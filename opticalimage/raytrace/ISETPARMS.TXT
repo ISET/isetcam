@@ -1,0 +1,15 @@
+%   C:\PROGRAM FILES\ZEMAX\LENSES\EO54852.ZMX
+lensFile='EO54852.ZMX';     %Lens file name
+psfSize=128;                 % PSF ROW AND COL SIZE
+psfSpacing=0.0002500;   % PSF GRID SPACING IN MM
+wave=400:50:700;            % WAVELENGTH SAMPLES (NM)
+imgHeightNum=13;             % Number of IMAGE HEIGHTS
+imgHeightMax=3.0000000;     % Maximum IMAGE HEIGHT (MM)
+objDist=250.000;                 % OBJECT DISTANCE (MM)
+mag=-0.023954;          % OPTICAL SYSTEM MAGNIFICATION
+baseLensFileName='C:\Program Files\ZEMAX\ISET\EO54852\EO54852'
+refWave=587.562;          % REFERENCE WAVELENGTH (NM)
+fov=26.198448;          % MAXIMUM DIAGONAL HALF FOV (DEGREE)
+efl=5.999968;          % EFFECTIVE FOCAL LENGTH
+fnumber_eff=1.780820;          % EFFECTIVE F-NUMBER
+fnumber=1.774644;          % F-NUMBER

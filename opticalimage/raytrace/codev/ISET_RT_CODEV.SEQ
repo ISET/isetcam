@@ -1,0 +1,338 @@
+!Image Systems Evaluation Toolkit (ISET) Code V Macro
+!
+!Author: P. Maeda, B. Wandell, P. Catrysse
+!Date:   November, 2004
+!
+! This macro is written to work with the ISET simulation technology.
+! The macro calculates (a) the local pointspread functions (b) the
+! geometric distortion, and (c) relative illumination from 
+! a lens description file.  Several other lens parameters are also 
+! calculated and saved (effective focal length, effective f-number,
+! and so forth).
+!
+! The data are written to a series .DAT files.  These files 
+! are read from within the ISET-Optics window.
+! The are stored as an ISET optics structure that can
+! be used in the ray trace analysis of image formation.
+!
+! To run this macro first edit the parameters in the editable section of this file (see below).
+! Then invoke this macro from within Code V.
+!
+! For example, if this macro is stored in the directory $DIR, invoke the Code V command
+!
+!     IN $DIR\ISET_RT_CODEV.SEQ 
+!       (e.g., IN C:\ORA\CVUSER\ISET_RT_CODEV.SEQ or 
+!              IN C:\u\brian\Matlab\PDC\Applications\Optics\rayTrace\ISET_RT_CODEV.SEQ 
+!        ).
+!
+! The output files are stored in the format 
+!     <basename>_PSF_<FieldHeightIndex>_<WavelengthIndex>.dat  (many files)
+!     <basename>_RI_.dat
+!     <basename>_DI_.dat
+!
+!Programming Notes:
+!  CENTER PIXEL INDEX COORDINATES OF CODEV PSF DATA IS (N/2+1, N/2+1) FOR AN N X N PSF DATA FILE
+!  PSF CENTERED ON CHIEF RAY.  DISTORTION NOT INCLUDED.
+!
+
+
+!ALLOCATE STRING VARIABLES -- DO NOT EDIT
+STR ^LENS_DIR
+STR ^LENS_FILE                     
+STR ^LENS_FULL	      
+STR ^PARAMETERS_FILE               
+STR ^PSF_PATH_FILENAM              
+STR ^OUTPUT_PSF_FILE               
+STR ^OUTPUT_DI_FILE
+STR ^OUTPUT_RI_FILE
+STR ^OUT_DIR
+STR ^OUT_FILE
+STR ^OUT_FULL
+STR ^TEMPSTR
+
+!----------------------------------------
+!USER EDITABLE VARIABLES
+!----------------------------------------
+^LENS_DIR=="C:\ORA\CODEV\LENS\"         ! MUST INCLUDE FINAL \
+^LENS_FILE=="FISHEYE"	                ! e.g., WIDEANG, FISHEYE, EO54852_FINITE_CONJUGATE
+
+^OUT_DIR== "C:\PSF_TMP\"                ! MUST INCLUDE FINAL \
+^OUT_FILE=="rtFishEye"    				! BaseName of the output files
+
+^PSF_SIZE==32			            !SAMPLES IN THE PSF, support of PSF data, typically 64 or 32(Fisheye)
+^GRID_SPACING==0.0005               !PSF GRID SPACING IN MM, e.g. 0.0005 is half a micron
+
+^WL_NUM==31                        !NUMBER OF WAVELENGTHS, e.g. 31
+^WL_MIN==400                       !MINIMUM WAVELENGTH IN NM, e.g. 400
+^WL_MAX==700                       !MAXIMUM WAVELENGTH IN NM, e.g. 700
+
+^IMGHT_NUM==60                     !NUMBER OF PARAXIAL IMAGE HEIGHTS, e.g. 12, 24 or 60 (FishEye)
+^IMGHT_MIN==0                      !MINIMUM PARAXIAL IMAGE HEIGHT IN MM, e.g. 0
+^IMGHT_MAX==4                      !MAXIMUM PARAXIAL IMAGE HEIGHT IN MM, e.g. 3.3, or 6.5 (FishEye)
+
+!---------------------DO NOT EDIT BELOW THIS LINE ----------------------
+!-----------------------------------------------------------------------
+
+^TEMPSTR == CONCAT(^OUT_DIR,^OUT_FILE)
+^PARAMETERS_FILE==CONCAT(^TEMPSTR,"_ISETPARMS.TXT")
+^LENS_FULL== CONCAT(^LENS_DIR,^LENS_FILE)
+^OUT_FULL == CONCAT(^OUT_DIR,^OUT_FILE)
+
+RES $LENS_FULL
+
+^PARAMETERS_BUF==3                 !CODE V BUFFER FOR OPTICAL PARAMETERS
+BUF DEL B^PARAMETERS_BUF           !CLEAR CODE V BUFFER FOR OPTICAL PARAMETERS
+
+^WL_REF_NUM==(REF)                 !LENS REFERENCE WAVELENGTH NUMBER   
+^WL_REF==(WL W^WL_REF_NUM)         !LENS REFERENCE WAVELENGTH 
+
+^OBJ_DIST==(THI S0)                !OBJECT DISTANCE IN MM
+^MAG==(RED)                        !OPTICAL SYSTEM MAGNIFICATION
+^EFL==(EFL)                        !EFFECTIVE FOCAL LENGTH IN MM
+^EPD==(EPD)                        !ENTRANCE PUPIL DIAMETER IN MM
+^FNO==^EFL/^EPD                    !F-NUMBER, equal to EFL/EPD
+^EFF_FNO==(FNO)                    !EFFECTIVE F-NUMBER, equal to 0.5/NA
+^NA==(NA)                          !NUMERICAL APERTURE
+
+!------------------------------------------------------------
+!----CALCULATE maximum diagonal half field of view
+!------------------------------------------------------------
+
+INS S1
+XIM 0; YIM (^IMGHT_MAX)
+^FOV==(AOI R1 S1 W^WL_REF_NUM F1)
+DEL S1
+
+!----------------------------------
+!----WRITE Parameters file
+!----------------------------------
+
+^TEMPSTR==CONCAT("%   ",^LENS_FULL)
+BUF PUT B^PARAMETERS_BUF I1 J1 ^TEMPSTR
+
+^TEMPSTR==CONCAT("lensFile='",^LENS_FILE)
+^TEMPSTR==CONCAT(^TEMPSTR,"'")
+BUF PUT B^PARAMETERS_BUF I2 J1 ^TEMPSTR
+
+^TEMPSTR==CONCAT("psfSize=",NUM_TO_STR(^PSF_SIZE))
+BUF PUT B^PARAMETERS_BUF I3 J1 ^TEMPSTR
+BUF PUT B^PARAMETERS_BUF I3 J2 "                 % PSF ROW AND COL SIZE"
+
+^TEMPSTR==CONCAT("psfSpacing=",NUM_TO_STR(^GRID_SPACING))
+BUF PUT B^PARAMETERS_BUF I4 J1 ^TEMPSTR
+BUF PUT B^PARAMETERS_BUF I4 J2 "   % PSF GRID SPACING IN MM"
+
+^dW==(^WL_MAX-^WL_MIN)/(^WL_NUM-1)
+^TEMPSTR=="wave="
+^TEMPSTR==CONCAT(^TEMPSTR,NUM_TO_STR(^WL_MIN))
+^TEMPSTR==CONCAT(^TEMPSTR,":")
+^TEMPSTR==CONCAT(^TEMPSTR,NUM_TO_STR(^dW))
+^TEMPSTR==CONCAT(^TEMPSTR,":")
+^TEMPSTR==CONCAT(^TEMPSTR,NUM_TO_STR(^WL_MAX))
+BUF PUT B^PARAMETERS_BUF I5 J1 ^TEMPSTR
+BUF PUT B^PARAMETERS_BUF I5 J2 "            % WAVELENGTH SAMPLES (NM)"
+
+^dH==(^IMGHT_MAX-^IMGHT_MIN)/(^IMGHT_NUM-1)
+^TEMPSTR=="imgHeight="
+^TEMPSTR==CONCAT(^TEMPSTR,NUM_TO_STR(^IMGHT_MIN))
+^TEMPSTR==CONCAT(^TEMPSTR,":")
+^TEMPSTR==CONCAT(^TEMPSTR,NUM_TO_STR(^dH))
+^TEMPSTR==CONCAT(^TEMPSTR,":")
+^TEMPSTR==CONCAT(^TEMPSTR,NUM_TO_STR(^IMGHT_MAX))
+BUF PUT B^PARAMETERS_BUF I6 J1 ^TEMPSTR
+BUF PUT B^PARAMETERS_BUF I6 J2 "     % PARAXIAL IMAGE HEIGHTS (MM)"
+
+^TEMPSTR==CONCAT("objDist=",NUM_TO_STR(^OBJ_DIST))
+BUF PUT B^PARAMETERS_BUF I7 J1 ^TEMPSTR 
+BUF PUT B^PARAMETERS_BUF I7 J2 "                 % OBJECT DISTANCE IN MM"
+
+^TEMPSTR==CONCAT("mag=",NUM_TO_STR(^MAG))
+BUF PUT B^PARAMETERS_BUF I8 J1 ^TEMPSTR
+BUF PUT B^PARAMETERS_BUF I8 J2 "          % OPTICAL SYSTEM MAGNIFICATION"
+
+^TEMPSTR==CONCAT("baseLensFileName='",^OUT_FILE)
+^TEMPSTR==CONCAT(^TEMPSTR,"'")
+BUF PUT B^PARAMETERS_BUF I9 J1 ^TEMPSTR
+
+^TEMPSTR==CONCAT("refWave=",NUM_TO_STR(^WL_REF))
+BUF PUT B^PARAMETERS_BUF I10 J1 ^TEMPSTR
+BUF PUT B^PARAMETERS_BUF I10 J2 "          % Reference Wavelength"
+
+^TEMPSTR==CONCAT("fov=",NUM_TO_STR(^FOV))
+BUF PUT B^PARAMETERS_BUF I11 J1 ^TEMPSTR
+BUF PUT B^PARAMETERS_BUF I11 J2 "          % MAXIMUM DIAGONAL HALF FOV IN DEG"
+
+^TEMPSTR==CONCAT("efl=",NUM_TO_STR(^EFL))
+BUF PUT B^PARAMETERS_BUF I12 J1 ^TEMPSTR
+BUF PUT B^PARAMETERS_BUF I12 J2 "          % EFFECTIVE FOCAL LENGTH IN MM"
+
+^TEMPSTR==CONCAT("fnumber=",NUM_TO_STR(^FNO))
+BUF PUT B^PARAMETERS_BUF I13 J1 ^TEMPSTR
+BUF PUT B^PARAMETERS_BUF I13 J2 "          % F-NUMBER = FOCAL LENGTH/ENTRANCE PUPIL DIAMETER"
+
+^TEMPSTR==CONCAT("fnumber_eff=",NUM_TO_STR(^EFF_FNO))
+BUF PUT B^PARAMETERS_BUF I14 J1 ^TEMPSTR
+BUF PUT B^PARAMETERS_BUF I14 J2 "          % EFFECTIVE F-NUMBER = 0.5/NUMERICAL APERTURE"
+
+BUF EXP B^PARAMETERS_BUF I1..14 J1..2 SEP $PARAMETERS_FILE
+
+!----------------------------------
+!----END WRITE Parameters file
+!----------------------------------
+
+!--------------------
+! CALCULATE THE PSF
+!--------------------
+^PSF_BUF==4                        !CODE V BUFFER FOR PSF DATA, NOT NEEDED BUT OK
+BUF DEL B^PSF_BUF                  !CLEAR CODE V BUFFER FOR PSF DATA
+^PSF_STARTROW==11                  !START ROW OF PSF DATA IN CODEV BUFFER
+^PSF_ENDROW==10+^PSF_SIZE          !END ROW OF PSF DATA IN CODEV BUFFER
+
+XIM 0 0
+YIM 0 ^IMGHT_MAX  
+SET APE                            !SET APERTURES BASED ON MAX IMAGE HEIGHT
+CA APE
+
+FOR ^I 1 (^WL_NUM)
+   ^WLT==^WL_MIN+(^I-1)*(^WL_MAX-^WL_MIN)/(^WL_NUM-1)
+
+   FOR ^J 1 (^IMGHT_NUM)
+      WL ^WLT
+      ^IMGHT==^IMGHT_MIN+(^J-1)*(^IMGHT_MAX-^IMGHT_MIN)/(^IMGHT_NUM-1)
+      XIM 0; YIM (^IMGHT)
+      SET VIG                      !SET VIGNETTING FACTORS FOR GIVEN IMAGE HEIGHT AND WAVELENGTH
+      PSF                          !USE CODE V PSF ANALYSIS TO GENERATE PSF DATA
+         TGR (^PSF_SIZE)
+         GRI (^GRID_SPACING)
+         LIS N
+         INT STR                   !PSF NORMALIZED TO STREHL RATIO OF PERFECT LENS=100
+         WBF B^PSF_BUF
+      GO
+
+	! SET UP THE PSF OUTPUT FILE NAME
+      ^OUTPUT_PSF_FILE==CONCAT(^OUT_FULL, "_PSF_")
+      ^OUTPUT_PSF_FILE==CONCAT(^OUTPUT_PSF_FILE, NUM_TO_STR(^J))
+      ^OUTPUT_PSF_FILE==CONCAT(^OUTPUT_PSF_FILE, "_")
+      ^OUTPUT_PSF_FILE==CONCAT(^OUTPUT_PSF_FILE, NUM_TO_STR(^I))
+      ^OUTPUT_PSF_FILE==CONCAT(^OUTPUT_PSF_FILE, ".dat")
+
+      !WRITE PSF DATA IN BUFFER
+      BUF EXP B^PSF_BUF I^PSF_STARTROW..^PSF_ENDROW J1..^PSF_SIZE SEP $OUTPUT_PSF_FILE
+
+	!CLEAR CODE V BUFFER FOR PSF DATA
+      BUF DEL B^PSF_BUF
+
+   END FOR
+END FOR
+
+
+!---------------------------------------
+!CALCULATE THE IMAGE DISTORTION
+!---------------------------------------
+
+!CREATE AND CLEAR CODE V BUFFER FOR DISTORTED IMAGE DATA
+^DI_BUF==^PSF_BUF+1
+BUF DEL B^DI_BUF                  
+
+FOR ^I 1 (^WL_NUM)
+	^WLT==^WL_MIN + (^I-1)*^dW
+
+	!CODE V NEEDS WAVELENGTHS TO BE INPUT IN DESCENDING ORDER
+	!SO DEPENDING ON WHETHER THE CURRENT WAVELENGTH IS HIGHER OR
+	!LOWER THAN THE REFERENCE, WE MUST ADJUST THE ORDER OF CALCULATION
+	IF ^WLT <= ^WL_REF
+      	WL (^WL_REF) (^WLT); REF 1  !REFERENCE WAVELENGTH > ILLUMINATION WAVELENGTH
+	ELS
+      	WL (^WLT) (^WL_REF); REF 2  !REFERENCE WAVELENGTH < ILLUMINATION WAVELENGTH
+   	END IF
+
+   	FOR ^J 1 (^IMGHT_NUM)
+      	^IMGHT==^IMGHT_MIN + (^J-1)*^dH
+
+		!SET VIGNETTING FACTORS
+      	XIM 0 0; 
+		YIM 0 (^IMGHT); 
+		SET VIG;  
+
+		!COMPUTE THE DISTORTED IMAGE HEIGHT FROM THE INPUT IMAGE HEIGHT
+      	IF ^WLT <= ^WL_REF
+      	   ^DISTIMGHT == (Y R1 SI F2 W2)    
+      	ELS
+     		    ^DISTIMGHT == (Y R1 SI F2 W1)
+      	END IF
+
+      	BUF PUT B^DI_BUF I^J J^I ^DISTIMGHT           
+   	END FOR
+END FOR
+
+! SET UP THE PSF OUTPUT FILE NAME
+^OUTPUT_DI_FILE==CONCAT(^OUT_FULL, "_DI_")
+!^OUTPUT_DI_FILE==CONCAT(^OUTPUT_DI_FILE, NUM_TO_STR(^I))
+!^OUTPUT_DI_FILE==CONCAT(^OUTPUT_DI_FILE, "_")
+!^OUTPUT_DI_FILE==CONCAT(^OUTPUT_DI_FILE, NUM_TO_STR(^J))
+^OUTPUT_DI_FILE==CONCAT(^OUTPUT_DI_FILE, ".dat")
+
+!WRITE DI DATA TO FILE
+BUF EXP B^DI_BUF I1..^IMGHT_NUM J1..^WL_NUM SEP $OUTPUT_DI_FILE
+
+!CLEAR CODE V BUFFER FOR DISTORTED IMAGE HEIGHT DATA
+BUF DEL B^DI_BUF 
+
+!---------------------------------------
+!CALCULATE THE RELATIVE ILLUMINATION
+!---------------------------------------
+
+!CREATE AND CLEAR CODE V BUFFER FOR RELATIVE ILLUMINATION DATA
+^RI_BUF==^DI_BUF+1
+BUF DEL B^RI_BUF 
+
+FOR ^I 1 (^WL_NUM)
+	^WLT==^WL_MIN + (^I-1)*^dW
+
+	!CODE V NEEDS WAVELENGTHS TO BE INPUT IN DESCENDING ORDER
+	!SO DEPENDING ON WHETHER THE CURRENT WAVELENGTH IS HIGHER OR
+	!LOWER THAN THE REFERENCE, WE MUST ADJUST THE ORDER OF CALCULATION
+	IF ^WLT <= ^WL_REF
+      	WL (^WL_REF) (^WLT); REF 1  !REFERENCE WAVELENGTH > ILLUMINATION WAVELENGTH
+	ELS
+      	WL (^WLT) (^WL_REF); REF 2  !REFERENCE WAVELENGTH < ILLUMINATION WAVELENGTH
+   	END IF
+
+   	FOR ^J 1 (^IMGHT_NUM)
+      	^IMGHT==^IMGHT_MIN + (^J-1)*^dH
+
+		!SET VIGNETTING FACTORS
+      	XIM 0 0; 
+		YIM 0 (^IMGHT); 
+		SET VIG;  
+
+     		BUF DEL B0; BUF YES
+     		TRA; FUL NO; NRD 50; GO  !USE CODE V TRA ANALYSIS OPTION TO CALCULATE RELATIVE ILLUMINATION
+      	BUF NO
+      	BUF FND B0 'RELATIVE ILLUM:'
+     		BUF FND                  !FIND NEXT OCCURRENCE OF 'RELATIVE ILLUM:' IN BUFFER BO
+      	^ROWB0  == (BUF.I B0)    !ROW IN BUFFER B0 THAT CONTAINS RELILLUM
+      	IF ^WLT <= ^WL_REF
+         		^RELILLUM == ((BUF.NUM B0 I^ROWB0 J3)/100)  !ASSIGN VALUE IN ROW ^ROWB0, COL 3 IN BUFFER B0 TO RELILLUM
+      	ELS
+         		^RELILLUM == ((BUF.NUM B0 I^ROWB0 J2)/100)  !ASSIGN VALUE IN ROW ^ROWB0, COL 2 IN BUFFER B0 TO RELILLUM
+      	END IF
+      	BUF PUT B^RI_BUF  I^J J^I ^RELILLUM
+   	END FOR
+END FOR
+
+! SET UP THE PSF OUTPUT FILE NAME
+^OUTPUT_RI_FILE==CONCAT(^OUT_FULL, "_RI_")
+!^OUTPUT_RI_FILE==CONCAT(^OUTPUT_RI_FILE, NUM_TO_STR(^I))
+!^OUTPUT_RI_FILE==CONCAT(^OUTPUT_RI_FILE, "_")
+!^OUTPUT_RI_FILE==CONCAT(^OUTPUT_RI_FILE, NUM_TO_STR(^J))
+^OUTPUT_RI_FILE==CONCAT(^OUTPUT_RI_FILE, ".dat")
+
+!WRITE RI DATA TO FILE
+BUF EXP B^RI_BUF I1..^IMGHT_NUM J1..^WL_NUM SEP $OUTPUT_RI_FILE
+
+!CLEAR CODE V BUFFER FOR RELATIVE ILLUMINATION DATA
+BUF DEL B^RI_BUF 
+
+!---------------------------END OF MACRO-------------------------------------
+

@@ -1,0 +1,9 @@
+This is the only file in the isetbio/local directory.
+
+This  directory is used as scratch space for remote data downloads.
+It is also a good place to keep various personalizations, such as your validation preference file.  
+
+Only this file and the directory are kept in the repository.  
+Other files placed in isetbio/local are ignored (by .gitignore).
+
+
