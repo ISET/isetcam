@@ -1,2 +1,4 @@
 # isetcam
-Open source version of the original ISET, works as a complement to ISETBIO
+The original commercial version of ISET from imageval now freely available for noncommercial users. 
+
+See also ISETBIO.
