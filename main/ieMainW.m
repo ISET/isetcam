@@ -74,15 +74,7 @@ guidata(hObject, handles);
 
 image(imread('mainIcon.jpg')); axis off; axis image;
 
-% Check key and post message if missing
-val = ieKeyVerify;
-if ~iscell(val) 
-    error('License/Key not verified. Returned cell array failure.');
-elseif ~strcmp(val{1},md5([date,'1951']))
-    ieInWindowMessage('License/Key values NOT Verified',handles,[]);
-else
-    ieSessionSet('mainwindow',hObject,eventdata,handles);
-end
+ieSessionSet('mainwindow',hObject,eventdata,handles);
 
 % If the person has set a position and size preference, put the window
 % there
@@ -109,49 +101,25 @@ return;
 % --- Executes on button press in btnScene.
 function btnScene_Callback(hObject, eventdata, handles)
 % Scene button
-
-val = ieKeyVerify;
-if ~strcmp(val{1},md5([num2str(date),'1951'])),
-    ieInWindowMessage('License/Key Not Verified',handles,[]);
-else
-    sceneWindow;
-end
+sceneWindow;
 return;
 
 % --- Executes on button press in btnOI.
 function btnOI_Callback(hObject, eventdata, handles)
 % Optics button
-
-val = ieKeyVerify;
-if ~strcmp(val{1},md5([num2str(date),'1951'])), 
-    ieInWindowMessage('License/Key Not Verified',handles,[]);
-else
-    oiWindow;
-end
+oiWindow;
 return;
 
 % --- Executes on button press in btnSensorImage.
 function btnSensorImage_Callback(hObject, eventdata, handles)
 % Sensor button
-
-val = ieKeyVerify;
-if ~strcmp(val{1},md5([num2str(date),'1951'])), 
-    ieInWindowMessage('License/Key Not Verified',handles,[]);
-else
-    sensorImageWindow;
-end
+sensorImageWindow;
 return;
 
 % --- Executes on button press in btnProcessor.
 function btnProcessor_Callback(hObject, eventdata, handles)
 % Processor button
-
-val = ieKeyVerify;
-if ~strcmp(val{1},md5([num2str(date),'1951'])), 
-    ieInWindowMessage('License/Key Not Verified',handles,[]);
-else
-    ipWindow;
-end
+ipWindow;
 return;
 
 % --------------------------------------------------------------------
