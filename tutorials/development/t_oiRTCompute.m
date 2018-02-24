@@ -6,9 +6,9 @@
 % These can either be specified synthetically, or they can be
 % derived from optics software, such as Zemax.
 %
-% See also:  s_opticsRTGridLines, t_oiCompute
-%
 % Copyright ImagEval Consultants, LLC, 2011.
+%
+% See also:  s_opticsRTGridLines, t_oiCompute
 
 %%
 ieInit
@@ -32,17 +32,14 @@ oi = oiCreate('ray trace');
 
 % If you would like to see the point spread functions, you can use this
 % code.
-%
-%   wave = 550;
-%   fhmm = 0.5;
-%   rtPlot(oi,'psf',wave,fhmm);
-%   psfMovie(oiGet(oi,'optics'));
-%   ieAddObject(oi); oiWindow;
+%{
+   wave = 550; fhmm = 0.5;
+   rtPlot(oi,'psf',wave,fhmm);
+%}
 
-% Confrim that the optics model type is set to ray trace
+% Confirm that the optics model type is set to ray trace
 % In general, optics parameters can be read out with this syntax using an
 % oiGet() call.
-
 fprintf('Optics model:       %s\n',oiGet(oi,'optics model'))
 fprintf('Ray trace lens:     %s\n',oiGet(oi,'optics rt name'))  % Name of the lens used by ray trace
 
