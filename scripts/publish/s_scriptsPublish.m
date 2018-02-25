@@ -1,8 +1,6 @@
 %% s_scriptsPublish
 %
-% Publish scripts.
-% 
-% Find the scripts in a directory and publish them.
+% Publish scripts as HTML files that can be viewed in a browser.
 %
 % Copyright ImageVal Consulting, LLC 2016
 
@@ -11,16 +9,17 @@ ieSessionSet('init clear',false);
 
 %%
 ieInit;
-clear all
+clear all; % Clear at the beginning, but not again.
 
-%% One at a time
+%% One sub directory at a time
+
 % str = 'optics';    % Which directory
 % sDir = {str};
 
 % All at once
 % sDir = {'color','metrics','optics','scene'};     % Must also be reset in the loop, below
-% sDir = {'scene','optics','sensor','color','metrics','image','display','camera',};
-sDir = {'optics'};
+sDir = {'scene','optics','sensor','color','metrics','image','display','camera',};
+% sDir = {'color'};
 maxHeight = 512;
 maxWidth  = 512;
 
@@ -29,6 +28,7 @@ maxWidth  = 512;
 % This could be {'html','pdf'}
 oFormats = {'html'};
 
+excludeNames = {'Contents.m'};
 % Loop on all the directories in the list
 for ss = 1:length(sDir)
     fprintf('Script directory: %s \n',sDir{ss});
@@ -37,18 +37,19 @@ for ss = 1:length(sDir)
 
     % Run them - later we can publish them, as a group with similar code.
     cd(fullfile(isetRootPath,'scripts',sDir{ss}));
-    theseScripts = dir('*.m');
-    nScripts = length(theseScripts);
+    allScripts = dir('*.m');
+    scriptNames = excludeScripts(allScripts,excludeNames);
+    nScripts = length(scriptNames);
     fprintf('Executing %d scripts from %s directory\n',nScripts,sDir{ss});
+    
     for thisScript=1:nScripts
         % Need to re-execute on each loop because of the ieInit commands
         cd(fullfile(isetRootPath,'scripts',sDir{ss}));
-        theseScripts = dir('*.m');
 
-        fprintf('%d %s ...',thisScript,theseScripts(thisScript).name);
+        fprintf('%d %s ...',thisScript,scriptNames(thisScript).name);
         
         for thisFormat = 1:length(oFormats)
-            publish(theseScripts(thisScript).name,...
+            publish(scriptNames(thisScript).name,...
                 'format',oFormats{thisFormat},...
                 'outputDir',oDir, ...
                 'maxHeight',maxHeight,...
@@ -63,4 +64,19 @@ for ss = 1:length(sDir)
 end
 
 
-%%
+%% 
+function keepScripts = excludeScripts(theseScripts,excludeNames)
+
+cnt = 1;
+for ii=1:length(theseScripts)
+    if ismember(theseScripts(ii).name,excludeNames)
+        % Do nothing
+    else
+        % Add to the list we keep.  Notice that only the name is preserved.
+        keepScripts(cnt).name = theseScripts(ii).name; %#ok<AGROW>
+        cnt = cnt+1;
+    end
+end
+
+end
+

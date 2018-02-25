@@ -103,4 +103,8 @@ C = reshape(C,nbb,nbb);
 vcNewGraphWin;
 imagesc(bbRange,bbRange,C); colorbar
 xlabel('From Temp'); ylabel('To Temp'); identityLine
+
+%%  Clean up the table
+delete(fname);
+
 %%
