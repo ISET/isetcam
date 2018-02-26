@@ -18,8 +18,13 @@
 % This function closes windows and can clear your variables, depending on how 
 % you set your ISET preferences.  
 %%
-getpref('ISET')       % Here is how your preferences are set
-setpref('ISET','initclear',true);    % To clear variables on ieInit, do this
+getpref('ISET')                      % Here is how your preferences are set
+
+% To clear workspace variables on ieInit, do this
+setpref('ISET','initclear',true);    
+
+% To preserve workspace variables on ieInit, do this
+setpref('ISET','initclear',false);   
 
 ieInit;
 %% Scene spectral radiance
