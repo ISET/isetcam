@@ -40,7 +40,7 @@ fprintf('Ray trace optics: %s\n',opticsGet(optics,'lensFile'));
 
 % Now, match the scene properties
 oi = oiSet(oi,'wangular',sceneGet(scene,'wangular'));
-oi = oiSet(oi,'spectrum',sceneGet(scene,'spectrum'));
+oi = oiSet(oi,'wave',sceneGet(scene,'wave'));
 
 % Match the scene distance and the rt distance.  They are both essentially
 % infinite.
