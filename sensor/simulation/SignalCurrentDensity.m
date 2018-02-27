@@ -4,7 +4,7 @@ function scdImage = SignalCurrentDensity(OI,ISA)
 %       scdImage = SignalCurrentDensity(OI,ISA)
 %
 %  This image has a spatial sampling density equal to the spatial sampling
-%  of the scene and describes the current per meter^2.
+%  of the scene and describes the current per meter^2 (A/m^2)
 %
 %  We perform the calculation two ways, depending on image size. If the
 %  image is less than 512x512, we calculate using a quick matrix
