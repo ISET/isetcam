@@ -54,7 +54,7 @@ end
 
 % Get optics and validate that it has ray trace information 
 optics = oiGet(oi,'optics');
-if isempty(opticsGet(optics,'rayTrace')),
+if isempty(opticsGet(optics,'rayTrace'))
     errordlg('No ray trace information.');
     return;
 end
@@ -132,15 +132,29 @@ if size(rtPSF{1,1,1}) ~= psfSize
     rtPSF = oiGet(oi,'sampledRTpsf');
 end
 
-%% Allocate space for the output irradiance after applying the svPSF. 
+%% Allocate space for the output irradiance after applying the svPSF
+
+% This should be an oiPad call that will correctly adjust the new
+% height of the image!!!
+
 % This grid matches the irradiance image spatial sampling
 %
-% The output irradiance imageis padded with extra rows and columns to
+% The output irradiance image is padded with extra rows and columns to
 % permit point spread blurring beyond the edge of inIrrad. The inIrrad
 % positions begin at (extraRow/2 + 1, extraCol/2 + 1) in the outIrrad data.
+extraRow = ceil(psfSize(1)); extraRow = 2*ceil(extraRow/2);
+extraCol = ceil(psfSize(2)); extraCol = 2*ceil(extraCol/2);
+oi = oiPad(oi,[extraRow,extraCol,0]);
+outIrrad = double(zeros(imSize(1)+extraRow,imSize(2)+extraCol,length(wavelength)));
+%{
+% Prior to Feb. 27 2018 the code below was used, without the oiPad.
+% This introduced an error: the size of the optical image was not
+% adjusted to account for the padding as is done in oiPad. 
+% MH pointed out the error.  BW fixed.
 extraRow = ceil(1.5*psfSize(1)); extraRow = 2*ceil(extraRow/2);
 extraCol = ceil(1.5*psfSize(2)); extraCol = 2*ceil(extraCol/2);
 outIrrad = double(zeros(imSize(1)+extraRow,imSize(2)+extraCol,length(wavelength)));
+%}
 
 %% Calculate the shift-variant summation of irradiance and blurring
 % Loop over wavelengths, image height, and image angles.
@@ -256,4 +270,4 @@ end
 % vcNewGraphWin; imageSPD(outIrrad);
 if showWaitBar, close(wBar); end
 
-return
+end

@@ -26,10 +26,10 @@ ieSessionSet('waitbar','on');
 %% Scene
 scene = sceneCreate('pointArray',512,32);
 scene = sceneInterpolateW(scene,450:100:650);
-scene = sceneSet(scene,'hfov',15);
+scene = sceneSet(scene,'hfov',10);
 scene = sceneSet(scene,'name','psf Point Array');
 
-ieAddObject(scene); sceneWindow;
+ieAddObject(scene); sceneWindow; truesize;
 
 %% Optics
 oi = oiCreate('ray trace');
@@ -45,7 +45,7 @@ oi = oiSet(oi,'optics',optics);
 oi = oiSet(oi,'optics model','ray trace');
 oi = oiCompute(scene,oi);
 oi = oiSet(oi,'name','ray trace case');
-ieAddObject(oi); oiWindow;
+ieAddObject(oi); oiWindow;truesize;
 
 %% Compute the diffraction limited case
 
@@ -58,7 +58,7 @@ oiDL = oiSet(oiDL,'optics',optics);
 oiDL = oiSet(oiDL,'optics model','diffraction limited');
 oiDL = oiCompute(scene,oiDL);
 oiDL = oiSet(oiDL,'name','psf diffraction case');
-ieAddObject(oiDL); oiWindow;
+ieAddObject(oiDL); oiWindow; truesize;
 
 %% Render the images
 imageMultiview('oi',[1 2],1); truesize;

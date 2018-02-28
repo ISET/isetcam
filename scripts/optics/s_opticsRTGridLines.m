@@ -71,7 +71,7 @@ irradiance = rtGeometry(scene,optics);
 % Copy the resulting data into the optical image structure
 oi = oiSet(oi,'photons',irradiance);
 oi = oiSet(oi,'name','Geometry only');
-ieAddObject(oi); oiWindow;
+ieAddObject(oi); oiWindow; truesize
 
 %% Precompute the PSF
 %
@@ -83,7 +83,7 @@ oi = oiSet(oi,'psfStruct',svPSF);
 outIrrad = rtPrecomputePSFApply(oi,angStep);
 oi = oiSet(oi,'photons',outIrrad);
 oi = oiSet(oi,'name','Stepwise-RT');
-ieAddObject(oi); oiWindow;
+ieAddObject(oi); oiWindow; truesize
 
 %% We choose ray trace by setting the optics method
 %
@@ -94,7 +94,7 @@ oi = oiCompute(scene,oi);
 oi = oiSet(oi,'name','Automated ray trace');
 
 % Have a look - barrell distortion and all
-ieAddObject(oi); oiWindow;
+ieAddObject(oi); oiWindow; truesize
 
 % Here is a horizontal line of illuminance
 rtData = oiPlot(oi,'illuminance hline',[1,64]);
@@ -114,7 +114,7 @@ oiDL = oiSet(oiDL,'name','DL method');
 oiDL = oiCompute(scene,oiDL);
 
 % No barrel distortion, less blurring
-ieAddObject(oiDL); oiWindow;
+ieAddObject(oiDL); oiWindow; truesize
 
 % Here is a horizontal line of illuminance
 dlData = oiPlot(oiDL,'illuminance hline',[1,64]);
@@ -137,7 +137,7 @@ sceneSmall = sceneSet(sceneSmall,'fov',20);
 % Ray trace calculation with distortion and shift-variant blurring
 oi = oiCompute(sceneSmall,oi);
 oi = oiSet(oi,'name','rt-Small-RT');
-ieAddObject(oi); oiWindow;
+ieAddObject(oi); oiWindow; truesize
 
 %% Equivalent diffraction limited
 
@@ -145,7 +145,7 @@ ieAddObject(oi); oiWindow;
 % This calculation is pretty quick.
 oiDL = oiCompute(sceneSmall,oiDL);
 oiDL = oiSet(oiDL,'name','rt-Small-DL');
-ieAddObject(oiDL); oiWindow;
+ieAddObject(oiDL); oiWindow; truesize
 
 %% 
 

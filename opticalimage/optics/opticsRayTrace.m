@@ -45,7 +45,7 @@ oi = oiSet(oi,'wangular',sceneGet(scene,'wangular'));
 % equal or greater than the scene fov.
 rtFOV    = opticsGet(optics,'rtdiagonalfov');
 sceneFOV = sceneGet(scene,'diagonalFieldOfView');
-if sceneFOV > rtFOV,
+if sceneFOV > rtFOV
     str = sprintf('Scene diag fov (%.0f) exceeds max RT fov (%.0f)',sceneFOV,rtFOV);
     ieInWindowMessage(str,handles,2); disp(str);
     %close(wBar);
@@ -59,13 +59,14 @@ sceneDist = sceneGet(scene,'distance');  %m
 % Usually this is a small thing because we are at infinity in both cases.
 rtDist = opticsGet(optics,'rtObjectDistance','m');
 if rtDist ~= sceneDist
+    sceneWindow; handles = ieSessionGet('scene guidata');
     delay = 1.5;
     str = sprintf('Scene distance (%.2f m) does not match ray trace assumption (%.2f m)',sceneDist,rtDist);
     ieInWindowMessage(str,handles,delay);
     ieInWindowMessage('Adjusting scene distance.',handles,delay);
     scene = sceneSet(scene,'distance',rtDist);
     vcReplaceObject(scene);
-    % sceneWindow;
+    sceneWindow; 
 end
 
 % We calculate the ray traced output in the order of 
@@ -104,10 +105,11 @@ end
 % psfMovie(oiGet(oi,'optics'));
 
 % Apply the OTF to the irrad data.
-fprintf('Applying PSFs.\n');             % ieAddObject(oi); oiWindow;
-[irrad, oi] = rtPrecomputePSFApply(oi);  % imageSPD(irrad,550:100:650);
-oi = oiSet(oi,'photons',double(irrad));  % 
-fprintf('Done applying PSFs.\n');        % ieAddObject(oi); oiWindow;
+fprintf('Applying PSFs.\n');             
+[irrad, oi] = rtPrecomputePSFApply(oi);  
+% imageSPD(irrad,550:100:650);
+oi = oiSet(oi,'photons',double(irrad)); 
+fprintf('Done applying PSFs.\n');
 
 % Do we have an anti-alias filter in place?
 switch lower(oiGet(oi,'diffuserMethod'))
@@ -129,4 +131,4 @@ end
 oi = oiSet(oi,'illuminance',illuminance);
 oi = oiSet(oi,'meanilluminance',meanIlluminance);
 
-return;
+end

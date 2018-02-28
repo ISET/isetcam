@@ -1,12 +1,13 @@
 %% Validation script for sceneFromFile
 %
-% Makes a small test scene in the local directory
-% 
+% Makes and deletes a small test scene in the local directory
+%
+% BW
 
+%%
 ieInit;
 
-% I have a local directory where I test stuff that is not included in the
-% git repository.
+% Use the local directory that is not included in the git repository.
 cd(fullfile(isetRootPath,'local'));
 
 %% Create and read a scene variable from the file
@@ -16,7 +17,7 @@ scene = sceneCreate;
 save('testS','scene');
 
 s = sceneFromFile('testS');
-isequal(s,scene)  % Should be the same
+assert(isequal(s,scene));  % Should be the same
 
 %%  Read in a mat multispectral file
 
@@ -26,10 +27,8 @@ scene = sceneFromFile(fName,'multispectral');
 ieAddObject(scene); sceneWindow;
 
 %% Create a file from RGB data
-d = displayCreate;
-
 RGB = ieClip(255*rand(10,10,3),0,255);
-scene = sceneFromFile(RGB,'rgb');
+scene = sceneFromFile(RGB,'rgb',100,'lcdExample');
 ieAddObject(scene); sceneWindow;
 
 %% Now try sceneToFile with the scene data
@@ -41,6 +40,11 @@ ieAddObject(scene2); sceneWindow;
 
 %% Now try on a jpg image
 fullFileName = which('eagle.jpg');
-scene = sceneFromFile(fullFileName,'rgb',[],d);
+scene = sceneFromFile(fullFileName,'rgb',100,'lcdExample');
 ieAddObject(scene); sceneWindow;
+assert(abs(scene.wAngular - 15.5233) < 1e-3);
+
+%% Clean up
+if exist('testS.mat','file'), delete('testS.mat'); end
+
 %%

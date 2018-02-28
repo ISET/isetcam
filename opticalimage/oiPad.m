@@ -1,29 +1,47 @@
 function oi = oiPad(oi,padSize,sDist,direction)
-%Pad the oi irradiance data with zeros, usually prior to applying OTF
+% Pad the oi irradiance data with zeros
 %
 %     oi = oiPad(oi,padSize,[sDist],direction)
 %
-% For optics calculations we need to pad the size (to avoid edge wrapping).
-% Here we pad the spatial dimensions with 0s. By changing the row and
-% column numbers, we also must and adjust some parameters, such as the
-% horizontal field of view accordingly.
+% Description:
+%   For optics calculations we pad the size to catch light spilled
+%   beyond the edge of the scene. We pad the spatial dimensions with
+%   zeroes. 
+%
+%   After changing the row and column numbers, we adjust the
+%   horizontal field of view accordingly.
+%
+% Inputs:
+%   oi:   Optical image structure
+%   padSize:  The number of elements to add.  If 'both', then this
+%             number of elements is added both at the beginning and end
+%   sDist:    Distance to the scene (meters).  If not passed in, the
+%             current scene is queried and its distance is used.  This
+%             is needed to adjust the angular field of view after the
+%             padding
+%  direction: By default, this is 'both', fore 'pre' and 'post'
+%             padding.
 %
 % You can set the argument direction = 'both','pre', or 'post' to pad both
 % or only on one side. By default, the zero-padding takes place on all
 % sides of the image.  Thus,  by default if padSize(1) is 3, we add 3 rows
 % on top and bottom (total of 6 rows).
 %
-% Example:
-%   oi = oiPad(oi,[8,8,0]);
-%
 % Copyright ImagEval Consultants, LLC, 2003.
+%
+% See also:  oiCompute
 
-if ieNotDefined('sDist'), 
+% Examples
+%{
+   oi = oiPad(oi,[8,8,0]);
+%}
+
+if ieNotDefined('sDist') 
     scene = vcGetObject('scene');
     if isempty(scene)
         warndlg('oiPad: No scene, assuming 1 m sDist');
         sDist = 1;
-    else  sDist = sceneGet(scene,'distance'); 
+    else,  sDist = sceneGet(scene,'distance'); 
     end
 end
 if ieNotDefined('direction'), direction = 'both'; end
@@ -35,14 +53,14 @@ if ismatrix(padSize), padSize(3) = 0; end
 photons = oiGet(oi,'photons');
 
 % Probably no longer useful.  Was used for compression issues.
-% Until recently, this was 1e-4.  
-padval = oiGet(oi,'data max')*1e-6;
+% Until recently, this was 1e-4.
+% Until Feb. 27, 2018 this was 1e-6.
+padval = oiGet(oi,'data max')*1e-9;
 
 try
     photons = padarray(photons,padSize,padval,direction);
 catch MEmemory
-    % Memory problem.  Try it one one wavelength at a time at single
-    % precision.
+    disp(MEmemory)
     
     % First, figure out the size of the new, padded array.
     photons = single(photons);
@@ -80,9 +98,9 @@ imageDistance = opticsGet(oiGet(oi,'optics'),'imageDistance',sDist);
 % Now we compute the new horizontal field of view using the formula that
 % says the opposite over adjacent is the tangent of the angle.  We return
 % the value in degrees
-oi = oiSet(oi,'horizontalfieldofview',ieRad2deg(2*atan((0.5*newWidth)/imageDistance)));
+oi = oiSet(oi,'horizontal field of view',ieRad2deg(2*atan((0.5*newWidth)/imageDistance)));
 
 % Now we adjust the columns by placing in the new photons
 oi = oiSet(oi,'photons',photons);
 
-return;
+end
