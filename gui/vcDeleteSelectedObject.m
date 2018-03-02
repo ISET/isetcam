@@ -9,9 +9,13 @@ function nRemaining = vcDeleteSelectedObject(objType)
 %  The number of remaining objects of that type is returned. 
 %
 % Example:
-%   vcDeleteSelectedObject('SCENE')
+%   vcDeleteSelectedObject(scene);    % Where scene is a struct
+%   vcDeleteSelectedObject('SCENE')   % Where a string
 %
 % Copyright ImagEval Consultants, LLC, 2005.
+
+%% Deal with the struct call
+if isstruct(objType), objType = objType.type; end
 
 % Get the selected object data structure and its position (val) in the list
 objType = vcEquivalentObjtype(objType);
@@ -22,6 +26,7 @@ if isempty(val)
     return;
 end
 
+%%
 obj = vcGetObjects(objType);
 nObj = length(obj);
 if nObj == 1

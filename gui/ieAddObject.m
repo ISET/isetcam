@@ -28,8 +28,8 @@ global vcSESSION;
 
 % Get a value
 % Makes objType proper type and forces upper case.
-if   exist('obj','var'), objType = lower(obj.type);
-else error('No object type');
+if exist('obj','var'), objType = lower(obj.type);
+else,                  error('No object type');
 end
 
 % If camera, three values.  Otherwise just one.

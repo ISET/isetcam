@@ -26,5 +26,4 @@ end
 % Delete the selected object
 nRemaining = vcDeleteSelectedObject(objType);
 
-return;
-
+end
