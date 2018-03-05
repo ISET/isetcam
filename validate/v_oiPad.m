@@ -1,8 +1,8 @@
 %% v_oiPad
 %
 % Validate that the oiPad function does not change the sample spacing,
-% just the size of the oi data.  This is tested for both the
-% shift-invariant model and the ray trace model.
+% just the size of the oi data.  This is tested for the diffraction
+% limited, shift-invariant and ray trace models.
 %
 % BW, SCIEN Stanford, 2018
 
@@ -19,7 +19,6 @@ oi = oiCreate('diffraction limited');
 oi = oiCompute(oi,s);
 oiGet(oi,'fov');
 baseSpacing = oiGet(oi,'sample spacing');
-sz = oiGet(oi,'size');
 
 %% Verify that padding does not change the sample spacing
 
@@ -29,8 +28,7 @@ for padding = 10:10:100
     newSpacing = oiGet(oip,'sample spacing');
     assert(max(abs(newSpacing - baseSpacing)) < 1e-10)
 end
-disp('v_oiPad succeeds for shift invariant');
-ieDeleteObject(s);
+disp('v_oiPad succeeds for diffraction limited');
 
 %% Make oi for testing
 oi = oiCreate('shiftinvariant');
@@ -48,7 +46,6 @@ for padding = 10:10:100
     assert(max(abs(newSpacing - baseSpacing)) < 1e-10)
 end
 disp('v_oiPad succeeds for shift invariant');
-ieDeleteObject(s);
 %%  Now check for the ray trace oi case, which failed at one time
 
 % Fewer wavelengths for speed
