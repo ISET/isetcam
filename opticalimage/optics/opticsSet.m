@@ -128,12 +128,6 @@ switch parm
     case {'focallength','flength'}
         optics.focalLength = val;
         
-        %     case {'spectrum'}
-        %         % Spectrum structure
-        %         optics.spectrum = val;
-        %     case {'wavelength','wave'}
-        %         optics.spectrum.wave = val;
-        
     case {'transmittance','transmittancescale'}
         % opticsSet(optics,'transmittance scale',scaleValues);
         %

@@ -167,7 +167,8 @@ switch oType
     case 'optics'
         % If optics, then we either return the optics or an optics
         % parameter.  I think we can handle the longer varargin by
-        % sending in varargin{:}, by the way.  Try this!
+        % sending in varargin{:}, by the way.  Try 
+        % val = opticsGet(optics,parm,varargin{:});
         optics = oi.optics;
         if isempty(parm), val = optics;
         elseif isempty(varargin), val = opticsGet(optics,parm);
@@ -179,7 +180,7 @@ switch oType
         
     case 'wvf'
         % If a wavefront structure, then we either return the wvf or
-        % an wvf parameter.
+        % an wvf parameter.  See above for varargin{:}
         wvf = oi.wvf;
         if isempty(parm), val = wvf;
         elseif isempty(varargin), val = wvfGet(wvf,parm);
@@ -239,8 +240,9 @@ switch oType
                 % in the oiCompute calculation.
                 sz = oiGet(oi,'size');
                 if isempty(sz)
-                    % This is what the computed OI size will be, given the current
-                    % scene.
+                    % This is what the computed OI size will be, given the
+                    % current scene.
+                    disp('Expected OI size from current scene')
                     scene  = vcGetObject('scene');
                     sz = sceneGet(scene,'size');
                     if isempty(sz), error('No scene or OI');
@@ -267,10 +269,14 @@ switch oType
             case {'distance','imagedistance','focalplanedistance'}
                 % oiGet(oi,'focal plane distance',[scene])
                 %
-                % We are finding the distance from the lens to the focal
+                % We calculate the distance from the lens to the focal
                 % plane. The focal plane depends on the scene distance.  If
                 % there is no scene, we assume the user meant a scene at
                 % infinity.
+                %
+                % Very confusing because there is another opticsGet() on
+                % these same parameters.  So why do we use an oiGet() and
+                % an opticsGet() with the same parameters.
                 if isempty(varargin)
                     % No scene was sent in.  So, we use the oi depth map to
                     % figure out the scene distance in the middle
@@ -295,16 +301,22 @@ switch oType
                 
             case {'wangular','widthangular','hfov','horizontalfieldofview','fov'}
                 % oiCompute(oi,scene) assigns the angular field of view to the oi.
-                % Normally, an OI would not have an angular field of view; it just
+                % This horizontal FOV represents the size of the OI,
+                % usually after the computational padding.
                 % reflects the angle of the scene it represents.
                 if checkfields(oi,'wAngular')
                     val = oi.wAngular;
                 else
-                    % We use the scene or a default.
+                    % We use the scene or a default.  Maybe this should be
+                    % an error.  Or computed from the 'width' and the
+                    % 'focal plane distance'.
+                    fprintf('*** The oi fov is not set yet.  ');
                     scene = vcGetObject('scene');
                     if isempty(scene) % Default scene visual angle.
+                        fprintf('Using a default fov of 10.\n');
                         disp('oiGet:  No scene, arbitrary oi angle: 10 deg'), val = 10;
                     else              % Use current scene angular width
+                        fprintf('Using the scene fov.\n');
                         val = sceneGet(scene,'wangular');
                     end
                 end
@@ -486,15 +498,24 @@ switch oType
                 
             case 'height'
                 % Height in meters is default
+                % Computed from sample size times number of rows.
+                % Sample size is computed from the width.
                 % oiGet(oi,'height','microns')
                 val = oiGet(oi,'sampleSize')*oiGet(oi,'rows');
                 if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
             case {'width'}
+                % oiGet(oi,'width',units)
+                % Width is computed from knowledge of the distance to focal
+                % plane and the horizontal (width) field of view.
+                %
                 % Width in meters is default - We need to handle 'skip' case
-                d = oiGet(oi,'focal plane distance');    % Distance from lens to image
-                fov = oiGet(oi,'wangular');       % Field of view (horizontal, width)
-                % ieRad2deg(2*atan((0.5*width)/imageDistance)) = fov
-                val = 2*d*tan(ieDeg2rad(fov/2));
+                
+                d   = oiGet(oi,'focal plane distance');  % Distance from lens to image
+                fov = oiGet(oi,'wangular');              % Field of view (horizontal, width)
+                
+                % fov   = 2 * atand((0.5*width)/d) % Opposite over adjacent
+                % width = 2 * d * tand(fov/2)
+                val = 2*d*tand(fov/2);
                 if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
                 
             case {'diagonal','diagonalsize'}
@@ -517,8 +538,9 @@ switch oType
                 val = floor(val/2) + 1;
                 
             case {'hspatialresolution','heightspatialresolution','hres'}
+                % oiGet(oi,'h spatial resolution',units)
                 % Resolution parameters
-                % Size in distance per pixel, default is meters per pixel
+                % Distance per pixel. Default is meters/pixel
                 % oiGet(oi,'hres','microns') is acceptable syntax.
                 h = oiGet(oi,'height');
                 r = oiGet(oi,'rows');
@@ -537,9 +559,9 @@ switch oType
                 if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
                 
             case {'wspatialresolution','widthspatialresolution','wres'}
+                % oiGet(oi,'w spatial resolution',units)
                 % Size in m per pixel is default.
-                % oiGet(oi,'wres','microns')
-                % oiGet(oi,'wres')
+                
                 w = oiGet(oi,'width');
                 c = oiGet(oi,'cols');
                 if isempty(c)

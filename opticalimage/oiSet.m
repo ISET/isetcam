@@ -180,6 +180,7 @@ switch parm
         oi.distance = val;
 
     case {'wangular','widthangular','hfov','horizontalfieldofview','fov'}
+        % Angular field of view for the OI width.  In degrees.
         oi.wAngular = val;
 
     case 'magnification'

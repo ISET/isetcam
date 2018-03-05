@@ -64,8 +64,8 @@ function gImage = rtGeometry(scene,optics)
 oiHandles = ieSessionGet('oihandles');
 ieInWindowMessage('',oiHandles,[]);
 
-% This is the ideal geometrical irradiance.
-% Should we use this, or some other initial ideal irradiance?  
+% This is the ideal geometrical irradiance with no geometric distortion. It
+% is calculated point by point from the scene radiance.  
 irradiance = oiCalculateIrradiance(scene,optics);
 wavelength = sceneGet(scene,'wavelength');
 
@@ -116,7 +116,12 @@ dx = xwidth/jmax;      %x-width of pixel in mm
 % image, instead of this section of the padded image.  This might simplify
 % the code below.
 
-zeropad=16;                             %zero padding size.  Figure out how to set this properly
+% Padding the image here is a problem for the geometry.  We need to account
+% for the field of view, if we pad.  I am not sure we need to pad.  So, for
+% now, I have set zeropad to do not pad, and will do some more testing.
+
+%zeropad=16;                             %zero padding size.  Figure out how to set this properly
+zeropad = 0;
 paddedRowMax = imax + 2*zeropad;        %number of rows in final geometric image space
 paddedColMax = jmax + 2*zeropad;        %number of columns in final geometric image space
 rowCenter=(paddedRowMax+1)/2;           %center row of final geometric image space

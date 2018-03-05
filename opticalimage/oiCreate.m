@@ -45,17 +45,20 @@ oi = oiCreate('uniform EE',64,(380:4:1068)); % Set size and wave
 %}
 %
 
+% Default is the diffraction limited calculation
 if ieNotDefined('oiType'),  oiType = 'diffraction limited'; end
 if ieNotDefined('val'),     val = vcNewObjectValue('OPTICALIMAGE'); end
 if ieNotDefined('optics'),  optics = opticsCreate('default'); end
 
-% Default is to use the diffraction limited calculation
 oi.type = 'opticalimage';
 oi.name = vcNewObjectName('opticalimage');
-% oi = oiSet(oi,'bit depth',32);  % Single precision.
 
-oiType = ieParamFormat(oiType);
-switch oiType 
+% In case there is an error, print out the valid types for the user.
+validTypes = {'default','diffraction limited','shift invariant','ray trace',...
+    'human','uniformd65','uniformEE','wvf'};
+
+%%
+switch ieParamFormat(oiType) 
     case {'diffractionlimited','standard(1/4-inch)','default'}
         oi = oiSet(oi,'optics',optics);
         
@@ -120,7 +123,13 @@ switch oiType
         oi.wvf = wvf;
         
     otherwise
-        error('Unknown oiType');
+        fprintf('\n--- Valid OI types: ---\n')
+        for ii=1:length(validTypes)
+            fprintf('%d: %s\n',ii,validTypes{ii});
+        end
+        fprintf('-------\n')
+
+        error('***Unknown oiType: %s\n',oiType);
 end
 
 return;

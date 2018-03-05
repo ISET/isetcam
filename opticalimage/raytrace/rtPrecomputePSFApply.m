@@ -19,18 +19,21 @@ function [outIrrad, oi] = rtPrecomputePSFApply(oi,angStep)
 %
 % See also:  rtPrecomputePSF, s_opticsRTSynthetic, s_opticsRTPSFView.m
 %
-% Examples
-%   scene = vcGetObject('scene');
-%   oi = vcGetObject('oi'); 
-% % Precompute the psf
-%   angStep = 10; psfStruct = rtPrecomputePSF(oi,angStep);
-%   oi = oiSet(oi,'psfStruct',psfStruct);
-%
-% % Call this routine via  opticsRayTrace
-%   oi = opticsRayTrace(scene,oi);
-%   ieAddObject(oi); oiWindow;
-%
 % Copyright ImagEval, LLC, 2005
+
+% Examples
+%{
+  scene = sceneCreate('slanted bar',[384,384]);
+  
+  scene = sceneSet(scene,'fov',2); ieAddObject(scene);
+  oi = oiCreate('raytrace');
+% Precompute the psf
+  angStep = 10; psfStruct = rtPrecomputePSF(oi,angStep,[0,0],scene);
+  oi = oiSet(oi,'psfStruct',psfStruct);
+% Call this routine via  opticsRayTrace
+  oi = opticsRayTrace(scene,oi);
+  ieAddObject(oi); oiWindow;
+%}
 
 
 %% Check the parameters, possibly precompute the shift-variant PSF
@@ -44,22 +47,27 @@ if isempty(svPSF)
     svPSF = rtPrecomputePSF(oi,angStep);
     oi = oiSet(oi,'psfStruct',svPSF);
 end
-% Have a look at the psf functions we computed.
-% vcNewGraphWin; 
-% for ii=1:size(svPSF.psf,2), imagesc(svPSF.psf{1,ii,1}), axis image; pause(0.3); end
-% vcNewGraphWin; imagesc(svPSF.psf{1,end,1})
+
+% Have a look at the psf functions.
+%{
+vcNewGraphWin; 
+for ii=1:size(svPSF.psf,2), imagesc(svPSF.psf{1,ii,1}), axis image; pause(0.3); end
+
+vcNewGraphWin; imagesc(svPSF.psf{1,end,1})
+
 % These are across the various angles
-% vcNewGraphWin; 
-% for ii=1:size(svPSF.psf,1), imagesc(svPSF.psf{ii,end,1}); axis image; pause(0.3); end
+vcNewGraphWin; 
+for ii=1:size(svPSF.psf,1), imagesc(svPSF.psf{ii,end,1}); axis image; pause(0.3); end
+%}
 
 % Get optics and validate that it has ray trace information 
-optics = oiGet(oi,'optics');
-if isempty(opticsGet(optics,'rayTrace'))
+if isempty(oiGet(oi,'optics rayTrace'))
     errordlg('No ray trace information.');
     return;
 end
 
 %% Properties of the optical image
+
 % Get some parameters
 inIrrad       = double(oiGet(oi,'photons')); %figure; imageSPD(inIrrad)
 imSize        = oiGet(oi,'size');
@@ -97,7 +105,7 @@ dataHeight = double(dataHeight);
 % 
 % I am not sure that this is right. perhaps this be from the oi structure
 % of psfield heights?
-imgHeight = opticsGet(optics,'rt Psf Field Height','mm');
+imgHeight = oiGet(oi,'optics rt Psf Field Height','mm');
 imgHeight = rtSampleHeights(imgHeight,dataHeight);
 fprintf('%.0f eccentricity bands\n',length(imgHeight));
 
@@ -110,9 +118,10 @@ aLUT = rtAngleLUT(svPSF);
 % vcNewGraphWin; plot(aLUT(:,1))
 
 %% Validate the interpolated ray trace PSF stored in oi.psf
+
 % The precomputed svPSF can become out of sync if we change the scene or
 % other parameters.  This validation checks that we are still OK and
-% recomputes if needed.
+% recomputes the PSF if needed.
 xGrid = rtPSFGrid(oi,'mm');
 psfSize = size(xGrid);
 rtPSF = oiGet(oi,'sampledRTpsf');
@@ -134,9 +143,6 @@ end
 
 %% Allocate space for the output irradiance after applying the svPSF
 
-% This should be an oiPad call that will correctly adjust the new
-% height of the image!!!
-
 % This grid matches the irradiance image spatial sampling
 %
 % The output irradiance image is padded with extra rows and columns to
@@ -144,8 +150,24 @@ end
 % positions begin at (extraRow/2 + 1, extraCol/2 + 1) in the outIrrad data.
 extraRow = ceil(psfSize(1)); extraRow = 2*ceil(extraRow/2);
 extraCol = ceil(psfSize(2)); extraCol = 2*ceil(extraCol/2);
-oi = oiPad(oi,[extraRow,extraCol,0]);
+oi = oiPad(oi,[extraRow,extraCol]);
+%{
+% These should match
+oiGet(oi,'hfov')
+spaceRes = oiGet(oi,'spatial resolution','um')
+spaceRes(2) - oiGet(oi,'width','um')/oiGet(oi,'cols')
+
+% The stored hfov should match this computed hfov
+oiGet(oi,'hfov')
+
+d = oiGet(oi,'optics focal length','um')
+2*atand((oiGet(oi,'width','um')/2)/d)
+
+%}
+
 outIrrad = double(zeros(imSize(1)+extraRow,imSize(2)+extraCol,length(wavelength)));
+
+% Programming note.  Still debugging this issue.
 %{
 % Prior to Feb. 27 2018 the code below was used, without the oiPad.
 % This introduced an error: the size of the optical image was not
@@ -266,6 +288,16 @@ for ww=1:nWave
     end
     outIrrad(:,:,ww) = thisOut;
 end
+
+%{
+oiGet(oi,'hfov')
+spaceRes = oiGet(oi,'spatial resolution','um')
+spaceRes(2) - oiGet(oi,'width','um')/oiGet(oi,'cols')
+
+oiGet(oi,'hfov')
+2*atand((oiGet(oi,'width','um')/2) / oiGet(oi,'optics focal length','um'))
+
+%}
 
 % vcNewGraphWin; imageSPD(outIrrad);
 if showWaitBar, close(wBar); end

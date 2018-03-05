@@ -1,4 +1,4 @@
-function svPSF = rtPrecomputePSF(oi,angStepSize, cPosition)
+function svPSF = rtPrecomputePSF(oi, angStepSize, cPosition)
 %Precompute shift-variant PSFs for ray trace model
 %
 %    svPSF = rtPrecomputePSF([oi],[angStepSize],[cPosition = (0,0)])
@@ -39,8 +39,15 @@ if ieNotDefined('angStepSize'), angStepSize = 1; end    % Angular step size in d
 % below.
 if ieNotDefined('cPosition'), cPosition = [0,0]; end    
 
+scene = ieGetObject('scene');
+if isempty(scene)
+    error('A scene must be selected in the database.');
+else
+    fprintf('Setting up for scene %s\n',scene.name);
+end
+
 optics = oiGet(oi,'optics');
-if isempty(opticsGet(optics,'rayTrace')),
+if isempty(opticsGet(optics,'rayTrace'))
     errordlg('No ray trace information.');
     return;
 end
@@ -82,7 +89,7 @@ xSupport = xSupport - cPosition(1);
 ySupport = ySupport - cPosition(2);
 
 % Determine the angle and field height of every irradiance position.  
-[dataAngle,dataHeight] = cart2pol(xSupport,ySupport);
+[~,dataHeight] = cart2pol(xSupport,ySupport);
 % dataAngleDeg = ieRad2deg(dataAngle);
 
 % Reduce imgHeights to those within the image height
@@ -105,6 +112,7 @@ elseif psfSize(1) < 20
     % This criterion of 20 was done by experimenting with just one
     % lens and a uniform image. The number may not be general.
     warndlg('Coarse scene spatial sampling;increase scene sampling for more precision.');
+    pause(2);
     disp('Suggest increasing scene sampling (or decrease field of view).')
 end
 
@@ -145,7 +153,7 @@ for ww=1:nWave
             % two bands. 
             % Try only hh ==1, not also hh == 2
             if (hh==1 || hh==2), thisAngle=sampAngles(1); 
-            else                 thisAngle = svPSF.sampAngles(aa);
+            else,                thisAngle = svPSF.sampAngles(aa);
             end
             
             % This is the slowest line in here by far.  If you can, find a
@@ -165,4 +173,4 @@ for ww=1:nWave
 end
 if showWaitBar, close(wBar); end
 
-return
+end

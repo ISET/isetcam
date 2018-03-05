@@ -13,6 +13,8 @@ function oi = opticsRayTrace(scene,oi)
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
+%% Check parameters
+
 if ieNotDefined('scene'), scene = vcGetObject('scene'); end
 if ieNotDefined('oi'),    oi = vcGetObject('oi');       end
 if isempty(which('rtRootPath')), error('Ray Trace routines not found on the path.'); end
@@ -21,43 +23,30 @@ if isempty(which('rtRootPath')), error('Ray Trace routines not found on the path
 handles = ieSessionGet('opticalimagehandle');
 ieInWindowMessage('',handles);
 
-optics = oiGet(oi,'optics');
-
-if isempty(opticsGet(optics,'rayTrace'))
+if isempty(oiGet(oi,'optics rayTrace'))
     % No ray trace data available
-    ieInWindowMessage('Use Optics | Import to get ray trace information.',handles,3);
-    %delete(wBar);
+    str = 'Use Optics | Import to get ray trace information.';
+    ieInWindowMessage(str,handles,3);
+    fprintf('%s.  Computation canceled.',str);
     return;
 end
-% Ray trace data are available.  Carry on.
 
-% The oi and optics must both have the scene spectrum.  It is annoying that
-% there is both an optics and an oi spectrum.  Sigh.
-oi     = oiSet(oi,'wavelength',sceneGet(scene,'wavelength'));
-% optics = opticsSet(optics,'spectrum',oiGet(oi,'spectrum'));
-oi     = oiSet(oi,'optics',optics);
-
-% I am not sure why we calculate this here, and we why aren't accounting
-% for the padding.
-oi = oiSet(oi,'wangular',sceneGet(scene,'wangular'));
-
-% Check that the ray trace data were calculated to a field of view
-% equal or greater than the scene fov.
-rtFOV    = opticsGet(optics,'rtdiagonalfov');
+% Check that the ray trace data were calculated to a field of view equal or
+% greater than the scene fov.
+rtFOV = oiGet(oi,'optics rtdiagonalfov');
+% rtFOV    = opticsGet(optics,'rtdiagonalfov');
 sceneFOV = sceneGet(scene,'diagonalFieldOfView');
 if sceneFOV > rtFOV
     str = sprintf('Scene diag fov (%.0f) exceeds max RT fov (%.0f)',sceneFOV,rtFOV);
-    ieInWindowMessage(str,handles,2); disp(str);
-    %close(wBar);
+    ieInWindowMessage(str,handles,2); 
+    fprintf('%s.  Computation canceled.',str);
     return;
 end
-% We have enough of a field of view.  Carry on again.
 
-sceneDist = sceneGet(scene,'distance');  %m
-
+% Check whether the optics ray trace was calculated for the scene distance
 % Check whether the rt calculations and the scene are for the same depth.
-% Usually this is a small thing because we are at infinity in both cases.
-rtDist = opticsGet(optics,'rtObjectDistance','m');
+sceneDist = sceneGet(scene,'distance');  %m
+rtDist    = oiGet(oi,'optics rtObjectDistance','m');
 if rtDist ~= sceneDist
     sceneWindow; handles = ieSessionGet('scene guidata');
     delay = 1.5;
@@ -65,19 +54,37 @@ if rtDist ~= sceneDist
     ieInWindowMessage(str,handles,delay);
     ieInWindowMessage('Adjusting scene distance.',handles,delay);
     scene = sceneSet(scene,'distance',rtDist);
-    vcReplaceObject(scene);
-    sceneWindow; 
+    % Update the scene and show it in the window
+    vcReplaceObject(scene); sceneWindow; 
 end
+
+% The optics must both have the scene wavelength sampling.
+oi  = oiSet(oi,'wavelength',sceneGet(scene,'wavelength'));
+
+% Start by assuming the OI hfov matches the scene hfov. Later in the
+% computation we account for the oi padding.  This makes sense for a thin
+% lens.  Not sure it makes sense for an arbitrary lens.  Checking!
+oi = oiSet(oi,'wangular',sceneGet(scene,'wangular'));
+
+%{
+% Check that the OI width is about right and that the h fov and width match
+% the spatial resolution.
+
+%}
+%% Calculations
 
 % We calculate the ray traced output in the order of 
 %  (a) Geometric distortion, 
 %  (b) Relative illumination, and 
 %  (c) OTF blurring 
 
-% The function rtGeometry calculates the distortion and relative
-% illumination at the same time. 
+% The function rtGeometry converts the scene radiance into optical
+% irradiance. It also calculates the geometric distortion and relative
+% illumination.  Warning!  The rtGeometry function returns samples that are
+% padded relative to the scene input.  Hence, the hfov is no longer
+% accurate!
 fprintf('Geometric distortion ...');
-irradiance = rtGeometry(scene,optics);
+irradiance = rtGeometry(scene,oiGet(oi,'optics'));
 fprintf('\n');
 if isempty(irradiance), close(wBar); return; end  % Error condition
 % figure; img = imageSPD(irradiance,oiGet(oi,'wave')); imagesc(img)

@@ -185,12 +185,14 @@ switch parm
     case {'fnumber','f#'}
         % This is the f# assuming an object is infinitely far away.
         if rt
-            if checkfields(optics,'rayTrace','fNumber'), val = optics.rayTrace.fNumber; end
-        else val = optics.fNumber;
+            if checkfields(optics,'rayTrace','fNumber')
+                val = optics.rayTrace.fNumber; 
+            end
+        else, val = optics.fNumber;
         end
     case {'model','opticsmodel'}
         if checkfields(optics,'model'), val = optics.model;
-        else val = 'diffractionLimited';
+        else, val = 'diffractionLimited';
         end
         
         % The user can set 'Diffraction limited' but have
@@ -200,7 +202,7 @@ switch parm
     case {'effectivefnumber','efffnumber','efff#'}
         % The f# if the object is not at infinity.
         if rt
-            if checkfields(optics,'rayTrace','effectiveFNumber'),
+            if checkfields(optics,'rayTrace','effectiveFNumber')
                 val = optics.rayTrace.effectiveFNumber;
             end
         else
@@ -235,22 +237,24 @@ switch parm
         val = 1/opticsGet(optics,'focallength',units);
 
     case {'imagedistance','focalplane','focalplanedistance'}
-        % Lensmaker's equation calculation of focal plane distance from
-        % the center of the lens.  If no source distance is provided, we
+        % Lensmaker's equation calculation of focal plane distance from the
+        % center of a thin lens.  If no source distance is provided, we
         % assume infinite distance
         %
         % opticsGet(optics,'focalplane',sDist); -- sDist is sourceDistance
         % opticsGet(optics,'focalplanedistance');  --   Infinite source dist
-
-        % No need to check rt because focalLength parameter does
-        % What about 'skip' case?  Should 'focalLength' call set this to
-        % 1/2 the scene distance, which preserves the geometry?
-        fL = opticsGet(optics,'focal Length');
+            
+        % No need to check rt because focal length parameter checks,
+        % returning RTeffectiveFocalLength.
+        %
+        % What about 'skip' optics case?  Should 'focalLength' call set
+        % this to 1/2 the scene distance, which preserves the geometry?
+        fL = opticsGet(optics,'focal length');
         if isempty(varargin), sDist = Inf;
-        else                  sDist = varargin{1};
+        else,                 sDist = varargin{1};
         end
         val = 1 / (1/fL - 1/sDist);   % Lens maker equation
-
+        
         % These all need the scene field of view.  They can be computed
         % from the geometry of the image distance and FOV.
     case {'imageheight'}
@@ -261,7 +265,7 @@ switch parm
             imageDistance = opticsGet(optics,'focal plane distance');
             val = 2*imageDistance*tan(ieDeg2rad(fov/2));
             if length(varargin) < 2, return;
-            else val = ieUnitScaleFactor(varargin{2})*val;
+            else, val = ieUnitScaleFactor(varargin{2})*val;
             end
         end
 
@@ -275,7 +279,7 @@ switch parm
             imageDistance = opticsGet(optics,'focalplanedistance');
             val = 2*imageDistance*tan(ieDeg2rad(fov/2));
             if length(varargin) < 2, return;
-            else val = ieUnitScaleFactor(varargin{2})*val;
+            else, val = ieUnitScaleFactor(varargin{2})*val;
             end
         end
 
@@ -313,7 +317,7 @@ switch parm
         % opticsGet(optics,'mag',sDist) -- specify source distance
         % opticsGet(optics,'mag')       -- current source distance
         if rt
-            val = opticsGet(optics,'rtmagnification');
+            val = opticsGet(optics,'rt magnification');
             return;
         end
         
@@ -343,9 +347,9 @@ switch parm
         %    distObj = 3f/2
         %
         % and in general distObj = (-M+1)f/(-M) * f
-        val = -(opticsGet(optics,'focalPlaneDistance',sDist))/sDist;
+        val = -(opticsGet(optics,'focal Plane Distance',sDist))/sDist;
 
-        case {'otf','otfdata','opticaltransferfunction'}
+        case {'otf','otfdata','optical transfer function'}
         % You can ask for a particular wavelength with the syntax
         %    opticsGet(optics,'otfData',oi, spatialUnits, wave)
         %
@@ -368,8 +372,8 @@ switch parm
                     error('opticsGet(optics,''otf data'',oi,fSupport,thisWave');
                 end
                 oi = varargin{1};
-                if length(varargin) < 2, units = 'mm'; else units = varargin{2}; end
-                if length(varargin) < 3, thisWave = []; else thisWave = varargin{3}; end
+                if length(varargin) < 2, units = 'mm'; else, units = varargin{2}; end
+                if length(varargin) < 3, thisWave = []; else, thisWave = varargin{3}; end
                 
                 % Could this be XXXXXX  and thus avoid the oi argument?
                 %    opticsGet(optics,'dl fsupport',wave,unit,nSamp)
@@ -389,10 +393,10 @@ switch parm
                 %   opticsGet(optics,'otf data',thisWave);
                 %
                 if ~isempty(varargin), thisWave = varargin{1}; 
-                else thisWave = []; end
+                else, thisWave = []; end
 
                 if checkfields(optics,'OTF','OTF'), OTF = optics.OTF.OTF;
-                else val = []; return;  % No OTF found.
+                else, val = []; return;  % No OTF found.
                 end
                 
                 % A wavelength is specified
@@ -453,7 +457,7 @@ switch parm
             efn = opticsGet(optics,'rteffectiveFnumber');
             fn = opticsGet(optics,'fnumber');
             val = (1/(1 - (efn/fn)))*opticsGet(optics,'rtmagnification');
-        else val = 1;
+        else, val = 1;
         end
 
     case {'transmittancescale','transmittance'}
@@ -504,9 +508,9 @@ switch parm
         % support out to the incoherent cutoff frequency).  This can be
         % used for plotting, for example.
 
-        if length(varargin) < 1, error('Must specify wavelength'); else thisWave = varargin{1}; end
-        if length(varargin) < 2, units = 'mm'; else units = varargin{2}; end
-        if length(varargin) < 3, nSamp = 30; else nSamp = varargin{3}; end
+        if length(varargin) < 1, error('Must specify wavelength'); else, thisWave = varargin{1}; end
+        if length(varargin) < 2, units = 'mm'; else, units = varargin{2}; end
+        if length(varargin) < 3, nSamp = 30; else, nSamp = varargin{3}; end
 
         % Sometimes the optics wavelength hasn't been defined because, say,
         % we haven't run through a scene.  So we trap that case here.
@@ -551,7 +555,7 @@ switch parm
         %   opticsGet(optics,'maxincutoff','m')
         %   opticsGet(optics,'maxincutoff')
         if isempty(varargin), val = max(opticsGet(optics,'incutoff'));
-        else val = max(opticsGet(optics,'incutoff',varargin{1}));
+        else, val = max(opticsGet(optics,'incutoff',varargin{1}));
         end
 
         % -------   OTF information and specifications.  
@@ -584,7 +588,7 @@ switch parm
         val.fx = opticsGet(optics,'otf fx',units);
 
         % If called with matrix, then 
-        if strfind(parm,'matrix')
+        if strfind(parm,'matrix') %#ok<*STRIFCND>
             [X,Y] = meshgrid(val.fy,val.fx); % Not sure about order yet!
             fSupport(:,:,1) = X; fSupport(:,:,2) = Y;
             val = fSupport;
@@ -602,7 +606,7 @@ switch parm
         if ~isempty(varargin), val = (val*1e+3)/ieUnitScaleFactor(varargin{1}); end
     case {'otfsize'}
         % Row and col samples
-        if checkfields(optics,'OTF','OTF'),
+        if checkfields(optics,'OTF','OTF')
             tmp = size(optics.OTF.OTF); val = tmp(1:2);
         end
 
@@ -612,7 +616,7 @@ switch parm
         % The optics has several functions that are wavelength dependent.
         % If the optics is diffraction limited, and no 
         if checkfields(optics,'OTF','wave'), val = optics.OTF.wave; 
-        else val = 400:10:700;
+        else, val = 400:10:700;
         end
         if ~isempty(varargin)
             units = varargin{1};
@@ -623,7 +627,7 @@ switch parm
         % Bin width of the otf wavelength samples
         otfWave = opticsGet(optics,'otfWave');
         if length(otfWave)>1, val = otfWave(2) - otfWave(1);
-        else val = 1;
+        else, val = 1;
         end
         
     case {'otfnwave'}
@@ -746,7 +750,7 @@ switch parm
                 % and should be fixed.  If the fx is sent in with different
                 % units, then the spacing is in those units.
                 if length(varargin) >= 1, fx = varargin{1};
-                else  fx = opticsGet(optics,'otf fx');
+                else,  fx = opticsGet(optics,'otf fx');
                 end
             otherwise
                 
@@ -843,8 +847,10 @@ switch parm
     case {'rtreferencewavelength','rtrefwave'}
         if checkfields(optics,'rayTrace','referenceWavelength'), val = optics.rayTrace.referenceWavelength;end
     case {'rtobjectdistance','rtobjdist','rtrefobjdist','rtreferenceobjectdistance'}
-        % TODO:  These are stored in mm, I believe.  Could change to m
-        if checkfields(optics,'rayTrace','objectDistance'),
+        if checkfields(optics,'rayTrace','objectDistance')
+            % These are stored in mm because, well, optics. We convert to
+            % meters and then apply the scale factor.  This way the return
+            % is always meters
             val = optics.rayTrace.objectDistance/1000;
         end
         if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
@@ -862,8 +868,8 @@ switch parm
         % the fov.  This was an error at ImageVal.
         if checkfields(optics,'rayTrace','maxfov'), val = optics.rayTrace.maxfov; end
     case {'rteffectivefocallength','rtefl','rteffectivefl'}
-        % TODO:  These are stored in mm, I believe.  Should change to m
-        if checkfields(optics,'rayTrace','effectiveFocalLength'),
+        % TODO:  These are stored in mm, because of, well, optics.
+        if checkfields(optics,'rayTrace','effectiveFocalLength')
             val = optics.rayTrace.effectiveFocalLength/1000;
         end
         if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
@@ -873,7 +879,7 @@ switch parm
     case {'rtpsffunction','rtpsfdata'}
         % Return the psf - either the whole thing or a selected psf
         % Data are stored as 4D (row,col,fieldHeight,wavelength) images
-        if checkfields(optics,'rayTrace','psf','function'),
+        if checkfields(optics,'rayTrace','psf','function')
             if ~isempty(varargin)
                 % Return the psf at a particular field height and wavelength
                 % The units of the field height are meters and nanometers
@@ -902,7 +908,7 @@ switch parm
     case {'rtpsffieldheight'}
         % opticsGet(optics,'rt psf field height','um')
         % Stored in mm. Returned in the requested units.
-        if checkfields(optics,'rayTrace','psf','fieldHeight'),
+        if checkfields(optics,'rayTrace','psf','fieldHeight')
             val = optics.rayTrace.psf.fieldHeight/1000;
         end
         if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
@@ -920,7 +926,7 @@ switch parm
         % For a 2^n (e.g., 64,64) grid, Code V puts the zero point at 2^n - 1 (e.g., 33,33)
         % s = opticsGet(optics,'rtPsfSupport','um');
         psfSize = opticsGet(optics,'rtPSFSize');
-        if isempty(varargin), units = 'm'; else units = varargin{1}; end
+        if isempty(varargin), units = 'm'; else, units = varargin{1}; end
         psfSpacing = opticsGet(optics,'rtPsfSpacing',units);
         colPsfPos = (((-psfSize(2)/2)+1):(psfSize(2)/2))*psfSpacing(2);
         rowPsfPos = (((-psfSize(1)/2)+1):(psfSize(1)/2))*psfSpacing(1);
@@ -929,7 +935,7 @@ switch parm
         val(:,:,2) = yPSF;
     case {'rtpsfsupportrow','rtpsfsupporty'}
         psfSize = opticsGet(optics,'rtPSFSize');
-        if isempty(varargin), units = 'm'; else units = varargin{1}; end
+        if isempty(varargin), units = 'm'; else, units = varargin{1}; end
         psfSpacing = opticsGet(optics,'rtPsfSpacing',units);
         val = (((-psfSize(1)/2)+1):(psfSize(1)/2))*psfSpacing(1);
         % Useful to be a column for interpolation.  Maybe they should
@@ -938,7 +944,7 @@ switch parm
 
     case {'rtpsfsupportcol','rtpsfsupportx'}
         psfSize = opticsGet(optics,'rtPSFSize');
-        if isempty(varargin), units = 'm'; else units = varargin{1}; end
+        if isempty(varargin), units = 'm'; else, units = varargin{1}; end
         psfSpacing = opticsGet(optics,'rtPsfSpacing',units);
         val = (((-psfSize(2)/2)+1):(psfSize(2)/2))*psfSpacing(2);
         % Useful to be a row for interpolation.  But maybe it should always
@@ -947,7 +953,7 @@ switch parm
     case {'rtfreqsupportcol','rtfreqsupportx'}
         % Calculate the frequency support across the column dimension
         % opticsGet(optics,'rtFreqSupportX','mm')
-        if isempty(varargin), units = 'm'; else units = varargin{1}; end
+        if isempty(varargin), units = 'm'; else, units = varargin{1}; end
         psfSpacing = opticsGet(optics,'rtPsfSpacing',units);
         sz = opticsGet(optics,'rtPsfSize',units);
         val = (((-sz(2)/2)+1):(sz(2)/2))*(1/(sz(2)*psfSpacing(2)));
@@ -955,30 +961,30 @@ switch parm
     case {'rtfreqsupportrow','rtfreqsupporty'}
         % Calculate the frequency support across the column dimension
         % opticsGet(optics,'rtFreqSupportX','mm')
-        if isempty(varargin), units = 'm'; else units = varargin{1}; end
+        if isempty(varargin), units = 'm'; else, units = varargin{1}; end
         psfSpacing = opticsGet(optics,'rtPsfSpacing',units);
         sz = opticsGet(optics,'rtPsfSize',units);
         val = (((-sz(1)/2)+1):(sz(1)/2))*(1/(sz(1)*psfSpacing(1)));
         val = val(:);
     case {'rtfreqsupport'}
         % val = opticsGet(optics,'rtFreqSupport','mm');
-        if isempty(varargin), units = 'm'; else units = varargin{1}; end
-        val{1} = opticsGet(optics,'rtFreqSupportX','mm');
-        val{2} = opticsGet(optics,'rtFreqSupportY','mm');
+        if isempty(varargin), units = 'mm'; else, units = varargin{1}; end
+        val{1} = opticsGet(optics,'rtFreqSupportX',units);
+        val{2} = opticsGet(optics,'rtFreqSupportY',units);
     case {'rtrelillum'}
         % The sample spacing on this is given below in rtrifieldheight
         if checkfields(optics,'rayTrace','relIllum'), val = optics.rayTrace.relIllum; end
     case {'rtrifunction','rtrelativeilluminationfunction','rtrelillumfunction'}
-        if checkfields(optics,'rayTrace','relIllum','function'),
+        if checkfields(optics,'rayTrace','relIllum','function')
             val = optics.rayTrace.relIllum.function;
         end
     case {'rtriwavelength','rtrelativeilluminationwavelength'}
-        if checkfields(optics,'rayTrace','relIllum','wavelength'),
+        if checkfields(optics,'rayTrace','relIllum','wavelength')
             val = optics.rayTrace.relIllum.wavelength;
         end
     case {'rtrifieldheight','rtrelativeilluminationfieldheight'}
         % TODO:  These are stored in mm, I believe.  Could change to m
-        if checkfields(optics,'rayTrace','relIllum','fieldHeight'),
+        if checkfields(optics,'rayTrace','relIllum','fieldHeight')
             val = optics.rayTrace.relIllum.fieldHeight/1000;
         end
         if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
@@ -987,7 +993,7 @@ switch parm
         if checkfields(optics,'rayTrace','geometry'), val = optics.rayTrace.geometry; end
     case {'rtgeomfunction','rtgeometryfunction','rtdistortionfunction','rtgeomdistortion'}
         % opticsGet(optics,'rtDistortionFunction',wavelength,'units');
-        if checkfields(optics,'rayTrace','geometry','function'),
+        if checkfields(optics,'rayTrace','geometry','function')
             % opticsGet(optics,'rtGeomFunction',[],'mm')
             % opticsGet(.,.,500,'um')  % 500 nm returned in microns
             % opticsGet(.,.)           % Whole function in meters
@@ -1009,7 +1015,7 @@ switch parm
             % Stored in millimeters. Convert to meters.
             val = val/1000;
             % If there is a second varargin, it specifieds the units.
-            if length(varargin) == 2,
+            if length(varargin) == 2
                 val = val*ieUnitScaleFactor(varargin{2});
             end
         end
@@ -1040,9 +1046,9 @@ switch parm
 
     case {'rtcomputespacing'}
         % Spacing of the point spread function samples.
-        % TODO: Is this really stored in meters, not millimeters like other
-        % stuff?
-        if checkfields(optics,'rayTrace','computation','psfSpacing'),
+        % Is this really stored in meters, not millimeters like other
+        % rt data.   Sigh.
+        if checkfields(optics,'rayTrace','computation','psfSpacing')
             val = optics.rayTrace.computation.psfSpacing;
             if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
         end

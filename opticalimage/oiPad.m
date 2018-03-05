@@ -1,7 +1,7 @@
 function oi = oiPad(oi,padSize,sDist,direction)
 % Pad the oi irradiance data with zeros
 %
-%     oi = oiPad(oi,padSize,[sDist],direction)
+%     oi = oiPad(oi,padSize,[sDist],[padDirection])
 %
 % Description:
 %   For optics calculations we pad the size to catch light spilled
@@ -13,14 +13,14 @@ function oi = oiPad(oi,padSize,sDist,direction)
 %
 % Inputs:
 %   oi:   Optical image structure
-%   padSize:  The number of elements to add.  If 'both', then this
-%             number of elements is added both at the beginning and end
+%   padSize:  The number of elements to add.  Padding is always 'both', at
+%             the beginning and end of the image array
+%
+% Optional input:
+%   direction: {'both','pre','post'} - Default is to pad 'both'
 %   sDist:    Distance to the scene (meters).  If not passed in, the
-%             current scene is queried and its distance is used.  This
-%             is needed to adjust the angular field of view after the
-%             padding
-%  direction: By default, this is 'both', fore 'pre' and 'post'
-%             padding.
+%             current scene distance is used. The sDist is needed to adjust
+%             the angular field of view after the padding
 %
 % You can set the argument direction = 'both','pre', or 'post' to pad both
 % or only on one side. By default, the zero-padding takes place on all
@@ -58,7 +58,7 @@ photons = oiGet(oi,'photons');
 padval = oiGet(oi,'data max')*1e-9;
 
 try
-    photons = padarray(photons,padSize,padval,direction);
+    newPhotons = padarray(photons,padSize,padval,direction);
 catch MEmemory
     disp(MEmemory)
     
@@ -76,10 +76,6 @@ catch MEmemory
             padarray(photons(:,:,ii),padSize,padval,direction);
     end
     
-    % Clear unused stuff ... probably not necessary.
-    clear photons;    
-    photons = newPhotons;
-    clear newPhotons;
 end
 
 % The sample spacing of the optical image at the surface of the sensor must
@@ -89,18 +85,39 @@ end
 
 % The width per horizontal sample at the sensor surface is the ratio of the
 % width to the number of columns.  The new number of columns is the sum of
-% the current number and the horizontal pad size, which is in pad(2).
+% the current number and the horizontal pad size, which is in padSize(2).
+%{
+oiGet(oi,'width','um')/oiGet(oi,'cols')
+spaceRes = oiGet(oi,'spatial resolution','um')
+oiGet(oi,'hfov')
+%}
 newWidth = oiGet(oi,'width')*((oiGet(oi,'cols') + padSize(2)*2)/oiGet(oi,'cols'));
+%{
+% This should leave the new spatial resolution unchanged.  It does for both
+% shift invariant and ray trace.
+newWidthUM = newWidth*1e6
+% This should be really small, so multiplying like this it is still 0
+abs(newWidthUM/(oiGet(oi,'cols') + padSize(2)*2) - spaceRes(2))*1e10
+%}
 
-% Find the distance from the image to the lens
-imageDistance = opticsGet(oiGet(oi,'optics'),'imageDistance',sDist);
+% Find the distance from the sensor image to the lens
+% imageDistance = opticsGet(oiGet(oi,'optics'),'imageDistance',sDist);
+imageDistance = oiGet(oi,'optics image distance',sDist);
 
-% Now we compute the new horizontal field of view using the formula that
-% says the opposite over adjacent is the tangent of the angle.  We return
-% the value in degrees
-oi = oiSet(oi,'horizontal field of view',ieRad2deg(2*atan((0.5*newWidth)/imageDistance)));
-
+% We compute the new horizontal field of view (deg) using the formula
+% that the opposite over adjacent is the tangent of the angle.  Is this OK
+% for the ray trace model?
+oi = oiSet(oi,'horizontal field of view',2*atand((0.5*newWidth)/imageDistance));
+%{
+w = oiGet(oi,'width','um')
+%}
 % Now we adjust the columns by placing in the new photons
-oi = oiSet(oi,'photons',photons);
+oi = oiSet(oi,'photons',newPhotons);
+%{
+oiGet(oi,'cols')
+oiGet(oi,'width','um')
+oiGet(oi,'width','um')/oiGet(oi,'cols')
+oiGet(oi,'w spatial resolution','um') - spaceRes(2)
+%}
 
 end
