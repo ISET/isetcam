@@ -18,7 +18,7 @@ ieInit
 %% Make an example scene radiance of points
 
 scene = sceneCreate('point array',384,32);   % Creates an array of points
-scene = sceneSet(scene,'fov',2);  
+scene = sceneSet(scene,'fov',5);       % Make this smaller after MH agrees.
 
 % To speed the computatons we use a small number of wavelength samples
 scene = sceneInterpolateW(scene,(550:100:650));

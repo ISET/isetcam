@@ -76,7 +76,6 @@ for ii=1:size(svPSF.psf,1), imagesc(svPSF.psf{ii,end,1}); axis image; pause(0.3)
 
 % Get parameters from the input, pre-blurred
 inIrrad       = double(oiGet(oi,'photons')); %figure; imageSPD(inIrrad)
-imSize        = oiGet(oi,'size');
 wavelength    = oiGet(oi,'wavelength');
 nWave         = oiGet(oi,'nwave');
 
