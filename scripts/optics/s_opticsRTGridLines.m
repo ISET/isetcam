@@ -58,18 +58,17 @@ oi = oiSet(oi,'wavelength',sceneGet(scene,'wavelength'));
 
 % Match the scene distance and the rt distance.  They are both essentially
 % infinite.
-scene   = sceneSet(scene,'distance',2);  % Two meters - essentially inf
-optics  = opticsSet(optics,'rtObjectDistance',sceneGet(scene,'distance','mm'));   
+scene = sceneSet(scene,'distance',2);  % Two meters - essentially inf
+oi    = oiSet(oi,'optics rtObjectDistance',sceneGet(scene,'distance','mm'));   
 
 %% Compute the distortion and show it in the OI
 
 % We calculate in the order of (a) Distortion, (b) Relative
 % illumination, and then (c) OTF blurring The function rtGeometry
 % calculates the distortion and relative illumination at the same time.
-irradiance = rtGeometry(scene,optics);
+oi = rtGeometry(oi,scene);
 
 % Copy the resulting data into the optical image structure
-oi = oiSet(oi,'photons',irradiance);
 oi = oiSet(oi,'name','Geometry only');
 ieAddObject(oi); oiWindow; truesize
 
@@ -80,8 +79,7 @@ svPSF    = rtPrecomputePSF(oi,angStep);
 oi = oiSet(oi,'psfStruct',svPSF);
 
 % Apply
-outIrrad = rtPrecomputePSFApply(oi,angStep);
-oi = oiSet(oi,'photons',outIrrad);
+oi = rtPrecomputePSFApply(oi,angStep);
 oi = oiSet(oi,'name','Stepwise-RT');
 ieAddObject(oi); oiWindow; truesize
 
@@ -101,7 +99,7 @@ rtData = oiPlot(oi,'illuminance hline',[1,64]);
 
 %% Compute using the diffraction-limited method 
 %
-oiDL = oiSet(oi,'optics model','diffraction limited');
+oiDL   = oiSet(oi,'optics model','diffraction limited');
 optics = oiGet(oiDL,'optics');
 
 % Set the diffraction limited f# from the ray trace values

@@ -1,10 +1,12 @@
-%% Setting up and running the ray trace calculation
+%% Running a ray trace calculation
 %
-% The ray-trace optics model is one of several types used in
-% ISET.  The key feature of the ray trace is that it includes
-% field-height and wavelength dependent point spread functions.
-% These can either be specified synthetically, or they can be
-% derived from optics software, such as Zemax.
+% The ray-trace optics model is one of several types used in ISET
+% (diffraction and shift-invariant are the others).
+%
+% The ray trace model includes field-height and wavelength dependent
+% point spread functions. These can either be created synthetically,
+% or they can be derived from optics software, such as Zemax.  We will
+% start producing them with isetlens, as well.
 %
 % Copyright ImagEval Consultants, LLC, 2011.
 %
@@ -16,7 +18,7 @@ ieInit
 %% Make an example scene radiance of points
 
 scene = sceneCreate('point array',384,32);   % Creates an array of points
-scene = sceneSet(scene,'fov',5);  
+scene = sceneSet(scene,'fov',2);  
 
 % To speed the computatons we use a small number of wavelength samples
 scene = sceneInterpolateW(scene,(550:100:650));

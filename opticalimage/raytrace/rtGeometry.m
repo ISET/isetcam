@@ -1,18 +1,19 @@
-function gImage = rtGeometry(scene,optics)
-%Compute the ray traced geometric distortion
+function oi = rtGeometry(oi,scene)
+%Compute the irradiance with ray traced geometric distortion
 %
-%    gImage = rtGeometry(scene,optics)
+%    oi = rtGeometry(oi,scene)
 %
-% Distortion and relative illumination are applied to the scene image. The
-% data for these ray trace parameters are stored in a ray tracing (rt)
-% optics field. The data are derived from optics modeling programs such as
-% Code V and Zemax. 
+% Description:
+%  The scene radiance is converted to an irradiance in the optical
+%  image. Distortion and relative illumination are applied. The ray
+%  trace parameters are stored in a ray tracing slot in the optics of
+%  the oi. The data are derived from optics modeling programs such as
+%  Code V and Zemax. 
 %
 % Example: 
-%   % (Assuming rtOptics are included in the oi)
 %   scene = sceneCreate('gridlines');
 %   oi = vcGetObject('oi'); optics = oiGet(oi,'optics');
-%   gImage = rtGeometry(scene,optics);
+%   oi = rtGeometry(oi,scene);
 %   imageSPD(gImage);
 %
 % Copyright ImagEval Consultants, LLC, 2005.
@@ -51,7 +52,8 @@ function gImage = rtGeometry(scene,optics)
 % 3)       imageDistance = opticsGet(optics,'focalplanedistance');
 % 
 % 
-% But the above assumes the source is at infinite. Instead, I believe it should be calculated like this:            
+% But the above assumes the source is at infinite. Instead, I believe
+% it should be calculated like this:
 % 
 %   scene = vcGetObject('scene');
 %   oDist = sceneGet(scene,'objectdistance');
@@ -60,12 +62,18 @@ function gImage = rtGeometry(scene,optics)
 % Am I misinterpreting the equations,or is the above correct?
 % H Gonzalez-Banos XVD Technology
 % 
+% This was implemented.  This note should be removed.
 
+%%
+optics = oiGet(oi,'optics');
+
+% Clear the display
 oiHandles = ieSessionGet('oihandles');
 ieInWindowMessage('',oiHandles,[]);
 
-% This is the ideal geometrical irradiance with no geometric distortion. It
-% is calculated point by point from the scene radiance.  
+%% This is the ideal geometrical irradiance with no geometric distortion.
+
+% Irradiance is calculated point by point from the scene radiance.  
 irradiance = oiCalculateIrradiance(scene,optics);
 wavelength = sceneGet(scene,'wavelength');
 
@@ -120,7 +128,7 @@ dx = xwidth/jmax;      %x-width of pixel in mm
 % for the field of view, if we pad.  I am not sure we need to pad.  So, for
 % now, I have set zeropad to do not pad, and will do some more testing.
 
-%zeropad=16;                             %zero padding size.  Figure out how to set this properly
+%zeropad=16;                            %zero padding size.  Figure out how to set this properly
 zeropad = 0;
 paddedRowMax = imax + 2*zeropad;        %number of rows in final geometric image space
 paddedColMax = jmax + 2*zeropad;        %number of columns in final geometric image space
@@ -222,6 +230,10 @@ for ww = 1:nWave
     gImage(:,:,ww)=distortedPaddedIrradiance(zeropad+1:paddedRowMax-zeropad,zeropad+1:paddedColMax-zeropad);
     
 end
+
+% I think this is what should be returned.  And we should check that
+% the size of the width is right!
+oi = oiSet(oi,'photons',gImage);
 
 % figure; imageSPD(gImage)
 

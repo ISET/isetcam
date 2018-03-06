@@ -1,36 +1,35 @@
-function [outIrrad, oi] = rtPrecomputePSFApply(oi,angStep)
-%Apply position dependent point spread function to an irradiance image
+function oi = rtPrecomputePSFApply(oi,angStep)
+% Apply position dependent point spread function to an irradiance image
 %
-%   [outIrrad, oi] = rtPrecomputePSFApply(oi, angSteps)
+%   oi = rtPrecomputePSFApply(oi, angSteps)
 %
-% rtPrecomputePSFApply performs PSF interpolation to optical image
-% irradiance data. The point spread is a function of each pixel's field
-% height and angle. 
+% Description:
+%  rtPrecomputePSFApply uses the PSFs to blur the optical image
+%  irradiance data. The point spread is a function of each pixel's
+%  field height and angle. The PSFs are pre-computed for each each
+%  wavelength using rtPrecomputePSF.  That function precomputes PSFs
+%  so that they are interpolated to the pixel resolution of the OI.
+%  The precomputed angles and field height samples can be relatively
+%  coarse.
 %
-% PSFs are pre-computed for each each wavelength in the OI using
-% rtPrecomputePSF.  The precomputed angles and field height samples can be
-% relatively coarse.  These precomputed PSFs are interpolated to the pixel
-% resolution of the OI.
-%
-% The PSF applied to a pixel is specific to the irradiance wavelength; the
-% PSF is the weighted sum of the four radial and angle PSFs that surround
-% the pixel. The code first interpolates for angle, and then for radial
-% position.
-%
-% See also:  rtPrecomputePSF, s_opticsRTSynthetic, s_opticsRTPSFView.m
+%  The PSF applied to a pixel is specific to the irradiance
+%  wavelength; the PSF is the weighted sum of the four radial and
+%  angle PSFs that surround the pixel. The code first interpolates for
+%  angle, and then for radial position.
 %
 % Copyright ImagEval, LLC, 2005
+%
+% See also:  rtPrecomputePSF, s_opticsRTSynthetic, s_opticsRTPSFView.m
 
 % Examples
 %{
   scene = sceneCreate('slanted bar',[384,384]);
-  
   scene = sceneSet(scene,'fov',2); ieAddObject(scene);
   oi = oiCreate('raytrace');
 % Precompute the psf
   angStep = 10; psfStruct = rtPrecomputePSF(oi,angStep,[0,0],scene);
   oi = oiSet(oi,'psfStruct',psfStruct);
-% Call this routine via  opticsRayTrace
+% Call this routine via opticsRayTrace directly, rather than oiCompute
   oi = opticsRayTrace(scene,oi);
   ieAddObject(oi); oiWindow;
 %}
@@ -39,36 +38,43 @@ function [outIrrad, oi] = rtPrecomputePSFApply(oi,angStep)
 %% Check the parameters, possibly precompute the shift-variant PSF
 if ieNotDefined('oi'), error('OI required'); end
 
-% Get the shift-variant PSF (svPSF) from the OI, or precompute it.
+% Validate that optics has ray trace information 
+if isempty(oiGet(oi,'optics rayTrace'))
+    errordlg('No ray trace information.');
+    return;
+end
+
+% Get the shift-variant PSF (svPSF) from the OI
 % the svPSF dimensions are svPSF.psf{angle,fieldHeight,wavelength} 
 svPSF = oiGet(oi,'psfStruct');
+
+% If it is empty, precompute it.
 if isempty(svPSF)
     if ieNotDefined('angStep'), angStep = 10; end  % 10 deg angle sampling
     svPSF = rtPrecomputePSF(oi,angStep);
     oi = oiSet(oi,'psfStruct',svPSF);
 end
 
-% Have a look at the psf functions.
+% You can visualize the psfs{angle,field height,wave}
 %{
+% The PSFs across field height.
 vcNewGraphWin; 
 for ii=1:size(svPSF.psf,2), imagesc(svPSF.psf{1,ii,1}), axis image; pause(0.3); end
-
-vcNewGraphWin; imagesc(svPSF.psf{1,end,1})
-
-% These are across the various angles
+%}
+%{
+% One PSF
+vcNewGraphWin; 
+imagesc(svPSF.psf{1,end,1})
+%}
+%{
+% The PSFs across angles
 vcNewGraphWin; 
 for ii=1:size(svPSF.psf,1), imagesc(svPSF.psf{ii,end,1}); axis image; pause(0.3); end
 %}
 
-% Get optics and validate that it has ray trace information 
-if isempty(oiGet(oi,'optics rayTrace'))
-    errordlg('No ray trace information.');
-    return;
-end
+%% Properties of the input optical image
 
-%% Properties of the optical image
-
-% Get some parameters
+% Get parameters from the input, pre-blurred
 inIrrad       = double(oiGet(oi,'photons')); %figure; imageSPD(inIrrad)
 imSize        = oiGet(oi,'size');
 wavelength    = oiGet(oi,'wavelength');
@@ -83,7 +89,7 @@ xSupport = sSupport(:,:,1);
 % axis xy rendering.
 ySupport = flipud(sSupport(:,:,2));
 
-%% Determine the field angle and height at each oi sample position.
+% Determine the field angle and height at each oi sample position.
 [dataAngle,dataHeight] = cart2pol(xSupport,ySupport);
 
 % Force data between 0-360 deg and to a resolution of 1 deg
@@ -99,11 +105,12 @@ dataAngle  = double(dataAngle);
 dataHeight = double(dataHeight);
 
 %% Reduce imgHeights to those levels within the image height
+
 % Some confusion.  There are the psf derived from, say, Zemax in the
 % optics. Then there are the psf structure values that are pre-computed.
 % This one is from the Zemax (or other) calculation.
 % 
-% I am not sure that this is right. perhaps this be from the oi structure
+% I am not sure that this is right. Perhaps this is from the oi structure
 % of psfield heights?
 imgHeight = oiGet(oi,'optics rt Psf Field Height','mm');
 imgHeight = rtSampleHeights(imgHeight,dataHeight);
@@ -120,63 +127,90 @@ aLUT = rtAngleLUT(svPSF);
 %% Validate the interpolated ray trace PSF stored in oi.psf
 
 % The precomputed svPSF can become out of sync if we change the scene or
-% other parameters.  This validation checks that we are still OK and
-% recomputes the PSF if needed.
+% other parameters.  This validation checks that the PSFs are properly
+% sampled.
 xGrid = rtPSFGrid(oi,'mm');
 psfSize = size(xGrid);
 rtPSF = oiGet(oi,'sampledRTpsf');
 if size(rtPSF{1,1,1}) ~= psfSize
+    % Not a match.  Recompute.
     handles = ieSessionGet('opticalImageHandle');
     ieInWindowMessage('Recomputing PSF to match oi sampling. ',handles,[]);
     
     psfStruct = rtPrecomputePSF(oi,oiGet(oi,'psfAngleStep'));
     if isempty(psfStruct)
-        warndlg('Scene is undersampled.  No ray trace blurring applied');
-        outIrrad = double(inIrrad); 
+        % Even worse.  The PSF is basically an impulse.  No need to
+        % blur.
+        warndlg('Scene is undersampled.  No blurring applied');
         return;
     end
+    
+    % Clear message.
+    % Get the PSFs again, this time with the right size
     ieInWindowMessage('',handles,[]);
     oi = oiSet(oi,'psfStruct',psfStruct);
-    % Get the PSFs again, this time with the right size
     rtPSF = oiGet(oi,'sampledRTpsf');
 end
 
 %% Allocate space for the output irradiance after applying the svPSF
 
-% This grid matches the irradiance image spatial sampling
+% The input spatial grid is the irradiance after geometric correction.
+% The PSF from the input irradiance positions will be added into the
+% output irradiance positions.
+
+% These variables represent the extent of the PSF in pixels. (Used to
+% be inside the loop.  Moved it out March 6, 2018).
+rExt = floor(psfSize(1)/2);
+cExt = floor(psfSize(2)/2);
+
+% We blur, so we add some extra rows and columns to catch the
+% light that spreads. Thus, the first point in the input radiance will
+% be placed in an interior point in the output radiance. The extra
+% rows and columns are both pre- and post-, so that initial position
+% will be this:
 %
-% The output irradiance image is padded with extra rows and columns to
-% permit point spread blurring beyond the edge of inIrrad. The inIrrad
-% positions begin at (extraRow/2 + 1, extraCol/2 + 1) in the outIrrad data.
-extraRow = ceil(psfSize(1)); extraRow = 2*ceil(extraRow/2);
-extraCol = ceil(psfSize(2)); extraCol = 2*ceil(extraCol/2);
+%    (extraRow/2 + 1, extraCol/2 + 1)
+%
+% The assignment to the output point is determined within the main
+% computational loop. 
+
+% How many extra rows should we add to each size of the image?  We
+% need at least as many as half the extent of the point spread.  We
+% add two more columns and rows, to be safe. 
+
+% This one worked for a while.  But not needed any more.
+% extraRow = ceil(psfSize(1)); extraRow = 2*ceil(extraRow/2);
+% extraCol = ceil(psfSize(2)); extraCol = 2*ceil(extraCol/2);
+extraRow = ceil(rExt) + 2; extraRow = 2*ceil(extraRow/2);
+extraCol = ceil(cExt) + 2; extraCol = 2*ceil(extraCol/2);
 oi = oiPad(oi,[extraRow,extraCol]);
-%{
+% oiGet(oi,'size')
 % These should match
+%{
 oiGet(oi,'hfov')
 spaceRes = oiGet(oi,'spatial resolution','um')
 spaceRes(2) - oiGet(oi,'width','um')/oiGet(oi,'cols')
+%}
 
 % The stored hfov should match this computed hfov
+%{
 oiGet(oi,'hfov')
-
 d = oiGet(oi,'optics focal length','um')
 2*atand((oiGet(oi,'width','um')/2)/d)
-
 %}
 
-outIrrad = double(zeros(imSize(1)+extraRow,imSize(2)+extraCol,length(wavelength)));
+% Because we have padded (above), I think the outIrrad should be
+% created this way: 
+%
+%   outIrrad = oiGet(oi,'photons'); size(outIrrad)
+%
+outIrrad = double(zeros(oiGet(oi,'row'),oiGet(oi,'col'),length(wavelength)));
+% size(outIrrad)
 
-% Programming note.  Still debugging this issue.
-%{
-% Prior to Feb. 27 2018 the code below was used, without the oiPad.
-% This introduced an error: the size of the optical image was not
-% adjusted to account for the padding as is done in oiPad. 
-% MH pointed out the error.  BW fixed.
-extraRow = ceil(1.5*psfSize(1)); extraRow = 2*ceil(extraRow/2);
-extraCol = ceil(1.5*psfSize(2)); extraCol = 2*ceil(extraCol/2);
-outIrrad = double(zeros(imSize(1)+extraRow,imSize(2)+extraCol,length(wavelength)));
-%}
+% But instead, we are only adding extraRow once, not pre- and post
+% (twice).  That's odd.
+% This worked.
+% outIrrad = double(zeros(imSize(1)+2*extraRow,imSize(2)+2*extraCol,length(wavelength)));
 
 %% Calculate the shift-variant summation of irradiance and blurring
 % Loop over wavelengths, image height, and image angles.
@@ -187,17 +221,14 @@ if showWaitBar
     wBar = waitbar(0,str);
 end
 
-for ww=1:nWave
-    % Settle on a wavelength, indexed by ww
-    rExt = floor(psfSize(1)/2);
-    cExt = floor(psfSize(2)/2);
+for ww=1:nWave  % Settle on a wavelength, indexed by ww
     
     % This is the input irradiance at the current wavelength.
     % The wavelength indices always match the precomputed PSFs.
     thisIrrad = inIrrad(:,:,ww);   % vcNewGraphWin; imagesc(thisIrrad)
     thisOut   = zeros(size(outIrrad,1),size(outIrrad,2));
-    for rr = 2:nFieldHeights
-        % Settle on a field height, indexed by rr
+    
+    for rr = 2:nFieldHeights    % Settle on a field height, indexed by rr    
         
         % Heights are in mm.  We convert to um.
         str = sprintf('Applying psfs: Wave: %.0f nm Height: %.0f (um)', ...
@@ -209,6 +240,7 @@ for ww=1:nWave
         % These will be the two indices, rr and rr-1, into the PSF data.
         lBand1 = (dataHeight >= imgHeight(rr-1)) & (dataHeight < imgHeight(rr));
         %  vcNewGraphWin; image(lBand1); colormap(gray(2))
+        
         [r1,c1] = find(lBand1);  % The 1 index doesn't make sense.
         % ind1 = find(lBand1);     % Indices into the data in the band
 
@@ -264,42 +296,52 @@ for ww=1:nWave
             % vcNewGraphWin; imagesc(thisPSF)
             % sum(thisPSF(:))
             
-            % Place the result in the proper row and column of the output. 
-            % if isodd(psfSize)
+            % Place the result in the proper row and column of the
+            % output irradiance. 
+            % 
+            % Logic:  The psf has an extent that covers -rExt:rExt. 
+            % We must shift the (r1,c1) input position by extraRow/2 to
+            % account for the row and column padding of the output.
+            % The even/odd issue can probably be avoided
+            % because psfSize is always even. if isodd(psfSize)
             if mod(psfSize,2)
-                outRow = ((r1(jj) - rExt):(r1(jj) + rExt)) + extraRow/2;
-                outCol = ((c1(jj) - cExt):(c1(jj) + cExt)) + extraCol/2;
+                % Removed /2 on extraRow/2
+                outRow = ((r1(jj) - rExt):(r1(jj) + rExt)) + extraRow;
+                outCol = ((c1(jj) - cExt):(c1(jj) + cExt)) + extraCol;
             else
-                outRow = ((r1(jj) - (rExt-1)):(r1(jj) + rExt)) + extraRow/2;
-                outCol = ((c1(jj) - (cExt-1)):(c1(jj) + cExt)) + extraCol/2;
+                outRow = ((r1(jj) - (rExt-1)):(r1(jj) + rExt)) + extraRow;
+                outCol = ((c1(jj) - (cExt-1)):(c1(jj) + cExt)) + extraCol;
             end
-            
+            if min(outRow < 1), pause; end
             % This line is very slow because it is a sum between a very
             % large result and something else.  We should find a way to
             % speed this up.
             thisOut(outRow,outCol) = thisOut(outRow,outCol) + out;
             % Used to have:
-            %  outIrrad(outRow,outCol,ww) = outIrrad(outRow,outCol,ww) + out;
-            % But such an assignment is pretty slow.  So we give up some
-            % space and speed it up.
-            % vcNewGraphWin; imagesc(outIrrad(:,:,ww)); colormap(gray);
-            % axis image
+            %
+            % outIrrad(outRow,outCol,ww) = outIrrad(outRow,outCol,ww) + out;
+            %
+            % The big summation is slow.  So we give up some space to
+            % speed the calculation.
+            %
+            % vcNewGraphWin; 
+            % imagesc(outIrrad(:,:,ww)); colormap(gray); axis image
         end
     end
     outIrrad(:,:,ww) = thisOut;
 end
 
+oi = oiSet(oi,'photons',outIrrad);
+
 %{
 oiGet(oi,'hfov')
 spaceRes = oiGet(oi,'spatial resolution','um')
 spaceRes(2) - oiGet(oi,'width','um')/oiGet(oi,'cols')
-
 oiGet(oi,'hfov')
 2*atand((oiGet(oi,'width','um')/2) / oiGet(oi,'optics focal length','um'))
-
 %}
 
-% vcNewGraphWin; imageSPD(outIrrad);
+% vcNewGraphWin; oiShowImage(oi);
 if showWaitBar, close(wBar); end
 
 end

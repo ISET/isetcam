@@ -65,11 +65,9 @@ oi  = oiSet(oi,'wavelength',sceneGet(scene,'wavelength'));
 % computation we account for the oi padding.  This makes sense for a thin
 % lens.  Not sure it makes sense for an arbitrary lens.  Checking!
 oi = oiSet(oi,'wangular',sceneGet(scene,'wangular'));
-
 %{
-% Check that the OI width is about right and that the h fov and width match
-% the spatial resolution.
-
+ oiGet(oi,'width','um')
+ oiGet(oi,'spatial resolution','um')
 %}
 %% Calculations
 
@@ -80,18 +78,16 @@ oi = oiSet(oi,'wangular',sceneGet(scene,'wangular'));
 
 % The function rtGeometry converts the scene radiance into optical
 % irradiance. It also calculates the geometric distortion and relative
-% illumination.  Warning!  The rtGeometry function returns samples that are
-% padded relative to the scene input.  Hence, the hfov is no longer
-% accurate!
+% illumination.
 fprintf('Geometric distortion ...');
-irradiance = rtGeometry(scene,oiGet(oi,'optics'));
+oi = rtGeometry(oi,scene);
 fprintf('\n');
-if isempty(irradiance), close(wBar); return; end  % Error condition
-% figure; img = imageSPD(irradiance,oiGet(oi,'wave')); imagesc(img)
-
-% Copy the geometrically distorted irradiance data into the optical image
-% structure 
-oi = oiSet(oi,'photons',irradiance);
+% vcNewGraphWin; oiShowImage(oi);
+%{
+ oiGet(oi,'width','um')
+ oiGet(oi,'width','um')/sceneGet(scene,'width','um')
+ oiGet(oi,'spatial resolution','um')
+%}
 
 % Pre-compute the OTF
 % We need to let the user set the angStep in the interface.  This is a good
@@ -112,20 +108,25 @@ end
 % psfMovie(oiGet(oi,'optics'));
 
 % Apply the OTF to the irrad data.
+% Very bad.  This changed the spatial sampling resolution.  Time to
+% fix!
 fprintf('Applying PSFs.\n');             
-[irrad, oi] = rtPrecomputePSFApply(oi);  
-% imageSPD(irrad,550:100:650);
-oi = oiSet(oi,'photons',double(irrad)); 
+oi = rtPrecomputePSFApply(oi);
 fprintf('Done applying PSFs.\n');
+%{
+ oiGet(oi,'width','um')
+ oiGet(oi,'width','um')/sceneGet(scene,'width','um')
+ oiGet(oi,'spatial resolution','um')
+%}
+
+% imageSPD(irrad,550:100:650);
 
 % Do we have an anti-alias filter in place?
 switch lower(oiGet(oi,'diffuserMethod'))
     case 'blur'
-        %waitbar(0.75,wBar,'OI-RT: Diffuser');
         blur = oiGet(oi,'diffuserBlur','um');
         if ~isempty(blur), oi = oiDiffuser(oi,blur); end
     case 'birefringent'
-        % waitbar(0.75,wBar,'OI-RT: Birefringent Diffuser');
         oi = oiBirefringentDiffuser(oi);
     case 'skip'
     otherwise
