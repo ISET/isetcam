@@ -18,51 +18,22 @@ function oi = rtGeometry(oi,scene)
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
+% Programming notes:
+%
+% imght:  Is a set of spatial samples in units of meters that defines
+% positions in the image plane where we will be distorting and relative
+% illuminating.  0 is the optical axis of the image height.  We only need
+% to sample out to the diagonal distance.
+%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Image x-direction corresponds to i matrix row axis
 % Image y-direction corresponds to j matrix column axis
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% imght:  Is a set of spatial samples in units of meters that defines
-% positions in the image plane where we will be distorting and relative
-% illuminating.  0 is the optical axis of the image height.  We only need
-% to sample out to the diagonal edge.
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Load Lens Ideal Image Height, Distorted Image Height, and 
 % Relative Illumination Data
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% Programming notes:  Distortion and relative illumination are
-% applied in the order (a) distortion and then (b) relative illumination
-% 
-% From HGB at XVD Technologies:
-% A related issue, but which I am not sure is a bug or not, is on how
-% xwidth is calculated. xwidth is calculated by: 
-% 
-% 
-% 1)      xwidth = opticsGet(optics,'imagewidth',fovmax,'mm') ;
-% 
-% Within opticsGet.m, the above value is returned as:
-% 
-%  2)      val = 2*imageDistance*tan(ieDeg2rad(fov/2));
-% 
-% The variable imageDistance is used in the equation, which is computed as:
-% 
-% 3)       imageDistance = opticsGet(optics,'focalplanedistance');
-% 
-% 
-% But the above assumes the source is at infinite. Instead, I believe
-% it should be calculated like this:
-% 
-%   scene = vcGetObject('scene');
-%   oDist = sceneGet(scene,'objectdistance');
-%   imageDistance = opticsGet(optics,'focalplanedistance',oDist);
-% 
-% Am I misinterpreting the equations,or is the above correct?
-% H Gonzalez-Banos XVD Technology
-% 
-% This was implemented.  This note should be removed.
 
 %%
 optics = oiGet(oi,'optics');
@@ -84,7 +55,7 @@ imght     = opticsGet(optics,'rtgeom field height','mm');       % mm
 % nFieldPositions =size(distimght,1);
 
 % These are the row,col,wavelength indices of the irradiance image.
-[imax, jmax, nWave] = size(irradiance);
+[rowMax, colMax, nWave] = size(irradiance);
 
 % We need to check that the current scene field of view is smaller than the
 % maxfov of this optical calculation.
@@ -94,7 +65,6 @@ fovmax = sceneGet(scene,'fov');     %Maximum horizontal field of view (deg)
 if fovmax > opticsGet(optics,'rtfov')
     str = sprintf('Scene FOV (%.0f) exceeds ray trace analysis (%.0f)',fovmax,opticsGet(optics,'rtfov'));
     ieInWindowMessage(str,oiHandles,[]);
-    gImage = [];
     return;
 end
 
@@ -111,7 +81,7 @@ xwidth = opticsGet(optics,'image width',fovmax,'mm');
 % illumination      
 % Fixed by H Gonzalez-Banos
 %
-dx = xwidth/jmax;      %x-width of pixel in mm
+dx = xwidth/colMax;      %x-width of pixel in mm
 % dy=ywidth/jmax;      %y-width of pixel in mm
 % pixelfov=fovmax/imax*xwidth/imgdiag*60;  %field of view of one pixel in arc minutes
 
@@ -130,8 +100,8 @@ dx = xwidth/jmax;      %x-width of pixel in mm
 
 %zeropad=16;                            %zero padding size.  Figure out how to set this properly
 zeropad = 0;
-paddedRowMax = imax + 2*zeropad;        %number of rows in final geometric image space
-paddedColMax = jmax + 2*zeropad;        %number of columns in final geometric image space
+paddedRowMax = rowMax + 2*zeropad;        %number of rows in final geometric image space
+paddedColMax = colMax + 2*zeropad;        %number of columns in final geometric image space
 rowCenter=(paddedRowMax+1)/2;           %center row of final geometric image space
 colCenter=(paddedColMax+1)/2;           %center column of final geometric image space
 
@@ -143,14 +113,14 @@ pixdist = sqrt(C.^2 + R.^2);
 pixang = atan2(C,R);
 
 %Pixel distance in real units (mm) to image center
-pixdistUnits =pixdist*dx;           
+pixdistUnits = pixdist*dx;           
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Start of Loop to Apply Distortion and Relative 
 % Illumination factor to Input Images
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-gImage=zeros(imax,jmax,nWave);      %intialize final distorted image space
+gImage=zeros(rowMax,colMax,nWave);      %intialize final distorted image space
 for ww = 1:nWave
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
