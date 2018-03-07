@@ -26,10 +26,11 @@ sceneWindow;
 
 %% Build the optical image
 
-oi = oiCreate;
+oi = oiCreate('raytrace');
 rtOptics = []; spreadLimits = [1 5]; xyRatio = 1.6;
 rtOptics = rtSynthetic(oi,rtOptics,spreadLimits,xyRatio);
-oi = oiSet(oi,'optics',rtOptics); 
+oi = oiSet(oi,'optics',rtOptics);
+
 oi = oiCompute(oi,scene);
 oi = oiSet(oi,'name','Synthetic-RT-Increasing-Gaussian');
 ieAddObject(oi); oiWindow;

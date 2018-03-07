@@ -3,35 +3,46 @@ function rtPlot(oi,dataType,varargin)
 %
 %   rtPlot(oi,dataType,[roiFlag=0])
 %
-%Purpose:
-%   Plot various ray trace functions including psf and otf and field height
-%   distortions.
+% Plot various ray trace functions including psf and otf and field
+% height distortions.
 %
-%      {'psf'}                   -- point spread function mesh
-%      {'psf550'}                -- point spread function mesh at 550 nm
-%      {'psfimage'}              -- point spread function  array of images
-%      {'relativeillumination'}  -- relative illumination mesh
-%      {'distortion'}            -- geometric distortion mesh
-%      {'distortionw'}           -- geometric distortion at a wavelength
+%  {'psf'}                   -- point spread function mesh
+%  {'psf550'}                -- point spread function mesh at 550 nm
+%  {'psfimage'}              -- point spread function  array of images
+%  {'relativeillumination'}  -- relative illumination mesh
+%  {'distortion'}            -- geometric distortion mesh
+%  {'distortionw'}           -- geometric distortion at a wavelength
+%  {'otf550'}                -- OTF at 550 nm
+%  {'psf movie'}             -- Movie of the PSF as a function of
+%                               field height
 %
-%      {'otf550','opticaltransferfunction550'}     -- Not yet implemented
-%      {'ls550','linespreadfunction550','lsf500'}  -- Not yet implemented
-%      {'lsfwavelength'}                           -- Not yet implemented
+%  {'ls550','linespreadfunction550','lsf500'}  -- Not yet implemented
+%  {'lsfwavelength'}                           -- Not yet implemented
 %
-%  The roiFlag options are not yet implemented.
-%
-% Example:
-%   oi = vcGetObject('OI');
-%   rtPlot(oi,'psfimage')
+% The roiFlag options are not yet implemented.
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
+% Examples:
+%{
+   oi = oiCreate('raytrace');
+   rtPlot(oi,'psf550');
+   rtPlot(oi,'psf',550,1);
+   rtPlot(oi,'psf image');
+   rtPlot(oi,'psf movie');
+   rtPlot(oi,'distortion');
+   rtPlot(oi,'distortionw',550);
+   rtPlot(oi,'otf550');
+   rtPlot(oi,'otf',550,0.5);
+%}
+
+%%
 if ieNotDefined('oi'), oi = vcGetObject('opticalimage'); end
 if ieNotDefined('dataType'), dataType = 'psf'; end
 
 optics = oiGet(oi,'optics');
 rt = opticsGet(optics,'rayTrace');
-if isempty(rt),
+if isempty(rt)
     hndl = guihandles(ieSessionGet('oifigure'));
     ieInWindowMessage('No ray trace data in optics.',hndl); return;
 end
@@ -43,12 +54,13 @@ opticsName = opticsGet(optics,'rtname');
 if isempty(opticsName), opticsName = 'unnamed'; end
 set(figNum,'name',opticsName);
 
+%%
 dataType = ieParamFormat(dataType);
 
 switch lower(dataType)
 
     case {'psf','pointspread','psfsurfacegraph'}
-        % rtPlot(optics,'psf',550,1);
+        % rtPlot(oi,'psf',550,1);
         % Plotting parameters
         if length(varargin) < 2
             % Need the wavelength and field height in mm
@@ -65,7 +77,6 @@ switch lower(dataType)
             fh = varargin{2};
         end
         
-
         optics = oiGet(oi,'optics');
         y = opticsGet(optics,'rtPsfSupportRow','um');
         x = opticsGet(optics,'rtPsfSupportCol','um');
@@ -88,7 +99,7 @@ switch lower(dataType)
         uData.PSF = PSF;
         set(gcf,'userdata',uData);
         
-    case {'pointspreadimage','psfimage','psfimages'}
+    case {'psfimage','psfimages','pointspreadimage'}
         % Need the wavelength and field height in mm
         prompt={'Enter wavelengths (nm)','Enter field heights (mm)'};
         answer=inputdlg(prompt,'PSF selections',1,{'450:50:600','0:0.5:2'});
@@ -128,16 +139,26 @@ switch lower(dataType)
             end
         end
         colormap(gray(256))
-
+    case {'psfmovie'}
+        % rtPlot(oi,'psf movie');
+        rtPSFVisualize(oiGet(oi,'optics'));
+        
     case {'otf','opticaltransferfunction'}
-        % Need the wavelength and field height in mm
-        prompt={'Enter wavelength (nm)','Enter field height (mm)'};
-        answer=inputdlg(prompt,'PSF properties',1,{'550','0'});
-        if isempty(answer), disp('User canceled'); return;
+        % rtPlot(oi,'otf',550,0.5);
+        if length(varargin) < 2
+            % Need the wavelength and field height in mm
+            prompt={'Enter wavelength (nm)','Enter field height (mm)'};
+            answer=inputdlg(prompt,'PSF properties',1,{'550','0'});
+            if isempty(answer), disp('User canceled'); return;
+            else
+                w  = str2num(answer{1}); %#ok<*ST2NM>
+                fh = str2num(answer{2});
+            end
         else
-            w  = str2num(answer{1}); %#ok<*ST2NM>
-            fh = str2num(answer{2});
+            w = varargin{1};
+            fh = varargin{2};
         end
+
         % fa = 0;
 
         optics = oiGet(oi,'optics');
@@ -153,20 +174,19 @@ switch lower(dataType)
         % Plot the OTF in units of cycles per millimeter
         mesh(xFreq,yFreq,OTF);
         xlabel('Frequency (c/mm)'); ylabel('Frequency (c/mm)');
-        str = sprintf('OTF %.0f',w);   title(str);
+        str = sprintf('OTF %.0f at %.1f mm',w,fh);   title(str);
 
         uData.xFreq = xFreq; uData.yFreq = yFreq;
         uData.OTF = OTF;
         set(gcf,'userdata',uData);
 
     case {'otf550','opticaltransferfunction550'}
-
+        % rtPlot(oi,'otf550');
         optics = oiGet(oi,'optics');
-        sSpacing = opticsGet(optics,'rtPsfSpacing','mm');   % Units of mm
 
         % Retrieve the PSF at the center of the field (0 height and 0
         % angle)
-        PSF = rtPSFInterp(optics,0,0,550);
+        PSF   = rtPSFInterp(optics,0,0,550);
         xFreq = opticsGet(optics,'rtFreqSupportX','mm');
         yFreq = opticsGet(optics,'rtFreqSupportY','mm');
         OTF = abs(fftshift(fft2(PSF)));
@@ -174,7 +194,7 @@ switch lower(dataType)
         % Plot the PSF in units of microns
         mesh(xFreq,yFreq,OTF);
         xlabel('Frequency (c/mm)'); ylabel('Frequency (c/mm)');
-        str = sprintf('OTF 550nm');   title(str);
+        str = sprintf('OTF 550nm at center');   title(str);
         
         % Store data in the window
         uData.xFreq = xFreq; uData.yFreq = yFreq;
@@ -211,10 +231,13 @@ switch lower(dataType)
         title('Field distortion (mm)');
 
     case {'distortionw','diw','distimghtw'}
-        % Only at one wavelength
-        w = ieReadNumber('Enter wavelength (nm)',550,'%.0f');
+        if ~isempty(varargin)
+            w = varargin{1};
+        else % Only at one wavelength
+            w = ieReadNumber('Enter wavelength (nm)',550,'%.0f');
+        end
         FH = opticsGet(optics,'rtgeomfieldheight');
-        waveList = opticsGet(optics,'wave');
+        % waveList = opticsGet(optics,'wave');
         diFH = opticsGet(optics,'rtgeomfunction',w);
         plot(FH,diFH - FH,'-x'); axis equal; grid on;
         xlabel('Geometric height (mm)');  ylabel('Distance (mm)');
@@ -222,7 +245,7 @@ switch lower(dataType)
 
     case {'psf550','pointspread550','ps550'}
         optics = oiGet(oi,'optics');
-        sSpacing = opticsGet(optics,'rtPsfSpacing','mm');   % Units of mm
+        % sSpacing = opticsGet(optics,'rtPsfSpacing','mm');   % Units of mm
 
         % Retrieve the PSF at the center of the field (0 height and 0
         % angle)
@@ -247,4 +270,4 @@ switch lower(dataType)
 end
 
 
-return;
+end
