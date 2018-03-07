@@ -206,10 +206,12 @@ switch lower(dataType)
         waveList = opticsGet(optics,'rtriwavelength');
         riFH = opticsGet(optics,'rtrifieldheight','mm');
 
-        % You must extract the relative illumination at the waveList sample
-        % values.  This has them all.
+        % Relative illumination is ri(fieldHeight, wave)
         ri = opticsGet(optics,'rtrifunction','mm');
 
+        % Odd that ri is (fh,wave) in row,col but the surf needs wave
+        % by FH.  This is because surf(X,Y,Z), not
+        % surf(row,col,height).
         surf(waveList,riFH,ri)
         xlabel('Wavelength (nm)');  ylabel('Distance (mm)');
         title('Relative illumination');

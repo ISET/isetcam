@@ -11,19 +11,33 @@ function ri = rtRIInterp(optics,wavelength)
 %
 % See also:  rtGeometry
 
+% Examples:
+%{
+oi = oiCreate('raytrace');
+relillum = oiGet(oi,'optics rtrifunction');
+wave = oiGet(oi,'optics rtriwavelength')
+% Function is: relillum(fieldHeight,wave)
+assert(length(wave) == size(relillum,2));  % Wave is 2nd dim
+%}
+%{
+% Plot the curve
+% surf is (X,Y,Z)
+rtPlot(oi,'relative illumination');
+%}
+
+%% Retrieve the relative illumination data at this wavelength
+
 ri = [];
 
-% relillum(distance,wave)
-relillum = opticsGet(optics,'rtrifunction');   %mm
+% relillum(distanceMM,wave)
+relillum = opticsGet(optics,'rtri function');   %mm
 if isempty(relillum), return; end
 
-% Uterpolate using a nearest neighbor method.  We could interpolate, I
+% Interpolate using a nearest neighbor method.  We could interpolate, I
 % suppose
-wave = opticsGet(optics,'rtriwavelength');
+wave = opticsGet(optics,'rtri wavelength');
 [~,waveIdx] = min(abs(wavelength - wave));
 
-% Hunh?  The comments here are odd.
-ri = relillum(:,waveIdx);    % Incorrect
-% ri = relillum(waveIdx,:);  %Corrected
+ri = relillum(:,waveIdx);
 
 end

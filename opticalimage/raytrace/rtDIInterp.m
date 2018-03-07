@@ -3,33 +3,43 @@ function di = rtDIInterp(optics,wavelength)
 %
 %   di = rtDIInterp(optics,wavelength)
 %
-% The distorted image (di) height function varies with wavelength. The
-% distortions are typically computed in Zemax at only a few wavelengths and
-% stored in the optics.rayTrace.geometry subfields. This function returns
-% the distortion data from the nearest wavelength value.
+% This function returns the geometric distortion data from the nearest
+% wavelength value. 
 %
-% Some day we could linearly interpolate between wavelengths, I suppose.
+% The distorted image (di) height function varies with wavelength. The
+% distortions are typically computed in Zemax at a few wavelengths and
+% stored in the optics.rayTrace.geometry subfields. 
+%
+% We could linearly interpolate between wavelengths, I suppose.
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 %
-% See also
-% 
+% See also: rtRIInterp, rtGeometry, t_oiRTCompute
+
 
 % Examples:
 %{
+oi = oiCreate('raytrace');
 wavelength = 500;
-di = rtDIInterp(optics,wavelength);
+di = rtDIInterp(oiGet(oi,'optics'),wavelength);
 %}
+%{
+% Plot the distortion
+oi = oiCreate('raytrace');
+rtPlot(oi,'distortion');
+%}
+
+%% Distortion as a function of distance for each wavelength
 
 di = [];
 
 % The distorted image height is in the ray trace variable.
-% Returned units are:
-distimght = opticsGet(optics,'rtDistortionFunction');
+% distimght(fieldHeight,wave)
+distimght = opticsGet(optics,'rtDistortion Function');
 if isempty(distimght), return; end
 
 % This is the wavelength used for geometric calculations?
-wave = opticsGet(optics,'rtGeomWavelength');
+wave = opticsGet(optics,'rtGeom Wavelength');
 
 % Use a nearest neighbor method.  We could linearly interpolate, I suppose
 [~, waveIdx] = min(abs(wavelength - wave));
