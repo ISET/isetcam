@@ -190,9 +190,10 @@ sceneName = ieParamFormat(sceneName);
 if strncmp(sceneName,'macbeth',5) || ...
         strcmp(sceneName,'default') || ...
     strcmp(sceneName,'empty')
-    patchSize = 16; wave = 400:10:700;
+    patchSize = 16; wave = 400:10:700; surfaceFile = 'macbethChart.mat';
     if ~isempty(varargin), patchSize = varargin{1}; end  % pixels per patch
     if length(varargin) > 1, wave = varargin{2}; end     % wave
+    if length(varargin) > 2, surfaceFile = varargin{3}; end % Reflectances
 end
 
 switch sceneName
@@ -224,7 +225,11 @@ switch sceneName
     case {'macbethee_ir','macbethequalenergyinfrared'}
         % Equal energy illumination into the IR
         scene = sceneDefault(scene,'ir',patchSize,wave);
-    
+    case {'macbethcustomreflectance'}
+        % s = sceneCreate('macbeth custom reflectance',patchSize,wave,surfaceFile)
+        % s = sceneCreate('macbeth custom reflectance',32,400:10:700,'macbethChart2.mat');
+        scene = sceneDefault(scene,'d65',patchSize,wave,surfaceFile);
+
     case {'reflectancechart'}
         % sceneCreate('reflectance chart',pSize,sSamples,sFiles,wave,grayFlag,sampling); 
         % There is always a gray strip at the right.
@@ -599,17 +604,22 @@ return
 
 
 %----------------------------------
-function scene = sceneDefault(scene,illuminantType,patchSize,wave)
+function scene = sceneDefault(scene,illuminantType,patchSize,wave,surfaceFile)
 %% Default scene is a Macbeth chart with D65 illuminant, patchSize 16
 %
 % sceneDefault(scene,'d65',patchSize,wave)
 %
 
+% These are the default surface reflectance values
+if ieNotDefined('surfaceFile')
+    surfaceFile = fullfile(isetRootPath,'data','surfaces','macbethChart.mat');
+end
+
 % Create the scene variable and possibly set wavelength
-% scene = sceneSet(scene,'type','scene');
 scene = initDefaultSpectrum(scene,'hyperspectral'); 
 scene = sceneSet(scene,'wave',wave);
 
+% Choose the illuminant type
 switch lower(illuminantType)
     case 'd65'
         scene = sceneSet(scene,'name','Macbeth (D65)');
@@ -642,7 +652,8 @@ scene = sceneSet(scene,'magnification',1.0);
 
 % The default patch size is 16x16.
 spectrum = sceneGet(scene,'spectrum');
-macbethChartObject = macbethChartCreate(patchSize,(1:24),spectrum);
+macbethChartObject = macbethChartCreate(patchSize,(1:24),spectrum,surfaceFile);
+
 scene = sceneCreateMacbeth(macbethChartObject,lightSource,scene);
 
 return

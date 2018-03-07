@@ -1,13 +1,13 @@
-function macbethChartObject = macbethChartCreate(patchSize,patchList,spectrum)
+function macbethChartObject = macbethChartCreate(patchSize,patchList,spectrum,surfaceFile)
 % Initiate a scene structure of the Gretag/Macbeth Color Chart reflectances
 %
 % macbethChartObject = ...
-%  macbethChartCreate([patchSize=12],[patchList=1:24],[spectrum={400:10:700});
+%  macbethChartCreate([patchSize=12],[patchList=1:24],[spectrum={400:10:700}],[surfaceFile]);
 %
-% Initiate a scene of spectral reflectance functions of the Macbeth chart.
-% The chart is coded as if you are looking at it with four rows and six
-% columns.  The white surface is on the left, and the black surface is on
-% the right.
+% Create a structure that contains the information needed for a scene of
+% the Macbeth chart. The chart is coded as if you are looking at it with
+% four rows and six columns.  The white surface is on the left, and the
+% black surface is on the right.
 % 
 % The numbering of the surfaces starts at the upper left and counts down
 % the first column.  The white patch, therefore, is number 4.  The
@@ -15,10 +15,18 @@ function macbethChartObject = macbethChartCreate(patchSize,patchList,spectrum)
 %   
 % The surface reflectance function information are contained in the slot
 % macbethChartObject.data. The data file contains spectral information
-% between 380 to 1068 nm.  
+% between 380 to 1068 nm.
 %
-% The default patch size is 16 pixels
-% The default patch list is all 24 macbeth surfaces.
+% Inputs:
+%  patchSize - Default is 16 pixels
+%  patchList - Default is 1:24, which means all the macbeth surfaces.
+%  spectrum  - spectrum.wave contains the wavelength samples (400:10:700);
+%  surfaceFile - A spectral file that is read by ieReadSpectra.  It
+%                contains the 24 surface reflectance curves.
+%
+% Output:
+%   macbethChartObject - A struct with information needed to create the
+%                        macbeth color checker scene.
 %
 % Examples:
 %    patchSize = 16;
@@ -45,7 +53,17 @@ function macbethChartObject = macbethChartCreate(patchSize,patchList,spectrum)
 %    macbethChartObject = macbethChartCreate(patchSize,patchList);
 %    spd = macbethChartObject.data; imageSPD(spd);
 %
-% Copyright ImagEval Consultants, LLC, 2003.
+% % To read an alternative file
+%    patchSize = 32;
+%    patchList = 1:24;
+%    spectrum.wave = (370:10:730);
+%    surfaceFile   = 'macbethChart2.mat';
+%    macbethChartObject = macbethChartCreate(patchSize,patchList,spectrum,surfaceFile);
+%    spd = macbethChartObject.data; imageSPD(spd,spectrum.wave);
+%
+% Copyright ImagEval Consultants, LLC, 2003
+%
+% See also:  sceneCreateMacbeth, sceneCreate('macbeth')
 
 %% Initialize object
 % The object is basically a scene, though it is missing some fields.
@@ -60,8 +78,12 @@ if ieNotDefined('patchSize'), patchSize = 16;   end
 % If we want just the gray series we can set patchList = 19:24;
 if ieNotDefined('patchList'), patchList = 1:24; end
 
+if ieNotDefined('surfaceFile')
+    surfaceFile = fullfile(isetRootPath,'data','surfaces','macbethChart.mat');
+end
+
 %% Surface reflectance spectrum
-if ieNotDefined('spectrum'), 
+if ieNotDefined('spectrum') 
     macbethChartObject = initDefaultSpectrum(macbethChartObject,'hyperspectral');
 else
     macbethChartObject = sceneSet(macbethChartObject,'spectrum',spectrum);
@@ -72,8 +94,7 @@ wave =   sceneGet(macbethChartObject,'wave');
 nWaves = sceneGet(macbethChartObject,'nwave');
 
 % Read the MCC reflectance data
-fName = fullfile(isetRootPath,'data','surfaces','macbethChart.mat');
-macbethChart = ieReadSpectra(fName,wave);
+macbethChart = ieReadSpectra(surfaceFile,wave);
 
 % Sort out whether we have the right set of patches
 macbethChart = macbethChart(:,patchList);
