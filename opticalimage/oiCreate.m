@@ -59,7 +59,7 @@ validTypes = {'default','diffraction limited','shift invariant','ray trace',...
 
 %%
 switch ieParamFormat(oiType) 
-    case {'diffractionlimited','standard(1/4-inch)','default'}
+    case {'diffractionlimited','diffraction','default'}
         oi = oiSet(oi,'optics',optics);
         
         % Set up the default glass diffuser with a 2 micron blur circle, but
