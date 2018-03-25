@@ -683,7 +683,7 @@ switch lower(pType)
         end
         
         if length(varargin) >= 2, nSamp = varargin{2};
-        else nSamp = 40; end
+        else, nSamp = 40; end
         
         % Retrieve OTF data (which might be complex) from the optics
         opticsModel = opticsGet(optics,'opticsModel');
