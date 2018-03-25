@@ -17,6 +17,8 @@ function oi = rtGeometry(oi,scene)
 %   imageSPD(gImage);
 %
 % Copyright ImagEval Consultants, LLC, 2005.
+%
+% See also:  s_opticsRTGridLines, t_oiRTCompute, rtDIInterp.m
 
 % Programming notes:
 %
@@ -130,11 +132,18 @@ for ww = 1:nWave
     % in the final from these locations in the original image.
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
+    % The di values (mm) are the true location on the sensor for each field
+    % height.  The units are mm.
+    di = rtDIInterp(optics,wavelength(ww));
+    %{
+      vcNewGraphWin; plot(imght(:),di(:));
+      grid on; axis square;identityLine;
+    %}
+    
     % We should find a way to validate the required polynomial degree and
     % illustrate with some examples.  When 8 is reduced to 4, we get real
     % problems.  This should be part of the presentation. We must linearly
     % interpolate for wavelength, first.
-    di = rtDIInterp(optics,wavelength(ww));
     
     % The polynomial order that we use here really matters.  For the Fish
     % EYE, pNum = 8 was a serious problem. pNum = 6 worked well for Fish Eye
@@ -164,7 +173,6 @@ for ww = 1:nWave
     polyQ = polyfit(di(:),ri(:),2);
     % figure; plot(polyval(polyQ,di(:)),ri(:),'-x'); grid on
 
-    
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Apply Distortion Shifts to Ideal Geometric Image.  
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

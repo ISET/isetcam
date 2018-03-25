@@ -32,8 +32,9 @@ for ii=1:nHeight
 end
 
 
-return;
+end
 
+%% Verifying the PSF file as being reasonable
 
 function  ok = rtCheckPSFFile(psfFileName)
 %
@@ -50,11 +51,10 @@ if ~exist(psfFileName,'file')
     error('No file named %s\n',psfFileName);
 else
     test = dir(psfFileName);
-    if test.bytes < 1025;
+    if test.bytes < 1025
         errordlg(sprintf('Bad PSF file: %s\n',psfFileName));
         ok = 0;
     end
 end
 
-return
-
+end

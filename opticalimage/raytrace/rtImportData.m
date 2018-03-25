@@ -1,14 +1,15 @@
-function optics = rtImportData(optics,rtProgram,pFileFull)
-%Import ray trace data for optics toolbox calculations
+function [optics, opticsFile] = rtImportData(optics,rtProgram,pFileFull)
+%Import data for optics ray trace calculations
 %
-%   optics = rtImportData(optics,rtProgram,pFileFull)
+%  [optics, opticsFile] = rtImportData(optics,rtProgram,pFileFull)
 %
-% The imported data files are produced by the macros ISET_RT_CODEV.SEQ or
-% ISET_RT_ZEMAX.ZPL run from within those ray tracing programs.
-% Instructions for using those macros are posted on the ImagEval web-site. 
+% Description:
+%  The imported data files are produced by the macros ISET_RT_CODEV.SEQ or
+%  ISET_RT_ZEMAX.ZPL run from within those ray tracing programs.
+%  Instructions for using those macros are posted on the ImagEval web-site.
 %
-% The ray trace (rt) data are returned as part of the optics structure
-% (optics.rt).
+%  The ray trace (rt) data are returned as part of the optics structure
+%  (optics.rt).
 %
 % Using the GUI (oiWindow), the user can export the optics.rt information
 % (oiWindow | Optics | Import Optics).
@@ -31,14 +32,18 @@ function optics = rtImportData(optics,rtProgram,pFileFull)
 % deg. But the zemax function provides us with image height along the
 % y-axis.  So, we rotate the PSFs here when we symmetrize.
 %
-% Examples
-%   oi = vcGetObject('oi'); optics = oiGet(oi,'optics');
-%   optics = rtImportData(optics);
-%   oi = sceneSet(oi,'optics',optics);;
-%   vcReplaceObject(oi);
-%
 % Copyright ImagEval Consultants, LLC, 2005.
+%
+% See also
 
+% Examples
+%{
+% Fails - need to make it work properly with a test data set.
+%  oi = vcGetObject('oi'); optics = oiGet(oi,'optics');
+%  optics = rtImportData(optics);
+%  oi = sceneSet(oi,'optics',optics);;
+%  vcReplaceObject(oi);
+%}
 
 % TODO:
 %
@@ -62,7 +67,7 @@ function optics = rtImportData(optics,rtProgram,pFileFull)
 if ieNotDefined('rtProgram'), rtProgram = 'zemax'; end
 rt.program = rtProgram;
 
-%%  Read the ISETPARMS file
+%  Read the ISETPARMS file
 if ieNotDefined('pFileFull')
     pFileFull = vcSelectDataFile('stayput','r','txt','Select the ISETPARMS.txt file');
     if isempty(pFileFull)
@@ -71,11 +76,12 @@ if ieNotDefined('pFileFull')
     end
 end
 
-% This is the
-% psfDir = fileparts(pFileFull);
+% Filled in if we save.  Otherwise, left empty.
+opticsFile = [];
 
-% Read the file, which was written out by Zemax.  As Zemax evolves, and
-% textscan evolves, we have had some issues staying abreast.
+%% Read the file, which was written out by Zemax.  
+% As Zemax evolves, and textscan evolves, we have had some issues staying
+% abreast.
 fid = fopen(pFileFull,'r');
 if fid == -1,  error('Unable to open %s\n',pFileFull);
 else
@@ -135,44 +141,43 @@ rt.effectiveFNumber = fnumber_eff;      % Effectve f# = 0.5/(NUMERICAL APERTURE)
 % is at an image height of zero.
 imgHeight = ((0:(imgHeightNum-1))/(imgHeightNum-1))*imgHeightMax;
 
-% PM wrote out 1/2 image diagonal field of view.  We want the horizontal
-% field of view.  We can assume that the FOV is square, so
-%   2*hFOV^2 = diagFOV^2
-% so the horizontal field of view is
-%   hFOV = diagFOV/sqrt(2) = 2/sqrt(2) * halfDiagFOV = sqrt(2)*halfDiagFOV
-% rt.maxfov = sqrt(2)*fov;
-%
-% Above is the old logic.  It seems wrong.  The FOV is the FOV, whether
-% horizontal or diagonal in this method.  We shouldn't have a sqrt(2).  The
-% PSF goes out to the FOV and we treat the readout as a circle.
+% The PSF goes out to the FOV and we treat the readout as a circle.  We
+% have the diagonal field of view here.  Maybe the variable should diagFOV.
 rt.maxfov = fov;
 
 % These are full path file names
-[diName,riName,psfNameList] = rtFileNames(baseLensFileName,wave,imgHeight); %#ok<NODEF>
+% [diName,riName,psfNameList] = rtFileNames(baseLensFileName,wave,imgHeight); %#ok<NODEF>
+[~,baseName,~] = fileparts(baseLensFileName);
+[diName,riName,psfNameList] = rtFileNames(baseName,wave,imgHeight); %#ok<NODEF>
 
 %%  Load the geometry - needs fixing up.
 % diName = 'I-Phone 5_DI_.dat';
-nWave = length(wave);
+nWave   = length(wave);
 nHeight = length(imgHeight);
 
 rt.geometry.fieldHeight = imgHeight(:);
 rt.geometry.wavelength = wave(:);
 
+% Read the geometry distortion file produced by Zemax
 fid = fopen(diName,'r');
 if fid == -1,  error('Unable to open %s\n',diName);
 else
     s = fread(fid,'*char');
     fclose(fid);
 end
-asciiValues = s( (s<128) & (s > 0))';
-% fprintf('Reduced character count from %d to %d\n',length(s),length(asciiValues));
+
+% This method for reading the new Zemax file is not going well (Brian).
+% Note that the zemaxLoad() uses 129, not 128.
+asciiValues = s( (s < 128) & (s > 0) )';
 dCell = textscan(asciiValues,'%f'); 
 d = dCell{1};
-%rt.geometry.function = reshape(d,nHeight,nWave); %Commented by Travis
-rt.geometry.function = reshape(d,nWave,nHeight);  %This is correct (Travis)
-% OLD: rt.geometry.function = load(diName);  %  These need to be re-written
 
-%%  Load the relative illumination,
+% The function is stored as (field height x wavelength)
+% For backwards compatibility this is correct (Brian)
+rt.geometry.function = reshape(d,nWave,nHeight)';  
+
+%%  Load the relative illumination
+
 rt.relIllum.fieldHeight = imgHeight(:);
 rt.relIllum.wavelength = wave(:);
 fid = fopen(riName,'r');
@@ -181,19 +186,20 @@ else
     s = fread(fid,'*char');
     fclose(fid);
 end
-asciiValues = s( (s<128) & (s > 0))';
-% fprintf('Reduced character count from %d to %d\n',length(s),length(asciiValues));
-dCell = textscan(asciiValues,'%f'); d = dCell{1};
-%rt.relIllum.function = reshape(d,nHeight,nWave);%Commented by Travis
-rt.relIllum.function = reshape(d,nWave,nHeight); %This is correct (Travis)
-% OLD CODE: rt.relIllum.function = load(riName);   % As per above.  Needs to be repaired
 
+asciiValues = s( (s < 128) & (s > 0) )';  % This eliminates non-ascii chars
+dCell = textscan(asciiValues,'%f');    % Read and save
+d = dCell{1};
 
+% (field height x wavelength)
+rt.relIllum.function = reshape(d,nWave,nHeight)';  % For backwards compatibility (Brian)
+
+%% Fill up the psf data
 
 switch lower(rtProgram)
-    case 'code v'
-        % In this case, psfSpacing is in the parameters file
-        [r,c] = size(load(psfNameList{1,1}));
+    %     case 'code v'
+    %         % In this case, psfSpacing is in the parameters file
+    %         [r,c] = size(load(psfNameList{1,1}));
     case 'zemax'
         % For Zemax, we read psfSpacing, usually 0.2500 uM and data area,
         % usually 32 microns (128*0.25), from the file.  The ratio is the
@@ -210,12 +216,11 @@ switch lower(rtProgram)
         errordlg('Unknown rtProgram');
 end
 
-% Fill up the psf data
 rt.psf.function = zeros(psfSize,psfSize,nHeight,nWave);
 
 % Load the pointspread function data into a 4D array
 % (row,col,imgHeight,Wavelength)
-[p,baseLensFile] = fileparts(lensFile);
+[~,baseLensFile] = fileparts(lensFile);
 showBar = ieSessionGet('waitbar');
 if showBar, wBar = waitbar(0,'Converting PSF data'); end
 warningGiven = 0;
@@ -226,10 +231,10 @@ for ii=1:length(imgHeight)
     
     for jj=1:length(wave)
         switch lower(rtProgram)
-            case 'code v'
-                % This should become codevLoad(); and include a check for
-                % key
-                rt.psf.function(:,:,ii,jj) = load(psfNameList{ii,jj});
+            %             case 'code v'
+            %                 % This should become codevLoad(); and include a check for
+            %                 % key
+            %                 rt.psf.function(:,:,ii,jj) = load(psfNameList{ii,jj});
             case 'zemax'
                 [testSpacing, testArea] = zemaxReadHeader(psfNameList{ii,jj});
                 if isempty(testSpacing) || isempty(testArea)
@@ -295,16 +300,16 @@ rt.psf.wavelength = wave(:);
 optics = opticsSet(optics,'rayTrace',rt);
 optics = opticsSet(optics,'model','rayTrace');
 
-%Save the optics data
+%% Save the optics data
 button = questdlg('Save the converted optics?','RT Optics save');
 switch lower(button)
     case 'yes'
-        vcSaveObject(optics);
+        opticsFile = vcSaveObject(optics);
     otherwise
         disp('RT optics not saved.')
 end
 
-return
+end
 
 
 
