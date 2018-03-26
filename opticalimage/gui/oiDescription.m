@@ -32,7 +32,7 @@ else, sz = oiGet(oi,'size');
         u = round(log10(oiGet(oi,'sampleSize')));
         if (u >= 0 ),     str = sprintf('  Sample: %.2f  m\n',oiGet(oi,'sampleSize','m'));
         elseif (u >= -3), str = sprintf('  Sample: %.2f mm\n',oiGet(oi,'sampleSize','mm'));
-        else             str = sprintf('  Sample: %.2f um\n',oiGet(oi,'sampleSize','um'));
+        else,             str = sprintf('  Sample: %.2f um\n',oiGet(oi,'sampleSize','um'));
         end
         txt = addText(txt,str);
 
@@ -80,8 +80,8 @@ switch lower(opticsModel)
         name = opticsGet(optics,'rtname');
         if isempty(name)
             lensFile = opticsGet(optics,'lensfile');
-            if ~isempty(lensFile), [p,name,e] = fileparts(lensFile);
-            else name = 'None';
+            if ~isempty(lensFile), [~,name,~] = fileparts(lensFile);
+            else, name = 'None';
             end
         end
         txt = addText(txt,sprintf('  Name:   %s\n',name));
@@ -105,8 +105,21 @@ switch lower(opticsModel)
             % diameter = opticsGet(optics,'diameter','mm');
             txt = [txt, sprintf('  Diameter:  %.2f mm\n',efl/efn)];
         end
-    case 'usersupplied'
-        txt = [txt, sprintf('Optics (User)\n')];
+        
+    case 'iset3d'
+        txt = [txt, sprintf('Optics (iset3d)\n')];
+        name = opticsGet(optics,'name');
+        txt = addText(txt,sprintf('  Name:   %s\n',name));
+
+        diameter = opticsGet(optics,'aperture diameter','mm');
+        txt = [txt, sprintf('  Diameter:  %.2f mm\n',diameter)];
+        if checkfields(oi,'optics','lens')
+            d = oiGet(oi,'lens density');
+            txt = [txt, sprintf('  Lens density:  %.2f \n',d)];
+        end
+        
+        %     case 'usersupplied'
+        %         txt = [txt, sprintf('Optics (User)\n')];
         
     otherwise
         error('Unknown optics model %s. ',opticsModel);
