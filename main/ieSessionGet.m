@@ -126,14 +126,14 @@ switch param
         % Default for help is true, if the initHelp has not been set.
         % I don't know what this does.
         if checkfields(vcSESSION,'initHelp'), val = vcSESSION.initHelp; 
-        else vcSESSION.initHelp = 1; val = 1; 
+        else, vcSESSION.initHelp = 1; val = 1; 
         end
         
     % Matlab setpref/getpref 
     case {'fontsize'}
         isetPref = getpref('ISET');
         if checkfields(isetPref,'fontSize'), val = isetPref.fontSize;
-        else val = 12;
+        else, val = 12;
         end
         
     case {'fontincrement','increasefontsize','fontdelta','deltafont'}
@@ -164,7 +164,7 @@ switch param
             if ~checkfields(iePref,'waitbar')
                 setpref('ISET','waitbar',0);
                 val = 0;
-            else val = iePref.waitbar;
+            else, val = iePref.waitbar;
             end
             vcSESSION.GUI.waitbar = val;
         end
@@ -176,7 +176,7 @@ switch param
         if checkfields(isetp,'wPos'),  val = isetp.wPos;
         else
             wPos = cell(1,6);
-            for ii=1:6, wPos{ii} = []; end;
+            for ii=1:6, wPos{ii} = []; end
             setpref('ISET','wPos',wPos);
             val = wPos;
         end
@@ -187,7 +187,7 @@ switch param
         if ~checkfields(iePref,'initclear')
             setpref('ISET','initclear',true);
             val = true;
-        else val = iePref.initclear;
+        else, val = iePref.initclear;
         end
         
     % Figure handles to the various windows.  
@@ -249,7 +249,7 @@ switch param
     case {'displayguidata'}
         v = ieSessionGet('display window');
         if ~isempty(v), val = guihandles(v); end
-    case {'metricguidata','metricshandle','metricshandles','metricswindowhandles','metricswindowhandles','metricswindowhandle'}
+    case {'metricguidata','metricshandle','metricshandles','metricswindowhandles','metricswindowhandle'}
         v = ieSessionGet('vcimagefigure');
         if ~isempty(v), val = guihandles(v); end
         
@@ -292,7 +292,7 @@ switch param
     case {'sensorgamma'}
         % ieSessionGet('sensor gamma')
         sensorg = ieSessionGet('sensor guidata');
-        if ~isempty(sensorg), 
+        if ~isempty(sensorg) 
             val = str2double(get(sensorg.editGam,'string'));  % Not different name
         end        
     case {'ipgamma','vcigamma'}

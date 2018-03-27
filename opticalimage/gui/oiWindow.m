@@ -32,7 +32,7 @@ gui_State = struct('gui_Name',       mfilename, ...
     'gui_OutputFcn',  @oiWindow_OutputFcn, ...
     'gui_LayoutFcn',  [] , ...
     'gui_Callback',   []);
-if nargin & isstr(varargin{1})
+if nargin && ischar(varargin{1})
     gui_State.gui_Callback = str2func(varargin{1});
 end
 
@@ -73,7 +73,7 @@ return;
 function oiDelete(hObject, eventdata, handles)
 % Edit | Delete Current OI
 vcDeleteSelectedObject('OPTICALIMAGE');
-[val,oi] = vcGetSelectedObject('OPTICALIMAGE');
+[~,oi] = vcGetSelectedObject('OPTICALIMAGE');
 if isempty(oi)
     oi = oiCreate;
     vcReplaceAndSelectObject(oi,1);
@@ -194,7 +194,7 @@ return;
 function editFocalLength_CreateFcn(hObject, eventdata, handles)
 
 if ispc, set(hObject,'BackgroundColor','white');
-else set(hObject,'BackgroundColor',get(0,'defaultUicontrolBackgroundColor'));
+else, set(hObject,'BackgroundColor',get(0,'defaultUicontrolBackgroundColor'));
 end
 return;
 
@@ -222,7 +222,7 @@ return;
 function editDefocus_CreateFcn(hObject, eventdata, handles)
 
 if ispc, set(hObject,'BackgroundColor','white');
-else set(hObject,'BackgroundColor',get(0,'defaultUicontrolBackgroundColor'));
+else, set(hObject,'BackgroundColor',get(0,'defaultUicontrolBackgroundColor'));
 end
 return;
 
@@ -235,9 +235,9 @@ function btnSimulate_Callback(hObject, eventdata, handles)
 
 scene = vcGetObject('scene');
 if isempty(scene), ieInWindowMessage('No scene data.',handles); beep; return;
-else ieInWindowMessage('',handles); end
+else, ieInWindowMessage('',handles); end
 
-[val,oi] = vcGetSelectedObject('OPTICALIMAGE');
+[~,oi] = vcGetSelectedObject('OPTICALIMAGE');
 
 % We now check within oiCompute whether the custom button is selected or
 % not.
@@ -266,8 +266,8 @@ return;
 % --------------------------------------------------------------------
 function menuFileSaveOI_Callback(hObject, eventdata, handles)
 
-[val,oi] = vcGetSelectedObject('OPTICALIMAGE');
-fullName = vcSaveObject(oi);
+[~,oi] = vcGetSelectedObject('OPTICALIMAGE');
+vcSaveObject(oi);
 
 return;
 
@@ -276,7 +276,7 @@ return;
 function editGamma_CreateFcn(hObject, eventdata, handles)
 
 if ispc, set(hObject,'BackgroundColor','white');
-else set(hObject,'BackgroundColor',get(0,'defaultUicontrolBackgroundColor'));
+else, set(hObject,'BackgroundColor',get(0,'defaultUicontrolBackgroundColor'));
 end
 
 return;
@@ -303,15 +303,15 @@ function popupDisplay_CreateFcn(hObject, eventdata, handles)
 % Hint: popupmenu controls usually have a white background on Windows.
 %       See ISPC and COMPUTER.
 if ispc, set(hObject,'BackgroundColor','white');
-else set(hObject,'BackgroundColor',get(0,'defaultUicontrolBackgroundColor'));
+else, set(hObject,'BackgroundColor',get(0,'defaultUicontrolBackgroundColor'));
 end
 return
 
 % --- Executes on button press in btnNew.
 function oiNew(hObject, eventdata, handles)
 
-[val, newOI] = vcGetSelectedObject('opticalimage');
-newVal = vcNewObjectValue('opticalimage');
+[~, newOI] = vcGetSelectedObject('opticalimage');
+% newVal = vcNewObjectValue('opticalimage');
 newOI.name = vcNewObjectName('opticalimage');
 newOI.type = 'opticalimage';
 newOI = oiClearData(newOI);
@@ -337,7 +337,7 @@ wave = opticsGet(oi,'wave');
 
 fullName = vcSelectDataFile('optics');
 if isempty(fullName), return;
-else                  optics = opticsSet(optics,'transmittance',ieReadSpectra(fullName,wave));
+else,                 optics = opticsSet(optics,'transmittance',ieReadSpectra(fullName,wave));
 end
 
 oi = oiSet(oi,'optics',optics);
@@ -358,7 +358,7 @@ if isempty(s), return; end
 
 [val,oi] = vcGetSelectedObject('OPTICALIMAGE');
 irrad = oiGet(oi,'photons');
-if isempty(irrad),
+if isempty(irrad)
     handles = ieSessionGet('opticalimagehandle');
     ieInWindowMessage('Can not scale:  No irradiance data.',handles,[]);
 else
@@ -391,7 +391,7 @@ function menuEditName_Callback(hObject, eventdata, handles)
 newName = ieReadString('New optical image name','new-oi');
 
 if isempty(newName),  return;
-else    oi = oiSet(oi,'name',newName);
+else,    oi = oiSet(oi,'name',newName);
 end
 
 vcReplaceAndSelectObject(oi,val)
@@ -401,11 +401,11 @@ return;
 % --------------------------------------------------------------------
 function menuCopyOI_Callback(hObject, eventdata, handles)
 
-[val,oi] = vcGetSelectedObject('OI');
+[~,oi] = vcGetSelectedObject('OI');
 
 newName = ieReadString('New optical image name','new-oi');
 if isempty(newName),  return;
-else    oi = oiSet(oi,'name',newName);
+else,    oi = oiSet(oi,'name',newName);
 end
 
 ieAddObject(oi);
@@ -564,7 +564,7 @@ function menuOpticsRename_Callback(hObject, eventdata, handles)
 oi = vcGetObject('OI');
 optics = oiGet(oi,'optics');
 
-if oiGet(oi,'customCompute'),
+if oiGet(oi,'customCompute')
     name = ieReadString('Enter new ray trace optics name');
     if isempty(name), return; end
     optics = opticsSet(optics,'rtname',name);
@@ -611,7 +611,7 @@ return;
 % --------------------------------------------------------------------
 function menuOpticsExports_Callback(hObject, eventdata, handles)
 
-[val,optics] = vcGetSelectedObject('OPTICS');
+[~,optics] = vcGetSelectedObject('OPTICS');
 vcExportObject(optics);
 
 return;
@@ -810,7 +810,7 @@ end
 return;
 
 % --------------------------------------------------------------------
-function menuPlotLSWave_Callback(hObject, eventdata, handles)
+function menuPlotLSWave_Callback(hObject, eventdata, handles) %#ok<*INUSL>
 % Analyze | Optics | LS by Wavelength
 
 oi = vcGetObject('OPTICALIMAGE');
@@ -1010,7 +1010,7 @@ oiPlot(oi,'illuminance roi');
 return;
 
 % --------------------------------------------------------------------
-function menuPlotRGB_Callback(hObject, eventdata, handles)
+function menuPlotRGB_Callback(hObject, eventdata, handles) %#ok<*INUSD>
 % Plot | Image (RGB)
 % Plots the current RGB image in a separate window
 imageMultiview('oi',vcGetSelectedObject('oi'));
@@ -1086,21 +1086,24 @@ optics = oiGet(oi,'optics');
 
 switch lower(method)
     case 'diffraction-limited'
-        optics = opticsSet(optics,'model','diffraction Limited');
+        optics = opticsSet(optics,'model','diffraction limited');
     case 'shift-invariant'
-        optics = opticsSet(optics,'model','shift Invariant');
+        optics = opticsSet(optics,'model','shift invariant');
         if isempty(opticsGet(optics,'otfdata'))
             % Warn the user
             ieInWindowMessage('Shift-invariant OTF data not loaded.',handles,2);
             disp('Shift-invariant data not loaded')
         end
     case 'ray trace'
-        if isempty(opticsGet(optics,'rayTrace'))
+        if isempty(opticsGet(optics,'ray trace'))
             % Warn the user
             ieInWindowMessage('Ray trace data not loaded.',handles,2);
             disp('Ray trace data not loaded')
         end
-        optics = opticsSet(optics,'model','rayTrace');
+        optics = opticsSet(optics,'model','ray trace');
+    case 'iset3d'
+                optics = opticsSet(optics,'model','iset3d');
+
     otherwise
         error('Unknown optics method');
 end
@@ -1182,7 +1185,7 @@ return;
 % --- Executes during object creation, after setting all properties.
 function editDiffuserBlur_CreateFcn(hObject, eventdata, handles)
 if ispc, set(hObject,'BackgroundColor','white');
-else     set(hObject,'BackgroundColor',get(0,'defaultUicontrolBackgroundColor'));
+else,    set(hObject,'BackgroundColor',get(0,'defaultUicontrolBackgroundColor'));
 end
 return;
 

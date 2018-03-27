@@ -67,6 +67,10 @@ switch lower(opticsModel)
         set(handles.popOpticsModel,'Value',3);
         switchControlVisibility(handles,'off');
         
+    case 'iset3d'
+        set(handles.popOpticsModel,'Value',4);
+        switchControlVisibility(handles,'off');
+        
     case 'skip'
         set(handles.popOpticsModel,'Value',4);
         switchControlVisibility(handles,'off');
