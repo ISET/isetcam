@@ -88,7 +88,7 @@ ieSaveColorFilter(cf,fullfile(isetRootPath,'data','sensor','colorfilters','auto'
 
 %%  Check that we can read and plot the filters
 
-testWave = 400:5:780;
+testWave = 400:5:950;
 [data,filterNames] = ieReadColorFilter(testWave,'MT9V024_RGB.mat');
 vcNewGraphWin; 
 plot(testWave,data,'-');
@@ -120,8 +120,26 @@ ieSaveColorFilter(cf,fullfile(isetRootPath,'data','sensor','colorfilters','auto'
 
 %%  Check that we can read and plot the filters
 
-testWave = 400:5:780;
+testWave = 400:5:950;
 [data,filterNames] = ieReadColorFilter(testWave,'MT9V024_RCCC.mat');
+vcNewGraphWin; 
+plot(testWave,data,'-');
+grid on; xlabel('Wavelength (nm)'); ylabel('Responsivity')
+filterNames
+
+%% Make an RGBW format color filter set
+
+[W,    wName,     wFileData] = ieReadColorFilter([],'MT9V024_RCCC.mat');
+[RGB, rgbNames, rgbFileData] = ieReadColorFilter([],'MT9V024_RGB.mat');
+cf.wavelength = wFileData.wavelength;
+cf.data = [rgbFileData.data,wFileData.data(:,2)];
+cf.filterNames = {rgbNames{:},wName{2}};
+cf.comment = 'Combined from MT9V024 RGB and RC data';
+ieSaveColorFilter(cf,fullfile(isetRootPath,'data','sensor','colorfilters','auto','MT9V024_RGBW.mat'));
+
+%%
+testWave = 400:5:950;
+[data,filterNames] = ieReadColorFilter(testWave,'MT9V024_RGBW.mat');
 vcNewGraphWin; 
 plot(testWave,data,'-');
 grid on; xlabel('Wavelength (nm)'); ylabel('Responsivity')
@@ -239,4 +257,41 @@ fprintf('Sensor dynamic range:  %f dB\n',sensorDR(sensor,1))
 
 %%
 oFile = fullfile(isetRootPath,'data','sensor','auto','MT9V024SensorRCCC');
+save(oFile,'sensor');
+
+%% The RGBW version
+
+sensor = sensorCreate;
+sensor = sensorSet(sensor,'name','MTV9V024-RGBW');
+sensor = sensorSet(sensor,'size',[480 752]);
+
+sensor = sensorSet(sensor,'pixel size ',6*1e-6);
+sensor = pixelCenterFillPD(sensor,0.8);
+
+wave = 400:10:780;
+[filterSpectra, filterNames] = ieReadColorFilter(wave,'MT9V024_RGBW.mat');
+sensor = sensorSet(sensor,'wave',wave);
+sensor = sensorSet(sensor,'filter spectra',filterSpectra);
+sensor = sensorSet(sensor,'filter names',filterNames);
+sensor = sensorSet(sensor,'pattern',[1 2; 3 4]);
+
+sensor = sensorSet(sensor,'pixel read noise volts',1e-3);
+sensor = sensorSet(sensor,'pixel voltage swing',2.8);
+sensor = sensorSet(sensor,'pixel dark voltage',1e-3);
+
+% Example of well capacity curve as a function of pixel size
+% http://www.clarkvision.com/articles/digital.sensor.performance.summary/#full_well
+% We set the conversion gain to match the curve for a 4um pixel
+sensor = sensorSet(sensor,'pixel conversion gain',110e-6);
+
+%%
+snr = pixelSNR(sensor);
+
+fprintf('Max Pixel SNR:    %f (dB)\n',max(snr));
+fprintf('Well capacity:    %d (electrons)\n',round(sensorGet(sensor,'pixel well capacity')));
+fprintf('Pixel read noise: %f (electrons)\n',sensorGet(sensor,'pixel read noise electrons'));
+fprintf('Sensor dynamic range:  %f dB\n',sensorDR(sensor,1))
+
+%%
+oFile = fullfile(isetRootPath,'data','sensor','auto','MT9V024SensorRGBW');
 save(oFile,'sensor');
