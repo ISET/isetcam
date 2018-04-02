@@ -1,7 +1,9 @@
 %% Avago sensor data
 %
-% This is really for the AR0132AT
+% Deprecate
 %
+
+error('Out of date')
 
 %% First, write out the color channels
 chdir(fullfile(isetRootPath,'data','sensor','CMOS'));

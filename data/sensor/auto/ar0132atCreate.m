@@ -1,9 +1,8 @@
 %% AR0132AT - ON Semiconductor RGB sensor
 %
-% Simulation of the ON RGB automotive sensor
-%
-% There are also files for the MT9VO24 RGB, RCCC and Monochrome sensors and
-% the Avago sensor.
+% Simulation of an ON/Aptina RGB automotive sensor with smaller pixels than
+% the MT9V024 version.  This has a 3.75 micron pixels and that one has 6
+% micron pixels.
 %
 % Copyright Imageval LLC, 2017
 
@@ -79,7 +78,7 @@ sensor = sensorSet(sensor,'pixel conversion gain',110e-6);
 % These values get us close to the numbers we expect from the literature
 snr = pixelSNR(sensor);
 
-oFile = fullfile(isetRootPath,'data','sensor','auto','ar0132at');
+oFile = fullfile(isetRootPath,'data','sensor','auto','ar0132atSensorRGB');
 save(oFile,'sensor');
 
 %% Summary of AR0132AT properties in simulation

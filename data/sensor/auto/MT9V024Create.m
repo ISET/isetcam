@@ -8,7 +8,8 @@
 %
 % The second half of the file builds the sensors.  Some of the specs are
 % taken from the data sheet below.  We should keep trying to improve the
-% accuracy of these values.
+% accuracy of these values.  These differ from the ARXXX version because
+% the pixels are 6 microns, and that model has 3.75 micron pixels.
 %
 % Reference:
 %  JEF stored PDFs defining several of the properties of these ON sensors
