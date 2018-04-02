@@ -1,9 +1,9 @@
-%% AR0132AT - ON Semiconductor
+%% AR0132AT - ON Semiconductor RGB sensor
 %
 % Simulation of the ON RGB automotive sensor
 %
-% There are separate files for the RCCC and Monochrome sensors
-% (MT9VO24*)
+% There are also files for the MT9VO24 RGB, RCCC and Monochrome sensors and
+% the Avago sensor.
 %
 % Copyright Imageval LLC, 2017
 
@@ -61,8 +61,9 @@ sensor = sensorSet(sensor,'pixel size same fill factor',pixelSize);
 
 colorFilterFile = fullfile(isetRootPath,'data','sensor','colorfilters','auto','ar0132at.mat');
 
-wave = sceneGet(scene,'wave');
+wave = [400:10:700];
 [filterSpectra, filterNames] = ieReadColorFilter(wave,colorFilterFile);
+sensor = sensorSet(sensor,'wave',wave);
 sensor = sensorSet(sensor,'filter spectra',filterSpectra);
 sensor = sensorSet(sensor,'filter names',filterNames);
 
