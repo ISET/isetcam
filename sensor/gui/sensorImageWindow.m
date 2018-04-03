@@ -26,7 +26,7 @@ function varargout = sensorImageWindow(varargin)
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
-% Last Modified by GUIDE v2.5 11-Dec-2014 15:51:20
+% Last Modified by GUIDE v2.5 02-Apr-2018 20:42:15
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -1829,5 +1829,14 @@ if ~isequal(size(eTimes),mSize)
     eTimes = ones(mSize)*sensorGet(sensor,'geometricMeanExposuretime');
     sensor = sensorSet(sensor,'expTime',eTimes);
 end
+
+return;
+
+
+% --- Executes on button press in btnTruesize.
+function btnTruesize_Callback(hObject, eventdata, handles)
+% btnTruesize - When pushed, invoke the truesize on refresh
+% 
+sensorRefresh(hObject, eventdata, handles);
 
 return;
