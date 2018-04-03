@@ -3,10 +3,13 @@ function [srgb,lrgb,maxY] = xyz2srgb(xyz)
 %
 %  [srgb,lrgb,maxY] = xyz2srgb(xyz)
 %
-% The CIE XYZ values are in an RGB Format image. They are converted to sRGB
-% values. The user can also get linear RGB values as well as the Y value
-% (maxY) that is used to scale the XYZ image so that it is within the [0,1]
-% range as required by the sRGB standard.
+% The CIE XYZ values are converted to sRGB values. Both input XYZ and
+% output srgb are in RGB Format (row, col, nWave), where nWave is 3 in
+% this case. 
+%
+% The user can also get linear RGB values and the Y value (maxY) that
+% is used to scale the XYZ image so that it is within the [0,1] range
+% as required by the sRGB standard.
 %
 % The sRGB color space is a display-oriented representation that matches
 % a Sony Trinitron. The monitor white point is assumed to be D65.  The
@@ -35,9 +38,9 @@ function [srgb,lrgb,maxY] = xyz2srgb(xyz)
 % Modern reference:    http://en.wikipedia.org/wiki/SRGB
 % Original Reference:  http://www.w3.org/Graphics/Color/sRGB
 %
-% See also:  colorTransformMatrix, lrgb2srgb, and imageLinearTransform.
-%
 % Copyright ImagEval Consultants, LLC, 2003.
+%
+% See also:  colorTransformMatrix, lrgb2srgb, and imageLinearTransform.
 
 %% Notes
 
