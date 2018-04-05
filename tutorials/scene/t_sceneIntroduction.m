@@ -150,7 +150,7 @@ sceneGet(scene,'sample spacing','m')
 % default distribution only includes one example.  We have another 100 or
 % so that are available.
 
-fname = fullfile(isetRootPath,'data','images','multispectral','stuffedAnimals_tungsten-hdrs.mat');
+fname = fullfile(isetRootPath,'data','images','multispectral','StuffedAnimals_tungsten-hdrs.mat');
 scene = sceneFromFile(fname,'multispectral');
 ieAddObject(scene); sceneWindow;
 %% Plot scene properties
