@@ -4,7 +4,8 @@ function [SNR, volts, SNRshot, SNRread] = pixelSNR(sensor,volts)
 %   [SNR, volts, SNRshot, SNRread] = pixelSNR(sensor,volts)
 %
 % The pixel SNR depends on the signal level (in volts) or these can be
-% stimulus referred to lux-sec (see pixelSNRluxsec).
+% stimulus referred to lux-sec (see pixelSNRluxsec). The SNR is returned in
+% decibels (dB).
 %
 % The formula for pixel signal-to-noise ratio is
 %
