@@ -38,7 +38,9 @@ switch lower(aeMethod)
     case 'cfa'
         [integrationTime,maxSignalVoltage] = aeCFA(OI,sensor,level);  
     case 'specular'
-        [integrationTime,maxSignalVoltage] = aeSpecular(OI,sensor,level);  
+        [integrationTime,maxSignalVoltage] = aeSpecular(OI,sensor,level); 
+    case 'mean'
+        [integrationTime,maxSignalVoltage] = aeMean(OI,sensor,level); 
     otherwise
         error('Unknown auto-exposure method')
 end
@@ -61,6 +63,26 @@ voltageSwing = sensorGet(sensor,'pixel voltage swing');
 signalVoltage = sensorComputeImage(OI,sensor);
 maxSignalVoltage = max(signalVoltage(:));
 integrationTime = (level * voltageSwing )/ maxSignalVoltage;
+
+return;
+
+%---------------------------
+function [integrationTime, maxSignalVoltage] = aeMean(OI,sensor,level)
+% Finds the sensor intergration time to achieve the desired mean voltage 
+% level expressed as a fraction of the voltage swing. For example setting
+% level of 0.3 means that mean(signalVoltage(:)) = 0.3*voltageSwing
+
+% Sensor may come in with a different itegration time than 1 second, so we
+% need to re-set it.
+sensor = sensorSet(sensor,'integrationTime',1);
+sensor = sensorSet(sensor,'analogGain',1);
+voltageSwing = sensorGet(sensor,'pixel voltage swing');
+
+signalVoltage = double(sensorComputeImage(OI,sensor));
+
+meanVoltage = mean(signalVoltage(:));
+integrationTime = (level * voltageSwing )/ meanVoltage;
+maxSignalVoltage = integrationTime*max(signalVoltage(:));
 
 return;
 
