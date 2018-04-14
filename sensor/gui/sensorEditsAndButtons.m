@@ -219,6 +219,14 @@ scaleMax = get(handles.btnDisplayScale,'Value');
 % Show the image
 sensorShowImage(sensor,gam,scaleMax);
 
+% True size button status
+if get(handles.btnTruesize,'Value')
+    sz = sensorGet(sensor,'size');
+    if min(sz) > 383, truesize;  
+    else, disp('Image too small for true size');
+    end
+end
+
 %% Refresh the font size
 fig = ieSessionGet('sensor window');
 ieFontSizeSet(fig,0);

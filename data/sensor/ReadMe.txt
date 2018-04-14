@@ -1,12 +1,11 @@
 The different components of a sensor model are stored in the various folders.
 
-The color filter array pattern options are in cfa.
+* The color filter array information is data/sensor/colorfilters
+* IR filters are in irfilters, though sometimes the CFA filters have an IR incorporated in them.
+* Photodetector spectral QE are in photodetectors
+* Sensors (with both CFA and pixels) are in data/sensor/* with the word sensor in the file name; the sub-directories auto and Nikon contain multiple sensors including pixel size, noise characteristics and such
 
-Color filters are in colorfilters
-
-IR filters are in irfilters
-
-Photodetector spectral QE are in photodetectors
+From the GUI
 
 To load the individual components use 
 
