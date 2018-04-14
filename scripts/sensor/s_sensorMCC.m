@@ -29,7 +29,7 @@ ieInit
 
 % This is an approximation to the Gretag in some sensor.  It was
 % distributed on the Internet.
-fName = 'gbrgMCCSensor.tif';
+fName = 'mccGBRGsensor.tif';
 mosaic = imread(fName);   % We treat the data in this file as sensor volts
 % imtool(mosaic)
 

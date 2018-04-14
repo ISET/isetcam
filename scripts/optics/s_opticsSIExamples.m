@@ -16,10 +16,11 @@
 % 
 % Copyright ImagEval Consultants, LLC, 2008
 
+%%
 ieInit
 %% Create the scene
 % First, we  create a checkerboard scene to blur.
-%%
+
 pixPerCheck = 16;
 nChecks = 6; 
 scene = sceneCreate('checkerboard',pixPerCheck,nChecks);
@@ -100,7 +101,7 @@ waveSpread = (wave/wave(1)).^3;
 xyRatio = ones(1,length(wave));
 
 % Now call the routine with these parameters
-optics  = siSynthetic(psfType,oi,waveSpread,xyRatio,'gaussPSF');
+optics  = siSynthetic(psfType,oi,waveSpread,xyRatio);
 oi      = oiSet(oi,'optics',optics);
 
 % Here is the rest of the computation, as above
