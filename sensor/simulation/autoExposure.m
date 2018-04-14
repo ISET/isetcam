@@ -3,18 +3,21 @@ function  [integrationTime,maxSignalVoltage,smallOI] = autoExposure(OI,sensor,le
 %
 %     [integrationTime,maxSignalVoltage,smallOI] = autoExposure(OI,sensor,[level = 0.95],[aeMethod])
 %
-%  Find an integration time (sec) that will produce a voltage at a
-%  fraction (0 < level < 1) of the voltage swing.  The data used to set
-%  the level are from the signal current image plus the dark current
-%  image.
+%  Find an integration time (sec) that produces a voltage level at a
+%  fraction (0 < level < 1) of the voltage swing.  The data used to set the
+%  level are from the signal current image plus the dark current image.
 %
-%   The currently implemented methods are
+%  The currently implemented methods are
 %
-%     {'default'}     - Calculate only for point with highest luminance
-%     {'luminance'}   - Full computation of the response
-%     {'aeFull'}      - 
-%     {'aeCFA'}       - 
-%     {'aeSpecular'}  - A certain percentage can be saturated
+%     'default'     - Integration time based on point with highest luminance
+%     'luminance'   - Extracts the brightest part of the image and returns the
+%                     integration time so that the brightest part is at
+%                     leve of the voltage swing. 
+%     'aeMean'      - Achieve a mean voltage level as fraction of voltage
+%                     swing
+%     'aeFull'      - Confusing.
+%     'aeCFA'       - Compute separately for each color filter type
+%     'aeSpecular'  - A certain percentage can be saturated
 %
 % The default method finds the signal voltage for a one sec exposure of the
 % portion of the optical image with peak illuminance.  The exposure routine
@@ -45,7 +48,7 @@ switch lower(aeMethod)
         error('Unknown auto-exposure method')
 end
 
-return;
+end
 
 %---------------------------
 function [integrationTime,maxSignalVoltage] = aeFull(OI,sensor,level)
@@ -64,7 +67,7 @@ signalVoltage = sensorComputeImage(OI,sensor);
 maxSignalVoltage = max(signalVoltage(:));
 integrationTime = (level * voltageSwing )/ maxSignalVoltage;
 
-return;
+end
 
 %---------------------------
 function [integrationTime, maxSignalVoltage] = aeMean(OI,sensor,level)
@@ -84,13 +87,13 @@ meanVoltage = mean(signalVoltage(:));
 integrationTime = (level * voltageSwing )/ meanVoltage;
 maxSignalVoltage = integrationTime*max(signalVoltage(:));
 
-return;
+end
 
 %---------------------------
 function [integrationTime,maxSignalVoltage,smallOI] = aeLuminance(OI,sensor,level)
-% This method extracts the brightest part of the image and sets the
-% integration time so that the brightest part is at a fraction of
-% saturation.
+% Extracts the brightest part of the image (oiExtractBright) and sets the
+% integration time so that the brightest part is at a fraction of voltage
+% swing.
 %
 % Because this method only calculates using a small portion of the image,
 % it is a lot faster than computing the full image.  It is, however, not
@@ -129,13 +132,15 @@ maxSignalVoltage = max(signalVoltage(:));
 % so that the maximum signal voltage will be level*voltageSwing.
 integrationTime = (level * voltageSwing )/ maxSignalVoltage;
 
-return;
+end
 
 %-------------------------
 function [integrationTime,maxSignalVoltage] = aeCFA(OI,sensor,level)
-% Based on aeFull. Finds the maximum signal voltage for a one sec exposure
-% for each filter type in the CFA and returns integration times that 
-% produces a value of level times the voltage swing for each position 
+% Finds the maximum signal voltage for a one sec exposure for each filter
+% type in the CFA and return the integration times that produce a value of
+% level times the voltage swing for each position
+%
+% Based on aeFull. 
 
 PIXEL = sensorGet(sensor,'pixel');
 voltageSwing  = pixelGet(PIXEL,'voltageSwing');
@@ -163,7 +168,7 @@ for jj = 1:nRows
     end
 end
 
-return
+end
 
 %-------------------------
 function [integrationTime,maxSignalVoltage] = aeSpecular(oi,sensor,level)
@@ -195,5 +200,5 @@ integrationTime = (voltageSwing/targetVoltage);
 
 maxSignalVoltage = max(signalVoltage(:));
 
-return
+end
 

@@ -161,7 +161,8 @@ switch lower(imType)
         
         % Set field of view
         if ischar(I), imgSz = size(imread(I), 2); 
-        else imgSz = size(I, 2); end
+        else, imgSz = size(I, 2); 
+        end
         imgFov = imgSz * displayGet(d, 'deg per dot');
         scene  = sceneSet(scene, 'h fov', imgFov);
         scene  = sceneSet(scene,'distance',displayGet(d,'viewing distance'));

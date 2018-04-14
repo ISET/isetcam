@@ -32,7 +32,9 @@ function sformatted = ieParamFormat(s)
     keyValuePairs = ieParamFormat(keyValuePairs)
 %}
 
-if (~ischar(s) & ~iscell(s)), error('s has to be a string or cell array'); end
+if (~ischar(s) && ~iscell(s))
+    error('s has to be a string or cell array'); 
+end
 
 % Lower case
 if (ischar(s))
