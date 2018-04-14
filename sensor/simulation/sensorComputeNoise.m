@@ -19,7 +19,7 @@ function sensor = sensorComputeNoise(sensor,wBar)
 
 %% Define parameters
 if ~exist('sensor','var') || isempty(sensor), errordlg('Image sensor array required.'); end
-if ~exist('wBar','var')   || isempty(wBar), showWaitBar = 0; else showWaitBar = 1; end
+if ~exist('wBar','var')   || isempty(wBar), showWaitBar = 0; else, showWaitBar = 1; end
 
 warning('sensorComputeNoise:NoiseIssues','Must be updated for new noise model');
 
