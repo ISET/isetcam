@@ -17,14 +17,16 @@ ieInit
 
 %% Make an example scene radiance of points
 
-scene = sceneCreate('point array',384,32);   % Creates an array of points
-scene = sceneSet(scene,'fov',5);       % Make this smaller after MH agrees.
+% You can adjust these parameters to speed up the calculation or
+% explore the lens properties
+scene = sceneCreate('point array',512,64);   % Creates an array of points
+scene = sceneSet(scene,'fov',20);            % Make this smaller after MH agrees.
 
 % To speed the computatons we use a small number of wavelength samples
-scene = sceneInterpolateW(scene,(550:100:650));
+scene = sceneInterpolateW(scene,(500:100:600));
 
 % Add the scene to the ISET database and view it
-ieAddObject(scene); sceneWindow;
+ieAddObject(scene); sceneWindow; truesize
 
 %% Create an optical image (oi) that uses the default ray trace model
 
@@ -49,7 +51,10 @@ fprintf('Ray trace lens:     %s\n',oiGet(oi,'optics rt name'))  % Name of the le
 
 oi = oiCompute(scene,oi);
 
+% Make it easy to see the points
+sceneWindow; truesize
+
 % Here is the blurred result
-ieAddObject(oi); oiWindow;
+ieAddObject(oi); oiWindow; truesize
 
 %%
