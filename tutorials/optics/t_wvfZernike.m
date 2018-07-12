@@ -1,8 +1,5 @@
 %% Tutorial on Zernike polynomial calculations (Psych 221)
 %
-% See
-% <http://white.stanford.edu/teach/index.php/Wavefront_optics_toolbox teaching> 
-%
 % This tutorial is simplified. The extended version is in *ISETBIO*.
 %
 % About the Zernike polynomials

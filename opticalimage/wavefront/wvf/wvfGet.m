@@ -43,10 +43,11 @@ function val = wvfGet(wvf,parm,varargin)
 %  + 'middle row' - The middle row of sampled functions
 %
 %  Calculation parameters
+%     'zcoeffs'     - Zernike polynomial coefficients
 %     'pupil diameter'  - Pupil size for calculation (mm,*)
 %     'wavelengths' - Wavelengths to calculate over (nm,*)
 %
-% Pupil and sointspread function
+% Pupil and pointspread function
 %  +  'wavefront aberrations' - The wavefront aberrations in microns.  Must call wvfComputePupilFunction on wvf before get (um)
 %  +  'pupil function' - The pupil function.  Must call wvfComputePupilFunction on wvf before get.
 %  +  'psf' - Point spread function.  Must call wvfComputePSF on wvf before get
@@ -193,7 +194,7 @@ switch parm
             wList = varargin{1}; idx = wvfWave2idx(wvf,wList);
             nWave = wvfGet(wvf,'nwave');
             if idx > nWave, error('idx (%d) > nWave',idx,nWave);
-            else val = wvf.pupilfunc{idx};
+            else, val = wvf.pupilfunc{idx};
             end
         end
         
