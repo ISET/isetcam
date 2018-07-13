@@ -1,7 +1,8 @@
-function wvf = wvfComputePupilFunction(wvf, showBar)
-% Compute the pupil fuction given the wvf object.
+function wvf = wvfFminPupilFunction(wvf, showBar)
+% Edited from wvfComputePupilFunction to produce a version for
+% fminsearchs
 %
-%    wvf = wvfComputePupilFunction(wvf)
+%    wvf = wvfFminPupilFunction(wvf,[showBar])
 %
 % The pupil function is a complex number that represents the amplitude and
 % phase of the wavefront across the pupil.  The pupil function at a
