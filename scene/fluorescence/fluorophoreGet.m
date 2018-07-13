@@ -1,9 +1,17 @@
 function val = fluorophoreGet(fl,param,varargin)
-
-% val = fluorophoreGet(fl,param,...)
+% The get method of the fluorophore object. 
+%
+% Syntax
+%  val = fluorophoreGet(fl,param,...)
 % 
-% The getter method of the fluorophore object. This function is used to
-% extract different properties of the fluorophore object.
+% Extract values from a the fluorophore structure.
+%
+% Inputs
+%  fl:     Fluorophore objects
+%  param:  Parameter to retrieve
+%
+% Optional parameters
+%   Depend on the value of param
 %
 % Examples:
 %   em = fluorophoreGet(fl,'emission');
