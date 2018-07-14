@@ -43,10 +43,11 @@ function val = wvfGet(wvf,parm,varargin)
 %  + 'middle row' - The middle row of sampled functions
 %
 %  Calculation parameters
+%     'zcoeffs'     - Zernike polynomial coefficients
 %     'pupil diameter'  - Pupil size for calculation (mm,*)
 %     'wavelengths' - Wavelengths to calculate over (nm,*)
 %
-% Pupil and sointspread function
+% Pupil and pointspread function
 %  +  'wavefront aberrations' - The wavefront aberrations in microns.  Must call wvfComputePupilFunction on wvf before get (um)
 %  +  'pupil function' - The pupil function.  Must call wvfComputePupilFunction on wvf before get.
 %  +  'psf' - Point spread function.  Must call wvfComputePSF on wvf before get
@@ -161,7 +162,7 @@ switch parm
             wList = varargin{1}; idx = wvfWave2idx(wvf,wList);
             nWave = wvfGet(wvf,'nwave');
             if idx > nWave, error('idx (%d) > nWave',idx,nWave);
-            else val = wvf.wavefrontaberrations{idx};
+            else, val = wvf.wavefrontaberrations{idx};
             end
         end
         
@@ -193,7 +194,7 @@ switch parm
             wList = varargin{1}; idx = wvfWave2idx(wvf,wList);
             nWave = wvfGet(wvf,'nwave');
             if idx > nWave, error('idx (%d) > nWave',idx,nWave);
-            else val = wvf.pupilfunc{idx};
+            else, val = wvf.pupilfunc{idx};
             end
         end
         
@@ -317,7 +318,7 @@ switch parm
         val = 17e-3;  % 17 mm is default
         if isfield(wvf,'focalLength'), val = wvf.focalLength; end
         
-        if ~isempty(varargin), 
+        if ~isempty(varargin) 
             val = val*ieUnitScaleFactor(varargin{1}); 
         end
     case {'fnumber'}
@@ -368,14 +369,14 @@ switch parm
         if isempty(varargin)
             % No wavelength listed.
             if (length(wvf.psf) == 1), val = wvf.psf{1};
-            else                       val = wvf.psf;
+            else,                      val = wvf.psf;
             end
         else
             % Wavelength listed.  Get the matrix for that wavelength
             wList = varargin{1}; idx = wvfWave2idx(wvf,wList);
             nWave = wvfGet(wvf,'nwave');
             if idx > nWave, error('idx (%d) > nWave',idx,nWave);
-            else val = wvf.psf{idx};
+            else, val = wvf.psf{idx};
             end
         end
         
@@ -385,7 +386,7 @@ switch parm
         %
         %   wvfGet(wvf,'diffraction psf',wList);
         if ~isempty(varargin), wList= varargin{1};
-        else                   wList = wvfGet(wvf,'wave');
+        else,                  wList = wvfGet(wvf,'wave');
         end
         zcoeffs = 0;
         wvfTemp = wvfSet(wvf,'zcoeffs',zcoeffs);
@@ -716,10 +717,10 @@ switch parm
         end
         
         if isempty(varargin), wList = wvfGet(wvf,'wave');
-        else wList = varargin{1};
+        else, wList = varargin{1};
         end
         if length(wList) > 1, error('Only one wavelength permitted');
-        else                  val = psfCenter(wvfGet(wvf,'psf',wList));
+        else,                 val = psfCenter(wvfGet(wvf,'psf',wList));
         end
         
     case '1dpsf'
