@@ -12,69 +12,66 @@
 %
 %
 
-%% Not sure which of these we will need
-
-waveIdx = 1;
-maxMM = 2;
-maxUM = 20;      
-pupilfuncrangeMM = 5;
-
 %% Use Zernike polynomials to specify a diffraction limited PSF.
 
 % This is the diffraction limited case with all the polynomials
 % coefficients set to 0.
-wvf0 = wvfCreate;
-wvf0 = wvfSet(wvf0,'wave',550);
-z = wvfGet(wvf0,'zcoeffs');
+wvf0 = wvfCreate('wave',550);
 
 % This is how we compute the PSF from those zcoeffs
 wvf0 = wvfComputePSF(wvf0);
-ab = wvfGet(wvf0','wavefront aberrations');
-vcNewGraphWin;
-imagesc(ab);
+wvfPlot(wvf0,'image psf space','um')
 
 % Also called the pupil aperture
-pf = wvfGet(wvf0','pupil function');
-vcNewGraphWin;
-imagesc(pf);
+pf = wvfGet(wvf0,'pupil function');
+wvfPlot(wvf0,'2d pupil phase space','mm')
 
-%% I think we are just looping over the zcoeffs
+%%  Testing the search
 
-% The fminsearch error function will do this
+% Create a wvf object
+wvf = wvfCreate('wave',500);
+wvf = wvfSet(wvf,'zcoeffs',0.93,'defocus');
+wvf = wvfSet(wvf,'zcoeffs',0.4,'vertical_astigmatism');
 
 wvf = wvfComputePSF(wvf);
-% Relies mainly on this
-% wvf = wvfComputePupilFunction(wvf, showBar);
+wvfPlot(wvf,'image pupil phase','mm')
+% wvfPlot(wvf,'image pupil amp','mm')
 
-thisPSF = wvfGet(wvf0,'psf');
+%% Pull out the parameters we need for the search
+thisWaveUM  = wvfGet(wvf,'wave','um');
+thisWaveNM  = wvfGet(wvf,'wave','nm');
+pupilSizeMM = wvfGet(wvf,'pupil size','mm');
+pupilPlaneSizeMM = wvfGet(wvf,'pupil plane size','mm',thisWaveNM);
+nPixels = wvfGet(wvf,'spatial samples');
+wvf     = wvfComputePSF(wvf);
+psfTarget = wvfGet(wvf,'psf');
+% wvfPlot(wvf,'image psf space','um')
 
-% Compute and return the error
-% desiredPSF vs. thisPSF
+f = @(x) psf2zcoeff(x,psfTarget,pupilSizeMM,pupilPlaneSizeMM,thisWaveUM, nPixels);
 
-% the wvfComputePSF requires the pupil function.
-% From this:  wvfComputePupilFunction
-%{
-% That is needed only once, not in the loop In fact, we don't really
-% need it for this case because the apodization (A) is always 1.
-A = ones(nPixel,nPixel);   
-%}
+% This is the right answer.
+% We initialize just away from the right answer/
+% We need to figure out how to set the tolerances
+zcoeffs = wvfGet(wvf,'zcoeffs');
+nCoeffs = 6;
+zcoeffs(1:nCoeffs)
+x0 = zeros(size(zcoeffs(1:nCoeffs)));
+options = optimset('PlotFcns',@optimplotfval);
 
-% Once we have the pupilfunc at the wavelength, we only need to do
-% this
-%{
-amp = fft2(pupilfunc{wl});
-inten = (amp .* conj(amp));   %intensity
-psf{wl} = real(fftshift(inten));
-    
-% Scale for unit area
-psf{wl} = psf{wl}/sum(sum(psf{wl}));
-%}
+x = fminsearch(f,x0,options);
+% Piston is always set to 0 in the search. It comes back arbitrary.
+% We force it to zero here.
+x(1) = 0;  
 
 %%
+disp(x)
+disp(zcoeffs(1:nCoeffs))
+%% Show that the pupil phase functions match
 
+wvfPlot(wvf,'image pupil phase','mm')
 
+wvf2 = wvfSet(wvf,'zcoeffs',x);
+wvf2     = wvfComputePSF(wvf2);
+wvfPlot(wvf2,'image pupil phase','mm')
 
-
-% wList = wvfGet(wvf0,'wave');
-wList = 550;
-wvfPlot(wvf0,'2dpsf space normalized','um',wList,maxUM);
+%%

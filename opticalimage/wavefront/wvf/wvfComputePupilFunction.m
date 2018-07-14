@@ -26,28 +26,16 @@ function wvf = wvfComputePupilFunction(wvf, showBar)
 % biology is left-right reflection symmetric, one might want to left-right
 % flip the coordinates when computing for the left eye (see OSA document).
 %
-%
-% See also: wvfCreate, wvfGet, wfvSet, wvfComputePSF
+% Original code provided by Heidi Hofer.
+% (c) Wavefront Toolbox Team 2011, 2012
+% Heavily modified for use in ISET, 2015
 %
 % Example:
 %    wvf = wvfCreate;
 %    wvf = wvfComputePupilFunction(wvf);
 %
-% Original code provided by Heidi Hofer.
-%
-% 8/20/11 dhb      Rename function and pull out of supplied routine.
-%                  Reformat comments.
-% 9/5/11  dhb      Rewrite for wvf struct i/o.  Rename.
-% 5/29/12 dhb      Removed comments about old inputs, since this now gets
-%                  its data via wvfGet.
-% 6/4/12  dhb      Implement caching system.
-% 7/23/12 dhb      Add in tip and tilt terms to be consistent with OSA standard.
-%                  Verified that these just offset the position of the psf by
-%                  a wavelength independent amount for the current calculation.
-% 7/24/12 dhb      Switch sign of y coord to match OSA standard.
-%
-% (c) Wavefront Toolbox Team 2011, 2012
-% Heavily modified for use in ISET, 2015
+% See also: 
+%  wvfCreate, wvfGet, wfvSet, wvfComputePSF
 
 %% Parameter checking
 if notDefined('wvf'), error('wvf required'); end
