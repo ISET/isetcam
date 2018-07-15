@@ -60,14 +60,14 @@ p.addParameter('DonaldsonMatrix',[],@isnumeric);
 p.parse(varargin{:});
 inputs = p.Results;
 
-%%
+%% Initialize the struct
+
 fl.name = inputs.name;
 fl.type = 'fluorophore';
 fl = initDefaultSpectrum(fl,'custom',inputs.wave);
 
 
-%% There is no default
-% The absence of a default could be a problem.
+%% Fill in the struct according to the different parameter type
 
 type = lower(inputs.type);
 type = strrep(type,' ','');
@@ -92,17 +92,16 @@ switch type
     
     case 'default'
         
-        % Create a default, idealized fluorophore with gaussian excitation
+        % Create a default, idealized fluorophore with Gaussian excitation
         % and emission spectra
         
         deltaL = inputs.wave(2) - inputs.wave(1);
 
-        
-        emWave = 550;
+        emWave = 550;   % Default peak emission wavelength
         em = exp(-(fl.spectrum.wave - emWave).^2/2/(15^2));
         em = em/sum(em)/deltaL;
         
-        exWave = 450;
+        exWave = 450;   % Default peak excitation wavelength
         ex = exp(-(fl.spectrum.wave - exWave).^2/2/(15^2));
         ex = ex/max(ex);
         
