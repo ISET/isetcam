@@ -1,23 +1,31 @@
 function wvf = wvfComputePSF(wvf)
 % Compute the psf for the wvf object.
 %
+% Syntax
 %   wvf = wvfComputePSF(wvf)
 %
-% The point spread function is computed for each wavelength in the input
-% wvf structure. The PSF computation is based on the Zernike coefficients
-% specified to the OSA standard.
+% Description
+%   The point spread function is computed for each wavelength in the input
+%   wvf structure. The PSF computation is based on the Zernike coefficients
+%   specified to the OSA standard.
 %
-% The computation is simply the amplitude of the fft of the pupil function
-% at each wavelength.  The psf is normalized for unit area under the curve
-% (i.e., no loss of light).
+%   The computation is the amplitude of the fft of the pupil function at
+%   each wavelength.  The psf is normalized for unit area under the curve
+%   (i.e., no loss of light).
 %
-% The real work for calculating the psf is done in the
-% wvfComputePupilFunction routine.
+%   The real work for calculating the psf is done in the
+%   wvfComputePupilFunction routine.
 % 
-% See also: wvfGet, wvfCreate, wvfSet, wvfComputePupilFunction
+% Input
+%   wvf - a wavefront structure
+%         The PSF is returned as part of the wvf when returned
 %
 % Copyright Wavefront Toolbox Team 2012
 % Heavily edited for ISET, 2015
+%
+% See also: 
+%  wvfGet, wvfCreate, wvfSet, wvfComputePupilFunction
+%
 
 %% Programming
 % We need to get the spatial sampling right.  At present, we aren't
@@ -43,12 +51,22 @@ for wl = 1:nWave
     % Converting the pupil function to the PSF requires only an fft2 and
     % magnitude calculation 
     pupilfunc{wl} = wvfGet(wvf,'pupil function',wList(wl));
+    
+    amp = fftshift(fft2(ifftshift(pupilfunc{wl})));
+    inten = (amp .* conj(amp));
+    psf{wl} = real(inten);
+    
+    %{
+    % Before DHB changes in ISETBio.  Returns about the same, but DHB is
+    % pretty sure his form is correct.
     amp = fft2(pupilfunc{wl});
     inten = (amp .* conj(amp));   %intensity
     psf{wl} = real(fftshift(inten));
+    %}
     
     % Scale for unit area
     psf{wl} = psf{wl}/sum(sum(psf{wl}));
+    % vcNewGraphWin; imagesc(psf{wl});
 end
 
 % The spatial support for each psf differs when computed in the pupil

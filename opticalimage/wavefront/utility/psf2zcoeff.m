@@ -1,4 +1,5 @@
-function err = psf2zcoeff(zcoeffs,psfTarget,pupilSizeMM, pupilPlaneSizeMM, thisWaveUM, nPixels)
+function err = psf2zcoeff(zcoeffs,psfTarget,pupilSizeMM,zpupilDiameterMM,...
+    pupilPlaneSizeMM, thisWaveUM, nPixels)
 % Error function for estimationg Zernike Coeffs from a psf
 %
 % Syntax
@@ -28,53 +29,16 @@ function err = psf2zcoeff(zcoeffs,psfTarget,pupilSizeMM, pupilPlaneSizeMM, thisW
 % See also
 %   s_opticsPSF2Zcoeffs, wvfCreate, wvfSet
 
-% Examples:
-%{
-% BW should shorten this example!  It is the main code in the
-% s_opticsPSF2Zcoeffs.m script
-
-wvf = wvfCreate('wave',500);
-wvf = wvfSet(wvf,'zcoeffs',2,'defocus');
-
-% Pull out the parameters we need for the search
-thisWaveUM  = wvfGet(wvf,'wave','um');
-thisWaveNM  = wvfGet(wvf,'wave','nm');
-pupilSizeMM = wvfGet(wvf,'pupil size','mm');
-pupilPlaneSizeMM = wvfGet(wvf,'pupil plane size','mm',thisWaveNM);
-
-nPixels   = wvfGet(wvf,'spatial samples');
-wvf       = wvfComputePSF(wvf);
-psfTarget = wvfGet(wvf,'psf');
-% wvfPlot(wvf,'image psf space','um')
-
-f = @(x) psf2zcoeff(x,psfTarget,pupilSizeMM,pupilPlaneSizeMM,thisWaveUM, nPixels);
-
-zcoeffs = wvfGet(wvf,'zcoeffs');
-nCoeffs = 6;
-zcoeffs(1:nCoeffs)
-x0 = zeros(size(zcoeffs(1:nCoeffs)));
-options = optimset('PlotFcns',@optimplotfval);
-x = fminsearch(f,x0,options);
-
-wvf2 = wvfSet(wvf,'zcoeffs',x);
-wvf2 = wvfComputePSF(wvf2);
-wvfPlot(wvf2,'image psf space','um')
-%}
-
 % Programming
 % CONSIDER fminunc
 
-% Samples in the pupil plane - Could be precomputed
-pupilPos = (0:(nPixels-1))*(pupilPlaneSizeMM/nPixels)-pupilPlaneSizeMM/2;
-[xpos, ypos] = meshgrid(pupilPos);
-ypos = ypos(end:-1:1,:);
+pupilPos = (1:nPixels) - (floor(nPixels / 2) + 1);
+pupilPos = pupilPos * (pupilPlaneSizeMM / nPixels);
 
-% This scalar could be passed in and adjusted for experiments.  Just
-% not yet.  Someone remind me of the name of this term, please!
-% (Apodization).
-%{
-    A = ones(nPixels,nPixels);
-%}
+% Do the meshgrid thing and flip y. Empirically the flip makes
+% things work out right.
+[xpos, ypos] = meshgrid(pupilPos);
+ypos = -ypos;
 
 % The Zernike polynomials are defined over the unit disk.  At
 % measurement time, the pupil was mapped onto the unit disk, so we
@@ -83,10 +47,9 @@ ypos = ypos(end:-1:1,:);
 %
 % And by convention expanding gives us the wavefront aberrations in
 % microns.
-norm_radius = (sqrt(xpos.^2+ypos.^2))/(pupilPlaneSizeMM/2);
+norm_radius = (sqrt(xpos.^2+ypos.^2))/(zpupilDiameterMM/2);
 theta = atan2(ypos,xpos);
 norm_radius_index = norm_radius <= 1;
-% All the way to here
 
 % We keep the first entry 0 ('piston') because it has no impact on the PSF,
 % according to a note in t_wvfZernike. Can I find a reference for that?
@@ -125,22 +88,20 @@ end
 
 % Here is the phase of the pupil function, with unit amplitude
 % everywhere
-% wavefrontaberrations = wavefrontAberrationsUM;
 pupilfuncphase = exp(-1i * 2 * pi * wavefrontAberrationsUM/thisWaveUM);
 
 % Set values outside the pupil we're calculating for to 0 amplitude
-pupilfuncphase(norm_radius > pupilSizeMM/pupilPlaneSizeMM)=0;
+pupilfuncphase(norm_radius > pupilSizeMM/zpupilDiameterMM)=0;
 
 % Multiply phase by the pupil function amplitude function.
-% Important to zero out before this step, because computation of A
-% doesn't know about the pupil size.
-% pupilfunc{ii} = A.*pupilfuncphase;
+% In all of our calculations, we are assuming this (apodization) function
+% is all 1s over the pupil
 pupilfunc = pupilfuncphase;
 
-amp   = fft2(pupilfunc);
-inten = (amp .* conj(amp));   %intensity
-psf   = real(fftshift(inten));
-    
+amp = fftshift(fft2(ifftshift(pupilfunc)));
+inten = (amp .* conj(amp));
+psf = real(inten);
+
 % Scale for unit area
 psf = psf/sum(psf(:));
 

@@ -68,7 +68,8 @@ for ii=1:nWavelengths
     if showBar
         waitbar(ii/nWavelengths,wBar,sprintf('Pupil function for %.0f',thisWave));
     end
-        
+       
+    %{
     % Set up pupil coordinates
     %
     % 3/9/2012, MDL: Removed nested for-loop for calculating the
@@ -88,6 +89,19 @@ for ii=1:nWavelengths
     pupilPos = (0:(nPixels-1))*(pupilPlaneSizeMM/nPixels)-pupilPlaneSizeMM/2;
     [xpos, ypos] = meshgrid(pupilPos);
     ypos = ypos(end:-1:1,:);
+    %}
+    
+    % Set up pupil coordinates.  Changed the commented code above to this
+    % in order to match ISETBio exactly.
+    nPixels = wvfGet(wvf, 'spatial samples');
+    pupilPlaneSizeMM = wvfGet(wvf, 'pupil plane size', 'mm', thisWave);
+    pupilPos = (1:nPixels) - (floor(nPixels / 2) + 1);
+    pupilPos = pupilPos * (pupilPlaneSizeMM / nPixels);
+    
+    % Do the meshgrid thing and flip y. Empirically the flip makes
+    % things work out right.
+    [xpos, ypos] = meshgrid(pupilPos);
+    ypos = -ypos;
     
     % This scalar could be passed in and adjusted for experiments.  Just
     % not yet.  Someone remind me of the name of this term, please!
@@ -105,23 +119,45 @@ for ii=1:nWavelengths
     % only be one, although there may be multiple calc wavelengths).
     %
     
-    % Deleted in ISET
-    % We flip the sign to describe change in optical power when we pass
-    % this through wvfDefocusDioptersToMicrons.
-    %     lcaDiopters = wvfLCAFromWavelengthDifference(wvfGet(wvf,'measured wavelength','nm'),thisWave);
-    %     lcaMicrons = wvfDefocusDioptersToMicrons(-lcaDiopters,measPupilSizeMM);
-
+    % There may be a difference between the wavelength we used to obtain
+    % the Z coefficients and the one we are using to calculate. For the
+    % human case, we know how much the defocus should change.  In general,
+    % we do not.  So the code here is commented out and we are assuming
+    % that the zcoeffs are adequate for the wls (wavelength we are using
+    % for the calculation).  See the code in ISETBio if you would like to
+    % make a weaker assumption and account for the system in ISETCam.
+    %{
+    lcaDiopters = wvfLCAFromWavelengthDifference(wvfGet(wvf,'zwavelength','nm'),thisWave);
+    lcaMicrons  = wvfDefocusDioptersToMicrons(-lcaDiopters,measPupilSizeMM);
+    %}
+    
+    % **********
+    % In ISETBio the measured pupil size and the calculation pupil size can
+    % differ.  In ISETCam, the measured and calculation pupil sizes are
+    % always the same.  That is, when we get a set of Zernike coefficients
+    % they always apply to the pupil size in the wvf structure.  This
+    % limits the generalization, but greatly simplifies a lot of the code.
+    % This comment should appear in a clearer and better place.
+    %
+    % Because of this, the ISETCam code should only match the ISETBio code
+    % when the measured pupil size equals the calculation pupil size.
+    % **********
+    %
     % The Zernike polynomials are defined over the unit disk.  At
     % measurement time, the pupil was mapped onto the unit disk, so we
     % do the same normalization here to obtain the expansion over the
-    % disk.
+    % disk. 
     %
     % And by convention expanding gives us the wavefront aberrations in
     % microns.
-    norm_radius = (sqrt(xpos.^2+ypos.^2))/(pupilPlaneSizeMM/2);
+    zpupilDiameterMM = wvfGet(wvf,'z pupil diameter');
+    norm_radius = (sqrt(xpos.^2+ypos.^2))/(zpupilDiameterMM/2);
+    % ***  Bad code *** changed on July 16, 2018.  Should not be using
+    % pupilPlaneSizeMM, I think.  That doesn't match ISETBio.
+    % norm_radius = (sqrt(xpos.^2+ypos.^2))/(pupilPlaneSizeMM/2);
     theta = atan2(ypos,xpos);
     norm_radius_index = norm_radius <= 1;
-    
+   
     % Get Zernike coefficients and add in appropriate info to defocus
     % Need to make sure the c vector is long enough to contain defocus
     % term, because we handle that specially and it's easy just to make
@@ -149,7 +185,8 @@ for ii=1:nWavelengths
             [n,m] = wvfOSAIndexToZernikeNM(osaIndex);
             wavefrontAberrationsUM(norm_radius_index) =  ...
                 wavefrontAberrationsUM(norm_radius_index) + ...
-                c(k)*sqrt(pi)*zernfun(n,m,norm_radius(norm_radius_index),theta(norm_radius_index),'norm');
+                c(k)*sqrt(pi)*zernfun(n,m,norm_radius(norm_radius_index),...
+                theta(norm_radius_index),'norm');
         end
     end
     
@@ -159,13 +196,16 @@ for ii=1:nWavelengths
     pupilfuncphase = exp(-1i * 2 * pi * wavefrontAberrationsUM/waveUM(ii));
     
     % Set values outside the pupil we're calculating for to 0 amplitude
-    pupilfuncphase(norm_radius > pupilSizeMM/pupilPlaneSizeMM)=0;
+    % In ISETBio case there is a measurement size that can differ from the
+    % calculation size.  But in ISETCam the calculated and measured are
+    % always the same.
+    pupilfuncphase(norm_radius > pupilSizeMM/zpupilDiameterMM)=0;
     
     % Multiply phase by the pupil function amplitude function.
     % Important to zero out before this step, because computation of A
     % doesn't know about the pupil size.
     pupilfunc{ii} = A.*pupilfuncphase;
-    % imagesc(angle(pupilfunc{ii}))
+    % vcNewGraphWin; imagesc(angle(pupilfunc{ii}))
 end
 
 if showBar, close(wBar); end

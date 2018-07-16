@@ -20,9 +20,12 @@ function wvf = wvfSet(wvf,parm,val,varargin)
 % Examples:
 %   wvf = wvfSet(wvf,'name','test wvf');
 %   wvf = wvfSet(wvf,'zcoeffs',z);
+%   wvf = wvfSet(wvf,'z pupil diameter',z);   % Pupil size for the z coeff rep
+%   wvf = wvfSet(wvf,'pupil diameter',z);     % For this calculation
+%   
 %
 % Inputs:
-%   wvf - A wavefront structure
+%   wvf   - A wavefront structure
 %   param - Parameter string
 %   val   - Value to set the parameter string
 %
@@ -167,6 +170,12 @@ switch parm
             wvf.zcoeffs(idx) = val;
         end
 
+    case 'zpupildiameter'
+        % Pupil diameter for the zcoeff measurements (millimeters)
+        wvf.zpupilDiameter = val;
+    case 'zwavelength'
+        % Wavelength for the zcoeff measurements
+        wvf.zwls = val;
     % These parameters are used for the specific calculations with this,
     % interpolating the measured values that are stored above.
     case {'pupildiameter','pupilsize'}

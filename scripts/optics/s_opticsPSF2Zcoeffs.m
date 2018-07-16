@@ -15,14 +15,14 @@
 %% Create a wavefront object with some coefficients
 
 % Create a wvf object
-wave = 500;
+wave = 550;
 wvf = wvfCreate('wave',wave);
-wvf = wvfSet(wvf,'zcoeffs',0.93,'defocus');
-wvf = wvfSet(wvf,'zcoeffs',0.4,'vertical_astigmatism');
+wvf = wvfSet(wvf,'zcoeffs',.2,'defocus');
+wvf = wvfSet(wvf,'zcoeffs',0,'vertical_astigmatism');
 
 wvf = wvfComputePSF(wvf);
-wvfPlot(wvf,'image pupil phase','mm')
-% wvfPlot(wvf,'image psf space','um')
+% wvfPlot(wvf,'image pupil phase','mm')
+wvfPlot(wvf,'image psf space','um')
 % wvfPlot(wvf,'image pupil amp','mm')
 
 %% Get the parameters we need for the search
@@ -30,12 +30,14 @@ wvfPlot(wvf,'image pupil phase','mm')
 thisWaveUM  = wvfGet(wvf,'wave','um');
 thisWaveNM  = wvfGet(wvf,'wave','nm');
 pupilSizeMM = wvfGet(wvf,'pupil size','mm');
+zpupilDiameterMM = wvfGet(wvf,'z pupil diameter');
+
 pupilPlaneSizeMM = wvfGet(wvf,'pupil plane size','mm',thisWaveNM);
-nPixels = wvfGet(wvf,'spatial samples');
-wvf     = wvfComputePSF(wvf);
+nPixels   = wvfGet(wvf,'spatial samples');
+wvf       = wvfComputePSF(wvf);
 psfTarget = wvfGet(wvf,'psf');
 
-f = @(x) psf2zcoeff(x,psfTarget,pupilSizeMM,pupilPlaneSizeMM,thisWaveUM, nPixels);
+f = @(x) psf2zcoeff(x,psfTarget,pupilSizeMM,zpupilDiameterMM,pupilPlaneSizeMM,thisWaveUM, nPixels);
 
 % I should to figure out how to set the tolerances.  Default is 1e-4
 zcoeffs = wvfGet(wvf,'zcoeffs');
