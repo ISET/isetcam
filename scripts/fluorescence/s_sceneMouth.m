@@ -38,7 +38,7 @@ nWaves = length(wave);
 % pHrodoRed
 % PacificOrange
 fName  = fullfile(isetRootPath,'data','fluorescence','pHrodoRed.mat');
-fl  = fiReadFluorophore(fName,'wave',wave);
+fl  = fluorophoreRead(fName,'wave',wave);
 
 vcNewGraphWin;
 semilogy(wave,fl.emission,'k-')

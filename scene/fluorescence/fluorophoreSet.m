@@ -70,7 +70,7 @@ switch param
         
         % If the fluorophore happened to be defined with a Donaldson
         % matrix, remove the matrix from the structure;
-        if isfield(fl,'donaldsonMatrix'), 
+        if isfield(fl,'donaldsonMatrix') 
             fl = rmfield(fl,'donaldsonMatrix');
         end
         

@@ -1,9 +1,9 @@
-function [ fl ] = fiReadFluorophore( fName, varargin )
+function [ fl ] = fluorophoreRead( fName, varargin )
 % Read fluorophore spectral properties from a Matlab (.mat) file fName.
 %
-% [ fl ] = fiReadFluorophore( fName,...)
+% [ fl ] = fluorophoreRead( fName,...)
 %
-% Fluorescent properties should have been saved using fiSaveFluorophore.
+% Fluorophore file should have been saved using fluorophoreSave.
 %
 % Inputs:
 %   fName - path to the data file
@@ -17,7 +17,7 @@ function [ fl ] = fiReadFluorophore( fName, varargin )
 %
 % Examples
 %   fName  = fullfile(fiToolboxRootPath,'data','LifeTechnologies','phRodoRed.mat');
-%   fl  = fiReadFluorophore(fName);
+%   fl  = fluorophoreRead(fName);
 %
 % Copyright, Henryk Blasinski 2016
 

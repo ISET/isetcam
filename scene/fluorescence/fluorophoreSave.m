@@ -1,10 +1,12 @@
-function fiSaveFluorophore( fName, fl, comment )
-% Save an fiFluorophore structure into a Matlab .mat file. 
+function fluorophoreSave( fName, fl, comment )
+% Save fluorophore structure into a Matlab .mat file. 
 %
-% fiSaveFluorophore( fName, flStruct, ...)
+% Syntax
+%   fluorophoreSave( fName, flStruct, ...)
 %
-% The fluorophore structure is defined in the fluorophoreCreate function.
-% It must contain the following fields 
+% Description
+%  The fluorophore structure is defined in the fluorophoreCreate function.
+%  It must contain the following fields
 %
 %    .name
 %    .solvent
@@ -13,17 +15,16 @@ function fiSaveFluorophore( fName, fl, comment )
 %    .comment
 %    .wave
 %
-% This function saves the fluorophore data with the emission and excitation
-% spectra normalized to unit amplitude (for comparison convenience).  It
-% does not include the quantum efficiency parameter, which is a scaling
-% factor depending on many physical parameters (for example concentration).
+% )Needs updating). Saves the fluorophore data with the emission and
+% excitation spectra normalizeds to unit amplitude (for comparison
+% convenience).  It does not include the quantum efficiency parameter,
+% which is a scaling factor depending on many physical parameters (for
+% example concentration).
 %
 % Inputs:
-%   fName - path to where the fluorophore is to be saved.
-%   fl - the fiToolbox fluorophore structure.
-%
-% Inputs (optional):
-%   'comment' - an optional commnet string.
+%   fName   - path to where the fluorophore is to be saved.
+%   fl      - the fluorophore structure.
+%   comment - a required comment string.
 %
 % Copyright, Henryk Blasinski 2016
 
@@ -31,7 +32,7 @@ function fiSaveFluorophore( fName, fl, comment )
 p = inputParser;
 p.addRequired('fName',@ischar);
 p.addRequired('fl',@isstruct);
-p.addParameter('comment','',@ischar);
+p.addRequired('comment',@ischar);
 
 p.parse(fName,fl,comment);
 inputs = p.Results;
@@ -40,7 +41,7 @@ inputs = p.Results;
 
 % I think I would use fluorophoreCreate here and then do a series of
 % fluorophoreSet commands, checking the inputs to make sure the data are
-% there.
+% there. (BW)
 
 name       = inputs.fl.name;
 solvent    = inputs.fl.solvent;
