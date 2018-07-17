@@ -82,6 +82,8 @@ sceneEnergy = bsxfun(@times, fLevel(:), sceneEnergy);
 % combine the different labels into an image and save it in the scene.label
 % slot. Then we would build utilities to show them.s
 cheek = imread(lName);  % An RGB file
+vcNewGraphWin; imagesc(cheek);
+
 cheek = RGB2XWFormat(cheek);
 cheekLabel = double(cheek(:,1));
 
@@ -91,6 +93,9 @@ luminance = sceneGet(scene,'luminance');
 luminance = ieScale(luminance,1);
 luminance = RGB2XWFormat(luminance);
 cheekLabel = luminance .* cheekLabel;
+
+sz = sceneGet(scene,'size');
+vcNewGraphWin; imagesc(XW2RGBFormat(cheekLabel,sz(1),sz(2)));
 
 sceneEnergy = bsxfun(@times, cheekLabel(:), sceneEnergy);
 
