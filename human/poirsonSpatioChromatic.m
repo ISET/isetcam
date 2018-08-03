@@ -10,7 +10,7 @@ function [lum, rg, by, positions] = poirsonSpatioChromatic(sampPerDeg,dimension)
 %   sampPerDeg: filter sampling resolution (default=241 samps/deg)
 %   dimension:  filter for 1D or 2D format (default = 2) 
 %
-% See the Spatial-CIELAB implementation for other related ideas.
+% See the Spatial-CIELAB implementation in ISETCAM for related ideas.
 %
 % Examples:
 %  [lum, rg, by, x]  = poirsonSpatioChromatic([],1);
@@ -75,7 +75,7 @@ by  = by/sum(by(:));
 
 if nargout == 4
     centerPosition = (width+1)/2;
-    positions = ([1:width] - centerPosition)*(1/sampPerDeg);
+    positions = ((1:width) - centerPosition)*(1/sampPerDeg);
 end
 
-return;
+end
