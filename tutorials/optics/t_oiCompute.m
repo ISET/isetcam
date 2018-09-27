@@ -27,7 +27,7 @@ scene = sceneCreate('point array');
 scene = sceneSet(scene,'hfov',1);  
 ieAddObject(scene); sceneWindow;
 
-% Diffraction limited optics
+%% Diffraction limited optics
 oi = oiCreate;                        
 
 % Compute optical image and show it
@@ -35,15 +35,11 @@ oi = oiCompute(scene,oi);
 ieAddObject(oi); oiWindow;
 
 %% Increase the f-number, compute and show the new image
-
-optics = oiGet(oi,'optics');
-fnSmall = opticsGet(optics,'f number');
-fnBig   = 3* fnSmall;
-
-optics = oiGet(oi,'optics');
-optics = opticsSet(optics,'fNumber',fnBig);
-oi2 = oiSet(oi,'optics',optics);
+fnSmall = oiGet(oi,'optics fnumber');
+fnBig   = 1.5 * fnSmall;
+oi2 = oiSet(oi,'optics fnumber',fnBig);
 oi2 = oiCompute(scene,oi2);
+oi2 = oiSet(oi2,'name',sprintf('lens f# %d\n',fnBig));
 ieAddObject(oi2); oiWindow;
 
 %% Plot the psf of the optics
