@@ -23,6 +23,7 @@ function val = ieSessionGet(param,varargin)
 %      {'help','init help'}
 %
 %  Matlab pref variables
+%      {'prefs'}      - Print out the preferences
 %      {'font size'}  - Font size in all GUI windows
 %      {'wait bar'}   - Show compute waitbars or not
 %      {'wpos'}       - Default GUI window positions and sizes
@@ -130,6 +131,8 @@ switch param
         end
         
     % Matlab setpref/getpref 
+    case {'prefs'}
+        val = getpref('ISET');
     case {'fontsize'}
         isetPref = getpref('ISET');
         if checkfields(isetPref,'fontSize'), val = isetPref.fontSize;

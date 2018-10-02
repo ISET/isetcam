@@ -14,7 +14,7 @@ function wPos = ieWindowsSet(wPos)
 % See also: ieWindowsGet
 %
 % Example
-%   ieWindowsSet;                    % Return to ISET pref setting
+%   ieWindowsSet;                % Return to ISET pref setting
 %   ieWindowsSet('wPosVideo');   % Get the video positions and save them
 %   ieWindowsSet('wPosWork');    % Get the work positions and save them
 %
@@ -38,7 +38,7 @@ if ischar(wPos)
     [p,n,e] = fileparts(wPos); if isempty(e), e = '.mat'; end
     wPos = fullfile(p,[n,e]);
     if exist(wPos,'file'), load(wPos,'wPos');
-    else                   error('No file %s\n',wPos);
+    else,                  error('No file %s\n',wPos);
     end
 end
 
