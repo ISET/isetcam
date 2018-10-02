@@ -15,11 +15,11 @@ function ieSessionSet(param,val,varargin)
 %   'init help'
 %
 % Matlab setpref variables
-%   'font size' -- This value determines whether we change the
-%     font size in every window by this increment, calling
-%     ieFontChangeSize when the window is opened.
-%   'wPos, window positions' - Window positions and size
-%   'wait bar'  - Show waitbars (or not) during certain long computations
+%   'font size' - This value determines whether we set the
+%       font size in every window, calling
+%       ieFontChangeSize when the window is opened.
+%   'window positions' - Window positions and size (see below)
+%   'wait bar'   - Show waitbars (or not) during certain long computations
 %   'init clear' - Clear variables when calling ieInit
 %
 % Figure handles
@@ -75,13 +75,13 @@ switch param
     case {'help','inithelp'}
         % Default for help is true, if the initHelp has not been set.
         if checkfields(vcSESSION,'initHelp'), vcSESSION.initHelp = val;
-        else vcSESSION.initHelp = 1; val = 1;
+        else, vcSESSION.initHelp = 1; 
         end
         
         % Matlab setpref values
-    case {'deltafontsize','fontincrement','increasefontsize','fontdelta','deltafont'}
-        % Deprecated
-        setpref('ISET','fontDelta',val);
+        %     case {'deltafontsize','fontincrement','increasefontsize','fontdelta','deltafont'}
+        %         % Deprecated
+        %         setpref('ISET','fontDelta',val);
     case {'fontsize'}
         % GUI window font size
         setpref('ISET','fontSize',val);
@@ -99,8 +99,21 @@ switch param
         vcSESSION.GUI.waitbar = val;
     case {'wpos','windowpositions'}
         % GUI window position and size preferences
+        % val should be a cell array, length 6, each 1 x 4, with values
+        % that are the relative position of the window on the screen, as
+        % used by set(w,'Position',pos);  
+        %
+        % For example, pos might be [0.1 0.45 0.32 0.41];
+        %
+        % 1 - 'main window'
+        % 2 - 'scene window'
+        % 3 - 'oi window'
+        % 4 - 'sensor window'
+        % 5 - 'ip window'
+        % 6 - 'graph window'
+        %
         if iscell(val) && length(val) == 6, setpref('ISET','wPos',val);
-        else error('Bad wPos variable, %f', val);
+        else, error('Bad wPos variable, %f', val);
         end
         
     case {'initclear'}
