@@ -1,5 +1,6 @@
-%% Introduction to ISET
-% An overview of *ISET* illustrating how to perform basic image system simulation.
+%% Introduction to ISETCam
+% An overview of *ISETCam* illustrating how to perform basic image
+% system simulation.
 % 
 % To find through other example scripts and tutorials use the tab-completion 
 % function. For example
@@ -15,10 +16,12 @@
 % 
 % Copyright ImagEval Consultants, LLC, 2010.
 %% Initialize ISET variables and structures
-% This function closes windows and can clear your variables, depending on how 
-% you set your ISET preferences.  
-%%
-getpref('ISET')                      % Here is how your preferences are set
+%
+% The ieInit function closes windows and can clear your variables,
+% depending on how you set your ISET preferences.
+
+% Here is how your preferences are set
+getpref('ISET')   % Current status
 
 % To clear workspace variables on ieInit, do this
 setpref('ISET','initclear',true);    
@@ -27,6 +30,7 @@ setpref('ISET','initclear',true);
 setpref('ISET','initclear',false);   
 
 ieInit;
+
 %% Scene spectral radiance
 % There are several ways to create a scene. One is to use the *sceneCreate* 
 % function. In the example below, we create a scene of the Macbeth Color Checker 

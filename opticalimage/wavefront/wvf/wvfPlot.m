@@ -7,63 +7,83 @@ function [uData, pData, fNum] = wvfPlot(wvfP,pType,varargin)
 % plotData:  The handles from the plotted data
 % fNum:      The figure number
 %
-% wvfP:     Wavefront structure
-% pType:    Plot type
-% varargin: These are used to set various parameters of the plot.  The
-%  standard format is: units, wavelength, plotRange, 'window/no-window'
-%  This should change by using an argument reading function for
-%  parameters/value pairs.
-%    
+% Inputs
+%  wvfP:     Wavefront structure
+%  pType:    Plot type
+%  varargin: These set parameters of the plot.  The standard format
+%    is: units, wavelength, plotRange, 'window/no-window' This should
+%    change by using an argument reading function for parameters/value
+%    pairs.
+% 
 % By default, this routine opens a new graph window (vcNewGraphWin). If the
-% final varargin argument is set to 'no window', then the vcNewGraphWin is
+% final varargin argument is 'no window', then the vcNewGraphWin is
 % suppressed.  Hence, you can use this call to plot within a subplot of a
 % current window.
 %
-% Plot types:
-%   wvf = wvfCreate; wvf = wvfComputePSF(wvf); 
-%   wave = wvfGet(wvf,'measured wavelength');
-%   + 2d psf angle - mesh.  wvfPlot(wvf,'2d psf angle','min',[], wave)
-%   + 2d psf space - mesh   wvfPlot(wvf,'2d psf space','um',wave,10)
-%   2d OTF       - mesh (e.g., linepairs/'um')
+% pType (Plot types):
+%   
+%   (mesh plots)
 %
-%   + 1d psf angle - graph (middle horizontal line)
-%   + 1d psf space - graph (middle horizontal line)
+%   + 2d psf angle - plots a mesh
+%        wvfPlot(wvfP,'2d psf angle',unit, waveIdx, plotRangeArcMin);
+%        wvfPlot(wvfP,'2d psf angle normalized',unit, waveIdx, rangeArcMin);
+%   + 2d psf space - mesh
+%        wvfPlot(wvfP,'2d psf space',unit,waveIdx,rangeArcMin);
+%        wvfPlot(wvf,'2d psf space','um',wave,10)
+%     2d OTF       - mesh (e.g., linepairs/'um')
 %
-%   image psf angle    - image ('min')
-%   image psf space    - image ('um')
-%   image pupil amp    - image ('mm')
-%   image pupil phase  - image ('mm')
+%   (middle horizontal line of the data)
+%   + 1d psf angle - graph 
+%   + 1d psf space - graph 
+%
+%  (image)
+%   image psf angle    ('arcmin')
+%   image psf space    ('um')
+%   image pupil amp    ('mm')
+%   image pupil phase  ('mm')
 %
 % Angle units are 'sec','min', or 'deg'   default - 'min'
 % Space units are 'm','cm','mm','um'      default - 'mm'
 % + Add the string 'normalized' to force the 2d and 1d graphs to be scaled
 %   to a peak of 1.
 %
-% Examples
-%  Start with a clean structure
-%    wvf = wvfCreate; wave = 550; wvf = wvfSet(wvf,'calc wave',wave); wvf = wvfComputePSF(wvf);
-%    unit = 'um'; 
-%    % u - data, p- figure properties
-%    [u,p]= wvfPlot(wvf,'1d psf space',unit,wave);
-%    set(p,'color','k','linewidth',2)
-%
-%  Change the calculated PSF wavelength and plot again
-%    wave = 500; wvf = wvfSet(wvf,'calc wave',wave); wvf = wvfComputePSF(wvf);
-%    unit = 'um'; 
-%    [u,p]= wvfPlot(wvf,'1d psf space',unit,wave); 
-%    set(p,'color','k','linewidth',2)
-%
-%  Plot in an existing window by appending 'no window'
-%  Also, plot normalized and not-normalized.
-%    vcNewGraphWin([],'tall');
-%    subplot(3,1,1), [u,p] = wvfPlot(wvf,'1d psf space',unit,wave,'no window');
-%    subplot(3,1,2), [u,p] = wvfPlot(wvf,'1d psf space normalized',unit,wave,'no window');
-%    subplot(3,1,3), wvfPlot(wvf,'image psf','um',wave,20,'no window');
+% (c) Wavefront Toolbox Team 2012 (bw)
 %
 % See also:  wvfComputePSF, v_wvfDiffractionPSF, vcNewGraphWin
 %
-% (c) Wavefront Toolbox Team 2012 (bw)
 
+% Examples:
+%{
+ %  Start with a clean structure
+    wvf = wvfCreate('wave',550); 
+    wvf = wvfComputePSF(wvf);
+    unit = 'um'; 
+    % u - data, p- figure properties
+    [u,p]= wvfPlot(wvf,'1d psf space',unit,550);
+    set(p,'color','k','linewidth',2); grid on
+%}
+%{
+  % Change the calculated PSF wavelength and plot again
+    wvf = wvfCreate('wave',500); 
+    wvf = wvfComputePSF(wvf);
+    unit = 'um'; 
+    [u,p]= wvfPlot(wvf,'1d psf space',unit,500); 
+    set(p,'color','k','linewidth',2)
+%}
+%{
+  % Plot in an existing window by appending 'no window'
+  % Also, plot normalized and not-normalized.
+    wave = 500;
+    wvf = wvfCreate('wave',wave);
+    wvf = wvfComputePSF(wvf);
+    vcNewGraphWin([],'tall');
+    subplot(3,1,1), wvfPlot(wvf,'2d psf space','um',500,'no window');
+    subplot(3,1,2), [u,p] = wvfPlot(wvf,'1d psf space normalized',unit,wave,'no window');
+    subplot(3,1,3), wvfPlot(wvf,'image psf','um',wave,20,'no window');
+%}
+
+
+%%
 if notDefined('wvfP'), error('Wavefront structure required.'); end
 if notDefined('pType'), pType = '1dpsf'; end
 
@@ -84,6 +104,10 @@ else
     fNum = vcNewGraphWin;
 end
 
+% Kept in this format for backwards compatibility.
+normalizedFlag = ~isempty(strfind(pType,'normalized'));
+
+%%
 switch(pType)
     
     case {'2dpsf','2dpsfangle','2dpsfanglenormalized'}
@@ -104,7 +128,7 @@ switch(pType)
         end
         
         % Search for key word normalized
-        if ~isempty(strfind(pType,'normalized'))
+        if normalizedFlag
             psf = psf(index,index)/max(psf(:));
         end
         
@@ -127,7 +151,7 @@ switch(pType)
         
         samp = wvfGet(wvfP,'psf spatial samples',unit,wList);
         psf  = wvfGet(wvfP,'psf',wList);
-        if ~isempty(strfind(pType,'normalized'))
+        if normalizedFlag
             psf = psf/max(psf(:));
         end
         
@@ -156,7 +180,7 @@ switch(pType)
         samp = wvfGet(wvfP,'psf spatial samples',unit,wList);
         psf = wvfGet(wvfP,'psf',wList);
         % If the string contains normalized
-        if ~isempty(strfind(pType,'normalized'))
+        if normalizedFlag
             psf = psf/max(psf(:));
         end
         
@@ -189,7 +213,7 @@ switch(pType)
         samp = wvfGet(wvfP,'psf angular samples',unit,wList);
         psf = wvfGet(wvfP,'psf',wList);
         % If the string contains normalized
-        if ~isempty(strfind(pType,'normalized'))
+        if normalizedFlag
             psf = psf/max(psf(:));
         end
         
@@ -221,7 +245,7 @@ switch(pType)
         
         % Get the data and if the string contains normalized ...
         psf = wvfGet(wvfP,'psf',wave);
-        if ~isempty(strfind(pType,'normalized'))
+        if normalizedFlag
             psf = psf/max(psf(:));
         end
         
@@ -257,20 +281,22 @@ switch(pType)
             [unit, wList, pRange] = wvfReadArg(wvfP,varargin);
         end
         
-        psfLine = wvfGet(wvfP,'1d psf',wList);
+        whichRow = wvfGet(wvfP,'middle row');
+        psfLine = wvfGet(wvfP,'1d psf',wList,whichRow);
         samp = wvfGet(wvfP,'psf angular samples',unit,wList);
         
         % Make a plot through of the returned PSF in the central region.
         index = find(abs(samp) < pRange);
         samp = samp(index);
         psfLine = psfLine(index);
-        if ~isempty(strfind(pType,'normalized'))
+        if normalizedFlag
             psfLine = psfLine/max(psfLine(:));
         end
         
         pData = plot(samp,psfLine,'r','LineWidth',4);
         str = sprintf('Angle (%s)',unit);
-        xlabel(str); ylabel('PSF slice');
+        xlabel(str); ylabel(sprintf('PSF (row=%d)',whichRow))
+        grid on
         
         % Store the data
         uData.x = samp; uData.y = psfLine;
@@ -283,14 +309,15 @@ switch(pType)
             [unit, wList, pRange] = wvfReadArg(wvfP,varargin);
         end
         
-        psfLine = wvfGet(wvfP,'1d psf',wList);
-        if ~isempty(strfind(pType,'normalized'))
+        whichRow = wvfGet(wvfP,'middle row');
+        psfLine = wvfGet(wvfP,'1d psf',wList,whichRow);
+        if normalizedFlag
             psfLine = psfLine/max(psfLine(:));
         end
         
         samp = wvfGet(wvfP,'psf spatial samples',unit, wList);
         
-        % Make a plot through of the returned PSF in the central region.
+        % Plot the returned PSF (a central line).
         if ~isempty(pRange)
             index = find(abs(samp) < pRange);
             samp = samp(index); psfLine = psfLine(index);
@@ -298,15 +325,16 @@ switch(pType)
         
         pData = plot(samp,psfLine,'r','LineWidth',4);
         s = sprintf('Position (%s)',unit);
-        xlabel(s); ylabel('PSF slice')
-        
+        xlabel(s); ylabel(sprintf('PSF (row=%d)',whichRow));
+        grid on
+
         % Store the data
         uData.x = samp; uData.y = psfLine;
         set(gcf,'userdata',uData);
-        
+
     case {'imagepupilamp','imagepupilampspace','2dpupilamplitudespace'}
-        %wvfPlot(wvfP,'2d pupil amplitude space','mm',pRange)
-        %plots the 2d pupil function amplitude for calculated pupil
+        % wvfPlot(wvfP,'2d pupil amplitude space','mm',pRange)
+        % plots the 2d pupil function amplitude for calculated pupil
         % Things to fix
         %  1. code in other plotting scales (distances or angles)
         
@@ -336,7 +364,7 @@ switch(pType)
     case {'imagepupilphase','2dpupilphasespace'}
         %plots the 2d pupil function PHASE for calculated pupil
         %
-        %wvfPlot(wvfP,'2d pupil phase space','mm',pRange)
+        % wvfPlot(wvfP,'2d pupil phase space','mm',pRange)
         %
         %some things to potentially fix:
         %1. modify colormap so that periodicity of phase is accounted for.
@@ -415,12 +443,12 @@ function [units, wList, pRange] = wvfReadArg(wvfP,theseArgs)
 
 % Units
 if ~isempty(theseArgs), units = theseArgs{1};
-else units = 'min';
+else, units = 'min';
 end
 
 % Wavelength list
 if length(theseArgs) > 1, wList = theseArgs{2};
-else wList = [];
+else, wList = [];
 end
 if isempty(wList)
     wList = wvfGet(wvfP,'wave');
@@ -436,7 +464,7 @@ if length(theseArgs) > 2 && isnumeric(theseArgs{3})
     % is numeric, then set it to the plot range.  Plot range is a 2-vector
     % of min,max values.
     pRange = theseArgs{3};
-else pRange = Inf;
+else, pRange = Inf;
 end
 
 end

@@ -81,6 +81,7 @@ if ieNotDefined('showSelection'), showSelection = 1; mccRectHandles = []; end
 if ieNotDefined('fullData'), fullData = 0; end
 if ieNotDefined('cornerPoints'), queryUser = true; else, queryUser = false;end
 
+%% Corner point 
 % obj is either a vcimage or a sensor image
 % In either case, we clear the mcc rect handles, put the object back, and
 % then read the corner points (if they weren't sent in).
@@ -124,7 +125,7 @@ end
 %
 
 %% Ask if the rects are OK. 
-if queryUser,
+if queryUser
     macbethDrawRects(obj);
     b = ieReadBoolean('Are these rects OK?');
 else
@@ -170,5 +171,5 @@ if showSelection, macbethDrawRects(obj); end
 
 ieInWindowMessage('',handles);
 
-return;
+end
 

@@ -1,33 +1,53 @@
 function wvf = wvfSet(wvf,parm,val,varargin)
 % Set wavefront parameters 
 %
-%     wvf = wvfSet(wvf,parm,val,varargin)
+% Syntax
+%   wvf = wvfSet(wvf,parm,val,varargin)
 %
-% Wavefront properties are stored as parameters. The wvf toolbox in ISET is
-% slimmed down from the full one in isetbio. Also the strong dependency on
-% human is removed.  If you are working with the human optics, use ISETBIO.
+% Description
+%   Wavefront properties are stored as parameters. The wvf toolbox in ISET
+%   is slimmed down from the full one in isetbio. Also the strong
+%   dependency on human is removed.  If you are working with the human
+%   optics, use ISETBIO.
 %
-% Parameter names can be written with spaces and upper/lower case.  The
-% strings are converted to lower case and all the spaces are removed by
-% this routine.
+%   Parameter names can be written with spaces and upper/lower case.  The
+%   strings are converted to lower case and all the spaces are removed by
+%   this routine.
 %
-% The basic parameters are pupil diameter, wavelengths, and Zernike
-% coefficients.  There are other parameters for spatial sampling (refXXX).
-% Not yet sure what all these are.
+%   The basic parameters are pupil diameter, wavelengths, and Zernike
+%   coefficients.  There are other parameters for spatial sampling.
 %
 % Examples:
 %   wvf = wvfSet(wvf,'name','test wvf');
 %   wvf = wvfSet(wvf,'zcoeffs',z);
+%   wvf = wvfSet(wvf,'z pupil diameter',z);   % Pupil size for the z coeff rep
+%   wvf = wvfSet(wvf,'pupil diameter',z);     % For this calculation
+%   
 %
-% Parameters:
+% Inputs:
+%   wvf   - A wavefront structure
+%   param - Parameter string
+%   val   - Value to set the parameter string
 %
-% Bookkeeping
+% Parameters
+%
+%  Bookkeeping
 %   'name' - Name of this object
 %   'type' - Type of this object, should always be 'wvf'
 %
-%  Calculation parameters
-%     'zcoeffs' - Zernike coefficients, OSA standard numbering/coords
-%     'pupil diameter'   - Pupil size for calculation (mm,*)
+%  Calculations
+%    'zcoeffs' - Zernike coefficients, OSA standard numbering/coords
+%         You can use an Zernike parameter name to specify a particular
+%         coefficient, such as 
+%
+%               wvfSet(wvf,'zcoeffs',2,'defocus');
+%               wvfSet(wvf,'zcoeffs',0.5,'oblique_astigmatism');
+%
+%    Use "help wvfOSAIndexToName" to see the names.  The OSA indices start
+%    with 0 while Matlab indexes from 1.  So if you send in the an OSA
+%    index of val, we return zcoeff(val+1)
+%
+%    'pupil diameter' - Pupil size for calculation (mm,*)
 %
 %  Spatial sampling parameters
 %    'sample interval domain' -
@@ -42,14 +62,15 @@ function wvf = wvfSet(wvf,parm,val,varargin)
 %    'ref psf sample interval' -
 %        Sampling interval for psf at measurment wavelength (arcminute/pixel)
 %
-% See also: wvfCreate, wvfGet, wvfComputePupilFunction, wvfComputePSF,
+% History
+%  Based on (DHB/BW) (c) Wavefront Toolbox Team 2011, 2012 Vastly reduced
+%  and simplified by Imageval for basic wavefront calculations.
 %
-% Based on (DHB/BW) (c) Wavefront Toolbox Team 2011, 2012
-% Vastly reduced and simplified by Imageval for basic wavefront
-% calculations.
+% See also: 
+%   wvfCreate, wvfGet, wvfComputePupilFunction, wvfComputePSF, psf2zcoeff
 
-% Arg checks and parse.
-%
+%% Arg checks and parse.
+
 % The switch on what we're setting is broken out into several pieces
 % below to allow use of cells, and so that autoindent does something
 % reasonable with our block comment style.
@@ -136,7 +157,8 @@ switch parm
         else
             % The arguments in jIndex are either numbers or strings.  If
             % strings, the strings are interpreted to be the jIndices in
-            % this routine.
+            % this routine.  Use help on this name to see the relationship
+            % between integers and names
             idx = wvfOSAIndexToVectorIndex(varargin{1});
             
             % Check that zcoeffs has enough slots, and if not expand it.
@@ -148,6 +170,12 @@ switch parm
             wvf.zcoeffs(idx) = val;
         end
 
+    case 'zpupildiameter'
+        % Pupil diameter for the zcoeff measurements (millimeters)
+        wvf.zpupilDiameter = val;
+    case 'zwavelength'
+        % Wavelength for the zcoeff measurements
+        wvf.zwls = val;
     % These parameters are used for the specific calculations with this,
     % interpolating the measured values that are stored above.
     case {'pupildiameter','pupilsize'}

@@ -159,7 +159,20 @@ switch lower(imageType)
             % Check whether the gTable has enough entries for this
             % image.
             if max(inImg(:)) > size(gTable,1)
-                error('Img exceeds gTable');
+                imgMax = max(inImg(:));
+                nbits = floor(log2(imgMax));
+                warning('Input data (%d bits) exceeds gTable (%d bits)',...
+                    nbits,log2(size(gTable,1)));
+                % Scale the image data to the range of the display
+                % gamma.  First scale to a max of 1, and then scale to
+                % the digital value range.
+                if nbits     >= 14, maxDisplay = 2^16;
+                elseif nbits >= 12, maxDisplay = 2^14;
+                elseif nbits >= 10, maxDisplay = 2^12;
+                elseif nbits >= 8,  maxDisplay = 20^10;
+                end
+                inImg = inImg/maxDisplay;
+                inImg = round(inImg*(size(gTable,1)-1));
             elseif max(inImg(:)) <= 1
                 % DAC values are [0, 2^nBits - 1]
                 inImg = round(inImg*(size(gTable,1)-1));

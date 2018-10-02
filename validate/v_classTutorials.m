@@ -15,6 +15,10 @@ else
     return;
 end
 
+%%
+hwISETCam
+disp('ISET Cam introduction');
+close all
 
 %%
 hwColorMatching

@@ -21,6 +21,7 @@
 %
 % Copyright Imageval Consulting, LLC 2015
 
+%%
 ieInit
 
 %% I compared this with the ISETBIO verion of wvfP
@@ -84,12 +85,12 @@ wvData = wvfPlot(wvfP,'otf','mm',thisWave,maxF);
 % length of fx is even or odd
 vcNewGraphWin;
 if isodd(length(wvData.fx)), wvMid = floor(length(wvData.fx)/2) + 1;
-else                 wvMid = length(wvData.fx)/2 + 1;
+else,                 wvMid = length(wvData.fx)/2 + 1;
 end
 plot(wvData.fx, wvData.otf(:,wvMid),'r-'); hold on;
 
 if isodd(length(oiData.fx)), oiMid = floor(length(oiData.fx)/2) + 1;
-else          oiMid = length(oiData.fx)/2 + 1;
+else,          oiMid = length(oiData.fx)/2 + 1;
 end
 plot(oiData.fx, oiData.otf(:,oiMid),'b-')
 legend({'wvf','oi'})
@@ -122,12 +123,12 @@ wvData = wvfPlot(wvfP,'2D otf','mm',thisWave);
 
 vcNewGraphWin;
 if isodd(length(wvData.fx)), wvMid = floor(length(wvData.fx)/2) + 1;
-else                 wvMid = length(wvData.fx)/2 + 1;
+else,                 wvMid = length(wvData.fx)/2 + 1;
 end
 plot(wvData.fx, wvData.otf(:,wvMid),'r-'); hold on;
 
 if isodd(length(oiData.fx)), oiMid = floor(length(oiData.fx)/2) + 1;
-else          oiMid = length(oiData.fx)/2 + 1;
+else,          oiMid = length(oiData.fx)/2 + 1;
 end
 plot(oiData.fx, oiData.otf(:,oiMid),'b-')
 legend({'wvf','oi'})
@@ -157,7 +158,7 @@ vcNewGraphWin; plot(est(:),oiData.otf(:),'rx')
 axis equal
 identityLine
 
-% Not quite perfect.
+% Nearly perfect.
 % vcNewGraphWin; hist(est(:) - oiData.otf(:),100)
 
 %% Test scene
@@ -169,25 +170,28 @@ ieAddObject(s);
 %% Calculate
 
 oi = oiCompute(oi,s);
+oi = oiSet(oi,'name',sprintf('oi f/# %.2f',oiGet(oi,'fnumber')));
 ieAddObject(oi); oiWindow;
 
 %% Standard way of creating a diffraction limited optics
 oiD = oiCreate;
 oiD = oiSet(oiD,'optics fnumber',wvfGet(wvfP,'fnumber'));
 oiD = oiCompute(oiD,s);
+oiD = oiSet(oiD,'name',sprintf('wvf f/# %.2f',wvfGet(wvfP,'fnumber')));
 ieAddObject(oiD); oiWindow;
 
 %% Finally, show off with setting a defocus on the wvf structure
 
-def = 2;
+def = 1;
 wvfD = wvfSet(wvfP,'zcoeff',def,'defocus');
+wvfD = wvfSet(wvfD,'z pupil diameter',8);
 wvfD = wvfComputePSF(wvfD);
 wvfPlot(wvfD,'2d psf space','um',thisWave,pRange);
-title(sprintf('Defocus %.1f mm',def));
+title(sprintf('Z defocus parameter %.1f',def));
 
 oiDD = wvf2oi(wvfD);
 oiDD = oiCompute(oiDD,s);
-oiDD = oiSet(oiDD,'name','wvf defocus');
+oiDD = oiSet(oiDD,'name',sprintf('Z defocus %.1f',def));
 ieAddObject(oiDD); oiWindow;
 
 %% 
