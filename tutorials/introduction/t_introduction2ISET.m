@@ -190,7 +190,7 @@ sensor = pixelCenterFillPD(sensor,fillfactor);
 wave = sensorGet(sensor,'wave');
 
 % Then we load the calibration data and attach them to the sensor structure
-fullFileName = fullfile(isetRootPath,'data','sensor','colorfilters','NikonD100.mat');
+fullFileName = fullfile(isetRootPath,'data','sensor','colorfilters','nikon','NikonD100.mat');
 [data,filterNames] = ieReadColorFilter(wave,fullFileName); 
 sensor = sensorSet(sensor,'filter spectra',data);
 sensor = sensorSet(sensor,'filter names',filterNames);
