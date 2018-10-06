@@ -56,14 +56,6 @@ for wl = 1:nWave
     inten = (amp .* conj(amp));
     psf{wl} = real(inten);
     
-    %{
-    % Before DHB changes in ISETBio.  Returns about the same, but DHB is
-    % pretty sure his form is correct.
-    amp = fft2(pupilfunc{wl});
-    inten = (amp .* conj(amp));   %intensity
-    psf{wl} = real(fftshift(inten));
-    %}
-    
     % Scale for unit area
     psf{wl} = psf{wl}/sum(sum(psf{wl}));
     % vcNewGraphWin; imagesc(psf{wl});

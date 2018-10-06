@@ -110,6 +110,10 @@ switch parm
     case 'type'
         val = wvf.type;
         
+    case {'umperdegree'}
+        % Conversion factor between um on retina & visual angle in degreees
+        val = wvf.umPerDegree;
+        
         %% Pupil plane properties
         %
         % The Zernike coefficients define the wavefront aberrations in the
@@ -533,18 +537,36 @@ switch parm
         % adj is the focal length, opposite is the distance on the imaging
         % surface, and the equation says the tangent of that ratio is 1
         % deg.
+        
+        %{
         flength = wvfGet(wvf,'focal length','m');
         mPerDeg = flength*tand(1);    % Meters per deg
         
         % Get the angular samples in degrees.  This is the wavelength
         % dependent step.
-        val = wvfGet(wvf,'psf angular samples','deg',wave);
         
         % Convert angle to meters
         val = val*mPerDeg;
         
         % Now convert to selected spatial scale
         val = val*ieUnitScaleFactor(unit);
+        %}
+        val = wvfGet(wvf,'psf angular samples','deg',wave);
+        switch unit
+            case {'nm', 'um', 'mm', 'cm', 'm', 'km', 'in', 'ft'}
+                mPerDeg = (wvfGet(wvf,'um per degree') * 10^-6);
+                val = val * mPerDeg;  % Sample in meters
+                val = val * ieUnitScaleFactor(unit);
+            case {'min'}
+                val = val*60;
+            case {'sec'}
+                val = val*60*60;
+            case {'deg'}
+                % Leave it alone
+            otherwise
+                error('Bad unit for samples space, %s', unit);
+        end
+        
         
     case {'psfspatialsample'}
         % This parameter matters for the OTF and PSF quite a bit.  It

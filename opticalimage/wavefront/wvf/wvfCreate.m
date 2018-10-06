@@ -46,6 +46,7 @@ wvf = wvfSet(wvf,'ref pupil plane size',16.2120);    % Original 16.212.  Not sur
 %% Calculation parameters
 wvf = wvfSet(wvf,'pupil size',3);   % Currently mm, but we should change to meters!
 wvf = wvfSet(wvf,'wavelengths',400:10:700);
+wvf = wvfSet(wvf,'um per degree',300);  % This is our estimate near fovea
 
 %% Zernike coefficient set up for diffraction limited case.
 

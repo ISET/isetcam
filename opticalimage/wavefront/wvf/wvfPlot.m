@@ -592,20 +592,17 @@ function [units, wList, pRange] = wvfReadArg(wvfP, theseArgs)
 %      pairs and stop this craziness.]
 
 % Units
-if ~isempty(theseArgs)
-    units = theseArgs{1};
-else
-    units = 'min';
+if ~isempty(theseArgs), units = theseArgs{1};
+else,                   units = 'min';
 end
 
 % Wavelength list
-if length(theseArgs) > 1
-    wList = theseArgs{2};
-else
-    wList = [];
+if length(theseArgs) > 1, wList = theseArgs{2};
+else,                     wList = [];
 end
+
 if isempty(wList)
-    wList = wvfGet(wvfP, 'calc wave');
+    wList = wvfGet(wvfP, 'wave');
     if length(wList) > 1
         warning('WVF:wList', 'Using 1st wave %d\n', wList(1));
         wList = wList(1);

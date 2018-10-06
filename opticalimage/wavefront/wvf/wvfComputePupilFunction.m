@@ -28,7 +28,7 @@ function wvf = wvfComputePupilFunction(wvf, showBar)
 %
 % Original code provided by Heidi Hofer.
 % (c) Wavefront Toolbox Team 2011, 2012
-% Heavily modified for use in ISET, 2015
+% Heavily modified for use in ISETCam, 2015
 %
 % Example:
 %    wvf = wvfCreate;
