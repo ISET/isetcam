@@ -112,7 +112,7 @@ switch parm
         
     case {'umperdegree'}
         % Conversion factor between um on retina & visual angle in degreees
-        val = wvf.umPerDegree;
+        val = wvf.umPerDegree;   % Applies to human case
         
         %% Pupil plane properties
         %
