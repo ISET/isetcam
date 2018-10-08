@@ -571,7 +571,14 @@ switch parm
     case {'psfspatialsample'}
         % This parameter matters for the OTF and PSF quite a bit.  It
         % is the number of um per degree on the retina.
-        umPerDeg = (330*10^-6);
+        %
+        % This is the way it is handled in ISETBio, though through a
+        % parameter set there.  We should probably do something compeltely
+        % different here!s
+        warning('psf spatial sample assumed to be 300 um per deg.');
+        warning('Not appropriate for ISETCam.  Tell BW to fix');
+        
+        umPerDeg = (300*10^-6);
         unit = 'mm'; wList = wvfGet(wvf,'measured wavelength');
         if ~isempty(varargin), unit = varargin{1}; end
         if length(varargin) > 1, wList = varargin{2}; end
