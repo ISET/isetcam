@@ -62,19 +62,19 @@ name = ieParamFormat(name);
 baseDir = fullfile(isetRootPath,'data','lights');
 switch lower(name)
     case {'tungsten'}
-        thisLight = fullfile(baseDir,'Tungsten');
+        thisLight = fullfile(baseDir,'Tungsten.mat');
         SPD = ieReadSpectra(thisLight,wave);
     case {'illuminantc'}
-        thisLight = fullfile(baseDir,'illuminantC');
+        thisLight = fullfile(baseDir,'illuminantC.mat');
         SPD = ieReadSpectra(thisLight,wave);
     case {'d50'}
-        thisLight = fullfile(baseDir,'D50');        
+        thisLight = fullfile(baseDir,'D50.mat');        
         SPD = ieReadSpectra(thisLight,wave);
     case {'fluorescent'}
-        thisLight = fullfile(baseDir,'Fluorescent');
+        thisLight = fullfile(baseDir,'Fluorescent.mat');
         SPD = ieReadSpectra(thisLight,wave);
     case {'d65'}
-        thisLight = fullfile(baseDir,'D65');
+        thisLight = fullfile(baseDir,'D65.mat');
         SPD = ieReadSpectra(thisLight,wave);
         
     case {'white','uniform','equalenergy'}
