@@ -45,6 +45,7 @@ else
     partialName = fname;
 end
 
+%{
 test = exist(partialName,'file');
 % If partialName is a directory or doesn't exist, we have a problem.
 if ~test || test == 7
@@ -55,6 +56,7 @@ if ~test || test == 7
         return;
     end
 end
+%}
 
 % Load in spectral data
 % We should probably trap this condition so that if it fails the user is sent into
