@@ -28,7 +28,7 @@ binWidth = sceneGet(scene,'binwidth');
 % Read the V-lambda curve based from the photopic luminosity data at the
 % relevant wavelengths for these data.  If these data extend beyond 780, we
 % still stop at that level because the luminosity is zero past there.
-fName = fullfile(isetRootPath,'data','human','luminosity.mat');
+fName = fullfile(isetRootPath,'data','human','luminosity');
 V = ieReadSpectra(fName,sWavelength);
 
 if showBar, h = waitbar(0,'Calculating luminance from photons'); end
