@@ -19,16 +19,16 @@ function pixel = pixelSet(pixel,param,val,varargin)
 %
 % Photodetector properties
 %      {'pdwidth'}              - photodetector width
-%      {'pdheight'}             -
-%      {'pdwidthandheight'}     - 
-%      {'layerthicknesses'}
-%      {'refractiveindices'} 
+%      {'pdheight'}             - photodetector height
+%      {'pdwidthandheight'}     - photodetector width and height
+%      {'layerthicknesses'}     - 
+%      {'refractiveindices'}    -
 %      {'pdxpos'}               - generally assumed in the center
 %      {'pdypos'}               -
 %      {'conversiongain'}       - Volts per electron                                       % Volts/e-
 %      {'voltageswing'}         - Assuming 0 volts min, this is max volt response          % Volts
-%      {'darkvoltage'}          - How the voltage grows in the dark from leakage           %V/sec/pixel
-%      {'readnoisevolts'}       - Gaussian noise (s.d.) due to reading                     %standard deviation in V
+%      {'dark voltage'}         - How the voltage grows in the dark from leakage           %V/sec/pixel
+%      {'read noise volts'}     - Gaussian noise (s.d.) due to reading                     %standard deviation in V
 %
 %  Spectral properties
 %      {'spectrum'}             - Structure
@@ -139,4 +139,4 @@ switch param
         error('Unknown param: %s',param);
 end  
 
-return;
+end

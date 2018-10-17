@@ -43,7 +43,7 @@ function sensor = sensorSet(sensor,param,val,varargin)
 %        {'infrared filter'}  - IR filter transmissivity
 %      {'spectrum'}           - wavelength spectrum structure
 %        {'wavelength'}       - wavelength samples
-%      {'colorfilterarray'}   - color filter array structure
+%      {'color filter array'} - color filter array structure
 %        {'cfa pattern'}          - color filter array (cfa) pattern
 %        {'cfa pattern and size'} - set cfa pattern and adjust sensor size if 
 %                                   there is a new block size
@@ -52,14 +52,14 @@ function sensor = sensorSet(sensor,param,val,varargin)
 %      {'data'}               - data structure
 %        {'volts'}            - voltage responses
 %        {'digitalValues'}    - digital values
-%      {'analogGain'}         - Transform volts
-%      {'analogOffset'}       - Transform volts
+%      {'analog gain'}        - Transform volts
+%      {'analog offset'}      - Transform volts
 %            Formula for offset and gain: (v + analogOffset)/analogGain)
 %
 %      {'roi'}                - region of interest information 
 %                               (roiLocs, Nx2, or rect 1x4 format)
 %      {'cds'}                - correlated double sampling flat
-%      {'quantizationmethod'} - method used for quantization 
+%      {'quantization method'}- method used for quantization 
 %                               ('analog', '10 bit', '8 bit', '12 bit')
 %      {'response type'}  - We allow a 'log' sensor type.  Default is
 %                          'linear'.  For the 'log' type, we convert
@@ -89,19 +89,19 @@ function sensor = sensorSet(sensor,param,val,varargin)
 % Optics
 %      {'vignetting'}
 %      {'microlens'}
-%      {'sensoretendue'}
-%      {'microlensoffset'}  - used with microlens window toolbox
+%      {'sensor etendue'}
+%      {'microlens offset'}  - used with microlens window toolbox
 %
 % Computational method
-%      {'sensorcomputemethod'}- special algorithm, say for sensor binning
+%      {'sensor compute method'}- special algorithm, say for sensor binning
 %      {'ngridsamples'}       - number of spatial grid samples within a pixel
 %
 % Check for consistency between GUI and data
 %      {'consistency'}
 %
 % Miscellaneous
-%     {'mccRectHandles'}  - Handles for the rectangle selections in an MCC
-%     {'mcccornerpoints'} - Corner points for the whole MCC chart
+%     {'mcc rect handles'}  - Handles for the rectangle selections in an MCC
+%     {'mcc corner points'} - Corner points for the whole MCC chart
 %     {'gamma'}           - Display gamma for the window
 %
 % Sensor motion
@@ -186,7 +186,7 @@ switch lower(param)
         sensor = sensorClearData(sensor);
 
         % In the case of human, resetting the size requires rebuilding the
-        % cone mosaic
+        % cone mosaic - Could be removed and use only ISETBio
         if strfind(sensorGet(sensor,'name'),'human')
             % disp('Resizing human sensor')
             if checkfields(sensor,'human','coneType')
@@ -486,7 +486,7 @@ switch lower(param)
             sensorImageWindow;
         end
         
-        % Human cone structure
+        % Human cone structure - Should be removed and used only in ISETBio
     case {'human'}
         % Structure containing information about human cone case
         % Only applies when the name field has the string 'human' in it.
@@ -523,7 +523,7 @@ switch lower(param)
         error('Unknown parameter.');
 end
 
-return
+end
 
 %---------------------
 function sensor = sensorSetQuantization(sensor,qMethod)
@@ -565,4 +565,4 @@ switch lower(qMethod)
         error('Unknown quantization method %s.',qMethod);
 end
 
-return;
+end
