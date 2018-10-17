@@ -1,9 +1,9 @@
 function sensor = sensorSet(sensor,param,val,varargin)
-%Set ISET sensor parameters.
+%Set ISETCam sensor parameters.
 %
 %   sensor = sensorSet(sensor,param,val,varargin);
 %
-% This routine sets the ISET sensor parameters.  See sensorGet for the
+% This routine sets the ISETCam sensor parameters.  See sensorGet for the
 % longer list of derived parameters.
 %
 % In addition to setting sensor parameters, it is possible to use this
@@ -20,10 +20,10 @@ function sensor = sensorSet(sensor,param,val,varargin)
 % Examples:
 %    sensor = sensorCreate; pixel = pixelCreate;
 %    sensor = sensorSet(sensor,'pixel',pixel);
-%    sensor = sensorSet(sensor,'autoExposure',1);   ('on' and 'off' work, too)
-%    sensor = sensorSet(sensor,'sensorComputeMethod',baseName);
-%    sensor = sensorSet(sensor,'quantizationMethod','10 bit');
-%    sensor = sensorSet(sensor,'analogGain',5);
+%    sensor = sensorSet(sensor,'auto exposure',1);   ('on' and 'off' work, too)
+%    sensor = sensorSet(sensor,'sensor compute method',baseName);
+%    sensor = sensorSet(sensor,'quantization method','10 bit');
+%    sensor = sensorSet(sensor,'analog gain',5);
 %    sensor = sensorSet(sensor,'pixel size same fill factor',1.2e-6);
 %    sensor = sensorSet(sensor,'pixel voltage swing',1.2);
 %    sensor = sensorSet(sensor,'response type','log'); % 'linear' or 'log'
@@ -78,9 +78,9 @@ function sensor = sensorSet(sensor,param,val,varargin)
 %      {'reuse noise'}        - Generate noise from current seed
 %      {'noise seed'}         - Saved noise seed for randn()
 %
-%      {'exposure Time'}       - exposure time in seconds
-%      {'exposure Plane'}      - selects exposure for display
-%      {'auto Exposure'}       - auto-exposure flag, 1 or 0
+%      {'exposure time'}       - exposure time in seconds
+%      {'exposure plane'}      - selects exposure for display
+%      {'auto exposure'}       - auto-exposure flag, 1 or 0
 %                                'on' and 'off' are also OK.
 %
 % Pixel
@@ -114,6 +114,9 @@ function sensor = sensorSet(sensor,param,val,varargin)
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
+
+%% Check parameters and special cases
+
 if ~exist('param','var') || isempty(param), error('Parameter field required.'); end
 
 % Empty is an allowed value.  So we don't use ieNotDefined.
@@ -121,7 +124,7 @@ if ~exist('val','var'),   error('Value field required.'); end
 
 [oType, param] = ieParameterOtype(param);
 
-% New handling of pixel setting via sensorSet call.
+%% Handle the case of a pixelSet via this sensorSet call.
 if isequal(oType,'pixel')
     if isempty(param)
         % oi = oiSet(oi,'optics',optics);
@@ -140,7 +143,8 @@ elseif isempty(param)
     error('oType %s. Empty param.\n',oType);
 end
 
-% The usual path is here
+%% The usual method of setting sensor parameters starts here
+
 param = ieParamFormat(param);  % Lower case and remove spaces
 switch lower(param)
 

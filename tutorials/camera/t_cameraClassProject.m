@@ -100,7 +100,7 @@ sensor = sensorM;
 sensor = sensorSet(sensor,'name','RGGB');
 
 % Load the calibration data and attach them to the sensor structure
-fullFileName = fullfile(isetRootPath,'data','sensor','colorfilters','NikonD100.mat');
+fullFileName = fullfile(isetRootPath,'data','sensor','colorfilters','nikon','NikonD100.mat');
 [data,filterNames] = ieReadColorFilter(wave,fullFileName); 
 sensor = sensorSet(sensor,'filterspectra',data);
 sensor = sensorSet(sensor,'filternames',filterNames);
@@ -155,7 +155,7 @@ ieAddObject(sensor); sensorWindow('scale',1);
 
 
 %% Data sheet
-
+%{
 % Sensor 1
 voltageSwing   = 1.0;  % Volts
 wellCapacity   = 5000;  % Electrons
@@ -176,8 +176,10 @@ rows = round(dyeSize(1)/pixelSize); rows = ceil(rows/2)*2;
 cols = round(dyeSize(2)/pixelSize); cols = ceil(cols/2)*2;
 rows
 cols
+%}
 
 %%
+%{
 % Sensor 2
 voltageSwing   = 1.0;  % Volts
 wellCapacity   = 7000;  % Electrons
@@ -198,9 +200,11 @@ rows = round(dyeSize(1)/pixelSize); rows = ceil(rows/2)*2;
 cols = round(dyeSize(2)/pixelSize); cols = ceil(cols/2)*2;
 rows
 cols
+%}
 
 %%
-% sensor 3
+%{
+ % sensor 3
 voltageSwing   = 1.0;  % Volts
 wellCapacity   = 9000;  % Electrons
 fillfactor     = 0.5;       % A fraction of the pixel area
@@ -220,9 +224,10 @@ rows = round(dyeSize(1)/pixelSize); rows = ceil(rows/2)*2;
 cols = round(dyeSize(2)/pixelSize); cols = ceil(cols/2)*2;
 rows
 cols
-
+%}
 %%
-% sensor 4
+%{
+ %sensor 4
 voltageSwing   = 1.0;  % Volts
 wellCapacity   = 12000;  % Electrons
 fillfactor     = 0.5;       % A fraction of the pixel area
@@ -242,5 +247,6 @@ rows = round(dyeSize(1)/pixelSize); rows = ceil(rows/2)*2;
 cols = round(dyeSize(2)/pixelSize); cols = ceil(cols/2)*2;
 rows
 cols
+%}
 
 
