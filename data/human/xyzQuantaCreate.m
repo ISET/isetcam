@@ -57,7 +57,7 @@ vcNewGraphWin; plot(wave,vlambdaQuanta); grid on
 
 % vcNewGraphWin; plot(wave,vlambdaQuanta./vlambda); grid on
 %% Save
-oname = fullfile(isetRootPath,'data','human','vlambdaQuanta.mat');
+oname = fullfile(isetRootPath,'data','human','vlambdaQuanta');
 ieSaveSpectralFile(wave,vlambdaQuanta,'vLambda in a format to calculate with quantal input',oname);
 
 % Copy to duplicate names

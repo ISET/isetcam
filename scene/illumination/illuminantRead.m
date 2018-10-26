@@ -48,7 +48,7 @@ if ieNotDefined('illP')
     if ieNotDefined('lightName')
         name = 'd65';
         warndlg('No illuminant name.  Assuming D65');
-    else name =  lightName;
+    else, name =  lightName;
     end
     luminance = 100;
     wave = 400:10:700;
@@ -59,18 +59,23 @@ else
 end
 
 name = ieParamFormat(name);
-
+baseDir = fullfile(isetRootPath,'data','lights');
 switch lower(name)
     case {'tungsten'}
-        SPD = ieReadSpectra('data/lights/Tungsten',wave);
+        thisLight = fullfile(baseDir,'Tungsten.mat');
+        SPD = ieReadSpectra(thisLight,wave);
     case {'illuminantc'}
-        SPD = ieReadSpectra('data/lights/illuminantC',wave);
+        thisLight = fullfile(baseDir,'illuminantC.mat');
+        SPD = ieReadSpectra(thisLight,wave);
     case {'d50'}
-        SPD = ieReadSpectra('data/lights/D50',wave);
+        thisLight = fullfile(baseDir,'D50.mat');        
+        SPD = ieReadSpectra(thisLight,wave);
     case {'fluorescent'}
-        SPD = ieReadSpectra('data/lights/Fluorescent',wave);
+        thisLight = fullfile(baseDir,'Fluorescent.mat');
+        SPD = ieReadSpectra(thisLight,wave);
     case {'d65'}
-        SPD = ieReadSpectra('data/lights/D65',wave);
+        thisLight = fullfile(baseDir,'D65.mat');
+        SPD = ieReadSpectra(thisLight,wave);
         
     case {'white','uniform','equalenergy'}
         SPD = ones(length(wave),1);
@@ -89,7 +94,7 @@ switch lower(name)
     case {'555nm','monochrome'}
         SPD = zeros(length(wave),1);
         % Set the wavelength closest to 555 to 1
-        [v,idx] = min(abs(wave - 555));
+        [~,idx] = min(abs(wave - 555));
         SPD(idx) = 1;
         
     otherwise   
@@ -106,4 +111,4 @@ spectralRadiance = (SPD / currentL) * luminance;
 %  ieLuminanceFromEnergy(spectralRadiance',wave)
 %  ieXYZFromEnergy(spectralRadiance',wave)
 
-return
+end

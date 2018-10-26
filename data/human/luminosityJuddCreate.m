@@ -3,7 +3,7 @@
 
 % Write Luminosity (V-lambda)
 [XYZ,wave] = ieReadSpectra('XYZ');
-oname = fullfile(isetRootPath,'data','human','luminosity.mat');
+oname = fullfile(isetRootPath,'data','human','luminosity');
 ieSaveSpectralFile(wave,XYZ(:,2),'Luminosity (Vlambda) in energy format',oname);
 
 % Plot the data to check.

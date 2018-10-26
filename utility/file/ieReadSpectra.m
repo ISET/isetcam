@@ -39,12 +39,11 @@ if ieNotDefined('fname'), fname = ''; end
 % Create a partialpath for this file name.  For this to work, we need to
 % keep all of the spectral data in a single directory, I am afraid.
 if isempty(fname)
-    partialName = vcSelectDataFile('');
-    if isempty(partialName), return; end
-else
-    partialName = fname;
+    fname = vcSelectDataFile('');
+    if isempty(fname), disp('User canceled'); return; end
 end
 
+%{
 test = exist(partialName,'file');
 % If partialName is a directory or doesn't exist, we have a problem.
 if ~test || test == 7
@@ -54,7 +53,8 @@ if ~test || test == 7
         warning('ieReadSpectra:File','Cannot find file %s. Returning empty data.',partialName);
         return;
     end
-end
+ends
+%}
 
 % Load in spectral data
 % We should probably trap this condition so that if it fails the user is sent into
@@ -63,12 +63,13 @@ end
 % foo = load(partialName)
 % if isfield(foo,'comment') ... approach in case the file is missing a
 % comment.  Then we should return an empty comment.
-tmp = load(partialName);
-if isfield(tmp,'data'), data = tmp.data; else data = []; end
-if isfield(tmp,'wavelength'), wavelength = tmp.wavelength; else wavelength = []; end
-if isfield(tmp,'comment'), comment = tmp.comment; else comment = []; end
+
+tmp = load(fname);
+if isfield(tmp,'data'), data = tmp.data; else, data = []; end
+if isfield(tmp,'wavelength'), wavelength = tmp.wavelength; else, wavelength = []; end
+if isfield(tmp,'comment'), comment = tmp.comment; else, comment = []; end
 if length(wavelength) ~= size(data,1)
-    error('Mis-match between wavelength and data variables in %s',partialName);
+    error('Mis-match between wavelength and data variables in %s',fname);
 end
 
 % If wave was not sent in, return the native resolution in the file.  No
@@ -78,4 +79,4 @@ if ieNotDefined('extrapVal'),  extrapVal = 0;  end
 
 res = interp1(wavelength(:), data, wave(:),'linear',extrapVal);
     
-return;
+end

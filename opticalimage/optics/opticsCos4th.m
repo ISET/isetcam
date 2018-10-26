@@ -20,16 +20,18 @@ function oi = opticsCos4th(oi)
 optics = oiGet(oi, 'optics');
 
 method = opticsGet(optics, 'cos4th function');
-if isempty(method)
+if isempty(method) || isequal(method,'cos4th')
     method = 'cos4th';
-    oi = oiSet(oi, 'optics cos4th function', optics);
+    oi = oiSet(oi, 'optics cos4th function', method);
+    optics = cos4th(optics,oi);
+else
+    % Calculating the  scaling factors using the user-supplied method.
+    % We might check whether it exists already and only do this if
+    % the cos4th slot is empty.
+    optics = feval(method, optics, oi);
+    % figure; mesh(optics.cos4th.value)
 end
 
-% Calculating the cos4th scaling factors
-% We might check whether it exists already and only do this if
-% the cos4th slot is empty.
-optics = feval(method, optics, oi);
-% figure; mesh(optics.cos4th.value)
 oi = oiSet(oi, 'optics', optics);
 
 % Applying cos4th scaling.
