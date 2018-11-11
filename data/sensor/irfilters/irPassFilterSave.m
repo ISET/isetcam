@@ -19,7 +19,7 @@ irPassData = conv(irPassData,g,'same');
 irPassFilter.wavelength = wave;
 irPassFilter.comment = 'Passes IR light starting around 720nm';
 irPassFilter.data = irPassData;
-irPassFilter.filterNames = {'IR Pass'};
+irPassFilter.filterNames = {'k_IRPass'};
 fname = fullfile(isetRootPath,'data','sensor','irfilters','irPassFilter');
 ieSaveColorFilter(irPassFilter, fname);
 
