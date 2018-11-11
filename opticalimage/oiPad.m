@@ -19,8 +19,8 @@ function oi = oiPad(oi,padSize,sDist,direction)
 % Optional input:
 %   direction: {'both','pre','post'} - Default is to pad 'both'
 %   sDist:    Distance to the scene (meters).  If not passed in, the
-%             current scene distance is used. The sDist is needed to adjust
-%             the angular field of view after the padding
+%             current scene distance is used. The sDist value is needed to
+%             adjust the angular field of view after the padding
 %
 % You can set the argument direction = 'both','pre', or 'post' to pad both
 % or only on one side. By default, the zero-padding takes place on all

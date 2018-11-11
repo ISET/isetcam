@@ -1,4 +1,4 @@
-%% Convert Yasum-Nayar data to ISETCAM scenes
+%% Convert Yasuma-Nayar data to ISETCAM scenes
 %
 % Downloaded the raw data from here
 %

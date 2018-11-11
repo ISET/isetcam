@@ -1,7 +1,10 @@
 function oi = oiCompute(scene,oi,opticsModel)
 % Gateway routine for optical image irradiance calculation
 %
+% Syntax
 %    oi = oiCompute(scene,oi,[opticsModel])
+%
+% Brief description:
 %
 % The spectral irradiance image, on the sensor plane just before sensor
 % capture, is the optical image.  This spectral irradiance distribution
@@ -9,7 +12,17 @@ function oi = oiCompute(scene,oi,opticsModel)
 % structure, oi.
 %
 % The returned spectral radiance is padded compared to the scene to allow
-% for light spreading from the edge of the scene.
+% for light spreading from the edge of the scene.  The amount of padding is
+% specified in oiApplyOTF, line 80, as
+%
+%   imSize   = oiGet(oi,'size'); 
+%   padSize  = round(imSize/8); padSize(3) = 0;
+%   sDist = sceneGet(scene,'distance'); 
+%   oi = oiPad(oi,padSize,sDist);
+%
+% To remove the padded region, you can use oiCrop.
+%
+% Optical models:
 %
 % Three types of optical calculations are implemented .  These are selected
 % from the interface in the oiWindow, or they can be set via 
@@ -50,15 +63,17 @@ function oi = oiCompute(scene,oi,opticsModel)
 % program was derived from ISET, but it is not as extensive and does not
 % include the full set of models.
 %
-% * The third model is a full ray trace model that allows shift-varying
-% wavelength-dependent point spread functions.  This model includes
-% geometric distortion information, relative illumination, and field-height
-% and wavelength dependent point spread functions (or OTFS). These are
-% usually imported from a full ray trace program, such as Zemax.  They can
-% also be obtained by the companion CISET program. To set this method use
-% opticsSet(optics,'model','rayTrace') 
+% * Historically, we also used a third model is a full ray trace model that
+% allows shift-varying wavelength-dependent point spread functions.  This
+% model includes geometric distortion information, relative illumination,
+% and field-height and wavelength dependent point spread functions (or
+% OTFS). These are usually imported from a full ray trace program, such as
+% Zemax.  They can also be obtained by the companion CISET program. To set
+% this method use opticsSet(optics,'model','rayTrace')
 %
-% See also: opticsDLCompute, opticsSICompute, opticsRayTrace
+% BUT IN RECENT YEARS, we are using iset3d for ray tracing calculations.
+% That method is greatly preferred, and we imagine that rayTrace mode here
+% will be deprecated.
 %
 % Use ieSessionSet('waitbar',0) to turn off waitbar displays
 % Use ieSessionSet('waitbar',1) to turn on waitbar displays
@@ -73,6 +88,9 @@ function oi = oiCompute(scene,oi,opticsModel)
 %   oi = oiCompute(scene,oi);
 %
 % Copyright ImagEval Consultants, LLC, 2005
+%
+% See also: opticsDLCompute, opticsSICompute, opticsRayTrace
+%
 
 if ieNotDefined('scene'), error('Scene required.'); end
 if ieNotDefined('oi'), error('Opticalimage required.'); end
