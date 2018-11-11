@@ -8,6 +8,8 @@ function camera = cameraCreate(cType,varargin)
 %                If not available, use default
 %   L3         - L3 type camera based on sensors in the L3 structure
 %   Ideal      - Diffraction limited, noise free sensor with XYZ
+%   monochrome - A default monochrome sensor
+%   
 %
 % Normally we create a camera from the currently selected oi, sensor, and
 % ip.  If there are none selected, we use the defaults.
@@ -20,6 +22,8 @@ function camera = cameraCreate(cType,varargin)
 %   c = cameraCreate('current');
 %   c = cameraCreate('ideal')
 %   c = cameraCreate('L3');
+%   c = cameraCreate('monochrome');
+%
 %
 % See also: v_camera
 %
@@ -48,7 +52,7 @@ switch cType
         camera.name = 'current';
         camera.type = 'camera';
         
-        oi = vcGetObject('oi');
+        oi = ieGetObject('oi');
         if isempty(oi)
             fprintf('Creating new oi (default)\n');
             oi = oiCreate;
@@ -57,7 +61,7 @@ switch cType
         end
         camera = cameraSet(camera,'oi',oi);
         
-        sensor = vcGetObject('sensor');
+        sensor = ieGetObject('sensor');
         if isempty(sensor)
             fprintf('Creating new sensor (default)\n');
             sensor = sensorCreate;
@@ -66,7 +70,7 @@ switch cType
         end
         camera = cameraSet(camera,'sensor',sensor);
         
-        ip = vcGetObject('ip');
+        ip = ieGetObject('ip');
         if isempty(ip)
             fprintf('Creating new ip (default)\n');
             ip = ipCreate;

@@ -45,9 +45,9 @@ function fullFileName = ieSaveColorFilter(inData,fullFileName)
 %     filterStruct.filterNames{3} = 'b_Nikon';
 %     ieSaveColorFilter(filterStruct,'deleteMeColorFilter');
 %
-% See also: 
-%
 % Copyright ImagEval Consultants, LLC, 2003.
+%
+% See also: 
 
 %%
 if ieNotDefined('fullFileName'), fullFileName = vcSelectDataFile('sensor','w','mat'); end
@@ -94,6 +94,8 @@ elseif isfield(inData,'data') && isfield(inData,'wavelength') && isfield(inData,
             eval(saveStr);
         end
     end
+else
+    error('Input data missing fields.  No file written.');
 end
 
-return;
+end
