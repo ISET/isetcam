@@ -1,8 +1,10 @@
 function [scene,parms] = sceneCreate(sceneName,varargin)
 % Create a scene structure.
 %
+% Syntax:
 %  [scene,parms] = sceneCreate(sceneName,varargin)
 %
+% Brief Description:
 % A scene describes the photons emitted from each visible point in the
 % scene. Generally, we model planar objects, such as a screen display (but
 % see below).

@@ -35,6 +35,7 @@ function outSensor = sensorCompute(sensor,oi,showBar)
 %     0      |   0         0            +                +        +
 %     1      |   +         0            +                +        +
 %     2      |   +         +            +                +        +
+%     3      |   +         0            0                0        0
 %
 % Further control can be achieved by setting parameters
 %   To remove analog-gain/offset, set the parameters to 1,0
@@ -216,11 +217,12 @@ for ss=1:length(masterSensor)   % Number of sensors
     
     % Skip this block if noiseFlag == -1.  That means no photon
     % noise, no other noises, no analog gain/offset, no clipping, no
-    % quantization 
+    % quantization.
     if noiseFlag > -1
         
-        % if noiseFlag = 0, no photon or other noise, but we will do analog
-        % gain/offset, clipping, and quantization
+        % See the comments at the top for the definition of the
+        % noiseFlag. Remember: the noiseFlag also governs clipping and
+        % quantization.
         if noiseFlag > 0
             % if noiseFlag = 1, add photon noise only
             % if noiseFlag = 2, add photon noise and other noises
