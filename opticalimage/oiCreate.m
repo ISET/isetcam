@@ -52,6 +52,7 @@ if ieNotDefined('optics'),  optics = opticsCreate('default'); end
 
 oi.type = 'opticalimage';
 oi.name = vcNewObjectName('opticalimage');
+oi.metadata = [];  % Store metadata typically for machine-learning apps
 
 % In case there is an error, print out the valid types for the user.
 validTypes = {'default','diffraction limited','shift invariant','ray trace',...
