@@ -172,23 +172,17 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
+%% Initial definition
 if ieNotDefined('sceneName'), sceneName = 'default'; end
 parms = [];  % Returned in some cases, not many.
 
 % Identify the object type
 scene.type = 'scene';
-% scene = sceneSet(scene,'bit depth',32);   % Single precision
 
-% We used to allow setting the bit depth to 16 or 64.  No more.
-% if length(varargin) > 1 && ischar(varargin{end-1})
-%     str = ieParamFormat(varargin{end-1});
-%     if isequal(str,'bitdepth')
-%         scene = sceneSet(scene,'bit depth',varargin{end}); 
-%     end
-% end
 sceneName = ieParamFormat(sceneName);
+scene.metadata = [];   % Metadata for machine learning apps
 
-% Handle the Macbeth parameter cases here
+%% Handle the Macbeth parameter cases here
 if strncmp(sceneName,'macbeth',5) || ...
         strcmp(sceneName,'default') || ...
     strcmp(sceneName,'empty')
@@ -198,6 +192,7 @@ if strncmp(sceneName,'macbeth',5) || ...
     if length(varargin) > 2, surfaceFile = varargin{3}; end % Reflectances
 end
 
+%%
 switch sceneName
     case 'default'
         % scene = sceneCreate('default',patchSize,wave);
