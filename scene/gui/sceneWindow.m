@@ -9,6 +9,9 @@ function varargout = sceneWindow(varargin)
 %      H = SCENEWINDOW returns the handle to a new SCENEWINDOW or the handle to
 %      the existing singleton*.
 %
+%      H = SCENEWINDOW(scene) adds the scene to the database and then opens
+%      the window.  Equivalent to ieAddObject(scene); sceneWindow;
+%
 %      SCENEWINDOW('CALLBACK',hObject,eventData,handles,...) calls the local
 %      function named CALLBACK in SCENEWINDOW.M with the given input arguments.
 %
@@ -43,6 +46,14 @@ end
 
 % --- Executes just before sceneWindow is made visible.
 function sceneWindow_OpeningFcn(hObject, eventdata, handles, varargin)
+
+% Permits calling as sceneWindow(scene);
+if ~isempty(varargin)
+    scene = varargin{1};
+    if strcmp(scene.type,'scene')
+        ieAddObject(scene);
+    end
+end
 
 sceneOpen(hObject,eventdata,handles) 
 sceneRefresh(hObject, eventdata, handles);

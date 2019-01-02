@@ -11,6 +11,9 @@ function varargout = oiWindow(varargin)
 %  H = OIWINDOW returns the handle to a new OIWINDOW or the handle to
 %  the existing singleton*.
 %
+%  H = OIWINDOW(oi) adds the oi to the database and then opens the
+%  oiWindow. Equivalent to ieAddObject(oi); oiWindow;
+%
 %  OIWINDOW('CALLBACK',hObject,eventData,handles,...) calls the local
 %  function named CALLBACK in OIWINDOW.M with the given input arguments.
 %
@@ -45,6 +48,14 @@ end
 
 % --- Executes just before oiWindow is made visible.
 function oiWindow_OpeningFcn(hObject, eventdata, handles, varargin)
+
+% Permits calling as oiWindow(oi);
+if ~isempty(varargin)
+    oi = varargin{1};
+    if strcmp(oi.type,'opticalimage')
+        ieAddObject(oi);
+    end
+end
 
 oiOpen(hObject,eventdata,handles);
 

@@ -380,9 +380,22 @@ switch lower(param)
         
         % Noise management
     case {'noiseflag'}
-        % 0 means both shot noise and electronic
-        % 1 means only shot noise
-        % 2 means no noise at all
+        % NOISE FLAG
+        %  The noise flag is an important way to control the details of the
+        %  calculation.  The default value of the noiseFlag is 2.  In this case,
+        %  which is standard operating, photon noise, read/reset, FPN, analog
+        %  gain/offset, clipping, quantization, are all included.  Different
+        %  selections are made by different values of the noiseFlag.
+        %
+        %   sensor = sensorSet(sensor,'noise flag',noiseFlag);
+        %
+        % The conditions are:
+        %
+        %  noiseFlag | photon other-noises analog-gain/offset clipping quantization
+        %    -1      |   0         0            0                0        0
+        %     0      |   0         0            +                +        +
+        %     1      |   +         0            +                +        +
+        %     2      |   +         +            +                +        +
         sensor.noiseFlag = val;
     case {'reusenoise'}
         % Decide whether we reuse (1) or recalculate (0) the noise.  If we
