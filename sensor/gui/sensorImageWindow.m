@@ -12,6 +12,10 @@ function varargout = sensorImageWindow(varargin)
 %  H = SENSORIMAGEWINDOW returns the handle to a new SENSORIMAGEWINDOW or the handle to
 %  the existing singleton*.
 %
+%  H = SENSORIMAGEWINDOW(sensor) adds sensor to the ISET database and
+%  returns the handle to a new SENSORIMAGEWINDOW or the handle to the
+%  existing singleton*.
+%
 %  SENSORIMAGEWINDOW('CALLBACK',hObject,eventData,handles,...) calls the local
 %  function named CALLBACK in SENSORIMAGEWINDOW.M with the given input arguments.
 %
@@ -50,6 +54,13 @@ end
 
 % --- Executes just before sensorImageWindow is made visible.
 function sensorImageWindow_OpeningFcn(hObject, eventdata, handles, varargin)
+
+if isempty(varargin), return;
+elseif isstruct(varargin{1}) && ...
+        isfield(varargin{1},'type') && ...
+        (strcmp(varargin{1}.type,'sensor'))
+    ieAddObject(varargin{1});
+end
 
 sensorOpen(hObject,eventdata,handles)
 sensorRefresh(hObject, eventdata, handles); 
