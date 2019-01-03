@@ -1,13 +1,14 @@
 function [scene, rcSize] = sceneRadianceChart(wave,radiance,varargin)
 % Create a radiance chart for testing
 %
-%   [scene, sampleList, reflectances, rcSize] = ...
-%      sceneRadianceChart(wave,radiance,...)
+%   [scene, rcSize] = sceneRadianceChart(wave,radiance,...)
 %
 % Descriptiopn:
-%   A radiance chart is created.  Each patch in the chart has a
-%   radiance drawn from the radiance input. The parameters needed to
-%   recreate the chart are attached to the scene structure.
+%   Create a chart of small square patches based on radiance data.
+%   Each patch in the chart has a radiance defined by the radiance
+%   input. The first N patches are the radiance samples.  Additional
+%   patches are created by randomly sampling the input. The parameters
+%   needed to recreate the chart are attached to the scene structure.
 %
 % Required inputs
 %  wave      - Wavelength samples
@@ -28,17 +29,21 @@ function [scene, rcSize] = sceneRadianceChart(wave,radiance,varargin)
 %   scene:         Radiance chart as a scene
 %
 % The radiance samples are placed as ordered in the columns.
-%  
-%Example:
-%  s = sceneCreate('radiance chart',wave,radiance, ...);
-%  sceneGet(s,'chart parameters');
-%  ieAddObject(s); sceneWindow;
 %
 % Copyright ImagEval Consultants, LLC, 2018.
 %
 % See also: 
 %   macbethChartCreate, sceneReflectanceChart
 %
+
+%Example:
+%{
+% Make up wave and radiance 
+  wave = 400:10:700;  radiance = rand(length(wave),50)*10^16;
+  scene = sceneRadianceChart(wave, radiance,'patch size',20);
+  sceneWindow(scene);
+  sceneGet(scene,'chart parameters')
+%}
 
 %% Parse input parameters for patch size, gray filling and sampling
 p = inputParser;
@@ -95,7 +100,7 @@ if grayFill
     % teeth.  This calculation gets the luminance
     L = ieLuminanceFromPhotons(ones(nWave,1),wave);
     
-    s = logspace(-0.3,1,r);  % A little darker to 10x lighter
+    s = linspace(0.2,3,r);  % A little darker to 10x lighter
     % Set the base at the mean luminance; and then scale lower and higher
     grayColumn = ones(nWave,r)*(meanLuminance/L)*diag(s);
     
