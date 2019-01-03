@@ -70,7 +70,7 @@ if iscellstr(sFiles)
     if iscell(sSamples)
         nSamples = 0;
         for ii=1:nFiles, nSamples = length(sSamples{ii}) + nSamples; end
-    else nSamples = sum(sSamples);
+    else, nSamples = sum(sSamples);
     end
 else
     reflectance = sFiles;
