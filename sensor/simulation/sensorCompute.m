@@ -30,29 +30,36 @@ function outSensor = sensorCompute(sensor,oi,showBar)
 %
 % The conditions are:
 %
-%  noiseFlag | photon other-noises analog-gain/offset clipping quantization
-%    -1      |   0         0            0                0        0
-%     0      |   0         0            +                +        +
-%     1      |   +         0            +                +        +
-%     2      |   +         +            +                +        +
-%     3      |   +         0            0                0        0
+%  noiseFlag | photon other-noises gain/offset clipping quantize cds
+%    -2      |   +         0            0         0        0      + 
+%    -1      |   0         0            0         0        0      +
+%     0      |   0         0            +         +        +      +
+%     1      |   +         0            +         +        +      +
+%     2      |   +         +            +         +        +      +
+%     3      |   +         0            0         0        0      +
 %
-% Further control can be achieved by setting parameters
-%   To remove analog-gain/offset, set the parameters to 1,0
-%   To remove quantization, set 'quantization method' to 'analog'
-%   These are both the default conditions. 
+%  Several of the factors are effectively removed by setting the
+%  sensor parameters.  Specifically,
+%
+%   * analog-gain/offset - set the parameters to 1,0 (default)
+%   * quantization       - set 'quantization method' to 'analog' (default)
+%   * CDS                - set the cds flag to false (default)
+%   * Clipping           - You can avoid clipping high with a large
+%        voltage swing.  But other noise factors might drive the
+%        voltage below 0, and we would clip. 
+%        If you just want photon noise, us noiseFlag = -2
 %
 % COMPUTATIONAL OUTLINE:
 %
 %   This is an overview of the algorithms.  The specific algorithms are
 %   described in the routines themselves.
 %
-%   1. Handle exposure: autoExposure (or not).
+%   1. Set exposure duration: autoExposure (or not), exposure model
 %   2. Compute the mean image: sensorComputeImage()
 %   3. Etendue calculation
 %   4. Noise, analog gain, clipping, quantization
 %   5. Correlated double-sampling
-%   6. Handle macbeth management
+%   6. Handle Macbeth ROI management
 %
 %  The value of showBar determines whether the waitbar is displayed to
 %  indicate progress during the computation.
@@ -67,7 +74,7 @@ function outSensor = sensorCompute(sensor,oi,showBar)
 %   scene = sceneCreate; scene = sceneSet(scene,'hfov',4);
 %   oi = oiCreate; sensor = sensorCreate;
 %   oi = oiCompute(oi,scene); sensor = sensorCompute(sensor,oi);
-%   vcAddAndSelectObject(sensor); sensorWindow('scale',1);
+%   sensorWindow(sensor);
 %
 % Copyright ImagEval Consultants, LLC, 2011
 
@@ -78,14 +85,12 @@ if ~exist('showBar','var') || isempty(showBar), showBar = ieSessionGet('waitbar'
 
 wBar = [];
 
-% We allow sensor arrays.  This was necessary as a temporary edit to keep
-% the code similar for a while.  Later, I will use thisSensor and simplify
-% the logic.
-masterSensor = sensor;
+% We allow sensor arrays as input, though this is rarely used.  
+sensorArray = sensor;
 clear sensor;
 
-for ss=1:length(masterSensor)   % Number of sensors
-    sensor = masterSensor(ss);
+for ss=1:length(sensorArray)   % Number of sensors
+    sensor = sensorArray(ss);
     %% Standard compute path
     if showBar, wBar = waitbar(0,sprintf('Sensor %d image:  ',ss)); end
     
@@ -196,61 +201,59 @@ for ss=1:length(masterSensor)   % Number of sensors
         delete(wBar); return;
     end
     
-    %% We have the mean image computed.  We add noise, clip and quantize
+    %% We have the mean image computed.  Now add noise, clip and quantize
 
     % See sensorComputeNoise to run just this noise section when you have a
     % mean image and just want many noisy, clipped, quantized examples.
     noiseFlag = sensorGet(sensor,'noise flag');
     
     % Follow noise flag rules
-    % noiseFlag = -1 - no noise, no analog-clipping-quant
-    % noiseFlag = 0  - no photon noise or other noise, but analog-clipping-quant are OK
-    % noiseFlag = 1  - photon noise plus analog-clipping-quant
-    % noiseFlag = 2  - dark current + photon + read-reset + FPN + colFPN
+    % noiseFlag = -2 - yes photon noise, no analog-clipping-quant
+    % noiseFlag = -1 - no noise,  no analog-clipping-quant
+    % noiseFlag =  0 - no noise, yes analog-clipping-quant
+    % noiseFlag =  1 - photon noise plus analog-clipping-quant
+    % noiseFlag =  2 - dark current + photon + read-reset + FPN + colFPN
     %
-    % In noiseFLag 0,1,2, 
+    % In noiseFlag 0,1,2, 
     %  the analog gain/offset can be eliminated by setting gain to 1 and
     %  offset to 0 
     % 
     %  Quantization can be turned off by setting the quantization method
     %  to 'analog'
     
-    % Skip this block if noiseFlag == -1.  That means no photon
-    % noise, no other noises, no analog gain/offset, no clipping, no
-    % quantization.
-    if noiseFlag > -1
-        
-        % See the comments at the top for the definition of the
-        % noiseFlag. Remember: the noiseFlag also governs clipping and
-        % quantization.
+    % Apply this block if noiseFlag >= 0.
+    %
+    if noiseFlag >= 0
+        % See the comments in the header for the definition of the
+        % noiseFlag. N.B. The noiseFlag  governs clipping and
+        % quantization, not just noise.
         if noiseFlag > 0
-            % if noiseFlag = 1, add photon noise only
+            % if noiseFlag = 1, add photon noise, but not other noises
             % if noiseFlag = 2, add photon noise and other noises
             sensor = sensorAddNoise(sensor);
         end
         
         %% Analog gain simulation
         
-        % We check for an analog gain and offset.  For many years there was
-        % no analog gain parameter.  This was added in January, 2008 when
-        % simulating some real devices. The manufacturers were clamping at
-        % zero and using the analog gain like wild men, rather than
-        % exposure duration. We set it in script for now, and we will add
-        % the ability to set it in the GUI before long.  If these
-        % parameters are not set, we assume they are returned as 1 (gain)
-        % and 0 (offset).
-        % Note that we added a print out for the 'log' sensor type.s
+        % We check for an analog gain and offset.  For many years
+        % there was no analog gain parameter. This was added in
+        % January, 2008 when simulating some real devices. The
+        % manufacturers were clamping at zero and using the analog
+        % gain like wild men, rather than exposure duration. If these
+        % parameters are not set, we they default to 1 (gain) and 0
+        % (offset).
         ag = sensorGet(sensor,'analogGain');
         ao = sensorGet(sensor,'analogOffset');
         if ag ~=1 || ao ~= 0
             if strcmp(responseType,'log')
+                % We added a warning for the 'log' sensor type. Offset
+                % and gain for a log sensor is a strange thing to do.
                 warning('log sensor with gain/Offset');
             end
             volts = sensorGet(sensor,'volts');
             volts = (volts + ao)/ag;
             sensor = sensorSet(sensor,'volts',volts);
         end
-        
         
         %% Clipping
         % We clip the voltage because everything must fall between 0 and
@@ -283,21 +286,35 @@ for ss=1:length(masterSensor)   % Number of sensors
             otherwise
                 sensor = sensorSet(sensor,'digitalvalues',analog2digital(sensor,'linear'));
         end
+    elseif noiseFlag == -2
+        % Only add photon noise.  No clipping or CDS or ADC or other
+        % noise methods.  Unfortunately, the sensorAddNoise parameter
+        % doesn't match the noiseFlag parameter closely.  So, we set
+        % it and then put it back.
+        sensor = sensorSet(sensor,'noiseFlag',1);  % Only Poisson noise
+        sensor = sensorAddNoise(sensor);
+        sensor = sensorSet(sensor,'noiseFlag',noiseFlag);  % Put it back
+    elseif noiseFlag == -1
+
+    else
+        error('Bad noiseFlag %d\n',noiseFlag);
     end
     
-    %% Correlated double sampling
     if  sensorGet(sensor,'cds')
-        % Read a zero integration time image that we will subtract from the
+        disp('CDS on')
+        % Read a zero integration time image that we subtract from the
         % simulated image.  This removes much of the effect of dsnu.
         integrationTime = sensorGet(sensor,'integration time');
         sensor = sensorSet(sensor,'integration time',0);
         
-        if showBar, waitbar(0.6,wBar,'Sensor image: CDS'); end
+        if showBar, waitbar(0.6,wBar,'Sensor image: CDS');  end
         cdsVolts = sensorComputeImage(oi,sensor);    %THIS WILL BREAK!!!!
         sensor = sensorSet(sensor,'integration time',integrationTime);
         sensor = sensorSet(sensor,'volts',ieClip(sensor.data.volts - cdsVolts,0,[]));
     end
+        
     
+    %% Correlated double sampling
     if isempty(sensorGet(sensor,'volts'))
         % Something went wrong.  Clean up the mess and return control to the main
         % processes.
@@ -310,9 +327,10 @@ for ss=1:length(masterSensor)   % Number of sensors
     
     if showBar, close(wBar); end
     
-    % The sensor structure has new fields at this point, so reassigning to
-    % the input sensor array doesn't work.  Explain, please.
-    outSensor(ss) = sensor;
+    % The sensor structure has fields that are not present in the
+    % input sensor. So we have a new outSensor.  There will be as many
+    % outSensor members as there are slots in the sensorArray.
+    outSensor(ss) = sensor; %#ok<AGROW>
     
 end
 

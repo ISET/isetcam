@@ -5,6 +5,7 @@ function ret = checkToolbox(toolboxName)
 %
 % Example:
 %   ret = checkToolbox('Parallel Computing Toolbox');
+%         checkToolbox('Statistics and Machine Learning Toolbox')
 %
 % (c) ISETBIO TEAM, 2014
 

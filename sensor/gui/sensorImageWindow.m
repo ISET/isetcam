@@ -55,11 +55,12 @@ end
 % --- Executes just before sensorImageWindow is made visible.
 function sensorImageWindow_OpeningFcn(hObject, eventdata, handles, varargin)
 
-if isempty(varargin), return;
+if isempty(varargin) % Do nothing
 elseif isstruct(varargin{1}) && ...
         isfield(varargin{1},'type') && ...
         (strcmp(varargin{1}.type,'sensor'))
     ieAddObject(varargin{1});
+    % varargin = varargin(2:end);
 end
 
 sensorOpen(hObject,eventdata,handles)

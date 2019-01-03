@@ -34,7 +34,8 @@ sensor = sensorSet(sensor,'exposure duration',T1);
 % Compute
 sensor = sensorCompute(sensor,oi);
 sensor = sensorSet(sensor,'name','Bluish');
-ieAddObject(sensor); sensorWindow('scale',1);
+ieAddObject(sensor); 
+sensorWindow('scale',1);
 
 %% Now for a long red exposure
 

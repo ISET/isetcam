@@ -8,6 +8,7 @@ function h = sensorWindow(varargin)
 %  a new SENSORIMAGEWINDOW or the handle to the existing singleton.
 %
 % Example:
+%   sensorWindow(sensor,'scale',1);
 %   sensorWindow('scale',0);
 %   sensorWindow('scale',1);
 %   sensorWindow('visible','off');
@@ -19,11 +20,6 @@ function h = sensorWindow(varargin)
 % See also
 %
 
-
-% Show the window and get the handle
-sensorImageWindow;
-h = ieSessionGet('sensor window handle');
-
 if isempty(varargin), return;
 elseif isstruct(varargin{1}) && ...
         isfield(varargin{1},'type') && ...
@@ -32,9 +28,11 @@ elseif isstruct(varargin{1}) && ...
     varargin = varargin(2:end);
 end
 
-% Start the window and then parse the arguments
-% sensorImageWindow;
+% Start the window 
+sensorImageWindow;  % I though this returned the handles, but no.  The fig.
+h = ieSessionGet('sensor window handle');
 
+% Parse the arguments
 for ii = 1:2:length(varargin)
     p = ieParamFormat(varargin{ii});
     val = varargin{ii+1};
