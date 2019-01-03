@@ -4,6 +4,9 @@
 %
 %
 
+%%
+ieInit;
+
 %% Make a uniform scene, pretty big
 scene = sceneCreate('uniform');  % Mean luminance is 100 cd/m2
 scene = sceneSet(scene,'fov',10);
@@ -18,7 +21,7 @@ sensor = sensorSetSizeToFOV(sensor,8);
 % Set the noise flag to Poisson noise only
 sensor = sensorSet(sensor,'noise flag',-2);
 
-sensor = sensorSet(sensor,'exp time',0.025/3000);  % Very short exposure
+sensor = sensorSet(sensor,'exp time',0.025*(3*1e-4));  % Very short exposure
 sensor = sensorCompute(sensor,oi);
 % sensorWindow(sensor,'scale',true);
 
@@ -30,11 +33,12 @@ lambda = mean(e(:));
 %%
 vcNewGraphWin;
 nSamps = length(e(:));
-hist(e(:),100);
+eHist = histogram(e(:),'Normalization','probability');
+hold on
 val = iePoisson(lambda,nSamps);
-X = [e(:), val(:)];
-thisHist = histogram(X,'Normalization','probability');
-
+pHist = histogram(val(:),'Normalization','probability');
+pHist.NumBins = eHist.NumBins*2;
+hold off
 
 %% Poisson formula for lambda
 samples  = 0:round(5*lambda);
