@@ -44,9 +44,9 @@ rgb2lms ./ (rgb2xyz*xyz2lms)
 
 % Calculate it
 w = 400:10:700;
-xyz = vcReadSpectra('XYZ.mat',w);
+xyz = ieReadSpectra('XYZ.mat',w);
 % plot(w,xyz)
-stockman = vcReadSpectra('stockman',w);
+stockman = ieReadSpectra('stockman',w);
 % plot(w,stockman)
 
 % XYZ = Stockman * sto2xyz
@@ -65,6 +65,6 @@ xyz2lms ./ xyz2sto
 lms2xyz ./ sto2xyz
 
 
-%%
+%% END
 
 

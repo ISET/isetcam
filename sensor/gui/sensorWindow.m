@@ -20,7 +20,7 @@ function h = sensorWindow(varargin)
 % See also
 %
 
-if isempty(varargin), return;
+if isempty(varargin) % Do nothing
 elseif isstruct(varargin{1}) && ...
         isfield(varargin{1},'type') && ...
         (strcmp(varargin{1}.type,'sensor'))

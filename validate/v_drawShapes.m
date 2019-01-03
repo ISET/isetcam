@@ -8,6 +8,7 @@
 %
 % Copyright Imageval Consulting, LLC 2015
 
+%%
 ieInit
 
 %% Scene
@@ -23,7 +24,10 @@ pause(1); delete(h);
 
 %% Sensor
 sensor = sensorCreate;
-sensor = sensorCompute(sensor,oi);ieAddObject(sensor); sensorWindow;
+sensor = sensorCompute(sensor,oi);
+ieAddObject(sensor); 
+sensorWindow;
+sensorImageWindow;
 h = ieDrawShape(sensor,'rectangle',[10 10 50 50]);
 pause(1); delete(h);
 

@@ -59,8 +59,8 @@ if isempty(varargin) % Do nothing
 elseif isstruct(varargin{1}) && ...
         isfield(varargin{1},'type') && ...
         (strcmp(varargin{1}.type,'sensor'))
+    % We have a sensor as input.  Put it in the database.
     ieAddObject(varargin{1});
-    % varargin = varargin(2:end);
 end
 
 sensorOpen(hObject,eventdata,handles)
