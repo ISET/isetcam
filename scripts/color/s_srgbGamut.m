@@ -54,7 +54,7 @@ grayFlag = 1;   % Add a gray strip, why not
 %      sceneReflectanceChart(sFiles,sSamples,pSize,[wave],[grayFlag=1],[sampling])
 [scene, ~, reflectances] = sceneReflectanceChart(sFiles,sSamples,pSize,wave, grayFlag);
 scene = sceneSet(scene,'name','D65 Natural');
-scene = sceneAdjustIlluminant(scene,'D65');
+scene = sceneAdjustIlluminant(scene,'D65.mat');
 ieAddObject(scene); sceneWindow;
 
 %%  Calculate out the XYZ
@@ -115,7 +115,7 @@ grayFlag = 1;   % Add a gray strip, why not
 %      sceneReflectanceChart(sFiles,sSamples,pSize,[wave],[grayFlag=1],[sampling])
 [scene, sampleList, reflectances] = sceneReflectanceChart(sFiles,sSamples,pSize,wave, grayFlag);
 scene = sceneSet(scene,'name','D65 Synthetic');
-scene = sceneAdjustIlluminant(scene,'D65');
+scene = sceneAdjustIlluminant(scene,'D65.mat');
 ieAddObject(scene); sceneWindow;
 
 %%  Synthetic surfaces under D65 on chromaticity plot

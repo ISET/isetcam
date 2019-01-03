@@ -40,7 +40,7 @@ ieAddObject(scene); sceneWindow;
 %% Adjust illuminant color
 
 % I prefer this rendering.  Why not enjoy life?
-scene = sceneAdjustIlluminant(scene,'D65');
+scene = sceneAdjustIlluminant(scene,'D65.mat');
 ieAddObject(scene); sceneWindow;
 
 %% Standard shift invariant optics

@@ -3,6 +3,12 @@
 % Understand the basic functions and parameters
 %
 % JEF/BW Vistasoft, 2018
+%
+% Requires the isetFluorescece toolbox
+
+
+%%
+ieInit
 
 %% Scene and fluorophore properties
 
