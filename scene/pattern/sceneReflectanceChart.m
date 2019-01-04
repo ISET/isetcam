@@ -37,12 +37,14 @@ function [scene, sSamples, reflectance, rcSize] = sceneReflectanceChart(sFiles,s
 %  sceneGet(s,'chart parameters');
 %  ieAddObject(s); sceneWindow;
 %
-% See also: macbethChartCreate
-%
 % Copyright ImagEval Consultants, LLC, 2010.
+%
+% See also: 
+%   macbethChartCreate, sceneRadianceChart
+
 
 if ieNotDefined('sFiles'), error('Surface files required'); 
-else                       nFiles = length(sFiles);
+else,                      nFiles = length(sFiles);
 end
 
 if ieNotDefined('pSize'),    pSize = 32; end
@@ -52,7 +54,7 @@ if ieNotDefined('sampling'), sampling = 'r'; end %With replacement by default
 % Default scene
 scene = sceneCreate;
 if ieNotDefined('wave'), wave = sceneGet(scene,'wave');
-else                     scene = sceneSet(scene,'wave',wave);
+else,                    scene = sceneSet(scene,'wave',wave);
 end
 nWave = length(wave);
 defaultLuminance = 100;  % cd/m2
@@ -149,7 +151,7 @@ chartP.rowcol   = rcSize;
 chartP.XYZ      = XYZ;
 scene = sceneSet(scene,'chart parameters',chartP);
 
-return
+end
 
 
 

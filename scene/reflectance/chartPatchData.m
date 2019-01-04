@@ -1,15 +1,33 @@
 function mRGB = chartPatchData(obj,mLocs,delta,fullData,dataType)
-%Return a cell array with the linear RGB values from a vcimage or sensor 
+%Return a cell array with the linear RGB values from an ip or sensor 
 %
+% Syntax:
 %    mRGB = chartPatchData(obj,mLocs,delta)
 %
-% Returns the linear RGB values from the sensor or processor window
+% Description:
+%  Returns the linear RGB values from the sensor or processor window
 %
-% Example:
+% Inputs
+%   obj   - An ISET sensor or processor (ip) data structure
+%   mLocs - Middle locations of the patches
+%   delta - Center-to-center spacing of the patches
+%
+% Optional parameters
+%   fullData - Logical. Return all the data in a patch (default is
+%              false, which is mean value only).
+%   dataType - Default is 'result' for ip object and 'volts' for
+%              sensor.  You can specify a different data type. Options
+%              are in vcGetROIData. 
+% Outputs
+%   mRGB - a cell array of linear RGB values from the patches
+%
+% Copyright ImagEval Consultants, LLC, 2011.
 %
 % See Also:  
 %
-% Copyright ImagEval Consultants, LLC, 2011.
+
+% Example:
+%
 
 if ieNotDefined('obj'),   error('vcimage or sensor required'); end
 if ieNotDefined('mLocs'), error('Mid locations required'); end

@@ -1,5 +1,5 @@
 function rectHandles = chartDrawRects(obj,mLocs,delta,onoff)
-% Draw the rectangles given the cornerPoints in the structure
+% Draw the MCC rectangles given the cornerPoints in the structure
 %
 %   rectHandles = chartDrawRects(obj,mLocs,delta,onoff)
 %
