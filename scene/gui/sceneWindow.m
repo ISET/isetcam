@@ -48,11 +48,10 @@ end
 function sceneWindow_OpeningFcn(hObject, eventdata, handles, varargin)
 
 % Permits calling as sceneWindow(scene);
-if ~isempty(varargin)
-    scene = varargin{1};
-    if strcmp(scene.type,'scene')
-        ieAddObject(scene);
-    end
+if ~isempty(varargin) ...
+        && isstruct(varargin{1}) ...
+        && strcmp(varargin{1}.type,'scene')
+    ieAddObject(varargin{1});
 end
 
 sceneOpen(hObject,eventdata,handles) 

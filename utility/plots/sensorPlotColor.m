@@ -28,8 +28,8 @@ spectralQE = sensorGet(sa,'spectralQE');
 % We need a default, target display to do the demosaic'ing
 demosaicedImage = Demosaic(ipCreate,sa); 
 
-figNum =  vcSelectFigure('GRAPHWIN');
-figNum =  plotSetUpWindow(figNum);
+figNum =  vcNewGraphWin;
+plotSetUpWindow(figNum);
 
 switch lower(type)
     case 'rg'
@@ -74,4 +74,4 @@ uData.d2 = d2;
 uData.rgb = rgb;
 set(gcf,'userdata',uData);
 
-return;
+end

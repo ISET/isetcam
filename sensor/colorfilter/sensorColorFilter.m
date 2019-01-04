@@ -1,28 +1,30 @@
-function [fData, wave] = sensorColorFilter(cfType,wave, varargin)
+function [fData, wave] = sensorColorFilter(cfType, wave, varargin)
 % Create color filters for use in a sensor
 %
 % Syntax:
-%     [fData, wave] = sensorColorFilter(cfType, wave, varargin)
+%   [fData, wave] = sensorColorFilter(cfType, wave, varargin)
 %
 % Description:
-%  Gateway routine for creating sensor color filter curves.
+%  Gateway routine for creating sensor color filter curves.  Useful
+%  for making an array of Gaussian filters, or an IR cut filter, or an
+%  UV cut filter.
 %
 % Required Inputs:
 %  cfType:  One of:  Gaussian, irFilter, uvFilter
 %  wave:    Wavelength samples
 %  
 % Optional inputs
-%  if Gaussian:   wave, cPos,  widths
-%  if uv filter:  wave, uvCut, smooth
-%  if ir filter:  wave, irCut, smooth
+%  if Gaussian:   [cPos,  widths] - Center positions and widths in nm
+%  if uv filter:  [uvCut, smooth] - Cut wavelength and smooth SD (nm)
+%  if ir filter:  [irCut, smooth] - Cut wavelength and smooth SD (nm)
 %
 % Outputs:
-%   fData - Matrix of filter data in columns.  nWave x nFilters
+%   fData - Filter data in columns. [nWave x nFilters]
 %
 % Copyright ImagEval Consultants, LLC, 2010
 %
 % See also: 
-%  
+%  oeSensorCreate
 
 %  
 % Examples:
@@ -30,12 +32,12 @@ function [fData, wave] = sensorColorFilter(cfType,wave, varargin)
 % Gaussian type:
  cfType = 'gaussian'; 
  [fData,wave] = sensorColorFilter(cfType);
- plot(wave,fData)
+ vcNewGraphWin; plot(wave,fData)
 %}
 %{
  wave = [400:10:700]; cPos = [500,600]; width = [40,40];
  fData = sensorColorFilter(cfType,wave, cPos, width);
- plot(wave,fData);
+ vcNewGraphWin; plot(wave,fData);
 %}
 %{
   cfType = 'gaussian'; wave = [350:850];
@@ -49,7 +51,7 @@ function [fData, wave] = sensorColorFilter(cfType,wave, varargin)
   vcNewGraphWin; plot(wave,f);
 %}
 %{
-  cfType = 'uv Filter'; wave = 350:800; uvCut = 440; smooth = 7;
+  cfType = 'uv Filter'; wave = 350:800; uvCut = 440; smooth = 20;
   f = sensorColorFilter(cfType,wave,uvCut,smooth);
   vcNewGraphWin; plot(wave,f);
 %}
@@ -105,17 +107,6 @@ switch lower(cfType)
 end
 
 if smooth > 0
-    g = fspecial('gaussian',[5*smooth,1],smooth);
-    fData = conv(fData,g,'same');
-    
-    switch (cfType)
-        case 'gaussian'
-            % No more smoothing.  User should change width
-            disp('No gaussian smoothing');
-        case 'uvfilter'
-            fData((end-(2*smooth)):end) = 1;
-        case 'irfilter'
-            fData(1:(2*smooth)) = 1;
-    end
-    
+    % Image processing toobox.
+    fData = imgaussfilt(fData,smooth);
 end

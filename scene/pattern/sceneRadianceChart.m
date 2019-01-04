@@ -22,8 +22,11 @@ function [scene, rcSize] = sceneRadianceChart(wave,radiance,varargin)
 %               the last one being a white patch and the others
 %               sampling different gray level reflectances (Default is
 %               true)
-%  sampling:    With replacement ('r'), or without replacement
-%  (anything else) from the radiances (replacement by default)
+%  sampling:    With replacement ('r'), or without (anything else)
+%               from the radiances (replacement by default).  We do
+%               not yet have a plan for the not with replacement
+%               sampling.
+%  illuminant:  Illuminant in photons
 %
 % Returns
 %   scene:         Radiance chart as a scene
@@ -56,6 +59,7 @@ p.addParameter('patchsize',10,@isscalar);
 p.addParameter('sampling','r',@ischar);
 p.addParameter('grayfill',true,@islogical);
 p.addParameter('rowcol',[],@isvector)
+p.addParameter('illuminant',[],@isvector)
 
 p.parse(wave,radiance,varargin{:});
 
@@ -63,6 +67,7 @@ pSize    = p.Results.patchsize;
 grayFill = p.Results.grayfill;
 sampling = p.Results.sampling;
 rowcol   = p.Results.rowcol;
+illuminantPhotons = p.Results.illuminant;  % In photons
 
 %% Default scene
 scene = sceneCreate('empty');
@@ -107,12 +112,20 @@ if grayFill
     % Add the columns
     radiance = [radiance, grayColumn];
     c = c + 1;
+    
+    % Illuminant
+    if isempty(illuminantPhotons)
+        illuminantPhotons = grayColumn(:,end);
+    end
+else
+    if isempty(illuminantPhotons)
+        % Five times the mean radiance.
+        illuminantPhotons = mean(radiance,2)*5;
+    end
+    
 end
+
 rcSize = [r,c];
-
-
-% Illuminant
-illuminantPhotons = grayColumn(:,end); 
 
 % Build up the size of the image regions - still reflectances
 % Turn the radiance into the RGB format.
@@ -121,8 +134,15 @@ sData = imageIncreaseImageRGBSize(sData,pSize);
 
 % Add data to scene, using equal energy illuminant
 scene = sceneSet(scene,'photons',sData);
-scene = sceneSet(scene,'illuminantPhotons',illuminantPhotons);
-scene = sceneSet(scene,'illuminantComment','Equal energy');
+ill = illuminantCreate;
+ill = illuminantSet(ill,'name','user-defined');
+ill = illuminantSet(ill,'wave',wave);
+ill = illuminantSet(ill,'photons',illuminantPhotons);
+ill = illuminantSet(ill,'comment','scene radiance chart');
+scene = sceneSet(scene,'illuminant',ill);
+
+% scene = sceneSet(scene,'illuminantPhotons',illuminantPhotons);
+% scene = sceneSet(scene,'illuminantComment','User set');
 scene = sceneSet(scene,'name','Radiance Chart (EE)');
 % sceneWindow(scene);
 

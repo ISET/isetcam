@@ -1470,7 +1470,7 @@ return;
 % --------------------------------------------------------------------
 function menuAnColorRB_Callback(hObject, eventdata, handles)
 % Analyze | Color | RB Analysis
-sensorPlotColor(vcGetObject('ISA'),'rb');
+sensorPlotColor(ieGetObject('ISA'),'rb');
 return;
 
 % --------------------------------------------------------------------

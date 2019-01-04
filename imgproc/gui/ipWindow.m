@@ -52,6 +52,14 @@ end
 
 % --- Executes just before ipWindow is made visible.
 function ipWindow_OpeningFcn(hObject, eventdata, handles, varargin)
+
+% Permits calling as ipWindow(ip);
+if ~isempty(varargin) && ...
+        isstruct(varargin{1}) && ...
+        strcmp(varargin{1}.type,'vcimage')
+    ieAddObject(varargin{1});
+end
+
 ipOpen(hObject,eventdata,handles);
 ipRefresh(hObject, eventdata, handles); 
 
