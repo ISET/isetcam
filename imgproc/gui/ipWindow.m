@@ -9,6 +9,10 @@ function varargout = ipWindow(varargin)
 %      H = IPWINDOW returns the handle to a new IPWINDOW or the handle to
 %      the existing singleton*.
 %
+%      H = IPWINDOW(ip) calls ieAddObject(ip and then returns the
+%      handle to a new IPWINDOW or the handle to the existing
+%      singleton*.
+%
 %      IPWINDOW('CALLBACK',hObject,eventData,handles,...) calls the local
 %      function named CALLBACK in IPWINDOW.M with the given input arguments.
 %
@@ -100,7 +104,7 @@ ipRefresh(hObject,eventdata,handles);
 return;
 
 % --- Outputs from this function are returned to the command line.
-function varargout = ipWindow_OutputFcn(hObject, eventdata, handles)
+function varargout = ipWindow_OutputFcn(hObject, eventdata, handles) %#ok<*INUSL>
 
 % Get default command line output from handles structure
 varargout{1} = handles.output;
@@ -569,16 +573,6 @@ vci = ieGetObject('VCIMAGE');
 plotDisplaySPD(vci);
 return;
 
-
-% --------------------------------------------------------------------
-% function plotColorProcessingMatrices_Callback(hObject, eventdata, handles)
-% % plot | Current matrix
-% % Print out the current transform matrix
-% vci = ieGetObject('vci');
-% T = ipGet(vci,'prodT');
-% disp(T)
-% return
-
 % --------------------------------------------------------------------
 function plotColorProcessingMatrices_Callback(hObject, eventdata, handles)
 % Plot | Color Processing matrices
@@ -805,8 +799,8 @@ else
     % Plot the response contrast on the screen for each of the three display
     % primaries.  These two plotting/imaging calls should be in a separate
     % routine and they should be improved.
-    figure(vcSelectFigure('GRAPHWIN'));
-    clf;
+    vcNewGraphWin;
+    
     rContrast = rContrast';
     plot(freq,rContrast(:,1),'ro-',freq,rContrast(:,2),'go-',freq,rContrast(:,3),'bo-')
     str = sprintf('System MTF (sensor %s)',fNames);
@@ -814,6 +808,7 @@ else
     xlabel('Spatial frequency (cpd)'); ylabel('Relative modulation');
     grid on
     line([0,freq(end)],[0,0],'color',[0,0,0]);
+    
     uData.freq = freq;
     uData.rContrast = rContrast;
     uData.fNames = fNames;
@@ -881,8 +876,8 @@ return;
 % --------------------------------------------------------------------
 function menuAnChrom_Callback(hObject, eventdata, handles)
 % Analyze | Color and luminance | ROI | Chromaticity (xy)
-vci = ieGetObject('vcimage');
-plotDisplayColor(vci,'chromaticity');
+ip = ieGetObject('vcimage');
+plotDisplayColor(ip,'chromaticity');
 return;
 
 % --------------------------------------------------------------------
@@ -899,14 +894,14 @@ return;
 
 % --------------------------------------------------------------------
 function menuAnColorLAB_Callback(hObject, eventdata, handles)
-vci = ieGetObject('VCIMAGE');
-plotDisplayColor(vci,'cielab');
+ip = ieGetObject('VCIMAGE');
+plotDisplayColor(ip,'cielab');
 return;
 
 % --------------------------------------------------------------------
 function menuAnLUV_Callback(hObject, eventdata, handles)
-vci = ieGetObject('VCIMAGE');
-plotDisplayColor(vci,'CIELUV');
+ip = ieGetObject('VCIMAGE');
+plotDisplayColor(ip,'CIELUV');
 return;
 
 
@@ -920,8 +915,8 @@ return;
 
 % --------------------------------------------------------------------
 function menuAnLum_Callback(hObject, eventdata, handles)
-vci = ieGetObject('vcimage');
-plotDisplayColor(vci,'luminance');
+ip = ieGetObject('vcimage');
+plotDisplayColor(ip,'luminance');
 return;
 
 % --------------------------------------------------------------------
@@ -943,7 +938,8 @@ return;
 % --------------------------------------------------------------------
 function menuRGBHist_Callback(hObject, eventdata, handles)
 % Analyze | Color and luminance | ROI | RGB Histogram
-plotDisplayColor([],'RGB');
+ip = ieGetObject('ip');
+plotDisplayColor(ip,'RGB');
 return;
 
 % --------------------------------------------------------------------

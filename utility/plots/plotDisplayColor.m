@@ -1,14 +1,21 @@
 function plotDisplayColor(ip,dataType)
-%Gateway routine for plotting image processor window color analysis
+%Old gate routine for plotting image processor window color analysis
 %
+% Syntax:
 %  plotDisplayColor(vci,dataType)
 %
-% The user selects a region of a display image.  This routine plots the
-% distribution of color values of various types.  
+% Description:
+%   We are planning to move to ipPlot().  For now, however, this
+%   routine is still called frequently.  It should be renamed
+%   displayPlotColor, by the way.
+%
+%  The user selects a region of a display image.  This routine plots
+%  the distribution of color values of various types.
 %
 %  Current types of data plots
 %
-%       {'rgb'}               - Digital rgb values
+%       {'rgb histogram'}     - Digital rgb values histograms
+%       {'rgb 3d'}            - 3D graph of RGB values
 %       {'chromaticity'}      - Display chromaticities
 %       {'luminance'}         - Display luminance
 %       {'cielab'}            - CIELAB values w.r.t the image white point
@@ -36,39 +43,46 @@ function plotDisplayColor(ip,dataType)
 
 %% Variables
 if ieNotDefined('vci');      ip = vcGetObject('vcimage'); end
-if ieNotDefined('dataType'), dataType = 'rgb'; end
+if ieNotDefined('dataType'), dataType = 'rgbhistogram'; end
 
 %% Select the RGB data from the ROI
 handles = ieSessionGet('vcimagehandle');
+
+% Get the data
 ieInWindowMessage('Select image region of interest.',handles,[]);
 roiLocs = vcROISelect(ip);
 RGB     = vcGetROIData(ip,roiLocs,'result');
 ieInWindowMessage('',handles,[]);
 
-%%
-% maxRGB = ipGet(vci,'rgbmax');
+%% Plot the data
 
-% Always open up a new window?
 figNum =  vcNewGraphWin;
 
 switch lower(dataType)
-    case {'rgb'}
+    case {'rgb','rgbhistogram'}
         colorlist = {'r','g','b'};
         for ii=1:3
             subplot(1,3,ii); 
             nBins = round(max(20,size(RGB,1)/25));
-            hist(RGB(:,ii),nBins);
+            thisH = histogram(RGB(:,ii),nBins);
             set(gca,'xlim',[0 1.1]); 
-            c = get(gca,'Children');
-            set(c,'EdgeColor',colorlist{ii});
             grid on;
+            thisH.FaceColor = colorlist{ii};
+            thisH.EdgeColor = colorlist{ii};
         end
         subplot(1,3,1); ylabel('Count');
         subplot(1,3,2); xlabel('Pixel value');
         title('RGB histograms');
-        set(gcf,'Color',[.8 .8 .8]);
+        % set(gcf,'Color',[.8 .8 .8]);
         udata.RGB = RGB;
 
+    case {'rgb3d'}
+        plot3(RGB(:,1),RGB(:,2),RGB(:,3),'.');
+        xlabel('R'); ylabel('G'); zlabel('B');
+        grid on;
+        title('RGB (result)');
+        udata.RGB = RGB;
+        
     case {'xy','chromaticity'}
         dataXYZ = imageRGB2XYZ(ip,RGB);
         xy = chromaticity(dataXYZ);
