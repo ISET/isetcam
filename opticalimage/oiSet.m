@@ -315,6 +315,14 @@ switch parm
         % oiSet(oi,'depth map',dMap);
         oi.depthMap = val;
         
+        % Chart parameters for MCC and other cases
+    case {'chartparameters'}
+        % Reflectance chart parameters are stored here.
+        oi.chartP = val;
+    case {'chartcorners'}
+        oi.chartP.cornerPoints = val;
+        
+        
     otherwise
         error('Unknown oiSet parameter: %s',parm);
 end

@@ -4,18 +4,19 @@ function macbethChartObject = macbethChartCreate(patchSize,patchList,spectrum,su
 % macbethChartObject = ...
 %  macbethChartCreate([patchSize=12],[patchList=1:24],[spectrum={400:10:700}],[surfaceFile]);
 %
-% Create a structure that contains the information needed for a scene of
-% the Macbeth chart. The chart is coded as if you are looking at it with
-% four rows and six columns.  The white surface is on the left, and the
-% black surface is on the right.
+% Description:
+%  Create a structure that contains the information needed for a scene of
+%  the Macbeth chart. The chart is coded as if you are looking at it with
+%  four rows and six columns.  The white surface is on the left, and the
+%  black surface is on the right.
 % 
-% The numbering of the surfaces starts at the upper left and counts down
-% the first column.  The white patch, therefore, is number 4.  The
-% achromatic (gray) series is 4:4:24.
+%  The numbering of the surfaces starts at the upper left and counts down
+%  the first column.  The white patch, therefore, is number 4.  The
+%  achromatic (gray) series is 4:4:24.
 %   
-% The surface reflectance function information are contained in the slot
-% macbethChartObject.data. The data file contains spectral information
-% between 380 to 1068 nm.
+%  The surface reflectance function information are contained in the slot
+%  macbethChartObject.data. The data file contains spectral information
+%  between 380 to 1068 nm.
 %
 % Inputs:
 %  patchSize - Default is 16 pixels

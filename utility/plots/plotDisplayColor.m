@@ -62,18 +62,18 @@ switch lower(dataType)
     case {'rgb','rgbhistogram'}
         colorlist = {'r','g','b'};
         for ii=1:3
+            % The individual panels
             subplot(1,3,ii); 
             nBins = round(max(20,size(RGB,1)/25));
             thisH = histogram(RGB(:,ii),nBins);
-            set(gca,'xlim',[0 1.1]); 
-            grid on;
+            set(gca,'xlim',[0 1.1]); grid on;
             thisH.FaceColor = colorlist{ii};
             thisH.EdgeColor = colorlist{ii};
         end
+        % Label the edge cases
         subplot(1,3,1); ylabel('Count');
         subplot(1,3,2); xlabel('Pixel value');
         title('RGB histograms');
-        % set(gcf,'Color',[.8 .8 .8]);
         udata.RGB = RGB;
 
     case {'rgb3d'}

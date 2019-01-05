@@ -1,5 +1,5 @@
 function [corners,rect] = chartCorners(sensor)
-% User selects the corner points of a chart
+% Deprecated: User selects the corner points of a chart
 %
 %  [corners,rect] = chartCorners(sensor)
 %

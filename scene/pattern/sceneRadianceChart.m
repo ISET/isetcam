@@ -152,6 +152,25 @@ chartP.patchSize = pSize;
 chartP.grayFill  = grayFill;
 chartP.sampling  = sampling;
 chartP.rowcol    = rcSize;
+y = rcSize(1)*pSize;
+x = rcSize(2)*pSize;
+chartP.cornerPoints = [1,y; x, y; x, 1; 1,1];
+
+% Consider this:  
+% The corner points are (x,y), that is col,row, instead of nearly
+% everything else which is (row,col).  This has something to do with
+% addressing images, historically, but it is mostly annoying.  Always
+% check!
+% if ~grayFill
+%     y = rcSize(1)*pSize;
+%     x = rcSize(2)*pSize;
+% else
+%     % We added an extra column of gray patches. So, remove the extra column
+%     % here.
+%     y = (rcSize(1)-1)*pSize;
+%     x = rcSize(2)*pSize;
+% end
+
 scene = sceneSet(scene,'chart parameters',chartP);
 
 end

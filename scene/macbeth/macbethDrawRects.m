@@ -1,25 +1,36 @@
 function obj = macbethDrawRects(obj,onoff)
 % Draw the MCC rectangles given the cornerPoints in the structure
 %
+% Syntax:
 %   obj = macbethDrawRects(obj,[onoff])
 %
-% Outline the center of each MCC patch used for analysis. This routine
-% works for vcimages (ip) and sensors.  It might work for simple Matlab
-% figures, too.
+% Description:
+%  Outline the center of each MCC patch used for analysis. This routine
+%  works for vcimages (ip) and sensors.  It might work for simple Matlab
+%  figures, too.
 %
-% obj:    An ip or sensor structure.  The object should contain a the mcc
-%         corner points.
-% on/off:  
+% Inputs:
+%   obj:    An ip or sensor structure.  The object should contain a the mcc
+%           corner points.
+%   onoff:  
 %    on:   Create the mcc rects, display and store them, refresh window
 %    off:  Delete any existing mcc rects in the object, refresh window
 %
-% Example:
+% Outputs:
+%    obj:   The rectangle handles (mccRectHandles) are returned, attached
+%           to the object 
 %
 % Copyright ImagEval Consultants, LLC, 2011.
+%
+% See also
+%   macbethROIs, macbethSelect, macbethRectangles, chartROIs, chart<TAB>
+%
 
+%%
 if ieNotDefined('obj'), error('Structure required'); end
 if ieNotDefined('onoff'), onoff = 'on'; end  % Default is on
 
+%%
 switch onoff
     case 'on'
         switch vcEquivalentObjtype(obj.type)
@@ -54,9 +65,12 @@ switch onoff
         for ii=1:24
             % Get the locations around the center
             theseLocs = macbethROIs(mLocs(:,ii),delta);
-            % Find the convex hull of the locations (a rect)
+            % Find the convex hull of the locations (a rect). The rect
+            % should be returned by macbethROIs, by the way. Not sure why
+            % it isn't.  I did that for chartROIs, I think.
             corners = convhull(theseLocs(:,1),theseLocs(:,2));
-            % Plot the convex hull
+            
+            % Plot the rects
             hold(a,'on');
             rectHandles(ii) = plot(a,theseLocs(corners,2),theseLocs(corners,1),...
                 'Color',[1 1 1], 'LineWidth',2);
@@ -94,4 +108,4 @@ switch onoff
         error('Unknown on/off %s\n',onoff);
 end
 
-return
+end

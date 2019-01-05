@@ -65,16 +65,17 @@ function [mRGB, mLocs, pSize, cornerPoints, mccRectHandles] = ...
 %   mRGB = macbethSelect(obj,0,1);
 %   graySeries = mRGB(1:4:24,:);
 %
-% See also:  macbethSensorValues, macbethRectangles, macbethROIs.  And
-% there are corresponding (but slightly different) routines for arbitrary
-% reflectances charts, such as chartPatchData, chartRectangles, ...
-%
 %  Example:
 %     showSelection = 1;
 %     obj = vcGetObject('vcimage');
 %     [mRGB mLocs, pSize, cornerPoints]= macbethSelect(obj,showSelection);
 %
 % Copyright ImagEval Consultants, LLC, 2005.
+%
+% See also:  macbethSensorValues, macbethRectangles, macbethROIs.  
+%     And there are corresponding (but slightly different) routines for
+%     arbitrary reflectances charts, such as chartPatchData,
+%     chartRectangles, ... 
 
 if ieNotDefined('obj'), obj = vcGetObject('vcimage'); end
 if ieNotDefined('showSelection'), showSelection = 1; mccRectHandles = []; end
@@ -140,7 +141,7 @@ elseif ~b  % False, a change is desired
     switch vcEquivalentObjtype(obj.type)
         case {'VCIMAGE'}
             ipWindow;
-        case {'ISA'};
+        case {'ISA'}
             sensorWindow('scale',1);
         otherwise
             error('Unknown type %s\n',obj.type);

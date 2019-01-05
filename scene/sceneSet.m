@@ -226,6 +226,8 @@ switch parm
         % See sceneReflectanceChart 
         % Reflectance chart parameters are stored here.
         scene.chartP = val;
+    case {'chartcorners'}
+        scene.chartP.cornerPoints = val;
         
     case {'luminance','lum'}
         % sceneSet(scene,'luminance',array)

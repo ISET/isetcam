@@ -101,4 +101,4 @@ pSize = 2*delta + 1;
 % Put up the mean locations in the sensor image
 % plot(mLocs(2,:),mLocs(1,:),'wo')
   
-return;
+end

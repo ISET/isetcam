@@ -1,16 +1,21 @@
 function rects = chartRects(corners,rcSize)
-% Compute rectangle ROIs for a chart 
+% Deprecated:  Compute rectangle ROIs for a chart 
+%
+% Syntax:
+%   rects = chartRects(corners,rcSize)
 %
 % Inputs
 %   corners: The corner points defining the chart
 %   rcSize:  Row and column patches
-% Returns
+%
+% Outputs
 %   rects:   Matrix of prod(rcSize) rows and 4 columns of rect positions
 % 
-% See also:  Related to macbeth selection mechanisms.  May replace in the
-% end.
-%
 % (c) Imageval Consulting, LLC, 2012
+%
+% See also
+%   mcc<TAB>, chart<Tab>
+%
 
 % We have the patch size (pSize).  We want the mid points of each patch.
 % First figure out where the corners are so we know where to start and end.

@@ -478,7 +478,9 @@ switch lower(param)
     case {'sensorcompute','sensorcomputemethod'}
         sensor.sensorComputeMethod = val;
 
-        % Macbeth color checker issues
+        % These ROIs for the MCC chart should be generalized to chartP here
+        % and in ip and other objects.  Maybe there should be a chart
+        % struct that is defined.
     case {'mccrecthandles'}
         % These are handles to the squares on the MCC selection regions
         % see macbethSelect.  If we over-write them, we first delete the
@@ -491,9 +493,10 @@ switch lower(param)
             end
         end
         sensor.mccRectHandles = val;
-    case {'mccpointlocs','mcccornerpoints'}
+    case {'cornerpoints','mccpointlocs','mcccornerpoints'}
         % Corner points for the whole MCC chart
         sensor.mccCornerPoints = val;
+        
     case {'gamma'}
         % Adjust the gamma on the display window.
         hdl = ieSessionGet('sensor window handle');
