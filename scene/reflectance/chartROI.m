@@ -21,20 +21,20 @@ function [patchLocs,rect] = chartROI(currentLoc,delta)
 % See also: 
 %   chartPatchData, chartRectangles,ieRoi2Locs
 
+%%
 if ieNotDefined('currentLoc'), error('current location in chart is required'); end
 if ieNotDefined('delta')
-    warning('Assuming a patch size of 10.')
+    warning('Assuming a square patch size of 10.')
     delta = 10; 
 end  % Get a better algorithm for size
 
-% Build the rect.  Added +1 January, 2019 because zero was returned in some
-% cases.
-rect(1) = currentLoc(2) - round(delta/2) + 1;
-rect(2) = currentLoc(1) - round(delta/2) + 1;
+%% Build the rect.
+rect(1) = currentLoc(2) - round(delta/2);
+rect(2) = currentLoc(1) - round(delta/2);
 rect(3) = delta;
 rect(4) = delta;
 
-% Convert the rect into the positions
+%% Convert the rect into the positions
 patchLocs = ieRoi2Locs(rect);
 
 end

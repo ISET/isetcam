@@ -1,5 +1,5 @@
 function roiV = chartRectsMean(sensor,rects,dataType)
-% Return mean values from rect ROIs of an object
+% Deprecated.  Return mean values from rect ROIs of an object
 %
 %    roiV = chartRectsMean(sensor,rects,dataType)
 %
