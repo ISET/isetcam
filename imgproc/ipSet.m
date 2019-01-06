@@ -48,11 +48,14 @@ function vci = ipSet(vci,param,val,varargin)
 %
 %  Correction of the sensor data to a standard space
 %      {'conversion sensor '}        - Sensor conversion structure
-%      {'conversion method sensor'}  - Name of the method (function)
+%      {'conversion method sensor'}  - Name of the method
+%         Options: 'none', 'manual matrix entry', 
+%                  'mcc optimized', 'esser optimized', 'multisurface'
 %      {'conversion matrix sensor'}  - The sensor conversion matrix
 %
 %  Calibrated color space (sensor spectral QE is allowed).
 %      {'internal colorspace'}      - Name of the internal color space
+%          Options: 'sensor', 'XYZ', 'Stockman', 'linear srgb'
 %      {'internal cs 2 display space'} - Transform from internal to display
 %
 %  Correction for the illuminant
@@ -71,23 +74,23 @@ function vci = ipSet(vci,param,val,varargin)
 %              The second is the illuminant correction
 %              The third is the internal color to display
 %
-%  Display properties will be taken out of this function in the future
+%  Display properties will be removed from this function in the future
 %      {'display'}  - Target display structure
-%      {'display Viewing Distance'} - Subject's distance in meters
+%      {'display viewing distance'} - Subject's distance in meters
 %
 %      {'data'}
 %        {'sensor input'}        - Data from sensor
-%        {'maximum Sensor Value'} - Largest possible sensor value
-%        {'display Output'}      - Data to be rendered on display
-%        {'data White Point'}     - If not the display, then this
-%        {'scale Display Output'} - Scaled to display max RGB
+%        {'maximum sensor value'} - Largest possible sensor value
+%        {'display output'}      - Data to be rendered on display
+%        {'data white point'}     - If not the display, then this
+%        {'scale display output'} - Scaled to display max RGB
 %
 %  Miscellaneous
 %     {'mccRectHandles'}  - Handles for the rectangle selections in an MCC
 %     {'mccCornerPoints'} - Outer corners of the MCC
 %     {'currectRect'}     - Rect used for an ROI
-%     {'gamma display'}   - Gamma for rendering data to GUI image
-%     {'scale display'}   - True or false for scaling the rendered image
+%     {'gamma display'}   - Gamma for rendering data to ipWindow image
+%     {'scale display'}   - True or false for scaling the ipWindow image
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
@@ -114,8 +117,7 @@ switch param
     % known sensor spectral QE to be considered calibrated, too.
     case {'internalcs','internalcolorspace'}
         % Color spaced used for calculations such as color balancing.
-        % sensor, XYZ, Stockman, linear srgb
-        % see ieColorTransform;
+        % see ieColorTransform or header of this document for options.
         vci.internalCS = val;
     case {'ics2display','ics2displaytransform','internalcs2displayspace'}
         % vci = imageSet(vci,'ics2display',val,3);
@@ -269,8 +271,8 @@ switch param
         % the other vci fields should be set except type should be 'L3'.
         vci.L3 = val;
         
-    otherwise,
-        error('Unknown parameter %s',param);
+    otherwise
+        error('Unknown ip parameter %s',param);
 end
 
-return;
+end

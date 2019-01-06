@@ -93,26 +93,34 @@ end
 
 %----------------------------------------------
 function T = linearsrgb(sensorQE,illuminant,wave)
+% Probably unused.
+%
 % Calculate the linear transformation from sensor into linear sRGB values.
 %
 % We read the MCC values in sRGB space (linear RGB).  The patch order in
 % this file is based on ImagEval history, not the official Macbeth
-% definition. In the next generation, we will calculate the linear sRGB
-% values for the set of surfaces that are sent in.  I think this is fairly
-% straightforward and should be implemented soon.
+% definition. 
+%
+% Probably, we should calculate the linear sRGB values for the set of
+% surfaces that are sent in.  I think this is fairly straightforward and
+% should be implemented soon.
+
+warning('linear srgb is used');
 
 %  TODO
-%  Instead of this code, though, we should be using xyz2srgb and then
-%  srgb2lrgb.
+%  Instead of this code, though, we should be using the standard color
+%  compute functions.
+%
 
 % patchSize = 1; patchList = 1:24;
 % macbethChartObject = macbethChartCreate(patchSize,patchList);
 % load('MCClRGB','lrgbValuesMCC','patchOrder');
-wave = 400:700;    % nanometers
-load('macbethChartLinearRGB');
+if ieNotDefined('wave'), wave = 400:700; end    % nanometers
+
+load('macbethChartLinearRGB','mcc');
 idealMacbeth = mcc.lrgbValuesMCC;
 
-% Get the MCC surface spectra and the D65 illuminant.  Combine them to
+% Get the MCC surface spectra and the illuminant.  Combine them to
 % estimate the sensor responses.
 % fName = fullfile(isetRootPath,'data','surfaces','macbethChart');
 % 
@@ -120,10 +128,10 @@ idealMacbeth = mcc.lrgbValuesMCC;
 surRef = macbethReadReflectance(wave);
 
 % surRef = surRef(:,patchOrder);
-d65    = ieReadSpectra(illuminant,wave);
+illSpectra  = ieReadSpectra(illuminant,wave);
 
 % Sensor RGB
-sensorMacbeth = (sensorQE'*diag(d65)*surRef)';
+sensorMacbeth = (sensorQE'*diag(illSpectra)*surRef)';
 
 % Solve: sensorMacbeth*T = lrgbValuesMCC
 T = pinv(sensorMacbeth)*idealMacbeth;
