@@ -88,7 +88,7 @@ switch obj.type
         if isempty(dataType), dataType = 'photons'; end
     case 'sensor'
         if isempty(dataType), dataType = 'electrons'; end
-    case 'ip'
+    case 'vcimage'
         if isempty(dataType), dataType = 'result'; end
     otherwise
         error('Unknown object type %s\n',obj.type);
