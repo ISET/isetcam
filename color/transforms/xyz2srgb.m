@@ -1,17 +1,30 @@
 function [srgb,lrgb,maxY] = xyz2srgb(xyz)
 %Convert CIE XYZ to sRGB color space
 %
+% Syntax:
 %  [srgb,lrgb,maxY] = xyz2srgb(xyz)
 %
-% The CIE XYZ values are converted to sRGB values. Both input XYZ and
-% output srgb are in RGB Format (row, col, nWave), where nWave is 3 in
-% this case. 
+% Brief description:
+%  The CIE XYZ values are converted to sRGB values. Both input XYZ and
+%  output srgb are in RGB Format (row, col, nWave), where nWave is 3 in
+%  this case. 
 %
-% The user can also get linear RGB values and the Y value (maxY) that
-% is used to scale the XYZ image so that it is within the [0,1] range
-% as required by the sRGB standard.
+% Inputs
+%   xyz - An RGB format matrix, (row,col,3) containing the X,Y, and Z
+%   values.
 %
-% The sRGB color space is a display-oriented representation that matches
+% Optional key/value
+%   N/A
+%
+% Returns:
+%   srgb - The sRGB standard
+%   lrgb - The linear RGB portion of the sRGB standard
+%   maxY - The brightest Y value in the original, which is used to
+%      scale the XYZ image so that it is within the [0,1] range as
+%      required by the sRGB standard. 
+%
+% Description:
+%    The sRGB color space is a display-oriented representation that matches
 % a Sony Trinitron. The monitor white point is assumed to be D65.  The
 % white point chromaticity are (.3127,.3290), and for an sRGB display
 % (1,1,1) is assumed to map to XYZ = ( 0.9504    0.9999    1.0891).
@@ -33,17 +46,8 @@ function [srgb,lrgb,maxY] = xyz2srgb(xyz)
 % The linear srgb values (lRGB) can also be returned. These are the values
 % of the linear phosphor intensities, without any gamma or clipping
 % applied. lRGB values nominally run from [0,1], but we allow them to be
-% returned  outside of this range.  
+% returned  outside of this range.
 %
-% Modern reference:    http://en.wikipedia.org/wiki/SRGB
-% Original Reference:  http://www.w3.org/Graphics/Color/sRGB
-%
-% Copyright ImagEval Consultants, LLC, 2003.
-%
-% See also:  colorTransformMatrix, lrgb2srgb, and imageLinearTransform.
-
-%% Notes
-
 % This xyz -> sRGB matrix is supposed to work for XYZ values scaled so that
 % the maximum Y value is around 1.  In the Wikipedia page, they write:
 %
@@ -57,10 +61,20 @@ function [srgb,lrgb,maxY] = xyz2srgb(xyz)
 %    XYZ values are such that white is D65 with unit luminance (X,Y,Z =
 %    0.9505, 1.0000, 1.0890).
 %
+% Modern reference:    http://en.wikipedia.org/wiki/SRGB
+% Original Reference:  http://www.w3.org/Graphics/Color/sRGB
+%
+% Copyright ImagEval Consultants, LLC, 2003.
+%
+% See also:  colorTransformMatrix, lrgb2srgb, and imageLinearTransform.
 
-%%
-% The matrix converts (R,G,B)*matrix.  This is the transpose of the
-% Wikipedia page.
+
+%% Should do parameter checking here!
+%
+
+%% The matrix converts (R,G,B)*matrix.  
+
+% This is the transpose of the Wikipedia page.
 matrix = colorTransformMatrix('xyz2srgb');
 
 % Notice that (1,1,1) maps into D65 with unit luminance (Y)
