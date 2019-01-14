@@ -2,12 +2,18 @@ function xyz = srgb2xyz(srgb)
 % Transform srgb to CIE XYZ
 %
 %    xyz = srgb2xyz(srgb)
-% 
-% sRGB:  RGB format image
-% xyz :  RGB format image
 %
-% Convert sRGB image into CIE XYZ values.
-% The input range for srgb values is (0,1).
+% Brief description:
+%   Convert sRGB image into CIE XYZ values. The input range for srgb
+%   values is (0,1).  
+%
+% Inputs
+%   sRGB:  RGB format image
+%
+% Outputs
+%   xyz :  RGB format image
+%
+% Description:
 %
 % The sRGB display is defined by three primaries with these chromaticity
 % coordinates (x,y,Y) and luminance
@@ -34,5 +40,4 @@ lrgb = srgb2lrgb(srgb);  %imtool(lrgb/max(lrgb(:)))
 matrix = colorTransformMatrix('lrgb2xyz');
 xyz = imageLinearTransform(lrgb, matrix);  
 
-return;
-
+end
