@@ -53,7 +53,7 @@ switch ieParamFormat(ilName)
         illP.name = ilName;
         illP.luminance = 100;
         illP.spectrum.wave = illuminantGet(il,'wave');
-        if ~isempty(varargin), illP.luminance = varargin{1}; end;
+        if ~isempty(varargin), illP.luminance = varargin{1}; end
         
         iEnergy = illuminantRead(illP);		    % [W/(sr m^2 nm)]
         iPhotons = Energy2Quanta(illuminantGet(il,'wave'),iEnergy); % Check this step

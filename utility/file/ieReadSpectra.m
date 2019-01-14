@@ -23,16 +23,18 @@ function [res,wave,comment,partialName] = ieReadSpectra(fname,wave,extrapVal)
 %   also store their names. See the functions ieReadColorFilter and
 %   ieSaveColorFilter
 %
-% Example:
-%    fullName = vcSelectDataFile([]);
-%    wave = 400:10:700;
-%    data = ieReadSpectra(fullName,wave)
-%    [data,wave] = ieReadSpectra(fullName)
-%
 % If you are reading a color filter, you should probably use
 % ieReadColorFilter rather than this routine
 %
 % Copyright ImagEval Consultants, LLC, 2005.
+
+% Examples:
+%{
+  fileName = 'XYZQuanta.mat';
+  wave = 400:10:700;
+  data = ieReadSpectra(fileName,wave)
+  [data,wave] = ieReadSpectra(fileName)
+%}
 
 if ieNotDefined('fname'), fname = ''; end
 
@@ -43,27 +45,7 @@ if isempty(fname)
     if isempty(fname), disp('User canceled'); return; end
 end
 
-%{
-test = exist(partialName,'file');
-% If partialName is a directory or doesn't exist, we have a problem.
-if ~test || test == 7
-    partialName = sprintf('%s.mat',partialName);
-    if ~exist(partialName,'file')
-        res        = []; wavelength = []; comment    = [];
-        warning('ieReadSpectra:File','Cannot find file %s. Returning empty data.',partialName);
-        return;
-    end
-ends
-%}
-
 % Load in spectral data
-% We should probably trap this condition so that if it fails the user is sent into
-% a GUI to find the data file.
-% Also, we should use
-% foo = load(partialName)
-% if isfield(foo,'comment') ... approach in case the file is missing a
-% comment.  Then we should return an empty comment.
-
 tmp = load(fname);
 if isfield(tmp,'data'), data = tmp.data; else, data = []; end
 if isfield(tmp,'wavelength'), wavelength = tmp.wavelength; else, wavelength = []; end
