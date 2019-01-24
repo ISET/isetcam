@@ -3,19 +3,20 @@ function figHdl = vcNewGraphWin(figHdl, fType, varargin)
 %
 %    figHdl = vcNewGraphWin([fig handle],[figure type],varargin)
 %
-% A graph window figure handle is returned and stored in the currernt
+% Open a figure.  The figure handle is returned and stored in the currernt
 % vcSESSION.GRAPHWIN entry.
 %
-% The varargin is a set of (param,val) pairs that are applied
-%     set(gcf,param,val);
-%
-% A few figure shapes can be defaulted
+% A few figure shapes are pre-defined
 %   fType:  Default - Matlab normal figure position
 %           upper left    Simple
 %           tall          (for 2x1 format)
 %           wide          (for 1x2 format)
 %           upperleftbig  (for 2x2 format)
 %   This list may grow.
+%
+% The varargin options are a set of (param,val) pairs that are applied
+%
+%     set(gcf,param,val);
 %
 % Examples
 %  vcNewGraphWin;
@@ -33,9 +34,10 @@ function figHdl = vcNewGraphWin(figHdl, fType, varargin)
 %  g = vcNewGraphWin([],[],'Visible','off'); 
 %  set(g,'Visible','on')
 %
+% Copyright ImagEval Consultants, LLC, 2005
+%
 % See also:  ieSessionSet
 %
-% Copyright ImagEval Consultants, LLC, 2005.
 
 if ieNotDefined('figHdl'), figHdl = figure; end
 if ieNotDefined('fType')  
@@ -64,11 +66,10 @@ switch(fType)
     case {'upperleftbig','big'}
         % Like upperleft but bigger
         set(figHdl,'Units','normalized','Position',[0.007 0.40  0.40 0.50]);
-
     otherwise % Matlab default
 end
 
-%% Parse the varargin arguments
+%% Apply the varargin arguments as key/value pairs
 if ~isempty(varargin)
     n = length(varargin);
     if ~mod(n,2)
@@ -82,4 +83,4 @@ end
 ieSessionSet('graphwinfigure',figHdl);
 ieSessionSet('graphwinhandle',guidata(figHdl));
 
-return;
+end
