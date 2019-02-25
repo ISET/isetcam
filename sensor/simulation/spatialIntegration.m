@@ -58,7 +58,7 @@ function signalCurrentImage = spatialIntegration(scdi,OI,ISA,gridSpacing)
 %
 % This is the spacing within a pixel on the sensor array.
 if ieNotDefined('gridSpacing'), gridSpacing = 1;
-else gridSpacing = 1/round(1/gridSpacing);
+else, gridSpacing = 1/round(1/gridSpacing);
 end
 nGridSamples = 1/gridSpacing;
 
@@ -78,7 +78,7 @@ flatSCDI = regridOI2ISA(scdi,OI,ISA,gridSpacing);
 % region of each pixel.  If we are super-sampling, we use sensorPDArray.
 % Otherwise, we only need the fill factor.
 if nGridSamples == 1, pdArray = pixelGet(sensorGet(ISA,'pixel'),'fillfactor');
-else                  pdArray = sensorPDArray(ISA,gridSpacing);
+else,                 pdArray = sensorPDArray(ISA,gridSpacing);
 end
 
 % Array pdArray up to match the number of pixels in the array
@@ -89,7 +89,7 @@ photoDetectorArray = repmat(pdArray, ISAsize);
 % the array.
 signalCurrentImageLarge = flatSCDI .* photoDetectorArray;
 
-if nGridSamples == 1, 
+if nGridSamples == 1 
     signalCurrentImage = pixelGet(ISA.pixel,'area')*signalCurrentImageLarge;
 else
     % If the grid samples are super-sampled, we must collapse this image,

@@ -52,9 +52,9 @@ end
 
 %---------------------------
 function [integrationTime,maxSignalVoltage] = aeFull(OI,sensor,level)
-% Finds the maximum signal voltage for a one sec exposure, and then returns
-% an integration time that produces a value of level times the voltage
-% swing. 
+% Finds the maximum signal voltage for a one sec exposure, and then
+% returns an integration time that produces a value of 'level' times
+% the voltage swing.
 %
 % This is not as useful as aeSpecular, below, we think.
 
@@ -176,9 +176,9 @@ function [integrationTime,maxSignalVoltage] = aeSpecular(oi,sensor,level)
 % comprising a small fraction of the total pixels, we want to set
 % the exposure without worrying about the specular image region.
 %
-% This algorithm allows you to ignore a percentage of the pixels
-% and set the exposure duration so that the remaining pixels
-% reach near the voltage swing.
+% This algorithm allows you to ignore a percentage of the pixels and
+% set the exposure duration so that the remaining pixels reach near
+% the voltage swing.
 %
 % To allow 5 percent to be saturated, set level to 0.95.
 %
