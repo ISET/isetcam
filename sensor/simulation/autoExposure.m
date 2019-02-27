@@ -1,8 +1,10 @@
 function  [integrationTime,maxSignalVoltage,smallOI] = autoExposure(oi,sensor,level,aeMethod,varargin)
 %Gateway routine to auto-exposure methods
 %
+% Syntax:
 %     [integrationTime,maxSignalVoltage,smallOI] = autoExposure(oi,sensor,[level = 0.95],[aeMethod='default'],varargin)
 %
+% Brief Description:
 %  Find an integration time (sec) that produces a voltage level at a
 %  fraction (0 < level < 1) of the voltage swing.  The data used to set the
 %  level are from the signal current image plus the dark current image.
@@ -21,7 +23,6 @@ function  [integrationTime,maxSignalVoltage,smallOI] = autoExposure(oi,sensor,le
 %   integrationTime:  In seconds
 %   maxSignalVotage:
 %   smallOI:
-%
 %
 %  The currently implemented methods are
 %
@@ -49,25 +50,29 @@ function  [integrationTime,maxSignalVoltage,smallOI] = autoExposure(oi,sensor,le
 %      'center'     - Set the exposure duration as in 'luminance', but
 %                     using a rect from the center of the image
 %
-% Copyright ImagEval Consultants, LLC, 2003.
+% See also
+%    sensorCompute
 
 % Examples:
 %{
-
+ scene = sceneCreate; 
+ oi = oiCreate; oi = oiCompute(oi,scene);
+ sensor = sensorCreate; 
+ sensor = autoExposure(oi,sensor,0.95,'weighted','center rect',[20 20 20 20]);
 %}
 
-% TODO: This routine needs to be expanded to include the other methods.
-% Good opportunities for matrix-metering with weighted matrices, and
-% perhaps other ideas.
+%%
 
 if ieNotDefined('level'), level = 0.95; end
 if ieNotDefined('aeMethod'), aeMethod = 'default'; end
 p = inputParser;
 
+varargin = ieParamFormat(varargin);
+
 p.addRequired('oi');
 p.addRequired('sensor');
 p.addRequired('level',@isscalar);
-p.addRequired('aeMethod',@ischar)
+p.addRequired('aemethod',@ischar)
 
 defaultRect = '';
 
@@ -87,7 +92,7 @@ switch lower(aeMethod)
     case 'mean'
         [integrationTime,maxSignalVoltage] = aeMean(oi,sensor,level); 
     case 'weighted'
-        [integrationTime,maxSignalVoltage] = aeWeighted(oi,sensor,level);
+        [integrationTime,maxSignalVoltage] = aeWeighted(oi,sensor,level,centerRect);
     otherwise
         error('Unknown auto-exposure method')
 end
