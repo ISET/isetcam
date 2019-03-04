@@ -25,7 +25,8 @@ optics = oiGet(oi,'optics');
 opticsModel = opticsGet(optics,'model');
 opticsModel = ieParamFormat(opticsModel);
 if ~(strcmpi(opticsModel,'dlmtf') || ...
-        strcmpi(opticsModel,'diffractionlimited'))
+        strcmpi(opticsModel,'diffractionlimited') ||...
+                    strcmpi(opticsModel, 'skip'))
     error('Bad DL optics model %s',opticsModel);
 else
     if showWaitBar, wStr = 'OI-DL: '; end

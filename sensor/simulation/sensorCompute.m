@@ -1,4 +1,4 @@
-function outSensor = sensorCompute(sensor,oi,showBar)
+function [outSensor, unitSigCurrent] = sensorCompute(sensor,oi,showBar)
 %Compute sensor response from optical image data
 %
 %   sensor = sensorCompute([sensor],[oi],[showBar = 1])

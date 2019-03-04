@@ -106,7 +106,7 @@ end
 % Compute according to the selected model
 opticsModel = ieParamFormat(opticsModel);
 switch opticsModel
-    case {'diffractionlimited','dlmtf'}
+    case {'diffractionlimited','dlmtf', 'skip'}
         % The skip case is handled by the DL case
         oi = opticsDLCompute(scene,oi);
     case 'shiftinvariant'

@@ -45,9 +45,9 @@ if ieNotDefined('spacing'), spacing = 0.2; end
 r = oiGet(oi,'rows'); c = oiGet(oi,'cols');
 rSamples = (0:(r-1));
 cSamples = (0:(c-1));
-sampleHeight = oiGet(oi,'hres'); 
-sampleWidth  = oiGet(oi,'wres');
-[theseRows,theseCols] = sample2space(rSamples,cSamples,sampleHeight,sampleWidth);
+sampleHeightOi = oiGet(oi,'hres'); 
+sampleWidthOi  = oiGet(oi,'wres');
+[theseRows,theseCols] = sample2space(rSamples,cSamples,sampleHeightOi,sampleWidthOi);
 [U,V] = meshgrid(theseCols, theseRows);
 
 % The values of newRols and newCols are sampled positions on the image
@@ -58,8 +58,8 @@ sampleWidth  = oiGet(oi,'wres');
 r = sensorGet(sensor,'rows'); c = sensorGet(sensor,'cols');
 rSamples = (0:spacing:(r-spacing)) + (spacing/2);
 cSamples = (0:spacing:(c-spacing)) + (spacing/2);
-sampleHeight = sensorGet(sensor,'hres'); sampleWidth = sensorGet(sensor,'wres');
-[newRows,newCols] = sample2space(rSamples,cSamples,sampleHeight,sampleWidth);
+sampleHeightSsor = sensorGet(sensor,'hres'); sampleWidthSsor = sensorGet(sensor,'wres');
+[newRows,newCols] = sample2space(rSamples,cSamples,sampleHeightSsor,sampleWidthSsor);
 [X,Y] = meshgrid(newCols,newRows); %#ok<NASGU>
 
 % This is the signal current density image on the planar surface of the
@@ -71,6 +71,14 @@ nFilters = sensorGet(sensor,'nfilters');
 % sensor surface.  
 interpolatedCFAN = interpcfaSCDI(newRows, newCols, sensor, spacing);
 
+% We need to add a gaussian kernel if the sensor size is much
+% larger than the oi resolution. 
+heightRatio = ceil(sampleHeightSsor / sampleHeightOi); % Take them as sigma
+widthRatio = ceil(sampleWidthSsor / sampleWidthOi);
+gKernel = fspecial('gaussian', [heightRatio widthRatio], heightRatio/4); % Here we assume square sensor
+% Other case we should use the average:
+% gKernel = ones(heightRatio, widthRatio)/(heightRatio*widthRatio);
+
 % warning('off','MATLAB:interp1:NaNinY');
 for ii=1:nFilters
     % The relationship between theseRows in the oi and newRows on the
@@ -81,7 +89,10 @@ for ii=1:nFilters
     % vcNewGraphWin; imagesc(newRows,newCols,tmp), colormap(gray);
 
     % Went to 2D in 2015.
-    tmp = interp2(U,V,scdi(:,:,ii),X,Y,'linear');
+    if heightRatio ~= 1 || widthRatio ~=1 && sensor.interp ~= 'linear'   
+        scdi(:,:,ii) = conv2(scdi(:,:,ii), gKernel, 'same');
+    end
+    tmp = interp2(U,V,scdi(:,:,ii),X,Y,'linear'); 
     % vcNewGraphWin; imagesc(newRows,newCols,tmp), colormap(gray);
     
     % In the new world, we just cycle through the filters in order.  The
