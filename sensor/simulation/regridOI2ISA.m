@@ -123,11 +123,15 @@ for ii=1:nFilters
     % specifically set a slot asking for 'linear' interpolation.  We
     % need to DOCUMENT this 'interp' slot.  It is not yet in the
     % sensorCreate or anywhere.
+    
+    scdi(:,:,ii) = conv2(scdi(:,:,ii), gKernel, 'same');
+    %{
     if (heightSamplesPerPixel > 1 || widthSamplesPerPixel > 1) && ...
             (isfield(sensor,'interp') && ~isequal(sensor.interp,'linear'))
         scdi(:,:,ii) = conv2(scdi(:,:,ii), gKernel, 'same');
     end
-    
+    %}
+            
     % After the potential Gaussian blurring of the OI to average
     % across the size of the pixel, we then sample using linear
     % interpolation that matches the sample spacing of the pixels on
