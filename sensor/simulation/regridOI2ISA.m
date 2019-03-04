@@ -1,9 +1,23 @@
 function [flatSCDI, newRows, newCols] = regridOI2ISA(scdi,oi,sensor,spacing)
-%Regrid current density in OI coordinates into sensor coordinates
+% Regrid current density in OI coordinates into sensor coordinates
 %
+% Syntax:
 %   [flatSCDI, newRows, newCols] = regridOI2ISA(scdi,oi,sensor,spacing)
 %
-% (ISA means image sensor array.  We usually use "sensor" now.)
+% Inputs:
+%    scdi:    signal current density image
+%    oi:      optical image
+%    sensor:  Sensor
+%    spacing:
+%
+% Outputs:
+%   flatSCDI: the resampled signal current density image at the
+%             spatial sampling resolution of the sensor. 
+%   newRows: the spatial positions, in meters, of the sampled points,
+%            where (0,0) is the center of the image sensor array. 
+%   newCols:  as above
+%
+% Note:  ISA means image sensor array.  We shifted to using "sensor" now.
 %
 % The spatial samples in the signal current density image (scdi) are
 % represented on a grid determined by the optical image sampling.  This
@@ -24,18 +38,30 @@ function [flatSCDI, newRows, newCols] = regridOI2ISA(scdi,oi,sensor,spacing)
 % returned (flatSCDI).  
 %
 % In earlier versions of ISET, we used very high sampling resolution
-% (spacing = 0.2, meaning we represented the flatSCDI so that there were 25
-% samples within the area of each pixel).  That was slow and did not
-% significantly add to the precision.  So around 2002, we shifted to a
-% default spacing of 1 (see the routine spatialIntegration).  It is
-% possible, however, to set the spacing from the GUI to a finer spacing.
+% (spacing = 0.2, meaning we represented the flatSCDI so that there
+% were 25 samples within the area of each pixel).  That was slow and
+% did not significantly add to the precision.  So around 2002, we
+% shifted to a default spacing of 1 sample per pixel (see the routine
+% spatialIntegration).  It is possible, however, to set the spacing
+% from the GUI to a finer spacing.
 %
-% flatSCDI: the resampled signal current density image. 
-% newRows and newCols: the spatial positions, in meters, of the sampled
-%      points, where (0,0) is the center of the image sensor array.
+% In 2019 Zheng Lyu and BW enabled using a nonlinear interpolation
+% method to average over more of the irradiance, simulating the
+% integration across the pixel aperture.
 %
-% Copyright ImagEval Consultants, LLC, 2003.
+% Copyright ImagEval Consultants, LLC, 2003
+%
+% See also:
+%    spatialIntegration, signalCurrent
+%
 
+
+% Examples:
+%{
+
+%}
+
+%%
 if ieNotDefined('spacing'), spacing = 0.2; end
 
 % The values theseRows, theseCols are the positions of the optical image in
@@ -45,9 +71,11 @@ if ieNotDefined('spacing'), spacing = 0.2; end
 r = oiGet(oi,'rows'); c = oiGet(oi,'cols');
 rSamples = (0:(r-1));
 cSamples = (0:(c-1));
-sampleHeightOi = oiGet(oi,'hres'); 
-sampleWidthOi  = oiGet(oi,'wres');
-[theseRows,theseCols] = sample2space(rSamples,cSamples,sampleHeightOi,sampleWidthOi);
+oiHeightSpacing = oiGet(oi,'hres'); 
+oiWidthSpacing  = oiGet(oi,'wres');
+
+% Puts the number of rows and columns in units of microns
+[theseRows,theseCols] = sample2space(rSamples,cSamples,oiHeightSpacing,oiWidthSpacing);
 [U,V] = meshgrid(theseCols, theseRows);
 
 % The values of newRols and newCols are sampled positions on the image
@@ -58,40 +86,52 @@ sampleWidthOi  = oiGet(oi,'wres');
 r = sensorGet(sensor,'rows'); c = sensorGet(sensor,'cols');
 rSamples = (0:spacing:(r-spacing)) + (spacing/2);
 cSamples = (0:spacing:(c-spacing)) + (spacing/2);
-sampleHeightSsor = sensorGet(sensor,'hres'); sampleWidthSsor = sensorGet(sensor,'wres');
-[newRows,newCols] = sample2space(rSamples,cSamples,sampleHeightSsor,sampleWidthSsor);
-[X,Y] = meshgrid(newCols,newRows); %#ok<NASGU>
 
-% This is the signal current density image on the planar surface of the
-% sensor.
+sensorHeightSpacing = sensorGet(sensor,'hres'); 
+sensorWidthSpacing  = sensorGet(sensor,'wres');
+[newRows,newCols]   = sample2space(rSamples,cSamples,sensorHeightSpacing,sensorWidthSpacing);
+[X,Y] = meshgrid(newCols,newRows);
+
+% Initialize the signal current density image on the planar surface of
+% the sensor.
 flatSCDI = zeros(size(X));
 nFilters = sensorGet(sensor,'nfilters');
 
-% We make an estimate of the color filter number at each point on the
-% sensor surface.  
+% Determine the color filter number at each point on the sensor surface.  
 interpolatedCFAN = interpcfaSCDI(newRows, newCols, sensor, spacing);
 
-% We need to add a gaussian kernel if the sensor size is much
-% larger than the oi resolution. 
-heightRatio = ceil(sampleHeightSsor / sampleHeightOi); % Take them as sigma
-widthRatio = ceil(sampleWidthSsor / sampleWidthOi);
-gKernel = fspecial('gaussian', [heightRatio widthRatio], heightRatio/4); % Here we assume square sensor
+% We add a Gaussian blurring kernel.  We only apply the kernel, however, if the
+% pixel size is much larger than the oi sampling resolution.
+
+% We will use these ratios to define the Gaussian SD (sigma)
+heightSamplesPerPixel = ceil(sensorHeightSpacing / oiHeightSpacing); 
+widthSamplesPerPixel  = ceil(sensorWidthSpacing  / oiWidthSpacing);
+
+% Build the Gaussian kernel.  Assuming a square pixel.
+gKernel = fspecial('gaussian', ...
+    [heightSamplesPerPixel widthSamplesPerPixel], ...
+    heightSamplesPerPixel/4); 
+
 % Other case we should use the average:
 % gKernel = ones(heightRatio, widthRatio)/(heightRatio*widthRatio);
 
 % warning('off','MATLAB:interp1:NaNinY');
 for ii=1:nFilters
-    % The relationship between theseRows in the oi and newRows on the
-    % sensor is about the field of view, really.
-    %     foo = interp1(theseRows,scdi(:,:,ii),newRows);
-    %     tmp = interp1(theseCols,foo',newCols)';
-    %     % vcNewGraphWin; imagesc(theseRows,theseCols,scdi(:,:,ii)); colormap(gray);
-    % vcNewGraphWin; imagesc(newRows,newCols,tmp), colormap(gray);
 
-    % Went to 2D in 2015.
-    if heightRatio ~= 1 || widthRatio ~=1 && sensor.interp ~= 'linear'   
+    % We only apply the Gaussian blur if the number of OI samples per
+    % sensor pixel is bigger than one and the person has nots
+    % specifically set a slot asking for 'linear' interpolation.  We
+    % need to DOCUMENT this 'interp' slot.  It is not yet in the
+    % sensorCreate or anywhere.
+    if (heightSamplesPerPixel > 1 || widthSamplesPerPixel > 1) && ...
+            (isfield(sensor,'interp') && ~isequal(sensor.interp,'linear'))
         scdi(:,:,ii) = conv2(scdi(:,:,ii), gKernel, 'same');
     end
+    
+    % After the potential Gaussian blurring of the OI to average
+    % across the size of the pixel, we then sample using linear
+    % interpolation that matches the sample spacing of the pixels on
+    % the sensor.
     tmp = interp2(U,V,scdi(:,:,ii),X,Y,'linear'); 
     % vcNewGraphWin; imagesc(newRows,newCols,tmp), colormap(gray);
     

@@ -1,12 +1,12 @@
-function signalCurrentImage = spatialIntegration(scdi,OI,ISA,gridSpacing) 
+function signalCurrentImage = spatialIntegration(scdi,oi,sensor,gridSpacing) 
 % Measure current at each sensor photodetector
 %
-%  signalCurrentImage = spatialIntegration(scdi,OI,ISA,[gridSpacing = 1/5])
+%  signalCurrentImage = spatialIntegration(scdi,oi,sensor,[gridSpacing = 1/5])
 %
 % The signal current density image (scdi) specifies the current (A/m2)
 % across the sensor surface at a set of sample values specified by the
-% optical image (OI).  This routine converts the scdi to a set of currents at
-% each photodetector. 
+% optical image (oi).  This routine converts the scdi to a set of
+% currents at each photodetector.
 %
 % The routine can operate in two modes.  In the first (lower resolution,
 % fast, default) mode, the routine assumes that each photodetector is
@@ -40,8 +40,8 @@ function signalCurrentImage = spatialIntegration(scdi,OI,ISA,gridSpacing)
 %    functions, this mode is valuable.
 %
 % INPUT:    scdi [nRows x nCols]   [A/m^2]
-%           OI:  optical image [structure]
-%           ISA:  image sensor array
+%           oi:      optical image [structure]
+%           sensor:  image sensor array
 %           gridSpacing specifies how finely to interpolate within each
 %           pixel. This value must be of the form 1/N where N is an odd integer.
 %
@@ -72,17 +72,17 @@ nGridSamples = 1/gridSpacing;
 %
 %  So the default is gridSpacing of 1.  
 %
-flatSCDI = regridOI2ISA(scdi,OI,ISA,gridSpacing);
+flatSCDI = regridOI2ISA(scdi,oi,sensor,gridSpacing);
 
 % Calculate the fractional area of the photodetector within each grid
 % region of each pixel.  If we are super-sampling, we use sensorPDArray.
 % Otherwise, we only need the fill factor.
-if nGridSamples == 1, pdArray = pixelGet(sensorGet(ISA,'pixel'),'fillfactor');
-else,                 pdArray = sensorPDArray(ISA,gridSpacing);
+if nGridSamples == 1, pdArray = pixelGet(sensorGet(sensor,'pixel'),'fillfactor');
+else,                 pdArray = sensorPDArray(sensor,gridSpacing);
 end
 
 % Array pdArray up to match the number of pixels in the array
-ISAsize = sensorGet(ISA,'size');
+ISAsize = sensorGet(sensor,'size');
 photoDetectorArray = repmat(pdArray, ISAsize);
 
 % Calculate the signal at each pixel by summing across each pixel within
@@ -90,7 +90,7 @@ photoDetectorArray = repmat(pdArray, ISAsize);
 signalCurrentImageLarge = flatSCDI .* photoDetectorArray;
 
 if nGridSamples == 1 
-    signalCurrentImage = pixelGet(ISA.pixel,'area')*signalCurrentImageLarge;
+    signalCurrentImage = pixelGet(sensor.pixel,'area')*signalCurrentImageLarge;
 else
     % If the grid samples are super-sampled, we must collapse this image,
     % summing across the pixel and create an image that has the same size
@@ -100,7 +100,7 @@ else
     % nGridSamples is 2. There can be a problem with the filter in that
     % case. It is OK at nGridSamples=3 and higher.
     % 
-    filt = pixelGet(ISA.pixel,'area')*(ones(nGridSamples,nGridSamples)/(nGridSamples^2));
+    filt = pixelGet(sensor.pixel,'area')*(ones(nGridSamples,nGridSamples)/(nGridSamples^2));
     
     signalCurrentImage = blurSample(signalCurrentImageLarge,filt);
 end

@@ -1,4 +1,4 @@
-function signalCurrentImage = signalCurrent(OI,ISA,wBar)
+function signalCurrentImage = signalCurrent(oi,sensor,wBar)
 % Compute the signal current at each pixel position
 %
 %      signalCurrentImage = signalCurrent(opticalImage,ISA,wBarHandles)
@@ -47,7 +47,7 @@ if ieNotDefined('wBar'), showBar = 0; else, showBar = 1; end
 % [nRows x nCols x nColors] that matches the optical image.
 % The spatial integration to account for the pixel size happens next.
 if showBar, waitbar(0.4,wBar,'Sensor image: Signal Current Density'); end
-signalCurrentDensityImage = SignalCurrentDensity(OI,ISA);	    % [A/m^2]
+signalCurrentDensityImage = SignalCurrentDensity(oi,sensor);	    % [A/m^2]
 
 if isempty(signalCurrentDensityImage)
     % This should never happen.
@@ -61,9 +61,9 @@ else
     % 0.2.  We could do this in the user-interface some day.  I am not sure
     % that it has much benefit, but it does take a lot more time and
     % memory.
-    gridSpacing = 1/sensorGet(ISA,'nSamplesPerPixel');
+    gridSpacing = 1/sensorGet(sensor,'nSamplesPerPixel');
     if showBar, waitbar(0.5,wBar,sprintf('Sensor image: Spatial (grid: %.2f)',gridSpacing)); end
-    signalCurrentImage = spatialIntegration(signalCurrentDensityImage,OI,ISA,gridSpacing); % [A]
+    signalCurrentImage = spatialIntegration(signalCurrentDensityImage,oi,sensor,gridSpacing); % [A]
 end
 
 %{
