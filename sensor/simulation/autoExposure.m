@@ -350,7 +350,7 @@ p.addRequired('sensor',@(x)(isequal(x.type,'sensor')));
 p.addRequired('level',@isscalar);
 
 p.addParameter('centerrect',[],@isvector);
-p.addParameter('videomax',1/60 - 0.004,@isscalar);   % Maximum exposure duration sec
+p.addParameter('videomax',1/60,@isscalar);   % Maximum exposure duration sec
 
 p.parse(oi,sensor,level,varargin{:});
 
