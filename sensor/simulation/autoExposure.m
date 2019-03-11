@@ -58,7 +58,11 @@ function  [integrationTime,maxSignalVoltage,smallOI] = autoExposure(oi,sensor,le
  scene = sceneCreate; 
  oi = oiCreate; oi = oiCompute(oi,scene);
  sensor = sensorCreate; 
- sensor = autoExposure(oi,sensor,0.95,'weighted','center rect',[20 20 20 20]);
+ sensor = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'));
+ eTime  = autoExposure(oi,sensor,0.50,'weighted','center rect',[30 50 20 20]);
+ sensor = sensorSet(sensor,'exp time',eTime);
+ sensor = sensorCompute(sensor,oi);
+ sensorWindow(sensor);
 %}
 
 %%
@@ -67,18 +71,22 @@ if ieNotDefined('level'), level = 0.95; end
 if ieNotDefined('aeMethod'), aeMethod = 'default'; end
 p = inputParser;
 
+% Eliminate spaces and force lower case
 varargin = ieParamFormat(varargin);
 
+% Required parameters
 p.addRequired('oi');
 p.addRequired('sensor');
 p.addRequired('level',@isscalar);
 p.addRequired('aemethod',@ischar)
 
-defaultRect = '';
+% Optional Key/val Parameters
+p.addParameter('centerrect',[],@isvector);
+p.addParameter('videomax',1/60 - 0.004,@isscalar);   % Maximum exposure duration sec
 
-p.addParameter('centerrect',defaultRect,@isvector);
 p.parse(oi,sensor,level,aeMethod,varargin{:});
 centerRect = p.Results.centerrect;
+videoMax   = p.Results.videomax;
 
 switch lower(aeMethod)
     case {'default','luminance'}
@@ -92,10 +100,60 @@ switch lower(aeMethod)
     case 'mean'
         [integrationTime,maxSignalVoltage] = aeMean(oi,sensor,level); 
     case 'weighted'
-        [integrationTime,maxSignalVoltage] = aeWeighted(oi,sensor,level,centerRect);
+        integrationTime = aeWeighted(oi,sensor,level,'centerrect',centerRect);
+    case 'video'
+        integrationTime = aeVideo(oi,sensor,level,'center rect',centerRect,'videomax',videoMax);
+
     otherwise
         error('Unknown auto-exposure method')
 end
+
+end
+
+%---------------------------
+function [integrationTime,maxSignalVoltage,smallOI] = aeLuminance(OI,sensor,level)
+% This is the default autoexposure method.
+%
+% It extracts the brightest part of the image (oiExtractBright) and sets
+% the integration time so that the brightest part is at a fraction of
+% voltage swing.
+%
+% Because this method only calculates the voltages for a small portion of
+% the image, it is a lot faster than computing the full image.  It is,
+% however, not used with real imagers.  We will be writing other algorithms
+% to evaluate auto-exposure routines that can be implemented in real
+% hardware.
+
+voltageSwing = sensorGet(sensor,'pixel voltage swing');
+
+% Find the brightest pixel in the optical image.  Not a typical method.
+smallOI = oiExtractBright(OI);
+
+% The number of sensors must match the CFA format of the color sensor
+% arrays.  So we choose a size that is an 8x multiple of the cfa pattern.
+smallSensor = sensorSet(sensor,'size',8*sensorGet(sensor,'cfaSize'));
+
+% We clear the data as well.
+smallSensor = sensorClearData(smallSensor);
+smallSensor = sensorSet(smallSensor,'integrationTime',1);     % Exposure is 1 sec
+
+sensorFOV = sensorGet(smallSensor,'fov',[],OI);
+% Now, treat the small OI as a large, uniform field that covers the sensor
+smallOI = oiSet(smallOI,'wangular',2*sensorFOV);
+
+% Compute the signal voltage for this small part of the image sensor array,
+% using the brightest part of the opticl image, and a 1 sec exposure
+% duration. (Generally, the voltage at 1 sec is larger than the voltage
+% swing.)
+%
+
+signalVoltage = sensorComputeImage(smallOI,smallSensor);
+maxSignalVoltage = max(signalVoltage(:));
+
+% Determine the integration time by figuring how large the voltage was. The
+% voltage swing is in volts. We figure out how to set the integration time
+% so that the maximum signal voltage will be level*voltageSwing.
+integrationTime = (level * voltageSwing )/ maxSignalVoltage;
 
 end
 
@@ -109,79 +167,49 @@ function [integrationTime,maxSignalVoltage] = aeFull(OI,sensor,level)
 
 % Sensor may come in with a different itegration time than 1 second, so we
 % need to re-set it.
-sensor = sensorSet(sensor,'integrationTime',1);
+sensor       = sensorSet(sensor,'integrationTime',1);
 voltageSwing = sensorGet(sensor,'pixel voltage swing');
 
-signalVoltage = sensorComputeImage(OI,sensor);
+% These are the signal voltages and the max
+signalVoltage    = sensorComputeImage(OI,sensor);
 maxSignalVoltage = max(signalVoltage(:));
-integrationTime = (level * voltageSwing )/ maxSignalVoltage;
+
+% With this integration time, the max voltage will be equal to a fraction
+% (level) of the voltage swing.
+integrationTime  = (level * voltageSwing )/ maxSignalVoltage;
 
 end
 
 %---------------------------
 function [integrationTime, maxSignalVoltage] = aeMean(OI,sensor,level)
-% Finds the sensor intergration time to achieve the desired mean voltage 
+% Finds the sensor integration time to achieve the desired mean voltage
 % level expressed as a fraction of the voltage swing. For example setting
 % level of 0.3 means that mean(signalVoltage(:)) = 0.3*voltageSwing
 
 % Sensor may come in with a different itegration time than 1 second, so we
-% need to re-set it.
+% need to set it locally.
 sensor = sensorSet(sensor,'integrationTime',1);
 sensor = sensorSet(sensor,'analogGain',1);
+
+% This is the peak voltage
 voltageSwing = sensorGet(sensor,'pixel voltage swing');
 
+% These are the voltages for this OI and sensor
 signalVoltage = double(sensorComputeImage(OI,sensor));
 
+% This is the mean
 meanVoltage = mean(signalVoltage(:));
+
+% With this integration time, the mean voltage will be a fraction (level)
+% of the voltage swing.
 integrationTime = (level * voltageSwing )/ meanVoltage;
-maxSignalVoltage = integrationTime*max(signalVoltage(:));
+
+if nargout == 2
+    maxSignalVoltage = integrationTime*max(signalVoltage(:));
+end
 
 end
 
-%---------------------------
-function [integrationTime,maxSignalVoltage,smallOI] = aeLuminance(OI,sensor,level)
-% Extracts the brightest part of the image (oiExtractBright) and sets the
-% integration time so that the brightest part is at a fraction of voltage
-% swing.
-%
-% Because this method only calculates using a small portion of the image,
-% it is a lot faster than computing the full image.  It is, however, not
-% possible to use with real imagers.  We will be writing other algorithms
-% to evaluate auto-exposure routines that can be implemented in real
-% hardware.
-
-voltageSwing = sensorGet(sensor,'pixel voltage swing');
-
-% Find the brightest pixel in the optical image
-smallOI = oiExtractBright(OI);
-
-% The number of sensors must match the CFA format of the color sensor
-% arrays.  So we choose a size that is an 8x multiple of the cfa pattern.
-smallISA = sensorSet(sensor,'size',8*sensorGet(sensor,'cfaSize'));
-
-% We clear the data as well.
-smallISA = sensorClearData(smallISA);
-smallISA = sensorSet(smallISA,'integrationTime',1);     % Exposure is 1 sec
-
-sensorFOV = sensorGet(smallISA,'fov',[],OI);
-% Now, treat the small OI as a large, uniform field that covers the sensor
-smallOI = oiSet(smallOI,'wangular',2*sensorFOV);
-
-% Compute the signal voltage for this small part of the image sensor array,
-% using the brightest part of the opticl image, and a 1 sec exposure
-% duration. (Generally, the voltage at 1 sec is larger than the voltage
-% swing.)
-%
-
-signalVoltage = sensorComputeImage(smallOI,smallISA);
-maxSignalVoltage = max(signalVoltage(:));
-
-% Determine the integration time by figuring how large the voltage was. The
-% voltage swing is in volts. We figure out how to set the integration time
-% so that the maximum signal voltage will be level*voltageSwing.
-integrationTime = (level * voltageSwing )/ maxSignalVoltage;
-
-end
 
 %-------------------------
 function [integrationTime,maxSignalVoltage] = aeCFA(OI,sensor,level)
@@ -242,7 +270,8 @@ sensor = sensorSet(sensor,'exp time',1);
 % Not clipped
 signalVoltage = sensorComputeImage(oi,sensor);
 
-% Percentile level is between 0 and 100
+% Percentile level is between 0 and 100.  That is why we multiply level by
+% 100.
 targetVoltage = prctile(signalVoltage(:),level*1e2);
 
 integrationTime = (voltageSwing/targetVoltage);
@@ -252,9 +281,68 @@ maxSignalVoltage = max(signalVoltage(:));
 end
 
 %-------------------------------
-function [integrationTime, maxSignalVoltage] = aeWeighted(oi,sensor,level,rect)
+function [integrationTime, maxSignalVoltage] = aeWeighted(oi,sensor,level,varargin)
+% Choose a region of the image, defined by the center rect, 
+
+varargin = ieParamFormat(varargin);
+p = inputParser;
+p.KeepUnmatched = true;  % In video case, we have another parameter
+
+p.addRequired('oi',@(x)(isequal(x.type,'opticalimage')));
+p.addRequired('sensor',@(x)(isequal(x.type,'sensor')));
+p.addRequired('level',@isscalar);
+p.addParameter('centerrect',[],@isvector);
+
+p.parse(oi,sensor,level,varargin{:});
+
+% This is the selected part of the OI.
+rect = p.Results.centerrect;
+centerOI = oiCrop(oi,rect);
+
+% Turn off noise and set to unit exposure time
+sensor = sensorSet(sensor,'noise flag',0);
+sensor = sensorSet(sensor,'exp time',1);
+
+% Store the voltage swing
 voltageSwing = sensorGet(sensor,'pixel voltage swing');
 
-centerOI = oiCrop(OI,rect);
+signalVoltage    = double(sensorComputeImage(centerOI,sensor));
+maxSignalVoltage = max(signalVoltage(:));
+
+% Find the integration time
+integrationTime = (level*voltageSwing/maxSignalVoltage);
+
+end
+
+%-------------------------------
+% http://hamamatsu.magnet.fsu.edu/articles/readoutandframerates.html
+function integrationTime = aeVideo(oi,sensor,level,varargin)
+% The video exposure time model is not clear to us.  It is possible that
+% there is a rolling shutter readout, so that the first line is exposed and
+% readout, then the second, and so forth.  In this case, the time between
+% readout might be limited only by how long we have to wait between the
+% first line readout.
+
+% Force lower case and no spaces
+varargin = ieParamFormat(varargin);
+
+p = inputParser;
+p.KeepUnmatched = true;  % In video case, we have another parameter
+
+p.addRequired('oi',@(x)(isequal(x.type,'opticalimage')));
+p.addRequired('sensor',@(x)(isequal(x.type,'sensor')));
+p.addRequired('level',@isscalar);
+
+p.addParameter('centerrect',[],@isvector);
+p.addParameter('videomax',1/60 - 0.004,@isscalar);   % Maximum exposure duration sec
+
+p.parse(oi,sensor,level,varargin{:});
+
+% This is the selected part of the OI.
+rect     = p.Results.centerrect;
+videomax = p.Results.videomax;
+
+integrationTime = aeWeighted(oi,sensor,level,'center rect',rect);
+integrationTime = min(videomax,integrationTime);
 
 end
