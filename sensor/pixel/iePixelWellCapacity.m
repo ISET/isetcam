@@ -25,10 +25,13 @@ function [electrons, wellCapacity] = iePixelWellCapacity(pixelSize)
 %
 %    Other values are from the papers cited in 
 %    https://www.cse.wustl.edu/~jain/cse567-11/ftp/imgsens/index.html
-%    
-%    (8 130,000)[Suntharalingam2009]
-%    (1.4, 4100) [Yong Lim]
-%    These data are approximately the values in the Canon pixel sizes.
+%
+%    And this from the web.  But we are waiting for Boyd.
+%     (8 130,000)[Suntharalingam2009]
+%     (5.6 160,000) [Akahane https://ieeexplore-ieee-org.stanford.idm.oclc.org/document/5263013]
+%     (1.4, 4100) [Yong Lim]
+%
+%    The Clark data are approximately the values in the Canon pixel sizes.
 %    Other vendors have different well capacity and pixel size
 %    relationships.
 %
