@@ -10,7 +10,7 @@ function  [integrationTime,maxSignalVoltage,smallOI] = autoExposure(oi,sensor,le
 %  level are from the signal current image plus the dark current image.
 %
 % Inputs:
-%  OI:       The optical image
+%  oi:       The optical image
 %  sensor:   The sensor
 %  level:    Fraction of the voltage swing (default is 0.95)
 %  aeMethod: Which method, default is 'luminance'.  See full set of
@@ -47,25 +47,38 @@ function  [integrationTime,maxSignalVoltage,smallOI] = autoExposure(oi,sensor,le
 %
 %                     mean(signalVoltage(:)) = 0.3*voltageSwing
 %
-%      'center'     - Set the exposure duration as in 'luminance', but
+%      'weighted'   - Set the exposure duration as in 'luminance', but
 %                     using a rect from the center of the image
+%                     (aeWeighted).
+%      'video'      - Same as weighted, but a maximum exposure time
+%                     sent in by a videomax parameter (default 1/60 s)
+%                     aeVideo).
 %
 % See also
 %    sensorCompute
 
 % Examples:
 %{
- scene = sceneCreate; 
- oi = oiCreate; oi = oiCompute(oi,scene);
- sensor = sensorCreate; 
- sensor = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'));
- eTime  = autoExposure(oi,sensor,0.50,'weighted','center rect',[30 50 20 20]);
+ scene = sceneCreate; oi = oiCreate; oi = oiCompute(oi,scene); oiWindow(oi);
+ [~,rect] = ieROISelect(oi);
+ sensor   = sensorCreate; 
+ sensor   = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'));
+ eTime  = autoExposure(oi,sensor,0.90,'weighted','center rect',rect);
  sensor = sensorSet(sensor,'exp time',eTime);
  sensor = sensorCompute(sensor,oi);
  sensorWindow(sensor);
+ sensorPlot(sensor,'volts hline',[1, 155]);  % (x,y), not (row, col)
+%}
+%{
+ eTime  = autoExposure(oi,sensor,0.90,'video','center rect',rect,'video max',1/60);
+ sensor = sensorSet(sensor,'exp time',eTime);
+ sensor = sensorCompute(sensor,oi);
+ sensorWindow(sensor);
+ sensorPlot(sensor,'volts hline',[1, 155]);  % (x,y), not (row, col)
 %}
 
-%%
+
+%% Parse arguments
 
 if ieNotDefined('level'), level = 0.95; end
 if ieNotDefined('aeMethod'), aeMethod = 'default'; end
@@ -75,14 +88,14 @@ p = inputParser;
 varargin = ieParamFormat(varargin);
 
 % Required parameters
-p.addRequired('oi');
+p.addRequired('oi')
 p.addRequired('sensor');
 p.addRequired('level',@isscalar);
 p.addRequired('aemethod',@ischar)
 
 % Optional Key/val Parameters
 p.addParameter('centerrect',[],@isvector);
-p.addParameter('videomax',1/60 - 0.004,@isscalar);   % Maximum exposure duration sec
+p.addParameter('videomax',1/60,@isscalar);   % Maximum exposure duration sec
 
 p.parse(oi,sensor,level,aeMethod,varargin{:});
 centerRect = p.Results.centerrect;
@@ -112,17 +125,19 @@ end
 
 %---------------------------
 function [integrationTime,maxSignalVoltage,smallOI] = aeLuminance(OI,sensor,level)
-% This is the default autoexposure method.
+% The default autoexposure method.
 %
-% It extracts the brightest part of the image (oiExtractBright) and sets
-% the integration time so that the brightest part is at a fraction of
-% voltage swing.
+% Extracts the brightest part of the image (oiExtractBright) and sets the
+% integration time so that the brightest part is at a fraction of voltage
+% swing.
 %
 % Because this method only calculates the voltages for a small portion of
-% the image, it is a lot faster than computing the full image.  It is,
-% however, not used with real imagers.  We will be writing other algorithms
-% to evaluate auto-exposure routines that can be implemented in real
-% hardware.
+% the image (the brightest)), it is a lot faster than computing the full
+% image. We are not sure if in practice only the brightest part can be
+% extracted.
+%
+% See also
+%   oiExtractBright
 
 voltageSwing = sensorGet(sensor,'pixel voltage swing');
 
@@ -146,7 +161,6 @@ smallOI = oiSet(smallOI,'wangular',2*sensorFOV);
 % duration. (Generally, the voltage at 1 sec is larger than the voltage
 % swing.)
 %
-
 signalVoltage = sensorComputeImage(smallOI,smallSensor);
 maxSignalVoltage = max(signalVoltage(:));
 
@@ -299,14 +313,16 @@ p.parse(oi,sensor,level,varargin{:});
 rect = p.Results.centerrect;
 centerOI = oiCrop(oi,rect);
 
-% Turn off noise and set to unit exposure time
-sensor = sensorSet(sensor,'noise flag',0);
-sensor = sensorSet(sensor,'exp time',1);
+% Cut down the sensor size, turn off noise and set to 1 s exposure time
+smallSensor = sensorSetSizeToFOV(sensor,oiGet(centerOI,'fov'));
+smallSensor = sensorSet(smallSensor,'noise flag',0);
+smallSensor = sensorSet(smallSensor,'exp time',1);
+smallSensor = sensorClearData(smallSensor);
 
 % Store the voltage swing
-voltageSwing = sensorGet(sensor,'pixel voltage swing');
+voltageSwing = sensorGet(smallSensor,'pixel voltage swing');
 
-signalVoltage    = double(sensorComputeImage(centerOI,sensor));
+signalVoltage    = double(sensorComputeImage(centerOI,smallSensor));
 maxSignalVoltage = max(signalVoltage(:));
 
 % Find the integration time
