@@ -269,23 +269,28 @@ switch oType
             case {'distance','imagedistance','focalplanedistance'}
                 % oiGet(oi,'focal plane distance',[scene])
                 %
-                % We calculate the distance from the lens to the focal
-                % plane. The focal plane depends on the scene distance.  If
-                % there is no scene, we assume the user meant a scene at
-                % infinity.
-                %
-                % Very confusing because there is another opticsGet() on
-                % these same parameters.  So why do we use an oiGet() and
-                % an opticsGet() with the same parameters.
+                % Calculate the distance from the lens to the focal plane.
+                % We set the scene distance here, and then call
+                %     opticsGet(optics,'image distance') 
+                % 
+                % March 11, 2019 (BW) Created the minSize = 10 variable and
+                % set the new logic was 5.  This was in response to an
+                % observation by Zhenyi.
+                
+                % The focal plane depends on the scene distance.  If there
+                % is no scene, we check the depth map.  If there is no
+                % depth map we assume very far away.
                 if isempty(varargin)
-                    % No scene was sent in.  So, we use the oi depth map to
-                    % figure out the scene distance in the middle
+                    % No scene distance sent in.  So, we use the oi depth
+                    % map to figure out the scene distance in the middle
                     if checkfields(oi,'depthMap') && ~isempty(oi.depthMap)
                         sz = size(oi.depthMap);
-                        if  sz(1) < 5 || sz(2) < 5
+                        minSize = 10;
+                        if  sz(1) < 2*minSize || sz(2) < 2*minSize
                             sDist = mean(oi.depthMap(:));
                         else
-                            sDist = getMiddleMatrix(oi.depthMap,5);
+                            % Use the middle of the depth map
+                            sDist = getMiddleMatrix(oi.depthMap,minSize);
                             sDist = mean(sDist(:));
                         end
                     else
@@ -293,10 +298,15 @@ switch oType
                         sDist = 1e10;
                     end
                 else
+                    % The scene distance was sent in
                     sDist = sceneGet(varargin{1},'distance','m');
                 end
-                
+ 
+                % Call the optics version of this routine, with the sDist
+                % set.
                 val = oiGet(oi,'optics image distance',sDist);
+                
+                % Adjust the units
                 if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
                 
             case {'wangular','widthangular','hfov','horizontalfieldofview','fov'}
