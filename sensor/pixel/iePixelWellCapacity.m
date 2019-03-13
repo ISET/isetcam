@@ -17,38 +17,42 @@ function [electrons, wellCapacity] = iePixelWellCapacity(pixelSize)
 % Description:
 %
 %{
-% Extrapolations to pixel sizes based on data from Boyd and the idea
-% that the well capacity is proportional to the pixel area.
+% This is the method we used to interpolate full well capacity (FWC) from 
+% pixel sizes based on data from our colleague (Boyd). 
 
-clear wellCapacity;
-wellCapacity(:,1) = [0.7 0.8 1.0 1.1 ]';
-wellCapacity(:,2) = [4000 5500 7500 10000]';
+clear wellCapacity; 
+wellCapacity(:,1) = [0.7   0.8 1.0   1.1  2     3       4.2]'; 
+wellCapacity(:,2) = [4000 5500 7500 10000 17500 25000   35000]';
 
-area = wellCapacity(:,1).^2;
-electrons = wellCapacity(:,2);
-slope = area\electrons;
+psize = wellCapacity(:,1); electrons = wellCapacity(:,2); 
+ieNewGraphWin;
+plot(psize,electrons,'ro-'); slope = psize\electrons;
 
-simulatedArea = 0:.1:36;
-predicted = simulatedArea*slope;
-ieNewGraphWin; plot(area,electrons,'ro',simulatedArea,predicted,'b-');
+% Second order polynomial does pretty well.
+p = polyfit(psize,electrons,2);
 
-simulatedSize = simulatedArea.^0.5;
-plot(wellCapacity(:,1),electrons,'ro',simulatedSize,predicted,'b-');
+% Interpolate to a fine resolution where further linear will be OK
+simulatedSize = 0:.1:7;    % This is an extrapolation ...
+simulatedFWC  = polyval(p,simulatedSize);
 
-clear wellCapacity;
-wellCapacity(:,1) = simulatedSize(:);
-wellCapacity(:,2) = predicted(:);
+ieNewGraphWin; 
+plot(psize,electrons,'ro',simulatedSize,simulatedFWC,'b-');
+xlabel('Pixel size (um)'); ylabel('FWC (electrons)'); grid on
 
-% This is what we wrote out in the file we are reading in.
+clear wellCapacity; 
+wellCapacity(:,1) = simulatedSize(:); 
+wellCapacity(:,2) = simulatedFWC(:);
+
+% This is what we wrote out in the file we are reading in. 
 fname = fullfile(isetRootPath,'data','sensor','wellCapacity');
 save(fname,'wellCapacity');
 
 %}
 %
-%    From an older online reference.
+%    NOTES:  From an older online reference.
 %    http://www.clarkvision.com/articles/digital.sensor.performance.summary/
 %
-%    Boyd Fowler says those numbers are way off.  
+%    Boyd says those numbers are way off.  
 %
 %    Other values are from the papers cited in 
 %    https://www.cse.wustl.edu/~jain/cse567-11/ftp/imgsens/index.html
@@ -69,26 +73,18 @@ save(fname,'wellCapacity');
 
 % Examples:
 %{
-  pSizeUM = 1;
+  pSizeUM = 4.2;
   fprintf('Well capacity %d\n',round(iePixelWellCapacity(pSizeUM)))
 %}
-
 %{
-  pSizeUM = 1;
+  pSizeUM = 2;
   [electrons, wellCapacity] = iePixelWellCapacity(pSizeUM);
-%}
-%{
-clear wellCapacity
-wellCapacity(:,1) = [0.7 0.8 1.0 1.1]';
-wellCapacity(:,2) = [4000 5500 7500 10000]';
-ieNewGraphWin; plot(wellCapacity(:,1),wellCapacity(:,2),'ro');
-hold on; plot(wc(:,1),wc(:,2),'b-');
-xlabel('Pixel size (um)'); ylabel ('FWC (electrons)');
-grid on
 %}
 %{
    [~,wc] = iePixelWellCapacity([]);
    ieNewGraphWin; plot(wc(:,1),wc(:,2));
+   xlabel('Pixel size (um)'); ylabel('FWC (electrons)');
+   grid on;
 %}
 %%
 p = inputParser;
