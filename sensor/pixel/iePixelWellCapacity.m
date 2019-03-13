@@ -15,13 +15,40 @@ function [electrons, wellCapacity] = iePixelWellCapacity(pixelSize)
 %   wellCapacity:  columns of pixel size (microns) and FWC (electrons)
 %
 % Description:
-%    From an online reference.
+%
+%{
+% Extrapolations to pixel sizes based on data from Boyd and the idea
+% that the well capacity is proportional to the pixel area.
+
+clear wellCapacity;
+wellCapacity(:,1) = [0.7 0.8 1.0 1.1 ]';
+wellCapacity(:,2) = [4000 5500 7500 10000]';
+
+area = wellCapacity(:,1).^2;
+electrons = wellCapacity(:,2);
+slope = area\electrons;
+
+simulatedArea = 0:.1:36;
+predicted = simulatedArea*slope;
+ieNewGraphWin; plot(area,electrons,'ro',simulatedArea,predicted,'b-');
+
+simulatedSize = simulatedArea.^0.5;
+plot(wellCapacity(:,1),electrons,'ro',simulatedSize,predicted,'b-');
+
+clear wellCapacity;
+wellCapacity(:,1) = simulatedSize(:);
+wellCapacity(:,2) = predicted(:);
+
+% This is what we wrote out in the file we are reading in.
+fname = fullfile(isetRootPath,'data','sensor','wellCapacity');
+save(fname,'wellCapacity');
+
+%}
+%
+%    From an older online reference.
 %    http://www.clarkvision.com/articles/digital.sensor.performance.summary/
 %
-%    Boyd Fowler says those numbers are way off.  He says for 0.7 to 1.1
-%
-%      wellCapacity(:,1) = [0.7 0.8 1.0 1.1 1.4 8]';
-%      wellCapacity(:,2) = [4000 5500 7500 10000 4100 130000]';
+%    Boyd Fowler says those numbers are way off.  
 %
 %    Other values are from the papers cited in 
 %    https://www.cse.wustl.edu/~jain/cse567-11/ftp/imgsens/index.html
@@ -45,10 +72,7 @@ function [electrons, wellCapacity] = iePixelWellCapacity(pixelSize)
   pSizeUM = 1;
   fprintf('Well capacity %d\n',round(iePixelWellCapacity(pSizeUM)))
 %}
-%{
-   [~,wc] = iePixelWellCapacity([]);
-   ieNewGraphWin; plot(wc(:,1),wc(:,2));
-%}
+
 %{
   pSizeUM = 1;
   [electrons, wellCapacity] = iePixelWellCapacity(pSizeUM);
@@ -58,11 +82,14 @@ clear wellCapacity
 wellCapacity(:,1) = [0.7 0.8 1.0 1.1]';
 wellCapacity(:,2) = [4000 5500 7500 10000]';
 ieNewGraphWin; plot(wellCapacity(:,1),wellCapacity(:,2),'ro');
-hold on; plot(wc(:,1),wc(:,2),'o');
+hold on; plot(wc(:,1),wc(:,2),'b-');
 xlabel('Pixel size (um)'); ylabel ('FWC (electrons)');
 grid on
 %}
-
+%{
+   [~,wc] = iePixelWellCapacity([]);
+   ieNewGraphWin; plot(wc(:,1),wc(:,2));
+%}
 %%
 p = inputParser;
 p.addRequired('pixelSize',@(x)(isscalar(x) || isempty(x)));
@@ -80,7 +107,7 @@ fname = fullfile(isetRootPath,'data','sensor','wellCapacity');
 load(fname,'wellCapacity');
 
 if ~isempty(pixelSize)
-    if (pixelSize < 1 || pixelSize > 8)
+    if (pixelSize < 0.5 || pixelSize > 8)
         warning('Pixel size (%.2f microns) out of typical range',pixelSize);
     end
     electrons = interp1(wellCapacity(:,1),wellCapacity(:,2),pixelSize,...
