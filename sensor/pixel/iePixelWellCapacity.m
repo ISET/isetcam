@@ -81,10 +81,13 @@ save(fname,'wellCapacity');
   [electrons, wellCapacity] = iePixelWellCapacity(pSizeUM);
 %}
 %{
+%  The curve extrapolates to a negative well capacity, so we clip that
    [~,wc] = iePixelWellCapacity([]);
-   ieNewGraphWin; plot(wc(:,1),wc(:,2));
+   l = (wc(:,2) > 0)
+   ieNewGraphWin; plot(wc(l,1),wc(l,2));
    xlabel('Pixel size (um)'); ylabel('FWC (electrons)');
    grid on;
+  
 %}
 %%
 p = inputParser;

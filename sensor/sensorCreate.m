@@ -178,7 +178,7 @@ switch sensorName
         
     case {'mt9v024'}
         % ON 6um sensor.  It can be mono, rgb, or rccc
-        % sensor = sensorCreate('MT90V24',[],'rccc');
+        % sensor = sensorCreate('MT9V024',[],'rccc');
         if isempty(varargin)
             colorType = 'rgb';
         else 
@@ -418,11 +418,13 @@ end
 function sensor = sensorMT9V024(sensor,colorType)
 %% Create the ON MT9V024 model, based on the data sheet
 %
-% Called from sensorCreate with the sensor somewhat initialized.
+% Called from sensorCreate.  Loads the relevant sensors that were
+% saved out by another function
 %
 % Copyright Imageval, LLC 2017
-
-% From the spec sheet
+%
+% See also
+%   isetcam/data/sensor/auto for the MT9V024Create.m
 
 % 480 x 752 pixels
 % 6 um pixels
@@ -434,58 +436,40 @@ function sensor = sensorMT9V024(sensor,colorType)
 % 100 dB HDR mode
 % 2x2 and 4x4 binning are available.
 
+%{
 pixelSize  = 6*1e-6; % Big pixels.  And they can be binned!
 fillFactor = 0.9;  % Assuming back side illuminated
 sensorSize = [480 752];    % Not important, really, but OK
 voltageSwing = 3.3;
+%}
 
 % Let's check this.  From the spec sheet
 % responsivity = 4.8;  % volts/lux-sec
 
 %% Create and set parameters
 
-sensor = sensorSet(sensor,'size',sensorSize);
-sensor = sensorSet(sensor,'pixel size same fill factor',pixelSize);
-
 switch colorType
     case 'mono'
-        pattern = 1;
-        colorFilterFile = fullfile(isetRootPath,'data','sensor','CMOS','MT9V024_Mono.mat');
-        sensor = sensorSet(sensor,'name','MT9V024_Mono');
+        name = 'MT9V024SensorMono';
         
     case 'rgb'
         % GB/RG
-        pattern    = [2 3; 1 2];
-        colorFilterFile = fullfile(isetRootPath,'data','sensor','CMOS','MT9V024_RGB.mat');
-        sensor = sensorSet(sensor,'name','MT9V024_RGB');
+        name = 'MT9V024SensorRGB';        
         
     case 'rccc'
         % Three white and one red
-        pattern    = [2 2; 2 1];
-        colorFilterFile = fullfile(isetRootPath,'data','sensor','CMOS','MT9V024_RCCC.mat');
-        sensor = sensorSet(sensor,'name','MT9V024_RCCC');
+        name = 'MT9V024SensorRCCC';
+        
+    case 'rgbw'
+        % Three white and one red
+        name = 'MT9V024SensorRGBW';
 
     otherwise
         error('Unknown type %s\n',colorType);
 end
 
-wave = 400:10:700;
-[filterSpectra, filterNames] = ieReadColorFilter(wave,colorFilterFile);
-sensor = sensorSet(sensor,'filter spectra',filterSpectra);
-sensor = sensorSet(sensor,'filter names',filterNames);
-sensor = sensorSet(sensor,'pattern',pattern);
-sensor = pixelCenterFillPD(sensor,fillFactor);
-
-sensor = sensorSet(sensor,'pixel read noise volts',1e-3);
-sensor = sensorSet(sensor,'pixel voltage swing',voltageSwing);
-sensor = sensorSet(sensor,'pixel dark voltage',1e-3);
-
-% Well capacity curve as a function of pixel size is:
-%  http://www.clarkvision.com/articles/digital.sensor.performance.summary/#full_well
-%
-% We set the conversion gain to match the curve for a 6um pixel.
-% That has a well capacity of 60,000.
-sensor = sensorSet(sensor,'pixel conversion gain',voltageSwing/60000);
+sensorFile = fullfile(isetRootPath,'data','sensor','auto',name);
+load(sensorFile,'sensor');
 
 end
 
