@@ -468,7 +468,10 @@ switch pType
         else
             imagesc(dmap); colormap(flipud(gray))
             namestr = sprintf('Depth map (max=%.1f)',max(dmap(:)));
-            axis off; set(g,'Name',namestr);
+            set(g,'Name',namestr);
+            colormap(flipud(gray));
+            axis image; cb = colorbar;
+            set(get(cb,'label'),'string','Meters','Rotation',90)
         end
         udata.dmap = dmap;
     case {'depthmapcontour','depthcontour'}

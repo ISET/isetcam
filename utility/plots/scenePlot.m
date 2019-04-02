@@ -674,7 +674,8 @@ switch lower(pType)
             % Far is dark, close is light
             
             colormap(flipud(gray));
-            axis image; colorbar;
+            axis image; cb = colorbar;
+            set(get(cb,'label'),'string','Meters','Rotation',90)
         end
         udata = dmap;
 
