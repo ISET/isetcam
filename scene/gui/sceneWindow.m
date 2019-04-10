@@ -647,7 +647,6 @@ function menuFileRef_Callback(hObject, eventdata, handles)
 sceneRefresh(hObject, eventdata, handles);
 return;
 
-
 % --------------------------------------------------------------------
 function sceneRefresh(hObject, eventdata, handles)
 % Refresh callback.
@@ -664,7 +663,7 @@ return;
 
 % --------------------------------------------------------------------
 function menuSceneMacbethC_Callback(hObject, eventdata, handles)
-val = vcNewObjectValue('SCENE');
+% val = vcNewObjectValue('SCENE');
 scene =  sceneCreate('macbethC');
 ieAddObject(scene);
 sceneRefresh(hObject, eventdata, handles);
@@ -673,7 +672,7 @@ return;
 % --------------------------------------------------------------------
 function menuSceneMacbethTungsten_Callback(hObject, eventdata, handles)
 
-val = vcNewObjectValue('SCENE');
+% val = vcNewObjectValue('SCENE');
 scene =  sceneCreate('macbethTungsten');
 ieAddObject(scene);
 sceneRefresh(hObject, eventdata, handles);
@@ -683,7 +682,7 @@ return;
 % --------------------------------------------------------------------
 function menuSceneMacbethD50_Callback(hObject, eventdata, handles)
 
-val = vcNewObjectValue('SCENE');
+% val = vcNewObjectValue('SCENE');
 scene =  sceneCreate('macbethD50');
 ieAddObject(scene);
 sceneRefresh(hObject, eventdata, handles);
@@ -693,7 +692,7 @@ return;
 % --------------------------------------------------------------------
 function menuSceneMacbethFluorescent_Callback(hObject, eventdata, handles)
 
-val = vcNewObjectValue('SCENE');
+% val = vcNewObjectValue('SCENE');
 scene =  sceneCreate('macbethFluorescent');
 ieAddObject(scene);
 sceneRefresh(hObject, eventdata, handles);
@@ -703,7 +702,7 @@ return;
 % --------------------------------------------------------------------
 function menuSceneMacbethD65_Callback(hObject, eventdata, handles)
 
-val = vcNewObjectValue('SCENE');
+% val = vcNewObjectValue('SCENE');
 scene =  sceneCreate('macbethD65');
 ieAddObject(scene);
 sceneRefresh(hObject, eventdata, handles);

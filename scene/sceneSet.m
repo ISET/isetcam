@@ -64,8 +64,9 @@ function scene = sceneSet(scene,parm,val,varargin)
 %         Though, this is being deprecated.
 %
 % Auxiliary
-%      'consistency' - Display consistent with window data
-%      'gamma'       - Gamma parameter for displaying image data
+%      'consistency'  - Display consistent with window data
+%      'gamma'        - Gamma parameter for displaying image data
+%      'display mode' - Sets sceneWindow display 'rgb','hdr','gray','clip'
 %      'rect'         - A rect region of interest
 %
 % Used to store the scene luminance rather than recompute (i.e., cache)
@@ -104,13 +105,34 @@ switch parm
         set(hdl.editGamma,'string',num2str(val));
         % sceneWindow('sceneRefresh',hObj,eventdata,hdl);
         sceneWindow;
+    case {'displaymode'}
+        % sceneSet(scene,'display mode','hdr');
+        
+        switch val
+            case 'hdr'
+                val = 3;
+            case 'rgb'
+                val = 1;
+            case 'gray'
+                val = 2;
+            case 'clip'
+                val = 4;
+            otherwise
+                fprintf('Legal display modes: rgb, gray, hdr, clip\n');
+        end
+        
+        hdl = ieSessionGet('scene window handle');
+        set(hdl.popupDisplay,'Value',val);
+        
+        % sceneWindow('sceneRefresh',hObj,eventdata,hdl);
+        sceneWindow;
         
     case {'distance' }
         % Positive for scenes, negative for optical images
         scene.distance = val;
 
     case {'wangular','widthangular','hfov','horizontalfieldofview','fov'}
-        if val > 180, val = 180 - eps; warndlg('Warning: fov > 180');
+        if val > 180,   val = 180 - eps; warndlg('Warning: fov > 180');
         elseif val < 0, val = eps; warndlg('Warning fov < 0');
         end
         scene.wAngular = val;
