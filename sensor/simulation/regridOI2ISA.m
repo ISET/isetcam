@@ -107,7 +107,13 @@ interpolatedCFAN = interpcfaSCDI(newRows, newCols, sensor, spacing);
 heightSamplesPerPixel = ceil(sensorHeightSpacing / oiHeightSpacing); 
 widthSamplesPerPixel  = ceil(sensorWidthSpacing  / oiWidthSpacing);
 
-% Build the Gaussian kernel.  Assuming a square pixel.
+% Build the Gaussian kernel.  Assuming a square pixel. (April, 2019)
+% The std. dev. of the Gaussian kernel is 1/4 of the number of samples
+% per pixel, so that the averaging (+/-2 s.d.) is the whole pixel
+% size.
+%
+% Notice that when there is only 1 OI sample per pixel, the support is
+% just [1,1] so that the Gaussian blur is irrelevant.
 gKernel = fspecial('gaussian', ...
     [heightSamplesPerPixel widthSamplesPerPixel], ...
     heightSamplesPerPixel/4); 
@@ -116,20 +122,38 @@ gKernel = fspecial('gaussian', ...
 % gKernel = ones(heightRatio, widthRatio)/(heightRatio*widthRatio);
 
 % warning('off','MATLAB:interp1:NaNinY');
-for ii=1:nFilters
-
-    % We only apply the Gaussian blur if the number of OI samples per
-    % sensor pixel is bigger than one and the person has nots
-    % specifically set a slot asking for 'linear' interpolation.  We
-    % need to DOCUMENT this 'interp' slot.  It is not yet in the
-    % sensorCreate or anywhere.
+for ii=1:nFilters  
     
     scdi(:,:,ii) = conv2(scdi(:,:,ii), gKernel, 'same');
     %{
+    % The logic of the Gaussian blur is this
+    %
+    % Suppose the number of OI samples per sensor pixel is bigger than 1 
+    %
+    %        |  |  |  |  |  |  |    OI
+    %              ---------
+    %             |         |
+    %             |  Pixel  |
+    %             |         |
+    %
+    % In this case, the linear interpolation between the two OI samples 
+    % near the center of the pixel is not really what we want.  We want the
+    % average across all the OI samples within the pixel.  So we blur
+    % by a number of samples that equals the width of the pixel.
+    %
+    % We could conditionalize the blurring in this way
+    %
     if (heightSamplesPerPixel > 1 || widthSamplesPerPixel > 1) && ...
             (isfield(sensor,'interp') && ~isequal(sensor.interp,'linear'))
         scdi(:,:,ii) = conv2(scdi(:,:,ii), gKernel, 'same');
     end
+    %
+    % But, when the OI samples are more widely spaced than the pixel
+    % size, the Gaussian is basically an impulse and has no impact.  
+    % So, we haven't written the code to distinguish, we just let the
+    % convolution run in both cases, knowing that when there are few
+    % samples per pixel the blur is irrelevant
+    %
     %}
             
     % After the potential Gaussian blurring of the OI to average
