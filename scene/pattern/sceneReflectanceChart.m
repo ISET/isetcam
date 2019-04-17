@@ -31,18 +31,30 @@ function [scene, sSamples, reflectance, rcSize] = sceneReflectanceChart(sFiles,s
 %
 % If a specific set of samples is chosen they are written out in row
 % first ordering, [ 1 4 7; 2 5 8; 3 6 9]
-%  
-%Example:
-%  s = sceneCreate('reflectance chart');
-%  sceneGet(s,'chart parameters');
-%  ieAddObject(s); sceneWindow;
 %
 % Copyright ImagEval Consultants, LLC, 2010.
 %
 % See also: 
 %   macbethChartCreate, sceneRadianceChart
 
+% Examples:
+%{
+ s = sceneCreate('reflectance chart');
+ p = sceneGet(s,'chart parameters');
+ sceneWindow(s);
+%}
+%{
+ s2 = sceneReflectanceChart(p.sFiles,p.sSamples,p.pSize,p.wave,p.grayFlag,p.sampling);
+ sceneWindow(s2);
+%}
+%{
+ s  = sceneCreate('reflectance chart');
+ p  = sceneGet(s,'chart parameters');
+ s2 = sceneCreate('reflectance chart',p);
+ sceneWindow(s); sceneWindow(s2);
+%}
 
+%%
 if ieNotDefined('sFiles'), error('Surface files required'); 
 else,                      nFiles = length(sFiles);
 end
@@ -51,7 +63,7 @@ if ieNotDefined('pSize'),    pSize = 32; end
 if ieNotDefined('grayFlag'), grayFlag = 1; end
 if ieNotDefined('sampling'), sampling = 'r'; end %With replacement by default
 
-% Default scene
+%% Default scene
 scene = sceneCreate;
 if ieNotDefined('wave'), wave = sceneGet(scene,'wave');
 else,                    scene = sceneSet(scene,'wave',wave);
@@ -147,8 +159,12 @@ chartP.sFiles   = sFiles;
 chartP.sSamples = sSamples;
 chartP.grayFlag = grayFlag;
 chartP.sampling = sampling;
-chartP.rowcol   = rcSize;
+chartP.pSize    = pSize;
+chartP.wave     = wave;
+
 chartP.XYZ      = XYZ;
+chartP.rowcol   = rcSize;
+
 scene = sceneSet(scene,'chart parameters',chartP);
 
 end

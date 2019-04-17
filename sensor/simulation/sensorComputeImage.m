@@ -1,47 +1,53 @@
 function [voltImage, dsnu, prnu] = sensorComputeImage(oi,sensor,wBar)
-%Main routine for computing the sensor voltage data from the optical image
+% Main routine to comput the sensor voltage data from the optical image
 %
+% Syntax:
 %  [voltImage,dsnu,prnu] = sensorComputeImage(oi,sensor,wBarHandles)
 %
-% Compute the sensor voltage image from the sensor parameters and the
-% optical image. This is the main computational routine used to compute
-% the sensor image, and it calls a variety of sub-routines that implement
-% many parts of the calculation.
+% Brief description:
+%  Compute the expected sensor voltage image from the sensor parameters and
+%  the optical image.  It calls a variety of sub-routines that implement
+%  many parts of the calculation.  The voltages returned here are not
+%  clipped by the voltage swing.  That is done in the sensorCompute()
+%  function.
 %
-% The spatial array of volts is routined by this routine.  In addition, the
-% fixed pattern offset (dsnu) and photoresponse nonuniformity (prnu) can
-% also be returned.  
-%   
-% To suppress the display of waitbars, set showBar to 0.  Default is 1.
+% Inputs:
+%   oi:           Optical image
+%   sensor:       Sensor
+%   wBarHandles:  Handle to a waitbar.  If empty or missing, no waitbar shown
 %
-%   COMPUTATIONAL OVERVIEW
+% Outputs
+%  voltImage: the spatial array of volts (not clipped by voltage swing). 
+%  dsnu:      the dark signal nonuniformity (fixed pattern offset)
+%  prnu:      the photoresponse nonuniformity (pixel-level gain)
 %
-%       1.  The current generated at each pixel by the signal is computed
-%       (signalCurrent).  This is converted to a voltage using the cur2volt
-%       parameter.
+% COMPUTATIONAL OVERVIEW
 %
-%       2.  The dark voltage is computed and added to the signal.
+%   1.  The current generated at each pixel by the signal is computed
+%   (signalCurrent).  This is converted to a voltage using the cur2volt
+%   parameter.
 %
-%       3.  Shot noise is computed for the sum of signal and dark voltage
-%       signal. This noise is added.  Hence, the Poisson noise includes
-%       both the uncertainty due to the signal and the uncertainty due to
-%       the dark voltage.  (It is possible to turn this off by a scripting
-%       command using sensorSet(sensor,'shotNoiseFlag',0)).
+%   2.  The dark voltage is computed and added to the signal.
 %
-%       4.  Read noise is added.
+%   3.  Shot noise is computed for the sum of signal and dark voltage
+%   signal. This noise is added.  Hence, the Poisson noise includes both
+%   the uncertainty due to the signal and the uncertainty due to the dark
+%   voltage.  (It is possible to turn this off by a scripting command using
+%   sensorSet(sensor,'shotNoiseFlag',0)).
 %
-%       5.  If the sensor fixed pattern noises, DSNU and PRNU  were
-%       previously stored, they are added/multipled into the signal.
-%       Otherwise, they are computed and stored and then combined into the
-%       signal.
+%   4.  Read noise is added.
 %
-%       6.  If column FPN is selected and stored, it is retrieved and
-%       combined into the signal.  If column FPN is selected but not
-%       stored, it is computed and applied. Finally, if it is not selected,
-%       it is not applied.
+%   5.  If the sensor fixed pattern noises, DSNU and PRNU  were previously
+%   stored, they are added/multipled into the signal. Otherwise, they are
+%   computed and stored and then combined into the signal.
 %
-%       7.  Analog gain (ag) and analog offset (ao) are applied to the
-%       voltage image: voltImage = (voltImage + ao)/ag;
+%   6.  If column FPN is selected and stored, it is retrieved and combined
+%   into the signal.  If column FPN is selected but not stored, it is
+%   computed and applied. Finally, if it is not selected, it is not
+%   applied.
+%
+%   7.  Analog gain (ag) and analog offset (ao) are applied to the
+%   voltage image: voltImage = (voltImage + ao)/ag;
 %
 %   Many more notes on the calculation, including all the units are
 %   embedded in the comments below. 
@@ -52,12 +58,15 @@ function [voltImage, dsnu, prnu] = sensorComputeImage(oi,sensor,wBar)
 %  Example:
 %     volts = sensorComputeImage(vcGetObject('oi'),vcGetObject('sensor'));
 %
-% Copyright ImagEval Consultants, LLC, 2003.
+% Copyright ImagEval Consultants, LLC, 2003
+%
+% See also
+%   sensorCompute
 
 %% Define parameters
 if ~exist('sensor','var') || isempty(sensor), errordlg('sensor required.'); end
 if ~exist('oi','var') || isempty(oi), errordlg('Optical image required.'); end
-if ~exist('wBar','var') || isempty(wBar), showBar = 0; else showBar = 1; end
+if ~exist('wBar','var') || isempty(wBar), showBar = 0; else, showBar = 1; end
 
 q = vcConstants('q');                       %Charge/electron
 pixel = sensorGet(sensor,'pixel');
@@ -78,7 +87,7 @@ cur2volt = cur2volt(:);
 
 % Calculate the signal current assuming cur2volt = 1;
 if showBar, unitSigCurrent = signalCurrent(oi,sensor,wBar);
-else        unitSigCurrent = signalCurrent(oi,sensor);
+else,       unitSigCurrent = signalCurrent(oi,sensor);
 end
 
 %% Convert to volts
@@ -114,7 +123,7 @@ sensor   = sensorSet(sensor,'volts',voltImage);
 sensor = sensorSet(sensor,'volts',voltImage);
 
 % Something went wrong.  Return data empty,  including the noise images.
-if isempty(voltImage),  
+if isempty(voltImage)  
     dsnu = []; prnu = []; 
     return; 
 end
@@ -177,7 +186,7 @@ sensor = sensorSet(sensor,'volts',voltImage);
 % Now we check for column FPN value.  If data exist then we compute column
 % FPN noise.  Otherwise, we carry on.
 if isempty(sensorGet(sensor,'coloffsetfpnvector')) || isempty(sensorGet(sensor,'colgainfpnvector'))
-else voltImage = noiseColumnFPN(sensor);
+else, voltImage = noiseColumnFPN(sensor);
 end
 
 %% Analog gain simulation
@@ -195,5 +204,5 @@ ag = sensorGet(sensor,'analogGain');
 ao = sensorGet(sensor,'analogOffset');
 voltImage = (voltImage + ao)/ag;
 
-return;
+end
 

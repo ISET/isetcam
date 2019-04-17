@@ -12,7 +12,7 @@ function [outSensor, unitSigCurrent] = sensorCompute(sensor,oi,showBar)
 %
 % Return
 %    sensor: Image sensor (possibly an array of sensors). The computed
-%    voltage data are stored in the sensor.
+%            voltage data are stored in the sensor.
 %
 %  The computation checks a variety of parameters and flags in the sensor
 %  structure to perform the calculation.  These parameters and flags can be
@@ -54,29 +54,29 @@ function [outSensor, unitSigCurrent] = sensorCompute(sensor,oi,showBar)
 %   This is an overview of the algorithms.  The specific algorithms are
 %   described in the routines themselves.
 %
-%   1. Set exposure duration: autoExposure (or not), exposure model
+%   1. Check exposure duration: autoExposure default, or use the set
+%      time.
 %   2. Compute the mean image: sensorComputeImage()
-%   3. Etendue calculation
+%   3. Etendue calculation to account for pixel vignetting 
 %   4. Noise, analog gain, clipping, quantization
 %   5. Correlated double-sampling
-%   6. Handle Macbeth ROI management
+%   6. Macbeth ROI management
 %
 %  The value of showBar determines whether the waitbar is displayed to
 %  indicate progress during the computation.
 %
-% See also:  sensorComputeNoise, sensorAddNoise
-%
-% Examples:
-%   sensor = sensorCompute;   % Use selected sensor and oi
-%   tmp = sensorCompute(vcGetObject('sensor'),vcGetObject('oi'),0);
-%
-%  Or, compute with specific sensors
-%   scene = sceneCreate; scene = sceneSet(scene,'hfov',4);
-%   oi = oiCreate; sensor = sensorCreate;
-%   oi = oiCompute(oi,scene); sensor = sensorCompute(sensor,oi);
-%   sensorWindow(sensor);
-%
 % Copyright ImagEval Consultants, LLC, 2011
+%
+% See also:  
+%   sensorComputeNoise, sensorAddNoise
+
+% Examples:
+%{
+  scene = sceneCreate; scene = sceneSet(scene,'hfov',4);
+  oi = oiCreate; oi = oiCompute(oi,scene); 
+  sensor = sensorCreate; sensor = sensorCompute(sensor,oi);
+  sensorWindow(sensor);
+%}
 
 %% Define and initialize parameters
 if ~exist('sensor','var') || isempty(sensor), sensor = vcGetSelectedObject('sensor'); end
@@ -94,7 +94,12 @@ for ss=1:length(sensorArray)   % Number of sensors
     %% Standard compute path
     if showBar, wBar = waitbar(0,sprintf('Sensor %d image:  ',ss)); end
     
-    % Determine the exposure model
+    % Determine the exposure model - At this point we use either the
+    % default auto-exposure or we use the time the user set.  If you
+    % would like to use a different autoExposure model, run it before
+    % the sensorCompute call and set the integration time determined
+    % by that call.  Some day, we might allow the user to set the
+    % model here, but that is not currently the case.
     integrationTime = sensorGet(sensor,'integration Time');
     pattern = sensorGet(sensor,'pattern');
     if numel(integrationTime) == 1 && ...

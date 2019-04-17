@@ -161,7 +161,7 @@ ieAddObject(sensor);
 
 vci = ipCompute(vci,sensor);
 mtf = ieISO12233(vci);
-assert(abs(mtf.mtf50 - 80) < 3);
+assert(abs(mtf.mtf50 - 77) < 3);
 
 ieAddObject(vci); ipWindow;
 h = ieDrawShape(vci,'rectangle',mtf.rect);

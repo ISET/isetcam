@@ -63,13 +63,13 @@ rgbFile = fullfile(isetRootPath,'data','images','rgb','eagle.jpg');
 scene = sceneFromFile(rgbFile,'rgb',[],displayCalFile);
 
 % Show the scene
-ieAddObject(scene); sceneWindow; 
+sceneWindow(scene); 
 
 %% Change the illuminant to 6500 K
 
 bb = blackbody(sceneGet(scene,'wave'),6500,'energy');
 scene = sceneAdjustIlluminant(scene,bb);
-ieAddObject(scene); sceneWindow % Show the scene.
+sceneWindow(scene); % Show the scene.
 
 % Now the reflectances and the illuminant are plausible natural
 % measurements.  Not great, but plausible.

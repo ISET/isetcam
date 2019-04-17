@@ -26,10 +26,11 @@ function gauss = gauss(hwhm, support)
 
 if (nargin < 2),  error('Two input arguments required'); end
 
-alpha = 2*sqrt(log(2))/(hwhm-1);
 x     = (1:support)-round(support/2);
 
-gauss = exp(-alpha*alpha*x.*x);
+s = ieHwhm2SD(hwhm, 1);
+gauss = exp(-(x/(2.*s)).^2);
+
 gauss = gauss/sum(sum(gauss));
 
 return;

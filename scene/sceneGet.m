@@ -487,9 +487,9 @@ switch parm
         % RGB (3D array) of scene Stockman LMS values
         energy = sceneGet(scene,'energy');
         wave   = sceneGet(scene,'wave');
-        S      = ieReadSpectra('stockman',wave);
+        S      = ieReadSpectra('stockmanEnergy',wave);   % Changed March 2019 from 'stockman'
         if numel(wave) > 1, dWave = wave(2) - wave(1);
-        else                dWave = 10; disp('10 nm bandwidth assumed');
+        else,               dWave = 10; disp('10 nm bandwidth assumed');
         end
         [energy,r,c] = RGB2XWFormat(energy);
         val = energy*S*dWave;

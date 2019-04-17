@@ -228,30 +228,43 @@ switch sceneName
         scene = sceneDefault(scene,'d65',patchSize,wave,surfaceFile);
 
     case {'reflectancechart'}
-        % sceneCreate('reflectance chart',pSize,sSamples,sFiles,wave,grayFlag,sampling); 
+        % sceneCreate('reflectance chart',pSize,sSamples,sFiles,wave,grayFlag,sampling);
+        % sceneCreate('reflectance chart',chartP);
         % There is always a gray strip at the right.
         
-        % Default surface files
-        sFiles{1} = fullfile(isetRootPath,'data','surfaces','reflectances','MunsellSamples_Vhrel.mat');
-        sFiles{2} = fullfile(isetRootPath,'data','surfaces','reflectances','Food_Vhrel.mat');
-        sFiles{3} = fullfile(isetRootPath,'data','surfaces','reflectances','HyspexSkinReflectance.mat');
-
-        % Surface samples from the files
-        sSamples = [50 40 10];   % 100 samples, should be 10x10
-        pSize = 24;     % Patch size in pixels
-        wave = [];      % Wavelength samples
-        grayFlag = 1;   % Add a gray strip column on right
-        sampling = 'r'; % Sample with replacement
-        
-        if isempty(varargin)
+        if ~isempty(varargin) && isstruct(varargin{1})
+            chartP   = varargin{1};
+            sFiles   = chartP.sFiles;     % Surface reflectance files
+            sSamples = chartP.sSamples;   % 100 samples, should be 10x10
+            pSize    = chartP.pSize;      % Patch size in pixels
+            wave     = chartP.wave;       % Wavelength samples
+            grayFlag = chartP.grayFlag;   % Add a gray strip column on right
+            sampling = chartP.sampling;   % Sample with replacement
         else
-            pSize = varargin{1};
-            if length(varargin) > 1, sSamples = varargin{2}; end
-            if length(varargin) > 2, sFiles   = varargin{3}; end
-            if length(varargin) > 3, wave     = varargin{4}; end
-            if length(varargin) > 4, grayFlag = varargin{5}; end            
-            if length(varargin) > 5, sampling = varargin{6}; end
+            
+            % Default surface files
+            sFiles{1} = fullfile(isetRootPath,'data','surfaces','reflectances','MunsellSamples_Vhrel.mat');
+            sFiles{2} = fullfile(isetRootPath,'data','surfaces','reflectances','Food_Vhrel.mat');
+            sFiles{3} = fullfile(isetRootPath,'data','surfaces','reflectances','HyspexSkinReflectance.mat');
+            
+            % Surface samples from the files
+            sSamples = [50 40 10];   % 100 samples, should be 10x10
+            pSize = 24;     % Patch size in pixels
+            wave = [];      % Wavelength samples
+            grayFlag = 1;   % Add a gray strip column on right
+            sampling = 'r'; % Sample with replacement
+            
+            if isempty(varargin)
+            else
+                pSize = varargin{1};
+                if length(varargin) > 1, sSamples = varargin{2}; end
+                if length(varargin) > 2, sFiles   = varargin{3}; end
+                if length(varargin) > 3, wave     = varargin{4}; end
+                if length(varargin) > 4, grayFlag = varargin{5}; end
+                if length(varargin) > 5, sampling = varargin{6}; end
+            end
         end
+        
         scene = sceneReflectanceChart(sFiles,sSamples,pSize,wave,grayFlag,sampling);
 
     case {'lstar'}
@@ -291,7 +304,7 @@ switch sceneName
         end
         scene = sceneMackay(scene,radFreq,sz);
     case {'harmonic','sinusoid'}
-        if isempty(varargin),
+        if isempty(varargin)
             [scene,parms] = sceneHarmonic(scene);
         elseif length(varargin) == 1
             parms = varargin{1};
