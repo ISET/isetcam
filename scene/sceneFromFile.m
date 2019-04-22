@@ -212,7 +212,7 @@ if ischar(I),
     if strcmp(I((end-2):end),'mat') && ieVarInFile(I,'dist')
         load(I,'dist'), scene = sceneSet(scene,'distance',dist);
     end
-else n = 'rgb image';
+else, n = 'rgb image';
 end
 
 if exist('d', 'var'), n = [n ' - ' displayGet(d, 'name')]; end

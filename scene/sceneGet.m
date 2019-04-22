@@ -253,14 +253,18 @@ switch parm
             else
                 % waveBandPhotons = sceneGet(scene,'photons',500)
                 idx = ieFindWaveIndex(sceneGet(scene,'wave'),varargin{1});
-                val = double(scene.data.photons(:,:,idx));
+                if max(idx(:)) == 0
+                    warning('No data at wavelength %d\n',varargin{1});
+                else
+                    val = double(scene.data.photons(:,:,idx));
+                end
             end
         end
         
     case {'photonsnoise'}
         % sceneGet(scene,'photons noise',roiLocs);
         if isempty(varargin), roiLocs = [];
-        else roiLocs = varargin{1};
+        else, roiLocs = varargin{1};
         end
         
         val = scenePhotonNoise(scene,roiLocs);
