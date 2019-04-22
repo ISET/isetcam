@@ -26,9 +26,8 @@ ipWindow(ip);
 %% Rect on a scene
 
 scene = sceneCreate;
-rect = [1 50 10 5];  % row, col, width, height
-[shapeHandle,ax] = ieROIDraw('scene','shape','rect',...
-    'shape data',rect);
+rect = [20 50 10 5];  % row, col, width, height
+[shapeHandle,ax] = ieROIDraw('scene','shape','rect','shape data',rect,'line width',5);
 shapeHandle.LineStyle = ':';
 delete(shapeHandle);
 
