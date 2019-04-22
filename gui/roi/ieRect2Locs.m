@@ -4,11 +4,11 @@ function roiLocs = ieRect2Locs(rect)
 %   roiLocs = ieRect2Locs(rect)
 %
 % The rect is usually selected selected using the Matlab grphical user
-% interface. The rect values are: 
-%     [colMin rowMin (width-1) (height-1)].  
-% (Note that col is the x dimension and row is the y dimension).
+% interface. The rect values are:
 %
-% See also: vcROISelect(), ieLocs2Rect
+%     [colMin rowMin (width-1) (height-1)].  
+%
+% (Note that col is the x dimension and row is the y dimension).
 %
 % Example:
 %   rect = round(getrect(ieSessionGet('ipwindow')));
@@ -24,6 +24,8 @@ function roiLocs = ieRect2Locs(rect)
 % like this one.
 %
 % (c) Imageval, 2004
+% See also: vcROISelect(), ieLocs2Rect
+%
 
 % The rect entries are (colMin,rowMin,colWidth-1,rowWidth-1) 
 % The number of data values are colMax - colMin + 1 and similarly for the
