@@ -55,8 +55,8 @@ if ieNotDefined('comment'), comment = sprintf('Scene: %s',sceneGet(scene,'name')
 photons    = sceneGet(scene,'photons');
 wave       = sceneGet(scene,'wave');
 illuminant = sceneGet(scene,'illuminant');
-wAngular        = sceneGet(scene,'fov');
-distance       = sceneGet(scene,'distance');
+wAngular   = sceneGet(scene,'fov');
+distance   = sceneGet(scene,'distance');
 name       = sceneGet(scene,'name');
 
 spectrum = sceneGet(scene, 'spectrum');
