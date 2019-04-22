@@ -11,6 +11,8 @@ ieInit
 %% Create the baseline windows
 
 scene = sceneCreate;
+sceneWindow(scene);
+
 oi  = oiCreate;
 oi = oiCompute(oi,scene);
 oiWindow(oi);
@@ -25,7 +27,8 @@ ipWindow(ip);
 
 scene = sceneCreate;
 rect = [1 50 10 5];  % row, col, width, height
-[shapeHandle,ax] = ieROIDraw('scene','shape','rect','shape data',rect);
+[shapeHandle,ax] = ieROIDraw('scene','shape','rect',...
+    'shape data',rect);
 shapeHandle.LineStyle = ':';
 delete(shapeHandle);
 

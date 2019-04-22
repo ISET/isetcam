@@ -15,10 +15,12 @@ function [shapeHandle,ax] = ieROIDraw(isetobj,varargin)
 %  shape:    Type of shape  ('rect')
 %  shape data:  Values needed to draw the shape
 %       rect = [row col width height]
-%
+%       color
+%       linewidth
+%       linestyle
 %
 % Outputs
-%  shape handle: Shape with its parameters
+%  shapeHandle: Shape with its parameters
 %  ax:           Current axes of the ISET object window
 %
 % See also
@@ -29,13 +31,13 @@ function [shapeHandle,ax] = ieROIDraw(isetobj,varargin)
 %{
 scene = sceneCreate;
 rect = [1 50 10 5];  % row, col, width, height
-[shapeHandle,ax] = ieROIDraw('scene','shape','rect','shape data',rect);
+[shapeHandle,ax] = ieROIDraw('scene','shape','rect','shape data',rect,'line width',5);
 shapeHandle.LineStyle = ':';
 delete(shapeHandle);
 %}
 %{
 rect = [50 50 20 20];
-[shapeHandle,ax] = ieROIDraw('oi','shape','rect','shape data',rect);
+[shapeHandle,ax] = ieROIDraw('oi','shape','rect','shape data',rect,'line style',':');
 shapeHandle.LineStyle = ':';
 shapeHandle.EdgeColor = 'w';
 delete(shapeHandle);
@@ -54,6 +56,9 @@ p = inputParser;
 p.addRequired('isetobj',@ischar);
 p.addParameter('shape','rect',@ischar);
 p.addParameter('shapedata',[1 1 5 5],@isnumeric);
+p.addParameter('color','w',@ischar);
+p.addParameter('linewidth',2,@isnumeric);
+p.addParameter('linestyle','-',@ischar);
 
 p.parse(isetobj,varargin{:});
 shape = p.Results.shape;
@@ -81,6 +86,9 @@ switch shape
     case 'rect'
         rect = p.Results.shapedata;
         shapeHandle = rectangle(ax,'Position',rect);
+        shapeHandle.EdgeColor = p.Results.color;
+        shapeHandle.LineWidth = p.Results.linewidth;
+        shapeHandle.LineStyle = p.Results.linestyle;
     case 'circle'
         % shape data [r row col]
         % r =  radius
