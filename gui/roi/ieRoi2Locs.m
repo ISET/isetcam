@@ -17,9 +17,11 @@ function roiLocs = ieRoi2Locs(rect)
 % [col,row,1,1] returns four positions. [col,row,0,0] returns 1 position.
 % Blame it on C and Fortran. Or me.
 %
-% See also: vcROISelect(), ieLocs2Rect
-%
 % Copyright ImagEval Consultants, LLC, 2005.
+%
+% See also:
+%   vcROISelect(), ieLocs2Rect
+%
 
 
 % The rect entries are  The number of data
