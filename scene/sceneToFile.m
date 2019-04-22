@@ -31,16 +31,19 @@ function [varExplained, nBases] = sceneToFile(fname,scene,bType,mType,comment)
 % varExplained - Fraction of variance explained by the linear model
 % nBases       - Number of basis functions saved
 %
-%Examples:
-%   scene = sceneCreate;
-%   vcAddAndSelectObject(scene); sceneWindow;
-%   sceneToFile('deleteMe',scene,0.999);
-%   scene2 = sceneFromFile('deleteMe','multispectral');
-%   vcAddAndSelectObject(scene2); sceneWindow;
-%
 %   sceneToFile('deleteMe',scene,[]);
 %
 % (c) Imageval Consulting, LLC 2013
+
+% Examples:
+%{
+%   scene = sceneCreate;
+%   ieAddObject(scene); sceneWindow;
+%   sceneToFile('deleteMe',scene,0.999);
+%   scene2 = sceneFromFile('deleteMe','multispectral');
+%   ieAddObject(scene2); sceneWindow;
+%
+%}
 
 % TODO:
 %   Add depth image as potential output, not just dist
@@ -55,8 +58,8 @@ if ieNotDefined('comment'), comment = sprintf('Scene: %s',sceneGet(scene,'name')
 photons    = sceneGet(scene,'photons');
 wave       = sceneGet(scene,'wave');
 illuminant = sceneGet(scene,'illuminant');
-wAngular   = sceneGet(scene,'fov');
-distance   = sceneGet(scene,'distance');
+fov        = sceneGet(scene,'fov');
+dist       = sceneGet(scene,'distance');
 name       = sceneGet(scene,'name');
 
 spectrum = sceneGet(scene, 'spectrum');
@@ -66,7 +69,7 @@ data = sceneGet(scene, 'data');
 
 if isempty(bType)
     % No compression.
-    save(fname,'photons','wave','comment','illuminant','wAngular','distance','name',...
+    save(fname,'photons','wave','comment','illuminant','fov','dist','name',...
         'spectrum', 'type', 'magnification', 'data');
     varExplained = 1;
     nBases = length(wave);
@@ -76,12 +79,14 @@ else
     [imgMean, basisData, ~, varExplained] = hcBasis(photons,bType,mType);
     clear photons;
     
-    % Plot the basis functions
-    %   wList = sceneGet(scene,'wave');
-    %   vcNewGraphWin;
-    %   for ii = 1:size(basisData,2)
-    %       plot(wList,basisData(:,ii)); hold on
-    %   end   
+    %{
+     %Plot the basis functions
+       wList = sceneGet(scene,'wave');
+       vcNewGraphWin;
+       for ii = 1:size(basisData,2)
+           plot(wList,basisData(:,ii)); hold on
+       end   
+    %}
     
     photons           = sceneGet(scene,'photons');
     [photons,row,col] = RGB2XWFormat(photons);

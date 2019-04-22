@@ -36,7 +36,13 @@ ieAddObject(scene); sceneWindow;
 % This tests whether the new 'fov' and 'dist' read/write works
 vExplained = sceneToFile('testS2',scene);
 scene2 = sceneFromFile('testS2','multispectral');
-ieAddObject(scene2); sceneWindow;
+
+wave = sceneGet(scene,'wave');
+q1 = sceneGet(scene,'photons',wave(10));
+q2 = sceneGet(scene2,'photons',wave(10));
+ieNewGraphWin; title('Validating sceneToFile');
+plot(q1(1:10:end),q2(1:10:end),'.'); grid on; xlabel('scene 1'); ylabel('scene 2');
+assert(sceneGet(scene,'fov') == sceneGet(scene2,'fov'))
 
 %% Now try on a jpg image
 fullFileName = which('eagle.jpg');
