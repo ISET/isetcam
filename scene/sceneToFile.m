@@ -55,13 +55,19 @@ if ieNotDefined('comment'), comment = sprintf('Scene: %s',sceneGet(scene,'name')
 photons    = sceneGet(scene,'photons');
 wave       = sceneGet(scene,'wave');
 illuminant = sceneGet(scene,'illuminant');
-fov        = sceneGet(scene,'fov');
-dist       = sceneGet(scene,'distance');
+wAngular        = sceneGet(scene,'fov');
+distance       = sceneGet(scene,'distance');
 name       = sceneGet(scene,'name');
+
+spectrum = sceneGet(scene, 'spectrum');
+type     = sceneGet(scene, 'type');
+magnification = sceneGet(scene, 'magnification');
+data = sceneGet(scene, 'data'); 
 
 if isempty(bType)
     % No compression.
-    save(fname,'photons','wave','comment','illuminant','fov','dist','name');
+    save(fname,'photons','wave','comment','illuminant','wAngular','distance','name',...
+        'spectrum', 'type', 'magnification', 'data');
     varExplained = 1;
     nBases = length(wave);
 else
