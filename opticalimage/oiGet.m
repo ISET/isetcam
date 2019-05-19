@@ -738,18 +738,22 @@ switch oType
                 
                 % Visual information
             case {'rgb','rgbimage'}
-                % Get the rgb image shown in the window
-                % rgb = oiGet(oi,'rgb image',0.6);
-                % imwrite(rgb,fName,'tiff')
+                % Get the rgb image shown in the oiWindow
+                %
+                %  rgb = oiGet(oi,'rgb image');
+                %
+                % Uses oiShowImage() to compute the rgb data consistently
+                % with what is in the oiWindow.
+                
+                gam = oiGet(oi,'gamma');
+                handles = ieSessionGet('oi handles');
+                if isempty(handles), displayFlag = -1;
+                else,                displayFlag = -1*abs(get(handles.popupDisplay,'Value'));
+                end
+                val = oiShowImage(oi,displayFlag,gam);
                 
                 %{
-                handles = ieSessionGet('oi handles');
-                if isempty(handles)
-                   % warning('No RGB display window.  Using default method.');
-                end
-                displayFlag = get(handles.popupDisplay,'Value');
-                rgb = oiShowImage(oi,displayFlag,gam);
-                %}
+                OLD CODE
                 if isempty(varargin), gam = oiGet(oi,'display gamma');
                 else, gam = varargin{1};
                 end
@@ -764,13 +768,8 @@ switch oType
                 %
                 displayFlag = -1;  % Compute rgb, but do not display
                 val = imageSPD(photons,wList,gam,row,col,displayFlag);
+                %}
                 
-                % Depth information: The depth map in the OI domain indicates
-                % locations where there were legitimate scene data for computing
-                % the OI data.  Other regions are 'extrapolated' by sceneDepthRange
-                % to keep the calculations correct.  But they don't always
-                % correspond to the original data.  When there is no depthMap in
-                % the scene, these are all logically '1' (true).
             case {'displaygamma','gamma'}
                 % oiGet(oi,'gamma')
                 % There can be a conflict with the display window in diplay
@@ -818,6 +817,13 @@ switch oType
                 val.Y = sum(sum(img .* distanceY));
                 
             case {'depthmap'}
+                % Depth information: The depth map in the OI domain
+                % indicates locations where there were legitimate scene
+                % data for computing the OI data.  Other regions are
+                % 'extrapolated' by sceneDepthRange to keep the
+                % calculations correct.  But they don't always correspond
+                % to the original data.  When there is no depthMap in the
+                % scene, these are all logically '1' (true).
                 if checkfields(oi,'depthMap'), val = oi.depthMap; end
                 
             otherwise

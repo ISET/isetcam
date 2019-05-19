@@ -82,6 +82,10 @@ elseif method == 2    % Gray scale image, used for SWIR, NIR
     RGB(:,:,1) = reshape(mean(SPD,3),row,col);
     RGB(:,:,2) = RGB(:,:,1);
     RGB(:,:,3) = RGB(:,:,1);
+    
+    % We need to scale only for this case.  The othercases handle in their
+    % own way.
+    RGB = ieScale(RGB,1);
 
 elseif method == 3   % HDR display method
     

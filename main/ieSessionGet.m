@@ -237,7 +237,7 @@ switch param
     case {'mainguidata','mainwindowhandle','mainhandle','mainhandles'}
         v = ieSessionGet('mainfigure');
         if ~isempty(v), val = guihandles(v); end
-    case {'sceneguidata','scenewindowhandle','sceneimagehandle','sceneimagehandles','scenewindowhandles'}
+    case {'sceneguidata','scenewindowhandle','scenehandle','sceneimagehandle','scenehandles','sceneimagehandles','scenewindowhandles'}
         v = ieSessionGet('sceneimagefigure');
         if ~isempty(v), val = guihandles(v); end
     case {'oiguidata','oiwindowhandle','oihandle','opticalimagehandle','oihandles','opticalimagehandles','oiwindowhandles'}

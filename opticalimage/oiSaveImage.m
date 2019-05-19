@@ -1,15 +1,41 @@
-function fName = oiSaveImage(oi,fName,gam)
-%Write png image approximating appearance of photon data
+function fName = oiSaveImage(oi,fName)
+% Write png image approximating appearance of photon data
 %
-%  fullName = oiSaveImage(oi,[fullpathname],[gam]);
+% Syntax:
+%  fullName = oiSaveImage(oi,[fullpathname]);
 %
-%   Save out an RGB image of the photon image as a png file.  If the name
-%   is not passed in, then the user is queried to select the fullpath name
-%   of the output file.  This routine is used for scenes.  sceneSaveImage
-%   is used for scenes.
+% Inputs
+%  oi:    Optical image
+%  fName: Name of output file
+%
+% Outputs
+%  fName: Full path to the output file
+%
+% Description:
+%  Save out an 8-bit RGB image of the photon image as a 'png' file.  If the
+%  name is not passed in, then the user is queried to select the fullpath
+%  name of the output file.  The same display method as in the oiWindow is
+%  used.  The image is not displayed. The file name of the output (full
+%  path) is returned.
+%
+%  The rgb image is obtained from the scene via oiShowImage, which uses the
+%  same method to render as determined by the parameters in the oiWindow.
 %
 % Copyright ImagEval Consultants, LLC, 2003.
+%
+% See also: 
+%  sceneSaveImage, imageSPD
 
+% Examples:
+%{
+  % We save the data using the flags in the oiWindow, if it is open.
+  % Otherwise, the standard RGB with gam = 1.
+  scene = sceneCreate; oi = oiCreate; oi = oiCompute(oi,scene); 
+  oiWindow(oi);
+  fName = oiSaveImage(oi,'deleteMe');   % PNG is appended
+  img = imread(fName); ieNewGraphWin; image(img);
+  delete(fName);
+%}
 
 if ~exist('oi','var') || isempty(oi), oi = ieGetObject('oi'); end
 
@@ -18,33 +44,28 @@ if ieNotDefined('fName')
     fName = vcSelectDataFile('session','w','png','Image file (png)');
 end
 
-% We save the data using the flags in the oiWindow, if it is open.
-% Otherwise, the standard RGB with gam = 1.
-%
-%{
-   % For testing
-   scene = sceneCreate; oi = oiCreate; oi = oiCompute(oi,scene); 
-   oiWindow(oi);
-%}
-gam     = oiGet(oi,'gamma');
+gam     = oiGet(oi,'display gamma');
 handles = ieSessionGet('oi handles');
-if isempty(handles),  displayFlag = 1;
-else,                 displayFlag = get(handles.popupDisplay,'Value');
+% The negative value means we do not bring up a window to show the image in
+% this routine.
+if isempty(handles),  displayFlag = -1;
+else,                 displayFlag = -1*abs(get(handles.popupDisplay,'Value'));
 end
 
+% Scale to max of 1 for output below; needed for gray scale case.
 RGB = oiShowImage(oi,displayFlag,gam);
-% ieNewGraphWin; imagescRGB(rgb);
 
-%{
-% Older code
+% Make sure file full path is returned
+[p,n,e] = fileparts(fName);
+if isempty(p), p = pwd; end
+if isempty(e), e = '.png'; end
+fName = fullfile(p,[n,e]);
 
-% Get rgb image from photon data.  Gamma either defined here or from the
-% open window.
-if ~exist('gam','var'),     RGB = oiGet(oi,'rgb image');
-else,                       RGB = oiGet(oi,'rgb image',gam);
-end
-%}
+% Always has a png extension.  So, no 'png' argument needed.
+% Written out as 8 bit for PNG format.
+imwrite(RGB,fName);
 
-imwrite(RGB,fName,'png');
+% Have a look
+%  imagescRGB(RGB);
 
 end

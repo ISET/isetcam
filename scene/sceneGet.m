@@ -744,37 +744,24 @@ switch parm
         
         % For display purposes
     case {'rgb','rgbimage'}
-        % rgb = sceneGet(scene,'rgb image',gam);
-        % imshow(rgb)
         % Get the rgb image shown in the window
+        % rgb = sceneGet(scene,'rgb image');
+        %   ieNewGraphWin; imshow(rgb)
         
-        if isempty(varargin), gam = sceneGet(scene,'display gamma');
-        else                  gam = varargin{1};
+        gam     = sceneGet(scene,'display gamma');
+        handles = ieSessionGet('scene handles');
+        if isempty(handles), displayFlag = -1;
+        else,                displayFlag = -1*abs(get(handles.popupDisplay,'Value'));
         end
-        
-        % Compute rgb, but do not display
-        photons = sceneGet(scene,'photons');
-        wList   = sceneGet(scene,'wave');
-        [row,col,nil] = size(photons); %#ok<NASGU>
-
-        % If the scene window is open, get the data rendered there.
-        displayFlag = -1;
-        g = ieSessionGet('scene guidata');
-        if ~isempty(g)
-            % Force displayFlag negative for now display
-            displayFlag = -1*abs(get(g.popupDisplay,'Value'));  % HDR mode
-        end
-        
-        % Display flag now matches an open scene window.
-        val = imageSPD(photons,wList,gam,row,col,displayFlag);
-        
-    case {'displaygamma'}
+        val = sceneShowImage(scene,displayFlag,gam);
+                
+    case {'displaygamma','gamma'}
         % sceneGet(scene,'display gamma')
 
         % See if there is a display window
         W = ieSessionGet('scene window handle');
         if isempty(W), val = 1;  % Default if no window
-        else val = str2double(get(W.editGamma,'string'));
+        else, val = str2double(get(W.editGamma,'string'));
         end
         
     otherwise
