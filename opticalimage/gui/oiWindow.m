@@ -163,7 +163,7 @@ return;
 function menuSaveImage_Callback(hObject, eventdata, handles)
 
 gam = str2double(get(handles.editGamma,'String'));
-oi = vcGetObject('OPTICALIMAGE');
+oi = ieGetObject('OPTICALIMAGE');
 oiSaveImage(oi,[],gam);
 
 return;
@@ -244,7 +244,7 @@ function btnSimulate_Callback(hObject, eventdata, handles)
 % calculate a new optical image. Probably, we should put this in a separate
 % function rather than keeping it in here.
 
-scene = vcGetObject('scene');
+scene = ieGetObject('scene');
 if isempty(scene), ieInWindowMessage('No scene data.',handles); beep; return;
 else, ieInWindowMessage('',handles); end
 
@@ -445,7 +445,7 @@ return;
 
 % --------------------------------------------------------------------
 function menuEditViewer_Callback(hObject, eventdata, handles)
-oi = vcGetObject('oi');
+oi = ieGetObject('oi');
 img = oiGet(oi,'photons');
 rgb = imageSPD(img,oiGet(oi,'wavelength'));
 ieViewer(rgb);
@@ -572,7 +572,7 @@ return;
 function menuOpticsRename_Callback(hObject, eventdata, handles)
 % Optics | Re-name
 
-oi = vcGetObject('OI');
+oi = ieGetObject('OI');
 optics = oiGet(oi,'optics');
 
 if oiGet(oi,'customCompute')
@@ -685,28 +685,28 @@ return;
 % --------------------------------------------------------------------
 function plotIrradiance_Callback(hObject, eventdata, handles)
 % Plot | Irradiance (photons)
-oi = vcGetObject('oi');
+oi = ieGetObject('oi');
 oiPlot(oi,'irradiance photons roi');
 return;
 
 % --------------------------------------------------------------------
 function menuPlotIrradEnergy_Callback(hObject, eventdata, handles)
 % Plot | Irradiance (energy)
-oi = vcGetObject('oi');
+oi = ieGetObject('oi');
 oiPlot(oi,'irradiance energy roi');
 return;
 
 % --------------------------------------------------------------------
 function menuPlotImageGrid_Callback(hObject, eventdata, handles)
 % Plot | Image (RGB, grid)
-oiPlot(vcGetObject('oi'),'irradiance image with grid');
+oiPlot(ieGetObject('oi'),'irradiance image with grid');
 return;
 
 % --------------------------------------------------------------------
 function menuPlotDepthmap_Callback(hObject, eventdata, handles)
 % Plot | Depth Map
 
-oi = vcGetObject('oi');
+oi = ieGetObject('oi');
 if isempty(oiGet(oi,'depth map'))
     handles = ieSessionGet('optical image handle');
     ieInWindowMessage('No depth data.',handles,3);
@@ -720,7 +720,7 @@ return
 function menuPlotDepthContour_Callback(hObject, eventdata, handles)
 % Plot | Depth Contour
 
-oi = vcGetObject('oi');
+oi = ieGetObject('oi');
 if isempty(oiGet(oi,'depth map'))
     handles = ieSessionGet('optical image handle');
     ieInWindowMessage('No depth data.',handles,3);
@@ -734,7 +734,7 @@ return
 % --------------------------------------------------------------------
 function menuPlotHLContrast_Callback(hObject, eventdata, handles)
 % Might never be called.  If it is, it is from Analyze pull down.
-oi = vcGetObject('OPTICALIMAGE');
+oi = ieGetObject('OPTICALIMAGE');
 oiPlot(oi,'hline contrast');
 return;
 
@@ -742,7 +742,7 @@ return;
 % --------------------------------------------------------------------
 function menuPlotVLContrast_Callback(hObject, eventdata, handles)
 % Might never be called.  If it is, it is from Analyze pull down.
-oi = vcGetObject('OPTICALIMAGE');
+oi = ieGetObject('OPTICALIMAGE');
 oiPlot(oi,'vlinecontrast');
 return;
 
@@ -780,7 +780,7 @@ return;
 % --------------------------------------------------------------------
 function menuPlotCIE_Callback(hObject, eventdata, handles)
 %
-oi = vcGetObject('OI');
+oi = ieGetObject('OI');
 oiPlot(oi,'chromaticity roi');
 return
 
@@ -797,7 +797,7 @@ return;
 % --------------------------------------------------------------------
 function menuTransmittance_Callback(hObject, eventdata, handles)
 % Analyze | Optics | Transmittance
-opticsPlotTransmittance(vcGetObject('OPTICALIMAGE'));
+opticsPlotTransmittance(ieGetObject('OPTICALIMAGE'));
 return;
 
 % --------------------------------------------------------------------
@@ -809,7 +809,7 @@ return;
 function menuPlotPS550_Callback(hObject, eventdata, handles)
 % Analyze | Optics | PSF Mesh (550)
 
-oi = vcGetObject('OPTICALIMAGE');
+oi = ieGetObject('OPTICALIMAGE');
 optics = oiGet(oi,'optics');
 opticsModel = opticsGet(optics,'model');
 switch lower(opticsModel)
@@ -824,7 +824,7 @@ return;
 function menuPlotLSWave_Callback(hObject, eventdata, handles) %#ok<*INUSL>
 % Analyze | Optics | LS by Wavelength
 
-oi = vcGetObject('OPTICALIMAGE');
+oi = ieGetObject('OPTICALIMAGE');
 optics = oiGet(oi,'optics');
 opticsModel = opticsGet(optics,'model');
 switch lower(opticsModel)
@@ -841,7 +841,7 @@ return;
 function menuPlOTFWave_Callback(hObject, eventdata, handles)
 % Analyze | Optics | OTF 1d by wave
 
-oi = vcGetObject('OPTICALIMAGE');
+oi = ieGetObject('OPTICALIMAGE');
 optics = oiGet(oi,'optics');
 opticsModel = opticsGet(optics,'model');
 switch lower(opticsModel)
@@ -858,7 +858,7 @@ function menuOTFAnyWave_Callback(hObject, eventdata, handles)
 % Analyze | Optics | OTF
 % User selects wavelength and plots OTF
 
-oi = vcGetObject('OPTICALIMAGE');
+oi = ieGetObject('OPTICALIMAGE');
 optics = oiGet(oi,'optics');
 opticsModel = opticsGet(optics,'model');
 switch lower(opticsModel)
@@ -875,7 +875,7 @@ function plotOTF_Callback(hObject, eventdata, handles)
 % Analyze | Optics | OTF (550)
 %
 
-oi = vcGetObject('OPTICALIMAGE');
+oi = ieGetObject('OPTICALIMAGE');
 optics = oiGet(oi,'optics');
 opticsModel = opticsGet(optics,'model');
 switch lower(opticsModel)
@@ -891,14 +891,14 @@ return;
 function menuPlotOffAxis_Callback(hObject, eventdata, handles)
 % Analyze | Optics | Off-Axis fall-off
 
-oi = vcGetObject('OPTICALIMAGE');
+oi = ieGetObject('OPTICALIMAGE');
 optics = oiGet(oi,'optics');
 opticsModel = opticsGet(optics,'model');
 switch lower(opticsModel)
     case 'raytrace'
-        rtPlot(vcGetObject('OI'),'relativeIllumination');
+        rtPlot(ieGetObject('OI'),'relativeIllumination');
     otherwise
-        opticsPlotOffAxis(vcGetObject('OI'));    % If  no ray trace, cos4th.
+        opticsPlotOffAxis(ieGetObject('OI'));    % If  no ray trace, cos4th.
 end
 
 return;
@@ -915,7 +915,7 @@ return;
 function menuAnOpImFieldAndWave_Callback(hObject, eventdata, handles)
 % Analyze | Optics | PSF images (rt)
 
-oi = vcGetObject('OPTICALIMAGE');
+oi = ieGetObject('OPTICALIMAGE');
 optics = oiGet(oi,'optics');
 opticsModel = opticsGet(optics,'model');
 switch lower(opticsModel)
@@ -932,7 +932,7 @@ return;
 function menuAnOpticsPSF_Callback(hObject, eventdata, handles)
 % Analyze | Optics | PSF
 
-oi          = vcGetObject('OPTICALIMAGE');
+oi          = ieGetObject('OPTICALIMAGE');
 optics      = oiGet(oi,'optics');
 opticsModel = opticsGet(optics,'model');
 switch lower(opticsModel)
@@ -954,22 +954,22 @@ return;
 
 % --------------------------------------------------------------------
 function menuAnLineIllumHorizontal_Callback(hObject, eventdata, handles)
-oiPlot(vcGetObject('OI'),'illuminance hline');
+oiPlot(ieGetObject('OI'),'illuminance hline');
 return;
 
 % --------------------------------------------------------------------
 function menuAnLineIllumVertical_Callback(hObject, eventdata, handles)
-oiPlot(vcGetObject('OI'),'illuminance vline');
+oiPlot(ieGetObject('OI'),'illuminance vline');
 return;
 
 % --------------------------------------------------------------------
 function menuAnLineIllumHorFFT_Callback(hObject, eventdata, handles)
-oiPlot(vcGetObject('OI'),'illuminance fft hline');
+oiPlot(ieGetObject('OI'),'illuminance fft hline');
 return;
 
 % --------------------------------------------------------------------
 function menuAnLineIllumVertFFT_Callback(hObject, eventdata, handles)
-oiPlot(vcGetObject('OI'),'illuminance fft vline');
+oiPlot(ieGetObject('OI'),'illuminance fft vline');
 return;
 
 % --------------------------------------------------------------------
@@ -984,7 +984,7 @@ function menuAnOptSampling_Callback(hObject, eventdata, handles)
 % In many cases, people will leave the lower sampling rate, which provides
 % speed but blurs the image, because they are interested in other features
 % of the simulation.
-oi = vcGetObject('oi');
+oi = ieGetObject('oi');
 inCutoff = opticsGet(oiGet(oi,'optics'),'maxincutoff','mm');
 maxFres = oiGet(oi,'maxFreqRes','mm');
 str = sprintf('DL cutoff: %.2f - Samp cutoff %.2f (cyc/mm)\n',inCutoff,maxFres);
@@ -1000,7 +1000,7 @@ function menuAnalyzeOptFieldD_Callback(hObject, eventdata, handles)
 
 if isempty(which('rtRootPath')), warndlg('Optics toolbox not installed. Contact ImagEval'); return; end
 
-oi     = vcGetObject('OI');
+oi     = ieGetObject('OI');
 optics = oiGet(oi,'optics');
 opticsModel = opticsGet(optics,'model');
 switch lower(opticsModel)
@@ -1016,7 +1016,7 @@ return;
 % --------------------------------------------------------------------
 function menuPlotLuxHist_Callback(hObject, eventdata, handles)
 % Analyze | ROI Summary | Illuminance
-oi = vcGetObject('OI');
+oi = ieGetObject('OI');
 oiPlot(oi,'illuminance roi');
 return;
 
@@ -1037,14 +1037,14 @@ return;
 % --------------------------------------------------------------------
 function menuHline_Callback(hObject, eventdata, handles)
 % Analyze | Line | Horizontal
-oi = vcGetObject('OI');
+oi = ieGetObject('OI');
 oiPlot(oi,'hline');
 return;
 
 % --------------------------------------------------------------------
 function menuVLine_Callback(hObject, eventdata, handles)
 % Analyze | Line | Vertical
-oi = vcGetObject('OI');
+oi = ieGetObject('OI');
 oiPlot(oi,'vline');
 return;
 
@@ -1053,7 +1053,7 @@ function menuFFTamp_Callback(hObject, eventdata, handles)
 % Analyze | FFT2dAmp
 % Default is whole image and a middle wavelength
 
-oi = vcGetObject('OI');
+oi = ieGetObject('OI');
 oiPlot(oi,'irradiance fft');
 
 return;
@@ -1092,7 +1092,7 @@ contents = get(handles.popOpticsModel,'String');
 
 method = contents{get(handles.popOpticsModel,'Value')};
 
-oi = vcGetObject('oi');
+oi = ieGetObject('oi');
 optics = oiGet(oi,'optics');
 
 switch lower(method)

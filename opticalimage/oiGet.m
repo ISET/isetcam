@@ -742,6 +742,14 @@ switch oType
                 % rgb = oiGet(oi,'rgb image',0.6);
                 % imwrite(rgb,fName,'tiff')
                 
+                %{
+                handles = ieSessionGet('oi handles');
+                if isempty(handles)
+                   % warning('No RGB display window.  Using default method.');
+                end
+                displayFlag = get(handles.popupDisplay,'Value');
+                rgb = oiShowImage(oi,displayFlag,gam);
+                %}
                 if isempty(varargin), gam = oiGet(oi,'display gamma');
                 else, gam = varargin{1};
                 end

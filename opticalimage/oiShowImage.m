@@ -42,8 +42,8 @@ end
 % This displays the image in the GUI.  The displayFlag flag determines how
 % imageSPD converts the data into a displayed image. The data in img are
 % in RGB format.
-% We should probably select the window here ... the oi window, that is.
+%
+% We should probably select the oi window here.
 rgb = imageSPD(photons,wList,gam,sz(1),sz(2),displayFlag);
 
-return;
-
+end

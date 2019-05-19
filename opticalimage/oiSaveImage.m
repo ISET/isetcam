@@ -11,18 +11,39 @@ function fName = oiSaveImage(oi,fName,gam)
 % Copyright ImagEval Consultants, LLC, 2003.
 
 
-if ~exist('oi','var') || isempty(oi), oi = vcGetObject('oi'); end
+if ~exist('oi','var') || isempty(oi), oi = ieGetObject('oi'); end
 
 % Get RGB file name (tif)
 if ieNotDefined('fName')
     fName = vcSelectDataFile('session','w','png','Image file (png)');
 end
 
+% We save the data using the flags in the oiWindow, if it is open.
+% Otherwise, the standard RGB with gam = 1.
+%
+%{
+   % For testing
+   scene = sceneCreate; oi = oiCreate; oi = oiCompute(oi,scene); 
+   oiWindow(oi);
+%}
+gam     = oiGet(oi,'gamma');
+handles = ieSessionGet('oi handles');
+if isempty(handles),  displayFlag = 1;
+else,                 displayFlag = get(handles.popupDisplay,'Value');
+end
+
+RGB = oiShowImage(oi,displayFlag,gam);
+% ieNewGraphWin; imagescRGB(rgb);
+
+%{
+% Older code
+
 % Get rgb image from photon data.  Gamma either defined here or from the
 % open window.
 if ~exist('gam','var'),     RGB = oiGet(oi,'rgb image');
-else                        RGB = oiGet(oi,'rgb image',gam);
+else,                       RGB = oiGet(oi,'rgb image',gam);
 end
+%}
 
 imwrite(RGB,fName,'png');
 
