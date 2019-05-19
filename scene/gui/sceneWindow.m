@@ -238,7 +238,7 @@ function menuEditScaleSize_Callback(hObject, eventdata, handles)
 
 scene = vcGetObject('scene');
 
-% Call GUI to set neßw row and col dimensions.
+% Call GUI to set neï¿½w row and col dimensions.
 sFactor = ieReadNumber('Spatial scale',2,'%.0f');
 if isempty(sFactor), disp('User canceled'); return; end
 
@@ -476,9 +476,8 @@ return
 % --------------------------------------------------------------------
 function menuSaveImage_Callback(hObject, eventdata, handles)
 % File | Save (.png)
-gam = str2double(get(handles.editGamma,'String'));
-[val, scene] = vcGetSelectedObject('SCENE');
-sceneSaveImage(scene,[],gam);
+scene = ieGetObject('SCENE');
+sceneSaveImage(scene,[]);
 return;
 
 % --------------------------------------------------------------------
