@@ -162,9 +162,8 @@ return;
 % --------------------------------------------------------------------
 function menuSaveImage_Callback(hObject, eventdata, handles)
 
-gam = str2double(get(handles.editGamma,'String'));
 oi = ieGetObject('OPTICALIMAGE');
-oiSaveImage(oi,[],gam);
+oiSaveImage(oi,[]);
 
 return;
 
