@@ -36,7 +36,7 @@ if ieNotDefined('fig'),  fig = ieSessionGet('ip window'); end
 
 % Bring up the figure.  If figNum is false (0), we don't plot
 if ~isequal(fig,0)
-    if isempty(fig), vcNewGraphWin;
+    if isempty(fig), ieNewGraphWin;
     else, figure(fig); 
     end
 end

@@ -246,7 +246,7 @@ switch param
     case {'sensorguidata','sensorwindowhandle','sensorimagehandle','sensorhandle','isahandle','sensorhandles','isahandles','sensorwindowhandles'}
         v = ieSessionGet('sensorfigure');
         if ~isempty(v), val = guihandles(v); end
-    case {'ipguidata','vciguidata','vciwindowhandle','vcimagehandle','vcimagehandles','processorwindowhandles','processorhandles','processorhandle','processorimagehandle'}
+    case {'ipguidata','iphandles','vciguidata','vciwindowhandle','vcimagehandle','vcimagehandles','processorwindowhandles','processorhandles','processorhandle','processorimagehandle'}
         v = ieSessionGet('vcimagefigure');
         if ~isempty(v), val = guihandles(v); end
     case {'displayguidata'}
