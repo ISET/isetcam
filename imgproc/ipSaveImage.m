@@ -11,7 +11,7 @@ function fName = ipSaveImage(ip,fName,showImageFlag,trueSizeFlag)
 % Description:
 %
 % See also
-%
+%   sceneSaveImage, oiSaveImage
 
 % Examples:
 %{
@@ -28,7 +28,7 @@ function fName = ipSaveImage(ip,fName,showImageFlag,trueSizeFlag)
   delete(fName);
 %}
 
-
+%%
 if ~exist('ip','var') || isempty(ip), ip = ieGetObject('ip'); end
 gam     = ipGet(ip,'display gamma');
 
@@ -41,7 +41,8 @@ end
 if ieNotDefined('showImageFlag'), showImageFlag = false; end
 if ieNotDefined('trueSizeFlag'), trueSizeFlag = false; end
 
-% Make sure file full path is returned
+%% Make sure file full path is returned and the output is a PNG file
+
 [p,n,e] = fileparts(fName);
 if isempty(p), p = pwd; end
 if isempty(e), e = '.png'; end
@@ -49,11 +50,10 @@ fName = fullfile(p,[n,e]);
 
 imwrite(img,fName);
 
+%% Show or not, true size or not.
 if showImageFlag
     imagesc(img);
-    if trueSizeFlag
-        truesize;
-    end
+    if trueSizeFlag, truesize; end
 end
 
 end
