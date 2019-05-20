@@ -406,22 +406,22 @@ return;
 % --------------------------------------------------------------------
 function menuFileSave_Callback(hObject, eventdata, handles)
 % File | Save Image
-% Write the data in the vcimage result to a file containing an RGB image.
-% This works for jpg, png and other formats.  Apparently not for 'tif'.
+%
+% Write the rgb data in the ip result to a file containing an RGB image.
+% Output is in 8-bit png format. 
 
-ip = ieGetObject('VCIMAGE');
+ip = ieGetObject('ip');
 
 fullName = vcSelectDataFile('stayPut','w');
 if isempty(fullName), return; end
 [p,n,e] = fileparts(fullName);
-if isempty(e), e = '.png'; fullName = [fullName, e];  end % Add ext 
+if isempty(e), e = '.png'; fullName = fullfile(p,[n, e]);  end % Add ext 
 
-gam = str2double(get(handles.editGamma,'String'));
-img = imageShowImage(ip, gam, true,0);
-imwrite(img,fullName);
+ipSaveImage(ip,fullName);
+
 fprintf('Saved image file %s\n',fullName);
 
-return
+return;
 
 % --------------------------------------------------------------------
 function menuEdit_Callback(hObject, eventdata, handles)
