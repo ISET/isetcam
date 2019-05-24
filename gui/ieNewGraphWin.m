@@ -1,7 +1,7 @@
-function figHdl = ieNewGraphWin(figHdl, fType, varargin)
+function figHdl = ieNewGraphWin(figHdl, fType, titleString, varargin)
 % Open a window for plotting (future of vcNewGraphWin)
 %
-%    figHdl = ieNewGraphWin([fig handle],[figure type],varargin)
+%    figHdl = ieNewGraphWin([fig handle],[figure type],[titleString],varargin)
 %
 % Open a figure.  The figure handle is returned and stored in the currernt
 % vcSESSION.GRAPHWIN entry.
@@ -61,8 +61,9 @@ if ieNotDefined('fType')
     wPos = wPos{6};
     if isempty(wPos), fType = 'upperleft'; end
 end
+if ieNotDefined('titleString'), titleString = 'ISET GraphWin'; end
 
-set(figHdl,'Name','ISET GraphWin','NumberTitle','off');
+set(figHdl,'Name',titleString,'NumberTitle','off');
 set(figHdl,'CloseRequestFcn','ieCloseRequestFcn');
 set(figHdl,'Color',[1 1 1]);
 
