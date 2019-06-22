@@ -17,9 +17,11 @@ function [mLocs,delta,pSize] = macbethRectangles(cornerPoints)
 % Example:
 %
 %
-% See also: macbethROIs, macbethSelect
-%
 % Copyright ImagEval Consultants, LLC, 2011.
+%
+% See also
+%   macbethROIs, macbethSelect, macbethDrawRects
+%
 
 if ieNotDefined('cornerPoints'), error('Point corners required'); end
 

@@ -22,8 +22,9 @@ function obj = macbethDrawRects(obj,onoff)
 %
 % Copyright ImagEval Consultants, LLC, 2011.
 %
-% See also
-%   macbethROIs, macbethSelect, macbethRectangles, chartROIs, chart<TAB>
+% See also:
+%   macbethROIs, macbethDrawRect, macbethSelect, macbethRectangles, chartROI
+%   chart<TAB>
 %
 
 %%
