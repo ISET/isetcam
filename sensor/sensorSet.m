@@ -3,16 +3,16 @@ function sensor = sensorSet(sensor,param,val,varargin)
 %
 %   sensor = sensorSet(sensor,param,val,varargin);
 %
-% This routine sets the ISETCam sensor parameters.  See sensorGet for the
-% longer list of derived parameters.
+% Sets the ISETCam sensor parameters.  See sensorGet for the longer
+% list of derived parameters.
 %
-% In addition to setting sensor parameters, it is possible to use this
-% routine to set pixel parameters using the syntax:
+% In addition to sensor parameters, it is possible to set pixel
+% parameters using this routine.  Use the syntax:
 %
-%     sensorSet(sensor,'pixel param',val);
+%    sensorSet(sensor,'pixel param',val);
 %
-% As of April 2014, we are using this approach more than the previous
-% approach
+% This approach shortens the code that used to look like this:
+%
 %    pixel = sensorGet(sensor,'pixel');
 %    pixel = pixelSet(pixel,'param',val);
 %    sensor = sensorSet(sensor,'pixel',pixel);
@@ -99,16 +99,20 @@ function sensor = sensorSet(sensor,param,val,varargin)
 % Check for consistency between GUI and data
 %      {'consistency'}
 %
-% Miscellaneous
-%     {'mcc rect handles'}  - Handles for the rectangle selections in an MCC
-%     {'mcc corner points'} - Corner points for the whole MCC chart
-%     {'gamma'}           - Display gamma for the window
-%
 % Sensor motion
 %     {'sensor movement'}  - A structure with sensor motion information 
 %     {'movement positions'} - Nx2 vector of (x,y) positions in deg
 %     {'framesPerPosition'}- Exposure times per (x,y) position
 %  
+% Window display
+%     {'gamma'}           - Display gamma for the window
+%     {'scale intensity'} - Scale display intensity to max
+%     {'true size'}       - Not yet implemented
+%
+% Macbeth Color checker
+%     {'mcc rect handles'}  - Handles for the rectangle selections in an MCC
+%     {'mcc corner points'} - Corner points for the whole MCC chart
+%
 % Private
 %      {'editfilternames'}
 %
@@ -505,6 +509,13 @@ switch lower(param)
             % sceneWindow('sceneRefresh',hObj,eventdata,hdl);
             sensorImageWindow;
         end
+    case {'scaleintensity'}
+        % Set the button on intensity scale on or off.  Refresh the
+        % sensor window.
+        % sensorSet(sensor,'scale intensity',1);
+        handles = ieSessionGet('sensor guidata');
+        set(handles.btnDisplayScale,'Value',val);
+        sensorImageWindow;
         
         % Human cone structure - Should be removed and used only in ISETBio
     case {'human'}
@@ -539,6 +550,7 @@ switch lower(param)
         % position (deg)
         sensor.movement.framesPerPosition = val;
 
+        
     otherwise
         error('Unknown parameter.');
 end

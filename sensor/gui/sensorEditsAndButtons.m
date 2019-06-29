@@ -231,6 +231,6 @@ end
 fig = ieSessionGet('sensor window');
 ieFontSizeSet(fig,0);
 
-return
+end
 
 

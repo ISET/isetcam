@@ -37,7 +37,7 @@ ieAddObject(scene); sceneWindow;
 % We create a point spread for each wavelength, 400:10:700. We write out 
 % a file that contains the point spread functions using ieSaveSIDataFile.
 %%
-umPerSample = [0.25,0.25];                % Sample spacing
+umPerSample = [0.5,0.5];                % Sample spacing
 
 % Point spread is a little square in the middle of the image
 h = zeros(128,128); h(48:79,48:79) = 1; h = h/sum(h(:));
