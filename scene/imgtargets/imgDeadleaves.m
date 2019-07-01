@@ -4,6 +4,9 @@ function img = imgDeadleaves(n,sigma,options)
 % Syntax
 %   image = imgDeadleaves(n,sigma,options);
 %
+% TODO
+%  I would like to put texture patterns inside the disks. *BW*
+%
 % Inputs
 %   n is the size of the image.
 %   sigma>0 control the repartition of the size of the basic shape:
