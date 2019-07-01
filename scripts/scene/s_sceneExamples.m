@@ -38,6 +38,12 @@ parms.ang= 0; parms.row = 64; parms.col = 64; parms.GaborFlag=0;
 [scene,parms] = sceneCreate('harmonic',parms);
 ieAddObject(scene); sceneWindow;
 
+%% Harmonic
+parms.freq = 1; parms.contrast = 1; parms.ph = 0;
+parms.ang= 0; parms.row = 64; parms.col = 64; parms.GaborFlag=0;
+[scene,parms] = sceneCreate('harmonic',parms);
+ieAddObject(scene); sceneWindow;
+
 %% Checkerboard
 period = 16; spacing = 8; spectralType = 'ep';
 scene = sceneCreate('checkerboard',period,spacing,spectralType);
