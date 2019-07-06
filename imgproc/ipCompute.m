@@ -110,7 +110,7 @@ else
     vci = vciComputeSingle(vci,sensor);
 end
 
-return
+end
 
 
 function vci = vciComputeSingle(vci,sensor)
@@ -145,10 +145,17 @@ if nFilters == 1 && nSensors == 1
     return;
 
 elseif nFilters == 2
-    warndlg('Rendering pipeline not implemented for 2 color sensor data.');
+    % For 2-color filter case, we only Demosaic, like the monochrome case
+    % (above). 
+    % 
+    % The only computational path we have now is for the demosaic algorithm
+    % 'analog rccc'.
+    if ~isequal(ieParamFormat(ipGet(vci,'demosaic method')),ieParamFormat('analog rccc'))
+        error('2D is only implemented for RCCC demosaic case');
+    end
     
-    % Null data.  I wonder if we should aim for Edwin Land type stuff here.
-    vci = ipSet(vci,'result',[]);
+    img = Demosaic(vci,sensor);    % Returns a monochrome image
+    vci = ipSet(vci,'result',repmat(img,[1,1,3]));
     return;
     
 elseif nFilters >= 3 || nSensors > 1
@@ -196,7 +203,6 @@ elseif nFilters >= 3 || nSensors > 1
             % vci = ipSet(vci,'sensor correction transform',[]);
             vci = ipSet(vci,'ics2display',[]);
         case 'adaptive'
-
             % Recompute a transform based, in part, on process the image
             % data and with knowledge of the multiple color filters.  
             %
@@ -267,7 +273,7 @@ elseif nFilters >= 3 || nSensors > 1
     vci = ipSet(vci,'mccRectHandles',[]);
 end
 
-return;
+end
 
 function vci = vciComputeBracketed(vci,sensor,combinationMethod)
 % Compute for bracketed exposure case
@@ -310,7 +316,7 @@ end
 vci = ipSet(vci,'sensorMax',sensorMax/min(expTimes));
 vci = ipSet(vci,'input',img);
 
-return;
+end
 
 function vci = vciComputeCFA(vci,sensor)
 % Compute for CFA exposure case
@@ -387,5 +393,5 @@ end
 vci = ipSet(vci,'sensorMax',mx);
 vci = ipSet(vci,'input',newImg);
 
-return;
+end
 

@@ -34,9 +34,16 @@ set(handles.popSelect,...
 
 % Demosaic method
 contents = get(handles.popDemosaic,'String');
-demosaicM = ipGet(ip,'demosaic method');
+
+% Afraid to change GUI directly.  So adding pocs here.  But add pocs to the
+% GUI when you get the nerve.
+contents{5} = 'pocs';
+contents{6} = 'analog rccc';
+set(handles.popDemosaic,'String',contents);
+
+demosaicM = ieParamFormat(ipGet(ip,'demosaic method'));
 for ii=1:length(contents)
-    if strcmpi(demosaicM,contents{ii})
+    if strcmpi(demosaicM,ieParamFormat(contents{ii}))
         set(handles.popDemosaic,'Value',ii);
         break;
     end

@@ -36,23 +36,51 @@ function demosaicedImage = Demosaic(vci,sensor)
 %    {'nearest neighbor'}
 %    {'multichannel'}  - linear initerpolation for multiple waveband data
 %                        in arbitrary patterns
-%    {'*yourRoutineName*'} - if you write on to this API, and we can find it
-%                            on the path, we will try to run it for you.
-%
-% See also:  plane2rgb(), demosaicMultichannel()
-%
-% Examples: 
-% Conventional call
-%    sensor = ieGetObject('sensor'); ip = ieGetObject('ip');
-%    d = Demosaic(ip,sensor); 
-%    vcNewGraphWin; imagescRGB(d)
-%
-% For multichannel data this might work
-%   sensor = ieGetObject('sensor'); ip = ieGetObject('ip');
-%   ip = ipSet(ip,'demosaic Method','multichannel');
-%   d = Demosaic(ip,sensor); imtool(d)
 %
 % Copyright ImagEval Consultants, LLC, 2005.
+%
+% See also:  plane2rgb(), demosaicMultichannel(), t_ipDemosaic
+%
+
+% Examples: 
+% Conventional call
+%{
+ scene = sceneCreate; camera = cameraCreate; 
+ camera = cameraCompute(camera,scene);
+ sensor = cameraGet(camera,'sensor'); ip = cameraGet(camera,'ip');
+ d = Demosaic(ip,sensor); 
+ ieNewGraphWin; imagescRGB(d)
+%}
+%{
+ scene = sceneCreate; camera = cameraCreate; 
+ sensor = sensorCreate('MT9V024',[],'rccc'); 
+ camera = cameraSet(camera,'sensor',sensor);
+ camera = cameraSet(camera,'ip demosaic method','analog rccc');
+ camera = cameraCompute(camera,scene);
+ % cameraWindow(camera,'sensor');
+ % cameraWindow(camera,'ip')
+
+ ip = ipSet(ip,'input',sensor.data.volts);
+ ip = ipSet(ip,'demosaic method','analog rccc');
+ d = Demosaic(ip,sensor); 
+ ieNewGraphWin; imagesc(d); colormap(gray);
+%}
+%{
+% For monochrome, Demosaic does nothing.
+ scene = sceneCreate; camera = cameraCreate; oi = cameraGet(camera,'oi');
+ sensor = sensorCreate('monochrome'); ip = cameraGet(camera,'ip');
+ oi = oiCompute(oi,scene); sensor = sensorCompute(sensor,oi);
+ ip = ipSet(ip,'demosaic method','bilinear');
+ d = Demosaic(ip,sensor); 
+ ieNewGraphWin; imagesc(d); colormap(gray);
+%}
+%{
+% For more than 3 (multichannel) data this works
+  sensor = ieGetObject('sensor'); ip = ieGetObject('ip');
+  ip = ipSet(ip,'demosaic method','multichannel');
+  d = Demosaic(ip,sensor); imtool(d)
+%}
+
 
 %% Check for a sensor array
 if length(sensor) > 1
@@ -72,15 +100,15 @@ end
 
 %% A typical mosaic case -  get the image input data
 
-% Normally, these are just a copy of the sensor
-% output data and are one-dimensional sensor plane. 
+% Normally, these are just a copy of the sensor output data, the sensor
+% image matrix (planar format)
 img = ipGet(vci,'input');
 
 % If the data are in planar format, put them into RGB format.  Otherwise,
 % if they are already in RGB format (i.e. multiplanar) copy them and move
 % on. 
 if ismatrix(img),  imgRGB = plane2rgb(img,sensor,0);
-else               imgRGB = img; 
+else,              imgRGB = img; 
 end
 
 % The planes are in the order of the filterNames. So, if the first filter
@@ -97,22 +125,25 @@ switch lower(m)
         method = 'ieBilinear';
     case {'multichannel'}
         method = 'multichannel';
-    case {'adaptive laplacian'}
+    case {'adaptivelaplacian'}
         method = 'adaptivelaplacian';
     case {'laplacian'}
         method = 'laplacian';
     case {'lcc1'}
         method = 'lcc1';
-    case {'nearest neighbor'}
+    case {'nearestneighbor'}
         method = 'nearestneighbor';
     case {'pocs','proj conv sets (pocs)'}
         method = 'pocs';
+    case {'analogrccc'}
+        % Analog systems RCCC implementation from Zhenyi
+        % method = 'analogrccc';
+        method = 'analogrccc';
     otherwise
-        % warning('Assuming a customer selected demosaic method.');
-        method = m;
+        error('Unknown demosaic method %s\n',m);
 end
 
-% The data are now in RGB format.  
+% The data are now in RGB format.    Could be 2D or 3D.
 
 % Some of the case statements need to know the Bayer pattern.  So we
 % compute it in case we need it.
@@ -125,7 +156,7 @@ bPattern = bPattern(:)';
 method = ieParamFormat(method);
 switch lower(method) 
     case {'bilinear','iebilinear'}
-        if size(imgRGB,3) == 3 && isequal(size(pattern) ,[2 2]);
+        if size(imgRGB,3) == 3 && isequal(size(pattern) ,[2 2])
             % ieBilinear is designed for Bayer 2x2 case.  Otherwise, just use
             % linear interpolation in the next else case.
             demosaicedImage = ieBilinear(imgRGB,sensorGet(sensor,'pattern'));
@@ -150,9 +181,9 @@ switch lower(method)
         clipToRange = 0;
         demosaicedImage = Laplacian(imgRGB,bPattern,clipToRange);
         
-    case 'lcc1'
+    % case 'lcc1'
         % Not properly implemented yet.
-        demosaicedImage = lcc1(imgRGB);
+        % demosaicedImage = lcc1(imgRGB);
         
     case 'nearestneighbor'
         % Should work on CMY, too, no?
@@ -183,16 +214,15 @@ switch lower(method)
     case 'usewideband'
         % Needs comments - MP
         demosaicedImage = demosaic_wideband(imgRGB,sensor);
+    
+    case 'analogrccc'
+        % Needs testing
+        demosaicedImage = demosaicRCCC(imgRGB);
         
     otherwise
         % This may be a custom method added by the user.  If we find an
         % executable by this name, then we will try running it.
-        if ~isempty(which(method))
-            % demosaicedImage = method(imgRGB);
-            demosaicedImage = feval(method,imgRGB,sensor);
-        else
-            error('Demosaic method (%s) not found.',method);
-        end
+        error('Demosaic method (%s) not found.',method);
 end
 
 end

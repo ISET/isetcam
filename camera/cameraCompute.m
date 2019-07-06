@@ -109,7 +109,7 @@ if ieNotDefined('camera'), error('Camera structure required.'); end
 if ieNotDefined('pType'), pType = 'sensor';
 elseif isstruct(pType)
     if strcmp(sceneGet(pType,'type'),'scene'), scene = pType; pType = 'scene';
-    else                                       error('Bad input object %s\n',pType);
+    else,                                      error('Bad input object %s\n',pType);
     end
 end
 

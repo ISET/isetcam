@@ -149,4 +149,4 @@ out(:,:,1) = outR;
 out(:,:,2) = outG; 
 out(:,:,3) = outB; 
   
-return;
+end
