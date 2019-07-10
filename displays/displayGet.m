@@ -174,7 +174,7 @@ switch parm
         % primaries.
         % Do we have a problem here if the display is not emissive?
         if ~isempty(varargin), wave = varargin{1}; 
-        else wave = displayGet(d,'wave');
+        else, wave = displayGet(d,'wave');
         end
         spd = displayGet(d,'spd',wave);
         val = spd(:,1:3);
