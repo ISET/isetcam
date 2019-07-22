@@ -78,12 +78,8 @@ a = rd.listArtifacts('print',true);
 data = rd.readArtifact(a(1));
 scene = data.scene;
 
-ieAddObject(scene); 
+sceneWindow(scene); 
 scene = sceneSet(scene,'gamma',0.5);
-
-% % As an HDR scene, it is hard to see with a gamma of 1
-% % So we set the gamma to 0.5
-% sceneWindow;
 
 % A nice property of the synthetic scenes is that we have ground truth
 % depth maps for them.
