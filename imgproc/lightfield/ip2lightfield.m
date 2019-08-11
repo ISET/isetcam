@@ -62,8 +62,8 @@ end
 
 %% Repack the rgb data into lightfield format
 
-superPixelH = size(rgb,1)/nPinholes(1);
-superPixelW = size(rgb,2)/nPinholes(2);
+superPixelH = floor(size(rgb,1)/nPinholes(1));
+superPixelW = floor(size(rgb,2)/nPinholes(2));
 lightfield = zeros(superPixelH, superPixelW, nPinholes(1), nPinholes(2), cDim);
 
 % For lightfield calculations, we use this rgb format
