@@ -75,8 +75,9 @@ for thisExposure = (nExposures - 1):-1:1
     fprintf('Exposure %d.  Replacing %d pixels\n',thisExposure,sum(lst(:)));
     if sum(lst(:)) == 0, break
     else
-        % Scaled volts from the shorter duration.
-        theseV = volts(:,:,thisExposure)*(maxTime/expTimes(thisExposure));
+        % Scaled volts for the shorter duration.
+        sFactor = (maxTime/expTimes(thisExposure));
+        theseV  = volts(:,:,thisExposure)*sFactor;
         combinedV(lst) = theseV(lst);
         maxV = maxV*sFactor;
         thisExp = thisExp + 1;
@@ -96,6 +97,16 @@ ip = ipCompute(ip,sensor); ipWindow(ip);
 rgb = hdrRender(ipGet(ip,'srgb'));
 figure(figH);
 subplot(1,2,2); imagescRGB(rgb); title('Multiple exposure')
+
+%% This is the same computation but using the sensorComputeMEV method
+
+maxTime  = 0.2;   % seconds
+expTimes = [maxTime/10, maxTime];
+sensor   = sensorSet(sensor,'exp time',expTimes);
+
+sensorMEV = sensorComputeMEV(sensor,oi);
+sensorMEV = sensorSet(sensorMEV,'name','Multiple exposure 2');
+sensorWindow(sensorMEV);
 
 %% END
 

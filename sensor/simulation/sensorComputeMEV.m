@@ -1,8 +1,8 @@
-function sensorMEV = sensorComputeMEV(sensor, oi, varargin)
+function sensor = sensorComputeMEV(sensor, oi, varargin)
 % Compute with multiple exposure values and return combined response
 %
 % Syntax
-%    sensorMEV = sensorComputeMEV(sensor, oi, varargin)
+%    sensor = sensorComputeMEV(sensor, oi, varargin)
 %
 % Brief description
 %    The sensor struct has multiple exposure times set.  The returned
@@ -17,9 +17,9 @@ function sensorMEV = sensorComputeMEV(sensor, oi, varargin)
 %   N/A
 %
 % Returns
-%   sensorMEV: The sensor with a single exposure containing the combined
-%              values.  The maximum voltage is adjusted to allow for the fact
-%              that there were multiple exposure values.
+%   sensor: The modified sensor with a single exposure containing the
+%           combined values.  The maximum voltage is adjusted to allow for
+%           the fact that there were multiple exposure values.
 %
 % Wandell, 2019
 %
@@ -29,10 +29,23 @@ function sensorMEV = sensorComputeMEV(sensor, oi, varargin)
 
 % Examples:
 %{
+scene = sceneFromFile('Feng_Office-hdrs.mat','multispectral');
+oi = oiCreate; oi = oiCompute(oi,scene);
+sensor = sensorCreate;
+sensor = sensorSet(sensor,'fov',sceneGet(scene,'fov'));
 
+maxTime  = 0.2;   % seconds
+expTimes = [maxTime/10, maxTime];
+sensor   = sensorSet(sensor,'exp time',expTimes);
+
+sensorMEV = sensorComputeMEV(sensor,oi);
+sensorMEV = sensorSet(sensorMEV,'name','Multiple exposure');
+sensorWindow(sensorMEV);
 %}
 %%
-p = inputParser;
+
+% Some day we will add parser
+% p = inputParser;
 
 %% Compute with multiple exposure times
 
@@ -57,11 +70,12 @@ maxV = vSwing*0.95;
 for thisExposure = (nExposures - 1):-1:1
     % Find the saturated pixels for this level
     lst = (combinedV > maxV);
-    fprintf('Exposure %d.  Replacing %d pixels\n',thisExposure,sum(lst(:)));
+    % fprintf('Exposure %d.  Replacing %d pixels\n',thisExposure,sum(lst(:)));
     if sum(lst(:)) == 0, break
     else
-        % Scaled volts from the shorter duration.
-        theseV = volts(:,:,thisExposure)*(maxTime/expTimes(thisExposure));
+        % Scaled volts for the shorter duration.
+        sFactor = (maxTime/expTimes(thisExposure));
+        theseV  = volts(:,:,thisExposure)*sFactor;
         combinedV(lst) = theseV(lst);
         maxV = maxV*sFactor;
         thisExp = thisExp + 1;
@@ -73,6 +87,9 @@ end
 sensor = sensorSet(sensor,'pixel voltage swing',max(combinedV(:))/0.95);
 sensor = sensorSet(sensor,'volts',combinedV);
 sensor = sensorSet(sensor,'name','combined');
+
+% Not sure what I should put in here.
+sensor = sensorSet(sensor,'exp time',maxTime);
 
 end
 
