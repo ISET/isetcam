@@ -1,13 +1,13 @@
 %% Multiple exposures
 %
-% Multiple capture (e.g., bracketing) and burst photography modes are
-% common.  Here are some examples of running these simulations in ISETCam.
+% Multiple capture (e.g., bracketing) are common.  Here is an example
+% of combining multiple exposures in ISETCam.
 %
 %
 % Wandell, 2019
 %
 % See also
-%
+%  sensorComputeMEV, t_sensorBurst
 
 %%
 ieInit
@@ -15,38 +15,44 @@ ieInit
 %% Set up the default scene and the oi
 
 % We will use an HDR scene before long, rather than this default.
-scene = sceneCreate;
+% scene = sceneCreate;
+scene = sceneFromFile('Feng_Office-hdrs.mat','multispectral');
+% sceneWindow(scene); sceneSet(scene,'display mode','hdr');
 oi = oiCreate; oi = oiCompute(oi,scene);
 
 %% Run the sensor simulation
 
+% First in single auto exposure mode
 sensor = sensorCreate; 
 sensor = sensorSet(sensor,'fov',sceneGet(scene,'fov'));
-
-% expTime   = autoExposure(oi,sensor);
-expTime = 0.3;   % 300 ms
-sensor = sensorSet(sensor,'exp time',expTime);  % 100 ms
-sensor = sensorCompute(sensor,oi); 
+sensor = sensorCompute(sensor,oi);
+sensor = sensorSet(sensor,'name','Auto exposure');
 sensorWindow(sensor);
+sensorSet(sensor,'gamma',0.3);
 
-%% Multiple exposure values
+%%  Now in MEV mode
+% You might find a maximum time this way.
+% expTime   = autoExposure(oi,sensor);
+maxTime = 0.2;   % seconds
 
 % Simple bracketing case.  Increasing order of equally scaled exposure
 % times.
-sFactor   = 4;
-burstTiming  = [expTime/(sFactor*sFactor), expTime/sFactor, expTime];
-sensorMEV = sensorSet(sensor,'exp time',burstTiming);
+expTimes  = [maxTime/10, maxTime];
+sensorMEV = sensorSet(sensor,'exp time',expTimes);
 
 % Get the multiple exposures.  This will display in bracketing mode
 sensorMEV = sensorCompute(sensorMEV,oi);
+sensorMEV = sensorSet(sensorMEV,'name','Multiple');
 sensorWindow(sensorMEV);
 
-%% One of many combination methods
+%% One combination method
 
 % Get the voltages from the multiple exposures
 volts      = sensorGet(sensorMEV,'volts');
 vSwing     = sensorGet(sensorMEV,'pixel voltage swing');
 nExposures = sensorGet(sensorMEV,'n exposures');
+expTimes   = sensorGet(sensorMEV,'exp time');
+maxTime    = max(expTimes(:));
 
 % Start out with the volts from the longest exposure time
 combinedV = volts(:,:,end);
@@ -63,35 +69,20 @@ for thisExposure = (nExposures - 1):-1:1
     if sum(lst(:)) == 0, break
     else
         % Scaled volts from the shorter duration.
-        theseV = volts(:,:,thisExposure)*(sFactor^thisExp);
+        theseV = volts(:,:,thisExposure)*(maxTime/expTimes(thisExposure));
         combinedV(lst) = theseV(lst);
         maxV = maxV*sFactor;
         thisExp = thisExp + 1;
     end
 end
 
+%% Notice that there is less noise in the dark regions
 sensor = sensorSet(sensor,'pixel voltage swing',max(combinedV(:))/0.95);
 sensor = sensorSet(sensor,'volts',combinedV);
-sensor = sensorSet(sensor,'name','combined MEV');
+sensor = sensorSet(sensor,'name','combined');
 sensorWindow(sensor);
 
-%% Burst photography example
-
-burstTiming = repmat(expTime/5,1,5);
-sensor      = sensorSet(sensor,'exp time',burstTiming);
-sensorBurst = sensorCompute(sensor,oi);
-sensorBurst = sensorSet(sensorBurst,'name',sprintf('burst-%d',numel(burstTiming)));
-sensorBurst = sensorSet(sensorBurst,'exp time',burstTiming(1));
-volts = sensorGet(sensorBurst,'volts');
-volts = sum(volts,3);
-sensorBurst = sensorSet(sensorBurst,'volts',volts);
-sensorWindow(sensorBurst);
-
-% Line is (x,y), not row,col.  (1,1) is upper left corner.
-sensorPlot(sensorBurst,'volts hline',[1,163]);
-
-
-%% 
+%%
 
 
 
