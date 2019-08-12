@@ -408,16 +408,20 @@ function editExpTime_Callback(hObject, eventdata, handles)
 %
 [val,sensor] = vcGetSelectedObject('sensor');
 
-% Interface is in several possible time units
-% We read in the those units, but we always store in seconds.
+% Interface is in several possible time units. We read in the those units,
+% but we store exposure time in seconds.
 str = get(handles.txtExposureUnits,'string');
 switch str
     case '(sec)'
         sFactor = 1;
     case '(us)'
         sFactor = 1e-6;
+    case '(ms)'
+        % (ms)
+        sFactor = 1e-3;
     otherwise
         sFactor = 1e-3;
+        warning('unexpected time string %s\n',str);
 end
 sensor = sensorSet(sensor,'expTime',str2double(get(hObject,'String'))*sFactor);
 
@@ -427,7 +431,7 @@ if isequal(get(handles.popupExpMode,'Val'),2)
 elseif isequal(get(handles.popupExpMode,'Val'),1)
     % Do nothing
 else
-    error('expPopup value %f\n',get(handles.popupExpMode,'Val'))
+    error('Exposure popup value (expPopup)%f\n',get(handles.popupExpMode,'Val'))
 end
 
 % Turn off auto-exposure
@@ -1791,6 +1795,8 @@ return;
 function sensor = sensorAdjustBracketTimes(handles,sensor)
 % Examine the bracket settings edit boxes and adjust the exposure times
 %
+% Another display mode is needed for multiple exposure times that are not
+% necessarily in bracketed mode.
 
 % This can be called by editing the exp time box or the nExposures or the
 % scale factor on exposures.
