@@ -30,6 +30,13 @@ sensor = sensorSet(sensor,'name','Auto exposure');
 sensorWindow(sensor);
 sensorSet(sensor,'gamma',0.3);
 
+%%
+ip = ipCreate; 
+ip = ipCompute(ip,sensor); ipWindow(ip);
+rgb = hdrRender(ipGet(ip,'srgb'));
+figH = ieNewGraphWin([],'wide'); 
+subplot(1,2,1); imagescRGB(rgb); title('Auto exposure')
+
 %%  Now in MEV mode
 % You might find a maximum time this way.
 % expTime   = autoExposure(oi,sensor);
@@ -77,12 +84,20 @@ for thisExposure = (nExposures - 1):-1:1
 end
 
 %% Notice that there is less noise in the dark regions
+
 sensor = sensorSet(sensor,'pixel voltage swing',max(combinedV(:))/0.95);
 sensor = sensorSet(sensor,'volts',combinedV);
 sensor = sensorSet(sensor,'name','combined');
 sensorWindow(sensor);
 
-%%
+%% For comparison with multiple exposure
+
+ip = ipCompute(ip,sensor); ipWindow(ip);
+rgb = hdrRender(ipGet(ip,'srgb'));
+figure(figH);
+subplot(1,2,2); imagescRGB(rgb); title('Multiple exposure')
+
+%% END
 
 
 
