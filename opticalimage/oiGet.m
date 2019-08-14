@@ -115,7 +115,8 @@ function val = oiGet(oi,parm,varargin)
 %      {'frequency support row','fsupporty'}*  - Frequency support for rows
 %
 % Depth
-%     {'depthMap'}   - Pixel wise depth map in meters
+%     {'depth map'}   - Pixel wise depth map in meters
+%     {'depth range'} - Depths beyond zero
 %
 % Optics information
 %      {'optics'}           - See opticsSet/Get
@@ -821,10 +822,16 @@ switch oType
                 % indicates locations where there were legitimate scene
                 % data for computing the OI data.  Other regions are
                 % 'extrapolated' by sceneDepthRange to keep the
-                % calculations correct.  But they don't always correspond
-                % to the original data.  When there is no depthMap in the
-                % scene, these are all logically '1' (true).
+                % calculations correct.  But they don't correspond to the
+                % original data.  When there is no depthMap in the scene,
+                % the oi depth map values are all logical '1' (true).
                 if checkfields(oi,'depthMap'), val = oi.depthMap; end
+            case {'depthrange'}
+                % oiGet(oi,'depth map') (meters)
+                % Min and max of the depth values > 0
+                depthmap = oiGet(oi,'depth map');
+                tmp = depthmap(depthmap > 0);
+                val = [min(tmp(:)), max(tmp(:))];
                 
             otherwise
                 disp(['Unknown parameter: ',parm]);
