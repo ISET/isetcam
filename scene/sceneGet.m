@@ -44,6 +44,7 @@ function val = sceneGet(scene,parm,varargin)
 %      'aspectratio'     - row/col
 %      'magnification','mag' -  Always 1.
 %      'depthmap'        - Distance to points in meters
+%      'depth range'     - Smallest distance > 0 and largest distance
 %
 % Radiance and reflectance information
 %      'data'
@@ -228,12 +229,14 @@ switch parm
             val = ones(sz(1),sz(2))*sceneGet(scene,'distance','m');
         end
         if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
+        
     case {'depthrange'}
         % Min and max of depth.  Units can be specified
         % sceneGet(scene,'depth range',units)
         dm = sceneGet(scene,'depth map');
         if isempty(dm), val = []; return;
         else
+            dm = dm(dm > 0);   % Remove the zeros
             val = [min(dm(:)), max(dm(:))];
             if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
         end

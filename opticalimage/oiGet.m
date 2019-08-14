@@ -818,6 +818,8 @@ switch oType
                 val.Y = sum(sum(img .* distanceY));
                 
             case {'depthmap'}
+                % oiGet(oi,'depth map',units)
+                %
                 % Depth information: The depth map in the OI domain
                 % indicates locations where there were legitimate scene
                 % data for computing the OI data.  Other regions are
@@ -826,13 +828,16 @@ switch oType
                 % original data.  When there is no depthMap in the scene,
                 % the oi depth map values are all logical '1' (true).
                 if checkfields(oi,'depthMap'), val = oi.depthMap; end
+                if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
+
             case {'depthrange'}
-                % oiGet(oi,'depth map') (meters)
+                % oiGet(oi,'depth map', units) 
                 % Min and max of the depth values > 0
                 depthmap = oiGet(oi,'depth map');
                 tmp = depthmap(depthmap > 0);
                 val = [min(tmp(:)), max(tmp(:))];
-                
+                if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
+
             otherwise
                 disp(['Unknown parameter: ',parm]);
                 
