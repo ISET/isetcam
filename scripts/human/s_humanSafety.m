@@ -57,7 +57,7 @@ duration = 1;                  % Seconds
 hazardEnergy = dot(Actinic,irradiance) * dLambda * duration;
 fprintf('Maximum exposure duration per eight hours:  %f (min)\n',(30/hazardEnergy)/60)
 %% An example of the 385nm light in the OralEye camera
-fname = fullfile(isetRootPath,'local','block_blueoraleye_nofilter_onedeg.mat');
+fname = fullfile(oreyeRootPath,'data','lights','OralEyeBlueLight.mat');
 load(fname,'wave','radiance');
 radiance = mean(radiance,2);
 irradiance = 2*pi*radiance;
