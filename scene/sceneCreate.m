@@ -71,8 +71,6 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %    wave = 400:10:700; grayFlag = 0; sampling = 'r'; 
 %    scene = sceneCreate('reflectance chart',pSize,sSamples,sFiles,wave,grayFlag,sampling); 
 %
-%   See also: s_sceneReflectanceCharts.m and s_imageReflectanceCharts.m
-%
 % NARROWBAND COLOR PATCHES
 %    wave = [600, 610];  sz = 64;
 %    scene = sceneCreate('uniform monochromatic',wave,sz);
@@ -168,9 +166,10 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %
 %     scene = sceneClearData(sceneCreate);
 %
-% See also:  sceneFromFile, displayCreate
-%
 % Copyright ImagEval Consultants, LLC, 2003.
+%
+% See also:  
+%  sceneFromFile, displayCreate, s_sceneReflectanceCharts.m 
 
 %% Initial definition
 if ieNotDefined('sceneName'), sceneName = 'default'; end

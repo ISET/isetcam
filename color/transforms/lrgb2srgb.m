@@ -33,4 +33,4 @@ big = (rgb > 0.0031308);
 rgb(~big) = rgb(~big) * 12.92;
 rgb(big) = 1.055*rgb(big).^(1/2.4) - 0.055;
 
-return;
+end

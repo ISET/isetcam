@@ -9,9 +9,8 @@ ieInit
 
 %% Create a point array scene
 scene = sceneCreate('point array');
-scene = sceneSet(scene,'h fov',2);    % Degrees
+scene = sceneSet(scene,'h fov',1);    % Degrees
 ieAddObject(scene); sceneWindow;
-
 
 %% Compute the irradiance
 oi = oiCreate;
@@ -34,6 +33,9 @@ oi = oiCompute(oi,scene);
 ieAddObject(oi);
 oiWindow;
 
+%% Plot the point spread
+oiPlot(oi,'psf 550');
+
 %% Check the inter-related parameters
 p = oiGet(oi,'optics pupil diameter','mm')
 f = oiGet(oi,'optics focal length','mm')
@@ -41,7 +43,6 @@ f/p
 
 %% Show the diffraction-limited blur dependence on wavelength
 
-vcNewGraphWin;
 uData = oiPlot(oi,'ls wavelength');
 title(sprintf('F/# = %.0d',oiGet(oi,'optics f number')))
 

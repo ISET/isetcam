@@ -1,5 +1,5 @@
 function mRGB = macbethPatchData(obj,mLocs,delta,fullData,dataType)
-% Return a cell array with the linear RGB values from a vcimage or sensor 
+% Return a cell array with the linear RGB values from an ip or sensor 
 %
 %    mRGB = macbethPatchData(obj,mLocs,delta)
 %
@@ -42,4 +42,4 @@ else  % Mean values from each patch
     end
 end
 
-return
+end
