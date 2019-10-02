@@ -20,7 +20,7 @@ ieInit
 %% Calculate the circle of confusion diameter for different points
 
 % Points distances
-oDist = logspace(-1.5,0.3,20);
+oDist = logspace(-1.5,1,20);
 
 optics = opticsCreate;
 optics = opticsSet(optics,'fnumber',2);
@@ -52,7 +52,6 @@ semilogy(oDist,c,'g-'); grid on
 l = xlabel('Object distance (m)');                  % set(l,'Position',[0.5 0.7,-1]);
 l = ylabel('Diameter of circle of confusion (um)'); % set(l,'Position',[-0.06 31.6,-1])
 
-
 %% Change the f-number once more, keeping focal length fixed
 
 optics = opticsSet(optics,'fnumber',8);
@@ -64,9 +63,11 @@ end
 % Why aren't the axes default positions OK?
 hold on
 semilogy(oDist,c,'r-'); grid on
-l = xlabel('Object distance (m)');                  % set(l,'Position',[0.5 0.7,-1]);
-l = ylabel('Diameter of circle of confusion (um)'); % set(l,'Position',[-0.06 31.6,-1])
+xlabel('Object distance (m)','fontsize',24);                  % set(l,'Position',[0.5 0.7,-1]);
+ylabel('Diameter of circle of confusion (um)','fontsize',24); % set(l,'Position',[-0.06 31.6,-1])
 
+% diffractionLine
+line([min(oDist),max(oDist)],[2 2],'linestyle',':','color','k');
 % In all cases
 % flength = opticsGet(optics,'focal length','mm');
 % title(sprintf('Focal length %.2f mm',flength));
