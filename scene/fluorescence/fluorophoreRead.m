@@ -24,28 +24,32 @@ function [ fl ] = fluorophoreRead( fName, varargin )
 %%
 p = inputParser;
 p.addRequired('fName',@ischar);
-p.addParameter('wave',(400:10:700)',@isvector);
-p.addParameter('qe',1,@isscalar);
+% p.addParameter('wave',(400:10:700)',@isvector);
+% p.addParameter('qe',1,@isscalar);
 
 p.parse(fName,varargin{:});
 inputs = p.Results;
 
-%%
+%% Read in the fluorophore file
 data = load(inputs.fName);
 
+%% Create the fluorophore with the data from the file
+
+% The emission and excitation are w.r.t. photons, not energy
+
 fl = fluorophoreCreate('type','custom',...
-                       'wave',data.wave,...
-                       'name',data.name,...
-                       'solvent',data.solvent,...
+                       'wave',      data.wave,...
+                       'name',      data.name,...
+                       'solvent',   data.solvent,...
                        'excitation',data.excitation,...
-                       'emission',data.emission);
+                       'emission',  data.emission);
                    
-fl = fluorophoreSet(fl,'qe',inputs.qe);
-if ~isempty(inputs.wave)
-    fl = fluorophoreSet(fl,'wave',inputs.wave);
-end
-
-
+% Changed October 6, 2019.  Not sure why inputs ever had wave.
+%
+% fl = fluorophoreSet(fl,'qe',inputs.qe);
+% if ~isempty(inputs.wave)
+%     fl = fluorophoreSet(fl,'wave',inputs.wave);
+% end
 
 end
 
