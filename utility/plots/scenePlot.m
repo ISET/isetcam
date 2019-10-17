@@ -250,7 +250,7 @@ switch lower(pType)
         if isempty(varargin)
             wave = sceneGet(scene,'wave');
             selectedWave = wave(round(length(wave)/2));
-        else selectedWave = varargin{1};
+        else, selectedWave = varargin{1};
         end
         
         data = sceneGet(scene,'photons',selectedWave);
@@ -279,7 +279,7 @@ switch lower(pType)
         if isempty(varargin)
             wave = sceneGet(scene,'wave');
             selectedWave = wave(round(length(wave)/2));
-        else selectedWave = varargin{1};
+        else, selectedWave = varargin{1};
         end
         
         data = sceneGet(scene,'photons',selectedWave);
@@ -644,7 +644,7 @@ switch lower(pType)
         wave = sceneGet(scene,'wave');
         sz = sceneGet(scene,'size');
         energy = sceneGet(scene,'illuminant energy');
-        if isempty(energy), 
+        if isempty(energy) 
             ieInWindowMessage('No illuminant data.',handle);
             close(gcf);
             error('No illuminant data');
@@ -704,5 +704,4 @@ if exist('roiRect','var'), udata.roiRect = roiRect; end
 if exist('roiLocs','var'), udata.roiLocs = roiLocs; end
 set(gcf,'userdata',udata);
 
-return;
-
+end

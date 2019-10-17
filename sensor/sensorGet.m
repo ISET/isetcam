@@ -490,7 +490,7 @@ switch oType
                 % Each sensor with values on this row in data
                 % The positions of the data in pos.
                 if isempty(varargin), error('Specify row or col.');
-                else rc = varargin{1};  % Could be a row or col
+                else, rc = varargin{1};  % Could be a row or col
                 end
                 nSensors = sensorGet(sensor,'n sensors');
                 
@@ -512,7 +512,7 @@ switch oType
                     % 'h' format, and we get the y-positions.
                     pos = support.y;
                     d = imageTranspose(d);
-                else error('Unknown orientation.');
+                else, error('Unknown orientation.');
                 end
                 
                 % Go get 'em
