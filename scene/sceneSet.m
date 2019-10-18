@@ -205,6 +205,83 @@ switch parm
         end
         % close(h);
         scene = sceneSet(scene,'photons',photons);
+        
+    case 'roiphotons'
+        % Place new scene radiance data into an ROI
+        %
+        %    scene = sceneSet(scene,'roi energy',val, roi);
+        %
+        % The radiance data should be in XW format
+        %
+        % The ROI is specified as either an ROI box or as a set of
+        % roilocs. If an ROI box then size(roi,2)is 4. If ROI Locs
+        % then size(roi,2) is 2 (roiLocs is Nx2).
+        %
+        if isempty(varargin), error('ROI required')
+        else, roi = varargin{1};
+        end
+        if size(roi,2) == 4, roiLocs = ieRoi2Locs(roi);
+        else,                roiLocs = roi;
+        end
+
+        wave = sceneGet(scene,'wave');
+        photons = zeros(size(val));
+        [~,w] = size(photons);
+        if w ~= length(wave), error('Data mismatch'); end
+        
+        photons = sceneGet(scene,'photons');
+        [photons, r, c] = RGB2XWFormat(photons);
+
+        sz = sceneGet(scene,'size');
+        roiLocs(:,1) = ieClip(roiLocs(:,1),1,r);
+        roiLocs(:,2) = ieClip(roiLocs(:,2),1,c);
+
+        imgLocs = sub2ind([sz(1),sz(2)],roiLocs(:,1),roiLocs(:,2));
+        photons(imgLocs,:) = val;
+        photons = XW2RGBFormat(photons,sz(1),sz(2));
+
+        scene = sceneSet(scene,'photons',photons);
+        
+    case 'roienergy'
+        % Place new scene radiance data into an ROI.  The ROI is
+        % specified as either an ROI box or as a set of roilocs.  The
+        % radiance data must be in XW format.
+        %
+        %    scene = sceneSet(scene,'roi energy',energy, roi);
+        % 
+        % The user specified the scene radiance in units of energy.
+        %
+        % The ROI is specified as either an ROI box or as a set of
+        % roilocs. If an ROI box then size(roi,2)is 4. If ROI Locs
+        % then size(roi,2) is 2 (roiLocs is Nx2).
+        %
+        
+        if isempty(varargin), error('ROI required')
+        else, roi = varargin{1};
+        end
+        
+        wave = sceneGet(scene,'wave');
+        photons = zeros(size(val));
+        [~,w] = size(photons);
+        if w ~= length(wave), error('Data mismatch'); end
+        
+        photons = Energy2Quanta(wave,val')';
+        %
+        %         % h = waitbar(0,'Energy to photons');
+        %         for ii=1:w
+        %             % waitbar(ii/w,h);
+        %             % Get the first image plane from the energy hypercube.
+        %             % Make it a row vector
+        %             tmp = val(:,:,ii); tmp = tmp(:)';
+        %             % Convert the rwo vector from energy to photons
+        %             tmp = Energy2Quanta(wave(ii),tmp);
+        %             % Reshape it and place it in the photon hypercube
+        %             photons(:,:,ii) = reshape(tmp,r,c);
+        %         end
+        
+        % close(h);
+        scene = sceneSet(scene,'roi photons',photons,roi);
+        
 
     case {'peakradiance','peakphotonradiance'}
         % Deprecated, I think.
