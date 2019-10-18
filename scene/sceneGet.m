@@ -429,7 +429,7 @@ switch parm
         % So, [col,row,0,0] returns 1 point and [col,row,1,1] returns 4
         % points.
         if isempty(varargin), error('ROI required')
-        else roiLocs = varargin{1};
+        else, roiLocs = varargin{1};
         end
         val = vcGetROIData(scene,roiLocs,'energy');
         
@@ -772,4 +772,4 @@ switch parm
         
 end
 
-return;
+end
