@@ -303,6 +303,12 @@ switch sceneName
         end
         scene = sceneMackay(scene,radFreq,sz);
     case {'harmonic','sinusoid'}
+        %
+        % scene = sceneCreate(scene,'harmonic',imageHparams);
+        %
+        % The scene spectral radiance is set to an equal photon radiance
+        % (not equal energy).
+        %
         if isempty(varargin)
             [scene,parms] = sceneHarmonic(scene);
         elseif length(varargin) == 1
@@ -782,6 +788,8 @@ function [scene,p] = sceneHarmonic(scene,parms, wave)
 % The frequency is with respect to the image (cyces/image).  To determine
 % cycles/deg, use cpd: freq/sceneGet(scene,'fov');
 %
+% The spectral radiance is set to an equal photon radiance (not equal
+% energy).
 
 scene = sceneSet(scene,'name','harmonic');
 
