@@ -124,7 +124,7 @@ switch lower(objType)
                 photons = obj.data.photons;
                 wavelength = oiGet(obj,'wavelength');
                 data = Quanta2Energy(wavelength,photons);
-            else errordlg('No data to plot.');  
+            else, errordlg('No data to plot.');  
             end
         end
 
@@ -176,4 +176,4 @@ switch lower(objType)
         roiData = img(imgLocs,:);
 end
 
-return;
+end

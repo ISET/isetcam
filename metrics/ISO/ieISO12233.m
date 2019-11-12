@@ -38,29 +38,26 @@ function mtfData = ieISO12233(ip,sensor)
 
 % Examples:
 %{
-  % Create an ip with the slanted bar.
+  % Create an ip with the slanted bar and compute MTF
+
   scene = sceneCreate('slanted edge',512);
   scene = sceneSet(scene,'fov',5);
-  camera = cameraCreate;
-  camera = cameraCompute(camera,scene);
-  cameraWindow(camera,'ip');
-
   oi = oiCreate; oi = oiCompute(oi,scene);
   sensor = sensorCreate; 
+  % Black edge.
   sensor = sensorSetSizeToFOV(sensor,1.5*sceneGet(scene,'fov'));
   sensor = sensorCompute(sensor,oi);
   ip = ipCreate; ip = ipCompute(ip,sensor);
-  ieAddObject(ip); ipWindow;
+  ipWindow(ip);
 
   % Compute the MTF
-  ip = cameraGet(camera,'ip'); sensor = cameraGet(camera,'sensor');
   mtfData = ieISO12233(ip,sensor);
   ieDrawShape(ip,'rectangle',mtfData.rect);
 
   % If the sensor is in the database, it will be used.
   ieAddObject(sensor);  
   mtf = ieISO12233(ip);
-  ieAddObject(ip); ipWindow; h = ieDrawShape(ip,'rectangle',mtf.rect);
+  ipWindow; h = ieDrawShape(ip,'rectangle',mtf.rect);
 
 %}
 
@@ -93,7 +90,7 @@ barImage = reshape(barImage,r,c,3);
 % Run the ISO 12233 code.
 dx = sensorGet(sensor,'pixel width','mm');
 mtfData = ISO12233(barImage, dx);
-mtfData.rect = masterRect;
+mtfData.rect = masterRect; % [masterRect(2) masterRect(1) masterRect(4) masterRect(3)]; 
 
 end
 

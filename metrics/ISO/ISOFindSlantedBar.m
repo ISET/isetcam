@@ -8,33 +8,44 @@ function rect = ISOFindSlantedBar(ip,blurFlag)
 %  blurFlag:  Apply blurring to image prior to finding rect (default = false)
 %
 % Return
-%  Rectangle
+%  rect:    [upperLeftRow upperLeftCol width height]
 %
 % The image processing structure, ip, should contains a slanted bar.  This
 % routine is supposed to find a rectangle in the slanted bar that will be a
 % good choice for sending in to the ISO12233 function.
 %
-% The rect should be taller than wide and should incorporate enough
-% rows to calculate the MTF.
+% The returned rect should be taller than wide and should incorporate
+% enough rows to calculate the MTF.
 %
 % This routine requires more checking.  It is written only to find a large
 % slanted bar image that takes up most of the ip.   This is a lousy
 % detection algorithm.
 %
-% Example:
-%   scene = sceneCreate('slanted edge',512);
-%   oi = oiCreate; oi = oiCompute(oi,scene);
-%   sensor = sensorCreate; 
-%   sensor = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'));
-%   sensor = sensorCompute(sensor,oi);
-%   ip = ipCreate; ip = ipCompute(ip,sensor);
-%   rect = ISOFindSlantedBar(ip,false); ieAddObject(ip); ipWindow;
-%   h  = ieDrawShape(ip,'rectangle',rect);
-%   delete(h);
+% Copyright Imageval, LLC 2012
 %
 % See also:  ieISO12233.m, ISO12233.m
-%
-% Copyright Imageval, LLC 2012
+
+% Examples:
+%{
+  scene = sceneCreate('slanted edge',512);
+  oi = oiCreate; oi = oiCompute(oi,scene);
+  sensor = sensorCreate; 
+  sensor = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'));
+  sensor = sensorCompute(sensor,oi);
+  ip = ipCreate; ip = ipCompute(ip,sensor);
+  rect = ISOFindSlantedBar(ip,false); 
+  ipWindow(ip); h  = ieDrawShape(ip,'rectangle',rect);
+%}
+%{
+  scene = sceneCreate('slanted edge',512);
+  oi = oiCreate; oi = oiCompute(oi,scene);
+  sensor = sensorCreate;
+  sensor = sensorSetSizeToFOV(sensor,1.5*sceneGet(scene,'fov'));
+  sensor = sensorCompute(sensor,oi);
+  ip = ipCreate; ip = ipCompute(ip,sensor);
+  rect = ISOFindSlantedBar(ip,false);
+  ipWindow(ip); h  = ieDrawShape(ip,'rectangle',rect);
+%}
 
 if ieNotDefined('ip'), error('image processor (ip) required'); end
 if ieNotDefined('blurFlag'), blurFlag = false; end
@@ -67,7 +78,8 @@ dySums = diff(ySums);  % vcNewGraphWin; plot(dySums)
 % Following ignores derivative values between two columns that are both 
 % below the average column value.  This ignores any large steps between two
 % dark values and preserves steps between bright and dark values.
-belowAverage = ySums < mean(ySums);
+% Also, black region must be 5x lower than white region, I am guessing.
+belowAverage = ySums < mean(ySums)/5;  
 remove = (belowAverage(1:end-1) & belowAverage(2:end));
 dySums(remove) = 0;
 
@@ -124,8 +136,8 @@ midPoint = (lowerRight + upperLeft)/2;  % Also ipGet(ip,'center')
 % different from standard ISET.
 width  = lowerRight(1) - upperLeft(1);
 height = round(1.5*width);
-colMin = round(midPoint(1) - width/2);
-rowMin = round(midPoint(2) - height/2);
+rowMin = round(midPoint(1) - width/2);
+colMin = round(midPoint(2) - height/2);
 
 
 %% We should test whether the rect parameters are at all sensible.
@@ -135,7 +147,8 @@ if width < 5 || height < 5
     rect = [];
     return;
 else 
-    rect = [colMin rowMin width height];
+    % row col changed Nov 11 2019
+    rect = [rowMin colMin width height];
 end
 
 end

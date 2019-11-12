@@ -161,7 +161,11 @@ ieAddObject(sensor);
 
 vci = ipCompute(vci,sensor);
 mtf = ieISO12233(vci);
-assert(abs(mtf.mtf50 - 77) < 3);
+
+% Changed from 77 to 75 on Nov. 11, 2019.  This was part of a fix of the
+% ISOFindSlantedBar code that put the rect more into the center of the
+% edge. 
+assert(abs(mtf.mtf50 - 75) < 3);
 
 ieAddObject(vci); ipWindow;
 h = ieDrawShape(vci,'rectangle',mtf.rect);
