@@ -85,6 +85,7 @@ function oi = oiSet(oi,parm,val,varargin)
 % Auxiliary
 %      {'consistency'}       - Is the display consistent with data
 %      {'gamma'}             - Display gamma in oiWindow
+%      {'displaymode'}       - No space. One of {'rgb','hdr','gray','clip'}
 %
 % Private variables used by ISET but not normally set by the user
 %
@@ -103,6 +104,7 @@ function oi = oiSet(oi,parm,val,varargin)
 %    oi = oiSet(oi,'filename','test')
 %    oi = oiSet(oi,'wvf zcoeffs',6,'defocus')
 %    oi = oiSet(oi,'wvf pupil diameter',3,'mm')
+%    oiSet(oi,'displaymode','hdr');
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 %
@@ -315,6 +317,28 @@ switch parm
         % oiSet(oi,'depth map',dMap);
         oi.depthMap = val;
         
+    case {'displaymode'}
+        % oiSet(scene,'display mode','hdr');
+        
+        switch val
+            case 'hdr'
+                val = 3;
+            case 'rgb'
+                val = 1;
+            case 'gray'
+                val = 2;
+            case 'clip'
+                val = 4;
+            otherwise
+                fprintf('Legal display modes: rgb, gray, hdr, clip\n');
+        end
+        
+        hdl = ieSessionGet('oi window handle');
+        set(hdl.popupDisplay,'Value',val);
+        
+        % sceneWindow('sceneRefresh',hObj,eventdata,hdl);
+        oiWindow;
+        
         % Chart parameters for MCC and other cases
     case {'chartparameters'}
         % Reflectance chart parameters are stored here.
@@ -327,4 +351,4 @@ switch parm
         error('Unknown oiSet parameter: %s',parm);
 end
 
-return;
+end
