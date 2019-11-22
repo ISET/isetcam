@@ -355,8 +355,11 @@ switch sceneName
         % By default a 32 x 32 with standard wave sampling
         %
         sz = 32; 
-        if ~isempty(varargin),   sz = varargin{1}; end
-        if length(varargin) > 1, wave = varargin{2};
+        if ~isempty(varargin) && ~isempty(varargin{1})
+            sz = varargin{1}; 
+        end
+        if length(varargin) > 1 && ~isempty(varargin{2})
+            wave = varargin{2};
             scene = sceneSet(scene,'wave',wave);
         end
         scene = sceneUniform(scene,'equal energy',sz);
