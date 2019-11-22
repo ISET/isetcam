@@ -9,8 +9,8 @@ function img = imageSlantedEdge(imSize,slope)
 %   testing.
 %
 % Inputs
-%   imSize
-%   slope
+%   imSize - (row,col) (384,384) by default
+%   slope  - slope of the edge (2.6 default)
 %
 % Key/val pairs
 %   N/A
@@ -31,18 +31,21 @@ function img = imageSlantedEdge(imSize,slope)
  axis image; colormap(gray)
 %}
 %{
- img = imageSlantedEdge(128,1);
+ img = imageSlantedEdge([256,128],2.3);
  ieNewGraphWin; imagesc(img); axis image; colormap(gray)
  truesize;
 %}
 
 %% Parse
-if ieNotDefined('imSize'),   imSize = 384; end
+if ieNotDefined('imSize'),   imSize = [384,384]; end
 if ieNotDefined('slope'),    slope = 2.6; end
+
+if numel(imSize) == 1, imSize(2) = imSize; end
 
 %% Make the image
 imSize = round(imSize/2);
-[X,Y] = meshgrid(-imSize:imSize,-imSize:imSize);
+[X,Y] = meshgrid(-imSize(2):imSize(2),-imSize(1):imSize(1));
+
 img = zeros(size(X));
 
 %  y = slope*x defines the line.  We find all the Y values that are

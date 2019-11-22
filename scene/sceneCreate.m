@@ -287,7 +287,7 @@ switch sceneName
         scene = sceneMultispectral(scene);
     case 'rgb'
         if isempty(varargin), scene = sceneRGB(scene);
-        else scene = sceneRGB(varargin{1});end
+        else, scene = sceneRGB(varargin{1});end
         
     case {'mackay','rayimage','ringsrays'}
         % Also called the Siemens star pattern
@@ -352,10 +352,14 @@ switch sceneName
         scene = sceneExpRamp(scene,sz,dynamicRange);
         
     case {'uniform','uniformee','uniformequalenergy'}   %Equal energy
-        if isempty(varargin),  sz = 32;
-        else                   sz = varargin{1};
+        % By default a 32 x 32 with standard wave sampling
+        %
+        sz = 32; 
+        if ~isempty(varargin),   sz = varargin{1}; end
+        if length(varargin) > 1, wave = varargin{2};
+            scene = sceneSet(scene,'wave',wave);
         end
-        scene = sceneUniform(scene,'equalenergy',sz);
+        scene = sceneUniform(scene,'equal energy',sz);
         
     case {'uniformeespecify'}   % Equal energy, specify waveband
         % scene = sceneCreate('uniformEESpecify',sz,wavelength);
@@ -929,7 +933,7 @@ switch lower(spectralType)
         il = illuminantCreate(spectralType,wave);
     case {'blackbody'}
         if isempty(varargin), cTemp = 5000;
-        else                  cTemp = varargin{1};
+        else,                 cTemp = varargin{1};
         end
         il = illuminantCreate('blackbody',wave,cTemp);
     otherwise
