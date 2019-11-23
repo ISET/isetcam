@@ -95,7 +95,7 @@ switch param
         pixel.pdWidth = val;
     case {'pdheight','photodetectorheight'}    % M
         pixel.pdHeight = val;
-    case {'pdwidthandheight'}                  %(M,M)
+    case {'pdwidthandheight','pdsize'}         %(M,M)
         pixel = pixelSet(pixel,'pdwidth',val(1));
         pixel = pixelSet(pixel,'pdheight',val(2));
     case {'layerthickness','layerthicknesses'} % M
