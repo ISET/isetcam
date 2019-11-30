@@ -36,9 +36,10 @@ if ieNotDefined('newFOV'), error('Must specify desired horizontal field of view 
 if ieNotDefined('scene'), scene = [];  end
 if ieNotDefined('oi'), oi = [];  end
 
-% Get the size.  If it is 0, set to a small size.
+% Get the size.  If size is 0,0 set to a small size.  Not sure when it is
+% ever empty, but that is what we had here for a while.
 sz = sensorGet(sensor,'size');
-if isempty(sz)
+if isempty(sz) || isequal(sz,[0 0])
     sz = [32,32];
     sensor = sensorSet(sensor,'size',sz);
 end
@@ -63,7 +64,7 @@ if length(newFOV) == 1
     currentHFOV = sensorGet(sensor,'fov horizontal',scene,oi);
     newSize = round(sz * (hFOV/currentHFOV));
     
-elseif length(newFOV) == 2,
+elseif length(newFOV) == 2
     % User sent in both horizontal and vertical field of view parameters
     hFOV = newFOV(1);
     vFOV = newFOV(2);
@@ -107,5 +108,5 @@ sensor = sensorClearData(sensor);
 %%  The person may want the corrected FOV
 if nargout == 2, actualFOV = sensorGet(sensor,'fov'); end
 
-return;
+end
 
