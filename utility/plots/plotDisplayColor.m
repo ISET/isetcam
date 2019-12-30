@@ -66,14 +66,15 @@ switch lower(dataType)
             subplot(1,3,ii); 
             nBins = round(max(20,size(RGB,1)/25));
             thisH = histogram(RGB(:,ii),nBins);
-            set(gca,'xlim',[0 1.1]); grid on;
             thisH.FaceColor = colorlist{ii};
             thisH.EdgeColor = colorlist{ii};
+            grid on
         end
         % Label the edge cases
         subplot(1,3,1); ylabel('Count');
         subplot(1,3,2); xlabel('Pixel value');
-        title('RGB histograms');
+        mn = mean(RGB);
+        title(sprintf('RGB histograms; mean = (%.1f,%.1f,%.1f)',mn(1),mn(2),mn(3)));
         udata.RGB = RGB;
 
     case {'rgb3d'}
