@@ -22,11 +22,18 @@ function hdl = plotRadiance(wavelength,radiance)
 % 
 
 hdl = ieNewGraphWin;
+wavelength = wavelength(:);
 
-plot(wavelength,radiance);
+nWave = length(wavelength);
+if nWave == size(radiance,1)
+    plot(wavelength(:),radiance);
+elseif length(wavelength) == size(radiance,2)
+    plot(wavelength(:),radiance');    
+end
 
-grid on; xlabel('Wavelength (nm)');
-
+xlabel('Wavelength (nm)');
 ylabel('Radiance (watts/sr/nm/m^2)');
+grid on; 
+title('Spectral radiance');
 
 end
