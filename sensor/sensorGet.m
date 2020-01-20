@@ -444,12 +444,20 @@ switch oType
                     if size(val,2) ~= 4, val =  ieLocs2Rect(val); end
                 end
             case {'roivolts','roidata','roidatav','roidatavolts'}
+                % V = sensorGet(sensor,'roi volts');
+                %
+                % If sensor.roi exists, it is used.  Otherwise, empty
+                % is returned and a warning issued.
                 if checkfields(sensor,'roi')
                     roiLocs = sensorGet(sensor,'roi locs');
                     val = vcGetROIData(sensor,roiLocs,'volts');
                 else, warning('ISET:nosensorroi','No sensor.roi field.  Returning empty voltage data.');
                 end
             case {'roielectrons','roidatae','roidataelectrons'}
+                % e = sensorGet(sensor,'roi electrons');
+                %
+                % If sensor.roi exists, it is used.  Otherwise, empty
+                % is returned and a warning issued.
                 if checkfields(sensor,'roi')
                     roiLocs = sensorGet(sensor,'roi locs');
                     val = vcGetROIData(sensor,roiLocs,'electrons');
