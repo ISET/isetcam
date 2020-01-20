@@ -100,7 +100,9 @@ if ieNotDefined('roiLocs')
         case {'electronshistogram','electronshist'...
                 'voltshistogram','voltshist'}
             % Region of interest plots
-            roiLocs = vcROISelect(sensor);
+            [roiLocs, roiRect] = vcROISelect(sensor);
+            % Store the rect for later plotting
+            sensor = sensorSet(sensor,'roi',roiRect);
             
         otherwise
             % There are some cases that are OK without an roiLocs value or
@@ -132,8 +134,11 @@ switch pType
         [uData, g] = plotSensorLine(sensor, 'h', 'dv', 'space', roiLocs);
     case {'voltshistogram','voltshist'}
         [uData,g] = plotSensorHist(sensor,'v',roiLocs);
+        sensorPlot(sensor,'roi');
     case {'electronshistogram','electronshist'}
+        % sensorPlot(sensor,'electrons histogram');
         [uData,g] = plotSensorHist(sensor,'e',roiLocs);
+        sensorPlot(sensor,'roi');
     case {'shotnoise'}
         [uData, g] = imageNoise('shot noise');
         
@@ -182,6 +187,23 @@ switch pType
         uData.spread = spread;
         uData.delta = delta;
         g = gcf;
+        
+    case {'roi'}
+        % [uData,g] = sensorPlot(sensor,'roi');
+        %
+        % If the roi is a rect, use its values to plot a white rectangle on
+        % the sensor image.  The returned graphics object is a rectangle
+        % (g) and you can adjust the colors and linewidth using it.
+        if ~isfield(sensor,'roi')
+            [~,rect] = vcROISelect(sensor);
+            sensor = sensorSet(sensor,'roi',rect);
+        elseif numel(sensor.roi) ~= 4
+            error('roi must be a rect');
+        end
+        
+        % Make sure the sensor window is selected
+        sensorImageWindow;
+        g = rectangle('Position',sensor.roi,'EdgeColor','w','LineWidth',2);
     otherwise
         error('Unknown sensor plot type %s\n',pType);
 end

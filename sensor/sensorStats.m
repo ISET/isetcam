@@ -1,51 +1,105 @@
-function s = sensorStats(roi,statType,unitType)
+function [s, sensor, theRect] = sensorStats(sensor,statType,unitType,quiet)
 % Calculate sensor statistics within a region of interest
 %
-%    s = sensorStats(roi,[statType],[unitType])
+% Syntax
+%    [stats, sensor, theRect] = sensorStats(sensor,[statType],[unitType],[quiet])
 %
-% Purpose:
-%   At present, the summary statistics are only mean, standard deviation
-%   and standard error of the mean.  These can be computed either with
-%   respect to sensor volts or sensor electrons.
+% Inputs
+%    sensor:     Either a sensor or an ROI.  If a sensor it may contain an
+%                roi field of Nx2 matrix locations (TODO: should allow for
+%                rect)  
+%    statType:   'basic'
+%    unitType:   'volts' or 'electrons'
+%    quiet:       Do not show rect if true
 %
-%   If the routine is called without a return argument, the data are shown
-%   in a graph window.
+% Returns:
+%    stats:   Struct with the statistics
+%    sensor:  The sensor is returned with the ROI added to it
+%    theRect: Graphics object of the rect on the sensor window
 %
-% Examples:
-%   s = sensorStats;
-%   sensorStats;
+% Description
+%   Return some summary statistics from the sensor.  Only basic statistics,
+%   mean, standard deviation and standard error of the mean are returned.
+%   These can be computed either with respect to sensor volts or sensor
+%   electrons.
+%
+%   If the routine is called without a return argument, the data are
+%   plotted. 
 %
 % Copyright ImagEval Consultants, LLC, 2005.
+%
+% See also
+%  
 
-if ~exist('statType','var'), statType = 'basic'; end
-if ~exist('unitType','var'), unitType = 'volts'; end
+% Examples:
+%{
+  [stats, sensor, theRect] = sensorStats;
+  theRect.LineStyle = ':';
+  delete(theRect);
+%}
+%{
+  % Suppress showing the rect
+  stats = sensorStats(sensor,'','',false);
+%}
+%{
+  % Refresh the sensor window to delete the rect
+  stats = sensorStats(sensor.roi);
+%}
 
-[val,isa] = vcGetSelectedObject('ISA');
-nSensors = sensorGet(isa,'nsensors');
+if ieNotDefined('sensor')
+    [~,sensor] = vcGetSelectedObject('ISA'); 
+    roi = []; 
+end
+if ieNotDefined('quiet'),    quiet = false; end
+if ieNotDefined('statType'), statType = 'basic'; end
+if ieNotDefined('unitType'),  unitType = 'volts'; end
 
-if ~exist('roi','var') | isempty(roi)
+if isstruct(sensor) && ...
+        isfield(sensor,'type') && ...
+        isequal(sensor.type,'sensor')
+else
+    % The user did not send in a sensor, but just an ROI
+    % So we assume user wants to use the currently selected sensor
+    roi = sensor;
+    if numel(roi) == 4
+        roi = ieRect2Locs(roi);
+    end
+    [~,sensor] = vcGetSelectedObject('ISA');
+end
+
+nSensors = sensorGet(sensor,'nsensors');
+
+if exist('roi','var'), sensor.roi = roi; 
+else,                  roi = [];
+end
+
+if isfield(sensor,'roi') && ~isempty(sensor.roi)
+    % Use the sensor.roi
+elseif isempty(roi) 
+    % No information.  Help the user choose the ROI
     isaHdl = ieSessionGet('isahandle');
     ieInWindowMessage('Select image region.',isaHdl,[]);
-
-    % This is not returned, so the assignment is useless.  Fix.
-    isa.roi = vcROISelect(isa);
-    
+    [~,rect] = vcROISelect(sensor);
+    sensor = sensorSet(sensor,'roi',rect);
     ieInWindowMessage('',isaHdl);
-
 else
-    isa.roi = roi;
+    % The user sent an ROI and isa.roi does not exist.
+    % Store this ROI
+    sensor.roi = sensorSet(sensor,'roi',roi);
 end
 
 switch lower(unitType)
     case {'volts','v'}
-        data = sensorGet(isa,'roivolts');
+        data = sensorGet(sensor,'roi volts');
         unitType = 'v';
     case {'electrons','e'}
-        data = sensorGet(isa,'roielectrons');
+        data = sensorGet(sensor,'roi electrons');
         unitType = 'e';
     otherwise
         error('Unknown unit type')
 end
+
+%% Calculate, dealing with all the NaNs\
 
 switch lower(statType)
     case 'basic'
@@ -71,6 +125,10 @@ switch lower(statType)
         error('Unknown statistic type.');
 end
 
+if ~quiet, [~,theRect] = sensorPlot(sensor,'roi'); end
+
+%% No arguments returned, so the user just wanted the plots
+
 if nargout == 0
     switch lower(statType)
         case 'basic'
@@ -88,19 +146,19 @@ if nargout == 0
             end
             plotTextString(txt,'ur');
             
-            [val,isa] = vcGetSelectedObject('ISA');
-            filterType = sensorGet(isa,'filternamescellarray');
+            [~,sensor] = vcGetSelectedObject('ISA');
+            filterType = sensorGet(sensor,'filternamescellarray');
             set(gca,'xtick',1:nSensors,'xticklabel',filterType);
             xlabel('Sensor color type');
             switch lower(unitType)
                 case 'v'
                     ylabel('Volts');
-                    set(gca,'ylim',[0,pixelGet(sensorGet(isa,'pixel'),'voltageswing')]);
+                    set(gca,'ylim',[0,pixelGet(sensorGet(sensor,'pixel'),'voltageswing')]);
                 case 'e'
                     ylabel('Electrons');
-                    set(gca,'ylim',[0,pixelGet(sensorGet(isa,'pixel'),'wellcapacity')]);
+                    set(gca,'ylim',[0,pixelGet(sensorGet(sensor,'pixel'),'wellcapacity')]);
             end
-            set(gca,'xtick',[1:nSensors],'xticklabel',filterType);
+            set(gca,'xtick',(1:nSensors),'xticklabel',filterType);
             title('Mean in ROI');
             
             grid on

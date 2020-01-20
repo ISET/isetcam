@@ -1393,9 +1393,9 @@ sensorPlotLine(vcGetObject('sensor'),'v','volts','fft');
 return;
 
 % --------------------------------------------------------------------
-function menuAnPixHistQ_Callback(hObject, eventdata, handles)
-plotSensorHistogram('e');
-return;
+% function menuAnPixHistQ_Callback(hObject, eventdata, handles)
+% plotSensorHistogram('e');
+% return;
 
 % --------------------------------------------------------------------
 function menuAnPixHistV_Callback(hObject, eventdata, handles)

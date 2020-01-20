@@ -1,5 +1,6 @@
 function [uData,figNum] = plotSensorHist(sensor,unitType,roiLocs)
 %
+% Syntax
 %  [uData, figNum] = plotSensorHist(sensor,unitType,roiLocs)
 %
 % sensor:    ISET sensor structure (color or monochrome)

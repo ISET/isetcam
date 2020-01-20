@@ -427,8 +427,9 @@ switch oType
                 % Region of interest for data handling
             case {'roi','roilocs'}
                 % roiLocs = sensorGet(sensor,'roi');
-                % This is the default, which is to return the roi as roi locations,
-                % an Nx2 matrix or (r,c) values.
+                %
+                % This is the default, which is to return the roi as roi
+                % locations, an Nx2 matrix or (r,c) values.
                 if checkfields(sensor,'roi')
                     % The data can be stored as a rect or as roiLocs.
                     val = sensor.roi;
@@ -446,13 +447,13 @@ switch oType
                 if checkfields(sensor,'roi')
                     roiLocs = sensorGet(sensor,'roi locs');
                     val = vcGetROIData(sensor,roiLocs,'volts');
-                else warning('ISET:nosensorroi','No sensor.roi field.  Returning empty voltage data.');
+                else, warning('ISET:nosensorroi','No sensor.roi field.  Returning empty voltage data.');
                 end
             case {'roielectrons','roidatae','roidataelectrons'}
                 if checkfields(sensor,'roi')
                     roiLocs = sensorGet(sensor,'roi locs');
                     val = vcGetROIData(sensor,roiLocs,'electrons');
-                else warning('ISET:nosensorroi','No sensor.roi field.  Returning empty electron data.');
+                else, warning('ISET:nosensorroi','No sensor.roi field.  Returning empty electron data.');
                 end
             case {'roivoltsmean'}
                 % sensorGet(sensor,'roi volts mean')

@@ -1,7 +1,14 @@
-function [data,figNum] = plotSensorHistogram(unitType)
+function [data,figNum, theRect] = plotSensorHistogram(unitType)
+% Select data and plot a histogram from each color channel
 %
-%  [data,figNum] = plotSensorHistogram([unitType])
+%    *** Deprecated ***
 %
+% Syntax
+%   [data,figNum, theRect] = plotSensorHistogram([unitType])
+%
+% Inputs
+%
+% Description
 %  Create a multiple panel plot showing the pixel voltages or electrons in
 %  a region selected by the user. 
 %
@@ -9,20 +16,22 @@ function [data,figNum] = plotSensorHistogram(unitType)
 %  each channel the non-sampled measurements are NaNs.  To get these out,
 %  you can use l = ~isnan(data(:,1)), for example.
 %
-% Examples:
-%
-%  [data,figNum] = plotSensorHistogram('v');
-%  [data,figNum] = plotSensorHistogram('e')
-%
+% See also
 %
 
-% Always use the currently selected sensor
+% Examples:
+%{
+  [data,figNum] = plotSensorHistogram('v');
+  [data,figNum] = plotSensorHistogram('e')
+%}
+
+%% Always use the currently selected sensor
 sensor = vcGetObject('sensor');
 
-% Select the data from the current sensor window
+%% Select the data from the current sensor window
 handles = ieSessionGet('sensorimagehandle');
 ieInWindowMessage('Select image region of interest.',handles,[]);
-sensor.roi = vcROISelect(sensor);
+[~,sensor.roi] = vcROISelect(sensor);
 ieInWindowMessage('',handles,[]);
 
 % Make sure the graph window is set
@@ -50,8 +59,9 @@ end
 % Do we attach the sensor with the ROI to vcSESSION?  Or just forget it?
 % Attach data to the figure
 set(figNum,'Userdata',data);
+[~,theRect] = sensorPlot(sensor,'roi');
 
-return;
+end
 
 %---------------
 function plotColorSensorHist(data,nSensors,unitType,colorOrder)
@@ -87,7 +97,7 @@ for ii=1:nSensors
    ylabel('Count');
 end
 
-return;
+end
 
 %---------------
 function plotMonochromeSensorHist(data,unitType)
@@ -105,6 +115,6 @@ switch lower(unitType)
 end
 ylabel('Count');
 
-return;
+end
 
 
