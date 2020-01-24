@@ -88,7 +88,7 @@ function vci = ipSet(vci,param,val,varargin)
 %  Miscellaneous
 %     {'mccRectHandles'}  - Handles for the rectangle selections in an MCC
 %     {'mccCornerPoints'} - Outer corners of the MCC
-%     {'currectRect'}     - Rect used for an ROI
+%     {'roi'}             - Rect used for an ROI
 %     {'gamma display'}   - Gamma for rendering data to ipWindow image
 %     {'scale display'}   - True or false for scaling the ipWindow image
 %
@@ -251,7 +251,7 @@ switch param
         vci.mccCornerPoints=  val;
 
     % Slot for holding a current retangular region of interest    
-    case {'currentrect'}
+    case {'roi','currentrect'}
         % [colMin rowMin width height]
         % Used for ROI display and management.
         vci.currentRect = val;

@@ -286,7 +286,7 @@ switch oType
                 % The sensor mosaic data.  row x col
                 % Not sure why a 1 is returned when no data.
                 if checkfields(ip,'data','input'), val = ip.data.input;
-                else                                val = 1;
+                else,                              val = 1;
                 end
                 
             case {'ninputfilters','numbersensorchannels','nsensorinputs'}
@@ -371,7 +371,7 @@ switch oType
             case {'mccpointlocs','mcccornerpoints'}
                 % Corner points for the whole MCC chart
                 if checkfields(ip,'mccCornerPoints'), val = ip.mccCornerPoints; end
-            case {'currentrect'}
+            case {'roi','currentrect'}
                 % [colMin rowMin width height]
                 % Used for ROI display and management.
                 if checkfields(ip,'currentRect'), val = ip.currentRect; end

@@ -51,6 +51,7 @@ function roiData = vcGetROIData(obj,roiLocs,dataType)
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
+%%
 if ieNotDefined('obj'),     error('Object must be defined'); end
 
 % The variable might be locs or a rect. We check and make sure it is locs.
@@ -61,6 +62,7 @@ elseif size(roiLocs,2) == 4
     roiLocs = ieRoi2Locs(roiLocs); 
 end
 
+%%
 objType = vcGetObjectType(obj);
 switch lower(objType)
     case {'scene'}
