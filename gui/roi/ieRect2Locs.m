@@ -14,17 +14,13 @@ function roiLocs = ieRect2Locs(rect)
 %   rect = round(getrect(ieSessionGet('ipwindow')));
 %   roiLocs = ieRect2Locs(rect);
 %   
-% Usually we call the routine vcROISelect directly, which calls this
+% Usually we call the routine ieROISelect directly, which calls this
 % routine:
-%   vci = vcGetObject('vcimage');
-%   [roiLocs roiRect] = vcROISelect(vci);
-%
-%
-% See also:  Uh oh, there is a routine ieROI2Locs which looks pretty much
-% like this one.
 %
 % (c) Imageval, 2004
-% See also: vcROISelect(), ieLocs2Rect
+%
+% See also:
+%  ieROISelect, ieLocs2Rect
 %
 
 % The rect entries are (colMin,rowMin,colWidth-1,rowWidth-1) 
@@ -36,4 +32,4 @@ rmin = rect(2); rmax = rect(2)+rect(4);
 [c,r] = meshgrid(cmin:cmax,rmin:rmax);
 roiLocs = [r(:),c(:)];
 
-return;
+end

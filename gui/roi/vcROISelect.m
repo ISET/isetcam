@@ -14,7 +14,7 @@ function [roiLocs,rect] = vcROISelect(obj,objFig)
 %  [roiLocs, rect] = vcROISelect(vci);
 %  iData   = vcGetROIData(vci,roiLocs,'results');
 %
-% See also: ieRoi2Locs
+% See also: ieRect2Locs
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
@@ -61,7 +61,6 @@ if rect(3) == 0 && rect(4) == 0
 end
 
 % Transform the rectangle into ROI locations
-roiLocs = ieRoi2Locs(rect);
+roiLocs = ieRect2Locs(rect);
 
-return;
-
+end

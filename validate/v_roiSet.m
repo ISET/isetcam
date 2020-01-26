@@ -25,7 +25,7 @@ sceneWindow(shiftedScene);
 %% Now make sure it works with roiLocs format
 
 % This will darken the patch
-roiLocs = ieRoi2Locs(shiftedRect);
+roiLocs = ieRect2Locs(shiftedRect);
 
 shiftedSceneGray = sceneSet(scene,'roi photons',newPhotons/3,roiLocs);
 sceneWindow(shiftedSceneGray);
@@ -43,7 +43,7 @@ sceneWindow(shiftedScene);
 %% Now make sure it works with roiLocs
 
 % This will darken the patch
-roiLocs = ieRoi2Locs(shiftedRect);
+roiLocs = ieRect2Locs(shiftedRect);
 shiftedSceneGray = sceneSet(scene,'roi energy',newEnergy/3,roiLocs);
 sceneWindow(shiftedSceneGray);
 

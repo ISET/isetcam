@@ -1,7 +1,9 @@
-% We illustrate how to create sensor images at different spatial
-% sampling rates and pixel sizes.  This script analyzes different
-% algorithms for interpolating the optical image (irradiance) onto
-% pixels with different sizes.
+%% t_sensorInterpolation
+%
+% We illustrate how to create sensor images at different spatial sampling
+% rates and pixel sizes.  This script analyzes different algorithms for
+% interpolating the optical image (irradiance) onto pixels with different
+% sizes.
 %
 % The critical calculations for managing pixel size and interpolation
 % are in sensorCompute within the routines
@@ -14,7 +16,6 @@
 %
 % See also
 %
-s
 
 %% init
 ieInit;
@@ -74,17 +75,14 @@ v1 = sensorGet(sensorLinear1,'volts');
 % sensorWindow(sensorLinear1);
 
 %%
-%{
+
 [sensorLinear2, unitSigCurrent2] = sensorCompute(sensorLinear, oi);
 sensorLinear2 = sensorSet(sensorLinear2,'name','Linear 2 interp');
 % sensorWindow(sensorLinear2);
-%}
 
-%{
 v2 = sensorGet(sensorLinear2,'volts');
 ieNewGraphWin; plot(v1(:),v2(:),'.');
 identityLine;
-%}
 
 %%
 sensorGauss = sensor;

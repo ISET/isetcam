@@ -26,7 +26,7 @@ if ieNotDefined('dist'), dist = ipGet(vci,'displayViewingDistance'); end
 
 % Select the ROI from the vcimage window
 if ieNotDefined('rect'),    [roiLocs,rect] = vcROISelect(vci);
-else                        roiLocs = ieRoi2Locs(rect);
+else,                       roiLocs = ieRect2Locs(rect);
 end
 % a = get(ipWindow,'CurrentAxes'); hold(a,'on'); ieDrawRect(a,rect)
 % Convert the data to an XYZ image

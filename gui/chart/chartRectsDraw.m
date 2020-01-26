@@ -21,7 +21,7 @@ function rectHandles = chartRectsDraw(obj,rects)
 
 %% Find corners of the rectangles.  
 
-% Should be a function.  Used in ieRoi2Locs, also.  Possibly other places
+% Maybe this should edited to use ieRect2Vertices
 cmin = rects(:,1); cmax = rects(:,1)+rects(:,3);
 rmin = rects(:,2); rmax = rects(:,2)+rects(:,4);
 

@@ -1,9 +1,12 @@
 %% Draw some shapes (ROIs) on the main axes for ISET windows
 %
-% The ROIs can be drawn and deleted.
-% This is just the beginning of building up ROI capabilities
+% The ROIs can be drawn and deleted. This is the beginning of building up
+% ROI capabilities.
+% 
+% The key routines are in the gui/roi directory.
 %
-% BW
+% Wandell
+%
 
 %%
 ieInit
@@ -27,14 +30,14 @@ ipWindow(ip);
 
 scene = sceneCreate;
 rect = [20 50 10 5];  % row, col, width, height
-[shapeHandle,ax] = ieROIDraw('scene','shape','rect','shape data',rect,'line width',5);
+shapeHandle = ieROIDraw('scene','shape','rect','shape data',rect,'line width',5);
 shapeHandle.LineStyle = ':';
 delete(shapeHandle);
 
 %% Rect on an oi
 
 rect = [50 50 20 20];
-[shapeHandle,ax] = ieROIDraw('oi','shape','rect','shape data',rect);
+shapeHandle = ieROIDraw('oi','shape','rect','shape data',rect);
 shapeHandle.LineStyle = ':';
 shapeHandle.EdgeColor = 'w';
 delete(shapeHandle);
@@ -42,7 +45,7 @@ delete(shapeHandle);
 %% Circle on an oi
 
 c = [10 20 20];
-[shapeHandle,ax] = ieROIDraw('oi','shape','circle','shape data',c);
+shapeHandle = ieROIDraw('oi','shape','circle','shape data',c);
 shapeHandle.LineStyle = ':';
 shapeHandle.EdgeColor = 'w';
 delete(shapeHandle);
@@ -50,7 +53,7 @@ delete(shapeHandle);
 %%  Circle on a sensor
 
 c = [10 20 20];
-[shapeHandle,ax] = ieROIDraw('sensor','shape','circle','shape data',c);
+shapeHandle = ieROIDraw('sensor','shape','circle','shape data',c);
 shapeHandle.Color = 'w';
 delete(shapeHandle);
 

@@ -17,7 +17,7 @@ function [uData, g] = ipPlot(ip,param,varargin)
 % Copyright Imageval Consulting, LLC 2015
 %
 % See also
-%
+%  ieROIDraw, ieROISelect
 
 %% Decode parameters
 
@@ -60,8 +60,8 @@ switch param
         
         % Make sure the sensor window is selected
         ipWindow;
-        g = rectangle('Position',ipGet(ip,'roi'),'EdgeColor','w','LineWidth',2);
-        
+        g = ieROIDraw('ip','shape','rect','shape data',ipGet(ip,'roi'));
+                
     otherwise
         error('Uknown parameter %s\n',param);
 end

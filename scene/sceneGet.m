@@ -294,7 +294,7 @@ switch parm
         % We should also implement:
         %   r = sceneGet(scene,'mean reflectance',roiRect);
         %
-        % radiance = vcGetROIData(scene,ieRoi2Locs(rect),'photons');
+        % radiance = vcGetROIData(scene,ieRect2Locs(rect),'photons');
         % illuminantSPD = sceneGet(scene,'illuminant photons');
         % reflectance = radiance*diag(1./illuminantSPD);
         % reflectance = mean(reflectance);

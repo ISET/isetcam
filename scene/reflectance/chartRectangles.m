@@ -77,7 +77,7 @@ end
 
 %% The rectangles
 
-% You can use ieRoi2Locs to return the locations within the rects
+% You can use ieRect2Locs to return the locations within the rects
 nPatches = size(mLocs,2);
 rects = zeros(nPatches,4);
 for ii=1:nPatches

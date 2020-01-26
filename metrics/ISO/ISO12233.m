@@ -61,7 +61,7 @@ function [results, fitme, esf, h] = ISO12233(barImage, deltaX, weight, plotOptio
   %The whole thing and cpd assuming a 1m viewing distance
   rectMTF    = [xmin ymin width height];
   c = rectMTF(3)+1; r = rectMTF(4)+1;
-  roiMTFLocs = ieRoi2Locs(rectMTF);
+  roiMTFLocs = ieRect2Locs(rectMTF);
   barImage   = vcGetROIData(vciBlurred,roiMTFLocs,'results');
   barImage = reshape(barImage,r,c,3);
   wgts = [ 0.3 0.6 0.1];
@@ -98,7 +98,7 @@ elseif isstruct(barImage) && isequal(barImage.type,'vcimage')
     % The barImage is really the image processor (ip)
     ip = barImage;
     rect = ISOFindSlantedBar(ip); 
-    roiLocs = ieRoi2Locs(rect);
+    roiLocs = ieRect2Locs(rect);
     barImage = vcGetROIData(ip,roiLocs,'results');
     col = rect(3)+1;
     row = rect(4)+1;

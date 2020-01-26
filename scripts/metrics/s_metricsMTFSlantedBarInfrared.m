@@ -14,7 +14,7 @@
 % # Compute the MTF of the slanted edge target for this sensor
 % and spatial CFA
 %
-% See also:  sceneCreate, ieReadColorFilter, ieRoi2Locs,
+% See also:  sceneCreate, ieReadColorFilter, ieRect2Locs,
 % vcGetROIData, ISO12233
 %
 % Copyright ImagEval Consultants, LLC, 2010
@@ -134,7 +134,7 @@ masterRect = [39    25    51    65];
 
 %% Calculate an MTF when you choose the rectangle
 
-roiLocs = ieRoi2Locs(masterRect);
+roiLocs = ieRect2Locs(masterRect);
 
 barImage = vcGetROIData(vci,roiLocs,'results');
 c = masterRect(3)+1;

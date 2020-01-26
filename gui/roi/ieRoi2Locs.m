@@ -1,5 +1,5 @@
 function roiLocs = ieRoi2Locs(rect)
-% Should be called ieRect2Locs
+% ******    Deprecated:  Call ieRect2Locs    *****
 %
 %  roiLocs = ieRoi2Locs(rect)
 %
@@ -23,7 +23,12 @@ function roiLocs = ieRoi2Locs(rect)
 %   vcROISelect(), ieLocs2Rect
 %
 
+warning('Call ieRect2Locs, not ieRoi2Locs.  This routine is deprecated.');
+roiLocs = ieRect2Locs(rect);
 
+end
+
+%{
 % The rect entries are  The number of data
 % values are colMax - colMin +1 and similarly for the row
 cmin = rect(1); cmax = rect(1)+rect(3);
@@ -33,3 +38,4 @@ rmin = rect(2); rmax = rect(2)+rect(4);
 roiLocs = [r(:),c(:)];
 
 return;
+%}

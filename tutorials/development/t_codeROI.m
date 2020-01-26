@@ -23,7 +23,7 @@ sceneWindow;
 [roiLocs,rect] = vcROISelect(scene);
 
 % If you know the rect, and want to recover the roiLocs, use this
-% roiLocs2 = ieRoi2Locs(rect);
+% roiLocs2 = ieRect2Locs(rect);
 % isequal(roiLocs,roiLocs2)
 
 %% Get data from the object

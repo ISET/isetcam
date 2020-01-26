@@ -220,7 +220,7 @@ switch parm
         if isempty(varargin), error('ROI required')
         else, roi = varargin{1};
         end
-        if size(roi,2) == 4, roiLocs = ieRoi2Locs(roi);
+        if size(roi,2) == 4, roiLocs = ieRect2Locs(roi);
         else,                roiLocs = roi;
         end
 

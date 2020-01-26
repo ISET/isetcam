@@ -12,7 +12,7 @@ function [udata, g] = scenePlot(scene,pType,roiLocs,varargin)
 %
 % The roiLocs can usually be specified either as an Nx2 matrix of locations
 % or as a rect, in which case the rect is recognized and converted to
-% roiLocs by the routine ieRoi2Locs (within vcGetROIData)
+% roiLocs by the routine ieRect2Locs (within vcGetROIData)
 %
 % The values of the plot type (pType) are
 %

@@ -43,7 +43,7 @@ end
 % h    = ieDrawRect(a,rect,[1 0 1],3);
 % delete(h)
 
-roiLocs = ieRoi2Locs(rect);
+roiLocs = ieRect2Locs(rect);
 barImage = vcGetROIData(ip,roiLocs,'results');
 c = rect(3)+1;
 r = rect(4)+1;

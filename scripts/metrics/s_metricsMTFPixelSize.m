@@ -106,7 +106,7 @@ for ii=1:length(pSize)
     % ipWindow;
     
     rect = round(masterRect/pSize(ii));
-    roiLocs = ieRoi2Locs(rect);
+    roiLocs = ieRect2Locs(rect);
        
     barImage = vcGetROIData(ip,roiLocs,'results');
     c = rect(3)+1;

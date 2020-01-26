@@ -59,7 +59,7 @@ if ieNotDefined('roiLocs'), error('ROI locations must be defined');
 elseif size(roiLocs,2) == 4
     % The user sent a rect.  Convert to roiLocs. 
     % Be alert to the problem of the rect size in comments, above
-    roiLocs = ieRoi2Locs(roiLocs); 
+    roiLocs = ieRect2Locs(roiLocs); 
 end
 
 %%

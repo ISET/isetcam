@@ -1,28 +1,39 @@
 function figNum = vcGetFigure(obj)
 % Return the figure number associated with an object. 
 %
-%     figNum = vcGetFigure(obj)
+% Syntax
+%   figNum = vcGetFigure(obj)
 %
-%   Possible ISET objects are scene, opticalimage, isa, vcimage.  This
-%   routine allows us to get the figure number when the object type is not
-%   identified in the main routine, such as getting an ROI for an oi,
+% Description
+%   Get the figure handle to one of the ISETCam windows. Possible ISET
+%   objects are scene, oi, sensor, ip.  
+%
+%   This routine allows us to get the figure number when the object type is
+%   not identified in the main routine, such as getting an ROI for an oi,
 %   scene, sensor or other type of window.
 %
 %   There is a separate routine for GraphWins.  But I am not sure why.
 %
-% Examples:
-%  figNum = vcGetFigure(obj)
-%  figure(figNum);
-%  handles = guihandle(figNum);
-%
 % Copyright ImagEval Consultants, LLC, 2005.
+%
+% See also
+%   vcEquivalentObjtype, vcGetObjectType
+   
+% Examples:
+%{
+ scene = sceneCreate; sceneWindow(scene);
+ figNum = vcGetFigure(scene)
+ figure(figNum);
+ handles = guihandles(figNum);
+%}
 
-% global vcSESSION;
-
+%%
 objType = vcGetObjectType(obj);
+
+% Forces the objType string to one of original names below.
 objType = vcEquivalentObjtype(objType);
 
-hdl = [];
+% hdl = [];
 switch lower(objType)
     case 'scene'
         figNum = ieSessionGet('scenewindow');
@@ -37,4 +48,4 @@ switch lower(objType)
         error('Unknown object type.');
 end
 
-return;
+end

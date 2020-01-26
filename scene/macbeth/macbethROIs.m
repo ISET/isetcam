@@ -19,7 +19,6 @@ rect(2) = currentLoc(1) - round(delta/2);
 rect(3) = delta;
 rect(4) = delta;
 
-patchLocs = ieRoi2Locs(rect);
+patchLocs = ieRect2Locs(rect);
 
-return;
-
+end

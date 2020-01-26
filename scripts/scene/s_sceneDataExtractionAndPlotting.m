@@ -39,7 +39,7 @@ scenePlot(scene,'illuminant energy');
 %% You can plot the spectral radiance energy from within an ROI
 
 rect = [51    35    10    11];   % Yellow Macbeth patch
-roiLocs = ieRoi2Locs(rect);      % xy locations in scene
+roiLocs = ieRect2Locs(rect);      % xy locations in scene
 scenePlot(scene,'radiance energy roi',roiLocs);
 
 %% Or plot the mean quanta (photons) at the same location

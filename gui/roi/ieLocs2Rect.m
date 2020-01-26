@@ -12,7 +12,8 @@ function rect = ieLocs2Rect(roiLocs)
 %  roiLocs2 = ieLocs2Rect(rect);
 %  isequal(roiLocs,roiLocs2)
 %
-% See also: ieGetXYCoords, ieRoi2Locs, vcROISelect, vcLineSelect, vcPointSelect
+% See also: 
+%   ieGetXYCoords, ieRect2Locs, vcROISelect, vcLineSelect, vcPointSelect
 %
 % (c) Imageval Consulting, LLC 2012
 

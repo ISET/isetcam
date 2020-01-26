@@ -22,9 +22,8 @@ ipWindow(ip);
 % This is the Demosaic call from inside of ipCompute (called also by
 % cameraCompute). In this illustration, there is no sensor or illuminant
 % correction
-sensor = cameraGet(camera,'sensor');
-ip = cameraGet(camera,'ip');
 fprintf('Demosaic method:  %s\n',ipGet(ip,'demosaic method'));
+
 d = Demosaic(ip,sensor);
 ieNewGraphWin; imagescRGB(d);
 

@@ -433,7 +433,7 @@ switch oType
                 if checkfields(sensor,'roi')
                     % The data can be stored as a rect or as roiLocs.
                     val = sensor.roi;
-                    if size(val,2) == 4, val = ieRoi2Locs(val); end
+                    if size(val,2) == 4, val = ieRect2Locs(val); end
                 end
             case {'roirect'}
                 % sensorGet(sensor,'roi rect')
