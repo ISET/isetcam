@@ -9,9 +9,12 @@ function [shapeHandle,ax] = ieROIDraw(isetobj,varargin)
 %   window.
 %
 % Inputs:
-%  isetobj:  Type of object ('scene','oi','sensor','ip', or 'display')
+%  isetobj:  An ISETCam object type ('scene','oi','sensor','ip', or
+%       'display') or just the string.  If just the string, (e.g., 'ip')
+%       then the routine gets the currently selected object from the
+%       database environment.
 %
-% Key/val pairs
+% Key/val pairs:
 %  shape:    Type of shape  ('rect')
 %  shape data:  Values needed to draw the shape
 %       rect = [row col width height]
@@ -50,10 +53,12 @@ shapeHandle.EdgeColor = 'w';
 delete(shapeHandle);
 %}
 
+%%
 varargin = ieParamFormat(varargin);
 
 p = inputParser;
-p.addRequired('isetobj',@ischar);
+vFunc = @(x)(ischar(x) || (isstruct(x) && isfield(x,'type')));
+p.addRequired('isetobj',vFunc);
 p.addParameter('shape','rect',@ischar);
 p.addParameter('shapedata',[1 1 5 5],@isnumeric);
 p.addParameter('color','w',@ischar);
@@ -63,24 +68,9 @@ p.addParameter('linestyle','-',@ischar);
 p.parse(isetobj,varargin{:});
 shape = p.Results.shape;
 
-%% Get the current axis for that iset object type
-
-switch isetobj
-    case 'scene'
-        ax = get(sceneWindow,'CurrentAxes');
-    case 'oi'
-        ax = get(oiWindow,'CurrentAxes');
-    case 'sensor'
-        ax = get(sensorImageWindow,'CurrentAxes');
-    case 'ip'
-        ax = get(ipWindow,'CurrentAxes');
-    case 'display'
-        ax = get(displayWindow,'CurrentAxes');
-    otherwise
-        error('Unknown iset object type %s\n',isetobj);
-end
 
 %% Draw the shape
+ax = ieAxisGet(isetobj);
 
 switch shape
     case 'rect'
