@@ -1,10 +1,12 @@
 function scene1 = sceneAdd(scene1,scene2,addFlag)
 % Add together the photons from two scenes
 %
+% Synopsis
 %  scene = sceneAdd(scene1,scene2,[addFlag='add'])
 %
-% Add two the radiance from two scenes that match in all ways (row, col,
-% wavelength, so forth).
+% Brief description
+%  Add two the radiance from two scenes that match in all ways (row, col,
+%  wavelength, so forth).
 %
 % addFlag: 
 %  add:     Add the radiance data from the two scenes(default)

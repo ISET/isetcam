@@ -3,24 +3,26 @@ function ieManualCreate(varargin)
 %
 % Brief synopsis
 %  This script finds ISETCAM and runs m2html. A new manual of HTML files
-%  will be created in the parallel directory ISETCAM-Manual.
+%  will be created in the directory html-manual.
 %
 % Inputs:
 %   N/A
 %
 % Optional key/value (default)
-%  style      - Output style ('noframe')
+%  style      - Output style ('default')
 %  manualName - Output directory name ('iManual')
 %  sourceName - Input directory ('isetcam')
 %
 % Outputs
-%    A directory with the manual pages is created
+%    A directory with the manual pages is created.  Click on index.html to
+%    see a browser window that explores the manual pages.
 %
 % Notes:
 %  You must have m2html on your path.
-%  I edited m2html to ignore .git
+%  I edited m2html to ignore a number of different directories (like
+%  external).
 %
-% Once the manual is created, I use
+% Once the manual is created, we will put it somewhere for the wiki page.
 %
 %    tar cvf iManual.tar iManual 
 %
@@ -79,8 +81,8 @@ sourceDefault = {'camera','color','displays', ...
 % No manual pages for these directories.
 ignored = {'manual','CIE','macbeth','dll70','xml','ptb','external','video','.git'};
 
-p.addParameter('style','brain',@ischar);
-p.addParameter('manualname','html',@ischar);
+p.addParameter('style','blue',@ischar);
+p.addParameter('manualname','html-manual',@ischar);
 p.addParameter('sourcename',sourceDefault,@ischar);
 p.parse(varargin{:});
 
@@ -110,15 +112,6 @@ switch lower(style)
             'ignoredDir',ignored, ...
             'source','off')
         
-        % I am mainly using 'default' for now.
-    case 'noframe'
-        m2html('mfiles',sourceName,'htmldir',manualName,'recursive','on',...
-            'ignoredDir',ignored, ...
-            'source','off')
-    case 'noframesource'
-        m2html('mfiles',sourceName,'htmldir',manualName,'recursive','on',...
-            'ignoredDir',ignored, ...
-            'source','on')
     case 'brain'
         m2html('mfiles',sourceName,'htmldir',manualName,'recursive','on',...
             'ignoredDir',ignored, ...

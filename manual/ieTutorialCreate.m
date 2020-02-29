@@ -19,8 +19,14 @@ ieSessionSet('wait bar',false);
 
 ieInit;
 
-%% Make the basic tutorial directory
-tHome = fullfile(isetRootPath,'..','tutorials');
+% https://www.mathworks.com/matlabcentral/answers/499628-how-to-set-default-font-size-in-matlab-published-html
+styleSheet = fullfile(isetRootPath,'manual','mxdom2simplehtml.xsl');
+if ~exist(styleSheet,'file')
+    error('Style sheet file missing');
+end
+
+%% Make the publishh tutorial directory
+tHome = fullfile(isetRootPath,'publish');
 if ~exist(tHome,'dir'), mkdir(tHome); end
 chdir(tHome);
 
@@ -31,12 +37,18 @@ chdir('scene')
 
 tList = {'t_sceneIntroduction.m','t_sceneRGB2Radiance.m','t_sceneSurfaceModels.m'};
 for tt=1:length(tList)
+    localFile = fullfile(pwd,tList{tt});
+    if exist(localFile,'file')
+        delete(localFile);
+    end
     tFile = which(tList{tt});
-    if isempty(tFile), error('Missing file %s',tList{tt}); end
-    copyfile(tFile,tList{tt});
-    publish(tList{tt},'html')
-    publish(tList{tt},'pdf')
-    delete(tList{tt});
+    if isempty(tFile), error('Missing file %s',tList{tt});
+    else
+        copyfile(tFile,localFile);
+    end
+    publish(localFile, 'stylesheet', styleSheet,'maxWidth',512)  
+    publish(localFile,'pdf')
+    delete(localFile);
 end
 
 % Move the files out of html into the oi directory.
@@ -51,12 +63,14 @@ chdir('oi')
 
 tList = {'t_oiIntroduction.m','t_oiCompute.m','t_oiRTCompute.m'};
 for tt=1:length(tList)
+    delete(fullfile(pwd,tList{tt}));
     tFile = which(tList{tt});
-    if isempty(tFile), error('Missing file %s',tList{tt}); end
-    copyfile(tFile,tList{tt});
-    publish(tList{tt},'html')
+    if isempty(tFile), error('Missing file %s',tList{tt});
+    else
+        copyfile(tFile,tList{tt});
+    end
+    publish(localFile, 'stylesheet', styleSheet,'maxWidth',512)  
     publish(tList{tt},'pdf')
-    delete(tList{tt});
 end
 
 % Move the files out of html into the oi directory.
@@ -74,11 +88,13 @@ chdir('optics')
 tList = {'t_opticsAiryDisk.m','t_opticsDiffraction.m','t_opticsImageFormation.m','t_opticsBarrelDistortion.m'};
 for tt=1:length(tList)
     tFile = which(tList{tt});
-    if isempty(tFile), error('Missing file %s',tList{tt}); end
-    copyfile(tFile,tList{tt});
-    publish(tList{tt},'html')
+    if isempty(tFile), error('Missing file %s',tList{tt});
+    else
+        copyfile(tFile,tList{tt});
+    end
+    publish(localFile, 'stylesheet', styleSheet,'maxWidth',512)  
     publish(tList{tt},'pdf')
-    delete(tList{tt});
+    delete(fullfile(pwd,tList{tt}));
 end
 
 % Move the files out of html into the oi directory.
@@ -91,14 +107,16 @@ chdir(tHome);
 if ~exist('./sensor','dir'), mkdir('sensor'); end
 chdir('sensor')
 
-tList = {'t_sensorExposure.m','t_sensorEstimation.m','s_sensorCountingPhotons.m','s_sensorExposureBracket.m'};
+tList = {'t_sensorEstimation.m','s_sensorCountingPhotons.m','t_sensorMultipleExposure.m'};
 for tt=1:length(tList)
     tFile = which(tList{tt});
-    if isempty(tFile), error('Missing file %s',tList{tt}); end
-    copyfile(tFile,tList{tt});
+    if isempty(tFile), error('Missing file %s',tList{tt});
+    else
+        copyfile(tFile,tList{tt});
+    end
     publish(tList{tt},'html')
     publish(tList{tt},'pdf')
-    delete(tList{tt});
+    delete(fullfile(pwd,tList{tt}));
 end
 
 % Move the files out of html into the oi directory.
@@ -115,11 +133,13 @@ chdir('ip')
 tList = {'t_ip.m'};
 for tt=1:length(tList)
     tFile = which(tList{tt});
-    if isempty(tFile), error('Missing file %s',tList{tt}); end
-    copyfile(tFile,tList{tt});
-    publish(tList{tt},'html')
+    if isempty(tFile), error('Missing file %s',tList{tt});
+    else
+        copyfile(tFile,tList{tt});
+    end
+    publish(localFile, 'stylesheet', styleSheet,'maxWidth',512)  
     publish(tList{tt},'pdf')
-    delete(tList{tt});
+    delete(fullfile(pwd,tList{tt}));
 end
 
 % Move the files out of html into the oi directory.
@@ -137,7 +157,7 @@ for tt=1:length(tList)
     tFile = which(tList{tt});
     if isempty(tFile), error('Missing file %s',tList{tt}); end
     copyfile(tFile,tList{tt});
-    publish(tList{tt},'html')
+    publish(localFile, 'stylesheet', styleSheet,'maxWidth',512)  
     publish(tList{tt},'pdf')
     delete(tList{tt});
 end
@@ -157,7 +177,7 @@ for tt=1:length(tList)
     tFile = which(tList{tt});
     if isempty(tFile), error('Missing file %s',tList{tt}); end
     copyfile(tFile,tList{tt});
-    publish(tList{tt},'html')
+    publish(localFile, 'stylesheet', styleSheet,'maxWidth',512)  
     publish(tList{tt},'pdf')
     delete(tList{tt});
 end
