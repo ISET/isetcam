@@ -1,0 +1,16 @@
+
+1.  Make sure that m2html is on your path. A version is kept in pdcSoft, so the command
+
+     pdcSoftPath
+
+will put it on Brian's path.
+
+2.  Create an exported version of iset-4.0, without the .svn files and other unversioned files.
+
+3.  Change to the directory just above the exported version
+
+4.  Run the commands
+
+  mkdir('iset-manual')
+  m2html('mfiles','iset-4.0', 'htmldir','iset-manual','source','off', 'recursive','on');
+
