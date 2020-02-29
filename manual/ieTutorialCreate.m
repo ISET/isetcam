@@ -63,14 +63,18 @@ chdir('oi')
 
 tList = {'t_oiIntroduction.m','t_oiCompute.m','t_oiRTCompute.m'};
 for tt=1:length(tList)
-    delete(fullfile(pwd,tList{tt}));
+    localFile = fullfile(pwd,tList{tt});
+    if exist(localFile,'file')
+        delete(localFile);
+    end
     tFile = which(tList{tt});
     if isempty(tFile), error('Missing file %s',tList{tt});
     else
-        copyfile(tFile,tList{tt});
+        copyfile(tFile,localFile);
     end
     publish(localFile, 'stylesheet', styleSheet,'maxWidth',512)  
-    publish(tList{tt},'pdf')
+    publish(localFile,'pdf')
+    delete(localFile);
 end
 
 % Move the files out of html into the oi directory.
@@ -87,14 +91,18 @@ chdir('optics')
 
 tList = {'t_opticsAiryDisk.m','t_opticsDiffraction.m','t_opticsImageFormation.m','t_opticsBarrelDistortion.m'};
 for tt=1:length(tList)
+    localFile = fullfile(pwd,tList{tt});
+    if exist(localFile,'file')
+        delete(localFile);
+    end
     tFile = which(tList{tt});
     if isempty(tFile), error('Missing file %s',tList{tt});
     else
-        copyfile(tFile,tList{tt});
+        copyfile(tFile,localFile);
     end
     publish(localFile, 'stylesheet', styleSheet,'maxWidth',512)  
-    publish(tList{tt},'pdf')
-    delete(fullfile(pwd,tList{tt}));
+    publish(localFile,'pdf')
+    delete(localFile);
 end
 
 % Move the files out of html into the oi directory.
@@ -109,14 +117,18 @@ chdir('sensor')
 
 tList = {'t_sensorEstimation.m','s_sensorCountingPhotons.m','t_sensorMultipleExposure.m'};
 for tt=1:length(tList)
+    localFile = fullfile(pwd,tList{tt});
+    if exist(localFile,'file')
+        delete(localFile);
+    end
     tFile = which(tList{tt});
     if isempty(tFile), error('Missing file %s',tList{tt});
     else
-        copyfile(tFile,tList{tt});
+        copyfile(tFile,localFile);
     end
-    publish(tList{tt},'html')
-    publish(tList{tt},'pdf')
-    delete(fullfile(pwd,tList{tt}));
+    publish(localFile, 'stylesheet', styleSheet,'maxWidth',512)  
+    publish(localFile,'pdf')
+    delete(localFile);
 end
 
 % Move the files out of html into the oi directory.
@@ -132,14 +144,18 @@ chdir('ip')
 
 tList = {'t_ip.m'};
 for tt=1:length(tList)
+    localFile = fullfile(pwd,tList{tt});
+    if exist(localFile,'file')
+        delete(localFile);
+    end
     tFile = which(tList{tt});
     if isempty(tFile), error('Missing file %s',tList{tt});
     else
-        copyfile(tFile,tList{tt});
+        copyfile(tFile,localFile);
     end
     publish(localFile, 'stylesheet', styleSheet,'maxWidth',512)  
-    publish(tList{tt},'pdf')
-    delete(fullfile(pwd,tList{tt}));
+    publish(localFile,'pdf')
+    delete(localFile);
 end
 
 % Move the files out of html into the oi directory.
@@ -154,12 +170,18 @@ chdir('metrics')
 
 tList = {'t_metricsColor.m','t_metricsScielab.m','s_scielabMTF.m','s_scielabPatches.m','s_metricsMTFSlantedBar.m'};
 for tt=1:length(tList)
+    localFile = fullfile(pwd,tList{tt});
+    if exist(localFile,'file')
+        delete(localFile);
+    end
     tFile = which(tList{tt});
-    if isempty(tFile), error('Missing file %s',tList{tt}); end
-    copyfile(tFile,tList{tt});
+    if isempty(tFile), error('Missing file %s',tList{tt});
+    else
+        copyfile(tFile,localFile);
+    end
     publish(localFile, 'stylesheet', styleSheet,'maxWidth',512)  
-    publish(tList{tt},'pdf')
-    delete(tList{tt});
+    publish(localFile,'pdf')
+    delete(localFile);
 end
 
 % Move the files out of html into the oi directory.
@@ -174,12 +196,18 @@ chdir('display')
 
 tList = {'t_displayIntroduction.m','t_displayRendering.m'};
 for tt=1:length(tList)
+    localFile = fullfile(pwd,tList{tt});
+    if exist(localFile,'file')
+        delete(localFile);
+    end
     tFile = which(tList{tt});
-    if isempty(tFile), error('Missing file %s',tList{tt}); end
-    copyfile(tFile,tList{tt});
+    if isempty(tFile), error('Missing file %s',tList{tt});
+    else
+        copyfile(tFile,localFile);
+    end
     publish(localFile, 'stylesheet', styleSheet,'maxWidth',512)  
-    publish(tList{tt},'pdf')
-    delete(tList{tt});
+    publish(localFile,'pdf')
+    delete(localFile);
 end
 
 % Move the files out of html into the oi directory.
