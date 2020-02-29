@@ -54,12 +54,34 @@ function ieManualCreate(varargin)
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
-%%
+%% Read varargin
+
 varargin = ieParamFormat(varargin);
 p = inputParser;
-p.addParameter('style','noframe',@ischar);
-p.addParameter('manualname','iManual',@ischar);
-p.addParameter('sourcename','isetcam',@ischar);
+
+
+% For testing
+% sourceDefault = {'isetcam/camera','isetcam/utility'};
+%
+% sourceDefault = {'isetcam'} should get everything.
+
+% The defaults
+%{
+sourceDefault = {'isetcam/camera','isetcam/color','isetcam/displays', ...
+    'isetcam/gui','isetcam/human','isetcam/imgproc','isetcam/main',...
+    'isetcam/metrics','isetcam/opticalimage','isetcam/scene', ...
+    'isetcam/scripts','isetcam/tutorials','isetcam/utility'};
+%}
+sourceDefault = {'camera','color','displays', ...
+    'gui','human','imgproc','main',...
+    'metrics','opticalimage','scene', ...
+    'scripts','tutorials','utility'};
+% No manual pages for these directories.
+ignored = {'manual','CIE','macbeth','dll70','xml','ptb','external','video','.git'};
+
+p.addParameter('style','brain',@ischar);
+p.addParameter('manualname','html',@ischar);
+p.addParameter('sourcename',sourceDefault,@ischar);
 p.parse(varargin{:});
 
 style      = p.Results.style;
@@ -68,7 +90,8 @@ manualName = p.Results.manualname;
 
 %% Change to the directory just above isetcam 
 curDir = pwd;
-chdir(fullfile(isetRootPath,'..'));
+% chdir(fullfile(isetRootPath,'..'));
+chdir(fullfile(isetRootPath));
 
 % This should be in the iset branch called admin
 if isempty(which('m2html'))
@@ -81,25 +104,32 @@ delete(str)
 
 %% Run m2html
 switch lower(style)
+    case 'default'
+        % Same as 'noframe' for now.
+        m2html('mfiles',sourceName,'htmldir',manualName,'recursive','on',...
+            'ignoredDir',ignored, ...
+            'source','off')
+        
+        % I am mainly using 'default' for now.
     case 'noframe'
         m2html('mfiles',sourceName,'htmldir',manualName,'recursive','on',...
-            'ignoredDir',{'manual','CIE','macbeth'}, ...
+            'ignoredDir',ignored, ...
             'source','off')
     case 'noframesource'
         m2html('mfiles',sourceName,'htmldir',manualName,'recursive','on',...
-            'ignoredDir',{'manual','CIE','macbeth'}, ...
+            'ignoredDir',ignored, ...
             'source','on')
     case 'brain'
         m2html('mfiles',sourceName,'htmldir',manualName,'recursive','on',...
-            'ignoredDir',{'manual','CIE'}, ...
+            'ignoredDir',ignored, ...
             'source','off','template','brain','index','menu')
     case 'frame'
         m2html('mfiles',sourceName,'htmldir',manualName,'recursive','on',...
-            'ignoredDir',{'manual','CIE','macbeth'}, ...
+            'ignoredDir',ignored, ...
             'source','off','template','frame','index','menu')
     case 'blue'
         m2html('mfiles',sourceName,'htmldir',manualName,'recursive','on',...
-            'ignoredDir',{'manual','CIE','macbeth'}, ...
+            'ignoredDir',ignored, ...
             'source','off','template','blue','index','menu')
     otherwise
         error('Unknown style.')
