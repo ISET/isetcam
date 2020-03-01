@@ -669,6 +669,7 @@ switch lower(pType)
         dmap = sceneGet(scene,'depth map');
         if isempty(dmap), error('No depth map')
         else
+            dmap(dmap == 0) = Inf;
             imagesc(dmap); colormap(flipud(gray)); % Near dark, far light
             axis off; set(g,'Name','ISET: Depth map (m)');
             % Far is dark, close is light
