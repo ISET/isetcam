@@ -191,10 +191,11 @@ chdir(tHome);
 if ~exist('./color','dir'), mkdir('color'); end
 chdir('color')
 
-% 't_cieChromaticity.m', 't_cielabEllipsoids.m'
+% {
+% Problem with publish and't_cielabEllipsoids.m'
 tList = {'t_colorEnergyQuanta.m','t_colorSpectrum.m','t_colorMatching.m',...
     't_colorMetamerism.m',...
-    's_colorIlluminantTransforms.m'};
+    's_colorIlluminantTransforms.m','t_cieChromaticity.m'};
 
 for ii=1:length(tList)
     if isempty(which(tList{ii}))
@@ -212,11 +213,17 @@ for tt=1:length(tList)
     else
         copyfile(tFile,localFile);
     end
-    publish(localFile, 'stylesheet', styleSheet,'maxWidth',512)  
-    if ~isequal('t_cieChromaticity.m',tList{tt}) && ...
-        ~isequal('t_cielabEllipsoids.m',tList{tt})
-        publish(localFile,'pdf');
+    try
+        publish(localFile, 'stylesheet', styleSheet,'maxWidth',512)
+    catch
+        fprintf('Failed to publish html %s\n',tList{tt});
     end
+    try
+        publish(localFile,'pdf');
+    catch
+        fprintf('Failed to publish pdf %s\n',tList{tt});
+    end
+
     delete(localFile);
 end
 
@@ -231,14 +238,20 @@ chdir(tHome);
 if ~exist('./metrics','dir'), mkdir('metrics'); end
 chdir('metrics')
 
+
+% 's_metricsSNRPixelSizeLuxsec.m',
 tList = {'t_metricsColor.m','t_metricsScielab.m','t_ieSQRI.m',...
     's_scielabMTF.m','s_scielabPatches.m','s_metricsMTFSlantedBar.m', ...
-    's_metricsMacbethDeltaE.m','s_metricsMTFPixelSize.m'};
+    's_metricsMacbethDeltaE.m','s_metricsMTFPixelSize.m','s_metricsAcutance.m',...
+    's_metricsEdge2MTF.m','s_metricsColorAccuracy.m',...    
+    's_metricsVSNR.m'};
+
 for ii=1:length(tList)
     if isempty(which(tList{ii}))
         error('can not find %s\n',tList{ii});
     end
 end
+
 for tt=1:length(tList)
     localFile = fullfile(pwd,tList{tt});
     if exist(localFile,'file')
@@ -249,8 +262,16 @@ for tt=1:length(tList)
     else
         copyfile(tFile,localFile);
     end
-    publish(localFile, 'stylesheet', styleSheet,'maxWidth',512)  
-    publish(localFile,'pdf');
+    try
+        publish(localFile, 'stylesheet', styleSheet,'maxWidth',512)
+    catch
+        fprintf('Failed to publish html %s\n',tList{tt});
+    end
+    try
+        publish(localFile,'pdf');
+    catch
+        fprintf('Failed to publish pdf %s\n',tList{tt});
+    end
     delete(localFile);
 end
 
