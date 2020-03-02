@@ -278,11 +278,6 @@ switch sceneName
         end
         scene = sceneLstarSteps(scene,bSize,nBars,deltaE);
         scene = sceneSet(scene,'name',sprintf('L-star (%d)',deltaE));
-
-        % Monochrome,RGB and multispectral add only a little.  Mostly created in sceneFromFile
-    case {'monochrome','unispectral'}
-        % sceneMonochrome is used for images with only one spectral band.
-        scene = sceneMonochrome(scene);
     case {'multispectral','hyperspectral'}
         scene = sceneMultispectral(scene);
     case 'rgb'

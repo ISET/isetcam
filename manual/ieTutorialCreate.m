@@ -71,6 +71,7 @@ end
 chdir(fullfile(tHome,'scene'))
 movefile('html/*','.');
 rmdir('html');
+disp('Scene is done');
 
 %% OI tutorials
 chdir(tHome);
@@ -109,7 +110,7 @@ end
 chdir(fullfile(tHome,'oi'))
 movefile('html/*','.');
 rmdir('html');
-
+disp('OI is done');
 %% Sensor
 chdir(tHome);
 if ~exist('./sensor','dir'), mkdir('sensor'); end
@@ -151,7 +152,7 @@ chdir(fullfile(tHome,'sensor'))
 movefile('html/*','.');
 rmdir('html');
 
-disp('Done with sensor')
+disp('Sensor is done')
 
 %% image processing
 chdir(tHome);
@@ -184,6 +185,46 @@ chdir(fullfile(tHome,'ip'))
 movefile('html/*','.');
 rmdir('html');
 disp('IP is done');
+
+%% Metrics
+chdir(tHome);
+if ~exist('./color','dir'), mkdir('color'); end
+chdir('color')
+
+% 't_cieChromaticity.m', 't_cielabEllipsoids.m'
+tList = {'t_colorEnergyQuanta.m','t_colorSpectrum.m','t_colorMatching.m',...
+    't_colorMetamerism.m',...
+    's_colorIlluminantTransforms.m'};
+
+for ii=1:length(tList)
+    if isempty(which(tList{ii}))
+        error('can not find %s\n',tList{ii});
+    end
+end
+
+for tt=1:length(tList)
+    localFile = fullfile(pwd,tList{tt});
+    if exist(localFile,'file')
+        delete(localFile);
+    end
+    tFile = which(tList{tt});
+    if isempty(tFile), error('Missing file %s',tList{tt});
+    else
+        copyfile(tFile,localFile);
+    end
+    publish(localFile, 'stylesheet', styleSheet,'maxWidth',512)  
+    if ~isequal('t_cieChromaticity.m',tList{tt}) && ...
+        ~isequal('t_cielabEllipsoids.m',tList{tt})
+        publish(localFile,'pdf');
+    end
+    delete(localFile);
+end
+
+% Move the files out of html into the oi directory.
+chdir(fullfile(tHome,'color'))
+movefile('html/*','.');
+rmdir('html');
+disp('Color is done');
 
 %% Metrics
 chdir(tHome);
