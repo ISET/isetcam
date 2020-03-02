@@ -183,6 +183,7 @@ end
 chdir(fullfile(tHome,'ip'))
 movefile('html/*','.');
 rmdir('html');
+disp('IP is done');
 
 %% Metrics
 chdir(tHome);
@@ -216,6 +217,7 @@ end
 chdir(fullfile(tHome,'metrics'))
 movefile('html/*','.');
 rmdir('html');
+disp('Metrics is done');
 
 %% Display
 chdir(tHome);
