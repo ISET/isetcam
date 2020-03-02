@@ -60,9 +60,9 @@ end
 
 % Put the 3x3 transforms in the columns
 % Force them to be unit length vectors
-tList = zeros(9,nbb*nbb);
+transformList = zeros(9,nbb*nbb);
 for ii=1:nbb*nbb
-    tList(:,ii) = unitLength(T{ii}(:));
+    transformList(:,ii) = unitLength(T{ii}(:));
 end
 
 comment = '3x3 transforms between different blackbody illuminants.  See s_colorILluminantTransforms.m';
@@ -77,7 +77,7 @@ B = [0.9245    0.0241   -0.0649
    
 % C is the cosine of the angle between the transforms
 B = unitLength(B(:));
-C = tList'* B(:);
+C = transformList'* B(:);
 C = reshape(C,nbb,nbb);
 
 % Show the cosines as an image.
@@ -96,7 +96,7 @@ F = [ 0.9570   -0.0727   -0.0347
 
 % C is the cosine of the angle between the transforms
 F = unitLength(F(:));
-C = tList'* F(:);   
+C = transformList'* F(:);   
 C = reshape(C,nbb,nbb);
 
 % Show the cosines as an image.
