@@ -11,7 +11,7 @@ function ieManualCreate(varargin)
 % Optional key/value (default)
 %  style      - Output style ('default')
 %  manualName - Output directory name ('iManual')
-%  sourceName - Input directory ('isetcam')
+%  sourceFiles - Input directory ('isetcam')
 %
 % Outputs
 %    A directory with the manual pages is created.  Click on index.html to
@@ -24,7 +24,7 @@ function ieManualCreate(varargin)
 %
 % Once the manual is created, we will put it somewhere for the wiki page.
 %
-%    tar cvf iManual.tar iManual 
+%    tar cvf iManual.tar iManual
 %
 % to create a tar file.  We use tar because permissions are preserved.
 % Then I move to google drive where Joyce uploads using cpanel to Imageval
@@ -41,56 +41,81 @@ function ieManualCreate(varargin)
 % One copy of the ISET manual is kept at
 %   * imageval in the directory /home/imageval/www/public/ISET-Manual-XXX.
 %
-%   There is a link from ISET-Functions to this directory.  For example, 
+%   There is a link from ISET-Functions to this directory.  For example,
 %   ln -s ISET-Manual-733 ISET-Functions
 %
 %   * stanford in brian/public_html/manuals with a link
 %   from /u/websk/docs/manuals/ISET, for example
 %   ln -s /home/brian/public_html/manuals/ISET-Manual-733 /u/websk/docs/manuals/ISET
 %
+% See also
+%   ieManualViewer
+
 % Examples:
-%  ieManualCreate;
-%
-%  ieManualCreate('style','Brain')
-%  ieManualCreate('style','frame','manualName','thisManual')
-%
-% Copyright ImagEval Consultants, LLC, 2005.
+%{
+  % The default style is frame, with source included. The link files is
+  % index.html
+  ieManualCreate;
+%}
+%{
+  ieManualCreate('press',true);
+%}
+%{
+  sourceFiles = {'camera'};
+  ieManualCreate('style','brain', ...
+                 'manualName',fullfile(isetRootPath,'local','testBrainCamera'),...
+                  'source files',sourceFiles)
+%}
+%{
+  ieManualCreate('style','frame','press',false)
+%}
+%{
+  ieManualCreate('style','frame','manualName','thisManual')
+%}
+%{
+  sourceFiles = {'scripts'};
+  ieManualCreate('style','frame',...
+                 'manualName',fullfile(isetRootPath,'local','testScripts'),...
+                 'source files',sourceFiles, ...
+                 'source', 'on');
+%}
+%{
+  sourceFiles = {'tutorials'};
+  ieManualCreate('style','frame',...
+                 'manualName',fullfile(isetRootPath,'local','testTutorials'),...
+                 'source files',sourceFiles, ...
+                 'source','on');
+%}
 
 %% Read varargin
 
 varargin = ieParamFormat(varargin);
 p = inputParser;
 
-
-% For testing
-% sourceDefault = {'isetcam/camera','isetcam/utility'};
-%
-% sourceDefault = {'isetcam'} should get everything.
-
-% The defaults
-%{
-sourceDefault = {'isetcam/camera','isetcam/color','isetcam/displays', ...
-    'isetcam/gui','isetcam/human','isetcam/imgproc','isetcam/main',...
-    'isetcam/metrics','isetcam/opticalimage','isetcam/scene', ...
-    'isetcam/scripts','isetcam/tutorials','isetcam/utility'};
-%}
-sourceDefault = {'camera','color','displays', ...
-    'gui','human','imgproc','main',...
+% Default directories (recursive)
+sourceFilesDefault = {'camera','color','displays', ...
+    'human','imgproc','main',...
     'metrics','opticalimage','scene', ...
     'scripts','tutorials','utility'};
-% No manual pages for these directories.
-ignored = {'manual','CIE','macbeth','dll70','xml','ptb','external','video','.git'};
 
-p.addParameter('style','blue',@ischar);
-p.addParameter('manualname','html-manual',@ischar);
-p.addParameter('sourcename',sourceDefault,@ischar);
+% Default ignore directories 
+ignored = {'gui','manual','CIE','macbeth','dll70','xml','ptb','external','video','.git'};
+
+p.addParameter('style','frame',@ischar);
+p.addParameter('manualname',fullfile(isetRootPath,'local','manuals'),@ischar);
+p.addParameter('sourcefiles',sourceFilesDefault,@iscell);
+p.addParameter('source','on',@ischar);
+p.addParameter('press',false, @islogical);
+
 p.parse(varargin{:});
 
-style      = p.Results.style;
-sourceName = p.Results.sourcename;
-manualName = p.Results.manualname;
+style       = p.Results.style;
+sourceFiles = p.Results.sourcefiles;
+manualName  = p.Results.manualname;
+press       = p.Results.press;
+source      = p.Results.source;
 
-%% Change to the directory just above isetcam 
+%% Change to the directory just above isetcam
 curDir = pwd;
 % chdir(fullfile(isetRootPath,'..'));
 chdir(fullfile(isetRootPath));
@@ -100,30 +125,46 @@ if isempty(which('m2html'))
     error('Could not find m2html. In branch admin.');
 end
 
+%%
+fprintf('Writing out to %s with style %s\n',manualName,style);
+if press
+    fprintf('Press key to begin: ');
+    pause;
+end
+
 %% Delete any old manual pages
 str = [manualName,filesep,'*.*'];
 delete(str)
 
 %% Run m2html
 switch lower(style)
-    case 'default'
-        % Same as 'noframe' for now.
-        m2html('mfiles',sourceName,'htmldir',manualName,'recursive','on',...
+    case {'frame','default'}
+        % Creates an index.html file.
+        m2html('mfiles',sourceFiles,...
+            'htmldir',manualName,...
+            'recursive','on',...
             'ignoredDir',ignored, ...
-            'source','off')
+            'source',source,...
+            'template','frame',...
+            'index','menu')
         
     case 'brain'
-        m2html('mfiles',sourceName,'htmldir',manualName,'recursive','on',...
+        m2html('mfiles',sourceFiles,...
+            'htmldir',manualName,...
+            'recursive','on',...
             'ignoredDir',ignored, ...
-            'source','off','template','brain','index','menu')
-    case 'frame'
-        m2html('mfiles',sourceName,'htmldir',manualName,'recursive','on',...
-            'ignoredDir',ignored, ...
-            'source','off','template','frame','index','menu')
+            'source',source,...
+            'template','brain',...
+            'index','menu')
+        
     case 'blue'
-        m2html('mfiles',sourceName,'htmldir',manualName,'recursive','on',...
+        m2html('mfiles',sourceFiles,'htmldir',manualName,...
+            'recursive','on',...
             'ignoredDir',ignored, ...
-            'source','off','template','blue','index','menu')
+            'source',source,...
+            'template','blue',...
+            'index','menu')
+        
     otherwise
         error('Unknown style.')
 end

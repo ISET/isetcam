@@ -147,7 +147,11 @@ switch lower(pType)
 
         udata.wave = wave;
         udata.energy = energy;
-        plot(wave,energy,'-'); grid on; 
+        if numel(energy) == 1
+            bar(wave,energy); grid on;
+        else
+            plot(wave,energy,'-'); grid on;
+        end
         
         % Fix an annoying Matlab plotting bug
         if max(energy(:)) < 1.1*min(energy(:))
@@ -164,7 +168,11 @@ switch lower(pType)
         
         udata.wave = wave;
         udata.photons = photons;
-        plot(wave,photons,'-'); grid on; 
+        if numel(photons) == 1
+            bar(wave,photons); grid on;
+        else
+            plot(wave,photons,'-'); grid on;
+        end
         
         % Fix an annoying Matlab plotting bug
         if max(photons(:)) < 1.1*min(photons(:))

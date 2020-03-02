@@ -26,7 +26,7 @@ if ~exist(styleSheet,'file')
 end
 
 %% Make the publishh tutorial directory
-tHome = fullfile(isetRootPath,'publish');
+tHome = fullfile(isetRootPath,'local','publish');
 if ~exist(tHome,'dir'), mkdir(tHome); end
 chdir(tHome);
 
@@ -35,7 +35,23 @@ chdir(tHome)
 if ~exist('./scene','dir'), mkdir('scene'); end
 chdir('scene')
 
-tList = {'t_sceneIntroduction.m','t_sceneRGB2Radiance.m','t_sceneSurfaceModels.m'};
+tList = {'t_sceneIntroduction.m','t_sceneSurfaceModels.m',...
+    's_sceneDemo.m','s_sceneExamples.m','s_sceneDataExtractionAndPlotting.m',...
+    's_sceneRoi.m', ...
+    't_sceneRGB2Radiance.m','s_sceneWavelength.m','s_sceneFromRGB.m',...
+    's_sceneFromRGBvsMultispectral.m','s_sceneFromMultispectral.m','s_sceneHCCompress.m',...
+    's_sceneHarmonics.m','s_sceneIncreaseSize.m','s_sceneMonochrome.m','s_sceneRender.m',...
+    's_sceneRotate.m','s_sceneSlantedBar.m', ...
+    's_sceneIlluminant.m','s_sceneDaylight.m','s_sceneChangeIlluminant.m',...
+    's_sceneCCT.m','s_sceneReflectanceSamples.m','s_sceneIlluminantMixtures.m',...
+    's_sceneIlluminantSpace.m','s_sceneXYZilluminantTransforms.m',...
+    's_surfaceMunsell.m','s_sceneReflectanceCharts.m','s_sceneReflectanceChartBasisFunctions.m'};
+for ii=1:length(tList)
+    if isempty(which(tList{ii}))
+        error('can not find %s\n',tList{ii});
+    end
+end
+
 for tt=1:length(tList)
     localFile = fullfile(pwd,tList{tt});
     if exist(localFile,'file')
@@ -47,7 +63,7 @@ for tt=1:length(tList)
         copyfile(tFile,localFile);
     end
     publish(localFile, 'stylesheet', styleSheet,'maxWidth',512)  
-    publish(localFile,'pdf')
+    publish(localFile,'pdf');
     delete(localFile);
 end
 
@@ -61,7 +77,19 @@ chdir(tHome);
 if ~exist('./oi','dir'), mkdir('oi'); end
 chdir('oi')
 
-tList = {'t_oiIntroduction.m','t_oiCompute.m','t_oiRTCompute.m'};
+tList = {'t_oiIntroduction.m','t_opticsImageFormation.m','t_opticsDiffraction.m',...
+    't_oiCompute.m','s_opticsCoC.m','s_opticsMicrolens.m','t_opticsAiryDisk.m','t_opticsPSFPlot.m',...
+    's_opticsDefocus.m','s_opticsDefocusScene.m','s_opticsDLPsf.m',...
+    's_opticsSIExamples.m','s_opticsGaussianPSF.m','s_opticsSIIdeal.m',...
+    't_wvfZernike.m','t_opticsWVF.m','t_opticsWVFZernike.m','t_wvfAstigmatism.m',...
+    't_wvfPlot.m','t_wvfPupilSize.m','t_wvfZernikeSet.m',...
+    't_oiRTCompute.m','s_opticsRTGridLines.m','s_opticsRTPSF.m','s_opticsRTPSFView.m',...
+    's_opticsRTSynthetic.m','t_opticsBarrelDistortion.m','s_opticsDepthDefocus.m'};
+for ii=1:length(tList)
+    if isempty(which(tList{ii}))
+        error('can not find %s\n',tList{ii});
+    end
+end
 for tt=1:length(tList)
     localFile = fullfile(pwd,tList{tt});
     if exist(localFile,'file')
@@ -73,7 +101,7 @@ for tt=1:length(tList)
         copyfile(tFile,localFile);
     end
     publish(localFile, 'stylesheet', styleSheet,'maxWidth',512)  
-    publish(localFile,'pdf')
+    publish(localFile,'pdf');
     delete(localFile);
 end
 
@@ -82,40 +110,27 @@ chdir(fullfile(tHome,'oi'))
 movefile('html/*','.');
 rmdir('html');
 
-
-%% Optics tutorials
-
-chdir(tHome);
-if ~exist('./optics','dir'), mkdir('optics'); end
-chdir('optics')
-
-tList = {'t_opticsAiryDisk.m','t_opticsDiffraction.m','t_opticsImageFormation.m','t_opticsBarrelDistortion.m'};
-for tt=1:length(tList)
-    localFile = fullfile(pwd,tList{tt});
-    if exist(localFile,'file')
-        delete(localFile);
-    end
-    tFile = which(tList{tt});
-    if isempty(tFile), error('Missing file %s',tList{tt});
-    else
-        copyfile(tFile,localFile);
-    end
-    publish(localFile, 'stylesheet', styleSheet,'maxWidth',512)  
-    publish(localFile,'pdf')
-    delete(localFile);
-end
-
-% Move the files out of html into the oi directory.
-chdir(fullfile(tHome,'optics'))
-movefile('html/*','.');
-rmdir('html');
-
 %% Sensor
 chdir(tHome);
 if ~exist('./sensor','dir'), mkdir('sensor'); end
 chdir('sensor')
 
-tList = {'t_sensorEstimation.m','s_sensorCountingPhotons.m','t_sensorMultipleExposure.m'};
+
+% Some problem with publishing this very nice script
+%   's_sensorMCC.m',
+tList = {'s_sensorStackedPixels.m','t_sensorInputRefer.m','s_sensorExposureBracket.m','s_sensorCountingPhotons.m',...
+    's_sensorRollingShutter.m', 's_sensorAnalyzeDarkVoltage.m','s_sensorExternalAnalysis.m',...
+    's_sensorSNR.m','s_sensorSpatialNoiseDSNU.m','s_sensorSpatialNoisePRNU.m',...
+    't_sensorSpatialResolution.m','s_sensorSizeResolution.m',...
+    's_sensorHDR_PixelSize.m','s_sensorExposureCFA.m','s_sensorMicrolens.m',...
+    't_sensorExposureColor.m','t_sensorEstimation.m','s_sensorCFA.m',...
+    's_sensorPlotColorFilters.m','s_sensorSpectralEstimation.m'}; 
+for ii=1:length(tList)
+    if isempty(which(tList{ii}))
+        error('can not find %s\n',tList{ii});
+    end
+end
+
 for tt=1:length(tList)
     localFile = fullfile(pwd,tList{tt});
     if exist(localFile,'file')
@@ -126,8 +141,8 @@ for tt=1:length(tList)
     else
         copyfile(tFile,localFile);
     end
-    publish(localFile, 'stylesheet', styleSheet,'maxWidth',512)  
-    publish(localFile,'pdf')
+    publish(localFile, 'stylesheet', styleSheet,'maxWidth',512) 
+    if ~isequal(tList{tt},'s_sensorMCC.m'), publish(localFile,'pdf'); end
     delete(localFile);
 end
 
@@ -136,13 +151,19 @@ chdir(fullfile(tHome,'sensor'))
 movefile('html/*','.');
 rmdir('html');
 
+disp('Done with sensor')
 
 %% image processing
 chdir(tHome);
 if ~exist('./ip','dir'), mkdir('ip'); end
 chdir('ip')
 
-tList = {'t_ip.m'};
+tList = {'t_ip.m','t_ipDemosaic.m','t_ipJPEGMonochrome.m','t_ipJPEGcolor.m'};
+for ii=1:length(tList)
+    if isempty(which(tList{ii}))
+        error('can not find %s\n',tList{ii});
+    end
+end
 for tt=1:length(tList)
     localFile = fullfile(pwd,tList{tt});
     if exist(localFile,'file')
@@ -154,7 +175,7 @@ for tt=1:length(tList)
         copyfile(tFile,localFile);
     end
     publish(localFile, 'stylesheet', styleSheet,'maxWidth',512)  
-    publish(localFile,'pdf')
+    publish(localFile,'pdf');
     delete(localFile);
 end
 
@@ -168,7 +189,14 @@ chdir(tHome);
 if ~exist('./metrics','dir'), mkdir('metrics'); end
 chdir('metrics')
 
-tList = {'t_metricsColor.m','t_metricsScielab.m','s_scielabMTF.m','s_scielabPatches.m','s_metricsMTFSlantedBar.m'};
+tList = {'t_metricsColor.m','t_metricsScielab.m','t_ieSQRI.m',...
+    's_scielabMTF.m','s_scielabPatches.m','s_metricsMTFSlantedBar.m', ...
+    's_metricsMacbethDeltaE.m','s_metricsMTFPixelSize.m'};
+for ii=1:length(tList)
+    if isempty(which(tList{ii}))
+        error('can not find %s\n',tList{ii});
+    end
+end
 for tt=1:length(tList)
     localFile = fullfile(pwd,tList{tt});
     if exist(localFile,'file')
@@ -180,7 +208,7 @@ for tt=1:length(tList)
         copyfile(tFile,localFile);
     end
     publish(localFile, 'stylesheet', styleSheet,'maxWidth',512)  
-    publish(localFile,'pdf')
+    publish(localFile,'pdf');
     delete(localFile);
 end
 
@@ -195,6 +223,11 @@ if ~exist('./display','dir'), mkdir('display'); end
 chdir('display')
 
 tList = {'t_displayIntroduction.m','t_displayRendering.m'};
+for ii=1:length(tList)
+    if isempty(which(tList{ii}))
+        error('can not find %s\n',tList{ii});
+    end
+end
 for tt=1:length(tList)
     localFile = fullfile(pwd,tList{tt});
     if exist(localFile,'file')
@@ -206,7 +239,7 @@ for tt=1:length(tList)
         copyfile(tFile,localFile);
     end
     publish(localFile, 'stylesheet', styleSheet,'maxWidth',512)  
-    publish(localFile,'pdf')
+    publish(localFile,'pdf');
     delete(localFile);
 end
 

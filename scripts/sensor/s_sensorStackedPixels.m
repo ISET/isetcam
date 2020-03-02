@@ -42,14 +42,21 @@ filterNames = {'rX','gY','bZ'};
 
 % Create a monochrome sensor.  We will reuse this structure to compute each
 % of the complete color filters.
+sensorCell = cell(1,3);
 for ii=1:3
-    sensorMonochrome(ii) = sensorCreate('monochrome');
-    sensorMonochrome(ii) = sensorSet(sensorMonochrome(ii),'pixel size constant fill factor',[1.4 1.4]*1e-6);
-    sensorMonochrome(ii) = sensorSet(sensorMonochrome(ii),'exp time',0.1);
-    sensorMonochrome(ii) = sensorSet(sensorMonochrome(ii),'filterspectra',fSpectra(:,ii));
-    sensorMonochrome(ii) = sensorSet(sensorMonochrome(ii),'Name',sprintf('Channel-%.0f',ii));
-    sensorMonochrome(ii) = sensorSetSizeToFOV(sensorMonochrome(ii),sceneGet(scene,'fov'),scene,oi);
-    sensorMonochrome(ii) = sensorSet(sensorMonochrome(ii),'wave',wave);
+    thisSensor = sensorCreate('monochrome');
+    thisSensor = sensorSet(thisSensor,'pixel size constant fill factor',[1.4 1.4]*1e-6);
+    thisSensor = sensorSet(thisSensor,'exp time',0.1);
+    thisSensor = sensorSet(thisSensor,'filterspectra',fSpectra(:,ii));
+    thisSensor = sensorSet(thisSensor,'Name',sprintf('Channel-%.0f',ii));
+    thisSensor = sensorSetSizeToFOV(thisSensor,sceneGet(scene,'fov'),scene,oi);
+    thisSensor = sensorSet(thisSensor,'wave',wave);
+    sensorCell{ii} = thisSensor;
+end
+
+clear sensorMonochrome
+for ii=1:3
+    sensorMonochrome(ii) = sensorCell{ii};
 end
 
 %% Loop on the filters and calculate monochrome sensor planes
@@ -64,7 +71,7 @@ for ii=1:3
     im(:,:,ii) = sensorGet(sensorMonochrome(ii),'volts');
 end
 
-ieAddObject(sensorMonochrome(1)); sensorWindow;
+sensorWindow(sensorMonochrome(1));
 
 %% Render the Foveon sensor data with the image processor (ipCompute)
 
