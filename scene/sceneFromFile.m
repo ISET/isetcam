@@ -110,13 +110,13 @@ switch lower(imType)
         end
         
         if ischar(dispCal), d = displayCreate(dispCal);
-        elseif isstruct(dispCal) && isequal(dispCal.type, 'display'),
+        elseif isstruct(dispCal) && isequal(dispCal.type, 'display')
             d = dispCal;
         end
                 
         % get additional parameter values
-        if ~isempty(varargin), doSub = varargin{1}; else doSub = false; end
-        if length(varargin) > 2, sz = varargin{3};  else sz = []; end
+        if ~isempty(varargin), doSub = varargin{1}; else, doSub = false; end
+        if length(varargin) > 2, sz = varargin{3};  else, sz = []; end
         
         % read radiance / reflectance
         photons = vcReadImage(I, imType, dispCal, doSub, sz);
@@ -134,7 +134,7 @@ switch lower(imType)
         % (b) For reflective display, the illuminant is required and should
         % be passed in in varargin{2}
         
-        if length(varargin) > 1, il = varargin{2}; else il = []; end
+        if length(varargin) > 1, il = varargin{2}; else, il = []; end
         
         % Initialize
         if isempty(il) && ~displayGet(d, 'is emissive')
