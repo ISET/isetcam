@@ -5,12 +5,15 @@ function thisDir = iePublish(tList,varargin)
 %    thisDir = iePublish(tList)
 %
 % Inputs:
-%   tList - Cell array of ISETCam scripts or tutorials
+%  tList - Cell array of ISETCam scripts or tutorials
 %
 % Optional key/value pairs
+%  pdf     - logical to publish pdf
+%  html    - logical to publish html
+%  style sheet - Style sheet file
 %
 % Returns
-%   thisDir - The directory where the PDF and HTML files were stored
+%  thisDir - The directory where the PDF and HTML files were stored
 %
 % See also
 %   ieTutorialCreate

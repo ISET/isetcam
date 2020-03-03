@@ -40,7 +40,7 @@ tList = {'t_sceneIntroduction.m','t_sceneSurfaceModels.m',...
     's_sceneCCT.m','s_sceneReflectanceSamples.m','s_sceneIlluminantMixtures.m',...
     's_sceneIlluminantSpace.m','s_sceneXYZilluminantTransforms.m',...
     's_surfaceMunsell.m','s_sceneReflectanceCharts.m','s_sceneReflectanceChartBasisFunctions.m'};
-iePublish(tList,'pdf',false);
+iePublish(tList);
 disp('Scene is done');
 
 %% OI tutorials
@@ -57,7 +57,7 @@ tList = {'t_oiIntroduction.m','t_opticsImageFormation.m','t_opticsDiffraction.m'
     't_oiRTCompute.m','s_opticsRTGridLines.m','s_opticsRTPSF.m','s_opticsRTPSFView.m',...
     's_opticsRTSynthetic.m','t_opticsBarrelDistortion.m','s_opticsDepthDefocus.m'};
 
-iePublish(tList,'pdf',false);
+iePublish(tList);
 
 disp('OI is done');
 %% Sensor
@@ -84,7 +84,7 @@ if ~exist('./ip','dir'), mkdir('ip'); end
 chdir('ip')
 
 tList = {'t_ip.m','t_ipDemosaic.m','t_ipJPEGMonochrome.m','t_ipJPEGcolor.m'};
-iePublish(tList,'pdf',false);
+iePublish(tList);
 disp('IP is done');
 
 %% Metrics
