@@ -19,12 +19,6 @@ ieSessionSet('wait bar',false);
 
 ieInit;
 
-% https://www.mathworks.com/matlabcentral/answers/499628-how-to-set-default-font-size-in-matlab-published-html
-styleSheet = fullfile(isetRootPath,'manual','mxdom2simplehtml.xsl');
-if ~exist(styleSheet,'file')
-    error('Style sheet file missing');
-end
-
 %% Make the publishh tutorial directory
 tHome = fullfile(isetRootPath,'local','publish');
 if ~exist(tHome,'dir'), mkdir(tHome); end
@@ -46,31 +40,7 @@ tList = {'t_sceneIntroduction.m','t_sceneSurfaceModels.m',...
     's_sceneCCT.m','s_sceneReflectanceSamples.m','s_sceneIlluminantMixtures.m',...
     's_sceneIlluminantSpace.m','s_sceneXYZilluminantTransforms.m',...
     's_surfaceMunsell.m','s_sceneReflectanceCharts.m','s_sceneReflectanceChartBasisFunctions.m'};
-for ii=1:length(tList)
-    if isempty(which(tList{ii}))
-        error('can not find %s\n',tList{ii});
-    end
-end
-
-for tt=1:length(tList)
-    localFile = fullfile(pwd,tList{tt});
-    if exist(localFile,'file')
-        delete(localFile);
-    end
-    tFile = which(tList{tt});
-    if isempty(tFile), error('Missing file %s',tList{tt});
-    else
-        copyfile(tFile,localFile);
-    end
-    publish(localFile, 'stylesheet', styleSheet,'maxWidth',512)  
-    publish(localFile,'pdf');
-    delete(localFile);
-end
-
-% Move the files out of html into the oi directory.
-chdir(fullfile(tHome,'scene'))
-movefile('html/*','.');
-rmdir('html');
+iePublish(tList,'pdf',false);
 disp('Scene is done');
 
 %% OI tutorials
@@ -86,36 +56,15 @@ tList = {'t_oiIntroduction.m','t_opticsImageFormation.m','t_opticsDiffraction.m'
     't_wvfPlot.m','t_wvfPupilSize.m','t_wvfZernikeSet.m',...
     't_oiRTCompute.m','s_opticsRTGridLines.m','s_opticsRTPSF.m','s_opticsRTPSFView.m',...
     's_opticsRTSynthetic.m','t_opticsBarrelDistortion.m','s_opticsDepthDefocus.m'};
-for ii=1:length(tList)
-    if isempty(which(tList{ii}))
-        error('can not find %s\n',tList{ii});
-    end
-end
-for tt=1:length(tList)
-    localFile = fullfile(pwd,tList{tt});
-    if exist(localFile,'file')
-        delete(localFile);
-    end
-    tFile = which(tList{tt});
-    if isempty(tFile), error('Missing file %s',tList{tt});
-    else
-        copyfile(tFile,localFile);
-    end
-    publish(localFile, 'stylesheet', styleSheet,'maxWidth',512)  
-    publish(localFile,'pdf');
-    delete(localFile);
-end
 
-% Move the files out of html into the oi directory.
-chdir(fullfile(tHome,'oi'))
-movefile('html/*','.');
-rmdir('html');
+iePublish(tList,'pdf',false);
+
 disp('OI is done');
 %% Sensor
+
 chdir(tHome);
 if ~exist('./sensor','dir'), mkdir('sensor'); end
 chdir('sensor')
-
 
 % Some problem with publishing this very nice script
 %   's_sensorMCC.m',
@@ -126,32 +75,7 @@ tList = {'s_sensorStackedPixels.m','t_sensorInputRefer.m','s_sensorExposureBrack
     's_sensorHDR_PixelSize.m','s_sensorExposureCFA.m','s_sensorMicrolens.m',...
     't_sensorExposureColor.m','t_sensorEstimation.m','s_sensorCFA.m',...
     's_sensorPlotColorFilters.m','s_sensorSpectralEstimation.m'}; 
-for ii=1:length(tList)
-    if isempty(which(tList{ii}))
-        error('can not find %s\n',tList{ii});
-    end
-end
-
-for tt=1:length(tList)
-    localFile = fullfile(pwd,tList{tt});
-    if exist(localFile,'file')
-        delete(localFile);
-    end
-    tFile = which(tList{tt});
-    if isempty(tFile), error('Missing file %s',tList{tt});
-    else
-        copyfile(tFile,localFile);
-    end
-    publish(localFile, 'stylesheet', styleSheet,'maxWidth',512) 
-    if ~isequal(tList{tt},'s_sensorMCC.m'), publish(localFile,'pdf'); end
-    delete(localFile);
-end
-
-% Move the files out of html into the oi directory.
-chdir(fullfile(tHome,'sensor'))
-movefile('html/*','.');
-rmdir('html');
-
+iePublish(tList);
 disp('Sensor is done')
 
 %% image processing
@@ -160,30 +84,7 @@ if ~exist('./ip','dir'), mkdir('ip'); end
 chdir('ip')
 
 tList = {'t_ip.m','t_ipDemosaic.m','t_ipJPEGMonochrome.m','t_ipJPEGcolor.m'};
-for ii=1:length(tList)
-    if isempty(which(tList{ii}))
-        error('can not find %s\n',tList{ii});
-    end
-end
-for tt=1:length(tList)
-    localFile = fullfile(pwd,tList{tt});
-    if exist(localFile,'file')
-        delete(localFile);
-    end
-    tFile = which(tList{tt});
-    if isempty(tFile), error('Missing file %s',tList{tt});
-    else
-        copyfile(tFile,localFile);
-    end
-    publish(localFile, 'stylesheet', styleSheet,'maxWidth',512)  
-    publish(localFile,'pdf');
-    delete(localFile);
-end
-
-% Move the files out of html into the oi directory.
-chdir(fullfile(tHome,'ip'))
-movefile('html/*','.');
-rmdir('html');
+iePublish(tList,'pdf',false);
 disp('IP is done');
 
 %% Metrics
@@ -191,46 +92,12 @@ chdir(tHome);
 if ~exist('./color','dir'), mkdir('color'); end
 chdir('color')
 
-% {
 % Problem with publish and't_cielabEllipsoids.m'
 tList = {'t_colorEnergyQuanta.m','t_colorSpectrum.m','t_colorMatching.m',...
     't_colorMetamerism.m',...
     's_colorIlluminantTransforms.m','t_cieChromaticity.m'};
+iePublish(tList);
 
-for ii=1:length(tList)
-    if isempty(which(tList{ii}))
-        error('can not find %s\n',tList{ii});
-    end
-end
-
-for tt=1:length(tList)
-    localFile = fullfile(pwd,tList{tt});
-    if exist(localFile,'file')
-        delete(localFile);
-    end
-    tFile = which(tList{tt});
-    if isempty(tFile), error('Missing file %s',tList{tt});
-    else
-        copyfile(tFile,localFile);
-    end
-    try
-        publish(localFile, 'stylesheet', styleSheet,'maxWidth',512)
-    catch
-        fprintf('Failed to publish html %s\n',tList{tt});
-    end
-    try
-        publish(localFile,'pdf');
-    catch
-        fprintf('Failed to publish pdf %s\n',tList{tt});
-    end
-
-    delete(localFile);
-end
-
-% Move the files out of html into the oi directory.
-chdir(fullfile(tHome,'color'))
-movefile('html/*','.');
-rmdir('html');
 disp('Color is done');
 
 %% Metrics
@@ -238,47 +105,14 @@ chdir(tHome);
 if ~exist('./metrics','dir'), mkdir('metrics'); end
 chdir('metrics')
 
-
 % 's_metricsSNRPixelSizeLuxsec.m',
 tList = {'t_metricsColor.m','t_metricsScielab.m','t_ieSQRI.m',...
     's_scielabMTF.m','s_scielabPatches.m','s_metricsMTFSlantedBar.m', ...
     's_metricsMacbethDeltaE.m','s_metricsMTFPixelSize.m','s_metricsAcutance.m',...
     's_metricsEdge2MTF.m','s_metricsColorAccuracy.m',...    
     's_metricsVSNR.m'};
+iePublish(tList);
 
-for ii=1:length(tList)
-    if isempty(which(tList{ii}))
-        error('can not find %s\n',tList{ii});
-    end
-end
-
-for tt=1:length(tList)
-    localFile = fullfile(pwd,tList{tt});
-    if exist(localFile,'file')
-        delete(localFile);
-    end
-    tFile = which(tList{tt});
-    if isempty(tFile), error('Missing file %s',tList{tt});
-    else
-        copyfile(tFile,localFile);
-    end
-    try
-        publish(localFile, 'stylesheet', styleSheet,'maxWidth',512)
-    catch
-        fprintf('Failed to publish html %s\n',tList{tt});
-    end
-    try
-        publish(localFile,'pdf');
-    catch
-        fprintf('Failed to publish pdf %s\n',tList{tt});
-    end
-    delete(localFile);
-end
-
-% Move the files out of html into the oi directory.
-chdir(fullfile(tHome,'metrics'))
-movefile('html/*','.');
-rmdir('html');
 disp('Metrics is done');
 
 %% Display
@@ -287,31 +121,9 @@ if ~exist('./display','dir'), mkdir('display'); end
 chdir('display')
 
 tList = {'t_displayIntroduction.m','t_displayRendering.m'};
-for ii=1:length(tList)
-    if isempty(which(tList{ii}))
-        error('can not find %s\n',tList{ii});
-    end
-end
-for tt=1:length(tList)
-    localFile = fullfile(pwd,tList{tt});
-    if exist(localFile,'file')
-        delete(localFile);
-    end
-    tFile = which(tList{tt});
-    if isempty(tFile), error('Missing file %s',tList{tt});
-    else
-        copyfile(tFile,localFile);
-    end
-    publish(localFile, 'stylesheet', styleSheet,'maxWidth',512)  
-    publish(localFile,'pdf');
-    delete(localFile);
-end
+iePublish(tList);
 
-% Move the files out of html into the oi directory.
-chdir(fullfile(tHome,'display'))
-movefile('html/*','.');
-rmdir('html');
-
+disp('Display is done.')
 
 %% Return init clear and wait bar status
 
