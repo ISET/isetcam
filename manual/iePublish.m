@@ -9,9 +9,9 @@ function thisDir = iePublish(tList,section,varargin)
 %  section - scene,oi,sensor,ip,color,metrics,display
 %
 % Optional key/value pairs
-%  pdf     - logical to publish pdf
-%  html    - logical to publish html
-%  style sheet - Style sheet file
+%  pdf     - publish pdf (default: true)
+%  html    - publish html (default: true)
+%  style sheet - Style sheet file (default: mxdom2simplehtml.xsl)
 %
 % Returns
 %  thisDir - The directory where the PDF and HTML files were stored
