@@ -1,10 +1,21 @@
 function ieTutorialCreate
-% Publish html files of the principal tutorials
+% Publish html and pdf files of the principal tutorials
 %
-% Copy key files that begin with t_<TAB> to a new
-% directory.  Run publish on them.  Give the directory to Joyce/Imageval.
+% Synopsis
+%   ieTutorialCreate
 %
-% BW, Copyright Imageval Consulting, LLC 2015
+% Description
+%  Creates html and pdf files that are stored on scarlet in
+%  brian/public_html/isetcam/publish.  I move them over there using fetch.
+%
+%  We link to those files from the ISETCam wiki pages.
+%
+%  The specific files that are chosen for each section of the manual are
+%  listed in this function (the tList variables).
+%
+% See also
+%  ieManualCreate - runs m2html to document the functions.
+%
 
 %% Deal with variable clearing in scripts
 
@@ -105,6 +116,8 @@ disp('Display is done.')
 
 ieSessionSet('init clear',initClear);
 ieSessionSet('wait bar',  wbStatus);
+
+end
 
 %% END
 
