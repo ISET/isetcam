@@ -660,7 +660,8 @@ switch lower(pType)
         
         % Create an RGB image
         udata.srgb = xyz2srgb(ieXYZFromEnergy(energy,wave));
-        imagesc(sz(1),sz(2),udata.srgb);  grid on; axis off
+        imagesc(sz(1),sz(2),udata.srgb);  
+        grid on; axis off; axis image;
         title('Illumination image')       
         
         % Depth - COuld go into plotSceneDepth
