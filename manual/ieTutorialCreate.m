@@ -26,9 +26,6 @@ chdir(tHome);
 
 %% Scene tutorials
 chdir(tHome)
-if ~exist('./scene','dir'), mkdir('scene'); end
-chdir('scene')
-
 tList = {'t_sceneIntroduction.m','t_sceneSurfaceModels.m',...
     's_sceneDemo.m','s_sceneExamples.m','s_sceneDataExtractionAndPlotting.m',...
     's_sceneRoi.m', ...
@@ -40,14 +37,11 @@ tList = {'t_sceneIntroduction.m','t_sceneSurfaceModels.m',...
     's_sceneCCT.m','s_sceneReflectanceSamples.m','s_sceneIlluminantMixtures.m',...
     's_sceneIlluminantSpace.m','s_sceneXYZilluminantTransforms.m',...
     's_surfaceMunsell.m','s_sceneReflectanceCharts.m','s_sceneReflectanceChartBasisFunctions.m'};
-iePublish(tList);
+iePublish(tList,'scene');
 disp('Scene is done');
 
 %% OI tutorials
 chdir(tHome);
-if ~exist('./oi','dir'), mkdir('oi'); end
-chdir('oi')
-
 tList = {'t_oiIntroduction.m','t_opticsImageFormation.m','t_opticsDiffraction.m',...
     't_oiCompute.m','s_opticsCoC.m','s_opticsMicrolens.m','t_opticsAiryDisk.m','t_opticsPSFPlot.m',...
     's_opticsDefocus.m','s_opticsDefocusScene.m','s_opticsDLPsf.m',...
@@ -56,15 +50,10 @@ tList = {'t_oiIntroduction.m','t_opticsImageFormation.m','t_opticsDiffraction.m'
     't_wvfPlot.m','t_wvfPupilSize.m','t_wvfZernikeSet.m',...
     't_oiRTCompute.m','s_opticsRTGridLines.m','s_opticsRTPSF.m','s_opticsRTPSFView.m',...
     's_opticsRTSynthetic.m','t_opticsBarrelDistortion.m','s_opticsDepthDefocus.m'};
-
-iePublish(tList);
-
+iePublish(tList,'oi');
 disp('OI is done');
 %% Sensor
-
 chdir(tHome);
-if ~exist('./sensor','dir'), mkdir('sensor'); end
-chdir('sensor')
 
 % Some problem with publishing this very nice script
 %   's_sensorMCC.m',
@@ -75,35 +64,27 @@ tList = {'s_sensorStackedPixels.m','t_sensorInputRefer.m','s_sensorExposureBrack
     's_sensorHDR_PixelSize.m','s_sensorExposureCFA.m','s_sensorMicrolens.m',...
     't_sensorExposureColor.m','t_sensorEstimation.m','s_sensorCFA.m',...
     's_sensorPlotColorFilters.m','s_sensorSpectralEstimation.m'}; 
-iePublish(tList);
+iePublish(tList,'sensor');
 disp('Sensor is done')
 
 %% image processing
 chdir(tHome);
-if ~exist('./ip','dir'), mkdir('ip'); end
-chdir('ip')
-
 tList = {'t_ip.m','t_ipDemosaic.m','t_ipJPEGMonochrome.m','t_ipJPEGcolor.m'};
-iePublish(tList);
+iePublish(tList,'ip');
 disp('IP is done');
 
 %% Metrics
 chdir(tHome);
-if ~exist('./color','dir'), mkdir('color'); end
-chdir('color')
 
 % Problem with publish and't_cielabEllipsoids.m'
 tList = {'t_colorEnergyQuanta.m','t_colorSpectrum.m','t_colorMatching.m',...
     't_colorMetamerism.m',...
     's_colorIlluminantTransforms.m','t_cieChromaticity.m'};
-iePublish(tList);
-
+iePublish(tList,'color');
 disp('Color is done');
 
 %% Metrics
 chdir(tHome);
-if ~exist('./metrics','dir'), mkdir('metrics'); end
-chdir('metrics')
 
 % 's_metricsSNRPixelSizeLuxsec.m',
 tList = {'t_metricsColor.m','t_metricsScielab.m','t_ieSQRI.m',...
@@ -111,18 +92,13 @@ tList = {'t_metricsColor.m','t_metricsScielab.m','t_ieSQRI.m',...
     's_metricsMacbethDeltaE.m','s_metricsMTFPixelSize.m','s_metricsAcutance.m',...
     's_metricsEdge2MTF.m','s_metricsColorAccuracy.m',...    
     's_metricsVSNR.m'};
-iePublish(tList);
-
+iePublish(tList,'metrics');
 disp('Metrics is done');
 
 %% Display
 chdir(tHome);
-if ~exist('./display','dir'), mkdir('display'); end
-chdir('display')
-
 tList = {'t_displayIntroduction.m','t_displayRendering.m'};
-iePublish(tList);
-
+iePublish(tList,'display');
 disp('Display is done.')
 
 %% Return init clear and wait bar status

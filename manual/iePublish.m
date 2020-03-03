@@ -1,11 +1,12 @@
-function thisDir = iePublish(tList,varargin)
+function thisDir = iePublish(tList,section,varargin)
 % Publish the files in the tutorial list (tList)
 %
 % Synopsis
-%    thisDir = iePublish(tList)
+%    thisDir = iePublish(tList,section,varargin)
 %
 % Inputs:
 %  tList - Cell array of ISETCam scripts or tutorials
+%  section - scene,oi,sensor,ip,color,metrics,display
 %
 % Optional key/value pairs
 %  pdf     - logical to publish pdf
@@ -29,16 +30,27 @@ end
 %% Parse
 varargin = ieParamFormat(varargin);
 p = inputParser;
+
 p.addRequired('tList',@iscell);
+vFunc = @(x)(ismember(x,{'scene','oi','sensor','ip','color','metrics','display'}));
+p.addRequired('section',vFunc);
+
 p.addParameter('pdf',true,@islogical);
 p.addParameter('html',true,@islogical);
 p.addParameter('stylesheet',styleSheet,@ischar);
 
-p.parse(tList,varargin{:});
+p.parse(tList,section,varargin{:});
 
 pdf        = p.Results.pdf;
 html       = p.Results.html;
 styleSheet = p.Results.stylesheet;
+
+%% Change into the directory for this section
+if ~exist(section,'dir')
+    mkdir(section); 
+    fprintf('Created directory %s in %s\n',section,pwd); 
+end
+chdir(section);
 
 %%  First check you can find all the files
 for ii=1:length(tList)
