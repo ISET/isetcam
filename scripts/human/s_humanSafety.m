@@ -3,8 +3,10 @@
 % How to calculate the safety of a short wavelength light with respect to
 % different standards.
 %
-% The official safety functions are stored in data/human/safetyStandards.
-% 
+% The official safety functions are stored in data/human/safetyStandard
+% The data were taken from ?IEC 62471:2006 Photobiological Safety of Lamps and Lamp Systems.? n.d. Accessed October 5, 2019. https://webstore.iec.ch/publication/7076
+% J.E. Farrell has a copy of this standard
+
 % We load in a radiance (Watts/sr/nm/m2), we convert that to irradiance for
 % a hemifield (2*pi/sr), so
 %
