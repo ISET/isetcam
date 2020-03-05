@@ -29,13 +29,16 @@ function RGB = ieLUTDigital(DAC, gTable)
 %
 % See also:  ieLUTLinear, ieLUTInvert
 %
-% Example:
-%   d = displayCreate; n = size(d.gamma,1);
-%   dac = floor(n*rand(10,10,3)) + 1;
-%   foo = ieLUTDigital(dac, d.gamma);
-%   vcNewGraphWin; plot(foo(:),dac(:),'.')
+% See also
 %
-% (c) Imageval Consulting, LLC 2013
+
+% Examples:
+%{
+  d = displayCreate; n = size(d.gamma,1);
+  dac = floor(n*rand(10,10,3)) + 1;
+  foo = ieLUTDigital(dac, d.gamma);
+  ieNewGraphWin; plot(foo(:),dac(:),'.')
+%}
 
 if (nargin==1), gTable = 2.2; end
 
