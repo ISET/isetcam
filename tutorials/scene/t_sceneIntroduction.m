@@ -1,24 +1,28 @@
 %% Tutorial describing the scene object
 %
-% ISET is structured around a few key objects that are important
-% parts of the image acquisition pipeline. These are the *scene,
-% optical image, sensor, and image processor*. This script
-% introduces the first and simplest ISET object: a *scene* .
+% *Description*
 %
-% A main goal of this script is to illustrate the ISET
-% programming style. By using ISET objects properly, the code and
-% analysis are much easier to understand. The implementation of
-% these objects was written before Matlab implemented its classes
-% and thus doesn't rely on that feature.  
+% ISETCam is structured around a few key objects that are important parts
+% of the image acquisition pipeline. These are the *scene, optical image,
+% sensor, and image processor*. This script introduces the first and
+% simplest ISETCam object: a *scene* .
 %
-% But many of the principles are the same. For each object there
-% are three fundamental operations: *Create, set parameters, and
-% get* object parameters.
+% A main goal of this script is to illustrate the ISETCam programming
+% style. By using ISETCam objects properly, the code and analysis are much
+% easier to understand. The implementation of these objects was written
+% before Matlab implemented its classes and thus doesn't rely on that
+% feature.
 %
-% The scene describes the spectral radiance field.  For the
-% present tutorial we  work with a simple planar radiance image,
-% such as the image on a display surface.  We have extended ISET
-% for implementations for 3D scenes.
+% But many of the principles are the same. For each object there are three
+% fundamental operations: *Create, set parameters, and get* object
+% parameters.
+%
+% The scene describes the spectral radiance field.  For the present
+% tutorial we  work with a simple planar radiance image, such as the image
+% on a display surface.  
+%
+% We have substantially extended ISETCam for implementations for 3D scenes
+% in the github repository (iset3d).  
 %
 % *Note*
 % 
@@ -32,11 +36,10 @@
 % * <http://www.mathworks.com/help/matlab/matlab_oop/getting-familiar-with-classes.html Matlab classes>
 % * <http://en.wikipedia.org/wiki/Scene_(perception) scenes in perception>
 %  
-% *See also* sceneFromFile, sceneGet, sceneSet, scenePlot,
-%            sceneCreate, t_IntroductionOI.m 
+% *See also* 
+%  sceneFromFile, sceneGet, sceneSet, scenePlot, sceneCreate,
+%  t_IntroductionOI.m  
 %
-% Copyright ImagEval Consultants, LLC, 2011.
-
 
 %%
 ieInit
