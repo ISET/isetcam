@@ -108,5 +108,4 @@ end
 % Now, both rho and the cutoff frequency are in cycles/degree.
 OTF2D = dlCore(rho,inCutoffFreq);
 
-
-return;
+end

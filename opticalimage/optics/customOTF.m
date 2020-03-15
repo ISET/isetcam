@@ -15,11 +15,10 @@ function [OTF2D, fSupport] = customOTF(oi,fSupport,wavelength,units)
 % The units for the frequency support are cycles/millimeters.  
 % Perhaps we should add a 'units' input argument here. 
 % 
-% Examples:
+% Copyright ImagEval Consultants, LLC, 2003.
 %
 % See also: oiCalculateOTF, dlCore.m
 %
-% Copyright ImagEval Consultants, LLC, 2003.
 
 if ieNotDefined('oi'),         error('Optical image required.'); end
 if ieNotDefined('wavelength'), wavelength = oiGet(oi,'wavelength'); end
@@ -83,14 +82,13 @@ if length(wavelength) == 1
     OTF2D    = ifftshift(interp2(X, Y, fftshift(OTF2D), fx, fy, '*linear',0));
 
 else
-    disp('Warning:  unverified customOTF using multiple wavelengths')
+    % disp('Warning:  unverified customOTF using multiple wavelengths')
     OTF2D = zeros(nY,nX,nWave);
     for ii=1:length(wavelength)
         tmp = opticsGet(optics,'otfData',wavelength(ii));
         OTF2D(:,:,ii) = ...
             fftshift(interp2(X, Y, fftshift(tmp), fx, fy, '*linear',0));
-
     end
 end
 
-return;
+end

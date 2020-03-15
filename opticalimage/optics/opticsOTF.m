@@ -54,7 +54,7 @@ switch lower(opticsModel)
         error('Unknown OTF method');
 end
 
-return;
+end
 
 %-------------------------------------------
 function oi = oiApplyOTF(oi,scene,unit)
@@ -93,15 +93,19 @@ oi = oiPad(oi,padSize,sDist);
 
 % Get the current data set.  It has the right size.  We over-write it
 % below.
-p = oiGet(oi,'photons');   
+p = oiGet(oi,'photons');
+otfM = oiCalculateOTF(oi, wave, unit);  % Took changes from ISETBio.
+
 for ii=1:length(wave)
-    img = oiGet(oi,'photons',wave(ii));
+    % img = oiGet(oi,'photons',wave(ii));
+    img = p(:, :, ii);
     % figure(1); imagesc(img); colormap(gray); 
 
     % For diffraction limited we calculate the OTF.  For other optics
     % models we look up the stored OTF.  Remember, DC is in the (1,1)
     % position.
-    otf = oiCalculateOTF(oi,wave(ii),unit);
+    % otf = oiCalculateOTF(oi,wave(ii),unit);
+    otf = otfM(:,:,ii);
     % figure(1); mesh(otf); otf(1,1)
     
     % Put the image center in (1,1) and take the transform.
@@ -135,5 +139,5 @@ end
 % Put all the photons in at once.
 oi = oiSet(oi,'photons',p);
 
-return;
+end
 
