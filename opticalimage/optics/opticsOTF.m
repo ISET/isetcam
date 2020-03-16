@@ -109,14 +109,16 @@ for ii=1:length(wave)
     % figure(1); mesh(otf); otf(1,1)
     
     % Put the image center in (1,1) and take the transform.
-    imgFFT = fft2(fftshift(img));
+    imgFFT = fft2(img);
+    % imgFFT = fft2(fftshift(img));
     % figure(1); imagesc(abs(imgFFT));  
     % figure(2); imagesc(abs(otf));
     % colormap(gray)
     
     % Multiply the transformed otf and the image.  
     % Then invert and put the image center in  the center of the matrix 
-    filteredIMG = abs(ifftshift(ifft2(otf .* imgFFT)));
+    filteredIMG = abs(ifft2(otf .* imgFFT));
+    % filteredIMG = abs(ifftshift(ifft2(otf .* imgFFT)));
     % if  (sum(filteredIMG(:))/sum(img(:)) - 1) > 1e-10  % Should be 1 if DC is correct
     %   warning('DC poorly accounted for');
     % end

@@ -67,7 +67,7 @@ end
 
 comment = '3x3 transforms between different blackbody illuminants.  See s_colorILluminantTransforms.m';
 fname = fullfile(isetRootPath,'data','lights','transformTable.mat');
-save(fname,'bbRange','tList','comment');
+save(fname,'bbRange','transformList','comment');
 %% Buddha image transform 
 
 % This was the 3x3 transform we found for the Buddha image 
@@ -83,7 +83,7 @@ C = reshape(C,nbb,nbb);
 % Show the cosines as an image.
 % N.B. We are not sure about the From/To labeling.  But this is
 % consistent with the Buddha color becoming more yellow
-vcNewGraphWin;
+ieNewGraphWin;
 imagesc(bbRange,bbRange,C); colorbar
 xlabel('From Temp'); ylabel('To Temp'); identityLine
 
@@ -100,11 +100,11 @@ C = transformList'* F(:);
 C = reshape(C,nbb,nbb);
 
 % Show the cosines as an image.
-vcNewGraphWin;
+ieNewGraphWin;
 imagesc(bbRange,bbRange,C); colorbar
 xlabel('From Temp'); ylabel('To Temp'); identityLine
 
 %%  Clean up the table
-delete(fname);
+if exist(fname,'file'), delete(fname); end
 
 %%
