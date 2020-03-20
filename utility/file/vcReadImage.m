@@ -298,7 +298,7 @@ switch lower(imageType)
             
             % Deal with the illuminant
             if ieVarInFile(variables,'illuminant')
-                load(fullname,'illuminant')
+                load(fullname,'illuminant') %#ok<NASGU>
             else
                 % illuminant = [];
                 warndlg('No illuminant information in %s\n',fullname);
@@ -320,7 +320,7 @@ switch lower(imageType)
             if ieVarInFile(variables,'photons'), load(fullname,'photons');
             elseif ieVarInFile(variables,'data')
                 load(fullname,'data'); photons = data; clear data;
-            else error('No photon data in file');
+            else, error('No photon data in file');
             end
             if ieVarInFile(variables,'comment'),  load(fullname,'comment'); end
             if ieVarInFile(variables,'wave'), load(fullname,'wave');
@@ -346,7 +346,7 @@ switch lower(imageType)
         % illuminant and resample.
         illuminant = [];
         if ieVarInFile(variables,'illuminant'), load(fullname,'illuminant')
-        else        warndlg('No illuminant information in %s\n',fullname);
+        else,         warndlg('No illuminant information in %s\n',fullname);
         end
         illuminant = illuminantModernize(illuminant);
         

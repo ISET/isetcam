@@ -202,7 +202,8 @@ switch sceneName
         doc('sceneList');
         return;
     case 'empty'
-        % scene = sceneCreate('empty',wave)
+        % scene = sceneCreate('empty',[],wave)
+        %
         % Sometimes you just want an empty scene structure with some
         % wavelength sampling.
         scene = sceneDefault(scene,'d65',[],wave);

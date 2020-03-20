@@ -21,7 +21,7 @@ if ieNotDefined('rect')
     % pixels.
     tmp = sqrt(double(img(:,:,cPlane))); 
     tmp = tmp/max(tmp(:));
-    f = vcNewGraphWin;
+    f = ieNewGraphWin;
     imagesc(tmp); colormap(hot); axis image
     [d,rect] = imcrop;
     close(f)
@@ -32,8 +32,8 @@ end
 % Create space for cropped image
 [r,c] = size(d);
 w = size(img,3);
-if isa(img,'uint16'), hc = zeros(r,c,w,'uint16');
-else                  hc = zeros(r,c,w,'double');
+if isa(img,'uint16'),  hc = zeros(r,c,w,'uint16');
+else,                  hc = zeros(r,c,w,'double');
 end
 
 % Crop each plane

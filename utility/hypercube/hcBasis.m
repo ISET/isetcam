@@ -1,34 +1,43 @@
 function [imgMean, basis, coef, varExplained] = hcBasis(hc,bType,mType)
 % Create wavelength basis functions and coefficients for an hc image
 %
+% Synopsis
 %  [imgMean, basis, coef, varExplained] = hcBasis(hc,cType,bType)
 %
+% Brief description
+%   Approximate the hypercube of photon data with respect to a mean value,
+%   basis functions, and per pixel coefficients.  The scene data can be
+%   saved in this format to make the file much more compact.
+%
 % INPUTS
-%  hc:     Hypercube data
+%  hc:    Hypercube data
 %  bType: Basis calculation type
 %           if < 1, a fraction specifying required variance explained
 %           if >= 1, a number of bases 
 %  mType:  Mean removal computation  
 %           'mean svd'  - pull out the mean before the svd
-%           'canonical' - leave the mean as part of the basis calculation.
-%           In this case imgMean is returned as empty.
+%           'canonical' - leave the mean as part of the basis calculation (default)
+%                         In this case imgMean is returned as empty.
 %
 % RETURNS
-%  imgMean:   Mean SPD of the pixels  (nWave,1)
-%  basis:     Wavelength basis
+%  imgMean:   Mean SPD of all the pixels  (nWave,1)
+%  basis:     Basis functions (.basis and .wave)
 %  coef:      RGB format (row,col,nBases)
-%  varExplained:  The hc variance explained by nbases
+%  varExplained:  The variance explained by the basis approximation
 %
-% The original image is recreated  using 
+% Description:
+%   The hypercube image data (photons) are approximated using a set of
+%   basis functions.  To reconstruct the photon data from the mean, basis
+%   function and coefficients you can use this:
 %
-%  d = RGB2XWFormat(coef)*basis'+ repmat(imgMean,row*col,1);
-%  hcimage(XW2RGBFormat(d,row,col))
-%
-%  [imgMean, b,c, vExplained] = hcBasis(hc,0.95);
-%
-% See also:  hcimage, and hc<TAB>, s_sceneHCCompress
+%     d = RGB2XWFormat(coef)*basis'+ repmat(imgMean,row*col,1);
+%     hcimage(XW2RGBFormat(d,row,col));   % Show the iamge
 %
 % Copyright ImagEval Consultants, LLC, 2012.
+%
+% See also:  
+%   hcimage, and hc<TAB>, s_sceneHCCompress, ieSaveMultiSpectralImage
+%
 
 %% Check arguments
 if ieNotDefined('hc'), error('Hypercube data required'); end
