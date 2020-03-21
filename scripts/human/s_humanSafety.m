@@ -1,15 +1,30 @@
 %% s_humanSafety
 %
-% Calculate the safety of a short wavelength light with respect to
-% different standards.
+% Calculate the safety of various types of lights for exposure to the eye
+% and to skin.
 %
-% The official safety functions are stored in data/human/safetyStandard.
-% The data were taken from 
+% The safety function curves used in these calculations are stored in
+% data/human/safetyStandard. 
+%
+%   Actinic         - UV hazard for skin and eye safety The limits for
+%                     exposure to ultraviolet radiation incident upon the
+%                     unprotected skin or eye (4.3.1 and 4.3.2)  
+%   blueLightHazard - Eye (retinal) safety (retinal photochemical injury
+%                     from chronic blue-light exposure).  There are
+%                     different functions for large and small field lights
+%                     (4.3.3 and 4.3.4)
+%   burnHazard      - Retinal thermal injury (4.3.5 and 4.3.6)
+%
+% The data for the safety function curves were taken from this paper
+%
 %  ?IEC 62471:2006 Photobiological Safety of Lamps and Lamp Systems.? n.d.
 %  Accessed October 5, 2019. https://webstore.iec.ch/publication/7076 
 %  J.E. Farrell has a copy of this standard
 %
-% We load in a radiance (Watts/sr/nm/m2), convert it to irradiance
+% Notes:   Near UV is also called UV-A and is 315-400nm.
+%
+% Calculations
+%  We load in a radiance (Watts/sr/nm/m2), convert it to irradiance
 %
 %      Irradiance = Radiance * pi
 %
@@ -60,6 +75,21 @@ https://physics.stackexchange.com/questions/116596/convert-units-for-spectral-ir
 The person multiplies b6000 by pi, not 2pi
 %}
 
+%% TODO
+%
+% Plot the three different functions and explain them here
+% Make sure the formulae for hazards are implemented for
+%
+%    Actinic UV hazard exposure limit skin and eye (4.3.1)
+%    Near UV hazard limit for the eye (4.3.2)
+%    Retinal blue light hazard exposure (4.3.3)
+%    Retinal blue light small source (4.3.4)
+%    Retinal thermal hazard (4.3.5)
+%    Retinal theermal hazard for weak visual stimulus (4.3.6)
+%    Infrared exposure for the eye (4.3.7)
+%    Thermal hazard for the skin (4.3.8)
+%
+
 %%  Create a radiance and convert it to irradiance
 
 wave       = 300:700;
@@ -75,13 +105,20 @@ Actinic = ieReadSpectra(fname,wave);
 
 % The formula is
 %
-%    sum Actinic(lambda) irradiance(Lambda) dLambda Time
+%    sum (Actinic(lambda,t) irradiance(Lambda)) dLambda dTime
 %
-
-% Units (Watts = Joules/sec)
-%     Watts/m2/nm * nm * sec
-%     Joules/sec/m2/nm * nm * sec
-%     Joules/m2
+% Our stimuli are constant over time, so this simplifies to
+%
+%    T * sum(Actinic(lambda) irradiance(lambda) dLambda
+%
+% where T is the total time.  Follow the units this way:
+%
+%     Irradiance units: Watts/m2/nm
+%     Watts = Joules/sec
+%  
+%     Watts/m2/nm * (nm * sec)         % Irradiance summed over nm and time
+%     Joules/sec/m2/nm * (nm * sec)    
+%     Joules/m2                        % Becomes Joules/area
 %
 dLambda  = wave(2) - wave(1);
 duration = 1;                  % Seconds
@@ -103,6 +140,18 @@ Actinic = ieReadSpectra(fname,wave);
 dLambda  = wave(2) - wave(1);
 duration = 1;                  % Seconds
 hazardEnergy = dot(Actinic,irradiance) * dLambda * duration;
+%{
+The maximum permissible exposure time per 8 hours for ultraviolet radiation
+incident upon the unprotected eye or skin shall be computed by:
+
+t_max = 30/E_s   (seconds) (Equation 4.2)
+
+E_s is the effective ultraviolet irradiance (W/m^2).  The formula for E_s
+is defined in Equation 4.1.  It is the inner product of the Actinic
+function and the irradiance function, accounting for time and wavelength
+sampling.
+
+%}
 fprintf('Maximum exposure duration per eight hours:  %f (min)\n',(30/hazardEnergy)/60)
 
 %% An example of the 385nm light in the OralEye camera
@@ -152,4 +201,14 @@ ylabel('Irradiance (watts/m^2');
 grid on
 legend({'Irradiance','Normalized hazard'});
 
-%%
+%%  Near-UV hazard exposure limit
+%{
+This calculation has no weighting function.  
+
+For times less than 1000 sec, add up the total irradiance
+from 315-400 without any hazard function (Equation 4.3a).  Call this E_UVA.
+Multiply by time (seconds).  The product should be less than 10,000.
+
+For times exceeding 1000 sec, add up the total irradiance, divide by the
+time, and the value must be less than 10 (Equation 4.3b).
+%}
