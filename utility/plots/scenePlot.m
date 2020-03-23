@@ -119,7 +119,11 @@ if ieNotDefined('roiLocs')
             if isequal( lower(pType),'illuminantphotonsroi') || ...
                     isequal(lower(pType),'illuminantenergyroi')
                 if isequal(sceneGet(scene,'illuminant format'),'spatial spectral')
-                    [roiLocs, roiRect] = vcROISelect(scene);
+                    % roiLocs might be passed and be empty.  In that case
+                    % the whole image will be treated as the ROI.
+                    if ~exist('roiLocs','var')
+                        [roiLocs, roiRect] = vcROISelect(scene);
+                    end
                 end
             else
                 % Region of interest plots
@@ -592,6 +596,7 @@ switch lower(pType)
     case {'illuminantenergyroi','illuminantenergy'}
         % scenePlot(scene,'illuminant energy')
         % scenePlot(scene,'illuminant energy roi',roiLocs');
+        % scenePlot(scene,'illuminant energy roi',[]);
         % Graph for spectral, image for spatial spectral
         handle = ieSessionGet('scenewindowhandle');
         ieInWindowMessage('',handle);       
@@ -604,8 +609,12 @@ switch lower(pType)
             case 'spatial spectral'
                 % Have the user choose the ROI because the illuminant is
                 % space-varying
-                energy = vcGetROIData(scene,roiLocs,'illuminant energy');
-                energy = mean(energy,1);
+                if isempty(roiLocs)
+                    energy = sceneGet(scene,'energy');
+                else
+                    energy = vcGetROIData(scene,roiLocs,'illuminant energy');
+                end
+                energy = mean(RGB2XWFormat(energy),1)';
             otherwise
                 % No illuminant
                 ieInWindowMessage('No illuminant data.',handle);

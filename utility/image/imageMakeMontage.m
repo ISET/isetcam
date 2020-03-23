@@ -1,18 +1,38 @@
 function  [img,coords] = imageMakeMontage(hc, sliceList, nCols, backVal)
-% Create an image comprising a montage of the slices in hc
+% Create an image comprising a montage of the slices in the image stack hc
 %
-% img = imageMakeMontage(hc, [sliceList=all], [nCols], [backVal])
+% Synopsis
+%   img = imageMakeMontage(hc, [sliceList=all], [nCols], [backVal])
 %
-% hc:         x by y by sliceNum
-% sliceList:   slices to include. Defaults to all 
-% nCols:      number of columns in the image montage
-% backVal:    Background color
+% Inputs:
+%   hc:         x by y by sliceNum
+%   sliceList:  slices to include. Defaults to all 
+%   nCols:      number of columns in the image montage
+%   backVal:    Background color
 %
-% Examples:
-% [img,coords] = imageMakeMontage(hc);
-%  vcNewGraphWin; imagesc(img); colormap(gray); axis equal; axis off;
+% Returns:
+%   img:   The image montage
+%   coords:  Not sure yet
+%
+% Description
+%    This was designed for a hypercube data set. The slice list determines
+%    which wavelengths are used to create the montage.
+%
+%    The method can also be used for a collection of ordinary luminance
+%    images that are stacked into a hypercube.  See the example below (to
+%    be written).
 %
 % (c) Imageval, 2012
+% 
+% See also
+%  
+
+% Examples:
+%{
+ [img,coords] = imageMakeMontage(hc);
+ ieNewGraphWin; imagesc(img); 
+ colormap(gray); axis equal; axis off;
+%}
 
 %%
 if ieNotDefined('hc'), error('hypercube data required.'); end
