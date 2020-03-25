@@ -44,16 +44,22 @@ function [reflectances, sSamples, wave] = ieReflectanceSamples(sFiles,sSamples,w
 %
 % Copyright ImagEval Consultants, LLC, 2010.
 
-if ieNotDefined('sFiles'),
+if ieNotDefined('sFiles')
     % Make up a list for the user
     sFiles = cell(1,4);
+    sFiles{1} = which('MunsellSamples_Vhrel.mat');
+    sFiles{2} = which('Food_Vhrel.mat');
+    sFiles{3} = which('DupontPaintChip_Vhrel.mat');
+    sFiles{3} = which('HyspexSkinReflectance.mat');
+    %{
     sFiles{1} = fullfile(isetRootPath,'data','surfaces','reflectances','MunsellSamples_Vhrel.mat');
     sFiles{2} = fullfile(isetRootPath,'data','surfaces','reflectances','Food_Vhrel.mat');
     sFiles{3} = fullfile(isetRootPath,'data','surfaces','reflectances','DupontPaintChip_Vhrel.mat');
-    sFiles{4} = fullfile(isetRootPath,'data','surfaces','reflectances','HyspexSkinReflectance.mat');
+    sFiles{4} = fullfile(isetRootPath,'data','surfaces','reflectances','skin','HyspexSkinReflectance.mat');
+    %}
     if ~exist('sSamples','var') || isempty(sSamples)
         sSamples = [24 24 24 24];
-    end    
+    end
 end
 nFiles = length(sFiles);
 

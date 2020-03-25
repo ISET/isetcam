@@ -243,9 +243,14 @@ switch sceneName
         else
             
             % Default surface files
-            sFiles{1} = fullfile(isetRootPath,'data','surfaces','reflectances','MunsellSamples_Vhrel.mat');
-            sFiles{2} = fullfile(isetRootPath,'data','surfaces','reflectances','Food_Vhrel.mat');
-            sFiles{3} = fullfile(isetRootPath,'data','surfaces','reflectances','HyspexSkinReflectance.mat');
+            sFiles{1} = which('MunsellSamples_Vhrel.mat'); 
+            sFiles{2} = which('Food_Vhrel.mat');
+            sFiles{3} = which('HyspexSkinReflectance.mat');
+            %{
+              sFiles{1} = fullfile(isetRootPath,'data','surfaces','reflectances','MunsellSamples_Vhrel.mat');
+              sFiles{2} = fullfile(isetRootPath,'data','surfaces','reflectances','Food_Vhrel.mat');
+              sFiles{3} = fullfile(isetRootPath,'data','surfaces','reflectances','skin','HyspexSkinReflectance.mat');
+            %}
             
             % Surface samples from the files
             sSamples = [50 40 10];   % 100 samples, should be 10x10
@@ -635,7 +640,8 @@ function scene = sceneDefault(scene,illuminantType,patchSize,wave,surfaceFile)
 
 % These are the default surface reflectance values
 if ieNotDefined('surfaceFile')
-    surfaceFile = fullfile(isetRootPath,'data','surfaces','macbethChart.mat');
+    surfaceFile = which('macbethChart.mat');
+    % surfaceFile = fullfile(isetRootPath,'data','surfaces','macbethChart.mat');
 end
 
 % Create the scene variable and possibly set wavelength

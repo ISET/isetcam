@@ -22,18 +22,24 @@ for ii=1:numel(rFiles)
 end
 
 disp(rFilenames);
+for ii=1:numel(rFilenames)
+    fprintf('%d  %s\n',ii,rFilenames{ii});
+end
 
 %% Load in.  Try NC's new plotting method
 
 wave = 400:10:700;
-rr  = 3;
+rr  = [5,13];
 
-[reflectances,wave] = ieReadSpectra(rFilenames{rr},wave);
+reflectances = [];
+for jj = rr
+    tmp = ieReadSpectra(rFilenames{jj},wave);
+    reflectances = cat(2,tmp,reflectances);
+end
+
 ieNewGraphWin;
 plot(wave,reflectances); grid on;
 xlabel('Wave (nm)'); ylabel('Reflectance');
-thisFile = strsplit(rFilenames{rr},'_');
-title(thisFile{1});
 
 %% Measure the approximation with reduced dimensionality
 

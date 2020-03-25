@@ -80,7 +80,8 @@ if ieNotDefined('patchSize'), patchSize = 16;   end
 if ieNotDefined('patchList'), patchList = 1:24; end
 
 if ieNotDefined('surfaceFile')
-    surfaceFile = fullfile(isetRootPath,'data','surfaces','macbethChart.mat');
+    surfaceFile = which('macbethChart.mat');
+    % surfaceFile = fullfile(isetRootPath,'data','surfaces','macbethChart.mat');
 end
 
 %% Surface reflectance spectrum
