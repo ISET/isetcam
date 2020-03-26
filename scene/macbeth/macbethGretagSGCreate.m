@@ -1,7 +1,7 @@
 %% macbethGretagSGCreate.m 
 %
-%Create a scene data structure of the Gretag digital color chart SG
-%reflectance target from Francisco Imai and Andy Lin July 2010
+% Create a scene data structure of the Gretag digital color chart SG
+% reflectance target from Francisco Imai and Andy Lin July 2010
 %
 % The scene assumes a illuminant with equal energy at all wavelengths. 
 % The user can change the illuminant using the GUI
@@ -22,7 +22,7 @@
 % fN = ieSaveSpectralFile(spd_wave,spd_reflectance,comment,[]);
 
 %% Create the large Gretag chart
-fName = fullfile(isetRootPath,'data','surfaces','gretagDigitalColorSG.mat');
+fName = which('gretagDigitalColorSG.mat');
 [reflectance wave]= ieReadSpectra(fName);
 
 %% Create the chart

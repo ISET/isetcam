@@ -19,7 +19,8 @@ if ieNotDefined('illuminant'), illuminant = 'D65'; end
 
 % Read the MCC surface spectra and a target illuminant, say D65.  Combine them.
 %
-fName = fullfile(isetRootPath,'data','surfaces','esserChart');
+% fullfile(isetRootPath,'data','surfaces','esserChart');
+fName = which('esserChart.mat'); 
 surRef = ieReadSpectra(fName,wave);
 illEnergy = ieReadSpectra(illuminant,wave);
 illQuanta = Energy2Quanta(wave,illEnergy);

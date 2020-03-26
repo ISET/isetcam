@@ -24,7 +24,7 @@ function macbethChart = macbethReadReflectance(wave,patchList)
 if ieNotDefined('wave'), wave = (400:700); end
 if ieNotDefined('patchList'), patchList = 1:24; end
 
-fName = fullfile(isetRootPath,'data','surfaces','macbethChart.mat');
+fName = which('macbethChart.mat');
 macbethChart = ieReadSpectra(fName,wave);
 
 macbethChart = macbethChart(:,patchList);

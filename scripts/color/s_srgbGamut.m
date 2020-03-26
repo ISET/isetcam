@@ -35,11 +35,18 @@ adobergbxy = cat(2,adobergbxy,adobergbxy(:,1));
 
 %% Load many natural surfaces
 
+sFiles{1} = which('Nature_Vhrel.mat');
+sFiles{2} = which('Objects_Vhrel.mat');
+sFiles{3} = which('Food_Vhrel.mat');
+sFiles{4} = which('Clothes_Vhrel.mat');
+sFiles{5} = which('Hair_Vhrel.mat');
+%{
 sFiles{1} = fullfile(isetRootPath,'data','surfaces','reflectances','Nature_Vhrel.mat');
 sFiles{2} = fullfile(isetRootPath,'data','surfaces','reflectances','Objects_Vhrel.mat');
 sFiles{3} = fullfile(isetRootPath,'data','surfaces','reflectances','Food_Vhrel.mat');
 sFiles{4} = fullfile(isetRootPath,'data','surfaces','reflectances','Clothes_Vhrel.mat');
 sFiles{5} = fullfile(isetRootPath,'data','surfaces','reflectances','Hair_Vhrel.mat');
+%}
 
 % To see how many samples in each of the files, you can do this
 % foo = load(sFiles{5});
@@ -103,10 +110,17 @@ title('Natural surfaces yellow illuminant')
 %% Load all the synthetic surfaces
 
 clear sFiles
+sFiles{1} = which('DupontPaintChip_Vhrel.mat');
+sFiles{2} = which('MunsellSamples_Vhrel.mat');
+sFiles{3} = which('esserChart.mat');
+sFiles{4} = which('gretagDigitalColorSG.mat');
+
+%{
 sFiles{1} = fullfile(isetRootPath,'data','surfaces','reflectances','DupontPaintChip_Vhrel.mat');
 sFiles{2} = fullfile(isetRootPath,'data','surfaces','reflectances','MunsellSamples_Vhrel.mat');
 sFiles{3} = fullfile(isetRootPath,'data','surfaces','reflectances','esserChart.mat');
 sFiles{4} = fullfile(isetRootPath,'data','surfaces','reflectances','gretagDigitalColorSG.mat');
+%}
 sSamples  = {1:120,1:64,1:113,1:140};
 pSize = 32;
 grayFlag = 1;   % Add a gray strip, why not

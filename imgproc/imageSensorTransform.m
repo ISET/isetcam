@@ -51,10 +51,12 @@ end
 method = ieParamFormat(method);
 switch method
     case {'mccoptimized','mcc'}
-        fName  = fullfile(isetRootPath,'data','surfaces','macbethChart');
+        % fullfile(isetRootPath,'data','surfaces','macbethChart');
+        fName  = which('macbethChart.mat'); 
         surRef = ieReadSpectra(fName,wave);
     case {'esseroptimized','esser'}
-        fName = fullfile(isetRootPath,'data','surfaces','esserChart');
+        % fullfile(isetRootPath,'data','surfaces','esserChart');
+        fName = which('esserChart.mat');   
         surRef = ieReadSpectra(fName,wave);
     case {'multisurface'}
         surRef = ieReflectanceSamples([],[],wave);

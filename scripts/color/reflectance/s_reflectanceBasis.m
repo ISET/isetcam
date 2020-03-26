@@ -29,7 +29,7 @@ end
 %% Load in.  Try NC's new plotting method
 
 wave = 400:10:700;
-rr  = [5,13];
+rr  = [5,12];
 
 reflectances = [];
 for jj = rr
@@ -57,7 +57,7 @@ weights = weights(1:dim,:);
 approx = Basis*weights;
 plot(wave,approx,'--',wave,reflectances,':'); grid on;
 xlabel('Wave (nm)'); ylabel('Reflectance');
-title(thisFile{1});
+% title(thisFile{1});
 
 %%  
 
@@ -74,6 +74,8 @@ t = text(0.1,0.8,sprintf('DIM = %d\nRMSE = %.3f',dim, rmse),'FontSize',18);
 
 ieNewGraphWin;
 plot(wave,Basis,'linewidth',1); grid on;
+xaxisLine;   % Nice to see where 0 is.
+
 xlabel('Wave (nm)');
 ylabel('Reflectance');
 legend({'1','2','3'},'Location','best');

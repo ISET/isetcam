@@ -40,7 +40,8 @@ if ieNotDefined('wave'), wave = 400:10:700; end
 
 %% Read the MCC surface spectra and a target illuminant, say D65. 
 % Combine them. 
-fName  = fullfile(isetRootPath,'data','surfaces','macbethChart');
+% fullfile(isetRootPath,'data','surfaces','macbethChart');
+fName  = which('macbethChart.mat'); 
 surRef = ieReadSpectra(fName,wave);
 
 % The scale factor on the illuminant is not known.  Thus, the transform is

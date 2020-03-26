@@ -9,11 +9,11 @@ function p = identityLine(ax,threeD)
 %
 % (c) Stanford VISTA Team
 
+%%
 if ieNotDefined('ax'), ax = gca; end
 if ieNotDefined('threeD'), threeD = false; end
 
-% Minimum and maximum of axes
-
+%% Minimum and maximum of axes
 
 if threeD
     xlim = get(ax, 'xlim'); 
