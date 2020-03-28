@@ -90,24 +90,13 @@ https://physics.stackexchange.com/questions/116596/convert-units-for-spectral-ir
 The person multiplies b6000 by pi, not 2pi
 %}
 
-%%  Create a radiance and convert it to irradiance
-
-wave       = 300:700;
-radiance   = 10*blackbody(wave,9000);
-irradiance = radiance*pi;
-
-% ieNewGraphWin; plot(wave,irradiance);
-
-%% Run the UV hazard safety function
-
-exposureMinutes = humanUVSafety(irradiance,wave);
-fprintf('Safe exposure (hours) for 8 hour period is %.2f minutes\n',exposureMinutes);
-
 %% An example of a light measured in the lab
 
+wave = 300:770;
 fname = which('LED405nm.mat');
 radiance = ieReadSpectra(fname,wave);
 radiance = mean(radiance,2);
+lum405 = ieLuminanceFromEnergy(radiance,wave);
 plotRadiance(wave,radiance);
 irradiance = pi*radiance;
 
@@ -116,9 +105,7 @@ fprintf('Maximum exposure duration per eight hours:  %f (min)\n',exposureMinutes
 
 %% An example of the 385nm light in the OralEye camera
 
-%fname = which('LED385nm.mat');
-
-fname = which('LED405nm.mat');
+fname = which('LED385nm.mat');
 wave = 300:700;
 radiance = ieReadSpectra(fname,wave);
 radiance = mean(radiance,2);
@@ -126,53 +113,40 @@ plotRadiance(wave,radiance);
 
 irradiance = pi*radiance;
 exposureMinutes = humanUVSafety(irradiance,wave);
-
 fprintf('Maximum exposure duration per eight hours:  %f (min)\n',exposureMinutes)
 
 % Each exposure is very brief.  So you can safelty take this many exposures
-fprintf('For a 30 ms exposure, you can take %d exposures\n',round((exposureMinutes*60)/0.030));
+fprintf('For a 30 ms exposure, you can take %d exposures in an eight hour period.\n',round((exposureMinutes*60)/0.030));
 
-lum405 = ieLuminanceFromEnergy(radiance,wave);
-radiance2 = ieLuminance2Radiance(lum405,405,'bin width',dLambda/6); % watts/sr/nm/m2
-lst = (wave == 405);
+%%  The mean daylight we measured in California
 
-%% Start with a monochromatic light luminance
+wave       = 300:700;
+[radiance,wave] = ieReadSpectra('DaylightPsychBldg.mat',wave);
+plotRadiance(wave,radiance);
 
+% Convert radiance to irradiance
+irradiance = radiance*pi;
 
-% Suppose we know the luminance of a 380 nm light with a 10 nm bin width
-% lum = 31; wave = 385; dLambda = 3;
+exposureMinutes = humanUVSafety(irradiance,wave);
+fprintf('Safe exposure (hours) for 8 hour period is %.2f minutes (%.2f hours)\n',exposureMinutes,exposureMinutes/60);
 
-% We convert the luminance to energy
-dLambda = 4;
-radiance2 = ieLuminance2Radiance(lum405,405,'bin width',dLambda); % watts/sr/nm/m2
+%% If you only know the luminance of an LED (monochromatic) and its bandwidth (s.d.)
 
-irradiance = pi*radiance;
+lum = lum405;   % cd/m2, luminance of the 405 LED
+thisWave = 405; % nm, center wavelength of the LED
+bandwidth = 15; % nm, Gaussian standard deviation, FW at roughly 1/2 of the max
+[estRadiance,wave] = ieLuminance2Radiance(lum,thisWave,'sd',bandwidth); 
+plot(wave,radiance,'--',wave,estRadiance,'o');
+legend({'meas rad','est rad'})
 
+ieLuminanceFromEnergy(estRadiance,wave)
+ieLuminanceFromEnergy(radiance,wave)
+
+irradiance = pi*estRadiance;
 exposureMinutes = humanUVSafety(irradiance,wave);
 
 % Conver the hazard energy into maximum daily allowable exposure in minutes
 fprintf('Maximum exposure duration per eight hours:  %f (min)\n',exposureMinutes)
+fprintf('For a 30 ms exposure, you can take %d exposures in an eight hour period.\n',round((exposureMinutes*60)/0.030));
 
-
-%%  Plot the Actinic hazard function 
-
-ieNewGraphWin;
-mx = max(irradiance(:));
-dummy = ieScale(Actinic,1)*mx;
-plot(wave,irradiance,'k-',wave,dummy,'r--','linewidth',2);
-xlabel('Wave (nm)');
-ylabel('Irradiance (watts/m^2');
-grid on
-legend({'Irradiance','Normalized hazard'});
-
-%%  Near-UV hazard exposure limit
-%{
-This calculation has no weighting function.  
-
-For times less than 1000 sec, add up the total irradiance
-from 315-400 without any hazard function (Equation 4.3a).  Call this E_UVA.
-Multiply by time (seconds).  The product should be less than 10,000.
-
-For times exceeding 1000 sec, add up the total irradiance, divide by the
-time, and the value must be less than 10 (Equation 4.3b).
-%}
+%%

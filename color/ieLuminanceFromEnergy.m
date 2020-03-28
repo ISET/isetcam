@@ -77,6 +77,7 @@ end
 
 fName = fullfile(isetRootPath,'data','human','luminosity');
 V = ieReadSpectra(fName,wave);
+% ieNewGraphWin; plot(wave,V);  % The luminance curve
 
 % 683 is the standard factor for conversion when the energy are in Watts.
 % The wavelength difference accounts for the wavelength sampling.
@@ -85,8 +86,11 @@ else,                fprintf('%d nm bandwidth\n',binwidth);
 end
 
 % The luminance formula.  xwData and V are not always rows or columns, so
-% we use the dot() formula here rather than multiplying.
+% we use the dot() formula  rather than multiplying.
 lum = 683*dot(xwData,V) * binwidth;
+
+% Compare the luminance and energy data
+% ieNewGraphWin; semilogy(wave,V,'--',wave,xwData,'o'); 
 
 end
 

@@ -19,15 +19,27 @@ function exposureMinutes = humanUVSafety(irradiance,wave)
 %  The data for the Actinic safety function curves were taken from this
 %  paper
 %
-%  IEC 62471:2006 Photobiological Safety of Lamps and Lamp Systems. n.d.
-%  Accessed October 5, 2019. https://webstore.iec.ch/publication/7076 
-%  J.E. Farrell has a copy of this standard
+%    IEC 62471:2006 Photobiological Safety of Lamps and Lamp Systems. n.d.
+%    Accessed October 5, 2019. https://webstore.iec.ch/publication/7076 
+%    J.E. Farrell has a copy of this standard
 %
 % Notes:   Near UV is also called UV-A and is 315-400nm.
 %
 % See also
 %   s_humanSafetyUVExposure
 
+%%  Near-UV hazard exposure limit
+%{
+This calculation has no weighting function.  
+
+For times less than 1000 sec, add up the total irradiance
+from 315-400 without any hazard function (Equation 4.3a).  Call this E_UVA.
+Multiply by time (seconds).  The product should be less than 10,000.
+
+For times exceeding 1000 sec, add up the total irradiance, divide by the
+time, and the value must be less than 10 (Equation 4.3b).
+
+%}
 
 %% Check inputs
 
@@ -40,6 +52,7 @@ end
 
 fname = which('Actinic.mat');
 Actinic = ieReadSpectra(fname,wave);
+% semilogy(wave,Actinic); xlabel('Wave'); grid on; 
 
 %% The UV hazard safety formula
 %   
