@@ -62,10 +62,10 @@ switch lower(targetSpace)
         % specific surface reflectance target under some illuminant.
         
         % Make case correct for filename
-        if     isequal(lower(targetSpace),'xyz'),     targetSpace = 'XYZ'; 
+        if     isequal(lower(targetSpace),'xyz'),     targetSpace = 'xyz'; 
         elseif isequal(lower(targetSpace),'stockman'),targetSpace = 'stockman';
         end
-        targetSpace = sprintf('%sQuanta.mat',targetSpace);
+        targetSpace = which(sprintf('%sQuanta.mat',targetSpace));
         targetQE = ieReadSpectra(targetSpace,wave);
         
         % This is where the transform is calculated
