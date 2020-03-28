@@ -6,11 +6,11 @@ function lum = ieLuminanceFromEnergy(energy,wave,varargin)
 %    lum = ieLuminanceFromEnergy(energy,wave,varargin)
 %
 % Input
-%   energy:   watts/sr/nm/m2
-%   wave:     Wavelength samples
+%   energy:   watts/sr/nm/m2  (a vector)
+%   wave:     Wavelength samples (a vector)
 %
 % Optional key/val pairs
-%  bin width:  Wavelength bin width when there is a monochromatic inut
+%  bin width:  Wavelength bin width when there is a monochromatic input
 %              (10nm default)
 %
 % Returns
@@ -84,8 +84,9 @@ if numel(wave) > 1,  binwidth = wave(2) - wave(1);
 else,                fprintf('%d nm bandwidth\n',binwidth);
 end
 
-% The luminance formula
-lum = 683*(xwData*V) * binwidth;
+% The luminance formula.  xwData and V are not always rows or columns, so
+% we use the dot() formula here rather than multiplying.
+lum = 683*dot(xwData,V) * binwidth;
 
 end
 

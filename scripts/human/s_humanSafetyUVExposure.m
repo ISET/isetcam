@@ -1,9 +1,9 @@
 %% s_humanSafetyUVExposure
 %
-% Calculate the safety of UV lights for exposure to the eye and to skin.
+% Calculate the safety of UV lights for eye and skin exposure.
 %
-% The safety function curves used in these calculations are stored in
-% data/human/safetyStandard. 
+% The safety function curves used in this and related calculations are
+% stored in data/human/safetyStandard.
 %
 %   Actinic         - UV hazard for skin and eye safety The limits for
 %                     exposure to ultraviolet radiation incident upon the
@@ -31,12 +31,24 @@
 %
 %      Irradiance = Radiance * pi
 %
-% This was used for the Oral Eye project, but we can not expect that the
-% repository will always be on the path.  So for this test we commented out
-% that part of the script
-%
 % See also
-%   Oral eye project
+% 
+
+%{ 
+% Safety Notes
+%
+% Plot the three different functions and explain them here
+% Make sure the formulae for hazards are implemented for
+%
+%    Actinic UV hazard exposure limit skin and eye (4.3.1)
+%    Near UV hazard limit for the eye (4.3.2)
+%    Retinal blue light hazard exposure (4.3.3)
+%    Retinal blue light small source (4.3.4)
+%    Retinal thermal hazard (4.3.5)
+%    Retinal theermal hazard for weak visual stimulus (4.3.6)
+%    Infrared exposure for the eye (4.3.7)
+%    Thermal hazard for the skin (4.3.8)
+%}
 
 %{
 We checked two ways if radiance -> irradiance is multiplied by 2pi or 1pi
@@ -78,119 +90,68 @@ https://physics.stackexchange.com/questions/116596/convert-units-for-spectral-ir
 The person multiplies b6000 by pi, not 2pi
 %}
 
-%% TODO
-%
-% Plot the three different functions and explain them here
-% Make sure the formulae for hazards are implemented for
-%
-%    Actinic UV hazard exposure limit skin and eye (4.3.1)
-%    Near UV hazard limit for the eye (4.3.2)
-%    Retinal blue light hazard exposure (4.3.3)
-%    Retinal blue light small source (4.3.4)
-%    Retinal thermal hazard (4.3.5)
-%    Retinal theermal hazard for weak visual stimulus (4.3.6)
-%    Infrared exposure for the eye (4.3.7)
-%    Thermal hazard for the skin (4.3.8)
-%
-
 %%  Create a radiance and convert it to irradiance
 
 wave       = 300:700;
-radiance   = blackbody(wave,3000);
+radiance   = 10*blackbody(wave,9000);
 irradiance = radiance*pi;
 
 % ieNewGraphWin; plot(wave,irradiance);
 
-%%  Load the safety function
+%% Run the UV hazard safety function
 
-fname = which('Actinic.mat');
-Actinic = ieReadSpectra(fname,wave);
-
-% The formula is
-%
-%    sum (Actinic(lambda,t) irradiance(Lambda)) dLambda dTime
-%
-% Our stimuli are constant over time, so this simplifies to
-%
-%    T * sum(Actinic(lambda) irradiance(lambda) dLambda
-%
-% where T is the total time.  Follow the units this way:
-%
-%     Irradiance units: Watts/m2/nm
-%     Watts = Joules/sec
-%  
-%     Watts/m2/nm * (nm * sec)         % Irradiance summed over nm and time
-%     Joules/sec/m2/nm * (nm * sec)    
-%     Joules/m2                        % Becomes Joules/area
-%
-dLambda  = wave(2) - wave(1);
-duration = 1;                  % Seconds
-hazardEnergy = dot(Actinic,irradiance) * dLambda * duration;
-
-% This is the formula from the standard to compute the maximum daily
-% allowable exposure 
-fprintf('Maximum exposure duration per eight hours:  %f (min)\n',(30/hazardEnergy)/60)
+exposureMinutes = humanUVSafety(irradiance,wave);
+fprintf('Safe exposure (hours) for 8 hour period is %.2f minutes\n',exposureMinutes);
 
 %% An example of a light measured in the lab
 
-fname = fullfile(isetRootPath,'local','blueLedlight30.mat');
-load(fname,'wave','radiance');
+fname = which('LED405nm.mat');
+radiance = ieReadSpectra(fname,wave);
 radiance = mean(radiance,2);
+plotRadiance(wave,radiance);
 irradiance = pi*radiance;
 
-fname = which('Actinic.mat');
-Actinic = ieReadSpectra(fname,wave);
-dLambda  = wave(2) - wave(1);
-duration = 1;                  % Seconds
-hazardEnergy = dot(Actinic,irradiance) * dLambda * duration;
-%{
-The maximum permissible exposure time per 8 hours for ultraviolet radiation
-incident upon the unprotected eye or skin shall be computed by:
-
-t_max = 30/E_s   (seconds) (Equation 4.2)
-
-E_s is the effective ultraviolet irradiance (W/m^2).  The formula for E_s
-is defined in Equation 4.1.  It is the inner product of the Actinic
-function and the irradiance function, accounting for time and wavelength
-sampling.
-
-%}
-fprintf('Maximum exposure duration per eight hours:  %f (min)\n',(30/hazardEnergy)/60)
+exposureMinutes = humanUVSafety(irradiance,wave);
+fprintf('Maximum exposure duration per eight hours:  %f (min)\n',exposureMinutes)
 
 %% An example of the 385nm light in the OralEye camera
 
-%{
-fname = fullfile(oreyeRootPath,'data','lights','OralEyeBlueLight.mat');
-load(fname,'wave','radiance');
-radiance = mean(radiance,2);
-irradiance = pi*radiance;
+%fname = which('LED385nm.mat');
 
-fname = which('Actinic.mat');
-Actinic = ieReadSpectra(fname,wave);
-dLambda  = wave(2) - wave(1);
-duration = 1;                  % Seconds
-hazardEnergy = dot(Actinic,irradiance) * dLambda * duration;
-fprintf('Maximum exposure duration per eight hours:  %f (min)\n',(30/hazardEnergy)/60)
-%}
+fname = which('LED405nm.mat');
+wave = 300:700;
+radiance = ieReadSpectra(fname,wave);
+radiance = mean(radiance,2);
+plotRadiance(wave,radiance);
+
+irradiance = pi*radiance;
+exposureMinutes = humanUVSafety(irradiance,wave);
+
+fprintf('Maximum exposure duration per eight hours:  %f (min)\n',exposureMinutes)
+
+% Each exposure is very brief.  So you can safelty take this many exposures
+fprintf('For a 30 ms exposure, you can take %d exposures\n',round((exposureMinutes*60)/0.030));
+
+lum405 = ieLuminanceFromEnergy(radiance,wave);
+radiance2 = ieLuminance2Radiance(lum405,405,'bin width',dLambda/6); % watts/sr/nm/m2
+lst = (wave == 405);
 
 %% Start with a monochromatic light luminance
 
+
 % Suppose we know the luminance of a 380 nm light with a 10 nm bin width
-lum = 10; wave = 380; dLambda = 10;
+% lum = 31; wave = 385; dLambda = 3;
 
 % We convert the luminance to energy
-radiance = ieLuminance2Radiance(lum,405,'bin width',dLambda); % watts/sr/nm/m2
+dLambda = 4;
+radiance2 = ieLuminance2Radiance(lum405,405,'bin width',dLambda); % watts/sr/nm/m2
 
-% Now read the hazard function (Actinic)
-Actinic = ieReadSpectra(fname,wave);
+irradiance = pi*radiance;
 
-% Convert radiance to irradiance and calculate the hazard for 1 sec
-% duration
-duration = 1;                  % Seconds
-hazardEnergy = dot(Actinic,radiance*pi) * dLambda * duration;
+exposureMinutes = humanUVSafety(irradiance,wave);
 
 % Conver the hazard energy into maximum daily allowable exposure in minutes
-fprintf('Maximum exposure duration per eight hours:  %f (min)\n',(30/hazardEnergy)/60)
+fprintf('Maximum exposure duration per eight hours:  %f (min)\n',exposureMinutes)
 
 
 %%  Plot the Actinic hazard function 
