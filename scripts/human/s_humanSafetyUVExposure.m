@@ -34,71 +34,18 @@
 % See also
 % 
 
-%{ 
-% Safety Notes
-%
-% Plot the three different functions and explain them here
-% Make sure the formulae for hazards are implemented for
-%
-%    Actinic UV hazard exposure limit skin and eye (4.3.1)
-%    Near UV hazard limit for the eye (4.3.2)
-%    Retinal blue light hazard exposure (4.3.3)
-%    Retinal blue light small source (4.3.4)
-%    Retinal thermal hazard (4.3.5)
-%    Retinal theermal hazard for weak visual stimulus (4.3.6)
-%    Infrared exposure for the eye (4.3.7)
-%    Thermal hazard for the skin (4.3.8)
-%}
-
-%{
-We checked two ways if radiance -> irradiance is multiplied by 2pi or 1pi
-
-From: Peter B. Catrysse <pcatryss@stanford.edu>
-Sent: Wednesday, August 21, 2019 11:02 AM
-To: Joyce Eileen Farrell <jefarrel@stanford.edu>
-Subject: RE: spectroradiometric measurements
-
-Hello Joyce,
-
- It is definitely pi. 
- There is 2*pi solid angle for the hemisphere, but when you integrate 
- you end up getting pi as factor.
-
-See you next week,
-
-Peter
-
-From: Joyce Eileen Farrell [mailto:jefarrel@stanford.edu] 
-Sent: Tuesday, August 20, 2019 10:58 PM
-To: Peter Bert Catrysse <pcatryss@stanford.edu>
-Subject: Re: spectroradiometric measurements
-
-Hi Peter,
-
-Thanks so very much for giving me the conversion from radiance to
-irradiance. 
-
-is it 
-E = pi*L/R (where E is irradiance, L is radiance and R is reflectance)
-or
-E=2pi*L/R
-
-See also this exchange
-
-https://physics.stackexchange.com/questions/116596/convert-units-for-spectral-irradiance
-
-The person multiplies b6000 by pi, not 2pi
-%}
+%% General parameters
+wave = 300:700;
 
 %% An example of a light measured in the lab
-
-wave = 300:770;
 fname = which('LED405nm.mat');
 radiance = ieReadSpectra(fname,wave);
-radiance = mean(radiance,2);
-lum405 = ieLuminanceFromEnergy(radiance,wave);
-plotRadiance(wave,radiance);
-irradiance = pi*radiance;
+ledRadiance = mean(radiance,2);
+ledRadiance(wave > 500) = 0;  % Only noise was measured above 500 nm
+
+lum405 = ieLuminanceFromEnergy(ledRadiance,wave);
+plotRadiance(wave,ledRadiance);
+irradiance = pi*ledRadiance;
 
 exposureMinutes = humanUVSafety(irradiance,wave);
 fprintf('Maximum exposure duration per eight hours:  %f (min)\n',exposureMinutes)
@@ -106,7 +53,6 @@ fprintf('Maximum exposure duration per eight hours:  %f (min)\n',exposureMinutes
 %% An example of the 385nm light in the OralEye camera
 
 fname = which('LED385nm.mat');
-wave = 300:700;
 radiance = ieReadSpectra(fname,wave);
 radiance = mean(radiance,2);
 plotRadiance(wave,radiance);
@@ -120,7 +66,6 @@ fprintf('For a 30 ms exposure, you can take %d exposures in an eight hour period
 
 %%  The mean daylight we measured in California
 
-wave       = 300:700;
 [radiance,wave] = ieReadSpectra('DaylightPsychBldg.mat',wave);
 plotRadiance(wave,radiance);
 
@@ -132,21 +77,71 @@ fprintf('Safe exposure (hours) for 8 hour period is %.2f minutes (%.2f hours)\n'
 
 %% If you only know the luminance of an LED (monochromatic) and its bandwidth (s.d.)
 
-lum = lum405;   % cd/m2, luminance of the 405 LED
-thisWave = 405; % nm, center wavelength of the LED
-bandwidth = 15; % nm, Gaussian standard deviation, FW at roughly 1/2 of the max
-[estRadiance,wave] = ieLuminance2Radiance(lum,thisWave,'sd',bandwidth); 
-plot(wave,radiance,'--',wave,estRadiance,'o');
-legend({'meas rad','est rad'})
+% The band width matters a lot for matching the curves.  The luminance
+% always matches correctly.
+lum       = lum405;  % cd/m2, luminance of the 405 LED
+thisWave  = 405;     % nm, center wavelength of the LED
+bandwidth = 12;      % nm, Gaussian standard deviation, FW at roughly 1/2 of the max
+[estRadiance,estWave] = ieLuminance2Radiance(lum,thisWave,'sd',bandwidth); 
+plotRadiance(estWave,estRadiance);
 
-ieLuminanceFromEnergy(estRadiance,wave)
-ieLuminanceFromEnergy(radiance,wave)
+% Check the luminance match
+assert(ieLuminanceFromEnergy(estRadiance,estWave) - lum405 < 1e-10)
 
+% Compare the curves
+ieNewGraphWin;
+plot(estWave,estRadiance,'o',wave,ledRadiance,'x');
+grid on; xlabel('Wave'); ylabel('Energy');
+legend({'estimated','measured'});
+
+% Calculate the safety
 irradiance = pi*estRadiance;
-exposureMinutes = humanUVSafety(irradiance,wave);
-
-% Conver the hazard energy into maximum daily allowable exposure in minutes
+exposureMinutes = humanUVSafety(irradiance,estWave);
 fprintf('Maximum exposure duration per eight hours:  %f (min)\n',exposureMinutes)
 fprintf('For a 30 ms exposure, you can take %d exposures in an eight hour period.\n',round((exposureMinutes*60)/0.030));
+
+%% Now check the other safety metric from Section 4.3.2
+
+fname = which('LED385nm.mat');
+radiance = ieReadSpectra(fname,wave);
+radiance = mean(radiance,2);
+
+irradiance = pi*radiance;
+duration = 8;   % Secs
+safe = humanUVSafety(irradiance,wave,'method','eye','duration',duration);
+
+if safe
+    fprintf('Safe at a duration of %d secs\n',duration);
+else
+    fprintf('Not safe at a duration of %d secs\n',duration);
+end
+
+%%  Blue light hazard calculation
+fname = which('LED405nm.mat');
+radiance = ieReadSpectra(fname,wave);
+radiance = mean(radiance,2);
+
+duration = 8*60*60;   % Secs
+safe = humanUVSafety(radiance,wave,'method','blue hazard','duration',duration);
+
+if safe
+    fprintf('Blue hazard: Safe at a duration of %d secs\n',duration);
+else
+    fprintf('Blue hazard: Not safe at a duration of %d secs\n',duration);
+end
+
+%% This is an extremely bright blackbody with a lot of short wave energy
+
+radiance = blackbody(wave,9000)*1e4;
+plotRadiance(wave,radiance);
+
+duration = 1000;   % Secs
+safe = humanUVSafety(radiance,wave,'method','blue hazard','duration',duration);
+
+if safe
+    fprintf('Blue hazard: Safe at a duration of %d secs\n',duration);
+else
+    fprintf('Blue hazard: Not safe at a duration of %d secs\n',duration);
+end
 
 %%
