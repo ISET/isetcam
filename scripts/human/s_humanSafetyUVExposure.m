@@ -120,6 +120,7 @@ end
 fname = which('LED405nm.mat');
 radiance = ieReadSpectra(fname,wave);
 radiance = mean(radiance,2);
+plotRadiance(wave,radiance);
 
 duration = 8*60*60;   % Secs
 safe = humanUVSafety(radiance,wave,'method','blue hazard','duration',duration);
