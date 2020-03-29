@@ -49,7 +49,13 @@ switch onoff
                 % Always show the data scaled
                 cornerPoints = sensorGet(obj,'mcc corner points');
                 a = get(sensorImageWindow,'CurrentAxes');
-                g = ieSessionGet('sensor guidata'); set(g.btnDisplayScale,'Value',1);
+                g = ieSessionGet('sensor guidata'); 
+                set(g.btnDisplayScale,'Value',1);
+            case 'SCENE'
+                cornerPoints = sceneGet(obj,'mcc corner points');
+                a = get(sceneWindow,'CurrentAxes');
+                % g = ieSessionGet('sensor guidata'); 
+                % set(g.btnDisplayScale,'Value',1);
             otherwise
                 error('Unknown object type %s',obj.type);
         end
@@ -84,6 +90,9 @@ switch onoff
                 obj = ipSet(obj,'mccRectHandles',rectHandles);
             case {'isa','sensor'}
                 obj = sensorSet(obj,'mccRectHandles',rectHandles);
+            case 'scene'
+                obj = sensorSet(obj,'mccRectHandles',rectHandles);
+
         end
         vcReplaceObject(obj);
     

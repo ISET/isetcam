@@ -108,7 +108,14 @@ switch lower(obj.type)
         if ieNotDefined('cornerPoints')
             cornerPoints = sensorGet(obj,'mcc corner points');
         end
-        
+    case {'scene'}
+        handles = ieSessionGet('scene Window Handles');
+        dataType = 'photons';
+        obj = sceneSet(obj,'mcc Rect Handles',[]);
+        vcReplaceObject(obj);
+        if ieNotDefined('cornerPoints')
+            cornerPoints = sensorGet(obj,'mcc corner points');
+        end
     otherwise
         error('Unknown object type');
 end
@@ -126,6 +133,8 @@ switch vcEquivalentObjtype(obj.type)
         obj = ipSet(obj,'mcc corner points',cornerPoints);
     case 'ISA'
         obj = sensorSet(obj,'mcc corner points',cornerPoints);
+    case 'SCENE'
+        obj = sceneSet(obj,'mcc corner points',cornerPoints);
 end
 %
 

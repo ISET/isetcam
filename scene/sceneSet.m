@@ -410,6 +410,22 @@ switch parm
     case {'illuminantspectrum'}
         scene.illuminant.spectrum = val;
         
+    case {'rect'}
+        % scene = sceneSet(scene,'rect',[x y h w]);
+        % An ROI rect.
+        scene.rect = val;
+    case {'mccrecthandles'}
+        if checkfields(scene,'mccRectHandles')
+            if ~isempty(scene.mccRectHandles)
+                try delete(scene.mccRectHandles(:));
+                catch
+                end
+            end
+        end
+        scene.mccRectHandles = val;
+    case {'mcccornerpoints'}
+        scene.mccCornerPoints = val;
+
     otherwise
         disp(['Unknown sceneSet parameter: ',parm]);
 end

@@ -767,6 +767,13 @@ switch parm
         else, val = str2double(get(W.editGamma,'string'));
         end
         
+        % MCC related regions of interest and handles.  Works with
+        % macbethSelect
+    case {'mccrecthandles'}
+        if checkfields(scene,'mccRectHandles'), val = scene.mccRectHandles; end
+    case {'mcccornerpoints'}
+        if checkfields(scene,'mccCornerPoints'), val = scene.mccCornerPoints; end
+
     otherwise
         disp(['Unknown parameter: ',parm]);
         
