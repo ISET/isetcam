@@ -32,42 +32,42 @@ function mRGB = chartPatchData(obj,mLocs,delta,fullData,dataType)
 % Copyright ImagEval Consultants, LLC, 2011.
 %
 % See Also:  
-%   chartROI, chartCornerpoints
+%   chartROI, chartCornerpoints, macbethSelect
 
 % Example:
 %{
-wave = 400:10:700;  radiance = rand(length(wave),50)*10^16;
-scene = sceneRadianceChart(wave, radiance,'patch size',25,'rowcol',[5,10]);
-sceneWindow(scene);
-
-% Define the corner points
-wholeChart = true;
-cp = chartCornerpoints(scene,wholeChart);
-
-% Create the rects
-chartP = sceneGet(scene,'chart parameters');
-sFactor = 0.5;
-[rects, mLocs, pSize] = chartRectangles(cp,chartP.rowcol(1),chartP.rowcol(2), sFactor);
-
-% Plot the rects
-rectHandles = chartRectsDraw(scene,rects);
-
-delete(rectHandles);
-
-% When fullData is true, each cell has the spectra from a patch
-fullData = true;
-mRGB = chartPatchData(scene,mLocs,pSize(1)*0.8,fullData);
-theseData = mRGB{1};
-% For the synthetic scene all the points are the same.
-vcNewGraphWin; plot(wave,theseData');  
-
-% When fullData is false, the rows are the mean spectra from each of the
-% different patches.
-fullData = false;
-mRGB = chartPatchData(scene,mLocs,pSize(1)*0.8,fullData);
-vcNewGraphWin; plot(wave,mRGB')
-
-
+% Fix this
+%
+% wave = 400:10:700;  radiance = rand(length(wave),50)*10^16;
+% scene = sceneRadianceChart(wave, radiance,'patch size',25,'rowcol',[5,10]);
+% sceneWindow(scene);
+% 
+% % Define the corner points
+% wholeChart = true;
+% cp = chartCornerpoints(scene,wholeChart);
+% 
+% % Create the rects
+% chartP = sceneGet(scene,'chart parameters');
+% sFactor = 0.5;
+% [rects, mLocs, pSize] = chartRectangles(cp,chartP.rowcol(1),chartP.rowcol(2), sFactor);
+% 
+% % Plot the rects
+% rectHandles = chartRectsDraw(scene,rects);
+% 
+% delete(rectHandles);
+% 
+% % When fullData is true, each cell has the spectra from a patch
+% fullData = true;
+% mRGB = chartPatchData(scene,mLocs,pSize(1)*0.8,fullData);
+% theseData = mRGB{1};
+% % For the synthetic scene all the points are the same.
+% vcNewGraphWin; plot(wave,theseData');  
+% 
+% % When fullData is false, the rows are the mean spectra from each of the
+% % different patches.
+% fullData = false;
+% mRGB = chartPatchData(scene,mLocs,pSize(1)*0.8,fullData);
+% vcNewGraphWin; plot(wave,mRGB')
 %}
 
 %% Parameter validation
