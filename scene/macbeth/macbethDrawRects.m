@@ -5,20 +5,19 @@ function obj = macbethDrawRects(obj,onoff)
 %   obj = macbethDrawRects(obj,[onoff])
 %
 % Description:
-%  Outline the center of each MCC patch used for analysis. This routine
-%  works for vcimages (ip) and sensors.  It might work for simple Matlab
-%  figures, too.
+%  Draw rectangles in each MCC patch as defined by the corner points of the
+%  scene object.
 %
 % Inputs:
-%   obj:    An ip or sensor structure.  The object should contain a the mcc
-%           corner points.
+%   obj:    An ip, sensor or scene structure.  The object should contain a
+%           the mcc corner points.
 %   onoff:  
 %    on:   Create the mcc rects, display and store them, refresh window
 %    off:  Delete any existing mcc rects in the object, refresh window
 %
 % Outputs:
-%    obj:   The rectangle handles (mccRectHandles) are returned, attached
-%           to the object 
+%    obj:   The rectangle handles (mccRectHandles) are attached to the
+%           returned object 
 %
 % Copyright ImagEval Consultants, LLC, 2011.
 %
@@ -84,15 +83,13 @@ switch onoff
         end
         
         % Store rectHandles
-        % A refresh will delete them also, apparently.
         switch lower(obj.type)
             case 'vcimage'
                 obj = ipSet(obj,'mccRectHandles',rectHandles);
             case {'isa','sensor'}
                 obj = sensorSet(obj,'mccRectHandles',rectHandles);
             case 'scene'
-                obj = sensorSet(obj,'mccRectHandles',rectHandles);
-
+                obj = sceneSet(obj,'mccRectHandles',rectHandles);
         end
         vcReplaceObject(obj);
     
@@ -112,6 +109,13 @@ switch onoff
                 obj = sensorSet(obj,'mccRectHandles',[]);
                 vcReplaceObject(obj);
                 sensorImageWindow;
+                
+            case {'scene'}
+                rects = sceneGet(obj,'mcc Rect Handles');
+                if ~isempty(rects), delete(rects); end
+                obj = sceneSet(obj,'mccRectHandles',[]);
+                vcReplaceObject(obj);
+                sceneWindow;
         end
         
     otherwise

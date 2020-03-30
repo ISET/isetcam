@@ -23,7 +23,7 @@ function varargout = sceneWindow(varargin)
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
-% Last Modified by GUIDE v2.5 16-Nov-2016 21:15:32
+% Last Modified by GUIDE v2.5 29-Mar-2020 17:06:30
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -640,16 +640,22 @@ sceneRefresh(hObject, eventdata, handles);
 
 return;
 
-
 % --------------------------------------------------------------------
 function menuFileRef_Callback(hObject, eventdata, handles)
+% Possible deprecated for the call below:  Refresh callback.
 sceneRefresh(hObject, eventdata, handles);
 return;
 
 % --------------------------------------------------------------------
 function sceneRefresh(hObject, eventdata, handles)
-% Refresh callback.
+% Possibly deprecated for the call below:  Refresh callback.
 sceneSetEditsAndButtons(handles)
+return;
+
+% --------------------------------------------------------------------
+function menuFileRefresh_Callback(hObject, eventdata, handles)
+% Menu:  File | Refresh .
+sceneRefresh(hObject, eventdata, handles);
 return;
 
 % --------------------------------------------------------------------
@@ -670,48 +676,39 @@ return;
 
 % --------------------------------------------------------------------
 function menuSceneMacbethTungsten_Callback(hObject, eventdata, handles)
-
-% val = vcNewObjectValue('SCENE');
+% Scene | Macbeth | Tungsten
 scene =  sceneCreate('macbethTungsten');
 ieAddObject(scene);
 sceneRefresh(hObject, eventdata, handles);
-
 return;
 
 % --------------------------------------------------------------------
 function menuSceneMacbethD50_Callback(hObject, eventdata, handles)
-
-% val = vcNewObjectValue('SCENE');
+% Scene | Macbeth | D 50
 scene =  sceneCreate('macbethD50');
 ieAddObject(scene);
 sceneRefresh(hObject, eventdata, handles);
-
 return;
 
 % --------------------------------------------------------------------
 function menuSceneMacbethFluorescent_Callback(hObject, eventdata, handles)
-
-% val = vcNewObjectValue('SCENE');
+% Scene | Macbeth | Fluorescent
 scene =  sceneCreate('macbethFluorescent');
 ieAddObject(scene);
 sceneRefresh(hObject, eventdata, handles);
-
 return;
 
 % --------------------------------------------------------------------
 function menuSceneMacbethD65_Callback(hObject, eventdata, handles)
-
-% val = vcNewObjectValue('SCENE');
+% Scene | Macbeth | D65
 scene =  sceneCreate('macbethD65');
 ieAddObject(scene);
 sceneRefresh(hObject, eventdata, handles);
-
 return;
 
 % --------------------------------------------------------------------
 function menuSceneMacbethVisIR_Callback(hObject, eventdata, handles)
 % Scene | Macbeth Charts | Visible-InfraRed
-
 wave = ieReadNumber('Enter waves','380:4:1068','%.0f');
 scene =  sceneCreate('macbethEE_IR',[],wave);
 ieAddObject(scene);
@@ -721,13 +718,12 @@ return;
 
 % --------------------------------------------------------------------
 function menuSceneLstar_Callback(hObject, eventdata, handles)
-% Create vertical bars with equal L* steps
-
+% Scene | Macbeth Charts | L* chart
+% Creates vertical bars with equal L* steps
 scene =  sceneCreate('lstar');
 ieAddObject(scene);
 sceneRefresh(hObject, eventdata, handles);
-
-return
+return;
 
 % --------------------------------------------------------------------
 function menuSceneFile_Callback(hObject, eventdata, handles)
@@ -753,7 +749,6 @@ ieAddObject(scene);
 sceneRefresh(hObject, eventdata, handles);
 return;
 
-
 % --------------------------------------------------------------------
 function menuFileChooseFileMono_Callback(hObject, eventdata, handles)
 % Scene | Choose | Monochrome
@@ -763,7 +758,6 @@ if isempty(scene), return; end
 ieAddObject(scene);
 sceneRefresh(hObject, eventdata, handles);
 return;
-
 
 % --------------------------------------------------------------------
 function menuScenesTest_Callback(hObject, eventdata, handles)
@@ -781,7 +775,6 @@ return;
 
 % --------------------------------------------------------------------
 function menuScenesSweep_Callback(hObject, eventdata, handles)
-val = vcNewObjectValue('SCENE');
 scene = sceneCreate('sweep');
 ieAddObject(scene);
 sceneRefresh(hObject, eventdata, handles);
@@ -817,7 +810,6 @@ return;
 % --------------------------------------------------------------------
 function menuScenePointArray_Callback(hObject, eventdata, handles)
 % Scene | Patterns | PointArray (D65)
-
 scene = sceneCreate('pointarray',[],[],'d65');
 ieAddObject(scene);
 sceneRefresh(hObject, eventdata, handles);
@@ -1231,13 +1223,6 @@ function menuHelpProgGuide_Callback(hObject, eventdata, handles)
 % Help | ISET functions (online)
 ieManualViewer('iset functions');
 return
-
-
-% --------------------------------------------------------------------
-function menuFileRefresh_Callback(hObject, eventdata, handles)
-% hObject    handle to menuFileRefresh (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
 
 

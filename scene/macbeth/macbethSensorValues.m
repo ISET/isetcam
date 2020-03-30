@@ -23,8 +23,6 @@ function [sensorImg,sensorSD,cornerPoints] = macbethSensorValues(sensor,showSele
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
-%TODO:  showSelection is not working any more.
-
 if ieNotDefined('sensor'), sensor = vcGetObject('sensor'); end
 if ieNotDefined('showSelection'), showSelection = true; end
 fullData = true;
@@ -37,7 +35,9 @@ end
 
 nSensors   = size(fullRGB{1},2);
 sensorImg  = zeros(24,nSensors);
-if nargout == 2, sensorSD = zeros(24,nSensors); else sensorSD = []; end
+if nargout == 2, sensorSD = zeros(24,nSensors); 
+else, sensorSD = []; 
+end
 
 % Fix up the NaNs for the sensor data
 for ii=1:24  % For each chip
@@ -49,4 +49,4 @@ for ii=1:24  % For each chip
     end
 end
 
-return;
+end
