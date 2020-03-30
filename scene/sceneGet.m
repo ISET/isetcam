@@ -327,7 +327,7 @@ switch parm
         % Return the reflectance in a region of interest
         % XW format
         if isempty(varargin), error('ROI required');
-        else roiLocs = varargin{1};
+        else, roiLocs = varargin{1};
         end
         
         sPhotons = vcGetROIData(scene,roiLocs,'photons');

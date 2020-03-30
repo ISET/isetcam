@@ -53,7 +53,8 @@ function [mRGB, mLocs, pSize, cornerPoints] = ...
 %   The 4th entry is the white patch.
 %   The gray series is 4:4:24
 %
-% Copyright ImagEval Consultants, LLC, 2005.
+% See examples:
+%  ieExamplesPrint('macbethSelect');
 %
 % See also:  
 %   macbethSensorValues, macbethRectangles, macbethROIs, chartRectangles,
@@ -157,7 +158,7 @@ end
 %% Deal with the interactive part
 
 queryUser = false;
-if isempty('cornerPoints')
+if isempty(cornerPoints)
     queryUser = true;
     % The user didn't send in any corner points, and there weren't any in
     % the structure, then we have the user select them in the window.
