@@ -578,7 +578,7 @@ end
 
 if exist('udata','var'), set(gcf,'userdata',udata); end
 
-return;
+end
 
 % - Brought into this file from a separate function
 function udata = plotOIIrradiance(oi,dataType,roiLocs)
@@ -634,7 +634,7 @@ else
     end
 end
 
-return;
+end
 
 % Moved into oiPlot June, 2012.
 function uData = plotOTF(oi,pType,varargin)
@@ -680,7 +680,7 @@ switch lower(pType)
         % plotOTF(oi,'otf',thisWave,nSamp);
         % OTF at a selected wavelength.
         units = 'mm';  % Units are cycles/mm
-        if strfind(pType,'550'),        thisWave = 550;
+        if ieContains(pType,'550'),        thisWave = 550;
         elseif length(varargin) >=1,    thisWave = varargin{1};
         else, thisWave = ieReadNumber('Select OTF wavelength (nm)',550,'%.0f');
         end
@@ -747,11 +747,11 @@ switch lower(pType)
         % oiPlot(oi,'psf',[],thisWave,units)  % empty is roiLocs
         % oiPlot(oi,'psf 550',[],thisWave,units)
         % Spatial scale is microns.
-        if strfind(pType,'550'),        thisWave = 550;
+        if ieContains(pType,'550'),     thisWave = 550;
         elseif length(varargin) >=1,    thisWave = varargin{1};
-        else thisWave = ieReadNumber('Select PSF wavelength (nm)',550,'%.0f');
+        else, thisWave = ieReadNumber('Select PSF wavelength (nm)',550,'%.0f');
         end
-        if length(varargin) >=2, units = varargin{2}; else units = 'um'; end
+        if length(varargin) >=2, units = varargin{2}; else, units = 'um'; end
         
         opticsModel = opticsGet(optics,'model');
         switch lower(opticsModel)
@@ -982,7 +982,10 @@ switch lower(pType)
         error('Unknown plotOTF data type.');
 end
 
-return;
+% There should be a uData no matter what.  But just in case ...
+if exist('uData','var'), set(gcf,'UserData',uData); end
+
+end
 
 function uData = plotIlluminanceMesh(oi,yScale)
 % Plot optical image illuminance (lux) as a mesh
@@ -1027,7 +1030,7 @@ uData.c = c; uData.r = r;
 xlabel('um'); ylabel('um');
 title('Illuminance');
 
-return;
+end
 
 function uData = plotOICIE(oi,dataType,roiLocs)
 % plotting CIE data from optical image.  Could be moved into the case
@@ -1088,7 +1091,7 @@ uData.roiLocs = roiLocs;
 oName = oiGet(oi,'name');
 set(gcf,'Name',sprintf('ISET-OI: %s',oName));
 
-return
+end
 
 
 %---------------------------------------------------
@@ -1125,5 +1128,4 @@ else
     sz = max(25,centerRow - idx);
 end
 
-return;
-
+end

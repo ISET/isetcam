@@ -38,12 +38,6 @@ function [figNum, uData] = sensorPlotLine(sensor, ori, dataType, sORt, xy)
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
-% Programming Notes:
-%
-%  This function should not be the main sensor plotting function.  There
-%  should be a sensorPlot() function that calls this and the several other
-%  sensor plotting functions.  This is implemented for plotOI and
-%  scenePlot, but not yet for sensorPlot or ipPlot
 
 %%
 if ieNotDefined('sensor'), sensor = vcGetObject('sensor'); end
