@@ -178,10 +178,10 @@ fprintf('Maximum exposure duration per eight hours:  %f (min)\n',(30/hazardEnerg
 %% Start with a monochromatic light luminance
 
 % Suppose we know the luminance of a 380 nm light with a 10 nm bin width
-lum = 10; wave = 380; dLambda = 10;
+lum = 10; thisWave = 380; dLambda = 10;
 
 % We convert the luminance to energy
-radiance = ieLuminance2Radiance(lum,405,'bin width',dLambda); % watts/sr/nm/m2
+radiance = ieLuminance2Radiance(lum,thisWave,'sd',dLambda); % watts/sr/nm/m2
 
 % Now read the hazard function (Actinic)
 Actinic = ieReadSpectra(fname,wave);

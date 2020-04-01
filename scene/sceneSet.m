@@ -403,12 +403,10 @@ switch parm
         end
     case {'illuminantname'}
         scene.illuminant = illuminantSet(scene.illuminant,'name',val);
-    case {'illuminantwave'}
-        error('Call scene set wave, not illuminant wave');
     case {'illuminantcomment'}
         scene.illuminant.comment = val;
-    case {'illuminantspectrum'}
-        scene.illuminant.spectrum = val;
+        %     case {'illuminantspectrum'}
+        %         scene.illuminant.spectrum = val;
         
     case {'rect'}
         % scene = sceneSet(scene,'rect',[x y h w]);

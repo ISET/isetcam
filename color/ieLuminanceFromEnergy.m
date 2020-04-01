@@ -6,7 +6,7 @@ function lum = ieLuminanceFromEnergy(energy,wave,varargin)
 %    lum = ieLuminanceFromEnergy(energy,wave,varargin)
 %
 % Input
-%   energy:   watts/sr/nm/m2  (a vector)
+%   energy:   watts/sr/nm/m2  (a vector, or a matrix XW format)
 %   wave:     Wavelength samples (a vector)
 %
 % Optional key/val pairs
@@ -85,9 +85,17 @@ if numel(wave) > 1,  binwidth = wave(2) - wave(1);
 else,                fprintf('%d nm bandwidth\n',binwidth);
 end
 
-% The luminance formula.  xwData and V are not always rows or columns, so
-% we use the dot() formula  rather than multiplying.
-lum = 683*dot(xwData,V) * binwidth;
+% The luminance formula.  
+if size(xwData,1) == 1 || size(xwData,2) == 1
+    % xwData can be a matrix, I suppose.  User better check that it is XW
+    % format.
+    lum = 683*dot(xwData,V) * binwidth;
+    
+else
+    % If vectors, xwData and V are not always rows or columns, so we use
+    % the dot() formula  rather than multiplying.
+    lum = 683*xwData*V * binwidth;
+end
 
 % Compare the luminance and energy data
 % ieNewGraphWin; semilogy(wave,V,'--',wave,xwData,'o'); 

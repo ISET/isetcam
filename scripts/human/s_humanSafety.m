@@ -131,7 +131,7 @@ fprintf('Maximum exposure duration per eight hours:  %f (min)\n',(30/hazardEnerg
 %% An example of a light measured in the lab
 
 fname = fullfile(isetRootPath,'local','blueLedlight30.mat');
-load(fname,'wave','radiance');
+ieReadSpectra(fname, wave); % tmp = load(fname); load(fname,'wave','radiance');
 radiance = mean(radiance,2);
 irradiance = pi*radiance;
 
@@ -154,29 +154,13 @@ sampling.
 %}
 fprintf('Maximum exposure duration per eight hours:  %f (min)\n',(30/hazardEnergy)/60)
 
-%% An example of the 385nm light in the OralEye camera
-
-%{
-fname = fullfile(oreyeRootPath,'data','lights','OralEyeBlueLight.mat');
-load(fname,'wave','radiance');
-radiance = mean(radiance,2);
-irradiance = pi*radiance;
-
-fname = which('Actinic.mat');
-Actinic = ieReadSpectra(fname,wave);
-dLambda  = wave(2) - wave(1);
-duration = 1;                  % Seconds
-hazardEnergy = dot(Actinic,irradiance) * dLambda * duration;
-fprintf('Maximum exposure duration per eight hours:  %f (min)\n',(30/hazardEnergy)/60)
-%}
-
 %% Start with a monochromatic light luminance
 
 % Suppose we know the luminance of a 380 nm light with a 10 nm bin width
-lum = 10; wave = 380; dLambda = 10;
+lum = 10; thisWave = 380; dLambda = 10;
 
 % We convert the luminance to energy
-radiance = ieLuminance2Radiance(lum,405,'bin width',dLambda); % watts/sr/nm/m2
+[radiance,wave] = ieLuminance2Radiance(lum,thisWave,'sd',dLambda); % watts/sr/nm/m2
 
 % Now read the hazard function (Actinic)
 Actinic = ieReadSpectra(fname,wave);

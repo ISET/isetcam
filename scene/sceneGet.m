@@ -119,7 +119,6 @@ function val = sceneGet(scene,parm,varargin)
 %        'illuminant energy'  - energy data
 %        'illuminant photons' - energy data
 %        'illuminant xyz'     - CIE XYZ (1931, 10 deg)
-%        'illuminant wave'    - wavelength samples - deprecated to wave
 %        'illuminant comment' - comment
 %        'illuminant format'  - 'spatial spectral' or 'spectral'
 %        'roi illuminant photons'        - illuminant photon spd in a region of interest 
@@ -701,7 +700,7 @@ switch parm
         % The data field is has illuminant in standard energy units.  We
         % convert from energy to photons here.  We account for the two
         % different illuminant formats (RGW or vector).
-        W = sceneGet(scene,'illuminant wave');
+        W = sceneGet(scene,'wave');
         switch sceneGet(scene,'illuminant format')
             case 'spectral'
                 val = sceneGet(scene,'illuminant photons');

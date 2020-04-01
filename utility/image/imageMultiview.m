@@ -26,6 +26,7 @@ function selectedObjs = imageMultiview(objType, selectedObjs, singlewindow)
 %
 % Copyright Imageval Consultants, LLC, 2013
 
+%%
 if ieNotDefined('objType'), error('Object type required.'); end
 if ieNotDefined('singlewindow'), singlewindow = false; end
 
@@ -57,7 +58,7 @@ if singlewindow
     else
         rWin = nObj; cWin = 1; fType = 'tall';
     end
-else   rWin = []; fType = 'upper left';
+else,  rWin = []; fType = 'upper left';
 end
 subCount = 1; % Which subplot are we in
 
@@ -70,7 +71,10 @@ for ii=selectedObjs
     switch objType
         case 'SCENE'
             gam = ieSessionGet('scene gamma');      % gamma in the window!
-            displayFlag = ieSessionGet('scene display flag'); % RGB, HDR, Gray
+            % Use the same display method, but do not show in the scene
+            % window.  The -1 makes that happen
+            displayFlag = abs(ieSessionGet('scene display flag')); % RGB, HDR, Gray
+            if isempty(displayFlag), displayFlag = 1; end
             sceneShowImage(objList{ii},displayFlag,gam);
             t = sprintf('Scene %d - %s',ii,sceneGet(objList{ii},'name'));
             

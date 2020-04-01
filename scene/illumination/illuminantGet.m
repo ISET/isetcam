@@ -1,22 +1,25 @@
 function val = illuminantGet(il,param,varargin)
 % Get parameter value from an illuminant structure
 %
+% Synopsis
 %  val = illuminantGet(il,param,varargin)
 %
-% Illuminant structures are implemented a set/get/create suite of routines.
-% This is the 'get' feature.
+% Brief description
+%   Illuminant structures are implemented a set/get/create suite of routines.
+%   This is the 'get' feature.
 %
-% Illuminants have a variety of formats.
+%   Illuminants have a variety of formats.
 %
-%  spectral - a single vector of wavelength that is applied to the entire
+%     spectral - a single vector of wavelength that is applied to the entire
 %             scene.   
-%  spatial spectral - a 3D representation of the illuminant (r,c,wave)
+%     spatial spectral - a 3D representation of the illuminant (r,c,wave)
 %
-% You can assess the illuminant format of a 'scene', as in
+%   You can assess the illuminant format of a 'scene', as in
 %      sceneGet(scene,'illuminant format')
-% You can also assess the illuminant format here as in
+%   You can also assess the illuminant format here as in
 %      illuminantGet(il,'illuminant format')
 %
+% Inputs
 %
 % il: illuminant structure.
 %  This structure contains a range of information about the illuminant,
@@ -31,26 +34,32 @@ function val = illuminantGet(il,param,varargin)
 % Can be spectral or spatial spectral
 %   photons   - Stored in photons
 %   energy    - Calculated from photons
-%   wave      - Wavelength samples (nm)
+%   wave      - Wavelength samples (nm), must be same as
+%               scene.spectrum.wave
 %
-%   comment   -
-%   luminance - 
-%   spatial size      - spatial/spectral or 1
+%   comment   -  Stored at creation, usually
+%   luminance -  Calculated
+%   spatial size   - spatial/spectral or 1
 %   cct            - Correlated color temperature
 %   format         - spectral or 'spatial spectral'
 %
-% See also:  illuminantCreate, illuminantSet
-%
 % Examples:
-%   il = illuminantCreate('blackbody',400:10:700,5000,200);
+%   ieExamplesPrint('illuminantGet');
 %
-%   illuminantGet(il,'luminance')
-%   illuminantGet(il,'name')
-%   illuminantGet(il,'type')
-%   e = illuminantGet(il,'energy')
-%   p = illuminantGet(il,'photons')
-%
-% (c) Imageval Consulting, LLC, 2012
+% See also:  
+%  illuminantCreate, illuminantSet
+
+% Examples:
+%{
+   wave = 400:10:700; cTemp = 5000; luminance = 200;
+   il = illuminantCreate('blackbody',wave,cTemp,luminance);
+
+   illuminantGet(il,'luminance')
+   illuminantGet(il,'name')
+   illuminantGet(il,'type')
+   e = illuminantGet(il,'energy');
+   p = illuminantGet(il,'photons')
+%}
 
 %% Parameter checking
 if ~exist('il','var') || isempty(il), error('illuminant structure required'); end
@@ -116,9 +125,9 @@ switch param
         % illuminantGet(il,'wave');
         % illuminantGet(il,'wave',scene);
         %
-        % If an illuminant, it has its own spectrum.
-        % If it is part of a scene, it may not have a spectrum and so we
-        % use the scene spectrum, I guess.
+        % If a stand alone illuminant, it has its own spectrum.
+        % If it is part of a scene, it may not have a spectrum. In that
+        % case we send in the scene spectrum and get the wavelength.
         if isfield(il,'spectrum'), val = il.spectrum.wave;
         elseif ~isempty(varargin), val = sceneGet(varargin{1},'wave');
         end

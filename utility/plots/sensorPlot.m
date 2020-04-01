@@ -135,11 +135,15 @@ switch pType
         [uData, g] = sensorPlotLine(sensor, 'h', 'dv', 'space', roiLocs);
     case {'voltshistogram','voltshist'}
         [uData,g] = plotSensorHist(sensor,'v',roiLocs);
+        sensor = sensorSet(sensor,'roi',roiLocs);
         sensorPlot(sensor,'roi');
     case {'electronshistogram','electronshist'}
-        % sensorPlot(sensor,'electrons histogram');
+        % sensorPlot(sensor,'electrons histogram',rect);
         [uData,g] = plotSensorHist(sensor,'e',roiLocs);
+        sensorImageWindow();
+        sensor = sensorSet(sensor,'roi',roiLocs);
         sensorPlot(sensor,'roi');
+
     case {'shotnoise'}
         [uData, g] = imageNoise('shot noise');
         
@@ -199,7 +203,7 @@ switch pType
             [~,rect] = vcROISelect(sensor);
             sensor = sensorSet(sensor,'roi',rect);
         elseif numel(sensor.roi) ~= 4
-            error('roi must be a rect');
+            rect = ieLocs2Rect(sensor.roi);
         end
         
         % Make sure the sensor window is selected

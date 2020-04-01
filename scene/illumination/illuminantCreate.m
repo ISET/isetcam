@@ -2,7 +2,7 @@ function il = illuminantCreate(ilName, wave, varargin)
 % Create an ISETCam illuminant (light source) structure.  
 %
 % Synopsis:
-%   illuminantCreate(ilName,wave,colorTemp,luminance)
+%   illuminantCreate(ilName, wave, varargin)
 %
 % Brief description:
 %   The illuminant structure includes information about the SPD of the
@@ -13,16 +13,16 @@ function il = illuminantCreate(ilName, wave, varargin)
 % Inputs
 %   ilName    - Illuminant name (see below).  default is 'd65'
 %   wave      - List of wavelengths.  Default is 400:10:700;
-%   colorTemp - Only required when ilName is blackbody
-%   luminance - Only required when ilName is blackbody (cd/m2)
+%   colorTemp - Required when ilName is blackbody (deg K)
+%   luminance - Required when ilName is blackbody (cd/m2)
 %
 % Returns
 %   il - An illuminant structure
 %
 % Illuminant names we can interpret here are:
 %
-%    blackbody (temp deg kelvin) - Choice of blackbody
-%    d65, d50                    -  Daylight illuminants
+%    blackbody                   - Choice of blackbody
+%    d65, d50                    - Daylight illuminants
 %    tungsten, fluorescent       - Indoor illuminants
 %    555 nm                      - Monochromatic
 %    equal energy, equal photons - Broad band for physics
@@ -38,26 +38,28 @@ function il = illuminantCreate(ilName, wave, varargin)
 
 % Examples:
 %{
-   il = illuminantCreate('d65')
+   il = illuminantCreate('d65');
 %}
 %{
-  cTemp = 3500; luminance = 100; 
-  il = illuminantCreate('blackbody',400:10:700, cTemp,luminance)
+  wave = 400:10:700; cTemp = 3500; luminance = 100; 
+  il = illuminantCreate('blackbody',wave, cTemp,luminance)
 %}
 %{
-  il = illuminantCreate('blackbody',[],6500,100)
+  wave = 400:5:700; cTemp = 5500; luminance = 10; 
+  il = illuminantCreate('blackbody',wave,cTemp,luminance)
 %}
 %{
-   il = illuminantCreate('illuminant c',400:1:700,500)
+  wave = 400:10:700; 
+  il = illuminantCreate('illuminant c',wave);
+  plotRadiance(wave,illuminantGet(il,'photons'));
 %}
 
 %% Initialize parameters
 if ieNotDefined('ilName'), ilName = 'd65'; end
+if ieNotDefined('wave'), wave = 400:10:700; end
 
 il.name = ilName;
 il.type = 'illuminant';
-il = initDefaultSpectrum(il,'hyperspectral');
-if exist('wave','var') && ~isempty(wave), il.spectrum.wave = wave; end
 
 %% There is no default
 % The absence of a default could be a problem.
@@ -68,11 +70,11 @@ switch ieParamFormat(ilName)
         % illuminantCreate('d65',luminance)
         illP.name = ilName;
         illP.luminance = 100;
-        illP.spectrum.wave = illuminantGet(il,'wave');
+        illP.spectrum.wave = wave;
         if ~isempty(varargin), illP.luminance = varargin{1}; end
         
         iEnergy = illuminantRead(illP);		    % [W/(sr m^2 nm)]
-        iPhotons = Energy2Quanta(illuminantGet(il,'wave'),iEnergy); % Check this step
+        iPhotons = Energy2Quanta(wave,iEnergy); % Check this step
         il = illuminantSet(il,'name',illP.name);
 
     case 'blackbody'
@@ -80,13 +82,13 @@ switch ieParamFormat(ilName)
         illP.name = 'blackbody';
         illP.temperature = 5000;
         illP.luminance   = 100;
-        illP.spectrum.wave = illuminantGet(il,'wave');
+        illP.spectrum.wave = wave;
         
         if ~isempty(varargin),   illP.temperature = varargin{1};  end
         if length(varargin) > 1, illP.luminance = varargin{2}; end
         
         iEnergy = illuminantRead(illP);		    % [W/(sr m^2 nm)]
-        iPhotons = Energy2Quanta(illuminantGet(il,'wave'),iEnergy); % Check this step
+        iPhotons = Energy2Quanta(wave,iEnergy); % Check this step
         
         il = illuminantSet(il,'name',sprintf('blackbody-%.0f',illP.temperature));
         
@@ -94,7 +96,9 @@ switch ieParamFormat(ilName)
         error('unknown illuminant type %s\n',ilName);
 end
 
-%% Set the photons and return
-il = illuminantSet(il,'photons',iPhotons);  % [photons/(s sr m^2 nm)]
+%% Set the wavelength and photons and return
 
-return;
+il = illuminantSet(il,'photons',iPhotons);  % [photons/(s sr m^2 nm)]
+il = illuminantSet(il,'wave',wave);  % nm
+
+end

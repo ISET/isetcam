@@ -600,7 +600,7 @@ switch lower(pType)
         % Graph for spectral, image for spatial spectral
         handle = ieSessionGet('scenewindowhandle');
         ieInWindowMessage('',handle);       
-        wave = sceneGet(scene,'wave');
+        wave = sceneGet(scene,'illuminant wave');
         
         switch sceneGet(scene,'illuminant format')
             case 'spectral'
@@ -633,7 +633,7 @@ switch lower(pType)
         % Graph for spectral, image for spatial spectral
         handle = ieSessionGet('scenewindowhandle');
         ieInWindowMessage('',handle);
-        wave = sceneGet(scene,'wave');
+        wave = sceneGet(scene,'illuminant wave');
         switch sceneGet(scene,'illuminant format')
             case 'spectral'
                 photons = sceneGet(scene,'illuminant photons');

@@ -34,7 +34,13 @@ if isempty(scene), cla; return;  end
 if ieNotDefined('gam'),         gam = 1; end
 if ieNotDefined('displayFlag'), displayFlag = 1; end
 
-sceneAxis = ieSessionGet('scene axis');
+try
+    % If this is to a sceneWindow, get the axis.
+    sceneAxis = ieSessionGet('scene axis');
+catch
+    % If there is no sceneWindow, set this to empty
+    sceneAxis = [];
+end
 
 %%  Get the data
 if checkfields(scene,'data','photons')
@@ -53,15 +59,10 @@ end
 % The absolute value of the displayFlag flag determines how imageSPD
 % converts the data into a displayed image.  It is determined from the GUI.
 
-% When the values are negative, the user just wants the data and does
-% not want to render anything.  So we leave the axes alone.
-if displayFlag >= 0
-    % Clearing the axis eliminates any ROI overlays
-    cla(sceneAxis);   
-end
+% Clearing the axis eliminates any ROI overlays
+cla(sceneAxis);
 rgb = imageSPD(photons,wList,gam,sz(1),sz(2),displayFlag);
 
-%% We should add back ROIs/overlays here, if desired.
-
+%% We could add back ROIs/overlays here, if desired.
 
 end

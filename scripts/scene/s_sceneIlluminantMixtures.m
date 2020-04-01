@@ -22,7 +22,7 @@
 % Copyight Imageval Consulting, LLC, 2011
 
 %%
-ieInit
+ieInit;
 
 %% The mixture of two illuminants
 
