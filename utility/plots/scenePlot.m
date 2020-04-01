@@ -611,10 +611,11 @@ switch lower(pType)
                 % space-varying
                 if isempty(roiLocs)
                     energy = sceneGet(scene,'energy');
+                    energy = mean(RGB2XWFormat(energy),1)';
                 else
                     energy = vcGetROIData(scene,roiLocs,'illuminant energy');
+                    energy = mean(energy,1);
                 end
-                energy = mean(RGB2XWFormat(energy),1)';
             otherwise
                 % No illuminant
                 ieInWindowMessage('No illuminant data.',handle);
