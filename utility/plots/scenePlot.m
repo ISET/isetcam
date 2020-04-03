@@ -611,10 +611,11 @@ switch lower(pType)
                 % space-varying
                 if isempty(roiLocs)
                     energy = sceneGet(scene,'energy');
+                    energy = mean(RGB2XWFormat(energy),1)';
                 else
                     energy = vcGetROIData(scene,roiLocs,'illuminant energy');
+                    energy = mean(energy,1);
                 end
-                energy = mean(energy,1)';
             otherwise
                 % No illuminant
                 ieInWindowMessage('No illuminant data.',handle);
@@ -638,9 +639,15 @@ switch lower(pType)
             case 'spectral'
                 photons = sceneGet(scene,'illuminant photons');
             case 'spatial spectral'
-                % Spatial region of the illuminant
-                photons = vcGetROIData(scene,roiLocs,'illuminant photons');
-                photons = mean(photons,1);
+                if isempty(roiLocs)
+                    % Get all the photons, convert to XW format, take the
+                    % mean.
+                    photons = sceneGet(scene,'photons');
+                    photons = mean(RGB2XWFormat(photons),1)';
+                else
+                    photons = vcGetROIData(scene,roiLocs,'illuminant photons');
+                    photons = mean(photons,1);
+                end
             otherwise
                 ieInWindowMessage('No illuminant data.',handle);
                 close(gcf)
