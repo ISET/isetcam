@@ -614,7 +614,7 @@ switch lower(pType)
                 else
                     energy = vcGetROIData(scene,roiLocs,'illuminant energy');
                 end
-                energy = mean(RGB2XWFormat(energy),1)';
+                energy = mean(energy,1)';
             otherwise
                 % No illuminant
                 ieInWindowMessage('No illuminant data.',handle);
