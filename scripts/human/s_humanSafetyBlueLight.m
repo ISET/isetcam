@@ -135,9 +135,8 @@ fprintf('Maximum exposure duration per eight hours:  %f (min)\n',(30/hazardEnerg
 
 %% An example of a light measured in the lab
 
-fname = fullfile(isetRootPath,'local','blueLedlight30.mat');
-load(fname,'wave','radiance');
-radiance = mean(radiance,2);
+radiance = ieReadSpectra('LED385nm.mat',wave);
+
 irradiance = pi*radiance;
 
 fname = which('Actinic.mat');
@@ -181,7 +180,7 @@ fprintf('Maximum exposure duration per eight hours:  %f (min)\n',(30/hazardEnerg
 lum = 10; thisWave = 380; dLambda = 10;
 
 % We convert the luminance to energy
-radiance = ieLuminance2Radiance(lum,thisWave,'sd',dLambda); % watts/sr/nm/m2
+[radiance,wave] = ieLuminance2Radiance(lum,thisWave,'sd',dLambda); % watts/sr/nm/m2
 
 % Now read the hazard function (Actinic)
 Actinic = ieReadSpectra(fname,wave);
@@ -198,13 +197,13 @@ fprintf('Maximum exposure duration per eight hours:  %f (min)\n',(30/hazardEnerg
 %%  Plot the Actinic hazard function 
 
 ieNewGraphWin;
-mx = max(irradiance(:));
+mx = max(radiance(:));
 dummy = ieScale(Actinic,1)*mx;
-plot(wave,irradiance,'k-',wave,dummy,'r--','linewidth',2);
+plot(wave,radiance,'k-',wave,dummy,'r--','linewidth',2);
 xlabel('Wave (nm)');
 ylabel('Irradiance (watts/m^2');
 grid on
-legend({'Irradiance','Normalized hazard'});
+legend({'Radiance','Normalized hazard'});
 
 %%  Near-UV hazard exposure limit
 %{
