@@ -33,7 +33,7 @@ end
 
 % Check that the ray trace data were calculated to a field of view equal or
 % greater than the scene fov.
-rtFOV = oiGet(oi,'optics rtdiagonalfov');
+rtFOV = oiGet(oi,'optics rtfov');
 % rtFOV    = opticsGet(optics,'rtdiagonalfov');
 sceneFOV = sceneGet(scene,'diagonalFieldOfView');
 if sceneFOV > rtFOV

@@ -142,8 +142,9 @@ rt.effectiveFNumber = fnumber_eff;      % Effectve f# = 0.5/(NUMERICAL APERTURE)
 imgHeight = ((0:(imgHeightNum-1))/(imgHeightNum-1))*imgHeightMax;
 
 % The PSF goes out to the FOV and we treat the readout as a circle.  We
-% have the diagonal field of view here.  Maybe the variable should diagFOV.
-rt.maxfov = fov;
+% have the field of view here. We multiply the number by 2 because in ZeMax
+% the original value is half of the FOV.
+rt.fov = fov * 2;
 
 % These are full path file names
 % [diName,riName,psfNameList] = rtFileNames(baseLensFileName,wave,imgHeight); %#ok<NODEF>

@@ -855,18 +855,15 @@ switch parm
         end
         if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
 
-    case {'rtfieldofview','rtfov','rtmaximumfieldofview','rtdiagonalfov', 'rthorizontalfov'}
-        % Maximum diagonal field of view for the ray trace calculation (not
+    case {'rtfov'}
+        % Maximum field of view for the ray trace calculation (not
         % the computed image).
         %
         % The stored value is half the maximum diagonal.  The max
         % horizontal is the same.  The FOV (whatever direction) is as far
         % as the PSF is computed by Zemax. It doesn't matter whether it is
         % measured along the diagonal or the horizontal.
-        %
-        % Until Aug. 13 2011, however, we stored sqrt(2)*fov, rather than
-        % the fov.  This was an error at ImageVal.
-        if checkfields(optics,'rayTrace','maxfov'), val = optics.rayTrace.maxfov; end
+        if checkfields(optics,'rayTrace','fov'), val = optics.rayTrace.fov; end
     case {'rteffectivefocallength','rtefl','rteffectivefl'}
         % TODO:  These are stored in mm, because of, well, optics.
         if checkfields(optics,'rayTrace','effectiveFocalLength')

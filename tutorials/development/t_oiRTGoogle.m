@@ -14,27 +14,22 @@ scene = sceneCrop(scene, rect);
 % Given (1) sensor pixel size and (2) size of the scene representation
 % image, what is the horizontal FOV that should be set to scene
 pixelSize = 1.21e-6; % 1.2 um for sensor pixel
-optics = load('lensmatfile.mat', 'optics');
-optics = optics.optics;
-
-focalLength = optics.rayTrace.effectiveFocalLength * 1e-3; % Convert to m
-
-% Get the size of scene
-sz = sceneGet(scene, 'size');
-height = pixelSize *sz(1);
-width = pixelSize * sz(2);
-
-
-hfov = 2 * atand(width/(2*focalLength) ); % Scene hFOV
-scene = sceneSet(scene, 'fov', hfov);
-% sceneWindow(scene)
-%%
-dFov = sceneGet(scene, 'diagonal angular');
-optics = opticsSet(optics, 'rtfov', max(opticsGet(optics, 'rtfov'), dFov));
+load('lensmatfile.mat', 'optics');
 
 oi = oiCreate('ray trace');
 oi = oiSet(oi, 'optics', optics);
-oi = oiSet(oi, 'optics model', 'ray trace'); % Is this necessary?
+
+focalLength = oiGet(oi, 'optics rteffectivefocallength', 'm'); % In meters
+
+nPixels = 1000;
+% This is the width of the sensor in meters
+width = pixelSize * nPixels;
+
+hfov = 2 * atand(width/(2*focalLength) ); % Scene hFOV
+scene = sceneSet(scene, 'fov', hfov);
+
+% sceneWindow(scene)
+%%
 oi = oiCompute(oi, scene);
 
 %%
