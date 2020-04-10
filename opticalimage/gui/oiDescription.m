@@ -88,7 +88,7 @@ switch lower(opticsModel)
 
         rtFOV = opticsGet(optics,'rtfov');
         if isempty(rtFOV), rtFOV = 0; end
-        txt = addText(txt,sprintf('  Hor fov: %.0f deg\n',rtFOV));
+        txt = addText(txt,sprintf('  Fov: %.0f deg\n',rtFOV));
         m = opticsGet(optics,'rtmagnification');
         if isempty(m), m = 0; end
         txt = [txt, sprintf('  Mag:      %.2e\n',m)];
