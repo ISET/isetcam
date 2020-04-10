@@ -142,8 +142,17 @@ title(sprintf('Optical image with FOV: %.4f', hHalffov));
 ieNewGraphWin;
 imshow(rgbOIFullFOV);
 title(sprintf('Optical image with FOV: %.4f', hFullfov));
+
 %}
 
+%% Write out images
+halfFOVSavePath = fullfile(isetRootPath, 'local', 'imgsFromGoogle', 'optics',...
+                    'RET_5920_60cm_8M_35HFOV_OI_ZL.bmp');
+imwrite(rgbOIHalfFOV, halfFOVSavePath);
+
+fullFOVSavePath = fullfile(isetRootPath, 'local', 'imgsFromGoogle', 'optics',...
+                    'RET_5920_60cm_8M_77HFOV_OI_ZL.bmp');
+imwrite(rgbOIFullFOV, fullFOVSavePath);                
 %% Finally compare the difference within half fov region
 rgbOIHalfFOVPd = single(zeros(szFullFOV));
 rgbOIHalfFOVPd(cropRect(2):cropRect(2)+cropRect(4),...
@@ -160,3 +169,6 @@ rgbOIFullFOVCrp = rgbOIFullFOV(cropRect(2):cropRect(2)+cropRect(4),...
 % Visualize the difference of the two images
 ieNewGraphWin;
 imagesc(rgbOIFullFOVCrp - rgbOIHalfFOV);
+
+%% Try using getMiddleMatrix
+% rgbOIFullFOVCrp2 = getMiddleMatrix()
