@@ -23,6 +23,8 @@ rd = RdtClient('isetbio');
 % Here is an example remote directory.
 rd.crp('/resources/scenes/hyperspectral/stanford_database'); % change remote path
 
+% rd.crp('/resources/scenes/hdr'); % change remote path
+
 % Problems here:
 % Currently only returns 30 elements
 % 'type' is not right because it says jpg when there are nef and pgm files

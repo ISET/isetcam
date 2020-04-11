@@ -31,5 +31,5 @@ for ii=1:w
     middleM(:,:,ii) = m(r,c,ii);
 end
 
-return;
+end
 

@@ -1,6 +1,7 @@
 function [optics, opticsFile] = rtImportData(optics,rtProgram,pFileFull)
-%Import data for optics ray trace calculations
+% Import data for optics ray trace calculations
 %
+% Synopsis
 %  [optics, opticsFile] = rtImportData(optics,rtProgram,pFileFull)
 %
 % Description:
@@ -11,8 +12,8 @@ function [optics, opticsFile] = rtImportData(optics,rtProgram,pFileFull)
 %  The ray trace (rt) data are returned as part of the optics structure
 %  (optics.rt).
 %
-% Using the GUI (oiWindow), the user can export the optics.rt information
-% (oiWindow | Optics | Import Optics).
+% Using the GUI (oiWindow), the user can export the optics ray trace
+% information (oiWindow | Optics | Import Optics).
 %
 % If it is exported, then the ray trace it can be imported using the Import
 % Optics pull down in the (oiWindow | Optics | Import Optics)
@@ -36,32 +37,19 @@ function [optics, opticsFile] = rtImportData(optics,rtProgram,pFileFull)
 %
 % See also
 
-% Examples
-%{
-% Fails - need to make it work properly with a test data set.
-%  oi = vcGetObject('oi'); optics = oiGet(oi,'optics');
-%  optics = rtImportData(optics);
-%  oi = sceneSet(oi,'optics',optics);;
-%  vcReplaceObject(oi);
-%}
 
-% TODO:
-%
-% We are concerned that at present (4.25.2008) the x,y dimensions of zemax
-% are flipped from the x,y of ISET.  We think we need to rotate the zemax
-% data before storing it.
+% Features to consider:
 %
 % Read the Chief Ray Angle data
+%
 % Read the header for the psfSpacing (in microns) and interpolate to 0.25
 % micron samples or some common size support for the PSF.
-%
-% All of the rt fields should be set using opticsSet(optics,'rtMumble')
-% instead of directly touching the structure, as we do here.
 %
 % The user should have an opportunity to symmetrize the PSFs w.r.t the
 % current sampling grid (rtPSFCenter).  They should also be able to
 % rotate the data which are normally entered along the y-axis but should be
 % entered along the x-axis (I think).
+
 
 %% Argument checking
 if ieNotDefined('rtProgram'), rtProgram = 'zemax'; end
@@ -148,7 +136,13 @@ rt.fov = fov * 2;
 
 % These are full path file names
 % [diName,riName,psfNameList] = rtFileNames(baseLensFileName,wave,imgHeight); %#ok<NODEF>
-[~,baseName,~] = fileparts(baseLensFileName);
+if ismac
+    % Sometimes people use PCs.  So we fix the file string by removing the
+    % disk drive (e.g., C:) and replacing \ with /.
+    tmp = strsplit(baseLensFileName,':');
+    tmp{2} = strrep(tmp{2},'\','/');
+end
+[~,baseName,~] = fileparts(tmp{2});
 [diName,riName,psfNameList] = rtFileNames(baseName,wave,imgHeight); %#ok<NODEF>
 
 %%  Load the geometry - needs fixing up.
