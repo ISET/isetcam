@@ -60,7 +60,19 @@ switch method
         currentVal = max(luminance(:));
         clear luminance;
         photons = photons*(val/currentVal);
-        
+    case 'crop'
+        roi = varargin{2};
+        currentVal = sceneGet(scene, 'roi mean photons', roi);
+        try
+            photons = photons*(val/currentVal);
+        catch ME
+            % Probably the data are too big for memory.  So scale the photons
+            % one waveband at a time.
+            nWave = sceneGet(scene,'wave');
+            for ii=1:nWave
+                photons(:,:,ii) = photons(:,:,ii)*(val/currentVal);
+            end
+        end
     otherwise
         error('Unknown method %s\n',method);
 end
