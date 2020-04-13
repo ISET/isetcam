@@ -46,8 +46,11 @@ oi = oiClearData(oi);
 oi = oiSet(oi,'photons',photons);
 newSz = oiGet(oi,'size');
 
-wAngularNew = atand(newSz(2) * sampleSpace/2/focalLength) / atand(sz(2) * sampleSpace/2/focalLength)...
-                    * wAngular;
+% The sample spacing will not be a preserved when the FOV changes and
+% becomes large. We might consider to do an integration to calculate
+% accurate width/height of the new frame.
+wAngularNew = atand(newSz(2) * sampleSpace/2/focalLength) /...
+                atand(sz(2) * sampleSpace/2/focalLength) * wAngular;
 oi = oiSet(oi,'wangular',wAngularNew);
 
 oi = oiSet(oi,'illuminance',oiCalculateIlluminance(oi));
