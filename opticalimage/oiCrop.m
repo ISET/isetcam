@@ -31,6 +31,8 @@ end
 
 wAngular = oiGet(oi,'wangular');
 sz = oiGet(oi,'size');
+focalLength = oiGet(oi, 'optics focal length');
+sampleSpace = oiGet(oi, 'distance per sample');
 % wave = oiGet(oi,'nwave');
 
 % The number of selected columns and rows
@@ -43,7 +45,10 @@ photons = XW2RGBFormat(photons,r,c);
 oi = oiClearData(oi);
 oi = oiSet(oi,'photons',photons);
 newSz = oiGet(oi,'size');
-oi = oiSet(oi,'wangular',(newSz(2)/sz(2))*wAngular);
+
+wAngularNew = atand(newSz(2) * sampleSpace/2/focalLength) / atand(sz(2) * sampleSpace/2/focalLength)...
+                    * wAngular;
+oi = oiSet(oi,'wangular',wAngularNew);
 
 oi = oiSet(oi,'illuminance',oiCalculateIlluminance(oi));
 

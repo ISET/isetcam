@@ -294,7 +294,8 @@ rt.psf.wavelength = wave(:);
 % opticsSet(optics,PARAM,VAL) all along.
 optics = opticsSet(optics,'rayTrace',rt);
 optics = opticsSet(optics,'model','rayTrace');
-
+optics = opticsSet(optics, 'focal length', rt.effectiveFocalLength);
+optics = opticsSet(optics, 'fnumber', rt.effectiveFNumber);
 %% Save the optics data
 button = questdlg('Save the converted optics?','RT Optics save');
 switch lower(button)

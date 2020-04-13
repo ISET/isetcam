@@ -64,12 +64,12 @@ objDistance = oiGet(oi,'optics rt object distance');  % meters
 widthNewFOV = 2 * objDistance * tand(newFOV/2); 
 widthFOV    = 2 * objDistance * tand(fov/2); % Same for the full fov
 
-nColNewFOV = floor(scenesize(2) * widthNewFOV / widthFOV);
-nRowNewFOV = floor(nColNewFOV / aspectRatio);
+nColNewFOV = round(scenesize(2) * widthNewFOV / widthFOV);
+nRowNewFOV = round(nColNewFOV / aspectRatio);
 
 %% Crop image for half FOV from center
 
-start    = [floor(center(1) - nRowNewFOV/2), floor(center(2) - nColNewFOV/2)];
+start    = [round(center(1) - nRowNewFOV/2), round(center(2) - nColNewFOV/2)];
 cropRect = [start(2) + 1, start(1) + 1, nColNewFOV - 1, nRowNewFOV - 1 ];
          
 end

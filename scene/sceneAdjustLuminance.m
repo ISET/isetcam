@@ -62,7 +62,7 @@ switch method
         photons = photons*(val/currentVal);
     case 'crop'
         roi = varargin{2};
-        currentVal = sceneGet(scene, 'roi mean photons', roi);
+        currentVal = sceneGet(scene, 'roi mean luminance', roi);
         try
             photons = photons*(val/currentVal);
         catch ME

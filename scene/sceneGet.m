@@ -74,11 +74,12 @@ function val = sceneGet(scene,parm,varargin)
 % * You can add a region of interest (roi) to the get
 %
 %  Luminance and other colorimetric properties
-%        'mean luminance' - mean luminance
-%        'luminance'      - spatial array of luminance
-%        'roi luminance'  - spatial roi of the luminance'
-%        'xyz'            - 3D array of XYZ values(CIE 1931, 10 deg)
-%        'lms'            - 3D array of cone values (Stockman)
+%        'mean luminance'      - mean luminance
+%        'luminance'           - spatial array of luminance
+%        'roi luminance'       - spatial luminance of the roi'
+%        'roi mean luminance'  - mean luminance of the roi'
+%        'xyz'                 - 3D array of XYZ values(CIE 1931, 10 deg)
+%        'lms'                 - 3D array of cone values (Stockman)
 %        
 % Resolution parameters
 %      'sample size'*          - size of each square pixel
@@ -476,8 +477,27 @@ switch parm
         end
         val = double(val);
         
+    case {'roimeanluminance'}
+        % sceneGet(scene, 'roi mean luminance', locsorrect);
+        if isempty(varargin), error('ROI required')
+        else, roiLocs = varargin{1};
+        end
+        roiMeanPhotons = sceneGet(scene, 'roi mean photons', roiLocs);
+        wave = sceneGet(scene, 'wave');
+        val = ieLuminanceFromPhotons(roiMeanPhotons, wave);
+        
     case {'roiluminance'}
-        error('Not yet implemented')
+        % sceneGet(scene, 'roi luminance', locsorrect);
+        if isempty(varargin), error('ROI required')
+        else, roiLocs = varargin{1};
+        end
+        roiPhotons = sceneGet(scene, 'roi photons', roiLocs);
+        wave = sceneGet(scene, 'wave');
+        val = ieLuminanceFromPhotons(roiPhotons, wave); 
+        
+        if numel(roiLocs) == 4
+            val = reshape(val, roiLocs(3)+1, roiLocs(4)+1);
+        end
         
     case {'xyz','dataxyz'}
         % sceneGet(scene,'xyz');
