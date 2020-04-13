@@ -35,7 +35,7 @@ function scene = sceneAdjustLuminance(scene,meanL,varargin)
 
 % Verify that current luminance exists, or calculate it
 if isnumeric(meanL), method = 'mean'; val = meanL;
-else                 method = meanL; val = varargin{1};
+else,                method = meanL; val = varargin{1};
 end
 
 % Saves a lot of time.  Calculation is single precision.
@@ -84,4 +84,4 @@ illuminant = sceneGet(scene,'illuminant photons');
 illuminant = illuminant*(val/currentVal);
 scene      = sceneSet(scene,'illuminant photons',illuminant);
 
-return
+end
