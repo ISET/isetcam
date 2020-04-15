@@ -624,7 +624,7 @@ switch lower(pType)
         plot(wave(:),energy,'-')
         xlabel('Wavelength (nm)');
         ylabel('Energy (watts/sr/nm/m^2)');
-        grid on,  title('Illuminant data')
+        grid on,  title(sprintf('%s Illuminant',sceneGet(scene,'name')));
         udata.wave = wave; udata.energy = energy;
         udata.comment = sceneGet(scene,'illuminant comment');
         
@@ -656,7 +656,7 @@ switch lower(pType)
         % Plot 'em up
         plot(wave(:),photons,'-')
         xlabel('Wavelength (nm)'); ylabel('Radiance (q/sec/sr/nm/m^2)');
-        grid on,  title('Illuminant data')
+        grid on,  title(sprintf('%s Illuminant',sceneGet(scene,'name')));
         udata.wave = wave; udata.photons = photons;
         udata.comment = sceneGet(scene,'illuminant comment');
         
