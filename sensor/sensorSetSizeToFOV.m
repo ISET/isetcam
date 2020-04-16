@@ -86,10 +86,6 @@ end
 
 if length(newFOV) == 1
     
-    % User sent in only horizontal field of view
-    % We scale to keep aspect ratio constant 
-    hFOV = newFOV;
-
     % This part is dangerous.  It is the part where scene and oi are used.
     % Same in the other part of the if/else
     %
@@ -99,8 +95,13 @@ if length(newFOV) == 1
     % If scene and oi are empty, then sensorGet uses the currently selected
     % ones. If none are selected, then it uses some arbitrary default
     % values. See the code in sensorGet.
-    currentHFOV = sensorGet(sensor,'fov horizontal',scene,oi);
-    newSize = round(sz * (hFOV/currentHFOV));
+    
+    % The desired width should create the new field of view.  The distance
+    % to the lens is the focal length.
+    flength = oiGet(oi,'optics focal length');
+    desiredWidth = 2*flength*tand(newFOV/2);
+    currentWidth = sensorGet(sensor,'width');
+    newSize = round(sz * (desiredWidth/currentWidth));
     
 elseif length(newFOV) == 2
     % User sent in both horizontal and vertical field of view parameters
