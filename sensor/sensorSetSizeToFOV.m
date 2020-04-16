@@ -113,9 +113,13 @@ elseif length(newFOV) == 2
     % If scene and oi are empty, then sensorGet uses the currently selected
     % ones. If none are selected, then it uses some arbitrary default values.
     % See the code in sensorGet.
-    currentHFOV = sensorGet(sensor,'fov horizontal',scene,oi);
-    currentVFOV = sensorGet(sensor,'fov vertical',scene,oi);
-    newSize = round([sz(1) * (vFOV/currentVFOV),sz(2) * (hFOV/currentHFOV)]);
+    flength       = oiGet(oi, 'optics focal length');
+    desiredWidth  = 2*flength*tand(hFOV/2);
+    desiredHeight = 2*flength*tand(vFOV/2);
+    currentWidth  = sensorGet('sensor', 'width');
+    currentHeight = sensorGet('sensor', 'height');
+    
+    newSize = round([sz(1) * (desiredHeight/currentHeight),sz(2) * (desiredWidth/currentWidth)]);
 else
     error('newFOV is wrong.');
 end
