@@ -61,22 +61,22 @@ return;
 end
 %%
 function plotColorSensorHist(data,nSensors,unitType,colorOrder)
+% Histogram of volts or electrons
 %
-
 % Perhaps we should plot the saturation level on the graph?
 %
 
-mxData = max(data(:))*1.2;
+mxData = max(data(:))*1.1;
 nBins = round(max(20,size(data,1)/25));
 for ii=1:nSensors
     subplot(nSensors,1,ii)
     
     l = ~isnan(data(:,ii)); tmp = data(l,ii);
-    hist(tmp,nBins);
-    c = get(gca,'Children');
-    if strcmp(colorOrder(ii) ,'o'), colorOrder(ii) = 'k'; end
-    set(c,'EdgeColor',colorOrder(ii))
     
+    hdl = histogram(tmp(:),nBins);
+    if strcmp(colorOrder(ii) ,'o'), colorOrder(ii) = 'k'; end
+    hdl.EdgeColor= colorOrder(ii); hdl.FaceColor= colorOrder(ii);
+
     % We might want to show the SNR in db some day.
     %     mn = mean(tmp);
     %     sd= std(tmp);
@@ -84,8 +84,7 @@ for ii=1:nSensors
     %     plotTextString(txt,'ul');  % And I think that 'ul' may not be
     %     working right.
     
-    set(gca,'xlim',[0 mxData*1.1]);
-    grid on
+    set(gca,'xlim',[0 mxData*1.1]); grid on
     switch lower(unitType)
         case 'v'
             xlabel('Volts')
@@ -100,13 +99,14 @@ end
 
 %%
 function plotMonochromeSensorHist(data,unitType)
-%
+% Only one sensor, show the histogram as gray
 % 
-hist(data(:,1));
-mxData = max(data(:))*1.2;
-
-set(gca,'xlim',[0 mxData*1.1]);
+hdl = histogram(data(:,1));
+hdl.FaceColor = [.5 .5 .5]; hdl.EdgeColor = [.5 .5 .5];
 grid on
+
+mxData = max(data(:))*1.1; set(gca,'xlim',[0 mxData*1.1]);
+
 switch lower(unitType)
     case 'v'
         xlabel('Volts')

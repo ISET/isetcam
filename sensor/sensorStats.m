@@ -1,4 +1,4 @@
-function [s, sensor, theRect] = sensorStats(sensor,statType,unitType,quiet)
+function [uData, sensor, theRect] = sensorStats(sensor,statType,unitType,quiet)
 % Calculate sensor statistics within a region of interest selected by user
 %
 % Syntax
@@ -88,29 +88,29 @@ switch lower(statType)
         % volts, too.  Not used here because, well, ....
         if nSensors == 1
             tmp = data(:); l = ~isnan(tmp); tmp = tmp(l);
-            s = mean(tmp);
+            uData = mean(tmp);
         else
-            s = zeros(3,1);
+            uData = zeros(3,1);
             for ii=1:nSensors
                 tmp = data(:,ii); l = ~isnan(tmp); tmp = tmp(l);
-                s(ii) = mean(tmp);
+                uData(ii) = mean(tmp);
             end
         end
     case 'basic'
         % Mean, std, sem, and N
         if nSensors == 1
             tmp = data(:); l = ~isnan(tmp); tmp = tmp(l);
-            s.mean = mean(tmp);
-            s.std  = std(tmp);
-            s.sem = s.std/sqrt(length(tmp) - 1);
-            s.N = length(tmp);
+            uData.mean = mean(tmp);
+            uData.std  = std(tmp);
+            uData.sem = uData.std/sqrt(length(tmp) - 1);
+            uData.N = length(tmp);
         else
             for ii=1:nSensors
                 tmp = data(:,ii); l = ~isnan(tmp); tmp = tmp(l);
-                s.mean(ii) = mean(tmp);
-                s.std(ii)  = std(tmp);
-                s.sem(ii) = s.std(ii)/sqrt(length(tmp) - 1);
-                s.N = length(tmp);
+                uData.mean(ii) = mean(tmp);
+                uData.std(ii)  = std(tmp);
+                uData.sem(ii) = uData.std(ii)/sqrt(length(tmp) - 1);
+                uData.N = length(tmp);
             end
         end
     otherwise
@@ -127,14 +127,19 @@ if nargout == 0
 
     switch lower(statType)
         case 'basic'
-            txt = sprintf('Mean: %.2e (%.2e)',s.mean(1),s.std(1));
+            % sensorStats(sensor,'basic', unitType)
+            txt = sprintf('Mean: %.2e (%.2e)',uData.mean(1),uData.std(1));
             if nSensors == 1
-                errorbar(1:nSensors,s.mean,s.std,'ko-');
+                errorbar(1:nSensors,uData.mean,uData.std,'ko-');
             else
                 for ii=2:nSensors
-                    txt = addText(txt,sprintf('\nMean: %.2e (%.2e)',s.mean(ii),s.std(ii)));
+                    txt = addText(txt,sprintf('\nMean: %.2e (%.2e)',uData.mean(ii),uData.std(ii)));
                 end
-                errorbar(1:nSensors,s.mean,s.std);
+                % errorbar(1:nSensors,uData.mean,uData.std);
+                hdl = bar(1:nSensors,uData.mean);
+                hdl.FaceColor = 'flat';
+                hdl.CData = eye(3);
+                
             end
             plotTextString(txt,'ur');
             
@@ -151,25 +156,25 @@ if nargout == 0
                     set(gca,'ylim',[0,pixelGet(sensorGet(sensor,'pixel'),'wellcapacity')]);
             end
             set(gca,'xtick',(1:nSensors),'xticklabel',filterType);
-            title(sprintf('Mean %s in ROI',unitType));
+            title(sprintf('Mean %uData in ROI',unitType));
             
             grid on
         case 'mean'
             % sensorStats(sensor,'mean',unitType)
             
             % Simple bar plot
-            h = bar(s); grid on; 
+            h = bar(uData); grid on; 
             h.FaceColor = [0.3 0.3 0.6];
             h.EdgeColor = [0.5 0.5 0.5];
             
             filterType = sensorGet(sensor,'filter names cellarray');
             set(gca,'xticklabels',filterType)
-            ylabel(sprintf('%s',unitType));
-            title(sprintf('Mean %s in ROI',unitType));
+            ylabel(sprintf('%uData',unitType));
+            title(sprintf('Mean %uData in ROI',unitType));
         otherwise
             error('Unknown stat type');
     end
-    set(figNum,'userdata',s);
+    set(figNum,'userdata',uData);
 end
 
 
