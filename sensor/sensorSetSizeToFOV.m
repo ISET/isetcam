@@ -116,8 +116,8 @@ elseif length(newFOV) == 2
     flength       = oiGet(oi, 'optics focal length');
     desiredWidth  = 2*flength*tand(hFOV/2);
     desiredHeight = 2*flength*tand(vFOV/2);
-    currentWidth  = sensorGet('sensor', 'width');
-    currentHeight = sensorGet('sensor', 'height');
+    currentWidth  = sensorGet(sensor, 'width');
+    currentHeight = sensorGet(sensor, 'height');
     
     newSize = round([sz(1) * (desiredHeight/currentHeight),sz(2) * (desiredWidth/currentWidth)]);
 else

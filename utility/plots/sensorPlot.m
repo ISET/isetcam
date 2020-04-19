@@ -199,16 +199,15 @@ switch pType
         % If the roi is a rect, use its values to plot a white rectangle on
         % the sensor image.  The returned graphics object is a rectangle
         % (g) and you can adjust the colors and linewidth using it.
-        if ~isfield(sensor,'roi')
-            [~,rect] = vcROISelect(sensor);
-            sensor = sensorSet(sensor,'roi',rect);
-        elseif numel(sensor.roi) ~= 4
-            rect = ieLocs2Rect(sensor.roi);
+        if numel(sensor.roi) ~= 4,  rect = ieLocs2Rect(sensor.roi);
+        else,                       rect = sensor.roi;
         end
         
         % Make sure the sensor window is selected
         sensorImageWindow;
-        g = rectangle('Position',sensor.roi,'EdgeColor','w','LineWidth',2);
+        g = rectangle('Position',rect,'EdgeColor','w','LineWidth',2);
+        uData.rect = rect;
+        
     otherwise
         error('Unknown sensor plot type %s\n',pType);
 end

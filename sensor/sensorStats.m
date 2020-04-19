@@ -1,16 +1,15 @@
 function [s, sensor, theRect] = sensorStats(sensor,statType,unitType,quiet)
-% Calculate sensor statistics within a region of interest
+% Calculate sensor statistics within a region of interest selected by user
 %
 % Syntax
 %    [stats, sensor, theRect] = sensorStats(sensor,[statType],[unitType],[quiet])
 %
 % Inputs
-%    sensor:     Either a sensor or an ROI.  If a sensor it may contain an
-%                roi field of Nx2 matrix locations (TODO: should allow for
-%                rect)  
+%    sensor:     A sensor it may contain an roi field of Nx2 matrix
+%                locations or a rect 
 %    statType:   'basic'
 %    unitType:   'volts' or 'electrons'
-%    quiet:       Do not show rect if true
+%    quiet:       Do not draw rect if true
 %
 % Returns:
 %    stats:   Struct with the statistics
@@ -51,48 +50,23 @@ function [s, sensor, theRect] = sensorStats(sensor,statType,unitType,quiet)
 %}
 
 %% Parse inputs
-if ieNotDefined('sensor')
-    [~,sensor] = vcGetSelectedObject('ISA'); 
-    roi = []; 
-end
-if ieNotDefined('quiet'),    quiet = false; end
-if ieNotDefined('statType'), statType = 'basic'; end
+if ieNotDefined('sensor'),    error('Sensor must be provided.'); end
+if ieNotDefined('quiet'),     quiet = false; end
+if ieNotDefined('statType'),  statType = 'basic'; end
 if ieNotDefined('unitType'),  unitType = 'volts'; end
 
-if isstruct(sensor) && ...
-        isfield(sensor,'type') && ...
-        isequal(sensor.type,'sensor')
-else
-    % The user did not send in a sensor, but just an ROI
-    % So we assume user wants to use the currently selected sensor
-    roi = sensor;
-    %     if numel(roi) == 4
-    %         roi = ieRect2Locs(roi);
-    %     end
-    [~,sensor] = vcGetSelectedObject('ISA');
-    sensor = sensorSet(sensor,'roi',roi);
-end
+assert(isstruct(sensor) && isfield(sensor,'type') ...
+                        && isequal(sensor.type,'sensor'));
 
 nSensors = sensorGet(sensor,'nsensors');
 
-if exist('roi','var'), sensor.roi = roi; 
-else,                  roi = [];
-end
-
-if isfield(sensor,'roi') && ~isempty(sensor.roi)
-    % Use the sensor.roi
-elseif isempty(roi) 
-    % No information.  Help the user choose the ROI
-    isaHdl = ieSessionGet('isahandle');
-    ieInWindowMessage('Select image region.',isaHdl,[]);
-    [~,rect] = vcROISelect(sensor);
-    sensor = sensorSet(sensor,'roi',rect);
-    ieInWindowMessage('',isaHdl);
-else
-    % The user sent an ROI and isa.roi does not exist.
-    % Store this ROI
-    sensor.roi = sensorSet(sensor,'roi',roi);
-end
+% We ignore the sensor.roi in this case.  The user always selects.  But
+% maybe we should allow the user to set.
+isaHdl = ieSessionGet('isahandle');
+ieInWindowMessage('Select image region.',isaHdl,[]);
+[~,rect] = vcROISelect(sensor);
+sensor = sensorSet(sensor,'roi',rect);
+ieInWindowMessage('',isaHdl);
 
 %% Get proper data type.  NaNs are still in there
 
@@ -153,18 +127,18 @@ if nargout == 0
 
     switch lower(statType)
         case 'basic'
-            txt = sprintf('Mean: %.2f',s.mean(1));
+            txt = sprintf('Mean: %.2e (%.2e)',s.mean(1),s.std(1));
             if nSensors == 1
-                errorbar([1:nSensors],s.mean,s.std,'ko-');
+                errorbar(1:nSensors,s.mean,s.std,'ko-');
             else
                 for ii=2:nSensors
-                    txt = addText(txt,sprintf('\nMean: %.2f',s.mean(ii)));
+                    txt = addText(txt,sprintf('\nMean: %.2e (%.2e)',s.mean(ii),s.std(ii)));
                 end
-                errorbar([1:nSensors],s.mean,s.std);
+                errorbar(1:nSensors,s.mean,s.std);
             end
             plotTextString(txt,'ur');
             
-            [~,sensor] = vcGetSelectedObject('ISA');
+            sensor = ieGetObject('sensor');
             filterType = sensorGet(sensor,'filter names cellarray');
             set(gca,'xtick',1:nSensors,'xticklabel',filterType);
             xlabel('Sensor color type');
