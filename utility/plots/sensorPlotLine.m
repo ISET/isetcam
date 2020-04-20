@@ -67,7 +67,7 @@ end
 %% Plot it
 
 if nSensors > 1
-    figNum = vcNewGraphWin([],'tall');  % Easier to see
+    figNum = ieNewGraphWin([],'tall');  % Easier to see
     data = plane2rgb(data,sensor,NaN);
     fColors = sensorGet(sensor,'filterPlotColors');
     if strcmp(dataType,'electrons') && isfield(sensor,'human')  || ...
@@ -84,7 +84,7 @@ end
 
 % Should set(gca,'xlim',[XX YY]) the same for all of these, sigh.
 
-return;
+end
 
 %----------------------------------------
 function uData = plotColorISALines(xy,pos,data,ori,nSensors,dataType,sORt,fColors,figNum)
@@ -190,7 +190,7 @@ end
 set(figNum,'userdata',uData);
 set(figNum,'Name',titleString);
 
-return;
+end
 
 %----------------------------------------
 function uData = plotMonochromeISALines(xy,pos,data,ori,dataType,sORt,figNum)
@@ -241,5 +241,5 @@ end
 set(figNum,'userdata',uData);
 set(figNum,'Name',titleString);
 
-return;
+end
 
