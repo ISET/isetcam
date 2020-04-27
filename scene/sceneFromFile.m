@@ -131,8 +131,8 @@ switch lower(imType)
     case {'monochrome','rgb'}  % 'unispectral'
         % init display structure
         if notDefined('dispCal')
-            warning('Default display lcdExample is used to create scene');
-            dispCal = displayCreate('lcdExample');
+            warning('Default display is used to create scene');
+            dispCal = displayCreate;
         end
         
         if ischar(dispCal), d = displayCreate(dispCal);
