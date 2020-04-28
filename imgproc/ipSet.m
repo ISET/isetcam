@@ -225,7 +225,9 @@ switch param
         % Controls the gamma for rendering the result data to the
         % GUI display.
         vci.render.gamma = val;
-        
+        hdl = ieSessionGet('ip handles');
+        set(hdl.editGamma,'string',num2str(val));
+        ipWindow;
     % Consistency (red button)
     case {'consistency','computationalconsistency','parameterconsistency'}
         vci.consistency = val;

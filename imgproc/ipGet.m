@@ -259,7 +259,9 @@ switch oType
             case {'scaledisplay','scaledisplayoutput'}
                 if checkfields(ip,'render','scale'), val = ip.render.scale; else val = 0 ; end
             case {'rendergamma','gamma'}
-                if checkfields(ip,'render','gamma'), val = ip.render.gamma; else val = 1 ; end
+                hdl = ieSessionGet('ip handles');
+                val = str2double(get(hdl.editGamma,'string'));
+                % if checkfields(ip,'render','gamma'), val = ip.render.gamma; else val = 1 ; end
                 
                 % Image processor data
             case {'data','datastructure'}

@@ -96,6 +96,7 @@ if length(newFOV) == 1
     % ones. If none are selected, then it uses some arbitrary default
     % values. See the code in sensorGet.
     
+    %
     % The desired width should create the new field of view.  The distance
     % to the lens is the focal length.
     flength = oiGet(oi,'optics focal length');

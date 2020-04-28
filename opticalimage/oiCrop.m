@@ -23,10 +23,13 @@ if ieNotDefined('oi'), error('You must define an optical image.'); end
 if ieNotDefined('rect')
     [roiLocs,rect] = vcROISelect(oi); 
 else
+    %{
     cmin = rect(1); cmax = rect(1)+rect(3);
     rmin = rect(2); rmax = rect(2)+rect(4);
     [c,r] = meshgrid(cmin:cmax,rmin:rmax);
     roiLocs = [r(:),c(:)];
+    %}
+    roiLocs = ieRect2Locs(rect);
 end
 
 wAngular = oiGet(oi,'wangular');
@@ -55,7 +58,7 @@ oi = oiSet(oi,'wangular',wAngularNew);
 
 oi = oiSet(oi,'illuminance',oiCalculateIlluminance(oi));
 
-return;
+end
 
 
 
