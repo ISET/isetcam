@@ -226,8 +226,10 @@ switch param
         % GUI display.
         vci.render.gamma = val;
         hdl = ieSessionGet('ip handles');
-        set(hdl.editGamma,'string',num2str(val));
-        ipWindow;
+        if ~isempty(hdl)
+            set(hdl.editGamma,'string',num2str(val));
+            ipWindow;
+        end
     % Consistency (red button)
     case {'consistency','computationalconsistency','parameterconsistency'}
         vci.consistency = val;
