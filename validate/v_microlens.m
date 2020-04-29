@@ -9,7 +9,7 @@
 ieInit
 oi = oiCreate; ieAddObject(oi);
 sensor = sensorCreate;
-sensor = sensorSet(sensor,'fov',30);
+sensor = sensorSet(sensor,'fov',30,scene,oi);
 ieAddObject(sensor);
 
 %% Try gets and sets
