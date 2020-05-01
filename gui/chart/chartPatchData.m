@@ -1,8 +1,8 @@
-function mRGB = chartPatchData(obj,mLocs,delta,fullData,dataType)
+function data = chartPatchData(obj,mLocs,delta,fullData,dataType)
 %Return a cell array with the linear RGB values from an ip or sensor 
 %
 % Syntax:
-%    mRGB = chartPatchData(obj,mLocs,delta)
+%    data = chartPatchData(obj,mLocs,delta)
 %
 % Description:
 %  Returns the linear RGB values from the sensor or processor window
@@ -13,61 +13,74 @@ function mRGB = chartPatchData(obj,mLocs,delta,fullData,dataType)
 %   delta - Width of the square around the center where data are extracted
 %
 % Optional parameters
-%   fullData - Return all the data in a patch (true), or the mean
-%              value  in the patch (false, default). 
+%   fullData - Return the full data from each sample in a patch (true), or
+%              the mean value  in the patch     (default: false). 
 %   dataType - Data type to return.  Defaults are
 %                scene  - 'photons'
 %                oi     - 'photons'
 %                sensor - 'electrons'
 %                ip     - 'result'
-%              You can specify certain other data types, as can be returned
-%              by vcGetROIData. The interface and options could be written
-%              more generally and better (BW).  Look at the header to
-%              vcGetROIData to see the options.
+%           You can specify certain other data types, as can be returned
+%           by vcGetROIData. The interface and options could be written
+%           more generally and better (BW).  Look at the header to
+%           vcGetROIData to see the options.
 % Outputs
-%   mRGB - a cell array of the values from each location in the
-%          patches (if fullData == true); or, a matrix of the mean values from
-%          each patch (if fullData == false, the default) 
+%   data - a cell array of the values from each location in the
+%          patches (if fullData == true); or, a matrix of the mean values
+%          from each patch (if fullData == false, the default)
+%
+% Examples:  ieExamplesRun('chartPatchData');
 %
 % Copyright ImagEval Consultants, LLC, 2011.
 %
 % See Also:  
 %   chartROI, chartCornerpoints, macbethSelect
 
-% Example:
+% Examples:
 %{
-% Fix this
-%
-% wave = 400:10:700;  radiance = rand(length(wave),50)*10^16;
-% scene = sceneRadianceChart(wave, radiance,'patch size',25,'rowcol',[5,10]);
-% sceneWindow(scene);
+wave = 400:10:700;  radiance = rand(length(wave),50)*10^16;
+scene = sceneRadianceChart(wave, radiance,'patch size',25,'rowcol',[5,10]);
+sceneWindow(scene);
 % 
-% % Define the corner points
-% wholeChart = true;
-% cp = chartCornerpoints(scene,wholeChart);
+% Define the corner points
+wholeChart = true;
+cp = chartCornerpoints(scene,wholeChart);
 % 
-% % Create the rects
-% chartP = sceneGet(scene,'chart parameters');
-% sFactor = 0.5;
-% [rects, mLocs, pSize] = chartRectangles(cp,chartP.rowcol(1),chartP.rowcol(2), sFactor);
+% Create the rects
+chartP = sceneGet(scene,'chart parameters');
+sFactor = 0.5;
+[rects, mLocs, pSize] = chartRectangles(cp,chartP.rowcol(1),chartP.rowcol(2), sFactor);
 % 
-% % Plot the rects
-% rectHandles = chartRectsDraw(scene,rects);
+% Plot the rects
+rectHandles = chartRectsDraw(scene,rects);
 % 
-% delete(rectHandles);
+delete(rectHandles);
+%}
+%{
+wave = 400:10:700;  radiance = rand(length(wave),50)*10^16;
+scene = sceneRadianceChart(wave, radiance,'patch size',25,'rowcol',[5,10]);
+sceneWindow(scene);
+
+wholeChart = true;
+cp = chartCornerpoints(scene,wholeChart);
 % 
-% % When fullData is true, each cell has the spectra from a patch
-% fullData = true;
-% mRGB = chartPatchData(scene,mLocs,pSize(1)*0.8,fullData);
-% theseData = mRGB{1};
-% % For the synthetic scene all the points are the same.
-% vcNewGraphWin; plot(wave,theseData');  
+% Create the rects
+chartP = sceneGet(scene,'chart parameters');
+sFactor = 0.5;
+[rects, mLocs, pSize] = chartRectangles(cp,chartP.rowcol(1),chartP.rowcol(2), sFactor);
+
+% When fullData is true, each cell has the spectra from a patch
+fullData = true;
+mRGB = chartPatchData(scene,mLocs,pSize(1)*0.8,fullData);
+theseData = mRGB{1};
+% For the synthetic scene all the points are the same.
+ieNewGraphWin; plot(wave,theseData');  
 % 
-% % When fullData is false, the rows are the mean spectra from each of the
-% % different patches.
-% fullData = false;
-% mRGB = chartPatchData(scene,mLocs,pSize(1)*0.8,fullData);
-% vcNewGraphWin; plot(wave,mRGB')
+% When fullData is false, the rows are the mean spectra from each of the
+% different patches.
+fullData = false;
+mRGB = chartPatchData(scene,mLocs,pSize(1)*0.8,fullData);
+ieNewGraphWin; plot(wave,mRGB')
 %}
 
 %% Parameter validation
@@ -80,7 +93,7 @@ if ieNotDefined('dataType'), dataType = '';     end  % Default for vcimage
 
 %% Data extraction
 nLocs = size(mLocs,2);
-mRGB = cell(1,nLocs);
+data = cell(1,nLocs);
 switch obj.type
     case 'scene'
         if isempty(dataType), dataType = 'photons'; end
@@ -98,15 +111,15 @@ for ii = 1:nLocs
     % mLocs(:,mPatch) is a column vector with (row,col)' for the
     % mPatch.
     theseLocs = chartROI(mLocs(:,ii),delta);
-    mRGB{ii} = vcGetROIData(obj,theseLocs,dataType);
+    data{ii} = vcGetROIData(obj,theseLocs,dataType);
 end
     
 if ~fullData  % User just wants the mean value
-    meanRGB = zeros(nLocs,size(mRGB{1},2));
+    meanRGB = zeros(nLocs,size(data{1},2));
     for ii = 1:nLocs
-        meanRGB(ii,:) = mean(mRGB{ii});
+        meanRGB(ii,:) = mean(data{ii});
     end
-    mRGB = meanRGB;
+    data = meanRGB;
 end
 
 end
