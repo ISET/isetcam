@@ -14,7 +14,7 @@ function rectHandles = chartRectsDraw(obj,rects)
 % (c) Imageval Consulting, LLC 2012
 %
 % See also:
-%   chartRectangles, sceneRadianceChart
+%   chartRectangles, chartCornerpoints, sceneRadianceChart
 
 %% Should check input parameters here!
 %

@@ -2,7 +2,7 @@ function data = chartPatchData(obj,mLocs,delta,fullData,dataType)
 %Return a cell array with the linear RGB values from an ip or sensor 
 %
 % Syntax:
-%    data = chartPatchData(obj,mLocs,delta)
+%    data = chartPatchData(obj,mLocs,delta,[fullData],[dataType])
 %
 % Description:
 %  Returns the linear RGB values from the sensor or processor window
