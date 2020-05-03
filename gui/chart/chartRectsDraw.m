@@ -1,7 +1,7 @@
 function rectHandles = chartRectsDraw(obj,rects)
 % Draw the ROI rectangles as an overlay on the object window
 %
-%   rectHandles = chartRectsDraw(sensor,rects)
+%   rectHandles = chartRectsDraw(obj,rects)
 %
 % Inputs:
 %   obj:     scene, oi, sensor or ip
@@ -14,7 +14,7 @@ function rectHandles = chartRectsDraw(obj,rects)
 % (c) Imageval Consulting, LLC 2012
 %
 % See also:
-%   chartRectangles, sceneRadianceChart
+%   chartRectangles, chartCornerpoints, sceneRadianceChart
 
 %% Should check input parameters here!
 %
