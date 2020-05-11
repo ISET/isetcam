@@ -1,38 +1,54 @@
 function scene = sceneAdjustIlluminant(scene,illEnergy,preserveMean)
 %Adjust the current scene illuminant to the value in data
 %
+% Brief synopsis
 %  scene = sceneAdjustIlluminant(scene,illEnergy,preserveMean)
 %
-% The scene radiance is scaled by dividing the current illuminant and
-% multiplying by the new illEnergy.  The reflectance is preserved.
+% Brief Description
+%  Change the scene illuminant.  The calculation scales the scene
+%  radiance by dividing out the current illuminant and then multiplying by
+%  the new illuminant. This preserves the reflectance. By default, we also
+%  preserve the scene mean luminance, which effectively scales the
+%  illuminant level.
+%
+%  If you do not want the illuminant level to change, then set the
+%  preserveMean flag to false. It is true by default.
+%
+%  If the current scene has no defined illuminant, we assume that the scene
+%  illuminant is D65.
+%
+%  This appears to work if the scene is a spatial-spectral illuminant too. 
 %
 % Parameters
 %  scene:      A scene structure, or the current scene will be assumed
 %  illuminant: Either a file name to spectral data or a vector (same length
-%    as scene wave) defining the illuminant in energy units
-%  preserveMean:  Scale result to preserve mean illuminant
-%
-% If the current scene has no defined illuminant, we assume that it has a
-% D65 illumination
-%
-% The scene luminance is preserved by this transformation.
-%
-% Example:
-%    scene = sceneCreate;   % Default is MCC under D65
-%    scene = sceneAdjustIlluminant(scene,'Horizon_Gretag.mat');
-%    vcReplaceAndSelectObject(scene); sceneWindow;
-%
-%    bb = blackbody(sceneGet(scene,'wave'),3000);
-%    scene = sceneAdjustIlluminant(scene,bb);
-%    vcReplaceAndSelectObject(scene); sceneWindow;
-%
-%    bb = blackbody(sceneGet(scene,'wave'),6500,'energy');
-%    figure; plot(wave,bb)
-%    scene = sceneAdjustIlluminant(scene,bb);
-%    vcReplaceAndSelectObject(scene); sceneWindow;
+%              as scene wave) defining the illuminant in energy units
+%  preserveMean:  Scale result to preserve mean illuminant (default true)
 %
 % Copyright ImagEval Consultants, LLC, 2010.
+%
+% See also
+%    sceneAdjustLuminance
 
+% Examples:
+%{
+    scene = sceneCreate;   % Default is MCC under D65
+    scene = sceneAdjustIlluminant(scene,'Horizon_Gretag.mat');
+    vcReplaceAndSelectObject(scene); sceneWindow;
+%}
+%{
+    bb = blackbody(sceneGet(scene,'wave'),3000);
+    scene = sceneAdjustIlluminant(scene,bb);
+    vcReplaceAndSelectObject(scene); sceneWindow;
+%}
+%{
+    bb = blackbody(sceneGet(scene,'wave'),6500,'energy');
+    figure; plot(wave,bb)
+    scene = sceneAdjustIlluminant(scene,bb);
+    vcReplaceAndSelectObject(scene); sceneWindow;
+%}
+
+%%
 if ieNotDefined('scene'),        scene = vcGetObject('scene'); end
 if ieNotDefined('preserveMean'), preserveMean = true; end
 
@@ -53,7 +69,7 @@ else
     fullName = '';
 end
 
-% We check the illuminant energy values.
+%% We check the illuminant energy values.
 if max(illEnergy) > 10^5
     % Energy is not this big.
     warning('Illuminant energy values are high; may be photons, not energy.')
@@ -63,7 +79,7 @@ elseif isequal(max(isnan(illEnergy(:))),1) || isequal(min(illEnergy(:)),0)
     return;
 end
 
-% Start the conversion
+%% Start the conversion
 curIll = sceneGet(scene,'illuminant photons');
 if isempty(curIll)
     % We  treat this as an opportunity to create an illuminant, as in
