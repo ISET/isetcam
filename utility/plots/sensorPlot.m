@@ -122,17 +122,17 @@ switch pType
     
     % Sensor data related
     case {'electronshline'}
-        [uData, g] = sensorPlotLine(sensor, 'h', 'electrons', 'space', roiLocs);
+        [g, uData] = sensorPlotLine(sensor, 'h', 'electrons', 'space', roiLocs);
     case {'electronsvline'}
-        [uData, g] = sensorPlotLine(sensor, 'v', 'electrons', 'space', roiLocs);
+        [g, uData]  = sensorPlotLine(sensor, 'v', 'electrons', 'space', roiLocs);
     case {'voltshline'}
-        [uData, g] = sensorPlotLine(sensor, 'h', 'volts', 'space', roiLocs);
+        [g, uData]  = sensorPlotLine(sensor, 'h', 'volts', 'space', roiLocs);
     case {'voltsvline'}
-        [uData, g] = sensorPlotLine(sensor, 'v', 'volts', 'space', roiLocs);
+        [g, uData]  = sensorPlotLine(sensor, 'v', 'volts', 'space', roiLocs);
     case {'dvvline'}
-        [uData, g] = sensorPlotLine(sensor, 'v', 'dv', 'space', roiLocs);    
+        [g, uData]  = sensorPlotLine(sensor, 'v', 'dv', 'space', roiLocs);    
     case {'dvhline'}
-        [uData, g] = sensorPlotLine(sensor, 'h', 'dv', 'space', roiLocs);
+        [g, uData]  = sensorPlotLine(sensor, 'h', 'dv', 'space', roiLocs);
     case {'voltshistogram','voltshist'}
         [uData,g] = plotSensorHist(sensor,'v',roiLocs);
         sensor = sensorSet(sensor,'roi',roiLocs);
