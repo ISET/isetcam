@@ -50,7 +50,7 @@ if ieNotDefined('sFiles')
     sFiles{1} = which('MunsellSamples_Vhrel.mat');
     sFiles{2} = which('Food_Vhrel.mat');
     sFiles{3} = which('DupontPaintChip_Vhrel.mat');
-    sFiles{3} = which('HyspexSkinReflectance.mat');
+    sFiles{4} = which('HyspexSkinReflectance.mat');
     %{
     sFiles{1} = fullfile(isetRootPath,'data','surfaces','reflectances','MunsellSamples_Vhrel.mat');
     sFiles{2} = fullfile(isetRootPath,'data','surfaces','reflectances','Food_Vhrel.mat');
