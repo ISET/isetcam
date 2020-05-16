@@ -59,9 +59,6 @@ function scene = sceneSet(scene,parm,val,varargin)
 %      'illuminant Photons' - Photons are converted to energy and stored 
 %      'illuminant Comment' - Comment
 %      'illuminant Name'    - Identifier for illuminant.
-%         See sceneIlluminantScale() for setting the illuminant level in
-%         certain cases of unknown reflectance and illuminant conditions.
-%         Though, this is being deprecated.
 %
 % Auxiliary
 %      'consistency'  - Display consistent with window data
