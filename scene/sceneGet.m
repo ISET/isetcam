@@ -119,6 +119,7 @@ function val = sceneGet(scene,parm,varargin)
 %        'illuminant name'    - Illuminant name
 %        'illuminant energy'  - energy data
 %        'illuminant photons' - energy data
+%        'illuminant image'   - 
 %        'illuminant xyz'     - CIE XYZ (1931, 10 deg)
 %        'illuminant comment' - comment
 %        'illuminant format'  - 'spatial spectral' or 'spectral'
@@ -735,6 +736,26 @@ switch parm
             otherwise
                 % No illuminant data
         end
+    case {'illuminantimage'}
+        wave = sceneGet(scene,'wave');
+        sz = sceneGet(scene,'size');
+        energy = sceneGet(scene,'illuminant energy');
+        if isempty(energy) 
+            ieInWindowMessage('No illuminant data.',handle);
+            close(gcf);
+            error('No illuminant data');
+        end
+        switch sceneGet(scene,'illuminant format')
+            case {'spectral'}
+                % Makes a uniform SPD image
+                energy = repmat(energy(:)',prod(sz),1);
+                energy = XW2RGBFormat(energy,sz(1),sz(2));
+            otherwise
+        end
+        
+        % Create an RGB image
+        val = xyz2srgb(ieXYZFromEnergy(energy,wave));       
+        
     case {'illuminantwave'}
         % Must be the same as the scene wave
         val = sceneGet(scene,'wave');
