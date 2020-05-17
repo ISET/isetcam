@@ -880,7 +880,7 @@ switch oType
                     % convert from energy to photons here.  We account for the two
                     % different illuminant formats (RGW or vector).
                     W = oiGet(oi,'wave');
-                    switch oiGet(po,'illuminant format')
+                    switch oiGet(oi,'illuminant format')
                         case 'spectral'
                             val = oiGet(oi,'illuminant photons');
                             val = Quanta2Energy(W,val(:));
@@ -895,7 +895,7 @@ switch oType
                             % No illuminant data
                     end
             case {'illuminantwave'}
-                % Must be the same as the scene wave
+                % Must be the same as the oi wave
                 val = oiGet(oi,'wave');
                 
             case {'illuminantxyz','whitexyz'}

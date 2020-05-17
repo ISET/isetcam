@@ -572,6 +572,33 @@ switch pType
         set(g,'name','OTF by Wave');
         colormap(jet)
         
+    case {'illuminantimage'}
+        % oiPlot(oi,'illuminant image')
+        % Make an RGB image showing the spatial image of the illuminant.
+        
+        wave = oiGet(oi,'wave');
+        sz = oiGet(oi,'size');
+        energy = oiGet(oi,'illuminant energy');
+        if isempty(energy) 
+            ieInWindowMessage('No illuminant data.',handle);
+            close(gcf);
+            error('No illuminant data');
+        end
+
+        switch oiGet(oi,'illuminant format')
+            case {'spectral'}
+                % Makes a uniform SPD image
+                energy = repmat(energy(:)',prod(sz),1);
+                energy = XW2RGBFormat(energy,sz(1),sz(2));
+            otherwise
+        end
+        
+        % Create an RGB image
+        udata.srgb = xyz2srgb(ieXYZFromEnergy(energy,wave));
+        imagesc(sz(1),sz(2),udata.srgb);  
+        grid on; axis off; axis image;
+        title('Illumination image')      
+        
     otherwise
         error('Unknown oiPlot type %s.',pType);
 end
