@@ -29,17 +29,14 @@ function [rects,mLocs,pSize] = chartRectangles(cp,rPatch,cPatch,sFactor)
 %{
   % Puts a mark in the center of each of the patches
   wave = 400:10:700;  radiance = rand(length(wave),50)*10^16;
-  scene = sceneRadianceChart(wave, radiance,'patch size',20);
+  scene = sceneRadianceChart(wave, radiance,'patch size',20,'rowcol',[15,15]);
   sceneWindow(scene);
   sceneGet(scene,'chart parameters')
   chartP = sceneGet(scene,'chart parameters');
-  mLocs = chartRectangles(chartP.cornerPoints,chartP.rowcol(1),chartP.rowcol(2));
-  
-  % Draw
-  a = get(sceneWindow,'CurrentAxes'); 
-  hold(a,'on'); 
-  plot(mLocs(2,:),mLocs(1,:),'o');
-  hold(a,'off');
+  [rects,mLocs,pSize] = chartRectangles(chartP.cornerPoints,chartP.rowcol(1),chartP.rowcol(2));
+  rdhl = chartRectsDraw(scene,rects)
+  pause(3);
+  delete(rdhl);
 %}
 
 %% Set up parameters

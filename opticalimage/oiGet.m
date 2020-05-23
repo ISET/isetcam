@@ -142,6 +142,15 @@ function val = oiGet(oi,parm,varargin)
 %      {'rgb image'}         - RGB rendering of OI data
 %      {'centroid'}          - Centroid of a point image
 %
+% Auxiliary information
+%      'illuminant'           - HDRS multispectral data illuminant stored here (watts/sr/m^2/nm)
+%        'illuminant name'    - Illuminant name
+%        'illuminant energy'  - energy data
+%        'illuminant photons' - energy data
+%        'illuminant xyz'     - CIE XYZ (1931, 10 deg)
+%        'illuminant comment' - comment
+%        'illuminant format'  - 'spatial spectral' or 'spectral'
+%
 % Copyright ImagEval Consultants, LLC, 2003.
 %
 % See also ieParameterOtype, oiSet, oiCreate, opticsSet, opticsGet
@@ -838,6 +847,76 @@ switch oType
                 val = [min(tmp(:)), max(tmp(:))];
                 if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
 
+            % Illuminant methods. Related to ISET3D.
+            %
+            % In some iset3d cases we compute illuminant information.
+            % We run the PBRT Docker container and replace all the surfaces
+            % with a white Lambertian surface.  piRender() in ISET3D
+            % returns the spatial-spectral illuminant.
+            %
+            case {'illuminant'}
+                % This is the whole illuminant structure.
+                if checkfields(oi,'illuminant'), val = oi.illuminant; end
+            case {'illuminantname'}
+                % oiGet(scene,'illuminant name')
+                il = oiGet(oi,'illuminant');
+                val = illuminantGet(il,'name');
+            case {'illuminantformat'}
+                % oiGet(oi,'illuminant format') 
+                % Checks whether illuminant is spatial spectral or just an
+                % SPD vector.
+                % Returns: spectral, spatial spectral, or empty
+                il = oiGet(oi,'illuminant');
+                if isempty(il), disp('No OI illuminant.'); return;
+                else,           val = illuminantGet(il,'illuminant format');
+                end
+                
+            case {'illuminantphotons'}
+                % The data field is has illuminant in photon units.
+                il = oiGet(oi,'illuminant');
+                val = illuminantGet(il,'photons');
+                case {'illuminantenergy'}
+                    % The data field is has illuminant in standard energy units.  We
+                    % convert from energy to photons here.  We account for the two
+                    % different illuminant formats (RGW or vector).
+                    W = oiGet(oi,'wave');
+                    switch oiGet(oi,'illuminant format')
+                        case 'spectral'
+                            val = oiGet(oi,'illuminant photons');
+                            val = Quanta2Energy(W,val(:));
+                            val = val(:);
+                        case 'spatial spectral'
+                            % Spatial-spectral format.  Sorry about all the transposes.
+                            val = oiGet(oi,'illuminant photons');
+                            [val,r,c] = RGB2XWFormat(val);
+                            val = Quanta2Energy(W,val);
+                            val = XW2RGBFormat(val,r,c);
+                        otherwise
+                            % No illuminant data
+                    end
+            case {'illuminantwave'}
+                % Must be the same as the oi wave
+                val = oiGet(oi,'wave');
+                
+            case {'illuminantxyz','whitexyz'}
+                % XYZ coordinates of illuminant, which is also the scene white
+                % point.
+                energy = oiGet(oi,'illuminant energy');
+                wave   = oiGet(oi,'wave');
+                
+                % Deal with spatial spectral case and vector case
+                if ndims(energy) == 3
+                    [energy,r,c] = RGB2XWFormat(energy);
+                    val = ieXYZFromEnergy(energy,wave);
+                    val = XW2RGBFormat(val,r,c);
+                else
+                    val    = ieXYZFromEnergy(energy(:)',wave);
+                end
+                % This can be single with the new data format.
+                val = double(val);
+            case {'illuminantcomment'}
+                if checkfields(oi,'illuminant','comment'),val = scene.illuminant.comment; end
+                
             otherwise
                 disp(['Unknown parameter: ',parm]);
                 

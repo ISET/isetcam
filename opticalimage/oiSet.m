@@ -82,6 +82,14 @@ function oi = oiSet(oi,parm,val,varargin)
 % Depth information
 %      {'depth map'}         - Distance of original scene pixel (meters)
 %
+% Some OI rendered by ISET3D have information about the spatial-spectral
+% illuminant 
+%    'illuminant'           - Illuminant structure
+%      'illuminant Energy'  - Illuminant spd in energy is stored W/sr/nm/sec
+%      'illuminant Photons' - Photons are converted to energy and stored 
+%      'illuminant Comment' - Comment
+%      'illuminant Name'    - Identifier for illuminant.
+%
 % Auxiliary
 %      {'consistency'}       - Is the display consistent with data
 %      {'gamma'}             - Display gamma in oiWindow
@@ -346,6 +354,45 @@ switch parm
     case {'chartcorners'}
         oi.chartP.cornerPoints = val;
         
+    % Illuminant (spatial-spectral) for ISET3D case
+    case {'illuminant'}
+        % The whole structure
+        oi.illuminant = val;
+    case {'illuminantdata','illuminantenergy'}
+        % This set changes the illuminant, but it does not change the
+        % radiance SPD.  Hence, changing the illuminant (implicitly)
+        % changes the reflectance. This might not be what you want.  If you
+        % want to change the scene as if it is illuminanted differently,
+        % use the function: sceneAdjustIlluminant()
+        
+        % The data can be a vector (one SPD for the whole image) or they
+        % can be in spatial spectral format SPD with a different illuminant
+        % at each position.
+        illuminant = oiGet(oi,'illuminant');
+        illuminant = illuminantSet(illuminant,'energy',val);
+        oi = sceneSet(oi,'illuminant',illuminant);
+    case {'illuminantphotons'}
+        % See comment above about sceneAdjustIlluminant.
+        %
+        % sceneSet(scene,'illuminant photons',data)
+        %
+        % We have to handle the spectral and the spatial spectral cases
+        % within the illuminantSet.  At this point, val can be a vector or
+        % an RGB format matrix.
+        if checkfields(oi,'illuminant')
+            oi.illuminant = illuminantSet(oi.illuminant,'photons',val);
+        else
+            % We use a default d65.  The user must change to be consistent
+            wave = oiGet(oi,'wave');
+            oi.illuminant = illuminantCreate('d65',wave);
+            oi.illuminant = illuminantSet(oi.illuminant,'photons',val);
+        end
+    case {'illuminantname'}
+        oi.illuminant = illuminantSet(oi.illuminant,'name',val);
+    case {'illuminantcomment'}
+        oi.illuminant.comment = val;
+    case {'illuminantspectrum'}
+        oi.illuminant.spectrum = val;
         
     otherwise
         error('Unknown oiSet parameter: %s',parm);
