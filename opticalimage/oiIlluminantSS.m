@@ -40,7 +40,7 @@ function oi = oiIlluminantSS(oi,pattern)
  oiGet(oi,'illuminant format')
  oi = oiIlluminantSS(oi);
  oiGet(oi,'illuminant format')
- oiWindow(scene);
+ oiWindow(oi);
 %}
 %{
  scene = sceneCreate; oi = oiCreate; oi = oiCompute(oi,scene);
@@ -48,7 +48,7 @@ function oi = oiIlluminantSS(oi,pattern)
  sz = oiGet(oi,'size');
  [X,Y] = meshgrid(1:sz(2),1:sz(1));
  oi = oiIlluminantSS(oi,X);
- oiWindow(scene);
+ oiWindow(oi);
 %}
 %% Make sure we convert to spatial spectral
 
