@@ -160,7 +160,21 @@ elseif nFilters == 2
     
 elseif nFilters >= 3 || nSensors > 1
     % Basic color processing pipeline. Single exposure case.
+    
+    % 0.  Some sensor designs expect the zero level (response to a black
+    % scene) should be a positive value.  If we store that level in the
+    % sensor structure, the IP should subtract the zero level prior to
+    % processing.  
     %
+    % We do that here by adjusting the vci.data.input by the zero level
+    % amount, making sure that we do not have any negative values.  This
+    % lets us use the same code as usual below.  See also
+    % zerolevel = sensorZerolevel(sensor);
+    %
+    zerolevel = sensorGet(sensor,'zero level');
+    if zerolevel ~= 0
+        vci.data.input = max( (vci.data.input - zerolevel) ,0);
+    end
  
     %1.  Demosaic in sensor space. The data remain in the sensor
     % channels and there is no scaling.

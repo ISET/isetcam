@@ -129,7 +129,7 @@ function val = sensorGet(sensor,param,varargin)
 %        {'max output'}            -
 %        {'quantization lut'}
 %        {'quantization method'}
-
+%      {'zero level'}    - The expected level to a black image
 %
 % Sensor color filter array and related color properties
 %     {'spectrum'}    - structure about spectral information
@@ -349,7 +349,7 @@ switch oType
                     else
                         sourceFL    = oiGet(oi,'optics focal length');
                     end
-                else sourceFL = varargin{1};
+                else, sourceFL = varargin{1};
                 end
                 val = ieRad2deg(sensorGet(sensor,'cra',sourceFL));
             case {'etendue','sensoretendue'}
@@ -394,11 +394,11 @@ switch oType
                 
             case {'analoggain','ag'}
                 if checkfields(sensor,'analogGain'), val = sensor.analogGain;
-                else val = 1;
+                else, val = 1;
                 end
             case {'analogoffset','ao'}
                 if checkfields(sensor,'analogGain'), val = sensor.analogOffset;
-                else   val = 0;
+                else,   val = 0;
                 end
             case {'dv','digitalvalue','digitalvalues'}
                 if checkfields(sensor,'data','dv'),val = sensor.data.dv; end
@@ -627,7 +627,7 @@ switch oType
             case {'binwidth','waveresolution','wavelengthresolution'}
                 wave = sensorGet(sensor,'wave');
                 if length(wave) > 1, val = wave(2) - wave(1);
-                else val = 1;
+                else, val = 1;
                 end
             case {'nwave','nwaves','numberofwavelengthsamples'}
                 val = length(sensorGet(sensor,'wave'));
@@ -648,7 +648,7 @@ switch oType
                 
                 % Human patterns don't have block sizes.
                 if sensorCheckHuman(sensor), val=1;
-                else val = size(sensorGet(sensor,'pattern'),1);
+                else, val = size(sensorGet(sensor,'pattern'),1);
                 end
                 
             case 'unitblockcols'
@@ -656,7 +656,7 @@ switch oType
                 
                 % Human patterns don't have block sizes.
                 if sensorCheckHuman(sensor), val=1;
-                else val = size(sensorGet(sensor,'pattern'),2);
+                else, val = size(sensorGet(sensor,'pattern'),2);
                 end
                 
             case {'cfasize','unitblocksize'}
@@ -666,7 +666,7 @@ switch oType
                 
                 % Human patterns don't have block sizes.
                 if sensorCheckHuman(sensor), val= [1 1];
-                else    val = size(sensorGet(sensor,'pattern'));
+                else,    val = size(sensorGet(sensor,'pattern'));
                 end
                 
             case 'unitblockconfig'
@@ -743,17 +743,22 @@ switch oType
             case {'colgainfpnvector','colgainfpn','colgain'}
                 if checkfields(sensor,'colGain'),val = sensor.colGain; end
                 
+            case {'zerolevel'}
+                if checkfields(sensor,'electrical','zerolevel')
+                    val = sensor.electrical.zerolevel; 
+                end
+
                 % Noise management
             case {'noiseflag','shotnoiseflag'}
                 % 0 means no noise
                 % 1 means shot noise but no electronics noise
                 % 2 means shot noise and electronics noise
                 if checkfields(sensor,'noiseFlag'), val = sensor.noiseFlag;
-                else val = 2;    % Compute both electronic and shot noise
+                else, val = 2;    % Compute both electronic and shot noise
                 end
             case {'reusenoise'}
                 if checkfields(sensor,'reuseNoise'), val = sensor.reuseNoise;
-                else val = 0;    % Do not reuse
+                else, val = 0;    % Do not reuse
                 end
             case {'noiseseed'}
                 if checkfields(sensor,'noiseSeed'), val = sensor.noiseSeed;
@@ -768,7 +773,7 @@ switch oType
             case {'ngridsamples','pixelsamples','nsamplesperpixel','npixelsamplesforcomputing'}
                 % Default is 1.  If not parameter is not set, we return the default.
                 if checkfields(sensor,'samplesPerPixel'),val = sensor.samplesPerPixel;
-                else val = 1;
+                else, val = 1;
                 end
                 
                 % Exposure related
@@ -813,7 +818,7 @@ switch oType
                 % position in the CFA, we wouldn't normally use this.  In
                 % that case we only have a single integrated CFA.
                 if checkfields(sensor,'exposurePlane'), val = sensor.exposurePlane;
-                else val = floor(sensorGet(sensor,'nExposures')/2) + 1;
+                else, val = floor(sensorGet(sensor,'nExposures')/2) + 1;
                 end
                 
             case {'cds','correlateddoublesampling'}
@@ -823,9 +828,9 @@ switch oType
             case {'vignettingflag','vignetting','bareetendue','sensorbareetendue','nomicrolensetendue'}
                 % If the vignetting flag has not been set, treat it as 'skip',
                 % which is 0.
-                if checkfields(sensor,'data','vignetting'),
+                if checkfields(sensor,'data','vignetting')
                     if isempty(sensor.data.vignetting), val = 0;
-                    else                             val = sensor.data.vignetting;
+                    else,                            val = sensor.data.vignetting;
                     end
                 else
                     val = 0;
@@ -874,7 +879,7 @@ switch oType
                     % The user might have sent a scene struct or a scene distance
                     % in meters.
                     if isstruct(scene), sDist = sceneGet(scene,'distance');
-                    else                sDist = scene;
+                    else,               sDist = scene;
                     end
                 end
                 % If there is no oi, then use the default optics focal length. The
@@ -915,7 +920,7 @@ switch oType
                     % The user might have sent a scene struct or a scene distance
                     % in meters.
                     if isstruct(scene), sDist = sceneGet(scene,'distance');
-                    else                sDist = scene;
+                    else,               sDist = scene;
                     end
                 end
                 % If there is no oi, then use the default optics focal length. The
@@ -938,7 +943,7 @@ switch oType
                 sz =  sensorGet(sensor,'size');
                 
                 if isempty(varargin), oi = vcGetObject('oi');
-                else oi = varargin{1};
+                else, oi = varargin{1};
                 end
                 
                 % The horizontal field of view should incorporate information from
@@ -955,7 +960,7 @@ switch oType
                 width = sensorGet(sensor,'width',unit);
                 
                 if length(varargin) < 2, scene = vcGetObject('scene');
-                else scene = varargin{2};
+                else, scene = varargin{2};
                 end
                 
                 % We want the optics to do this right.
@@ -985,7 +990,7 @@ switch oType
                 % false.  This checks whether the parameters and the displayed
                 % image are consistent/updated.
                 if checkfields(sensor,'consistency'), val = sensor.consistency;
-                else sensorSet(sensor,'consistency',0); val = 0;
+                else, sensorSet(sensor,'consistency',0); val = 0;
                 end
                 
             case {'mccrecthandles'}
@@ -1045,12 +1050,12 @@ switch oType
             case {'movementpositions','sensorpositions'}
                 % Nx2 vector of (x,y) positions in deg
                 if checkfields(sensor,'movement','pos'), val = sensor.movement.pos;
-                else val = [0,0];
+                else, val = [0,0];
                 end
             case {'sensorpositionsx'}
                 if checkfields(sensor,'movement','pos')
                     val = sensor.movement.pos(:,1);
-                else val = 0;
+                else, val = 0;
                 end
             case {'sensorpositionsy'}
                 if checkfields(sensor,'movement','pos')
