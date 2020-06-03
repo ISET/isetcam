@@ -1,8 +1,8 @@
-function ExecuteTextInScript(theScript)
+function ieExamplesRunTextInScript(theScript)
 % Open file, read it, execute the text via eval
 %
 % Syntax:
-%     ExecuteTextInScript(theScript)
+%     ieExamplesRunTextInScript(theScript)
 %
 % Description
 %    This is mostly to test that if we have a string
@@ -21,7 +21,7 @@ function ExecuteTextInScript(theScript)
 % Examples are provided in the code.
 %
 % See also:
-%     ExecuteExamplesInScript
+%     
 %
 
 % History
@@ -29,7 +29,7 @@ function ExecuteTextInScript(theScript)
 
 % Examples:
 %{
-    ExecuteTextInScript('SimpleScript.m');
+    ieExamplesRunTextInScript('SimpleScript.m');
 %}
 %{
     % Another example.  This is here to help

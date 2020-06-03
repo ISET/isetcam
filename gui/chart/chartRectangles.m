@@ -20,12 +20,12 @@ function [rects,mLocs,pSize] = chartRectangles(cp,rPatch,cPatch,sFactor)
 %          and so forth.
 %   pSize: The patch size
 %
-% Copyright Imageval, LLC 2014
+% ieExamplesPrint('chartRectangles')
 % 
 % See also
 %   sceneRadianceChart, chartRectsDraw, chartROI
 
-% Example:
+% Examples:
 %{
   % Puts a mark in the center of each of the patches
   wave = 400:10:700;  radiance = rand(length(wave),50)*10^16;
@@ -34,9 +34,25 @@ function [rects,mLocs,pSize] = chartRectangles(cp,rPatch,cPatch,sFactor)
   sceneGet(scene,'chart parameters')
   chartP = sceneGet(scene,'chart parameters');
   [rects,mLocs,pSize] = chartRectangles(chartP.cornerPoints,chartP.rowcol(1),chartP.rowcol(2));
-  rdhl = chartRectsDraw(scene,rects)
+  rdhl = chartRectsDraw(scene,rects);
   pause(3);
   delete(rdhl);
+%}
+%{
+ scene = sceneCreate; sceneWindow(scene);
+ cp = chartCornerpoints(scene);
+ [rects,mLocs,pSize] = chartRectangles(cp,4,6,1);
+ rdhl = chartRectsDraw(scene,rects);
+ pause(3);delete(rdhl);
+%}
+%{
+ scene = sceneCreate;
+ sceneWindow(scene);
+ sz = sceneGet(scene,'size');
+ cp = [1,sz(1); sz(2), sz(1); sz(2),1; 1, 1] - 1;
+ [rects,mLocs,pSize] = chartRectangles(cp,4,6,.8);
+ rdhl = chartRectsDraw(scene,rects);
+ pause(3);delete(rdhl);
 %}
 
 %% Set up parameters
@@ -52,7 +68,7 @@ chartY = cp(1,2) - cp(4,2);
 
 % The extra 1 has to do with the rect definitions in chartCornerpoints
 % These min values center the squares.
-minX = cp(1,1)-1; minY = cp(4,2)-1;
+minX = cp(1,1); minY = cp(4,2);
 
 % Patch sizes
 pSize = round([chartY/rPatch,chartX/cPatch]);
