@@ -29,42 +29,52 @@ function macbethChartObject = macbethChartCreate(patchSize,patchList,spectrum,su
 %   macbethChartObject - A struct with information needed to create the
 %                        macbeth color checker scene.
 %
-% Examples:
-%    patchSize = 16;
-%    patchList = 1:24;
-%    macbethChartObject = macbethChartCreate(patchSize,patchList);
-%
-% % To read a different spectral range
-%    spectrum.wave      = (370:10:730);
-%    macbethChartObject = macbethChartCreate([],[],spectrum);
-%
-% % To make an image
-%    macbethChartObject = macbethChartCreate(patchSize,patchList);
-%    spd = macbethChartObject.data; imageSPD(spd);
-%
-% % To read the chart reflectances 
-%    patchSize = 1; patchList = 1:24;
-%    macbethChartObject = macbethChartCreate(patchSize,patchList);
-%    r = macbethChartObject.data; reflectances = RGB2XWFormat(r)';
-%    vcNewGraphWin; plot(reflectances)
-%
-% % To read just the gray series
-%    patchSize = 16;
-%    patchList = 4:4:24;
-%    macbethChartObject = macbethChartCreate(patchSize,patchList);
-%    spd = macbethChartObject.data; imageSPD(spd);
-%
-% % To read an alternative file
-%    patchSize = 32;
-%    patchList = 1:24;
-%    spectrum.wave = (370:10:730);
-%    surfaceFile   = 'macbethChart2.mat';
-%    macbethChartObject = macbethChartCreate(patchSize,patchList,spectrum,surfaceFile);
-%    spd = macbethChartObject.data; imageSPD(spd,spectrum.wave);
+% ieExamplesPrint('macbethChartCreate');
 %
 % Copyright ImagEval Consultants, LLC, 2003
 %
-% See also:  sceneCreateMacbeth, sceneCreate('macbeth')
+% See also:  
+%   sceneCreateMacbeth, sceneCreate('macbeth')
+
+% Examples:
+%{
+  patchSize = 16;
+  patchList = 1:24;
+  macbethChartObject = macbethChartCreate(patchSize,patchList);
+%}
+%{
+% To read a different spectral range
+  spectrum.wave      = (370:10:730);
+  macbethChartObject = macbethChartCreate([],[],spectrum);
+%}
+%{
+ % To make an image
+  macbethChartObject = macbethChartCreate(patchSize,patchList);
+  spd = macbethChartObject.data; imageSPD(spd);
+%}
+%{
+ % To read the chart reflectances 
+ patchSize = 1; patchList = 1:24;
+ macbethChartObject = macbethChartCreate(patchSize,patchList);
+ r = macbethChartObject.data; reflectances = RGB2XWFormat(r)';
+ ieNewGraphWin; plot(reflectances)
+%}
+%{
+ % To read just the gray series
+ patchSize = 16;
+ patchList = 4:4:24;
+ macbethChartObject = macbethChartCreate(patchSize,patchList);
+ spd = macbethChartObject.data; imageSPD(spd);
+%}
+%{ 
+% To read an alternative file
+  patchSize = 32;
+  patchList = 1:24;
+  spectrum.wave = (370:10:730);
+  surfaceFile   = 'macbethChart.mat';
+  macbethChartObject = macbethChartCreate(patchSize,patchList,spectrum,surfaceFile);
+  spd = macbethChartObject.data; imageSPD(spd,spectrum.wave);
+%}
 
 %% Initialize object
 % The object is basically a scene, though it is missing some fields.

@@ -44,6 +44,7 @@ if ieNotDefined('gam'), gam = 1; end
 if ieNotDefined('displayFlag'), displayFlag = 1; end
 
 if ieNotDefined('wList')
+    w = size(SPD,3);
     if     w == 31,  wList = (400:10:700); 
     elseif w == 301, wList = (400:1:700);
     elseif w == 37,  wList = (370:10:730);
