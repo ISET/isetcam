@@ -1,8 +1,8 @@
-function status = PrintExamples(theFunction,varargin)
+function status = ieExamplesPrint(theFunction,varargin)
 % Open file, read it, parse and print the examples
 %
 % Syntax:
-%     status = PrintExamples(theFunction, varargin)
+%     status = ieExamplesPrint(theFunction, varargin)
 %
 % Description:
 %    A comment line followed by a
@@ -36,7 +36,7 @@ function status = PrintExamples(theFunction,varargin)
 % Examples are provided in the code.
 %
 % See also:
-%    
+%    ieExamplesRunTextInScript, ieRunValidateAll
 %
 
 % History
@@ -45,7 +45,7 @@ function status = PrintExamples(theFunction,varargin)
 % Examples:
 %{
     % Should execute both examples successfully
-    PrintExamples('ExecuteTextInScript');
+    ieExamplesPrint('ieExamplesRunTextInScript');
 %}
 
 %% Parse input

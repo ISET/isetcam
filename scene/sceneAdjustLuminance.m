@@ -2,22 +2,25 @@ function scene = sceneAdjustLuminance(scene,meanL,varargin)
 % Scale scene luminance
 %
 % Synopsis:
-%   scene = sceneAdjustLuminance(scene,param,val,varargin)
+%   scene = sceneAdjustLuminance(scene,param,val,[roi rect])
 %
 % Brief description:
 %   The photon level in the scene structure is multiplied so that the
-%   luminance parameter ('mean', 'peak' or 'crop') is set to val. The
+%   luminance parameter ('mean', 'peak' or 'roi') is set to val. The
 %   illuminant is also scaled to preserve the reflectance.
 %
 % Inputs
 %   scene:  Scene object
-%   param:  Which param, choices are 'mean', 'peak', or 'crop'
+%   param:  Options: 'mean', 'peak', or 'roi' (formerly 'crop')
 %   val:    Luminance value on return
 % 
 % Output
 %   scene
 %
-% Copyright ImagEval Consultants, LLC, 2003.
+% ieExamplesPrint('sceneAdjustLuminance');
+%
+% See also
+%    sceneAdjustIlluminant
 
 % Examples:
 %{
@@ -32,7 +35,7 @@ function scene = sceneAdjustLuminance(scene,meanL,varargin)
 %}
 %{
   scene = sceneCreate; 
-  scene = sceneAdjustLuminance(scene,'crop',200);
+  scene = sceneAdjustLuminance(scene,'roi',200,rect);
 %}
 %{
 % For backwards compatibility, we still allow setting the mean level as
@@ -68,8 +71,8 @@ switch method
         currentL = max(luminance(:));
         clear luminance;
         photons = photons*(targetL/currentL);
-    case 'crop'
-        % The roi can be locs or rect
+    case {'roi','crop'}
+        % The roi can be a locs or rect
         roi = varargin{2};
         currentL = sceneGet(scene, 'roi mean luminance', roi);
         try

@@ -1,4 +1,6 @@
 function [mLocs,delta,pSize] = macbethRectangles(cornerPoints)
+% Deprecated:  Use chartRectangles
+%
 % Calculate mid point of rectangles for an MCC from the corner points
 %
 %   [mLocs,delta,pSize] = macbethRectangles(cornerPoints)
@@ -20,9 +22,12 @@ function [mLocs,delta,pSize] = macbethRectangles(cornerPoints)
 % Copyright ImagEval Consultants, LLC, 2011.
 %
 % See also
-%   macbethROIs, macbethSelect, macbethDrawRects
+%   chart*
 %
 
+[mLocs,delta,pSize] = chartRectangles(cornerPoints);
+
+%{
 if ieNotDefined('cornerPoints'), error('Point corners required'); end
 
 % cornerpoints are (x,y) (col,row) format.
@@ -104,3 +109,4 @@ pSize = 2*delta + 1;
 % plot(mLocs(2,:),mLocs(1,:),'wo')
   
 end
+%}
