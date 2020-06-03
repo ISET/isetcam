@@ -147,7 +147,7 @@ if ~isempty(il)
             if r*c*w < (640*640*31)
                 % This is wavelength x space, rather than XW as usual
                 photons    = RGB2XWFormat(illuminantPhotons)';
-                newPhotons = interp1(curWave,illuminantPhotons,waveSpectrum.wave, 'linear')';
+                newPhotons = interp1(curWave,photons,waveSpectrum.wave, 'linear')';
                 % Replaced 2013.09.29 for speed
                 % newPhotons = interp1(curWave,photons,...
                 %      waveSpectrum.wave, 'linear',min(photons(:))*1e-3)';
