@@ -479,7 +479,7 @@ switch parm
         val = double(val);
         
     case {'roimeanluminance'}
-        % sceneGet(scene, 'roi mean luminance', locsorrect);
+        % sceneGet(scene, 'roi mean luminance', locsORrect);
         if isempty(varargin), error('ROI required')
         else, roiLocs = varargin{1};
         end
@@ -488,7 +488,7 @@ switch parm
         val = ieLuminanceFromPhotons(roiMeanPhotons, wave);
         
     case {'roiluminance'}
-        % sceneGet(scene, 'roi luminance', locsorrect);
+        % sceneGet(scene, 'roi luminance', locsORrect);
         if isempty(varargin), error('ROI required')
         else, roiLocs = varargin{1};
         end
