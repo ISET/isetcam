@@ -36,7 +36,7 @@ switch lower(method)
         % that range.
         nBits = sensorGet(sensor,'nbits'); 
         if isempty(nBits), nBits = 8; warning('ISET:Quantization0','Assuming %d bits.',nBits); end
-        quantizationStep = voltageSwing / (2^nBits);	    % [mV/DN]
+        quantizationStep = voltageSwing / (2^nBits - 1);	    % [mV/DN]
         quantImg = round(img/quantizationStep);             % [DV]
         if nargout == 2
             quantizationError = img - (quantImg * quantizationStep); 	% [mV]
