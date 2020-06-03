@@ -1,22 +1,28 @@
-function figNum = plotDisplayLine(vci,ori,xy)
-%Graph the values across a line in the vcimage window
+function figNum = plotDisplayLine(ip,ori,xy)
+% Graph the values across a line in the ipWindow
 %
-%   figNum = plotDisplayLine([vci], [ori = 'h'], [xy])
+% Synopsis
+%   figNum = plotDisplayLine([ip], [ori = 'h'], [xy])
 %
-% The line plot must pass through a point xy selected by the user.  The
-% line orientation (h or v) ori, is passed as a calling argument (ORI). 
-% Monochrome and color data are handled in various ways.  
+% Brief description:
+%  This is called from ipPlot. The line plot must pass through a point xy
+%  selected by the user.  The line orientation (h or v) ori, is passed as a
+%  calling argument (ORI).  Monochrome and color data are handled in
+%  various ways.   
 %   
-% The plotted values are attached the graph window and can be obtained
-% using a data = get(figNum,'userdata') call.
+%  The plotted values are attached the graph window and can be obtained
+%  using a data = get(figNum,'userdata') call.
 %
 % Examples:
 %    figNum = plotDisplayLine(ip,'h')
 %    figNum = plotDisplayLine(ip,'h',[1,1])
 %
 % Copyright ImagEval Consultants, LLC, 2005.
+%
+% See also
+%   ipPlot
 
-if ieNotDefined('vci'),    vci = vcGetObject('VCIMAGE'); end
+if ieNotDefined('ip'),    ip = vcGetObject('VCIMAGE'); end
 if ieNotDefined('ori'),    ori = 'h'; end
 if ieNotDefined('xy')
     % Find the line in the sensor window.
@@ -28,16 +34,16 @@ if ieNotDefined('xy')
         otherwise
             error('Unknown orientation')
     end
-    pointLoc = vcPointSelect(vci,1,message);
+    pointLoc = vcPointSelect(ip,1,message);
     xy = round(pointLoc);
 end
 
-data = ipGet(vci,'result');
+data = ipGet(ip,'quantized result');
 if isempty(data), error('Results not computed in display window.'); end
 
 figNum = plotColorDisplayLines(xy,data,ori);
 
-return;
+end
 
 %-----------------------------
 function figNum = plotColorDisplayLines(xy,data,ori)
@@ -77,4 +83,4 @@ set(gcf,'userdata',uData);
 set(gcf,'NumberTitle','off');
 set(gcf,'Name',titleString);
 
-return;
+end

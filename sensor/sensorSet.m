@@ -29,92 +29,92 @@ function sensor = sensorSet(sensor,param,val,varargin)
 %    sensor = sensorSet(sensor,'response type','log'); % 'linear' or 'log'
 %
 % General
-%      {'name'} - This sensor's identifier
-%      {'rows'} - number of rows
-%      {'cols'} - number of cols
-%      {'size'} - [rows,cols]
-%      {'fov'}  - horizontal field of view.  NOTE: Also adjusts row/col!
+%      'name' - This sensor's identifier
+%      'rows' - number of rows
+%      'cols' - number of cols
+%      'size' - [rows,cols]
+%      'fov'  - horizontal field of view.  NOTE: Also adjusts row/col!
 %
 % Color
-%      {'color'}  - structure containing color information
-%        {'filter transmissivities'}   - color filter transmissivities
+%      'color'  - structure containing color information
+%        'filter transmissivities'   - color filter transmissivities
 %            (also, 'filter spectra')
-%        {'filter names'}   - color filter names
-%        {'infrared filter'}  - IR filter transmissivity
-%      {'spectrum'}           - wavelength spectrum structure
-%        {'wavelength'}       - wavelength samples
-%      {'color filter array'} - color filter array structure
-%        {'cfa pattern'}          - color filter array (cfa) pattern
-%        {'cfa pattern and size'} - set cfa pattern and adjust sensor size if 
+%        'filter names'   - color filter names
+%        'infrared filter'  - IR filter transmissivity
+%      'spectrum'           - wavelength spectrum structure
+%        'wavelength'       - wavelength samples
+%      'color filter array' - color filter array structure
+%        'cfa pattern'          - color filter array (cfa) pattern
+%        'cfa pattern and size' - set cfa pattern and adjust sensor size if 
 %                                   there is a new block size
 %
 % Electrical and imaging
-%      {'data'}               - data structure
-%        {'volts'}            - voltage responses
-%        {'digitalValues'}    - digital values
-%      {'analog gain'}        - Transform volts
-%      {'analog offset'}      - Transform volts
+%      'data'               - data structure
+%        'volts'            - voltage responses
+%        'digitalValues'    - digital values
+%      'analog gain'        - Transform volts
+%      'analog offset'      - Transform volts
 %            Formula for offset and gain: (v + analogOffset)/analogGain)
 %
-%      {'roi'}                - region of interest information 
+%      'roi'                - region of interest information 
 %                               (roiLocs, Nx2, or rect 1x4 format)
-%      {'cds'}                - correlated double sampling flat
-%      {'quantization method'}- method used for quantization 
+%      'cds'                - correlated double sampling flat
+%      'quantization method'- method used for quantization 
 %                               ('analog', '10 bit', '8 bit', '12 bit')
-%      {'response type'}  - We allow a 'log' sensor type.  Default is
+%      'response type'  - We allow a 'log' sensor type.  Default is
 %                          'linear'.  For the 'log' type, we convert
 %                          the pixel voltage by log10() on return.
 %
-%      {'dsnu image'}         - Dark signal non uniformity (DSNU) image
-%      {'prnu image'}         - Photo response non uniformity (PRNU) image
-%      {'dsnu level'}         - dark signal nonuniformity (std dev)
-%      {'prnu level'}         - photoresponse nonuniformity (std dev)
-%      {'column fpn parameters'} - column fpn parameters, both offset and gain
-%      {'col gain fpn vector'}   - column gain fpn data
-%      {'col offset fpn vector'} - column offset fpn data
-%      {'noise Flag'}         - 0 means no noise
+%      'dsnu image'         - Dark signal non uniformity (DSNU) image
+%      'prnu image'         - Photo response non uniformity (PRNU) image
+%      'dsnu level'         - dark signal nonuniformity (std dev)
+%      'prnu level'         - photoresponse nonuniformity (std dev)
+%      'column fpn parameters' - column fpn parameters, both offset and gain
+%      'col gain fpn vector'   - column gain fpn data
+%      'col offset fpn vector' - column offset fpn data
+%      'noise Flag'         - 0 means no noise
 %                               1 means only shot noise,
 %                               2 means shot noise and electronics noise
-%      {'reuse noise'}        - Generate noise from current seed
-%      {'noise seed'}         - Saved noise seed for randn()
+%      'reuse noise'        - Generate noise from current seed
+%      'noise seed'         - Saved noise seed for randn()
 %
-%      {'exposure time'}       - exposure time in seconds
-%      {'exposure plane'}      - selects exposure for display
-%      {'auto exposure'}       - auto-exposure flag, 1 or 0
+%      'exposure time'       - exposure time in seconds
+%      'exposure plane'      - selects exposure for display
+%      'auto exposure'       - auto-exposure flag, 1 or 0
 %                                'on' and 'off' are also OK.
 %
 % Pixel
-%      {'pixel'}
+%      'pixel'
 %
 % Optics
-%      {'vignetting'}
-%      {'microlens'}
-%      {'sensor etendue'}
-%      {'microlens offset'}  - used with microlens window toolbox
+%      'vignetting'
+%      'microlens'
+%      'sensor etendue'
+%      'microlens offset'  - used with microlens window toolbox
 %
 % Computational method
-%      {'sensor compute method'}- special algorithm, say for sensor binning
-%      {'ngridsamples'}       - number of spatial grid samples within a pixel
+%      'sensor compute method'- special algorithm, say for sensor binning
+%      'ngridsamples'       - number of spatial grid samples within a pixel
 %
 % Check for consistency between GUI and data
-%      {'consistency'}
+%      'consistency'
 %
 % Sensor motion
-%     {'sensor movement'}  - A structure with sensor motion information 
-%     {'movement positions'} - Nx2 vector of (x,y) positions in deg
-%     {'framesPerPosition'}- Exposure times per (x,y) position
+%     'sensor movement'  - A structure with sensor motion information 
+%     'movement positions' - Nx2 vector of (x,y) positions in deg
+%     'framesPerPosition'- Exposure times per (x,y) position
 %  
 % Window display
-%     {'gamma'}           - Display gamma for the window
-%     {'scale intensity'} - Scale display intensity to max
-%     {'true size'}       - Not yet implemented
+%     'gamma'           - Display gamma for the window
+%     'scale intensity' - Scale display intensity to max
+%     'true size'       - Not yet implemented
 %
 % Macbeth Color checker
-%     {'mcc rect handles'}  - Handles for the rectangle selections in an MCC
-%     {'mcc corner points'} - Corner points for the whole MCC chart
+%     'mcc rect handles'  - Handles for the rectangle selections in an MCC
+%     'mcc corner points' - Corner points for the whole MCC chart
 %
 % Private
-%      {'editfilternames'}
+%      'editfilternames'
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 

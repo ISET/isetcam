@@ -30,73 +30,73 @@ function val = ipGet(ip,param,varargin)
 %  in the main ISET database is the one analyzed in the displayWindow. 
 %
 % Image Processor parameters
-%      {'name'}  - This image processing structure name
-%      {'type'}  - Always 'vcimage'
-%      {'row'}   - Display row number
-%      {'col'}   - Display col number
-%      {'input size'}  - [row,col]
-%      {'result size'} - [row,col]
+%      'name'  - This image processing structure name
+%      'type'  - Always 'vcimage'
+%      'row'   - Display row number
+%      'col'   - Display col number
+%      'input size'  - [row,col]
+%      'result size' - [row,col]
 %
 % Rendering methods and transforms (matrices)
-%      {'render'}       - Render structure
+%      'render'       - Render structure
 %          Includes gamma and scale parameters
-%      {'demosaic'}     - Demosaic structure
-%        {'demosaic method'}     - Spatial demosaicking function
+%      'demosaic'     - Demosaic structure
+%        'demosaic method'     - Spatial demosaicking function
 %
-%      {'sensor conversion'}  - Sensor conversion structure
-%        {'sensor conversion method'}    - Function name for color conversion
-%        {'sensor conversion matrix'}      - sensor conversion (transform{1})
+%      'sensor conversion'  - Sensor conversion structure
+%        'sensor conversion method'    - Function name for color conversion
+%        'sensor conversion matrix'      - sensor conversion (transform{1})
 %
-%      {'illuminant correction'} - Illuminant correction structure
-%        {'illuminant correction method'}     - Function name for color balance
-%        {'illuminant correction matrix'}     - illuminant color balance    (transform{2})
-%      {'internal color space'}          - Internal color space name (e.g.,'XYZ')
-%        {'internal color matching function'} - Reads the file with the name
+%      'illuminant correction' - Illuminant correction structure
+%        'illuminant correction method'     - Function name for color balance
+%        'illuminant correction matrix'     - illuminant color balance    (transform{2})
+%      'internal color space'          - Internal color space name (e.g.,'XYZ')
+%        'internal color matching function' - Reads the file with the name
 %
-%      {'transforms'} - All rendering transforms in a cell array
-%        {'ics2display transform'}      - Internal color space to display (transform{3})
-%        {'Combined transform'}         - Product of the other 3 matrices,
+%      'transforms' - All rendering transforms in a cell array
+%        'ics2display transform'      - Internal color space to display (transform{3})
+%        'Combined transform'         - Product of the other 3 matrices,
 %                                             tSC{1}*tIC{2}*tICS2D{3}
-%        {'Each transform'}             - cell array of three matrices
+%        'Each transform'             - cell array of three matrices
 %
 % Wavelength functions for the internal color space
-%      {'spectrum'}     - Wavelength information structure
-%        {'wavelength'} - wavelength samples
-%        {'binwidth'}   - wavelength bin size
-%        {'nwave'}      - number of wavelength samples
+%      'spectrum'     - Wavelength information structure
+%        'wavelength' - wavelength samples
+%        'binwidth'   - wavelength bin size
+%        'nwave'      - number of wavelength samples
 %
 % DATA information
-%      {'data'}  - Data structure
-%        {'sensor mosaic'}   - Sensor mosaic used to initiate rendering pipeline
-%        {'sensor channels'} - Sensor data demosaicked into RGB format
-%        {'nSensor channels'}- Number of sensor channel inputs
-%        {'data display'}  - Digital values for display rendering
+%      'data'  - Data structure
+%        'sensor mosaic'   - Sensor mosaic used to initiate rendering pipeline
+%        'sensor channels' - Sensor data demosaicked into RGB format
+%        'nSensor channels'- Number of sensor channel inputs
+%        'data display'  - Digital values for display rendering
 %                            These are linear values for the primaries, not
 %                            accounting for the gamma.
-%        {'data srgb'}     - sRGB rendering of the display data (This is
+%        'data srgb'     - sRGB rendering of the display data (This is
 %                            used in the GUI window
-%        {'data xyz'}      - CIE XYZ values of the display data
-%        {'data roi'}      - Slot to store region of interest RGB data
-%        {'roi xyz'}       - Slot to store XYZ values of ROI data
-%        {'result scaled to max'} - Display data scaled to display max
-%        {'result primary n'}     - Primary SPD for nth primary
-%        {'result max','rgb max'}
-%        {'maximum sensor value'}
-%        {'data white point'}
-%        {'scale display'}
-%      {'data or display white'}  - Data white point if present, otherwise
+%        'data xyz'      - CIE XYZ values of the display data
+%        'data roi'      - Slot to store region of interest RGB data
+%        'roi xyz'       - Slot to store XYZ values of ROI data
+%        'result scaled to max' - Display data scaled to display max
+%        'result primary n'     - Primary SPD for nth primary
+%        'result max','rgb max'
+%        'maximum sensor value'
+%        'data white point'
+%        'scale display'
+%      'data or display white'  - Data white point if present, otherwise
 %                                   display white point
 %
 %
 % Miscellaneous
-%     {'mcc Rect Handles'}  - Handles for the rectangle selections in an MCC
-%     {'mcc Corner Points'} - Outer corners of the MCC
-%     {'center'}            - (r,c) at the image center
-%     {'distance2center'}   - Distance (in pixels) to image center
-%     {'angle'}             - Angle around image center
-%     {'image grid'}        - X,Y coords (in pixels) from image center
+%     'mcc Rect Handles'  - Handles for the rectangle selections in an MCC
+%     'mcc Corner Points' - Outer corners of the MCC
+%     'center'            - (r,c) at the image center
+%     'distance2center'   - Distance (in pixels) to image center
+%     'angle'             - Angle around image center
+%     'image grid'        - X,Y coords (in pixels) from image center
 %                              Returned in a cell array
-%     {'L3'}                - L3 structure.  Requires L3 repository.
+%     'L3'                - L3 structure.  Requires L3 repository.
 %
 % Examples:
 %
@@ -216,7 +216,7 @@ switch oType
             case {'transformcellarray','transforms'}
                 if checkfields(ip,'data','transforms'), val = ip.data.transforms; end
             case {'transformmethod'}
-                % tMethod = ipGet(vci,'transform method')
+                % tMethod = ipGet(ip,'transform method')
                 % Other options are 'New' and 'Current'
                 if checkfields(ip,'transformMethod'),val = ip.transformMethod; end
             case {'conversiontransformsensor','correctionmatrixsensor'}
@@ -268,14 +268,14 @@ switch oType
                 val = ip.data;
             case {'roidata','dataroi','roiresult'}
                 % h = ipWindow;
-                % roiLocs = vcROISelect(vci,h);
-                % ipGet(vci,'roiData',roiLocs);
+                % roiLocs = vcROISelect(ip,h);
+                % ipGet(ip,'roiData',roiLocs);
                 if ~isempty(varargin)
                     roiLocs = varargin{1};
                     val = vcGetROIData(ip,roiLocs,'result');
                 end
             case {'roixyz','xyzroi'}
-                % ipGet(vci,'roixyz',roiLocs)
+                % ipGet(ip,'roixyz',roiLocs)
                 if ~isempty(varargin)
                     roiLocs = varargin{1};
                     val = imageDataXYZ(ip,roiLocs);
@@ -283,12 +283,27 @@ switch oType
                     val = imageDataXYZ(ip);
                 end
                 
-            case {'sensormosaic','input','sensorinput'}
-                % ipGet(ip,'sensor mosaic')
+                % Sensor information.
+            case {'sensorinput','sensormosaic','input'}
+                % ipGet(ip,'sensor input')
                 % The sensor mosaic data.  row x col
                 % Not sure why a 1 is returned when no data.
                 if checkfields(ip,'data','input'), val = ip.data.input;
                 else,                              val = 1;
+                end
+            case {'quantization'}
+                if checkfield(ip,'data','quantization')
+                    val = ip.data.quantization;
+                end
+            case {'nbits','bits'}
+                if checkfields(ip,'data','quantization','bits')
+                    val = ip.data.quantization.bits;
+                end
+            case {'maxdigitalvalue'}
+                % sensorGet(sensor,'max digital value')
+                nbits = ipGet(ip,'nbits');
+                if isempty(nbits), return
+                else, val = 2^nbits;
                 end
                 
             case {'ninputfilters','numbersensorchannels','nsensorinputs'}
@@ -302,19 +317,24 @@ switch oType
                 
                 % Result and display are mixed up together here.
                 % We should decide which to use
-            case {'datadisplay','result','results','dataresult',}
-                % ipGet(vci,'display data')
-                % These are the linear primary intensities of the display
-                
-                % Removed 'displaydata' as an option Dec. 2013.
+            case {'result','results','datadisplay','dataresult',}
+                % ipGet(ip,'result')
+                %
+                % These are the linear primary intensities of the display.
+                % THey are stored as values between 0 and 1.  If you would
+                % like the quantization values, use 'quantized result'
                 if checkfields(ip,'data','result'), val = ip.data.result; end
+            case {'quantizedresult'}
+                val = ipGet(ip,'result');
+                val = val*ipGet(ip,'max digital value');
+                
             case {'dataxyz'}
-                % ipGet(vci,'display data xyz');
+                % ipGet(ip,'display data xyz');
                 % Convert the linear display data into XYZ values, accounting for
                 % the display primaries.
                 val = imageDataXYZ(ip);
             case {'srgb','datasrgb'}
-                % ipGet(vci,'data srgb');
+                % ipGet(ip,'data srgb');
                 % 
                 val = imageShowImage(ip,[],[],0);
                 %  val = imageDataXYZ(ip);
@@ -334,8 +354,8 @@ switch oType
             case {'resultblue','resultprimary3','bluedata','datablue'}
                 val = ip.data.result(:,:,3);
             case {'resultprimary','resultprimaryn'}
-                % redPrimary = ipGet(vci,resultprimary,1);
-                % p4 = ipGet(vci,resultprimary,4);
+                % redPrimary = ipGet(ip,resultprimary,1);
+                % p4 = ipGet(ip,resultprimary,4);
                 if length(varargin) == 1, n = varargin{1};
                 else errordlg('You must specify a primary number.')
                 end
@@ -387,21 +407,21 @@ switch oType
                 val = (sz+1)/2;
             case {'distance2center'}
                 % Distance from the image center in units of pixels
-                % val = ipGet(vci,'distance2center'); figure; surf(val)
+                % val = ipGet(ip,'distance2center'); figure; surf(val)
                 G =  ipGet(ip,'imageGrid');
                 if isempty(G), return; end
                 val = sqrt(G{1}.^2 + G{2}.^2);
                 
             case {'angle'}
                 % Angle with respect to image center
-                % val = ipGet(vci,'angle'); figure; surf(val)
+                % val = ipGet(ip,'angle'); figure; surf(val)
                 G =  ipGet(ip,'imageGrid');
                 if isempty(G), return; end
                 val = atan2(G{2},G{1});
                 
             case {'imagegrid'}
                 % Returns a cellarray of X,Y coordinates
-                % val = ipGet(vci,'imageGrid');
+                % val = ipGet(ip,'imageGrid');
                 sz = ipGet(ip,'size');
                 if isempty(sz), return; end
                 center = ipGet(ip,'center');
@@ -424,7 +444,7 @@ switch oType
                 warning('l3 get fell through to otherwise condition in ipGet')
                 val = ip.L3;
                 
-            otherwise,
+            otherwise
                 error('Unknown parameter: %s\n',param);
         end
 end

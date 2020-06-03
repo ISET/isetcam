@@ -53,178 +53,178 @@ function val = sensorGet(sensor,param,varargin)
 %    val = sensorGet(sensor,'response type'); % {'linear','log'}
 % 
 % List of sensor parameters
-%      {'name'}                 - this sensor name
-%      {'type'}                 - always 'sensor'
-%      {'row'}                  - sensor rows
-%      {'col'}                  - sensor columns
-%      {'size'}                 - (rows,cols)
-%      {'height'}*              - sensor height (units)
-%      {'width'}*               - sensor width  (units)
-%      {'dimension'}*           - (height,width)
-%      {'spatial support'}*      - position of pixels.
-%      {'wspatial resolution'}*  - spatial distance between pixels (width)
-%      {'hspatial resolution'}*  - spatial distance between pixels (height)
+%      'name'                 - this sensor name
+%      'type'                 - always 'sensor'
+%      'row'                  - sensor rows
+%      'col'                  - sensor columns
+%      'size'                 - (rows,cols)
+%      'height'*              - sensor height (units)
+%      'width'*               - sensor width  (units)
+%      'dimension'*           - (height,width)
+%      'spatial support'*      - position of pixels.
+%      'wspatial resolution'*  - spatial distance between pixels (width)
+%      'hspatial resolution'*  - spatial distance between pixels (height)
 %
 %  Field of view and sampling density
-%      {'hfov'}   - horizontal field of view (deg)
-%      {'vfov'}   - vertical field of view (deg)
-%      {'h deg perpixel'} - horizontal deg per pixel
-%      {'v deg perpixel'} - vertical deg per pixel
-%      {'h deg perdistance'} - deg per unit horizontal distance *
-%      {'v deg perdistance'} - deg per unit vertical distance *
+%      'hfov'   - horizontal field of view (deg)
+%      'vfov'   - vertical field of view (deg)
+%      'h deg perpixel' - horizontal deg per pixel
+%      'v deg perpixel' - vertical deg per pixel
+%      'h deg perdistance' - deg per unit horizontal distance *
+%      'v deg perdistance' - deg per unit vertical distance *
 %
 %  Sensor optics related
-%      {'fov'}                  - sensor horizontal field of view
-%      {'chief Ray Angle'}        - chief ray angle in radians at each pixel
+%      'fov'                  - sensor horizontal field of view
+%      'chief Ray Angle'        - chief ray angle in radians at each pixel
 %          sensorGet(sensor,'chiefRayAngle',sourceFocaLengthMeters)
-%      {'chief Ray Angle Degrees'} - chief ray angle in degrees at each pixel
+%      'chief Ray Angle Degrees' - chief ray angle in degrees at each pixel
 %          sensorGet(sensor,'chiefRayAngleDegrees',sourceFocaLengthMeters)
-%      {'sensor Etendue'}        - optical efficiency at each pixel
-%      {'micro Lens'}            - microlens data structure, accessed using
+%      'sensor Etendue'        - optical efficiency at each pixel
+%      'micro Lens'            - microlens data structure, accessed using
 %          mlensGet() and mlensSet (optics toolbox only)
 %
 % Sensor array data
-%      {'volts'}          - Sensor output in volts
-%      {'digital values'} - Sensor output in digital units
-%      {'electrons'}      - Sensor output in electrons
+%      'volts'          - Sensor output in volts
+%      'digital values' - Sensor output in digital units
+%      'electrons'      - Sensor output in electrons
 %         A single color plane can be returned
 %         sensorGet(sensor,'electrons',2);
-%      {'dv or volts'}    - Return either dv if present, otherwise volts
-%      {'roi locs'}       - Stored region of interest (roiLocs)
-%      {'roi rect'}       - Rect.  Format is [cmin,rmin,width,height]
-%      {'roi volts'}      - Volts inside of stored region of interest
+%      'dv or volts'    - Return either dv if present, otherwise volts
+%      'roi locs'       - Stored region of interest (roiLocs)
+%      'roi rect'       - Rect.  Format is [cmin,rmin,width,height]
+%      'roi volts'      - Volts inside of stored region of interest
 %         If there is no stored region of interest, ask the user to select.
-%      {'roi electrons'}  - Electrons inside of stored ROI, or user selects
-%      {'roi volts mean'} - The mean values in each band
-%      {'roi electrons mean'} - As above but electrons
-%      {'hline volts'}    - Volts along a horizontal line
+%      'roi electrons'  - Electrons inside of stored ROI, or user selects
+%      'roi volts mean' - The mean values in each band
+%      'roi electrons mean' - As above but electrons
+%      'hline volts'    - Volts along a horizontal line
 %          sensorGet(sensor,'hline volts',50);
-%      {'hline electrons'} - horizontal line electrons
-%      {'vline volts'}     - vertical line volts
-%      {'vline electrons'} - vertical line electrons
-%      {'response ratio'}  - Peak sensor volt divided by voltage swing
-%      {'response dr'}     - Sensor response dynamic range.
+%      'hline electrons' - horizontal line electrons
+%      'vline volts'     - vertical line volts
+%      'vline electrons' - vertical line electrons
+%      'response ratio'  - Peak sensor volt divided by voltage swing
+%      'response dr'     - Sensor response dynamic range.
 %           If min is 0, we use (voltage swing / 2^12) as the smallest
 %           value
 %
 % Sensor roi
-%     {'roi'} - rectangle representing current region of interest
+%     'roi' - rectangle representing current region of interest
 %        Additional ROI processing may be inserted in the next few years.
 %
 % Sensor array electrical processing properties
-%      {'analog Gain'}     - A scale factor that divides the sensor voltage
+%      'analog Gain'     - A scale factor that divides the sensor voltage
 %                           prior to clipping
-%      {'analog Offset'}   - Added to the voltage to stay away from zero, sometimes used
+%      'analog Offset'   - Added to the voltage to stay away from zero, sometimes used
 %                           to minimize the effects of dark noise at the low levels
 %         Formula for offset and gain: (v + analogOffset)/analogGain)
 %
-%      {'sensor Dynamic Range'} - Computed
+%      'sensor Dynamic Range' - Computed
 %
-%      {'response type'}  - We allow a 'log' sensor type.  Default is
+%      'response type'  - We allow a 'log' sensor type.  Default is
 %                          'linear'.  For the 'log' type, we convert
 %                          the pixel voltage by log10() on return.
 %
-%      {'quantization}   -  Quantization structre
-%        {'nbits'}                - number of bits in quantization method
-%        {'max output'}            -
-%        {'quantization lut'}
-%        {'quantization method'}
-%      {'zero level'}    - The expected level to a black image
+%      'quantization}   -  Quantization structre
+%        'nbits'                - number of bits in quantization method
+%        'max output'            -
+%        'quantization lut'
+%        'quantization method'
+%      'zero level'    - The expected level to a black image
 %
 % Sensor color filter array and related color properties
-%     {'spectrum'}    - structure about spectral information
-%       {'wave'}      - wavelength samples
-%       {'binwidth'}  - difference between wavelength samples
-%       {'nwave'}     - number of wavelength samples
-%     {'color'}
-%       {'filter transmissivities'} - Filter transmissivity as a function
+%     'spectrum'    - structure about spectral information
+%       'wave'      - wavelength samples
+%       'binwidth'  - difference between wavelength samples
+%       'nwave'     - number of wavelength samples
+%     'color'
+%       'filter transmissivities' - Filter transmissivity as a function
 %            of wave (also 'filter spectra')
-%       {'infrared filter'} - Normally the IR, but we sometimes put other
+%       'infrared filter' - Normally the IR, but we sometimes put other
 %            filters, such as macular pigment, in the ir slot.
 %
-%      {'cfa Name'}     - Best guess at conventional CFA architecture name
-%      {'filter Names'} - Cell array of filter names. The first letter of
+%      'cfa Name'     - Best guess at conventional CFA architecture name
+%      'filter Names' - Cell array of filter names. The first letter of
 %        each filter should indicate the filter color see sensorColorOrder
 %        comments for more information
-%      {'nfilters'}    - number of color filters
-%      {'filter Color Letters'} - A string with each letter being the first
+%      'nfilters'    - number of color filters
+%      'filter Color Letters' - A string with each letter being the first
 %        letter of a color filter; the letters are from the list in
 %        sensorColorOrder. The pattern field(see below) describes their
 %        position in array.
-%      {'filter Color Letters Cell'} -  As above, but returned in a cell array
+%      'filter Color Letters Cell' -  As above, but returned in a cell array
 %         rather than a string
-%      {'filter plotcolors'} - one of rgbcmyk for plotting for this filter
-%      {'spectral QE'} - Product of photodetector QE, IR and color filters
+%      'filter plotcolors' - one of rgbcmyk for plotting for this filter
+%      'spectral QE' - Product of photodetector QE, IR and color filters
 %           Does not include vignetting or pixel fill factor.
-%      {'pattern'}     - Matrix that defines the color filter array
+%      'pattern'     - Matrix that defines the color filter array
 %        pattern; e.g. [1 2; 2 3] if the spectrra are RGB and the pattern
 %        is a conventional Bayer [r g; g b]
 %
 % Noise properties
-%      {'dsnu sigma'}           - Dark signal nonuniformity (DSNU) parameter (volts)
-%      {'prnu sigma'}           - Photoresponse nonuniformity (PRNU) parameter (std dev percent)
-%      {'fpn parameters'}       - (dsnusigma,prnusigma)
-%      {'dsnu image'}           - Dark signal non uniformity (DSNU) image
-%      {'prnu image',}          - Photo response non uniformity (PRNU) image
-%      {'column fpn'}           - Column (offset,gain) parameters
-%      {'column dsnu'}          - The column offset parameters (Volts)
-%      {'column prnu'}          - The column gain parameters (std dev in Volts)
-%      {'col offset fpnvector'}  - The sensor column offset data
-%      {'col gain fpnvector'}    - The sensor column gain data
-%      {'noise flag'}           - Governs sensorCompute noise calculations
+%      'dsnu sigma'           - Dark signal nonuniformity (DSNU) parameter (volts)
+%      'prnu sigma'           - Photoresponse nonuniformity (PRNU) parameter (std dev percent)
+%      'fpn parameters'       - (dsnusigma,prnusigma)
+%      'dsnu image'           - Dark signal non uniformity (DSNU) image
+%      'prnu image'           - Photo response non uniformity (PRNU) image
+%      'column fpn'           - Column (offset,gain) parameters
+%      'column dsnu'          - The column offset parameters (Volts)
+%      'column prnu'          - The column gain parameters (std dev in Volts)
+%      'col offset fpnvector'  - The sensor column offset data
+%      'col gain fpnvector'    - The sensor column gain data
+%      'noise flag'           - Governs sensorCompute noise calculations
 %                                 0 no noise at all
 %                                 1 shot noise, no electronics noise
 %                                 2 shot noise and electronics noise
-%      {'reuse noise'}         - Use the stored noise seed
-%      {'noise seed'}          - Stored noise seed from last run
+%      'reuse noise'         - Use the stored noise seed
+%      'noise seed'          - Stored noise seed from last run
 %
 %  The pixel structure
-%      {'pixel'}  - pixel structure is complex; accessed using pixelGet();
+%      'pixel'  - pixel structure is complex; accessed using pixelGet();
 %
 %  Sensor computation parameters
-%      {'auto exposure'}   - Auto-exposure flag (0,1)
-%      {'exposure time'}   - Exposure time (sec)
-%      {'unique exptimes'}  - Unique values from the exposure time list
-%      {'exposure plane'}  - Select exposure for display when bracketing
-%      {'cds'}            - Correlated double-sampling flag
-%      {'pixel vignetting'}- Include pixel optical efficiency in
+%      'auto exposure'   - Auto-exposure flag (0,1)
+%      'exposure time'   - Exposure time (sec)
+%      'unique exptimes'  - Unique values from the exposure time list
+%      'exposure plane'  - Select exposure for display when bracketing
+%      'cds'            - Correlated double-sampling flag
+%      'pixel vignetting'- Include pixel optical efficiency in
 %             sensorCompute.
 %             val = 1 Means vignetting only.
 %             val = 2 means microlens included. (Microlens shifting NYI).
 %             otherwise, skip both vignetting and microlens.
-%      {'sensor compute','sensor compute method'}
+%      'sensor compute','sensor compute method'
 %         % Swap in a sensorCompute routine.  If this is empty, then the
 %         % standard vcamera\sensor\mySensorCompute routine will be used.
-%      {'nsamples perpixel','npixel samples for computing'}
+%      'nsamples perpixel','npixel samples for computing'
 %         % Default is 1.  If not parameter is not set, we return the default.
-%      {'consistency'}
+%      'consistency'
 %         % If the consistency field is not present, assume false and set it
 %         % false.  This checks whether the parameters and the displayed
 %         % image are consistent/updated.
 %
 % Human sensor special case
-%    {'human'} - The structure with all human parameters.  Applies only
+%    'human' - The structure with all human parameters.  Applies only
 %      when the name contains the string 'human' in it
-%      {'cone type'} - K=1, L=2, M=3 or S=4 (K means none)
-%      {'densities'} - densities used to generate mosaic (K,L,M,S)
-%      {'rSeed'}     - seed for generating mosaic
-%      {'xy'}        - xy position of the cones in the mosaic
+%      'cone type' - K=1, L=2, M=3 or S=4 (K means none)
+%      'densities' - densities used to generate mosaic (K,L,M,S)
+%      'rSeed'     - seed for generating mosaic
+%      'xy'        - xy position of the cones in the mosaic
 %
 % Sensor motion
-%       {'sensor movement'}     - A structure of sensor motion information
-%       {'movement positions'}  - Nx2 vector of (x,y) positions in deg
-%       {'frames per position'} - N vector of exposures per position
-%       {'sensor positions x'}  - 1st column (x) of sensor positions (deg)
-%       {'sensor positions y'}  - 2nd column (y) of sensor positions (deg)
+%       'sensor movement'     - A structure of sensor motion information
+%       'movement positions'  - Nx2 vector of (x,y) positions in deg
+%       'frames per position' - N vector of exposures per position
+%       'sensor positions x'  - 1st column (x) of sensor positions (deg)
+%       'sensor positions y'  - 2nd column (y) of sensor positions (deg)
 %
 % Miscellaneous - Macbeth color checker (MCC)
 %   More chart handling is being introduced.  See chart<TAB>
 %
-%     {'mcc rect handles'}  - Handles for the rectangle selections in an MCC
-%     {'mcc corner points'} - Corner points for the MCC chart
+%     'mcc rect handles'  - Handles for the rectangle selections in an MCC
+%     'mcc corner points' - Corner points for the MCC chart
 %
-%     {'rgb'}               - Display image in sensorImageWindow
-%     {'gamma'}             - Display gamma level
+%     'rgb'               - Display image in sensorImageWindow
+%     'gamma'             - Display gamma level
 %
 % See also:  sensorSet
 %
