@@ -25,7 +25,7 @@ function [mLocs,delta,pSize] = macbethRectangles(cornerPoints)
 %   chart*
 %
 
-[mLocs,delta,pSize] = chartRectangles(cornerPoints);
+[mLocs,delta,pSize] = chartRectangles(cornerPoints,4,6,0.8);
 
 %{
 if ieNotDefined('cornerPoints'), error('Point corners required'); end
