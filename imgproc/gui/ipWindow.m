@@ -849,7 +849,7 @@ function menuPlImTrueSize_Callback(hObject, eventdata, handles)
 % Plot | True size image
 
 gam = str2double(get(handles.editGamma,'String'));
-ip = vcGetObject('ip');
+ip = ieGetObject('ip');
 ip = ipSet(ip,'gamma',gam);
 
 imageShowImage(ip,gam,true,vcNewGraphWin);
