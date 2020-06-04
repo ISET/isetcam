@@ -1,8 +1,8 @@
-function data = chartPatchData(obj,mLocs,delta,fullData,dataType)
-% Deprecated:  Call chartRectData
+function data = chartRectData(obj,mLocs,delta,fullData,dataType)
+%Return a cell array with the linear RGB values from an ip or sensor 
 %
 % Syntax:
-%    data = chartPatchData(obj,mLocs,delta,[fullData],[dataType])
+%    data = chartRectData(obj,mLocs,delta,[fullData],[dataType])
 %
 % Description:
 %  Returns the linear RGB values from the sensor or processor window
@@ -29,7 +29,7 @@ function data = chartPatchData(obj,mLocs,delta,fullData,dataType)
 %          patches (if fullData == true); or, a matrix of the mean values
 %          from each patch (if fullData == false, the default)
 %
-% Examples:  ieExamplesRun('chartPatchData');
+% ieExamplesPrint('chartRectData');
 %
 % Copyright ImagEval Consultants, LLC, 2011.
 %
@@ -41,7 +41,6 @@ function data = chartPatchData(obj,mLocs,delta,fullData,dataType)
 wave = 400:10:700;  radiance = rand(length(wave),50)*10^16;
 scene = sceneRadianceChart(wave, radiance,'patch size',25,'rowcol',[5,10]);
 sceneWindow(scene);
-% 
 % Define the corner points
 wholeChart = true;
 cp = chartCornerpoints(scene,wholeChart);
@@ -60,10 +59,9 @@ delete(rectHandles);
 wave = 400:10:700;  radiance = rand(length(wave),50)*10^16;
 scene = sceneRadianceChart(wave, radiance,'patch size',25,'rowcol',[5,10]);
 sceneWindow(scene);
-
 wholeChart = true;
 cp = chartCornerpoints(scene,wholeChart);
-% 
+
 % Create the rects
 chartP = sceneGet(scene,'chart parameters');
 sFactor = 0.5;
@@ -71,7 +69,7 @@ sFactor = 0.5;
 
 % When fullData is true, each cell has the spectra from a patch
 fullData = true;
-mRGB = chartPatchData(scene,mLocs,pSize(1)*0.8,fullData);
+mRGB = chartRectData(scene,mLocs,pSize(1)*0.8,fullData);
 theseData = mRGB{1};
 % For the synthetic scene all the points are the same.
 ieNewGraphWin; plot(wave,theseData');  
@@ -79,7 +77,7 @@ ieNewGraphWin; plot(wave,theseData');
 % When fullData is false, the rows are the mean spectra from each of the
 % different patches.
 fullData = false;
-mRGB = chartPatchData(scene,mLocs,pSize(1)*0.8,fullData);
+mRGB = chartRectData(scene,mLocs,pSize(1)*0.8,fullData);
 ieNewGraphWin; plot(wave,mRGB')
 %}
 
