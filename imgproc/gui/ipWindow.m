@@ -836,7 +836,8 @@ return;
 % --------------------------------------------------------------------
 function menuAnColVisualComp_Callback(hObject, eventdata, handles)
 % Analyze | Color and Luminance | Visual Compare (D65)
-macbethCompareIdeal;
+ip = ieGetObject('ip');
+macbethCompareIdeal(ip);
 return;
 
 % --------------------------------------------------------------------

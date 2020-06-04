@@ -1,7 +1,7 @@
-function [embRGB,mRGB,pSize] = macbethCompareIdeal(mRGB,illType)
+function [embRGB,mRGB,pSize] = macbethCompareIdeal(ip,mRGB,illType)
 % Create an image of an ideal MCC (color temperature ...) with data embedded
 % 
-%   [embRGB,mRGB,pSize] = macbethCompareIdeal(mRGB,illType)
+%   [embRGB,mRGB,pSize] = macbethCompareIdeal(ip,mRGB,illType)
 %
 % mRGB:    Macbeth RGB values of the data in the ipWindow
 % illType: Illuminant name (e.g., 'd65'). See illuminantRead for all
@@ -16,34 +16,41 @@ function [embRGB,mRGB,pSize] = macbethCompareIdeal(mRGB,illType)
 
 % Examples:
 %{
-   [embRGB,mRGB,pSize] = macbethCompareIdeal; 
-%}
-%{
-   macbethCompareIdeal(mRGB,pSize,4000);
-%}
-%{
-   macbethCompareIdeal(mRGB,pSize,6000);
-%}
-%{
-   macbethCompareIdeal(mRGB,pSize,'d65');
+  scene = sceneCreate; oi = oiCreate; oi = oiCompute(oi,scene);
+  sensor = sensorCreate; 
+  sensor = sensorSet(sensor,'fov',sceneGet(scene,'fov'),scene,oi);
+  sensor = sensorCompute(sensor,oi);
+  ip = ipCreate; ip = ipCompute(ip,sensor);
+  [embRGB,mRGB,pSize] = macbethCompareIdeal(ip,[],'d65'); 
 %}
 
 %% Arguments
-ip = vcGetObject('ip');
-
+if ieNotDefined('ip'), error('ip required'); end
 
 % If the mRGB or pSize not defined, we need to do some processing.
-if ieNotDefined('mRGB') 
-if isempty(ipGet(ip,'mcc corner points'))
+if ieNotDefined('mRGB')
     cp = chartCornerpoints(ip);
+    [rects,mLocs,pSize] = chartRectangles(cp,4,6,0.5);
+    rHdl = chartRectsDraw(ip,rects);
+    mRGB = chartRectsData(ip,mLocs,0.6*pSize(1));
+    pause(1); delete(rHdl);
 end
 
-[rects,mLocs,pSize] = chartRectangles(cp,4,6,0.5);
-rHdl = chartRectsDraw(ip,rects);
-
-mRGB = chartRectsData;
+if ieNotDefined('pSize')
+    sz = ipGet(ip,'size');
+    pSize = round((sz(1)/4)*0.6);
 end
+
 if ieNotDefined('illType'), illType = 'd65'; end
+
+%% Put mRGB into image format
+if ismatrix(mRGB)
+    mRGB = XW2RGBFormat(mRGB,4,6);
+end
+%{
+mRGB = imageIncreaseImageRGBSize(mRGB,pSize);
+ieNewGraphWin; imagescRGB(mRGB);
+%}
 
 %% Calculate the lRGB values under this illuminant for an ideal MCC
 
@@ -54,27 +61,31 @@ ideal     = macbethIdealColor(illType,'lrgb');
 % We reshape into a mini-image 
 idealLRGB = XW2RGBFormat(ideal,4,6);
 
-% Now expand the iamge to a bigger size so we can insert the data we are
+% Now expand the image to a bigger size so we can insert the data we are
 % comparing.
 fullIdealRGB = imageIncreaseImageRGBSize(idealLRGB,pSize);
+% ieNewGraphWin; imagescRGB(fullIdealRGB);
 
 %% Make the image with the data embedded
 
 % Start with the full RGB image rendered for an sRGB display.
-embRGB       = fullIdealRGB;   % imagesc(embRGB)
+embRGB       = fullIdealRGB;   % ieNewGraphWin; imagesc(embRGB)
 
 % Embed the mRGB values into the ideal RGB images
-w = pSize + round(-pSize/3:0);
+w = pSize(1) + round(-pSize(1)/3:0);
+thisPatch = 1;
 for ii=1:4
-    l1 = (ii-1)*pSize + w;
+    rows = (ii-1)*pSize(1) + w;
     for jj=1:6
-        l2 = (jj-1)*pSize + w;
-        rgb = squeeze(mRGB(ii,jj,:));
+        cols = (jj-1)*pSize(1) + w;
         for kk=1:3
-            embRGB(l1,l2,kk) = rgb(kk);
+            % For each color channcel
+            embRGB(rows,cols,kk) = mRGB(ii,jj,kk);
         end
     end
+    thisPatch = thisPatch + 1;
 end
+% ieNewGraphWin; imagescRGB(embRGB);
 
 %% Display in graph window
 
@@ -85,7 +96,7 @@ end
 % convert the ISET mRGB data to the sRGB format, accounting for the current
 % display.
 
-figNum = vcNewGraphWin([],'wide');
+figNum = ieNewGraphWin([],'wide');
 str = sprintf('%s: MCC %s',ipGet(ip,'name'),illType);
 set(figNum,'name',str);
 set(figNum,'Color',[1 1 1]*.7);
