@@ -1,41 +1,47 @@
-function [embRGB,mRGB,pSize] = macbethCompareIdeal(mRGB,pSize,illType)
-%Create an image of an ideal MCC (color temperature ...) with data embedded
+function [embRGB,mRGB,pSize] = macbethCompareIdeal(mRGB,illType)
+% Create an image of an ideal MCC (color temperature ...) with data embedded
 % 
-%   [embRGB,mRGB,pSize] = macbethCompareIdeal(mRGB,pSize,illType)
+%   [embRGB,mRGB,pSize] = macbethCompareIdeal(mRGB,illType)
 %
 % mRGB:    Macbeth RGB values of the data in the ipWindow
-% pSize:   Patch size for the embedded targets
 % illType: Illuminant name (e.g., 'd65'). See illuminantRead for all
 %          illuminant type options
 %
 % TODO: Need to be able to set illType parameter for color temperature
 %
-% Example
-%   [embRGB,mRGB,pSize] = macbethCompareIdeal; 
-%
-%   macbethCompareIdeal(mRGB,pSize,4000);
-%   macbethCompareIdeal(mRGB,pSize,6000);
-%   macbethCompareIdeal(mRGB,pSize,'d65');
-%
 % See also:  macbethIdealColor
 %
-% Copyright ImagEval Consultants, LLC, 2003.
+% See also
+%
+
+% Examples:
+%{
+   [embRGB,mRGB,pSize] = macbethCompareIdeal; 
+%}
+%{
+   macbethCompareIdeal(mRGB,pSize,4000);
+%}
+%{
+   macbethCompareIdeal(mRGB,pSize,6000);
+%}
+%{
+   macbethCompareIdeal(mRGB,pSize,'d65');
+%}
 
 %% Arguments
 ip = vcGetObject('ip');
 
+
 % If the mRGB or pSize not defined, we need to do some processing.
-if ieNotDefined('mRGB') || ieNotDefined('pSize')
-    cornerPoints = [
-     1    55
-    88    55
-    88     6
-     1     6];
-    % Now, we get the RGB values for the image data displayed in the
-    % image processing window.  We treat this as lRGB (not sRGB) data.
-    [mRGB, ~, pSize]= macbethSelect(ip, true, [], cornerPoints);
-    mRGB = reshape(mRGB,4,6,3);
-    mRGB = mRGB/max(mRGB(:));
+if ieNotDefined('mRGB') 
+if isempty(ipGet(ip,'mcc corner points'))
+    cp = chartCornerpoints(ip);
+end
+
+[rects,mLocs,pSize] = chartRectangles(cp,4,6,0.5);
+rHdl = chartRectsDraw(ip,rects);
+
+mRGB = chartRectsData;
 end
 if ieNotDefined('illType'), illType = 'd65'; end
 

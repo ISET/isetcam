@@ -58,7 +58,7 @@ function [mRGB, mLocs, pSize, cornerPoints] = ...
 %
 % See also:  
 %   macbethSensorValues, macbethRectangles, macbethROIs, chartRectangles,
-%   chartPatchData
+%   chartRectsData
 
 % Examples:
 %{ 

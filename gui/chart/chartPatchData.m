@@ -1,5 +1,5 @@
 function data = chartPatchData(obj,mLocs,delta,fullData,dataType)
-%Return a cell array with the linear RGB values from an ip or sensor 
+% Deprecated:  Call chartRectData
 %
 % Syntax:
 %    data = chartPatchData(obj,mLocs,delta,[fullData],[dataType])
