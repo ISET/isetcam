@@ -83,5 +83,48 @@ estimatedW = A\b;
 estimatedW = estimatedW/estimatedW(1);
 disp(estimatedW)
 
+%%  Calculating with a scene and sensor structures
+
+scene = sceneCreate;
+scene = sceneAdjustIlluminant(scene,Quanta2Energy(wave,illPhotons));
+fov   = sceneGet(scene,'fov');
+sceneWindow(scene);
+
+oi = oiCreate; oi = oiCompute(oi,scene);
+
+sensor = sensorCreate; 
+sensor = sensorSet(sensor,'fov',fov,scene,oi);
+sensor = sensorCompute(sensor,oi);
+cp = [1   180
+    241   182
+    240    19
+    2    20];
+
+psizef = 0.4;
+[rects,mlocs,pSize] = chartRectangles(cp,4,6,psizef);
+delta = round(psizef*pSize(1));
+C = chartRectsData(sensor,mlocs,delta,false,'electrons');
+
+sensorWindow(sensor);
+illEstimate = sensorMacbethDaylightEstimate(sensor,'corner points',cp,'scene',scene);
+
+% Convert the illuminant data to a photon basis
+wave = sensorGet(sensor,'wave');
+dayBasis = ieReadSpectra('cieDaylightBasis.mat',wave); 
+dayBasis = Energy2Quanta(wave,dayBasis);
+reflectance   = macbethReadReflectance(wave);
+sensorFilters = sensorGet(sensor,'spectral qe');
+illPhotons = sceneGet(scene,'illuminant photons');
+Ccheck = (sensorFilters'*diag(illPhotons)*reflectance)';
+Ccheck = ieScale(Ccheck,1)*max(C(:));
+ieNewGraphWin; plot(Ccheck(:),C(:),'o'); grid on; identityLine;
+
+
+illEnergy = sceneGet(scene,'illuminant energy');
+wave = sceneGet(scene,'wave');
+ieNewGraphWin;
+plot(wave, ieScale(illEstimate,1),'r-',wave,ieScale(illEnergy,1),'k--');
+grid on;
+
 %% END
 
