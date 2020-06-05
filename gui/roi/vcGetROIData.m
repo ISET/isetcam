@@ -16,6 +16,10 @@ function roiData = vcGetROIData(obj,roiLocs,dataType)
 % here, the spatial size of the returned data are width+1 and height+1.
 % Thus, [col,row,1,1] returns four positions.
 %
+% When the obj is a sensor the returned values typically include NaNs
+% because of the sensor mosaic. There will be a green, but not a red or
+% blue at the green positions.
+%
 % A variety of data types and windows can be chosen. These are:
 %
 %   scene:         photons (default) or energy

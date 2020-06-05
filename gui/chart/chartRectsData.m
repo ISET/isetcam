@@ -41,24 +41,6 @@ function data = chartRectsData(obj,mLocs,delta,fullData,dataType)
  wave = 400:10:700;  radiance = rand(length(wave),50)*10^16;
  scene = sceneRadianceChart(wave, radiance,'patch size',25,'rowcol',[5,10]);
  sceneWindow(scene);
-% Define the corner points
- wholeChart = true;
- cp = chartCornerpoints(scene,wholeChart);
-% 
-% Create the rects
- chartP = sceneGet(scene,'chart parameters');
- sFactor = 0.5;
- [rects, mLocs, pSize] = chartRectangles(cp,chartP.rowcol(1),chartP.rowcol(2), sFactor);
-% 
-% Plot the rects
- rectHandles = chartRectsDraw(scene,rects);
-% 
- delete(rectHandles);
-%}
-%{
- wave = 400:10:700;  radiance = rand(length(wave),50)*10^16;
- scene = sceneRadianceChart(wave, radiance,'patch size',25,'rowcol',[5,10]);
- sceneWindow(scene);
  wholeChart = true;
  cp = chartCornerpoints(scene,wholeChart);
 
@@ -111,12 +93,28 @@ for ii = 1:nLocs
     theseLocs = chartROI(mLocs(:,ii),delta);
     data{ii} = vcGetROIData(obj,theseLocs,dataType);
 end
-    
+
 if ~fullData  % User just wants the mean value
-    meanRGB = zeros(nLocs,size(data{1},2));
-    for ii = 1:nLocs
-        meanRGB(ii,:) = mean(data{ii});
+    nSensors = size(data{1},2);
+    meanRGB = zeros(nLocs,nSensors);
+    switch obj.type
+        case 'sensor'
+            % The sensor data typically include NaNs because of the mosaic - a green
+            % pixel has no red or blue values.  We account for this when we take the
+            % mean of the sensor data.
+            for ii=1:nLocs
+                d = data{ii};
+                for ss=1:nSensors
+                    lst = ~isnan(d(:,ss));
+                    meanRGB(ii,ss) = mean(d(lst,ss));
+                end
+            end
+        otherwise
+            for ii = 1:nLocs
+                meanRGB(ii,:) = mean(data{ii});
+            end
     end
+    
     data = meanRGB;
 end
 
