@@ -31,7 +31,7 @@ function oi = oiFromFile(imageData,imageType, meanLuminance, dispCal, wList)
 % Examples:
 %{
   filename = 'eagle.jpg';
-  oiFromFile(filename,'rgb');
+  oi = oiFromFile(filename,'rgb');
   oiWindow(oi);
 %}
 %{

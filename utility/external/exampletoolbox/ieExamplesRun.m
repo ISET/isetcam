@@ -1,12 +1,13 @@
-function [names,status] = RunExamples(str,varargin)
+function [names,status] = ieExamplesRun(str,varargin)
 % Invoke examples for all files in a directory or a function
 %
-%   [names,status] = RunExamples(fileOrDirectory, ...);
+%   [names,status] = ieExamplesRun(fileOrDirectory, ...);
 %
 % Copyright ISETBIO Team, 2018
 %
 % See also
-%   ExecuteExamplesInFunction, ExecuteExamplesInDirectory, PrintExamples
+%  ieExamplesPrint
+%
 
 % Examples:
 %{
@@ -48,10 +49,10 @@ verbose = p.Results.verbose;
 
 %%
 if exist(str,'dir')
-    [names,status] = ExecuteExamplesInDirectory(str);
+    [names,status] = ieExamplesRunInDirectory(str);
 elseif exist(str,'file')
     names  = str;
-    status = ExecuteExamplesInFunction(str,'findfunction',fFlag,...
+    status = ieExamplesRunInFunction(str,'findfunction',fFlag,...
         'printexampletext',pFlag,...
         'verbose',verbose, ...
         'closefigs',p.Results.closefigs);
