@@ -1,8 +1,8 @@
-function status = ExecuteExamplesInFunction(theFunction,varargin)
+function status = ieExamplesRunInFunction(theFunction,varargin)
 % Open file, read it, parse execute any examples
 %
 % Syntax:
-%     status = ExecuteExamplesInFunction(theFunction)
+%     status = ieExamplesRunInFunction(theFunction)
 %
 % Description:
 %    Examples are enclosed in block quotes, following a comment line that

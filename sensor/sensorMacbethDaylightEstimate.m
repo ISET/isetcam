@@ -1,4 +1,4 @@
-function [illPhotons,cp,wgts] = sensorMacbethDaylightEstimate(sensor,varargin)
+function [illPhotons,cp,wgts,Cstacked,X] = sensorMacbethDaylightEstimate(sensor,varargin)
 % Use sensor data with an MCC to estimate a daylight illuminant
 %
 %   There is currently a bug relating to photons/energy representation of
@@ -42,22 +42,35 @@ function [illPhotons,cp,wgts] = sensorMacbethDaylightEstimate(sensor,varargin)
    plotRadiance(sensorGet(sensor,'wave'),illPhotons);
 %}
 %{
-   % When you know the corner points
+   % When you know the corner points you can run this code.
+
+   % Create a scene and set its illuminant to be the first daylight
+   % component
    scene = sceneCreate; 
+   wave = sceneGet(scene,'wave');
+   dayBasis = ieReadSpectra('cieDaylightBasis.mat',wave);
+   wgts = [1,-1,0.3]';
+   % Impomrtant to use this, not sceneSet()
+   scene = sceneAdjustIlluminant(scene,dayBasis*wgts,true);
+   sceneWindow(scene);
+
+   % Build the sensor data
    oi = oiCreate; oi = oiCompute(oi,scene);
    fov = sceneGet(scene,'fov');
    sensor = sensorCreate; sensor = sensorSet(sensor,'fov',fov,scene,oi);
+   sensor = sensorSet(sensor,'noise flag',1);
    sensor = sensorCompute(sensor,oi);
+
+   % Estimate the daylight, should have weights as above
    cp = [1   180
       241   182
       240    19
         2    20];
-   illEstimate = sensorMacbethDaylightEstimate(sensor,'corner points',cp,'scene',scene);
-   illEnergy = sceneGet(scene,'illuminant energy');
-   wave = sceneGet(scene,'wave');
-   ieNewGraphWin;
-   plot(wave, ieScale(illEstimate,1),'r-',wave,ieScale(illEnergy,1),'k--');
-   grid on;
+   [illPhotonEstimate,tst,wgtsEstimate] = sensorMacbethDaylightEstimate(sensor,'corner points',cp);
+   illPhotons = sceneGet(scene,'illuminant photons');
+   ieNewGraphWin; plot(wave,ieScale(illPhotonEstimate,1),'r-',wave,ieScale(illPhotons,1),'k-');
+   set(gca,'ylim',[ 0 1]);
+   wgts, wgtsEstimate
 %}
 
 %% Input
@@ -68,12 +81,10 @@ p = inputParser;
 p.addRequired('sensor',@(x)(isequal(x.type,'sensor')));
 p.addParameter('cornerpoints',[],@isnumeric);
 p.addParameter('patchsizefraction',0.4,@(x)(x < 1 && x > 0));
-p.addParameter('scene',[],@(x)(isequal(x.type,'scene')));
 
 p.parse(sensor,varargin{:});
 cp     = p.Results.cornerpoints;
 psizef = p.Results.patchsizefraction;
-scene  = p.Results.scene;
 
 %% Deal with the rects on the MCC chart
 
@@ -91,11 +102,14 @@ pause(1); delete(recthdl)
 % Now we have the 24 x 3 RGB values from the MCC
 delta = round(psizef*pSize(1));
 C = chartRectsData(sensor,mlocs,delta,false,'electrons');
+C = C';
+Cstacked = C(:);
+
 
 %% Calculation starts here by getting the key data
 
 % Convert the illuminant data to a photon basis
-wave = sensorGet(sensor,'wave');
+wave     = sensorGet(sensor,'wave');
 dayBasis = ieReadSpectra('cieDaylightBasis.mat',wave); 
 dayBasis = Energy2Quanta(wave,dayBasis);
 
@@ -122,9 +136,6 @@ X3 = sensorFilters'*diag(dayBasis(:,3))*reflectance;
 % Stack the three matrices 
 X = [X1(:), X2(:), X3(:)];
 
-% Stack the camera data into a big column
-Cstacked = C(:);
-
 %% The daylight basis weights are supposed to solve this linear equation
 %
 %     Cstacked = X w
@@ -141,5 +152,5 @@ wgts = wgts/wgts(1);
 
 illPhotons = dayBasis*wgts;
 % plotRadiance(wave,illPhotons);
-
+%
 end
