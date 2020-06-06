@@ -43,10 +43,10 @@ dayBasis = Energy2Quanta(wave,dayBasis);
 
 %%  Make up a set of weights for the illuminant
 
-w = [1 -0.5 0.5];
+w = [1 0 0];
 illuminant = illuminantSet(illuminant,'photons',dayBasis*w');
 illPhotons = illuminantGet(illuminant,'photons');
-% plotRadiance(wave,illPhotons);
+% plotRadiance(wave,illPhotons); 
 
 %% Calculate the sensor data
 

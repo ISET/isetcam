@@ -18,6 +18,16 @@ function rectHandles = chartRectsDraw(obj,rects)
 
 %% Should check input parameters here!
 %
+if isempty(ieSessionGet('sensor window'))
+    switch obj.type
+        case 'sensor'
+            sensorWindow(obj);
+        case 'scene'
+            sceneWindow(obj);
+        case 'vcimage'
+            ipWindow(obj);
+    end     
+end
 
 %% Find corners of the rectangles.  
 
