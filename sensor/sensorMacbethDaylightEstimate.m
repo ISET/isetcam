@@ -37,6 +37,7 @@ function [illPhotons,cp,wgts] = sensorMacbethDaylightEstimate(sensor,varargin)
    fov = sceneGet(scene,'fov');
    sensor = sensorCreate; sensor = sensorSet(sensor,'fov',fov,scene,oi);
    sensor = sensorCompute(sensor,oi);
+   sensorWindow(sensor);
    [illPhotons,cp,wgts] = sensorMacbethDaylightEstimate(sensor);
    plotRadiance(sensorGet(sensor,'wave'),illPhotons);
 %}

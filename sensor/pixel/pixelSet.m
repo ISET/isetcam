@@ -118,7 +118,6 @@ switch param
         pixel.darkVoltage = val;
         
     case {'readnoise','readnoiseelectrons','readstandarddeviationelectrons'}         %standard deviation in e-
-        warndlg('Setting read noise with an electrons call.  Bad.')
         pixel.readNoise = val*pixelGet(pixel,'conversiongain');
         
     case {'readnoisevolts','readstandarddeviationvolts','readnoisestdvolts'}         %standard deviation in V

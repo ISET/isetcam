@@ -380,26 +380,7 @@ switch lower(param)
         if isempty(val), sensor.colOffset = val;
         elseif length(val) == sensorGet(sensor,'cols'), sensor.colOffset = val;
         else, error('Bad column offset data');
-        end
-    case {'zerolevel'}
-        % Some sensors have an expected zerolevel when there is a black
-        % scene.  We store it here.
-        if isempty(val)
-            % Calculate the zero level for the user, who sent in an empty
-            % value.
-            oiBlack = oiCreate('black');
-            sensor2 = sensorSet(sensor,'noiseflag',0); % Little noise
-            sensor2 = sensorCompute(sensor2,oiBlack);
-            switch sensorGet(sensor,'quantization method')
-                case 'analog'
-                    val = sensorGet(sensor2,'volts');
-                otherwise
-                    val = sensorGet(sensor2,'dv');
-            end
-            val = mean(val(:));
-        end
-        sensor.electrical.zerolevel = val;
-        
+        end        
         % Noise management
     case {'noiseflag'}
         % NOISE FLAG

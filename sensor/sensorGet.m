@@ -171,6 +171,8 @@ function val = sensorGet(sensor,param,varargin)
 %      'column prnu'          - The column gain parameters (std dev in Volts)
 %      'col offset fpnvector'  - The sensor column offset data
 %      'col gain fpnvector'    - The sensor column gain data
+%      'black level'         - set a zero level in volts or digital value,
+%                              depending on the quantization method (analog or bits)
 %      'noise flag'           - Governs sensorCompute noise calculations
 %                                 0 no noise at all
 %                                 1 shot noise, no electronics noise
@@ -743,10 +745,19 @@ switch oType
             case {'colgainfpnvector','colgainfpn','colgain'}
                 if checkfields(sensor,'colGain'),val = sensor.colGain; end
                 
-            case {'zerolevel'}
-                if checkfields(sensor,'electrical','zerolevel')
-                    val = sensor.electrical.zerolevel; 
+            case {'blacklevel', 'zerolevel'}
+                % Calculate the zero level for the user, who sent in an empty
+                % value.
+                oiBlack = oiCreate('black');
+                sensor2 = sensorSet(sensor,'noiseflag',0); % Little noise
+                sensor2 = sensorCompute(sensor2,oiBlack);
+                switch sensorGet(sensor,'quantization method')
+                    case 'analog'
+                        val = sensorGet(sensor2,'volts');
+                    otherwise
+                        val = sensorGet(sensor2,'dv');
                 end
+                val = mean(val(:));
 
                 % Noise management
             case {'noiseflag','shotnoiseflag'}
