@@ -72,7 +72,7 @@ pSize = sensorGet(sensor,'pixel size');
 rowcol = sensorGet(sensor,'size');
 y = (1:rowcol(1)); x = (1:rowcol(2)); 
 sFactor = pSize(2)/pSize(1);
-if sFactor > 1 , y = y*sFactor;  % rows
+if sFactor > 1 , y = y/sFactor;  % rows
 else,            x = x*sFactor;  % columns
 end
 
