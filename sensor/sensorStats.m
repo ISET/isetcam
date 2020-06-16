@@ -62,11 +62,13 @@ nSensors = sensorGet(sensor,'nsensors');
 
 % We ignore the sensor.roi in this case.  The user always selects.  But
 % maybe we should allow the user to set.
-isaHdl = ieSessionGet('isahandle');
-ieInWindowMessage('Select image region.',isaHdl,[]);
-[~,rect] = vcROISelect(sensor);
-sensor = sensorSet(sensor,'roi',rect);
-ieInWindowMessage('',isaHdl);
+if isempty(sensorGet(sensor,'roi'))
+    isaHdl = ieSessionGet('isahandle');
+    ieInWindowMessage('Select image region.',isaHdl,[]);
+    [~,rect] = vcROISelect(sensor);
+    sensor = sensorSet(sensor,'roi',rect);
+    ieInWindowMessage('',isaHdl);
+end
 
 %% Get proper data type.  NaNs are still in there
 

@@ -46,13 +46,37 @@ if isempty(sensor),return; end
 % case.
 img = sensorData2Image(sensor,'dv or volts',gam,scaleMax);
 
+%% We want to handle the cases when the pixel size is not square
+%
+% This choice arises from dual pixel auto focus modeling.  We number the
+% rows and columns with non-integer values so the image will present
+% correctly.  Selecting a column, though, can be a problem.  We might
+% always be off by 1.
+
+% We are not yet happy with the way this works with plotting.
+% Still thinking (ZLy, BW)
+
+% We could be showing the image with ss.x and ss.y.  We then need to fix
+% vcLineSelect or vcPointSelect.
+% ss  = sensorGet(sensor,'spatial support');
+
+pSize = sensorGet(sensor,'pixel size');
+rowcol = sensorGet(sensor,'size');
+y = (1:rowcol(1)); x = (1:rowcol(2)); 
+sFactor = pSize(2)/pSize(1);
+if sFactor > 1
+    y = y*sFactor;  % rows
+else
+    x = x*sFactor;  % columns
+end
+
 % If figNum is false, we don't display.  Otherwise, we show the data in
 % the currently selected figure.
 if ~isempty(img)
     % If the sensor is monochrome, the img is a matrix, not RGB.
     if ismatrix(img), img = repmat(img,[1,1,3]); end
 
-    if ~isequal(figNum,0), image(img); axis image; axis off; end
+    if ~isequal(figNum,0), image(x,y,img); axis image; axis off; end
     if (sensorGet(sensor,'nSensors') == 1), colormap(gray(256)); end
 end
 
