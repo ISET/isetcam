@@ -41,7 +41,7 @@ thisR.camera = piCameraCreate('omni','lensFile',combinedLensFile);
 
 pixelsPerMicrolens = 2;
 
-pixelSize  = ulens.get('lens height')/pixelsPerMicrolens;   % mm
+pixelSize  = uLens.get('lens height')/pixelsPerMicrolens;   % mm
 filmwidth  = nMicrolens(2)*uLens.get('diameter','mm');       % mm
 filmheight = nMicrolens(1)*uLens.get('diameter','mm');       % mm
 filmresolution = [filmheight, filmwidth]/pixelSize;
@@ -80,6 +80,7 @@ sensor = sensorSet(sensor,'pattern',[2 2 1 1; 3 3 2 2]);
 piWrite(thisR);
 [oi, result] = piRender(thisR,'render type','radiance');
 
+% oiWindow(oi);
 %% Compute the sensor data
 
 % Notice that we get the spatial structure of the image right, even though
@@ -93,11 +94,26 @@ volts = sensorGet(sensor,'volts');
 leftVolts = volts(1:2:end,1:2:end);
 rightVolts = volts(2:2:end,2:2:end);
 
-%%
+%% Create sensors for left and right image
 leftSensor = sensorCreate;
-rightSensor = sensorCreate;
+% rightSensor = sensorCreate;
 
+leftSensor = sensorSet(leftSensor, 'size', [rowcol(1), rowcol(2)*2]);
+leftSensor = sensorSet(leftSensor, 'pixel width', sz(2)/2);
+rightSensor = leftSensor;
 
+% Set volts to sensor
+leftSensor = sensorSet(leftSensor, 'volts', leftVolts);
+leftSensor = sensorSet(leftSensor, 'name', 'Left sensor image');
+rightSensor = sensorSet(rightSensor, 'volts', rightVolts);
+rightSensor = sensorSet(rightSensor, 'name', 'Right sensor image');
+
+%{
+sensorWindow(leftSensor);
+sensorWindow(rightSensor);
+%}
+
+%% Apply IP
 
 
 %% END
