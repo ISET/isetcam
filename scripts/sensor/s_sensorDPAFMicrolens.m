@@ -15,6 +15,7 @@
 %% Initialize a scene and oi
 ieInit;
 if ~piDockerExists, piDockerConfig; end
+chdir(fullfile(piRootPath,'local'));
 
 %%  Get the chess set scene
 
@@ -85,20 +86,42 @@ piWrite(thisR);
 % Notice that we get the spatial structure of the image right, even though
 % the pixels are rectangular.
 sensor = sensorCompute(sensor,oi);
+sensor = sensorSet(sensor,'name','DPAF');
 sensorWindow(sensor);
 
 %%  Extract the left and right images from the dual pixel array
 
 volts = sensorGet(sensor,'volts');
-leftVolts = volts(1:2:end,1:2:end);
-rightVolts = volts(2:2:end,2:2:end);
+leftVolts = volts(1:end,1:2:end);
+rightVolts = volts(1:end,2:2:end);
 
 %%
 leftSensor = sensorCreate;
+leftSensor = sensorSet(leftSensor,'size',size(leftVolts));
+leftSensor = sensorSet(leftSensor,'volts',leftVolts);
+leftSensor = sensorSet(leftSensor,'name','left');
+
+sensorWindow(leftSensor);
+
+%%
 rightSensor = sensorCreate;
+rightSensor = sensorSet(rightSensor,'size',size(rightVolts));
+rightSensor = sensorSet(rightSensor,'volts',rightVolts);
+rightSensor = sensorSet(rightSensor,'name','right');
+sensorWindow(rightSensor);
 
+%%
+ip = ipCreate;
+ip = ipCompute(ip,sensor);
+ipWindow(ip);
 
+leftip = ipCreate;
+leftip = ipCompute(leftip,leftSensor);
+ipWindow(leftip);
 
+rightip = ipCreate;
+rightip = ipCompute(rightip,rightSensor);
+ipWindow(rightip);
 
 %% END
 
