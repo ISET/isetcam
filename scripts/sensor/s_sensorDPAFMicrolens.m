@@ -42,7 +42,7 @@ thisR.camera = piCameraCreate('omni','lensFile',combinedLensFile);
 
 pixelsPerMicrolens = 2;
 
-pixelSize  = ulens.get('lens height')/pixelsPerMicrolens;   % mm
+pixelSize  = uLens.get('lens height')/pixelsPerMicrolens;   % mm
 filmwidth  = nMicrolens(2)*uLens.get('diameter','mm');       % mm
 filmheight = nMicrolens(1)*uLens.get('diameter','mm');       % mm
 filmresolution = [filmheight, filmwidth]/pixelSize;
@@ -81,6 +81,7 @@ sensor = sensorSet(sensor,'pattern',[2 2 1 1; 3 3 2 2]);
 piWrite(thisR);
 [oi, result] = piRender(thisR,'render type','radiance');
 
+% oiWindow(oi);
 %% Compute the sensor data
 
 % Notice that we get the spatial structure of the image right, even though
@@ -95,7 +96,7 @@ volts = sensorGet(sensor,'volts');
 leftVolts = volts(1:end,1:2:end);
 rightVolts = volts(1:end,2:2:end);
 
-%%
+%% Create sensors for left and right image
 leftSensor = sensorCreate;
 leftSensor = sensorSet(leftSensor,'size',size(leftVolts));
 leftSensor = sensorSet(leftSensor,'volts',leftVolts);
