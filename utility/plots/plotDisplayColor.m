@@ -30,19 +30,16 @@ function plotDisplayColor(ip,dataType)
 % See also:  plotDisplayGamut
 %
 % Examples:
-%  vci = vcGetObject('vci');
-%  plotDisplayColor(vci,'xy'); userData = get(gcf,'UserData');
+%  ip = ieGetObject('ip');
+%  plotDisplayColor(ip,'xy'); userData = get(gcf,'UserData');
 %
 %  plotDisplayColor([],'luminance')
 %  plotDisplayColor([],'cielab')
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
-% TODO:  Restructure using a new routine, plotIP
-%
-
 %% Variables
-if ieNotDefined('vci');      ip = vcGetObject('vcimage'); end
+if ieNotDefined('ip');      ip = vcGetObject('ip'); end
 if ieNotDefined('dataType'), dataType = 'rgbhistogram'; end
 
 %% Select the RGB data from the ROI
@@ -50,13 +47,13 @@ handles = ieSessionGet('vcimagehandle');
 
 % Get the data
 ieInWindowMessage('Select image region of interest.',handles,[]);
-roiLocs = vcROISelect(ip);
+roiLocs = ieROISelect(ip);
 RGB     = vcGetROIData(ip,roiLocs,'result');
 ieInWindowMessage('',handles,[]);
 
 %% Plot the data
 
-figNum =  vcNewGraphWin;
+figNum =  ieNewGraphWin;
 
 switch lower(dataType)
     case {'rgb','rgbhistogram'}
@@ -88,8 +85,12 @@ switch lower(dataType)
         dataXYZ = imageRGB2XYZ(ip,RGB);
         xy = chromaticity(dataXYZ);
         
-        plotSpectrumLocus(figNum); hold on;
-        plot(xy(:,1),xy(:,2),'o'); 
+        % Gray background, res of 256, do not start a new figure
+        chromaticityPlot(xy,'gray',256,false);
+
+        % plotSpectrumLocus(figNum); hold on;
+        hold on
+        plot(xy(:,1),xy(:,2),'ko'); 
         grid on;
         
         title('CIE (1931) chromaticities');
@@ -98,7 +99,7 @@ switch lower(dataType)
 
         meanXYZ = mean(dataXYZ);
         
-        txt = sprintf('X = %.02f\nY = %.02f\nZ = %.02f',meanXYZ(1),meanXYZ(2),meanXYZ(3));
+        txt = sprintf(' Mean XYZ \nX = %.02f\nY = %.02f\nZ = %.02f',meanXYZ(1),meanXYZ(2),meanXYZ(3));
         plotTextString(txt,'ur');
         
         udata.xy = xy; udata.XYZ = dataXYZ;
@@ -108,7 +109,7 @@ switch lower(dataType)
         dataXYZ = imageRGB2XYZ(ip,RGB);
         luminance = dataXYZ(:,2);
         
-        hist(luminance(:)); grid on;
+        histogram(luminance(:)); grid on;
         xlabel('Luminance (cd/m^2)'); ylabel('Count'); title('Luminance (CIE 1931 Y)');
         set(gca,'xlim',[max(0,0.*min(luminance(:))), max(luminance(:))*1.1]);
         mnL = mean(luminance);
@@ -124,7 +125,7 @@ switch lower(dataType)
         % Needs updating
         dataXYZ  = ipGet(ip,'roi xyz',roiLocs);
         whitepnt = ipGet(ip,'data or Display WhitePoint');
-        dataLAB = ieXYZ2LAB(dataXYZ,whitepnt);
+        dataLAB = ieXYZ2LAB(double(dataXYZ),double(whitepnt));
         plot3(dataLAB(:,2), dataLAB(:,3),dataLAB(:,1), 'o');
         set(gca,'xlim',[-50 50],'ylim',[-50 50],'zlim',[0,100]);
         grid on; axis square
@@ -160,4 +161,4 @@ end
 set(figNum,'Userdata',udata);
 hold off
 
-return;
+end

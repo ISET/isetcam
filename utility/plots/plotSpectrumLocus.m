@@ -12,8 +12,8 @@ function [p,l] = plotSpectrumLocus(fig)
 %
 % Copyright Imageval 2003
 
-if ieNotDefined('fig'), vcNewGraphWin; 
-else figure(fig);
+if ieNotDefined('fig'), ieNewGraphWin; 
+else, figure(fig);
 end
 
 wave = 370:730;
@@ -24,13 +24,15 @@ XYZ = ieReadSpectra('XYZ',wave);
 spectrumLocus = chromaticity(XYZ);
 
 % These are the (x,y) points of the spectral lines
-p = plot(spectrumLocus(:,1),spectrumLocus(:,2),'-');
+p = plot(spectrumLocus(:,1),spectrumLocus(:,2),'k--');
 hold on;
 
 % Add a line to close up the outer rim of the spectrum locus curve
 l = line([spectrumLocus(1,1),spectrumLocus(end,1)],...
-    [spectrumLocus(1,2),spectrumLocus(end,2)]);
+    [spectrumLocus(1,2),spectrumLocus(end,2)], ...
+    'Color',[0 0 0],'LineStyle','--');
+
 hold on;
 axis equal; grid on
 
-return;
+end
