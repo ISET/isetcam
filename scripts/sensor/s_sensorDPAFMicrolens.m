@@ -26,7 +26,7 @@ thisR = piRecipeDefault('scene name','chessSet');
 uLensName = 'microlens.json';
 iLensName = 'dgauss.22deg.3.0mm.json';
 uLensHeight = 0.0028;        % 2.8 um - each covers two pixels
-nMicrolens = [40 40]*5;      % Appears to work for rectangular case, too
+nMicrolens = [40 40]*8;      % Appears to work for rectangular case, too
 
 [combinedLensFile, uLens, iLens] = lensCombine(uLensName,iLensName,uLensHeight,nMicrolens);
 
@@ -57,6 +57,9 @@ thisR.set('film resolution',filmresolution);
 
 % This is the aperture of the imaging lens of the camera in mm
 thisR.set('aperture diameter',6);   
+
+% Adjust for quality
+thisR.set('rays per pixel',64);
 
 %% Make a dual pixel sensor that has rectangular pixels
 %
