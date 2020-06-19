@@ -32,11 +32,11 @@ function [uData, g] = sensorPlot(sensor, pType, roiLocs, varargin)
 % The properties that can be plotted are:
 %
 % Sensor Data plots
-%  'electrons hline'
-%  'electrons vline'
-%  'volts hline'
-%  'volts vline'
-%  'dv vline'
+%  'electrons hline' - sensorPlot(sensor,'electrons hline',[x y])
+%  'electrons vline' - sensorPlot(sensor,'electrons vline',[x y])
+%  'volts hline'     - sensorPlot(sensor,'volts hline',[x y])
+%  'volts vline'     - sensorPlot(sensor,'volts vline',[x y])
+%  'dv vline'        - ...
 %  'dv hline'
 %  'volts histogram'
 %  'electrons histogram'
@@ -48,7 +48,7 @@ function [uData, g] = sensorPlot(sensor, pType, roiLocs, varargin)
 %  'color filters'
 %  'ir filter'
 %
-% Electrical properties
+% Sensor electrical properties
 %  'pixel spectral qe' -   % Volts/Quantum response by wavelength
 %  'pixel spectral sr' -   % Volts/Energy response by wavelength
 %  'spectral qe'

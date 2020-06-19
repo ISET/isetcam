@@ -106,7 +106,7 @@ leftSensor = sensorSet(leftSensor,'volts',leftVolts);
 leftSensor = sensorSet(leftSensor,'name','left');
 
 sensorWindow(leftSensor);
-
+% sensorPlot(leftSensor,'electrons hline',
 %%
 rightSensor = sensorCreate;
 rightSensor = sensorSet(rightSensor,'size',size(rightVolts));
