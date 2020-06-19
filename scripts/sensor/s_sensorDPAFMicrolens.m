@@ -15,6 +15,7 @@
 %% Initialize a scene and oi
 ieInit;
 if ~piDockerExists, piDockerConfig; end
+chdir(fullfile(isetRootPath,'local'))
 
 %%  Get the chess set scene
 
