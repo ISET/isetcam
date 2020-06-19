@@ -50,6 +50,9 @@ function figNum = plotColorDisplayLines(xy,data,ori)
 % Internal routine:  plot color line data from display data
 %
 
+dType = 'digital';
+if max(data(:)) <=1, dType = 'analog'; end
+    
 switch lower(ori)
     case {'h','horizontal'}
         lData = squeeze(data(xy(2),:,:));
@@ -72,7 +75,13 @@ for ii=1:3
     subplot(3,1,ii)
     plot(pos,lData(:,ii),colordef{ii})
     grid on; set(gca,'xlim',[pos(1), pos(end)]);
-    xlabel(xstr);  ylabel('Digital value');
+    xlabel(xstr);
+    switch dType
+        case 'digital'
+            ylabel('Digital value');
+        case 'analog'
+            ylabel('Value')
+    end
     if ii==1,  title(titleString); end
 end
 

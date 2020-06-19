@@ -15,7 +15,7 @@
 %% Initialize a scene and oi
 ieInit;
 if ~piDockerExists, piDockerConfig; end
-chdir(fullfile(isetRootPath,'local'))
+chdir(fullfile(piRootPath,'local'));
 
 %%  Get the chess set scene
 
@@ -26,7 +26,7 @@ thisR = piRecipeDefault('scene name','chessSet');
 uLensName = 'microlens.json';
 iLensName = 'dgauss.22deg.3.0mm.json';
 uLensHeight = 0.0028;        % 2.8 um - each covers two pixels
-nMicrolens = [40 40]*5;      % Appears to work for rectangular case, too
+nMicrolens = [40 40]*8;      % Appears to work for rectangular case, too
 
 [combinedLensFile, uLens, iLens] = lensCombine(uLensName,iLensName,uLensHeight,nMicrolens);
 
@@ -58,6 +58,9 @@ thisR.set('film resolution',filmresolution);
 % This is the aperture of the imaging lens of the camera in mm
 thisR.set('aperture diameter',6);   
 
+% Adjust for quality
+thisR.set('rays per pixel',64);
+
 %% Make a dual pixel sensor that has rectangular pixels
 %
 
@@ -87,35 +90,42 @@ piWrite(thisR);
 % Notice that we get the spatial structure of the image right, even though
 % the pixels are rectangular.
 sensor = sensorCompute(sensor,oi);
+sensor = sensorSet(sensor,'name','DPAF');
 sensorWindow(sensor);
 
 %%  Extract the left and right images from the dual pixel array
 
 volts = sensorGet(sensor,'volts');
-leftVolts = volts(1:2:end,1:2:end);
-rightVolts = volts(2:2:end,2:2:end);
+leftVolts = volts(1:end,1:2:end);
+rightVolts = volts(1:end,2:2:end);
 
 %% Create sensors for left and right image
 leftSensor = sensorCreate;
-% rightSensor = sensorCreate;
+leftSensor = sensorSet(leftSensor,'size',size(leftVolts));
+leftSensor = sensorSet(leftSensor,'volts',leftVolts);
+leftSensor = sensorSet(leftSensor,'name','left');
 
-leftSensor = sensorSet(leftSensor, 'size', [rowcol(1), rowcol(2)*2]);
-leftSensor = sensorSet(leftSensor, 'pixel width', sz(2)/2);
-rightSensor = leftSensor;
-
-% Set volts to sensor
-leftSensor = sensorSet(leftSensor, 'volts', leftVolts);
-leftSensor = sensorSet(leftSensor, 'name', 'Left sensor image');
-rightSensor = sensorSet(rightSensor, 'volts', rightVolts);
-rightSensor = sensorSet(rightSensor, 'name', 'Right sensor image');
-
-%{
 sensorWindow(leftSensor);
+
+%%
+rightSensor = sensorCreate;
+rightSensor = sensorSet(rightSensor,'size',size(rightVolts));
+rightSensor = sensorSet(rightSensor,'volts',rightVolts);
+rightSensor = sensorSet(rightSensor,'name','right');
 sensorWindow(rightSensor);
-%}
 
-%% Apply IP
+%%
+ip = ipCreate;
+ip = ipCompute(ip,sensor);
+ipWindow(ip);
 
+leftip = ipCreate;
+leftip = ipCompute(leftip,leftSensor);
+ipWindow(leftip);
+
+rightip = ipCreate;
+rightip = ipCompute(rightip,rightSensor);
+ipWindow(rightip);
 
 %% END
 
