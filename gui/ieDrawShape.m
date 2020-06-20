@@ -3,26 +3,34 @@ function h = ieDrawShape(obj,shape,varargin)
 %
 %   h = ieDrawShape(obj,shape,varargin)
 %
-% Example:
-%   scene = sceneCreate; ieAddObject(scene); sceneWindow;
-%   h = ieDrawShape(scene,'rectangle',[10 10 50 50]);
-%
-%   h = ieDrawShape(ip,'rectangle',rect);
-%   set(h,'edgecolor','r')
-%   delete(h);
-%
-%   c = ipGet(ip,'center');
-%   radius = c(1)/4;
-%   h = ieDrawShape(ip,'circle',c(1:2),radius);
-%   set(h,'color',[0 0 1]);
-%   delete(h);
-%
-% See also: v_drawShapes
-%
 % Copyright Imageval, LLC 2015
+%
+% ieExamplesPrint('ieDrawShape');
+%
+% See also: 
+%   ieROIDraw, v_drawShapes
+%
+
+% Examples:
+%{
+  scene = sceneCreate; ieAddObject(scene); sceneWindow;
+  h = ieDrawShape(scene,'rectangle',[10 10 50 50]);
+  set(h,'edgecolor','r'); pause(1);
+  delete(h);
+%}
+%{
+ camera = cameraCreate;  scene = sceneCreate;
+ camera = cameraCompute(camera, scene); ip = cameraGet(camera,'ip');
+ ipWindow(ip);
+ c = ipGet(ip,'center');
+ radius = c(1)/4;
+ h = ieDrawShape(ip,'circle',c(1:2),radius);
+ set(h,'color',[0 0 1]); pause(1)
+ delete(h);
+%}
 
 
-% Select the window
+%% Select the window
 switch obj.type
     case 'scene'
         axes(ieSessionGet('scene axis'));
@@ -36,6 +44,7 @@ switch obj.type
         error('Unknown object type %s\n',obj.type);
 end
 
+%%
 switch shape
     case 'circle'
         % ieDrawShape(obj,'circle',[20 20],10);
@@ -61,7 +70,7 @@ end
 
 end
 
-%
+%%
 function pts = circle(center,r,nPts)
 %
 t = linspace(0,2*pi,nPts)'; 

@@ -10,12 +10,7 @@ function [uData, g] = ipPlot(ip,param,xy,varargin)
 % Inputs
 %   ip:
 %   param
-%      'horizontalline'
-%      'roi'
-%
-%
-%   xy
-%
+%   xy - xy position on the image for plotting a line
 %
 % Key/val pairs
 %
@@ -23,40 +18,61 @@ function [uData, g] = ipPlot(ip,param,xy,varargin)
 %    uData
 %    hdl
 %
-% Copyright Imageval Consulting, LLC 2015
+% Parameters
+%    'horizontalline'  - send in the xy or select it
+%    'verticalline'    -   "
+%    'chromaticity'    -  send in an ROI or select it
+%    'cielab'          -   "
+%    'cieluv'          -   "
+%    'luminance'       -   "
+%    'rgbhistogram'    -   "
+%    'rgb3d'           -  Three-D plot of points
+%    'roi'             -  Show the ROI on the image
+%
+%
+% ieExamplesPrint('ipPlot');
 %
 % See also
-%  ieROIDraw, ieROISelect
+%  ieROISelect, ieROIDraw, ieDrawShape
+
+% Examples:
+%{
+ camera = cameraCreate;  scene = sceneCreate;
+ camera = cameraCompute(camera, scene); ip = cameraGet(camera,'ip');
+ ipWindow(ip);
+ [uData,hdl] = ipPlot(ip,'horizontal line',[20 20]);
+%}
 
 %% Decode parameters
 
 % varargin = ieParamFormat(varargin);
-uData = [];
-
 if ieNotDefined('ip'), error('ip required.'); end
 if ieNotDefined('param'), error('plotting parameter required'); end
 if ieNotDefined('xy'), xy = []; end
 
-param    = ieParamFormat(param);
+uData = [];
+g = [];
 
+%%
+param    = ieParamFormat(param);
 switch param
     case 'horizontalline'
         % Set xy
-        plotDisplayLine(ip,'h',xy);
+        [uData, g] = plotDisplayLine(ip,'h',xy);
     case 'verticalline'
-        plotDisplayLine(ip,'v');
+        [uData, g] = plotDisplayLine(ip,'v');
     case 'chromaticity'
-        plotDisplayColor(ip,'chromaticity');
+        [uData, g] = plotDisplayColor(ip,'chromaticity');
     case 'cielab'
-        plotDisplayColor(ip,'CIELAB');
+        [uData, g] = plotDisplayColor(ip,'CIELAB');
     case 'cieluv'
-        plotDisplayColor(ip,'CIELUV');
+        [uData, g] = plotDisplayColor(ip,'CIELUV');
     case 'luminance'
-        plotDisplayColor(ip,'luminance');
+        [uData, g] = plotDisplayColor(ip,'luminance');
     case 'rgbhistogram'
-        plotDisplayColor(ip,'RGB');
+        [uData, g] = plotDisplayColor(ip,'RGB');
     case 'rgb3d'
-        plotDisplayColor(ip,'rgb3d');
+        [uData, g] = plotDisplayColor(ip,'rgb3d');
 
     case {'roi'}
         % [uData,g] = ipPlot(ip,'roi');

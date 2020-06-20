@@ -26,35 +26,37 @@ function [shapeHandle,ax] = ieROIDraw(isetobj,varargin)
 %  shapeHandle: Shape with its parameters
 %  ax:           Current axes of the ISET object window
 %
+% ieExamplesPrint('ieROIDraw');
+%
 % See also
 %   chartROI, chartRectangles, macbethROIs
 %  
 
 % Examples:
 %{
-scene = sceneCreate;
-rect = [20 50 10 5];  % row, col, width, height
-[shapeHandle,ax] = ieROIDraw('scene','shape','rect','shape data',rect,'line width',5);
-shapeHandle.LineStyle = ':';
-delete(shapeHandle);
+ scene = sceneCreate;
+ rect = [20 50 10 5];  % row, col, width, height
+ [shapeHandle,ax] = ieROIDraw('scene','shape','rect','shape data',rect,'line width',5);
+ shapeHandle.LineStyle = ':';
+ delete(shapeHandle);
 %}
 %{
-rect = [50 50 20 20];
-[shapeHandle,ax] = ieROIDraw('oi','shape','rect','shape data',rect,'line style',':');
-shapeHandle.LineStyle = ':';
-shapeHandle.EdgeColor = 'w';
-delete(shapeHandle);
+ rect = [50 50 20 20];
+ [shapeHandle,ax] = ieROIDraw('oi','shape','rect','shape data',rect,'line style',':');
+ shapeHandle.LineStyle = ':';
+ shapeHandle.EdgeColor = 'w';
+ delete(shapeHandle);
 %}
 %{
-c = [10 20 20];
-[shapeHandle,ax] = ieROIDraw('oi','shape','circle','shape data',c);
-shapeHandle.LineStyle = ':';
-shapeHandle.EdgeColor = 'w';
-delete(shapeHandle);
+ c = [10 20 20];
+ [shapeHandle,ax] = ieROIDraw('oi','shape','circle','shape data',c);
+ shapeHandle.LineStyle = ':';
+ shapeHandle.EdgeColor = 'w';
+ delete(shapeHandle);
 %}
 %{
-c = [1 88 70 70];
-[shapeHandle,ax] = ieROIDraw('ip','shape','line','shape data',c);
+ c = [1 88 70 70];
+ [shapeHandle,ax] = ieROIDraw('ip','shape','line','shape data',c);
 %}
 
 %%
