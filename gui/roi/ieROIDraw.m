@@ -52,6 +52,10 @@ shapeHandle.LineStyle = ':';
 shapeHandle.EdgeColor = 'w';
 delete(shapeHandle);
 %}
+%{
+c = [1 88 70 70];
+[shapeHandle,ax] = ieROIDraw('ip','shape','line','shape data',c);
+%}
 
 %%
 varargin = ieParamFormat(varargin);
@@ -92,6 +96,14 @@ switch shape
         xunit = radius * cos(th) + x;
         yunit = radius * sin(th) + y; hold on;
         shapeHandle = plot(ax,xunit, yunit);
+    case 'line'
+        % shape data for a line are two points on the line
+        % [x1 x2 y1 y2]
+        pts = p.Results.shapedata;
+        shapeHandle = line(pts(1:2),pts(3:4));
+        shapeHandle.Color = p.Results.color;
+        shapeHandle.LineWidth = p.Results.linewidth;
+        shapeHandle.LineStyle = p.Results.linestyle;
     otherwise
         error('Unknown shape %s\n',shape);
 end

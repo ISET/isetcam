@@ -24,9 +24,11 @@ thisR = piRecipeDefault('scene name','chessSet');
 %% Set up the combined imaging and microlens array
 
 uLensName = 'microlens.json';
-iLensName = 'dgauss.22deg.3.0mm.json';
+% iLensName = 'dgauss.22deg.3.0mm.json';
+iLensName = 'dgauss.22deg.50.0mm.json'; 
+
 uLensHeight = 0.0028;        % 2.8 um - each covers two pixels
-nMicrolens = [40 40]*8;      % Appears to work for rectangular case, too
+nMicrolens = [64 64]*4;     % Did a lot of work at 40,40 * 8
 
 [combinedLensFile, uLens, iLens] = lensCombine(uLensName,iLensName,uLensHeight,nMicrolens);
 
@@ -47,7 +49,12 @@ filmwidth  = nMicrolens(2)*uLens.get('diameter','mm');       % mm
 filmheight = nMicrolens(1)*uLens.get('diameter','mm');       % mm
 filmresolution = [filmheight, filmwidth]/pixelSize;
 
+dRange = thisR.get('depth range');
+thisR.set('focus distance',dRange(2));
+
+%{
 thisR.set('focus distance',0.6);
+%}
 
 % This is the size of the film/sensor in millimeters 
 thisR.set('film diagonal',sqrt(filmwidth^2 + filmheight^2));
@@ -56,10 +63,12 @@ thisR.set('film diagonal',sqrt(filmwidth^2 + filmheight^2));
 thisR.set('film resolution',filmresolution);
 
 % This is the aperture of the imaging lens of the camera in mm
-thisR.set('aperture diameter',6);   
+thisR.set('aperture diameter',10);   
 
 % Adjust for quality
-thisR.set('rays per pixel',64);
+thisR.set('rays per pixel',32);
+
+thisR.get('depth range')
 
 %% Make a dual pixel sensor that has rectangular pixels
 %
@@ -106,13 +115,35 @@ leftSensor = sensorSet(leftSensor,'volts',leftVolts);
 leftSensor = sensorSet(leftSensor,'name','left');
 
 sensorWindow(leftSensor);
-% sensorPlot(leftSensor,'electrons hline',
 %%
 rightSensor = sensorCreate;
 rightSensor = sensorSet(rightSensor,'size',size(rightVolts));
 rightSensor = sensorSet(rightSensor,'volts',rightVolts);
 rightSensor = sensorSet(rightSensor,'name','right');
 sensorWindow(rightSensor);
+
+%%
+rightSensorData = sensorPlot(rightSensor,'electrons hline',[88 88]);
+% sensorPlot(rightSensor,'electrons hline',[89 89]);
+c = [1 176 89 89];
+[shapeHandle,ax] = ieROIDraw('sensor','shape','line','shape data',c);
+leftSensorData = sensorPlot(leftSensor,'electrons hline',[88 88]);
+% sensorPlot(leftSensor,'electrons hline',[89 89]);
+
+ieNewGraphWin; 
+plot(leftSensorData.pos{1},leftSensorData.data{1},'b-',...
+    rightSensorData.pos{1},rightSensorData.data{1},'r-');
+
+%%
+bothVolts = (leftVolts + rightVolts)/2;
+sensorBoth = rightSensor;
+sensorBoth = sensorSet(sensorBoth,'volts',bothVolts);
+sensorWindow(sensorBoth);
+ipBoth = ipCreate;
+ipBoth = ipCompute(ipBoth,sensorBoth);
+ipWindow(ipBoth);
+
+
 
 %%
 ip = ipCreate;
@@ -122,10 +153,11 @@ ipWindow(ip);
 leftip = ipCreate;
 leftip = ipCompute(leftip,leftSensor);
 ipWindow(leftip);
+leftuData = ipPlot(leftip,'horizontal line',[89 89]);
 
 rightip = ipCreate;
 rightip = ipCompute(rightip,rightSensor);
 ipWindow(rightip);
-
+rightuData = ipPlot(rightip,'horizontal line',[89 89]);
 %% END
 

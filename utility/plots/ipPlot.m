@@ -1,4 +1,4 @@
-function [uData, g] = ipPlot(ip,param,varargin)
+function [uData, g] = ipPlot(ip,param,xy,varargin)
 % Gatway plotting routine for the image processing structure
 %
 % Syntax
@@ -8,11 +8,20 @@ function [uData, g] = ipPlot(ip,param,varargin)
 %   Needs comments and updating for the ip plotting gateway.
 %
 % Inputs
+%   ip:
+%   param
+%      'horizontalline'
+%      'roi'
+%
+%
+%   xy
+%
 %
 % Key/val pairs
 %
 % Returns
-%
+%    uData
+%    hdl
 %
 % Copyright Imageval Consulting, LLC 2015
 %
@@ -26,12 +35,14 @@ uData = [];
 
 if ieNotDefined('ip'), error('ip required.'); end
 if ieNotDefined('param'), error('plotting parameter required'); end
+if ieNotDefined('xy'), xy = []; end
 
 param    = ieParamFormat(param);
 
 switch param
     case 'horizontalline'
-        plotDisplayLine(ip,'h');
+        % Set xy
+        plotDisplayLine(ip,'h',xy);
     case 'verticalline'
         plotDisplayLine(ip,'v');
     case 'chromaticity'
