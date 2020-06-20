@@ -1,16 +1,19 @@
-function plotDisplayColor(ip,dataType)
-%Old gate routine for plotting image processor window color analysis
+function [uData, figHdl] = plotDisplayColor(ip,dataType)
+% Plots for ip (image processor) window color analysis
 %
 % Syntax:
-%  plotDisplayColor(vci,dataType)
+%  [udata, figHdl] = plotDisplayColor(ip,dataType)
 %
 % Description:
-%   We are planning to move to ipPlot().  For now, however, this
-%   routine is still called frequently.  It should be renamed
-%   displayPlotColor, by the way.
+%   Use ipPlot rather than calling this routine directly.  It will be
+%   renamed to displayPlotColor() some day.
 %
 %  The user selects a region of a display image.  This routine plots
 %  the distribution of color values of various types.
+%
+% Inputs:
+%   ip - Image processor object
+%   dataType - string specifying the type of plot
 %
 %  Current types of data plots
 %
@@ -21,22 +24,26 @@ function plotDisplayColor(ip,dataType)
 %       {'cielab'}            - CIELAB values w.r.t the image white point
 %       {'cieluv'}            - CIELUV values w.r.t. the image white point.
 %
-% The selected values are stored in the userdata area of the plot window,
-% that is, get(gcf,'userdata') will return the values.
+% Outputs
+%   uData  - Struct with the values.  This is also attached to the userdata
+%            in the figure (get(figHdl,'userdata'))
+%   figHdl - Figure handle of the graph window
 %
-% If vci is empty, then the currently selected processor data (vci) is
+% If ip is empty, then the currently selected image processor data (ip) is
 % used.
 %
-% See also:  plotDisplayGamut
+% ieExamplesPrint('plotDisplayColor')
 %
+% See also:  
+%  plotDisplayGamut
+
 % Examples:
-%  ip = ieGetObject('ip');
-%  plotDisplayColor(ip,'xy'); userData = get(gcf,'UserData');
-%
-%  plotDisplayColor([],'luminance')
-%  plotDisplayColor([],'cielab')
-%
-% Copyright ImagEval Consultants, LLC, 2005.
+%{
+  ip = ieGetObject('ip');
+  plotDisplayColor(ip,'xy'); userData = get(gcf,'UserData');
+  plotDisplayColor([],'luminance')
+  plotDisplayColor([],'cielab')
+%}
 
 %% Variables
 if ieNotDefined('ip');      ip = vcGetObject('ip'); end
@@ -47,13 +54,14 @@ handles = ieSessionGet('vcimagehandle');
 
 % Get the data
 ieInWindowMessage('Select image region of interest.',handles,[]);
-roiLocs = ieROISelect(ip);
+[roiLocs, rect] = ieROISelect(ip);
 RGB     = vcGetROIData(ip,roiLocs,'result');
 ieInWindowMessage('',handles,[]);
 
 %% Plot the data
 
-figNum =  ieNewGraphWin;
+figHdl =  ieNewGraphWin;
+uData.rect = rect;
 
 switch lower(dataType)
     case {'rgb','rgbhistogram'}
@@ -72,14 +80,14 @@ switch lower(dataType)
         subplot(1,3,2); xlabel('Pixel value');
         mn = mean(RGB);
         title(sprintf('RGB histograms; mean = (%.1f,%.1f,%.1f)',mn(1),mn(2),mn(3)));
-        udata.RGB = RGB;
+        uData.RGB = RGB;
 
     case {'rgb3d'}
         plot3(RGB(:,1),RGB(:,2),RGB(:,3),'.');
         xlabel('R'); ylabel('G'); zlabel('B');
         grid on;
         title('RGB (result)');
-        udata.RGB = RGB;
+        uData.RGB = RGB;
         
     case {'xy','chromaticity'}
         dataXYZ = imageRGB2XYZ(ip,RGB);
@@ -102,7 +110,7 @@ switch lower(dataType)
         txt = sprintf(' Mean XYZ \nX = %.02f\nY = %.02f\nZ = %.02f',meanXYZ(1),meanXYZ(2),meanXYZ(3));
         plotTextString(txt,'ur');
         
-        udata.xy = xy; udata.XYZ = dataXYZ;
+        uData.xy = xy; uData.XYZ = dataXYZ;
         
     case 'luminance'
         
@@ -117,9 +125,9 @@ switch lower(dataType)
         txt = sprintf('Mean: %.02f\nSD:   %.03f\nSNR (db)=%.03f',mnL,stdL,20*log10(mnL/stdL));
         plotTextString(txt,'ul');
 
-        udata.luminance = luminance;
-        udata.meanL = mnL;
-        udata.stdLum = stdL;
+        uData.luminance = luminance;
+        uData.meanL = mnL;
+        uData.stdLum = stdL;
         
     case 'cielab'
         % Needs updating
@@ -127,7 +135,7 @@ switch lower(dataType)
         whitepnt = ipGet(ip,'data or Display WhitePoint');
         dataLAB = ieXYZ2LAB(double(dataXYZ),double(whitepnt));
         plot3(dataLAB(:,2), dataLAB(:,3),dataLAB(:,1), 'o');
-        set(gca,'xlim',[-50 50],'ylim',[-50 50],'zlim',[0,100]);
+        set(gca,'xlim',[-80 80],'ylim',[-80 80],'zlim',[0,100]);
         grid on; axis square
         
         xlabel('a*'); ylabel('b*'); zlabel('L*');
@@ -136,7 +144,7 @@ switch lower(dataType)
         txt = sprintf('Mean: [%.02f,%.02f,%.02f]\n',mean(dataLAB));
         plotTextString(txt,'ul');
         
-        udata = dataLAB;
+        uData = dataLAB;
         
     case 'cieluv'
         dataXYZ  = ipGet(ip,'roi xyz',roiLocs);
@@ -152,13 +160,17 @@ switch lower(dataType)
         txt = sprintf('Mean: [%.02f,%.02f,%.02f]\n',mean(dataLUV));
         plotTextString(txt,'ul');
         
-        udata = dataLUV;
+        uData = dataLUV;
         
     otherwise
         error('Unknown plot display data type.')
 end
 
-set(figNum,'Userdata',udata);
+% Draw the ROI on the window
+ieROIDraw(ip,'shape','rectangle','shape data',rect);
+
+% Store the data
+set(figHdl,'Userdata',uData);
 hold off
 
 end

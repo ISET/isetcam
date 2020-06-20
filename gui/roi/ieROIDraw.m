@@ -79,7 +79,7 @@ shape = p.Results.shape;
 ax = ieAxisGet(isetobj);
 
 switch shape
-    case 'rect'
+    case {'rect','rectangle'}
         rect = p.Results.shapedata;
         shapeHandle = rectangle(ax,'Position',rect);
         shapeHandle.EdgeColor = p.Results.color;
