@@ -43,7 +43,7 @@ TungstenEnergy = ieReadSpectra('Tungsten.mat',wave);
 scene = sceneAdjustIlluminant(scene,TungstenEnergy);
 scene = sceneSet(scene,'illuminantComment','Tungsten illuminant');
 
-ieAddObject(scene); sceneWindow;
+sceneWindow(scene);
 scenePlot(scene,'illuminant photons roi');
 
 %% Read in a multispectral scene from data/images

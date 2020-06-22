@@ -124,29 +124,33 @@ if ieNotDefined('roiLocs')
             sz = sceneGet(scene,'size');
             ieROIDraw(scene,'shape','line','shape data',[1 sz(2) roiLocs(2) roiLocs(2)]);
             
-        case {'radianceenergyroi'...
-                'radiancephotonsroi', ...
+        case {'radianceenergyroi', 'radiancephotonsroi', ...
                 'chromaticityroi','chromaticity', ...
                 'luminanceroi','luminance',...
-                'reflectanceroi','reflectance'...
-                'illuminantphotonsroi','illuminantenergyroi'}
+                'reflectanceroi','reflectance'}
             
-            % Check illuminant case for spatial spectral
-            % All other cases are spatial, so just get the data.
-            if isequal( lower(pType),'illuminantphotonsroi') || ...
-                    isequal(lower(pType),'illuminantenergyroi')
-                if isequal(sceneGet(scene,'illuminant format'),'spatial spectral')
-                    % roiLocs might be passed and be empty.  In that case
-                    % the whole image will be treated as the ROI.
-                    if ~exist('roiLocs','var')
-                        [roiLocs, roiRect] = vcROISelect(scene);
-                    end
-                end
-            else
-                % Region of interest plots
-                [roiLocs, roiRect] = vcROISelect(scene);
-            end
+            [roiLocs, roiRect] = vcROISelect(scene);
             ieROIDraw(scene,'shape','rect','shape data',roiRect);
+
+        case {'illuminantphotonsroi','illuminantenergyroi'}
+            
+            % Check about the ROI for spatial spectral
+            % All other cases are spatial, so just get the data.
+
+            if isequal(sceneGet(scene,'illuminant format'),'spatial spectral')
+                % User should select the ROI
+                if ~exist('roiLocs','var')
+                    [roiLocs, roiRect] = vcROISelect(scene);
+                elseif isempty(roiLocs)
+                    % Passed as empty.  Choose the whole scene.
+                    sz = sceneGet(scene,'size');
+                    roiRect = [1 1 sz(2) sz(1)];
+                end
+                ieROIDraw(scene,'shape','rect','shape data',roiRect);
+            else
+                % Not spatial spectral.  
+                disp('No ROI needed unless spatial spectral illluminant'); 
+            end
 
         otherwise
             % There are some cases that are OK without an roiLocs value or ROI.
@@ -493,7 +497,7 @@ switch lower(pType)
         
         % Values for legend
         if size(XYZ,1) > 1,   val = mean(XYZ); valxy = mean(data);
-        else                  val = XYZ; valxy = data;
+        else ,                val = XYZ; valxy = data;
         end
         
         % Put up the plot of the spectrum locus and the data
