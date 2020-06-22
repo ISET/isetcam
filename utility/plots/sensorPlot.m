@@ -65,22 +65,33 @@ function [uData, g] = sensorPlot(sensor, pType, roiLocs, varargin)
 %
 % Color filter array and spectra
 %
+% ieExamplesPrint('sensorPlot');
+%
 % See also
 %   scenePlot, oiPlot, ipPlot
 
-%Examples:
+% Examples:
 %{
-  scene = sceneCreate;
-  scene = sceneSet(scene,'fov',2);
+  scene = sceneCreate; camera = cameraCreate;
+  camera = cameraCompute(camera,scene);
+  sensor = cameraGet(camera,'sensor');
+  sensorWindow(sensor);
+  sensorPlot(sensor,'electrons hline');
+%}
+%{
+  scene = sceneCreate; scene = sceneSet(scene,'fov',2);
   oi = oiCreate; oi = oiCompute(oi,scene);
   sensor = sensorCreate; sensor = sensorCompute(sensor,oi);
 
   uData = sensorPlot(sensor,'electrons hline',[20 20]);
   isequal(uData,get(gcf,'UserData'))
-
+%}
+%{
+  scene = sceneCreate; scene = sceneSet(scene,'fov',2);
+  oi = oiCreate; oi = oiCompute(oi,scene);
+  sensor = sensorCreate; sensor = sensorCompute(sensor,oi);
   sensorPlot(sensor,'volts vline',[20 20]);
-  get(gfc,'UserData')
-
+  get(gcf,'UserData')
   uData = sensorPlot(sensor,'volts vline ',[53 1],'no fig');
 %}
 
@@ -94,17 +105,25 @@ pType = ieParamFormat(pType);
 % For cases that need roiLocs, when none is passed in
 if ieNotDefined('roiLocs')
     switch lower(pType)
-        case {'voltshline','electronshline',...
-                'voltsvline', 'electronsvline', ...
-                'dvvline', 'dvhline'}
+        case {'voltshline','electronshline','dvhline'}
             
             % Get a location
             roiLocs = vcPointSelect(sensor);
+            sz = sensorGet(sensor,'size');
+            ieROIDraw(sensor,'shape','line','shape data',[1 sz(2) roiLocs(2) roiLocs(2)]);
+
+        case {'electronsvline','voltsvline','dvvline'}
+            roiLocs = vcPointSelect(sensor);
+            sz = sensorGet(sensor,'size');
+            ieROIDraw(sensor,'shape','line','shape data',[roiLocs(1) roiLocs(1) 1 sz(1)]);
             
         case {'electronshistogram','electronshist'...
                 'voltshistogram','voltshist'}
+            
             % Region of interest plots
             [roiLocs, roiRect] = vcROISelect(sensor);
+            ieROIDraw(sensor,'shape','rect','shape data',roiRect);
+
             % Store the rect for later plotting
             sensor = sensorSet(sensor,'roi',roiRect);
             
