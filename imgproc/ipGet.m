@@ -301,8 +301,12 @@ switch oType
                 end
             case {'maxdigitalvalue'}
                 % sensorGet(sensor,'max digital value')
+                %
+                % Either the max digital value or 1 if there is no
+                % representation of the nbits.
                 nbits = ipGet(ip,'nbits');
-                if isempty(nbits), return
+                if isempty(nbits), val = 1; 
+                    return
                 else, val = 2^nbits;
                 end
                 
@@ -357,11 +361,11 @@ switch oType
                 % redPrimary = ipGet(ip,resultprimary,1);
                 % p4 = ipGet(ip,resultprimary,4);
                 if length(varargin) == 1, n = varargin{1};
-                else errordlg('You must specify a primary number.')
+                else, errordlg('You must specify a primary number.')
                 end
                 if size(ip.data.result,3) >= n
                     val = ip.data.result(:,:,n);
-                else error('No such display primary.');
+                else, error('No such display primary.');
                 end
             case {'resultmax'}
                 if checkfields(ip,'data','result'), val = max(ip.data.result(:)); end
@@ -449,4 +453,4 @@ switch oType
         end
 end
 
-return;
+end

@@ -1,35 +1,40 @@
 function [figNum, uData] = sensorPlotLine(sensor, ori, dataType, sORt, xy)
 % Plot a line of sensor data
 %
+% Synopsis:
 %   [uData, figNum] = ...
 %   sensorPlotLine([sensor],[ori='h'],[dataType ='dv'],[spaceOrTransform = 'space'],[xy])
 %
-% Plot the values in the sensor array taken from a horizontal or vertical
-% line.  The line passes through the  point xy.
+% Description:
+%   Plot the values in the sensor array taken from a horizontal or vertical
+%   line.  The line passes through the  point xy.
 %
-% sensor:   ISET sensor structure.  Default:  vcGetObject('sensor')
-% ori:      Orientation of line ('h' or 'v', default: 'h')
-% dataType: {'electrons','photons'},'volts','dv'  (Default: 'electrons').
-%            If a human sensor, 'electrons' plots label the y axis as
+% Inputs
+%  sensor:   ISET sensor structure.  Default:  vcGetObject('sensor')
+%  ori:      Orientation of line ('h' or 'v', default: 'h')
+%  dataType: {'electrons','photons'},'volts','dv'  (Default: 'electrons').
+%             If a human sensor, 'electrons' plots label the y axis as
 %            'absorptions'. Human is determined if there is a sensor field,
 %            'human'.
-% sORt:     Plot the space or transform domain.  Transform (frequency) is
+%  sORt:     Plot the space or transform domain.  Transform (frequency) is
 %           weird and doesn't work properly for human.  Default: 'space'
-% xy:       Point (col,row) for determining the horizontal or vertical line.
+%  xy:       Point (col,row) for determining the horizontal or vertical line.
 %
 % Set the sORt flag to 
 %   {'spatial','space','spacedomain'} (default)
 %   {'transform','fourier','fourierdomain','fft'}
 %
-% If no xy position is specified, the user is prompted to select using a
-% crosshair on the sensor image window.  Otherwise, 
-%  if the orientation is 'h' (horizontal) a row containing xy is plotted
-%  If orientation is 'v' (vertical) a column containing xy is plotted.
+%  If no xy position is specified, the user is prompted to select using a
+%  crosshair on the sensor image window.  Otherwise, 
+%   If the orientation is 'h' (horizontal) a row containing xy is plotted
+%   If orientation is 'v' (vertical) a column containing xy is plotted.
 %
-% The data plotted in the figure are returned in the structure, sData.
+% Returns:
+%   figNum
+%   uData: The data plotted in the figure are returned in this structure.
 %
 % Example:
-%  row = sensorGet(vcGetObject('sensor'),'rows'); row = round(row/2);
+%  row = sensorGet(ieGetObject('sensor'),'rows'); row = round(row/2);
 %  sData = sensorPlotLine([],'h','volts','space',[1,row])
 %
 % Internal functions:
@@ -37,6 +42,9 @@ function [figNum, uData] = sensorPlotLine(sensor, ori, dataType, sORt, xy)
 %   plotMonochromeISALines
 %
 % Copyright ImagEval Consultants, LLC, 2003.
+% 
+% See also
+%   sensorPlot
 
 
 %%
