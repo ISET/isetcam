@@ -49,7 +49,7 @@ switch lower(position)
     otherwise
         error('Unknown position');
 end
-
+x = double(x); y = double(y);
 % Display
 t = text(x, y, str);
 set(t,'Background','w','Fontsize',fontSize);

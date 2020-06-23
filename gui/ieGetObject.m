@@ -62,4 +62,4 @@ else
     % warning('No object found');
 end
 
-return
+end

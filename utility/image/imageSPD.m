@@ -39,10 +39,12 @@ function RGB = imageSPD(SPD,wList,gam,row,col,displayFlag,xcoords,ycoords)
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
+%%
 if ieNotDefined('gam'), gam = 1; end
 if ieNotDefined('displayFlag'), displayFlag = 1; end
 
 if ieNotDefined('wList')
+    w = size(SPD,3);
     if     w == 31,  wList = (400:10:700); 
     elseif w == 301, wList = (400:1:700);
     elseif w == 37,  wList = (370:10:730);
@@ -55,7 +57,7 @@ if ieNotDefined('wList')
     end
 end
 
-% Parse the display flag
+%% Parse the display flag
 method = abs(displayFlag);
 show = false;
 if displayFlag > 0, show = true; end
@@ -113,7 +115,7 @@ else
     error('Unknown display flag value: %d\n',displayFlag);
 end
 
-% Deal with gamma
+%% Deal with gamma
 if ~isequal(gam,1), RGB = RGB.^gam; end
 
 % If value is positive, display the rendered RGB. If negative, we just

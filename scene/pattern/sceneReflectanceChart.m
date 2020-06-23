@@ -14,7 +14,7 @@ function [scene, sSamples, reflectance, rcSize] = sceneReflectanceChart(sFiles,s
 %            It is also possible to set sFiles to a matrix of reflectances.
 %  sSamples: This can either be
 %      - Vector indicating how many surfaces to sample from each file
-%      - A cell array of specifying the list of samples from each file 
+%      - A cell array specifying the list of samples from each file 
 %  pSize:    The number of pixels on the side of each square patch
 %  wave:     Wavelength Samples
 %  grayFlag: Fill the last part of the chart with gray surfaces, the last

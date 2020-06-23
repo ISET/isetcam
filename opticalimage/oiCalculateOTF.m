@@ -58,4 +58,4 @@ switch lower(opticsModel)
         error('Unknown optics model: %s',opticsModel);
 end
 
-return;
+end

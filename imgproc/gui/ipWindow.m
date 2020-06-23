@@ -836,7 +836,8 @@ return;
 % --------------------------------------------------------------------
 function menuAnColVisualComp_Callback(hObject, eventdata, handles)
 % Analyze | Color and Luminance | Visual Compare (D65)
-macbethCompareIdeal;
+ip = ieGetObject('ip');
+macbethCompareIdeal(ip);
 return;
 
 % --------------------------------------------------------------------
@@ -848,7 +849,7 @@ function menuPlImTrueSize_Callback(hObject, eventdata, handles)
 % Plot | True size image
 
 gam = str2double(get(handles.editGamma,'String'));
-ip = vcGetObject('ip');
+ip = ieGetObject('ip');
 ip = ipSet(ip,'gamma',gam);
 
 imageShowImage(ip,gam,true,vcNewGraphWin);

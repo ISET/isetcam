@@ -14,6 +14,5 @@ function lum = ieLuminanceFromPhotons(photons,wave)
 energy = Quanta2Energy(wave,photons);
 lum = ieLuminanceFromEnergy(energy,wave);
 
-return;
-
+end
 

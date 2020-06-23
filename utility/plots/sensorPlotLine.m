@@ -1,35 +1,40 @@
 function [figNum, uData] = sensorPlotLine(sensor, ori, dataType, sORt, xy)
 % Plot a line of sensor data
 %
+% Synopsis:
 %   [uData, figNum] = ...
 %   sensorPlotLine([sensor],[ori='h'],[dataType ='dv'],[spaceOrTransform = 'space'],[xy])
 %
-% Plot the values in the sensor array taken from a horizontal or vertical
-% line.  The line passes through the  point xy.
+% Description:
+%   Plot the values in the sensor array taken from a horizontal or vertical
+%   line.  The line passes through the  point xy.
 %
-% sensor:   ISET sensor structure.  Default:  vcGetObject('sensor')
-% ori:      Orientation of line ('h' or 'v', default: 'h')
-% dataType: {'electrons','photons'},'volts','dv'  (Default: 'electrons').
-%            If a human sensor, 'electrons' plots label the y axis as
+% Inputs
+%  sensor:   ISET sensor structure.  Default:  vcGetObject('sensor')
+%  ori:      Orientation of line ('h' or 'v', default: 'h')
+%  dataType: {'electrons','photons'},'volts','dv'  (Default: 'electrons').
+%             If a human sensor, 'electrons' plots label the y axis as
 %            'absorptions'. Human is determined if there is a sensor field,
 %            'human'.
-% sORt:     Plot the space or transform domain.  Transform (frequency) is
+%  sORt:     Plot the space or transform domain.  Transform (frequency) is
 %           weird and doesn't work properly for human.  Default: 'space'
-% xy:       Point (col,row) for determining the horizontal or vertical line.
+%  xy:       Point (col,row) for determining the horizontal or vertical line.
 %
 % Set the sORt flag to 
 %   {'spatial','space','spacedomain'} (default)
 %   {'transform','fourier','fourierdomain','fft'}
 %
-% If no xy position is specified, the user is prompted to select using a
-% crosshair on the sensor image window.  Otherwise, 
-%  if the orientation is 'h' (horizontal) a row containing xy is plotted
-%  If orientation is 'v' (vertical) a column containing xy is plotted.
+%  If no xy position is specified, the user is prompted to select using a
+%  crosshair on the sensor image window.  Otherwise, 
+%   If the orientation is 'h' (horizontal) a row containing xy is plotted
+%   If orientation is 'v' (vertical) a column containing xy is plotted.
 %
-% The data plotted in the figure are returned in the structure, sData.
+% Returns:
+%   figNum
+%   uData: The data plotted in the figure are returned in this structure.
 %
 % Example:
-%  row = sensorGet(vcGetObject('sensor'),'rows'); row = round(row/2);
+%  row = sensorGet(ieGetObject('sensor'),'rows'); row = round(row/2);
 %  sData = sensorPlotLine([],'h','volts','space',[1,row])
 %
 % Internal functions:
@@ -37,13 +42,10 @@ function [figNum, uData] = sensorPlotLine(sensor, ori, dataType, sORt, xy)
 %   plotMonochromeISALines
 %
 % Copyright ImagEval Consultants, LLC, 2003.
+% 
+% See also
+%   sensorPlot
 
-% Programming Notes:
-%
-%  This function should not be the main sensor plotting function.  There
-%  should be a sensorPlot() function that calls this and the several other
-%  sensor plotting functions.  This is implemented for plotOI and
-%  scenePlot, but not yet for sensorPlot or ipPlot
 
 %%
 if ieNotDefined('sensor'), sensor = vcGetObject('sensor'); end
@@ -73,7 +75,7 @@ end
 %% Plot it
 
 if nSensors > 1
-    figNum = vcNewGraphWin([],'tall');  % Easier to see
+    figNum = ieNewGraphWin([],'tall');  % Easier to see
     data = plane2rgb(data,sensor,NaN);
     fColors = sensorGet(sensor,'filterPlotColors');
     if strcmp(dataType,'electrons') && isfield(sensor,'human')  || ...
@@ -90,7 +92,7 @@ end
 
 % Should set(gca,'xlim',[XX YY]) the same for all of these, sigh.
 
-return;
+end
 
 %----------------------------------------
 function uData = plotColorISALines(xy,pos,data,ori,nSensors,dataType,sORt,fColors,figNum)
@@ -196,7 +198,7 @@ end
 set(figNum,'userdata',uData);
 set(figNum,'Name',titleString);
 
-return;
+end
 
 %----------------------------------------
 function uData = plotMonochromeISALines(xy,pos,data,ori,dataType,sORt,figNum)
@@ -247,5 +249,5 @@ end
 set(figNum,'userdata',uData);
 set(figNum,'Name',titleString);
 
-return;
+end
 

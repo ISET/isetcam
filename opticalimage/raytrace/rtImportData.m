@@ -1,74 +1,63 @@
 function [optics, opticsFile] = rtImportData(optics,rtProgram,pFileFull)
-%Import data for optics ray trace calculations
+% Import data from Zemax for optics ray trace calculations
 %
+% Synopsis
 %  [optics, opticsFile] = rtImportData(optics,rtProgram,pFileFull)
 %
 % Description:
-%  The imported data files are produced by the macros ISET_RT_CODEV.SEQ or
-%  ISET_RT_ZEMAX.ZPL run from within those ray tracing programs.
-%  Instructions for using those macros are posted on the ImagEval web-site.
+%  This function imports data files are produced by the macro
+%  ISET_RT_ZEMAX.ZPL in Zemax.  The macro generates text files that contain
+%  critical parameters for the optics 'ray tracing' method.
 %
-%  The ray trace (rt) data are returned as part of the optics structure
-%  (optics.rt).
+%  The ray trace (rt) parameters and pointspread function data are returned
+%  as part of the optics structure (optics.rt).
 %
-% Using the GUI (oiWindow), the user can export the optics.rt information
-% (oiWindow | Optics | Import Optics).
+%  Using the GUI (oiWindow), the user can export the optics ray trace
+%  information (oiWindow | Optics | Import Optics).
 %
-% If it is exported, then the ray trace it can be imported using the Import
-% Optics pull down in the (oiWindow | Optics | Import Optics)
+%  If it is exported, then the ray trace it can be imported using the
+%  Import Optics pull down in the (oiWindow | Optics | Import Optics)
 %
-% Ray trace methods can be used in the optics computation by selecting
-% the 'Custom Compute' button and then selecting the custom computation
-% routine:  opticsRayTrace
+%  Ray trace methods can be used in the optics computation by selecting the
+%  'Custom Compute' button and then selecting the custom computation
+%  routine:  opticsRayTrace
 %
-% The ray trace point spread functions (PSFs) are not always centered on
-% the sampling grid.  This produces an unwanted image displacement, and
-% this can be quite significant given that we are sampling the PSFs at
-% several hundred microns.  The distortion should be handled properly by
-% the rtGeometry call, so that in principle these PSFs should be centered.
-% We can enforce such symmetry here, and we do at the user's option.
-%
-% There is also the issue of the rotation.  We assume that the x-axis is 0
-% deg. But the zemax function provides us with image height along the
-% y-axis.  So, we rotate the PSFs here when we symmetrize.
+%  The ray trace point spread functions (PSFs) are not always centered on
+%  the sampling grid.  This produces an unwanted image displacement, and
+%  this can be quite significant given that we are sampling the PSFs at
+%  several hundred microns.  The distortion should be handled properly by
+%  the rtGeometry call, so that in principle these PSFs should be centered.
+%  We can enforce such symmetry here, and we do at the user's option.
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 %
 % See also
+%  t_oiRTCompute
 
-% Examples
-%{
-% Fails - need to make it work properly with a test data set.
-%  oi = vcGetObject('oi'); optics = oiGet(oi,'optics');
-%  optics = rtImportData(optics);
-%  oi = sceneSet(oi,'optics',optics);;
-%  vcReplaceObject(oi);
-%}
-
-% TODO:
+% Programming note
 %
-% We are concerned that at present (4.25.2008) the x,y dimensions of zemax
-% are flipped from the x,y of ISET.  We think we need to rotate the zemax
-% data before storing it.
+% We assume that the x-axis is 0 deg. But the zemax function provides us
+% with image height along the y-axis.  So, we rotate the PSFs when we
+% symmetrize.
 %
 % Read the Chief Ray Angle data
-% Read the header for the psfSpacing (in microns) and interpolate to 0.25
-% micron samples or some common size support for the PSF.
-%
-% All of the rt fields should be set using opticsSet(optics,'rtMumble')
-% instead of directly touching the structure, as we do here.
 %
 % The user should have an opportunity to symmetrize the PSFs w.r.t the
 % current sampling grid (rtPSFCenter).  They should also be able to
 % rotate the data which are normally entered along the y-axis but should be
 % entered along the x-axis (I think).
+%
+% Perhaps we should be getting the transmittance out of ZEMAX?
 
 %% Argument checking
+
 if ieNotDefined('rtProgram'), rtProgram = 'zemax'; end
 rt.program = rtProgram;
 
 %  Read the ISETPARMS file
 if ieNotDefined('pFileFull')
+    % Full file path to the parameter text file.  If empty, the user is
+    % asked to select the file through the GUI.
     pFileFull = vcSelectDataFile('stayput','r','txt','Select the ISETPARMS.txt file');
     if isempty(pFileFull)
         disp('User canceled')
@@ -79,7 +68,8 @@ end
 % Filled in if we save.  Otherwise, left empty.
 opticsFile = [];
 
-%% Read the file, which was written out by Zemax.  
+%% Read the file, which was written out by Zemax.
+
 % As Zemax evolves, and textscan evolves, we have had some issues staying
 % abreast.
 fid = fopen(pFileFull,'r');
@@ -94,11 +84,6 @@ end
 asciiValues = s( (s<128) & (s > 0))';
 eval(asciiValues)   % Keep only the ascii characters
 fprintf('Reduced character count from %d to %d\n',length(s),length(asciiValues));
-
-% success = copyfile([filename,ext],[filename,'.m']);
-% if ~success, errordlg('Error moving parameters file.  Check permissions.'); end
-
-% Perhaps we should be getting the transmittance out of ZEMAX/CODEV?
 
 % Evaluate the parameters file and set basic parameters
 %
@@ -142,21 +127,31 @@ rt.effectiveFNumber = fnumber_eff;      % Effectve f# = 0.5/(NUMERICAL APERTURE)
 imgHeight = ((0:(imgHeightNum-1))/(imgHeightNum-1))*imgHeightMax;
 
 % The PSF goes out to the FOV and we treat the readout as a circle.  We
-% have the diagonal field of view here.  Maybe the variable should diagFOV.
-rt.maxfov = fov;
+% have the field of view here. We multiply the number by 2 because in ZeMax
+% the original value is half of the FOV.
+rt.fov = fov * 2;
 
-% These are full path file names
+% These are full path file names of the distortion, relative illumination
+% and PSF files
+%
 % [diName,riName,psfNameList] = rtFileNames(baseLensFileName,wave,imgHeight); %#ok<NODEF>
-[~,baseName,~] = fileparts(baseLensFileName);
+if ismac
+    % Sometimes people use PCs.  So we fix the file string by removing the
+    % disk drive (e.g., C:) and replacing \ with /.
+    tmp = strsplit(baseLensFileName,':');
+    tmp{2} = strrep(tmp{2},'\','/');
+end
+[~,baseName,~] = fileparts(tmp{2});
 [diName,riName,psfNameList] = rtFileNames(baseName,wave,imgHeight); %#ok<NODEF>
 
-%%  Load the geometry - needs fixing up.
+%%  Load the geometry
+
 % diName = 'I-Phone 5_DI_.dat';
 nWave   = length(wave);
 nHeight = length(imgHeight);
 
 rt.geometry.fieldHeight = imgHeight(:);
-rt.geometry.wavelength = wave(:);
+rt.geometry.wavelength = wave(:); %#ok<IDISVAR>
 
 % Read the geometry distortion file produced by Zemax
 fid = fopen(diName,'r');
@@ -166,7 +161,6 @@ else
     fclose(fid);
 end
 
-% This method for reading the new Zemax file is not going well (Brian).
 % Note that the zemaxLoad() uses 129, not 128.
 asciiValues = s( (s < 128) & (s > 0) )';
 dCell = textscan(asciiValues,'%f'); 
@@ -197,9 +191,6 @@ rt.relIllum.function = reshape(d,nWave,nHeight)';  % For backwards compatibility
 %% Fill up the psf data
 
 switch lower(rtProgram)
-    %     case 'code v'
-    %         % In this case, psfSpacing is in the parameters file
-    %         [r,c] = size(load(psfNameList{1,1}));
     case 'zemax'
         % For Zemax, we read psfSpacing, usually 0.2500 uM and data area,
         % usually 32 microns (128*0.25), from the file.  The ratio is the
@@ -213,7 +204,9 @@ switch lower(rtProgram)
             psfSize = round(psfSize);
         end
     otherwise
-        errordlg('Unknown rtProgram');
+        % We used to allow CODEV.  But we no longer have that.  I left this
+        % code here just as a check.
+        errordlg('Unknown rtProgram %s',rtProgram);
 end
 
 rt.psf.function = zeros(psfSize,psfSize,nHeight,nWave);
@@ -257,50 +250,30 @@ for ii=1:length(imgHeight)
     end
 end
 
-% We should ask the user if the psf data should be centered at this
-% point.
-% r = questdlg('Center PSFs on grid?');
-% if strcmp(r,'Yes')
-%     disp('PSF centering not yet implemented.')
-% %     optics = opticsSet(optics,'rayTrace',rt); 
-% %     % We need to check for rotation, too.  At present, the Zemax script has
-% %     % a y-axis field height.  That could mean (depending on whether Y is up
-% %     % or down) a 90 or a -90 deg rotation is needed.  To check.  I think a
-% %     % -90 is needed.
-% %     disp('rtImportData: Centering and rotating 90 deg clockwise')
-% %     optics = rtPSFCenter(optics,-1);
-% %     rt = opticsGet(optics,'rayTrace'); 
-% end
-
 if showBar, delete(wBar); end
 
-% Save the (x,y) positions of the PSF samples.  These are in units of
-% millimeters because the psfSpacing variable is in millimeters.
-% This list always contains a sample at 0
-% For a 2^n (e.g., 64,64) grid, Code V puts the zero point at 2^n - 1 (e.g., 33,33)
-%
-% psfSize = [r,c];
-% colPsfPos = [((-psfSize(2)/2)):(psfSize(2)/2) - 1]*psfSpacing;
-% rowPsfPos = [((-psfSize(1)/2)):(psfSize(1)/2) - 1]*psfSpacing;
-% [xPSF,yPSF] = meshgrid(colPsfPos,rowPsfPos);
-% rt.psf.xSupport = xPSF;
-% rt.psf.ySupport = yPSF;
+% We should do these as opticsSet commands
 
 % The image height is given in millimeters and stored in millimeters
 rt.psf.fieldHeight = imgHeight(:);
 
-% The Zemax values are given in microns.  We store them in millimeters.
+% The Zemax sample spacing values are given in microns.  We store them in
+% millimeters like everything else.
 rt.psf.sampleSpacing = [psfSpacing,psfSpacing]/1000;
 
-% Units are nanometers
+% Wavelength units are nanometers
 rt.psf.wavelength = wave(:);
 
-% Put all the rt info into the optics.  Probably we should been doing
-% opticsSet(optics,PARAM,VAL) all along.
-optics = opticsSet(optics,'rayTrace',rt);
-optics = opticsSet(optics,'model','rayTrace');
+% Put all the rt info into the optics.
+optics = opticsSet(optics, 'rayTrace',rt);
+optics = opticsSet(optics, 'model','rayTrace');
+optics = opticsSet(optics, 'focal length', rt.effectiveFocalLength);
+optics = opticsSet(optics, 'fnumber', rt.effectiveFNumber);
 
 %% Save the optics data
+
+% We always ask the user about saving the file.  We should fix the
+% interface to allow the user to turn this off or to provide a file.s
 button = questdlg('Save the converted optics?','RT Optics save');
 switch lower(button)
     case 'yes'

@@ -1,73 +1,99 @@
 function [scene,I] = sceneFromFile(I, imType, meanLuminance, dispCal, ...
     wList, varargin)
-% Create a scene structure by reading data from a file
+% Create an ISETCam scene structure by reading data from a file
 %
-%     [scene, I] = sceneFromFile(imageData, imageType, [meanLuminance], ...
-%                       [display], [wave], [doSub], [ambient], [oSample])
+% Synopsis:
 %
-% imageData: Typically, this is the name of an RGB image file.  But, it
-%            may also be 
+%   [scene, I] = sceneFromFile(imageData, imageType, [meanLuminance], ...
+%                     [display], [wave], [doSub], [ambient], [oSample])
+%
+% Inputs:
+%  imageData: Typically, this is the name of an RGB image file.  But, it
+%             may also be 
 %              * RGB data, rather than the file name
 %              * A file that contains a scene structure
-% imageType: 'multispectral' or 'rgb' or 'monochrome'
-%             When 'rgb', the imageData might be RGB format.
-% dispCal:   A display structure used to convert RGB to spectral data.
-%            For the typical case an emissive display the illuminant SPD is
-%            modeled and set to the white point of the display
-%            Unusual cases:
-%            (a) If sub-pixel modeling is required varargin{1} is set to
-%            true, (default is false)
-%            (b) If a reflective display is modeled, the illuminant is
-%            required and passed in as varargin{2} 
-% wList:     The scene wavelength samples
+%  imageType: 'multispectral' or 'rgb' or 'monochrome'
+%              When 'rgb', the imageData might be RGB format.
+%  dispCal:   A display structure used to convert RGB to spectral data.
+%             For the typical case an emissive display the illuminant SPD is
+%             modeled and set to the white point of the display
+%             Unusual cases:
+%              (a) If sub-pixel modeling is required varargin{1} is set to
+%                  true, (default is false)
+%              (b) If a reflective display is modeled, the illuminant is
+%                  required and passed in as varargin{2} 
+%  wList:     The scene wavelength samples
 %
-% The data in the image file are converted into spectral format and placed
-% in an ISET scene data structure. The allowable imageTypes are monochrome,
-% rgb, multispectral and hyperspectral. If you do not specify, and we
-% cannot infer, then you may be asked.
+% Returns;
+%   scene:    The ISETCam scene structure
 %
-% If the image is RGB format, you may specify a display calibration file
-% (dispCal). This file contains display calibration data that are used to
-% convert the RGB values into a spectral radiance image. If you do not
-% define the dispCal, the default display file 'lcdExample' will be used.
+% Description
+%  The data in the image file are converted into spectral format and placed
+%  in an ISETcam scene data structure. The allowable imageTypes are
+%  monochrome, rgb, multispectral and hyperspectral. If you do not specify,
+%  and we cannot infer, then you may be asked.
 %
-% You may specify the wavelength sampling (wList) for the returned scene.
+%  If the image is RGB format, you may specify a display calibration file
+%  (dispCal). This file contains display calibration data that are used to
+%  convert the RGB values into a spectral radiance image. If you do not
+%  define the dispCal, the default display file 'lcdExample' will be used.
 %
-% The default illuminant for an RGB file is the display white point.
-% The mean luminance can be set to over-ride this value.
+%  You may specify the wavelength sampling (wList) for the returned scene.
 %
+%  The default illuminant for an RGB file is the display white point.
+%  The mean luminance can be set to over-ride this value.
+%
+% See examples
+%   ieExamplesPrint('sceneFromFile');
+%
+% See also
+%   vcSelectImage, ieImageType
+
 % Examples:
-%   scene = sceneFromFile;
-%   [scene,fname] = sceneFromFile;
 %
-%   fullFileName = vcSelectImage;
-%   imgType = ieImageType(fullFileName);
-%   scene = sceneFromFile(fullFileName,imgType);
-%
-%   imgType = 'multispectral';
-%   scene = sceneFromFile(fullFileName,imgType);
-%
-%   imgType = 'rgb'; meanLuminance = 10;
-%   fullFileName = vcSelectImage;
-%   scene = sceneFromFile(fullFileName,imgType,meanLuminance);
-%
-%   dispCal = 'OLED-Sony.mat';meanLuminance=[];
-%   fName = fullfile(isetRootPath,'data','images','rgb','eagle.jpg');
-%   scene = sceneFromFile(fName,'rgb',meanLuminance,dispCal);
-%
-%   wList = [400:50:700];
-%   fullFileName = fullfile(isetRootPath,'data','images', ...
-%                   'multispectral','StuffedAnimals_tungsten-hdrs');
-%   scene = sceneFromFile(fullFileName,'multispectral',[],[],wList);
-%
-%   dispCal = 'OLED-Sony.mat';meanLuminance=[];
-%   fName = fullfile(isetRootPath,'data','images','rgb','eagle.jpg');
-%   rgb = imread(fName);
-%   scene = sceneFromFile(rgb,'rgb',100,dispCal);
-%
-%   vcAddAndSelectObject(scene); sceneWindow
-%
-% Copyright ImagEval Consultants, LLC, 2003.
+%{
+   scene = sceneFromFile;
+%}
+%{
+   [scene,fname] = sceneFromFile;
+%}
+%{
+   fullFileName = vcSelectImage;
+   imgType = ieImageType(fullFileName);
+   scene = sceneFromFile(fullFileName,imgType);
+   sceneWindow(scene);
+%}
+%{
+   imgType = 'rgb'; meanLuminance = 10;
+   fullFileName = vcSelectImage;
+   scene = sceneFromFile(fullFileName,imgType,meanLuminance);
+   sceneWindow(scene);
+%}
+%{
+   wList = [400:50:700];
+   fullFileName = fullfile(isetRootPath,'data','images', ...
+                   'multispectral','StuffedAnimals_tungsten-hdrs');
+   scene = sceneFromFile(fullFileName,'multispectral',[],[],wList);
+   sceneWindow(scene);
+%}
+%{
+   meanLuminance=[];
+   dispCal = 'OLED-Sony.mat';
+   fName = fullfile(isetRootPath,'data','images','rgb','eagle.jpg');
+   wList = 400:100:700;
+   scene = sceneFromFile(imread(fName),'rgb',100,dispCal,wList);
+   sceneWindow(scene);
+%}
+%{
+  meanLuminance= 10;
+  thisDisplay = displayCreate;
+  h = harmonicP('row',2048,'col',2048);
+  img = imageHarmonic(h);
+  img = floor(ieScale(img,0,255));
+  tic
+  scene = sceneFromFile(img,'monochrome',meanLuminance,thisDisplay,600);
+  toc
+%}
 
 %% Parameter set up
 
@@ -75,7 +101,7 @@ if notDefined('I')
     % If imageData is not sent in, we ask the user for a filename.
     % The user may or may not have set the imageType.  Sigh.
     if notDefined('imType'), [I,imType] = vcSelectImage;
-    else I = vcSelectImage(imType);
+    else, I = vcSelectImage(imType);
     end
     if isempty(I), scene = []; return; end
 end
@@ -91,7 +117,7 @@ if ischar(I)
         if strcmp(I((end-2):end),'mat')
             if ieVarInFile(I, 'scene'), load(I,'scene'); return; end
         end
-    else error('No file named %s\n',I);
+    else, error('No file named %s\n',I);
     end
 end
 %% Determine the photons and illuminant structure
@@ -105,24 +131,30 @@ switch lower(imType)
     case {'monochrome','rgb'}  % 'unispectral'
         % init display structure
         if notDefined('dispCal')
-            warning('Default display lcdExample is used to create scene');
-            dispCal = displayCreate('lcdExample');
+            warning('Default display is used to create scene');
+            dispCal = displayCreate;
         end
         
         if ischar(dispCal), d = displayCreate(dispCal);
         elseif isstruct(dispCal) && isequal(dispCal.type, 'display')
             d = dispCal;
+        else
+            error('Bad display information.');
         end
-                
+        
+        if exist('wList','var')
+            d = displaySet(d,'wave',wList);
+        end
+        wave  = displayGet(d, 'wave');
+
         % get additional parameter values
         if ~isempty(varargin), doSub = varargin{1}; else, doSub = false; end
         if length(varargin) > 2, sz = varargin{3};  else, sz = []; end
         
         % read radiance / reflectance
-        photons = vcReadImage(I, imType, dispCal, doSub, sz);
+        photons = vcReadImage(I, imType, d, doSub, sz);
         
         % Match the display wavelength and the scene wavelength
-        wave  = displayGet(d, 'wave');
         scene = sceneCreate('rgb');
         scene = sceneSet(scene, 'wave', wave);
         
@@ -143,7 +175,7 @@ switch lower(imType)
         if isempty(il)
             il    = illuminantCreate('d65', wave);
             % Replace default with display white point SPD
-            il    = illuminantSet(il, 'energy', sum(d.spd,2));
+            il    = illuminantSet(il, 'energy', sum(displayGet(d,'spd'),2));
         end
         scene = sceneSet(scene, 'illuminant', il);
         
@@ -197,14 +229,19 @@ if ieSessionGet('gpu compute')
     photons = gpuArray(photons);
 end
 
-scene = sceneSet(scene, 'filename', I);
+if ischar(I)
+    scene = sceneSet(scene, 'filename', I);
+else
+    scene = sceneSet(scene,'filename','numerical');
+end
+
 scene = sceneSet(scene, 'photons', photons);
 scene = sceneSet(scene, 'illuminant', il);
 
 % Name the scene with the file name or just announce that we received rgb
 % data.  Also, check whether the file contains 'fov' and 'dist' variables
 % and stick them into the scene if they are there
-if ischar(I), 
+if ischar(I) 
     [~, n, ~] = fileparts(I);  % This will be the name
     if strcmp(I((end-2):end),'mat') && ieVarInFile(I,'fov')
         load(I,'fov'); scene = sceneSet(scene,'fov',fov);
@@ -223,7 +260,10 @@ if ~notDefined('meanLuminance')
 end
 
 if ~notDefined('wList')
-    scene = sceneSet(scene, 'wave', wList);
+    % I think the scene should match wList by this time.
+    if ~isequal(wList,sceneGet(scene,'wave'))
+        scene = sceneSet(scene, 'wave', wList);
+    end
 end
 
 end

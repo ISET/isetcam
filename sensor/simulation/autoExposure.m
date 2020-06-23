@@ -62,7 +62,7 @@ function  [integrationTime,maxSignalVoltage,smallOI] = autoExposure(oi,sensor,le
  scene = sceneCreate; oi = oiCreate; oi = oiCompute(oi,scene); oiWindow(oi);
  [~,rect] = ieROISelect(oi);
  sensor   = sensorCreate; 
- sensor   = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'));
+ sensor   = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'),[],oi);
  eTime  = autoExposure(oi,sensor,0.90,'weighted','center rect',rect);
  sensor = sensorSet(sensor,'exp time',eTime);
  sensor = sensorCompute(sensor,oi);
@@ -314,7 +314,7 @@ rect = p.Results.centerrect;
 centerOI = oiCrop(oi,rect);
 
 % Cut down the sensor size, turn off noise and set to 1 s exposure time
-smallSensor = sensorSetSizeToFOV(sensor,oiGet(centerOI,'fov'));
+smallSensor = sensorSetSizeToFOV(sensor,oiGet(centerOI,'fov'),[],oi);
 smallSensor = sensorSet(smallSensor,'noise flag',0);
 smallSensor = sensorSet(smallSensor,'exp time',1);
 smallSensor = sensorClearData(smallSensor);

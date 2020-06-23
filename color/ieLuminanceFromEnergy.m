@@ -1,10 +1,22 @@
-function lum = ieLuminanceFromEnergy(energy,wave)
+function lum = ieLuminanceFromEnergy(energy,wave,varargin)
 % Calculate luminance (cd/m2) and related quantities (lux,lumens,cd) from spectral
 % energy
 %
-%    lum = ieLuminanceFromEnergy(energy,wave)
+% Synopsis
+%    lum = ieLuminanceFromEnergy(energy,wave,varargin)
 %
-% Purpose:
+% Input
+%   energy:   watts/sr/nm/m2  (a vector, or a matrix XW format)
+%   wave:     Wavelength samples (a vector)
+%
+% Optional key/val pairs
+%  bin width:  Wavelength bin width when there is a monochromatic input
+%              (10nm default)
+%
+% Returns
+%  lum:   Luminance in cd/m2
+%
+% Description:
 %   The CIE formula for luminance converts a spectral radiance distribution
 %   (W/m2-sr-nm) into luminance (candelas per meter squared, cd/m2). This
 %   routine accepts RGB or XW (space-wavelength) formatted inputs. In XW
@@ -26,17 +38,33 @@ function lum = ieLuminanceFromEnergy(energy,wave)
 %   To calculate luminance (or illuminance) from a spectral radiance
 %   distribution in photons, use ieLuminanceFromPhotons() 
 %
-% Examples:
-%   wave = 400:10:700;
-%   tmp = load('crtSPD'); dsp = tmp.d;
-%   energy = displayGet(dsp,'whitespd',wave);
-%   energy = energy';
-%   lum = ieLuminanceFromEnergy(energy,wave)
 %
 % Online reference:
 %  http://www.optics.arizona.edu/Palmer/rpfaq/rpfaq.htm
 %
-% Copyright ImagEval Consultants, LLC, 2003.
+% See also
+%  ieLuminance2Radiance, ieLuminanceFromPhotons
+
+% Examples:
+%{
+  wave = 400:10:700;
+  dsp = displayCreate;
+  energy = displayGet(dsp,'whitespd',wave);
+  energy = energy';
+  lum = ieLuminanceFromEnergy(energy,wave)
+%}
+
+%% 
+p = inputParser;
+varargin = ieParamFormat(varargin);
+p.addRequired('energy',@isnumeric);
+p.addRequired('wave',@isnumeric);
+p.addParameter('binwidth',10,@isnumeric);
+
+p.parse(energy,wave,varargin{:});
+binwidth = p.Results.binwidth;
+
+%%
 
 % xwData = ieConvert2XW(energy,wave);
 switch vcGetImageFormat(energy,wave)
@@ -49,14 +77,28 @@ end
 
 fName = fullfile(isetRootPath,'data','human','luminosity');
 V = ieReadSpectra(fName,wave);
+% ieNewGraphWin; plot(wave,V);  % The luminance curve
 
 % 683 is the standard factor for conversion when the energy are in Watts.
 % The wavelength difference accounts for the wavelength sampling.
-if numel(wave) > 1,  dWave = wave(2) - wave(1);
-else                 dWave = 10;   disp('10 nm band assumed');
+if numel(wave) > 1,  binwidth = wave(2) - wave(1);
+else,                fprintf('%d nm bandwidth\n',binwidth);
 end
-lum = 683*(xwData*V) * dWave;
 
-return;
+% The luminance formula.  
+if size(xwData,1) == 1 || size(xwData,2) == 1
+    % xwData can be a matrix, I suppose.  User better check that it is XW
+    % format.
+    lum = 683*dot(xwData,V) * binwidth;
+    
+else
+    % If vectors, xwData and V are not always rows or columns, so we use
+    % the dot() formula  rather than multiplying.
+    lum = 683*xwData*V * binwidth;
+end
 
+% Compare the luminance and energy data
+% ieNewGraphWin; semilogy(wave,V,'--',wave,xwData,'o'); 
+
+end
 

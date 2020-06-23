@@ -1,7 +1,7 @@
 function g = chromaticityPlot(pts,background,nPix,newFig)
 % Draw points superimposed on an xy chromaticity diagram 
 %
-%     g = chromaticityPlot(pts,[background='gray'],[nPix=256])
+%     g = chromaticityPlot(pts,[background='gray'],[nPix=256], [newFig])
 %
 % The general surrounding background can be gray (by default), white or
 % black.
@@ -35,7 +35,7 @@ function g = chromaticityPlot(pts,background,nPix,newFig)
 if ieNotDefined('pts'), pts = []; end
 if ieNotDefined('background'), background = 'gray'; end
 if ieNotDefined('nPix'), nPix = 256; end
-if ieNotDefined('newFig'), newFig = 1; end
+if ieNotDefined('newFig'), newFig = true; end
 g = [];
 
 %% Create a mesh grid of points filled with xy values
@@ -71,13 +71,13 @@ backXYZ = srgb2xyz(w);
 switch background
     case 'white'
         backXYZ = backXYZ*Y_val;
-        if newFig, g = vcNewGraphWin([],[],'Color',[1 1 1]); end
+        if newFig, g = ieNewGraphWin([],[],'Color',[1 1 1]); end
     case 'black'
         backXYZ = backXYZ*0;
-        if newFig, g = vcNewGraphWin([],[],'Color',[0 0 0]); end
+        if newFig, g = ieNewGraphWin([],[],'Color',[0 0 0]); end
     case 'gray'
         backXYZ = backXYZ*Y_val/2;
-        if newFig, g = vcNewGraphWin([],[],'Color',[0.7 0.7 0.7]); end
+        if newFig, g = ieNewGraphWin([],[],'Color',[0.7 0.7 0.7]); end
     otherwise
         error('Unknown background %s\n',background);
 end

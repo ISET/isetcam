@@ -26,7 +26,10 @@ nHeight = length(imgHeight);
 psfNameList = cell(nHeight,nWave);
 for ii=1:nHeight
     for jj=1:nWave
-        psfNameList{ii,jj} = sprintf('%s_2D_PSF_Fld%.0f_Wave%.0f.dat',lensFile,ii,jj);
+        % Get the full path.  We are worried that there may be multiple
+        % optics with the same basename.
+        baseName = sprintf('%s_2D_PSF_Fld%.0f_Wave%.0f.dat',lensFile,ii,jj);
+        psfNameList{ii,jj} = which(baseName);
         rtCheckPSFFile(psfNameList{ii,jj});
     end
 end

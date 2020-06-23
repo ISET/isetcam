@@ -37,12 +37,11 @@ function [varExplained, nBases] = sceneToFile(fname,scene,bType,mType,comment)
 
 % Examples:
 %{
-%   scene = sceneCreate;
-%   ieAddObject(scene); sceneWindow;
-%   sceneToFile('deleteMe',scene,0.999);
-%   scene2 = sceneFromFile('deleteMe','multispectral');
-%   ieAddObject(scene2); sceneWindow;
-%
+   scene = sceneCreate;
+   ieAddObject(scene); sceneWindow;
+   sceneToFile('deleteMe',scene,0.999);
+   scene2 = sceneFromFile('deleteMe','multispectral');
+   ieAddObject(scene2); sceneWindow;
 %}
 
 % TODO:

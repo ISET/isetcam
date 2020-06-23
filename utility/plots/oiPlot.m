@@ -96,26 +96,34 @@ pType = ieParamFormat(pType);
 if ieNotDefined('roiLocs')
     % oiWindow;
     switch pType
-        case {  'irradiancevline','vline','vlineirradiance', ...
-                'irradiancehline','hline','hlineirradiance' , ...
+        case {  'irradiancehline','hline','hlineirradiance' , ...
                 'illuminancehline','horizontallineilluminance','hlineilluminance', ...
-                'illuminanceffthline', 'illuminancefftvline',...
-                'illuminancevline','vlineilluminance', ...
+                'illuminanceffthline',...
                 'contrasthline','hlinecontrast', ...
-                'contrastvline','vlinecontrast'}
+                }
+            roiLocs = vcPointSelect(oi);
+            sz = sceneGet(oi,'size');
+            ieROIDraw(oi,'shape','line','shape data',[1 sz(2) roiLocs(2) roiLocs(2)]);
+            
+        case {'irradiancevline','vline','vlineirradiance',...
+                'illuminancevline','vlineilluminance', ...
+                'contrastvline','vlinecontrast','illuminancefftvline'}
             roiLocs = vcLineSelect(oi);
+            sz = sceneGet(oi,'size');
+            ieROIDraw(oi,'shape','line','shape data',[roiLocs(1) roiLocs(1) 1 sz(1)]);
             
         case {'irradianceenergyroi','irradiancephotonsroi', ...
                 'chromaticityroi','illuminanceroi'}
-            roiLocs = vcROISelect(oi);
-            
+            [roiLocs,roiRect] = vcROISelect(oi);
+            ieROIDraw(oi,'shape','rect','shape data',roiRect);
+
         otherwise
             % There are cases that don't need a position
     end
 end
 
 % Make the plot window and use this default gray scale map.
-g = vcNewGraphWin;
+g = ieNewGraphWin;
 mp = 0.4*gray + 0.4*ones(size(gray));
 colormap(mp);
 
@@ -231,7 +239,7 @@ switch pType
     case {'irradianceimagewave','irradianceimagewavegrid'}
         % oiPlot(oi,'irradianceImageWave',wave,gSpacing);
         if isempty(varargin), wave = 500;
-        else wave = varargin{1};
+        else, wave = varargin{1};
         end
         
         irrad   = oiGet(oi,'photons',wave);
@@ -498,7 +506,7 @@ switch pType
                 rtPlot(oi,'otf');
             otherwise
                 if isempty(varargin), udata = plotOTF(oi,'otf');
-                else w = varargin{1}; udata = plotOTF(oi,'otf',w);
+                else, w = varargin{1}; udata = plotOTF(oi,'otf',w);
                 end
         end
         set(g,'userdata',udata);
@@ -572,13 +580,40 @@ switch pType
         set(g,'name','OTF by Wave');
         colormap(jet)
         
+    case {'illuminantimage'}
+        % oiPlot(oi,'illuminant image')
+        % Make an RGB image showing the spatial image of the illuminant.
+        
+        wave = oiGet(oi,'wave');
+        sz = oiGet(oi,'size');
+        energy = oiGet(oi,'illuminant energy');
+        if isempty(energy) 
+            ieInWindowMessage('No illuminant data.',handle);
+            close(gcf);
+            error('No illuminant data');
+        end
+
+        switch oiGet(oi,'illuminant format')
+            case {'spectral'}
+                % Makes a uniform SPD image
+                energy = repmat(energy(:)',prod(sz),1);
+                energy = XW2RGBFormat(energy,sz(1),sz(2));
+            otherwise
+        end
+        
+        % Create an RGB image
+        udata.srgb = xyz2srgb(ieXYZFromEnergy(energy,wave));
+        imagesc(sz(1),sz(2),udata.srgb);  
+        grid on; axis off; axis image;
+        title('Illumination image')      
+        
     otherwise
         error('Unknown oiPlot type %s.',pType);
 end
 
 if exist('udata','var'), set(gcf,'userdata',udata); end
 
-return;
+end
 
 % - Brought into this file from a separate function
 function udata = plotOIIrradiance(oi,dataType,roiLocs)
@@ -634,7 +669,7 @@ else
     end
 end
 
-return;
+end
 
 % Moved into oiPlot June, 2012.
 function uData = plotOTF(oi,pType,varargin)
@@ -680,7 +715,7 @@ switch lower(pType)
         % plotOTF(oi,'otf',thisWave,nSamp);
         % OTF at a selected wavelength.
         units = 'mm';  % Units are cycles/mm
-        if strfind(pType,'550'),        thisWave = 550;
+        if ieContains(pType,'550'),        thisWave = 550;
         elseif length(varargin) >=1,    thisWave = varargin{1};
         else, thisWave = ieReadNumber('Select OTF wavelength (nm)',550,'%.0f');
         end
@@ -747,11 +782,11 @@ switch lower(pType)
         % oiPlot(oi,'psf',[],thisWave,units)  % empty is roiLocs
         % oiPlot(oi,'psf 550',[],thisWave,units)
         % Spatial scale is microns.
-        if strfind(pType,'550'),        thisWave = 550;
+        if ieContains(pType,'550'),     thisWave = 550;
         elseif length(varargin) >=1,    thisWave = varargin{1};
-        else thisWave = ieReadNumber('Select PSF wavelength (nm)',550,'%.0f');
+        else, thisWave = ieReadNumber('Select PSF wavelength (nm)',550,'%.0f');
         end
-        if length(varargin) >=2, units = varargin{2}; else units = 'um'; end
+        if length(varargin) >=2, units = varargin{2}; else, units = 'um'; end
         
         opticsModel = opticsGet(optics,'model');
         switch lower(opticsModel)
@@ -982,7 +1017,10 @@ switch lower(pType)
         error('Unknown plotOTF data type.');
 end
 
-return;
+% There should be a uData no matter what.  But just in case ...
+if exist('uData','var'), set(gcf,'UserData',uData); end
+
+end
 
 function uData = plotIlluminanceMesh(oi,yScale)
 % Plot optical image illuminance (lux) as a mesh
@@ -1001,7 +1039,6 @@ function uData = plotIlluminanceMesh(oi,yScale)
 
 if ieNotDefined('oi'), error('OI required.'); end
 if ieNotDefined('yScale'),  yScale = 'log'; end
-if ieNotDefined('roiFlag'), roiFlag = 0; end
 
 illum = oiGet(oi,'illuminance');
 
@@ -1027,7 +1064,7 @@ uData.c = c; uData.r = r;
 xlabel('um'); ylabel('um');
 title('Illuminance');
 
-return;
+end
 
 function uData = plotOICIE(oi,dataType,roiLocs)
 % plotting CIE data from optical image.  Could be moved into the case
@@ -1044,7 +1081,7 @@ function uData = plotOICIE(oi,dataType,roiLocs)
 %
 % Examples:
 %   oi = vcGetObject('oi');
-%   vcNewGraphWin;
+%   ieNewGraphWin;
 %   udata = plotOICIE(oi,'chromaticity')
 %   plotOICIE(oi,'illuminance',roiLocs);
 %   plotOICIE(oi,'chromaticity',roiLocs);
@@ -1075,7 +1112,7 @@ switch lower(dataType)
         
     case {'illuminance'}
         data = vcGetROIData(oi,roiLocs,'illuminance');
-        hist(data(:));
+        histogram(data(:));
         uData.illum = data;
         xlabel('Iluminance (lux)'); ylabel('Count');
         title('Iluminance histogram');
@@ -1088,10 +1125,11 @@ uData.roiLocs = roiLocs;
 oName = oiGet(oi,'name');
 set(gcf,'Name',sprintf('ISET-OI: %s',oName));
 
-return
+end
 
 
 %---------------------------------------------------
+%{
 function sz = selectPlotSupport(data,prct)
 % Select a central region for plotting
 %
@@ -1125,5 +1163,5 @@ else
     sz = max(25,centerRow - idx);
 end
 
-return;
-
+end
+%}

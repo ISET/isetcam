@@ -19,7 +19,7 @@ function [patchLocs,rect] = chartROI(currentLoc,delta)
 % Copyright ImagEval Consultants, LLC, 2014
 %
 % See also: 
-%   chartPatchData, chartRectangles,ieRect2Locs
+%   chartRectsData, chartRectangles,ieRect2Locs
 
 %%
 if ieNotDefined('currentLoc'), error('current location in chart is required'); end

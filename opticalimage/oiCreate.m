@@ -16,12 +16,12 @@ function [oi,val] = oiCreate(oiType,varargin)
 %                             model set up. Like human but pillbox OTF
 %     {'wvf'}        - Use the wavefront methods to specify the shift
 %     {'human'}      - Inserts human shift-invariant optics
-%                   invariant optics
 %     {'ray trace'}  - Ray trace OI
 %
 %  These are used for snr-lux testing
 %     {'uniform d65'} - Turns off offaxis to make uniform D65 image
 %     {'uniform ee'}  - Turns off offaxis and creates uniform EE image
+%     {'black'}        - A black OI used for sensor parameter estimates
 %
 % The wavelength spectrum is normally inherited from the scene.  To
 % specify a spectrum for the optical image use
@@ -111,6 +111,18 @@ switch ieParamFormat(oiType)
         if length(varargin) >= 1, sz = varargin{1}; end
         if length(varargin) >= 2, wave = varargin{2}; end
         oi = oiCreateUniformEE(sz,wave);
+        
+    case {'black'}
+        % oi = oiCreate('black',sz,wave);
+        %
+        % Black scene with huge FOV.  Used to set zerolevel in the sensor,
+        % and perhaps other electrical testing code.
+        wave = 400:10:700; sz = 32;
+        if length(varargin) >= 1, sz = varargin{1}; end
+        if length(varargin) >= 2, wave = varargin{2}; end
+        oi = oiCreate; oi = oiSet(oi,'wave',wave);
+        oi = oiSet(oi,'photons',zeros(sz,sz,numel(wave)));
+        oi = oiSet(oi,'fov',100);
         
     case {'wvf'}
         % A shift-invariant type with a wavefront struct attached that

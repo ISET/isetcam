@@ -59,9 +59,6 @@ function scene = sceneSet(scene,parm,val,varargin)
 %      'illuminant Photons' - Photons are converted to energy and stored 
 %      'illuminant Comment' - Comment
 %      'illuminant Name'    - Identifier for illuminant.
-%         See sceneIlluminantScale() for setting the illuminant level in
-%         certain cases of unknown reflectance and illuminant conditions.
-%         Though, this is being deprecated.
 %
 % Auxiliary
 %      'consistency'  - Display consistent with window data
@@ -403,13 +400,27 @@ switch parm
         end
     case {'illuminantname'}
         scene.illuminant = illuminantSet(scene.illuminant,'name',val);
-    case {'illuminantwave'}
-        error('Call scene set wave, not illuminant wave');
     case {'illuminantcomment'}
         scene.illuminant.comment = val;
     case {'illuminantspectrum'}
         scene.illuminant.spectrum = val;
         
+    case {'rect'}
+        % scene = sceneSet(scene,'rect',[x y h w]);
+        % An ROI rect.
+        scene.rect = val;
+    case {'mccrecthandles'}
+        if checkfields(scene,'mccRectHandles')
+            if ~isempty(scene.mccRectHandles)
+                try delete(scene.mccRectHandles(:));
+                catch
+                end
+            end
+        end
+        scene.mccRectHandles = val;
+    case {'mcccornerpoints'}
+        scene.mccCornerPoints = val;
+
     otherwise
         disp(['Unknown sceneSet parameter: ',parm]);
 end

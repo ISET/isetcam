@@ -102,7 +102,7 @@ function [camera,img] = cameraCompute(camera,pType,mode,sensorResize)
 % scene rather than to specify the processing type.  So we trap the
 % different conditions in this maze of conditions.
 
-% by default do not scale output image
+%% By default do not scale output image
 adjustScale = 0;
 
 if ieNotDefined('camera'), error('Camera structure required.'); end

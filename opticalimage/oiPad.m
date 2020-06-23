@@ -91,7 +91,7 @@ oiGet(oi,'width','um')/oiGet(oi,'cols')
 spaceRes = oiGet(oi,'spatial resolution','um')
 oiGet(oi,'hfov')
 %}
-newWidth = oiGet(oi,'width')*((oiGet(oi,'cols') + padSize(2)*2)/oiGet(oi,'cols'));
+% newWidth = oiGet(oi,'width')*((oiGet(oi,'cols') + padSize(2)*2)/oiGet(oi,'cols'));
 %{
 % This should leave the new spatial resolution unchanged.  It does for both
 % shift invariant and ray trace.
@@ -102,12 +102,19 @@ abs(newWidthUM/(oiGet(oi,'cols') + padSize(2)*2) - spaceRes(2))*1e10
 
 % Find the distance from the sensor image to the lens
 % imageDistance = opticsGet(oiGet(oi,'optics'),'imageDistance',sDist);
-imageDistance = oiGet(oi,'optics image distance',sDist);
+% imageDistance = oiGet(oi,'optics image distance',sDist);
 
 % We compute the new horizontal field of view (deg) using the formula
 % that the opposite over adjacent is the tangent of the angle.  Is this OK
 % for the ray trace model?
-oi = oiSet(oi,'horizontal field of view',2*atand((0.5*newWidth)/imageDistance));
+% oi = oiSet(oi,'horizontal field of view',2*atand((0.5*newWidth)/imageDistance));
+
+% New way to update the fov
+old_fov = oiGet(oi,'wangular');
+size_ratio = (oiGet(oi,'cols') + padSize(2)*2)/oiGet(oi,'cols');
+new_fov = 2 * atand(size_ratio * tand(old_fov/2));
+oi = oiSet(oi,'wangular',new_fov);
+
 %{
 w = oiGet(oi,'width','um')
 %}

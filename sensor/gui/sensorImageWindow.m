@@ -539,7 +539,7 @@ fullName = vcSelectDataFile('stayput','r','mat');
 if isempty(fullName), return; end
 
 tmp = load(fullName,'volts');
-isa = vcGetObject('ISA');
+isa = ieGetObject('ISA');
 isa = sensorSet(isa,'volts',tmp.volts);
 
 vcReplaceAndSelectObject(isa);
@@ -550,7 +550,7 @@ return;
 % --------------------------------------------------------------------
 function menuFileSaveVoltsMat_Callback(hObject, eventdata, handles)
 % Save Volts (MAT file)
-isa = vcGetObject('ISA');
+isa = ieGetObject('ISA');
 volts = sensorGet(isa,'volts');
 if isempty(volts), errordlg('No voltage data.'); end
 
@@ -612,7 +612,7 @@ return;
 % --------------------------------------------------------------------
 function menuCopySensor_Callback(hObject, eventdata, handles)
 
-sensor = vcGetObject('ISA');
+sensor = ieGetObject('ISA');
 
 newName = ieReadString('New ISA name','new-isa');
 if isempty(newName),  return;
@@ -641,7 +641,7 @@ return;
 % --------------------------------------------------------------------
 function menuEditResWave_Callback(hObject, eventdata, handles)
 % Edit | Resample Wavelength
-isa = vcGetObject('isa');
+isa = ieGetObject('isa');
 isa = sensorResampleWave(isa);
 vcReplaceObject(isa);
 return;
@@ -678,7 +678,7 @@ return;
 % --------------------------------------------------------------------
 function menuEditViewer_Callback(hObject, eventdata, handles)
 % Edit | Viewer
-sensor = vcGetObject('ISA');
+sensor = ieGetObject('ISA');
 img = sensorData2Image(sensor,'volts');
 ieViewer(img);
 return;
@@ -696,7 +696,7 @@ return;
 % --------------------------------------------------------------------
 function menuAnalyzePOVignetting_Callback(hObject, eventdata, handles)
 % Analyze | Pixel Optics | Relative Illumination
-sensor = vcGetObject('sensor');
+sensor = ieGetObject('sensor');
 sensorPlot(sensor,'etendue');
 return;
 % --------------------------------------------------------------------
@@ -736,7 +736,7 @@ function menuSensorPixelVignetting_Callback(hObject, eventdata, handles)
 %
 % Set check the Pixel OE computation.
 
-ISA = vcGetObject('ISA');
+ISA = ieGetObject('ISA');
 
 % Set the vignetting
 pvFlag = sensorGet(ISA,'vignetting');
@@ -768,7 +768,7 @@ function menuSensorCDS_Callback(hObject, eventdata, handles)
 %  Set check on CDS menu item.  We should probably display this in the
 %  information box at the right, also.
 
-ISA = vcGetObject('ISA');
+ISA = ieGetObject('ISA');
 state = get(hObject,'Check');
 
 switch state
@@ -788,7 +788,7 @@ return;
 % --------------------------------------------------------------------
 function menuSensorColFPN_Callback(hObject, eventdata, handles)
 
-sensor = vcGetObject('ISA');
+sensor = ieGetObject('ISA');
 state = get(hObject,'Check');
 
 switch state
@@ -838,7 +838,7 @@ function menuSensorSetComputeGrid_Callback(hObject, eventdata, handles)
 % Sensor | Set Compute Grid
 % Sets pixel samples in signalCurrent
 
-sensor = vcGetObject('ISA');
+sensor = ieGetObject('ISA');
 currentPixelSamples = sensorGet(sensor,'nSamplesPerPixel');
 nPixelSamples = ieReadNumber('Enter odd integer specifying number of samples/pixel (default=1)',currentPixelSamples,'%.0f');
 
@@ -910,7 +910,7 @@ function createNewSensor(hObject, eventdata, handles)
 % New ISA
 % Defaults to current values, except new color, as per sensorCreate.
 
-newISA = vcGetObject('ISA');
+newISA = ieGetObject('ISA');
 newVal = vcNewObjectValue('ISA');
 
 sensorArrayNames = get(handles.popISA,'String');
@@ -973,7 +973,7 @@ function editGam_Callback(hObject, eventdata, handles)
 % Handle value is read during refresh.
 
 % Don't change the red consistency button
-sensor = vcGetObject('sensor');
+sensor = ieGetObject('sensor');
 sensor = sensorSet(sensor,'consistency',-1);
 vcReplaceObject(sensor);
 sensorRefresh(hObject,eventdata,handles);
@@ -984,7 +984,7 @@ function btnDisplayScale_Callback(hObject, eventdata, handles)
 % Handle value is read during refresh.
 
 % Don't change the red consistency button
-sensor = vcGetObject('sensor');
+sensor = ieGetObject('sensor');
 sensor = sensorSet(sensor,'consistency',-1);
 vcReplaceObject(sensor);
 
@@ -1211,9 +1211,9 @@ return;
 function menuAnExposureValue_Callback(hObject, eventdata, handles)
 % Analyze | SNR | Exposure Value
 
-oi     = vcGetObject('oi');
+oi     = ieGetObject('oi');
 optics = oiGet(oi,'optics');
-sensor = vcGetObject('sensor');
+sensor = ieGetObject('sensor');
 EV = exposureValue(optics,sensor);
 
 str = sprintf('Exposure value (log2(f/#^2 / T)):    %.2f',EV);
@@ -1226,7 +1226,7 @@ function menuAnPhotExp_Callback(hObject, eventdata, handles)
 % Analyze | SNR | Photometric Exp
 
 str = sprintf('Photometric exposure (lux-sec): %.2f',...
-    photometricExposure(vcGetObject('OI'),vcGetObject('ISA')));
+    photometricExposure(ieGetObject('OI'),ieGetObject('ISA')));
 
 % Display in window message
 ieInWindowMessage(str,ieSessionGet('sensorwindowhandles'));
@@ -1277,7 +1277,7 @@ function menuPlotSensorImageTSize_Callback(hObject, eventdata, handles)
 % Plot | SensorImage (True Size)
 gam      = str2double(get(handles.editGam,'String'));
 scaleMax = get(handles.btnDisplayScale,'Value');
-sensor   = vcGetObject('sensor');
+sensor   = ieGetObject('sensor');
 
 % Get voltages or digital values
 bits     = sensorGet(sensor,'bits');
@@ -1304,7 +1304,7 @@ function plotMccOverlay_Callback(hObject, eventdata, handles)
 % Plot | MCC overlay off
 % Delete the MCC boxes showing the selection
 
-sensor = vcGetObject('sensor');
+sensor = ieGetObject('sensor');
 macbethDrawRects(sensor,'off');
 vcReplaceObject(sensor);
 sensorRefresh(hObject, eventdata, handles);
@@ -1315,7 +1315,7 @@ return;
 function menuPlotHumanCone_Callback(hObject, eventdata, handles)
 % Plot | Human Cone
 
-sensor = vcGetObject('sensor');
+sensor = ieGetObject('sensor');
 if sensorCheckHuman(sensor), sensorConePlot(sensor)
 else ieInWindowMessage('Not a human cone sensor',handles,3);
 end
@@ -1348,65 +1348,66 @@ return;
 % --------------------------------------------------------------------
 function menuAnLineV_Callback(hObject, eventdata, handles)
 % Analyze | Line | Vertical | Electrons
-sensorPlot(vcGetObject('sensor'),'electrons vline');
-%OLD:  sensorPlotLine(vcGetObject('ISA'),'v','volts','space');
+sensorPlot(ieGetObject('sensor'),'electrons vline');
+%OLD:  sensorPlotLine(ieGetObject('ISA'),'v','volts','space');
 return;
 
 % --------------------------------------------------------------------
 function menuAnLineH_Callback(hObject, eventdata, handles)
 % Analyze | Line | Horizontal | Volts
-sensorPlot(vcGetObject('sensor'),'volts hline');
+sensorPlot(ieGetObject('sensor'),'volts hline');
 return;
 
 % --------------------------------------------------------------------
 function menuHorLineE_Callback(hObject, eventdata, handles)
 % Analyze | Line | Horizontal | Electrons
-sensorPlot(vcGetObject('sensor'),'electrons hline');
+sensorPlot(ieGetObject('sensor'),'electrons hline');
 return;
 
 % --------------------------------------------------------------------
 function menuVertLineE_Callback(hObject, eventdata, handles)
 % Analyze | Line | Vertical | Electrons
-sensorPlot(vcGetObject('sensor'),'electrons vline');
+sensorPlot(ieGetObject('sensor'),'electrons vline');
 return;
 
 % --------------------------------------------------------------------
 function menuHorLineDV_Callback(hObject, eventdata, handles)
-% sensorPlotLine(vcGetObject('sensor'),'h','dv','space');
-sensorPlot(vcGetObject('sensor'),'dv hline');
+% sensorPlotLine(ieGetObject('sensor'),'h','dv','space');
+sensorPlot(ieGetObject('sensor'),'dv hline');
 return;
 
 % --------------------------------------------------------------------
 function menuVertLineDV_Callback(hObject, eventdata, handles)
-% sensorPlotLine(vcGetObject('sensor'),'v','dv','space');
-sensorPlot(vcGetObject('sensor'),'dv vline');
+% sensorPlotLine(ieGetObject('sensor'),'v','dv','space');
+sensorPlot(ieGetObject('sensor'),'dv vline');
 return;
 
 % --------------------------------------------------------------------
 function menuFFThor_Callback(hObject, eventdata, handles)
-sensorPlotLine(vcGetObject('sensor'),'h','volts','fft');
+sensorPlotLine(ieGetObject('sensor'),'h','volts','fft');
 return;
 
 % --------------------------------------------------------------------
 function menuFFTVert_Callback(hObject, eventdata, handles)
-sensorPlotLine(vcGetObject('sensor'),'v','volts','fft');
+sensorPlotLine(ieGetObject('sensor'),'v','volts','fft');
 return;
 
 % --------------------------------------------------------------------
-% function menuAnPixHistQ_Callback(hObject, eventdata, handles)
-% plotSensorHistogram('e');
-% return;
+function menuAnPixHistQ_Callback(hObject, eventdata, handles)
+%plotSensorHistogram('e');
+sensorPlot(ieGetObject('sensor'),'electrons histogram');
+return;
 
 % --------------------------------------------------------------------
 function menuAnPixHistV_Callback(hObject, eventdata, handles)
 % Analyze | Line | Vertical | Volts
-sensorPlot(vcGetObject('sensor'),'volts hist');
+sensorPlot(ieGetObject('sensor'),'volts histogram');
 return;
 
 % --------------------------------------------------------------------
 function menuAnPixelSNR_Callback(hObject, eventdata, handles)
 % Graph the pixel SNR as a function of voltage swing
-sensorPlot(vcGetObject('sensor'),'pixel snr');
+sensorPlot(ieGetObject('sensor'),'pixel snr');
 % plotPixelSNR;
 return;
 
@@ -1424,12 +1425,12 @@ return;
 % --------------------------------------------------------------------
 function menuAnBasicV_Callback(hObject, eventdata, handles)
 %
-sensorStats([],'basic','volts');
+sensorStats(ieGetObject('sensor'),'basic','volts');
 return;
 
 % --------------------------------------------------------------------
 function menuAnBasicE_Callback(hObject, eventdata, handles)
-sensorStats([],'basic','electrons');
+sensorStats(ieGetObject('sensor'),'basic','electrons');
 return;
 
 % ----------------------Pixel Optics-------------------
@@ -1446,7 +1447,7 @@ fullName = vcSelectDataFile('stayPut','r');
 if isempty(fullName), disp('User canceled'); return; end
 tmp = load(fullName);
 if isfield(tmp,'ml')
-    ISA = vcGetObject('ISA');
+    ISA = ieGetObject('ISA');
     ISA = sensorSet(ISA,'microLens',tmp.ml);
     vcReplaceObject(ISA);
 else
@@ -1459,7 +1460,7 @@ return;
 function menuAnPixOptSaveUl_Callback(hObject, eventdata, handles)
 % Analyze | Pixel Optics | Save uL
 
-ISA = vcGetObject('ISA');
+ISA = ieGetObject('ISA');
 ml = sensorGet(ISA,'microLens');
 fullName = vcSelectDataFile('stayPut','w');
 if isempty(fullName), disp('User canceled'); return; end
@@ -1480,14 +1481,14 @@ return;
 % --------------------------------------------------------------------
 function menuAnColorRG_Callback(hObject, eventdata, handles)
 % Analyze | Color | RG Analysis
-sensorPlotColor(vcGetObject('ISA'),'rg');
+sensorPlotColor(ieGetObject('ISA'),'rg');
 return;
 
 % --------------------------------------------------------------------
 function menuAnColCCM_Callback(hObject, eventdata, handles)
 % Analyze | Color | Color Conversion Matrix
 
-sensor = vcGetObject('sensor');
+sensor = ieGetObject('sensor');
 [L,corners] = sensorCCM(sensor); %#ok<ASGLU>
 
 fprintf('    ==  MCC to XYZ_D65 matrix  ==\n');
@@ -1612,7 +1613,7 @@ return;
 
 % --------------------------------------------------------------------
 function menuAnPOShowUL_Callback(hObject, eventdata, handles)
-ISA = vcGetObject('ISA');
+ISA = ieGetObject('ISA');
 mlPrint(sensorGet(ISA,'microLens'));
 return;
 
@@ -1658,7 +1659,7 @@ function popupExpMode_Callback(hObject, eventdata, handles)
 % Hints: contents = get(hObject,'String') returns popupExpMode contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupExpMode
 
-sensor = vcGetObject('sensor');
+sensor = ieGetObject('sensor');
 
 % Determine which case we popped into
 contents = get(hObject,'String');
@@ -1719,7 +1720,7 @@ return;
 
 function editNExposures_Callback(hObject, eventdata, handles)
 % Set the number of exposures in the bracketing mode
-sensor = vcGetObject('sensor');
+sensor = ieGetObject('sensor');
 sensor = sensorAdjustBracketTimes(handles,sensor);
 sensor = sensorClearData(sensor);
 vcReplaceObject(sensor);
@@ -1747,7 +1748,7 @@ return;
 function btnShowCFAExpDurations_Callback(hObject, eventdata, handles)
 % Bring up a gui that shows the CFA exposures
 
-sensor = vcGetObject('sensor');
+sensor = ieGetObject('sensor');
 
 % Make sure we are in the CFA format
 sensor = sensorAdjustCFATimes(handles,sensor);
@@ -1780,7 +1781,7 @@ end
 function sliderSelectBracketedExposure_Callback(hObject, eventdata, handles)
 % Slider on the lower left of the window
 % Chooses which of the exposures to display
-sensor = vcGetObject('sensor');
+sensor = ieGetObject('sensor');
 
 exposurePlane = get(handles.sliderSelectBracketedExposure,'value');
 sensor = sensorSet(sensor,'exposurePlane',exposurePlane);
@@ -1803,7 +1804,7 @@ function sensor = sensorAdjustBracketTimes(handles,sensor)
 %
 % If it is called from the exp time box, then we get the sensor passed in.
 % Otherwise we use the default sensor.
-if ieNotDefined('sensor'), sensor = vcGetObject('sensor'); end
+if ieNotDefined('sensor'), sensor = ieGetObject('sensor'); end
 
 % Require odd exposure number.  Update the edit box with the right number
 nExposures = str2double(get(handles.editNExposures,'String'));
@@ -1836,7 +1837,7 @@ function sensor = sensorAdjustCFATimes(handles,sensor)
 % sensor into the CFA exposure mode.
 %
 
-if ieNotDefined('sensor'), sensor = vcGetObject('sensor'); end
+if ieNotDefined('sensor'), sensor = ieGetObject('sensor'); end
 
 mSize = size(sensorGet(sensor,'pattern'));
 eTimes = sensorGet(sensor,'expTimes');

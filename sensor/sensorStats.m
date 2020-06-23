@@ -1,16 +1,15 @@
-function [s, sensor, theRect] = sensorStats(sensor,statType,unitType,quiet)
-% Calculate sensor statistics within a region of interest
+function [uData, sensor, theRect] = sensorStats(sensor,statType,unitType,quiet)
+% Calculate sensor statistics within a region of interest selected by user
 %
 % Syntax
 %    [stats, sensor, theRect] = sensorStats(sensor,[statType],[unitType],[quiet])
 %
 % Inputs
-%    sensor:     Either a sensor or an ROI.  If a sensor it may contain an
-%                roi field of Nx2 matrix locations (TODO: should allow for
-%                rect)  
+%    sensor:     A sensor it may contain an roi field of Nx2 matrix
+%                locations or a rect 
 %    statType:   'basic'
 %    unitType:   'volts' or 'electrons'
-%    quiet:       Do not show rect if true
+%    quiet:       Do not draw rect if true
 %
 % Returns:
 %    stats:   Struct with the statistics
@@ -51,47 +50,24 @@ function [s, sensor, theRect] = sensorStats(sensor,statType,unitType,quiet)
 %}
 
 %% Parse inputs
-if ieNotDefined('sensor')
-    [~,sensor] = vcGetSelectedObject('ISA'); 
-    roi = []; 
-end
-if ieNotDefined('quiet'),    quiet = false; end
-if ieNotDefined('statType'), statType = 'basic'; end
+if ieNotDefined('sensor'),    error('Sensor must be provided.'); end
+if ieNotDefined('quiet'),     quiet = false; end
+if ieNotDefined('statType'),  statType = 'basic'; end
 if ieNotDefined('unitType'),  unitType = 'volts'; end
 
-if isstruct(sensor) && ...
-        isfield(sensor,'type') && ...
-        isequal(sensor.type,'sensor')
-else
-    % The user did not send in a sensor, but just an ROI
-    % So we assume user wants to use the currently selected sensor
-    roi = sensor;
-    %     if numel(roi) == 4
-    %         roi = ieRect2Locs(roi);
-    %     end
-    [~,sensor] = vcGetSelectedObject('ISA');
-    sensor = sensorSet(sensor,'roi',roi);
-end
+assert(isstruct(sensor) && isfield(sensor,'type') ...
+                        && isequal(sensor.type,'sensor'));
 
 nSensors = sensorGet(sensor,'nsensors');
 
-if exist('roi','var'), sensor.roi = roi; 
-else,                  roi = [];
-end
-
-if isfield(sensor,'roi') && ~isempty(sensor.roi)
-    % Use the sensor.roi
-elseif isempty(roi) 
-    % No information.  Help the user choose the ROI
+% We ignore the sensor.roi in this case.  The user always selects.  But
+% maybe we should allow the user to set.
+if isempty(sensorGet(sensor,'roi'))
     isaHdl = ieSessionGet('isahandle');
     ieInWindowMessage('Select image region.',isaHdl,[]);
     [~,rect] = vcROISelect(sensor);
     sensor = sensorSet(sensor,'roi',rect);
     ieInWindowMessage('',isaHdl);
-else
-    % The user sent an ROI and isa.roi does not exist.
-    % Store this ROI
-    sensor.roi = sensorSet(sensor,'roi',roi);
 end
 
 %% Get proper data type.  NaNs are still in there
@@ -114,29 +90,29 @@ switch lower(statType)
         % volts, too.  Not used here because, well, ....
         if nSensors == 1
             tmp = data(:); l = ~isnan(tmp); tmp = tmp(l);
-            s = mean(tmp);
+            uData = mean(tmp);
         else
-            s = zeros(3,1);
+            uData = zeros(3,1);
             for ii=1:nSensors
                 tmp = data(:,ii); l = ~isnan(tmp); tmp = tmp(l);
-                s(ii) = mean(tmp);
+                uData(ii) = mean(tmp);
             end
         end
     case 'basic'
         % Mean, std, sem, and N
         if nSensors == 1
             tmp = data(:); l = ~isnan(tmp); tmp = tmp(l);
-            s.mean = mean(tmp);
-            s.std  = std(tmp);
-            s.sem = s.std/sqrt(length(tmp) - 1);
-            s.N = length(tmp);
+            uData.mean = mean(tmp);
+            uData.std  = std(tmp);
+            uData.sem = uData.std/sqrt(length(tmp) - 1);
+            uData.N = length(tmp);
         else
             for ii=1:nSensors
                 tmp = data(:,ii); l = ~isnan(tmp); tmp = tmp(l);
-                s.mean(ii) = mean(tmp);
-                s.std(ii)  = std(tmp);
-                s.sem(ii) = s.std(ii)/sqrt(length(tmp) - 1);
-                s.N = length(tmp);
+                uData.mean(ii) = mean(tmp);
+                uData.std(ii)  = std(tmp);
+                uData.sem(ii) = uData.std(ii)/sqrt(length(tmp) - 1);
+                uData.N = length(tmp);
             end
         end
     otherwise
@@ -153,18 +129,23 @@ if nargout == 0
 
     switch lower(statType)
         case 'basic'
-            txt = sprintf('Mean: %.2f',s.mean(1));
+            % sensorStats(sensor,'basic', unitType)
+            txt = sprintf('Mean: %.2e (%.2e)',uData.mean(1),uData.std(1));
             if nSensors == 1
-                errorbar([1:nSensors],s.mean,s.std,'ko-');
+                errorbar(1:nSensors,uData.mean,uData.std,'ko-');
             else
                 for ii=2:nSensors
-                    txt = addText(txt,sprintf('\nMean: %.2f',s.mean(ii)));
+                    txt = addText(txt,sprintf('\nMean: %.2e (%.2e)',uData.mean(ii),uData.std(ii)));
                 end
-                errorbar([1:nSensors],s.mean,s.std);
+                % errorbar(1:nSensors,uData.mean,uData.std);
+                hdl = bar(1:nSensors,uData.mean);
+                hdl.FaceColor = 'flat';
+                hdl.CData = eye(3);
+                
             end
             plotTextString(txt,'ur');
             
-            [~,sensor] = vcGetSelectedObject('ISA');
+            sensor = ieGetObject('sensor');
             filterType = sensorGet(sensor,'filter names cellarray');
             set(gca,'xtick',1:nSensors,'xticklabel',filterType);
             xlabel('Sensor color type');
@@ -177,25 +158,25 @@ if nargout == 0
                     set(gca,'ylim',[0,pixelGet(sensorGet(sensor,'pixel'),'wellcapacity')]);
             end
             set(gca,'xtick',(1:nSensors),'xticklabel',filterType);
-            title(sprintf('Mean %s in ROI',unitType));
+            title(sprintf('Mean %uData in ROI',unitType));
             
             grid on
         case 'mean'
             % sensorStats(sensor,'mean',unitType)
             
             % Simple bar plot
-            h = bar(s); grid on; 
+            h = bar(uData); grid on; 
             h.FaceColor = [0.3 0.3 0.6];
             h.EdgeColor = [0.5 0.5 0.5];
             
             filterType = sensorGet(sensor,'filter names cellarray');
             set(gca,'xticklabels',filterType)
-            ylabel(sprintf('%s',unitType));
-            title(sprintf('Mean %s in ROI',unitType));
+            ylabel(sprintf('%uData',unitType));
+            title(sprintf('Mean %uData in ROI',unitType));
         otherwise
             error('Unknown stat type');
     end
-    set(figNum,'userdata',s);
+    set(figNum,'userdata',uData);
 end
 
 

@@ -19,9 +19,13 @@ ieInit;
 
 % Choose reflectance data for testing
 sFiles = cell(1,2);
+sFiles{1} = which('MunsellSamples_Vhrel.mat');
+sFiles{2} = which('Food_Vhrel.mat');
+
+%{
 sFiles{1} = fullfile(isetRootPath,'data','surfaces','reflectances','MunsellSamples_Vhrel.mat');
 sFiles{2} = fullfile(isetRootPath,'data','surfaces','reflectances','Food_Vhrel.mat');
-
+%}
 % Number of samples from each of the files
 sSamples = [48 16]; 
 % pSize = 16; [scene, samples] = sceneReflectanceChart(sFiles,sSamples,pSize);

@@ -1,4 +1,4 @@
-function vci = ipCompute(vci,sensor)
+function ip = ipCompute(ip,sensor)
 % Image processing pipeline from image sensor to a display
 %
 %    ip = ipCompute(ip,sensor);
@@ -31,24 +31,24 @@ function vci = ipCompute(vci,sensor)
 
 
 %% Check arguments
-if ieNotDefined('vci'), error('Image process structure is required.'); end
+if ieNotDefined('ip'), error('Image process structure is required.'); end
 if ieNotDefined('sensor'), error('Sensor structure is required.'); end
 
 
 %% Assign a name if the current one is 'default' or a copy.  
 % Maybe we should always assign the sensor name whenever we compute?
-if strcmpi(ipGet(vci,'name'),'default') || ... 
-    strcmpi(ipGet(vci,'name'),'copy')
-    vci = ipSet(vci,'name',sensorGet(sensor(1),'name'));
+if strcmpi(ipGet(ip,'name'),'default') || ... 
+    strcmpi(ipGet(ip,'name'),'copy')
+    ip = ipSet(ip,'name',sensorGet(sensor(1),'name'));
 end
 
 %% Handle sensor array case.  No special exposure cases are handled.
 if length(sensor) > 1
-    % No need to put volts into the vci.  Demosaic will recognize this as
+    % No need to put volts into the ip.  Demosaic will recognize this as
     % an array of sensors and it will pull the volts out of each of the
     % individual sensors.
-    vci = ipSet(vci,'datamax',sensorGet(sensor(1),'max'));
-    vci = vciComputeSingle(vci,sensor);
+    ip = ipSet(ip,'datamax',sensorGet(sensor(1),'max'));
+    ip = vciComputeSingle(ip,sensor);
     return;
 end
 
@@ -56,13 +56,13 @@ end
 
 % We demosaick the quantized sensor values.  If this field is empty, use the
 % continuous voltages 
-vci = ipSet(vci,'input',sensorGet(sensor,'dv or volts'));
+ip = ipSet(ip,'input',sensorGet(sensor,'dv or volts'));
 
 %  The max is either the max digital value or the voltage swing, depending
 %  on whether we have computed DVs or Volts.  But this value is not
 %  terribly important because the we render into an RGB display in the unit
 %  cube.
-vci = ipSet(vci,'datamax',sensorGet(sensor(1),'max'));
+ip = ipSet(ip,'datamax',sensorGet(sensor(1),'max'));
 
 %% Pre-process the multiple exposure durations case
 % Combine the the exposure durations into a single planar array.  Then we
@@ -74,9 +74,9 @@ switch exposureMethod(1:3)
         % Don't need to pre-process
     case 'bra'  % bracketedExposure
         % On return, the maximum sensible exposure time is set
-        vci = vciComputeBracketed(vci,sensor);
+        ip = vciComputeBracketed(ip,sensor);
     case 'cfa'  % cfaExposure
-        vci = vciComputeCFA(vci,sensor);
+        ip = vciComputeCFA(ip,sensor);
     otherwise
         error('Unknown exposure method %s\n',exposureMethod);
 end
@@ -84,7 +84,7 @@ end
 % We introduce the L3 pipeline here, which is not part of ISET.
 % Perhaps we should test for the L3render function and warn the user if it
 % does not exist on the path?
-pType = ieParamFormat(ipGet(vci,'name'));
+pType = ieParamFormat(ipGet(ip,'name'));
 if strncmpi(pType,'l3',2)
     
     %Perform L^3 processing, either local or global
@@ -92,32 +92,32 @@ if strncmpi(pType,'l3',2)
     if strncmpi(pType,'l3global',8), mode = 'global'; end
     fprintf('** Using L3render %s method **\n',mode);
     
-    L3 = ipGet(vci,'L3');
+    L3 = ipGet(ip,'L3');
     [L3xyz,lumIdx,satIdx,clusterIdx] = L3render(L3,sensor,mode);
 
-    % Convert the results and save in the L3 structure and vci.
+    % Convert the results and save in the L3 structure and ip.
     % Shouldn't we be saving the srgb?  Or using xyz2lrgb?
     [srgb, lrgb] = xyz2srgb(L3xyz); %#ok<ASGLU>
-    vci = ipSet(vci,'result',lrgb);
+    ip = ipSet(ip,'result',lrgb);
     
     L3  = L3Set(L3,'luminance index',lumIdx);
     L3  = L3Set(L3,'xyz result',L3xyz);
     L3  = L3Set(L3,'saturation index',satIdx);
     L3  = L3Set(L3,'cluster index',clusterIdx);
-    vci = ipSet(vci,'L3',L3);
+    ip = ipSet(ip,'L3',L3);
 else
     % Conventional RGB pipeline, most common case
-    vci = vciComputeSingle(vci,sensor);
+    ip = vciComputeSingle(ip,sensor);
 end
 
 end
 
 
-function vci = vciComputeSingle(vci,sensor)
+function ip = vciComputeSingle(ip,sensor)
 % Process image for single exposure case, or after pre-processing for
 % bracketed and CFA cases.
 %
-%    vci = vciComputeSingle(vci,sensor)
+%    ip = vciComputeSingle(ip,sensor)
 %
 % The processing steps through
 %   1. Demosaicing
@@ -138,10 +138,10 @@ if nFilters == 1 && nSensors == 1
     % If monochrome sensor, just copy the sensor values to the RGB values
     % of the display, but normalize between 0 and 1 based on the kind of
     % data.
-    img = vci.data.input / sensorGet(sensor,'max');
+    img = ip.data.input / sensorGet(sensor,'max');
     
     % The image data are RGB, even though the sensor is monochrome.
-    vci = ipSet(vci,'result',repmat(img,[1,1,3]));
+    ip = ipSet(ip,'result',repmat(img,[1,1,3]));
     return;
 
 elseif nFilters == 2
@@ -150,38 +150,52 @@ elseif nFilters == 2
     % 
     % The only computational path we have now is for the demosaic algorithm
     % 'analog rccc'.
-    if ~isequal(ieParamFormat(ipGet(vci,'demosaic method')),ieParamFormat('analog rccc'))
+    if ~isequal(ieParamFormat(ipGet(ip,'demosaic method')),ieParamFormat('analog rccc'))
         error('2D is only implemented for RCCC demosaic case');
     end
     
-    img = Demosaic(vci,sensor);    % Returns a monochrome image
-    vci = ipSet(vci,'result',repmat(img,[1,1,3]));
+    img = Demosaic(ip,sensor);    % Returns a monochrome image
+    ip = ipSet(ip,'result',repmat(img,[1,1,3]));
     return;
     
 elseif nFilters >= 3 || nSensors > 1
     % Basic color processing pipeline. Single exposure case.
+    
+    % 0.  Some sensor designs expect the zero level (response to a black
+    % scene) should be a positive value.  If we store that level in the
+    % sensor structure, the IP should subtract the zero level prior to
+    % processing.  
     %
+    % We do that here by adjusting the ip.data.input by the zero level
+    % amount, making sure that we do not have any negative values.  This
+    % lets us use the same code as usual below.  See also
+    % zerolevel = sensorZerolevel(sensor);
+    %
+    zerolevel = sensorGet(sensor,'zero level');
+    if zerolevel ~= 0
+        ip.data.input = max( (ip.data.input - zerolevel) ,0);
+    end
  
     %1.  Demosaic in sensor space. The data remain in the sensor
     % channels and there is no scaling.
-    if ndims(vci.data.input) == nFilters, img = vci.data.input;
-    elseif ismatrix(vci.data.input),      img = Demosaic(vci,sensor);
+    if ndims(ip.data.input) == nFilters, img = ip.data.input;
+    elseif ismatrix(ip.data.input),      img = Demosaic(ip,sensor);
     else
         error('Not sure about input data structure');
     end
     
     % Save the demosaiced sensor space channel values. May be used later
     % for adaptation of color balance for IR enabled sensors
-    vci = ipSet(vci,'sensor space',img);
+    ip = ipSet(ip,'sensor space',img);
 
     % Decide if we are using the current matrix or we are in a processing
     % chain for balancing and rendering, or whether we are using the
     % current matrix.
-    tMethod = ieParamFormat(ipGet(vci,'transform method'));
+    tMethod = ieParamFormat(ipGet(ip,'transform method'));
     switch tMethod
         case 'current'
             % Use the stored transform matrix, don't recompute.
-            T   = ipGet(vci,'prodT');
+            T   = ipGet(ip,'prodT');
             img = imageLinearTransform(img,T);
 
         case {'new','manual matrix entry'}
@@ -189,19 +203,19 @@ elseif nFilters >= 3 || nSensors > 1
             % way, the sensor correction transform is the only one used to
             % convert from sensor to display.
 
-            Torig = ipGet(vci,'combined transform');
+            Torig = ipGet(ip,'combined transform');
             Torig = Torig/max(Torig(:));
             T = ieReadMatrix(Torig,'%.3f   ','Color Transform');
             if isempty(T), return; end
 
             % Store and apply this transform.
-            vci = ipSet(vci,'conversion matrix sensor',T);
+            ip = ipSet(ip,'conversion matrix sensor',T);
             img = imageLinearTransform(img,T);  % vcNewGraphWin; imagesc(img)
 
             % Set the other transforms to empty.
-            vci = ipSet(vci,'correction matrix illuminant',[]);
-            % vci = ipSet(vci,'sensor correction transform',[]);
-            vci = ipSet(vci,'ics2display',[]);
+            ip = ipSet(ip,'correction matrix illuminant',[]);
+            % ip = ipSet(ip,'sensor correction transform',[]);
+            ip = ipSet(ip,'ics2display',[]);
         case 'adaptive'
             % Recompute a transform based, in part, on process the image
             % data and with knowledge of the multiple color filters.  
@@ -209,7 +223,7 @@ elseif nFilters >= 3 || nSensors > 1
             
             % 2.  Convert the demosaicked img data into an internal color
             % space. The choice of the internal space is governed by the
-            % field ipGet(vci,'Sensor Correction Method')
+            % field ipGet(ip,'Sensor Correction Method')
             
             N = length(sensor);
             if N > 1
@@ -227,14 +241,14 @@ elseif nFilters >= 3 || nSensors > 1
                 s = sensor;
             end
     
-            [img,vci] = imageSensorCorrection(img,vci,s);
+            [img,ip] = imageSensorCorrection(img,ip,s);
             if isempty(img), disp('User canceled'); return; end
             % imtool(img/max(img(:))); ii = 3; imtool(img(:,:,ii))
             
             % 3. Perform an illuminant correct operation in the ICS space.
             % The operation is governed by the 'illuminant correction method'
             % parameter.
-            [img,vci] = imageIlluminantCorrection(img,vci);
+            [img,ip] = imageIlluminantCorrection(img,ip);
 
             % 4.  Convert from the img data in the internal color space
             % into display space.  The display space is sRGB.  The data are
@@ -244,7 +258,7 @@ elseif nFilters >= 3 || nSensors > 1
             %
             % N.B. The display on the user's desk is not likely to be the
             % calibrated display that is modeled.
-            [img,vci] = displayRender(img,vci,s);
+            [img,ip] = displayRender(img,ip,s);
         otherwise
             error('Unknown transform method %s\n',tMethod);
     end
@@ -263,28 +277,37 @@ elseif nFilters >= 3 || nSensors > 1
     imgMax = max(img(:));
     
     % Changed sensor to sensor(1) to deal with sensor array case.
-    img = (img/imgMax)*sensorGet(sensor(1),'response ratio');
-
-    % Clip the img data and attach it to the vci
-    img = ieClip(img,0,ipGet(vci,'max sensor'));
-    vci = ipSet(vci,'result',img);
+    img = (img/imgMax)*sensorGet(sensor(1),'volts2max ratio');
+    
+    % {
+    %Clip the img data and attach it to the ip
+    switch sensorGet(sensor,'quantization method')
+        case 'analog'
+            img = ieClip(img,0,ipGet(ip,'max sensor'));
+        otherwise
+            % When the data are digital, we should probably do something
+            % else.  Or maybe nothing.
+    end
+    %}
+    ip = ipSet(ip,'quantization',sensorGet(sensor,'quantization'));
+    ip = ipSet(ip,'result',img);
     
     % macbethSelect rect handles -- get rid of them
-    vci = ipSet(vci,'mccRectHandles',[]);
+    ip = ipSet(ip,'mccRectHandles',[]);
 end
 
 end
 
-function vci = vciComputeBracketed(vci,sensor,combinationMethod)
+function ip = vciComputeBracketed(ip,sensor,combinationMethod)
 % Compute for bracketed exposure case
 %
 % sensor = vcGetObject('sensor');
-% vci = vcGetObject('vcimage');
+% ip = vcGetObject('vcimage');
 %
-if ieNotDefined('vci'), error('Virtual camera image required.'); end
+if ieNotDefined('ip'), error('Virtual camera image required.'); end
 if ieNotDefined('sensor'), error('Image sensor array requried.'); end
 if ieNotDefined('combinationMethod')
-    combinationMethod = ipGet(vci,'combinationMethod'); 
+    combinationMethod = ipGet(ip,'combinationMethod'); 
 end
 
 % Could send this parameter in.  It is the value we accept as below saturation
@@ -293,8 +316,8 @@ expTimes      = sensorGet(sensor,'expTimes');
 
 % Get the data, either as volts or digital values.
 % Indicate which on return
-img       = ipGet(vci,'input');
-sensorMax = ipGet(vci,'maximum sensor value');
+img       = ipGet(ip,'input');
+sensorMax = ipGet(ip,'maximum sensor value');
 satMax    = satPercentage*sensorMax;
 
 % Set values > saturatation value to -1 in the img array
@@ -313,12 +336,12 @@ switch combinationMethod
 end
 
 % The largest value we can ever get
-vci = ipSet(vci,'sensorMax',sensorMax/min(expTimes));
-vci = ipSet(vci,'input',img);
+ip = ipSet(ip,'sensorMax',sensorMax/min(expTimes));
+ip = ipSet(ip,'input',img);
 
 end
 
-function vci = vciComputeCFA(vci,sensor)
+function ip = vciComputeCFA(ip,sensor)
 % Compute for CFA exposure case
 %
 % In this case the img is N different CFA arrays, with each N corresponding
@@ -328,11 +351,11 @@ function vci = vciComputeCFA(vci,sensor)
 % merge them back into a single CFA.
 %
 
-if ieNotDefined('vci'), error('Virtual camera image required.'); end
+if ieNotDefined('ip'), error('Virtual camera image required.'); end
 if ieNotDefined('sensor'), error('Image sensor array requried.'); end
 
 % sensor = vcGetObject('sensor');
-% vci = vcGetObject('vcimage');
+% ip = vcGetObject('vcimage');
 %
 
 % Read the exposure times - same as number of filters
@@ -340,8 +363,8 @@ expTimes = sensorGet(sensor,'expTimes');
 nExps    = length(expTimes(:));
 % Get the data, either as volts or digital values.
 % Indicate which on return
-img       = ipGet(vci,'input');
-sensorMax = ipGet(vci,'maximum sensor value');
+img       = ipGet(ip,'input');
+sensorMax = ipGet(ip,'maximum sensor value');
 
 % We are not sure how to handle the fact that channels can be saturated but
 % with different exposure durations.  In that case, when we normalize by
@@ -390,8 +413,8 @@ for kk = 1:nExps
 end
 
 % Update sensorMax with the largest value we can ever get
-vci = ipSet(vci,'sensorMax',mx);
-vci = ipSet(vci,'input',newImg);
+ip = ipSet(ip,'sensorMax',mx);
+ip = ipSet(ip,'input',newImg);
 
 end
 

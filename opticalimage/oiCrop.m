@@ -23,14 +23,19 @@ if ieNotDefined('oi'), error('You must define an optical image.'); end
 if ieNotDefined('rect')
     [roiLocs,rect] = vcROISelect(oi); 
 else
+    %{
     cmin = rect(1); cmax = rect(1)+rect(3);
     rmin = rect(2); rmax = rect(2)+rect(4);
     [c,r] = meshgrid(cmin:cmax,rmin:rmax);
     roiLocs = [r(:),c(:)];
+    %}
+    roiLocs = ieRect2Locs(rect);
 end
 
 wAngular = oiGet(oi,'wangular');
 sz = oiGet(oi,'size');
+focalLength = oiGet(oi, 'optics focal length');
+sampleSpace = oiGet(oi, 'distance per sample');
 % wave = oiGet(oi,'nwave');
 
 % The number of selected columns and rows
@@ -43,11 +48,17 @@ photons = XW2RGBFormat(photons,r,c);
 oi = oiClearData(oi);
 oi = oiSet(oi,'photons',photons);
 newSz = oiGet(oi,'size');
-oi = oiSet(oi,'wangular',(newSz(2)/sz(2))*wAngular);
+
+% The sample spacing will not be a preserved when the FOV changes and
+% becomes large. We might consider to do an integration to calculate
+% accurate width/height of the new frame.
+wAngularNew = atand(newSz(2) * sampleSpace/2/focalLength) /...
+                atand(sz(2) * sampleSpace/2/focalLength) * wAngular;
+oi = oiSet(oi,'wangular',wAngularNew);
 
 oi = oiSet(oi,'illuminance',oiCalculateIlluminance(oi));
 
-return;
+end
 
 
 

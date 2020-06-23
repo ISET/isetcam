@@ -1,7 +1,7 @@
 function [uData, g] = sensorPlot(sensor, pType, roiLocs, varargin)
 % Gateway routine for plotting sensor data
 %
-%   [uData, g] = sensorPlot([sensor], pType, roiLocs, varargin)
+%   [uData, hdl] = sensorPlot([sensor], pType, roiLocs, varargin)
 %
 % These plots characterizing the data, sensor parts, or performance of
 % the sensor.  There are many types of plots, and as part of the function
@@ -11,11 +11,12 @@ function [uData, g] = sensorPlot(sensor, pType, roiLocs, varargin)
 %  sensor: The image sensor
 %  pType:  The plot type
 %  roiLocs:  When needed, these specify the region of interest
+%
 % Additional arguments may be required for different plot types.
 %
 % Outputs:
 %  uData:  Structure of the plotted (user data)
-%  g:      Figure handle
+%  hdl:    Figure handle
 %
 % In general, you can prevent showing the figure by terminating the
 % arguments with a string, 'no fig', as in
@@ -24,19 +25,18 @@ function [uData, g] = sensorPlot(sensor, pType, roiLocs, varargin)
 % 
 % In this case, the data will be returned, but no figure will be produced.
 %
-% The main routine, plotSensor, is a gateway to many other characterization
-% and plotting routines.  These are contained within this file.  Sensor
-% plotting should be called from here, if at all possible, so we can avoid
-% duplication.
+% The main routine, sensorPlot, is a gateway to many other characterization
+% and plotting routines contained within this file.  Sensor plotting should
+% be called from here, if at all possible, so we avoid duplication.
 %
 % The properties that can be plotted are:
 %
 % Sensor Data plots
-%  'electrons hline'
-%  'electrons vline'
-%  'volts hline'
-%  'volts vline'
-%  'dv vline'
+%  'electrons hline' - sensorPlot(sensor,'electrons hline',[x y])
+%  'electrons vline' - sensorPlot(sensor,'electrons vline',[x y])
+%  'volts hline'     - sensorPlot(sensor,'volts hline',[x y])
+%  'volts vline'     - sensorPlot(sensor,'volts vline',[x y])
+%  'dv vline'        - ...
 %  'dv hline'
 %  'volts histogram'
 %  'electrons histogram'
@@ -48,11 +48,9 @@ function [uData, g] = sensorPlot(sensor, pType, roiLocs, varargin)
 %  'color filters'
 %  'ir filter'
 %
-% Electrical properties
-%  'pixel spectral qe'
-%     % Volts/Quantum response by wavelength
-%  'pixel spectral sr'
-%     % Volts/Energy response by wavelength
+% Sensor electrical properties
+%  'pixel spectral qe' -   % Volts/Quantum response by wavelength
+%  'pixel spectral sr' -   % Volts/Energy response by wavelength
 %  'spectral qe'
 %  'pixel snr'
 %  'sensor snr'
@@ -62,25 +60,42 @@ function [uData, g] = sensorPlot(sensor, pType, roiLocs, varargin)
 % Optics related
 %  'etendue'
 % 
-% % Human
+% Human
 % 'conemosaic' % Not sure
 %
 % Color filter array and spectra
 %
-%Examples:
-%  scene = sceneCreate;
-%  scene = sceneSet(scene,'fov',2);
-%  oi = oiCreate; oi = oiCompute(oi,scene);
-%  sensor = sensorCreate; sensor = sensorCompute(sensor,oi);
+% ieExamplesPrint('sensorPlot');
 %
-%  sensorPlot(sensor,'electrons hline',[20 20]);
-%  sensorPlot(sensor,'volts vline',[20 20]);
-%
-%  uData = sensorPlot(sensor,'volts vline ',[53 1],'no fig');
-%
-% (c) Imageval Consulting, LLC, 2012
+% See also
+%   scenePlot, oiPlot, ipPlot
 
-%% Input arguments
+% Examples:
+%{
+  scene = sceneCreate; camera = cameraCreate;
+  camera = cameraCompute(camera,scene);
+  sensor = cameraGet(camera,'sensor');
+  sensorWindow(sensor);
+  sensorPlot(sensor,'electrons hline');
+%}
+%{
+  scene = sceneCreate; scene = sceneSet(scene,'fov',2);
+  oi = oiCreate; oi = oiCompute(oi,scene);
+  sensor = sensorCreate; sensor = sensorCompute(sensor,oi);
+
+  uData = sensorPlot(sensor,'electrons hline',[20 20]);
+  isequal(uData,get(gcf,'UserData'))
+%}
+%{
+  scene = sceneCreate; scene = sceneSet(scene,'fov',2);
+  oi = oiCreate; oi = oiCompute(oi,scene);
+  sensor = sensorCreate; sensor = sensorCompute(sensor,oi);
+  sensorPlot(sensor,'volts vline',[20 20]);
+  get(gcf,'UserData')
+  uData = sensorPlot(sensor,'volts vline ',[53 1],'no fig');
+%}
+
+%% Parse arguments
 if ieNotDefined('sensor'), sensor = vcGetObject('sensor'); end
 if ieNotDefined('pType'),  pType = 'volts hline'; end
 
@@ -90,17 +105,25 @@ pType = ieParamFormat(pType);
 % For cases that need roiLocs, when none is passed in
 if ieNotDefined('roiLocs')
     switch lower(pType)
-        case {'voltshline','electronshline',...
-                'voltsvline', 'electronsvline', ...
-                'dvvline', 'dvhline'}
+        case {'voltshline','electronshline','dvhline'}
             
             % Get a location
             roiLocs = vcPointSelect(sensor);
+            sz = sensorGet(sensor,'size');
+            ieROIDraw(sensor,'shape','line','shape data',[1 sz(2) roiLocs(2) roiLocs(2)]);
+
+        case {'electronsvline','voltsvline','dvvline'}
+            roiLocs = vcPointSelect(sensor);
+            sz = sensorGet(sensor,'size');
+            ieROIDraw(sensor,'shape','line','shape data',[roiLocs(1) roiLocs(1) 1 sz(1)]);
             
         case {'electronshistogram','electronshist'...
                 'voltshistogram','voltshist'}
+            
             % Region of interest plots
             [roiLocs, roiRect] = vcROISelect(sensor);
+            ieROIDraw(sensor,'shape','rect','shape data',roiRect);
+
             % Store the rect for later plotting
             sensor = sensorSet(sensor,'roi',roiRect);
             
@@ -110,9 +133,6 @@ if ieNotDefined('roiLocs')
     end
 end
 
-% The vcNewGraphWin shape depends on the plot.  So it is invoked within the
-% individual functions and the handle is returned here
-
 % Deal with these:  sensorPlotLine, sensorPlotColor,
 % sensorPlotMultipleLines, sensorPlot
 
@@ -121,24 +141,28 @@ switch pType
     
     % Sensor data related
     case {'electronshline'}
-        [uData, g] = plotSensorLine(sensor, 'h', 'electrons', 'space', roiLocs);
+        [g, uData] = sensorPlotLine(sensor, 'h', 'electrons', 'space', roiLocs);
     case {'electronsvline'}
-        [uData, g] = plotSensorLine(sensor, 'v', 'electrons', 'space', roiLocs);
+        [g, uData]  = sensorPlotLine(sensor, 'v', 'electrons', 'space', roiLocs);
     case {'voltshline'}
-        [uData, g] = plotSensorLine(sensor, 'h', 'volts', 'space', roiLocs);
+        [g, uData]  = sensorPlotLine(sensor, 'h', 'volts', 'space', roiLocs);
     case {'voltsvline'}
-        [uData, g] = plotSensorLine(sensor, 'v', 'volts', 'space', roiLocs);
+        [g, uData]  = sensorPlotLine(sensor, 'v', 'volts', 'space', roiLocs);
     case {'dvvline'}
-        [uData, g] = plotSensorLine(sensor, 'v', 'dv', 'space', roiLocs);    
+        [g, uData]  = sensorPlotLine(sensor, 'v', 'dv', 'space', roiLocs);    
     case {'dvhline'}
-        [uData, g] = plotSensorLine(sensor, 'h', 'dv', 'space', roiLocs);
+        [g, uData]  = sensorPlotLine(sensor, 'h', 'dv', 'space', roiLocs);
     case {'voltshistogram','voltshist'}
         [uData,g] = plotSensorHist(sensor,'v',roiLocs);
+        sensor = sensorSet(sensor,'roi',roiLocs);
         sensorPlot(sensor,'roi');
     case {'electronshistogram','electronshist'}
-        % sensorPlot(sensor,'electrons histogram');
+        % sensorPlot(sensor,'electrons histogram',rect);
         [uData,g] = plotSensorHist(sensor,'e',roiLocs);
+        sensorImageWindow();
+        sensor = sensorSet(sensor,'roi',roiLocs);
         sensorPlot(sensor,'roi');
+
     case {'shotnoise'}
         [uData, g] = imageNoise('shot noise');
         
@@ -194,16 +218,15 @@ switch pType
         % If the roi is a rect, use its values to plot a white rectangle on
         % the sensor image.  The returned graphics object is a rectangle
         % (g) and you can adjust the colors and linewidth using it.
-        if ~isfield(sensor,'roi')
-            [~,rect] = vcROISelect(sensor);
-            sensor = sensorSet(sensor,'roi',rect);
-        elseif numel(sensor.roi) ~= 4
-            error('roi must be a rect');
+        if numel(sensor.roi) ~= 4,  rect = ieLocs2Rect(sensor.roi);
+        else,                       rect = sensor.roi;
         end
         
         % Make sure the sensor window is selected
         sensorImageWindow;
-        g = rectangle('Position',sensor.roi,'EdgeColor','w','LineWidth',2);
+        g = rectangle('Position',rect,'EdgeColor','w','LineWidth',2);
+        uData.rect = rect;
+        
     otherwise
         error('Unknown sensor plot type %s\n',pType);
 end
@@ -219,6 +242,9 @@ if ~isempty(varargin)
     end
 end
 
+% Attach the userdata to the figure.
+if exist('uData','var'), set(gcf,'UserData',uData); end
+
 end
 
 
@@ -230,9 +256,13 @@ end
 % in here.
 
 %% Methods for plotting lines of data
+%
+% ** Deprecated - replaced by sensorPlotLine **
+%
 % These are implemented as an overall line plot and then special cases for
 % color and monochrome sensors, and a further special case for integrating
 % data across multiple lines.
+%{
 function [uData, figNum] = plotSensorLine(sensor, ori, dataType, sORt, xy)
 % Plot a line of sensor data
 %
@@ -430,6 +460,7 @@ set(figNum,'Name',titleString);
 
 
 end
+%}
 
 %% Monocrhome sensor line
 function [uData, figNum] = plotSensorLineMonochrome(xy,pos,data,ori,dataType,sORt)

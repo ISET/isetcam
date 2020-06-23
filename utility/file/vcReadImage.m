@@ -54,8 +54,11 @@ function [photons, illuminant, basis, comment, mcCOEF] = vcReadImage(fullname,im
 %
 %   See v_displayLUT.m for example calls.
 %
-% Copyright ImagEval Consultants, LLC, 2005.
+% See also
+%   sceneFromFile
+%
 
+%%
 if notDefined('imageType'), imageType = 'rgb'; end
 if notDefined('fullname')
     [fullname,imageType] = vcSelectImage(imageType);
@@ -72,19 +75,19 @@ switch lower(imageType)
     
     case {'rgb','unispectral','monochrome'}
         if isempty(varargin) || isempty(varargin{1}), dispCal = [];
-        else dispCal = varargin{1};
+        else, dispCal = varargin{1};
         end
         
         % doSub indicates whether or not to use subpixel rendering
         % techniques
         if length(varargin) > 1, doSub = varargin{2};
-        else doSub = false;
+        else, doSub = false;
         end
         
         % if we do subpixle rendering, the user could specify how many
         % samples per dixel to be used in scene generation
         if length(varargin) > 2, sz = varargin{3};
-        else sz = [];
+        else, sz = [];
         end
         
         % Programming Note (HJ):
@@ -101,7 +104,7 @@ switch lower(imageType)
         
         % Read the image data and convert them to double
         if ischar(fullname), inImg = double(imread(fullname));
-        else                 inImg = double(fullname);
+        else,                inImg = double(fullname);
         end
         
         % An rgb image.
@@ -137,7 +140,7 @@ switch lower(imageType)
             elseif isstruct(dispCal) && isequal(dispCal.type, 'display')
                 d = dispCal;
             else
-                error('Unknown diplay structure');
+                error('Unknown display structure');
             end
             
             % Get the parameters from the display
@@ -295,7 +298,7 @@ switch lower(imageType)
             
             % Deal with the illuminant
             if ieVarInFile(variables,'illuminant')
-                load(fullname,'illuminant')
+                load(fullname,'illuminant') %#ok<NASGU>
             else
                 % illuminant = [];
                 warndlg('No illuminant information in %s\n',fullname);
@@ -317,7 +320,7 @@ switch lower(imageType)
             if ieVarInFile(variables,'photons'), load(fullname,'photons');
             elseif ieVarInFile(variables,'data')
                 load(fullname,'data'); photons = data; clear data;
-            else error('No photon data in file');
+            else, error('No photon data in file');
             end
             if ieVarInFile(variables,'comment'),  load(fullname,'comment'); end
             if ieVarInFile(variables,'wave'), load(fullname,'wave');
@@ -343,7 +346,7 @@ switch lower(imageType)
         % illuminant and resample.
         illuminant = [];
         if ieVarInFile(variables,'illuminant'), load(fullname,'illuminant')
-        else        warndlg('No illuminant information in %s\n',fullname);
+        else,         warndlg('No illuminant information in %s\n',fullname);
         end
         illuminant = illuminantModernize(illuminant);
         

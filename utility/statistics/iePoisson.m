@@ -28,7 +28,7 @@ function val = iePoisson(lambda, nSamp, useSeed)
 % 6/3/15  xd  iePoissrnd now uses a randomly generated seed
 % 6/4/15  xd  added flag to determine if noise should be frozen
 %
-% See also: 
+% See also:
 %    noiseShot
 
 % Examples:
@@ -54,14 +54,13 @@ if notDefined('lambda'), error('rate parameter lambda required'); end
 if notDefined('nSamp'), nSamp = 1; end
 if notDefined('useSeed'), useSeed = 1; end
 
-%% Check for stats toolbox and key function. 
+%% Check for stats toolbox and key function.
 % This is expected to exist on the user's path.
 % Could also run: checkToolbox('Statistics and Machine Learning Toolbox')
-if exist('poissrnd','file')
-    
+try
     if ~useSeed
         % No seed.
-        rng('shuffle'); % seeds the random number generator based on the current time. 
+        rng('shuffle'); % seeds the random number generator based on the current time.
     end
     
     % Matlab toolbox version is present. Use it.
@@ -72,11 +71,11 @@ if exist('poissrnd','file')
         % Returns a matrix
         val = poissrnd(lambda);
     end
-        
-    return;
-end
-
-% No toolbox.  Sigh.  Check if we have MEX function
+    
+catch
+    
+    % No toolbox.  Sigh.  Check if we have MEX function
+    %{
 if (exist('iePoissrnd','file')==3)
     if useSeed
         val = iePoissrnd(lambda, nSamp, rand * 12345701);
@@ -89,42 +88,45 @@ if (exist('iePoissrnd','file')==3)
     end
     return;
 end
-
-% Use the local ISET methods
-% Simple implementation, this is slow for large lambda
-% Not recommended.
-
-% warning('Using slow poission random variable generation');
-if isscalar(lambda)
-    % Scalar version of the routine
-    % Probably we want multiple samples for a single lambda
-    val = zeros(1, nSamp);
-    for nn = 1 : nSamp
-        kk = 0;
-        p = 0;
-        while p < lambda
-            kk = kk + 1;
-            p = p - log(rand);
+    %}
+    
+    % Use the local ISET methods
+    % Simple implementation, this is slow for large lambda
+    % Not recommended.
+    
+    warning('Using slow poisson random variable generation.  Recommend getting stats toolbox.');
+    if isscalar(lambda)
+        % Scalar version of the routine
+        % Probably we want multiple samples for a single lambda
+        val = zeros(1, nSamp);
+        for nn = 1 : nSamp
+            kk = 0;
+            p = 0;
+            while p < lambda
+                kk = kk + 1;
+                p = p - log(rand);
+            end
+            val(nn) = kk - 1;
         end
-        val(nn) = kk - 1;
-    end
-    % figure(1); hist(val,50)
-else
-    % A matrix or vector of lambdas and we return samples for each
-    val = zeros(size(lambda));
-    for ii = 1 : numel(lambda)
-        kk = 0;
-        p = 0;
-        while p < lambda(ii)
-            kk = kk + 1;
-            p = p - log(rand);
+        % figure(1); hist(val,50)
+    else
+        % A matrix or vector of lambdas and we return samples for each
+        val = zeros(size(lambda));
+        for ii = 1 : numel(lambda)
+            kk = 0;
+            p = 0;
+            while p < lambda(ii)
+                kk = kk + 1;
+                p = p - log(rand);
+            end
+            val(ii) = kk - 1;
         end
-        val(ii) = kk - 1;
     end
-end
-
-if ~useSeed
-    rng(p);
+    
+    if ~useSeed
+        rng(p);
+    end
+    
 end
 
 end

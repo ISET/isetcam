@@ -61,15 +61,16 @@ scenePlot(scene,'illuminant photons');
 % Rendered image changes appearance.
 scene2 = sceneAdjustIlluminant(scene,'Fluorescent.mat');
 scene2 = sceneSet(scene2,'name','fluorescent');
-ieAddObject(scene2); sceneWindow;
+sceneWindow(scene2);
 
 %% Adjust the illuminant and preserve the scene radiance
 
 % This changes the reflectance.  Radiance is unchanged, so the
 % rendered image is unchanged
-ill = illuminantCreate('d50');
+wave = sceneGet(scene,'wave');
+ill = illuminantCreate('d50',wave);
 scene3 = sceneSet(scene,'illuminant',ill);
 scene3 = sceneSet(scene3,'name','d50');
-ieAddObject(scene3); sceneWindow;
+sceneWindow(scene3);
 
 %% 

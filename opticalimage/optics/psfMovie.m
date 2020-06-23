@@ -28,8 +28,8 @@ function psfMovie(optics,figNum,delay)
 %
 % Copyright ImagEval, LLC, 2005
 
-if ieNotDefined('optics'), optics = vcGetObject('optics'); end
-if ieNotDefined('figNum'), figNum = vcSelectFigure('GRAPHWIN'); end
+if ieNotDefined('optics'), optics = oiGet(vcGetObject('oi'), 'optics'); end
+if ieNotDefined('figNum'), figNum = ieNewGraphWin; end
 if ieNotDefined('delay'), delay = 0.2; end
 
 figure(figNum)
@@ -46,7 +46,7 @@ switch lower(opticsModel)
         wave = opticsGet(optics,'wavelength');
         w = size(psf,3);
 
-        for ii=1:w, 
+        for ii=1:w
             imagesc(y,x,psf(:,:,ii));
             xlabel('Position (um)');
             ylabel('Position (um)');
@@ -56,7 +56,6 @@ switch lower(opticsModel)
         end
     case 'raytrace'
         name = opticsGet(optics,'rtname');
-        figNum = vcNewGraphWin;
         set(figNum,'name',sprintf('%s: PSF movie',name));
         colormap(gray(256));
 

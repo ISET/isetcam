@@ -74,11 +74,12 @@ function val = sceneGet(scene,parm,varargin)
 % * You can add a region of interest (roi) to the get
 %
 %  Luminance and other colorimetric properties
-%        'mean luminance' - mean luminance
-%        'luminance'      - spatial array of luminance
-%        'roi luminance'  - spatial roi of the luminance'
-%        'xyz'            - 3D array of XYZ values(CIE 1931, 10 deg)
-%        'lms'            - 3D array of cone values (Stockman)
+%        'mean luminance'      - mean luminance
+%        'luminance'           - spatial array of luminance
+%        'roi luminance'       - spatial luminance of the roi'
+%        'roi mean luminance'  - mean luminance of the roi'
+%        'xyz'                 - 3D array of XYZ values(CIE 1931, 10 deg)
+%        'lms'                 - 3D array of cone values (Stockman)
 %        
 % Resolution parameters
 %      'sample size'*          - size of each square pixel
@@ -118,8 +119,8 @@ function val = sceneGet(scene,parm,varargin)
 %        'illuminant name'    - Illuminant name
 %        'illuminant energy'  - energy data
 %        'illuminant photons' - energy data
+%        'illuminant image'   - 
 %        'illuminant xyz'     - CIE XYZ (1931, 10 deg)
-%        'illuminant wave'    - wavelength samples - deprecated to wave
 %        'illuminant comment' - comment
 %        'illuminant format'  - 'spatial spectral' or 'spectral'
 %        'roi illuminant photons'        - illuminant photon spd in a region of interest 
@@ -327,7 +328,7 @@ switch parm
         % Return the reflectance in a region of interest
         % XW format
         if isempty(varargin), error('ROI required');
-        else roiLocs = varargin{1};
+        else, roiLocs = varargin{1};
         end
         
         sPhotons = vcGetROIData(scene,roiLocs,'photons');
@@ -477,8 +478,27 @@ switch parm
         end
         val = double(val);
         
+    case {'roimeanluminance'}
+        % sceneGet(scene, 'roi mean luminance', locsORrect);
+        if isempty(varargin), error('ROI required')
+        else, roiLocs = varargin{1};
+        end
+        roiMeanPhotons = sceneGet(scene, 'roi mean photons', roiLocs);
+        wave = sceneGet(scene, 'wave');
+        val = ieLuminanceFromPhotons(roiMeanPhotons, wave);
+        
     case {'roiluminance'}
-        error('Not yet implemented')
+        % sceneGet(scene, 'roi luminance', locsORrect);
+        if isempty(varargin), error('ROI required')
+        else, roiLocs = varargin{1};
+        end
+        roiPhotons = sceneGet(scene, 'roi photons', roiLocs);
+        wave = sceneGet(scene, 'wave');
+        val = ieLuminanceFromPhotons(roiPhotons, wave); 
+        
+        if numel(roiLocs) == 4
+            val = reshape(val, roiLocs(3)+1, roiLocs(4)+1);
+        end
         
     case {'xyz','dataxyz'}
         % sceneGet(scene,'xyz');
@@ -701,7 +721,7 @@ switch parm
         % The data field is has illuminant in standard energy units.  We
         % convert from energy to photons here.  We account for the two
         % different illuminant formats (RGW or vector).
-        W = sceneGet(scene,'illuminant wave');
+        W = sceneGet(scene,'wave');
         switch sceneGet(scene,'illuminant format')
             case 'spectral'
                 val = sceneGet(scene,'illuminant photons');
@@ -716,6 +736,26 @@ switch parm
             otherwise
                 % No illuminant data
         end
+    case {'illuminantimage'}
+        wave = sceneGet(scene,'wave');
+        sz = sceneGet(scene,'size');
+        energy = sceneGet(scene,'illuminant energy');
+        if isempty(energy) 
+            ieInWindowMessage('No illuminant data.',handle);
+            close(gcf);
+            error('No illuminant data');
+        end
+        switch sceneGet(scene,'illuminant format')
+            case {'spectral'}
+                % Makes a uniform SPD image
+                energy = repmat(energy(:)',prod(sz),1);
+                energy = XW2RGBFormat(energy,sz(1),sz(2));
+            otherwise
+        end
+        
+        % Create an RGB image
+        val = xyz2srgb(ieXYZFromEnergy(energy,wave));       
+        
     case {'illuminantwave'}
         % Must be the same as the scene wave
         val = sceneGet(scene,'wave');
@@ -767,6 +807,13 @@ switch parm
         else, val = str2double(get(W.editGamma,'string'));
         end
         
+        % MCC related regions of interest and handles.  Works with
+        % macbethSelect
+    case {'mccrecthandles'}
+        if checkfields(scene,'mccRectHandles'), val = scene.mccRectHandles; end
+    case {'mcccornerpoints'}
+        if checkfields(scene,'mccCornerPoints'), val = scene.mccCornerPoints; end
+
     otherwise
         disp(['Unknown parameter: ',parm]);
         

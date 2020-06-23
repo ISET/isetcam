@@ -18,7 +18,7 @@ ieInit
 % labels.
 
 % load macbethChart;
-fName = fullfile(isetRootPath,'data','surfaces','macbethChart.mat');
+fName = which('macbethChart.mat');
 wave = 400:700;
 macbethChart = ieReadSpectra(fName,wave);
 

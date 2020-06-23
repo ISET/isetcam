@@ -58,31 +58,40 @@ function [udata, g] = scenePlot(scene,pType,roiLocs,varargin)
 %     {'depth map'}              - Depth map (Meters)
 %     {'depth map contour'}      - Depth map with contour overlaid (Meters)
 %
+% ieExamplesPrint('scenePlot');
+%
+% See also
+%   oiPlot, sensorPlot, ipPlot
+
 % Examples:
+%{
 %  A line plot of the radiance, starting at the (x,y) point [1,rows]
-%     scene = vcGetObject('SCENE');
-%     rows = round(sceneGet(scene,'rows')/2);
-%     scenePlot(scene,'hline radiance',[1,rows]);
-%
-%  A region of interest
-%
-%  Fourier Transform of the luminance in the row
-%     uData = scenePlot(scene,'luminance fft hline',[1,rows])
-%
-%  Radiance image with an overlaid spatial grid
-%     scenePlot(scene,'radiance image with grid')
-%
-%     scenePlot(scene,'illuminant photons')
-%     scenePlot(scene,'depth map')
-%
+    scene = sceneCreate;
+    rows = round(sceneGet(scene,'rows')/2);
+    scenePlot(scene,'hline radiance',[1,rows]);
+%}
+%{
+% Commented out because it requires user clicking
+%  scene = sceneCreate; sceneWindow(scene);
+%  scenePlot(scene,'hline radiance');
+%  scenePlot(scene,'vline radiance');
+%}
+%{
+% Fourier Transform of the luminance in the row
+     uData = scenePlot(scene,'luminance fft hline',[1,rows])
+%}
+%{
+% Radiance image with an overlaid spatial grid
+     scenePlot(scene,'radiance image with grid')
+     scenePlot(scene,'illuminant photons')
+     scenePlot(scene,'depth map')
+%}
+%{
 %  Reflectance data from an ROI
-%     scene = vcGetObject('scene');
-%     [roiLocs, roiRect]  = vcROISelect(scene);
-%     [f, uData] = scenePlot(scene,'reflectance',roiLocs);
-%
-% See also:  oiPlot, sensorPlot, ipPlot
-%
-% Copyright ImagEval Consultants, LLC, 2005.
+     scene = vcGetObject('scene');
+     [roiLocs, roiRect]  = vcROISelect(scene);
+     [f, uData] = scenePlot(scene,'reflectance',roiLocs);
+%}
 
 if ieNotDefined('scene'), scene = vcGetObject('scene'); end
 if ieNotDefined('pType'), pType = 'hlineluminance'; end
@@ -95,37 +104,54 @@ pType = ieParamFormat(pType);
 
 if ieNotDefined('roiLocs')
     switch lower(pType)
-        case {'radiancehline','hlineradiance',  ...
-                'radiancevline','vlineradiance' ...
-                'luminancehline', ...
+        case {'radiancevline','vlineradiance', ...
                 'luminancefftvline', ...
-                'luminanceffthline' ...
                 'luminancevline','vlineluminance' ...
-                'contrasthline','hlinecontrast', ...
                 'contrastvline','vlinecontrast'}
             
-            % Get a location
+            % Get a location and draw a line
             roiLocs = vcPointSelect(scene);
+            % Draw a line on the sceneWindow
+            sz = sceneGet(scene,'size');
+            ieROIDraw(scene,'shape','line','shape data',[roiLocs(1) roiLocs(1) 1 sz(1)]);
             
-        case {'radianceenergyroi'...
-                'radiancephotonsroi', ...
+        case {'radiancehline','hlineradiance',...
+                'luminancehline','luminanceffthline' ...
+                'contrasthline','hlinecontrast'}
+            
+            % Get a location and draw a line
+            roiLocs = vcPointSelect(scene);
+            sz = sceneGet(scene,'size');
+            ieROIDraw(scene,'shape','line','shape data',[1 sz(2) roiLocs(2) roiLocs(2)]);
+            
+        case {'radianceenergyroi', 'radiancephotonsroi', ...
                 'chromaticityroi','chromaticity', ...
                 'luminanceroi','luminance',...
-                'reflectanceroi','reflectance'...
-                'illuminantphotonsroi','illuminantenergyroi'}
+                'reflectanceroi','reflectance'}
             
-            % Check illuminant case for spatial spectral
+            [roiLocs, roiRect] = vcROISelect(scene);
+            ieROIDraw(scene,'shape','rect','shape data',roiRect);
+
+        case {'illuminantphotonsroi','illuminantenergyroi'}
+            
+            % Check about the ROI for spatial spectral
             % All other cases are spatial, so just get the data.
-            if isequal( lower(pType),'illuminantphotonsroi') || ...
-                    isequal(lower(pType),'illuminantenergyroi')
-                if isequal(sceneGet(scene,'illuminant format'),'spatial spectral')
+
+            if isequal(sceneGet(scene,'illuminant format'),'spatial spectral')
+                % User should select the ROI
+                if ~exist('roiLocs','var')
                     [roiLocs, roiRect] = vcROISelect(scene);
+                elseif isempty(roiLocs)
+                    % Passed as empty.  Choose the whole scene.
+                    sz = sceneGet(scene,'size');
+                    roiRect = [1 1 sz(2) sz(1)];
                 end
+                ieROIDraw(scene,'shape','rect','shape data',roiRect);
             else
-                % Region of interest plots
-                [roiLocs, roiRect] = vcROISelect(scene);
+                % Not spatial spectral.  
+                disp('No ROI needed unless spatial spectral illluminant'); 
             end
-            
+
         otherwise
             % There are some cases that are OK without an roiLocs value or ROI.
     end
@@ -205,6 +231,7 @@ switch lower(pType)
 
         udata.wave = wave; udata.pos = pos.x; udata.data = data';
         udata.cmd = 'mesh(pos,wave,data)';
+        udata.xy = roiLocs;
 
     case {'radiancevline','vlineradiance'}
         % scenePlot(scene,'radiance vline',roiLocs)
@@ -470,7 +497,7 @@ switch lower(pType)
         
         % Values for legend
         if size(XYZ,1) > 1,   val = mean(XYZ); valxy = mean(data);
-        else                  val = XYZ; valxy = data;
+        else ,                val = XYZ; valxy = data;
         end
         
         % Put up the plot of the spectrum locus and the data
@@ -592,10 +619,11 @@ switch lower(pType)
     case {'illuminantenergyroi','illuminantenergy'}
         % scenePlot(scene,'illuminant energy')
         % scenePlot(scene,'illuminant energy roi',roiLocs');
+        % scenePlot(scene,'illuminant energy roi',[]);
         % Graph for spectral, image for spatial spectral
         handle = ieSessionGet('scenewindowhandle');
         ieInWindowMessage('',handle);       
-        wave = sceneGet(scene,'wave');
+        wave = sceneGet(scene,'illuminant wave');
         
         switch sceneGet(scene,'illuminant format')
             case 'spectral'
@@ -604,8 +632,13 @@ switch lower(pType)
             case 'spatial spectral'
                 % Have the user choose the ROI because the illuminant is
                 % space-varying
-                energy = vcGetROIData(scene,roiLocs,'illuminant energy');
-                energy = mean(energy,1);
+                if isempty(roiLocs)
+                    energy = sceneGet(scene,'energy');
+                    energy = mean(RGB2XWFormat(energy),1)';
+                else
+                    energy = vcGetROIData(scene,roiLocs,'illuminant energy');
+                    energy = mean(energy,1);
+                end
             otherwise
                 % No illuminant
                 ieInWindowMessage('No illuminant data.',handle);
@@ -614,7 +647,7 @@ switch lower(pType)
         plot(wave(:),energy,'-')
         xlabel('Wavelength (nm)');
         ylabel('Energy (watts/sr/nm/m^2)');
-        grid on,  title('Illuminant data')
+        grid on,  title(sprintf('%s Illuminant',sceneGet(scene,'name')));
         udata.wave = wave; udata.energy = energy;
         udata.comment = sceneGet(scene,'illuminant comment');
         
@@ -624,14 +657,20 @@ switch lower(pType)
         % Graph for spectral, image for spatial spectral
         handle = ieSessionGet('scenewindowhandle');
         ieInWindowMessage('',handle);
-        wave = sceneGet(scene,'wave');
+        wave = sceneGet(scene,'illuminant wave');
         switch sceneGet(scene,'illuminant format')
             case 'spectral'
                 photons = sceneGet(scene,'illuminant photons');
             case 'spatial spectral'
-                % Spatial region of the illuminant
-                photons = vcGetROIData(scene,roiLocs,'illuminant photons');
-                photons = mean(photons,1);
+                if isempty(roiLocs)
+                    % Get all the photons, convert to XW format, take the
+                    % mean.
+                    photons = sceneGet(scene,'photons');
+                    photons = mean(RGB2XWFormat(photons),1)';
+                else
+                    photons = vcGetROIData(scene,roiLocs,'illuminant photons');
+                    photons = mean(photons,1);
+                end
             otherwise
                 ieInWindowMessage('No illuminant data.',handle);
                 close(gcf)
@@ -640,7 +679,7 @@ switch lower(pType)
         % Plot 'em up
         plot(wave(:),photons,'-')
         xlabel('Wavelength (nm)'); ylabel('Radiance (q/sec/sr/nm/m^2)');
-        grid on,  title('Illuminant data')
+        grid on,  title(sprintf('%s Illuminant',sceneGet(scene,'name')));
         udata.wave = wave; udata.photons = photons;
         udata.comment = sceneGet(scene,'illuminant comment');
         
@@ -668,7 +707,8 @@ switch lower(pType)
         
         % Create an RGB image
         udata.srgb = xyz2srgb(ieXYZFromEnergy(energy,wave));
-        imagesc(sz(1),sz(2),udata.srgb);  grid on; axis off
+        imagesc(sz(1),sz(2),udata.srgb);  
+        grid on; axis off; axis image;
         title('Illumination image')       
         
         % Depth - COuld go into plotSceneDepth

@@ -84,18 +84,21 @@ function demosaicedImage = Demosaic(vci,sensor)
 
 %% Check for a sensor array
 if length(sensor) > 1
-    % Sensor array.  Copy the data from the sensors into demosaicedImage.
+    % Sensor array.  Copy the data from each of the sensors in the array
+    % into demosaicedImage. In this case there is no demosaicking, the
+    % multiple sensors each capture the full set of color samples. 
+    %
     % This is used for 'ideal' sensor calculations and certain types of
     % imagers such as prismatic sensors, Foveon style sensors, and who
     % knows what else will come our way.
-    N = length(sensor);
-    sz = sensorGet(sensor(1),'size');
+    N = length(sensor);                % How many different sensors
+    sz = sensorGet(sensor(1),'size');  % The spatial row/col of the sensors
     demosaicedImage = zeros(sz(1),sz(2),N);
     for ii=1:N
         % We should test to see if the sensors are monochrome.
         demosaicedImage(:,:,ii) = sensorGet(sensor(ii),'dv or volts');
     end
-    return;
+    return;  % No real demosaicking happens.
 end
 
 %% A typical mosaic case -  get the image input data

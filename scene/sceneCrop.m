@@ -22,7 +22,7 @@ function [scene,rect] = sceneCrop(scene,rect)
 
 if ieNotDefined('scene'), error('You must define a scene.'); end
 
-if ieNotDefined('rect'), 
+if ieNotDefined('rect') 
     [roiLocs,rect] = vcROISelect(scene); 
 else
     cmin = rect(1); cmax = rect(1)+rect(3);

@@ -26,31 +26,37 @@ function [shapeHandle,ax] = ieROIDraw(isetobj,varargin)
 %  shapeHandle: Shape with its parameters
 %  ax:           Current axes of the ISET object window
 %
+% ieExamplesPrint('ieROIDraw');
+%
 % See also
 %   chartROI, chartRectangles, macbethROIs
 %  
 
 % Examples:
 %{
-scene = sceneCreate;
-rect = [20 50 10 5];  % row, col, width, height
-[shapeHandle,ax] = ieROIDraw('scene','shape','rect','shape data',rect,'line width',5);
-shapeHandle.LineStyle = ':';
-delete(shapeHandle);
+ scene = sceneCreate;
+ rect = [20 50 10 5];  % row, col, width, height
+ [shapeHandle,ax] = ieROIDraw('scene','shape','rect','shape data',rect,'line width',5);
+ shapeHandle.LineStyle = ':';
+ delete(shapeHandle);
 %}
 %{
-rect = [50 50 20 20];
-[shapeHandle,ax] = ieROIDraw('oi','shape','rect','shape data',rect,'line style',':');
-shapeHandle.LineStyle = ':';
-shapeHandle.EdgeColor = 'w';
-delete(shapeHandle);
+ rect = [50 50 20 20];
+ [shapeHandle,ax] = ieROIDraw('oi','shape','rect','shape data',rect,'line style',':');
+ shapeHandle.LineStyle = ':';
+ shapeHandle.EdgeColor = 'w';
+ delete(shapeHandle);
 %}
 %{
-c = [10 20 20];
-[shapeHandle,ax] = ieROIDraw('oi','shape','circle','shape data',c);
-shapeHandle.LineStyle = ':';
-shapeHandle.EdgeColor = 'w';
-delete(shapeHandle);
+ c = [10 20 20];
+ [shapeHandle,ax] = ieROIDraw('oi','shape','circle','shape data',c);
+ shapeHandle.LineStyle = ':';
+ shapeHandle.EdgeColor = 'w';
+ delete(shapeHandle);
+%}
+%{
+ c = [1 88 70 70];
+ [shapeHandle,ax] = ieROIDraw('ip','shape','line','shape data',c);
 %}
 
 %%
@@ -73,7 +79,7 @@ shape = p.Results.shape;
 ax = ieAxisGet(isetobj);
 
 switch shape
-    case 'rect'
+    case {'rect','rectangle'}
         rect = p.Results.shapedata;
         shapeHandle = rectangle(ax,'Position',rect);
         shapeHandle.EdgeColor = p.Results.color;
@@ -92,6 +98,14 @@ switch shape
         xunit = radius * cos(th) + x;
         yunit = radius * sin(th) + y; hold on;
         shapeHandle = plot(ax,xunit, yunit);
+    case 'line'
+        % shape data for a line are two points on the line
+        % [x1 x2 y1 y2]
+        pts = p.Results.shapedata;
+        shapeHandle = line(pts(1:2),pts(3:4));
+        shapeHandle.Color = p.Results.color;
+        shapeHandle.LineWidth = p.Results.linewidth;
+        shapeHandle.LineStyle = p.Results.linestyle;
     otherwise
         error('Unknown shape %s\n',shape);
 end
