@@ -62,13 +62,30 @@ switch lower(method)
         error('Unknown color conversion method %s',method)
 end
 
-% The display image RGB is always between 0 and 1. The maximum image value
-% is the ratio of the maximum data value in the sensor image divided by the
-% sensor's maximum possible value.
-imgMax = max(img(:));
-img = (img/imgMax)*sensorGet(sensor,'response ratio');
-
-% figure; imagescRGB(vci.data.result);
+% The display image RGB is always between 0 and 1. We make sure the maximum
+% image value is the ratio of the maximum data value in the sensor image
+% divided by the sensor's maximum voltage value.  When we are in the
+% digital domain, we don't have to do anything, though.
+qm = sensorGet(sensor,'quantization method');
+switch qm
+    case 'analog'
+        imgMax = max(img(:));
+        % The true values only fill up a part of the response dynamic
+        % range.  We try to preserve that here by making sure that the img
+        % numerical values fill up the same range in the display.  So dark
+        % images will still be dark instead of being scaled so that the
+        % brightest part is white.  Multiplying by the volts 2 max volts
+        % ratio sets the range.
+        img = (img/imgMax)*sensorGet(sensor,'volts 2 max ratio');
+    case 'linear'
+        % Digital values
+        % These are displayed correctly displayRender() routine.  No need
+        % for scaling here.
+        %
+        % ieNewGraphWin; imagescRGB(img);
+    otherwise
+        error('Unknown quantization method %s\n',qm);
+end
 
 end
 

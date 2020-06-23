@@ -275,20 +275,22 @@ elseif nFilters >= 3 || nSensors > 1
     % corresponds to 0 in the image processing data.
     %
     imgMax = max(img(:));
-    
-    % Changed sensor to sensor(1) to deal with sensor array case.
-    img = (img/imgMax)*sensorGet(sensor(1),'volts2max ratio');
-    
-    % {
-    %Clip the img data and attach it to the ip
+        
     switch sensorGet(sensor,'quantization method')
         case 'analog'
+            % Changed sensor to sensor(1) to deal with sensor array case.
+            img = (img/imgMax)*sensorGet(sensor(1),'volts2max ratio');
             img = ieClip(img,0,ipGet(ip,'max sensor'));
+        case 'linear'
+            % Digital values, so only clip at the bottom.
+            img = (img/imgMax)*ipGet(ip,'max digital value');
+            img = ieClip(img,0,ipGet(ip,'max digital value'));
         otherwise
             % When the data are digital, we should probably do something
             % else.  Or maybe nothing.
     end
-    %}
+    % ieNewGraphWin; imagescRGB(img);
+    
     ip = ipSet(ip,'quantization',sensorGet(sensor,'quantization'));
     ip = ipSet(ip,'result',img);
     

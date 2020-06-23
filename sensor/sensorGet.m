@@ -377,7 +377,9 @@ switch oType
             case{'volts2maxratio','responseratio'}
                 % sensorGet(sensor,'response ratio')
                 %
-                % Ratio of peak data voltage to voltage swing.
+                % Ratio of peak data voltage to voltage swing.  Used in
+                % displayRender to make sure the image display range
+                % matches the sensor data range.
                 v = sensorGet(sensor,'volts');
                 pixel = sensorGet(sensor,'pixel');
                 sm = pixelGet(pixel,'voltage swing');
