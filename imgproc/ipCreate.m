@@ -28,6 +28,7 @@ ip.name = ipName;
 ip = ipSet(ip,'type','vcimage');
 ip = initDefaultSpectrum(ip,'hyperspectral');
 
+% {
 % Use sensor data if present
 if ~isempty(sensor)
     % If dv is present in sensor, get it.  Otherwise get volts.
@@ -39,6 +40,7 @@ if ~isempty(sensor)
         ip = ipSet(ip,'datamax',2^nbits);
     end
 end
+%}
 
 % Figure out the display.  Could be string or struct
 if ieNotDefined('display')

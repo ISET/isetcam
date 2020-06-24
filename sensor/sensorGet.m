@@ -486,17 +486,25 @@ switch oType
                 % rg = sensorGet(sensor,'chromaticity',rect)
                 % Estimate the rg sensor chromaticities
                 %
+                % ONLY WORKS WITH Bayer patterns
                 if isempty(varargin), rect = []; 
                 else, rect = varargin{1};
                 end
+                
+                % Make sure rect starts at odd numbers and height and width
+                % are odd numbers to align with a Bayer pattern.
+                lst = ~isodd(rect); rect(lst) = rect(lst)-1;
                 mosaic   = sensorGet(sensor,'volts');
                 if ~isempty(rect), mosaic = imcrop(mosaic,rect); end
+
+                % Use ipCompute to interpolate the mosaic and produce a
+                % chromaticity value at every point.
                 sensorC = sensorSet(sensor,'volts',mosaic);
-                % sensorWindow(sensorC);
-                ip = ipCreate; rgb = Demosaic(ip,sensorC);
+                ip = ipCreate; ip = ipCompute(ip,sensorC); 
+                rgb = ipGet(ip,'sensor space');   % Just demosaic'd
                 s = sum(rgb,3); r = rgb(:,:,1)./s; g = rgb(:,:,2)./s;
+                
                 val(:,1) = r(:); val(:,2) = g(:);
-                % ieNewGraphWin; plot(val(:,1),val(:,2),'o');
             case {'roielectronsmean'}
                 % sensorGet(sensor,'roi electrons mean')
                 %   Mean value for each of the sensor types

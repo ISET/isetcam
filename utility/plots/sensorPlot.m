@@ -98,6 +98,7 @@ function [uData, g] = sensorPlot(sensor, pType, roiLocs, varargin)
   scene = sceneCreate; camera=cameraCreate;
   camera = cameraCompute(camera,scene);
   sensor = cameraGet(camera,'sensor');
+  sensorWindow(sensor);
   sensorPlot(sensor,'chromaticity');
 %}
 
@@ -237,6 +238,7 @@ switch pType
         % We should add an option for electrons
         if isempty(roiLocs), roiLocs = sensorGet(sensor,'roi');
         end
+        if ismatrix(roiLocs), roiLocs = ieLocs2Rect(roiLocs); end
         rg   = sensorGet(sensor,'chromaticity',roiLocs);
         ieNewGraphWin; 
         plot(rg(:,1),rg(:,2),'.');
@@ -249,6 +251,7 @@ switch pType
         hold on; plot(rg(:,1),rg(:,2),'k-','LineWidth',1);
         thisLine = line([rg(end,1),rg(1,1)],[rg(end,2),rg(1,2)]);
         thisLine.Color = [0 0 0]; thisLine.LineWidth = 1;
+        thisLine.LineStyle = '--';
         grid on; xlabel('r-chromaticity'); ylabel('g-chromaticity');
         uData.spectrumlocus = rg;
         title('rg sensor chromaticity');
