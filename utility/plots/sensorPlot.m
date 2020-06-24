@@ -238,7 +238,12 @@ switch pType
         % We should add an option for electrons
         if isempty(roiLocs), roiLocs = sensorGet(sensor,'roi');
         end
-        if ismatrix(roiLocs), roiLocs = ieLocs2Rect(roiLocs); end
+        if numel(roiLocs) == 4
+        elseif size(roiLocs,2) == 2
+            roiLocs = ieLocs2Rect(roiLocs); 
+        else
+            error('Bad roiLocs');
+        end
         rg   = sensorGet(sensor,'chromaticity',roiLocs);
         ieNewGraphWin; 
         plot(rg(:,1),rg(:,2),'.');
