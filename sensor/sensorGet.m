@@ -89,6 +89,7 @@ function val = sensorGet(sensor,param,varargin)
 %      'electrons'      - Sensor output in electrons
 %         A single color plane can be returned
 %         sensorGet(sensor,'electrons',2);
+%      'chromaticity'   - Sensor rg-chromaticity after Demosaicking (roiRect allowed)
 %      'dv or volts'    - Return either dv if present, otherwise volts
 %      'roi locs'       - Stored region of interest (roiLocs)
 %      'roi rect'       - Rect.  Format is [cmin,rmin,width,height]
@@ -481,6 +482,21 @@ switch oType
                         val(ii) = mean(thisD(~isnan(thisD)));
                     end
                 end
+            case {'chromaticity'}
+                % rg = sensorGet(sensor,'chromaticity',rect)
+                % Estimate the rg sensor chromaticities
+                %
+                if isempty(varargin), rect = []; 
+                else, rect = varargin{1};
+                end
+                mosaic   = sensorGet(sensor,'volts');
+                if ~isempty(rect), mosaic = imcrop(mosaic,rect); end
+                sensorC = sensorSet(sensor,'volts',mosaic);
+                % sensorWindow(sensorC);
+                ip = ipCreate; rgb = Demosaic(ip,sensorC);
+                s = sum(rgb,3); r = rgb(:,:,1)./s; g = rgb(:,:,2)./s;
+                val(:,1) = r(:); val(:,2) = g(:);
+                % ieNewGraphWin; plot(val(:,1),val(:,2),'o');
             case {'roielectronsmean'}
                 % sensorGet(sensor,'roi electrons mean')
                 %   Mean value for each of the sensor types
@@ -1084,11 +1100,9 @@ switch oType
                 else
                     val = 1;
                 end
-                
                 %
             otherwise
                 error('Unknown sensor parameter.');
-                
         end
 end
 

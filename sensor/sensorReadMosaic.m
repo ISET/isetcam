@@ -19,6 +19,9 @@ function sensor = sensorReadMosaic(sensor,fname,varargin)
 %   should test with different mosaics and we should extend the code to
 %   work with something other than GR;GB Bayer format.
 %
+% Examples
+%  ieExamplesPrint('sensorReadMosaic');
+%
 % See also
 %   sensorRead*
 
