@@ -257,7 +257,7 @@ switch oType
         pixel = sensor.pixel;
         if isempty(param), val = pixel;
         elseif   isempty(varargin), val = pixelGet(pixel,param);
-        else     val = pixelGet(pixel,param,varargin{1});
+        else,     val = pixelGet(pixel,param,varargin{1});
         end
     otherwise
         param = ieParamFormat(param);
@@ -329,7 +329,7 @@ switch oType
                 
                 % Jst flipped .x and .y positions
                 [X,Y] = meshgrid(support.x,support.y);
-                if isempty(varargin),
+                if isempty(varargin)
                     optics = oiGet(vcGetObject('OI'),'optics');
                     sourceFL = opticsGet(optics,'focalLength'); % Meters.
                 else
@@ -897,10 +897,10 @@ switch oType
                 % then we might correct.
                 %
                 if ~isempty(varargin), scene = varargin{1};
-                else                   scene = vcGetObject('scene');
+                else,                  scene = vcGetObject('scene');
                 end
                 if length(varargin) > 1, oi = varargin{2};
-                else                     oi = vcGetObject('oi');
+                else,                    oi = vcGetObject('oi');
                 end
                 % If no scene is sent in, assume the scene is infinitely far away.
                 if isempty(scene), sDist = Inf;
@@ -1089,7 +1089,7 @@ switch oType
             case {'sensorpositionsy'}
                 if checkfields(sensor,'movement','pos')
                     val = sensor.movement.pos(:,2);
-                else val = 0;
+                else, val = 0;
                 end
             case {'framesperposition','exposuretimesperposition','etimeperpos'}
                 % Exposure frames for each (x,y) position
@@ -1149,11 +1149,11 @@ if length(p(:)) == 1
     cfaName = 'Monochrome';
 elseif ~isequal(size(p),[2,2])
     cfaName = 'Other'; return;
-elseif strcmp(filterColors,'bgr');
+elseif strcmp(filterColors,'bgr')
     cfaName = 'Bayer RGB';
-elseif strcmp(filterColors,'cmy');
+elseif strcmp(filterColors,'cmy')
     cfaName = 'Bayer CMY';
-elseif strcmp(filterColors,'bgrw');
+elseif strcmp(filterColors,'bgrw')
     cfaName = 'RGBW';
 else
     cfaName = 'Other';

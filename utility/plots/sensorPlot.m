@@ -125,7 +125,7 @@ if ieNotDefined('roiLocs')
             
         case {'electronshistogram','electronshist'...
                 'voltshistogram','voltshist',...
-                'chromaticityroi'}
+                'chromaticity'}
             
             % Region of interest plots
             [roiLocs, roiRect] = vcROISelect(sensor);
@@ -231,11 +231,27 @@ switch pType
         g = rectangle('Position',rect,'EdgeColor','w','LineWidth',2);
         uData.rect = rect;
     case {'chromaticity'}
+        % sensorPlot(sensor,'chromaticity',[rect])
+        %
         % rg-chromaticity of the sensor volt data
-        rect = sensorGet(sensor,'roi');
-        rg = sensorGet(sensor,'chromaticity',rect);
-        ieNewGraphWin; plot(rg(:,1),rg(:,2),'.');
+        % We should add an option for electrons
+        if isempty(roiLocs), roiLocs = sensorGet(sensor,'roi');
+        end
+        rg   = sensorGet(sensor,'chromaticity',roiLocs);
+        ieNewGraphWin; 
+        plot(rg(:,1),rg(:,2),'.');
         grid on; xlabel('r-chromaticity'); ylabel('g-chromaticity');
+        uData.rg = rg; uData.rect = roiLocs; clear rg;
+        
+        % Add the spectrum locus.  It is not necessarily convex.
+        sqe = sensorGet(sensor,'spectralqe'); s = sum(sqe,2);
+        rg(:,1) = sqe(:,1)./s; rg(:,2) = sqe(:,2)./s;
+        hold on; plot(rg(:,1),rg(:,2),'k-','LineWidth',1);
+        thisLine = line([rg(end,1),rg(1,1)],[rg(end,2),rg(1,2)]);
+        thisLine.Color = [0 0 0]; thisLine.LineWidth = 1;
+        grid on; xlabel('r-chromaticity'); ylabel('g-chromaticity');
+        uData.spectrumlocus = rg;
+        title('rg sensor chromaticity');
     otherwise
         error('Unknown sensor plot type %s\n',pType);
 end
