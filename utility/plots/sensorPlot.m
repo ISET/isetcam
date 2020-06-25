@@ -98,8 +98,8 @@ function [uData, g] = sensorPlot(sensor, pType, roiLocs, varargin)
   scene = sceneCreate; camera=cameraCreate;
   camera = cameraCompute(camera,scene);
   sensor = cameraGet(camera,'sensor');
-  sensorWindow(sensor);
-  sensorPlot(sensor,'chromaticity');
+  % sensorWindow(sensor);
+  sensorPlot(sensor,'chromaticity',[30 30 10 10]);
 %}
 
 %% Parse arguments
