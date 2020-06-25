@@ -34,8 +34,7 @@ sensor = sensorSet(sensor,'exposure duration',T1);
 % Compute
 sensor = sensorCompute(sensor,oi);
 sensor = sensorSet(sensor,'name','Bluish');
-ieAddObject(sensor); 
-sensorWindow('scale',1);
+sensorWindow(sensor,'scale',1);
 
 %% Now for a long red exposure
 
@@ -44,8 +43,7 @@ T1 = [0.04    0.70;
 sensor = sensorSet(sensor,'exposure duration',T1);
 sensor = sensorCompute(sensor,oi);
 sensor = sensorSet(sensor,'name','Reddish');
-ieAddObject(sensor);
-sensorWindow('scale',1);
+sensorWindow(sensor,'scale',1);
 
 % Click on the CFA exposure button to popup the channel exposure settings
 

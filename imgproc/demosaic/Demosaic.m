@@ -1,7 +1,7 @@
-function demosaicedImage = Demosaic(vci,sensor) 
+function demosaicedImage = Demosaic(ip,sensor) 
 %Color demosaicking interface routine
 %
-%    demosaicedImage = Demosaic(vci,sensor) 
+%    demosaicedImage = Demosaic(ip,sensor) 
 %
 % This routine calls functions for demosaicking a typical CFA sensor. 
 %
@@ -37,9 +37,10 @@ function demosaicedImage = Demosaic(vci,sensor)
 %    {'multichannel'}  - linear initerpolation for multiple waveband data
 %                        in arbitrary patterns
 %
-% Copyright ImagEval Consultants, LLC, 2005.
+% ieExamplesPrint('Demosaic');
 %
-% See also:  plane2rgb(), demosaicMultichannel(), t_ipDemosaic
+% See also:
+%   plane2rgb(), demosaicMultichannel(), t_ipDemosaic
 %
 
 % Examples: 
@@ -59,11 +60,6 @@ function demosaicedImage = Demosaic(vci,sensor)
  camera = cameraCompute(camera,scene);
  % cameraWindow(camera,'sensor');
  % cameraWindow(camera,'ip')
-
- ip = ipSet(ip,'input',sensor.data.volts);
- ip = ipSet(ip,'demosaic method','analog rccc');
- d = Demosaic(ip,sensor); 
- ieNewGraphWin; imagesc(d); colormap(gray);
 %}
 %{
 % For monochrome, Demosaic does nothing.
@@ -105,7 +101,8 @@ end
 
 % Normally, these are just a copy of the sensor output data, the sensor
 % image matrix (planar format)
-img = ipGet(vci,'input');
+% ip  = ipSet(ip,'input',double(sensorGet(sensor,'volts')));
+img = ipGet(ip,'input');
 
 % If the data are in planar format, put them into RGB format.  Otherwise,
 % if they are already in RGB format (i.e. multiplanar) copy them and move
@@ -121,7 +118,7 @@ end
 
 % Translator for the demosaic method.  This should get used to clarify the
 % multichannel options below.
-m = ipGet(vci,'demosaicmethod');  
+m = ipGet(ip,'demosaicmethod');  
 m = ieParamFormat(m);
 switch lower(m)
     case {'iebilinear','bilinear'}

@@ -20,6 +20,7 @@ function ip = ipCreate(ipName,sensor,display,L3)
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
+%%
 if ieNotDefined('ipName'), ipName = 'default'; end
 if ieNotDefined('sensor'), sensor = vcGetObject('sensor'); end
 
@@ -28,8 +29,8 @@ ip.name = ipName;
 ip = ipSet(ip,'type','vcimage');
 ip = initDefaultSpectrum(ip,'hyperspectral');
 
-% {
-% Use sensor data if present
+
+%% Use sensor data if present
 if ~isempty(sensor)
     % If dv is present in sensor, get it.  Otherwise get volts.
     ip = ipSet(ip,'input',sensorGet(sensor,'dv or volts'));
@@ -40,9 +41,8 @@ if ~isempty(sensor)
         ip = ipSet(ip,'datamax',2^nbits);
     end
 end
-%}
 
-% Figure out the display.  Could be string or struct
+%% Figure out the display.  Could be string or struct
 if ieNotDefined('display')
     wave = ipGet(ip,'wave');
     display = displayCreate('lcdExample.mat',wave); 
@@ -52,22 +52,22 @@ elseif ischar(display)
 end
 ip = ipSet(ip,'display',display);
 
-% Image processing chain methods. - Changed default May, 2012 (BW)
+%% Image processing chain methods. - Changed default May, 2012 (BW)
 ip = ipSet(ip,'transform method','adaptive');
 ip = ipSet(ip,'demosaic method','Bilinear');
 ip = ipSet(ip,'illuminant correction method','None');
 ip = ipSet(ip,'internal CS','XYZ');
 ip = ipSet(ip,'conversion method sensor ','MCC optimized');
 
-% Rendering assumptions 
+%% Rendering assumptions 
 ip = ipSet(ip,'renderGamma',1);
 ip = ipSet(ip','scaleDisplay',1);
 ip = ipSet(ip,'mccRectHandles',[]);
 
-% Append an L3 structure
+%% Append an L3 structure
 if strncmpi(ipName,'L3',2)
     if ieNotDefined('L3'), L3 = L3Create; end
     ip = ipSet(ip,'L3',L3);
 end
 
-return;
+end

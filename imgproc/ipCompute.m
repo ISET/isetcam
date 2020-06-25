@@ -56,7 +56,7 @@ end
 
 % We demosaick the quantized sensor values.  If this field is empty, use the
 % continuous voltages 
-ip = ipSet(ip,'input',sensorGet(sensor,'dv or volts'));
+ip = ipSet(ip,'input',double(sensorGet(sensor,'dv or volts')));
 
 %  The max is either the max digital value or the voltage swing, depending
 %  on whether we have computed DVs or Volts.  But this value is not
