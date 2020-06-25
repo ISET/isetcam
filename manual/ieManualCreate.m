@@ -42,13 +42,10 @@ function ieManualCreate(varargin)
 %      git tag
 %      git describe --tags
 %
-% One copy of the ISET manual is kept at
-%   * imageval in the directory /home/imageval/www/public/ISET-Manual-XXX.
+%   * We are serving the manual pages from black at Stanford
 %
-%   There is a link from ISET-Functions to this directory.  For example,
-%   ln -s ISET-Manual-733 ISET-Functions
+%           stanford in brian/public_html/manuals with a link
 %
-%   * stanford in brian/public_html/manuals with a link
 %   from /u/websk/docs/manuals/ISET, for example
 %   ln -s /home/brian/public_html/manuals/ISET-Manual-733 /u/websk/docs/manuals/ISET
 %
