@@ -87,6 +87,10 @@ function ieManualCreate(varargin)
                  'source files',sourceFiles, ...
                  'source','on');
 %}
+%{
+  sourceFiles = {'sensor'};
+  ieManualCreate('source files',sourceFiles);
+%}
 
 %% Read varargin
 
@@ -97,7 +101,7 @@ p = inputParser;
 sourceFilesDefault = {'camera','color','displays', ...
     'human','imgproc','main',...
     'metrics','opticalimage','scene', ...
-    'scripts','tutorials','utility'};
+    'sensor','scripts','tutorials','utility'};
 
 % Default ignore directories 
 ignored = {'gui','manual','CIE','macbeth','dll70','xml','ptb','external','video','.git'};

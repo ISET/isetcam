@@ -3,27 +3,12 @@ function ieManualViewer(mType)
 %
 %   ieManualViewer(mType)
 %
-% Open a browser into the ImagEval web-site to show different parts of the
-% user manual.
+% Open a browser into the m2html web-site to show the functions and the
+% source code.  This is not as good an overview as going to the ISETCam
+% gitHub directory itself, but ...
 %
 % Examples:
-%   ieManualViewer
-%   ieManualViewer('imageval')
-%   ieManualViewer('imageval code');
-%   ieManualViewer('application notes') - NYI
-%
-%   ieManualViewer('iset functions')
-%
-%   ieManualViewer('scene functions')
-%
-%   ieManualViewer('oi functions')
-%   ieManualViewer('optics functions')
-%
-%   ieManualViewer('sensor functions')
-%   ieManualViewer('pixel functions')
-%
-%   ieManualViewer('ip functions')
-%   ieManualViewer('metrics functions')
+%   ieManualViewer('github');
 %
 % Copyright ImagEval Consultants, LLC, 2006.
 
@@ -31,40 +16,42 @@ function ieManualViewer(mType)
 
 % Defaults
 if ieNotDefined('mType')
-    web('http://imageval.com/documentation/','-browser');
+    web('https://github.com/iset/isetcam/wiki','-browser');
     return;
 else
     mType = ieParamFormat(mType);
     switch mType
-        case {'functions','isetfunctions'}
-            web('http://imageval.com/Functions/iset-manual/iset/index.html','-browser');
-        case {'home','imageval'}
-            web('http://www.imageval.com','-browser');
-        case {'imagevalcode'}
-            web('http://www.imageval.com/code/','-browser');
+        case {'isetfunctions'}
+            % m2html overview for old-timers
+            web('https://scarlet.stanford.edu/~brian/isetcam/manuals/index.html','-browser');
+        case {'github'}
+            % Main
+            web('https://github.com/ISET/isetcam','-browser')
+            % Separate directories
         case {'scenefunctions'}
-            web('http://imageval.com/Functions/iset-manual/iset/scene/index.html','-browser');
+            web('https://github.com/ISET/isetcam/tree/master/scene','-browser');
         case {'oifunctions'}
-            web('http://imageval.com/Functions/iset-manual/iset/opticalimage/index.html','-browser');
+            web('https://github.com/ISET/isetcam/tree/master/opticalimage','-browser');
         case {'opticsfunctions'}
-            web('http://www.imageval.com/Functions/iset-manual/iset/opticalimage/optics/index.html','-browser');
+            web('https://github.com/ISET/isetcam/tree/master/opticalimage/optics','-browser');
         case {'sensorfunctions'}
-            web('http://imageval.com/Functions/iset-manual/iset/sensor/index.html','-browser');
+            web('https://github.com/ISET/isetcam/tree/master/sensor','-browser');
         case {'pixelfunctions'}
-            web('http://imageval.com/Functions/iset-manual/iset/sensor/pixel/index.html','-browser');
+            web('https://github.com/ISET/isetcam/tree/master/sensor/pixel','-browser');
         case {'ipfunctions'}
-            web('http://imageval.com/Functions/iset-manual/iset/imgproc/index.html','-browser');
+            web('https://github.com/ISET/isetcam/tree/master/imgproc','-browser');
         case {'metricsfunctions'}
-            web('http://imageval.com/Functions/iset-manual/iset/metrics/index.html','-browser');
-        case {'applicationnotes'}
-            error('Not yet implemented')
-            web('http://imageval.com/application-notes/','-browser');
+            web('https://github.com/ISET/isetcam/tree/master/metrics','-browser');
+        case {'displayfunctions'}
+            web('https://github.com/ISET/isetcam/tree/master/displays','-browser');
         otherwise
-            web('http://imageval.com/code','-browser');
+            web('https://github.com/iset/isetcam/wiki','-browser');
     end
 end
 
-return
+end
+
+
 
 
 
