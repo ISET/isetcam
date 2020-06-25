@@ -11,17 +11,18 @@
 
 %% Start with a monochromatic light luminance
 
-% SUppose we measure a monochromatic source and it has these parameters
+% Suppose we measure a monochromatic source and it has these parameters
 lum     = 100;     % Luminance of the monochromatic source
-wave    = 390;    % Mean wavelength of the monochromatic source
+thisWave    = 390;    % Mean wavelength of the monochromatic source
 dLambda = 10;     % Spectral band width
 
 % We convert the luminance to energy
 % watts/sr/nm/m2
-radiance = ieLuminance2Radiance(lum,405,'bin width',dLambda); 
+[radiance,wave] = ieLuminance2Radiance(lum,thisWave,'sd',dLambda); 
 
 % Now read the hazard function (Actinic) of the safety standard.  For more
 % information read the comments in s_humanSafety.
+fname = which('Actinic.mat');
 Actinic = ieReadSpectra(fname,wave);
 
 % Convert radiance to irradiance and calculate the hazard for 1 sec

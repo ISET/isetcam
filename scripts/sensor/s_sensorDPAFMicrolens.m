@@ -24,8 +24,8 @@ thisR = piRecipeDefault('scene name','chessSet');
 %% Set up the combined imaging and microlens array
 
 uLensName = 'microlens.json';
-% iLensName = 'dgauss.22deg.3.0mm.json';
-iLensName = 'dgauss.22deg.50.0mm.json'; 
+iLensName = 'dgauss.22deg.3.0mm.json';
+% iLensName = 'dgauss.22deg.50.0mm.json'; 
 
 uLensHeight = 0.0028;        % 2.8 um - each covers two pixels
 nMicrolens = [64 64]*4;     % Did a lot of work at 40,40 * 8

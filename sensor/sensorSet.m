@@ -328,7 +328,12 @@ switch lower(param)
     case {'data'}
         sensor.data = val;
     case {'voltage','volts'}
+        % Setting new voltage data requires updating rows and cols
+        % Really, we should not have separate rows/cols but just use the
+        % sensor data, IMHO (BW).
         sensor.data.volts = val;
+        sensor.rows = size(val,1);
+        sensor.cols = size(val,2);
         %  We adjust the row and column size to match the data. The data
         %  size is the factor that determines the sensor row and column values.
         %  The row and col values are only included for those cases when

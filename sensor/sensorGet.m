@@ -89,6 +89,7 @@ function val = sensorGet(sensor,param,varargin)
 %      'electrons'      - Sensor output in electrons
 %         A single color plane can be returned
 %         sensorGet(sensor,'electrons',2);
+%      'chromaticity'   - Sensor rg-chromaticity after Demosaicking (roiRect allowed)
 %      'dv or volts'    - Return either dv if present, otherwise volts
 %      'roi locs'       - Stored region of interest (roiLocs)
 %      'roi rect'       - Rect.  Format is [cmin,rmin,width,height]
@@ -256,7 +257,7 @@ switch oType
         pixel = sensor.pixel;
         if isempty(param), val = pixel;
         elseif   isempty(varargin), val = pixelGet(pixel,param);
-        else     val = pixelGet(pixel,param,varargin{1});
+        else,     val = pixelGet(pixel,param,varargin{1});
         end
     otherwise
         param = ieParamFormat(param);
@@ -328,7 +329,7 @@ switch oType
                 
                 % Jst flipped .x and .y positions
                 [X,Y] = meshgrid(support.x,support.y);
-                if isempty(varargin),
+                if isempty(varargin)
                     optics = oiGet(vcGetObject('OI'),'optics');
                     sourceFL = opticsGet(optics,'focalLength'); % Meters.
                 else
@@ -377,7 +378,9 @@ switch oType
             case{'volts2maxratio','responseratio'}
                 % sensorGet(sensor,'response ratio')
                 %
-                % Ratio of peak data voltage to voltage swing.
+                % Ratio of peak data voltage to voltage swing.  Used in
+                % displayRender to make sure the image display range
+                % matches the sensor data range.
                 v = sensorGet(sensor,'volts');
                 pixel = sensorGet(sensor,'pixel');
                 sm = pixelGet(pixel,'voltage swing');
@@ -479,6 +482,29 @@ switch oType
                         val(ii) = mean(thisD(~isnan(thisD)));
                     end
                 end
+            case {'chromaticity'}
+                % rg = sensorGet(sensor,'chromaticity',rect)
+                % Estimate the rg sensor chromaticities
+                %
+                % ONLY WORKS WITH Bayer patterns
+                if isempty(varargin), rect = []; 
+                else, rect = varargin{1};
+                end
+                
+                % Make sure rect starts at odd numbers and height and width
+                % are odd numbers to align with a Bayer pattern.
+                lst = ~isodd(rect); rect(lst) = rect(lst)-1;
+                mosaic   = sensorGet(sensor,'volts');
+                if ~isempty(rect), mosaic = imcrop(mosaic,rect); end
+
+                % Use ipCompute to interpolate the mosaic and produce a
+                % chromaticity value at every point.
+                sensorC = sensorSet(sensor,'volts',mosaic);
+                ip = ipCreate; ip = ipCompute(ip,sensorC); 
+                rgb = ipGet(ip,'sensor space');   % Just demosaic'd
+                s = sum(rgb,3); r = rgb(:,:,1)./s; g = rgb(:,:,2)./s;
+                
+                val(:,1) = r(:); val(:,2) = g(:);
             case {'roielectronsmean'}
                 % sensorGet(sensor,'roi electrons mean')
                 %   Mean value for each of the sensor types
@@ -879,10 +905,10 @@ switch oType
                 % then we might correct.
                 %
                 if ~isempty(varargin), scene = varargin{1};
-                else                   scene = vcGetObject('scene');
+                else,                  scene = vcGetObject('scene');
                 end
                 if length(varargin) > 1, oi = varargin{2};
-                else                     oi = vcGetObject('oi');
+                else,                    oi = vcGetObject('oi');
                 end
                 % If no scene is sent in, assume the scene is infinitely far away.
                 if isempty(scene), sDist = Inf;
@@ -1071,7 +1097,7 @@ switch oType
             case {'sensorpositionsy'}
                 if checkfields(sensor,'movement','pos')
                     val = sensor.movement.pos(:,2);
-                else val = 0;
+                else, val = 0;
                 end
             case {'framesperposition','exposuretimesperposition','etimeperpos'}
                 % Exposure frames for each (x,y) position
@@ -1082,11 +1108,9 @@ switch oType
                 else
                     val = 1;
                 end
-                
                 %
             otherwise
                 error('Unknown sensor parameter.');
-                
         end
 end
 
@@ -1133,11 +1157,11 @@ if length(p(:)) == 1
     cfaName = 'Monochrome';
 elseif ~isequal(size(p),[2,2])
     cfaName = 'Other'; return;
-elseif strcmp(filterColors,'bgr');
+elseif strcmp(filterColors,'bgr')
     cfaName = 'Bayer RGB';
-elseif strcmp(filterColors,'cmy');
+elseif strcmp(filterColors,'cmy')
     cfaName = 'Bayer CMY';
-elseif strcmp(filterColors,'bgrw');
+elseif strcmp(filterColors,'bgrw')
     cfaName = 'RGBW';
 else
     cfaName = 'Other';

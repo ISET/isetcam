@@ -66,7 +66,7 @@ function [img,vci] = imageSensorCorrection(img,vci,sensor)
 
 if ieNotDefined('img'), error('Image required'); end
 
-param = ieParamFormat(ipGet(vci,'conversion method Sensor'));
+param = ieParamFormat(ipGet(vci,'conversion method sensor'));
 switch param
     case {'none','sensor'}
         % This case can be trouble when there are more than 3 color
