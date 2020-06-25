@@ -2,8 +2,11 @@ function ieManualCreate(varargin)
 % Use m2html to create a manual of all ISET functions
 %
 % Brief synopsis
-%  This script finds ISETCAM and runs m2html. A new manual of HTML files
-%  will be created in the directory html-manual.
+%   ieManualCreate(varargin)
+%
+% Description
+%  This script finds ISETCam and runs m2html. A new manual of HTML files
+%  will be created in the ISETCam  directory local/manuals.
 %
 % Inputs:
 %   N/A
@@ -14,21 +17,22 @@ function ieManualCreate(varargin)
 %  sourceFiles - Input directory ('isetcam')
 %
 % Outputs
-%    A directory with the manual pages is created.  Click on index.html to
-%    see a browser window that explores the manual pages.
+%  A directory with the manual pages is created.  Click on index.html to
+%  see a browser window that explores the manual pages.
 %
 % Notes:
-%  You must have m2html on your path.
-%  I edited m2html to ignore a number of different directories (like
+%  * You must have m2html on your path.  Normally I do this by maintaining
+%  m2html in the 'admin' branch of ISETCam
+%  * I edited m2html to ignore a number of different directories (like
 %  external).
 %
-% Once the manual is created, we will put it somewhere for the wiki page.
+% Once the manual is created, we put it somewhere public where we can
+% access it from the ISETCam the wiki page. We can't put it in the wiki
+% page because of the way GitHub handles HTML files.
+%
+% I create a tar file this way:
 %
 %    tar cvf iManual.tar iManual
-%
-% to create a tar file.  We use tar because permissions are preserved.
-% Then I move to google drive where Joyce uploads using cpanel to Imageval
-% site.  She extracts and replaces the iset-manual directory with this one.
 %
 %  * It is best to tag the commit before you run this.  To tag a commit use
 %       git tag VXXXX -m "Comment"
