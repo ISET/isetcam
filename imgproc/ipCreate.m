@@ -22,7 +22,7 @@ function ip = ipCreate(ipName,sensor,display,L3)
 
 %%
 if ieNotDefined('ipName'), ipName = 'default'; end
-if ieNotDefined('sensor'), sensor = vcGetObject('sensor'); end
+if ieNotDefined('sensor'), sensor = []; end % sensor = vcGetObject('sensor'); end
 
 % Start building the parts
 ip.name = ipName;
@@ -40,7 +40,10 @@ if ~isempty(sensor)
     else
         ip = ipSet(ip,'datamax',2^nbits);
     end
+else
+    ip = ipSet(ip,'input',[]);
 end
+
 
 %% Figure out the display.  Could be string or struct
 if ieNotDefined('display')
