@@ -114,6 +114,10 @@ end
 dv = sensorGet(sensor,'dv');
 if ~isempty(dv)
     newDV = imcrop(dv,rect);
+    if ~exist('newSize','var')
+        newSize = size(newDV);
+        sensor = sensorSet(sensor,'size',newSize);
+    end
     sensor = sensorSet(sensor,'digital values',newDV);
 end
 
