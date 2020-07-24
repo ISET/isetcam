@@ -1,4 +1,4 @@
-function [sensor,actualFOV] = sensorSetSizeToFOV(sensor,newFOV,scene,oi)
+function [sensor,actualFOV] = sensorSetSizeToFOV(sensor,newFOV,~,oi)
 % Adjust sensor rows and columns so that horizontal FOV is deg (angle)
 %
 % Synopsis
@@ -32,7 +32,8 @@ function [sensor,actualFOV] = sensorSetSizeToFOV(sensor,newFOV,scene,oi)
 %  size must be a multiple of the cfa size.
 %
 %  The FOV of the sensor depends on the focal length to the optics and the
-%  size of the sensor. Hence, we normally send in the scene and oi.
+%  size of the sensor. Hence, we normally send in the oi.  We should never
+%  have to send in the scene and that will be deprecated.
 % 
 %  We try to handle the human cone array case, which is special, by catching
 %  the string 'human' in the name and saying the block size is one.  This is
@@ -64,10 +65,12 @@ function [sensor,actualFOV] = sensorSetSizeToFOV(sensor,newFOV,scene,oi)
   [sensor, fov] = sensorSetSizeToFOV(sensor,[3,3],scene,oi);
 %}
 
-%%
+%% Parameters
+
+% It appears that we do not really need to send in the scene
 if ieNotDefined('sensor'), sensor = vcGetObject('sensor'); end
 if ieNotDefined('newFOV'), error('Must specify desired horizontal field of view (degrees)'); end
-if ieNotDefined('scene'), scene = [];  end
+% if ieNotDefined('scene'), scene = [];  end
 if ieNotDefined('oi'), oi = [];  end
 
 % Get the size.  If size is 0,0 set to a small size.  Not sure when it is
