@@ -1,9 +1,9 @@
-function [mRGB, mLocs, pSize, cornerPoints] = ...
+function [mRGB, mLocs, pSize, cornerPoints, mRGBstd] = ...
     macbethSelect(obj,showSelection,fullData,cornerPoints)
 %Identify Macbeth color checker patch positions from window image
 %
 % Synopsis
-%  [mRGB mLocs, pSize, cornerPoints] =
+%  [mRGB mLocs, pSize, cornerPoints, mRGBstd] =
 %            macbethSelect(obj,showSelection,fullData,cornerPoints)
 %
 % Brief Description
@@ -44,6 +44,7 @@ function [mRGB, mLocs, pSize, cornerPoints] = ...
 %        sample positions with a (row,col) coordinate.
 %   pSize:           The size of the square region in the center of the patch
 %   cornerPoints:    Corner points of the selected MCC
+%   mRGBstd:  Standard deviation when the mean values are requested
 %
 % In ISET the ordering of the Macbeth patches is:
 %
@@ -130,7 +131,7 @@ switch lower(obj.type)
         handles = ieSessionGet('vcimage handles');
         dataType = 'result';
         obj = ipSet(obj,'mcc Rect Handles',[]);
-        vcReplaceObject(obj);
+        vcReplaceObject(obj); ipWindow;
         if ieNotDefined('cornerPoints')
             cornerPoints = ipGet(obj,'mcc corner points');
         end
@@ -139,7 +140,8 @@ switch lower(obj.type)
         handles = ieSessionGet('sensor Window Handles');
         dataType = 'dvorvolts';
         obj = sensorSet(obj,'mcc Rect Handles',[]);
-        vcReplaceObject(obj);
+        % Make sure these data are in the sensor in the window
+        vcReplaceObject(obj); sensorWindow;
         if ieNotDefined('cornerPoints')
             cornerPoints = sensorGet(obj,'mcc corner points');
         end
@@ -147,7 +149,7 @@ switch lower(obj.type)
         handles = ieSessionGet('scene Window Handles');
         dataType = 'photons';
         obj = sceneSet(obj,'mcc Rect Handles',[]);
-        vcReplaceObject(obj);
+        vcReplaceObject(obj); sceneWindow;
         if ieNotDefined('cornerPoints')
             cornerPoints = sensorGet(obj,'mcc corner points');
         end
@@ -227,7 +229,7 @@ ieInWindowMessage('',handles);
 % Get the mean RGB data or the full data from the patches in a cell array
 % The processor window is assumed to store linear RGB values, not gamma
 % corrected.
-mRGB = macbethPatchData(obj,mLocs,delta,fullData,dataType);
+[mRGB,mRGBstd] = macbethPatchData(obj,mLocs,delta,fullData,dataType);
 
 % Plot the rectangles.
 if showSelection, macbethDrawRects(obj); end

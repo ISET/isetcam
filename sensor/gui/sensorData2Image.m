@@ -171,8 +171,10 @@ if nSensors > 1    % A color CFA
     end
 
     % Scale the displayed image intensity to the range between 0 and
-    % the voltage swing.  RGB images are supposed to run from 0,1
-    img = img/mxImage;
+    % the voltage swing.  RGB images are supposed to run from 0,1.
+    %
+    % If the dv data are ints, we need to cast the max as a double
+    img = img/double(mxImage);  
     img = ieClip(img,0,1).^gam;
 
 elseif nSensors == 1
