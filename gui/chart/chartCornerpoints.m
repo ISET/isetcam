@@ -49,8 +49,11 @@ function cornerPoints = chartCornerpoints(obj,wholeChart)
 %  routines, without the specialization for MCC.  This will require some
 %  fixing of the sceneSet,oiSet, ... and so forth. 
 
-if ieNotDefined('obj'), error('Sensor or IP object required.'); end
+if ieNotDefined('obj'), error('Scene,oi,sensor or ip object required.'); end
 if ieNotDefined('wholeChart'), wholeChart = false; end
+
+ieReplaceObject(obj);
+ieRefreshWindow(obj.type);
 
 if ~wholeChart
     % Get the user to select corner points in the window.
@@ -69,7 +72,7 @@ switch lower(obj.type)
             cornerPoints = [1,y; x,y; x,1; 1,1];
         end
         obj = sceneSet(obj,'chart corners',cornerPoints);
-        vcReplaceObject(obj);
+        ieReplaceObject(obj);
         sceneWindow;
         
     case 'opticalimage'
@@ -109,7 +112,7 @@ switch lower(obj.type)
         ipWindow
         
     otherwise
-        error('Unknown object type');
+        error('Unknown object type %s\n',obj.type);
 end
 
 

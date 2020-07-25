@@ -24,8 +24,8 @@ function [macbethLAB, macbethXYZ, dE, vci] = macbethColorError(vci,illName,corne
 %           to use the monitor model stored in the vci.
 %
 % Example:
-%   vci = vcGetObject('vcimage');
-%   [macbethXYZ, whiteXYZ] = vcimageMCCXYZ(vci);
+%   ip = vcGetObject('ip');
+%   [macbethXYZ, whiteXYZ] = ipMCCXYZ(vci);
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
@@ -75,7 +75,7 @@ end
 
 % These are Processor window XYZ values using the monitor model.  They are
 % computed using a model monitor with peak luminance of Y = 1 cd/m2.
-[macbethXYZ, whiteMacbethXYZ, cornerPoints] = vcimageMCCXYZ(vci,cornerPoints,method);
+[macbethXYZ, whiteMacbethXYZ, cornerPoints] = ipMCCXYZ(vci,cornerPoints,method);
 vci = ipSet(vci,'mcc corner points',cornerPoints);
 vci = macbethDrawRects(vci);        % Make sure we have ther rects
 vci = macbethDrawRects(vci,'off');  % Now turn it all off

@@ -1,13 +1,11 @@
-function [macbethXYZ, whiteXYZ, cornerPoints] = vcimageMCCXYZ(vci,cornerPoints,method)
-%DEPRECATED:  Estimate XYZ values of the MCC patches and the image white point from vci
+function [macbethXYZ, whiteXYZ, cornerPoints] = ipMCCXYZ(ip,cornerPoints,method)
+%Estimate XYZ values of the MCC patches and the image white point from ip
 %
-%  USE ieMCCZYZ;
+%  [macbethXYZ, whiteXYZ] = ipMCCXYZ(ip,pointLoc,method)
 %
-%  [macbethXYZ, whiteXYZ] = vcimageMCCXYZ(vci,pointLoc,method)
+% We assume the ip has an image of the MCC in its output field
 %
-% We assume the vci has an image of the MCC in its output field
-%
-% vci:       The virtual camera image structure 
+% ip:        The virtual camera image structure 
 % pointLoc:  Outer points of the MCC (usually selected by user)
 % method:    We either assume the display is an sRGB display (method =
 %            'sRGB'), or we use the model display in the processor window
@@ -15,32 +13,34 @@ function [macbethXYZ, whiteXYZ, cornerPoints] = vcimageMCCXYZ(vci,cornerPoints,m
 %
 % macbethXYZ:  24 x 3
 % whiteXYZ:    3 x 1, white point, which is macbethXYZ(4,:)
-% pointLoc:    Locations of the points in the iamge
+% pointLoc:    Locations of the points in the image
 %
 % The MCC white patch the fourth row, first column.
 %
-% Examples:
-%  vci = vcGetObject('vcimage'); 
-%  [macbethXYZ, whiteXYZ] = vcimageMCCXYZ(vci);
-%  figure(1); clf; plot3(macbethXYZ(:,1),macbethXYZ(:,2),macbethXYZ(:,3),'o')
-%  xy = chromaticity(macbethXYZ);
-%  clf; plot(xy(:,1),xy(:,2),'o'); hold on; plotSpectrumLocus; 
-%  grid on; axis equal
+% ieExamplesPrint('ipMCCXYZ');
 %
-%  macbethLAB = ieXYZ2LAB(macbethXYZ,whiteXYZ, 1);
-%  clf; plot3(macbethLAB(:,1),macbethLAB(:,2), macbethLAB(:,3),'o'); 
-%  set(gca,'xlim',[0 105]); grid on
-%
-% Copyright ImagEval Consultants, LLC, 2005.
-%
-% See Also: macbethColorError, macbethEvaluationGraphs
+% See Also: 
+%    macbethColorError, macbethEvaluationGraphs
 %
 
-error('Use ieMCCXYZ');
-%
+% Examples:
 %{
+  ip = ieGetObject('ip'); 
+ [macbethXYZ, whiteXYZ] = ipMCCXYZ(ip);
+ ieNewGraphWin;
+ plot3(macbethXYZ(:,1),macbethXYZ(:,2),macbethXYZ(:,3),'o')
+ xy = chromaticity(macbethXYZ);
+ clf; plot(xy(:,1),xy(:,2),'o'); hold on; plotSpectrumLocus; 
+ grid on; axis equal
+
+ macbethLAB = ieXYZ2LAB(macbethXYZ,whiteXYZ, 1);
+ clf; plot3(macbethLAB(:,1),macbethLAB(:,2), macbethLAB(:,3),'o'); 
+ set(gca,'xlim',[0 105]); grid on
+%}
+
+
 %% Check input variables
-if ieNotDefined('vci'), vci = vcGetObject('vcimage'); end
+if ieNotDefined('ip'), ip = ieGetObject('ip'); end
 if ieNotDefined('method'), method = 'sRGB'; end
 
 % These pointLoc values are the coordinates of the corners of the MCC in
@@ -50,7 +50,7 @@ if ieNotDefined('method'), method = 'sRGB'; end
 % primaries.
 if ieNotDefined('cornerPoints')
     % macbethSelect will prompt the user to identify corners.
-    [rgbData, mLocs, pSize, cornerPoints] = macbethSelect(vci);
+    [rgbData, mLocs, pSize, cornerPoints] = macbethSelect(ip);
     if isempty(rgbData)
         fprintf('%s: user canceled\n',mfilename);
         macbethXYZ = []; whiteXYZ = []; cornerPoints = [];
@@ -60,7 +60,7 @@ if ieNotDefined('cornerPoints')
     clear pSize
 else
     % The user is not bothered
-    rgbData = macbethSelect(vci,0,0,cornerPoints);
+    rgbData = macbethSelect(ip,0,0,cornerPoints);
 end
 
 %% Compute the 
@@ -84,7 +84,7 @@ switch(lower(method))
         % display model, particularly the SPD of the display, to compute
         % the MCC's XYZ values on the display.
         rgbData = XW2RGBFormat(rgbData,4,6);
-        macbethXYZ = imageRGB2XYZ(vci,rgbData);
+        macbethXYZ = imageRGB2XYZ(ip,rgbData);
         % vcNewGraphWin; image(xyz2srgb(macbethXYZ))
 
 end
@@ -102,4 +102,3 @@ whiteXYZ   = double(macbethXYZ(whiteIndex,:));
 
 
 end
-%}

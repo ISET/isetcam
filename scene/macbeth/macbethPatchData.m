@@ -17,15 +17,13 @@ function [mRGB,stdRGB] = macbethPatchData(obj,mLocs,delta,fullData,dataType)
 %          standard deviatons 
 %
 % See Also:  
-%   macbethSelect, vcimageMCCXYZ, vcGetROIData, macbethColorError
+%   macbethSelect, ipMCCXYZ, vcGetROIData, macbethColorError
 %
 
 % Examples:
 %{
 % Add example
 %}
-
-
 
 %% Parse inputs
 

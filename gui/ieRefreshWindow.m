@@ -1,7 +1,15 @@
-function ieRefreshWindow(objType)
+function hdl = ieRefreshWindow(objType)
 %Refresh one of the four types of windows
 %
+% Synopsis
 %   ieRefreshWindow(objType)
+%
+% Input
+%  objType:  A string defining the object type.  If obj is an ISETCam
+%            struct, then this could be obj.type 
+%
+% Output
+%   hdl:     Handle to the window
 %
 %Purpose:
 %   Issue a refresh to one of the ISET windows.  This routine is useful
@@ -9,10 +17,11 @@ function ieRefreshWindow(objType)
 %   according to the new data.
 %
 % Example:
-%    vcReplaceObject(scene); ieRefreshWindow('scene');
-%    vcReplaceObject(oi); ieRefreshWindow('oi');
-%    vcReplaceObject(isa); ieRefreshWindow('isa');
+%    ieReplaceObject(scene); ieRefreshWindow('scene');
+%    vcReplaceObject(oi); ieRefreshWindow('opticalimage');
+%    vcReplaceObject(isa); ieRefreshWindow('sensor');
 %    vcReplaceObject(vcimage); ieRefreshWindow('vcimage');
+%    ieReplaceObject(obj); ieRefreshWindow(obj.type);
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
@@ -22,19 +31,19 @@ objType = vcEquivalentObjtype(objType);
 
 switch lower(objType)
     case {'scene'}
-        h = sceneWindow; 
+        hdl = sceneWindow; 
 
-    case {'opticalimage'}
-        h = oiWindow; 
+    case {'opticalimage','oi'}
+        hdl = oiWindow; 
        
-    case {'isa'}
-        h = sensorImageWindow; 
+    case {'isa','sensor'}
+        hdl = sensorImageWindow; 
         
-    case {'vcimage'}
-        h = ipWindow; 
+    case {'vcimage','ip'}
+        hdl = ipWindow; 
         
     otherwise
         error('Unknown object type');
 end
 
-return;
+end
