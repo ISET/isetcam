@@ -151,7 +151,7 @@ switch lower(obj.type)
         obj = sceneSet(obj,'mcc Rect Handles',[]);
         vcReplaceObject(obj); sceneWindow;
         if ieNotDefined('cornerPoints')
-            cornerPoints = sensorGet(obj,'mcc corner points');
+            cornerPoints = sceneGet(obj,'mcc corner points');
         end
     otherwise
         error('Unknown object type');
