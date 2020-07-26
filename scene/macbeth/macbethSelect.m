@@ -85,7 +85,7 @@ function [pData, mLocs, pSize, cornerPoints, pStd] = ...
  macbethDrawRects(scene,'on');
 %}
 %{
- scene = sceneCreate; oi = oiCreate; oi = oiCompute(oi,scene);
+ scene  = sceneCreate; oi = oiCreate; oi = oiCompute(oi,scene);
  sensor = sensorCreate; sensor = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'));
  sensor = sensorCompute(sensor,oi);
  ip = ipCreate; ip = ipCompute(ip,sensor);
@@ -136,7 +136,7 @@ switch lower(obj.type)
         handles = ieSessionGet('vcimage handles');
         dataType = 'result';
         obj = ipSet(obj,'mcc Rect Handles',[]);
-        vcReplaceObject(obj); ipWindow;
+        ieAddObject(obj); ipWindow;
         if ieNotDefined('cornerPoints')
             cornerPoints = ipGet(obj,'mcc corner points');
         end
@@ -146,7 +146,7 @@ switch lower(obj.type)
         dataType = 'dvorvolts';
         obj = sensorSet(obj,'mcc Rect Handles',[]);
         % Make sure these data are in the sensor in the window
-        vcReplaceObject(obj); sensorWindow;
+        ieAddObject(obj); sensorWindow;
         if ieNotDefined('cornerPoints')
             cornerPoints = sensorGet(obj,'mcc corner points');
         end
@@ -154,7 +154,7 @@ switch lower(obj.type)
         handles = ieSessionGet('scene Window Handles');
         dataType = 'photons';
         obj = sceneSet(obj,'mcc Rect Handles',[]);
-        vcReplaceObject(obj); sceneWindow;
+        ieAddObject(obj); sceneWindow;
         if ieNotDefined('cornerPoints')
             cornerPoints = sceneGet(obj,'mcc corner points');
         end
