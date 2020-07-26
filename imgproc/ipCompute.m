@@ -263,17 +263,10 @@ elseif nFilters >= 3 || nSensors > 1
             error('Unknown transform method %s\n',tMethod);
     end
    
-    % The display image RGB is always between 0 and 1. 
-    %
-    % Normally, we set the maximum image value to match the ratio of the
-    % maximum voltage to the voltage swing.
-    % In some cases - say for an ideal sensor with extremely large voltage
-    % swing that we use in theory, this forces the data to be very small.
-    % In that case, you should scale the data to max function.
-    %
-    % range of the sensor data, with the assumption that 0 in the sensor
-    % corresponds to 0 in the image processing data.
-    %
+        
+   %{
+    % This was moved into displayRender.  For a while it was duplicated,
+    % being both there and here. (BW, July 25, 2020).
     imgMax = max(img(:));
         
     switch sensorGet(sensor,'quantization method')
@@ -290,6 +283,7 @@ elseif nFilters >= 3 || nSensors > 1
             % else.  Or maybe nothing.
     end
     % ieNewGraphWin; imagescRGB(img);
+    %}
     
     ip = ipSet(ip,'quantization',sensorGet(sensor,'quantization'));
     ip = ipSet(ip,'result',img);

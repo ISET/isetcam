@@ -26,7 +26,7 @@ if ~(ismatrix(RGB))
     % If you are here, we are RGB format.
     [RGB, row, col]= RGB2XWFormat(RGB); 
     RGBFlag = 1; 
-else RGBFlag = 0;
+else, RGBFlag = 0;
 end
 
 %% Calculate
@@ -48,4 +48,4 @@ if RGBFlag
     dataXYZ = XW2RGBFormat(dataXYZ,row,col);
 end
 
-return;
+end

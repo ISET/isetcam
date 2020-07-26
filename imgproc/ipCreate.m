@@ -63,7 +63,9 @@ ip = ipSet(ip,'internal CS','XYZ');
 ip = ipSet(ip,'conversion method sensor ','MCC optimized');
 
 %% Rendering assumptions 
-ip = ipSet(ip,'renderGamma',1);
+
+% Turned this off because it opened the window
+% ip = ipSet(ip,'renderGamma',1);  % Maybe it should not do that???
 ip = ipSet(ip','scaleDisplay',1);
 ip = ipSet(ip,'mccRectHandles',[]);
 

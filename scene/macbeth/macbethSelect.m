@@ -1,25 +1,21 @@
-function [mRGB, mLocs, pSize, cornerPoints, mRGBstd] = ...
+function [pData, mLocs, pSize, cornerPoints, pStd] = ...
     macbethSelect(obj,showSelection,fullData,cornerPoints)
 %Identify Macbeth color checker patch positions from window image
 %
 % Synopsis
-%  [mRGB mLocs, pSize, cornerPoints, mRGBstd] =
+%  [pData mLocs, pSize, cornerPoints, pStd] =
 %            macbethSelect(obj,showSelection,fullData,cornerPoints)
 %
 % Brief Description
-%  This routine typically7 works within an ISET window, though this is not
-%  needed when the corner points of the MCC are already known.
+%  This routine typically works within an ISET window, though this is not
+%  needed when the corner points of the MCC in the image are known.
 %
-%  From the window, the user selects the four corner points on the MCC
-%  (white, black, blue, brown). This function estimates the (row, column)
-%  centers of the 24 MCC patches and the values near the center of each
-%  patch.
-%
-%  The handles to the rects (mccRectHandles) are attached to the object.
-%  This lets the macbethDrawRects() routine turn them on and off.
+%  The user selects the four corner points on the MCC (white, black, blue,
+%  brown). This identifies the 24 MCC patch locations.  Then the data are
+%  selected.
 %
 % Inputs
-%   obj:  sensor, ip, scene
+%   obj:  sensor, ip, scene.  Not sure why, but OI is not yet implemented.
 %   showSelection (boolean): Put up the rectangles so the user sees the
 %     selected rects.
 %   fullData:  Determines output in mRGB
@@ -57,9 +53,18 @@ function [mRGB, mLocs, pSize, cornerPoints, mRGBstd] = ...
 % See examples:
 %  ieExamplesPrint('macbethSelect');
 %
+% Programming TODO:
+%   Should be refactored as (p means 'patch')
+%
+%     [pData, pSD, cornerPoints, mLocs, pSize] =
+%        macbethSelect(obj,cornerPoints,dataType,showRects,fullData);
+%
+%   Also (a) more testing, and (b)oi implemented
+%
 % See also:  
 %   macbethSensorValues, macbethRectangles, macbethROIs, chartRectangles,
 %   chartRectsData
+%
 
 % Examples:
 %{ 
@@ -184,7 +189,7 @@ if queryUser
     rectsOK = ieReadBoolean('Are these rects OK?');
     if isempty(rectsOK)
         fprintf('%s: user canceled\n',mfilename);
-        mRGB=[]; mLocs=[]; pSize=[]; cornerPoints=[];
+        pData=[]; mLocs=[]; pSize=[]; cornerPoints=[];
         return;
     else
         while ~rectsOK   % False, a change is desired
@@ -229,7 +234,7 @@ ieInWindowMessage('',handles);
 % Get the mean RGB data or the full data from the patches in a cell array
 % The processor window is assumed to store linear RGB values, not gamma
 % corrected.
-[mRGB,mRGBstd] = macbethPatchData(obj,mLocs,delta,fullData,dataType);
+[pData,pStd] = macbethPatchData(obj,mLocs,delta,fullData,dataType);
 
 % Plot the rectangles.
 if showSelection, macbethDrawRects(obj); end

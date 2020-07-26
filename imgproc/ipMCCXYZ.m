@@ -67,28 +67,31 @@ end
 
 switch(lower(method))
     case 'srgb'
-        % The display is treated as an sRGB.
-
+        
+        disp('Converting rgb to XYZ values from an sRGB display');
+        
         % We read the data and convert them into sRGB values.
         rgbLSRGB = lrgb2srgb(ieClip(rgbData,0,1));
         
         % When convert the sRGB values into XYZ values for the RGB*L data.
         % The format for sgb2xyz is (row,col,colorVector).  We treat the
         % MCC as one row, 24 columns, each with three entries.
-        rgbLSRGB = XW2RGBFormat(rgbLSRGB,4,6);        
+        rgbLSRGB   = XW2RGBFormat(rgbLSRGB,4,6);        
         macbethXYZ = srgb2xyz(rgbLSRGB);  % Y is in cd/m2
         % vcNewGraphWin; image(xyz2srgb(macbethXYZ)); 
 
     case 'custom'
-        % The routine imageRGB2XYZ accounts for the currently loaded
-        % display model, particularly the SPD of the display, to compute
-        % the MCC's XYZ values on the display.
-        rgbData = XW2RGBFormat(rgbData,4,6);
+        
+        fprintf('Converting rgb to XYZ assuming linear display (%s)\n',ipGet(ip,'display name'));
+        
+        % The routine imageRGB2XYZ uses the currently loaded display model,
+        % particularly the SPD of the display, to compute the MCC's XYZ
+        % values on the display.
+        rgbData    = XW2RGBFormat(rgbData,4,6);
         macbethXYZ = imageRGB2XYZ(ip,rgbData);
         % vcNewGraphWin; image(xyz2srgb(macbethXYZ))
 
 end
-
 
 % Squeeze the singleton dimension
 % Also, the data are now single format.  For various CIELAB calculations
