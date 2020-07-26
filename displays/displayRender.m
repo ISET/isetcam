@@ -72,7 +72,6 @@ end
 % small. In that case, you can scale the data to max function in the GUI.
 %
 qm = sensorGet(sensor,'quantization method');
-imgMax = max(img(:));
 
 switch qm
     case 'analog'
@@ -83,18 +82,22 @@ switch qm
         % brightest part is white.  Multiplying by the volts 2 max volts
         % ratio sets the range.
         
+        imgMax = max(img(:));
+        fprintf('Analog quantization. Scaling result by %f\n',imgMax);
+
         img = (img/imgMax)*sensorGet(sensor,'volts 2 max ratio');
         img = ieClip(img,0,ipGet(ip,'max sensor'));
 
     case 'linear'
         % Digital values
-        % These are displayed correctly displayRender() routine.  No need
-        % for scaling here.
+        % No need for scaling here.
         %
         % ieNewGraphWin; imagescRGB(img);
         % Digital values, so only clip at the bottom.
-        img = (img/imgMax)*ipGet(ip,'max digital value');
-        img = ieClip(img,0,ipGet(ip,'max digital value'));
+        %
+        % OLD CODE.  Delete when ready
+        % img = (img/imgMax)*ipGet(ip,'max digital value');
+        % img = ieClip(img,0,ipGet(ip,'max digital value'));
     otherwise
         error('Unknown quantization method %s\n',qm);
 end

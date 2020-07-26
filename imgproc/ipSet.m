@@ -45,6 +45,8 @@ function ip = ipSet(ip,param,val,varargin)
 %       'adaptive' - Use the image processing algorithms for sensor and
 %                      illuminant corrections to determine the matrix on
 %                      this image  
+%       'render demosaic only' - Sets the ip so only demosaicing and
+%                                sensor zerolevel subtraction are included.
 %
 %  Correction of the sensor data to a standard space
 %     'conversion sensor '        - Sensor conversion structure
@@ -93,6 +95,9 @@ function ip = ipSet(ip,param,val,varargin)
 %     'scale display'   - True or false for scaling the ipWindow image
 %
 % Copyright ImagEval Consultants, LLC, 2005.
+%
+% See also
+%   ipGet
 
 % Set display parameters to match the new ones in ipGet
 
@@ -198,6 +203,11 @@ switch param
         % The quantization struct might be used to determine if the
         % input data were really digital values.  Not much used yet.
         ip.data.quantization = val;
+    case {'nbits'}
+        % ip = ipSet(ip,'nbits',val);
+        %
+        % Bit depth of the image representations
+        ip.data.quantization.bits = val;
         
     case {'transforms'}
         % ip = ipSet(ip,'transforms',eye(3),2);
@@ -224,6 +234,18 @@ switch param
         ip.render = val;
     case {'rendermethod','renderingmethod','customrendermethod'}
         ip.render.method = val;
+    case {'renderdemosaiconly'}
+        % ipSet(ip,'render demosaic only',true)
+        %
+        % Set to true if you want to make sure only demosaicking and
+        % zerolevel correction are used, but not sensor conversion or
+        % illuminant correction.
+        if val
+            ip = ipSet(ip,'internal cs','Sensor');
+            ip = ipSet(ip,'conversion method sensor','None');
+            ip = ipSet(ip,'correction method illuminant','None');
+        end
+        
     case {'scaledisplay','scaledisplayoutput'}
         % This is a binary 1 or 0 for one or off
         ip.render.scale = val;

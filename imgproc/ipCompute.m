@@ -112,7 +112,7 @@ end
 
 end
 
-
+%%
 function ip = vciComputeSingle(ip,sensor)
 % Process image for single exposure case, or after pre-processing for
 % bracketed and CFA cases.
@@ -133,6 +133,9 @@ function ip = vciComputeSingle(ip,sensor)
 % We handle the case of different number of filters somewhat differently.
 nFilters = sensorGet(sensor(1),'nfilters');
 nSensors = length(sensor);
+
+% We need to know about the quantization before we get to displayRender.
+ip = ipSet(ip,'quantization',sensorGet(sensor,'quantization'));
 
 if nFilters == 1 && nSensors == 1
     % If monochrome sensor, just copy the sensor values to the RGB values
@@ -186,7 +189,7 @@ elseif nFilters >= 3 || nSensors > 1
     
     % Save the demosaiced sensor space channel values. May be used later
     % for adaptation of color balance for IR enabled sensors
-    ip = ipSet(ip,'sensor space',img);
+    ip = ipSet(ip,'sensor space',img);    % saveimg = img;
 
     % Decide if we are using the current matrix or we are in a processing
     % chain for balancing and rendering, or whether we are using the
@@ -262,30 +265,8 @@ elseif nFilters >= 3 || nSensors > 1
         otherwise
             error('Unknown transform method %s\n',tMethod);
     end
-   
-        
-   %{
-    % This was moved into displayRender.  For a while it was duplicated,
-    % being both there and here. (BW, July 25, 2020).
-    imgMax = max(img(:));
-        
-    switch sensorGet(sensor,'quantization method')
-        case 'analog'
-            % Changed sensor to sensor(1) to deal with sensor array case.
-            img = (img/imgMax)*sensorGet(sensor(1),'volts2max ratio');
-            img = ieClip(img,0,ipGet(ip,'max sensor'));
-        case 'linear'
-            % Digital values, so only clip at the bottom.
-            img = (img/imgMax)*ipGet(ip,'max digital value');
-            img = ieClip(img,0,ipGet(ip,'max digital value'));
-        otherwise
-            % When the data are digital, we should probably do something
-            % else.  Or maybe nothing.
-    end
-    % ieNewGraphWin; imagescRGB(img);
-    %}
     
-    ip = ipSet(ip,'quantization',sensorGet(sensor,'quantization'));
+    % Done with all the image processing.  Save in result.
     ip = ipSet(ip,'result',img);
     
     % macbethSelect rect handles -- get rid of them
@@ -294,6 +275,7 @@ end
 
 end
 
+%%
 function ip = vciComputeBracketed(ip,sensor,combinationMethod)
 % Compute for bracketed exposure case
 %
