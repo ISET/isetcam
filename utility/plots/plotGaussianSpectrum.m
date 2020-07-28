@@ -1,5 +1,7 @@
 function tran=plotGaussianSpectrum(wavelength,mu,sig)
-
+% Deprecated
+%
+%
 % Plots a transmittance curve
 % Used primarily by the makeCustomCFApattern UI
 
@@ -13,6 +15,7 @@ tran=exp( -(1/(2*sig^2)) * (wavelength-mu).^2  );
 plot(wavelength,tran,'k');
 axis tight
 hold on;
+
 % Load LUT that maps spectral wavelengths to visible colors
 load spectrumLUT 
 %                     bbI       1x1377            11016  double              
@@ -34,3 +37,4 @@ end
 set(gca,'Xtick',[],'Ytick',[]);
 
 
+end

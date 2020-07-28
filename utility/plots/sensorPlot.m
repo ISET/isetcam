@@ -227,8 +227,8 @@ switch pType
         else,                       rect = sensor.roi;
         end
         
-        % Make sure the sensor window is selected
-        sensorImageWindow;
+        % Make sure the sensor window is selected with the sensor data
+        sensorImageWindow();
         g = rectangle('Position',rect,'EdgeColor','w','LineWidth',2);
         uData.rect = rect;
     case {'chromaticity'}
