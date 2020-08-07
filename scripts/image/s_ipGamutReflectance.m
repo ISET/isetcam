@@ -45,7 +45,7 @@ r3 = XW2RGBFormat(r3,row,col);
 % Store the result
 s2 = sceneAdjustReflectance(s,r3);
 s2 = sceneSet(s2,'name','Gaussian');
-ieAddObject(s2); sceneWindow;
+sceneWindow(s2);
 
 %% Show the the modified scene
 
@@ -73,6 +73,7 @@ for ii=1:nLoops
     r3 = conv2(r3,g,'same');
 end
 r3 = XW2RGBFormat(r3,row,col);
+r3 = ieClip(r3,0,1);
 s3 = sceneAdjustReflectance(s,r3);
 s3 = sceneSet(s3,'name','DoG');
 ieAddObject(s3); sceneWindow;

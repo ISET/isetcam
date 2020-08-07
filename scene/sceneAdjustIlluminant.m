@@ -1,31 +1,35 @@
 function scene = sceneAdjustIlluminant(scene,illEnergy,preserveMean)
 %Adjust the current scene illuminant to the value in data
 %
-% Brief synopsis
+% Synopsis
 %  scene = sceneAdjustIlluminant(scene,illEnergy,preserveMean)
 %
 % Brief Description
-%  Change the scene illuminant.  The calculation scales the scene
-%  radiance by dividing out the current illuminant and then multiplying by
-%  the new illuminant. This preserves the reflectance. By default, we also
-%  preserve the scene mean luminance, which effectively scales the
-%  illuminant level.
+%  Change the scene illuminant.  
 %
-%  If you do not want the illuminant level to change, then set the
-%  preserveMean flag to false. It is true by default.
-%
-%  If the current scene has no defined illuminant, we assume that the scene
-%  illuminant is D65.
-%
-%  This appears to work if the scene is a spatial-spectral illuminant too. 
-%
-% Parameters
+% Inputs
 %  scene:      A scene structure, or the current scene will be assumed
-%  illuminant: Either a file name to spectral data or a vector (same length
-%              as scene wave) defining the illuminant in energy units
+%  illEnergy:  Either a file name to spectral data or a vector (same length
+%              as scene wave) defining the illuminant in energy units or an
+%              ISETCam illuminant struct.
 %  preserveMean:  Scale result to preserve mean illuminant (default true)
 %
-% Copyright ImagEval Consultants, LLC, 2010.
+%  Description
+%    The calculation scales the scene radiance by dividing out the current
+%    illuminant and then multiplying by the new illuminant. This preserves
+%    the reflectance. By default, we also preserve the scene mean luminance,
+%    which effectively scales the illuminant level.
+%
+%    If you do not want the illuminant level to change, then set the
+%    preserveMean flag to false. It is true by default.
+%
+%    If the current scene has no defined illuminant, we assume that the scene
+%    illuminant is D65.
+%
+%    This appears to work if the scene is a spatial-spectral illuminant
+%    too.  
+%
+% ieExamplesPrint('sceneAdjustIlluminant');
 %
 % See also
 %    sceneAdjustLuminance
@@ -49,7 +53,7 @@ function scene = sceneAdjustIlluminant(scene,illEnergy,preserveMean)
 %}
 
 %%
-if ieNotDefined('scene'),        scene = vcGetObject('scene'); end
+if ieNotDefined('scene'),        scene = ieGetObject('scene'); end
 if ieNotDefined('preserveMean'), preserveMean = true; end
 
 % Make sure we have the illuminant data in the form of energy
@@ -64,6 +68,9 @@ elseif ischar(illEnergy)
     if ~exist(fullName,'file'), error('No file %s\n',fullName);
     else, illEnergy = ieReadSpectra(fullName,wave);
     end
+elseif isstruct(illEnergy) && isequal(illEnergy.type,'illuminant')
+    fullName = illuminantGet(illEnergy,'name');
+    illEnergy = illuminantGet(illEnergy,'energy');
 else
     % User sent numbers.  We check for numerical validity next.
     fullName = '';
@@ -73,10 +80,8 @@ end
 if max(illEnergy) > 10^5
     % Energy is not this big.
     warning('Illuminant energy values are high; may be photons, not energy.')
-elseif isequal(max(isnan(illEnergy(:))),1) || isequal(min(illEnergy(:)),0)
-    warndlg('NaNs or zeros present in proposed illuminant over this wavelength range. No transformation applied.');
-    pause(3);
-    return;
+elseif isequal(min(illEnergy(:)),0)
+    warning('Illuminant transformation cannot be inverted applied (zeroes).');
 end
 
 %% Start the conversion
@@ -86,7 +91,7 @@ if isempty(curIll)
     % sceneFromFile (or vcReadImage). Assume the illuminant is D65.  Lord
     % knows why.  Maybe we should do an illuminant estimation algorithm
     % here.
-    disp('Old scene.  Creating D65 illuminant')
+    disp('Old style scene.  Creating D65 illuminant')
     wave   = sceneGet(scene,'wave');
     curIll = ieReadSpectra('D65',wave);   % D65 in energy units
     scene  = sceneSet(scene,'illuminant energy',curIll);
@@ -149,5 +154,5 @@ end
 
 scene = sceneSet(scene,'illuminant comment',fullName);
 
-return;
+end
 
