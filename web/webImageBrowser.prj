@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.ezdeploy" plugin-version="1.0">
-  <configuration build-checksum="869726178" file="B:\iset\isetcam\web\webImageBrowser.prj" location="B:\iset\isetcam\web" name="webImageBrowser" preferred-package-location="s:\code\iset\webImageBrowser\for_redistribution" preferred-package-type="package.type.exe" target="target.ezdeploy.standalone" target-name="Application Compiler">
+  <configuration build-checksum="2145853442" file="B:\iset\isetcam\web\webImageBrowser.prj" location="B:\iset\isetcam\web" name="webImageBrowser" preferred-package-location="s:\code\iset\webImageBrowser\for_redistribution" preferred-package-type="package.type.exe" target="target.ezdeploy.standalone" target-name="Application Compiler">
     <param.appname>webImageBrowser</param.appname>
     <param.icon />
     <param.icons />
@@ -96,7 +96,6 @@
       <file>B:\iset\isetcam\camera\cameraSet.m</file>
       <file>B:\iset\isetcam\camera\cameraVSNR_SL.m</file>
       <file>B:\iset\isetcam\color\cct.m</file>
-      <file>B:\iset\isetcam\color\cct.mat</file>
       <file>B:\iset\isetcam\color\chromaticity.m</file>
       <file>B:\iset\isetcam\color\chromaticityPlot.m</file>
       <file>B:\iset\isetcam\color\colorBlockMatrix.m</file>
