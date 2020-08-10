@@ -42,12 +42,16 @@ ieAddObject(sensor); sensorImageWindow;
 % sensor, saving the data in sData.  Choose the middle row. 
 row = sensorGet(sensor,'rows'); row = round(row/2);
 [g, sData] = sensorPlotLine(sensor,'h','volts','space',[1,row]);
-close(g);
+if ~isdeployed % close gets an error when we run a Windows EXE
+    close(g);
+end
 
 %% Generate the optical image plot for illuminance
 row   = sceneGet(oi,'rows'); row = round(row/2);
 [oData,g] = oiPlot(oi,'horizontal line illuminance',[1,row]);
-close(g);
+if ~isdeployed % close gets an error when we run a Windows EXE
+    close(g);
+end
 
 % One set of data is in volts and the other in illuminance.  Normalize them
 % to a common 0,1 range
@@ -82,11 +86,16 @@ ieAddObject(sensorSmall); sensorImageWindow;
 row = sensorGet(sensorSmall,'rows'); row = round(row/2);
 
 [g, sData] = sensorPlotLine(sensorSmall,'h','volts','space',[1,row]);
-close(g);
+if ~isdeployed % close gets an error when we run a Windows EXE
+    close(g);
+end
 
 row = sceneGet(oi,'rows'); row = round(row/2);
 
-[oData,g] = oiPlot(oi,'horizontallineilluminance',[1,row]); close(g);
+[oData,g] = oiPlot(oi,'horizontallineilluminance',[1,row]); 
+if ~isdeployed % close gets an error when we run a Windows EXE
+    close(g);
+end
 sData.normData = ieScale(sData.data,0,1);
 oData.normData = ieScale(oData.data,0,1);
 pSize = sensorGet(sensorSmall,'pixel width','microns');
