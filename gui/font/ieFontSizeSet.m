@@ -28,12 +28,12 @@ function fSize = ieFontSizeSet(fig,fSize)
 
 %% Set up parameters
 
-if ieNotDefined('fig'), error('Figure required.'); end;
+if ieNotDefined('fig'), error('Figure required.'); end
 
 % Pull out the current font size preference
 isetP = getpref('ISET');
 if checkfields(isetP,'fontSize'),   prefSize = isetP.fontSize;
-else prefSize = 12;  % Default preference
+else, prefSize = 12;  % Default preference
 end
 
 if ieNotDefined('fSize')

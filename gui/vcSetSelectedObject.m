@@ -25,11 +25,11 @@ function vcSetSelectedObject(objType,val)
 %  We should eliminate these routines and instead do the work through
 %  switch statements that go to ieSessionSet
 
-global vcSESSION;
+global vcSESSION; %#ok<NUSED>
 
 objType = vcEquivalentObjtype(objType);
 
-if isempty(val) || val < 1
+if logical(isempty(val)) || logical(val < 1)   % BW - 2020
     eval(['vcSESSION.SELECTED.',objType,'= [];'])
 else
     nObjects = length(vcGetObjects(objType));
