@@ -45,7 +45,7 @@ end
 %%  Get the data
 if checkfields(scene,'data','photons')
     % Don't duplicate the data.
-    photons = scene.data.photons;
+    photons = sceneGet(scene,'photons'); 
     wList   = sceneGet(scene,'wavelength');
     sz      = sceneGet(scene,'size');
 else

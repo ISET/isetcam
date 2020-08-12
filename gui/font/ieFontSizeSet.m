@@ -26,6 +26,20 @@ function fSize = ieFontSizeSet(fig,fSize)
 %
 % Copyright Imageval Consulting, LLC, 2015
 
+%{
+% For appDesigner
+% https://www.mathworks.com/matlabcentral/answers/504775-change-font-size-of-every-components-in-uifigure-app-designer-by-following-the-uifigures-s-size 
+
+app.UIFigure.Position(3)
+app.h = findobj(app.UIFigure, '-property', 'FontSize');
+app.hFontSize = cell2mat(get(app.h,'FontSize'));
+position = app.UIFigure.Position;
+            
+widthF = position(3);
+            
+newFontSize = double(widthF) * app.hFontSize / 1463.0;
+set(app.h,{'FontSize'}, num2cell(newFontSize));
+%}
 %% Set up parameters
 
 if ieNotDefined('fig'), error('Figure required.'); end
