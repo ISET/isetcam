@@ -129,8 +129,7 @@ if ieNotDefined('roiLocs')
                 'luminanceroi','luminance',...
                 'reflectanceroi','reflectance'}
             
-            [roiLocs, roiRect] = vcROISelect(scene);
-            ieROIDraw(scene,'shape','rect','shape data',roiRect);
+            roiLocs = ieROISelect(scene);  % Should be ieROIRectSelect() or add parameters
 
         case {'illuminantphotonsroi','illuminantenergyroi'}
             
@@ -621,8 +620,8 @@ switch lower(pType)
         % scenePlot(scene,'illuminant energy roi',roiLocs');
         % scenePlot(scene,'illuminant energy roi',[]);
         % Graph for spectral, image for spatial spectral
-        handle = ieSessionGet('scenewindowhandle');
-        ieInWindowMessage('',handle);       
+        app = ieSessionGet('scenewindow');
+        ieInWindowMessage('',app);       
         wave = sceneGet(scene,'illuminant wave');
         
         switch sceneGet(scene,'illuminant format')
@@ -641,7 +640,7 @@ switch lower(pType)
                 end
             otherwise
                 % No illuminant
-                ieInWindowMessage('No illuminant data.',handle);
+                ieInWindowMessage('No illuminant data.',app);
                 close(gcf)
         end
         plot(wave(:),energy,'-')
@@ -655,8 +654,8 @@ switch lower(pType)
         % scenePlot(scene,'illuminant photons')
         % scenePlot(scene,'illuminant photons roi',roiLocs);
         % Graph for spectral, image for spatial spectral
-        handle = ieSessionGet('scenewindowhandle');
-        ieInWindowMessage('',handle);
+        app = ieSessionGet('scenewindow');
+        ieInWindowMessage('',app);
         wave = sceneGet(scene,'illuminant wave');
         switch sceneGet(scene,'illuminant format')
             case 'spectral'

@@ -20,6 +20,7 @@ function ieFontInit(fig)
 
 % Get the preferred font size and set it.
 fSize = ieSessionGet('font size');
+
 ieFontSizeSet(fig,fSize);
 
-return;
+end

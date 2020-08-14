@@ -1,8 +1,8 @@
-function [roiLocs,rect] = ieROISelect(obj,objFig,varargin)
+function [roiLocs,roi] = ieROISelect(obj,varargin)
 % Select a region of interest (ROI) from an image and calculate locations  
 %
 % Syntax
-%   [roiLocs,rect] = ieROISelect(obj,[objFig],varargin)
+%   [roiLocs,roi] = ieROISelect(obj,varargin)
 %
 % Description
 %  The row and col locations of the region of interest (ROI) are returned
@@ -45,40 +45,41 @@ function [roiLocs,rect] = ieROISelect(obj,objFig,varargin)
 
 %%
 if ieNotDefined('obj'), error('You must define an object (isa,oi,scene ...)'); end
-if ieNotDefined('objFig')
-    objFig = vcGetFigure(obj);
-    
-    % If the returned figure is empty, the user probably did not set up the
-    % object window yet.  So we add the object to the database and open the
-    % window
-    if isempty(objFig)
-        % We should add ieAddAndSelect()
-        % ieAddObject(obj);
-        % Should become ieOpenWindow(obj)
-        switch obj.type
-            case 'scene'
-                objFig = sceneWindow(obj);
-            case 'opticalimage'
-                objFig = oiWindow(obj);
-            case 'sensor'
-                objFig = sensorWindow(obj);
-            case 'vcimage'
-                objFig = ipWindow(obj);
-            otherwise
-                error('Unknown obj type %s\n',obj.type);
-        end
+app = vcGetFigure(obj);
+
+% If the returned figure is empty, the user probably did not set up the
+% object window yet.  So we add the object to the database and open the
+% window
+if isempty(app)
+    % We should add ieAddAndSelect()
+    % ieAddObject(obj);
+    % Should become ieOpenWindow(obj)
+    switch obj.type
+        case 'scene'
+            app = sceneWindow_App(obj);
+        case 'opticalimage'
+            app = oiWindow(obj);
+        case 'sensor'
+            app = sensorWindow(obj);
+        case 'vcimage'
+            app = ipWindow(obj);
+        otherwise
+            error('Unknown obj type %s\n',obj.type);
     end
 end
 
-% Select points.  
-hndl = guihandles(objFig);
-msg = sprintf('Drag to select a region.');
-ieInWindowMessage(msg,hndl);
+
+% Select points.
+app.txtMessage.Text = 'Drag to select a region.';
 
 % Select an ROI graphically.  Calculate the row and col locations.
 % figure(objFig);
-rect = round(getrect(objFig));
-ieInWindowMessage('',hndl);
+% rect = round(getrect(objFig));
+% Should become a switch statement for the shape, ultimately.
+roi  = drawrectangle(app.sceneImage);
+rect = round(roi.Position);
+
+app.txtMessage.Text = '';
 
 % If the user double clicks without selecting a rectangle, we treat the
 % response as a single point.  We do this by making the size 1,1.

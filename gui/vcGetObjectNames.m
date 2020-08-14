@@ -1,16 +1,31 @@
-function objNames = vcGetObjectNames(objType)
+function objNames = vcGetObjectNames(objType,makeUnique)
 % Compile a list of object names from vcSESSION variable
 %
-%   objNames = vcGetObjectNames(objType)
+% Synopsis
+%   objNames = vcGetObjectNames(objType,[makeUnique])
 %
-% Returns the names of current objects of a given standard type. 
-% This routine also checks for empty objects, which sometimes arise because
-% of runtime errors, and deletes any empty objects of the given type.
+% Description:
+%   Returns the names of current objects of a given standard type. This
+%   routine also checks for empty objects, which sometimes arise because of
+%   runtime errors, and deletes any empty objects of the given type.
 %
-% Example
-%  vcGetObjectNames('oi')
+% Inputs:
+%   objType
+%
+% Optional
+%   makeUnique - logical
+%
+% Outputs
+%   objNames - Cell array of the object names, perhaps made unique
+%
+% Examples
+%  oiNames         = vcGetObjectNames('oi')
+%  namesMadeUnique = vcGetObjectNames('scene',true);
 %
 % Copyright ImagEval Consultants, LLC, 2005.
+% 
+% See also
+%  
 
 %% PROGRAMMING
 %
@@ -18,6 +33,7 @@ function objNames = vcGetObjectNames(objType)
 % inside of this routine
 
 if ieNotDefined('objType'), objType = 'scene'; end
+if ieNotDefined('makeUnique'), makeUnique = false; end
 
 objects = vcGetObjects(objType);
 nObj = length(objects);
@@ -58,6 +74,11 @@ else
     end
 end
 
-return
+if makeUnique
+    % We change them all by enumerating.
+    for ii=1:numel(objNames)
+        objNames{ii} = sprintf('%d-%s',ii,objNames{ii});
+    end
+end
 
-
+end

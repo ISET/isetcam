@@ -127,10 +127,8 @@ switch param
         vcSESSION.GUI.vcMainWindow.eventdata = varargin{1};
         vcSESSION.GUI.vcMainWindow.handles = varargin{2};
     case {'scenewindow'}
-        if length(varargin) < 2, error('scene window requires hObject,eventdata,handles'); end
-        vcSESSION.GUI.vcSceneWindow.hObject = val;
-        vcSESSION.GUI.vcSceneWindow.eventdata = varargin{1};
-        vcSESSION.GUI.vcSceneWindow.handles = varargin{2};
+        % We are now just storing the whole app struct
+        vcSESSION.GUI.vcSceneWindow.app = val;
     case {'oiwindow'}
         if length(varargin) < 2, error('optical image window requires hObject,eventdata,handles'); end
         vcSESSION.GUI.vcOptImgWindow.hObject = val;

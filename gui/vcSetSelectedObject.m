@@ -16,10 +16,11 @@ function vcSetSelectedObject(objType,val)
 %  vcSetSelectedObject('OPTICALIMAGE',3);
 %  vcSetSelectedObject('OPTICALIMAGE',3);
 %
+% Copyright ImagEval Consultants, LLC, 2005.
+%
 %  See also;
 %    ieAddObject, vcNewObjectValue
 %
-% Copyright ImagEval Consultants, LLC, 2005.
 
 % TODO:
 %  We should eliminate these routines and instead do the work through
@@ -27,11 +28,14 @@ function vcSetSelectedObject(objType,val)
 
 global vcSESSION; %#ok<NUSED>
 
+% Make sure we have the correct string
 objType = vcEquivalentObjtype(objType);
 
-if logical(isempty(val)) || logical(val < 1)   % BW - 2020
+if logical(isempty(val)) || logical(val < 1)
+    % No object is selected.
     eval(['vcSESSION.SELECTED.',objType,'= [];'])
 else
+    % Select the object.
     nObjects = length(vcGetObjects(objType));
     if val <= nObjects
         eval(['vcSESSION.SELECTED.',objType,'= val;']);
@@ -40,5 +44,4 @@ else
     end
 end
 
-
-return;
+end

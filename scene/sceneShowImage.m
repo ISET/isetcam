@@ -36,7 +36,8 @@ if ieNotDefined('displayFlag'), displayFlag = 1; end
 
 try
     % If this is to a sceneWindow, get the axis.
-    sceneAxis = ieSessionGet('scene axis');
+    hdl = ieSessionGet('scene window');
+    sceneAxis = hdl.CurrentAxes;
 catch
     % If there is no sceneWindow, set this to empty
     sceneAxis = [];

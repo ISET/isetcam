@@ -63,7 +63,7 @@ show = false;
 if displayFlag > 0, show = true; end
     
 % Convert the SPD data to a visible range image
-if (method == 0) || (method == 1)
+if isequal(method,0) || isequal(method,1)
     
     XYZ = ieXYZFromPhotons(SPD,wList);
     

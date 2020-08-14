@@ -210,7 +210,9 @@ switch param
         end
     case {'scenewindow','scenefigure','sceneimagefigure','sceneimagefigures'}
         if checkfields(vcSESSION,'GUI','vcSceneWindow')
-            val = vcSESSION.GUI.vcSceneWindow.hObject;
+            val = vcSESSION.GUI.vcSceneWindow.app;
+            % val = app.figure1;
+            % val = vcSESSION.GUI.vcSceneWindow.hObject;
         end
     case {'oiwindow','oifigure','opticalimagefigure','oifigures','opticalimagefigures'}
         if checkfields(vcSESSION,'GUI','vcOptImgWindow')
