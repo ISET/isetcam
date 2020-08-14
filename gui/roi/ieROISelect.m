@@ -47,6 +47,8 @@ function [roiLocs,roi] = ieROISelect(obj,varargin)
 if ieNotDefined('obj'), error('You must define an object (isa,oi,scene ...)'); end
 app = vcGetFigure(obj);
 
+%% Check that the window exists!
+
 % If the returned figure is empty, the user probably did not set up the
 % object window yet.  So we add the object to the database and open the
 % window
@@ -69,16 +71,17 @@ if isempty(app)
 end
 
 
-% Select points.
+%% Select points.
+
+% Tell the user
 app.txtMessage.Text = 'Drag to select a region.';
 
-% Select an ROI graphically.  Calculate the row and col locations.
-% figure(objFig);
-% rect = round(getrect(objFig));
-% Should become a switch statement for the shape, ultimately.
+% Select an ROI graphically. This should become a switch statement for the
+% shape, ultimately. 
 roi  = drawrectangle(app.sceneImage);
 rect = round(roi.Position);
 
+% Clear the in window message
 app.txtMessage.Text = '';
 
 % If the user double clicks without selecting a rectangle, we treat the
@@ -92,4 +95,3 @@ end
 roiLocs = ieRect2Locs(rect);
 
 end
-

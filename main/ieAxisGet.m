@@ -36,7 +36,8 @@ end
 
 switch lower(vcEquivalentObjtype(obj))
     case 'scene'
-        ax = get(sceneWindow,'CurrentAxes');
+        app = ieSessionGet('scene window');
+        ax = app.sceneImage;
     case 'opticalimage'
         ax = get(oiWindow,'CurrentAxes');
     case 'isa'

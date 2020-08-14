@@ -1,14 +1,22 @@
-function pointLoc = vcPointSelect(obj,nPoints,msg)
+function [pointLoc,pt] = vcPointSelect(obj,nPoints,msg)
 % Select point locations from an ISET window. 
 %
-%   pointLoc = vcPointSelect(obj,[nPoints = 1],[msg])
+%   [pointLoc, pt] = vcPointSelect(obj,[nPoints = 1],[msg])
 %
+% Input
+%   obj
+%   nPoints
+%   msg
+%
+% Output
 %  pointLoc: Returns the (x,y) = (col,row) values. During the point
 %  selection process.  The upper left is (1,1).
 %
 %      left click is used to choose a point, 
 %      backspace deletes the previous point, 
 %      right click indicates done.
+%
+% Needs a re-write ...
 %
 %  If nPoints is not specified, then nPoints = 1 is assumed.  In that case,
 %  a single right click is all that is required. 
@@ -22,22 +30,26 @@ function pointLoc = vcPointSelect(obj,nPoints,msg)
 %   pointLoc = vcPointSelect(vcGetObject('sensor'),3,'Help me')
 %
 % Copyright ImagEval Consultants, LLC, 2005.
-
+%
+% See also
+%   ieROISelct
+%
 if ieNotDefined('obj'), error('Object is required (isa,oi,scene ...)'); end
 if ieNotDefined('nPoints'), nPoints = 1; end
 if ieNotDefined('msg')
-    msg = sprintf('Right click to select point');
+    msg = sprintf('Click to select point');
 end
 
-objFig = vcGetFigure(obj); 
+if ieNotDefined('obj'), error('You must define an object (isa,oi,scene ...)'); end
+app = vcGetFigure(obj);
 
 % Select points.  
-hndl = guihandles(objFig);
-ieInWindowMessage(msg,hndl);
+app.txtMessage.Text = msg;
 
-[y,x] = getpts(objFig);
-x = round(x); y = round(y);
-ieInWindowMessage('',hndl);
+pt = drawpoint(app.sceneImage);
+x = round(pt.Position(2)); y = round(pt.Position(1));
+
+app.txtMessage.Text = '';
 
 if length(x) < nPoints
     pointLoc = [];
@@ -53,5 +65,4 @@ end
 pointLoc(:,1) = y(list);
 pointLoc(:,2) = x(list);
 
-return;
-
+end
