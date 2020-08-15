@@ -802,9 +802,9 @@ switch parm
         % sceneGet(scene,'display gamma')
 
         % See if there is a display window
-        W = ieSessionGet('scene window handle');
-        if isempty(W), val = 1;  % Default if no window
-        else, val = str2double(get(W.editGamma,'string'));
+        thisW = ieSessionGet('scene window');
+        if isempty(thisW), val = 1;  % Default if no window
+        else, val = str2double(thisW.editGamma.Value);
         end
         
         % MCC related regions of interest and handles.  Works with

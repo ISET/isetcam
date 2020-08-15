@@ -74,7 +74,7 @@ figNum = vcSelectFigure('SCENE');  figure(figNum);
 
 % Get the integer that indicates which element of the displayFlag is
 % selected.
-displayFlag = find(contains(app.popupDisplay.Value,app.popupDisplay.Items));
+displayFlag = find(contains(app.popupDisplay.Items,app.popupDisplay.Value));
 
 % Get the display gamma value from the app UI
 gam = str2double(app.editGamma.Value);

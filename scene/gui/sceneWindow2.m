@@ -22,7 +22,11 @@ function thisWindow = sceneWindow2(scene)
 
 %% Add the scene to the database if it is in the call
 
-if exist('scene','var'), ieAddObject(scene); end
+if exist('scene','var')
+    ieAddObject(scene); 
+else
+    ieAddObject(sceneCreate);
+end
 
 %% See if there is a live window.
 thisWindow = ieSessionGet('scene window');

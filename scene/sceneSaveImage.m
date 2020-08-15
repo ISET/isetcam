@@ -24,7 +24,7 @@ function fName = sceneSaveImage(scene,fName)
 %{
   % We save the data using the flags in the oiWindow, if it is open.
   % Otherwise, the standard RGB with gam = 1.
-  scene = sceneCreate; sceneWindow(scene);
+  scene = sceneCreate;
   fName = sceneSaveImage(scene,'deleteMe');   % PNG is appended
   img = imread(fName); ieNewGraphWin; image(img);
   delete(fName);
@@ -38,11 +38,14 @@ if ieNotDefined('fName')
 end
 
 gam     = sceneGet(scene,'display gamma');
-handles = ieSessionGet('scene handles');
+thisW = ieSessionGet('scene window');
+
 % The negative value means we do not bring up a window to show the image in
 % this routine.
-if isempty(handles),  displayFlag = -1;
-else,                 displayFlag = -1*abs(get(handles.popupDisplay,'Value'));
+if isempty(thisW)
+    displayFlag = -1;
+else
+    displayFlag = -1*find(contains(thisW.popupDisplay.Items,thisW.popupDisplay.Value));
 end
 
 % Scale to max of 1 for output below; needed for gray scale case.
@@ -54,8 +57,7 @@ if isempty(p), p = pwd; end
 if isempty(e), e = '.png'; end
 fName = fullfile(p,[n,e]);
 
-% Always has a png extension.  So, no 'png' argument needed.
-% Written out as 8 bit for PNG format.
+% Always has a png extension. Written out as 8 bit for PNG format.
 imwrite(RGB,fName);
 
 % Have a look
