@@ -33,6 +33,7 @@ if isempty(scene)
     app.popupSelectScene.Value = app.popupSelectScene.Items{1};
     
 else
+    % 
     if ~isfield(scene,'depthMap')
         % Text boxes on right: we should reduce the fields in SCENE.
         app.editDistance.Visible = 'on';
@@ -70,7 +71,7 @@ app.txtSceneDescription.Text = sceneDescription(scene);
 %% Get the gamma and displayFlag from the scene window.
 
 % Make sure we are looking at the scene figure.
-figNum = vcSelectFigure('SCENE');  figure(figNum);
+% figNum = vcSelectFigure('SCENE');  figure(figNum);
 
 % Get the integer that indicates which element of the displayFlag is
 % selected.
@@ -80,7 +81,7 @@ displayFlag = find(contains(app.popupDisplay.Items,app.popupDisplay.Value));
 gam = str2double(app.editGamma.Value);
 
 % Display the RGB image in the sceneAxis of the scene window
-sceneShowImage(scene,displayFlag,gam);
+sceneShowImage(scene,displayFlag,gam,app);
 
 % Refresh the font size
 ieFontSizeSet(app,0);

@@ -97,11 +97,15 @@ end
 
 end
 
-% Create a default display structure
+%% Create a default display structure
+
 function d = displayDefault(d)
 % Create a default display that works well with the imageSPD rendering
 % routine.  See vcReadImage for more notes.  Or move those notes here.
-%
+
+% I now think we should use one of the calibrated displays as the default.
+% But I am reluctant to change for compatibility reasons (BW).
+
 wave = 400:10:700;
 spd = pinv(colorBlockMatrix(length(wave)))/700;  % Makes 100 cd/m2 peak
 d = displaySet(d,'wave',wave);
