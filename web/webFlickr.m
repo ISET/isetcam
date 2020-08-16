@@ -45,6 +45,10 @@ classdef webFlickr
                 string(fPhoto.id), "_" + string(fPhoto.secret), "_" + string(sizeSuffix), ".jpg");
         end
         
+        function ourImage = getImage(obj, fPhoto, wantSize)
+            ourURL = getImageURL(obj, fPhoto, wantSize);
+            ourImage = webread(ourURL);   
+        end
     end
 end
 
