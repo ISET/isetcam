@@ -126,11 +126,17 @@ end
 %% Deal with gamma
 if ~isequal(gam,1), rgb = rgb.^gam; end
 
-% In some cases imageSPD is called directly, not through sceneShowImage.
-% In that case we show the data if the displayFlag sign is positive. If
+
+% sceneShowImage always sets the displayFlag to negative.  So in that main
+% usage, we never show here.  Instead we show there.
+%
+% In other cases imageSPD is called directly, not through sceneShowImage.
+% In those cases we show the data if the displayFlag sign is positive. If
 % displayFlag is negative, imageSPD just returns the rgb values.
 if displayFlag >= 0
     if ieNotDefined('sceneW'), sceneW = sceneWindow; end
+    % sprintf('imageSPD:  %s\n',sceneW.figure1.Name)
+    figure(sceneW.figure1);  % Make sure it is selected
     cla(sceneW.sceneImage);  % Should be called imageAxis
     if ieNotDefined('xcoords') || ieNotDefined('ycoords')
         imagescRGB(rgb); axis image; axis off

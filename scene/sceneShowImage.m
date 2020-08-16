@@ -54,8 +54,12 @@ if ieNotDefined('gam'),         gam = 1;         end
 if ieNotDefined('displayFlag'), displayFlag = 1; end
 if ieNotDefined('sceneW'),      sceneW = [];     end
 
-if ~isempty(sceneW), sceneAxis = sceneW.sceneImage; 
-else, sceneAxis = []; end
+if ~isempty(sceneW)
+    disp(sceneW.figure1.Name);
+    sceneAxis = sceneW.sceneImage; 
+else
+    sceneAxis = []; 
+end
 
 %%  Get the data
 if checkfields(scene,'data','photons')
@@ -75,7 +79,8 @@ end
 % converts the data into a displayed image.  It is determined from the GUI
 % from the app.
 
-% Clearing the axis eliminates any ROI overlays
+% The displayFlag is always set to negative.  So imageSPD does not show the
+% image.  Rather, we show it upon return here.
 rgb = imageSPD(photons,wList,gam,sz(1),sz(2),-1*abs(displayFlag),[],[],sceneW);
 
 %% We could add back ROIs/overlays here, if desired.
@@ -83,6 +88,8 @@ rgb = imageSPD(photons,wList,gam,sz(1),sz(2),-1*abs(displayFlag),[],[],sceneW);
 % If value is positive, display the rendered RGB. If negative, we just
 % return the RGB values.
 if displayFlag >= 0
+    % sprintf('sceneShowImage:  %s\n',sceneW.figure1.Name)
+    figure(sceneW.figure1);  % Make sure it is selected
     cla(sceneW.sceneImage);  % Should be called imageAxis
     if ieNotDefined('xcoords') || ieNotDefined('ycoords')
         imagescRGB(rgb); axis image; axis off
