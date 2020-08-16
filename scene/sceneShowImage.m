@@ -55,7 +55,7 @@ if ieNotDefined('displayFlag'), displayFlag = 1; end
 if ieNotDefined('sceneW'),      sceneW = [];     end
 
 if ~isempty(sceneW)
-    disp(sceneW.figure1.Name);
+    % disp(sceneW.figure1.Name);
     sceneAxis = sceneW.sceneImage; 
 else
     sceneAxis = []; 

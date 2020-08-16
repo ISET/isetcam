@@ -97,11 +97,10 @@ switch parm
         % sceneSet([],'gamma',1);
         % Should this be ieSessionSet('scene gamma',val)
         % hObj = ieSessionGet('scene window');
-        hdl = ieSessionGet('scene window handle');
+        sceneW = ieSessionGet('scene window');
         % eventdata = [];
-        set(hdl.editGamma,'string',num2str(val));
-        % sceneWindow('sceneRefresh',hObj,eventdata,hdl);
-        sceneWindow;
+        sceneW.editGamma.Value = num2str(val);
+        sceneW.refresh;
     case {'displaymode'}
         % sceneSet(scene,'display mode','hdr');
         
