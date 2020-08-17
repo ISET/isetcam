@@ -37,9 +37,10 @@ classdef webFlickr
         %https://farm{farm-id}.staticflickr.com/{server-id}/{id}_{secret}_[mstzb].jpg
         function ourURL = getImageURL(obj, fPhoto, wantSize)
             if isequal(wantSize, 'thumbnail')
-                sizeSuffix = 't'; % 100 px longest side is t
+                % t seems too small, m is a little slow, try q
+                sizeSuffix = 'q'; % 150 px is q, 100,240 px longest side is t,m
             else
-                sizeSuffix = 'b'; % 1024 px for now
+                sizeSuffix = 'b'; % b is 1024 px for now, k = 2048 requires auth
             end 
             ourURL = strcat("https://farm", string(fPhoto.farm), ".staticflickr.com/", string(fPhoto.server) + "/", ...
                 string(fPhoto.id), "_" + string(fPhoto.secret), "_" + string(sizeSuffix), ".jpg");
