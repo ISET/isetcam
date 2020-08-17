@@ -1,16 +1,34 @@
 function sceneOpen(app)
-% Initialize sceneWindow
+% Deprecated
+%   Moved into sceneWindow_App
 % 
-%    sceneOpen(hObject,eventdata,handles)
+% Synopsis
+%    sceneOpen(app)
 %
-% Copyright ImagEval Consultants, LLC, 2005.
+% Inputs
+%  app:   sceneWindow_App
+%
+% Outputs
+%  N/A
+%
+% See also
+%   sceneWindow_App
 
-% Choose default command line output for microLensWindow
+error('Moved')
 
+end
+
+%{
 % Store the app iin the database for when we need it.
-vcSetFigureHandles('SCENE',app);
+if isempty(ieSessionGet('scene window'))
+    disp('Storing this sceneWindow_App in database');
+    ieSessionSet('scene window',app);
+else
+    disp('sceneWindow_App exists in database. This as an extra window');
+end
 
 %  Check the preferences for ISET and adjust the font size.
 ieFontInit(app);
 
 end
+%}

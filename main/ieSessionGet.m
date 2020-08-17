@@ -259,16 +259,9 @@ switch param
         if ~isempty(v), val = guihandles(v); end
         
     case {'sceneaxis'}
-        % This will be Matlab version dependent, sigh.  This works for
-        % 2013b, but probably not for later versions.  So, we need to check
-        % before long.
-        %
-        % Also, I had to change the settings in the guide window that
-        % allows the gui window to be selected from the command line
-        % Tools | Gui Options | Pulldown window.
-        % BUt I think that is done now (BW).
-        hdl = ieSessionGet('scenewindow');
-        hdl = get(hdl); val = hdl.CurrentAxes;
+        % For app design.  All of the others will need updating, too.
+        sceneW = ieSessionGet('scene window');
+        val = sceneW.sceneImage;
     case {'oiaxis'}
         hdl = ieSessionGet('oiwindow');
         hdl = get(hdl); val = hdl.CurrentAxes;

@@ -1,22 +1,12 @@
-function RGB = imageSPD(SPD,wList,gam,row,col,displayFlag,xcoords,ycoords)
+function rgb = imageSPD(spd,wList,gam,row,col,displayFlag,xcoords,ycoords,sceneW)
 % Derive an RGB image from an SPD (photons) data
 %
-%     RGB = imageSPD(SPD,[wList],[gam],[row],[col],[displayFlag=1],[x coords],[y coords])
+%     RGB = imageSPD(spd,[wList],[gam],[row],[col],[displayFlag=1],[xcoords],[ycoords],[sceneW])
 %
-% The RGB image represents the appearance of the spectral power
-% distribution (spd) data.  The input spd data should be in RGB format.
+% Brief description
 %
-% In the typical method, the RGB image is created by converting the image
-% SPD (photons) to XYZ, and then converting the XYZ to sRGB format
-% (xyz2srgb). The conversion to XYZ is managed so that the largest XYZ
-% value is 1.
-%
-% The routine can also be used to return the sRGB values without displaying
-% the data. All the conditions with displayFlag < 0 just compute, don't
-% display.
-%
-% The image can be displayed with a spatial sampling grid overlaid to
-% indicate the position on the optical image or sensor surface.
+%  The RGB image represents the appearance of the spectral power
+%  distribution (spd) data.  The input spd data should be in RGB format.
 %
 % wList: the sample wavelengths of the SPD 
 %           (default depends on the number of wavelength samples)
@@ -29,22 +19,42 @@ function RGB = imageSPD(SPD,wList,gam,row,col,displayFlag,xcoords,ycoords)
 %     = +/- 3,   use HDR method (hdrRender.m)
 %     = +/- 4,   clip highlights (Set top 0.05 percent of pixels to max) 
 %     
-%  x and y:  Coords (spatial positions) of the image points, to be shown as
-%            image grid
+%  xcoords, ycoords: Spatial coords of the image points, to be shown as
+%                    image grid
 %
+%  sceneW:  The sceneWindow_App object.  sceneW.sceneImage is the display
+%           axis.
+%
+% Description:
+%  In the typical method, the RGB image is created by converting the image
+%  SPD (photons) to XYZ, and then converting the XYZ to sRGB format
+%  (xyz2srgb). The conversion to XYZ is managed so that the largest XYZ
+%  value is 1.
+%
+%  The routine can also be used to return the sRGB values without displaying
+%  the data. All the conditions with displayFlag < 0 just compute, don't
+%  display.
+%
+%  The image can be displayed with a spatial sampling grid overlaid to
+%  indicate the position on the optical image or sensor surface.
+%
+% Copyright ImagEval Consultants, LLC, 2005.
+%
+% See also
+%   sceneShowImage
+
 % Examples:
 %   imageSPD(spdData,[], 0.5,[],[],1);   % spdData is [r,c,w]
 %   imageSPD(spdData,[], 0.6,128,128);   % spdData is [128*128,w]              
 %   rgb = imageSPD(spdData,[], 0.5,[],[],0);  % rgb is calculated, but not displayed
 %
-% Copyright ImagEval Consultants, LLC, 2005.
 
 %%
 if ieNotDefined('gam'), gam = 1; end
 if ieNotDefined('displayFlag'), displayFlag = 1; end
 
 if ieNotDefined('wList')
-    w = size(SPD,3);
+    w = size(spd,3);
     if     w == 31,  wList = (400:10:700); 
     elseif w == 301, wList = (400:1:700);
     elseif w == 37,  wList = (370:10:730);
@@ -59,13 +69,11 @@ end
 
 %% Parse the display flag
 method = abs(displayFlag);
-show = false;
-if displayFlag > 0, show = true; end
     
 % Convert the SPD data to a visible range image
 if isequal(method,0) || isequal(method,1)
     
-    XYZ = ieXYZFromPhotons(SPD,wList);
+    XYZ = ieXYZFromPhotons(spd,wList);
     
     % We are considering getting rid of this normalization.  The user
     % may want to set the relative intensity, so that two scenes with
@@ -73,31 +81,31 @@ if isequal(method,0) || isequal(method,1)
     % well.  By including this, we force all the images to be
     % normalized so tha the brightest point is the same.
     XYZ = XYZ/max(XYZ(:));
-    RGB = xyz2srgb(XYZ);
+    rgb = xyz2srgb(XYZ);
     
     % Person asked for a different gamma, so give it to them
-    if ~isequal(gam,1), RGB = RGB.^gam; end
+    if ~isequal(gam,1), rgb = rgb.^gam; end
 
 elseif method == 2    % Gray scale image, used for SWIR, NIR
     
-    RGB = zeros(row,col,3);
-    RGB(:,:,1) = reshape(mean(SPD,3),row,col);
-    RGB(:,:,2) = RGB(:,:,1);
-    RGB(:,:,3) = RGB(:,:,1);
+    rgb = zeros(row,col,3);
+    rgb(:,:,1) = reshape(mean(spd,3),row,col);
+    rgb(:,:,2) = rgb(:,:,1);
+    rgb(:,:,3) = rgb(:,:,1);
     
     % We need to scale only for this case.  The othercases handle in their
     % own way.
-    RGB = ieScale(RGB,1);
+    rgb = ieScale(rgb,1);
 
 elseif method == 3   % HDR display method
     
-    XYZ = ieXYZFromPhotons(SPD,wList);
+    XYZ = ieXYZFromPhotons(spd,wList);
     XYZ = XYZ/max(XYZ(:));
-    RGB = xyz2srgb(XYZ);
-    RGB = hdrRender(RGB);
+    rgb = xyz2srgb(XYZ);
+    rgb = hdrRender(rgb);
 
 elseif method == 4  % Clip the highlights (NYI)
-    XYZ = ieXYZFromPhotons(SPD,wList);
+    XYZ = ieXYZFromPhotons(spd,wList);
     
     % Find a reasonable place to clip the highlights
     Y = XYZ(:,:,2);
@@ -108,30 +116,39 @@ elseif method == 4  % Clip the highlights (NYI)
     XYZ = ieClip(XYZ,0,yClip);
     XYZ = XYZ/max(XYZ(:));   % Scale for rendering in XYZ and then sRGB
     
-    RGB = xyz2srgb(XYZ);
-    RGB = hdrRender(RGB);
+    rgb = xyz2srgb(XYZ);
+    rgb = hdrRender(rgb);
     
 else
     error('Unknown display flag value: %d\n',displayFlag);
 end
 
 %% Deal with gamma
-if ~isequal(gam,1), RGB = RGB.^gam; end
+if ~isequal(gam,1), rgb = rgb.^gam; end
 
-% If value is positive, display the rendered RGB. If negative, we just
-% return the RGB values.
-if show
+
+% sceneShowImage always sets the displayFlag to negative.  So in that main
+% usage, we never show here.  Instead we show there.
+%
+% In other cases imageSPD is called directly, not through sceneShowImage.
+% In those cases we show the data if the displayFlag sign is positive. If
+% displayFlag is negative, imageSPD just returns the rgb values.
+if displayFlag >= 0
+    if ieNotDefined('sceneW'), sceneW = sceneWindow; end
+    % sprintf('imageSPD:  %s\n',sceneW.figure1.Name)
+    figure(sceneW.figure1);  % Make sure it is selected
+    cla(sceneW.sceneImage);  % Should be called imageAxis
     if ieNotDefined('xcoords') || ieNotDefined('ycoords')
-        imagescRGB(RGB); axis image; axis off
+        imagescRGB(rgb); axis image; axis off
     else
         % User specified a grid overlay
-        RGB = RGB/max(RGB(:));
-        RGB = ieClip(RGB,0,[]);
-        imagesc(xcoords,ycoords,RGB);
+        rgb = rgb/max(rgb(:));
+        rgb = ieClip(rgb,0,[]);
+        imagesc(xcoords,ycoords,rgb);
         axis image; grid on;
         set(gca,'xcolor',[.5 .5 .5]);
         set(gca,'ycolor',[.5 .5 .5]);
-    end    
+    end   
 end
 
 end
