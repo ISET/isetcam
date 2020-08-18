@@ -2,6 +2,7 @@ function sceneW = sceneWindow(scene)
 % Wrapper that replaces the GUIDE sceneWindow functionality
 %
 % Synopsis
+%   sceneW = sceneWindow(scene)
 %
 % Brief description
 %   Opens a sceneWindow interface based on the sceneWindow_App. 
@@ -16,11 +17,11 @@ function sceneW = sceneWindow(scene)
 %
 % Description
 %
-%  If there is a sceneWindow_App stored in the vcSESSION database, this interface
-%  opens that app.
+%  If there is a sceneWindow_App stored in the vcSESSION database, this
+%  interface opens that app.
 %
-%  If that slot is empty, this functioh creates one and stores it in the
-%  database. 
+%  If that slot is empty, this function creates one and stores it in the
+%  database.
 %
 %  The sceneWindow_Apps all show any of the scenes stored in the
 %  vcSESSION.SCENE database slot.
@@ -36,10 +37,6 @@ function sceneW = sceneWindow(scene)
 %{
    scene = sceneCreate;
    sceneWindow(scene);
-%}
-%{
-   scene = sceneCreate('slanted bar');
-   thisWindow = sceneWindow(scene);
 %}
 
 %% Add the scene to the database if it is in the call

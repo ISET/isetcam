@@ -1,7 +1,10 @@
-function bool = oiOpen(hObject,eventdata,handles)
+function bool = oiOpen(oiW)
+% Deprecated: Function is now public in oiWindow_App
+%
+%
 % Initialize oiWindow
 % 
-%    oiOpen(hObject,eventdata,handles)
+%    oiOpen(oiW)
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 

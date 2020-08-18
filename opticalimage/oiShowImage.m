@@ -1,7 +1,7 @@
-function rgb = oiShowImage(oi,displayFlag,gam)
-%Render an image of the scene data
+function rgb = oiShowImage(oi,displayFlag,gam,oiW)
+% Render an image of the oi data
 %
-%    rgb = oiShowImage(oi,displayFlag,gam)
+%    rgb = oiShowImage(oi,displayFlag,gam,oiW)
 %
 % oi:   Optical image
 % displayFlag: (see imageSPD; if value is 0 or negative, don't display)
@@ -19,11 +19,9 @@ function rgb = oiShowImage(oi,displayFlag,gam)
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
-% TODO:  Shouldn't we select the axes for rendering here?  There is only
-% one axis in the scene and oi window. But if we ever go to more, this
-% routine should  say which axis should be used for rendering.
-
-if isempty(oi), cla; return;  end
+%%
+if ieNotDefined('oiW'), oiW = ieSessionGet('oi window'); end
+if isempty(oi), clear(oiW.oiImage); return;  end
 
 if ieNotDefined('gam'), gam = 1; end
 if ieNotDefined('displayFlag'), displayFlag = 1; end
@@ -34,7 +32,7 @@ if checkfields(oi,'data','photons')
     wList   = oiGet(oi,'wavelength');
     sz      = oiGet(oi,'size');
 else 
-    cla
+    cla(oiW.oiImage);
     % warning('Photon data are not available for this oi.');
     return;
 end
@@ -44,6 +42,27 @@ end
 % in RGB format.
 %
 % We should probably select the oi window here.
-rgb = imageSPD(photons,wList,gam,sz(1),sz(2),displayFlag);
+rgb = imageSPD(photons,wList,gam,sz(1),sz(2),displayFlag,[],[],oiW);
+
+%% If displayFlag value is positive, display the rendered RGB. 
+
+% If negative, we just return the RGB values.
+if displayFlag >= 0
+    if ~isempty(oiW)
+        % Should be called imageAxis.  Not sure it is needed, really.
+        cla(oiW.oiImage);  
+    end
+    if ieNotDefined('xcoords') || ieNotDefined('ycoords')
+        imagescRGB(rgb); axis image; axis off
+    else
+        % User specified a grid overlay
+        rgb = rgb/max(rgb(:));
+        rgb = ieClip(rgb,0,[]);
+        imagesc(xcoords,ycoords,rgb);
+        axis image; grid on;
+        set(gca,'xcolor',[.5 .5 .5]);
+        set(gca,'ycolor',[.5 .5 .5]);
+    end   
+end
 
 end

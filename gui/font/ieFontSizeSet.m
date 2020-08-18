@@ -60,51 +60,21 @@ end
 minSize = 7; maxSize = 25;
 fSize = ieClip(fSize,minSize,maxSize);
 
-if isequal(class(fig),'sceneWindow_App')
-    % Perhaps we should implement as below.  Use one object as the base
-    % size and everything else as an offset from that.  Not hard to write.
-    % Lets us have multiple font sizes and manage them all.
-    
-    % Find handles to all the objects that have a font size
-    h = findobj(fig.figure1,'-property','FontSize');
-    for ii=1:numel(h)
-        h(ii).FontSize = fSize;
-    end
+% Perhaps we should implement as below.  Use one object as the base
+% size and everything else as an offset from that.  Not hard to write.
+% Lets us have multiple font sizes and manage them all.
 
-else
-    
-    %% Apply the new change in the font size to the window.
-    
-    % If there is no window, we just update the preference
-    % Get all the children of the figure.
-    t = allchild(fig);
-    
-    % Change the text displays
-    tHandles = findall(t,'Style','Text');
-    setFontSize(tHandles,fSize);
-    
-    % Change the popupmenu font sizes.
-    tHandles = findall(t,'Style','popupmenu');
-    setFontSize(tHandles,fSize);
-    
-    % Change the popupmenu font sizes.
-    tHandles = findall(t,'Style','edit');
-    setFontSize(tHandles,fSize);
-    
-    % Change the radiobutton font sizes.
-    tHandles = findall(t,'Style','radiobutton');
-    setFontSize(tHandles,fSize);
-    
-    % Change the pushbutton font sizes.
-    tHandles = findall(t,'Style','pushbutton');
-    setFontSize(tHandles,fSize);
-        
+% Find handles to all the objects that have a font size
+h = findobj(fig.figure1,'-property','FontSize');
+for ii=1:numel(h)
+    h(ii).FontSize = fSize;
 end
 
 setpref('ISET','fontSize',fSize);
 
 end
 
+%{
 % Set the size of the font for all of this type of handle
 function setFontSize(tHandles,fSize)
         
@@ -129,3 +99,4 @@ else
 end
 
 end
+%}

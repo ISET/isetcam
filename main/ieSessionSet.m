@@ -130,20 +130,19 @@ switch param
         % We are now just storing the whole app struct
         vcSESSION.GUI.vcSceneWindow.app = val;
     case {'oiwindow'}
-        if length(varargin) < 2, error('optical image window requires hObject,eventdata,handles'); end
-        vcSESSION.GUI.vcOptImgWindow.hObject = val;
-        vcSESSION.GUI.vcOptImgWindow.eventdata = varargin{1};
-        vcSESSION.GUI.vcOptImgWindow.handles = varargin{2};
+        vcSESSION.GUI.vcOptImgWindow.app = val;
     case {'sensorwindow'}
         if length(varargin) < 2, error('sensor window requires hObject,eventdata,handles'); end
-        vcSESSION.GUI.vcSensImgWindow.hObject = val;
-        vcSESSION.GUI.vcSensImgWindow.eventdata = varargin{1};
-        vcSESSION.GUI.vcSensImgWindow.handles = varargin{2};
+        vcSESSION.GUI.vcSensImgWindow.app = val;
+        % vcSESSION.GUI.vcSensImgWindow.hObject = val;
+        % vcSESSION.GUI.vcSensImgWindow.eventdata = varargin{1};
+        % vcSESSION.GUI.vcSensImgWindow.handles = varargin{2};
     case {'vcimagewindow','ipwindow'}
         if length(varargin) < 2, error('vcimage window requires hObject,eventdata,handles'); end
-        vcSESSION.GUI.vcImageWindow.hObject = val;
-        vcSESSION.GUI.vcImageWindow.eventdata = varargin{1};
-        vcSESSION.GUI.vcImageWindow.handles = varargin{2};
+        vcSESSION.GUI.vcImageWindow.app = val;
+        % vcSESSION.GUI.vcImageWindow.hObject = val;
+        %vcSESSION.GUI.vcImageWindow.eventdata = varargin{1};
+        % vcSESSION.GUI.vcImageWindow.handles = varargin{2};
     case {'displaywindow'}
         % Newly installed
         vcSESSION.GUI.vcDisplayWindow.hObject = val;

@@ -1,7 +1,7 @@
-function rgb = imageSPD(spd,wList,gam,row,col,displayFlag,xcoords,ycoords,sceneW)
+function rgb = imageSPD(spd,wList,gam,row,col,displayFlag,xcoords,ycoords,thisW)
 % Derive an RGB image from an SPD (photons) data
 %
-%     RGB = imageSPD(spd,[wList],[gam],[row],[col],[displayFlag=1],[xcoords],[ycoords],[sceneW])
+%     RGB = imageSPD(spd,[wList],[gam],[row],[col],[displayFlag=1],[xcoords],[ycoords],[thisW])
 %
 % Brief description
 %
@@ -22,8 +22,8 @@ function rgb = imageSPD(spd,wList,gam,row,col,displayFlag,xcoords,ycoords,sceneW
 %  xcoords, ycoords: Spatial coords of the image points, to be shown as
 %                    image grid
 %
-%  sceneW:  The sceneWindow_App object.  sceneW.sceneImage is the display
-%           axis.
+%  thisW:  The window_App object.  sceneW.sceneImage or oiW.oiImage is the
+%          display axis.
 %
 % Description:
 %  In the typical method, the RGB image is created by converting the image
@@ -41,7 +41,7 @@ function rgb = imageSPD(spd,wList,gam,row,col,displayFlag,xcoords,ycoords,sceneW
 % Copyright ImagEval Consultants, LLC, 2005.
 %
 % See also
-%   sceneShowImage
+%   sceneShowImage, oiShowImage
 
 % Examples:
 %   imageSPD(spdData,[], 0.5,[],[],1);   % spdData is [r,c,w]
@@ -126,18 +126,28 @@ end
 %% Deal with gamma
 if ~isequal(gam,1), rgb = rgb.^gam; end
 
-
-% sceneShowImage always sets the displayFlag to negative.  So in that main
-% usage, we never show here.  Instead we show there.
+% oiShowImage and sceneShowImage always sets the displayFlag to negative.
+% So in that main usage, we never show here.  Instead we show there.
 %
 % In other cases imageSPD is called directly, not through sceneShowImage.
 % In those cases we show the data if the displayFlag sign is positive. If
 % displayFlag is negative, imageSPD just returns the rgb values.
 if displayFlag >= 0
-    if ieNotDefined('sceneW'), sceneW = sceneWindow; end
+    if ieNotDefined('thisW')
+        warning('Assuming scene window, not oi window.'); 
+        thisW = ieSessionGet('scene window');
+    end
+    switch class(thisW)
+        case 'oiWindow_App'
+            cla(thisW.oiImage);  % Should be called imageAxis
+        case 'sceneWindow_App'
+            cla(thisW.sceneImage);  % Should be called imageAxis
+        otherwise
+            error('Unknown window_App');
+    end
+    
     % sprintf('imageSPD:  %s\n',sceneW.figure1.Name)
-    figure(sceneW.figure1);  % Make sure it is selected
-    cla(sceneW.sceneImage);  % Should be called imageAxis
+    figure(thisW.figure1);  % Make sure it is selected
     if ieNotDefined('xcoords') || ieNotDefined('ycoords')
         imagescRGB(rgb); axis image; axis off
     else

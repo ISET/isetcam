@@ -216,25 +216,26 @@ switch param
         end
     case {'oiwindow','oifigure','opticalimagefigure','oifigures','opticalimagefigures'}
         if checkfields(vcSESSION,'GUI','vcOptImgWindow')
-            val = vcSESSION.GUI.vcOptImgWindow.hObject;
+            val = vcSESSION.GUI.vcOptImgWindow.app;
         end
     case {'sensorwindow','sensorfigure','isafigure','sensorfigures','isafigures','isawindow'}
         if checkfields(vcSESSION,'GUI','vcSensImgWindow')
-            val = vcSESSION.GUI.vcSensImgWindow.hObject;
+            val = vcSESSION.GUI.vcSensImgWindow.app;
         end
     case {'ipwindow','ipfigure','vcimagefigure','vcimagefigures','vcimagewindow'}
         if checkfields(vcSESSION,'GUI','vcImageWindow')
-            val = vcSESSION.GUI.vcImageWindow.hObject;
+            val = vcSESSION.GUI.vcImageWindow.app;
         end
     case {'displaywindow'}
         if checkfields(vcSESSION,'GUI','vcDisplayWindow')
-            val = vcSESSION.GUI.vcDisplayWindow.hObject;
+            val = vcSESSION.GUI.vcDisplayWindow.app;
         end
     case {'metricswindow','metricsfigure','metricsfigures'}
         if checkfields(vcSESSION,'GUI','metricsWindow')
-            val = vcSESSION.GUI.metricsWindow.hObject;
+            val = vcSESSION.GUI.metricsWindow.app;
         end
         
+        %{
         % Handles to the guidata in the windows
     case {'mainguidata','mainwindowhandle','mainhandle','mainhandles'}
         v = ieSessionGet('mainfigure');
@@ -257,6 +258,7 @@ switch param
     case {'metricguidata','metricshandle','metricshandles','metricswindowhandles','metricswindowhandle'}
         v = ieSessionGet('vcimagefigure');
         if ~isempty(v), val = guihandles(v); end
+     %}
         
     case {'sceneaxis'}
         % For app design.  All of the others will need updating, too.
