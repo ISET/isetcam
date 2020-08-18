@@ -55,8 +55,8 @@ if ieNotDefined('displayFlag'), displayFlag = 1; end
 if ieNotDefined('sceneW'),      sceneW = [];     end
 
 if ~isempty(sceneW)
-    % disp(sceneW.figure1.Name);
-    sceneAxis = sceneW.sceneImage; 
+    figure(sceneW.figure1);   % Make sure it is selected
+    sceneAxis = sceneW.sceneImage;
 else
     sceneAxis = []; 
 end
@@ -88,9 +88,10 @@ rgb = imageSPD(photons,wList,gam,sz(1),sz(2),-1*abs(displayFlag),[],[],sceneW);
 % If value is positive, display the rendered RGB. If negative, we just
 % return the RGB values.
 if displayFlag >= 0
-    % sprintf('sceneShowImage:  %s\n',sceneW.figure1.Name)
-    figure(sceneW.figure1);  % Make sure it is selected
-    cla(sceneW.sceneImage);  % Should be called imageAxis
+    if ~isempty(sceneAxis)
+        % Should be called imageAxis.  Not sure it is needed, really.
+        cla(sceneW.sceneImage);  
+    end
     if ieNotDefined('xcoords') || ieNotDefined('ycoords')
         imagescRGB(rgb); axis image; axis off
     else

@@ -70,7 +70,7 @@ for ii=selectedObjs
     end
     switch objType
         case 'SCENE'
-            gam = ieSessionGet('scene gamma');      % gamma in the window!
+            gam = sceneGet(objList{ii},'gamma');      % gamma in the window!
             % Use the same display method, but do not show in the scene
             % window.  The -1 makes that happen
             displayFlag = abs(ieSessionGet('scene display flag')); % RGB, HDR, Gray

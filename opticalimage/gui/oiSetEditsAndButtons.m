@@ -1,4 +1,4 @@
-function oiSetEditsAndButtons(handles)
+function oiSetEditsAndButtons(app)
 % Refresh the buttons and edit fields in the optical image window
 %
 %   oiSetEditsAndButtons(handles)
@@ -10,7 +10,7 @@ function oiSetEditsAndButtons(handles)
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
-[val,oi] = vcGetSelectedObject('OPTICALIMAGE');
+[oi, val] = ieGetObject('OPTICALIMAGE');
 if isempty(oi)
     oi = oiCreate;
     val = 1;
@@ -18,45 +18,39 @@ end
 
 % Clear the inline message
 optics = oiGet(oi,'optics');
-ieInWindowMessage('',handles,[]);
+ieInWindowMessage('',app,[]);
 
 % Which optics model
 opticsModel = opticsGet(optics,'model');
 
 % Append the oi names to 'New'
-names = {'New'};
 oiNames = vcGetObjectNames('OPTICALIMAGE');
-for ii=1:length(oiNames),names{ii+1} = char(oiNames(ii)); end
+Items = cellMerge({'New OI'}, oiNames);
 
-% Select the appropriate OI entry to display.
-if length(names) > 1, val = val+1; end
-set(handles.SelectOptImg,'String',names,'Value',val);
-% We use a slightly different logic in sceneSetEditsAndButtons.
-
-% Set the custom compute button.  Now obsolete.
-% customCompute = oiGet(oi,'customCompute');
-% set(handles.btnCustom,'Value',customCompute);
-% set(handles.btnCustom,'Visible','off');
+app.SelectOptImg.Items = Items;
+app.SelectOptImg.Value = Items{1 + val};
 
 % Buttons
 % Check the custom compute
 switch lower(opticsModel)
     
     case {'diffractionlimited','dlmtf'}
-        set(handles.popOpticsModel,'Value',1);
-        switchControlVisibility(handles,'on');
+        app.popOpticsModel.Value = app.popOpticsModel.Items{1}; 
         
         % Set the diffraction limited optics parameters
         optics = oiGet(oi,'optics');
         str = sprintf('%2.2f',opticsGet(optics,'focalLength','mm'));
-        set(handles.editFocalLength,'String',str);
-        str = sprintf('%1.2f',opticsGet(optics,'fnumber'));
-        set(handles.editFnumber,'String',str);
+        app.editFocalLength.Value = str;
         
-        val = opticsGet(optics,'offaxismethod');
-        if strcmpi(val,'skip'), set(handles.btnOffAxis, 'Value',0);
+        str = sprintf('%1.2f',opticsGet(optics,'fnumber'));
+        app.editFnumber.Value = str;
+        
+        %{
+        val = opticsGet(optics,'off axis method');
+        if strcmpi(val,'skip'), app.btnOffAxis, 'Value',0);
         else, set(handles.btnOffAxis, 'Value',1);
         end
+        %}
         
     case 'shiftinvariant'
         % The SI model may have a wvf attached, or not.
@@ -84,12 +78,13 @@ dMethod = oiGet(oi,'diffuserMethod');
 
 switch lower(dMethod)
     case 'skip'
-        set(handles.popDiffuser,'val',1)
-        set(handles.editDiffuserBlur,'visible','off');
-        set(handles.txtBlurSD,'visible','off');
+        app.popDiffuser.Value =  app.popDiffuser.Items{1};
+        app.editDiffuserBlur.Visible = 'off';
+        app.txtBlurSD.Visible = 'off';
+        %{
         set(handles.popDiffuser,'Position',[0.756 0.109 0.11 0.043])
         set(handles.txtDiffuser,'Position',[0.756 .165 0.082 0.029])
-        
+        %}
     case 'blur'
         set(handles.popDiffuser,'val',2)
         set(handles.editDiffuserBlur,'visible','on');
@@ -124,6 +119,7 @@ switch lower(dMethod)
         error('Unknown diffuser method %s\n',dMethod);
 end
 
+%{
 % If the incoming call set consistency true, then we eliminate the red
 % square on the window.  Otherwise, consistency is false.  We always set
 % consistency to false on the way out.  This overdoes it so that sometimes
@@ -136,28 +132,28 @@ if oiGet(oi,'consistency')
 else
     set(handles.txtConsistency,'BackgroundColor',[1,0,0]);
 end
+%}
 
-gam = str2double(get(handles.editGamma,'String'));
+gam = str2double(app.editGamma.Value);
 
-% Select the figure
-figure(ieSessionGet('oi window'));
-% figNum = vcSelectFigure('OI');
-% figure(figNum);
+% Select the OI figure
+figure(app.figure1);
 
 % For NIR, SWIR and so forth we might use a different displayFlag value.
 % See oiShowImage.  In the future, we will read the displayFlag from
 % either a global or a setting in the oi GUI.
-displayFlag = get(handles.popupDisplay,'Value');
-oiShowImage(oi,displayFlag,gam);
+displayFlag = find(contains(app.popupDisplay.Items,app.popupDisplay.Value));
 
-set(handles.txtOpticalImage,'String',oiDescription(oi));
+oiShowImage(oi,displayFlag,gam,app);
+
+app.txtOpticalImage.Text = oiDescription(oi);
 
 %% Force a font size refresh
-fig = ieSessionGet('oi window');
-ieFontSizeSet(fig,0);
+ieFontSizeSet(app,0);
 
 end
 
+%{
 %------------------------------------------------------
 function switchControlVisibility(handles,state)
 %Turn on/off the diffraction limited buttons and edit fields
@@ -194,3 +190,4 @@ switch state
 end
 
 end
+%}

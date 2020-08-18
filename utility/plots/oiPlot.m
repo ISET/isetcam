@@ -90,38 +90,56 @@ function [udata, g] = oiPlot(oi,pType,roiLocs,varargin)
 if ieNotDefined('oi'), oi = vcGetObject('OI'); end
 if ieNotDefined('pType'), pType = 'hlineilluminance'; end
 
+% In some cases we want to select the app window.  The user can indicate
+% which oiWindow by appending the app as the last argument to this call.
+% With this method, we have the window available when we need it, below.
+if ~isempty(varargin)
+    if isequal(class(varargin{end}),'oiWindow_App')
+        thisW = varargin{:};
+        
+        % Remove the app from the array so as to note confuse routines,
+        % below.  Not sure this is needed, but probably.
+        varargin = varargin(1:(end-1));
+    end
+end
+
 % Reformat the parameter - no spaces, all lower case
 pType = ieParamFormat(pType);
 
 if ieNotDefined('roiLocs')
-    % oiWindow;
+    
+    % Focus on the oiWindow for clicking.
+    figure(thisW.figure1);
+
     switch pType
         case {  'irradiancehline','hline','hlineirradiance' , ...
                 'illuminancehline','horizontallineilluminance','hlineilluminance', ...
                 'illuminanceffthline',...
                 'contrasthline','hlinecontrast', ...
                 }
-            roiLocs = vcPointSelect(oi);
-            sz = sceneGet(oi,'size');
-            ieROIDraw(oi,'shape','line','shape data',[1 sz(2) roiLocs(2) roiLocs(2)]);
+            roiLocs = iePointSelect(oi);
+            % sz = sceneGet(oi,'size');
+            % ieROIDraw(oi,'shape','line','shape data',[1 sz(2) roiLocs(2) roiLocs(2)]);
             
         case {'irradiancevline','vline','vlineirradiance',...
                 'illuminancevline','vlineilluminance', ...
                 'contrastvline','vlinecontrast','illuminancefftvline'}
             roiLocs = vcLineSelect(oi);
-            sz = sceneGet(oi,'size');
-            ieROIDraw(oi,'shape','line','shape data',[roiLocs(1) roiLocs(1) 1 sz(1)]);
+            % sz = sceneGet(oi,'size');
+            % ieROIDraw(oi,'shape','line','shape data',[roiLocs(1) roiLocs(1) 1 sz(1)]);
             
         case {'irradianceenergyroi','irradiancephotonsroi', ...
                 'chromaticityroi','illuminanceroi'}
-            [roiLocs,roiRect] = vcROISelect(oi);
-            ieROIDraw(oi,'shape','rect','shape data',roiRect);
+            [roiLocs,roiRect] = ieROISelect(oi);
+            % ieROIDraw(oi,'shape','rect','shape data',roiRect);
 
         otherwise
             % There are cases that don't need a position
     end
 end
 
+
+     
 % Make the plot window and use this default gray scale map.
 g = ieNewGraphWin;
 mp = 0.4*gray + 0.4*ones(size(gray));

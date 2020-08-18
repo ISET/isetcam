@@ -184,4 +184,4 @@ ieAddObject(scene); sceneWindow;
 % energy.
 scenePlot(scene,'illuminant photons');
 
-%%
+%% END

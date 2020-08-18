@@ -53,18 +53,16 @@ app = vcGetFigure(obj);
 % object window yet.  So we add the object to the database and open the
 % window
 if isempty(app)
-    % We should add ieAddAndSelect()
-    % ieAddObject(obj);
     % Should become ieOpenWindow(obj)
     switch obj.type
         case 'scene'
-            app = sceneWindow_App(obj);
+            app = sceneWindow();
         case 'opticalimage'
-            app = oiWindow(obj);
+            app = oiWindow();
         case 'sensor'
-            app = sensorWindow(obj);
+            app = sensorWindow();
         case 'vcimage'
-            app = ipWindow(obj);
+            app = ipWindow();
         otherwise
             error('Unknown obj type %s\n',obj.type);
     end
@@ -77,8 +75,16 @@ end
 app.txtMessage.Text = 'Drag to select a region.';
 
 % Select an ROI graphically. This should become a switch statement for the
-% shape, ultimately. 
-roi  = drawrectangle(app.sceneImage);
+% shape, ultimately.
+switch class(app)
+    case 'sceneWindow_App'
+        roi  = drawrectangle(app.sceneImage);
+    case 'oiWindow_App'
+        roi  = drawrectangle(app.oiImage);
+    otherwise
+        error('Unknown app %s\n',class(app));
+end
+
 rect = round(roi.Position);
 
 % Clear the in window message
