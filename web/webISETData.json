@@ -1,0 +1,29 @@
+{
+  "Hyperspectral": [
+  {"Name": "Fruit Scene",
+   "Description" : "A collection of hyperspectral images for imaging systems research T. Skauli and J. Farrell Proc. SPIE 8660, Digital Photography IX, 86600C (February 4, 2013)",
+   "URL" : "https://drive.google.com/file/d/12IDTmG4lNBJLgjd20C2Xb2OORNlGuKF-/view?usp=sharing",
+   "Icon" : "https://drive.google.com/file/d/1xX27lXb0cwXFojVTS43XvD2VeFXoFScW/view?usp=sharing",
+   "Keywords": ["Hyperspectral", "Fruit"]
+  },
+    {"Name": "Rotten Fruit Chart",
+   "Description" : ["A collection of hyperspectral images for imaging systems research T. Skauli and J. Farrell Proc. SPIE 8660, Digital Photography IX, 86600C (February 4, 2013)"],
+   "URL" : ["https://drive.google.com/file/d/1dvlfc3M_vEUl9LCVe-uNa9KpzxEESP_7/view?usp=sharing"],
+   "Icon" : "https://drive.google.com/file/d/1xX27lXb0cwXFojVTS43XvD2VeFXoFScW/view?usp=sharing",
+   "Keywords": ["Hyperspectral", "Fruit", "Rotten", "Chart"]
+  },
+    {"Name": [],
+   "Description" : [],
+   "URL" : [],
+   "Icon" : [],
+   "Keywords": []
+  },
+    {"Name": [],
+   "Description" : [],
+   "URL" : [],
+   "Icon" : [],
+   "Keywords": []
+  }
+]
+  
+}
