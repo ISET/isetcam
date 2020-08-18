@@ -58,7 +58,7 @@ if isempty(app)
     % Should become ieOpenWindow(obj)
     switch obj.type
         case 'scene'
-            app = sceneWindow_App(obj);
+            app = sceneWindow(obj);
         case 'opticalimage'
             app = oiWindow(obj);
         case 'sensor'
