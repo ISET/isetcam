@@ -107,7 +107,8 @@ end
 pType = ieParamFormat(pType);
 
 if ieNotDefined('roiLocs')
-    % oiWindow;
+    
+    % Focus on the oiWindow for clicking.
     figure(thisW.figure1);
 
     switch pType
@@ -116,21 +117,21 @@ if ieNotDefined('roiLocs')
                 'illuminanceffthline',...
                 'contrasthline','hlinecontrast', ...
                 }
-            roiLocs = vcPointSelect(oi);
-            sz = sceneGet(oi,'size');
-            ieROIDraw(oi,'shape','line','shape data',[1 sz(2) roiLocs(2) roiLocs(2)]);
+            roiLocs = iePointSelect(oi);
+            % sz = sceneGet(oi,'size');
+            % ieROIDraw(oi,'shape','line','shape data',[1 sz(2) roiLocs(2) roiLocs(2)]);
             
         case {'irradiancevline','vline','vlineirradiance',...
                 'illuminancevline','vlineilluminance', ...
                 'contrastvline','vlinecontrast','illuminancefftvline'}
             roiLocs = vcLineSelect(oi);
-            sz = sceneGet(oi,'size');
-            ieROIDraw(oi,'shape','line','shape data',[roiLocs(1) roiLocs(1) 1 sz(1)]);
+            % sz = sceneGet(oi,'size');
+            % ieROIDraw(oi,'shape','line','shape data',[roiLocs(1) roiLocs(1) 1 sz(1)]);
             
         case {'irradianceenergyroi','irradiancephotonsroi', ...
                 'chromaticityroi','illuminanceroi'}
             [roiLocs,roiRect] = ieROISelect(oi);
-            ieROIDraw(oi,'shape','rect','shape data',roiRect);
+            % ieROIDraw(oi,'shape','rect','shape data',roiRect);
 
         otherwise
             % There are cases that don't need a position
