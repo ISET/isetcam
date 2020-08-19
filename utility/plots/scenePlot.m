@@ -110,7 +110,7 @@ if ieNotDefined('roiLocs')
                 'contrastvline','vlinecontrast'}
             
             % Get a location and draw a vertical line
-            roiLocs = vcPointSelect(scene);
+            roiLocs = iePointSelect(scene);
             
             % Draw a line on the sceneWindow.  I may be off by 1.
             sz = sceneGet(scene,'size');
@@ -121,10 +121,10 @@ if ieNotDefined('roiLocs')
                 'contrasthline','hlinecontrast'}
             
             % Get a location and draw a horizontal line
-            roiLocs = vcPointSelect(scene);
-            sz = sceneGet(scene,'size');
-            
+            roiLocs = iePointSelect(scene);
+
             % Draw a line on the sceneWindow.  I may be off by 1.
+            sz = sceneGet(scene,'size');
             ieROIDraw(scene,'shape','line','shape data',[1 sz(2) roiLocs(2) roiLocs(2)]);
             
         case {'radianceenergyroi', 'radiancephotonsroi', ...

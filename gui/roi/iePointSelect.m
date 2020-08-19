@@ -1,28 +1,17 @@
-function [pointLoc,pt] = iePointSelect(obj,nPoints,msg)
+function [pointLoc,pt] = iePointSelect(obj,msg)
 % Select point locations from an ISET window. 
 %
-%   [pointLoc, pt] = iePointSelect(obj,[nPoints = 1],[msg])
+%   [pointLoc, pt] = iePointSelect(obj,[msg])
 %
 % Input
-%   obj
-%   nPoints
-%   msg
+%   obj:      An ISETCam struct (scene, oi, sensor, ip)
+%   msg:      Message for the window
 %
 % Output
 %  pointLoc: Returns the (x,y) = (col,row) values. During the point
-%  selection process.  The upper left is (1,1).
+%            selection process.  The upper left is (1,1).
 %
-%      left click is used to choose a point, 
-%      backspace deletes the previous point, 
-%      right click indicates done.
-%
-% Needs a re-write ...
-%
-%  If nPoints is not specified, then nPoints = 1 is assumed.  In that case,
-%  a single right click is all that is required. 
-%
-%  In general, the number of points is checked and a message is printed if
-%  it is incorrect.  But the pointLoc values are still returned.
+% Description
 %
 % Example:
 %   pointLoc = vcPointSelect(vcGetObject('OI'))
@@ -36,7 +25,6 @@ function [pointLoc,pt] = iePointSelect(obj,nPoints,msg)
 %
 
 if ieNotDefined('obj'), error('Object is required (isa,oi,scene ...)'); end
-if ieNotDefined('nPoints'), nPoints = 1; end
 if ieNotDefined('msg')
     msg = sprintf('Click to select point');
 end
@@ -48,23 +36,33 @@ app = vcGetFigure(obj);
 app.txtMessage.Text = msg;
 
 % Would be good to figure out which click and how to validate ...
-pt = drawpoint(app.sceneImage);
+switch class(app)
+    case 'sceneWindow_App'
+        pt = drawpoint(app.sceneImage);
+    case 'oiWindow_App'
+        pt = drawpoint(app.oiImage);
+    otherwise
+        error('Not yet implemented for %s\n',class(app));
+end
+
 x = round(pt.Position(2)); y = round(pt.Position(1));
 
 app.txtMessage.Text = '';
 
+%{
 if length(x) < nPoints
     pointLoc = [];
-    warning('ISET:vcPointSelect1','Returning only %.0f points',length(x));
+    warning('ISET:iePointSelect1','Returning only %.0f points',length(x));
     list = (1:length(x));
 elseif length(x) > (nPoints) 
-    warning('ISET:vcPointSelect2','Returning first of %.0f points',nPoints);
+    warning('ISET:iePointSelect2','Returning first of %.0f points',nPoints);
     list = (1:nPoints);
 else
     list = (1:nPoints);
 end
+%}
 
-pointLoc(:,1) = y(list);
-pointLoc(:,2) = x(list);
+pointLoc(:,1) = y;
+pointLoc(:,2) = x;
 
 end

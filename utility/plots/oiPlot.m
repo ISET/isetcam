@@ -112,35 +112,37 @@ if ieNotDefined('roiLocs')
     figure(thisW.figure1);
 
     switch pType
-        case {  'irradiancehline','hline','hlineirradiance' , ...
+        case {'irradiancehline','hline','hlineirradiance' , ...
                 'illuminancehline','horizontallineilluminance','hlineilluminance', ...
                 'illuminanceffthline',...
                 'contrasthline','hlinecontrast', ...
                 }
             roiLocs = iePointSelect(oi);
-            % sz = sceneGet(oi,'size');
-            % ieROIDraw(oi,'shape','line','shape data',[1 sz(2) roiLocs(2) roiLocs(2)]);
+            
+            % Draw a line on the oiWindow.  I may be off by 1.
+            sz = oiGet(oi,'size');
+            ieROIDraw(oi,'shape','line','shape data',[1 sz(2) roiLocs(2) roiLocs(2)]);
             
         case {'irradiancevline','vline','vlineirradiance',...
                 'illuminancevline','vlineilluminance', ...
                 'contrastvline','vlinecontrast','illuminancefftvline'}
-            roiLocs = vcLineSelect(oi);
-            % sz = sceneGet(oi,'size');
-            % ieROIDraw(oi,'shape','line','shape data',[roiLocs(1) roiLocs(1) 1 sz(1)]);
+            roiLocs = iePointSelect(oi);
+            
+            % Draw a line on the oiWindow.  I may be off by 1.
+            sz = oiGet(oi,'size');
+            ieROIDraw(oi,'shape','line','shape data',[roiLocs(1) roiLocs(1) 1 sz(1)]);
             
         case {'irradianceenergyroi','irradiancephotonsroi', ...
                 'chromaticityroi','illuminanceroi'}
-            [roiLocs,roiRect] = ieROISelect(oi);
-            % ieROIDraw(oi,'shape','rect','shape data',roiRect);
+            roiLocs = ieROISelect(oi);
 
         otherwise
-            % There are cases that don't need a position
+            % There are many cases that don't need a position
     end
 end
+   
+%% Make the plot window and use this default gray scale map
 
-
-     
-% Make the plot window and use this default gray scale map.
 g = ieNewGraphWin;
 mp = 0.4*gray + 0.4*ones(size(gray));
 colormap(mp);
