@@ -28,7 +28,7 @@ end
 
 %% Load in.  Try NC's new plotting method
 
-wave = 400:10:700;
+wave = 400:5:700;
 rr  = [5,12];
 
 reflectances = [];
@@ -43,7 +43,7 @@ xlabel('Wave (nm)'); ylabel('Reflectance');
 
 %% Measure the approximation with reduced dimensionality
 
-dim = 3;
+dim = 8;
 
 [Basis,S,V] = svd(reflectances);
 % Reduce the dimensionality
@@ -80,6 +80,8 @@ xlabel('Wave (nm)');
 ylabel('Reflectance');
 legend({'1','2','3'},'Location','best');
 
-%%
+%%  Save them out in a data file
+fname = fullfile(isetRootPath,'data','surfaces','reflectances','reflectanceBasis.mat');
+ieSaveSpectralFile(wave,Basis,'Surface reflectance basis functions from s_reflectanceBasis',fname);
 
-%%
+%% END

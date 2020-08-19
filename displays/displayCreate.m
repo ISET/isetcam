@@ -78,7 +78,8 @@ switch sParam
                 error('No display struct in the file');
             else  d = tmp.d;
             end
-        else error('Unknown display %s.',displayName);
+        else
+            error('Unknown display %s.',displayName);
         end
 
 end

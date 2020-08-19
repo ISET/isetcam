@@ -93,12 +93,13 @@ if ieNotDefined('pType'), pType = 'hlineilluminance'; end
 % In some cases we want to select the app window.  The user can indicate
 % which oiWindow by appending the app as the last argument to this call.
 % With this method, we have the window available when we need it, below.
+thisW = [];
 if ~isempty(varargin)
+    % See if the user sent in thisW
     if isequal(class(varargin{end}),'oiWindow_App')
         thisW = varargin{:};
         
-        % Remove the app from the array so as to note confuse routines,
-        % below.  Not sure this is needed, but probably.
+        % Remove the app from the array.  Backwards compatibility.
         varargin = varargin(1:(end-1));
     end
 end
@@ -108,9 +109,11 @@ pType = ieParamFormat(pType);
 
 if ieNotDefined('roiLocs')
     
-    % Focus on the oiWindow for clicking.
-    figure(thisW.figure1);
-
+    if ~isempty(thisW)
+        % Focus on the oiWindow for clicking.
+        figure(thisW.figure1);
+    end
+    
     switch pType
         case {'irradiancehline','hline','hlineirradiance' , ...
                 'illuminancehline','horizontallineilluminance','hlineilluminance', ...

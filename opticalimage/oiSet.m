@@ -179,11 +179,9 @@ switch parm
     case {'gamma'}
         % oiSet([],'gamma',0.6);
         % Should this be ieSessionSet('oi gamma',val)
-        hObj = ieSessionGet('oi window ');
-        hdl = ieSessionGet('oi window handle');
-        eventdata = [];
-        set(hdl.editGamma,'string',num2str(val));
-        oiWindow('oiRefresh',hObj,eventdata,hdl);
+        app = ieSessionGet('oi window');
+        app.editGamma.Value = num2str(val);
+        app.refresh;
         
     case {'distance' }
         % Positive for scenes, negative for optical images
