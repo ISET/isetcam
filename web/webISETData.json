@@ -15,13 +15,13 @@
     {"Name": ["San Francisco"],
    "Description" : ["Cityscape, I assume"],
    "URL" : ["http://web.stanford.edu/~david81/ISETData/Hyperspectral/SanFrancisco.mat"],
-   "Icon" : ["http://web.stanford.edu/~david81/ISETData/Hyperspectral/landscape_montage.jpg"],
+   "Icon" : ["http://web.stanford.edu/~david81/ISETData/Hyperspectral/landscape.jpg"],
    "Keywords": ["Landscape", "San Francisco", "City", "Hyperspectral"]
   },
     {"Name": ["Stanford Tower"],
    "Description" : ["Quite possibly a tower"],
    "URL" : ["http://web.stanford.edu/~david81/ISETData/Hyperspectral/StanfordTower.mat"],
-   "Icon" : ["http://web.stanford.edu/~david81/ISETData/Hyperspectral/landscape_montage.jpg"],
+   "Icon" : ["http://web.stanford.edu/~david81/ISETData/Hyperspectral/landscape.jpg"],
    "Keywords": ["Stanford", "Tower", "Landscape", "Hyperspectral"]
   },
     {"Name": [],
