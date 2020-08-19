@@ -62,6 +62,20 @@ rgbPrimaries = rgbPrimaries*(100/peakL);
 d = displaySet(d,'spd',rgbPrimaries);
 peakL = displayGet(d,'peak luminance');
 
+%% Set the gamma of the display 
+
+% When we read in the image we will be applying the gamma correction for
+% some display when we compute the radiance.  Maybe we should be using
+% sRGB, which is something like 2.2 or 1.8.  For now, I inserted a measured
+% gamma from an Apple display.
+
+% Maybe we should set this based on the MCC gray series.  We know those
+% reflectance levels and the horizontal luminance line should get at least
+% the ratios on that right. (BW).
+dApple = displayCreate('LCD-Apple');
+g = displayGet(dApple,'gamma');
+d = displaySet(d,'gamma',g);
+
 %% Save the reflectance-display
 
 % We will use this as the default display for sceneFromFile

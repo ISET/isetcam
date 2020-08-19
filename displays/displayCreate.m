@@ -1,20 +1,36 @@
 function d = displayCreate(displayName,varargin)
 % Create a display structure.
 %
+% Synopsis
 %  d = displayCreate(displayFileName,[wave])
 %
-% Display (d) calibration data are stored in a display structure. These are
-% the spectral radiance distribution of its primaries and a gamma function.
+% Brief description
+%  Display (d) calibration data are stored in a display structure. These
+%  are the spectral radiance distribution of its primaries and a gamma
+%  function.
 %
-% displayName: Name of a file containing a calibrated display structure.
+% Inputs:
+%  displayName: Name of a file containing a calibrated display structure.
+%               The default is a special display we created called
+%               'reflectance-display'.  This display converts the RGB
+%               values in the image as if they were to be shown on an sRGB
+%               display.  The display SPD is chosen so that if we assume a
+%               D65 illuminant and those primaries, the estimate surface
+%               reflectance of an object is within the first three linear
+%               basis functions of natural surfaces.  Ask me how Joyce and
+%               I did that.  Or read s_displaySurfaceReflectance.
+%  
+% Optional key/value pairs:
+%   Settable display parameters as pairs.  Anything that works in
+%   displaySet will work here
+%
+% Description
 %   There are various examples in data/displays.  They contain a variable
 %   ('d') that is a display structure.  See displayGet and displaySet for
 %   the slots.
 % 
-% See Also:  sceneFromFile (RGB read in particular)
-%
 % Example:
-%   d = displayCreate;
+%   d = displayCreate;     % The default is 'reflectance-display'
 %   d = displayCreate('lcdExample');
 %   wave = 400:5:700; d = displayCreate('lcdExample',wave);
 %
@@ -23,7 +39,16 @@ function d = displayCreate(displayName,varargin)
 %   d = displayCreate('LCD-Apple');
 %  
 % Copyright ImagEval Consultants, LLC, 2011.
+%
+% See Also:  
+%   sceneFromFile (RGB read in particular)
+%
 
+% Examples:
+%{
+  d = displayCreate;
+  displayPlot(d,'spd');
+%}
 
 %% sRGB definitions in terms of xy
 %
@@ -43,7 +68,7 @@ function d = displayCreate(displayName,varargin)
 
 
 %% Arguments
-if ieNotDefined('displayName'), displayName = 'default'; end
+if ieNotDefined('displayName'), displayName = 'reflectance-display'; end
 
 % Identify the object type
 d.type = 'display';
