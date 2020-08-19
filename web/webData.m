@@ -34,7 +34,7 @@ classdef webData
             for i = 1:length(ourDataObject)
                 found = true;
                 for j = 1: length(ourKeywords)
-                    if find(strcmp(ourDataObject(i).Keywords, ourKeywords(j)))
+                    if find(strcmpi(ourDataObject(i).Keywords, ourKeywords(j)))
                     elseif isequal(ourKeywords(j), "")
                         % always match an empty string
                     else
