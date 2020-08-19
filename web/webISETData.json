@@ -2,15 +2,27 @@
   "Hyperspectral": [
   {"Name": "Fruit Scene",
    "Description" : "A collection of hyperspectral images for imaging systems research T. Skauli and J. Farrell Proc. SPIE 8660, Digital Photography IX, 86600C (February 4, 2013)",
-   "URL" : "https://drive.google.com/file/d/12IDTmG4lNBJLgjd20C2Xb2OORNlGuKF-/view?usp=sharing",
-   "Icon" : "https://drive.google.com/file/d/1xX27lXb0cwXFojVTS43XvD2VeFXoFScW/view?usp=sharing",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/Hyperspectral/FruitMCC.mat",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/Hyperspectral/montage.jpg",
    "Keywords": ["Hyperspectral", "Fruit"]
   },
     {"Name": "Rotten Fruit Chart",
    "Description" : ["A collection of hyperspectral images for imaging systems research T. Skauli and J. Farrell Proc. SPIE 8660, Digital Photography IX, 86600C (February 4, 2013)"],
-   "URL" : ["https://drive.google.com/file/d/1dvlfc3M_vEUl9LCVe-uNa9KpzxEESP_7/view?usp=sharing"],
-   "Icon" : "https://drive.google.com/file/d/1xX27lXb0cwXFojVTS43XvD2VeFXoFScW/view?usp=sharing",
+   "URL" : ["http://web.stanford.edu/~david81/ISETData/Hyperspectral/ChartsRottenFruit.mat"],
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/Hyperspectral/montage.jpg",
    "Keywords": ["Hyperspectral", "Fruit", "Rotten", "Chart"]
+  },
+    {"Name": ["San Francisco"],
+   "Description" : ["Cityscape, I assume"],
+   "URL" : ["http://web.stanford.edu/~david81/ISETData/Hyperspectral/SanFrancisco.mat"],
+   "Icon" : ["http://web.stanford.edu/~david81/ISETData/Hyperspectral/landscape_montage.jpg"],
+   "Keywords": ["Landscape", "San Francisco", "City", "Hyperspectral"]
+  },
+    {"Name": ["Stanford Tower"],
+   "Description" : ["Quite possibly a tower"],
+   "URL" : ["http://web.stanford.edu/~david81/ISETData/Hyperspectral/StanfordTower.mat"],
+   "Icon" : ["http://web.stanford.edu/~david81/ISETData/Hyperspectral/landscape_montage.jpg"],
+   "Keywords": ["Stanford", "Tower", "Landscape", "Hyperspectral"]
   },
     {"Name": [],
    "Description" : [],
