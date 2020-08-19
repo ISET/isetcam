@@ -11,6 +11,7 @@
 wave = 400:1:700;
 basis = ieReadSpectra('reflectanceBasis.mat',wave);
 basis(:,1) = -1*basis(:,1);
+% plotReflectance(wave,basis(:,1:3));
 
 %% Load up D65
 
