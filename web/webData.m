@@ -27,6 +27,8 @@ classdef webData
             switch obj.dataType
                 case 'Hyperspectral'
                     ourDataObject = obj.ourDataStruct.Hyperspectral;
+                case 'HDR'
+                    ourDataObject = obj.ourDataStruct.HDR;
                 otherwise
                     uialert("Data Type not supported.");
             end
@@ -47,9 +49,12 @@ classdef webData
                 end
                 if found == true
                     if exist('outputArg')
-                        outputArg(end+1) = obj.ourDataStruct.Hyperspectral(i);
+                        % can we just use ourDataObj(i) since it is typed??
+                        %outputArg(end+1) = obj.ourDataStruct.Hyperspectral(i);
+                        outputArg(end+1) = ourDataObject(i);
                     else
-                        outputArg(1) = obj.ourDataStruct.Hyperspectral(i);
+                        outputArg(1) = ourDataObject(i);
+                        %outputArg(1) = obj.ourDataStruct.Hyperspectral(i);
                     end
                 end
             end
