@@ -132,22 +132,22 @@ if ~isequal(gam,1), rgb = rgb.^gam; end
 % In other cases imageSPD is called directly, not through sceneShowImage.
 % In those cases we show the data if the displayFlag sign is positive. If
 % displayFlag is negative, imageSPD just returns the rgb values.
+if ieNotDefined('thisW'), thisW = []; end
 if displayFlag >= 0
-    if ieNotDefined('thisW')
-        warning('Assuming scene window, not oi window.'); 
-        thisW = ieSessionGet('scene window');
-    end
+    
+    % Make sure the figure is selected and axis is cleared.
     switch class(thisW)
         case 'oiWindow_App'
+            figure(thisW.figure1);
             cla(thisW.oiImage);  % Should be called imageAxis
         case 'sceneWindow_App'
+            figure(thisW.figure1);
             cla(thisW.sceneImage);  % Should be called imageAxis
-        otherwise
-            error('Unknown window_App');
+        case 'double'
+            ieNewGraphWin;
+            % cla(thisFig);
     end
-    
-    % sprintf('imageSPD:  %s\n',sceneW.figure1.Name)
-    figure(thisW.figure1);  % Make sure it is selected
+
     if ieNotDefined('xcoords') || ieNotDefined('ycoords')
         imagescRGB(rgb); axis image; axis off
     else

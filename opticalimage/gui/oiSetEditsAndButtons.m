@@ -1,22 +1,28 @@
 function oiSetEditsAndButtons(app)
 % Refresh the buttons and edit fields in the optical image window
 %
-%   oiSetEditsAndButtons(handles)
+% Synopsis
+%   oiSetEditsAndButtons(app)
 %
-% Refresh the current optical image window. If there is no optical image,
-% then a default oi is created.
+% Description
+%  Refresh the current optical image window. If there is no optical image,
+%  then a default oi is created.
 %
-% Perhaps we should have a flag to leave the inline message in place?
+%  Perhaps we should have a flag to leave the inline message in place?
 %
 % Copyright ImagEval Consultants, LLC, 2003.
+% 
+% See also
+%
 
+%%
 [oi, val] = ieGetObject('OPTICALIMAGE');
 if isempty(oi)
     oi = oiCreate;
     val = 1;
 end
 
-% Clear the inline message
+%% Clear the inline message
 optics = oiGet(oi,'optics');
 ieInWindowMessage('',app,[]);
 
@@ -30,7 +36,7 @@ Items = cellMerge({'New OI'}, oiNames);
 app.SelectOptImg.Items = Items;
 app.SelectOptImg.Value = Items{1 + val};
 
-% Buttons
+%% Buttons
 % Check the custom compute
 switch lower(opticsModel)
     
@@ -45,6 +51,8 @@ switch lower(opticsModel)
         str = sprintf('%1.2f',opticsGet(optics,'fnumber'));
         app.editFnumber.Value = str;
         
+        switchControlVisibility(app,'on');
+
         %{
         val = opticsGet(optics,'off axis method');
         if strcmpi(val,'skip'), app.btnOffAxis, 'Value',0);
@@ -54,27 +62,27 @@ switch lower(opticsModel)
         
     case 'shiftinvariant'
         % The SI model may have a wvf attached, or not.
-        set(handles.popOpticsModel,'Value',2);
-        switchControlVisibility(handles,'off');
+        app.popOpticsModel.Value = app.popOpticsModel.Items{2};
+        switchControlVisibility(app,'off');
         
     case 'raytrace'
-        set(handles.popOpticsModel,'Value',3);
+        app.popOpticsModel.Value = app.popOpticsModel.Items{3};
         switchControlVisibility(handles,'off');
         
     case 'iset3d'
         set(handles.popOpticsModel,'Value',4);
-        switchControlVisibility(handles,'off');
+        switchControlVisibility(app,'off');
         
     case 'skip'
-        set(handles.popOpticsModel,'Value',4);
-        switchControlVisibility(handles,'off');
+        app.popOpticsModel.Value = app.popOpticsModel.Items{4};
+        switchControlVisibility(app,'off');
         
     otherwise
         error('Unknown optics model')
 end
 
-% Adjust the anti-alias filter
-dMethod = oiGet(oi,'diffuserMethod');
+%% Based on the anti-alias filter pulldown selection
+dMethod = oiGet(oi,'diffuser method');
 
 switch lower(dMethod)
     case 'skip'
@@ -86,16 +94,11 @@ switch lower(dMethod)
         set(handles.txtDiffuser,'Position',[0.756 .165 0.082 0.029])
         %}
     case 'blur'
-        set(handles.popDiffuser,'val',2)
-        set(handles.editDiffuserBlur,'visible','on');
-        set(handles.txtBlurSD,'string','FWHM (um)');
-        set(handles.txtBlurSD,'visible','on');
-        set(handles.txtBlurSD,'TooltipString','Full width half maximum of Gaussian spread');
-        
-        set(handles.txtBlurSD,'Position',[0.8693 .117 0.089 0.029])
-        set(handles.editDiffuserBlur,'Position',[0.82 0.115 0.038 0.033])
-        set(handles.popDiffuser,'Position',[0.693 0.109 0.11 0.043])
-        set(handles.txtDiffuser,'Position',[0.693 .165 0.082 0.029])
+        app.popDiffuser.Value =  app.popDiffuser.Items{2};
+        app.editDiffuserBlur.Visible = 'on';
+        app.txtBlurSD.Text = 'FWHM (um)';
+        app.txtBlurSD.Visible = 'on';
+        app.txtBlurSD.Tooltip = 'Full-width half-max Gaussian spread';
         
         val = oiGet(oi,'diffuserBlur','um');
         if isempty(val)
@@ -103,36 +106,24 @@ switch lower(dMethod)
             oi = oiSet(oi,'diffuserBlur',val*10^-6);
             vcReplaceObject(oi);
         end
-        set(handles.editDiffuserBlur,'String',num2str(val));
+        app.editDiffuserBlur.Value = num2str(val);
+        
     case 'birefringent'
-        set(handles.popDiffuser,'val',3)
-        set(handles.popDiffuser,'Position',[0.756 0.109 0.11 0.043])
-        set(handles.txtDiffuser,'Position',[0.756 .165 0.082 0.029])
+        app.popDiffuser.Value =  app.popDiffuser.Items{3};
+        % set(handles.popDiffuser,'Position',[0.756 0.109 0.11 0.043])
+        % set(handles.txtDiffuser,'Position',[0.756 .165 0.082 0.029])
         
         % For now off, but if we decide to allow the value to change, then
         % we can use the buttons like this.
-        set(handles.editDiffuserBlur,'visible','off');
-        set(handles.txtBlurSD,'visible','off');
-        set(handles.txtBlurSD,'string','Disp (um)');
-        set(handles.txtBlurSD,'TooltipString','Birefringent displacement in microns');
+        app.editDiffuserBlur.Visible = 'on';
+        app.txtBlurSD.Visible,'on';
+        app.txtBlurSD.Text = 'Displacement (um)';
+        app.txtBlurSD.Tooltip ='Birefringent displacement (um)';
     otherwise
         error('Unknown diffuser method %s\n',dMethod);
 end
 
-%{
-% If the incoming call set consistency true, then we eliminate the red
-% square on the window.  Otherwise, consistency is false.  We always set
-% consistency to false on the way out.  This overdoes it so that sometimes
-% we show inconsistent when it is really consistent.
-if oiGet(oi,'consistency')
-    defaultBackground = get(0,'defaultUicontrolBackgroundColor');
-    set(handles.txtConsistency,'BackgroundColor',defaultBackground)    
-    oi = oiSet(oi,'consistency',0);
-    vcReplaceObject(oi);
-else
-    set(handles.txtConsistency,'BackgroundColor',[1,0,0]);
-end
-%}
+%% Display in axis
 
 gam = str2double(app.editGamma.Value);
 
@@ -148,14 +139,13 @@ oiShowImage(oi,displayFlag,gam,app);
 
 app.txtOpticalImage.Text = oiDescription(oi);
 
-%% Force a font size refresh
+% Force a font size refresh
 ieFontSizeSet(app,0);
 
 end
 
-%{
 %------------------------------------------------------
-function switchControlVisibility(handles,state)
+function switchControlVisibility(app,state)
 %Turn on/off the diffraction limited buttons and edit fields
 %On turns on the diffraction.
 %Off turns off the diffraction and puts up the custom popup menu
@@ -163,31 +153,35 @@ function switchControlVisibility(handles,state)
 
 switch state
     case 'on'
-        set(handles.txtFocalLength,'visible','on')
-        set(handles.txtFnumber,'visible','on')
-        set(handles.editFocalLength,'visible','on')
-        set(handles.editFnumber,'visible','on')
-        set(handles.txtM,'visible','on')
-        % set(handles.btnOffAxis,'visible','on');
-        % set(handles.txtDiffractionLimitedOptics,'visible','on');
-        set(handles.editDiffuserBlur,'visible','on');
-        set(handles.txtBlurSD,'visible','on');
+        app.txtFocalLength.Visible  ='on';
+        app.editFocalLength.Visible ='on';
+
+        app.txtFnumber.Visible  = 'on';
+        app.editFnumber.Visible = 'on';
+
+        app.txtMessage.Visible='on';
+        % set(handles.btnOffAxis.Visible,'on');
+        % set(handles.txtDiffractionLimitedOptics.Visible,'on');
+        app.editDiffuserBlur.Visible='on';
+        app.txtBlurSD.Visible='on';
         
     case 'off'
-        set(handles.txtFocalLength,'visible','off')
-        set(handles.txtFnumber,'visible','off')
-        set(handles.editFocalLength,'visible','off')
-        set(handles.editFnumber,'visible','off')
-        set(handles.txtM,'visible','off')
-        % set(handles.btnOffAxis,'visible','off');
-        % set(handles.txtDiffractionLimitedOptics,'visible','off');
-        set(handles.editDiffuserBlur,'visible','off');
-        set(handles.txtBlurSD,'visible','off');
+        app.txtFocalLength.Visible  = 'off';
+        app.editFocalLength.Visible = 'off';
+
+        app.txtFnumber.Visible  = 'off';
+        app.editFnumber.Visible = 'off';
+        
+        app.txtMessage.Visible = 'off';
+        % set(handles.btnOffAxis.Visible,'off');
+        % set(handles.txtDiffractionLimitedOptics.Visible,'off');
+        
+        app.editDiffuserBlur.Visible = 'off';
+        app.txtBlurSD.Visible = 'off';
         
     otherwise
-        error('Unknown state.');
+        error('Unknown state %s.\n',state);
         
 end
 
 end
-%}

@@ -1,12 +1,21 @@
 function oi = opticsPlotOffAxis(oi,val)
-%Plot relative illuminantion (off-axis) fall off function
+% Plot relative illumination (off-axis) fall off
 %
-%      oi = opticsPlotOffAxis(oi,val)
+% Synopsis
+%   oi = opticsPlotOffAxis(oi,val)
 %
-% Plot the off-axis fall-off for the current optical image and optics
-% assumptions.  
+% Input
+%  oi
+%  val
 %
-% The data are stored in the oi{val} if that parameter is sent in.
+% Return
+%  oi
+%
+% Description
+%   Plot the off-axis fall-off for the current optical image and optics
+%   assumptions.  
+%
+%   The data are stored in the oi{val} if that parameter is sent in.
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
@@ -22,26 +31,30 @@ if isempty(data)
     % the result.   
     method = opticsGet(optics,'cos4th function');
     if isempty(method), method = 'cos4th'; end
-    
-    % Calculating the cos4th scaling factors
-    % We might check whether it exists already and only do this if
-    % the cos4th slot is empty.
-    optics = feval(method, optics, oi);
-    oi = oiSet(oi,'optics',optics);
-    data = opticsGet(optics,'cos4th data');
-
-    % Should probably be eliminated.
-    if ~isempty(val), vcReplaceObject(oi,val); end
+    switch method
+        case 'cos4th'
+            % Calculating the cos4th scaling factors We might check whether
+            % the data exist already and only do this if the cos4th slot is
+            % empty.
+            optics = cos4th(oi);  % Returns optics with cos4th data attached
+            oi   = oiSet(oi,'optics',optics);
+            data = opticsGet(optics,'cos4th data');
+        otherwise
+            % This path is almost never used and needs a lot of testing.
+            % And documentation.
+            optics = feval(method, optics, oi);
+            oi   = oiSet(oi,'optics',optics);
+            data = opticsGet(optics,'cos4th data');
+    end
 end
 
-figNum =  vcSelectFigure('GRAPHWIN');
-plotSetUpWindow(figNum);
+figNum =  ieNewGraphWin;
 
 mesh(data);
-
 xlabel('Row'),ylabel('Col'),zlabel('Relative intensity');
-title('Off-axis intensity falloff');
-grid on;  udata.x = data;
-set(figNum,'Userdata',udata);
+title('Relative illumination');
+grid on;
 
-return;
+set(figNum,'Userdata',data);
+
+end

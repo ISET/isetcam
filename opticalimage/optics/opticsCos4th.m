@@ -1,13 +1,21 @@
 function oi = opticsCos4th(oi)
 % Compute relative illumination for cos4th model
 %
-%    oi = opticsCos4th(oi)
+% Synopsis
+%  oi = opticsCos4th(oi)
 %
-% This routine is used for shift-invariant optics, when full ray trace
-% information is unavailable.
+% Input
+%  oi:
+%
+% Return:
+%  oi - with the cos4th data attached
+%
+% Description
+%  This routine is used for shift-invariant optics, when full ray trace
+%  information is unavailable.
 %
 % Example:
-% Shows how long to compute cos4th
+%  Calculates how long to compute cos4th
 %
 %   scene = sceneCreate; oi = oiCreate;
 %   oi = oiSet(oi,'offaxis method','cos4th');
@@ -23,7 +31,7 @@ method = opticsGet(optics, 'cos4th function');
 if isempty(method) || isequal(method,'cos4th')
     method = 'cos4th';
     oi = oiSet(oi, 'optics cos4th function', method);
-    optics = cos4th(optics,oi);
+    optics = cos4th(oi);
 else
     % Calculating the  scaling factors using the user-supplied method.
     % We might check whether it exists already and only do this if

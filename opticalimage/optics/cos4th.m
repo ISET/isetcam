@@ -1,16 +1,19 @@
-function optics = cos4th(optics,opticalImage)
+function optics = cos4th(oi)
 %Calculate cos4th offaxis fall off data
 %
-%   optics = cos4th(optics,opticalImage)
+% Synopsis
+%   optics = cos4th(oi)
 %
-% The irradiance of a uniform radiance input field declines as we move from
-% the principal axis to off-axis locations.  This is called the relative
-% illumination, or sometimes the cos4th fall off.  The cos4th formula is a
-% good approximation in many cases.  More detailed calculations for
-% specific lenses can be obtained using ray trace methods.
+% Description
+%  The irradiance of a uniform radiance input field declines as we move
+%  from the principal axis to off-axis locations.  This is called the
+%  relative illumination, or sometimes the cos4th fall off.  The cos4th
+%  formula is a good approximation in many cases.  More detailed
+%  calculations for specific lenses can be obtained using ray trace
+%  methods.
 % 
-% The algorithm in this routine handles the case of a distant image
-% separately from that of a close image. 
+%  The algorithm in this routine handles the case of a distant image
+%  separately from that of a close image. 
 %
 % Formula:
 %   d  = distance from the lens to the image plane
@@ -27,18 +30,20 @@ function optics = cos4th(optics,opticalImage)
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
-% Setting up local variables
-sSupport = oiGet(opticalImage,'spatialsupport');
+%% Setting up local variables
+optics = oiGet(oi,'optics');
+
+sSupport = oiGet(oi,'spatialsupport');
 x = sSupport(:,:,2); 
 y = sSupport(:,:,1);
 
 imageDistance = opticsGet(optics,'imagedistance');
-imageDiagonal = oiGet(opticalImage,'diagonal');
+imageDiagonal = oiGet(oi,'diagonal');
 
 fNumber = opticsGet(optics,'fNumber');
 sFactor = sqrt(imageDistance.^2 + (x.^2 + y.^2));
 
-% Calculate the spatial fall off from the center of the lens
+%% Calculate the spatial fall off from the center of the lens
 if (imageDistance > 10*imageDiagonal)
     % If image is relatively distance
     % Use if imageDistance >> imageDiagonal
@@ -71,7 +76,7 @@ else
     spatialFall = spatialFall./(pi*sin_theta.^2);
 end
 
-% figure; mesh(spatialFall)
+%% figure; mesh(spatialFall)
 optics = opticsSet(optics,'cos4th data',spatialFall);
 
 end

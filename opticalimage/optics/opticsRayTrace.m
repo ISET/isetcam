@@ -20,8 +20,8 @@ if ieNotDefined('oi'),    oi = vcGetObject('oi');       end
 if isempty(which('rtRootPath')), error('Ray Trace routines not found on the path.'); end
 
 % Clear out the in window message
-handles = ieSessionGet('opticalimagehandle');
-ieInWindowMessage('',handles);
+app = ieSessionGet('oi window');
+ieInWindowMessage('',app);
 
 if isempty(oiGet(oi,'optics rayTrace'))
     % No ray trace data available
