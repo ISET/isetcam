@@ -3,25 +3,25 @@
   {"Name": "Fruit Scene",
    "Description" : "A collection of hyperspectral images for imaging systems research T. Skauli and J. Farrell Proc. SPIE 8660, Digital Photography IX, 86600C (February 4, 2013)",
    "URL" : "http://web.stanford.edu/~david81/ISETData/Hyperspectral/FruitMCC.mat",
-   "Icon" : "http://web.stanford.edu/~david81/ISETData/Hyperspectral/montage.jpg",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/Hyperspectral/FruitMCC.png",
    "Keywords": ["Hyperspectral", "Fruit"]
   },
     {"Name": "Rotten Fruit Chart",
    "Description" : "A collection of hyperspectral images for imaging systems research T. Skauli and J. Farrell Proc. SPIE 8660, Digital Photography IX, 86600C (February 4, 2013)",
    "URL" : "http://web.stanford.edu/~david81/ISETData/Hyperspectral/ChartsRottenFruit.mat",
-   "Icon" : "http://web.stanford.edu/~david81/ISETData/Hyperspectral/montage.jpg",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/Hyperspectral/ChartsRottenFruit.png",
    "Keywords": ["Hyperspectral", "Fruit", "Rotten", "Chart"]
   },
     {"Name": "San Francisco",
    "Description" : "Cityscape, I assume",
    "URL" : "http://web.stanford.edu/~david81/ISETData/Hyperspectral/SanFrancisco.mat",
-   "Icon" : "http://web.stanford.edu/~david81/ISETData/Hyperspectral/landscape_montage.jpg",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/Hyperspectral/SanFrancisco.png",
    "Keywords": ["Landscape", "San Francisco", "City", "Hyperspectral"]
   },
     {"Name": "Stanford Tower",
    "Description" : "Quite possibly a tower",
    "URL" : "http://web.stanford.edu/~david81/ISETData/Hyperspectral/StanfordTower.mat",
-   "Icon" : "http://web.stanford.edu/~david81/ISETData/Hyperspectral/landscape_montage.jpg",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/Hyperspectral/StanfordTower.png",
    "Keywords": ["Stanford", "Tower", "Landscape", "Hyperspectral"]
   },
     {"Name": [],
@@ -42,15 +42,40 @@
   {"Name": "Stone",
    "Description" : "A Stone. Duh!",
    "URL" : "http://web.stanford.edu/~david81/ISETData/HDR/stone1.mat",
-   "Icon" : "https://www.extremetech.com/wp-content/uploads/2019/11/Luminar-4-UI-Example-640x353.jpg",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/HDR/stone1.png",
    "Keywords": ["HDR", "Stone", "Nature"]
   },
-    {"Name": "Tree",
-   "Description" : "The Stanford Tree?",
-   "URL" : "http://web.stanford.edu/~david81/ISETData/HDR/tree1.mat",
-   "Icon" : "https://www.extremetech.com/wp-content/uploads/2019/11/Luminar-4-UI-Example-640x353.jpg",
-   "Keywords": ["HDR", "Nature", "Stanford", "Tree"]
+    {"Name": "Aisle",
+   "Description" : "Aisle?",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/HDR/aisle1.mat",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/HDR/aisle1.png",
+   "Keywords": ["HDR", "Nature", "Stanford", "Aisle", "Building"]
+  },
+    {"Name": "BBQ Site",
+   "Description" : "BBQ Site",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/HDR/BBQsite1.mat",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/HDR/BBQsite1.png",
+   "Keywords": ["HDR", "Nature", "Stanford", "BBQ", "Landscape", "Outdoor"]
+  },
+    {"Name": "Building",
+   "Description" : "Front of Building?",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/HDR/buildingFront.mat",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/HDR/buildingFront.png",
+   "Keywords": ["HDR", "Nature", "Stanford", "Building"]
+  },
+    {"Name": "Cars",
+   "Description" : "Cars?",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/HDR/cars1.mat",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/HDR/cars1.png",
+   "Keywords": ["HDR", "Nature", "Stanford", "Car", "Cars"]
+  },
+    {"Name": "Church",
+   "Description" : "Church?",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/HDR/church1.mat",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/HDR/church1.png",
+   "Keywords": ["HDR", "Nature", "Stanford", "Church"]
   }
+
 ]
   
 }
