@@ -69,7 +69,7 @@ if checkfields(scene,'data','photons')
     sz      = sceneGet(scene,'size');
 else
     cla(sceneAxis);
-    sprintf('ISET Warning:  Data are not available');
+    warning('Data are not available');
     return;
 end
    
@@ -88,10 +88,11 @@ rgb = imageSPD(photons,wList,gam,sz(1),sz(2),-1*abs(displayFlag),[],[],sceneW);
 % If value is positive, display the rendered RGB. If negative, we just
 % return the RGB values.
 if displayFlag >= 0
-    if ~isempty(sceneAxis)
+    if isempty(sceneAxis)
         % Should be called imageAxis.  Not sure it is needed, really.
-        cla(sceneW.sceneImage);  
+        ieNewGraphWin;
     end
+    
     if ieNotDefined('xcoords') || ieNotDefined('ycoords')
         imagescRGB(rgb); axis image; axis off
     else

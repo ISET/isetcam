@@ -63,8 +63,8 @@ end
 subCount = 1; % Which subplot are we in
 
 %% This is the display loop
-for ii=selectedObjs
-    if (~singlewindow || subCount == 1), vcNewGraphWin([],fType); end
+for ii=1:numel(selectedObjs)
+    if (~singlewindow || subCount == 1), ieNewGraphWin([],fType); end
     if singlewindow
         subplot(rWin,cWin,subCount); subCount = subCount+1; 
     end
@@ -79,8 +79,8 @@ for ii=selectedObjs
             t = sprintf('Scene %d - %s',ii,sceneGet(objList{ii},'name'));
             
         case 'OPTICALIMAGE'
-            gam = ieSessionGet('oi gamma');      % gamma in the window!
-            displayFlag = ieSessionGet('oi display flag'); % RGB, HDR, Gray
+            gam = oiGet(objList{ii},'gamma');
+            displayFlag = abs(ieSessionGet('oi display flag')); % RGB, HDR, Gray
             oiShowImage(objList{ii},displayFlag,gam);
             t =sprintf('OI %d - %s',ii,oiGet(objList{ii},'name'));
             
@@ -104,7 +104,7 @@ for ii=selectedObjs
     
     % Label the image or window
     if singlewindow,      title(t)
-    else                  set(gcf,'name',t);
+    else,                 set(gcf,'name',t);
     end
     
 end
