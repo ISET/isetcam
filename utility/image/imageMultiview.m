@@ -73,15 +73,18 @@ for ii=1:numel(selectedObjs)
             gam = sceneGet(objList{ii},'gamma');      % gamma in the window!
             % Use the same display method, but do not show in the scene
             % window.  The -1 makes that happen
-            displayFlag = abs(ieSessionGet('scene display flag')); % RGB, HDR, Gray
-            if isempty(displayFlag), displayFlag = 1; end
-            sceneShowImage(objList{ii},displayFlag,gam);
+            displayFlag = -1*abs(ieSessionGet('scene display flag')); % RGB, HDR, Gray
+            if isempty(displayFlag), displayFlag = -1; end
+            rgb = sceneShowImage(objList{ii},displayFlag,gam);
+            imagesc(rgb);
             t = sprintf('Scene %d - %s',ii,sceneGet(objList{ii},'name'));
             
         case 'OPTICALIMAGE'
             gam = oiGet(objList{ii},'gamma');
-            displayFlag = abs(ieSessionGet('oi display flag')); % RGB, HDR, Gray
-            oiShowImage(objList{ii},displayFlag,gam);
+            displayFlag = -1*abs(ieSessionGet('oi display flag')); % RGB, HDR, Gray
+            if isempty(displayFlag), displayFlag = -1; end
+            rgb = oiShowImage(objList{ii},displayFlag,gam);
+            imagesc(rgb);
             t =sprintf('OI %d - %s',ii,oiGet(objList{ii},'name'));
             
         case 'ISA'
