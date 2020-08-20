@@ -36,6 +36,21 @@
    "Icon" : [],
    "Keywords": []
   }
+],
+
+  "HDR": [
+  {"Name": "Stone",
+   "Description" : "A Stone. Duh!",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/HDR/stone1.mat",
+   "Icon" : "https://www.extremetech.com/wp-content/uploads/2019/11/Luminar-4-UI-Example-640x353.jpg",
+   "Keywords": ["HDR", "Stone", "Nature"]
+  },
+    {"Name": "Tree",
+   "Description" : "The Stanford Tree?",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/HDR/tree1.mat",
+   "Icon" : "https://www.extremetech.com/wp-content/uploads/2019/11/Luminar-4-UI-Example-640x353.jpg",
+   "Keywords": ["HDR", "Nature", "Stanford", "Tree"]
+  }
 ]
   
 }
