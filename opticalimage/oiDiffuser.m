@@ -62,9 +62,9 @@ wSpatialRes = oiGet(oi,'width spatial resolution','microns');
 sigma = sd/wSpatialRes;
 
 if sigma < 0.5
-    handles = ieSessionGet('opticalimagehandle');
+    app = ieSessionGet('oi window');
     str= 'Optical image spatial sampling is low compared to the image sensor';
-    ieInWindowMessage(str,handles,4);
+    ieInWindowMessage(str,app,4);
 end
 
 % Calculate the support for the Gaussian filter.  We make the support large

@@ -63,8 +63,8 @@ end
 subCount = 1; % Which subplot are we in
 
 %% This is the display loop
-for ii=selectedObjs
-    if (~singlewindow || subCount == 1), vcNewGraphWin([],fType); end
+for ii=1:numel(selectedObjs)
+    if (~singlewindow || subCount == 1), ieNewGraphWin([],fType); end
     if singlewindow
         subplot(rWin,cWin,subCount); subCount = subCount+1; 
     end
@@ -73,15 +73,18 @@ for ii=selectedObjs
             gam = sceneGet(objList{ii},'gamma');      % gamma in the window!
             % Use the same display method, but do not show in the scene
             % window.  The -1 makes that happen
-            displayFlag = abs(ieSessionGet('scene display flag')); % RGB, HDR, Gray
-            if isempty(displayFlag), displayFlag = 1; end
-            sceneShowImage(objList{ii},displayFlag,gam);
+            displayFlag = -1*abs(ieSessionGet('scene display flag')); % RGB, HDR, Gray
+            if isempty(displayFlag), displayFlag = -1; end
+            rgb = sceneShowImage(objList{ii},displayFlag,gam);
+            imagesc(rgb);
             t = sprintf('Scene %d - %s',ii,sceneGet(objList{ii},'name'));
             
         case 'OPTICALIMAGE'
-            gam = ieSessionGet('oi gamma');      % gamma in the window!
-            displayFlag = ieSessionGet('oi display flag'); % RGB, HDR, Gray
-            oiShowImage(objList{ii},displayFlag,gam);
+            gam = oiGet(objList{ii},'gamma');
+            displayFlag = -1*abs(ieSessionGet('oi display flag')); % RGB, HDR, Gray
+            if isempty(displayFlag), displayFlag = -1; end
+            rgb = oiShowImage(objList{ii},displayFlag,gam);
+            imagesc(rgb);
             t =sprintf('OI %d - %s',ii,oiGet(objList{ii},'name'));
             
         case 'ISA'
@@ -104,7 +107,7 @@ for ii=selectedObjs
     
     % Label the image or window
     if singlewindow,      title(t)
-    else                  set(gcf,'name',t);
+    else,                 set(gcf,'name',t);
     end
     
 end

@@ -280,15 +280,19 @@ switch param
         sg = ieSessionGet('scene guidata');
         if ~isempty(sg), val = str2double(get(sg.editGamma,'string')); end
     case {'scenedisplayflag'}
-        sg = ieSessionGet('oi guidata');
-        if ~isempty(sg), val = get(sg.popupDisplay,'value'); end
+        app = ieSessionGet('scene window');
+        if ~isempty(app)
+            val = find(contains(app.popupDisplay.Items,app.popupDisplay.Value)); 
+        end
     case {'oigamma'}
         % ieSessionGet('oi gamma')
         oig = ieSessionGet('oi guidata');
         if ~isempty(oig), val = str2double(get(oig.editGamma,'string')); end
     case {'oidisplayflag'}
-        oig = ieSessionGet('oi guidata');
-        if ~isempty(oig), val = get(oig.popupDisplay,'value'); end
+        app = ieSessionGet('oi window');
+        if ~isempty(app)
+            val = find(contains(app.popupDisplay.Items,app.popupDisplay.Value)); 
+        end
     case {'sensorgamma'}
         % ieSessionGet('sensor gamma')
         sensorg = ieSessionGet('sensor guidata');

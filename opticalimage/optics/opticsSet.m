@@ -58,7 +58,7 @@ function optics = opticsSet(optics,parm,val,varargin)
 % Relative illumination data
 %      {'relillummethod'}- 
 %      {'off axis method'}  - Set to 'Skip' to turn off or 'cos4th'
-%      {'cos4th functon'}   - Function for calculating cos4th 
+%      {'cos4th function'}   - Function for calculating cos4th 
 %      {'cos4th data'}      - Cached cos4th data
 %
 % Ray trace optics specifications

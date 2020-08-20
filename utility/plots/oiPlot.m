@@ -60,6 +60,9 @@ function [udata, g] = oiPlot(oi,pType,roiLocs,varargin)
 %         3*incoherent cutoff). Number of spatial samples to plot in the
 %         line spread can be set (default: 40).
 %
+%      {'relative illumination'} - Calls opticsPlotOffAxis
+%      
+%
 % See also:  plotOITest, scenePlot, sensorPlot
 %
 % Examples:
@@ -80,6 +83,8 @@ function [udata, g] = oiPlot(oi,pType,roiLocs,varargin)
 %   uData = oiPlot(oi,'psf 550','um')
 %   uData = oiPlot(oi,'otf 550','um')
 %   uData = oiPlot(oi,'ls wavelength')
+%
+%   uData = oiPlot(oi,'relative illumination');
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
@@ -518,6 +523,10 @@ switch pType
         axis off; set(g,'Name',namestr);
         
         % Optics related
+    case {'relativeillumination'}
+        % Optics relative illumination
+        udata = opticsPlotOffAxis(oi);
+
     case {'otf','otfanywave'}
         % User asked to select a wavelength
         % Optical transfer function, units are lines/mm
@@ -608,7 +617,7 @@ switch pType
         % Make an RGB image showing the spatial image of the illuminant.
         
         wave = oiGet(oi,'wave');
-        sz = oiGet(oi,'size');
+        sz   = oiGet(oi,'size');
         energy = oiGet(oi,'illuminant energy');
         if isempty(energy) 
             ieInWindowMessage('No illuminant data.',handle);
