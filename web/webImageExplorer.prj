@@ -3,15 +3,15 @@
     <param.appname>webImageExplorer</param.appname>
     <param.icon />
     <param.icons />
-    <param.version>0.1</param.version>
+    <param.version>0.11</param.version>
     <param.authnamewatermark>VistaLab</param.authnamewatermark>
     <param.email>david.cardinal@stanford.edu</param.email>
-    <param.company>Stanford</param.company>
+    <param.company>Stanford University</param.company>
     <param.summary>Find and explore images in ISET toolbox</param.summary>
     <param.description />
-    <param.screenshot />
+    <param.screenshot>S:\projects\iset\Stanford Logo.png</param.screenshot>
     <param.guid />
-    <param.installpath.string>\Stanford\webImageExplorer\</param.installpath.string>
+    <param.installpath.string>\Stanford University\webImageExplorer\</param.installpath.string>
     <param.installpath.combo>option.installpath.programfiles</param.installpath.combo>
     <param.logo />
     <param.install.notes />
@@ -46,9 +46,7 @@
       <param.icon />
       <param.icons />
       <param.email />
-      <param.company />
       <param.description />
-      <param.screenshot />
       <param.guid />
       <param.installpath.string />
       <param.installpath.combo />
