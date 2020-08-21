@@ -133,9 +133,9 @@ figure(app.figure1);
 % For NIR, SWIR and so forth we might use a different displayFlag value.
 % See oiShowImage.  In the future, we will read the displayFlag from
 % either a global or a setting in the oi GUI.
-displayFlag = find(contains(app.popupDisplay.Items,app.popupDisplay.Value));
+renderFlag = oiGet(oi,'render flag index'); 
 
-oiShowImage(oi,displayFlag,gam,app);
+oiShowImage(oi,renderFlag,gam,app);
 
 app.txtOpticalImage.Text = oiDescription(oi);
 
