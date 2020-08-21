@@ -116,6 +116,42 @@
    "URL" : "http://web.stanford.edu/~david81/ISETData/HDR/pool.mat",
    "Icon" : "http://web.stanford.edu/~david81/ISETData/HDR/pool.jpg",
    "Keywords": ["HDR", "Stanford"]
+  },
+    {"Name": "Aisle 2",
+   "Description" : "Another Aisle!",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/HDR/aisle2.mat",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/HDR/aisle2.jpg",
+   "Keywords": ["HDR", "Stanford"]
+  },
+    {"Name": "BuildingFront",
+   "Description" : "Front of Building",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/HDR/BuildingFront.mat",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/HDR/BuildingFront.jpg",
+   "Keywords": ["HDR", "Stanford", "Building"]
+  },
+    {"Name": "Cars 2",
+   "Description" : "More Cars",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/HDR/cars2.mat",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/HDR/cars2.jpg",
+   "Keywords": ["HDR", "Stanford", "Cars"]
+  },
+    {"Name": "Church 1 P",
+   "Description" : "Church",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/HDR/church1_p.mat",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/HDR/church1_p.jpg",
+   "Keywords": ["HDR", "Stanford", "Church", "P"]
+  },
+    {"Name": "Flower 1 P",
+   "Description" : "Flower",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/HDR/flower1_p.mat",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/HDR/flower1_p.jpg",
+   "Keywords": ["HDR", "Stanford", "Flower", "P"]
+  },
+    {"Name": "Glare 1",
+   "Description" : "Glare",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/HDR/glare1.mat",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/HDR/glare1.jpg",
+   "Keywords": ["HDR", "Stanford", "Glare", "Lighting"]
   }
 
 
