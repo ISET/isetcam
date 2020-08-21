@@ -55,7 +55,8 @@ RGB = sceneShowImage(scene,displayFlag,gam);
 [p,n,e] = fileparts(fName);
 if isempty(p), p = pwd; end
 if isempty(e), e = '.png'; end
-fName = fullfile(p,[n,e]);
+% djc -- This doesn't work for me! fName = fullfile(p,[n,e]);
+fName = fullfile(p,strcat(n,e))
 
 % Always has a png extension. Written out as 8 bit for PNG format.
 imwrite(RGB,fName);

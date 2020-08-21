@@ -2,6 +2,14 @@ classdef webData
     %WEBDATA Fetech various kinds of data into ISET
     %   Might wind up being a super-class for various kinds of data, but 
     %   keeping it simple for now.
+    %   Handles Hyperspectral and Multispectral as separate cases,
+    %   since they are in the database (JSON file) separately,
+    %   but they are very similar so possibly code can be combined
+    %   HDR images are also handled separately, but they too are .MAT
+    %   scenes.
+    %
+    %   For now they all read from a single JSON file, but it could easily
+    %   be split into several 
     
     properties
         dataType; % whether it is Hyperspectral, Multispectral, or HDR
@@ -23,7 +31,7 @@ classdef webData
             %METHOD1 Summary of this method goes here
             %   Detailed explanation goes here
             %outputArg = JSON STRUCT FOR FLICKR< WHAT HERE?;   
-            ourKeywords = split(ourTags);
+            ourKeywords = split(ourTags,",");
             switch obj.dataType
                 case 'Hyperspectral'
                     ourDataObject = obj.ourDataStruct.Hyperspectral;
@@ -38,17 +46,18 @@ classdef webData
                 if isempty(ourDataObject(i).Name) % blank entry
                     found = false;
                 else
+                    %this is wrong, makes it so keywords have to be the
+                    %same!
                     for j = 1: length(ourKeywords)
-                        if find(strcmpi(ourDataObject(i).Keywords, ourKeywords(j)))
-                        elseif isequal(ourKeywords(j), "")
-                            % always match an empty string
+                        if find(strcmpi(ourDataObject(i).Keywords, strtrim(ourKeywords(j))))
+                        elseif isequal(strtrim(ourKeywords(j)), "")
                         else
-                            found = false;
+                            found = false; % currently we want to find all keywords
                         end
                     end
                 end
                 if found == true
-                    if exist('outputArg')
+                    if exist('outputArg', 'var')
                         % can we just use ourDataObj(i) since it is typed??
                         %outputArg(end+1) = obj.ourDataStruct.Hyperspectral(i);
                         outputArg(end+1) = ourDataObject(i);
@@ -58,6 +67,9 @@ classdef webData
                     end
                 end
             end
+            if ~exist('outputArg','var') 
+                outputArg = [];
+            end 
         end
         
         function ourURL = getImageURL(obj, fPhoto, wantSize)
@@ -66,6 +78,10 @@ classdef webData
             else
                 ourURL = fPhoto.URL;
             end 
+        end
+        
+        function ourTitle = getImageTitle(obj, fPhoto)
+            ourTitle = fPhoto.Name;
         end
         
         function ourImage = getImage(obj, fPhoto, wantSize)
