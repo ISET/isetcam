@@ -6,6 +6,7 @@ classdef webFlickr
         api_key;
         search_url;
         format;
+        tag_mode;
         nojsoncallback;
         per_page;
         licenses;
@@ -18,6 +19,7 @@ classdef webFlickr
             obj.api_key = 'a6365f14201cd3c5f34678e671b9ab8d'; % use mine for now at least
             obj.search_url = 'https://www.flickr.com/services/rest/?method=flickr.photos.search';
             obj.format = 'json';
+            obj.tag_mode = 'all'; % require all keywords (comma separated) for now
             obj.nojsoncallback = '1';
             obj.per_page = 50; %our default of how many photos we want
             obj.licenses = '1,2,3,4,5,6,7,8,9,10'; % everything shareable for now
@@ -29,7 +31,7 @@ classdef webFlickr
             %   Detailed explanation goes here
             outputArg = webread(obj.search_url, 'api_key', obj.api_key, 'tags', ourTags, ...
             'format', obj.format, 'nojsoncallback', obj.nojsoncallback, 'safe_search', 1, ...
-            'content_type', 1, 'per_page', obj.per_page, 'license', obj.licenses);            
+            'content_type', 1, 'per_page', obj.per_page, 'tag_mode', obj.tag_mode, 'license', obj.licenses);            
         end
         
         function ourTitle = getImageTitle(obj, fPhoto)
