@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.ezdeploy" plugin-version="1.0">
-  <configuration build-checksum="3733684603" file="B:\iset\isetcam\web\webImageBrowser.prj" location="B:\iset\isetcam\web" name="webImageBrowser" preferred-package-location="s:\projects\iset\web\ImageBrowser\for_redistribution" preferred-package-type="package.type.exe" target="target.ezdeploy.standalone" target-name="Application Compiler">
+  <configuration build-checksum="3733684603" file="B:\iset\isetcam\web\webImageExplorer.prj" location="B:\iset\isetcam\web" name="webImageExplorer" preferred-package-location="s:\projects\iset\web\ImageBrowser\for_redistribution" preferred-package-type="package.type.exe" target="target.ezdeploy.standalone" target-name="Application Compiler">
     <param.appname>webImageExplorer</param.appname>
     <param.icon />
     <param.icons />
@@ -16,10 +16,10 @@
     <param.logo />
     <param.install.notes />
     <param.target.install.notes />
-    <param.intermediate>s:\projects\iset\web\webImageBrowser\for_testing</param.intermediate>
-    <param.files.only>s:\projects\iset\web\webImageBrowser\for_redistribution_files_only</param.files.only>
-    <param.output>s:\projects\iset\web\ImageBrowser\for_redistribution</param.output>
-    <param.logdir>${PROJECT_ROOT}\webImageBrowser</param.logdir>
+    <param.intermediate>s:\projects\iset\web\webImageExplorer\for_testing</param.intermediate>
+    <param.files.only>s:\projects\iset\web\webImageExplorer\for_redistribution_files_only</param.files.only>
+    <param.output>s:\projects\iset\web\webImageExplorer\for_redistribution</param.output>
+    <param.logdir>${PROJECT_ROOT}\webImageExplorer</param.logdir>
     <param.enable.clean.build>false</param.enable.clean.build>
     <param.user.defined.mcr.options />
     <param.target.type>subtarget.standalone</param.target.type>
@@ -608,9 +608,9 @@
       <file>B:\iset\scitran\utility\notDefined.m</file>
     </fileset.depfun>
     <build-deliverables>
-      <file location="s:\projects\iset\web\webImageBrowser\for_testing" name="webImageExplorer.exe" optional="false">s:\projects\iset\web\webImageBrowser\for_testing\webImageExplorer.exe</file>
-      <file location="s:\projects\iset\web\webImageBrowser\for_testing" name="splash.png" optional="false">s:\projects\iset\web\webImageBrowser\for_testing\splash.png</file>
-      <file location="s:\projects\iset\web\webImageBrowser\for_testing" name="readme.txt" optional="true">s:\projects\iset\web\webImageBrowser\for_testing\readme.txt</file>
+      <file location="s:\projects\iset\web\webImageExplorer\for_testing" name="readme.txt" optional="true">s:\projects\iset\web\webImageExplorer\for_testing\readme.txt</file>
+      <file location="s:\projects\iset\web\webImageExplorer\for_testing" name="splash.png" optional="false">s:\projects\iset\web\webImageExplorer\for_testing\splash.png</file>
+      <file location="s:\projects\iset\web\webImageExplorer\for_testing" name="webImageExplorer.exe" optional="false">s:\projects\iset\web\webImageExplorer\for_testing\webImageExplorer.exe</file>
     </build-deliverables>
     <workflow />
     <matlab>
