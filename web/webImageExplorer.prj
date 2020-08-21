@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.ezdeploy" plugin-version="1.0">
-  <configuration build-checksum="3733684603" file="B:\iset\isetcam\web\webImageExplorer.prj" location="B:\iset\isetcam\web" name="webImageExplorer" preferred-package-location="s:\projects\iset\web\ImageBrowser\for_redistribution" preferred-package-type="package.type.exe" target="target.ezdeploy.standalone" target-name="Application Compiler">
+  <configuration build-checksum="3750277505" file="B:\iset\isetcam\web\webImageExplorer.prj" location="B:\iset\isetcam\web" name="webImageExplorer" preferred-package-location="s:\projects\iset\web\webImageExplorer\for_redistribution" preferred-package-type="package.type.exe" target="target.ezdeploy.standalone" target-name="Application Compiler">
     <param.appname>webImageExplorer</param.appname>
     <param.icon />
     <param.icons />
@@ -600,6 +600,7 @@
       <file>B:\iset\isetcam\utility\units\ieUnitScaleFactor.m</file>
       <file>B:\iset\isetcam\utility\units\sample2space.m</file>
       <file>B:\iset\isetcam\utility\units\unitFrequencyList.m</file>
+      <file>${PROJECT_ROOT}\Vista Lab Logo.png</file>
       <file>${PROJECT_ROOT}\webData.m</file>
       <file>${PROJECT_ROOT}\webFlickr.m</file>
       <file>${PROJECT_ROOT}\webISETData.json</file>
