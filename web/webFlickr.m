@@ -34,8 +34,9 @@ classdef webFlickr
         function outputArg = search(obj,ourTags)
             %METHOD1 Summary of this method goes here
             %   Detailed explanation goes here
+            % 'safe_search', 3,
             outputArg = webread(obj.search_url, 'api_key', obj.api_key, 'tags', ourTags, ...
-            'format', obj.format, 'nojsoncallback', obj.nojsoncallback, 'safe_search', 1, ...
+            'format', obj.format, 'nojsoncallback', obj.nojsoncallback,  ...
             'content_type', 1, 'sort', obj.sort, 'per_page', obj.per_page, 'tag_mode', obj.tag_mode, 'license', obj.licenses);            
         end
         
