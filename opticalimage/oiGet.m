@@ -744,13 +744,11 @@ switch oType
                 % displayFlag
 
                 % Uses oiShowImage() to compute the rgb data consistently
-                % with what is in the oiWindow.
+                % with what is in the oiWindow.  Force the renderFlag to
+                % negative to prevent display.
                 gam = oiGet(oi,'gamma');
-                handles = ieSessionGet('oi handles');
-                if isempty(handles), renderFlag = -1;
-                else,                renderFlag = -1*abs(get(handles.popupDisplay,'Value'));
-                end
-                val = oiShowImage(oi,renderFlag,gam);
+                renderFlag = oiGet(oi,'render flag index');
+                val = oiShowImage(oi,-1*abs(renderFlag),gam);
                 
             case {'gamma'}
                 % oiGet(oi,'gamma')

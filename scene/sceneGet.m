@@ -791,13 +791,11 @@ switch parm
         %
         % Get the rgb image shown in the window
         
-        gam     = sceneGet(scene,'gamma');
-        handles = ieSessionGet('scene handles');
-        if isempty(handles), displayFlag = -1;
-        else,                displayFlag = -1*abs(get(handles.popupDisplay,'Value'));
-        end
-        val = sceneShowImage(scene,displayFlag,gam);
-                
+        gam        = sceneGet(scene,'gamma');
+        renderFlag = sceneGet(scene,'render flag index');
+        renderFlag = -1*abs(renderFlag);
+        val = sceneShowImage(scene,renderFlag,gam);
+        
     case {'gamma'}
         % sceneGet(scene,'gamma')
 
@@ -809,10 +807,10 @@ switch parm
         
     case {'renderflagindex'}
         % val = oiGet(oi,'display flag index')
-        % When there is an oiWindow open and set in the vcSESSION,
-        % find the display flag index
         %
-        % See if there is a display window
+        % When there is an oiWindow open and set in the vcSESSION,
+        % find the display flag index.  Otherwise return 1.
+        
         sceneW = ieSessionGet('scene window');
         if isempty(sceneW), val = 1;   % Default if no window
         else, val = find(contains(sceneW.popupRender.Items,sceneW.popupRender.Value));
@@ -823,10 +821,10 @@ switch parm
         % When there is an oiWindow open and set in the vcSESSION,
         % find the display flag index
         
-        % See if there is a display window
+        % See if there is a scene window
         sceneW = ieSessionGet('scene window');
         if isempty(sceneW), val = 'no window';   % Default if no window
-        else, val = sceneW.popupRender.Value;
+        else,               val = sceneW.popupRender.Value;
         end
         
     % MCC related regions of interest and handles.  Works with
