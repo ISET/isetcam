@@ -42,7 +42,7 @@ classdef webData
                     %same!
                     for j = 1: length(ourKeywords)
                         if find(strcmpi(ourDataObject(i).Keywords, strtrim(ourKeywords(j))))
-                        elseif isequal(ourKeywords(j), "")
+                        elseif isequal(strtrim(ourKeywords(j)), "")
                         else
                             found = false; % currently we want to find all keywords
                         end
