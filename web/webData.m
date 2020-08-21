@@ -2,6 +2,14 @@ classdef webData
     %WEBDATA Fetech various kinds of data into ISET
     %   Might wind up being a super-class for various kinds of data, but 
     %   keeping it simple for now.
+    %   Handles Hyperspectral and Multispectral as separate cases,
+    %   since they are in the database (JSON file) separately,
+    %   but they are very similar so possibly code can be combined
+    %   HDR images are also handled separately, but they too are .MAT
+    %   scenes.
+    %
+    %   For now they all read from a single JSON file, but it could easily
+    %   be split into several 
     
     properties
         dataType; % whether it is Hyperspectral, Multispectral, or HDR

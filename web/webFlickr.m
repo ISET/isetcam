@@ -1,6 +1,9 @@
 classdef webFlickr
-    %WEBFLICKER Summary of this class goes here
-    %   Detailed explanation goes here
+    %WEBFLICKR Access to Flickr API
+    %   Retrieves information about images matching keywords
+    %   along with a small size and large size as needed
+    %   current default is comma-separated keywords, all of which need to
+    %   be matched
     
     properties
         api_key;
