@@ -23,7 +23,7 @@ classdef webData
             %METHOD1 Summary of this method goes here
             %   Detailed explanation goes here
             %outputArg = JSON STRUCT FOR FLICKR< WHAT HERE?;   
-            ourKeywords = split(ourTags);
+            ourKeywords = split(ourTags,", ");
             switch obj.dataType
                 case 'Hyperspectral'
                     ourDataObject = obj.ourDataStruct.Hyperspectral;
@@ -38,17 +38,21 @@ classdef webData
                 if isempty(ourDataObject(i).Name) % blank entry
                     found = false;
                 else
+                    %this is wrong, makes it so keywords have to be the
+                    %same!
                     for j = 1: length(ourKeywords)
+                        keywordMatch = false;
                         if find(strcmpi(ourDataObject(i).Keywords, ourKeywords(j)))
+                            keywordMatch = true;
                         elseif isequal(ourKeywords(j), "")
-                            % always match an empty string
+                            keywordMatch = true;
                         else
-                            found = false;
+                            found = false; % currently we want to find all keywords
                         end
                     end
                 end
                 if found == true
-                    if exist('outputArg')
+                    if exist('outputArg', 'var')
                         % can we just use ourDataObj(i) since it is typed??
                         %outputArg(end+1) = obj.ourDataStruct.Hyperspectral(i);
                         outputArg(end+1) = ourDataObject(i);
@@ -58,6 +62,9 @@ classdef webData
                     end
                 end
             end
+            if ~exist('outputArg','var') 
+                outputArg = [];
+            end 
         end
         
         function ourURL = getImageURL(obj, fPhoto, wantSize)
@@ -66,6 +73,10 @@ classdef webData
             else
                 ourURL = fPhoto.URL;
             end 
+        end
+        
+        function ourTitle = getImageTitle(obj, fPhoto)
+            ourTitle = fPhoto.Name;
         end
         
         function ourImage = getImage(obj, fPhoto, wantSize)

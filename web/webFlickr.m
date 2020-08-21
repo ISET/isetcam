@@ -32,6 +32,10 @@ classdef webFlickr
             'content_type', 1, 'per_page', obj.per_page, 'license', obj.licenses);            
         end
         
+        function ourTitle = getImageTitle(obj, fPhoto)
+            ourTitle = fPhoto.title;
+        end
+        
         % pass a Flickr photo object and desired size to get the URL of the
         % image
         %https://farm{farm-id}.staticflickr.com/{server-id}/{id}_{secret}_[mstzb].jpg
