@@ -268,10 +268,10 @@ switch pType
         % plotOI(oi,'irradianceImage',sampleSpacing-um);
         irrad   = oiGet(oi,'photons');
         wave    = oiGet(oi,'wave');
-        nWave   = oiGet(oi,'nwave');
+        nWave   = oiGet(oi,'n wave');
         sz      = oiGet(oi,'size');
-        spacing = oiGet(oi,'sampleSpacing','um');
-        gam     = oiGet(oi,'display gamma');
+        spacing = oiGet(oi,'sample spacing','um');
+        gam     = oiGet(oi,'gamma');
         
         % This is probably now a spatial support oiGet ...
         xCoords = spacing(2) * (1:sz(2)); xCoords = xCoords - mean(xCoords);

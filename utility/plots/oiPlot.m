@@ -305,7 +305,7 @@ switch pType
         nWave   = oiGet(oi,'nwave');
         sz      = oiGet(oi,'size');
         spacing = oiGet(oi,'sampleSpacing','um');
-        gam     = oiGet(oi,'display gamma');
+        gam     = oiGet(oi,'gamma');
         
         % This is probably now a spatial support oiGet ...
         xCoords = spacing(2) * (1:sz(2)); xCoords = xCoords - mean(xCoords);

@@ -736,51 +736,23 @@ switch oType
                 fResolution = oiGet(oi,'frequencyresolution',units);
                 l=find(abs(fResolution.fy) == 0); val = fResolution.fy(l:end);
                 
-                % Computational methods -- About to be obsolete and managed by the
-                % optics model information in the optics structure.
-                %             case {'customcomputemethod','oicompute','oicomputemethod','oimethod'}
-                %                 if checkfields(oi,'customMethod'), val = oi.customMethod; end
-                %             case {'customcompute','booleancustomcompute'}
-                %                 % 1 or 0
-                %                 if checkfields(oi,'customCompute'), val = oi.customCompute;
-                %                 else val = 0;
-                %                 end
-                
                 % Visual information
             case {'rgb','rgbimage'}
-                % Get the rgb image shown in the oiWindow
-                %
                 %  rgb = oiGet(oi,'rgb image');
                 %
+                % Get the rgb image shown in the oiWindow as per the
+                % displayFlag
+
                 % Uses oiShowImage() to compute the rgb data consistently
                 % with what is in the oiWindow.
-                
                 gam = oiGet(oi,'gamma');
                 handles = ieSessionGet('oi handles');
-                if isempty(handles), displayFlag = -1;
-                else,                displayFlag = -1*abs(get(handles.popupDisplay,'Value'));
+                if isempty(handles), renderFlag = -1;
+                else,                renderFlag = -1*abs(get(handles.popupDisplay,'Value'));
                 end
-                val = oiShowImage(oi,displayFlag,gam);
+                val = oiShowImage(oi,renderFlag,gam);
                 
-                %{
-                OLD CODE
-                if isempty(varargin), gam = oiGet(oi,'display gamma');
-                else, gam = varargin{1};
-                end
-                
-                % Render the rgb image
-                photons = oiGet(oi,'photons');
-                wList   = oiGet(oi,'wave');
-                [row,col,~] = size(photons); 
-                %         photons = RGB2XWFormat(photons);
-                %         val     = imageSPD2RGB(photons,wList,gam);
-                %         val     = XW2RGBFormat(val,row,col);
-                %
-                displayFlag = -1;  % Compute rgb, but do not display
-                val = imageSPD(photons,wList,gam,row,col,displayFlag);
-                %}
-                
-            case {'displaygamma','gamma'}
+            case {'gamma'}
                 % oiGet(oi,'gamma')
                 % There can be a conflict with the display window in diplay
                 % gamma call
@@ -789,6 +761,28 @@ switch oType
                 oiW = ieSessionGet('oi window');
                 if isempty(oiW), val = 1;  % Default if no window
                 else, val = str2double(oiW.editGamma.Value);
+                end
+                
+            case {'renderflagindex'}
+                % val = oiGet(oi,'display flag index')
+                % When there is an oiWindow open and set in the vcSESSION,
+                % find the display flag index
+                %
+                % See if there is a display window
+                oiW = ieSessionGet('oi window');
+                if isempty(oiW), val = 1;   % Default if no window
+                else, val = find(contains(oiW.popupRender.Items,oiW.popupRender.Value));
+                end
+                
+            case {'renderflagstring'}
+                % val = oiGet(oi,'display flag string')
+                % When there is an oiWindow open and set in the vcSESSION,
+                % find the display flag index
+                
+                % See if there is a display window
+                oiW = ieSessionGet('oi window');
+                if isempty(oiW), val = 'no window';   % Default if no window
+                else, val = oiW.popupRender.Value;
                 end
                 
             case {'centroid'}

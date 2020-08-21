@@ -37,7 +37,7 @@ if ieNotDefined('fName')
     fName = vcSelectDataFile('session','w','png','Image file (png)');
 end
 
-gam     = sceneGet(scene,'display gamma');
+gam   = sceneGet(scene,'gamma');
 thisW = ieSessionGet('scene window');
 
 % The negative value means we do not bring up a window to show the image in

@@ -787,19 +787,19 @@ switch parm
         
         % For display purposes
     case {'rgb','rgbimage'}
-        % Get the rgb image shown in the window
         % rgb = sceneGet(scene,'rgb image');
-        %   ieNewGraphWin; imshow(rgb)
+        %
+        % Get the rgb image shown in the window
         
-        gam     = sceneGet(scene,'display gamma');
+        gam     = sceneGet(scene,'gamma');
         handles = ieSessionGet('scene handles');
         if isempty(handles), displayFlag = -1;
         else,                displayFlag = -1*abs(get(handles.popupDisplay,'Value'));
         end
         val = sceneShowImage(scene,displayFlag,gam);
                 
-    case {'displaygamma','gamma'}
-        % sceneGet(scene,'display gamma')
+    case {'gamma'}
+        % sceneGet(scene,'gamma')
 
         % See if there is a display window
         thisW = ieSessionGet('scene window');
@@ -807,8 +807,30 @@ switch parm
         else, val = str2double(thisW.editGamma.Value);
         end
         
-        % MCC related regions of interest and handles.  Works with
-        % macbethSelect
+    case {'renderflagindex'}
+        % val = oiGet(oi,'display flag index')
+        % When there is an oiWindow open and set in the vcSESSION,
+        % find the display flag index
+        %
+        % See if there is a display window
+        sceneW = ieSessionGet('scene window');
+        if isempty(sceneW), val = 1;   % Default if no window
+        else, val = find(contains(sceneW.popupRender.Items,sceneW.popupRender.Value));
+        end
+        
+    case {'renderflagstring'}
+        % val = oiGet(oi,'display flag string')
+        % When there is an oiWindow open and set in the vcSESSION,
+        % find the display flag index
+        
+        % See if there is a display window
+        sceneW = ieSessionGet('scene window');
+        if isempty(sceneW), val = 'no window';   % Default if no window
+        else, val = sceneW.popupRender.Value;
+        end
+        
+    % MCC related regions of interest and handles.  Works with
+    % macbethSelect
     case {'mccrecthandles'}
         if checkfields(scene,'mccRectHandles'), val = scene.mccRectHandles; end
     case {'mcccornerpoints'}

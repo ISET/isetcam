@@ -44,8 +44,9 @@ if ieNotDefined('fName')
     fName = vcSelectDataFile('session','w','png','Image file (png)');
 end
 
-gam     = oiGet(oi,'display gamma');
-handles = ieSessionGet('oi handles');
+gam         = oiGet(oi,'gamma');
+displayFlag = oiGet(oi,'display flag index');  % Integer
+
 % The negative value means we do not bring up a window to show the image in
 % this routine.
 if isempty(handles),  displayFlag = -1;

@@ -75,13 +75,13 @@ app.txtSceneDescription.Text = sceneDescription(scene);
 
 % Get the integer that indicates which element of the displayFlag is
 % selected.
-displayFlag = find(contains(app.popupDisplay.Items,app.popupDisplay.Value));
+renderFlag = sceneGet(scene,'render flag index'); 
 
 % Get the display gamma value from the app UI
 gam = str2double(app.editGamma.Value);
 
 % Display the RGB image in the sceneAxis of the scene window
-sceneShowImage(scene,displayFlag,gam,app);
+sceneShowImage(scene,renderFlag,gam,app);
 
 % Refresh the font size
 ieFontSizeSet(app,0);
