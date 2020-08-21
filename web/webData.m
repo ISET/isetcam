@@ -23,7 +23,7 @@ classdef webData
             %METHOD1 Summary of this method goes here
             %   Detailed explanation goes here
             %outputArg = JSON STRUCT FOR FLICKR< WHAT HERE?;   
-            ourKeywords = split(ourTags,", ");
+            ourKeywords = split(ourTags,",");
             switch obj.dataType
                 case 'Hyperspectral'
                     ourDataObject = obj.ourDataStruct.Hyperspectral;
@@ -41,11 +41,8 @@ classdef webData
                     %this is wrong, makes it so keywords have to be the
                     %same!
                     for j = 1: length(ourKeywords)
-                        keywordMatch = false;
-                        if find(strcmpi(ourDataObject(i).Keywords, ourKeywords(j)))
-                            keywordMatch = true;
+                        if find(strcmpi(ourDataObject(i).Keywords, strtrim(ourKeywords(j))))
                         elseif isequal(ourKeywords(j), "")
-                            keywordMatch = true;
                         else
                             found = false; % currently we want to find all keywords
                         end
