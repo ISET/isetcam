@@ -91,9 +91,9 @@ function oi = oiSet(oi,parm,val,varargin)
 %      'illuminant Name'    - Identifier for illuminant.
 %
 % Auxiliary
-%      {'consistency'}       - Is the display consistent with data
 %      {'gamma'}             - Display gamma in oiWindow
-%      {'displaymode'}       - No space. One of {'rgb','hdr','gray','clip'}
+%      {'render flag'}       - One of {'rgb','hdr','gray','clip'} or an
+%                             integer between 1 and 4
 %
 % Private variables used by ISET but not normally set by the user
 %
@@ -112,7 +112,7 @@ function oi = oiSet(oi,parm,val,varargin)
 %    oi = oiSet(oi,'filename','test')
 %    oi = oiSet(oi,'wvf zcoeffs',6,'defocus')
 %    oi = oiSet(oi,'wvf pupil diameter',3,'mm')
-%    oiSet(oi,'displaymode','hdr');
+%    oiSet(oi,'render flag','hdr');
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 %
@@ -182,6 +182,27 @@ switch parm
         app = ieSessionGet('oi window');
         app.editGamma.Value = num2str(val);
         app.refresh;
+    case {'renderflag','displaymode'}
+        % oiSet(scene,'display mode','hdr');
+        app = ieSessionGet('oi window');
+        if isempty(app)
+            warning('Render flag is only set when the sceneWindow is open');
+        else
+            switch val
+                case {'hdr',3}
+                    val = 3;
+                case {'rgb',1}
+                    val = 1;
+                case {'gray',2}
+                    val = 2;
+                case {'clip',4}
+                    val = 4;
+                otherwise
+                    fprintf('Permissible display modes: rgb, gray, hdr, clip\n');
+            end
+            app.popupRender.Value = app.popupRender.Items{val};
+            app.refresh;
+        end
         
     case {'distance' }
         % Positive for scenes, negative for optical images
@@ -322,29 +343,7 @@ switch parm
         % Depth map, usuaully inherited from scene, in meters
         % oiSet(oi,'depth map',dMap);
         oi.depthMap = val;
-        
-    case {'displaymode'}
-        % oiSet(scene,'display mode','hdr');
-        
-        switch val
-            case 'hdr'
-                val = 3;
-            case 'rgb'
-                val = 1;
-            case 'gray'
-                val = 2;
-            case 'clip'
-                val = 4;
-            otherwise
-                fprintf('Legal display modes: rgb, gray, hdr, clip\n');
-        end
-        
-        hdl = ieSessionGet('oi window handle');
-        set(hdl.popupDisplay,'Value',val);
-        
-        % sceneWindow('sceneRefresh',hObj,eventdata,hdl);
-        oiWindow;
-        
+       
         % Chart parameters for MCC and other cases
     case {'chartparameters'}
         % Reflectance chart parameters are stored here.
