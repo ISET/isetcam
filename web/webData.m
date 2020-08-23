@@ -72,6 +72,36 @@ classdef webData
             end 
         end
         
+        function displayScene(obj, fPhoto, sceneType)
+            switch sceneType
+                case 'Hyperspectral'
+                    imageDataURL = obj.getImageURL(fPhoto, 'large');
+                    sceneFile = websave(fPhoto.Name, imageDataURL);
+                    % I, imType, meanLuminance, dispCal, wList
+                    scene = sceneFromFile(sceneFile,'multispectral',[],[],[]);
+                    scene = sceneSet(scene, 'name', fPhoto.Name);
+                    delete(sceneFile);
+                    sceneWindow(scene);
+                case 'HDR'
+                    
+                    % we can't load hyperspectral data directly, as it
+                    % doesn't come in as the correct type
+                    %imageData = app.hyperObj.getImage(event.Source.UserData, 'large');
+                    imageDataURL = obj.getImageURL(fPhoto, 'large');
+                    sceneFile = websave(fPhoto.Name, imageDataURL);
+                    % I, imType, meanLuminance, dispCal, wList
+                    % try using HDR as default display
+                    scene = sceneFromFile(sceneFile,'multispectral',[],[],400:10:700);
+                    scene = sceneSet(scene, 'name', fPhoto.Name);
+                    delete(sceneFile); % I think it is okay to remove now
+                    sceneWindow(scene);
+                    sceneSet(scene,'renderflag', 'hdr');
+
+                case 'RGB'
+                otherwise
+            end
+        end
+        
         function ourURL = getImageURL(obj, fPhoto, wantSize)
             if isequal(wantSize, 'thumbnail')
                 ourURL = fPhoto.Icon;
@@ -91,4 +121,3 @@ classdef webData
 
     end
 end
-
