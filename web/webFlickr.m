@@ -11,9 +11,10 @@ classdef webFlickr
         format;
         tag_mode;
         nojsoncallback;
-        per_page;
+        per_page = 20;
         licenses;
         sort;
+        waveList = 400:10:700;
     end
     
     methods
@@ -25,7 +26,6 @@ classdef webFlickr
             obj.format = 'json';
             obj.tag_mode = 'all'; % require all keywords (comma separated) for now
             obj.nojsoncallback = '1';
-            obj.per_page = 50; %our default of how many photos we want
             obj.licenses = '1,2,3,4,5,6,7,8,9,10'; % everything shareable for now
             obj.sort = 'relevance';
             %obj.api_key = inputArg1;
@@ -47,7 +47,7 @@ classdef webFlickr
         function displayScene(obj, fPhoto, sceneType)
             imageData = obj.getImage(fPhoto, 'large');
             % I, imType, meanLuminance, dispCal, wList
-            scene = sceneFromFile(imageData,'rgb',[],[],400:10:700);
+            scene = sceneFromFile(imageData,'rgb',[],[],obj.waveList);
             scene = sceneSet(scene, 'name', fPhoto.title);
             sceneWindow(scene);
             

@@ -14,6 +14,7 @@ classdef webData
     properties
         dataType; % whether it is Hyperspectral, Multispectral, or HDR
         ourDataStruct;
+        waveList = 400:10:700; % default wavelengths for display of hyperspectral
     end
     
     methods
@@ -69,21 +70,19 @@ classdef webData
         end
         
         function displayScene(obj, fPhoto, sceneType)
+            % common code for all ISET scene types:
+            imageDataURL = obj.getImageURL(fPhoto, 'large');
+            sceneFile = websave(fPhoto.Name, imageDataURL);
             switch sceneType
                 case 'Hyperspectral'
-                    imageDataURL = obj.getImageURL(fPhoto, 'large');
-                    sceneFile = websave(fPhoto.Name, imageDataURL);
                     % I, imType, meanLuminance, dispCal, wList
                     scene = sceneFromFile(sceneFile,'multispectral',[],[],[]);
                     scene = sceneSet(scene, 'name', fPhoto.Name);
                     delete(sceneFile);
                     sceneWindow(scene);
                 case 'HDR'
-                    
-                    imageDataURL = obj.getImageURL(fPhoto, 'large');
-                    sceneFile = websave(fPhoto.Name, imageDataURL);
                     % I, imType, meanLuminance, dispCal, wList
-                    scene = sceneFromFile(sceneFile,'multispectral',[],[],400:10:700);
+                    scene = sceneFromFile(sceneFile,'multispectral',[],[],obj.waveList);
                     scene = sceneSet(scene, 'name', fPhoto.Name);
                     delete(sceneFile); % I think it is okay to remove now
                     sceneWindow(scene);
@@ -91,6 +90,11 @@ classdef webData
                     sceneSet(scene,'renderflag', 'hdr');
 
                 case 'RGB'
+                    % I, imType, meanLuminance, dispCal, wList
+                    scene = sceneFromFile(sceneFile,'rgb',[],[],obj.waveList);
+                    scene = sceneSet(scene, 'name', fPhoto.Name);
+                    delete(sceneFile); % I think it is okay to remove now
+                    sceneWindow(scene);               
                 otherwise
             end
         end
