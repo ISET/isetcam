@@ -24,30 +24,26 @@ classdef webData
             % not sure if we want one big json file or several, one per
             % type, so no we have one file
             ourData = fileread('webISETData.json');
-            obj.ourDataStruct = jsondecode(ourData);
+            switch forType
+                case 'Hyperspectral'
+                    obj.ourDataStruct = jsondecode(ourData).Hyperspectral;
+                case 'HDR'
+                    obj.ourDataStruct = jsondecode(ourData).HDR;
+            end
         end
         
         function outputArg = search(obj,ourTags)
             %METHOD1 Summary of this method goes here
             %   Detailed explanation goes here
-            %outputArg = JSON STRUCT FOR FLICKR< WHAT HERE?;   
+            %outputArg = JSON STRUCT for our scene type   
             ourKeywords = split(ourTags,",");
-            switch obj.dataType
-                case 'Hyperspectral'
-                    ourDataObject = obj.ourDataStruct.Hyperspectral;
-                case 'HDR'
-                    ourDataObject = obj.ourDataStruct.HDR;
-                otherwise
-                    uialert("Data Type not supported.");
-            end
+            ourDataObject = obj.ourDataStruct
             
             for i = 1:length(ourDataObject)
                 found = true;
                 if isempty(ourDataObject(i).Name) % blank entry
                     found = false;
                 else
-                    %this is wrong, makes it so keywords have to be the
-                    %same!
                     for j = 1: length(ourKeywords)
                         if find(strcmpi(ourDataObject(i).Keywords, strtrim(ourKeywords(j))))
                         elseif isequal(strtrim(ourKeywords(j)), "")
