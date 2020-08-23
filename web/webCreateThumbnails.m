@@ -6,9 +6,9 @@ ourFiles = dir(fullfile(folderPath,"*.mat"));
 for i = 1:length(ourFiles)
     fullPath = fullfile(ourFiles(i).folder, ourFiles(i).name);
     ourScene = sceneFromFile(fullPath, 'multispectral');
-    useHDR = true; % for HDR rendering
+    useHDR = false; % for HDR rendering
     if useHDR
-        rgbImage = sceneShowImage(ourScene, 3); % try hdr rendering
+        rgbImage = sceneShowImage(ourScene, -3); % try hdr rendering
         thumbName = strrep(fullPath, ".mat", ".png");
         imwrite(rgbImage, thumbName);
     else

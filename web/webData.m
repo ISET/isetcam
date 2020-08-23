@@ -28,6 +28,8 @@ classdef webData
             switch forType
                 case 'Hyperspectral'
                     obj.ourDataStruct = jsondecode(ourData).Hyperspectral;
+                case 'Multispectral'
+                    obj.ourDataStruct = jsondecode(ourData).Multispectral;
                 case 'HDR'
                     obj.ourDataStruct = jsondecode(ourData).HDR;
             end
@@ -74,7 +76,7 @@ classdef webData
             imageDataURL = obj.getImageURL(fPhoto, 'large');
             sceneFile = websave(fPhoto.Name, imageDataURL);
             switch sceneType
-                case 'Hyperspectral'
+                case {'Hyperspectral', 'Multispectral'}
                     % I, imType, meanLuminance, dispCal, wList
                     scene = sceneFromFile(sceneFile,'multispectral',[],[],[]);
                     scene = sceneSet(scene, 'name', fPhoto.Name);
