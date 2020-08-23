@@ -84,17 +84,14 @@ classdef webData
                     sceneWindow(scene);
                 case 'HDR'
                     
-                    % we can't load hyperspectral data directly, as it
-                    % doesn't come in as the correct type
-                    %imageData = app.hyperObj.getImage(event.Source.UserData, 'large');
                     imageDataURL = obj.getImageURL(fPhoto, 'large');
                     sceneFile = websave(fPhoto.Name, imageDataURL);
                     % I, imType, meanLuminance, dispCal, wList
-                    % try using HDR as default display
                     scene = sceneFromFile(sceneFile,'multispectral',[],[],400:10:700);
                     scene = sceneSet(scene, 'name', fPhoto.Name);
                     delete(sceneFile); % I think it is okay to remove now
                     sceneWindow(scene);
+                    % try using HDR as default display
                     sceneSet(scene,'renderflag', 'hdr');
 
                 case 'RGB'

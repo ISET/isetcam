@@ -44,6 +44,15 @@ classdef webFlickr
             ourTitle = fPhoto.title;
         end
         
+        function displayScene(obj, fPhoto, sceneType)
+            imageData = obj.getImage(fPhoto, 'large');
+            % I, imType, meanLuminance, dispCal, wList
+            scene = sceneFromFile(imageData,'rgb',[],[],400:10:700);
+            scene = sceneSet(scene, 'name', fPhoto.title);
+            sceneWindow(scene);
+            
+        end
+        
         % pass a Flickr photo object and desired size to get the URL of the
         % image
         %https://farm{farm-id}.staticflickr.com/{server-id}/{id}_{secret}_[mstzb].jpg
