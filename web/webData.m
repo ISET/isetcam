@@ -14,7 +14,13 @@ classdef webData
     properties
         dataType; % whether it is Hyperspectral, Multispectral, or HDR
         ourDataStruct;
-        waveList = 400:10:700; % default wavelengths for display of hyperspectral
+        defaultWavelist = 400:10:700; % default wavelengths for display of hyperspectral
+        
+                
+        % where we cache images and scenes -- currently deleted after
+        % loading
+        webDataCache = fullfile(isetRootPath, 'local', 'webData');
+
     end
     
     methods
@@ -32,6 +38,11 @@ classdef webData
                     obj.ourDataStruct = jsondecode(ourData).Multispectral;
                 case 'HDR'
                     obj.ourDataStruct = jsondecode(ourData).HDR;
+            end
+            try
+                mkdir(obj.webDataCache);
+            catch
+                warning('Unable to create local cache folder');
             end
         end
         
@@ -74,31 +85,46 @@ classdef webData
         function displayScene(obj, fPhoto, sceneType)
             % common code for all ISET scene types:
             imageDataURL = obj.getImageURL(fPhoto, 'large');
-            sceneFile = websave(fPhoto.Name, imageDataURL);
+            [~,name,ext] = fileparts(imageDataURL);
+            cacheFile = fullfile(obj.webDataCache,[name ext]);
+            if isfile(cacheFile)
+                msg = 'You have a downloaded copy of this scene. Would you like to use it?';
+                title = 'Confirm using existing scene copy';
+                selection = questdlg(msg, "Use existing copy?", "Yes", "No","Yes");
+                switch selection
+                    case "Yes"
+                        sceneFile = cacheFile;
+                    case "No"
+                        sceneFile = websave(cacheFile, imageDataURL);
+                end
+            else
+                sceneFile = websave(cacheFile, imageDataURL);
+            end
             switch sceneType
                 case {'Hyperspectral', 'Multispectral'}
                     % I, imType, meanLuminance, dispCal, wList
                     scene = sceneFromFile(sceneFile,'multispectral',[],[],[]);
                     scene = sceneSet(scene, 'name', fPhoto.Name);
-                    delete(sceneFile);
                     sceneWindow(scene);
                 case 'HDR'
                     % I, imType, meanLuminance, dispCal, wList
-                    scene = sceneFromFile(sceneFile,'multispectral',[],[],obj.waveList);
+                    scene = sceneFromFile(sceneFile,'multispectral',[],[],getpref('ISET','openRGBwavelist', obj.defaultWavelist));
                     scene = sceneSet(scene, 'name', fPhoto.Name);
-                    delete(sceneFile); % I think it is okay to remove now
                     sceneWindow(scene);
                     % try using HDR as default display
                     sceneSet(scene,'renderflag', 'hdr');
 
                 case 'RGB'
                     % I, imType, meanLuminance, dispCal, wList
-                    scene = sceneFromFile(sceneFile,'rgb',[],[],obj.waveList);
+                    scene = sceneFromFile(sceneFile,'rgb',[],[],getpref('ISET','openRGBwavelist', obj.defaultWavelist));
                     scene = sceneSet(scene, 'name', fPhoto.Name);
-                    delete(sceneFile); % I think it is okay to remove now
                     sceneWindow(scene);               
                 otherwise
             end
+            if getpref('ISET','keepDownloads', false) == false
+                delete(sceneFile);
+            end
+
         end
         
         function ourURL = getImageURL(obj, fPhoto, wantSize)

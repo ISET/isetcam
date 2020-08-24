@@ -11,10 +11,10 @@ classdef webFlickr
         format;
         tag_mode;
         nojsoncallback;
-        per_page = 20;
+        defaultPerPage = 20;
         licenses;
         sort;
-        waveList = 400:10:700;
+        defaultWavelist = 400:10:700;
     end
     
     methods
@@ -35,9 +35,10 @@ classdef webFlickr
             %METHOD1 Summary of this method goes here
             %   Detailed explanation goes here
             % 'safe_search', 3,
+            per_page = getpref('ISET','maxSearchResults',obj.defaultPerPage);
             outputArg = webread(obj.search_url, 'api_key', obj.api_key, 'tags', ourTags, ...
             'format', obj.format, 'nojsoncallback', obj.nojsoncallback,  ...
-            'content_type', 1, 'sort', obj.sort, 'per_page', obj.per_page, 'tag_mode', obj.tag_mode, 'license', obj.licenses);            
+            'content_type', 1, 'sort', obj.sort, 'per_page', per_page, 'tag_mode', obj.tag_mode, 'license', obj.licenses);            
         end
         
         function ourTitle = getImageTitle(obj, fPhoto)
@@ -47,7 +48,7 @@ classdef webFlickr
         function displayScene(obj, fPhoto, sceneType)
             imageData = obj.getImage(fPhoto, 'large');
             % I, imType, meanLuminance, dispCal, wList
-            scene = sceneFromFile(imageData,'rgb',[],[],obj.waveList);
+            scene = sceneFromFile(imageData,'rgb',[],[],getpref('ISET','openRGBwavelist', obj.defaultWavelist));
             scene = sceneSet(scene, 'name', fPhoto.title);
             sceneWindow(scene);
             
