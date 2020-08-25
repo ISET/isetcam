@@ -29,6 +29,7 @@ classdef webLOC
             %   Detailed explanation goes here
             searchPadding = 3; %how many times more images to get to make sure we have enough
             per_page = getpref('ISET','maxSearchResults',obj.defaultPerPage);
+            ourTags = strrep(ourTags, ",", "+");
             searchResult = webread(strcat(obj.search_url, ourTags, "&c=", ...
                 string(per_page * searchPadding))); % fix per page to whatever it really is!            
             fullResults = jsondecode(searchResult).results; % results is the array of image structs
