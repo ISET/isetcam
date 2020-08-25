@@ -16,10 +16,6 @@ function sceneSetEditsAndButtons(app)
 
 %% Always choose the current scene for display
 
-% Debugging.  Can go away when done.
-% global vcSESSION
-% vcSESSION.SELECTED.SCENE
-
 % We also display the currently selected scene.
 [scene, val] = ieGetObject('SCENE'); 
 

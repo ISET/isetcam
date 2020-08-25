@@ -806,18 +806,18 @@ switch parm
         %----------- Relative illumination (off-axis) specifications
     case {'offaxis','offaxismethod','relativeilluminationtype'}
         % This is the method used to compute relative illumination. It can
-        % be 'Skip','cos4th','codeV', or 'Zemax'.
+        % be 'Skip','cos4th'.  State is shown in the window by a switch.
         val = optics.offaxis;
     case {'cos4thmethod','cos4thfunction'}
-        % Most people use cos4th as an offaxis method. In that case, the
+        % We have only used cos4th as an offaxis method. In that case, the
         % function that implements cos4th can be stored here.  I suspect
-        % this extra step is not needed. We have a cos4th function and we use
-        % that without allowing some other implementation.  It is here only
-        % for some old backwards compatibility.
+        % this extra step is not needed. We have a cos4th function and we
+        % use that without allowing some other implementation.  It is here
+        % only for some old backwards compatibility.
         %
         % Do not run cos4th when you are using the Code V (or probably
-        % Zemax methods.  These calculations include the cos4th mechanisms
-        % in the lens calculations.
+        % Zemax methods.  These calculations include the relative
+        % illumination as part of the lens calculations.
         if checkfields(optics,'cos4th','function'), val = optics.cos4th.function; end
     case {'cos4th','cos4thdata','cos4thvalue'}
         % Numerical values.  Should change field to data from value.  I

@@ -19,6 +19,7 @@ function oiSetEditsAndButtons(app)
 [oi, val] = ieGetObject('OPTICALIMAGE');
 if isempty(oi)
     oi = oiCreate;
+    ieAddObject(oi);
     val = 1;
 end
 
@@ -29,12 +30,15 @@ ieInWindowMessage('',app,[]);
 % Which optics model
 opticsModel = opticsGet(optics,'model');
 
-% Append the oi names to 'New'
-oiNames = vcGetObjectNames('OPTICALIMAGE');
+% Get a numbered list of names
+oiNames = vcGetObjectNames('OPTICALIMAGE',true);
+
+% Prepend the oi names to 'New'
 Items = cellMerge({'New OI'}, oiNames);
 
-app.SelectOptImg.Items = Items;
-app.SelectOptImg.Value = Items{1 + val};
+app.pulldownSelectOI.Items = Items;
+app.pulldownSelectOI.Value = Items{1 + val};
+% Used to be SelectOptImg
 
 %% Buttons
 % Check the custom compute
@@ -121,6 +125,15 @@ switch lower(dMethod)
         app.txtBlurSD.Tooltip ='Birefringent displacement (um)';
     otherwise
         error('Unknown diffuser method %s\n',dMethod);
+end
+
+% The relative illumination is controlled by the cos4th switch in the
+% window.  We make sure they are consistent here.
+switch lower(app.cos4thSwitch.Value)
+    case 'on'
+        oi = oiSet(oi,'optics relative illumination','cos4th');
+    case 'off'
+        oi = oiSet(oi,'optics relative illumination','skip');
 end
 
 %% Display in axis

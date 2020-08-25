@@ -155,13 +155,13 @@ switch parm
         optics.transmittance.scale = interp1(oldWave,oldScale,val)';
         
     % ---- Relative illumination calculations
-    case {'offaxis','offaxismethod','relillummethod','cos4thflag'}
+    case {'relativeillumination','offaxismethod','cos4thflag'}
         % Flag determining whether you use the cos4th method 
         % Bad naming because of history.
         optics.offaxis = val;
     case {'cos4thfunction','cos4thmethod'}
-        % We only have cos4th offaxis implemented, and this probably is all we will
-        % need.
+        % We only have cos4th offaxis implemented, and this probably is all
+        % we will ever use.
         optics.cos4th.function = val;
     case {'cos4th','cos4thdata','cos4thvalue'}
         % Numerical values.  Should change field to data from value.
