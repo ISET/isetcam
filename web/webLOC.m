@@ -27,11 +27,30 @@ classdef webLOC
         function outputArg = search(obj,ourTags)
             %METHOD1 Summary of this method goes here
             %   Detailed explanation goes here
-            % 'safe_search', 3,
+            searchPadding = 3; %how many times more images to get to make sure we have enough
             per_page = getpref('ISET','maxSearchResults',obj.defaultPerPage);
+            ourTags = strrep(ourTags, ",", "+");
             searchResult = webread(strcat(obj.search_url, ourTags, "&c=", ...
-                string(per_page))); % fix per page to whatever it really is!            
-            outputArg = jsondecode(searchResult).results; % results is the array of image structs
+                string(per_page * searchPadding))); % fix per page to whatever it really is!            
+            fullResults = jsondecode(searchResult).results; % results is the array of image structs
+            outputArg = obj.filterResults(fullResults);
+        end
+        
+        function outputArg = filterResults(obj, listResults)
+            notDigitized = 'item not digitized thumbnail';
+            ourResults = [];
+            for i = 1:length(listResults)
+                if isequal(listResults(i).image.alt, notDigitized)
+                    % nothing to show
+                else
+                    if length(ourResults) == 0
+                        ourResults = [listResults(i)];
+                    else
+                        ourResults(end+1) = listResults(i);
+                    end
+                end
+            end
+            outputArg = ourResults;
         end
         
         function ourTitle = getImageTitle(obj, fPhoto)
