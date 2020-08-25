@@ -63,6 +63,7 @@ end
 
 %% Description box on upper right
 app.txtSceneDescription.Text = sceneDescription(scene);
+app.sceneDisplayData(sceneDescription(scene));
 
 %% Get the gamma and displayFlag from the scene window.
 
