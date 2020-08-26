@@ -1,4 +1,4 @@
-function t = iePTable(obj,varargin)
+function thisTable = iePTable(obj,varargin)
 % Create a table listing the object parameters
 %
 %   tbl = iePTable(obj,varargin);
@@ -36,8 +36,8 @@ if ieNotDefined('obj') || isempty(obj), error('ISET object required.'); end
 bColor   = [.8 .8 .8];  % Window background color
 
 % Main window
-hdl = vcNewGraphWin([],'upper left',...
-    'Units','pixel',...
+thisWindow = ieNewGraphWin([],'upper left','ISET Param Table', ...
+    'Units','normalized',...
     'Color',bColor, ...
     'ToolBar','None');
 
@@ -45,28 +45,15 @@ hdl = vcNewGraphWin([],'upper left',...
 % be adjusting table parameters, or do we just do that on the return?
 if ~isempty(varargin) && ~isodd(length(varargin))
     for ii=1:2:length(varargin)
-        set(hdl,varargin{ii},varargin{ii+1});
+        set(thisWindow,varargin{ii},varargin{ii+1});
     end
 end
 
 %% Build table
-FontSize = 14;          % Table font size
-inset    = 25;          % Pixels from the left window edge
+FontSize = 18;          % Table font size
+% inset    = 25;          % Pixels from the left window edge
 
-t = uitable('Parent',hdl,'Units','pixel');
-pos = get(hdl,'Position');   % Lower left corner of the window
-set(t, 'RowName', '');       % No numbers at left
-
-% Not sure this is the right way to set up the size.
-cWidth = round((pos(3) - 2*inset)/2);
-set(t, 'Position', [inset, inset, pos(3)-2*inset, pos(4)-2*inset]);
-set(t,'ColumnWidth',{cWidth});
-
-cNames = {'Property','Value'};
-cFormat = {'char','numeric'};
-set(t,'ColumnName',cNames,'ColumnFormat',cFormat);
-
-set(t,'FontSize',FontSize);
+% windowPos = thisWindow.Position;   % Lower left corner of the window
 
 oType = vcEquivalentObjtype(obj.type);
 % Handle each object a little differently
@@ -93,18 +80,40 @@ switch lower(oType)
         error('Unknown type %s\n',obj.type);
 end
 
-set(t, 'Data', data);
+%% Create the table in the window
 
+thisTable = uitable('Parent',thisWindow,'Units','normalized');
+thisTable.Data = data;
+thisTable.RowName ='';       % No numbers at left
+
+% Not sure this is the right way to set up the size.
+% screenSize = get(0,'ScreenSize');    % Column, Row
+% cWidth = round((windowPos(3) - 2*inset)/2)*screenSize(2);
+% position is left, bottom, width, height (Pixels)
+% thisTable.Units = 'normalized';
+% thisTable.Position = thisWindow.Position .* [0.01 0.01 0.95 0.95];
+% thisTable.Position = [inset, inset, windowPos(3)-2*inset, windowPos(4)-2*inset];
+
+thisTable.ColumnName = {'Property','Value'};
+thisTable.ColumnFormat = {'char','numeric'};
+
+thisTable.FontSize = FontSize;
+thisTable.ColumnWidth = {250,250};
+thisTable.Position = [0.025 0.025, 0.95, 0.95];
+
+thisWindow.Position = [0.0070    0.6785    0.25    0.25];
+%{
 % Readjust the window height to accommodate the rows of the table
-current = pos(3);
+current = windowPos(3);
 target  = FontSize*size(data,1)*2.5; 
 delta   = target - current;
 
 % [x,y,width,height];   Lower left corner is (0,0)
-pos(4) = max(pos(4),pos(4) + delta);  % Enlarge the row height
-pos(2) = min(pos(2),pos(2) - delta);  % Move the lower left corner down
-set(hdl, 'Position', [pos(1), pos(2), pos(3), pos(4)]); % Enlarge window
-set(t, 'Position', [inset, inset pos(3)-2*inset, pos(4)-2*inset]);
+windowPos(4) = max(windowPos(4),windowPos(4) + delta);  % Enlarge the row height
+windowPos(2) = min(windowPos(2),windowPos(2) - delta);  % Move the lower left corner down
+% set(hdl, 'Position', [pos(1), pos(2), pos(3), pos(4)]); % Enlarge window
+thisTable.Position= [inset, inset windowPos(3)-2*inset, windowPos(4)-2*inset];
+%}
 
 end
 

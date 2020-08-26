@@ -129,7 +129,7 @@ end
 
 % The relative illumination is controlled by the cos4th switch in the
 % window.  We make sure they are consistent here.
-switch lower(app.cos4thSwitch.Value)
+switch lower(app.Cos4thSwitch.Value)
     case 'on'
         oi = oiSet(oi,'optics relative illumination','cos4th');
     case 'off'

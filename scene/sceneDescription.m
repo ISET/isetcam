@@ -18,14 +18,14 @@ else
     u = round(log10(sceneGet(scene,'height','m')));
     if (u >= 0 ),         str = sprintf('Hgt,Wdth:\t(%3.2f, %3.2f) m\n',sceneGet(scene,'height', 'm'), sceneGet(scene,'width', 'm'));
     elseif (u >= -3),    str = sprintf('Hgt,Wdth\t(%3.2f, %3.2f) mm\n',sceneGet(scene,'height','mm'),sceneGet(scene,'width','mm'));
-    else                 str = sprintf('Hgt,Wdth\t(%3.2f, %3.2f) um\n',sceneGet(scene,'height','um'),sceneGet(scene,'width','um'));
+    else,                str = sprintf('Hgt,Wdth\t(%3.2f, %3.2f) um\n',sceneGet(scene,'height','um'),sceneGet(scene,'width','um'));
     end
     txt = addText(txt,str);
 
     u = round(log10(sceneGet(scene,'sampleSize','m')));
     if (u >= 0 ),     str = sprintf('Sample:\t%3.2f  m \n',sceneGet(scene,'sampleSize', 'm'));
     elseif (u >= -3), str = sprintf('Sample:\t%3.2f mm \n',sceneGet(scene,'sampleSize','mm'));
-    else             str = sprintf('Sample:\t%3.2f um \n',sceneGet(scene,'sampleSize','um'));
+    else,             str = sprintf('Sample:\t%3.2f um \n',sceneGet(scene,'sampleSize','um'));
     end
     txt = addText(txt,str);
 
@@ -40,7 +40,7 @@ else
     luminance = sceneGet(scene,'luminance');
     mx = max(luminance(:));
     mn = min(luminance(:));
-    if mn == 0, 
+    if mn == 0
         str = sprintf('DR: Inf\n  (max %.0f, min %.2f cd/m2)\n',mx,mn);
     else 
         dr = mx/mn; 
@@ -57,4 +57,4 @@ else
     
 end
 
-return;
+end

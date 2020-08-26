@@ -1,4 +1,4 @@
-function figHdl = ieNewGraphWin(figHdl, fType, titleString, varargin)
+function thisWindow = ieNewGraphWin(thisWindow, fType, titleString, varargin)
 % Open a window for plotting (future of vcNewGraphWin)
 %
 %    figHdl = ieNewGraphWin([fig handle],[figure type],[titleString],varargin)
@@ -21,6 +21,7 @@ function figHdl = ieNewGraphWin(figHdl, fType, titleString, varargin)
 % You can set your preferred color order and other properties in the
 % startup, say by using 
 %
+%   groot = get(0);
 %   set(groot,'defaultAxesColorOrder',co)
 %   set(groot,'DefaultAxesFontsize',16)
 %   set(groot,'DefaultAxesFontName','Georgia')
@@ -38,23 +39,17 @@ function figHdl = ieNewGraphWin(figHdl, fType, titleString, varargin)
 %
 % To set other fields, use
 %  ieNewGraphWin([],'wide','Color',[0.5 0.5 0.5])
-%  g = ieNewGraphWin([],[],'Visible','off'); 
-%  set(g,'Visible','on')
+%  g = ieNewGraphWin([],[],'Visible','Off'); 
+%  g.Visible = 'on';
 %
 % Copyright ImagEval Consultants, LLC, 2005
 %
 % See also:  
 %   ieSessionSet
-%
-
-
-%% TODO
-% We should make vcNewGraphWin call this
-%
-%    
+%  
 
 %%
-if ieNotDefined('figHdl'), figHdl = figure; end
+if ieNotDefined('thisWindow'), thisWindow = figure; end
 if ieNotDefined('fType')  
     fType = 'default'; 
     wPos = ieSessionGet('wpos');
@@ -63,25 +58,28 @@ if ieNotDefined('fType')
 end
 if ieNotDefined('titleString'), titleString = 'ISET GraphWin'; end
 
-set(figHdl,'Name',titleString,'NumberTitle','off');
-set(figHdl,'CloseRequestFcn','ieCloseRequestFcn');
-set(figHdl,'Color',[1 1 1]);
+thisWindow.Name = titleString;
+thisWindow.NumberTitle = 'Off';
+thisWindow.CloseRequestFcn = 'ieCloseRequestFcn';
+thisWindow.Color = [1 1 1];
+thisWindow.Units = 'normalized';
 
 % Position the figure
 fType = ieParamFormat(fType);
+
 switch(fType)
     case 'default'
         % Use the getpref window position for the graph window
-        set(figHdl,'Units','normalized','Position',wPos);
+        thisWindow.Position = wPos;
     case 'upperleft'
-        set(figHdl,'Units','normalized','Position',[0.007 0.55  0.28 0.36]);
+        thisWindow.Position = [0.007 0.55  0.28 0.36];
     case 'tall'
-        set(figHdl,'Units','normalized','Position',[0.007 0.055 0.28 0.85]);
+        thisWindow.Position = [0.007 0.055 0.28 0.85];
     case 'wide'
-        set(figHdl,'Units','normalized','Position',[0.007 0.62  0.60  0.3]);
+        thisWindow.Position = [0.007 0.62  0.60  0.3];
     case {'upperleftbig','big'}
         % Like upperleft but bigger
-        set(figHdl,'Units','normalized','Position',[0.007 0.40  0.40 0.50]);
+        thisWindow.Position = [0.007 0.40  0.40 0.50];
     otherwise % Matlab default
 end
 
@@ -90,13 +88,13 @@ if ~isempty(varargin)
     n = length(varargin);
     if ~mod(n,2)
         for ii=1:2:(n-1)
-            set(figHdl,varargin{ii},varargin{ii+1});
+            set(thisWindow,varargin{ii},varargin{ii+1});
         end
     end
 end
 
 %% Store some information.  Not sure it is needed; not much used.
-ieSessionSet('graphwinfigure',figHdl);
-ieSessionSet('graphwinhandle',guidata(figHdl));
+% ieSessionSet('graphwinfigure',thisWindow);
+% ieSessionSet('graphwinhandle',guidata(thisWindow));
 
 end

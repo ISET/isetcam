@@ -67,9 +67,8 @@ end
 
 if isempty(oiW)
     % There is no existing scene window.  So we create one and store it in
-    % the database. 
+    % the database as part of the opening function.
     oiW = oiWindow_App;
-    ieSessionSet('oi window',oiW);
 end
 
 % Maybe this should be sceneW.refresh?

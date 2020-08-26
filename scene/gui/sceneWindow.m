@@ -68,7 +68,6 @@ if isempty(sceneW)
     % There is no existing scene window.  So we create one and store it in
     % the database. 
     sceneW = sceneWindow_App;
-    ieSessionSet('scene window',sceneW);
 end
 
 % Maybe this should be sceneW.refresh?
