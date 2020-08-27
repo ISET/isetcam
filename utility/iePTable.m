@@ -30,35 +30,55 @@ function thisTable = iePTable(obj,varargin)
 %
 % (c) Stanford VISTA Team, 2014
 
+% Examples:
+%{
+ scene = sceneCreate;
+ thisTable = iePTable(scene,'format','window');
+%}
+%{
+ scene = sceneCreate;
+ thisTable = iePTable(scene,'format','embed');
+%}
 %% Default table and window parameters
-if ieNotDefined('obj') || isempty(obj), error('ISET object required.'); end
 
-bColor   = [.8 .8 .8];  % Window background color
+varargin = ieParamFormat(varargin);
+
+p = inputParser;
+p.addRequired('obj',@isstruct);
+vFunc = @(x)(ismember(x,{'window','embed'}));
+p.addParameter('uitable',[],@(x)(isa(x,'matlab.ui.control.Table')));
+p.addParameter('format','window',vFunc);
+p.addParameter('backgroundcolor',[0.8 0.8 0.8],@isvector);
+p.addParameter('fontsize',14,@isscalar);
+p.parse(obj,varargin{:});
+
+format   = p.Results.format;
+bColor   = p.Results.backgroundcolor;
+FontSize = p.Results.fontsize;
 
 % Main window
-thisWindow = ieNewGraphWin([],'upper left','ISET Param Table', ...
-    'Units','normalized',...
-    'Color',bColor, ...
-    'ToolBar','None');
+if isequal(format,'window')
+    thisWindow = ieNewGraphWin([],'upper left','ISET Param Table', ...
+        'Units','normalized',...
+        'Color',bColor, ...
+        'ToolBar','None');
+end
 
 % Set additional window parameters from the arguments.  Perhaps we should
 % be adjusting table parameters, or do we just do that on the return?
-if ~isempty(varargin) && ~isodd(length(varargin))
-    for ii=1:2:length(varargin)
-        set(thisWindow,varargin{ii},varargin{ii+1});
-    end
-end
+% if ~isempty(varargin) && ~isodd(length(varargin))
+%     for ii=1:2:length(varargin)
+%         set(thisWindow,varargin{ii},varargin{ii+1});
+%     end
+% end
 
 %% Build table
-FontSize = 14;          % Table font size
-
-% windowPos = thisWindow.Position;   % Lower left corner of the window
 
 oType = vcEquivalentObjtype(obj.type);
 % Handle each object a little differently
 switch lower(oType)
     case 'scene'
-        data = tableScene(obj);
+        data = tableScene(obj,format);
     case 'opticalimage'
         data = tableOI(obj);
     case 'optics'
@@ -79,57 +99,65 @@ switch lower(oType)
         error('Unknown type %s\n',obj.type);
 end
 
-%% Create the table in the window
+%% Create the table in its own window or embedded format
 
-thisTable = uitable('Parent',thisWindow,'Units','normalized');
+if isequal(format,'window')
+    thisWindow.Position = [0.0070    0.6785    0.25    0.25];
+
+    thisTable = uitable('Parent',thisWindow,'Units','normalized');
+    thisTable.ColumnName = {'Property','Value','Units'};
+    thisTable.ColumnWidth = {200,200,200};
+    thisTable.Position = [0.025 0.025, 0.95, 0.95];
+    thisTable.FontSize = FontSize;
+else
+    if ~isempty(p.Results.uitable)
+        thisTable = p.Results.uitable;
+    else
+        thisTable = uitable;
+    end
+    thisTable.ColumnName = {'Property','Value'};
+    thisTable.ColumnWidth = 'auto';
+    thisTable.FontName = 'Courier';
+    thisTable.FontSize = getpref('ISET','fontSize') - 3;
+end
+
 thisTable.Data = data;
-thisTable.RowName ='';       % No numbers at left
-
-% Not sure this is the right way to set up the size.
-% screenSize = get(0,'ScreenSize');    % Column, Row
-% cWidth = round((windowPos(3) - 2*inset)/2)*screenSize(2);
-% position is left, bottom, width, height (Pixels)
-% thisTable.Units = 'normalized';
-% thisTable.Position = thisWindow.Position .* [0.01 0.01 0.95 0.95];
-% thisTable.Position = [inset, inset, windowPos(3)-2*inset, windowPos(4)-2*inset];
-
-thisTable.ColumnName = {'Property','Value','Units'};
-thisTable.ColumnFormat = {'char','numeric'};
-
-thisTable.FontSize = FontSize;
-thisTable.ColumnWidth = {200,200,200};
-thisTable.Position = [0.025 0.025, 0.95, 0.95];
-
-thisWindow.Position = [0.0070    0.6785    0.25    0.25];
-%{
-% Readjust the window height to accommodate the rows of the table
-current = windowPos(3);
-target  = FontSize*size(data,1)*2.5; 
-delta   = target - current;
-
-% [x,y,width,height];   Lower left corner is (0,0)
-windowPos(4) = max(windowPos(4),windowPos(4) + delta);  % Enlarge the row height
-windowPos(2) = min(windowPos(2),windowPos(2) - delta);  % Move the lower left corner down
-% set(hdl, 'Position', [pos(1), pos(2), pos(3), pos(4)]); % Enlarge window
-thisTable.Position= [inset, inset windowPos(3)-2*inset, windowPos(4)-2*inset];
-%}
+thisTable.RowName = '';       % No numbers at left
+% thisTable.ColumnFormat = {'char','numeric'};
 
 end
 
-function data = tableScene(scene)
+function data = tableScene(scene,format)
 % iePTable(sceneCreate);
-precision = 4;
-data = {...
-    'Name',                     sceneGet(scene,'name'), '';
-    'Field of view',            num2str(sceneGet(scene,'fov')), 'hor deg';
-    'Rows/cols',                num2str(sceneGet(scene,'size')),'samples';
-    'Height/Width',             num2str(sceneGet(scene,'height and width','mm'),precision), 'mm';
-    'Distance ',                num2str(sceneGet(scene,'distance','m'),precision), 'meters';
-    'Angular res',              num2str(sceneGet(scene,'angular resolution'),precision), 'deg/samp';
-    'Sample spacing',           num2str(sceneGet(scene,'sample spacing','mm'),precision), 'mm/sample';
-    'Mean luminance',           num2str(sceneGet(scene,'mean luminance'),precision), 'cd/m^2 (nits)';
-    'Illuminant name',          sceneGet(scene,'illuminant name'), '';
-    };
+switch format
+    case 'window'
+        precision = 4;
+        data = {...
+            'Name',                     sceneGet(scene,'name'), '';
+            'Field of view',            num2str(sceneGet(scene,'fov')), 'width deg';
+            'Rows/cols',                num2str(sceneGet(scene,'size')),'samples';
+            'Height/Width',             num2str(sceneGet(scene,'height and width','mm'),precision), 'mm';
+            'Distance ',                num2str(sceneGet(scene,'distance','m'),precision), 'meters';
+            'Angular res',              num2str(sceneGet(scene,'angular resolution'),precision), 'deg/samp';
+            'Sample spacing',           num2str(sceneGet(scene,'sample spacing','mm'),precision), 'mm/sample';
+            'Mean luminance',           num2str(sceneGet(scene,'mean luminance'),precision), 'cd/m^2 (nits)';
+            'Illuminant name',          sceneGet(scene,'illuminant name'), '';
+            };
+    case 'embed'
+        precision = 2;
+        data = {...
+            'FoV (width)',            num2str(sceneGet(scene,'fov'),precision);
+            'Rows/cols',                num2str(sceneGet(scene,'size'));
+            'Hght/Width (mm)',          num2str(sceneGet(scene,'height and width','mm'),precision+2);
+            'Distance (m)',             num2str(sceneGet(scene,'distance','m'),precision);
+            'Angular res (deg/samp)',   num2str(sceneGet(scene,'angular resolution'),precision);
+            'Samp space (mm/sample)',     num2str(sceneGet(scene,'sample spacing','mm'),precision);
+            'Mean luminance (cd/m^2)',    num2str(sceneGet(scene,'mean luminance'),precision);
+            'Illuminant name',          sceneGet(scene,'illuminant name');
+            };
+    otherwise
+        error('Unknown table format %s\n',format);
+end
 
 end
 
