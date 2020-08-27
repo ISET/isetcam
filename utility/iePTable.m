@@ -50,8 +50,7 @@ if ~isempty(varargin) && ~isodd(length(varargin))
 end
 
 %% Build table
-FontSize = 18;          % Table font size
-% inset    = 25;          % Pixels from the left window edge
+FontSize = 14;          % Table font size
 
 % windowPos = thisWindow.Position;   % Lower left corner of the window
 
@@ -94,11 +93,11 @@ thisTable.RowName ='';       % No numbers at left
 % thisTable.Position = thisWindow.Position .* [0.01 0.01 0.95 0.95];
 % thisTable.Position = [inset, inset, windowPos(3)-2*inset, windowPos(4)-2*inset];
 
-thisTable.ColumnName = {'Property','Value'};
+thisTable.ColumnName = {'Property','Value','Units'};
 thisTable.ColumnFormat = {'char','numeric'};
 
 thisTable.FontSize = FontSize;
-thisTable.ColumnWidth = {250,250};
+thisTable.ColumnWidth = {200,200,200};
 thisTable.Position = [0.025 0.025, 0.95, 0.95];
 
 thisWindow.Position = [0.0070    0.6785    0.25    0.25];
@@ -121,16 +120,15 @@ function data = tableScene(scene)
 % iePTable(sceneCreate);
 precision = 4;
 data = {...
-    '-----Scene-----',''
-    'Name',                           sceneGet(scene,'name');
-    'Field of view (horizontal, deg)',num2str(sceneGet(scene,'fov'));
-    'Rows/cols',                      num2str(sceneGet(scene,'size'));
-    'Height/Width (mm)',              num2str(sceneGet(scene,'height and width','mm'),precision);
-    'Distance (m)',                   num2str(sceneGet(scene,'distance','m'),precision);
-    'Angular res (deg/sample)',       num2str(sceneGet(scene,'angular resolution'),precision);
-    'Sample spacing (mm/sample)',     num2str(sceneGet(scene,'sample spacing','mm'),precision);
-    'Mean luminance',                 num2str(sceneGet(scene,'mean luminance'),precision);
-    'Illuminant name',                sceneGet(scene,'illuminant name');
+    'Name',                     sceneGet(scene,'name'), '';
+    'Field of view',            num2str(sceneGet(scene,'fov')), 'hor deg';
+    'Rows/cols',                num2str(sceneGet(scene,'size')),'samples';
+    'Height/Width',             num2str(sceneGet(scene,'height and width','mm'),precision), 'mm';
+    'Distance ',                num2str(sceneGet(scene,'distance','m'),precision), 'meters';
+    'Angular res',              num2str(sceneGet(scene,'angular resolution'),precision), 'deg/samp';
+    'Sample spacing',           num2str(sceneGet(scene,'sample spacing','mm'),precision), 'mm/sample';
+    'Mean luminance',           num2str(sceneGet(scene,'mean luminance'),precision), 'cd/m^2 (nits)';
+    'Illuminant name',          sceneGet(scene,'illuminant name'), '';
     };
 
 end
@@ -144,14 +142,12 @@ if isempty(oi), data = []; return; end
 % OK, we have an oi so put up the data.
 precision = 3;
 data = {...
-    '-----Optical image-----',''
-    'Name',                   oiGet(oi,'name');
-    'Rows/cols',              num2str(oiGet(oi,'size'));
-    'FOV (deg, horizontal)',  num2str(oiGet(oi,'fov'));
-    'Resolution (um/sample)', num2str(oiGet(oi,'spatial resolution','um'),precision);
-    'Mean illuminance',       num2str(oiGet(oi,'mean illuminance'),precision);
-    'Area (mm^2)',            num2str(oiGet(oi,'area','mm'),precision);
-    '',''
+    'Name',                   oiGet(oi,'name'), '';
+    'Rows/cols',              num2str(oiGet(oi,'size')), 'samples';
+    'FOV ',  num2str(oiGet(oi,'fov')), 'horizontal, deg';
+    'Resolution', num2str(oiGet(oi,'spatial resolution','um'),precision),'um/sample';
+    'Mean illuminance',       num2str(oiGet(oi,'mean illuminance'),precision),'lux';
+    'Area',            num2str(oiGet(oi,'area','mm'),precision),'mm^2';
     };
 
 % Deal with light field optical image parameters.
@@ -175,11 +171,10 @@ function data = tableOptics(optics)
 % num2str, 2nd argument is precision
 data = {...
     '-----Optics-----',''
-    'Name',                  opticsGet(optics,'name');
-    'Focal length (mm)',     num2str(opticsGet(optics,'focal length','mm'),1);
-    'F-number',              sprintf('%.1f',opticsGet(optics,'fnumber'));
-    'Aperture diameter (mm)',num2str(opticsGet(optics,'aperture diameter','mm'),2);
-    '',''
+    'Name',                  opticsGet(optics,'name'), '';
+    'Focal length',     num2str(opticsGet(optics,'focal length','mm'),1), 'mm';
+    'F-number',              sprintf('%.1f',opticsGet(optics,'fnumber')), 'dimensionless';
+    'Aperture diameter',num2str(opticsGet(optics,'aperture diameter','mm'),2), 'mm';
     };
 end
 

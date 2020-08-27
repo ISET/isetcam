@@ -64,13 +64,20 @@ end
 
 %% See if there is a live window.
 
+
 if isempty(sceneW)
     % There is no existing scene window.  So we create one and store it in
-    % the database. 
+    % the database as part of the opening function.
     sceneW = sceneWindow_App;
+else
+    try
+        sceneW.refresh;
+    catch
+        sceneW = sceneWindow_App;
+        ieSessionSet('scene window',sceneW);
+    end
 end
 
-% Maybe this should be sceneW.refresh?
 sceneW.refresh;
 
 end
