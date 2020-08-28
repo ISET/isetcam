@@ -39,6 +39,11 @@ function thisTable = iePTable(obj,varargin)
  scene = sceneCreate;
  thisTable = iePTable(scene,'format','embed');
 %}
+%{
+ scene = sceneCreate;
+ oi = oiCreate; oi = oiCompute(oi,scene);
+ thisTable = iePTable(oi,'format','window');
+%}
 %% Default table and window parameters
 
 varargin = ieParamFormat(varargin);
@@ -80,21 +85,21 @@ switch lower(oType)
     case 'scene'
         data = tableScene(obj,format);
     case 'opticalimage'
-        data = tableOI(obj);
+        data = tableOI(obj,format);
     case 'optics'
-        data = tableOptics(obj);
+        data = tableOptics(obj,format);
     case 'pixel'
         data = tablePixel(obj);
     case 'isa'  % image sensor array
-        data = tableSensor(obj);
+        data = tableSensor(obj,format);
     case 'vcimage'
-        data = tableIP(obj);
+        data = tableIP(obj,format);
     case 'camera'
         % Make the table a little bigger for this case
         data = tableCamera(obj);
-        set(gcf,'Name',cameraGet(obj,'name'));
+        set(gcf,'Name',cameraGet(obj,'name'),format);
     case 'display'
-        data = tableDisplay(obj);
+        data = tableDisplay(obj,format);
     otherwise
         error('Unknown type %s\n',obj.type);
 end
@@ -161,49 +166,82 @@ end
 
 end
 
-function data = tableOI(oi)
+function data = tableOI(oi, format)
 % iePTable(oiCreate);
 
-% Handle the camera case with no oi.
 if isempty(oi), data = []; return; end  
 
-% OK, we have an oi so put up the data.
-precision = 3;
-data = {...
-    'Name',                   oiGet(oi,'name'), '';
-    'Rows/cols',              num2str(oiGet(oi,'size')), 'samples';
-    'FOV ',  num2str(oiGet(oi,'fov')), 'horizontal, deg';
-    'Resolution', num2str(oiGet(oi,'spatial resolution','um'),precision),'um/sample';
-    'Mean illuminance',       num2str(oiGet(oi,'mean illuminance'),precision),'lux';
-    'Area',            num2str(oiGet(oi,'area','mm'),precision),'mm^2';
-    };
-
-% Deal with light field optical image parameters.
-if isfield(oi, 'lightfield')
-    lfData = {...
-        '----- LF array -----',''
-        'Pinholes',           num2str(oi.lightfield.pinholes);
-        '',''
-        };
-    data = cellCombine(data,lfData);
+switch format
+    case 'window'
+        % OK, we have an oi so put up the data.
+        precision = 3;
+        data = {...
+            'OI name',         oiGet(oi,'name'), '';
+            'Rows cols',       num2str(oiGet(oi,'size')), 'samples';
+            'Hor FOV',         num2str(oiGet(oi,'fov')),  'deg';
+            'Spatial res',     num2str(oiGet(oi,'spatial resolution','um'),precision),'um/sample';
+            'Mean illuminance',num2str(oiGet(oi,'mean illuminance'),precision),'lux';
+            'Area',            num2str(oiGet(oi,'area','mm'),precision),'mm^2';
+            };
+        
+        % Deal with light field optical image parameters.
+        if isfield(oi, 'lightfield')
+            lfData = {...
+                '----- LF array -----',''
+                'Pinholes',           num2str(oi.lightfield.pinholes);
+                '',''
+                };
+            data = cellCombine(data,lfData);
+        end
+        
+    case 'embed'
+                % OK, we have an oi so put up the data.
+        precision = 3;
+        data = {...
+            'Rows/cols',              num2str(oiGet(oi,'size'));
+            'H FOV (deg)',            num2str(oiGet(oi,'fov'));
+            'Resolution (um/sample)', num2str(oiGet(oi,'spatial resolution','um'),precision);
+            'Mean illuminance (lux)', num2str(oiGet(oi,'mean illuminance'),precision);
+            'Area (mm^2)',            num2str(oiGet(oi,'area','mm'),precision)';
+            };
+        
+        % Deal with light field optical image parameters.
+        if isfield(oi, 'lightfield')
+            data{end+1,:} = ...
+                {
+                'Pinholes',           num2str(oi.lightfield.pinholes);
+                };
+        end
+    otherwise
+        error('Unknown table format %s\n',format);
 end
 
-oData = tableOptics(oiGet(oi,'optics'));
-data = cellCombine(data,oData);
+oData = tableOptics(oiGet(oi,'optics'),format);
+data  = cellCombine(data,oData);
 
 end
 
-function data = tableOptics(optics)
+function data = tableOptics(optics,format)
 % iePTable(opticsCreate);
 
-% num2str, 2nd argument is precision
-data = {...
-    '-----Optics-----',''
-    'Name',                  opticsGet(optics,'name'), '';
-    'Focal length',     num2str(opticsGet(optics,'focal length','mm'),1), 'mm';
-    'F-number',              sprintf('%.1f',opticsGet(optics,'fnumber')), 'dimensionless';
-    'Aperture diameter',num2str(opticsGet(optics,'aperture diameter','mm'),2), 'mm';
-    };
+switch format
+    case 'window'
+        % num2str, 2nd argument is precision
+        data = {...
+            'Optics type',             opticsGet(optics,'name'), '';
+            'Focal length',     num2str(opticsGet(optics,'focal length','mm'),1), 'mm';
+            'F-number',         sprintf('%.1f',opticsGet(optics,'fnumber')), 'dimensionless';
+            'Aperture diameter',num2str(opticsGet(optics,'aperture diameter','mm'),2), 'mm';
+            };
+    case 'embed'
+        data = {...
+            'Focal length (mm)',     num2str(opticsGet(optics,'focal length','mm'),1);
+            'F-number',         sprintf('%.1f',opticsGet(optics,'fnumber'));
+            'Aperture diameter (mm)',num2str(opticsGet(optics,'aperture diameter','mm'),2);
+            };
+    otherwise
+        error('Unknown table format %s\n',format);
+end
 end
 
 function data = tableSensor(sensor)

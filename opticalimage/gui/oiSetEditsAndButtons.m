@@ -136,6 +136,10 @@ switch lower(app.Cos4thSwitch.Value)
         oi = oiSet(oi,'optics relative illumination','skip');
 end
 
+%% Information table
+
+app.oiDisplayData(oi);
+
 %% Display in axis
 
 gam = str2double(app.editGamma.Value);
@@ -149,8 +153,6 @@ figure(app.figure1);
 renderFlag = oiGet(oi,'render flag index'); 
 
 oiShowImage(oi,renderFlag,gam,app);
-
-app.txtOpticalImage.Text = oiDescription(oi);
 
 % Force a font size refresh
 ieFontSizeSet(app,0);

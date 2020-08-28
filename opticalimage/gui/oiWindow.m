@@ -23,6 +23,10 @@ function oiW = oiWindow(oi)
 %  If that slot is empty, this function creates one and stores it in the
 %  database.
 %
+%  Sometimes there is a stale handle to an app in the vcSESSION database.
+%  This code tries the non-empty (but potentially stale) app.  If it works,
+%  onward. If not, then it creates a new one, stores it, and uses it.
+%
 %  The oiWindow_App all show any of the ois stored in the vcSESSION.OI
 %  database slot.
 %

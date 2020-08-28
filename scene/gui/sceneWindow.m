@@ -23,7 +23,11 @@ function sceneW = sceneWindow(scene)
 %  If that slot is empty, this function creates one and stores it in the
 %  database.
 %
-%  The sceneWindow_Apps all show any of the scenes stored in the
+%  Sometimes there is a stale handle to an app in the vcSESSION database.
+%  This code tries the non-empty (but potentially stale) app.  If it works,
+%  onward. If not, then it creates a new one, stores it, and uses it.
+%
+%  The sceneWindow_App shows any of the scenes stored in the
 %  vcSESSION.SCENE database slot.
 %
 % See also
