@@ -76,6 +76,11 @@ else
     fullName = '';
 end
 
+% A public service announcement.
+if max(illEnergy > 10^14)
+    warning('Illuminant appears to be in units of photons rather than energy.  Please check');
+end
+
 %% We check the illuminant energy values.
 if max(illEnergy) > 10^5
     % Energy is not this big.
