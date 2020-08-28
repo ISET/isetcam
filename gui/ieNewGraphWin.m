@@ -60,7 +60,14 @@ if ieNotDefined('titleString'), titleString = 'ISET GraphWin'; end
 
 thisWindow.Name = titleString;
 thisWindow.NumberTitle = 'Off';
-thisWindow.CloseRequestFcn = 'ieCloseRequestFcn';
+
+% when deployed we can't use chararray syntax, apparently
+if isdeployed
+    thisWindow.CloseRequestFcn = @ieCloseRequestFcn;
+else
+    thisWindow.CloseRequestFcn = 'ieCloseRequestFcn';
+end
+
 thisWindow.Color = [1 1 1];
 thisWindow.Units = 'normalized';
 
