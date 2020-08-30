@@ -62,6 +62,7 @@ inputSize = net.Layers(1).InputSize;
 %  what we decide we want to use as a metric. Right now just runs on the
 %  original image folder and prints out what it finds.
 
+totalScore = 0;
 for i = 1:length(fileList)
     try 
         ourGTFileName = fullfile(fileList(i).folder, fileList(i).name);
@@ -70,13 +71,13 @@ for i = 1:length(fileList)
         [label, scores] = classify(net,ourGTImage);
         [~,idx] = sort(scores,'descend');
         idx = idx(5:-1:1);
-        classNamesTop = net.Layers(end).ClassNames(idx);
-        scoresTop = scores(idx);
+        classNamesGTTop = net.Layers(end).ClassNames(idx);
+        scoresGTTop = scores(idx);
         
         % for now we just output the top classes for each image, but of
         % course would want to do something smart with them & scores
         disp(strcat("Classes for GT image: ", fullfile(fileList(i).folder, fileList(i).name)));
-        classNamesTop % the top 5 possible classes
+        classNamesGTTop % the top 5 possible classes
 
         % now calculate the same thing for the simulated image
         [fPath, fName, fExt] = fileparts(ourGTFileName);
@@ -87,16 +88,22 @@ for i = 1:length(fileList)
         [label, scores] = classify(net,ourTestImage);
         [~,idx] = sort(scores,'descend');
         idx = idx(5:-1:1);
-        classNamesTop = net.Layers(end).ClassNames(idx);
-        scoresTop = scores(idx);
+        classNamesTestTop = net.Layers(end).ClassNames(idx);
+        scoresTestTop = scores(idx);
         
         % for now we just output the top classes for each image, but of
         % course would want to do something smart with them & scores
         disp(strcat("Classes for our Simulated Test image: ", ourTestFileName));
-        classNamesTop % the top 5 possible classes
+        classNamesTestTop % the top 5 possible classes
+        
+        imageScore = length(find(ismember(classNamesGTTop, classNamesTestTop)));
+        totalScore = totalScore + imageScore;
+        disp(strcat("Image Matching Score: ", string(imageScore)));
         
     catch
         warning("boring?");
     end
+    
 end 
 
+disp(strcat("Total score for: ", string(length(fileList)), " images is: ", string(totalScore)));
