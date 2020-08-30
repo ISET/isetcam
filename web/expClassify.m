@@ -11,8 +11,11 @@ net = resnet50; % vgg19; googlenet;
 % test. They can get those using imgBrowser+Flickr+curating+save, or
 % however ...
 inputFolder = uigetdir(fullfile(isetRootPath, 'local', 'images'), "Get Test Folder");
+outputSubFolder = "simulated";
 
 dirList = dir(inputFolder);
+fileList = [];
+
 % all this code simply to get just a list of files:)
 for i = 1:length(dirList)
     if isfile(fullfile(dirList(i).folder, dirList(i).name))
@@ -28,17 +31,27 @@ end
 % does this make one if none exists? Otherwise check & create
 ourSensor = ieGetObject('isa');
 
+% create a folder for our simulated outputs
+mkdir(fullfile(inputFolder,outputSubFolder));
+
 for i = 1:length(fileList)
-    ourScene = sceneFromFile(fullfile(fileList(i).folder, fileList(i).name),'rgb');
+    sceneFileName = fullfile(fileList(i).folder, fileList(i).name);
+    ourScene = sceneFromFile(sceneFileName,'rgb');
     % Here is where I get confused!!
     ourOI = ieGetObject('OPTICALIMAGE'); %this doesn't seem right!
     computedOI = oiCompute(ourScene, ourOI);
-    ourImage = sensorCompute(ourSensor,computedOI);
     
-    [val,isa] = ieGetSelectedObject('ISA');
-    gam = str2double(get(handles.editGam,'String'));
-    scaleMax = get(handles.btnDisplayScale,'Value');
-    outputFileName = sensorSaveImage(isa,[],'volts',gam,scaleMax);
+    [fPath, fName, fExt] = fileparts(sceneFileName);
+    ourOutputFileName = fullfile(fPath, outputSubFolder, strcat(fName, ".png"));
+    oiSaveImage(computedOI,ourOutputFileName);
+
+% punt on sensor for now, see if we can just to optics!
+%    ourImage = sensorCompute(ourSensor,computedOI);
+    
+%    [val,isa] = ieGetSelectedObject('ISA');
+%    gam = str2double(get(handles.editGam,'String'));
+%    scaleMax = get(handles.btnDisplayScale,'Value');
+%    outputFileName = sensorSaveImage(isa,[],'volts',gam,scaleMax);
     % Need to write these files someplace!
 end
 
@@ -51,7 +64,25 @@ inputSize = net.Layers(1).InputSize;
 
 for i = 1:length(fileList)
     try 
-        ourTestImage = imread(fullfile(fileList(i).folder, fileList(i).name));
+        ourGTFileName = fullfile(fileList(i).folder, fileList(i).name);
+        ourGTImage = imread(ourGTFileName);
+        ourGTImage = imresize(ourGTImage,inputSize(1:2));
+        [label, scores] = classify(net,ourGTImage);
+        [~,idx] = sort(scores,'descend');
+        idx = idx(5:-1:1);
+        classNamesTop = net.Layers(end).ClassNames(idx);
+        scoresTop = scores(idx);
+        
+        % for now we just output the top classes for each image, but of
+        % course would want to do something smart with them & scores
+        disp(strcat("Classes for GT image: ", fullfile(fileList(i).folder, fileList(i).name)));
+        classNamesTop % the top 5 possible classes
+
+        % now calculate the same thing for the simulated image
+        [fPath, fName, fExt] = fileparts(ourGTFileName);
+        ourTestFileName = fullfile(fPath, outputSubFolder, strcat(fName, ".png"));
+
+        ourTestImage = imread(ourTestFileName);
         ourTestImage = imresize(ourTestImage,inputSize(1:2));
         [label, scores] = classify(net,ourTestImage);
         [~,idx] = sort(scores,'descend');
@@ -61,7 +92,9 @@ for i = 1:length(fileList)
         
         % for now we just output the top classes for each image, but of
         % course would want to do something smart with them & scores
+        disp(strcat("Classes for our Simulated Test image: ", ourTestFileName));
         classNamesTop % the top 5 possible classes
+        
     catch
         warning("boring?");
     end
