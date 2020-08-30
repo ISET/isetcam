@@ -45,6 +45,10 @@ for i = 1:length(fileList)
     ourOutputFileName = fullfile(fPath, outputSubFolder, strcat(fName, ".png"));
     oiSaveImage(computedOI,ourOutputFileName);
 
+    % djc note: I think we should free up the computedOI here to save memory
+    % but I'm not sure if I can set it to [] directly, or need to call a
+    % vc* routine to make sure other stuff is also reset, or ??
+    
 % punt on sensor for now, see if we can just to optics!
 %    ourImage = sensorCompute(ourSensor,computedOI);
     
