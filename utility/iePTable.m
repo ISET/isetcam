@@ -5,13 +5,13 @@ function thisTable = iePTable(obj,varargin)
 %
 % Input
 %  Obj:      Can be a scene, oi, optics, sensor, pixel, IP, or camera
-%  varargin: figure properties (e.g., Units, Color, Toolbar, Menubar, ...) 
+%  varargin: figure properties (e.g., Units, Color, Toolbar, Menubar, ...)
 %
 % Returns
 %  tbl:  A table object.  The window is the 'Parent'
 %          (get(tbl,'Parent')).  Table parameters can be set.
 %
-% TODO:  Should we add to allow custom table entries?  
+% TODO:  Should we add to allow custom table entries?
 %        Should we make a saveas output to EPS?
 %        Mathworks should have a way to make a display figure from a table
 %        object.  What they do is allow you to create a uitable display
@@ -20,7 +20,7 @@ function thisTable = iePTable(obj,varargin)
 %
 % Examples:
 %  tbl = iePTable(cameraCreate);
-%  tbl = iePTable(oiCreate); 
+%  tbl = iePTable(oiCreate);
 %
 % Adjust the table parameters
 %  tbl = iePTable(sceneCreate); set(tbl,'FontSize',24);
@@ -108,7 +108,7 @@ end
 
 if isequal(format,'window')
     thisWindow.Position = [0.0070    0.6785    0.25    0.25];
-
+    
     thisTable = uitable('Parent',thisWindow,'Units','normalized');
     thisTable.ColumnName = {'Property','Value','Units'};
     thisTable.ColumnWidth = {200,200,200};
@@ -169,7 +169,7 @@ end
 function data = tableOI(oi, format)
 % iePTable(oiCreate);
 
-if isempty(oi), data = []; return; end  
+if isempty(oi), data = []; return; end
 
 switch format
     case 'window'
@@ -195,7 +195,7 @@ switch format
         end
         
     case 'embed'
-                % OK, we have an oi so put up the data.
+        % OK, we have an oi so put up the data.
         precision = 3;
         data = {...
             'Rows/cols',              num2str(oiGet(oi,'size'));
@@ -227,100 +227,141 @@ function data = tableOptics(optics,format)
 switch format
     case 'window'
         % num2str, 2nd argument is precision
+        precision = 3;
+        
         data = {...
-            'Optics type',             opticsGet(optics,'name'), '';
-            'Focal length',     num2str(opticsGet(optics,'focal length','mm'),1), 'mm';
+            'Optics type',      opticsGet(optics,'name'), '';
+            'Focal length',     num2str(opticsGet(optics,'focal length','mm'),precision), 'mm';
             'F-number',         sprintf('%.1f',opticsGet(optics,'fnumber')), 'dimensionless';
-            'Aperture diameter',num2str(opticsGet(optics,'aperture diameter','mm'),2), 'mm';
+            'Aperture diameter',num2str(opticsGet(optics,'aperture diameter','mm'),precision), 'mm';
             };
     case 'embed'
+        precision = 3;
+        
         data = {...
-            'Focal length (mm)',     num2str(opticsGet(optics,'focal length','mm'),1);
+            'Focal length (mm)',     num2str(opticsGet(optics,'focal length','mm'),precision);
             'F-number',         sprintf('%.1f',opticsGet(optics,'fnumber'));
-            'Aperture diameter (mm)',num2str(opticsGet(optics,'aperture diameter','mm'),2);
+            'Aperture diameter (mm)',num2str(opticsGet(optics,'aperture diameter','mm'),precision);
             };
     otherwise
         error('Unknown table format %s\n',format);
 end
 end
 
-function data = tableSensor(sensor)
+function data = tableSensor(sensor,format)
 % iePTable(sensorCreate);
 
 % Handle the camera case with no sensor.
-if isempty(sensor), data = []; return; end 
+if isempty(sensor), data = []; return; end
 
-% num2str - 2nd argument is precision
-data = {
-        '-----Sensor-----',''
-    'Row/col',           num2str(sensorGet(sensor,'size'));
-    'Exp time (s)',      num2str(sensorGet(sensor,'exp time'));
-    'Size (mm)',         num2str(sensorGet(sensor,'dimension','mm'),1);
-    'DSNU (V)',          num2str(sensorGet(sensor, 'dsnu level'),2);
-    'PRNU (%)',          num2str(sensorGet(sensor, 'prnu level'),2);
-    'Analog Gain',       num2str(sensorGet(sensor, 'analog gain'),2);
-    'Analog Offset (V)', num2str(sensorGet(sensor, 'analog offset'),2);
-    '',''
-    };
-
+switch format
+    case 'window'
+        % num2str - 2nd argument is precision
+        precision = 3;
+        
+        data = {
+            '-----Sensor-----',''
+            'Row/col',           num2str(sensorGet(sensor,'size'));
+            'Exp time (s)',      num2str(sensorGet(sensor,'exp time'));
+            'Size (mm)',         num2str(sensorGet(sensor,'dimension','mm'),precision);
+            'DSNU (V)',          num2str(sensorGet(sensor, 'dsnu level'),precision);
+            'PRNU (%)',          num2str(sensorGet(sensor, 'prnu level'),precision);
+            'Analog Gain',       num2str(sensorGet(sensor, 'analog gain'),precision);
+            'Analog Offset (V)', num2str(sensorGet(sensor, 'analog offset'),precision);
+            '',''
+            };
+    case 'embed'
+        precision = 3;
+        
+    otherwise
+        error('Unknown table format %s\n',format);
+end
 pData = tablePixel(sensorGet(sensor,'pixel'));
 data = cellCombine(data,pData);
 
 end
 
-function data = tablePixel(pixel)
+function data = tablePixel(pixel,format)
 % iePTable(pixel);
 
-data = {
-        '-----Pixel-----',''
-    'Width/height (um)',      num2str(pixelGet(pixel, 'width','um'),2);
-    'Fill factor',            num2str(pixelGet(pixel, 'fill factor'),2);
-    'Dark voltage (V/sec)',   num2str(pixelGet(pixel, 'dark voltage'),2);
-    'Read noise (V)',         num2str(pixelGet(pixel, 'read noise'),3);
-    'Conversion Gain (V/e-)', num2str(pixelGet(pixel, 'conversion gain'),2);
-    'Voltage Swing (V)',      num2str(pixelGet(pixel, 'voltage swing'),2);
-    'Well Capacity (e-)',     num2str(pixelGet(pixel, 'well capacity'));
-    '',''
-    };
-
+switch format
+    case 'window'
+        precision = 3;
+        data = {
+            '-----Pixel-----',''
+            'Width/height (um)',      num2str(pixelGet(pixel, 'width','um'),precision);
+            'Fill factor',            num2str(pixelGet(pixel, 'fill factor'),precision);
+            'Dark voltage (V/sec)',   num2str(pixelGet(pixel, 'dark voltage'),precision);
+            'Read noise (V)',         num2str(pixelGet(pixel, 'read noise'),precision);
+            'Conversion Gain (V/e-)', num2str(pixelGet(pixel, 'conversion gain'),precision);
+            'Voltage Swing (V)',      num2str(pixelGet(pixel, 'voltage swing'),precision);
+            'Well Capacity (e-)',     num2str(pixelGet(pixel, 'well capacity'),precision);
+            '',''
+            };
+        
+    case 'embed'
+        precision = 3;
+        
+    otherwise
+        error('Unknown table format %s\n',format);
+end
 end
 
-function data = tableIP(ip)
+function data = tableIP(ip,format)
 % iePtable(ipCreate)
 
 if isempty(ip), data = []; return; end
-data = {
-        '-----Img Proc-----','';
-        'name',                ipGet(ip,'name');
-        'row, col, primaries', num2str(ipGet(ip,'result size'));
-        'demosaic',            ipGet(ip,'demosaic method');
-        'sensor conversion',   ipGet(ip,'sensor conversion method');
-        'illuminant correct',  ipGet(ip,'illuminant correction method');
-        };
+switch format
+    case 'window'
+        precision = 3;
+        
+        data = {
+            '-----Img Proc-----','';
+            'name',                ipGet(ip,'name');
+            'row, col, primaries', num2str(ipGet(ip,'result size'),precision);
+            'demosaic',            ipGet(ip,'demosaic method');
+            'sensor conversion',   ipGet(ip,'sensor conversion method');
+            'illuminant correct',  ipGet(ip,'illuminant correction method');
+            };
+    case 'embed'
+        precision = 3;
+        
+    otherwise
+        error('Unknown table format %s\n',format);
+end
 end
 
-function data = tableDisplay(display)
+function data = tableDisplay(display,format)
 % iePTable(displayCreate);
-data = {
-        '-----Display-----','';
-        'name',    displayGet(display,'name');
-        'dpi',     num2str(displayGet(display,'dpi'));
-        'DAC size',num2str(displayGet(display,'dac size'));
-        };
-    
+switch format
+    case 'window'
+        precision = 3;
+        data = {
+            '-----Display-----','';
+            'name',    displayGet(display,'name');
+            'dpi',     num2str(displayGet(display,'dpi'),precision);
+            'DAC size',num2str(displayGet(display,'dac size'),precision);
+            };
+        
+    case 'embed'
+        precision = 3;
+
+    otherwise
+        error('Unknown table format %s\n',format);
+end
 end
 
-function data = tableCamera(camera)
+function data = tableCamera(camera,format)
 % Creates separate tables for each of the main camera components
 
 % iePTable(cameraCreate);
 
 % Camera table shows optics, pixel and sensor parameters.  This should be
-oData = tableOI(cameraGet(camera, 'oi'));
-sData = tableSensor(cameraGet(camera,'sensor'));
+oData = tableOI(cameraGet(camera, 'oi'),format);
+sData = tableSensor(cameraGet(camera,'sensor'),format);
 data  = cellCombine(oData,sData);
 
-ipData = tableIP(cameraGet(camera,'ip'));
+ipData = tableIP(cameraGet(camera,'ip'),format);
 data  = cellCombine(data,ipData);
 
 end

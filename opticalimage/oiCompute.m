@@ -92,6 +92,19 @@ function oi = oiCompute(scene,oi,opticsModel)
 % See also: opticsDLCompute, opticsSICompute, opticsRayTrace
 %
 
+% Note about cropping the oi data back to the same size (no black border)
+% on the scene window
+%
+% The optical image is padded by 1/8th of the scene size on all sides.
+% So the eliminate the black border, we need to crop a rect that is 
+%
+%  rect = [row col height width]
+%  oiSize = sceneSize * (1 + 1/4))
+%  sceneSize = oiGet(oi,'size')/(1.25);
+%
+%  [sceneSize(1)/8 sceneSize(2)/8 sceneSize(1) sceneSize(2)]
+%
+
 if ieNotDefined('scene'), error('Scene required.'); end
 if ieNotDefined('oi'), error('Opticalimage required.'); end
 if strcmp(oi.type,'scene') && strcmp(scene.type,'opticalimage')

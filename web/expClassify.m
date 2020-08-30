@@ -4,60 +4,80 @@
 % Note that they will error the first time, require an add-in to be
 % downloaded. Link to the download appears in the script window, 
 % or can be found using the add-in explorer
-%
+
+%%
 net = resnet50; % vgg19; googlenet;
 
 % user points us to the folder of previously downloaded images they want to
 % test. They can get those using imgBrowser+Flickr+curating+save, or
 % however ...
-inputFolder = uigetdir(fullfile(isetRootPath, 'local', 'images'), "Get Test Folder");
-outputSubFolder = "simulated";
 
-dirList = dir(inputFolder);
-fileList = [];
+%%
+inputFolder = fullfile(isetRootPath,'local','images','dogs');
+inputFiles = dir(fullfile(inputFolder,'*.jpg'));
 
-% all this code simply to get just a list of files:)
-for i = 1:length(dirList)
-    if isfile(fullfile(dirList(i).folder, dirList(i).name))
-        % There HAS to be a better way to do this in Matlab!
-        if length(fileList) == 0
-            fileList = [dirList(i)];
-        else
-            fileList(end+1) = dirList(i);
-        end
-    end
+outputOI = fullfile(inputFolder,'opticalimage');
+if ~exist(outputOI,'dir'), mkdir(fullfile(inputFolder,outputOI)); end
+
+oi = oiCreate;
+
+%% Make the optical images
+wave = 400:10:700;
+
+for ii = 1:numel(inputFiles)
+    sceneFileName = fullfile(inputFiles(ii).folder, inputFiles(ii).name);
+    ourScene = sceneFromFile(sceneFileName,'rgb',[],'reflectance-display',wave);
+    [~,thisFileName,~] = fileparts(inputFiles(ii).name);
+    ourScene = sceneSet(ourScene,'name',thisFileName);
+    
+    % Here is where I get confused!!
+    % ourOI = ieGetObject('OPTICALIMAGE'); %this doesn't seem right!
+    oi = oiCompute(oi, ourScene);
+
+    % Cropping principles:
+    %   oiSize = sceneSize * (1 + 1/4))
+    %   sceneSize = oiGet(oi,'size')/(1.25);
+    %   [sceneSize(1)/8 sceneSize(2)/8 sceneSize(1) sceneSize(2)]
+    %   rect = [row col height width]
+
+    sz     = sceneGet(ourScene,'size');
+    rect   = round([sz(2)/8 sz(1)/8 sz(2) sz(1)]);
+    oiTest = oiCrop(oi,rect);
+    % oiWindow(oiTest);
+    
+    save(fullfile(outputOI,[oiGet(oi,'name'),'.mat']),'oi');
 end
 
-% does this make one if none exists? Otherwise check & create
-ourSensor = ieGetObject('isa');
+%%  Set sensor and ip parameters and create sample images with those parameters
 
-% create a folder for our simulated outputs
-mkdir(fullfile(inputFolder,outputSubFolder));
+sensor = sensorCreate;
+sensor = sensorSetSizeToFOV(sensor,35,ourScene,oi);
+ip     = ipCreate;
+outputRGB = fullfile(inputFolder,'ip');
+if ~exist(outputRGB,'dir'), mkdir(outputRGB); end
 
-for i = 1:length(fileList)
-    sceneFileName = fullfile(fileList(i).folder, fileList(i).name);
-    ourScene = sceneFromFile(sceneFileName,'rgb');
-    % Here is where I get confused!!
-    ourOI = ieGetObject('OPTICALIMAGE'); %this doesn't seem right!
-    computedOI = oiCompute(ourScene, ourOI);
+chdir(outputOI);
+oiList = dir(fullfile(outputOI,'*.mat'));
+
+for ii=1:numel(oiList)
+    % oiRGB = oiGet(ourOI,'rgb image');
+    % ieNewGraphWin; imagescRGB(oiRGB)
+    load(oiList(ii).name,'oi');
+    sensor = sensorCompute(sensor,oi);
+    % sensorWindow(sensor);
+    
+    ip  = ipCompute(ip,sensor);
+    rgb = ipGet(ip,'result');
     
     [fPath, fName, fExt] = fileparts(sceneFileName);
-    ourOutputFileName = fullfile(fPath, outputSubFolder, strcat(fName, ".png"));
-    oiSaveImage(computedOI,ourOutputFileName);
-
-    % djc note: I think we should free up the computedOI here to save memory
-    % but I'm not sure if I can set it to [] directly, or need to call a
-    % vc* routine to make sure other stuff is also reset, or ??
-    
-% punt on sensor for now, see if we can just to optics!
-%    ourImage = sensorCompute(ourSensor,computedOI);
-    
-%    [val,isa] = ieGetSelectedObject('ISA');
-%    gam = str2double(get(handles.editGam,'String'));
-%    scaleMax = get(handles.btnDisplayScale,'Value');
-%    outputFileName = sensorSaveImage(isa,[],'volts',gam,scaleMax);
-    % Need to write these files someplace!
+    ourOutputFileName = fullfile(outputRGB, sprintf('%s.jpg',oiGet(oi,'name')));
+    imwrite(rgb,ourOutputFileName);
 end
+
+%%  Let's classify with the ResNet
+
+ipFolder = fullfile(isetRootPath,'local','images','dogs','ip');
+ipFiles = dir(fullfile(ipFolder,'*.jpg'));
 
 inputSize = net.Layers(1).InputSize;
 
@@ -67,47 +87,49 @@ inputSize = net.Layers(1).InputSize;
 %  original image folder and prints out what it finds.
 
 totalScore = 0;
-for i = 1:length(fileList)
-    try 
-        ourGTFileName = fullfile(fileList(i).folder, fileList(i).name);
-        ourGTImage = imread(ourGTFileName);
-        ourGTImage = imresize(ourGTImage,inputSize(1:2));
-        [label, scores] = classify(net,ourGTImage);
-        [~,idx] = sort(scores,'descend');
-        idx = idx(5:-1:1);
-        classNamesGTTop = net.Layers(end).ClassNames(idx);
-        scoresGTTop = scores(idx);
-        
-        % for now we just output the top classes for each image, but of
-        % course would want to do something smart with them & scores
-        disp(strcat("Classes for GT image: ", fullfile(fileList(i).folder, fileList(i).name)));
-        classNamesGTTop % the top 5 possible classes
-
-        % now calculate the same thing for the simulated image
-        [fPath, fName, fExt] = fileparts(ourGTFileName);
-        ourTestFileName = fullfile(fPath, outputSubFolder, strcat(fName, ".png"));
-
-        ourTestImage = imread(ourTestFileName);
-        ourTestImage = imresize(ourTestImage,inputSize(1:2));
-        [label, scores] = classify(net,ourTestImage);
-        [~,idx] = sort(scores,'descend');
-        idx = idx(5:-1:1);
-        classNamesTestTop = net.Layers(end).ClassNames(idx);
-        scoresTestTop = scores(idx);
-        
-        % for now we just output the top classes for each image, but of
-        % course would want to do something smart with them & scores
-        disp(strcat("Classes for our Simulated Test image: ", ourTestFileName));
-        classNamesTestTop % the top 5 possible classes
-        
-        imageScore = length(find(ismember(classNamesGTTop, classNamesTestTop)));
-        totalScore = totalScore + imageScore;
-        disp(strcat("Image Matching Score: ", string(imageScore)));
-        
-    catch
-        warning("boring?");
-    end
+for ii = 1:length(inputFiles)
+    % Classify each of the original downloaded images
+    ourGTFileName = fullfile(inputFiles(ii).folder, inputFiles(ii).name);
+    ourGTImage = imread(ourGTFileName);
+    ourGTImage = imresize(ourGTImage,inputSize(1:2));
+    [label, scores] = classify(net,ourGTImage);
+    disp(label)
+    [~,idx] = sort(scores,'descend');
+    idx = idx(1:5);
+    classNamesGTTop = net.Layers(end).ClassNames(idx);
+    scoresGTTop = scores(idx);
     
-end 
+    % for now we just output the top classes for each image, but of
+    % course would want to do something smart with them & scores
+    disp(strcat("Classes for GT image: ", fullfile(inputFiles(ii).folder, inputFiles(ii).name)));
+    disp(classNamesGTTop) % the top 5 possible classes
+    
+    % Classify using the simulated images, through the sensor
+    ipFileName = fullfile(ipFolder, inputFiles(ii).name);
+    
+    ourTestImage = imread(ipFileName);
+    ourTestImage = imresize(ourTestImage,inputSize(1:2));
+    [label, scores] = classify(net,ourTestImage);
+    disp(label)
 
-disp(strcat("Total score for: ", string(length(fileList)), " images is: ", string(totalScore)));
+    % The scores are worst to best when sorted this way?
+    [~,idx] = sort(scores,'descend');
+    idx = idx(1:5);
+    classNamesTestTop = net.Layers(end).ClassNames(idx);
+    scoresTestTop = scores(idx);
+    
+    % for now we just output the top classes for each image, but of
+    % course would want to do something smart with them & scores
+    disp(strcat("Classes for our Simulated Test image: ", ipFileName));
+    disp(classNamesTestTop)% the top 5 possible classes
+    
+    imageScore = length(find(ismember(classNamesGTTop, classNamesTestTop)));
+    totalScore = totalScore + imageScore;
+    disp(strcat("Image Matching Score: ", string(imageScore)));
+    
+end
+
+%%
+disp(strcat("Total score for: ", string(length(inputFiles)), " images is: ", string(totalScore)));
+
+%%
