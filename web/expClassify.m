@@ -51,6 +51,21 @@ fovData = [];
 
 % our default sensor seems to be closer to 8 x 10 not 3 x 4,
 desiredImageSize = [768 1024]; % a decent compromise that should work on average
+
+cachedOpticsFlag = false; % default
+if isfile(fullfile(outputOIFolder,'cachedOptics.mat'))
+    load(fullfile(outputOIFolder,'cachedOptics.mat'),'cachedOptics');
+    if isequal(cachedOptics, oi.optics)
+        cachedOpticsFlag = true;
+    else
+        % Save the optics so that we can check to see if we can re-use the OI cache
+        % in future
+        cachedOptics = oi.optics;
+        save(fullfile(outputOIFolder,'cachedOptics'),'cachedOptics');
+        
+    end
+end
+
 for ii = 1:numel(inputFiles)
     
     sceneFileName = fullfile(inputFiles(ii).folder, inputFiles(ii).name);
@@ -69,20 +84,29 @@ for ii = 1:numel(inputFiles)
     sceneFOV = sceneGet(ourScene,'fov');
     fovData(ii) = sceneFOV;
     % we pre-compute the optical image so it can be cached for future
-    oi = oiCompute(oi, ourScene);
     
-    % Cropping principles:
-    %   oiSize = sceneSize * (1 + 1/4))
-    %   sceneSize = oiGet(oi,'size')/(1.25);
-    %   [sceneSize(1)/8 sceneSize(2)/8 sceneSize(1) sceneSize(2)]
-    %   rect = [row col height width]
-    
-    sz     = sceneGet(ourScene,'size');
-    rect   = round([sz(2)/8 sz(1)/8 sz(2) sz(1)]);
-    oi = oiCrop(oi,rect);
-    % oiWindow(oiTest);
-    
-    save(fullfile(outputOIFolder,[oiGet(oi,'name'),'.mat']),'oi');
+    if isfile(fullfile(outputOIFolder,[thisFileName+".mat"]))
+        cachedFile = true; % we have a file with the same name
+    else
+        cachedFile = false; % cheat for now
+    end
+    if cachedOpticsFlag == false || cachedFile == false
+        oi = oiCompute(oi, ourScene);
+        
+        % Cropping principles:
+        %   oiSize = sceneSize * (1 + 1/4))
+        %   sceneSize = oiGet(oi,'size')/(1.25);
+        %   [sceneSize(1)/8 sceneSize(2)/8 sceneSize(1) sceneSize(2)]
+        %   rect = [row col height width]
+        
+        sz     = sceneGet(ourScene,'size');
+        rect   = round([sz(2)/8 sz(1)/8 sz(2) sz(1)]);
+        oi = oiCrop(oi,rect);
+        % oiWindow(oiTest);
+        
+        save(fullfile(outputOIFolder,[oiGet(oi,'name'),'.mat']),'oi');
+        
+    end
 end
 
 %%  Set sensor and ip parameters and create sample images with those parameters
@@ -98,21 +122,25 @@ chdir(outputOIFolder); % this is so stupid!
 for ii=1:numel(oiList)
     % oiRGB = oiGet(ourOI,'rgb image');
     % ieNewGraphWin; imagescRGB(oiRGB)
-    load(oiList(ii).name,'oi');
-    oiSize = size(oi.data.photons); % I think this is a proxy for resolution
     
-    sceneFOV = fovData(ii);
-    sensor = sensorSetSizeToFOV(sensor,sceneFOV,ourScene,oi);
-    
-    sensor = sensorCompute(sensor,oi);
-    % sensorWindow(sensor);
-    
-    ip  = ipCompute(ip,sensor);
-    rgb = ipGet(ip,'result');
-    
-    [fPath, fName, fExt] = fileparts(sceneFileName);
-    ourOutputFileName = fullfile(outputRGB, sprintf('%s.jpg',oiGet(oi,'name')));
-    imwrite(rgb,ourOutputFileName);
+    % don't load our cache file!
+    if ~isequal(oiList(ii).name, 'cachedOptics.mat')
+        load(oiList(ii).name,'oi');
+        oiSize = size(oi.data.photons); % I think this is a proxy for resolution
+        
+        sceneFOV = fovData(ii);
+        sensor = sensorSetSizeToFOV(sensor,sceneFOV,ourScene,oi);
+        
+        sensor = sensorCompute(sensor,oi);
+        % sensorWindow(sensor);
+        
+        ip  = ipCompute(ip,sensor);
+        rgb = ipGet(ip,'result');
+        
+        [fPath, fName, fExt] = fileparts(sceneFileName);
+        ourOutputFileName = fullfile(outputRGB, sprintf('%s.jpg',oiGet(oi,'name')));
+        imwrite(rgb,ourOutputFileName);
+    end
 end
 chdir(defDir);
 
