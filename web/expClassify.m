@@ -16,13 +16,13 @@ p = inputParser;
 
 p.addParameter('oi',oiCreate(),@(x)(equals(class(x), 'struct')));
 p.addParameter('sensor',sensorCreate(),@(x)(equals(class(x), 'struct')));
-p.addParameter('pipeline',ipCreate(),@(x)(equals(class(x), 'struct')));
+p.addParameter('ip',ipCreate(),@(x)(equals(class(x), 'struct')));
 p.addParameter('imageFolder',"",@ischar); % or string?
 p.parse(varargin{:});
 
 oi   = p.Results.oi;
 sensor   = p.Results.sensor;
-ip = p.Results.pipeline;
+ip = p.Results.ip;
 imageFolder = p.Results.imageFolder;
 
 %%
