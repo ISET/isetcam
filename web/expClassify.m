@@ -13,11 +13,12 @@ net = resnet50; % vgg19; googlenet;
 % however ...
 
 %%
-inputFolder = fullfile(isetRootPath,'local','images','dogs');
+inputFolder = uigetdir(fullfile(isetRootPath, "local", "images"), "Choose folder with the original images.");
+%inputFolder = fullfile(isetRootPath,'local','images','dogs');
 inputFiles = dir(fullfile(inputFolder,'*.jpg'));
 
-outputOI = fullfile(inputFolder,'opticalimage');
-if ~exist(outputOI,'dir'), mkdir(fullfile(inputFolder,outputOI)); end
+outputOIFolder = fullfile(inputFolder,'opticalimage');
+if ~exist(outputOIFolder,'dir'), mkdir(outputOIFolder); end
 
 oi = oiCreate;
 
@@ -29,9 +30,8 @@ for ii = 1:numel(inputFiles)
     ourScene = sceneFromFile(sceneFileName,'rgb',[],'reflectance-display',wave);
     [~,thisFileName,~] = fileparts(inputFiles(ii).name);
     ourScene = sceneSet(ourScene,'name',thisFileName);
-    
-    % Here is where I get confused!!
-    % ourOI = ieGetObject('OPTICALIMAGE'); %this doesn't seem right!
+
+    % we pre-compute the optical image so it can be cached for future
     oi = oiCompute(oi, ourScene);
 
     % Cropping principles:
@@ -42,10 +42,10 @@ for ii = 1:numel(inputFiles)
 
     sz     = sceneGet(ourScene,'size');
     rect   = round([sz(2)/8 sz(1)/8 sz(2) sz(1)]);
-    oiTest = oiCrop(oi,rect);
+    oi = oiCrop(oi,rect);
     % oiWindow(oiTest);
     
-    save(fullfile(outputOI,[oiGet(oi,'name'),'.mat']),'oi');
+    save(fullfile(outputOIFolder,[oiGet(oi,'name'),'.mat']),'oi');
 end
 
 %%  Set sensor and ip parameters and create sample images with those parameters
@@ -56,8 +56,8 @@ ip     = ipCreate;
 outputRGB = fullfile(inputFolder,'ip');
 if ~exist(outputRGB,'dir'), mkdir(outputRGB); end
 
-chdir(outputOI);
-oiList = dir(fullfile(outputOI,'*.mat'));
+chdir(outputOIFolder);
+oiList = dir(fullfile(outputOIFolder,'*.mat'));
 
 for ii=1:numel(oiList)
     % oiRGB = oiGet(ourOI,'rgb image');
@@ -76,8 +76,7 @@ end
 
 %%  Let's classify with the ResNet
 
-ipFolder = fullfile(isetRootPath,'local','images','dogs','ip');
-ipFiles = dir(fullfile(ipFolder,'*.jpg'));
+ipFolder = fullfile(inputFolder,'ip');
 
 inputSize = net.Layers(1).InputSize;
 
