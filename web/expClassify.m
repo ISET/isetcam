@@ -26,9 +26,22 @@ oi = oiCreate;
 wave = 400:10:700;
 
 fovData = [];
+
+% our default sensor seems to be closer to 8 x 10 not 3 x 4,
+desiredImageSize = [768 1024]; % a decent compromise that should work on average
 for ii = 1:numel(inputFiles)
+    
     sceneFileName = fullfile(inputFiles(ii).folder, inputFiles(ii).name);
-    ourScene = sceneFromFile(sceneFileName,'rgb',[],'reflectance-display',wave);
+    % what if our original image is portrait mode? It won't match our
+    % camera sensor very well. 
+    initialImage = imread(sceneFileName);
+    initialSize = size(initialImage);
+    if initialSize(1) > initialSize(2)
+        initialImage = imrotate(initialImage, -90);
+    end
+    initialImage = imresize(initialImage, desiredImageSize);
+    ourScene = sceneFromFile(initialImage,'rgb',[],'reflectance-display',wave);
+    
     [~,thisFileName,~] = fileparts(inputFiles(ii).name);
     ourScene = sceneSet(ourScene,'name',thisFileName);
     sceneFOV = sceneGet(ourScene,'fov');
@@ -53,6 +66,8 @@ end
 %%  Set sensor and ip parameters and create sample images with those parameters
 
 sensor = sensorCreate;
+sensor = sensorSet(sensor, 'size', [desiredImageSize(1) desiredImageSize(2)]);
+    
 ip     = ipCreate;
 outputRGB = fullfile(inputFolder,'ip');
 if ~exist(outputRGB,'dir'), mkdir(outputRGB); end
@@ -68,11 +83,6 @@ for ii=1:numel(oiList)
     load(oiList(ii).name,'oi');
     oiSize = size(oi.data.photons); % I think this is a proxy for resolution
     
-    % rect   = round([sz(2)/8 sz(1)/8 sz(2) sz(1)]);
-
-    %sensor = sensorSet(sensor, 'size', [oiSize(1) oiSize(2)]);
-    % if we use this, need to use each scene!
-    %sceneFOV = sceneGet(ourScene,'fov');
     sceneFOV = fovData(ii);
     sensor = sensorSetSizeToFOV(sensor,sceneFOV,ourScene,oi);
 
