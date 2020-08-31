@@ -1,9 +1,29 @@
-% playground for experimenting with classification
+function classifierResults = expClassify(varargin)
+% Compute classification experiment results for a particular camera design
+%
+%   classifierResults = expClassify(varargin)
+%       eg: expClassify([imageFolder], [oi], [sensor], [ip])
 %
 % start with Googlenet, vgg, resnet, can use others.
 % Note that they will error the first time, require an add-in to be
-% downloaded. Link to the download appears in the script window, 
+% downloaded. Link to the download appears in the script window,
 % or can be found using the add-in explorer
+
+%%
+varargin = ieParamFormat(varargin);
+
+p = inputParser;
+
+p.addParameter('oi',oiCreate(),@(x)(equals(class(x), 'struct')));
+p.addParameter('sensor',sensorCreate(),@(x)(equals(class(x), 'struct')));
+p.addParameter('pipeline',ipCreate(),@(x)(equals(class(x), 'struct')));
+p.addParameter('imageFolder',"",@ischar); % or string?
+p.parse(varargin{:});
+
+oi   = p.Results.oi;
+sensor   = p.Results.sensor;
+ip = p.Results.pipeline;
+imageFolder = p.Results.imageFolder;
 
 %%
 net = resnet50; % vgg19; googlenet;
@@ -13,14 +33,16 @@ net = resnet50; % vgg19; googlenet;
 % however ...
 
 %%
-inputFolder = uigetdir(fullfile(isetRootPath, "local", "images"), "Choose folder with the original images.");
-%inputFolder = fullfile(isetRootPath,'local','images','dogs');
+if ~isfolder(imageFolder)
+    inputFolder = uigetdir(fullfile(isetRootPath, "local", "images"), "Choose folder with the original images.");
+else
+    inputFolder = imageFolder;
+end
+    %inputFolder = fullfile(isetRootPath,'local','images','dogs');
 inputFiles = dir(fullfile(inputFolder,'*.jpg'));
 
 outputOIFolder = fullfile(inputFolder,'opticalimage');
 if ~exist(outputOIFolder,'dir'), mkdir(outputOIFolder); end
-
-oi = oiCreate;
 
 %% Make the optical images
 wave = 400:10:700;
@@ -33,7 +55,7 @@ for ii = 1:numel(inputFiles)
     
     sceneFileName = fullfile(inputFiles(ii).folder, inputFiles(ii).name);
     % what if our original image is portrait mode? It won't match our
-    % camera sensor very well. 
+    % camera sensor very well.
     initialImage = imread(sceneFileName);
     initialSize = size(initialImage);
     if initialSize(1) > initialSize(2)
@@ -48,13 +70,13 @@ for ii = 1:numel(inputFiles)
     fovData(ii) = sceneFOV;
     % we pre-compute the optical image so it can be cached for future
     oi = oiCompute(oi, ourScene);
-
+    
     % Cropping principles:
     %   oiSize = sceneSize * (1 + 1/4))
     %   sceneSize = oiGet(oi,'size')/(1.25);
     %   [sceneSize(1)/8 sceneSize(2)/8 sceneSize(1) sceneSize(2)]
     %   rect = [row col height width]
-
+    
     sz     = sceneGet(ourScene,'size');
     rect   = round([sz(2)/8 sz(1)/8 sz(2) sz(1)]);
     oi = oiCrop(oi,rect);
@@ -64,11 +86,7 @@ for ii = 1:numel(inputFiles)
 end
 
 %%  Set sensor and ip parameters and create sample images with those parameters
-
-sensor = sensorCreate;
 sensor = sensorSet(sensor, 'size', [desiredImageSize(1) desiredImageSize(2)]);
-    
-ip     = ipCreate;
 outputRGB = fullfile(inputFolder,'ip');
 if ~exist(outputRGB,'dir'), mkdir(outputRGB); end
 
@@ -85,7 +103,7 @@ for ii=1:numel(oiList)
     
     sceneFOV = fovData(ii);
     sensor = sensorSetSizeToFOV(sensor,sceneFOV,ourScene,oi);
-
+    
     sensor = sensorCompute(sensor,oi);
     % sensorWindow(sensor);
     
@@ -134,7 +152,7 @@ for ii = 1:length(inputFiles)
     ourTestImage = imresize(ourTestImage,inputSize(1:2));
     [label, scores] = classify(net,ourTestImage);
     disp(label)
-
+    
     % The scores are worst to best when sorted this way?
     [~,idx] = sort(scores,'descend');
     idx = idx(1:5);
@@ -155,4 +173,5 @@ end
 %%
 disp(strcat("Total score for: ", string(length(inputFiles)), " images is: ", string(totalScore)));
 
+end
 %%
