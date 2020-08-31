@@ -25,12 +25,14 @@ oi = oiCreate;
 %% Make the optical images
 wave = 400:10:700;
 
+fovData = [];
 for ii = 1:numel(inputFiles)
     sceneFileName = fullfile(inputFiles(ii).folder, inputFiles(ii).name);
     ourScene = sceneFromFile(sceneFileName,'rgb',[],'reflectance-display',wave);
     [~,thisFileName,~] = fileparts(inputFiles(ii).name);
     ourScene = sceneSet(ourScene,'name',thisFileName);
-
+    sceneFOV = sceneGet(ourScene,'fov');
+    fovData(ii) = sceneFOV;
     % we pre-compute the optical image so it can be cached for future
     oi = oiCompute(oi, ourScene);
 
@@ -51,18 +53,29 @@ end
 %%  Set sensor and ip parameters and create sample images with those parameters
 
 sensor = sensorCreate;
-sensor = sensorSetSizeToFOV(sensor,35,ourScene,oi);
 ip     = ipCreate;
 outputRGB = fullfile(inputFolder,'ip');
 if ~exist(outputRGB,'dir'), mkdir(outputRGB); end
 
-chdir(outputOIFolder);
+
 oiList = dir(fullfile(outputOIFolder,'*.mat'));
 
+defDir = pwd;
+chdir(outputOIFolder); % this is so stupid!
 for ii=1:numel(oiList)
     % oiRGB = oiGet(ourOI,'rgb image');
     % ieNewGraphWin; imagescRGB(oiRGB)
     load(oiList(ii).name,'oi');
+    oiSize = size(oi.data.photons); % I think this is a proxy for resolution
+    
+    % rect   = round([sz(2)/8 sz(1)/8 sz(2) sz(1)]);
+
+    %sensor = sensorSet(sensor, 'size', [oiSize(1) oiSize(2)]);
+    % if we use this, need to use each scene!
+    %sceneFOV = sceneGet(ourScene,'fov');
+    sceneFOV = fovData(ii);
+    sensor = sensorSetSizeToFOV(sensor,sceneFOV,ourScene,oi);
+
     sensor = sensorCompute(sensor,oi);
     % sensorWindow(sensor);
     
@@ -73,6 +86,7 @@ for ii=1:numel(oiList)
     ourOutputFileName = fullfile(outputRGB, sprintf('%s.jpg',oiGet(oi,'name')));
     imwrite(rgb,ourOutputFileName);
 end
+chdir(defDir);
 
 %%  Let's classify with the ResNet
 
