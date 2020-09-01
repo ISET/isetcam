@@ -17,6 +17,7 @@ p = inputParser;
 p.addParameter('oi',oiCreate(),@(x)(isequal(class(x), 'struct')));
 p.addParameter('sensor',sensorCreate(),@(x)(isequal(class(x), 'struct')));
 p.addParameter('ip',ipCreate(),@(x)(isequal(class(x), 'struct')));
+p.addParameter('scoreClasses', 5);
 p.addParameter('imageFolder',"",@ischar); % or string?
 p.parse(varargin{:});
 
@@ -24,9 +25,15 @@ oi   = p.Results.oi;
 sensor   = p.Results.sensor;
 ip = p.Results.ip;
 imageFolder = p.Results.imageFolder;
+scoreClasses = p.Results.scoreClasses;
 
 %%
-net = resnet50; % vgg19; googlenet;
+% not sure if we can use the downloadable NNs from the runtime
+if isdeployed
+    net = squeezenet();
+else
+    net = resnet50; % vgg19; googlenet;
+end
 
 % user points us to the folder of previously downloaded images they want to
 % test. They can get those using imgBrowser+Flickr+curating+save, or
@@ -39,7 +46,14 @@ else
     inputFolder = imageFolder;
 end
     %inputFolder = fullfile(isetRootPath,'local','images','dogs');
-inputFiles = dir(fullfile(inputFolder,'*.jpg'));
+if ~isempty(inputFolder) && ~isequal(inputFolder,0) && isdir(inputFolder)
+    inputFiles = dir(fullfile(inputFolder,'*.jpg'));
+else
+    msgbox("No images specified. Exiting.");
+    scoreStats = [];
+    scoreTable = [];
+    return
+end
 
 outputOIFolder = fullfile(inputFolder,'opticalimage');
 if ~exist(outputOIFolder,'dir'), mkdir(outputOIFolder); end
@@ -161,7 +175,7 @@ inputSize = net.Layers(1).InputSize;
 %  original image folder and prints out what it finds.
 
 totalScore = 0;
-scoreClasses = 5;
+ourScoreArray = [];
 for ii = 1:length(inputFiles)
     % Classify each of the original downloaded images
     ourGTFileName = fullfile(inputFiles(ii).folder, inputFiles(ii).name);
@@ -192,7 +206,7 @@ for ii = 1:length(inputFiles)
     idx = idx(1:scoreClasses);
     classNamesTestTop = net.Layers(end).ClassNames(idx);
     scoresTestTop = scores(idx);
-    
+
     % for now we just output the top classes for each image, but of
     % course would want to do something smart with them & scores
     disp(strcat("Classes for our Simulated Test image: ", ipFileName));
@@ -200,6 +214,12 @@ for ii = 1:length(inputFiles)
     
     imageScore = length(find(ismember(classNamesGTTop, classNamesTestTop)));
     totalScore = totalScore + imageScore;
+    
+    % start to create a scoreTable
+    ourScoreArray = [ourScoreArray ; ["Image Name:" inputFiles(ii).name]];
+    ourScoreArray = [ourScoreArray ; [classNamesGTTop classNamesTestTop]];
+    ourScoreArray = [ourScoreArray ; ["-----------" strcat("Score: ", string(imageScore))]];
+
     disp(strcat("Image Matching Score: ", string(imageScore)));
     
 end
@@ -207,6 +227,6 @@ end
 %%
 disp(strcat("Total score for: ", string(length(inputFiles)), " images is: ", string(totalScore)));
 scoreStats = [totalScore length(inputFiles)*scoreClasses length(inputFiles)];
-
+scoreTable = ourScoreArray; % pass back Cell Array for now instead of a true table
 end
 %%
