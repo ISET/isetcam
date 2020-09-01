@@ -1,4 +1,4 @@
-function classifierResults = expClassify(varargin)
+function [scoreStats, scoreTable] = expClassify(varargin)
 % Compute classification experiment results for a particular camera design
 %
 %   classifierResults = expClassify(varargin)
@@ -14,9 +14,9 @@ varargin = ieParamFormat(varargin);
 
 p = inputParser;
 
-p.addParameter('oi',oiCreate(),@(x)(equals(class(x), 'struct')));
-p.addParameter('sensor',sensorCreate(),@(x)(equals(class(x), 'struct')));
-p.addParameter('ip',ipCreate(),@(x)(equals(class(x), 'struct')));
+p.addParameter('oi',oiCreate(),@(x)(isequal(class(x), 'struct')));
+p.addParameter('sensor',sensorCreate(),@(x)(isequal(class(x), 'struct')));
+p.addParameter('ip',ipCreate(),@(x)(isequal(class(x), 'struct')));
 p.addParameter('imageFolder',"",@ischar); % or string?
 p.parse(varargin{:});
 
@@ -114,6 +114,7 @@ for ii = 1:numel(inputFiles)
 end
 
 %%  Set sensor and ip parameters and create sample images with those parameters
+% Corrects for aspect ratio
 sensor = sensorSet(sensor, 'size', [desiredImageSize(1) desiredImageSize(2)]);
 outputRGB = fullfile(inputFolder,'ip');
 if ~exist(outputRGB,'dir'), mkdir(outputRGB); end
@@ -148,7 +149,7 @@ for ii=1:numel(oiList)
 end
 chdir(defDir);
 
-%%  Let's classify with the ResNet
+%%  Let's classify with the chosen network (probably Resnet-50)
 
 ipFolder = fullfile(inputFolder,'ip');
 
@@ -160,6 +161,7 @@ inputSize = net.Layers(1).InputSize;
 %  original image folder and prints out what it finds.
 
 totalScore = 0;
+scoreClasses = 5;
 for ii = 1:length(inputFiles)
     % Classify each of the original downloaded images
     ourGTFileName = fullfile(inputFiles(ii).folder, inputFiles(ii).name);
@@ -168,14 +170,14 @@ for ii = 1:length(inputFiles)
     [label, scores] = classify(net,ourGTImage);
     disp(label)
     [~,idx] = sort(scores,'descend');
-    idx = idx(1:5);
+    idx = idx(1:scoreClasses);
     classNamesGTTop = net.Layers(end).ClassNames(idx);
     scoresGTTop = scores(idx);
     
     % for now we just output the top classes for each image, but of
     % course would want to do something smart with them & scores
     disp(strcat("Classes for GT image: ", fullfile(inputFiles(ii).folder, inputFiles(ii).name)));
-    disp(classNamesGTTop) % the top 5 possible classes
+    disp(classNamesGTTop) % the top scoreClasses possible classes
     
     % Classify using the simulated images, through the sensor
     ipFileName = fullfile(ipFolder, inputFiles(ii).name);
@@ -187,14 +189,14 @@ for ii = 1:length(inputFiles)
     
     % The scores are worst to best when sorted this way?
     [~,idx] = sort(scores,'descend');
-    idx = idx(1:5);
+    idx = idx(1:scoreClasses);
     classNamesTestTop = net.Layers(end).ClassNames(idx);
     scoresTestTop = scores(idx);
     
     % for now we just output the top classes for each image, but of
     % course would want to do something smart with them & scores
     disp(strcat("Classes for our Simulated Test image: ", ipFileName));
-    disp(classNamesTestTop)% the top 5 possible classes
+    disp(classNamesTestTop)% the top scoreClasses possible classes
     
     imageScore = length(find(ismember(classNamesGTTop, classNamesTestTop)));
     totalScore = totalScore + imageScore;
@@ -204,6 +206,7 @@ end
 
 %%
 disp(strcat("Total score for: ", string(length(inputFiles)), " images is: ", string(totalScore)));
+scoreStats = [totalScore length(inputFiles)*scoreClasses length(inputFiles)];
 
 end
 %%
