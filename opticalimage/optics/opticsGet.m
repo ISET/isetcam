@@ -651,11 +651,8 @@ switch parm
         switch lower(oModel)
             case 'diffractionlimited'
                 % opticsGet(optics,'psf Data',thisWave,'um');
-                
-                % Older code
-                %   dlF = opticsGet(optics,'dlFSupport',thisWave(1),units,nSamp);
-                %   [fSupport(:,:,1),fSupport(:,:,2)] = meshgrid(dlF{1},dlF{2});
                 fSupport = opticsGet(optics,'dlFSupport matrix',thisWave(1),units,nSamp);
+                
                 % This increases the spatial frequency resolution (highest
                 % spatial frequency) by a factor of 4, which yields a
                 % higher spatial resolution estimate
@@ -663,9 +660,6 @@ switch parm
                 
                 % Calculate the OTF using diffraction limited MTF (dlMTF)
                 otf = dlMTF(optics,fSupport,thisWave,units);
-                
-                % Calculate the spatial support for the PSF using 
-                %  opticsGet(optics,'psf support',fSupport,nSamp)
                 
                 % Diffraction limited OTF
                 if length(thisWave) == 1
@@ -680,14 +674,15 @@ switch parm
                 sSupport = opticsGet(optics,'psf support',fSupport, nSamp);
 
             case 'shiftinvariant'
-                % opticsGet(optics,'psf data',thisWave,units)
+                % val = opticsGet(optics,'psf data',thisWave,'um');
                 % What do we do about the units???  The OTF values are
                 % generated at 0.25 micron spacing of the psf, I think.
                 if checkfields(optics,'OTF','OTF')
                     otfWave = opticsGet(optics,'otf wave');
                     if ~isempty(varargin)
                         % Just at the interpolated wavelength
-                        otf = opticsGet(optics,'otf data',varargin{1});
+                        thisWave = varargin{1};
+                        otf = opticsGet(optics,'otf data',thisWave);
                         % mesh(fftshift(otf))
                         psf = fftshift(ifft2(otf));
                         % mesh(abs(psf))

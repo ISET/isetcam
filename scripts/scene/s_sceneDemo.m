@@ -39,7 +39,7 @@ ieAddObject(sceneMacbethD65);
 %
 % Then bring up the scene window.  You can interact with the
 % scene through this window
-sceneWindow;
+sceneWindow; pause(0.2);
 %
 %% sceneGet
 
@@ -49,7 +49,7 @@ sceneGet(sceneMacbethD65,'meanLuminance')
 % Image of the luminance map of the Macbeth
 luminance = sceneGet(sceneMacbethD65,'luminance');
 
-vcNewGraphWin;
+ieNewGraphWin;
 imagesc(luminance); axis image; colormap(gray);
 
 % To access directly the photons in the image, do this:
@@ -73,7 +73,7 @@ meanPhotons = squeeze(meanPhotons);
 assert(abs(mean(meanPhotons(:)) / 3.7624e+15 - 1) < tolerance,'Mean photon error');
 
 %% Plot the mean radiance
-vcNewGraphWin;
+ieNewGraphWin;
 plot(wave,meanPhotons);
 xlabel('Wavelength (nm)'); ylabel('Radiance (q/sec/nm/sr/m^2'); 
 grid on
@@ -96,8 +96,7 @@ fprintf('FOV: %f\n',sceneGet(sceneMacbethD65,'fov'))
 % There are many types of scenes.  Here is a simple one that is
 % useful for demosaicing.  For a list, type help sceneCreate
 sceneTest = sceneCreate('freq orient pattern');
-ieAddObject(sceneTest);
-sceneWindow;
+sceneWindow(sceneTest); pause(0.2);
 
 % With this one, we might try some simple plots, such as a plot
 % of the luminance across the bottom row
@@ -110,7 +109,7 @@ luminance = sceneGet(sceneTest,'luminance');
 data = luminance(sz(1),:);
 
 support = sceneSpatialSupport(sceneTest,'mm');
-vcNewGraphWin;
+ieNewGraphWin;
 plot(support.x,data,'-');
 xlabel('mm'); ylabel('cd/m2'); grid on
 
@@ -118,7 +117,7 @@ rows = round(sceneGet(sceneTest,'rows')/2);
 assert(rows == 128,'Row test failed')
 scenePlot(sceneTest,'radiance hline',[1,rows]);
 
-%%
+%% END
 
 
 

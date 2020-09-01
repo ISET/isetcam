@@ -15,6 +15,7 @@
 
 %%
 ieInit;
+delay = 0.2;
 
 %% Let's work with a small checkerboard scene
 pixPerCheck = 8;
@@ -23,7 +24,7 @@ scene = sceneCreate('checkerboard',pixPerCheck,nChecks);
 wave  = sceneGet(scene,'wave');
 scene = sceneSet(scene,'fov',3);
 
-ieAddObject(scene); sceneWindow
+sceneWindow(scene); pause(delay);
 
 %% Now, write out a file containing the relevant point spread function
 % data, along with related variables.

@@ -230,17 +230,20 @@ switch format
         precision = 3;
         
         data = {...
-            'Optics type',      opticsGet(optics,'name'), '';
+            'Optics model',     opticsGet(optics,'model'), '';
+            'Optics name',      opticsGet(optics,'name'),'';
             'Focal length',     num2str(opticsGet(optics,'focal length','mm'),precision), 'mm';
             'F-number',         sprintf('%.1f',opticsGet(optics,'fnumber')), 'dimensionless';
             'Aperture diameter',num2str(opticsGet(optics,'aperture diameter','mm'),precision), 'mm';
             };
+        
     case 'embed'
         precision = 3;
         
         data = {...
+            'Optics model',          sprintf('%s-%s',opticsGet(optics,'name'),opticsGet(optics,'model'));
             'Focal length (mm)',     num2str(opticsGet(optics,'focal length','mm'),precision);
-            'F-number',         sprintf('%.1f',opticsGet(optics,'fnumber'));
+            'F-number',              sprintf('%.1f',opticsGet(optics,'fnumber'));
             'Aperture diameter (mm)',num2str(opticsGet(optics,'aperture diameter','mm'),precision);
             };
     otherwise
