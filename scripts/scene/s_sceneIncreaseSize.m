@@ -13,24 +13,25 @@
 
 %%
 ieInit
+delay = 0.2;
 
 %%
 scene = sceneCreate;
-ieAddObject(scene); sceneWindow;
+sceneWindow(scene); pause(delay);
 
 %% Double the rows, triple the columns
 s = [2,3];
 p = sceneGet(scene,'photons');
 p = imageIncreaseImageRGBSize(p,s);
 scene = sceneSet(scene,'photons',p);
-ieAddObject(scene); sceneWindow;
+sceneWindow(scene); pause(delay);
 
 %% Double the cols
 s = [1,2];
 p = sceneGet(scene,'photons');
 p = imageIncreaseImageRGBSize(p,s);
 scene = sceneSet(scene,'photons',p);
-ieAddObject(scene); sceneWindow;
+sceneWindow(scene); pause(delay);
 
 %% Triple the cols - should return to original aspect ratio
 
@@ -38,6 +39,6 @@ s = [3,1];
 p = sceneGet(scene,'photons');
 p = imageIncreaseImageRGBSize(p,s);
 scene = sceneSet(scene,'photons',p);
-ieAddObject(scene); sceneWindow;
+sceneWindow(scene); pause(delay);
 
 %%

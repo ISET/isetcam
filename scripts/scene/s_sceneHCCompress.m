@@ -22,13 +22,14 @@
 
 %%
 ieInit
+delay = 0.2;
 
 %% Read in the scene
 fName = fullfile(isetRootPath,'data','images','multispectral','StuffedAnimals_tungsten-hdrs');
 scene = sceneFromFile(fName,'multispectral');
 
 % Have a look at the image
-sceneWindow(scene);
+sceneWindow(scene); pause(delay);
 
 % Plot the illuminant
 scenePlot(scene,'illuminant photons');
@@ -53,7 +54,7 @@ scene2 = sceneFromFile(oFile ,'multispectral',[],[],wList);
 
 % This poor representation produces a very desaturated
 % image
-sceneWindow(scene2);
+sceneWindow(scene2); pause(delay);
 
 %% Now require that much more of the variance be explained
 vExplained = 0.99;
@@ -75,7 +76,7 @@ ieSaveMultiSpectralImage(oFile,coef,basis,comment,imgMean,illuminant);
 %% read in the data
 wList = 400:5:700;
 scene2 = sceneFromFile(oFile ,'multispectral',[],[],wList);
-sceneWindow(scene2);
+sceneWindow(scene2); pause(delay)
 
 %% Clean up the temporary file.
 delete(oFile);

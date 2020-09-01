@@ -35,6 +35,7 @@
 
 %%
 ieInit
+delay = 0.2;
 
 %% Load display calibration data
 
@@ -63,13 +64,13 @@ rgbFile = fullfile(isetRootPath,'data','images','rgb','eagle.jpg');
 scene = sceneFromFile(rgbFile,'rgb',[],displayCalFile);
 
 % Show the scene
-sceneWindow(scene); 
+sceneWindow(scene); pause(delay);
 
 %% Change the illuminant to 6500 K
 
 bb = blackbody(sceneGet(scene,'wave'),6500,'energy');
 scene = sceneAdjustIlluminant(scene,bb);
-sceneWindow(scene); % Show the scene.
+sceneWindow(scene); pause(delay);
 
 % Now the reflectances and the illuminant are plausible natural
 % measurements.  Not great, but plausible.
