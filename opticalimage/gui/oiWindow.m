@@ -8,12 +8,12 @@ function oiW = oiWindow(oi)
 %   Opens a oiWindow interface based on the oiWindow_App. 
 %
 % Inputs
-%   oi:  The scene you want in the window.  If empty, the currently
-%           selected scene in global vcSESSION is used.  If there is no
-%           selected scene a default scene is created and used.
+%   oi:     The oi you want in the window.  If empty, the currently
+%           selected oi in global vcSESSION is used.  If there is no
+%           selected oi a default scene is created and used.
 %
 % Outputs
-%   oiW:  An sceneWindow_App object.
+%   oiW:  An oiWindow_App object.
 %
 % Description
 %
