@@ -215,10 +215,12 @@ for ii = 1:length(inputFiles)
     imageScore = length(find(ismember(classNamesGTTop, classNamesTestTop)));
     totalScore = totalScore + imageScore;
     
-    % start to create a scoreTable
-    ourScoreArray = [ourScoreArray ; ["Image Name:" inputFiles(ii).name]];
-    ourScoreArray = [ourScoreArray ; [classNamesGTTop classNamesTestTop]];
-    ourScoreArray = [ourScoreArray ; ["-----------" strcat("Score: ", string(imageScore))]];
+    padCells = cell(scoreClasses,1);
+    padCells(:) = {''};
+    
+    ourScoreArray = [ourScoreArray ; ["Image Name:" inputFiles(ii).name ipFileName]];
+    ourScoreArray = [ourScoreArray ; [classNamesGTTop classNamesTestTop padCells]];
+    ourScoreArray = [ourScoreArray ; ["-----------" strcat("Score: ", string(imageScore)) "..."]];
 
     disp(strcat("Image Matching Score: ", string(imageScore)));
     
