@@ -291,7 +291,7 @@ switch param
     case {'oidisplayflag'}
         app = ieSessionGet('oi window');
         if ~isempty(app)
-            val = find(contains(app.popupDisplay.Items,app.popupDisplay.Value)); 
+            val = find(contains(app.popupRender.Items,app.popupRender.Value)); 
         end
     case {'sensorgamma'}
         % ieSessionGet('sensor gamma')

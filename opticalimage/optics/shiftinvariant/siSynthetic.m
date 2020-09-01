@@ -22,31 +22,36 @@ function optics = siSynthetic(psfType,oi,varargin)
 %   inData  - filename or struct with psf, umPerSamp, and wave data
 %   outFile - Optional
 %
+% Copyright ImagEval Consultants, LLC, 2005.
+%
 % See also:  s_SIExamples, ieSaveSIOpticsFile
 %  s_FFTinMatlab for an explanation of some of the operations in here.
 %
+
 % Examples:
-%  oi = vcGetObject('oi'); wave = oiGet(oi,'wave');
-%  psfType = 'gaussian'; 
-%  waveSpread = wave/wave(1);
-%
-% Circularly symmetric Gaussian
-%  xyRatio = ones(1,length(wave));
-%  optics = siSynthetic(psfType,oi,waveSpread,xyRatio);
-%
+%{
+  wave = 400:10:700; psfType = 'gaussian';  waveSpread = wave/wave(1);
+  xyRatio = ones(1,length(wave));
+  optics = siSynthetic(psfType,oi,waveSpread,xyRatio);
+  psfMovie(optics,ieNewGraphWin);
+%}
+%{
 % Make one with an asymmetric Gaussian
-%  xyRatio = 2*ones(1,length(wave));
-%  optics =  siSynthetic(psfType,oi,waveSpread,xyRatio);
-%
+  wave = 400:10:700; psfType = 'gaussian';  waveSpread = wave/wave(1);
+  xyRatio = 2*ones(1,length(wave));
+  optics = siSynthetic(psfType,oi,waveSpread,xyRatio);
+  psfMovie(optics,ieNewGraphWin);
+%}  
+%{
 % Convert a custom file to an optics structure
 %  ieSaveSIOpticsFile(rand(128,128,31),(400:10:700),[0.25,0.25],'custom.mat');
 %  inFile = 'custom'; outFile = 'deleteMe.mat'
-%  optics = siSynthetic('custom',oi,inFile,outFile);
-%
-% Do not write out file
 %  optics = siSynthetic('custom',oi,'custom',[]);  
-%
-% Copyright ImagEval Consultants, LLC, 2005.
+%}
+%{
+%  optics = siSynthetic('custom',oi,inFile,outFile);
+%}
+
 
 
 %% Parameter initializiation

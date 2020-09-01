@@ -60,12 +60,19 @@ switch lower(opticsType)
     
     case 'shiftinvariant'
         % optics = opticsCreate('shift invariant',oi);
-        % Shift-invariant optics based on an example data set (SI-pillBox).
-        % The OTF is represented in terms of fx and fy specified in cycles
-        % per millimeter.
+        %
+        % Shift-invariant optics based on a Gaussian.  (Used to use
+        % SI-pillBox).  The OTF is represented in terms of fx and fy
+        % specified in cycles per millimeter.
+        
         if ~isempty(varargin), oi = varargin{1}; else, oi = oiCreate; end
-        optics = siSynthetic('custom',oi,'SI-pillBox',[]);
-        optics = opticsSet(optics,'model','shiftInvariant');
+        wave = 400:10:700; psfType = 'gaussian';  waveSpread = wave/wave(1);
+        xyRatio = ones(1,length(wave));
+        optics = siSynthetic(psfType,oi,waveSpread,xyRatio);
+        % psfMovie(optics,ieNewGraphWin);
+  
+        % Used to create a pillbox like this
+        % optics = siSynthetic('custom',oi,'SI-pillBox',[]);        
         
     case 'human'
         % Pupil radius in meters.  Default is 3 mm
