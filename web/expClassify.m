@@ -58,12 +58,16 @@ if isfile(fullfile(outputOIFolder,'cachedOptics.mat'))
     if isequal(cachedOptics, oi.optics)
         cachedOpticsFlag = true;
     else
-        % Save the optics so that we can check to see if we can re-use the OI cache
+        % Save the new optics so that we can check to see if we can re-use the OI cache
         % in future
         cachedOptics = oi.optics;
-        save(fullfile(outputOIFolder,'cachedOptics'),'cachedOptics');
-        
+        save(fullfile(outputOIFolder,'cachedOptics'),'cachedOptics');        
     end
+else
+    % Save current optics so that we can check to see if we can re-use the OI cache
+    cachedOptics = oi.optics;
+    save(fullfile(outputOIFolder,'cachedOptics'),'cachedOptics');
+    
 end
 
 for ii = 1:numel(inputFiles)
