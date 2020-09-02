@@ -1,58 +1,85 @@
-function h = sensorWindow(varargin)
-% Show the sensor window allowing to set some of the display fields
+function sensorW = sensorWindow(sensor)
+% Wrapper that replaces the GUIDE oiWindow functionality
 %
-%  H = SENSORIMAGEWINDOW(varargin)
+% Synopsis
+%   sensorW = sensorWindow(sensor)
 %
-%  This is an interface to sensorImageWindow. If varargin{1} is a
-%  sensor, it is added to the ISET database and returns the handle to
-%  a new SENSORIMAGEWINDOW or the handle to the existing singleton.
+% Brief description
+%   Opens a sensorWindow interface based on the sensorWindow_App. 
 %
-% Example:
-%   sensorWindow(sensor,'scale',1);
-%   sensorWindow('scale',0);
-%   sensorWindow('scale',1);
-%   sensorWindow('visible','off');
+% Inputs
+%   sensor: The sensor you want in the window.  If empty, the currently
+%           selected sensor in global vcSESSION is used.  If there is no
+%           selected sensor a default sensor is created and used.
 %
-%   figure(h.sensorImageWindow)
+% Outputs
+%   sensorW:  An sensorWindow_App object.
 %
-% (c) Copyright Imageval LLC, 2012
+% Description
+%
+%  If there is a sensorWindow_App stored in the vcSESSION database, this
+%  interface opens that app.
+%
+%  If that slot is empty, this function creates one and stores it in the
+%  database.
+%
+%  Sometimes there is a stale handle to an app in the vcSESSION database.
+%  This code tries the non-empty (but potentially stale) app.  If it works,
+%  onward. If not, then it creates a new one, stores it, and uses it.
+%
+%  The sensorWindow_App all show any of the sensors stored in the
+%  vcSESSION.ISA database slot.  (ISA is image sensor array).
 %
 % See also
+%    sceneWindow_App, oiWindow_App
 %
 
-if isempty(varargin) % Do nothing
-elseif isstruct(varargin{1}) && ...
-        isfield(varargin{1},'type') && ...
-        (strcmp(varargin{1}.type,'sensor'))
-    ieAddObject(varargin{1});
-    varargin = varargin(2:end);
-end
+% Examples
+%{
+   sensorWindow;
+%}
+%{
+   scene = sceneCreate;
+   oi = oiCreate;  oi = oiCompute(oi,scene);
+   oiWindow(oi);
+%}
 
-% Start the window 
-sensorImageWindow;  % I though this returned the handles, but no.  The fig.
-h = ieSessionGet('sensor window handle');
+%% Add the scene to the database if it is in the call
 
-% Parse the arguments
-for ii = 1:2:length(varargin)
-    p = ieParamFormat(varargin{ii});
-    val = varargin{ii+1};
-    switch p
-        case 'scale'
-            set(h.btnDisplayScale,'Value',val);
-        case 'gamma'
-            set(h.editGam,'String',num2str(val));
-        case 'visible'
-            % sensorWindow('visible','on');
-            % sensorWindow('visible','off');
-            set(h.sensorImageWindow,'visible',val)
-        otherwise
-            error('Unknown parameter %s\n',p);
+sensorW = ieSessionGet('sensor window');
+
+if exist('sensor','var')
+    % A sensor was passed in.  We add it to the database and select it.
+    % That sensor will appear in the window.
+    ieAddObject(sensor);
+else
+    % Get the currently selected scene
+    sensor = ieGetObject('sensor');
+    if isempty(sensor)
+        % There are no scenes. We create the default scene and add it to
+        % the database
+        sensor = sensorCreate;
+        ieAddObject(sensor);
+    else
+        % No need to do anything. There is a window app and there are
+        % scenes in the database.  We refresh below, but maybe we should do
+        % it here?
     end
 end
 
-sensorImageWindow;  % Refreshes the window.
+%% See if there is a live window.
 
+if isempty(sensorW)
+    % There is no existing scene window.  So we create one and store it in
+    % the database as part of the opening function.
+    sensorW = sensorWindow_App;
+else
+    try
+        sensorW.refresh;
+    catch
+        sensorW = sensorWindow_App;
+        ieSessionSet('sensor window',sensorW);
+    end
 end
 
-
-
+end

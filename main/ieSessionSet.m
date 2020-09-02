@@ -132,13 +132,11 @@ switch param
     case {'oiwindow'}
         vcSESSION.GUI.vcOptImgWindow.app = val;
     case {'sensorwindow'}
-        if length(varargin) < 2, error('sensor window requires hObject,eventdata,handles'); end
         vcSESSION.GUI.vcSensImgWindow.app = val;
         % vcSESSION.GUI.vcSensImgWindow.hObject = val;
         % vcSESSION.GUI.vcSensImgWindow.eventdata = varargin{1};
         % vcSESSION.GUI.vcSensImgWindow.handles = varargin{2};
     case {'vcimagewindow','ipwindow'}
-        if length(varargin) < 2, error('vcimage window requires hObject,eventdata,handles'); end
         vcSESSION.GUI.vcImageWindow.app = val;
         % vcSESSION.GUI.vcImageWindow.hObject = val;
         %vcSESSION.GUI.vcImageWindow.eventdata = varargin{1};
