@@ -4,10 +4,13 @@ function [scoreStats, scoreTable] = expClassify(varargin)
 %   classifierResults = expClassify(varargin)
 %       eg: expClassify([imageFolder], [oi], [sensor], [ip])
 %
-% start with Googlenet, vgg, resnet, can use others.
+% start with googlenet, vgg19, resnet50, can use others.
 % Note that they will error the first time, require an add-in to be
 % downloaded. Link to the download appears in the script window,
 % or can be found using the add-in explorer
+% 
+% use squeezenet when compiled, as it doesn't require a download
+% 
 
 %%
 varargin = ieParamFormat(varargin);
