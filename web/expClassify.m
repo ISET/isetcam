@@ -9,7 +9,7 @@ function [scoreStats, scoreTable] = expClassify(varargin)
 % downloaded. Link to the download appears in the script window,
 % or can be found using the add-in explorer
 % 
-% use squeezenet when compiled, as it doesn't require a download
+% 
 % 
 
 %%
@@ -33,7 +33,7 @@ scoreClasses = p.Results.scoreClasses;
 
 %%
 % not sure if we can use the downloadable NNs from the runtime
-if isdeployed
+if false % looks like we can download the other networks! isdeployed
     net = squeezenet();
 else
     if ~isempty(p.Results.classifier)
@@ -108,6 +108,11 @@ for ii = 1:numel(inputFiles)
     % camera sensor very well.
     initialImage = imread(sceneFileName);
     initialSize = size(initialImage);
+    
+    % Problem: We need to rotate something (sensor or image)
+    % so that we get a fair capture. BUT: NNs are sensitive to orientation
+    % so we either need to store to rotate back after re-reading, OR rotate
+    % the OI back before we store it? OR ??
     if initialSize(1) > initialSize(2)
         initialImage = imrotate(initialImage, -90);
     end
