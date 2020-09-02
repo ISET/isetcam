@@ -18,7 +18,8 @@ p.addParameter('oi',oiCreate(),@(x)(isequal(class(x), 'struct')));
 p.addParameter('sensor',sensorCreate(),@(x)(isequal(class(x), 'struct')));
 p.addParameter('ip',ipCreate(),@(x)(isequal(class(x), 'struct')));
 p.addParameter('scoreClasses', 5);
-p.addParameter('imageFolder',"",@ischar); % or string?
+p.addParameter('imageFolder',""); % or string?
+p.addParameter('classifier','resnet50');
 p.parse(varargin{:});
 
 oi   = p.Results.oi;
@@ -32,7 +33,20 @@ scoreClasses = p.Results.scoreClasses;
 if isdeployed
     net = squeezenet();
 else
-    net = resnet50; % vgg19; googlenet;
+    if ~isempty(p.Results.classifier)
+        switch p.Results.classifier
+            case 'resnet50'
+                net = resnet50;
+            case 'googlenet'
+                net = googlenet;
+            case 'vgg19'
+                net = vgg19;
+            otherwise
+                net = resnet50;
+        end
+    else
+        net = resnet50; % vgg19; googlenet;
+    end
 end
 
 % user points us to the folder of previously downloaded images they want to
