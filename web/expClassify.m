@@ -104,8 +104,7 @@ end
 for ii = 1:numel(inputFiles)
     
     sceneFileName = fullfile(inputFiles(ii).folder, inputFiles(ii).name);
-    % what if our original image is portrait mode? It won't match our
-    % camera sensor very well.
+
     initialImage = imread(sceneFileName);
     initialSize = size(initialImage);
     
@@ -113,7 +112,9 @@ for ii = 1:numel(inputFiles)
     % so that we get a fair capture. BUT: NNs are sensitive to orientation
     % so we either need to store to rotate back after re-reading, OR rotate
     % the OI back before we store it? OR ??
+    imageRotation = 0; % the default
     if initialSize(1) > initialSize(2)
+        imageRotation = -90;
         initialImage = imrotate(initialImage, -90);
     end
     initialImage = imresize(initialImage, desiredImageSize);
@@ -132,7 +133,7 @@ for ii = 1:numel(inputFiles)
     end
     if cachedOpticsFlag == false || cachedFile == false
         oi = oiCompute(oi, ourScene);
-        
+        oi.metadata.rotated = imageRotation;
         % Cropping principles:
         %   oiSize = sceneSize * (1 + 1/4))
         %   sceneSize = oiGet(oi,'size')/(1.25);
@@ -151,7 +152,7 @@ end
 
 %%  Set sensor and ip parameters and create sample images with those parameters
 % Corrects for aspect ratio
-sensor = sensorSet(sensor, 'size', [desiredImageSize(1) desiredImageSize(2)]);
+%sensor = sensorSet(sensor, 'size', [desiredImageSize(1) desiredImageSize(2)]);
 outputRGB = fullfile(inputFolder,'ip');
 if ~exist(outputRGB,'dir'), mkdir(outputRGB); end
 
@@ -180,6 +181,9 @@ for ii=1:numel(oiList)
         
         [fPath, fName, fExt] = fileparts(sceneFileName);
         ourOutputFileName = fullfile(outputRGB, sprintf('%s.jpg',oiGet(oi,'name')));
+        if isfield(oi.metadata, 'rotated') && oi.metadata.rotated ~= 0
+            rgb = imrotate(rgb, -1 * oi.metadata.rotated);
+        end
         imwrite(rgb,ourOutputFileName);
     end
 end
