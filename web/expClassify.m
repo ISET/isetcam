@@ -23,6 +23,7 @@ p.addParameter('ip',ipCreate(),@(x)(isequal(class(x), 'struct')));
 p.addParameter('scoreClasses', 5);
 p.addParameter('imageFolder',""); % or string?
 p.addParameter('classifier','resnet50');
+p.addParameter('progDialog', "");
 p.parse(varargin{:});
 
 oi   = p.Results.oi;
@@ -30,6 +31,7 @@ sensor   = p.Results.sensor;
 ip = p.Results.ip;
 imageFolder = p.Results.imageFolder;
 scoreClasses = p.Results.scoreClasses;
+progDialog = p.Results.progDialog;
 
 %%
 % not sure if we can use the downloadable NNs from the runtime
@@ -132,6 +134,11 @@ for ii = 1:numel(inputFiles)
         cachedFile = false; % cheat for now
     end
     if cachedOpticsFlag == false || cachedFile == false
+        if ~isequal(progDialog, '')
+            progDialog.Indeterminate = 'off';
+            progDialog.Message = "Generating Optical Images";
+            progDialog.Value = ii/numel(inputFiles);
+        end
         oi = oiCompute(oi, ourScene);
         oi.metadata.rotated = imageRotation;
         % Cropping principles:
@@ -172,7 +179,13 @@ for ii=1:numel(oiList)
         
         sceneFOV = fovData(ii);
         sensor = sensorSetSizeToFOV(sensor,sceneFOV,ourScene,oi);
-        
+
+        if ~isequal(progDialog, '')
+            progDialog.Indeterminate = 'off';
+            progDialog.Message = "Generating images captured by your Sensor & IP";
+            progDialog.Value = ii/numel(oiList);
+        end
+
         sensor = sensorCompute(sensor,oi);
         % sensorWindow(sensor);
         
@@ -203,6 +216,13 @@ inputSize = net.Layers(1).InputSize;
 totalScore = 0;
 ourScoreArray = [];
 for ii = 1:length(inputFiles)
+    
+        if ~isequal(progDialog, '')
+            progDialog.Indeterminate = 'off';
+            progDialog.Message = "Classifying Images";
+            progDialog.Value = ii/numel(inputFiles);
+        end
+
     % Classify each of the original downloaded images
     ourGTFileName = fullfile(inputFiles(ii).folder, inputFiles(ii).name);
     ourGTImage = imread(ourGTFileName);
