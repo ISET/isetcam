@@ -1,44 +1,61 @@
-function img = sensorShowImage(sensor,gam,scaleMax,figNum)
+function img = sensorShowImage(sensor,gam,scaleMax,app)
 % Display the image in a scene structure.
 %
-%    img = sensorShowImage(sensor,[gam=1],[scaleMax=0],[figNum])
+% Synopsis
+%    img = sensorShowImage(sensor,[gam=1],[scaleMax=0],[app])
 %
-% The display is shown as a r,g,b or c,m,y or monochrome array that
-% indicates the values of individual pixels in the sensor, depending on
-% the sensor type. 
+% Inputs
+%   sensor:    ISETCam sensor
+%   gam:       Display gamma
+%   scaleMax:  Scale to maximum brightness
+%   app:       The sensorWindow app.  If this is the number 0, the image is
+%              returned but not displayed in the axis (app.imgMain).
 %
-% Image appearance -
+% Optional key/value
+%   N/A
 %
-% In the other windows we convert the display image into an sRGB format by
-% first calculating XYZ values and then using xyz2srgb. In this window,
-% however, we do not have XYZ values at every pixel. Rather, we have RGB
-% values that are linear with respect to the number of volts at the pixel.
-% To preserve the general appearance, we treat these values as linear rgb
-% and use lrgb2srgb() to calculate the displayed image.  This is
-% implemented in sensorData2Image.
+% Output
+%   img:  RGB image displayed in main axis
 %
-% The final display can be modified by the gamma parameter is read from the
-% figure setting. 
+% Description
+%  The main image axis show the r,g,b or c,m,y or monochrome array that
+%  indicates the values of individual pixels in the sensor (depending on
+%  the sensor type).
+%
+% Notes Image appearance -
+%
+%  In the other windows we convert the display image into an sRGB format by
+%  first calculating XYZ values and then using xyz2srgb. In this window,
+%  however, we do not have XYZ values at every pixel. Rather, we have RGB
+%  values that are linear with respect to the number of volts at the pixel.
+%  To preserve the general appearance, we treat these values as linear rgb
+%  and use lrgb2srgb() to calculate the displayed image.  This is
+%  implemented in sensorData2Image.
+%
+%  The final display can be modified by the gamma parameter is read from the
+%  figure setting. 
 %  
-% The data are either scaled to a maximum of the voltage swing (default) or
-% if scaleMax = 1 (Scale button is selected in the window) the image data
-% are scaled to fill up the display range. This option is useful for small
-% voltage values compared to the voltage swing, say in the simulation of
-% human cone responses.
+%  The data are either scaled to a maximum of the voltage swing (default) or
+%  if scaleMax = 1 (Scale button is selected in the window) the image data
+%  are scaled to fill up the display range. This option is useful for small
+%  voltage values compared to the voltage swing, say in the simulation of
+%  human cone responses.
+%
+% Copyright ImagEval Consultants, LLC, 2003.
 %
 % Examples:
 %   sensorShowImage(sensor,gam); 
 %   sensorShowImage(sensor); 
 %
-% See also:  sensorData2Image, imageShowImage, sceneShowImage, oiShowImage
+% See also:  
+%   sensorData2Image, imageShowImage, sceneShowImage, oiShowImage
 %
-% Copyright ImagEval Consultants, LLC, 2003.
 
 if ieNotDefined('gam'),      gam = ieSessionGet('sensor gamma'); end
 if ieNotDefined('scaleMax'), scaleMax = 0; end
-if ieNotDefined('figNum'),   figNum = ieSessionGet('sensor window'); end
+if ieNotDefined('app'),      app = ieSessionGet('sensor window'); end
 
-cla;
+axes(app.imgMain); cla;
 if isempty(sensor),return; end
 
 % We have the voltage or digital values and we want to render them into an
@@ -83,7 +100,8 @@ if ~isempty(img)
     % If the sensor is monochrome, the img is a matrix, not RGB.
     if ismatrix(img), img = repmat(img,[1,1,3]); end
 
-    if ~isequal(figNum,0), image(x,y,img); axis image; axis off; end
+    % What is this condition on app 0?  Is that do not display?
+    if ~isequal(app,0), image(x,y,img); axis image; axis off; end
     if (sensorGet(sensor,'nSensors') == 1), colormap(gray(256)); end
 end
 

@@ -291,11 +291,6 @@ switch sensorName
         sensor = sensorSet(sensor,'densities',rgbDensities);
         sensor = sensorSet(sensor,'rSeed',rSeed);
 
-    case 'mouse'
-        error('NYI: mouse needs to be fixed up with sensorCreateConeMosaic');
-        filterFile = 'mouseColorFilters.mat';
-        sensor = sensorMouse(sensor, filterFile);
-        sensor = sensorSet(sensor, 'pixel', pixelCreate('mouse'));
     otherwise
         error('Unknown sensor type');
 end
@@ -334,6 +329,7 @@ end
 
 %-----------------------------
 
+%{
 %----------------------
 function sensor = sensorMouse(sensor, filterFile)
 %
@@ -375,6 +371,7 @@ error('Not yet implemented');
 %    sensor = sensorSet(sensor,'filterNames',filterNames);
 
 end
+%}
 
 %-----------------------------
 function sensor = sensorInterleaved(sensor,filterPattern,filterFile)

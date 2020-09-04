@@ -46,41 +46,32 @@ function oiW = oiWindow(oi)
 
 %% Add the scene to the database if it is in the call
 
-oiW = ieSessionGet('oi window');
-
 if exist('oi','var')
-    % A scene was passed in.  We add it to the database and select it.
-    % That scene will appear in the window.
+    % An oi was passed in.  We add it to the database and select it.
+    % That oi will appear in the window.
     ieAddObject(oi);
 else
     % Get the currently selected scene
     oi = ieGetObject('oi');
     if isempty(oi)
-        % There are no scenes. We create the default scene and add it to
+        % There are no ois. We create the default oi and add it to
         % the database
         oi = oiCreate;
         ieAddObject(oi);
-    else
-        % No need to do anything. There is a window app and there are
-        % scenes in the database.  We refresh below, but maybe we should do
-        % it here?
     end
 end
 
 %% See if there is a live window.
 
-if isempty(oiW)
-    % There is no existing scene window.  So we create one and store it in
-    % the database as part of the opening function.
-    oiW = oiWindow_App;
+oiW = ieSessionGet('oi window');
+
+if ~isempty(oiW) && isvalid(oiW)
+    oiW.refresh;
 else
-    try
-        oiW.refresh;
-    catch
-        oiW = oiWindow_App;
-        ieSessionSet('oi window',oiW);
-    end
+    oiW = oiWindow_App;
+    ieSessionSet('oi window',oiW);
 end
 
+oiW.refresh;
 
 end

@@ -1,5 +1,7 @@
 function txt = sensorDescription(ISA)
-%Generate text describing derived sensor properties
+%Deprecated - Shifting to useing iePTable
+%
+% Generate text describing derived sensor properties
 %
 %   txt = sensorDescription(ISA)
 %
@@ -11,6 +13,9 @@ function txt = sensorDescription(ISA)
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
+error('Deprecated');
+end
+%{
 height = sensorGet(ISA,'height','mm');
 width =  sensorGet(ISA,'width', 'mm');
 txt = sprintf('Size (H,W):\t(%.2f, %.2f) mm\n',height,width);
@@ -69,3 +74,5 @@ newText = sprintf('OE Method: [%s]\n',pvState);
 txt = addText(txt,newText);
 
 return;
+%}
+

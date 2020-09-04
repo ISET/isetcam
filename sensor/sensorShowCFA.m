@@ -1,15 +1,15 @@
-function [hdl, cfaImg] = sensorShowCFA(sensor,fullArray, hdl, nBlocks)
+function [hdl, cfaImg] = sensorShowCFA(sensor,fullArray, app, nBlocks)
 %Create an image illustrating the sensor CFA spatial pattern
 %
-%    [cfaAxis, cfaImg] = sensorShowCFA(sensor,[fullArray = 0],hdl, nBlocks)
+%    [cfaAxis, cfaImg] = sensorShowCFA(sensor,[fullArray = 0],app, nBlocks)
 %
 % The plotted colors are based on the letter names of the color filters
 % (not the spectra).
 %
 % sensor:    Sensor object
 %  fullArray: Typically an image of just the super pixel pattern is shown.
-%          If fullArray is true, makes an image showing the full pattern.
-% hdl:       handle of the sensor window guihandles.
+%             If fullArray is true, makes an image showing the full pattern.
+%  app:       app for the sensorWindow that has imgCFA as a slot 
 %
 % Return
 %   hdl:    Handle of the image
@@ -31,18 +31,15 @@ function [hdl, cfaImg] = sensorShowCFA(sensor,fullArray, hdl, nBlocks)
 
 if ieNotDefined('sensor'),    sensor = vcGetObject('sensor'); end
 if ieNotDefined('fullArray'), fullArray = false; end
-if ieNotDefined('hdl'),
+if ieNotDefined('app')
     % Set up in a new window
     fig = vcNewGraphWin;
     set(fig,'Name', sensorGet(sensor,'name'),'menubar','None');
     tSizeFlag = true;
     hdl = [];
 else
-    if ~isfield(hdl,'imgCFA')
-        error('hdl is not guihandles of the sensor window');
-    end
     % Set up the sensor window image
-    axes(hdl.imgCFA); axis image; axis off
+    axes(app.imgCFA); axis image; axis off
     tSizeFlag = false;
 end
 if ieNotDefined('nBlocks'), nBlocks = 1; end
@@ -78,9 +75,10 @@ axis image off;
 
 if tSizeFlag, truesize(fig); end
 
-% Set control back to main window in sensor
+% Set control back to main window in sensorWindow
 if exist('hdl','var') && ~isempty(hdl)
-    axes(hdl.axes2);
+    axes(hdl.imgMain);
 end
 
-return
+end
+

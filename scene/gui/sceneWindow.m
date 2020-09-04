@@ -45,8 +45,6 @@ function sceneW = sceneWindow(scene)
 
 %% Add the scene to the database if it is in the call
 
-sceneW = ieSessionGet('scene window');
-
 if exist('scene','var')
     % A scene was passed in.  We add it to the database and select it.
     % That scene will appear in the window.
@@ -59,27 +57,18 @@ else
         % the database
         scene = sceneCreate;
         ieAddObject(scene);
-    else
-        % No need to do anything. There is a window app and there are
-        % scenes in the database.  We refresh below, but maybe we should do
-        % it here?
     end
 end
 
 %% See if there is a live window.
 
+sceneW = ieSessionGet('scene window');
 
-if isempty(sceneW)
-    % There is no existing scene window.  So we create one and store it in
-    % the database as part of the opening function.
-    sceneW = sceneWindow_App;
+if ~isempty(sceneW) && isvalid(sceneW)
+    sceneW.refresh;
 else
-    try
-        sceneW.refresh;
-    catch
-        sceneW = sceneWindow_App;
-        ieSessionSet('scene window',sceneW);
-    end
+    sceneW = sceneWindow_App;
+    ieSessionSet('scene window',sceneW);
 end
 
 sceneW.refresh;

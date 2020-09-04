@@ -157,13 +157,15 @@ switch lower(param)
 
     case {'rows','row'}
         % sensor = sensorSet(sensor,'rows',r);
+        
+        % Find how many rows in the unit block.  Make sure the new number
+        % of rows is a multiple of that.
         ubRows = sensorGet(sensor,'unit block rows');
-        if ubRows > 0, sensor.rows = round(val/ubRows)*ubRows;
+        if ubRows > 0, sensor.rows = floor(val/ubRows)*ubRows;
         else,          sensor.rows = val;
         end
         
-        % We clear the data at this point to prevent any possibility of a
-        % mis-match with the block array size
+        % Clear the data because it is no longer accurate.
         sensor = sensorClearData(sensor);
     case {'cols','col'}
         % sensor = sensorSet(sensor,'cols',c);
@@ -171,32 +173,47 @@ switch lower(param)
         % Set sensor cols, but make sure that we align with the proper
         % block size.
         ubCols = sensorGet(sensor,'unit block cols');
-        if ubCols > 0, sensor.cols = round(val/ubCols)*ubCols;
+        if ubCols > 0, sensor.cols = floor(val/ubCols)*ubCols;
         else,         sensor.cols = val;
         end
-        % We clear the data at this point to prevent any possibility of a
-        % mis-match with the block array size
+        
+        % Clear the data because it is no longer accurate.
         sensor = sensorClearData(sensor);
+        
     case {'size'}
         % sensor = sensorSet(sensor,'size',[r c]);
         %
         % There are constraints on the possible sizes because of the block
-        % pattern size.  This handles that issue.  Consequently, the actual
-        % size may differ from the set size.
+        % pattern size.  The row and col sets deal with that issue.
+        % Consequently, the actual size may differ from the set size.
         %
         % There are cases when we want to set a FOV rather than size.  See
         % sensorSetSizeToFOV for those cases.
-
-        % Not sure why the size checking is needed for human case.  Check.
-        % It's a problem in sensorCompute.
+        
+        %{
+            % Define target size to be consistent with desired scale and CFA
+            cfaSize = sensorGet(sensor,'cfaSize');
+            targetSize = ceil(s*sensorGet(sensor,'size') ./ cfaSize).* cfaSize;
+            
+            % If for some reason ceil(sz/cfaSize) is zero, we set size to one pixel
+            % cfa.
+            if targetSize(1) == 0, targetSize = cfaSize; end
+            
+            % Set size
+            % Data are cleared
+            sensor = sensorSet(sensor,'size',targetSize);
+        %}
+        
+        % The sensor data are cleared by these routines, too.
         sensor = sensorSet(sensor,'rows',val(1));
         sensor = sensorSet(sensor,'cols',val(2));
-        sensor = sensorClearData(sensor);
 
         % In the case of human, resetting the size requires rebuilding the
         % cone mosaic - Could be removed and use only ISETBio
-        if strfind(sensorGet(sensor,'name'),'human')
-            % disp('Resizing human sensor')
+        thisName = sensorGet(sensor,'name');
+        if isempty(thisName), return;
+        elseif contains(thisName,'human')
+            disp('Resizing human sensor.  Suggest you use ISETBio.')
             if checkfields(sensor,'human','coneType')
                 d = sensor.human.densities;
                 rSeed = sensor.human.rSeed;
@@ -297,9 +314,10 @@ switch lower(param)
         % sensorSet(sensor,'auto exposure',1);
         % Boolean flag for turning on auto-exposure.
         if ischar(val)
-            % Let the person put on and off into the autoexposure field
-            if strcmp(val,'on'), val = 1;
-            else,val = 0;
+            % We accept on and off into the autoexposure field.  Case
+            % insensitive.
+            if strcmpi(val,'on'), val = 1;
+            else, val = 0;
             end
         end
         sensor.AE = val;
