@@ -44,9 +44,7 @@ function sensorW = sensorWindow(sensor)
    oiWindow(oi);
 %}
 
-%% Add the scene to the database if it is in the call
-
-sensorW = ieSessionGet('sensor window');
+%% Add a sensor to the database if it is in the call
 
 if exist('sensor','var')
     % A sensor was passed in.  We add it to the database and select it.
@@ -56,30 +54,23 @@ else
     % Get the currently selected scene
     sensor = ieGetObject('sensor');
     if isempty(sensor)
-        % There are no scenes. We create the default scene and add it to
+        % There are no sensors. We create the default sensor and add it to
         % the database
         sensor = sensorCreate;
         ieAddObject(sensor);
-    else
-        % No need to do anything. There is a window app and there are
-        % scenes in the database.  We refresh below, but maybe we should do
-        % it here?
     end
 end
 
-%% See if there is a live window.
+%% See if there is a window.
+sensorW = ieSessionGet('sensor window');
 
-if isempty(sensorW)
-    % There is no existing scene window.  So we create one and store it in
-    % the database as part of the opening function.
-    sensorW = sensorWindow_App;
+if ~isempty(sensorW) && isvalid(sensorW)
+    sensorW.refresh;
 else
-    try
-        sensorW.refresh;
-    catch
-        sensorW = sensorWindow_App;
-        ieSessionSet('sensor window',sensorW);
-    end
+    sensorW = sensorWindow_App;
+    ieSessionSet('sensor window',sensorW);
 end
+
+sensorW.refresh;
 
 end
