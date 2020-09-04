@@ -80,6 +80,11 @@ switch(lower(objType))
         data.vcimage.name = objName;
         ieAddObject(data.vcimage);
         
+    case 'camera'
+        data = load(fullName,'camera');
+        data.camera.name = objName;
+        ieAddObject(data.camera);
+        
     otherwise
         error('Unknown object type');
 end

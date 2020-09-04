@@ -23,6 +23,7 @@ p.addParameter('ip',ipCreate(),@(x)(isequal(class(x), 'struct')));
 p.addParameter('scoreClasses', 5);
 p.addParameter('imageFolder',""); % or string?
 p.addParameter('classifier','resnet50');
+p.addParameter('progDialog', "");
 p.parse(varargin{:});
 
 oi   = p.Results.oi;
@@ -30,6 +31,7 @@ sensor   = p.Results.sensor;
 ip = p.Results.ip;
 imageFolder = p.Results.imageFolder;
 scoreClasses = p.Results.scoreClasses;
+progDialog = p.Results.progDialog;
 
 %%
 % not sure if we can use the downloadable NNs from the runtime
@@ -104,8 +106,7 @@ end
 for ii = 1:numel(inputFiles)
     
     sceneFileName = fullfile(inputFiles(ii).folder, inputFiles(ii).name);
-    % what if our original image is portrait mode? It won't match our
-    % camera sensor very well.
+
     initialImage = imread(sceneFileName);
     initialSize = size(initialImage);
     
@@ -113,7 +114,9 @@ for ii = 1:numel(inputFiles)
     % so that we get a fair capture. BUT: NNs are sensitive to orientation
     % so we either need to store to rotate back after re-reading, OR rotate
     % the OI back before we store it? OR ??
+    imageRotation = 0; % the default
     if initialSize(1) > initialSize(2)
+        imageRotation = -90;
         initialImage = imrotate(initialImage, -90);
     end
     initialImage = imresize(initialImage, desiredImageSize);
@@ -131,8 +134,13 @@ for ii = 1:numel(inputFiles)
         cachedFile = false; % cheat for now
     end
     if cachedOpticsFlag == false || cachedFile == false
+        if ~isequal(progDialog, '')
+            progDialog.Indeterminate = 'off';
+            progDialog.Message = "Generating Optical Images";
+            progDialog.Value = ii/numel(inputFiles);
+        end
         oi = oiCompute(oi, ourScene);
-        
+        oi.metadata.rotated = imageRotation;
         % Cropping principles:
         %   oiSize = sceneSize * (1 + 1/4))
         %   sceneSize = oiGet(oi,'size')/(1.25);
@@ -171,7 +179,13 @@ for ii=1:numel(oiList)
         
         sceneFOV = fovData(ii);
         sensor = sensorSetSizeToFOV(sensor,sceneFOV,ourScene,oi);
-        
+
+        if ~isequal(progDialog, '')
+            progDialog.Indeterminate = 'off';
+            progDialog.Message = "Generating images captured by your Sensor & IP";
+            progDialog.Value = ii/numel(oiList);
+        end
+
         sensor = sensorCompute(sensor,oi);
         % sensorWindow(sensor);
         
@@ -180,6 +194,9 @@ for ii=1:numel(oiList)
         
         [fPath, fName, fExt] = fileparts(sceneFileName);
         ourOutputFileName = fullfile(outputRGB, sprintf('%s.jpg',oiGet(oi,'name')));
+        if isfield(oi.metadata, 'rotated') && oi.metadata.rotated ~= 0
+            rgb = imrotate(rgb, -1 * oi.metadata.rotated);
+        end
         imwrite(rgb,ourOutputFileName);
     end
 end
@@ -199,9 +216,20 @@ inputSize = net.Layers(1).InputSize;
 totalScore = 0;
 ourScoreArray = [];
 for ii = 1:length(inputFiles)
+    
+        if ~isequal(progDialog, '')
+            progDialog.Indeterminate = 'off';
+            progDialog.Message = "Classifying Images";
+            progDialog.Value = ii/numel(inputFiles);
+        end
+
     % Classify each of the original downloaded images
     ourGTFileName = fullfile(inputFiles(ii).folder, inputFiles(ii).name);
     ourGTImage = imread(ourGTFileName);
+    
+    % in theory we could first resize to our "desiredImageSize" to match
+    % the processing of the IP version, but I'm not sure it matters?
+    ourGTImage = imresize(ourGTImage, desiredImageSize(1:2));
     ourGTImage = imresize(ourGTImage,inputSize(1:2));
     [label, scores] = classify(net,ourGTImage);
     disp(label)
@@ -239,10 +267,11 @@ for ii = 1:length(inputFiles)
     
     padCells = cell(scoreClasses,1);
     padCells(:) = {''};
-    
-    ourScoreArray = [ourScoreArray ; ["Image Name:" inputFiles(ii).name ipFileName]];
-    ourScoreArray = [ourScoreArray ; [classNamesGTTop classNamesTestTop padCells]];
-    ourScoreArray = [ourScoreArray ; ["-----------" strcat("Score: ", string(imageScore)) "..."]];
+
+    % need to make sure each row we add has the same number of elements
+    ourScoreArray = [ourScoreArray ; ["Image Name:" inputFiles(ii).name ourGTFileName ipFileName]];
+    ourScoreArray = [ourScoreArray ; [classNamesGTTop classNamesTestTop padCells padCells]];
+    ourScoreArray = [ourScoreArray ; ["-----------" strcat("Score: ", string(imageScore)) "..." "..."]];
 
     disp(strcat("Image Matching Score: ", string(imageScore)));
     
