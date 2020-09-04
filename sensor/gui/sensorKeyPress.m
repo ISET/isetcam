@@ -1,4 +1,5 @@
 function sensorKeyPress
+% Deprecated
 %
 % Author; ImagEval
 % Purpose:

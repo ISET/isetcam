@@ -4,10 +4,10 @@ function fSize = ieFontSizeSet(fig,fSize)
 %  fSize = ieFontSizeSet(fig,fSize);
 %
 % Input
-%  fig:   sceneWindow_App class of a window. Used to be a handle to the
+%  fig:   An app window. Used to be a handle to the
 %         figure of, say, the scene or oi window or the 
 %         
-%  fSize: The font size you want for this window
+%  fSize: The font size you want for this app window
 %        If fSize is 0, we are simply refreshing the window
 %        if fSize is missing, we bring up a window and ask the user
 %        Otherwise, we uset the actual fSize value
@@ -22,9 +22,9 @@ function fSize = ieFontSizeSet(fig,fSize)
 %  different boxes, the relative amount is preserved.
 %
 % Example:
-%  s = sceneCreate; ieAddObject(s); sceneWindow;
-%  fig = ieSessionGet('scene window');
-%  ieFontSizeSet(fig, 14);
+%  s = sceneCreate; sceneWindow(s);
+%  app = ieSessionGet('scene window');
+%  ieFontSizeSet(app, 14);
 %
 % (This is part of replacing ieFontChangeSize)
 %
@@ -74,29 +74,3 @@ setpref('ISET','fontSize',fSize);
 
 end
 
-%{
-% Set the size of the font for all of this type of handle
-function setFontSize(tHandles,fSize)
-        
-% Current font sizes
-curSize = get(tHandles,'FontSize');
-
-if isempty(curSize)
-    % No fonts to change.
-    return;
-elseif length(curSize) == 1
-        % Single font size case
-        set(tHandles,'FontSize',fSize);
-else
-    % Set as if first size is the base size and everything else is offset
-    for ii=1:length(curSize)
-        if ii==1, offset = 0;
-        else,     offset = curSize{ii} - curSize{1};
-        end
-        thisSize = fSize + offset;
-        set(tHandles,'FontSize',thisSize);
-    end
-end
-
-end
-%}

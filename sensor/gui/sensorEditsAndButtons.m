@@ -1,7 +1,7 @@
-function sensorEditsAndButtons(handles,sensor)
+function sensorEditsAndButtons(app)
 %Update the sensor image window interface
 %
-%   sensorEditsAndButtons(handles,[sensor])
+%   sensorEditsAndButtons(app,[sensor])
 %
 % Update the sensor image window contents with data using data in the
 % currently selected sensor (image sensor array) or another one that is passed
@@ -10,111 +10,78 @@ function sensorEditsAndButtons(handles,sensor)
 % Copyright ImagEval Consultants, LLC, 2003.
 
 %% Set up window
-if ieNotDefined('sensor'), sensor = vcGetObject('sensor'); end
 
-figure(vcSelectFigure('sensor'));
-ieInWindowMessage('',ieSessionGet('sensorwindowhandles'));
-  
+% Get an existing sensor or make one up.  Not sure we should make one up.
+sensor = ieGetObject('sensor');
+if isempty(sensor)
+    sensor = sensorCreate;
+    ieAddObject(sensor);
+end
+
+ieInWindowMessage('',app,[]);
+
 %% Sensor (sensor) properties
-str = sprintf('%.0f',sensorGet(sensor,'rows')); set(handles.editISARows,'string',str);
-str = sprintf('%.0f',sensorGet(sensor,'cols')); set(handles.editISAcols,'string',str);
+app.editISARows.Value = num2str(sensorGet(sensor,'rows'));
+app.editISAcols.Value = num2str(sensorGet(sensor,'cols'));
 
 % Sets the units. This should become a function
-t = sensorGet(sensor,'geometricMeanExposureTime');  % In seconds
+t = sensorGet(sensor,'geometric Mean Exposure Time');  % In seconds
 u = log10(t);
-if u >= 0, 
+if u >= 0
     str = sprintf('%.2f',sensorGet(sensor,'geometricMeanExposureTime')); 
-    set(handles.txtExposureUnits,'string','(sec)');
-elseif u >= -3, 
+    app.txtExposureUnits.Text = '(sec)';
+elseif u >= -3
     str = sprintf('%.2f',sensorGet(sensor,'geometricMeanExposureTime')*10^3); 
-    set(handles.txtExposureUnits,'string','(ms)');
+    app.txtExposureUnits.Text = '(ms)';
 else 
     str = sprintf('%.2f',sensorGet(sensor,'geometricMeanExposureTime')*10^6); 
-    set(handles.txtExposureUnits,'string','(us)');
+    app.txtExposureUnits.Text = '(us)';
 end
-set(handles.editExpTime,'string',str);
+app.editExpTime.Value = str;
 
 % Set the slider in the case of bracketed exposures.
 nExposures = sensorGet(sensor,'nExposures');
 if nExposures > 1
-    set(handles.sliderSelectBracketedExposure,'max',nExposures);
-    set(handles.sliderSelectBracketedExposure,'value',sensorGet(sensor,'Exposure Plane'));
+    app.sliderSelectBracketedExposure.Limits = [1-eps,nExposures];
+    app.sliderSelectBracketedExposure.Value = sensorGet(sensor,'Exposure Plane');
     
-    ss = 1/(nExposures-1);
-    set(handles.sliderSelectBracketedExposure,'sliderStep',[ss ss]);
-    set(handles.editNExposures,'string',num2str(nExposures));
+    % ss = 1/(nExposures-1);  % Was slider steps
+    app.sliderSelectBracketedExposure.MajorTicks = [1:nExposures];
+    app.editNExposures.Value = num2str(nExposures);
     
     eTimes = sensorGet(sensor,'exposure time');
-    set(handles.editExpFactor,'string',num2str(eTimes(2)/eTimes(1)));
+    app.editExpFactor.Value = num2str(eTimes(2)/eTimes(1));
 end
 
 str = sprintf('%3.1f',sensorGet(sensor,'gain'));    
-set(handles.editGainFPN,'string',str);
+app.editGainFPN.Value = str;
 
 % The offset is stored in volts.  It is displayed in millivolts.
 str = sprintf('%3.1f',sensorGet(sensor,'offset')*1000);  
-set(handles.editOffsetFPN,'string',str);
+app.editOffsetFPN.Value= str;
 
 %% Pixel properties
-PIXEL = sensorGet(sensor,'pixel');
+thisPixel = sensorGet(sensor,'pixel');
 
 %  Dark Voltage displayed in millivolts
-str = sprintf('%2.1f',pixelGet(PIXEL,'darkvolt')*10^3);   %
-set(handles.editDarkCurrent,'string',str);
+str = sprintf('%2.1f',pixelGet(thisPixel,'darkvolt')*10^3);   %
+app.editDarkCurrent.Value = str;
 
-str = sprintf('%.01f',pixelGet(PIXEL,'conversiongain')*(10^6)); 
-set(handles.editConvGain,'string',str);
-str = sprintf('%4.1f',pixelGet(PIXEL,'readnoisemillivolts'));   % Read noise displayed in mV
-set(handles.editReadNoise,'string',str);
-str = sprintf('%2.2f',pixelGet(PIXEL,'voltageswing')); 
-set(handles.editVoltageSwing,'string',str);
+str = sprintf('%.01f',pixelGet(thisPixel,'conversiongain')*(10^6)); 
+app.editConvGain.Value = str;
+str = sprintf('%4.1f',pixelGet(thisPixel,'readnoisemillivolts'));   % Read noise displayed in mV
+app.editReadNoise.Value = str;
+str = sprintf('%2.2f',pixelGet(thisPixel,'voltage swing')); 
+app.editVoltageSwing.Value = str;
 
 %% Header strings
-set(handles.txtISADescription,'string',sensorDescription(sensor));
-set(handles.txtPixelDescription,'string',pixelDescription(PIXEL));
+app.sensorDisplayData(sensor);
+app.pixelDisplayData(sensorGet(sensor,'pixel'));
 
-% If the incoming call set consistency true, then we eliminate the red
-% square on the window.  Otherwise, consistency is false.  We always set it
-% to false on the way out.
-%
-% This is now a problem.  THere are some buttons and sliders on the sensor
-% window that change the display (e.g., Exposure plane slider, gamma and
-% scale) but leave the data accurate.  When those are touched we turn on
-% the red spot.  It shouldn't get turned on.  So we need to indicate that.
-%
-% We could shift the code so that we don't always turn consistency false
-% here by re-writing all the calls and have them decide.  That puts a lot
-% of code into the callbacks in the sensorImageWndow.  Another is to put a
-% special value, say -1, into the consistency field and when we see we know
-% that the callback is through a mechanism that didn't hurt the sensor
-% data.
-c = sensorGet(sensor,'consistency');
-if isequal(c,1)
-    % We know the data are consistent.  Get rid of the red spot.
-    %
-    % We think this is the monitor default gray or white or whatever.  We
-    % could use a different default as in the ISET main window and keep
-    % this consistent with that.
-    defaultBackground = get(0,'defaultUicontrolBackgroundColor');
-    set(handles.txtConsistency,'BackgroundColor',defaultBackground)
-    
-    % Assume any change will make it inconsistent going forward.
-    sensor = sensorSet(sensor,'consistency',0);
-    vcReplaceObject(sensor);
-elseif isequal(c,0)
-    % The data are inconsistent.  Put on the red spot.
-    set(handles.txtConsistency,'BackgroundColor',[1,0,0]);
-else
-    % In the case when we have a slider or something that doesn't influence
-    % the data and we don't want to influence the red spot because we just
-    % don't know, well, just don't do anything.  But when we are done, put
-    % it back to inconsistent, as above.
-    sensor = sensorSet(sensor,'consistency',0);
-    vcReplaceObject(sensor);
+% Auto exposure switch
+if sensorGet(sensor,'autoexposure'), app.AutoESwitch.Value = 'On';
+else,                                app.AutoESwitch.Value = 'Off';
 end
-
-% Button states
-set(handles.btnAutoExp,'Value',sensorGet(sensor,'autoexposure'));
 
 %% mp, Nov., 2009
 % Exposure mode settings. Placing these lines here is somewhat redundant.
@@ -123,42 +90,38 @@ set(handles.btnAutoExp,'Value',sensorGet(sensor,'autoexposure'));
 % menu) will be accounted for by the drop down menu's callback
 % (popupExpMode_Callback)
 
-sensor = vcGetObject('sensor');
 exposureMethod = sensorGet(sensor,'exposureMethod');
 switch exposureMethod(1:3)
     case 'sin'  % singleExposure
-        
-        set(handles.popupExpMode,'value',1);
-        set(handles.btnAutoExp,'visible','on');
-        set(handles.editExpTime,'visible','on');
-        set(handles.btnShowCFAExpDurations,'visible','off');
-        set(handles.editNExposures,'visible','off');
-        set(handles.editExpFactor,'visible','off');
-        set(handles.sliderSelectBracketedExposure,'visible','off');
-        set(handles.txtBracketExposure,'visible','off');
+        app.popupExpMode.Value = app.popupExpMode.Items{1};
+        app.AutoESwitch.Visible = true;
+        app.editExpTime.Visible = true;
+        app.editNExposures.Visible = false;
+        app.editExpFactor.Visible = false;
+        app.sliderSelectBracketedExposure.Visible = false;
+        app.txtBracketExposure.Visible = false;
+        app.btnShowCFAExpDurations.Visible = false;
 
     case 'bra'  % bracketedExposure
-        
-        set(handles.popupExpMode,'value',2);
-        set(handles.editExpTime,'visible','on');
-        set(handles.sliderSelectBracketedExposure,'visible','on');
-        set(handles.editNExposures,'visible','on');
-        set(handles.editExpFactor,'visible','on');
-        set(handles.btnShowCFAExpDurations,'visible','off');
-
-        set(handles.btnAutoExp,'visible','off');
-        set(handles.txtBracketExposure,'visible','on');
+        app.popupExpMode.Value = app.popupExpMode.Items{2};
+        app.AutoESwitch.Visible = 'off';
+        app.editExpTime.Visible = 'on';
+        app.editNExposures.Visible = 'on';
+        app.editExpFactor.Visible = 'on';
+        app.sliderSelectBracketedExposure.Visible = 'on';
+        app.txtBracketExposure.Visible = 'on';
+        app.btnShowCFAExpDurations.Visible = 'off';
 
     case 'cfa'  % cfaExposure
-        set(handles.popupExpMode,'value',3);
-        set(handles.btnAutoExp,'visible','on');
-        set(handles.btnShowCFAExpDurations,'visible','on');
-        set(handles.editExpTime,'visible','off');
-        set(handles.editNExposures,'visible','off');
-        set(handles.editExpFactor,'visible','off');
-        set(handles.sliderSelectBracketedExposure,'visible','off');
-        set(handles.txtBracketExposure,'visible','off');               
-        
+        app.popupExpMode.Value = app.popupExpMode.Items{3};
+        app.AutoESwitch.Visible = true;
+        app.editExpTime.Visible = 'off';
+        app.editNExposures.Visible = 'off';
+        app.editExpFactor.Visible = 'off';
+        app.sliderSelectBracketedExposure.Visible = 'off';
+        app.txtBracketExposure.Visible = 'off';
+        app.btnShowCFAExpDurations.Visible = 'on';
+
     otherwise
         error('Unknown exposure method %s\n',exposureMethod);
 end
@@ -167,69 +130,66 @@ end
 
 nameList = vcGetObjectNames('sensor');
 selectList = {'New'};
-for ii=1:length(nameList); selectList{ii+1} = char(nameList{ii}); end
-set(handles.popupSelect,...
-    'String',selectList,...
-    'Value',vcGetSelectedObject('sensor')+1);
+for ii=1:length(nameList)
+    selectList{ii+1} = sprintf('%d-%s',ii,nameList{ii}); 
+end
+app.popupSelect.Items = selectList;
+app.popupSelect.Value = app.popupSelect.Items{vcGetSelectedObject('sensor')+1};
 
-% Start of eliminating code below.  Just show the CFA
-sensorShowCFA(sensor,false,handles);
+%% Start of eliminating code below.  Just show the CFA
+sensorShowCFA(sensor,false,app);
 
 % Make the pop up selection match the sensor type
 switch ieParamFormat(sensorGet(sensor,'cfa name'))
     case 'bayerrgb'
-        set(handles.popISA,'Value',1);
+        app.popISA.Value = app.popISA.Items{1};
     case 'bayercmy'
-        set(handles.popISA,'Value',2);
+        app.popISA.Value = app.popISA.Items{2};
     case 'rgbw'
-        set(handles.popISA,'Value',3);
+        app.popISA.Value = app.popISA.Items{3};
     case 'monochrome'
-        set(handles.popISA,'Value',4);
+        app.popISA.Value = app.popISA.Items{4};
     otherwise
         % Other
-        set(handles.popISA,'Value',5);
+        app.popISA.Value = app.popISA.Items{5};
 end
 
 % Display the quantization method
-switch lower(sensorGet(sensor,'quantizationmethod'))
+switch lower(sensorGet(sensor,'quantization method'))
     case 'analog'
-        set(handles.popQuantization,'Value',1);
+        app.popQuantization.Value = app.popQuantization.Items{1};
     case 'linear'
         switch sensorGet(sensor,'nbits')
             case 4
-                set(handles.popQuantization,'Value',2);
+                app.popQuantization.Value = app.popQuantization.Items{2};
             case 8
-                set(handles.popQuantization,'Value',3);
+                app.popQuantization.Value = app.popQuantization.Items{3};
             case 10
-                set(handles.popQuantization,'Value',4);
+                app.popQuantization.Value = app.popQuantization.Items{4};
             case 12
-                set(handles.popQuantization,'Value',5);
+                app.popQuantization.Value = app.popQuantization.Items{5};
             otherwise
                 warning('Unknown quantization'); %#ok<WNTAG>
-                set(handles.popQuantization,'Value',1);
+                app.popQuantization.Value =  app.popQuantization.Items{1};
         end
     otherwise
-        set(handles.popISA,'Value',1);
+        app.popQuantization.Value = app.popQuantization.Items{1};
 end
 
 %% Display the image.
-gam = str2double(get(handles.editGam,'String'));
-scaleMax = get(handles.btnDisplayScale,'Value');
-
-% Show the image
-sensorShowImage(sensor,gam,scaleMax);
-
-% True size button status
-if get(handles.btnTruesize,'Value')
-    sz = sensorGet(sensor,'size');
-    if min(sz) > 383, truesize;  
-    else, disp('Image too small for true size');
-    end
+gam = str2double(app.GammaEditField.Value);
+switch lower(app.MaxbrightSwitch.Value)
+    case 'on'
+        scaleMax = 1;
+    case 'off'
+        scaleMax = 0;
 end
 
+% Show the image
+sensorShowImage(sensor,gam,scaleMax,app);
+
 %% Refresh the font size
-fig = ieSessionGet('sensor window');
-ieFontSizeSet(fig,0);
+ieFontSizeSet(app,0);
 
 end
 

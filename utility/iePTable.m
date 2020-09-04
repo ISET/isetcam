@@ -69,14 +69,6 @@ if isequal(format,'window')
         'ToolBar','None');
 end
 
-% Set additional window parameters from the arguments.  Perhaps we should
-% be adjusting table parameters, or do we just do that on the return?
-% if ~isempty(varargin) && ~isodd(length(varargin))
-%     for ii=1:2:length(varargin)
-%         set(thisWindow,varargin{ii},varargin{ii+1});
-%     end
-% end
-
 %% Build table
 
 oType = vcEquivalentObjtype(obj.type);
@@ -89,14 +81,14 @@ switch lower(oType)
     case 'optics'
         data = tableOptics(obj,format);
     case 'pixel'
-        data = tablePixel(obj);
+        data = tablePixel(obj,format);
     case 'isa'  % image sensor array
         data = tableSensor(obj,format);
     case 'vcimage'
         data = tableIP(obj,format);
     case 'camera'
         % Make the table a little bigger for this case
-        data = tableCamera(obj);
+        data = tableCamera(obj,format);
         set(gcf,'Name',cameraGet(obj,'name'),format);
     case 'display'
         data = tableDisplay(obj,format);
@@ -110,25 +102,24 @@ if isequal(format,'window')
     thisWindow.Position = [0.0070    0.6785    0.25    0.25];
     
     thisTable = uitable('Parent',thisWindow,'Units','normalized');
-    thisTable.ColumnName = {'Property','Value','Units'};
+    thisTable.ColumnName  = {'Property','Value','Units'};
     thisTable.ColumnWidth = {200,200,200};
-    thisTable.Position = [0.025 0.025, 0.95, 0.95];
-    thisTable.FontSize = FontSize;
+    thisTable.Position    = [0.025 0.025, 0.95, 0.95];
+    thisTable.FontSize    = FontSize;
 else
     if ~isempty(p.Results.uitable)
         thisTable = p.Results.uitable;
     else
         thisTable = uitable;
     end
-    thisTable.ColumnName = {'Property','Value'};
+    thisTable.ColumnName  = {'Property','Value'};
     thisTable.ColumnWidth = 'auto';
-    thisTable.FontName = 'Courier';
-    thisTable.FontSize = getpref('ISET','fontSize') - 3;
+    thisTable.FontName    = 'Courier';
+    thisTable.FontSize    = getpref('ISET','fontSize') - 3;
 end
 
-thisTable.Data = data;
+thisTable.Data    = data;
 thisTable.RowName = '';       % No numbers at left
-% thisTable.ColumnFormat = {'char','numeric'};
 
 end
 
@@ -138,26 +129,26 @@ switch format
     case 'window'
         precision = 4;
         data = {...
-            'Name',                     sceneGet(scene,'name'), '';
-            'Field of view',            num2str(sceneGet(scene,'fov')), 'width deg';
-            'Rows/cols',                num2str(sceneGet(scene,'size')),'samples';
-            'Height/Width',             num2str(sceneGet(scene,'height and width','mm'),precision), 'mm';
-            'Distance ',                num2str(sceneGet(scene,'distance','m'),precision), 'meters';
-            'Angular res',              num2str(sceneGet(scene,'angular resolution'),precision), 'deg/samp';
-            'Sample spacing',           num2str(sceneGet(scene,'sample spacing','mm'),precision), 'mm/sample';
-            'Mean luminance',           num2str(sceneGet(scene,'mean luminance'),precision), 'cd/m^2 (nits)';
-            'Illuminant name',          sceneGet(scene,'illuminant name'), '';
+            'Name',                     sceneGet(scene,'name'),                                      '';
+            'Field of view',            num2str(sceneGet(scene,'fov')),                              'width deg';
+            'Rows/cols',                num2str(sceneGet(scene,'size')),                             'samples';
+            'Height/Width',             num2str(sceneGet(scene,'height and width','mm'),precision),  'mm';
+            'Distance ',                num2str(sceneGet(scene,'distance','m'),precision),           'meters';
+            'Angular res',              num2str(sceneGet(scene,'angular resolution'),precision),     'deg/samp';
+            'Sample spacing',           num2str(sceneGet(scene,'sample spacing','mm'),precision),    'mm/sample';
+            'Mean luminance',           num2str(sceneGet(scene,'mean luminance'),precision),         'cd/m^2 (nits)';
+            'Illuminant name',          sceneGet(scene,'illuminant name'),                           '';
             };
     case 'embed'
         precision = 2;
         data = {...
-            'FoV (width)',            num2str(sceneGet(scene,'fov'),precision);
+            'FoV (width)',              num2str(sceneGet(scene,'fov'),precision);
             'Rows/cols',                num2str(sceneGet(scene,'size'));
             'Hght/Width (mm)',          num2str(sceneGet(scene,'height and width','mm'),precision+2);
             'Distance (m)',             num2str(sceneGet(scene,'distance','m'),precision);
             'Angular res (deg/samp)',   num2str(sceneGet(scene,'angular resolution'),precision);
-            'Samp space (mm/sample)',     num2str(sceneGet(scene,'sample spacing','mm'),precision);
-            'Mean luminance (cd/m^2)',    num2str(sceneGet(scene,'mean luminance'),precision);
+            'Samp space (mm/sample)',   num2str(sceneGet(scene,'sample spacing','mm'),precision);
+            'Mean luminance (cd/m^2)',  num2str(sceneGet(scene,'mean luminance'),precision);
             'Illuminant name',          sceneGet(scene,'illuminant name');
             };
     otherwise
@@ -177,11 +168,11 @@ switch format
         precision = 3;
         data = {...
             'OI name',         oiGet(oi,'name'), '';
-            'Rows cols',       num2str(oiGet(oi,'size')), 'samples';
-            'Hor FOV',         num2str(oiGet(oi,'fov')),  'deg';
+            'Rows cols',       num2str(oiGet(oi,'size')),                             'samples';
+            'Hor FOV',         num2str(oiGet(oi,'fov')),                              'deg';
             'Spatial res',     num2str(oiGet(oi,'spatial resolution','um'),precision),'um/sample';
-            'Mean illuminance',num2str(oiGet(oi,'mean illuminance'),precision),'lux';
-            'Area',            num2str(oiGet(oi,'area','mm'),precision),'mm^2';
+            'Mean illuminance',num2str(oiGet(oi,'mean illuminance'),precision),       'lux';
+            'Area',            num2str(oiGet(oi,'area','mm'),precision),              'mm^2';
             };
         
         % Deal with light field optical image parameters.
@@ -230,10 +221,10 @@ switch format
         precision = 3;
         
         data = {...
-            'Optics model',     opticsGet(optics,'model'), '';
-            'Optics name',      opticsGet(optics,'name'),'';
-            'Focal length',     num2str(opticsGet(optics,'focal length','mm'),precision), 'mm';
-            'F-number',         sprintf('%.1f',opticsGet(optics,'fnumber')), 'dimensionless';
+            'Optics model',     opticsGet(optics,'model'),                     '';
+            'Optics name',      opticsGet(optics,'name'),                      '';
+            'Focal length',     num2str(opticsGet(optics,'focal length','mm'),precision),      'mm';
+            'F-number',         sprintf('%.1f',opticsGet(optics,'fnumber')),              'dimensionless';
             'Aperture diameter',num2str(opticsGet(optics,'aperture diameter','mm'),precision), 'mm';
             };
         
@@ -242,7 +233,7 @@ switch format
         
         data = {...
             'Optics model',          sprintf('%s-%s',opticsGet(optics,'name'),opticsGet(optics,'model'));
-            'Focal length (mm)',     num2str(opticsGet(optics,'focal length','mm'),precision);
+            'Focal length (mm)',     num2str(opticsGet(optics,'focal length','mm'),     precision);
             'F-number',              sprintf('%.1f',opticsGet(optics,'fnumber'));
             'Aperture diameter (mm)',num2str(opticsGet(optics,'aperture diameter','mm'),precision);
             };
@@ -263,24 +254,27 @@ switch format
         precision = 3;
         
         data = {
-            '-----Sensor-----',''
-            'Row/col',           num2str(sensorGet(sensor,'size'));
-            'Exp time (s)',      num2str(sensorGet(sensor,'exp time'));
-            'Size (mm)',         num2str(sensorGet(sensor,'dimension','mm'),precision);
-            'DSNU (V)',          num2str(sensorGet(sensor, 'dsnu level'),precision);
-            'PRNU (%)',          num2str(sensorGet(sensor, 'prnu level'),precision);
-            'Analog Gain',       num2str(sensorGet(sensor, 'analog gain'),precision);
-            'Analog Offset (V)', num2str(sensorGet(sensor, 'analog offset'),precision);
-            '',''
+            'Row/col',           num2str(sensorGet(sensor,'size')),                    '';
+            'Exp time (s)',      num2str(sensorGet(sensor,'exp time')),                's';
+            'Size (mm)',         num2str(sensorGet(sensor,'dimension','mm'),precision),'mm';
+            'DSNU (V)',          num2str(sensorGet(sensor, 'dsnu level'),precision),   'V';
+            'PRNU (%)',          num2str(sensorGet(sensor, 'prnu level'),precision),   '%';
+            'Analog Gain',       num2str(sensorGet(sensor, 'analog gain'),precision),  '';
+            'Analog Offset (V)', num2str(sensorGet(sensor, 'analog offset'),precision),'V';
             };
+        
+        % When it is the full window, we add in the pixel values.
+        pData = tablePixel(sensorGet(sensor,'pixel'),format);
+        data = cellCombine(data,pData);
+
     case 'embed'
         precision = 3;
-        
+        data = {
+            'Size (mm)',         num2str(sensorGet(sensor,'dimension','mm'),precision);
+            };
     otherwise
         error('Unknown table format %s\n',format);
 end
-pData = tablePixel(sensorGet(sensor,'pixel'));
-data = cellCombine(data,pData);
 
 end
 
@@ -291,20 +285,30 @@ switch format
     case 'window'
         precision = 3;
         data = {
-            '-----Pixel-----',''
-            'Width/height (um)',      num2str(pixelGet(pixel, 'width','um'),precision);
-            'Fill factor',            num2str(pixelGet(pixel, 'fill factor'),precision);
-            'Dark voltage (V/sec)',   num2str(pixelGet(pixel, 'dark voltage'),precision);
-            'Read noise (V)',         num2str(pixelGet(pixel, 'read noise'),precision);
-            'Conversion Gain (V/e-)', num2str(pixelGet(pixel, 'conversion gain'),precision);
-            'Voltage Swing (V)',      num2str(pixelGet(pixel, 'voltage swing'),precision);
-            'Well Capacity (e-)',     num2str(pixelGet(pixel, 'well capacity'),precision);
-            '',''
+            '-------------------', '------- Pixel -------',  '-------------------';
+            'Width/height',           num2str(pixelGet(pixel, 'width','um'),     precision),  'um';
+            'Fill factor',            num2str(pixelGet(pixel, 'fill factor'),    precision),  '';
+            'Dark voltage (V/sec)',   num2str(pixelGet(pixel, 'dark voltage'),   precision), 'V/sec';
+            'Read noise (V)',         num2str(pixelGet(pixel, 'read noise'),     precision),  'V';
+            'Conversion Gain (V/e-)', num2str(pixelGet(pixel, 'conversion gain'),precision), 'V/e-';
+            'Voltage Swing (V)',      num2str(pixelGet(pixel, 'voltage swing'),  precision),  'V';
+            'Well Capacity (e-)',     num2str(pixelGet(pixel, 'well capacity'),  precision),  'e-';
+            '','',''
             };
         
     case 'embed'
+        % Needs to be adjusted for what is already on the screen.
         precision = 3;
-        
+               data = {
+            'Width/height (um)',      num2str(pixelGet(pixel, 'width','um'),     precision);
+            'Fill factor',            num2str(pixelGet(pixel, 'fill factor'),    precision);
+            'Read noise (V)',         num2str(pixelGet(pixel, 'read noise'),     precision);
+            'Conversion Gain (V/e-)', num2str(pixelGet(pixel, 'conversion gain'),precision);
+            'Voltage Swing (V)',      num2str(pixelGet(pixel, 'voltage swing'),  precision);
+            'Well Capacity (e-)',     num2str(pixelGet(pixel, 'well capacity'),  precision);
+            '',''
+            };
+    
     otherwise
         error('Unknown table format %s\n',format);
 end
@@ -317,18 +321,23 @@ if isempty(ip), data = []; return; end
 switch format
     case 'window'
         precision = 3;
-        
         data = {
-            '-----Img Proc-----','';
+            'name',                ipGet(ip,'name'), '';
+            'row, col, primaries', num2str(ipGet(ip,'result size'),precision), '';
+            'demosaic',            ipGet(ip,'demosaic method'),                '';
+            'sensor conversion',   ipGet(ip,'sensor conversion method'),       '';
+            'illuminant correct',  ipGet(ip,'illuminant correction method'),   '';
+            };
+
+    case 'embed'
+        precision = 3;
+        data = {
             'name',                ipGet(ip,'name');
             'row, col, primaries', num2str(ipGet(ip,'result size'),precision);
             'demosaic',            ipGet(ip,'demosaic method');
             'sensor conversion',   ipGet(ip,'sensor conversion method');
             'illuminant correct',  ipGet(ip,'illuminant correction method');
             };
-    case 'embed'
-        precision = 3;
-        
     otherwise
         error('Unknown table format %s\n',format);
 end
@@ -340,15 +349,18 @@ switch format
     case 'window'
         precision = 3;
         data = {
-            '-----Display-----','';
-            'name',    displayGet(display,'name');
-            'dpi',     num2str(displayGet(display,'dpi'),precision);
-            'DAC size',num2str(displayGet(display,'dac size'),precision);
+            'name',     displayGet(display,'name'),                       '';
+            'dpi',      num2str(displayGet(display,'dpi'),precision),     '';
+            'DAC size', num2str(displayGet(display,'dac size'),precision),'';
             };
         
     case 'embed'
         precision = 3;
-
+        data = {
+            'name',     displayGet(display,'name');
+            'dpi',      num2str(displayGet(display,'dpi'),precision);
+            'DAC size', num2str(displayGet(display,'dac size'),precision);
+            };
     otherwise
         error('Unknown table format %s\n',format);
 end
