@@ -58,6 +58,10 @@ switch(lower(objType))
         vcimage = obj;
         save(fullName,'vcimage');
    
+    case 'camera'
+        camera = obj;
+        save(fullName,'camera');
+
     otherwise
         error('Unknown object type');
 end

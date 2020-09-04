@@ -67,6 +67,8 @@ else
             vcSESSION.VCIMAGE{val} = obj;
         case {'display'}
             vcSESSION.DISPLAY{val} = obj;
+        case 'camera'
+            vcSESSION.CAMERA{val} = obj;
         otherwise
             error('Unknown object type');
     end
