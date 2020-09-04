@@ -152,7 +152,7 @@ end
 
 %%  Set sensor and ip parameters and create sample images with those parameters
 % Corrects for aspect ratio
-%sensor = sensorSet(sensor, 'size', [desiredImageSize(1) desiredImageSize(2)]);
+sensor = sensorSet(sensor, 'size', [desiredImageSize(1) desiredImageSize(2)]);
 outputRGB = fullfile(inputFolder,'ip');
 if ~exist(outputRGB,'dir'), mkdir(outputRGB); end
 
@@ -206,6 +206,10 @@ for ii = 1:length(inputFiles)
     % Classify each of the original downloaded images
     ourGTFileName = fullfile(inputFiles(ii).folder, inputFiles(ii).name);
     ourGTImage = imread(ourGTFileName);
+    
+    % in theory we could first resize to our "desiredImageSize" to match
+    % the processing of the IP version, but I'm not sure it matters?
+    ourGTImage = imresize(ourGTImage, desiredImageSize(1:2));
     ourGTImage = imresize(ourGTImage,inputSize(1:2));
     [label, scores] = classify(net,ourGTImage);
     disp(label)
@@ -243,10 +247,11 @@ for ii = 1:length(inputFiles)
     
     padCells = cell(scoreClasses,1);
     padCells(:) = {''};
-    
-    ourScoreArray = [ourScoreArray ; ["Image Name:" inputFiles(ii).name ipFileName]];
-    ourScoreArray = [ourScoreArray ; [classNamesGTTop classNamesTestTop padCells]];
-    ourScoreArray = [ourScoreArray ; ["-----------" strcat("Score: ", string(imageScore)) "..."]];
+
+    % need to make sure each row we add has the same number of elements
+    ourScoreArray = [ourScoreArray ; ["Image Name:" inputFiles(ii).name ourGTFileName ipFileName]];
+    ourScoreArray = [ourScoreArray ; [classNamesGTTop classNamesTestTop padCells padCells]];
+    ourScoreArray = [ourScoreArray ; ["-----------" strcat("Score: ", string(imageScore)) "..." "..."]];
 
     disp(strcat("Image Matching Score: ", string(imageScore)));
     
