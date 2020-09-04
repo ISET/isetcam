@@ -21,9 +21,21 @@ switch(objType)
         % Return vals for oi, sensor, and ip
         val = zeros(3,1);
         
-        val(1) = length(vcSESSION.OPTICALIMAGE) + 1;
-        val(2) = length(vcSESSION.ISA) + 1;
-        val(3) = length(vcSESSION.VCIMAGE) + 1;
+        if isfield(vcSESSION,'OPTICALIMAGE')
+            val(1) = length(vcSESSION.OPTICALIMAGE) + 1;
+        else
+            val(1) = 1; % don't know if this works, but certainly can't use length!
+        end
+        if isfield(vcSESSION,'ISA')
+            val(2) = length(vcSESSION.ISA) + 1;
+        else
+            val(2) = 1; % don't know if this works, but certainly can't use length!
+        end
+        if isfield(vcSESSION,'VCIMAGE')
+            val(3) = length(vcSESSION.VCIMAGE) + 1;
+        else
+            val(3) = 1; % don't know if this works, but certainly can't use length!
+        end
         
     otherwise
         % Returns one value for this object
