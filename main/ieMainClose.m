@@ -1,6 +1,9 @@
 function ieMainClose
 % Close the all the ISET windows and the ieMainwindow
 %
+% This looks like a big problem to me.  We need a better way to deal with
+% it.
+%
 %     ieMainClose
 %
 % The routine checks for various fields, closes all the main windows
@@ -45,4 +48,4 @@ end
 vcSESSION.GUI = [];
 closereq;
 
-return;
+end

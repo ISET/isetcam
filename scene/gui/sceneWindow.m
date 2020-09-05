@@ -64,13 +64,17 @@ end
 
 sceneW = ieSessionGet('scene window');
 
-if ~isempty(sceneW) && isvalid(sceneW)
-    sceneW.refresh;
-else
+if isempty(sceneW)
+    % Empty, so create one and put it in the vcSESSION
     sceneW = sceneWindow_App;
     ieSessionSet('scene window',sceneW);
+elseif ~isvalid(sceneW)
+    % Replace the invalid one
+    sceneW = sceneWindow_App;
+    ieSessionSet('scene window',sceneW);
+else
+    % Just refresh it
+    sceneW.refresh;
 end
-
-sceneW.refresh;
 
 end
