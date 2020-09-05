@@ -65,15 +65,14 @@ end
 
 sensorW = ieSessionGet('sensor window');
 
-
 if isempty(sensorW)
     % Empty, so create one and put it in the vcSESSION
     sensorW = sensorWindow_App;
-    ieSessionSet('scene window',sensorW);
+    ieSessionSet('sensor window',sensorW);
 elseif ~isvalid(sensorW)
     % Replace the invalid one
     sensorW = sensorWindow_App;
-    ieSessionSet('scene window',sensorW);
+    ieSessionSet('sensor window',sensorW);
 else
     % Just refresh it
     sensorW.refresh;

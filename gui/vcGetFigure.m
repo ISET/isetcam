@@ -1,8 +1,15 @@
-function app = vcGetFigure(obj)
+function [app, appAxis] = vcGetFigure(obj)
 % Return the figure number associated with an object. 
 %
 % Syntax
-%   app = vcGetFigure(obj)
+%   [app, appAxis] = vcGetFigure(obj)
+%
+% Input
+%   obj:  One of the ISETCam main object types, scene, oi, sensor, ip
+% 
+% Output
+%   app:  The window app
+%   appAxis:  The axis of the main window;
 %
 % Description
 %   Get the app object to one of the ISETCam windows. Possible ISET objects
@@ -11,8 +18,6 @@ function app = vcGetFigure(obj)
 %   This routine allows us to get the figure number when the object type is
 %   not identified in the main routine, such as getting an ROI for an oi,
 %   scene, sensor or other type of window.
-%
-%   There is a separate routine for GraphWins.  But I am not sure why.
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 %
@@ -27,22 +32,26 @@ function app = vcGetFigure(obj)
 %}
 
 %%
-objType = vcGetObjectType(obj);
+% objType = vcGetObjectType(obj);
 
 % Forces the objType string to one of original names below.
-objType = vcEquivalentObjtype(objType);
+objType = vcEquivalentObjtype(obj.type);
 
 % hdl = [];
 switch lower(objType)
     case 'scene'
-        app = ieSessionGet('scenewindow');
+        app = ieSessionGet('scene window');
+        appAxis = app.sceneImage;
     case {'opticalimage'}
-        app = ieSessionGet('oiwindow');
+        app = ieSessionGet('oi window');
+        appAxis = app.oiImage;
     case {'isa'}
-        app = ieSessionGet('sensorwindow');
+        app = ieSessionGet('sensor window');
+        appAxis = app.imgMain;
     case {'vcimage'}
-        app = ieSessionGet('ipwindow');
-        
+        app = ieSessionGet('ip window');
+        appAxis = [];  % Fill in when you know it
+
     otherwise
         error('Unknown object type.');
 end
