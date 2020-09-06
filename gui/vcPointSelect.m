@@ -1,5 +1,7 @@
 function [pointLoc,pt] = vcPointSelect(obj,nPoints,msg)
-% Select point locations from an ISET window. 
+% Deprecated:  Use iePointSelect
+%
+%   Select point locations from an ISET window. 
 %
 % Synopsis
 %   [pointLoc, pt] = vcPointSelect(obj,[nPoints = 1],[msg])
@@ -37,6 +39,8 @@ function [pointLoc,pt] = vcPointSelect(obj,nPoints,msg)
 %
 
 %%
+warning('Deprecated.  Use iePointSelect');
+
 if ieNotDefined('obj'), error('Object is required (isa,oi,scene ...)'); end
 if ieNotDefined('nPoints'), nPoints = 1; end
 if ieNotDefined('msg')

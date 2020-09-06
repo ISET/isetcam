@@ -115,12 +115,12 @@ if ieNotDefined('roiLocs')
         case {'voltshline','electronshline','dvhline'}
             
             % Get a location
-            roiLocs = vcPointSelect(sensor);
+            roiLocs = iePointSelect(sensor);
             sz = sensorGet(sensor,'size');
             ieROIDraw(sensor,'shape','line','shape data',[1 sz(2) roiLocs(2) roiLocs(2)]);
 
         case {'electronsvline','voltsvline','dvvline'}
-            roiLocs = vcPointSelect(sensor);
+            roiLocs = iePointSelect(sensor);
             sz = sensorGet(sensor,'size');
             ieROIDraw(sensor,'shape','line','shape data',[roiLocs(1) roiLocs(1) 1 sz(1)]);
             
@@ -129,11 +129,11 @@ if ieNotDefined('roiLocs')
                 'chromaticity'}
             
             % Region of interest plots
-            [roiLocs, roiRect] = vcROISelect(sensor);
-            ieROIDraw(sensor,'shape','rect','shape data',roiRect);
+            [roiLocs, roiRect] = ieROISelect(sensor);
+            % ieROIDraw(sensor,'shape','rect','shape data',roiRect);
 
             % Store the rect for later plotting
-            sensor = sensorSet(sensor,'roi',roiRect);
+            sensor = sensorSet(sensor,'roi',round(roiRect.Position));
             
         otherwise
             % There are some cases that are OK without an roiLocs value or
@@ -159,15 +159,9 @@ switch pType
         [g, uData]  = sensorPlotLine(sensor, 'h', 'dv', 'space', roiLocs);
     case {'voltshistogram','voltshist'}
         [uData,g] = plotSensorHist(sensor,'v',roiLocs);
-        sensor = sensorSet(sensor,'roi',roiLocs);
-        sensorPlot(sensor,'roi');
     case {'electronshistogram','electronshist'}
         % sensorPlot(sensor,'electrons histogram',rect);
         [uData,g] = plotSensorHist(sensor,'e',roiLocs);
-        sensorImageWindow();
-        sensor = sensorSet(sensor,'roi',roiLocs);
-        sensorPlot(sensor,'roi');
-
     case {'shotnoise'}
         [uData, g] = imageNoise('shot noise');
         
@@ -217,20 +211,6 @@ switch pType
         uData.delta = delta;
         g = gcf;
         
-    case {'roi'}
-        % [uData,g] = sensorPlot(sensor,'roi');
-        %
-        % If the roi is a rect, use its values to plot a white rectangle on
-        % the sensor image.  The returned graphics object is a rectangle
-        % (g) and you can adjust the colors and linewidth using it.
-        if numel(sensor.roi) ~= 4,  rect = ieLocs2Rect(sensor.roi);
-        else,                       rect = sensor.roi;
-        end
-        
-        % Make sure the sensor window is selected with the sensor data
-        sensorImageWindow();
-        g = rectangle('Position',rect,'EdgeColor','w','LineWidth',2);
-        uData.rect = rect;
     case {'chromaticity'}
         % sensorPlot(sensor,'chromaticity',[rect])
         %
@@ -265,8 +245,8 @@ switch pType
 end
 
 % We always create a window.  But, if the user doesn't want a window then
-% plotSensor(......,'no fig')  then we close the window, but still return
-% the data.
+% plotSensor(......,'no fig'), we close the window but still return the
+% data.
 if ~isempty(varargin)
     figStatus = ieParamFormat(varargin{end});
     switch figStatus
@@ -360,7 +340,7 @@ for ii=1:size(data,2)
             % There can be multiple IR filters
             plot(wave,data(:,ii),'k-'); hold on;
         otherwise
-            if ~ismember(filterNames{ii},'rgbcmyk'),
+            if ~ismember(filterNames{ii},'rgbcmyk')
                 plot(wave,data(:,ii),['k','-']);
             else
                 plot(wave,data(:,ii),[filterNames{ii},'-']);
@@ -424,7 +404,7 @@ end
 % Store data, put up image, label
 uData.theNoise = theNoise;
 
-figNum = vcNewGraphWin;
+figNum = ieNewGraphWin;
 imagesc(theNoise); colormap(gray(256)); colorbar;
 nameFig    = get(figNum,'Name'); 
 nameString = [nameFig,nameString];

@@ -1,17 +1,29 @@
 function ip = ipCreate(ipName,sensor,display,L3)
 %Create an image processing (ip) structure with default fields
 %
-%   ip = ipCreate(ipName,[sensor = vcGetObject('sensor')],[display = 'lcdExample.mat'])
-%    
-% The values of several ip fields are drawn from the current image sensor
+% Synopsis
+%  ip = ipCreate(ipName,[sensor = vcGetObject('sensor')],[display = 'lcdExample.mat'])
+% 
+% Input
+%   ipName
+%   sensor
+%   display
+%   L3
 %
-% The display structure is initiated as a (very close to) an sRGB device.
+% Output
+%   ip:  ISETCam image process struct
 %
-% The display data must match the wavelength sampling of the sensor, or
-% the default spectrum if there is no sensor.
+% Description:
+%  The values of several ip fields are set from the properties of the
+%  current image sensor
 %
-% In the event that the ipName starts with 'L3', then the L3 rendering
-% pipeline is used.  These can be either L3 or L3global.
+%  The display structure is initiated as a (very close to) an sRGB device.
+%
+%  The display data must match the wavelength sampling of the sensor, or
+%  the default spectrum if there is no sensor.
+%
+%  In the event that the ipName starts with 'L3', then the L3 rendering
+%  pipeline is used.  These can be either L3 or L3global.
 %
 % Example:
 %  ip = ipCreate;               % Name is default

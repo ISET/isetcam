@@ -17,8 +17,8 @@ function [roiLocs,roi] = ieROISelect(obj,varargin)
 % Optional key/val pairs
 %
 % Return
-%   roiLocs
-%   rect
+%   roiLocs:  The list of Nx2 (row,col) locations.
+%   roi:      A Matlab Rectangle object where roi.Position is the rect
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 %
@@ -72,15 +72,17 @@ end
 %% Select points.
 
 % Tell the user
-app.txtMessage.Text = 'Drag to select a region.';
+app.txtMessage.Text = 'Drag to select a rectangle.';
 
 % Select an ROI graphically. This should become a switch statement for the
-% shape, ultimately.
+% shape, ultimately.  Look at vcGetFigure to get the app and appAxis.
 switch class(app)
     case 'sceneWindow_App'
         roi  = drawrectangle(app.sceneImage);
     case 'oiWindow_App'
         roi  = drawrectangle(app.oiImage);
+    case 'sensorWindow_App'
+        roi  = drawrectangle(app.imgMain);
     otherwise
         error('Unknown app %s\n',class(app));
 end

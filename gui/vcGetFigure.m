@@ -1,14 +1,14 @@
 function [app, appAxis] = vcGetFigure(obj)
-% Return the figure number associated with an object. 
+% Return the figure number associated with an object.
 %
 % Syntax
 %   [app, appAxis] = vcGetFigure(obj)
 %
 % Input
 %   obj:  One of the ISETCam main object types, scene, oi, sensor, ip
-% 
+%
 % Output
-%   app:  The window app
+%   app:      The window app
 %   appAxis:  The axis of the main window;
 %
 % Description
@@ -22,36 +22,37 @@ function [app, appAxis] = vcGetFigure(obj)
 % Copyright ImagEval Consultants, LLC, 2005.
 %
 % See also
-%   vcEquivalentObjtype, vcGetObjectType
-   
+%   ieAxisGet, vcEquivalentObjtype, vcGetObjectType
+
 % Examples:
 %{
- scene = sceneCreate; 
+ scene = sceneCreate;
  sceneWindow(scene);
- app = vcGetFigure(scene)
+ [app,appAxis] = vcGetFigure(scene)
 %}
 
-%%
-% objType = vcGetObjectType(obj);
-
-% Forces the objType string to one of original names below.
+%% Forces the objType string to one of original names below.
 objType = vcEquivalentObjtype(obj.type);
 
-% hdl = [];
+%% Looks up the names of the app and the proper axis
+
 switch lower(objType)
     case 'scene'
         app = ieSessionGet('scene window');
+        if isempty(app), error('Undefined scene app'); end
         appAxis = app.sceneImage;
     case {'opticalimage'}
         app = ieSessionGet('oi window');
+        if isempty(app), error('Undefined oi app'); end
         appAxis = app.oiImage;
     case {'isa'}
         app = ieSessionGet('sensor window');
+        if isempty(app), error('Undefined sensor app'); end
         appAxis = app.imgMain;
     case {'vcimage'}
         app = ieSessionGet('ip window');
+        if isempty(app), error('Undefined ip app'); end
         appAxis = [];  % Fill in when you know it
-
     otherwise
         error('Unknown object type.');
 end

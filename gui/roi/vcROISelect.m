@@ -1,4 +1,4 @@
-function [roiLocs,rect] = vcROISelect(obj,objFig)
+function [roiLocs,rect] = vcROISelect(obj,app)
 % Select a region of interest (ROI) from an image and calculate locations  
 %
 %   [roiLocs,rect] = vcROISelect(obj,[objFig])
@@ -23,20 +23,20 @@ function [roiLocs,rect] = vcROISelect(obj,objFig)
 
 if ieNotDefined('obj'), error('You must define an object (isa,oi,scene ...)'); end
 if ieNotDefined('objFig')
-    objFig = vcGetFigure(obj); 
-    if isempty(objFig)
+    [app, appAxis] = vcGetFigure(obj); 
+    if isempty(app)
         % We should add ieAddAndSelect()
         ieAddObject(obj);
         % Should become ieOpenWindow(obj)
         switch obj.type
             case 'scene'
-                objFig = sceneWindow;
+                app = sceneWindow;
             case 'opticalimage'
-                objFig = oiWindow;
+                app = oiWindow;
             case 'sensor'
-                objFig = sensorWindow;
+                app = sensorWindow;
             case 'vcimage'
-                objFig = ipWindow;
+                app = ipWindow;
             otherwise
                 error('Unknown obj type %s\n',obj.type);
         end
@@ -44,14 +44,13 @@ if ieNotDefined('objFig')
 end
 
 % Select points.  
-hndl = guihandles(objFig);
 msg = sprintf('Drag to select a region.');
-ieInWindowMessage(msg,hndl);
+ieInWindowMessage(msg,app);
 
 % Select an ROI graphically.  Calculate the row and col locations.
 % figure(objFig);
-rect = round(getrect(objFig));
-ieInWindowMessage('',hndl);
+rect = round(getrect(appAxis));
+ieInWindowMessage('',app);
 
 % If the user double clicks without selecting a rectangle, we treat the
 % response as a single point.  We do this by making the size 1,1.
