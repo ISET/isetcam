@@ -1,22 +1,23 @@
 function [pointLoc,pt] = vcPointSelect(obj,nPoints,msg)
 % Select point locations from an ISET window. 
 %
+% Synopsis
 %   [pointLoc, pt] = vcPointSelect(obj,[nPoints = 1],[msg])
 %
+% Description
+%   Pick a point, used for plotting routines.
+%   We need a txtMessage slot in the app for every window.
+%
 % Input
-%   obj
-%   nPoints
-%   msg
+%   obj:      One of the ISETCam main types
+%   nPoints:  How many points if more than one
+%   msg:      Message for the txtMessage slot in the app
 %
 % Output
 %  pointLoc: Returns the (x,y) = (col,row) values. During the point
 %  selection process.  The upper left is (1,1).
 %
-%      left click is used to choose a point, 
-%      backspace deletes the previous point, 
-%      right click indicates done.
-%
-% Needs a re-write ...
+% Text below Needs a re-write ... this is how it used to work.
 %
 %  If nPoints is not specified, then nPoints = 1 is assumed.  In that case,
 %  a single right click is all that is required. 
@@ -34,6 +35,8 @@ function [pointLoc,pt] = vcPointSelect(obj,nPoints,msg)
 % See also
 %   ieROISelct
 %
+
+%%
 if ieNotDefined('obj'), error('Object is required (isa,oi,scene ...)'); end
 if ieNotDefined('nPoints'), nPoints = 1; end
 if ieNotDefined('msg')
@@ -41,12 +44,16 @@ if ieNotDefined('msg')
 end
 
 if ieNotDefined('obj'), error('You must define an object (isa,oi,scene ...)'); end
-app = vcGetFigure(obj);
 
-% Select points.  
+[app,appAxis] = vcGetFigure(obj);
+
+% if isempty(app) || ~isvalid(app)
+%     error('No window open f
+
+% Select a point message.  All the apps have this slot, I think.
 app.txtMessage.Text = msg;
 
-pt = drawpoint(app.sceneImage);
+pt = drawpoint(appAxis);
 x = round(pt.Position(2)); y = round(pt.Position(1));
 
 app.txtMessage.Text = '';

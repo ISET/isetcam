@@ -16,6 +16,7 @@ function ax = ieAxisGet(obj,varargin)
 % Wandell, January 24 2020
 %
 % See also
+%   vcGetFigure
 %
 
 %%
@@ -34,6 +35,7 @@ end
 
 %% Switch through the cases
 
+% See vcGetFigure for another approach.  Fix in ieROIDraw.
 switch lower(vcEquivalentObjtype(obj))
     case 'scene'
         app = ieSessionGet('scene window');
@@ -42,11 +44,14 @@ switch lower(vcEquivalentObjtype(obj))
         app = ieSessionGet('oi window');
         ax  = app.oiImage;
     case 'isa'
-        ax = get(sensorImageWindow,'CurrentAxes');
+        app = ieSessionGet('sensor window');
+        ax  = app.imgMain;
     case 'vcimage'
-        ax = get(ipWindow,'CurrentAxes');
+        disp('Implement ip in ieAxisGet');
+        error('Not yet implemented');
     case 'display'
-        ax = get(displayWindow,'CurrentAxes');
+        disp('Implement display in ieAxisGet');
+        error('Not yet implemented');    
     otherwise
         error('Unknown iset object type %s\n',isetobj);
 end

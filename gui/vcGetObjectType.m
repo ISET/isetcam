@@ -17,9 +17,7 @@ function objType = vcGetObjectType(obj)
 % Copyright ImagEval Consultants, LLC, 2005.
 
 if checkfields(obj,'type'), objType = obj.type; return; 
-else error('Object does not have a type field.'); 
+else, error('Object does not have a type field.'); 
 end
 
-
-return;
-
+end

@@ -122,10 +122,7 @@ switch param
         
         % Set window information at startup
     case {'mainwindow'}
-        if length(varargin) < 2, error('main window requires hObject,eventdata,handles'); end
-        vcSESSION.GUI.vcMainWindow.hObject = val;
-        vcSESSION.GUI.vcMainWindow.eventdata = varargin{1};
-        vcSESSION.GUI.vcMainWindow.handles = varargin{2};
+        vcSESSION.GUI.vcMainWindow.app = val;
     case {'scenewindow'}
         % We are now just storing the whole app struct
         vcSESSION.GUI.vcSceneWindow.app = val;
@@ -133,19 +130,11 @@ switch param
         vcSESSION.GUI.vcOptImgWindow.app = val;
     case {'sensorwindow'}
         vcSESSION.GUI.vcSensImgWindow.app = val;
-        % vcSESSION.GUI.vcSensImgWindow.hObject = val;
-        % vcSESSION.GUI.vcSensImgWindow.eventdata = varargin{1};
-        % vcSESSION.GUI.vcSensImgWindow.handles = varargin{2};
     case {'vcimagewindow','ipwindow'}
         vcSESSION.GUI.vcImageWindow.app = val;
-        % vcSESSION.GUI.vcImageWindow.hObject = val;
-        %vcSESSION.GUI.vcImageWindow.eventdata = varargin{1};
-        % vcSESSION.GUI.vcImageWindow.handles = varargin{2};
     case {'displaywindow'}
-        % Newly installed
-        vcSESSION.GUI.vcDisplayWindow.hObject = val;
-        vcSESSION.GUI.vcDisplayWindow.eventdata = varargin{1};
-        vcSESSION.GUI.vcDisplayWindow.handles = varargin{2};
+        vcSESSION.GUI.vcDisplayWindow.app = val;
+        
         % Refresh image window
     case {'displayimage'}
         if ~ndims(val) == 3
@@ -173,7 +162,7 @@ switch param
         % At present we don't add any objects with handles.  So this is
         % empty. But we might some day.
         vcSESSION.GRAPHWIN.handle = val;
-        
+    %{
         % Manage the screen gamma values.  Also brings up the window.  Not
         % sure if that is right.
     case {'scenegamma'}
@@ -202,7 +191,7 @@ switch param
         ipg = ieSessionGet('ip guidata');
         if ~isempty(ipg), set(ipg.editGamma,'string',num2str(val,'%.1f')); end
         ipWindow;
-        
+        %}
         % Set selected object
         % ieSessionSet('scene',val);
         % and so forth
