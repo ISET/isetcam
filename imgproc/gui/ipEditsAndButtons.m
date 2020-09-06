@@ -42,117 +42,64 @@ end
 % Clear the text message in the window
 ieInWindowMessage('',app);
 
+app.ipDisplayData(ip);
+
 %% Set the select IP popup at the top.
-nameList = vcGetObjectNames('VCIMAGE');
+
+nameList = vcGetObjectNames('ip');
 selectList = {'New'};
-for ii=1:length(nameList); selectList{ii+1} = char(nameList{ii}); end
-set(handles.popSelect,...
-    'String',selectList,...
-    'Value',vcGetSelectedObject('VCIMAGE')+1);
+for ii=1:length(nameList)
+    selectList{ii+1} = sprintf('%d-%s',ii,nameList{ii}); 
+end
+
+% Sometimes we get an error here, but not all the time.  I don't know why.
+app.popSelect.Items = selectList;
+app.popSelect.Value = app.popSelect.Items{vcGetSelectedObject('ip')+1};
 
 %% Manage the transformations at the right of the window
 
-% Demosaic method
-contents = get(handles.popDemosaic,'String');
+% Demosiac
+app.popDemosaic.Value = lower(ipGet(ip,'demosaic method'));
 
-% Afraid to change GUI directly.  So adding pocs here.  But add pocs to the
-% GUI when you get the nerve.
-contents{5} = 'pocs';
-contents{6} = 'analog rccc';
-set(handles.popDemosaic,'String',contents);
-
-demosaicM = ieParamFormat(ipGet(ip,'demosaic method'));
-for ii=1:length(contents)
-    if strcmpi(demosaicM,ieParamFormat(contents{ii}))
-        set(handles.popDemosaic,'Value',ii);
-        break;
-    end
-end
-
-% Transform method
-tMethod = ipGet(ip,'Transform method');
-contents = get(handles.popTransform,'String');
-for ii=1:length(contents)
-    if strcmpi(tMethod,contents{ii})
-        set(handles.popTransform,'Value',ii); break;
-    end
-end
+% Sensor transform
+% app.popTransform.Items
+app.popTransform.Value = lower(ipGet(ip,'Transform method'));
 
 % Sensor conversion method
-colorconversionM = ipGet(ip,'conversion method sensor');
-contents = get(handles.popColorConversionM,'String');
-for ii=1:length(contents)
-    if strcmpi(colorconversionM,contents{ii})
-        set(handles.popColorConversionM,'Value',ii); break;
-    end
-end
+app.popColorConversionM.Value = lower(ipGet(ip,'conversion method sensor'));
 
 % Internal color space
-internalCS = ipGet(ip,'internalcs');
-contents = get(handles.popColorSpace,'String');
-for ii=1:length(contents)
-    if strcmpi(internalCS,contents{ii})
-        set(handles.popColorSpace,'Value',ii); break;
-    end
-end
+app.popColorSpace.Value = lower(ipGet(ip,'internalcs'));
 
 % Illuminant correction method
-colorbalanceM = ipGet(ip,'illuminant correction method');
-contents = get(handles.popBalance,'String');
-for ii=1:length(contents)
-    if strcmpi(colorbalanceM,contents{ii})
-        set(handles.popBalance,'Value',ii); break;
-    end
-end
+app.popBalance.Value = lower(ipGet(ip,'illuminant correction method'));
 
 %% Adjust the screen panels depending on the type of Transform.
 % In the L3 case we eliminate most of the popups
 if strncmpi(ip.name,'l3',2)
     % L3 method case.  Turn off most of the popups because they don't apply
     % in this case.
-    setPopupVisibility('l3',handles);
+    setPopupVisibility('l3',app);
 else
-    setPopupVisibility(ipGet(ip,'transform method'),handles);
+    setPopupVisibility(ipGet(ip,'transform method'),app);
 end
-
-%% Update red box.  
-% The consistency flag should be executed more thoughtfully in both this
-% window and the other windows.  Currently the button indicates
-% inconsistent even when the data are consistent.
-if checkfields(ip,'consistency') && ip.consistency
-    % Set square to background color
-    defaultBackground = get(0,'defaultUicontrolBackgroundColor');
-    set(handles.txtConsistency,'BackgroundColor',defaultBackground)
-    ip = ipSet(ip,'consistency',0); 
-    vcReplaceObject(ip);
-else
-    % Set square red.
-    set(handles.txtConsistency,'BackgroundColor',[1,0,0]);
-end
-
-%% Write the text into the upper right portion of the window.
-ipDescription(ip,handles);
 
 %% Set the button that determines whether to scale the display output
-set(handles.btnScale,'Value',logical(ipGet(ip,'scaledisplay')))
+% app.btnScale.Value = logical(ipGet(ip,'scaledisplay'));
 
 %% Read how the user set the gamma value 
-gam = ipGet(ip,'render gamma');
-set(handles.editGamma,'String',num2str(gam));
-% Not needed because it is in ip.
-% set(handles.editGamma,'Value',gam);  
 
 % Display the image
+gam = str2double(app.editGamma.Value);
 imageShowImage(ip,gam);
 
 %% Refresh font size
-fig = ieSessionGet('ip window');
-ieFontSizeSet(fig,0);
+ieFontSizeSet(app,0);
 
 end
 
 %-------------------------------------------------------
-function setPopupVisibility(tMethod,handles)
+function setPopupVisibility(tMethod,app)
 % Adjust the visibility of the popups on the right hand panel depending on
 % various conditions
 %
@@ -170,103 +117,95 @@ switch lower(tMethod)
     case {'new'}
 
         % Demosaic panel
-        set(handles.txtDemosaic,'ForegroundColor',colorOn);
-        set(handles.popDemosaic,'Visible','on');
+        app.txtDemosaic.FontColor = colorOn;
+        app.popDemosaic.Visible = 'on';
         
         % Transform panel
-        set(handles.txtTransform,'ForegroundColor',colorOn);
-        set(handles.popTransform,'Visible','on');
+        app.txtTransform.FontColor = colorOn;
+        app.popTransform.Visible='on';
         
         % Sensor panel
-        set(handles.txtSensor,'ForegroundColor',colorOff)
-        set(handles.txtMethod,'ForegroundColor',colorOff)
-        set(handles.txtICS,'ForegroundColor',colorOff);
-        set(handles.popColorSpace,'Visible','off');
-        set(handles.popColorConversionM,'Visible','off');
+        app.txtSensor.FontColor= colorOff;
+        app.txtMethod.FontColor= colorOff;
+        app.txtICS.FontColor= colorOff;
+        app.popColorSpace.Visible= 'off';
+        app.popColorConversionM.Visible= 'off';
         
         % Illuminant panel
-        set(handles.popBalance,'Visible','off');
-        set(handles.txtIlluminant,'ForegroundColor',colorOff);
+        app.popBalance.Visible= 'off';
+        app.txtIlluminant.FontColor= colorOff;
         
     case {'current'}
         % Nice to gray stuff out rather than make it go away
         
         % Demosaic panel
-        set(handles.txtDemosaic,'ForegroundColor',colorOn);
-        set(handles.popDemosaic,'Visible','on');
+        app.txtDemosaic.FontColor= colorOn;
+        app.popDemosaic.Visible= 'on';
         
         % Transform panel
-        set(handles.txtTransform,'ForegroundColor',colorOn);
-        set(handles.popTransform,'Visible','on');
+        app.txtTransform.FontColor= colorOn;
+        app.popTransform.Visible= 'on';
         
         % Sensor panel
-        % set(handles.panelSensor,'Visible','off')
-        set(handles.txtSensor,'ForegroundColor',colorOff)
-        set(handles.txtMethod,'ForegroundColor',colorOff)
-        set(handles.txtICS,'ForegroundColor',colorOff);
-        set(handles.popColorConversionM,'Visible','off');
-        set(handles.popColorSpace,'Visible','off');
-        %set(handles.popColorConversionM,'ForegroundColor',colorOff);
-        %set(handles.popColorSpace,'ForegroundColor',colorOff);
+        % set(handles.panelSensor.Visible= 'off')
+        app.txtSensor.FontColor= colorOff;
+        app.txtMethod.FontColor= colorOff;
+        app.txtICS.FontColor= colorOff;
+        app.popColorConversionM.Visible= 'off';
+        app.popColorSpace.Visible= 'off';
         
         % Illuminant panel
-        set(handles.popBalance,'Visible','off');
-        set(handles.txtIlluminant,'ForegroundColor',colorOff);
-        % set(handles.popBalance,'ForegroundColor',colorOff);
+        app.popBalance.Visible= 'off';
+        app.txtIlluminant.FontColor= colorOff;
         
     case {'adaptive'}
 
        % Demosaic panel
-        set(handles.txtDemosaic,'ForegroundColor',colorOn);
-        set(handles.popDemosaic,'Visible','on');
+        app.textDemosaic.FontColor = colorOn;
+        app.popDemosaic.Visible = 'on';
         
         % Transform panel
-        set(handles.txtTransform,'ForegroundColor',colorOn);
-        set(handles.popTransform,'Visible','on');
+        app.txtTransform.FontColor = colorOn;
+        app.popTransform.Visible = 'on';
 
         % Sensor panel
-        % set(handles.panelSensor,'Visible','off')
-        set(handles.txtSensor,'ForegroundColor',colorOn)
-        set(handles.txtMethod,'ForegroundColor',colorOn)
-        set(handles.txtICS,'ForegroundColor',colorOn);
+        % set(handles.panelSensor.Visible= 'off')
+        app.txtSensor.FontColor= colorOn;
+        app.txtMethod.FontColor= colorOn;
+        app.txtICS.FontColor= colorOn;
         
-        % set(handles.txtSensor,'Visible','off')
-        % set(handles.txtMethod,'Visible','off')
-        % set(handles.txtICS,'Visible','off');
-        set(handles.popColorConversionM,'Visible','on');
-        set(handles.popColorSpace,'Visible','on');
-        set(handles.popColorConversionM,'ForegroundColor',colorOn);
-        set(handles.popColorSpace,'ForegroundColor',colorOn);
+        app.popColorConversionM.Visible= 'on';
+        app.popColorSpace.Visible= 'on';
+        app.popColorConversionM.FontColor= colorOn;
+        app.popColorSpace.FontColor= colorOn;
         
         % Illuminant panel
-        % set(handles.panelIlluminant,'Visible','off')
-        % set(handles.txtIlluminant','Visible','on');
-        set(handles.popBalance,'Visible','on');
-        set(handles.txtIlluminant,'ForegroundColor',colorOn);
-        set(handles.popBalance,'ForegroundColor',colorOn);
+        app.popBalance.Visible= 'on';
+        app.txtIlluminant.FontColor= colorOn;
+        app.popBalance.FontColor= colorOn;
         
     case 'l3'
         % In this case, most of the routines are irrelevant so the whole
         % set of panels are grayed out.
         
         % Demosaic panel
-        set(handles.txtDemosaic,'ForegroundColor',colorOff);
-        set(handles.popDemosaic,'Visible','off');
+        app.txtDemosaic.FontColor= colorOff;
+        app.popDemosaic.Visible= 'off';
         
         % Transform panel
-        set(handles.txtTransform,'ForegroundColor',colorOff);
-        set(handles.popTransform,'Visible','off');
+        app.txtTransform.FontColor= colorOff;
+        app.popTransform.Visible= 'off';
         
         % Sensor panel
-        set(handles.txtSensor,'ForegroundColor',colorOff)
-        set(handles.txtMethod,'ForegroundColor',colorOff)
-        set(handles.txtICS,'ForegroundColor',colorOff);
-        set(handles.popColorSpace,'Visible','off');
-        set(handles.popColorConversionM,'Visible','off');
+        app.txtSensor.FontColor= colorOff;
+        app.txtMethod.FontColor= colorOff;
+        app.txtICS.FontColor= colorOff;
+        app.popColorSpace.Visible= 'off';
+        app.popColorConversionM.Visible= 'off';
 
         % Illuminant panel
-        set(handles.popBalance,'Visible','off');
-        set(handles.txtIlluminant,'ForegroundColor',colorOff);
+        app.popBalance.Visible= 'off';
+        app.txtIlluminant.FontColor= colorOff;
         
 
     otherwise
