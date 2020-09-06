@@ -896,10 +896,52 @@ switch oType
                 if checkfields(sensor,'ml'), val = sensor.ml; end
                 
                 % Field of view and sampling density
-            case {'fov','sensorfov','fovhorizontal','fovh','hfov'}
+            case {'hfov','fov','sensorfov','fovhorizontal','fovh'}
                 % sensorGet(sensor,'fov',sDist,oi); - Explicit scene dist in m
                 % sensorGet(sensor,'fov',scene,oi); - Explicit scene
                 % sensorGet(sensor,'fov');          - Uses defaults.  Dangerous.
+                %
+                % This is the horizontal field of view (default)
+                %
+                % I think this is too complex.  The assumption here is that
+                % the sensor is at the proper focal distance for the scene.
+                % If the scene is at infinity, then the focal distance is
+                % the focal length. But if the scene is close, then we
+                % might correct.
+                % 
+                % But we should probably just compute it assuming the scene
+                % is infinitely far away and the distance to the lens is
+                % the focal distance.
+                %
+                if isempty(varargin)
+                    scene = ieGetObject('scene');
+                    if isempty(scene), sDist = 1e6; end
+                else
+                    scene = varargin{1};
+                    if isstruct(scene), sDist = sceneGet(scene,'distance','m');
+                    else,               sDist = scene;
+                    end
+                end
+                
+                % The image distance depends on the scene distance and
+                % focal length via the lensmaker's formula, (we assume the
+                % sensor is at the proper focal distance).
+                if length(varargin) > 1, oi = varargin{2};
+                else,                    oi = ieGetObject('oi');
+                end
+                if isempty(oi)
+                    distance = opticsGet(opticsCreate,'focal length');
+                else
+                    distance = oiGet(oi,'optics focal plane distance',sDist);
+                end
+                width = sensorGet(sensor,'arraywidth');
+                val = ieRad2deg(2*atan(0.5*width/distance));
+                
+            case {'fovvertical','vfov','fovv'}
+                % This is  the vertical field of view
+                % sensorGet(sensor,'fov vertical',sDist,oi); - Explicit scene dist in m
+                % sensorGet(sensor,'fov vertical',scene,oi); - Explicit scene
+                % sensorGet(sensor,'fov vertical');          - Uses defaults.  Dangerous.
                 %
                 % This is the horizontal field of view (default)
                 % We compute it from the distance between the lens and the sensor
@@ -934,53 +976,13 @@ switch oType
                 else
                     distance = opticsGet(oiGet(oi,'optics'),'focal plane distance',sDist);
                 end
-                width = sensorGet(sensor,'arraywidth');
-                val = ieRad2deg(2*atan(0.5*width/distance));
-            case {'fovvertical','vfov','fovv'}
-                % This is  the vertical field of view
-                % sensorGet(sensor,'fov vertical',sDist,oi); - Explicit scene dist in m
-                % sensorGet(sensor,'fov vertical',scene,oi); - Explicit scene
-                % sensorGet(sensor,'fov vertical');          - Uses defaults.  Dangerous.
-                %
-                % This is the horizontal field of view (default)
-                % We compute it from the distance between the lens and the sensor
-                % surface and we also use the sensor array width.
-                % The assumption here is that the sensor is at the proper focal
-                % distance for the scene.  If the scene is at infinity, then the
-                % focal distance is the focal length.  But if the scene is close,
-                % then we might correct.
-                %
-                if ~isempty(varargin), scene = varargin{1};
-                else                   scene = vcGetObject('scene');
-                end
-                if length(varargin) > 1, oi = varargin{2};
-                else                     oi = vcGetObject('oi');
-                end
-                % If no scene is sent in, assume the scene is infinitely far away.
-                if isempty(scene), sDist = Inf;
-                else
-                    % The user might have sent a scene struct or a scene distance
-                    % in meters.
-                    if isstruct(scene), sDist = sceneGet(scene,'distance');
-                    else,               sDist = scene;
-                    end
-                end
-                % If there is no oi, then use the default optics focal length. The
-                % image distance depends on the scene distance and focal length via
-                % the lensmaker's formula, (we assume the sensor is at the proper
-                % focal distance).
-                if isempty(oi)
-                    distance = opticsGet(opticsCreate,'focal length');
-                    % fprintf('Sensor fov estimated using focal length = %f m\n',distance);
-                else
-                    distance = opticsGet(oiGet(oi,'optics'),'focal plane distance',sDist);
-                end
                 
                 height = sensorGet(sensor,'array height');
                 val = ieRad2deg(2*atan(0.5*height/distance));
                 
             case {'hdegperpixel','degpersample','degreesperpixel'}
                 % degPerPixel = sensorGet(sensor,'h deg per pixel',oi);
+                %
                 % Horizontal field of view divided by number of pixels
                 sz =  sensorGet(sensor,'size');
                 
@@ -990,7 +992,8 @@ switch oType
                 
                 % The horizontal field of view should incorporate information from
                 % the optics.
-                val = sensorGet(sensor,'hfov',oi)/sz(2);
+                sDist = 1e6;   % Assume the scene is very far away.
+                val = sensorGet(sensor,'hfov',sDist,oi)/sz(2);
             case {'vdegperpixel','vdegreesperpixel'}
                 sz =  sensorGet(sensor,'size');
                 val = sensorGet(sensor,'vfov')/sz(1);
