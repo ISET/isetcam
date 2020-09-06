@@ -46,6 +46,10 @@ else
                 net = googlenet;
             case 'vgg19'
                 net = vgg19;
+            % if the user has their own network, they can name it customnet
+            % select it from the classifier menu, and we'll use it
+            case 'customnet'
+                net = customnet;
             otherwise
                 net = resnet50;
         end
@@ -206,8 +210,11 @@ chdir(defDir);
 
 ipFolder = fullfile(inputFolder,'ip');
 
-inputSize = net.Layers(1).InputSize;
-
+try
+    inputSize = net.Layers(1).InputSize;
+catch
+    msgbox("Unable to load specified network.");
+end
 % We would want to run our classifier on the original folder
 %  and the camera images and djinn up some comparison info, depending on
 %  what we decide we want to use as a metric. Right now just runs on the
