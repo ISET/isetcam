@@ -46,7 +46,7 @@ if nExposures > 1
     app.sliderSelectBracketedExposure.Value = sensorGet(sensor,'Exposure Plane');
     
     % ss = 1/(nExposures-1);  % Was slider steps
-    app.sliderSelectBracketedExposure.MajorTicks = [1:nExposures];
+    app.sliderSelectBracketedExposure.MajorTicks = (1:nExposures);
     app.editNExposures.Value = num2str(nExposures);
     
     eTimes = sensorGet(sensor,'exposure time');
@@ -133,6 +133,8 @@ selectList = {'New'};
 for ii=1:length(nameList)
     selectList{ii+1} = sprintf('%d-%s',ii,nameList{ii}); 
 end
+
+% Sometimes we get an error here, but not all the time.  I don't know why.
 app.popupSelect.Items = selectList;
 app.popupSelect.Value = app.popupSelect.Items{vcGetSelectedObject('sensor')+1};
 
