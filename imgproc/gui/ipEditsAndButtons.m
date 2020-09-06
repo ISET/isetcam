@@ -1,26 +1,46 @@
-function ipEditsAndButtons(handles,ip)
-%Update the Processor image window fields
+function ipEditsAndButtons(app,ip)
+% Update the Processor image window fields
 %
-%   ipEditsAndButtons(handles,ip)
+% Synopsis
+%   ipEditsAndButtons(app,ip)
 %
-% A variety of text boxes, display data, and compute methods are updated in
-% the vcimage window.  
+% Brief Description
+%   Update the ip window
 %
-% The status of the window is updated to conform to the entries in the ip
-% structure.  
+% Inputs:
+%   app:   ipWindow_App object
+%   ip:    Currently selected ip
 %
-% This routine is called in many places within ipWindow via the
-% vcimageRefresh function.
+% Output
+%   N/A
 %
-% See also:  imageShowImage
+% Description
+%  A variety of text boxes, display data, and compute methods are updated in
+%  the vcimage window.  
+%
+%  The status of the window is updated to conform to the entries in the ip
+%  structure.  
+%
+%  This routine is called in many places within ipWindow via the
+%  ipRefresh function.
 %
 % Copyright ImagEval Consultants, LLC, 2005.
+%
+% See also:  
+%   imageShowImage
+%
 
 %%
-if ~exist('ip','var') || isempty(ip)
-    ip = vcGetObject('VCIMAGE');
+
+% Get an existing ip or make one up.  Not sure we should make one up.
+if ieNotDefined('ip'), ip = ieGetObject('ip'); end
+if isempty(ip)
+    ip = ipCreate;
+    ieAddObject(ip);
 end
-figure(handles.figure1);
+
+% Clear the text message in the window
+ieInWindowMessage('',app);
 
 %% Set the select IP popup at the top.
 nameList = vcGetObjectNames('VCIMAGE');
@@ -129,8 +149,7 @@ imageShowImage(ip,gam);
 fig = ieSessionGet('ip window');
 ieFontSizeSet(fig,0);
 
-return;
-
+end
 
 %-------------------------------------------------------
 function setPopupVisibility(tMethod,handles)
@@ -254,5 +273,4 @@ switch lower(tMethod)
         error('Unknown transform method %s\n',tMethod);
 end
 
-
-return
+end
