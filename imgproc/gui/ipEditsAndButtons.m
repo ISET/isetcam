@@ -117,17 +117,17 @@ switch lower(tMethod)
     case {'new'}
 
         % Demosaic panel
-        app.txtDemosaic.FontColor = colorOn;
+        % app.txtDemosaic.FontColor = colorOn;
         app.popDemosaic.Visible = 'on';
         
         % Transform panel
-        app.txtTransform.FontColor = colorOn;
+        % app.txtTransform.FontColor = colorOn;
         app.popTransform.Visible='on';
         
         % Sensor panel
-        app.txtSensor.FontColor= colorOff;
-        app.txtMethod.FontColor= colorOff;
-        app.txtICS.FontColor= colorOff;
+        % app.txtSensor.FontColor= colorOff;
+        % app.txtMethod.FontColor= colorOff;
+        % app.txtICS.FontColor= colorOff;
         app.popColorSpace.Visible= 'off';
         app.popColorConversionM.Visible= 'off';
         
@@ -139,18 +139,18 @@ switch lower(tMethod)
         % Nice to gray stuff out rather than make it go away
         
         % Demosaic panel
-        app.txtDemosaic.FontColor= colorOn;
+        % app.txtDemosaic.FontColor= colorOn;
         app.popDemosaic.Visible= 'on';
         
         % Transform panel
-        app.txtTransform.FontColor= colorOn;
+        % app.txtTransform.FontColor= colorOn;
         app.popTransform.Visible= 'on';
         
         % Sensor panel
         % set(handles.panelSensor.Visible= 'off')
-        app.txtSensor.FontColor= colorOff;
-        app.txtMethod.FontColor= colorOff;
-        app.txtICS.FontColor= colorOff;
+        % app.txtSensor.FontColor= colorOff;
+        % app.txtMethod.FontColor= colorOff;
+        % app.txtICS.FontColor= colorOff;
         app.popColorConversionM.Visible= 'off';
         app.popColorSpace.Visible= 'off';
         
