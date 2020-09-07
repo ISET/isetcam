@@ -95,11 +95,12 @@ for ii=1:numel(selectedObjs)
             t = sprintf('Sensor %d - %s',ii,sensorGet(objList{ii},'name'));
             
         case 'VCIMAGE'
-            gam = ieSessionGet('ip gamma');      % gamma in the window!
+            ip = objList{ii};
+            gam = ipGet(ip,'gamma');      % gamma in the window!
             trueSizeFlag = []; showFig = false;
             img = imageShowImage(objList{ii},gam,trueSizeFlag,showFig);
             imagesc(img); axis off; axis image
-            t = sprintf('VCI %d - %s',ii,ipGet(objList{ii},'name'));
+            t = sprintf('VCI %d - %s',ii,ipGet(ip,'name'));
             
         otherwise
             error('Unsupported object type %s\n', objType);
