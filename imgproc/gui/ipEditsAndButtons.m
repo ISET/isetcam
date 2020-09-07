@@ -91,7 +91,7 @@ end
 
 % Display the image
 gam = str2double(app.editGamma.Value);
-imageShowImage(ip,gam);
+imageShowImage(ip,gam,false,app);
 
 %% Refresh font size
 ieFontSizeSet(app,0);
@@ -161,16 +161,16 @@ switch lower(tMethod)
     case {'adaptive'}
 
        % Demosaic panel
-        app.textDemosaic.FontColor = colorOn;
+        % app.textDemosaic.FontColor = colorOn;
         app.popDemosaic.Visible = 'on';
         
         % Transform panel
-        app.txtTransform.FontColor = colorOn;
+        % app.txtTransform.FontColor = colorOn;
         app.popTransform.Visible = 'on';
 
         % Sensor panel
         % set(handles.panelSensor.Visible= 'off')
-        app.txtSensor.FontColor= colorOn;
+        % app.txtSensor.FontColor= colorOn;
         app.txtMethod.FontColor= colorOn;
         app.txtICS.FontColor= colorOn;
         

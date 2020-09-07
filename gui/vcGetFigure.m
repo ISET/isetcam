@@ -52,7 +52,7 @@ switch lower(objType)
     case {'vcimage'}
         app = ieSessionGet('ip window');
         if isempty(app), error('Undefined ip app'); end
-        appAxis = [];  % Fill in when you know it
+        appAxis = app.ipImage;
     otherwise
         error('Unknown object type.');
 end
