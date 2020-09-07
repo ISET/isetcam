@@ -257,12 +257,39 @@ switch oType
                 % Structure
                 if checkfields(ip,'render'), val = ip.render; end
             case {'scaledisplay','scaledisplayoutput'}
-                if checkfields(ip,'render','scale'), val = ip.render.scale; else val = 0 ; end
+                if checkfields(ip,'render','scale')
+                    val = ip.render.scale;
+                else
+                    app = ieSessionGet('ip window');
+                    if ~isempty(app) && isvalid(app)
+                        switch lower(app.MaxbrightSwitch.Value)
+                            case 'on'
+                                val = 1;
+                            case 'off'
+                                val = 0;
+                        end
+                        
+                    else
+                        val = 0;
+                    end
+                    % Could be ipSet()
+                    ip.render.scale = val;
+                end
+                
             case {'rendergamma','gamma'}
-                app = ieSessionGet('ip window');
-                if isempty(app), warning('No window for gamma.'); end
-                val = str2double(app.editGamma.Value);
-
+                % Gamma value used to render the display in the ipWindow
+                if checkfields(ip,'render','gamma')
+                    val = ip.render.gamma;
+                else
+                    app = ieSessionGet('ip window');
+                    if ~isempty(app) && isvalid(app)
+                        val = str2double(app.editGamma.Value);
+                    else
+                        val = 1;
+                    end
+                    ip.render.gamma = val;
+                end
+                
                 % Image processor data
             case {'data','datastructure'}
                 val = ip.data;

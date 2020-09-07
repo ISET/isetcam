@@ -85,13 +85,13 @@ else
 end
 
 %% Set the button that determines whether to scale the display output
-% app.btnScale.Value = logical(ipGet(ip,'scaledisplay'));
 
 %% Read how the user set the gamma value 
 
 % Display the image
-gam = str2double(app.editGamma.Value);
-imageShowImage(ip,gam,false,app);
+gam = ipGet(ip,'gamma');
+trueSizeFlag = false;
+imageShowImage(ip,gam,trueSizeFlag,app);
 
 %% Refresh font size
 ieFontSizeSet(app,0);
