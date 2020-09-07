@@ -247,6 +247,8 @@ function data = tableSensor(sensor,format)
 
 % Handle the camera case with no sensor.
 if isempty(sensor), data = []; return; end
+oi = ieGetObject('oi');
+if isempty(oi), oi = oiCreate; end
 
 switch format
     case 'window'
@@ -254,13 +256,16 @@ switch format
         precision = 3;
         
         data = {
-            'Row/col',           num2str(sensorGet(sensor,'size')),                    '';
-            'Exp time (s)',      num2str(sensorGet(sensor,'exp time')),                's';
-            'Size (mm)',         num2str(sensorGet(sensor,'dimension','mm'),precision),'mm';
-            'DSNU (V)',          num2str(sensorGet(sensor, 'dsnu level'),precision),   'V';
-            'PRNU (%)',          num2str(sensorGet(sensor, 'prnu level'),precision),   '%';
-            'Analog Gain',       num2str(sensorGet(sensor, 'analog gain'),precision),  '';
-            'Analog Offset (V)', num2str(sensorGet(sensor, 'analog offset'),precision),'V';
+            'Size',          num2str(sensorGet(sensor,'dimension','mm'),precision), 'mm';
+            'Row/col',       num2str(sensorGet(sensor,'size')),                     '';
+            'Hor FOV',       num2str(sensorGet(sensor,'fov', 1e6, oi),precision),   'deg';
+            'Hor Res',       num2str(sensorGet(sensor,'wspatial resolution','um'),precision), 'um';
+            'Hor Res',       num2str(sensorGet(sensor,'h deg per pixel',oi),precision), 'deg/pixel';
+            'Exp time',      num2str(sensorGet(sensor,'exp time')),                 's';
+            'DSNU',          num2str(sensorGet(sensor, 'dsnu level'),precision),    'V';
+            'PRNU',          num2str(sensorGet(sensor, 'prnu level'),precision),    '%';
+            'Analog gain',   num2str(sensorGet(sensor, 'analog gain'),precision),   '';
+            'Analog offset', num2str(sensorGet(sensor, 'analog offset'),precision), 'V';
             };
         
         % When it is the full window, we add in the pixel values.
@@ -270,8 +275,14 @@ switch format
     case 'embed'
         precision = 3;
         data = {
-            'Size (mm)',         num2str(sensorGet(sensor,'dimension','mm'),precision);
+            'Size (mm)',     num2str(sensorGet(sensor,'dimension','mm'),precision);
+            'Hor FOV (deg)', num2str(sensorGet(sensor,'fov',1e6, oi),precision);
+            'Res (um)',  num2str(sensorGet(sensor,'wspatial resolution','um'),precision);
+            'Res (deg/pix)', num2str(sensorGet(sensor,'h deg perpixel'),precision);
+            'Analog gain',   num2str(sensorGet(sensor,'analog gain'), precision);
+            'Analog offset', num2str(sensorGet(sensor,'analog offset'),precision);
             };
+        
     otherwise
         error('Unknown table format %s\n',format);
 end

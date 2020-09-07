@@ -1,13 +1,12 @@
-function ipDescription(ip,handles)
+function ipDescription
+% Deprecated
 %
-%   ipDescription(vci,handles)
+error('Internal to ipWindow_App now');
 %
-% Summarize settings for display model and image processing in the
-% Processor window.
-%
-% Copyright ImagEval Consultants, LLC, 2005.
+end
 
 
+%{
 %% Image information
 txt = sprintf('Image:\n');
 wp = ipGet(ip,'data whitepoint');    % It is a column
@@ -57,6 +56,7 @@ D = ipGet(ip,'correction transform illuminant');
 newText = sprintf('  Illuminant: [%.2f,%.2f,%.2f]\n',diag(D));  
 txt = addText(txt,newText);
 
-set(handles.txtDisplay,'String',txt);
+set(app.txtDisplay,'String',txt);
 
 return;
+%}

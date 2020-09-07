@@ -1,7 +1,7 @@
-function ipOpen(hObject,eventdata,handles)
+function ipOpen(app)
 % Initialize ipWindow
 % 
-%   ipOpen(hObject,eventdata,handles)
+%   ipOpen(app)
 %
 % Copyright ImagEval Consultants, LLC, 2014.
 

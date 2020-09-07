@@ -1,15 +1,10 @@
-function displayClose
+function vcimageClose
 %
 % Author: ImagEval
 % Purpose:
 %    Close window function for DISPLAY.
 
-global vcSESSION;
-
-if checkfields(vcSESSION,'GUI','vcImageWindow')
-    vcSESSION.GUI = rmfield(vcSESSION.GUI,'vcImageWindow');
+error('deprecated');
+%
 end
 
-closereq;
-
-return;

@@ -16,6 +16,8 @@ function xy = vcLineSelect(obj,objFig)
 % See also:  
 %   vcPointSelect, vcLineSelect, vcROISelect, ieGetXYCoords
 
+error('Deprecated.  Use iePointSelect');
+%{
 if ieNotDefined('obj'), error('You must define an object (isa,oi,scene ...)'); end
 if ieNotDefined('objFig'), objFig = vcGetFigure(obj); end
 
@@ -34,5 +36,6 @@ else
 end
 
 ieInWindowMessage('',hndl);
+%}
 
 end

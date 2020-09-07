@@ -223,19 +223,19 @@ switch oType
                 transforms = ipGet(ip,'transforms');
                 if length(transforms) >= 1  % && ~isempty(transforms{1})
                     val = transforms{1};
-                else   val = eye(3,3);
+                else,  val = eye(3,3);
                 end
             case {'illuminantcorrectionmatrix','correctiontransformilluminant','correctionmatrixilluminant'}
                 transforms = ipGet(ip,'transforms');
                 if length(transforms) >= 2 && ~isempty(transforms{2})
                     val = transforms{2};
-                else   val = eye(3,3);
+                else,   val = eye(3,3);
                 end
             case {'ics2display','ics2displaytransform','internalcs2displayspace'}
                 transforms = ipGet(ip,'transforms');
                 if length(transforms) >= 3 && ~isempty(transforms{3})
                     val = transforms{3};
-                else   val = eye(3,3);
+                else,  val = eye(3,3);
                 end
             case {'combinedtransform','prodt'} %product of transforms (prodT)
                 % This is meant to be rowVec*M were rowVec = (r,g,b). If the
@@ -259,10 +259,10 @@ switch oType
             case {'scaledisplay','scaledisplayoutput'}
                 if checkfields(ip,'render','scale'), val = ip.render.scale; else val = 0 ; end
             case {'rendergamma','gamma'}
-                hdl = ieSessionGet('ip handles');
-                val = str2double(get(hdl.editGamma,'string'));
-                % if checkfields(ip,'render','gamma'), val = ip.render.gamma; else val = 1 ; end
-                
+                app = ieSessionGet('ip window');
+                if isempty(app), warning('No window for gamma.'); end
+                val = str2double(app.editGamma.Value);
+
                 % Image processor data
             case {'data','datastructure'}
                 val = ip.data;

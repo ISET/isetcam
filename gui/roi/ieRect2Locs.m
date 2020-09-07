@@ -1,27 +1,30 @@
 function roiLocs = ieRect2Locs(rect)
 % Convert a rect from an ISET window into region of interest locations. 
 %
+% Synopsis
 %   roiLocs = ieRect2Locs(rect)
 %
-% The rect is usually selected selected using the Matlab grphical user
-% interface. The rect values are:
+% Description
+%   The rect is usually selected selected using the Matlab graphical user
+%   interface. In most cases the rect values are:
 %
-%     [colMin rowMin (width-1) (height-1)].  
+%     [colMin rowMin (width-1) (height-1)].
 %
-% (Note that col is the x dimension and row is the y dimension).
-%
-% Example:
-%   rect = round(getrect(ieSessionGet('ipwindow')));
-%   roiLocs = ieRect2Locs(rect);
+%   In some cases, more modern ones, the rect is sometimes a Matlab
+%   Rectangle object and round(rect.Positions) are the rect.
 %   
-% Usually we call the routine ieROISelect directly, which calls this
-% routine:
+%   Usually we call the routine ieROISelect directly, which might then call
+%   this routine.
 %
 % (c) Imageval, 2004
 %
 % See also:
 %  ieROISelect, ieLocs2Rect
 %
+
+if isa(rect,'images.roi.Rectangle')
+    rect = round(rect.Position);
+end
 
 % The rect entries are (colMin,rowMin,colWidth-1,rowWidth-1) 
 % The number of data values are colMax - colMin + 1 and similarly for the

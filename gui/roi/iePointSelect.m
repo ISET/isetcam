@@ -29,40 +29,17 @@ if ieNotDefined('msg')
     msg = sprintf('Click to select point');
 end
 
-if ieNotDefined('obj'), error('You must define an object (isa,oi,scene ...)'); end
-app = vcGetFigure(obj);
+% Find the app and its main axis
+[app, appAxis] = vcGetFigure(obj);
 
-% Select points.  
+% Select a points  
 app.txtMessage.Text = msg;
 
-% Would be good to figure out which click and how to validate ...
-switch class(app)
-    case 'sceneWindow_App'
-        pt = drawpoint(app.sceneImage);
-    case 'oiWindow_App'
-        pt = drawpoint(app.oiImage);
-    otherwise
-        error('Not yet implemented for %s\n',class(app));
-end
-
+pt = drawpoint(appAxis);
 x = round(pt.Position(2)); y = round(pt.Position(1));
 
 app.txtMessage.Text = '';
 
-%{
-if length(x) < nPoints
-    pointLoc = [];
-    warning('ISET:iePointSelect1','Returning only %.0f points',length(x));
-    list = (1:length(x));
-elseif length(x) > (nPoints) 
-    warning('ISET:iePointSelect2','Returning first of %.0f points',nPoints);
-    list = (1:nPoints);
-else
-    list = (1:nPoints);
-end
-%}
-
-pointLoc(:,1) = y;
-pointLoc(:,2) = x;
+pointLoc(:,1) = y; pointLoc(:,2) = x;
 
 end
