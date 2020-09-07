@@ -132,8 +132,8 @@ switch param
     case {'demosaicstructure','demosaic'}
         ip.demosaic = val;
     case {'demosaicmethod'}
-        if isempty(val), val = 'None'; end
-        ip.demosaic.method = val;
+        if isempty(val), val = 'none'; end
+        ip.demosaic.method = lower(val);
         
     % Accounting for the difference between the sensors and the internal
     % color space linear span.
@@ -155,13 +155,10 @@ switch param
     case {'illuminantcorrection','correctionilluminant'}
         ip.illuminantCorrection = val;
     case {'illuminantcorrectionmethod','correctionmethodilluminant'}
-        % Possible illuminant correction methods:
-        %  'manual matrix entry', 
-        %  'grayWorld'
-        %  'WhiteWorld'
-        %  'None'
-        if isempty(val), val = 'None'; end
-        ip.illuminantCorrection.method = val;
+        % We need the list of methods here!
+        %
+        if isempty(val), val = 'none'; end
+        ip.illuminantCorrection.method = lower(val);
         
     case {'correctionmatrixilluminant','illuminantcorrectionmatrix','correctiontransformilluminant','illuminantcorrectiontransform'}
         % ip = imageSet(ip,'whitebalancetransform',val,2);
@@ -221,7 +218,9 @@ switch param
     case {'transformmethod'}
         % ip = ipSet(ip,'transform method','Adaptive')
         % Other options are 'New' and 'Current'
-        ip.transformMethod = val;
+        %
+        % We need the list here!
+        ip.transformMethod = lower(val);
         
     case {'datamax','rgbmax','sensormax','maximumsensorvalue','maximumsensorvoltageswing'}
         % This should probably account for the type of exposure condition.
@@ -253,11 +252,13 @@ switch param
         % Controls the gamma for rendering the result data to the
         % GUI display.
         ip.render.gamma = val;
-        hdl = ieSessionGet('ip handles');
-        if ~isempty(hdl)
-            set(hdl.editGamma,'string',num2str(val));
-            ipWindow;
+        
+        % If the window is open and valid, set the edit box and refresh it.
+        app = ieSessionGet('ip window');
+        if ~isempty(app) && isvalid(app)
+            app.refresh;
         end
+        
     % Consistency (red button)
     case {'consistency','computationalconsistency','parameterconsistency'}
         ip.consistency = val;
