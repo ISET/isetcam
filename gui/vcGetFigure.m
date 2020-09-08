@@ -30,6 +30,8 @@ function [app, appAxis] = vcGetFigure(obj,select)
  [app,appAxis] = vcGetFigure(scene)
 %}
 
+warning('Deprecated.  Use ieGetAp()');
+
 %%
 if ieNotDefined('obj'), error('An ISETCam obj required'); end
 if ieNotDefined('select'), select = true; end
