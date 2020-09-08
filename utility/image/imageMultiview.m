@@ -73,7 +73,7 @@ for ii=1:numel(selectedObjs)
             gam = sceneGet(objList{ii},'gamma');      % gamma in the window!
             % Use the same display method, but do not show in the scene
             % window.  The -1 makes that happen
-            displayFlag = -1*abs(ieSessionGet('scene display flag')); % RGB, HDR, Gray
+            displayFlag = -1*abs(sceneGet(objList{ii},'render flag index')); % RGB, HDR, Gray
             if isempty(displayFlag), displayFlag = -1; end
             rgb = sceneShowImage(objList{ii},displayFlag,gam);
             imagesc(rgb);

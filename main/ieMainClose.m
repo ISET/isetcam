@@ -48,4 +48,21 @@ end
 vcSESSION.GUI = [];
 closereq;
 
+% Check that the window apps have been deleted
+assert(isempty(ieSessionGet('scene window')));
+assert(isempty(ieSessionGet('oi window')));
+assert(isempty(ieSessionGet('sensor window')));
+assert(isempty(ieSessionGet('ip window')));
+
+%{
+% We should write an ieSessionPrint function that lists what we have in
+% different critical places in vcSESSION
+%
+   ieSessionGet('scene window')
+   ieSessionGet('oi window')
+   ieSessionGet('sensor window')
+   ieSessionGet('ip window')
+%}
+
+
 end

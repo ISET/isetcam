@@ -14,7 +14,7 @@
 
 %% Close the ISET windows and all others
 
-% Close the ISET windows
+% Close the ISET windows and remove any invalid apps
 ieMainClose;
 
 % Close the other windows
@@ -31,6 +31,7 @@ clear global;  % Made consistent with ISETBIO
 % In ISETBIO this is false.
 % Determine if you want to clear session variables
 if ieSessionGet('init clear'), clearvars;  end
+
 
 %% Initialize ISET database variable
 
