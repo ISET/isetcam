@@ -5,8 +5,8 @@ function [app, appAxis] = vcGetFigure(obj,select)
 %   [app, appAxis] = vcGetFigure(obj,[select])
 %
 % Input
-%   obj:  One of the ISETCam main object types, scene, oi, sensor, ip
-% select: If true, the select the figure also
+%   obj:    One of the ISETCam main object types, scene, oi, sensor, ip
+%   select: If true, select (put the focus on) the figure also
 %
 % Output
 %   app:      The window app
@@ -14,11 +14,9 @@ function [app, appAxis] = vcGetFigure(obj,select)
 %
 % Description
 %   Get the app object to one of the ISETCam windows. Possible ISET objects
-%   are scene, oi, sensor, ip.
+%   are scene, oi, sensor, ip.   The main image axis can also be returned.
 %
-%   This routine allows us to get the figure number when the object type is
-%   not identified in the main routine, such as getting an ROI for an oi,
-%   scene, sensor or other type of window.
+%   If select is 'true' then the focus is placed on the figure.
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 %
@@ -63,4 +61,5 @@ switch lower(objType)
 end
 
 if select, figure(app.figure1); end
+
 end

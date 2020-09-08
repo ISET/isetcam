@@ -30,6 +30,13 @@ function cornerPoints = chartCornerpoints(obj,wholeChart)
 
 
 % Examples:
+%{
+  sceneWindow;
+  scene = ieGetObject('scene');
+  cp = chartCornerpoints(scene);
+  [rects,mLocs,pSize] = chartRectangles(cp,4,6,0.5);  % MCC parameters
+  chartRectsDraw(scene,rects);
+%}
 %{    
   scene = sceneCreate;  camera = cameraCreate('default');
   camera = cameraCompute(camera,scene);
