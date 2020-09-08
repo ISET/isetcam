@@ -44,53 +44,24 @@ function [roiLocs,roi] = ieROISelect(obj,varargin)
 %}
 
 %%
-if ieNotDefined('obj'), error('You must define an object (isa,oi,scene ...)'); end
-app = vcGetFigure(obj);
+if ieNotDefined('obj'), error('ISETCam object required (isa,oi,scene ...)'); end
 
-%% Check that the window exists!
-
-% If the returned figure is empty, the user probably did not set up the
-% object window yet.  So we add the object to the database and open the
-% window
-if isempty(app)
-    % Should become ieOpenWindow(obj)
-    switch obj.type
-        case 'scene'
-            app = sceneWindow();
-        case 'opticalimage'
-            app = oiWindow();
-        case 'sensor'
-            app = sensorWindow();
-        case 'vcimage'
-            app = ipWindow();
-        otherwise
-            error('Unknown obj type %s\n',obj.type);
-    end
+% Get the associated window;
+[app, appAxis] = vcGetFigure(obj);
+if isempty(app) || ~isvalid(app)
+    error('No window availble');
 end
-
 
 %% Select points.
 
 % Tell the user
-app.txtMessage.Text = 'Drag to select a rectangle.';
-
 % Select an ROI graphically. This should become a switch statement for the
 % shape, ultimately.  Look at vcGetFigure to get the app and appAxis.
-switch class(app)
-    case 'sceneWindow_App'
-        roi  = drawrectangle(app.sceneImage);
-    case 'oiWindow_App'
-        roi  = drawrectangle(app.oiImage);
-    case 'sensorWindow_App'
-        roi  = drawrectangle(app.imgMain);
-    otherwise
-        error('Unknown app %s\n',class(app));
-end
+ieInWindowMessage('Select a rectangle.',app)
+roi  = drawrectangle(appAxis);
+ieInWindowMessage('',app)
 
 rect = round(roi.Position);
-
-% Clear the in window message
-app.txtMessage.Text = '';
 
 % If the user double clicks without selecting a rectangle, we treat the
 % response as a single point.  We do this by making the size 1,1.

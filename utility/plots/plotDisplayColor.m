@@ -50,13 +50,13 @@ if ieNotDefined('ip');      ip = vcGetObject('ip'); end
 if ieNotDefined('dataType'), dataType = 'rgbhistogram'; end
 
 %% Select the RGB data from the ROI
-handles = ieSessionGet('vcimagehandle');
+% app = ieSessionGet('ip window');
 
 % Get the data
-ieInWindowMessage('Select image region of interest.',handles,[]);
+% ieInWindowMessage('Select image region of interest.',app,[]);
 [roiLocs, rect] = ieROISelect(ip);
 RGB     = vcGetROIData(ip,roiLocs,'result');
-ieInWindowMessage('',handles,[]);
+% ieInWindowMessage('',app,[]);
 
 %% Plot the data
 
@@ -167,7 +167,7 @@ switch lower(dataType)
 end
 
 % Draw the ROI on the window
-ieROIDraw(ip,'shape','rectangle','shape data',rect);
+% ieROIDraw(ip,'shape','rectangle','shape data',rect);
 
 % Store the data
 set(figHdl,'Userdata',uData);

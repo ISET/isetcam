@@ -55,4 +55,4 @@ end
 
 vcSetSelectedObject(objType,val)
 
-return;
+end

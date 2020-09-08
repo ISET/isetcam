@@ -133,30 +133,33 @@ if ieNotDefined('fullData'), fullData = 0; end
 % then read the corner points (if they weren't sent in).
 switch lower(obj.type)
     case 'vcimage'
-        handles = ieSessionGet('vcimage handles');
         dataType = 'result';
-        obj = ipSet(obj,'mcc Rect Handles',[]);
-        ieAddObject(obj); ipWindow;
+        % obj = ipSet(obj,'mcc Rect Handles',[]);
+        % ieAddObject(obj); ipWindow;
         if ieNotDefined('cornerPoints')
-            cornerPoints = ipGet(obj,'mcc corner points');
+            wholeChart = false;
+            cornerPoints = chartCornerpoints(obj,wholeChart);
         end
         
     case {'isa','sensor'} 
-        handles = ieSessionGet('sensor Window Handles');
+        % app = ieSessionGet('sensor window');
         dataType = 'dvorvolts';
-        obj = sensorSet(obj,'mcc Rect Handles',[]);
+        % obj = sensorSet(obj,'mcc Rect Handles',[]);
         % Make sure these data are in the sensor in the window
-        ieAddObject(obj); sensorWindow;
+        % vcReplaceObject(obj); 
+        sensorWindow;
         if ieNotDefined('cornerPoints')
-            cornerPoints = sensorGet(obj,'mcc corner points');
+            wholeChart = false;
+            cornerPoints = chartCornerpoints(obj,wholeChart);
         end
     case {'scene'}
-        handles = ieSessionGet('scene Window Handles');
+        % handles = ieSessionGet('scene Window Handles');
         dataType = 'photons';
-        obj = sceneSet(obj,'mcc Rect Handles',[]);
-        ieAddObject(obj); sceneWindow;
+        % obj = sceneSet(obj,'mcc Rect Handles',[]);
+        % ieAddObject(obj); sceneWindow;
         if ieNotDefined('cornerPoints')
-            cornerPoints = sceneGet(obj,'mcc corner points');
+            wholeChart = false;
+            cornerPoints = chartCornerpoints(obj,wholeChart);
         end
     otherwise
         error('Unknown object type');
@@ -224,8 +227,6 @@ if queryUser
     end
 end
 
-ieInWindowMessage('',handles);
-
 %% Find rect midpoints and patch size.  
 
 % mLocs are the 24 MCC patch middles in (row,col) format.
@@ -238,8 +239,6 @@ ieInWindowMessage('',handles);
 
 % Plot the rectangles.
 if showSelection, macbethDrawRects(obj); end
-
-ieInWindowMessage('',handles);
 
 end
 

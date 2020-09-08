@@ -41,10 +41,13 @@ if fullData  % The values from every location in each of the 24 patches
     % There is some chance this works for every data type because mRGB is a
     % cell array.
     mRGB = cell(1,24);
+    stdRGB = [];   % Haven't worked out the std dev in this case yet.
     for ii = 1:24 
         theseLocs = macbethROIs(mLocs(:,ii),delta); % List locs for this patch
         mRGB{ii} = vcGetROIData(obj,theseLocs,dataType);
+        % stdRGB(ii,:) = nanstd(mRGB{ii});
     end
+    
 else  % Mean values from each patch
 
     % In this case, the means have different vector lengths for different

@@ -15,7 +15,8 @@ function h = ieDrawShape(obj,shape,varargin)
 %{
   scene = sceneCreate; ieAddObject(scene); sceneWindow;
   h = ieDrawShape(scene,'rectangle',[10 10 50 50]);
-  set(h,'edgecolor','r'); pause(1);
+  h.EdgeColor = 'r';
+  pause(1);
   delete(h);
 %}
 %{
@@ -25,24 +26,17 @@ function h = ieDrawShape(obj,shape,varargin)
  c = ipGet(ip,'center');
  radius = c(1)/4;
  h = ieDrawShape(ip,'circle',c(1:2),radius);
- set(h,'color',[0 0 1]); pause(1)
+ h.Color = [0 0 1];
+ pause(1)
  delete(h);
 %}
 
 
 %% Select the window
-switch obj.type
-    case 'scene'
-        axes(ieSessionGet('scene axis'));
-    case 'opticalimage'
-        axes(ieSessionGet('oi axis'));
-    case 'sensor'
-        axes(ieSessionGet('sensor axis'));
-    case 'vcimage'
-        axes(ieSessionGet('ip axis'));
-    otherwise
-        error('Unknown object type %s\n',obj.type);
-end
+
+select = true;
+[~, appAxis] = vcGetFigure(obj,select);
+axis(appAxis);
 
 %%
 switch shape
@@ -56,8 +50,10 @@ switch shape
     case 'rectangle'
         % rect = [10 10 50 50];
         % ieDrawShape(obj,'rectangle',rect);
-        h = rectangle('Position',varargin{1});
-        set(h,'edgecolor','k');
+        h = rectangle(appAxis,'Position',varargin{1},...
+            'EdgeColor',[1 1 1], ...
+            'LineWidth',1,...
+            'Curvature',0.2);
         
     case 'line'
         % X = [0 96]; Y = [32 32];
@@ -70,13 +66,15 @@ end
 
 end
 
-%%
+%% Not sure why we need this
+
 function pts = circle(center,r,nPts)
-%
+
 t = linspace(0,2*pi,nPts)'; 
 pts = zeros(length(t),2);
 pts(:,1) = r.*cos(t) + center(1); 
-pts(:,2) = r.*sin(t) + center(2); 
+pts(:,2) = r.*sin(t) + center(2);
+
 end
 
 

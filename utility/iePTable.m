@@ -338,6 +338,8 @@ switch format
             'demosaic',            ipGet(ip,'demosaic method'),                '';
             'sensor conversion',   ipGet(ip,'sensor conversion method'),       '';
             'illuminant correct',  ipGet(ip,'illuminant correction method'),   '';
+            'display name',        ipGet(ip,'display name'),                   '';
+            'display dpi',         num2str(ipGet(ip,'display dpi')),           'dots per inch';
             };
 
     case 'embed'
@@ -345,9 +347,7 @@ switch format
         data = {
             'name',                ipGet(ip,'name');
             'row, col, primaries', num2str(ipGet(ip,'result size'),precision);
-            'demosaic',            ipGet(ip,'demosaic method');
-            'sensor conversion',   ipGet(ip,'sensor conversion method');
-            'illuminant correct',  ipGet(ip,'illuminant correction method');
+            'display name',        ipGet(ip,'display name');
             };
     otherwise
         error('Unknown table format %s\n',format);

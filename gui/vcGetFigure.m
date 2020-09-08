@@ -1,11 +1,12 @@
-function [app, appAxis] = vcGetFigure(obj)
-% Return the figure number associated with an object.
+function [app, appAxis] = vcGetFigure(obj,select)
+% Return the app and main axis associated with an object.
 %
 % Syntax
-%   [app, appAxis] = vcGetFigure(obj)
+%   [app, appAxis] = vcGetFigure(obj,[select])
 %
 % Input
 %   obj:  One of the ISETCam main object types, scene, oi, sensor, ip
+% select: If true, the select the figure also
 %
 % Output
 %   app:      The window app
@@ -30,6 +31,10 @@ function [app, appAxis] = vcGetFigure(obj)
  sceneWindow(scene);
  [app,appAxis] = vcGetFigure(scene)
 %}
+
+%%
+if ieNotDefined('obj'), error('An ISETCam obj required'); end
+if ieNotDefined('select'), select = true; end
 
 %% Forces the objType string to one of original names below.
 objType = vcEquivalentObjtype(obj.type);
@@ -57,4 +62,5 @@ switch lower(objType)
         error('Unknown object type.');
 end
 
+if select, figure(app.figure1); end
 end

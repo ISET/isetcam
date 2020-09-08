@@ -1,4 +1,6 @@
 function [roiLocs,rect] = vcROISelect(obj,app)
+% Deprecated:  Use ieROISelect.
+%
 % Select a region of interest (ROI) from an image and calculate locations  
 %
 %   [roiLocs,rect] = vcROISelect(obj,[objFig])
@@ -21,6 +23,9 @@ function [roiLocs,rect] = vcROISelect(obj,app)
 % TODO:  See proposal for ieOpenWindow below.  We should also add
 % ieRoiSelect to plan for deprecation of the vcXXX routines.
 
+warning('Please use ieROISelect');
+
+%%
 if ieNotDefined('obj'), error('You must define an object (isa,oi,scene ...)'); end
 if ieNotDefined('objFig')
     [app, appAxis] = vcGetFigure(obj); 

@@ -52,13 +52,17 @@ function cornerPoints = chartCornerpoints(obj,wholeChart)
 if ieNotDefined('obj'), error('Scene,oi,sensor or ip object required.'); end
 if ieNotDefined('wholeChart'), wholeChart = false; end
 
+% Make sure this is the selected object.  Perhaps we should test rather
+% than over-write.  But I am tired just now.
 ieReplaceObject(obj);
-ieRefreshWindow(obj.type);
+ieRefreshWindow(obj.type);  % Make sure it is displayed.
 
 if ~wholeChart
+    nPoints = 4;
     % Get the user to select corner points in the window.
-    cornerPoints = vcPointSelect(obj,4,...
-        'Select (1) lower left, (2) lower right, (3) upper right, (4) upper left');
+    cornerPoints = iePointSelect(obj, ...
+        'Select (1) lower left, (2) lower right, (3) upper right, (4) upper left', ...
+            nPoints);
 end
 
 % We make sure that the rects are cleared because we are selecting new
@@ -73,7 +77,7 @@ switch lower(obj.type)
         end
         obj = sceneSet(obj,'chart corners',cornerPoints);
         ieReplaceObject(obj);
-        sceneWindow;
+        % sceneWindow;
         
     case 'opticalimage'
         if wholeChart
@@ -82,8 +86,8 @@ switch lower(obj.type)
             cornerPoints = [1,y; x,y; x,1; 1,1];
         end
         obj = oiSet(obj,'chart corners',cornerPoints);
-        vcReplaceObject(obj);
-        oiWindow;
+        ieReplaceObject(obj);
+        % oiWindow;
         
     case {'isa','sensor'}
         % Should set the corner points in this case, too!
@@ -93,10 +97,10 @@ switch lower(obj.type)
             x = sz(2); y = sz(1);
             cornerPoints = [1,y; x,y; x,1; 1,1];
         end
-        obj = sensorSet(obj,'mccRectHandles',[]);
+        % obj = sensorSet(obj,'mccRectHandles',[]);
         obj = sensorSet(obj,'cornerpoints',cornerPoints);
-        vcReplaceObject(obj);
-        sensorImageWindow;
+        ieReplaceObject(obj);
+        % sensorWindow;
         
     case 'vcimage'
         % Should set the corner points in this case, too!
@@ -106,10 +110,10 @@ switch lower(obj.type)
             x = sz(2); y = sz(1);
             cornerPoints = [1,y; x,y; x,1; 1,1];
         end
-        obj = ipSet(obj,'mccRectHandles',[]);
+        % obj = ipSet(obj,'mccRectHandles',[]);
         obj = ipSet(obj,'cornerpoints',cornerPoints);
-        vcReplaceObject(obj);
-        ipWindow
+        ieReplaceObject(obj);
+        % ipWindow
         
     otherwise
         error('Unknown object type %s\n',obj.type);

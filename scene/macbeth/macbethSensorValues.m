@@ -1,5 +1,15 @@
 function [sensorImg,sensorSD,cornerPoints] = macbethSensorValues(sensor,showSelection,cornerPoints)
-% Identify MCC patches and calculate RGB mean (s.d.) of the 24 patches
+% Deprecated:
+%
+%   Replaced by chart code such as
+%    cp = chartCornerpoints(sensor,false);  % Get the corner points
+%    [rects,mLocs,pSize] = chartRectangles(cp,4,6,0.5);
+%    fullData = false;
+%    dataType = 'dvorvolts';
+%    delta = round(pSize(1)*0.5);
+%    data = chartRectsData(sensor,mLocs,delta,fullData,dataType);
+%
+%   Identify MCC patches and calculate RGB mean (s.d.) of the 24 patches
 %
 %   [sensorImg,sensorSD,cornerPoints] = macbethSensorValues(sensor,showSelection,cornerPoints);
 %
@@ -23,10 +33,12 @@ function [sensorImg,sensorSD,cornerPoints] = macbethSensorValues(sensor,showSele
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
+%%
 if ieNotDefined('sensor'), sensor = vcGetObject('sensor'); end
 if ieNotDefined('showSelection'), showSelection = true; end
 fullData = true;
-% Get the raw sensor data
+
+%% Get the raw sensor data
 if ieNotDefined('cornerPoints')
     [fullRGB, mLocs, pSize, cornerPoints] = macbethSelect(sensor,showSelection,fullData);
 else

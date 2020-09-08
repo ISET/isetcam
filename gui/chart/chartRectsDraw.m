@@ -16,18 +16,6 @@ function rectHandles = chartRectsDraw(obj,rects)
 % See also:
 %   chartRectangles, chartCornerpoints, sceneRadianceChart
 
-%% Should check input parameters here!
-%
-if isempty(ieSessionGet('sensor window'))
-    switch obj.type
-        case 'sensor'
-            sensorWindow(obj);
-        case 'scene'
-            sceneWindow(obj);
-        case 'vcimage'
-            ipWindow(obj);
-    end     
-end
 
 %% Find corners of the rectangles.  
 
@@ -51,26 +39,12 @@ for ii=1:nRects
         cmin(ii),rmin(ii)];
 end
 
-% The handle to the axis in the window
-switch obj.type 
-    case 'scene'
-        a = get(sceneWindow,'CurrentAxes');
-    case 'opticalimage'
-        a = get(oiWindow,'CurrentAxes');
-    case 'sensor'
-        a = get(sensorImageWindow,'CurrentAxes');
-    case 'vcimage'
-        a = get(ipWindow,'CurrentAxes');
-    otherwise
-        disp('Unknown object %s\n',obj.type);
-end
+%% Draw the rects
 
-% Draw the rects
+% The draw routine selects the axis.  Maybe we should select it here?
 for ii=1:nRects
-    hold(a,'on');
-    rectHandles(ii) = plot(a,c{ii}(:,1),c{ii}(:,2),'Color',[1 1 1], 'LineWidth',2);
+    rectHandles(ii) = ieDrawShape(obj,'rectangle',round(rects(ii,:)));
 end
-hold(a,'off')
 
 end
 

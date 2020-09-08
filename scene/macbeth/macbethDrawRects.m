@@ -31,30 +31,18 @@ if ieNotDefined('obj'), error('Structure required'); end
 if ieNotDefined('onoff'), onoff = 'on'; end  % Default is on
 
 %%
+[app, appAxis] = vcGetFigure(obj);
+
 switch onoff
     case 'on'
         switch vcEquivalentObjtype(obj.type)
             case 'VCIMAGE'
-                if ~isequal(vcGetObject('vcimage'),obj)
-                    % Put this object in place
-                end
                 cornerPoints = ipGet(obj,'mcc corner points');
-                a = get(ipWindow,'CurrentAxes');
             case 'ISA'
-                % Make sure the current object matches this object
-                if ~isequal(vcGetObject('sensor'),obj)
-                    % Put this object in place
-                end
                 % Always show the data scaled
                 cornerPoints = sensorGet(obj,'mcc corner points');
-                a = get(sensorImageWindow,'CurrentAxes');
-                g = ieSessionGet('sensor guidata'); 
-                set(g.btnDisplayScale,'Value',1);
             case 'SCENE'
                 cornerPoints = sceneGet(obj,'mcc corner points');
-                a = get(sceneWindow,'CurrentAxes');
-                % g = ieSessionGet('sensor guidata'); 
-                % set(g.btnDisplayScale,'Value',1);
             otherwise
                 error('Unknown object type %s',obj.type);
         end
@@ -63,7 +51,7 @@ switch onoff
         % chartCornerpoints here.  But for now, we throw an error.
         if isempty(cornerPoints), error('No mcc corner points'); end
         
-        % From the corner points, get the macbeth patch center locations.
+        % From the corner points, calculate the macbeth patch center locations.
         [mLocs, delta] = macbethRectangles(cornerPoints);
         
         % Plot the rectangles
@@ -71,15 +59,19 @@ switch onoff
         for ii=1:24
             % Get the locations around the center
             theseLocs = macbethROIs(mLocs(:,ii),delta);
+            
             % Find the convex hull of the locations (a rect). The rect
             % should be returned by macbethROIs, by the way. Not sure why
             % it isn't.  I did that for chartROIs, I think.
-            corners = convhull(theseLocs(:,1),theseLocs(:,2));
+            [~,rect] = chartROI(mLocs(:,ii),delta);
+            % corners = convhull(theseLocs(:,1),theseLocs(:,2));
             
             % Plot the rects
-            hold(a,'on');
-            rectHandles(ii) = plot(a,theseLocs(corners,2),theseLocs(corners,1),...
-                'Color',[1 1 1], 'LineWidth',2);
+            rectHandles(ii) = drawrectangle(appAxis, 'DrawingArea',rect,'Color',[1 1 1]);
+            % theseLocs(corners,2),theseLocs(corners,1),...
+            %     'Color',[1 1 1], 'LineWidth',2);
+            % rectHandles(ii) = plot(a,theseLocs(corners,2),theseLocs(corners,1),...
+            %     'Color',[1 1 1], 'LineWidth',2);
         end
         
         % Store rectHandles
