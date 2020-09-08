@@ -234,6 +234,13 @@ for ii = 1:length(inputFiles)
     ourGTFileName = fullfile(inputFiles(ii).folder, inputFiles(ii).name);
     ourGTImage = imread(ourGTFileName);
     
+    %classifiers can only work with 3-channel images
+    if ismatrix(ourGTImage)
+        % probably grayscale and image control needs
+        % 'color'
+        ourGTImage = cat(3, ourGTImage, ourGTImage, ourGTImage);
+    end
+
     % in theory we could first resize to our "desiredImageSize" to match
     % the processing of the IP version, but I'm not sure it matters?
     ourGTImage = imresize(ourGTImage, desiredImageSize(1:2));
