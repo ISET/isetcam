@@ -41,6 +41,7 @@ function [pointLoc,pt] = vcPointSelect(obj,nPoints,msg)
 %%
 warning('Deprecated.  Use iePointSelect');
 
+%%
 if ieNotDefined('obj'), error('Object is required (isa,oi,scene ...)'); end
 if ieNotDefined('nPoints'), nPoints = 1; end
 if ieNotDefined('msg')
@@ -49,7 +50,7 @@ end
 
 if ieNotDefined('obj'), error('You must define an object (isa,oi,scene ...)'); end
 
-[app,appAxis] = vcGetFigure(obj);
+[app,appAxis] = ieAppGet(obj);
 
 % if isempty(app) || ~isvalid(app)
 %     error('No window open f

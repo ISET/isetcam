@@ -28,7 +28,7 @@ warning('Please use ieROISelect');
 %%
 if ieNotDefined('obj'), error('You must define an object (isa,oi,scene ...)'); end
 if ieNotDefined('objFig')
-    [app, appAxis] = vcGetFigure(obj); 
+    [app, appAxis] = ieAppGet(obj); 
     if isempty(app)
         % We should add ieAddAndSelect()
         ieAddObject(obj);

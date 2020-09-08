@@ -31,7 +31,7 @@ if ieNotDefined('obj'), error('Structure required'); end
 if ieNotDefined('onoff'), onoff = 'on'; end  % Default is on
 
 %%
-[app, appAxis] = vcGetFigure(obj);
+[app, appAxis] = ieAppGet(obj);
 
 switch onoff
     case 'on'

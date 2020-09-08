@@ -35,7 +35,7 @@ function h = ieDrawShape(obj,shape,varargin)
 %% Select the window
 
 select = true;
-[~, appAxis] = vcGetFigure(obj,select);
+[~, appAxis] = ieAppGet(obj,select);
 axis(appAxis);
 
 %%

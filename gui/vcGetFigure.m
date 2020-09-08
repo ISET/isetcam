@@ -1,5 +1,7 @@
 function [app, appAxis] = vcGetFigure(obj,select)
-% Return the app and main axis associated with an object.
+% Deprecated.   Use ieAppGet
+%
+%   Return the app and main axis associated with an object.
 %
 % Syntax
 %   [app, appAxis] = vcGetFigure(obj,[select])

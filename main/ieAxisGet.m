@@ -1,5 +1,7 @@
 function ax = ieAxisGet(obj,varargin)
-% Return the image axis in a window of one of the major ISETCam types
+% Deprecated
+%
+%   Return the image axis in a window of one of the major ISETCam types
 %
 % Syntax
 %  ax = ieAxisGet(obj,varargin)
@@ -16,10 +18,12 @@ function ax = ieAxisGet(obj,varargin)
 % Wandell, January 24 2020
 %
 % See also
-%   vcGetFigure
+%   ieAppGet
 %
 
 %%
+warning('Deprecated.  See ieAppGet');
+
 % varargin = ieParamFormat(varargin);
 
 p = inputParser;
@@ -35,7 +39,7 @@ end
 
 %% Switch through the cases
 
-% See vcGetFigure for another approach.  Fix in ieROIDraw.
+% See ieAppGet for another approach.  Fix in ieROIDraw.
 switch lower(vcEquivalentObjtype(obj))
     case 'scene'
         app = ieSessionGet('scene window');

@@ -73,7 +73,7 @@ function val = ieSessionGet(param,varargin)
 % Copyright ImagEval Consultants, LLC, 2005.
 %
 % See also
-%   vcGetFigure(obj);
+%   ieAppGet(obj);
 %
 
 %% Parameters

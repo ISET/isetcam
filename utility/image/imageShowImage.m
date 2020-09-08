@@ -48,7 +48,7 @@ function img = imageShowImage(ip,gam,trueSizeFlag,app)
 if ieNotDefined('ip'), cla; return;  end
 if ieNotDefined('trueSizeFlag'), trueSizeFlag = 0; end
 if ieNotDefined('app')
-    [app,appAxis] = vcGetFigure('ip');
+    [app,appAxis] = ieAppGet('ip');
     if ieNotDefined('gam')
         gam = str2double(app.editGamma.Value);
     end

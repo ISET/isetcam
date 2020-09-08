@@ -47,7 +47,7 @@ function [roiLocs,roi] = ieROISelect(obj,varargin)
 if ieNotDefined('obj'), error('ISETCam object required (isa,oi,scene ...)'); end
 
 % Get the associated window;
-[app, appAxis] = vcGetFigure(obj);
+[app, appAxis] = ieAppGet(obj);
 if isempty(app) || ~isvalid(app)
     error('No window availble');
 end
@@ -56,7 +56,7 @@ end
 
 % Tell the user
 % Select an ROI graphically. This should become a switch statement for the
-% shape, ultimately.  Look at vcGetFigure to get the app and appAxis.
+% shape, ultimately.
 ieInWindowMessage('Select a rectangle.',app)
 roi  = drawrectangle(appAxis);
 ieInWindowMessage('',app)

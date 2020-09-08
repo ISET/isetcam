@@ -33,7 +33,7 @@ end
 if ieNotDefined('nPoints'), nPoints = 1; end
 
 % Find the app and its main axis
-[app, appAxis] = vcGetFigure(obj);
+[app, appAxis] = ieAppGet(obj);
 
 % Select a points  
 ieInWindowMessage(msg,app); 

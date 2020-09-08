@@ -27,6 +27,9 @@ function [xy, button] = ieGetXYCoords(obj)
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
+warning('Deprecated.  Use iePointSelect');
+
+%%
 if ieNotDefined('obj'), error('You must define an object (isa,oi,scene ...)'); end
 if ieNotDefined('objFig'), objFig = vcGetFigure(obj); end
 
