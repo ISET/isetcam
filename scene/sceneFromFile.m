@@ -225,9 +225,11 @@ switch lower(imType)
 end
 
 %% Put all the parameters in place and return
+%{
 if ieSessionGet('gpu compute')
     photons = gpuArray(photons);
 end
+%}
 
 if ischar(I)
     scene = sceneSet(scene, 'filename', I);

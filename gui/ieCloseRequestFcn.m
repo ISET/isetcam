@@ -10,8 +10,8 @@ function ieCloseRequestFcn
 
 % If this is the current graph window, then we set the figure information
 % to empty before exiting.
-if (gcf == ieSessionGet('graph window')), ieSessionSet('graph window',[]); end
+% if (gcf == ieSessionGet('graph window')), ieSessionSet('graph window',[]); end
 
 closereq;
 
-return;
+end

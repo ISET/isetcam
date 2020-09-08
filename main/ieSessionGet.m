@@ -238,11 +238,7 @@ switch param
         else
             val = 1e6;
         end
-        % HJ GPU case
-    case {'gpu', 'gpucompute', 'gpucomputing'}
-        % Whether or not to use gpu compute.  Always false now, but in the
-        % future we may do more with this.
-        val = false;
+
     otherwise
         error('Unknown parameter %s\n',param)
         
