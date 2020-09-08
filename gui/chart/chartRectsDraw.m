@@ -20,8 +20,8 @@ function rectHandles = chartRectsDraw(obj,rects)
 %% Find corners of the rectangles.  
 
 % Maybe this should edited to use ieRect2Vertices
-cmin = rects(:,1); cmax = rects(:,1)+rects(:,3);
-rmin = rects(:,2); rmax = rects(:,2)+rects(:,4);
+cmin = rects(:,1) - 1; cmax = rects(:,1)+rects(:,3) - 1;
+rmin = rects(:,2) - 1; rmax = rects(:,2)+rects(:,4) - 1;
 
 % These are the graphical handles for the rects we will draw
 nRects = size(rects,1);

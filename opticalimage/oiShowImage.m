@@ -20,7 +20,7 @@ function rgb = oiShowImage(oi,displayFlag,gam,oiW)
 % Copyright ImagEval Consultants, LLC, 2003.
 
 %%
-if isempty(oi), cla; return;  end
+if isempty(oi) || ~checkfields(oi,'data'), cla; return;  end
 if ieNotDefined('gam'), gam = 1; end
 if ieNotDefined('displayFlag'), displayFlag = 1; end
 if ieNotDefined('oiW'), oiW = []; end

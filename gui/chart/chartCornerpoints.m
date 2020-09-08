@@ -62,7 +62,7 @@ if ieNotDefined('wholeChart'), wholeChart = false; end
 % Make sure this is the selected object.  Perhaps we should test rather
 % than over-write.  But I am tired just now.
 ieReplaceObject(obj);
-ieRefreshWindow(obj.type);  % Make sure it is displayed.
+ieRefreshWindow(obj.type);  % Make sure it is the focus and displayed.
 
 if ~wholeChart
     nPoints = 4;
@@ -84,7 +84,6 @@ switch lower(obj.type)
         end
         obj = sceneSet(obj,'chart corners',cornerPoints);
         ieReplaceObject(obj);
-        % sceneWindow;
         
     case 'opticalimage'
         if wholeChart
@@ -94,7 +93,6 @@ switch lower(obj.type)
         end
         obj = oiSet(obj,'chart corners',cornerPoints);
         ieReplaceObject(obj);
-        % oiWindow;
         
     case {'isa','sensor'}
         % Should set the corner points in this case, too!
@@ -107,7 +105,6 @@ switch lower(obj.type)
         % obj = sensorSet(obj,'mccRectHandles',[]);
         obj = sensorSet(obj,'cornerpoints',cornerPoints);
         ieReplaceObject(obj);
-        % sensorWindow;
         
     case 'vcimage'
         % Should set the corner points in this case, too!
@@ -120,7 +117,6 @@ switch lower(obj.type)
         % obj = ipSet(obj,'mccRectHandles',[]);
         obj = ipSet(obj,'cornerpoints',cornerPoints);
         ieReplaceObject(obj);
-        % ipWindow
         
     otherwise
         error('Unknown object type %s\n',obj.type);

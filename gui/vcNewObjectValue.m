@@ -40,7 +40,7 @@ switch(objType)
     otherwise
         % Returns one value for this object
         object = vcGetObjects(objType);
-        if isempty(object{1}),  val = 1;
+        if isempty(object) || isempty(object{1}),  val = 1;
         else,                   val = length(object) + 1;
         end
 end
