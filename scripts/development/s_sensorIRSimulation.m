@@ -107,7 +107,7 @@ sensor = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'),scene,oi);
 % oi = vcGetObject('oi');
 sensor = sensorCompute(sensor,oi);
 ieAddObject(sensor)
-sensorImageWindow;
+sensorWindow;
 
 % Plot a couple of lines
 % sensorPlotLine(sensor,'h','volts','space',[1,115]);

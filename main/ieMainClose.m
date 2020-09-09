@@ -26,7 +26,7 @@ if checkfields(vcSESSION.GUI,'vcOptImgWindow','hObject')
 end
 
 if checkfields(vcSESSION.GUI,'vcSensImgWindow','hObject')
-    sensorImageWindow;
+    sensorWindow;
     sensorClose;
 end
 

@@ -535,9 +535,10 @@ switch lower(param)
         % Set the button on intensity scale on or off.  Refresh the
         % sensor window.
         % sensorSet(sensor,'scale intensity',1);
+        error('fix me');
         handles = ieSessionGet('sensor guidata');
         set(handles.btnDisplayScale,'Value',val);
-        sensorImageWindow;
+        sensorWindow;
         
         % Human cone structure - Should be removed and used only in ISETBio
     case {'human'}

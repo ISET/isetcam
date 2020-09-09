@@ -38,7 +38,7 @@ sensor = sensorCreate;
 
 sensor = sensorSetSizeToFOV(sensor,fov*0.95,scene,oi);
 sensor = sensorCompute(sensor,oi);
-vcReplaceAndSelectObject(sensor); sensorImageWindow;
+vcReplaceAndSelectObject(sensor); sensorWindow;
 
 %% Create the rendered image
 vci    = ipCreate;

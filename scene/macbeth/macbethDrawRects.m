@@ -100,7 +100,7 @@ switch onoff
                 delete(rects);
                 obj = sensorSet(obj,'mccRectHandles',[]);
                 vcReplaceObject(obj);
-                sensorImageWindow;
+                sensorWindow;
                 
             case {'scene'}
                 rects = sceneGet(obj,'mcc Rect Handles');

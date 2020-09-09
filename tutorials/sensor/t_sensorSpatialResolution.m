@@ -35,7 +35,7 @@ sensor = sensorCreate('monochrome');
 sensor = sensorCompute(sensor,oi);
 
 % To see the sensor image in a GUI, use this
-ieAddObject(sensor); sensorImageWindow;
+sensorWindow(sensor);
 
 % Now plot the optical image and the voltage response on a common spatial
 % scale. First, generate a plot of the voltage across the pixels on the
@@ -80,7 +80,7 @@ sensorSmall = sensorSet(sensor,'pixel size Constant Fill Factor',[1,1]*2e-6);
 sensorSmall = sensorCompute(sensorSmall,oi);
 
 % To see the sensor image in a GUI, use this
-ieAddObject(sensorSmall); sensorImageWindow;
+sensorWindow(sensorSmall);
 
 %% Same plotting as above, note the end of the aliasing
 row = sensorGet(sensorSmall,'rows'); row = round(row/2);

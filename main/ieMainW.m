@@ -113,7 +113,7 @@ return;
 % --- Executes on button press in btnSensorImage.
 function btnSensorImage_Callback(hObject, eventdata, handles)
 % Sensor button
-sensorImageWindow;
+sensorWindow;
 return;
 
 % --- Executes on button press in btnProcessor.

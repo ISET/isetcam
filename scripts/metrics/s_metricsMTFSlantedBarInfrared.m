@@ -154,7 +154,6 @@ ISO12233(barImage, dx);
 sensor = sensorSet(sensor,'ir filter',irFilter);
 sensor = sensorCompute(sensor,oi);
 ieAddObject(sensor); 
-% sensorImageWindow;
 
 %% Compute the MTF with the rectangle selected automatically
 
