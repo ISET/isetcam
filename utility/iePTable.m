@@ -89,7 +89,7 @@ switch lower(oType)
     case 'camera'
         % Make the table a little bigger for this case
         data = tableCamera(obj,format);
-        set(gcf,'Name',cameraGet(obj,'name'),format);
+        % set(gcf,'Name',cameraGet(obj,'name'),format);
     case 'display'
         data = tableDisplay(obj,format);
     otherwise
