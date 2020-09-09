@@ -496,20 +496,29 @@ switch oType
                 lst = ~isodd(rect); rect(lst) = rect(lst)-1;
                 mosaic   = sensorGet(sensor,'volts');
                 mosaicDV = sensorGet(sensor, 'dv');
-                if ~isempty(rect), mosaic = imcrop(mosaic,rect); end
-                if ~isempty(rect) && ~isempty(mosaicDV)
-                    mosaicDV = imcrop(mosaicDV, rect);
+                if ~isempty(rect)
+                    mosaic = mosaic(rect(2):rect(2)+rect(4)-1,...
+                                    rect(1):rect(1)+rect(3)-1,:); 
                 end
-
-                % Use ipCompute to interpolate the mosaic and produce a
-                % chromaticity value at every point.
-                sensorC = sensorSet(sensor,'volts',mosaic);
-                sensorC = sensorSet(sensorC, 'dv', mosaicDV);
-                ip = ipCreate; ip = ipCompute(ip,sensorC); 
-                rgb = ipGet(ip,'sensor space');   % Just demosaic'd
-                s = sum(rgb,3); r = rgb(:,:,1)./s; g = rgb(:,:,2)./s;
+                if ~isempty(rect) && ~isempty(mosaicDV)
+                    mosaicDV = mosaicDV(rect(2):rect(2)+rect(4)-1,...
+                                    rect(1):rect(1)+rect(3)-1,:); 
+                end
                 
-                val(:,1) = r(:); val(:,2) = g(:);
+                val = zeros(size(mosaicDV, 1) * size(mosaicDV, 2), 2, size(mosaic, 3));
+                exp = sensorGet(sensor, 'exp time');
+                for ii=1:size(mosaic, 3)
+                    % Use ipCompute to interpolate the mosaic and produce a
+                    % chromaticity value at every point.
+                    sensorC = sensorSet(sensor,'volts',mosaic(:,:,ii));
+                    sensorC = sensorSet(sensorC, 'exp time', exp(ii));
+                    sensorC = sensorSet(sensorC, 'dv', mosaicDV(:,:,ii));
+                    ip = ipCreate; ip = ipCompute(ip,sensorC); 
+                    rgb = ipGet(ip,'sensor space');   % Just demosaic'd
+                    s = sum(rgb,3); r = rgb(:,:,1)./s; g = rgb(:,:,2)./s;
+
+                    val(:,1,ii) = r(:); val(:,2,ii) = g(:);
+                end
             case {'roielectronsmean'}
                 % sensorGet(sensor,'roi electrons mean')
                 %   Mean value for each of the sensor types
