@@ -11,6 +11,8 @@
 
 %%
 ieInit
+wbState = ieSessionGet('waitbar');
+ieSessionSet('waitbar',false);
 
 %% Set up the default scene and the oi
 
@@ -107,6 +109,9 @@ sensor   = sensorSet(sensor,'exp time',expTimes);
 sensorMEV = sensorComputeMEV(sensor,oi);
 sensorMEV = sensorSet(sensorMEV,'name','Multiple exposure 2');
 sensorWindow(sensorMEV);
+
+%%
+ieSessionSet('waitbar',wbState);
 
 %% END
 
