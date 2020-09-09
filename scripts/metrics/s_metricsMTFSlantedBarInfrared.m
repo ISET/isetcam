@@ -96,7 +96,7 @@ sensor = sensorSet(sensor,'pixel',pixel);
 
 % Match the sensor size to the scene FOV. Also matches the CFA size to the
 % sensor (I think).
-sensor = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'),scene,oi);
+sensor = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'),oi);
 
 % Compute the image and bring it up.
 sensor = sensorCompute(sensor,oi);

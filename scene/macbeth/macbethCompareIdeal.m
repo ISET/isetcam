@@ -18,7 +18,7 @@ function [embRGB,mRGB,pSize] = macbethCompareIdeal(ip,mRGB,illType)
 %{
   scene = sceneCreate; oi = oiCreate; oi = oiCompute(oi,scene);
   sensor = sensorCreate; 
-  sensor = sensorSet(sensor,'fov',sceneGet(scene,'fov'),scene,oi);
+  sensor = sensorSet(sensor,'fov',sceneGet(scene,'fov'),oi);
   sensor = sensorCompute(sensor,oi);
   ip = ipCreate; ip = ipCompute(ip,sensor);
   [embRGB,mRGB,pSize] = macbethCompareIdeal(ip,[],'d65'); 

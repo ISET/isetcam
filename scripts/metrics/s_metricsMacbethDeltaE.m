@@ -64,7 +64,7 @@ sensor = sensorCreate;
 % figure(1); plot(wave,filterSpectra)
 
 % Match the sensor size to the scene FOV
-sensor = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'),scene,oi);
+sensor = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'),oi);
 
 % Compute the image and bring it up.
 sensor = sensorCompute(sensor,oi);

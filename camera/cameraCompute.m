@@ -146,7 +146,7 @@ switch mode
                         fov = [hfovScene,vfovScene];
                         N = length(sensor);
                         for ii=1:N
-                            sensor(ii) = sensorSetSizeToFOV(sensor(ii),fov,scene,oi);
+                            sensor(ii) = sensorSetSizeToFOV(sensor(ii),fov,oi);
                         end
                     end
                 end

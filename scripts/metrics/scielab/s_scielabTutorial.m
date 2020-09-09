@@ -38,7 +38,7 @@ ieAddObject(oi);
 
 % Sensor
 sensor = sensorCreate; 
-sensor = sensorSetSizeToFOV(sensor,1.1*sceneGet(scene,'fov'),scene,oi);
+sensor = sensorSetSizeToFOV(sensor,1.1*sceneGet(scene,'fov'),oi);
 sensor = sensorCompute(sensor,oi);
 ieAddObject(sensor);
 % sensorImageWindow;

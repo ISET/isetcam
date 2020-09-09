@@ -36,7 +36,7 @@ oi     = oiCompute(scene,oi);
 %%
 sensor = sensorCreate;
 
-sensor = sensorSetSizeToFOV(sensor,fov*0.95,scene,oi);
+sensor = sensorSetSizeToFOV(sensor,fov*0.95,oi);
 sensor = sensorCompute(sensor,oi);
 vcReplaceAndSelectObject(sensor); sensorWindow;
 

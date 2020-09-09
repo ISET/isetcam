@@ -53,7 +53,7 @@ wave  = sensorGet(nikon,'wave');
 % Load up  Nikon color filters and an infrared
 nikon = sensorSet(nikon,'infrared',ieReadSpectra('infrared2',wave));
 nikon = sensorSet(nikon,'color filters',ieReadSpectra('NikonD70',wave));
-nikon = sensorSetSizeToFOV(nikon,sceneGet(scene,'fov'),scene,oi);
+nikon = sensorSetSizeToFOV(nikon,sceneGet(scene,'fov'),oi);
 
 %% Display the scene over a range of blackbody illuminants 
 bbodyList = (3000:1000:8500);

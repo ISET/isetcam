@@ -74,7 +74,7 @@ scenePlot(scene,'illuminant energy roi');
 scene = sceneAdjustLuminance(scene,200);  % Candelas/m2
 scene = sceneSet(scene,'fov',26.5);       % Set the scene horizontal field of view
 scene = sceneInterpolateW(scene,wave,true); % Resample, preserve luminance
-ieAddObject(scene); sceneWindow;            % if you want to view the change in the GUI window
+sceneWindow(scene);            % if you want to view the change in the GUI window
 %% Optics
 % There are also simple functions to transform between the objects, say from 
 % the scene (radiance) to the optical image (irradiance). To explore the effect 
@@ -83,7 +83,7 @@ ieAddObject(scene); sceneWindow;            % if you want to view the change in 
 % by typing *doc sceneCreate.*
 %%
 scene = sceneCreate('radial lines');
-ieAddObject(scene); sceneWindow;
+sceneWindow(scene);
 %% Calculate the optical image (irradiance at the sensor)
 % The optical image is an important structure, like the scene structure. We 
 % adjust the properties of optical image formation using the oiSet and oiGet routines.
@@ -111,7 +111,7 @@ oi = oiCompute(oi,scene);
 
 % Save the optical image structure and bring up the optical image
 % window.
-ieAddObject(oi); oiWindow;
+oiWindow(oi);
 
 %% 
 % Many other optics and oi properties can be set . For a list see *doc opticsSet, 
@@ -208,7 +208,7 @@ sensor = sensorCompute(sensor,oi);
 % resize the window to eliminate these. You can also set the
 % display gamma function to brighten the appearance in the edit
 % box at the lower left of the window.
-ieAddObject(sensor); sensorWindow;
+sensorWindow(sensor);
 
 % There are a variety of ways to quantify these data in the
 % pulldown menus. Also, you can view the individual pixel data
@@ -234,7 +234,7 @@ ip = ipCreate;
 % parameters are ipGet and ipSet.
 %
 ip = ipSet(ip,'name','Unbalanced');
-ip = ipSet(ip,'scaledisplay',1);
+ip = ipSet(ip,'scale display',1);
 
 % The default properties use bilinear demosaicking, no color
 % conversion or balancing.  The sensor RGB values are simply set
@@ -245,8 +245,9 @@ ip = ipCompute(ip,sensor);
 % processed data, this time a full RGB image.
 ieAddObject(ip); ipWindow
 
-% You can experiment by changing the processing parameters in
-% many ways, such as:
+%% You can experiment by changing the processing parameters 
+
+% For example
 ip2 = ipSet(ip,'name','More Balanced');
 ip2 = ipSet(ip2,'internalCS','XYZ');
 ip2 = ipSet(ip2,'conversion method sensor','MCC Optimized');
@@ -255,7 +256,7 @@ ip2 = ipSet(ip2,'correction method illuminant','Gray World');
 % With these parameters, the colors will appear to be more accurate
 ip2 = ipCompute(ip2,sensor);
 
-ieAddObject(ip2); ipWindow
+ipWindow(ip2)
 
 % Again, this window offers the opportunity to perform many
 % parameter changes and to evaluate certain metric properties of
@@ -271,4 +272,5 @@ oi = oiCompute(oi,scene);
 sensor = sensorCompute(sensor,oi);
 ip = ipCompute(ip,sensor);
 ipWindow(ip);
+
 %% END

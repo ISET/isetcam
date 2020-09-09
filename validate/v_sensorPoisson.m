@@ -17,7 +17,7 @@ oi = oiCreate; oi = oiCompute(oi,scene);
 %% For a monochrome sensor, look at the center of the uniform image
 sensor = sensorCreate('monochrome');
 fov = 8;
-sensor = sensorSetSizeToFOV(sensor,fov,scene,oi);
+sensor = sensorSetSizeToFOV(sensor,fov,oi);
 
 % Set the noise flag to Poisson noise only
 sensor = sensorSet(sensor,'noise flag',-2);

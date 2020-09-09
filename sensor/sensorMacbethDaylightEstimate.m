@@ -35,7 +35,7 @@ function [illPhotons,cp,wgts,Cstacked,X] = sensorMacbethDaylightEstimate(sensor,
    % User selects cornerpoints of the MCC
    scene = sceneCreate; oi = oiCreate; oi = oiCompute(oi,scene);
    fov = sceneGet(scene,'fov');
-   sensor = sensorCreate; sensor = sensorSet(sensor,'fov',fov,scene,oi);
+   sensor = sensorCreate; sensor = sensorSet(sensor,'fov',fov,oi);
    sensor = sensorCompute(sensor,oi);
    sensorWindow(sensor);
    [illPhotons,cp,wgts] = sensorMacbethDaylightEstimate(sensor);
@@ -57,7 +57,7 @@ function [illPhotons,cp,wgts,Cstacked,X] = sensorMacbethDaylightEstimate(sensor,
    % Build the sensor data
    oi = oiCreate; oi = oiCompute(oi,scene);
    fov = sceneGet(scene,'fov');
-   sensor = sensorCreate; sensor = sensorSet(sensor,'fov',fov,scene,oi);
+   sensor = sensorCreate; sensor = sensorSet(sensor,'fov',fov,oi);
    sensor = sensorSet(sensor,'noise flag',1);
    sensor = sensorCompute(sensor,oi);
 
