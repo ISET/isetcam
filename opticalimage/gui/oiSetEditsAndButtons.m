@@ -54,15 +54,7 @@ switch lower(opticsModel)
         
         str = sprintf('%1.2f',opticsGet(optics,'fnumber'));
         app.editFnumber.Value = str;
-        
         switchControlVisibility(app,'on');
-
-        %{
-        val = opticsGet(optics,'off axis method');
-        if strcmpi(val,'skip'), app.btnOffAxis, 'Value',0);
-        else, set(handles.btnOffAxis, 'Value',1);
-        end
-        %}
         
     case 'shiftinvariant'
         % The SI model may have a wvf attached, or not.
@@ -71,7 +63,7 @@ switch lower(opticsModel)
         
     case 'raytrace'
         app.popOpticsModel.Value = app.popOpticsModel.Items{3};
-        switchControlVisibility(handles,'off');
+        switchControlVisibility(app,'off');
         
     case 'iset3d'
         set(handles.popOpticsModel,'Value',4);
