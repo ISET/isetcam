@@ -51,10 +51,8 @@ patchSize = 64;
 scene = sceneCreate('macbeth tungsten',patchSize,wave);
 
 % It is often useful to visualize the data in the scene window
-ieAddObject(scene); sceneWindow;
+sceneWindow(scene);
 
-% Useful for publish
-% h = sceneWindow; set(h,'InvertHardCopy','off');  
 %% The scene illuminant
 % Within the ISET framework, we use specific functions to interact with the 
 % objects.  All of the major types of objects have a Create, Get, Set and Plot 
@@ -107,13 +105,13 @@ oi = oiSet(oi,'optics fnumber',2.8);
 % In this example we set the properties of the optics to include
 % cos4th falloff for the off axis vignetting of the imaging lens,
 % and we set the lens focal length to 3 mm.
-oi = oiSet(oi,'optics offaxis','cos4th');
+oi = oiSet(oi,'optics offaxis method','cos4th');
 oi = oiSet(oi,'optics focal length',3e-3);
 oi = oiCompute(oi,scene);
 
 % Save the optical image structure and bring up the optical image
 % window.
-ieAddObject(oi); h = oiWindow;
+ieAddObject(oi); oiWindow;
 
 %% 
 % Many other optics and oi properties can be set . For a list see *doc opticsSet, 
@@ -272,7 +270,5 @@ oi = oiSet(oi,'optics fnumber',8);
 oi = oiCompute(oi,scene);
 sensor = sensorCompute(sensor,oi);
 ip = ipCompute(ip,sensor);
-ieAddObject(ip);
-ipWindow;
-%% 
-%
+ipWindow(ip);
+%% END

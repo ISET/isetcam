@@ -8,10 +8,13 @@ function img = imageShowImage(ip,gam,trueSizeFlag,app)
 %  ip:             Image process structure
 %  gam:            Gamma for the image display
 %  trueSizeFlag:
-%  app:   Either an ipWindow_App object, a Matlab ui figure, or 0.  If 0, the
-%         rgb values are returned but not displayed.  If a figure the data
-%         are shown in the figure.  If the ipWindow_App the data are shown
-%         in app.ipImage axis.
+%  app:   Either an ipWindow_App object
+%         an existing Matlab ui figure, 
+%         or 0.  
+%
+%         If 0, the rgb values are returned but not displayed.  If a figure
+%         the data are shown in the figure.  If the ipWindow_App the data
+%         are shown in app.ipImage axis.
 %
 % Output:
 %  img:   sRGB image
@@ -52,15 +55,18 @@ if ieNotDefined('app')
     if ieNotDefined('gam')
         gam = str2double(app.editGamma.Value);
     end
-    axis(appAxis);   % Select the axis
+elseif isa(app,'ipWindow_App')
+    appAxis = app.ipImage;
 elseif isa(app,'matlab.ui.Figure')
+    % Not sure why we are ever here.  Maybe the user had a pre-defined
+    % window?
     figure(app);
 elseif ~isequal(app,0)
-    % Show it in a window
-    if ieNotDefined('gam')
-        gam = 1;
-    end
+    % User sent in a 0.  User wants the image in a separate window via
+    % ieNewGraphWin 
 end
+
+if ieNotDefined('gam'), gam = 1; end
 
 %% Test and then convert the linear RGB values stored in result to XYZ.  
 img = ipGet(ip,'result');
@@ -94,9 +100,7 @@ switch ipType
     case 'monochrome'
         colormap(gray(256));
         if gam ~= 1, img = img.^(gam); end
-        if app, imagesc(img); axis image; axis off;
-            if trueSizeFlag, truesize; end    
-        end
+
     case 'rgb'
         % Set the largest srgb to 1.
         %
@@ -107,8 +111,6 @@ switch ipType
             mxImage = max(img(:));
             img = img/mxImage;
             img = lrgb2srgb(img);
-        else
-            % No scaling. 
         end
         
         % There may be some negative numbers or numbers
@@ -120,18 +122,20 @@ switch ipType
         % in sRGB mode.
         if gam ~=1, img = img.^gam; end
         
-        % Maybe this has to do with Matlab 2014b?  Or maybe just testing
-        % for a false figure number?
-        if ~isequal(app,0) 
-            image(img); axis image; axis off;
-            if trueSizeFlag
-                truesize;
-                set(app,'name',sprintf('ip:%s gam: %.2f',ipGet(ip,'name'),gam));
-            end
-        end
-        
     otherwise
         error('No display method for %s.',ipType);
+end
+
+% Either show it in the app window or in a graph window
+if ~isequal(app,0)
+    image(appAxis,img); axis image; axis off;
+else
+    % app is 0.
+    ieNewGraphWin;
+    imshow(img); axis image; axis off;
+    if trueSizeFlag
+        truesize;
+    end
 end
 
 end
