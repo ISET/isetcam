@@ -229,15 +229,15 @@ switch lower(param)
         end
 
     case {'fov','horizontalfieldofview'}
-        % sensor = sensorSet(sensor,'fov',newFOV,scene,oi);
-        % This set is dangerous because it changes the size.  And size
-        % changes the FOV.  So, I am not happy.  But we use it so much that
-        % I stuck it in secretly.  But the preferred usage should be:
-        % [sensor,actualFOV] = sensorSetSizeToFOV(sensor,newFOV,scene,oi);
-        scene = []; oi = [];
-        if ~isempty(varargin), scene = varargin{1}; end
-        if length(varargin) > 1, oi = varargin{2}; end
-        sensor = sensorSetSizeToFOV(sensor,val, scene, oi);
+        % sensor = sensorSet(sensor,'fov',newFOV,oi);
+        %
+        % This set is dangerous because it changes the sensor size. A
+        % preferred usage might be: 
+        %  [sensor,actualFOV] = sensorSetSizeToFOV(sensor,newFOV,oi);
+        %
+        oi = [];
+        if ~isempty(varargin), oi    = varargin{1}; end
+        sensor = sensorSetSizeToFOV(sensor,val, oi);
     case 'color'
         sensor.color = val;
     case {'filterspectra','colorfilters','filtertransmissivities'}

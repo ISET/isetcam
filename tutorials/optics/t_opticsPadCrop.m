@@ -47,7 +47,7 @@ oiWindow(oiCropped);
 %% Notice that for sensors, you can crop just by setting the FOV
 
 sensor = sensorCreate;
-sensor = sensorSet(sensor,'fov',sceneGet(scene,'fov'),scene,oi);
+sensor = sensorSet(sensor,'fov',sceneGet(scene,'fov'),oi);
 
 % The oi has the padding.  But the sensor is cropped
 sensor = sensorCompute(sensor,oi);
@@ -63,7 +63,7 @@ sensorWindow(sensor);
 % Notice, however, that the FOV is always the horizontal field of view, so
 % we do not get padding in the vertical direction for a rectangular image.
 % Only for a square image.
-sensor = sensorSetSizeToFOV(sensor,oiGet(oi,'fov'),[],oi);
+sensor = sensorSetSizeToFOV(sensor,oiGet(oi,'fov'),oi);
 sensor = sensorCompute(sensor,oi);
 sensorWindow(sensor);
 

@@ -15,7 +15,7 @@ sensor = sensorCompute(sensor,oi);
 sensorWindow(sensor);
 
 %%
-sensor2 = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'),[],oi);
+sensor2 = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'),oi);
 sensor2 = sensorCompute(sensor2,oi);
 sensorWindow(sensor2);
 

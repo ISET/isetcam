@@ -30,7 +30,7 @@ sensor = sensorSet(sensor,'microlens',mlens);
 
 % Then give the sensor a decent field of view
 fov = 20;
-sensor = sensorSetSizeToFOV(sensor,fov,[],oi);
+sensor = sensorSetSizeToFOV(sensor,fov,oi);
 ieAddObject(sensor);
 
 % Here are the default specifications for the optics and sensor

@@ -182,7 +182,7 @@ for ii=1:numel(oiList)
         oiSize = size(oi.data.photons); % I think this is a proxy for resolution
         
         sceneFOV = fovData(ii);
-        sensor = sensorSetSizeToFOV(sensor,sceneFOV,ourScene,oi);
+        sensor = sensorSetSizeToFOV(sensor,sceneFOV,oi);
 
         if ~isequal(progDialog, '')
             progDialog.Indeterminate = 'off';

@@ -103,7 +103,7 @@ sensor = sensorSet(sensor,'pattern',[1 5 3; 2 4 2; 3 2 1]);
 
 % sensorShowCFA(sensor);
 
-sensor = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'),scene,oi);
+sensor = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'),oi);
 % oi = vcGetObject('oi');
 sensor = sensorCompute(sensor,oi);
 ieAddObject(sensor)

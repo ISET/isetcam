@@ -24,7 +24,7 @@ ieAddObject(oi); oiWindow;
 
 sensor = sensorCreate;
 sensor = sensorSet(sensor,'pixel size constant fill factor',[1.5 1.5]*1e-6);
-sensor = sensorSetSizeToFOV(sensor,5,s,oi);
+sensor = sensorSetSizeToFOV(sensor,5,oi);
 sensor = sensorCompute(sensor,oi);
 ieAddObject(sensor); sensorWindow;
 

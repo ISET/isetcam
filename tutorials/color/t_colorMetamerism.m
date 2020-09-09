@@ -169,7 +169,7 @@ oiWindow(oi);
 % this spatial resolution.
 sensor = sensorCreate('human');
 sensor = sensorSet(sensor,'exp time',0.10);
-sensor = sensorSetSizeToFOV(sensor,1,uniformScene,oi);
+sensor = sensorSetSizeToFOV(sensor,1,oi);
 sensor = sensorCompute(sensor,oi);
 
 sz = sensorGet(sensor,'size');

@@ -79,7 +79,8 @@ sceneWindow(scene); pause(delay);
 
 % Here is the yellow beak region and its reflectance
 rect = [144   198    27    18];
-r = ieDrawShape(scene,'rectangle',rect); set(r,'EdgeColor',[0 0 1]);
+r = ieDrawShape(scene,'rectangle',rect); 
+set(r,'EdgeColor',[0 0 1]);
 scenePlot(scene,'reflectance roi',rect);
 
 %%

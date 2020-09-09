@@ -69,7 +69,7 @@ pixel = pixelCreate;
 sensor = sensorCreate('Custom', pixel, filterOrder, filterFile);
 delete(filterFile);  % Delete to keep the directory clean
 
-sensor = sensorSet(sensor,'fov',sceneGet(scene,'fov')*1.1,scene,oi);
+sensor = sensorSet(sensor,'fov',sceneGet(scene,'fov')*1.1,oi);
 
 sensor = sensorSet(sensor,'Name','Camera-Simulation');
 

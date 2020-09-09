@@ -20,7 +20,7 @@ scene  = sceneSet(scene,'hfov',10);
 
 oi     = oiCreate;
 sensor = sensorCreate;
-sensor = sensorSetSizeToFOV(sensor,10,scene,oi);
+sensor = sensorSetSizeToFOV(sensor,10,oi);
 ip     = ipCreate;
 
 oi     = oiCompute(oi,scene);

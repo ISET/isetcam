@@ -48,7 +48,7 @@ for ii=1:3
     sensorMonochrome(ii) = sensorSet(sensorMonochrome(ii),'exp time',0.1);
     sensorMonochrome(ii) = sensorSet(sensorMonochrome(ii),'filterspectra',fSpectra(:,ii));
     sensorMonochrome(ii) = sensorSet(sensorMonochrome(ii),'Name',sprintf('Channel-%.0f',ii));
-    sensorMonochrome(ii) = sensorSetSizeToFOV(sensorMonochrome(ii),sceneGet(scene,'fov'),scene,oi);
+    sensorMonochrome(ii) = sensorSetSizeToFOV(sensorMonochrome(ii),sceneGet(scene,'fov'),oi);
     sensorMonochrome(ii) = sensorSet(sensorMonochrome(ii),'wave',wave);
 end
 
@@ -72,7 +72,7 @@ ieAddObject(sensorMonochrome(1)); sensorWindow;
 sensorFoveon = sensorCreate;
 sensorFoveon = sensorSet(sensorFoveon,'pixel size constant fill factor',[1.4 1.4]*1e-6);
 sensorFoveon = sensorSet(sensorFoveon,'exp time',0.1);
-sensorFoveon = sensorSetSizeToFOV(sensorFoveon,sceneGet(scene,'fov'),scene,oi);
+sensorFoveon = sensorSetSizeToFOV(sensorFoveon,sceneGet(scene,'fov'),oi);
 sensorFoveon = sensorSet(sensorFoveon,'wave',wave);
 
 % Place the data (im) into the volts field of the matched sensor. The
@@ -106,7 +106,7 @@ sensorPlot(sensorBayer,'color filters');
 % Match the size and exposure time and field of view
 sensorBayer = sensorSet(sensorBayer,'pixel size constant fill factor',[1.4 1.4]*1e-6);
 sensorBayer = sensorSet(sensorBayer,'exp time',0.1);
-sensorBayer = sensorSetSizeToFOV(sensorBayer,sceneGet(scene,'fov'),scene,oi);
+sensorBayer = sensorSetSizeToFOV(sensorBayer,sceneGet(scene,'fov'),oi);
 
 % Compute
 sensorBayer = sensorCompute(sensorBayer,oi);
