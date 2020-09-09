@@ -13,13 +13,17 @@ ieInit
 
 %% Create the baseline windows
 
-scene = sceneCreate; ieAddObject(scene);
+scene = sceneCreate; 
+sceneWindow(scene);
 
-oi  = oiCreate; oi = oiCompute(oi,scene); ieAddObject(oi);
+oi  = oiCreate; oi = oiCompute(oi,scene); 
+oiWindow(oi);
 
-sensor = sensorCreate; sensor = sensorCompute(sensor,oi); ieAddObject(sensor);
+sensor = sensorCreate; sensor = sensorCompute(sensor,oi); 
+sensorWindow(sensor);
 
-ip = ipCreate; ip = ipCompute(ip,sensor); ieAddObject(ip);
+ip = ipCreate; ip = ipCompute(ip,sensor); 
+ipWindow(ip);
 
 %% Rect on a scene
 
@@ -42,7 +46,7 @@ delete(shapeHandle);
 
 c = [15 30 20];   % Radius, row, col
 shapeHandle = ieROIDraw('oi','shape','circle','shape data',c);
-shapeHandle.LineStyle = ':';
+% shapeHandle.LineStyle = ':';
 shapeHandle.Color = 'w';
 pause(1)
 delete(shapeHandle);

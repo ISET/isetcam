@@ -34,8 +34,8 @@ function demosaicedImage = Demosaic(ip,sensor)
 %    {'adaptive laplacian'}
 %    {'pocs'}  - Projection onto convex sets
 %    {'nearest neighbor'}
-%    {'multichannel'}  - linear initerpolation for multiple waveband data
-%                        in arbitrary patterns
+%    {'multichannel'}  - linear initerpolation for multichannel sensor
+%    {'analog rccc'}   - Special case of Red/Clear... sensor
 %
 % ieExamplesPrint('Demosaic');
 %

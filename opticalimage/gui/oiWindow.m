@@ -68,11 +68,11 @@ oiW = ieSessionGet('oi window');
 if isempty(oiW)
     % Empty, so create one and put it in the vcSESSION
     oiW = oiWindow_App;
-    ieSessionSet('scene window',oiW);
+    ieSessionSet('oi window',oiW);
 elseif ~isvalid(oiW)
     % Replace the invalid one
     oiW = oiWindow_App;
-    ieSessionSet('scene window',oiW);
+    ieSessionSet('oi window',oiW);
 else
     % Just refresh it
     oiW.refresh;

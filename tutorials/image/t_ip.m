@@ -14,7 +14,8 @@ sensor = sensorCreate;
 sensor = sensorSet(sensor,'size',[340 420]);
 
 % Match the scene field of view to the sensor size
-scene  = sceneSet(scene,'fov',sensorGet(sensor,'fov'));
+fov = sensorGet(sensor,'fov',sceneGet(scene,'distance'),oi);
+scene  = sceneSet(scene,'fov',fov);
 
 % Compute the optical image and sensor from the scene.
 oi     = oiCompute(scene,oi);
@@ -58,8 +59,7 @@ ip = ipSet(ip,'name','MCC-XYZ');
 
 % Compute from sensor to sRGB
 ip = ipCompute(ip,sensor);
-ieAddObject(ip);
-ipWindow;
+ipWindow(ip);
 
 %% Set the illuminant correction algorithm
 
@@ -86,7 +86,8 @@ ipWindow;
 %% Interacting with the image processing display
 
 % This is the display structure
-d = ipGet(ip,'display')
+d = ipGet(ip,'display');
+disp(d)
 
 % There is a separate window for interacting with the display
 % See t_displayIntroduction.
@@ -100,5 +101,4 @@ displayPlot(d,'gamut 3d');
 %% Display subpixel pointspreads
 displayPlot(d,'psf')
 
-
-%% 
+%% END

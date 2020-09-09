@@ -10,7 +10,7 @@ function [noisyImage,colDSNU,colPRNU] = noiseColumnFPN(sensor)
 %      colPRNU = N(0,1)*colPRNU + 1
 %
 % If the column FPN values are not already computed, they are computed
-% here.  Usually, however, the values are computed in sensorImageWindow.
+% here.  Usually, however, the values are computed in sensorWindow.
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 

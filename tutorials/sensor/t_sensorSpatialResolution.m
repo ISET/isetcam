@@ -107,4 +107,4 @@ set(gca,'xlim',[-40 40])
 xtick = min(sData.pos):xSpacing:max(sData.pos);
 set(gca,'xtick',xtick); grid on; title('Fine pixel')
 
-%%
+%% END

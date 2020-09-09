@@ -16,7 +16,7 @@ function [outSensor, unitSigCurrent] = sensorCompute(sensor,oi,showBar)
 %
 %  The computation checks a variety of parameters and flags in the sensor
 %  structure to perform the calculation.  These parameters and flags can be
-%  set either through the graphical user interface (sensorImageWindow) or
+%  set either through the graphical user interface (sensorWindow) or
 %  by scripts.
 %
 % NOISE FLAG

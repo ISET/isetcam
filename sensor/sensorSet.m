@@ -524,22 +524,28 @@ switch lower(param)
         sensor.mccCornerPoints = val;
         
     case {'gamma'}
-        % Adjust the gamma on the display window.
-        hdl = ieSessionGet('sensor window handle');
-        if ~isempty(hdl)
-            set(hdl.editGam,'string',num2str(val));
-            % sceneWindow('sceneRefresh',hObj,eventdata,hdl);
-            sensorImageWindow;
+        % Adjust the gamma including updating the sensorWindow.
+        sensor.render.gamma = val;
+        app = ieSessionGet('sensor window');
+        if ~isempty(app) && isvalid(app)
+            app.GammaEditField.Value = num2str(val);
+            app.refresh;
         end
+            
     case {'scaleintensity'}
         % Set the button on intensity scale on or off.  Refresh the
         % sensor window.
+        %
         % sensorSet(sensor,'scale intensity',1);
-        error('fix me');
-        handles = ieSessionGet('sensor guidata');
-        set(handles.btnDisplayScale,'Value',val);
-        sensorWindow;
-        
+        sensor.render.scale = val;
+        app = ieSessionGet('sensor guidata');
+        if ~isempty(app) && isvalid(app)
+            if val, app.MaxbrightSwitch.Value = 'On';
+            else,   app.MaxbrightSwitch.Value = 'Off';
+            end
+            app.refresh;
+        end
+
         % Human cone structure - Should be removed and used only in ISETBio
     case {'human'}
         % Structure containing information about human cone case

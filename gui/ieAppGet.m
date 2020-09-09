@@ -1,11 +1,13 @@
-function [app, appAxis] = ieAppGet(obj,select)
+function [app, appAxis] = ieAppGet(obj,varargin)
 % Return the app and main axis associated with an object.
 %
 % Syntax
-%   [app, appAxis] = ieAppGet(obj,[select])
+%   [app, appAxis] = ieAppGet(obj,varargin)
 %
 % Input
 %   obj:    One of the ISETCam main object types, scene, oi, sensor, ip
+%
+% Optional key/value
 %   select: If true, put the focus on the figure (call figure(app.figure1))
 %           Perhaps we should call app.refresh?
 %
@@ -31,12 +33,17 @@ function [app, appAxis] = ieAppGet(obj,select)
  [app,appAxis] = ieAppGet(scene)
 %}
 
-%%
-if ieNotDefined('obj'), error('An ISETCam obj required'); end
-if ieNotDefined('select'), select = true; end
+%% Parse
+p = inputParser;
+p.addRequired('obj',@(x)(isstruct(x) || ischar(x)));
+p.addParameter('select',true,@islogical);
+p.parse(obj,varargin{:});
+select = p.Results.select;
 
-%% Forces the objType string to one of original names below.
-objType = vcEquivalentObjtype(obj.type);
+% Forces the objType string to one of original names below.
+if isstruct(obj), objType = vcEquivalentObjtype(obj.type); 
+else,             objType = vcEquivalentObjtype(obj);
+end
 
 %% Looks up the names of the app and the proper axis
 

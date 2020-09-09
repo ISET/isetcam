@@ -226,7 +226,7 @@ function val = sensorGet(sensor,param,varargin)
 %     'mcc rect handles'  - Handles for the rectangle selections in an MCC
 %     'mcc corner points' - Corner points for the MCC chart
 %
-%     'rgb'               - Display image in sensorImageWindow
+%     'rgb'               - Display image in sensorWindow
 %     'gamma'             - Display gamma level
 %
 % See also:  sensorSet

@@ -141,4 +141,4 @@ ylabel('Relative amplitude');
 title('MTF for different pixel sizes (fixed die size)');
 hold off; grid on
 
-%%
+%% END

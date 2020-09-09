@@ -100,6 +100,6 @@ size(dv)
 %% Show the different resolution images side by side
 imageMultiview('ip',1:3,true);
 
-%%
+%% END
 
 

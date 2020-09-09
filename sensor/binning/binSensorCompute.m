@@ -11,7 +11,7 @@ function ISA = binSensorCompute(ISA,OPTICALIMAGE,bMethod,showWaitBar)
 %  The computation checks a variety of parameters and flags in the ISA
 %  structure to perform the calculation.  Most of these parameters and
 %  flags can be set either through the graphical user interface
-%  (sensorImageWindow) or by scripts.
+%  (sensorWindow) or by scripts.
 %
 %  The binning method (bMethod) can only be set from a script.  From the
 %  GUI, it uses the default (kodak2008) method.
