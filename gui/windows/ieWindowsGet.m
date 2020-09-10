@@ -23,23 +23,23 @@ if ieNotDefined('saveFlag'), saveFlag = false; end
 wPos = ieSessionGet('wpos');
 
 w = ieSessionGet('main window');
-if ~isempty(w), wPos{1} = get(w,'Position'); end
+if ~isempty(w), wPos{1} = w.figure1.Position; end
 wPos{1} = get(w,'Position');
 
 w = ieSessionGet('scene window');
-if ~isempty(w), wPos{2} = get(w,'Position'); end
+if ~isempty(w), wPos{2} = w.figure1.Position; end
 
 w = ieSessionGet('oi window');
-if ~isempty(w), wPos{3} = get(w,'Position'); end
+if ~isempty(w), wPos{3} = w.figure1.Position; end
 
 w = ieSessionGet('sensor window');
-if ~isempty(w), wPos{4} = get(w,'Position'); end
+if ~isempty(w), wPos{4} = w.figure1.Position; end
 
 w = ieSessionGet('ip window');
-if ~isempty(w), wPos{5} = get(w,'Position'); end
+if ~isempty(w), wPos{5} = w.figure1.Position; end
 
-w = ieSessionGet('graph window');
-if ~isempty(w), wPos{6} = get(w,'Position'); end
+% w = ieSessionGet('graph window');
+% if ~isempty(w), wPos{6} = w.figure1.Position; end
 
 if saveFlag, setpref('ISET','wPos',wPos);  end
 

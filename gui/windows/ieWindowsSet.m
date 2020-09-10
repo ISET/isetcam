@@ -45,24 +45,24 @@ end
 %% If the window is created and there is a stored value, set the window
 
 w = ieSessionGet('main window'); v = wPos{1};
-if ~isempty(w) && ~isempty(v), set(w,'Position',v); end
+if ~isempty(w) && ~isempty(v), w.figure1.Position = v; end
 
 w = ieSessionGet('scene window'); v = wPos{2};
-if ~isempty(w) && ~isempty(v), set(w,'Position',v); end
+if ~isempty(w) && ~isempty(v), w.figure1.Position = v; end
 
 w = ieSessionGet('oi window'); v = wPos{3};
-if ~isempty(w) && ~isempty(v), set(w,'Position',v); end
+if ~isempty(w) && ~isempty(v), w.figure1.Position = v; end
 
 w = ieSessionGet('sensor window');v = wPos{4};
-if ~isempty(w) && ~isempty(v), set(w,'Position',v); end
+if ~isempty(w) && ~isempty(v), w.figure1.Position = v; end
 
 w = ieSessionGet('ip window');v = wPos{5};
-if ~isempty(w) && ~isempty(v), set(w,'Position',v); end
+if ~isempty(w) && ~isempty(v), w.figure1.Position = v; end
 
-if size(wPos) > 5
-    w = ieSessionGet('graph window');v = wPos{6};
-    if ~isempty(w) && ~isempty(v), set(w,'Position',v); end
-end
+% if size(wPos) > 5
+%     w = ieSessionGet('graph window');v = wPos{6};
+%     if ~isempty(w) && ~isempty(v), set(w,'Position',v); end
+% end
 
 setpref('ISET','wPos',wPos);
 

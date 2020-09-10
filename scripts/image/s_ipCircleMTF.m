@@ -16,13 +16,13 @@ scene = sceneCreate('mackay');
 oi    = oiCreate;
 oi    = oiCompute(oi,scene);
 sensor= sensorCreate;
-sensor= sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'));
+sensor= sensorSet(sensor,'fov',sceneGet(scene,'fov'),oi);
 sensor= sensorCompute(sensor,oi);
 
 ip    = ipCreate;
 ip    = ipCompute(ip,sensor);
 
-ieAddObject(ip); ipWindow;
+ipWindow(ip);
 
 %% Plot spectrum and the circle on the data ...
 
@@ -40,7 +40,7 @@ rImg = img(:,:,2);
 % figure(1); imagesc(rImg); axis image
 thisPeak = zeros(1,length(rList));
 
-vcNewGraphWin;
+fig = ieNewGraphWin;
 for ii=1:length(rList)
     
     % Find the points at this distance
@@ -66,13 +66,11 @@ for ii=1:length(rList)
     
     % Show the circle on the image
     subplot(1,2,2), tmp = rImg; tmp(lst) = 0;
-    imagesc(tmp); colormap(gray(256)); axis image
-    drawnow;
-    pause(1)
+    imagesc(tmp); colormap(gray(256)); axis image; pause(2);
 end
 
 %% Plot the modulation transfer function
-vcNewGraphWin; plot(max(rList) - rList,thisPeak,'o-')
+ieNewGraphWin; plot(max(rList) - rList,thisPeak,'o-')
 xlabel('maxRadius - thisRadius')
 ylabel('FFT peak')
 grid on

@@ -52,13 +52,14 @@ varargin = ieParamFormat(varargin);
 p.addRequired('lum',@isnumeric);
 p.addRequired('thisWave',@(x)(x >= 350 && x <= 720));
 p.addParameter('sd',10,@isnumeric);   % Standard deviation of the Gaussian radiance model
+p.addParameter('wave',300:1:770,@isvector);
 
 p.parse(lum,thisWave,varargin{:});
-sd = p.Results.sd;
+
+sd    = p.Results.sd;
+wave  = p.Results.wave;   % I chose a big range because we used for UV LEDs
 
 %% Model the radiance as a Gaussian centered at thisWave
-
-wave   = 300:1:770;   % I chose a big range because we used for UV LEDs
 energy = zeros(numel(wave),1);
 energy(wave == thisWave) = 1;   % Set an impulse at the center wave
 

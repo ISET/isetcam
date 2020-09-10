@@ -6,6 +6,9 @@
 % This script may become the basis for calculating (efficiently) from a
 % video
 %
+% NOTE:  With Matlab 2020a this script produced Matlab Graphics Error
+% notices.  Twice.
+%
 % Wandell, Copyright Imageval, LLC, 2015
 
 ieInit
@@ -27,13 +30,12 @@ img((r+1)/2,(r+1)/2,pixelType) = 1;
 
 pointScene = sceneFromFile(img,'rgb',[],d);
 % pointScene = sceneSet(pointScene,'distance',10);
-ieAddObject(pointScene);
-sceneWindow;
+sceneWindow(pointScene);
 
 %%  Compute OI
 
 oi = oiCompute(oi,pointScene);
-ieAddObject(oi); oiWindow;
+oiWindow(oi);
 
 %%  Make a high resolution cone sampling array
 
@@ -48,19 +50,17 @@ params.rgbDensities = dens; % Empty, L,M,S
 
 pixel = [];
 sensor = sensorCreate('human',pixel,params);
-sensor = sensorSetSizeToFOV(sensor,sceneGet(pointScene,'fov'));
+sensor = sensorSet(sensor,'fov',sceneGet(pointScene,'fov'),oi);
 sensor = sensorSet(sensor,'noise flag',0);
-
-%
 sensor = sensorCompute(sensor,oi);
-ieAddObject(sensor);
-sensorWindow('scale',true);
+
+sensorWindow(sensor);
 
 %% Plot
 
 v = sensorGet(sensor,'volts',coneType);  % Get the right cone type
 
-vcNewGraphWin([],'tall');
+ieNewGraphWin([],'tall');
 
 subplot(2,1,1)
 sz = sensorGet(sensor,'size');
@@ -77,15 +77,13 @@ pointScene = sceneFromFile(img,'rgb',[],d);
 pointScene = sceneSet(pointScene,'distance',10);
 oi     = oiCompute(oi,pointScene);
 sensor = sensorCompute(sensor,oi);
-
-ieAddObject(sensor);
-sensorWindow('scale',true);
+sensorWindow(sensor);
 
 %% Plot
 
 v = sensorGet(sensor,'volts',coneType);  % Get the right cone type
 
-vcNewGraphWin([],'tall');
+ieNewGraphWin([],'tall');
 
 subplot(2,1,1)
 sz = sensorGet(sensor,'size');
@@ -97,5 +95,6 @@ mesh(v); colormap(jet)
 
 m = getMiddleMatrix(v,127);
 
-vcNewGraphWin; otf = psf2otf(m); mesh(fftshift(abs(otf)));
+ieNewGraphWin; otf = psf2otf(m); mesh(fftshift(abs(otf)));
 
+%% END
