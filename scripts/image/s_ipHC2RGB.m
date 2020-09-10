@@ -14,7 +14,7 @@ nBands = 10;
 scene = sceneCreate('slanted bar');
 
 rgbImages = imagehc2rgb(scene,10);
-vcNewGraphWin([],'tall');
+ieNewGraphWin([],'tall');
 for ii=1:10
     subplot(5,2,ii); imagescRGB(rgbImages(:,:,:,ii));
 end
@@ -29,8 +29,8 @@ oi = oiSet(oi,'optics',optics);
 oi = oiCompute(oi,scene);
 
 rgbImages = imagehc2rgb(oi,nBands);
-vcNewGraphWin([],'tall');
+ieNewGraphWin([],'tall');
 for ii=1:10
     subplot(5,2,ii); imagescRGB(rgbImages(:,:,:,ii));
 end
-%% 
+%% END
