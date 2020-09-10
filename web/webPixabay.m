@@ -29,9 +29,14 @@ classdef webPixabay
          end
         
         function outputArg = search(obj,ourTags)
-            useTags = ourTags(1); % NEED TO TURN INTO X+Y FOR PIXABAY!
             per_page = getpref('ISET','maxSearchResults',obj.defaultPerPage);
-            outputArg = webread(obj.search_url, 'key', obj.key, 'tags', useTags, ...
+            useTags = "";
+            splitTags = split(ourTags,", ");
+            for ii=1:numel(splitTags)-1
+                useTags = strcat(useTags,splitTags(ii),"+");
+            end
+            useTags = strcat(useTags,splitTags(numel(splitTags)));
+            outputArg = webread(obj.search_url, 'key', obj.key, 'q', useTags, ...
             'image_type', 'photo', 'pretty', 'true', 'order', 'popular', 'per_page', per_page);            
         end
         
