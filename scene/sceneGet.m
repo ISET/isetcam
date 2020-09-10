@@ -129,9 +129,13 @@ function val = sceneGet(scene,parm,varargin)
 % Display
 %      'rgb image'  - RGB image of the scene display
 %
-% Reflectance chart - for a sceneCreate('reflectance chart')
-%       'chart parameters' - Structure of parameters
-%       'roi'    - Sometimes we store a rect as a region of interest
+% Charts
+%       'chart parameters' - Structure of reflectance chart parameters
+%                            sceneCreate('reflectance chart') 
+%       'corner points'    - Corner points for the any chart.  This will
+%                            replace the MCC calls
+%       'roi'              - Sometimes we store a rect as a region of
+%                            interest.  Not well integrated, yet.
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
@@ -834,6 +838,13 @@ switch parm
     case {'mcccornerpoints'}
         if checkfields(scene,'mccCornerPoints'), val = scene.mccCornerPoints; end
 
+    case {'chartcornerpoints'}
+        % fourPoints = sceneGet(scene,'chart corner points');
+        %
+        % This should become the standard, replacing the mcc specific
+        % version.
+        warning('NYI');
+        
     otherwise
         disp(['Unknown parameter: ',parm]);
         

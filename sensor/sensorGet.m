@@ -224,7 +224,10 @@ function val = sensorGet(sensor,param,varargin)
 %   More chart handling is being introduced.  See chart<TAB>
 %
 %     'mcc rect handles'  - Handles for the rectangle selections in an MCC
+%                           (deprecated)
 %     'mcc corner points' - Corner points for the MCC chart
+%     'corner points'     - Corner points for the any chart.  This will
+%                           replace the MCC calls
 %
 %     'rgb'               - Display image in sensorWindow
 %     'gamma'             - Display gamma level
@@ -1047,6 +1050,14 @@ switch oType
             case {'mccpointlocs','mcccornerpoints'}
                 % Corner points for the whole MCC chart
                 if checkfields(sensor,'mccCornerPoints'), val = sensor.mccCornerPoints; end
+                
+            case {'chartcornerpoints'}
+                % fourPoints = oiGet(scene,'chart corner points');
+                %
+                % This should become the standard, replacing the mcc
+                % specific versions.  It seems like this has not been in
+                % the OI, but it is in scene and sensor and ip.
+                warning('NYI');
                 
                 % Display image
             case {'rgb'}

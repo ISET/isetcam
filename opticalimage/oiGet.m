@@ -141,6 +141,7 @@ function val = oiGet(oi,parm,varargin)
 %      {'display gamma'}     - Gamma setting in the display window
 %      {'rgb image'}         - RGB rendering of OI data
 %      {'centroid'}          - Centroid of a point image
+%      {'corner points'}     - Chart corner points
 %
 % Auxiliary information
 %      'illuminant'           - HDRS multispectral data illuminant stored here (watts/sr/m^2/nm)
@@ -782,6 +783,14 @@ switch oType
                 if isempty(oiW), val = 'no window';   % Default if no window
                 else, val = oiW.popupRender.Value;
                 end
+                
+            case {'chartcornerpoints'}
+                % fourPoints = oiGet(scene,'chart corner points');
+                %
+                % This should become the standard, replacing the mcc
+                % specific versions.  It seems like this has not been in
+                % the OI, but it is in scene and sensor and ip.
+                warning('NYI');
                 
             case {'centroid'}
                 % val = oiGet(oi,'centroid',[units]);

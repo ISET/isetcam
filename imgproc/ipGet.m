@@ -90,7 +90,11 @@ function val = ipGet(ip,param,varargin)
 %
 % Miscellaneous
 %     'mcc Rect Handles'  - Handles for the rectangle selections in an MCC
+%                           (deprecated in Matlab 2020a app version.)
 %     'mcc Corner Points' - Outer corners of the MCC
+%     'corner points'     - Four corners for general charts.  Will replace
+%                           the MCC special case along with chart<>
+%                           functions.
 %     'center'            - (r,c) at the image center
 %     'distance2center'   - Distance (in pixels) to image center
 %     'angle'             - Angle around image center
@@ -429,6 +433,14 @@ switch oType
             case {'mccpointlocs','mcccornerpoints'}
                 % Corner points for the whole MCC chart
                 if checkfields(ip,'mccCornerPoints'), val = ip.mccCornerPoints; end
+            case {'chartcornerpoints'}
+                % fourPoints = oiGet(scene,'chart corner points');
+                %
+                % This should become the standard, replacing the mcc
+                % specific versions.  It seems like this has not been in
+                % the OI, but it is in scene and sensor and ip.
+                warning('NYI');
+                
             case {'roi','currentrect'}
                 % [colMin rowMin width height]
                 % Used for ROI display and management.
