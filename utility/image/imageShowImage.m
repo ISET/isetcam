@@ -59,9 +59,10 @@ elseif isa(app,'ipWindow_App')
 elseif isa(app,'matlab.ui.Figure')
     % Not sure why we are ever here.  Maybe the user had a pre-defined
     % window?
-    figure(app);
-elseif ~isequal(app,0)
+    appAxis = [];
+elseif isequal(app,0)
     % User sent in a 0. Just return the values and do not show anywhere.
+    appAxis = [];
 end
 
 if ieNotDefined('gam'), gam = ipGet(ip,'gamma'); end
@@ -134,7 +135,7 @@ elseif isequal(app,0)
     % Just return;
     return;
 else
-    ieNewGraphWin;
+    figure(app);
     imshow(img); 
     axis image; axis off;
     if trueSizeFlag
