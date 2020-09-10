@@ -29,21 +29,26 @@ classdef webPixabay
          end
         
         function outputArg = search(obj,ourTags)
-            useTags = ourTags(1); % NEED TO TURN INTO X+Y FOR PIXABAY!
             per_page = getpref('ISET','maxSearchResults',obj.defaultPerPage);
-            outputArg = webread(obj.search_url, 'key', obj.key, 'tags', useTags, ...
+            useTags = "";
+            splitTags = split(ourTags,", ");
+            for ii=1:numel(splitTags)-1
+                useTags = strcat(useTags,splitTags(ii),"+");
+            end
+            useTags = strcat(useTags,splitTags(numel(splitTags)));
+            outputArg = webread(obj.search_url, 'key', obj.key, 'q', useTags, ...
             'image_type', 'photo', 'pretty', 'true', 'order', 'popular', 'per_page', per_page);            
         end
         
         function ourTitle = getImageTitle(obj, fPhoto)
-            ourTitle = fPhoto.id; % I don't think Pixabay uses titles??
+            ourTitle = string(fPhoto.id); % I don't think Pixabay uses titles??
         end
         
         function displayScene(obj, fPhoto, sceneType)
             imageData = obj.getImage(fPhoto, 'large');
             % I, imType, meanLuminance, dispCal, wList
             scene = sceneFromFile(imageData,'rgb',[],[],getpref('ISET','openRGBwavelist', obj.defaultWavelist));
-            scene = sceneSet(scene, 'name', fPhoto.title);
+            scene = sceneSet(scene, 'name', string(fPhoto.id)); % I think we can parse the Page URL instead?
             sceneWindow(scene);
             
         end
@@ -56,7 +61,7 @@ classdef webPixabay
                 % t seems too small, m is a little slow, try q
                 ourURL = fPhoto.previewURL;
             else
-                ourURL = fPhoto.imageURL;
+                ourURL = fPhoto.largeImageURL;
             end 
         end
         
