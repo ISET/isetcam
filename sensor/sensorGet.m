@@ -497,15 +497,15 @@ switch oType
                 mosaic   = sensorGet(sensor,'volts');
                 mosaicDV = sensorGet(sensor, 'dv');
                 if ~isempty(rect)
-                    mosaic = mosaic(rect(2):rect(2)+rect(4)-1,...
-                                    rect(1):rect(1)+rect(3)-1,:); 
-                end
-                if ~isempty(rect) && ~isempty(mosaicDV)
-                    mosaicDV = mosaicDV(rect(2):rect(2)+rect(4)-1,...
-                                    rect(1):rect(1)+rect(3)-1,:); 
+                    mosaic = mosaic(rect(2):rect(2)+rect(4),...
+                                    rect(1):rect(1)+rect(3),:); 
+                    if ~isempty(mosaicDV)
+                        mosaicDV = mosaicDV(rect(2):rect(2)+rect(4),...
+                                        rect(1):rect(1)+rect(3),:); 
+                    end
                 end
                 
-                val = zeros(size(mosaicDV, 1) * size(mosaicDV, 2), 2, size(mosaic, 3));
+                val = zeros(size(mosaic, 1) * size(mosaic, 2), 2, size(mosaic, 3));
                 exp = sensorGet(sensor, 'exp time');
                 for ii=1:size(mosaic, 3)
                     % Use ipCompute to interpolate the mosaic and produce a

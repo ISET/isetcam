@@ -28,6 +28,6 @@ camera = cameraCompute(camera,scene);
 sensor = cameraGet(camera,'sensor');
 sensorWindow(sensor);
 
-% sensorPlot(sensor,'chromaticity',[20 20 40 40]);
+sensorPlot(sensor,'chromaticity',[20 20 40 40]);
 
 %% End
