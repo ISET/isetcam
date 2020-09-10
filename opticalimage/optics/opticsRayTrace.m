@@ -48,14 +48,15 @@ end
 sceneDist = sceneGet(scene,'distance');  %m
 rtDist    = oiGet(oi,'optics rtObjectDistance','m');
 if rtDist ~= sceneDist
-    sceneWindow; handles = ieSessionGet('scene guidata');
+    app = sceneWindow;
     delay = 1.5;
     str = sprintf('Scene distance (%.2f m) does not match ray trace assumption (%.2f m)',sceneDist,rtDist);
-    ieInWindowMessage(str,handles,delay);
-    ieInWindowMessage('Adjusting scene distance.',handles,delay);
+    ieInWindowMessage(str,app,delay);
+    ieInWindowMessage('Adjusting scene distance.',app,delay);
     scene = sceneSet(scene,'distance',rtDist);
     % Update the scene and show it in the window
-    vcReplaceObject(scene); sceneWindow; 
+    ieReplaceObject(scene); 
+    sceneWindow; 
 end
 
 % The optics must both have the scene wavelength sampling.

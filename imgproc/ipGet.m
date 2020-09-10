@@ -279,14 +279,19 @@ switch oType
             case {'rendergamma','gamma'}
                 % Gamma value used to render the display in the ipWindow
                 if checkfields(ip,'render','gamma')
+                    % Stored, so return it
                     val = ip.render.gamma;
                 else
+                    % Not yet stored.  See if we can get it from the
+                    % app window
                     app = ieSessionGet('ip window');
                     if ~isempty(app) && isvalid(app)
                         val = str2double(app.editGamma.Value);
                     else
+                        % Nowhere to be found.  Treat it as 1.
                         val = 1;
                     end
+                    % Whatever we decided, store it now.
                     ip.render.gamma = val;
                 end
                 

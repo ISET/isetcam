@@ -50,7 +50,7 @@ optics  = opticsSet(optics,'rtObjectDistance',sceneGet(scene,'distance','mm'));
 oi = oiSet(oi,'optics',optics);
 oi = oiSet(oi,'optics model','ray trace');
 
-ieSessionSet('waitbar','on')
+% ieSessionSet('waitbar','on')
 oi = oiCompute(scene,oi);
 ieAddObject(oi); oiWindow;
 

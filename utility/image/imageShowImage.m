@@ -51,24 +51,23 @@ function img = imageShowImage(ip,gam,trueSizeFlag,app)
 if ieNotDefined('ip'), cla; return;  end
 if ieNotDefined('trueSizeFlag'), trueSizeFlag = 0; end
 if ieNotDefined('app')
+    % User told us nothing. We think the user wants it in the IP window
     [app,appAxis] = ieAppGet('ip');
-    if ieNotDefined('gam')
-        gam = str2double(app.editGamma.Value);
-    end
 elseif isa(app,'ipWindow_App')
+    % In this case, they gave us the app window
     appAxis = app.ipImage;
 elseif isa(app,'matlab.ui.Figure')
     % Not sure why we are ever here.  Maybe the user had a pre-defined
     % window?
     figure(app);
 elseif ~isequal(app,0)
-    % User sent in a 0.  User wants the image in a separate window via
-    % ieNewGraphWin 
+    % User sent in a 0. Just return the values and do not show anywhere.
 end
 
-if ieNotDefined('gam'), gam = 1; end
+if ieNotDefined('gam'), gam = ipGet(ip,'gamma'); end
 
 %% Test and then convert the linear RGB values stored in result to XYZ.  
+
 img = ipGet(ip,'result');
 
 if isempty(img)
@@ -127,15 +126,21 @@ switch ipType
 end
 
 % Either show it in the app window or in a graph window
-if ~isequal(app,0)
-    image(appAxis,img); axis image; axis off;
+if isa(appAxis,'matlab.ui.control.UIAxes')
+    % Show it in the window
+    image(appAxis,img); 
+    axis image; axis off;
+elseif isequal(app,0)
+    % Just return;
+    return;
 else
-    % app is 0.
     ieNewGraphWin;
-    imshow(img); axis image; axis off;
+    imshow(img); 
+    axis image; axis off;
     if trueSizeFlag
         truesize;
     end
 end
+
 
 end
