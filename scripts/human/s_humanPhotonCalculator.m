@@ -56,9 +56,9 @@ centerPoints = round(size(oi.depthMap) ./ 2 ) ;
 irradiance = vcGetROIData(oi,centerPoints,'photons');
 irradiance = mean(irradiance);  % quanta / sec / m^2 /nm
 str = sprintf('Irradiance: %.3e (q/s/m^2/nm)  at %.0f nm',irradiance,monochormeWave);
-msgbox(str);
+disp(str);
  
 strLog = sprintf('Irradiance: 10^%1.1f (q/s/m^2/nm)  at %.0f nm',log10(irradiance),monochormeWave);
-msgbox(strLog);
+disp(strLog);
  
 %% End
