@@ -62,7 +62,7 @@ sensor = sensorSet(sensor, 'pixel pdwidth', pixelSize);
 sensor = sensorSet(sensor, 'pixel pdheight', pixelSize);
 % sensorGet(sensor,'pixel fill factor')
 
-sensor = sensorSetSizeToFOV(sensor, oiGet(oi, 'fov'));
+sensor = sensorSetSizeToFOV(sensor, oiGet(oi, 'fov'),[],oi);
 sensor = sensorSet(sensor, 'noise flag', -1);
 %% We introduced a new slot for controlling the spatial interpolation
 

@@ -24,7 +24,7 @@ oi = oiCreate; oi = oiCompute(oi,scene);
 
 % First in single auto exposure mode
 sensor = sensorCreate; 
-sensor = sensorSet(sensor,'fov',sceneGet(scene,'fov'));
+sensor = sensorSet(sensor,'fov',sceneGet(scene,'fov'),[],oi);
 sensor = sensorCompute(sensor,oi);
 sensor = sensorSet(sensor,'name','Auto exposure');
 sensorWindow(sensor);

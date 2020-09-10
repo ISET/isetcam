@@ -27,7 +27,7 @@ oi = oiCreate; oi = oiCompute(oi,scene);
 
 % First in auto exposure mode.  Kind of a lousy image.
 sensor = sensorCreate; 
-sensor = sensorSet(sensor,'fov',sceneGet(scene,'fov'));
+sensor = sensorSet(sensor,'fov',sceneGet(scene,'fov'),[],oi);
 sensor = sensorCompute(sensor,oi);
 
 % Line is (x,y), not row,col.  (1,1) is upper left corner.
