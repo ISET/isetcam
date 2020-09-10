@@ -239,12 +239,10 @@ function menuFileWaitBar_Callback(hObject, eventdata, handles)
 
 % h = guihandles;
 b = ieSessionGet('wait bar');
-if b, 
+if b
     ieSessionSet('wait bar',false);
-%     set(h.menuFileWaitBar,'Checked','off');
 else
     ieSessionSet('wait bar',true);
-%     set(h.menuFileWaitBar,'Checked','on');
 end
 refreshMain(handles);
 return

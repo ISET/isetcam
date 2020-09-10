@@ -16,7 +16,7 @@
 %%
 ieInit
 wbStatus = ieSessionGet('waitbar');
-ieSessionSet('waitbar','on');
+% ieSessionSet('waitbar','on');
 
 %% Alternatively, you can run an oiCompute in the ray trace mode
 
