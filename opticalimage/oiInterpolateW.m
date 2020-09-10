@@ -12,7 +12,7 @@ function oi = oiInterpolateW(oi,newWave)
 
 %% Params
 if ieNotDefined('oi'), oi = vcGetObject('oi'); end
-handles = ieSessionGet('opticalimagehandle');
+app = ieSessionGet('oi window');
 
 % Note the current oi properties
 row = oiGet(oi,'row'); 
@@ -33,7 +33,7 @@ if ieNotDefined('newWave')
     if high > low,       newWave = low:skip:high;
     elseif high == low,  newWave = low;     % User made monochrome, so onlyl 1 sample
     else 
-        ieInWindowMessage('Bad wavelength ordering:  high < low. Data unchanged.',handles,5);
+        ieInWindowMessage('Bad wavelength ordering:  high < low. Data unchanged.',app,5);
         return;
     end
 else
