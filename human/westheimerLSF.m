@@ -1,7 +1,7 @@
-function ls = westheimerLSF(xSec)
+function [ls, xSec] = westheimerLSF(xSec)
 %Westheimer line spread function
 %
-%  ls = westheimerLSF(xSec)
+%  [ls, xSec] = westheimerLSF(xSec)
 %
 % Spatial position is x in secs of arc of visual angle.
 %
@@ -33,4 +33,4 @@ xMin = xSec/60;
 ls = 0.47*exp(-3.3 *(xMin.^2)) + 0.53*exp(-0.93*abs(xMin));
 ls = ls / sum(ls);
 
-return;
+end
