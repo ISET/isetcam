@@ -32,15 +32,7 @@ function [hdl, cfaImg] = sensorShowCFA(sensor,fullArray, app, nBlocks)
 if ieNotDefined('sensor'),    sensor = vcGetObject('sensor'); end
 if ieNotDefined('fullArray'), fullArray = false; end
 if ieNotDefined('app')
-    % Set up in a new window
-    fig = vcNewGraphWin;
-    set(fig,'Name', sensorGet(sensor,'name'),'menubar','None');
-    tSizeFlag = true;
-    hdl = [];
-else
-    % Set up the sensor window image
-    axes(app.imgCFA); axis image; axis off
-    tSizeFlag = false;
+    app = [];
 end
 if ieNotDefined('nBlocks'), nBlocks = 1; end
 
@@ -70,15 +62,19 @@ end
 
 % Draw the CFA in the figure window (true size)
 cfaImg = ind2rgb(cfaImg,mp);
-image(cfaImg);
-axis image off;
+if isempty(app)
+    tSizeFlag = true;
+    % Set up in a new window
+    fig = ieNewGraphWin;
+    set(fig,'Name', sensorGet(sensor,'name'),'menubar','None');
+    image(cfaImg);
+
+else
+    app.imageCFA.ImageSource = cfaImg;
+    tSizeFlag = false;
+end
 
 if tSizeFlag, truesize(fig); end
-
-% Set control back to main window in sensorWindow
-if exist('hdl','var') && ~isempty(hdl)
-    axes(hdl.imgMain);
-end
 
 end
 
