@@ -57,7 +57,9 @@ if displayFlag >= 0
         ieNewGraphWin
     end
     if ieNotDefined('xcoords') || ieNotDefined('ycoords')
-        imagescRGB(rgb); axis image; axis off
+% djc -- from my read, looks like imagescRGB already calls axis off for us
+%        imagescRGB(rgb); axis image; axis off
+        imagescRGB(rgb); axis off
     else
         % User specified a grid overlay
         rgb = rgb/max(rgb(:));
