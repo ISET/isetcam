@@ -69,7 +69,7 @@ else
     inputFolder = imageFolder;
 end
     %inputFolder = fullfile(isetRootPath,'local','images','dogs');
-if ~isempty(inputFolder) && ~isequal(inputFolder,0) && isdir(inputFolder)
+if ~isempty(inputFolder) && ~isequal(inputFolder,0) && isfolder(inputFolder)
     inputFiles = dir(fullfile(inputFolder,'*.jpg'));
 else
     msgbox("No images specified. Exiting.");
@@ -107,6 +107,7 @@ else
     
 end
 
+fovData = zeros(numel(inputFiles), 2);
 for ii = 1:numel(inputFiles)
     
     sceneFileName = fullfile(inputFiles(ii).folder, inputFiles(ii).name);
@@ -123,13 +124,15 @@ for ii = 1:numel(inputFiles)
         imageRotation = -90;
         initialImage = imrotate(initialImage, -90);
     end
-    initialImage = imresize(initialImage, desiredImageSize);
+    
+    % let's try not forcing the image size, since it may already be smaller
+    %initialImage = imresize(initialImage, desiredImageSize);
     ourScene = sceneFromFile(initialImage,'rgb',[],'reflectance-display',wave);
     
     [~,thisFileName,~] = fileparts(inputFiles(ii).name);
     ourScene = sceneSet(ourScene,'name',thisFileName);
-    sceneFOV = sceneGet(ourScene,'fov');
-    fovData(ii) = sceneFOV;
+    sceneFOV = [sceneGet(ourScene,'fovhorizontal') sceneGet(ourScene,'fovvertical')];
+    fovData(ii,:) = sceneFOV;
     % we pre-compute the optical image so it can be cached for future
     
     if isfile(fullfile(outputOIFolder,[thisFileName+".mat"]))
@@ -181,7 +184,7 @@ for ii=1:numel(oiList)
         load(oiList(ii).name,'oi');
         oiSize = size(oi.data.photons); % I think this is a proxy for resolution
         
-        sceneFOV = fovData(ii);
+        sceneFOV = fovData(ii,:);
         sensor = sensorSetSizeToFOV(sensor,sceneFOV,oi);
 
         if ~isequal(progDialog, '')
@@ -243,7 +246,9 @@ for ii = 1:length(inputFiles)
 
     % in theory we could first resize to our "desiredImageSize" to match
     % the processing of the IP version, but I'm not sure it matters?
-    ourGTImage = imresize(ourGTImage, desiredImageSize(1:2));
+    %ourGTImage = imresize(ourGTImage, desiredImageSize(1:2));
+
+    % downsize to match the input layer of the NN
     ourGTImage = imresize(ourGTImage,inputSize(1:2));
     [label, scores] = classify(net,ourGTImage);
     disp(label)
@@ -261,6 +266,8 @@ for ii = 1:length(inputFiles)
     ipFileName = fullfile(ipFolder, inputFiles(ii).name);
     
     ourTestImage = imread(ipFileName);
+    
+    % downsize to match the input layer of the NN
     ourTestImage = imresize(ourTestImage,inputSize(1:2));
     [label, scores] = classify(net,ourTestImage);
     disp(label)
