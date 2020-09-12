@@ -22,7 +22,7 @@ oi = oiCompute(scene,oi);
 sensor = sensorCreate('human');
 sensor = sensorSet(sensor,'exptime',0.2);
 sensor = sensorCompute(sensor,oi);
-sensorWindow(sensor,'scale',1);
+sensorWindow(sensor);
 
 %% Something funny happens with the exposure duration.
 rows = [10,10]; cols = [10,10];

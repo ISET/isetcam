@@ -31,11 +31,12 @@ end
 disp('v_oiPad succeeds for diffraction limited');
 
 %% Make oi for testing
-oi = oiCreate('shiftinvariant');
+oi = oiCreate('shift invariant');
 oi = oiCompute(oi,s);
 oiGet(oi,'fov');
 baseSpacing = oiGet(oi,'sample spacing');
 sz = oiGet(oi,'size');
+% oiWindow(oi);
 
 %% Verify that padding does not change the sample spacing
 

@@ -67,7 +67,6 @@ switch ieParamFormat(oiType)
         % skipped
         oi = oiSet(oi,'diffuser method','skip');
         oi = oiSet(oi,'diffuser blur',2*10^-6);
-        oi = oiSet(oi,'consistency',1);
 
     case {'shiftinvariant'}
         % Rather than using the diffraction limited call to make the OTF,
@@ -78,7 +77,6 @@ switch ieParamFormat(oiType)
         oi = oiSet(oi,'optics',opticsCreate('shift invariant',oi));
         oi = oiSet(oi,'name','SI');
         oi = oiSet(oi,'diffuserMethod','skip');
-        oi = oiSet(oi,'consistency',1);
 
     case {'raytrace'}
         % Create the default ray trace unless a file name is passed in

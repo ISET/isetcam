@@ -20,7 +20,8 @@ pSize = [1.4 1.4]*1e-6;
 %%
 % dir(fullfile(isetRootPath,'data','images','rgb'))
 
-[scene, fname] = sceneFromFile('woodDuck.png','rgb', 300, displayCreate);
+% woodDuck.png
+[scene, fname] = sceneFromFile('zebra.jpg','rgb', 300, displayCreate);
 % Create the scene and calculate with the camera
 % scene  = sceneCreate('reflectance chart');
 scene  = sceneSet(scene,'fov',fov);
@@ -35,7 +36,7 @@ cameraWindow(camera,'sensor');
 % cameraWindow(camera,'ip');
 
 bayerSensor = sensorCreate;
-bayerSensor = sensorSet(bayerSensor,'fov',fov);
+bayerSensor = sensorSet(bayerSensor,'fov',fov,cameraGet(camera,'oi'));
 bayerSensor = sensorSet(bayerSensor,'name','Bayer');
 
 camera = cameraSet(camera,'sensor',bayerSensor);
@@ -45,7 +46,7 @@ cameraWindow(camera,'sensor');
 
 %% Adjust the sensor to a different type
 cmySensor = sensorCreate('cmy');
-cmySensor = sensorSet(cmySensor,'fov',fov);
+cmySensor = sensorSet(cmySensor,'fov',fov,cameraGet(camera,'oi'));
 cmySensor = sensorSet(cmySensor,'name','cmy');
 
 camera = cameraSet(camera,'sensor',cmySensor);
@@ -59,7 +60,7 @@ cameraWindow(camera,'sensor');
 %% If you would like a different RGB spatial pattern ...
 sensor = sensorCreate('RGB');
 sensor = sensorSet(sensor,'pattern',[ 2 1 2; 3 2 1; 2 3 2]);
-sensor = sensorSet(sensor,'fov',fov);
+sensor = sensorSet(sensor,'fov',fov,cameraGet(camera,'oi'));
 sensor = sensorSet(sensor,'name','3x3 RGB');
 sensor = sensorSet(sensor,'pixel size constant fill factor',pSize);
 
@@ -72,7 +73,7 @@ cameraWindow(camera,'sensor');
 
 %%  Now a white pixel
 rgbwSensor = sensorCreate('rgbw');
-rgbwSensor = sensorSet(rgbwSensor,'fov',fov);
+rgbwSensor = sensorSet(rgbwSensor,'fov',fov,cameraGet(camera,'oi'));
 rgbwSensor = sensorSet(rgbwSensor,'name','rgbw');
 
 camera = cameraSet(camera,'sensor',rgbwSensor);

@@ -60,7 +60,7 @@ RGB = oiShowImage(oi,renderFlag,gam);
 [p,n,e] = fileparts(fName);
 if isempty(p), p = pwd; end
 if isempty(e), e = '.png'; end
-fName = fullfile(p,[n+e]);
+fName = fullfile(p,[n,e]);
 
 % Always has a png extension.  So, no 'png' argument needed.
 % Written out as 8 bit for PNG format.

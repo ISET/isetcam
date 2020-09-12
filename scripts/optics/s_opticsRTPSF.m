@@ -29,7 +29,7 @@ scene = sceneInterpolateW(scene,450:100:650);
 scene = sceneSet(scene,'hfov',10);
 scene = sceneSet(scene,'name','psf Point Array');
 
-ieAddObject(scene); sceneWindow; truesize;
+sceneWindow(scene);
 
 %% Optics
 oi = oiCreate('ray trace');
@@ -45,7 +45,7 @@ oi = oiSet(oi,'optics',optics);
 oi = oiSet(oi,'optics model','ray trace');
 oi = oiCompute(scene,oi);
 oi = oiSet(oi,'name','ray trace case');
-ieAddObject(oi); oiWindow;truesize;
+oiWindow(oi);
 
 %% Compute the diffraction limited case
 

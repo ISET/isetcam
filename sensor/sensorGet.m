@@ -916,7 +916,7 @@ switch oType
                 % is infinitely far away and the distance to the lens is
                 % the focal distance.
                 %
-                if isempty(varargin{1})
+                if isempty(varargin) || isempty(varargin{1})
                     scene = ieGetObject('scene');
                     if isempty(scene), sDist = 1e6; 
                     else,              sDist = sceneGet(scene,'distance');

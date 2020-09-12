@@ -1,8 +1,7 @@
 %% v_macbeth
 %
-%  Validate the chart/macbeth utilities for the scene window.  I am going
-%  to make other validations for the oi and sensor window, upgrading the
-%  chart role and testing.
+%  Test specific chart/macbeth utilities.  The general testing of the chart
+%  utilities shuld happen in v_chart.
 %
 % * macbethIlluminant estimates the illuminant from the image of an MCC
 % * macbethDrawRects:  Show and then eliminate the rects for the patches
@@ -17,31 +16,27 @@ ieInit
 scene = sceneCreate;
 wave = sceneGet(scene,'wave');
 
-% White point (1,64), black point (96,64) and so forth
-cornerPoints = [
-    1    64
-    96    64
-    96     1
-    1     1];
-scene = sceneSet(scene,'chart corner points',cornerPoints);
+% The whole image is the chart.  Set the cornerpoints and store them in the
+% chartP of the scene.
+[cornerpoints, scene] = chartCornerpoints(scene,true);
 
-%%
+%% Estimate the illuminant photons from the MCC data
+
 illPhotons = macbethIlluminant(scene);
+
+%%  Compare the original and the estimated
 
 illOrig = sceneGet(scene,'illuminant photons');
 
-%%
 ieNewGraphWin;
 loglog(illOrig,illPhotons);
 xlabel('Original'); ylabel('Estimated'); grid on
 assert( max(illOrig./illPhotons) - 1 < 1e-6)
 
-% plotRadiance(wave,illPhotons);
-% scenePlot(scene,'illuminant photons');
-
 %%
 sceneWindow(scene);
 macbethDrawRects(scene,'on');
-macbethDrawRects(scene,'off');
+pause(1)
+macbethDrawRects(scene,'off');  % Just a refresh.
 
 %% END

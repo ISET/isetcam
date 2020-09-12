@@ -8,11 +8,11 @@ scene = sceneCreate;
 scene = sceneSet(scene,'fov',4);
 oi = oiCreate; oi = oiCompute(oi,scene);
 
+%%
 sensor = sensorCreate; 
 sensor = sensorSet(sensor,'qmethod', '10 bit');  % Linear, 10 bits
 sensor = sensorCompute(sensor,oi);
-ieAddObject(sensor);
-sensorWindow('scale',1');
+sensorWindow(sensor);
 
 %%
 sensorPlot(sensor,'electrons hline',[20 20]);

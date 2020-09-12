@@ -1,37 +1,35 @@
-function obj = macbethDrawRects(obj,onoff)
-% Draw the MCC rectangles given the cornerPoints in the structure
+function macbethDrawRects(obj,onoff)
+% Draw Macbeth CC rectangles from the stored cornerPoints 
 %
 % Syntax:
-%   obj = macbethDrawRects(obj,[onoff])
+%   macbethDrawRects(obj,[onoff])
 %
 % Description:
 %  Draw rectangles in each MCC patch as defined by the corner points of the
-%  scene object.
+%  object.
 %
 % Inputs:
-%   obj:    An ip, sensor or scene structure.  The object should contain a
-%           the mcc corner points.
-%   onoff:  
-%    on:   Create the mcc rects, display and store them, refresh window
-%    off:  Delete any existing mcc rects in the object, refresh window
+%   obj:    A scene, oi, sensor or ip scene structure.  The structure
+%           should contain the corner points.
+%
+%   onoff:
+%    on:   Create the rects and display them
+%    off:  Refresh window, which eliminates the displayed rectangles
 %
 % Outputs:
-%    obj:   The rectangle handles (mccRectHandles) are attached to the
-%           returned object 
+%    N/A
 %
 % Copyright ImagEval Consultants, LLC, 2011.
 %
 % See also:
-%   macbethROIs, macbethDrawRect, macbethSelect, macbethRectangles, chartROI
-%   chart<TAB>
+%   macbethSelect, chart<TAB>
 %
 
 %%
 if ieNotDefined('obj'), error('Structure required'); end
 if ieNotDefined('onoff'), onoff = 'on'; end  % Default is on
 
-%%
-
+%% Turn the rectangles on or off
 
 switch onoff
     case 'on'
@@ -51,33 +49,21 @@ switch onoff
         end
         
         if isempty(cornerPoints), error('No chart corner points'); end
-
+        
         % From the corner points, calculate the macbeth patch center locations.
         rects = chartRectangles(cornerPoints,4,6,0.5);
         chartRectsDraw(obj,rects);
         
     case 'off'
-        % Delete handles from current axis and update the object
+        % This is just a refresh. 
         switch lower(obj.type)
             case 'vcimage'
-                rects = ipGet(obj,'chart rects');
-                delete(rects);
-                obj = ipSet(obj,'mccRectHandles',[]);
-                vcReplaceObject(obj);
                 ipWindow;
-
+                
             case {'isa','sensor'}
-                rects = sensorGet(obj,'chart rects');
-                delete(rects);
-                obj = sensorSet(obj,'mccRectHandles',[]);
-                vcReplaceObject(obj);
                 sensorWindow;
                 
             case {'scene'}
-                rects = sceneGet(obj,'chart rects');
-                if ~isempty(rects), delete(rects); end
-                obj = sceneSet(obj,'mccRectHandles',[]);
-                vcReplaceObject(obj);
                 sceneWindow;
         end
         

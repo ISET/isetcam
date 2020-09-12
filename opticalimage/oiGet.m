@@ -780,7 +780,7 @@ switch oType
                 
                 % See if there is a display window
                 oiW = ieSessionGet('oi window');
-                if isempty(oiW), val = 'no window';   % Default if no window
+                if isempty(oiW), val = 'Standard RGB';   % Default if no window
                 else, val = oiW.popupRender.Value;
                 end
                 

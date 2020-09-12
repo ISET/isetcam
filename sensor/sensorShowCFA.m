@@ -1,34 +1,36 @@
-function [hdl, cfaImg] = sensorShowCFA(sensor,fullArray, app, nBlocks)
+function [fig, cfaImg] = sensorShowCFA(sensor,fullArray, app, nBlocks)
 %Create an image illustrating the sensor CFA spatial pattern
 %
-%    [cfaAxis, cfaImg] = sensorShowCFA(sensor,[fullArray = 0],app, nBlocks)
+%    [fig, cfaImg] = sensorShowCFA(sensor,[fullArray = 0],app, nBlocks)
 %
 % The plotted colors are based on the letter names of the color filters
 % (not the spectra).
 %
-% sensor:    Sensor object
+%  sensor:    Sensor object
 %  fullArray: Typically an image of just the super pixel pattern is shown.
 %             If fullArray is true, makes an image showing the full pattern.
 %  app:       app for the sensorWindow that has imgCFA as a slot 
+%  nBlocks:   Number of cfa blocks to render
 %
 % Return
-%   hdl:    Handle of the image
+%   fig:    Handle to the figure where data are rendered
 %   cfaImg: RGB image of the CFA array 
 %
-% Example:
-%  ieInit; 
-%  sensor = sensorCreate; s = sceneCreate; oi = oiCreate;
-%  oi = oiCompute(oi,s); sensor = sensorCompute(sensor,oi);
-%  ieAddObject(oi); ieAddObject(sensor); hdl = sensorWindow;
-%  hdl = sensorShowCFA(sensor,false,hdl);
-%
-%  sensor = sensorCreate('human');
-%  sensorShowCFA(sensor);
+% Copyright ImagEval Consultants, LLC, 2010
 %
 % See also: sensorPlot, sensorImageColorArray, sensorDetermineCFA
 %
-% Copyright ImagEval Consultants, LLC, 2010
 
+% Examples:
+%{
+  s = sceneCreate; oi = oiCreate; sensor = sensorCreate; 
+  oi = oiCompute(oi,s); sensor = sensorCompute(sensor,oi); 
+  img = sensorShowCFA(sensor,false);
+  sensor = sensorCreate('human');
+  sensorShowCFA(sensor);
+%}
+
+%%
 if ieNotDefined('sensor'),    sensor = vcGetObject('sensor'); end
 if ieNotDefined('fullArray'), fullArray = false; end
 if ieNotDefined('app')
@@ -36,31 +38,33 @@ if ieNotDefined('app')
 end
 if ieNotDefined('nBlocks'), nBlocks = 1; end
 
-% This is an indexed color image of the sensor detectors.
+%% Indexed color image of the sensor detectors.
+
 % The colors in mp are based on the letters in 'plot filter colors'
-[cfaImage,mp] = sensorImageColorArray(sensorDetermineCFA(sensor));
+[cfaSmall,mp] = sensorImageColorArray(sensorDetermineCFA(sensor));
 
 if fullArray
     % Set the image so each pixel is 3x3
     s = 3;
-    cfaImg = imageIncreaseImageRGBSize(cfaImage,s);
+    cfaImg = imageIncreaseImageRGBSize(cfaSmall,s);
 else
     % Get the first block
     p = sensorGet(sensor,'pattern');
     
     % Number of blocks times the size
     sz = size(p)*nBlocks;
-    cfaImage = cfaImage(1:sz(1),1:sz(2));
+    cfaSmall = cfaSmall(1:sz(1),1:sz(2));
     
     % Make the image pretty big.  If it is a human sensor, the block is
     % already quite big, so we don't make it too much bigger.
-    if max(size(cfaImage,1)) < 64, s = 192/round(size(cfaImage,1));
-    else                           s = 3;
+    if max(size(cfaSmall,1)) < 64, s = 192/round(size(cfaSmall,1));
+    else,                           s = 3;
     end
-    cfaImg = imageIncreaseImageRGBSize(cfaImage,s);
+    cfaImg = imageIncreaseImageRGBSize(cfaSmall,s);
 end
 
-% Draw the CFA in the figure window (true size)
+%% Draw the CFA 
+
 cfaImg = ind2rgb(cfaImg,mp);
 if isempty(app)
     tSizeFlag = true;
@@ -68,9 +72,9 @@ if isempty(app)
     fig = ieNewGraphWin;
     set(fig,'Name', sensorGet(sensor,'name'),'menubar','None');
     image(cfaImg);
-
 else
     app.imageCFA.ImageSource = cfaImg;
+    fig = app.figure1;
     tSizeFlag = false;
 end
 

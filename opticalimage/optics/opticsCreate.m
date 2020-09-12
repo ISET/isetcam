@@ -66,7 +66,12 @@ switch lower(opticsType)
         % specified in cycles per millimeter.
         
         if ~isempty(varargin), oi = varargin{1}; else, oi = oiCreate; end
-        wave = 400:10:700; psfType = 'gaussian';  waveSpread = wave/wave(1);
+        wave = oiGet(oi,'wave');
+        if isempty(wave)
+            wave = 400:10:700; 
+            oi = oiSet(oi,'wave',wave);
+        end
+        psfType = 'gaussian';  waveSpread = wave/wave(1);
         xyRatio = ones(1,length(wave));
         optics = siSynthetic(psfType,oi,waveSpread,xyRatio);
         % psfMovie(optics,ieNewGraphWin);

@@ -97,7 +97,7 @@ close(wBar);
 %% Make sure the sensor was fully illuminated
 
 % Should be uniform and filled up!
-ieAddObject(sensor); sensorWindow('scale',true);
+sensorWindow(sensor);
 
 %% Compute the best-fitting line for expTime vs. voltage for each pixel
 
@@ -114,10 +114,10 @@ offsets = x(2,:);
 
 %% Plot the data and analyze the values.
 
-vcNewGraphWin; 
+ieNewGraphWin; 
 t = sprintf('Normalized slopes (photon noise)');
 
-hist(slopes,50); title(t)
+histogram(slopes,50); title(t)
 set(gca,'xlim',[0.9 1.1]);
 
 PRNU = 100*std(slopes); % Std. of slope as a percentage (not fraction)

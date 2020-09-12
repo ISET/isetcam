@@ -81,7 +81,7 @@ for ii=1:numel(selectedObjs)
             
         case 'OPTICALIMAGE'
             gam = oiGet(objList{ii},'gamma');
-            displayFlag = -1*abs(ieSessionGet('oi display flag')); % RGB, HDR, Gray
+            displayFlag = -1*abs(oiGet(objList{ii},'render flag index')); % RGB, HDR, Gray
             if isempty(displayFlag), displayFlag = -1; end
             rgb = oiShowImage(objList{ii},displayFlag,gam);
             imagesc(rgb);

@@ -52,8 +52,11 @@ if ieNotDefined('showEvaluation'), showEvaluation = true; end
 
 ccmMethod = ieParamFormat(ccmMethod);
 switch lower(ccmMethod)
-    case 'macbeth'        
-        cp = chartCornerpoints(sensor,false);  % Get the corner points
+    case 'macbeth'
+        cp = sensorGet(sensor,'chart corner points');
+        if isempty(cp)
+            cp = chartCornerpoints(sensor,false);  % Get the corner points
+        end
         [rects,mLocs,pSize] = chartRectangles(cp,4,6,0.5);  % MCC parameters
         fullData = false;
         dataType = 'volts';
