@@ -57,7 +57,7 @@ if displayFlag >= 0
         ieNewGraphWin
     end
     if ieNotDefined('xcoords') || ieNotDefined('ycoords')
-% djc -- from my read, looks like imagescRGB already calls axis off for us
+% djc -- from my read, looks like imagescRGB already calls axis image for us
 %        imagescRGB(rgb); axis image; axis off
         imagescRGB(rgb); axis off
     else
