@@ -17,6 +17,8 @@
 %% Initialize
 ieInit
 
+setpref('ISET', 'benchmarkstart', cputime); % if I just put it in a variable it gets cleared:(
+
 %% Scene tests
 h = msgbox('Scene','ISET Tests','replace');
 set(h,'position',round([36.0000  664.1379  124.7586   50.2759]));
@@ -61,3 +63,7 @@ set(h,'position',round([36.0000  664.1379  124.7586   50.2759]));
 t_displayIntroduction;
 
 %% End
+
+afterTime = cputime;
+beforeTime = getpref('ISET', 'benchmarkstart', 0);
+strcat("v_ISET ran in: ", string(afterTime - beforeTime), " seconds of CPU time.")
