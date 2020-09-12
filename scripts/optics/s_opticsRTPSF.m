@@ -58,7 +58,7 @@ oiDL = oiSet(oiDL,'optics',optics);
 oiDL = oiSet(oiDL,'optics model','diffraction limited');
 oiDL = oiCompute(scene,oiDL);
 oiDL = oiSet(oiDL,'name','psf diffraction case');
-ieAddObject(oiDL); oiWindow; truesize;
+ieAddObject(oiDL); oiWindow;
 
 %% Render the images
 imageMultiview('oi',[1 2],1); truesize;
