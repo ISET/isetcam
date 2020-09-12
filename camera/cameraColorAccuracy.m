@@ -27,17 +27,14 @@ camera = cameraCompute(camera,mcc);
 
 %% Plot the error metric
 
-vci = cameraGet(camera,'vci');
-% ieAddObject(vci); ipWindow;
+ip = cameraGet(camera,'vci');
+ipWindow(ip);
 
 % The mcc image runs all the way horizontally, but is a few pixels short in
 % the y-dimension.
-sz = ipGet(vci,'size');
-xMin = 1; xMax = sz(2);
-yMin = 1 + 5; yMax = sz(1) - 5;
-cornerPoints = [ xMin yMax; xMax yMax; xMax yMin; xMin yMin];
-vci = ipSet(camera.vci,'mcc corner points',cornerPoints);
-% ieAddObject(vci); ipWindow;
+cp = chartCornerpoints(ip,true);
+ip = ipSet(ip,'chart corner points',cp);
+macbethDrawRects(ip,'on')
 
 % If you change the size of the sensor or other spatial parameters, you may
 % have to adjust these.  You can use this routine to interactively click on
@@ -54,10 +51,13 @@ vci = ipSet(camera.vci,'mcc corner points',cornerPoints);
 
 % Compute the delta E values
 % This produces a plot with several evaluations of the errors
-[macbethLAB, macbethXYZ, deltaE] = macbethColorError(vci,'D65',cornerPoints);
+[macbethLAB, macbethXYZ, deltaE] = macbethColorError(ip,'D65',cp);
+camera = cameraSet(camera,'ip chart corner points',cp);
 
 % Store results.
+eAnalysis.macbethLAB = macbethLAB;
+eAnalysis.macbethXYZ = macbethXYZ;
 eAnalysis.deltaE = deltaE;
-eAnalysis.vci    = vci;
+eAnalysis.vci    = ip;
 
-return
+end

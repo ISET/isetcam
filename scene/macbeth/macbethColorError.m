@@ -48,37 +48,37 @@ gSeries = 4:4:24;
 if ieNotDefined('cornerPoints')
     % First, check whether there are cornerpoints attached to the object.
     % If there aren't, the user is queried in vcimageMCCXYZ, below.
-    cornerPoints = ipGet(vci,'mcc corner points');
+    cornerPoints = ipGet(vci,'chart corner points');
     
     % But, if there are cornerpoints, check them here.
     if ~isempty(cornerPoints)    
         % Ask the user if a change is desired.  The current ones may not be
         % satisfactory.
-        vci = macbethDrawRects(vci);
+        macbethDrawRects(vci,'on');
         b = ieReadBoolean('Are these rects OK?');
         if b % Do nothing, we are good.  Just turn off rects
-            vci = macbethDrawRects(vci,'off');
+            macbethDrawRects(vci,'off');
         else
             % Set the cornerPoints to empty and let vcimageMCCXYZ handle
             % the situation, below
             cornerPoints = [];
             vci = ipSet(vci,'mcc corner points',cornerPoints);
-            vci = macbethDrawRects(vci,'off');
+            macbethDrawRects(vci,'off');
         end
     else
         % There were no corner points.  So, the user must be asked.
     end
 end
 
-
 %% Retrieve ideal and image MCCdata LAB and XYZ values
 
 % These are Processor window XYZ values using the monitor model.  They are
 % computed using a model monitor with peak luminance of Y = 1 cd/m2.
 [macbethXYZ, whiteMacbethXYZ, cornerPoints] = ipMCCXYZ(vci,cornerPoints,method);
-vci = ipSet(vci,'mcc corner points',cornerPoints);
-vci = macbethDrawRects(vci);        % Make sure we have ther rects
-vci = macbethDrawRects(vci,'off');  % Now turn it all off
+vci = ipSet(vci,'chart corner points',cornerPoints);
+macbethDrawRects(vci,'on');        % Make sure we have ther rects
+pause(1)
+macbethDrawRects(vci,'off');  % Now turn it all off
 
 % The idealXYZ values of the MCC
 idealXYZ = macbethIdealColor(illName,'xyz');

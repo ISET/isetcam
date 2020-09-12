@@ -29,11 +29,14 @@ if ieNotDefined('ip'), error('ip required'); end
 
 % If the mRGB or pSize not defined, we need to do some processing.
 if ieNotDefined('mRGB')
-    cp = chartCornerpoints(ip);
+    cp = ipGet(ip,'chart corner points');
+    if isempty(cp)
+        cp = chartCornerpoints(ip);
+    end
     [rects,mLocs,pSize] = chartRectangles(cp,4,6,0.5);
-    rHdl = chartRectsDraw(ip,rects);
+    chartRectsDraw(ip,rects);
     mRGB = chartRectsData(ip,mLocs,0.6*pSize(1));
-    pause(1); delete(rHdl);
+    pause(1);
 end
 
 if ieNotDefined('pSize')

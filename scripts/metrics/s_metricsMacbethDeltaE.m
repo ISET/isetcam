@@ -51,7 +51,7 @@ oi     = oiCreate;
 optics = oiGet(oi,'optics');
 optics = opticsSet(optics,'fnumber',opt_fnumber);
 optics = opticsSet(optics,'focallength',opt_flength);
-optics = opticsSet(optics,'offaxis','skip');
+optics = opticsSet(optics,'off axis method','skip');
 oi     = oiSet(oi,'optics',optics);
 oi     = oiCompute(scene,oi);
 
@@ -69,7 +69,7 @@ sensor = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'),oi);
 % Compute the image and bring it up.
 sensor = sensorCompute(sensor,oi);
 ieAddObject(sensor)
-sensorImageWindow;
+sensorWindow;
 
 % Plot a couple of lines
 %    sensorPlotLine(sensor,'h','volts','space',[1,115]);
@@ -81,16 +81,17 @@ sensorImageWindow;
 % This routine asks you to select the locations of the outer
 % boundaries of the MCC.  It returns the linear transform that
 % converts the data to a nicely rendered D65 MCC.
-sensorLocs = [ 
+cp = [ 
     1   244
    328   246
    329    28
      2    27];
+sensor = sensorSet(sensor,'chart corner points',cp);
 if ieNotDefined('sensorLocs')
-    [L,sensorLocs] = sensorCCM(vcGetObject('sensor'),'macbeth');
+    [L,sensorLocs] = sensorCCM(sensor,'macbeth');
 else
     % If you already figured out sensorLocs, you can just run this
-    [L,sensorLocs] = sensorCCM(vcGetObject('sensor'),'macbeth',sensorLocs);
+    [L,sensorLocs] = sensorCCM(sensor,'macbeth',sensorLocs);
 end
 
 %% Create and set the processor window

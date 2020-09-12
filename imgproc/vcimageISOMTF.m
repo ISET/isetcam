@@ -45,7 +45,7 @@ scene  = sceneSet(scene,'fov',5);
 
 % Make sure the scene and sensor FOV match
 sensor = cameraGet(camera,'sensor');
-sensor = sensorSetSizeToFOV(sensor,5);
+sensor = sensorSet(sensor,'fov',5,cameraGet(camera,'oi'));
 camera = cameraSet(camera,'sensor',sensor);
 camera = cameraCompute(camera,scene);
 

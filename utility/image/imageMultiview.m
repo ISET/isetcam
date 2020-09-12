@@ -76,7 +76,7 @@ for ii=1:numel(selectedObjs)
             displayFlag = -1*abs(sceneGet(objList{ii},'render flag index')); % RGB, HDR, Gray
             if isempty(displayFlag), displayFlag = -1; end
             rgb = sceneShowImage(objList{ii},displayFlag,gam);
-            imagesc(rgb);
+            imshow(rgb); 
             t = sprintf('Scene %d - %s',ii,sceneGet(objList{ii},'name'));
             
         case 'OPTICALIMAGE'
@@ -84,14 +84,14 @@ for ii=1:numel(selectedObjs)
             displayFlag = -1*abs(oiGet(objList{ii},'render flag index')); % RGB, HDR, Gray
             if isempty(displayFlag), displayFlag = -1; end
             rgb = oiShowImage(objList{ii},displayFlag,gam);
-            imagesc(rgb);
+            imshow(rgb);
             t =sprintf('OI %d - %s',ii,oiGet(objList{ii},'name'));
             
         case 'ISA'
             gam = ieSessionGet('sensor gamma');      % gamma in the window!
             scaleMax = true; showFig = false;
             img = sensorShowImage(objList{ii},gam,scaleMax,showFig);
-            imagesc(img); axis off;
+            imshow(img); 
             t = sprintf('Sensor %d - %s',ii,sensorGet(objList{ii},'name'));
             
         case 'VCIMAGE'
@@ -99,7 +99,7 @@ for ii=1:numel(selectedObjs)
             gam = ipGet(ip,'gamma');      % gamma in the window!
             trueSizeFlag = []; showFig = false;
             img = imageShowImage(objList{ii},gam,trueSizeFlag,showFig);
-            imagesc(img); axis off; axis image
+            imshow(img);
             t = sprintf('VCI %d - %s',ii,ipGet(ip,'name'));
             
         otherwise
@@ -112,6 +112,7 @@ for ii=1:numel(selectedObjs)
     end
     
 end
+
 
 end
 

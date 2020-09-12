@@ -92,7 +92,7 @@ hold off
 scene = sceneCreate;
 oi    = oiCreate;
 oi    = oiCompute(oi,scene);
-nikon = sensorSetSizeToFOV(nikon,sceneGet(scene,'fov'));
+nikon = sensorSet(nikon,'fov',sceneGet(scene,'fov'),oi);
 nikon = sensorCompute(nikon,oi);
 ieAddObject(nikon); sensorWindow;
 
@@ -113,7 +113,7 @@ for ii=1:nIlluminant
 end
 
 vcNewGraphWin;
-hist(allDE,50);
+histogram(allDE,50);
 set(gca,'xlim',[0 maxDE])
 xlabel('CIELAB \Delta E'); ylabel('Count')
 title(sprintf('Illuminant-dependent sensor correction (%s)',filterFile));
@@ -137,7 +137,7 @@ end
 
 
 vcNewGraphWin;
-hist(allDE,50);
+histogram(allDE,50);
 set(gca,'xlim',[0 maxDE])
 xlabel('CIELAB \Delta E')
 ylabel('Count')
@@ -171,7 +171,7 @@ title(sprintf('%s spectral QE',filterFile));
 scene = sceneCreate;
 oi    = oiCreate;
 oi    = oiCompute(oi,scene);
-sensor = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'));
+sensor = sensorSet(sensor,'fov',sceneGet(scene,'fov'),oi);
 sensor = sensorCompute(sensor,oi);
 ieAddObject(sensor); sensorWindow;
 
@@ -222,7 +222,7 @@ end
 
 % Error in CIELAB space
 vcNewGraphWin;
-hist(allDE,50);
+histogram(allDE,50);
 set(gca,'xlim',[0 maxDE])
 xlabel('CIELAB \Delta E'); ylabel('Count')
 title(sprintf('Illuminant-dependent sensor correction (%s)',filterFile));
@@ -244,7 +244,7 @@ for ii=1:nIlluminant
 end
 
 vcNewGraphWin;
-hist(allDE,50);
+histogram(allDE,50);
 set(gca,'xlim',[0 maxDE])
 xlabel('CIELAB \Delta E')
 ylabel('Count')
