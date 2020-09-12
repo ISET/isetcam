@@ -43,6 +43,8 @@ switch shape
     case 'circle'
         % ieDrawShape(obj,'circle',[20 20],10);
         % nSamplePoints = 100
+        % Should update to permit multiple circles.
+        % 
         hold on;
         pts = circle(varargin{1},varargin{2},100);
         h = plot(pts(:,2),pts(:,1),'k-');
@@ -50,10 +52,14 @@ switch shape
     case 'rectangle'
         % rect = [10 10 50 50];
         % ieDrawShape(obj,'rectangle',rect);
-        h = rectangle(appAxis,'Position',varargin{1},...
-            'EdgeColor',[1 1 1], ...
-            'LineWidth',1,...
-            'Curvature',0.2);
+        rects = varargin{1}; 
+        nRects = size(rects,1);
+        for ii=1:nRects
+            h(ii) = rectangle(appAxis,'Position',rects(ii,:),...
+                'EdgeColor',[1 1 1], ...
+                'LineWidth',1,...
+                'Curvature',0.2); %#ok<AGROW>
+        end
         
     case 'line'
         % X = [0 96]; Y = [32 32];

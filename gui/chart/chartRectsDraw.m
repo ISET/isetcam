@@ -25,7 +25,6 @@ rmin = rects(:,2) - 1; rmax = rects(:,2)+rects(:,4) - 1;
 
 % These are the graphical handles for the rects we will draw
 nRects = size(rects,1);
-rectHandles = zeros(nRects,1);
 
 % These are the rect parameters for drawing, below.  Awkward how these are
 % cells and such.  Could simplify.
@@ -39,12 +38,9 @@ for ii=1:nRects
         cmin(ii),rmin(ii)];
 end
 
-%% Draw the rects
+%% Draw the rects.  Multiple rects can be sent in
 
-% The draw routine selects the axis.  Maybe we should select it here?
-for ii=1:nRects
-    rectHandles(ii) = ieDrawShape(obj,'rectangle',round(rects(ii,:)));
-end
+rectHandles = ieDrawShape(obj,'rectangle',round(rects));
 
 end
 

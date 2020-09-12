@@ -82,7 +82,7 @@ switch lower(obj.type)
             x = sz(2); y = sz(1);
             cornerPoints = [1,y; x,y; x,1; 1,1];
         end
-        obj = sceneSet(obj,'chart corners',cornerPoints);
+        obj = sceneSet(obj,'chart corner points',cornerPoints);
         ieReplaceObject(obj);
         
     case 'opticalimage'
@@ -91,7 +91,7 @@ switch lower(obj.type)
             x = sz(2); y = sz(1);
             cornerPoints = [1,y; x,y; x,1; 1,1];
         end
-        obj = oiSet(obj,'chart corners',cornerPoints);
+        obj = oiSet(obj,'chart corner points',cornerPoints);
         ieReplaceObject(obj);
         
     case {'isa','sensor'}
@@ -103,7 +103,7 @@ switch lower(obj.type)
             cornerPoints = [1,y; x,y; x,1; 1,1];
         end
         % obj = sensorSet(obj,'mccRectHandles',[]);
-        obj = sensorSet(obj,'cornerpoints',cornerPoints);
+        obj = sensorSet(obj,'chart corner points',cornerPoints);
         ieReplaceObject(obj);
         
     case 'vcimage'

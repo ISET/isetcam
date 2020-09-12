@@ -1,6 +1,8 @@
 %% v_macbeth
 %
-%  Validate the chart/macbeth utilities
+%  Validate the chart/macbeth utilities for the scene window.  I am going
+%  to make other validations for the oi and sensor window, upgrading the
+%  chart role and testing.
 %
 % * macbethIlluminant estimates the illuminant from the image of an MCC
 % * macbethDrawRects:  Show and then eliminate the rects for the patches
