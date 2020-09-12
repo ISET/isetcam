@@ -319,7 +319,12 @@ switch parm
         % See sceneReflectanceChart 
         % Reflectance chart parameters are stored here.
         scene.chartP = val;
-    case {'chartcorners'}
+        scene.chartP.cornerPoints = val;
+    case {'cornerpoints','chartcornerpoints','chartcorners'}
+        % fourPoints = sceneGet(scene,'chart corner points');
+        %
+        % This should become the standard, replacing the mcc specific
+        % version.
         scene.chartP.cornerPoints = val;
         
     case {'luminance','lum'}

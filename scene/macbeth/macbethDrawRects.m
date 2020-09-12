@@ -31,60 +31,31 @@ if ieNotDefined('obj'), error('Structure required'); end
 if ieNotDefined('onoff'), onoff = 'on'; end  % Default is on
 
 %%
-[app, appAxis] = ieAppGet(obj);
+
 
 switch onoff
     case 'on'
         switch vcEquivalentObjtype(obj.type)
             case 'VCIMAGE'
-                cornerPoints = ipGet(obj,'mcc corner points');
+                cornerPoints = ipGet(obj,'chart corner points');
+                ipWindow;
             case 'ISA'
                 % Always show the data scaled
-                cornerPoints = sensorGet(obj,'mcc corner points');
+                cornerPoints = sensorGet(obj,'chart corner points');
+                sensorWindow;
             case 'SCENE'
-                cornerPoints = sceneGet(obj,'mcc corner points');
+                cornerPoints = sceneGet(obj,'chart corner points');
+                sceneWindow;
             otherwise
                 error('Unknown object type %s',obj.type);
         end
         
-        % Can't draw them if there are no corner points.  We could call
-        % chartCornerpoints here.  But for now, we throw an error.
-        if isempty(cornerPoints), error('No mcc corner points'); end
-        
+        if isempty(cornerPoints), error('No chart corner points'); end
+
         % From the corner points, calculate the macbeth patch center locations.
-        [mLocs, delta] = macbethRectangles(cornerPoints);
+        rects = chartRectangles(cornerPoints,4,6,0.5);
+        chartRectsDraw(obj,rects);
         
-        % Plot the rectangles
-        rectHandles = zeros(24,1);
-        for ii=1:24
-            % Get the locations around the center
-            theseLocs = macbethROIs(mLocs(:,ii),delta);
-            
-            % Find the convex hull of the locations (a rect). The rect
-            % should be returned by macbethROIs, by the way. Not sure why
-            % it isn't.  I did that for chartROIs, I think.
-            [~,rect] = chartROI(mLocs(:,ii),delta);
-            % corners = convhull(theseLocs(:,1),theseLocs(:,2));
-            
-            % Plot the rects
-            rectHandles(ii) = drawrectangle(appAxis, 'DrawingArea',rect,'Color',[1 1 1]);
-            % theseLocs(corners,2),theseLocs(corners,1),...
-            %     'Color',[1 1 1], 'LineWidth',2);
-            % rectHandles(ii) = plot(a,theseLocs(corners,2),theseLocs(corners,1),...
-            %     'Color',[1 1 1], 'LineWidth',2);
-        end
-        
-        % Store rectHandles
-        switch lower(obj.type)
-            case 'vcimage'
-                obj = ipSet(obj,'mccRectHandles',rectHandles);
-            case {'isa','sensor'}
-                obj = sensorSet(obj,'mccRectHandles',rectHandles);
-            case 'scene'
-                obj = sceneSet(obj,'mccRectHandles',rectHandles);
-        end
-        vcReplaceObject(obj);
-    
     case 'off'
         % Delete handles from current axis and update the object
         switch lower(obj.type)

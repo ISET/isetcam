@@ -13,6 +13,7 @@ ieInit
 
 %% Illuminant estimate method
 scene = sceneCreate;
+wave = sceneGet(scene,'wave');
 
 % White point (1,64), black point (96,64) and so forth
 cornerPoints = [
@@ -20,11 +21,14 @@ cornerPoints = [
     96    64
     96     1
     1     1];
-scene = sceneSet(scene,'mcc corner points',cornerPoints);
+scene = sceneSet(scene,'chart corner points',cornerPoints);
+
+%%
 illPhotons = macbethIlluminant(scene);
 
-wave = sceneGet(scene,'wave');
 illOrig = sceneGet(scene,'illuminant photons');
+
+%%
 ieNewGraphWin;
 loglog(illOrig,illPhotons);
 xlabel('Original'); ylabel('Estimated'); grid on

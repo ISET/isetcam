@@ -88,8 +88,7 @@ function ip = ipSet(ip,param,val,varargin)
 %        'scale display output' - Scaled to display max RGB
 %
 %  Miscellaneous
-%     'mccRectHandles'  - Handles for the rectangle selections in an MCC
-%     'mccCornerPoints' - Outer corners of the MCC
+%     'chart corner points' - Outer corners of the chart, such as MCC
 %     'roi'             - Rect used for an ROI
 %     'gamma display'   - Gamma for rendering data to ipWindow image
 %     'scale display'   - True or false for scaling the ipWindow image
@@ -266,7 +265,8 @@ switch param
     % Special case for ROIs and macbeth color checker.  This should get
     % generalized to chart and chart parameter calls.  Too special now for
     % MCC case.  See related comments in sensorSet.
-    case {'mccrecthandles'}
+    %{
+      case {'mccrecthandles'}
         % These are handles to the squares on the MCC selection regions
         % see macbethSelect
         if checkfields(ip,'mccRectHandles')
@@ -277,11 +277,16 @@ switch param
             end
         end
         ip.mccRectHandles = val;
-    case {'cornerpoints','mccpointlocs','mcccornerpoints'}
+    %}
+    
+    case {'mccpointlocs','mcccornerpoints'}
         % Corner points for the whole chart.  These have been MCC charts,
         % but we should update to a chartP struct and have these be
         % chartP.cornerPoints.
+        warning('use chart corner points')
         ip.mccCornerPoints=  val;
+    case {'cornerpoints','chartcornerpoints'}
+        ip.cornerPoints=  val;
 
     % Slot for holding a current retangular region of interest    
     case {'roi','currentrect'}

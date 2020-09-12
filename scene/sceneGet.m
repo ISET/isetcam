@@ -834,16 +834,18 @@ switch parm
     % MCC related regions of interest and handles.  Works with
     % macbethSelect
     case {'mccrecthandles'}
+        warning('Use chart, not mcc');
         if checkfields(scene,'mccRectHandles'), val = scene.mccRectHandles; end
     case {'mcccornerpoints'}
+        warning('Use chart, not mcc');
         if checkfields(scene,'mccCornerPoints'), val = scene.mccCornerPoints; end
 
-    case {'chartcornerpoints'}
+    case {'cornerpoints','chartcornerpoints'}
         % fourPoints = sceneGet(scene,'chart corner points');
         %
         % This should become the standard, replacing the mcc specific
         % version.
-        warning('NYI');
+        if checkfields(scene,'chartP','cornerPoints'), val = scene.chartP.cornerPoints; end
         
     otherwise
         disp(['Unknown parameter: ',parm]);

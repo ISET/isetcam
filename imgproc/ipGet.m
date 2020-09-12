@@ -430,16 +430,18 @@ switch oType
                 % These are handles to the squares on the MCC selection regions
                 % see macbethSelect
                 if checkfields(ip,'mccRectHandles'), val = ip.mccRectHandles; end
-            case {'mccpointlocs','mcccornerpoints'}
+            case {'mcccornerpoints'}
                 % Corner points for the whole MCC chart
+                warning('Use chart corner points')
                 if checkfields(ip,'mccCornerPoints'), val = ip.mccCornerPoints; end
-            case {'chartcornerpoints'}
+            case {'cornerpoints','chartcornerpoints'}
                 % fourPoints = oiGet(scene,'chart corner points');
                 %
                 % This should become the standard, replacing the mcc
                 % specific versions.  It seems like this has not been in
                 % the OI, but it is in scene and sensor and ip.
-                warning('NYI');
+                if checkfields(ip,'cornerPoints'), val = ip.cornerPoints; end
+                
                 
             case {'roi','currentrect'}
                 % [colMin rowMin width height]

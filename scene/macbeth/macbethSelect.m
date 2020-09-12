@@ -25,9 +25,9 @@ function [pData, mLocs, pSize, cornerPoints, pStd] = ...
 %    If fullData = 1, the values of every point in each patch is returned.
 %     Use fullData = 1 for sensor images and calculate the means. This will
 %     account for the NaNs that are returned. 
-%   cornerPoints: Sometimes, the MCC corner point locations are stored.
-%     In that case, you can send them in and the routine will skip the
-%     graphical interaction.
+%   cornerPoints: Sometimes, the MCC corner point locations are stored in
+%     the scene struct. In that case, this routine will skip the graphical
+%     interaction.
 %
 % Outputs
 %   mRGB: The data in each patch. The image processor and sensor
@@ -127,46 +127,59 @@ if ieNotDefined('obj'), obj = vcGetObject('vcimage'); end
 if ieNotDefined('showSelection'), showSelection = true; end
 if ieNotDefined('fullData'), fullData = 0; end
 
-%% Corner point 
-% obj is either a vcimage or a sensor image
-% In either case, we clear the mcc rect handles, put the object back, and
-% then read the corner points (if they weren't sent in).
+% This should be a parameter
+queryUser = false;
+
+%% Corner points
+
+% To select the data, we start with the chart corner points.  They might be
+%   * Sent in
+%   * Attached to the object
+%   * We choose in the window
 switch lower(obj.type)
     case 'vcimage'
         dataType = 'result';
         % obj = ipSet(obj,'mcc Rect Handles',[]);
         % ieAddObject(obj); ipWindow;
-        if ieNotDefined('cornerPoints')
-            wholeChart = false;
-            cornerPoints = chartCornerpoints(obj,wholeChart);
-        end
         
-    case {'isa','sensor'} 
+        if ieNotDefined('cornerPoints')
+            cornerPoints = ipGet(obj,'corner points');
+            if isempty(cornerPoints)
+                ipWindow;
+                cornerPoints = chartCornerpoints(obj,wholeChart);
+            end
+        end
+        obj = ipSet(obj,'chart corner points',cornerPoints);
+        
+    case {'isa','sensor'}
         % app = ieSessionGet('sensor window');
         dataType = 'dvorvolts';
-        % obj = sensorSet(obj,'mcc Rect Handles',[]);
-        % Make sure these data are in the sensor in the window
-        % vcReplaceObject(obj); 
-        sensorWindow;
         if ieNotDefined('cornerPoints')
-            wholeChart = false;
-            cornerPoints = chartCornerpoints(obj,wholeChart);
+            cornerPoints = sensorGet(obj,'corner points');
+            if isempty(cornerPoints)
+                sensorWindow;
+                cornerPoints = chartCornerpoints(obj,wholeChart);
+            end
         end
+        obj = sensorSet(obj,'chart corner points',cornerPoints);
+        
     case {'scene'}
-        % handles = ieSessionGet('scene Window Handles');
         dataType = 'photons';
-        % obj = sceneSet(obj,'mcc Rect Handles',[]);
-        % ieAddObject(obj); sceneWindow;
+        cornerPoints = sceneGet(obj,'chart corner points');
         if ieNotDefined('cornerPoints')
-            wholeChart = false;
-            cornerPoints = chartCornerpoints(obj,wholeChart);
+            sceneWindow;
+            cornerPoints = chartCornerpoints(obj);
         end
+        obj = sceneSet(obj,'chart corner points',cornerPoints);
+        
     otherwise
         error('Unknown object type');
 end
 
 %% Deal with the interactive part
 
+%{
+% In this scheme we should never ge here.
 queryUser = false;
 if isempty(cornerPoints)
     queryUser = true;
@@ -175,16 +188,16 @@ if isempty(cornerPoints)
     cornerPoints = vcPointSelect(obj,4,...
         'Select (1) lower left, (2) lower right, (3) upper right, (4) upper left');
 end
-
-%% Save the corner points
 switch vcEquivalentObjtype(obj.type)
     case 'VCIMAGE'
-        obj = ipSet(obj,'mcc corner points',cornerPoints);
+        obj = ipSet(obj,'chart corner points',cornerPoints);
     case 'ISA'
-        obj = sensorSet(obj,'mcc corner points',cornerPoints);
+        obj = sensorSet(obj,'chart corner points',cornerPoints);
     case 'SCENE'
-        obj = sceneSet(obj,'mcc corner points',cornerPoints);
+        obj = sceneSet(obj,'chart corner points',cornerPoints);
 end
+%}
+
 
 %% Ask if the rects are OK. 
 if queryUser
