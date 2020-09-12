@@ -269,8 +269,6 @@ elseif nFilters >= 3 || nSensors > 1
     % Done with all the image processing.  Save in result.
     ip = ipSet(ip,'result',img);
     
-    % macbethSelect rect handles -- get rid of them
-    ip = ipSet(ip,'mccRectHandles',[]);
 end
 
 end

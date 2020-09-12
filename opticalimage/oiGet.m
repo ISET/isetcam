@@ -784,13 +784,19 @@ switch oType
                 else, val = oiW.popupRender.Value;
                 end
                 
-            case {'chartcornerpoints'}
-                % fourPoints = oiGet(scene,'chart corner points');
-                %
-                % This should become the standard, replacing the mcc
-                % specific versions.  It seems like this has not been in
-                % the OI, but it is in scene and sensor and ip.
-                warning('NYI');
+            case {'chartparameters'}
+                % Struct of chart parameters
+                if checkfields(oi,'chartP'), val = oi.chartP; end
+            case {'cornerpoints','chartcornerpoints','chartcorners'}
+                % fourPoints = oiGet(oi,'chart corner points');
+                if checkfields(oi,'chartP','cornerPoints'), val = oi.chartP.cornerPoints; end
+            case {'chartrects','chartrectangles'}
+                % rects = oiGet(oi,'chart rectangles');
+                if checkfields(oi,'chartP','rects'), val = oi.chartP.rects; end
+            case {'currentrect'}
+                % [colMin rowMin width height]
+                % Used for ROI display and management.
+                if checkfields(oi,'chartP','currentRect'), val = oi.chartP.currentRect; end
                 
             case {'centroid'}
                 % val = oiGet(oi,'centroid',[units]);

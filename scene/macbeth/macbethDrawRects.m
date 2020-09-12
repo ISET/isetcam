@@ -60,21 +60,21 @@ switch onoff
         % Delete handles from current axis and update the object
         switch lower(obj.type)
             case 'vcimage'
-                rects = ipGet(obj,'mcc Rect Handles');
+                rects = ipGet(obj,'chart rects');
                 delete(rects);
                 obj = ipSet(obj,'mccRectHandles',[]);
                 vcReplaceObject(obj);
                 ipWindow;
 
             case {'isa','sensor'}
-                rects = sensorGet(obj,'mcc Rect Handles');
+                rects = sensorGet(obj,'chart rects');
                 delete(rects);
                 obj = sensorSet(obj,'mccRectHandles',[]);
                 vcReplaceObject(obj);
                 sensorWindow;
                 
             case {'scene'}
-                rects = sceneGet(obj,'mcc Rect Handles');
+                rects = sceneGet(obj,'chart rects');
                 if ~isempty(rects), delete(rects); end
                 obj = sceneSet(obj,'mccRectHandles',[]);
                 vcReplaceObject(obj);

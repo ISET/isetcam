@@ -348,8 +348,15 @@ switch parm
     case {'chartparameters'}
         % Reflectance chart parameters are stored here.
         oi.chartP = val;
-    case {'chartcorners'}
-        oi.chartP.cornerPoints = val;
+    case {'cornerpoints','chartcornerpoints'}
+        oi.chartP.cornerPoints=  val;
+    case {'chartrects','chartrectangles'}
+        oi.chartP.rects =  val;
+        % Slot for holding a current retangular region of interest
+    case {'currentrect'}
+        % [colMin rowMin width height]
+        % Used for ROI display and management.
+        oi.chartP.currentRect = val;
         
     % Illuminant (spatial-spectral) for ISET3D case
     case {'illuminant'}

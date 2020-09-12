@@ -422,31 +422,34 @@ switch oType
                 if isempty(val), val = ipGet(ip,'display white point'); end
                 
                 % ISET window management
+                %{
             case {'consistency','computationalconsistency','parameterconsistency'}
                 ip.consistency = val;
-                
-                % Macbeth color checker and related ROIs and image spatial management
-            case {'mccrecthandles'}
-                % These are handles to the squares on the MCC selection regions
-                % see macbethSelect
-                if checkfields(ip,'mccRectHandles'), val = ip.mccRectHandles; end
-            case {'mcccornerpoints'}
-                % Corner points for the whole MCC chart
-                warning('Use chart corner points')
-                if checkfields(ip,'mccCornerPoints'), val = ip.mccCornerPoints; end
+                %
+                %                 % Macbeth color checker and related ROIs and image spatial management
+                %             case {'mccrecthandles'}
+                %                 % These are handles to the squares on the MCC selection regions
+                %                 % see macbethSelect
+                %                 if checkfields(ip,'mccRectHandles'), val = ip.mccRectHandles; end
+                %             case {'mcccornerpoints'}
+                %                 % Corner points for the whole MCC chart
+                %                 warning('Use chart corner points')
+                %                 if checkfields(ip,'mccCornerPoints'), val = ip.mccCornerPoints; end
+                %
+                %}
+            case {'chartparameters'}
+                % Struct of chart parameters
+                if checkfields(ip,'chartP'), val = ip.chartP; end
             case {'cornerpoints','chartcornerpoints'}
                 % fourPoints = oiGet(scene,'chart corner points');
-                %
-                % This should become the standard, replacing the mcc
-                % specific versions.  It seems like this has not been in
-                % the OI, but it is in scene and sensor and ip.
-                if checkfields(ip,'cornerPoints'), val = ip.cornerPoints; end
-                
-                
-            case {'roi','currentrect'}
+                if checkfields(ip,'chartP','cornerPoints'), val = ip.chartP.cornerPoints; end
+            case {'chartrects','chartrectangles'}
+                % rects = ipGet(sensor,'chart rectangles');
+                if checkfields(ip,'chartP','rects'), val = ip.chartP.rects; end
+            case {'currentrect'}
                 % [colMin rowMin width height]
                 % Used for ROI display and management.
-                if checkfields(ip,'currentRect'), val = ip.currentRect; end
+                if checkfields(ip,'chartP','currentRect'), val = ip.chartP.currentRect; end
                 
             case {'imagecenter','center'}
                 % row,col at the image center.  We do it this way because there is

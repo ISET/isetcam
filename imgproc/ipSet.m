@@ -259,9 +259,10 @@ switch param
         end
         
     % Consistency (red button)
+    %{
     case {'consistency','computationalconsistency','parameterconsistency'}
         ip.consistency = val;
-    
+    %}
     % Special case for ROIs and macbeth color checker.  This should get
     % generalized to chart and chart parameter calls.  Too special now for
     % MCC case.  See related comments in sensorSet.
@@ -278,21 +279,26 @@ switch param
         end
         ip.mccRectHandles = val;
     %}
-    
+    %{
     case {'mccpointlocs','mcccornerpoints'}
         % Corner points for the whole chart.  These have been MCC charts,
         % but we should update to a chartP struct and have these be
         % chartP.cornerPoints.
         warning('use chart corner points')
         ip.mccCornerPoints=  val;
+    %}    
+    case {'chartparameters'}
+        % Reflectance chart parameters are stored here.
+        ip.chartP = val;
     case {'cornerpoints','chartcornerpoints'}
-        ip.cornerPoints=  val;
-
-    % Slot for holding a current retangular region of interest    
-    case {'roi','currentrect'}
+        ip.chartP.cornerPoints=  val;
+    case {'chartrects','chartrectangles'}
+        ip.chartP.rects =  val;
+        % Slot for holding a current retangular region of interest
+    case {'currentrect'}
         % [colMin rowMin width height]
         % Used for ROI display and management.
-        ip.currentRect = val;
+        ip.chartP.currentRect = val;
 
     % Needs more comments and development    
     case {'combineexposures','combinationmethod'}

@@ -315,17 +315,20 @@ switch parm
             error('known reflectance is [reflectance,row,col,wave]'); 
         end
         scene.data.knownReflectance = val;
+        
+    % See sceneReflectanceChart 
+    % Reflectance chart parameters are stored here.
     case {'chartparameters'}
-        % See sceneReflectanceChart 
-        % Reflectance chart parameters are stored here.
         scene.chartP = val;
-        scene.chartP.cornerPoints = val;
     case {'cornerpoints','chartcornerpoints','chartcorners'}
         % fourPoints = sceneGet(scene,'chart corner points');
-        %
-        % This should become the standard, replacing the mcc specific
-        % version.
         scene.chartP.cornerPoints = val;
+    case {'chartrects','chartrectangles'}
+        scene.chartP.rects = val;
+    case {'currentrect'}
+        % [colMin rowMin width height]
+        % Used for ROI display and management.
+        scene.chartP.currentRect = val;
         
     case {'luminance','lum'}
         % sceneSet(scene,'luminance',array)

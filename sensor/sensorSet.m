@@ -109,9 +109,9 @@ function sensor = sensorSet(sensor,param,val,varargin)
 %     'scale intensity' - Scale display intensity to max
 %     'true size'       - Not yet implemented
 %
-% Macbeth Color checker
-%     'mcc rect handles'  - Handles for the rectangle selections in an MCC
-%     'mcc corner points' - Corner points for the whole MCC chart
+% Charts
+%     'chart rectangles'    - Rectangle positions in a chart
+%     'chart corner points' - Corner points for the whole chart
 %
 % Private
 %      'editfilternames'
@@ -363,6 +363,7 @@ switch lower(param)
     case {'dv','digitalvalue','digitalvalues'}
         sensor.data.dv = val;
     case {'roi'}
+        % Perhaps this should be current rect, see below?
         sensor.roi = val;
     case {'quantization','qmethod','quantizationmethod'}
         % 'analog', '10 bit', '8 bit', '12 bit'
@@ -507,6 +508,7 @@ switch lower(param)
         % These ROIs for the MCC chart should be generalized to chartP here
         % and in ip and other objects.  Maybe there should be a chart
         % struct that is defined.
+    %{
     case {'mccrecthandles'}
         % These are handles to the squares on the MCC selection regions
         % see macbethSelect.  If we over-write them, we first delete the
@@ -522,6 +524,20 @@ switch lower(param)
     case {'cornerpoints','mccpointlocs','mcccornerpoints'}
         % Corner points for the whole MCC chart
         sensor.mccCornerPoints = val;
+    %}
+                % Chart parameters for MCC and other cases
+    case {'chartparameters'}
+        % Reflectance chart parameters are stored here.
+        sensor.chartP = val;
+    case {'cornerpoints','chartcornerpoints'}
+        sensor.chartP.cornerPoints=  val;
+    case {'chartrects','chartrectangles'}
+        sensor.chartP.rects =  val;
+        % Slot for holding a current retangular region of interest
+    case {'currentrect'}
+        % [colMin rowMin width height]
+        % Used for ROI display and management.
+        sensor.chartP.currentRect = val;
         
     case {'gamma'}
         % Adjust the gamma including updating the sensorWindow.

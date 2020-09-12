@@ -783,11 +783,7 @@ switch parm
     case {'illuminantcomment'}
         if checkfields(scene,'illuminant','comment'),val = scene.illuminant.comment; end
         
-        % Reflectance chart parameters,
-        % for sceneCreate('reflectance chart') case
-        % More parameters may be added into this section.
-    case {'chartparameters'} % Structure of reflectance chart parameters
-        if checkfields(scene,'chartP'), val = scene.chartP; end
+        
         
         % For display purposes
     case {'rgb','rgbimage'}
@@ -831,21 +827,22 @@ switch parm
         else,               val = sceneW.popupRender.Value;
         end
         
-    % MCC related regions of interest and handles.  Works with
-    % macbethSelect
-    case {'mccrecthandles'}
-        warning('Use chart, not mcc');
-        if checkfields(scene,'mccRectHandles'), val = scene.mccRectHandles; end
-    case {'mcccornerpoints'}
-        warning('Use chart, not mcc');
-        if checkfields(scene,'mccCornerPoints'), val = scene.mccCornerPoints; end
-
-    case {'cornerpoints','chartcornerpoints'}
+        % Reflectance chart parameters.  Used for MCC and other charts.
+    case {'chartparameters'} % Structure of reflectance chart parameters
+        if checkfields(scene,'chartP'), val = scene.chartP; end
+    case {'cornerpoints','chartcornerpoints','chartcorners'}
         % fourPoints = sceneGet(scene,'chart corner points');
         %
         % This should become the standard, replacing the mcc specific
         % version.
         if checkfields(scene,'chartP','cornerPoints'), val = scene.chartP.cornerPoints; end
+    case {'chartrects','chartrectangles'}
+        % rects = sceneGet(scene,'chart rectangles');
+        if checkfields(scene,'chartP','rects'), val = scene.chartP.rects; end
+    case {'currentrect'}
+        % [colMin rowMin width height]
+        % Used for ROI display and management.
+        if checkfields(oi,'chartP','currentRect'), val = oi.chartP.currentRect; end
         
     otherwise
         disp(['Unknown parameter: ',parm]);

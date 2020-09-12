@@ -79,7 +79,7 @@ ip = ipSet(ip,'conversion method sensor ','MCC optimized');
 % Turned this off because it opened the window
 % ip = ipSet(ip,'renderGamma',1);  % Maybe it should not do that???
 ip = ipSet(ip','scaleDisplay',1);
-ip = ipSet(ip,'mccRectHandles',[]);
+% ip = ipSet(ip,'mccRectHandles',[]);
 
 %% Append an L3 structure
 if strncmpi(ipName,'L3',2)
