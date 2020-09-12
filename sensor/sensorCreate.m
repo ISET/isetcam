@@ -304,8 +304,8 @@ sensor = sensorSet(sensor,'CDS',0);
 % Put in a default infrared filter.  All ones.
 sensor = sensorSet(sensor,'irfilter',ones(sensorGet(sensor,'nwave'),1));
 
-% Place holder for Macbeth color checker positions
-sensor = sensorSet(sensor,'mccRectHandles',[]);
+% Place holder for charts, such as the MCC
+sensor = sensorSet(sensor,'chart parameters',[]);
 
 % Compute with all noise turned on by default
 sensor = sensorSet(sensor,'noise flag',2);

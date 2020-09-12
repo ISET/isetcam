@@ -1,12 +1,12 @@
 %% v_macbeth
 %
-%  Validate some macbeth utilities
+%  Validate the chart/macbeth utilities
 %
-% macbethIlluminant estimates the illuminant from the image of an MCC
-% macbethDrawRects:  Show and then eliminate the rects for the patches
+% * macbethIlluminant estimates the illuminant from the image of an MCC
+% * macbethDrawRects:  Show and then eliminate the rects for the patches
 %
 % See also
-%
+%   chart<TAB>
 
 %%
 ieInit

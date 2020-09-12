@@ -346,7 +346,7 @@ for ss=1:length(sensorArray)   % Number of sensors
     
     %% Macbeth chart management
     % Possible overlay showing center of Macbeth chart
-    sensor = sensorSet(sensor,'mccRectHandles',[]);
+    % sensor = sensorSet(sensor,'mccRectHandles',[]);
     
     if showBar, close(wBar); end
     
