@@ -39,7 +39,7 @@ ieFontSizeSet(app,14)
 %}
 %% Set up parameters
 
-if ieNotDefined('fig'), error('Figure required.'); end
+if ~exist('fig','var')||isempty(fig), error('Figure required.'); end
 
 % Pull out the current font size preference
 isetP = getpref('ISET');
@@ -47,7 +47,7 @@ if checkfields(isetP,'fontSize'),   prefSize = isetP.fontSize;
 else, prefSize = 12;  % Default preference
 end
 
-if ieNotDefined('fSize')
+if ~exist('fSize','var')||isempty(fSize)
     % fSize is empty or missing, so ask the user
     fSize = ieReadNumber('Enter font size (7-25): ',prefSize,' %.0f');
     if isempty(fSize), return; end

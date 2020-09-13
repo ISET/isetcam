@@ -172,7 +172,7 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %  sceneFromFile, displayCreate, s_sceneReflectanceCharts.m 
 
 %% Initial definition
-if ieNotDefined('sceneName'), sceneName = 'default'; end
+if ~exist('sceneName','var')||isempty(sceneName), sceneName = 'default'; end
 parms = [];  % Returned in some cases, not many.
 
 % Identify the object type
@@ -700,7 +700,7 @@ return;
 function scene = sceneRGB(scene)
 %% Prepare a scene for RGB data.
 
-if ieNotDefined('scene'), scene.type = 'scene'; end
+if ~exist('scene','var')||isempty(scene), scene.type = 'scene'; end
 
 scene = sceneSet(scene,'name','rgb');
 scene = sceneSet(scene,'type','scene');

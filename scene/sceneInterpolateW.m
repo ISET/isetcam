@@ -28,8 +28,8 @@ function scene = sceneInterpolateW(scene,newWave,pLum)
 % Copyright ImagEval Consultants, LLC, 2003.
 
 %% Initialize parameters
-if ieNotDefined('pLum'),  pLum = 1; end
-if ieNotDefined('scene'), scene = vcGetSelectedObject('scene');
+if ~exist('pLum','var')||isempty(pLum),  pLum = 1; end
+if ~exist('scene','var')||isempty(scene), scene = vcGetSelectedObject('scene');
 elseif ~strcmp(sceneGet(scene,'type'),'scene')
     errordlg('sceneInterpolationW structure not a scene!');
 end
@@ -43,7 +43,7 @@ col   = sceneGet(scene,'col');
 curWave = sceneGet(scene,'wave');
 
 % If the user didn't send in new wavelengths, we ask.
-if ieNotDefined('newWave')
+if ~exist('newWave','var')||isempty(newWave)
     handles = ieSessionGet('scene image handle');
     prompt={'Start (nm)','Stop (nm)','Spacing (nm)'};
     def={num2str(curWave(1)),num2str(curWave(end)),num2str(sceneGet(scene,'binwidth'))};

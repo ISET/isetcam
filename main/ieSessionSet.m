@@ -60,7 +60,7 @@ function ieSessionSet(param,val,varargin)
 %% Parameters
 global vcSESSION
 
-if ieNotDefined('param'), error('You must specify a parameter.'); end
+if ~exist('param','var')||isempty(param), error('You must specify a parameter.'); end
 if ~exist('val','var'),   error('You must specify a value.');     end
 
 %% Main switch

@@ -50,9 +50,9 @@ function rgb = sceneShowImage(scene,displayFlag,gam,sceneW)
 %%  Input parameters
 if isempty(scene), cla; return;  end
 
-if ieNotDefined('gam'),         gam = 1;         end
-if ieNotDefined('displayFlag'), displayFlag = 1; end
-if ieNotDefined('sceneW'),      sceneW = [];     end
+if ~exist('gam','var')||isempty(gam),         gam = 1;         end
+if ~exist('displayFlag','var')||isempty(displayFlag), displayFlag = 1; end
+if ~exist('sceneW','var')||isempty(sceneW),      sceneW = [];     end
 
 if ~isempty(sceneW)
     figure(sceneW.figure1);   % Make sure it is selected
@@ -93,7 +93,7 @@ if displayFlag >= 0
         ieNewGraphWin;
     end
     
-    if ieNotDefined('xcoords') || ieNotDefined('ycoords')
+    if ~exist('xcoords', 'var') || ~exist('ycoords', 'var') || isempty(xcoords) || isempty(ycoords)
         imagescRGB(rgb); axis image; axis off
     else
         % User specified a grid overlay
