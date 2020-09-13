@@ -1,5 +1,5 @@
 function d = displaySet(d,parm,val,varargin)
-%Set display parameter values
+% Set display structure values
 %
 %   d = displaySet(d,parm,val,varargin)
 %
@@ -12,13 +12,18 @@ function d = displaySet(d,parm,val,varargin)
 %   dixel              - subpixel structure
 %   viewing distance   - viewing distance
 %   comment            - comments for this display
+%   image              - Image data, typically RGB, to be rendered in the
+%                        display window.
 %
-%   refresh rate       - 
-%   pixels per dixel
-%   dixel image
-%   dixel control map
-%   render function
+%   refresh rate       - Temporal refresh rate
+%   pixels per dixel   - Spatial samples per dixel
+%   dixel image        - The display pixel image showing the dixel
+%   dixel control map  - Not sure
+%   render function    - Not sure
 %
+% See also: 
+%   displayGet, displayCreate, ieLUTDigital, ieLUTLinear
+
 % Examples:
 %
 %  d = displayCreate;
@@ -26,10 +31,6 @@ function d = displaySet(d,parm,val,varargin)
 %  d = displaySet(d,'gTable','linear');
 %  d = displaySet(d,'name','My Display Type');
 %
-% See also: 
-%   displayGet, displayCreate, ieLUTDigital, ieLUTLinear
-%
-% Copyright ImagEval 2011
 
 if notDefined('parm'), error('Parameter not found.');  end
 
@@ -109,6 +110,9 @@ switch parm
     case {'comment'}
         % comment for the display
         d.comment = val;
+    case {'rgb','image'}
+        d.image = val;
+        
     otherwise
         error('Unknown parameter %s\n',parm);
 end

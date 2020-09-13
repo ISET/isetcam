@@ -41,12 +41,17 @@ function val = ieSessionGet(param,varargin)
 %      {'names'}     - Names of the objects of a type
 %          ieSessionGet('names','sensor')
 %
-% Current objects
 %
-% Examples:
+% Copyright ImagEval Consultants, LLC, 2005.
+%
+% See also
+%   ieAppGet(obj);
+%
+
+% Examples
+%   NOT UPDATED YET
+%
 %   h = ieSessionGet('scene window handle')
-%   g = ieSessionGet('scene guidata')
-%   (N.B. g = guidata(h)) 
 % 
 %   ieSessionSet('wait bar','on');
 %   ieSessionGet('wait bar')
@@ -69,12 +74,6 @@ function val = ieSessionGet(param,varargin)
 %   set(oig,'position',[0.15    0.3    0.28    0.37])
 %
 %   ieSessionGet('nobjects','sensor')
-%
-% Copyright ImagEval Consultants, LLC, 2005.
-%
-% See also
-%   ieAppGet(obj);
-%
 
 %% Parameters
 global vcSESSION
