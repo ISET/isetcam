@@ -31,7 +31,7 @@ function sFactor = ieUnitScaleFactor(unitName)
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
-if ieNotDefined('unitName'), error('Unit name must be defined.'); end
+if ~exist('unitName','var')||isempty(unitName), error('Unit name must be defined.'); end
 
 switch lower(unitName)
     

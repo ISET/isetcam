@@ -50,10 +50,10 @@ function rgb = imageSPD(spd,wList,gam,row,col,displayFlag,xcoords,ycoords,thisW)
 %
 
 %%
-if ieNotDefined('gam'), gam = 1; end
-if ieNotDefined('displayFlag'), displayFlag = 1; end
+if ~exist('gam','var')||isempty(gam), gam = 1; end
+if ~exist('displayFlag','var')||isempty(displayFlag), displayFlag = 1; end
 
-if ieNotDefined('wList')
+if ~exist('wList','var')||isempty(wList)
     w = size(spd,3);
     if     w == 31,  wList = (400:10:700); 
     elseif w == 301, wList = (400:1:700);
@@ -132,7 +132,7 @@ if ~isequal(gam,1), rgb = rgb.^gam; end
 % In other cases imageSPD is called directly, not through sceneShowImage.
 % In those cases we show the data if the displayFlag sign is positive. If
 % displayFlag is negative, imageSPD just returns the rgb values.
-if ieNotDefined('thisW'), thisW = []; end
+if ~exist('thisW','var')||isempty(thisW), thisW = []; end
 if displayFlag >= 0
     
     % Make sure the figure is selected and axis is cleared.

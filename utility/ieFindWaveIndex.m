@@ -21,9 +21,9 @@ function idx = ieFindWaveIndex(wave,waveVal,perfect)
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
-if ieNotDefined('wave'), error('Must define list of all wavelengths'); end
-if ieNotDefined('waveVal'), error('Must define wavelength values'); end
-if ieNotDefined('perfect'), perfect = 1; end
+if ~exist('wave','var')||isempty(wave), error('Must define list of all wavelengths'); end
+if ~exist('waveVal','var')||isempty(waveVal), error('Must define wavelength values'); end
+if ~exist('perfect','var')||isempty(perfect), perfect = 1; end
 
 if perfect
     % Find only perfect matches

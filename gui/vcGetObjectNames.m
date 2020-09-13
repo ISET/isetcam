@@ -32,8 +32,8 @@ function objNames = vcGetObjectNames(objType,makeUnique)
 % Perhaps this should be done in some more open way, rather than buried
 % inside of this routine
 
-if ieNotDefined('objType'), objType = 'scene'; end
-if ieNotDefined('makeUnique'), makeUnique = false; end
+if ~exist('objType','var')||isempty(objType), objType = 'scene'; end
+if ~exist('makeUnique','var')||isempty(makeUnique), makeUnique = false; end
 
 objects = vcGetObjects(objType);
 nObj = length(objects);
