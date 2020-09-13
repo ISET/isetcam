@@ -105,13 +105,13 @@ function oi = oiCompute(scene,oi,opticsModel)
 %  [sceneSize(1)/8 sceneSize(2)/8 sceneSize(1) sceneSize(2)]
 %
 
-if ieNotDefined('scene'), error('Scene required.'); end
-if ieNotDefined('oi'), error('Opticalimage required.'); end
+if ~exist('scene','var') || isempty(scene), error('Scene required.'); end
+if ~exist('oi','var') || isempty(oi), error('Opticalimage required.'); end
 if strcmp(oi.type,'scene') && strcmp(scene.type,'opticalimage')
     % disp('oiCompute: flipping arguments')
     tmp = scene; scene = oi; oi = tmp; clear tmp
 end
-if ieNotDefined('opticsModel') 
+if ~exist('opticsModel','var') || isempty(opticsModel)
     optics = oiGet(oi,'optics'); 
     opticsModel = opticsGet(optics,'model'); 
 end

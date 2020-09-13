@@ -31,8 +31,12 @@ function ip = ipCompute(ip,sensor)
 
 
 %% Check arguments
-if ieNotDefined('ip'), error('Image process structure is required.'); end
-if ieNotDefined('sensor'), error('Sensor structure is required.'); end
+if ~exist('ip','var') || isempty(ip)
+ error('Image process structure is required.'); 
+end
+if ~exist('sensor','var')
+    error('Sensor structure is required.'); 
+end
 
 
 %% Assign a name if the current one is 'default' or a copy.  
@@ -280,9 +284,9 @@ function ip = vciComputeBracketed(ip,sensor,combinationMethod)
 % sensor = vcGetObject('sensor');
 % ip = vcGetObject('vcimage');
 %
-if ieNotDefined('ip'), error('Virtual camera image required.'); end
-if ieNotDefined('sensor'), error('Image sensor array requried.'); end
-if ieNotDefined('combinationMethod')
+if ~exist('ip','var'), error('Virtual camera image required.'); end
+if ~exist('sensor','var'), error('Image sensor array requried.'); end
+if ~exist('combinationMethod','var')
     combinationMethod = ipGet(ip,'combinationMethod'); 
 end
 
@@ -327,12 +331,8 @@ function ip = vciComputeCFA(ip,sensor)
 % merge them back into a single CFA.
 %
 
-if ieNotDefined('ip'), error('Virtual camera image required.'); end
-if ieNotDefined('sensor'), error('Image sensor array requried.'); end
-
-% sensor = vcGetObject('sensor');
-% ip = vcGetObject('vcimage');
-%
+if ~exist('ip','var'),     error('Virtual camera image required.'); end
+if ~exist('sensor','var'), error('Image sensor array requried.'); end
 
 % Read the exposure times - same as number of filters
 expTimes = sensorGet(sensor,'expTimes');

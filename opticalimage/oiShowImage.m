@@ -20,10 +20,10 @@ function rgb = oiShowImage(oi,displayFlag,gam,oiW)
 % Copyright ImagEval Consultants, LLC, 2003.
 
 %%
-if isempty(oi) || ~checkfields(oi,'data'), cla; return;  end
-if ieNotDefined('gam'), gam = 1; end
-if ieNotDefined('displayFlag'), displayFlag = 1; end
-if ieNotDefined('oiW'), oiW = []; end
+if ~exist('oi','var') || isempty(oi) || ~checkfields(oi,'data'), cla; return;  end
+if ~exist('gam','var') || isempty(gam), gam = 1; end
+if ~exist('displayFlag','var'), displayFlag = 1; end
+if ~exist('oiW','var'), oiW = []; end
 
 if ~isempty(oiW)
     % Make sure it is selected
@@ -56,9 +56,8 @@ if displayFlag >= 0
         % Should be called imageAxis.  Not sure it is needed, really.
         ieNewGraphWin
     end
-    if ieNotDefined('xcoords') || ieNotDefined('ycoords')
-% djc -- from my read, looks like imagescRGB already calls axis image for us
-%        imagescRGB(rgb); axis image; axis off
+    if ~exist('xcoords','var') || ~exist('ycoords','var') ...
+            || isempty(xcoords) || isempty(ycoords)
         imagescRGB(rgb); axis off
     else
         % User specified a grid overlay
