@@ -68,7 +68,8 @@ function d = displayCreate(displayName,varargin)
 
 
 %% Arguments
-if ~exist('displayName','var')||isempty(displayname), displayName = 'reflectance-display'; end
+
+if ~exist('displayName','var')||isempty(displayName), displayName = 'reflectance-display'; end
 
 % Identify the object type
 d.type = 'display';
