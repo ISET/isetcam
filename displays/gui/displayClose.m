@@ -1,5 +1,6 @@
 function displayClose(varargin)
-%% function displayClose 
+% DEPRECATED
+%
 %     This is GUI callback function which is invoked when the display
 %     window is to be closed.
 %

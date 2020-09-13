@@ -136,13 +136,15 @@ switch param
         vcSESSION.GUI.vcDisplayWindow.app = val;
         
         % Refresh image window
-    case {'displayimage'}
+        % Putting this in the display object itself, not here
+        %{
+    case {'displayimage','imgdata'}
         if ~ndims(val) == 3
             error('Data do not appear to be an RGB image');
         else
             vcSESSION.imgData = val;
         end
-        
+        %}
     case {'metricswindow'}
         if length(varargin) < 2, error('metrics window requires hObject,eventdata,handles'); end
         vcSESSION.GUI.metricsWindow.hObject = val;

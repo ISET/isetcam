@@ -25,14 +25,20 @@ function d = displayCreate(displayName,varargin)
 %   displaySet will work here
 %
 % Description
-%   There are various examples in data/displays.  They contain a variable
-%   ('d') that is a display structure.  See displayGet and displaySet for
-%   the slots.
+%   There are various calibrated displays in data/displays.  They contain a
+%   variable ('d') that is a display structure.  See displayGet and
+%   displaySet for the slots. 
+%
+%   The 'reflectance-display' is designed to work well with sceneFromFile,
+%   producing a scene whose reflectances are within the 3D basis functions
+%   of natural surfaces and a D65 illuminant.
 % 
-% Example:
-%   d = displayCreate;     % The default is 'reflectance-display'
-%   d = displayCreate('lcdExample');
-%   wave = 400:5:700; d = displayCreate('lcdExample',wave);
+% sRGB definitions in terms of xy
+%
+%        Red     Green   Blue   White
+%  x	0.6400	0.3000	0.1500	0.3127
+%  y	0.3300	0.6000	0.0600	0.3290
+%
 %
 %  Some displays have psf data, as well.  For example:
 %
@@ -48,24 +54,14 @@ function d = displayCreate(displayName,varargin)
 %{
   d = displayCreate;
   displayPlot(d,'spd');
+  displayGet(d,'primaries xy')'
+  displayGet(d,'white xy')'
 %}
-
-%% sRGB definitions in terms of xy
-%
-%     Red     Green   Blue   White
-% x	0.6400	0.3000	0.1500	0.3127
-% y	0.3300	0.6000	0.0600	0.3290
-%
-% The default is a set of block primaries.  They are close to this.  We
-% should make one that is perfect. The default is shown below, and the
-% white point xy is a little too much x.  The file lcdExample.mat is a
-% little closer.
-%
-% d = displayCreate;
-% displayGet(d,'primaries xy')'
-% displayGet(d,'white xy')'
-%
-
+%{
+   d = displayCreate;     % The default is 'reflectance-display'
+   d = displayCreate('lcdExample');
+   wave = 400:5:700; d = displayCreate('lcdExample',wave);
+%}
 
 %% Arguments
 if ieNotDefined('displayName'), displayName = 'reflectance-display'; end
@@ -109,7 +105,11 @@ switch sParam
 
 end
 
-% Handle user-specified parameter values
+% Start out without an image.  Until we know what we should use.
+d = displaySet(d,'image',[]);
+
+%% Handle user-specified parameter values
+
 % Now we only support user setting value of wavelength
 if length(varargin) >= 1
     newWave = varargin{1};

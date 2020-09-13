@@ -1,45 +1,43 @@
-function rgb = displayShowImage(d, displayFlag, varargin)
+function rgb = displayShowImage(thisD, displayFlag, varargin)
 %Render an image of the display image data
 %
-%    rgb = displayShowImage(d, [displayFlag], [varargin])
+% Synopsis
+%   rgb = displayShowImage(thisD, [displayFlag], [varargin])
 %
+% Inputs
+%
+% Optional
+%
+% Outputs
+%
+%  
 % Examples:
-%   d   = displayCreate('LCD-Apple');
-%   rgb = displayShowImage(d);
-%   displayShowImage(d);
-%   rgb = displayShowImage(d, 1, ha);
+%   thisD   = displayCreate('LCD-Apple');
+%   scene = sceneCreate; rgb = sceneGet(scene,'rgb');
+%   thisD = displaySet(thisD,'rgb',rgb);
+%
+%   rgb = displayShowImage(thisD);
+%   displayShowImage(thisD);
+%   rgb = displayShowImage(thisD, 1, ha);
 %
 % (HJ) May, 2014
 
-if isempty(d), cla; return;  end
+%% Get parameters
+
+if isempty(thisD), cla; return;  end
 if notDefined('displayFlag'), displayFlag = 1; end
-if ~isempty(varargin), ha = varargin{1}; end
+if isempty(varargin), app = ieAppGet(thisD); end
 
-% Get parameters
-wave = displayGet(d, 'wave');
-global vcSESSION;
+%% Show the stored rgb image
 
-% Not sure why display image is attached here, rather than to display.  Ask
-% HJ.
-if isfield(vcSESSION, 'imgData')
-    rgb = vcSESSION.imgData;
-else
-    cla;
-    warning('No image data found');
-    return;
+% We convert the stored rgb image into a scene using the display
+% characteristics.
+rgb = displayGet(thisD,'rgb');
+if ~isempty(rgb)
+    scene = sceneFromFile(rgb, 'rgb', [], thisD);
+    rgb   = sceneGet(scene, 'rgb');
+    imshow(app.axisMain,rgb); axis image; axis off
 end
 
-% Compute photon image
-scene = sceneFromFile(rgb, 'rgb', [], d);
-img   = sceneGet(scene, 'photons');
-    
-% This displays the image in the GUI.  The displayFlag flag determines how
-% imageSPD converts the data into a displayed image.  It is set from the
-% GUI in the function displayShowImage.
-axes(ha);
-gam = 1;
-rgb = imageSPD(img,wave,gam, [], [], displayFlag);
-axis image; axis off
-
-return;
+end
 
