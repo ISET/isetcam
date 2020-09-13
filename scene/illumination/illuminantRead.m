@@ -63,7 +63,7 @@ function [spectralRadiance,wave] = illuminantRead(illP,lightName,wave,luminance)
 %}
 
 %%
-if ieNotDefined('illP')
+if ~exist('illP','var')||isempty(illP)
     % No illP
     if ieNotDefined('lightName')
         name = 'd65';

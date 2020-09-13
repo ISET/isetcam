@@ -18,8 +18,8 @@ function object = initDefaultSpectrum(object,spectralType,wave)
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
-if ieNotDefined('object'), error('Object required.'); end
-if ieNotDefined('spectralType'), spectralType = 'hyperspectral'; end
+if ~exist('object','var')||isempty(object), error('Object required.'); end
+if ~exist('spectralType','var')||isempty(spectralType), spectralType = 'hyperspectral'; end
 
 switch lower(spectralType)
     case {'spectral','multispectral','hyperspectral'}

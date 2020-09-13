@@ -36,7 +36,7 @@ function [res,wave,comment,partialName] = ieReadSpectra(fname,wave,extrapVal)
   [data,wave] = ieReadSpectra(fileName)
 %}
 
-if ieNotDefined('fname'), fname = ''; end
+if ~exist('fname','var')||isempty(fname), fname = ''; end
 
 % Create a partialpath for this file name.  For this to work, we need to
 % keep all of the spectral data in a single directory, I am afraid.
@@ -56,8 +56,8 @@ end
 
 % If wave was not sent in, return the native resolution in the file.  No
 % interpolation will occur.
-if ieNotDefined('wave'),  wave = wavelength; end
-if ieNotDefined('extrapVal'),  extrapVal = 0;  end
+if ~exist('wave','var')||isempty(wave),  wave = wavelength; end
+if ~exist('extrapVal','var')||isempty(extrapVal),  extrapVal = 0;  end
 
 res = interp1(wavelength(:), data, wave(:),'linear',extrapVal);
     

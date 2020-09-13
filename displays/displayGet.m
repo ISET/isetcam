@@ -80,7 +80,7 @@ function val = displayGet(d, parm, varargin)
 %  We need to return the size of the subpixel samples in the psf image.
 
 %% Check parameters
-if ieNotDefined('parm'), error('Parameter not found.');  end
+if ~exist('parm','var')||isempty(parm) , error('Parameter not found.');  end
 
 % Default is empty when the parameter is not yet defined.
 val = [];

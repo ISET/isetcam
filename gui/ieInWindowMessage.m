@@ -11,9 +11,12 @@ function ieInWindowMessage(str,app,duration)
 
 
 %%
-if ieNotDefined('str'), str = ''; end
-if ieNotDefined('app'), disp(str); return; end
-if ieNotDefined('duration'), duration = []; end
+%if ieNotDefined('str'), str = ''; end
+%if ieNotDefined('app'), disp(str); return; end
+%if ieNotDefined('duration'), duration = []; end
+if (~exist('str','var')||isempty(str)),str = ''; end
+if (~exist('app','var')||isempty(app)),disp(str); return; end
+if (~exist('duration','var')||isempty(duration)),duration = []; end
 
 % Place the string in the message area.
 app.txtMessage.Text = str;

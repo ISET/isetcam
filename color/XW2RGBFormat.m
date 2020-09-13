@@ -24,14 +24,14 @@ function imRGB = XW2RGBFormat(imXW,row,col)
 % Copyright ImagEval Consultants, LLC, 2003.
 
 
-if ieNotDefined('imXW'), error('No image data.'); end
+if ~exist('imXW','var')||isempty(imXW), error('No image data.'); end
 
 % I took this out because it is possible to have a monochrome scene with
 % just one column.
 % if ndims(imXW) ~= 2,  error('XW2RGB:  input should be 2D'); end
 
-if ieNotDefined('row'), error('No row size.'); end
-if ieNotDefined('col'), error('No col size.'); end
+if ~exist('row','var')||isempty(row), error('No row size.'); end
+if ~exist('col','var')||isempty(col), error('No col size.'); end
 
 x = size(imXW,1);
 w = size(imXW,2);

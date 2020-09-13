@@ -97,8 +97,8 @@ function result = colorTransformMatrix(matrixtype,spacetype)
 % T3x3*colVector At ImagEval, we use rowVector*T3x3.  We retained her terms
 % but we return the transpose of her result (see the end).
 
-if ieNotDefined('matrixtype'), error('Matrix type required.'); end
-if ieNotDefined('spacetype'),  spacetype = []; end
+if ~exist('matrixtype','var')||isempty(matrixtype), error('Matrix type required.'); end
+if ~exist('spacetype','var')||isempty(spacetype),  spacetype = []; end
 
 matrixtype = ieParamFormat(matrixtype);
 

@@ -63,8 +63,8 @@ function il = illuminantCreate(ilName, wave, varargin)
 %}
 
 %% Initialize parameters
-if ieNotDefined('ilName'), ilName = 'd65'; end
-if ieNotDefined('wave'), wave = 400:10:700; end
+if ~exist('ilName','var')||isempty(ilName), ilName = 'd65'; end
+if ~exist('wave','var')||isempty(ilName), wave = 400:10:700; end
 
 il.name = ilName;
 il.type = 'illuminant';
