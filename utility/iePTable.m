@@ -129,7 +129,7 @@ switch format
     case 'window'
         precision = 4;
         data = {...
-            'Name',                     sceneGet(scene,'name'),                                      '';
+            'Name',                     char(sceneGet(scene,'name')),                                      '';
             'Field of view',            num2str(sceneGet(scene,'fov')),                              'width deg';
             'Rows/cols',                num2str(sceneGet(scene,'size')),                             'samples';
             'Height/Width',             num2str(sceneGet(scene,'height and width','mm'),precision),  'mm';
@@ -167,7 +167,7 @@ switch format
         % OK, we have an oi so put up the data.
         precision = 3;
         data = {...
-            'OI name',         oiGet(oi,'name'), '';
+            'OI name',         char(oiGet(oi,'name')), '';
             'Rows cols',       num2str(oiGet(oi,'size')),                             'samples';
             'Hor FOV',         num2str(oiGet(oi,'fov')),                              'deg';
             'Spatial res',     num2str(oiGet(oi,'spatial resolution','um'),precision),'um/sample';
