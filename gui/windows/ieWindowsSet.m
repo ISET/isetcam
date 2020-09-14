@@ -59,6 +59,16 @@ if ~isempty(w) && ~isempty(v), w.figure1.Position = v; end
 w = ieSessionGet('ip window');v = wPos{5};
 if ~isempty(w) && ~isempty(v), w.figure1.Position = v; end
 
+if numel(wPos) > 5
+     w = ieSessionGet('camdesign window');v = wPos{6};
+     if ~isempty(w) && ~isempty(v), w.figure1.Position = v; end
+end
+
+if numel(wPos) > 6
+     w = ieSessionGet('imageexplore window');v = wPos{7};
+     if ~isempty(w) && ~isempty(v), w.UIFigure.Position = v; end
+end
+
 % if size(wPos) > 5
 %     w = ieSessionGet('graph window');v = wPos{6};
 %     if ~isempty(w) && ~isempty(v), set(w,'Position',v); end

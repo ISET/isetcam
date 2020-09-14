@@ -40,6 +40,12 @@ if ~isempty(w), wPos{5} = w.figure1.Position; end
 
 % w = ieSessionGet('graph window');
 % if ~isempty(w), wPos{6} = w.figure1.Position; end
+w = ieSessionGet('camdesign window');
+if ~isempty(w), wPos{6} = w.figure1.Position; end
+
+w = ieSessionGet('imageexplore window');
+if ~isempty(w), wPos{7} = w.UIFigure.Position; end
+
 
 if saveFlag, setpref('ISET','wPos',wPos);  end
 

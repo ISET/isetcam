@@ -32,6 +32,12 @@ switch lower(figType)
     case {'metrics'}
         ieSessionSet('metricswindow',hObject,eventdata,handles);
         
+    case {'camdesign'}
+        ieSessionSet('camdesignwindow',app);
+        
+    case {'imageexplorer'}
+        ieSessionSet('imageexplorewindow', app);
+        
     otherwise
         error('Unknown figure type');
 end
