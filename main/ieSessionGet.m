@@ -194,6 +194,14 @@ switch param
         if checkfields(vcSESSION,'GUI','metricsWindow')
             val = vcSESSION.GUI.metricsWindow.app;
         end
+    case {'camdesignwindow'}
+        if checkfields(vcSESSION,'GUI','vcCamDesignWindow')
+            val = vcSESSION.GUI.vcCamDesignWindow.app;
+        end
+    case {'imageexplorewindow'}
+        if checkfields(vcSESSION,'GUI','vcImageExploreWindow')
+            val = vcSESSION.GUI.vcImageExploreWindow.app;
+        end
         
         % Information about current objects
         % ieSessionGet('scene');
