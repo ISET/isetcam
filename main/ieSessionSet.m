@@ -30,6 +30,8 @@ function ieSessionSet(param,val,varargin)
 %    'ip window'      - Store handles for image processor
 %                         (virtual camera image) window
 %    'metrics window'  - Store handles for metrics window
+%    'camdesign window' - App handle for camera design app
+%    'imageexplore window' - App handle for the image explorer app
 %    'graphwin val'    - Number for graphics window
 %    'graphwin handle' - Not currently used, in future will be as named
 %    'graphwin figure' - hObject for graphics window.  Why is this not
@@ -134,6 +136,10 @@ switch param
         vcSESSION.GUI.vcImageWindow.app = val;
     case {'displaywindow'}
         vcSESSION.GUI.vcDisplayWindow.app = val;
+    case {'camdesignwindow'}
+        vcSESSION.GUI.vcCamDesignWindow.app = val;
+    case {'imageexplorewindow'}
+        vcSESSION.GUI.vcImageExploreWindow.app = val;
         
         % Refresh image window
         % Putting this in the display object itself, not here
