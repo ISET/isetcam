@@ -35,14 +35,16 @@ global vcSESSION
 % For speed
 if ~exist('objType','var') || isempty(objType), error('objType must be defined'); end
 if isempty(vcSESSION)
-    errordlg('Please start ISET to initialize vcSESSION.');
-    return;
+    % If the user has not initialized ISET but gotten to this point, then
+    % we initialize the vcSESSION database for the user here.
+    ieInit;
 end
 if ~exist('val','var') || isempty(val), val = vcGetSelectedObject(objType); end
 
 objType = vcEquivalentObjtype(objType);
 
 %%
+sOBJECT = [];
 if ~isempty(val)
     switch(lower(objType))
         case {'scene','isa','opticalimage','vcimage','display'}
@@ -56,10 +58,6 @@ if ~isempty(val)
         otherwise
             error('Unknown object type.');
     end
-else
-    % No val.  Return empty.
-    sOBJECT = [];
-    % warning('No object found');
 end
 
 end

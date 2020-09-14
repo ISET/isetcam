@@ -605,6 +605,8 @@ if ieNotDefined('contrast'), contrast = 0.20;
 elseif contrast > 1, contrast = contrast/100; 
 end
 
+if numel(sz) == 1, sz(2) = sz(1); end
+
 scene = initDefaultSpectrum(scene,'hyperspectral');
 wave  = sceneGet(scene,'wave');
 nWave = sceneGet(scene,'nwave');
@@ -1296,7 +1298,7 @@ illP = illuminantGet(il,'photons');
 for ii=1:nWave, img(:,:,ii) = d*illP(ii); end
 scene = sceneSet(scene,'photons',img);
 
-return
+return;
 
 %---------------------------------------------------------------
 function scene = sceneSlantedBar(scene,imSize,barSlope,fieldOfView,wave)
