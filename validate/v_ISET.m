@@ -18,6 +18,7 @@
 ieInit
 
 setpref('ISET', 'benchmarkstart', cputime); % if I just put it in a variable it gets cleared:(
+tic
 
 %% Scene tests
 h = msgbox('Scene','ISET Tests','replace');
@@ -67,3 +68,4 @@ t_displayIntroduction;
 afterTime = cputime;
 beforeTime = getpref('ISET', 'benchmarkstart', 0);
 strcat("v_ISET ran in: ", string(afterTime - beforeTime), " seconds of CPU time.")
+toc
