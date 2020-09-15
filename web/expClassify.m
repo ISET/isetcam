@@ -156,7 +156,8 @@ for ii = 1:numel(inputFiles)
         
         sz     = sceneGet(ourScene,'size');
         rect   = round([sz(2)/8 sz(1)/8 sz(2) sz(1)]);
-        oi = oiCrop(oi,rect);
+        % I think maybe Brian changed things so we don't need this??
+        %oi = oiCrop(oi,rect);
         % oiWindow(oiTest);
         
         save(fullfile(outputOIFolder,[oiGet(oi,'name'),'.mat']),'oi');
