@@ -1,15 +1,16 @@
-function oi = opticsPlotOffAxis(oi,val)
+function oi = opticsPlotOffAxis(oi,thisW)
 % Plot relative illumination (off-axis) fall off
 %
 % Synopsis
 %   oi = opticsPlotOffAxis(oi,val)
 %
 % Input
-%  oi
-%  val
+%  oi:      Optical image
+%  thisW:   Window
 %
 % Return
-%  oi
+%  oi:      Optical image, not really modified but maybe a little for
+%           storing the cos4th data
 %
 % Description
 %   Plot the off-axis fall-off for the current optical image and optics
@@ -19,7 +20,7 @@ function oi = opticsPlotOffAxis(oi,val)
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
-if ieNotDefined('val'), val = []; end
+if ieNotDefined('thisW'), thisW = []; end
 
 optics = oiGet(oi,'optics');
 data = opticsGet(optics,'cos4th');
@@ -48,13 +49,19 @@ if isempty(data)
     end
 end
 
-figNum =  ieNewGraphWin;
+switch class(thisW)
+    case ''
+        thisW = ieNewGraphWin;
+    case 'matlab.ui.Figure'
+    otherwise
+        error('Unknown window types %s\n',class(thisW));
+end
 
 mesh(data);
 xlabel('Row'),ylabel('Col'),zlabel('Relative intensity');
 title('Relative illumination');
 grid on;
 
-set(figNum,'Userdata',data);
+set(thisW,'Userdata',data);
 
 end

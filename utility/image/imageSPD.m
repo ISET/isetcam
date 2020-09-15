@@ -143,7 +143,11 @@ if displayFlag >= 0
         case 'sceneWindow_App'
             figure(thisW.figure1);
             cla(thisW.sceneImage);  % Should be called imageAxis
+        case 'matlab.ui.Figure'
+            % There is a figure waiting 
+            % Perhaps figure(thisW) should be invoked?
         case 'double'
+            % Not sure why this is here.
             ieNewGraphWin;
             % cla(thisFig);
     end

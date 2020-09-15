@@ -61,7 +61,7 @@ function [udata, g] = oiPlot(oi,pType,roiLocs,varargin)
 %         line spread can be set (default: 40).
 %
 %      {'relative illumination'} - Calls opticsPlotOffAxis
-%      
+%      {'lens transmittance'}    - Calls opticsPlotTransmittance
 %
 % See also:  plotOITest, scenePlot, sensorPlot
 %
@@ -318,11 +318,12 @@ switch pType
         end
         
         if nWave > 1
-            imageSPD(irrad,wave,gam,sz(1),sz(2),1,xCoords,yCoords);
+            imageSPD(irrad,wave,gam,sz(1),sz(2),1,xCoords,yCoords,g);
         else
             wList = oiGet(oi,'wavelength');
             [row,col] = size(irrad);
-            imageSPD(irrad,wList,gam,row,col,1,xCoords,yCoords);
+            % Pass in the window handle
+            imageSPD(irrad,wList,gam,row,col,1,xCoords,yCoords,g);
         end
         xlabel('Position (um)'); ylabel('Position (um)');
         
@@ -525,8 +526,10 @@ switch pType
         % Optics related
     case {'relativeillumination'}
         % Optics relative illumination
-        udata = opticsPlotOffAxis(oi);
-
+        udata = opticsPlotOffAxis(oi,g);
+    case{'lenstransmittance'}  
+        udata = opticsPlotTransmittance(oi,g);
+        
     case {'otf','otfanywave'}
         % User asked to select a wavelength
         % Optical transfer function, units are lines/mm
