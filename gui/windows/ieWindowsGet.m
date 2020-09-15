@@ -23,28 +23,27 @@ if ieNotDefined('saveFlag'), saveFlag = false; end
 wPos = ieSessionGet('wpos');
 
 w = ieSessionGet('main window');
-if ~isempty(w), wPos{1} = w.figure1.Position; end
-wPos{1} = get(w,'Position');
+if ~isempty(w) && isvalid(w), wPos{1} = w.figure1.Position; end
 
 w = ieSessionGet('scene window');
-if ~isempty(w), wPos{2} = w.figure1.Position; end
+if ~isempty(w) && isvalid(w), wPos{2} = w.figure1.Position; end
 
 w = ieSessionGet('oi window');
-if ~isempty(w), wPos{3} = w.figure1.Position; end
+if ~isempty(w) && isvalid(w), wPos{3} = w.figure1.Position; end
 
 w = ieSessionGet('sensor window');
-if ~isempty(w), wPos{4} = w.figure1.Position; end
+if ~isempty(w) && isvalid(w), wPos{4} = w.figure1.Position; end
 
 w = ieSessionGet('ip window');
-if ~isempty(w), wPos{5} = w.figure1.Position; end
+if ~isempty(w) && isvalid(w), wPos{5} = w.figure1.Position; end
 
 % w = ieSessionGet('graph window');
 % if ~isempty(w), wPos{6} = w.figure1.Position; end
 w = ieSessionGet('camdesign window');
-if ~isempty(w), wPos{6} = w.figure1.Position; end
+if ~isempty(w) && isvalid(w), wPos{6} = w.figure1.Position; end
 
 w = ieSessionGet('imageexplore window');
-if ~isempty(w), wPos{7} = w.UIFigure.Position; end
+if ~isempty(w) && isvalid(w), wPos{7} = w.UIFigure.Position; end
 
 
 if saveFlag, setpref('ISET','wPos',wPos);  end
