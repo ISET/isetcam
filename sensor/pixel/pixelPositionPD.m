@@ -17,17 +17,17 @@ function PIXEL = pixelPositionPD(PIXEL,place)
 %    this position being the upper left corner, not the center of the
 %    photodetector.)
 
-if ~exist('place','var') | isempty(place), place = 'center'; end
+if ~exist('place','var') || isempty(place), place = 'center'; end
 
 switch lower(place)
     case 'center'
         PIXEL.pdXpos = (pixelGet(PIXEL,'width') - pixelGet(PIXEL,'pdWidth'))/2;
         PIXEL.pdYpos = (pixelGet(PIXEL,'height') - pixelGet(PIXEL,'pdHeight'))/2;
-        if PIXEL.pdXpos < 0 | PIXEL.pdYpos < 0
+        if (PIXEL.pdXpos < 0) || (PIXEL.pdYpos < 0)
             error('Inconsistent photodetector and pixel sizes.');
         end
     otherwise
-        error('Unknown placement.');
+        error('Unknown placement principle %s.',lower(place));
 end
 
-return;
+end
