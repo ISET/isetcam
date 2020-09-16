@@ -82,12 +82,13 @@ d = displaySet(d,'name',displayName);
 sParam = ieParamFormat(displayName);
 switch sParam
     case 'default'
-        % See comment about the default above.  We should make it a little
-        % closer to sRGB standard chromaticities.
+        % This is the old default display with block matrix primaries.  The
+        % modern default display is the 'reflectance-display'
         d = displayDefault(d);
  
     case 'equalenergy'
-        % Make the primaries all the same and equal energy
+        % Make the primaries all the same and equal energy.  Thus, a
+        % monochrome display.
         d = displayDefault(d);
         spd = ones(size(d.spd))*1e-3;
         d = displaySet(d,'spd',spd);
@@ -98,7 +99,16 @@ switch sParam
             tmp = load(displayName);
             if ~isfield(tmp,'d')
                 error('No display struct in the file');
-            else  d = tmp.d;
+            else,  d = tmp.d;
+            end
+            if isempty(displayGet(d,'dixel'))
+                % Some displays do not have a spatial dixel.  For example,
+                % the reflectance-display is entirely imaginary.  So, we
+                % assign a dixel here from an existing display that was
+                % calibrated.
+                fprintf('Assigning the dixel from LCD-Apple to the %s display.\n', displayGet(d,'name'));
+                tmp = load('LCD-Apple');
+                d.dixel = tmp.d.dixel;
             end
         else
             error('Unknown display %s.',displayName);

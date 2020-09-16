@@ -64,6 +64,10 @@ switch lower(objType)
         app = ieSessionGet('ip window');
         if isempty(app), error('Undefined ip app'); end
         appAxis = app.ipImage;
+    case {'display'}
+        app = ieSessionGet('display window');
+        if isempty(app), error('Undefined display app'); end
+        appAxis = app.displayImage;
     otherwise
         error('Unknown object type.');
 end

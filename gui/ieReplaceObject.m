@@ -49,6 +49,8 @@ switch lower(objType)
         vcSESSION.ISA{val}.pixel = obj;
     case 'vcimage'
         vcSESSION.VCIMAGE{val} = obj;
+    case 'display'
+        vcSESSION.DISPLAY{val} = obj;
     otherwise
         error('Unknown object type');
 end
