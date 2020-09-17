@@ -57,6 +57,7 @@ end
 w = ieSessionGet('main window'); v = wPos{1};
 if ~isempty(w) && ~isempty(v) && isvalid(w)
     w.figure1.Position = v; 
+    movegui(w.figure1);
     if restoreState && ~isempty(wState) && numel(wState) >= 1
         w.figure1.WindowState = wState{1};
     end
@@ -65,6 +66,7 @@ end
 w = ieSessionGet('scene window'); v = wPos{2};
 if ~isempty(w) && ~isempty(v) && isvalid(w)
     w.figure1.Position = v;
+    movegui(w.figure1);
     if restoreState && ~isempty(wState) && numel(wState) >= 2
         w.figure1.WindowState = wState{2};
     end
@@ -73,6 +75,7 @@ end
 w = ieSessionGet('oi window'); v = wPos{3};
 if ~isempty(w) && ~isempty(v) && isvalid(w)
     w.figure1.Position = v;
+    movegui(w.figure1);
     if restoreState && ~isempty(wState) && numel(wState) >= 3
         w.figure1.WindowState = wState{3};
     end
@@ -81,6 +84,7 @@ end
 w = ieSessionGet('sensor window');v = wPos{4};
 if ~isempty(w) && ~isempty(v) && isvalid(w)
     w.figure1.Position = v;
+    movegui(w.figure1);
     if restoreState && ~isempty(wState) && numel(wState) >= 4
         w.figure1.WindowState = wState{4};
     end
@@ -89,6 +93,7 @@ end
 w = ieSessionGet('ip window');v = wPos{5};
 if ~isempty(w) && ~isempty(v) && isvalid(w)
     w.figure1.Position = v;
+    movegui(w.figure1);
     if restoreState && ~isempty(wState) && numel(wState) >= 5
         w.figure1.WindowState = wState{5};
     end
@@ -98,6 +103,7 @@ if numel(wPos) > 5
      w = ieSessionGet('camdesign window');v = wPos{6};
      if ~isempty(w) && ~isempty(v) && isvalid(w)
          w.figure1.Position = v;
+        movegui(w.figure1);
         if restoreState && ~isempty(wState) && numel(wState) >= 6
             w.figure1.WindowState = wState{6};
         end
@@ -108,6 +114,7 @@ if numel(wPos) > 6
      w = ieSessionGet('imageexplore window');v = wPos{7};
      if ~isempty(w) && ~isempty(v) && isvalid(w)
          w.UIFigure.Position = v;
+         movegui(w.UIFigure);
          if restoreState && ~isempty(wState) && numel(wState) >= 7
             w.UIFigure.WindowState = wState{7};
          end
