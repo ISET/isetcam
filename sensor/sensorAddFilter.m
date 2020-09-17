@@ -1,17 +1,28 @@
 function sensor = sensorAddFilter(sensor,fname)
-%Add a color filter to the list of ISA filters
+% Add a color filter to the list of ISA filters
 %
-%   isa = sensorAddFilter(isa)
+% Synopsis
+%   sensor = sensorAddFilter(sensor)
 %
-% The color filter is added to the isa.color.filterSpectra list.  The data
-% are read from a file.  This routine is used when editing the color
-% filters in the sensorWindow.
+% Description
+%  The color filter are read from a file and added to the
+%  sensor.color.filterSpectra list. This routine is used when editing the
+%  color filters in the sensorWindow.
 %
+% Inputs
+% 
+% Output
+%   sensor:  Modified sensor
+%
+% 
 % Examples:
 %    sensor = ieGetObject('sensor');
 %    sensor = sensorAddFilter(sensor);
 %
 % Copyright ImagEval Consultants, LLC, 2003.
+%
+% See also
+%    sensorDesignCFA_App.mlapp
 
 if ieNotDefined('isa'), sensor = ieGetObject('ISA'); end
 if ieNotDefined('fname'), fname = []; end
@@ -39,9 +50,9 @@ newFilterName = char(newFilterNames{whichColumn});
 sensor = sensorSet(sensor,'editFilterNames',length(filterNames)+1,newFilterName);
 
 % Add the filter data to filterSpectra
-filterSpectra = sensorGet(sensor,'filterspectra');
+filterSpectra = sensorGet(sensor,'filter spectra');
 filterSpectra(:,(nFilters+1)) = data;
-sensor = sensorSet(sensor,'filterspectra',filterSpectra);
+sensor = sensorSet(sensor,'filter spectra',filterSpectra);
 
 end
 
