@@ -63,8 +63,14 @@ sensorWindow(sensor);
 % Notice, however, that the FOV is always the horizontal field of view, so
 % we do not get padding in the vertical direction for a rectangular image.
 % Only for a square image.
+<<<<<<< HEAD
 sensor = sensorSetSizeToFOV(sensor,oiGet(oi,'fov'),oi);
 sensor = sensorCompute(sensor,oi);
 sensorWindow(sensor);
+=======
+sensor = sensorSetSizeToFOV(sensor,oiGet(oi,'fov'),[],oi);
+sensor = sensorCompute(sensor,oi);
+sensorWindow(sensor); truesize
+>>>>>>> master
 
 %% END

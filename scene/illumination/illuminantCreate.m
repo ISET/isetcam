@@ -27,6 +27,7 @@ function il = illuminantCreate(ilName, wave, varargin)
 %    555 nm                      - Monochromatic
 %    equal energy, equal photons - Broad band for physics
 %    illuminant c                - A CIE Standard
+%    Gaussian                    - Useful for simulating narrowband lights
 %
 % See examples:
 %  ieExamplesPrint('illuminantCreate');
