@@ -129,15 +129,14 @@ end
 % Either show it in the app window or in a graph window
 if isa(appAxis,'matlab.ui.control.UIAxes')
     % Show it in the window
-    image(appAxis,img); 
-    axis image; axis off;
+    axis(appAxis);
+    image(img); axis image; axis off;
 elseif isequal(app,0)
     % Just return;
     return;
-else
-    figure(app);
-    imshow(img); 
-    axis image; axis off;
+elseif isa(app,'matlab.ui.Figure')
+    figure(app); 
+    image(img); axis image; axis off;
     if trueSizeFlag
         truesize;
     end
