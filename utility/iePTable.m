@@ -129,15 +129,19 @@ switch format
     case 'window'
         precision = 4;
         data = {...
-            'Name',                     char(sceneGet(scene,'name')),                                      '';
-            'Field of view',            num2str(sceneGet(scene,'fov')),                              'width deg';
+            'Name',                     char(sceneGet(scene,'name')),                                '';
+            'Field of view (hor)',      num2str(sceneGet(scene,'fov')),                              'deg';
+            'Field of view (diag)',     num2str(sceneGet(scene,'diagonal field of view')),           'deg';
             'Rows/cols',                num2str(sceneGet(scene,'size')),                             'samples';
             'Height/Width',             num2str(sceneGet(scene,'height and width','mm'),precision),  'mm';
             'Distance ',                num2str(sceneGet(scene,'distance','m'),precision),           'meters';
             'Angular res',              num2str(sceneGet(scene,'angular resolution'),precision),     'deg/samp';
             'Sample spacing',           num2str(sceneGet(scene,'sample spacing','mm'),precision),    'mm/sample';
+            'Peak radiance,wave',       sprintf('%e, %.0f',sceneGet(scene,'peakradianceandwave')),   'q/s/sr/m^2, nm';
             'Mean luminance',           num2str(sceneGet(scene,'mean luminance'),precision),         'cd/m^2 (nits)';
+            'Dynamic range',            num2str(sceneGet(scene,'luminance dynamic range')),          'dB';
             'Illuminant name',          sceneGet(scene,'illuminant name'),                           '';
+            'Depth range',              num2str(sceneGet(scene,'depth range')),                      'm';
             };
     case 'embed'
         precision = 2;
@@ -150,6 +154,7 @@ switch format
             'Samp space (mm/sample)',   num2str(sceneGet(scene,'sample spacing','mm'),precision);
             'Mean luminance (cd/m^2)',  num2str(sceneGet(scene,'mean luminance'),precision);
             'Illuminant name',          sceneGet(scene,'illuminant name');
+            'Lum dynamic range',        sceneGet(scene,'luminance dynamic range');
             };
     otherwise
         error('Unknown table format %s\n',format);
