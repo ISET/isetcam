@@ -66,7 +66,7 @@ if ~isempty(w) && ~isempty(v) && isvalid(w)
     w.figure1.Position = v; 
     if screenProtect, movegui(w.figure1); end
     if restoreState && ~isempty(wState) && numel(wState) >= 1
-        w.figure1.WindowState = wState{1};
+        if ~isempty(wState{1}), w.figure1.WindowState = wState{1}; end
     end
 end
 
@@ -75,7 +75,7 @@ if ~isempty(w) && ~isempty(v) && isvalid(w)
     w.figure1.Position = v;
     if screenProtect, movegui(w.figure1); end
     if restoreState && ~isempty(wState) && numel(wState) >= 2
-        w.figure1.WindowState = wState{2};
+        if ~isempty(wState{2}), w.figure1.WindowState = wState{2}; end
     end
 end
 
@@ -84,7 +84,7 @@ if ~isempty(w) && ~isempty(v) && isvalid(w)
     w.figure1.Position = v;
     if screenProtect, movegui(w.figure1); end
     if restoreState && ~isempty(wState) && numel(wState) >= 3
-        w.figure1.WindowState = wState{3};
+        if ~isempty(wState{3}), w.figure1.WindowState = wState{3}; end
     end
 end
 
@@ -93,7 +93,7 @@ if ~isempty(w) && ~isempty(v) && isvalid(w)
     w.figure1.Position = v;
     if screenProtect, movegui(w.figure1); end
     if restoreState && ~isempty(wState) && numel(wState) >= 4
-        w.figure1.WindowState = wState{4};
+        if ~isempty(wState{4}), w.figure1.WindowState = wState{4}; end
     end
 end
 
@@ -102,7 +102,7 @@ if ~isempty(w) && ~isempty(v) && isvalid(w)
     w.figure1.Position = v;
     if screenProtect, movegui(w.figure1); end
     if restoreState && ~isempty(wState) && numel(wState) >= 5
-        w.figure1.WindowState = wState{5};
+        if ~isempty(wState{5}), w.figure1.WindowState = wState{5}; end
     end
 end
 
@@ -112,7 +112,7 @@ if numel(wPos) > 5
          w.figure1.Position = v;
         if screenProtect, movegui(w.figure1); end
         if restoreState && ~isempty(wState) && numel(wState) >= 6
-            w.figure1.WindowState = wState{6};
+            if ~isempty(wState{6}), w.figure1.WindowState = wState{6}; end
         end
      end
 end
@@ -123,7 +123,7 @@ if numel(wPos) > 6
          w.UIFigure.Position = v;
          if screenProtect, movegui(w.UIFigure); end
          if restoreState && ~isempty(wState) && numel(wState) >= 7
-             w.UIFigure.WindowState = wState{7};
+             if ~isempty(wState{7}), w.UIFigure.WindowState = wState{7}; end
          end
      end
 end
