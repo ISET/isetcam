@@ -4,12 +4,28 @@ function [scoreStats, scoreTable] = expClassify(varargin)
 %   classifierResults = expClassify(varargin)
 %       eg: expClassify([imageFolder], [oi], [sensor], [ip])
 %
-% start with googlenet, vgg19, resnet50, can use others.
-% Note that they will error the first time, require an add-in to be
+% Will run a classifier on a folder of images, as well as on a version
+% of those images that have been processed using optics, sensor, and ip
+%
+% Initial implementation offers googlenet, vgg19, resnet50, could add
+% squeezenet easily. There is also an option to run a user-supplied
+% classifier (called customnet).
+%
+% Note that loading a classifier will error the first time, requiring
+% the pre-trained network add-in (a supporting package for the Deep Learning toolbox) to be
 % downloaded. Link to the download appears in the script window,
 % or can be found using the add-in explorer
 % 
-% 
+% Because they are expensive to calculate, we cache optical images and
+% re-use them if the image name and the optics are the same.
+%
+% Processed images go into a sub-folder called "ip" and OIs into "optical
+% image"
+%
+% If a folder is not supplied, the user is asked to supply one
+%
+% If elements of the camera are not specified, the current defaults are
+% used.
 % 
 
 %%
