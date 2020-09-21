@@ -81,6 +81,7 @@ else
     sceneW.refresh;
 end
 
-if exist('show','var') && show, drawnow; end
+% Assume true if it does not exist.  Or if it is true.
+if ~exist('show','var') || show, drawnow; end
 
 end
