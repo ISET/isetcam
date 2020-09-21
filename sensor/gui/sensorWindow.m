@@ -11,6 +11,8 @@ function sensorW = sensorWindow(sensor)
 %   sensor: The sensor you want in the window.  If empty, the currently
 %           selected sensor in global vcSESSION is used.  If there is no
 %           selected sensor a default sensor is created and used.
+%   show:   Executes a drawnow command on exiting.  
+%           (Optional, default true)
 %
 % Outputs
 %   sensorW:  An sensorWindow_App object.
@@ -77,5 +79,7 @@ else
     % Just refresh it
     sensorW.refresh;
 end
+
+if exist('show','var') && show, drawnow; end
 
 end

@@ -11,6 +11,8 @@ function ipW = ipWindow(ip)
 %   ip:  The image processor you want in the window.  If empty, the currently
 %        selected ip in global vcSESSION is used.  If there is no
 %        selected ip a default ip is created and used.
+%   show:   Executes a drawnow command on exiting.  
+%           (Optional, default true)
 %
 % Outputs
 %   ipW:  An ipWindow_App object.
@@ -77,5 +79,7 @@ else
     % Just refresh it
     ipW.refresh;
 end
+
+if exist('show','var') && show, drawnow; end
 
 end

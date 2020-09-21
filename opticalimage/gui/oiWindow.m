@@ -1,8 +1,8 @@
-function oiW = oiWindow(oi)
+function oiW = oiWindow(oi,show)
 % Wrapper that replaces the GUIDE oiWindow functionality
 %
 % Synopsis
-%   oiW = oiWindow(oi)
+%   oiW = oiWindow(oi,show)
 %
 % Brief description
 %   Opens a oiWindow interface based on the oiWindow_App. 
@@ -11,6 +11,8 @@ function oiW = oiWindow(oi)
 %   oi:     The oi you want in the window.  If empty, the currently
 %           selected oi in global vcSESSION is used.  If there is no
 %           selected oi a default scene is created and used.
+%   show:   Executes a drawnow command on exiting.  
+%           (Optional, default true)
 %
 % Outputs
 %   oiW:  An oiWindow_App object.
@@ -77,5 +79,7 @@ else
     % Just refresh it
     oiW.refresh;
 end
+
+if exist('show','var') && show, drawnow; end
 
 end
