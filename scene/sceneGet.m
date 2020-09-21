@@ -59,6 +59,7 @@ function val = sceneGet(scene,parm,varargin)
 %        'energy'           - radiance data (energy)
 %        'mean energy spd'  - mean spd in energy units
 %        'mean photons spd' - mean spd in photon units
+%        'dynamic range'    - luminance dynamic range
 %
 %    The roi can be specified as either Nx2 locations or as a 4-vector of
 %    [row,col,height,width].  Returned values are the mean over the roi.
@@ -217,7 +218,7 @@ switch parm
             % Use the current scene information
             val = sceneGet(vcGetObject('SCENE'),'aspectRatio');
             return;
-        else val = r/c;
+        else, val = r/c;
         end
     case {'magnification','mag'}
         % Scenes always have a magnification of 1. Optical image mag
@@ -287,7 +288,7 @@ switch parm
         % So, [col,row,0,0] returns 1 point and [col,row,1,1] returns 4
         % points.
         if isempty(varargin), error('ROI required')
-        else roiLocs = varargin{1};
+        else, roiLocs = varargin{1};
         end
         val = vcGetROIData(scene,roiLocs,'photons');
                 
@@ -360,7 +361,7 @@ switch parm
         %
         % Return the mean reflectance spd in a region of interest
         if isempty(varargin), error('ROI required')
-        else roiLocs = varargin{1};
+        else, roiLocs = varargin{1};
         end
         val = sceneGet(scene,'roi reflectance', roiLocs);
         val = mean(val,1);
@@ -372,13 +373,21 @@ switch parm
         % wavelengths are passed, then the peak at all wavelength is
         % returned in a vector.
         if isempty(varargin), wave = sceneGet(scene,'wave');
-        else wave = varargin{1};
+        else, wave = varargin{1};
         end
         nWave = length(wave);
         val = zeros(nWave,1);
         for ii=1:nWave
             tmp = sceneGet(scene,'photons',wave(ii));
             val(ii) = max(tmp(:));
+        end
+    case {'luminancedynamicrange','dynamicrange'}
+        % sceneGet(scene,'luminance dynamic range')
+        % Measured in dB (10 log10(max/min))
+        lum = sceneGet(scene,'luminance');
+        if min(lum(:)) > 0
+            val = 10*log10(max(lum(:))/min(lum(:)));
+        else,  val = Inf;
         end
     case {'peakradianceandwave'}
         % Probably deprecated

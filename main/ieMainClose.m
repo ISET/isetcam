@@ -1,13 +1,11 @@
 function ieMainClose
-% Close the all the ISET windows and the ieMainwindow
-%
-% This looks like a big problem to me.  We need a better way to deal with
-% it.
+% Close the all the ISET windows that have an app in the database.
 %
 %     ieMainClose
 %
-% The routine checks for various fields, closes all the main windows
-% properly. 
+% The routine checks for various fields, closes the scene, oi, sensor, ip
+% and metrics windows.  If there are multiple versions of the window, the
+% additional unmanaged windows, they may not be closed.
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
@@ -15,54 +13,38 @@ global vcSESSION
 
 if ~checkfields(vcSESSION,'GUI'); closereq; return; end
 
-if checkfields(vcSESSION.GUI,'vcSceneWindow','hObject')
-    sceneWindow;
-    sceneClose;
-end
+app = ieSessionGet('scene window');
+if ~isempty(app), delete(app); ieSessionSet('scene window',[]); end
 
-if checkfields(vcSESSION.GUI,'vcOptImgWindow','hObject')
-    oiWindow;
-    oiClose;
-end
+app = ieSessionGet('oi window');
+if ~isempty(app), delete(app); ieSessionSet('oi window',[]); end
 
-if checkfields(vcSESSION.GUI,'vcSensImgWindow','hObject')
-    sensorWindow;
-    sensorClose;
-end
+app = ieSessionGet('sensor window');
+if ~isempty(app), delete(app); ieSessionSet('sensor window',[]); end
 
-if checkfields(vcSESSION.GUI,'vcImageWindow','hObject')
-    ipWindow;
-    vcimageClose;
-end
+app = ieSessionGet('ip window');
+if ~isempty(app), delete(app); ieSessionSet('ip window',[]); end
 
-if checkfields(vcSESSION.GUI,'vcDisplayWindow','hObject')
-    displayWindow;
-    displayClose;
-end
+app = ieSessionGet('display window');
+if ~isempty(app), delete(app); ieSessionSet('display window',[]); end
 
-if checkfields(vcSESSION.GUI,'metricsWindow','hObject')
-    metricsWindow;
-    metricsClose;
-end
+% disp('Metrics window NYI');
+%{
+    app = ieSessionGet('metrics window');
+    if ~isempty(app), delete(app); ieSessionSet('metrics window',[]); end
+%}
 
+% Empty out the GUI slots.  Not sure why.
 vcSESSION.GUI = [];
+
+% I think this will close the main window if that is where the call came
+% from
 closereq;
 
-% Check that the window apps have been deleted
+% Check that the window apps have been deleted from the database.
 assert(isempty(ieSessionGet('scene window')));
 assert(isempty(ieSessionGet('oi window')));
 assert(isempty(ieSessionGet('sensor window')));
 assert(isempty(ieSessionGet('ip window')));
-
-%{
-% We should write an ieSessionPrint function that lists what we have in
-% different critical places in vcSESSION
-%
-   ieSessionGet('scene window')
-   ieSessionGet('oi window')
-   ieSessionGet('sensor window')
-   ieSessionGet('ip window')
-%}
-
 
 end
