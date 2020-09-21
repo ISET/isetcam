@@ -77,4 +77,6 @@ else
     sceneW.refresh;
 end
 
+drawnow;
+
 end

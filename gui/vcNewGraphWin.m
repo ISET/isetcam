@@ -1,44 +1,15 @@
 function figHdl = vcNewGraphWin(figHdl, fType, varargin)
-% Open a window for plotting
-%
-%    figHdl = vcNewGraphWin([fig handle],[figure type],varargin)
-%
-% Open a figure.  The figure handle is returned and stored in the currernt
-% vcSESSION.GRAPHWIN entry.
-%
-% A few figure shapes are pre-defined
-%   fType:  Default - Matlab normal figure position
-%           upper left    Simple
-%           tall          (for 2x1 format)
-%           wide          (for 1x2 format)
-%           upperleftbig  (for 2x2 format)
-%   This list may grow.
-%
-% The varargin options are a set of (param,val) pairs that are applied
-%
-%     set(gcf,param,val);
-%
-% Examples
-%  vcNewGraphWin;
-%
-%  vcNewGraphWin([],'upper left')   
-%  vcNewGraphWin([],'tall')
-%  vcNewGraphWin([],'wide')
-%  vcNewGraphWin([],'upper left big')
-%
-% Or set your own position
-%  vcNewGraphWin([],[],'position',[0.5 0.5 0.28 0.36]);
-%
-% To set other fields, use
-%  vcNewGraphWin([],'wide','Color',[0.5 0.5 0.5])
-%  g = vcNewGraphWin([],[],'Visible','off'); 
-%  set(g,'Visible','on')
-%
-% Copyright ImagEval Consultants, LLC, 2005
-%
-% See also:  ieSessionSet
+% Deprecated:  Calls ieNewGraphWin;
 %
 
+if ~exist('figHdl','var'), figHdl = []; end
+if ~exist('fType','var'), fType = 'default'; end
+
+figHdl = ieNewGraphWin(figHdl, fType, varargin{:});
+
+end
+
+%{
 if ieNotDefined('figHdl'), figHdl = figure; end
 if ieNotDefined('fType')  
     fType = 'default'; 
@@ -84,3 +55,5 @@ ieSessionSet('graphwinfigure',figHdl);
 ieSessionSet('graphwinhandle',guidata(figHdl));
 
 end
+%}
+

@@ -51,10 +51,7 @@ function thisWindow = ieNewGraphWin(thisWindow, fType, titleString, varargin)
 %%
 if ieNotDefined('thisWindow'), thisWindow = figure; end
 if ieNotDefined('fType')  
-    fType = 'default'; 
-    wPos = ieSessionGet('wpos');
-    wPos = wPos{6};
-    if isempty(wPos), fType = 'upperleft'; end
+    fType = 'upperleft'; 
 end
 if ieNotDefined('titleString'), titleString = 'ISET GraphWin'; end
 
@@ -75,10 +72,7 @@ thisWindow.Units = 'normalized';
 fType = ieParamFormat(fType);
 
 switch(fType)
-    case 'default'
-        % Use the getpref window position for the graph window
-        thisWindow.Position = wPos;
-    case 'upperleft'
+    case {'default','upperleft'}
         thisWindow.Position = [0.007 0.55  0.28 0.36];
     case 'tall'
         thisWindow.Position = [0.007 0.055 0.28 0.85];
