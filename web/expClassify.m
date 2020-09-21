@@ -100,8 +100,6 @@ if ~exist(outputOIFolder,'dir'), mkdir(outputOIFolder); end
 %% Make the optical images
 wave = 400:10:700;
 
-fovData = [];
-
 % our default sensor seems to be closer to 8 x 10 not 3 x 4,
 desiredImageSize = [768 1024]; % a decent compromise that should work on average
 
@@ -123,7 +121,8 @@ else
     
 end
 
-fovData = zeros(numel(inputFiles), 2);
+fovData = containers.Map('KeyType','char','ValueType','any');
+%fovData = zeros(numel(inputFiles), 2);
 for ii = 1:numel(inputFiles)
     
     sceneFileName = fullfile(inputFiles(ii).folder, inputFiles(ii).name);
@@ -148,7 +147,8 @@ for ii = 1:numel(inputFiles)
     [~,thisFileName,~] = fileparts(inputFiles(ii).name);
     ourScene = sceneSet(ourScene,'name',thisFileName);
     sceneFOV = [sceneGet(ourScene,'fovhorizontal') sceneGet(ourScene,'fovvertical')];
-    fovData(ii,:) = sceneFOV;
+    tmpFOV = containers.Map({thisFileName}, {sceneFOV});
+    fovData = [fovData ; tmpFOV];
     % we pre-compute the optical image so it can be cached for future
     
     if isfile(fullfile(outputOIFolder,[thisFileName+".mat"]))
@@ -201,7 +201,12 @@ for ii=1:numel(oiList)
         load(oiList(ii).name,'oi');
         oiSize = size(oi.data.photons); % I think this is a proxy for resolution
         
-        sceneFOV = fovData(ii,:);
+        try
+            fName = split(oiList(ii).name,'.');
+            sceneFOV = fovData(fName{1});
+        catch
+            sceneFOV = [45 30]; % arbitrary default, but should never get here
+        end
         sensor = sensorSetSizeToFOV(sensor,sceneFOV,oi);
 
         if ~isequal(progDialog, '')
