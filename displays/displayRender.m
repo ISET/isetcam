@@ -83,7 +83,7 @@ switch qm
         % ratio sets the range.
         
         imgMax = max(img(:));
-        fprintf('Analog quantization. Scaling result by %f\n',imgMax);
+        % fprintf('Analog quantization. Scaling result by %f\n',imgMax);
 
         img = (img/imgMax)*sensorGet(sensor,'volts 2 max ratio');
         img = ieClip(img,0,ipGet(ip,'max sensor'));

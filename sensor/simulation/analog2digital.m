@@ -46,4 +46,4 @@ switch lower(method)
         warning('ISET:Quantization1','Unknown quantization method.')
 end
 
-return;
+end

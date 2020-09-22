@@ -48,7 +48,6 @@ oi = oiCreate;
 fNumber = 4;
 oi = oiSet(oi,'optics fnumber',fNumber);
 
-
 % Now, compute the optical image from this scene and the current optical
 % image properties
 oi = oiCompute(scene,oi);
@@ -121,7 +120,7 @@ vci = ipSet(vci,'internal CS','XYZ');
 % demosaicing, no color conversion or balancing.  The sensor RGB
 % values are simply set to the display RGB values.
 vci = ipCompute(vci,sensor);
-ipWindow(vci)
+ipWindow(vci);
 
 %% Define the rect for the ISO12233 calculation
 
