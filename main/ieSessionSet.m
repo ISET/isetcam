@@ -112,10 +112,12 @@ switch param
         % 3 - 'oi window'
         % 4 - 'sensor window'
         % 5 - 'ip window'
-        % 6 - 'graph window'
-        %
-        if iscell(val) && length(val) == 6, setpref('ISET','wPos',val);
-        else, error('Bad wPos variable, %f', val);
+        % 6 - 'graph window'  I propose to deprecate this unused functionality.
+        % 7 - 'Ask Dave Cardinal??'
+        if iscell(val)
+            if numel(val) >= 6, val{6} = []; end
+            setpref('ISET','wPos',val);
+        else, error('wPos variable is not a cell array.  %s\n', class(val));
         end
         
     case {'initclear'}
@@ -141,16 +143,6 @@ switch param
     case {'imageexplorewindow'}
         vcSESSION.GUI.vcImageExploreWindow.app = val;
         
-        % Refresh image window
-        % Putting this in the display object itself, not here
-        %{
-    case {'displayimage','imgdata'}
-        if ~ndims(val) == 3
-            error('Data do not appear to be an RGB image');
-        else
-            vcSESSION.imgData = val;
-        end
-        %}
     case {'metricswindow'}
         if length(varargin) < 2, error('metrics window requires hObject,eventdata,handles'); end
         vcSESSION.GUI.metricsWindow.hObject = val;
@@ -170,36 +162,7 @@ switch param
         % At present we don't add any objects with handles.  So this is
         % empty. But we might some day.
         vcSESSION.GRAPHWIN.handle = val;
-    %{
-        % Manage the screen gamma values.  Also brings up the window.  Not
-        % sure if that is right.
-    case {'scenegamma'}
-        % ieSessionSet('scene gamma',0.5);
-        scg = ieSessionGet('scene guidata');
-        if ~isempty(scg), set(scg.editGamma,'string',num2str(val,'%.1f')); end
-        sceneWindow;
-    case {'scenedisplayflag'}
-        sg = ieSessionGet('scene guidata');
-        if ~isempty(sg), set(sg.popupDisplay,'value',val); end
-        sceneWindow;
-    case {'oigamma'}
-        oig = ieSessionGet('oi guidata');
-        if ~isempty(oig), set(oig.editGamma,'string',num2str(val,'%.1f')); end
-        oiWindow;
-    case {'oidisplayflag'}
-        oig = ieSessionGet('oi guidata');
-        if ~isempty(oig),set(oig.popupDisplay,'value',val); end
-        oiWindow;
-    case {'sensorgamma'}
-        % Note the wrong field name, editGam, not editGamma, sigh.
-        seg = ieSessionGet('sensor guidata');
-        if ~isempty(seg), set(seg.editGam,'string',num2str(val,'%.1f')); end
-        sensorWindow;
-    case {'ipgamma','vcigamma'}
-        ipg = ieSessionGet('ip guidata');
-        if ~isempty(ipg), set(ipg.editGamma,'string',num2str(val,'%.1f')); end
-        ipWindow;
-        %}
+    
         % Set selected object
         % ieSessionSet('scene',val);
         % and so forth

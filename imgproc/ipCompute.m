@@ -34,7 +34,7 @@ function ip = ipCompute(ip,sensor)
 if ~exist('ip','var') || isempty(ip)
  error('Image process structure is required.'); 
 end
-if ~exist('sensor','var')
+if ~exist('sensor','var') || isempty(sensor) % need to make sure it has at least one!
     error('Sensor structure is required.'); 
 end
 

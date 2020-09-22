@@ -1,8 +1,22 @@
-function [res,wave,comment,partialName] = ieReadSpectra(fname,wave,extrapVal)
+function [res,wave,comment,fname] = ieReadSpectra(fname,wave,extrapVal)
 % Read in spectral data and interpolate to the specified wavelengths
 %
-%      [res,wave,comment,fName] = ieReadSpectra(fname,wave,extrapVal)
+% Synopsis
+%   [res,wave,comment,fName] = ieReadSpectra(fname,wave,extrapVal)
 %
+% Input:
+%   fname     - File name to read.  If empty, user is asked to pick.
+%   wave      - Wavelength samples (default whatever is in the file)
+%   extrapval - Extrapolation value for wavelengths outside the range in
+%               the file
+%
+% Outputs
+%   res    - Interpolated and extrapolated values
+%   wave   - Sample wavelengths
+%   comment - Comment in the file
+%   fname   - File name if selected by user
+%
+% Description
 %   Spectral data are stored in files that include both the sampled data
 %   and the wavelength values.  This routine reads the stored values and
 %   returns them interpolated or extrapolated to the values in parameter
