@@ -83,12 +83,14 @@ setpref('ISET', 'tvdisplayTime', toc(getpref('ISET', 'tvdisplayStart')));
 tTotal = toc(getpref('ISET','tStart'));
 afterTime = cputime;
 beforeTime = getpref('ISET', 'benchmarkstart', 0);
-strcat("v_ISET ran in: ", string(afterTime - beforeTime), " seconds of CPU time.")
-strcat("v_ISET ran in: ", string(tTotal), " total seconds.")
-strcat("Scenes ran in: ", string(getpref('ISET','tvsceneTime')), " seconds.")
-strcat("Optics ran in: ", string(getpref('ISET','tvopticsTime')), " seconds.")
-strcat("Sensor ran in: ", string(getpref('ISET','tvsensorTime')), " seconds.")
-strcat("IP     ran in: ", string(getpref('ISET','tvipTime')), " seconds.")
-strcat("Display ranin: ", string(getpref('ISET','tvdisplayTime')), " seconds.")
-strcat("Metric ran in: ", string(getpref('ISET','tvmetricsTime')), " seconds.")
-strcat("Human ran in: ", string(getpref('ISET','tvhumanTime')), " seconds.")
+glData = opengl('data');
+disp(strcat("v_ISET ran  on: ", glData.Vendor, " ", glData.Renderer, "with driver version: ", glData.Version)); 
+disp(strcat("v_ISET ran  in: ", string(afterTime - beforeTime), " seconds of CPU time."));
+disp(strcat("v_ISET ran  in: ", string(tTotal), " total seconds."));
+fprintf("Scenes  ran in: %5.1f seconds.\n", getpref('ISET','tvsceneTime'));
+fprintf("Optics  ran in: %5.1f seconds.\n", getpref('ISET','tvopticsTime'));
+fprintf("Sensor  ran in: %5.1f seconds.\n", getpref('ISET','tvsensorTime'));
+fprintf("IP      ran in: %5.1f seconds.\n", getpref('ISET','tvipTime'));
+fprintf("Display ran in: %5.1f seconds.\n", getpref('ISET','tvdisplayTime'));
+fprintf("Metrics ran in: %5.1f seconds.\n", getpref('ISET','tvmetricsTime'));
+fprintf("Human   ran in: %5.1f seconds.\n", getpref('ISET','tvhumanTime'));
