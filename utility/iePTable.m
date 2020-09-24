@@ -154,7 +154,7 @@ switch format
             'Samp space (mm/sample)',   num2str(sceneGet(scene,'sample spacing','mm'),precision);
             'Mean luminance (cd/m^2)',  num2str(sceneGet(scene,'mean luminance'),precision);
             'Illuminant name',          sceneGet(scene,'illuminant name');
-            'Lum dynamic range',        sceneGet(scene,'luminance dynamic range');
+            'Lum dynamic range',        num2str(sceneGet(scene,'luminance dynamic range'));
             };
     otherwise
         error('Unknown table format %s\n',format);
