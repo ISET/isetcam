@@ -1,8 +1,8 @@
-function mtfData = ieISO12233(ip,sensor)
+function mtfData = ieISO12233(ip,sensor,plotOptions)
 %Calculate ISO12233 MTF from an image processor and sensor
 %
 % Syntax
-%   mtfData = ieISO12233(ip,sensor);
+%   mtfData = ieISO12233(ip,sensor,plotOptions);
 %
 % Required inputs
 %   ip - ISET image processor structure containing a slanted edge .
@@ -12,7 +12,8 @@ function mtfData = ieISO12233(ip,sensor)
 %
 % Optional inputs
 %   sensor - ISET sensor structure. Only the pixel size is needed from the
-%   sensor.  
+%            sensor.  
+%   plotOptions - 'all', 'luminance', or 'none'
 %
 % Returns
 %  mtfData - a structure with several slots that includes the MTF data,
@@ -74,6 +75,9 @@ if ~exist('sensor','var') || isempty(sensor)
     else, fprintf('Using selected sensor\n');
     end
 end
+if ~exist('plotOptions','var') || isempty(plotOptions)
+    plotOptions = 'all';
+end
 
 % We need to keep checking this routine.  It isn't always right, and that
 % can create problems.
@@ -89,7 +93,9 @@ barImage = reshape(barImage,r,c,3);
 
 % Run the ISO 12233 code.
 dx = sensorGet(sensor,'pixel width','mm');
-mtfData = ISO12233(barImage, dx);
+
+% ISO12233(barImage, deltaX, weight, plotOptions)
+mtfData = ISO12233(barImage, dx, [], plotOptions);
 mtfData.rect = masterRect; % [masterRect(2) masterRect(1) masterRect(4) masterRect(3)]; 
 
 end
