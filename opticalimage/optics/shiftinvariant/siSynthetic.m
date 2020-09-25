@@ -176,8 +176,8 @@ if isempty(outFile), return;
 else,                vcSaveObject(optics,outFile);
 end
 
-if exist('deleteMe.mat','file'), delete('deleteMe.mat'); end
-if exist('customFile.mat','file'), delete('customFile.mat'); end
+if exist(fullfile(tempdir,'deleteMe.mat'),'file'), delete(fullfile(tempdir,'deleteMe.mat')); end
+if exist(fullfile(tempdir,'customFile.mat'),'file'), delete(fullfile(tempdir,'customFile.mat')); end
 
 
 end

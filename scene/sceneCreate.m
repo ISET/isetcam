@@ -554,6 +554,16 @@ end
 scene = sceneInitGeometry(scene);
 scene = sceneInitSpatial(scene);
 
+useSingle = getpref('ISET', 'useSingle', true);
+if useSingle
+    if isfield(scene,'spectrum') && isfield (scene.spectrum,'wave')
+        scene.spectrum.wave = single(scene.spectrum.wave);
+    end
+    if isfield(scene,'illuminant') && isfield(scene.illuminant,'spectrum')
+        scene.illuminant.spectrum.wave = single(scene.illuminant.spectrum.wave);
+    end
+    
+end
 % Scenes are initialized to a mean luminance of 100 cd/m2.  The illuminant
 % is adjusted so that dividing the radiance (in photons) by the illuminant
 % (in photons) produces a peak reflectance of 0.9.
@@ -1323,8 +1333,13 @@ nWave  = sceneGet(scene,'nwave');
 % Make the image
 imSize = round(imSize/2);
 [X,Y] = meshgrid(-imSize:imSize,-imSize:imSize);
-img = zeros(size(X));
-
+if getpref('ISET','useSingle',true)
+    X = single(X);
+    Y = single(Y);
+    img = single(zeros(size(X)));
+else
+    img = zeros(size(X));
+end
 %  y = barSlope*x defines the line.  We find all the Y values that are
 %  above the line
 list = (Y > barSlope*X );
