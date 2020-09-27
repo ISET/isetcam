@@ -62,7 +62,7 @@ switch parm
         if ~isfield(d, 'wave')
             d.wave = val(:);
         elseif ~isequal(val(:),d.wave)
-            disp('Interpolating display SPD for consistency with new wave.')
+            % disp('Interpolating display SPD for consistency with new wave.')
             spd = displayGet(d,'spd');
             wave = displayGet(d,'wave');
             newSPD = interp1(wave, spd, val(:), 'linear');
