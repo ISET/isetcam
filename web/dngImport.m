@@ -4,12 +4,12 @@ loadDNG(fullfile(fPath,fName));
 % dng2rgb(fullfile(fPath, fName));
 
 function [rawData, tinfo]= loadDNG(dngFilename)   
-warning off MATLAB:tifflib:TIFFReadDirectory:libraryWarning
+warning off MATLAB:tifflib:TIFFReadDirectory:TIFFlibrarywarning
     if(exist(dngFilename,'file'))
         tinfo = imfinfo(dngFilename);
         t = Tiff(dngFilename,'r');
         rawData = t.read();
-        imshow(rawData);
+        imshow(rawData,[]);
         t.close();
     else
         if(nargin<1 || isempty(dngFilename))
