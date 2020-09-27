@@ -16,10 +16,6 @@
    The functions that process Foveon images have been RESTRICTED
    since Revision 1.237.  All other code remains free for all uses.
 
-   See https://www.cybercom.net/~dcoffin/dcraw
-   Compiled on black using 
-   gcc -o dcraw -O4 dcraw.c -lm -DNODEPS
-
    *If you have not modified dcraw.c in any way, a link to my
    homepage qualifies as "full source code".
 
