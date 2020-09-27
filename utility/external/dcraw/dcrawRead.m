@@ -42,9 +42,12 @@ if ismac
     fp = fullfile(L3rootpath, 'external', 'dcraw', 'dcraw_mac');
 elseif isunix
     fp = fullfile(L3rootpath, 'external', 'dcraw', 'dcraw_linux');
+elseif ispc
+    fp = fullfile(L3rootpath, 'external', 'dcraw', 'dcraw_win64');
 else
-    error('no dcraw for windows support for this point');
+    error('If you are on Win32, use dcraw_win32.');
 end
+
 fout = tempname;
 [s, msg] = system([fp ' ' opts ' ' fname ' > ' fout]);
 
