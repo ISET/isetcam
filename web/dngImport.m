@@ -1,3 +1,24 @@
+[fName, fPath] = uigetfile('*.dng;*.tiff;*.tif');
+% for now we call the one that works for Adobe:
+loadDNG(fullfile(fPath,fName));
+% dng2rgb(fullfile(fPath, fName));
+
+function [rawData, tinfo]= loadDNG(dngFilename)   
+warning off MATLAB:tifflib:TIFFReadDirectory:libraryWarning
+    if(exist(dngFilename,'file'))
+        tinfo = imfinfo(dngFilename);
+        t = Tiff(dngFilename,'r');
+        rawData = t.read();
+        imshow(rawData);
+        t.close();
+    else
+        if(nargin<1 || isempty(dngFilename))
+            dngFilename = 'File';
+        end
+        fprintf(1,'%s could not be found\n',dngFilename);
+        rawData = [];
+    end
+end
 
 % Rafael Villamor Lora (Using Rob Sumner 'RAW Guide')
 % January 24, 2019 (Last modified: 02/14/19)
