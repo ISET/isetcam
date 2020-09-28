@@ -44,7 +44,7 @@ y = zeros(nPoints,1);
 axis(appAxis);
 for ii=1:nPoints
     pt = drawpoint(appAxis);
-    x(ii) = round(pt.Position(2)); y(ii) = round(pt.Position(1));
+    x(ii) = round(pt.Position(1)); y(ii) = round(pt.Position(2));
 end
 
 ieInWindowMessage('',app); 
