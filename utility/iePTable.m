@@ -130,7 +130,7 @@ else
         thisTable = uitable;
     end
     thisTable.ColumnName  = {'Property','Value'};
-    thisTable.ColumnWidth = 'auto';
+    thisTable.ColumnWidth = {round(thisTable.Position(3)/2),round(thisTable.Position(3)/2)}; %'auto';
     thisTable.FontName    = 'Courier';
     thisTable.FontSize    = getpref('ISET','fontSize') - 3;
 
