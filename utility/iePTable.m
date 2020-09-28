@@ -63,10 +63,8 @@ FontSize = p.Results.fontsize;
 
 % Main window
 if isequal(format,'window')
-    thisWindow = ieNewGraphWin([],'upper left','ISET Param Table', ...
-        'Units','normalized',...
-        'Color',bColor, ...
-        'ToolBar','None');
+    thisWindow = uifigure('Name', "ISET Parameter Table");
+    movegui(thisWindow,'northwest');
 end
 
 %% Build table
@@ -76,38 +74,55 @@ oType = vcEquivalentObjtype(obj.type);
 switch lower(oType)
     case 'scene'
         data = tableScene(obj,format);
+        extendTitle = " for a Scene";
     case 'opticalimage'
         data = tableOI(obj,format);
+        extendTitle = " for an Optical Image";
     case 'optics'
         data = tableOptics(obj,format);
+        extendTitle = " for an Optics";
     case 'pixel'
         data = tablePixel(obj,format);
+        extendTitle = " for a Pixel";
     case 'isa'  % image sensor array
         data = tableSensor(obj,format);
+        extendTitle = " for a Sensor";
     case 'vcimage'
         data = tableIP(obj,format);
+        extendTitle = " for an Imaging Pipeline";
     case 'camera'
         % Make the table a little bigger for this case
         data = tableCamera(obj,format);
+        extendTitle = " for a Camera";
         % set(gcf,'Name',cameraGet(obj,'name'),format);
     case 'display'
         data = tableDisplay(obj,format);
+        extendTitle = " for a Display";
+
     otherwise
         error('Unknown type %s\n',obj.type);
+        
 end
-
 %% Create the table in its own window or embedded format
 
 if isequal(format,'window')
-    thisWindow.Position = [0.0070    0.6785    0.25    0.25];
-    
+
+    thisWindow.Name = strcat(thisWindow.Name, extendTitle);
     thisTable = uitable('Parent',thisWindow,'Units','normalized');
     thisTable.ColumnName  = {'Property','Value','Units'};
     thisTable.ColumnWidth = {200,200,200};
     thisTable.Position    = [0.025 0.025, 0.95, 0.95];
     thisTable.FontSize    = FontSize;
     thisTable.FontName    = 'Courier';
-    thisTable.FontSize    = getpref('ISET','fontSize');
+    thisTable.Tag = 'IEPTable Table';
+    
+    mnuTools = uimenu(thisWindow,'Text','File');
+ 
+    mnuExport = uimenu(mnuTools,'Text','Export...');
+    mnuExport.MenuSelectedFcn = @mnuExportSelected;
+ 
+
+
 else
     if ~isempty(p.Results.uitable)
         thisTable = p.Results.uitable;
@@ -118,6 +133,7 @@ else
     thisTable.ColumnWidth = 'auto';
     thisTable.FontName    = 'Courier';
     thisTable.FontSize    = getpref('ISET','fontSize') - 3;
+
 end
 
 thisTable.Data    = data;
@@ -418,6 +434,21 @@ cols = size(oData,2);
 for ii=1:cols
     data(1:oRows,ii) = oData(:,ii);
     data((oRows+1):end,ii) = sData(:,ii);
+end
+
+end
+
+function mnuExportSelected(src,event)
+% allow user to export the current parameters
+paramFolder = fullfile(isetRootPath, "local", "parameters");
+if ~isfolder(paramFolder)
+    mkdir(paramFolder);
+end
+[paramFileName, paramFilePath] = uiputfile(fullfile(paramFolder,"*.csv"),"Choose a filename for your Score data");
+if ~isequal(paramFileName,0)
+    ourFigure = ancestor(src,'figure');
+    ourTable = findobj([ourFigure], 'Tag', 'IEPTable Table');
+    writecell(ourTable.Data, fullfile(paramFilePath, paramFileName));
 end
 
 end
