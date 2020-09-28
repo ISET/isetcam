@@ -25,12 +25,15 @@ if ~iscell(ext), ext = {ext}; end
 
 % Check if dcraw executable works
 if ismac
-    fp = fullfile(L3rootpath, 'external', 'dcraw', 'dcraw_mac');
+    fp = fullfile(isetRootPath,'utility', 'external', 'dcraw', 'dcraw_mac');
 elseif isunix
-    fp = fullfile(L3rootpath, 'external', 'dcraw', 'dcraw_linux');
+    fp = fullfile(isetRootPath,'utility', 'external', 'dcraw', 'dcraw_linux');
+elseif ispc
+    fp = fullfile(isetRootPath, 'utility', 'external', 'dcraw', 'dcraw_win64.exe');
 else
-    error('no dcraw support for windows at this point');
+    error('If you are on Win32, use dcraw_win32.');
 end
+
 if exist(fp, 'file') == 2
     [s, msg] = system(fp);
     if s == 1, s = 0; end
