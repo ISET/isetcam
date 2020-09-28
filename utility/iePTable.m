@@ -132,12 +132,12 @@ switch format
             'Name',                     char(sceneGet(scene,'name')),                                '';
             'Field of view (hor)',      num2str(sceneGet(scene,'fov')),                              'deg';
             'Field of view (diag)',     num2str(sceneGet(scene,'diagonal field of view')),           'deg';
-            'Rows/cols',                num2str(sceneGet(scene,'size')),                             'samples';
-            'Height/Width',             num2str(sceneGet(scene,'height and width','mm'),precision),  'mm';
-            'Distance ',                num2str(sceneGet(scene,'distance','m'),precision),           'meters';
-            'Angular res',              num2str(sceneGet(scene,'angular resolution'),precision),     'deg/samp';
+            'Rows & columns',                num2str(sceneGet(scene,'size')),                             'samples';
+            'Height & Width',             num2str(sceneGet(scene,'height and width','mm'),precision),  'mm';
+            'Distance',                num2str(sceneGet(scene,'distance','m'),precision),           'meters';
+            'Angular resolution',              num2str(sceneGet(scene,'angular resolution'),precision),     'deg/samp';
             'Sample spacing',           num2str(sceneGet(scene,'sample spacing','mm'),precision),    'mm/sample';
-            'Peak radiance,wave',       sprintf('%e, %.0f',sceneGet(scene,'peakradianceandwave')),   'q/s/sr/m^2, nm';
+            'Peak radiance, wave',       sprintf('%e, %.0f',sceneGet(scene,'peakradianceandwave')),   'q/s/sr/m^2, nm';
             'Mean luminance',           num2str(sceneGet(scene,'mean luminance'),precision),         'cd/m^2 (nits)';
             'Dynamic range',            num2str(sceneGet(scene,'luminance dynamic range')),          'dB';
             'Illuminant name',          sceneGet(scene,'illuminant name'),                           '';
@@ -172,10 +172,10 @@ switch format
         % OK, we have an oi so put up the data.
         precision = 3;
         data = {...
-            'OI name',         char(oiGet(oi,'name')), '';
-            'Rows cols',       num2str(oiGet(oi,'size')),                             'samples';
-            'Hor FOV',         num2str(oiGet(oi,'fov')),                              'deg';
-            'Spatial res',     num2str(oiGet(oi,'spatial resolution','um'),precision),'um/sample';
+            'Optical Image name',         char(oiGet(oi,'name')), '';
+            'Rows & cols',       num2str(oiGet(oi,'size')),                             'samples';
+            'Horizontal FOV',         num2str(oiGet(oi,'fov')),                              'deg';
+            'Spatial resolution',     num2str(oiGet(oi,'spatial resolution','um'),precision),'um/sample';
             'Mean illuminance',num2str(oiGet(oi,'mean illuminance'),precision),       'lux';
             'Area',            num2str(oiGet(oi,'area','mm'),precision),              'mm^2';
             };
@@ -194,7 +194,7 @@ switch format
         % OK, we have an oi so put up the data.
         precision = 3;
         data = {...
-            'Rows/cols',              num2str(oiGet(oi,'size'));
+            'Rows & columns',              num2str(oiGet(oi,'size'));
             'H FOV (deg)',            num2str(oiGet(oi,'fov'));
             'Resolution (um/sample)', num2str(oiGet(oi,'spatial resolution','um'),precision);
             'Mean illuminance (lux)', num2str(oiGet(oi,'mean illuminance'),precision);
@@ -262,11 +262,11 @@ switch format
         
         data = {
             'Size',          num2str(sensorGet(sensor,'dimension','mm'),precision), 'mm';
-            'Row/col',       num2str(sensorGet(sensor,'size')),                     '';
-            'Hor FOV',       num2str(sensorGet(sensor,'fov', 1e6, oi),precision),   'deg';
-            'Hor Res',       num2str(sensorGet(sensor,'wspatial resolution','um'),precision), 'um';
-            'Hor Res',       num2str(sensorGet(sensor,'h deg per pixel',oi),precision), 'deg/pixel';
-            'Exp time',      num2str(sensorGet(sensor,'exp time')),                 's';
+            'Rows and Columns',       num2str(sensorGet(sensor,'size')),                     '';
+            'Horizontal FOV',       num2str(sensorGet(sensor,'fov', 1e6, oi),precision),   'deg';
+            'Horizontal Res / distance',       num2str(sensorGet(sensor,'wspatial resolution','um'),precision), 'um';
+            'Horizontal Res / degrees',       num2str(sensorGet(sensor,'h deg per pixel',oi),precision), 'deg/pixel';
+            'Exposure time',      num2str(sensorGet(sensor,'exp time')),                 's';
             'DSNU',          num2str(sensorGet(sensor, 'dsnu level'),precision),    'V';
             'PRNU',          num2str(sensorGet(sensor, 'prnu level'),precision),    '%';
             'Analog gain',   num2str(sensorGet(sensor, 'analog gain'),precision),   '';
@@ -302,7 +302,7 @@ switch format
         precision = 3;
         data = {
             '-------------------', '------- Pixel -------',  '-------------------';
-            'Width/height',           num2str(pixelGet(pixel, 'width','um'),     precision),  'um';
+            'Width & height',           num2str(pixelGet(pixel, 'width','um'),     precision),  'um';
             'Fill factor',            num2str(pixelGet(pixel, 'fill factor'),    precision),  '';
             'Dark voltage (V/sec)',   num2str(pixelGet(pixel, 'dark voltage'),   precision), 'V/sec';
             'Read noise (V)',         num2str(pixelGet(pixel, 'read noise'),     precision),  'V';
@@ -338,13 +338,13 @@ switch format
     case 'window'
         precision = 3;
         data = {
-            'name',                ipGet(ip,'name'), '';
-            'row, col, primaries', num2str(ipGet(ip,'result size'),precision), '';
-            'demosaic',            ipGet(ip,'demosaic method'),                '';
-            'sensor conversion',   ipGet(ip,'sensor conversion method'),       '';
-            'illuminant correct',  ipGet(ip,'illuminant correction method'),   '';
-            'display name',        ipGet(ip,'display name'),                   '';
-            'display dpi',         num2str(ipGet(ip,'display dpi')),           'dots per inch';
+            'Name',                ipGet(ip,'name'), '';
+            'Rows, Columns, Primaries', num2str(ipGet(ip,'result size'),precision), '';
+            'Demosaic',            ipGet(ip,'demosaic method'),                '';
+            'Sensor conversion',   ipGet(ip,'sensor conversion method'),       '';
+            'Illuminant correction',  ipGet(ip,'illuminant correction method'),   '';
+            'Display name',        ipGet(ip,'display name'),                   '';
+            'Display dpi',         num2str(ipGet(ip,'display dpi')),           'dots per inch';
             };
 
     case 'embed'
@@ -365,8 +365,8 @@ switch format
     case 'window'
         precision = 3;
         data = {
-            'name',     displayGet(display,'name'),                       '';
-            'dpi',      num2str(displayGet(display,'dpi'),precision),     '';
+            'Name',     displayGet(display,'name'),                       '';
+            'DPI',      num2str(displayGet(display,'dpi'),precision),     '';
             'DAC size', num2str(displayGet(display,'dac size'),precision),'';
             };
         
