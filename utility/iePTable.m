@@ -106,6 +106,8 @@ if isequal(format,'window')
     thisTable.ColumnWidth = {200,200,200};
     thisTable.Position    = [0.025 0.025, 0.95, 0.95];
     thisTable.FontSize    = FontSize;
+    thisTable.FontName    = 'Courier';
+    thisTable.FontSize    = getpref('ISET','fontSize');
 else
     if ~isempty(p.Results.uitable)
         thisTable = p.Results.uitable;
@@ -261,6 +263,7 @@ switch format
         precision = 3;
         
         data = {
+            'Name',         sensorGet(sensor,'name'), '';
             'Size',          num2str(sensorGet(sensor,'dimension','mm'),precision), 'mm';
             'Rows and Columns',       num2str(sensorGet(sensor,'size')),                     '';
             'Horizontal FOV',       num2str(sensorGet(sensor,'fov', 1e6, oi),precision),   'deg';
@@ -345,6 +348,7 @@ switch format
             'Illuminant correction',  ipGet(ip,'illuminant correction method'),   '';
             'Display name',        ipGet(ip,'display name'),                   '';
             'Display dpi',         num2str(ipGet(ip,'display dpi')),           'dots per inch';
+            '--------------------', '-----------------------', '-------------------';
             };
 
     case 'embed'
@@ -368,6 +372,7 @@ switch format
             'Name',     displayGet(display,'name'),                       '';
             'DPI',      num2str(displayGet(display,'dpi'),precision),     '';
             'DAC size', num2str(displayGet(display,'dac size'),precision),'';
+            '--------', '------------------------','---------------------';
             };
         
     case 'embed'

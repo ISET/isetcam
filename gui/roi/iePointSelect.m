@@ -49,6 +49,6 @@ end
 
 ieInWindowMessage('',app); 
 
-pointLoc(:,1) = y(:); pointLoc(:,2) = x(:);
+pointLoc(:,1) = x(:); pointLoc(:,2) = y(:);
 
 end
