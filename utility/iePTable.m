@@ -108,10 +108,14 @@ end
 if isequal(format,'window')
 
     thisWindow.Name = strcat(thisWindow.Name, extendTitle);
-    thisTable = uitable('Parent',thisWindow,'Units','normalized');
+    %can't set to normalized in 2020a
+    %thisTable = uitable('Parent',thisWindow,'Units','normalized');
+    thisTable = uitable('Parent', thisWindow);
     thisTable.ColumnName  = {'Property','Value','Units'};
     thisTable.ColumnWidth = {200,200,200};
-    thisTable.Position    = [0.025 0.025, 0.95, 0.95];
+    winPos = thisWindow.Position;
+    thisTable.Position = [2 2 winPos(3)-2 winPos(4)-2];
+    %thisTable.Position    = [0.025 0.025, 0.95, 0.95];
     thisTable.FontSize    = FontSize;
     thisTable.FontName    = 'Courier';
     thisTable.Tag = 'IEPTable Table';
