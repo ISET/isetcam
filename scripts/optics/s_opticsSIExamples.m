@@ -28,7 +28,7 @@ wave  = sceneGet(scene,'wave');
 scene = sceneSet(scene,'fov',3);
 
 % Replace the optical image into your ISET window
-ieAddObject(scene); sceneWindow;
+sceneWindow(scene);
 %% Example 1: Create a pillbox point spread function
 % Point spread functions are small images.  There is one image for each wavelength.  
 % In this example, the spatial grid is 128 x 128 with samples spaced every 0.25 
@@ -101,7 +101,7 @@ waveSpread = (wave/wave(1)).^3;
 xyRatio = ones(1,length(wave));
 
 % Now call the routine with these parameters
-optics  = siSynthetic(psfType,oi,waveSpread,xyRatio);
+optics  = siSynthetic(psfType,oi,double(waveSpread),xyRatio);
 oi      = oiSet(oi,'optics',optics);
 
 % Here is the rest of the computation, as above
@@ -131,5 +131,4 @@ oiWindow;
 % images.
 %%
 imageMultiview('oi',1:4,1);
-%% 
-%
+%% End
