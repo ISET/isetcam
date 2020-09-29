@@ -18,11 +18,11 @@ if notDefined('fname'), error('file name required'); end
 
 % Decode file
 if ismac
-    fp = fullfile(L3rootpath, 'external', 'dcraw', 'dcraw_mac');
+    fp = fullfile(isetRootPath,'utility', 'external', 'dcraw', 'dcraw_mac');
 elseif isunix
-    fp = fullfile(L3rootpath, 'external', 'dcraw', 'dcraw_linux');
+    fp = fullfile(isetRootPath,'utility', 'external', 'dcraw', 'dcraw_linux');
 elseif ispc
-    fp = fullfile(L3rootpath, 'external', 'dcraw', 'dcraw_win64');
+    fp = fullfile(isetRootPath, 'utility', 'external', 'dcraw', 'dcraw_win64.exe');
 else
     error('If you are on Win32, use dcraw_win32.');
 end
