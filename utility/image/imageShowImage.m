@@ -129,8 +129,8 @@ end
 % Either show it in the app window or in a graph window
 if isa(appAxis,'matlab.ui.control.UIAxes')
     % Show it in the window
-    axis(appAxis);
-    image(img); axis image; axis off;
+    % axis(appAxis);
+    image(appAxis,img); axis image; axis off;
 elseif isequal(app,0)
     % Just return;
     return;
