@@ -40,7 +40,8 @@ p.addParameter('scoreClasses', 5);
 p.addParameter('imageFolder',""); % or string?
 p.addParameter('classifier','resnet50'); % none means don't bother?
 p.addParameter('progDialog', "");
-p.addParameter('recurse', false);
+p.addParameter('ipOutputFolder', ''); % optionally force a different folder
+p.addParameter('maxImages', 10000); % optionally limit how many images we'll process
 p.parse(varargin{:});
 
 oi   = p.Results.oi;
@@ -49,39 +50,35 @@ ip = p.Results.ip;
 imageFolder = p.Results.imageFolder;
 scoreClasses = p.Results.scoreClasses;
 progDialog = p.Results.progDialog;
+ipFolder = p.Results.ipOutputFolder; 
+maxImages = p.Results.maxImages;
 
 %%
-% not sure if we can use the downloadable NNs from the runtime
-if false % looks like we can download the other networks! isdeployed
-    net = squeezenet();
-else
-    if ~isempty(p.Results.classifier)
-        switch p.Results.classifier
-            case 'squeezenet'
-                net = squeezenet;
-            case 'resnet50'
-                net = resnet50;
-            case 'googlenet'
-                net = googlenet;
-            case 'vgg19'
-                net = vgg19;
+if ~isempty(p.Results.classifier)
+    switch p.Results.classifier
+        case 'squeezenet'
+            net = squeezenet;
+        case 'resnet50'
+            net = resnet50;
+        case 'googlenet'
+            net = googlenet;
+        case 'vgg19'
+            net = vgg19;
             % if the user has their own network, they can name it customnet
             % select it from the classifier menu, and we'll use it
-            case 'customnet'
-                net = customnet;
-            otherwise
-                net = resnet50;
-        end
-    else
-        net = resnet50; % vgg19; googlenet;
+        case 'customnet'
+            net = customnet;
+        otherwise
+            net = resnet50;
     end
+else
+    net = []; % assume if we get none, we don't want to classify resnet50; % vgg19; googlenet;
 end
 
-% user points us to the folder of previously downloaded images they want to
+%% user points us to the folder of previously downloaded images they want to
 % test. They can get those using imgBrowser+Flickr+curating+save, or
 % however ...
 
-%%
 if ~isfolder(imageFolder)
     inputFolder = uigetdir(fullfile(isetRootPath, "local", "images"), "Choose folder with the original images.");
 else
@@ -126,7 +123,8 @@ end
 
 fovData = containers.Map('KeyType','char','ValueType','any');
 %fovData = zeros(numel(inputFiles), 2);
-for ii = 1:numel(inputFiles)
+maxImages = min(maxImages, numel(inputFiles));
+for ii = 1:maxImages
     
     sceneFileName = fullfile(inputFiles(ii).folder, inputFiles(ii).name);
 
@@ -187,8 +185,12 @@ end
 %%  Set sensor and ip parameters and create sample images with those parameters
 % Corrects for aspect ratio
 sensor = sensorSet(sensor, 'size', [desiredImageSize(1) desiredImageSize(2)]);
-outputRGB = fullfile(inputFolder,'ip');
-if ~exist(outputRGB,'dir'), mkdir(outputRGB); end
+
+if isempty(ipFolder)
+    ipFolder = fullfile(inputFolder,'ip');
+end
+
+if ~exist(ipFolder,'dir'), mkdir(ipFolder); end
 
 
 oiList = dir(fullfile(outputOIFolder,'*.mat'));
@@ -225,7 +227,7 @@ for ii=1:numel(oiList)
         rgb = ipGet(ip,'result');
         
         [fPath, fName, fExt] = fileparts(sceneFileName);
-        ourOutputFileName = fullfile(outputRGB, sprintf('%s.jpg',oiGet(oi,'name')));
+        ourOutputFileName = fullfile(ipFolder, sprintf('%s.jpg',oiGet(oi,'name')));
         if isfield(oi.metadata, 'rotated') && oi.metadata.rotated ~= 0
             rgb = imrotate(rgb, -1 * oi.metadata.rotated);
         end
@@ -234,9 +236,12 @@ for ii=1:numel(oiList)
 end
 chdir(defDir);
 
-%%  Let's classify with the chosen network (probably Resnet-50)
+%% If no classifier, we stop here
+if isempty(net)
+    return
+end
 
-ipFolder = fullfile(inputFolder,'ip');
+%%  Let's classify with the chosen network (probably Resnet-50)
 
 try
     inputSize = net.Layers(1).InputSize;
@@ -250,7 +255,7 @@ end
 
 totalScore = 0;
 ourScoreArray = [];
-for ii = 1:length(inputFiles)
+for ii = 1:maxImages
     
         if ~isequal(progDialog, '')
             progDialog.Indeterminate = 'off';
