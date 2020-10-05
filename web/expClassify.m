@@ -38,8 +38,9 @@ p.addParameter('sensor',sensorCreate(),@(x)(isequal(class(x), 'struct')));
 p.addParameter('ip',ipCreate(),@(x)(isequal(class(x), 'struct')));
 p.addParameter('scoreClasses', 5);
 p.addParameter('imageFolder',""); % or string?
-p.addParameter('classifier','resnet50');
+p.addParameter('classifier','resnet50'); % none means don't bother?
 p.addParameter('progDialog', "");
+p.addParameter('recurse', false);
 p.parse(varargin{:});
 
 oi   = p.Results.oi;
@@ -56,6 +57,8 @@ if false % looks like we can download the other networks! isdeployed
 else
     if ~isempty(p.Results.classifier)
         switch p.Results.classifier
+            case 'squeezenet'
+                net = squeezenet;
             case 'resnet50'
                 net = resnet50;
             case 'googlenet'
