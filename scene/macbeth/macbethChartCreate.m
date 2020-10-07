@@ -5,18 +5,23 @@ function macbethChartObject = macbethChartCreate(patchSize,patchList,spectrum,su
 %  macbethChartCreate([patchSize=12],[patchList=1:24],[spectrum={400:10:700}],[surfaceFile]);
 %
 % Description:
-%  Create a structure that contains the information needed for a scene of
-%  the Macbeth chart. The chart is coded as if you are looking at it with
-%  four rows and six columns.  The white surface is on the left, and the
-%  black surface is on the right.
+%  Create a structure that contains the surface reflectances of a Macbeth
+%  (Gretag) chart. The information is structured to make it easy to create
+%  a scene (spectral radiance) of the Macbeth chart in its standard format.
+%
+%  The ordering of the patches in the chart is coded as if you are looking
+%  at it with four rows and six columns.  The white surface is on the lower
+%  left, and the black surface is on the lower right.  Brown is at the
+%  upper left.
 % 
 %  The numbering of the surfaces starts at the upper left and counts down
 %  the first column.  The white patch, therefore, is number 4.  The
 %  achromatic (gray) series is 4:4:24.
 %   
-%  The surface reflectance function information are contained in the slot
-%  macbethChartObject.data. The data file contains spectral information
-%  between 380 to 1068 nm.
+%  The surface reflectance function information is contained in the slot
+%  macbethChartObject.data. The data file can contain spectral information
+%  between 380 to 1068 nm, but the actual wavelength samples are determined
+%  in the spectrum.wave argument.
 %
 % Inputs:
 %  patchSize - Default is 16 pixels
@@ -97,8 +102,12 @@ end
 %% Surface reflectance spectrum
 if ieNotDefined('spectrum') 
     macbethChartObject = initDefaultSpectrum(macbethChartObject,'hyperspectral');
-else
+elseif isstruct(spectrum)
     macbethChartObject = sceneSet(macbethChartObject,'spectrum',spectrum);
+else
+    % Sometimes people just in the wave, not spectrum.wave
+    thisSpectrum.wave = spectrum;
+    macbethChartObject = sceneSet(macbethChartObject,'spectrum',thisSpectrum);
 end
 
 % Read wavelength information from the macbeth chart data

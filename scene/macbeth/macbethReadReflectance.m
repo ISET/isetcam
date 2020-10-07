@@ -1,5 +1,5 @@
 function macbethChart = macbethReadReflectance(wave,patchList)
-% Read the macbeth surface reflectances into the standard vimage ordering
+% Read the macbeth surface reflectances into the standard format
 %
 % Synopsis
 %   macbethChart = macbethReadReflectance(wave,patchList);
@@ -18,7 +18,6 @@ function macbethChart = macbethReadReflectance(wave,patchList)
 %
 % See also: 
 %   t_SurfaceModels and macbethChartCreate 
-%
 
 % Examples:
 %{
