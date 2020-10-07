@@ -31,4 +31,4 @@ sPhotons      = XW2RGBFormat(sPhotons,r,c);
 scene = sceneSet(scene,'photons',sPhotons);
 scene = sceneSet(scene,'illuminant',lightSource);
 
-return;
+end
