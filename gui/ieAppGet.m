@@ -5,7 +5,8 @@ function [app, appAxis] = ieAppGet(obj,varargin)
 %   [app, appAxis] = ieAppGet(obj,varargin)
 %
 % Input
-%   obj:    One of the ISETCam main object types, scene, oi, sensor, ip
+%   obj:    One of the ISETCam main object types, scene, oi, sensor, ip.
+%           It can be either a string or the struct.
 %
 % Optional key/value
 %   select: If true, put the focus on the figure (call figure(app.figure1))
