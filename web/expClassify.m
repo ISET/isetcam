@@ -33,18 +33,20 @@ varargin = ieParamFormat(varargin);
 
 p = inputParser;
 
-p.addParameter('oi',oiCreate(),@(x)(isequal(class(x), 'struct')));
+p.addParameter('optics',[],@(x)(isequal(class(x), 'struct')));
 p.addParameter('sensor',sensorCreate(),@(x)(isequal(class(x), 'struct')));
+p.addParameter('oi',oiCreate(),@(x)(isequal(class(x), 'struct')));
 p.addParameter('ip',ipCreate(),@(x)(isequal(class(x), 'struct')));
 p.addParameter('scoreClasses', 5);
-p.addParameter('imageFolder',""); % or string?
-p.addParameter('classifier','resnet50'); % none means don't bother?
+p.addParameter('imageFolder',""); % or string
+p.addParameter('classifier','resnet50'); % none means don't bother
 p.addParameter('progDialog', "");
 p.addParameter('ipOutputFolder', ''); % optionally force a different folder
 p.addParameter('maxImages', 10000); % optionally limit how many images we'll process
 p.parse(varargin{:});
 
-oi   = p.Results.oi;
+optics   = p.Results.optics;
+oi = p.Results.oi;
 sensor   = p.Results.sensor;
 ip = p.Results.ip;
 imageFolder = p.Results.imageFolder;
@@ -103,20 +105,25 @@ wave = 400:10:700;
 % our default sensor seems to be closer to 8 x 10 not 3 x 4,
 desiredImageSize = [768 1024]; % a decent compromise that should work on average
 
+% use optics if we are passed them, otherwise get from oi
+if isempty(optics)
+    optics = oi.optics;
+end
+
 cachedOpticsFlag = false; % default
 if isfile(fullfile(outputOIFolder,'cachedOptics.mat'))
     load(fullfile(outputOIFolder,'cachedOptics.mat'),'cachedOptics');
-    if isequal(cachedOptics, oi.optics)
+    if isequal(cachedOptics, optics)
         cachedOpticsFlag = true;
     else
         % Save the new optics so that we can check to see if we can re-use the OI cache
         % in future
-        cachedOptics = oi.optics;
+        cachedOptics = optics;
         save(fullfile(outputOIFolder,'cachedOptics'),'cachedOptics');        
     end
 else
     % Save current optics so that we can check to see if we can re-use the OI cache
-    cachedOptics = oi.optics;
+    cachedOptics = optics;
     save(fullfile(outputOIFolder,'cachedOptics'),'cachedOptics');
     
 end
@@ -163,6 +170,8 @@ for ii = 1:maxImages
             progDialog.Message = "Generating Optical Images";
             progDialog.Value = ii/numel(inputFiles);
         end
+        
+        % HOW DO WE GET AN OI -- DO WE NEED IT PASSED OR CAN WE INVENT IT
         oi = oiCompute(oi, ourScene);
         oi.metadata.rotated = imageRotation;
         % Cropping principles:
