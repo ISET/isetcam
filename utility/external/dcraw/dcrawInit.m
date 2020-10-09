@@ -20,7 +20,7 @@ function [s, msg] = dcrawInit(ext)
 % HJ, VISTA TEAM, 2015
 
 % Check inputs
-if notDefined('ext'), ext = {'RAW', 'ARW', 'NEF'}; end
+if notDefined('ext'), ext = {'RAW', 'ARW', 'NEF', 'CRW', 'CR2', 'DNG'}; end
 if ~iscell(ext), ext = {ext}; end
 
 % Check if dcraw executable works
