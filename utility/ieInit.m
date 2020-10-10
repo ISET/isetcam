@@ -12,6 +12,11 @@
 %
 % Copyright ImagEval Consultants, LLC, 2011.
 
+%% Make sure we don't also have isetbio in our path!
+if contains(path,'isetcam') && contains(path,'isetbio')
+    error("Isetcam & Isetbio contain over-lapping functionality, so only one at a time should be in your path");
+end
+
 %% Close the ISET windows and all others
 
 % Close the ISET windows and remove any invalid apps
