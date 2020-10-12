@@ -7,7 +7,7 @@ function [scene,fName] = sceneFromDDFFile(fName, imType, meanLuminance, dispCal,
 % it should probably take depth as a parameter, but it seems to have 
 % a lot of other legacy parameter stuff, so doing it here for now
 scene = sceneFromFile(fName, imType, meanLuminance, dispCal, ...
-    wList, varargin);
+    wList, varargin{:});
 
 % right now we only support depth that is compatible with Google's approach
 depthMap = exiftoolDepthFromFile(fName, 'type', 'GooglePixel');
