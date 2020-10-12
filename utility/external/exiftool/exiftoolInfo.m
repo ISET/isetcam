@@ -1,4 +1,4 @@
-function exifInfo = exiftoolInfo(fname)
+function exifInfo = exiftoolInfo(fname, varargin)
 % Query image for various parameters, returned in text
 %
 % Inputs:
@@ -16,6 +16,13 @@ function exifInfo = exiftoolInfo(fname)
 % Check inputs
 if notDefined('fname'), error('file name required'); end
 
+varargin = ieParamFormat(varargin);
+p = inputParser;
+p.addParameter('format','text');
+p.parse(varargin{:});
+
+format = p.Results.format;
+
 % Decode file
 if ismac
     error("No exiftool setup for Mac yet");
@@ -28,7 +35,12 @@ else
     error('Not sure what OS you are on or which exiftool to run');
 end
 
-opts = '-v';
+if isequal(format, 'json')
+    opts = '-json';
+else
+    opts = '-v';
+end
+
 [~, exifInfo] = system([fp ' ' opts ' ' fname]);
 
 end
