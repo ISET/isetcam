@@ -73,11 +73,11 @@ switch fImageInfo.Orientation
         % we're fine
         depthmap = imresize(depthmap, [fImageInfo.ImageWidth, fImageInfo.ImageHeight]);
     case 'Rotate 90 CW'
-        depthmap = imrotate(depthmap, -90);
-        depthmap = imresize(depthmap, [fImageInfo.ImageWidth, fImageInfo.ImageHeight]);        
+        %depthmap = imrotate(depthmap, -90);
+        depthmap = imresize(depthmap, [fImageInfo.ImageHeight, fImageInfo.ImageWidth]);        
     case 'Rotate 90 CCW'
-        depthmap = imrotate(depthmap, 90);
-        depthmap = imresize(depthmap, [fImageInfo.ImageWidth, fImageInfo.ImageHeight]);
+        %depthmap = imrotate(depthmap, 90);
+        depthmap = imresize(depthmap, [fImageInfo.ImageHeight, fImageInfo.ImageWidth]);
     otherwise
         depthmap = imresize(depthmap, [fImageInfo.ImageWidth, fImageInfo.ImageHeight]);
 
