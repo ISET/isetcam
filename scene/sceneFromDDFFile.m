@@ -26,12 +26,9 @@ toc
 
 % right now we only support depth that is compatible with Google's approach
 depthMap = exiftoolDepthFromFile(fName, 'type', 'GooglePixel');
-
-% NEED TO DECIDE IF DEPTHMAP IS ALREADY METERS HERE, OR IS A JPEG???
-%depthImage = imload(depthmap);
-
-scene = sceneSet(scene, 'depth map', depthMap);
-
+if ~isempty(depthMap)
+    scene = sceneSet(scene, 'depth map', depthMap);
+end
 
 end
 
