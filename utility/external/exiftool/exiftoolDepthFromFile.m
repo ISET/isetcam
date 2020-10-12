@@ -30,6 +30,17 @@ if s ~= 0, error(msg); end
 fImageInfo = imfinfo(fName);
 
 depthmap = imread(fout);
+
+%may need to rotate depthmap
+switch fImageInfo.Orientation
+    case 1
+        % we're fine
+    case 6
+        depthmap = imrotate(depthmap, -90);
+    case 7
+        depthmap = imrotate(depthmap, 90);
+end
+
 depthmap = imresize(depthmap, [fImageInfo.Width, fImageInfo.Height]);
 
 %map = [];
