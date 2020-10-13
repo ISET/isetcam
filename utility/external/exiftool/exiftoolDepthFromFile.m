@@ -43,6 +43,9 @@ textDistance = split(fImageInfo.SubjectDistance, ' '); % by default is in text
 subjectDistance = single(str2double(textDistance{1}));
 subjectDiopters = 1/subjectDistance;
 
+minDiopters = 0;
+maxDiopters = 0;
+
 switch fImageInfo.DepthMapUnits
     case 'Meters'
         farMeters = fImageInfo.DepthMapFar;
@@ -58,11 +61,19 @@ switch fImageInfo.DepthMapUnits
         %diopterMap = minDiopters + (single(depthmap)./depthMax .* (maxDiopters - minDiopters));  
 
         % what about an inverse range map
-        diopterMap = maxDiopters - (single(depthmap)./depthMax .* (maxDiopters - minDiopters));  
+        %diopterMap = maxDiopters - (single(depthmap)./depthMax .* (maxDiopters - minDiopters));  
         %depthmap = 1./diopterMap;
-        % this seems like an impressive version of depth:
-        depthmap =  subjectDistance + (subjectDiopters * (((depthmap - 128) * (maxDiopters - minDiopters))/255));
         
+        % Code from Google doc on RangeInverse
+        % Source: https://developers.google.com/depthmap-metadata/encoding
+        
+        far = maxDiopters; % maybe should be 1/for meters
+        near = minDiopters; % maybe should be 1/for meters
+        farnear = far * near; % not sure if this should really be converted to meters
+        farminusnear = far - near; % also maybe should be meters?
+        dNormal = single(depthmap) ./ depthMax;
+        dCalc = farnear ./ (far - dNormal * farminusnear);
+        depthmap = dCalc;
         
     otherwise % assume meters?
         % do nothing
