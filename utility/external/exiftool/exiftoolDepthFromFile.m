@@ -1,12 +1,31 @@
 function depthmap = exiftoolDepthFromFile(fName, varargin)
-%EXIFTOOLDEPTHFROMFILE Summary of this function goes here
+%EXIFTOOLDEPTHFROMFILE Pulls depth maps from some images
+
+%{
+    A number of smartphones and cameras, including recent model Google
+    Pixel cameras can optionally record depth information in the form of a
+    depth map alongside the main image.
+
+    Google has published a spec for its version, called Dynamic Depth
+    Format. Unfortunately, it leaves a number of pieces up to the
+    implementation. We have been able to read out the depth map using Phil
+    Harvey's amazing Exiftool, and take a stab at interpreting its
+    RangeInverse encoding to come up with something in meters that ISET can
+    use. 
+
+    However, it doesn't seem quite right yet. Perhaps there is some scaling
+    factor related to it using diopters as the unit of distance? The task
+    is to use some 'ground truth' images and scenes to see if you can sort
+    out the rest of the encoding and get a sense of how and when the
+    depthmaps are accurate or useful.
+%}
 
 % Check inputs
 if notDefined('fName'), error('file name required'); end
 
 % Set path to exiftool
 if ismac
-    error("No exiftool setup for Mac yet");
+    error("No exiftool setup for Mac yet. Someone needs to download & check in.");
     %fp = fullfile(isetRootPath,'utility', 'external', 'exiftool', 'exiftool_mac');
 elseif isunix
     fp = fullfile(isetRootPath,'utility', 'external', 'exiftool', 'exiftool');
