@@ -34,10 +34,14 @@ end
 %fullimage = imread(fName); % we need this to scale the depth map to match
 fImageInfo = jsondecode(exiftoolInfo(fName, 'format', 'json'));
 
-depthmap = imread(fout);
+depthmap = single(imread(fout));
 
 % we are assuming our depth map is uint8 
 depthMax = 255;
+
+textDistance = split(fImageInfo.SubjectDistance, ' '); % by default is in text
+subjectDistance = single(str2double(textDistance{1}));
+subjectDiopters = 1/subjectDistance;
 
 switch fImageInfo.DepthMapUnits
     case 'Meters'
@@ -55,8 +59,10 @@ switch fImageInfo.DepthMapUnits
 
         % what about an inverse range map
         diopterMap = maxDiopters - (single(depthmap)./depthMax .* (maxDiopters - minDiopters));  
-
-        depthmap = 1./diopterMap;
+        %depthmap = 1./diopterMap;
+        % this seems like an impressive version of depth:
+        depthmap =  subjectDistance + (subjectDiopters * (((depthmap - 128) * (maxDiopters - minDiopters))/255));
+        
         
     otherwise % assume meters?
         % do nothing
@@ -71,7 +77,7 @@ end
 switch fImageInfo.Orientation
     case 1
         % we're fine
-        depthmap = imresize(depthmap, [fImageInfo.ImageWidth, fImageInfo.ImageHeight]);
+        depthmap = imresize(depthmap, [fImageInfo.ImageHeight, fImageInfo.ImageWidth]);
     case 'Rotate 90 CW'
         %depthmap = imrotate(depthmap, -90);
         depthmap = imresize(depthmap, [fImageInfo.ImageHeight, fImageInfo.ImageWidth]);        
@@ -79,7 +85,7 @@ switch fImageInfo.Orientation
         %depthmap = imrotate(depthmap, 90);
         depthmap = imresize(depthmap, [fImageInfo.ImageHeight, fImageInfo.ImageWidth]);
     otherwise
-        depthmap = imresize(depthmap, [fImageInfo.ImageWidth, fImageInfo.ImageHeight]);
+        depthmap = imresize(depthmap, [fImageInfo.ImageHeight, fImageInfo.ImageWidth]);
 
 end
 
