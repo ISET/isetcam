@@ -49,6 +49,7 @@ resourceName   = p.Results.resourcename;
 resourceType   = p.Results.resourcetype;
 localName = p.Results.localname;
 unZip = p.Results.unzip;
+removeTempFiles = p.Results.removetempfiles;
 
 if isempty(localName), localName = resourceName; end
 verbose = p.Results.verbose;
@@ -85,7 +86,7 @@ switch resourceType
                     websave(localURL, resourceURL);
                     if unZip
                         unzip(localURL, downloadDir);
-                        if removetempfiles
+                        if removeTempFiles
                             delete(localURL);
                         end
                         % not sure how we "know" what the unzip path is?
