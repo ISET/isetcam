@@ -6,12 +6,17 @@ function localFile = ieWebGet(varargin)
 %
 % Examples
 %{
-resourcetype - hyperspectral, multispectral, hdr, pbrt, ....
+resourcetype - hyperspectral, multispectral, hdr, pbrt, V3....
+resourcename - name of the scene or image
+op - 'fetch', 'browse', (someday 'list'/'dir')
+askfirst - confirm download
+verbose - tell the user what we did
 readonly - (possible for images)
 {dir,ls} - use webread rather than websave to list the directory
 %}
 %{
    localFile       = ieWebGet('resourcename', 'ChessSet', 'resourcetype', 'pbrt')
+   ~                = ieWebGet('resourcetype', 'pbrt', 'op', 'browse')
    saveFile       = ieWebGet('resourceName','barbecue.jpg','resourcetype','hdr');
    dataFromFile   = ieWebGet('thisMatFile','type','hyperspectral','readonly',true);
    listOfTheFiles = ieWebGet('resourcetype','V3','dir',true)
@@ -100,7 +105,7 @@ switch resourceType
                 
         end
     case {'hyperspectral', 'multispectral', 'hdr'}
-        baseURL = 'http://stanford.edu/~david81';
+        baseURL = 'http://stanford.edu/~david81/ISETData';
     otherwise
         error('sceneType %s not supported.',resourceType);
 end
