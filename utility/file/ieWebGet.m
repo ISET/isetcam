@@ -1,7 +1,6 @@
-%% Download a file from the Stanford web site
+%% Download a resource from the Stanford web site
 %
-
-function ieWebGet(varargin)
+function localFile = ieWebGet(varargin)
 
 %{
 filetype - hyperspectral, multispectral, hdr, pbrt, ....
@@ -9,12 +8,12 @@ readonly - (possible for images)
 {dir,ls} - use webread rather than websave to list the directory
 %}
 %{
-   saveFile       = ieWebGet('remote file','chessSet.zip','type','V3');
-   saveFile       = ieWebGet('remote file','barbecue.jpg','type','hdr');
+   localFile       = ieWebGet('resourcename', 'ChessSet', 'resourcetype', 'pbrt')
+   saveFile       = ieWebGet('resourceName','barbecue.jpg','resourcetype','hdr');
    dataFromFile   = ieWebGet('thisMatFile','type','hyperspectral','readonly',true);
-   listOfTheFiles = ieWebGet('type','V3','dir',true)
+   listOfTheFiles = ieWebGet('resourcetype','V3','dir',true)
    % Bring up the browser   
-   url            = ieWebGet('type','hyperspectral','browse',true); 
+   url            = ieWebGet('resourcetype','hyperspectral','browse',true); 
 %}
 %{
   listOfTheFiles = ieWebGet('','type','V3','dir',true)
@@ -23,16 +22,20 @@ readonly - (possible for images)
 %}
 
 p = inputParser;
-p.addRequired('name');
-p.addParameter('scenetype');
-p.parse(varargin);
+p.addParameter('resourcename', '');
+p.addParameter('resourcetype', 'pbrt');
+p.addParameter('askfirst', true);
+p.addParameter('removetempfiles', true);
 
-sceneName   = p.Results.name;
-sceneType   = p.Results.scenetype;
+p.parse(varargin{:});
 
-switch sceneType
-    case 'pbrt'
-        if exist(piRootPath, 'var') && isfolder(piRootPath) 
+resourceName   = p.Results.resourcename;
+resourceType   = p.Results.resourcetype;
+askFirst = p.Results.askfirst;
+
+switch resourceType
+    case {'pbrt', 'V3'}
+        if exist('piRootPath') && isfolder(piRootPath) 
             downloadRoot = piRootPath;
         elseif exist(isetRootPath, 'var') && isfolder(isetRootPath)
             downloadRoot = isetRootPath;
@@ -41,18 +44,46 @@ switch sceneType
         end
         % for now we only support v3 pbrt files
         downloadDir = fullfile(downloadRoot,'data','v3');
-        baseURL = 'http://web.stanford.edu/people/wandell/data'
+        if ~isfolder(downloadDir)
+            mkdir(downloadDir);
+        end
+        baseURL = 'http://stanford.edu/~wandell/data/pbrt/';
+        
+        remoteFileName = strcat(resourceName, '.zip');
+        resourceURL = strcat(baseURL, remoteFileName);
+        localURL = fullfile(downloadDir, remoteFileName);
+        
+        proceed = confirmDownload(resourceName, resourceURL, localURL);
+        if proceed == false, return, end
+
+        try
+            websave(localURL, resourceURL);
+            unzip(localURL, downloadDir);
+            if removetempfiles
+                delete(localURL);
+            end
+            localFile = localURL;
+        catch
+            %not much in the way of error handling yet:)
+            warning("Unable to retrieve: %s", resourceURL);
+            localFile = '';
+        end
+        
     case {'hyperspectral', 'multispectral', 'hdr'}
-        baseURL = 'http://web.stanford.edu/people/david81'
+        baseURL = 'http://stanford.edu/~david81';
     otherwise
         error('not supported yet');
 end
 
-downloadFName = fullfile(downloadDir, sceneName);
 
-websave(downloadFName,[baseURL,remoteFileName])
+end
 
-% chdir(fullfile(isetbioRootPath,'local'));
-websave('chessSet.zip','http://web.stanford.edu/people/wandell/data/chessSet.zip');
-
+function proceed = confirmDownload(resourceName, resourceURL, localURL)
+    question = sprintf("Okay to download: %s from %s to file %s and unzip it?\n This may take some time.", resourceName, resourceURL, localURL);
+    answer = questdlg(question, "Confirm Web Resource Download", 'Yes');
+    if isequal(answer, 'Yes')
+        proceed = true;
+    else
+        proceed = false;
+    end 
 end
