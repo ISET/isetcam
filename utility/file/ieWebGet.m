@@ -1,7 +1,14 @@
 %% Download a resource from the Stanford web site
 %
 function localFile = ieWebGet(varargin)
+%% Download a file from the Stanford web site
+%
+%
+% See also
+%
 
+
+% Examples
 %{
 filetype - hyperspectral, multispectral, hdr, pbrt, ....
 readonly - (possible for images)
@@ -21,16 +28,28 @@ readonly - (possible for images)
   dataFromFile   = ieWebGet(listOfTheFiles{ii},'type','V3','readonly',true);
 %}
 
+%% Decode key/val args
+
+varargin = ieParamFormat(varargin);
+
 p = inputParser;
 p.addParameter('resourcename', '');
 p.addParameter('resourcetype', 'pbrt');
 p.addParameter('askfirst', true);
+p.addParameter('localname','',@ischar);     % Defaults to remote name
 p.addParameter('removetempfiles', true);
+p.addParameter('verbose',true,@islogical);  % Tell the user what happened
+p.addParameter('list',false,@islogical);    % This or maybe if resourceName is ''?
 
 p.parse(varargin{:});
 
 resourceName   = p.Results.resourcename;
 resourceType   = p.Results.resourcetype;
+localName = p.Results.localName;
+
+if isempty(localName), localName = remoteName; end
+verbose = p.Results.verbose;
+list = p.Results.list;
 askFirst = p.Results.askfirst;
 
 switch resourceType
@@ -72,9 +91,15 @@ switch resourceType
     case {'hyperspectral', 'multispectral', 'hdr'}
         baseURL = 'http://stanford.edu/~david81';
     otherwise
-        error('not supported yet');
+        error('sceneType %s not supported.',resourceType);
 end
 
+        
+
+%%
+if verbose
+    disp('Tell the user what happened');
+end
 
 end
 
