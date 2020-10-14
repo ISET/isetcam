@@ -1,16 +1,12 @@
-%% Download a resource from the Stanford web site
-%
 function localFile = ieWebGet(varargin)
-%% Download a file from the Stanford web site
+%% Download a resource from the Stanford web site
 %
 %
 % See also
 %
-
-
 % Examples
 %{
-filetype - hyperspectral, multispectral, hdr, pbrt, ....
+resourcetype - hyperspectral, multispectral, hdr, pbrt, ....
 readonly - (possible for images)
 {dir,ls} - use webread rather than websave to list the directory
 %}
@@ -45,9 +41,9 @@ p.parse(varargin{:});
 
 resourceName   = p.Results.resourcename;
 resourceType   = p.Results.resourcetype;
-localName = p.Results.localName;
+localName = p.Results.localname;
 
-if isempty(localName), localName = remoteName; end
+if isempty(localName), localName = resourceName; end
 verbose = p.Results.verbose;
 list = p.Results.list;
 askFirst = p.Results.askfirst;
