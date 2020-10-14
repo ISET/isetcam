@@ -22,12 +22,35 @@ readonly - (possible for images)
   dataFromFile   = ieWebGet(listOfTheFiles{ii},'type','V3','readonly',true);
 %}
 
-switch filetype
-    baseURL = 'http://web.stanford.edu/people/david81'
-    baseURL = 'http://web.stanford.edu/people/wandell/data'
+p = inputParser;
+p.addRequired('name');
+p.addParameter('scenetype');
+p.parse(varargin);
+
+sceneName   = p.Results.name;
+sceneType   = p.Results.scenetype;
+
+switch sceneType
+    case 'pbrt'
+        if exist(piRootPath, 'var') && isfolder(piRootPath) 
+            downloadRoot = piRootPath;
+        elseif exist(isetRootPath, 'var') && isfolder(isetRootPath)
+            downloadRoot = isetRootPath;
+        else
+            error("Need to have either iset3D or isetCam Root set");
+        end
+        % for now we only support v3 pbrt files
+        downloadDir = fullfile(downloadRoot,'data','v3');
+        baseURL = 'http://web.stanford.edu/people/wandell/data'
+    case {'hyperspectral', 'multispectral', 'hdr'}
+        baseURL = 'http://web.stanford.edu/people/david81'
+    otherwise
+        error('not supported yet');
 end
 
-websave(localFileName,[baseURL,remoteFileName])
+downloadFName = fullfile(downloadDir, sceneName);
+
+websave(downloadFName,[baseURL,remoteFileName])
 
 % chdir(fullfile(isetbioRootPath,'local'));
 websave('chessSet.zip','http://web.stanford.edu/people/wandell/data/chessSet.zip');
