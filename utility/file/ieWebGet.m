@@ -55,6 +55,7 @@ if isempty(localName), localName = resourceName; end
 verbose = p.Results.verbose;
 op = p.Results.op;
 askFirst = p.Results.askfirst;
+localFile = ''; %default
 
 switch resourceType
     case {'pbrt', 'V3'}
@@ -106,7 +107,22 @@ switch resourceType
                 
         end
     case {'hyperspectral', 'multispectral', 'hdr'}
-        baseURL = 'http://stanford.edu/~david81/ISETData';
+        parentURL = 'http://stanford.edu/~david81/ISETData/';
+        switch resourceType
+            case 'hyperspectral'
+                baseURL = strcat(parentURL, "Hyperspectral", '/');
+            case 'multispectral'
+                baseURL = strcat(parentURL, "Multispectral", '/');
+            case 'hdr'
+                baseURL = strcat(parentURL, "HDR", '/');
+        end
+        switch op
+            case 'browse'
+                web(baseURL);
+            otherwise
+                warning("Not Supported yet");
+        end
+        
     otherwise
         error('sceneType %s not supported.',resourceType);
 end
