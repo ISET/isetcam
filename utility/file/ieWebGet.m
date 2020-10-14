@@ -32,20 +32,22 @@ p = inputParser;
 p.addParameter('resourcename', '');
 p.addParameter('resourcetype', 'pbrt');
 p.addParameter('askfirst', true);
+p.addParameter('unzip', true); % assume the user wants the resource unzipped, if applicable
 p.addParameter('localname','',@ischar);     % Defaults to remote name
 p.addParameter('removetempfiles', true);
 p.addParameter('verbose',true,@islogical);  % Tell the user what happened
-p.addParameter('list',false,@islogical);    % This or maybe if resourceName is ''?
+p.addParameter('op','fetch',@ischar);  %or can list or browse
 
 p.parse(varargin{:});
 
 resourceName   = p.Results.resourcename;
 resourceType   = p.Results.resourcetype;
 localName = p.Results.localname;
+unZip = p.Results.unzip;
 
 if isempty(localName), localName = resourceName; end
 verbose = p.Results.verbose;
-list = p.Results.list;
+op = p.Results.op;
 askFirst = p.Results.askfirst;
 
 switch resourceType
@@ -57,33 +59,46 @@ switch resourceType
         else
             error("Need to have either iset3D or isetCam Root set");
         end
-        % for now we only support v3 pbrt files
-        downloadDir = fullfile(downloadRoot,'data','v3');
-        if ~isfolder(downloadDir)
-            mkdir(downloadDir);
-        end
+        
         baseURL = 'http://stanford.edu/~wandell/data/pbrt/';
-        
-        remoteFileName = strcat(resourceName, '.zip');
-        resourceURL = strcat(baseURL, remoteFileName);
-        localURL = fullfile(downloadDir, remoteFileName);
-        
-        proceed = confirmDownload(resourceName, resourceURL, localURL);
-        if proceed == false, return, end
-
-        try
-            websave(localURL, resourceURL);
-            unzip(localURL, downloadDir);
-            if removetempfiles
-                delete(localURL);
-            end
-            localFile = localURL;
-        catch
-            %not much in the way of error handling yet:)
-            warning("Unable to retrieve: %s", resourceURL);
-            localFile = '';
+        switch op
+            case 'fetch'
+                % for now we only support v3 pbrt files
+                downloadDir = fullfile(downloadRoot,'data','v3');
+                if ~isfolder(downloadDir)
+                    mkdir(downloadDir);
+                end
+                
+                remoteFileName = strcat(resourceName, '.zip');
+                resourceURL = strcat(baseURL, remoteFileName);
+                localURL = fullfile(downloadDir, remoteFileName);
+                
+                proceed = confirmDownload(resourceName, resourceURL, localURL);
+                if proceed == false, return, end
+                
+                try
+                    websave(localURL, resourceURL);
+                    if unZip
+                        unzip(localURL, downloadDir);
+                        if removetempfiles
+                            delete(localURL);
+                        end
+                        % not sure how we "know" what the unzip path is?
+                        localFile = fullfile(downloadDir, resourceName);
+                    else
+                        localFile = localURL;
+                    end
+                catch
+                    %not much in the way of error handling yet:)
+                    warning("Unable to retrieve: %s", resourceURL);
+                    localFile = '';
+                end
+            case 'browse'
+                % assume for now that means we are listing
+                web(baseURL);
+                localFile = '';
+                
         end
-        
     case {'hyperspectral', 'multispectral', 'hdr'}
         baseURL = 'http://stanford.edu/~david81';
     otherwise
@@ -94,7 +109,7 @@ end
 
 %%
 if verbose
-    disp('Tell the user what happened');
+    disp(strcat("Retrieved: ", resourceName, " to: ", localFile));
 end
 
 end
