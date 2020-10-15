@@ -106,6 +106,8 @@ switch resourceType
     case {'hyperspectral', 'multispectral', 'hdr'}
 
         parentURL = 'http://stanford.edu/~david81/ISETData/';
+        % do we want to switch based on browse op or 
+        % split by type first? 
         switch resourceType
             case 'hyperspectral'
                 baseURL = strcat(parentURL, "Hyperspectral", '/');
@@ -117,6 +119,7 @@ switch resourceType
         switch op
             case 'browse'
                 web(baseURL);
+<<<<<<< HEAD
             case {'read', 'fetch'}
                 options = weboptions('Timeout', 60);
                 if ~endsWith(resourceName, "." + lettersPattern)
@@ -150,6 +153,33 @@ switch resourceType
                             warning("Unable to retrieve %s", resourceURL);
                         end
                 end
+=======
+            case 'fetch'
+                % all of these seem to be .mat files, so we need
+                % to decide whether we want to ask for the basename or the
+                % fullname?
+                
+                % and is there a default place for .mat scenes, or should
+                % we require a directory?
+                
+                remoteFileName = strcat(resourceName, '.mat');
+                resourceURL = strcat(baseURL, remoteFileName);
+                localURL = fullfile(downloadDir, remoteFileName);
+                
+                proceed = confirmDownload(resourceName, resourceURL, localURL);
+                if proceed == false, return, end
+                
+                try
+                    % check if these are right
+                    % what folder do we want locally?
+                    websave(localURL, resourceURL);
+                catch
+                    %not much in the way of error handling yet:)
+                    warning("Unable to retrieve: %s", resourceURL);
+                    localFile = '';
+                end
+                
+>>>>>>> 69a9bcd3c965941b9531575f14c3a8297853e4cc
             otherwise
                 warning("Not Supported yet");
         end
