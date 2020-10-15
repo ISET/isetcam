@@ -31,12 +31,12 @@ verbose - tell the user what we did
 varargin = ieParamFormat(varargin);
 
 p = inputParser;
-p.addParameter('resourcename', '');
-p.addParameter('resourcetype', 'pbrt');
-p.addParameter('askfirst', true);
-p.addParameter('unzip', true); % assume the user wants the resource unzipped, if applicable
+p.addParameter('resourcename', '', @ischar);
+p.addParameter('resourcetype', 'pbrt',@ischar);
+p.addParameter('askfirst', true, @islogical);
+p.addParameter('unzip', true, @islogical); % assume the user wants the resource unzipped, if applicable
 p.addParameter('localname','',@ischar);     % Defaults to remote name
-p.addParameter('removetempfiles', true);
+p.addParameter('removetempfiles', true, @islogical);
 p.addParameter('verbose',true,@islogical);  % Tell the user what happened
 p.addParameter('op','fetch',@ischar);  %or can list or browse
 
