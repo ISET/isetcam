@@ -7,7 +7,8 @@ function localFile = ieWebGet(varargin)
 %{
 resourcetype - hyperspectral, multispectral, hdr, {pbrt, v3} -- default
 pbrt
-resourcename - name of the scene or image
+resourcename - name of the scene or image (with or without .mat in the case
+of ISET scenes)
 op - 'fetch', 'browse', 'read', (someday 'list'/'dir')
 askfirst - confirm download -- default = true
 verbose - tell the user what we did -- default = false
