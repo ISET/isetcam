@@ -2,32 +2,33 @@ function localFile = ieWebGet(varargin)
 %% Download a resource from the Stanford web site
 %
 %
-% See also
+% See also: webImageBrowser_mlapp
 %
 %{
-resourcetype - hyperspectral, multispectral, hdr, pbrt, V3....
+resourcetype - hyperspectral, multispectral, hdr, {pbrt, v3} -- default
+pbrt
 resourcename - name of the scene or image
 op - 'fetch', 'browse', 'read', (someday 'list'/'dir')
-askfirst - confirm download
-verbose - tell the user what we did
+askfirst - confirm download -- default = true
+verbose - tell the user what we did -- default = false
 removetempfiles - delete downloaded .zip files after they are extracted
 localname - over-ride resourcename for local copy
-unzip - unzip downloaded resource 
+unzip - unzip downloaded resource -- default = true
+
+NOTE: pbrt scenes default to being stored under iset3d/data/v3/ if available, other
+scenes default to being stored under isetcam/local/scenes/<resourcetype>/.
 
 %}
 % Examples
 %{
-    THINGS that work now:
     localFile       = ieWebGet('resourcename', 'ChessSet', 'resourcetype', 'pbrt')
-    data = ieWebGet('op', 'read', 'resourcetype', 'hyperspectral', 'resourcename', 'FruitMCC') 
-    localFile = ieWebGet('op', 'fetch', 'resourcetype', 'hdr', 'resourcename', 'BBQsite1')  
-    ~                = ieWebGet('resourcetype', 'pbrt', 'op', 'browse')
+    data            = ieWebGet('op', 'read', 'resourcetype', 'hyperspectral', 'resourcename', 'FruitMCC') 
+    localFile       = ieWebGet('op', 'fetch', 'resourcetype', 'hdr', 'resourcename', 'BBQsite1')  
+    ~               = ieWebGet('resourcetype', 'pbrt', 'op', 'browse')
+
+    % Use it to create a list of resources and then select one:
     arrayOfResourceFiles = ieWebGet('op', 'list', 'resourcetype', 'hyperspectral')
 	data = ieWebGet('op', 'read', 'resourcetype', 'hyperspectral', 'resourcename', arrayOfResourceFiles{ii})
-%}
-%{
-    IDEAS for the future:
-  % determine which ii value
 %}
 
 %% Decode key/val args
