@@ -10,6 +10,10 @@ resourcename - name of the scene or image
 op - 'fetch', 'browse', 'read', (someday 'list'/'dir')
 askfirst - confirm download
 verbose - tell the user what we did
+removetempfiles - delete downloaded .zip files after they are extracted
+localname - over-ride resourcename for local copy
+unzip - unzip downloaded resource 
+
 %}
 % Examples
 %{
@@ -38,7 +42,7 @@ p.addParameter('unzip', true, @islogical); % assume the user wants the resource 
 p.addParameter('localname','',@ischar);     % Defaults to remote name
 p.addParameter('removetempfiles', true, @islogical);
 p.addParameter('verbose',true,@islogical);  % Tell the user what happened
-p.addParameter('op','fetch',@ischar);  %or can list or browse
+p.addParameter('op','fetch',@ischar);  %or can browse or read
 
 p.parse(varargin{:});
 
