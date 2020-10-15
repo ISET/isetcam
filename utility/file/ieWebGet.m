@@ -119,7 +119,6 @@ switch resourceType
         switch op
             case 'browse'
                 web(baseURL);
-<<<<<<< HEAD
             case {'read', 'fetch'}
                 options = weboptions('Timeout', 60);
                 if ~endsWith(resourceName, "." + lettersPattern)
@@ -153,7 +152,6 @@ switch resourceType
                             warning("Unable to retrieve %s", resourceURL);
                         end
                 end
-=======
             case 'fetch'
                 % all of these seem to be .mat files, so we need
                 % to decide whether we want to ask for the basename or the
@@ -179,7 +177,6 @@ switch resourceType
                     localFile = '';
                 end
                 
->>>>>>> 69a9bcd3c965941b9531575f14c3a8297853e4cc
             otherwise
                 warning("Not Supported yet");
         end
