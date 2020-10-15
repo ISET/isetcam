@@ -108,6 +108,8 @@ switch resourceType
         end
     case {'hyperspectral', 'multispectral', 'hdr'}
         parentURL = 'http://stanford.edu/~david81/ISETData/';
+        % do we want to switch based on browse op or 
+        % split by type first? 
         switch resourceType
             case 'hyperspectral'
                 baseURL = strcat(parentURL, "Hyperspectral", '/');
@@ -119,6 +121,31 @@ switch resourceType
         switch op
             case 'browse'
                 web(baseURL);
+            case 'fetch'
+                % all of these seem to be .mat files, so we need
+                % to decide whether we want to ask for the basename or the
+                % fullname?
+                
+                % and is there a default place for .mat scenes, or should
+                % we require a directory?
+                
+                remoteFileName = strcat(resourceName, '.mat');
+                resourceURL = strcat(baseURL, remoteFileName);
+                localURL = fullfile(downloadDir, remoteFileName);
+                
+                proceed = confirmDownload(resourceName, resourceURL, localURL);
+                if proceed == false, return, end
+                
+                try
+                    % check if these are right
+                    % what folder do we want locally?
+                    websave(localURL, resourceURL);
+                catch
+                    %not much in the way of error handling yet:)
+                    warning("Unable to retrieve: %s", resourceURL);
+                    localFile = '';
+                end
+                
             otherwise
                 warning("Not Supported yet");
         end
