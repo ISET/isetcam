@@ -22,12 +22,12 @@ unzip - unzip downloaded resource
     data = ieWebGet('op', 'read', 'resourcetype', 'hyperspectral', 'resourcename', 'FruitMCC') 
     localFile = ieWebGet('op', 'fetch', 'resourcetype', 'hdr', 'resourcename', 'BBQsite1')  
     ~                = ieWebGet('resourcetype', 'pbrt', 'op', 'browse')
+    arrayOfResourceFiles = ieWebGet('op', 'list', 'resourcetype', 'hyperspectral')
+	data = ieWebGet('op', 'read', 'resourcetype', 'hyperspectral', 'resourcename', arrayOfResourceFiles{ii})
 %}
 %{
     IDEAS for the future:
-  listOfTheFiles = ieWebGet('','type','V3','dir',true)
   % determine which ii value
-  dataFromFile   = ieWebGet(listOfTheFiles{ii},'type','V3','readonly',true);
 %}
 
 %% Decode key/val args
