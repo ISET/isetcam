@@ -4,26 +4,23 @@ function localFile = ieWebGet(varargin)
 %
 % See also
 %
-% Examples
 %{
 resourcetype - hyperspectral, multispectral, hdr, pbrt, V3....
 resourcename - name of the scene or image
-op - 'fetch', 'browse', (someday 'list'/'dir')
+op - 'fetch', 'browse', 'read', (someday 'list'/'dir')
 askfirst - confirm download
 verbose - tell the user what we did
-readonly - (possible for images)
-{dir,ls} - use webread rather than websave to list the directory
+%}
+% Examples
+%{
+    THINGS that work now:
+    localFile       = ieWebGet('resourcename', 'ChessSet', 'resourcetype', 'pbrt')
+    data = ieWebGet('op', 'read', 'resourcetype', 'hyperspectral', 'resourcename', 'FruitMCC') 
+    localFile = ieWebGet('op', 'fetch', 'resourcetype', 'hdr', 'resourcename', 'BBQsite1')  
+    ~                = ieWebGet('resourcetype', 'pbrt', 'op', 'browse')
 %}
 %{
-   localFile       = ieWebGet('resourcename', 'ChessSet', 'resourcetype', 'pbrt')
-   ~                = ieWebGet('resourcetype', 'pbrt', 'op', 'browse')
-   saveFile       = ieWebGet('resourceName','barbecue.jpg','resourcetype','hdr');
-   dataFromFile   = ieWebGet('thisMatFile','type','hyperspectral','readonly',true);
-   listOfTheFiles = ieWebGet('resourcetype','V3','dir',true)
-   % Bring up the browser   
-   url            = ieWebGet('resourcetype','hyperspectral','browse',true); 
-%}
-%{
+    IDEAS for the future:
   listOfTheFiles = ieWebGet('','type','V3','dir',true)
   % determine which ii value
   dataFromFile   = ieWebGet(listOfTheFiles{ii},'type','V3','readonly',true);
@@ -107,6 +104,7 @@ switch resourceType
                 
         end
     case {'hyperspectral', 'multispectral', 'hdr'}
+
         parentURL = 'http://stanford.edu/~david81/ISETData/';
         switch resourceType
             case 'hyperspectral'
@@ -119,6 +117,39 @@ switch resourceType
         switch op
             case 'browse'
                 web(baseURL);
+            case {'read', 'fetch'}
+                options = weboptions('Timeout', 60);
+                if ~endsWith(resourceName, "." + lettersPattern)
+                    remoteFileName = strcat(resourceName, '.mat');
+                else
+                    remoteFileName = resourceName;
+                end
+                resourceURL = strcat(baseURL, remoteFileName);
+                switch op
+                    case 'read'
+                        % in this case we are actually returning a Matlab
+                        % array with scene data!
+                        localFile = webread(resourceURL, options);
+                    case 'fetch'
+                        if exist('isetRootPath') && isfolder(isetRootPath)
+                            downloadRoot = isetRootPath;
+                            downloadDir = fullfile(downloadRoot, 'local', 'scenes', resourceType);
+                            if ~isfolder(downloadDir)
+                                mkdir(downloadDir)
+                            end
+                        else
+                            error("Need to have isetCam Root set");
+                        end
+                        
+                        localFile = fullfile(downloadDir, remoteFileName);
+                        proceed = confirmDownload(resourceName, resourceURL, localFile);
+                        if proceed == false, return, end
+                        try
+                            websave(localFile, resourceURL, options);
+                        catch
+                            warning("Unable to retrieve %s", resourceURL);
+                        end
+                end
             otherwise
                 warning("Not Supported yet");
         end
@@ -131,13 +162,19 @@ end
 
 %%
 if verbose
-    disp(strcat("Retrieved: ", resourceName, " to: ", localFile));
+    if ischar(localFile)
+        disp(strcat("Retrieved: ", resourceName, " to: ", localFile));
+    elseif exist('localFile') && ~isempty(localFile)
+        disp(strcat("Retrieved: ", resourceName, " and returned it as an array"));
+    else
+        disp(strcat("Unable to Retrieve: ", resourceName));
+    end
 end
 
 end
 
 function proceed = confirmDownload(resourceName, resourceURL, localURL)
-    question = sprintf("Okay to download: %s from %s to file %s and unzip it?\n This may take some time.", resourceName, resourceURL, localURL);
+    question = sprintf("Okay to download: %s from %s to file %s and if necessary, unzip it?\n This may take some time.", resourceName, resourceURL, localURL);
     answer = questdlg(question, "Confirm Web Resource Download", 'Yes');
     if isequal(answer, 'Yes')
         proceed = true;
