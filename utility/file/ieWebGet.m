@@ -12,10 +12,15 @@ function localFile = ieWebGet(varargin)
 %  N/A
 %
 % Key/val pairs
-%  op:           The operation to perform {'fetch','read','list','browse'}
-%  resourcetype: 'pbrt', 'hyperspectral', 'multispectral', 'hdr'
-%  resourcename: 
-%
+%  op:            The operation to perform {'fetch','read','list','browse'}
+%                 (default: 'fetch')
+%  resource type: 'pbrt', 'hyperspectral', 'multispectral', 'hdr' 
+%                 (default: 'pbrt')
+%  resource name: File name of the remote file
+%  remove temp files:  Remove local temp file (zip)
+%  unzip:           :  Unzip the file
+%  verbose          :  Print a report to the command window
+% 
 % Output
 %   localFile:  Name of the local download file
 %
@@ -27,28 +32,15 @@ function localFile = ieWebGet(varargin)
 %   The types of resources are listed above.  To see the names of the
 %   resources, use the 'list' operation.
 %
-%
 % See also: 
 %    webImageBrowser_mlapp
 %
 
-%{
-resourcetype - hyperspectral, multispectral, hdr, {pbrt, v3} -- default
-pbrt
-resourcename - name of the scene or image (with or without .mat in the case
-of ISET scenes)
-op - 'fetch', 'browse', 'read', (someday 'list'/'dir')
-askfirst - confirm download -- default = true
-verbose - tell the user what we did -- default = false
-removetempfiles - delete downloaded .zip files after they are extracted
-localname - over-ride resourcename for local copy
-unzip - unzip downloaded resource -- default = true
-
-NOTE: pbrt scenes default to being stored under iset3d/data/v3/ if available, other
-scenes default to being stored under isetcam/local/scenes/<resourcetype>/.
-
-%}
 % Examples
+%{
+% NOTE: pbrt scenes default to being stored under iset3d/data/v3/ if available, other
+% scenes default to being stored under isetcam/local/scenes/<resourcetype>/.
+%}
 %{
     localFile       = ieWebGet('resourcename', 'ChessSet', 'resourcetype', 'pbrt')
     data            = ieWebGet('op', 'read', 'resourcetype', 'hyperspectral', 'resourcename', 'FruitMCC')
@@ -58,7 +50,7 @@ scenes default to being stored under isetcam/local/scenes/<resourcetype>/.
 %{
     % Use it to create a list of resources and then select one:
     arrayOfResourceFiles = ieWebGet('op', 'list', 'resourcetype', 'hyperspectral')
-	data = ieWebGet('op', 'read', 'resource type', 'hyperspectral', 'resource name', arrayOfResourceFiles{ii})
+	data = ieWebGet('op', 'read', 'resource type', 'hyperspectral', 'resource name', arrayOfResourceFiles{ii});
 %}
 
 %% Decode key/val args
@@ -66,11 +58,14 @@ scenes default to being stored under isetcam/local/scenes/<resourcetype>/.
 varargin = ieParamFormat(varargin);
 
 p = inputParser;
-p.addParameter('op','fetch',@ischar);       % The operation can be fetch, read, list or browse
+vFunc = @(x)(ismember(x,{'fetch','read','list','browse'}));
+p.addParameter('op','fetch',vFunc);
 p.addParameter('resourcename', '', @ischar);
-p.addParameter('resourcetype', 'pbrt',@ischar);
+vFunc = @(x)(ismember(x,{'pbrt', 'hyperspectral', 'multispectral', 'hdr','pbrt','v3'}));
+p.addParameter('resourcetype', 'pbrt',vFunc);
+
 p.addParameter('askfirst', true, @islogical);
-p.addParameter('unzip', true, @islogical); % assume the user wants the resource unzipped, if applicable
+p.addParameter('unzip', true, @islogical);  % assume the user wants the resource unzipped, if applicable
 p.addParameter('localname','',@ischar);     % Defaults to remote name
 p.addParameter('removetempfiles', true, @islogical);
 p.addParameter('verbose',true,@islogical);  % Tell the user what happened
@@ -92,10 +87,10 @@ askFirst  = p.Results.askfirst;
 localFile = '';        % Default local file name
 
 switch resourceType
-    case {'pbrt', 'V3'}
+    case {'pbrt', 'v3'}
         if exist('piRootPath','file') && isfolder(piRootPath)
             downloadRoot = piRootPath;
-        elseif exist(isetRootPath, 'var') && isfolder(isetRootPath)
+        elseif exist('isetRootPath', 'file') && isfolder(isetRootPath)
             downloadRoot = isetRootPath;
         else
             error("Need to have either iset3D or isetCam Root set");
@@ -111,12 +106,14 @@ switch resourceType
                 end
                 
                 remoteFileName = strcat(resourceName, '.zip');
-                resourceURL = strcat(baseURL, remoteFileName);
-                localURL = fullfile(downloadDir, remoteFileName);
+                resourceURL    = strcat(baseURL, remoteFileName);
+                localURL       = fullfile(downloadDir, remoteFileName);
                 
-                proceed = confirmDownload(resourceName, resourceURL, localURL);
-                if proceed == false, return, end
-                
+                if askFirst
+                    proceed = confirmDownload(resourceName, resourceURL, localURL);
+                    if proceed == false, return, end
+                end
+
                 try
                     websave(localURL, resourceURL);
                     if unZip
@@ -174,8 +171,12 @@ switch resourceType
                 switch op
                     case 'read'
                         % in this case we are actually returning a Matlab
-                        % array with scene data!
+                        % array with scene data!  (BW):  Not sure this
+                        % works.  Maybe we fetch and then load.
+                        %{
                         localFile = webread(resourceURL, options);
+                        %}
+                        
                     case 'fetch'
                         if exist('isetRootPath','file') && isfolder(isetRootPath)
                             downloadRoot = isetRootPath;
@@ -184,12 +185,15 @@ switch resourceType
                                 mkdir(downloadDir)
                             end
                         else
-                            error("Need to have isetCam Root set");
+                            error("Need to have root path set for isetcam or isetbio.");
                         end
                         
                         localFile = fullfile(downloadDir, remoteFileName);
-                        proceed = confirmDownload(resourceName, resourceURL, localFile);
-                        if proceed == false, return, end
+                        if askFirst
+                            proceed = confirmDownload(resourceName, resourceURL, localFile);
+                            if proceed == false, return, end
+                        end
+                        
                         try
                             websave(localFile, resourceURL, options);
                         catch
@@ -222,7 +226,7 @@ if verbose
         disp(strcat("Retrieved: ", resourceName, " to: ", localFile));
     elseif exist('localFile','file') && ~isempty(localFile)
         disp(strcat("Retrieved: ", resourceName, " and returned it as an array"));
-    else
+    elseif ~isequal(op,'list')
         disp(strcat("Unable to Retrieve: ", resourceName));
     end
 end
