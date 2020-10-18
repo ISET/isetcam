@@ -1,9 +1,37 @@
 function localFile = ieWebGet(varargin)
 %% Download a resource from the Stanford web site
 %
+% Synopsis
+%   localFile = ieWebGet(varargin)
 %
-% See also: webImageBrowser_mlapp
+% Brief description
+%  Download an ISET zip or mat-file file from the web.  The type of file
+%  and the remote file name define how to get the file.
 %
+% Inputs
+%  N/A
+%
+% Key/val pairs
+%  op:           The operation to perform {'fetch','read','list','browse'}
+%  resourcetype: 'pbrt', 'hyperspectral', 'multispectral', 'hdr'
+%  resourcename: 
+%
+% Output
+%   localFile:  Name of the local download file
+%
+% Description
+%   We store various data sets (resources) as zip- and mat-files on the
+%   Stanford resource, cardinal.stanford.edu/~SOMEONE.  This routine is a
+%   gateway that allows us to download the files (using fetch).
+%
+%   The types of resources are listed above.  To see the names of the
+%   resources, use the 'list' operation.
+%
+%
+% See also: 
+%    webImageBrowser_mlapp
+%
+
 %{
 resourcetype - hyperspectral, multispectral, hdr, {pbrt, v3} -- default
 pbrt
@@ -23,13 +51,14 @@ scenes default to being stored under isetcam/local/scenes/<resourcetype>/.
 % Examples
 %{
     localFile       = ieWebGet('resourcename', 'ChessSet', 'resourcetype', 'pbrt')
-    data            = ieWebGet('op', 'read', 'resourcetype', 'hyperspectral', 'resourcename', 'FruitMCC') 
-    localFile       = ieWebGet('op', 'fetch', 'resourcetype', 'hdr', 'resourcename', 'BBQsite1')  
+    data            = ieWebGet('op', 'read', 'resourcetype', 'hyperspectral', 'resourcename', 'FruitMCC')
+    localFile       = ieWebGet('op', 'fetch', 'resourcetype', 'hdr', 'resourcename', 'BBQsite1')
     ~               = ieWebGet('resourcetype', 'pbrt', 'op', 'browse')
-
+%}
+%{
     % Use it to create a list of resources and then select one:
     arrayOfResourceFiles = ieWebGet('op', 'list', 'resourcetype', 'hyperspectral')
-	data = ieWebGet('op', 'read', 'resourcetype', 'hyperspectral', 'resourcename', arrayOfResourceFiles{ii})
+	data = ieWebGet('op', 'read', 'resource type', 'hyperspectral', 'resource name', arrayOfResourceFiles{ii})
 %}
 
 %% Decode key/val args
@@ -37,6 +66,7 @@ scenes default to being stored under isetcam/local/scenes/<resourcetype>/.
 varargin = ieParamFormat(varargin);
 
 p = inputParser;
+p.addParameter('op','fetch',@ischar);       % The operation can be fetch, read, list or browse
 p.addParameter('resourcename', '', @ischar);
 p.addParameter('resourcetype', 'pbrt',@ischar);
 p.addParameter('askfirst', true, @islogical);
@@ -44,25 +74,26 @@ p.addParameter('unzip', true, @islogical); % assume the user wants the resource 
 p.addParameter('localname','',@ischar);     % Defaults to remote name
 p.addParameter('removetempfiles', true, @islogical);
 p.addParameter('verbose',true,@islogical);  % Tell the user what happened
-p.addParameter('op','fetch',@ischar);  %or can browse or read
 
 p.parse(varargin{:});
 
 resourceName   = p.Results.resourcename;
 resourceType   = p.Results.resourcetype;
-localName = p.Results.localname;
-unZip = p.Results.unzip;
+localName      = p.Results.localname;
+unZip          = p.Results.unzip;
 removeTempFiles = p.Results.removetempfiles;
 
-if isempty(localName), localName = resourceName; end
-verbose = p.Results.verbose;
-op = p.Results.op;
-askFirst = p.Results.askfirst;
-localFile = ''; %default
+if isempty(localName)
+    localName = resourceName; 
+end
+verbose   = p.Results.verbose;
+op        = p.Results.op;
+askFirst  = p.Results.askfirst;
+localFile = '';        % Default local file name
 
 switch resourceType
     case {'pbrt', 'V3'}
-        if exist('piRootPath') && isfolder(piRootPath) 
+        if exist('piRootPath','file') && isfolder(piRootPath)
             downloadRoot = piRootPath;
         elseif exist(isetRootPath, 'var') && isfolder(isetRootPath)
             downloadRoot = isetRootPath;
@@ -117,10 +148,10 @@ switch resourceType
                 end
         end
     case {'hyperspectral', 'multispectral', 'hdr'}
-
+        
         parentURL = 'http://stanford.edu/~david81/ISETData/';
-        % do we want to switch based on browse op or 
-        % split by type first? 
+        % do we want to switch based on browse op or
+        % split by type first?
         switch resourceType
             case 'hyperspectral'
                 baseURL = strcat(parentURL, "Hyperspectral", '/');
@@ -146,7 +177,7 @@ switch resourceType
                         % array with scene data!
                         localFile = webread(resourceURL, options);
                     case 'fetch'
-                        if exist('isetRootPath') && isfolder(isetRootPath)
+                        if exist('isetRootPath','file') && isfolder(isetRootPath)
                             downloadRoot = isetRootPath;
                             downloadDir = fullfile(downloadRoot, 'local', 'scenes', resourceType);
                             if ~isfolder(downloadDir)
@@ -185,13 +216,11 @@ switch resourceType
         error('sceneType %s not supported.',resourceType);
 end
 
-        
-
-%%
+%% Tell the user what happened
 if verbose
     if ischar(localFile)
         disp(strcat("Retrieved: ", resourceName, " to: ", localFile));
-    elseif exist('localFile') && ~isempty(localFile)
+    elseif exist('localFile','file') && ~isempty(localFile)
         disp(strcat("Retrieved: ", resourceName, " and returned it as an array"));
     else
         disp(strcat("Unable to Retrieve: ", resourceName));
@@ -200,12 +229,14 @@ end
 
 end
 
+%% Query the user to confirm the download
+%
 function proceed = confirmDownload(resourceName, resourceURL, localURL)
-    question = sprintf("Okay to download: %s from %s to file %s and if necessary, unzip it?\n This may take some time.", resourceName, resourceURL, localURL);
-    answer = questdlg(question, "Confirm Web Resource Download", 'Yes');
-    if isequal(answer, 'Yes')
-        proceed = true;
-    else
-        proceed = false;
-    end 
+question = sprintf("Okay to download: %s from %s to file %s and if necessary, unzip it?\n This may take some time.", resourceName, resourceURL, localURL);
+answer = questdlg(question, "Confirm Web Resource Download", 'Yes');
+if isequal(answer, 'Yes')
+    proceed = true;
+else
+    proceed = false;
+end
 end

@@ -12,9 +12,10 @@
 %
 % Copyright ImagEval Consultants, LLC, 2011.
 
-%% Make sure we don't also have isetbio in our path!
-if contains(path,'isetcam') && contains(path,'isetbio')
-    error("Isetcam & Isetbio contain over-lapping functionality, so only one at a time should be in your path");
+%% Make sure we don't have both isetcam and isetbio in our path
+%  This test is not great.   But the idea is that imgproc is not in isetbio.
+if contains(path,'imgproc') && contains(path,'cones')
+    error("Isetcam & Isetbio contain over-lapping functionality. Only one at a time should be in your path");
 end
 
 %% Close the ISET windows and all others

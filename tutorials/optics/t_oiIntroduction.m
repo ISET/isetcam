@@ -24,7 +24,7 @@ ieInit
 %%
 scene = sceneCreate('point array');  % Creates an array of points
 scene = sceneSet(scene,'hfov',1);    % 1 deg field of view
-ieAddObject(scene); sceneWindow;
+sceneWindow(scene);
 %% Create and show an optical image
 % ISET has several optics models that you can experiment with. These include 
 % shift-invariant optics, in which there is a different shift-invariant pointspread 
@@ -36,7 +36,7 @@ ieAddObject(scene); sceneWindow;
 oi = oiCreate;                        
 oi = oiCompute(scene,oi);
 oi = oiSet(oi,'name','Small f number');
-ieAddObject(oi); oiWindow;
+oiWindow(oi);
 %% Increase the f# of the optics and compute again.
 % Increasing the f-number of the optics will blur the irradiance image. The 
 % optics structure is attached to the optical image. To increase the f-number 
@@ -49,7 +49,7 @@ oiBigF = oiSet(oi,'optics f number',fnBig);
 oiBigF  = oiCompute(scene,oiBigF);
 
 oiBigF  = oiSet(oiBigF,'name','Big f number');
-ieAddObject(oiBigF); oiWindow;
+oiWindow(oiBigF);
 %% Use oiPlot to compare the two different optics
 % In this case we plot the point spread function at 600 nm.  First for the small 
 % f/#.
@@ -94,6 +94,6 @@ title(sprintf('Zoomed view: F-number = %d',fnBig))
 oiHuman = oiCreate('human');
 oiHuman = oiCompute(scene,oiHuman);
 oiHuman = oiSet(oiHuman,'name','human optics');
-ieAddObject(oiHuman); oiWindow;
+oiWindow(oiHuman);
 %% 
 %

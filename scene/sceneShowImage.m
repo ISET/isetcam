@@ -1,8 +1,8 @@
-function rgb = sceneShowImage(scene,displayFlag,gam,sceneW)
+function rgb = sceneShowImage(scene,renderFlag,gam,app)
 % Render an image of the scene data from its SPD values
 %
 % Synopsis
-%    rgb = sceneShowImage(scene,displayFlag,gam,sceneW)
+%    rgb = sceneShowImage(scene,renderFlag,gam,app)
 %
 % Brief description
 %  Computes from scene spectral data to an sRGB rendering. Which type of
@@ -10,7 +10,7 @@ function rgb = sceneShowImage(scene,displayFlag,gam,sceneW)
 %
 % Inputs
 %  scene:
-%  displayFlag:
+%  renderFlag:
 %     absolute value of 0,1 compute RGB image 
 %     absolute value of 2,  compute gray scale for IR
 %     absolute value of 3,  HDR rendering method
@@ -19,7 +19,8 @@ function rgb = sceneShowImage(scene,displayFlag,gam,sceneW)
 %     into the rgb variable that is returned.
 %
 %  gam:    The gamma value for the rendering
-%  sceneW: sceneWindow_App class object
+%  app:    sceneWindow_App class object, or a fig, or 0 (equiv to
+%          renderFlag <= 0)
 %
 % Outputs
 %   rgb:   Image for display
@@ -27,7 +28,7 @@ function rgb = sceneShowImage(scene,displayFlag,gam,sceneW)
 % Copyright ImagEval Consultants, LLC, 2003.
 %
 % See also
-%   imageSPD
+%   imageSPD, oiShowImage, imageShowImage
 
 % Examples:
 %{
@@ -36,11 +37,11 @@ function rgb = sceneShowImage(scene,displayFlag,gam,sceneW)
    ieNewGraphWin; imagescRGB(rgb);    % Now show
 %}
 %{
-   thisW = sceneWindow2;
+   thisW = sceneWindow;
    sceneShowImage(scene,1,1,thisW);      % Show
 %}
 %{
-   thisW = sceneWindow2;
+   thisW = sceneWindow;
    im = sceneShowImage(scene,2,1,thisW); % Show gray scale version.
 %}
 %{
@@ -50,15 +51,23 @@ function rgb = sceneShowImage(scene,displayFlag,gam,sceneW)
 %%  Input parameters
 if isempty(scene), cla; return;  end
 
-if ~exist('gam','var')||isempty(gam),         gam = 1;         end
-if ~exist('displayFlag','var')||isempty(displayFlag), displayFlag = 1; end
-if ~exist('sceneW','var')||isempty(sceneW),      sceneW = [];     end
+if ~exist('gam','var') || isempty(gam),         gam = 1;         end
+if ~exist('renderFlag','var') || isempty(renderFlag), renderFlag = 1; end
+if ~exist('app','var') || isempty(app),      app = [];     end
 
-if ~isempty(sceneW)
-    figure(sceneW.figure1);   % Make sure it is selected
-    sceneAxis = sceneW.sceneImage;
-else
-    sceneAxis = []; 
+if renderFlag > 0 
+    if isempty(app) || isa(app,'sceneWindow_App')
+        % User told us nothing. We think the user wants it in the IP window
+        [app,appAxis] = ieAppGet('scene');
+    elseif isa(app,'matlab.ui.Figure')
+        % Not sure why we are ever here.  Maybe the user had a pre-defined
+        % window?
+        appAxis = [];
+    elseif isequal(app,0)
+        % User sent in a 0. Just return the values and do not display.
+        % Equivalent to displayFlag = false;
+        appAxis = [];
+    end
 end
 
 %%  Get the data
@@ -81,29 +90,36 @@ end
 
 % The displayFlag is always set to negative.  So imageSPD does not show the
 % image.  Rather, we show it upon return here.
-rgb = imageSPD(photons,wList,gam,sz(1),sz(2),-1*abs(displayFlag),[],[],sceneW);
+rgb = imageSPD(photons,wList,gam,sz(1),sz(2),-1*abs(renderFlag),[],[],app);
 
 %% We could add back ROIs/overlays here, if desired.
 
-% If value is positive, display the rendered RGB. If negative, we just
-% return the RGB values.
-if displayFlag >= 0
-    if isempty(sceneAxis)
-        % Should be called imageAxis.  Not sure it is needed, really.
-        ieNewGraphWin;
+if renderFlag > 0
+    % Either show it in the app window or in a graph window
+    if isa(appAxis,'matlab.ui.control.UIAxes')
+        % This is the axis in the window
+        image(appAxis,rgb); axis image; axis off;
+        
+    elseif isa(app,'matlab.ui.Figure')
+        % This is a Matlab figure
+        figure(app);
+        if ~exist('xcoords', 'var') || ~exist('ycoords', 'var') || isempty(xcoords) || isempty(ycoords)
+            imagescRGB(rgb); axis image; axis off
+        else
+            % User specified a grid overlay
+            rgb = rgb/max(rgb(:));
+            rgb = ieClip(rgb,0,[]);
+            imagesc(xcoords,ycoords,rgb);
+            axis image;   grid on;
+            set(gca,'xcolor',[.5 .5 .5]);
+            set(gca,'ycolor',[.5 .5 .5]);
+        end
+        
+    elseif isequal(app,0)
+        % Just return;
+        return;
     end
     
-    if ~exist('xcoords', 'var') || ~exist('ycoords', 'var') || isempty(xcoords) || isempty(ycoords)
-        imagescRGB(rgb); axis image; axis off
-    else
-        % User specified a grid overlay
-        rgb = rgb/max(rgb(:));
-        rgb = ieClip(rgb,0,[]);
-        imagesc(xcoords,ycoords,rgb);
-        axis image; grid on;
-        set(gca,'xcolor',[.5 .5 .5]);
-        set(gca,'ycolor',[.5 .5 .5]);
-    end   
 end
 
 end
