@@ -785,19 +785,6 @@ switch parm
         val(:,:,1) = X*deltaSpace;
         val(:,:,2) = Y*deltaSpace;
         
-        % Code prior to October 2015
-        %         if length(varargin) >= 1, units = varargin{1};
-        %         else units = 'mm'; end
-        %
-        %         sz = opticsGet(optics,'otf size');
-        %         if isempty(sz), error('No optical image data'); end
-        %
-        %         x = (0:(sz(1)-1))*opticsGet(optics,'psfspacing',units);
-        %         x = x - mean(x);
-        %         [X,Y] = meshgrid(x,x);
-        %         val{1} = X; val{2} = Y;
-        
-        
         %----------- Relative illumination (off-axis) specifications
     case {'offaxis','offaxismethod','relativeilluminationtype'}
         % This is the method used to compute relative illumination. It can

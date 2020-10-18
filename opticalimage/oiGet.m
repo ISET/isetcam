@@ -138,7 +138,7 @@ function val = oiGet(oi,parm,varargin)
 %       {'rt psf size'}        - row,col dimensions of the psf
 %
 % Misc
-%      {'display gamma'}     - Gamma setting in the display window
+%      {'gamma'}             - Gamma setting in the oiWindow
 %      {'rgb image'}         - RGB rendering of OI data
 %      {'centroid'}          - Centroid of a point image
 %      {'corner points'}     - Chart corner points
@@ -752,8 +752,8 @@ switch oType
                 val = oiShowImage(oi,-1*abs(renderFlag),gam);
                 
             case {'gamma'}
-                % oiGet(oi,'gamma')
-                % There can be a conflict with the display window in diplay
+                % oiGet(oi,'display gamma')
+                % There can be a conflict with the display window in display
                 % gamma call
                 %
                 % See if there is a display window

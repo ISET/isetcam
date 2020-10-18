@@ -25,10 +25,10 @@ format = p.Results.format;
 
 % Decode file
 if ismac
-    error("No exiftool setup for Mac yet");
+    error('Download exiftool for Mac and install from this site https://exiftool.org/');
     %fp = fullfile(isetRootPath,'utility', 'external', 'exiftool', 'exiftool_mac');
 elseif isunix
-    fp = fullfile(isetRootPath,'utility', 'external', 'exiftool', 'exiftool');
+    fp = fullfile(isetRootPath,'utility', 'external', 'exiftool', 'exiftool_linux');
 elseif ispc
     fp = fullfile(isetRootPath, 'utility', 'external', 'exiftool', 'exiftool.exe');
 else
