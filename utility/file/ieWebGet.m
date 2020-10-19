@@ -169,15 +169,7 @@ switch resourceType
                 end
                 resourceURL = strcat(baseURL, remoteFileName);
                 switch op
-                    case 'read'
-                        % in this case we are actually returning a Matlab
-                        % array with scene data!  (BW):  Not sure this
-                        % works.  Maybe we fetch and then load.
-                        %{
-                        localFile = webread(resourceURL, options);
-                        %}
-                        
-                    case 'fetch'
+                    case {'fetch','read'}
                         if exist('isetRootPath','file') && isfolder(isetRootPath)
                             downloadRoot = isetRootPath;
                             downloadDir = fullfile(downloadRoot, 'local', 'scenes', resourceType);
@@ -199,6 +191,16 @@ switch resourceType
                         catch
                             warning("Unable to retrieve %s", resourceURL);
                         end
+                        if isequal(op, 'read')
+                        % in this case we are actually returning a Matlab
+                        % array with scene data!
+                            stashFile = localFile;
+                            localFile = load(stashFile);
+                            if removeTempFiles
+                                delete(stashFile);
+                            end
+                        end
+                        
                 end
             case 'list'
                 % simply read the pre-loaded list of resources
@@ -224,6 +226,8 @@ end
 if verbose
     if ischar(localFile)
         disp(strcat("Retrieved: ", resourceName, " to: ", localFile));
+    elseif isstruct(localFile)
+        disp(strcat("Retrieved: ", resourceName, " and returned as a struct"));
     elseif exist('localFile','file') && ~isempty(localFile)
         disp(strcat("Retrieved: ", resourceName, " and returned it as an array"));
     elseif ~isequal(op,'list')
