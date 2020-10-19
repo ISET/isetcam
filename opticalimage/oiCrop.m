@@ -4,6 +4,12 @@ function [oi,rect] = oiCrop(oi,rect)
 % Synopsis
 %  [oi,rect] = oiCrop(oi,[rect])
 %
+% Description
+%   The image axis is (1,1) in the upper left.  Increasing y-values run
+%   down the image.  Increasing x-values run to the right.
+%   The rect parameters are (x,y,width,height).
+%   (x,y) is the upper left corner of the rectangular region
+%
 % Inputs
 %    oi:  An optical image structure
 %  rect:  Typically a vector (rect) of [row col height width]

@@ -1,8 +1,8 @@
-function [cornerPoints, obj] = chartCornerpoints(obj,wholeChart)
+function [cornerPoints, obj, rect] = chartCornerpoints(obj,wholeChart)
 % Return the outer corner points of a chart from sensor or ip window
 %
 % Syntax:
-%    [cornerPoints, obj] = chartCornerpoints(obj,wholeChart)
+%    [cornerPoints, obj, rect] = chartCornerpoints(obj,wholeChart)
 %
 % Description:
 %  The user selects the four corner points we need to define the positions
@@ -22,6 +22,8 @@ function [cornerPoints, obj] = chartCornerpoints(obj,wholeChart)
 %
 % Outputs:
 %   cornerPoints:  Matrix (4x2) in (col,row), i.e. (x,y) format.
+%   obj:           The cornerpoints are attached to the object.
+%   rect:          Rect to use for cropping
 %
 % Copyright Imageval LLC, 2014
 %
@@ -111,6 +113,18 @@ switch lower(obj.type)
         
     otherwise
         error('Unknown object type %s\n',obj.type);
+end
+
+if nargout == 3
+    % Corner Points are lower left, lower right, upper right, upper left
+    % Upper left is (x,y)
+    % How far to the right is width 
+    % How far down is height
+    x = cornerPoints(4,1);
+    y = cornerPoints(4,2);
+    width = cornerPoints(3,1) - cornerPoints(4,1);
+    height = cornerPoints(1,2) - cornerPoints(4,2);
+    rect = [x, y, width, height];
 end
 
 end

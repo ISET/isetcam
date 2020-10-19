@@ -366,7 +366,12 @@ switch oType
                 if checkfields(ip,'data','result'), val = ip.data.result; end
             case {'quantizedresult'}
                 val = ipGet(ip,'result');
-                val = val*ipGet(ip,'max digital value');
+                %
+                % If the results are already quantized, why would we
+                % multiply again by the max digital value?  Only if the
+                % result field was scaled to 0,1.  BUt it's not. So, I
+                % removed this (BW).
+                % val = val*ipGet(ip,'max digital value');
                 
             case {'dataxyz'}
                 % ipGet(ip,'display data xyz');
