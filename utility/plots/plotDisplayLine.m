@@ -45,7 +45,7 @@ if ieNotDefined('xy')
         otherwise
             error('Unknown orientation')
     end
-    pointLoc = vcPointSelect(ip,1,message);
+    pointLoc = iePointSelect(ip,message,1);
     xy = round(pointLoc);
 end
 

@@ -64,7 +64,7 @@ ip = ipSet(ip,'input',double(sensorGet(sensor,'dv or volts')));
 
 %  The max is either the max digital value or the voltage swing, depending
 %  on whether we have computed DVs or Volts.  But this value is not
-%  terribly important because the we render into an RGB display in the unit
+%  terribly important because we render into an RGB display in the unit
 %  cube.
 ip = ipSet(ip,'datamax',sensorGet(sensor(1),'max'));
 

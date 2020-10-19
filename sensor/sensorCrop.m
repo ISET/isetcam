@@ -4,6 +4,12 @@ function sensor = sensorCrop(sensor,rect)
 % Synopsis
 %   sensor = sensorCrop(sensor,rect)
 %
+% Description
+%   The image axis is (1,1) in the upper left.  Increasing y-values run
+%   down the image.  Increasing x-values run to the right.
+%   The rect parameters are (x,y,width,height).
+%   (x,y) is the upper left corner of the rectangular region
+%
 % Inputs
 %   sensor:  ISETCam sensor struct
 %   rect:    [x,y,width,height]
@@ -25,7 +31,7 @@ sensor = sensorCreate;
 sensor = sensorCompute(sensor,oi);
 sensorWindow(sensor);
 
-rect = [10 12 13 21];
+rect = [25 25 40 40];
 test = sensorCrop(sensor,rect);
 sensorWindow(test);
 %}
