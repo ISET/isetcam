@@ -406,6 +406,14 @@ switch lower(param)
         else, error('Bad column offset data');
         end        
         % Noise management
+    case {'blacklevel', 'zerolevel'}
+        % In some cases we have a black level handed to us by the header of
+        % a digital file.  We store the black level directly like this.
+        % This is typically a digital value > 32.
+        if val < 32
+            warning('Digital black level %d is surprisingly low.',val);
+        end
+        sensor.blackLevel = val;
     case {'noiseflag'}
         % NOISE FLAG
         %  The noise flag is an important way to control the details of the

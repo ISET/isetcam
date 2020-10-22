@@ -789,19 +789,29 @@ switch oType
                 if checkfields(sensor,'colGain'),val = sensor.colGain; end
                 
             case {'blacklevel', 'zerolevel'}
-                % Calculate the zero level for the user, who sent in an empty
-                % value.
-                oiBlack = oiCreate('black');
-                sensor2 = sensorSet(sensor,'noiseflag',0); % Little noise
-                sensor2 = sensorCompute(sensor2,oiBlack);
-                switch sensorGet(sensor,'quantization method')
-                    case 'analog'
-                        val = sensorGet(sensor2,'volts');
-                    otherwise
-                        val = sensorGet(sensor2,'dv');
+                % Calculate the zero level for the user, who sent in an
+                % empty value.  This level depends on the analog offset and
+                % gain.  We return either the voltage or if the
+                % quantization method is used we return the digital value.
+                %
+                % In some cases we have a digital zero level in the file
+                % (e.g., DNG data from the pixel4a).  In that case, we
+                % should be able to simply set the value and read it.
+                if checkfields(sensor,'blackLevel')
+                    val = sensor.blackLevel;
+                else
+                    oiBlack = oiCreate('black');
+                    sensor2 = sensorSet(sensor,'noiseflag',0); % Little noise
+                    sensor2 = sensorCompute(sensor2,oiBlack);
+                    switch sensorGet(sensor,'quantization method')
+                        case 'analog'
+                            val = sensorGet(sensor2,'volts');
+                        otherwise
+                            val = sensorGet(sensor2,'dv');
+                    end
+                    val = mean(val(:));
                 end
-                val = mean(val(:));
-
+                
                 % Noise management
             case {'noiseflag','shotnoiseflag'}
                 % 0 means no noise
