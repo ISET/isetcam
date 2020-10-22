@@ -1,33 +1,54 @@
 function ip = ipCompute(ip,sensor)
 % Image processing pipeline from image sensor to a display
 %
+% Synopsis
 %    ip = ipCompute(ip,sensor);
 %
-% The image pipeline (ip) converts  sensor data (sensor) into an image. 
+% Brief description
+%   The image processing pipeline (ip) converts  sensor data (sensor) into
+%   a display image.
 %
-% The ip slot 
-%  'input'  contains the voltage (or dv) data from the sensor object.
-%  'result' contains the computed image. 
+% Inputs:
+%   ip:      The image processor struct
+%   sensor:  The sensor struct
 %
-% By default, this routine applies demosaic, sensor color conversion to an
-% internal representation, and illuminant correction towards a specific
-% display (in that order).
+% Description
+%  
+%  The sensor data (either the voltage or digital values) are processed by
+%  a series of stages in ipCompute. A sequence of images are stored within
+%  the ip.data slot.
+% 
+%  input:  contains the voltage (or digital values, dv) from the sensor
+%          object.   
+%  sensorspace:  The demosaicked data from input
+%  result:       The processed data in lrgb format (between 0 and 1), ready
+%                for conversion to srgb as part of the display
+%  
+%  By default the ip applies demosaic, sensor color conversion to an
+%  internal representation, and illuminant correction towards a specific
+%  display (in that order).  Which algorithms are applied is controlled by
+%  setting the parameters of the ip (i.e., ipSet).  The parameter control
+%  features like the demosaicking method, the sensor conversion approach,
+%  and the illuminant correction.
 %
-% If the sensor is monochrome, the pipeline copies the sensor data to the
-% display output as a monochrome image.
+%  If the sensor is monochrome, the pipeline copies the sensor data to the
+%  display output as a monochrome image.
 %
-% This method runs on the assumption that the internal color space is
-% three-dimensional.
+%  This method runs on the assumption that the internal color space is
+%  three-dimensional.
 %
-% We are writing other rendering pipelines based on different architectures
-% in the future.
+% About L3
 %
-% If the ip name begins with 'L3' then the data are rendered using the L3
-% render method. The option 'L3global' uses the global parameters of the L3
-% structure.  In this case, we expect an L3 structure that was learned is
-% attached to the ip.
+%   We are writing other rendering pipelines based on different
+%   architectures in the future.  One special one is L3.
 %
-% Copyright ImagEval Consultants, LLC, 2003.
+%   If the ip.name begins with 'L3' then the data are rendered using the L3
+%   render method. The option 'L3global' uses the global parameters of the
+%   L3 structure.  In this case, we expect an L3 structure that was learned
+%   is attached to the ip. (More documentation needed, sorry! BW)
+%
+% See also
+%   ipWindow, ipPlot
 
 
 %% Check arguments

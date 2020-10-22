@@ -90,7 +90,21 @@ switch qm
 
     case 'linear'
         % Digital values
-        % No need for scaling here.
+        % But the 'result' field is supposed to be sRGB and thus the
+        % entries must be between 0 and 1.  So, we clip at 0.
+        img = ieClip(img,0,[]);
+        
+        % The biggest value is less than 1.  What should it be?  Maybe we
+        % set it a little below 1.  If you find yourself back here with a
+        % better idea, do it.  For example, if we have a maximum digial of
+        % 8096, and the peak value is 7096, we would set it to a max of
+        % 7096/8096.
+        %
+        % That would require knowing the proper max digital value.
+        %
+        img = img/max(img(:));
+        
+        % How do we choose the biggest value?  
         %
         % ieNewGraphWin; imagescRGB(img);
         % Digital values, so only clip at the bottom.

@@ -1,8 +1,11 @@
-function [rects,mLocs,pSize] = chartRectangles(cp,nRows,nCols,sFactor)
+function [rects,mLocs,pSize] = chartRectangles(cp,nRows,nCols,sFactor,blackEdge)
 % Calculate patch midpoint locations and patch size
 %
 % Syntax:
-%   [rects,mLocs,pSize] = chartRectangles(cp,nRows,nCols,sFactor)
+%   [rects,mLocs,pSize] = chartRectangles(cp,nRows,nCols,sFactor,blackEdge)
+%
+% Brief
+%   Help the user select rectangles for a chart, often an MCC.
 %
 % Inputs:
 %   cp:       Cornerpoints of the chart (x,y) format (chartCornerpoints),
@@ -28,6 +31,17 @@ function [rects,mLocs,pSize] = chartRectangles(cp,nRows,nCols,sFactor)
 %   The four cornerpoints that are selected start with the lower left of
 %   the chart and then the lower right, upper right, and upper left.  This
 %   is determined by the function chartCornerpoints
+%
+%  ** MCC considerations **
+%   There are some issues when the MCC chart has black borders around the
+%   patches.  In that case the geometry selection needs some adjustment. We
+%   are still working on getting that better.  
+%
+%   To manage that case we now have a blackEdge flag you can set for the
+%   borders. The patch is treated as the color region plus the added black
+%   edge on the right and top.  The center of the rectangle is pushed down
+%   and to left and the size is shrunk to account for the fact that the
+%   black borders are not part of the data we want.
 %
 % ieExamplesPrint('chartRectangles')
 % 
@@ -62,13 +76,15 @@ function [rects,mLocs,pSize] = chartRectangles(cp,nRows,nCols,sFactor)
 
 %% Set up parameters
 
-if ieNotDefined('cp'), error('Corner points required'); end
+if ieNotDefined('cp'),    error('Corner points required'); end
 if ieNotDefined('nRows'), error('Number of row patches required'); end
 if ieNotDefined('nCols'), error('Number of col patches required'); end
-if ieNotDefined('sFactor'), sFactor = 0.6; end
+if ieNotDefined('sFactor'),   sFactor = 0.5; end
+if ieNotDefined('blackEdge'), blackEdge = false; end
 
 %{
-% Should we be checking something like this?
+% Should we be checking the selection something like this?  Should we draw
+% a rect using the 4 points?
 %
 % Verify that the slopes on the two edges are similar
 dy = cp(2,2) - cp(1,2); dx = cp(2,1) - cp(1,1);
@@ -137,15 +153,15 @@ end
 %  size.  So we subtract 10% of the pSize from the x values and add 20% of
 %  the pSize to the y values.
 %
-%{
-blackEdge = false;
 if blackEdge
- delta = round(pSize/10);
- for ii = 1:(nRows*nCols)
-     mLocs(1,ii) = mLocs(1,ii) + delta(1);
-     mLocs(2,ii) = mLocs(2,ii) - delta(2);
+    delta = round(pSize/10);
+    for ii = 1:(nRows*nCols)
+        mLocs(1,ii) = mLocs(1,ii) + delta(1);
+        mLocs(2,ii) = mLocs(2,ii) - delta(2);
+    end
+    sFactor = sFactor*0.9;
 end
-%}
+
 
 %% Create the rectangles
 

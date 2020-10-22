@@ -42,6 +42,9 @@ if ieNotDefined('sensor'), error('sensor required'); end
 % For now. Though we could allow this to be interactive at some point.
 if ieNotDefined('rect'), error('crop rect required'); end
 
+% Modern Matlab returns a Rectangle object, not just a rect vector. We only
+% want the Position of the rectangle for this crop.
+if isa(rect,'images.roi.Rectangle'), rect = rect.Position; end
 %%
 
 % Get the data
