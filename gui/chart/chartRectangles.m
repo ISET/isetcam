@@ -124,6 +124,23 @@ for cc = 1:nCols
     end
 end
 
+%% Adjust if there are black borders around the patches
+%
+%  If there is a black border, the center of the color part is down and to
+%  the left compared to what we selected.  About 20% of the total patch
+%  size.  So we subtract 10% of the pSize from the x values and add 20% of
+%  the pSize to the y values.
+%
+%{
+blackEdge = false;
+if blackEdge
+ delta = round(pSize/10);
+ for ii = 1:(nRows*nCols)
+     mLocs(1,ii) = mLocs(1,ii) + delta(1);
+     mLocs(2,ii) = mLocs(2,ii) - delta(2);
+end
+%}
+
 %% Create the rectangles
 
 % You can use ieRect2Locs to return the locations within the rects
