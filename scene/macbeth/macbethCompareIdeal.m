@@ -50,6 +50,7 @@ if ieNotDefined('illType'), illType = 'd65'; end
 if ismatrix(mRGB)
     mRGB = XW2RGBFormat(mRGB,4,6);
 end
+
 %{
 mRGB = imageIncreaseImageRGBSize(mRGB,pSize);
 ieNewGraphWin; imagescRGB(mRGB);
@@ -64,8 +65,11 @@ ideal     = macbethIdealColor(illType,'lrgb');
 % We reshape into a mini-image 
 idealLRGB = XW2RGBFormat(ideal,4,6);
 
-% Now expand the image to a bigger size so we can insert the data we are
-% comparing.
+%% Eliminate absolute level differences.  Scale so max in data is 1
+mRGB = ieScale(mRGB,1);
+idealLRGB = ieScale(idealLRGB,1);
+
+%% Expand the image to a bigger size so we can insert the data we are comparing.
 fullIdealRGB = imageIncreaseImageRGBSize(idealLRGB,pSize);
 % ieNewGraphWin; imagescRGB(fullIdealRGB);
 

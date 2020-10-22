@@ -65,8 +65,11 @@ function [rects,mLocs,pSize] = chartRectangles(cp,nRows,nCols,sFactor)
 if ieNotDefined('cp'), error('Corner points required'); end
 if ieNotDefined('nRows'), error('Number of row patches required'); end
 if ieNotDefined('nCols'), error('Number of col patches required'); end
-if ieNotDefined('sFactor'), sFactor = 0.8; end
+if ieNotDefined('sFactor'), sFactor = 0.6; end
 
+%{
+% Should we be checking something like this?
+%
 % Verify that the slopes on the two edges are similar
 dy = cp(2,2) - cp(1,2); dx = cp(2,1) - cp(1,1);
 slopeBottom = dy/dx;
@@ -74,15 +77,18 @@ dy = cp(3,2) - cp(4,2); dx = cp(3,1) - cp(4,1);
 slopeTop = dy/dx;
 
 % Not sure what a reasonable match might be.
-if abs(slopeTop - slopeBottom) > 0.5, warning('Top bottom edges are not parallel'); end
+if abs(slopeTop - slopeBottom) > 0.5, warning('Top bottom edge slopes differ.'); end
 
-dy = cp(1,2) - cp(4,2); dx = cp(4,1) - cp(1,1);
-slopeLeft = dy/dx;
-dy = cp(2,2) - cp(3,2); dx = cp(3,1) - cp(2,1);
-slopeRight = dy/dx;
+leftdy  = cp(1,2) - cp(4,2); leftdx  = cp(1,1) - cp(4,1);
+rightdy = cp(2,2) - cp(3,2); rightdx = cp(2,1) - cp(3,1);
 
 % Not sure what a reasonable match might be.
-if abs(slopeLeft - slopeRight) > 0.5, warning('Left right edges may not be parallel'); end
+if (leftdy - rightdy)/rightdy > 0.1
+    warning('Left and right edges are very different lengths');
+elseif  (leftdx - rightdx)/rightdx > 0.2
+    warning('Left and right edges may not be very parallel.');
+end
+%}
 
 %% We use the top line and the left line for definition
 
