@@ -1,7 +1,7 @@
 function nRemaining = ieDeleteObject(objType,val)
 % Delete the specified object type of at position val
 %
-%    nRemaining = ieDeleteObject(object,[val])
+%    nRemaining = ieDeleteObject(objType,[val])
 %
 % The ISET objects that can be deleted by this call are: 
 %   SCENE, OPTICALIMAGE (OI), VCIMAGE (IMGPROC), ISA (SENSOR).
