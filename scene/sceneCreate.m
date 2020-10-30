@@ -54,6 +54,13 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %         wave = [380:5:720];
 %         scene = sceneCreate('macbeth Tungsten',patchSizePixels,wave);
 %
+%   If you would like the color checker to have black borders around the
+%   patches, then use
+%
+%        patchSizePixels = 16; wave = [380:5:720]; blackBorder = true;
+%        scene = sceneCreate('macbeth d65',patchSizePixels,wave,...
+%                  'macbethChart.mat',blackBorder);
+%
 %   For a bar width of 50 pixels, 5 bars, at L* levels (1:nBars)-1 * 10, use
 %         scene = sceneCreate('lstar',50,5,10);
 % 
@@ -185,10 +192,12 @@ scene.metadata = [];   % Metadata for machine learning apps
 if strncmp(sceneName,'macbeth',5) || ...
         strcmp(sceneName,'default') || ...
     strcmp(sceneName,'empty')
-    patchSize = 16; wave = 400:10:700; surfaceFile = 'macbethChart.mat';
+    patchSize = 16; wave = 400:10:700; surfaceFile = 'macbethChart.mat'; 
+    blackBorder = false;
     if ~isempty(varargin), patchSize = varargin{1}; end  % pixels per patch
     if length(varargin) > 1, wave = varargin{2}; end     % wave
     if length(varargin) > 2, surfaceFile = varargin{3}; end % Reflectances
+    if length(varargin) > 3, blackBorder = varargin{4}; end % 
 end
 
 %%
@@ -210,22 +219,22 @@ switch sceneName
         scene = sceneClearData(scene);
     case {'macbeth','macbethd65'}
         % sceneCreate('macbethD65',patchSize,wave);
-        scene = sceneDefault(scene,'d65',patchSize,wave);
+        scene = sceneDefault(scene,'d65',patchSize,wave,surfaceFile,blackBorder);
     case {'macbethd50'}
-        scene = sceneDefault(scene,'d50',patchSize,wave);
+        scene = sceneDefault(scene,'d50',patchSize,wave,surfaceFile,blackBorder);
     case {'macbethc','macbethillc'}
-        scene = sceneDefault(scene,'c',patchSize,wave);
+        scene = sceneDefault(scene,'c',patchSize,wave,surfaceFile,blackBorder);
     case {'macbethfluorescent','macbethfluor'}
-        scene = sceneDefault(scene,'fluorescent',patchSize,wave);
+        scene = sceneDefault(scene,'fluorescent',patchSize,wave,surfaceFile,blackBorder);
     case {'macbethtungsten','macbethtung'}
-        scene = sceneDefault(scene,'tungsten',patchSize,wave);
+        scene = sceneDefault(scene,'tungsten',patchSize,wave,surfaceFile,blackBorder);
     case {'macbethee_ir','macbethequalenergyinfrared'}
         % Equal energy illumination into the IR
-        scene = sceneDefault(scene,'ir',patchSize,wave);
+        scene = sceneDefault(scene,'ir',patchSize,wave,surfaceFile,blackBorder);
     case {'macbethcustomreflectance'}
         % s = sceneCreate('macbeth custom reflectance',patchSize,wave,surfaceFile)
         % s = sceneCreate('macbeth custom reflectance',32,400:10:700,'macbethChart2.mat');
-        scene = sceneDefault(scene,'d65',patchSize,wave,surfaceFile);
+        scene = sceneDefault(scene,'d65',patchSize,wave,surfaceFile,blackBorder);
 
     case {'reflectancechart'}
         % sceneCreate('reflectance chart',pSize,sSamples,sFiles,wave,grayFlag,sampling);
@@ -644,17 +653,17 @@ return
 
 
 %----------------------------------
-function scene = sceneDefault(scene,illuminantType,patchSize,wave,surfaceFile)
+function scene = sceneDefault(scene,illuminantType,patchSize,wave,surfaceFile,blackBorder)
 %% Default scene is a Macbeth chart with D65 illuminant, patchSize 16
 %
-% sceneDefault(scene,'d65',patchSize,wave)
+% sceneDefault(scene,'d65',patchSize,wave,surfaceFile,blackBorder)
 %
 
 % These are the default surface reflectance values
 if ieNotDefined('surfaceFile')
     surfaceFile = which('macbethChart.mat');
-    % surfaceFile = fullfile(isetRootPath,'data','surfaces','macbethChart.mat');
 end
+if ieNotDefined('blackBorder'), blackBorder = false; end
 
 % Create the scene variable and possibly set wavelength
 scene = initDefaultSpectrum(scene,'hyperspectral'); 
@@ -693,7 +702,7 @@ scene = sceneSet(scene,'magnification',1.0);
 
 % The default patch size is 16x16.
 spectrum = sceneGet(scene,'spectrum');
-macbethChartObject = macbethChartCreate(patchSize,(1:24),spectrum,surfaceFile);
+macbethChartObject = macbethChartCreate(patchSize,(1:24),spectrum,surfaceFile,blackBorder);
 
 scene = sceneCreateMacbeth(macbethChartObject,lightSource,scene);
 

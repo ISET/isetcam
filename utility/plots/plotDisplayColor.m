@@ -1,13 +1,13 @@
 function [uData, figHdl] = plotDisplayColor(ip,dataType)
 % Plots for ip (image processor) window color analysis
 %
+% NOTE:  Use ipPlot rather than calling this routine directly.  It will be 
+%        renamed to displayPlotColor() some day.
+%
 % Syntax:
 %  [udata, figHdl] = plotDisplayColor(ip,dataType)
 %
 % Description:
-%   Use ipPlot rather than calling this routine directly.  It will be
-%   renamed to displayPlotColor() some day.
-%
 %  The user selects a region of a display image.  This routine plots
 %  the distribution of color values of various types.
 %

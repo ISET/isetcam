@@ -1,8 +1,9 @@
-function macbethChartObject = macbethChartCreate(patchSize,patchList,spectrum,surfaceFile)
+function macbethChartObject = macbethChartCreate(patchSize,patchList,spectrum,surfaceFile,blackBorder)
 % Initiate a scene structure of the Gretag/Macbeth Color Chart reflectances
 %
 % macbethChartObject = ...
-%  macbethChartCreate([patchSize=12],[patchList=1:24],[spectrum={400:10:700}],[surfaceFile]);
+%  macbethChartCreate([patchSize=16],[patchList=1:24],...
+%        [spectrum={400:10:700}],[surfaceFile],[blackBorder = false]);
 %
 % Description:
 %  Create a structure that contains the surface reflectances of a Macbeth
@@ -29,6 +30,8 @@ function macbethChartObject = macbethChartCreate(patchSize,patchList,spectrum,su
 %  spectrum  - spectrum.wave contains the wavelength samples (400:10:700);
 %  surfaceFile - A spectral file that is read by ieReadSpectra.  It
 %                contains the 24 surface reflectance curves.
+%  blackBorder - Sometimes the MCC has a black border around the patches
+%                If this is set to true, we add 20% border
 %
 % Output:
 %   macbethChartObject - A struct with information needed to create the
@@ -80,6 +83,11 @@ function macbethChartObject = macbethChartCreate(patchSize,patchList,spectrum,su
   macbethChartObject = macbethChartCreate(patchSize,patchList,spectrum,surfaceFile);
   spd = macbethChartObject.data; imageSPD(spd,spectrum.wave);
 %}
+%{
+  % With a black border.
+  macbethChartObject = macbethChartCreate([],[],[],[],true);
+  imageSPD(macbethChartObject.data,macbethChartObject.spectrum.wave);
+%}
 
 %% Initialize object
 % The object is basically a scene, though it is missing some fields.
@@ -98,6 +106,8 @@ if ieNotDefined('surfaceFile')
     surfaceFile = which('macbethChart.mat');
     % surfaceFile = fullfile(isetRootPath,'data','surfaces','macbethChart.mat');
 end
+
+if ieNotDefined('blackBorder'), blackBorder = false; end
 
 %% Surface reflectance spectrum
 if ieNotDefined('spectrum') 
@@ -127,5 +137,22 @@ end
 
 % Make it the right patch size
 macbethChartObject.data = imageIncreaseImageRGBSize(macbethChart,patchSize);
+
+if blackBorder
+    % User set a black border.  We make it 20% of the patchSize
+    data = macbethChartObject.data;
+    nPixel = floor(0.2*patchSize);  % Number of pixels for black stripe
+    for cc = 1:6
+        data(:,floor(cc*patchSize - nPixel):(cc*patchSize),:) = 0;
+    end
+    for rr = 1:4
+        data(floor(rr*patchSize - nPixel):(rr*patchSize),:,:) = 0;
+    end
+
+    % Put a black column on the left and a black row on the top
+    data = padarray(data,[nPixel nPixel 0],0,'pre');
+    
+    macbethChartObject.data = data;
+end
 
 end
