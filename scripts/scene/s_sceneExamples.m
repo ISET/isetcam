@@ -75,7 +75,7 @@ sceneWindow(scene); pause(0.1);
 %% Macbeth Color Checker
 patchSizePixels = 16;
 wave = (380:5:720);
-scene = sceneCreate('macbeth tungsten',patchSizePixels,wave,'bit depth',64);
+scene = sceneCreate('macbeth tungsten',patchSizePixels,wave);
 sceneWindow(scene); pause(0.1);
 
 %% Natural-100 Reflectance Chart
@@ -85,7 +85,7 @@ sceneWindow(scene); pause(0.1);
 %% Macbeth Color Checker
 patchSizePixels = 16;
 wave = (380:5:720);
-scene = sceneCreate('macbeth tungsten',patchSizePixels,wave,'bit depth',64);
+scene = sceneCreate('macbeth tungsten',patchSizePixels,wave);
 sceneWindow(scene); pause(0.1);
 
 %% Uniform Field

@@ -9,7 +9,7 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 % scene. Generally, we model planar objects, such as a screen display (but
 % see below).
 %
-% The scene is located at some distance from the center of the optics, has
+% The scene is located at some distance from the center of the optics, hasG
 % a field of view, and a spectral radiance distribution.  There are
 % routines to handle depth as well that are partly implemented and under
 % development.  We plan to integrate this aspect of the modeling with PBRT.
