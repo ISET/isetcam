@@ -1,19 +1,25 @@
-function [sensorM, info] = sensorDNGRead(fname)
+function [sensorM, info] = sensorDNGRead(fname,varargin)
 % Read a DNG file with the assumption that the sensor is a Sony IMX363
 %
 % Synopsis
-%   sensorM = sensorDNGRead(fname)
+%   sensorM = sensorDNGRead(fname,varargin)
 %
 % Brief
 %   Adobe digital negative files (DNG) are close to the raw sensor values.
 %   This function reads a DNG file and its header, assigning the image
 %   values and other properties to an ISETCam sensor.
 %
-%   This is a scratch file.  We will add the opportunity to set more
-%   parameters in the calling arguments over time.
+%   This function reads the orientation of the camera from the header file
+%   and correctly interprets the CFA pattern.
+%
+%   This is an initial draft.  We will more parameters in the calling
+%   arguments over time.
 %
 % Inputs
 %  fname:  File name of the DNG file
+%
+% Optional key/val
+%  full info:  Return the full header info, not the simple form
 %
 % Outputs
 %  sensorM:  An ISETCam sensor containing the DNG data in the digital
@@ -25,26 +31,39 @@ function [sensorM, info] = sensorDNGRead(fname)
 %  sensorCreate
 %
 
-% Metadata
-if ~exist(fname,'file')
-    error('No file found %s\n',fname);
+% Examples:
+%{
+   fname = 'MCC-centered.dng';
+   [sensor, info] = sensorDNGRead(fname);
+   rect = [774  1371  1615  1099];
+   sensor = sensorCrop(sensor,rect);
+   sensorWindow(sensor);
+%}
+
+%% Parse
+varargin = ieParamFormat(varargin);
+p = inputParser;
+
+vFunc = @(x)(exist(x,'file'));
+p.addRequired('fname',vFunc);
+p.addParameter('fullinfo',false);
+
+p.parse(fname,varargin{:});
+fullInfo = p.Results.fullinfo;
+
+%% Metadata
+if fullInfo
+    % All the header information
+    [img, info] = ieDNGRead(fname);
 else
-    img          = dcrawRead(fname);
-    info         = imfinfo(fname);
-    if checkfields(info,'DigitalCamera')
-        % For camera app files
-        isoSpeed     = info.DigitalCamera.ISOSpeedRatings;
-        exposureTime = info.DigitalCamera.ExposureTime;
-        blackLevel   = info.SubIFDs{1}.BlackLevel;
-    else
-        % For openCam files
-        isoSpeed     = info.ISOSpeedRatings;
-        exposureTime = info.ExposureTime;
-        blackLevel   = info.BlackLevel;
-    end
+    % Just a simplified header
+    [img, info] = ieDNGRead(fname,'simple info',true);
 end
 
-blackLevel = ceil(blackLevel(1));
+%% Fix up the data
+
+blackLevel = ceil(info.blackLevel(1));
+exposureTime = info.exposureTime;  % I hope this is in seconds
 img = ieClip(img,blackLevel,[]);   % sets the lower to blacklevel, no upper bound
 
 % Stuff the measured raw data into a simulated sensor
@@ -55,11 +74,12 @@ sensorM = sensorSet(sensorM,'black level',blackLevel);
 sensorM = sensorSet(sensorM,'name',fname);
 sensorM = sensorSet(sensorM,'digital values',img);
 
-% If we know how to use the isoSpeed to set the sensor gain, we would
-%
+% If we know how to use the isoSpeed to set the sensor gain, we would.  I
+% think they should be used for analog gain and offset, along with black
+% level. 
 
 %% The Bayer pattern depends on the orientation.
-switch info.Orientation
+switch info.orientation
     case 1
         % Counter clockwise 90 deg
         % R G
