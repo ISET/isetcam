@@ -1,10 +1,9 @@
-%% PSF 2 Wernike Coefficients
+%% s_opticsPSF2Zcoeffs.m
+%  
+% PSF 2 Wernike Coefficients
 %
 % Search for the Wernike polynomial coefficients that produce a target PSF.
 % 
-% It is possible there is an analytical solution to this.  I was too lazy
-% to figure that out.  I will check with someone over coffee.
-%
 % Note this good Watson tutorial.  But it has no units, wavelength,
 % and such.
 %

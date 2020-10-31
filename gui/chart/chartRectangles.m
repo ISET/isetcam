@@ -122,16 +122,19 @@ pSize = round([chartY/nRows,chartX/nCols]);
 % Each point is some amount down the line at the left edge plus some amount
 % down the line across the top.
 
-mLocs = zeros(2,nRows*nCols);  % Columns with row/col ???
+mLocs = zeros(2,nRows*nCols);  % Columns with row first ordering
 ii = 1;
 for cc = 1:nCols
-    % The extra 1 helps center because there are nCols but we are squeezing
-    % them as if there are nCols + 1.
+    % There are nCols chips in the columns.  This parameter measures what
+    % fraction of the way we are for the left edge of each column.
     colFrac = (cc-1)/nCols;
     thisCol = [cp(4,1), cp(4,2)]*(1-colFrac) + [cp(3,1),cp(3,2)]*colFrac;  % (x,y)
+    
+    % The center of this column is halfway through the patch size
     thisCol(1) = thisCol(1) + pSize(1)/2;
     for rr = 1:nRows
-        % See comment above about need to add 1 to nRows
+        % As above, but for rows.  And note we loop faster on the rows than
+        % columns.
         rowFrac = (rr-1)/nRows;
         thisRow = [cp(4,1),cp(4,2)]*(1-rowFrac) + [cp(1,1),cp(1,2)]*rowFrac; % (x,y)
         thisRow(2) = thisRow(2) + pSize(2)/2;
@@ -139,7 +142,8 @@ for cc = 1:nCols
         thisPoint = round(thisCol + thisRow - cp(4,:));  % (x,y)
         % drawpoint(ax,'Position',thisPoint,'color','k');  
 
-        % Annoyingly, the mLocs are not in (x,y) format
+        % Annoyingly, the mLocs are not in (x,y) format, they are in row,
+        % col format.
         mLocs(:,ii) = fliplr(thisPoint);   % (y,x) format, row,col
 
         ii = ii+1;
@@ -154,14 +158,14 @@ end
 %  the pSize to the y values.
 %
 if blackEdge
-    delta = round(pSize/10);
+    disp('Black border')
+    delta = round(pSize/15);
     for ii = 1:(nRows*nCols)
-        mLocs(1,ii) = mLocs(1,ii) + delta(1);
-        mLocs(2,ii) = mLocs(2,ii) - delta(2);
+        mLocs(1,ii) = mLocs(1,ii) - delta(1);   % y dimension
+        mLocs(2,ii) = mLocs(2,ii) - delta(2);   % x dimension
     end
     sFactor = sFactor*0.9;
 end
-
 
 %% Create the rectangles
 
