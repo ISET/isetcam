@@ -159,7 +159,7 @@ end
 %
 if blackEdge
     disp('Black border')
-    delta = round(pSize/15);
+    delta = round(pSize/8);
     for ii = 1:(nRows*nCols)
         mLocs(1,ii) = mLocs(1,ii) - delta(1);   % y dimension
         mLocs(2,ii) = mLocs(2,ii) - delta(2);   % x dimension
