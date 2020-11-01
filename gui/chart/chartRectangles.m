@@ -128,7 +128,7 @@ for cc = 1:nCols
     % There are nCols chips in the columns.  This parameter measures what
     % fraction of the way we are for the left edge of each column.
     colFrac = (cc-1)/nCols;
-    thisCol = [cp(4,1), cp(4,2)]*(1-colFrac) + [cp(3,1),cp(3,2)]*colFrac;  % (x,y)
+    thisCol = [cp(4,1), cp(4,2)]*(1-colFrac) + [cp(3,1),cp(3,2)]*colFrac + 0.5;  % (x,y)
     
     % The center of this column is halfway through the patch size
     thisCol(1) = thisCol(1) + pSize(1)/2;
@@ -136,7 +136,7 @@ for cc = 1:nCols
         % As above, but for rows.  And note we loop faster on the rows than
         % columns.
         rowFrac = (rr-1)/nRows;
-        thisRow = [cp(4,1),cp(4,2)]*(1-rowFrac) + [cp(1,1),cp(1,2)]*rowFrac; % (x,y)
+        thisRow = [cp(4,1),cp(4,2)]*(1-rowFrac) + [cp(1,1),cp(1,2)]*rowFrac + 0.5; % (x,y)
         thisRow(2) = thisRow(2) + pSize(2)/2;
         
         thisPoint = round(thisCol + thisRow - cp(4,:));  % (x,y)
