@@ -188,6 +188,7 @@ switch parm
     case {'pupildiameter','pupilsize'}
         % This value is currently mm.  We should change to meters and
         % account for that everywhere, sigh.
+        disp('Pupil diameter in mm.  This will change to meters some day');
         wvf.pupilDiameter = val;        
 
     case {'focallength','flength'}
