@@ -318,12 +318,14 @@ switch parm
         end
         
     case {'pupildiameter','pupilsize'}
-        %  wvfGet(wvf,'pupil diameter','mm')
+        % wvfGet(wvf,'pupil diameter','mm')
+        %
         % Pupil diameter
         %
         % Used when computing pupil function and PSF.
         % (For the moment, it is stored in mm.  But that should change
-        % shortly!)
+        % some day!).  We account for the mm storage if requested, but by
+        % default we return in millimeters.
         val = wvf.pupilDiameter;
         
         % Adjust units from millimeters to requested
