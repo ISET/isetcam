@@ -149,12 +149,16 @@ elseif isequal(oType,'wvf')
         oi.wvf = val;
         return;
     else
+        % We are adjusting the wavefront parameters
         if isempty(varargin), oi.wvf = wvfSet(oi.wvf,parm,val);
         elseif length(varargin) == 1
             oi.wvf = wvfSet(oi.wvf,parm,val,varargin{:});
         elseif length(varargin) == 2
             oi.wvf = wvfSet(oi.wvf,parm,val,varargin{1},varargin{2});
         end
+        % Should we always do this here before returning?
+         wvf = wvfComputePSF(oi.wvf);
+         oi = wvf2oi(wvf);
         return;
     end
 elseif isempty(parm)
