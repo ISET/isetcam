@@ -150,7 +150,7 @@ switch pType
     case {'electronsvline'}
         [g, uData]  = sensorPlotLine(sensor, 'v', 'electrons', 'space', roiLocs);
     case {'voltshline'}
-        sensorPlotLine(sensor, 'h', 'volts', 'space', roiLocs);
+        [g, uData]  = sensorPlotLine(sensor, 'h', 'volts', 'space', roiLocs);
         % roiLocs(2) = roiLocs(2)+1;
         % [g, uData]  = sensorPlotLine(sensor, 'h', 'volts', 'space', roiLocs);
     case {'voltsvline'}
