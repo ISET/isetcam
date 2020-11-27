@@ -38,6 +38,19 @@ function [outSensor, unitSigCurrent] = sensorCompute(sensor,oi,showBar)
 %     2      |   +         +            +         +        +      +
 %     3      |   +         0            0         0        0      +
 %
+    % noiseFlag = -2 - yes photon noise, no analog-clipping-quant
+    % noiseFlag = -1 - no noise,  no analog-clipping-quant
+    % noiseFlag =  0 - no noise, yes analog-clipping-quant
+    % noiseFlag =  1 - photon noise plus analog-clipping-quant
+    % noiseFlag =  2 - dark current + photon + read-reset + FPN + colFPN
+    %
+    % In noiseFlag 0,1,2, 
+    %  the analog gain/offset can be eliminated by setting gain to 1 and
+    %  offset to 0 
+    % 
+    %  Quantization can be turned off by setting the quantization method
+    %  to 'analog'
+    
 %  Several of the factors are effectively removed by setting the
 %  sensor parameters.  Specifically,
 %
@@ -176,7 +189,7 @@ for ss=1:length(sensorArray)   % Number of sensors
     sensor    = sensorVignetting(sensor);
     etendue   = sensorGet(sensor,'sensorEtendue');  % vcNewGraphWin; imagesc(etendue)
     voltImage = voltImage .* repmat(etendue,[1 1 sensorGet(sensor,'nExposures')]);
-    % vcNewGraphWin; imagesc(voltImage); colormap(gray)
+    % ieNewGraphWin; imagesc(voltImage); colormap(gray)
     
     responseType = sensorGet(sensor,'response type');
     switch responseType
@@ -212,23 +225,12 @@ for ss=1:length(sensorArray)   % Number of sensors
     % mean image and just want many noisy, clipped, quantized examples.
     noiseFlag = sensorGet(sensor,'noise flag');
     
-    % Follow noise flag rules
-    % noiseFlag = -2 - yes photon noise, no analog-clipping-quant
-    % noiseFlag = -1 - no noise,  no analog-clipping-quant
-    % noiseFlag =  0 - no noise, yes analog-clipping-quant
-    % noiseFlag =  1 - photon noise plus analog-clipping-quant
-    % noiseFlag =  2 - dark current + photon + read-reset + FPN + colFPN
-    %
-    % In noiseFlag 0,1,2, 
-    %  the analog gain/offset can be eliminated by setting gain to 1 and
-    %  offset to 0 
-    % 
-    %  Quantization can be turned off by setting the quantization method
-    %  to 'analog'
-    
-    % Apply this block if noiseFlag >= 0.
+    % The noise flag rules for different integer values are described in
+    % the header to this function. 
     %
     if noiseFlag >= 0
+        % Apply this block if noiseFlag >= 0.
+
         % See the comments in the header for the definition of the
         % noiseFlag. N.B. The noiseFlag  governs clipping and
         % quantization, not just noise.

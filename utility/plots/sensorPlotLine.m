@@ -1,6 +1,9 @@
 function [figNum, uData] = sensorPlotLine(sensor, ori, dataType, sORt, xy)
 % Plot a line of sensor data
 %
+% TODO:  See comment below about the case in which there are multiple
+%        captures (e.g., exposure bracketing or burst photography).
+%
 % Synopsis:
 %   [uData, figNum] = ...
 %   sensorPlotLine([sensor],[ori='h'],[dataType ='dv'],[spaceOrTransform = 'space'],[xy])
@@ -56,6 +59,9 @@ if ieNotDefined('xy'), xy = vcLineSelect(sensor); end
 
 sSupport = sensorGet(sensor,'spatialSupport','microns');
 
+% We need to allow for the possibility that the data is exposure bracketed
+% or burst sensor type so that data has a 3rd dimension.  Then we need to
+% figure out what to do.
 data = sensorGet(sensor,dataType);
 if isempty(data), warndlg(sprintf('Data type %s unavailable.',dataType)); return; end
 
