@@ -72,9 +72,16 @@ function sensor = sensorSet(sensor,param,val,varargin)
 %      'column fpn parameters' - column fpn parameters, both offset and gain
 %      'col gain fpn vector'   - column gain fpn data
 %      'col offset fpn vector' - column offset fpn data
-%      'noise Flag'         - 0 means no noise
-%                               1 means only shot noise,
-%                               2 means shot noise and electronics noise
+%      'noise Flag'         -  
+% The conditions are:
+%  noiseFlag            | photon other-noises analog-gain/offset clipping quantization
+%  -1 or 'none'         |   0         0            0                0        0
+%   0 or 'onlygcq',
+%     'nophotonother',
+%     'nophoton'        |   0         0            +                +        +
+%   1 or 'noother'      |   +         0            +                +        +
+%   2 or 'default'      |   +         +            +                +        +
+%
 %      'reuse noise'        - Generate noise from current seed
 %      'noise seed'         - Saved noise seed for randn()
 %
@@ -423,14 +430,21 @@ switch lower(param)
         %  selections are made by different values of the noiseFlag.
         %
         %   sensor = sensorSet(sensor,'noise flag',noiseFlag);
-        %
-        % The conditions are:
-        %
-        %  noiseFlag | photon other-noises analog-gain/offset clipping quantization
-        %    -1      |   0         0            0                0        0
-        %     0      |   0         0            +                +        +
-        %     1      |   +         0            +                +        +
-        %     2      |   +         +            +                +        +
+        %   SEE DESCRIPTION OF FLAG VALUES IN THE FUNCTION HEADER COMMENT
+        if ischar(val)
+            switch (val)
+                case 'default'
+                    val = 2;
+                case 'none'
+                    val = -1;
+                case 'noother'
+                    val = 1;
+                case {'onlygcq','nophotonother', 'nophoton'}
+                    val = 0;
+                otherwise
+                    error(" invalid noise flag");
+            end
+        end
         sensor.noiseFlag = val;
     case {'reusenoise'}
         % Decide whether we reuse (1) or recalculate (0) the noise.  If we
