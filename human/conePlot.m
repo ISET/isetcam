@@ -3,26 +3,32 @@ function [support, spread, delta] = conePlot(xy,coneType, support, spread, delta
 %
 %    [support, spread, delta] = conePlot(xy,coneType, [support], [spread], [delta])
 %
-% xy:        Cone positions (um)
-% coneTYpe:  an integer from 1:4 where 1 means no cone (K), 2:4 are L,M,S
-% support, spread, delta are gaussian blurring parameters for creating the
-% image
+% Inputs:
+%  xy:        Cone positions (um)
+%  coneTYpe:  an integer from 1:4 where 1 means no cone (K), 2:4 are L,M,S
+%  support:   Gaussian blurring parameters for creating the image
+%    spread
+%    delta  
 %
-% These images can be compared with the ones measured by Hofer et al. in
-% the J. Neuroscience paper and then published by Williams in a JOV paper.  
-% I downloaded those from
+% Description
+%   These images can be compared with the ones measured by Hofer et al. in
+%   the J. Neuroscience paper and then published by Williams in a JOV
+%   paper. I downloaded those from
+%
 %   http://www.journalofvision.org/5/5/5/article.aspx#tab1
 %
-% Those data and the plotting routine for them are in the repository under
-% cone/data/williams.
+%   Those data and the plotting routine for them are in the repository under
+%   cone/data/williams.
 %
-% See also:  sensorConePlot, humanConeMosaic
 %
-% Example:
-%  [sensor, xy, coneType] = sensorCreateConeMosaic;
-%  conePlot(xy,coneType);
-%
-% Copyright ImagEval LLLC, 2009
+% See also
+%   sensorConePlot, humanConeMosaic
+
+% Examples:
+%{
+  [sensor, xy, coneType] = sensorCreateConeMosaic;
+  conePlot(xy,coneType);
+%}
 
 if ieNotDefined('delta'),   delta = 0.4; end  % Sampling in microns
 % support and spread are adjusted below, after the grid is built
@@ -61,8 +67,7 @@ g = fspecial('gaussian',support,spread);
 tmp = imfilter(coneImage,g);
 
 % Show the image
-h = ieNewGraphWin;
-set(h,'Name','ISET: Human cone mosaic');
+ieNewGraphWin([],[],'ISET: Human cone mosaic');
 imagescRGB(tmp);
 
 end

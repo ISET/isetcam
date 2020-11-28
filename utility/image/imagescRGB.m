@@ -39,7 +39,7 @@ if s ~= 0, rgbim = rgbim/max(rgbim(:)); end
 if ismatrix(rgbim)
     
     if  nargin - 1 < 2, error('2-dimensional input requires row and col arguments.');
-    else                row = varargin{1}; col = varargin{2};
+    else,               row = varargin{1}; col = varargin{2};
     end
     
     rgbim = XW2RGBFormat(rgbim,row,col);

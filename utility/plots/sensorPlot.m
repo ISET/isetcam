@@ -109,20 +109,38 @@ p = inputParser;
 p.addRequired('sensor', @isstruct);
 p.addRequired('ptype',@ischar);
 p.addRequired('roilocs');
-p.addParameter('whichimg',1,@isscalar);
+p.addParameter('capture',1,@isscalar);
 p.addParameter('nofig',false,@islogical);
 
 p.parse(sensor,ptype,roilocs,varargin{:});
 
 pType    = ieParamFormat(p.Results.ptype);
 roiLocs  = p.Results.roilocs;
-whichImg = p.Results.whichimg;
+capture  = p.Results.capture;
 noFig    = p.Results.nofig;
 
 uData = [];
 
 %% If the sensor has multiple exposures, deal with it here
 
+ncaptures = sensorGet(sensor,'n captures');
+if isempty(ncaptures) || isequal(ncaptures,1)
+    % Do nothing
+elseif capture <= ncaptures
+    % Make the sensor like it has just one capture.  We put it back at the
+    % end, if needed.
+    store.volts = sensorGet(sensor,'volts'); 
+    sensor = sensorSet(sensor,'volts',store.volts(:,:,capture)); 
+
+    store.dv = sensorGet(sensor,'dv');
+    if ~isempty(store.dv)
+        sensor = sensorSet(sensor,'dv',store.dv(:,:,capture));
+    end
+    store.eTimes = sensorGet(sensor,'exp time');
+    sensor = sensorSet(sensor,'exp time',store.eTimes(capture));
+elseif capture > ncaptures
+    error('Selected capture %d exceeds data size %d',capture,ncaptures);
+end
 
 %% The cases that need roiLocs, but none is passed
 if isempty(roiLocs)
@@ -181,8 +199,19 @@ switch pType
     case {'electronshistogram','electronshist'}
         % sensorPlot(sensor,'electrons histogram',rect);
         [uData,g] = plotSensorHist(sensor,'e',roiLocs);
+        
+        % Various types of noise
     case {'shotnoise'}
+        % Poisson noise at each pixel
         [uData, g] = imageNoise('shot noise');
+    case {'dsnu'}
+        [uData, g] = imageNoise('dsnu');
+        str = sprintf('dsnu sigma %.2f',sensorGet(sensor,'dsnu sigma'));
+        title(sprintf('ISET: %s',str));
+    case {'prnu'}
+        [uData, g] = imageNoise('prnu');
+        str = sprintf('prnu sigma %.2f',sensorGet(sensor,'prnu sigma'));
+        title(sprintf('ISET: %s',str));
         
         % Wavelength and color properties
     case {'cfa','cfablock'}
@@ -270,14 +299,25 @@ if noFig
     close(g);
 else
     % They want the figure.  Attach the userdata to the figure.
-    g.Visible = true;
+    g.Visible = 'on';
     if exist('uData','var'), set(gcf,'UserData',uData); end
+    if ~isequal(capture,1)
+        % The capture number might not be different from 1.
+        g.Name = sprintf('%s (exp %d)',g.Name,capture);
+    end
 end
+
+% Put the original sensor back?
+%{
+sensor = sensorSet(sensor,'exp time',store.eTimes);
+sensor = sensorSet(sensor,'volts',store.volts);
+sensor = sensorSet(sensor,'dv',store.dv);
+%}
 
 end
 
 %%
-function [udata, figNum] = plotSpectra(sensor,dataType)
+function [udata, fighdl] = plotSpectra(sensor,dataType)
 %Plot various spectral functions in the sensor window
 %
 %  [udata, figNum] = plotSpectra(sensor,[dataType])
@@ -348,7 +388,8 @@ switch lower(dataType)
         disp('Unknown data type')
 end
 
-figNum = vcNewGraphWin;
+% Create the invisible figure here; the plot() calls go into this figure.
+fighdl = ieNewGraphWin([],[],sprintf('ISET: %s',dataType'),'Visible','off');
 
 for ii=1:size(data,2)
     switch lower(dataType)
@@ -365,12 +406,12 @@ for ii=1:size(data,2)
     end
 end
 
-% Label, attach data to the figure 
+% Label, attach data to the figure.  Remember it is not yet visible.  That
+% happens in the calling routine.
 udata.x = wave; udata.y = data;
-set(figNum,'Userdata',udata);
-nameString = get(figNum,'Name');
-set(figNum,'Name',sprintf('%s: %s',nameString,dataType'));
-xlabel('Wavelength (nm)'); ylabel(ystr);
+set(fighdl,'Userdata',udata);
+xlabel('Wavelength (nm)'); 
+ylabel(ystr);
 grid on;
 
 end
@@ -384,9 +425,6 @@ function [uData, figNum] = imageNoise(noiseType,sensor)
 % The default noise type is shot-noise (electron variance).  Other types
 % are dsnu and prnu.  The shot-noise is generated on-the-fly.  The
 % dsnuImage and prnuImage are taken from the sensor array.
-%
-% Example:
-%   imageNoise('shotNoise',vcGetObject('sensor'));
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
@@ -420,12 +458,10 @@ end
 % Store data, put up image, label
 uData.theNoise = theNoise;
 
-figNum = ieNewGraphWin;
-imagesc(theNoise); colormap(gray(256)); colorbar;
-nameFig    = get(figNum,'Name'); 
-nameString = [nameFig,nameString];
-set(figNum,'Name',nameString);
+figNum = ieNewGraphWin([],[],['ISET: ',nameString]);
 title(titleString); 
+imagesc(theNoise); 
+colormap(gray(256)); colorbar;
 axis off
 
 end

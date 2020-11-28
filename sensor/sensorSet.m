@@ -72,16 +72,12 @@ function sensor = sensorSet(sensor,param,val,varargin)
 %      'column fpn parameters' - column fpn parameters, both offset and gain
 %      'col gain fpn vector'   - column gain fpn data
 %      'col offset fpn vector' - column offset fpn data
-%      'noise Flag'         - 0 means no noise
-%                               1 means only shot noise,
-%                               2 means shot noise and electronics noise
-%      'reuse noise'        - Generate noise from current seed
-%      'noise seed'         - Saved noise seed for randn()
-%
-%      'exposure time'       - exposure time in seconds
-%      'exposure plane'      - selects exposure for display
-%      'auto exposure'       - auto-exposure flag, 1 or 0
-%                                'on' and 'off' are also OK.
+%      'noise flag'            - Read the documentation in the header of
+%               sensorCompute to understand the different flags. Briefly,
+%               the default noiseFlag value is 2, which includes photon
+%               noise, read/reset, FPN, analog gain/offset, clipping,
+%               quantization, are all included. noiseFlag = -2 is purely
+%               photon noise.  Read the documentation in sensorCompute!
 %
 % Pixel
 %      'pixel'
@@ -415,22 +411,7 @@ switch lower(param)
         end
         sensor.blackLevel = val;
     case {'noiseflag'}
-        % NOISE FLAG
-        %  The noise flag is an important way to control the details of the
-        %  calculation.  The default value of the noiseFlag is 2.  In this case,
-        %  which is standard operating, photon noise, read/reset, FPN, analog
-        %  gain/offset, clipping, quantization, are all included.  Different
-        %  selections are made by different values of the noiseFlag.
-        %
-        %   sensor = sensorSet(sensor,'noise flag',noiseFlag);
-        %
-        % The conditions are:
-        %
-        %  noiseFlag | photon other-noises analog-gain/offset clipping quantization
-        %    -1      |   0         0            0                0        0
-        %     0      |   0         0            +                +        +
-        %     1      |   +         0            +                +        +
-        %     2      |   +         +            +                +        +
+        % See the comments to define the noise flag parameter.
         sensor.noiseFlag = val;
     case {'reusenoise'}
         % Decide whether we reuse (1) or recalculate (0) the noise.  If we

@@ -21,51 +21,46 @@ function [outSensor, unitSigCurrent] = sensorCompute(sensor,oi,showBar)
 %
 % NOISE FLAG
 %  The noise flag is an important way to control the details of the
-%  calculation.  The default value of the noiseFlag is 2.  In this case,
-%  which is standard operating, photon noise, read/reset, FPN, analog
-%  gain/offset, clipping, quantization, are all included.  Different
-%  selections are made by different values of the noiseFlag.  
+%  calculation.  The default value of the noiseFlag is 2.  This case is
+%  standard operating mode with photon noise, read/reset, dsnu, prnu,
+%  analog gain/offset, clipping, quantization, included.  
+%
+%  Each of the noises can be individually controlled, but the noise flag
+%  simplifies turning off different types of noise for certain experiments
 %
 %   sensor = sensorSet(sensor,'noise flag',noiseFlag);   
 %
 % The conditions are:
 %
-%  noiseFlag | photon other-noises gain/offset clipping quantize cds
-%    -2      |   +         0            0         0        0      + 
-%    -1      |   0         0            0         0        0      +
-%     0      |   0         0            +         +        +      +
-%     1      |   +         0            +         +        +      +
-%     2      |   +         +            +         +        +      +
-%     3      |   +         0            0         0        0      +
+%  noiseFlag | photon other-noises gain/offset clipping quantize 
+%    -2      |   +         0            0         0        0     
+%    -1      |   0         0            0         0        0     
+%     0      |   0         0            +         +        +     
+%     1      |   +         0            +         +        +     
+%     2      |   +         +            +         +        +     
 %
-    % noiseFlag = -2 - yes photon noise, no analog-clipping-quant
-    % noiseFlag = -1 - no noise,  no analog-clipping-quant
-    % noiseFlag =  0 - no noise, yes analog-clipping-quant
-    % noiseFlag =  1 - photon noise plus analog-clipping-quant
-    % noiseFlag =  2 - dark current + photon + read-reset + FPN + colFPN
-    %
-    % In noiseFlag 0,1,2, 
-    %  the analog gain/offset can be eliminated by setting gain to 1 and
-    %  offset to 0 
-    % 
-    %  Quantization can be turned off by setting the quantization method
-    %  to 'analog'
-    
-%  Several of the factors are effectively removed by setting the
-%  sensor parameters.  Specifically,
+% noiseFlag = -2 - photon noise, no other noises, no other distortions ('photon only')
+% noiseFlag = -1 - no photon noise, no other noises, no distortion of any sort ('ideal')
+% noiseFlag =  0 - no photon noise, no other noises, yes analog-clipping-quant
+% noiseFlag =  1 - photon noise, no other noises, analog-clipping-quant
+% noiseFlag =  2 - photon noise, other noises, analog-clipping-quant
 %
-%   * analog-gain/offset - set the parameters to 1,0 (default)
+% In addition to controlling factors through the noise flag, it is possible
+% to manage them by individually setting sensor paramters. For example,
+% when noiseFlag 0,1,2, you can still control the analog gain/offset noise
+% can be eliminated by setting 'prnu sigma' and 'dsnu sigma' to 0.
+% Similarly you can set the read noise and dark voltage to 0.
+% 
+% Quantization noise can be turned off by setting the quantization method
+% to 'analog' 
+%
 %   * quantization       - set 'quantization method' to 'analog' (default)
 %   * CDS                - set the cds flag to false (default)
 %   * Clipping           - You can avoid clipping high with a large
 %        voltage swing.  But other noise factors might drive the
 %        voltage below 0, and we would clip. 
-%        If you just want photon noise, us noiseFlag = -2
 %
 % COMPUTATIONAL OUTLINE:
-%
-%   This is an overview of the algorithms.  The specific algorithms are
-%   described in the routines themselves.
 %
 %   1. Check exposure duration: autoExposure default, or use the set
 %      time.
