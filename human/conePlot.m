@@ -61,9 +61,9 @@ g = fspecial('gaussian',support,spread);
 tmp = imfilter(coneImage,g);
 
 % Show the image
-h = vcNewGraphWin;
+h = ieNewGraphWin;
 set(h,'Name','ISET: Human cone mosaic');
 imagescRGB(tmp);
 
-return;
+end
 

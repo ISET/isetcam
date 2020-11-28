@@ -62,4 +62,4 @@ end
 h = imshow(rgbim);
 axis image;
 
-return;
+end

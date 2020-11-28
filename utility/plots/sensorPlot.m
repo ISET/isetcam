@@ -1,29 +1,26 @@
-function [uData, g] = sensorPlot(sensor, pType, roiLocs, varargin)
+function [uData, g] = sensorPlot(sensor, ptype, roilocs, varargin)
 % Gateway routine for plotting sensor data
 %
-%   [uData, hdl] = sensorPlot([sensor], pType, roiLocs, varargin)
+%   [uData, hdl] = sensorPlot(sensor, ptype, roilocs, varargin)
 %
 % These plots characterizing the data, sensor parts, or performance of
 % the sensor.  There are many types of plots, and as part of the function
 % they also return the rendered data.  
 %
 % Inputs:
-%  sensor: The image sensor
-%  pType:  The plot type
-%  roiLocs:  When needed, these specify the region of interest
+%  sensor:   An ISETCam sensor
+%  ptype:    The plot type (char)
+%  roilocs:  When needed, specify the region of interest
 %
-% Additional arguments may be required for different plot types.
+% Optional key/val pairs
+%   'no fig'  - Do not plot the figure, just return the uData (logical)
+%   
+%    Additional parameters may be required for different plot types. I will
+%    try to figure that out and put them here.
 %
 % Outputs:
 %  uData:  Structure of the plotted (user data)
 %  hdl:    Figure handle
-%
-% In general, you can prevent showing the figure by terminating the
-% arguments with a string, 'no fig', as in
-%
-%   uData = sensorPlot(sensor,'volts vline ',[53 1],'no fig');
-% 
-% In this case, the data will be returned, but no figure will be produced.
 %
 % The main routine, sensorPlot, is a gateway to many other characterization
 % and plotting routines contained within this file.  Sensor plotting should
@@ -75,8 +72,8 @@ function [uData, g] = sensorPlot(sensor, pType, roiLocs, varargin)
   scene = sceneCreate; camera = cameraCreate;
   camera = cameraCompute(camera,scene);
   sensor = cameraGet(camera,'sensor');
-  sensorWindow(sensor);
-  sensorPlot(sensor,'electrons hline');
+  % sensorWindow(sensor);
+  sensorPlot(sensor,'electrons hline',[1 19]);
 %}
 %{
   scene = sceneCreate; scene = sceneSet(scene,'fov',2);
@@ -92,7 +89,7 @@ function [uData, g] = sensorPlot(sensor, pType, roiLocs, varargin)
   sensor = sensorCreate; sensor = sensorCompute(sensor,oi);
   sensorPlot(sensor,'volts vline',[20 20]);
   get(gcf,'UserData')
-  uData = sensorPlot(sensor,'volts vline ',[53 1],'no fig');
+  uData = sensorPlot(sensor,'volts vline ',[53 1],'no fig',false);
 %}
 %{
   scene = sceneCreate; camera=cameraCreate;
@@ -103,14 +100,32 @@ function [uData, g] = sensorPlot(sensor, pType, roiLocs, varargin)
 %}
 
 %% Parse arguments
-if ieNotDefined('sensor'), sensor = vcGetObject('sensor'); end
-if ieNotDefined('pType'),  pType = 'volts hline'; end
+if ieNotDefined('roilocs'),roilocs = []; end
+
+varargin = ieParamFormat(varargin);
+
+p = inputParser;
+
+p.addRequired('sensor', @isstruct);
+p.addRequired('ptype',@ischar);
+p.addRequired('roilocs');
+p.addParameter('whichimg',1,@isscalar);
+p.addParameter('nofig',false,@islogical);
+
+p.parse(sensor,ptype,roilocs,varargin{:});
+
+pType    = ieParamFormat(p.Results.ptype);
+roiLocs  = p.Results.roilocs;
+whichImg = p.Results.whichimg;
+noFig    = p.Results.nofig;
 
 uData = [];
-pType = ieParamFormat(pType);
 
-% For cases that need roiLocs, when none is passed in
-if ieNotDefined('roiLocs')
+%% If the sensor has multiple exposures, deal with it here
+
+
+%% The cases that need roiLocs, but none is passed
+if isempty(roiLocs)
     switch lower(pType)
         case {'voltshline','electronshline','dvhline'}
             
@@ -130,14 +145,16 @@ if ieNotDefined('roiLocs')
             
             % Region of interest plots
             [roiLocs, roiRect] = ieROISelect(sensor);
-            % ieROIDraw(sensor,'shape','rect','shape data',roiRect);
 
             % Store the rect for later plotting
             sensor = sensorSet(sensor,'roi',round(roiRect.Position));
             
+            % Why is this commented out?
+            % ieROIDraw(sensor,'shape','rect','shape data',roiRect);
+
         otherwise
-            % There are some cases that are OK without an roiLocs value or
-            % ROI. Such as 'snr'
+            % There are plots that are OK without an roiLocs value or ROI.
+            % Such as 'snr', spectral qe, and so forth
     end
 end
 
@@ -246,19 +263,16 @@ switch pType
         error('Unknown sensor plot type %s\n',pType);
 end
 
-% We always create a window.  But, if the user doesn't want a window then
-% plotSensor(......,'no fig'), we close the window but still return the
-% data.
-if ~isempty(varargin)
-    figStatus = ieParamFormat(varargin{end});
-    switch figStatus
-        case {'nofig','nowindow'}
-            close(g);
-    end
+% If the user doesn't want the figure .... lose it.  Otherwise, we should
+% make it visible here, I think.  Which means we should initialize it as
+% invisible in the functions below.
+if noFig
+    close(g);
+else
+    % They want the figure.  Attach the userdata to the figure.
+    g.Visible = true;
+    if exist('uData','var'), set(gcf,'UserData',uData); end
 end
-
-% Attach the userdata to the figure.
-if exist('uData','var'), set(gcf,'UserData',uData); end
 
 end
 
