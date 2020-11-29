@@ -419,33 +419,45 @@ switch lower(param)
         end
         sensor.blackLevel = val;
     case {'noiseflag'}
-<<<<<<< HEAD
-        % See the comments to define the noise flag parameter.
-=======
         % NOISE FLAG
         %  The noise flag is an important way to control the details of the
-        %  calculation.  The default value of the noiseFlag is 2.  In this case,
-        %  which is standard operating, photon noise, read/reset, FPN, analog
-        %  gain/offset, clipping, quantization, are all included.  Different
-        %  selections are made by different values of the noiseFlag.
+        %  calculation.  The default value of the noiseFlag is 2.  In this
+        %  case, which is standard operating, photon noise, read/reset,
+        %  FPN, analog gain/offset, clipping, quantization, are all
+        %  included.  Different selections are made by different values of
+        %  the noiseFlag.
         %
-        %   sensor = sensorSet(sensor,'noise flag',noiseFlag);
+        %  gcq:     gain, clipping quantization
+        %  enoise:  Electrical noise (read, reset, dark)
+        %  pnoise:  Photon noise
+        %
         %   SEE DESCRIPTION OF FLAG VALUES IN THE FUNCTION HEADER COMMENT
         if ischar(val)
             switch (val)
                 case 'default'
+                    % Photon noise, electrical noise, and all the
+                    % non-idealities                    
                     val = 2;
-                case 'none'
+                case {'photononly'}
+                    % No electrical noise or non-idealities.  Just photon
+                    % noise.
+                    val = -2;
+                case {'none'}
+                    % No noise or non-idealities of any sort.
                     val = -1;
-                case 'noother'
+                case {'noother','noelectrical'}
+                    % Photon noise, but no other electrical noise.  The
+                    % clipping and FPN non-idealities are still present.
                     val = 1;
                 case {'onlygcq','nophotonother', 'nophoton'}
+                    % No photon noise, no electrical noise, but clipping,
+                    % quantization and other non-idealities are present.
+                    % Only gain, clipping, quantization (gcq)
                     val = 0;
                 otherwise
                     error(" invalid noise flag");
             end
         end
->>>>>>> dev
         sensor.noiseFlag = val;
     case {'reusenoise'}
         % Decide whether we reuse (1) or recalculate (0) the noise.  If we

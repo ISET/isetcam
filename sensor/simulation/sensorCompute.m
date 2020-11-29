@@ -32,21 +32,25 @@ function [outSensor, unitSigCurrent] = sensorCompute(sensor,oi,showBar)
 %
 % The conditions are:
 %
-%  noiseFlag | photon other-noises gain/offset clipping quantize 
+%  noiseFlag | photon   e-noises gain/offset clipping quantize 
 %    -2      |   +         0            0         0        0     
 %    -1      |   0         0            0         0        0     
 %     0      |   0         0            +         +        +     
-%     1      |   +         0            +         +        +     
-%     2      |   +         +            +         +        +     
+%     1      |   +         0            +         +        +     (noelectrical)
+%     2      |   +         +            +         +        +     (default)
 %
-% noiseFlag = -2 - photon noise, no other noises, no other distortions ('photon only')
-% noiseFlag = -1 - no photon noise, no other noises, no distortion of any sort ('ideal')
-% noiseFlag =  0 - no photon noise, no other noises, yes analog-clipping-quant
-% noiseFlag =  1 - photon noise, no other noises, analog-clipping-quant
-% noiseFlag =  2 - photon noise, other noises, analog-clipping-quant
+%  pnoise:  Photon noise
+%  enoise:  Electrical noise (read, reset, dark)
+%  gcq:     dsnu, prnu, clipping, quantization
+%
+% noiseFlag = -2 - photon noise,    no eNoises, no GCQ
+% noiseFlag = -1 - no photon noise, no eNoises, no GCQ
+% noiseFlag =  0 - no photon noise, no eNoises, yes GCQ
+% noiseFlag =  1 - photon noise, no eNoises, yes GCQ 
+% noiseFlag =  2 - photon noise, yes eNoises,yes GCQ
 %
 % In addition to controlling factors through the noise flag, it is possible
-% to manage them by individually setting sensor paramters. For example,
+% to manage them by individually setting sensor parameters. For example,
 % when noiseFlag 0,1,2, you can still control the analog gain/offset noise
 % can be eliminated by setting 'prnu sigma' and 'dsnu sigma' to 0.
 % Similarly you can set the read noise and dark voltage to 0.
