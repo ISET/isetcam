@@ -79,6 +79,14 @@ function sensor = sensorSet(sensor,param,val,varargin)
 %               quantization, are all included. noiseFlag = -2 is purely
 %               photon noise.  Read the documentation in sensorCompute!
 %
+%      'reuse noise'        - Generate noise from current seed
+%      'noise seed'         - Saved noise seed for randn()
+%
+%      'exposure time'       - exposure time in seconds
+%      'exposure plane'      - selects exposure for display
+%      'auto exposure'       - auto-exposure flag, 1 or 0
+%                                'on' and 'off' are also OK.
+%
 % Pixel
 %      'pixel'
 %
@@ -376,12 +384,12 @@ switch lower(param)
         sensor.offsetFPNimage = val;
     case {'gainfpnimage','prnuimage'}   % Photo response non uniformity (PRNU) image
         sensor.gainFPNimage = val;
-    case {'dsnulevel','sigmaoffsetfpn','offsetfpn','offset','offsetsd','offsetnoisevalue'}
+    case {'dsnulevel','dsnusigma','sigmaoffsetfpn','offsetfpn','offsetsd','offsetnoisevalue'}
         % Units are volts
         sensor.sigmaOffsetFPN = val;
         % Clear the dsnu image when the dsnu level is reset
         sensor = sensorSet(sensor,'dsnuimage',[]);
-    case {'prnulevel','sigmagainfpn','gainfpn','gain','gainsd','gainnoisevalue'}
+    case {'prnulevel','prnusigma','sigmagainfpn','gainfpn','gainsd','gainnoisevalue'}
         % This is stored as a percentage. Always.  This is a change from
         % the past where I tried to be clever but got into trouble.
         sensor.sigmaGainFPN = val;
@@ -411,7 +419,33 @@ switch lower(param)
         end
         sensor.blackLevel = val;
     case {'noiseflag'}
+<<<<<<< HEAD
         % See the comments to define the noise flag parameter.
+=======
+        % NOISE FLAG
+        %  The noise flag is an important way to control the details of the
+        %  calculation.  The default value of the noiseFlag is 2.  In this case,
+        %  which is standard operating, photon noise, read/reset, FPN, analog
+        %  gain/offset, clipping, quantization, are all included.  Different
+        %  selections are made by different values of the noiseFlag.
+        %
+        %   sensor = sensorSet(sensor,'noise flag',noiseFlag);
+        %   SEE DESCRIPTION OF FLAG VALUES IN THE FUNCTION HEADER COMMENT
+        if ischar(val)
+            switch (val)
+                case 'default'
+                    val = 2;
+                case 'none'
+                    val = -1;
+                case 'noother'
+                    val = 1;
+                case {'onlygcq','nophotonother', 'nophoton'}
+                    val = 0;
+                otherwise
+                    error(" invalid noise flag");
+            end
+        end
+>>>>>>> dev
         sensor.noiseFlag = val;
     case {'reusenoise'}
         % Decide whether we reuse (1) or recalculate (0) the noise.  If we
