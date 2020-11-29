@@ -33,15 +33,15 @@ function [outSensor, unitSigCurrent] = sensorCompute(sensor,oi,showBar)
 % The conditions are:
 %
 %  noiseFlag | photon   e-noises gain/offset clipping quantize 
-%    -2      |   +         0            0         0        0     
-%    -1      |   0         0            0         0        0     
-%     0      |   0         0            +         +        +     
-%     1      |   +         0            +         +        +     (noelectrical)
+%    -2      |   +         0            0         0        0     (no pixel no system)
+%    -1      |   0         0            0         0        0     (ideal)
+%     0      |   0         0            +         +        +     (no photon no pixel)
+%     1      |   +         0            +         +        +     (no pixel)
 %     2      |   +         +            +         +        +     (default)
 %
-%  pnoise:  Photon noise
-%  enoise:  Electrical noise (read, reset, dark)
-%  gcq:     dsnu, prnu, clipping, quantization
+%  photon noise:  Photon noise
+%  pixel noise:   Electrical noise (read, reset, dark)
+%  system noise:  gain/offset (prnu, dsnu), clipping, quantization
 %
 % noiseFlag = -2 - photon noise,    no eNoises, no GCQ
 % noiseFlag = -1 - no photon noise, no eNoises, no GCQ

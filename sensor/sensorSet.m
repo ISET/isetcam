@@ -427,33 +427,35 @@ switch lower(param)
         %  included.  Different selections are made by different values of
         %  the noiseFlag.
         %
-        %  gcq:     gain, clipping quantization
-        %  enoise:  Electrical noise (read, reset, dark)
-        %  pnoise:  Photon noise
+        %  We allow strings to turn off different types of noise
+        %
+        %  photon noise:  Photon noise
+        %  pixel noise:   Electrical noise (read, reset, dark)
+        %  system noise:  gain/offset (prnu, dsnu), clipping, quantization
         %
         %   SEE DESCRIPTION OF FLAG VALUES IN THE FUNCTION HEADER COMMENT
         if ischar(val)
             switch (val)
                 case 'default'
                     % Photon noise, electrical noise, and all the
-                    % non-idealities                    
+                    % non-idealities
                     val = 2;
-                case {'photononly'}
-                    % No electrical noise or non-idealities.  Just photon
-                    % noise.
-                    val = -2;
-                case {'none'}
-                    % No noise or non-idealities of any sort.
-                    val = -1;
-                case {'noother','noelectrical'}
+                case {'nopixelnoise','noother','noelectrical','nopixel'}
                     % Photon noise, but no other electrical noise.  The
                     % clipping and FPN non-idealities are still present.
                     val = 1;
-                case {'onlygcq','nophotonother', 'nophoton'}
+                case {'nophotonnopixel','onlygcq','nophotonother', 'nophoton'}
                     % No photon noise, no electrical noise, but clipping,
                     % quantization and other non-idealities are present.
                     % Only gain, clipping, quantization (gcq)
                     val = 0;
+                case {'nophotonnopixelnosystem','none','ideal'}
+                    % No noise or non-idealities of any sort.
+                    val = -1;
+                case {'nopixelnosystem','photononly','onlyphoton'}
+                    % No electrical noise or non-idealities.  Just photon
+                    % noise.
+                    val = -2;
                 otherwise
                     error(" invalid noise flag");
             end
