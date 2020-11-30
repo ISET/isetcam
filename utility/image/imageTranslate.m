@@ -25,10 +25,11 @@ function imgT = imageTranslate(img,shift)
 if ~exist('img','var')   || isempty(img), error('Image required'); end
 if ~exist('shift','var') || isempty(shift), error('(x,y) Displacement required'); end
 
-if round(shift) ~= shift
-    shift = round(shift);
-    warning('Rounding the shift to integer size');
-end
+% Legacy as we now support sub-pixel shifts
+% if round(shift) ~= shift
+%     shift = round(shift);
+%     warning('Rounding the shift to integer size');
+% end
 
 rcw = size(img);   % Row, column, wavelength
 
@@ -38,19 +39,27 @@ rcw = size(img);   % Row, column, wavelength
 % upward/leftward displacement (both positive). We will need to handle
 % negative shift, too.
 
-if shift(2) >= 0, cc = (shift(2)+1):rcw(2); end
-if shift(1) >= 0, rr = (shift(1)+1):rcw(1); end
+% now legacy code...
+%if shift(2) >= 0, cc = (shift(2)+1):rcw(2); end
+%if shift(1) >= 0, rr = (shift(1)+1):rcw(1); end
 
-% We could figure this out
-% t = maketform('affine',XXX);
-imgT = zeros(size(img));
-if length(rcw)     == 2
-    imgT(1:length(rr),1:length(cc)) = img(rr,cc);
-elseif length(rcw) == 3
-    for ww=1:rcw(3)
-        imgT(1:length(rr),1:length(cc),ww) = img(rr,cc,ww);
-    end
+% Note that we assume + is up/left, but by default Matlab assumes
+% down/right
+if length(rcw) == 2
+   imgT = imtranslate(img, [-1 * shift(1), -1 * shift(2)], 'FillValues', 0);
+else
+   imgT = imtranslate(img, [-1 * shift(1), -1 * shift(2), 0], 'FillValues', 0);
 end
+
+% old code
+% imgT = zeros(size(img));
+% if length(rcw)     == 2
+%     imgT(1:length(rr),1:length(cc)) = img(rr,cc);
+% elseif length(rcw) == 3
+%     for ww=1:rcw(3)
+%         imgT(1:length(rr),1:length(cc),ww) = img(rr,cc,ww);
+%     end
+% end
 
 
 end

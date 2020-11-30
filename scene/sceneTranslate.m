@@ -8,6 +8,10 @@ function scene = sceneTranslate(scene,dxy)
 %  discrete step size of the scene to avoid blurring by interpolation.  I
 %  suppose we could allow interpolation.
 %
+%
+% DJC: Update to imageTranslate should now allow sub-pixel interp
+%      so I think we can remove the round() call if that works
+%
 % scene:  Spectral scene
 % dxy:    (x,y) displacement in degrees
 %
@@ -29,7 +33,9 @@ if ~exist('dxy','var'),   error('x,y displacement required'); end
 % dxy(1) = colShift*degPerPixel;
 degPerPixel = sceneGet(scene,'h angular resolution');
 
-shift = round(dxy/degPerPixel);   % Discretize step size here
+% we can now do sub-pixel shifts
+% shift = round(dxy/degPerPixel);   % Discretize step size here
+shift = dxy/degPerPixel;   % Discretize step size here
 p = sceneGet(scene,'photons');
 p = imageTranslate(p,shift);
 
