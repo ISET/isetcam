@@ -58,6 +58,7 @@ function val = sensorGet(sensor,param,varargin)
 %      'row'                  - sensor rows
 %      'col'                  - sensor columns
 %      'size'                 - (rows,cols)
+%      'ncaptures'            -  Number of exposures captured
 %      'height'*              - sensor height (units)
 %      'width'*               - sensor width  (units)
 %      'dimension'*           - (height,width)
@@ -288,20 +289,35 @@ switch oType
                 elseif checkfields(sensor,'cols'), val = sensor.cols;
                 end
             case {'size','arrayrowcol'}
-                % Note:  dimension is (x,y) but size is (row,col)
+                % row by col samples
+                % sensorGet(sensor,'size')
                 val = [sensorGet(sensor,'rows'),sensorGet(sensor,'cols')];
-                
             case {'height','arrayheight'}
                 val = sensorGet(sensor,'rows')*sensorGet(sensor,'deltay');
                 if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
             case {'width','arraywidth'}
                 val = sensorGet(sensor,'cols')*sensorGet(sensor,'deltax');
                 if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-                
             case {'dimension'}
+                % height by width in length units
+                % sensorGet(sensor,'dimension','mm')
                 val = [sensorGet(sensor,'height'), sensorGet(sensor,'width')];
                 if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-                
+            case {'ncaptures'}
+                % sensorGet(sensor,'captures')
+                %
+                % When we use multiple exposure times we have multiple
+                % captures in the 3rd dimension of volts or dv.  So after
+                % sensor compute this value should be equal to the number
+                % of exposure times.  Before sensor compute it can be
+                % empty.
+                val = sensorGet(sensor,'dv or volts');
+                if isempty(val), return;
+                elseif ismatrix(val)
+                    val = 1;
+                else
+                    val = size(val,3);
+                end
                 % The resolutions also represent the center-to-center spacing of the pixels.
             case {'wspatialresolution','wres','deltax','widthspatialresolution'}
                 PIXEL = sensorGet(sensor,'pixel');
@@ -829,8 +845,8 @@ switch oType
                 else
                     try
                         rng('default');
-                    catch err
-                        randn('seed');
+                    catch
+                        rng('seed');
                     end% Compute both electronic and shot noise
                 end
                 

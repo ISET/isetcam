@@ -72,15 +72,12 @@ function sensor = sensorSet(sensor,param,val,varargin)
 %      'column fpn parameters' - column fpn parameters, both offset and gain
 %      'col gain fpn vector'   - column gain fpn data
 %      'col offset fpn vector' - column offset fpn data
-%      'noise Flag'         -  
-% The conditions are:
-%  noiseFlag            | photon other-noises analog-gain/offset clipping quantization
-%  -1 or 'none'         |   0         0            0                0        0
-%   0 or 'onlygcq',
-%     'nophotonother',
-%     'nophoton'        |   0         0            +                +        +
-%   1 or 'noother'      |   +         0            +                +        +
-%   2 or 'default'      |   +         +            +                +        +
+%      'noise flag'            - Read the documentation in the header of
+%               sensorCompute to understand the different flags. Briefly,
+%               the default noiseFlag value is 2, which includes photon
+%               noise, read/reset, FPN, analog gain/offset, clipping,
+%               quantization, are all included. noiseFlag = -2 is purely
+%               photon noise.  Read the documentation in sensorCompute!
 %
 %      'reuse noise'        - Generate noise from current seed
 %      'noise seed'         - Saved noise seed for randn()
@@ -387,12 +384,12 @@ switch lower(param)
         sensor.offsetFPNimage = val;
     case {'gainfpnimage','prnuimage'}   % Photo response non uniformity (PRNU) image
         sensor.gainFPNimage = val;
-    case {'dsnulevel','sigmaoffsetfpn','offsetfpn','offset','offsetsd','offsetnoisevalue'}
+    case {'dsnulevel','dsnusigma','sigmaoffsetfpn','offsetfpn','offsetsd','offsetnoisevalue'}
         % Units are volts
         sensor.sigmaOffsetFPN = val;
         % Clear the dsnu image when the dsnu level is reset
         sensor = sensorSet(sensor,'dsnuimage',[]);
-    case {'prnulevel','sigmagainfpn','gainfpn','gain','gainsd','gainnoisevalue'}
+    case {'prnulevel','prnusigma','sigmagainfpn','gainfpn','gainsd','gainnoisevalue'}
         % This is stored as a percentage. Always.  This is a change from
         % the past where I tried to be clever but got into trouble.
         sensor.sigmaGainFPN = val;
@@ -424,23 +421,41 @@ switch lower(param)
     case {'noiseflag'}
         % NOISE FLAG
         %  The noise flag is an important way to control the details of the
-        %  calculation.  The default value of the noiseFlag is 2.  In this case,
-        %  which is standard operating, photon noise, read/reset, FPN, analog
-        %  gain/offset, clipping, quantization, are all included.  Different
-        %  selections are made by different values of the noiseFlag.
+        %  calculation.  The default value of the noiseFlag is 2.  In this
+        %  case, which is standard operating, photon noise, read/reset,
+        %  FPN, analog gain/offset, clipping, quantization, are all
+        %  included.  Different selections are made by different values of
+        %  the noiseFlag.
         %
-        %   sensor = sensorSet(sensor,'noise flag',noiseFlag);
+        %  We allow strings to turn off different types of noise
+        %
+        %  photon noise:  Photon noise
+        %  pixel noise:   Electrical noise (read, reset, dark)
+        %  system noise:  gain/offset (prnu, dsnu), clipping, quantization
+        %
         %   SEE DESCRIPTION OF FLAG VALUES IN THE FUNCTION HEADER COMMENT
         if ischar(val)
             switch (val)
                 case 'default'
+                    % Photon noise, electrical noise, and all the
+                    % non-idealities
                     val = 2;
-                case 'none'
-                    val = -1;
-                case 'noother'
+                case {'nopixelnoise','noother','noelectrical','nopixel'}
+                    % Photon noise, but no other electrical noise.  The
+                    % clipping and FPN non-idealities are still present.
                     val = 1;
-                case {'onlygcq','nophotonother', 'nophoton'}
+                case {'nophotonnopixel','onlygcq','nophotonother', 'nophoton'}
+                    % No photon noise, no electrical noise, but clipping,
+                    % quantization and other non-idealities are present.
+                    % Only gain, clipping, quantization (gcq)
                     val = 0;
+                case {'nophotonnopixelnosystem','none','ideal'}
+                    % No noise or non-idealities of any sort.
+                    val = -1;
+                case {'nopixelnosystem','photononly','onlyphoton'}
+                    % No electrical noise or non-idealities.  Just photon
+                    % noise.
+                    val = -2;
                 otherwise
                     error(" invalid noise flag");
             end

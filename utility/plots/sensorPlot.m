@@ -1,29 +1,26 @@
-function [uData, g] = sensorPlot(sensor, pType, roiLocs, varargin)
+function [uData, g] = sensorPlot(sensor, ptype, roilocs, varargin)
 % Gateway routine for plotting sensor data
 %
-%   [uData, hdl] = sensorPlot([sensor], pType, roiLocs, varargin)
+%   [uData, hdl] = sensorPlot(sensor, ptype, roilocs, varargin)
 %
 % These plots characterizing the data, sensor parts, or performance of
 % the sensor.  There are many types of plots, and as part of the function
 % they also return the rendered data.  
 %
 % Inputs:
-%  sensor: The image sensor
-%  pType:  The plot type
-%  roiLocs:  When needed, these specify the region of interest
+%  sensor:   An ISETCam sensor
+%  ptype:    The plot type (char)
+%  roilocs:  When needed, specify the region of interest
 %
-% Additional arguments may be required for different plot types.
+% Optional key/val pairs
+%   'no fig'  - Do not plot the figure, just return the uData (logical)
+%   
+%    Additional parameters may be required for different plot types. I will
+%    try to figure that out and put them here.
 %
 % Outputs:
 %  uData:  Structure of the plotted (user data)
 %  hdl:    Figure handle
-%
-% In general, you can prevent showing the figure by terminating the
-% arguments with a string, 'no fig', as in
-%
-%   uData = sensorPlot(sensor,'volts vline ',[53 1],'no fig');
-% 
-% In this case, the data will be returned, but no figure will be produced.
 %
 % The main routine, sensorPlot, is a gateway to many other characterization
 % and plotting routines contained within this file.  Sensor plotting should
@@ -75,8 +72,8 @@ function [uData, g] = sensorPlot(sensor, pType, roiLocs, varargin)
   scene = sceneCreate; camera = cameraCreate;
   camera = cameraCompute(camera,scene);
   sensor = cameraGet(camera,'sensor');
-  sensorWindow(sensor);
-  sensorPlot(sensor,'electrons hline');
+  % sensorWindow(sensor);
+  sensorPlot(sensor,'electrons hline',[1 19]);
 %}
 %{
   scene = sceneCreate; scene = sceneSet(scene,'fov',2);
@@ -92,7 +89,7 @@ function [uData, g] = sensorPlot(sensor, pType, roiLocs, varargin)
   sensor = sensorCreate; sensor = sensorCompute(sensor,oi);
   sensorPlot(sensor,'volts vline',[20 20]);
   get(gcf,'UserData')
-  uData = sensorPlot(sensor,'volts vline ',[53 1],'no fig');
+  uData = sensorPlot(sensor,'volts vline ',[53 1],'no fig',false);
 %}
 %{
   scene = sceneCreate; camera=cameraCreate;
@@ -103,14 +100,50 @@ function [uData, g] = sensorPlot(sensor, pType, roiLocs, varargin)
 %}
 
 %% Parse arguments
-if ieNotDefined('sensor'), sensor = vcGetObject('sensor'); end
-if ieNotDefined('pType'),  pType = 'volts hline'; end
+if ieNotDefined('roilocs'),roilocs = []; end
+
+varargin = ieParamFormat(varargin);
+
+p = inputParser;
+
+p.addRequired('sensor', @isstruct);
+p.addRequired('ptype',@ischar);
+p.addRequired('roilocs');
+p.addParameter('capture',1,@isscalar);
+p.addParameter('nofig',false,@islogical);
+
+p.parse(sensor,ptype,roilocs,varargin{:});
+
+pType    = ieParamFormat(p.Results.ptype);
+roiLocs  = p.Results.roilocs;
+capture  = p.Results.capture;
+noFig    = p.Results.nofig;
 
 uData = [];
-pType = ieParamFormat(pType);
 
-% For cases that need roiLocs, when none is passed in
-if ieNotDefined('roiLocs')
+%% If the sensor has multiple exposures, deal with it here
+
+ncaptures = sensorGet(sensor,'n captures');
+if isempty(ncaptures) || isequal(ncaptures,1)
+    % Do nothing
+elseif capture <= ncaptures
+    % Make the sensor like it has just one capture.  We put it back at the
+    % end, if needed.
+    store.volts = sensorGet(sensor,'volts'); 
+    sensor = sensorSet(sensor,'volts',store.volts(:,:,capture)); 
+
+    store.dv = sensorGet(sensor,'dv');
+    if ~isempty(store.dv)
+        sensor = sensorSet(sensor,'dv',store.dv(:,:,capture));
+    end
+    store.eTimes = sensorGet(sensor,'exp time');
+    sensor = sensorSet(sensor,'exp time',store.eTimes(capture));
+elseif capture > ncaptures
+    error('Selected capture %d exceeds data size %d',capture,ncaptures);
+end
+
+%% The cases that need roiLocs, but none is passed
+if isempty(roiLocs)
     switch lower(pType)
         case {'voltshline','electronshline','dvhline'}
             
@@ -130,14 +163,16 @@ if ieNotDefined('roiLocs')
             
             % Region of interest plots
             [roiLocs, roiRect] = ieROISelect(sensor);
-            % ieROIDraw(sensor,'shape','rect','shape data',roiRect);
 
             % Store the rect for later plotting
             sensor = sensorSet(sensor,'roi',round(roiRect.Position));
             
+            % Why is this commented out?
+            % ieROIDraw(sensor,'shape','rect','shape data',roiRect);
+
         otherwise
-            % There are some cases that are OK without an roiLocs value or
-            % ROI. Such as 'snr'
+            % There are plots that are OK without an roiLocs value or ROI.
+            % Such as 'snr', spectral qe, and so forth
     end
 end
 
@@ -164,8 +199,19 @@ switch pType
     case {'electronshistogram','electronshist'}
         % sensorPlot(sensor,'electrons histogram',rect);
         [uData,g] = plotSensorHist(sensor,'e',roiLocs);
+        
+        % Various types of noise
     case {'shotnoise'}
+        % Poisson noise at each pixel
         [uData, g] = imageNoise('shot noise');
+    case {'dsnu'}
+        [uData, g] = imageNoise('dsnu');
+        str = sprintf('dsnu sigma %.2f',sensorGet(sensor,'dsnu sigma'));
+        title(sprintf('ISET: %s',str));
+    case {'prnu'}
+        [uData, g] = imageNoise('prnu');
+        str = sprintf('prnu sigma %.2f',sensorGet(sensor,'prnu sigma'));
+        title(sprintf('ISET: %s',str));
         
         % Wavelength and color properties
     case {'cfa','cfablock'}
@@ -246,24 +292,32 @@ switch pType
         error('Unknown sensor plot type %s\n',pType);
 end
 
-% We always create a window.  But, if the user doesn't want a window then
-% plotSensor(......,'no fig'), we close the window but still return the
-% data.
-if ~isempty(varargin)
-    figStatus = ieParamFormat(varargin{end});
-    switch figStatus
-        case {'nofig','nowindow'}
-            close(g);
+% If the user doesn't want the figure .... lose it.  Otherwise, we should
+% make it visible here, I think.  Which means we should initialize it as
+% invisible in the functions below.
+if noFig
+    close(g);
+else
+    % They want the figure.  Attach the userdata to the figure.
+    g.Visible = 'on';
+    if exist('uData','var'), set(gcf,'UserData',uData); end
+    if ~isequal(capture,1)
+        % The capture number might not be different from 1.
+        g.Name = sprintf('%s (exp %d)',g.Name,capture);
     end
 end
 
-% Attach the userdata to the figure.
-if exist('uData','var'), set(gcf,'UserData',uData); end
+% Put the original sensor back?
+%{
+sensor = sensorSet(sensor,'exp time',store.eTimes);
+sensor = sensorSet(sensor,'volts',store.volts);
+sensor = sensorSet(sensor,'dv',store.dv);
+%}
 
 end
 
 %%
-function [udata, figNum] = plotSpectra(sensor,dataType)
+function [udata, fighdl] = plotSpectra(sensor,dataType)
 %Plot various spectral functions in the sensor window
 %
 %  [udata, figNum] = plotSpectra(sensor,[dataType])
@@ -334,7 +388,8 @@ switch lower(dataType)
         disp('Unknown data type')
 end
 
-figNum = vcNewGraphWin;
+% Create the invisible figure here; the plot() calls go into this figure.
+fighdl = ieNewGraphWin([],[],sprintf('ISET: %s',dataType'),'Visible','off');
 
 for ii=1:size(data,2)
     switch lower(dataType)
@@ -351,12 +406,12 @@ for ii=1:size(data,2)
     end
 end
 
-% Label, attach data to the figure 
+% Label, attach data to the figure.  Remember it is not yet visible.  That
+% happens in the calling routine.
 udata.x = wave; udata.y = data;
-set(figNum,'Userdata',udata);
-nameString = get(figNum,'Name');
-set(figNum,'Name',sprintf('%s: %s',nameString,dataType'));
-xlabel('Wavelength (nm)'); ylabel(ystr);
+set(fighdl,'Userdata',udata);
+xlabel('Wavelength (nm)'); 
+ylabel(ystr);
 grid on;
 
 end
@@ -370,9 +425,6 @@ function [uData, figNum] = imageNoise(noiseType,sensor)
 % The default noise type is shot-noise (electron variance).  Other types
 % are dsnu and prnu.  The shot-noise is generated on-the-fly.  The
 % dsnuImage and prnuImage are taken from the sensor array.
-%
-% Example:
-%   imageNoise('shotNoise',vcGetObject('sensor'));
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
@@ -406,12 +458,10 @@ end
 % Store data, put up image, label
 uData.theNoise = theNoise;
 
-figNum = ieNewGraphWin;
-imagesc(theNoise); colormap(gray(256)); colorbar;
-nameFig    = get(figNum,'Name'); 
-nameString = [nameFig,nameString];
-set(figNum,'Name',nameString);
+figNum = ieNewGraphWin([],[],['ISET: ',nameString]);
 title(titleString); 
+imagesc(theNoise); 
+colormap(gray(256)); colorbar;
 axis off
 
 end
