@@ -1,4 +1,4 @@
-function imgT = imageTranslate(img,shift)
+function imgT = imageTranslate(img,shift, fillValues)
 % Translate image data
 %
 %   imgT = imageTranslate(scene,shift);
@@ -24,7 +24,9 @@ function imgT = imageTranslate(img,shift)
 %% Use this form because we may loop on this routine a lot
 if ~exist('img','var')   || isempty(img), error('Image required'); end
 if ~exist('shift','var') || isempty(shift), error('(x,y) Displacement required'); end
-
+if ~exist('fillValues', 'var')
+    fillValues = 0; % default
+end
 % Legacy as we now support sub-pixel shifts
 % if round(shift) ~= shift
 %     shift = round(shift);
@@ -46,9 +48,9 @@ rcw = size(img);   % Row, column, wavelength
 % Note that we assume + is up/left, but by default Matlab assumes
 % down/right
 if length(rcw) == 2
-   imgT = imtranslate(img, [-1 * shift(1), -1 * shift(2)], 'FillValues', 0);
+   imgT = imtranslate(img, [-1 * shift(1), -1 * shift(2)], 'FillValues', fillValues);
 else
-   imgT = imtranslate(img, [-1 * shift(1), -1 * shift(2), 0], 'FillValues', 0);
+   imgT = imtranslate(img, [-1 * shift(1), -1 * shift(2), 0], 'FillValues', fillValues);
 end
 
 % old code

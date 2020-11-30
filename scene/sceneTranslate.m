@@ -1,4 +1,4 @@
-function scene = sceneTranslate(scene,dxy)
+function scene = sceneTranslate(scene,dxy,fillValues)
 % Translate a scene
 %
 %   scene = sceneTranslate(scene,dxy);
@@ -14,6 +14,7 @@ function scene = sceneTranslate(scene,dxy)
 %
 % scene:  Spectral scene
 % dxy:    (x,y) displacement in degrees
+% fillValue: value to use for areas that need to be filled in
 %
 % Example:
 %   scene = sceneCreate;
@@ -27,6 +28,7 @@ function scene = sceneTranslate(scene,dxy)
 
 if ~exist('scene','var'), error('Scene required.'); end
 if ~exist('dxy','var'),   error('x,y displacement required'); end
+if ~exist('fillValues', 'var'), fillValues = 0; end % default
 
 % Calculate the shift in pixels in the row/col directions
 % dxy(2) = rowShift*degPerPixel;
@@ -37,7 +39,7 @@ degPerPixel = sceneGet(scene,'h angular resolution');
 % shift = round(dxy/degPerPixel);   % Discretize step size here
 shift = dxy/degPerPixel;   % Discretize step size here
 p = sceneGet(scene,'photons');
-p = imageTranslate(p,shift);
+p = imageTranslate(p,shift, fillValues);
 
 scene = sceneSet(scene,'photons',p);
 % ieAddObject(scene); sceneWindow;
