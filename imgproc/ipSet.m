@@ -63,7 +63,7 @@ function ip = ipSet(ip,param,val,varargin)
 %  Correction for the illuminant
 %      'correction illuminant'               - Color balance structure
 %      'correction method illuminant'        - Name of the method (function)
-%        Currently supported
+%        Currently supporteddisplay
 %          'none', 'gray world', 'white world', 'manual matrix entry'
 %      'correction matrix illuminant'        - Color balance transform
 %
