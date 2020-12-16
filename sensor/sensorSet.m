@@ -83,6 +83,7 @@ function sensor = sensorSet(sensor,param,val,varargin)
 %      'noise seed'         - Saved noise seed for randn()
 %
 %      'exposure time'       - exposure time in seconds
+%      'exposure method'     - manually set in case we don't like the auto
 %      'exposure plane'      - selects exposure for display
 %      'auto exposure'       - auto-exposure flag, 1 or 0
 %                                'on' and 'off' are also OK.
@@ -314,6 +315,10 @@ switch lower(param)
         % Which of the multiple exposures, in a bracketed condition, we
         % show in the window.
         sensor.exposurePlane = round(val);
+    case {'exposuremethod'}
+        % this allows us to over-ride the automatic setting of bracketing,
+        % for example, so we can do burst photography
+        sensor.exposureMethod = val;
     case {'autoexp','autoexposure','automaticexposure'}
         % sensorSet(sensor,'auto exposure',1);
         % Boolean flag for turning on auto-exposure.

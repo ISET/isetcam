@@ -103,7 +103,7 @@ switch exposureMethod(1:3)
     case 'cfa'  % cfaExposure
         ip = ipComputeCFA(ip,sensor);
     case 'bur'  % burst of images
-        ip = ipComputeBurse(ip, sensor);
+        ip = ipComputeBurst(ip, sensor, 'sum');
     otherwise
         error('Unknown exposure method %s\n',exposureMethod);
 end
@@ -417,11 +417,14 @@ ip = ipSet(ip,'input',newImg);
 
 end
 
-function ip = ipComputeBurst(ip,sensor)
+function ip = ipComputeBurst(ip,sensor, combinationMethod)
 % Compute for Burst exposure case
 
-if ~exist('ip','var'),     error('IP required.'); end
-if ~exist('sensor','var'), error('Sensor array required.'); end
+if ~exist('ip','var'), error('IP required.'); end
+if ~exist('sensor','var'), error('Sensor required.'); end
+if ~exist('combinationMethod','var')
+    combinationMethod = ipGet(ip,'combinationMethod');
+end
 
 % Read the exposure times - same as number of filters
 expTimes = sensorGet(sensor,'expTimes');
@@ -429,6 +432,15 @@ nExps    = length(expTimes(:));
 % Get the data, either as volts or digital values.
 % Indicate which on return
 img       = ipGet(ip,'input');
+
+switch combinationMethod
+    case 'sum'
+        % simplest case where we just sum the burst of images
+        img = sum(img, 3);
+        ip = ipSet(ip, 'input', img);
+    otherwise
+        error("Don't know how to combine burst of images");
+end
 
 %ip = ipSet(ip,'input',newImg);
 end
