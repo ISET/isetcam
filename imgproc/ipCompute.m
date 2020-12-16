@@ -305,10 +305,10 @@ function ip = vciComputeBracketed(ip,sensor,combinationMethod)
 % sensor = vcGetObject('sensor');
 % ip = vcGetObject('vcimage');
 %
-if ~exist('ip','var'), error('Virtual camera image required.'); end
-if ~exist('sensor','var'), error('Image sensor array requried.'); end
+if ~exist('ip','var'), error('IP required.'); end
+if ~exist('sensor','var'), error('Sensor required.'); end
 if ~exist('combinationMethod','var')
-    combinationMethod = ipGet(ip,'combinationMethod'); 
+    combinationMethod = ipGet(ip,'combinationMethod');
 end
 
 % Could send this parameter in.  It is the value we accept as below saturation
@@ -352,8 +352,8 @@ function ip = vciComputeCFA(ip,sensor)
 % merge them back into a single CFA.
 %
 
-if ~exist('ip','var'),     error('Virtual camera image required.'); end
-if ~exist('sensor','var'), error('Image sensor array requried.'); end
+if ~exist('ip','var'),     error('IP required.'); end
+if ~exist('sensor','var'), error('Sensor array required.'); end
 
 % Read the exposure times - same as number of filters
 expTimes = sensorGet(sensor,'expTimes');
