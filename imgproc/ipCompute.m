@@ -73,7 +73,7 @@ if length(sensor) > 1
     % an array of sensors and it will pull the volts out of each of the
     % individual sensors.
     ip = ipSet(ip,'datamax',sensorGet(sensor(1),'max'));
-    ip = vciComputeSingle(ip,sensor);
+    ip = ipComputeSingle(ip,sensor);
     return;
 end
 
