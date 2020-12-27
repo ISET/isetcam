@@ -10,6 +10,7 @@ classdef CModule
         oi; % optics plus their resulting image
         sensor;
         stabilizer; % for future use :)
+        % for future, do user filters go here or in optics?
     end
     
     % Currently, many of the calls to us are just going to be passthrough
