@@ -14,6 +14,19 @@ classdef CScene
     %
     % History:
     %   Initial Version: D. Cardinal 12/20
+    %
+    % Sample Code:
+    %{
+    	ourScene = Cscene();
+        ourScene.initialScene = <name of cb_bunny resource>
+        ourScene.cameraMotion = [0 0 0];
+        ourScene.objectMotion = [['Default' [0 1 0] [0 0 0]]];
+        ourScene.exposureTimes = [.5 .5 .5 .5];
+        ourScene.cacheName = 'cb_bunny_slide';
+    
+        previewScene = ourScene.preview();
+        renderedScenes = ourScene.render();
+    %}
     
     properties
         initialScene; % Ideally this is a PBRT scene, but we also need
@@ -29,6 +42,19 @@ classdef CScene
                       % out CScenes, that could encapsulate a "Setting"
                       % and then be re-used as test cases
                       % [['<objectname'] [tx ty tz] [rx ry rz]], repeat]
+                      
+         expTimes;    % single or array of exposure times to use when
+                      % generating the rendered images
+                      
+         cacheName;   % Because scenes can be expensive to render, we
+                      % store them in /local. But to use them as a cache
+                      % we need to make sure they are relevant. We could
+                      % do what we do with OI and match the entire setting
+                      % structure, or here we just let the user "tag" a
+                      % cache entry to see if they want to re-use it.
+                      % individual scene frames are stored as files under
+                      % this folder.
+                      
     end
     
     methods
