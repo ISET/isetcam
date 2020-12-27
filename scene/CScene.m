@@ -16,10 +16,14 @@ classdef CScene
     %   Initial Version: D. Cardinal 12/20
     %
     % Sample Code:
+    %   load the Cornell Box + Stanford bunny
+    %   set up for moving the bunny
+    %   then generate a series of scenes based on that
     %{
     	ourScene = Cscene();
-        ourScene.initialScene = <name of cb_bunny resource>
+        ourScene.initialScene = <name of cb_bunny pbrt resource>
         ourScene.cameraMotion = [0 0 0];
+        % bunny is currently labeled Default
         ourScene.objectMotion = [['Default' [0 1 0] [0 0 0]]];
         ourScene.exposureTimes = [.5 .5 .5 .5];
         ourScene.cacheName = 'cb_bunny_slide';
