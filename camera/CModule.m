@@ -7,9 +7,14 @@ classdef CModule
     %   to support that in future.
     
     properties
+        oi; % optics plus their resulting image
         sensor;
-        oi;
+        stabilizer; % for future use :)
     end
+    
+    % Currently, many of the calls to us are just going to be passthrough
+    % to either the sensor or optics structs, but not sure there is a
+    % better way to deal with it that leaves existing code alone.
     
     methods
         function obj = CModule(inputArg1,inputArg2)
@@ -18,13 +23,17 @@ classdef CModule
             obj.Property1 = inputArg1 + inputArg2;
         end
         
-        function outputArg = compute(obj,XXX)
+        function cOutput = compute(obj,XXX)
             %COMPUTE Calculate what we capture
             %   Simplest case this is sensorCompute + oiCompute
             %   however, we also need to integrate multi-capture
             %   including support for scenes that change during the
             %   burst or HDR capture
-            outputArg = obj.Property1 + inputArg;
+            
+            %! -- One biggish decision is whether to have the CModule
+            %     directly support capturing bursts/brackets, or have 
+            %     it called multiple times by the CCamera object (?)
+            
         end
     end
 end

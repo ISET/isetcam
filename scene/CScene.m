@@ -16,13 +16,19 @@ classdef CScene
     %   Initial Version: D. Cardinal 12/20
     
     properties
-        initialScene;
-        cameraMotion; % extent of camera motion in TBD units
+        initialScene; % Ideally this is a PBRT scene, but we also need
+                      % to handle the case where it is an ISET scene
+                      % or even just an image file
+                      
+        cameraMotion; % extent of camera motion in meters per second
+                      % ['<cameraname>' [tx ty tz] [rx ry rz]]
+                      
         objectMotion; % okay, this could be complicated.
                       % we have object names, translation, and rotation
                       % Seems like a good argument for being able to write
                       % out CScenes, that could encapsulate a "Setting"
                       % and then be re-used as test cases
+                      % [['<objectname'] [tx ty tz] [rx ry rz]], repeat]
     end
     
     methods
@@ -36,7 +42,7 @@ classdef CScene
             outputArg = render(obj,XXX)
             % render uses what we know about the initial
             % image and subsequent motion requests
-            % to generate one or more output scene objects
+            % to generate one or more output scene structs
             
             %   Detailed explanation goes here
             
