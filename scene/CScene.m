@@ -36,6 +36,8 @@ classdef CScene
         initialScene = ''; % Ideally this is a PBRT scene, but we also need
         % to handle the case where it is an ISET scene
         % or even just an image file
+        scenePath = 'Cornell_BoxBunnyChart'; %Default PBRT scene
+        sceneName =  'cornell box bunny chart'; 
         
         cameraMotion = []; % extent of camera motion in meters per second
         % ['<cameraname>' [tx ty tz] [rx ry rz]]
@@ -69,15 +71,17 @@ classdef CScene
     
     %% Do the work here
     methods
-        function obj = CScene(XXX)
+        function obj = CScene(scenePath, sceneName)
             %CSCENE Construct an instance of this class
             %   allow whatever init we want to accept in the creation call
-            
+            obj.scenePath = scenePath;
+            obj.sceneName = sceneName;
         end
         
         %% Main rendering function
-        % Do we want to get the sceneName & scenePath to initialize here?
-        function sceneFiles = render(obj,XXX)
+        % We know the scene, but need to pass Exposure Time(s),
+        % which also gives us numFrames
+        function sceneFiles = render(obj,expTimes)
             % render uses what we know about the initial
             % image and subsequent motion requests
             % to generate one or more output scene or oi structs
@@ -85,21 +89,12 @@ classdef CScene
             %   If lensmodel is set, it is used with PBRT and
             %   we return an array of oi objects, otherwise scenes
             
-            % Pick a default scene if none provided
-            if ~exist('scenePath','var') || isempty(scenePath)
-                scenePath = 'Cornell_BoxBunnyChart';
-            end
-            if ~exist('sceneName','var') || isempty(sceneName)
-                sceneName = 'cornell box bunny chart';
-            end
-            if ~exist('numFrames','var') || numFrames == 0
-                numFrames = 4;
-            end
+            obj.numFrames = numel(expTimes);
             
             % initialize our pbrt scene
             if ~piDockerExists, piDockerConfig; end
             % read scene (defaults is cornell box with bunny)
-            thisR = piRecipeDefault('scene name', sceneName);
+            thisR = piRecipeDefault('scene name', obj.sceneName);
             
             % Modify the film resolution
             % FIX: This should be set to the sensor size, ideally
@@ -117,7 +112,7 @@ classdef CScene
             % Find the bunny! (our default)
             bunnyName = 'Default'; % hopefully will get changed
             
-            imageFolderPath = fullfile(isetRootPath, 'local', scenePath, 'images');
+            imageFolderPath = fullfile(isetRootPath, 'local', obj.scenePath, 'images');
             if ~isfolder(imageFolderPath)
                 mkdir(imageFolderPath);
             end
