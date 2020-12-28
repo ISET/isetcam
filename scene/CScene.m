@@ -69,15 +69,15 @@ classdef CScene
     
     %% Do the work here
     methods
-        function obj = CSene(XXX)
-            %CSENE Construct an instance of this class
+        function obj = CScene(XXX)
+            %CSCENE Construct an instance of this class
             %   allow whatever init we want to accept in the creation call
             
         end
         
         %% Main rendering function
         % Do we want to get the sceneName & scenePath to initialize here?
-        function outputArg = render(obj,XXX)
+        function sceneFiles = render(obj,XXX)
             % render uses what we know about the initial
             % image and subsequent motion requests
             % to generate one or more output scene or oi structs
@@ -85,8 +85,7 @@ classdef CScene
             %   If lensmodel is set, it is used with PBRT and
             %   we return an array of oi objects, otherwise scenes
             
-            
-            
+            % Pick a default scene if none provided
             if ~exist('scenePath','var') || isempty(scenePath)
                 scenePath = 'Cornell_BoxBunnyChart';
             end
@@ -96,18 +95,20 @@ classdef CScene
             if ~exist('numFrames','var') || numFrames == 0
                 numFrames = 4;
             end
-            motionX = 1; % default
-            motionY = 1;
-            motionZ = 0;
+            
             % initialize our pbrt scene
             if ~piDockerExists, piDockerConfig; end
-            %% Read Cornell Box
+            % read scene (defaults is cornell box with bunny)
             thisR = piRecipeDefault('scene name', sceneName);
             
             % Modify the film resolution
+            % FIX: This should be set to the sensor size, ideally
+            % or maybe to a fraction for faster performance
             thisR.set('filmresolution', [512, 512]);
             
             %% Add new light
+            % UPDATE THIS WITH NEW CODE FROM MOTION TUTORIAL IN ISET3D
+            % ONCE IT IS IN GOOD SHAPE.
             thisR = piLightAdd(thisR,...
                 'type','point',...
                 'light spectrum','Tungsten',...
@@ -124,6 +125,11 @@ classdef CScene
             for ii = 1:numFrames
                 imageFilePrefixName = fullfile(imageFolderPath, append("frame_", num2str(ii)));
                 imageFileName = append(imageFilePrefixName,  ".mat");
+                
+                %IF we haven't rendered before, do it now
+                %FIX: CURREENT SIMPLE HARD-CODE MOTION
+                % NEEDS TO READ objectmotion & cameramotion arrays and
+                % process
                 if ~isfile(imageFileName)
                     moveX = motionX * (ii - 1);
                     moveY = motionY * (ii - 1);
@@ -131,7 +137,8 @@ classdef CScene
                     
                     % if we want movement during each frame, need to get
                     % the actual exposure time from the caller:
-                    thisR.set('cameraexposure', 0.5);
+                    % if expTime is single value, can we sub-index 1?
+                    thisR.set('cameraexposure', expTime(ii));
                     
                     % setting motion isn't working for me:
                     %thisR.set('asset', bunnyName, 'motion', 'translation', [moveX, moveY, moveZ]);
@@ -142,6 +149,8 @@ classdef CScene
                     piWrite(thisR);
                     
                     %% Render and visualize
+                    % Should we also allow for keeping depth if needed for
+                    % post-processing?
                     [scene, results] = piRender(thisR, 'render type', 'radiance');
                     sceneToFile(imageFileName,scene);
                     sceneSaveImage(scene,imageFilePrefixName);
