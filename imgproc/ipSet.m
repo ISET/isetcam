@@ -302,11 +302,13 @@ switch param
 
     % Needs more comments and development    
     case {'combineexposures','combinationmethod'}
-        % Method for combining multiple exposures in bracketed case
+        % Method for combining multiple exposures in bracketed or burst case
         % Implemented:
         %   longest - Longest not saturated
+        %   sum -- for burst, just add values
         %   Others to come, I hope
         ip.combineExposures = val;
+        ip.combinationMethod = val; % this is what the Get routine wants!
         
     % Special case for L3 work with unconventional CFAs
     case {'l3'}
