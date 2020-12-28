@@ -4,7 +4,7 @@ classdef CScene
     %   camera motion and motion of objects in the scene
     %   
     %   For full functionality, accepts a PBRT scene from
-    %   which it can generate a series of usable scenes for an oi
+    %   which it can generate a series of usable scenes or ois
     %
     %   Can also accept ISET scenes (.mat) and images, but
     %   with reduced functionality
@@ -24,7 +24,7 @@ classdef CScene
         ourScene.initialScene = <name of cb_bunny pbrt resource>
         ourScene.cameraMotion = [0 0 0];
         % bunny is currently labeled Default
-        ourScene.objectMotion = [['Default' [0 1 0] [0 0 0]]];
+        ourScene.objectMotion = [['Default' [1 0 0] [0 0 0]]];
         ourScene.exposureTimes = [.5 .5 .5 .5];
         ourScene.cacheName = 'cb_bunny_slide';
     
@@ -33,24 +33,24 @@ classdef CScene
     %}
     
     properties
-        initialScene; % Ideally this is a PBRT scene, but we also need
+        initialScene = ''; % Ideally this is a PBRT scene, but we also need
                       % to handle the case where it is an ISET scene
                       % or even just an image file
                       
-        cameraMotion; % extent of camera motion in meters per second
+        cameraMotion = []; % extent of camera motion in meters per second
                       % ['<cameraname>' [tx ty tz] [rx ry rz]]
                       
-        objectMotion; % okay, this could be complicated.
+        objectMotion = []; % okay, this could be complicated.
                       % we have object names, translation, and rotation
                       % Seems like a good argument for being able to write
                       % out CScenes, that could encapsulate a "Setting"
                       % and then be re-used as test cases
                       % [['<objectname'] [tx ty tz] [rx ry rz]], repeat]
                       
-         expTimes;    % single or array of exposure times to use when
+         expTimes = [.5];    % single or array of exposure times to use when
                       % generating the rendered images
                       
-         cacheName;   % Because scenes can be expensive to render, we
+         cacheName = '';   % Because scenes can be expensive to render, we
                       % store them in /local. But to use them as a cache
                       % we need to make sure they are relevant. We could
                       % do what we do with OI and match the entire setting
@@ -59,22 +59,28 @@ classdef CScene
                       % individual scene frames are stored as files under
                       % this folder.
                       
+         lensModel = '';   % Since PBRT can accept lens models and return an OI
+                      % provide the option to specify one here. In this
+                      % case, instead of returning an array of scenes, we
+                      % return an array of oi's, that can be fed directly
+                      % to a sensor. Default is simple "pinhole" 
+                      
     end
     
     methods
-        function obj = CSene(inputArg1,inputArg2)
+        function obj = CSene(XXX)
             %CSENE Construct an instance of this class
-            %   Detailed explanation goes here
-            obj.Property1 = inputArg1 + inputArg2;
+            %   allow whatever init we want to accept in the creation call
+            
         end
         
-        function
-            outputArg = render(obj,XXX)
+        function outputArg = render(obj,XXX)
             % render uses what we know about the initial
             % image and subsequent motion requests
-            % to generate one or more output scene structs
+            % to generate one or more output scene or oi structs
             
-            %   Detailed explanation goes here
+            %   If lensmodel is set, it is used with PBRT and
+            %   we return an array of oi objects, otherwise scenes
             
         end
         
