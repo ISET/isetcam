@@ -7,9 +7,9 @@ classdef CModule
     %   to support that in future.
     
     properties
-        oi; % optics plus their resulting image
-        sensor;
-        stabilizer; % for future use :)
+        oi = oiCreate(); % optics plus their resulting image
+        sensor = sensorCreate();
+        stabilizer = []; % for future use :)
         % for future, do user filters go here or in optics?
     end
     
@@ -21,7 +21,7 @@ classdef CModule
         function obj = CModule(inputArg1,inputArg2)
             %CMODULE Construct an instance of this class
             %   Detailed explanation goes here
-            obj.Property1 = inputArg1 + inputArg2;
+            
         end
         
         function cOutput = compute(obj,XXX)
@@ -30,6 +30,12 @@ classdef CModule
             %   however, we also need to integrate multi-capture
             %   including support for scenes that change during the
             %   burst or HDR capture
+            
+            %   For burst/bracket we (or our caller) use CScene to call PBRT (if we have an
+            %   appropriate scene) to generate a set of scenes for us.
+            %
+            %   IF we can load our lens model into PBRT, then it gives us
+            %   an array of oi's, not scenes
             
             %! -- One biggish decision is whether to have the CModule
             %     directly support capturing bursts/brackets, or have 
