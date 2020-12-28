@@ -39,11 +39,14 @@ classdef CCamera
             % input, so maybe we don't need to do a CScene.Preview?
             
             if ~exist('scene', 'var') || isempty(scene)
-                scene = sceneCreate();
+                scene = CScene();
             end
             if ~exist('intent','var') || isempty(intent)
                 intent = 'Auto';
             end
+            
+            % Based on the intent determine number of frames and exposure
+            % time(s). Potentially more sophisticated stuff as well
             
             switch intent
                 case {'Auto', 'Portrait', 'Scenic', 'Action', ...
@@ -56,6 +59,12 @@ classdef CCamera
                     % Something like:
                     % sensorImages = obj.cmodule.capture(xxx);
                     % outputImages = obj.isp.Compute(sensorImages);
+                    
+                    % For now assume we're a very simple camera!
+                    nFrames = 1;
+                    
+                    % And we can do AutoExposure to get our time.
+                    expTime = .5; % FIX TO GET REAL EXPOSURE!
                     
                 case 'HDR'
                     % use the bracketing code
@@ -74,15 +83,20 @@ classdef CCamera
                     error("Unknown photo intent");
             end
             
-            function save(obj, sFileName)
-                save(sFileName, obj);
-            end
+            % Simplest case, now that we have the nFrames & expTimes
+            % We can ask our camera module to capture the image.
             
-            function load(obj, lFileName)
-                % how do we make sure this gets loaded into us
-                % or should we just have an initializer that uses load?
-                load(lFileName, obj)
-            end
+        end
+        
+        function save(obj, sFileName)
+            save(sFileName, obj);
+        end
+        
+        function load(obj, lFileName)
+            % how do we make sure this gets loaded into us
+            % or should we just have an initializer that uses load?
+            load(lFileName, obj)
+        end
     end
 end
 
