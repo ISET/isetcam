@@ -138,7 +138,7 @@ classdef CScene
                     % if we want movement during each frame, need to get
                     % the actual exposure time from the caller:
                     % if expTime is single value, can we sub-index 1?
-                    thisR.set('cameraexposure', expTime(ii));
+                    thisR.set('cameraexposure', obj.expTimes(ii));
                     
                     % setting motion isn't working for me:
                     %thisR.set('asset', bunnyName, 'motion', 'translation', [moveX, moveY, moveZ]);
