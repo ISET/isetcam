@@ -119,9 +119,14 @@ classdef CScene
                 mkdir(imageFolderPath);
             end
             sceneFiles = [];
-            for ii = 1:numFrames
+            for ii = 1:obj.numFrames
                 imageFilePrefixName = fullfile(imageFolderPath, append("frame_", num2str(ii)));
                 imageFileName = append(imageFilePrefixName,  ".mat");
+                
+                % TOTAL HACK:
+                motionX = .1;
+                motionY = .1;
+                motionZ = 0;
                 
                 %IF we haven't rendered before, do it now
                 %FIX: CURREENT SIMPLE HARD-CODE MOTION
