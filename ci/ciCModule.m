@@ -6,6 +6,9 @@ classdef ciCModule
     %   but as many camera systems now use several, we expect
     %   to support that in future.
     
+    % History:
+    %   Initial Code: D.Cardinal 12/2020
+    
     properties
         oi = oiCreate(); % optics plus their resulting image
         sensor = sensorCreate();
@@ -43,6 +46,13 @@ classdef ciCModule
             cOutput = [];
             for ii = 1:numel(sceneArray)
                 opticalImage = oiCompute(obj.oi, sceneArray(ii)); 
+                
+                % set sensor FOV to match scene. I don't know if we should
+                % always do this, or rely on the user to sort it out?
+                if ii == 1 % just need to do this once, I think
+                    sceneFOV = [sceneGet(sceneArray(ii),'fovhorizontal') sceneGet(sceneArray(ii),'fovvertical')];
+                    obj.sensor = sensorSetSizeToFOV(obj.sensor,sceneFOV,opticalimage);
+                end
                 sensorImage = sensorCompute(obj.sensor, opticalImage);
                 cOutput = [cOutput sensorImage];
             end

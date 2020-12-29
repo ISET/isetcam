@@ -14,7 +14,7 @@ classdef ciScene
     %   that to make decisions about setting capture parameters
     %
     % History:
-    %   Initial Version: D. Cardinal 12/20
+    %   Initial Version: D. Cardinal 12/2020
     %
     % Sample Code:
     %   load the Cornell Box + Stanford bunny

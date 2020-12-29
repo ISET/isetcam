@@ -7,6 +7,9 @@ classdef ciCamera
     %   *     and potentially for multiple camera modules used for one
     %         photo
     
+    % History:
+    %   Initial Version: D.Cardinal 12/2020
+    
     properties
         cmodule = ciCModule(); % 1 (or more) CModules
         % probably need to superset this
