@@ -67,6 +67,8 @@ classdef CScene
         % return an array of oi's, that can be fed directly
         % to a sensor. Default is simple "pinhole"
         
+        numFrames = 1;
+        
     end
     
     %% Do the work here
