@@ -19,7 +19,7 @@ classdef CCamera
             
         end
         
-        function outputArg = TakePicture(obj, scene, intent)
+        function ourPicture = TakePicture(obj, scene, intent)
             %TakePicture Main function telling us to create a photo
             
             % scene can be either a scene struct (static)
@@ -87,9 +87,14 @@ classdef CCamera
             
             % Simplest case, now that we have the nFrames & expTimes
             % We can ask our camera module to capture the image.
-            ourCaptures = obj.cameramodule.compute(useScenes);
+            ourCaptures = oiCompute(obj.cameramodule, useScenes);
             
             % now we need to use the IP and our logic to combine images
+            % if simple then ipCompute usually wants the sensor?
+            if numel(ourCaptures) == 1
+                ourPicture = ipCompute(obj.isp, obj.sensor, ourCaptures);
+            end
+            
         end
         
         function save(obj, sFileName)
