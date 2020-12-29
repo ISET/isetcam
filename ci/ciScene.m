@@ -4,7 +4,8 @@ classdef ciScene
     %   camera motion and motion of objects in the scene
     %
     %   For full functionality, accepts a PBRT scene from
-    %   which it can generate a series of usable scenes or ois
+    %   which it can generate a series of usable scenes or ois,
+    %   either as a scene name, or as a Recipe
     %
     %   Can also accept ISET scenes (.mat) and images, but
     %   with reduced functionality
@@ -38,6 +39,10 @@ classdef ciScene
         % or even just an image file
         scenePath = 'Cornell_BoxBunnyChart'; %Default PBRT scene
         sceneName =  'cornell box bunny chart'; 
+        sceneFileName = '';
+        thisR;
+        
+        resolution = [512 512]; 
         
         cameraMotion = []; % extent of camera motion in meters per second
         % ['<cameraname>' [tx ty tz] [rx ry rz]]
@@ -73,11 +78,35 @@ classdef ciScene
     
     %% Do the work here
     methods
-        function obj = ciScene(scenePath, sceneName)
+        function obj = ciScene(sceneType, varargin)
             %CISCENE Construct an instance of this class
             %   allow whatever init we want to accept in the creation call
-            obj.scenePath = scenePath;
-            obj.sceneName = sceneName;
+            switch scenetype
+                case 'recipe'
+                    obj.thisR = varargin(1);
+                case 'pbrt'
+                    if exists(varargin(1))
+                        obj.scenePath = varargin(1);
+                    end
+                    if exists(varargin(2))
+                        obj.sceneName = varargin(2);
+                    end
+                case 'iset scene file'
+                    if isfile(varargin(1))
+                        obj.sceneFileName = varargin(1);
+                    end 
+                case 'iset scene'
+                    if exists(varargin(1))
+                        obj.initialScene = varargin(1);
+                    end
+                case 'image'
+                    if exists(varargin(1))
+                        obj.sceneFileName = varargin(1);
+                    end
+                otherwise
+                    error("Unknown Scene Type");
+            end
+            
         end
         
         %% Main rendering function
@@ -96,12 +125,13 @@ classdef ciScene
             % initialize our pbrt scene
             if ~piDockerExists, piDockerConfig; end
             % read scene (defaults is cornell box with bunny)
-            thisR = piRecipeDefault('scene name', obj.sceneName);
-            
+            if ~exist(obj.thisR, 'var') || isempty(obj.thisR)
+                obj.thisR = piRecipeDefault('scene name', obj.sceneName);
+            end
             % Modify the film resolution
             % FIX: This should be set to the sensor size, ideally
             % or maybe to a fraction for faster performance
-            thisR.set('filmresolution', [512, 512]);
+            thisR.set('filmresolution', obj.resolution);
             
             %% Add new light
             % UPDATE THIS WITH NEW CODE FROM MOTION TUTORIAL IN ISET3D
@@ -143,9 +173,9 @@ classdef ciScene
                     thisR.set('cameraexposure', obj.expTimes(ii));
                     
                     % setting motion isn't working for me:
-                    %thisR.set('asset', bunnyName, 'motion', 'translation', [moveX, moveY, moveZ]);
+                    thisR.set('asset', bunnyName, 'motion', 'translation', [moveX, moveY, moveZ]);
                     % but translation does:
-                    thisR.set('asset', bunnyName, 'translation', [moveX, moveY, moveZ]);
+                    %thisR.set('asset', bunnyName, 'translation', [moveX, moveY, moveZ]);
                     
                     %% Write recipe
                     piWrite(thisR);
