@@ -20,6 +20,10 @@ classdef ciCamera
             
         end
         
+        % Expected to be over-ridden in sub-classes
+        % but they can still call us for "generic" processing.
+        % There may also be lower-level touchpoints for sub-classing
+        % so that they don't need to re-implement all of this. . .
         function ourPicture = TakePicture(obj, scene, intent)
             %TakePicture Main function telling us to create a photo
             
