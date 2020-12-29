@@ -9,6 +9,7 @@ classdef ciCamera
     
     properties
         cmodule = ciCModule(); % 1 (or more) CModules
+        % probably need to superset this
         isp = ipCreate();     % an ip or maybe something that extends an ip
         
     end
