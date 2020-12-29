@@ -153,34 +153,30 @@ classdef ciScene
                 mkdir(imageFolderPath);
             end
             sceneFiles = [];
+            
+            % process object motion
+            for ii = 1:numel(obj.objectmotion)
+                ourMotion = obj.objectmotion{ii};
+                    % setting motion isn't working for me:
+                    if ~isempty(ourMotion(1))
+                        obj.thisR.set('asset', ourMotion(1), 'motion', 'translation', ourMotion(2));
+                        obj.thisR.set('asset', ourMotion(1), 'motion', 'rotation', ourMotion(3));
+                    end
+                    %thisR.set('asset', bunnyName, 'translation', [moveX, moveY, moveZ]);
+                
+            end
             for ii = 1:obj.numFrames
                 imageFilePrefixName = fullfile(imageFolderPath, append("frame_", num2str(ii)));
                 imageFileName = append(imageFilePrefixName,  ".mat");
                 
-                % TOTAL HACK:
-                motionX = .1;
-                motionY = .1;
-                motionZ = 0;
-                
                 %IF we haven't rendered before, do it now
-                %FIX: CURREENT SIMPLE HARD-CODE MOTION
-                % NEEDS TO READ objectmotion & cameramotion arrays and
-                % process
                 if ~isfile(imageFileName)
-                    moveX = motionX * (ii - 1);
-                    moveY = motionY * (ii - 1);
-                    moveZ = motionZ * (ii - 1);
                     
                     % if we want movement during each frame, need to get
                     % the actual exposure time from the caller:
                     % if expTime is single value, can we sub-index 1?
                     obj.thisR.set('cameraexposure', obj.expTimes(ii));
-                    
-                    % setting motion isn't working for me:
-                    obj.thisR.set('asset', bunnyName, 'motion', 'translation', [moveX, moveY, moveZ]);
-                    % but translation does:
-                    %thisR.set('asset', bunnyName, 'translation', [moveX, moveY, moveZ]);
-                    
+                                        
                     %% Write recipe
                     piWrite(obj.thisR);
                     
