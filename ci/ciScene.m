@@ -34,6 +34,7 @@ classdef ciScene
     %}
     
     properties
+        sceneType = '';
         initialScene = ''; % Ideally this is a PBRT scene, but we also need
         % to handle the case where it is an ISET scene
         % or even just an image file
@@ -81,27 +82,30 @@ classdef ciScene
         function obj = ciScene(sceneType, varargin)
             %CISCENE Construct an instance of this class
             %   allow whatever init we want to accept in the creation call
-            switch scenetype
+            obj.sceneType = sceneType;
+            switch obj.sceneType
                 case 'recipe'
-                    obj.thisR = varargin(1);
-                case 'pbrt'
-                    if exists(varargin(1))
-                        obj.scenePath = varargin(1);
+                    if exist(varargin{1},'var')
+                        obj.thisR = varargin{1};
                     end
-                    if exists(varargin(2))
-                        obj.sceneName = varargin(2);
+                case 'pbrt'
+                    if exist(varargin{1}, 'var')
+                        obj.scenePath = varargin{1};
+                    end
+                    if exist(varargin{2}, 'var')
+                        obj.sceneName = varargin{2};
                     end
                 case 'iset scene file'
-                    if isfile(varargin(1))
-                        obj.sceneFileName = varargin(1);
+                    if isfile(varargin{1})
+                        obj.sceneFileName = varargin{1};
                     end 
                 case 'iset scene'
-                    if exists(varargin(1))
-                        obj.initialScene = varargin(1);
+                    if exist(varargin{1},'var')
+                        obj.initialScene = varargin{1};
                     end
                 case 'image'
-                    if exists(varargin(1))
-                        obj.sceneFileName = varargin(1);
+                    if exist(varargin{1}, 'var')
+                        obj.sceneFileName = varargin{1};
                     end
                 otherwise
                     error("Unknown Scene Type");
@@ -131,12 +135,12 @@ classdef ciScene
             % Modify the film resolution
             % FIX: This should be set to the sensor size, ideally
             % or maybe to a fraction for faster performance
-            thisR.set('filmresolution', obj.resolution);
+            obj.thisR.set('filmresolution', obj.resolution);
             
             %% Add new light
             % UPDATE THIS WITH NEW CODE FROM MOTION TUTORIAL IN ISET3D
             % ONCE IT IS IN GOOD SHAPE.
-            thisR = piLightAdd(thisR,...
+            obj.thisR = piLightAdd(obj.thisR,...
                 'type','point',...
                 'light spectrum','Tungsten',...
                 'cameracoordinate', true);
@@ -170,20 +174,20 @@ classdef ciScene
                     % if we want movement during each frame, need to get
                     % the actual exposure time from the caller:
                     % if expTime is single value, can we sub-index 1?
-                    thisR.set('cameraexposure', obj.expTimes(ii));
+                    obj.thisR.set('cameraexposure', obj.expTimes(ii));
                     
                     % setting motion isn't working for me:
-                    thisR.set('asset', bunnyName, 'motion', 'translation', [moveX, moveY, moveZ]);
+                    obj.thisR.set('asset', bunnyName, 'motion', 'translation', [moveX, moveY, moveZ]);
                     % but translation does:
                     %thisR.set('asset', bunnyName, 'translation', [moveX, moveY, moveZ]);
                     
                     %% Write recipe
-                    piWrite(thisR);
+                    piWrite(obj.thisR);
                     
                     %% Render and visualize
                     % Should we also allow for keeping depth if needed for
                     % post-processing?
-                    [scene, results] = piRender(thisR, 'render type', 'radiance');
+                    [scene, results] = piRender(obj.thisR, 'render type', 'radiance');
                     sceneToFile(imageFileName,scene);
                     sceneSaveImage(scene,imageFilePrefixName);
                 end
