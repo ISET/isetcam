@@ -18,13 +18,13 @@ classdef CModule
     % better way to deal with it that leaves existing code alone.
     
     methods
-        function obj = CModule(inputArg1,inputArg2)
+        function obj = CModule()
             %CMODULE Construct an instance of this class
-            %   Detailed explanation goes here
+            
             
         end
         
-        function cOutput = compute(obj,XXX)
+        function cOutput = compute(obj, sceneArray) % will support more args
             %COMPUTE Calculate what we capture
             %   Simplest case this is sensorCompute + oiCompute
             %   however, we also need to integrate multi-capture
@@ -40,7 +40,12 @@ classdef CModule
             %! -- One biggish decision is whether to have the CModule
             %     directly support capturing bursts/brackets, or have 
             %     it called multiple times by the CCamera object (?)
-            
+            cOutput = [];
+            for ii = 1:numel(sceneArray)
+                opticalImage = oiCompute(obj.oi, sceneArray(ii)); 
+                sensorImage = sensorCompute(obj.sensor, opticalImage);
+                cOutput = [cOutput sensorImage];
+            end
         end
     end
 end

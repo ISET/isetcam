@@ -14,9 +14,8 @@ classdef CCamera
     end
     
     methods
-        function obj = CCamera(XXX)
+        function obj = CCamera() % parameters TBD
             %CCAMERA Construct an instance of this class
-            %   Detailed explanation goes here
             
         end
         
@@ -64,7 +63,10 @@ classdef CCamera
                     nFrames = 1;
                     
                     % And we can do AutoExposure to get our time.
-                    expTime = .5; % FIX TO GET REAL EXPOSURE!
+                    expTimes = [.5]; % FIX TO GET REAL EXPOSURE!
+                    
+                    % As a simple test just get a scene we can use!
+                    useScenes = scene.render(expTimes);
                     
                 case 'HDR'
                     % use the bracketing code
@@ -85,7 +87,9 @@ classdef CCamera
             
             % Simplest case, now that we have the nFrames & expTimes
             % We can ask our camera module to capture the image.
+            ourCaptures = obj.cameramodule.compute(useScenes);
             
+            % now we need to use the IP and our logic to combine images
         end
         
         function save(obj, sFileName)
