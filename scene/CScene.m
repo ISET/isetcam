@@ -112,7 +112,7 @@ classdef CScene
                 'cameracoordinate', true);
             
             % Find the bunny! (our default)
-            bunnyName = 'Default'; % hopefully will get changed
+            bunnyName = 'Default_B'; % might get changed?
             
             imageFolderPath = fullfile(isetRootPath, 'local', obj.scenePath, 'images');
             if ~isfolder(imageFolderPath)

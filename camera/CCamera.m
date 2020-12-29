@@ -86,13 +86,11 @@ classdef CCamera
             end
             
             % Simplest case, now that we have the nFrames & expTimes
-            % We can ask our camera module to capture the image.
-            ourCaptures = oiCompute(obj.cameramodule, useScenes);
-            
-            % now we need to use the IP and our logic to combine images
-            % if simple then ipCompute usually wants the sensor?
-            if numel(ourCaptures) == 1
-                ourPicture = ipCompute(obj.isp, obj.sensor, ourCaptures);
+            for ii = 1:numel(useScenes)
+                useableScene = sceneFromFile(useScenes(ii), 'multispectral');
+                ourOIs = oiCompute(useableScene, obj.cmodule.oi);
+                ourCaptures = sensorCompute(obj.cmodule.sensor, ourOIs);
+                ourPicture = ipCompute(obj.isp, ourCaptures);
             end
             
         end
