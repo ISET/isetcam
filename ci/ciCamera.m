@@ -1,5 +1,5 @@
-classdef CCamera
-    %CCAMERA Computational Camera
+classdef ciCamera
+    %CICAMERA Computational Camera
     %   Allows for more complex camera designs, potentially including:
     %   * Burst captures, including support for camera and object motion
     %   * More sophisticated ISP features
@@ -8,14 +8,14 @@ classdef CCamera
     %         photo
     
     properties
-        cmodule = CModule(); % 1 (or more) CModules
+        cmodule = ciCModule(); % 1 (or more) CModules
         isp = ipCreate();     % an ip or maybe something that extends an ip
         
     end
     
     methods
-        function obj = CCamera() % parameters TBD
-            %CCAMERA Construct an instance of this class
+        function obj = ciCamera() % parameters TBD
+            %CICAMERA Construct an instance of this class
             
         end
         
@@ -38,7 +38,7 @@ classdef CCamera
             % input, so maybe we don't need to do a CScene.Preview?
             
             if ~exist('scene', 'var') || isempty(scene)
-                scene = CScene();
+                scene = ciScene();
             end
             if ~exist('intent','var') || isempty(intent)
                 intent = 'Auto';

@@ -1,8 +1,8 @@
-classdef CModule
-    %CMODULE Camera module including sensor and optics
+classdef ciCModule
+    %CICMODULE Camera module including sensor and optics
     %   wraps existing sensor and oi structs to allow
     %   control as a unit by a computational camera system
-    %   initially we're supporting 1 CModule per CCamera,
+    %   initially we're supporting 1 ciCModule per ciCamera,
     %   but as many camera systems now use several, we expect
     %   to support that in future.
     
@@ -18,8 +18,8 @@ classdef CModule
     % better way to deal with it that leaves existing code alone.
     
     methods
-        function obj = CModule()
-            %CMODULE Construct an instance of this class
+        function obj = ciCModule()
+            %CICMODULE Construct an instance of this class
             
             
         end

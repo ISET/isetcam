@@ -1,5 +1,5 @@
-classdef CScene
-    %CSCENE Computational enhancement of scene struct
+classdef ciScene
+    %CISCENE Computational enhancement of scene struct
     %   Allows for computed scenes, that can include
     %   camera motion and motion of objects in the scene
     %
@@ -20,7 +20,7 @@ classdef CScene
     %   set up for moving the bunny
     %   then generate a series of scenes based on that
     %{
-    	ourScene = Cscene();
+    	ourScene = ciScene();
         ourScene.initialScene = <name of cb_bunny pbrt resource>
         ourScene.cameraMotion = [0 0 0];
         % bunny is currently labeled Default
@@ -73,8 +73,8 @@ classdef CScene
     
     %% Do the work here
     methods
-        function obj = CScene(scenePath, sceneName)
-            %CSCENE Construct an instance of this class
+        function obj = ciScene(scenePath, sceneName)
+            %CISCENE Construct an instance of this class
             %   allow whatever init we want to accept in the creation call
             obj.scenePath = scenePath;
             obj.sceneName = sceneName;
