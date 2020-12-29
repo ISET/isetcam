@@ -59,11 +59,7 @@ classdef ciCamera
                     % we might also want to add more "techie" intents
                     % like 'burst' rather than relying on them being
                     % activated based on some other user choice
-                    
-                    % Something like:
-                    % sensorImages = obj.cmodule.capture(xxx);
-                    % outputImages = obj.isp.Compute(sensorImages);
-                    
+                                        
                     % For now assume we're a very simple camera!
                     nFrames = 1;
                     
@@ -94,6 +90,8 @@ classdef ciCamera
             for ii = 1:numel(useScenes)
                 useableScene = sceneFromFile(useScenes(ii), 'multispectral');
                 ourOIs = oiCompute(useableScene, obj.cmodule.oi);
+                sceneFOV = [sceneGet(useableScene,'fovhorizontal'), sceneGet(useableScene,'fovvertical')];
+                obj.cmodule.sensor = sensorSetSizeToFOV(obj.cmodule.sensor,sceneFOV,obj.cmodule.oi);
                 ourCaptures = sensorCompute(obj.cmodule.sensor, ourOIs);
                 ourPicture = ipCompute(obj.isp, ourCaptures);
             end
