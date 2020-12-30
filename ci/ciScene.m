@@ -147,6 +147,10 @@ classdef ciScene
             sceneFiles = [];
             sceneObjects = [];
             
+            % Okay we have object motion & numframes
+            % but if Motion doesn't work, then we need to translate between
+            % frames
+            
             % process object motion
             for ii = 1:numel(obj.objectMotion)
                 ourMotion = obj.objectMotion{ii};
