@@ -90,9 +90,9 @@ end
 blackLevel   = ceil(ieInfo.blackLevel(1));
 exposureTime = ieInfo.exposureTime;  % I hope this is in seconds
 img = ieClip(img,blackLevel,[]);   % sets the lower to blacklevel, no upper bound
-
+isoSpeed = ieInfo.isoSpeed;
 % Stuff the measured raw data into a simulated sensor
-sensor = sensorCreate('IMX363');
+sensor = sensorCreate('IMX363', [], 'isospeed', isoSpeed);
 sensor = sensorSet(sensor,'size',size(img));
 sensor = sensorSet(sensor,'exp time',exposureTime);
 sensor = sensorSet(sensor,'black level',blackLevel);

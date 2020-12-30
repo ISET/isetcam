@@ -215,7 +215,7 @@ switch sensorName
         
     case {'imx363'}
         % A Sony sensor used in many systems
-        sensor = sensorIMX363('row col',[600 800]);
+        sensor = sensorIMX363('row col',[600 800], varargin{:});
 
     case {'custom'}      % Often used for multiple channel
         % sensorCreate('custom',pixel,filterPattern,filterFile,wave);
