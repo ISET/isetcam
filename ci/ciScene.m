@@ -48,12 +48,7 @@ classdef ciScene
         cameraMotion = []; % extent of camera motion in meters per second
         % ['<cameraname>' [tx ty tz] [rx ry rz]]
         
-        objectMotion = []; % okay, this could be complicated.
-        % we have object names, translation, and rotation
-        % Seems like a good argument for being able to write
-        % out CScenes, that could encapsulate a "Setting"
-        % and then be re-used as test cases
-        % [['<objectname'] [tx ty tz] [rx ry rz]], repeat]
+        objectMotion = []; 
         
         expTimes = [1.5];    % single or array of exposure times to use when
         % generating the rendered images
@@ -155,7 +150,6 @@ classdef ciScene
             % process object motion
             for ii = 1:numel(obj.objectMotion)
                 ourMotion = obj.objectMotion{ii};
-                    % setting motion isn't working for me:
                     if ~isempty(ourMotion{1})
                         obj.thisR.set('asset', ourMotion{1}, 'motion', 'translation', ourMotion{2});
                         obj.thisR.set('asset', ourMotion{1}, 'motion', 'rotation', ourMotion{3});
@@ -173,8 +167,14 @@ classdef ciScene
                     % if we want movement during each frame, need to get
                     % the actual exposure time from the caller:
                     % if expTime is single value, can we sub-index 1?
+                    
                     obj.thisR.set('cameraexposure', obj.expTimes(ii));
-                                        
+                    
+                    % Hack to test shutter
+                    % unfortunately, it doesn't seem to do what we want
+                    %obj.thisR.set('shutteropen', 1);
+                    %obj.thisR.set('shutterclose', 25);
+                    
                     %% Write recipe
                     piWrite(obj.thisR);
                     
