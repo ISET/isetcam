@@ -55,7 +55,7 @@ classdef ciScene
         % and then be re-used as test cases
         % [['<objectname'] [tx ty tz] [rx ry rz]], repeat]
         
-        expTimes = [.5];    % single or array of exposure times to use when
+        expTimes = [1.5];    % single or array of exposure times to use when
         % generating the rendered images
         
         cacheName = '';   % Because scenes can be expensive to render, we
@@ -144,9 +144,6 @@ classdef ciScene
                 'type','point',...
                 'light spectrum','Tungsten',...
                 'cameracoordinate', true);
-            
-            % Find the bunny! (our default)
-            bunnyName = 'Default_B'; % might get changed?
             
             imageFolderPath = fullfile(isetRootPath, 'local', obj.scenePath, 'images');
             if ~isfolder(imageFolderPath)
