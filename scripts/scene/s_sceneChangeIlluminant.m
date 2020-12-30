@@ -61,7 +61,7 @@ sceneWindow(scene); pause(delay);
 
 %% Convert the scene to the sunset color, Horizon_Gretag
 
-scene = sceneAdjustIlluminant(scene,'Horizon_Gretag.mat');
+scene = sceneAdjustIlluminant(scene,'illHorizon-20180220.mat');
 sceneWindow(scene); pause(delay);
 
 %%
