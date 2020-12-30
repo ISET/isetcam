@@ -818,7 +818,7 @@ switch oType
                     val = sensor.blackLevel;
                 else
                     oiBlack = oiCreate('black');
-                    sensor2 = sensorSet(sensor,'noiseflag',0); % Little noise
+                    sensor2 = sensorSet(sensor,'noiseflag','none'); % Little noise
                     sensor2 = sensorCompute(sensor2,oiBlack);
                     switch sensorGet(sensor,'quantization method')
                         case 'analog'

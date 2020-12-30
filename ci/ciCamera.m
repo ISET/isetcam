@@ -64,10 +64,10 @@ classdef ciCamera
                     % activated based on some other user choice
                                         
                     % For now assume we're a very simple camera!
-                    nFrames = 1;
+                    nFrames = 2;
                     
                     % And we can do AutoExposure to get our time.
-                    expTimes = [.5]; % FIX TO GET REAL EXPOSURE!
+                    expTimes = [.5 .5]; % FIX TO GET REAL EXPOSURE!
                     
                     % As a simple test just get a scene we can use!
                     [sceneObjects, sceneFiles] = scene.render(expTimes);
@@ -94,6 +94,9 @@ classdef ciCamera
             % Each returns an array of sensor objects with the images
             % pre-computed
             sensorImages = obj.cmodule.compute(sceneObjects);
+            
+            % I think we have a problem here because we have created an 
+            % array of sensor images, and ipCompute only wants one
             ourPicture = ipCompute(obj.isp, sensorImages);
 %{
             for ii = 1:numel(useScenes)

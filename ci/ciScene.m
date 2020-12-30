@@ -50,7 +50,7 @@ classdef ciScene
         
         objectMotion = []; 
         
-        expTimes = [1.5];    % single or array of exposure times to use when
+        expTimes = [.5];    % single or array of exposure times to use when
         % generating the rendered images
         
         cacheName = '';   % Because scenes can be expensive to render, we
@@ -120,7 +120,7 @@ classdef ciScene
             %   we return an array of oi objects, otherwise scenes
             
             obj.numFrames = numel(expTimes);
-            
+            obj.expTimes = expTimes;
             % initialize our pbrt scene
             if ~piDockerExists, piDockerConfig; end
             % read scene (defaults is cornell box with bunny)
@@ -196,7 +196,7 @@ classdef ciScene
             
         end
         
-        function outputArg = preview(obj, XXX)
+        function outputArg = preview(obj)
             % get a preview that the camera can use to plan capture
             % settings
         end
