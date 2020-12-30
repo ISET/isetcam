@@ -45,13 +45,17 @@ classdef ciCModule
             %     it called multiple times by the CCamera object (?)
             cOutput = [];
             for ii = 1:numel(sceneArray)
+                
+                % If we don't have scene objects, then use files:
+                %useableScene = sceneFromFile(useScenes(ii), 'multispectral');
+
                 opticalImage = oiCompute(obj.oi, sceneArray(ii)); 
                 
                 % set sensor FOV to match scene. I don't know if we should
                 % always do this, or rely on the user to sort it out?
                 if ii == 1 % just need to do this once, I think
                     sceneFOV = [sceneGet(sceneArray(ii),'fovhorizontal') sceneGet(sceneArray(ii),'fovvertical')];
-                    obj.sensor = sensorSetSizeToFOV(obj.sensor,sceneFOV,opticalimage);
+                    obj.sensor = sensorSetSizeToFOV(obj.sensor,sceneFOV,opticalImage);
                 end
                 sensorImage = sensorCompute(obj.sensor, opticalImage);
                 cOutput = [cOutput sensorImage];

@@ -70,7 +70,7 @@ classdef ciCamera
                     expTimes = [.5]; % FIX TO GET REAL EXPOSURE!
                     
                     % As a simple test just get a scene we can use!
-                    useScenes = scene.render(expTimes);
+                    [sceneObjects, sceneFiles] = scene.render(expTimes);
                     
                 case 'HDR'
                     % use the bracketing code
@@ -90,6 +90,12 @@ classdef ciCamera
             end
             
             % Simplest case, now that we have the nFrames & expTimes
+            % We want to call our camera module(s).
+            % Each returns an array of sensor objects with the images
+            % pre-computed
+            sensorImages = obj.cmodule.compute(sceneObjects);
+            ourPicture = ipCompute(obj.isp, sensorImages);
+%{
             for ii = 1:numel(useScenes)
                 useableScene = sceneFromFile(useScenes(ii), 'multispectral');
                 ourOIs = oiCompute(useableScene, obj.cmodule.oi);
@@ -98,6 +104,8 @@ classdef ciCamera
                 ourCaptures = sensorCompute(obj.cmodule.sensor, ourOIs);
                 ourPicture = ipCompute(obj.isp, ourCaptures);
             end
+%}
+          
             
         end
         

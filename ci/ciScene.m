@@ -116,7 +116,7 @@ classdef ciScene
         %% Main rendering function
         % We know the scene, but need to pass Exposure Time(s),
         % which also gives us numFrames
-        function sceneFiles = render(obj,expTimes)
+        function [sceneObjects, sceneFiles] = render(obj,expTimes)
             % render uses what we know about the initial
             % image and subsequent motion requests
             % to generate one or more output scene or oi structs
@@ -153,14 +153,15 @@ classdef ciScene
                 mkdir(imageFolderPath);
             end
             sceneFiles = [];
+            sceneObjects = [];
             
             % process object motion
-            for ii = 1:numel(obj.objectmotion)
-                ourMotion = obj.objectmotion{ii};
+            for ii = 1:numel(obj.objectMotion)
+                ourMotion = obj.objectMotion{ii};
                     % setting motion isn't working for me:
-                    if ~isempty(ourMotion(1))
-                        obj.thisR.set('asset', ourMotion(1), 'motion', 'translation', ourMotion(2));
-                        obj.thisR.set('asset', ourMotion(1), 'motion', 'rotation', ourMotion(3));
+                    if ~isempty(ourMotion{1})
+                        obj.thisR.set('asset', ourMotion{1}, 'motion', 'translation', ourMotion{2});
+                        obj.thisR.set('asset', ourMotion{1}, 'motion', 'rotation', ourMotion{3});
                     end
                     %thisR.set('asset', bunnyName, 'translation', [moveX, moveY, moveZ]);
                 
@@ -183,10 +184,15 @@ classdef ciScene
                     %% Render and visualize
                     % Should we also allow for keeping depth if needed for
                     % post-processing?
-                    [scene, results] = piRender(obj.thisR, 'render type', 'radiance');
-                    sceneToFile(imageFileName,scene);
-                    sceneSaveImage(scene,imageFilePrefixName);
+                    [sceneObject, results] = piRender(obj.thisR, 'render type', 'radiance');
+                    sceneToFile(imageFileName,sceneObject);
+                    
+                    % this is mostly just for debugging & human inspection
+                    sceneSaveImage(sceneObject,imageFilePrefixName);
+                else
+                    sceneObject = sceneFromFile(imageFileName, 'multispectral');
                 end
+                sceneObjects = [sceneObjects sceneObject]; %#ok<AGROW>
                 sceneFiles = [sceneFiles imageFileName]; %#ok<AGROW>
             end
             
