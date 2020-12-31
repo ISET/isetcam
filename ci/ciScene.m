@@ -53,10 +53,12 @@ classdef ciScene
         thisR;
         
         resolution = [512 512]; % default
-        
+
+        allowsCameraMotion = true;
         cameraMotion = []; % extent of camera motion in meters per second
         % ['<cameraname>' [tx ty tz] [rx ry rz]]
         
+        allowsObjectMotion = false;
         objectMotion = []; % none until the user adds some 
         
         expTimes = [.5];    % single or array of exposure times to use when
@@ -91,26 +93,41 @@ classdef ciScene
                 case 'recipe' % we can pass a recipe directly if we already have one loaded
                     if exist(varargin{1},'var')
                         obj.thisR = varargin{1};
+                        obj.allowsObjectMotion = true;
+                    else
+                        error("For recipe, need to pass in an object");
                     end
-                case 'pbrt' % or a recipe file
+                case 'pbrt' % pass a pbrt scene 
                     if exist(varargin{1}, 'var')
                         obj.scenePath = varargin{1};
+                    else
+                        error("Need scene Path");
                     end
                     if exist(varargin{2}, 'var')
                         obj.sceneName = varargin{2};
+                    else
+                        error("Need scene Name");
                     end
+                    
+                    if ~piDockerExists, piDockerConfig; end
+                    obj.thisR = piRecipeDefault('scene name', obj.sceneName);
+                    obj.allowsObjectMotion = true;
+
                 case 'iset scene file'
                     if isfile(varargin{1})
                         obj.sceneFileName = varargin{1};
                     end 
+                    % TBD
                 case 'iset scene'
                     if exist(varargin{1},'var')
                         obj.initialScene = varargin{1};
                     end
+                    % TBD
                 case 'image'
                     if exist(varargin{1}, 'var')
                         obj.sceneFileName = varargin{1};
                     end
+                    % TBD
                 otherwise
                     error("Unknown Scene Type");
             end
