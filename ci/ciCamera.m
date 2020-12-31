@@ -69,9 +69,14 @@ classdef ciCamera
                     % And we can do AutoExposure to get our time.
                     expTimes = [.1 .1 .1]; % FIX TO GET REAL EXPOSURE!
                     
+                    % When we ask for a preview, it messes up FOV of other
+                    % sensors?
                     % test to see if preview works
-                    previewScene = scene.preview();
-                    sceneWindow(previewScene{1});
+                    %previewScene = scene.preview();
+                    %sceneLuminance = sceneGet(previewScene{1}, 'mean luminance');
+                    %fprintf("Scene Luminance is: %f\n", sceneLuminance);
+                    %for Debugging
+                    %sceneWindow(previewScene{1});
                     
                     % As a simple test just get a scene we can use!
                     [sceneObjects, sceneFiles] = scene.render(expTimes);

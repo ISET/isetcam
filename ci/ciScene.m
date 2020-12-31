@@ -199,6 +199,10 @@ classdef ciScene
                     % this is mostly just for debugging & human inspection
                     sceneSaveImage(sceneObject,imageFilePrefixName);
                 else
+                    % There is some problem here I think, as scenes that
+                    % have been previously generated show up without the
+                    % correct FOV. So maybe we need to set that here, but
+                    % where else is it set?
                     sceneObject = sceneFromFile(imageFileName, 'multispectral');
                 end
                 if ~exist('sceneObjects', 'var')
