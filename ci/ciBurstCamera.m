@@ -14,10 +14,14 @@ classdef ciBurstCamera < ciCamera
 
         end
         
-        function outputArg = method1(obj,inputArg)
-            %METHOD1 Summary of this method goes here
-            %   Detailed explanation goes here
-            outputArg = obj.Property1 + inputArg;
+       function ourPicture = TakePicture(obj, scene, intent)
+
+            TakePicture@ciCamera(obj, scene, intent);
+            % Typically we'd invoke the parent before or after us
+            % or to handle cases we don't need to
+            % Let's think about the best way to do that.
+            % Otherwise could be some other type of specialized call?
+            
         end
     end
 end
