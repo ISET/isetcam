@@ -16,7 +16,7 @@ classdef ciBurstCamera < ciCamera
         
        function ourPicture = TakePicture(obj, scene, intent)
 
-            TakePicture@ciCamera(obj, scene, intent);
+            ourPicture = TakePicture@ciCamera(obj, scene, intent);
             % Typically we'd invoke the parent before or after us
             % or to handle cases we don't need to
             % Let's think about the best way to do that.
