@@ -18,7 +18,7 @@ classdef ciCamera
     end
     
     methods
-        function obj = ciCamera() % parameters TBD
+        function obj = ciCamera(varargin) % parameters TBD
             %CICAMERA Construct an instance of this class
             
         end

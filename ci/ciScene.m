@@ -98,12 +98,12 @@ classdef ciScene
                         error("For recipe, need to pass in an object");
                     end
                 case 'pbrt' % pass a pbrt scene 
-                    if exist(varargin{1}, 'var')
+                    if nargin > 1
                         obj.scenePath = varargin{1};
                     else
                         error("Need scene Path");
                     end
-                    if exist(varargin{2}, 'var')
+                    if nargin > 2
                         obj.sceneName = varargin{2};
                     else
                         error("Need scene Name");
@@ -119,12 +119,12 @@ classdef ciScene
                     end 
                     % TBD
                 case 'iset scene'
-                    if exist(varargin{1},'var')
+                    if exist(varargin{1})
                         obj.initialScene = varargin{1};
                     end
                     % TBD
                 case 'image'
-                    if exist(varargin{1}, 'var')
+                    if exist(varargin{1})
                         obj.sceneFileName = varargin{1};
                     end
                     % TBD
@@ -147,10 +147,15 @@ classdef ciScene
             
             obj.numFrames = numel(expTimes);
             obj.expTimes = expTimes;
+            
+            % The below code works for when we get a pbrt scene or a
+            % recipe, but doesn't know what to do with an iset scene or one
+            % or more pre-baked images.
+            
             % initialize our pbrt scene
             if ~piDockerExists, piDockerConfig; end
             % read scene (defaults is cornell box with bunny)
-            if ~exist(obj.thisR, 'var') || isempty(obj.thisR)
+            if ~exist('obj.thisR', 'var') || isempty(obj.thisR)
                 obj.thisR = piRecipeDefault('scene name', obj.sceneName);
             end
             % Modify the film resolution
@@ -158,9 +163,7 @@ classdef ciScene
             % or maybe to a fraction for faster performance
             obj.thisR.set('filmresolution', obj.resolution);
             
-            %% Add new light
-            % UPDATE THIS WITH NEW CODE FROM MOTION TUTORIAL IN ISET3D
-            % ONCE IT IS IN GOOD SHAPE.
+            %% Looks like we still need to add our own light
             obj.thisR = piLightAdd(obj.thisR,...
                 'type','point',...
                 'light spectrum','Tungsten',...
@@ -177,15 +180,17 @@ classdef ciScene
             % but if Motion doesn't work, then we need to translate between
             % frames
             
-            % process object motion
-            for ii = 1:numel(obj.objectMotion)
-                ourMotion = obj.objectMotion{ii};
+            % process object motion if allowed
+            if obj.allowsObjectMotion
+                for ii = 1:numel(obj.objectMotion)
+                    ourMotion = obj.objectMotion{ii};
                     if ~isempty(ourMotion{1})
                         obj.thisR.set('asset', ourMotion{1}, 'motion', 'translation', ourMotion{2});
                         obj.thisR.set('asset', ourMotion{1}, 'motion', 'rotation', ourMotion{3});
                     end
                     %thisR.set('asset', bunnyName, 'translation', [moveX, moveY, moveZ]);
-                
+                    
+                end
             end
             sTime = 0;
             for ii = 1:obj.numFrames

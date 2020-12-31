@@ -3,14 +3,15 @@ classdef ciBurstCamera < ciCamera
     %   Detailed explanation goes here
     
     properties
-        Property1
+        
     end
     
     methods
-        function obj = ciBurstCamera(inputArg1,inputArg2)
+        function obj = ciBurstCamera(varargin)
             %CIBURSTCAMERA Construct an instance of this class
-            %   Detailed explanation goes here
-            obj.Property1 = inputArg1 + inputArg2;
+            %   First invoke our parent ciCamera class
+            obj = obj@ciCamera(varargin);
+
         end
         
         function outputArg = method1(obj,inputArg)
