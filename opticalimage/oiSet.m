@@ -284,7 +284,8 @@ switch parm
         % Set the whole illuminance
         % The mean will be derived in oiGet.
         oi = oiAdjustIlluminance(oi,val);
-
+    case {'maxilluminance', 'peakilluminance', 'maxillum', 'peakillum'}
+        oi = oiAdjustIlluminance(oi,val, 'max');
     case {'datawave','datawavelength','wave','wavelength'}
         % oi = oiSet(oi,'wave',val)
         % val is a vector in evenly spaced nanometers

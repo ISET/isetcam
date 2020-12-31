@@ -216,7 +216,7 @@ switch sensorName
     case {'imx363'}
         % A Sony sensor used in many systems
         sensor = sensorIMX363('row col',[600 800], varargin{:});
-
+        
     case {'custom'}      % Often used for multiple channel
         % sensorCreate('custom',pixel,filterPattern,filterFile,wave);
         if length(varargin) >= 1, filterPattern = varargin{1};
@@ -328,8 +328,10 @@ sensor = sensorSet(sensor,'integrationTime',0);
 sensor = sensorSet(sensor,'autoexposure',1);    
 sensor = sensorSet(sensor,'CDS',0);
 
+if ~isequal(sensorName, 'imx363')
 % Put in a default infrared filter.  All ones.
 sensor = sensorSet(sensor,'irfilter',ones(sensorGet(sensor,'nwave'),1));
+end
 
 % Place holder for charts, such as the MCC
 sensor = sensorSet(sensor,'chart parameters',[]);
@@ -516,7 +518,7 @@ p.addParameter('digitalblacklevel', 64, @isnumeric);
 p.addParameter('digitalwhitelevel', 1023, @isnumeric);
 p.addParameter('wellcapacity',6000,@isnumeric);
 p.addParameter('exposuretime',1/60,@isnumeric);
-p.addParameter('wave',390:20:710,@isnumeric);
+p.addParameter('wave',390:10:710,@isnumeric);
 p.addParameter('readnoise',5,@isnumeric);
 p.addParameter('qefilename', fullfile(isetRootPath,'data','sensor','qe_IMX363_public.mat'), @isfile);
 p.addParameter('irfilename', fullfile(isetRootPath,'data','sensor','ircf_public.mat'), @isfile);

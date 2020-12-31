@@ -110,6 +110,7 @@ assert(rem(numel(rect(2):(rect(2) + rect(4))),cfaSize(2)) == 0)
 
 % Crop the volts
 volts = sensorGet(sensor,'volts');
+dv = sensorGet(sensor,'dv');
 if isempty(volts)
     % That's weird.  why crop a sensor that has no data?  Just resize.
 else
@@ -120,7 +121,6 @@ else
 end
 
 % Crop the digital values
-dv = sensorGet(sensor,'dv');
 if ~isempty(dv)
     newDV = imcrop(dv,rect);
     if ~exist('newSize','var')
