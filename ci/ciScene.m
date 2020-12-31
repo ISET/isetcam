@@ -161,23 +161,24 @@ classdef ciScene
                     %thisR.set('asset', bunnyName, 'translation', [moveX, moveY, moveZ]);
                 
             end
+            sTime = 0;
             for ii = 1:obj.numFrames
                 imageFilePrefixName = fullfile(imageFolderPath, append("frame_", num2str(ii)));
                 imageFileName = append(imageFilePrefixName,  ".mat");
                 
+                % old way in case shutteropen/close aren't working
+                %obj.thisR.set('cameraexposure', obj.expTimes(ii));
+                
+                % We set the shutter open/close successively
+                % for each frame of the capture, even if we don't
+                % render a frame, as we might need to render subsequent
+                % frames
+                obj.thisR.set('shutteropen', sTime);
+                sTime = sTime + obj.expTimes(ii);
+                obj.thisR.set('shutterclose', sTime);
+                
                 %IF we haven't rendered before, do it now
                 if ~isfile(imageFileName)
-                    
-                    % if we want movement during each frame, need to get
-                    % the actual exposure time from the caller:
-                    % if expTime is single value, can we sub-index 1?
-                    
-                    obj.thisR.set('cameraexposure', obj.expTimes(ii));
-                    
-                    % Hack to test shutter
-                    % unfortunately, it doesn't seem to do what we want
-                    %obj.thisR.set('shutteropen', 1);
-                    %obj.thisR.set('shutterclose', 25);
                     
                     %% Write recipe
                     piWrite(obj.thisR);
@@ -194,7 +195,9 @@ classdef ciScene
                     sceneObject = sceneFromFile(imageFileName, 'multispectral');
                 end
                 sceneObjects = [sceneObjects sceneObject]; %#ok<AGROW>
+                sceneObject = [];
                 sceneFiles = [sceneFiles imageFileName]; %#ok<AGROW>
+                
             end
             
             

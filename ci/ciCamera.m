@@ -64,10 +64,10 @@ classdef ciCamera
                     % activated based on some other user choice
                                         
                     % For now assume we're a very simple camera!
-                    nFrames = 2;
+                    nFrames = 3;
                     
                     % And we can do AutoExposure to get our time.
-                    expTimes = [.5 .5]; % FIX TO GET REAL EXPOSURE!
+                    expTimes = [.5 .5 .5]; % FIX TO GET REAL EXPOSURE!
                     
                     % As a simple test just get a scene we can use!
                     [sceneObjects, sceneFiles] = scene.render(expTimes);
@@ -97,7 +97,11 @@ classdef ciCamera
             
             % I think we have a problem here because we have created an 
             % array of sensor images, and ipCompute only wants one
-            ourPicture = ipCompute(obj.isp, sensorImages);
+            % just use one at a time for now
+            for ii=1:numel(sensorImages)
+                ourPicture = ipCompute(obj.isp, sensorImages(ii));
+                ipWindow(ourPicture);
+            end
 %{
             for ii = 1:numel(useScenes)
                 useableScene = sceneFromFile(useScenes(ii), 'multispectral');
