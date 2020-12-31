@@ -13,6 +13,15 @@ classdef ciScene
     %   Can also retrieve a scene preview, as CCamera/CModule may rely on
     %   that to make decisions about setting capture parameters
     %
+    % Parameters:
+    %   Create:
+    %       scenetype: 
+    %           'recipe' -- previously-loaded recipe
+    %           'pbrt'   -- a PBRT scene
+    %           'iset'   -- an ISET scene file
+    %           'scene'  -- previously-loaded ISET scene struct
+    %           'image'  -- image file name
+    %
     % History:
     %   Initial Version: D. Cardinal 12/2020
     %
@@ -39,16 +48,16 @@ classdef ciScene
         % to handle the case where it is an ISET scene
         % or even just an image file
         scenePath = 'Cornell_BoxBunnyChart'; %Default PBRT scene
-        sceneName =  'cornell box bunny chart'; 
+        sceneName =  'cornell box bunny chart'; %Default PBRT scene name
         sceneFileName = '';
         thisR;
         
-        resolution = [512 512]; 
+        resolution = [512 512]; % default
         
         cameraMotion = []; % extent of camera motion in meters per second
         % ['<cameraname>' [tx ty tz] [rx ry rz]]
         
-        objectMotion = []; 
+        objectMotion = []; % none until the user adds some 
         
         expTimes = [.5];    % single or array of exposure times to use when
         % generating the rendered images
@@ -68,7 +77,7 @@ classdef ciScene
         % return an array of oi's, that can be fed directly
         % to a sensor. Default is simple "pinhole"
         
-        numFrames = 1;
+        numFrames = 1; % just the default
         
     end
     
@@ -79,11 +88,11 @@ classdef ciScene
             %   allow whatever init we want to accept in the creation call
             obj.sceneType = sceneType;
             switch obj.sceneType
-                case 'recipe'
+                case 'recipe' % we can pass a recipe directly if we already have one loaded
                     if exist(varargin{1},'var')
                         obj.thisR = varargin{1};
                     end
-                case 'pbrt'
+                case 'pbrt' % or a recipe file
                     if exist(varargin{1}, 'var')
                         obj.scenePath = varargin{1};
                     end
@@ -145,7 +154,7 @@ classdef ciScene
                 mkdir(imageFolderPath);
             end
             sceneFiles = [];
-            sceneObjects = [];
+            if exist('sceneObjects', 'var') clear(sceneObjects); end
             
             % Okay we have object motion & numframes
             % but if Motion doesn't work, then we need to translate between
@@ -192,8 +201,11 @@ classdef ciScene
                 else
                     sceneObject = sceneFromFile(imageFileName, 'multispectral');
                 end
-                sceneObjects = [sceneObjects sceneObject]; %#ok<AGROW>
-                sceneObject = [];
+                if ~exist('sceneObjects', 'var')
+                    sceneObjects = {sceneObject};
+                else
+                    sceneObjects(end+1) = {sceneObject};
+                end
                 sceneFiles = [sceneFiles imageFileName]; %#ok<AGROW>
                 
             end
@@ -206,6 +218,8 @@ classdef ciScene
             % settings
             [previewScene, previewFiles] = obj.render( .1); % generic exposure time
             % delete any image files that were created
+            % except we are deleting them all :(
+            % need to fix that!
             for ii = 1:numel(previewFiles)
                 if isfile(previewFiles(ii)) delete(previewFiles(ii)); end
             end

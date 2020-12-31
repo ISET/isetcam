@@ -48,18 +48,18 @@ classdef ciCModule
                 
                 % If we don't have scene objects, then use files:
                 %useableScene = sceneFromFile(useScenes(ii), 'multispectral');
-
-                opticalImage = oiCompute(obj.oi, sceneArray(ii)); 
+                ourScene = sceneArray{ii};
+                opticalImage = oiCompute(obj.oi, ourScene); 
                 
                 % set sensor FOV to match scene. I don't know if we should
                 % always do this, or rely on the user to sort it out?
                 if ii == 1 % just need to do this once, I think
-                    sceneFOV = [sceneGet(sceneArray(ii),'fovhorizontal') sceneGet(sceneArray(ii),'fovvertical')];
+                    sceneFOV = [sceneGet(ourScene,'fovhorizontal') sceneGet(ourScene,'fovvertical')];
                     obj.sensor = sensorSetSizeToFOV(obj.sensor,sceneFOV,opticalImage);
                 end
                 obj.sensor = sensorSet(obj.sensor, 'exposure time', exposureTimes(ii));
                 sensorImage = sensorCompute(obj.sensor, opticalImage);
-                cOutput = [cOutput sensorImage];
+                cOutput = [cOutput sensorImage]; %#ok<AGROW>
             end
         end
     end
