@@ -27,7 +27,7 @@ classdef ciCModule
             
         end
         
-        function cOutput = compute(obj, sceneArray) % will support more args
+        function cOutput = compute(obj, sceneArray, exposureTimes) % will support more args
             %COMPUTE Calculate what we capture
             %   Simplest case this is sensorCompute + oiCompute
             %   however, we also need to integrate multi-capture
@@ -57,6 +57,7 @@ classdef ciCModule
                     sceneFOV = [sceneGet(sceneArray(ii),'fovhorizontal') sceneGet(sceneArray(ii),'fovvertical')];
                     obj.sensor = sensorSetSizeToFOV(obj.sensor,sceneFOV,opticalImage);
                 end
+                obj.sensor = sensorSet(obj.sensor, 'exposure time', exposureTimes(ii));
                 sensorImage = sensorCompute(obj.sensor, opticalImage);
                 cOutput = [cOutput sensorImage];
             end

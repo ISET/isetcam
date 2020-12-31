@@ -93,12 +93,13 @@ classdef ciCamera
             % We want to call our camera module(s).
             % Each returns an array of sensor objects with the images
             % pre-computed
-            sensorImages = obj.cmodule.compute(sceneObjects);
+            sensorImages = obj.cmodule.compute(sceneObjects, expTimes);
             
             % I think we have a problem here because we have created an 
             % array of sensor images, and ipCompute only wants one
             % just use one at a time for now
             for ii=1:numel(sensorImages)
+                sensorWindow(sensorImages(ii));
                 ourPicture = ipCompute(obj.isp, sensorImages(ii));
                 ipWindow(ourPicture);
             end

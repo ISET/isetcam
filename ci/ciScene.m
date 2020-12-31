@@ -166,9 +166,6 @@ classdef ciScene
                 imageFilePrefixName = fullfile(imageFolderPath, append("frame_", num2str(ii)));
                 imageFileName = append(imageFilePrefixName,  ".mat");
                 
-                % old way in case shutteropen/close aren't working
-                %obj.thisR.set('cameraexposure', obj.expTimes(ii));
-                
                 % We set the shutter open/close successively
                 % for each frame of the capture, even if we don't
                 % render a frame, as we might need to render subsequent
@@ -187,6 +184,7 @@ classdef ciScene
                     % Should we also allow for keeping depth if needed for
                     % post-processing?
                     [sceneObject, results] = piRender(obj.thisR, 'render type', 'radiance');
+                                        
                     sceneToFile(imageFileName,sceneObject);
                     
                     % this is mostly just for debugging & human inspection
@@ -203,9 +201,14 @@ classdef ciScene
             
         end
         
-        function outputArg = preview(obj)
+        function previewScene = preview(obj)
             % get a preview that the camera can use to plan capture
             % settings
+            [previewScene, previewFiles] = obj.render( .1); % generic exposure time
+            % delete any image files that were created
+            for ii = 1:numel(previewFiles)
+                if isfile(previewFiles(ii)) delete(previewFiles(ii)); end
+            end
         end
         
         function load(obj, cSceneFile)
