@@ -31,11 +31,23 @@ classdef ciBurstCamera < ciCamera
        % Decides on number of frames and their exposure times
        % based on the preview image passed in from the camera module
        function [expTimes] = planCaptures(obj, previewImage, intent)
+           
+           baseExposure = .1; % should calculate from preview image!
+           numFrames = 3; %generic
+           if numFrames > 1 && ~isodd(numFrames)
+               numFrames = numFrames + 1;
+           end
+           frameOffset = (numFrames -1) / 2; 
            switch intent
                case 'HDR'
-                   expTimes = [.05 .1 .2]; % for now
+                   expTimes = repmat(baseExposure^(1/2^frameOffset, 1, numFrames);
+                   expTimes = [baseExposure^
                case 'Burst'
-                   expTimes = [.05 .05 .05]; % for now
+                   % algorithm here to calculate number of images and 
+                   % exposure time based on estimated processing power,
+                   % lighting, and possibly motion/intent
+                   expTimes = repmat(baseExposure, 1, numFrames);
+                   
                otherwise
                    [expTimes] = planCaptures@ciCamera(obj, previewImage, intent);
            end

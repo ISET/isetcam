@@ -42,15 +42,24 @@ classdef ciScene
         renderedScenes = ourScene.render();
     %}
     
+    % TODO:
+    %  * figure out a way to do something interesting with ISET scenes &
+    %  images as input -- a sub-set of what we can do with pbrt, of course.
+    %  * add ability to pass lens models to pbrt & deal with returned oi
+    %  instead of scenes
+    %  ! figure out how/where to incorporate exposure/illuminance so that
+    %  either the scenes render appropriately, or so we do something else
+    
     properties
         sceneType = '';
         initialScene = ''; % Ideally this is a PBRT scene, but we also need
         % to handle the case where it is an ISET scene
         % or even just an image file
-        scenePath = 'Cornell_BoxBunnyChart'; %Default PBRT scene
-        sceneName =  'cornell box bunny chart'; %Default PBRT scene name
         sceneFileName = '';
         thisR;
+        
+        scenePath;  % defaults set in constructor if needed
+        sceneName;
         
         resolution = [512 512]; % default
         
@@ -85,30 +94,33 @@ classdef ciScene
     
     %% Do the work here
     methods
-        function obj = ciScene(sceneType, varargin)
+        function obj = ciScene(sceneType, options)
+            arguments
+                sceneType (1,1) string;
+                options.recipe struct = struct([]);
+                options.sceneName char = 'cornell box bunny chart';
+                options.scenePath char = 'Cornell_BoxBunnyChart';
+                options.resolution (1,2) {mustBeNumeric} = [512 512];
+                options.sceneFileName (1,1) string {isfile(options.sceneFileName)} = "";
+                options.initialScene (1,:) struct = ([]);
+            end
+            obj.resolution = options.resolution;
+            
             %CISCENE Construct an instance of this class
             %   allow whatever init we want to accept in the creation call
             obj.sceneType = sceneType;
             switch obj.sceneType
                 case 'recipe' % we can pass a recipe directly if we already have one loaded
-                    if exist(varargin{1},'var')
-                        obj.thisR = varargin{1};
+                    if exist(options.recipe,'var')
+                        obj.thisR = options.recipe;
                         obj.allowsObjectMotion = true;
                     else
                         error("For recipe, need to pass in an object");
                     end
                 case 'pbrt' % pass a pbrt scene
-                    if nargin > 1
-                        obj.scenePath = varargin{1};
-                    else
-                        error("Need scene Path");
-                    end
-                    if nargin > 2
-                        obj.sceneName = varargin{2};
-                    else
-                        error("Need scene Name");
-                    end
-                    
+                        obj.scenePath = options.scenePath;
+                        obj.sceneName = options.sceneName;
+                        
                     if ~piDockerExists, piDockerConfig; end
                     obj.thisR = piRecipeDefault('scene name', obj.sceneName);
                     obj.allowsObjectMotion = true;
@@ -116,21 +128,15 @@ classdef ciScene
                     % ideally we should be able to accept an array of scene
                     % files
                 case 'iset scene file'
-                    if isfile(varargin{1})
-                        obj.sceneFileName = varargin{1};
-                    end
+                    obj.sceneFileName = options.sceneFileName;
                     % TBD
                     %ideally we should be able to acept an array of scenes
                 case 'iset scene'
-                    if exist(varargin{1})
-                        obj.initialScene = varargin{1};
-                    end
+                    obj.initialScene = options.initialScene;
                     % TBD
                     %ideally we should be able to accept an array of images
                 case 'image'
-                    if exist(varargin{1})
-                        obj.sceneFileName = varargin{1};
-                    end
+
                     % TBD
                 otherwise
                     error("Unknown Scene Type");
@@ -141,7 +147,12 @@ classdef ciScene
         %% Main rendering function
         % We know the scene, but need to pass Exposure Time(s),
         % which also gives us numFrames
-        function [sceneObjects, sceneFiles] = render(obj,expTimes)
+        function [sceneObjects, sceneFiles] = render(obj,expTimes, options)
+            arguments
+                obj ciScene;
+                expTimes (1,:);
+                options.previewFlag (1,2) {islogical} = false;
+            end
             % render uses what we know about the initial
             % image and subsequent motion requests
             % to generate one or more output scene or oi structs
@@ -156,7 +167,8 @@ classdef ciScene
             % recipe, but doesn't know what to do with an iset scene or one
             % or more pre-baked images.
             
-            % initialize our pbrt scene
+            % Process based on sceneType. If disjoint, we should
+            % probably make this a switch statement
             if isequal(obj.sceneType, 'pbrt') || equals(obj.sceneType, 'recipe')
                 if ~piDockerExists, piDockerConfig; end
                 % read scene (defaults is cornell box with bunny)
@@ -200,7 +212,11 @@ classdef ciScene
                 end
                 sTime = 0;
                 for ii = 1:obj.numFrames
-                    imageFilePrefixName = fullfile(imageFolderPath, append("frame_", num2str(ii)));
+                    if options.previewFlag
+                        imageFilePrefixName = fullfile(imageFolderPath, append("preview_", num2str(ii)));
+                    else
+                        imageFilePrefixName = fullfile(imageFolderPath, append("frame_", num2str(ii)));
+                    end
                     imageFileName = append(imageFilePrefixName,  ".mat");
                     
                     % We set the shutter open/close successively
@@ -248,13 +264,7 @@ classdef ciScene
         function previewScene = preview(obj)
             % get a preview that the camera can use to plan capture
             % settings
-            [previewScene, previewFiles] = obj.render( .1); % generic exposure time
-            % delete any image files that were created
-            % except we are deleting them all :(
-            % need to fix that!
-            for ii = 1:numel(previewFiles)
-                if isfile(previewFiles(ii)) delete(previewFiles(ii)); end
-            end
+            [previewScene, previewFiles] = obj.render( .1, 'previewFlag', true); % generic exposure time
         end
         
         function load(obj, cSceneFile)
