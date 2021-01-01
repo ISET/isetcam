@@ -35,7 +35,7 @@ classdef ciCamera
             % unless we want to force the caller to generat a CScerne
             % to simplify our life. That gives us .preview, .render
             % with support for motion and an array of shutter times
-            % 
+            %
             % In addition to main intents, someday we could get fancy
             % and allow the user to specify one of a multiple of cameras
             % (like Wide-angle, or Telephoto)
@@ -52,9 +52,52 @@ classdef ciCamera
                 intent = 'Auto';
             end
             
-            % Based on the intent determine number of frames and exposure
+            % Based on the intent and optionally the results of
+            % a preview image, determine number of frames and exposure
             % time(s). Potentially more sophisticated stuff as well
             
+            %put this here to avoid code duplication, but wasted if
+            %a particular algorithem doesn't use it?
+            previewImage = scene.preview();
+            
+            % Given our preview & intent the camera can decide
+            % how many images to take and at what exposure
+            % for now we assume a single camera module
+            [expTimes] = obj.planCaptures(previewImage, intent);
+
+            % As a simple test just get a scene we can use!
+            [sceneObjects, sceneFiles] = scene.render(expTimes);
+            
+            % Simplest case, now that we have the nFrames & expTimes
+            % We want to call our camera module(s).
+            % Each returns an array of sensor objects with the images
+            % pre-computed
+            sensorImages = obj.cmodule.compute(sceneObjects, expTimes);
+            
+            % I think we have a problem here because we have created an
+            % array of sensor images, and ipCompute only wants one
+            % just use one at a time for now
+            for ii=1:numel(sensorImages)
+                sensorWindow(sensorImages(ii));
+                ourPicture = ipCompute(obj.isp, sensorImages(ii));
+                ipWindow(ourPicture);
+            end
+            %{
+            or we could do it this way and invoke each sensor separately?
+            for ii = 1:numel(useScenes)
+                useableScene = sceneFromFile(useScenes(ii), 'multispectral');
+                ourOIs = oiCompute(useableScene, obj.cmodule.oi);
+                sceneFOV = [sceneGet(useableScene,'fovhorizontal'), sceneGet(useableScene,'fovvertical')];
+                obj.cmodule.sensor = sensorSetSizeToFOV(obj.cmodule.sensor,sceneFOV,obj.cmodule.oi);
+                ourCaptures = sensorCompute(obj.cmodule.sensor, ourOIs);
+                ourPicture = ipCompute(obj.isp, ourCaptures);
+            end
+            %}
+            
+            
+        end
+        
+        function [expTimes] = planCaptures(obj, previewImage, intent)
             switch intent
                 case {'Auto', 'Portrait', 'Scenic', 'Action', ...
                         'Night'}
@@ -62,12 +105,10 @@ classdef ciCamera
                     % we might also want to add more "techie" intents
                     % like 'burst' rather than relying on them being
                     % activated based on some other user choice
-                                        
-                    % For now assume we're a very simple camera!
-                    nFrames = 3;
                     
+                    % For now assume we're a very simple camera!                    
                     % And we can do AutoExposure to get our time.
-                    expTimes = [.1 .1 .1]; % FIX TO GET REAL EXPOSURE!
+                    expTimes = [.1]; % FIX TO GET REAL EXPOSURE!
                     
                     % When we ask for a preview, it messes up FOV of other
                     % sensors?
@@ -78,52 +119,26 @@ classdef ciCamera
                     %for Debugging
                     %sceneWindow(previewScene{1});
                     
-                    % As a simple test just get a scene we can use!
-                    [sceneObjects, sceneFiles] = scene.render(expTimes);
                     
                 case 'HDR'
                     % use the bracketing code
-                case 'burst'
+                    expTimes = [.05 .1 .2];
+                case 'Burst'
                     % not sure burst is ever really a "user intent" but
                     % it might make sense to allow it. Otherwise it could
                     % just be the way a particular camera implements
                     % some of the other intents
-                case 'pro'
+                    expTimes = [.05 .05 .05];
+                case 'Pro'
                     % here we allow the user to set exposure time,
                     % focus, exposure comp if AutoExpose, WB, etc.
                     % Might force camera to a specific module also?
                     % Zoom is settable, but might be digital??
                     % Aperture also, maybe some shutter modes at some point
+                    expTimes = [.1];
                 case 'otherwise'
                     error("Unknown photo intent");
             end
-            
-            % Simplest case, now that we have the nFrames & expTimes
-            % We want to call our camera module(s).
-            % Each returns an array of sensor objects with the images
-            % pre-computed
-            sensorImages = obj.cmodule.compute(sceneObjects, expTimes);
-            
-            % I think we have a problem here because we have created an 
-            % array of sensor images, and ipCompute only wants one
-            % just use one at a time for now
-            for ii=1:numel(sensorImages)
-                sensorWindow(sensorImages(ii));
-                ourPicture = ipCompute(obj.isp, sensorImages(ii));
-                ipWindow(ourPicture);
-            end
-%{
-            for ii = 1:numel(useScenes)
-                useableScene = sceneFromFile(useScenes(ii), 'multispectral');
-                ourOIs = oiCompute(useableScene, obj.cmodule.oi);
-                sceneFOV = [sceneGet(useableScene,'fovhorizontal'), sceneGet(useableScene,'fovvertical')];
-                obj.cmodule.sensor = sensorSetSizeToFOV(obj.cmodule.sensor,sceneFOV,obj.cmodule.oi);
-                ourCaptures = sensorCompute(obj.cmodule.sensor, ourOIs);
-                ourPicture = ipCompute(obj.isp, ourCaptures);
-            end
-%}
-          
-            
         end
         
         function save(obj, sFileName)

@@ -22,7 +22,21 @@ classdef ciBurstCamera < ciCamera
             % Let's think about the best way to do that.
             % Otherwise could be some other type of specialized call?
             
-        end
+       end
+        
+       % I'm not sure why this is strictly required, and the super-class
+       % isn't called if we don't have one, but in any case, it is a likely
+       % function to want to over-ride!
+       function [expTimes] = planCaptures(obj, previewImage, intent)
+           switch intent
+               case 'HDR'
+                   expTimes = [.05 .1 .2]; % for now
+               case 'Burst'
+                   expTimes = [.05 .05 .05]; % for now
+               otherwise
+                   [expTimes] = planCaptures@ciCamera(obj, previewImage, intent);
+           end
+       end
     end
 end
 
