@@ -18,9 +18,9 @@ classdef ciCamera
     end
     
     methods
-        function obj = ciCamera(varargin) % parameters TBD
-            %CICAMERA Construct an instance of this class
-            
+        function obj = ciCamera(options) % parameters TBD
+            %CICAMERA Construct an instance of the generic camera
+            %"super-class"
         end
         
         % Expected to be over-ridden in sub-classes
@@ -63,6 +63,8 @@ classdef ciCamera
             % Given our preview & intent the camera can decide
             % how many images to take and at what exposure
             % for now we assume a single camera module
+            % IF a camera is okay with standard processing,
+            % could just over-ride planCaptures and leave the rest alone.
             [expTimes] = obj.planCaptures(previewImage, intent);
 
             % As a simple test just get a scene we can use!
@@ -74,14 +76,11 @@ classdef ciCamera
             % pre-computed
             sensorImages = obj.cmodule.compute(sceneObjects, expTimes);
             
-            % I think we have a problem here because we have created an
-            % array of sensor images, and ipCompute only wants one
-            % just use one at a time for now
-            for ii=1:numel(sensorImages)
-                sensorWindow(sensorImages(ii));
-                ourPicture = obj.isp.compute(sensorImages(ii));
-                ipWindow(ourPicture);
-            end
+            % generic version, currently just prints out each processed
+            % image from the sensor
+            ourPicture = obj.computePhoto(sensorImages, intent);
+
+            
             %{
             or we could do it this way and invoke each sensor separately?
             for ii = 1:numel(useScenes)
@@ -95,6 +94,14 @@ classdef ciCamera
             %}
             
             
+        end
+        
+        function ourPhoto = computePhoto(obj, sensorImages, intent)
+            for ii=1:numel(sensorImages)
+                sensorWindow(sensorImages(ii));
+                ourPhoto = obj.isp.compute(sensorImages(ii));
+                ipWindow(ourPhoto);
+            end
         end
         
         function [expTimes] = planCaptures(obj, previewImage, intent)

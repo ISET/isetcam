@@ -7,7 +7,6 @@ classdef ciBurstCamera < ciCamera
     %   Initial Version: D.Cardinal 12/2020
 
     properties
-        
     end
     
     methods
@@ -19,7 +18,7 @@ classdef ciBurstCamera < ciCamera
         end
         
        function ourPicture = TakePicture(obj, scene, intent)
-
+            obj.intent = intent;
             ourPicture = TakePicture@ciCamera(obj, scene, intent);
             % Typically we'd invoke the parent before or after us
             % or to handle cases we don't need to
@@ -31,7 +30,7 @@ classdef ciBurstCamera < ciCamera
        % Decides on number of frames and their exposure times
        % based on the preview image passed in from the camera module
        function [expTimes] = planCaptures(obj, previewImage, intent)
-           
+           obj.intent = intent;
            baseExposure = .1; % should calculate from preview image!
            numFrames = 3; %generic
            if numFrames > 1 && ~isodd(numFrames)
@@ -51,6 +50,29 @@ classdef ciBurstCamera < ciCamera
                otherwise
                    [expTimes] = planCaptures@ciCamera(obj, previewImage, intent);
            end
+       end
+       
+       % over-ride default processing to allow sum & hdr, for example:
+       % should we also get intent passed here?
+       function ourPhoto = computePhoto(obj, sensorImages, intent)
+
+           switch intent
+               case 'HDR'
+               case 'Burst'
+                   % baseline is just sum the voltages
+                   sunSensor = sensorSet('volts'...
+               otherwise
+                   ourPhoto = computePhoto@ciCamera(obj, sensorImages, intent);
+           end
+           %{
+           % generic base code
+           for ii=1:numel(sensorImages)
+               sensorWindow(sensorImages(ii));
+               ourPhoto = obj.isp.compute(sensorImages(ii));
+               ipWindow(ourPhoto);
+           end
+           %}
+           
        end
     end
 end
