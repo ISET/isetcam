@@ -58,7 +58,7 @@ classdef ciScene
         cameraMotion = []; % extent of camera motion in meters per second
         % ['<cameraname>' [tx ty tz] [rx ry rz]]
         
-        allowsObjectMotion = false;
+        allowsObjectMotion = false; % default until set
         objectMotion = []; % none until the user adds some 
         
         expTimes = [.5];    % single or array of exposure times to use when

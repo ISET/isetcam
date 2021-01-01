@@ -13,7 +13,7 @@ classdef ciCamera
     properties
         cmodule = ciCModule(); % 1 (or more) CModules
         % probably need to superset this
-        isp = ipCreate();     % an ip or maybe something that extends an ip
+        isp = ciIP();     % an ip or maybe something that extends an ip
         
     end
     
@@ -79,7 +79,7 @@ classdef ciCamera
             % just use one at a time for now
             for ii=1:numel(sensorImages)
                 sensorWindow(sensorImages(ii));
-                ourPicture = ipCompute(obj.isp, sensorImages(ii));
+                ourPicture = obj.isp.compute(sensorImages(ii));
                 ipWindow(ourPicture);
             end
             %{
