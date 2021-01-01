@@ -7,7 +7,7 @@ classdef ciCModule
     %   to support that in future.
     
     % History:
-    %   Initial Code: D.Cardinal 12/2020
+    %   Initial Version: D.Cardinal 12/2020
     
     properties
         oi = oiCreate(); % optics plus their resulting image
@@ -51,12 +51,13 @@ classdef ciCModule
                 ourScene = sceneArray{ii};
                 opticalImage = oiCompute(obj.oi, ourScene); 
                 
-                % set sensor FOV to match scene. I don't know if we should
-                % always do this, or rely on the user to sort it out?
-                if ii == 1 % just need to do this once, I think
+                % set sensor FOV to match scene.
+                % Usually just need to do once, but sometimes something
+                % gets confused.
+                %if ii == 1 % just need to do this once, I think
                     sceneFOV = [sceneGet(ourScene,'fovhorizontal') sceneGet(ourScene,'fovvertical')];
                     obj.sensor = sensorSetSizeToFOV(obj.sensor,sceneFOV,opticalImage);
-                end
+                %end
                 obj.sensor = sensorSet(obj.sensor, 'exposure time', exposureTimes(ii));
                 sensorImage = sensorCompute(obj.sensor, opticalImage);
                 cOutput = [cOutput sensorImage]; %#ok<AGROW>

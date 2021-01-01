@@ -1,7 +1,11 @@
 classdef ciBurstCamera < ciCamera
     %CIBURSTCAMERA Sub-class of ciCamera that adds burst and bracketing
-    %   Detailed explanation goes here
+    %   Basic multi-capture functionality, to be used for testing
+    %   and as a base class for additional enhancements
     
+    % History:
+    %   Initial Version: D.Cardinal 12/2020
+
     properties
         
     end
@@ -23,10 +27,9 @@ classdef ciBurstCamera < ciCamera
             % Otherwise could be some other type of specialized call?
             
        end
-        
-       % I'm not sure why this is strictly required, and the super-class
-       % isn't called if we don't have one, but in any case, it is a likely
-       % function to want to over-ride!
+       
+       % Decides on number of frames and their exposure times
+       % based on the preview image passed in from the camera module
        function [expTimes] = planCaptures(obj, previewImage, intent)
            switch intent
                case 'HDR'

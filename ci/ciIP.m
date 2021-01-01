@@ -1,9 +1,14 @@
 classdef ciIP
-    %CIIP Summary of this class goes here
-    %   Detailed explanation goes here
+    %CIIP Wrapper for ip to support computational cameras
+    %   TBD how much we need to extend the current ip
+    %   versus adding functionality to it, but
+    %   having this class at least gives us options
+    %
+    % History:
+    %   Initial Version: D. Cardinal, 12/2020
     
     properties
-        ip = ipCreate();
+        ip = ipCreate(); % by default we just wrap an ip
     end
     
     methods
