@@ -40,8 +40,8 @@ classdef ciBurstCamera < ciCamera
            frameOffset = (numFrames -1) / 2; 
            switch intent
                case 'HDR'
-                   expTimes = repmat(baseExposure^(1/2^frameOffset, 1, numFrames);
-                   expTimes = [baseExposure^
+                   expTimes = repmat(baseExposure, 1, numFrames);
+                   expTimes = expTimes.*(2.^[-1*frameOffset:1:frameOffset]);
                case 'Burst'
                    % algorithm here to calculate number of images and 
                    % exposure time based on estimated processing power,
