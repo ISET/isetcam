@@ -14,7 +14,7 @@ classdef ciCamera
         cmodule = ciCModule(); % 1 (or more) CModules
         % probably need to superset this
         isp = ciIP();     % an ip or maybe something that extends an ip
-        
+        numHDRFrames = 3;
     end
     
     methods
@@ -27,8 +27,15 @@ classdef ciCamera
         % but they can still call us for "generic" processing.
         % There may also be lower-level touchpoints for sub-classing
         % so that they don't need to re-implement all of this. . .
-        function ourPicture = TakePicture(obj, scene, intent)
+        function ourPicture = TakePicture(obj, scene, intent, options)
             %TakePicture Main function telling us to create a photo
+            arguments
+                obj;
+                scene;
+                intent;
+                options.numHDRFrames = 3;
+            end
+            obj.numHDRFrames = options.numHDRFrames;
             
             % scene can be either a scene struct (static)
             % or an array of scenes or a CSCene (in theory)
@@ -56,8 +63,6 @@ classdef ciCamera
             % a preview image, determine number of frames and exposure
             % time(s). Potentially more sophisticated stuff as well
             
-            %put this here to avoid code duplication, but wasted if
-            %a particular algorithem doesn't use it?
             previewImage = scene.preview();
             
             % Given our preview & intent the camera can decide
@@ -115,8 +120,9 @@ classdef ciCamera
                     
                     % For now assume we're a very simple camera!                    
                     % And we can do AutoExposure to get our time.
-                    expTimes = [.1]; % FIX TO GET REAL EXPOSURE!
                     
+                    oi = oiCompute(ojb.cmodule.oi, previewImage);
+                    expTimes = [autoExposure(oi, previewImage)];
                     % When we ask for a preview, it messes up FOV of other
                     % sensors?
                     % test to see if preview works

@@ -10,8 +10,8 @@ classdef ciCModule
     %   Initial Version: D.Cardinal 12/2020
     
     properties
-        oi = oiCreate(); % optics plus their resulting image
-        sensor = sensorCreate();
+        oi; % optics plus their resulting image
+        sensor;
         stabilizer = []; % for future use :)
         % for future, do user filters go here or in optics?
     end
@@ -21,9 +21,14 @@ classdef ciCModule
     % better way to deal with it that leaves existing code alone.
     
     methods
-        function obj = ciCModule()
+        function obj = ciCModule(options)
             %CICMODULE Construct an instance of this class
-            
+            arguments
+                options.sensor = sensorCreate();
+                options.oi = oiCreate();
+            end
+            obj.sensor = options.sensor;
+            obj.oi = options.oi;
             
         end
         

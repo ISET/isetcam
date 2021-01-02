@@ -17,9 +17,16 @@ classdef ciBurstCamera < ciCamera
 
         end
         
-       function ourPicture = TakePicture(obj, scene, intent)
+       function ourPicture = TakePicture(obj, scene, intent, options)
             
-            ourPicture = TakePicture@ciCamera(obj, scene, intent);
+           arguments
+               obj;
+               scene;
+               intent;
+               options.numHDRFrames = 3;
+           end
+           
+            ourPicture = TakePicture@ciCamera(obj, scene, intent, options);
             % Typically we'd invoke the parent before or after us
             % or to handle cases we don't need to
             % Let's think about the best way to do that.
@@ -30,8 +37,12 @@ classdef ciBurstCamera < ciCamera
        % Decides on number of frames and their exposure times
        % based on the preview image passed in from the camera module
        function [expTimes] = planCaptures(obj, previewImage, intent)
-           
-           baseExposure = .05; % should calculate from preview image!
+
+           % by default set our base exposure to simple auto-exposure
+           oi = oiCompute(previewImage, obj.cmodule.oi);
+           baseExposure = [autoExposure(oi, obj.cmodule.sensor)];
+
+           % should numFrames be set at the camera level?
            numFrames = 5; %generic
            if numFrames > 1 && ~isodd(numFrames)
                numFrames = numFrames + 1;
@@ -66,9 +77,10 @@ classdef ciBurstCamera < ciCamera
                    % clever
                    sensorImage = obj.isp.mergeSensors(sensorImages);
                    sensorImage = sensorSet(sensorImage,'exposure method', 'bracketing');
-                   
-                   ipHDR = ipSet(obj.isp.ip, 'render demosaic only', 'true');
-                   ipHDR = ipSet(ipHDR, 'combination method', 'longest');
+ 
+% what if we don't bother limiting to demosaic
+%                   ipHDR = ipSet(obj.isp.ip, 'render demosaic only', 'true');
+                   ipHDR = ipSet(obj.isp.ip, 'combination method', 'longest');
                    
                    % old ipBurstMotion  = ipCompute(ipBurstMotion,sensorBurstMotion);
                    % if we want to use the existing ipCompute we need to

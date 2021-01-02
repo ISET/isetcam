@@ -181,11 +181,13 @@ classdef ciScene
                 obj.thisR.set('filmresolution', obj.resolution);
                 
                 %% Looks like we still need to add our own light
-                obj.thisR = piLightAdd(obj.thisR,...
+                %{
+                   obj.thisR = piLightAdd(obj.thisR,...
                     'type','point',...
                     'light spectrum','Tungsten',...
                     'cameracoordinate', true);
-                
+                %}
+                obj.thisR = piLightAdd(obj.thisR, 'type' , 'infinite');
                 
                 imageFolderPath = fullfile(isetRootPath, 'local', obj.scenePath, 'images');
                 if ~isfolder(imageFolderPath)
@@ -264,7 +266,8 @@ classdef ciScene
         function previewScene = preview(obj)
             % get a preview that the camera can use to plan capture
             % settings
-            [previewScene, previewFiles] = obj.render( .1, 'previewFlag', true); % generic exposure time
+            [previewScenes, previewFiles] = obj.render( .1, 'previewFlag', true); % generic exposure time
+            previewScene = previewScenes{1}; % just need the first element
         end
         
         function load(obj, cSceneFile)
