@@ -102,9 +102,8 @@ switch exposureMethod(1:3)
         ip = ipComputeBracketed(ip,sensor);
     case 'cfa'  % cfaExposure
         ip = ipComputeCFA(ip,sensor);
-% not sure we want to support burst here, TBD djc
-%    case 'bur'  % burst of images
-%        ip = ipComputeBurst(ip, sensor, 'sum');
+    case 'bur'  % burst of images
+        ip = ipComputeBurst(ip, sensor, 'sum');
     otherwise
         error('Unknown exposure method %s\n',exposureMethod);
 end

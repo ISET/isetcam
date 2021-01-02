@@ -81,6 +81,7 @@ classdef ciBurstCamera < ciCamera
                case 'Burst'
                    % baseline is just sum the voltages
                    sensorImage = obj.isp.mergeSensors(sensorImages);
+                   sensorImage = sensorSet(sensorImage,'exposure method', 'burst');
 
                    ipBurst = ipSet(obj.isp.ip, 'render demosaic only', 'true');
                    ipBurst = ipSet(ipBurst, 'combination method', 'sum');
