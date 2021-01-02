@@ -18,7 +18,7 @@ classdef ciCamera
     end
     
     methods
-        function obj = ciCamera(options) % parameters TBD
+        function obj = ciCamera() % parameters TBD
             %CICAMERA Construct an instance of the generic camera
             %"super-class"
         end
@@ -129,7 +129,7 @@ classdef ciCamera
                     
                 case 'HDR'
                     % use the bracketing code
-                    expTimes = [.05 .1 .2];
+                    expTimes = [.05 .01 .20];
                 case 'Burst'
                     % not sure burst is ever really a "user intent" but
                     % it might make sense to allow it. Otherwise it could

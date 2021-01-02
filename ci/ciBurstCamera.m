@@ -10,15 +10,15 @@ classdef ciBurstCamera < ciCamera
     end
     
     methods
-        function obj = ciBurstCamera(varargin)
+        function obj = ciBurstCamera()
             %CIBURSTCAMERA Construct an instance of this class
             %   First invoke our parent ciCamera class
-            obj = obj@ciCamera(varargin);
+            obj = obj@ciCamera();
 
         end
         
        function ourPicture = TakePicture(obj, scene, intent)
-            obj.intent = intent;
+            
             ourPicture = TakePicture@ciCamera(obj, scene, intent);
             % Typically we'd invoke the parent before or after us
             % or to handle cases we don't need to
@@ -30,9 +30,9 @@ classdef ciBurstCamera < ciCamera
        % Decides on number of frames and their exposure times
        % based on the preview image passed in from the camera module
        function [expTimes] = planCaptures(obj, previewImage, intent)
-           obj.intent = intent;
-           baseExposure = .1; % should calculate from preview image!
-           numFrames = 3; %generic
+           
+           baseExposure = .05; % should calculate from preview image!
+           numFrames = 5; %generic
            if numFrames > 1 && ~isodd(numFrames)
                numFrames = numFrames + 1;
            end
@@ -58,9 +58,36 @@ classdef ciBurstCamera < ciCamera
 
            switch intent
                case 'HDR'
+                   % ipCompute for HDR assumes we have an array of voltages
+                   % in a single sensor, NOT an array of sensors
+                   % so first we merge our sensor array into one sensor
+                   % For now this is simply concatenating, but could be
+                   % more complex in a sub-class that wanted to be more
+                   % clever
+                   sensorImage = obj.isp.mergeSensors(sensorImages);
+                   sensorImage = sensorSet(sensorImage,'exposure method', 'bracketing');
+                   
+                   ipHDR = ipSet(obj.isp.ip, 'render demosaic only', 'true');
+                   ipHDR = ipSet(ipHDR, 'combination method', 'longest');
+                   
+                   % old ipBurstMotion  = ipCompute(ipBurstMotion,sensorBurstMotion);
+                   % if we want to use the existing ipCompute we need to
+                   % combine multiple sensors into one, with all the data &
+                   % exposure times. Otherwise ipCompute gets confused if
+                   % it is handed multiple sensors. It thinks those are
+                   % something else.
+                   ipHDR = ipCompute(ipHDR, sensorImage);
+                   ourPhoto = ipHDR;
                case 'Burst'
                    % baseline is just sum the voltages
-                   sunSensor = sensorSet('volts'...
+                   sensorImage = obj.isp.mergeSensors(sensorImages);
+
+                   ipBurst = ipSet(obj.isp.ip, 'render demosaic only', 'true');
+                   ipBurst = ipSet(ipBurst, 'combination method', 'sum');
+                   
+                   % old ipBurstMotion  = ipCompute(ipBurstMotion,sensorBurstMotion);
+                   ipBurst = ipCompute(ipBurst, sensorImage);
+                   ourPhoto = ipBurst;
                otherwise
                    ourPhoto = computePhoto@ciCamera(obj, sensorImages, intent);
            end

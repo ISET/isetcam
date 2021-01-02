@@ -28,6 +28,22 @@ classdef ciIP
             %   Detailed explanation goes here
             aPicture = ipCompute(obj.ip, sensorImages);
         end
+        
+        % take a sequence of frames that are in separate sensor objects
+        % and combine them into a single struct for processing by ip.
+        function singleSensor = mergeSensors(obj, sensorArray)
+            singleSensor = sensorArray(1);
+            for ii = 2:numel(sensorArray)
+                singleSensor = sensorSet(singleSensor, 'exposure time', ...
+                    [sensorGet(singleSensor,'exposure time') sensorGet(sensorArray(ii), 'exposure time')]);
+                %sensorSet(singleSensor, 'data', ...
+                %    [sensorGet(singleSensor,'data') sensorGet(sensorArray(ii), 'data')]);
+                % this might be cheating, but can we just append the data
+                % arrays? should probably use some version of get & set
+                % assume we have volts (ugh:))
+                singleSensor.data.volts(:,:,ii) = sensorArray(ii).data.volts;
+            end
+        end
     end
 end
 
