@@ -12,13 +12,17 @@ function sensor = sensorFromFile(filename)
 fullName = fullfile(filename);
 
 sensorNames = {'isa', 'sensor'};
+% turn off warnings because matlab hates us using the variable isa now
+warning('off');
 dataArray = load(fullName,sensorNames{:});
 
 if isfield(dataArray, 'isa')
     sensor = dataArray.isa;
+elseif isfield(dataArray,'isa_')
+    sensor = dataArray.isa_;
 elseif isfield(dataArray, 'sensor')
     sensor = dataArray.sensor;
 end
-
+warning('on');
 end
 

@@ -70,7 +70,7 @@ switch(lower(objType))
         % sensor. Someone better at ISET or Matlab can probably improve.
         sensorNames = {'isa', 'sensor'};
         dataArray = load(fullName,sensorNames{:});
-        warning('on');
+
         if isfield(dataArray, 'isa')
             data = dataArray.isa;
              % This is what they rename the variable in Matlab 7.04
@@ -79,6 +79,7 @@ switch(lower(objType))
         elseif isfield(dataArray, 'sensor')
             data = dataArray.sensor;
         end
+        warning('on');
         data.name = objName;
         ieAddObject(data);     
         
