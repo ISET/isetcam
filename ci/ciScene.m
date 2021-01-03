@@ -61,7 +61,7 @@ classdef ciScene
         scenePath;  % defaults set in constructor if needed
         sceneName;
         
-        resolution = [512 512]; % default
+        resolution = [1024 1024]; % default
         
         allowsCameraMotion = true;
         cameraMotion = []; % extent of camera motion in meters per second
@@ -100,7 +100,7 @@ classdef ciScene
                 options.recipe struct = struct([]);
                 options.sceneName char = 'cornell box bunny chart';
                 options.scenePath char = 'Cornell_BoxBunnyChart';
-                options.resolution (1,2) {mustBeNumeric} = [512 512];
+                options.resolution (1,2) {mustBeNumeric} = [1024 1024];
                 options.sceneFileName (1,1) string {isfile(options.sceneFileName)} = "";
                 options.initialScene (1,:) struct = ([]);
             end
@@ -179,7 +179,7 @@ classdef ciScene
                 % FIX: This should be set to the sensor size, ideally
                 % or maybe to a fraction for faster performance
                 obj.thisR.set('filmresolution', obj.resolution);
-                
+                obj.thisR.set('rays per pixel',128);
                 %% Looks like we still need to add our own light
                 %{
                    obj.thisR = piLightAdd(obj.thisR,...
