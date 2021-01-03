@@ -24,7 +24,10 @@ classdef ciBurstCamera < ciCamera
                scene;
                intent;
                options.numHDRFrames = 3;
+               options.numBurstFrames = 3;
            end
+           obj.numHDRFrames = options.numHDRFrames;
+           obj.numBurstFrames = options.numBurstFrames;
            
             ourPicture = TakePicture@ciCamera(obj, scene, intent);
             % Typically we'd invoke the parent before or after us
@@ -42,18 +45,23 @@ classdef ciBurstCamera < ciCamera
            oi = oiCompute(previewImage, obj.cmodule.oi);
            baseExposure = [autoExposure(oi, obj.cmodule.sensor)];
 
-           % should numFrames be set at the camera level?
-           numFrames = 5; %generic
-           if numFrames > 1 && ~isodd(numFrames)
-               numFrames = numFrames + 1;
-           end
-           frameOffset = (numFrames -1) / 2; 
+          
            switch intent
                case 'HDR'
+                   numFrames = obj.numHDRFrames;
+                   frameOffset = (numFrames -1) / 2;
+                   if numFrames > 1 && ~isodd(numFrames)
+                       numFrames = numFrames + 1;
+                   end
                    expTimes = repmat(baseExposure, 1, numFrames);
                    expTimes = expTimes.*(2.^[-1*frameOffset:1:frameOffset]);
                case 'Burst'
-                   % algorithm here to calculate number of images and 
+                   numFrames = obj.numBurstFrames;
+                   frameOffset = (numFrames -1) / 2;
+                   if numFrames > 1 && ~isodd(numFrames)
+                       numFrames = numFrames + 1;
+                   end
+                   % algorithm here to calculate number of images and
                    % exposure time based on estimated processing power,
                    % lighting, and possibly motion/intent
                    expTimes = repmat(baseExposure, 1, numFrames);

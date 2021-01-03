@@ -15,6 +15,7 @@ classdef ciCamera
         % probably need to superset this
         isp = ciIP();     % an ip or maybe something that extends an ip
         numHDRFrames = 3;
+        numBurstFrames = 3;
     end
     
     methods

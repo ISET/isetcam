@@ -61,7 +61,14 @@ classdef ciScene
         scenePath;  % defaults set in constructor if needed
         sceneName;
         
-        resolution = [1024 1024]; % default
+        resolution; % set in constructor
+        numRays; % set in constructor
+        
+        %numFrames & expTimes are currently over-defined
+        %as we compute nF from eT, but leaving both here for possible TBA
+        numFrames; % Set in constructor
+        expTimes = [.5];    % single or array of exposure times to use when
+        % generating the rendered images
         
         allowsCameraMotion = true;
         cameraMotion = []; % extent of camera motion in meters per second
@@ -70,8 +77,6 @@ classdef ciScene
         allowsObjectMotion = false; % default until set by scene type
         objectMotion = []; % none until the user adds some
         
-        expTimes = [.5];    % single or array of exposure times to use when
-        % generating the rendered images
         
         cacheName = '';   % Because scenes can be expensive to render, we
         % store them in /local. But to use them as a cache
@@ -88,8 +93,6 @@ classdef ciScene
         % return an array of oi's, that can be fed directly
         % to a sensor. Default is simple "pinhole"
         
-        numFrames = 1; % just the default
-        
     end
     
     %% Do the work here
@@ -100,11 +103,16 @@ classdef ciScene
                 options.recipe struct = struct([]);
                 options.sceneName char = 'cornell box bunny chart';
                 options.scenePath char = 'Cornell_BoxBunnyChart';
-                options.resolution (1,2) {mustBeNumeric} = [1024 1024];
+                options.resolution (1,2) {mustBeNumeric} = [512 512];
+                options.numRays (1,1) {mustBeNumeric} = 64;
+                options.numFrames (1,1) {mustBeNumeric} = 1;
                 options.sceneFileName (1,1) string {isfile(options.sceneFileName)} = "";
                 options.initialScene (1,:) struct = ([]);
             end
             obj.resolution = options.resolution;
+            obj.numRays = options.numRays;
+            obj.numFrames = options.numFrames;
+            
             
             %CISCENE Construct an instance of this class
             %   allow whatever init we want to accept in the creation call
@@ -118,9 +126,9 @@ classdef ciScene
                         error("For recipe, need to pass in an object");
                     end
                 case 'pbrt' % pass a pbrt scene
-                        obj.scenePath = options.scenePath;
-                        obj.sceneName = options.sceneName;
-                        
+                    obj.scenePath = options.scenePath;
+                    obj.sceneName = options.sceneName;
+                    
                     if ~piDockerExists, piDockerConfig; end
                     obj.thisR = piRecipeDefault('scene name', obj.sceneName);
                     obj.allowsObjectMotion = true;
@@ -136,7 +144,7 @@ classdef ciScene
                     % TBD
                     %ideally we should be able to accept an array of images
                 case 'image'
-
+                    
                     % TBD
                 otherwise
                     error("Unknown Scene Type");
@@ -153,15 +161,16 @@ classdef ciScene
                 expTimes (1,:);
                 options.previewFlag (1,2) {islogical} = false;
             end
+            obj.numFrames = numel(expTimes);
+            obj.expTimes = expTimes;
+            
             % render uses what we know about the initial
             % image and subsequent motion requests
             % to generate one or more output scene or oi structs
             
-            %   If lensmodel is set, it is used with PBRT and
+            %   If lensmodel is set, in future it will be used with PBRT and
             %   we return an array of oi objects, otherwise scenes
-            
-            obj.numFrames = numel(expTimes);
-            obj.expTimes = expTimes;
+            %   FUTURE
             
             % The below code works for when we get a pbrt scene or a
             % recipe, but doesn't know what to do with an iset scene or one
@@ -179,13 +188,21 @@ classdef ciScene
                 % FIX: This should be set to the sensor size, ideally
                 % or maybe to a fraction for faster performance
                 obj.thisR.set('filmresolution', obj.resolution);
-                obj.thisR.set('rays per pixel',128);
+                obj.thisR.set('rays per pixel',obj.numRays);
                 %% Looks like we still need to add our own light
                 %{
                    obj.thisR = piLightAdd(obj.thisR,...
                     'type','point',...
                     'light spectrum','Tungsten',...
                     'cameracoordinate', true);
+                %}
+                %{
+                    thisR = piLightAdd(thisR,...
+                    'type','spot',...
+                    'light spectrum','equalEnergy',...
+                    'spectrum scale', 1,...
+                    'from', thisR.lookAt.from,...
+                    'to', thisR.lookAt.to);
                 %}
                 obj.thisR = piLightAdd(obj.thisR, 'type' , 'infinite');
                 
@@ -212,6 +229,7 @@ classdef ciScene
                         
                     end
                 end
+                
                 sTime = 0;
                 for ii = 1:obj.numFrames
                     if options.previewFlag
@@ -235,6 +253,28 @@ classdef ciScene
                         %% Write recipe
                         piWrite(obj.thisR);
                         
+                        % process camera motion if allowed
+                        % We do this per frame because we want to
+                        % allow for some perturbance/shake/etc.
+                        if obj.allowsCameraMotion && ii > 1
+                            for ii = 1:numel(obj.cameraMotion)
+                                ourMotion = obj.cameraMotion{ii};
+                                if ~isempty(ourMotion{2})
+                                    obj.thisR = piCameraTranslate(obj.thisR, ...
+                                        'x shift', ourMotion{2}(1),...
+                                        'y shift', ourMotion{2}(2),...
+                                        'z shift', ourMotion{2}(3));  % meters
+                                end
+                                if ~isempty(ourMotion{3})
+                                    obj.thisR = piCameraRotate(obj.thisR,...
+                                        'x rot', ourMotion{3}(1),...
+                                        'y rot', ourMotion{3}(2),...
+                                        'z rot', ourMotion{3}(3));
+                                end
+                                
+                            end
+                        end
+                        %
                         %% Render and visualize
                         % Should we also allow for keeping depth if needed for
                         % post-processing?
