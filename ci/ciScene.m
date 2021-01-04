@@ -18,9 +18,11 @@ classdef ciScene
     %       scenetype:
     %           'recipe' -- previously-loaded recipe
     %           'pbrt'   -- a PBRT scene
-    %           'iset'   -- an ISET scene file
-    %           'scene'  -- previously-loaded ISET scene struct
-    %           'image'  -- image file name
+    %           'iset scene file'   -- an ISET scene file
+    %           'iset scene'  -- previously-loaded ISET scene struct
+    %           'image file'  -- image file name
+    %           'iset scene array'  -- ISET pre-computed scenes
+    %           'image file array'  -- pre-computed image files
     %
     % History:
     %   Initial Version: D. Cardinal 12/2020
@@ -185,147 +187,176 @@ classdef ciScene
             
             % The below code works for when we get a pbrt scene or a
             % recipe, but doesn't know what to do with an iset scene or one
-            % or more pre-baked images.
+            % or more pre-baked images -- yet.
             
-            % Process based on sceneType. If disjoint, we should
-            % probably make this a switch statement
-            if isequal(obj.sceneType, 'pbrt') || equals(obj.sceneType, 'recipe')
-                if ~piDockerExists, piDockerConfig; end
-                % read scene (defaults is cornell box with bunny)
-                if isempty(obj.thisR)
-                    obj.thisR = piRecipeDefault('scene name', obj.sceneName);
-                    % Okay, if we have a lensFile, we need to reapply it here
-                    % but it doesn't seem to work?
-                    if ~isempty(obj.lensFile)                        
-                        obj.thisR.camera = piCameraCreate('omni','lensFile',obj.lensFile);
+            % Process based on sceneType. 
+            switch obj.sceneType
+                case {'pbrt', 'recipe'}
+                    if ~piDockerExists, piDockerConfig; end
+                    % read scene (defaults is cornell box with bunny)
+                    if isempty(obj.thisR)
+                        obj.thisR = piRecipeDefault('scene name', obj.sceneName);
+                        % Okay, if we have a lensFile, we need to reapply it here
+                        % but it doesn't seem to work?
+                        if ~isempty(obj.lensFile)
+                            obj.thisR.camera = piCameraCreate('omni','lensFile',obj.lensFile);
+                        end
                     end
-                end
-                
-                
-                % Modify the film resolution
-                % FIX: This should be set to the sensor size, ideally
-                % or maybe to a fraction for faster performance
-                val = recipeSet(obj.thisR,'filmresolution', obj.resolution);
-                val = recipeSet(obj.thisR,'rays per pixel',obj.numRays);
-                %% Looks like we still need to add our own light
-                %{
+                    
+                    
+                    % Modify the film resolution
+                    % FIX: This should be set to the sensor size, ideally
+                    % or maybe to a fraction for faster performance
+                    val = recipeSet(obj.thisR,'filmresolution', obj.resolution);
+                    val = recipeSet(obj.thisR,'rays per pixel',obj.numRays);
+                    %% Looks like we still need to add our own light
+                    %{
                    obj.thisR = piLightAdd(obj.thisR,...
                     'type','point',...
                     'light spectrum','Tungsten',...
                     'cameracoordinate', true);
-                %}
-                %{
+                    %}
+                    %{
                     thisR = piLightAdd(thisR,...
                     'type','spot',...
                     'light spectrum','equalEnergy',...
                     'spectrum scale', 1,...
                     'from', thisR.lookAt.from,...
                     'to', thisR.lookAt.to);
-                %}
-                val = piLightAdd(obj.thisR, 'type' , 'infinite');
-                
-                imageFolderPath = fullfile(isetRootPath, 'local', obj.scenePath, 'images');
-                if ~isfolder(imageFolderPath)
-                    mkdir(imageFolderPath);
-                end
-                sceneFiles = [];
-                if exist('sceneObjects', 'var') clear(sceneObjects); end
-                
-                % Okay we have object motion & numframes
-                % but if Motion doesn't work, then we need to translate between
-                % frames
-                
-                % process object motion if allowed
-                if obj.allowsObjectMotion
-                    for ii = 1:numel(obj.objectMotion)
-                        ourMotion = obj.objectMotion{ii};
-                        if ~isempty(ourMotion{1})
-                            obj.thisR.set('asset', ourMotion{1}, 'motion', 'translation', ourMotion{2});
-                            obj.thisR.set('asset', ourMotion{1}, 'motion', 'rotation', ourMotion{3});
-                        end
-                        %thisR.set('asset', bunnyName, 'translation', [moveX, moveY, moveZ]);
-                        
-                    end
-                end
-                
-                sTime = 0;
-                for ii = 1:obj.numFrames
-                    if options.previewFlag
-                        imageFilePrefixName = fullfile(imageFolderPath, append("preview_", num2str(ii)));
-                    else
-                        imageFilePrefixName = fullfile(imageFolderPath, append("frame_", num2str(ii)));
-                    end
-                    imageFileName = append(imageFilePrefixName,  ".mat");
+                    %}
+                    val = piLightAdd(obj.thisR, 'type' , 'infinite');
                     
-                    % We set the shutter open/close successively
-                    % for each frame of the capture, even if we don't
-                    % render a frame, as we might need to render subsequent
+                    imageFolderPath = fullfile(isetRootPath, 'local', obj.scenePath, 'images');
+                    if ~isfolder(imageFolderPath)
+                        mkdir(imageFolderPath);
+                    end
+                    sceneFiles = [];
+                    if exist('sceneObjects', 'var') clear(sceneObjects); end
+                    
+                    % Okay we have object motion & numframes
+                    % but if Motion doesn't work, then we need to translate between
                     % frames
-                    obj.thisR.set('shutteropen', sTime);
-                    sTime = sTime + obj.expTimes(ii);
-                    obj.thisR.set('shutterclose', sTime);
                     
-                    %IF we haven't rendered before, do it now
-                    if ~isfile(imageFileName)
-                        
-                        %% Write recipe
-                        piWrite(obj.thisR);
-                        
-                        % process camera motion if allowed
-                        % We do this per frame because we want to
-                        % allow for some perturbance/shake/etc.
-                        
-                        % Need to improve by supporting motion during
-                        % capture like in: t_piIntro_cameramotion
-                        if obj.allowsCameraMotion && ii > 1
-                            for ii = 1:numel(obj.cameraMotion)
-                                ourMotion = obj.cameraMotion{ii};
-                                if ~isempty(ourMotion{2})
-                                    obj.thisR = piCameraTranslate(obj.thisR, ...
-                                        'x shift', ourMotion{2}(1),...
-                                        'y shift', ourMotion{2}(2),...
-                                        'z shift', ourMotion{2}(3));  % meters
-                                end
-                                if ~isempty(ourMotion{3})
-                                    obj.thisR = piCameraRotate(obj.thisR,...
-                                        'x rot', ourMotion{3}(1),...
-                                        'y rot', ourMotion{3}(2),...
-                                        'z rot', ourMotion{3}(3));
-                                end
-                                
+                    % process object motion if allowed
+                    if obj.allowsObjectMotion
+                        for ii = 1:numel(obj.objectMotion)
+                            ourMotion = obj.objectMotion{ii};
+                            if ~isempty(ourMotion{1})
+                                obj.thisR.set('asset', ourMotion{1}, 'motion', 'translation', ourMotion{2});
+                                obj.thisR.set('asset', ourMotion{1}, 'motion', 'rotation', ourMotion{3});
                             end
+                            %thisR.set('asset', bunnyName, 'translation', [moveX, moveY, moveZ]);
+                            
                         end
-                        %
-                        %% Render and visualize
-                        % Should we also allow for keeping depth if needed for
-                        % post-processing?
-                        [sceneObject, results] = piRender(obj.thisR, 'render type', 'radiance');
-                        if isequal(sceneObject.type, 'scene')
-                            sceneToFile(imageFileName,sceneObject);
-                            % this is mostly just for debugging & human inspection
-                            sceneSaveImage(sceneObject,imageFilePrefixName);
-                        elseif isequal(sceneObject.type, 'opticalimage') % we have an optical image
-                            error("Don't know what to do with OI yet");
-                        else
-                            error("Render seems to have failed.");
-                        end
-                    else
-                        % There is some problem here I think, as scenes that
-                        % have been previously generated show up without the
-                        % correct FOV. So maybe we need to set that here, but
-                        % where else is it set?
-                        sceneObject = sceneFromFile(imageFileName, 'multispectral');
                     end
-                    if ~exist('sceneObjects', 'var')
-                        sceneObjects = {sceneObject};
-                    else
-                        sceneObjects(end+1) = {sceneObject};
-                    end
-                    sceneFiles = [sceneFiles imageFileName]; %#ok<AGROW>
                     
-                end
-                
+                    sTime = 0;
+                    for ii = 1:obj.numFrames
+                        if options.previewFlag
+                            imageFilePrefixName = fullfile(imageFolderPath, append("preview_", num2str(ii)));
+                        else
+                            imageFilePrefixName = fullfile(imageFolderPath, append("frame_", num2str(ii)));
+                        end
+                        imageFileName = append(imageFilePrefixName,  ".mat");
+                        
+                        % We set the shutter open/close successively
+                        % for each frame of the capture, even if we don't
+                        % render a frame, as we might need to render subsequent
+                        % frames
+                        obj.thisR.set('shutteropen', sTime);
+                        sTime = sTime + obj.expTimes(ii);
+                        obj.thisR.set('shutterclose', sTime);
+                        
+                        %IF we haven't rendered before, do it now
+                        if ~isfile(imageFileName)
+                            
+                            %% Write recipe
+                            piWrite(obj.thisR);
+                            
+                            % process camera motion if allowed
+                            % We do this per frame because we want to
+                            % allow for some perturbance/shake/etc.
+                            
+                            % Need to improve by supporting motion during
+                            % capture like in: t_piIntro_cameramotion
+                            if obj.allowsCameraMotion && ii > 1
+                                for ii = 1:numel(obj.cameraMotion)
+                                    ourMotion = obj.cameraMotion{ii};
+                                    if ~isempty(ourMotion{2})
+                                        obj.thisR = piCameraTranslate(obj.thisR, ...
+                                            'x shift', ourMotion{2}(1),...
+                                            'y shift', ourMotion{2}(2),...
+                                            'z shift', ourMotion{2}(3));  % meters
+                                    end
+                                    if ~isempty(ourMotion{3})
+                                        obj.thisR = piCameraRotate(obj.thisR,...
+                                            'x rot', ourMotion{3}(1),...
+                                            'y rot', ourMotion{3}(2),...
+                                            'z rot', ourMotion{3}(3));
+                                    end
+                                    
+                                end
+                            end
+                            %
+                            %% Render and visualize
+                            % Should we also allow for keeping depth if needed for
+                            % post-processing?
+                            [sceneObject, results] = piRender(obj.thisR, 'render type', 'radiance');
+                            if isequal(sceneObject.type, 'scene')
+                                sceneToFile(imageFileName,sceneObject);
+                                % this is mostly just for debugging & human inspection
+                                sceneSaveImage(sceneObject,imageFilePrefixName);
+                            elseif isequal(sceneObject.type, 'opticalimage') % we have an optical image
+                                error("Don't know what to do with OI yet");
+                            else
+                                error("Render seems to have failed.");
+                            end
+                        else
+                            % There is some problem here I think, as scenes that
+                            % have been previously generated show up without the
+                            % correct FOV. So maybe we need to set that here, but
+                            % where else is it set?
+                            sceneObject = sceneFromFile(imageFileName, 'multispectral');
+                        end
+                        if ~exist('sceneObjects', 'var')
+                            sceneObjects = {sceneObject};
+                        else
+                            sceneObjects(end+1) = {sceneObject};
+                        end
+                        sceneFiles = [sceneFiles imageFileName]; %#ok<AGROW>
+                        
+                    end
+                case 'iset scene'
+                    % we can only do scene motion.
+                case 'iset scene array'
+                    % for when we have a full set of scenes already!
+                case 'image file'
+                    % single base image
+                case 'image file array'
+                    % when we get pre-computed images that include motion
+                otherwise
+                    error("unsupported scene type");
             end
+        end
+        
+        % code ripped from old style tutorial, needs to be incorporated:
+        function jitterScenes()
+            motionHDegrees = 2;
+            motionVDegrees = 0.3;
+            tScene = scene; % initial Seed
+            % translation wants degrees
+            motionArray = genMotion(motionHDegrees, motionVDegrees, obj.numFrames); % Set large to see effect
+            
+            for ii = 1:obj.numFrames
+                % simple motion model where user tries to keep initial
+                % position but is off by a random amount each time
+                tScene = sceneTranslate(scene, motionArray(ii, :), sceneGet(scene, 'mean luminance'));
+            end
+        end
+        
+        % generate some random scene/camera motion
+        function [motionArray] = genMotion(xPixels, yPixels, numFrames)
+            motionArray = 2 * (rand(numFrames, 2)-.5) .* repmat([xPixels yPixels], numFrames, 1);
         end
         
         function previewScene = preview(obj)
