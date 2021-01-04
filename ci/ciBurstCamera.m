@@ -25,7 +25,11 @@ classdef ciBurstCamera < ciCamera
                intent;
                options.numHDRFrames = 3;
                options.numBurstFrames = 3;
-           end
+               options.imageName char = '';
+            end
+            if ~isempty(options.imageName) 
+                obj.isp.ip = ipSet(obj.isp.ip, 'name', options.imageName);
+            end
            obj.numHDRFrames = options.numHDRFrames;
            obj.numBurstFrames = options.numBurstFrames;
            

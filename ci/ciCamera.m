@@ -35,8 +35,12 @@ classdef ciCamera
                 scene;
                 intent;
                 options.numHDRFrames = 3;
+                options.imageName char = '';
             end
             obj.numHDRFrames = options.numHDRFrames;
+            if ~isempty(options.imageName) 
+                obj.isp.ip = ipSet(obj.isp.ip, 'name', options.imageName);
+            end
             
             % scene can be either a scene struct (static)
             % or an array of scenes or a CSCene (in theory)
@@ -121,9 +125,9 @@ classdef ciCamera
                     
                     % For now assume we're a very simple camera!                    
                     % And we can do AutoExposure to get our time.
+                    oi = oiCompute(previewImage, obj.cmodule.oi);
+                    expTimes = [autoExposure(oi, obj.cmodule.sensor)];
                     
-                    oi = oiCompute(ojb.cmodule.oi, previewImage);
-                    expTimes = [autoExposure(oi, previewImage)];
                     % When we ask for a preview, it messes up FOV of other
                     % sensors?
                     % test to see if preview works
