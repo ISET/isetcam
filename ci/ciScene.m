@@ -77,7 +77,7 @@ classdef ciScene
         allowsObjectMotion = false; % default until set by scene type
         objectMotion = []; % none until the user adds some
         
-        
+        % Unused until we figure out a better caching system!
         cacheName = '';   % Because scenes can be expensive to render, we
         % store them in /local. But to use them as a cache
         % we need to make sure they are relevant. We could
@@ -117,6 +117,7 @@ classdef ciScene
             obj.resolution = options.resolution;
             obj.numRays = options.numRays;
             obj.numFrames = options.numFrames;
+            obj.lensFile = options.lensFile;
             
             %CISCENE Construct an instance of this class
             %   allow whatever init we want to accept in the creation call
@@ -125,6 +126,9 @@ classdef ciScene
                 case 'recipe' % we can pass a recipe directly if we already have one loaded
                     if exist(options.recipe,'var')
                         obj.thisR = options.recipe;
+                        if ~isempty(obj.lensFile)
+                            obj.thisR.camera = piCameraCreate('omni','lensFile',obj.lensFile);
+                        end
                         obj.allowsObjectMotion = true;
                     else
                         error("For recipe, need to pass in an object");
@@ -135,6 +139,9 @@ classdef ciScene
                     
                     if ~piDockerExists, piDockerConfig; end
                     obj.thisR = piRecipeDefault('scene name', obj.sceneName);
+                    if ~isempty(options.lensFile)
+                        obj.thisR.camera = piCameraCreate('omni','lensFile',obj.lensFile);
+                    end
                     obj.allowsObjectMotion = true;
                     
                     % ideally we should be able to accept an array of scene
@@ -187,18 +194,19 @@ classdef ciScene
                 % read scene (defaults is cornell box with bunny)
                 if isempty(obj.thisR)
                     obj.thisR = piRecipeDefault('scene name', obj.sceneName);
-                end
-                % Okay, if we have a lensFile, we need to reapply it here
-                if ~isempty(obj.lensFile)
-                    obj.thisR.camera = piCameraCreate('omni','lensFile',obj.lensFile);
+                    % Okay, if we have a lensFile, we need to reapply it here
+                    % but it doesn't seem to work?
+                    if ~isempty(obj.lensFile)                        
+                        obj.thisR.camera = piCameraCreate('omni','lensFile',obj.lensFile);
+                    end
                 end
                 
                 
                 % Modify the film resolution
                 % FIX: This should be set to the sensor size, ideally
                 % or maybe to a fraction for faster performance
-                obj.thisR.set('filmresolution', obj.resolution);
-                obj.thisR.set('rays per pixel',obj.numRays);
+                val = recipeSet(obj.thisR,'filmresolution', obj.resolution);
+                val = recipeSet(obj.thisR,'rays per pixel',obj.numRays);
                 %% Looks like we still need to add our own light
                 %{
                    obj.thisR = piLightAdd(obj.thisR,...
@@ -214,7 +222,7 @@ classdef ciScene
                     'from', thisR.lookAt.from,...
                     'to', thisR.lookAt.to);
                 %}
-                obj.thisR = piLightAdd(obj.thisR, 'type' , 'infinite');
+                val = piLightAdd(obj.thisR, 'type' , 'infinite');
                 
                 imageFolderPath = fullfile(isetRootPath, 'local', obj.scenePath, 'images');
                 if ~isfolder(imageFolderPath)
@@ -292,11 +300,15 @@ classdef ciScene
                         % Should we also allow for keeping depth if needed for
                         % post-processing?
                         [sceneObject, results] = piRender(obj.thisR, 'render type', 'radiance');
-                        
-                        sceneToFile(imageFileName,sceneObject);
-                        
-                        % this is mostly just for debugging & human inspection
-                        sceneSaveImage(sceneObject,imageFilePrefixName);
+                        if isequal(sceneObject.type, 'scene')
+                            sceneToFile(imageFileName,sceneObject);
+                            % this is mostly just for debugging & human inspection
+                            sceneSaveImage(sceneObject,imageFilePrefixName);
+                        elseif isequal(sceneObject.type, 'opticalimage') % we have an optical image
+                            error("Don't know what to do with OI yet");
+                        else
+                            error("Render seems to have failed.");
+                        end
                     else
                         % There is some problem here I think, as scenes that
                         % have been previously generated show up without the
