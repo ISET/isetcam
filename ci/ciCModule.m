@@ -54,11 +54,13 @@ classdef ciCModule
                 % If we don't have scene objects, then use files:
                 %useableScene = sceneFromFile(useScenes(ii), 'multispectral');
                 ourScene = sceneArray{ii};
-                if equals(ourScene.type, 'scene')
+                if strcmp(ourScene.type, 'scene')
                     opticalImage = oiCompute(obj.oi, ourScene); 
-                else
+                elseif strcmp(ourScene.type, 'oi')
                     % we already used a lens, so we got back an OI
                     opticalImage = ourScene;
+                else
+                    error("Unknown scene render");
                 end
                 % set sensor FOV to match scene.
                 % Usually just need to do once, but sometimes something
