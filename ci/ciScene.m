@@ -87,11 +87,15 @@ classdef ciScene
         % individual scene frames are stored as files under
         % this folder.
         
-        lensModel = '';   % Since PBRT can accept lens models and return an OI
+        lensFile = '';   % Since PBRT can accept lens models and return an OI
         % provide the option to specify one here. In this
         % case, instead of returning an array of scenes, we
         % return an array of oi's, that can be fed directly
         % to a sensor. Default is simple "pinhole"
+        %{
+            lensfile  = 'dgauss.22deg.50.0mm.json';    % 30 38 18 10
+            thisR.camera = piCameraCreate('omni','lensFile',lensfile);
+        %}
         
     end
     
@@ -108,11 +112,11 @@ classdef ciScene
                 options.numFrames (1,1) {mustBeNumeric} = 1;
                 options.sceneFileName (1,1) string {isfile(options.sceneFileName)} = "";
                 options.initialScene (1,:) struct = ([]);
+                options.lensFile char = '';
             end
             obj.resolution = options.resolution;
             obj.numRays = options.numRays;
             obj.numFrames = options.numFrames;
-            
             
             %CISCENE Construct an instance of this class
             %   allow whatever init we want to accept in the creation call
@@ -181,9 +185,15 @@ classdef ciScene
             if isequal(obj.sceneType, 'pbrt') || equals(obj.sceneType, 'recipe')
                 if ~piDockerExists, piDockerConfig; end
                 % read scene (defaults is cornell box with bunny)
-                if ~exist('obj.thisR', 'var') || isempty(obj.thisR)
+                if isempty(obj.thisR)
                     obj.thisR = piRecipeDefault('scene name', obj.sceneName);
                 end
+                % Okay, if we have a lensFile, we need to reapply it here
+                if ~isempty(obj.lensFile)
+                    obj.thisR.camera = piCameraCreate('omni','lensFile',obj.lensFile);
+                end
+                
+                
                 % Modify the film resolution
                 % FIX: This should be set to the sensor size, ideally
                 % or maybe to a fraction for faster performance
@@ -256,6 +266,9 @@ classdef ciScene
                         % process camera motion if allowed
                         % We do this per frame because we want to
                         % allow for some perturbance/shake/etc.
+                        
+                        % Need to improve by supporting motion during
+                        % capture like in: t_piIntro_cameramotion
                         if obj.allowsCameraMotion && ii > 1
                             for ii = 1:numel(obj.cameraMotion)
                                 ourMotion = obj.cameraMotion{ii};
