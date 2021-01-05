@@ -227,8 +227,15 @@ classdef ciScene
                     
                     % experiment with spectrum scale to see if we can
                     % affect lighting conditions in our scenes
-                    val = piLightAdd(obj.thisR, 'type' , 'infinite', 'spectrum scale', 1000000);
-                    
+                    %val = piLightAdd(obj.thisR, 'type' , 'infinite', 'spectrum scale', 1000000);
+                    % Add an equal energy distant light for uniform lighting
+                    spectrumScale = 1000;       
+                    lightSpectrum = 'equalEnergy';
+                    obj.thisR = piLightAdd(obj.thisR,...
+                        'type','distant',...
+                         'light spectrum',lightSpectrum,...
+                          'spectrumscale', spectrumScale,...
+                          'cameracoordinate', true);
                     imageFolderPath = fullfile(isetRootPath, 'local', obj.scenePath, 'images');
                     if ~isfolder(imageFolderPath)
                         mkdir(imageFolderPath);
@@ -315,12 +322,9 @@ classdef ciScene
                                 error("Render seems to have failed.");
                             end
                         else
-                            % There is some problem here I think, as scenes that
-                            % have been previously generated show up without the
-                            % correct FOV. So maybe we need to set that here, but
-                            % where else is it set?
                             sceneObject = sceneFromFile(imageFileName, 'multispectral');
                         end
+                        sprintf("Scene luminance is: %f", sceneGet(sceneObject, 'mean luminance'))
                         if ~exist('sceneObjects', 'var')
                             sceneObjects = {sceneObject};
                         else
