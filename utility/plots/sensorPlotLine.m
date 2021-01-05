@@ -82,7 +82,8 @@ end
 %% Plot it
 
 if nSensors > 1
-    figNum = ieNewGraphWin([],'tall');  % Easier to see
+    % 3rd arg is title string
+    figNum = ieNewGraphWin([],'tall',[],'Visible','Off');  % Easier to see
     data = plane2rgb(data,sensor,NaN);
     fColors = sensorGet(sensor,'filterPlotColors');
     if strcmp(dataType,'electrons') && isfield(sensor,'human')  || ...
@@ -131,12 +132,13 @@ for ii = 1:nSensors
         % No data for this pixel type on this row
     else
         % These are cell arrays because for some sensors, like the human
-        % cones, there are uneven numbers of samples on every row.
+        % cones, there are unpredictable numbers of samples on every row.
         nColors = nColors + 1;
+        pixColor{nColors} = ii;               %#ok<NASGU,AGROW>
         pixPlot{nColors} = [fColors(ii),'-']; %#ok<AGROW>
-        pixPos{nColors}  = pos(l)'; %#ok<AGROW>
+        pixPos{nColors}  = pos(l)';           %#ok<AGROW>
         tmp = d(l);
-        pixData{nColors} = tmp(:); %#ok<AGROW>
+        pixData{nColors} = tmp(:);            %#ok<AGROW>
     end
 end
 
@@ -169,6 +171,7 @@ for ii=1:nColors
             % Attach data to figure and label.
             % uData.pos(:,ii) = pos(:); uData.data(:,ii) = pixData(:,ii);
             uData.pos{ii} = pixPos{ii}; uData.data{ii} = pixData{ii};
+            uData.pixColor{ii} = pixColor{ii};
         case {'transform','fourier','fourierdomain','fft'}
             
             % We have a problem in this code.  The pixPos needs to be

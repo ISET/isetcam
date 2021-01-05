@@ -110,6 +110,7 @@ p.addRequired('sensor', @isstruct);
 p.addRequired('ptype',@ischar);
 p.addRequired('roilocs');
 p.addParameter('capture',1,@isscalar);
+p.addParameter('twolines',false,@isscalar);
 p.addParameter('nofig',false,@islogical);
 
 p.parse(sensor,ptype,roilocs,varargin{:});
@@ -118,6 +119,7 @@ pType    = ieParamFormat(p.Results.ptype);
 roiLocs  = p.Results.roilocs;
 capture  = p.Results.capture;
 noFig    = p.Results.nofig;
+twoLines = p.Results.twolines;
 
 uData = [];
 
@@ -153,6 +155,8 @@ if isempty(roiLocs)
             ieROIDraw(sensor,'shape','line','shape data',[1 sz(2) roiLocs(2) roiLocs(2)]);
 
         case {'electronsvline','voltsvline','dvvline'}
+            % When the selection ends in a '2' we use this point and the
+            % one below it.
             roiLocs = iePointSelect(sensor);
             sz = sensorGet(sensor,'size');
             ieROIDraw(sensor,'shape','line','shape data',[roiLocs(1) roiLocs(1) 1 sz(1)]);
@@ -179,21 +183,49 @@ end
 %% Plot 
 switch pType
     
-    % Sensor data related
+    % Sensor data related. roiLocs is (x,y) format
     case {'electronshline'}
         [g, uData] = sensorPlotLine(sensor, 'h', 'electrons', 'space', roiLocs);
+        if twoLines
+            delete(g); roiLocs(2) = roiLocs(2) + 1;
+            [~, uData2] = sensorPlotLine(sensor, 'h', 'electrons', 'space', roiLocs);
+            [g, uData] = sensorPlotTwoLines(sensor,uData,uData2);
+        end
     case {'electronsvline'}
-        [g, uData]  = sensorPlotLine(sensor, 'v', 'electrons', 'space', roiLocs);
+        [g, uData]  = sensorPlotLine(sensor, 'v', 'electrons', 'space', roiLocs);        
+        if twoLines
+            delete(g); roiLocs(1) = roiLocs(1) + 1;
+            [~, uData2]  = sensorPlotLine(sensor, 'v', 'electrons', 'space', roiLocs);
+            [g, uData] = sensorPlotTwoLines(sensor,uData,uData2);
+        end
     case {'voltshline'}
         [g, uData]  = sensorPlotLine(sensor, 'h', 'volts', 'space', roiLocs);
-        % roiLocs(2) = roiLocs(2)+1;
-        % [g, uData]  = sensorPlotLine(sensor, 'h', 'volts', 'space', roiLocs);
+        if twoLines
+            delete(g); roiLocs(2) = roiLocs(2) + 1;
+            [~,uData2]  = sensorPlotLine(sensor, 'h', 'volts', 'space', roiLocs);
+            [g, uData] = sensorPlotTwoLines(sensor,uData,uData2);
+        end        
     case {'voltsvline'}
         [g, uData]  = sensorPlotLine(sensor, 'v', 'volts', 'space', roiLocs);
+        if twoLines
+            delete(g); roiLocs(1) = roiLocs(1) + 1;
+            [~,uData2]  = sensorPlotLine(sensor, 'v', 'volts', 'space', roiLocs);
+            [g, uData]= sensorPlotTwoLines(sensor,uData,uData2);
+        end  
     case {'dvvline'}
-        [g, uData]  = sensorPlotLine(sensor, 'v', 'dv', 'space', roiLocs);    
+        [g, uData]  = sensorPlotLine(sensor, 'v', 'dv', 'space', roiLocs);
+        if twoLines
+            delete(g); roiLocs(1) = roiLocs(1) + 1;
+            [~,uData2]  = sensorPlotLine(sensor, 'v', 'dv', 'space', roiLocs);
+            [g, uData] = sensorPlotTwoLines(sensor,uData,uData2);
+        end
     case {'dvhline'}
         [g, uData]  = sensorPlotLine(sensor, 'h', 'dv', 'space', roiLocs);
+        if twoLines
+            delete(g); roiLocs(2) = roiLocs(2) + 1;
+            [~,uData2]  = sensorPlotLine(sensor, 'h', 'dv', 'space', roiLocs);
+            [g, uData] = sensorPlotTwoLines(sensor,uData,uData2);
+        end
     case {'voltshistogram','voltshist'}
         [uData,g] = plotSensorHist(sensor,'v',roiLocs);
     case {'electronshistogram','electronshist'}
@@ -242,10 +274,7 @@ switch pType
         [uData, g] = plotPixelSNR(sensor);
     case {'sensorsnr','snr'}
         [uData,g] = plotSensorSNR(sensor);
-    case {'dsnu'}
-        [uData, g] = imageNoise('dsnu');
-    case {'prnu'}
-        [uData, g] = imageNoise('prnu');
+
 
         % Optics related
     case {'etendue'}
@@ -466,3 +495,39 @@ axis off
 
 end
 %%
+
+function [g,uData] = sensorPlotTwoLines(sensor,uData,uData2)
+% Take data from two line plots and combine
+%
+% 
+
+pixColor = [cell2mat(uData.pixColor),cell2mat(uData2.pixColor)];
+pixPos = [uData.pos,uData2.pos];
+pixData = [uData.data,uData2.data];
+
+% Commented out was used to make subplots()
+% nColors = numel(unique(pixColor));
+% g = ieNewGraphWin([],'tall',[],'Visible','on');
+
+mn = 0; mx = 0;
+fColors = sensorGet(sensor,'filter plot colors');
+
+% All the curves on the same graph
+g = ieNewGraphWin([],[],[],'Visible','on');
+for ii=1:numel(pixColor)
+    thisColor = pixColor(ii);
+    % subplot(nColors,1,thisColor)
+    plot(pixPos{ii},pixData{ii},[fColors(thisColor),'-'],'Linewidth',1);
+    mn = min(mn,min(pixPos{ii}));
+    mx = max(mx,max(pixPos{ii}));
+    hold on;
+end
+
+xlabel('Position (um)'); ylabel('volts');
+grid on; set(gca,'xlim',[mn mx]);
+
+clear uData;
+uData.pixPos   = pixPos;
+uData.pixData  = pixData;
+uData.pixColor = pixColor;
+end
