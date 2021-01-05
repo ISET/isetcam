@@ -1,4 +1,5 @@
-# computational imaging classes todo list:
+# computational imaging classes todo list.
+# D.Cardinal current as of Jan 4, 2021
 
 NEAR TERM:
 * support pbrt lens files by correctly processing oi returns
