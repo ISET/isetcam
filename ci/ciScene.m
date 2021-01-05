@@ -224,7 +224,10 @@ classdef ciScene
                     'from', thisR.lookAt.from,...
                     'to', thisR.lookAt.to);
                     %}
-                    val = piLightAdd(obj.thisR, 'type' , 'infinite');
+                    
+                    % experiment with spectrum scale to see if we can
+                    % affect lighting conditions in our scenes
+                    val = piLightAdd(obj.thisR, 'type' , 'infinite', 'spectrum scale', 1000000);
                     
                     imageFolderPath = fullfile(isetRootPath, 'local', obj.scenePath, 'images');
                     if ~isfolder(imageFolderPath)
