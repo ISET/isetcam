@@ -23,6 +23,7 @@ classdef ciScene
     %           'image file'  -- image file name
     %           'iset scene array'  -- ISET pre-computed scenes
     %           'image file array'  -- pre-computed image files
+    %           'sceneLuminance' -- light level of the rendered scenes
     %
     % History:
     %   Initial Version: D. Cardinal 12/2020
@@ -99,6 +100,8 @@ classdef ciScene
             thisR.camera = piCameraCreate('omni','lensFile',lensfile);
         %}
         
+        sceneLuminance; % set in constructor, helps simulate lighting
+        
     end
     
     %% Do the work here
@@ -115,11 +118,13 @@ classdef ciScene
                 options.sceneFileName (1,1) string {isfile(options.sceneFileName)} = "";
                 options.initialScene (1,:) struct = ([]);
                 options.lensFile char = '';
+                options.sceneLuminance (1,1) {mustBeNumeric} = 100;
             end
             obj.resolution = options.resolution;
             obj.numRays = options.numRays;
             obj.numFrames = options.numFrames;
             obj.lensFile = options.lensFile;
+            obj.sceneLuminance = options.sceneLuminance;
             
             %CISCENE Construct an instance of this class
             %   allow whatever init we want to accept in the creation call
@@ -209,6 +214,7 @@ classdef ciScene
                     % or maybe to a fraction for faster performance
                     val = recipeSet(obj.thisR,'filmresolution', obj.resolution);
                     val = recipeSet(obj.thisR,'rays per pixel',obj.numRays);
+                    
                     %% Looks like we still need to add our own light
                     %{
                    obj.thisR = piLightAdd(obj.thisR,...
@@ -311,7 +317,12 @@ classdef ciScene
                             %% Render and visualize
                             % Should we also allow for keeping depth if needed for
                             % post-processing?
-                            [sceneObject, results] = piRender(obj.thisR, 'render type', 'radiance');
+                            [sceneObject, results] = piRender(obj.thisR, 'render type', 'radiance', ...
+                                'mean luminance', obj.sceneLuminance);
+                            
+                            % for debugging
+                            sceneWindow(sceneObject);
+                            
                             if isequal(sceneObject.type, 'scene')
                                 sceneToFile(imageFileName,sceneObject);
                                 % this is mostly just for debugging & human inspection
