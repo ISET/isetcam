@@ -79,9 +79,14 @@ if onlyInfo
     img = [];
     return; 
 else
-    % dcraw needs a full path name, often.
-    fname = which(fname);
-    img = dcrawRead(fname);
+    % If fname has any spaces in it, dcraw is unhappy.
+    try
+        img = dcrawRead(fname);
+    catch
+        % dcraw needs a full path name, often.
+        fname = which(fname);
+        img = dcrawRead(fname);
+    end
 end
 
 end
