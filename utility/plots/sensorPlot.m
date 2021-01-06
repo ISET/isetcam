@@ -231,6 +231,9 @@ switch pType
     case {'electronshistogram','electronshist'}
         % sensorPlot(sensor,'electrons histogram',rect);
         [uData,g] = plotSensorHist(sensor,'e',roiLocs);
+    case {'dvhistogram','digitalcounthist'}
+        % sensorPlot(sensor,'electrons histogram',rect);
+        [uData,g] = plotSensorHist(sensor,'dv',roiLocs);
         
         % Various types of noise
     case {'shotnoise'}
