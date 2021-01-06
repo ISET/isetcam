@@ -242,6 +242,7 @@ switch param
             ip = ipSet(ip,'internal cs','Sensor');
             ip = ipSet(ip,'conversion method sensor','None');
             ip = ipSet(ip,'correction method illuminant','None');
+            ip = ipSet(ip, 'transform method', 'current');
         end
         
     case {'scaledisplay','scaledisplayoutput'}

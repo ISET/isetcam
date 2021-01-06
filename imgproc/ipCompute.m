@@ -225,7 +225,8 @@ elseif nFilters >= 3 || nSensors > 1
             % Use the stored transform matrix, don't recompute.
             T   = ipGet(ip,'prodT');
             img = imageLinearTransform(img,T);
-
+            % Scale the img to make sure the results is 0 to 1
+            img = img / (sensorGet(sensor, 'maxdigitalvalue') - zerolevel);
         case {'new','manual matrix entry'}
             % Allow the user to specify a matrix from the GUI. When set this
             % way, the sensor correction transform is the only one used to
