@@ -80,15 +80,10 @@ classdef ciScene
         allowsObjectMotion = false; % default until set by scene type
         objectMotion = []; % none until the user adds some
         
-        % Unused until we figure out a better caching system!
-        cacheName = '';   % Because scenes can be expensive to render, we
+        % Where we store "us" (obj) so we know whether to re-render
+        cacheFileName = '';   % Because scenes can be expensive to render, we
         % store them in /local. But to use them as a cache
-        % we need to make sure they are relevant. We could
-        % do what we do with OI and match the entire setting
-        % structure, or here we just let the user "tag" a
-        % cache entry to see if they want to re-use it.
-        % individual scene frames are stored as files under
-        % this folder.
+        % we need to make sure they are relevant. 
         
         lensFile = '';   % Since PBRT can accept lens models and return an OI
         % provide the option to specify one here. In this
@@ -216,31 +211,12 @@ classdef ciScene
                     val = recipeSet(obj.thisR,'rays per pixel',obj.numRays);
                     
                     %% Looks like we still need to add our own light
-                    %{
-                   obj.thisR = piLightAdd(obj.thisR,...
-                    'type','point',...
-                    'light spectrum','Tungsten',...
-                    'cameracoordinate', true);
-                    %}
-                    %{
-                    thisR = piLightAdd(thisR,...
-                    'type','spot',...
-                    'light spectrum','equalEnergy',...
-                    'spectrum scale', 1,...
-                    'from', thisR.lookAt.from,...
-                    'to', thisR.lookAt.to);
-                    %}
                     
-                    % experiment with spectrum scale to see if we can
-                    % affect lighting conditions in our scenes
-                    %val = piLightAdd(obj.thisR, 'type' , 'infinite', 'spectrum scale', 1000000);
                     % Add an equal energy distant light for uniform lighting
-                    spectrumScale = 1000;       
                     lightSpectrum = 'equalEnergy';
                     obj.thisR = piLightAdd(obj.thisR,...
                         'type','distant',...
                          'light spectrum',lightSpectrum,...
-                          'spectrumscale', spectrumScale,...
                           'cameracoordinate', true);
                     imageFolderPath = fullfile(isetRootPath, 'local', obj.scenePath, 'images');
                     if ~isfolder(imageFolderPath)
@@ -282,9 +258,19 @@ classdef ciScene
                         obj.thisR.set('shutteropen', sTime);
                         sTime = sTime + obj.expTimes(ii);
                         obj.thisR.set('shutterclose', sTime);
-                        
+
+                        % Check to see if we already have a cache
+                        obj.cacheFileName = fullfile(imageFolderPath, 'cached_ciScene.mat');
+                        haveCache = false;
+                        if isfile(obj.cacheFileName) 
+                            cachedScene = load(obj.cacheFileName,'obj');
+                            if isequal(obj, cachedScene.obj)
+                                haveCache = true;
+                            end
+                        end
+                        save(obj.cacheFileName, 'obj');
                         %IF we haven't rendered before, do it now
-                        if ~isfile(imageFileName)
+                        if haveCache == false || ~isfile(imageFileName)
                             
                             %% Write recipe
                             piWrite(obj.thisR);
@@ -388,12 +374,7 @@ classdef ciScene
             % load cScene data back in
             load(cSceneFile, obj);
         end
-        
-        function save(obj, cSceneFile)
-            % write out cScene data for later re-use
-            save(cSceneFile, obj);
-        end
-        
+                
     end
 end
 
