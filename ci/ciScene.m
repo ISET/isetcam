@@ -83,7 +83,7 @@ classdef ciScene
         % Where we store "us" (obj) so we know whether to re-render
         cacheFileName = '';   % Because scenes can be expensive to render, we
         % store them in /local. But to use them as a cache
-        % we need to make sure they are relevant. 
+        % we need to make sure they are relevant.
         
         lensFile = '';   % Since PBRT can accept lens models and return an OI
         % provide the option to specify one here. In this
@@ -189,7 +189,7 @@ classdef ciScene
             % recipe, but doesn't know what to do with an iset scene or one
             % or more pre-baked images -- yet.
             
-            % Process based on sceneType. 
+            % Process based on sceneType.
             switch obj.sceneType
                 case {'pbrt', 'recipe'}
                     if ~piDockerExists, piDockerConfig; end
@@ -216,8 +216,8 @@ classdef ciScene
                     lightSpectrum = 'equalEnergy';
                     obj.thisR = piLightAdd(obj.thisR,...
                         'type','distant',...
-                         'light spectrum',lightSpectrum,...
-                          'cameracoordinate', true);
+                        'light spectrum',lightSpectrum,...
+                        'cameracoordinate', true);
                     imageFolderPath = fullfile(isetRootPath, 'local', obj.scenePath, 'images');
                     if ~isfolder(imageFolderPath)
                         mkdir(imageFolderPath);
@@ -250,6 +250,7 @@ classdef ciScene
                             imageFilePrefixName = fullfile(imageFolderPath, append("frame_", num2str(ii)));
                         end
                         imageFileName = append(imageFilePrefixName,  ".mat");
+                        cachedRecipeFileName = fullfile(imageFolderPath, append("recipe_", num2str(ii), ".mat"));
                         
                         % We set the shutter open/close successively
                         % for each frame of the capture, even if we don't
@@ -258,78 +259,78 @@ classdef ciScene
                         obj.thisR.set('shutteropen', sTime);
                         sTime = sTime + obj.expTimes(ii);
                         obj.thisR.set('shutterclose', sTime);
-
-                        % Check to see if we already have a cache
-                        obj.cacheFileName = fullfile(imageFolderPath, 'cached_ciScene.mat');
+                        
+                        
+                        %% Write recipe
+                        piWrite(obj.thisR);
+                        
+                        % process camera motion if allowed
+                        % We do this per frame because we want to
+                        % allow for some perturbance/shake/etc.
+                        
+                        % Need to improve by supporting motion during
+                        % capture like in: t_piIntro_cameramotion
+                        if obj.allowsCameraMotion && ii > 1
+                            for ii = 1:numel(obj.cameraMotion)
+                                ourMotion = obj.cameraMotion{ii};
+                                if ~isempty(ourMotion{2})
+                                    obj.thisR = piCameraTranslate(obj.thisR, ...
+                                        'x shift', ourMotion{2}(1),...
+                                        'y shift', ourMotion{2}(2),...
+                                        'z shift', ourMotion{2}(3));  % meters
+                                end
+                                if ~isempty(ourMotion{3})
+                                    obj.thisR = piCameraRotate(obj.thisR,...
+                                        'x rot', ourMotion{3}(1),...
+                                        'y rot', ourMotion{3}(2),...
+                                        'z rot', ourMotion{3}(3));
+                                end
+                                
+                            end
+                        end
+                        %
+                        %% Render and visualize
+                        % Should we also allow for keeping depth if needed for
+                        % post-processing?
+                        % cacheRecipe here
+                        piWrite(obj.thisR); % Not sure if we have to?
                         haveCache = false;
-                        if isfile(obj.cacheFileName) 
-                            cachedScene = load(obj.cacheFileName,'obj');
-                            if isequal(obj, cachedScene.obj)
+                        if isfile(cachedRecipeFileName)
+                            cachedRecipe = load(cachedRecipeFileName,'rName');
+                            if isequal(obj.thisR, cachedRecipe.rName)
                                 haveCache = true;
                             end
                         end
-                        save(obj.cacheFileName, 'obj');
-                        %IF we haven't rendered before, do it now
-                        if haveCache == false || ~isfile(imageFileName)
-                            
-                            %% Write recipe
-                            piWrite(obj.thisR);
-                            
-                            % process camera motion if allowed
-                            % We do this per frame because we want to
-                            % allow for some perturbance/shake/etc.
-                            
-                            % Need to improve by supporting motion during
-                            % capture like in: t_piIntro_cameramotion
-                            if obj.allowsCameraMotion && ii > 1
-                                for ii = 1:numel(obj.cameraMotion)
-                                    ourMotion = obj.cameraMotion{ii};
-                                    if ~isempty(ourMotion{2})
-                                        obj.thisR = piCameraTranslate(obj.thisR, ...
-                                            'x shift', ourMotion{2}(1),...
-                                            'y shift', ourMotion{2}(2),...
-                                            'z shift', ourMotion{2}(3));  % meters
-                                    end
-                                    if ~isempty(ourMotion{3})
-                                        obj.thisR = piCameraRotate(obj.thisR,...
-                                            'x rot', ourMotion{3}(1),...
-                                            'y rot', ourMotion{3}(2),...
-                                            'z rot', ourMotion{3}(3));
-                                    end
-                                    
-                                end
-                            end
-                            %
-                            %% Render and visualize
-                            % Should we also allow for keeping depth if needed for
-                            % post-processing?
+                        % we don't need to render but we do still need to
+                        % create a sceneObject
+                        if haveCache == false
+                            rName = obj.thisR; % Save doesn't like dots?
+                            save(cachedRecipeFileName, 'rName');
                             [sceneObject, results] = piRender(obj.thisR, 'render type', 'radiance', ...
                                 'mean luminance', obj.sceneLuminance);
-                            
-                            % for debugging
-                            sceneWindow(sceneObject);
-                            
-                            if isequal(sceneObject.type, 'scene')
-                                sceneToFile(imageFileName,sceneObject);
-                                % this is mostly just for debugging & human inspection
-                                sceneSaveImage(sceneObject,imageFilePrefixName);
-                            elseif isequal(sceneObject.type, 'opticalimage') % we have an optical image
-                                error("Don't know what to do with OI yet");
-                            else
-                                error("Render seems to have failed.");
-                            end
                         else
                             sceneObject = sceneFromFile(imageFileName, 'multispectral');
                         end
-                        sprintf("Scene luminance is: %f", sceneGet(sceneObject, 'mean luminance'))
-                        if ~exist('sceneObjects', 'var')
-                            sceneObjects = {sceneObject};
-                        else
-                            sceneObjects(end+1) = {sceneObject};
-                        end
-                        sceneFiles = [sceneFiles imageFileName]; %#ok<AGROW>
+                        % for debugging
+                        sceneWindow(sceneObject);
                         
+                        if isequal(sceneObject.type, 'scene') && haveCache == false
+                            sceneToFile(imageFileName,sceneObject);
+                            % this is mostly just for debugging & human inspection
+                            sceneSaveImage(sceneObject,imageFilePrefixName);
+                        elseif isequal(sceneObject.type, 'opticalimage') % we have an optical image
+                            error("Don't know what to do with OI yet");
+                        else
+                            error("Render seems to have failed.");
+                        end
                     end
+                    sprintf("Scene luminance is: %f", sceneGet(sceneObject, 'mean luminance'))
+                    if ~exist('sceneObjects', 'var')
+                        sceneObjects = {sceneObject};
+                    else
+                        sceneObjects(end+1) = {sceneObject};
+                    end
+                    sceneFiles = [sceneFiles imageFileName]; 
                 case 'iset scene'
                     % we can only do scene motion.
                 case 'iset scene array'
@@ -374,7 +375,7 @@ classdef ciScene
             % load cScene data back in
             load(cSceneFile, obj);
         end
-                
+        
     end
 end
 
