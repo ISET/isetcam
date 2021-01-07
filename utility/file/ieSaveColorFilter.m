@@ -53,7 +53,8 @@ function fullFileName = ieSaveColorFilter(inData,fullFileName)
 if ieNotDefined('fullFileName'), fullFileName = vcSelectDataFile('sensor','w','mat'); end
 
 %% Sensor and structure cases
-if isfield(inData,'type') && strcmp(sensorGet(inData,'type'),'ISA')
+if isfield(inData,'type') && (strcmp(sensorGet(inData,'type'),'ISA')||...
+                              strcmp(sensorGet(inData,'type'),'sensor'))
     
     % Sensor case
     isa = inData;
