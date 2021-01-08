@@ -73,7 +73,7 @@ if length(sensor) > 1
     % an array of sensors and it will pull the volts out of each of the
     % individual sensors.
     ip = ipSet(ip,'datamax',sensorGet(sensor(1),'max'));
-    ip = vciComputeSingle(ip,sensor);
+    ip = ipComputeSingle(ip,sensor);
     return;
 end
 
@@ -99,9 +99,11 @@ switch exposureMethod(1:3)
         % Don't need to pre-process
     case 'bra'  % bracketedExposure
         % On return, the maximum sensible exposure time is set
-        ip = vciComputeBracketed(ip,sensor);
+        ip = ipComputeBracketed(ip,sensor);
     case 'cfa'  % cfaExposure
-        ip = vciComputeCFA(ip,sensor);
+        ip = ipComputeCFA(ip,sensor);
+    case 'bur'  % burst of images
+        ip = ipComputeBurst(ip, sensor, 'sum');
     otherwise
         error('Unknown exposure method %s\n',exposureMethod);
 end
@@ -132,17 +134,17 @@ if strncmpi(pType,'l3',2)
     ip = ipSet(ip,'L3',L3);
 else
     % Conventional RGB pipeline, most common case
-    ip = vciComputeSingle(ip,sensor);
+    ip = ipComputeSingle(ip,sensor);
 end
 
 end
 
 %%
-function ip = vciComputeSingle(ip,sensor)
+function ip = ipComputeSingle(ip,sensor)
 % Process image for single exposure case, or after pre-processing for
 % bracketed and CFA cases.
 %
-%    ip = vciComputeSingle(ip,sensor)
+%    ip = ipComputeSingle(ip,sensor)
 %
 % The processing steps through
 %   1. Demosaicing
@@ -301,7 +303,7 @@ end
 end
 
 %%
-function ip = vciComputeBracketed(ip,sensor,combinationMethod)
+function ip = ipComputeBracketed(ip,sensor,combinationMethod)
 % Compute for bracketed exposure case
 %
 % sensor = vcGetObject('sensor');
@@ -344,7 +346,7 @@ ip = ipSet(ip,'input',img);
 
 end
 
-function ip = vciComputeCFA(ip,sensor)
+function ip = ipComputeCFA(ip,sensor)
 % Compute for CFA exposure case
 %
 % In this case the img is N different CFA arrays, with each N corresponding
@@ -417,3 +419,30 @@ ip = ipSet(ip,'input',newImg);
 
 end
 
+function ip = ipComputeBurst(ip,sensor, combinationMethod)
+% Compute for Burst exposure case
+
+if ~exist('ip','var'), error('IP required.'); end
+if ~exist('sensor','var'), error('Sensor required.'); end
+if ~exist('combinationMethod','var')
+    combinationMethod = ipGet(ip,'combinationMethod');
+end
+
+% Read the exposure times - same as number of filters
+expTimes = sensorGet(sensor,'expTimes');
+nExps    = length(expTimes(:));
+% Get the data, either as volts or digital values.
+% Indicate which on return
+img       = ipGet(ip,'input');
+
+switch combinationMethod
+    case 'sum'
+        % simplest case where we just sum the burst of images
+        img = sum(img, 3);
+        ip = ipSet(ip, 'input', img);
+    otherwise
+        error("Don't know how to combine burst of images");
+end
+
+%ip = ipSet(ip,'input',newImg);
+end

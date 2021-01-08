@@ -200,7 +200,7 @@ switch lower(imType)
         scene  = sceneSet(scene,'distance',displayGet(d,'viewing distance'));
 
     case {'multispectral','hyperspectral'}
-        if ~ischar(I), error('File name required for multispectral'); end
+        if ~isfile(I), error('Name of existing file required for multispectral'); end
         if notDefined('wList'), wList = []; end
         
         scene = sceneCreate('multispectral');

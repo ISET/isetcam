@@ -46,7 +46,8 @@ function val = sensorGet(sensor,param,varargin)
 %    val = sensorGet(sensor,'Electrons',2);   % Second color type
 %    val = sensorGet(sensor,'fov horizontal') % degrees
 %    val = sensorGet(sensor,'PIXEL')
-%    val = sensorGet(sensor,'exposureMethod');% Single, bracketed, cfa
+%    val = sensorGet(sensor,'exposureMethod');% Single, bracketed, cfa,
+%    burst
 %    val = sensorGet(sensor,'nExposures')     % Number of exposures
 %    val = sensorGet(sensor,'filtercolornames')
 %    val = sensorGet(sensor,'exposurePlane'); % For bracketing simulation
@@ -827,7 +828,7 @@ switch oType
                     val = sensor.blackLevel;
                 else
                     oiBlack = oiCreate('black');
-                    sensor2 = sensorSet(sensor,'noiseflag',0); % Little noise
+                    sensor2 = sensorSet(sensor,'noiseflag','none'); % Little noise
                     sensor2 = sensorCompute(sensor2,oiBlack);
                     switch sensorGet(sensor,'quantization method')
                         case 'analog'
@@ -870,11 +871,16 @@ switch oType
             case {'exposuremethod','expmethod'}
                 % We plan to re-write the exposure parameters into a sub-structure
                 % that lives inside the sensor, sensor.exposure.XXX
-                tmp = sensorGet(sensor,'exptimes');
-                p   = sensorGet(sensor,'pattern');
-                if     isscalar(tmp), val = 'singleExposure';
-                elseif isvector(tmp),  val = 'bracketedExposure';
-                elseif isequal(size(p),size(tmp)),  val = 'cfaExposure';
+                % add support for manually setting exposure type
+                if isfield(sensor, 'exposureMethod') && ~isempty(sensor.exposureMethod)
+                    val = sensor.exposureMethod;
+                else
+                    tmp = sensorGet(sensor,'exptimes');
+                    p   = sensorGet(sensor,'pattern');
+                    if     isscalar(tmp), val = 'singleExposure';
+                    elseif isvector(tmp),  val = 'bracketedExposure';
+                    elseif isequal(size(p),size(tmp)),  val = 'cfaExposure';
+                    end
                 end
             case {'integrationtime','integrationtimes','exptime','exptimes','exposuretimes','exposuretime','exposureduration','exposuredurations'}
                 % This can be a single number, a vector, or a matrix that matches
