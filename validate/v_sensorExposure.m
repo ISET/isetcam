@@ -20,14 +20,14 @@ pSize = [1, 1.5, 2, 2.5, 3]*1e-6;   % Microns
 % Expected number of electrons. As we vary pixel size changes, the exposure
 % duration varies to achieve this number of electrons, Computed Sept 21,
 % 2020
-expected = 5200;
+expected = 5123; % updated 1/2021 to match new data, was 5200;
 tolerance = 0.5;
 
 %%  Sony IMX363 QE
 
 sensor = sensorCreate('imx363');
 sensor = sensorSet(sensor,'fov',sceneGet(uScene,'fov')/4,oi);
-sensor = sensorSet(sensor,'noise flag',0);
+sensor = sensorSet(sensor,'noise flag',-1);
 sensor = sensorSet(sensor,'auto exposure',true);
 
 %%
@@ -41,7 +41,7 @@ for ii=1:length(pSize)
     thisSensor = sensorSet(sensor,'pixel size constant fill factor',pSize(ii));
     thisSensor = sensorCompute(thisSensor,uOI);
     e = sensorGet(thisSensor,'electrons');
-    assert( ((nanmean(e(:)) - expected)/100) < tolerance);
+    assert( abs(((nanmean(e(:)) - expected)/100)) < tolerance);
     fprintf('%.2f %2f %f\n',pSize(ii)*1e6,sensorGet(thisSensor,'exp time','sec'),nanmean(e(:)));
 end
 
@@ -57,7 +57,7 @@ for ii=1:length(pSize)
     thisSensor = sensorSet(sensor,'pixel size constant fill factor',pSize(ii));
     thisSensor = sensorCompute(thisSensor,uOI);
     e = sensorGet(thisSensor,'electrons');
-    assert( ((nanmean(e(:)) - expected)/100) < tolerance);
+    assert( abs(((nanmean(e(:)) - expected)/100)) < tolerance);
     fprintf('%.2f %2f %f\n',pSize(ii)*1e6,sensorGet(thisSensor,'exp time','sec'),nanmean(e(:)));
 end
 
