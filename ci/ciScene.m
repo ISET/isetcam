@@ -7,8 +7,10 @@ classdef ciScene
     %   which it can generate a series of usable scenes or ois,
     %   either as a scene name, or as a Recipe
     %
-    %   Can also accept ISET scenes (.mat) and images, but
+    %   Can also accept ISET scenes (.mat), but
     %   with reduced functionality
+    %
+    %   FUTURE: Support for image files 
     %
     %   Can also retrieve a scene preview, as CCamera/CModule may rely on
     %   that to make decisions about setting capture parameters
@@ -18,11 +20,10 @@ classdef ciScene
     %       scenetype:
     %           'recipe' -- previously-loaded recipe
     %           'pbrt'   -- a PBRT scene
-    %           'iset scene file'   -- an ISET scene file
-    %           'iset scene'  -- previously-loaded ISET scene struct
-    %           'image file'  -- image file name
-    %           'iset scene array'  -- ISET pre-computed scenes
-    %           'image file array'  -- pre-computed image files
+    %           For now these just handle single instances:
+    %           'iset scene files'   -- an ISET scene file(s)
+    %           'iset scenes'  -- previously-loaded ISET scene struct(s)
+    %           'image files'  -- image file name(s)
     %           'sceneLuminance' -- light level of the rendered scenes
     %
     % History:
@@ -58,8 +59,8 @@ classdef ciScene
         initialScene = ''; % Ideally this is a PBRT scene, but we also need
         % to handle the case where it is an ISET scene
         % or even just an image file
-        sceneFileName = '';
-        imageFileName = '';
+        sceneFileNames = [];
+        imageFileNames = [];
         
         thisR;
         
@@ -107,8 +108,8 @@ classdef ciScene
                 options.resolution (1,2) {mustBeNumeric} = [512 512];
                 options.numRays (1,1) {mustBeNumeric} = 64;
                 options.numFrames (1,1) {mustBeNumeric} = 1;
-                options.imageFileName (1,1) string {isfile(options.imageFileName)} = "";
-                options.sceneFileName (1,1) string {isfile(options.sceneFileName)} = "";
+                options.imageFileNames (1,:) string = [];
+                options.sceneFileName (1,:) string = [];
                 options.initialScene (1,:) struct = ([]);
                 options.lensFile char = '';
                 options.sceneLuminance (1,1) {mustBeNumeric} = 100;
@@ -147,7 +148,7 @@ classdef ciScene
                     % ideally we should be able to accept an array of scene
                     % files
                 case 'iset scene file'
-                    obj.sceneFileName = options.sceneFileName;
+                    obj.sceneFileNames = options.sceneFileNames;
                     % TBD
                     %ideally we should be able to acept an array of scenes
                 case 'iset scene'
@@ -155,7 +156,7 @@ classdef ciScene
                     % TBD
                     %ideally we should be able to accept an array of images
                 case 'image'
-                    obj.imageFileName = options.imageFileName;
+                    obj.imageFileNames = options.imageFileNames;
                     % TBD
                 otherwise
                     error("Unknown Scene Type");
