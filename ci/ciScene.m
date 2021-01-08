@@ -109,7 +109,7 @@ classdef ciScene
                 options.numRays (1,1) {mustBeNumeric} = 64;
                 options.numFrames (1,1) {mustBeNumeric} = 1;
                 options.imageFileNames (1,:) string = [];
-                options.sceneFileName (1,:) string = [];
+                options.sceneFileNames (1,:) string = [];
                 options.initialScene (1,:) struct = ([]);
                 options.lensFile char = '';
                 options.sceneLuminance (1,1) {mustBeNumeric} = 100;
@@ -273,28 +273,10 @@ classdef ciScene
                         % Need to improve by supporting motion during
                         % capture like in: t_piIntro_cameramotion
                         if obj.allowsCameraMotion && ii > 1
-                            for ii = 1:numel(obj.cameraMotion)
-                                ourMotion = obj.cameraMotion{ii};
-                                if ~isempty(ourMotion{2})
-                                    obj.thisR = piCameraTranslate(obj.thisR, ...
-                                        'x shift', ourMotion{2}(1),...
-                                        'y shift', ourMotion{2}(2),...
-                                        'z shift', ourMotion{2}(3));  % meters
-                                end
-                                if ~isempty(ourMotion{3})
-                                    obj.thisR = piCameraRotate(obj.thisR,...
-                                        'x rot', ourMotion{3}(1),...
-                                        'y rot', ourMotion{3}(2),...
-                                        'z rot', ourMotion{3}(3));
-                                end
-                                
-                            end
+                            moveCamera(obj);
                         end
                         %
                         %% Render and visualize
-                        % Should we also allow for keeping depth if needed for
-                        % post-processing?
-                        % cacheRecipe here
                         piWrite(obj.thisR); % Not sure if we have to?
                         haveCache = false;
                         if isfile(cachedRecipeFileName)
@@ -309,7 +291,9 @@ classdef ciScene
                         if options.reRender == true && haveCache == false
                             rName = obj.thisR; % Save doesn't like dots?
                             save(cachedRecipeFileName, 'rName');
-                            [sceneObject, results] = piRender(obj.thisR, 'render type', 'radiance', ...
+                            % by default also calc depth, could make that
+                            % an option:
+                            [sceneObject, results] = piRender(obj.thisR, 'render type', 'both', ...
                                 'mean luminance', obj.sceneLuminance);
                         else
                             sceneObject = sceneFromFile(imageFileName, 'multispectral');
@@ -334,16 +318,31 @@ classdef ciScene
                         sceneObjects(end+1) = {sceneObject};
                     end
                     sceneFiles = [sceneFiles imageFileName]; 
-                case 'iset scene'
-                    % we can only do scene motion.
-                case 'iset scene array'
-                    % for when we have a full set of scenes already!
-                case 'image file'
-                    % single base image
-                case 'image file array'
-                    % when we get pre-computed images that include motion
+                case 'iset scenes'
+                    % we can only do camera motion by moving the scene.
+                case 'image files'
+                    % single base image or array of images
                 otherwise
                     error("unsupported scene type");
+            end
+        end
+        
+        function moveCamera(obj)
+            for ii = 1:numel(obj.cameraMotion)
+                ourMotion = obj.cameraMotion{ii};
+                if ~isempty(ourMotion{2})
+                    obj.thisR = piCameraTranslate(obj.thisR, ...
+                        'x shift', ourMotion{2}(1),...
+                        'y shift', ourMotion{2}(2),...
+                        'z shift', ourMotion{2}(3));  % meters
+                end
+                if ~isempty(ourMotion{3})
+                    obj.thisR = piCameraRotate(obj.thisR,...
+                        'x rot', ourMotion{3}(1),...
+                        'y rot', ourMotion{3}(2),...
+                        'z rot', ourMotion{3}(3));
+                end
+                
             end
         end
         
