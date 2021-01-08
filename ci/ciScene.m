@@ -59,6 +59,8 @@ classdef ciScene
         % to handle the case where it is an ISET scene
         % or even just an image file
         sceneFileName = '';
+        imageFileName = '';
+        
         thisR;
         
         scenePath;  % defaults set in constructor if needed
@@ -79,12 +81,7 @@ classdef ciScene
         
         allowsObjectMotion = false; % default until set by scene type
         objectMotion = []; % none until the user adds some
-        
-        % Where we store "us" (obj) so we know whether to re-render
-        cacheFileName = '';   % Because scenes can be expensive to render, we
-        % store them in /local. But to use them as a cache
-        % we need to make sure they are relevant.
-        
+                
         lensFile = '';   % Since PBRT can accept lens models and return an OI
         % provide the option to specify one here. In this
         % case, instead of returning an array of scenes, we
@@ -110,6 +107,7 @@ classdef ciScene
                 options.resolution (1,2) {mustBeNumeric} = [512 512];
                 options.numRays (1,1) {mustBeNumeric} = 64;
                 options.numFrames (1,1) {mustBeNumeric} = 1;
+                options.imageFileName (1,1) string {isfile(options.imageFileName)} = "";
                 options.sceneFileName (1,1) string {isfile(options.sceneFileName)} = "";
                 options.initialScene (1,:) struct = ([]);
                 options.lensFile char = '';
@@ -157,7 +155,7 @@ classdef ciScene
                     % TBD
                     %ideally we should be able to accept an array of images
                 case 'image'
-                    
+                    obj.imageFileName = options.imageFileName;
                     % TBD
                 otherwise
                     error("Unknown Scene Type");
@@ -172,11 +170,14 @@ classdef ciScene
             arguments
                 obj ciScene;
                 expTimes (1,:);
-                options.previewFlag (1,2) {islogical} = false;
+                options.previewFlag (1,1) {islogical} = false;
+                % reRender is tricky. You can use it if you are sure
+                % you haven't changed anything in the recipe since last
+                % time
+                options.reRender (1,1) {islogical} = true;
             end
             obj.numFrames = numel(expTimes);
             obj.expTimes = expTimes;
-            
             % render uses what we know about the initial
             % image and subsequent motion requests
             % to generate one or more output scene or oi structs
@@ -301,9 +302,10 @@ classdef ciScene
                                 haveCache = true;
                             end
                         end
-                        % we don't need to render but we do still need to
-                        % create a sceneObject
-                        if haveCache == false
+                        
+                        % Haven't found a good way to cache, so we've added
+                        % a reRender flag to override regenerating scenes
+                        if options.reRender == true && haveCache == false
                             rName = obj.thisR; % Save doesn't like dots?
                             save(cachedRecipeFileName, 'rName');
                             [sceneObject, results] = piRender(obj.thisR, 'render type', 'radiance', ...

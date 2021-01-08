@@ -26,6 +26,7 @@ classdef ciBurstCamera < ciCamera
                options.numHDRFrames = 3;
                options.numBurstFrames = 3;
                options.imageName char = '';
+               options.reRender (1,1) {islogical} = true;
             end
             if ~isempty(options.imageName) 
                 obj.isp.ip = ipSet(obj.isp.ip, 'name', options.imageName);
@@ -33,7 +34,7 @@ classdef ciBurstCamera < ciCamera
            obj.numHDRFrames = options.numHDRFrames;
            obj.numBurstFrames = options.numBurstFrames;
            
-            ourPicture = TakePicture@ciCamera(obj, scene, intent);
+            ourPicture = TakePicture@ciCamera(obj, scene, intent, 'reRender', options.reRender);
             % Typically we'd invoke the parent before or after us
             % or to handle cases we don't need to
             % Let's think about the best way to do that.

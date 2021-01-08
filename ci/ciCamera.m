@@ -36,6 +36,7 @@ classdef ciCamera
                 intent;
                 options.numHDRFrames = 3;
                 options.imageName char = '';
+                options.reRender (1,1) {islogical} = true;
             end
             obj.numHDRFrames = options.numHDRFrames;
             if ~isempty(options.imageName) 
@@ -78,7 +79,7 @@ classdef ciCamera
             [expTimes] = obj.planCaptures(previewImage, intent);
 
             % As a simple test just get a scene we can use!
-            [sceneObjects, sceneFiles] = scene.render(expTimes);
+            [sceneObjects, sceneFiles] = scene.render(expTimes, 'reRender', options.reRender);
             
             % Simplest case, now that we have the nFrames & expTimes
             % We want to call our camera module(s).
