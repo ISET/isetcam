@@ -72,6 +72,13 @@ setpref('ISET', 'tvmetricsStart', tic);
 v_metrics
 setpref('ISET', 'tvmetricsTime', toc(getpref('ISET', 'tvmetricsStart')));
 
+%% Computational Imaging tests
+h = msgbox('CI','ISET Tests','replace');
+set(h,'position',round([36.0000  664.1379  124.7586   50.2759]));
+setpref('ISET', 'tvciStart', tic);
+v_ci
+setpref('ISET', 'tvciTime', toc(getpref('ISET', 'tvciStart')));
+
 %% Display window
 h = msgbox('Display','ISET Tests','replace');
 set(h,'position',round([36.0000  664.1379  124.7586   50.2759]));
