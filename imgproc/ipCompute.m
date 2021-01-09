@@ -229,7 +229,10 @@ elseif nFilters >= 3 || nSensors > 1
             img = imageLinearTransform(img,T);
             % Scale the img to make sure the results is 0 to 1]
             % We already subtract the zero level from image earlier
-            img = img / (sensorGet(sensor, 'maxdigitalvalue') - zerolevel);
+            % in some cases we are already normalized
+            if max(img,[],'all') > 1
+                img = img / (sensorGet(sensor, 'maxdigitalvalue') - zerolevel);
+            end
         case {'new','manual matrix entry'}
             % Allow the user to specify a matrix from the GUI. When set this
             % way, the sensor correction transform is the only one used to
