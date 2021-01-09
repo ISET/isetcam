@@ -433,6 +433,8 @@ end
 
 % Read the exposure times - same as number of filters
 expTimes = sensorGet(sensor,'expTimes');
+sensorMax = ipGet(ip,'maximum sensor value');
+
 nExps    = length(expTimes(:));
 % Get the data, either as volts or digital values.
 % Indicate which on return

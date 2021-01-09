@@ -11,12 +11,12 @@ aScenes = [aScene aScene aScene];
 expTimes = [.1 .1 .1];
 
 % create computational versions of those s
-cScenes = ciScene('iset scenes', aScenes);
-cScene = ciScene(aScene);
+cScenes = ciScene('iset scenes', 'isetScenes', aScenes);
+cScene = ciScene('iset scenes', 'isetScenes', aScene);
     
 ourCamera = ciCamera();
 
-ourCamera.takePicture(aScene, 'Auto');
+ourCamera.TakePicture(cScene, 'Auto');
 
-ourCamera.takePicture(aScenes, 'Burst');
+ourCamera.TakePicture(cScenes, 'Burst', 'expTimes', expTimes);
 

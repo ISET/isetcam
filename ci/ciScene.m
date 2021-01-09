@@ -59,7 +59,7 @@ classdef ciScene < handle
         initialScene = ''; % Ideally this is a PBRT scene, but we also need
         % to handle the case where it is an ISET scene
         % or even just an image file
-        isetSceneNames = [];
+        isetScenes = [];
         sceneFileNames = [];
         imageFileNames = [];
         
@@ -110,7 +110,7 @@ classdef ciScene < handle
                 options.numRays (1,1) {mustBeNumeric} = 64;
                 options.numFrames (1,1) {mustBeNumeric} = 1;
                 options.imageFileNames (1,:) string = [];
-                options.isetSceneNames (1,:) string = [];
+                options.isetScenes (1,:) struct = [];
                 options.isetSceneFileNames (1,:) string = [];
                 options.initialScene (1,:) struct = ([]);
                 options.lensFile char = '';
@@ -154,7 +154,7 @@ classdef ciScene < handle
                     % TBD
                     %ideally we should be able to accept an array of scene files
                 case 'iset scenes'
-                    obj.isetSceneNames = options.isetSceneNames;
+                    obj.isetScenes = options.isetScenes;
                     % TBD
                     %ideally we should be able to accept an array of images
                 case 'images'
@@ -321,11 +321,16 @@ classdef ciScene < handle
                     end
                     sceneFiles = [sceneFiles imageFileName]; 
                 case 'iset scenes'
+                    sceneFiles = [];
+                    if options.previewFlag && numel(expTimes) > 1
+                        expTimes = expTimes(1); % no need for more than one when previewing
+                    end
+                        
                     % we want to generate scenes as needed
                     if numel(expTimes) == numel(obj.isetScenes)
                         sceneObjects = obj.isetScenes;
                         % pre-gen, good to go
-                    elseif numel(expTimes > 1) && numel(obj.isetScenes) > 1
+                    elseif numel(expTimes) > 1 && numel(obj.isetScenes) > 1
                         error("If you pass multiple scenes to ciScene, they need to match up with Exposure Times.");
                     elseif numel(expTimes) > 1
                         % TBD Burst where we have to create scenes
@@ -334,7 +339,7 @@ classdef ciScene < handle
                         % We have an array of scenes, so extend our
                         % exposure time array to match
                         obj.expTimes = repmat(expTimes, 1, numel(obj.isetScenes));
-                        sceneObject = obj.isetScenes;
+                        sceneObjects = {obj.isetScenes};
                         % TBD Burst where we have scenes
                     else
                         error("Unknown scene parameters");
@@ -389,8 +394,8 @@ classdef ciScene < handle
         function previewScene = preview(obj)
             % get a preview that the camera can use to plan capture
             % settings
-            [previewScenes, previewFiles] = obj.render( .1, 'previewFlag', true); % generic exposure time
-            previewScene = previewScenes{1}; % just need the first element
+            [previewScenes, previewFiles] = obj.render([.1], 'previewFlag', true); % generic exposure time
+            previewScene = previewScenes(1); % just need the first element
         end
         
         function load(obj, cSceneFile)

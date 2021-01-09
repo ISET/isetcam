@@ -16,6 +16,7 @@ classdef ciCamera
         isp = ciIP();     % an ip or maybe something that extends an ip
         numHDRFrames = 3;
         numBurstFrames = 3;
+        expTimes = [];
     end
     
     methods
@@ -37,8 +38,10 @@ classdef ciCamera
                 options.numHDRFrames = 3;
                 options.imageName char = '';
                 options.reRender (1,1) {islogical} = true;
+                options.expTimes = [];
             end
             obj.numHDRFrames = options.numHDRFrames;
+            obj.expTimes = options.expTimes;
             if ~isempty(options.imageName) 
                 obj.isp.ip = ipSet(obj.isp.ip, 'name', options.imageName);
             end
@@ -76,8 +79,11 @@ classdef ciCamera
             % for now we assume a single camera module
             % IF a camera is okay with standard processing,
             % could just over-ride planCaptures and leave the rest alone.
-            [expTimes] = obj.planCaptures(previewImage, intent);
-
+            if isequal(obj.expTimes, [])
+                [expTimes] = obj.planCaptures(previewImage, intent);
+            else
+                expTimes = obj.expTimes;
+            end
             % As a simple test just get a scene we can use!
             [sceneObjects, sceneFiles] = scene.render(expTimes, 'reRender', options.reRender);
             
@@ -127,8 +133,12 @@ classdef ciCamera
                     % For now assume we're a very simple camera!                    
                     % And we can do AutoExposure to get our time.
                     oi = oiCompute(previewImage, obj.cmodule.oi);
-                    expTimes = [autoExposure(oi, obj.cmodule.sensor)];
-                    
+                    % Compute exposure times if they weren't passed to us
+                    if isequal(obj.expTimes, [])
+                        expTimes = [autoExposure(oi, obj.cmodule.sensor)];
+                    else
+                        expTimes = obj.expTimes;
+                    end
                     % When we ask for a preview, it messes up FOV of other
                     % sensors?
                     % test to see if preview works
