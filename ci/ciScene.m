@@ -1,4 +1,4 @@
-classdef ciScene
+classdef ciScene < handle
     %CISCENE Computational enhancement of scene struct
     %   Allows for computed scenes, that can include
     %   camera motion and motion of objects in the scene
@@ -59,6 +59,7 @@ classdef ciScene
         initialScene = ''; % Ideally this is a PBRT scene, but we also need
         % to handle the case where it is an ISET scene
         % or even just an image file
+        isetSceneNames = [];
         sceneFileNames = [];
         imageFileNames = [];
         
@@ -109,7 +110,8 @@ classdef ciScene
                 options.numRays (1,1) {mustBeNumeric} = 64;
                 options.numFrames (1,1) {mustBeNumeric} = 1;
                 options.imageFileNames (1,:) string = [];
-                options.sceneFileNames (1,:) string = [];
+                options.isetSceneNames (1,:) string = [];
+                options.isetSceneFileNames (1,:) string = [];
                 options.initialScene (1,:) struct = ([]);
                 options.lensFile char = '';
                 options.sceneLuminance (1,1) {mustBeNumeric} = 100;
@@ -147,15 +149,15 @@ classdef ciScene
                     
                     % ideally we should be able to accept an array of scene
                     % files
-                case 'iset scene file'
+                case 'iset scene files'
                     obj.sceneFileNames = options.sceneFileNames;
                     % TBD
-                    %ideally we should be able to acept an array of scenes
-                case 'iset scene'
-                    obj.initialScene = options.initialScene;
+                    %ideally we should be able to accept an array of scene files
+                case 'iset scenes'
+                    obj.isetSceneNames = options.isetSceneNames;
                     % TBD
                     %ideally we should be able to accept an array of images
-                case 'image'
+                case 'images'
                     obj.imageFileNames = options.imageFileNames;
                     % TBD
                 otherwise
@@ -225,7 +227,7 @@ classdef ciScene
                         mkdir(imageFolderPath);
                     end
                     sceneFiles = [];
-                    if exist('sceneObjects', 'var') clear(sceneObjects); end
+                    if exist('sceneObjects', 'var'); clear(sceneObjects); end
                     
                     % Okay we have object motion & numframes
                     % but if Motion doesn't work, then we need to translate between
@@ -319,6 +321,24 @@ classdef ciScene
                     end
                     sceneFiles = [sceneFiles imageFileName]; 
                 case 'iset scenes'
+                    % we want to generate scenes as needed
+                    if numel(expTimes) == numel(obj.isetScenes)
+                        sceneObjects = obj.isetScenes;
+                        % pre-gen, good to go
+                    elseif numel(expTimes > 1) && numel(obj.isetScenes) > 1
+                        error("If you pass multiple scenes to ciScene, they need to match up with Exposure Times.");
+                    elseif numel(expTimes) > 1
+                        % TBD Burst where we have to create scenes
+                        % These can include camera motion
+                    elseif numel(expTimes) == 1
+                        % We have an array of scenes, so extend our
+                        % exposure time array to match
+                        obj.expTimes = repmat(expTimes, 1, numel(obj.isetScenes));
+                        sceneObject = obj.isetScenes;
+                        % TBD Burst where we have scenes
+                    else
+                        error("Unknown scene parameters");
+                    end
                     % we can only do camera motion by moving the scene.
                 case 'image files'
                     % single base image or array of images
