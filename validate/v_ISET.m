@@ -100,4 +100,5 @@ fprintf("Sensor  ran in: %5.1f seconds.\n", getpref('ISET','tvsensorTime'));
 fprintf("IP      ran in: %5.1f seconds.\n", getpref('ISET','tvipTime'));
 fprintf("Display ran in: %5.1f seconds.\n", getpref('ISET','tvdisplayTime'));
 fprintf("Metrics ran in: %5.1f seconds.\n", getpref('ISET','tvmetricsTime'));
+fprintf("CI      ran in: %5.1f seconds.\n", getpref('ISET','tvciTime'));
 fprintf("Human   ran in: %5.1f seconds.\n", getpref('ISET','tvhumanTime'));
