@@ -72,6 +72,7 @@ classdef ciCamera
             % a preview image, determine number of frames and exposure
             % time(s). Potentially more sophisticated stuff as well
             
+            % Sometimes comes back as a cell rather than a scene.
             previewImage = scene.preview();
             
             % Given our preview & intent the camera can decide

@@ -47,7 +47,7 @@ classdef ciBurstCamera < ciCamera
        function [expTimes] = planCaptures(obj, previewImage, intent)
 
            % by default set our base exposure to simple auto-exposure
-           oi = oiCompute(previewImage, obj.cmodule.oi);
+           oi = oiCompute(previewImage{1},obj.cmodule.oi);
            baseExposure = [autoExposure(oi, obj.cmodule.sensor)];
 
           
