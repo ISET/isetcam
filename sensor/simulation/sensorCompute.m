@@ -32,12 +32,12 @@ function [outSensor, unitSigCurrent] = sensorCompute(sensor,oi,showBar)
 %
 % The conditions are:
 %
-%  noiseFlag | photon   e-noises gain/offset clipping quantize 
-%    -2      |   +         0            0         0        0     (no pixel no system)
-%    -1      |   0         0            0         0        0     (ideal)
-%     0      |   0         0            +         +        +     (no photon no pixel)
-%     1      |   +         0            +         +        +     (no pixel)
-%     2      |   +         +            +         +        +     (default)
+%  noiseFlag | photon   e-noises gain/offset clipping  CDS
+%    -2      |   +         0            0         0     0   ('no pixel no system')
+%    -1      |   0         0            0         0     0   ('no photon no pixel no system')
+%     0      |   0         0            +         +     +   ('no photon no pixel')
+%     1      |   +         0            +         +     +   ('no pixel noise')
+%     2      |   +         +            +         +     +   ('default')
 %
 %  photon noise:  Photon noise
 %  pixel noise:   Electrical noise (read, reset, dark)
@@ -280,51 +280,58 @@ for ss=1:length(sensorArray)   % Number of sensors
         end
         
         %% Clipping
-        % We clip the voltage because everything must fall between 0 and
-        % voltage swing.  This is true even if the responseType is
-        % log.
-        vSwing = sensorGet(sensor,'pixel voltage swing');
-        sensor = sensorSet(sensor,'volts',ieClip(sensorGet(sensor,'volts'),0,vSwing));
         
-        %% Quantization
-        % Compute the digital values (DV).   The results are written into
-        % sensor.data.dv.  If the quantization method is Analog, then the
-        % data.dv field is cleared and the data are stored only in
-        % data.volts.
-        
-        if showBar, waitbar(0.95,wBar,'Sensor image: A/D'); end
-        switch lower(sensorGet(sensor,'quantization method'))
-            case 'analog'
-                % dv = [];
-                % Could just copy rather than calling analog2digital.  How bout
-                % it?
-                sensor = sensorSet(sensor,'volts',analog2digital(sensor,'analog'));
-            case 'linear'
-                sensor = sensorSet(sensor,'digital values',analog2digital(sensor,'linear'));
-            case 'sqrt'
-                sensor = sensorSet(sensor,'digital values',analog2digital(sensor,'sqrt'));
-            case 'lut'
-                warning('sensorComputeNoise:LUT','LUT quantization not yet implemented.')
-            case 'gamma'
-                warning('sensorComputeNoise:Gamma','Gamma quantization not yet implemented.')
-            otherwise
-                sensor = sensorSet(sensor,'digitalvalues',analog2digital(sensor,'linear'));
+        % Applied for 0,1,2
+        if noiseFlag >=0 && noiseFlag <=2
+            % We clip the voltage because everything must fall between 0 and
+            % voltage swing.  This is true even if the responseType is
+            % log.
+            vSwing = sensorGet(sensor,'pixel voltage swing');
+            sensor = sensorSet(sensor,'volts',ieClip(sensorGet(sensor,'volts'),0,vSwing));
         end
+        
+        
     elseif noiseFlag == -2
-        % Only add photon noise.  No clipping or CDS or ADC or other
-        % noise methods.  Unfortunately, the sensorAddNoise parameter
-        % doesn't match the noiseFlag parameter closely.  So, we set
-        % it and then put it back.
+        % Only add photon noise.  No clipping or CDS or other noise
+        % methods.  Unfortunately, the sensorAddNoise parameter doesn't
+        % match the noiseFlag parameter closely.  So, we set it and then
+        % put it back.
         sensor = sensorSet(sensor,'noiseFlag',1);  % Only Poisson noise
         sensor = sensorAddNoise(sensor);
         sensor = sensorSet(sensor,'noiseFlag',noiseFlag);  % Put it back
     elseif noiseFlag == -1
+        % No photon no pixel no system
 
     else
         error('Bad noiseFlag %d\n',noiseFlag);
     end
     
-    if  sensorGet(sensor,'cds')
+    %% Quantization
+    
+    % Run the quantization, no matter the noise flag. This writes to
+    % the DV slot but does not impact the volts/electrons. The results are
+    % written into sensor.data.dv.  If 'analog' is set, however, no
+    % quantization is applied.
+    if showBar, waitbar(0.95,wBar,'Sensor image: A/D'); end
+    switch lower(sensorGet(sensor,'quantization method'))
+        case 'analog'
+            % If the quantization method is Analog, then the data are
+            % stored only in data.volts.  We used to run this line.
+            % sensor = sensorSet(sensor,'volts',analog2digital(sensor,'analog'));
+        case 'linear'
+            sensor = sensorSet(sensor,'digital values',analog2digital(sensor,'linear'));
+        case 'sqrt'
+            sensor = sensorSet(sensor,'digital values',analog2digital(sensor,'sqrt'));
+        case 'lut'
+            warning('sensorComputeNoise:LUT','LUT quantization not yet implemented.')
+        case 'gamma'
+            warning('sensorComputeNoise:Gamma','Gamma quantization not yet implemented.')
+        otherwise
+            sensor = sensorSet(sensor,'digital values',analog2digital(sensor,'linear'));
+    end
+    
+    %% Correlated double sampling
+    if  sensorGet(sensor,'cds') && noiseFlag >= 0
         disp('CDS on')
         % Read a zero integration time image that we subtract from the
         % simulated image.  This removes much of the effect of dsnu.
@@ -336,9 +343,9 @@ for ss=1:length(sensorArray)   % Number of sensors
         sensor = sensorSet(sensor,'integration time',integrationTime);
         sensor = sensorSet(sensor,'volts',ieClip(sensor.data.volts - cdsVolts,0,[]));
     end
-        
     
-    %% Correlated double sampling
+    
+    %% Check
     if isempty(sensorGet(sensor,'volts'))
         % Something went wrong.  Clean up the mess and return control to the main
         % processes.
@@ -346,9 +353,9 @@ for ss=1:length(sensorArray)   % Number of sensors
     end
     
     %% Macbeth chart management
-    % Possible overlay showing center of Macbeth chart
-    % sensor = sensorSet(sensor,'mccRectHandles',[]);
     
+    % Possible overlay showing center of Macbeth chart
+    % sensor = sensorSet(sensor,'mccRectHandles',[]);    
     if showBar, close(wBar); end
     
     % The sensor structure has fields that are not present in the

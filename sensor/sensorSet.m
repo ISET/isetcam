@@ -77,7 +77,8 @@ function sensor = sensorSet(sensor,param,val,varargin)
 %               the default noiseFlag value is 2, which includes photon
 %               noise, read/reset, FPN, analog gain/offset, clipping,
 %               quantization, are all included. noiseFlag = -2 is purely
-%               photon noise.  Read the documentation in sensorCompute!
+%               photon noise.  -1 is no noise at all. Read the
+%               documentation in sensorCompute! 
 %
 %      'reuse noise'        - Generate noise from current seed
 %      'noise seed'         - Saved noise seed for randn()
@@ -441,15 +442,16 @@ switch lower(param)
         %   SEE DESCRIPTION OF FLAG VALUES IN THE FUNCTION HEADER COMMENT
         if ischar(val)
             switch (val)
-                case 'default'
+                case {'default','all'}
                     % Photon noise, electrical noise, and all the
                     % non-idealities
                     val = 2;
-                case {'nopixelnoise','noother','noelectrical','nopixel'}
-                    % Photon noise, but no other electrical noise.  The
-                    % clipping and FPN non-idealities are still present.
+                case {'nopixel','nopixelnoise','noother','noelectrical'}
+                    % Photon noise, and system nosise, but no pixel noise.
+                    % The clipping and FPN non-idealities are still
+                    % present.
                     val = 1;
-                case {'nophotonnopixel','onlygcq','nophotonother', 'nophoton'}
+                case {'nophotonnopixel'} %'onlygcq','nophotonother', 'nophoton'
                     % No photon noise, no electrical noise, but clipping,
                     % quantization and other non-idealities are present.
                     % Only gain, clipping, quantization (gcq)

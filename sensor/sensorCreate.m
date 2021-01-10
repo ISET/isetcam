@@ -215,6 +215,9 @@ switch sensorName
         
     case {'imx363'}
         % A Sony sensor used in many systems
+        % To over-ride the row/col default use
+        %
+        % sensorCreate('imx363',[],'row col',[300 400]);
         sensor = sensorIMX363('row col',[600 800], varargin{:});
         
     case {'custom'}      % Often used for multiple channel
@@ -478,15 +481,14 @@ function sensor = sensorIMX363(varargin)
 % Examples:
 %{
  % The defaults and some plots
- sensor = sensorIMX363;
+ sensor = sensorCreate('IMX363');
  sensorPlot(sensor,'spectral qe');
  sensorPlot(sensor,'cfa block');
  sensorPlot(sensor,'pixel snr');
- save(fullfile(igRootPath,'data','sensor','sensor_IMX363_public.mat'), 'sensor');
 %}
 %{
  % Adjust a parameter
- sensor = sensorIMX363('row col',[256 384]);
+ sensor = sensorCreate('IMX363',[],'row col',[256 384]);
  sensorPlot(sensor,'cfa full');
 %}
 
