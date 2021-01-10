@@ -60,7 +60,7 @@ classdef ciScene < handle
         % to handle the case where it is an ISET scene
         % or even just an image file
         isetScenes = [];
-        sceneFileNames = [];
+        isetSceneFileNames = [];
         imageFileNames = [];
         
         thisR;
@@ -150,9 +150,13 @@ classdef ciScene < handle
                     % ideally we should be able to accept an array of scene
                     % files
                 case 'iset scene files'
-                    obj.sceneFileNames = options.sceneFileNames;
+                    obj.isetSceneFileNames = options.isetSceneFileNames;
+                    % hack just to see if we can process one scene
+                    % assume ISET scenes are multispectral, fwiw.
+                    obj.isetScenes = [sceneFromFile(obj.isetSceneFileNames(1), 'multispectral')];
                     % TBD
                     %ideally we should be able to accept an array of scene files
+                    obj.sceneType = 'iset scenes'; % Since we have now loaded our files into scenes
                 case 'iset scenes'
                     obj.isetScenes = options.isetScenes;
                     % TBD
@@ -391,11 +395,10 @@ classdef ciScene < handle
             motionArray = 2 * (rand(numFrames, 2)-.5) .* repmat([xPixels yPixels], numFrames, 1);
         end
         
-        function previewScene = preview(obj)
+        function previewScenes = preview(obj)
             % get a preview that the camera can use to plan capture
             % settings
             [previewScenes, previewFiles] = obj.render([.1], 'previewFlag', true); % generic exposure time
-            previewScene = previewScenes(1); % just need the first element
         end
         
         function load(obj, cSceneFile)
