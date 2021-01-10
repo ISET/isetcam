@@ -53,7 +53,7 @@ classdef ciCModule
                 
                 % If we don't have scene objects, then use files:
                 %useableScene = sceneFromFile(useScenes(ii), 'multispectral');
-                ourScene = sceneArray(ii);
+                ourScene = sceneArray{ii};
                 if strcmp(ourScene.type, 'scene')
                     opticalImage = oiCompute(obj.oi, ourScene); 
                 elseif strcmp(ourScene.type, 'oi')

@@ -72,8 +72,9 @@ classdef ciCamera
             % a preview image, determine number of frames and exposure
             % time(s). Potentially more sophisticated stuff as well
             
-            % Sometimes comes back as a cell rather than a scene.
-            previewImage = scene.preview();
+            % Comes back as a cell array in case we want to do more
+            % sophisticated multi-frame previews eventually.
+            previewImages = scene.preview();
             
             % Given our preview & intent the camera can decide
             % how many images to take and at what exposure
@@ -81,7 +82,7 @@ classdef ciCamera
             % IF a camera is okay with standard processing,
             % could just over-ride planCaptures and leave the rest alone.
             if isequal(obj.expTimes, [])
-                [expTimes] = obj.planCaptures(previewImage, intent);
+                [expTimes] = obj.planCaptures(previewImages, intent);
             else
                 expTimes = obj.expTimes;
             end
@@ -122,7 +123,7 @@ classdef ciCamera
             end
         end
         
-        function [expTimes] = planCaptures(obj, previewImage, intent)
+        function [expTimes] = planCaptures(obj, previewImages, intent)
             switch intent
                 case {'Auto', 'Portrait', 'Scenic', 'Action', ...
                         'Night'}
@@ -133,7 +134,8 @@ classdef ciCamera
                     
                     % For now assume we're a very simple camera!                    
                     % And we can do AutoExposure to get our time.
-                    oi = oiCompute(previewImage, obj.cmodule.oi);
+                    % We also only use a single preview image
+                    oi = oiCompute(previewImages{1}, obj.cmodule.oi);
                     % Compute exposure times if they weren't passed to us
                     if isequal(obj.expTimes, [])
                         expTimes = [autoExposure(oi, obj.cmodule.sensor)];
