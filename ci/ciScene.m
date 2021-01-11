@@ -59,7 +59,7 @@ classdef ciScene < handle
         initialScene = ''; % Ideally this is a PBRT scene, but we also need
         % to handle the case where it is an ISET scene
         % or even just an image file
-        isetScenes = [];
+        isetScenes = {};
         isetSceneFileNames = [];
         imageFileNames = [];
         
@@ -331,7 +331,9 @@ classdef ciScene < handle
                     end
                         
                     % we want to generate scenes as needed
-                    if numel(expTimes) == numel(obj.isetScenes)
+                    if numel(expTimes) == 1 && numel(obj.isetScenes) == 1
+                        sceneObjects = {obj.isetScenes};
+                    elseif numel(expTimes) == numel(obj.isetScenes)
                         sceneObjects = obj.isetScenes;
                         % pre-gen, good to go
                     elseif numel(expTimes) > 1 && numel(obj.isetScenes) > 1

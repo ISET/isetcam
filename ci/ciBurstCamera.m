@@ -17,11 +17,11 @@ classdef ciBurstCamera < ciCamera
 
         end
         
-       function ourPicture = TakePicture(obj, scenes, intent, options)
+       function ourPicture = TakePicture(obj, aCIScene, intent, options)
             
            arguments
                obj;
-               scenes;
+               aCIScene;
                intent;
                options.numHDRFrames = 3;
                options.numBurstFrames = 3;
@@ -34,7 +34,7 @@ classdef ciBurstCamera < ciCamera
            obj.numHDRFrames = options.numHDRFrames;
            obj.numBurstFrames = options.numBurstFrames;
            
-            ourPicture = TakePicture@ciCamera(obj, scenes, intent, 'reRender', options.reRender);
+            ourPicture = TakePicture@ciCamera(obj, aCIScene, intent, 'reRender', options.reRender);
             % Typically we'd invoke the parent before or after us
             % or to handle cases we don't need to
             % Let's think about the best way to do that.
@@ -44,10 +44,10 @@ classdef ciBurstCamera < ciCamera
        
        % Decides on number of frames and their exposure times
        % based on the preview image passed in from the camera module
-       function [expTimes] = planCaptures(obj, previewImage, intent)
+       function [expTimes] = planCaptures(obj, previewImages, intent)
 
            % by default set our base exposure to simple auto-exposure
-           oi = oiCompute(previewImage{1},obj.cmodule.oi);
+           oi = oiCompute(previewImages{1},obj.cmodule.oi);
            baseExposure = [autoExposure(oi, obj.cmodule.sensor)];
 
           
@@ -72,7 +72,7 @@ classdef ciBurstCamera < ciCamera
                    expTimes = repmat(baseExposure, 1, numFrames);
                    
                otherwise
-                   [expTimes] = planCaptures@ciCamera(obj, previewImage, intent);
+                   [expTimes] = planCaptures@ciCamera(obj, previewImages, intent);
            end
        end
        

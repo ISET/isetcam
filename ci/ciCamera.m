@@ -29,11 +29,11 @@ classdef ciCamera
         % but they can still call us for "generic" processing.
         % There may also be lower-level touchpoints for sub-classing
         % so that they don't need to re-implement all of this. . .
-        function ourPicture = TakePicture(obj, scene, intent, options)
+        function ourPicture = TakePicture(obj, aCIScene, intent, options)
             %TakePicture Main function telling us to create a photo
             arguments
                 obj;
-                scene;
+                aCIScene;
                 intent;
                 options.numHDRFrames = 3;
                 options.imageName char = '';
@@ -46,10 +46,8 @@ classdef ciCamera
                 obj.isp.ip = ipSet(obj.isp.ip, 'name', options.imageName);
             end
             
-            % scene can be either a scene struct (static)
-            % or an array of scenes or a CSCene (in theory)
-            % unless we want to force the caller to generat a CScerne
-            % to simplify our life. That gives us .preview, .render
+            % aCIScene is a ciScene
+            % That gives us .preview, .render
             % with support for motion and an array of shutter times
             %
             % In addition to main intents, someday we could get fancy
@@ -61,8 +59,8 @@ classdef ciCamera
             % of the scene (maybe just the first frame of a multiple scene
             % input, so maybe we don't need to do a CScene.Preview?
             
-            if ~exist('scene', 'var') || isempty(scene)
-                scene = ciScene();
+            if ~exist('aCIScene', 'var') || isempty(aCIScene)
+                aCIScene = ciScene('pbrt');
             end
             if ~exist('intent','var') || isempty(intent)
                 intent = 'Auto';
@@ -74,7 +72,7 @@ classdef ciCamera
             
             % Comes back as a cell array in case we want to do more
             % sophisticated multi-frame previews eventually.
-            previewImages = scene.preview();
+            previewImages = aCIScene.preview();
             
             % Given our preview & intent the camera can decide
             % how many images to take and at what exposure
@@ -87,7 +85,7 @@ classdef ciCamera
                 expTimes = obj.expTimes;
             end
             % As a simple test just get a scene we can use!
-            [sceneObjects, sceneFiles] = scene.render(expTimes, 'reRender', options.reRender);
+            [sceneObjects, sceneFiles] = aCIScene.render(expTimes, 'reRender', options.reRender);
             
             % Simplest case, now that we have the nFrames & expTimes
             % We want to call our camera module(s).
