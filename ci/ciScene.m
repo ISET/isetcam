@@ -279,7 +279,7 @@ classdef ciScene < handle
                         % Need to improve by supporting motion during
                         % capture like in: t_piIntro_cameramotion
                         if obj.allowsCameraMotion && ii > 1
-                            moveCamera(obj);
+                            movePBRTCamera(obj);
                         end
                         %
                         %% Render and visualize
@@ -339,10 +339,9 @@ classdef ciScene < handle
                     elseif numel(expTimes) > 1 && numel(obj.isetScenes) > 1
                         error("If you pass multiple scenes to ciScene, they need to match up with Exposure Times.");
                     elseif numel(expTimes) > 1
+                        %% Here is the case where we need to add camera motion
                         % we just have one scene so multiply it out
                         sceneObjects = num2cell(repmat(obj.isetScenes, 1, numel(expTimes)));
-                        % TBD Burst where we have to create scenes
-                        % These can include camera motion
                     elseif numel(expTimes) == 1
                         % We have an array of scenes, so extend our
                         % exposure time array to match
@@ -360,7 +359,7 @@ classdef ciScene < handle
             end
         end
         
-        function moveCamera(obj)
+        function movePBRTCamera(obj)
             for ii = 1:numel(obj.cameraMotion)
                 ourMotion = obj.cameraMotion{ii};
                 if ~isempty(ourMotion{2})
@@ -380,7 +379,8 @@ classdef ciScene < handle
         end
         
         % code ripped from old style tutorial, needs to be incorporated:
-        function jitterScenes()
+        % we don't really move the camera, but we can move the scene
+        function moveISETCamera()
             motionHDegrees = 2;
             motionVDegrees = 0.3;
             tScene = scene; % initial Seed
