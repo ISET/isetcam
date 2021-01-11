@@ -230,7 +230,8 @@ elseif nFilters >= 3 || nSensors > 1
             % Scale the img to make sure the results is 0 to 1]
             % We already subtract the zero level from image earlier
             % in some cases we are already normalized
-            if max(img,[],'all') > 1
+            % Can only normalize this way if we have a digital value!
+            if ~isempty(sensorGet(sensor, 'maxdigitalvalue'))
                 img = img / (sensorGet(sensor, 'maxdigitalvalue') - zerolevel);
             end
         case {'new','manual matrix entry'}

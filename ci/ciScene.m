@@ -197,6 +197,7 @@ classdef ciScene < handle
             % recipe, but doesn't know what to do with an iset scene or one
             % or more pre-baked images -- yet.
             
+            if exist('sceneObjects', 'var'); clear(sceneObjects); end
             % Process based on sceneType.
             switch obj.sceneType
                 case {'pbrt', 'recipe'}
@@ -231,7 +232,6 @@ classdef ciScene < handle
                         mkdir(imageFolderPath);
                     end
                     sceneFiles = [];
-                    if exist('sceneObjects', 'var'); clear(sceneObjects); end
                     
                     % Okay we have object motion & numframes
                     % but if Motion doesn't work, then we need to translate between
@@ -339,6 +339,8 @@ classdef ciScene < handle
                     elseif numel(expTimes) > 1 && numel(obj.isetScenes) > 1
                         error("If you pass multiple scenes to ciScene, they need to match up with Exposure Times.");
                     elseif numel(expTimes) > 1
+                        % we just have one scene so multiply it out
+                        sceneObjects = num2cell(repmat(obj.isetScenes, 1, numel(expTimes)));
                         % TBD Burst where we have to create scenes
                         % These can include camera motion
                     elseif numel(expTimes) == 1
