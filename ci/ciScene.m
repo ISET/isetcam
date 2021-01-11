@@ -20,9 +20,10 @@ classdef ciScene < handle
     %       scenetype:
     %           'recipe' -- previously-loaded recipe
     %           'pbrt'   -- a PBRT scene
+    %           'iset scenes'  -- previously-loaded ISET scene struct(s)
     %           For now these just handle single instances:
     %           'iset scene files'   -- an ISET scene file(s)
-    %           'iset scenes'  -- previously-loaded ISET scene struct(s)
+    %           'iset scene files'   -- an ISET scene file(s)
     %           'image files'  -- image file name(s)
     %           'sceneLuminance' -- light level of the rendered scenes
     %
@@ -47,12 +48,8 @@ classdef ciScene < handle
     %}
     
     % TODO:
-    %  * figure out a way to do something interesting with ISET scenes &
-    %  images as input -- a sub-set of what we can do with pbrt, of course.
     %  * add ability to pass lens models to pbrt & deal with returned oi
     %  instead of scenes
-    %  ! figure out how/where to incorporate exposure/illuminance so that
-    %  either the scenes render appropriately, or so we do something else
     
     properties
         sceneType = '';
@@ -153,9 +150,10 @@ classdef ciScene < handle
                     obj.isetSceneFileNames = options.isetSceneFileNames;
                     % hack just to see if we can process one scene
                     % assume ISET scenes are multispectral, fwiw.
-                    obj.isetScenes = [sceneFromFile(obj.isetSceneFileNames(1), 'multispectral')];
-                    % TBD
-                    %ideally we should be able to accept an array of scene files
+                    obj.isetScenes = [];
+                    for ii = 1:numel(obj.isetSceneFileNames)
+                        obj.isetScenes = [obj.isetScenes sceneFromFile(obj.isetSceneFileNames(1), 'multispectral')];
+                    end
                     obj.sceneType = 'iset scenes'; % Since we have now loaded our files into scenes
                 case 'iset scenes'
                     obj.isetScenes = options.isetScenes;
