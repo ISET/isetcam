@@ -339,7 +339,18 @@ classdef ciScene < handle
                     elseif numel(expTimes) > 1
                         %% Here is the case where we need to add camera motion
                         % we just have one scene so multiply it out
-                        sceneObjects = num2cell(repmat(obj.isetScenes, 1, numel(expTimes)));
+                        if ~isempty(obj.cameraMotion)
+                            movedScene = obj.isetScenes;
+                            sceneObjects = {};
+                            for ii = 1:numel(expTimes)
+                                sceneObjects{end+1} = movedScene; %#ok<AGROW>
+                                movedScene = moveISETCamera(obj, movedScene, obj.cameraMotion);
+                            end
+                            
+                        else
+                            % without camera motion!
+                            sceneObjects = num2cell(repmat(obj.isetScenes, 1, numel(expTimes)));
+                        end
                     elseif numel(expTimes) == 1
                         % We have an array of scenes, so extend our
                         % exposure time array to match
@@ -376,20 +387,52 @@ classdef ciScene < handle
             end
         end
         
-        % code ripped from old style tutorial, needs to be incorporated:
         % we don't really move the camera, but we can move the scene
-        function moveISETCamera()
-            motionHDegrees = 2;
-            motionVDegrees = 0.3;
-            tScene = scene; % initial Seed
-            % translation wants degrees
-            motionArray = genMotion(motionHDegrees, motionVDegrees, obj.numFrames); % Set large to see effect
-            
-            for ii = 1:obj.numFrames
-                % simple motion model where user tries to keep initial
-                % position but is off by a random amount each time
-                tScene = sceneTranslate(scene, motionArray(ii, :), sceneGet(scene, 'mean luminance'));
+        function movedScene = moveISETCamera(obj, existingScene, moveCamera)
+            arguments
+                obj ciScene;
+                existingScene struct;
+                moveCamera;
             end
+            
+            % We need to make sure all our returned scenes are the same
+            % dimensions as our original, or they can't be merged later
+            origSize = size(existingScene.data);
+            
+            %motionHDegrees = 2;
+            %motionVDegrees = 0.3;
+            if isempty(moveCamera)
+                movedScene = existingScene;
+                return; % nothing to do
+            end
+            %Assume for now the caller only has one motion argument
+            %for ii = 1:numel(obj.cameraMotion)
+                ourMotion = moveCamera{1};
+                if ~isempty(ourMotion{2})
+                    movedScene = sceneTranslate(existingScene, ...
+                        ourMotion{2}, sceneGet(existingScene, 'mean luminance'));
+                else
+                    movedScene = existingScene;
+                end
+                if ~isempty(ourMotion{3})  
+                    tmpScene = movedScene; % need to copy or it locks up...
+                    movedScene = sceneRotate(tmpScene, ...
+                        ourMotion{3}(1));
+                end
+                % make sure dimensions match
+                %movedScene = resize(movedScene.data, origSize);
+            %end            
+
+            %Some code for when we want to put back "random" motion
+%             tScene = scene; % initial Seed
+%             % translation wants degrees
+%             motionArray = genMotion(motionHDegrees, motionVDegrees, obj.numFrames); % Set large to see effect
+%             
+%             for ii = 1:obj.numFrames
+%                 % simple motion model where user tries to keep initial
+%                 % position but is off by a random amount each time
+%                 tScene = sceneTranslate(scene, motionArray(ii, :), sceneGet(scene, 'mean luminance'));
+%             end
         end
         
         % generate some random scene/camera motion

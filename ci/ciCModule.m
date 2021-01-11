@@ -65,10 +65,10 @@ classdef ciCModule
                 % set sensor FOV to match scene.
                 % Usually just need to do once, but sometimes something
                 % gets confused.
-                %if ii == 1 % just need to do this once, I think
+                if ii == 1 % just need to do this once, I think
                     sceneFOV = [sceneGet(ourScene,'fovhorizontal') sceneGet(ourScene,'fovvertical')];
                     obj.sensor = sensorSetSizeToFOV(obj.sensor,sceneFOV,opticalImage);
-                %end
+                end
                 obj.sensor = sensorSet(obj.sensor, 'exposure time', exposureTimes(ii));
                 sensorImage = sensorCompute(obj.sensor, opticalImage);
                 cOutput = [cOutput sensorImage]; %#ok<AGROW>
