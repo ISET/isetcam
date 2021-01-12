@@ -327,11 +327,12 @@ classdef ciScene < handle
                     end
                         
                     % we want to generate scenes as needed
-                    if numel(expTimes) == 1 && numel(obj.isetScenes) == 1
-                        sceneObjects = {obj.isetScenes};
-                    elseif numel(expTimes) == numel(obj.isetScenes)
-                        sceneObjects = obj.isetScenes;
-                        % pre-gen, good to go
+                    if numel(expTimes) == numel(obj.isetScenes)
+                        % there has got to be a simpler way!
+                        sceneObjects = {};
+                        for ii = 1:numel(expTimes)
+                            sceneObjects{end+1} = obj.isetScenes(ii); %#ok<AGROW>
+                        end
                     elseif numel(expTimes) > 1 && numel(obj.isetScenes) > 1
                         error("If you pass multiple scenes to ciScene, they need to match up with Exposure Times.");
                     elseif numel(expTimes) > 1
@@ -353,8 +354,11 @@ classdef ciScene < handle
                         % We have an array of scenes, so extend our
                         % exposure time array to match
                         obj.expTimes = repmat(expTimes, 1, numel(obj.isetScenes));
-                        sceneObjects = {obj.isetScenes};
-                        % TBD Burst where we have scenes
+                        % there has got to be a simpler way!
+                        sceneObjects = {};
+                        for ii = 1:numel(expTimes)
+                            sceneObjects{end+1} = obj.isetScenes(ii); %#ok<AGROW>
+                        end
                     else
                         error("Unknown scene parameters");
                     end
