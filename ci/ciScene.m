@@ -152,16 +152,18 @@ classdef ciScene < handle
                     % assume ISET scenes are multispectral, fwiw.
                     obj.isetScenes = [];
                     for ii = 1:numel(obj.isetSceneFileNames)
-                        obj.isetScenes = [obj.isetScenes sceneFromFile(obj.isetSceneFileNames(1), 'multispectral')];
+                        obj.isetScenes = [obj.isetScenes sceneFromFile(obj.isetSceneFileNames(ii), 'multispectral')];
                     end
                     obj.sceneType = 'iset scenes'; % Since we have now loaded our files into scenes
                 case 'iset scenes'
                     obj.isetScenes = options.isetScenes;
-                    % TBD
-                    %ideally we should be able to accept an array of images
                 case 'images'
+                    obj.isetScenes = [];
                     obj.imageFileNames = options.imageFileNames;
-                    % TBD
+                    for ii = 1:numel(options.imageFileNames)
+                        obj.isetScenes = [obj.isetScenes sceneFromFile(convertStringsToChars(options.imageFileNames(ii)), 'rgb')];
+                    end
+                    obj.sceneType = 'iset scenes'; % as we now have scene files
                 otherwise
                     error("Unknown Scene Type");
             end
@@ -190,11 +192,7 @@ classdef ciScene < handle
             %   If lensmodel is set, in future it will be used with PBRT and
             %   we return an array of oi objects, otherwise scenes
             %   FUTURE
-            
-            % The below code works for when we get a pbrt scene or a
-            % recipe, but doesn't know what to do with an iset scene or one
-            % or more pre-baked images -- yet.
-            
+                        
             if exist('sceneObjects', 'var'); clear(sceneObjects); end
             % Process based on sceneType.
             switch obj.sceneType
