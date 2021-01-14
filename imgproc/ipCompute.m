@@ -342,9 +342,7 @@ switch combinationMethod
         [img,loc] = max(img,[],3);
         expByLoc  = expTimes(loc);
         img = img ./ expByLoc;    
-        %% DJC Maybe we have to
-        
-        normalize here, or we get over-saturated values?
+        %% DJC Maybe we have to normalize here, or we get over-saturated values?
     otherwise
         error('Unknown combination method: %s\n', combinationMethod)
 end
