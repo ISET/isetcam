@@ -1,7 +1,10 @@
 classdef ciCamera
     %CICAMERA Computational Camera
-    %   Allows for more complex camera designs, potentially including:
-    %   * Burst captures, including support for camera and object motion
+    %   Base class, allows extension for CI features, including:
+    %   * Bracketing (HDR)
+    %   * Burst captures
+    %   * Support for camera and object motion
+    %   * Works with pbrt recipes, iset scenes, and images
     %   * More sophisticated ISP features
     %   *     including support for "Intents" provided by the user
     %   *     and potentially for multiple camera modules used for one
@@ -11,9 +14,9 @@ classdef ciCamera
     %   Initial Version: D.Cardinal 12/2020
     
     properties
-        cmodule = []; % 1 (or more) CModules
+        cmodules = ciCModule.empty; % 1 (or more) CModules
         % probably need to superset this
-        isp = [];     % an ip or maybe something that extends an ip
+        isp = [];     % an extended ip
         numHDRFrames = 3;
         numBurstFrames = 3;
         expTimes = [];
@@ -21,14 +24,15 @@ classdef ciCamera
     
     methods
         function obj = ciCamera() % parameters TBD
-            obj.cmodule = ciCModule(); % 1 (or more) CModules
-            obj.isp = ciIP();     % an ip or maybe something that extends an ip
-            %CICAMERA Construct an instance of the generic camera
+            %CICAMERA Construct an instance of the generic ciCamera
             %"super-class"
+            obj.cmodules(1) = ciCModule(); % 1 (or more) CModules
+            obj.isp = ciIP();     % extended ip
+            
         end
         
-        % Expected to be over-ridden in sub-classes
-        % but they can still call us for "generic" processing.
+        % Expected to be over-ridden in sub-classes for specific
+        % processing, but they can still call us for "generic" processing.
         % There may also be lower-level touchpoints for sub-classing
         % so that they don't need to re-implement all of this. . .
         function ourPicture = TakePicture(obj, aCIScene, intent, options)
@@ -72,9 +76,10 @@ classdef ciCamera
             % a preview image, determine number of frames and exposure
             % time(s). Potentially more sophisticated stuff as well
             
-            % Comes back as a cell array in case we want to do more
-            % sophisticated multi-frame previews eventually.
-            previewImages = aCIScene.preview();
+            % Preview(s) come back as a cell array in case we want to do more
+            % sophisticated multi-frame previews eventually. For now we
+            % just use one preview image:
+            previewImages(1) = aCIScene.preview();
             
             % Given our preview & intent the camera can decide
             % how many images to take and at what exposure
@@ -82,7 +87,7 @@ classdef ciCamera
             % IF a camera is okay with standard processing,
             % could just over-ride planCaptures and leave the rest alone.
             if isequal(obj.expTimes, [])
-                [expTimes] = obj.planCaptures(previewImages, intent);
+                [expTimes] = obj.planCaptures(previewImages(1), intent);
             else
                 expTimes = obj.expTimes;
             end
@@ -93,13 +98,13 @@ classdef ciCamera
             % We want to call our camera module(s).
             % Each returns an array of sensor objects with the images
             % pre-computed
-            sensorImages = obj.cmodule.compute(sceneObjects, expTimes);
+            sensorImages = obj.cmodules(1).compute(sceneObjects, expTimes);
             
             % generic version, currently just prints out each processed
             % image from the sensor
             ourPicture = obj.computePhoto(sensorImages, intent);
 
-            
+            % alternate method of doing multi-sensor:
             %{
             or we could do it this way and invoke each sensor separately?
             for ii = 1:numel(useScenes)
@@ -135,10 +140,10 @@ classdef ciCamera
                     % For now assume we're a very simple camera!                    
                     % And we can do AutoExposure to get our time.
                     % We also only use a single preview image
-                    oi = oiCompute(previewImages{1}, obj.cmodule.oi);
+                    oi = oiCompute(previewImages{1}, obj.cmodules(1).oi);
                     % Compute exposure times if they weren't passed to us
                     if isequal(obj.expTimes, [])
-                        expTimes = [autoExposure(oi, obj.cmodule.sensor)];
+                        expTimes = [autoExposure(oi, obj.cmodules(1).sensor)];
                     else
                         expTimes = obj.expTimes;
                     end

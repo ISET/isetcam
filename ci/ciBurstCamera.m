@@ -43,8 +43,8 @@ classdef ciBurstCamera < ciCamera
        function [expTimes] = planCaptures(obj, previewImages, intent)
 
            % by default set our base exposure to simple auto-exposure
-           oi = oiCompute(previewImages{1},obj.cmodule.oi);
-           baseExposure = [autoExposure(oi, obj.cmodule.sensor)];
+           oi = oiCompute(previewImages{1},obj.cmodules(1).oi);
+           baseExposure = [autoExposure(oi, obj.cmodules(1).sensor)];
 
           
            switch intent
@@ -101,7 +101,7 @@ classdef ciBurstCamera < ciCamera
                    ipHDR = ipCompute(ipHDR, sensorImage);
                    ourPhoto = ipHDR;
                case 'Burst'
-                   % baseline is just sum the voltages
+                   % baseline is just sum the voltages, without alignment
                    sensorImage = obj.isp.mergeSensors(sensorImages);
                    sensorImage = sensorSet(sensorImage,'exposure method', 'burst');
 
@@ -114,14 +114,6 @@ classdef ciBurstCamera < ciCamera
                otherwise
                    ourPhoto = computePhoto@ciCamera(obj, sensorImages, intent);
            end
-           %{
-           % generic base code
-           for ii=1:numel(sensorImages)
-               sensorWindow(sensorImages(ii));
-               ourPhoto = obj.isp.compute(sensorImages(ii));
-               ipWindow(ourPhoto);
-           end
-           %}
            
        end
     end
