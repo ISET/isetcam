@@ -5,7 +5,6 @@ NEAR TERM:
 * support pbrt lens files by correctly processing oi returns
 * [short term fix is reRender flag] 
     figure out a rational rendered scene caching strategy
-* add support for non-pbrt input scenes
 * maybe do something useful with Portrait & Scenic intents, etc.
 * look at Brian's suggestion of focus stacking
 

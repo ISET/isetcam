@@ -216,6 +216,7 @@ elseif nFilters >= 3 || nSensors > 1
     
     % Save the demosaiced sensor space channel values. May be used later
     % for adaptation of color balance for IR enabled sensors
+    % if shooting bracketed, where did we get de-mosaiced?
     ip = ipSet(ip,'sensor space',img);    % saveimg = img;
 
     % Decide if we are using the current matrix or we are in a processing

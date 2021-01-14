@@ -24,7 +24,8 @@ classdef ciCModule
         function obj = ciCModule(options)
             %CICMODULE Construct an instance of this class
             arguments
-                options.sensor = sensorCreate();
+                % we shouldn't assume this, but otherwise things get weird
+                options.sensor = sensorCreate('bayer (rggb)');
                 options.oi = oiCreate();
             end
             obj.sensor = options.sensor;
