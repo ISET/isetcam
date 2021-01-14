@@ -10,8 +10,6 @@ classdef ciScene < handle
     %   Can also accept ISET scenes (.mat), but
     %   with reduced functionality
     %
-    %   FUTURE: Support for image files 
-    %
     %   Can also retrieve a scene preview, as CCamera/CModule may rely on
     %   that to make decisions about setting capture parameters
     %
@@ -112,6 +110,8 @@ classdef ciScene < handle
                 options.initialScene (1,:) struct = ([]);
                 options.lensFile char = '';
                 options.sceneLuminance (1,1) {mustBeNumeric} = 100;
+                options.waveLengths {mustBeNumeric} = [400:10:700];
+                options.dispCal char = 'OLED-Sony.mat';
             end
             obj.resolution = options.resolution;
             obj.numRays = options.numRays;
@@ -152,7 +152,8 @@ classdef ciScene < handle
                     % assume ISET scenes are multispectral, fwiw.
                     obj.isetScenes = [];
                     for ii = 1:numel(obj.isetSceneFileNames)
-                        obj.isetScenes = [obj.isetScenes sceneFromFile(obj.isetSceneFileNames(ii), 'multispectral')];
+                        obj.isetScenes = [obj.isetScenes sceneFromFile(obj.isetSceneFileNames(ii), 'multispectral',...
+                            [], options.dispCal)];
                     end
                     obj.sceneType = 'iset scenes'; % Since we have now loaded our files into scenes
                 case 'iset scenes'
@@ -161,7 +162,8 @@ classdef ciScene < handle
                     obj.isetScenes = [];
                     obj.imageFileNames = options.imageFileNames;
                     for ii = 1:numel(options.imageFileNames)
-                        obj.isetScenes = [obj.isetScenes sceneFromFile(convertStringsToChars(options.imageFileNames(ii)), 'rgb')];
+                        obj.isetScenes = [obj.isetScenes sceneFromFile(convertStringsToChars(options.imageFileNames(ii)), 'rgb', ...
+                            [], options.dispCal, options.waveLengths)];
                     end
                     obj.sceneType = 'iset scenes'; % as we now have scene files
                 otherwise

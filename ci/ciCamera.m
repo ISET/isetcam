@@ -11,9 +11,9 @@ classdef ciCamera
     %   Initial Version: D.Cardinal 12/2020
     
     properties
-        cmodule = ciCModule(); % 1 (or more) CModules
+        cmodule = []; % 1 (or more) CModules
         % probably need to superset this
-        isp = ciIP();     % an ip or maybe something that extends an ip
+        isp = [];     % an ip or maybe something that extends an ip
         numHDRFrames = 3;
         numBurstFrames = 3;
         expTimes = [];
@@ -21,6 +21,8 @@ classdef ciCamera
     
     methods
         function obj = ciCamera() % parameters TBD
+            obj.cmodule = ciCModule(); % 1 (or more) CModules
+            obj.isp = ciIP();     % an ip or maybe something that extends an ip
             %CICAMERA Construct an instance of the generic camera
             %"super-class"
         end

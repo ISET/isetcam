@@ -8,7 +8,10 @@ classdef ciIP
     %   Initial Version: D. Cardinal, 12/2020
     
     properties
-        ip = ipCreate(); % by default we just wrap an ip
+        defaultDisplay = 'OLED-Sony.mat'; % in case this makes a difference
+        ip = [];
+        % we have an option to pass the ip a sensor, but don't know if we
+        % need to?
     end
     
     methods
@@ -18,6 +21,9 @@ classdef ciIP
             %   for now, just a straight wrapper on an ip
             if exist('userIp')
                 obj.ip = userIp;
+            else
+                obj.ip = ipCreate('ci IP', [], obj.defaultDisplay); % by default we just wrap an ip
+                
             end
         end
         

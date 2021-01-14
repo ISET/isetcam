@@ -230,9 +230,10 @@ elseif nFilters >= 3 || nSensors > 1
             % Scale the img to make sure the results is 0 to 1]
             % We already subtract the zero level from image earlier
             % in some cases we are already normalized
-            % Can only normalize this way if we have a digital value!
             if ~isempty(sensorGet(sensor, 'maxdigitalvalue'))
                 img = img / (sensorGet(sensor, 'maxdigitalvalue') - zerolevel);
+            elseif ~isempty(ipGet(ip,'maximum sensor value'))
+                img = img / (ipGet(sensor, 'maximum sensor value') - zerolevel);
             end
         case {'new','manual matrix entry'}
             % Allow the user to specify a matrix from the GUI. When set this
@@ -345,7 +346,13 @@ switch combinationMethod
 end
 
 % The largest value we can ever get
-ip = ipSet(ip,'sensorMax',sensorMax/min(expTimes));
+% DJC I don't think this works right for all expTimes, as we start
+% returning massive signal values and Adaptive doesn't normalize. So I've
+% changed this to scale to the original sensor voltage swing (only affects
+% bracketing, which I don't think anyone except me is currently using:)
+%ip = ipSet(ip,'sensorMax',sensorMax/min(expTimes));
+img = img ./ max(img,[],'all'); % scale
+ip = ipSet(ip, 'sensorMax', max(img,[],'all'));
 ip = ipSet(ip,'input',img);
 
 end
