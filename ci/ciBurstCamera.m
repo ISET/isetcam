@@ -18,7 +18,7 @@ classdef ciBurstCamera < ciCamera
         end
         
        function ourPicture = TakePicture(obj, aCIScene, intent, options)
-            
+           
            arguments
                obj;
                aCIScene;
@@ -27,19 +27,15 @@ classdef ciBurstCamera < ciCamera
                options.numBurstFrames = 3;
                options.imageName char = '';
                options.reRender (1,1) {islogical} = true;
-            end
-            if ~isempty(options.imageName) 
-                obj.isp.ip = ipSet(obj.isp.ip, 'name', options.imageName);
-            end
+           end
+           if ~isempty(options.imageName)
+               obj.isp.ip = ipSet(obj.isp.ip, 'name', options.imageName);
+           end
            obj.numHDRFrames = options.numHDRFrames;
            obj.numBurstFrames = options.numBurstFrames;
            
-            ourPicture = TakePicture@ciCamera(obj, aCIScene, intent, 'reRender', options.reRender);
-            % Typically we'd invoke the parent before or after us
-            % or to handle cases we don't need to
-            % Let's think about the best way to do that.
-            % Otherwise could be some other type of specialized call?
-            
+           ourPicture = TakePicture@ciCamera(obj, aCIScene, intent, 'reRender', options.reRender);
+           
        end
        
        % Decides on number of frames and their exposure times
@@ -53,6 +49,9 @@ classdef ciBurstCamera < ciCamera
           
            switch intent
                case 'HDR'
+                   % Bracket the requested number of frames around our base
+                   % exposure. TBD might be an AutoHDR based on overall
+                   % scene dynamic range.
                    numFrames = obj.numHDRFrames;
                    frameOffset = (numFrames -1) / 2;
                    if numFrames > 1 && ~isodd(numFrames)
@@ -61,23 +60,27 @@ classdef ciBurstCamera < ciCamera
                    expTimes = repmat(baseExposure, 1, numFrames);
                    expTimes = expTimes.*(2.^[-1*frameOffset:1:frameOffset]);
                case 'Burst'
+                   % For now this is a very simple algorithm that just
+                   % takes the base exposure and divides it into the number
+                   % of frames.
                    numFrames = obj.numBurstFrames;
                    frameOffset = (numFrames -1) / 2;
                    if numFrames > 1 && ~isodd(numFrames)
                        numFrames = numFrames + 1;
                    end
-                   % algorithm here to calculate number of images and
+                   % Future: Algorithm here to calculate number of images and
                    % exposure time based on estimated processing power,
                    % lighting, and possibly motion/intent
-                   expTimes = repmat(baseExposure, 1, numFrames);
+                   expTimes = repmat(baseExposure/numFrames, 1, numFrames);
                    
                otherwise
+                   % just do what the base camera class would do
                    [expTimes] = planCaptures@ciCamera(obj, previewImages, intent);
            end
        end
        
-       % over-ride default processing to allow sum & hdr, for example:
-       % should we also get intent passed here?
+       % Here we over-ride default processing to compute a photo after we've
+       % captured one or more frames. This allows burst & hdr, for example:
        function ourPhoto = computePhoto(obj, sensorImages, intent)
 
            switch intent
@@ -91,16 +94,10 @@ classdef ciBurstCamera < ciCamera
                    sensorImage = obj.isp.mergeSensors(sensorImages);
                    sensorImage = sensorSet(sensorImage,'exposure method', 'bracketing');
  
-% what if we don't bother limiting to demosaic
-%                   ipHDR = ipSet(obj.isp.ip, 'render demosaic only', 'true');
+% what if we don't bother limiting to demosaic?
+                   ipHDR = ipSet(obj.isp.ip, 'render demosaic only', 'true');
                    ipHDR = ipSet(obj.isp.ip, 'combination method', 'longest');
                    
-                   % old ipBurstMotion  = ipCompute(ipBurstMotion,sensorBurstMotion);
-                   % if we want to use the existing ipCompute we need to
-                   % combine multiple sensors into one, with all the data &
-                   % exposure times. Otherwise ipCompute gets confused if
-                   % it is handed multiple sensors. It thinks those are
-                   % something else.
                    ipHDR = ipCompute(ipHDR, sensorImage);
                    ourPhoto = ipHDR;
                case 'Burst'
