@@ -50,7 +50,8 @@ classdef ciBurstCamera < ciCamera
            switch intent
                case 'HDR'
                    % Bracket the requested number of frames around our base
-                   % exposure. TBD might be an AutoHDR based on overall
+                   % exposure. 
+                   % TODO: An AutoHDR based on overall
                    % scene dynamic range.
                    numFrames = obj.numHDRFrames;
                    frameOffset = (numFrames -1) / 2;
@@ -94,9 +95,8 @@ classdef ciBurstCamera < ciCamera
                    sensorImage = obj.isp.mergeSensors(sensorImages);
                    sensorImage = sensorSet(sensorImage,'exposure method', 'bracketing');
  
-% what if we don't bother limiting to demosaic?
                    ipHDR = ipSet(obj.isp.ip, 'render demosaic only', 'true');
-                   ipHDR = ipSet(obj.isp.ip, 'combination method', 'longest');
+                   ipHDR = ipSet(ipHDR, 'combination method', 'longest');
                    
                    ipHDR = ipCompute(ipHDR, sensorImage);
                    ourPhoto = ipHDR;

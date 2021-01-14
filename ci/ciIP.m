@@ -10,8 +10,6 @@ classdef ciIP
     properties
         defaultDisplay = 'OLED-Sony.mat'; % in case this makes a difference
         ip = [];
-        % we have an option to pass the ip a sensor, but don't know if we
-        % need to?
     end
     
     methods
@@ -27,26 +25,20 @@ classdef ciIP
             end
         end
         
-        % somewhere we have to extend functionality to handle multiple
-        % images, either in ciCamera or here!!
         function aPicture = compute(obj, sensorImages)
-            %METHOD1 Summary of this method goes here
-            %   Detailed explanation goes here
+            %Compute final image from sensor captures
             aPicture = ipCompute(obj.ip, sensorImages);
         end
         
         % take a sequence of frames that are in separate sensor objects
         % and combine them into a single struct for processing by ip.
+        % Right now this is simple processing of voltages. Should also
+        % look at demosaic first and other options
         function singleSensor = mergeSensors(obj, sensorArray)
             singleSensor = sensorArray(1);
             for ii = 2:numel(sensorArray)
                 singleSensor = sensorSet(singleSensor, 'exposure time', ...
                     [sensorGet(singleSensor,'exposure time') sensorGet(sensorArray(ii), 'exposure time')]);
-                %sensorSet(singleSensor, 'data', ...
-                %    [sensorGet(singleSensor,'data') sensorGet(sensorArray(ii), 'data')]);
-                % this might be cheating, but can we just append the data
-                % arrays? should probably use some version of get & set
-                % assume we have volts (ugh:))
                 singleSensor.data.volts(:,:,ii) = sensorArray(ii).data.volts;
             end
         end

@@ -25,7 +25,7 @@ classdef ciCModule
             %CICMODULE Construct an instance of this class
             arguments
                 % we shouldn't assume this, but otherwise things get weird
-                options.sensor = sensorCreate('bayer (rggb)');
+                options.sensor = sensorCreate(); %('bayer (rggb)');
                 options.oi = oiCreate();
             end
             obj.sensor = options.sensor;
@@ -36,24 +36,22 @@ classdef ciCModule
         function cOutput = compute(obj, sceneArray, exposureTimes) % will support more args
             %COMPUTE Calculate what we capture
             %   Simplest case this is sensorCompute + oiCompute
-            %   however, we also need to integrate multi-capture
+            %   however, we also integrate multi-capture
             %   including support for scenes that change during the
             %   burst or HDR capture
             
             %   For burst/bracket we (or our caller) use CScene to call PBRT (if we have an
-            %   appropriate scene) to generate a set of scenes for us.
+            %   appropriate scene) to generate a set of scenes for us. Or
+            %   we synthetically approximate motion from either a baseline
+            %   ISET scene or image file. If given a burst of scenes or
+            %   images, we assume they already incorporate motion.
             %
-            %   IF we can load our lens model into PBRT, then it gives us
+            %   TODO: If we load our lens model into PBRT, then it gives us
             %   an array of oi's, not scenes
             
-            %! -- One biggish decision is whether to have the CModule
-            %     directly support capturing bursts/brackets, or have 
-            %     it called multiple times by the CCamera object (?)
             cOutput = [];
             for ii = 1:numel(sceneArray)
                 
-                % If we don't have scene objects, then use files:
-                %useableScene = sceneFromFile(useScenes(ii), 'multispectral');
                 ourScene = sceneArray{ii};
                 if strcmp(ourScene.type, 'scene')
                     opticalImage = oiCompute(obj.oi, ourScene); 
@@ -64,8 +62,6 @@ classdef ciCModule
                     error("Unknown scene render");
                 end
                 % set sensor FOV to match scene.
-                % Usually just need to do once, but sometimes something
-                % gets confused.
                 if ii == 1 % just need to do this once, I think
                     sceneFOV = [sceneGet(ourScene,'fovhorizontal') sceneGet(ourScene,'fovvertical')];
                     obj.sensor = sensorSetSizeToFOV(obj.sensor,sceneFOV,opticalImage);

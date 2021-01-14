@@ -1,10 +1,12 @@
 classdef ciCamera
     %CICAMERA Computational Camera
     %   Base class, allows extension for CI features, including:
+    %   In ciBurstCamera:
     %   * Bracketing (HDR)
     %   * Burst captures
     %   * Support for camera and object motion
     %   * Works with pbrt recipes, iset scenes, and images
+    %   FUTURE:
     %   * More sophisticated ISP features
     %   *     including support for "Intents" provided by the user
     %   *     and potentially for multiple camera modules used for one
@@ -15,7 +17,6 @@ classdef ciCamera
     
     properties
         cmodules = ciCModule.empty; % 1 (or more) CModules
-        % probably need to superset this
         isp = [];     % an extended ip
         numHDRFrames = 3;
         numBurstFrames = 3;
@@ -120,6 +121,8 @@ classdef ciCamera
             
         end
         
+        % This lower-leval routine is called once we have our sensor
+        % image(s), and generates a final image based on the intent
         function ourPhoto = computePhoto(obj, sensorImages, intent)
             for ii=1:numel(sensorImages)
                 sensorWindow(sensorImages(ii));
@@ -128,46 +131,36 @@ classdef ciCamera
             end
         end
         
+        % A key element of modern computational cameras is their ability
+        % to use statistics from the scene (in this case via preview 
+        % image(s) to plan how many frames to capture and with what settings. 
         function [expTimes] = planCaptures(obj, previewImages, intent)
             switch intent
                 case {'Auto', 'Portrait', 'Scenic', 'Action', ...
                         'Night'}
                     % split these apart as they are implemented
                     % we might also want to add more "techie" intents
-                    % like 'burst' rather than relying on them being
-                    % activated based on some other user choice
                     
                     % For now assume we're a very simple camera!                    
                     % And we can do AutoExposure to get our time.
                     % We also only use a single preview image
                     oi = oiCompute(previewImages{1}, obj.cmodules(1).oi);
+
                     % Compute exposure times if they weren't passed to us
                     if isequal(obj.expTimes, [])
                         expTimes = [autoExposure(oi, obj.cmodules(1).sensor)];
                     else
                         expTimes = obj.expTimes;
                     end
-                    % When we ask for a preview, it messes up FOV of other
-                    % sensors?
-                    % test to see if preview works
-                    %previewScene = scene.preview();
-                    %sceneLuminance = sceneGet(previewScene{1}, 'mean luminance');
-                    %fprintf("Scene Luminance is: %f\n", sceneLuminance);
-                    %for Debugging
-                    %sceneWindow(previewScene{1});
-                    
                     
                 case 'HDR'
-                    % use the bracketing code
+                    % base, simplest, hard-wired
                     expTimes = [.05 .01 .20];
                 case 'Burst'
-                    % not sure burst is ever really a "user intent" but
-                    % it might make sense to allow it. Otherwise it could
-                    % just be the way a particular camera implements
-                    % some of the other intents
+                    % base, simplest, hard-wired
                     expTimes = [.05 .05 .05];
                 case 'Pro'
-                    % here we allow the user to set exposure time,
+                    % TODO: here we allow the user to set exposure time,
                     % focus, exposure comp if AutoExpose, WB, etc.
                     % Might force camera to a specific module also?
                     % Zoom is settable, but might be digital??
