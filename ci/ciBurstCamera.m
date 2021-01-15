@@ -17,24 +17,25 @@ classdef ciBurstCamera < ciCamera
 
         end
         
-       function ourPicture = TakePicture(obj, aCIScene, intent, options)
+       function ourPicture = TakePicture(obj, aCIScene, intent, camProps)
            
            arguments
                obj;
                aCIScene;
                intent;
-               options.numHDRFrames = 3;
-               options.numBurstFrames = 3;
-               options.imageName char = '';
-               options.reRender (1,1) {islogical} = true;
+               camProps.?ciCamera;
+               camProps.numHDRFrames = 3;
+               camProps.numBurstFrames = 3;
+               camProps.imageName char = '';
+               camProps.reRender (1,1) {islogical} = true;
            end
-           if ~isempty(options.imageName)
-               obj.isp.ip = ipSet(obj.isp.ip, 'name', options.imageName);
+           if ~isempty(camProps.imageName)
+               obj.isp.ip = ipSet(obj.isp.ip, 'name', camProps.imageName);
            end
-           obj.numHDRFrames = options.numHDRFrames;
-           obj.numBurstFrames = options.numBurstFrames;
+           obj.numHDRFrames = camProps.numHDRFrames;
+           obj.numBurstFrames = camProps.numBurstFrames;
 
-           varargin=namedargs2cell(options); 
+           varargin=namedargs2cell(camProps); 
            ourPicture = TakePicture@ciCamera(obj, aCIScene, intent, varargin{:});
            
        end
