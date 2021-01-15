@@ -43,6 +43,7 @@ classdef ciCamera
                 aCIScene;
                 intent;
                 options.numHDRFrames = 3;
+                options.numBurstFrames = 3;
                 options.imageName char = '';
                 options.reRender (1,1) {islogical} = true;
                 options.expTimes = [];

@@ -33,8 +33,13 @@ classdef ciBurstCamera < ciCamera
            end
            obj.numHDRFrames = options.numHDRFrames;
            obj.numBurstFrames = options.numBurstFrames;
-           
-           ourPicture = TakePicture@ciCamera(obj, aCIScene, intent, 'reRender', options.reRender);
+
+           % might be a way to pass optional params, but doesn't seem to
+           %ourPicture = TakePicture@ciCamera(obj, aCIScene, intent, namedargs2cell(options));
+           varargin=struct2pairs(options ); 
+           ourPicture = TakePicture@ciCamera(obj, aCIScene, intent, varargin {:});
+
+%           ourPicture = TakePicture@ciCamera(obj, aCIScene, intent, options); %'reRender', options.reRender);
            
        end
        
