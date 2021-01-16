@@ -93,7 +93,9 @@ classdef ciCamera
             else
                 expTimes = obj.expTimes;
             end
-            % As a simple test just get a scene we can use!
+            
+            % Render scenes as needed. Note that if pbrt has a lens file
+            % then 'sceneObjects' are actually oi structs
             [sceneObjects, sceneFiles] = aCIScene.render(expTimes, 'reRender', options.reRender);
             
             % Simplest case, now that we have the nFrames & expTimes
@@ -145,7 +147,11 @@ classdef ciCamera
                     % For now assume we're a very simple camera!                    
                     % And we can do AutoExposure to get our time.
                     % We also only use a single preview image
-                    oi = oiCompute(previewImages{1}, obj.cmodules(1).oi);
+                    if isequal(previewImages{1}.type, 'opticalimage')
+                        oi = previewImages{1};
+                    else
+                        oi = oiCompute(previewImages{1}, obj.cmodules(1).oi);
+                    end
 
                     % Compute exposure times if they weren't passed to us
                     if isequal(obj.expTimes, [])

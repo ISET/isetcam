@@ -24,8 +24,8 @@ classdef ciCModule
         function obj = ciCModule(options)
             %CICMODULE Construct an instance of this class
             arguments
-                % we shouldn't assume this, but otherwise things get weird
-                options.sensor = sensorCreate(); %('bayer (rggb)');
+                % if we don't get sensor or oi passed in, use default
+                options.sensor = sensorCreate(); 
                 options.oi = oiCreate();
             end
             obj.sensor = options.sensor;
@@ -55,7 +55,7 @@ classdef ciCModule
                 ourScene = sceneArray{ii};
                 if strcmp(ourScene.type, 'scene')
                     opticalImage = oiCompute(obj.oi, ourScene); 
-                elseif strcmp(ourScene.type, 'oi')
+                elseif strcmp(ourScene.type, 'oi') || strcmp(ourScene.type, 'opticalimage')
                     % we already used a lens, so we got back an OI
                     opticalImage = ourScene;
                 else

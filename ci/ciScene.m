@@ -309,13 +309,14 @@ classdef ciScene < handle
                             sceneToFile(imageFileName,sceneObject);
                             % this is mostly just for debugging & human inspection
                             sceneSaveImage(sceneObject,imageFilePrefixName);
+                            sprintf("Scene luminance is: %f", sceneGet(sceneObject, 'mean luminance'))
                         elseif isequal(sceneObject.type, 'opticalimage') % we have an optical image
-                            error("Don't know what to do with OI yet");
+                            oiSaveImage(sceneObject, append(imageFilePrefixName,'.png'));
+                            save(imageFileName,'sceneObject');
                         else
                             error("Render seems to have failed.");
                         end
                     end
-                    sprintf("Scene luminance is: %f", sceneGet(sceneObject, 'mean luminance'))
                     if ~exist('sceneObjects', 'var')
                         sceneObjects = {sceneObject};
                     else
