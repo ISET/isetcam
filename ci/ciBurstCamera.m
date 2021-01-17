@@ -46,7 +46,7 @@ classdef ciBurstCamera < ciCamera
 
            % by default set our base exposure to simple auto-exposure
            if isequal(previewImages{1}.type, 'opticalimage')
-               oi = previewImages{1}'
+               oi = previewImages{1};
            else
                oi = oiCompute(previewImages{1},obj.cmodules(1).oi);
            end
