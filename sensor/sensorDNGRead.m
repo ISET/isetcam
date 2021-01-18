@@ -2,7 +2,7 @@ function [sensor, info] = sensorDNGRead(fname,varargin)
 % Read a DNG file with the assumption that the sensor is a Sony IMX363
 %
 % Synopsis
-%   sensor = sensorDNGRead(fname,varargin)
+%   [sensor, info] = sensorDNGRead(fname,varargin)
 %
 % Brief
 %   Adobe digital negative files (DNG) are close to the raw sensor values.

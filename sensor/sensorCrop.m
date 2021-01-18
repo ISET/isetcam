@@ -44,7 +44,7 @@ if ieNotDefined('rect'), error('crop rect required'); end
 
 % Modern Matlab returns a Rectangle object, not just a rect vector. We only
 % want the Position of the rectangle for this crop.
-if isa(rect,'images.roi.Rectangle'), rect = rect.Position; end
+if isa(rect,'images.roi.Rectangle'), rect = round(rect.Position); end
 %%
 
 % Get the data
