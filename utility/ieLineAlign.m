@@ -1,4 +1,4 @@
-function estP = ieLineAlign(D1,D2)
+function [estP, estY] = ieLineAlign(D1,D2)
 % Aligns the data in D1 and D2 by a shift and scale
 %
 % Synopsis
@@ -28,26 +28,35 @@ function estP = ieLineAlign(D1,D2)
 
 % Examples:
 %{
-% The shift and stretch of the x axis
+% Here is a simple function
 D1.x = -50:50;
-D1.y = D1.x.^2;
+func = @(x)(0.3*x.^2 + 12*x - 5);
+D1.y = func(D1.x);
 
-% The same function applied to each
-s1 = 2.5; s2 = 15;
-D2.x = s1*(D1.x - s2);
-D2.y = D1.x.^2;
-plot(D1.x,D1.y,'k--',D2.x,D2.y,'r:');
+% Here is the same function but with x shifted and scaled
+D2.x = D1.x;    % Sample the same points
 
-p = ieLineAlign(D1,D2)
+% But the measurements were shifted and scaled
+s1 = 1.2; s2 = 3;
+ssX = s1*(D1.x - s2);
 
-%
-xRescaled = (D2.x/p(1)) + p(2);
-xScaledEst =  interp1(D2.x, D2.y, xRescaled);
-l = ~isnan(xScaledEst);
+% The function with some noise.
+D2.y = func(ssX) + randn(size(ssX))*5; 
 
-% Compare
-ieNewGraphWin;
-plot(D1.x,D1.y,'k--',xRescaled(l),xScaledEst(l),'r:');
+plot(D1.x,D1.y,'k--',D2.x,D2.y,'r-');
+
+% This function tries to find s1 and s2
+% Some of the estimated values are NaN.
+[p, estY] = ieLineAlign(D1,D2);
+
+% If we shift and scale the x values of D2, we should have a plot that
+% matches D1.
+plot(D1.x,D1.y,'k--', p(1)*(D2.x - p(2)), D2.y,'r-');
+set(gca,'xlim',[-40 40]);
+
+% The same plot using the estimated Y values returned by ieLinAlign
+plot(D1.x,D1.y,'k--', D1.x, estY,'r-');
+set(gca,'xlim',[-40 40]);
 
 %}
 
@@ -57,10 +66,12 @@ options = optimset(@fminsearch);
 
 estP = fminsearch(@sseval,p,options,D1,D2);
 
+[~,estY] = sseval(estP,D1,D2);
+
 end
 
 %%
-function e = sseval(p,D1,D2)
+function [e, est] = sseval(p,D1,D2)
 % Shift and scale the x-axis to match D1 to D2.  
 %
 % Synopsis
@@ -84,7 +95,12 @@ function e = sseval(p,D1,D2)
 %      D2.x/p(1) + p(2)
 %
 % The estimate for the shifted and scaled values are
-est = interp1(D2.x, D2.y, D2.x/p(1) + p(2));
+% est = interp1(D2.x, D2.y, D2.x/p(1) + p(2));
+
+% If we shift and scale D2's x value and measure at D1's x value,
+% we want the new est to match D1.x,D1.y
+% est = interp1(D2.x/p(1) + p(2), D2.y, D1.x);
+est = interp1(p(1)*(D2.x - p(2)), D2.y, D1.x);
 
 %{
 % If there is a 3rd parameter we scale the result.
