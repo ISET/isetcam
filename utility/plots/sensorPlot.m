@@ -190,6 +190,7 @@ switch pType
             delete(g); roiLocs(2) = roiLocs(2) + 1;
             [~, uData2] = sensorPlotLine(sensor, 'h', 'electrons', 'space', roiLocs);
             [g, uData] = sensorPlotTwoLines(sensor,uData,uData2);
+            title(sprintf('Horizontal line %d',roiLocs(2)-1));
         end
     case {'electronsvline'}
         [g, uData]  = sensorPlotLine(sensor, 'v', 'electrons', 'space', roiLocs);        
@@ -197,6 +198,7 @@ switch pType
             delete(g); roiLocs(1) = roiLocs(1) + 1;
             [~, uData2]  = sensorPlotLine(sensor, 'v', 'electrons', 'space', roiLocs);
             [g, uData] = sensorPlotTwoLines(sensor,uData,uData2);
+            title(sprintf('Vertical line %d',roiLocs(1)-1));
         end
     case {'voltshline'}
         [g, uData]  = sensorPlotLine(sensor, 'h', 'volts', 'space', roiLocs);
@@ -204,6 +206,7 @@ switch pType
             delete(g); roiLocs(2) = roiLocs(2) + 1;
             [~,uData2]  = sensorPlotLine(sensor, 'h', 'volts', 'space', roiLocs);
             [g, uData] = sensorPlotTwoLines(sensor,uData,uData2);
+            title(sprintf('Horizontal line %d',roiLocs(2)-1));
         end        
     case {'voltsvline'}
         [g, uData]  = sensorPlotLine(sensor, 'v', 'volts', 'space', roiLocs);
@@ -211,6 +214,7 @@ switch pType
             delete(g); roiLocs(1) = roiLocs(1) + 1;
             [~,uData2]  = sensorPlotLine(sensor, 'v', 'volts', 'space', roiLocs);
             [g, uData]= sensorPlotTwoLines(sensor,uData,uData2);
+            title(sprintf('Vertical line %d',roiLocs(1)-1));
         end  
     case {'dvvline'}
         [g, uData]  = sensorPlotLine(sensor, 'v', 'dv', 'space', roiLocs);
@@ -218,6 +222,7 @@ switch pType
             delete(g); roiLocs(1) = roiLocs(1) + 1;
             [~,uData2]  = sensorPlotLine(sensor, 'v', 'dv', 'space', roiLocs);
             [g, uData] = sensorPlotTwoLines(sensor,uData,uData2);
+            title(sprintf('Vertical line %d',roiLocs(1)-1));
         end
     case {'dvhline'}
         [g, uData]  = sensorPlotLine(sensor, 'h', 'dv', 'space', roiLocs);
@@ -225,6 +230,7 @@ switch pType
             delete(g); roiLocs(2) = roiLocs(2) + 1;
             [~,uData2]  = sensorPlotLine(sensor, 'h', 'dv', 'space', roiLocs);
             [g, uData] = sensorPlotTwoLines(sensor,uData,uData2);
+            title(sprintf('Horizontal line %d',roiLocs(2)-1));
         end
     case {'voltshistogram','voltshist'}
         [uData,g] = plotSensorHist(sensor,'v',roiLocs);
