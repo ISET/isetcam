@@ -128,6 +128,7 @@ classdef ciScene < handle
                         obj.thisR = options.recipe;
                         if ~isempty(obj.lensFile)
                             obj.thisR.camera = piCameraCreate('omni','lensFile',obj.lensFile);
+                            obj.thisR.set('film diagonal',66); % random from the tutorial
                         end
                         obj.allowsObjectMotion = true;
                     else
@@ -313,6 +314,7 @@ classdef ciScene < handle
                         elseif isequal(sceneObject.type, 'opticalimage') % we have an optical image
                             oiSaveImage(sceneObject, append(imageFilePrefixName,'.png'));
                             save(imageFileName,'sceneObject');
+                            oiWindow(sceneObject);
                         else
                             error("Render seems to have failed.");
                         end

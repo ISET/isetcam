@@ -68,6 +68,13 @@ classdef ciCModule
                     error("Unknown scene render");
                 end
                 obj.sensor = sensorSet(obj.sensor, 'exposure time', exposureTimes(ii));
+                % The OI returned from pbrt doesn't currently give us a
+                % width or height, so we need to make something up:
+                %% Hack -- DJC
+                oiAngularWidth = oiGet(opticalImage,'wangular'); 
+                if isempty(oiAngularWidth)
+                    opticalImage = oiSet(opticalImage, 'wangular', .30);
+                end
                 sensorImage = sensorCompute(obj.sensor, opticalImage);
                 cOutput = [cOutput sensorImage]; %#ok<AGROW>
             end
