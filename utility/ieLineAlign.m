@@ -2,26 +2,40 @@ function [estP, estY] = ieLineAlign(D1,D2)
 % Aligns the data in D1 and D2 by a shift and scale
 %
 % Synopsis
-%  estP = ieLineAlign(D1,D2);
+%  [p, estY] = ieLineAlign(D1,D2);
 %
 % Inputs
-%   D1 - D1.x, D1.y  (y = f(x))
-%   D1 - D1.x, D2.y
+%   D1 - a struct with x,y such that D1.x, D1.y = func(D1.x))
+%   D2 - a struct with x,y such that D2.x, D2.y = func(p(1)*(D2.x - p(2)))
 %
 % Output
-%  estP - Estimated parameters so that
+%   p    - Estimated scale (p(1)) and shift (p(2)) parameters. (The
+%          infrastructure for scaling) the y-value is also in place.
+%   estY - The D2.y value we would have observed after accounting for the
+%          scale and shift on the x-axis
 %
 % Description
-%  The two sets of data are presumed to be related by a shift and scale of
-%  the x-axis such that:
+%  The two data sets are related by a shift and scale of the x-axis such
+%  that: 
 %
-%     D2.x = estP(1)*(D1.x - estP(2))
+%     D2.x = p(1)*(D1.x - p(2))
 %
-%  We estimate the two parameters (estP). These are selected to convert the
-%  D2 data into the D1 data by rescaling the x-axis as in
+%  The y-values are built on the same function, 
 %
-%     xScaledEst =  interp1(D2.x, D2.y, D2.x/p(1) + p(2));
-%     D1.y ~ xScaledEst
+%     D1.y = func(D1.x) 
+%     D2.y = func(D2.x) = func(p(1)*(D1.x - p(2)));
+%
+%  *ieLineAlign* estimates the scale and shift parameters (p). If they are
+%  correctly estimated, then the D1 plot should align with the D2 plot
+%  after we scale and shift the D2.x values
+%
+%     plot(D1.x, D1.y, 'k--', p(1)*(D2.x - p(2)), D2.y,'r-');
+%
+%  Also, the estY returned variable is D2.y after correcting for the  scale
+%  and shift, in the sense that D1.y and estY are the same when plotted
+%  against D1.x
+%
+%      plot(D1.x,D1.y,'k--', D1.x, estY,'r-');
 %
 % See also
 %  s_figuresEI2021.mlx (isetcornellbox)
@@ -41,7 +55,7 @@ s1 = 1.2; s2 = 3;
 ssX = s1*(D1.x - s2);
 
 % The function with some noise.
-D2.y = func(ssX) + randn(size(ssX))*5; 
+D2.y = (func(ssX) + randn(size(ssX))*5); 
 
 plot(D1.x,D1.y,'k--',D2.x,D2.y,'r-');
 
@@ -60,13 +74,17 @@ set(gca,'xlim',[-40 40]);
 
 %}
 
+% This also can work with a third term to scale the y output.
+% Maybe I should work harder at it. (BW).
 p = [1,0];
 
 options = optimset(@fminsearch);
 
 estP = fminsearch(@sseval,p,options,D1,D2);
 
-[~,estY] = sseval(estP,D1,D2);
+if nargout == 2
+    [~,estY] = sseval(estP,D1,D2);
+end
 
 end
 
@@ -105,7 +123,7 @@ est = interp1(p(1)*(D2.x - p(2)), D2.y, D1.x);
 %{
 % If there is a 3rd parameter we scale the result.
 if numel(p) == 3
-    est = est*p(3);
+    est = est/p(3);
 end
 %}
 
