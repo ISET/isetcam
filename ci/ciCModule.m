@@ -25,7 +25,7 @@ classdef ciCModule
             %CICMODULE Construct an instance of this class
             arguments
                 % if we don't get sensor or oi passed in, use default
-                options.sensor = sensorCreate(); 
+                options.sensor = sensorCreate();
                 options.oi = oiCreate();
             end
             obj.sensor = options.sensor;
@@ -54,17 +54,18 @@ classdef ciCModule
                 
                 ourScene = sceneArray{ii};
                 if strcmp(ourScene.type, 'scene')
-                    opticalImage = oiCompute(obj.oi, ourScene); 
+                    opticalImage = oiCompute(obj.oi, ourScene);
+                    % set sensor FOV to match scene.
+                    if ii == 1 % just need to do this once, I think
+                        sceneFOV = [sceneGet(ourScene,'fovhorizontal') sceneGet(ourScene,'fovvertical')];
+                        obj.sensor = sensorSetSizeToFOV(obj.sensor,sceneFOV,opticalImage);
+                    end
+                    
                 elseif strcmp(ourScene.type, 'oi') || strcmp(ourScene.type, 'opticalimage')
                     % we already used a lens, so we got back an OI
                     opticalImage = ourScene;
                 else
                     error("Unknown scene render");
-                end
-                % set sensor FOV to match scene.
-                if ii == 1 % just need to do this once, I think
-                    sceneFOV = [sceneGet(ourScene,'fovhorizontal') sceneGet(ourScene,'fovvertical')];
-                    obj.sensor = sensorSetSizeToFOV(obj.sensor,sceneFOV,opticalImage);
                 end
                 obj.sensor = sensorSet(obj.sensor, 'exposure time', exposureTimes(ii));
                 sensorImage = sensorCompute(obj.sensor, opticalImage);
