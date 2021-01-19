@@ -64,6 +64,8 @@ classdef ciCModule
                 elseif strcmp(ourScene.type, 'oi') || strcmp(ourScene.type, 'opticalimage')
                     % we already used a lens, so we got back an OI
                     opticalImage = ourScene;
+                    oiFOV = [oiGet(ourScene,'hfov'), oiGet(ourScene,'vfov')];
+                    obj.sensor = sensorSetSizeToFOV(obj.sensor,oiFOV,ourScene);
                 else
                     error("Unknown scene render");
                 end
