@@ -128,7 +128,7 @@ classdef ciScene < handle
                         obj.thisR = options.recipe;
                         if ~isempty(obj.lensFile)
                             obj.thisR.camera = piCameraCreate('omni','lensFile',obj.lensFile);
-                            obj.thisR.set('film diagonal',66); % random from the tutorial
+                            obj.thisR.set('film diagonal',66); % sensor mm
                         end
                         obj.allowsObjectMotion = true;
                     else
@@ -142,6 +142,7 @@ classdef ciScene < handle
                     obj.thisR = piRecipeDefault('scene name', obj.sceneName);
                     if ~isempty(options.lensFile)
                         obj.thisR.camera = piCameraCreate('omni','lensFile',obj.lensFile);
+                        obj.thisR.set('film diagonal',66); % sensor mm
                     end
                     obj.allowsObjectMotion = true;
                     
