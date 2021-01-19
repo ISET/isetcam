@@ -80,6 +80,7 @@ classdef ciScene < handle
         objectMotion = []; % none until the user adds some
                 
         lensFile = '';   % Since PBRT can accept lens models and return an OI
+        apertureDiameter = 5; % passed when using a lens file. in mm.
         % provide the option to specify one here. In this
         % case, instead of returning an array of scenes, we
         % return an array of oi's, that can be fed directly
@@ -112,12 +113,15 @@ classdef ciScene < handle
                 options.sceneLuminance (1,1) {mustBeNumeric} = 100;
                 options.waveLengths {mustBeNumeric} = [400:10:700];
                 options.dispCal char = 'OLED-Sony.mat';
+                options.apertureDiameter {mustBeNumeric} = 5;
             end
             obj.resolution = options.resolution;
             obj.numRays = options.numRays;
             obj.numFrames = options.numFrames;
             obj.lensFile = options.lensFile;
             obj.sceneLuminance = options.sceneLuminance;
+            obj.apertureDiameter = options.apertureDiameter;
+            
             
             %CISCENE Construct an instance of this class
             %   allow whatever init we want to accept in the creation call
