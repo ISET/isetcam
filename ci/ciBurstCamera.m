@@ -7,6 +7,9 @@ classdef ciBurstCamera < ciCamera
     %   Initial Version: D.Cardinal 12/2020
 
     properties
+        numHDRFrames;
+        numBurstFrames;
+        numFocusFrames; 
     end
     
     methods
@@ -17,24 +20,27 @@ classdef ciBurstCamera < ciCamera
 
         end
         
-       function ourPicture = TakePicture(obj, aCIScene, intent, camProps)
+       function ourPicture = TakePicture(obj, aCIScene, intent, options, camProps)
            
            arguments
                obj;
                aCIScene;
                intent;
+               options.numHDRFrames = 3;
+               options.numBurstFrames = 3;
+               options.numFocusFrames = 5;
                camProps.?ciCamera;
-               camProps.numHDRFrames = 3;
-               camProps.numBurstFrames = 3;
                camProps.imageName char = '';
                camProps.reRender (1,1) {islogical} = true;
            end
            if ~isempty(camProps.imageName)
                obj.isp.ip = ipSet(obj.isp.ip, 'name', camProps.imageName);
            end
-           obj.numHDRFrames = camProps.numHDRFrames;
-           obj.numBurstFrames = camProps.numBurstFrames;
+           obj.numHDRFrames = options.numHDRFrames;
+           obj.numBurstFrames = options.numBurstFrames;
+           obj.numFocusFrames = options.numFocusFrames;
 
+           
            varargin=namedargs2cell(camProps); 
            ourPicture = TakePicture@ciCamera(obj, aCIScene, intent, varargin{:});
            
@@ -86,6 +92,12 @@ classdef ciBurstCamera < ciCamera
                    % to figure them out? For a 3D scene we could
                    % automatically figure out the scene depth and iterate
                    % through it.
+                   
+                   % In the case of pbrt+lens file, we render a series of
+                   % OIs in pbrt (NOT IMPLEMENTED). For now, we're working
+                   % on the case where we get a 3D scene from pbrt or ISET
+                   % and using a synthetic defocus. This is NOT as
+                   % accurate, but a starting point.:)
                    error("Focus Stacking not supported yet.");
                   
                otherwise

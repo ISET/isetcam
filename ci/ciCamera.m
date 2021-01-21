@@ -18,8 +18,6 @@ classdef ciCamera
     properties
         cmodules = ciCModule.empty; % 1 (or more) CModules
         isp = [];     % an extended ip
-        numHDRFrames = 3;
-        numBurstFrames = 3;
         expTimes = [];
     end
     
@@ -42,13 +40,10 @@ classdef ciCamera
                 obj;
                 aCIScene;
                 intent;
-                options.numHDRFrames = 3;
-                options.numBurstFrames = 3;
                 options.imageName char = '';
                 options.reRender (1,1) {islogical} = true;
                 options.expTimes = [];
             end
-            obj.numHDRFrames = options.numHDRFrames;
             obj.expTimes = options.expTimes;
             if ~isempty(options.imageName) 
                 obj.isp.ip = ipSet(obj.isp.ip, 'name', options.imageName);

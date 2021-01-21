@@ -69,15 +69,13 @@ classdef ciCModule
                     opticalImage = ourScene;
                     % this gets really broken, as our sensor shows a tiny
                     % FOV, so set size makes it massive resolution???'
-                    % Problem may be in AE, so disable that for returned
-                    % OI
                     oiFOV = [oiGet(opticalImage,'hfov'), oiGet(opticalImage,'vfov')];
                     obj.sensor = sensorSetSizeToFOV(obj.sensor,oiFOV,opticalImage);
                 else
                     error("Unknown scene render");
                 end
                 obj.sensor = sensorSet(obj.sensor, 'exposure time', exposureTimes(ii));
-                % The OI returned from pbrt doesn't currently give us a
+                % The OI returned from pbrt sometimes doesn't currently give us a
                 % width or height, so we need to make something up:
                 %% Hack -- DJC
                 oiAngularWidth = oiGet(opticalImage,'wangular'); 
