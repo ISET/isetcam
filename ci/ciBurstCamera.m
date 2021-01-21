@@ -83,7 +83,9 @@ classdef ciBurstCamera < ciCamera
                case 'FocusStack'
                    % we know the photographer wants to focus stack. Do we
                    % want them to specify the parameters, or should we try
-                   % to figure them out?
+                   % to figure them out? For a 3D scene we could
+                   % automatically figure out the scene depth and iterate
+                   % through it.
                    error("Focus Stacking not supported yet.");
                   
                otherwise
