@@ -1,4 +1,4 @@
-classdef ciCamera
+classdef ciCamera < handle
     %CICAMERA Computational Camera
     %   Base class, allows extension for CI features, including:
     %   In ciBurstCamera:
@@ -43,6 +43,7 @@ classdef ciCamera
                 options.imageName char = '';
                 options.reRender (1,1) {islogical} = true;
                 options.expTimes = [];
+                options.stackFrames = 0;
             end
             obj.expTimes = options.expTimes;
             if ~isempty(options.imageName) 
@@ -97,7 +98,7 @@ classdef ciCamera
             % We want to call our camera module(s).
             % Each returns an array of sensor objects with the images
             % pre-computed
-            sensorImages = obj.cmodules(1).compute(sceneObjects, expTimes);
+            sensorImages = obj.cmodules(1).compute(sceneObjects, expTimes, 'stackFrames', options.stackFrames);
             
             % generic version, currently just prints out each processed
             % image from the sensor
@@ -154,13 +155,6 @@ classdef ciCamera
                         expTimes = obj.expTimes;
                     end
                     
-                    
-                case 'HDR'
-                    % base, simplest, hard-wired
-                    expTimes = [.05 .01 .20];
-                case 'Burst'
-                    % base, simplest, hard-wired
-                    expTimes = [.05 .05 .05];
                 case 'Pro'
                     % TODO: here we allow the user to set exposure time,
                     % focus, exposure comp if AutoExpose, WB, etc.
@@ -169,7 +163,7 @@ classdef ciCamera
                     % Aperture also, maybe some shutter modes at some point
                     expTimes = [.1];
                 case 'otherwise'
-                    error("Unknown photo intent");
+                    error("Unknown photo intent. You may need a specialized sub-class implementation.");
             end
         end
         

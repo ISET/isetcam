@@ -36,7 +36,7 @@ classdef ciCModule
             
         end
         
-        function cOutput = compute(obj, sceneArray, exposureTimes) % will support more args
+        function cOutput = compute(obj, sceneArray, exposureTimes, options) % will support more args
             %COMPUTE Calculate what we capture
             %   Simplest case this is sensorCompute + oiCompute
             %   however, we also integrate multi-capture
@@ -52,6 +52,13 @@ classdef ciCModule
             %   TODO: If we load our lens model into PBRT, then it gives us
             %   an array of oi's, not scenes
             
+            arguments
+                obj ciCModule;
+                sceneArray;
+                exposureTimes;
+                options.stackFrames {mustBeNumeric} = 0;
+            end
+            
             cOutput = [];
             for ii = 1:numel(sceneArray)
                 
@@ -62,6 +69,19 @@ classdef ciCModule
                     if ii == 1 % just need to do this once, I think
                         sceneFOV = [sceneGet(ourScene,'fovhorizontal') sceneGet(ourScene,'fovvertical')];
                         obj.sensor = sensorSetSizeToFOV(obj.sensor,sceneFOV,opticalImage);
+                    end
+                    if options.stackFrames > 0
+                        % we use defocus from depth here, especially needed
+                        % for focus stacking if not done in pbrt. Need to
+                        % add a way to pass focal distances.
+                        % [oi, oiD, D] = s3dRenderDepthDefocus(scene, oi, imgPlaneDist, depthEdges, cAberration)
+                        imgPlaneDist = opticsGet(obj.oi.optics,'focal length');
+                        mults = 1:(1/options.stackFrames):2; % go extreme to see effect
+                        for ii = 1:options.stackFrames
+                            imgPlaneDist = imgPlaneDist*mults(ii);
+                            [opticalImage, ~, ~] = s3dRenderDepthDefocus(ourScene, opticalImage, imgPlaneDist);
+                            oiWindow(opticalImage); % Check to see what they look like!
+                        end
                     end
                     
                 elseif strcmp(ourScene.type, 'oi') || strcmp(ourScene.type, 'opticalimage')
@@ -78,7 +98,7 @@ classdef ciCModule
                 % The OI returned from pbrt sometimes doesn't currently give us a
                 % width or height, so we need to make something up:
                 %% Hack -- DJC
-                oiAngularWidth = oiGet(opticalImage,'wangular'); 
+                oiAngularWidth = oiGet(opticalImage,'wangular');
                 if isempty(oiAngularWidth)
                     warning("No idea why we need to set wangular here!");
                     opticalImage = oiSet(opticalImage, 'wangular', .30);

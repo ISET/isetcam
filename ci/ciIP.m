@@ -1,4 +1,4 @@
-classdef ciIP
+classdef ciIP < handle
     %CIIP Wrapper for ip to support computational cameras
     %   TBD how much we need to extend the current ip
     %   versus adding functionality to it, but

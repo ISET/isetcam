@@ -181,6 +181,9 @@ classdef ciScene < handle
         %% Main rendering function
         % We know the scene, but need to pass Exposure Time(s),
         % which also gives us numFrames
+        % TODO: If there is no camera or object motion, then for burst &
+        % stack operations, maybe we should just render once in pbrt to
+        % save time?
         function [sceneObjects, sceneFiles] = render(obj,expTimes, options)
             arguments
                 obj ciScene;

@@ -42,7 +42,13 @@ classdef ciBurstCamera < ciCamera
 
            
            varargin=namedargs2cell(camProps); 
-           ourPicture = TakePicture@ciCamera(obj, aCIScene, intent, varargin{:});
+           switch intent
+               case 'FocusStack'
+                   stackFrames = obj.numFocusFrames;
+               otherwise
+                   stackFrames = 0;
+           end
+           ourPicture = TakePicture@ciCamera(obj, aCIScene, intent, 'stackFrames', stackFrames, varargin{:});
            
        end
        
@@ -72,34 +78,21 @@ classdef ciBurstCamera < ciCamera
                    end
                    expTimes = repmat(baseExposure, 1, numFrames);
                    expTimes = expTimes.*(2.^[-1*frameOffset:1:frameOffset]);
-               case 'Burst'
+               case {'Burst', 'FocusStack'}
                    % For now this is a very simple algorithm that just
                    % takes the base exposure and divides it into the number
                    % of frames.
-                   numFrames = obj.numBurstFrames;
-                   frameOffset = (numFrames -1) / 2;
-                   if numFrames > 1 && ~isodd(numFrames)
-                       numFrames = numFrames + 1;
+                   switch intent
+                       case 'Burst'
+                           numFrames = obj.numBurstFrames;
+                       case 'FocusStack'
+                           numFrames = obj.numFocusFrames;
                    end
                    % Future: Algorithm here to calculate number of images and
                    % exposure time based on estimated processing power,
                    % lighting, and possibly motion/intent
                    expTimes = repmat(baseExposure/numFrames, 1, numFrames);
-                   
-               case 'FocusStack'
-                   % we know the photographer wants to focus stack. Do we
-                   % want them to specify the parameters, or should we try
-                   % to figure them out? For a 3D scene we could
-                   % automatically figure out the scene depth and iterate
-                   % through it.
-                   
-                   % In the case of pbrt+lens file, we render a series of
-                   % OIs in pbrt (NOT IMPLEMENTED). For now, we're working
-                   % on the case where we get a 3D scene from pbrt or ISET
-                   % and using a synthetic defocus. This is NOT as
-                   % accurate, but a starting point.:)
-                   error("Focus Stacking not supported yet.");
-                  
+                                                        
                otherwise
                    % just do what the base camera class would do
                    [expTimes] = planCaptures@ciCamera(obj, previewImages, intent);
@@ -137,6 +130,18 @@ classdef ciBurstCamera < ciCamera
                    % old ipBurstMotion  = ipCompute(ipBurstMotion,sensorBurstMotion);
                    ipBurst = ipCompute(ipBurst, sensorImage);
                    ourPhoto = ipBurst;
+               case 'FocusStack'
+                   % Doesn't stack yet. Needs to do that during merge!
+                   sensorImage = obj.isp.mergeSensors(sensorImages);
+                   sensorImage = sensorSet(sensorImage,'exposure method', 'burst');
+
+                   ipStack = ipSet(obj.isp.ip, 'render demosaic only', 'true');
+                   ipStack = ipSet(ipStack, 'combination method', 'sum');
+                   
+                   % old ipBurstMotion  = ipCompute(ipBurstMotion,sensorBurstMotion);
+                   ipStack = ipCompute(ipStack, sensorImage);
+                   ourPhoto = ipStack;
+
                otherwise
                    ourPhoto = computePhoto@ciCamera(obj, sensorImages, intent);
            end
