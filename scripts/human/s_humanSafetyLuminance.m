@@ -12,8 +12,8 @@
 %% Start with a monochromatic light luminance
 
 % Suppose we measure a monochromatic source and it has these parameters
-lum     = 100;     % Luminance of the monochromatic source
-thisWave    = 390;    % Mean wavelength of the monochromatic source
+lum     = 200;     % Luminance of the monochromatic source
+thisWave    = 405;    % Mean wavelength of the monochromatic source
 dLambda = 10;     % Spectral band width
 
 % We convert the luminance to energy
