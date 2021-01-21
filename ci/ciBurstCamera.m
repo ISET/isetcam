@@ -44,12 +44,12 @@ classdef ciBurstCamera < ciCamera
        % based on the preview image passed in from the camera module
        function [expTimes] = planCaptures(obj, previewImages, intent)
 
-           % by default set our base exposure to simple auto-exposure
            if isequal(previewImages{1}.type, 'opticalimage')
                oi = previewImages{1};
            else
                oi = oiCompute(previewImages{1},obj.cmodules(1).oi);
            end
+           % by default set our base exposure to simple auto-exposure
            baseExposure = [autoExposure(oi, obj.cmodules(1).sensor)];
 
           
@@ -80,6 +80,12 @@ classdef ciBurstCamera < ciCamera
                    % lighting, and possibly motion/intent
                    expTimes = repmat(baseExposure/numFrames, 1, numFrames);
                    
+               case 'FocusStack'
+                   % we know the photographer wants to focus stack. Do we
+                   % want them to specify the parameters, or should we try
+                   % to figure them out?
+                   error("Focus Stacking not supported yet.");
+                  
                otherwise
                    % just do what the base camera class would do
                    [expTimes] = planCaptures@ciCamera(obj, previewImages, intent);

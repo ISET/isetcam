@@ -308,10 +308,10 @@ classdef ciScene < handle
                         else
                             sceneObject = sceneFromFile(imageFileName, 'multispectral');
                         end
-                        % for debugging
-                        sceneWindow(sceneObject);
                         
                         if isequal(sceneObject.type, 'scene') && haveCache == false
+                            % for debugging
+                            sceneWindow(sceneObject);
                             sceneToFile(imageFileName,sceneObject);
                             % this is mostly just for debugging & human inspection
                             sceneSaveImage(sceneObject,imageFilePrefixName);

@@ -152,13 +152,13 @@ classdef ciCamera
                     else
                         oi = oiCompute(previewImages{1}, obj.cmodules(1).oi);
                     end
-
                     % Compute exposure times if they weren't passed to us
                     if isequal(obj.expTimes, [])
                         expTimes = [autoExposure(oi, obj.cmodules(1).sensor)];
                     else
                         expTimes = obj.expTimes;
                     end
+                    
                     
                 case 'HDR'
                     % base, simplest, hard-wired

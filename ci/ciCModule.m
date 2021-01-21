@@ -5,6 +5,9 @@ classdef ciCModule
     %   initially we're supporting 1 ciCModule per ciCamera,
     %   but as many camera systems now use several, we expect
     %   to support that in future.
+    %
+    %   Note that if we are working with pbrt & a lens file
+    %   then the CModule gets back an oi and ignores its own optics.
     
     % History:
     %   Initial Version: D.Cardinal 12/2020
@@ -64,8 +67,12 @@ classdef ciCModule
                 elseif strcmp(ourScene.type, 'oi') || strcmp(ourScene.type, 'opticalimage')
                     % we already used a lens, so we got back an OI
                     opticalImage = ourScene;
-                    oiFOV = [oiGet(ourScene,'hfov'), oiGet(ourScene,'vfov')];
-                    obj.sensor = sensorSetSizeToFOV(obj.sensor,oiFOV,ourScene);
+                    % this gets really broken, as our sensor shows a tiny
+                    % FOV, so set size makes it massive resolution???'
+                    % Problem may be in AE, so disable that for returned
+                    % OI
+                    oiFOV = [oiGet(opticalImage,'hfov'), oiGet(opticalImage,'vfov')];
+                    obj.sensor = sensorSetSizeToFOV(obj.sensor,oiFOV,opticalImage);
                 else
                     error("Unknown scene render");
                 end
@@ -75,6 +82,7 @@ classdef ciCModule
                 %% Hack -- DJC
                 oiAngularWidth = oiGet(opticalImage,'wangular'); 
                 if isempty(oiAngularWidth)
+                    warning("No idea why we need to set wangular here!");
                     opticalImage = oiSet(opticalImage, 'wangular', .30);
                 end
                 sensorImage = sensorCompute(obj.sensor, opticalImage);
