@@ -64,6 +64,7 @@ classdef ciCModule
                 
                 ourScene = sceneArray{ii};
                 if strcmp(ourScene.type, 'scene')
+                    % DOESN'T WORK. Clearly doing something wrong:( DJC
                     if options.stackFrames > 0
                         % we use defocus from depth here, especially needed
                         % for focus stacking if not done in pbrt. Need to
