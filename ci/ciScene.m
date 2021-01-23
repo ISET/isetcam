@@ -226,6 +226,13 @@ classdef ciScene < handle
                     val = recipeSet(obj.thisR,'filmresolution', obj.resolution);
                     val = recipeSet(obj.thisR,'rays per pixel',obj.numRays);
                     
+                    % Hack to see if reducing the from/to lookAt numbers
+                    % will help us not show everything in the scene as 60
+                    % meters away!
+                    laFrom = obj.thisR.lookAt.from;
+                    laTo = obj.thisR.lookAt.to;
+                    if abs(laFrom(1)) > 10; obj.thisR.lookAt.from = [laFrom(1) / 20, laFrom(2) / 20, laFrom(3) / 20]; end
+                    if abs(laTo(1)) > 10; obj.thisR.lookAt.to = [laTo(1) / 20, laTo(2) / 20, laTo(3) / 20]; end
                     %% Looks like we still need to add our own light
                     
                     % Add an equal energy distant light for uniform lighting

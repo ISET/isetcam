@@ -64,23 +64,28 @@ classdef ciCModule
                 
                 ourScene = sceneArray{ii};
                 if strcmp(ourScene.type, 'scene')
-                    opticalImage = oiCompute(obj.oi, ourScene);
-                    % set sensor FOV to match scene.
-                    if ii == 1 % just need to do this once, I think
-                        sceneFOV = [sceneGet(ourScene,'fovhorizontal') sceneGet(ourScene,'fovvertical')];
-                        obj.sensor = sensorSetSizeToFOV(obj.sensor,sceneFOV,opticalImage);
-                    end
                     if options.stackFrames > 0
                         % we use defocus from depth here, especially needed
                         % for focus stacking if not done in pbrt. Need to
                         % add a way to pass focal distances.
                         % [oi, oiD, D] = s3dRenderDepthDefocus(scene, oi, imgPlaneDist, depthEdges, cAberration)
                         imgPlaneDist = opticsGet(obj.oi.optics,'focal length');
-                        mults = 1:(1/options.stackFrames):2; % go extreme to see effect
-                        for ii = 1:options.stackFrames
-                            imgPlaneDist = imgPlaneDist*mults(ii);
-                            [opticalImage, ~, ~] = s3dRenderDepthDefocus(ourScene, opticalImage, imgPlaneDist);
+                        multiplier = 1.2; % go extreme to see effect
+                        for iii = 1:options.stackFrames
+                            [opticalImage, ~, ~] = s3dRenderDepthDefocus(ourScene, obj.oi, imgPlaneDist);
+                            imgPlaneDist = imgPlaneDist*multiplier;
+                            % set sensor FOV to match scene.
+                            sceneFOV = [sceneGet(ourScene,'fovhorizontal') sceneGet(ourScene,'fovvertical')];
+                            obj.sensor = sensorSetSizeToFOV(obj.sensor,sceneFOV,opticalImage);
                             oiWindow(opticalImage); % Check to see what they look like!
+                        end
+                    else
+                        opticalImage = oiCompute(obj.oi, ourScene);
+                        % set sensor FOV to match scene, but only once or
+                        % we get multiple sizes, which don't merge
+                        if ii == 1
+                            sceneFOV = [sceneGet(ourScene,'fovhorizontal') sceneGet(ourScene,'fovvertical')];
+                            obj.sensor = sensorSetSizeToFOV(obj.sensor,sceneFOV,opticalImage);
                         end
                     end
                     
