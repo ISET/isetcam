@@ -282,10 +282,6 @@ classdef ciScene < handle
                         sTime = sTime + obj.expTimes(ii);
                         obj.thisR.set('shutterclose', sTime);
                         
-                        
-                        %% Write recipe
-                        piWrite(obj.thisR);
-                        
                         % process camera motion if allowed
                         % We do this per frame because we want to
                         % allow for some perturbance/shake/etc.
@@ -297,7 +293,7 @@ classdef ciScene < handle
                         end
                         %
                         %% Render and visualize
-                        piWrite(obj.thisR); % Not sure if we have to?
+                        piWrite(obj.thisR); % pbrt reads from disk files so we need to write out
                         haveCache = false;
                         if isfile(cachedRecipeFileName)
                             cachedRecipe = load(cachedRecipeFileName,'rName');
