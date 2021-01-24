@@ -105,6 +105,11 @@ for ii = selectedObjs
             oiShowImage(objList{ii}, true, gam);
             t =sprintf('OI %d - %s', ii, oiGet(objList{ii}, 'name'));
 
+        case 'VCIMAGE'
+            img = imageShowImage(objList{ii},gam,true,0);
+            t =sprintf('IP %d - %s', ii, ipGet(objList{ii}, 'name'));
+            image(img); axis image; axis off;
+            
         otherwise
             error('Unsupported object type %s\n', objType);
     end
