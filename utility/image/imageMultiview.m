@@ -1,4 +1,4 @@
-function selectedObjs = imageMultiview(objType, selectedObjs, singlewindow)
+tfunction selectedObjs = imageMultiview(objType, selectedObjs, singlewindow)
 % Display multiple images of selected GUI objects
 %
 % Syntax:
