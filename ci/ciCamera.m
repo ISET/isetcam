@@ -119,17 +119,7 @@ classdef ciCamera < handle
             
             
         end
-        
-        % This lower-leval routine is called once we have our sensor
-        % image(s), and generates a final image based on the intent
-        function ourPhoto = computePhoto(obj, sensorImages, intent)
-            for ii=1:numel(sensorImages)
-                sensorWindow(sensorImages(ii));
-                ourPhoto = obj.isp.compute(sensorImages(ii));
-                ipWindow(ourPhoto);
-            end
-        end
-        
+                
         % A key element of modern computational cameras is their ability
         % to use statistics from the scene (in this case via preview 
         % image(s) to plan how many frames to capture and with what settings. 

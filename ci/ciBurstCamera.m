@@ -100,51 +100,11 @@ classdef ciBurstCamera < ciCamera
        end
        
        % Here we over-ride default processing to compute a photo after we've
-       % captured one or more frames. This allows burst & hdr, for example:
+       % captured one or more frames. This allows burst & hdr, for example.
+       % More should probably be in the IP class?
        function ourPhoto = computePhoto(obj, sensorImages, intent)
 
-           switch intent
-               case 'HDR'
-                   % ipCompute for HDR assumes we have an array of voltages
-                   % in a single sensor, NOT an array of sensors
-                   % so first we merge our sensor array into one sensor
-                   % For now this is simply concatenating, but could be
-                   % more complex in a sub-class that wanted to be more
-                   % clever
-                   sensorImage = obj.isp.mergeSensors(sensorImages);
-                   sensorImage = sensorSet(sensorImage,'exposure method', 'bracketing');
- 
-                   ipHDR = ipSet(obj.isp.ip, 'render demosaic only', 'true');
-                   ipHDR = ipSet(ipHDR, 'combination method', 'longest');
-                   
-                   ipHDR = ipCompute(ipHDR, sensorImage);
-                   ourPhoto = ipHDR;
-               case 'Burst'
-                   % baseline is just sum the voltages, without alignment
-                   sensorImage = obj.isp.mergeSensors(sensorImages);
-                   sensorImage = sensorSet(sensorImage,'exposure method', 'burst');
-
-                   ipBurst = ipSet(obj.isp.ip, 'render demosaic only', 'true');
-                   ipBurst = ipSet(ipBurst, 'combination method', 'sum');
-                   
-                   % old ipBurstMotion  = ipCompute(ipBurstMotion,sensorBurstMotion);
-                   ipBurst = ipCompute(ipBurst, sensorImage);
-                   ourPhoto = ipBurst;
-               case 'FocusStack'
-                   % Doesn't stack yet. Needs to do that during merge!
-                   sensorImage = obj.isp.mergeSensors(sensorImages);
-                   sensorImage = sensorSet(sensorImage,'exposure method', 'burst');
-
-                   ipStack = ipSet(obj.isp.ip, 'render demosaic only', 'true');
-                   ipStack = ipSet(ipStack, 'combination method', 'sum');
-                   
-                   % old ipBurstMotion  = ipCompute(ipBurstMotion,sensorBurstMotion);
-                   ipStack = ipCompute(ipStack, sensorImage);
-                   ourPhoto = ipStack;
-
-               otherwise
-                   ourPhoto = computePhoto@ciCamera(obj, sensorImages, intent);
-           end
+           ourPhoto = obj.isp.ispCompute(sensorImages, intent);
            
        end
     end
