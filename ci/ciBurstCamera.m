@@ -15,9 +15,9 @@ classdef ciBurstCamera < ciCamera
     methods
         function obj = ciBurstCamera()
             %CIBURSTCAMERA Construct an instance of this class
-            %   First invoke our parent ciCamera class
-            obj = obj@ciCamera();
-
+            obj.cmodules(1) = ciCModule(); % 1 (or more) CModules
+            obj.isp = ciBurstIP();     % extended ip
+            
         end
         
        function ourPicture = TakePicture(obj, aCIScene, intent, options, camProps)

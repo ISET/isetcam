@@ -1,33 +1,24 @@
-classdef ciIP < handle
-    %CIIP Wrapper for ip to support computational cameras
-    %   TBD how much we need to extend the current ip
-    %   versus adding functionality to it or using the ciCamera class, but
-    %   having this class at least gives us options
+classdef ciBurstIP < ciIP
+    %CIBURSTIP Burst-supporting version of ciIP Wrapper for ip to support computational cameras
     %
     % History:
-    %   Initial Version: D. Cardinal, 12/2020
+    %   Initial Version: D. Cardinal, 01/2021
     
     properties
-        defaultDisplay = 'OLED-Sony.mat'; % in case this makes a difference
-        ip = [];
+        % sub-class properties here
     end
     
     methods
-        function obj = ciIP(userIP)
-            %CIIP Construct an instance of this class
+        function obj = ciBurstIP(userIP)
+            %CIBURSTIP Construct an instance of this class
             %   create a programmable ip
-            %   for now, just a straight wrapper on an ip
-            if exist('userIp') && ~isempty(userIP)
-                obj.ip = userIP;
-            else
-                obj.ip = ipCreate('ci IP', [], obj.defaultDisplay); % by default we just wrap an ip
-                
-            end
+            if ~exist('userIP', 'var'); userIP = []; end
+            obj = obj@ciIP(userIP);
         end
         
-        function aPicture = compute(obj, sensorImages)
+        function aPicture = compute(sensorImages)
             %Compute final image from sensor captures
-            aPicture = ipCompute(obj.ip, sensorImages);
+            aPicture = compute@ciIP(sensorImages);
         end
         
         function ourPhoto = ispCompute(obj, sensorImages, intent)
