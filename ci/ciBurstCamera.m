@@ -7,9 +7,9 @@ classdef ciBurstCamera < ciCamera
     %   Initial Version: D.Cardinal 12/2020
 
     properties
-        numHDRFrames;
-        numBurstFrames;
-        numFocusFrames; 
+        numHDRFrames = 3;
+        numBurstFrames = 3;
+        numFocusFrames = 5; 
     end
     
     methods
@@ -28,7 +28,7 @@ classdef ciBurstCamera < ciCamera
                intent;
                options.numHDRFrames = 3;
                options.numBurstFrames = 3;
-               options.numFocusFrames = 5;
+               options.numFocusFrames = 3;
                camProps.?ciCamera;
                camProps.imageName char = '';
                camProps.reRender (1,1) {islogical} = true;
