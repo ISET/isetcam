@@ -463,11 +463,13 @@ classdef ciScene < handle
             % settings
             [previewScenes, previewFiles] = obj.render([.1], 'previewFlag', true); % generic exposure time
         end
-        
-        function load(obj, cSceneFile)
-            % load cScene data back in
-            load(cSceneFile, obj);
-        end
+       
+       function infoArray = showInfo(obj)
+           infoArray = {'Scene Type: ', obj.sceneType};
+           infoArray = [infoArray; {'Scene Name:', obj.sceneName}];
+           infoArray = [infoArray; {'Rays per pixel:', obj.numRays}];
+           infoArray = [infoArray; {'Resolution:', [obj.resolution(1) obj.resolution(2)]}];
+       end
         
     end
 end
