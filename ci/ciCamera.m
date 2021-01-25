@@ -19,6 +19,7 @@ classdef ciCamera < handle
         cmodules = ciCModule.empty; % 1 (or more) CModules
         isp = [];     % an extended ip
         expTimes = [];
+        supportedIntents = {'Auto', 'Pro'};
     end
     
     methods
@@ -157,14 +158,8 @@ classdef ciCamera < handle
             end
         end
         
-        function save(obj, sFileName)
-            save(sFileName, obj);
-        end
-        
-        function load(obj, lFileName)
-            % how do we make sure this gets loaded into us
-            % or should we just have an initializer that uses load?
-            load(lFileName, obj)
+        function infoArray = showInfo(obj)
+            infoArray = {'Intents', strjoin(obj.supportedIntents)};
         end
     end
 end

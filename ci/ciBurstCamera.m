@@ -17,6 +17,7 @@ classdef ciBurstCamera < ciCamera
             %CIBURSTCAMERA Construct an instance of this class
             obj.cmodules(1) = ciCModule(); % 1 (or more) CModules
             obj.isp = ciBurstIP();     % extended ip
+            obj.supportedIntents = {'Auto', 'HDR', 'Burst', 'Focus'};
             
         end
         
@@ -106,6 +107,13 @@ classdef ciBurstCamera < ciCamera
 
            ourPhoto = obj.isp.ispCompute(sensorImages, intent);
            
+       end
+       
+       function infoArray = showInfo(obj)
+           infoArray = showInfo@ciCamera(obj);
+           infoArray = [infoArray; {'HDR Frames', obj.numHDRFrames}];
+           infoArray = [infoArray; {'Burst Frames', obj.numBurstFrames}];
+           infoArray = [infoArray; {'Focust Frames', obj.numFocusFrames}];
        end
     end
 end
