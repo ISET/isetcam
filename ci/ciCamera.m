@@ -159,7 +159,8 @@ classdef ciCamera < handle
         end
         
         function infoArray = showInfo(obj)
-            infoArray = {'Intents', strjoin(obj.supportedIntents)};
+            infoArray = {'Camera Type:', class(obj)};
+            infoArray = [infoArray; {'Intents', strjoin(obj.supportedIntents)}];
         end
     end
 end
