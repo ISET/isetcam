@@ -468,7 +468,8 @@ classdef ciScene < handle
            infoArray = {'Scene Type: ', obj.sceneType};
            infoArray = [infoArray; {'Scene Name:', obj.sceneName}];
            infoArray = [infoArray; {'Rays per pixel:', obj.numRays}];
-           infoArray = [infoArray; {'Resolution:', [obj.resolution(1) obj.resolution(2)]}];
+           rez = sprintf("%d by %d",obj.resolution(1), obj.resolution(2));
+           infoArray = [infoArray; {'Resolution:', rez}];
        end
         
     end
