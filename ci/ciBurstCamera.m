@@ -113,7 +113,7 @@ classdef ciBurstCamera < ciCamera
            infoArray = showInfo@ciCamera(obj);
            infoArray = [infoArray; {'HDR Frames', obj.numHDRFrames}];
            infoArray = [infoArray; {'Burst Frames', obj.numBurstFrames}];
-           infoArray = [infoArray; {'Focust Frames', obj.numFocusFrames}];
+           infoArray = [infoArray; {'Focus Frames', obj.numFocusFrames}];
        end
     end
 end
