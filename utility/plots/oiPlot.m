@@ -558,8 +558,9 @@ switch pType
     case {'psf'}
         % Point spread function at selected wavelength
         % oiPlot(oi,'psf',[],420);
-        if isempty(varargin), udata = plotOTF(oi,'psf');
-        else, w = varargin{1}; udata = plotOTF(oi,'psf',w);
+        if isempty(varargin), udata = plotOTF(oi,'psf', 'airy disk', true);
+        else, w = varargin{1}; udata = plotOTF(oi,'psf', 'this wave', w,...
+                                                         'airy disk', true);
         end
         set(g,'userdata',udata);
         namestr = sprintf('ISET: %s',oiGet(oi,'name'));
@@ -568,7 +569,7 @@ switch pType
         
     case {'psf550'}
         % PSF at 550nm spatial units are microns
-        udata = plotOTF(oi,'psf',550);
+        udata = plotOTF(oi,'psf', 'this wave', 550, 'airy disk', true);
         set(g,'userdata',udata);
         namestr = sprintf('ISET: %s',oiGet(oi,'name'));
         set(g,'Name',namestr);
@@ -710,7 +711,7 @@ end
 function uData = plotOTF(oi,pType,varargin)
 %Plot OTF functions associated with the optics in an optical image
 %
-%   plotOTF(oi,[pType])
+%   plotOTF(oi,[pType], )
 %
 %      {'otf'}          - Optical transfer function, units are lines/mm
 %      {'otf 550'}       - OTF at 550 nm
@@ -726,9 +727,22 @@ function uData = plotOTF(oi,pType,varargin)
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
-if ieNotDefined('oi'),    oi = vcGetObject('oi'); end
-if ieNotDefined('pType'), pType = 'otf550'; end
+%%
+varargin = ieParamFormat(varargin);
+p = inputParser;
+p.addRequired('oi', @isstruct);
+p.addRequired('pType', @ischar);
+p.addParameter('airydisk', false, @islogical);
+p.addParameter('nsamp', 40, @isnumeric);
+p.addParameter('thiswave', 550, @isnumeric);
+p.addParameter('units', 'um', @ischar);
+p.parse(oi, pType, varargin{:});
 
+airyDisk = p.Results.airydisk;
+nSamp    = p.Results.nsamp;
+thisWave = p.Results.thiswave;
+units    = p.Results.units;
+%%
 wavelength = oiGet(oi,'wavelength');
 optics     = oiGet(oi,'optics');
 
@@ -750,13 +764,6 @@ switch lower(pType)
         % plotOTF(oi,'otf',thisWave,nSamp);
         % OTF at a selected wavelength.
         units = 'mm';  % Units are cycles/mm
-        if ieContains(pType,'550'),        thisWave = 550;
-        elseif length(varargin) >=1,    thisWave = varargin{1};
-        else, thisWave = ieReadNumber('Select OTF wavelength (nm)',550,'%.0f');
-        end
-        
-        if length(varargin) >= 2, nSamp = varargin{2};
-        else, nSamp = 40; end
         
         % Retrieve OTF data (which might be complex) from the optics
         opticsModel = opticsGet(optics,'opticsModel');
@@ -817,11 +824,6 @@ switch lower(pType)
         % oiPlot(oi,'psf',[],thisWave,units)  % empty is roiLocs
         % oiPlot(oi,'psf 550',[],thisWave,units)
         % Spatial scale is microns.
-        if ieContains(pType,'550'),     thisWave = 550;
-        elseif length(varargin) >=1,    thisWave = varargin{1};
-        else, thisWave = ieReadNumber('Select PSF wavelength (nm)',550,'%.0f');
-        end
-        if length(varargin) >=2, units = varargin{2}; else, units = 'um'; end
         
         opticsModel = opticsGet(optics,'model');
         switch lower(opticsModel)
@@ -876,6 +878,17 @@ switch lower(pType)
                 psf      = psfData.psf;
                 sSupport = psfData.xy;
                 
+                if airyDisk
+                    % Calculate the Airy disk
+                    fNumber = opticsGet(optics,'fNumber');
+                    
+                    % This is the Airy disk radius, by formula
+                    radius = (2.44*fNumber*thisWave*10^-9)/2 * ieUnitScaleFactor(units);
+                    
+                    % Draw a circle at the first zero crossing (Airy disk)
+                    nCircleSamples = 200;
+                    [adX,adY,adZ] = ieShape('circle',nCircleSamples,radius);
+                end
             case {'raytrace'}
                 % opticsGet(optics,'rtPSFdata') should be
                 % cleaned up for this call.  Spatial support, frequency
@@ -888,7 +901,8 @@ switch lower(pType)
         
         % Plot it and if diffraction limited, then add the Airy disk
         mesh(sSupport(:,:,1),sSupport(:,:,2),abs(psf));
-        if strcmpi(opticsModel,'diffractionlimited')
+        if strcmpi(opticsModel,'diffractionlimited') ||...
+                    strcmpi(opticsModel, 'shiftinvariant')
             ringZ = max(psf(:))*1e-3;
             hold on; p = plot3(adX,adY,adZ + ringZ,'k-'); 
             set(p,'linewidth',3); hold off;
@@ -901,6 +915,7 @@ switch lower(pType)
         uData.x = sSupport(:,:,1); uData.y = sSupport(:,:,2);
         uData.psf = psf;
         
+
     case {'lswavelength'}
         % Line spread function at all wavelengths
         units = 'um';
@@ -910,23 +925,18 @@ switch lower(pType)
         
         % Choose the peak frequency for the OTF.  If none is passed in, we
         % use the incoherent cutoff frequency.
-        if length(varargin) >= 1 && ~isempty(varargin{1})
-            peakF = varargin{1};
-        else
-            switch lower(model)
-                case 'diffractionlimited'
-                    inCutoff = opticsGet(optics,'inCutoff',units);
-                    peakF = 3*max(inCutoff);
-                case 'shiftinvariant'
-                    fx = opticsGet(optics,'otffx','um');
-                    peakF = max(abs(fx(:)));
-                otherwise
-                    error('LS not implemented for %s model',model);
-            end
+        switch lower(model)
+            case 'diffractionlimited'
+                inCutoff = opticsGet(optics,'inCutoff',units);
+                peakF = 3*max(inCutoff);
+            case 'shiftinvariant'
+                fx = opticsGet(optics,'otffx','um');
+                peakF = max(abs(fx(:)));
+            otherwise
+                error('LS not implemented for %s model',model);
         end
-        if length(varargin) >= 2, spaceSamp = varargin{2};
-        else, spaceSamp = 40;
-        end
+        
+        middleSamps = 40;
         
         % The incoherent cutoff frequency has units of cycles/micron
         % So, 1/inCutoff has units of microns/Nyquist
@@ -972,7 +982,7 @@ switch lower(pType)
             
             % Pull out samples from the middle because otherwise the image
             % can be hard to see.
-            lsWave(:,ii) = getMiddleMatrix(lsf,spaceSamp); %#ok<AGROW>
+            lsWave(:,ii) = getMiddleMatrix(lsf,middleSamps); %#ok<AGROW>
         end
         %  Apparently we sometimes have a little complex value
         lsWave = abs(lsWave);
@@ -980,7 +990,7 @@ switch lower(pType)
         % Choose the x coordinates that match the line spread spatial
         % samples.
         X = (-nSamp:(nSamp-1))*deltaSpace;
-        X = getMiddleMatrix(X,spaceSamp);
+        X = getMiddleMatrix(X,middleSamps);
         
         % Show it
         if nWave > 1
@@ -1011,11 +1021,9 @@ switch lower(pType)
                 % These run from [-peakF, +peakF].  We make 100 samples,
                 % which is pretty arbitrary.  Not sure how to choose this better.
                 % Should be using unitFrequencyList() here.
-                if length(varargin) >= 1, peakF = varargin{1};
-                else
-                    inCutoff = opticsGet(optics,'inCutoff',units);
-                    peakF = 3*max(inCutoff);
-                end
+                inCutoff = opticsGet(optics,'inCutoff',units);
+                peakF = 3*max(inCutoff);
+                
                 nSamp = 100;
                 fSamp = (-nSamp:(nSamp-1))/nSamp;
                 [fX,fY] = meshgrid(fSamp,fSamp);

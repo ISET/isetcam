@@ -152,9 +152,6 @@ for ii=1:nWavelengths
     % microns.
     zpupilDiameterMM = wvfGet(wvf,'z pupil diameter');
     norm_radius = (sqrt(xpos.^2+ypos.^2))/(zpupilDiameterMM/2);
-    % ***  Bad code *** changed on July 16, 2018.  Should not be using
-    % pupilPlaneSizeMM, I think.  That doesn't match ISETBio.
-    % norm_radius = (sqrt(xpos.^2+ypos.^2))/(pupilPlaneSizeMM/2);
     theta = atan2(ypos,xpos);
     norm_radius_index = norm_radius <= 1;
    

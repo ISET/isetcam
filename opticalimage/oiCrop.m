@@ -65,7 +65,8 @@ elseif isvector(rect)
     roiLocs = ieRect2Locs(rect);
 end
 
-
+%% Preserve the original sample space
+sampleSpace = oiGet(oi, 'distance per sample');
 %% Adjust the irradiance data
 
 % The number of selected columns and rows
@@ -87,13 +88,17 @@ oi = oiSet(oi,'illuminance',oiCalculateIlluminance(oi));
 % becomes large. We might consider to do an integration to calculate
 % accurate width/height of the new frame.
 
+
+focalLength = oiGet(oi, 'optics focal length');
+%{
+% ZLY: I think we can calculate the wAngular in this way.
 wAngular = oiGet(oi,'wangular');
 sz = oiGet(oi,'size');
-focalLength = oiGet(oi, 'optics focal length');
-sampleSpace = oiGet(oi, 'distance per sample');
-
 wAngularNew = atand(newSz(2) * sampleSpace/2/focalLength) /...
     atand(sz(2) * sampleSpace/2/focalLength) * wAngular;
+%}
+wAngularNew = atand(newSz(2) * sampleSpace(2) / 2 / focalLength) * 2;
+
             
 oi = oiSet(oi,'wangular',wAngularNew);
 
