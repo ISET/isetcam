@@ -78,7 +78,7 @@ classdef ciScene < handle
         
         allowsObjectMotion = false; % default until set by scene type
         objectMotion = []; % none until the user adds some
-                
+        
         lensFile = '';   % Since PBRT can accept lens models and return an OI
         apertureDiameter = 5; % passed when using a lens file. in mm.
         % provide the option to specify one here. In this
@@ -203,7 +203,7 @@ classdef ciScene < handle
             %   If lensmodel is set, in future it will be used with PBRT and
             %   we return an array of oi objects, otherwise scenes
             %   FUTURE
-                        
+            
             if exist('sceneObjects', 'var'); clear(sceneObjects); end
             % Process based on sceneType.
             switch obj.sceneType
@@ -329,19 +329,20 @@ classdef ciScene < handle
                         else
                             error("Render seems to have failed.");
                         end
+                        
+                        if ~exist('sceneObjects', 'var')
+                            sceneObjects = {sceneObject};
+                        else
+                            sceneObjects(end+1) = {sceneObject};
+                        end
+                        sceneFiles = [sceneFiles imageFileName];
                     end
-                    if ~exist('sceneObjects', 'var')
-                        sceneObjects = {sceneObject};
-                    else
-                        sceneObjects(end+1) = {sceneObject};
-                    end
-                    sceneFiles = [sceneFiles imageFileName]; 
                 case 'iset scenes'
                     sceneFiles = [];
                     if options.previewFlag && numel(expTimes) > 1
                         expTimes = expTimes(1); % no need for more than one when previewing
                     end
-                        
+                    
                     % we want to generate scenes as needed
                     if numel(expTimes) == numel(obj.isetScenes)
                         % there has got to be a simpler way!
@@ -425,32 +426,32 @@ classdef ciScene < handle
             end
             %Assume for now the caller only has one motion argument
             %for ii = 1:numel(obj.cameraMotion)
-                ourMotion = moveCamera{1};
-                if ~isempty(ourMotion{2})
-                    movedScene = sceneTranslate(existingScene, ...
-                        ourMotion{2}, sceneGet(existingScene, 'mean luminance'));
-                else
-                    movedScene = existingScene;
-                end
-                if ~isempty(ourMotion{3})  
-                    tmpScene = movedScene; % need to copy or it locks up...
-                    movedScene = sceneRotate(tmpScene, ...
-                        ourMotion{3}(1));
-                end
-                % make sure dimensions match
-                %movedScene = resize(movedScene.data, origSize);
-            %end            
-
+            ourMotion = moveCamera{1};
+            if ~isempty(ourMotion{2})
+                movedScene = sceneTranslate(existingScene, ...
+                    ourMotion{2}, sceneGet(existingScene, 'mean luminance'));
+            else
+                movedScene = existingScene;
+            end
+            if ~isempty(ourMotion{3})
+                tmpScene = movedScene; % need to copy or it locks up...
+                movedScene = sceneRotate(tmpScene, ...
+                    ourMotion{3}(1));
+            end
+            % make sure dimensions match
+            %movedScene = resize(movedScene.data, origSize);
+            %end
+            
             %Some code for when we want to put back "random" motion
-%             tScene = scene; % initial Seed
-%             % translation wants degrees
-%             motionArray = genMotion(motionHDegrees, motionVDegrees, obj.numFrames); % Set large to see effect
-%             
-%             for ii = 1:obj.numFrames
-%                 % simple motion model where user tries to keep initial
-%                 % position but is off by a random amount each time
-%                 tScene = sceneTranslate(scene, motionArray(ii, :), sceneGet(scene, 'mean luminance'));
-%             end
+            %             tScene = scene; % initial Seed
+            %             % translation wants degrees
+            %             motionArray = genMotion(motionHDegrees, motionVDegrees, obj.numFrames); % Set large to see effect
+            %
+            %             for ii = 1:obj.numFrames
+            %                 % simple motion model where user tries to keep initial
+            %                 % position but is off by a random amount each time
+            %                 tScene = sceneTranslate(scene, motionArray(ii, :), sceneGet(scene, 'mean luminance'));
+            %             end
         end
         
         % generate some random scene/camera motion
@@ -463,14 +464,14 @@ classdef ciScene < handle
             % settings
             [previewScenes, previewFiles] = obj.render([.1], 'previewFlag', true); % generic exposure time
         end
-       
-       function infoArray = showInfo(obj)
-           infoArray = {'Scene Type: ', obj.sceneType};
-           infoArray = [infoArray; {'Scene Name:', obj.sceneName}];
-           infoArray = [infoArray; {'Rays per pixel:', obj.numRays}];
-           rez = sprintf("%d by %d",obj.resolution(1), obj.resolution(2));
-           infoArray = [infoArray; {'Resolution:', rez}];
-       end
+        
+        function infoArray = showInfo(obj)
+            infoArray = {'Scene Type: ', obj.sceneType};
+            infoArray = [infoArray; {'Scene Name:', obj.sceneName}];
+            infoArray = [infoArray; {'Rays per pixel:', obj.numRays}];
+            rez = sprintf("%d by %d",obj.resolution(1), obj.resolution(2));
+            infoArray = [infoArray; {'Resolution:', rez}];
+        end
         
     end
 end

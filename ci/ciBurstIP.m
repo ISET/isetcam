@@ -6,6 +6,7 @@ classdef ciBurstIP < ciIP
     
     properties
         % sub-class properties here
+        useRaw = false; %merge in RGB space by default
     end
     
     methods
@@ -24,20 +25,33 @@ classdef ciBurstIP < ciIP
         function ourPhoto = ispCompute(obj, sensorImages, intent)
             switch intent
                 case 'HDR'
-                    % ipCompute for HDR assumes we have an array of voltages
-                    % in a single sensor, NOT an array of sensors
-                    % so first we merge our sensor array into one sensor
-                    % For now this is simply concatenating, but could be
-                    % more complex in a sub-class that wanted to be more
-                    % clever
-                    sensorImage = obj.mergeSensors(sensorImages);
-                    sensorImage = sensorSet(sensorImage,'exposure method', 'bracketing');
-                    
-                    %obj.ip = ipSet(obj.ip, 'render demosaic only', 'true');
-                    obj.ip = ipSet(obj.ip, 'combination method', 'longest');
-                    
-                    obj.ip = ipCompute(obj.ip, sensorImage);
-                    ourPhoto = obj.ip;
+                    % decide if we want to let the ip combine raw data, or
+                    % demosaic it first
+                    if obj.useRaw
+                        % ipCompute for HDR assumes we have an array of voltages
+                        % in a single sensor, NOT an array of sensors
+                        % so first we merge our sensor array into one sensor
+                        sensorImage = obj.mergeSensors(sensorImages);
+                        sensorImage = sensorSet(sensorImage,'exposure method', 'bracketing');
+                        obj.ip = ipSet(obj.ip, 'combination method', 'longest');
+                        obj.ip = ipCompute(obj.ip, sensorImage);
+                        ourPhoto = obj.ip;
+                    else
+                        obj.ip = ipSet(obj.ip, 'render demosaic only', true);
+                        
+                        % now we want to register all the linear image data
+                        for ii = 1:numel(sensorImages)
+                            tmpIP = ipCompute(obj.ip, sensorImages(ii));
+                            currentImage = ipGet(tmpIP,'result');
+                            if ii > 1
+                                tmpImage = obj.registerRGBImages(currentImage, tmpImage);
+                            else
+                                tmpImage = currentImage;
+                            end
+                        end
+                        ourPhoto = ipSet(tmpIP,'result', tmpImage);
+                        
+                    end
                 case 'Burst'
                     % baseline is just sum the voltages, without alignment
                     sensorImage = obj.mergeSensors(sensorImages);
@@ -86,6 +100,50 @@ classdef ciBurstIP < ciIP
                 singleSensor.data.volts(:,:,ii) = sensorArray(ii).data.volts;
             end
         end
+        
+        function [alignedImage] = registerRGBImages(obj, movingImage,baseImage)
+
+            %  MOVING and FIXED using auto-generated code from the Registration
+            %  Estimator app. The values for all registration parameters were set
+            %  interactively in the app and result in the registered image stored in the
+            %  structure array MOVINGREG.
+            
+            %merge = registerImages(rgb2gray(img2), rgb2gray(img1));
+            %imshowpair(img2,(imwarp(img1, merge.Transformation)), 'diff');
+            
+            MOVING = rgb2gray(movingImage);
+            FIXED = rgb2gray(baseImage);
+            
+            % Default spatial referencing objects
+            fixedRefObj = imref2d(size(FIXED));
+            movingRefObj = imref2d(size(MOVING));
+            
+            % Detect SURF features
+            fixedPoints = detectSURFFeatures(FIXED,'MetricThreshold',750.000000,'NumOctaves',3,'NumScaleLevels',5);
+            movingPoints = detectSURFFeatures(MOVING,'MetricThreshold',750.000000,'NumOctaves',3,'NumScaleLevels',5);
+            
+            % Extract features
+            [fixedFeatures,fixedValidPoints] = extractFeatures(FIXED,fixedPoints,'Upright',false);
+            [movingFeatures,movingValidPoints] = extractFeatures(MOVING,movingPoints,'Upright',false);
+            
+            % Match features
+            indexPairs = matchFeatures(fixedFeatures,movingFeatures,'MatchThreshold',50.000000,'MaxRatio',0.500000);
+            fixedMatchedPoints = fixedValidPoints(indexPairs(:,1));
+            movingMatchedPoints = movingValidPoints(indexPairs(:,2));
+            MOVINGREG.FixedMatchedFeatures = fixedMatchedPoints;
+            MOVINGREG.MovingMatchedFeatures = movingMatchedPoints;
+            
+            % Apply transformation - Results may not be identical between runs because of the randomized nature of the algorithm
+            tform = estimateGeometricTransform(movingMatchedPoints,fixedMatchedPoints,'projective');
+            MOVINGREG.Transformation = tform;
+            MOVINGREG.RegisteredImage = imwarp(MOVING, movingRefObj, tform, 'OutputView', fixedRefObj, 'SmoothEdges', true);
+            
+            % Store spatial referencing object
+            MOVINGREG.SpatialRefObj = fixedRefObj;
+            
+            alignedImage = imwarp(movingImage, movingRefObj, tform, 'OutputView', fixedRefObj, 'SmoothEdges', true);
+        end
+        
     end
 end
 
