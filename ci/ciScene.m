@@ -296,10 +296,10 @@ classdef ciScene < handle
                         piWrite(obj.thisR); % pbrt reads from disk files so we need to write out
                         haveCache = false;
                         if isfile(cachedRecipeFileName)
-                            cachedRecipe = load(cachedRecipeFileName,'rName');
-                            if isequal(obj.thisR, cachedRecipe.rName)
-                                haveCache = true;
-                            end
+                            %cachedRecipe = load(cachedRecipeFileName,'rName');
+                            %if isequal(obj.thisR, cachedRecipe.rName)
+                            %   haveCache = true;
+                            %end
                         end
                         
                         % Haven't found a good way to cache, so we've added

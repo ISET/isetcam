@@ -37,19 +37,31 @@ classdef ciBurstIP < ciIP
                         obj.ip = ipCompute(obj.ip, sensorImage);
                         ourPhoto = obj.ip;
                     else
-                        obj.ip = ipSet(obj.ip, 'render demosaic only', true);
+                        % Might want the option to combine before or after
+                        %obj.ip = ipSet(obj.ip, 'render demosaic only', true);
                         
-                        % now we want to register all the linear image data
+                        % now we want to register all the image data
+                        frameExposures = [];
                         for ii = 1:numel(sensorImages)
                             tmpIP = ipCompute(obj.ip, sensorImages(ii));
+                            frameExposures = [frameExposures sensorImages(ii).integrationTime];
                             currentImage = ipGet(tmpIP,'result');
+                            % we can convert to sRGB here, or after
+                            % registration
+                            %currentImage = lrgb2srgb(currentImage); %make useable
                             if ii > 1
-                                tmpImage = obj.registerRGBImages(currentImage, tmpImage);
+                                imageFrames{ii} = uint8(round(rescale(...
+                                    obj.registerRGBImages(currentImage, baseImage), 0, 255)));
                             else
-                                tmpImage = currentImage;
+                                imageFrames = {uint8(round(rescale(currentImage, 0, 255)))};
+                                % maybe should try to pick the "middle
+                                % image"?
+                                baseImage = currentImage;
                             end
                         end
-                        ourPhoto = ipSet(tmpIP,'result', tmpImage);
+                        hdrImage = makehdr(imageFrames, 'RelativeExposure', frameExposures./min(frameExposures));
+                        finalImage = tonemap(hdrImage);
+                        ourPhoto = ipSet(tmpIP,'result', finalImage);
                         
                     end
                 case 'Burst'
@@ -134,14 +146,23 @@ classdef ciBurstIP < ciIP
             MOVINGREG.MovingMatchedFeatures = movingMatchedPoints;
             
             % Apply transformation - Results may not be identical between runs because of the randomized nature of the algorithm
-            tform = estimateGeometricTransform(movingMatchedPoints,fixedMatchedPoints,'projective');
-            MOVINGREG.Transformation = tform;
-            MOVINGREG.RegisteredImage = imwarp(MOVING, movingRefObj, tform, 'OutputView', fixedRefObj, 'SmoothEdges', true);
-            
-            % Store spatial referencing object
-            MOVINGREG.SpatialRefObj = fixedRefObj;
-            
-            alignedImage = imwarp(movingImage, movingRefObj, tform, 'OutputView', fixedRefObj, 'SmoothEdges', true);
+            try
+                tform = estimateGeometricTransform(movingMatchedPoints,fixedMatchedPoints,'projective');
+                MOVINGREG.Transformation = tform;
+                MOVINGREG.RegisteredImage = imwarp(MOVING, movingRefObj, tform, 'OutputView', fixedRefObj, 'SmoothEdges', true);
+                
+                % Store spatial referencing object
+                MOVINGREG.SpatialRefObj = fixedRefObj;
+                
+                alignedImage = imwarp(movingImage, movingRefObj, tform, 'OutputView', fixedRefObj, 'SmoothEdges', true);
+            catch
+                alignedImage = baseImage;
+                warning("Unable to register new image, so just returning the base image.");
+            end
+            if mean(alignedImage, 'all') == 0 % failed but doesn't give us an error
+                alignedImage = baseImage;
+                warning("Unable to register new image, so just returning the base image.");
+            end
         end
         
     end
