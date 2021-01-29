@@ -132,7 +132,7 @@ classdef ciCamera < handle
                 intent;
                 options.returnIP;
             end
-            ourPhoto = obj.isp.ispCompute(sensorImages, intent, 'renderIP', options.returnIP); 
+            ourPhoto = obj.isp.ispCompute(sensorImages, intent, 'returnIP', options.returnIP); 
         end
        
         % A key element of modern computational cameras is their ability
