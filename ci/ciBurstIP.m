@@ -3,10 +3,16 @@ classdef ciBurstIP < ciIP
     %
     % History:
     %   Initial Version: D. Cardinal, 01/2021
+    %
+    % Unlike a classic "ip" the BurstIP is capable of a variety of ways of
+    % combining frames, including some that produce an RGB image instead of
+    % an ip. 
+    %
+    % 
     
     properties
         % sub-class properties here
-        useRaw = false; %merge in RGB space by default
+        returnIP = false; %merge in RGB space by default
     end
     
     methods
@@ -21,13 +27,14 @@ classdef ciBurstIP < ciIP
             %Compute final image from sensor captures
             aPicture = compute@ciIP(sensorImages);
         end
-        
+
+        % This computes an output photograph. 
         function ourPhoto = ispCompute(obj, sensorImages, intent)
             switch intent
                 case 'HDR'
                     % decide if we want to let the ip combine raw data, or
                     % demosaic it first
-                    if obj.useRaw
+                    if obj.returnIP
                         % ipCompute for HDR assumes we have an array of voltages
                         % in a single sensor, NOT an array of sensors
                         % so first we merge our sensor array into one sensor
@@ -53,15 +60,15 @@ classdef ciBurstIP < ciIP
                                 imageFrames{ii} = uint8(round(rescale(...
                                     obj.registerRGBImages(currentImage, baseImage), 0, 255)));
                             else
-                                imageFrames = {uint8(round(rescale(currentImage, 0, 255)))};
+                                imageFrames = {obj.ipToImage(tmpIP)};
                                 % maybe should try to pick the "middle
                                 % image"?
                                 baseImage = currentImage;
                             end
                         end
                         hdrImage = makehdr(imageFrames, 'RelativeExposure', frameExposures./min(frameExposures));
-                        finalImage = tonemap(hdrImage);
-                        ourPhoto = ipSet(tmpIP,'result', finalImage);
+                        ourPhoto = tonemap(hdrImage);
+                        
                         
                     end
                 case 'Burst'
@@ -74,7 +81,11 @@ classdef ciBurstIP < ciIP
                     
                     % old ipBurstMotion  = ipCompute(ipBurstMotion,sensorBurstMotion);
                     obj.ip = ipCompute(obj.ip, sensorImage);
-                    ourPhoto = obj.ip;
+                    if obj.returnIP
+                        ourPhoto = obj.ip;
+                    else
+                        ourPhoto = obj.ipToImage(obj.ip);
+                    end
                 case 'FocusStack'
                     % Doesn't stack yet. Needs to do that during merge!
                     sensorImage = obj.isp.mergeSensors(sensorImages);
@@ -85,7 +96,11 @@ classdef ciBurstIP < ciIP
                     
                     % old ipBurstMotion  = ipCompute(ipBurstMotion,sensorBurstMotion);
                     obj.ip = ipCompute(obj.ip, sensorImage);
-                    ourPhoto = obj.ip;
+                    if obj.returnIP
+                        ourPhoto = obj.ip;
+                    else
+                        ourPhoto = obj.ipToImage(obj.ip);
+                    end
                     
                 otherwise
                     % This lower-leval routine is called once we have our sensor
@@ -95,6 +110,9 @@ classdef ciBurstIP < ciIP
                     for ii=1:numel(sensorImages)
                         sensorWindow(sensorImages(ii));
                         ourPhoto = ipCompute(obj.ip, sensorImages(ii));
+                        if obj.returnIP == false
+                            ourPhoto = obj.ipToImage(ourPhoto);
+                        end
                     end
             end
             
@@ -111,6 +129,12 @@ classdef ciBurstIP < ciIP
                     [sensorGet(singleSensor,'exposure time') sensorGet(sensorArray(ii), 'exposure time')]);
                 singleSensor.data.volts(:,:,ii) = sensorArray(ii).data.volts;
             end
+        end
+       
+        % Seems like there is probably a way to do this in the existing ip
+        % code, but I couldn't find it.
+        function anImage = ipToImage(obj, anIP)
+            anImage = uint8(round(rescale(ipGet(anIP,'data srgb'), 0, 255)));
         end
         
         function [alignedImage] = registerRGBImages(obj, movingImage,baseImage)

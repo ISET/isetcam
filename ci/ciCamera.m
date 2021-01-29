@@ -120,7 +120,13 @@ classdef ciCamera < handle
             
             
         end
-                
+        
+        % Here we over-ride default processing to compute a photo after we've
+        % captured one or more frames. This allows burst & hdr, for example.
+        function ourPhoto = computePhoto(obj, sensorImages, intent)
+            ourPhoto = obj.isp.ispCompute(sensorImages, intent); 
+        end
+       
         % A key element of modern computational cameras is their ability
         % to use statistics from the scene (in this case via preview 
         % image(s) to plan how many frames to capture and with what settings. 

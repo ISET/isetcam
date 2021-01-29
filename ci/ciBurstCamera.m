@@ -99,16 +99,7 @@ classdef ciBurstCamera < ciCamera
                    [expTimes] = planCaptures@ciCamera(obj, previewImages, intent);
            end
        end
-       
-       % Here we over-ride default processing to compute a photo after we've
-       % captured one or more frames. This allows burst & hdr, for example.
-       % More should probably be in the IP class?
-       function ourPhoto = computePhoto(obj, sensorImages, intent)
-
-           ourPhoto = obj.isp.ispCompute(sensorImages, intent);
-           
-       end
-       
+              
        function infoArray = showInfo(obj)
            infoArray = showInfo@ciCamera(obj);
            infoArray = [infoArray; {'HDR Frames', obj.numHDRFrames}];
