@@ -127,11 +127,12 @@ classdef ciCamera < handle
         % captured one or more frames. This allows burst & hdr, for example.
         function ourPhoto = computePhoto(obj, sensorImages, intent, options)
             arguments
+                obj
                 sensorImages;
                 intent;
-                options.renderIP;
+                options.returnIP;
             end
-            ourPhoto = obj.isp.ispCompute(sensorImages, intent, 'renderIP', options.renderIP); 
+            ourPhoto = obj.isp.ispCompute(sensorImages, intent, 'renderIP', options.returnIP); 
         end
        
         % A key element of modern computational cameras is their ability
