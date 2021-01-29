@@ -45,14 +45,11 @@ classdef ciCamera < handle
                 options.reRender (1,1) {islogical} = true;
                 options.expTimes = [];
                 options.stackFrames = 0;
-                options.returnIP;
+                options.returnIP = obj.isp.returnIP; % default
             end
             obj.expTimes = options.expTimes;
             if ~isempty(options.imageName) 
                 obj.isp.ip = ipSet(obj.isp.ip, 'name', options.imageName);
-            end
-            if isfield(options,'returnIP') 
-                obj.isp.returnIP =  options.returnIP;
             end
             
             % aCIScene is a ciScene
@@ -107,7 +104,8 @@ classdef ciCamera < handle
             
             % generic version, currently just prints out each processed
             % image from the sensor
-            ourPicture = obj.computePhoto(sensorImages, intent);
+            ourPicture = obj.computePhoto(sensorImages, intent, ...
+                'returnIP', options.returnIP);
 
             % alternate method of doing multi-sensor:
             %{
@@ -127,8 +125,13 @@ classdef ciCamera < handle
         
         % Here we over-ride default processing to compute a photo after we've
         % captured one or more frames. This allows burst & hdr, for example.
-        function ourPhoto = computePhoto(obj, sensorImages, intent)
-            ourPhoto = obj.isp.ispCompute(sensorImages, intent); 
+        function ourPhoto = computePhoto(obj, sensorImages, intent, options)
+            arguments
+                sensorImages;
+                intent;
+                options.renderIP;
+            end
+            ourPhoto = obj.isp.ispCompute(sensorImages, intent, 'renderIP', options.renderIP); 
         end
        
         % A key element of modern computational cameras is their ability
