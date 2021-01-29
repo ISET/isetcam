@@ -29,12 +29,20 @@ classdef ciBurstIP < ciIP
         end
 
         % This computes an output photograph. 
-        function ourPhoto = ispCompute(obj, sensorImages, intent)
+        function ourPhoto = ispCompute(obj, sensorImages, intent, options)
+            
+            arguments
+                obj;
+                sensorImages;
+                intent;
+                options.returnIP = obj.returnIP;
+            end
+            
             switch intent
                 case 'HDR'
                     % decide if we want to let the ip combine raw data, or
                     % demosaic it first
-                    if obj.returnIP
+                    if options.returnIP
                         % ipCompute for HDR assumes we have an array of voltages
                         % in a single sensor, NOT an array of sensors
                         % so first we merge our sensor array into one sensor
@@ -52,13 +60,13 @@ classdef ciBurstIP < ciIP
                         for ii = 1:numel(sensorImages)
                             tmpIP = ipCompute(obj.ip, sensorImages(ii));
                             frameExposures = [frameExposures sensorImages(ii).integrationTime];
-                            currentImage = ipGet(tmpIP,'result');
+                            currentImage = ipGet(tmpIP,'data srgb');
                             % we can convert to sRGB here, or after
                             % registration
                             %currentImage = lrgb2srgb(currentImage); %make useable
                             if ii > 1
-                                imageFrames{ii} = uint8(round(rescale(...
-                                    obj.registerRGBImages(currentImage, baseImage), 0, 255)));
+                                tmpImage = obj.registerRGBImages(currentImage, baseImage);
+                                imageFrames{ii} = uint8(round(rescale(tmpImage, 0, 255)));
                             else
                                 imageFrames = {obj.ipToImage(tmpIP)};
                                 % maybe should try to pick the "middle
@@ -180,12 +188,12 @@ classdef ciBurstIP < ciIP
                 
                 alignedImage = imwarp(movingImage, movingRefObj, tform, 'OutputView', fixedRefObj, 'SmoothEdges', true);
             catch
-                alignedImage = baseImage;
-                warning("Unable to register new image, so just returning the base image.");
+                alignedImage = movingImage;
+                warning("Unable to register new image, so just returning the un-registered image.");
             end
             if mean(alignedImage, 'all') == 0 % failed but doesn't give us an error
-                alignedImage = baseImage;
-                warning("Unable to register new image, so just returning the base image.");
+                alignedImage = movingImage;
+                warning("Unable to register new image, so just returning the un-registered image.");
             end
         end
         

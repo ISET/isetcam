@@ -30,6 +30,7 @@ classdef ciBurstCamera < ciCamera
                options.numHDRFrames = 3;
                options.numBurstFrames = 3;
                options.numFocusFrames = 3;
+               options.returnIP = obj.isp.returnIP;
                camProps.?ciCamera;
                camProps.imageName char = '';
                camProps.reRender (1,1) {islogical} = true;
@@ -49,7 +50,8 @@ classdef ciBurstCamera < ciCamera
                otherwise
                    stackFrames = 0;
            end
-           ourPicture = TakePicture@ciCamera(obj, aCIScene, intent, 'stackFrames', stackFrames, varargin{:});
+           ourPicture = TakePicture@ciCamera(obj, aCIScene, intent, ...,
+               'returnIP', options.returnIP, 'stackFrames', stackFrames, varargin{:});
            
        end
        

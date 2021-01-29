@@ -45,10 +45,14 @@ classdef ciCamera < handle
                 options.reRender (1,1) {islogical} = true;
                 options.expTimes = [];
                 options.stackFrames = 0;
+                options.returnIP;
             end
             obj.expTimes = options.expTimes;
             if ~isempty(options.imageName) 
                 obj.isp.ip = ipSet(obj.isp.ip, 'name', options.imageName);
+            end
+            if isfield(options,'returnIP') 
+                obj.isp.returnIP =  options.returnIP;
             end
             
             % aCIScene is a ciScene
