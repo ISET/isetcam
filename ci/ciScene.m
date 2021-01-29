@@ -459,7 +459,7 @@ classdef ciScene < handle
             motionArray = 2 * (rand(numFrames, 2)-.5) .* repmat([xPixels yPixels], numFrames, 1);
         end
         
-        function previewScenes = preview(obj)
+        function [previewScenes, previewFiles] = preview(obj)
             % get a preview that the camera can use to plan capture
             % settings
             [previewScenes, previewFiles] = obj.render([.1], 'previewFlag', true); % generic exposure time
