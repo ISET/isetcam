@@ -30,6 +30,10 @@ classdef ciIP < handle
             aPicture = ipCompute(obj.ip, sensorImages);
         end
         
+        % Here we compute the image (in the form of an ip) that we get from
+        % photographing our scene. NOTE: The default ciCamera does not do
+        % any advanced processing, so it always returns an ip, not an RGB
+        % result that has been further processed.
         function ourPhoto = ispCompute(obj, sensorImages, intent)
             switch intent
                 case 'HDR'
