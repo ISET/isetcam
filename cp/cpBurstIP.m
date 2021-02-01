@@ -35,6 +35,8 @@ classdef cpBurstIP < cpIP
                 obj;
                 sensorImages;
                 intent;
+                % Use our default for whether to just return an IP if the
+                % user doesn't specify what to do
                 options.returnIP = obj.returnIP;
             end
             

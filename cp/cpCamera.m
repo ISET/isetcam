@@ -1,7 +1,7 @@
 classdef cpCamera < handle
     %cpCamera Computational Camera
-    %   Base class, allows extension for CI features, including:
-    %   In ciBurstCamera:
+    %   Base class, allows extension for CP features, including:
+    %   In cpBurstCamera:
     %   * Bracketing (HDR)
     %   * Burst captures
     %   * Support for camera and object motion
