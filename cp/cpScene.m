@@ -91,7 +91,7 @@ classdef cpScene < handle
         %}
         
         sceneLuminance; % set in constructor, helps simulate lighting
-        
+        cachedRecipeFileName = '';
     end
     
     %% Do the work here
@@ -272,7 +272,6 @@ classdef cpScene < handle
                             imageFilePrefixName = fullfile(imageFolderPath, append("frame_", num2str(ii)));
                         end
                         imageFileName = append(imageFilePrefixName,  ".mat");
-                        cachedRecipeFileName = fullfile(imageFolderPath, append("recipe_", num2str(ii), ".mat"));
                         
                         % We set the shutter open/close successively
                         % for each frame of the capture, even if we don't
@@ -293,20 +292,23 @@ classdef cpScene < handle
                         end
                         %
                         %% Render and visualize
+                        % we don't want to trip over ourselves by
+                        % over-writing the primary copy in local and then
+                        % having other bits of code use it. So TBD is
+                        % unique naming & then deletion. Annoying &
+                        % expensive, but for now?...
+                        [defaultRecipeDirectory, defaultRecipeFile, suffix] = ...
+                            fileparts(recipeGet(obj.thisR, 'outputfile'));
+                        obj.cachedRecipeFileName = fullfile(tempname(defaultRecipeDirectory), strcat(defaultRecipeFile,suffix));
+                        recipeSet(obj.thisR, 'outputfile', obj.cachedRecipeFileName);
                         piWrite(obj.thisR); % pbrt reads from disk files so we need to write out
                         haveCache = false;
-                        if isfile(cachedRecipeFileName)
-                            %cachedRecipe = load(cachedRecipeFileName,'rName');
-                            %if isequal(obj.thisR, cachedRecipe.rName)
-                            %   haveCache = true;
-                            %end
-                        end
                         
                         % Haven't found a good way to cache, so we've added
                         % a reRender flag to override regenerating scenes
                         if options.reRender == true && haveCache == false
                             rName = obj.thisR; % Save doesn't like dots?
-                            save(cachedRecipeFileName, 'rName');
+                            save(obj.cachedRecipeFileName, 'rName');
                             % by default also calc depth, could make that
                             % an option:
                             [sceneObject, results] = piRender(obj.thisR, 'render type', 'both', ...
