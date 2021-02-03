@@ -308,7 +308,8 @@ classdef cpScene < handle
                         % a reRender flag to override regenerating scenes
                         if options.reRender == true && haveCache == false
                             rName = obj.thisR; % Save doesn't like dots?
-                            save(obj.cachedRecipeFileName, 'rName');
+                            % THIS IS REALLY WRONG, SO TURNED IT OFF
+                            %save(obj.cachedRecipeFileName, 'rName');
                             % by default also calc depth, could make that
                             % an option:
                             [sceneObject, results] = piRender(obj.thisR, 'render type', 'both', ...
