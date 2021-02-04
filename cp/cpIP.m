@@ -10,6 +10,8 @@ classdef cpIP < handle
     properties
         defaultDisplay = 'OLED-Sony.mat'; % in case this makes a difference
         ip = [];
+        returnIP = false; %merge in RGB space by default
+
     end
     
     methods
@@ -34,7 +36,7 @@ classdef cpIP < handle
         % photographing our scene. NOTE: The default ciCamera does not do
         % any advanced processing, so it always returns an ip, not an RGB
         % result that has been further processed.
-        function ourPhoto = ispCompute(obj, sensorImages, intent)
+        function ourPhoto = ispCompute(obj, sensorImages, intent, varargin)
             switch intent
                 case 'HDR'
                     % ipCompute for HDR assumes we have an array of voltages

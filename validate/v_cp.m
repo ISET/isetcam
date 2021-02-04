@@ -13,11 +13,11 @@ expTimes = [.1 .1 .1];   % Seconds
 
 %% create computational versions of those scenes
 
-cScenes = ciScene('iset scenes', 'isetScenes', aScenes);
-cScene  = ciScene('iset scenes', 'isetScenes', aScene);
+cScenes = cpScene('iset scenes', 'isetScenes', aScenes);
+cScene  = cpScene('iset scenes', 'isetScenes', aScene);
     
 %% 
-ourCamera = ciCamera();
+ourCamera = cpCamera();
 
 %% 
 ourCamera.TakePicture(cScene, 'Auto');

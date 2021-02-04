@@ -12,7 +12,7 @@ classdef cpBurstIP < cpIP
     
     properties
         % sub-class properties here
-        returnIP = false; %merge in RGB space by default
+
     end
     
     methods
