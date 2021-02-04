@@ -541,7 +541,7 @@ switch pType
                 rtPlot(oi,'otf');
             otherwise
                 if isempty(varargin), udata = plotOTF(oi,'otf');
-                else, w = varargin{1}; udata = plotOTF(oi,'otf',w);
+                else, w = varargin{1}; udata = plotOTF(oi,'otf', 'this wave', w);
                 end
         end
         set(g,'userdata',udata);
