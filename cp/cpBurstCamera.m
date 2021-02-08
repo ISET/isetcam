@@ -45,7 +45,7 @@ classdef cpBurstCamera < cpCamera
            
            varargin=namedargs2cell(camProps); 
            switch intent
-               case 'FocusStack'
+               case {'FocusStack', 'Focus'}
                    stackFrames = obj.numFocusFrames;
                otherwise
                    stackFrames = 0;
@@ -81,14 +81,14 @@ classdef cpBurstCamera < cpCamera
                    end
                    expTimes = repmat(baseExposure, 1, numFrames);
                    expTimes = expTimes.*(2.^[-1*frameOffset:1:frameOffset]);
-               case {'Burst', 'FocusStack'}
+               case {'Burst', 'FocusStack', 'Focus'}
                    % For now this is a very simple algorithm that just
                    % takes the base exposure and divides it into the number
                    % of frames.
                    switch intent
                        case 'Burst'
                            numFrames = obj.numBurstFrames;
-                       case 'FocusStack'
+                       case {'FocusStack', 'Focus'}
                            numFrames = obj.numFocusFrames;
                    end
                    % Future: Algorithm here to calculate number of images and
