@@ -23,34 +23,32 @@ simpleScene = cpScene('pbrt', 'scenePath', 'CornellBoxReference', ...
     'numRays', numRays, ...
     'sceneLuminance', sceneLuminance);
 
+ourCamera.cmodules(1).sensor = ...
+    sensorSet(ourCamera.cmodules(1).sensor, ...
+    'size', [filmResolution, filmResolution]);
 
-%{
-    thisR = simpleScene.thisR;
-    bunny = load('bunny.mat');
-    thisR.set('asset',bunny.assetTree.Node{1},'add',1);
-    thisR.assets.show;
-    thisR.set('material', 'add', bunny.matList{1});
-    piWrite(thisR);
-    scene = piRender(thisR);
-    sceneWindow(scene);
-    %}
-    
-    ourCamera.cmodules(1).sensor = ...
-        sensorSet(ourCamera.cmodules(1).sensor, ...
-        'size', [filmResolution, filmResolution]);
-    
-    % Look at the original scene by showing our camera and then clicking
-    % "Preview" to get a rendering.
-    cpCameraWindow(ourCamera, simpleScene);
-    
-    % Next:
-    
-    % Add Bunny
-    
-    % Add MCC
-    
-    % Add AF chart if there is an asset for it
-    
-    % Give the resulting scene to our camera & try again.
-    
-    %%
+% Look at the original scene by showing our camera and then clicking
+% "Preview" to get a rendering.
+cpCameraWindow(ourCamera, simpleScene);
+
+% Add the Stanford bunny to the scene
+thisR = simpleScene.thisR;
+bunny = load('bunny.mat');
+thisR.set('asset',1, 'add', bunny.assetTree.Node{1});
+%thisR.assets.show;
+thisR.set('material', 'add', bunny.matList{1});
+piWrite(thisR);
+
+
+%{ 
+% Take a look if we want
+scene = piRender(thisR);
+sceneWindow(scene);
+%}
+
+% TODO Next:
+% Add MCC
+% Add AF chart if there is an asset for it
+% Give the resulting scene to our camera & try again.
+
+%%
