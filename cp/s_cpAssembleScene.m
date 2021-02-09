@@ -29,22 +29,25 @@ ourCamera.cmodules(1).sensor = ...
 
 % Look at the original scene by showing our camera and then clicking
 % "Preview" to get a rendering.
-cpCameraWindow(ourCamera, simpleScene);
+% cpCameraWindow(ourCamera, simpleScene);
 
 % Add the Stanford bunny to the scene
-thisR = simpleScene.thisR;
 bunny = load('bunny.mat');
-thisR.set('asset',1, 'add', bunny.assetTree.Node{1});
+simpleScene.thisR.set('asset',1, 'add', bunny.assetTree.Node{1});
 %thisR.assets.show;
-thisR.set('material', 'add', bunny.matList{1});
-piWrite(thisR);
+simpleScene.thisR.set('material', 'add', bunny.matList{1});
+piWrite(simpleScene.thisR);
 
+% Add some motion to the bunny
+% simpleScene.objectMotion = {{'Bunny_O', [1 0 0], [0 0 0]}};
 
-%{ 
 % Take a look if we want
+%{
 scene = piRender(thisR);
 sceneWindow(scene);
 %}
+
+cpCameraWindow(ourCamera, simpleScene);
 
 % TODO Next:
 % Add MCC
