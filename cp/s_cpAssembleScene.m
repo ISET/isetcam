@@ -7,6 +7,14 @@
 % scene.
 %
 
+%{
+% recipe test
+thisR = piRecipeDefault('scene name', 'CornellBoxReference');
+piWrite(thisR);
+ourScene = piRender(thisR);
+min(min(ourScene.depthMap))
+%}
+
 %%
 ieInit();
 filmResolution = 256;
