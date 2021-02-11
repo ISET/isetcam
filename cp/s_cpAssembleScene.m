@@ -10,9 +10,12 @@
 %{
 % recipe test, since on some systems there are errant 0 depth pixels
 thisR = piRecipeDefault('scene name', 'CornellBoxReference');
+thisR.set('spatial resolution',[640 640]);
 piWrite(thisR);
 ourScene = piRender(thisR);
 min(min(ourScene.depthMap))
+ieNewGraphWin; mesh(ourScene.depthMap);
+ieNewGraphWin; imagesc(ourScene.depthMap);
 %}
 
 %%
