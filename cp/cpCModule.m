@@ -71,9 +71,12 @@ classdef cpCModule
                         % add a way to pass focal distances.
                         % [oi, oiD, D] = s3dRenderDepthDefocus(scene, oi, imgPlaneDist, depthEdges, cAberration)
                         imgPlaneDist = opticsGet(obj.oi.optics,'focal length');
-                        multiplier = 1.2; % go extreme to see effect
+                        multiplier = 1.01; 
+                        sceneDepth = max(ourScene.depthMap,[], 'all') - min(ourScene.depthMap,[], 'all');
+                        sceneBands = 8;
+                        depthEdges = min(ourScene.depthMap,[], 'all'): sceneDepth / sceneBands : max(ourScene.depthMap,[], 'all');
                         for iii = 1:options.stackFrames
-                            [opticalImage, ~, ~] = s3dRenderDepthDefocus(ourScene, obj.oi, imgPlaneDist);
+                            [opticalImage, ~, ~] = s3dRenderDepthDefocus(ourScene, obj.oi, imgPlaneDist, depthEdges);
                             imgPlaneDist = imgPlaneDist*multiplier;
                             % set sensor FOV to match scene.
                             sceneFOV = [sceneGet(ourScene,'fovhorizontal') sceneGet(ourScene,'fovvertical')];

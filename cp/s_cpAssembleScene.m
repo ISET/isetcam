@@ -8,7 +8,7 @@
 %
 
 %{
-% recipe test
+% recipe test, since on some systems there are errant 0 depth pixels
 thisR = piRecipeDefault('scene name', 'CornellBoxReference');
 piWrite(thisR);
 ourScene = piRender(thisR);
@@ -39,6 +39,11 @@ ourCamera.cmodules(1).sensor = ...
 % "Preview" to get a rendering.
 % cpCameraWindow(ourCamera, simpleScene);
 
+% for focus stacking let's make our lens wide-open and
+% longer focal length so we get optical blur
+ourCamera.cmodules(1).oi = oiSet(ourCamera.cmodules(1).oi,'optics focallength', .120);
+ourCamera.cmodules(1).oi = oiSet(ourCamera.cmodules(1).oi,'optics fnumber',1.2);
+
 % Add the Stanford bunny to the scene
 bunny = load('bunny.mat');
 simpleScene.thisR.set('asset',1, 'add', bunny.assetTree.Node{1});
@@ -46,7 +51,7 @@ simpleScene.thisR.set('asset',1, 'add', bunny.assetTree.Node{1});
 simpleScene.thisR.set('material', 'add', bunny.matList{1});
 piWrite(simpleScene.thisR);
 
-% Add some motion to the bunny
+% Optionally add some motion to the bunny
 % simpleScene.objectMotion = {{'Bunny_O', [1 0 0], [0 0 0]}};
 
 % Take a look if we want
