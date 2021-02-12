@@ -29,6 +29,7 @@ classdef cpIP < handle
         
         function aPicture = compute(obj, sensorImages)
             %Compute final image from sensor captures
+            
             aPicture = ipCompute(obj.ip, sensorImages);
         end
         

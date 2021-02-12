@@ -36,7 +36,7 @@ classdef cpCModule
             
         end
         
-        function cOutput = compute(obj, sceneArray, exposureTimes, options) % will support more args
+        function cOutput = compute(obj, aCPScene, expTimes, options) % will support more args
             %COMPUTE Calculate what we capture
             %   Simplest case this is sensorCompute + oiCompute
             %   however, we also integrate multi-capture
@@ -54,22 +54,33 @@ classdef cpCModule
             
             arguments
                 obj cpCModule;
-                sceneArray;
-                exposureTimes;
+                aCPScene;
+                expTimes;
                 options.stackFrames {mustBeNumeric} = 0;
+                options.reRender {islogical} = true;
             end
             
+            % need to know our sensor size to judge film size
+            % however it is in meters and pi wants mm
+            filmSize = 1000 * sensorGet(obj.sensor, 'width');
+            % Render scenes as needed. Note that if pbrt has a lens file                                                                                    -
+            % then 'sceneObjects' are actually oi structs                                                                                                          -
+            [sceneObjects, sceneFiles] = aCPScene.render(expTimes, ...,
+                'reRender', options.reRender, 'filmSize', filmSize); 
+            
             cOutput = [];
-            for ii = 1:numel(sceneArray)
+            for ii = 1:numel(sceneObjects)
                 
-                ourScene = sceneArray{ii};
+                ourScene = sceneObjects{ii};
                 if strcmp(ourScene.type, 'scene')
-                    % DOESN'T WORK. Clearly doing something wrong:( DJC
                     if options.stackFrames > 0
+                        % DOESN'T WORK. Clearly doing something wrong:( DJC
+                        % -- This is the "simple" case where we emulate
+                        %    blur. The "advanced" case should use lens
+                        %    files.
                         % we use defocus from depth here, especially needed
                         % for focus stacking if not done in pbrt. Need to
                         % add a way to pass focal distances.
-                        % [oi, oiD, D] = s3dRenderDepthDefocus(scene, oi, imgPlaneDist, depthEdges, cAberration)
                         imgPlaneDist = opticsGet(obj.oi.optics,'focal length');
                         multiplier = 1.01; 
                         sceneDepth = max(ourScene.depthMap,[], 'all') - min(ourScene.depthMap,[], 'all');
@@ -98,12 +109,14 @@ classdef cpCModule
                     opticalImage = ourScene;
                     % this gets really broken, as our sensor shows a tiny
                     % FOV, so set size makes it massive resolution???'
-                    oiFOV = [oiGet(opticalImage,'hfov'), oiGet(opticalImage,'vfov')];
-                    obj.sensor = sensorSetSizeToFOV(obj.sensor,oiFOV,opticalImage);
+                    %oiFOV = [oiGet(opticalImage,'hfov'), oiGet(opticalImage,'vfov')];
+                    %obj.sensor = sensorSetSizeToFOV(obj.sensor,oiFOV,opticalImage);
+                    %sensorFOV = sensorGet(obj.sensor, 'fov horizontal');
+                    %oiSet(opticalImage,'fov', sensorFOV);
                 else
                     error("Unknown scene render");
                 end
-                obj.sensor = sensorSet(obj.sensor, 'exposure time', exposureTimes(ii));
+                obj.sensor = sensorSet(obj.sensor, 'exposure time', expTimes(ii));
                 % The OI returned from pbrt sometimes doesn't currently give us a
                 % width or height, so we need to make something up:
                 %% Hack -- DJC

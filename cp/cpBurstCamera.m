@@ -37,6 +37,8 @@ classdef cpBurstCamera < cpCamera
            end
            if ~isempty(camProps.imageName)
                obj.isp.ip = ipSet(obj.isp.ip, 'name', camProps.imageName);
+           else
+               obj.isp.ip = ipSet(obj.isp.ip, 'name', 'Burst Camera Image');
            end
            obj.numHDRFrames = options.numHDRFrames;
            obj.numBurstFrames = options.numBurstFrames;

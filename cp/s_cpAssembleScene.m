@@ -54,6 +54,9 @@ simpleScene.thisR.set('asset',1, 'add', bunny.assetTree.Node{1});
 simpleScene.thisR.set('material', 'add', bunny.matList{1});
 piWrite(simpleScene.thisR);
 
+% capture a set of images that could/should have different focus
+%ourCamera.TakePicture();
+
 % Optionally add some motion to the bunny
 % simpleScene.objectMotion = {{'Bunny_O', [1 0 0], [0 0 0]}};
 

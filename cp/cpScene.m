@@ -193,6 +193,7 @@ classdef cpScene < handle
                 % you haven't changed anything in the recipe since last
                 % time
                 options.reRender (1,1) {islogical} = true;
+                options.filmSize {mustBeNumeric} = 22; % default
             end
             obj.numFrames = numel(expTimes);
             obj.expTimes = expTimes;
@@ -225,7 +226,7 @@ classdef cpScene < handle
                     % or maybe to a fraction for faster performance
                     val = recipeSet(obj.thisR,'filmresolution', obj.resolution);
                     val = recipeSet(obj.thisR,'rays per pixel',obj.numRays);
-                    
+                    val = recipeSet(obj.thisR,'film diagonal', round(options.filmSize *1.5));
                     % Hack to see if reducing the from/to lookAt numbers
                     % will help us not show everything in the scene as 60
                     % meters away!
