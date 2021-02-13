@@ -23,20 +23,39 @@ ieInit();
 filmResolution = 256;
 numRays = 64;
 sceneLuminance = 100;
-ourCamera = cpBurstCamera();
+%ourCamera = cpBurstCamera();
+% I'm okay with any sensor I can get to work, for now at least:)
+% Same for lens choice!
 sensor = sensorFromFile('ar0132atSensorRGB');
-ourCamera.cmodules(1) = cpCModule('sensor', sensor);
+%ourCamera.cmodules(1) = cpCModule('sensor', sensor);
 
-%% scene with no lens file (yet)
+%% scene -- just a wrapper for piRecipeDefault when created:
 simpleScene = cpScene('pbrt', 'scenePath', 'CornellBoxReference', ...
     'sceneName', 'CornellBoxReference', ...
     'resolution', [filmResolution filmResolution], ...
     'numRays', numRays, ...
+    'lensFile','2el.XXdeg.50mm.json',...
     'sceneLuminance', sceneLuminance);
 
-ourCamera.cmodules(1).sensor = ...
-    sensorSet(ourCamera.cmodules(1).sensor, ...
-    'size', [filmResolution, filmResolution]);
+% Add the Stanford bunny to the scene
+bunny = load('bunny.mat');
+simpleScene.thisR.set('asset',1, 'add', bunny.assetTree.Node{1});
+
+simpleScene.thisR.set('material', 'add', bunny.matList{1});
+piWrite(simpleScene.thisR);
+oi = piRender(simpleScene.thisR);
+ieAddObject(oi); oiWindow(oi);
+
+% We get a tiny slice of the image, but if we try to change the sensor to
+% match the 50 degree FOV, it scales by adding pixels and becomes massive
+% resolution
+sensorRender = sensorCompute(sensor, oi);
+sensorWindow(sensorRender);
+
+% ------------------- SPARE STUFF BELOW ---------------------------------
+%ourCamera.cmodules(1).sensor = ...
+%    sensorSet(ourCamera.cmodules(1).sensor, ...
+%    'size', [filmResolution, filmResolution]);
 
 % Look at the original scene by showing our camera and then clicking
 % "Preview" to get a rendering.
@@ -44,16 +63,10 @@ ourCamera.cmodules(1).sensor = ...
 
 % for focus stacking let's make our lens wide-open and
 % longer focal length so we get optical blur
-ourCamera.cmodules(1).oi = oiSet(ourCamera.cmodules(1).oi,'optics focallength', .120);
-ourCamera.cmodules(1).oi = oiSet(ourCamera.cmodules(1).oi,'optics fnumber',1.2);
+%ourCamera.cmodules(1).oi = oiSet(ourCamera.cmodules(1).oi,'optics focallength', .120);
+%ourCamera.cmodules(1).oi = oiSet(ourCamera.cmodules(1).oi,'optics fnumber',1.2);
 
-% Add the Stanford bunny to the scene
-bunny = load('bunny.mat');
-simpleScene.thisR.set('asset',1, 'add', bunny.assetTree.Node{1});
 %thisR.assets.show;
-simpleScene.thisR.set('material', 'add', bunny.matList{1});
-piWrite(simpleScene.thisR);
-
 % Optionally add some motion to the bunny
 % simpleScene.objectMotion = {{'Bunny_O', [1 0 0], [0 0 0]}};
 
@@ -63,7 +76,7 @@ scene = piRender(thisR);
 sceneWindow(scene);
 %}
 
-cpCameraWindow(ourCamera, simpleScene);
+%cpCameraWindow(ourCamera, simpleScene);
 
 % TODO Next:
 % Add MCC
