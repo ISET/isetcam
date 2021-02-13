@@ -19,7 +19,7 @@ classdef cpCamera < handle
         cmodules = cpCModule.empty; % 1 (or more) CModules
         isp = [];     % an extended ip
         expTimes = [];
-        supportedIntents = {'Auto', 'Pro'};
+        supportedIntents;
     end
     
     methods
@@ -28,7 +28,7 @@ classdef cpCamera < handle
             %"super-class"
             obj.cmodules(1) = cpCModule(); % 1 (or more) CModules
             obj.isp = cpIP();     % extended ip
-            
+            obj.supportedIntents = {'Auto', 'Pro'};
         end
         
         % Expected to be over-ridden in sub-classes for specific
@@ -52,7 +52,7 @@ classdef cpCamera < handle
                 obj.isp.ip = ipSet(obj.isp.ip, 'name', options.imageName);
             end
             
-            % aCIScene is a ciScene
+            % aCIScene is a cpScene
             % That gives us .preview, .render
             % with support for motion and an array of shutter times
             %
@@ -92,15 +92,12 @@ classdef cpCamera < handle
                 expTimes = obj.expTimes;
             end
             
-            % Render scenes as needed. Note that if pbrt has a lens file
-            % then 'sceneObjects' are actually oi structs
-            [sceneObjects, sceneFiles] = aCPScene.render(expTimes, 'reRender', options.reRender);
             
             % Simplest case, now that we have the nFrames & expTimes
             % We want to call our camera module(s).
             % Each returns an array of sensor objects with the images
             % pre-computed
-            sensorImages = obj.cmodules(1).compute(sceneObjects, expTimes, 'stackFrames', options.stackFrames);
+            sensorImages = obj.cmodules(1).compute(aCPScene, expTimes, 'stackFrames', options.stackFrames);
             
             % generic version, currently just prints out each processed
             % image from the sensor
@@ -123,7 +120,7 @@ classdef cpCamera < handle
             
         end
         
-        % Here we over-ride default processing to compute a photo after we've
+        % Here sub-classes over-ride default processing to compute a photo after we've
         % captured one or more frames. This allows burst & hdr, for example.
         function ourPhoto = computePhoto(obj, sensorImages, intent, options)
             arguments

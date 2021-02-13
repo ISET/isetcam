@@ -67,6 +67,15 @@ sensorWindow(sensorRender);
 %ourCamera.cmodules(1).oi = oiSet(ourCamera.cmodules(1).oi,'optics fnumber',1.2);
 
 %thisR.assets.show;
+<<<<<<< HEAD
+=======
+simpleScene.thisR.set('material', 'add', bunny.matList{1});
+piWrite(simpleScene.thisR);
+
+% capture a set of images that could/should have different focus
+%ourCamera.TakePicture();
+
+>>>>>>> 2f5b1a663efd657fb419a424483ef2ba71b858b0
 % Optionally add some motion to the bunny
 % simpleScene.objectMotion = {{'Bunny_O', [1 0 0], [0 0 0]}};
 
