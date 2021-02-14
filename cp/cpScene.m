@@ -92,6 +92,8 @@ classdef cpScene < handle
         
         sceneLuminance; % set in constructor, helps simulate lighting
         cachedRecipeFileName = '';
+        originalRecipeFileName = ''; % to put back after we stash copies
+        clearTempFiles = true; % by default remove our copy of pbrt scenes after use
     end
     
     %% Do the work here
@@ -300,7 +302,9 @@ classdef cpScene < handle
                         % expensive, but for now?...
                         [defaultRecipeDirectory, defaultRecipeFile, suffix] = ...
                             fileparts(recipeGet(obj.thisR, 'outputfile'));
+
                         obj.cachedRecipeFileName = fullfile(tempname(defaultRecipeDirectory), strcat(defaultRecipeFile,suffix));
+                        obj.originalRecipeFileName = recipeGet(obj.thisR, 'outputfile');
                         recipeSet(obj.thisR, 'outputfile', obj.cachedRecipeFileName);
                         piWrite(obj.thisR); % pbrt reads from disk files so we need to write out
                         haveCache = false;
@@ -309,14 +313,16 @@ classdef cpScene < handle
                         % a reRender flag to override regenerating scenes
                         if options.reRender == true && haveCache == false
                             rName = obj.thisR; % Save doesn't like dots?
-                            % THIS IS REALLY WRONG, SO TURNED IT OFF
-                            %save(obj.cachedRecipeFileName, 'rName');
                             % by default also calc depth, could make that
                             % an option:
                             [sceneObject, results] = piRender(obj.thisR, 'render type', 'both', ...
                                 'mean luminance', obj.sceneLuminance);
                         else
                             sceneObject = sceneFromFile(imageFileName, 'multispectral');
+                        end
+                        recipeSet(obj.thisR, 'outputfile', obj.originalRecipeFileName);
+                        if obj.clearTempFiles && isfile(obj.cachedRecipeFileName)
+                            rmdir(fileparts(obj.cachedRecipeFileName), 's');
                         end
                         
                         if isequal(sceneObject.type, 'scene') && haveCache == false
@@ -476,7 +482,14 @@ classdef cpScene < handle
             rez = sprintf("%d by %d",obj.resolution(1), obj.resolution(2));
             infoArray = [infoArray; {'Resolution:', rez}];
         end
-        
+
+        % remove the cached pbrt scene when we are destroyed
+        function delete(obj)
+            if isfile(obj.cachedRecipeFileName)
+                [cacheDir, ~, ~] = fileparts(obj.cachedRecipeFileName);
+                rmdir(cacheDir,'s');
+            end
+        end
     end
 end
 
