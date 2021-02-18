@@ -37,14 +37,14 @@ classdef cpBurstIP < cpIP
                 intent;
                 % Use our default for whether to just return an IP if the
                 % user doesn't specify what to do
-                options.returnIP = obj.returnIP;
+                options.insensorIP = obj.insensorIP;
             end
             
             switch intent
                 case 'HDR'
                     % decide if we want to let the ip combine raw data, or
                     % demosaic it first
-                    if options.returnIP
+                    if options.insensorIP
                         % ipCompute for HDR assumes we have an array of voltages
                         % in a single sensor, NOT an array of sensors
                         % so first we merge our sensor array into one sensor
@@ -91,7 +91,7 @@ classdef cpBurstIP < cpIP
                     
                     % old ipBurstMotion  = ipCompute(ipBurstMotion,sensorBurstMotion);
                     obj.ip = ipCompute(obj.ip, sensorImage);
-                    if obj.returnIP
+                    if obj.insensorIP
                         ourPhoto = obj.ip;
                     else
                         ourPhoto = obj.ipToImage(obj.ip);
@@ -106,7 +106,7 @@ classdef cpBurstIP < cpIP
                     
                     % old ipBurstMotion  = ipCompute(ipBurstMotion,sensorBurstMotion);
                     obj.ip = ipCompute(obj.ip, sensorImage);
-                    if obj.returnIP
+                    if obj.insensorIP
                         ourPhoto = obj.ip;
                     else
                         ourPhoto = obj.ipToImage(obj.ip);
@@ -120,7 +120,7 @@ classdef cpBurstIP < cpIP
                     for ii=1:numel(sensorImages)
                         sensorWindow(sensorImages(ii));
                         ourPhoto = ipCompute(obj.ip, sensorImages(ii));
-                        if obj.returnIP == false
+                        if obj.insensorIP == false
                             ourPhoto = obj.ipToImage(ourPhoto);
                         end
                     end

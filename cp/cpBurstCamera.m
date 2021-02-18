@@ -30,7 +30,7 @@ classdef cpBurstCamera < cpCamera
                options.numHDRFrames = 3;
                options.numBurstFrames = 3;
                options.numFocusFrames = 3;
-               options.returnIP = obj.isp.returnIP;
+               options.insensorIP = obj.isp.insensorIP;
                camProps.?cpCamera;
                camProps.imageName char = '';
                camProps.reRender (1,1) {islogical} = true;
@@ -53,7 +53,7 @@ classdef cpBurstCamera < cpCamera
                    stackFrames = 0;
            end
            ourPicture = TakePicture@cpCamera(obj, aCPScene, intent, ...,
-               'returnIP', options.returnIP, 'stackFrames', stackFrames, varargin{:});
+               'insensorIP', options.insensorIP, 'stackFrames', stackFrames, varargin{:});
            
        end
        
