@@ -46,7 +46,7 @@ classdef cpIP < handle
                     % For now this is simply concatenating, but could be
                     % more complex in a sub-class that wanted to be more
                     % clever
-                    sensorImage = obj.mergeSensors(sensorImages);
+                    sensorImage = obj.mergeSensors(sensorImages, varargin{:});
                     sensorImage = sensorSet(sensorImage,'exposure method', 'bracketing');
                     
                     %obj.ip = ipSet(obj.ip, 'render demosaic only', 'true');
@@ -56,7 +56,7 @@ classdef cpIP < handle
                     ourPhoto = obj.ip;
                 case 'Burst'
                     % baseline is just sum the voltages, without alignment
-                    sensorImage = obj.mergeSensors(sensorImages);
+                    sensorImage = obj.mergeSensors(sensorImages, varargin{:});
                     sensorImage = sensorSet(sensorImage,'exposure method', 'burst');
                     
                     %obj.ip = ipSet(obj.ip, 'render demosaic only', 'true');
@@ -67,7 +67,7 @@ classdef cpIP < handle
                     ourPhoto = obj.ip;
                 case 'FocusStack'
                     % Doesn't stack yet. Needs to do that during merge!
-                    sensorImage = obj.isp.mergeSensors(sensorImages);
+                    sensorImage = obj.isp.mergeSensors(sensorImages, varargin{:});
                     sensorImage = sensorSet(sensorImage,'exposure method', 'burst');
                     
                     %obj.ip = ipSet(obj.ip, 'render demosaic only', 'true');
