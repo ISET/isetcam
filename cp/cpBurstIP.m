@@ -91,7 +91,7 @@ classdef cpBurstIP < cpIP
                     
                     % old ipBurstMotion  = ipCompute(ipBurstMotion,sensorBurstMotion);
                     obj.ip = ipCompute(obj.ip, sensorImage);
-                    if obj.insensorIP
+                    if options.insensorIP
                         ourPhoto = obj.ip;
                     else
                         ourPhoto = obj.ipToImage(obj.ip);
