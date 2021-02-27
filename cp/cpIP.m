@@ -94,7 +94,7 @@ classdef cpIP < handle
         % and combine them into a single struct for processing by ip.
         % Right now this is simple processing of voltages. Should also
         % look at demosaic first and other options
-        function singleSensor = mergeSensors(obj, sensorArray)
+        function singleSensor = mergeSensors(obj, sensorArray, varargin)
             singleSensor = sensorArray(1);
             for ii = 2:numel(sensorArray)
                 singleSensor = sensorSet(singleSensor, 'exposure time', ...
