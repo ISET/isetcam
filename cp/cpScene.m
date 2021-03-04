@@ -331,7 +331,7 @@ classdef cpScene < handle
                             sceneToFile(imageFileName,sceneObject);
                             % this is mostly just for debugging & human inspection
                             sceneSaveImage(sceneObject,imageFilePrefixName);
-                            sprintf("Scene luminance is: %f", sceneGet(sceneObject, 'mean luminance'))
+                            %sprintf("Scene luminance is: %f", sceneGet(sceneObject, 'mean luminance'));
                         elseif isequal(sceneObject.type, 'opticalimage') % we have an optical image
                             oiSaveImage(sceneObject, append(imageFilePrefixName,'.png'));
                             save(imageFileName,'sceneObject');
