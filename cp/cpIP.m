@@ -83,7 +83,7 @@ classdef cpIP < handle
                     % Except this doesn't seem to deal with multiple
                     % images?
                     for ii=1:numel(sensorImages)
-                        sensorWindow(sensorImages(ii));
+                        %sensorWindow(sensorImages(ii));
                         ourPhoto = ipCompute(obj.ip, sensorImages(ii));
                     end
             end

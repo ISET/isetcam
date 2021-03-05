@@ -145,7 +145,7 @@ classdef cpScene < handle
                     obj.sceneName = options.sceneName;
                     
                     if ~piDockerExists, piDockerConfig; end
-                    obj.thisR = piRecipeDefault('scene name', obj.sceneName);
+                    obj.thisR = piRecipeDefault('scene name', obj.sceneName, 'verbose', 0);
                     if ~isempty(options.lensFile)
                         obj.thisR.camera = piCameraCreate('omni','lensFile',obj.lensFile);
                         obj.thisR.set('film diagonal',66); % sensor mm
@@ -305,8 +305,9 @@ classdef cpScene < handle
 
                         obj.cachedRecipeFileName = fullfile(tempname(defaultRecipeDirectory), strcat(defaultRecipeFile,suffix));
                         obj.originalRecipeFileName = recipeGet(obj.thisR, 'outputfile');
+                        recipeSet(obj.thisR, 'verbose', 0);
                         recipeSet(obj.thisR, 'outputfile', obj.cachedRecipeFileName);
-                        piWrite(obj.thisR); % pbrt reads from disk files so we need to write out
+                        piWrite(obj.thisR, 'verbose', 0); % pbrt reads from disk files so we need to write out
                         haveCache = false;
                         
                         % Haven't found a good way to cache, so we've added
