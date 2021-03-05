@@ -316,7 +316,7 @@ classdef cpScene < handle
                             % by default also calc depth, could make that
                             % an option:
                             [sceneObject, results] = piRender(obj.thisR, 'render type', 'both', ...
-                                'mean luminance', obj.sceneLuminance);
+                                'mean luminance', obj.sceneLuminance, 'verbose', 0);
                         else
                             sceneObject = sceneFromFile(imageFileName, 'multispectral');
                         end
