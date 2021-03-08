@@ -94,6 +94,8 @@ classdef cpScene < handle
         cachedRecipeFileName = '';
         originalRecipeFileName = ''; % to put back after we stash copies
         clearTempFiles = true; % by default remove our copy of pbrt scenes after use
+        
+        verbosity; % level of chattiness
     end
     
     %% Do the work here
@@ -116,6 +118,7 @@ classdef cpScene < handle
                 options.waveLengths {mustBeNumeric} = [400:10:700];
                 options.dispCal char = 'OLED-Sony.mat';
                 options.apertureDiameter {mustBeNumeric} = 5;
+                options.verbose {mustBeNumeric} = 0; % squash output by default
             end
             obj.resolution = options.resolution;
             obj.numRays = options.numRays;
@@ -123,6 +126,7 @@ classdef cpScene < handle
             obj.lensFile = options.lensFile;
             obj.sceneLuminance = options.sceneLuminance;
             obj.apertureDiameter = options.apertureDiameter;
+            obj.verbosity = options.verbose;
             
             
             %cpScene Construct an instance of this class
@@ -317,7 +321,7 @@ classdef cpScene < handle
                             % by default also calc depth, could make that
                             % an option:
                             [sceneObject, results] = piRender(obj.thisR, 'render type', 'both', ...
-                                'mean luminance', obj.sceneLuminance, 'verbose', 0);
+                                'mean luminance', obj.sceneLuminance, 'verbose', obj.verbosity);
                         else
                             sceneObject = sceneFromFile(imageFileName, 'multispectral');
                         end
