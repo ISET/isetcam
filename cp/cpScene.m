@@ -137,7 +137,11 @@ classdef cpScene < handle
                     if exist(options.recipe,'var')
                         obj.thisR = options.recipe;
                         if ~isempty(obj.lensFile)
-                            obj.thisR.camera = piCameraCreate('omni','lensFile',obj.lensFile);
+                            % try a realistic camera
+                            %obj.thisR.camera = piCameraCreate('omni','lensFile',obj.lensFile);
+                            obj.thisR.camera = piCameraCreate('realistic',...
+                                'lensFile',obj.lensFile,...
+                                'focusdistance', 1.0);
                             obj.thisR.set('film diagonal',66); % sensor mm
                         end
                         obj.allowsObjectMotion = true;
