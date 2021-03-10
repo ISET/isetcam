@@ -87,7 +87,7 @@ classdef cpScene < handle
         % to a sensor. Default is simple "pinhole"
         %{
             lensfile  = 'dgauss.22deg.50.0mm.json';    % 30 38 18 10
-            thisR.camera = piCameraCreate('omni','lensFile',lensfile);
+            thisR.camera = piCameraCreate('realistic','lensFile',lensfile);
         %}
         
         sceneLuminance; % set in constructor, helps simulate lighting
@@ -137,12 +137,12 @@ classdef cpScene < handle
                     if exist(options.recipe,'var')
                         obj.thisR = options.recipe;
                         if ~isempty(obj.lensFile)
-                            % try a realistic camera
-                            %obj.thisR.camera = piCameraCreate('omni','lensFile',obj.lensFile);
+
                             obj.thisR.camera = piCameraCreate('realistic',...
-                                'lensFile',obj.lensFile,...
-                                'focusdistance', 1.0);
+                                'lensFile',obj.lensFile);
+                            obj.thisR.set('focusdistance', 1.0);
                             obj.thisR.set('film diagonal',66); % sensor mm
+                            
                         end
                         obj.allowsObjectMotion = true;
                     else
@@ -155,7 +155,9 @@ classdef cpScene < handle
                     if ~piDockerExists, piDockerConfig; end
                     obj.thisR = piRecipeDefault('scene name', obj.sceneName, 'verbose', 0);
                     if ~isempty(options.lensFile)
-                        obj.thisR.camera = piCameraCreate('omni','lensFile',obj.lensFile);
+                        obj.thisR.camera = piCameraCreate('realistic',...
+                            'lensFile',obj.lensFile);
+                        obj.thisR.set('focusdistance', 1);
                         obj.thisR.set('film diagonal',66); % sensor mm
                     end
                     obj.allowsObjectMotion = true;
@@ -204,6 +206,7 @@ classdef cpScene < handle
                 % time
                 options.reRender (1,1) {islogical} = true;
                 options.filmSize {mustBeNumeric} = 22; % default
+                options.stackFrames = 0;
             end
             obj.numFrames = numel(expTimes);
             obj.expTimes = expTimes;
@@ -226,7 +229,7 @@ classdef cpScene < handle
                         % Okay, if we have a lensFile, we need to reapply it here
                         % but it doesn't seem to work?
                         if ~isempty(obj.lensFile)
-                            obj.thisR.camera = piCameraCreate('omni','lensFile',obj.lensFile);
+                            obj.thisR.camera = piCameraCreate('realistic','lensFile',obj.lensFile);
                         end
                     end
                     
@@ -237,15 +240,8 @@ classdef cpScene < handle
                     val = recipeSet(obj.thisR,'filmresolution', obj.resolution);
                     val = recipeSet(obj.thisR,'rays per pixel',obj.numRays);
                     val = recipeSet(obj.thisR,'film diagonal', round(options.filmSize *1.5));
-                    % Hack to see if reducing the from/to lookAt numbers
-                    % will help us not show everything in the scene as 60
-                    % meters away!
-                    %laFrom = obj.thisR.lookAt.from;
-                    %laTo = obj.thisR.lookAt.to;
-                    %if abs(laFrom(1)) > 10; obj.thisR.lookAt.from = [laFrom(1) / 20, laFrom(2) / 20, laFrom(3) / 20]; end
-                    %if abs(laTo(1)) > 10; obj.thisR.lookAt.to = [laTo(1) / 20, laTo(2) / 20, laTo(3) / 20]; end
+
                     %% Looks like we still need to add our own light
-                    
                     % Add an equal energy distant light for uniform lighting
                     lightSpectrum = 'equalEnergy';
                     obj.thisR = piLightAdd(obj.thisR,...
@@ -291,7 +287,10 @@ classdef cpScene < handle
                         obj.thisR.set('shutteropen', sTime);
                         sTime = sTime + obj.expTimes(ii);
                         obj.thisR.set('shutterclose', sTime);
-                        
+
+                        if options.stackFrames > 0
+                            obj.thisR.set('focusdistance', ii * .5); % hack for now
+                        end
                         % process camera motion if allowed
                         % We do this per frame because we want to
                         % allow for some perturbance/shake/etc.

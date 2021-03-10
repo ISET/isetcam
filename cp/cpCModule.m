@@ -65,8 +65,9 @@ classdef cpCModule
             filmSize = 1000 * sensorGet(obj.sensor, 'width');
             % Render scenes as needed. Note that if pbrt has a lens file                                                                                    -
             % then 'sceneObjects' are actually oi structs                                                                                                          -
-            [sceneObjects, sceneFiles] = aCPScene.render(expTimes, ...,
-                'reRender', options.reRender, 'filmSize', filmSize); 
+            [sceneObjects, sceneFiles] = aCPScene.render(expTimes, ...
+                'reRender', options.reRender, 'filmSize', filmSize, ...
+                'stackFrames', options.stackFrames); 
             
             cOutput = [];
             for ii = 1:numel(sceneObjects)
