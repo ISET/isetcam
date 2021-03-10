@@ -272,6 +272,17 @@ classdef cpScene < handle
                     end
                     
                     sTime = 0;
+                    distanceRange = obj.thisR.get('depthrange');
+                    % if we are focus stacking space out our focus
+                    % distances
+                    if options.stackFrames > 0
+                        focusFrames = max(options.stackFrames, obj.numFrames);
+                        focusRange = [distanceRange(1):(distanceRange(2)-distanceRange(1))/focusFrames:...
+                            distanceRange(2)];
+                    else
+                        focusRange = repelem(distanceRange(2) - distanceRange(1), obj.numFrames);
+                    end
+                        
                     for ii = 1:obj.numFrames
                         if options.previewFlag
                             imageFilePrefixName = fullfile(imageFolderPath, append("preview_", num2str(ii)));
@@ -288,9 +299,8 @@ classdef cpScene < handle
                         sTime = sTime + obj.expTimes(ii);
                         obj.thisR.set('shutterclose', sTime);
 
-                        if options.stackFrames > 0
-                            obj.thisR.set('focusdistance', ii * .5); % hack for now
-                        end
+                        obj.thisR.set('focusdistance', focusRange(ii)); 
+
                         % process camera motion if allowed
                         % We do this per frame because we want to
                         % allow for some perturbance/shake/etc.

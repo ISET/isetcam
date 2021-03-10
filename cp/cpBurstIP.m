@@ -98,7 +98,7 @@ classdef cpBurstIP < cpIP
                     end
                 case 'FocusStack'
                     % Doesn't stack yet. Needs to do that during merge!
-                    sensorImage = obj.isp.mergeSensors(sensorImages);
+                    sensorImage = obj.mergeSensors(sensorImages);
                     sensorImage = sensorSet(sensorImage,'exposure method', 'burst');
                     
                     %obj.ip = ipSet(obj.ip, 'render demosaic only', 'true');
