@@ -97,19 +97,44 @@ classdef cpBurstIP < cpIP
                         ourPhoto = obj.ipToImage(obj.ip);
                     end
                 case 'FocusStack'
-                    % Doesn't stack yet. Needs to do that during merge!
-                    sensorImage = obj.mergeSensors(sensorImages);
-                    sensorImage = sensorSet(sensorImage,'exposure method', 'burst');
-                    
-                    %obj.ip = ipSet(obj.ip, 'render demosaic only', 'true');
-                    obj.ip = ipSet(obj.ip, 'combination method', 'sum');
-                    
-                    % old ipBurstMotion  = ipCompute(ipBurstMotion,sensorBurstMotion);
-                    obj.ip = ipCompute(obj.ip, sensorImage);
                     if obj.insensorIP
+                        % Doesn't support in-sensor focus stacking
+                        % just adds burst of images together
+                        sensorImage = obj.mergeSensors(sensorImages);
+                        sensorImage = sensorSet(sensorImage,'exposure method', 'burst');
+                        
+                        %obj.ip = ipSet(obj.ip, 'render demosaic only', 'true');
+                        obj.ip = ipSet(obj.ip, 'combination method', 'sum');
+                        
+                        % old ipBurstMotion  = ipCompute(ipBurstMotion,sensorBurstMotion);
+                        obj.ip = ipCompute(obj.ip, sensorImage);
                         ourPhoto = obj.ip;
                     else
-                        ourPhoto = obj.ipToImage(obj.ip);
+                        % We need to turn each sensor image into an RGB,
+                        % then call a focus stacker
+                        % now we want to register all the image data
+                        frameExposures = [];
+                        for ii = 1:numel(sensorImages)
+                            tmpIP = ipCompute(obj.ip, sensorImages(ii));
+                            frameExposures = [frameExposures sensorImages(ii).integrationTime];
+                            currentImage = ipGet(tmpIP,'data srgb');
+                            
+                            % I'm not sure if we want to do registration
+                            % for focus stacking. It is primarily used on
+                            % static scenes. Leaving it out for now, but if
+                            % needed can copy the code from the HDR case
+
+                            imageFrames{ii} = {obj.ipToImage(tmpIP)};
+
+                        end
+                        for ii = 1:numel(imageFrames)
+                            imgFiles{ii} = ['foo_', num2str(ii), '.jpg'];
+                            imwrite(imageFrames{ii}{1}, imgFiles{ii});
+                        end
+                        % this isn't working with raw images, so try image
+                        % files like the original
+                        % ourPhoto = fstack(imageFrames);
+                        ourPhoto = fstack(imgFiles);
                     end
                     
                 otherwise

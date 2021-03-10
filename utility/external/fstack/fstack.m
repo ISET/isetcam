@@ -32,8 +32,8 @@ function im = fstack(imlist, varargin)
 %
 %S. Pertuz
 %Jan/2016
-
-
+%
+% Adapted for use in ISETCam D. Cardinal March/2021
 
 %Parse inputs:
 opts = parseInputs(imlist, varargin{:});
@@ -56,7 +56,11 @@ end
 tic
 fprintf('Fmeasure     ')
 for p = 1:P
-    im = imread(imlist{p});
+    if isstring(imlist{p}) || ischar(imlist{p})
+        im = imread(imlist{p});
+    else
+        im = imlist{p}{1};
+    end
     if opts.RGB
         imagesR(:,:,p) = im(:,:,1);
         imagesG(:,:,p) = im(:,:,2);
@@ -172,7 +176,12 @@ end
 function options = parseInputs(imlist, varargin) 
 
 % Determine image size and type:
-im = imread(imlist{1});
+% Add support for directly passing images
+if ischar(imlist{1}) || isstring(imlist{1})
+    im = imread(imlist{1});
+else
+    im = imlist{1}{1};
+end
 options.RGB = (ndims(im)==3);
 M = size(im, 1);
 N = size(im, 2);
