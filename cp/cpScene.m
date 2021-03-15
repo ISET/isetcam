@@ -95,6 +95,10 @@ classdef cpScene < handle
         originalRecipeFileName = ''; % to put back after we stash copies
         clearTempFiles = true; % by default remove our copy of pbrt scenes after use
         
+        focusRange = []; % for when we do focus stacking
+        % right now we calculate automatically, but should allow it to be
+        % passed in as well
+        
         verbosity; % level of chattiness
     end
     
@@ -140,7 +144,6 @@ classdef cpScene < handle
 
                             obj.thisR.camera = piCameraCreate('realistic',...
                                 'lensFile',obj.lensFile);
-                            obj.thisR.set('focusdistance', 1.0);
                             obj.thisR.set('film diagonal',66); % sensor mm
                             
                         end
@@ -157,7 +160,6 @@ classdef cpScene < handle
                     if ~isempty(options.lensFile)
                         obj.thisR.camera = piCameraCreate('realistic',...
                             'lensFile',obj.lensFile);
-                        obj.thisR.set('focusdistance', 1);
                         obj.thisR.set('film diagonal',66); % sensor mm
                     end
                     obj.allowsObjectMotion = true;
@@ -277,10 +279,10 @@ classdef cpScene < handle
                     % distances
                     if options.stackFrames > 0
                         focusFrames = max(options.stackFrames, obj.numFrames);
-                        focusRange = [distanceRange(1):(distanceRange(2)-distanceRange(1))/focusFrames:...
+                        obj.focusRange = [distanceRange(1):(distanceRange(2)-distanceRange(1))/(focusFrames-1):...
                             distanceRange(2)];
                     else
-                        focusRange = repelem(distanceRange(2) - distanceRange(1), obj.numFrames);
+                        obj.focusRange = repelem(distanceRange(2) - distanceRange(1), obj.numFrames);
                     end
                         
                     for ii = 1:obj.numFrames
@@ -299,7 +301,7 @@ classdef cpScene < handle
                         sTime = sTime + obj.expTimes(ii);
                         obj.thisR.set('shutterclose', sTime);
 
-                        obj.thisR.set('focusdistance', focusRange(ii)); 
+                        obj.thisR.set('focusdistance', obj.focusRange(ii)); 
 
                         % process camera motion if allowed
                         % We do this per frame because we want to

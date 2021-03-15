@@ -102,7 +102,7 @@ classdef cpCamera < handle
             % generic version, currently just prints out each processed
             % image from the sensor
             ourPicture = obj.computePhoto(sensorImages, intent, ...
-                'insensorIP', options.insensorIP);
+                'insensorIP', options.insensorIP, 'scene', aCPScene);
 
             % alternate method of doing multi-sensor:
             %{
@@ -127,9 +127,10 @@ classdef cpCamera < handle
                 obj
                 sensorImages;
                 intent;
-                options.insensorIP;
+                options.insensorIP = true;
+                options.scene = [];
             end
-            ourPhoto = obj.isp.ispCompute(sensorImages, intent, 'insensorIP', options.insensorIP); 
+            ourPhoto = obj.isp.ispCompute(sensorImages, intent, 'insensorIP', options.insensorIP, 'scene', options.scene); 
         end
        
         % A key element of modern computational cameras is their ability
