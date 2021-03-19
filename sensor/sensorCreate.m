@@ -218,7 +218,7 @@ switch sensorName
         sensor = sensorIMX363('row col',[600 800]);
 
     case {'custom'}      % Often used for multiple channel
-        % sensorCreate('custom',pixel,filterPattern,filterFile,wave);
+        % sensorCreate('custom',filterColorLetters,filterPattern,filterFile,wave);
         if length(varargin) >= 1, filterPattern = varargin{1};
         else  % Must read it here
         end
