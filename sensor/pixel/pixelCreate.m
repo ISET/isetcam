@@ -58,7 +58,7 @@ switch lower(pixelType)
         pixel = pixelHuman;
     case 'mouse'
         pixel = pixelMouse;
-    otherwise,
+    otherwise
         error('Unknown pixelType.');
 end
 
