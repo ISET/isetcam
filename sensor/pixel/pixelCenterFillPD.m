@@ -1,13 +1,13 @@
 function sensor = pixelCenterFillPD(sensor,fillfactor)
 % Adjust the pixel photodiode to be centered (fill factor [0,1])
 %
-%    isa = pixelCenterFillPD(isa,fillfactor)
+%    sensor = pixelCenterFillPD(sensor,fillfactor)
 %
 % Create a centered photodetector with a particular fill factor within a
 % pixel. (The pixel is attached to the sensor.)
 %
 % Example:
-%  isa = pixelCenterFillPD(isa,0.5)
+%  sensor = pixelCenterFillPD(sensor,0.5)
 %
 % See also: pixelPositionPD
 %
@@ -23,7 +23,7 @@ function sensor = pixelCenterFillPD(sensor,fillfactor)
 
 if ieNotDefined('sensor'), sensor = vcGetObject('ISA'); end
 if ieNotDefined('fillfactor'), fillfactor = 1;
-elseif (fillfactor > 1) || (fillfactor < 0), 
+elseif (fillfactor > 1) || (fillfactor < 0) 
     error('Fill factor must be between 0 and 1.  Parameter value = %f\n',fillfactor); 
 end
 
