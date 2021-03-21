@@ -31,6 +31,8 @@ classdef cpBurstCamera < cpCamera
                options.numBurstFrames = 3;
                options.numFocusFrames = 3;
                options.insensorIP = obj.isp.insensorIP;
+               options.focusMode char = 'Auto';
+               options.focusParam = 'Center'; % for Manual is distance in m
                camProps.?cpCamera;
                camProps.imageName char = '';
                camProps.reRender (1,1) {islogical} = true;
@@ -42,16 +44,17 @@ classdef cpBurstCamera < cpCamera
            end
            obj.numHDRFrames = options.numHDRFrames;
            obj.numBurstFrames = options.numBurstFrames;
-           obj.numFocusFrames = options.numFocusFrames;
-
            
            varargin=namedargs2cell(camProps); 
-           switch intent
-               case {'FocusStack', 'Focus'}
-                   stackFrames = obj.numFocusFrames;
+           switch options.focusMode
+               case 'Stack'
+                   stackFrames = options.focusParam;
+                   obj.numFocusFrames = options.focusParam;
                otherwise
                    stackFrames = 0;
+                   obj.numFocusFrames = 0;
            end
+           
            ourPicture = TakePicture@cpCamera(obj, aCPScene, intent, ...,
                'insensorIP', options.insensorIP, 'stackFrames', stackFrames, varargin{:});
            

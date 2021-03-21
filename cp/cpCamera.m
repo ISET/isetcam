@@ -46,8 +46,14 @@ classdef cpCamera < handle
                 options.expTimes = [];
                 options.stackFrames = 0;
                 options.insensorIP = obj.isp.insensorIP; % default
+                options.focusMode char = 'Auto';
+                options.focusParam = 'Center'; % for Manual is distance in m
             end
             obj.expTimes = options.expTimes;
+            % Not sure yet whether we need these at the class level
+            %obj.focusMode = options.focusMode;
+            %obj.focusParam = options.focusParam;
+            
             if ~isempty(options.imageName) 
                 obj.isp.ip = ipSet(obj.isp.ip, 'name', options.imageName);
             end
@@ -97,26 +103,16 @@ classdef cpCamera < handle
             % We want to call our camera module(s).
             % Each returns an array of sensor objects with the images
             % pre-computed
-            sensorImages = obj.cmodules(1).compute(aCPScene, expTimes, 'stackFrames', options.stackFrames);
             
+            if strcmp(options.focusMode, 'Stack')
+                sensorImages = obj.cmodules(1).compute(aCPScene, expTimes, 'stackFrames', options.focusParam);
+            else
+                sensorImages = obj.cmodules(1).compute(aCPScene, expTimes, 'stackFrames', 0);
+            end
             % generic version, currently just prints out each processed
             % image from the sensor
             ourPicture = obj.computePhoto(sensorImages, intent, ...
-                'insensorIP', options.insensorIP, 'scene', aCPScene);
-
-            % alternate method of doing multi-sensor:
-            %{
-            or we could do it this way and invoke each sensor separately?
-            for ii = 1:numel(useScenes)
-                useableScene = sceneFromFile(useScenes(ii), 'multispectral');
-                ourOIs = oiCompute(useableScene, obj.cmodule.oi);
-                sceneFOV = [sceneGet(useableScene,'fovhorizontal'), sceneGet(useableScene,'fovvertical')];
-                obj.cmodule.sensor = sensorSetSizeToFOV(obj.cmodule.sensor,sceneFOV,obj.cmodule.oi);
-                ourCaptures = sensorCompute(obj.cmodule.sensor, ourOIs);
-                ourPicture = ipCompute(obj.isp, ourCaptures);
-            end
-            %}
-            
+                'insensorIP', options.insensorIP, 'scene', aCPScene);            
             
         end
         
