@@ -253,7 +253,7 @@ switch param
         % Controls the gamma for rendering the result data to the
         % GUI display.
         ip.render.gamma = val;
-        
+        ieReplaceObject(ip);
         % If the window is open and valid, set the edit box and refresh it.
         app = ieSessionGet('ip window');
         if ~isempty(app) && isvalid(app)
