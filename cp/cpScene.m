@@ -327,7 +327,9 @@ classdef cpScene < handle
                         obj.originalRecipeFileName = recipeGet(obj.thisR, 'outputfile');
                         recipeSet(obj.thisR, 'verbose', 0);
                         recipeSet(obj.thisR, 'outputfile', obj.cachedRecipeFileName);
+                        tic % let's see how much overhead is the copy
                         piWrite(obj.thisR, 'verbose', 0); % pbrt reads from disk files so we need to write out
+                        toc
                         haveCache = false;
                         
                         % Haven't found a good way to cache, so we've added
