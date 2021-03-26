@@ -19,6 +19,7 @@ function sensor = sensorCreateIMECSSM4x4vis(varargin)
 %   wavelength range XXX.
 %   The imec sensor is a CMOSIS CMV2000 sensor. See https://ams.com/cmv2000
 %   for technical specifications.
+%   A useful calibration document: https://ams.com/documents/20143/36005/CMVxxx_AN000355_1-00.pdf/05fbbca0-fb6c-ad32-1078-3719ce658884    
 %
 % Gain Description CMV2000
 %   The CMV2000 has multiple gains that can be applied to the output signal: the analog gain and
@@ -63,7 +64,7 @@ p.addParameter('quantization','10 bit',@(x)(ismember(x,{'10 bit','8 bit'}))); %
 p.addParameter('dsnu',0,@isnumeric); % 0.0726
 p.addParameter('prnu',0.7,@isnumeric);
 p.addParameter('fillfactor',0.42,@isnumeric);
-p.addParameter('darkcurrent',125,@isnumeric);   % Electrons/s (at 25 degrees celcius)
+p.addParameter('darkcurrent',125,@isnumeric);   % Electrons/s (at 25 degrees celcius)   doubling per 6.5°C increase
 p.addParameter('digitalblacklevel', 64, @isnumeric); 
 p.addParameter('digitalwhitelevel', 2^10, @isnumeric); % TG: should depend on quantization?Add
 p.addParameter('exposuretime',1/60,@isnumeric);
