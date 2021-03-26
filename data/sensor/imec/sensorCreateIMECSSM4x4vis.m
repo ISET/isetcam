@@ -17,6 +17,8 @@ function sensor = sensorCreateIMECSSM4x4vis(varargin)
 %   The IMEC SSM is a snap shot sensor.  BY default we create a 4x4
 %   super-pixel that has a series of Lorentzian spectral filters over the
 %   wavelength range XXX.
+%   The imec sensor is a CMOSIS CMV2000 sensor. See https://ams.com/cmv2000
+%   for technical specifications.
 %
 %
 % See also
@@ -44,18 +46,18 @@ p.addParameter('pixelsize',5.5 *1e-6,@isnumeric);
 p.addParameter('analoggain',1.4 *1e-6,@isnumeric);
 p.addParameter('isospeed',270,@isnumeric);
 p.addParameter('isounitygain', 55, @isnumeric);
-p.addParameter('quantization','10 bit',@(x)(ismember(x,{'12 bit','10 bit','8 bit','analog'})));
+p.addParameter('quantization','10 bit',@(x)(ismember(x,{'10 bit','8 bit'}))); % 
 p.addParameter('dsnu',0,@isnumeric); % 0.0726
 p.addParameter('prnu',0.7,@isnumeric);
 p.addParameter('fillfactor',0.42,@isnumeric);
-p.addParameter('darkvoltage',0,@isnumeric);
-p.addParameter('electron2dn',0.075,@isnumeric);  % Each electron adds this many bits
+p.addParameter('darkcurrent',125,@isnumeric);   % Electrons/s (at 25 degrees celcius)
+p.addParameter('electron2dn',0.075,@isnumeric);  % Each electron adds this many bits (in 10 bit mode)
 p.addParameter('digitalblacklevel', 64, @isnumeric);
 p.addParameter('digitalwhitelevel', 1023, @isnumeric);
-p.addParameter('wellcapacity',13500,@isnumeric);
 p.addParameter('exposuretime',1/60,@isnumeric);
 p.addParameter('wave',460:620,@isnumeric);
 p.addParameter('readnoise',13,@isnumeric);   % Electrons
+p.addParameter('wellcapacity',13.5e3,@isnumeric);   % Electrons
 p.addParameter('voltageswing',0.5,@isnumeric);
 p.addParameter('qefilename', fullfile(isetRootPath,'data','sensor','imec','qe_IMEC.mat'), @isfile);
 % p.addParameter('irfilename', fullfile(isetRootPath,'data','sensor','ircf_public.mat'), @isfile);
@@ -74,10 +76,11 @@ pixelsize    = p.Results.pixelsize;     % Meters
 % isoUnityGain = p.Results.isounitygain;  % ISO speed equivalent to analog gain of 1x, for Pixel 4: ISO55
 quantization = p.Results.quantization;  % quantization method - could be 'analog' or '10 bit' or others
 wavelengths  = p.Results.wave;          % Wavelength samples (nm)
+darkcurrent =  p.Results.darkcurrent;   % electrons/sec
 dsnu         = p.Results.dsnu;          % Dark signal nonuniformity
 fillfactor   = p.Results.fillfactor;    % A fraction of the pixel area
-darkvoltage  = p.Results.darkvoltage;   % Volts/sec
-electron2dn  = p.Results.electron2dn;   % lsb per electron 0.075 10 bit with unity gain
+%electron2dn  = p.Results.electron2dn;   % lsb per electron 0.075 10 bit with unity gain
+
 
 % blacklevel   = p.Results.digitalblacklevel; % black level offset in DN
 % whitelevel   = p.Results.digitalwhitelevel; % white level in DN
@@ -87,10 +90,10 @@ readnoise    = p.Results.readnoise;     % Read noise in electrons
 qefilename   = p.Results.qefilename;    % QE curve file name
 % irfilename   = p.Results.irfilename;    % IR cut filter file name
 voltageswing = p.Results.voltageswing;  % pixel voltage swing
+wellcapacity= p.Results.wellcapacity;
 
-% Implicit parameters
-wellcapacity = 2^10/electron2dn;
-
+% Implicit parameters 
+darkvoltage  = (voltageswing/wellcapacity)*darkcurrent;
 %% Start to set the parameters for the pixel and sensor 
 
 
