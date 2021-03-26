@@ -20,6 +20,20 @@ function sensor = sensorCreateIMECSSM4x4vis(varargin)
 %   The imec sensor is a CMOSIS CMV2000 sensor. See https://ams.com/cmv2000
 %   for technical specifications.
 %
+% Gain Description CMV2000
+%   The CMV2000 has multiple gains that can be applied to the output signal: the analog gain and
+%   the ACD/digital gain. 
+%
+%   ADC gain: A slower clock signal means a higher ADC_gain register value for an
+%              actual ADC gain of 1x. Also at higher register values, the actual ADC gain will increase in bigger steps. So fine-tuning the
+%              ADC gain is easier at lower register values.  The datasheet
+%              shows a graph what ADC gain you obtain for a given clock
+%              frequency.
+%
+%   Analog gain: 1, 1.2, 1.4, 1.6, 2, 2.4, 2.8, 3.2, 4
+%
+%
+%   
 %
 % See also
 %    sensorIMX363, sensorCreate
@@ -43,17 +57,15 @@ p = inputParser;
 % Set the default values here
 p.addParameter('rowcol',[1016 2040],@isvector);
 p.addParameter('pixelsize',5.5 *1e-6,@isnumeric);
-p.addParameter('analoggain',1.4 *1e-6,@isnumeric);
+p.addParameter('analoggain',1.4 *1e-6,@(x)(ismember(x,[1, 1.2, 1.4, 1.6, 2, 2.4, 2.8, 3.2, 4]))); 
 p.addParameter('isospeed',270,@isnumeric);
-p.addParameter('isounitygain', 55, @isnumeric);
 p.addParameter('quantization','10 bit',@(x)(ismember(x,{'10 bit','8 bit'}))); % 
 p.addParameter('dsnu',0,@isnumeric); % 0.0726
 p.addParameter('prnu',0.7,@isnumeric);
 p.addParameter('fillfactor',0.42,@isnumeric);
 p.addParameter('darkcurrent',125,@isnumeric);   % Electrons/s (at 25 degrees celcius)
-p.addParameter('electron2dn',0.075,@isnumeric);  % Each electron adds this many bits (in 10 bit mode)
-p.addParameter('digitalblacklevel', 64, @isnumeric);
-p.addParameter('digitalwhitelevel', 1023, @isnumeric);
+p.addParameter('digitalblacklevel', 64, @isnumeric); 
+p.addParameter('digitalwhitelevel', 2^10, @isnumeric); % TG: should depend on quantization?Add
 p.addParameter('exposuretime',1/60,@isnumeric);
 p.addParameter('wave',460:620,@isnumeric);
 p.addParameter('readnoise',13,@isnumeric);   % Electrons
@@ -79,7 +91,6 @@ wavelengths  = p.Results.wave;          % Wavelength samples (nm)
 darkcurrent =  p.Results.darkcurrent;   % electrons/sec
 dsnu         = p.Results.dsnu;          % Dark signal nonuniformity
 fillfactor   = p.Results.fillfactor;    % A fraction of the pixel area
-%electron2dn  = p.Results.electron2dn;   % lsb per electron 0.075 10 bit with unity gain
 
 
 % blacklevel   = p.Results.digitalblacklevel; % black level offset in DN
