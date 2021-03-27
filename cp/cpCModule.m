@@ -76,7 +76,7 @@ classdef cpCModule
                 
                 ourScene = sceneObjects{ii};
                 if strcmp(ourScene.type, 'scene')
-                    if options.stackFrames > 0
+                    if isequal(options.focusMode, 'Stack')
                         % DOESN'T WORK. Clearly doing something wrong:( DJC
                         % -- This is the "simple" case where we emulate
                         %    blur. The "advanced" case should use lens
