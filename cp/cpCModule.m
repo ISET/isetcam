@@ -56,7 +56,8 @@ classdef cpCModule
                 obj cpCModule;
                 aCPScene;
                 expTimes;
-                options.stackFrames {mustBeNumeric} = 0;
+                options.focusMode = 'Auto';
+                options.focusParam = '';
                 options.reRender {islogical} = true;
             end
             
@@ -67,7 +68,8 @@ classdef cpCModule
             % then 'sceneObjects' are actually oi structs                                                                                                          -
             [sceneObjects, sceneFiles] = aCPScene.render(expTimes, ...
                 'reRender', options.reRender, 'filmSize', filmSize, ...
-                'stackFrames', options.stackFrames); 
+                'focusMode', options.focusMode, ...
+                'focusParam', options.focusParam); 
             
             cOutput = [];
             for ii = 1:numel(sceneObjects)
