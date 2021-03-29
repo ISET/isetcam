@@ -102,6 +102,12 @@ classdef cpCamera < handle
             sensorImages = obj.cmodules(1).compute(aCPScene, obj.expTimes, 'focusMode', options.focusMode, 'focusParam', options.focusParam);
 
                 % generic version, currently just prints out each processed
+            
+            sensorImages = obj.cmodules(1).compute(aCPScene, expTimes, ...
+                'focusMode', options.focusMode, ...
+                'focusParam', options.focusParam);
+            
+            % generic version, currently just prints out each processed
             % image from the sensor
             ourPicture = obj.computePhoto(sensorImages, intent, ...
                 'insensorIP', options.insensorIP, 'scene', aCPScene);            

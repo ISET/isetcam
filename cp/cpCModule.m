@@ -95,13 +95,18 @@ classdef cpCModule
             [focusDistances, expTimes] = obj.focus(aCPScene, expTimes, options.focusMode, options.focusParam);
             [sceneObjects, sceneFiles] = aCPScene.render(expTimes, focusDistances, ...
                 'reRender', options.reRender, 'filmSize', filmSize); 
+            % then 'sceneObjects' are actually oi structs                                                                                                          -
+            [sceneObjects, sceneFiles] = aCPScene.render(expTimes, ...
+                'reRender', options.reRender, 'filmSize', filmSize, ...
+                'focusMode', options.focusMode, ...
+                'focusParam', options.focusParam); 
             
             cOutput = [];
             for ii = 1:numel(sceneObjects)
                 
                 ourScene = sceneObjects{ii};
                 if strcmp(ourScene.type, 'scene')
-                    if options.stackFrames > 0
+                    if isequal(options.focusMode, 'Stack')
                         % DOESN'T WORK. Clearly doing something wrong:( DJC
                         % -- This is the "simple" case where we emulate
                         %    blur. The "advanced" case should use lens

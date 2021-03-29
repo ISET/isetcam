@@ -37,7 +37,7 @@ classdef cpScene < handle
         ourScene.initialScene = <name of cb_bunny pbrt resource>
         ourScene.cameraMotion = [0 0 0];
         % bunny is currently labeled Default_B
-        ourScene.objectMotion = [['Default_B' [1 0 0] [0 0 0]]];
+        ourScene.objectMotion = {{'Bunny_O', [1 0 0], [0 0 0]}};
         ourScene.exposureTimes = [.5 .5 .5 .5];
         ourScene.cacheName = 'cb_bunny_slide';
     
@@ -209,6 +209,11 @@ classdef cpScene < handle
                 % time
                 options.reRender (1,1) {islogical} = true;
                 options.filmSize {mustBeNumeric} = 22; % default
+<<<<<<< HEAD
+=======
+                options.focusMode = 'Auto';
+                options.focusParam = 0;
+>>>>>>> 06283280b08642d000880d28e74589c60cf3333f
             end
             obj.numFrames = numel(expTimes);
             obj.expTimes = expTimes;
@@ -275,9 +280,26 @@ classdef cpScene < handle
                     end
                     
                     sTime = 0;
+<<<<<<< HEAD
                     
                     
                     for ii = 1:numel(focusDistances)
+=======
+                    distanceRange = obj.thisR.get('depthrange');
+                    % if we are focus stacking space out our focus
+                    % distances
+                    if isequal(options.focusMode, 'Stack')
+                        focusFrames = max(options.focusParam, obj.numFrames);
+                        obj.focusRange = [distanceRange(1):(distanceRange(2)-distanceRange(1))/(focusFrames-1):...
+                            distanceRange(2)];
+                    elseif isequal(options.focusMode, 'Manual')
+                        obj.focusRange = repelem(options.focusParam, obj.numFrames);
+                    else 
+                        obj.focusRange = repelem(distanceRange(2) - distanceRange(1), obj.numFrames);
+                    end
+                        
+                    for ii = 1:obj.numFrames
+>>>>>>> 06283280b08642d000880d28e74589c60cf3333f
                         if options.previewFlag
                             imageFilePrefixName = fullfile(imageFolderPath, append("preview_", num2str(ii)));
                         else
