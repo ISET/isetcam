@@ -1,12 +1,11 @@
 %% Generate QE files for ISET based on new IMEC SSM4x4 mosaic VIS sensor
-
 %
 % Thomas Goossens
 
 clear; close all
 
 %% Wavelength range of the IMEC sensor
-wl=(470:600)';
+wl=(460:600)';
 
 
 %% Filter QE
