@@ -198,17 +198,17 @@ classdef cpScene < handle
         % TODO: If there is no camera or object motion, then for burst &
         % stack operations, maybe we should just render once in pbrt to
         % save time?
-        function [sceneObjects, sceneFiles] = render(obj,expTimes, options)
+        function [sceneObjects, sceneFiles] = render(obj,expTimes, focusDistances, options)
             arguments
                 obj cpScene;
                 expTimes (1,:);
+                focusDistances = [10]; % random default focus distance
                 options.previewFlag (1,1) {islogical} = false;
                 % reRender is tricky. You can use it if you are sure
                 % you haven't changed anything in the recipe since last
                 % time
                 options.reRender (1,1) {islogical} = true;
                 options.filmSize {mustBeNumeric} = 22; % default
-                options.stackFrames = 0;
             end
             obj.numFrames = numel(expTimes);
             obj.expTimes = expTimes;
@@ -275,18 +275,9 @@ classdef cpScene < handle
                     end
                     
                     sTime = 0;
-                    distanceRange = obj.thisR.get('depthrange');
-                    % if we are focus stacking space out our focus
-                    % distances
-                    if options.stackFrames > 0
-                        focusFrames = max(options.stackFrames, obj.numFrames);
-                        obj.focusRange = [distanceRange(1):(distanceRange(2)-distanceRange(1))/(focusFrames-1):...
-                            distanceRange(2)];
-                    else
-                        obj.focusRange = repelem(distanceRange(2) - distanceRange(1), obj.numFrames);
-                    end
-                        
-                    for ii = 1:obj.numFrames
+                    
+                    
+                    for ii = 1:numel(focusDistances)
                         if options.previewFlag
                             imageFilePrefixName = fullfile(imageFolderPath, append("preview_", num2str(ii)));
                         else
@@ -302,7 +293,7 @@ classdef cpScene < handle
                         sTime = sTime + obj.expTimes(ii);
                         obj.thisR.set('shutterclose', sTime);
 
-                        obj.thisR.set('focusdistance', obj.focusRange(ii)); 
+                        obj.thisR.set('focusdistance', focusDistances(ii)); 
 
                         % process camera motion if allowed
                         % We do this per frame because we want to
