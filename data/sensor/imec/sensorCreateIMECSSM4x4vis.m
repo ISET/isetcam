@@ -148,12 +148,37 @@ sceneWindow(scene);
 oi = oiCreate;
 oi = oiCompute(oi,scene);
 oiWindow(oi);
-sensor = sensorSet(sensor,'exposure time',1e-3);
+% sensor = sensorSet(sensor,'exposure time',100e-3);
+sensor = sensorSet(sensor, 'auto exp', 1);
 sensor = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'),oi);
 sensor = sensorCompute(sensor,oi);
 
 sensorWindow(sensor);
 
+%{
+% This is the script from Thomas that helps visualizing the sensor image.
+% Maybe at some point we can consider use this for hyperspectral imaging?
+
+sensor = sensorCompute(sensor, oi);
+DN = sensorGet(sensor,'digitalvalues');
+
+figure(10);clf;
+imagesc(DN,[0 2^10]); colormap gray
+axis equal 
+
+% Demosaic
+band=1; %band counter
+for r=1:4
+    for c=1:4
+        D(:,:,band) = DN(r:4:end,c:4:end);
+       band=band+1;
+    end
+end
+fig=figure(11);clf;
+sliceViewer(D.^0.5);
+fig.Position=[200 201 594 499];
+colormap gray
+%}
 %% Create Camera
 camera = cameraCreate;
 camera = cameraSet(camera,'sensor',sensor);
