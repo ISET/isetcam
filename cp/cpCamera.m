@@ -44,7 +44,6 @@ classdef cpCamera < handle
                 options.imageName char = '';
                 options.reRender (1,1) {islogical} = true;
                 options.expTimes = [];
-                options.stackFrames = 0;
                 options.insensorIP = obj.isp.insensorIP; % default
                 options.focusMode char = 'Auto';
                 options.focusParam = 'Center'; % for Manual is distance in m
@@ -93,23 +92,16 @@ classdef cpCamera < handle
             % IF a camera is okay with standard processing,
             % could just over-ride planCaptures and leave the rest alone.
             if isequal(obj.expTimes, [])
-                [expTimes] = obj.planCaptures(previewImages(1), intent);
-            else
-                expTimes = obj.expTimes;
+                [obj.expTimes] = obj.planCaptures(previewImages(1), intent);
             end
-            
             
             % Simplest case, now that we have the nFrames & expTimes
             % We want to call our camera module(s).
             % Each returns an array of sensor objects with the images
             % pre-computed
-            
-            if strcmp(options.focusMode, 'Stack')
-                sensorImages = obj.cmodules(1).compute(aCPScene, expTimes, 'stackFrames', options.focusParam);
-            else
-                sensorImages = obj.cmodules(1).compute(aCPScene, expTimes, 'stackFrames', 0);
-            end
-            % generic version, currently just prints out each processed
+            sensorImages = obj.cmodules(1).compute(aCPScene, obj.expTimes, 'focusMode', options.focusMode, 'focusParam', options.focusParam);
+
+                % generic version, currently just prints out each processed
             % image from the sensor
             ourPicture = obj.computePhoto(sensorImages, intent, ...
                 'insensorIP', options.insensorIP, 'scene', aCPScene);            
