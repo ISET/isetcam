@@ -36,6 +36,31 @@ classdef cpCModule
             
         end
         
+        % Based on the camera's focus settings we calculate focus distances
+        % by querying the scene
+        function [focusDistances, expTimes] = focus(obj, aCPScene, expTimes, focusMode, focusParam)
+            if isequal(aCPScene.sceneType, 'pbrt') || isequal(aCPScene.sceneType, 'recipe')
+                
+                distanceRange = aCPScene.thisR.get('depthrange');
+                % if we are focus stacking space out our focus
+                % distances
+                if isequal(focusMode, 'Stack')
+                    focusFrames = focusParam;
+                    focusDistances = [distanceRange(1):(distanceRange(2)-distanceRange(1))/(focusFrames-1):...
+                        distanceRange(2)];
+                    if numel(expTimes) < focusParam
+                        expTimes = repelem(expTimes(1), focusParam);
+                    end
+                else
+                    focusDistances = repelem(distanceRange(2) - distanceRange(1), numel(expTimes));
+                    expTimes = expTimes;
+                end
+                
+            else
+                warning("Unsupported scene type for focus -- Future work");
+            end
+        end
+        
         function cOutput = compute(obj, aCPScene, expTimes, options) % will support more args
             %COMPUTE Calculate what we capture
             %   Simplest case this is sensorCompute + oiCompute
@@ -56,7 +81,8 @@ classdef cpCModule
                 obj cpCModule;
                 aCPScene;
                 expTimes;
-                options.stackFrames {mustBeNumeric} = 0;
+                options.focusMode = 'Auto';
+                options.focusParam = '';
                 options.reRender {islogical} = true;
             end
             
@@ -64,10 +90,11 @@ classdef cpCModule
             % however it is in meters and pi wants mm
             filmSize = 1000 * sensorGet(obj.sensor, 'width');
             % Render scenes as needed. Note that if pbrt has a lens file                                                                                    -
-            % then 'sceneObjects' are actually oi structs                                                                                                          -
-            [sceneObjects, sceneFiles] = aCPScene.render(expTimes, ...
-                'reRender', options.reRender, 'filmSize', filmSize, ...
-                'stackFrames', options.stackFrames); 
+            % then 'sceneObjects' are actually oi structs
+            
+            [focusDistances, expTimes] = obj.focus(aCPScene, expTimes, options.focusMode, options.focusParam);
+            [sceneObjects, sceneFiles] = aCPScene.render(expTimes, focusDistances, ...
+                'reRender', options.reRender, 'filmSize', filmSize); 
             
             cOutput = [];
             for ii = 1:numel(sceneObjects)
