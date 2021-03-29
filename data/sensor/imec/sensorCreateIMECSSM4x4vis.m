@@ -59,19 +59,19 @@ p = inputParser;
 p.addParameter('rowcol',[1016 2040],@isvector);
 p.addParameter('pixelsize',5.5 *1e-6,@isnumeric);
 p.addParameter('analoggain',1.4 *1e-6,@(x)(ismember(x,[1, 1.2, 1.4, 1.6, 2, 2.4, 2.8, 3.2, 4]))); 
-p.addParameter('isospeed',270,@isnumeric);
+%p.addParameter('isospeed',270,@isnumeric);
 p.addParameter('quantization','10 bit',@(x)(ismember(x,{'10 bit','8 bit'}))); % 
 p.addParameter('dsnu',0,@isnumeric); % 0.0726
 p.addParameter('prnu',0.7,@isnumeric);
 p.addParameter('fillfactor',0.42,@isnumeric);
 p.addParameter('darkcurrent',125,@isnumeric);   % Electrons/s (at 25 degrees celcius)   doubling per 6.5°C increase
-p.addParameter('digitalblacklevel', 64, @isnumeric); 
-p.addParameter('digitalwhitelevel', 2^10, @isnumeric); % TG: should depend on quantization?Add
+%p.addParameter('digitalblacklevel', 64, @isnumeric); 
+%p.addParameter('digitalwhitelevel', 2^10, @isnumeric); % TG: should depend on quantization?Add
 p.addParameter('exposuretime',1/60,@isnumeric);
 p.addParameter('wave',460:620,@isnumeric);
 p.addParameter('readnoise',13,@isnumeric);   % Electrons
 p.addParameter('wellcapacity',13.5e3,@isnumeric);   % Electrons
-p.addParameter('voltageswing',0.5,@isnumeric);
+p.addParameter('voltageswing',2,@isnumeric);
 p.addParameter('qefilename', fullfile(isetRootPath,'data','sensor','imec','qe_IMEC.mat'), @isfile);
 % p.addParameter('irfilename', fullfile(isetRootPath,'data','sensor','ircf_public.mat'), @isfile);
 
@@ -105,7 +105,15 @@ voltageswing = p.Results.voltageswing;  % pixel voltage swing
 wellcapacity= p.Results.wellcapacity;
 
 % Implicit parameters 
-darkvoltage  = (voltageswing/wellcapacity)*darkcurrent;
+conversiongain = (voltageswing/wellcapacity); % volts per electron
+darkvoltage  = conversiongain*darkcurrent;  %volts/second = volts/electron * electrons/second
+
+
+% Check : bitsperelectron*wellcapacity = 2^10 (approximately)
+%bitsperelectron = 0.075 ; % bits/electron 
+%voltsperlsb  = voltageswing / (2^10); % (should be per 2^quantization)
+
+
 %% Start to set the parameters for the pixel and sensor 
 
 
@@ -139,86 +147,8 @@ sensor = sensorSet(sensor,'wave',wavelengths);
 sensor = sensorSet(sensor,'filter transmissivities',filters);
 sensor = sensorSet(sensor,'filter names', filternames);
 
-%% Create Scene 
-fov = 40;      % what is this?
-%scene  = sceneCreate('reflectance chart');
-scene  = sceneCreate('macbeth d65');
-scene  = sceneSet(scene,'fov',fov);
-sceneWindow(scene);
-oi = oiCreate;
-oi = oiCompute(oi,scene);
-oiWindow(oi);
-% sensor = sensorSet(sensor,'exposure time',100e-3);
-sensor = sensorSet(sensor, 'auto exp', 1);
-sensor = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'),oi);
-sensor = sensorCompute(sensor,oi);
 
-sensorWindow(sensor);
-
-%{
-% This is the script from Thomas that helps visualizing the sensor image.
-% Maybe at some point we can consider use this for hyperspectral imaging?
-
-sensor = sensorCompute(sensor, oi);
-DN = sensorGet(sensor,'digitalvalues');
-
-figure(10);clf;
-imagesc(DN,[0 2^10]); colormap gray
-axis equal 
-
-% Demosaic
-band=1; %band counter
-for r=1:4
-    for c=1:4
-        D(:,:,band) = DN(r:4:end,c:4:end);
-       band=band+1;
-    end
 end
-fig=figure(11);clf;
-sliceViewer(D.^0.5);
-fig.Position=[200 201 594 499];
-colormap gray
-%}
-%% Create Camera
-camera = cameraCreate;
-camera = cameraSet(camera,'sensor',sensor);
-%camera=cameraSet(camera,'focallength',8*1e-3)
-
-
-% Q: how to choose focal length
-% Q: What parameters should i Set at this moment?
-
-
-%% Compute optical image
-camera = cameraCompute(camera,scene); % what does this do?
-oi =camera.oi;
-
-% Full image
-sensor = sensorCompute(sensor, oi);
-DN = sensorGet(sensor,'digitalvalues');
-
-
-figure(10);clf;
-imagesc(DN,[0 2^10]); colormap gray
-axis equal 
-
-%% Demosaic
-band=1; %band counter
-for r=1:4
-    for c=1:4
-        D(:,:,band) = DN(r:4:end,c:4:end);
-       band=band+1;
-    end
-end
-
-    
-%oiWindow(oi)
-fig=figure(11);clf;
-sliceViewer(D);
-fig.Position=[200 201 594 499];
-colormap gray
-
-
 
 
 
