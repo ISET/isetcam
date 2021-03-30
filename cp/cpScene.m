@@ -209,11 +209,8 @@ classdef cpScene < handle
                 % time
                 options.reRender (1,1) {islogical} = true;
                 options.filmSize {mustBeNumeric} = 22; % default
-<<<<<<< HEAD
-=======
                 options.focusMode = 'Auto';
                 options.focusParam = 0;
->>>>>>> 06283280b08642d000880d28e74589c60cf3333f
             end
             obj.numFrames = numel(expTimes);
             obj.expTimes = expTimes;
