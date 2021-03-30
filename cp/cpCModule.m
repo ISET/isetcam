@@ -101,7 +101,7 @@ classdef cpCModule
                 
                 ourScene = sceneObjects{ii};
                 if strcmp(ourScene.type, 'scene')
-                    if options.stackFrames > 0
+                    if numel(focusDistances) > 1
                         % DOESN'T WORK. Clearly doing something wrong:( DJC
                         % -- This is the "simple" case where we emulate
                         %    blur. The "advanced" case should use lens
