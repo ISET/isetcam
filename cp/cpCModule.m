@@ -57,7 +57,6 @@ classdef cpCModule
                 end
                 
             else
-                focusDistances = [10];
                 warning("Unsupported scene type for focus -- Future work");
             end
         end
