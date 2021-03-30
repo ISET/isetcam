@@ -57,6 +57,7 @@ classdef cpCModule
                 end
                 
             else
+                focusDistances = [10];
                 warning("Unsupported scene type for focus -- Future work");
             end
         end
@@ -106,7 +107,7 @@ classdef cpCModule
                 
                 ourScene = sceneObjects{ii};
                 if strcmp(ourScene.type, 'scene')
-                    if isequal(options.focusMode, 'Stack')
+                    if numel(focusDistances) > 1
                         % DOESN'T WORK. Clearly doing something wrong:( DJC
                         % -- This is the "simple" case where we emulate
                         %    blur. The "advanced" case should use lens
