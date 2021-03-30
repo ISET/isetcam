@@ -87,8 +87,10 @@ for ii=1:nPlanes
     tmp = ones(rows,cols)*emptyVal;
     
     % Find the locations for the first of the values
-    % l = (cfa == cfaVals(ii));
-    l = (filterColorLetters(ii) == cfa);
+    % filterColorLetters is the list of color letters for the color
+    % filters.  It might be 'rgbg'
+    % l = (filterColorLetters(ii) == cfa);
+    l = (cfaN == ii);
     
     % Set the entries at those locations to img(l)
     tmp(l) = img(l);   % figure(1); hist(tmp(:),50)
@@ -112,4 +114,4 @@ end
 % filters we have in the image sensor plane.
 if nargout > 1, cfaVals = unique(cfaN(:)); end
 
-return;
+end

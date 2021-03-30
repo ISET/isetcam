@@ -120,18 +120,20 @@ if nSensors > 1    % A color CFA
 
     img = plane2rgb(img,sensor,0);
 
-    % We should find a transformation, T, that maps the existing
+    % In some cases we find a transformation, T, that maps the existing
     % sensors into RGB colors.  Then we apply that T to the image data.
     % This algorithm should work for any choice of color filter
     % spectra.  Perhaps the scaling (above) should be done below?  Or
     % at least T should be scaled.
     %
-    % Notice that we sort the strings so that rgb and bgr and so forth are
-    % all treated the same.  They are both treated as RGB. Also rgbw and
-    % wrgb are treated the same.  They are both treated as WRGB.
+    % In other cases we look at the strings that define the rgb and bgr
+    % filters. We do this because it looks nicer to have saturated R,G, and
+    % B for those classic Bayer patterns or for patterns that are RGB with
+    % a clear (white) filter. rgbw and wrgb are treated the same.  They are
+    % both treated as WRGB.
     %
     % Some thoughts: 
-    %   We can  adjust T to get nice saturated colors.
+    %   We might try to  adjust T to get nice saturated colors.
     % One thought is to find the max value in each row and set that
     % to 1 and set the others to 0. That would handle a lot of
     % cases.
@@ -142,7 +144,9 @@ if nSensors > 1    % A color CFA
     %
     % Another thought:
     %    T = colorTransformMatrix('cmy2rgb');
-    %    This is a good grbc case.
+    %
+    %    This is a good grbc case that could be handled as a special case,
+    %    too.
     %    T = [1 0 0 ; 0 1 0 ; 0 0 1 ; 0 1 1];
     %
     % We could insert other switches.  For example, we could trap cmy and

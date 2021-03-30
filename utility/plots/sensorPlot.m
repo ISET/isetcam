@@ -160,10 +160,10 @@ switch pType
     case {'dvhline'}
         [g, uData]  = sensorPlotLine(sensor, 'h', 'dv', 'space', roiLocs);
     case {'voltshistogram','voltshist'}
-        [uData,g] = plotSensorHist(sensor,'v',roiLocs);
+        [uData,g] = sensorPlotHist(sensor,'v',roiLocs);
     case {'electronshistogram','electronshist'}
         % sensorPlot(sensor,'electrons histogram',rect);
-        [uData,g] = plotSensorHist(sensor,'e',roiLocs);
+        [uData,g] = sensorPlotHist(sensor,'e',roiLocs);
     case {'shotnoise'}
         [uData, g] = imageNoise('shot noise');
         
@@ -207,6 +207,7 @@ switch pType
         
         % Human
     case {'conemosaic'} % Not sure
+        % Eliminate.  Send users to ISETBio.
         [support, spread, delta] = sensorConePlot(sensor);
         uData.support = support;
         uData.spread = spread;
