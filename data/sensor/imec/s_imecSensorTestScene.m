@@ -3,7 +3,7 @@ clear; close all;
 ieInit;
 %% Create Sensor
 
-sensor = sensorCreateIMECSSM4x4vis();
+sensor = sensorCreateIMECSSM4x4vis('rowcol',[300 400]);
 
 %% Create Scene 
 fov = 40;      % what is this?
@@ -28,6 +28,8 @@ ip = ipCreate;
 ip = ipSet(ip,'render demosaic only',true);
 ip = ipCompute(ip,sensor);
 data = ipGet(ip,'sensor space');
+
+ieNewGraphWin;
 sliceViewer(data);
 
 %%
