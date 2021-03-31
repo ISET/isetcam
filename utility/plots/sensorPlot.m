@@ -153,7 +153,11 @@ switch pType
         % TODO: We should make a special window to view these images.  The
         % window should show the filter spectrum and position in the
         % pattern of each channel
-        nChannels = numel(sensorGet(sensor,'pattern'));
+        
+        % Shouldn't we be dealing with channels and pattern?  We are
+        % currently at the mercy of sensorDemosaic
+        %
+        % nChannels = numel(sensorGet(sensor,'pattern'));
 
         imgs = sensorDemosaic(sensor);
         if size(imgs,3) == 3
