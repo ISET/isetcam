@@ -156,16 +156,31 @@ switch pType
         nChannels = numel(sensorGet(sensor,'pattern'));
 
         imgs = sensorDemosaic(sensor);
-        T = sensorDisplayTransform(sensor);
-        lst = 1:nChannels;
-        
-        ieNewGraphWin;
-        for ii=1:size(imgs,3)
-            theseImgs = imgs;
-            theseImgs(:,:,lst ~= ii) = 0;
-            img = imageLinearTransform(theseImgs,T);
-            imagescRGB(img); title(sprintf('Channel %d',ii)); 
-            drawnow; pause(0.3);            
+        if size(imgs,3) == 3
+            % An 3d set, probably RGB. Jst show them one at a time.  We
+            % should probably not even be here.
+            ieNewGraphWin;
+            lst = 1:3;
+            for ii=1:3
+                thisImg = imgs;
+                thisImg(:,:,lst ~= ii) = 0;
+                imagescRGB(thisImg); 
+                title(sprintf('Channel %d',ii));
+                drawnow; pause(0.3);
+            end
+        else
+            
+            T = sensorDisplayTransform(sensor);
+            lst = 1:numel(sensorGet(sensor,'pattern'));
+            
+            ieNewGraphWin;
+            for ii=1:size(imgs,3)
+                theseImgs = imgs;
+                theseImgs(:,:,lst ~= ii) = 0;
+                img = imageLinearTransform(theseImgs,T);
+                imagescRGB(img); title(sprintf('Channel %d',ii));
+                drawnow; pause(0.3);
+            end
         end
         
     % We should have a 'case' for true size here.  Now the true size
