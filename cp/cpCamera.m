@@ -99,18 +99,14 @@ classdef cpCamera < handle
             % We want to call our camera module(s).
             % Each returns an array of sensor objects with the images
             % pre-computed
-            sensorImages = obj.cmodules(1).compute(aCPScene, obj.expTimes, 'focusMode', options.focusMode, 'focusParam', options.focusParam);
-
-                % generic version, currently just prints out each processed
-            
-            sensorImages = obj.cmodules(1).compute(aCPScene, expTimes, ...
-                'focusMode', options.focusMode, ...
+            [sensorImages, focusDistances] = obj.cmodules(1).compute(aCPScene, obj.expTimes, 'focusMode', options.focusMode,...
                 'focusParam', options.focusParam);
             
             % generic version, currently just prints out each processed
             % image from the sensor
             ourPicture = obj.computePhoto(sensorImages, intent, ...
-                'insensorIP', options.insensorIP, 'scene', aCPScene);            
+                'insensorIP', options.insensorIP, 'scene', aCPScene, ...
+                'focusDistances', focusDistances);            
             
         end
         
@@ -123,8 +119,11 @@ classdef cpCamera < handle
                 intent;
                 options.insensorIP = true;
                 options.scene = [];
+                options.focusDistances = [];
             end
-            ourPhoto = obj.isp.ispCompute(sensorImages, intent, 'insensorIP', options.insensorIP, 'scene', options.scene); 
+            ourPhoto = obj.isp.ispCompute(sensorImages, intent, 'insensorIP', ...
+                options.insensorIP, 'scene', options.scene, ...
+                'focusDistances',options.focusDistances); 
         end
        
         % A key element of modern computational cameras is their ability

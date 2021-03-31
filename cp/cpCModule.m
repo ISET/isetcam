@@ -61,7 +61,7 @@ classdef cpCModule
             end
         end
         
-        function cOutput = compute(obj, aCPScene, expTimes, options) % will support more args
+        function [cOutput, focusDistances] = compute(obj, aCPScene, expTimes, options) % will support more args
             %COMPUTE Calculate what we capture
             %   Simplest case this is sensorCompute + oiCompute
             %   however, we also integrate multi-capture
@@ -90,16 +90,13 @@ classdef cpCModule
             % however it is in meters and pi wants mm
             filmSize = 1000 * sensorGet(obj.sensor, 'width');
             % Render scenes as needed. Note that if pbrt has a lens file                                                                                    -
-            % then 'sceneObjects' are actually oi structs
-            
-            [focusDistances, expTimes] = obj.focus(aCPScene, expTimes, options.focusMode, options.focusParam);
-            [sceneObjects, sceneFiles] = aCPScene.render(expTimes, focusDistances, ...
-                'reRender', options.reRender, 'filmSize', filmSize); 
             % then 'sceneObjects' are actually oi structs                                                                                                          -
-            [sceneObjects, sceneFiles] = aCPScene.render(expTimes, ...
-                'reRender', options.reRender, 'filmSize', filmSize, ...
-                'focusMode', options.focusMode, ...
-                'focusParam', options.focusParam); 
+            
+            [focusDistances, expTimes] = focus(obj, aCPScene, expTimes, options.focusMode, options.focusParam);
+            
+            [sceneObjects, sceneFiles] = aCPScene.render(expTimes,...
+                focusDistances,...
+                'reRender', options.reRender, 'filmSize', filmSize);
             
             cOutput = [];
             for ii = 1:numel(sceneObjects)
