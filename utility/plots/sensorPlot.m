@@ -144,6 +144,33 @@ end
 %% Plot 
 switch pType
     
+    % Sensor images
+    case {'channels'}
+        % Shows images of the different channels in pattern
+        % The images are shown in a color that approximates the color of
+        % the filter for that channel.
+        %
+        % TODO: We should make a special window to view these images.  The
+        % window should show the filter spectrum and position in the
+        % pattern of each channel
+        nChannels = numel(sensorGet(sensor,'pattern'));
+
+        imgs = sensorDemosaic(sensor);
+        T = sensorDisplayTransform(sensor);
+        lst = 1:nChannels;
+        
+        ieNewGraphWin;
+        for ii=1:size(imgs,3)
+            theseImgs = imgs;
+            theseImgs(:,:,lst ~= ii) = 0;
+            img = imageLinearTransform(theseImgs,T);
+            imagescRGB(img); title(sprintf('Channel %d',ii)); 
+            drawnow; pause(0.3);            
+        end
+        
+    % We should have a 'case' for true size here.  Now the true size
+    % calulcation is done as a function inside of the sensorWindow app.
+        
     % Sensor data related
     case {'electronshline'}
         [g, uData] = sensorPlotLine(sensor, 'h', 'electrons', 'space', roiLocs);

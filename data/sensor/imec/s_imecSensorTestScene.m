@@ -14,36 +14,21 @@ sceneWindow(scene);
 oi = oiCreate;
 oi = oiCompute(oi,scene);
 
-
-
 %% Compute optical image
 % sensor = sensorSet(sensor,'exposure time',100e-3);
 sensor = sensorSet(sensor, 'auto exp', 1);
 sensor = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'),oi);
 sensor = sensorCompute(sensor,oi);
+sensorPlot(sensor,'channels');
+
 sensorWindow(sensor);
 
-%% Get Digital numbers
-DN = sensorGet(sensor,'digitalvalues');
+%%
+ip = ipCreate;
+ip = ipSet(ip,'render demosaic only',true);
+ip = ipCompute(ip,sensor);
+data = ipGet(ip,'sensor space');
+sliceViewer(data);
 
-
-figure(10);clf;
-imagesc(DN,[0 2^10]); colormap gray
-axis equal 
-
-%% Demosaic
-band=1; %band counter
-for r=1:4
-    for c=1:4
-        D(:,:,band) = DN(r:4:end,c:4:end);
-       band=band+1;
-    end
-end
-
-    
-%oiWindow(oi)
-fig=figure(11);clf;
-sliceViewer(D);
-fig.Position=[200 201 594 499];
-colormap gray
+%%
 

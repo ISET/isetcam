@@ -33,8 +33,8 @@ function ip = ipSet(ip,param,val,varargin)
 %   'type'                  - Always 'vcimage'
 %
 % Processing pipeline options
-%    'demosaic'              - The demosiac structure
-%    'demosaic method'       - Name of the demosaic method (function)
+%    'demosaic'         - The demosiac structure
+%    'demosaic method'  - Name of the demosaic method (function)
 %         Currently supported are listed in Demosaic
 %         'bilinear','adaptive laplacian','laplacian','nearest neighbor'
 %
@@ -57,14 +57,14 @@ function ip = ipSet(ip,param,val,varargin)
 %
 %  Calibrated color space (sensor spectral QE is allowed).
 %      'internal colorspace'      - Name of the internal color space
-%          Options: 'sensor', 'XYZ', 'Stockman', 'linear srgb'
+%            Options: 'sensor', 'XYZ', 'Stockman', 'linear srgb'
 %      'internal cs 2 display space' - Transform from internal to display
 %
 %  Correction for the illuminant
 %      'correction illuminant'               - Color balance structure
 %      'correction method illuminant'        - Name of the method (function)
 %        Currently supported
-%          'none', 'gray world', 'white world', 'manual matrix entry'
+%            'none', 'gray world', 'white world', 'manual matrix entry'
 %      'correction matrix illuminant'        - Color balance transform
 %
 %      'spectrum'           - Wavelength structure
@@ -88,7 +88,8 @@ function ip = ipSet(ip,param,val,varargin)
 %        'scale display output' - Scaled to display max RGB
 %
 %  Miscellaneous
-%     'chart corner points' - Outer corners of the chart, such as MCC
+%     'render demosaic only' - Skip everything but demosaicing
+%     'chart corner points'  - Outer corners of the chart, such as MCC
 %     'roi'             - Rect used for an ROI
 %     'gamma display'   - Gamma for rendering data to ipWindow image
 %     'scale display'   - True or false for scaling the ipWindow image

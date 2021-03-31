@@ -1,25 +1,36 @@
 function img = sensorData2Image(sensor,dataType,gam,scaleMax)
 % Produce the image data displayed in the sensor window.
 %
+% Synopsis
 %   img = sensorData2Image(sensor,[dataType = 'volts'],[gam=1],[scaleMax=0 (false)])
 %
 % This function renders an image of the sensor CFA.  
+%
+% Inputs
+%   sensor
+%   dataType
+%   gam
+%   scaleMax
+%
+% Optional key/val
+%   N/A
 %
 % Return:
 %  img: If the sensor has multiple filters, the image is RGB. If the sensor
 %       is monochrome, the image is a single matrix.
 %
-% This routine creates the color at each pixel resemble the transmissivity
-% of the color filter at that pixel. The intensity measures the size of the
-% data.  The dataType is normally volts.
+% Description
+%  This routine creates the color at each pixel resemble the transmissivity
+%  of the color filter at that pixel. The intensity measures the size of the
+%  data.  The dataType is normally volts.
 %
-% Normally, the function takes in one CFA plane. It can also handle the
-% case of multiple exposure durations.
+%  Normally, the function takes in one CFA plane. It can also handle the
+%  case of multiple exposure durations.
 %
-% While it is usally used for volts, the routine converts the image from
-% the 'dv' fields or even 'electrons' (I think). 
+%  While it is usally used for volts, the routine converts the image from
+%  the 'dv' fields or even 'electrons' (I think). 
 %
-% The returned images can be written out as a tiff file by sensorSaveImage.
+%  The returned images can be written out as a tiff file by sensorSaveImage.
 %
 % Examples:
 %  sensor = vcGetObject('sensor');
@@ -41,6 +52,10 @@ function img = sensorData2Image(sensor,dataType,gam,scaleMax)
 %  vcReplaceAndSelectObject(sensor); sensorImageWindow();
 %
 % Copyright ImagEval Consultants, LLC, 2003.
+%
+% See also
+%  sensorDisplayTransform
+%
 
 %%
 if ieNotDefined('sensor'),     sensor = vcGetObject('sensor'); end
@@ -195,42 +210,4 @@ end
 % kind of transformation, but ...
 img = lrgb2srgb(img);
 
-return;
-
-
-%-----------------------------------------------------
-function T = sensorDisplayTransform(sensor)
-%
-%  T = sensorDisplayTransform(sensor)
-%
-%   Find a transform that maps the sensor filter spectra into a an
-%   approximation of their (R,G,B) appearance. This transform is used for
-%   displaying the sensor data.
-%   To see estimate the RGB appearance of the filterSpectra, we create
-%   block matrix functions and multiply the filterspectra
-%
-%      filterRGB = bMatrix'*filterSpectra
-%
-%   The first column of filterRGB tells us the RGB value to use to display
-%   the first filter, and so forth.  So, if the sensor data are in the
-%   columns of a matrix, we want the display image to be
-%
-%                   sensorData*filterRGB'
-%
-%   Also, we want to scale T reasonably.  For now, we have [1,1,1]*T set to
-%   a max value of 1.  But these images look a little dim to me.
-%
-
-% We set the extrapVal to 0.2 because we may have infrared data
-bMatrix = colorBlockMatrix(sensorGet(sensor,'wave'),0.2);
-filterSpectra = sensorGet(sensor,'filterspectra');
-
-filterRGB = bMatrix'*filterSpectra;
-T = filterRGB';
-% o = ones(1,size(T,1));
-s = max(T(:));
-% s = max((o*T)');
-T = T/s;
-
-return;
-
+end
