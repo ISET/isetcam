@@ -146,49 +146,38 @@ switch pType
     
     % Sensor images
     case {'channels'}
-        % Shows images of the different channels in pattern
-        % The images are shown in a color that approximates the color of
-        % the filter for that channel.
+        % sensorPlot(sensor,'channels');
         %
-        % TODO: We should make a special window to view these images.  The
-        % window should show the filter spectrum and position in the
-        % pattern of each channel
+        % Plot | Sensor channel images
+        %
+        % Brings up a special window that shows the images of the different
+        % channels in the super pixel pattern.
+        %
+        sensorChannelImage(sensor);
+    case {'truesize'}
+        % sensorPlot(sensor,'true size');
+        %
+        % Plot | SensorImage (True Size)
+        sensor   = ieGetObject('sensor');
+        gam  = sensorGet(sensor,'gamma');
+        scaleMax = sensorGet(sensor,'scalemax');
         
-        % Shouldn't we be dealing with channels and pattern?  We are
-        % currently at the mercy of sensorDemosaic
-        %
-        % nChannels = numel(sensorGet(sensor,'pattern'));
-
-        imgs = sensorDemosaic(sensor);
-        if size(imgs,3) == 3
-            % An 3d set, probably RGB. Jst show them one at a time.  We
-            % should probably not even be here.
-            ieNewGraphWin;
-            lst = 1:3;
-            for ii=1:3
-                thisImg = imgs;
-                thisImg(:,:,lst ~= ii) = 0;
-                imagescRGB(thisImg); 
-                title(sprintf('Channel %d',ii));
-                drawnow; pause(0.3);
-            end
+        % Get voltages or digital values
+        bits     = sensorGet(sensor,'bits');
+        if isempty(bits)
+            img      = sensorData2Image(sensor,'volts',gam,scaleMax);
         else
-            
-            T = sensorDisplayTransform(sensor);
-            lst = 1:numel(sensorGet(sensor,'pattern'));
-            
-            ieNewGraphWin;
-            for ii=1:size(imgs,3)
-                theseImgs = imgs;
-                theseImgs(:,:,lst ~= ii) = 0;
-                img = imageLinearTransform(theseImgs,T);
-                imagescRGB(img); title(sprintf('Channel %d',ii));
-                drawnow; pause(0.3);
-            end
+            img      = sensorData2Image(sensor,'dv',gam,scaleMax);
         end
         
-    % We should have a 'case' for true size here.  Now the true size
-    % calulcation is done as a function inside of the sensorWindow app.
+        if ismatrix(img)
+            % imtool needs monochrome images scaled between 0 and 1
+            w = ieNewGraphWin; img = img/max(img(:));
+            imshow(img); truesize(w);
+            set(w,'Name',sensorGet(sensor,'name'));
+        else
+            ieViewer(img);
+        end
         
     % Sensor data related
     case {'electronshline'}
