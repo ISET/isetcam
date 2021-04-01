@@ -21,6 +21,9 @@ sensor = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'),oi);
 sensor = sensorCompute(sensor,oi);
 sensorPlot(sensor,'channels');
 
+%%
+sensorChannelImage(sensor);
+
 sensorWindow(sensor);
 
 %%
