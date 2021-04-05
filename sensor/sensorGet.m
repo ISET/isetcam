@@ -550,7 +550,7 @@ switch oType
                 
                 % Check if the data are in sensor
                 if     strfind(param,'volts'), d = sensorGet(sensor,'volts');
-                elseif strfind(param,'electrons'), d = sensorGet(sensor,'electrons');
+                elseif ieContains(param,'electrons'), d = sensorGet(sensor,'electrons');
                 end
                 if isempty(d)
                     warning('sensorGet:Nolinedata','No data');

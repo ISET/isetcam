@@ -29,10 +29,10 @@ switch(lower(ext))
         
         % Two special tests for monochrome targets
         test1 = fullfile('data','images','targets');
-        if strfind(lower(fullName),test1) %#ok<*STRIFCND>
+        if ieContains(lower(fullName),test1) %#ok<*STRIFCND>
             % Could be an EIA target.
             imageType = 'monochrome';
-        elseif strfind(lower(fullName),'monochrome')
+        elseif ieContains(lower(fullName),'monochrome')
             imageType = 'monochrome';
         else
             % Most likely it is rgb
@@ -46,9 +46,9 @@ end
 % Check the path string for a clue
 imageType = '';
 imagePath = lower(imagePath);
-if strfind(imagePath,'monochrome'), imageType = 'monochrome';
-elseif strfind(imagePath,'multispectral'), imageType = 'multispectral';
-elseif strfind(imagePath,'rgb'), imageType = 'rgb';
+if ieContains(imagePath,'monochrome'), imageType = 'monochrome';
+elseif ieContains(imagePath,'multispectral'), imageType = 'multispectral';
+elseif ieContains(imagePath,'rgb'), imageType = 'rgb';
 end
 if ~isempty(imageType), return; end
 

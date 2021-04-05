@@ -822,7 +822,7 @@ switch parm
         
         sceneW = ieSessionGet('scene window');
         if isempty(sceneW), val = 1;   % Default if no window
-        else, val = find(contains(sceneW.popupRender.Items,sceneW.popupRender.Value));
+        else, val = find(ieContains(sceneW.popupRender.Items,sceneW.popupRender.Value));
         end
         
     case {'renderflagstring'}

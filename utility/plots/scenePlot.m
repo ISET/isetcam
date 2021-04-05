@@ -585,7 +585,7 @@ switch lower(pType)
     case {'luminancemeshlinear','luminancemeshlog10','luminancemeshlog'}
         % scenePlot(scene,'luminance mesh linear')
         
-        if strfind(pType,'log'), yScale = 'log'; 
+        if ieContains(pType,'log'), yScale = 'log'; 
         else yScale = 'linear';
         end
         
