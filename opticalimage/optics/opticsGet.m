@@ -526,7 +526,7 @@ switch parm
         val{2} = fSamp*inCutoff;
 
         % Alternative return format
-        if strfind(parm,'matrix')
+        if ieContains(parm,'matrix')
             [valMatrix(:,:,1),valMatrix(:,:,2)] = meshgrid(val{1},val{2});
             val = valMatrix;
         end
@@ -588,7 +588,7 @@ switch parm
         val.fx = opticsGet(optics,'otf fx',units);
 
         % If called with matrix, then 
-        if strfind(parm,'matrix') %#ok<*STRIFCND>
+        if ieContains(parm,'matrix') %#ok<*STRIFCND>
             [X,Y] = meshgrid(val.fy,val.fx); % Not sure about order yet!
             fSupport(:,:,1) = X; fSupport(:,:,2) = Y;
             val = fSupport;

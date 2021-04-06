@@ -212,7 +212,7 @@ switch lower(param)
         % cone mosaic - Could be removed and use only ISETBio
         thisName = sensorGet(sensor,'name');
         if isempty(thisName), return;
-        elseif contains(thisName,'human')
+        elseif ieContains(thisName,'human')
             disp('Resizing human sensor.  Suggest you use ISETBio.')
             if checkfields(sensor,'human','coneType')
                 d = sensor.human.densities;

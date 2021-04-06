@@ -47,12 +47,12 @@ if isempty(ThePath)
         % end-1 to trim trailing carriage return
         %StringStart = StringStart(1:(end-1));
         StringStart = deblank(StringStart);
-        if strfind(StringStart,'%UserData')
+        if ieContains(StringStart,'%UserData')
             FoundHomeDir = 0;
             [ErrMsg,HomeDir] = dos('echo %UserProfile%');
             % HomeDir = HomeDir(1:(end-1));
             HomeDir = deblank(HomeDir);
-            if strfind(HomeDir,'%UserProfile')
+            if ieContains(HomeDir,'%UserProfile')
                 HomeDir = uigetdir('','Please find your home folder for me');
                 if ischar(HomeDir)
                     FoundHomeDir = 1;
