@@ -76,7 +76,11 @@ setpref('ISET', 'tvmetricsTime', toc(getpref('ISET', 'tvmetricsStart')));
 h = msgbox('CI','ISET Tests','replace');
 set(h,'position',round([36.0000  664.1379  124.7586   50.2759]));
 setpref('ISET', 'tvciStart', tic);
-v_cp
+%{
+% Dave:  Needs to be fixed. scene type 'iset scenes' not recognized in
+% the 'focus' method 
+v_cp  
+%}
 setpref('ISET', 'tvciTime', toc(getpref('ISET', 'tvciStart')));
 
 %% Display window
