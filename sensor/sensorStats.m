@@ -74,6 +74,8 @@ switch lower(unitType)
         data = sensorGet(sensor,'roi volts');
     case {'electrons'}
         data = sensorGet(sensor,'roi electrons');
+    case {'dv','digitalcount'}
+        data = sensorGet(sensor,'roi dv');
     otherwise
         error('Unknown unit type')
 end

@@ -63,7 +63,7 @@ function ip = ipSet(ip,param,val,varargin)
 %  Correction for the illuminant
 %      'correction illuminant'               - Color balance structure
 %      'correction method illuminant'        - Name of the method (function)
-%        Currently supported
+%        Currently supporteddisplay
 %          'none', 'gray world', 'white world', 'manual matrix entry'
 %      'correction matrix illuminant'        - Color balance transform
 %
@@ -242,6 +242,8 @@ switch param
             ip = ipSet(ip,'internal cs','Sensor');
             ip = ipSet(ip,'conversion method sensor','None');
             ip = ipSet(ip,'correction method illuminant','None');
+            ip = ipSet(ip, 'transform method', 'current');
+            ip = ipSet(ip,'ics2display transform', eye(3));        
         end
         
     case {'scaledisplay','scaledisplayoutput'}
@@ -302,11 +304,13 @@ switch param
 
     % Needs more comments and development    
     case {'combineexposures','combinationmethod'}
-        % Method for combining multiple exposures in bracketed case
+        % Method for combining multiple exposures in bracketed or burst case
         % Implemented:
         %   longest - Longest not saturated
+        %   sum -- for burst, just add values
         %   Others to come, I hope
         ip.combineExposures = val;
+        ip.combinationMethod = val; % this is what the Get routine wants!
         
     % Special case for L3 work with unconventional CFAs
     case {'l3'}

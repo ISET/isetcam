@@ -50,4 +50,4 @@ else
     [support, spread, delta] = conePlot(xy, coneType, support, spread, delta);
 end
 
-return;
+end

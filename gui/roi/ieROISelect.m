@@ -1,5 +1,5 @@
 function [roiLocs,roi] = ieROISelect(obj,varargin)
-% Select a region of interest (ROI) from an image and calculate locations  
+% Select a rectangular region of interest (ROI)  
 %
 % Syntax
 %   [roiLocs,roi] = ieROISelect(obj,varargin)
@@ -8,8 +8,8 @@ function [roiLocs,roi] = ieROISelect(obj,varargin)
 %  The row and col locations of the region of interest (ROI) are returned
 %  in the Nx2 matrix, roiLocs.
 %
-%  If requested, the selected rectangle (rect) determining the region of
-%  interest, [colmin,rowmin,width,height], is also returned.  
+%  If requested, the selected rectangle (rect) is also returned.   The rect
+%  corner positions are part of the roi.
 %
 % Input
 %   obj - An ISETCam structure (scene, oi, sensor, ip)

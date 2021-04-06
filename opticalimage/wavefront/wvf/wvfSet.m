@@ -110,18 +110,18 @@ switch parm
         % wvfComputePupilFunction, mainly.  It is possible that there are
         % other functions or scripts that compare the data as well.
         % 
-
+    %{
     case {'umperdegree'}
         % Applies to human calculations.
         % This is the factor used to convert between um on the retina and degrees of
         % visual angle. This is typically 300, but we have it as a
         % parameter for historical reasons.  They value does matter.
         wvf.umPerDegree = val;
-        
+    %}        
         %% Calculation parameters
         %
         %  Zernike coefficients and related
-        %
+
     case {'zcoeffs', 'zcoeff','zcoef'}
         % wvfSet(wvf,'zcoeffs',val, jIndex);
         % wvfSet(wvf,'zcoeffs',2,'defocus');

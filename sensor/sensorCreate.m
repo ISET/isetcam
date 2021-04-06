@@ -215,8 +215,11 @@ switch sensorName
         
     case {'imx363'}
         % A Sony sensor used in many systems
-        sensor = sensorIMX363('row col',[600 800]);
-
+        % To over-ride the row/col default use
+        %
+        % sensorCreate('imx363',[],'row col',[300 400]);
+        sensor = sensorIMX363('row col',[600 800], varargin{:});
+        
     case {'custom'}      % Often used for multiple channel
         % sensorCreate('custom',pixel,filterPattern,filterFile,wave);
         if length(varargin) >= 1, filterPattern = varargin{1};
@@ -328,8 +331,10 @@ sensor = sensorSet(sensor,'integrationTime',0);
 sensor = sensorSet(sensor,'autoexposure',1);    
 sensor = sensorSet(sensor,'CDS',0);
 
+if ~isequal(sensorName, 'imx363')
 % Put in a default infrared filter.  All ones.
 sensor = sensorSet(sensor,'irfilter',ones(sensorGet(sensor,'nwave'),1));
+end
 
 % Place holder for charts, such as the MCC
 sensor = sensorSet(sensor,'chart parameters',[]);
@@ -476,15 +481,14 @@ function sensor = sensorIMX363(varargin)
 % Examples:
 %{
  % The defaults and some plots
- sensor = sensorIMX363;
+ sensor = sensorCreate('IMX363');
  sensorPlot(sensor,'spectral qe');
  sensorPlot(sensor,'cfa block');
  sensorPlot(sensor,'pixel snr');
- save(fullfile(igRootPath,'data','sensor','sensor_IMX363_public.mat'), 'sensor');
 %}
 %{
  % Adjust a parameter
- sensor = sensorIMX363('row col',[256 384]);
+ sensor = sensorCreate('IMX363',[],'row col',[256 384]);
  sensorPlot(sensor,'cfa full');
 %}
 
@@ -516,7 +520,7 @@ p.addParameter('digitalblacklevel', 64, @isnumeric);
 p.addParameter('digitalwhitelevel', 1023, @isnumeric);
 p.addParameter('wellcapacity',6000,@isnumeric);
 p.addParameter('exposuretime',1/60,@isnumeric);
-p.addParameter('wave',390:20:710,@isnumeric);
+p.addParameter('wave',390:10:710,@isnumeric);
 p.addParameter('readnoise',5,@isnumeric);
 p.addParameter('qefilename', fullfile(isetRootPath,'data','sensor','qe_IMX363_public.mat'), @isfile);
 p.addParameter('irfilename', fullfile(isetRootPath,'data','sensor','ircf_public.mat'), @isfile);

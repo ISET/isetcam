@@ -37,7 +37,7 @@ function scene = sceneAdjustIlluminant(scene,illEnergy,preserveMean)
 % Examples:
 %{
     scene = sceneCreate;   % Default is MCC under D65
-    scene = sceneAdjustIlluminant(scene,'Horizon_Gretag.mat');
+    scene = sceneAdjustIlluminant(scene,'illHorizon-20180220.mat');
     vcReplaceAndSelectObject(scene); sceneWindow;
 %}
 %{

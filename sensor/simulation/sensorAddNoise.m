@@ -15,10 +15,12 @@ function sensor = sensorAddNoise(sensor)
 % An important reason for this routine is to let us generate multiple
 % (noisy) samples of the same mean image.
 %
-% noiseFlag cases
+% IMPORTANT NOTE:
+% noiseFlag cases that are correctly handled.
 %   0 - No noise at all
 %   1 - Photon noise only
 %   2 - Photon noise and electronic noise
+% We are not sure whether the -1 and -2 cases are handled correctly.
 %
 % Additional imperfections (analog gain/offset, clipping, quantization) are
 % handled in the main sensorCompute routine.  The inclusion of these
@@ -37,6 +39,8 @@ pixel = sensorGet(sensor,'pixel');
 % 1 Photon noise
 % 2 Photon and electronic noise
 noiseFlag = sensorGet(sensor,'noise Flag');
+
+if noiseFlag == 0, return; end
 
 % Random noise generator seed issues must be handled here.  This is tough
 % to make sure we can absolutely replicate the noise to test code accuracy.
@@ -93,7 +97,9 @@ for ii=1:nExposures
     if noiseFlag > 1  % If noiseFlag = 2
         vImage = vImage + pixelGet(pixel,'dark Voltage')*eTimes(ii);
         sensor = sensorSet(sensor,'volts',vImage);
-    end
+    else
+        sensor = sensorSet(sensor,'volts',vImage);
+    end      
     
     % Add shot noise if the noiseFlag is 1 or 2.
     % It must be done after adding the dark current.
@@ -120,4 +126,4 @@ end
 
 sensor = sensorSet(sensor,'volts',volts);
 
-return
+end

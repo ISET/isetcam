@@ -46,7 +46,8 @@ function val = sensorGet(sensor,param,varargin)
 %    val = sensorGet(sensor,'Electrons',2);   % Second color type
 %    val = sensorGet(sensor,'fov horizontal') % degrees
 %    val = sensorGet(sensor,'PIXEL')
-%    val = sensorGet(sensor,'exposureMethod');% Single, bracketed, cfa
+%    val = sensorGet(sensor,'exposureMethod');% Single, bracketed, cfa,
+%    burst
 %    val = sensorGet(sensor,'nExposures')     % Number of exposures
 %    val = sensorGet(sensor,'filtercolornames')
 %    val = sensorGet(sensor,'exposurePlane'); % For bracketing simulation
@@ -58,6 +59,7 @@ function val = sensorGet(sensor,param,varargin)
 %      'row'                  - sensor rows
 %      'col'                  - sensor columns
 %      'size'                 - (rows,cols)
+%      'ncaptures'            -  Number of exposures captured
 %      'height'*              - sensor height (units)
 %      'width'*               - sensor width  (units)
 %      'dimension'*           - (height,width)
@@ -288,20 +290,35 @@ switch oType
                 elseif checkfields(sensor,'cols'), val = sensor.cols;
                 end
             case {'size','arrayrowcol'}
-                % Note:  dimension is (x,y) but size is (row,col)
+                % row by col samples
+                % sensorGet(sensor,'size')
                 val = [sensorGet(sensor,'rows'),sensorGet(sensor,'cols')];
-                
             case {'height','arrayheight'}
                 val = sensorGet(sensor,'rows')*sensorGet(sensor,'deltay');
                 if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
             case {'width','arraywidth'}
                 val = sensorGet(sensor,'cols')*sensorGet(sensor,'deltax');
                 if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-                
             case {'dimension'}
+                % height by width in length units
+                % sensorGet(sensor,'dimension','mm')
                 val = [sensorGet(sensor,'height'), sensorGet(sensor,'width')];
                 if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-                
+            case {'ncaptures'}
+                % sensorGet(sensor,'captures')
+                %
+                % When we use multiple exposure times we have multiple
+                % captures in the 3rd dimension of volts or dv.  So after
+                % sensor compute this value should be equal to the number
+                % of exposure times.  Before sensor compute it can be
+                % empty.
+                val = sensorGet(sensor,'dv or volts');
+                if isempty(val), return;
+                elseif ismatrix(val)
+                    val = 1;
+                else
+                    val = size(val,3);
+                end
                 % The resolutions also represent the center-to-center spacing of the pixels.
             case {'wspatialresolution','wres','deltax','widthspatialresolution'}
                 PIXEL = sensorGet(sensor,'pixel');
@@ -470,6 +487,16 @@ switch oType
                     roiLocs = sensorGet(sensor,'roi locs');
                     val = vcGetROIData(sensor,roiLocs,'electrons');
                 else, warning('ISET:nosensorroi','No sensor.roi field.  Returning empty electron data.');
+                end
+                case {'roidv','roidigitalcount'}
+                % V = sensorGet(sensor,'roi dv');
+                %
+                % If sensor.roi exists, it is used.  Otherwise, empty
+                % is returned and a warning issued.
+                if checkfields(sensor,'roi')
+                    roiLocs = sensorGet(sensor,'roi locs');
+                    val = vcGetROIData(sensor,roiLocs,'dv');
+                else, warning('ISET:nosensorroi','No sensor.roi field.  Returning empty voltage data.');
                 end
             case {'roivoltsmean'}
                 % sensorGet(sensor,'roi volts mean')
@@ -801,7 +828,7 @@ switch oType
                     val = sensor.blackLevel;
                 else
                     oiBlack = oiCreate('black');
-                    sensor2 = sensorSet(sensor,'noiseflag',0); % Little noise
+                    sensor2 = sensorSet(sensor,'noiseflag','none'); % Little noise
                     sensor2 = sensorCompute(sensor2,oiBlack);
                     switch sensorGet(sensor,'quantization method')
                         case 'analog'
@@ -829,8 +856,8 @@ switch oType
                 else
                     try
                         rng('default');
-                    catch err
-                        randn('seed');
+                    catch
+                        rng('seed');
                     end% Compute both electronic and shot noise
                 end
                 
@@ -844,11 +871,16 @@ switch oType
             case {'exposuremethod','expmethod'}
                 % We plan to re-write the exposure parameters into a sub-structure
                 % that lives inside the sensor, sensor.exposure.XXX
-                tmp = sensorGet(sensor,'exptimes');
-                p   = sensorGet(sensor,'pattern');
-                if     isscalar(tmp), val = 'singleExposure';
-                elseif isvector(tmp),  val = 'bracketedExposure';
-                elseif isequal(size(p),size(tmp)),  val = 'cfaExposure';
+                % add support for manually setting exposure type
+                if isfield(sensor, 'exposureMethod') && ~isempty(sensor.exposureMethod)
+                    val = sensor.exposureMethod;
+                else
+                    tmp = sensorGet(sensor,'exptimes');
+                    p   = sensorGet(sensor,'pattern');
+                    if     isscalar(tmp), val = 'singleExposure';
+                    elseif isvector(tmp),  val = 'bracketedExposure';
+                    elseif isequal(size(p),size(tmp)),  val = 'cfaExposure';
+                    end
                 end
             case {'integrationtime','integrationtimes','exptime','exptimes','exposuretimes','exposuretime','exposureduration','exposuredurations'}
                 % This can be a single number, a vector, or a matrix that matches
