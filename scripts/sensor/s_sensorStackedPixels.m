@@ -41,17 +41,16 @@ fSpectra = ieScale(fSpectra,1);
 filterNames = {'rX','gY','bZ'};
 
 % Create a monochrome sensor.  We will reuse this structure to compute each
-% of the complete color filters.
-sensorMonochrome = cell(1,3);
+% of the complete color filters.]
+clear sensorMonochrome;
 for ii=1:3
-    sensorMonochrome{ii} = sensorCreate('monochrome'); 
-    sensorMonochrome{ii} = sensorSet(sensorMonochrome{ii},'pixel size constant fill factor',[1.4 1.4]*1e-6);
-    sensorMonochrome{ii} = sensorSet(sensorMonochrome{ii},'exp time',0.1);
-    sensorMonochrome{ii} = sensorSet(sensorMonochrome{ii},'filterspectra',fSpectra(:,ii));
-    sensorMonochrome{ii} = sensorSet(sensorMonochrome{ii},'Name',sprintf('Channel-%.0f',ii));
-    sensorMonochrome{ii} = sensorSetSizeToFOV(sensorMonochrome{ii},sceneGet(scene,'fov'),oi);
-    sensorMonochrome{ii} = sensorSet(sensorMonochrome{ii},'wave',wave);
-    sensorMonochrome{ii} = sensorCompute(sensorMonochrome{ii},oi);{ii}
+    sensorMonochrome(ii) = sensorCreate('monochrome'); %#ok<*SAGROW>
+    sensorMonochrome(ii) = sensorSet(sensorMonochrome(ii),'pixel size constant fill factor',[1.4 1.4]*1e-6);
+    sensorMonochrome(ii) = sensorSet(sensorMonochrome(ii),'exp time',0.1);
+    sensorMonochrome(ii) = sensorSet(sensorMonochrome(ii),'filterspectra',fSpectra(:,ii));
+    sensorMonochrome(ii) = sensorSet(sensorMonochrome(ii),'Name',sprintf('Channel-%.0f',ii));
+    sensorMonochrome(ii) = sensorSetSizeToFOV(sensorMonochrome(ii),sceneGet(scene,'fov'),oi);
+    sensorMonochrome(ii) = sensorSet(sensorMonochrome(ii),'wave',wave);
 end
 
 %% Loop on the filters and calculate monochrome sensor planes
@@ -63,7 +62,7 @@ for ii=1:3
     im(:,:,ii) = sensorGet(sensorMonochrome{ii},'volts');
 end
 
-sensorWindow(sensorMonochrome{1});
+sensorWindow(sensorMonochrome(1));
 
 %% Render the Foveon sensor data with the image processor (ipCompute)
 
@@ -90,7 +89,7 @@ sensorFoveon = sensorSet(sensorFoveon,'volts',im);
 ip = ipCreate;
 ip = ipCompute(ip,sensorFoveon);
 ip = ipSet(ip,'name','Foveon Triple Well');
-ieAddObject(ip); ipWindow;
+ipWindow(ip);
 
 %% Perform ane equivalent calculation with a conventional RGB Bayer sensor
 
@@ -114,6 +113,6 @@ sensorBayer = sensorCompute(sensorBayer,oi);
 % Well.  Notice the difference in noise and the difference in mosaic
 ip = ipCompute(ip,sensorBayer);
 ip = ipSet(ip,'name','Bayer Mosaic');
-ieAddObject(ip); ipWindow;
+ipWindow(ip);
 
 %%
