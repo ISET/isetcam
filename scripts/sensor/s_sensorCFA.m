@@ -91,7 +91,7 @@ cameraWindow(camera,'sensor');
 quadSensor = sensorCreate;
 % Should be sensorCreateQuad;
 quadSensor = sensorSet(quadSensor,'pattern',[3 3 2 2; 3 3 2 2; 2 2 1 1; 2 2 1 1]);
-quadSensor = sensorSet(quadSensor,'fov',fov);
+quadSensor = sensorSet(quadSensor,'fov',fov,oi);
 quadSensor = sensorSet(quadSensor,'name','quad');
 
 camera = cameraSet(camera,'sensor',quadSensor);

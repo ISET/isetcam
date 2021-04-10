@@ -241,8 +241,10 @@ switch lower(param)
         % preferred usage might be: 
         %  [sensor,actualFOV] = sensorSetSizeToFOV(sensor,newFOV,oi);
         %
-        oi = [];
-        if ~isempty(varargin), oi    = varargin{1}; end
+        if ~isempty(varargin), oi    = varargin{1}; 
+        else, oi = ieGetObject('oi');
+        end
+        if isempty(oi), error('oi required to set sensor fov'); end
         sensor = sensorSetSizeToFOV(sensor,val, oi);
     case 'color'
         sensor.color = val;
