@@ -18,7 +18,7 @@ function [embRGB,mRGB,pSize] = macbethCompareIdeal(ip,mRGB,illType)
 %{
   scene = sceneCreate; oi = oiCreate; oi = oiCompute(oi,scene);
   sensor = sensorCreate; 
-  sensor = sensorSet(sensor,'fov',sceneGet(scene,'fov'),scene,oi);
+  sensor = sensorSet(sensor,'fov',sceneGet(scene,'fov'),oi);
   sensor = sensorCompute(sensor,oi);
   ip = ipCreate; ip = ipCompute(ip,sensor);
   [embRGB,mRGB,pSize] = macbethCompareIdeal(ip,[],'d65'); 
@@ -29,11 +29,14 @@ if ieNotDefined('ip'), error('ip required'); end
 
 % If the mRGB or pSize not defined, we need to do some processing.
 if ieNotDefined('mRGB')
-    cp = chartCornerpoints(ip);
+    cp = ipGet(ip,'chart corner points');
+    if isempty(cp)
+        cp = chartCornerpoints(ip);
+    end
     [rects,mLocs,pSize] = chartRectangles(cp,4,6,0.5);
-    rHdl = chartRectsDraw(ip,rects);
+    chartRectsDraw(ip,rects);
     mRGB = chartRectsData(ip,mLocs,0.6*pSize(1));
-    pause(1); delete(rHdl);
+    pause(1);
 end
 
 if ieNotDefined('pSize')
@@ -47,6 +50,7 @@ if ieNotDefined('illType'), illType = 'd65'; end
 if ismatrix(mRGB)
     mRGB = XW2RGBFormat(mRGB,4,6);
 end
+
 %{
 mRGB = imageIncreaseImageRGBSize(mRGB,pSize);
 ieNewGraphWin; imagescRGB(mRGB);
@@ -61,8 +65,11 @@ ideal     = macbethIdealColor(illType,'lrgb');
 % We reshape into a mini-image 
 idealLRGB = XW2RGBFormat(ideal,4,6);
 
-% Now expand the image to a bigger size so we can insert the data we are
-% comparing.
+%% Eliminate absolute level differences.  Scale so max in data is 1
+mRGB = ieScale(mRGB,1);
+idealLRGB = ieScale(idealLRGB,1);
+
+%% Expand the image to a bigger size so we can insert the data we are comparing.
 fullIdealRGB = imageIncreaseImageRGBSize(idealLRGB,pSize);
 % ieNewGraphWin; imagescRGB(fullIdealRGB);
 

@@ -35,8 +35,9 @@ switch lower(objType)
         if isempty(figNum) && ~noNewWin, figNum = vcNewGraphWin;  end
         
     case 'scene'
-        figNum = ieSessionGet('scene window');
-        if isempty(figNum) && ~noNewWin, figNum = sceneWindow; end
+        app = ieSessionGet('scene window');
+        if isempty(app) && ~noNewWin, app = sceneWindow_App; end
+        figNum = app.figure1;
         
     case {'opticalimage'}
         figNum = ieSessionGet('oi window');
@@ -54,5 +55,4 @@ switch lower(objType)
         error('Unknown window type.');
 end
 
-return;
-
+end

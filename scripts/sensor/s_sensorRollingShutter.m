@@ -23,7 +23,7 @@ oi     = oiCreate;
 sensor    = sensorCreate;
 pixelSize = [1.4 1.4]*1e-6;    % Pixel size of 1.4 um
 sensor    = sensorSet(sensor,'pixel size constant fill factor',pixelSize);
-sensor    = sensorSet(sensor,'fov',sceneGet(scene,'fov')/2);
+sensor    = sensorSet(sensor,'fov',sceneGet(scene,'fov')/2,oi);
 sz        = sensorGet(sensor,'size');
 
 % Exposure time of the complete image (all rows).  As we increase the
@@ -60,12 +60,10 @@ rate = 0.3;
 fprintf('Computing %i frames\nRotation rate: %.2f (cycles per sec)\n',nFrames,rate/perRow/360);
 
 %% This is the scene we will rotate
-ieAddObject(scene);
-sceneWindow;
+sceneWindow(scene);
 
 oi = oiCompute(oi,scene);
-ieAddObject(oi);
-oiWindow;
+oiWindow(oi);
 
 %% Make the pattern with sceneRotate, then acquire with sensorCompute
 
@@ -100,7 +98,7 @@ close(w)
 
 %% These are the individual sensor frames
 
-vcNewGraphWin; colormap(gray); axis image; axis off
+ieNewGraphWin; colormap(gray); axis image; axis off
 fps = 7;
 for ii=1:nFrames
     imagesc(v(:,:,ii)); pause(1/fps);
@@ -119,7 +117,7 @@ z = zeros(nFrames,1);
 z(slist) = 1;
 
 % Sum across a sliding temporal range
-vcNewGraphWin; colormap(gray); axis image; axis off
+ieNewGraphWin; colormap(gray); axis image; axis off
 fps = 7;
 for rr = 1:sz(1)
     slist = slist+1; 
@@ -130,7 +128,7 @@ for rr = 1:sz(1)
     imagesc(final); pause(1/fps);
 end
 
-% vcNewGraphWin; imagesc(final);
+% ieNewGraphWin; imagesc(final);
 
 %%  Image process and then show the final color image
 srs = sensorSet(sensor,'volts',final);

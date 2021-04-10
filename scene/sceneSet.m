@@ -42,8 +42,7 @@ function scene = sceneSet(scene,parm,val,varargin)
 %         'peak photon radiance' - Used for monochromatic scenes mainly;
 %         not a variable, but a function
 % Depth
-%      'depthMap' - Stored in meters.  Used with RenderToolbox
-%      synthetic scenes.  (See scene3D pdcproject directory).
+%      'depthMap' - Stored in meters.
 %
 % Reflectance chart parameters
 %      'chart parameters'  - When we use sceneCreate('reflectance chart')
@@ -61,7 +60,6 @@ function scene = sceneSet(scene,parm,val,varargin)
 %      'illuminant Name'    - Identifier for illuminant.
 %
 % Auxiliary
-%      'consistency'  - Display consistent with window data
 %      'gamma'        - Gamma parameter for displaying image data
 %      'display mode' - Sets sceneWindow display 'rgb','hdr','gray','clip'
 %      'rect'         - A rect region of interest
@@ -97,32 +95,31 @@ switch parm
         % sceneSet([],'gamma',1);
         % Should this be ieSessionSet('scene gamma',val)
         % hObj = ieSessionGet('scene window');
-        hdl = ieSessionGet('scene window handle');
+        sceneW = ieSessionGet('scene window');
         % eventdata = [];
-        set(hdl.editGamma,'string',num2str(val));
-        % sceneWindow('sceneRefresh',hObj,eventdata,hdl);
-        sceneWindow;
-    case {'displaymode'}
+        sceneW.editGamma.Value = num2str(val);
+        sceneW.refresh;
+    case {'renderflag','displaymode'}
         % sceneSet(scene,'display mode','hdr');
-        
-        switch val
-            case 'hdr'
-                val = 3;
-            case 'rgb'
-                val = 1;
-            case 'gray'
-                val = 2;
-            case 'clip'
-                val = 4;
-            otherwise
-                fprintf('Legal display modes: rgb, gray, hdr, clip\n');
+        app = ieSessionGet('scene window');
+        if isempty(app)
+            warning('Render flag is only set when the sceneWindow is open');
+        else
+            switch val
+                case {'hdr',3}
+                    val = 3;
+                case {'rgb',1}
+                    val = 1;
+                case {'gray',2}
+                    val = 2;
+                case {'clip',4}
+                    val = 4;
+                otherwise
+                    fprintf('Permissible display modes: rgb, gray, hdr, clip\n');
+            end
+            app.popupRender.Value = app.popupRender.Items{val};
+            app.refresh;
         end
-        
-        hdl = ieSessionGet('scene window handle');
-        set(hdl.popupDisplay,'Value',val);
-        
-        % sceneWindow('sceneRefresh',hObj,eventdata,hdl);
-        sceneWindow;
         
     case {'distance' }
         % Positive for scenes, negative for optical images
@@ -318,12 +315,20 @@ switch parm
             error('known reflectance is [reflectance,row,col,wave]'); 
         end
         scene.data.knownReflectance = val;
+        
+    % See sceneReflectanceChart 
+    % Reflectance chart parameters are stored here.
     case {'chartparameters'}
-        % See sceneReflectanceChart 
-        % Reflectance chart parameters are stored here.
         scene.chartP = val;
-    case {'chartcorners'}
+    case {'cornerpoints','chartcornerpoints','chartcorners'}
+        % fourPoints = sceneGet(scene,'chart corner points');
         scene.chartP.cornerPoints = val;
+    case {'chartrects','chartrectangles'}
+        scene.chartP.rects = val;
+    case {'currentrect'}
+        % [colMin rowMin width height]
+        % Used for ROI display and management.
+        scene.chartP.currentRect = val;
         
     case {'luminance','lum'}
         % sceneSet(scene,'luminance',array)

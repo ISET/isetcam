@@ -135,7 +135,12 @@ fprintf('Maximum exposure duration per eight hours:  %f (min)\n',(30/hazardEnerg
 
 %% An example of a light measured in the lab
 
+
 radiance = ieReadSpectra('LED385nm.mat',wave);
+%{
+radiance = ieReadSpectra('LED405nm.mat',wave);
+radiance = radiance(:,1);
+%}
 
 irradiance = pi*radiance;
 

@@ -30,7 +30,7 @@ oiGet(oi,'illuminant format')
 illuPhoton = oiGet(oi, 'illuminant photons');
 illuName = oiGet(oi, 'illuminant name');
 illuWave = oiGet(oi, 'illuminant wave');
-imageSPD(illuPhoton, illuWave);
+rgb = imageSPD(illuPhoton, illuWave);
 oiPlot(oi, 'illuminant image');
 
 

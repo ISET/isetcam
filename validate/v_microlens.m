@@ -7,9 +7,11 @@
 
 %% Each section starts with a fresh copy of the sensor/oi/mlens
 ieInit
+
+%%
 oi = oiCreate; ieAddObject(oi);
 sensor = sensorCreate;
-sensor = sensorSet(sensor,'fov',30,scene,oi);
+sensor = sensorSet(sensor,'fov',30,oi);
 ieAddObject(sensor);
 
 %% Try gets and sets

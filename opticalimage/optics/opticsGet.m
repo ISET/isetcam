@@ -526,7 +526,7 @@ switch parm
         val{2} = fSamp*inCutoff;
 
         % Alternative return format
-        if strfind(parm,'matrix')
+        if ieContains(parm,'matrix')
             [valMatrix(:,:,1),valMatrix(:,:,2)] = meshgrid(val{1},val{2});
             val = valMatrix;
         end
@@ -588,7 +588,7 @@ switch parm
         val.fx = opticsGet(optics,'otf fx',units);
 
         % If called with matrix, then 
-        if strfind(parm,'matrix') %#ok<*STRIFCND>
+        if ieContains(parm,'matrix') %#ok<*STRIFCND>
             [X,Y] = meshgrid(val.fy,val.fx); % Not sure about order yet!
             fSupport(:,:,1) = X; fSupport(:,:,2) = Y;
             val = fSupport;
@@ -651,11 +651,8 @@ switch parm
         switch lower(oModel)
             case 'diffractionlimited'
                 % opticsGet(optics,'psf Data',thisWave,'um');
-                
-                % Older code
-                %   dlF = opticsGet(optics,'dlFSupport',thisWave(1),units,nSamp);
-                %   [fSupport(:,:,1),fSupport(:,:,2)] = meshgrid(dlF{1},dlF{2});
                 fSupport = opticsGet(optics,'dlFSupport matrix',thisWave(1),units,nSamp);
+                
                 % This increases the spatial frequency resolution (highest
                 % spatial frequency) by a factor of 4, which yields a
                 % higher spatial resolution estimate
@@ -663,9 +660,6 @@ switch parm
                 
                 % Calculate the OTF using diffraction limited MTF (dlMTF)
                 otf = dlMTF(optics,fSupport,thisWave,units);
-                
-                % Calculate the spatial support for the PSF using 
-                %  opticsGet(optics,'psf support',fSupport,nSamp)
                 
                 % Diffraction limited OTF
                 if length(thisWave) == 1
@@ -680,14 +674,15 @@ switch parm
                 sSupport = opticsGet(optics,'psf support',fSupport, nSamp);
 
             case 'shiftinvariant'
-                % opticsGet(optics,'psf data',thisWave,units)
+                % val = opticsGet(optics,'psf data',thisWave,'um');
                 % What do we do about the units???  The OTF values are
                 % generated at 0.25 micron spacing of the psf, I think.
                 if checkfields(optics,'OTF','OTF')
                     otfWave = opticsGet(optics,'otf wave');
                     if ~isempty(varargin)
                         % Just at the interpolated wavelength
-                        otf = opticsGet(optics,'otf data',varargin{1});
+                        thisWave = varargin{1};
+                        otf = opticsGet(optics,'otf data',thisWave);
                         % mesh(fftshift(otf))
                         psf = fftshift(ifft2(otf));
                         % mesh(abs(psf))
@@ -790,34 +785,21 @@ switch parm
         val(:,:,1) = X*deltaSpace;
         val(:,:,2) = Y*deltaSpace;
         
-        % Code prior to October 2015
-        %         if length(varargin) >= 1, units = varargin{1};
-        %         else units = 'mm'; end
-        %
-        %         sz = opticsGet(optics,'otf size');
-        %         if isempty(sz), error('No optical image data'); end
-        %
-        %         x = (0:(sz(1)-1))*opticsGet(optics,'psfspacing',units);
-        %         x = x - mean(x);
-        %         [X,Y] = meshgrid(x,x);
-        %         val{1} = X; val{2} = Y;
-        
-        
         %----------- Relative illumination (off-axis) specifications
     case {'offaxis','offaxismethod','relativeilluminationtype'}
         % This is the method used to compute relative illumination. It can
-        % be 'Skip','cos4th','codeV', or 'Zemax'.
+        % be 'Skip','cos4th'.  State is shown in the window by a switch.
         val = optics.offaxis;
     case {'cos4thmethod','cos4thfunction'}
-        % Most people use cos4th as an offaxis method. In that case, the
+        % We have only used cos4th as an offaxis method. In that case, the
         % function that implements cos4th can be stored here.  I suspect
-        % this extra step is not needed. We have a cos4th function and we use
-        % that without allowing some other implementation.  It is here only
-        % for some old backwards compatibility.
+        % this extra step is not needed. We have a cos4th function and we
+        % use that without allowing some other implementation.  It is here
+        % only for some old backwards compatibility.
         %
         % Do not run cos4th when you are using the Code V (or probably
-        % Zemax methods.  These calculations include the cos4th mechanisms
-        % in the lens calculations.
+        % Zemax methods.  These calculations include the relative
+        % illumination as part of the lens calculations.
         if checkfields(optics,'cos4th','function'), val = optics.cos4th.function; end
     case {'cos4th','cos4thdata','cos4thvalue'}
         % Numerical values.  Should change field to data from value.  I

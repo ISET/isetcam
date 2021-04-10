@@ -133,8 +133,8 @@ psfSize = size(xGrid);
 rtPSF = oiGet(oi,'sampledRTpsf');
 if size(rtPSF{1,1,1}) ~= psfSize
     % Not a match.  Recompute.
-    handles = ieSessionGet('opticalImageHandle');
-    ieInWindowMessage('Recomputing PSF to match oi sampling. ',handles,[]);
+    app = ieSessionGet('oi window');
+    ieInWindowMessage('Recomputing PSF to match oi sampling. ',app,[]);
     
     psfStruct = rtPrecomputePSF(oi,oiGet(oi,'psfAngleStep'));
     if isempty(psfStruct)
@@ -146,7 +146,7 @@ if size(rtPSF{1,1,1}) ~= psfSize
     
     % Clear message.
     % Get the PSFs again, this time with the right size
-    ieInWindowMessage('',handles,[]);
+    ieInWindowMessage('',app,[]);
     oi = oiSet(oi,'psfStruct',psfStruct);
     rtPSF = oiGet(oi,'sampledRTpsf');
 end

@@ -75,7 +75,7 @@ vci = ipSet(vci,'illuminant correction transform',D);
 % Convert the data
 img = imageLinearTransform(img,D);
 
-return;
+end
 
 %-------------------------------------------------------
 function D = grayWorld(img,vci)
@@ -116,7 +116,7 @@ for ii=1:N, D(ii) = whiteRatio(ii)*(avg(1)/avg(ii)); end
 % Now put the values into a diagonal for processing.
 D = diag(D);
 
-return;
+end
 
 %-------------------------------------------------------
 function D = whiteWorld(img,vci)
@@ -170,7 +170,7 @@ for ii=1:N, D(ii) = whiteRatio(ii)*(brt(1)/brt(ii)); end
 % Now put the values into a diagonal for processing.
 D = diag(D);
 
-return;
+end
 
 %-------------------------------------------------------
 function whiteRatio = calcWPScaling(vci,target)
@@ -182,7 +182,7 @@ function whiteRatio = calcWPScaling(vci,target)
 if ieNotDefined('target'), target = 'D65'; end
 
 internalCMF = ipGet(vci,'internalCMF');
-if isempty(internalCMF),
+if isempty(internalCMF)
     % If there is no internal color space (i.e., we are using Sensor, we
     % assume that equal energy produces equal responses in the sensors. It
     % would be better to calculate this with knowledge of the sensors and
@@ -204,4 +204,4 @@ end
 whiteRatio = internalCMF'*tData;
 whiteRatio = whiteRatio/max(whiteRatio);
 
-return;
+end

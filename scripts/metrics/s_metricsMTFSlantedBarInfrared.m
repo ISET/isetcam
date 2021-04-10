@@ -48,12 +48,10 @@ oi = oiCreate;
 fNumber = 4;
 oi = oiSet(oi,'optics fnumber',fNumber);
 
-
 % Now, compute the optical image from this scene and the current optical
 % image properties
 oi = oiCompute(scene,oi);
-ieAddObject(oi);              % Add to database
-oiWindow;
+oiWindow(oi);
 
 %% Create sensor
 
@@ -97,11 +95,11 @@ sensor = sensorSet(sensor,'pixel',pixel);
 
 % Match the sensor size to the scene FOV. Also matches the CFA size to the
 % sensor (I think).
-sensor = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'),scene,oi);
+sensor = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'),oi);
 
 % Compute the image and bring it up.
 sensor = sensorCompute(sensor,oi);
-ieAddObject(sensor); sensorImageWindow;
+ieAddObject(sensor); sensorWindow;
 
 % Plot a couple of lines
 %    sensorPlotLine(sensor,'h','volts','space',[1,80]);
@@ -122,7 +120,7 @@ vci = ipSet(vci,'internal CS','XYZ');
 % demosaicing, no color conversion or balancing.  The sensor RGB
 % values are simply set to the display RGB values.
 vci = ipCompute(vci,sensor);
-ieAddObject(vci); ipWindow
+ipWindow(vci);
 
 %% Define the rect for the ISO12233 calculation
 
@@ -155,7 +153,6 @@ ISO12233(barImage, dx);
 sensor = sensorSet(sensor,'ir filter',irFilter);
 sensor = sensorCompute(sensor,oi);
 ieAddObject(sensor); 
-% sensorImageWindow;
 
 %% Compute the MTF with the rectangle selected automatically
 
@@ -170,4 +167,4 @@ assert(abs(mtf.mtf50 - 75) <= 3);
 ieAddObject(vci); ipWindow;
 h = ieDrawShape(vci,'rectangle',mtf.rect);
 
-%% 
+%% END

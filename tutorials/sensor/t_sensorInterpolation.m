@@ -21,13 +21,9 @@
 ieInit;
 
 %% Create a point array 
-%{
-% inFile = fullfile('/scratch', 'zhenglyu', 'renderedScene', 'landscape', 'landscape4k_scene.mat');
-% load(inFile);
-%}
 
-scene = sceneCreate('point array');
 % scene = sceneCreate('slanted bar');
+scene = sceneCreate('point array');
 scene = sceneSet(scene, 'fov', 1);
 % sceneWindow(scene);
 %%  For a FOV of 1 deg we end up with a 0.53 um sample spacing in the OI
@@ -62,7 +58,7 @@ sensor = sensorSet(sensor, 'pixel pdwidth', pixelSize);
 sensor = sensorSet(sensor, 'pixel pdheight', pixelSize);
 % sensorGet(sensor,'pixel fill factor')
 
-sensor = sensorSetSizeToFOV(sensor, oiGet(oi, 'fov'));
+sensor = sensorSet(sensor, 'fov', oiGet(oi, 'fov'), oi);
 sensor = sensorSet(sensor, 'noise flag', -1);
 %% We introduced a new slot for controlling the spatial interpolation
 

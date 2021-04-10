@@ -39,7 +39,7 @@ sensor = sensorCompute(sensor,oi);
 sensor = sensorSet(sensor,'name','human-D65');
 
 vcAddAndSelectObject(sensor);
-sensorWindow('scale',1);
+sensorWindow;
 
 %% Plot a line showing the photon absorptions for the broadband stimulus
 y = sensorGet(sensor,'cols')/2;
@@ -73,8 +73,8 @@ xy = [0 y];
 sensorPlotLine(sensor,'h','photons','space',xy);
 
 %% Show the 550 nm image 
-vcAddAndSelectObject(sensor); 
-sensorWindow;
+sensorWindow(sensor);
+
 
 %% Create a small grid pattern and image it on the sensor
 imgSize = 128; lineSeparation = 32;
@@ -86,8 +86,8 @@ sensor = sensorCompute(sensor,oi);
 sensor = sensorSet(sensor,'name','human-grid');
 
 % Show it
-vcAddAndSelectObject(sensor);
-sensorWindow;
+sensorWindow(sensor);
+
 
 %% Plot a line through the two grid lines
 % The
@@ -105,8 +105,7 @@ sensor = sensorSet(sensor,'exp time',0.050);
 sensor = sensorCompute(sensor,oi);
 sensor = sensorSet(sensor,'name','human-grid');
 
-vcAddAndSelectObject(sensor);
-sensorWindow;
+sensorWindow(sensor);
 sensorPlotLine(sensor,'h','photons','space',xy);
 
-
+%%

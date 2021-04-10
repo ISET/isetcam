@@ -1,17 +1,29 @@
 function ip = ipCreate(ipName,sensor,display,L3)
 %Create an image processing (ip) structure with default fields
 %
-%   ip = ipCreate(ipName,[sensor = vcGetObject('sensor')],[display = 'lcdExample.mat'])
-%    
-% The values of several ip fields are drawn from the current image sensor
+% Synopsis
+%  ip = ipCreate(ipName,[sensor = vcGetObject('sensor')],[display = 'lcdExample.mat'])
+% 
+% Input
+%   ipName
+%   sensor
+%   display
+%   L3
 %
-% The display structure is initiated as a (very close to) an sRGB device.
+% Output
+%   ip:  ISETCam image process struct
 %
-% The display data must match the wavelength sampling of the sensor, or
-% the default spectrum if there is no sensor.
+% Description:
+%  The values of several ip fields are set from the properties of the
+%  current image sensor
 %
-% In the event that the ipName starts with 'L3', then the L3 rendering
-% pipeline is used.  These can be either L3 or L3global.
+%  The display structure is initiated as a (very close to) an sRGB device.
+%
+%  The display data must match the wavelength sampling of the sensor, or
+%  the default spectrum if there is no sensor.
+%
+%  In the event that the ipName starts with 'L3', then the L3 rendering
+%  pipeline is used.  These can be either L3 or L3global.
 %
 % Example:
 %  ip = ipCreate;               % Name is default
@@ -22,7 +34,7 @@ function ip = ipCreate(ipName,sensor,display,L3)
 
 %%
 if ieNotDefined('ipName'), ipName = 'default'; end
-if ieNotDefined('sensor'), sensor = vcGetObject('sensor'); end
+if ieNotDefined('sensor'), sensor = []; end % sensor = vcGetObject('sensor'); end
 
 % Start building the parts
 ip.name = ipName;
@@ -40,7 +52,10 @@ if ~isempty(sensor)
     else
         ip = ipSet(ip,'datamax',2^nbits);
     end
+else
+    ip = ipSet(ip,'input',[]);
 end
+
 
 %% Figure out the display.  Could be string or struct
 if ieNotDefined('display')
@@ -60,9 +75,11 @@ ip = ipSet(ip,'internal CS','XYZ');
 ip = ipSet(ip,'conversion method sensor ','MCC optimized');
 
 %% Rendering assumptions 
-ip = ipSet(ip,'renderGamma',1);
+
+% Turned this off because it opened the window
+% ip = ipSet(ip,'renderGamma',1);  % Maybe it should not do that???
 ip = ipSet(ip','scaleDisplay',1);
-ip = ipSet(ip,'mccRectHandles',[]);
+% ip = ipSet(ip,'mccRectHandles',[]);
 
 %% Append an L3 structure
 if strncmpi(ipName,'L3',2)

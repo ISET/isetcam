@@ -59,11 +59,15 @@ function val = displayGet(d, parm, varargin)
 %     {'render function'}    - function handle used to convert rgb input to
 %                              corresponding dixel image
 %
+% Image data
+%     {'image'}              - The image data for the main display window
+%                              image.
+%
 % Examples
 %   d = displayCreate;
 %   w = displayGet(d,'wave');
 %   p = displayGet(d,'spd');
-%   vcNewGraphWin; plot(w,p); set(gca, 'ylim', [-.1 1.1])
+%   ieNewGraphWin; plot(w,p); set(gca, 'ylim', [-.1 1.1])
 %
 %   chromaticityPlot(displayGet(d, 'white xy'))
 %
@@ -80,7 +84,7 @@ function val = displayGet(d, parm, varargin)
 %  We need to return the size of the subpixel samples in the psf image.
 
 %% Check parameters
-if ieNotDefined('parm'), error('Parameter not found.');  end
+if ~exist('parm','var')||isempty(parm) , error('Parameter not found.');  end
 
 % Default is empty when the parameter is not yet defined.
 val = [];
@@ -238,7 +242,7 @@ switch parm
         % displayGet(dsp,'white xyz',wave)
         e = displayGet(d,'white spd');
         if isempty(varargin), wave = displayGet(d,'wave');
-        else wave = varargin{1};
+        else, wave = varargin{1};
         end
         % Energy needs to be XW format, so a row vector
         val = ieXYZFromEnergy(e',wave);
@@ -273,7 +277,7 @@ switch parm
         % Spatial parameters
     case {'dpi', 'ppi'}
         if checkfields(d,'dpi'), val = d.dpi;
-        else val = 96;
+        else, val = 96;
         end
     case {'metersperdot'}
         % displayGet(dsp,'meters per dot','m')
@@ -309,7 +313,7 @@ switch parm
     case {'viewingdistance', 'distance'}
         % Viewing distance in meters
         if checkfields(d,'dist'), val = d.dist;
-        else val = 0.5;   % Default viewing distance in meters, 19 inches
+        else, val = 0.5;   % Default viewing distance in meters, 19 inches
         end
         
     case {'refreshrate'}
@@ -483,6 +487,12 @@ switch parm
         blackSpd = displayGet(d, 'black spd');
         blackXYZ = ieXYZFromEnergy(blackSpd', displayGet(d, 'wave'));
         val = blackXYZ(2);
+        
+        % Image data.  Maybe we should add other information?
+    case {'rgb','image'}
+        % This is where we store the image that will be rendered into the
+        % main axis of the display window.
+        val = d.image;
     otherwise
         error('Unknown parameter %s\n',parm);
 end

@@ -113,7 +113,7 @@ return;
 % --- Executes on button press in btnSensorImage.
 function btnSensorImage_Callback(hObject, eventdata, handles)
 % Sensor button
-sensorImageWindow;
+sensorWindow;
 return;
 
 % --- Executes on button press in btnProcessor.
@@ -239,12 +239,10 @@ function menuFileWaitBar_Callback(hObject, eventdata, handles)
 
 % h = guihandles;
 b = ieSessionGet('wait bar');
-if b, 
+if b
     ieSessionSet('wait bar',false);
-%     set(h.menuFileWaitBar,'Checked','off');
 else
     ieSessionSet('wait bar',true);
-%     set(h.menuFileWaitBar,'Checked','on');
 end
 refreshMain(handles);
 return

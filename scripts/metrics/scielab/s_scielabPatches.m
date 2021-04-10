@@ -11,7 +11,7 @@
 %
 % Copyright Imageval 2012
 
-%
+%%
 ieInit
 
 %%  Here is a standard uniform patch
@@ -74,7 +74,12 @@ if showBar, close(wBar); end
 % mean(RGB2XWFormat(xyz2))
 
 %% Compare delta E values
-vcNewGraphWin;
+%%
+% 
+% # ITEM1
+% # ITEM2
+% 
+ieNewGraphWin;
 plot(dE(:),dES(:),'o')
 title('CIELAB vs. SCIELAB for uniform patches')
 xlabel('CIELAB \Delta E')

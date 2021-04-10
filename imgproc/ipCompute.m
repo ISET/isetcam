@@ -1,38 +1,63 @@
 function ip = ipCompute(ip,sensor)
 % Image processing pipeline from image sensor to a display
 %
+% Synopsis
 %    ip = ipCompute(ip,sensor);
 %
-% The image pipeline (ip) converts  sensor data (sensor) into an image. 
+% Brief description
+%   The image processing pipeline (ip) converts  sensor data (sensor) into
+%   a display image.
 %
-% The ip slot 
-%  'input'  contains the voltage (or dv) data from the sensor object.
-%  'result' contains the computed image. 
+% Inputs:
+%   ip:      The image processor struct
+%   sensor:  The sensor struct
 %
-% By default, this routine applies demosaic, sensor color conversion to an
-% internal representation, and illuminant correction towards a specific
-% display (in that order).
+% Description
+%  
+%  The sensor data (either the voltage or digital values) are processed by
+%  a series of stages in ipCompute. A sequence of images are stored within
+%  the ip.data slot.
+% 
+%  input:  contains the voltage (or digital values, dv) from the sensor
+%          object.   
+%  sensorspace:  The demosaicked data from input
+%  result:       The processed data in lrgb format (between 0 and 1), ready
+%                for conversion to srgb as part of the display
+%  
+%  By default the ip applies demosaic, sensor color conversion to an
+%  internal representation, and illuminant correction towards a specific
+%  display (in that order).  Which algorithms are applied is controlled by
+%  setting the parameters of the ip (i.e., ipSet).  The parameter control
+%  features like the demosaicking method, the sensor conversion approach,
+%  and the illuminant correction.
 %
-% If the sensor is monochrome, the pipeline copies the sensor data to the
-% display output as a monochrome image.
+%  If the sensor is monochrome, the pipeline copies the sensor data to the
+%  display output as a monochrome image.
 %
-% This method runs on the assumption that the internal color space is
-% three-dimensional.
+%  This method runs on the assumption that the internal color space is
+%  three-dimensional.
 %
-% We are writing other rendering pipelines based on different architectures
-% in the future.
+% About L3
 %
-% If the ip name begins with 'L3' then the data are rendered using the L3
-% render method. The option 'L3global' uses the global parameters of the L3
-% structure.  In this case, we expect an L3 structure that was learned is
-% attached to the ip.
+%   We are writing other rendering pipelines based on different
+%   architectures in the future.  One special one is L3.
 %
-% Copyright ImagEval Consultants, LLC, 2003.
+%   If the ip.name begins with 'L3' then the data are rendered using the L3
+%   render method. The option 'L3global' uses the global parameters of the
+%   L3 structure.  In this case, we expect an L3 structure that was learned
+%   is attached to the ip. (More documentation needed, sorry! BW)
+%
+% See also
+%   ipWindow, ipPlot
 
 
 %% Check arguments
-if ieNotDefined('ip'), error('Image process structure is required.'); end
-if ieNotDefined('sensor'), error('Sensor structure is required.'); end
+if ~exist('ip','var') || isempty(ip)
+ error('Image process structure is required.'); 
+end
+if ~exist('sensor','var') || isempty(sensor) % need to make sure it has at least one!
+    error('Sensor structure is required.'); 
+end
 
 
 %% Assign a name if the current one is 'default' or a copy.  
@@ -48,7 +73,7 @@ if length(sensor) > 1
     % an array of sensors and it will pull the volts out of each of the
     % individual sensors.
     ip = ipSet(ip,'datamax',sensorGet(sensor(1),'max'));
-    ip = vciComputeSingle(ip,sensor);
+    ip = ipComputeSingle(ip,sensor);
     return;
 end
 
@@ -60,7 +85,7 @@ ip = ipSet(ip,'input',double(sensorGet(sensor,'dv or volts')));
 
 %  The max is either the max digital value or the voltage swing, depending
 %  on whether we have computed DVs or Volts.  But this value is not
-%  terribly important because the we render into an RGB display in the unit
+%  terribly important because we render into an RGB display in the unit
 %  cube.
 ip = ipSet(ip,'datamax',sensorGet(sensor(1),'max'));
 
@@ -74,9 +99,11 @@ switch exposureMethod(1:3)
         % Don't need to pre-process
     case 'bra'  % bracketedExposure
         % On return, the maximum sensible exposure time is set
-        ip = vciComputeBracketed(ip,sensor);
+        ip = ipComputeBracketed(ip,sensor);
     case 'cfa'  % cfaExposure
-        ip = vciComputeCFA(ip,sensor);
+        ip = ipComputeCFA(ip,sensor);
+    case 'bur'  % burst of images
+        ip = ipComputeBurst(ip, sensor, 'sum');
     otherwise
         error('Unknown exposure method %s\n',exposureMethod);
 end
@@ -107,17 +134,17 @@ if strncmpi(pType,'l3',2)
     ip = ipSet(ip,'L3',L3);
 else
     % Conventional RGB pipeline, most common case
-    ip = vciComputeSingle(ip,sensor);
+    ip = ipComputeSingle(ip,sensor);
 end
 
 end
 
-
-function ip = vciComputeSingle(ip,sensor)
+%%
+function ip = ipComputeSingle(ip,sensor)
 % Process image for single exposure case, or after pre-processing for
 % bracketed and CFA cases.
 %
-%    ip = vciComputeSingle(ip,sensor)
+%    ip = ipComputeSingle(ip,sensor)
 %
 % The processing steps through
 %   1. Demosaicing
@@ -133,6 +160,9 @@ function ip = vciComputeSingle(ip,sensor)
 % We handle the case of different number of filters somewhat differently.
 nFilters = sensorGet(sensor(1),'nfilters');
 nSensors = length(sensor);
+
+% We need to know about the quantization before we get to displayRender.
+ip = ipSet(ip,'quantization',sensorGet(sensor,'quantization'));
 
 if nFilters == 1 && nSensors == 1
     % If monochrome sensor, just copy the sensor values to the RGB values
@@ -186,7 +216,8 @@ elseif nFilters >= 3 || nSensors > 1
     
     % Save the demosaiced sensor space channel values. May be used later
     % for adaptation of color balance for IR enabled sensors
-    ip = ipSet(ip,'sensor space',img);
+    % if shooting bracketed, where did we get de-mosaiced?
+    ip = ipSet(ip,'sensor space',img);    % saveimg = img;
 
     % Decide if we are using the current matrix or we are in a processing
     % chain for balancing and rendering, or whether we are using the
@@ -197,7 +228,14 @@ elseif nFilters >= 3 || nSensors > 1
             % Use the stored transform matrix, don't recompute.
             T   = ipGet(ip,'prodT');
             img = imageLinearTransform(img,T);
-
+            % Scale the img to make sure the results is 0 to 1]
+            % We already subtract the zero level from image earlier
+            % in some cases we are already normalized
+            if ~isempty(sensorGet(sensor, 'maxdigitalvalue'))
+                img = img / (sensorGet(sensor, 'maxdigitalvalue') - zerolevel);
+            elseif ~isempty(ipGet(ip,'maximum sensor value'))
+                img = img / (ipGet(sensor, 'maximum sensor value') - zerolevel);
+            end
         case {'new','manual matrix entry'}
             % Allow the user to specify a matrix from the GUI. When set this
             % way, the sensor correction transform is the only one used to
@@ -262,54 +300,25 @@ elseif nFilters >= 3 || nSensors > 1
         otherwise
             error('Unknown transform method %s\n',tMethod);
     end
-   
-    % The display image RGB is always between 0 and 1. 
-    %
-    % Normally, we set the maximum image value to match the ratio of the
-    % maximum voltage to the voltage swing.
-    % In some cases - say for an ideal sensor with extremely large voltage
-    % swing that we use in theory, this forces the data to be very small.
-    % In that case, you should scale the data to max function.
-    %
-    % range of the sensor data, with the assumption that 0 in the sensor
-    % corresponds to 0 in the image processing data.
-    %
-    imgMax = max(img(:));
-        
-    switch sensorGet(sensor,'quantization method')
-        case 'analog'
-            % Changed sensor to sensor(1) to deal with sensor array case.
-            img = (img/imgMax)*sensorGet(sensor(1),'volts2max ratio');
-            img = ieClip(img,0,ipGet(ip,'max sensor'));
-        case 'linear'
-            % Digital values, so only clip at the bottom.
-            img = (img/imgMax)*ipGet(ip,'max digital value');
-            img = ieClip(img,0,ipGet(ip,'max digital value'));
-        otherwise
-            % When the data are digital, we should probably do something
-            % else.  Or maybe nothing.
-    end
-    % ieNewGraphWin; imagescRGB(img);
     
-    ip = ipSet(ip,'quantization',sensorGet(sensor,'quantization'));
+    % Done with all the image processing.  Save in result.
     ip = ipSet(ip,'result',img);
     
-    % macbethSelect rect handles -- get rid of them
-    ip = ipSet(ip,'mccRectHandles',[]);
 end
 
 end
 
-function ip = vciComputeBracketed(ip,sensor,combinationMethod)
+%%
+function ip = ipComputeBracketed(ip,sensor,combinationMethod)
 % Compute for bracketed exposure case
 %
 % sensor = vcGetObject('sensor');
 % ip = vcGetObject('vcimage');
 %
-if ieNotDefined('ip'), error('Virtual camera image required.'); end
-if ieNotDefined('sensor'), error('Image sensor array requried.'); end
-if ieNotDefined('combinationMethod')
-    combinationMethod = ipGet(ip,'combinationMethod'); 
+if ~exist('ip','var'), error('IP required.'); end
+if ~exist('sensor','var'), error('Sensor required.'); end
+if ~exist('combinationMethod','var')
+    combinationMethod = ipGet(ip,'combinationMethod');
 end
 
 % Could send this parameter in.  It is the value we accept as below saturation
@@ -332,18 +341,25 @@ switch combinationMethod
         % Choose the max at each point
         [img,loc] = max(img,[],3);
         expByLoc  = expTimes(loc);
-        img = img ./ expByLoc;               
+        img = img ./ expByLoc;    
+        %% DJC Maybe we have to normalize here, or we get over-saturated values?
     otherwise
         error('Unknown combination method: %s\n', combinationMethod)
 end
 
 % The largest value we can ever get
-ip = ipSet(ip,'sensorMax',sensorMax/min(expTimes));
+% DJC I don't think this works right for all expTimes, as we start
+% returning massive signal values and Adaptive doesn't normalize. So I've
+% changed this to scale to the original sensor voltage swing (only affects
+% bracketing, which I don't think anyone except me is currently using:)
+%ip = ipSet(ip,'sensorMax',sensorMax/min(expTimes));
+img = img ./ max(img,[],'all'); % scale
+ip = ipSet(ip, 'sensorMax', max(img,[],'all'));
 ip = ipSet(ip,'input',img);
 
 end
 
-function ip = vciComputeCFA(ip,sensor)
+function ip = ipComputeCFA(ip,sensor)
 % Compute for CFA exposure case
 %
 % In this case the img is N different CFA arrays, with each N corresponding
@@ -353,12 +369,8 @@ function ip = vciComputeCFA(ip,sensor)
 % merge them back into a single CFA.
 %
 
-if ieNotDefined('ip'), error('Virtual camera image required.'); end
-if ieNotDefined('sensor'), error('Image sensor array requried.'); end
-
-% sensor = vcGetObject('sensor');
-% ip = vcGetObject('vcimage');
-%
+if ~exist('ip','var'),     error('IP required.'); end
+if ~exist('sensor','var'), error('Sensor array required.'); end
 
 % Read the exposure times - same as number of filters
 expTimes = sensorGet(sensor,'expTimes');
@@ -420,3 +432,32 @@ ip = ipSet(ip,'input',newImg);
 
 end
 
+function ip = ipComputeBurst(ip,sensor, combinationMethod)
+% Compute for Burst exposure case
+
+if ~exist('ip','var'), error('IP required.'); end
+if ~exist('sensor','var'), error('Sensor required.'); end
+if ~exist('combinationMethod','var')
+    combinationMethod = ipGet(ip,'combinationMethod');
+end
+
+% Read the exposure times - same as number of filters
+expTimes = sensorGet(sensor,'expTimes');
+sensorMax = ipGet(ip,'maximum sensor value');
+
+nExps    = length(expTimes(:));
+% Get the data, either as volts or digital values.
+% Indicate which on return
+img       = ipGet(ip,'input');
+
+switch combinationMethod
+    case 'sum'
+        % simplest case where we just sum the burst of images
+        img = sum(img, 3);
+        ip = ipSet(ip, 'input', img);
+    otherwise
+        error("Don't know how to combine burst of images");
+end
+
+%ip = ipSet(ip,'input',newImg);
+end

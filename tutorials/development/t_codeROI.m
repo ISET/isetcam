@@ -13,14 +13,14 @@ ieInit;
 
 %% Build a test scene
 scene = sceneCreate;
-ieAddObject(scene);
-sceneWindow;
+sceneWindow2(scene);
 
 %% Select a region using the mouse
 
 % The format of a rect is
 %   [colmin,rowmin,width,height]
-[roiLocs,rect] = vcROISelect(scene);
+[roiLocs,roi] = ieROISelect(scene);
+rect = round(roi.Position);
 
 % If you know the rect, and want to recover the roiLocs, use this
 % roiLocs2 = ieRect2Locs(rect);
@@ -34,7 +34,10 @@ roiData = vcGetROIData(scene,roiLocs,'photons');
 
 % To convert the roiData back to a little square region run
 spd = XW2RGBFormat(roiData,rect(4)+1,rect(3)+1);
-vcNewGraphWin; imageSPD(spd,sceneGet(scene,'wave'));
+ieNewGraphWin; 
+rgb = imageSPD(spd,sceneGet(scene,'wave'));
+imagescRGB(rgb);
+
 
 %% The same method can be used with an OI
 

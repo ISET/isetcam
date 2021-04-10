@@ -21,20 +21,13 @@ wave = sceneGet(scene,'wave');
 
 %% Selecting the optics
 
-% Adjust the optics here
-optics = oiGet(oi,'optics');
-
 % Adjust optics and set anti-aliasing parameters here ...
-optics = opticsSet(optics,'f number',5);
-
-% Put the optics back into the optical image
-oi = oiSet(oi,'optics',optics);
+oi = oiSet(oi,'optics f number',5);
 
 oi = oiCompute(scene,oi);
 
 % If you want to visualize what you have, you can run this
-% oi = oiCompute(scene,oi); 
-% vcAddAndSelectObject(oi); oiWindow;
+% oiWindow(oi);
 
 %% Set the PIXEL and SENSOR properties
 % We  create a monochrome sensor and set the pixel properties. We use this
@@ -91,7 +84,7 @@ sensorM = pixelCenterFillPD(sensorM,fillfactor);
 sensorM = sensorCompute(sensorM,oi);
 
 % We can view the monochrome sensor image in the GUI.  
-ieAddObject(sensorM); sensorImageWindow;
+sensorWindow(sensorM);
 
 %%  Modify the sensor by placing a CFA array 
 
@@ -115,7 +108,7 @@ sensor = sensorSet(sensor,'ir filter',irFilter);
 sensor = sensorCompute(sensor,oi);
 
 % We can view the monochrome sensor image in the GUI.  
-ieAddObject(sensor); sensorImageWindow;
+sensorWindow(sensor);
 
 %% Use a different color filter array pattern
 
@@ -145,7 +138,7 @@ sensor = sensorSet(sensor,'ir filter',irFilter);
 sensor = sensorCompute(sensor,oi);
 
 % We can view the monochrome sensor image in the GUI.  
-ieAddObject(sensor); sensorWindow('scale',1);
+sensorWindow(sensor);
 
 %% Evaluate the image with some metrics
 
@@ -154,99 +147,5 @@ ieAddObject(sensor); sensorWindow('scale',1);
 %% END SCRIPT
 
 
-%% Data sheet
-%{
-% Sensor 1
-voltageSwing   = 1.0;  % Volts
-wellCapacity   = 5000;  % Electrons
-fillfactor     = 0.5;       % A fraction of the pixel area
-pixelSize      = 1.4*1e-6;   % Meters
-darkvoltage    = 0.0054;     % Volts/sec
-readnoise      = 0.00038;    % Volts
-dsnu =  0.0025;           % Volts
-prnu = 0.75;            % Percent (ranging between 0 and 100)
-
-conversiongain = voltageSwing/wellCapacity;   
-
-% for computational convenience, we use a small (central) region of a sensor
-dyeSize = sensorFormats('sixteenthinch');  % Size in meters
-
-% Adjust the row/col for a single dye size
-rows = round(dyeSize(1)/pixelSize); rows = ceil(rows/2)*2;
-cols = round(dyeSize(2)/pixelSize); cols = ceil(cols/2)*2;
-rows
-cols
-%}
-
-%%
-%{
-% Sensor 2
-voltageSwing   = 1.0;  % Volts
-wellCapacity   = 7000;  % Electrons
-fillfactor     = 0.5;       % A fraction of the pixel area
-pixelSize      = 1.75*1e-6;   % Meters
-darkvoltage    = 0.0031;     % Volts/sec
-readnoise      = 0.0003;    % Volts
-dsnu =  0.0020;           % Volts
-prnu = 0.8;            % Percent (ranging between 0 and 100)
-
-conversiongain = voltageSwing/wellCapacity;   
-
-% for computational convenience, we use a small (central) region of a sensor
-dyeSize = sensorFormats('sixteenthinch');  % Size in meters
-
-% Adjust the row/col for a single dye size
-rows = round(dyeSize(1)/pixelSize); rows = ceil(rows/2)*2;
-cols = round(dyeSize(2)/pixelSize); cols = ceil(cols/2)*2;
-rows
-cols
-%}
-
-%%
-%{
- % sensor 3
-voltageSwing   = 1.0;  % Volts
-wellCapacity   = 9000;  % Electrons
-fillfactor     = 0.5;       % A fraction of the pixel area
-pixelSize      = 2.2*1e-6;   % Meters
-darkvoltage    = 0.0028;     % Volts/sec
-readnoise      = 0.00028;    % Volts
-dsnu =  0.0015;           % Volts
-prnu = 1.0;            % Percent (ranging between 0 and 100)
-
-conversiongain = voltageSwing/wellCapacity;   
-
-% for computational convenience, we use a small (central) region of a sensor
-dyeSize = sensorFormats('sixteenthinch');  % Size in meters
-
-% Adjust the row/col for a single dye size
-rows = round(dyeSize(1)/pixelSize); rows = ceil(rows/2)*2;
-cols = round(dyeSize(2)/pixelSize); cols = ceil(cols/2)*2;
-rows
-cols
-%}
-%%
-%{
- %sensor 4
-voltageSwing   = 1.0;  % Volts
-wellCapacity   = 12000;  % Electrons
-fillfactor     = 0.5;       % A fraction of the pixel area
-pixelSize      = 3.0*1e-6;   % Meters
-darkvoltage    = 0.0;     % Volts/sec
-readnoise      = 0.000358;    % Volts
-dsnu =  0.0015;           % Volts
-prnu = 1.0;            % Percent (ranging between 0 and 100)
-
-conversiongain = voltageSwing/wellCapacity;   
-
-% for computational convenience, we use a small (central) region of a sensor
-dyeSize = sensorFormats('sixteenthinch');  % Size in meters
-
-% Adjust the row/col for a single dye size
-rows = round(dyeSize(1)/pixelSize); rows = ceil(rows/2)*2;
-cols = round(dyeSize(2)/pixelSize); cols = ceil(cols/2)*2;
-rows
-cols
-%}
 
 

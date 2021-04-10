@@ -46,7 +46,8 @@ function val = sensorGet(sensor,param,varargin)
 %    val = sensorGet(sensor,'Electrons',2);   % Second color type
 %    val = sensorGet(sensor,'fov horizontal') % degrees
 %    val = sensorGet(sensor,'PIXEL')
-%    val = sensorGet(sensor,'exposureMethod');% Single, bracketed, cfa
+%    val = sensorGet(sensor,'exposureMethod');% Single, bracketed, cfa,
+%    burst
 %    val = sensorGet(sensor,'nExposures')     % Number of exposures
 %    val = sensorGet(sensor,'filtercolornames')
 %    val = sensorGet(sensor,'exposurePlane'); % For bracketing simulation
@@ -58,6 +59,7 @@ function val = sensorGet(sensor,param,varargin)
 %      'row'                  - sensor rows
 %      'col'                  - sensor columns
 %      'size'                 - (rows,cols)
+%      'ncaptures'            -  Number of exposures captured
 %      'height'*              - sensor height (units)
 %      'width'*               - sensor width  (units)
 %      'dimension'*           - (height,width)
@@ -224,9 +226,12 @@ function val = sensorGet(sensor,param,varargin)
 %   More chart handling is being introduced.  See chart<TAB>
 %
 %     'mcc rect handles'  - Handles for the rectangle selections in an MCC
+%                           (deprecated)
 %     'mcc corner points' - Corner points for the MCC chart
+%     'corner points'     - Corner points for the any chart.  This will
+%                           replace the MCC calls
 %
-%     'rgb'               - Display image in sensorImageWindow
+%     'rgb'               - Display image in sensorWindow
 %     'gamma'             - Display gamma level
 %
 % See also:  sensorSet
@@ -285,20 +290,35 @@ switch oType
                 elseif checkfields(sensor,'cols'), val = sensor.cols;
                 end
             case {'size','arrayrowcol'}
-                % Note:  dimension is (x,y) but size is (row,col)
+                % row by col samples
+                % sensorGet(sensor,'size')
                 val = [sensorGet(sensor,'rows'),sensorGet(sensor,'cols')];
-                
             case {'height','arrayheight'}
                 val = sensorGet(sensor,'rows')*sensorGet(sensor,'deltay');
                 if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
             case {'width','arraywidth'}
                 val = sensorGet(sensor,'cols')*sensorGet(sensor,'deltax');
                 if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-                
             case {'dimension'}
+                % height by width in length units
+                % sensorGet(sensor,'dimension','mm')
                 val = [sensorGet(sensor,'height'), sensorGet(sensor,'width')];
                 if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-                
+            case {'ncaptures'}
+                % sensorGet(sensor,'captures')
+                %
+                % When we use multiple exposure times we have multiple
+                % captures in the 3rd dimension of volts or dv.  So after
+                % sensor compute this value should be equal to the number
+                % of exposure times.  Before sensor compute it can be
+                % empty.
+                val = sensorGet(sensor,'dv or volts');
+                if isempty(val), return;
+                elseif ismatrix(val)
+                    val = 1;
+                else
+                    val = size(val,3);
+                end
                 % The resolutions also represent the center-to-center spacing of the pixels.
             case {'wspatialresolution','wres','deltax','widthspatialresolution'}
                 PIXEL = sensorGet(sensor,'pixel');
@@ -468,6 +488,16 @@ switch oType
                     val = vcGetROIData(sensor,roiLocs,'electrons');
                 else, warning('ISET:nosensorroi','No sensor.roi field.  Returning empty electron data.');
                 end
+                case {'roidv','roidigitalcount'}
+                % V = sensorGet(sensor,'roi dv');
+                %
+                % If sensor.roi exists, it is used.  Otherwise, empty
+                % is returned and a warning issued.
+                if checkfields(sensor,'roi')
+                    roiLocs = sensorGet(sensor,'roi locs');
+                    val = vcGetROIData(sensor,roiLocs,'dv');
+                else, warning('ISET:nosensorroi','No sensor.roi field.  Returning empty voltage data.');
+                end
             case {'roivoltsmean'}
                 % sensorGet(sensor,'roi volts mean')
                 % Mean value for each of the sensor types
@@ -495,16 +525,30 @@ switch oType
                 % are odd numbers to align with a Bayer pattern.
                 lst = ~isodd(rect); rect(lst) = rect(lst)-1;
                 mosaic   = sensorGet(sensor,'volts');
-                if ~isempty(rect), mosaic = imcrop(mosaic,rect); end
-
-                % Use ipCompute to interpolate the mosaic and produce a
-                % chromaticity value at every point.
-                sensorC = sensorSet(sensor,'volts',mosaic);
-                ip = ipCreate; ip = ipCompute(ip,sensorC); 
-                rgb = ipGet(ip,'sensor space');   % Just demosaic'd
-                s = sum(rgb,3); r = rgb(:,:,1)./s; g = rgb(:,:,2)./s;
+                mosaicDV = sensorGet(sensor, 'dv');
+                if ~isempty(rect)
+                    mosaic = mosaic(rect(2):rect(2)+rect(4),...
+                                    rect(1):rect(1)+rect(3),:); 
+                    if ~isempty(mosaicDV)
+                        mosaicDV = mosaicDV(rect(2):rect(2)+rect(4),...
+                                        rect(1):rect(1)+rect(3),:); 
+                    end
+                end
                 
-                val(:,1) = r(:); val(:,2) = g(:);
+                val = zeros(size(mosaic, 1) * size(mosaic, 2), 2, size(mosaic, 3));
+                exp = sensorGet(sensor, 'exp time');
+                for ii=1:size(mosaic, 3)
+                    % Use ipCompute to interpolate the mosaic and produce a
+                    % chromaticity value at every point.
+                    sensorC = sensorSet(sensor,'volts',mosaic(:,:,ii));
+                    sensorC = sensorSet(sensorC, 'exp time', exp(ii));
+                    sensorC = sensorSet(sensorC, 'dv', mosaicDV(:,:,ii));
+                    ip = ipCreate; ip = ipCompute(ip,sensorC); 
+                    rgb = ipGet(ip,'sensor space');   % Just demosaic'd
+                    s = sum(rgb,3); r = rgb(:,:,1)./s; g = rgb(:,:,2)./s;
+
+                    val(:,1,ii) = r(:); val(:,2,ii) = g(:);
+                end
             case {'roielectronsmean'}
                 % sensorGet(sensor,'roi electrons mean')
                 %   Mean value for each of the sensor types
@@ -533,7 +577,7 @@ switch oType
                 
                 % Check if the data are in sensor
                 if     strfind(param,'volts'), d = sensorGet(sensor,'volts');
-                elseif strfind(param,'electrons'), d = sensorGet(sensor,'electrons');
+                elseif ieContains(param,'electrons'), d = sensorGet(sensor,'electrons');
                 end
                 if isempty(d)
                     warning('sensorGet:Nolinedata','No data');
@@ -772,19 +816,29 @@ switch oType
                 if checkfields(sensor,'colGain'),val = sensor.colGain; end
                 
             case {'blacklevel', 'zerolevel'}
-                % Calculate the zero level for the user, who sent in an empty
-                % value.
-                oiBlack = oiCreate('black');
-                sensor2 = sensorSet(sensor,'noiseflag',0); % Little noise
-                sensor2 = sensorCompute(sensor2,oiBlack);
-                switch sensorGet(sensor,'quantization method')
-                    case 'analog'
-                        val = sensorGet(sensor2,'volts');
-                    otherwise
-                        val = sensorGet(sensor2,'dv');
+                % Calculate the zero level for the user, who sent in an
+                % empty value.  This level depends on the analog offset and
+                % gain.  We return either the voltage or if the
+                % quantization method is used we return the digital value.
+                %
+                % In some cases we have a digital zero level in the file
+                % (e.g., DNG data from the pixel4a).  In that case, we
+                % should be able to simply set the value and read it.
+                if checkfields(sensor,'blackLevel')
+                    val = sensor.blackLevel;
+                else
+                    oiBlack = oiCreate('black');
+                    sensor2 = sensorSet(sensor,'noiseflag','none'); % Little noise
+                    sensor2 = sensorCompute(sensor2,oiBlack);
+                    switch sensorGet(sensor,'quantization method')
+                        case 'analog'
+                            val = sensorGet(sensor2,'volts');
+                        otherwise
+                            val = sensorGet(sensor2,'dv');
+                    end
+                    val = mean(val(:));
                 end
-                val = mean(val(:));
-
+                
                 % Noise management
             case {'noiseflag','shotnoiseflag'}
                 % 0 means no noise
@@ -802,8 +856,8 @@ switch oType
                 else
                     try
                         rng('default');
-                    catch err
-                        randn('seed');
+                    catch
+                        rng('seed');
                     end% Compute both electronic and shot noise
                 end
                 
@@ -817,11 +871,16 @@ switch oType
             case {'exposuremethod','expmethod'}
                 % We plan to re-write the exposure parameters into a sub-structure
                 % that lives inside the sensor, sensor.exposure.XXX
-                tmp = sensorGet(sensor,'exptimes');
-                p   = sensorGet(sensor,'pattern');
-                if     isscalar(tmp), val = 'singleExposure';
-                elseif isvector(tmp),  val = 'bracketedExposure';
-                elseif isequal(size(p),size(tmp)),  val = 'cfaExposure';
+                % add support for manually setting exposure type
+                if isfield(sensor, 'exposureMethod') && ~isempty(sensor.exposureMethod)
+                    val = sensor.exposureMethod;
+                else
+                    tmp = sensorGet(sensor,'exptimes');
+                    p   = sensorGet(sensor,'pattern');
+                    if     isscalar(tmp), val = 'singleExposure';
+                    elseif isvector(tmp),  val = 'bracketedExposure';
+                    elseif isequal(size(p),size(tmp)),  val = 'cfaExposure';
+                    end
                 end
             case {'integrationtime','integrationtimes','exptime','exptimes','exposuretimes','exposuretime','exposureduration','exposuredurations'}
                 % This can be a single number, a vector, or a matrix that matches
@@ -891,10 +950,54 @@ switch oType
                 if checkfields(sensor,'ml'), val = sensor.ml; end
                 
                 % Field of view and sampling density
-            case {'fov','sensorfov','fovhorizontal','fovh','hfov'}
+            case {'hfov','fov','sensorfov','fovhorizontal','fovh'}
                 % sensorGet(sensor,'fov',sDist,oi); - Explicit scene dist in m
                 % sensorGet(sensor,'fov',scene,oi); - Explicit scene
                 % sensorGet(sensor,'fov');          - Uses defaults.  Dangerous.
+                %
+                % This is the horizontal field of view (default)
+                %
+                % I think this is too complex.  The assumption here is that
+                % the sensor is at the proper focal distance for the scene.
+                % If the scene is at infinity, then the focal distance is
+                % the focal length. But if the scene is close, then we
+                % might correct.
+                % 
+                % But we should probably just compute it assuming the scene
+                % is infinitely far away and the distance to the lens is
+                % the focal distance.
+                %
+                if isempty(varargin) || isempty(varargin{1})
+                    scene = ieGetObject('scene');
+                    if isempty(scene), sDist = 1e6; 
+                    else,              sDist = sceneGet(scene,'distance');
+                    end
+                else
+                    scene = varargin{1};
+                    if isstruct(scene), sDist = sceneGet(scene,'distance','m');
+                    else,               sDist = scene;
+                    end
+                end
+                
+                % The image distance depends on the scene distance and
+                % focal length via the lensmaker's formula, (we assume the
+                % sensor is at the proper focal distance).
+                if length(varargin) > 1, oi = varargin{2};
+                else,                    oi = ieGetObject('oi');
+                end
+                if isempty(oi)
+                    distance = opticsGet(opticsCreate,'focal length');
+                else
+                    distance = oiGet(oi,'optics focal plane distance',sDist);
+                end
+                width = sensorGet(sensor,'arraywidth');
+                val = ieRad2deg(2*atan(0.5*width/distance));
+                
+            case {'fovvertical','vfov','fovv'}
+                % This is  the vertical field of view
+                % sensorGet(sensor,'fov vertical',sDist,oi); - Explicit scene dist in m
+                % sensorGet(sensor,'fov vertical',scene,oi); - Explicit scene
+                % sensorGet(sensor,'fov vertical');          - Uses defaults.  Dangerous.
                 %
                 % This is the horizontal field of view (default)
                 % We compute it from the distance between the lens and the sensor
@@ -929,53 +1032,13 @@ switch oType
                 else
                     distance = opticsGet(oiGet(oi,'optics'),'focal plane distance',sDist);
                 end
-                width = sensorGet(sensor,'arraywidth');
-                val = ieRad2deg(2*atan(0.5*width/distance));
-            case {'fovvertical','vfov','fovv'}
-                % This is  the vertical field of view
-                % sensorGet(sensor,'fov vertical',sDist,oi); - Explicit scene dist in m
-                % sensorGet(sensor,'fov vertical',scene,oi); - Explicit scene
-                % sensorGet(sensor,'fov vertical');          - Uses defaults.  Dangerous.
-                %
-                % This is the horizontal field of view (default)
-                % We compute it from the distance between the lens and the sensor
-                % surface and we also use the sensor array width.
-                % The assumption here is that the sensor is at the proper focal
-                % distance for the scene.  If the scene is at infinity, then the
-                % focal distance is the focal length.  But if the scene is close,
-                % then we might correct.
-                %
-                if ~isempty(varargin), scene = varargin{1};
-                else                   scene = vcGetObject('scene');
-                end
-                if length(varargin) > 1, oi = varargin{2};
-                else                     oi = vcGetObject('oi');
-                end
-                % If no scene is sent in, assume the scene is infinitely far away.
-                if isempty(scene), sDist = Inf;
-                else
-                    % The user might have sent a scene struct or a scene distance
-                    % in meters.
-                    if isstruct(scene), sDist = sceneGet(scene,'distance');
-                    else,               sDist = scene;
-                    end
-                end
-                % If there is no oi, then use the default optics focal length. The
-                % image distance depends on the scene distance and focal length via
-                % the lensmaker's formula, (we assume the sensor is at the proper
-                % focal distance).
-                if isempty(oi)
-                    distance = opticsGet(opticsCreate,'focal length');
-                    % fprintf('Sensor fov estimated using focal length = %f m\n',distance);
-                else
-                    distance = opticsGet(oiGet(oi,'optics'),'focal plane distance',sDist);
-                end
                 
                 height = sensorGet(sensor,'array height');
                 val = ieRad2deg(2*atan(0.5*height/distance));
                 
             case {'hdegperpixel','degpersample','degreesperpixel'}
                 % degPerPixel = sensorGet(sensor,'h deg per pixel',oi);
+                %
                 % Horizontal field of view divided by number of pixels
                 sz =  sensorGet(sensor,'size');
                 
@@ -985,7 +1048,8 @@ switch oType
                 
                 % The horizontal field of view should incorporate information from
                 % the optics.
-                val = sensorGet(sensor,'hfov',oi)/sz(2);
+                sDist = 1e6;   % Assume the scene is very far away.
+                val = sensorGet(sensor,'hfov',sDist,oi)/sz(2);
             case {'vdegperpixel','vdegreesperpixel'}
                 sz =  sensorGet(sensor,'size');
                 val = sensorGet(sensor,'vfov')/sz(1);
@@ -1017,11 +1081,14 @@ switch oType
                 val = fov/width;
                 
                 % Computational flags
+                %{
             case {'sensorcompute','sensorcomputemethod'}
                 % Swap in a sensorCompute routine.  If this is empty, then the
                 % standard vcamera\sensor\mySensorCompute routine will be used.
                 if checkfields(sensor,'sensorComputeMethod'), val = sensor.sensorComputeMethod;
-                else  val = 'mySensorCompute';  end
+                else,  val = 'mySensorCompute';  end
+                %}
+                %{
             case {'consistency','computationalconsistency'}
                 % If the consistency field is not present, assume false and set it
                 % false.  This checks whether the parameters and the displayed
@@ -1029,14 +1096,20 @@ switch oType
                 if checkfields(sensor,'consistency'), val = sensor.consistency;
                 else, sensorSet(sensor,'consistency',0); val = 0;
                 end
-                
-            case {'mccrecthandles'}
-                % These are handles to the squares on the MCC selection regions
-                % see macbethSelect
-                if checkfields(sensor,'mccRectHandles'), val = sensor.mccRectHandles; end
-            case {'mccpointlocs','mcccornerpoints'}
-                % Corner points for the whole MCC chart
-                if checkfields(sensor,'mccCornerPoints'), val = sensor.mccCornerPoints; end
+                %}
+            case {'chartparameters'}
+                % Struct of chart parameters
+                if checkfields(sensor,'chartP'), val = sensor.chartP; end
+            case {'cornerpoints','chartcornerpoints','chartcorners'}
+                % fourPoints = sensorGet(sensor,'chart corner points');
+                if checkfields(sensor,'chartP','cornerPoints'), val = sensor.chartP.cornerPoints; end
+            case {'chartrects','chartrectangles'}
+                % rects = sensorGet(sensor,'chart rectangles');
+                if checkfields(sensor,'chartP','rects'), val = sensor.chartP.rects; end
+            case {'currentrect'}
+                % [colMin rowMin width height]
+                % Used for ROI display and management.
+                if checkfields(sensor,'chartP','currentRect'), val = sensor.chartP.currentRect; end
                 
                 % Display image
             case {'rgb'}
@@ -1051,10 +1124,19 @@ switch oType
                 
             case {'gamma'}
                 % The gamma display in the sensor window
-                hdl = ieSessionGet('sensor window handle');
-                if ~isempty(hdl)
-                    val = get(hdl.editGam,'string');
-                    val = str2double(val);
+                % sensorGet(sensor,'gamma')
+                app = ieSessionGet('sensor window');
+                if ~isempty(app)
+                    val = str2double(app.GammaEditField.Value);
+                end
+            case {'maxbright','scalemax'}
+                % Scale the displayed image to max (1,1,1)
+                % Returns true (scale to max) or false
+                % sensorGet(sensor,'scale max')
+                app = ieSessionGet('sensor window');
+                val = true;
+                if ~isempty(app) && strcmpi(app.MaxbrightSwitch.Value,'Off')
+                    val = false;
                 end
                 
                 % Human cone case

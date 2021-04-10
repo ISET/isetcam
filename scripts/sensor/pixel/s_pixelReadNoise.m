@@ -86,8 +86,8 @@ end
 pSTD = std(volts,[],2);
 
 % The histogram is the distribution of the estimated pixel read noises
-vcNewGraphWin; 
-hist(pSTD,50)
+ieNewGraphWin; 
+histogram(pSTD,50)
 grid on;
 
 title(sprintf('Variation in repeated reads (N=%d)',nRepeats))

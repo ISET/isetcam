@@ -10,15 +10,14 @@ function xy = vcLineSelect(obj,objFig)
 % Example:
 %   xy = vcLineSelect(vcGetObject('isa'));
 %
-% See also:  vcPointSelect, vcLineSelect, vcROISelect, ieGetXYCoords
 %
 % Copyright ImagEval Consultants, LLC, 2005.
+%
+% See also:  
+%   vcPointSelect, vcLineSelect, vcROISelect, ieGetXYCoords
 
-% TODO:
-%  getpts() allows you to specify the axis, not just the figure.  We should
-%  probably use that addressing.  We should also trap the case no points
-%  returned ... is that possible?  Or out of range points?
-
+error('Deprecated.  Use iePointSelect');
+%{
 if ieNotDefined('obj'), error('You must define an object (isa,oi,scene ...)'); end
 if ieNotDefined('objFig'), objFig = vcGetFigure(obj); end
 
@@ -37,6 +36,6 @@ else
 end
 
 ieInWindowMessage('',hndl);
+%}
 
-return;
-
+end

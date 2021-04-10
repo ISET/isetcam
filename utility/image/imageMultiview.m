@@ -1,34 +1,52 @@
 function selectedObjs = imageMultiview(objType, selectedObjs, singlewindow)
 % Display multiple images of selected GUI objects
 %
-%  selectedObjs = imageMultiview(objType, selectedObjs, singlewindow)
+% Syntax:
+%   selectedObjs = imageMultiview(objType, [selectedObjs], [singlewindow])
 %
-% This routine lets the user compare the images side by side, rather than
-% flipping through them in the GUI window.
+% Description:
+%    This routine lets the user compare the images side by side, rather
+%    than flipping through them in the GUI window.
 %
-% objType:       Which window (scene, oi, sensor, or vcimage)
-% selectedObjs:  List of the selected object numbers, e.g., [1 3 5]
-% singlewindow:  Put the images in subplots of a single figure (true) or in
-%                different figures (default = false);
+%    Examples are located within the code. To access the examples, type
+%    'edit imageMultiview.m' into the Command Window.
 %
-% See also: imageMontage
+% Inputs:
+%    objType      - Which window (scene, oi, or vcimage)
+%    selectedObjs - (Optional) List of the selected object numbers, e.g., 
+%                   [1 3 5]. Default is all of the objects in ObjList.
+%    singlewindow - (Optional) Whether or not to plot all of the images in
+%                   the same figure in subplots (true), or in different
+%                   figures (false.) Default is false.
 %
-% Example:
-%  objType = 'scene';
-%  imageMultiview(objType);
+% Outputs:
+%    selectedObjs - The selected objects
 %
-%  selectedObjs = [1 6];
-%  imageMultiview(objType,whichObj);
+% Optional key/value pairs:
+%    None.
 %
-%  objType = 'vcimage';
-%  selectedObjs = [2 3 5];
-%  imageMultiview(objType,whichObj, true);
+% See Also:
+%    imageMontage
 %
-% Copyright Imageval Consultants, LLC, 2013
 
-%%
-if ieNotDefined('objType'), error('Object type required.'); end
-if ieNotDefined('singlewindow'), singlewindow = false; end
+% History:
+%    xx/xx/13       Copyright Imageval Consultants, LLC, 2013
+%    12/07/17  jnm  Formatting
+%    12/26/17   BW  Removed vcimage/imageGet. Fixed examples.
+%    01/26/18  jnm  Formatting update to match Wiki.
+%
+% Examples:
+%{
+    scene = sceneCreate; ieAddObject(scene); 
+    scene = sceneCreate('macbeth tungsten');
+    ieAddObject(scene); 
+    objType = 'scene';
+    imageMultiview(objType,[1 2],true);
+    imageMultiview(objType,[1 2]);
+%}
+
+if notDefined('objType'), error('Object type required.'); end
+if notDefined('singlewindow'), singlewindow = false; end
 
 % Allows some aliases to be used
 objType = vcEquivalentObjtype(objType);
@@ -36,79 +54,69 @@ objType = vcEquivalentObjtype(objType);
 % Get the objects
 [objList, nObj] = vcGetObjects(objType);
 if  isempty(objList)
-    fprintf('No objects of type %s\n',objType);
+    fprintf('No objects of type %s\n', objType);
     return;
 end
 
 % Show a subset or all
-if ieNotDefined('selectedObjs')
-    lst = cell(1,nObj);
-    for ii=1:nObj, lst{ii} = objList{ii}.name; end
-    selectedObjs = listdlg('ListString',lst);
+if notDefined('selectedObjs')
+    lst = cell(1, nObj);
+    for ii = 1:nObj, lst{ii} = objList{ii}.name; end
+    selectedObjs = listdlg('ListString', lst);
 end
-
-% Adjust for the selected objects only
-nObj = length(selectedObjs);
 
 % Set up the subplots or multiple window conditions
 if singlewindow
     if nObj > 3
-        rWin = ceil(sqrt(nObj));
-        cWin = ceil(nObj/rWin); fType = 'upper left';
+        rWin = ceil(sqrt(length(selectedObjs)));
+        cWin = rWin;
+        fType = 'upper left';
     else
-        rWin = nObj; cWin = 1; fType = 'tall';
+        rWin = nObj;
+        cWin = 1;
+        fType = 'tall';
     end
-else,  rWin = []; fType = 'upper left';
+else
+    rWin = [];
+    fType = 'upper left';
 end
-subCount = 1; % Which subplot are we in
+gam = 1;  % Figure out a rationale for this.
+subCount = 1;  % Which subplot are we in
 
 %% This is the display loop
-for ii=selectedObjs
-    if (~singlewindow || subCount == 1), vcNewGraphWin([],fType); end
+for ii = selectedObjs
+    if (~singlewindow || subCount == 1)
+        % If not a single window, always call.  Or if the first time
+        % through, call
+        thisFig = ieNewGraphWin([], fType); 
+    end
     if singlewindow
-        subplot(rWin,cWin,subCount); subCount = subCount+1; 
+        % If we are in a single window, pick the subplot.
+        subplot(rWin, cWin, subCount);
+        subCount = subCount + 1;
     end
     switch objType
         case 'SCENE'
-            gam = ieSessionGet('scene gamma');      % gamma in the window!
-            % Use the same display method, but do not show in the scene
-            % window.  The -1 makes that happen
-            displayFlag = abs(ieSessionGet('scene display flag')); % RGB, HDR, Gray
-            if isempty(displayFlag), displayFlag = 1; end
-            sceneShowImage(objList{ii},displayFlag,gam);
-            t = sprintf('Scene %d - %s',ii,sceneGet(objList{ii},'name'));
-            
+            sceneShowImage(objList{ii}, true, gam, thisFig);
+            t = sprintf('Scene %d - %s', ii, ...
+                sceneGet(objList{ii}, 'name'));
+
         case 'OPTICALIMAGE'
-            gam = ieSessionGet('oi gamma');      % gamma in the window!
-            displayFlag = ieSessionGet('oi display flag'); % RGB, HDR, Gray
-            oiShowImage(objList{ii},displayFlag,gam);
-            t =sprintf('OI %d - %s',ii,oiGet(objList{ii},'name'));
-            
-        case 'ISA'
-            gam = ieSessionGet('sensor gamma');      % gamma in the window!
-            scaleMax = true; showFig = false;
-            img = sensorShowImage(objList{ii},gam,scaleMax,showFig);
-            imagesc(img); axis off;
-            t = sprintf('Sensor %d - %s',ii,sensorGet(objList{ii},'name'));
-            
+            oiShowImage(objList{ii}, true, gam);
+            t =sprintf('OI %d - %s', ii, oiGet(objList{ii}, 'name'));
+
         case 'VCIMAGE'
-            gam = ieSessionGet('ip gamma');      % gamma in the window!
-            trueSizeFlag = []; showFig = false;
-            img = imageShowImage(objList{ii},gam,trueSizeFlag,showFig);
-            imagesc(img); axis off; axis image
-            t = sprintf('VCI %d - %s',ii,ipGet(objList{ii},'name'));
+            img = imageShowImage(objList{ii},gam,true,0);
+            t =sprintf('IP %d - %s', ii, ipGet(objList{ii}, 'name'));
+            image(img); axis image; axis off;
             
         otherwise
             error('Unsupported object type %s\n', objType);
     end
-    
+
     % Label the image or window
-    if singlewindow,      title(t)
-    else                  set(gcf,'name',t);
-    end
-    
-end
+    if singlewindow, title(t); else, set(gcf, 'name', t); end
 
 end
 
-
+end

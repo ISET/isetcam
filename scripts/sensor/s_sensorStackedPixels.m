@@ -42,36 +42,28 @@ filterNames = {'rX','gY','bZ'};
 
 % Create a monochrome sensor.  We will reuse this structure to compute each
 % of the complete color filters.
-sensorCell = cell(1,3);
+sensorMonochrome = cell(1,3);
 for ii=1:3
-    thisSensor = sensorCreate('monochrome');
-    thisSensor = sensorSet(thisSensor,'pixel size constant fill factor',[1.4 1.4]*1e-6);
-    thisSensor = sensorSet(thisSensor,'exp time',0.1);
-    thisSensor = sensorSet(thisSensor,'filterspectra',fSpectra(:,ii));
-    thisSensor = sensorSet(thisSensor,'Name',sprintf('Channel-%.0f',ii));
-    thisSensor = sensorSetSizeToFOV(thisSensor,sceneGet(scene,'fov'),scene,oi);
-    thisSensor = sensorSet(thisSensor,'wave',wave);
-    sensorCell{ii} = thisSensor;
-end
-
-clear sensorMonochrome
-for ii=1:3
-    sensorMonochrome(ii) = sensorCell{ii};
+    sensorMonochrome{ii} = sensorCreate('monochrome'); 
+    sensorMonochrome{ii} = sensorSet(sensorMonochrome{ii},'pixel size constant fill factor',[1.4 1.4]*1e-6);
+    sensorMonochrome{ii} = sensorSet(sensorMonochrome{ii},'exp time',0.1);
+    sensorMonochrome{ii} = sensorSet(sensorMonochrome{ii},'filterspectra',fSpectra(:,ii));
+    sensorMonochrome{ii} = sensorSet(sensorMonochrome{ii},'Name',sprintf('Channel-%.0f',ii));
+    sensorMonochrome{ii} = sensorSetSizeToFOV(sensorMonochrome{ii},sceneGet(scene,'fov'),oi);
+    sensorMonochrome{ii} = sensorSet(sensorMonochrome{ii},'wave',wave);
+    sensorMonochrome{ii} = sensorCompute(sensorMonochrome{ii},oi);{ii}
 end
 
 %% Loop on the filters and calculate monochrome sensor planes
 
-% sensorCompute can take an array of sensors as input.
-sensorMonochrome = sensorCompute(sensorMonochrome,oi);
-
-sz = sensorGet(sensorMonochrome(1),'size');
+sz = sensorGet(sensorMonochrome{ii},'size');
 nChannels = size(fSpectra,2); 
 im = zeros(sz(1),sz(2),nChannels);
 for ii=1:3
-    im(:,:,ii) = sensorGet(sensorMonochrome(ii),'volts');
+    im(:,:,ii) = sensorGet(sensorMonochrome{ii},'volts');
 end
 
-sensorWindow(sensorMonochrome(1));
+sensorWindow(sensorMonochrome{1});
 
 %% Render the Foveon sensor data with the image processor (ipCompute)
 
@@ -79,7 +71,7 @@ sensorWindow(sensorMonochrome(1));
 sensorFoveon = sensorCreate;
 sensorFoveon = sensorSet(sensorFoveon,'pixel size constant fill factor',[1.4 1.4]*1e-6);
 sensorFoveon = sensorSet(sensorFoveon,'exp time',0.1);
-sensorFoveon = sensorSetSizeToFOV(sensorFoveon,sceneGet(scene,'fov'),scene,oi);
+sensorFoveon = sensorSetSizeToFOV(sensorFoveon,sceneGet(scene,'fov'),oi);
 sensorFoveon = sensorSet(sensorFoveon,'wave',wave);
 
 % Place the data (im) into the volts field of the matched sensor. The
@@ -113,7 +105,7 @@ sensorPlot(sensorBayer,'color filters');
 % Match the size and exposure time and field of view
 sensorBayer = sensorSet(sensorBayer,'pixel size constant fill factor',[1.4 1.4]*1e-6);
 sensorBayer = sensorSet(sensorBayer,'exp time',0.1);
-sensorBayer = sensorSetSizeToFOV(sensorBayer,sceneGet(scene,'fov'),scene,oi);
+sensorBayer = sensorSetSizeToFOV(sensorBayer,sceneGet(scene,'fov'),oi);
 
 % Compute
 sensorBayer = sensorCompute(sensorBayer,oi);

@@ -59,6 +59,7 @@ function val = sceneGet(scene,parm,varargin)
 %        'energy'           - radiance data (energy)
 %        'mean energy spd'  - mean spd in energy units
 %        'mean photons spd' - mean spd in photon units
+%        'dynamic range'    - luminance dynamic range
 %
 %    The roi can be specified as either Nx2 locations or as a 4-vector of
 %    [row,col,height,width].  Returned values are the mean over the roi.
@@ -129,9 +130,13 @@ function val = sceneGet(scene,parm,varargin)
 % Display
 %      'rgb image'  - RGB image of the scene display
 %
-% Reflectance chart - for a sceneCreate('reflectance chart')
-%       'chart parameters' - Structure of parameters
-%       'roi'    - Sometimes we store a rect as a region of interest
+% Charts
+%       'chart parameters' - Structure of reflectance chart parameters
+%                            sceneCreate('reflectance chart') 
+%       'corner points'    - Corner points for the any chart.  This will
+%                            replace the MCC calls
+%       'roi'              - Sometimes we store a rect as a region of
+%                            interest.  Not well integrated, yet.
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
@@ -213,7 +218,7 @@ switch parm
             % Use the current scene information
             val = sceneGet(vcGetObject('SCENE'),'aspectRatio');
             return;
-        else val = r/c;
+        else, val = r/c;
         end
     case {'magnification','mag'}
         % Scenes always have a magnification of 1. Optical image mag
@@ -283,7 +288,7 @@ switch parm
         % So, [col,row,0,0] returns 1 point and [col,row,1,1] returns 4
         % points.
         if isempty(varargin), error('ROI required')
-        else roiLocs = varargin{1};
+        else, roiLocs = varargin{1};
         end
         val = vcGetROIData(scene,roiLocs,'photons');
                 
@@ -356,7 +361,7 @@ switch parm
         %
         % Return the mean reflectance spd in a region of interest
         if isempty(varargin), error('ROI required')
-        else roiLocs = varargin{1};
+        else, roiLocs = varargin{1};
         end
         val = sceneGet(scene,'roi reflectance', roiLocs);
         val = mean(val,1);
@@ -368,13 +373,21 @@ switch parm
         % wavelengths are passed, then the peak at all wavelength is
         % returned in a vector.
         if isempty(varargin), wave = sceneGet(scene,'wave');
-        else wave = varargin{1};
+        else, wave = varargin{1};
         end
         nWave = length(wave);
         val = zeros(nWave,1);
         for ii=1:nWave
             tmp = sceneGet(scene,'photons',wave(ii));
             val(ii) = max(tmp(:));
+        end
+    case {'luminancedynamicrange','dynamicrange'}
+        % sceneGet(scene,'luminance dynamic range')
+        % Measured in dB (10 log10(max/min))
+        lum = sceneGet(scene,'luminance');
+        if min(lum(:)) > 0
+            val = 10*log10(max(lum(:))/min(lum(:)));
+        else,  val = Inf;
         end
     case {'peakradianceandwave'}
         % Probably deprecated
@@ -779,41 +792,67 @@ switch parm
     case {'illuminantcomment'}
         if checkfields(scene,'illuminant','comment'),val = scene.illuminant.comment; end
         
-        % Reflectance chart parameters,
-        % for sceneCreate('reflectance chart') case
-        % More parameters may be added into this section.
-    case {'chartparameters'} % Structure of reflectance chart parameters
-        if checkfields(scene,'chartP'), val = scene.chartP; end
+        
         
         % For display purposes
     case {'rgb','rgbimage'}
-        % Get the rgb image shown in the window
         % rgb = sceneGet(scene,'rgb image');
-        %   ieNewGraphWin; imshow(rgb)
+        %
+        % Get the rgb image shown in the window
         
-        gam     = sceneGet(scene,'display gamma');
-        handles = ieSessionGet('scene handles');
-        if isempty(handles), displayFlag = -1;
-        else,                displayFlag = -1*abs(get(handles.popupDisplay,'Value'));
-        end
-        val = sceneShowImage(scene,displayFlag,gam);
-                
-    case {'displaygamma','gamma'}
-        % sceneGet(scene,'display gamma')
+        gam        = sceneGet(scene,'gamma');
+        renderFlag = sceneGet(scene,'render flag index');
+        renderFlag = -1*abs(renderFlag);
+        val = sceneShowImage(scene,renderFlag,gam);
+        
+    case {'gamma'}
+        % sceneGet(scene,'gamma')
 
         % See if there is a display window
-        W = ieSessionGet('scene window handle');
-        if isempty(W), val = 1;  % Default if no window
-        else, val = str2double(get(W.editGamma,'string'));
+        thisW = ieSessionGet('scene window');
+        if isempty(thisW), val = 1;  % Default if no window
+        else, val = str2double(thisW.editGamma.Value);
         end
         
-        % MCC related regions of interest and handles.  Works with
-        % macbethSelect
-    case {'mccrecthandles'}
-        if checkfields(scene,'mccRectHandles'), val = scene.mccRectHandles; end
-    case {'mcccornerpoints'}
-        if checkfields(scene,'mccCornerPoints'), val = scene.mccCornerPoints; end
-
+    case {'renderflagindex'}
+        % val = oiGet(oi,'display flag index')
+        %
+        % When there is an oiWindow open and set in the vcSESSION,
+        % find the display flag index.  Otherwise return 1.
+        
+        sceneW = ieSessionGet('scene window');
+        if isempty(sceneW), val = 1;   % Default if no window
+        else, val = find(ieContains(sceneW.popupRender.Items,sceneW.popupRender.Value));
+        end
+        
+    case {'renderflagstring'}
+        % val = oiGet(oi,'display flag string')
+        % When there is an oiWindow open and set in the vcSESSION,
+        % find the display flag index
+        
+        % See if there is a scene window
+        sceneW = ieSessionGet('scene window');
+        if isempty(sceneW), val = 'no window';   % Default if no window
+        else,               val = sceneW.popupRender.Value;
+        end
+        
+        % Reflectance chart parameters.  Used for MCC and other charts.
+    case {'chartparameters'} % Structure of reflectance chart parameters
+        if checkfields(scene,'chartP'), val = scene.chartP; end
+    case {'cornerpoints','chartcornerpoints','chartcorners'}
+        % fourPoints = sceneGet(scene,'chart corner points');
+        %
+        % This should become the standard, replacing the mcc specific
+        % version.
+        if checkfields(scene,'chartP','cornerPoints'), val = scene.chartP.cornerPoints; end
+    case {'chartrects','chartrectangles'}
+        % rects = sceneGet(scene,'chart rectangles');
+        if checkfields(scene,'chartP','rects'), val = scene.chartP.rects; end
+    case {'currentrect'}
+        % [colMin rowMin width height]
+        % Used for ROI display and management.
+        if checkfields(oi,'chartP','currentRect'), val = oi.chartP.currentRect; end
+        
     otherwise
         disp(['Unknown parameter: ',parm]);
         

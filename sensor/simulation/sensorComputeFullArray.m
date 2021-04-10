@@ -41,7 +41,6 @@ for kk=1:numChannels
     s = sensorSet(sensor,'filterspectra',cFilters(:,kk));
     s = sensorSet(s,'Name',sprintf('Channel-%.0f',kk));
     s = sensorCompute(s,oi,0);
-    % vcAddAndSelectObject(s); sensorImageWindow
     
     volts(:,:,kk) = sensorGet(s,'volts');
 end

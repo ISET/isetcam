@@ -67,7 +67,6 @@ for ii=1:length(pSize)
     sensor{ii} = sensorCompute(sensor{ii},oi);
     sensor{ii} = sensorSet(sensor{ii},'name',sprintf('pSize %.1f',pSize(ii)));
     ieAddObject(sensor{ii}); 
-    % sensorImageWindow;
     
     ip{ii} = ipCompute(baseProcessor,sensor{ii});
     ip{ii} = ipSet(ip{ii},'name',sprintf('pSize %.1f',pSize(ii)));
@@ -101,6 +100,6 @@ size(dv)
 %% Show the different resolution images side by side
 imageMultiview('ip',1:3,true);
 
-%%
+%% END
 
 

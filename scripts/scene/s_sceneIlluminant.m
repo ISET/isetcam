@@ -50,7 +50,7 @@ illum = illuminantCreate('d65',wave,luminance);
 p     = illuminantGet(illum,'photons');
 w     = illuminantGet(illum,'wave');
 
-vcNewGraphWin; 
+ieNewGraphWin; 
 plot(w,p); grid on
 xlabel('Wavelength'); ylabel('Photons')
 

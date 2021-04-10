@@ -1,35 +1,39 @@
-function str = displayDescription(d)
-%% function displayDescription(display)
-%   Text description of the display properties, displayed in display window
-%   
+function str = displayDescription(thisD)
+% Text description of the display properties, displayed in display window
+% 
+% This will be replaced by an iePTable call
+%
+% Synopsis
+%   str = displayDescription(display)
+%
+
 %  Example:
 %   d = displayCreate('LCD-Apple');
 %   str = displayDescription(d)
 %
 % (HJ) May, 2014
 
-if ieNotDefined('d'), d = []; end
-global vcSESSION
+if ieNotDefined('thisD'), thisD = []; end
 
-if isempty(d)
+if isempty(thisD)
     str = 'No display structure';
 else
-    str = sprintf('Name:\t%s\n', displayGet(d, 'name'));
+    str = sprintf('Name:\t%s\n', displayGet(thisD, 'name'));
     
-    wave = displayGet(d,'wave');
-    spacing = displayGet(d,'binwidth');
+    wave = displayGet(thisD,'wave');
+    spacing = displayGet(thisD,'binwidth');
     str = addText(str,sprintf('Wave:\t%d:%d:%d nm\n', ...
                         min(wave(:)),spacing,max(wave(:))));
-    
-                    
     str = addText(str, sprintf('# primaries:\t%d\n', ...
-                            displayGet(d, 'nprimaries')));
+                            displayGet(thisD, 'nprimaries')));
     str = addText(str, sprintf('Color bit depth:\t%d\n', ...
-                            displayGet(d, 'bits')));
-    I = vcSESSION.imgData;
+                            displayGet(thisD, 'bits')));
+    rgb = displayGet(thisD,'rgb');
     str = addText(str, sprintf('Image width: %d\t Height: %d', ...
-                            size(I, 2), size(I, 1)));
+                            size(rgb, 2), size(rgb, 1)));
     
+end
+
 end
 
 %% END

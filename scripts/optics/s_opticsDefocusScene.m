@@ -18,7 +18,7 @@
 ieInit
 
 % I like showing the waitbar when the computations take more than a second
-ieSessionSet('wait bar','on');
+% ieSessionSet('wait bar','on');
 
 %% Create a test scene
 

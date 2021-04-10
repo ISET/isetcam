@@ -1,5 +1,7 @@
 function [macbethXYZ, whiteXYZ, cornerPoints] = vcimageMCCXYZ(vci,cornerPoints,method)
-%Estimate XYZ values of the MCC patches and the image white point from vci
+%DEPRECATED:  Estimate XYZ values of the MCC patches and the image white point from vci
+%
+%  USE ieMCCZYZ;
 %
 %  [macbethXYZ, whiteXYZ] = vcimageMCCXYZ(vci,pointLoc,method)
 %
@@ -34,6 +36,9 @@ function [macbethXYZ, whiteXYZ, cornerPoints] = vcimageMCCXYZ(vci,cornerPoints,m
 % See Also: macbethColorError, macbethEvaluationGraphs
 %
 
+error('Use ieMCCXYZ');
+%
+%{
 %% Check input variables
 if ieNotDefined('vci'), vci = vcGetObject('vcimage'); end
 if ieNotDefined('method'), method = 'sRGB'; end
@@ -97,3 +102,4 @@ whiteXYZ   = double(macbethXYZ(whiteIndex,:));
 
 
 end
+%}

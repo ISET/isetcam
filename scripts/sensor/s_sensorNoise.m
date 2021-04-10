@@ -31,7 +31,7 @@ sensor = sensorSet(sensor,'noise flag',0);
 sensorNF = sensorCompute(sensor,oi);
 v = sensorGet(sensorNF,'volts');
 
-ieAddObject(sensorNF); sensorImageWindow
+ieAddObject(sensorNF); sensorWindow
 % sensorNF = vcGetObject('sensor');
 
 %% Now compute with all noise terms on
@@ -41,11 +41,11 @@ voltImages = sensorComputeSamples(sensorNF,nSamp);
 
 %% Look at the noise histogram across all images
 noiseImages = voltImages - repmat(v,[1 1 nSamp]);
-vcNewGraphWin; hist(noiseImages(:),100)
+ieNewGraphWin; histogram(noiseImages(:),100)
 
 %%
 s = std(voltImages,0,3);
-vcNewGraphWin;
+ieNewGraphWin;
 imagesc(s); colorbar
 
 %%
@@ -60,7 +60,7 @@ s2 = sensorCompute(sensor,oi);
 
 v1 = sensorGet(s1,'volts');
 v2 = sensorGet(s2,'volts');
-hist(v1(:) - v2(:),100)
+histogram(v1(:) - v2(:),100)
 
 %%
 

@@ -13,6 +13,12 @@ function ieRunScriptsAll
 % 
 % 07/26/17  dhb  Wrote this, because we care.
 
+%%  Set for app designer buggy stuff
+
+ieSessionSet('waitbar','off');
+
+%%
+
 % User/project specific preferences
 % local directory where tutorial scripts are located
 p = struct(...

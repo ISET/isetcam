@@ -1,12 +1,14 @@
-function sensorPlotColor(sa,type)
+function sensorPlotColor(sensor,type)
 % Plot sensor cross-correlations 
 %
-%     sensorColorPlot(sa,[type=RB'])
+% Synopsis
+%  sensorColorPlot(sa,[type=RB'])
 %
-% This routine analyzes the scene color properties, usually color
-% balancing. The routine produces a graph that includes the
-% cross-corrrelation and indicates the expected distribution assuming
-% various different color temperatures of the ambient illumination.
+% Description
+%  This routine analyzes the scene color properties, usually color
+%  balancing. The routine produces a graph that includes the
+%  cross-corrrelation and indicates the expected distribution assuming
+%  various different color temperatures of the ambient illumination.
 %
 % Example:
 %   sensor = vcGetObject('ISA');
@@ -14,22 +16,21 @@ function sensorPlotColor(sa,type)
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
-% TODO:  This should be moved into sensorPlot as a case statement.  After
-% we write sensorPlot, sigh.
-
-if ieNotDefined('sa'), sa=vcGetObject('isa'); end
+if ieNotDefined('sa'),   sensor = ieGetObject('sensor'); end
 if ieNotDefined('type'), type = 'rg'; end
+
 labels = {'Red sensor','Green sensor','Blue sensor'};
 
 % Demosiac the (R,B) values. 
-wave = sensorGet(sa,'wave');
-spectralQE = sensorGet(sa,'spectralQE');
+wave       = sensorGet(sensor,'wave');
+spectralQE = sensorGet(sensor,'spectral QE');
 
 % We need a default, target display to do the demosaic'ing
-demosaicedImage = Demosaic(ipCreate,sa); 
+ip = ipCreate;
+ip = ipSet(ip,'input',sensorGet(sensor,'volts'));
+demosaicedImage = Demosaic(ip,sensor); 
 
-figNum =  vcNewGraphWin;
-plotSetUpWindow(figNum);
+figNum =  ieNewGraphWin;
 
 switch lower(type)
     case 'rg'

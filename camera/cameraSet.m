@@ -103,7 +103,7 @@ switch oType
                 % We assume the scene is far away and the sensor is at the focal
                 % length of the optics.
                 sensor = cameraGet(camera,'sensor');
-                sensor = sensorSetSizeToFOV(sensor,val,[],camera.oi);
+                sensor = sensorSetSizeToFOV(sensor,val,camera.oi);
                 camera = cameraSet(camera,'sensor',sensor);
                 
                 % IMPORTANT.  I GUESS THIS HAS TO GO INTO SENSORSET.
@@ -113,7 +113,7 @@ switch oType
                     vci      = cameraGet(camera,'vci');
                     L3       = ipGet(vci,'L3');
                     sensorD  = L3Get(L3,'design sensor');
-                    sensorD  = sensorSetSizeToFOV(sensorD,val,[],camera.oi);
+                    sensorD  = sensorSetSizeToFOV(sensorD,val,camera.oi);
                     L3       = L3Set(L3,'design sensor',sensorD);
                     vci      = ipSet(vci,'L3',L3);
                     camera   = cameraSet(camera,'vci',vci);

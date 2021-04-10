@@ -41,10 +41,10 @@ wave = 400:5:710;
 % see s_sceneFromMultispectral.m, s_sceneFromRGB.m
 
 patchSize = 64;
-scene = sceneCreate('macbethtungsten',patchSize,wave);
+scene = sceneCreate('macbeth tungsten',patchSize,wave);
 
 % It is often useful to visualize the data in the scene window
-ieAddObject(scene); sceneWindow;
+sceneWindow(scene);
 
 %%
 % Each scene has a stored illuminant. 
@@ -55,7 +55,7 @@ scenePlot(scene,'illuminant energy roi');
 % It is possible to change the scene illuminant
 scene = sceneAdjustIlluminant(scene,'D65.mat');
 scene = sceneSet(scene,'name','D65'); % Set the scene name
-ieAddObject(scene); sceneWindow;
+sceneWindow(scene);
 
 %%
 % Once the scene is loaded, you can adjust different properties
@@ -65,7 +65,7 @@ scenePlot(scene,'illuminant energy roi');
 scene = sceneAdjustLuminance(scene,200);  % Candelas/m2
 scene = sceneSet(scene,'fov',26.5);       % Set the scene horizontal field of view
 scene = sceneInterpolateW(scene,wave,1);  % Resample, preserve luminance
-% ieAddObject(scene); sceneWindow; % if you want to view the change in the GUI window
+% sceneWindow(scene); % if you want to view the change in the GUI window
 %% Optics
 % see t_IntroductionOI.m
 %
@@ -84,20 +84,17 @@ scene = sceneInterpolateW(scene,wave,1);  % Resample, preserve luminance
 % the diffraction-limited lens model.  To create a diffraction-limited
 % optics with an f# of 4, you can call these functions
 oi = oiCreate;
-optics = oiGet(oi,'optics');           
-optics = opticsSet(optics,'fnumber',4);
+
+optics = oiGet(oi,'optics');
+
+oi = oiSet(oi,'optics fnumber',4);
+% optics = opticsSet(optics,'fnumber',4);
 
 % In this example we set the properties of the optics to include cos4th
 % falloff for the off axis vignetting of the imaging lens, and we set the
 % lens focal length to 3 mm. 
-optics = opticsSet(optics,'offaxis','cos4th');
-optics = opticsSet(optics,'focallength',3e-3);     % from lens calibration software
-
-% Many other properties can be set as well (type help opticsSet or doc
-% opticsSet).
-
-% We then replace the new optics variable into the optical image structure.
-oi = oiSet(oi,'optics',optics);
+oi = oiSet(oi,'optics off axis method','cos4th');
+oi = oiSet(oi,'optics focal length',3e-3);     % from lens calibration software
 
 % We use the scene structure and the optical image structure to update the
 % irradiance.
@@ -105,7 +102,7 @@ oi = oiCompute(scene,oi);
 
 % We save the optical image structure and bring up the optical image
 % window.
-ieAddObject(oi); oiWindow;
+oiWindow(oi);
 
 % From the window you can see a wide range of options. These include
 % insertion of a birefringent anti-aliasing filter, turning off cos4th
@@ -160,7 +157,7 @@ analogOffset = 0;         % Used to account for sensor black level
 rows = 466;               % number of pixels in a row
 cols = 642;               % number of pixels in a column
 
-% Set these sensor properties
+%%  Set these sensor properties
 % sensor = sensorSet(sensor,'exposuretime',exposureDuration); % commented because we set autoexposure
 sensorSet(sensor,'autoExposure',1);  
 sensor = sensorSet(sensor,'rows',rows);
@@ -196,7 +193,7 @@ sensor = sensorCompute(sensor,oi);
 % into the display window.  You can resize the window to eliminate these.
 % You can also set the display gamma function to brighten the appearance in
 % the edit box at the lower left of the window.
-ieAddObject(sensor); sensorImageWindow;
+sensorWindow(sensor);
 
 % There are a variety of ways to quantify these data in the pulldown menus.
 % Also, you can view the individual pixel data either by zooming on the
@@ -229,7 +226,7 @@ vci = ipCompute(vci,sensor);
 
 % As in the other cases, we can bring up a window to view the processed
 % data, this time a full RGB image.
-ieAddObject(vci); ipWindow
+ipWindow(vci);
 
 % You can experiment by changing the processing parameters in many ways,
 % such as:
@@ -241,7 +238,7 @@ vci2 = ipSet(vci2,'illuminant correction method','Gray World');
 % With these parameters, the colors will appear to be more accurate
 vci2 = ipCompute(vci2,sensor);
 
-ieAddObject(vci2); ipWindow
+ipWindow(vci2);
 
 % Again, this window offers the opportunity to perform many parameter
 % changes and to evaluate certain metric properties of the current system.

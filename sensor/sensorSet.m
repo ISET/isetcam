@@ -34,7 +34,7 @@ function sensor = sensorSet(sensor,param,val,varargin)
 %      'cols' - number of cols
 %      'size' - [rows,cols]
 %      'fov'  - horizontal field of view.  NOTE: Also adjusts row/col!
-%
+%      
 % Color
 %      'color'  - structure containing color information
 %        'filter transmissivities'   - color filter transmissivities
@@ -72,13 +72,19 @@ function sensor = sensorSet(sensor,param,val,varargin)
 %      'column fpn parameters' - column fpn parameters, both offset and gain
 %      'col gain fpn vector'   - column gain fpn data
 %      'col offset fpn vector' - column offset fpn data
-%      'noise Flag'         - 0 means no noise
-%                               1 means only shot noise,
-%                               2 means shot noise and electronics noise
+%      'noise flag'            - Read the documentation in the header of
+%               sensorCompute to understand the different flags. Briefly,
+%               the default noiseFlag value is 2, which includes photon
+%               noise, read/reset, FPN, analog gain/offset, clipping,
+%               quantization, are all included. noiseFlag = -2 is purely
+%               photon noise.  -1 is no noise at all. Read the
+%               documentation in sensorCompute! 
+%
 %      'reuse noise'        - Generate noise from current seed
 %      'noise seed'         - Saved noise seed for randn()
 %
 %      'exposure time'       - exposure time in seconds
+%      'exposure method'     - manually set in case we don't like the auto
 %      'exposure plane'      - selects exposure for display
 %      'auto exposure'       - auto-exposure flag, 1 or 0
 %                                'on' and 'off' are also OK.
@@ -109,9 +115,9 @@ function sensor = sensorSet(sensor,param,val,varargin)
 %     'scale intensity' - Scale display intensity to max
 %     'true size'       - Not yet implemented
 %
-% Macbeth Color checker
-%     'mcc rect handles'  - Handles for the rectangle selections in an MCC
-%     'mcc corner points' - Corner points for the whole MCC chart
+% Charts
+%     'chart rectangles'    - Rectangle positions in a chart
+%     'chart corner points' - Corner points for the whole chart
 %
 % Private
 %      'editfilternames'
@@ -157,13 +163,15 @@ switch lower(param)
 
     case {'rows','row'}
         % sensor = sensorSet(sensor,'rows',r);
+        
+        % Find how many rows in the unit block.  Make sure the new number
+        % of rows is a multiple of that.
         ubRows = sensorGet(sensor,'unit block rows');
-        if ubRows > 0, sensor.rows = round(val/ubRows)*ubRows;
+        if ubRows > 0, sensor.rows = floor(val/ubRows)*ubRows;
         else,          sensor.rows = val;
         end
         
-        % We clear the data at this point to prevent any possibility of a
-        % mis-match with the block array size
+        % Clear the data because it is no longer accurate.
         sensor = sensorClearData(sensor);
     case {'cols','col'}
         % sensor = sensorSet(sensor,'cols',c);
@@ -171,32 +179,47 @@ switch lower(param)
         % Set sensor cols, but make sure that we align with the proper
         % block size.
         ubCols = sensorGet(sensor,'unit block cols');
-        if ubCols > 0, sensor.cols = round(val/ubCols)*ubCols;
+        if ubCols > 0, sensor.cols = floor(val/ubCols)*ubCols;
         else,         sensor.cols = val;
         end
-        % We clear the data at this point to prevent any possibility of a
-        % mis-match with the block array size
+        
+        % Clear the data because it is no longer accurate.
         sensor = sensorClearData(sensor);
+        
     case {'size'}
         % sensor = sensorSet(sensor,'size',[r c]);
         %
         % There are constraints on the possible sizes because of the block
-        % pattern size.  This handles that issue.  Consequently, the actual
-        % size may differ from the set size.
+        % pattern size.  The row and col sets deal with that issue.
+        % Consequently, the actual size may differ from the set size.
         %
         % There are cases when we want to set a FOV rather than size.  See
         % sensorSetSizeToFOV for those cases.
-
-        % Not sure why the size checking is needed for human case.  Check.
-        % It's a problem in sensorCompute.
+        
+        %{
+            % Define target size to be consistent with desired scale and CFA
+            cfaSize = sensorGet(sensor,'cfaSize');
+            targetSize = ceil(s*sensorGet(sensor,'size') ./ cfaSize).* cfaSize;
+            
+            % If for some reason ceil(sz/cfaSize) is zero, we set size to one pixel
+            % cfa.
+            if targetSize(1) == 0, targetSize = cfaSize; end
+            
+            % Set size
+            % Data are cleared
+            sensor = sensorSet(sensor,'size',targetSize);
+        %}
+        
+        % The sensor data are cleared by these routines, too.
         sensor = sensorSet(sensor,'rows',val(1));
         sensor = sensorSet(sensor,'cols',val(2));
-        sensor = sensorClearData(sensor);
 
         % In the case of human, resetting the size requires rebuilding the
         % cone mosaic - Could be removed and use only ISETBio
-        if strfind(sensorGet(sensor,'name'),'human')
-            % disp('Resizing human sensor')
+        thisName = sensorGet(sensor,'name');
+        if isempty(thisName), return;
+        elseif ieContains(thisName,'human')
+            disp('Resizing human sensor.  Suggest you use ISETBio.')
             if checkfields(sensor,'human','coneType')
                 d = sensor.human.densities;
                 rSeed = sensor.human.rSeed;
@@ -212,15 +235,17 @@ switch lower(param)
         end
 
     case {'fov','horizontalfieldofview'}
-        % sensor = sensorSet(sensor,'fov',newFOV,scene,oi);
-        % This set is dangerous because it changes the size.  And size
-        % changes the FOV.  So, I am not happy.  But we use it so much that
-        % I stuck it in secretly.  But the preferred usage should be:
-        % [sensor,actualFOV] = sensorSetSizeToFOV(sensor,newFOV,scene,oi);
-        scene = []; oi = [];
-        if ~isempty(varargin), scene = varargin{1}; end
-        if length(varargin) > 1, oi = varargin{2}; end
-        sensor = sensorSetSizeToFOV(sensor,val, scene, oi);
+        % sensor = sensorSet(sensor,'fov',newFOV,oi);
+        %
+        % This set is dangerous because it changes the sensor size. A
+        % preferred usage might be: 
+        %  [sensor,actualFOV] = sensorSetSizeToFOV(sensor,newFOV,oi);
+        %
+        if ~isempty(varargin), oi    = varargin{1}; 
+        else, oi = ieGetObject('oi');
+        end
+        if isempty(oi), error('oi required to set sensor fov'); end
+        sensor = sensorSetSizeToFOV(sensor,val, oi);
     case 'color'
         sensor.color = val;
     case {'filterspectra','colorfilters','filtertransmissivities'}
@@ -293,13 +318,18 @@ switch lower(param)
         % Which of the multiple exposures, in a bracketed condition, we
         % show in the window.
         sensor.exposurePlane = round(val);
+    case {'exposuremethod'}
+        % this allows us to over-ride the automatic setting of bracketing,
+        % for example, so we can do burst photography
+        sensor.exposureMethod = val;
     case {'autoexp','autoexposure','automaticexposure'}
         % sensorSet(sensor,'auto exposure',1);
         % Boolean flag for turning on auto-exposure.
         if ischar(val)
-            % Let the person put on and off into the autoexposure field
-            if strcmp(val,'on'), val = 1;
-            else,val = 0;
+            % We accept on and off into the autoexposure field.  Case
+            % insensitive.
+            if strcmpi(val,'on'), val = 1;
+            else, val = 0;
             end
         end
         sensor.AE = val;
@@ -345,6 +375,7 @@ switch lower(param)
     case {'dv','digitalvalue','digitalvalues'}
         sensor.data.dv = val;
     case {'roi'}
+        % Perhaps this should be current rect, see below?
         sensor.roi = val;
     case {'quantization','qmethod','quantizationmethod'}
         % 'analog', '10 bit', '8 bit', '12 bit'
@@ -361,12 +392,12 @@ switch lower(param)
         sensor.offsetFPNimage = val;
     case {'gainfpnimage','prnuimage'}   % Photo response non uniformity (PRNU) image
         sensor.gainFPNimage = val;
-    case {'dsnulevel','sigmaoffsetfpn','offsetfpn','offset','offsetsd','offsetnoisevalue'}
+    case {'dsnulevel','dsnusigma','sigmaoffsetfpn','offsetfpn','offsetsd','offsetnoisevalue'}
         % Units are volts
         sensor.sigmaOffsetFPN = val;
         % Clear the dsnu image when the dsnu level is reset
         sensor = sensorSet(sensor,'dsnuimage',[]);
-    case {'prnulevel','sigmagainfpn','gainfpn','gain','gainsd','gainnoisevalue'}
+    case {'prnulevel','prnusigma','sigmagainfpn','gainfpn','gainsd','gainnoisevalue'}
         % This is stored as a percentage. Always.  This is a change from
         % the past where I tried to be clever but got into trouble.
         sensor.sigmaGainFPN = val;
@@ -387,23 +418,57 @@ switch lower(param)
         else, error('Bad column offset data');
         end        
         % Noise management
+    case {'blacklevel', 'zerolevel'}
+        % In some cases we have a black level handed to us by the header of
+        % a digital file.  We store the black level directly like this.
+        % This is typically a digital value > 32.
+        if val < 32
+            warning('Digital black level %d is surprisingly low.',val);
+        end
+        sensor.blackLevel = val;
     case {'noiseflag'}
         % NOISE FLAG
         %  The noise flag is an important way to control the details of the
-        %  calculation.  The default value of the noiseFlag is 2.  In this case,
-        %  which is standard operating, photon noise, read/reset, FPN, analog
-        %  gain/offset, clipping, quantization, are all included.  Different
-        %  selections are made by different values of the noiseFlag.
+        %  calculation.  The default value of the noiseFlag is 2.  In this
+        %  case, which is standard operating, photon noise, read/reset,
+        %  FPN, analog gain/offset, clipping, quantization, are all
+        %  included.  Different selections are made by different values of
+        %  the noiseFlag.
         %
-        %   sensor = sensorSet(sensor,'noise flag',noiseFlag);
+        %  We allow strings to turn off different types of noise
         %
-        % The conditions are:
+        %  photon noise:  Photon noise
+        %  pixel noise:   Electrical noise (read, reset, dark)
+        %  system noise:  gain/offset (prnu, dsnu), clipping, quantization
         %
-        %  noiseFlag | photon other-noises analog-gain/offset clipping quantization
-        %    -1      |   0         0            0                0        0
-        %     0      |   0         0            +                +        +
-        %     1      |   +         0            +                +        +
-        %     2      |   +         +            +                +        +
+        %   SEE DESCRIPTION OF FLAG VALUES IN THE FUNCTION HEADER COMMENT
+        if ischar(val)
+            switch (val)
+                case {'default','all'}
+                    % Photon noise, electrical noise, and all the
+                    % non-idealities
+                    val = 2;
+                case {'nopixel','nopixelnoise','noother','noelectrical'}
+                    % Photon noise, and system nosise, but no pixel noise.
+                    % The clipping and FPN non-idealities are still
+                    % present.
+                    val = 1;
+                case {'nophotonnopixel'} %'onlygcq','nophotonother', 'nophoton'
+                    % No photon noise, no electrical noise, but clipping,
+                    % quantization and other non-idealities are present.
+                    % Only gain, clipping, quantization (gcq)
+                    val = 0;
+                case {'nophotonnopixelnosystem','none','ideal'}
+                    % No noise or non-idealities of any sort.
+                    val = -1;
+                case {'nopixelnosystem','photononly','onlyphoton'}
+                    % No electrical noise or non-idealities.  Just photon
+                    % noise.
+                    val = -2;
+                otherwise
+                    error(" invalid noise flag");
+            end
+        end
         sensor.noiseFlag = val;
     case {'reusenoise'}
         % Decide whether we reuse (1) or recalculate (0) the noise.  If we
@@ -489,6 +554,7 @@ switch lower(param)
         % These ROIs for the MCC chart should be generalized to chartP here
         % and in ip and other objects.  Maybe there should be a chart
         % struct that is defined.
+    %{
     case {'mccrecthandles'}
         % These are handles to the squares on the MCC selection regions
         % see macbethSelect.  If we over-write them, we first delete the
@@ -504,23 +570,44 @@ switch lower(param)
     case {'cornerpoints','mccpointlocs','mcccornerpoints'}
         % Corner points for the whole MCC chart
         sensor.mccCornerPoints = val;
+    %}
+                % Chart parameters for MCC and other cases
+    case {'chartparameters'}
+        % Reflectance chart parameters are stored here.
+        sensor.chartP = val;
+    case {'cornerpoints','chartcornerpoints'}
+        sensor.chartP.cornerPoints=  val;
+    case {'chartrects','chartrectangles'}
+        sensor.chartP.rects =  val;
+        % Slot for holding a current retangular region of interest
+    case {'currentrect'}
+        % [colMin rowMin width height]
+        % Used for ROI display and management.
+        sensor.chartP.currentRect = val;
         
     case {'gamma'}
-        % Adjust the gamma on the display window.
-        hdl = ieSessionGet('sensor window handle');
-        if ~isempty(hdl)
-            set(hdl.editGam,'string',num2str(val));
-            % sceneWindow('sceneRefresh',hObj,eventdata,hdl);
-            sensorImageWindow;
+        % Adjust the gamma including updating the sensorWindow.
+        sensor.render.gamma = val;
+        app = ieSessionGet('sensor window');
+        if ~isempty(app) && isvalid(app)
+            app.GammaEditField.Value = num2str(val);
+            app.refresh;
         end
+            
     case {'scaleintensity'}
         % Set the button on intensity scale on or off.  Refresh the
         % sensor window.
+        %
         % sensorSet(sensor,'scale intensity',1);
-        handles = ieSessionGet('sensor guidata');
-        set(handles.btnDisplayScale,'Value',val);
-        sensorImageWindow;
-        
+        sensor.render.scale = val;
+        app = ieSessionGet('sensor guidata');
+        if ~isempty(app) && isvalid(app)
+            if val, app.MaxbrightSwitch.Value = 'On';
+            else,   app.MaxbrightSwitch.Value = 'Off';
+            end
+            app.refresh;
+        end
+
         % Human cone structure - Should be removed and used only in ISETBio
     case {'human'}
         % Structure containing information about human cone case

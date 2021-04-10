@@ -16,28 +16,15 @@ function rectHandles = chartRectsDraw(obj,rects)
 % See also:
 %   chartRectangles, chartCornerpoints, sceneRadianceChart
 
-%% Should check input parameters here!
-%
-if isempty(ieSessionGet('sensor window'))
-    switch obj.type
-        case 'sensor'
-            sensorWindow(obj);
-        case 'scene'
-            sceneWindow(obj);
-        case 'vcimage'
-            ipWindow(obj);
-    end     
-end
 
 %% Find corners of the rectangles.  
 
 % Maybe this should edited to use ieRect2Vertices
-cmin = rects(:,1); cmax = rects(:,1)+rects(:,3);
-rmin = rects(:,2); rmax = rects(:,2)+rects(:,4);
+cmin = rects(:,1) - 1; cmax = rects(:,1)+rects(:,3) - 1;
+rmin = rects(:,2) - 1; rmax = rects(:,2)+rects(:,4) - 1;
 
 % These are the graphical handles for the rects we will draw
 nRects = size(rects,1);
-rectHandles = zeros(nRects,1);
 
 % These are the rect parameters for drawing, below.  Awkward how these are
 % cells and such.  Could simplify.
@@ -51,26 +38,9 @@ for ii=1:nRects
         cmin(ii),rmin(ii)];
 end
 
-% The handle to the axis in the window
-switch obj.type 
-    case 'scene'
-        a = get(sceneWindow,'CurrentAxes');
-    case 'opticalimage'
-        a = get(oiWindow,'CurrentAxes');
-    case 'sensor'
-        a = get(sensorImageWindow,'CurrentAxes');
-    case 'vcimage'
-        a = get(ipWindow,'CurrentAxes');
-    otherwise
-        disp('Unknown object %s\n',obj.type);
-end
+%% Draw the rects.  Multiple rects can be sent in
 
-% Draw the rects
-for ii=1:nRects
-    hold(a,'on');
-    rectHandles(ii) = plot(a,c{ii}(:,1),c{ii}(:,2),'Color',[1 1 1], 'LineWidth',2);
-end
-hold(a,'off')
+rectHandles = ieDrawShape(obj,'rectangle',round(rects));
 
 end
 

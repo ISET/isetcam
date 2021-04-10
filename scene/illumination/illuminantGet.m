@@ -103,7 +103,9 @@ switch param
                 val = interp1(il_wave, val, wave, 'linear');
             end
         end
-        val = double(val);
+        if ~getpref('ISET', 'useSingle', true)
+            val = double(val);
+        end
         
     case 'energy'
         % This has to work for spatial spectral and pure spectral

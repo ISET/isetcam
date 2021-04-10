@@ -34,7 +34,7 @@ ieAddObject(oi); oiWindow;
 %% We use a small pixel size and see the scene come through correctly
 
 sensor = sensorCreate('monochrome');
-sensor = sensorSetSizeToFOV(sensor,fov,scene,oi);
+sensor = sensorSetSizeToFOV(sensor,fov,oi);
 
 % Set a two micron pixel
 sensor = sensorSet(sensor,'pixel size constant fill factor',2e-6);
@@ -50,7 +50,7 @@ sensorPlot(sensor,'electrons hline',[5 1]);
 % spatial frequency, but the sensor capture appears to be low spatial
 % frequency.
 sensor = sensorSet(sensor,'pixel size constant fill factor',6e-6);
-sensor = sensorSetSizeToFOV(sensor,fov,scene,oi);
+sensor = sensorSetSizeToFOV(sensor,fov,oi);
 sensor = sensorCompute(sensor,oi);
 ieAddObject(sensor); sensorWindow;
 
@@ -73,7 +73,7 @@ scene = sceneSet(scene,'fov',fov);
 
 oi = oiSet(oi,'optics fnumber', 2);
 sensor = sensorSet(sensor,'pixel size constant fill factor',6e-6);
-sensor = sensorSetSizeToFOV(sensor,fov,scene,oi);
+sensor = sensorSetSizeToFOV(sensor,fov,oi);
 oi = oiCompute(oi,scene);
 sensor = sensorCompute(sensor,oi);
 ieAddObject(sensor); sensorWindow;

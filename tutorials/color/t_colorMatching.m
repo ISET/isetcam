@@ -41,7 +41,7 @@ phosphors  = displayGet(d,'spd');
 wavelength = displayGet(d,'wave');
 
 % Plot the display phosphors
-vcNewGraphWin
+ieNewGraphWin
 plot(wavelength,phosphors(:,1),'r-', ...
     wavelength,phosphors(:,2), 'g-',...
     wavelength,phosphors(:,3),'b-')
@@ -54,7 +54,7 @@ set(gca,'xlim',[350 750]), grid on
 %  of a matrix, called xyz.  Because these functions are so widely used,
 %  they are stored in the main toolbox area.
 
-vcNewGraphWin
+ieNewGraphWin
 XYZ = ieReadSpectra('XYZ',wavelength);
 plot(wavelength, XYZ(:,1:3));
 xlabel('Wavelength (nm)'), ylabel('Responsivity')
@@ -153,7 +153,7 @@ ieXYZFromEnergy((phosphors*marsRGB)',wavelength)
 ieXYZFromEnergy(marsSPD',wavelength)
 
 % The spectrum we should display, therefore, is equal to 
-vcNewGraphWin;
+ieNewGraphWin;
 subplot(2,1,1)
 plot(wavelength,phosphors*marsRGB)
 title('Output SPD of the monitor');
@@ -182,7 +182,7 @@ xlabel('wavelength(nm)');ylabel('Energy')
 % here:
 
 load cMatch/monitorGam
-vcNewGraphWin;
+ieNewGraphWin;
 plot(1:256,monitorGam(:,1)), grid on
 xlabel('Frame buffer'); 
 ylabel('Emitted intensity of red phoshor');
@@ -237,7 +237,7 @@ title('SPD of Green Phosphor at fb = 130');
 % we can calculate the frame-buffer value as frame-buffer =
 % l^(1/gamma).
 
-vcNewGraphWin;
+ieNewGraphWin;
 intensity = 0:.001:1;
 predFB = intensity.^(1/2.7);
 plot(intensity,predFB)

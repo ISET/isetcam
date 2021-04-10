@@ -24,7 +24,7 @@ oi = oiCompute(oi,scene);
 
 % Create a sensor
 sensor = sensorCreate;
-sensor = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'),scene,oi);
+sensor = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'),oi);
 
 % Adjust the sensor so that G is more sensitive
 f = sensorGet(sensor,'filter transmissivities');

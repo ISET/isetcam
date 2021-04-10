@@ -1,5 +1,7 @@
 function ax = ieAxisGet(obj,varargin)
-% Return the image axis in a window of one of the major ISETCam types
+% Deprecated
+%
+%   Return the image axis in a window of one of the major ISETCam types
 %
 % Syntax
 %  ax = ieAxisGet(obj,varargin)
@@ -16,9 +18,12 @@ function ax = ieAxisGet(obj,varargin)
 % Wandell, January 24 2020
 %
 % See also
+%   ieAppGet
 %
 
 %%
+warning('Deprecated.  See ieAppGet');
+
 % varargin = ieParamFormat(varargin);
 
 p = inputParser;
@@ -34,17 +39,23 @@ end
 
 %% Switch through the cases
 
+% See ieAppGet for another approach.  Fix in ieROIDraw.
 switch lower(vcEquivalentObjtype(obj))
     case 'scene'
-        ax = get(sceneWindow,'CurrentAxes');
+        app = ieSessionGet('scene window');
+        ax  = app.sceneImage;
     case 'opticalimage'
-        ax = get(oiWindow,'CurrentAxes');
+        app = ieSessionGet('oi window');
+        ax  = app.oiImage;
     case 'isa'
-        ax = get(sensorImageWindow,'CurrentAxes');
+        app = ieSessionGet('sensor window');
+        ax  = app.imgMain;
     case 'vcimage'
-        ax = get(ipWindow,'CurrentAxes');
+        disp('Implement ip in ieAxisGet');
+        error('Not yet implemented');
     case 'display'
-        ax = get(displayWindow,'CurrentAxes');
+        disp('Implement display in ieAxisGet');
+        error('Not yet implemented');    
     otherwise
         error('Unknown iset object type %s\n',isetobj);
 end

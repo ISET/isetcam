@@ -2,7 +2,7 @@ function il = illuminantCreate(ilName, wave, varargin)
 % Create an ISETCam illuminant (light source) structure.  
 %
 % Synopsis:
-%   illuminantCreate(ilName, wave, varargin)
+%   il = illuminantCreate(ilName, wave, varargin)
 %
 % Brief description:
 %   The illuminant structure includes information about the SPD of the
@@ -27,6 +27,7 @@ function il = illuminantCreate(ilName, wave, varargin)
 %    555 nm                      - Monochromatic
 %    equal energy, equal photons - Broad band for physics
 %    illuminant c                - A CIE Standard
+%    Gaussian                    - Useful for simulating narrowband lights
 %
 % See examples:
 %  ieExamplesPrint('illuminantCreate');
@@ -53,13 +54,22 @@ function il = illuminantCreate(ilName, wave, varargin)
   il = illuminantCreate('illuminant c',wave);
   plotRadiance(wave,illuminantGet(il,'photons'));
 %}
+%{
+  wave = 400:3:700;
+  params.center = 510; params.sd = 5; params.peakEnergy = 10;
+  il = illuminantCreate('gaussian',wave,params);
+  wave = illuminantGet(il,'wave');
+  e = illuminantGet(il,'energy');
+  plotRadiance(wave,e)
+%}
 
 %% Initialize parameters
-if ieNotDefined('ilName'), ilName = 'd65'; end
-if ieNotDefined('wave'), wave = 400:10:700; end
+if ~exist('ilName','var')||isempty(ilName), ilName = 'd65'; end
+if ~exist('wave','var')|| isempty(wave), wave = 400:10:700; end
 
 il.name = ilName;
 il.type = 'illuminant';
+il.spectrum.wave = wave;
 
 %% There is no default
 % The absence of a default could be a problem.
@@ -91,6 +101,24 @@ switch ieParamFormat(ilName)
         iPhotons = Energy2Quanta(wave,iEnergy); % Check this step
         
         il = illuminantSet(il,'name',sprintf('blackbody-%.0f',illP.temperature));
+        
+    case 'gaussian'
+        % illuminantCreate('gaussian',wave,params)
+        % params.center(), params.sd(), params.peakEnergy
+        center     = 550; % nm
+        sd         = 20;  % nm 
+        peakEnergy = 25;  % watts/sr/nm/m2
+        if ~isempty(varargin)
+            params = varargin{1};
+            % Person sent in parameters
+            if isfield(params,'center'),     center = params.center; end
+            if isfield(params,'sd'),         sd = params.sd; end
+            if isfield(params,'peakEnergy'), peakEnergy = params.peakEnergy; end 
+        end
+        
+        il = illuminantSet(il,'name',sprintf('Gaussian %.0f\n',center));
+        iEnergy = peakEnergy * exp(-1/2* ((wave - center)/sd).^2); % [W/(sr m^2 nm)]
+        iPhotons = Energy2Quanta(wave,iEnergy(:)); 
         
     otherwise
         error('unknown illuminant type %s\n',ilName);

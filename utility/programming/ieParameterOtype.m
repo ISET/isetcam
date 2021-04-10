@@ -115,7 +115,7 @@ end
 % coding using hashing.  Not sure we can use it in previous versions of
 % Matlab, though.
 p = ieParamFormat(param);
-switch param
+switch p
     case {'objectdistance','meanluminance','luminance', ...
             'illuminant','illuminantname','illuminantenergy', ...
             'illuminantphotons','illuminantxyz','illuminantwave',...
@@ -188,6 +188,8 @@ switch param
     case {'trainingilluminant','clusters','filters','sensorpatches'}
         % There could be many more parameters here.
         oType = 'l3';
+    case {'assetobject', 'assetbranch', 'assetlight'}
+        oType = 'asset';
     otherwise
         % Default was 'camera'.  Did the change break it?
         oType = '';

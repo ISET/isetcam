@@ -1,44 +1,101 @@
-function txt = iePrintSessionInfo
+function iePrintSessionInfo(objType)
 %Summarize session information in a text string
 %
-%    iePrintSessionInfo
+% Synopsis
+%  iePrintSessionInfo(objType)
 %
 % The general data in the vcSESSION structure are printed to the return
 % variable, txt
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
-txt = sprintf('Session %s\n--------------\n',ieSessionGet('name'));
+%%
+if ieNotDefined('objType'), objType = 'all'; end
 
-nScenes = vcCountObjects('SCENE');
-if nScenes == 0, sceneInfo = sprintf('No Scenes.\n');
-else sceneInfo = sprintf('%.0f Scenes\n',nScenes);
+%%
+objType = ieParamFormat(objType);
+
+%% In addition to the name, we could get some info about each object
+
+% Scene
+if isequal(objType,'all') || isequal(objType,'scene') || isequal(objType,'scenes')
+    fprintf('\n');
+    nObj = vcCountObjects('SCENE');
+    if nObj == 0
+        fprintf('No Scenes.\n');
+    else
+        names = vcGetObjectNames('scene');
+        fprintf('Scenes:  (* selected)\n------------\n')
+        for ii=1:numel(names)
+            selected = '';
+            if isequal(ieGetSelectedObject('scene'),ii)
+                selected = '*';
+            end
+            fprintf('%2.0f %s %s\n',ii,names{ii},selected);
+        end
+    end
 end
 
-nScenes = vcCountObjects('OPTICALIMAGE');
-if nScenes == 0
-    oiInfo = sprintf('No optical images.\n');
-else
-    oiInfo = sprintf('%.0f optical images\n',nScenes);
+% OI
+if isequal(objType,'all') || isequal(objType,'oi') || isequal(objType,'ois')
+    fprintf('\n');
+    nObj = vcCountObjects('OPTICALIMAGE');
+    if nObj == 0
+        fprintf('No OIs.\n');
+    else
+        names = vcGetObjectNames('oi');
+        fprintf('OIs  (* selected):\n------------\n')
+        for ii=1:numel(names)
+            selected = '';
+            if isequal(ieGetSelectedObject('oi'),ii)
+                selected = '*';
+            end
+            fprintf('%2.0f %s %s\n',ii,names{ii},selected);
+        end
+    end
 end
 
-nISA = vcCountObjects('ISA');
-if nISA == 0
-    sensorInfo = sprintf('No Sensors.\n');
-else
-    sensorInfo = sprintf('%.0f Sensors\n',nISA);
+% Sensors
+if isequal(objType,'all') || isequal(objType,'sensor') || isequal(objType,'sensors')
+    fprintf('\n');
+    nObj = vcCountObjects('ISA');
+    if nObj == 0
+        fprintf('No Sensors.\n');
+    else
+        names = vcGetObjectNames('isa');
+        fprintf('Sensors (* selected):\n------------\n')
+        for ii=1:numel(names)
+            selected = '';
+            if isequal(ieGetSelectedObject('isa'),ii)
+                selected = '*';
+            end
+            fprintf('%2.0f %s %s\n',ii,names{ii},selected);
+        end
+    end
 end
 
-nVCI = vcCountObjects('vci');
-if nVCI == 0
-    vciInfo = sprintf('No Processed images.\n');
-else
-    vciInfo = sprintf('%.0f Processed images\n',nVCI);
+% IPs
+if isequal(objType,'all') || isequal(objType,'ip') || isequal(objType,'ips')
+    fprintf('\n');
+    nObj = vcCountObjects('IP');
+    if nObj == 0
+        fprintf('No IP.\n');
+    else
+        names = vcGetObjectNames('ip');
+        fprintf('IPs  (* selected):\n------------\n')
+        for ii=1:numel(names)
+            selected = '';
+            if isequal(ieGetSelectedObject('ip'),ii)
+                selected = '*';
+            end
+            fprintf('%2.0f %s %s\n',ii,names{ii},selected);
+        end
+    end
 end
 
-% txt = [txt,sceneInfo,oiInfo,sensorInfo,VideoInfo];
-txt = [txt,sceneInfo,oiInfo,sensorInfo,vciInfo];
+fprintf('\n\n');
 
-return;
+end
+
 
 

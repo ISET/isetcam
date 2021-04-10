@@ -1,6 +1,7 @@
 function [img, fhandle] = ieHistImage(X, plotFlag, fhandle)
 % Create an intensity histogram from the (x,y) data in columns of X
 %
+% Synopsis
 %    [img, figHandle] = ieHistImage(X, [plotFlag = true], fhandle)
 %
 % X:  An N x 2 matrix of the scatter plot values.  These are divided into
@@ -13,6 +14,9 @@ function [img, fhandle] = ieHistImage(X, plotFlag, fhandle)
 %    showPlot (true/false)
 %
 % BW, Copyright Imageval Consulting, LLC, 2015
+%
+% See also
+%
 
 %% Check parameters
 if ieNotDefined('X'),  error('X required');
@@ -29,8 +33,8 @@ if ieNotDefined('fhandle'), fhandle = []; end
 
 %% We will allow more parameters here
 if plotFlag
-    if isempty(fhandle), fhandle = vcNewGraphWin; 
-    else                 figure(fhandle)
+    if isempty(fhandle), fhandle = ieNewGraphWin; 
+    else,                figure(fhandle)
     end
     
     imagesc(mid{1:2},img);

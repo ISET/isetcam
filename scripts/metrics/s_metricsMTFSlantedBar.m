@@ -72,7 +72,7 @@ vci = ipCreate;
 % GUI, use these commands
 %    vcReplaceObject(scene); sceneWindow;
 %    vcReplaceObject(oi); oiWindow;
-%    vcReplaceObject(sensor); sensorImageWindow;
+%    vcReplaceObject(sensor); sensorWindow;
 %    vcReplaceObject(vci); ipWindow;
 
 % To determine the masterRect size, run this code and use the
@@ -116,7 +116,6 @@ ieISO12233(vci);
 
 sensor = sensorCompute(sensorM,oi);
 vcReplaceObject(sensor); 
-% sensorImageWindow;
     
 vci = ipCompute(vci,sensor);
 vcReplaceObject(vci); ipWindow;
@@ -154,4 +153,4 @@ ylabel('Relative amplitude');
 title('MTF');
 hold off; grid on
 
-%%
+%% END

@@ -25,14 +25,14 @@ ieInit
 
 scene = sceneCreate('point array');   
 scene = sceneSet(scene,'hfov',1);  
-ieAddObject(scene); sceneWindow;
+sceneWindow(scene);
 
 %% Diffraction limited optics
 oi = oiCreate;                        
 
 % Compute optical image and show it
 oi = oiCompute(scene,oi);
-ieAddObject(oi); oiWindow;
+oiWindow(oi);
 
 %% Increase the f-number, compute and show the new image
 fnSmall = oiGet(oi,'optics fnumber');

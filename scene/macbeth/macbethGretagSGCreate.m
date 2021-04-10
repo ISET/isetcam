@@ -1,21 +1,16 @@
 %% macbethGretagSGCreate.m 
 %
-% Create a scene data structure of the Gretag digital color chart SG
-% reflectance target from Francisco Imai and Andy Lin July 2010
+% A script that creates a scene data structure of the Gretag digital color
+% chart SG reflectance target provided by Francisco Imai and Andy Lin July
+% 2010
 %
-% The scene assumes a illuminant with equal energy at all wavelengths. 
-% The user can change the illuminant using the GUI
-%   Scene>Edit>Adjust SPD>Change Illuminant) 
-% or by using a script
-%   s_changeIlluminant.m in the ISET-4.0/scripts/scene directory
+% The scene assumes a illuminant with equal energy at all wavelengths.  We
+% have a chart with these color patches in the Packard lab.
 %
-% In the future we should make this a function that accepts 
-%   reflectance, wavelength, number of rows, number of cols, size of
-%   patch, width of black lines
-% And we should define a format for Excel spreadsheet data which we can
-% read in using this script
+% The user can change the illuminant in the sceneWindow.
 %
-% Copyright ImagEval Consultants, LLC, 2010.
+% See also
+%   macbethChartCreate;
 
 %% Read and store Gretag reflectcance data from Canon
 % comment = 'Gretag digital color chart SG reflectance target from Francisco Imai and Andy Lin July 2010';
@@ -23,10 +18,11 @@
 
 %% Create the large Gretag chart
 fName = which('gretagDigitalColorSG.mat');
-[reflectance wave]= ieReadSpectra(fName);
+wave = 400:10:700;
+reflectance= ieReadSpectra(fName,wave);
 
 %% Create the chart
-nWave = 36;
+nWave = numel(wave);
 rows  = 10;
 cols  = 14;
 
@@ -37,7 +33,10 @@ peakR = max(tmp(:));
 % Make the patches a little bigger than needed so we can put in black lines
 patchSize = 30;
 img = imageIncreaseImageRGBSize(tmp,patchSize);
-% tst = sum(img,3); imagesc(tst)
+%{
+ ieNewGraphWin;
+ tst = sum(img,3); imagesc(tst)
+%}
 
 %% Insert 5 black lines
 nBlack = 5;
@@ -47,18 +46,30 @@ for ii=(patchSize - nBlack + 1):patchSize:(rows*patchSize)
         img(theseRows,:,ww) = 0;
     end
 end
-% tst = sum(img,3); imagesc(tst)
+%{
+ ieNewGraphWin;
+ tst = sum(img,3); imagesc(tst)
+%}
+
 for jj=(patchSize - nBlack + 1):patchSize:(cols*patchSize)
     theseCols = jj:(jj+nBlack);
     for ww=1:nWave
         img(:, theseCols,ww ) = 0;
     end
 end
-% tst = sum(img,3); imagesc(tst)
+%{
+ ieNewGraphWin;
+ tst = sum(img,3); imagesc(tst)
+%}
+
 %% Prepend black rows and columns
 new = zeros(size(img,1)+5,size(img,2)+5,nWave);
 new(6:end,6:end,:) = img;
 img = new;
+%{
+ ieNewGraphWin;
+ tst = sum(img,3); imagesc(tst)
+%}
 
 %%
 scene = sceneCreate;
@@ -68,16 +79,9 @@ scene = sceneSet(scene,'photons',img);
 scene = sceneSet(scene,'knownReflectance',[img(10,10,10),10,10,10]);
 scene = sceneSet(scene,'illuminantEnergy',ones(nWave,1));
 scene = sceneAdjustLuminance(scene,100);
-%%
-ieAddObject(scene);
-sceneWindow
 
 %%
-% interpolate scene
-wave = 400:10:700;
-scene = sceneInterpolateW(scene,wave,1);
-ieAddObject(scene);
-sceneWindow
-%%
-% save gretagDigitalColorSGscene scene
+sceneWindow(scene);
+
+%% END
 

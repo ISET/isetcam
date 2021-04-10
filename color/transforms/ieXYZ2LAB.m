@@ -1,59 +1,47 @@
 function lab = ieXYZ2LAB(xyz, whitepoint, useOldCode)
 % Convert CIE XYZ values to CIE LAB values
 %
+% Synopsis
 %    lab = ieXYZ2LAB(xyz, whitepoint, useOldCode)
 %
-% Convert CIE XYZ into CIE L*a*b*.  The CIELAB values are used for color
-% metric calculations, such as deltaE2000.  The formula for XYZ to CIELAB
-% require knowledge of the XYZ white point as well. 
+% Brief description
+%   Convert CIE XYZ into CIE L*a*b*.  The CIELAB values are used for color
+%   metric calculations, such as deltaE2000.  The formula for XYZ to CIELAB
+%   require knowledge of the XYZ white point as well.
 %
-% XYZ can be in either XW or RGB format.
-% WHITEPOINT: a 3-vector of the xyz values of the white point.
+% Inputs
+%   xyz:        Can be in either XW or RGB format.
+%   whitepoint: a 3-vector of the xyz values of the white point.
 %
-% CIELAB values are returned in the same format (RGB or XW) as the input
-% XYZ. 
+% Output
+%    lab: The CIELAB values are returned in the same format (RGB or XW) as
+%         the input XYZ. 
 %
-% Read about CIELAB formulae in Wyszecki and Stiles, page 167 and other
-% standard texts.
-%
-% The Matlab image toolbox routines makecform and applycform have CIELAB
-% transforms.  These are not the default, however, because they are not in
-% all versions.  Instead, we default to the code we used for many years.
-% But by setting useOldCode = 0, you get the Matlab implementation.
+% Description
+%   Read about CIELAB formulae in Wyszecki and Stiles, page 167 and other
+%   standard texts.  See the tutorial information in the psych221 scripts.
 %
 % For a (very small) problem with the official formula, see
 % http://www.brucelindbloom.com/index.html?LContinuity.html
 %
-% Examples:
-%  vci = vcGetObject('vcimage');
-%  [locs,rgb] = macbethSelect(vci); 
-%  dataXYZ = imageRGB2xyz(vci,rgb);
-%  whiteXYZ = dataXYZ(1,:);
-%  lab = ieXYZ2LAB(dataXYZ,whiteXYZ);
-%
 % See also:  ieLAB2XYZ
 %
-% Copyright ImagEval Consultants, LLC, 2003.
-
-% TODO:
-% Must specify if XYZ is 2 deg or 10 deg XYZ? CIELAB probably requires
-% one of them.  I think XYZ 10.  Must check.
-% Or do we just specify in the methods
-% - BW ). 
 
 if ieNotDefined('xyz'), error('No data.'); end
 if ieNotDefined('whitepoint'), error('A whitepoint is required for conversion to CIELAB.'); end
-if ieNotDefined('useOldCode'), useOldCode = 0; end
+if ieNotDefined('useOldCode'), useOldCode = false; end
 
 if (exist('makecform','file') == 2) &&  ~useOldCode
     % This is where we want to be, but it only exists in the relatively
     % recent Matlab routines.
     % Matlab's implementation is only for CIELAB 1976
     cform = makecform('xyz2lab','WhitePoint',whitepoint(:)');
+    if isequal(class(xyz), 'single'), xyz = double(xyz); end
     lab = applycform(xyz,cform);
     return;
 
 else
+    % Before Matlab caught on, we used this code. 
     % Set the white point values
     if   (length(whitepoint)~=3 ), error('whitepoint must be a three vector')
     else Xn = whitepoint(1); Yn = whitepoint(2); Zn = whitepoint(3);

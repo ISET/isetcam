@@ -78,7 +78,7 @@ ip = ipCreate;
 %    sensor = sensorSet(sensor,'rows',round(dyeSizeMicrons/pS));
 %    sensor = sensorSet(sensor,'cols',round(dyeSizeMicrons/pS));
 %    sensor = sensorCompute(sensor,oi); 
-%    vcReplaceObject(sensor); sensorImageWindow;
+%    vcReplaceObject(sensor); sensorWindow;
 %    vci = ipCompute(vci,sensor);
 %    vcReplaceObject(vci); ipWindow;
 %    [roiLocs,masterRect] = vcROISelect(vci);
@@ -99,7 +99,6 @@ for ii=1:length(pSize)
 
     sensor = sensorCompute(sensor,oi);
     vcReplaceObject(sensor); 
-    % sensorImageWindow;
      
     ip = ipCompute(ip,sensor);
     vcReplaceObject(ip); 
@@ -142,4 +141,4 @@ ylabel('Relative amplitude');
 title('MTF for different pixel sizes (fixed die size)');
 hold off; grid on
 
-%%
+%% END

@@ -268,10 +268,10 @@ switch pType
         % plotOI(oi,'irradianceImage',sampleSpacing-um);
         irrad   = oiGet(oi,'photons');
         wave    = oiGet(oi,'wave');
-        nWave   = oiGet(oi,'nwave');
+        nWave   = oiGet(oi,'n wave');
         sz      = oiGet(oi,'size');
-        spacing = oiGet(oi,'sampleSpacing','um');
-        gam     = oiGet(oi,'display gamma');
+        spacing = oiGet(oi,'sample spacing','um');
+        gam     = oiGet(oi,'gamma');
         
         % This is probably now a spatial support oiGet ...
         xCoords = spacing(2) * (1:sz(2)); xCoords = xCoords - mean(xCoords);
@@ -677,7 +677,7 @@ switch lower(pType)
         % plotOTF(oi,'otf',thisWave,nSamp);
         % OTF at a selected wavelength.
         units = 'mm';  % Units are cycles/mm
-        if strfind(pType,'550'),        thisWave = 550;
+        if ieContains(pType,'550'),        thisWave = 550;
         elseif length(varargin) >=1,    thisWave = varargin{1};
         else thisWave = ieReadNumber('Select OTF wavelength (nm)',550,'%.0f');
         end
@@ -739,7 +739,7 @@ switch lower(pType)
     case {'psf','psf550'}
         % Spatial scale is microns.
         units = 'um'; nSamp = 100; oSample = 4;
-        if strfind(pType,'550'),        thisWave = 550;
+        if ieContains(pType,'550'),        thisWave = 550;
         elseif length(varargin) >=1,    thisWave = varargin{1};
         else thisWave = ieReadNumber('Select PSF wavelength (nm)',550,'%.0f');
         end

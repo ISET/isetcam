@@ -160,7 +160,7 @@ oi = oiCompute(oi,barS);
 midRow = round(oiGet(oi,'rows')/2);
 oiPlot(oi,'h line irradiance',[1,midRow]);
 title('1 cpd bar');
-ieAddObject(oi); oiWindow;
+oiWindow(oi);
 
 %% Compute the sensor response for these half degree bars
 
@@ -169,11 +169,11 @@ ieAddObject(oi); oiWindow;
 % this spatial resolution.
 sensor = sensorCreate('human');
 sensor = sensorSet(sensor,'exp time',0.10);
-sensor = sensorSetSizeToFOV(sensor,1,uniformScene,oi);
+sensor = sensorSetSizeToFOV(sensor,1,oi);
 sensor = sensorCompute(sensor,oi);
 
 sz = sensorGet(sensor,'size');
 sensorPlot(sensor,'electrons hline',round([1,sz(1)/2]));
-ieAddObject(sensor); sensorWindow('scale',1);
+sensorWindow(sensor);
 
-%%
+%% END

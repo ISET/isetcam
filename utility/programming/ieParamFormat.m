@@ -33,7 +33,7 @@ function sformatted = ieParamFormat(s)
 %}
 
 if (~ischar(s) && ~iscell(s))
-    error('s has to be a string or cell array'); 
+    error('s has to be a character array or cell array'); 
 end
 
 % Lower case

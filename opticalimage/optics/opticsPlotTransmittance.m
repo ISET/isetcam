@@ -1,10 +1,15 @@
-function opticsPlotTransmittance(oi);
+function udata = opticsPlotTransmittance(oi,thisW)
 %Plot spectral transmittance of the optics
 %
-%   opticsPlotTransmittance(oi)
+% Synopsis
+%   udata = opticsPlotTransmittance(oi,thisW)
+% 
+% Inputs
+%       oi:
+%    thisW:
 %
-% Author: ImagEval
-% Purpose:
+%
+% Description
 %    Plot the transmittance of the lens and other intervening media. 
 %
 %    This slot is used to store the human macular pigment density.  It can
@@ -12,16 +17,38 @@ function opticsPlotTransmittance(oi);
 %    two.
 %
 % Copyright ImagEval Consultants, LLC, 2003.
+% 
+% See also
+%    oiPlot
 
-figNum =  vcSelectFigure('GRAPHWIN');
-figNum =  plotSetUpWindow(figNum);
+%{
+ oi = oiCreate;
+ opticsPlotTransmittance(oi);
+%}
+%{
+  oi = ieGetObject('oi');
+   opticsPlotTransmittance(oi);
 
-wave = oiGet(oi,'wave');
-optics = oiGet(oi,'optics');
-transmittance = opticsGet(optics,'transmittance');
-if isempty(transmittance), transmittance = ones(size(wave)); end
+%}
 
+%% Set up the parameters
+
+if ieNotDefined('oi'), error('oi required.'); end
+if ieNotDefined('thisW'), thisW = ieNewGraphWin; end
+
+wave          = oiGet(oi,'wave');
+if isempty(wave), warning('oi not fully specified yet.'); return; end
+
+optics        = oiGet(oi,'optics');
+transmittance = opticsGet(optics,'transmittance',wave);
+
+if isempty(transmittance), transmittance = ones(numel(wave),1); end
+
+%% Plot it
+figure(thisW);
 plot(wave,transmittance,'-o')
+
+%% Store the data
 
 udata.wave = wave; udata.transmittance = transmittance;
 set(gca,'userdata',udata);
@@ -29,4 +56,4 @@ xlabel('Wavelength (nm)'); ylabel('Transmittance');
 title('Optical transmittance');
 grid on
 
-return;
+end

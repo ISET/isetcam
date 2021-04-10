@@ -10,6 +10,6 @@ function rootPath=isetRootPath()
 
 rootPath=which('isetRootPath');
 
-[rootPath,fName,ext]=fileparts(rootPath);
+rootPath =fileparts(rootPath);
 
-return
+end

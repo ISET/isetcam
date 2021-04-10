@@ -28,6 +28,14 @@ function psfMovie(optics,figNum,delay)
 %
 % Copyright ImagEval, LLC, 2005
 
+% Examples:
+%{
+  optics = opticsCreate('shift invariant');
+  psfMovie(optics,ieNewGraphWin,0.1);
+%}
+%{
+  optics = opticsCreate('diffraction limited');
+%}
 if ieNotDefined('optics'), optics = oiGet(vcGetObject('oi'), 'optics'); end
 if ieNotDefined('figNum'), figNum = ieNewGraphWin; end
 if ieNotDefined('delay'), delay = 0.2; end
@@ -37,23 +45,24 @@ set(figNum,'name','PSF Movie');
 
 opticsModel = opticsGet(optics,'model');
 switch lower(opticsModel)
-    case 'diffractionlimited'
-        disp('Not yet implemented for diffraction limited')
-    case 'shiftinvariant'
-        psf  = opticsGet(optics,'psfData');
-        support = opticsGet(optics,'psfSupport','um');
-        y = support{1}(:); x = support{2}(:);
-        wave = opticsGet(optics,'wavelength');
-        w = size(psf,3);
-
-        for ii=1:w
-            imagesc(y,x,psf(:,:,ii));
+    case {'diffractionlimited', 'shiftinvariant'}
+            
+        psfData = opticsGet(optics,'psf data');
+        wave  = opticsGet(optics,'wavelength');
+        
+        % Not really sure this is the (x,y) or (y,x)
+        x = psfData.xy(1,:,1) - mean(psfData.xy(1,:,1));
+        y = psfData.xy(:,1,2) - mean(psfData.xy(:,1,2));
+        
+        for ii=1:size(psfData.psf,3)
+            imagesc(x,y,psfData.psf(:,:,ii));
             xlabel('Position (um)');
             ylabel('Position (um)');
             grid on; axis image
             title(sprintf('Wave %.0f nm',wave(ii)));
             pause(delay);
         end
+    
     case 'raytrace'
         name = opticsGet(optics,'rtname');
         set(figNum,'name',sprintf('%s: PSF movie',name));
@@ -83,4 +92,4 @@ switch lower(opticsModel)
 end
 
 
-return;
+end

@@ -44,10 +44,6 @@ cameraWindow(camera,'ip');
 camera = cameraSet(camera,'ip demosaic method','nearest neighbor');
 camera = cameraCompute(camera,scene);
 cameraWindow(camera,'ip');
-%%
-camera = cameraSet(camera,'ip demosaic method','pocs');
-camera = cameraCompute(camera,scene);
-cameraWindow(camera,'ip');
 
 %% A special case for ans RCCC automotive sensor demosaic'd into a monochrome image
 

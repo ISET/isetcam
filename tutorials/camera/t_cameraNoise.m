@@ -15,6 +15,7 @@ camera = cameraCreate;
 camera = cameraSet(camera,'optics fnumber',2);
 
 %% Download an interesting scene
+if ~exist('RdtClient', 'file'), return; end
 rd = RdtClient('isetbio');
 rd.crp('/resources/scenes/multiband/scien/2008');
 

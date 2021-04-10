@@ -103,16 +103,16 @@ sensor = sensorSet(sensor,'pattern',[1 5 3; 2 4 2; 3 2 1]);
 
 % sensorShowCFA(sensor);
 
-sensor = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'),scene,oi);
+sensor = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'),oi);
 % oi = vcGetObject('oi');
 sensor = sensorCompute(sensor,oi);
 ieAddObject(sensor)
-sensorImageWindow;
+sensorWindow;
 
 % Plot a couple of lines
 % sensorPlotLine(sensor,'h','volts','space',[1,115]);
 % sensorPlotLine(sensor,'h','volts','space',[1,116]);
 % sensorPlotLine(sensor,'h','volts','space',[1,117]);
 
-
+%% END
 

@@ -22,10 +22,10 @@ oiPlot(oi,'illuminance mesh linear');
 v_sceneSpatialResample
 
 %% Check GUI control
-ieAddObject(oi);
-oiWindow;
-oiSet([],'gamma',1);
-oiSet([],'gamma',0.4); pause(0.5)
-oiSet([],'gamma',1);
+oiWindow(oi); pause(0.2);
+
+oiSet(oi,'gamma',1);
+oiSet(oi,'gamma',0.4); pause(0.5)
+oiSet(oi,'gamma',1);
 
 %%

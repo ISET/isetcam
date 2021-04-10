@@ -74,6 +74,14 @@ sceneWindow;
 % in the pull down menus for cropping, transposing, and measuring scene
 % properties.
 
+% The command
+%
+%   sceneWindow(scene);
+%
+% is equivalent to 
+%
+%   ieAddObject(scene); sceneWindow;
+%
 %% The way to interact with an object is through gets and sets.
 % For example, each object has a name and a type.
 name  = sceneGet(scene,'name')
@@ -155,7 +163,7 @@ sceneGet(scene,'sample spacing','m')
 
 fname = fullfile(isetRootPath,'data','images','multispectral','StuffedAnimals_tungsten-hdrs.mat');
 scene = sceneFromFile(fname,'multispectral');
-ieAddObject(scene); sceneWindow;
+sceneWindow(scene);
 %% Plot scene properties
 
 % Many scene properties that can be plotted either from the scene Window or
@@ -176,7 +184,7 @@ scenePlot(scene,'illuminant energy');
 % scene.
 bb = blackbody(sceneGet(scene,'wave'),6500,'energy');
 scene = sceneAdjustIlluminant(scene,bb);
-ieAddObject(scene); sceneWindow;
+sceneWindow(scene);
 
 %%  ISET keeps track of units
 
@@ -184,4 +192,4 @@ ieAddObject(scene); sceneWindow;
 % energy.
 scenePlot(scene,'illuminant photons');
 
-%%
+%% END

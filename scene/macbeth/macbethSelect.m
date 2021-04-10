@@ -1,25 +1,21 @@
-function [mRGB, mLocs, pSize, cornerPoints] = ...
+function [pData, mLocs, pSize, cornerPoints, pStd] = ...
     macbethSelect(obj,showSelection,fullData,cornerPoints)
 %Identify Macbeth color checker patch positions from window image
 %
 % Synopsis
-%  [mRGB mLocs, pSize, cornerPoints] =
+%  [pData mLocs, pSize, cornerPoints, pStd] =
 %            macbethSelect(obj,showSelection,fullData,cornerPoints)
 %
 % Brief Description
-%  This routine typically7 works within an ISET window, though this is not
-%  needed when the corner points of the MCC are already known.
+%  This routine typically works within an ISET window, though this is not
+%  needed when the corner points of the MCC in the image are known.
 %
-%  From the window, the user selects the four corner points on the MCC
-%  (white, black, blue, brown). This function estimates the (row, column)
-%  centers of the 24 MCC patches and the values near the center of each
-%  patch.
-%
-%  The handles to the rects (mccRectHandles) are attached to the object.
-%  This lets the macbethDrawRects() routine turn them on and off.
+%  The user selects the four corner points on the MCC (white, black, blue,
+%  brown). This identifies the 24 MCC patch locations.  Then the data are
+%  selected.
 %
 % Inputs
-%   obj:  sensor, ip, scene
+%   obj:  sensor, ip, scene.  Not sure why, but OI is not yet implemented.
 %   showSelection (boolean): Put up the rectangles so the user sees the
 %     selected rects.
 %   fullData:  Determines output in mRGB
@@ -29,9 +25,9 @@ function [mRGB, mLocs, pSize, cornerPoints] = ...
 %    If fullData = 1, the values of every point in each patch is returned.
 %     Use fullData = 1 for sensor images and calculate the means. This will
 %     account for the NaNs that are returned. 
-%   cornerPoints: Sometimes, the MCC corner point locations are stored.
-%     In that case, you can send them in and the routine will skip the
-%     graphical interaction.
+%   cornerPoints: Sometimes, the MCC corner point locations are stored in
+%     the scene struct. In that case, this routine will skip the graphical
+%     interaction.
 %
 % Outputs
 %   mRGB: The data in each patch. The image processor and sensor
@@ -44,6 +40,7 @@ function [mRGB, mLocs, pSize, cornerPoints] = ...
 %        sample positions with a (row,col) coordinate.
 %   pSize:           The size of the square region in the center of the patch
 %   cornerPoints:    Corner points of the selected MCC
+%   mRGBstd:  Standard deviation when the mean values are requested
 %
 % In ISET the ordering of the Macbeth patches is:
 %
@@ -56,9 +53,18 @@ function [mRGB, mLocs, pSize, cornerPoints] = ...
 % See examples:
 %  ieExamplesPrint('macbethSelect');
 %
+% Programming TODO:
+%   Should be refactored as (p means 'patch')
+%
+%     [pData, pSD, cornerPoints, mLocs, pSize] =
+%        macbethSelect(obj,cornerPoints,dataType,showRects,fullData);
+%
+%   Also (a) more testing, and (b)oi implemented
+%
 % See also:  
 %   macbethSensorValues, macbethRectangles, macbethROIs, chartRectangles,
 %   chartRectsData
+%
 
 % Examples:
 %{ 
@@ -79,7 +85,7 @@ function [mRGB, mLocs, pSize, cornerPoints] = ...
  macbethDrawRects(scene,'on');
 %}
 %{
- scene = sceneCreate; oi = oiCreate; oi = oiCompute(oi,scene);
+ scene  = sceneCreate; oi = oiCreate; oi = oiCompute(oi,scene);
  sensor = sensorCreate; sensor = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'));
  sensor = sensorCompute(sensor,oi);
  ip = ipCreate; ip = ipCompute(ip,sensor);
@@ -121,42 +127,59 @@ if ieNotDefined('obj'), obj = vcGetObject('vcimage'); end
 if ieNotDefined('showSelection'), showSelection = true; end
 if ieNotDefined('fullData'), fullData = 0; end
 
-%% Corner point 
-% obj is either a vcimage or a sensor image
-% In either case, we clear the mcc rect handles, put the object back, and
-% then read the corner points (if they weren't sent in).
+% This should be a parameter
+queryUser = false;
+
+%% Corner points
+
+% To select the data, we start with the chart corner points.  They might be
+%   * Sent in
+%   * Attached to the object
+%   * We choose in the window
 switch lower(obj.type)
     case 'vcimage'
-        handles = ieSessionGet('vcimage handles');
         dataType = 'result';
-        obj = ipSet(obj,'mcc Rect Handles',[]);
-        vcReplaceObject(obj);
-        if ieNotDefined('cornerPoints')
-            cornerPoints = ipGet(obj,'mcc corner points');
-        end
+        % obj = ipSet(obj,'mcc Rect Handles',[]);
+        % ieAddObject(obj); ipWindow;
         
-    case {'isa','sensor'} 
-        handles = ieSessionGet('sensor Window Handles');
+        if ieNotDefined('cornerPoints')
+            cornerPoints = ipGet(obj,'corner points');
+            if isempty(cornerPoints)
+                ipWindow;
+                cornerPoints = chartCornerpoints(obj,wholeChart);
+            end
+        end
+        obj = ipSet(obj,'chart corner points',cornerPoints);
+        
+    case {'isa','sensor'}
+        % app = ieSessionGet('sensor window');
         dataType = 'dvorvolts';
-        obj = sensorSet(obj,'mcc Rect Handles',[]);
-        vcReplaceObject(obj);
         if ieNotDefined('cornerPoints')
-            cornerPoints = sensorGet(obj,'mcc corner points');
+            cornerPoints = sensorGet(obj,'corner points');
+            if isempty(cornerPoints)
+                sensorWindow;
+                cornerPoints = chartCornerpoints(obj,wholeChart);
+            end
         end
+        obj = sensorSet(obj,'chart corner points',cornerPoints);
+        
     case {'scene'}
-        handles = ieSessionGet('scene Window Handles');
         dataType = 'photons';
-        obj = sceneSet(obj,'mcc Rect Handles',[]);
-        vcReplaceObject(obj);
+        cornerPoints = sceneGet(obj,'chart corner points');
         if ieNotDefined('cornerPoints')
-            cornerPoints = sensorGet(obj,'mcc corner points');
+            sceneWindow;
+            cornerPoints = chartCornerpoints(obj);
         end
+        obj = sceneSet(obj,'chart corner points',cornerPoints);
+        
     otherwise
         error('Unknown object type');
 end
 
 %% Deal with the interactive part
 
+%{
+% In this scheme we should never ge here.
 queryUser = false;
 if isempty(cornerPoints)
     queryUser = true;
@@ -165,16 +188,16 @@ if isempty(cornerPoints)
     cornerPoints = vcPointSelect(obj,4,...
         'Select (1) lower left, (2) lower right, (3) upper right, (4) upper left');
 end
-
-%% Save the corner points
 switch vcEquivalentObjtype(obj.type)
     case 'VCIMAGE'
-        obj = ipSet(obj,'mcc corner points',cornerPoints);
+        obj = ipSet(obj,'chart corner points',cornerPoints);
     case 'ISA'
-        obj = sensorSet(obj,'mcc corner points',cornerPoints);
+        obj = sensorSet(obj,'chart corner points',cornerPoints);
     case 'SCENE'
-        obj = sceneSet(obj,'mcc corner points',cornerPoints);
+        obj = sceneSet(obj,'chart corner points',cornerPoints);
 end
+%}
+
 
 %% Ask if the rects are OK. 
 if queryUser
@@ -182,7 +205,7 @@ if queryUser
     rectsOK = ieReadBoolean('Are these rects OK?');
     if isempty(rectsOK)
         fprintf('%s: user canceled\n',mfilename);
-        mRGB=[]; mLocs=[]; pSize=[]; cornerPoints=[];
+        pData=[]; mLocs=[]; pSize=[]; cornerPoints=[];
         return;
     else
         while ~rectsOK   % False, a change is desired
@@ -217,8 +240,6 @@ if queryUser
     end
 end
 
-ieInWindowMessage('',handles);
-
 %% Find rect midpoints and patch size.  
 
 % mLocs are the 24 MCC patch middles in (row,col) format.
@@ -227,12 +248,10 @@ ieInWindowMessage('',handles);
 % Get the mean RGB data or the full data from the patches in a cell array
 % The processor window is assumed to store linear RGB values, not gamma
 % corrected.
-mRGB = macbethPatchData(obj,mLocs,delta,fullData,dataType);
+[pData,pStd] = macbethPatchData(obj,mLocs,delta,fullData,dataType);
 
 % Plot the rectangles.
 if showSelection, macbethDrawRects(obj); end
-
-ieInWindowMessage('',handles);
 
 end
 

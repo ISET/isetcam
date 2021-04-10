@@ -45,10 +45,6 @@ camera = cameraCompute(camera,scene);
 
 % To see all of the objects and their parameters listed their windows, you
 % can use 
-% You can open all of them with a single call, using 
-cameraWindow(camera,'all');
-
-% If you want to just see one or another, you can invoke
 cameraWindow(camera,'oi');
 cameraWindow(camera,'sensor');
 cameraWindow(camera,'ip');
@@ -79,14 +75,8 @@ imagesc(sRGB);
 % is to retrieve the object, the set property, and reattach the object.
 % For example, 
 
-% First, get the optics from the camera object
-optics = cameraGet(camera,'optics');
-
 % Set the value
-optics = opticsSet(optics,'fnumber',16);
-
-% Reattach
-camera = cameraSet(camera,'optics',optics);
+camera = cameraSet(camera,'optics fnumber',16);
 
 % Compute, get the result, and show
 camera = cameraCompute(camera,scene);
@@ -94,16 +84,8 @@ camera = cameraCompute(camera,scene);
 % Now get the image processor sRGB values and display them.
 ip     = cameraGet(camera,'ip');
 sRGB   = ipGet(ip,'data srgb');
-vcNewGraphWin;
+ieNewGraphWin;
 imagesc(sRGB);
-
-% A shorter way to do the same thing is this:
-camera = cameraSet(camera,'optics fnumber',16);
-
-% The two methods produce the same outcome
-camera = cameraCompute(camera,scene);
-sRGB   = cameraGet(camera,'ip srgb');
-vcNewGraphWin; imagesc(sRGB)
 
 %% Adjust the illuminant correction to gray world
 
@@ -116,7 +98,7 @@ camera = cameraCompute(camera,scene);
 sRGB   = cameraGet(camera,'ip data srgb');
 
 % Have a look at the data, rendered for an sRGB monitor 
-vcNewGraphWin;
+ieNewGraphWin;
 imagesc(sRGB);
 
 %% To speed up the calculation, start from the computed optical image.
@@ -131,6 +113,7 @@ fprintf('From the sensor\n');
 tic, cameraCompute(camera,'sensor'); toc
 
 %% View the processing result
+
 cameraWindow(camera,'ip');
 
 %%

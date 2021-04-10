@@ -1,4 +1,4 @@
-function wPos = ieWindowsGet(saveFlag)
+function [wPos, wState] = ieWindowsGet(saveFlag)
 % Find current window positions and sizes
 %
 %  wPos = ieWindowsGet(saveFlag);
@@ -19,29 +19,59 @@ function wPos = ieWindowsGet(saveFlag)
 % Copyright Imageval Consulting, LLC 2013
 
 if ieNotDefined('saveFlag'), saveFlag = false; end
-    
+
+wState = [];
 wPos = ieSessionGet('wpos');
 
 w = ieSessionGet('main window');
-if ~isempty(w), wPos{1} = get(w,'Position'); end
-wPos{1} = get(w,'Position');
+if ~isempty(w) && isvalid(w)
+    wPos{1} = w.figure1.Position; 
+    wState{1} = w.figure1.WindowState;
+end
 
 w = ieSessionGet('scene window');
-if ~isempty(w), wPos{2} = get(w,'Position'); end
+if ~isempty(w) && isvalid(w)
+    wPos{2} = w.figure1.Position; 
+    wState{2} = w.figure1.WindowState;
+end
 
 w = ieSessionGet('oi window');
-if ~isempty(w), wPos{3} = get(w,'Position'); end
+if ~isempty(w) && isvalid(w)
+    wPos{3} = w.figure1.Position; 
+    wState{3} = w.figure1.WindowState;
+end
 
 w = ieSessionGet('sensor window');
-if ~isempty(w), wPos{4} = get(w,'Position'); end
+if ~isempty(w) && isvalid(w)
+    wPos{4} = w.figure1.Position;
+    wState{4} = w.figure1.WindowState;
+end
 
 w = ieSessionGet('ip window');
-if ~isempty(w), wPos{5} = get(w,'Position'); end
+if ~isempty(w) && isvalid(w)
+    wPos{5} = w.figure1.Position;
+    wState{5} = w.figure1.WindowState;
+end
 
-w = ieSessionGet('graph window');
-if ~isempty(w), wPos{6} = get(w,'Position'); end
+% w = ieSessionGet('graph window');
+% if ~isempty(w), wPos{6} = w.figure1.Position; end
+w = ieSessionGet('camdesign window');
+if ~isempty(w) && isvalid(w)
+    wPos{6} = w.figure1.Position; 
+    wState{6} = w.figure1.WindowState;
+end
 
-if saveFlag, setpref('ISET','wPos',wPos);  end
+w = ieSessionGet('imageexplore window');
+if ~isempty(w) && isvalid(w)
+    wPos{7} = w.UIFigure.Position; 
+    wState{7} = w.UIFigure.WindowState;
+end
+
+
+if saveFlag
+    setpref('ISET','wPos',wPos);  
+    setpref('ISET','wState',wState);  
+end
 
 end
 

@@ -97,8 +97,8 @@ function result = colorTransformMatrix(matrixtype,spacetype)
 % T3x3*colVector At ImagEval, we use rowVector*T3x3.  We retained her terms
 % but we return the transpose of her result (see the end).
 
-if ieNotDefined('matrixtype'), error('Matrix type required.'); end
-if ieNotDefined('spacetype'),  spacetype = []; end
+if ~exist('matrixtype','var')||isempty(matrixtype), error('Matrix type required.'); end
+if ~exist('spacetype','var')||isempty(spacetype),  spacetype = []; end
 
 matrixtype = ieParamFormat(matrixtype);
 
@@ -204,7 +204,7 @@ switch lower(matrixtype)
         % These are used for sensor display purposes.  Sometimes we have a CMY
         % sensor coded in the 3 plane format.  We would like to display the CMY.
         % Matlab treats the data as RGB.  So, we need to convert the data prior to
-        % display, so it looks right.  Used in sensorImageWindow and ipWindow.
+        % display, so it looks right.  Used in sensorWindow and ipWindow.
         if (matrixtype(1) == 'c')
             result = [0 1 1; ...
                 1 0 1 ; ...
@@ -221,6 +221,5 @@ end
 % This format works with imageLinearTransform
 result = result';
 
-return;
-
+end
 

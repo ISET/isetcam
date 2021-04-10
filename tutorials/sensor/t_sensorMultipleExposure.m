@@ -11,6 +11,8 @@
 
 %%
 ieInit
+wbState = ieSessionGet('waitbar');
+ieSessionSet('waitbar',false);
 
 %% Set up the default scene and the oi
 
@@ -24,7 +26,7 @@ oi = oiCreate; oi = oiCompute(oi,scene);
 
 % First in single auto exposure mode
 sensor = sensorCreate; 
-sensor = sensorSet(sensor,'fov',sceneGet(scene,'fov'));
+sensor = sensorSet(sensor,'fov',sceneGet(scene,'fov'),oi);
 sensor = sensorCompute(sensor,oi);
 sensor = sensorSet(sensor,'name','Auto exposure');
 sensorWindow(sensor);
@@ -107,6 +109,9 @@ sensor   = sensorSet(sensor,'exp time',expTimes);
 sensorMEV = sensorComputeMEV(sensor,oi);
 sensorMEV = sensorSet(sensorMEV,'name','Multiple exposure 2');
 sensorWindow(sensorMEV);
+
+%%
+ieSessionSet('waitbar',wbState);
 
 %% END
 

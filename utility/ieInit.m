@@ -12,9 +12,15 @@
 %
 % Copyright ImagEval Consultants, LLC, 2011.
 
+%% Make sure we don't have both isetcam and isetbio in our path
+%  This test is not great.   But the idea is that imgproc is not in isetbio.
+if ieContains(path,'imgproc') && ieContains(path,'cones')
+    error("Isetcam & Isetbio contain over-lapping functionality. Only one at a time should be in your path");
+end
+
 %% Close the ISET windows and all others
 
-% Close the ISET windows
+% Close the ISET windows and remove any invalid apps
 ieMainClose;
 
 % Close the other windows
@@ -31,6 +37,7 @@ clear global;  % Made consistent with ISETBIO
 % In ISETBIO this is false.
 % Determine if you want to clear session variables
 if ieSessionGet('init clear'), clearvars;  end
+
 
 %% Initialize ISET database variable
 

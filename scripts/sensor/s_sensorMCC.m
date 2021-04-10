@@ -53,7 +53,7 @@ sensor = sensorSet(sensor,'volts',volts);
 
 %View the sensor voltages in the GUI
 ieAddObject(sensor);
-sensorImageWindow;
+sensorWindow;
 
 %% Interactively determine Color Conversion Matrix CCM
 %
@@ -64,12 +64,14 @@ sensorImageWindow;
 
 % But, you can just use this rectangle which lets this script run
 % without user interaction.
-rect = [
+cp = [
     15   584
    782   584
    784    26
     23    19];
-sensorCCM([],[],rect,true);
+sensor = sensorSet(sensor,'chart corner points',cp);
+% [L,pointLoc] = sensorCCM(sensor,ccmMethod,pointLoc,showSelection)
+sensorCCM(sensor,[],[],true);
 
 % Notice the large $\Delta E$ values.  The sensor data from the
 % Internet don't match our sensor.

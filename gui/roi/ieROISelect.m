@@ -1,15 +1,15 @@
-function [roiLocs,rect] = ieROISelect(obj,objFig,varargin)
-% Select a region of interest (ROI) from an image and calculate locations  
+function [roiLocs,roi] = ieROISelect(obj,varargin)
+% Select a rectangular region of interest (ROI)  
 %
 % Syntax
-%   [roiLocs,rect] = ieROISelect(obj,[objFig],varargin)
+%   [roiLocs,roi] = ieROISelect(obj,varargin)
 %
 % Description
 %  The row and col locations of the region of interest (ROI) are returned
 %  in the Nx2 matrix, roiLocs.
 %
-%  If requested, the selected rectangle (rect) determining the region of
-%  interest, [colmin,rowmin,width,height], is also returned.  
+%  If requested, the selected rectangle (rect) is also returned.   The rect
+%  corner positions are part of the roi.
 %
 % Input
 %   obj - An ISETCam structure (scene, oi, sensor, ip)
@@ -17,8 +17,8 @@ function [roiLocs,rect] = ieROISelect(obj,objFig,varargin)
 % Optional key/val pairs
 %
 % Return
-%   roiLocs
-%   rect
+%   roiLocs:  The list of Nx2 (row,col) locations.
+%   roi:      A Matlab Rectangle object where roi.Position is the rect
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 %
@@ -44,41 +44,24 @@ function [roiLocs,rect] = ieROISelect(obj,objFig,varargin)
 %}
 
 %%
-if ieNotDefined('obj'), error('You must define an object (isa,oi,scene ...)'); end
-if ieNotDefined('objFig')
-    objFig = vcGetFigure(obj);
-    
-    % If the returned figure is empty, the user probably did not set up the
-    % object window yet.  So we add the object to the database and open the
-    % window
-    if isempty(objFig)
-        % We should add ieAddAndSelect()
-        % ieAddObject(obj);
-        % Should become ieOpenWindow(obj)
-        switch obj.type
-            case 'scene'
-                objFig = sceneWindow(obj);
-            case 'opticalimage'
-                objFig = oiWindow(obj);
-            case 'sensor'
-                objFig = sensorWindow(obj);
-            case 'vcimage'
-                objFig = ipWindow(obj);
-            otherwise
-                error('Unknown obj type %s\n',obj.type);
-        end
-    end
+if ieNotDefined('obj'), error('ISETCam object required (isa,oi,scene ...)'); end
+
+% Get the associated window;
+[app, appAxis] = ieAppGet(obj);
+if isempty(app) || ~isvalid(app)
+    error('No window availble');
 end
 
-% Select points.  
-hndl = guihandles(objFig);
-msg = sprintf('Drag to select a region.');
-ieInWindowMessage(msg,hndl);
+%% Select points.
 
-% Select an ROI graphically.  Calculate the row and col locations.
-% figure(objFig);
-rect = round(getrect(objFig));
-ieInWindowMessage('',hndl);
+% Tell the user
+% Select an ROI graphically. This should become a switch statement for the
+% shape, ultimately.
+ieInWindowMessage('Select a rectangle.',app)
+roi  = drawrectangle(appAxis);
+ieInWindowMessage('',app)
+
+rect = round(roi.Position);
 
 % If the user double clicks without selecting a rectangle, we treat the
 % response as a single point.  We do this by making the size 1,1.
@@ -91,4 +74,3 @@ end
 roiLocs = ieRect2Locs(rect);
 
 end
-

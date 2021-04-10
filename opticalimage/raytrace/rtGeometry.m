@@ -41,8 +41,8 @@ function oi = rtGeometry(oi,scene)
 optics = oiGet(oi,'optics');
 
 % Clear the display
-oiHandles = ieSessionGet('oihandles');
-ieInWindowMessage('',oiHandles,[]);
+app = ieSessionGet('oi window');
+ieInWindowMessage('',app,[]);
 
 %% This is the ideal geometrical irradiance with no geometric distortion.
 

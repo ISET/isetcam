@@ -42,6 +42,7 @@ dayBasis = Energy2Quanta(wave,dayBasis);
 % plotRadiance(wave,dayBasis);
 
 %%  Make up a set of weights for the illuminant
+illuminant = illuminantCreate;
 
 w = [1 0 0];
 illuminant = illuminantSet(illuminant,'photons',dayBasis*w');

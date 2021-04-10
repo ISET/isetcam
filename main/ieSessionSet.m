@@ -30,6 +30,8 @@ function ieSessionSet(param,val,varargin)
 %    'ip window'      - Store handles for image processor
 %                         (virtual camera image) window
 %    'metrics window'  - Store handles for metrics window
+%    'camdesign window' - App handle for camera design app
+%    'imageexplore window' - App handle for the image explorer app
 %    'graphwin val'    - Number for graphics window
 %    'graphwin handle' - Not currently used, in future will be as named
 %    'graphwin figure' - hObject for graphics window.  Why is this not
@@ -60,7 +62,7 @@ function ieSessionSet(param,val,varargin)
 %% Parameters
 global vcSESSION
 
-if ieNotDefined('param'), error('You must specify a parameter.'); end
+if ~exist('param','var')||isempty(param), error('You must specify a parameter.'); end
 if ~exist('val','var'),   error('You must specify a value.');     end
 
 %% Main switch
@@ -110,10 +112,12 @@ switch param
         % 3 - 'oi window'
         % 4 - 'sensor window'
         % 5 - 'ip window'
-        % 6 - 'graph window'
-        %
-        if iscell(val) && length(val) == 6, setpref('ISET','wPos',val);
-        else, error('Bad wPos variable, %f', val);
+        % 6 - 'graph window'  I propose to deprecate this unused functionality.
+        % 7 - 'Ask Dave Cardinal??'
+        if iscell(val)
+            if numel(val) >= 6, val{6} = []; end
+            setpref('ISET','wPos',val);
+        else, error('wPos variable is not a cell array.  %s\n', class(val));
         end
         
     case {'initclear'}
@@ -122,42 +126,22 @@ switch param
         
         % Set window information at startup
     case {'mainwindow'}
-        if length(varargin) < 2, error('main window requires hObject,eventdata,handles'); end
-        vcSESSION.GUI.vcMainWindow.hObject = val;
-        vcSESSION.GUI.vcMainWindow.eventdata = varargin{1};
-        vcSESSION.GUI.vcMainWindow.handles = varargin{2};
+        vcSESSION.GUI.vcMainWindow.app = val;
     case {'scenewindow'}
-        if length(varargin) < 2, error('scene window requires hObject,eventdata,handles'); end
-        vcSESSION.GUI.vcSceneWindow.hObject = val;
-        vcSESSION.GUI.vcSceneWindow.eventdata = varargin{1};
-        vcSESSION.GUI.vcSceneWindow.handles = varargin{2};
+        % We are now just storing the whole app struct
+        vcSESSION.GUI.vcSceneWindow.app = val;
     case {'oiwindow'}
-        if length(varargin) < 2, error('optical image window requires hObject,eventdata,handles'); end
-        vcSESSION.GUI.vcOptImgWindow.hObject = val;
-        vcSESSION.GUI.vcOptImgWindow.eventdata = varargin{1};
-        vcSESSION.GUI.vcOptImgWindow.handles = varargin{2};
+        vcSESSION.GUI.vcOptImgWindow.app = val;
     case {'sensorwindow'}
-        if length(varargin) < 2, error('sensor window requires hObject,eventdata,handles'); end
-        vcSESSION.GUI.vcSensImgWindow.hObject = val;
-        vcSESSION.GUI.vcSensImgWindow.eventdata = varargin{1};
-        vcSESSION.GUI.vcSensImgWindow.handles = varargin{2};
+        vcSESSION.GUI.vcSensImgWindow.app = val;
     case {'vcimagewindow','ipwindow'}
-        if length(varargin) < 2, error('vcimage window requires hObject,eventdata,handles'); end
-        vcSESSION.GUI.vcImageWindow.hObject = val;
-        vcSESSION.GUI.vcImageWindow.eventdata = varargin{1};
-        vcSESSION.GUI.vcImageWindow.handles = varargin{2};
+        vcSESSION.GUI.vcImageWindow.app = val;
     case {'displaywindow'}
-        % Newly installed
-        vcSESSION.GUI.vcDisplayWindow.hObject = val;
-        vcSESSION.GUI.vcDisplayWindow.eventdata = varargin{1};
-        vcSESSION.GUI.vcDisplayWindow.handles = varargin{2};
-        % Refresh image window
-    case {'displayimage'}
-        if ~ndims(val) == 3
-            error('Data do not appear to be an RGB image');
-        else
-            vcSESSION.imgData = val;
-        end
+        vcSESSION.GUI.vcDisplayWindow.app = val;
+    case {'camdesignwindow'}
+        vcSESSION.GUI.vcCamDesignWindow.app = val;
+    case {'imageexplorewindow'}
+        vcSESSION.GUI.vcImageExploreWindow.app = val;
         
     case {'metricswindow'}
         if length(varargin) < 2, error('metrics window requires hObject,eventdata,handles'); end
@@ -178,36 +162,7 @@ switch param
         % At present we don't add any objects with handles.  So this is
         % empty. But we might some day.
         vcSESSION.GRAPHWIN.handle = val;
-        
-        % Manage the screen gamma values.  Also brings up the window.  Not
-        % sure if that is right.
-    case {'scenegamma'}
-        % ieSessionSet('scene gamma',0.5);
-        scg = ieSessionGet('scene guidata');
-        if ~isempty(scg), set(scg.editGamma,'string',num2str(val,'%.1f')); end
-        sceneWindow;
-    case {'scenedisplayflag'}
-        sg = ieSessionGet('scene guidata');
-        if ~isempty(sg), set(sg.popupDisplay,'value',val); end
-        sceneWindow;
-    case {'oigamma'}
-        oig = ieSessionGet('oi guidata');
-        if ~isempty(oig), set(oig.editGamma,'string',num2str(val,'%.1f')); end
-        oiWindow;
-    case {'oidisplayflag'}
-        oig = ieSessionGet('oi guidata');
-        if ~isempty(oig),set(oig.popupDisplay,'value',val); end
-        oiWindow;
-    case {'sensorgamma'}
-        % Note the wrong field name, editGam, not editGamma, sigh.
-        seg = ieSessionGet('sensor guidata');
-        if ~isempty(seg), set(seg.editGam,'string',num2str(val,'%.1f')); end
-        sensorWindow;
-    case {'ipgamma','vcigamma'}
-        ipg = ieSessionGet('ip guidata');
-        if ~isempty(ipg), set(ipg.editGamma,'string',num2str(val,'%.1f')); end
-        ipWindow;
-        
+    
         % Set selected object
         % ieSessionSet('scene',val);
         % and so forth

@@ -90,7 +90,11 @@ function val = ipGet(ip,param,varargin)
 %
 % Miscellaneous
 %     'mcc Rect Handles'  - Handles for the rectangle selections in an MCC
+%                           (deprecated in Matlab 2020a app version.)
 %     'mcc Corner Points' - Outer corners of the MCC
+%     'corner points'     - Four corners for general charts.  Will replace
+%                           the MCC special case along with chart<>
+%                           functions.
 %     'center'            - (r,c) at the image center
 %     'distance2center'   - Distance (in pixels) to image center
 %     'angle'             - Angle around image center
@@ -221,21 +225,21 @@ switch oType
                 if checkfields(ip,'transformMethod'),val = ip.transformMethod; end
             case {'conversiontransformsensor','correctionmatrixsensor'}
                 transforms = ipGet(ip,'transforms');
-                if length(transforms) >= 1  % && ~isempty(transforms{1})
+                if length(transforms) >= 1 && ~isempty(transforms{1})
                     val = transforms{1};
-                else   val = eye(3,3);
+                else,  val = eye(3,3);
                 end
             case {'illuminantcorrectionmatrix','correctiontransformilluminant','correctionmatrixilluminant'}
                 transforms = ipGet(ip,'transforms');
                 if length(transforms) >= 2 && ~isempty(transforms{2})
                     val = transforms{2};
-                else   val = eye(3,3);
+                else,   val = eye(3,3);
                 end
             case {'ics2display','ics2displaytransform','internalcs2displayspace'}
                 transforms = ipGet(ip,'transforms');
                 if length(transforms) >= 3 && ~isempty(transforms{3})
                     val = transforms{3};
-                else   val = eye(3,3);
+                else,  val = eye(3,3);
                 end
             case {'combinedtransform','prodt'} %product of transforms (prodT)
                 % This is meant to be rowVec*M were rowVec = (r,g,b). If the
@@ -257,11 +261,43 @@ switch oType
                 % Structure
                 if checkfields(ip,'render'), val = ip.render; end
             case {'scaledisplay','scaledisplayoutput'}
-                if checkfields(ip,'render','scale'), val = ip.render.scale; else val = 0 ; end
+                if checkfields(ip,'render','scale')
+                    val = ip.render.scale;
+                else
+                    app = ieSessionGet('ip window');
+                    if ~isempty(app) && isvalid(app)
+                        switch lower(app.MaxbrightSwitch.Value)
+                            case 'on'
+                                val = 1;
+                            case 'off'
+                                val = 0;
+                        end
+                        
+                    else
+                        val = 0;
+                    end
+                    % Could be ipSet()
+                    ip.render.scale = val;
+                end
+                
             case {'rendergamma','gamma'}
-                hdl = ieSessionGet('ip handles');
-                val = str2double(get(hdl.editGamma,'string'));
-                % if checkfields(ip,'render','gamma'), val = ip.render.gamma; else val = 1 ; end
+                % Gamma value used to render the display in the ipWindow
+                if checkfields(ip,'render','gamma')
+                    % Stored, so return it
+                    val = ip.render.gamma;
+                else
+                    % Not yet stored.  See if we can get it from the
+                    % app window
+                    app = ieSessionGet('ip window');
+                    if ~isempty(app) && isvalid(app)
+                        val = str2double(app.editGamma.Value);
+                    else
+                        % Nowhere to be found.  Treat it as 1.
+                        val = 1;
+                    end
+                    % Whatever we decided, store it now.
+                    ip.render.gamma = val;
+                end
                 
                 % Image processor data
             case {'data','datastructure'}
@@ -330,7 +366,12 @@ switch oType
                 if checkfields(ip,'data','result'), val = ip.data.result; end
             case {'quantizedresult'}
                 val = ipGet(ip,'result');
-                val = val*ipGet(ip,'max digital value');
+                %
+                % If the results are already quantized, why would we
+                % multiply again by the max digital value?  Only if the
+                % result field was scaled to 0,1.  BUt it's not. So, I
+                % removed this (BW).
+                % val = val*ipGet(ip,'max digital value');
                 
             case {'dataxyz'}
                 % ipGet(ip,'display data xyz');
@@ -386,21 +427,34 @@ switch oType
                 if isempty(val), val = ipGet(ip,'display white point'); end
                 
                 % ISET window management
+                %{
             case {'consistency','computationalconsistency','parameterconsistency'}
                 ip.consistency = val;
-                
-                % Macbeth color checker and related ROIs and image spatial management
-            case {'mccrecthandles'}
-                % These are handles to the squares on the MCC selection regions
-                % see macbethSelect
-                if checkfields(ip,'mccRectHandles'), val = ip.mccRectHandles; end
-            case {'mccpointlocs','mcccornerpoints'}
-                % Corner points for the whole MCC chart
-                if checkfields(ip,'mccCornerPoints'), val = ip.mccCornerPoints; end
-            case {'roi','currentrect'}
+                %
+                %                 % Macbeth color checker and related ROIs and image spatial management
+                %             case {'mccrecthandles'}
+                %                 % These are handles to the squares on the MCC selection regions
+                %                 % see macbethSelect
+                %                 if checkfields(ip,'mccRectHandles'), val = ip.mccRectHandles; end
+                %             case {'mcccornerpoints'}
+                %                 % Corner points for the whole MCC chart
+                %                 warning('Use chart corner points')
+                %                 if checkfields(ip,'mccCornerPoints'), val = ip.mccCornerPoints; end
+                %
+                %}
+            case {'chartparameters'}
+                % Struct of chart parameters
+                if checkfields(ip,'chartP'), val = ip.chartP; end
+            case {'cornerpoints','chartcornerpoints'}
+                % fourPoints = oiGet(scene,'chart corner points');
+                if checkfields(ip,'chartP','cornerPoints'), val = ip.chartP.cornerPoints; end
+            case {'chartrects','chartrectangles'}
+                % rects = ipGet(sensor,'chart rectangles');
+                if checkfields(ip,'chartP','rects'), val = ip.chartP.rects; end
+            case {'currentrect'}
                 % [colMin rowMin width height]
                 % Used for ROI display and management.
-                if checkfields(ip,'currentRect'), val = ip.currentRect; end
+                if checkfields(ip,'chartP','currentRect'), val = ip.chartP.currentRect; end
                 
             case {'imagecenter','center'}
                 % row,col at the image center.  We do it this way because there is

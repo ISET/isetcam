@@ -32,7 +32,7 @@ scene = sceneCreate;
 wave  = sceneGet(scene,'wave');
 
 % It is often useful to visualize the data in the scene window
-ieAddObject(scene); sceneWindow;
+sceneWindow(scene);
 
 % When the window appears, you can scale the window size and adjust the
 % font size as well (Edit | Change Font Size). There are many other options
@@ -43,7 +43,7 @@ ieAddObject(scene); sceneWindow;
 %
 oi = oiCreate;
 oi = oiCompute(scene,oi);
-ieAddObject(oi); oiWindow;
+oiWindow(oi);
 
 %% SENSOR
 
@@ -69,7 +69,7 @@ pixel = pixelCreate;
 sensor = sensorCreate('Custom', pixel, filterOrder, filterFile);
 delete(filterFile);  % Delete to keep the directory clean
 
-sensor = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov')*1.1,scene,oi);
+sensor = sensorSet(sensor,'fov',sceneGet(scene,'fov')*1.1,oi);
 
 sensor = sensorSet(sensor,'Name','Camera-Simulation');
 
@@ -88,7 +88,7 @@ sensor = sensorCompute(sensor,oi);
 % into the display window.  You can resize the window to eliminate these.
 %  * You can also set the display gamma function to brighten the appearance
 % in the edit box at the lower left of the window.
-ieAddObject(sensor); sensorImageWindow;
+sensorWindow(sensor);
 
 % There are a variety of ways to quantify these data in the pulldown menus.
 % Also, you can view the individual pixel data either by zooming on the
@@ -126,7 +126,7 @@ o = ipGet(vci,'result'); o = o/max(o(:)); vci = ipSet(vci,'result',o);
 
 % As in the other cases, we can bring up a window to view the processed
 % data, this time a full RGB image.
-ieAddObject(vci); ipWindow
+ipWindow(vci);
 
 %% Sensor conversion
 

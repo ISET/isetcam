@@ -33,8 +33,8 @@ function ip = ipSet(ip,param,val,varargin)
 %   'type'                  - Always 'vcimage'
 %
 % Processing pipeline options
-%    'demosaic'              - The demosiac structure
-%    'demosaic method'       - Name of the demosaic method (function)
+%    'demosaic'         - The demosiac structure
+%    'demosaic method'  - Name of the demosaic method (function)
 %         Currently supported are listed in Demosaic
 %         'bilinear','adaptive laplacian','laplacian','nearest neighbor'
 %
@@ -45,6 +45,8 @@ function ip = ipSet(ip,param,val,varargin)
 %       'adaptive' - Use the image processing algorithms for sensor and
 %                      illuminant corrections to determine the matrix on
 %                      this image  
+%       'render demosaic only' - Sets the ip so only demosaicing and
+%                                sensor zerolevel subtraction are included.
 %
 %  Correction of the sensor data to a standard space
 %     'conversion sensor '        - Sensor conversion structure
@@ -55,14 +57,15 @@ function ip = ipSet(ip,param,val,varargin)
 %
 %  Calibrated color space (sensor spectral QE is allowed).
 %      'internal colorspace'      - Name of the internal color space
-%          Options: 'sensor', 'XYZ', 'Stockman', 'linear srgb'
+%            Options: 'sensor', 'XYZ', 'Stockman', 'linear srgb'
 %      'internal cs 2 display space' - Transform from internal to display
 %
 %  Correction for the illuminant
 %      'correction illuminant'               - Color balance structure
 %      'correction method illuminant'        - Name of the method (function)
 %        Currently supported
-%          'none', 'gray world', 'white world', 'manual matrix entry'
+%            'none', 'gray world', 'white world', 'manual matrix entry'
+%
 %      'correction matrix illuminant'        - Color balance transform
 %
 %      'spectrum'           - Wavelength structure
@@ -86,13 +89,16 @@ function ip = ipSet(ip,param,val,varargin)
 %        'scale display output' - Scaled to display max RGB
 %
 %  Miscellaneous
-%     'mccRectHandles'  - Handles for the rectangle selections in an MCC
-%     'mccCornerPoints' - Outer corners of the MCC
+%     'render demosaic only' - Skip everything but demosaicing
+%     'chart corner points'  - Outer corners of the chart, such as MCC
 %     'roi'             - Rect used for an ROI
 %     'gamma display'   - Gamma for rendering data to ipWindow image
 %     'scale display'   - True or false for scaling the ipWindow image
 %
 % Copyright ImagEval Consultants, LLC, 2005.
+%
+% See also
+%   ipGet
 
 % Set display parameters to match the new ones in ipGet
 
@@ -127,8 +133,8 @@ switch param
     case {'demosaicstructure','demosaic'}
         ip.demosaic = val;
     case {'demosaicmethod'}
-        if isempty(val), val = 'None'; end
-        ip.demosaic.method = val;
+        if isempty(val), val = 'none'; end
+        ip.demosaic.method = lower(val);
         
     % Accounting for the difference between the sensors and the internal
     % color space linear span.
@@ -150,13 +156,10 @@ switch param
     case {'illuminantcorrection','correctionilluminant'}
         ip.illuminantCorrection = val;
     case {'illuminantcorrectionmethod','correctionmethodilluminant'}
-        % Possible illuminant correction methods:
-        %  'manual matrix entry', 
-        %  'grayWorld'
-        %  'WhiteWorld'
-        %  'None'
-        if isempty(val), val = 'None'; end
-        ip.illuminantCorrection.method = val;
+        % We need the list of methods here!
+        %
+        if isempty(val), val = 'none'; end
+        ip.illuminantCorrection.method = lower(val);
         
     case {'correctionmatrixilluminant','illuminantcorrectionmatrix','correctiontransformilluminant','illuminantcorrectiontransform'}
         % ip = imageSet(ip,'whitebalancetransform',val,2);
@@ -198,6 +201,11 @@ switch param
         % The quantization struct might be used to determine if the
         % input data were really digital values.  Not much used yet.
         ip.data.quantization = val;
+    case {'nbits'}
+        % ip = ipSet(ip,'nbits',val);
+        %
+        % Bit depth of the image representations
+        ip.data.quantization.bits = val;
         
     case {'transforms'}
         % ip = ipSet(ip,'transforms',eye(3),2);
@@ -211,7 +219,9 @@ switch param
     case {'transformmethod'}
         % ip = ipSet(ip,'transform method','Adaptive')
         % Other options are 'New' and 'Current'
-        ip.transformMethod = val;
+        %
+        % We need the list here!
+        ip.transformMethod = lower(val);
         
     case {'datamax','rgbmax','sensormax','maximumsensorvalue','maximumsensorvoltageswing'}
         % This should probably account for the type of exposure condition.
@@ -224,6 +234,20 @@ switch param
         ip.render = val;
     case {'rendermethod','renderingmethod','customrendermethod'}
         ip.render.method = val;
+    case {'renderdemosaiconly'}
+        % ipSet(ip,'render demosaic only',true)
+        %
+        % Set to true if you want to make sure only demosaicking and
+        % zerolevel correction are used, but not sensor conversion or
+        % illuminant correction.
+        if val
+            ip = ipSet(ip,'internal cs','Sensor');
+            ip = ipSet(ip,'conversion method sensor','None');
+            ip = ipSet(ip,'correction method illuminant','None');
+            ip = ipSet(ip, 'transform method', 'current');
+            ip = ipSet(ip,'ics2display transform', eye(3));        
+        end
+        
     case {'scaledisplay','scaledisplayoutput'}
         % This is a binary 1 or 0 for one or off
         ip.render.scale = val;
@@ -231,19 +255,23 @@ switch param
         % Controls the gamma for rendering the result data to the
         % GUI display.
         ip.render.gamma = val;
-        hdl = ieSessionGet('ip handles');
-        if ~isempty(hdl)
-            set(hdl.editGamma,'string',num2str(val));
-            ipWindow;
+        
+        % If the window is open and valid, set the edit box and refresh it.
+        app = ieSessionGet('ip window');
+        if ~isempty(app) && isvalid(app)
+            app.refresh;
         end
+        
     % Consistency (red button)
+    %{
     case {'consistency','computationalconsistency','parameterconsistency'}
         ip.consistency = val;
-    
+    %}
     % Special case for ROIs and macbeth color checker.  This should get
     % generalized to chart and chart parameter calls.  Too special now for
     % MCC case.  See related comments in sensorSet.
-    case {'mccrecthandles'}
+    %{
+      case {'mccrecthandles'}
         % These are handles to the squares on the MCC selection regions
         % see macbethSelect
         if checkfields(ip,'mccRectHandles')
@@ -254,25 +282,37 @@ switch param
             end
         end
         ip.mccRectHandles = val;
-    case {'cornerpoints','mccpointlocs','mcccornerpoints'}
+    %}
+    %{
+    case {'mccpointlocs','mcccornerpoints'}
         % Corner points for the whole chart.  These have been MCC charts,
         % but we should update to a chartP struct and have these be
         % chartP.cornerPoints.
+        warning('use chart corner points')
         ip.mccCornerPoints=  val;
-
-    % Slot for holding a current retangular region of interest    
-    case {'roi','currentrect'}
+    %}    
+    case {'chartparameters'}
+        % Reflectance chart parameters are stored here.
+        ip.chartP = val;
+    case {'cornerpoints','chartcornerpoints'}
+        ip.chartP.cornerPoints=  val;
+    case {'chartrects','chartrectangles'}
+        ip.chartP.rects =  val;
+        % Slot for holding a current retangular region of interest
+    case {'currentrect'}
         % [colMin rowMin width height]
         % Used for ROI display and management.
-        ip.currentRect = val;
+        ip.chartP.currentRect = val;
 
     % Needs more comments and development    
     case {'combineexposures','combinationmethod'}
-        % Method for combining multiple exposures in bracketed case
+        % Method for combining multiple exposures in bracketed or burst case
         % Implemented:
         %   longest - Longest not saturated
+        %   sum -- for burst, just add values
         %   Others to come, I hope
         ip.combineExposures = val;
+        ip.combinationMethod = val; % this is what the Get routine wants!
         
     % Special case for L3 work with unconventional CFAs
     case {'l3'}

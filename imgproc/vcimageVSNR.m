@@ -17,17 +17,25 @@ function [vSNR,rect] = vcimageVSNR(vci,dpi,dist,rect)
 %    vSNR = vcimageVSNR;
 %
 % Copyright ImagEval Consultants, LLC, 2009
+%
+% See also
+%   xyz2vSNR
 
+%%
 if ieNotDefined('vci'), vci = vcGetObject('vci'); end
 
 % Dots per inch on the display and subject's viewing distance 
-if ieNotDefined('dpi'),  dpi  = ipGet(vci,'displayDPI');   end
-if ieNotDefined('dist'), dist = ipGet(vci,'displayViewingDistance'); end
+if ieNotDefined('dpi'),  dpi  = ipGet(vci,'display DPI');   end
+if ieNotDefined('dist'), dist = ipGet(vci,'display Viewing Distance'); end
 
-% Select the ROI from the vcimage window
-if ieNotDefined('rect'),    [roiLocs,rect] = vcROISelect(vci);
-else,                       roiLocs = ieRect2Locs(rect);
+% Select the ROI from the ipWindow_App
+if ieNotDefined('rect')
+    [roiLocs,roi] = ieROISelect(vci);
+    rect = round(roi.Position);
+else                       
+    roiLocs = ieRect2Locs(rect);
 end
+
 % a = get(ipWindow,'CurrentAxes'); hold(a,'on'); ieDrawRect(a,rect)
 % Convert the data to an XYZ image
 roiXYZ = vcGetROIData(vci,roiLocs,'roixyz');          % Nx3
@@ -35,15 +43,21 @@ roiXYZ = vcGetROIData(vci,roiLocs,'roixyz');          % Nx3
 % Reshape into an image
 c = rect(3)+1;r = rect(4)+1;
 roiXYZ = XW2RGBFormat(roiXYZ,r,c);
-% figure(1); Y = roiXYZ(:,:,2); mesh(Y); colormap(jet(255)); mean(Y(:))
-% srgb = xyz2srgb(roiXYZ); imagesc(srgb/255);
+
+%{
+ figure(1); 
+ Y = roiXYZ(:,:,2); mesh(Y); 
+ colormap(jet(255)); mean(Y(:))
+ srgb = xyz2srgb(roiXYZ); imagesc(srgb/255);
+%}
+
 
 % Set the SCIELAB parameters
 whitePtXYZ = ipGet(vci,'display White XYZ');
 p = scParams(dpi,dist);
 
 % The filter shouldn't exceed the size of the image.
-[r,c,w] = size(roiXYZ);
+[r,c,~] = size(roiXYZ);
 if r < p.sampPerDeg || c < p.sampPerDeg
     warning('Image size < 1 deg, may be a problem with filter size.')
     p.filterSize = min(r,c);
@@ -53,5 +67,5 @@ end
 % Call the main vSNR routine
 vSNR = xyz2vSNR(roiXYZ,whitePtXYZ,p);
 
-return
+end
 

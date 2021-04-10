@@ -9,7 +9,7 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 % scene. Generally, we model planar objects, such as a screen display (but
 % see below).
 %
-% The scene is located at some distance from the center of the optics, has
+% The scene is located at some distance from the center of the optics, hasG
 % a field of view, and a spectral radiance distribution.  There are
 % routines to handle depth as well that are partly implemented and under
 % development.  We plan to integrate this aspect of the modeling with PBRT.
@@ -53,6 +53,13 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %         patchSizePixels = 16;
 %         wave = [380:5:720];
 %         scene = sceneCreate('macbeth Tungsten',patchSizePixels,wave);
+%
+%   If you would like the color checker to have black borders around the
+%   patches, then use
+%
+%        patchSizePixels = 16; wave = [380:5:720]; blackBorder = true;
+%        scene = sceneCreate('macbeth d65',patchSizePixels,wave,...
+%                  'macbethChart.mat',blackBorder);
 %
 %   For a bar width of 50 pixels, 5 bars, at L* levels (1:nBars)-1 * 10, use
 %         scene = sceneCreate('lstar',50,5,10);
@@ -172,7 +179,7 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %  sceneFromFile, displayCreate, s_sceneReflectanceCharts.m 
 
 %% Initial definition
-if ieNotDefined('sceneName'), sceneName = 'default'; end
+if ~exist('sceneName','var')||isempty(sceneName), sceneName = 'default'; end
 parms = [];  % Returned in some cases, not many.
 
 % Identify the object type
@@ -185,10 +192,12 @@ scene.metadata = [];   % Metadata for machine learning apps
 if strncmp(sceneName,'macbeth',5) || ...
         strcmp(sceneName,'default') || ...
     strcmp(sceneName,'empty')
-    patchSize = 16; wave = 400:10:700; surfaceFile = 'macbethChart.mat';
+    patchSize = 16; wave = 400:10:700; surfaceFile = 'macbethChart.mat'; 
+    blackBorder = false;
     if ~isempty(varargin), patchSize = varargin{1}; end  % pixels per patch
     if length(varargin) > 1, wave = varargin{2}; end     % wave
     if length(varargin) > 2, surfaceFile = varargin{3}; end % Reflectances
+    if length(varargin) > 3, blackBorder = varargin{4}; end % 
 end
 
 %%
@@ -210,22 +219,22 @@ switch sceneName
         scene = sceneClearData(scene);
     case {'macbeth','macbethd65'}
         % sceneCreate('macbethD65',patchSize,wave);
-        scene = sceneDefault(scene,'d65',patchSize,wave);
+        scene = sceneDefault(scene,'d65',patchSize,wave,surfaceFile,blackBorder);
     case {'macbethd50'}
-        scene = sceneDefault(scene,'d50',patchSize,wave);
+        scene = sceneDefault(scene,'d50',patchSize,wave,surfaceFile,blackBorder);
     case {'macbethc','macbethillc'}
-        scene = sceneDefault(scene,'c',patchSize,wave);
+        scene = sceneDefault(scene,'c',patchSize,wave,surfaceFile,blackBorder);
     case {'macbethfluorescent','macbethfluor'}
-        scene = sceneDefault(scene,'fluorescent',patchSize,wave);
+        scene = sceneDefault(scene,'fluorescent',patchSize,wave,surfaceFile,blackBorder);
     case {'macbethtungsten','macbethtung'}
-        scene = sceneDefault(scene,'tungsten',patchSize,wave);
+        scene = sceneDefault(scene,'tungsten',patchSize,wave,surfaceFile,blackBorder);
     case {'macbethee_ir','macbethequalenergyinfrared'}
         % Equal energy illumination into the IR
-        scene = sceneDefault(scene,'ir',patchSize,wave);
+        scene = sceneDefault(scene,'ir',patchSize,wave,surfaceFile,blackBorder);
     case {'macbethcustomreflectance'}
         % s = sceneCreate('macbeth custom reflectance',patchSize,wave,surfaceFile)
         % s = sceneCreate('macbeth custom reflectance',32,400:10:700,'macbethChart2.mat');
-        scene = sceneDefault(scene,'d65',patchSize,wave,surfaceFile);
+        scene = sceneDefault(scene,'d65',patchSize,wave,surfaceFile,blackBorder);
 
     case {'reflectancechart'}
         % sceneCreate('reflectance chart',pSize,sSamples,sFiles,wave,grayFlag,sampling);
@@ -549,6 +558,16 @@ end
 scene = sceneInitGeometry(scene);
 scene = sceneInitSpatial(scene);
 
+useSingle = getpref('ISET', 'useSingle', true);
+if useSingle
+    if isfield(scene,'spectrum') && isfield (scene.spectrum,'wave')
+        scene.spectrum.wave = single(scene.spectrum.wave);
+    end
+    if isfield(scene,'illuminant') && isfield(scene.illuminant,'spectrum')
+        scene.illuminant.spectrum.wave = single(scene.illuminant.spectrum.wave);
+    end
+    
+end
 % Scenes are initialized to a mean luminance of 100 cd/m2.  The illuminant
 % is adjusted so that dividing the radiance (in photons) by the illuminant
 % (in photons) produces a peak reflectance of 0.9.
@@ -600,6 +619,8 @@ if ieNotDefined('contrast'), contrast = 0.20;
 elseif contrast > 1, contrast = contrast/100; 
 end
 
+if numel(sz) == 1, sz(2) = sz(1); end
+
 scene = initDefaultSpectrum(scene,'hyperspectral');
 wave  = sceneGet(scene,'wave');
 nWave = sceneGet(scene,'nwave');
@@ -627,17 +648,17 @@ return
 
 
 %----------------------------------
-function scene = sceneDefault(scene,illuminantType,patchSize,wave,surfaceFile)
+function scene = sceneDefault(scene,illuminantType,patchSize,wave,surfaceFile,blackBorder)
 %% Default scene is a Macbeth chart with D65 illuminant, patchSize 16
 %
-% sceneDefault(scene,'d65',patchSize,wave)
+% sceneDefault(scene,'d65',patchSize,wave,surfaceFile,blackBorder)
 %
 
 % These are the default surface reflectance values
 if ieNotDefined('surfaceFile')
     surfaceFile = which('macbethChart.mat');
-    % surfaceFile = fullfile(isetRootPath,'data','surfaces','macbethChart.mat');
 end
+if ieNotDefined('blackBorder'), blackBorder = false; end
 
 % Create the scene variable and possibly set wavelength
 scene = initDefaultSpectrum(scene,'hyperspectral'); 
@@ -676,7 +697,7 @@ scene = sceneSet(scene,'magnification',1.0);
 
 % The default patch size is 16x16.
 spectrum = sceneGet(scene,'spectrum');
-macbethChartObject = macbethChartCreate(patchSize,(1:24),spectrum,surfaceFile);
+macbethChartObject = macbethChartCreate(patchSize,(1:24),spectrum,surfaceFile,blackBorder);
 
 scene = sceneCreateMacbeth(macbethChartObject,lightSource,scene);
 
@@ -695,7 +716,7 @@ return;
 function scene = sceneRGB(scene)
 %% Prepare a scene for RGB data.
 
-if ieNotDefined('scene'), scene.type = 'scene'; end
+if ~exist('scene','var')||isempty(scene), scene.type = 'scene'; end
 
 scene = sceneSet(scene,'name','rgb');
 scene = sceneSet(scene,'type','scene');
@@ -1291,7 +1312,7 @@ illP = illuminantGet(il,'photons');
 for ii=1:nWave, img(:,:,ii) = d*illP(ii); end
 scene = sceneSet(scene,'photons',img);
 
-return
+return;
 
 %---------------------------------------------------------------
 function scene = sceneSlantedBar(scene,imSize,barSlope,fieldOfView,wave)
@@ -1316,8 +1337,13 @@ nWave  = sceneGet(scene,'nwave');
 % Make the image
 imSize = round(imSize/2);
 [X,Y] = meshgrid(-imSize:imSize,-imSize:imSize);
-img = zeros(size(X));
-
+if getpref('ISET','useSingle',true)
+    X = single(X);
+    Y = single(Y);
+    img = single(zeros(size(X)));
+else
+    img = zeros(size(X));
+end
 %  y = barSlope*x defines the line.  We find all the Y values that are
 %  above the line
 list = (Y > barSlope*X );

@@ -15,7 +15,7 @@ function sensor = sensorReadFilter(filterType,sensor,fname)
 %
 % Resetting any of these curves in the sensor changes the currently the
 % properties of the image sensor array and should clear the sensor data.
-% This happens on the return in sensorImageWindow.
+% This happens on the return in sensorWindow.
 %
 % The wavelength sampling of the data matches the current specification in
 % sensor. 
@@ -27,7 +27,7 @@ function sensor = sensorReadFilter(filterType,sensor,fname)
 % Return
 %   The sensor is with the updated fields is returned
 %
-% See also:  Used in sensorImageWindow:
+% See also:  Used in sensorWindow:
 %
 % Copyright Imageval Consulting, LLC 2005
 
@@ -35,15 +35,18 @@ if ieNotDefined('sensor'), sensor = ieGetObject('ISA'); end
 if ieNotDefined('filterType'), filterType = 'cfa'; end
 
 % Read the color filter data, matched to sensor
-if ieNotDefined('fname'),
+if ieNotDefined('fname')
     % Read the color filter data
     fname = vcSelectDataFile(fullfile(isetRootPath,'data','sensor','cfa'));
     if isempty(fname),  return; end
 end
 
 % Read the filter transmission spectra
+wavelength = sensorGet(sensor, 'wave');
+%{
 load(fname,'wavelength');
 sensor = sensorSet(sensor,'wave',wavelength);
+%}
 [filterSpectra,newFilterNames,extra] = ieReadColorFilter(wavelength,fname);
 if isempty(filterSpectra), error('No filter spectra'); end
 

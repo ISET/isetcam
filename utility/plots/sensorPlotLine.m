@@ -1,6 +1,9 @@
 function [figNum, uData] = sensorPlotLine(sensor, ori, dataType, sORt, xy)
 % Plot a line of sensor data
 %
+% TODO:  See comment below about the case in which there are multiple
+%        captures (e.g., exposure bracketing or burst photography).
+%
 % Synopsis:
 %   [uData, figNum] = ...
 %   sensorPlotLine([sensor],[ori='h'],[dataType ='dv'],[spaceOrTransform = 'space'],[xy])
@@ -20,12 +23,12 @@ function [figNum, uData] = sensorPlotLine(sensor, ori, dataType, sORt, xy)
 %           weird and doesn't work properly for human.  Default: 'space'
 %  xy:       Point (col,row) for determining the horizontal or vertical line.
 %
-% Set the sORt flag to 
+% Set the sORt flag to
 %   {'spatial','space','spacedomain'} (default)
 %   {'transform','fourier','fourierdomain','fft'}
 %
 %  If no xy position is specified, the user is prompted to select using a
-%  crosshair on the sensor image window.  Otherwise, 
+%  crosshair on the sensor image window.  Otherwise,
 %   If the orientation is 'h' (horizontal) a row containing xy is plotted
 %   If orientation is 'v' (vertical) a column containing xy is plotted.
 %
@@ -42,7 +45,7 @@ function [figNum, uData] = sensorPlotLine(sensor, ori, dataType, sORt, xy)
 %   plotMonochromeISALines
 %
 % Copyright ImagEval Consultants, LLC, 2003.
-% 
+%
 % See also
 %   sensorPlot
 
@@ -56,11 +59,15 @@ if ieNotDefined('xy'), xy = vcLineSelect(sensor); end
 
 sSupport = sensorGet(sensor,'spatialSupport','microns');
 
+% We need to allow for the possibility that the data is exposure bracketed
+% or burst sensor type so that data has a 3rd dimension.  Then we need to
+% figure out what to do.
 data = sensorGet(sensor,dataType);
 if isempty(data), warndlg(sprintf('Data type %s unavailable.',dataType)); return; end
 
 %% Find the line in the sensor window.
 nSensors = sensorGet(sensor,'nSensors');
+
 switch lower(ori)
     case {'h','horizontal'}
         pos = sSupport.x;
@@ -75,7 +82,8 @@ end
 %% Plot it
 
 if nSensors > 1
-    figNum = ieNewGraphWin([],'tall');  % Easier to see
+    % 3rd arg is title string
+    figNum = ieNewGraphWin([],'tall',[],'Visible','Off');  % Easier to see
     data = plane2rgb(data,sensor,NaN);
     fColors = sensorGet(sensor,'filterPlotColors');
     if strcmp(dataType,'electrons') && isfield(sensor,'human')  || ...
@@ -117,19 +125,20 @@ end
 nColors = 0;
 for ii = 1:nSensors
     d = lData{ii};  % These are the data from the ith sensor
-
+    
     % Skip the black sensor
     l = find(~isnan(d));
     if isempty(l)
         % No data for this pixel type on this row
     else
         % These are cell arrays because for some sensors, like the human
-        % cones, there are uneven numbers of samples on every row.
+        % cones, there are unpredictable numbers of samples on every row.
         nColors = nColors + 1;
+        pixColor{nColors} = ii;               %#ok<NASGU,AGROW>
         pixPlot{nColors} = [fColors(ii),'-']; %#ok<AGROW>
-        pixPos{nColors}  = pos(l)'; %#ok<AGROW>
+        pixPos{nColors}  = pos(l)';           %#ok<AGROW>
         tmp = d(l);
-        pixData{nColors} = tmp(:); %#ok<AGROW>
+        pixData{nColors} = tmp(:);            %#ok<AGROW>
     end
 end
 
@@ -162,21 +171,22 @@ for ii=1:nColors
             % Attach data to figure and label.
             % uData.pos(:,ii) = pos(:); uData.data(:,ii) = pixData(:,ii);
             uData.pos{ii} = pixPos{ii}; uData.data{ii} = pixData{ii};
+            uData.pixColor{ii} = pixColor{ii};
         case {'transform','fourier','fourierdomain','fft'}
             
             % We have a problem in this code.  The pixPos needs to be
             % interpolated to the same number and spacing of sample
-            % positions for this to make sense.  
+            % positions for this to make sense.
             
             % Data are in microns.  Convert to mm for linepair/mm
             normalize = 1;
             [freq,pixAmp] = ieSpace2Amp(pixPos{ii}*1e-3,pixData{ii},normalize);
-
+            
             plot(freq,pixAmp,pixPlot{ii});
             xlabel('Cycles/mm'); ylabel('Normalized amp');
             set(gca,'xtick',ieChooseTickMarks(freq)); grid on;
             set(gca,'ylim',[0 1]);
-
+            
             % Should we try to put a vertical line at the Nyquist sampling
             % frequency, measured in lines/mm.  That is at one cycle per
             % two samples (delta).  So we want to know how many
@@ -185,7 +195,7 @@ for ii=1:nColors
             nyquist = (1/delta)*1000;
             line([nyquist,nyquist],[0,1],'color','k');
             text(nyquist*0.95,0.75,'half-sampling')
-
+            
             % Attach data to figure and label.
             %             uData.pos(:,ii) = freq(:); uData.data(:,ii) = pixAmp;
             %             uData.freq(:,ii) = freq(:); uData.amp(:,ii) = pixAmp; uData.mean(:,ii) = pixAmp(1);
@@ -237,7 +247,7 @@ switch lower(sORt)
         grid on;
         uData.freq = freq; uData.amp = dataAmp; uData.mean = dataAmp(1);
         uData.peakContrast = max(dataAmp(:))/dataAmp(1);
-
+        
         % Attach data to figure and label.
         set(figNum,'userdata',uData);
         set(figNum,'Name',titleString);

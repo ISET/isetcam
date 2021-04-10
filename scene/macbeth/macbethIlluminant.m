@@ -64,4 +64,7 @@ for ii=1:nWave
     
 end
 
+ieNewGraphWin;
+plot(wave,illPhotons);
+
 end

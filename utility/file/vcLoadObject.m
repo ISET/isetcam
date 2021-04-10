@@ -65,13 +65,23 @@ switch(lower(objType))
         % condition here and handle it.  But if we have to do it lots of
         % places, we are in trouble.
         warning('off');
-        data = load(fullName,'isa');
-        warning('on');
+        % this is pretty lame, but otherwise we have an issue with the fact
+        % that some of our sensors are still stored as isa, and others as
+        % sensor. Someone better at ISET or Matlab can probably improve.
+        sensorNames = {'isa', 'sensor'};
+        dataArray = load(fullName,sensorNames{:});
 
-        % This is what they rename the variable in Matlab 7.04
-        if checkfields(data,'isa_'), data.isa = data.isa_; end
-        data.isa.name = objName;
-        ieAddObject(data.isa);
+        if isfield(dataArray, 'isa')
+            data = dataArray.isa;
+             % This is what they rename the variable in Matlab 7.04
+        elseif checkfields(dataArray,'isa_'), 
+            dataArray.isa = dataArray.isa_; 
+        elseif isfield(dataArray, 'sensor')
+            data = dataArray.sensor;
+        end
+        warning('on');
+        data.name = objName;
+        ieAddObject(data);     
         
     case 'vcimage'
         % This was wrong as late as December, 2016.  It had 'display'
@@ -79,6 +89,11 @@ switch(lower(objType))
         data = load(fullName,'vcimage');
         data.vcimage.name = objName;
         ieAddObject(data.vcimage);
+        
+    case 'camera'
+        data = load(fullName,'camera');
+        data.camera.name = objName;
+        ieAddObject(data.camera);
         
     otherwise
         error('Unknown object type');

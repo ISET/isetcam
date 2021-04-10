@@ -17,7 +17,7 @@ if ieNotDefined('sensor'), sensor = vcGetObject('sensor'); end
 if ieNotDefined('method'), method = sensorGet(sensor,'quantizationMethod'); end
 
 %% Get voltage data and range
-voltageSwing = sensorGet(sensor,'pixel voltageSwing');
+voltageSwing = sensorGet(sensor,'pixel voltage swing');
 img          = sensorGet(sensor,'volts'); 
 if isempty(img), error('No voltage image'); end
 
@@ -46,4 +46,4 @@ switch lower(method)
         warning('ISET:Quantization1','Unknown quantization method.')
 end
 
-return;
+end

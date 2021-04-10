@@ -5,12 +5,12 @@ function [uData, g] = ipPlot(ip,param,xy,varargin)
 %   [uData, g] = ipPlot(ip,param,varargin)
 %
 % Brief description
-%   Needs comments and updating for the ip plotting gateway.
+%   Image processing (ip) plotting gateway.
 %
 % Inputs
-%   ip:
-%   param
-%   xy - xy position on the image for plotting a line
+%   ip:    - Image processing struct
+%   param: - Plot parameter
+%   xy     - xy position on the image for plotting a line
 %
 % Key/val pairs
 %
@@ -19,8 +19,8 @@ function [uData, g] = ipPlot(ip,param,xy,varargin)
 %    hdl
 %
 % Parameters
-%    'horizontalline'  - send in the xy or select it
-%    'verticalline'    -   "
+%    'horizontal line' - send in the xy or select it
+%    'vertical line'   -   "
 %    'chromaticity'    -  send in an ROI or select it
 %    'cielab'          -   "
 %    'cieluv'          -   "

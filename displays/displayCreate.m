@@ -1,49 +1,71 @@
 function d = displayCreate(displayName,varargin)
 % Create a display structure.
 %
+% Synopsis
 %  d = displayCreate(displayFileName,[wave])
 %
-% Display (d) calibration data are stored in a display structure. These are
-% the spectral radiance distribution of its primaries and a gamma function.
+% Brief description
+%  Display (d) calibration data are stored in a display structure. These
+%  are the spectral radiance distribution of its primaries and a gamma
+%  function.
 %
-% displayName: Name of a file containing a calibrated display structure.
-%   There are various examples in data/displays.  They contain a variable
-%   ('d') that is a display structure.  See displayGet and displaySet for
-%   the slots.
+% Inputs:
+%  displayName: Name of a file containing a calibrated display structure.
+%               The default is a special display we created called
+%               'reflectance-display'.  This display converts the RGB
+%               values in the image as if they were to be shown on an sRGB
+%               display.  The display SPD is chosen so that if we assume a
+%               D65 illuminant and those primaries, the estimate surface
+%               reflectance of an object is within the first three linear
+%               basis functions of natural surfaces.  Ask me how Joyce and
+%               I did that.  Or read s_displaySurfaceReflectance.
+%  
+% Optional key/value pairs:
+%   Settable display parameters as pairs.  Anything that works in
+%   displaySet will work here
+%
+% Description
+%   There are various calibrated displays in data/displays.  They contain a
+%   variable ('d') that is a display structure.  See displayGet and
+%   displaySet for the slots. 
+%
+%   The 'reflectance-display' is designed to work well with sceneFromFile,
+%   producing a scene whose reflectances are within the 3D basis functions
+%   of natural surfaces and a D65 illuminant.
 % 
-% See Also:  sceneFromFile (RGB read in particular)
+% sRGB definitions in terms of xy
 %
-% Example:
-%   d = displayCreate;
-%   d = displayCreate('lcdExample');
-%   wave = 400:5:700; d = displayCreate('lcdExample',wave);
+%        Red     Green   Blue   White
+%  x	0.6400	0.3000	0.1500	0.3127
+%  y	0.3300	0.6000	0.0600	0.3290
+%
 %
 %  Some displays have psf data, as well.  For example:
 %
 %   d = displayCreate('LCD-Apple');
 %  
 % Copyright ImagEval Consultants, LLC, 2011.
-
-
-%% sRGB definitions in terms of xy
 %
-%     Red     Green   Blue   White
-% x	0.6400	0.3000	0.1500	0.3127
-% y	0.3300	0.6000	0.0600	0.3290
-%
-% The default is a set of block primaries.  They are close to this.  We
-% should make one that is perfect. The default is shown below, and the
-% white point xy is a little too much x.  The file lcdExample.mat is a
-% little closer.
-%
-% d = displayCreate;
-% displayGet(d,'primaries xy')'
-% displayGet(d,'white xy')'
+% See Also:  
+%   sceneFromFile (RGB read in particular)
 %
 
+% Examples:
+%{
+  d = displayCreate;
+  displayPlot(d,'spd');
+  displayGet(d,'primaries xy')'
+  displayGet(d,'white xy')'
+%}
+%{
+   d = displayCreate;     % The default is 'reflectance-display'
+   d = displayCreate('lcdExample');
+   wave = 400:5:700; d = displayCreate('lcdExample',wave);
+%}
 
 %% Arguments
-if ieNotDefined('displayName'), displayName = 'default'; end
+
+if ~exist('displayName','var')||isempty(displayName), displayName = 'reflectance-display'; end
 
 % Identify the object type
 d.type = 'display';
@@ -60,12 +82,13 @@ d = displaySet(d,'name',displayName);
 sParam = ieParamFormat(displayName);
 switch sParam
     case 'default'
-        % See comment about the default above.  We should make it a little
-        % closer to sRGB standard chromaticities.
+        % This is the old default display with block matrix primaries.  The
+        % modern default display is the 'reflectance-display'
         d = displayDefault(d);
  
     case 'equalenergy'
-        % Make the primaries all the same and equal energy
+        % Make the primaries all the same and equal energy.  Thus, a
+        % monochrome display.
         d = displayDefault(d);
         spd = ones(size(d.spd))*1e-3;
         d = displaySet(d,'spd',spd);
@@ -76,14 +99,28 @@ switch sParam
             tmp = load(displayName);
             if ~isfield(tmp,'d')
                 error('No display struct in the file');
-            else  d = tmp.d;
+            else,  d = tmp.d;
             end
-        else error('Unknown display %s.',displayName);
+            if isempty(displayGet(d,'dixel'))
+                % Some displays do not have a spatial dixel.  For example,
+                % the reflectance-display is entirely imaginary.  So, we
+                % assign a dixel here from an existing display that was
+                % calibrated.
+                fprintf('Assigning the dixel from LCD-Apple to the %s display.\n', displayGet(d,'name'));
+                tmp = load('LCD-Apple');
+                d.dixel = tmp.d.dixel;
+            end
+        else
+            error('Unknown display %s.',displayName);
         end
 
 end
 
-% Handle user-specified parameter values
+% Start out without an image.  Until we know what we should use.
+d = displaySet(d,'image',[]);
+
+%% Handle user-specified parameter values
+
 % Now we only support user setting value of wavelength
 if length(varargin) >= 1
     newWave = varargin{1};
@@ -97,11 +134,15 @@ end
 
 end
 
-% Create a default display structure
+%% Create a default display structure
+
 function d = displayDefault(d)
 % Create a default display that works well with the imageSPD rendering
 % routine.  See vcReadImage for more notes.  Or move those notes here.
-%
+
+% I now think we should use one of the calibrated displays as the default.
+% But I am reluctant to change for compatibility reasons (BW).
+
 wave = 400:10:700;
 spd = pinv(colorBlockMatrix(length(wave)))/700;  % Makes 100 cd/m2 peak
 d = displaySet(d,'wave',wave);

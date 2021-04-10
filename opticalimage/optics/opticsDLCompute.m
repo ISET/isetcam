@@ -60,7 +60,7 @@ switch lower(offaxismethod)
     case 'cos4th'
         oi = opticsCos4th(oi);
     otherwise
-        fprintf('\n-----\nUnknown offaxis method: %s.\nUsing cos4th instead.',optics.offaxis);
+        fprintf('\n-----\nUnknown offaxis method: %s.\nUsing cos4th.',optics.offaxis);
         oi = opticsCos4th(oi);
 end
 

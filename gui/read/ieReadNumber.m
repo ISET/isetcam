@@ -21,7 +21,7 @@ dlgTitle= sprintf('ISET read number'); lineNo=1;
 answer = inputdlg(prompt,dlgTitle,lineNo,def,'on');
 
 if   isempty(answer),  val = [];
-else                   val = eval(answer{1});
+else,                  val = eval(answer{1});
 end
 
-return;
+end

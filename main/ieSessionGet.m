@@ -1,19 +1,13 @@
 function val = ieSessionGet(param,varargin)
 % Get fields from global vcSESSION, including figure handles, guidata ...
 %
+% Synopsis
 %     val = ieSessionGet(param,varargin);
 %
+% Description:
 %  The vcSESSION parameter is a global variable that contains information
 %  about the windows, custom processing routines, and related ISET
-%  session information.
-%
-%  This get routine retrieves that information.  The information is stored
-%  in a global variable for now.  In the future, this information will be
-%  obtained using findobj().
-%
-%  The tag 'handle' refers to the guihandles.  The tag 'figure' refers to
-%  the figure number.  The guidhandles can be retrieved by using 
-%  h = guihanles(f);
+%  session information. ieSessionGet retrieves that information.  
 %
 %  A list of the parameters is:
 %
@@ -39,47 +33,25 @@ function val = ieSessionGet(param,varargin)
 %      {'metrics window'}
 %      {'graphwin figure'} - Rarely used
 %
-%   Axis handles  - These are the axes (images) in the windows. There is
-%   one main image in each, and the case when there is more than one
-%   (display) we will handle differently later.
-%     {'scene axis'}        - Scene
-%     {'oi axis'}           - Optical image
-%     {'sensor axis'}       - Sensor
-%     {'ip axis'}           - Image processing
-%
-% Guidata
-%      {'main guidata'}   - Guidata of Main window
-%      {'scene guidata'}  - Guidata from scene window 
-%      {'oi guidata'}     - ...
-%      {'sensor guidata'}
-%      {'ip guidata'}
-%      {'display guidata'}
-%      {'metrics guidata'}
-%      {'graphwin guidata'}
-%
 % Objects properties  (ieSessionGet(param,objType))
+%      {'summary'}   - Summarize what is in the database
 %      {'selected'}  - Which is currently selected objtype
 %      {'nobjects'}  - How many objects of a type.
 %          ieSessionGet('nobjects','sensor')
 %      {'names'}     - Names of the objects of a type
 %          ieSessionGet('names','sensor')
 %
-% Window settings
-%      {'scene gamma'}    - Gamma for scene window display, ...
-%      {'scene display flag'} - RGB, HDR, Gray scale
 %
-%      {'oi gamma'}
-%      {'oi display flag'} - RGB, HDR, Gray scale
+% Copyright ImagEval Consultants, LLC, 2005.
 %
-%      {'sensor gamma'}
-%      {'ip gamma'}
+% See also
+%   ieAppGet(obj);
 %
-% Current objects
+
+% Examples
+%   NOT UPDATED YET
 %
-% Examples:
 %   h = ieSessionGet('scene window handle')
-%   g = ieSessionGet('scene guidata')
-%   (N.B. g = guidata(h)) 
 % 
 %   ieSessionSet('wait bar','on');
 %   ieSessionGet('wait bar')
@@ -102,13 +74,11 @@ function val = ieSessionGet(param,varargin)
 %   set(oig,'position',[0.15    0.3    0.28    0.37])
 %
 %   ieSessionGet('nobjects','sensor')
-%
-% Copyright ImagEval Consultants, LLC, 2005.
 
 %% Parameters
 global vcSESSION
 
-if ieNotDefined('param'), error('You must specify a parameter.'); end
+if ~exist('param','var')||isempty(param), error('You must specify a parameter.'); end
 val = [];
 
 % Eliminate spaces and make lower case
@@ -193,116 +163,44 @@ switch param
         else, val = iePref.initclear;
         end
         
-    % Figure handles to the various windows.  
-    % vcNewGraphWin, main, scene, oi, sensor, ip
-    case {'graphwindow','graphfigure'}
-        if checkfields(vcSESSION,'GRAPHWIN','hObject') 
-            val = vcSESSION.GRAPHWIN.hObject; 
-        end  
-    case {'graphguidata'}
-        if checkfields(vcSESSION,'GRAPHWIN','handle') 
-            val = guidata(ieSessionGet('graph window')); 
-        end  
-        
     case {'mainwindow','mainfigure','mainfigures'}
         if checkfields(vcSESSION,'GUI','vcMainWindow')
             val = vcSESSION.GUI.vcMainWindow.hObject;
         end
     case {'scenewindow','scenefigure','sceneimagefigure','sceneimagefigures'}
         if checkfields(vcSESSION,'GUI','vcSceneWindow')
-            val = vcSESSION.GUI.vcSceneWindow.hObject;
+            val = vcSESSION.GUI.vcSceneWindow.app;
+            % val = app.figure1;
+            % val = vcSESSION.GUI.vcSceneWindow.hObject;
         end
     case {'oiwindow','oifigure','opticalimagefigure','oifigures','opticalimagefigures'}
         if checkfields(vcSESSION,'GUI','vcOptImgWindow')
-            val = vcSESSION.GUI.vcOptImgWindow.hObject;
+            val = vcSESSION.GUI.vcOptImgWindow.app;
         end
     case {'sensorwindow','sensorfigure','isafigure','sensorfigures','isafigures','isawindow'}
         if checkfields(vcSESSION,'GUI','vcSensImgWindow')
-            val = vcSESSION.GUI.vcSensImgWindow.hObject;
+            val = vcSESSION.GUI.vcSensImgWindow.app;
         end
     case {'ipwindow','ipfigure','vcimagefigure','vcimagefigures','vcimagewindow'}
         if checkfields(vcSESSION,'GUI','vcImageWindow')
-            val = vcSESSION.GUI.vcImageWindow.hObject;
+            val = vcSESSION.GUI.vcImageWindow.app;
         end
     case {'displaywindow'}
         if checkfields(vcSESSION,'GUI','vcDisplayWindow')
-            val = vcSESSION.GUI.vcDisplayWindow.hObject;
+            val = vcSESSION.GUI.vcDisplayWindow.app;
         end
     case {'metricswindow','metricsfigure','metricsfigures'}
         if checkfields(vcSESSION,'GUI','metricsWindow')
-            val = vcSESSION.GUI.metricsWindow.hObject;
+            val = vcSESSION.GUI.metricsWindow.app;
         end
-        
-        % Handles to the guidata in the windows
-    case {'mainguidata','mainwindowhandle','mainhandle','mainhandles'}
-        v = ieSessionGet('mainfigure');
-        if ~isempty(v), val = guihandles(v); end
-    case {'sceneguidata','scenewindowhandle','scenehandle','sceneimagehandle','scenehandles','sceneimagehandles','scenewindowhandles'}
-        v = ieSessionGet('sceneimagefigure');
-        if ~isempty(v), val = guihandles(v); end
-    case {'oiguidata','oiwindowhandle','oihandle','opticalimagehandle','oihandles','opticalimagehandles','oiwindowhandles'}
-        v = ieSessionGet('opticalimagefigure');
-        if ~isempty(v), val = guihandles(v); end
-    case {'sensorguidata','sensorwindowhandle','sensorimagehandle','sensorhandle','isahandle','sensorhandles','isahandles','sensorwindowhandles'}
-        v = ieSessionGet('sensorfigure');
-        if ~isempty(v), val = guihandles(v); end
-    case {'ipguidata','iphandles','vciguidata','vciwindowhandle','vcimagehandle','vcimagehandles','processorwindowhandles','processorhandles','processorhandle','processorimagehandle'}
-        v = ieSessionGet('vcimagefigure');
-        if ~isempty(v), val = guihandles(v); end
-    case {'displayguidata'}
-        v = ieSessionGet('display window');
-        if ~isempty(v), val = guihandles(v); end
-    case {'metricguidata','metricshandle','metricshandles','metricswindowhandles','metricswindowhandle'}
-        v = ieSessionGet('vcimagefigure');
-        if ~isempty(v), val = guihandles(v); end
-        
-    case {'sceneaxis'}
-        % This will be Matlab version dependent, sigh.  This works for
-        % 2013b, but probably not for later versions.  So, we need to check
-        % before long.
-        %
-        % Also, I had to change the settings in the guide window that
-        % allows the gui window to be selected from the command line
-        % Tools | Gui Options | Pulldown window.
-        % BUt I think that is done now (BW).
-        hdl = ieSessionGet('scenewindow');
-        hdl = get(hdl); val = hdl.CurrentAxes;
-    case {'oiaxis'}
-        hdl = ieSessionGet('oiwindow');
-        hdl = get(hdl); val = hdl.CurrentAxes;
-    case {'sensoraxis'}
-        hdl = ieSessionGet('sensorwindow');
-        hdl = get(hdl); val = hdl.CurrentAxes;
-    case {'ipaxis'}
-        hdl = ieSessionGet('ipwindow');
-        hdl = get(hdl); val = hdl.CurrentAxes;
-        
-        % Window data for display
-    case {'scenegamma'}
-        % ieSessionGet('scene gamma')
-        sg = ieSessionGet('scene guidata');
-        if ~isempty(sg), val = str2double(get(sg.editGamma,'string')); end
-    case {'scenedisplayflag'}
-        sg = ieSessionGet('oi guidata');
-        if ~isempty(sg), val = get(sg.popupDisplay,'value'); end
-    case {'oigamma'}
-        % ieSessionGet('oi gamma')
-        oig = ieSessionGet('oi guidata');
-        if ~isempty(oig), val = str2double(get(oig.editGamma,'string')); end
-    case {'oidisplayflag'}
-        oig = ieSessionGet('oi guidata');
-        if ~isempty(oig), val = get(oig.popupDisplay,'value'); end
-    case {'sensorgamma'}
-        % ieSessionGet('sensor gamma')
-        sensorg = ieSessionGet('sensor guidata');
-        if ~isempty(sensorg) 
-            val = str2double(get(sensorg.editGam,'string'));  % Not different name
-        end        
-    case {'ipgamma','vcigamma'}
-        % ieSessionGet('ip gamma')
-        % ieSessionGet('vci gamma')
-        ipg = ieSessionGet('ip guidata');
-        if ~isempty(ipg), val = str2double(get(ipg.editGamma,'string')); end
+    case {'camdesignwindow'}
+        if checkfields(vcSESSION,'GUI','vcCamDesignWindow')
+            val = vcSESSION.GUI.vcCamDesignWindow.app;
+        end
+    case {'imageexplorewindow'}
+        if checkfields(vcSESSION,'GUI','vcImageExploreWindow')
+            val = vcSESSION.GUI.vcImageExploreWindow.app;
+        end
         
         % Information about current objects
         % ieSessionGet('scene');
@@ -347,11 +245,7 @@ switch param
         else
             val = 1e6;
         end
-        % HJ GPU case
-    case {'gpu', 'gpucompute', 'gpucomputing'}
-        % Whether or not to use gpu compute.  Always false now, but in the
-        % future we may do more with this.
-        val = false;
+
     otherwise
         error('Unknown parameter %s\n',param)
         

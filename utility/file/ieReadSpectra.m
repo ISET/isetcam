@@ -1,8 +1,22 @@
-function [res,wave,comment,partialName] = ieReadSpectra(fname,wave,extrapVal)
+function [res,wave,comment,fname] = ieReadSpectra(fname,wave,extrapVal)
 % Read in spectral data and interpolate to the specified wavelengths
 %
-%      [res,wave,comment,fName] = ieReadSpectra(fname,wave,extrapVal)
+% Synopsis
+%   [res,wave,comment,fName] = ieReadSpectra(fname,wave,extrapVal)
 %
+% Input:
+%   fname     - File name to read.  If empty, user is asked to pick.
+%   wave      - Wavelength samples (default whatever is in the file)
+%   extrapval - Extrapolation value for wavelengths outside the range in
+%               the file
+%
+% Outputs
+%   res    - Interpolated and extrapolated values
+%   wave   - Sample wavelengths
+%   comment - Comment in the file
+%   fname   - File name if selected by user
+%
+% Description
 %   Spectral data are stored in files that include both the sampled data
 %   and the wavelength values.  This routine reads the stored values and
 %   returns them interpolated or extrapolated to the values in parameter
@@ -36,7 +50,7 @@ function [res,wave,comment,partialName] = ieReadSpectra(fname,wave,extrapVal)
   [data,wave] = ieReadSpectra(fileName)
 %}
 
-if ieNotDefined('fname'), fname = ''; end
+if ~exist('fname','var')||isempty(fname), fname = ''; end
 
 % Create a partialpath for this file name.  For this to work, we need to
 % keep all of the spectral data in a single directory, I am afraid.
@@ -56,8 +70,8 @@ end
 
 % If wave was not sent in, return the native resolution in the file.  No
 % interpolation will occur.
-if ieNotDefined('wave'),  wave = wavelength; end
-if ieNotDefined('extrapVal'),  extrapVal = 0;  end
+if ~exist('wave','var')||isempty(wave),  wave = wavelength; end
+if ~exist('extrapVal','var')||isempty(extrapVal),  extrapVal = 0;  end
 
 res = interp1(wavelength(:), data, wave(:),'linear',extrapVal);
     

@@ -1,5 +1,7 @@
 %% Create a sensor with a rectangular pixel
 %
+% Deprecated:  This should be moved to ISET3D
+%
 %  Illustrates how to create a sensor for dual pixel autofocus experiments
 %  (DPAF).
 %

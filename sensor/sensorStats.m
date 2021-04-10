@@ -6,7 +6,7 @@ function [uData, sensor, theRect] = sensorStats(sensor,statType,unitType,quiet)
 %
 % Inputs
 %    sensor:     A sensor it may contain an roi field of Nx2 matrix
-%                locations or a rect 
+%                locations or a rect
 %    statType:   'basic'
 %    unitType:   'volts' or 'electrons'
 %    quiet:       Do not draw rect if true
@@ -23,12 +23,12 @@ function [uData, sensor, theRect] = sensorStats(sensor,statType,unitType,quiet)
 %   electrons.
 %
 %   If the routine is called without a return argument, the data are
-%   plotted. 
+%   plotted.
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 %
 % See also
-%  
+%
 
 % Examples:
 %{
@@ -56,18 +56,15 @@ if ieNotDefined('statType'),  statType = 'basic'; end
 if ieNotDefined('unitType'),  unitType = 'volts'; end
 
 assert(isstruct(sensor) && isfield(sensor,'type') ...
-                        && isequal(sensor.type,'sensor'));
+    && isequal(sensor.type,'sensor'));
 
 nSensors = sensorGet(sensor,'nsensors');
 
-% We ignore the sensor.roi in this case.  The user always selects.  But
-% maybe we should allow the user to set.
+% We use the sensor.roi if it is there.  If it is empty, we have the user
+% select.
 if isempty(sensorGet(sensor,'roi'))
-    isaHdl = ieSessionGet('isahandle');
-    ieInWindowMessage('Select image region.',isaHdl,[]);
-    [~,rect] = vcROISelect(sensor);
-    sensor = sensorSet(sensor,'roi',rect);
-    ieInWindowMessage('',isaHdl);
+    [~,roiRectangle] = ieROISelect(sensor);
+    sensor = sensorSet(sensor,'roi',round(roiRectangle.Position));
 end
 
 %% Get proper data type.  NaNs are still in there
@@ -77,6 +74,8 @@ switch lower(unitType)
         data = sensorGet(sensor,'roi volts');
     case {'electrons'}
         data = sensorGet(sensor,'roi electrons');
+    case {'dv','digitalcount'}
+        data = sensorGet(sensor,'roi dv');
     otherwise
         error('Unknown unit type')
 end
@@ -119,14 +118,12 @@ switch lower(statType)
         error('Unknown statistic type.');
 end
 
-if ~quiet, [~,theRect] = sensorPlot(sensor,'roi'); end
-
 %% No arguments returned, so the user just wanted the plots
 
 if nargout == 0
     % Open up a clean new figure
     figNum = ieNewGraphWin;
-
+    
     switch lower(statType)
         case 'basic'
             % sensorStats(sensor,'basic', unitType)
@@ -158,14 +155,14 @@ if nargout == 0
                     set(gca,'ylim',[0,pixelGet(sensorGet(sensor,'pixel'),'wellcapacity')]);
             end
             set(gca,'xtick',(1:nSensors),'xticklabel',filterType);
-            title(sprintf('Mean %uData in ROI',unitType));
+            title(sprintf('Mean %s in ROI',unitType));
             
             grid on
         case 'mean'
             % sensorStats(sensor,'mean',unitType)
             
             % Simple bar plot
-            h = bar(uData); grid on; 
+            h = bar(uData); grid on;
             h.FaceColor = [0.3 0.3 0.6];
             h.EdgeColor = [0.5 0.5 0.5];
             
@@ -178,6 +175,5 @@ if nargout == 0
     end
     set(figNum,'userdata',uData);
 end
-
 
 end

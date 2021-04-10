@@ -1,24 +1,35 @@
-function isa = sensorAddFilter(isa,fname)
-%Add a color filter to the list of ISA filters
+function sensor = sensorAddFilter(sensor,fname)
+% Add a color filter to the list of ISA filters
 %
-%   isa = sensorAddFilter(isa)
+% Synopsis
+%   sensor = sensorAddFilter(sensor)
 %
-% The color filter is added to the isa.color.filterSpectra list.  The data
-% are read from a file.  This routine is used when editing the color
-% filters in the sensorImageWindow.
+% Description
+%  The color filter are read from a file and added to the
+%  sensor.color.filterSpectra list. This routine is used when editing the
+%  color filters in the sensorWindow.
 %
+% Inputs
+% 
+% Output
+%   sensor:  Modified sensor
+%
+% 
 % Examples:
-%    isa = vcGetObject('ISA');
-%    isa = sensorAddFilter(isa);
+%    sensor = ieGetObject('sensor');
+%    sensor = sensorAddFilter(sensor);
 %
 % Copyright ImagEval Consultants, LLC, 2003.
+%
+% See also
+%    sensorDesignCFA_App.mlapp
 
-if ieNotDefined('isa'), [val,isa] = vcGetSelectedObject('ISA'); end
+if ieNotDefined('isa'), sensor = ieGetObject('ISA'); end
 if ieNotDefined('fname'), fname = []; end
 
-wave = sensorGet(isa,'wave');
-filterNames = sensorGet(isa,'filterNames');
-nFilters = sensorGet(isa,'nfilters');
+wave = sensorGet(sensor,'wave');
+filterNames = sensorGet(sensor,'filterNames');
+nFilters = sensorGet(sensor,'nfilters');
 
 [data,newFilterNames] = ieReadColorFilter(wave,fname);
 if isempty(data), disp('User canceled.'); return; end
@@ -36,12 +47,12 @@ end
 
 % Add the filter name to filterNames
 newFilterName = char(newFilterNames{whichColumn});
-isa = sensorSet(isa,'editFilterNames',length(filterNames)+1,newFilterName);
+sensor = sensorSet(sensor,'editFilterNames',length(filterNames)+1,newFilterName);
 
 % Add the filter data to filterSpectra
-filterSpectra = sensorGet(isa,'filterspectra');
+filterSpectra = sensorGet(sensor,'filter spectra');
 filterSpectra(:,(nFilters+1)) = data;
-isa = sensorSet(isa,'filterspectra',filterSpectra);
+sensor = sensorSet(sensor,'filter spectra',filterSpectra);
 
-return;
+end
 

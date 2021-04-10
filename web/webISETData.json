@@ -1,0 +1,199 @@
+{
+  "Hyperspectral": [
+  {"Name": "Fruit Scene",
+   "Description" : "A collection of hyperspectral images for imaging systems research T. Skauli and J. Farrell Proc. SPIE 8660, Digital Photography IX, 86600C (February 4, 2013)",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/Hyperspectral/FruitMCC.mat",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/Hyperspectral/FruitMCC.jpg",
+   "Keywords": ["Hyperspectral", "Fruit"]
+  },
+    {"Name": "Rotten Fruit Chart",
+   "Description" : "A collection of hyperspectral images for imaging systems research T. Skauli and J. Farrell Proc. SPIE 8660, Digital Photography IX, 86600C (February 4, 2013)",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/Hyperspectral/ChartsRottenFruit.mat",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/Hyperspectral/ChartsRottenFruit.jpg",
+   "Keywords": ["Hyperspectral", "Fruit", "Rotten", "Chart"]
+  },
+    {"Name": "San Francisco",
+   "Description" : "Cityscape, I assume",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/Hyperspectral/SanFrancisco.mat",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/Hyperspectral/SanFrancisco.jpg",
+   "Keywords": ["Landscape", "San Francisco", "City", "Hyperspectral"]
+  },
+    {"Name": "Stanford Tower",
+   "Description" : "Quite possibly a tower",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/Hyperspectral/StanfordTower.mat",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/Hyperspectral/StanfordTower.jpg",
+   "Keywords": ["Stanford", "Tower", "Landscape", "Hyperspectral"]
+  },
+    {"Name": [],
+   "Description" : [],
+   "URL" : [],
+   "Icon" : [],
+   "Keywords": []
+  },
+    {"Name": [],
+   "Description" : [],
+   "URL" : [],
+   "Icon" : [],
+   "Keywords": []
+  }
+],
+
+  "Multispectral": [
+  {"Name": "AfricanAmericanMale",
+   "Description" : "A Database of High Dynamic Range Visible and Near-infrared Multispectral Images Manu Parmar, Francisco Imai, Sung Ho Park, and Joyce Farrell",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/Multispectral/AfricanAmericanMale.mat",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/Multispectral/AfricanAmericanMale.jpg",
+   "Keywords": ["Multispectral", "Stanford", "AfricanAmericanMale"]
+  },
+  {"Name": "AsianFemale",
+   "Description" : "A Database of High Dynamic Range Visible and Near-infrared Multispectral Images Manu Parmar, Francisco Imai, Sung Ho Park, and Joyce Farrell",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/Multispectral/AsianFemale.mat",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/Multispectral/AsianFemale.jpg",
+   "Keywords": ["Multispectral", "Stanford", "AsianFemale"]
+  },
+  {"Name": "AsianFemaleWithFlowers",
+   "Description" : "A Database of High Dynamic Range Visible and Near-infrared Multispectral Images Manu Parmar, Francisco Imai, Sung Ho Park, and Joyce Farrell",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/Multispectral/AsianFemaleWithFlowers.mat",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/Multispectral/AsianFemaleWithFlowers.jpg",
+   "Keywords": ["Multispectral", "Stanford", "AsianFemaleWithFlowers"]
+  },
+  {"Name": "AsianWoman",
+   "Description" : "A Database of High Dynamic Range Visible and Near-infrared Multispectral Images Manu Parmar, Francisco Imai, Sung Ho Park, and Joyce Farrell",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/Multispectral/AsianWoman.mat",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/Multispectral/AsianWoman.jpg",
+   "Keywords": ["Multispectral", "Stanford", "Asian Woman"]
+  },
+  {"Name": "CarTrophiesTungsten",
+   "Description" : "A Database of High Dynamic Range Visible and Near-infrared Multispectral Images Manu Parmar, Francisco Imai, Sung Ho Park, and Joyce Farrell",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/Multispectral/CarTrophiesTungsten.mat",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/Multispectral/CarTrophiesTungsten.jpg",
+   "Keywords": ["Multispectral", "Stanford", "Car", "Trophies", "Tungsten"]
+  },
+  {"Name": "AsianWoman2WithFlowers",
+   "Description" : "A Database of High Dynamic Range Visible and Near-infrared Multispectral Images Manu Parmar, Francisco Imai, Sung Ho Park, and Joyce Farrell",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/Multispectral/AsianWoman2WithFlowers.mat",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/Multispectral/AsianWoman2WithFlowers.jpg",
+   "Keywords": ["Multispectral", "Stanford", "AsianWoman2WithFlowers"]
+  }
+],
+
+  "HDR": [
+  {"Name": "Stone",
+   "Description" : "A Stone. Duh!",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/HDR/stone1.mat",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/HDR/stone1.jpg",
+   "Keywords": ["HDR", "Stone", "Nature"]
+  },
+    {"Name": "Aisle",
+   "Description" : "Aisle?",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/HDR/aisle1.mat",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/HDR/aisle1.jpg",
+   "Keywords": ["HDR", "Nature", "Stanford", "Aisle", "Building"]
+  },
+    {"Name": "BBQ Site",
+   "Description" : "BBQ Site",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/HDR/BBQsite1.mat",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/HDR/BBQsite1.jpg",
+   "Keywords": ["HDR", "Nature", "Stanford", "BBQ", "Landscape", "Outdoor"]
+  },
+    {"Name": "Building",
+   "Description" : "Front of Building?",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/HDR/buildingFront.mat",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/HDR/buildingFront.jpg",
+   "Keywords": ["HDR", "Nature", "Stanford", "Building"]
+  },
+    {"Name": "Cars",
+   "Description" : "Cars?",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/HDR/cars1.mat",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/HDR/cars1.jpg",
+   "Keywords": ["HDR", "Nature", "Stanford", "Car", "Cars"]
+  },
+    {"Name": "Church",
+   "Description" : "Church?",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/HDR/church1.mat",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/HDR/church1.jpg",
+   "Keywords": ["HDR", "Nature", "Stanford", "Church"]
+  },
+    {"Name": "Bikes",
+   "Description" : "Bikes ?",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/HDR/bikes.mat",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/HDR/bikes.jpg",
+   "Keywords": ["HDR", "Stanford", "Bike", "Bicycle", "Bike"]
+  },
+    {"Name": "Deep Shadows",
+   "Description" : "Soap Opera ?",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/HDR/deepShadow1.mat",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/HDR/deepShadow1.jpg",
+   "Keywords": ["HDR", "Stanford", "Shadow", "Contrast", "Lighting"]
+  },
+    {"Name": "Flower",
+   "Description" : "A Flower ?",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/HDR/flower1.mat",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/HDR/flower1.jpg",
+   "Keywords": ["HDR", "Stanford", "Nature", "Flower"]
+  },
+    {"Name": "Inside a Building",
+   "Description" : " Interior ?",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/HDR/buildingInside1.mat",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/HDR/buildingInside1.jpg",
+   "Keywords": ["HDR", "Stanford", "Building", "Inside", "Interior"]
+  },
+    {"Name": "Museum",
+   "Description" : "Place where old stuff lives ?",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/HDR/museum1.mat",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/HDR/museum1.jpg",
+   "Keywords": ["HDR", "Stanford", "Museum", "Stuff", "Old"]
+  },
+    {"Name": "Night",
+   "Description" : "Good Night ?",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/HDR/night1.mat",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/HDR/night1.jpg",
+   "Keywords": ["HDR", "Stanford", "Night", "Night Time"]
+  },
+    {"Name": "Pool",
+   "Description" : "Swimming or Betting?",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/HDR/pool.mat",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/HDR/pool.jpg",
+   "Keywords": ["HDR", "Stanford"]
+  },
+    {"Name": "Aisle 2",
+   "Description" : "Another Aisle!",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/HDR/aisle2.mat",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/HDR/aisle2.jpg",
+   "Keywords": ["HDR", "Stanford"]
+  },
+    {"Name": "BuildingFront",
+   "Description" : "Front of Building",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/HDR/buildingFront.mat",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/HDR/buildingFront.jpg",
+   "Keywords": ["HDR", "Stanford", "Building"]
+  },
+    {"Name": "Cars 2",
+   "Description" : "More Cars",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/HDR/cars2.mat",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/HDR/cars2.jpg",
+   "Keywords": ["HDR", "Stanford", "Cars"]
+  },
+    {"Name": "Church 1 P",
+   "Description" : "Church",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/HDR/church1_p.mat",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/HDR/church1_p.jpg",
+   "Keywords": ["HDR", "Stanford", "Church", "P"]
+  },
+    {"Name": "Flower 1 P",
+   "Description" : "Flower",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/HDR/flower1_p.mat",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/HDR/flower1_p.jpg",
+   "Keywords": ["HDR", "Stanford", "Flower", "P"]
+  },
+    {"Name": "Glare 1",
+   "Description" : "Glare",
+   "URL" : "http://web.stanford.edu/~david81/ISETData/HDR/glare1.mat",
+   "Icon" : "http://web.stanford.edu/~david81/ISETData/HDR/glare1.jpg",
+   "Keywords": ["HDR", "Stanford", "Glare", "Lighting"]
+  }
+
+
+]
+  
+}

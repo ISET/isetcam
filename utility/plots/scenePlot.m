@@ -109,9 +109,10 @@ if ieNotDefined('roiLocs')
                 'luminancevline','vlineluminance' ...
                 'contrastvline','vlinecontrast'}
             
-            % Get a location and draw a line
-            roiLocs = vcPointSelect(scene);
-            % Draw a line on the sceneWindow
+            % Get a location and draw a vertical line
+            roiLocs = iePointSelect(scene);
+            
+            % Draw a line on the sceneWindow.  I may be off by 1.
             sz = sceneGet(scene,'size');
             ieROIDraw(scene,'shape','line','shape data',[roiLocs(1) roiLocs(1) 1 sz(1)]);
             
@@ -119,8 +120,10 @@ if ieNotDefined('roiLocs')
                 'luminancehline','luminanceffthline' ...
                 'contrasthline','hlinecontrast'}
             
-            % Get a location and draw a line
-            roiLocs = vcPointSelect(scene);
+            % Get a location and draw a horizontal line
+            roiLocs = iePointSelect(scene);
+
+            % Draw a line on the sceneWindow.  I may be off by 1.
             sz = sceneGet(scene,'size');
             ieROIDraw(scene,'shape','line','shape data',[1 sz(2) roiLocs(2) roiLocs(2)]);
             
@@ -129,8 +132,7 @@ if ieNotDefined('roiLocs')
                 'luminanceroi','luminance',...
                 'reflectanceroi','reflectance'}
             
-            [roiLocs, roiRect] = vcROISelect(scene);
-            ieROIDraw(scene,'shape','rect','shape data',roiRect);
+            roiLocs = ieROISelect(scene);  % Should be ieROIRectSelect() or add parameters
 
         case {'illuminantphotonsroi','illuminantenergyroi'}
             
@@ -583,7 +585,7 @@ switch lower(pType)
     case {'luminancemeshlinear','luminancemeshlog10','luminancemeshlog'}
         % scenePlot(scene,'luminance mesh linear')
         
-        if strfind(pType,'log'), yScale = 'log'; 
+        if ieContains(pType,'log'), yScale = 'log'; 
         else yScale = 'linear';
         end
         
@@ -621,8 +623,8 @@ switch lower(pType)
         % scenePlot(scene,'illuminant energy roi',roiLocs');
         % scenePlot(scene,'illuminant energy roi',[]);
         % Graph for spectral, image for spatial spectral
-        handle = ieSessionGet('scenewindowhandle');
-        ieInWindowMessage('',handle);       
+        app = ieSessionGet('scenewindow');
+        ieInWindowMessage('',app);       
         wave = sceneGet(scene,'illuminant wave');
         
         switch sceneGet(scene,'illuminant format')
@@ -641,7 +643,7 @@ switch lower(pType)
                 end
             otherwise
                 % No illuminant
-                ieInWindowMessage('No illuminant data.',handle);
+                ieInWindowMessage('No illuminant data.',app);
                 close(gcf)
         end
         plot(wave(:),energy,'-')
@@ -655,8 +657,8 @@ switch lower(pType)
         % scenePlot(scene,'illuminant photons')
         % scenePlot(scene,'illuminant photons roi',roiLocs);
         % Graph for spectral, image for spatial spectral
-        handle = ieSessionGet('scenewindowhandle');
-        ieInWindowMessage('',handle);
+        app = ieSessionGet('scenewindow');
+        ieInWindowMessage('',app);
         wave = sceneGet(scene,'illuminant wave');
         switch sceneGet(scene,'illuminant format')
             case 'spectral'

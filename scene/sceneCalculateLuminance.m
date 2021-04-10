@@ -12,7 +12,7 @@ function [luminance,meanLuminance] = sceneCalculateLuminance(scene)
 % 
 % Copyright ImagEval Consultants, LLC, 2003.
 
-if ieNotDefined('scene'), error('Scene variable required.'); end
+if ~exist('scene','var')||isempty(scene), error('Scene variable required.'); end
 
 % User may turn on the wait bar, or not, with ieSessionSet('wait bar')
 % showBar = ieSessionGet('wait bar');

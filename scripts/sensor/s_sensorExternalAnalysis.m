@@ -98,7 +98,7 @@ dut = sensorSet(dut,'pixel',pixel);
 
 % Display the device under test in the window. Note that the description in
 % the window matches the parameters you set above.
-val = ieAddObject(dut); sensorImageWindow;
+val = ieAddObject(dut); sensorWindow;
 
 % You can also set using additional scripting or through the window
 % interface.  If you then wish to save the sensor, you can do so from the
@@ -119,6 +119,6 @@ val = ieAddObject(dut); sensorImageWindow;
 fullName = 'dutData.mat';
 tmp = load(fullName,'volts');
 dut = sensorSet(dut,'volts',tmp.volts);
-vcReplaceObject(dut,val); sensorImageWindow;
+vcReplaceObject(dut,val); sensorWindow;
 
-%%
+%% END

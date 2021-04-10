@@ -23,34 +23,34 @@ sensor = sensorSet(sensor,'exp time',0.050);
 
 sensor = sensorCompute(sensor,oi);
 sensor = sensorSet(sensor,'name','original');
-vcAddAndSelectObject(sensor); sensorImageWindow;
+sensorWindow(sensor);
 
 %% No noise, just compute the mean, no quantization, clipping or analog gain and offset
 sensor = sensorSet(sensor,'noiseFlag',-1);
 sensorMean = sensorCompute(sensor,oi);
 sensorMean = sensorSet(sensorMean,'name','mean');
-vcAddAndSelectObject(sensorMean); sensorImageWindow;
+sensorWindow(sensorMean);
 
 
 %% No noise, but include quantization, clipping, analog gain/offset
 sensor = sensorSet(sensor,'noiseFlag',0);
 sensorMean = sensorCompute(sensor,oi);
 sensorMean = sensorSet(sensorMean,'name','mean');
-vcAddAndSelectObject(sensorMean); sensorImageWindow;
+sensorWindow(sensorMean);
 
 %% Photon noise but non electronic noise (includes q/c/a)
 sensor = sensorSet(sensor,'noiseFlag',1);
 sensorPhotonNoise = sensorCompute(sensor,oi);
 sensorPhotonNoise = sensorSet(sensorPhotonNoise,'name','photon noise');
 
-vcAddAndSelectObject(sensorPhotonNoise); sensorImageWindow;
+sensorWindow(sensorPhotonNoise);
 
 %% Photon and electrical noise q/c/a
 sensor = sensorSet(sensor,'noiseFlag',2);
 sensorAllNoise = sensorCompute(sensor,oi);
 sensorAllNoise = sensorSet(sensorAllNoise,'name','all noise');
 
-vcAddAndSelectObject(sensorAllNoise); sensorImageWindow;
+sensorWindow(sensorAllNoise);
 
 %% Reuse the noise
 sensorAllNoise  = sensorSet(sensorAllNoise,'reuse noise',1);
@@ -78,12 +78,12 @@ assert(max(abs(v1(:) - v2(:))) > 1e-4,'Reused noise difference too small')
 sensor = sensorSet(sensor,'noise flag',-1);   % No noise, clipping, nothing
 sensorMean = sensorCompute(sensor,oi);
 sensorMean = sensorSet(sensorMean,'name','mean');
-vcAddAndSelectObject(sensorMean); sensorImageWindow;
+sensorWindow(sensorMean);
 
 sensorMean  = sensorSet(sensorMean,'noise flag',1);
 sensorNoise = sensorComputeNoise(sensorMean,[]);
 sensorNoise = sensorSet(sensorNoise,'name','meanPlusNoise');
-vcAddAndSelectObject(sensorNoise); sensorImageWindow;
+sensorWindow(sensorNoise);
 
 v1 = sensorGet(sensorMean,'volts');
 v2 = sensorGet(sensorNoise,'volts');
@@ -118,8 +118,8 @@ sensorNew = sensorSet(sensor,'noiseFlag',0);
 sensorNew1 = sensorCompute(sensorNew,oi);
 sensorNew2 = sensorCompute(sensorNew,oi);
 
-vcAddAndSelectObject(sensorNew1); 
-vcAddAndSelectObject(sensorNew2); sensorImageWindow;
+ieAddObject(sensorNew1); 
+sensorWindow(sensorNew2);
 
 %% Should be IDENTICAL
 
@@ -147,6 +147,5 @@ vcNewGraphWin; plot(v1(:),v2(:),'.');
 grid on
 xlabel('sensor original')
 xlabel('sensor reuse')
-
 
 %% End

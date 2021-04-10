@@ -1,7 +1,14 @@
 function [scene,rect] = sceneCrop(scene,rect)
 %Crop scene data.
 %
+% Synopsis
 %  [scene,rect] = sceneCrop(scene,[rect])
+%
+% Description
+%   The image axis is (1,1) in the upper left.  Increasing y-values run
+%   down the image.  Increasing x-values run to the right.
+%   The rect parameters are (x,y,width,height).
+%   (x,y) is the upper left corner of the rectangular region
 %
 %Purpose:
 %   Crop the data (photons) in the scene or optical image to within the

@@ -53,9 +53,20 @@ if ieNotDefined('showEvaluation'), showEvaluation = true; end
 ccmMethod = ieParamFormat(ccmMethod);
 switch lower(ccmMethod)
     case 'macbeth'
-        % rgb are the 24x3 values in the sensor at the macbeth positions.
-        [rgb,sdRGB,pointLoc] = macbethSensorValues(sensor,showSelection,pointLoc);
-        idealRGB             = macbethIdealColor('d65','lrgb');
+        cp = sensorGet(sensor,'chart corner points');
+        if isempty(cp)
+            cp = chartCornerpoints(sensor,false);  % Get the corner points
+        end
+        [rects,mLocs,pSize] = chartRectangles(cp,4,6,0.5);  % MCC parameters
+        fullData = false;
+        dataType = 'volts';
+        delta = round(pSize(1)*0.5);
+        
+        % rgb are the 24x3 values (average) from the sensor at the macbeth positions.
+        rgb = chartRectsData(sensor,mLocs,delta,fullData,dataType);
+        
+        % The desired rgb values
+        idealRGB          = macbethIdealColor('d65','lrgb');
         
         % We want: idealRGB = rgb*L
         % So we calculate L = pinv(rgb)*idealRGB
@@ -70,4 +81,6 @@ switch lower(ccmMethod)
         error('Unknown method for determining color conversion matrix.')
 end
 
-return;
+if showSelection, chartRectsDraw(sensor,rects); end
+
+end

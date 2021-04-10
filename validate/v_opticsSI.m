@@ -15,6 +15,7 @@
 
 %%
 ieInit;
+delay = 0.2;
 
 %% Let's work with a small checkerboard scene
 pixPerCheck = 8;
@@ -23,7 +24,7 @@ scene = sceneCreate('checkerboard',pixPerCheck,nChecks);
 wave  = sceneGet(scene,'wave');
 scene = sceneSet(scene,'fov',3);
 
-ieAddObject(scene); sceneWindow
+sceneWindow(scene); pause(delay);
 
 %% Now, write out a file containing the relevant point spread function
 % data, along with related variables.
@@ -35,11 +36,11 @@ psf = zeros(128,128,length(wave));
 for ii=1:length(wave), psf(:,:,ii) = h; end     % PSF data
 
 %% Save the data
-ieSaveSIDataFile(psf,wave,umPerSample,'customFile');
+ieSaveSIDataFile(psf,wave,umPerSample,fullfile(tempdir,'customFile'));
 
 % Read the custom data and put it into an optics structure.
 oi = oiCreate;
-optics = siSynthetic('custom',oi,'customFile','deleteMe');
+optics = siSynthetic('custom',oi,fullfile(tempdir,'customFile'),fullfile(tempdir,'deleteMe'));
 
 %% Make sure the program knows you want to use shift invariant
 optics = opticsSet(optics,'model','shiftInvariant');

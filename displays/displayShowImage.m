@@ -1,45 +1,60 @@
-function rgb = displayShowImage(d, displayFlag, varargin)
-%Render an image of the display image data
+function rgb = displayShowImage(thisD, varargin)
+% Render an image of the display image data
 %
-%    rgb = displayShowImage(d, [displayFlag], [varargin])
+% Synopsis
+%   rgb = displayShowImage(thisD, [varargin])
 %
+% Inputs
+%
+% Optional
+%   app:   Display window, either displayWindow_App or a matlab.ui.figure.
+%
+% Outputs
+%   rgb:   The images
+%  
 % Examples:
-%   d   = displayCreate('LCD-Apple');
-%   rgb = displayShowImage(d);
-%   displayShowImage(d);
-%   rgb = displayShowImage(d, 1, ha);
+%   thisD   = displayCreate('LCD-Apple');
+%   scene = sceneCreate; rgb = sceneGet(scene,'rgb');
+%   thisD = displaySet(thisD,'rgb',rgb);
+%
+%   rgb = displayShowImage(thisD);
+%   displayShowImage(thisD);
+%   rgb = displayShowImage(thisD, 1, ha);
 %
 % (HJ) May, 2014
 
-if isempty(d), cla; return;  end
-if notDefined('displayFlag'), displayFlag = 1; end
-if ~isempty(varargin), ha = varargin{1}; end
+%% Get parameters
 
-% Get parameters
-wave = displayGet(d, 'wave');
-global vcSESSION;
-
-% Not sure why display image is attached here, rather than to display.  Ask
-% HJ.
-if isfield(vcSESSION, 'imgData')
-    rgb = vcSESSION.imgData;
-else
-    cla;
-    warning('No image data found');
-    return;
+if isempty(thisD), cla; return;  end
+if isempty(varargin), app = ieAppGet(thisD);
+else, app = varargin{1};
 end
 
-% Compute photon image
-scene = sceneFromFile(rgb, 'rgb', [], d);
-img   = sceneGet(scene, 'photons');
-    
-% This displays the image in the GUI.  The displayFlag flag determines how
-% imageSPD converts the data into a displayed image.  It is set from the
-% GUI in the function displayShowImage.
-axes(ha);
-gam = 1;
-rgb = imageSPD(img,wave,gam, [], [], displayFlag);
-axis image; axis off
+%% Show the stored rgb image
 
-return;
+% We convert the stored rgb image into a scene using the display
+% characteristics.
+rgb = displayGet(thisD,'rgb');
+if ~isempty(rgb)
+    scene = sceneFromFile(rgb, 'rgb', [], thisD);
+    rgb   = sceneGet(scene, 'rgb');
+else
+    scene = sceneCreate;
+    rgb = sceneGet(scene,'rgb');
+    thisD = displaySet(thisD,'rgb',rgb);
+    ieReplaceObject(thisD);
+end
+
+switch class(app)
+    case 'displayWindow_App'
+        axis(app.displayImage);
+        imshow(rgb); axis image; axis off
+    case 'matlab.ui.figure'
+        imshow(app,rgb); axis image; axis off
+    otherwise
+        error('Unknown type of display window %s\n',class(app));
+end
+
+
+end
 

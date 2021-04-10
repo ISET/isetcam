@@ -15,12 +15,19 @@ function [shapeHandle,ax] = ieROIDraw(isetobj,varargin)
 %       database environment.
 %
 % Key/val pairs:
-%  shape:    Type of shape  ('rect')
-%  shape data:  Values needed to draw the shape
-%       rect = [row col width height]
+%  shape:    Type of shape  ('rect', 'circle','line')
+%  parameters for all the shapes
 %       color
 %       linewidth
-%       linestyle
+%
+%  parameters for rect:
+%     rect = [row col width height]
+%     linestyle 
+%     curvature (at the corners of the rect, default is 0.2)
+%
+%  parameters for circle
+%
+%  parameters for line
 %
 % Outputs
 %  shapeHandle: Shape with its parameters
@@ -70,21 +77,28 @@ p.addParameter('shapedata',[1 1 5 5],@isnumeric);
 p.addParameter('color','w',@ischar);
 p.addParameter('linewidth',2,@isnumeric);
 p.addParameter('linestyle','-',@ischar);
+p.addParameter('curvature',0.2,@isnumeric);
 
 p.parse(isetobj,varargin{:});
 shape = p.Results.shape;
 
-
 %% Draw the shape
-ax = ieAxisGet(isetobj);
+[~,ax] = ieAppGet(isetobj);
+if ~isvalid(ax), error('Object %s axis is not valid.',isetobj.type); end
 
 switch shape
     case {'rect','rectangle'}
         rect = p.Results.shapedata;
-        shapeHandle = rectangle(ax,'Position',rect);
+
+        % I don't use this because it doesn't allow
+        % LineStyle
+        %   shapeHandle = drawrectangle(ax,'Position',rect);
+        % 
+        shapeHandle = rectangle(ax,'Position',rect,'Curvature',p.Results.curvature);
         shapeHandle.EdgeColor = p.Results.color;
         shapeHandle.LineWidth = p.Results.linewidth;
         shapeHandle.LineStyle = p.Results.linestyle;
+        
     case 'circle'
         % shape data [r row col]
         % r =  radius
@@ -93,11 +107,13 @@ switch shape
         radius = p.Results.shapedata(1);
         x = p.Results.shapedata(3);
         y = p.Results.shapedata(2);
-        
+        shapeHandle = drawcircle(ax,'Radius',radius,'Center',[x y]);
+        %{
         th = 0:pi/50:2*pi;
         xunit = radius * cos(th) + x;
         yunit = radius * sin(th) + y; hold on;
         shapeHandle = plot(ax,xunit, yunit);
+        %}
     case 'line'
         % shape data for a line are two points on the line
         % [x1 x2 y1 y2]

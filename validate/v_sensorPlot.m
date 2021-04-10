@@ -8,11 +8,11 @@ scene = sceneCreate;
 scene = sceneSet(scene,'fov',4);
 oi = oiCreate; oi = oiCompute(oi,scene);
 
+%%
 sensor = sensorCreate; 
 sensor = sensorSet(sensor,'qmethod', '10 bit');  % Linear, 10 bits
 sensor = sensorCompute(sensor,oi);
-ieAddObject(sensor);
-sensorWindow('scale',1');
+sensorWindow(sensor);
 
 %%
 sensorPlot(sensor,'electrons hline',[20 20]);
@@ -59,6 +59,14 @@ human = sensorCreate('human');
 hline = findobj(h, 'type', 'line');
 set(hline(2), 'Color', [1 0.6 0]);
 
+%% Make a multicapture sensor and plot things
+sensor = sensorSet(sensor,'exp time',[0.05 0.05]);
+sensor = sensorCompute(sensor,oi);
+sensorPlot(sensor,'electrons hline',[20 20],'capture',1);
+
+%% These should still work
+
+[uData, g] = sensorPlot(sensor,'cfa full');
+[uData,g] = sensorPlot(sensor,'sensor snr');
+
 %%
-
-

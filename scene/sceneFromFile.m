@@ -200,7 +200,7 @@ switch lower(imType)
         scene  = sceneSet(scene,'distance',displayGet(d,'viewing distance'));
 
     case {'multispectral','hyperspectral'}
-        if ~ischar(I), error('File name required for multispectral'); end
+        if ~exist(I,'file'), error('Name of existing file required for multispectral'); end
         if notDefined('wList'), wList = []; end
         
         scene = sceneCreate('multispectral');
@@ -225,9 +225,11 @@ switch lower(imType)
 end
 
 %% Put all the parameters in place and return
+%{
 if ieSessionGet('gpu compute')
     photons = gpuArray(photons);
 end
+%}
 
 if ischar(I)
     scene = sceneSet(scene, 'filename', I);

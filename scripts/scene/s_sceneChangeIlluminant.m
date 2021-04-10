@@ -18,7 +18,7 @@
 
 %%
 ieInit
-
+delay = 0.2;
 %% Create a default scene
  
 % sceneCreate creates a scene object. In this case, without any
@@ -26,11 +26,10 @@ ieInit
 % uniformly illuminated with daylight 6500 (D65)
 
 scene = sceneCreate;
-ieAddObject(scene); sceneWindow;
+sceneWindow(scene); pause(delay);
 
 % Plot the illuminant.
 scenePlot(scene,'illuminant photons');
-
 
 %% Replace the current illuminant with a tungsten illuminant
 
@@ -43,14 +42,14 @@ TungstenEnergy = ieReadSpectra('Tungsten.mat',wave);
 scene = sceneAdjustIlluminant(scene,TungstenEnergy);
 scene = sceneSet(scene,'illuminantComment','Tungsten illuminant');
 
-sceneWindow(scene);
+sceneWindow(scene); pause(delay);
 scenePlot(scene,'illuminant photons roi');
 
 %% Read in a multispectral scene from data/images
 
 sceneFile = fullfile(isetRootPath,'data','images','multispectral','StuffedAnimals_tungsten-hdrs.mat');
 scene = sceneFromFile(sceneFile,'multispectral');
-ieAddObject(scene); sceneWindow; 
+sceneWindow(scene); pause(delay);
 scenePlot(scene,'illuminant energy');
 
 %% Change the illuminant to equal energy
@@ -58,12 +57,11 @@ scenePlot(scene,'illuminant energy');
 % This time, we send in the file name rather than the vector of
 % illuminant energies
 scene = sceneAdjustIlluminant(scene,'equalEnergy.mat');
-ieAddObject(scene); sceneWindow; % display sceneWindow
+sceneWindow(scene); pause(delay);
 
 %% Convert the scene to the sunset color, Horizon_Gretag
 
-scene = sceneAdjustIlluminant(scene,'Horizon_Gretag.mat');
-ieAddObject(scene); sceneWindow; 
-
+scene = sceneAdjustIlluminant(scene,'illHorizon-20180220.mat');
+sceneWindow(scene); pause(delay);
 
 %%
