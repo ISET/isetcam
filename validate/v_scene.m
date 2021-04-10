@@ -21,6 +21,9 @@ scene = ieGetObject('scene');
 sceneSet(scene,'gamma',0.5);
 sceneSet(scene,'gamma',1);
 
+%% Check sceneCombine
+scene = sceneCombine(sceneCreate,sceneCreate,'direction','horizontal');
+sceneWindow(scene);
 
 %% Additional scripts of interest
 %

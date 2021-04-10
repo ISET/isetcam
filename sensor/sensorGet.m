@@ -1124,10 +1124,19 @@ switch oType
                 
             case {'gamma'}
                 % The gamma display in the sensor window
-                hdl = ieSessionGet('sensor window handle');
-                if ~isempty(hdl)
-                    val = get(hdl.editGam,'string');
-                    val = str2double(val);
+                % sensorGet(sensor,'gamma')
+                app = ieSessionGet('sensor window');
+                if ~isempty(app)
+                    val = str2double(app.GammaEditField.Value);
+                end
+            case {'maxbright','scalemax'}
+                % Scale the displayed image to max (1,1,1)
+                % Returns true (scale to max) or false
+                % sensorGet(sensor,'scale max')
+                app = ieSessionGet('sensor window');
+                val = true;
+                if ~isempty(app) && strcmpi(app.MaxbrightSwitch.Value,'Off')
+                    val = false;
                 end
                 
                 % Human cone case

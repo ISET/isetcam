@@ -34,7 +34,7 @@ function sensor = sensorSet(sensor,param,val,varargin)
 %      'cols' - number of cols
 %      'size' - [rows,cols]
 %      'fov'  - horizontal field of view.  NOTE: Also adjusts row/col!
-%
+%      
 % Color
 %      'color'  - structure containing color information
 %        'filter transmissivities'   - color filter transmissivities
