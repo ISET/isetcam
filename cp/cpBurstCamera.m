@@ -48,15 +48,13 @@ classdef cpBurstCamera < cpCamera
            varargin=namedargs2cell(camProps); 
            switch options.focusMode
                case 'Stack'
-                   stackFrames = options.focusParam;
                    obj.numFocusFrames = options.focusParam;
                otherwise
-                   stackFrames = 0;
                    obj.numFocusFrames = 0;
            end
            
            ourPicture = TakePicture@cpCamera(obj, aCPScene, intent, ...,
-               'insensorIP', options.insensorIP, 'stackFrames', stackFrames, varargin{:});
+               'insensorIP', options.insensorIP, 'focusParam', options.focusParam, 'focusMode', options.focusMode, varargin{:});
            
        end
        

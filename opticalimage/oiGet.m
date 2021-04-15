@@ -775,7 +775,7 @@ switch oType
                 % See if there is a display window
                 oiW = ieSessionGet('oi window');
                 if isempty(oiW), val = 1;   % Default if no window
-                else, val = find(contains(oiW.popupRender.Items,oiW.popupRender.Value));
+                else, val = find(ieContains(oiW.popupRender.Items,oiW.popupRender.Value));
                 end
                 
             case {'renderflagstring'}

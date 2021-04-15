@@ -184,6 +184,42 @@ end
 switch pType
     
     % Sensor data related. roiLocs is (x,y) format
+    % Sensor images
+    case {'channels'}
+        % sensorPlot(sensor,'channels');
+        %
+        % Plot | Sensor channel images
+        %
+        % Brings up a special window that shows the images of the different
+        % channels in the super pixel pattern.
+        %
+        sensorChannelImage(sensor);
+    case {'truesize'}
+        % sensorPlot(sensor,'true size');
+        %
+        % Plot | SensorImage (True Size)
+        sensor   = ieGetObject('sensor');
+        gam  = sensorGet(sensor,'gamma');
+        scaleMax = sensorGet(sensor,'scalemax');
+        
+        % Get voltages or digital values
+        bits     = sensorGet(sensor,'bits');
+        if isempty(bits)
+            img      = sensorData2Image(sensor,'volts',gam,scaleMax);
+        else
+            img      = sensorData2Image(sensor,'dv',gam,scaleMax);
+        end
+        
+        if ismatrix(img)
+            % imtool needs monochrome images scaled between 0 and 1
+            w = ieNewGraphWin; img = img/max(img(:));
+            imshow(img); truesize(w);
+            set(w,'Name',sensorGet(sensor,'name'));
+        else
+            ieViewer(img);
+        end
+        
+    % Sensor data related
     case {'electronshline'}
         [g, uData] = sensorPlotLine(sensor, 'h', 'electrons', 'space', roiLocs);
         if twoLines
@@ -233,15 +269,10 @@ switch pType
             title(sprintf('Horizontal line %d',roiLocs(2)-1));
         end
     case {'voltshistogram','voltshist'}
-        [uData,g] = plotSensorHist(sensor,'v',roiLocs);
+        [uData,g] = sensorPlotHist(sensor,'v',roiLocs);
     case {'electronshistogram','electronshist'}
         % sensorPlot(sensor,'electrons histogram',rect);
-        [uData,g] = plotSensorHist(sensor,'e',roiLocs);
-    case {'dvhistogram','digitalcounthist'}
-        % sensorPlot(sensor,'electrons histogram',rect);
-        [uData,g] = plotSensorHist(sensor,'dv',roiLocs);
-        
-        % Various types of noise
+        [uData,g] = sensorPlotHist(sensor,'e',roiLocs);
     case {'shotnoise'}
         % Poisson noise at each pixel
         [uData, g] = imageNoise('shot noise');
@@ -291,6 +322,7 @@ switch pType
         
         % Human
     case {'conemosaic'} % Not sure
+        % Eliminate.  Send users to ISETBio.
         [support, spread, delta] = sensorConePlot(sensor);
         uData.support = support;
         uData.spread = spread;

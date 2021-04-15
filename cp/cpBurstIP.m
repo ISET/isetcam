@@ -38,6 +38,7 @@ classdef cpBurstIP < cpIP
                 % Use our default for whether to just return an IP if the
                 % user doesn't specify what to do
                 options.insensorIP = obj.insensorIP;
+                options.focusDistances = [];
                 options.scene = [];
             end
             
@@ -133,13 +134,7 @@ classdef cpBurstIP < cpIP
                             imwrite(imageFrames{ii}{1}, imgFiles{ii});
                         end
                         
-                        % get our focus distances from the scene via ??
-                        if ~isempty(options.scene)
-                            focusRange = options.scene.focusRange;
-                        else
-                            focusRange = []; % this is almost certainly an error
-                        end
-                        ourPhoto = fstack(imageFrames,'focus', focusRange);
+                        ourPhoto = fstack(imageFrames,'focus', options.focusDistances);
                     end
                     
                 otherwise

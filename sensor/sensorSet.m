@@ -34,7 +34,7 @@ function sensor = sensorSet(sensor,param,val,varargin)
 %      'cols' - number of cols
 %      'size' - [rows,cols]
 %      'fov'  - horizontal field of view.  NOTE: Also adjusts row/col!
-%
+%      
 % Color
 %      'color'  - structure containing color information
 %        'filter transmissivities'   - color filter transmissivities
@@ -218,7 +218,7 @@ switch lower(param)
         % cone mosaic - Could be removed and use only ISETBio
         thisName = sensorGet(sensor,'name');
         if isempty(thisName), return;
-        elseif contains(thisName,'human')
+        elseif ieContains(thisName,'human')
             disp('Resizing human sensor.  Suggest you use ISETBio.')
             if checkfields(sensor,'human','coneType')
                 d = sensor.human.densities;
@@ -241,8 +241,10 @@ switch lower(param)
         % preferred usage might be: 
         %  [sensor,actualFOV] = sensorSetSizeToFOV(sensor,newFOV,oi);
         %
-        oi = [];
-        if ~isempty(varargin), oi    = varargin{1}; end
+        if ~isempty(varargin), oi    = varargin{1}; 
+        else, oi = ieGetObject('oi');
+        end
+        if isempty(oi), error('oi required to set sensor fov'); end
         sensor = sensorSetSizeToFOV(sensor,val, oi);
     case 'color'
         sensor.color = val;

@@ -59,8 +59,6 @@ end
 uData.data = data;
 uData.roiLocs = roiLocs;
 
-return;
-
 end
 %%
 function plotColorSensorHist(data,nSensors,unitType,colorOrder)
@@ -99,7 +97,6 @@ for ii=1:nSensors
     ylabel('Count');
 end
 
-return;
 end
 
 %%
@@ -120,7 +117,6 @@ switch lower(unitType)
 end
 ylabel('Count');
 
-return;
 end
 
 

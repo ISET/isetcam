@@ -75,7 +75,7 @@ switch param
         N = ipGet(vci,'nSensorInputs');
         
         if N > 3
-            warndlg('Warning.  No sensor conversion but n sensors > 3');
+            % warndlg('Warning.  No sensor conversion but n sensors > 3');
         end
         % We are told not to transform, so set it to identity with
         % dimension of the sensor input

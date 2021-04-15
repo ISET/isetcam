@@ -425,24 +425,32 @@ switch parm
         
     case {'degreesperdistance','degperdist'}
         % opticsGet(optics,'deg per dist','mm')
+        %
         % We use this constant to convert from the input spatial frequency units
         % (cycles/deg) to cycles/meter needed for the Hopkins eye. We need to
         % calculate this value from the optics data passed in.
         %
-        % Given D0, the focal plane is 1/D0 meters from the lens.  Call this the
-        % adjacent edge of the right triangle from the image plane to the lens.
+        % Given the power, D0, in units of 1/meters, the focal plane is
+        % (1/D0) meters from the lens.  This is really just the focal
+        % distance.  Call this the  adjacent edge of the right triangle
+        % from the image plane to the lens. 
         %
-        % 1 deg of visual angle is
-        %   tan(opp/(1/D0)) = ieDeg2rad(1)           (rad)
-        %   opp/(1/D0) = atan(ieDeg2rad(1))          (1/rad)
-        %   opp = atan(ieDeg2rad(1))*(1/D0)          (1/rad * meter)
-        %   c = 1/opp = 1/ (atan(ieDeg2rad(1))*(1/D0))   1 / ((1/rad) * meter) = rad/meter
+        % From geometry, 1 deg of visual angle has an opposite over
+        % adjacent of
+        %
+        %   (opp/(1/D0)) = tand(1)
+        % 
+        % So for 1 deg this is the distance (dist/deg)
+        %   tand(1)*(1/D0)    
+        %   
+        % Finally, deg/distance is 1 / (tand(1)*(1/D0))
         %
         % The conversion is: (cycles/rad) * (rad/meter) = cycles/meter
         units = 'm'; 
         if ~isempty(varargin), units = varargin{1}; end
         D0 = opticsGet(optics,'power',units); 
-        val = 1/( (1/D0) * atan(ieDeg2rad(1)) );  
+        val = (1/D0) * tand(1);     % deg/dist
+        val = 1/val;
         
     case {'distperdeg','distanceperdegree'}
         units = 'm';
@@ -526,7 +534,7 @@ switch parm
         val{2} = fSamp*inCutoff;
 
         % Alternative return format
-        if strfind(parm,'matrix')
+        if ieContains(parm,'matrix')
             [valMatrix(:,:,1),valMatrix(:,:,2)] = meshgrid(val{1},val{2});
             val = valMatrix;
         end
@@ -588,7 +596,7 @@ switch parm
         val.fx = opticsGet(optics,'otf fx',units);
 
         % If called with matrix, then 
-        if strfind(parm,'matrix') %#ok<*STRIFCND>
+        if ieContains(parm,'matrix') %#ok<*STRIFCND>
             [X,Y] = meshgrid(val.fy,val.fx); % Not sure about order yet!
             fSupport(:,:,1) = X; fSupport(:,:,2) = Y;
             val = fSupport;

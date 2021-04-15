@@ -593,7 +593,7 @@ switch pType
                 if ~isempty(varargin), nSamps = varargin{1}; 
                 else, nSamps = 40;
                 end
-                udata = plotOTF(oi,'ls wavelength',[], nSamps);
+                udata = plotOTF(oi,'ls wavelength','nsamp', nSamps);
                 set(g,'userdata',udata);
         end
         set(g,'name','LS by Wave');

@@ -213,7 +213,7 @@ switch resourceType
                 end
                 % we need to filter here as sometimes we only want .MAT
                 % files
-                localFile = localFile(contains(localFile, ".mat", 'IgnoreCase', true));
+                localFile = localFile(ieContains(localFile, ".mat", 'IgnoreCase', true));
             otherwise
                 warning("Not Supported yet");
         end
