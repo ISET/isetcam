@@ -20,9 +20,9 @@ cPhase   = [0, 0, 0]*pi;      % Freq differences are enough
 
 %% RGB channels
 rSamples = 0:(nRows-1);
-r = cWeights(1)*cos(2*pi*cFreq(1)*rows/nRows + cPhase(1)) + 2;
-g = cWeights(2)*cos(2*pi*cFreq(2)*rows/nRows + cPhase(2)) + 2;
-b = cWeights(3)*cos(2*pi*cFreq(3)*rows/nRows + cPhase(3)) + 2;
+r = cWeights(1)*cos(2*pi*cFreq(1)*rSamples/nRows + cPhase(1)) + 2;
+g = cWeights(2)*cos(2*pi*cFreq(2)*rSamples/nRows + cPhase(2)) + 2;
+b = cWeights(3)*cos(2*pi*cFreq(3)*rSamples/nRows + cPhase(3)) + 2;
 % ieNewGraphWin; plot(rSamples,r,'r-',rSamples,g,'g-',rSamples,b,'b-')
 
 %% Spatial modulation
