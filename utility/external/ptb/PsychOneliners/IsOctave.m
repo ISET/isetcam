@@ -16,13 +16,9 @@ function resultFlag = IsOctave
 persistent rc;
 
 if isempty(rc)
-	% If the built-in variable OCTAVE_VERSION exists,
-	% then we are running under GNU/Octave, otherwise not.
-	if ismember(exist('OCTAVE_VERSION', 'builtin'), [102, 5])
-	  rc = 1;
-	else
-	  rc = 0;
-	end;
+    % If the built-in variable OCTAVE_VERSION exists, then we are running
+    % under GNU/Octave, otherwise not.                                                                                                                               
+    rc = exist('OCTAVE_VERSION', 'builtin') ~= 0;   
 end
 
 resultFlag = rc;
