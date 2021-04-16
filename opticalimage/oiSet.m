@@ -286,10 +286,21 @@ switch parm
         oi = oiAdjustIlluminance(oi,val);
     case {'maxilluminance', 'peakilluminance', 'maxillum', 'peakillum'}
         oi = oiAdjustIlluminance(oi,val, 'max');
+    case {'spectrum','wavespectrum','wavelengthspectrumstructure'}
+        oi.spectrum = val;
     case {'datawave','datawavelength','wave','wavelength'}
         % oi = oiSet(oi,'wave',val)
         % val is a vector in evenly spaced nanometers
-        oi.spectrum.wave = val(:);
+        
+        % If there are photon data, we interpolate the data as well as
+        % setting the wavelength. If there are no photon data, we just set
+        % the wavelength.
+
+        if ~checkfields(oi,'data','photons') || isempty(oi.data.photons)
+            oi.spectrum.wave = val(:);
+        elseif ~isequal(val, oiGet(oi, 'wave'))
+            oi = oiInterpolateW(oi, val);
+        end
 
         % Optical methods
     case {'opticsmodel'}
