@@ -172,9 +172,18 @@ switch lower(imageType)
                 if nbits     >= 14, maxDisplay = 2^16;
                 elseif nbits >= 12, maxDisplay = 2^14;
                 elseif nbits >= 10, maxDisplay = 2^12;
-                elseif nbits >= 8,  maxDisplay = 20^10;
+                elseif nbits >= 8,  maxDisplay = 2^10;
                 end
-                inImg = inImg/maxDisplay;
+
+		% Resize gTable to match image bits.
+                x_in = (0:1:size(gTable,1)-1) ./ 255;
+                y_in = gTable;
+                x_out = (0:1:2^(nbits+1)-1) ./ (2^(nbits+1)-1);
+                gTable = interp1(x_in, y_in, x_out, 'spline');
+
+                % Stretch image to match size of gamma table.
+                % This probably isn't necessary
+                inImg = inImg/imgMax;
                 inImg = round(inImg*(size(gTable,1)-1));
             elseif max(inImg(:)) <= 1
                 % DAC values are [0, 2^nBits - 1]
