@@ -1,10 +1,10 @@
-% ISET -- Script to start ISET (Image Systems Evaluation Toolbox) 
+% ISET -- Script to start ISET (Image Systems Evaluation Toolbox)
 %
 % This script initializes the ISET (Image Systems Evaluation Tool) program.
 % The script checks for the existence of an isetSession file (saved from a
-% previous session). 
-% 
-% The script 
+% previous session).
+%
+% The script
 %   * Checks  the current version of Matlab, which should be 6.5 or higher
 %   * Initiates the ISET Session window
 %   * Initiates the vcSESSION (global) variable used by ISET windows
@@ -26,21 +26,29 @@ thisVersion = 4.0;         % Started August, 2009
 
 ieSessionSet('version',thisVersion);
 
-%%
-version = ver('Matlab');
-v = version.Version(1:3);
-if v < 7.0
-    warning('ISET compatible with version 7.0 or greater.  This version is %f\n',v)
+% Determine whether we are running under MATLAB or Octave.
+if ~isempty(ver('matlab'))
+    interpreter = ver('matlab');
+    interpreter.MinimumVersion = '7';
+elseif ~isempty(ver('octave'))
+    interpreter = ver('octave');
+    interpreter.MinimumVersion = '6.1';
+else
+    error('Could not determine interpreter version.');
 end
 
-disp(['ISET ',num2str(vcSESSION.VERSION),', Matlab ',version.Version]);
+if verLessThan(interpreter.Name, interpreter.MinimumVersion)
+    warning(strcat('ISET requires ', interpreter.Name, ' version ', interpreter.MinimumVersion, ' or higher.'))
+end
+
+disp(['ISET ',num2str(vcSESSION.VERSION),', ', interpreter.Name, ' ' ,interpreter.Version]);
 
 clear expectedMatlabVersion version matlabVersion
 
 %% Default session file name.
 % We check for a session file named iset-dateTime
 %
-%   * If one exists, we load it.  
+%   * If one exists, we load it.
 %   * If several exist, we load the latest one
 %   * The user can load a sessison file with a different name from the Main
 %     Window.
@@ -57,9 +65,6 @@ fprintf('Copyright ImagEval Consulting, LLC, 2003-%s\n',year);
 ieInitSession;
 ieSessionSet('dir',pwd);
 ieSessionSet('name',sessionFileName);
-
-% wp = ieSessionGet('whitePoint');
-% fprintf('White point for Scene/OI rendering set to %s\n',wp);
 
 clear sessionFileName
 clear thisVersion

@@ -43,4 +43,15 @@ if ieSessionGet('init clear'), clearvars;  end
 
 ieInitSession;
 
-%% 
+% Load required packages if running under GNU Octave.
+if ~isempty(ver('Octave'))
+    pkg load general
+    pkg load image
+    pkg load io
+    pkg load optiminterp
+    pkg load signal
+    pkg load statistics
+    warning('off', 'Octave:data-file-in-path')
+end
+
+%%
