@@ -488,7 +488,7 @@ switch oType
                     val = vcGetROIData(sensor,roiLocs,'electrons');
                 else, warning('ISET:nosensorroi','No sensor.roi field.  Returning empty electron data.');
                 end
-                case {'roidv','roidigitalcount'}
+            case {'roidv','roidigitalcount'}
                 % V = sensorGet(sensor,'roi dv');
                 %
                 % If sensor.roi exists, it is used.  Otherwise, empty
@@ -498,6 +498,7 @@ switch oType
                     val = vcGetROIData(sensor,roiLocs,'dv');
                 else, warning('ISET:nosensorroi','No sensor.roi field.  Returning empty voltage data.');
                 end
+                
             case {'roivoltsmean'}
                 % sensorGet(sensor,'roi volts mean')
                 % Mean value for each of the sensor types
