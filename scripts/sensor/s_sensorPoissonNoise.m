@@ -49,5 +49,12 @@ oi = oiCompute(oi,scene);
 sensor = sensorCompute(sensor,oi);
 sensorWindow(sensor);
 
+% [col row width height], (x,y,width,height)
+rect = [186 340 44 46];
+sensor = sensorSet(sensor,'roi',rect);
+sensorGet(sensor,'roi rect')
+dv = sensorGet(sensor,'roi dv',rect);
 
+nanmean(dv)
+nanstd(dv)
 %% END

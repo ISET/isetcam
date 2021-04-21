@@ -170,6 +170,7 @@ if isempty(roiLocs)
 
             % Store the rect for later plotting
             sensor = sensorSet(sensor,'roi',round(roiRect.Position));
+            ieReplaceObject(sensor);
             
             % Why is this commented out?
             % ieROIDraw(sensor,'shape','rect','shape data',roiRect);

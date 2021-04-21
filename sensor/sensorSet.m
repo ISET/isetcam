@@ -375,7 +375,8 @@ switch lower(param)
     case {'dv','digitalvalue','digitalvalues'}
         sensor.data.dv = val;
     case {'roi'}
-        % Perhaps this should be current rect, see below?
+        % The most recent roi, usually a rect, is stored here by
+        % sensorPlot.
         sensor.roi = val;
     case {'quantization','qmethod','quantizationmethod'}
         % 'analog', '10 bit', '8 bit', '12 bit'
@@ -551,36 +552,16 @@ switch lower(param)
     case {'sensorcompute','sensorcomputemethod'}
         sensor.sensorComputeMethod = val;
 
-        % These ROIs for the MCC chart should be generalized to chartP here
-        % and in ip and other objects.  Maybe there should be a chart
-        % struct that is defined.
-    %{
-    case {'mccrecthandles'}
-        % These are handles to the squares on the MCC selection regions
-        % see macbethSelect.  If we over-write them, we first delete the
-        % existing ones.
-        if checkfields(sensor,'mccRectHandles')
-            if ~isempty(sensor.mccRectHandles)
-                try delete(sensor.mccRectHandles(:));
-                catch
-                end
-            end
-        end
-        sensor.mccRectHandles = val;
-    case {'cornerpoints','mccpointlocs','mcccornerpoints'}
-        % Corner points for the whole MCC chart
-        sensor.mccCornerPoints = val;
-    %}
-                % Chart parameters for MCC and other cases
+        % Chart parameters for MCC and other general cases
     case {'chartparameters'}
         % Reflectance chart parameters are stored here.
         sensor.chartP = val;
-    case {'cornerpoints','chartcornerpoints'}
+    case {'chartcornerpoints','cornerpoints'}
         sensor.chartP.cornerPoints=  val;
     case {'chartrects','chartrectangles'}
         sensor.chartP.rects =  val;
         % Slot for holding a current retangular region of interest
-    case {'currentrect'}
+    case {'chartcurrentrect','currentrect'}
         % [colMin rowMin width height]
         % Used for ROI display and management.
         sensor.chartP.currentRect = val;

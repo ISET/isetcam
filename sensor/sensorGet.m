@@ -111,8 +111,7 @@ function val = sensorGet(sensor,param,varargin)
 %           value
 %
 % Sensor roi
-%     'roi' - rectangle representing current region of interest
-%        Additional ROI processing may be inserted in the next few years.
+%     'roi' - rectangle representing current region of interest.
 %
 % Sensor array electrical processing properties
 %      'analog Gain'     - A scale factor that divides the sensor voltage
@@ -453,12 +452,18 @@ switch oType
             case {'roi','roilocs'}
                 % roiLocs = sensorGet(sensor,'roi');
                 %
-                % This is the default, which is to return the roi as roi
-                % locations, an Nx2 matrix or (r,c) values.
+                % The roi is stored either as a rect or as an Nx2 matrix of
+                % row,col locations.  If the oType is roi we return
+                % whatever is there.  If oType is roilocs, we convert the
+                % rect to locs.
                 if checkfields(sensor,'roi')
                     % The data can be stored as a rect or as roiLocs.
                     val = sensor.roi;
-                    if size(val,2) == 4, val = ieRect2Locs(val); end
+                end
+                
+                % Convert to locs because the user specified roilocs
+                if isequal(param,'roilocs') && size(val,2) == 4
+                    val = ieRect2Locs(val); 
                 end
             case {'roirect'}
                 % sensorGet(sensor,'roi rect')
