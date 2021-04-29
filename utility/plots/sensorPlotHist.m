@@ -36,9 +36,11 @@ figNum = ieNewGraphWin([],'tall');
 %% Get the data 
 switch lower(unitType)
     case {'v','volts'}
-        data   = sensorGet(sensor,'roivolts',roiLocs);
+        data   = sensorGet(sensor,'roi volts',roiLocs);
     case {'e','electrons'}
-        data   = sensorGet(sensor,'roielectrons',roiLocs);
+        data   = sensorGet(sensor,'roi electrons',roiLocs);
+    case {'dv','digitalvalues'}
+        data   = sensorGet(sensor,'roi dv',roiLocs);
     otherwise
         error('Unknown unit type.');
 end

@@ -163,17 +163,18 @@ if isempty(roiLocs)
             
         case {'electronshistogram','electronshist'...
                 'voltshistogram','voltshist',...
-                'chromaticity'}
+                'chromaticity','dvhistogram'}
             
             % Region of interest plots
             [roiLocs, roiRect] = ieROISelect(sensor);
 
             % Store the rect for later plotting
             sensor = sensorSet(sensor,'roi',round(roiRect.Position));
+            ieReplaceObject(sensor);
             
             % Why is this commented out?
             % ieROIDraw(sensor,'shape','rect','shape data',roiRect);
-
+            
         otherwise
             % There are plots that are OK without an roiLocs value or ROI.
             % Such as 'snr', spectral qe, and so forth
@@ -268,11 +269,15 @@ switch pType
             [g, uData] = sensorPlotTwoLines(sensor,uData,uData2);
             title(sprintf('Horizontal line %d',roiLocs(2)-1));
         end
+        
     case {'voltshistogram','voltshist'}
         [uData,g] = sensorPlotHist(sensor,'v',roiLocs);
     case {'electronshistogram','electronshist'}
         % sensorPlot(sensor,'electrons histogram',rect);
         [uData,g] = sensorPlotHist(sensor,'e',roiLocs);
+    case {'dvhistogram'}
+        [uData,g] = sensorPlotHist(sensor,'dv',roiLocs);
+        
     case {'shotnoise'}
         % Poisson noise at each pixel
         [uData, g] = imageNoise('shot noise');
