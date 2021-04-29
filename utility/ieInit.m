@@ -18,6 +18,10 @@ if ieContains(path,'imgproc') && ieContains(path,'cones')
     error("Isetcam & Isetbio contain over-lapping functionality. Only one at a time should be in your path");
 end
 
+if ieContains(version,'2019b')
+    warning('Windows do not run correctly under version 2019b');
+end
+
 %% Close the ISET windows and all others
 
 % Close the ISET windows and remove any invalid apps
