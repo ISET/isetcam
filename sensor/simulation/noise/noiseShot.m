@@ -28,39 +28,43 @@ volts          = sensorGet(ISA,'volts');
 conversionGain = pixelGet(ISA.pixel,'conversion gain');
 electronImage  = volts/conversionGain;
 
-% N.B. The noise is Poisson in electron  units. But the distribution in
-% voltage units is NOT Poisson.  The voltage signal, however, does have the
-% same SNR as the electron signal.
+% % N.B. The noise is Poisson in electron  units. But the distribution in
+% % voltage units is NOT Poisson.  The voltage signal, however, does have the
+% % same SNR as the electron signal.
+% 
+% % The Poisson variance is equal to the mean. Randn is unit normal (N(0,1)).
+% % S*Randn is N(0,S). 
+% %
+% % We multiply each point in the image by the square root of its mean value
+% % to create the noise. For most cases this Normal approximation is
+% % adequate. But we trap (below) the cases when the value is small and
+% % replace it with the Poisson random value.
+% theNoise = sqrt(electronImage) .* randn(size(electronImage));
+% 
+% % We add the mean electron and noise electrons together. 
+% noisyImage = round(electronImage + theNoise);
+%  
+% % Now, we find the small mean values and create a Poisson sample. This is
+% % too slow in general because the Poisson algorithm is slow for big
+% % numbers.  But it is fast for small numbers. We can't rely on the Stats
+% % toolbox being present, so we use this Poisson sampler from Knuth. Create
+% % and copy the Poisson samples into the noisyImage
+% poissonCriterion = 25;
+% [r,c] = find(electronImage < poissonCriterion);
+% v = electronImage(electronImage < poissonCriterion);
+% if ~isempty(v)
+%     vn = iePoisson(v);  % Poisson samples
+%     for ii=1:length(r)
+%         noisyImage(r(ii),c(ii)) = vn(ii);
+%         
+%         % The noise is the Poisson value minus the mean (6/2015, BW)
+%         theNoise(r(ii),c(ii))   = vn(ii) - v(ii); 
+%     end
+% end
 
-% The Poisson variance is equal to the mean. Randn is unit normal (N(0,1)).
-% S*Randn is N(0,S). 
-%
-% We multiply each point in the image by the square root of its mean value
-% to create the noise. For most cases this Normal approximation is
-% adequate. But we trap (below) the cases when the value is small and
-% replace it with the Poisson random value.
-theNoise = sqrt(electronImage) .* randn(size(electronImage));
-
-% We add the mean electron and noise electrons together. 
-noisyImage = round(electronImage + theNoise);
- 
-% Now, we find the small mean values and create a Poisson sample. This is
-% too slow in general because the Poisson algorithm is slow for big
-% numbers.  But it is fast for small numbers. We can't rely on the Stats
-% toolbox being present, so we use this Poisson sampler from Knuth. Create
-% and copy the Poisson samples into the noisyImage
-poissonCriterion = 25;
-[r,c] = find(electronImage < poissonCriterion);
-v = electronImage(electronImage < poissonCriterion);
-if ~isempty(v)
-    vn = iePoisson(v);  % Poisson samples
-    for ii=1:length(r)
-        noisyImage(r(ii),c(ii)) = vn(ii);
-        
-        % The noise is the Poisson value minus the mean (6/2015, BW)
-        theNoise(r(ii),c(ii))   = vn(ii) - v(ii); 
-    end
-end
+% Change method of adding noise to speed up processing
+noisyImage = poissrnd(electronImage);
+theNoise = noisyImage - electronImage;
 
 % Convert the noisy electron image back into the voltage signal
 noisyImage = conversionGain*noisyImage;

@@ -19,6 +19,7 @@ if ieNotDefined('method'), method = sensorGet(sensor,'quantizationMethod'); end
 %% Get voltage data and range
 voltageSwing = sensorGet(sensor,'pixel voltageSwing');
 img          = sensorGet(sensor,'volts'); 
+dn2volts = sensor.dn2volts;
 if isempty(img), error('No voltage image'); end
 
 %% Apply method
@@ -36,8 +37,9 @@ switch lower(method)
         % that range.
         nBits = sensorGet(sensor,'nbits'); 
         if isempty(nBits), nBits = 8; warning('ISET:Quantization0','Assuming %d bits.',nBits); end
-        quantizationStep = voltageSwing / (2^nBits);	    % [mV/DN]
-        quantImg = round(img/quantizationStep);             % [DV]
+        %quantizationStep = voltageSwing / (2^nBits);               % [V/DN]
+        quantizationStep = dn2volts;     % [V/DN]
+        quantImg = round(img/quantizationStep);                     % [DV]
         if nargout == 2
             quantizationError = img - (quantImg * quantizationStep); 	% [mV]
         end
