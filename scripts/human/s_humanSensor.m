@@ -28,9 +28,9 @@ hFov = 1;   % Horizontal field of view (deg)
 scene = sceneSet(scene,'fov',hFov);
 % vcAddAndSelectObject(scene); sceneWindow;
 
-if ieNotDefined('oi'), oi = oiCreate('human'); end
+oi = oiCreate('human');
 oi = oiCompute(scene,oi);
-% vcAddAndSelectObject(oi); oiWindow;
+% vcAddAndSelectObject(oi); oiWindow(oi);
 
 %% Create the human sensor with a size matched to the scene
 % The code here illustrates the complete set of parameters to create a
@@ -137,4 +137,4 @@ sensor = sensorCreate('human',[],params);
 
 sensorConePlot(sensor); title('Protan cone mosaic');
 
-
+%% END
