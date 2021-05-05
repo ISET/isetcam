@@ -71,14 +71,20 @@ if isempty(app)
     % Set up in a new window
     fig = ieNewGraphWin;
     set(fig,'Name', sensorGet(sensor,'name'),'menubar','None');
-    image(cfaImg);
+    image(cfaImg); axis off
 else
     app.imageCFA.ImageSource = cfaImg;
     fig = app.figure1;
     tSizeFlag = false;
 end
 
-if tSizeFlag, truesize(fig); end
+if tSizeFlag
+    if fullArray
+       %  truesize(fig);
+    else
+        truesize(fig,[92 92]);
+    end
+end
 
 end
 

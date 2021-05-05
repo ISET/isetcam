@@ -149,12 +149,16 @@ elseif isequal(oType,'wvf')
         oi.wvf = val;
         return;
     else
+        % We are adjusting the wavefront parameters
         if isempty(varargin), oi.wvf = wvfSet(oi.wvf,parm,val);
         elseif length(varargin) == 1
             oi.wvf = wvfSet(oi.wvf,parm,val,varargin{:});
         elseif length(varargin) == 2
             oi.wvf = wvfSet(oi.wvf,parm,val,varargin{1},varargin{2});
         end
+        % Should we always do this here before returning?
+         wvf = wvfComputePSF(oi.wvf);
+         oi = wvf2oi(wvf);
         return;
     end
 elseif isempty(parm)
@@ -280,11 +284,23 @@ switch parm
         % Set the whole illuminance
         % The mean will be derived in oiGet.
         oi = oiAdjustIlluminance(oi,val);
-
+    case {'maxilluminance', 'peakilluminance', 'maxillum', 'peakillum'}
+        oi = oiAdjustIlluminance(oi,val, 'max');
+    case {'spectrum','wavespectrum','wavelengthspectrumstructure'}
+        oi.spectrum = val;
     case {'datawave','datawavelength','wave','wavelength'}
         % oi = oiSet(oi,'wave',val)
         % val is a vector in evenly spaced nanometers
-        oi.spectrum.wave = val(:);
+        
+        % If there are photon data, we interpolate the data as well as
+        % setting the wavelength. If there are no photon data, we just set
+        % the wavelength.
+
+        if ~checkfields(oi,'data','photons') || isempty(oi.data.photons)
+            oi.spectrum.wave = val(:);
+        elseif ~isequal(val, oiGet(oi, 'wave'))
+            oi = oiInterpolateW(oi, val);
+        end
 
         % Optical methods
     case {'opticsmodel'}

@@ -24,10 +24,10 @@ if ieNotDefined('unitType'), unitType = 'electrons'; end
 
 if ieNotDefined('roiLocs')
     % Select the data from the current sensor window
-    handles = ieSessionGet('sensor image handle');
-    ieInWindowMessage('Select image region of interest.',handles,[]);
-    roiLocs = vcROISelect(sensor);
-    ieInWindowMessage('',handles,[]);
+    app = ieAppGet(sensor);
+    ieInWindowMessage('Select image region of interest.',app,[]);
+    roiLocs = ieROISelect(sensor);
+    ieInWindowMessage('',app,[]);
 end
 sensor = sensorSet(sensor,'roi',roiLocs);
 
@@ -36,9 +36,12 @@ figNum = vcNewGraphWin([],'tall');
 %% Get the data 
 switch lower(unitType)
     case {'v','volts'}
-        data   = sensorGet(sensor,'roivolts',roiLocs);
+        data   = sensorGet(sensor,'roi volts',roiLocs);
     case {'e','electrons'}
-        data   = sensorGet(sensor,'roielectrons',roiLocs);
+        data   = sensorGet(sensor,'roi electrons',roiLocs);
+    case {'dv','digitalcount'}
+        data   = sensorGet(sensor,'roi dv',roiLocs);
+
     otherwise
         error('Unknown unit type.');
 end
@@ -55,8 +58,6 @@ end
 
 uData.data = data;
 uData.roiLocs = roiLocs;
-
-return;
 
 end
 %%
@@ -90,11 +91,12 @@ for ii=1:nSensors
             xlabel('Volts')
         case 'e'
             xlabel('Electrons')
+        case 'dv'
+            xlabel('Digital value')
     end
     ylabel('Count');
 end
 
-return;
 end
 
 %%
@@ -115,7 +117,6 @@ switch lower(unitType)
 end
 ylabel('Count');
 
-return;
 end
 
 

@@ -16,6 +16,7 @@ function pixel = pixelSet(pixel,param,val,varargin)
 %      {'sizesamefillfactor'}  - [width,height] in meters, alters photodetector size to preserve fill factor
 %      {'widthgap'}            - gap between pixels (usually 0)
 %      {'heightgap'}  
+%      {'fillfactor'}          - fill factor (area of pd to area of pixel)
 %
 % Photodetector properties
 %      {'pdwidth'}              - photodetector width
@@ -72,6 +73,10 @@ switch param
         disp('Fill factor may have changed');
     case {'sizeconstantfillfactor','sizekeepfillfactor','sizesamefillfactor'}
         % pixelSet(pixel,'size ConstantFillFactor',newSize);
+        % 
+        % This changes the pixel size and keeps the fill factor constant by
+        % also changing the size of the photodetector area.
+        %
         % If newSize is a single number, we assume the user meant the
         % height and width were both this size.
         if length(val) < 2, val(2) = val(1); end
@@ -98,6 +103,14 @@ switch param
     case {'pdwidthandheight','pdsize'}         %(M,M)
         pixel = pixelSet(pixel,'pdwidth',val(1));
         pixel = pixelSet(pixel,'pdheight',val(2));
+    case {'fillfactor'}
+        % pixel = pixelSet(pixel,'fill factor',0.5);
+        %
+        % This changes the size of the photodetector area but keeps the
+        % size of the pixel constant.
+        pixel = pixelSet(pixel,'pd width',sqrt(val)*pixelGet(pixel,'deltax'));
+        pixel = pixelSet(pixel,'pd height',sqrt(val)*pixelGet(pixel,'deltay'));
+
     case {'layerthickness','layerthicknesses'} % M
         pixel.layerThickness = val;
         

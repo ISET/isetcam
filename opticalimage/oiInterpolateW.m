@@ -43,8 +43,9 @@ end
 %% Current oi photons
 photons = oiGet(oi,'photons');
 
-% We clear the data to save memory space.  
-oi = oiClearData(oi);
+% We clear the data to save memory space.  % ZLY: Commenting this out -
+% isn't it wired?
+% oi = oiClearData(oi);
 
 % We do this trick to be able to do a 1D interpolation. It is fast
 % ... 2d is slow.  The RGB2XW format puts the photons in columns by
@@ -53,7 +54,8 @@ photons = RGB2XWFormat(photons)';
 newPhotons = interp1(curWave,photons,newWave)';
 newPhotons = XW2RGBFormat(newPhotons,row,col);
 
-oi = oiSet(oi,'wave',newWave); 
+newSpectrum.wave = newWave;
+oi = oiSet(oi,'spectrum',newSpectrum); 
 oi = oiSet(oi,'photons',newPhotons);
 
 % Preserve the original mean luminance (stored in meanL) despite the resampling.

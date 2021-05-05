@@ -482,7 +482,12 @@ switch oType
                     oi.data.illuminance = oiCalculateIlluminance(oi);
                 end
                 val = mean(oi.data.illuminance(:));
-                
+            case {'maxilluminance', 'peakilluminance'}
+                % Derived from the illuminance
+                if ~checkfields(oi,'data','illuminance') || isempty(oi.data.illuminance)
+                    oi.data.illuminance = oiCalculateIlluminance(oi);
+                end
+                val = max(oi.data.illuminance(:));                
             case {'illuminance','illum'}
                 if ~checkfields(oi,'data','illuminance') || isempty(oi.data.illuminance)
                          val = oiCalculateIlluminance(oi);

@@ -42,8 +42,11 @@ if ieNotDefined('fname')
 end
 
 % Read the filter transmission spectra
+wavelength = sensorGet(sensor, 'wave');
+%{
 load(fname,'wavelength');
 sensor = sensorSet(sensor,'wave',wavelength);
+%}
 [filterSpectra,newFilterNames,extra] = ieReadColorFilter(wavelength,fname);
 if isempty(filterSpectra), error('No filter spectra'); end
 

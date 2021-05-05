@@ -46,7 +46,8 @@ function val = sensorGet(sensor,param,varargin)
 %    val = sensorGet(sensor,'Electrons',2);   % Second color type
 %    val = sensorGet(sensor,'fov horizontal') % degrees
 %    val = sensorGet(sensor,'PIXEL')
-%    val = sensorGet(sensor,'exposureMethod');% Single, bracketed, cfa
+%    val = sensorGet(sensor,'exposureMethod');% Single, bracketed, cfa,
+%    burst
 %    val = sensorGet(sensor,'nExposures')     % Number of exposures
 %    val = sensorGet(sensor,'filtercolornames')
 %    val = sensorGet(sensor,'exposurePlane'); % For bracketing simulation
@@ -58,6 +59,7 @@ function val = sensorGet(sensor,param,varargin)
 %      'row'                  - sensor rows
 %      'col'                  - sensor columns
 %      'size'                 - (rows,cols)
+%      'ncaptures'            -  Number of exposures captured
 %      'height'*              - sensor height (units)
 %      'width'*               - sensor width  (units)
 %      'dimension'*           - (height,width)
@@ -109,8 +111,7 @@ function val = sensorGet(sensor,param,varargin)
 %           value
 %
 % Sensor roi
-%     'roi' - rectangle representing current region of interest
-%        Additional ROI processing may be inserted in the next few years.
+%     'roi' - rectangle representing current region of interest.
 %
 % Sensor array electrical processing properties
 %      'analog Gain'     - A scale factor that divides the sensor voltage
@@ -288,20 +289,35 @@ switch oType
                 elseif checkfields(sensor,'cols'), val = sensor.cols;
                 end
             case {'size','arrayrowcol'}
-                % Note:  dimension is (x,y) but size is (row,col)
+                % row by col samples
+                % sensorGet(sensor,'size')
                 val = [sensorGet(sensor,'rows'),sensorGet(sensor,'cols')];
-                
             case {'height','arrayheight'}
                 val = sensorGet(sensor,'rows')*sensorGet(sensor,'deltay');
                 if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
             case {'width','arraywidth'}
                 val = sensorGet(sensor,'cols')*sensorGet(sensor,'deltax');
                 if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-                
             case {'dimension'}
+                % height by width in length units
+                % sensorGet(sensor,'dimension','mm')
                 val = [sensorGet(sensor,'height'), sensorGet(sensor,'width')];
                 if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-                
+            case {'ncaptures'}
+                % sensorGet(sensor,'captures')
+                %
+                % When we use multiple exposure times we have multiple
+                % captures in the 3rd dimension of volts or dv.  So after
+                % sensor compute this value should be equal to the number
+                % of exposure times.  Before sensor compute it can be
+                % empty.
+                val = sensorGet(sensor,'dv or volts');
+                if isempty(val), return;
+                elseif ismatrix(val)
+                    val = 1;
+                else
+                    val = size(val,3);
+                end
                 % The resolutions also represent the center-to-center spacing of the pixels.
             case {'wspatialresolution','wres','deltax','widthspatialresolution'}
                 PIXEL = sensorGet(sensor,'pixel');
@@ -436,12 +452,18 @@ switch oType
             case {'roi','roilocs'}
                 % roiLocs = sensorGet(sensor,'roi');
                 %
-                % This is the default, which is to return the roi as roi
-                % locations, an Nx2 matrix or (r,c) values.
+                % The roi is stored either as a rect or as an Nx2 matrix of
+                % row,col locations.  If the oType is roi we return
+                % whatever is there.  If oType is roilocs, we convert the
+                % rect to locs.
                 if checkfields(sensor,'roi')
                     % The data can be stored as a rect or as roiLocs.
                     val = sensor.roi;
-                    if size(val,2) == 4, val = ieRect2Locs(val); end
+                end
+                
+                % Convert to locs because the user specified roilocs
+                if isequal(param,'roilocs') && size(val,2) == 4
+                    val = ieRect2Locs(val); 
                 end
             case {'roirect'}
                 % sensorGet(sensor,'roi rect')
@@ -471,6 +493,17 @@ switch oType
                     val = vcGetROIData(sensor,roiLocs,'electrons');
                 else, warning('ISET:nosensorroi','No sensor.roi field.  Returning empty electron data.');
                 end
+            case {'roidv','roidigitalcount'}
+                % V = sensorGet(sensor,'roi dv');
+                %
+                % If sensor.roi exists, it is used.  Otherwise, empty
+                % is returned and a warning issued.
+                if checkfields(sensor,'roi')
+                    roiLocs = sensorGet(sensor,'roi locs');
+                    val = vcGetROIData(sensor,roiLocs,'dv');
+                else, warning('ISET:nosensorroi','No sensor.roi field.  Returning empty voltage data.');
+                end
+                
             case {'roivoltsmean'}
                 % sensorGet(sensor,'roi volts mean')
                 % Mean value for each of the sensor types
@@ -801,7 +834,7 @@ switch oType
                     val = sensor.blackLevel;
                 else
                     oiBlack = oiCreate('black');
-                    sensor2 = sensorSet(sensor,'noiseflag',0); % Little noise
+                    sensor2 = sensorSet(sensor,'noiseflag','none'); % Little noise
                     sensor2 = sensorCompute(sensor2,oiBlack);
                     switch sensorGet(sensor,'quantization method')
                         case 'analog'
@@ -829,8 +862,8 @@ switch oType
                 else
                     try
                         rng('default');
-                    catch err
-                        randn('seed');
+                    catch
+                        rng('seed');
                     end% Compute both electronic and shot noise
                 end
                 
@@ -844,11 +877,16 @@ switch oType
             case {'exposuremethod','expmethod'}
                 % We plan to re-write the exposure parameters into a sub-structure
                 % that lives inside the sensor, sensor.exposure.XXX
-                tmp = sensorGet(sensor,'exptimes');
-                p   = sensorGet(sensor,'pattern');
-                if     isscalar(tmp), val = 'singleExposure';
-                elseif isvector(tmp),  val = 'bracketedExposure';
-                elseif isequal(size(p),size(tmp)),  val = 'cfaExposure';
+                % add support for manually setting exposure type
+                if isfield(sensor, 'exposureMethod') && ~isempty(sensor.exposureMethod)
+                    val = sensor.exposureMethod;
+                else
+                    tmp = sensorGet(sensor,'exptimes');
+                    p   = sensorGet(sensor,'pattern');
+                    if     isscalar(tmp), val = 'singleExposure';
+                    elseif isvector(tmp),  val = 'bracketedExposure';
+                    elseif isequal(size(p),size(tmp)),  val = 'cfaExposure';
+                    end
                 end
             case {'integrationtime','integrationtimes','exptime','exptimes','exposuretimes','exposuretime','exposureduration','exposuredurations'}
                 % This can be a single number, a vector, or a matrix that matches
@@ -1092,10 +1130,19 @@ switch oType
                 
             case {'gamma'}
                 % The gamma display in the sensor window
-                hdl = ieSessionGet('sensor window handle');
-                if ~isempty(hdl)
-                    val = get(hdl.editGam,'string');
-                    val = str2double(val);
+                % sensorGet(sensor,'gamma')
+                app = ieSessionGet('sensor window');
+                if ~isempty(app)
+                    val = str2double(app.GammaEditField.Value);
+                end
+            case {'maxbright','scalemax'}
+                % Scale the displayed image to max (1,1,1)
+                % Returns true (scale to max) or false
+                % sensorGet(sensor,'scale max')
+                app = ieSessionGet('sensor window');
+                val = true;
+                if ~isempty(app) && strcmpi(app.MaxbrightSwitch.Value,'Off')
+                    val = false;
                 end
                 
                 % Human cone case

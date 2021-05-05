@@ -33,8 +33,8 @@ function ip = ipSet(ip,param,val,varargin)
 %   'type'                  - Always 'vcimage'
 %
 % Processing pipeline options
-%    'demosaic'              - The demosiac structure
-%    'demosaic method'       - Name of the demosaic method (function)
+%    'demosaic'         - The demosiac structure
+%    'demosaic method'  - Name of the demosaic method (function)
 %         Currently supported are listed in Demosaic
 %         'bilinear','adaptive laplacian','laplacian','nearest neighbor'
 %
@@ -57,14 +57,15 @@ function ip = ipSet(ip,param,val,varargin)
 %
 %  Calibrated color space (sensor spectral QE is allowed).
 %      'internal colorspace'      - Name of the internal color space
-%          Options: 'sensor', 'XYZ', 'Stockman', 'linear srgb'
+%            Options: 'sensor', 'XYZ', 'Stockman', 'linear srgb'
 %      'internal cs 2 display space' - Transform from internal to display
 %
 %  Correction for the illuminant
 %      'correction illuminant'               - Color balance structure
 %      'correction method illuminant'        - Name of the method (function)
 %        Currently supported
-%          'none', 'gray world', 'white world', 'manual matrix entry'
+%            'none', 'gray world', 'white world', 'manual matrix entry'
+%
 %      'correction matrix illuminant'        - Color balance transform
 %
 %      'spectrum'           - Wavelength structure
@@ -88,7 +89,8 @@ function ip = ipSet(ip,param,val,varargin)
 %        'scale display output' - Scaled to display max RGB
 %
 %  Miscellaneous
-%     'chart corner points' - Outer corners of the chart, such as MCC
+%     'render demosaic only' - Skip everything but demosaicing
+%     'chart corner points'  - Outer corners of the chart, such as MCC
 %     'roi'             - Rect used for an ROI
 %     'gamma display'   - Gamma for rendering data to ipWindow image
 %     'scale display'   - True or false for scaling the ipWindow image
@@ -242,6 +244,8 @@ switch param
             ip = ipSet(ip,'internal cs','Sensor');
             ip = ipSet(ip,'conversion method sensor','None');
             ip = ipSet(ip,'correction method illuminant','None');
+            ip = ipSet(ip, 'transform method', 'current');
+            ip = ipSet(ip,'ics2display transform', eye(3));        
         end
         
     case {'scaledisplay','scaledisplayoutput'}
@@ -251,7 +255,7 @@ switch param
         % Controls the gamma for rendering the result data to the
         % GUI display.
         ip.render.gamma = val;
-        
+        ieReplaceObject(ip);
         % If the window is open and valid, set the edit box and refresh it.
         app = ieSessionGet('ip window');
         if ~isempty(app) && isvalid(app)
@@ -302,11 +306,13 @@ switch param
 
     % Needs more comments and development    
     case {'combineexposures','combinationmethod'}
-        % Method for combining multiple exposures in bracketed case
+        % Method for combining multiple exposures in bracketed or burst case
         % Implemented:
         %   longest - Longest not saturated
+        %   sum -- for burst, just add values
         %   Others to come, I hope
         ip.combineExposures = val;
+        ip.combinationMethod = val; % this is what the Get routine wants!
         
     % Special case for L3 work with unconventional CFAs
     case {'l3'}

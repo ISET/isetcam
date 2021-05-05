@@ -2,7 +2,7 @@ function fName = ipSaveImage(ip,fName,showImageFlag,trueSizeFlag)
 % Save the image in the ipWindow to an 8-bit PNG file
 %
 % Syntax
-%   fName = imageSaveImage(ip,fName)
+%   fName = ipSaveImage(ip,fName)
 %
 % Inputs
 %   ip:     image processor struct

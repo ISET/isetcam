@@ -3,8 +3,7 @@ function thisWindow = ieNewGraphWin(thisWindow, fType, titleString, varargin)
 %
 %    figHdl = ieNewGraphWin([fig handle],[figure type],[titleString],varargin)
 %
-% Open a figure.  The figure handle is returned and stored in the currernt
-% vcSESSION.GRAPHWIN entry.
+% Open a figure.  The figure handle is returned.
 %
 % A few figure shapes are pre-defined
 %   fType:  Default - Matlab normal figure position

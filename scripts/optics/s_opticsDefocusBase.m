@@ -18,7 +18,7 @@ ieInit;
 % scene = sceneCreate('sweep frequency');
 scene = sceneCreate('sweep frequency',384,30);
 
-% Compute a diffraction limited oi in the shift invariant model
+%% Compute a diffraction limited oi in the shift invariant model
 oi = oiCreate('wvf');
 D = 0;
 oi = oiSet(oi,'wvf zcoeffs',D,'defocus');
@@ -27,6 +27,7 @@ ieAddObject(oi); oiWindow;
 oiPlot(oi,'illuminance hline',[1,50]);
 title(sprintf('Defocus %.1f',D));
 
+%%
 D = 8;
 oi = oiSet(oi,'wvf zcoeffs',D,'defocus');
 oi = wvf2oi(wvfComputePSF(oi.wvf));

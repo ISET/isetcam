@@ -85,7 +85,8 @@ masterRect = ISOFindSlantedBar(ip);
 if isempty(masterRect), return; end
 
 %% Get the bar image ready.
-barImage = vcGetROIData(ip,masterRect,'results');
+% These data are demosaicked but not processed more.
+barImage = vcGetROIData(ip,masterRect,'sensor space');
 c = masterRect(3)+1;
 r = masterRect(4)+1;
 barImage = reshape(barImage,r,c,3);

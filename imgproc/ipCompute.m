@@ -73,7 +73,7 @@ if length(sensor) > 1
     % an array of sensors and it will pull the volts out of each of the
     % individual sensors.
     ip = ipSet(ip,'datamax',sensorGet(sensor(1),'max'));
-    ip = vciComputeSingle(ip,sensor);
+    ip = ipComputeSingle(ip,sensor);
     return;
 end
 
@@ -99,9 +99,11 @@ switch exposureMethod(1:3)
         % Don't need to pre-process
     case 'bra'  % bracketedExposure
         % On return, the maximum sensible exposure time is set
-        ip = vciComputeBracketed(ip,sensor);
+        ip = ipComputeBracketed(ip,sensor);
     case 'cfa'  % cfaExposure
-        ip = vciComputeCFA(ip,sensor);
+        ip = ipComputeCFA(ip,sensor);
+    case 'bur'  % burst of images
+        ip = ipComputeBurst(ip, sensor, 'sum');
     otherwise
         error('Unknown exposure method %s\n',exposureMethod);
 end
@@ -132,17 +134,17 @@ if strncmpi(pType,'l3',2)
     ip = ipSet(ip,'L3',L3);
 else
     % Conventional RGB pipeline, most common case
-    ip = vciComputeSingle(ip,sensor);
+    ip = ipComputeSingle(ip,sensor);
 end
 
 end
 
 %%
-function ip = vciComputeSingle(ip,sensor)
+function ip = ipComputeSingle(ip,sensor)
 % Process image for single exposure case, or after pre-processing for
 % bracketed and CFA cases.
 %
-%    ip = vciComputeSingle(ip,sensor)
+%    ip = ipComputeSingle(ip,sensor)
 %
 % The processing steps through
 %   1. Demosaicing
@@ -214,6 +216,7 @@ elseif nFilters >= 3 || nSensors > 1
     
     % Save the demosaiced sensor space channel values. May be used later
     % for adaptation of color balance for IR enabled sensors
+    % if shooting bracketed, where did we get de-mosaiced?
     ip = ipSet(ip,'sensor space',img);    % saveimg = img;
 
     % Decide if we are using the current matrix or we are in a processing
@@ -225,7 +228,14 @@ elseif nFilters >= 3 || nSensors > 1
             % Use the stored transform matrix, don't recompute.
             T   = ipGet(ip,'prodT');
             img = imageLinearTransform(img,T);
-
+            % Scale the img to make sure the results is 0 to 1]
+            % We already subtract the zero level from image earlier
+            % in some cases we are already normalized
+            if ~isempty(sensorGet(sensor, 'maxdigitalvalue'))
+                img = img / (sensorGet(sensor, 'maxdigitalvalue') - zerolevel);
+            elseif ~isempty(ipGet(ip,'maximum sensor value'))
+                img = img / (ipGet(sensor, 'maximum sensor value') - zerolevel);
+            end
         case {'new','manual matrix entry'}
             % Allow the user to specify a matrix from the GUI. When set this
             % way, the sensor correction transform is the only one used to
@@ -299,16 +309,16 @@ end
 end
 
 %%
-function ip = vciComputeBracketed(ip,sensor,combinationMethod)
+function ip = ipComputeBracketed(ip,sensor,combinationMethod)
 % Compute for bracketed exposure case
 %
 % sensor = vcGetObject('sensor');
 % ip = vcGetObject('vcimage');
 %
-if ~exist('ip','var'), error('Virtual camera image required.'); end
-if ~exist('sensor','var'), error('Image sensor array requried.'); end
+if ~exist('ip','var'), error('IP required.'); end
+if ~exist('sensor','var'), error('Sensor required.'); end
 if ~exist('combinationMethod','var')
-    combinationMethod = ipGet(ip,'combinationMethod'); 
+    combinationMethod = ipGet(ip,'combinationMethod');
 end
 
 % Could send this parameter in.  It is the value we accept as below saturation
@@ -331,18 +341,25 @@ switch combinationMethod
         % Choose the max at each point
         [img,loc] = max(img,[],3);
         expByLoc  = expTimes(loc);
-        img = img ./ expByLoc;               
+        img = img ./ expByLoc;    
+        %% DJC Maybe we have to normalize here, or we get over-saturated values?
     otherwise
         error('Unknown combination method: %s\n', combinationMethod)
 end
 
 % The largest value we can ever get
-ip = ipSet(ip,'sensorMax',sensorMax/min(expTimes));
+% DJC I don't think this works right for all expTimes, as we start
+% returning massive signal values and Adaptive doesn't normalize. So I've
+% changed this to scale to the original sensor voltage swing (only affects
+% bracketing, which I don't think anyone except me is currently using:)
+%ip = ipSet(ip,'sensorMax',sensorMax/min(expTimes));
+img = img ./ max(img,[],'all'); % scale
+ip = ipSet(ip, 'sensorMax', max(img,[],'all'));
 ip = ipSet(ip,'input',img);
 
 end
 
-function ip = vciComputeCFA(ip,sensor)
+function ip = ipComputeCFA(ip,sensor)
 % Compute for CFA exposure case
 %
 % In this case the img is N different CFA arrays, with each N corresponding
@@ -352,8 +369,8 @@ function ip = vciComputeCFA(ip,sensor)
 % merge them back into a single CFA.
 %
 
-if ~exist('ip','var'),     error('Virtual camera image required.'); end
-if ~exist('sensor','var'), error('Image sensor array requried.'); end
+if ~exist('ip','var'),     error('IP required.'); end
+if ~exist('sensor','var'), error('Sensor array required.'); end
 
 % Read the exposure times - same as number of filters
 expTimes = sensorGet(sensor,'expTimes');
@@ -415,3 +432,32 @@ ip = ipSet(ip,'input',newImg);
 
 end
 
+function ip = ipComputeBurst(ip,sensor, combinationMethod)
+% Compute for Burst exposure case
+
+if ~exist('ip','var'), error('IP required.'); end
+if ~exist('sensor','var'), error('Sensor required.'); end
+if ~exist('combinationMethod','var')
+    combinationMethod = ipGet(ip,'combinationMethod');
+end
+
+% Read the exposure times - same as number of filters
+expTimes = sensorGet(sensor,'expTimes');
+sensorMax = ipGet(ip,'maximum sensor value');
+
+nExps    = length(expTimes(:));
+% Get the data, either as volts or digital values.
+% Indicate which on return
+img       = ipGet(ip,'input');
+
+switch combinationMethod
+    case 'sum'
+        % simplest case where we just sum the burst of images
+        img = sum(img, 3);
+        ip = ipSet(ip, 'input', img);
+    otherwise
+        error("Don't know how to combine burst of images");
+end
+
+%ip = ipSet(ip,'input',newImg);
+end

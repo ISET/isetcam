@@ -60,7 +60,13 @@ RGB = oiShowImage(oi,renderFlag,gam);
 [p,n,e] = fileparts(fName);
 if isempty(p), p = pwd; end
 if isempty(e), e = '.png'; end
-fName = fullfile(p,[n,e]);
+if ispc
+    % seems like I'm the only one for whom the default doesn't work, so
+    % thinking maybe it is a windows thing?
+    fName = fullfile(p,append(n,e));
+else
+    fName = fullfile(p,[n,e]);
+end
 
 % Always has a png extension.  So, no 'png' argument needed.
 % Written out as 8 bit for PNG format.

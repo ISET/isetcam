@@ -1,6 +1,9 @@
 function [figNum, uData] = sensorPlotLine(sensor, ori, dataType, sORt, xy)
 % Plot a line of sensor data
 %
+% TODO:  See comment below about the case in which there are multiple
+%        captures (e.g., exposure bracketing or burst photography).
+%
 % Synopsis:
 %   [uData, figNum] = ...
 %   sensorPlotLine([sensor],[ori='h'],[dataType ='dv'],[spaceOrTransform = 'space'],[xy])
@@ -56,6 +59,9 @@ if ieNotDefined('xy'), xy = vcLineSelect(sensor); end
 
 sSupport = sensorGet(sensor,'spatialSupport','microns');
 
+% We need to allow for the possibility that the data is exposure bracketed
+% or burst sensor type so that data has a 3rd dimension.  Then we need to
+% figure out what to do.
 data = sensorGet(sensor,dataType);
 if isempty(data), warndlg(sprintf('Data type %s unavailable.',dataType)); return; end
 
@@ -76,7 +82,8 @@ end
 %% Plot it
 
 if nSensors > 1
-    figNum = ieNewGraphWin([],'tall');  % Easier to see
+    % 3rd arg is title string
+    figNum = ieNewGraphWin([],'tall',[],'Visible','Off');  % Easier to see
     data = plane2rgb(data,sensor,NaN);
     fColors = sensorGet(sensor,'filterPlotColors');
     if strcmp(dataType,'electrons') && isfield(sensor,'human')  || ...
@@ -125,12 +132,13 @@ for ii = 1:nSensors
         % No data for this pixel type on this row
     else
         % These are cell arrays because for some sensors, like the human
-        % cones, there are uneven numbers of samples on every row.
+        % cones, there are unpredictable numbers of samples on every row.
         nColors = nColors + 1;
+        pixColor{nColors} = ii;               %#ok<NASGU,AGROW>
         pixPlot{nColors} = [fColors(ii),'-']; %#ok<AGROW>
-        pixPos{nColors}  = pos(l)'; %#ok<AGROW>
+        pixPos{nColors}  = pos(l)';           %#ok<AGROW>
         tmp = d(l);
-        pixData{nColors} = tmp(:); %#ok<AGROW>
+        pixData{nColors} = tmp(:);            %#ok<AGROW>
     end
 end
 
@@ -163,6 +171,7 @@ for ii=1:nColors
             % Attach data to figure and label.
             % uData.pos(:,ii) = pos(:); uData.data(:,ii) = pixData(:,ii);
             uData.pos{ii} = pixPos{ii}; uData.data{ii} = pixData{ii};
+            uData.pixColor{ii} = pixColor{ii};
         case {'transform','fourier','fourierdomain','fft'}
             
             % We have a problem in this code.  The pixPos needs to be

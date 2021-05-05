@@ -52,7 +52,7 @@ RGB = sceneShowImage(scene,-1*renderFlag,gam);
 % Make sure file full path is returned
 [p,n,e] = fileparts(fName);
 if isempty(p), p = pwd; end
-if isempty(e), e = '.png'; end
+if isempty(e) || e == "", e = '.png'; end % isempty doesn't work for strings
 
 % djc -- This doesn't work for me! fName = fullfile(p,[n,e]);
 % bw  -- Must be a windows/mac thing.  Surprised

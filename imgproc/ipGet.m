@@ -225,7 +225,7 @@ switch oType
                 if checkfields(ip,'transformMethod'),val = ip.transformMethod; end
             case {'conversiontransformsensor','correctionmatrixsensor'}
                 transforms = ipGet(ip,'transforms');
-                if length(transforms) >= 1  % && ~isempty(transforms{1})
+                if length(transforms) >= 1 && ~isempty(transforms{1})
                     val = transforms{1};
                 else,  val = eye(3,3);
                 end

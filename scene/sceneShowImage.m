@@ -15,7 +15,7 @@ function rgb = sceneShowImage(scene,renderFlag,gam,app)
 %     absolute value of 2,  compute gray scale for IR
 %     absolute value of 3,  HDR rendering method
 %
-%     If value is zero or negative, do not display, just render the values
+%     If value is negative, do not display, just render the values
 %     into the rgb variable that is returned.
 %
 %  gam:    The gamma value for the rendering
