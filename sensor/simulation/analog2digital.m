@@ -1,11 +1,11 @@
 function [quantImg,quantizationError] = analog2digital(sensor,method)
 %Analog-to-digital conversion for voltage data in a sensory array
-%  
+%
 %  [qImage,qError] = analog2digital(ISA,method)
 %
 %  Various quantization schemes are implemented. This routine calculates
-%  the quantized image and the quantization error, if requested.. 
-%   
+%  the quantized image and the quantization error, if requested..
+%
 % Example:
 %
 % [qImage,qError] = analog2digital(ISA,method);
@@ -34,14 +34,14 @@ switch lower(method)
         % This assumes that the lowest value is 0 and the highest
         % value is voltageSwing, and we divide the volts evenly over
         % that range.
-        nBits = sensorGet(sensor,'nbits'); 
+        nBits = sensorGet(sensor,'nbits');
         if isempty(nBits), nBits = 8; warning('ISET:Quantization0','Assuming %d bits.',nBits); end
         quantizationStep = voltageSwing / (2^nBits);	    % [mV/DN]
         quantImg = round(img/quantizationStep);             % [DV]
         if nargout == 2
             quantizationError = img - (quantImg * quantizationStep); 	% [mV]
         end
-                
+        
     otherwise
         warning('ISET:Quantization1','Unknown quantization method.')
 end
