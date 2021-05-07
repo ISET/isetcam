@@ -27,8 +27,8 @@ else
 	n=name;
 	p=paths;
 end
-pathIndex=[1 1+findstr(pathsep,p)];
-nameIndex=[findstr([filesep n filesep],p) findstr([filesep n pathsep],p)];
+pathIndex=[1 1+strfind(pathsep,p)];
+nameIndex=[strfind([filesep n filesep],p) strfind([filesep n pathsep],p)];
 clear n p
 if isempty(nameIndex)
 	directory=[];

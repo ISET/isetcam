@@ -20,7 +20,7 @@ function pic=getpfmraw(filename)
 
 %% Open file.
 %
- filename(findstr(filename,' '))=[];
+ filename(strfind(filename,' '))=[];
  fid=fopen(filename);
 
 
