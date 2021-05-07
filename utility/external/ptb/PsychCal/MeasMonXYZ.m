@@ -61,7 +61,7 @@ for i=1:nMeas
 	% Make the measurement
 	switch (whichMeterType)
 		case 0,
-			XYZ(:,i) = sum(settings(:,i)*ones(3,1);
+			XYZ(:,i) = sum(settings(:,i))*ones(3,1);
 			WaitSecs(0.1);
 		case 1,
 		  XYZ(:,i) = MeasXYZ;
