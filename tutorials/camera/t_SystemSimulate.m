@@ -109,9 +109,7 @@ oiWindow(oi);
 % image fall-off, adjusting the lens properties, and so forth.
 %
 % You can read more about the optics models by typing "doc opticsGet".
-% You can see an online video about using the ray trace software at:
-%   http://www.imageval.com/public/Products/ISET/ApplicationNotes/ZemaxTutorial.htm
-% 
+%
 %% Sensor
 % The irradiance is then captured by a simulated sensor, resulting
 % in an array of output voltages.

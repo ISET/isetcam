@@ -18,7 +18,7 @@ function imgRGB = Pocs(bayer_in, bPattern,iterN )
 %  School of Electrical and Computer Engineering
 %  Georgia Institute of Technology
 %  Email: bahadir@ece.gatech.edu
-%  URL  : http://users.ece.gatech.edu/bahadir
+%  URL  : https://web.archive.org/web/http://users.ece.gatech.edu/bahadir/
 %
 % ISET implementation by Stephanie Kwan and Brian Wandell
 %

@@ -67,7 +67,7 @@ function icc=IccProfile(command,file)
 % "icc" that you can use in your software. For explanation of the contents,
 % consult the official ICC documentation, plus Apple's documentation of
 % their custom tags: 'vcgt' and 'mmod'.
-% web http://www.color.org/profiles.html ;
+% web https://www.color.org/profiles.html ;
 % web http://developer.apple.com/techpubs/macos8/MultimediaGraphics/ColorSyncManager/ManagingColorWithColorSync/ColorSync.7b.html
 % 
 % EXPLANATION OF TAG TYPE:
@@ -154,7 +154,7 @@ function icc=IccProfile(command,file)
 % 
 % Monaco EZColor software $299
 % MonacoSENSOR colorimeter $249 (or both together for $499)
-% web http://www.monacosys.com/monacoezcolor.html ;
+% web https://www.xrite.com/ ;
 % 
 % The ColorBlind+Sequel package, for $299, is cheaper than the $499
 % Monaco package, and the ColorBlind software seems to be at least as
@@ -166,7 +166,7 @@ function icc=IccProfile(command,file)
 % ACKNOWLEDGEMENT: IccProfile.mex is largely a Matlab interface to 
 % the excellent free icclib created in C by Graeme Gill, for which we 
 % are very grateful.
-% web http://web.access.net.au/argyll/color.html ;
+% web http://www.argyllcms.com/ ;
 
 % HISTORY
 % 7/28/00 dgp Wrote it, using Graeme Gill's icclib.c.

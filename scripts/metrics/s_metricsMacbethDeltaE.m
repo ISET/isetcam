@@ -17,10 +17,6 @@
 % You can alter parameters of the sensor or optics and see how
 % this changes the CIELAB errors.
 %
-% Reference:
-% <http://www.imageval.com/public/Products/ISET/ApplicationNotes/ColorCorrectionMatrix.pdf
-% Color correction Matrix Notes>
-%
 % See also:  macbethColorError, sceneAdjustLuminance, oiCompute, sensorSetSizeToFOV,
 % ipCreate
 %

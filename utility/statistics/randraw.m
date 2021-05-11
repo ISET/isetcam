@@ -119,9 +119,9 @@ function varargout = randraw(distribName, distribParams, varargin)
 % Reference links:
 %   1) http://mathworld.wolfram.com/topics/StatisticalDistributions.html
 %   2) http://en.wikipedia.org/wiki/Category:Probability_distributions
-%   3) http://www.brighton-webs.co.uk/index.asp
+%   3) https://www.brighton.ac.uk/index.aspx
 %   4) http://www.jstatsoft.org/v11/i03/v11i03.pdf
-%   5) http://www.quantlet.com/mdstat/scripts/csa/html/node236.html
+%   5) https://web.archive.org/web/20070216230726/http://www.quantlet.com/mdstat/scripts/csa/html/node236.html
 
 funcName = mfilename;
 
@@ -2901,7 +2901,7 @@ if strcmp(runMode, 'genRun')
                     
                     % REFERENCES:
                     % 1. http://www.quantlet.com/mdstat/scripts/csa/html/node236.html
-                    % 2. http://www.anst.uu.se/larsfors/APRv1_5.pdf
+                    % 2. http://www.anst.uu.se/larsfors/APRv1_5.pdf (broken)
                     % 3. http://ica2001.ucsd.edu/index_files/pdfs/048-jenssen.pdf  
                     % 4. http://www.freidok.uni-freiburg.de/volltexte/15/pdf/15_1.pdf
 
