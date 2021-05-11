@@ -21,16 +21,16 @@ function thirtyDBLevel = sensorMPE30(sensor)
 
 if ieNotDefined('sensor'), sensor = vcGetObject('sensor'); end
 
-[snr,luxsec] = sensorSNRluxsec(sensor);
-thirtyDBLevel = interp1(snr,luxsec,30);
+[snr, luxsec] = sensorSNRluxsec(sensor);
+thirtyDBLevel = interp1(snr, luxsec, 30);
 
 if nargout == 0
     % Plot the data.  Could add data to the userdata of the graph.
-    semilogx(luxsec,snr);
+    semilogx(luxsec, snr);
     xlabel('Photometric Exposure (lux-sec)');
     ylabel('SNR (db)');
     grid on
-    str = sprintf('MPE30 = %.3f',thirtyDBLevel);
+    str = sprintf('MPE30 = %.3f', thirtyDBLevel);
     title(str)
 end
 

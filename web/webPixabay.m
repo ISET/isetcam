@@ -4,9 +4,9 @@ classdef webPixabay
     %   along with a small size and large size as needed
     %   current default is comma-separated keywords, all of which need to
     %   be matched
-    
+
     properties
-        key = '18230017-1d12c1c7c5182cfa172a39807';  
+        key = '18230017-1d12c1c7c5182cfa172a39807';
         search_url = 'https://pixabay.com/api/?';
         format;
         tag_mode;
@@ -16,7 +16,7 @@ classdef webPixabay
         sort;
         defaultWavelist = 400:10:700;
     end
-    
+
     methods
         function obj = webPixabay()
             %WEBPIXABAY Construct an instance of this class
@@ -26,33 +26,33 @@ classdef webPixabay
             %obj.nojsoncallback = '1';
             %obj.licenses = '1,2,3,4,5,6,7,8,9,10'; % everything shareable for now
             %obj.sort = 'relevance';
-         end
-        
-        function outputArg = search(obj,ourTags)
-            per_page = getpref('ISET','maxSearchResults',obj.defaultPerPage);
-            useTags = "";
-            splitTags = split(ourTags,", ");
-            for ii=1:numel(splitTags)-1
-                useTags = strcat(useTags,splitTags(ii),"+");
-            end
-            useTags = strcat(useTags,splitTags(numel(splitTags)));
-            outputArg = webread(obj.search_url, 'key', obj.key, 'q', useTags, ...
-            'image_type', 'photo', 'pretty', 'true', 'order', 'popular', 'per_page', per_page);            
         end
-        
+
+        function outputArg = search(obj, ourTags)
+            per_page = getpref('ISET', 'maxSearchResults', obj.defaultPerPage);
+            useTags = "";
+            splitTags = split(ourTags, ", ");
+            for ii = 1:numel(splitTags) - 1
+                useTags = strcat(useTags, splitTags(ii), "+");
+            end
+            useTags = strcat(useTags, splitTags(numel(splitTags)));
+            outputArg = webread(obj.search_url, 'key', obj.key, 'q', useTags, ...
+                'image_type', 'photo', 'pretty', 'true', 'order', 'popular', 'per_page', per_page);
+        end
+
         function ourTitle = getImageTitle(obj, fPhoto)
             ourTitle = string(fPhoto.id); % I don't think Pixabay uses titles??
         end
-        
+
         function displayScene(obj, fPhoto, sceneType)
             imageData = obj.getImage(fPhoto, 'large');
             % I, imType, meanLuminance, dispCal, wList
-            scene = sceneFromFile(imageData,'rgb',[],[],getpref('ISET','openRGBwavelist', obj.defaultWavelist));
+            scene = sceneFromFile(imageData, 'rgb', [], [], getpref('ISET', 'openRGBwavelist', obj.defaultWavelist));
             scene = sceneSet(scene, 'name', string(fPhoto.id)); % I think we can parse the Page URL instead?
             sceneWindow(scene);
-            
+
         end
-        
+
         % pass a Pixabay photo object and desired size to get the URL of the
         % image
         %https://farm{farm-id}.staticflickr.com/{server-id}/{id}_{secret}_[mstzb].jpg
@@ -62,13 +62,12 @@ classdef webPixabay
                 ourURL = fPhoto.previewURL;
             else
                 ourURL = fPhoto.largeImageURL;
-            end 
+            end
         end
-        
+
         function ourImage = getImage(obj, fPhoto, wantSize)
             ourURL = getImageURL(obj, fPhoto, wantSize);
-            ourImage = webread(ourURL);   
+            ourImage = webread(ourURL);
         end
     end
 end
-

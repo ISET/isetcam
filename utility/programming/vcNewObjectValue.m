@@ -16,34 +16,33 @@ function val = vcNewObjectValue(objType)
 
 global vcSESSION
 
-switch(objType)
+switch (objType)
     case 'camera'
         % Return vals for oi, sensor, and ip
-        val = zeros(3,1);
-        
-        if isfield(vcSESSION,'OPTICALIMAGE')
+        val = zeros(3, 1);
+
+        if isfield(vcSESSION, 'OPTICALIMAGE')
             val(1) = length(vcSESSION.OPTICALIMAGE) + 1;
         else
             val(1) = 1; % don't know if this works, but certainly can't use length!
         end
-        if isfield(vcSESSION,'ISA')
+        if isfield(vcSESSION, 'ISA')
             val(2) = length(vcSESSION.ISA) + 1;
         else
             val(2) = 1; % don't know if this works, but certainly can't use length!
         end
-        if isfield(vcSESSION,'VCIMAGE')
+        if isfield(vcSESSION, 'VCIMAGE')
             val(3) = length(vcSESSION.VCIMAGE) + 1;
         else
             val(3) = 1; % don't know if this works, but certainly can't use length!
         end
-        
+
     otherwise
         % Returns one value for this object
         object = vcGetObjects(objType);
-        if isempty(object) || isempty(object{1}),  val = 1;
-        else,                   val = length(object) + 1;
+        if isempty(object) || isempty(object{1}), val = 1;
+        else, val = length(object) + 1;
         end
 end
 
 end
-

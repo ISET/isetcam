@@ -1,4 +1,4 @@
-function Lstar = Y2Lstar(Y,Yn)
+function Lstar = Y2Lstar(Y, Yn)
 % Convert Y (luminance) to L* (CIELAB)
 %
 %  Lstar = Y2Lstar(Y,Yn)
@@ -13,11 +13,11 @@ function Lstar = Y2Lstar(Y,Yn)
 % Copyright ImagEval Consultants, LLC, 2003.
 
 % Basic formula
-T = Y/Yn;
-Lstar = 116*(T.^(1/3)) - 16;
+T = Y / Yn;
+Lstar = 116 * (T.^(1 / 3)) - 16;
 
 % Buf if the ratio is small ...
 l = (T < .008856);
-Lstar(l) = 903.3*T(l);
+Lstar(l) = 903.3 * T(l);
 
 return;

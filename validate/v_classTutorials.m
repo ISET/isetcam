@@ -6,7 +6,7 @@
 % Copyright ImagEval Consultants, LLC, 2010.
 
 %% Run through all the tutorial files
-if exist('hwImageFormation','file')
+if exist('hwImageFormation', 'file')
     hwImageFormation
     disp('Image Formation confirmed');
     close all

@@ -1,4 +1,4 @@
-function img = sensorShowCFAWeights(wgts,sensor,cPos,varargin)
+function img = sensorShowCFAWeights(wgts, sensor, cPos, varargin)
 % Create an image of the weights (normalized) on a small CFA region
 %
 %    img = sensorShowCFAWeights(wgts,sensor,cPos,varargin)
@@ -13,7 +13,7 @@ function img = sensorShowCFAWeights(wgts,sensor,cPos,varargin)
 %  cPos:   The center position of the sensor pattern
 %
 % Inputs (optional, parameter value pairs)
-%  imgSize: Scale final image size to be imgSize*size(wgts) 
+%  imgSize: Scale final image size to be imgSize*size(wgts)
 %
 % Return:
 %   img = RGB image of the weights times the CFA colors
@@ -22,18 +22,18 @@ function img = sensorShowCFAWeights(wgts,sensor,cPos,varargin)
 %  sensor = sensorCreate;
 %  wgts = rand(5,5);
 %  img = sensorShowCFAWeights(wgts,sensor,[1,1],'imgScale',16);
-%  vcNewGraphWin; imagesc(img); 
+%  vcNewGraphWin; imagesc(img);
 %
 %  img = sensorShowCFAWeights(wgts,sensor,[2,1],'imgScale',16);
-%  vcNewGraphWin; imagesc(img); 
+%  vcNewGraphWin; imagesc(img);
 %
 %  img = sensorShowCFAWeights(ones(5,5),sensor,[1,2],'imgScale',32);
-%  vcNewGraphWin; imagesc(img); 
+%  vcNewGraphWin; imagesc(img);
 %
 %  sensor = sensorCreate('cmy');
 %  wgts = rand(5,5);
 %  img = sensorShowCFAWeights(wgts,sensor,[2,1],'imgScale',16);
-%  vcNewGraphWin; imagesc(img); 
+%  vcNewGraphWin; imagesc(img);
 %
 % See also:
 %
@@ -42,39 +42,39 @@ function img = sensorShowCFAWeights(wgts,sensor,cPos,varargin)
 %% Set up key variables
 
 p = inputParser;
-p.addRequired('wgts',@isnumeric);
+p.addRequired('wgts', @isnumeric);
 p.addRequired('sensor');
 
 patchSize = size(wgts);
-p.addOptional('cPos',ceil(patchSize/2),@isnumeric);
-p.addOptional('imgScale',32,@isnumeric);
+p.addOptional('cPos', ceil(patchSize / 2), @isnumeric);
+p.addOptional('imgScale', 32, @isnumeric);
 
-p.parse(wgts,sensor,cPos,varargin{:});
+p.parse(wgts, sensor, cPos, varargin{:});
 imgScale = p.Results.imgScale;
 
 %% Build the color mosaic image
 
 % This is an index image of the whole cfa
-[cfaImage,mp] = sensorImageColorArray(sensorDetermineCFA(sensor));
+[cfaImage, mp] = sensorImageColorArray(sensorDetermineCFA(sensor));
 
 % Clip a CFA section from the middle of the image, centered on cPos
-pattern = sensorGet(sensor,'pattern');
-offset = pattern*10 + 1;
-h = (patchSize - 1)/2;
-cfaImage = cfaImage(offset(1) + cPos(1) + (-h:h),offset(2) + cPos(2) + (-h:h));
+pattern = sensorGet(sensor, 'pattern');
+offset = pattern * 10 + 1;
+h = (patchSize - 1) / 2;
+cfaImage = cfaImage(offset(1)+cPos(1)+(-h:h), offset(2)+cPos(2)+(-h:h));
 
-cfaImage = ind2rgb(cfaImage,mp);
+cfaImage = ind2rgb(cfaImage, mp);
 % vcNewGraphWin; imagesc(cfaImage);
 
 if max(wgts(:)) == min(wgts(:))
     wgts = ones(size(wgts));
 else
-    wgts = ieScale(wgts,0,1);
+    wgts = ieScale(wgts, 0, 1);
 end
 
 % Make the image
-wgts = repmat(wgts,1,1,3);
-img  = wgts .* cfaImage;
-img = imageIncreaseImageRGBSize(img,imgScale);
+wgts = repmat(wgts, 1, 1, 3);
+img = wgts .* cfaImage;
+img = imageIncreaseImageRGBSize(img, imgScale);
 
 end

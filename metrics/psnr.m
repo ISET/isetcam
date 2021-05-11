@@ -1,4 +1,4 @@
-function val = psnr(im1,im2)
+function val = psnr(im1, im2)
 %
 %   val = psnr(im1,im2)
 %
@@ -9,13 +9,13 @@ function val = psnr(im1,im2)
 %
 % Internet information: http://www.vsofts.com/codec/codec_psnr.html
 
-se = (255*(im1 - im2)).^2;
+se = (255 * (im1 - im2)).^2;
 rmse = sqrt(mean(se(:)));
 
 if rmse == 0
     val = Inf;
 else
-    val = 20*log10(255/sqrt(rmse));
+    val = 20 * log10(255/sqrt(rmse));
 end
 
 return;

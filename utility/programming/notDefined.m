@@ -28,17 +28,17 @@ function ndef = notDefined(varString)
 % Nikhil 01/10 -- support for checking structure variables added
 
 [rootVarString, fieldString] = strtok(varString, '.');
-str = sprintf('''%s''',rootVarString);
-cmd1 = ['~exist(' str ',''var'') == 1'];
-cmd2 = ['isempty(',rootVarString ') == 1'];
+str = sprintf('''%s''', rootVarString);
+cmd1 = ['~exist(', str, ',''var'') == 1'];
+cmd2 = ['isempty(', rootVarString, ') == 1'];
 
 % create cmd3 if this is a structure
 if ~isempty(fieldString)
     fieldString = fieldString(2:end);
     fieldString = strrep(fieldString, '.', ''',''');
-    cmd3 = ['~checkfields(', rootVarString, ',''', fieldString ''')'];
+    cmd3 = ['~checkfields(', rootVarString, ',''', fieldString, ''')'];
 end
-cmd = [cmd1, ' || ',cmd2];
+cmd = [cmd1, ' || ', cmd2];
 
 % If either of these conditions holds, then not defined is true
 ndef = evalin('caller', cmd); % Check if variables exist in caller space

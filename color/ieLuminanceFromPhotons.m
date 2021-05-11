@@ -1,4 +1,4 @@
-function lum = ieLuminanceFromPhotons(photons,wave)
+function lum = ieLuminanceFromPhotons(photons, wave)
 %Calculate luminance (cd/m2) and related quantities (lux,lumens,cd) from spectral
 % photons
 %
@@ -11,8 +11,7 @@ function lum = ieLuminanceFromPhotons(photons,wave)
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
-energy = Quanta2Energy(wave,photons);
-lum = ieLuminanceFromEnergy(energy,wave);
+energy = Quanta2Energy(wave, photons);
+lum = ieLuminanceFromEnergy(energy, wave);
 
 end
-

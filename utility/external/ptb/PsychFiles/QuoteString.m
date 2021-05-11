@@ -1,4 +1,4 @@
-function string=QuoteString(string)
+function string = QuoteString(string)
 % string=QuoteString(string)
 %
 % Wraps a string in quotes, after doubling any embedded quotes.
@@ -11,5 +11,5 @@ function string=QuoteString(string)
 % Denis Pelli 6/6/96
 % DCN, now a oneliner
 
-quote='''';
-string=[quote strrep(string,quote,[quote quote]) quote];
+quote = '''';
+string = [quote, strrep(string, quote, [quote, quote]), quote];

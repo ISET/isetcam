@@ -5,7 +5,7 @@
 % Part of LF Toolbox v0.4 released 12-Feb-2015
 % Copyright (c) 2013-2015 Donald G. Dansereau
 
-function LF = LFConvertToFloat( LF, Precision )
+function LF = LFConvertToFloat(LF, Precision)
 
 Precision = LFDefaultVal('Precision', 'single');
 
@@ -14,6 +14,6 @@ IsInt = isinteger(LF);
 
 LF = cast(LF, Precision);
 
-if( IsInt )
-	LF = LF ./ cast(intmax(OrigClass), Precision);
+if (IsInt)
+    LF = LF ./ cast(intmax(OrigClass), Precision);
 end

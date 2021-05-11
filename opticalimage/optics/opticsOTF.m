@@ -1,4 +1,4 @@
-function oi = opticsOTF(oi,scene)
+function oi = opticsOTF(oi, scene)
 % Apply the opticalImage OTF to the photon data
 %
 %    oi = opticsOTF(oi,scene);
@@ -9,7 +9,7 @@ function oi = opticsOTF(oi,scene)
 % ray trace approach.
 %
 % The  spatial (frequency) support of the OTF is computed from the OI
-% information. 
+% information.
 %
 % The OTF data are not stored or returned.  The OTF can be quite large.  It
 % represents every spatial frequency in every waveband.  So we  compute the
@@ -36,20 +36,20 @@ if ieNotDefined('oi'), error('Optical image required.'); end
 if ieNotDefined('scene'), scene = vcGetObject('scene'); end
 % if ieNotDefined('otfSaveFlag'),  otfSaveFlag = 0; end
 
-optics      = oiGet(oi,'optics');
-opticsModel = opticsGet(optics,'model');
+optics = oiGet(oi, 'optics');
+opticsModel = opticsGet(optics, 'model');
 
 switch lower(opticsModel)
-    case {'skip','skipotf'}
-        irradianceImage = oiGet(oi,'photons');
-        oi = oiSet(oi,'photons',irradianceImage);
+    case {'skip', 'skipotf'}
+        irradianceImage = oiGet(oi, 'photons');
+        oi = oiSet(oi, 'photons', irradianceImage);
 
-    case {'dlmtf','diffractionlimited'}
-        oi = oiApplyOTF(oi,scene);
-           
-    case {'shiftinvariant','custom','humanotf'}
-        oi = oiApplyOTF(oi,scene,'mm');
-        
+    case {'dlmtf', 'diffractionlimited'}
+        oi = oiApplyOTF(oi, scene);
+
+    case {'shiftinvariant', 'custom', 'humanotf'}
+        oi = oiApplyOTF(oi, scene, 'mm');
+
     otherwise
         error('Unknown OTF method');
 end
@@ -57,7 +57,7 @@ end
 end
 
 %-------------------------------------------
-function oi = oiApplyOTF(oi,scene,unit)
+function oi = oiApplyOTF(oi, scene, unit)
 %Calculate and apply the otf waveband by waveband
 %
 %   oi = oiApplyOTF(oi,method,unit);
@@ -72,18 +72,18 @@ function oi = oiApplyOTF(oi,scene,unit)
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
-if ieNotDefined('oi'),     error('Optical image required.'); end
-if ieNotDefined('unit'),   unit   = 'cyclesPerDegree'; end
+if ieNotDefined('oi'), error('Optical image required.'); end
+if ieNotDefined('unit'), unit = 'cyclesPerDegree'; end
 
-wave     = oiGet(oi,'wave');
+wave = oiGet(oi, 'wave');
 
 % Pad the optical image to allow for light spread.  Also, make sure the row
 % and col values are even.
-imSize   = oiGet(oi,'size');
-padSize  = round(imSize/8);
+imSize = oiGet(oi, 'size');
+padSize = round(imSize/8);
 padSize(3) = 0;
-sDist = sceneGet(scene,'distance');
-oi = oiPad(oi,padSize,sDist);
+sDist = sceneGet(scene, 'distance');
+oi = oiPad(oi, padSize, sDist);
 
 % See s_FFTinMatlab to understand the logic of the operations here.
 % We used to do this one wavelength at a time.  But this could cause
@@ -93,30 +93,30 @@ oi = oiPad(oi,padSize,sDist);
 
 % Get the current data set.  It has the right size.  We over-write it
 % below.
-p = oiGet(oi,'photons');
-otfM = oiCalculateOTF(oi, wave, unit);  % Took changes from ISETBio.
+p = oiGet(oi, 'photons');
+otfM = oiCalculateOTF(oi, wave, unit); % Took changes from ISETBio.
 
-for ii=1:length(wave)
+for ii = 1:length(wave)
     % img = oiGet(oi,'photons',wave(ii));
     img = p(:, :, ii);
-    % figure(1); imagesc(img); colormap(gray); 
+    % figure(1); imagesc(img); colormap(gray);
 
     % For diffraction limited we calculate the OTF.  For other optics
     % models we look up the stored OTF.  Remember, DC is in the (1,1)
     % position.
     % otf = oiCalculateOTF(oi,wave(ii),unit);
-    otf = otfM(:,:,ii);
+    otf = otfM(:, :, ii);
     % figure(1); mesh(otf); otf(1,1)
-    
+
     % Put the image center in (1,1) and take the transform.
     imgFFT = fft2(img);
     % imgFFT = fft2(fftshift(img));
-    % figure(1); imagesc(abs(imgFFT));  
+    % figure(1); imagesc(abs(imgFFT));
     % figure(2); imagesc(abs(otf));
     % colormap(gray)
-    
-    % Multiply the transformed otf and the image.  
-    % Then invert and put the image center in  the center of the matrix 
+
+    % Multiply the transformed otf and the image.
+    % Then invert and put the image center in  the center of the matrix
     filteredIMG = abs(ifft2(otf .* imgFFT));
     % filteredIMG = abs(ifftshift(ifft2(otf .* imgFFT)));
     % if  (sum(filteredIMG(:))/sum(img(:)) - 1) > 1e-10  % Should be 1 if DC is correct
@@ -127,7 +127,7 @@ for ii=1:length(wave)
     %  if ~isreal(filteredIMG),
     %     warning('ISET:complexphotons','Complex photons: %.0f', wave(ii));
     %  end
-       
+
     % Sometimes we had  annoying complex values left after this filtering.
     % We got rid of it by an abs() operator.  It should never be there.
     % But we think it arises because of rounding error.  We haven't seen
@@ -135,11 +135,10 @@ for ii=1:length(wave)
     % figure(1); imagesc(abs(filteredIMG)); colormap(gray)
     %
     % oi = oiSet(oi,'photons',filteredIMG,wave(ii));
-    p(:,:,ii) = filteredIMG;
+    p(:, :, ii) = filteredIMG;
 end
 
 % Put all the photons in at once.
-oi = oiSet(oi,'photons',p);
+oi = oiSet(oi, 'photons', p);
 
 end
-

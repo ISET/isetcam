@@ -1,4 +1,4 @@
-function quantalEfficiencies = PhotopigmentQuantalEfficiency(receptorTypes,species,source)
+function quantalEfficiencies = PhotopigmentQuantalEfficiency(receptorTypes, species, source)
 % quantalEfficiencies = PhotopigmentQuantalEfficiency.(receptorTypes,[species],[source])
 %
 % Return estimate of the fraction of absorbed quanta that lead to an isomerization.
@@ -22,36 +22,35 @@ function quantalEfficiencies = PhotopigmentQuantalEfficiency(receptorTypes,speci
 
 % Fill in defaults
 if (nargin < 2 || isempty(species))
-	species = 'Human';
+    species = 'Human';
 end
 if (nargin < 3 || isempty(source))
-	source = 'Rodieck';
+    source = 'Rodieck';
 end
 
 % Fill in specific density according to specified source
 if (iscell(receptorTypes))
-	quantalEfficiencies = zeros(length(receptorTypes),1);
+    quantalEfficiencies = zeros(length(receptorTypes), 1);
 else
-	quantalEfficiencies = zeros(1,1);
+    quantalEfficiencies = zeros(1, 1);
 end
 for i = 1:length(quantalEfficiencies)
-	if (iscell(receptorTypes))
-		type = receptorTypes{i};
-	elseif (i == 1)
-		type = receptorTypes;
-	else
-		error('Argument receptorTypes must be a string or a cell array of strings');
-	end
+    if (iscell(receptorTypes))
+        type = receptorTypes{i};
+    elseif (i == 1)
+        type = receptorTypes;
+    else
+        error('Argument receptorTypes must be a string or a cell array of strings');
+    end
 
-	switch (source)
+    switch (source)
         case {'None'};
             quantalEfficiencies(i) = 1;
-            
-		case {'Generic'}
-			quantalEfficiencies(i) = 0.667;
 
-		otherwise
-			error(sprintf('Unknown source %s for quantal efficiency estimates',source));
-	end
-end
- 
+        case {'Generic'}
+            quantalEfficiencies(i) = 0.667;
+
+        otherwise
+            error(sprintf('Unknown source %s for quantal efficiency estimates', source));
+            end
+    end

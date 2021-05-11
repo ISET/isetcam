@@ -1,4 +1,4 @@
-function alpha = metricsMaskedError(imgV,E,method)
+function alpha = metricsMaskedError(imgV, E, method)
 % Gateway routine for calculating the correlated part of the error
 %
 %   alpha = metricsMaskedError(imgV,E,[method='ls'])
@@ -12,7 +12,7 @@ function alpha = metricsMaskedError(imgV,E,method)
 %
 % (c) Imageval 2011
 
-if ieNotDefined('method'), method = 'ls';  end
+if ieNotDefined('method'), method = 'ls'; end
 
 % There will be various ways to calculate
 method = ieParamFormat(method);
@@ -20,10 +20,10 @@ switch method
     case 'ls'
         % Least squared estimate for the whole image
         % E = alpha*imgV
-        alpha = imgV(:)\E(:);
+        alpha = imgV(:) \ E(:);
 
     otherwise
-        error('Unknown method: %s\n',method);
+        error('Unknown method: %s\n', method);
 end
 
 return

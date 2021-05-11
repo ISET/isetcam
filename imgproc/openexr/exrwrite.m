@@ -1,4 +1,4 @@
-function exrwrite( hdr, filename )
+function exrwrite(hdr, filename)
 %EXRWRITE    Write OpenEXR high dynamic range (HDR) image.
 % EXRWRITE(HDR, FILENAME) creates an OpenEXR high dynamic range (HDR) image
 % file from HDR, a real numeric high dynamic range image with either one or

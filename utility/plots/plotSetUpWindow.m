@@ -4,7 +4,7 @@ function figNum = plotSetUpWindow(figNum)
 %  plotSetUpWindow(figNum)
 %
 % This routine could, ultimately, take into account the user's display says
-% or other window positions.  
+% or other window positions.
 %
 % Examples:
 %  plotSetUpWindow;
@@ -16,14 +16,14 @@ function figNum = plotSetUpWindow(figNum)
 %   The management of the graphics windows is very poor right
 %   now and needs to be corrected.  We should allow multiple graph windows
 %   and help keep track of them.
-%   
+%
 
 if ieNotDefined('figNum')
-    figNum = vcSelectFigure('GRAPHWIN'); 
-    set(figNum,'Units','Normalized','Position',[0.5769, 0.0308,0.4200, 0.4200]);
-    set(figNum,'Name','ISET GraphWin','NumberTitle','off');
+    figNum = vcSelectFigure('GRAPHWIN');
+    set(figNum, 'Units', 'Normalized', 'Position', [0.5769, 0.0308, 0.4200, 0.4200]);
+    set(figNum, 'Name', 'ISET GraphWin', 'NumberTitle', 'off');
 else
-    figure(figNum); 
+    figure(figNum);
 end
 
 colormap('default')

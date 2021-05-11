@@ -1,4 +1,4 @@
-function quanta = EnergyToQuanta(wls,energy)
+function quanta = EnergyToQuanta(wls, energy)
 % quanta = EnergyToQuanta(wls,energy)
 %
 % Convert energy units (energy or power per unit wavelength)
@@ -18,5 +18,5 @@ function quanta = EnergyToQuanta(wls,energy)
 wls = MakeItWls(wls);
 h = 6.626e-34;
 c = 2.998e8;
-[n,m] = size(energy);
-quanta = (energy/(h*c)) .* (1e-9 * wls(:,ones(1,m)));
+[n, m] = size(energy);
+quanta = (energy / (h * c)) .* (1e-9 * wls(:, ones(1, m)));

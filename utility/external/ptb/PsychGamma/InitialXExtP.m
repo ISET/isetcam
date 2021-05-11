@@ -11,8 +11,7 @@ function x = InitialXExtP(xp)
 %               FitGammaExpP.  Make default guess for gamma 2.
 % 11/16/06 dhb  Adjust initial offset for [0,1] world.
 
-x = [2 0]';
+x = [2, 0]';
 if (nargin == 1)
-  x(1) = xp;
+    x(1) = xp;
 end
-

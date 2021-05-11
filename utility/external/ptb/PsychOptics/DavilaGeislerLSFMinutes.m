@@ -14,7 +14,7 @@ function lsf = DavilaGeislerLSFMinutes(distance)
 weight1 = 0.409;
 sigma1 = 0.417;
 sigma2 = 1.42;
-lsf = weight1*normpdf(distance,0,sigma1) + ...
-       (1-weight1)*normpdf(distance,0,sigma2);
-  
-lsf = lsf/max(lsf(:));
+lsf = weight1 * normpdf(distance, 0, sigma1) + ...
+    (1 - weight1) * normpdf(distance, 0, sigma2);
+
+lsf = lsf / max(lsf(:));

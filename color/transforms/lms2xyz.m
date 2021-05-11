@@ -18,9 +18,9 @@ if ndims(lms) == 3
     xyz = imageLinearTransform(lms, colorTransformMatrix('lms2xyz'));
 elseif ndims(lms) == 2
     % XW format - Not debugged thoroughly
-    if (size(lms,1) == 3) && size(lms,2) ~= 3
+    if (size(lms, 1) == 3) && size(lms, 2) ~= 3
         xyz = lms * colorTransformMatrix('lms2xyz');
-    elseif    (size(lms,1) ~= 3) && size(lms,2) == 3
+    elseif (size(lms, 1) ~= 3) && size(lms, 2) == 3
         xyz = lms' * colorTransformMatrix('lms2xyz');
     else
         error('Ambiguous lms shape');
@@ -28,4 +28,3 @@ elseif ndims(lms) == 2
 end
 
 return
-

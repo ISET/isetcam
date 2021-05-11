@@ -1,4 +1,4 @@
-function T = LambNomogram(S,lambdaMax)
+function T = LambNomogram(S, lambdaMax)
 % T = LambNomogram(S,lambdaMax)
 %
 % Compute spectral sensitivities according to the
@@ -14,23 +14,28 @@ function T = LambNomogram(S,lambdaMax)
 % 8/20/98 dhb  Wrote it.
 
 % These are the coefficients for Equation 2.
-a = 70; b = 28.5; c = -14.1;
-A = 0.880; B = 0.924; C = 1.104; D = 0.655;
+a = 70;
+b = 28.5;
+c = -14.1;
+A = 0.880;
+B = 0.924;
+C = 1.104;
+D = 0.655;
 
 % Get wls argument.
 wls = MakeItWls(S);
-[nWls,nil] = size(wls);
-[nT,nil] = size(lambdaMax);
-T = zeros(nT,nWls);
+[nWls, nil] = size(wls);
+[nT, nil] = size(lambdaMax);
+T = zeros(nT, nWls);
 
 for i = 1:nT
-	theMax = lambdaMax(i);
-	wlarg = theMax ./ wls';
-	T(i,:) = 1 ./ ( ...
-					  exp( a*(A-wlarg) ) + ...
-						exp( b*(B-wlarg) ) + ...
-						exp( c*(C-wlarg) ) + ...
-						D ...
-						);
-	T(i,:) = T(i,:)/max(T(i,:));
+    theMax = lambdaMax(i);
+    wlarg = theMax ./ wls';
+    T(i, :) = 1 ./ ( ...
+        exp(a * (A - wlarg)) + ...
+        exp(b * (B - wlarg)) + ...
+        exp(c * (C - wlarg)) + ...
+        D ...
+        );
+    T(i, :) = T(i, :) / max(T(i, :));
 end

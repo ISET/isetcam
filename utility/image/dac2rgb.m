@@ -30,11 +30,11 @@ if ieNotDefined('GammaTable'), GammaTable = 2.2; end
 % will be returned in the input format
 if ndims(DAC) == 2
     dFormat = 'XW';
-    nPrimaries = size(DAC,2);
+    nPrimaries = size(DAC, 2);
 else
     dFormat = 'RGB';
-    nPrimaries = size(DAC,3);
-    [DAC,r,c] = RGB2XWFormat(DAC);
+    nPrimaries = size(DAC, 3);
+    [DAC, r, c] = RGB2XWFormat(DAC);
 end
 
 % Allocate space for return data
@@ -42,36 +42,36 @@ RGB = zeros(size(DAC));
 
 % At this point, the data are in XW format
 if isscalar(GammaTable)
-    if (nargin==1)
-        disp(['Raising DAC values to a power of ' num2str(GammaTable)]);
+    if (nargin == 1)
+        disp(['Raising DAC values to a power of ', num2str(GammaTable)]);
     end
     RGB = DAC.^GammaTable;
 
-elseif isequal(size(GammaTable(:)),[3,1])
-    fprintf('Using separate gamma values per primary %.3f\n',GammaTable);
-    
+elseif isequal(size(GammaTable(:)), [3, 1])
+    fprintf('Using separate gamma values per primary %.3f\n', GammaTable);
+
     % Stay in XW format
-    for ii=1:nPrimaries
-        RGB(:,ii) = DAC(:,ii).^GammaTable(ii);
+    for ii = 1:nPrimaries
+        RGB(:, ii) = DAC(:, ii).^GammaTable(ii);
     end
-    
+
 elseif ndims(GammaTable) == 2
     % A full table was sent in.  We put the primary values in the dac
     % through different lookup tables, one for the R,G and B.
-    DAC = round(DAC * (size(GammaTable,1)-1)) + 1;
-    
-    if (size(GammaTable,2)==1)
-        GammaTable = repmat(GammaTable,1,nPrimaries);
+    DAC = round(DAC*(size(GammaTable, 1) - 1)) + 1;
+
+    if (size(GammaTable, 2) == 1)
+        GammaTable = repmat(GammaTable, 1, nPrimaries);
     end
-    
-    for ii=1:nPrimaries
-        RGB(:,ii) = GammaTable(DAC(:,ii));
+
+    for ii = 1:nPrimaries
+        RGB(:, ii) = GammaTable(DAC(:, ii));
     end
-    
+
 else
     error('Could not parse GammaTable');
 end
 
-if isequal(dFormat,'RGB'), RGB = XW2RGBFormat(RGB,r,c); end
+if isequal(dFormat, 'RGB'), RGB = XW2RGBFormat(RGB, r, c); end
 
 return

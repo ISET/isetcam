@@ -1,4 +1,4 @@
-function [udata, g] = oiPlot(oi,pType,roiLocs,varargin)
+function [udata, g] = oiPlot(oi, pType, roiLocs, varargin)
 % Gateway routine for plotting optical image (oi) properties
 %
 %   [udata, g] = oiPlot([oi],[pType='illuminance hline'],[xy],[wave])
@@ -19,9 +19,9 @@ function [udata, g] = oiPlot(oi,pType,roiLocs,varargin)
 %    Irradiance
 %     {'irradiance photons roi'} - Irradiance within an ROI of the image
 %     {'irradiance energy roi'}  - Irradiance within an ROI of the image
-%     {'irradiance hline'}  - Horizontal line spectral irradiance (photons) 
+%     {'irradiance hline'}  - Horizontal line spectral irradiance (photons)
 %                            (space x wavelength)
-%     {'irradiance vline'}  - Vertical line spectral irradiance (photons) 
+%     {'irradiance vline'}  - Vertical line spectral irradiance (photons)
 %                            (space x wavelength)
 %     {'irradiance fft'}    - 2D FFT of radiance at some wavelength
 %     {'irradiance image with grid'} - Show spatial grid on irradiance image
@@ -90,7 +90,7 @@ function [udata, g] = oiPlot(oi,pType,roiLocs,varargin)
 
 %% Programming note
 %  This function includes within it the previous functions plotOTF and
-%  plotOIIrradiance. Those have been deprecated.  
+%  plotOIIrradiance. Those have been deprecated.
 
 if ieNotDefined('oi'), oi = vcGetObject('OI'); end
 if ieNotDefined('pType'), pType = 'hlineilluminance'; end
@@ -101,11 +101,11 @@ if ieNotDefined('pType'), pType = 'hlineilluminance'; end
 thisW = [];
 if ~isempty(varargin)
     % See if the user sent in thisW
-    if isequal(class(varargin{end}),'oiWindow_App')
+    if isequal(class(varargin{end}), 'oiWindow_App')
         thisW = varargin{:};
-        
+
         % Remove the app from the array.  Backwards compatibility.
-        varargin = varargin(1:(end-1));
+        varargin = varargin(1:(end -1));
     end
 end
 
@@ -113,119 +113,129 @@ end
 pType = ieParamFormat(pType);
 
 if ieNotDefined('roiLocs')
-    
+
     if ~isempty(thisW)
         % Focus on the oiWindow for clicking.
         figure(thisW.figure1);
     end
-    
+
     switch pType
-        case {'irradiancehline','hline','hlineirradiance' , ...
-                'illuminancehline','horizontallineilluminance','hlineilluminance', ...
-                'illuminanceffthline',...
-                'contrasthline','hlinecontrast', ...
+        case {'irradiancehline', 'hline', 'hlineirradiance', ...
+                'illuminancehline', 'horizontallineilluminance', 'hlineilluminance', ...
+                'illuminanceffthline', ...
+                'contrasthline', 'hlinecontrast', ...
                 }
             roiLocs = iePointSelect(oi);
-            
+
             % Draw a line on the oiWindow.  I may be off by 1.
-            sz = oiGet(oi,'size');
-            ieROIDraw(oi,'shape','line','shape data',[1 sz(2) roiLocs(2) roiLocs(2)]);
-            
-        case {'irradiancevline','vline','vlineirradiance',...
-                'illuminancevline','vlineilluminance', ...
-                'contrastvline','vlinecontrast','illuminancefftvline'}
+            sz = oiGet(oi, 'size');
+            ieROIDraw(oi, 'shape', 'line', 'shape data', [1, sz(2), roiLocs(2), roiLocs(2)]);
+
+        case {'irradiancevline', 'vline', 'vlineirradiance', ...
+                'illuminancevline', 'vlineilluminance', ...
+                'contrastvline', 'vlinecontrast', 'illuminancefftvline'}
             roiLocs = iePointSelect(oi);
-            
+
             % Draw a line on the oiWindow.  I may be off by 1.
-            sz = oiGet(oi,'size');
-            ieROIDraw(oi,'shape','line','shape data',[roiLocs(1) roiLocs(1) 1 sz(1)]);
-            
-        case {'irradianceenergyroi','irradiancephotonsroi', ...
-                'chromaticityroi','illuminanceroi'}
+            sz = oiGet(oi, 'size');
+            ieROIDraw(oi, 'shape', 'line', 'shape data', [roiLocs(1), roiLocs(1), 1, sz(1)]);
+
+        case {'irradianceenergyroi', 'irradiancephotonsroi', ...
+                'chromaticityroi', 'illuminanceroi'}
             roiLocs = ieROISelect(oi);
 
         otherwise
             % There are many cases that don't need a position
     end
 end
-   
+
 %% Make the plot window and use this default gray scale map
 
 g = ieNewGraphWin;
-mp = 0.4*gray + 0.4*ones(size(gray));
+mp = 0.4 * gray + 0.4 * ones(size(gray));
 colormap(mp);
 
 switch pType
-    
-    % Irradiance related
+
+        % Irradiance related
     case {'irradiancephotonsroi'}
         %[uData, g] = oiPlot(oi,'irradiance photons roi',roiLocs);
         %
-        udata = plotOIIrradiance(oi,'photons',roiLocs);
+        udata = plotOIIrradiance(oi, 'photons', roiLocs);
     case {'irradianceenergyroi'}
         %[uData, g] = oiPlot(oi,'irradiance energy roi',roiLocs);
         %
-        udata = plotOIIrradiance(oi,'energy',roiLocs);
-        
-    case {'irradiancehline','hline','hlineirradiance'}
+        udata = plotOIIrradiance(oi, 'energy', roiLocs);
+
+    case {'irradiancehline', 'hline', 'hlineirradiance'}
         % oiPlot('irradiance hline')
-        data = oiGet(oi,'photons');
-        if isempty(data), warndlg(sprintf('Photon data are unavailable.')); return; end
-        
-        wave = oiGet(oi,'wave');
-        data = squeeze(data(roiLocs(2),:,:));
-        if isa(data,'single'), data = double(data); end
-        
-        posMicrons = oiSpatialSupport(oi,'um');
-        
-        if size(data,1) == 1
+        data = oiGet(oi, 'photons');
+        if isempty(data), warndlg(sprintf('Photon data are unavailable.'));
+            return;
+        end
+
+        wave = oiGet(oi, 'wave');
+        data = squeeze(data(roiLocs(2), :, :));
+        if isa(data, 'single'), data = double(data); end
+
+        posMicrons = oiSpatialSupport(oi, 'um');
+
+        if size(data, 1) == 1
             % Manage monochrome data
-            plot(posMicrons.x,data');
+            plot(posMicrons.x, data');
             xlabel('Position (mm)');
             ylabel('Irradiance (q/s/nm/m^2)');
             title('Monochrome image')
-            grid on; set(gca,'xtick',ieChooseTickMarks(posMicrons.x))
+            grid on; set(gca, 'xtick', ieChooseTickMarks(posMicrons.x))
         else
-            mesh(posMicrons.x,wave,double(double(data')));
+            mesh(posMicrons.x, wave, double(double(data')));
             xlabel('Position (um)');
-            ylabel('Wavelength (nm)'); zlabel('Irradiance (q/s/nm/m^2)');
-            grid on; set(gca,'xtick',ieChooseTickMarks(posMicrons.x))
+            ylabel('Wavelength (nm)');
+            zlabel('Irradiance (q/s/nm/m^2)');
+            grid on; set(gca, 'xtick', ieChooseTickMarks(posMicrons.x))
         end
-        
-        udata.wave = wave; udata.pos = posMicrons.x; udata.data = double(data');
+
+        udata.wave = wave;
+        udata.pos = posMicrons.x;
+        udata.data = double(data');
         udata.cmd = 'mesh(pos,wave,data)';
-        set(g,'Name',sprintf('ISET GraphWin: line %.0f',roiLocs(2)));
+        set(g, 'Name', sprintf('ISET GraphWin: line %.0f', roiLocs(2)));
         colormap(jet);
-        
-    case {'irradiancevline','vline','vlineirradiance',}
+
+    case {'irradiancevline', 'vline', 'vlineirradiance',}
         % oiPlot(oi,'irradiance vline')
-        data = oiGet(oi,'photons');
-        if isempty(data), warndlg(sprintf('Photon data are unavailable.')); return; end
-        
-        wave = oiGet(oi,'wave');
-        data = squeeze(data(:,roiLocs(1),:));
-        if isa(data,'single'), data = double(data); end
-        
-        posMicrons = oiSpatialSupport(oi,'microns');
-        
-        if size(data,2) == 1
-            plot(posMicrons.y,data);
+        data = oiGet(oi, 'photons');
+        if isempty(data), warndlg(sprintf('Photon data are unavailable.'));
+            return;
+        end
+
+        wave = oiGet(oi, 'wave');
+        data = squeeze(data(:, roiLocs(1), :));
+        if isa(data, 'single'), data = double(data); end
+
+        posMicrons = oiSpatialSupport(oi, 'microns');
+
+        if size(data, 2) == 1
+            plot(posMicrons.y, data);
             xlabel('Position (mm)');
             ylabel('Irradiance (q/s/nm/m^2)');
             title('Monochrome image')
-            grid on; set(gca,'xtick',ieChooseTickMarks(posMicrons.y))
+            grid on; set(gca, 'xtick', ieChooseTickMarks(posMicrons.y))
         else
-            mesh(posMicrons.y,wave,double(data'));
+            mesh(posMicrons.y, wave, double(data'));
             xlabel('Position (um)');
-            ylabel('Wavelength (nm)'); zlabel('Irradiance (q/s/nm/m^2)');
-            grid on; set(gca,'xtick',ieChooseTickMarks(posMicrons.y))
+            ylabel('Wavelength (nm)');
+            zlabel('Irradiance (q/s/nm/m^2)');
+            grid on; set(gca, 'xtick', ieChooseTickMarks(posMicrons.y))
         end
-        
+
         % Attach data to the figure
-        udata.wave = wave; udata.pos = posMicrons.y; udata.data = double(data');
-        set(g,'Name',sprintf('Line %.0f',roiLocs(1)));
+        udata.wave = wave;
+        udata.pos = posMicrons.y;
+        udata.data = double(data');
+        set(g, 'Name', sprintf('Line %.0f', roiLocs(1)));
         colormap(jet);
-        
+
     case {'irradiancefft'}
         % plot(oi,'irradiance fft',roiLocs,wave)
         % This is the fft of the region at the selected wavelength.
@@ -236,346 +246,414 @@ switch pType
         % The mean is not included in the graph to help with the dynamic
         % range.
         % Axis range could be better.
-        
+
         if isempty(varargin)
-            wave = oiGet(oi,'wave');
-            selectedWave = wave(round(length(wave)/2));
+            wave = oiGet(oi, 'wave');
+            selectedWave = wave(round(length(wave) / 2));
         else
             selectedWave = varargin{1};
         end
-        
-        
-        data = oiGet(oi,'photons',selectedWave);
-        if isempty(data), warndlg(sprintf('Photon data are unavailable.')); return; end
-        
-        if isa(data,'single'), data = double(data); end
+
+
+        data = oiGet(oi, 'photons', selectedWave);
+        if isempty(data), warndlg(sprintf('Photon data are unavailable.'));
+            return;
+        end
+
+        if isa(data, 'single'), data = double(data); end
         sz = size(data);
-        
+
         % Remove the mean
         data = data - mean(data(:));
-        
+
         % Plot and attach data to figure
-        udata.x = 1:sz(2); udata.y = 1:sz(1); udata.z = fftshift(abs(fft2(data)));
+        udata.x = 1:sz(2);
+        udata.y = 1:sz(1);
+        udata.z = fftshift(abs(fft2(data)));
         udata.cmd = 'mesh(x,y,z)';
-        mesh(udata.x,udata.y,udata.z);
-        xlabel('Cycles/ROI-image'); ylabel('Cycles/ROI-image'); zlabel('Amplitude');
+        mesh(udata.x, udata.y, udata.z);
+        xlabel('Cycles/ROI-image');
+        ylabel('Cycles/ROI-image');
+        zlabel('Amplitude');
         str = sprintf('Amplitude spectrum at %.0f nm', selectedWave);
         title(str);
-        set(g,'Name',sprintf('Irradiance with grid'));
+        set(g, 'Name', sprintf('Irradiance with grid'));
         colormap(jet)
-        
-    case {'irradianceimagewave','irradianceimagewavegrid'}
+
+    case {'irradianceimagewave', 'irradianceimagewavegrid'}
         % oiPlot(oi,'irradianceImageWave',wave,gSpacing);
         if isempty(varargin), wave = 500;
         else, wave = varargin{1};
         end
-        
-        irrad   = oiGet(oi,'photons',wave);
-        sz      = oiGet(oi,'size');
-        spacing = oiGet(oi,'sampleSpacing','um');
-        
+
+        irrad = oiGet(oi, 'photons', wave);
+        sz = oiGet(oi, 'size');
+        spacing = oiGet(oi, 'sampleSpacing', 'um');
+
         % This is probably now a spatial support oiGet ...
-        xCoords = spacing(2) * (1:sz(2)); xCoords = xCoords - mean(xCoords);
-        yCoords = spacing(1) * (1:sz(1)); yCoords = yCoords - mean(yCoords);
+        xCoords = spacing(2) * (1:sz(2));
+        xCoords = xCoords - mean(xCoords);
+        yCoords = spacing(1) * (1:sz(1));
+        yCoords = yCoords - mean(yCoords);
         suggestedSpacing = round(max(xCoords(:))/5);
         if length(varargin) == 2, gSpacing = varargin{2};
         else
-            gSpacing = ieReadNumber('Enter grid spacing (um)',suggestedSpacing,'%.2f');
+            gSpacing = ieReadNumber('Enter grid spacing (um)', suggestedSpacing, '%.2f');
             if isempty(gSpacing), return; end
         end
-        
-        imagesc(xCoords,yCoords,irrad); colormap(gray)
-        xlabel('Position (um)'); ylabel('Position (um)');
-        
+
+        imagesc(xCoords, yCoords, irrad); colormap(gray)
+        xlabel('Position (um)');
+        ylabel('Position (um)');
+
         udata.irrad = irrad;
         udata.xCoords = xCoords;
         udata.yCoords = yCoords;
-        
-        xGrid = (0:gSpacing:round(max(xCoords))); tmp = -1*fliplr(xGrid); xGrid = [tmp(1:(end-1)), xGrid];
-        yGrid = (0:gSpacing:round(max(yCoords))); tmp = -1*fliplr(yGrid); yGrid = [tmp(1:(end-1)), yGrid];
-        
-        set(gca,'xcolor',[.5 .5 .5]); set(gca,'ycolor',[.5 .5 .5]);
-        set(gca,'xtick',xGrid,'ytick',yGrid); grid on
-        set(g,'Name',sprintf('Image with grid'));
-        
-    case {'irradianceimagegrid','irradianceimagewithgrid','irradianceimage'}
+
+        xGrid = (0:gSpacing:round(max(xCoords)));
+        tmp = -1 * fliplr(xGrid);
+        xGrid = [tmp(1:(end -1)), xGrid];
+        yGrid = (0:gSpacing:round(max(yCoords)));
+        tmp = -1 * fliplr(yGrid);
+        yGrid = [tmp(1:(end -1)), yGrid];
+
+        set(gca, 'xcolor', [.5, .5, .5]);
+        set(gca, 'ycolor', [.5, .5, .5]);
+        set(gca, 'xtick', xGrid, 'ytick', yGrid); grid on
+        set(g, 'Name', sprintf('Image with grid'));
+
+    case {'irradianceimagegrid', 'irradianceimagewithgrid', 'irradianceimage'}
         % oiPlot(oi,'irradianceImage',sampleSpacing-um);
-        irrad   = oiGet(oi,'photons');
-        wave    = oiGet(oi,'wave');
-        nWave   = oiGet(oi,'nwave');
-        sz      = oiGet(oi,'size');
-        spacing = oiGet(oi,'sampleSpacing','um');
-        gam     = oiGet(oi,'gamma');
-        
+        irrad = oiGet(oi, 'photons');
+        wave = oiGet(oi, 'wave');
+        nWave = oiGet(oi, 'nwave');
+        sz = oiGet(oi, 'size');
+        spacing = oiGet(oi, 'sampleSpacing', 'um');
+        gam = oiGet(oi, 'gamma');
+
         % This is probably now a spatial support oiGet ...
-        xCoords = spacing(2) * (1:sz(2)); xCoords = xCoords - mean(xCoords);
-        yCoords = spacing(1) * (1:sz(1)); yCoords = yCoords - mean(yCoords);
+        xCoords = spacing(2) * (1:sz(2));
+        xCoords = xCoords - mean(xCoords);
+        yCoords = spacing(1) * (1:sz(1));
+        yCoords = yCoords - mean(yCoords);
         if length(varargin) >= 1, gSpacing = varargin{1};
         else
             suggestedSpacing = round(max(xCoords(:))/5);
-            gSpacing = ieReadNumber('Enter grid spacing (um)',suggestedSpacing,'%.2f');
+            gSpacing = ieReadNumber('Enter grid spacing (um)', suggestedSpacing, '%.2f');
             if isempty(gSpacing), return; end
         end
-        
+
         if nWave > 1
-            imageSPD(irrad,wave,gam,sz(1),sz(2),1,xCoords,yCoords,g);
+            imageSPD(irrad, wave, gam, sz(1), sz(2), 1, xCoords, yCoords, g);
         else
-            wList = oiGet(oi,'wavelength');
-            [row,col] = size(irrad);
+            wList = oiGet(oi, 'wavelength');
+            [row, col] = size(irrad);
             % Pass in the window handle
-            imageSPD(irrad,wList,gam,row,col,1,xCoords,yCoords,g);
+            imageSPD(irrad, wList, gam, row, col, 1, xCoords, yCoords, g);
         end
-        xlabel('Position (um)'); ylabel('Position (um)');
-        
+        xlabel('Position (um)');
+        ylabel('Position (um)');
+
         udata.irrad = irrad;
         udata.xCoords = xCoords;
         udata.yCoords = yCoords;
-        
-        xGrid = (0:gSpacing:round(max(xCoords))); tmp = -1*fliplr(xGrid); xGrid = [tmp(1:(end-1)), xGrid];
-        yGrid = (0:gSpacing:round(max(yCoords))); tmp = -1*fliplr(yGrid); yGrid = [tmp(1:(end-1)), yGrid];
-        
-        set(gca,'xcolor',[.5 .5 .5]); set(gca,'ycolor',[.5 .5 .5]);
-        set(gca,'xtick',xGrid,'ytick',yGrid); grid on
-        set(g,'Name',sprintf('Irradiance with grid'));
-        
+
+        xGrid = (0:gSpacing:round(max(xCoords)));
+        tmp = -1 * fliplr(xGrid);
+        xGrid = [tmp(1:(end -1)), xGrid];
+        yGrid = (0:gSpacing:round(max(yCoords)));
+        tmp = -1 * fliplr(yGrid);
+        yGrid = [tmp(1:(end -1)), yGrid];
+
+        set(gca, 'xcolor', [.5, .5, .5]);
+        set(gca, 'ycolor', [.5, .5, .5]);
+        set(gca, 'xtick', xGrid, 'ytick', yGrid); grid on
+        set(g, 'Name', sprintf('Irradiance with grid'));
+
         % Illuminance and chromaticity
     case {'illuminanceroi'}
         % Histogram of illuminance in an ROI
-        udata = plotOICIE(oi,'illuminance',roiLocs);
+        udata = plotOICIE(oi, 'illuminance', roiLocs);
     case {'chromaticityroi'}
         % Graph of chromaticity coords in an ROI
-        udata = plotOICIE(oi,'chromaticity',roiLocs);
-        
-    case {'illuminancehline','horizontallineilluminance','hlineilluminance'}
+        udata = plotOICIE(oi, 'chromaticity', roiLocs);
+
+    case {'illuminancehline', 'horizontallineilluminance', 'hlineilluminance'}
         % oiPlot(oi,'illuminance hline')
-        data = oiGet(oi,'illuminance');
-        if isempty(data), warndlg(sprintf('Illuminance data are unavailable.')); return; end
-        illum = data(roiLocs(2),:);
-        posMicrons = oiSpatialSupport(oi,'um');
-        
-        plot(posMicrons.x,illum);
-        xlabel('Position (um)'); ylabel('Illuminance (lux)');
-        grid on; set(gca,'xtick',ieChooseTickMarks(posMicrons.x))
-        
-        udata.pos = posMicrons.x; udata.data = illum';
+        data = oiGet(oi, 'illuminance');
+        if isempty(data), warndlg(sprintf('Illuminance data are unavailable.'));
+            return;
+        end
+        illum = data(roiLocs(2), :);
+        posMicrons = oiSpatialSupport(oi, 'um');
+
+        plot(posMicrons.x, illum);
+        xlabel('Position (um)');
+        ylabel('Illuminance (lux)');
+        grid on; set(gca, 'xtick', ieChooseTickMarks(posMicrons.x))
+
+        udata.pos = posMicrons.x;
+        udata.data = illum';
         udata.cmd = 'plot(pos,illum)';
-        set(g,'Name',sprintf('Line %.0f',roiLocs(2)));
-        
+        set(g, 'Name', sprintf('Line %.0f', roiLocs(2)));
+
     case {'illuminancemeshlog'}
         % Mesh plot of image log illuminance
-        udata = plotIlluminanceMesh(oi,'log');
+        udata = plotIlluminanceMesh(oi, 'log');
     case {'illuminancemeshlinear'}
         % Mesh plot of image illuminance
-        udata = plotIlluminanceMesh(oi,'linear');
+        udata = plotIlluminanceMesh(oi, 'linear');
     case {'illuminanceffthline'}
         % oiPlot(oi,'illuminance fft hline')
         % The mean is removed to keep the dynamic range reasonable.
-        
-        data = oiGet(oi,'illuminance');
-        if isempty(data), warndlg(sprintf('Illuminance data are unavailable.')); return; end
-        illum = data(roiLocs(2),:); illum = illum - mean(illum(:));
-        xPosMM = oiSpatialSupport(oi,'mm');
-        
+
+        data = oiGet(oi, 'illuminance');
+        if isempty(data), warndlg(sprintf('Illuminance data are unavailable.'));
+            return;
+        end
+        illum = data(roiLocs(2), :);
+        illum = illum - mean(illum(:));
+        xPosMM = oiSpatialSupport(oi, 'mm');
+
         % Compute amplitude spectrum in units of millimeters
         normalize = 1;
-        [freq,fftIllum] = ieSpace2Amp(xPosMM.x,illum,normalize);
-        
-        plot(freq,fftIllum,'r-');
-        xlabel('Cycles/mm'); ylabel('Normalized amplitude'); grid on
-        
-        udata.freq = freq; udata.data = fftIllum;
+        [freq, fftIllum] = ieSpace2Amp(xPosMM.x, illum, normalize);
+
+        plot(freq, fftIllum, 'r-');
+        xlabel('Cycles/mm');
+        ylabel('Normalized amplitude');
+        grid on
+
+        udata.freq = freq;
+        udata.data = fftIllum;
         udata.cmd = 'plot(freq,data,''r-'')';
-        set(g,'Name',sprintf('Line %.0f',roiLocs(2)));
-        
-    case {'illuminancevline','vlineilluminance'}
+        set(g, 'Name', sprintf('Line %.0f', roiLocs(2)));
+
+    case {'illuminancevline', 'vlineilluminance'}
         % oiPlot(oi,'illuminance vline')
-        
-        data = oiGet(oi,'illuminance');
-        if isempty(data), warndlg(sprintf('Illuminance data are unavailable.')); return; end
-        illum = data(:,roiLocs(1));
-        posMicrons = oiSpatialSupport(oi,'um');
-        
-        plot(posMicrons.y,illum);
-        xlabel('Position (um)'); ylabel('Illuminance (lux)');
-        grid on; set(gca,'xtick',ieChooseTickMarks(posMicrons.y))
-        
-        udata.pos = posMicrons.y; udata.data = illum';
+
+        data = oiGet(oi, 'illuminance');
+        if isempty(data), warndlg(sprintf('Illuminance data are unavailable.'));
+            return;
+        end
+        illum = data(:, roiLocs(1));
+        posMicrons = oiSpatialSupport(oi, 'um');
+
+        plot(posMicrons.y, illum);
+        xlabel('Position (um)');
+        ylabel('Illuminance (lux)');
+        grid on; set(gca, 'xtick', ieChooseTickMarks(posMicrons.y))
+
+        udata.pos = posMicrons.y;
+        udata.data = illum';
         udata.cmd = 'plot(pos,illum)';
-        set(g,'Name',sprintf('Line %.0f',roiLocs(1)));
-        
+        set(g, 'Name', sprintf('Line %.0f', roiLocs(1)));
+
     case {'illuminancefftvline'}
         % oiPlot(oi,'illuminance fft vline')
-        
+
         % space = oiGet(oi,'spatialSupport');
-        
-        data = oiGet(oi,'illuminance');
-        if isempty(data), warndlg(sprintf('Illuminance data are unavailable.')); return; end
-        illum = data(:,roiLocs(1));
-        yPosMM = oiSpatialSupport(oi,'mm');
-        
+
+        data = oiGet(oi, 'illuminance');
+        if isempty(data), warndlg(sprintf('Illuminance data are unavailable.'));
+            return;
+        end
+        illum = data(:, roiLocs(1));
+        yPosMM = oiSpatialSupport(oi, 'mm');
+
         % Compute amplitude spectrum in units of millimeters
         normalize = 1;
-        [freq,fftIllum] = ieSpace2Amp(yPosMM.y,illum,normalize);
-        
-        plot(freq,fftIllum,'r-');
-        xlabel('Cycles/mm'); ylabel('Normalized amplitude'); grid on
-        
-        udata.freq = freq; udata.data = fftIllum;
+        [freq, fftIllum] = ieSpace2Amp(yPosMM.y, illum, normalize);
+
+        plot(freq, fftIllum, 'r-');
+        xlabel('Cycles/mm');
+        ylabel('Normalized amplitude');
+        grid on
+
+        udata.freq = freq;
+        udata.data = fftIllum;
         udata.cmd = 'plot(freq,data,''r-'')';
-        set(gcf,'Name',sprintf('Line %.0f',roiLocs(1)));
-        
-    case {'illuminancefft','fftilluminance'}
+        set(gcf, 'Name', sprintf('Line %.0f', roiLocs(1)));
+
+    case {'illuminancefft', 'fftilluminance'}
         % oiPlot(oi,'illuminance fft')
         % Spatial frequency amplitude at a single wavelength.  Axis range
         % could be better.
-        
+
         % This seems wrong ... it should be a get on illuminance, not
         % photons.
-        data = oiGet(oi,'illuminance');
+        data = oiGet(oi, 'illuminance');
         sz = size(data);
-        udata.x = 1:sz(2); udata.y = 1:sz(1); udata.z = fftshift(abs(fft2(data)));
+        udata.x = 1:sz(2);
+        udata.y = 1:sz(1);
+        udata.z = fftshift(abs(fft2(data)));
         udata.cmd = 'mesh(x,y,z)';
-        mesh(udata.x,udata.y,udata.z);
-        xlabel('Cycles/image'); ylabel('Cycles/image'); zlabel('Amplitude');
+        mesh(udata.x, udata.y, udata.z);
+        xlabel('Cycles/image');
+        ylabel('Cycles/image');
+        zlabel('Amplitude');
         title('Illuminance amplitude spectrum');
-        
+
         % Contrast related
-    case {'contrasthline','hlinecontrast'}
+    case {'contrasthline', 'hlinecontrast'}
         % oiPlot(oi,'contrast hline')
         % Plot percent contrast (difference from the mean as a percentage
         % of the mean).
-        
-        data = oiGet(oi,'photons');
-        if isempty(data), warndlg(sprintf('Photon data are unavailable.')); return; end
-        data = squeeze(data(roiLocs(2),:,:));
-        if isa(data,'single'), data = double(data); end
-        
+
+        data = oiGet(oi, 'photons');
+        if isempty(data), warndlg(sprintf('Photon data are unavailable.'));
+            return;
+        end
+        data = squeeze(data(roiLocs(2), :, :));
+        if isa(data, 'single'), data = double(data); end
+
         % Percent contrast
         mn = mean(data(:));
-        if mn == 0, warndlg('Zero mean.  Cannot compute contrast.'); return; end
-        data = 100*(data - mn)/mn;
-        
-        posMicrons = oiSpatialSupport(oi,'microns');
-        
-        wave = oiGet(oi,'wave');
-        
-        mesh(posMicrons.x,wave,double(data'));
-        xlabel('Position (um)'); ylabel('Wavelength (nm)'); zlabel('Percent contrast');
-        grid on; set(gca,'xtick',ieChooseTickMarks(posMicrons.x))
-        udata.wave = wave; udata.pos = posMicrons.x; udata.data = double(data');
+        if mn == 0, warndlg('Zero mean.  Cannot compute contrast.');
+            return;
+        end
+        data = 100 * (data - mn) / mn;
+
+        posMicrons = oiSpatialSupport(oi, 'microns');
+
+        wave = oiGet(oi, 'wave');
+
+        mesh(posMicrons.x, wave, double(data'));
+        xlabel('Position (um)');
+        ylabel('Wavelength (nm)');
+        zlabel('Percent contrast');
+        grid on; set(gca, 'xtick', ieChooseTickMarks(posMicrons.x))
+        udata.wave = wave;
+        udata.pos = posMicrons.x;
+        udata.data = double(data');
         udata.cmd = 'mesh(pos,wave,data)';
-        set(g,'Name',sprintf('Line %.0f',roiLocs(2)));
+        set(g, 'Name', sprintf('Line %.0f', roiLocs(2)));
         colormap(jet)
-        
-    case {'contrastvline','vlinecontrast'} % Done
+
+    case {'contrastvline', 'vlinecontrast'} % Done
         % oiPlot(oi,'contrast vline')
         % Plot percent contrast (difference from the mean as a percentage
         % of the mean).
-        data = oiGet(oi,'photons');
+        data = oiGet(oi, 'photons');
         if isempty(data)
             warndlg(sprintf('Photon data are unavailable.'));
             return;
         end
-        
-        wave = oiGet(oi,'wave');
-        data = squeeze(data(:,roiLocs(1),:));
-        if isa(data,'single'), data = double(data); end
-        
+
+        wave = oiGet(oi, 'wave');
+        data = squeeze(data(:, roiLocs(1), :));
+        if isa(data, 'single'), data = double(data); end
+
         % Percent contrast
         mn = mean(data(:));
-        if mn == 0, warndlg('Zero mean.  Cannot compute contrast.'); return; end
-        data = 100*(data - mn)/mn;
-        
-        posMicrons = oiSpatialSupport(oi,'microns');
-        
-        mesh(posMicrons.y,wave,double(data'));
-        xlabel('Position (um)'); ylabel('Wavelength (nm)');zlabel('Irradiance (q/s/nm/m^2)')
+        if mn == 0, warndlg('Zero mean.  Cannot compute contrast.');
+            return;
+        end
+        data = 100 * (data - mn) / mn;
+
+        posMicrons = oiSpatialSupport(oi, 'microns');
+
+        mesh(posMicrons.y, wave, double(data'));
+        xlabel('Position (um)');
+        ylabel('Wavelength (nm)');
+        zlabel('Irradiance (q/s/nm/m^2)')
         zlabel('Percent contrast')
-        grid on; set(gca,'xtick',ieChooseTickMarks(posMicrons.y))
-        
-        udata.wave = wave; udata.pos = posMicrons.y; udata.data = double(data');
+        grid on; set(gca, 'xtick', ieChooseTickMarks(posMicrons.y))
+
+        udata.wave = wave;
+        udata.pos = posMicrons.y;
+        udata.data = double(data');
         udata.cmd = 'mesh(pos,wave,data)';
-        set(g,'Name',sprintf('Line %.0f',roiLocs(1)));
-        
+        set(g, 'Name', sprintf('Line %.0f', roiLocs(1)));
+
         % Depth related
     case {'depthmap'}
         % oiPlot(oi,'depth map')
-        dmap = oiGet(oi,'depth map');
-        if isempty(dmap),  close(g); error('No depth map')
+        dmap = oiGet(oi, 'depth map');
+        if isempty(dmap), close(g); error('No depth map')
         else
             imagesc(dmap); colormap(flipud(gray))
-            namestr = sprintf('Depth map (max=%.1f)',max(dmap(:)));
-            set(g,'Name',namestr);
+            namestr = sprintf('Depth map (max=%.1f)', max(dmap(:)));
+            set(g, 'Name', namestr);
             colormap(flipud(gray));
-            axis image; cb = colorbar;
-            set(get(cb,'label'),'string','Meters','Rotation',90)
+            axis image;
+            cb = colorbar;
+            set(get(cb, 'label'), 'string', 'Meters', 'Rotation', 90)
         end
         udata.dmap = dmap;
-    case {'depthmapcontour','depthcontour'}
+    case {'depthmapcontour', 'depthcontour'}
         % oiPlot(oi,'depth contour')
-        dmap = oiGet(oi,'depth map');
-        dmap = ieScale(dmap,0,1); mx = max(dmap(:));
-        drgb = cat(3,dmap,dmap,dmap);
-        
-        image(drgb); colormap(flipud(gray)); hold on
-        n = 4; v = (1:n)/n; contour(dmap,v);
+        dmap = oiGet(oi, 'depth map');
+        dmap = ieScale(dmap, 0, 1);
+        mx = max(dmap(:));
+        drgb = cat(3, dmap, dmap, dmap);
+
+        image(drgb);
+        colormap(flipud(gray));
+        hold on
+        n = 4;
+        v = (1:n) / n;
+        contour(dmap, v);
         hold off
-        namestr = sprintf('ISET: Depth map (max = %.1f m)',mx);
-        axis off; set(g,'Name',namestr);
-        
+        namestr = sprintf('ISET: Depth map (max = %.1f m)', mx);
+        axis off;
+        set(g, 'Name', namestr);
+
         % Optics related
     case {'relativeillumination'}
         % Optics relative illumination
-        udata = opticsPlotOffAxis(oi,g);
-    case{'lenstransmittance'}  
-        udata = opticsPlotTransmittance(oi,g);
-        
-    case {'otf','otfanywave'}
+        udata = opticsPlotOffAxis(oi, g);
+    case {'lenstransmittance'}
+        udata = opticsPlotTransmittance(oi, g);
+
+    case {'otf', 'otfanywave'}
         % User asked to select a wavelength
         % Optical transfer function, units are lines/mm
         % oiPlot(oi,'otf',[],420);
-        optics = oiGet(oi,'optics');
-        opticsModel = opticsGet(optics,'model');
+        optics = oiGet(oi, 'optics');
+        opticsModel = opticsGet(optics, 'model');
         switch lower(opticsModel)
             case 'raytrace'
-                rtPlot(oi,'otf');
+                rtPlot(oi, 'otf');
             otherwise
-                if isempty(varargin), udata = plotOTF(oi,'otf');
-                else, w = varargin{1}; udata = plotOTF(oi,'otf', 'this wave', w);
+                if isempty(varargin), udata = plotOTF(oi, 'otf');
+                else, w = varargin{1};
+                    udata = plotOTF(oi, 'otf', 'this wave', w);
                 end
         end
-        set(g,'userdata',udata);
-        set(g,'name','OTF');
+        set(g, 'userdata', udata);
+        set(g, 'name', 'OTF');
         colormap(jet)
-        
+
     case {'otf550'}
         % OTF at 550 nm
-        udata = plotOTF(oi,'otf 550');
-        set(g,'userdata',udata);
-        set(g,'name','OTF 550');
+        udata = plotOTF(oi, 'otf 550');
+        set(g, 'userdata', udata);
+        set(g, 'name', 'OTF 550');
         colormap(jet)
-        
+
     case {'psf'}
         % Point spread function at selected wavelength
         % oiPlot(oi,'psf',[],420);
-        if isempty(varargin), udata = plotOTF(oi,'psf', 'airy disk', true);
-        else, w = varargin{1}; udata = plotOTF(oi,'psf', 'this wave', w,...
-                                                         'airy disk', true);
+        if isempty(varargin), udata = plotOTF(oi, 'psf', 'airy disk', true);
+        else, w = varargin{1};
+            udata = plotOTF(oi, 'psf', 'this wave', w, ...
+                'airy disk', true);
         end
-        set(g,'userdata',udata);
-        namestr = sprintf('ISET: %s',oiGet(oi,'name'));
-        set(g,'Name',namestr);
+        set(g, 'userdata', udata);
+        namestr = sprintf('ISET: %s', oiGet(oi, 'name'));
+        set(g, 'Name', namestr);
         colormap(jet)
-        
+
     case {'psf550'}
         % PSF at 550nm spatial units are microns
-        udata = plotOTF(oi,'psf', 'this wave', 550, 'airy disk', true);
-        set(g,'userdata',udata);
-        namestr = sprintf('ISET: %s',oiGet(oi,'name'));
-        set(g,'Name',namestr);
+        udata = plotOTF(oi, 'psf', 'this wave', 550, 'airy disk', true);
+        set(g, 'userdata', udata);
+        namestr = sprintf('ISET: %s', oiGet(oi, 'name'));
+        set(g, 'Name', namestr);
         colormap(jet)
-        
-    case {'lswavelength','lsfwavelength'}
+
+    case {'lswavelength', 'lsfwavelength'}
         % uData = oiPlot(oi,pType,[],nSpatialSamps)
         % the nSpatialSamps part isn't working.
         %
@@ -583,76 +661,78 @@ switch pType
         %    Peak spatial frequency can be set for the OTF (default:
         %    3*incoherent cutoff). Number of spatial samples to plot in the
         %    line spread can be set (default: 40).
-        optics = oiGet(oi,'optics');
-        opticsModel = opticsGet(optics,'model');
+        optics = oiGet(oi, 'optics');
+        opticsModel = opticsGet(optics, 'model');
         switch lower(opticsModel)
             case 'raytrace'
-                ieInWindowMessage('Ray trace: ls wavelength not yet implemented.',handles);
+                ieInWindowMessage('Ray trace: ls wavelength not yet implemented.', handles);
                 disp('Not yet implemented')
             otherwise
-                if ~isempty(varargin), nSamps = varargin{1}; 
+                if ~isempty(varargin), nSamps = varargin{1};
                 else, nSamps = 40;
                 end
-                udata = plotOTF(oi,'ls wavelength','nsamp', nSamps);
-                set(g,'userdata',udata);
+                udata = plotOTF(oi, 'ls wavelength', 'nsamp', nSamps);
+                set(g, 'userdata', udata);
         end
-        set(g,'name','LS by Wave');
+        set(g, 'name', 'LS by Wave');
         colormap(jet)
-        
-    case{'otfwavelength','mtfwavelength'}
+
+    case {'otfwavelength', 'mtfwavelength'}
         % One dimensional otf at all wavelengths as  mesh plot.
         % Units are cycles/mm
-        optics = oiGet(oi,'optics');
-        opticsModel = opticsGet(optics,'model');
+        optics = oiGet(oi, 'optics');
+        opticsModel = opticsGet(optics, 'model');
         switch lower(opticsModel)
             case 'raytrace'
                 % Not what the user asked for.  Must fix.  Add varargin,
                 % and make the right plot.  This isn't it.
-                rtPlot(oi,'otf');
+                rtPlot(oi, 'otf');
             otherwise
-                udata = plotOTF(oi,'otf wavelength');
-                set(g,'userdata',udata);
+                udata = plotOTF(oi, 'otf wavelength');
+                set(g, 'userdata', udata);
         end
-        set(g,'name','OTF by Wave');
+        set(g, 'name', 'OTF by Wave');
         colormap(jet)
-        
+
     case {'illuminantimage'}
         % oiPlot(oi,'illuminant image')
         % Make an RGB image showing the spatial image of the illuminant.
-        
-        wave = oiGet(oi,'wave');
-        sz   = oiGet(oi,'size');
-        energy = oiGet(oi,'illuminant energy');
-        if isempty(energy) 
-            ieInWindowMessage('No illuminant data.',handle);
+
+        wave = oiGet(oi, 'wave');
+        sz = oiGet(oi, 'size');
+        energy = oiGet(oi, 'illuminant energy');
+        if isempty(energy)
+            ieInWindowMessage('No illuminant data.', handle);
             close(gcf);
             error('No illuminant data');
         end
 
-        switch oiGet(oi,'illuminant format')
+        switch oiGet(oi, 'illuminant format')
             case {'spectral'}
                 % Makes a uniform SPD image
-                energy = repmat(energy(:)',prod(sz),1);
-                energy = XW2RGBFormat(energy,sz(1),sz(2));
+                energy = repmat(energy(:)', prod(sz), 1);
+                energy = XW2RGBFormat(energy, sz(1), sz(2));
             otherwise
         end
-        
+
         % Create an RGB image
-        udata.srgb = xyz2srgb(ieXYZFromEnergy(energy,wave));
-        imagesc(sz(1),sz(2),udata.srgb);  
-        grid on; axis off; axis image;
-        title('Illumination image')      
-        
+        udata.srgb = xyz2srgb(ieXYZFromEnergy(energy, wave));
+        imagesc(sz(1), sz(2), udata.srgb);
+        grid on;
+        axis off;
+        axis image;
+        title('Illumination image')
+
     otherwise
-        error('Unknown oiPlot type %s.',pType);
+        error('Unknown oiPlot type %s.', pType);
 end
 
-if exist('udata','var'), set(gcf,'userdata',udata); end
+if exist('udata', 'var'), set(gcf, 'userdata', udata); end
 
 end
 
 % - Brought into this file from a separate function
-function udata = plotOIIrradiance(oi,dataType,roiLocs)
+function udata = plotOIIrradiance(oi, dataType, roiLocs)
 %Plot mean irradiance within a selected ROI of the optical image window
 %
 %   udata = plotOIIrradiance(oi,dataType,roiLocs)
@@ -668,8 +748,8 @@ function udata = plotOIIrradiance(oi,dataType,roiLocs)
 
 if ieNotDefined('dataType'), dataType = 'photons'; end
 
-wave = oiGet(oi,'wave');
-irradiance = vcGetROIData(oi,roiLocs,dataType);
+wave = oiGet(oi, 'wave');
+irradiance = vcGetROIData(oi, roiLocs, dataType);
 irradiance = mean(irradiance);
 
 if length(wave) == 1
@@ -677,24 +757,25 @@ if length(wave) == 1
     % put up a box describing the mean irradiance.
     switch dataType
         case 'photons'
-            str = sprintf('Irradiance: %.3e (q/s/m^2/nm)  at %.0f nm',irradiance,wave);
+            str = sprintf('Irradiance: %.3e (q/s/m^2/nm)  at %.0f nm', irradiance, wave);
         case 'energy'
-            str = sprintf('Irradiance: %.3e (Watts/m^2/nm) at %.0f nm',irradiance,wave);
+            str = sprintf('Irradiance: %.3e (Watts/m^2/nm) at %.0f nm', irradiance, wave);
         otherwise
             error('Unknown data type.');
     end
     msgbox(str);
 else
-    
+
     % Attach data to the figure itself
-    udata.x = wave; udata.y = irradiance;
+    udata.x = wave;
+    udata.y = irradiance;
     udata.roiLocs = roiLocs;
-    
-    plot(wave,irradiance);
-    set(gca,'ylim',[.95*min(irradiance(:)),1.03*max(irradiance(:))]);
+
+    plot(wave, irradiance);
+    set(gca, 'ylim', [.95 * min(irradiance(:)), 1.03 * max(irradiance(:))]);
     xlabel('Wavelength (nm)');
     grid on;
-    
+
     switch lower(dataType)
         case 'photons'
             ylabel('Irradiance (q/s/m^2/nm)');
@@ -708,7 +789,7 @@ end
 end
 
 % Moved into oiPlot June, 2012.
-function uData = plotOTF(oi,pType,varargin)
+function uData = plotOTF(oi, pType, varargin)
 %Plot OTF functions associated with the optics in an optical image
 %
 %   plotOTF(oi,[pType], )
@@ -739,69 +820,71 @@ p.addParameter('units', 'um', @ischar);
 p.parse(oi, pType, varargin{:});
 
 airyDisk = p.Results.airydisk;
-nSamp    = p.Results.nsamp;
+nSamp = p.Results.nsamp;
 thisWave = p.Results.thiswave;
 units    = p.Results.units;
+
 %%
-wavelength = oiGet(oi,'wavelength');
-optics     = oiGet(oi,'optics');
+wavelength = oiGet(oi, 'wavelength');
+optics = oiGet(oi, 'optics');
 
 % This catches the case in which the oi has not yet been defined, but the
 % optics have.
 if isempty(wavelength)
-    oi = initDefaultSpectrum(oi,'hyperspectral');
-    optics = initDefaultSpectrum(optics,'hyperspectral');
-    wavelength = opticsGet(optics,'wavelength');
+    oi = initDefaultSpectrum(oi, 'hyperspectral');
+    optics = initDefaultSpectrum(optics, 'hyperspectral');
+    wavelength = opticsGet(optics, 'wavelength');
 end
 
-nWave      = oiGet(oi,'nwave');
+nWave = oiGet(oi, 'nwave');
 pType = ieParamFormat(pType);
 
 switch lower(pType)
-    case {'otf','otf550'}
+    case {'otf', 'otf550'}
         % Good example of why we need to parse the varargin
         % oiPlot(oi,'otf',[], thisWave);
         % plotOTF(oi,'otf',thisWave,nSamp);
         % OTF at a selected wavelength.
-        units = 'mm';  % Units are cycles/mm
-        
+        units = 'mm'; % Units are cycles/mm
+
         % Retrieve OTF data (which might be complex) from the optics
-        opticsModel = opticsGet(optics,'opticsModel');
+        opticsModel = opticsGet(optics, 'opticsModel');
         switch lower(opticsModel)
-            case {'dlmtf','diffractionlimited'}
+            case {'dlmtf', 'diffractionlimited'}
                 % Compute the otf data
-                
+
                 % Specify frequency support and compute the dl MTF
-                fSupport = opticsGet(optics,'dl fsupport matrix',thisWave,units,nSamp);
-                fSupport = fSupport*4;  % Enlarge the frequency support
-                otf = dlMTF(oi,fSupport,thisWave,units);
-                
+                fSupport = opticsGet(optics, 'dl fsupport matrix', thisWave, units, nSamp);
+                fSupport = fSupport * 4; % Enlarge the frequency support
+                otf = dlMTF(oi, fSupport, thisWave, units);
+
                 % DC is at (1,1); we plot with DC in the center.
                 otf = fftshift(otf);
-                figTitle = sprintf('DL OTF at %.0f',thisWave);
-                
+                figTitle = sprintf('DL OTF at %.0f', thisWave);
+
             case {'shiftinvariant'}
                 % In this case, the otf data must be stored
-                otf = opticsGet(optics,'otf data',thisWave);
+                otf = opticsGet(optics, 'otf data', thisWave);
                 if isempty(otf), error('No OTF data'); end
-                
+
                 % Units are cycles/mm of optics support
                 % We are returned fSupport(:,:,1/2) for X and Y
-                fSupport = opticsGet(optics,'otf support matrix');
-                
+                fSupport = opticsGet(optics, 'otf support matrix');
+
                 % Transform so DC is in center
                 otf = fftshift(otf);
-                figTitle = sprintf('abs(OTF) at %.0f nm',thisWave);
-                
+                figTitle = sprintf('abs(OTF) at %.0f nm', thisWave);
+
             case {'raytrace'}
                 error('Ray trace plot: Not yet implemented');
                 % figTitle = sprintf('abs(OTF) at %.0f nm',thisWave);
-                
+
             otherwise
-                error('Unknown optics model: %s\n',opticsModel);
+                error('Unknown optics model: %s\n', opticsModel);
         end
-        
-        X = fSupport(:,:,1); Y = fSupport(:,:,2);
+
+        X = fSupport(:, :, 1);
+        Y = fSupport(:, :, 2);
 
         % Select the support and plot the mesh
         % I decided to show the whole thing for now.
@@ -809,47 +892,49 @@ switch lower(pType)
         %         X   = getMiddleMatrix(X,sz);
         %         Y   = getMiddleMatrix(Y,sz);
         %         otf = getMiddleMatrix(otf,sz);
-        if isreal(otf(:)), mesh(X,Y,otf);
+        if isreal(otf(:)), mesh(X, Y, otf);
         else
             title('ABS(otf)')
-            mesh(X,Y,abs(otf));
+            mesh(X, Y, abs(otf));
         end
-        
+
         % Label axes and store data
         xlabel('cyc/mm'), ylabel('cyc/mm'), zlabel('amplitude');
         title(figTitle);
-        uData.otf = otf; uData.fx = X(1,:); uData.fy = Y(:,1);
-        
-    case {'psf','psf550'}
+        uData.otf = otf;
+        uData.fx = X(1, :);
+        uData.fy = Y(:, 1);
+
+    case {'psf', 'psf550'}
         % oiPlot(oi,'psf',[],thisWave,units)  % empty is roiLocs
         % oiPlot(oi,'psf 550',[],thisWave,units)
         % Spatial scale is microns.
-        
-        opticsModel = opticsGet(optics,'model');
+
+        opticsModel = opticsGet(optics, 'model');
         switch lower(opticsModel)
             case {'diffractionlimited'}
                 % oiPlot(oi,'psf',[],thisWave,units)
-                
+
                 % This could all be opticsGet(optics,'psf data',thisWave)
                 % As below for shift invariant.
-                nSamp = 25;  % We get 2*nSamp base frequency terms
-                
+                nSamp = 25; % We get 2*nSamp base frequency terms
+
                 % Get the basic frequency support
-                val = opticsGet(optics,'dlFSupport',thisWave,units,nSamp);
-                [fSupport(:,:,1),fSupport(:,:,2)] = meshgrid(val{1},val{2});
-                
+                val = opticsGet(optics, 'dlFSupport', thisWave, units, nSamp);
+                [fSupport(:, :, 1), fSupport(:, :, 2)] = meshgrid(val{1}, val{2});
+
                 % Increase the spatial frequency range (highest
                 % spatial frequency) by a factor of 4, which yields a
                 % higher spatial resolution estimate of the psf
-                fSupport = fSupport*4;
-                
+                fSupport = fSupport * 4;
+
                 % Calculate the OTF using diffraction limited MTF (dlMTF)
-                otf = dlMTF(oi,fSupport,thisWave,units);
-                sSupport = opticsGet(optics,'psf support',fSupport,nSamp);   
-                
+                otf = dlMTF(oi, fSupport, thisWave, units);
+                sSupport = opticsGet(optics, 'psf support', fSupport, nSamp);
+
                 % Derive the psf from the OTF
                 psf = fftshift(ifft2(otf));
-                
+
                 % Frequency units are cycles/micron. The spatial frequency support runs
                 % from -Nyquist:Nyquist. With this support, the Nyquist frequency is
                 % actually the highest (peak) frequency value. There are two samples per
@@ -862,349 +947,367 @@ switch lower(pType)
                 %                 [X,Y] = meshgrid(samp,samp);
                 %                 sSupport(:,:,1) = X*deltaSpace;
                 %                 sSupport(:,:,2) = Y*deltaSpace;
-                
+
                 % Calculate the Airy disk
-                fNumber = opticsGet(optics,'fNumber');
-                
+                fNumber = opticsGet(optics, 'fNumber');
+
                 % This is the Airy disk radius, by formula
-                radius = (2.44*fNumber*thisWave*10^-9)/2 * ieUnitScaleFactor(units);
-                
+                radius = (2.44 * fNumber * thisWave * 10^-9) / 2 * ieUnitScaleFactor(units);
+
                 % Draw a circle at the first zero crossing (Airy disk)
                 nCircleSamples = 200;
-                [adX,adY,adZ] = ieShape('circle',nCircleSamples,radius);
-                
+                [adX, adY, adZ] = ieShape('circle', nCircleSamples, radius);
+
             case {'shiftinvariant'}
-                psfData  = opticsGet(optics,'psf data',thisWave);
-                psf      = psfData.psf;
+                psfData = opticsGet(optics, 'psf data', thisWave);
+                psf = psfData.psf;
                 sSupport = psfData.xy;
-                
+
                 if airyDisk
                     % Calculate the Airy disk
-                    fNumber = opticsGet(optics,'fNumber');
-                    
+                    fNumber = opticsGet(optics, 'fNumber');
+
                     % This is the Airy disk radius, by formula
-                    radius = (2.44*fNumber*thisWave*10^-9)/2 * ieUnitScaleFactor(units);
-                    
+                    radius = (2.44 * fNumber * thisWave * 10^-9) / 2 * ieUnitScaleFactor(units);
+
                     % Draw a circle at the first zero crossing (Airy disk)
                     nCircleSamples = 200;
-                    [adX,adY,adZ] = ieShape('circle',nCircleSamples,radius);
+                    [adX, adY, adZ] = ieShape('circle', nCircleSamples, radius);
                 end
             case {'raytrace'}
                 % opticsGet(optics,'rtPSFdata') should be
                 % cleaned up for this call.  Spatial support, frequency
                 % support, all of that should be in there.
                 error('Not yet implemented');
-                
+
             otherwise
-                error('Unknown otf function: %s\n',opticsModel);
+                error('Unknown otf function: %s\n', opticsModel);
         end
-        
+
         % Plot it and if diffraction limited, then add the Airy disk
-        mesh(sSupport(:,:,1),sSupport(:,:,2),abs(psf));
-        if strcmpi(opticsModel,'diffractionlimited') ||...
-                    strcmpi(opticsModel, 'shiftinvariant')
-            ringZ = max(psf(:))*1e-3;
-            hold on; p = plot3(adX,adY,adZ + ringZ,'k-'); 
-            set(p,'linewidth',3); hold off;
+        mesh(sSupport(:, :, 1), sSupport(:, :, 2), abs(psf));
+        if strcmpi(opticsModel, 'diffractionlimited') || ...
+                strcmpi(opticsModel, 'shiftinvariant')
+            ringZ = max(psf(:)) * 1e-3;
+            hold on;
+            p = plot3(adX, adY, adZ+ringZ, 'k-');
+            set(p, 'linewidth', 3);
+            hold off;
         end
-        
+
         % Label, store data
-        xlabel('Position (um)'); ylabel('Position (um)');
+        xlabel('Position (um)');
+        ylabel('Position (um)');
         zlabel('Irradiance (relative)');
-        title(sprintf('Point spread (%.0f nm)',thisWave));
-        uData.x = sSupport(:,:,1); uData.y = sSupport(:,:,2);
+        title(sprintf('Point spread (%.0f nm)', thisWave));
+        uData.x = sSupport(:, :, 1);
+        uData.y = sSupport(:, :, 2);
         uData.psf = psf;
-        
+
 
     case {'lswavelength'}
         % Line spread function at all wavelengths
         units = 'um';
-        wavelength = oiGet(oi,'wavelength');
-        nWave      = oiGet(oi,'nwave');
-        model      = opticsGet(optics,'model');
-        
+        wavelength = oiGet(oi, 'wavelength');
+        nWave = oiGet(oi, 'nwave');
+        model = opticsGet(optics, 'model');
+
         % Choose the peak frequency for the OTF.  If none is passed in, we
         % use the incoherent cutoff frequency.
         switch lower(model)
             case 'diffractionlimited'
-                inCutoff = opticsGet(optics,'inCutoff',units);
-                peakF = 3*max(inCutoff);
+                inCutoff = opticsGet(optics, 'inCutoff', units);
+                peakF = 3 * max(inCutoff);
             case 'shiftinvariant'
-                fx = opticsGet(optics,'otffx','um');
+                fx = opticsGet(optics, 'otffx', 'um');
                 peakF = max(abs(fx(:)));
             otherwise
-                error('LS not implemented for %s model',model);
-        end
-        
-        middleSamps = 40;
-        
-        % The incoherent cutoff frequency has units of cycles/micron
-        % So, 1/inCutoff has units of microns/Nyquist
-        % The maximum frequency is at the Nyquist, and there are two
-        % samples at the Nqyuist.  So the sample spacing is half the
-        deltaSpace = 1/(2*peakF);
-        
-        % Make the spatial frequency samples used to compute the OTF. These
-        % run from [-peakF, +peakF].  We make 100 samples, which is pretty
-        % arbitrary.  Not sure how to choose this better. Should be using
-        % unitFrequencyList() here.
-        nSamp = 100;
-        fSamp = (-nSamp:(nSamp-1))/nSamp;
-        [fX,fY] = meshgrid(fSamp,fSamp);
-        fSupport(:,:,1) = fX*peakF;
-        fSupport(:,:,2) = fY*peakF;
-        
-        opticsModel = opticsGet(optics,'opticsModel');
-        switch lower(opticsModel)
-            case {'dlmtf','diffractionlimited'}
-                otf = dlMTF(oi,fSupport,wavelength,units);
-            case {'shiftinvariant'}
-                sz=opticsGet(optics,'otf size');
-                otf = zeros(sz(1),sz(2),nWave);
-                for ii=1:nWave
-                    otf(:,:,ii) = opticsGet(optics,'otfdata',wavelength(ii));
+                error('LS not implemented for %s model', model);
                 end
-            otherwise
-                error('LSWavelength1D not implemented for model: %s\n',opticsModel);
-        end
-        
-        % Create the line spread for a horizontal line. We use the first
-        % row of the otf to estimate the line spread. This only works if
-        % the OTF is circularly symmetric; if it is not, there isn't really
-        % a single line spread.
-        for ii=1:nWave
-            % The central line in the otf is the first line
-            tmp = otf(1,:,ii);  % figure; imagesc(abs(otf(:,:,ii)))
-            
-            % We invert the OTF along that line to get an LSF.  We apply
-            % the fftshift because we want the lsf to be centered.
-            lsf = fftshift(ifft(tmp));   % figure; plot(abs(lsf))
-            
-            % Pull out samples from the middle because otherwise the image
-            % can be hard to see.
-            lsWave(:,ii) = getMiddleMatrix(lsf,middleSamps); %#ok<AGROW>
-        end
-        %  Apparently we sometimes have a little complex value
-        lsWave = abs(lsWave);
-        
-        % Choose the x coordinates that match the line spread spatial
-        % samples.
-        X = (-nSamp:(nSamp-1))*deltaSpace;
-        X = getMiddleMatrix(X,middleSamps);
-        
-        % Show it
-        if nWave > 1
-            mesh(X,wavelength,lsWave');
-            xlabel('Position (um)'); ylabel('Wavelength (nm)'); zlabel('Intensity (rel.)');
-        else
-            plot(X,lsWave(:));
-            xlabel('Wavelength (nm)'); ylabel('Intensity (rel.)');
-        end
-        view(30,20);
-        
-        % Store the results in the figure.
-        uData.x = X; uData.wavelength = wavelength; uData.lsWave = lsWave';
-        
-    case {'otfwavelength'}
-        % Plot a line through the center of the OTF as a function of
-        % wavelength
-        opticsModel = opticsGet(optics,'opticsModel');
-        units = 'um';
-        
-        % We get the OTF slightly differently for the different models.  If
-        % we rewrote opticsGet to check for the optics model, we could do
-        % things a little more simply here.  Maybe we should put this code
-        % into opticsGet. -- BW
-        switch lower(opticsModel)
-            case {'dlmtf','diffractionlimited'}
-                % Make the spatial frequency samples used to compute the OTF.
-                % These run from [-peakF, +peakF].  We make 100 samples,
-                % which is pretty arbitrary.  Not sure how to choose this better.
-                % Should be using unitFrequencyList() here.
-                inCutoff = opticsGet(optics,'inCutoff',units);
-                peakF = 3*max(inCutoff);
-                
+
+                middleSamps = 40;
+
+                % The incoherent cutoff frequency has units of cycles/micron
+                % So, 1/inCutoff has units of microns/Nyquist
+                % The maximum frequency is at the Nyquist, and there are two
+                % samples at the Nqyuist.  So the sample spacing is half the
+                deltaSpace = 1 / (2 * peakF);
+
+                % Make the spatial frequency samples used to compute the OTF. These
+                % run from [-peakF, +peakF].  We make 100 samples, which is pretty
+                % arbitrary.  Not sure how to choose this better. Should be using
+                % unitFrequencyList() here.
                 nSamp = 100;
-                fSamp = (-nSamp:(nSamp-1))/nSamp;
-                [fX,fY] = meshgrid(fSamp,fSamp);
-                fSupport(:,:,1) = fX*peakF;
-                fSupport(:,:,2) = fY*peakF;
-                % The fftshift centers the OTF data so that DC is in the
-                % middle.
-                otf = dlMTF(oi,fSupport,wavelength,units);
-                
-            case {'shiftinvariant'}
-                % Data are stored in OTF slot
-                fSupport = opticsGet(optics,'otf support matrix');
-                otf = zeros(size(fSupport,1),size(fSupport,2),nWave);
-                for ii=1:nWave
-                    otf(:,:,ii) = abs(opticsGet(optics,'otfdata',wavelength(ii)));
+                fSamp = (-nSamp:(nSamp - 1)) / nSamp;
+                [fX, fY] = meshgrid(fSamp, fSamp);
+                fSupport(:, :, 1) = fX * peakF;
+                fSupport(:, :, 2) = fY * peakF;
+
+                opticsModel = opticsGet(optics, 'opticsModel');
+                switch lower(opticsModel)
+                    case {'dlmtf', 'diffractionlimited'}
+                        otf = dlMTF(oi, fSupport, wavelength, units);
+                    case {'shiftinvariant'}
+                        sz = opticsGet(optics, 'otf size');
+                        otf = zeros(sz(1), sz(2), nWave);
+                        for ii = 1:nWave
+                            otf(:, :, ii) = opticsGet(optics, 'otfdata', wavelength(ii));
+                        end
+                    otherwise
+                        error('LSWavelength1D not implemented for model: %s\n', opticsModel);
+                        end
+
+                        % Create the line spread for a horizontal line. We use the first
+                        % row of the otf to estimate the line spread. This only works if
+                        % the OTF is circularly symmetric; if it is not, there isn't really
+                        % a single line spread.
+                        for ii = 1:nWave
+                            % The central line in the otf is the first line
+                            tmp = otf(1, :, ii); % figure; imagesc(abs(otf(:,:,ii)))
+
+                            % We invert the OTF along that line to get an LSF.  We apply
+                            % the fftshift because we want the lsf to be centered.
+                            lsf = fftshift(ifft(tmp)); % figure; plot(abs(lsf))
+
+                            % Pull out samples from the middle because otherwise the image
+                            % can be hard to see.
+                            lsWave(:, ii) = getMiddleMatrix(lsf, middleSamps); %#ok<AGROW>
+                        end
+                        %  Apparently we sometimes have a little complex value
+                        lsWave = abs(lsWave);
+
+                        % Choose the x coordinates that match the line spread spatial
+                        % samples.
+                        X = (-nSamp:(nSamp - 1)) * deltaSpace;
+                        X = getMiddleMatrix(X, middleSamps);
+
+                        % Show it
+                        if nWave > 1
+                            mesh(X, wavelength, lsWave');
+                            xlabel('Position (um)');
+                            ylabel('Wavelength (nm)');
+                            zlabel('Intensity (rel.)');
+                        else
+                            plot(X, lsWave(:));
+                            xlabel('Wavelength (nm)');
+                            ylabel('Intensity (rel.)');
+                        end
+                        view(30, 20);
+
+                        % Store the results in the figure.
+                        uData.x = X;
+                        uData.wavelength = wavelength;
+                        uData.lsWave = lsWave';
+
+                    case {'otfwavelength'}
+                        % Plot a line through the center of the OTF as a function of
+                        % wavelength
+                        opticsModel = opticsGet(optics, 'opticsModel');
+                        units = 'um';
+
+                        % We get the OTF slightly differently for the different models.  If
+                        % we rewrote opticsGet to check for the optics model, we could do
+                        % things a little more simply here.  Maybe we should put this code
+                        % into opticsGet. -- BW
+                        switch lower(opticsModel)
+                            case {'dlmtf', 'diffractionlimited'}
+                                % Make the spatial frequency samples used to compute the OTF.
+                                % These run from [-peakF, +peakF].  We make 100 samples,
+                                % which is pretty arbitrary.  Not sure how to choose this better.
+                                % Should be using unitFrequencyList() here.
+                                inCutoff = opticsGet(optics, 'inCutoff', units);
+                                peakF = 3 * max(inCutoff);
+
+                                nSamp = 100;
+                                fSamp = (-nSamp:(nSamp - 1)) / nSamp;
+                                [fX, fY] = meshgrid(fSamp, fSamp);
+                                fSupport(:, :, 1) = fX * peakF;
+                                fSupport(:, :, 2) = fY * peakF;
+                                % The fftshift centers the OTF data so that DC is in the
+                                % middle.
+                                otf = dlMTF(oi, fSupport, wavelength, units);
+
+                            case {'shiftinvariant'}
+                                % Data are stored in OTF slot
+                                fSupport = opticsGet(optics, 'otf support matrix');
+                                otf = zeros(size(fSupport, 1), size(fSupport, 2), nWave);
+                                for ii = 1:nWave
+                                    otf(:, :, ii) = abs(opticsGet(optics, 'otfdata', wavelength(ii)));
+                                end
+
+                            otherwise
+                                error('OTF 1D plot not implemented for: %s\n', opticsModel);
+                        end
+
+                        fx = fSupport(1, :, 1);
+                        otfWave = zeros(length(fx), nWave);
+                        for ii = 1:nWave, otfWave(:, ii) = fftshift(otf(1, :, ii)); end
+
+                        mesh(fx, wavelength, otfWave');
+                        view(30, 20);
+                        xlabel('cycles/mm');
+                        ylabel('Wavelength (nm)');
+                        zlabel('abs(OTF)');
+
+                        % Store the data in the figure.
+                        uData.otf = otfWave;
+                        uData.fSupport = fx;
+                        uData.wavelength = wavelength;
+
+                    otherwise
+                        error('Unknown plotOTF data type.');
                 end
-                
-            otherwise
-                error('OTF 1D plot not implemented for: %s\n',opticsModel);
+
+                % There should be a uData no matter what.  But just in case ...
+                if exist('uData', 'var'), set(gcf, 'UserData', uData); end
+
         end
-        
-        fx = fSupport(1,:,1);
-        otfWave = zeros(length(fx),nWave);
-        for ii=1:nWave, otfWave(:,ii) = fftshift(otf(1,:,ii)); end
-        
-        mesh(fx,wavelength,otfWave'); view(30,20);
-        xlabel('cycles/mm'); ylabel('Wavelength (nm)'); zlabel('abs(OTF)');
-        
-        % Store the data in the figure.
-        uData.otf = otfWave; uData.fSupport = fx;
-        uData.wavelength = wavelength;
-        
-    otherwise
-        error('Unknown plotOTF data type.');
-end
 
-% There should be a uData no matter what.  But just in case ...
-if exist('uData','var'), set(gcf,'UserData',uData); end
+        function uData = plotIlluminanceMesh(oi, yScale)
+            % Plot optical image illuminance (lux) as a mesh
+            %
+            %   plotIlluminanceMesh(oi,yScale)
+            %
+            % The default scaling of the lux axis is logarithmic.  Set yScale to 'linear' for a
+            % linear scale.
+            %
+            % If roiFlag is set to true (1), the user selects a region of the image
+            % from the optical image window. Otherwise the entire image is plotted.
+            %
+            % In the GraphWin, set Tools | Move Camera to rotate the view.
+            %
+            % Copyright ImagEval Consultants, LLC, 2003.
 
-end
+            if ieNotDefined('oi'), error('OI required.'); end
+            if ieNotDefined('yScale'), yScale = 'log'; end
 
-function uData = plotIlluminanceMesh(oi,yScale)
-% Plot optical image illuminance (lux) as a mesh
-%
-%   plotIlluminanceMesh(oi,yScale)
-%
-% The default scaling of the lux axis is logarithmic.  Set yScale to 'linear' for a
-% linear scale.
-%
-% If roiFlag is set to true (1), the user selects a region of the image
-% from the optical image window. Otherwise the entire image is plotted.
-%
-% In the GraphWin, set Tools | Move Camera to rotate the view.
-%
-% Copyright ImagEval Consultants, LLC, 2003.
+            illum = oiGet(oi, 'illuminance');
 
-if ieNotDefined('oi'), error('OI required.'); end
-if ieNotDefined('yScale'),  yScale = 'log'; end
+            spacing = oiGet(oi, 'sample spacing', 'um');
+            sz = size(illum);
+            r = (1:sz(1)) * spacing(1);
+            c = (1:sz(2)) * spacing(2);
+            switch yScale
+                case 'log'
+                    uData.data = fliplr(log10(illum));
+                    mesh(c, r, uData.data);
+                    zlabel('Lux (Log 10)')
+                case 'linear'
+                    uData.data = fliplr(illum);
+                    mesh(c, r, uData.data);
+                    zlabel('Lux')
+                otherwise
+                    error('unknown yScale.');
+            end
 
-illum = oiGet(oi,'illuminance');
+            uData.c = c;
+            uData.r = r;
 
-spacing = oiGet(oi,'sample spacing','um');
-sz = size(illum);
-r = (1:sz(1))*spacing(1);
-c = (1:sz(2))*spacing(2);
-switch yScale
-    case 'log'
-        uData.data = fliplr(log10(illum));
-        mesh(c,r,uData.data);
-        zlabel('Lux (Log 10)')
-    case 'linear'
-        uData.data = fliplr(illum);
-        mesh(c,r,uData.data);
-        zlabel('Lux')
-    otherwise
-        error('unknown yScale.');
-end
+            xlabel('um');
+            ylabel('um');
+            title('Illuminance');
 
-uData.c = c; uData.r = r;
+        end
 
-xlabel('um'); ylabel('um');
-title('Illuminance');
+        function uData = plotOICIE(oi, dataType, roiLocs)
+            % plotting CIE data from optical image.  Could be moved into the case
+            % statements of the mother ship.
+            %
+            %  uData = plotOICIE(oi,dataType,roiLocs)
+            %
+            %   Graph  optical image properties (Luminance, chromaticity coordinates)
+            %   from an ROI.  The user is prompted to select the ROI in the OI window.
+            %
+            %   The plotted values can be obtained from the GraphWin using
+            %
+            %       udata = get(gcf,'userdata');
+            %
+            % Examples:
+            %   oi = vcGetObject('oi');
+            %   ieNewGraphWin;
+            %   udata = plotOICIE(oi,'chromaticity')
+            %   plotOICIE(oi,'illuminance',roiLocs);
+            %   plotOICIE(oi,'chromaticity',roiLocs);
+            %
+            % Copyright ImagEval Consultants, LLC, 2003.
 
-end
+            switch lower(dataType)
 
-function uData = plotOICIE(oi,dataType,roiLocs)
-% plotting CIE data from optical image.  Could be moved into the case
-% statements of the mother ship.
-%
-%  uData = plotOICIE(oi,dataType,roiLocs)
-%
-%   Graph  optical image properties (Luminance, chromaticity coordinates)
-%   from an ROI.  The user is prompted to select the ROI in the OI window.
-%
-%   The plotted values can be obtained from the GraphWin using
-%
-%       udata = get(gcf,'userdata');
-%
-% Examples:
-%   oi = vcGetObject('oi');
-%   ieNewGraphWin;
-%   udata = plotOICIE(oi,'chromaticity')
-%   plotOICIE(oi,'illuminance',roiLocs);
-%   plotOICIE(oi,'chromaticity',roiLocs);
-%
-% Copyright ImagEval Consultants, LLC, 2003.
+                case {'chromaticity'}
+                    photons = vcGetROIData(oi, roiLocs, 'photons');
+                    wave = oiGet(oi, 'wave');
+                    XYZ = ieXYZFromPhotons(photons, wave);
+                    data = chromaticity(XYZ);
+                    uData.x = data(:, 1);
+                    uData.y = data(:, 2);
+                    val = mean(XYZ);
+                    valxy = mean(data);
 
-switch lower(dataType)
-    
-    case {'chromaticity'}
-        photons = vcGetROIData(oi,roiLocs,'photons');
-        wave = oiGet(oi,'wave');
-        XYZ = ieXYZFromPhotons(photons,wave);
-        data = chromaticity(XYZ);
-        uData.x = data(:,1); uData.y = data(:,2);
-        val = mean(XYZ); valxy = mean(data);
-        
-        chromaticityPlot(data,[],[],0);
-        title('roiLocs-chromaticity (CIE 1931)');
-        
-        txt = sprintf('Means\n');
-        tmp = sprintf('X= %.02f\nY= %.02f\nZ= %.02f\n',val(1),val(2),val(3));
-        txt = addText(txt,tmp);
-        tmp = sprintf('x= %0.02f\ny= %0.02f\n',valxy(1),valxy(2));
-        txt = addText(txt,tmp);
-        text(0.8,0.65,txt);
-        axis equal
-        hold off
-        
-    case {'illuminance'}
-        data = vcGetROIData(oi,roiLocs,'illuminance');
-        histogram(data(:));
-        uData.illum = data;
-        xlabel('Iluminance (lux)'); ylabel('Count');
-        title('Iluminance histogram');
-        
-    otherwise
-        error('Unknown oi plot data type %s\n',dataType);
-end
+                    chromaticityPlot(data, [], [], 0);
+                    title('roiLocs-chromaticity (CIE 1931)');
 
-uData.roiLocs = roiLocs;
-oName = oiGet(oi,'name');
-set(gcf,'Name',sprintf('ISET-OI: %s',oName));
+                    txt = sprintf('Means\n');
+                    tmp = sprintf('X= %.02f\nY= %.02f\nZ= %.02f\n', val(1), val(2), val(3));
+                    txt = addText(txt, tmp);
+                    tmp = sprintf('x= %0.02f\ny= %0.02f\n', valxy(1), valxy(2));
+                    txt = addText(txt, tmp);
+                    text(0.8, 0.65, txt);
+                    axis equal
+                    hold off
 
-end
+                case {'illuminance'}
+                    data = vcGetROIData(oi, roiLocs, 'illuminance');
+                    histogram(data(:));
+                    uData.illum = data;
+                    xlabel('Iluminance (lux)');
+                    ylabel('Count');
+                    title('Iluminance histogram');
+
+                otherwise
+                    error('Unknown oi plot data type %s\n', dataType);
+            end
+
+            uData.roiLocs = roiLocs;
+            oName = oiGet(oi, 'name');
+            set(gcf, 'Name', sprintf('ISET-OI: %s', oName));
+
+        end
 
 
-%---------------------------------------------------
-%{
-function sz = selectPlotSupport(data,prct)
-% Select a central region for plotting
-%
-%  sz = selectPlotSupport(data,prct)
-%
-% Sometimes we have a large surface to plot but the interesting part is
-% near the middle of the data set.  Rather than plotting the entire surf or
-% mesh(data) we pull out a central region.  This routine encapsulates the
-% method for choosing the  extent of data we pull out.  This routine is
-% used in conjunction with getMiddleMatrix.
-%
-%  See meshPlot
-%
-% TODO: What if data are a vector?  Can we adjust this routine to make it work?
+        %---------------------------------------------------
+        %{
+        function sz = selectPlotSupport(data,prct)
+            % Select a central region for plotting
+            %
+            %  sz = selectPlotSupport(data,prct)
+            %
+            % Sometimes we have a large surface to plot but the interesting part is
+            % near the middle of the data set.  Rather than plotting the entire surf or
+            % mesh(data) we pull out a central region.  This routine encapsulates the
+            % method for choosing the  extent of data we pull out.  This routine is
+            % used in conjunction with getMiddleMatrix.
+            %
+            %  See meshPlot
+            %
+            % TODO: What if data are a vector?  Can we adjust this routine to make it work?
 
-if ieNotDefined('prct'), prct = 0.01; end
+            if ieNotDefined('prct'), prct = 0.01; end
 
-r = size(data,1); mx = max(data(:));
-centerRow = round(r/2);
+            r = size(data,1); mx = max(data(:));
+            centerRow = round(r/2);
 
-% Find the locations in the center row that are less than prct of the
-% data maximum.
-l = (data(centerRow,:) <= prct*mx);
+            % Find the locations in the center row that are less than prct of the
+            % data maximum.
+            l = (data(centerRow,:) <= prct*mx);
 
-if max(l) == 0
-    % Nothing found
-    sz = centerRow - 1;
-else
-    % Not sure what is going on here ...
-    [v,idx] = max(data(centerRow,l));
-    sz = max(25,centerRow - idx);
-end
+            if max(l) == 0
+                % Nothing found
+                sz = centerRow - 1;
+            else
+                % Not sure what is going on here ...
+                [v,idx] = max(data(centerRow,l));
+                sz = max(25,centerRow - idx);
+            end
 
-end
-%}
+        end
+        %}

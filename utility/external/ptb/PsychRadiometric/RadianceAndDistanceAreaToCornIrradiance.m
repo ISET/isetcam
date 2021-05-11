@@ -1,4 +1,4 @@
-function cornealIrradiance_PowerPerArea = RadianceAndDistanceAreaToCornIrradiance(radiance_PowerPerSrArea,stimulusDistance,stimulusArea)
+function cornealIrradiance_PowerPerArea = RadianceAndDistanceAreaToCornIrradiance(radiance_PowerPerSrArea, stimulusDistance, stimulusArea)
 % cornealIrradiance_PowerPerArea = RadianceAndDistanceAreaToCornIrradiance(radiance_PowerPerSrArea,stimulusDistance,stimulusArea)
 %
 % Convert the radiance of a stimulus to corneal irradiance, given that we know the distance to the stimulus and the area
@@ -26,5 +26,4 @@ radiantIntensity_PowerPerSr = radiance_PowerPerSrArea * stimulusArea;
 % by (stimulusDistance^2).  The radiant intensity is the power passing through 1
 % sr at the cornea, and thus also the power passing through an area of (stimulusDistance^2).
 % Dividing by this area gives the power per area.
-cornealIrradiance_PowerPerArea = radiantIntensity_PowerPerSr/(stimulusDistance^2);
-
+cornealIrradiance_PowerPerArea = radiantIntensity_PowerPerSr / (stimulusDistance^2);

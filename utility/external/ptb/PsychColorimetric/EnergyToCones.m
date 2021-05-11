@@ -1,4 +1,4 @@
-function cones = EnergyToCones(wl,energy,S_cones,T_cones)
+function cones = EnergyToCones(wl, energy, S_cones, T_cones)
 % cones = EnergyToCones(wl,energy,S_cones,T_cones)
 %
 % Convert energy of a monochromatic light to cone excitations.
@@ -9,11 +9,9 @@ function cones = EnergyToCones(wl,energy,S_cones,T_cones)
 wls_cones = MakeItWls(S_cones);
 
 % Convert
-n_cones = size(T_cones,1);
+n_cones = size(T_cones, 1);
 index = find(wl == wls_cones);
 if (isempty(index))
-	error('Passed wavelength not subset of cone wavelengths');
+    error('Passed wavelength not subset of cone wavelengths');
 end
-cones = T_cones(:,index)*energy;
-
-
+cones = T_cones(:, index) * energy;

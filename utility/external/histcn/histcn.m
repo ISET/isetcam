@@ -62,11 +62,11 @@ function [count, edges, mid, loc] = histcn(X, varargin)
 %  imagesc(mid{1:2},N); axis xy; identityLine;
 %
 % See also: HIST, ACCUMARRAY
-% 
+%
 % Bruno Luong: <brunoluong@yahoo.com>
 % Last update: 25/August/2011
 
-if ndims(X)>2
+if ndims(X) > 2
     error('histcn: X requires to be an (M x N) array of M points in R^N');
 end
 DEFAULT_NBINS = 64;
@@ -79,9 +79,9 @@ Fun = {};
 split = find(cellfun('isclass', varargin, 'char'), 1, 'first');
 if ~isempty(split)
     for k = split:2:length(varargin)
-        if strcmpi(varargin{k},'AccumData')
+        if strcmpi(varargin{k}, 'AccumData')
             AccumData = varargin{k+1}(:);
-        elseif strcmpi(varargin{k},'Fun')
+        elseif strcmpi(varargin{k}, 'Fun')
             Fun = varargin(k+1); % 1x1 cell
         end
     end
@@ -89,9 +89,9 @@ if ~isempty(split)
 end
 
 % Get the dimension
-nd = size(X,2);
+nd = size(X, 2);
 edges = varargin;
-if nd<length(edges)
+if nd < length(edges)
     nd = length(edges); % wasting CPU time warranty
 else
     edges(end+1:nd) = {DEFAULT_NBINS};
@@ -99,45 +99,45 @@ end
 
 % Allocation of array loc: index location of X in the bins
 loc = zeros(size(X));
-sz = zeros(1,nd);
+sz = zeros(1, nd);
 % Loop in the dimension
-for d=1:nd
+for d = 1:nd
     ed = edges{d};
-    Xd = X(:,d);
+    Xd = X(:, d);
     if isempty(ed)
         ed = DEFAULT_NBINS;
     end
     if isscalar(ed) % automatic linear subdivision
-        ed = linspace(min(Xd),max(Xd),ed+1);
+        ed = linspace(min(Xd), max(Xd), ed+1);
     end
     edges{d} = ed;
     % Call histc on this dimension
-    [dummy loc(:,d)] = histc(Xd, ed, 1);
+    [dummy, loc(:, d)] = histc(Xd, ed, 1);
     % Use sz(d) = length(ed); to create consistent number of bins
-    sz(d) = length(ed)-1;
+    sz(d) = length(ed) - 1;
 end % for-loop
 
 % Clean
 clear dummy
 
 % This is need for seldome points that hit the right border
-sz = max([sz; max(loc,[],1)]);
+sz = max([sz; max(loc, [], 1)]);
 
 % Compute the mid points
-mid = cellfun(@(e) 0.5*(e(1:end-1)+e(2:end)), edges, ...
-              'UniformOutput', false);
-          
+mid = cellfun(@(e) 0.5*(e(1:end - 1) + e(2:end)), edges, ...
+    'UniformOutput', false);
+
 % Count for points where all coordinates are falling in a corresponding
 % bins
-if nd==1
-    sz = [sz 1]; % Matlab doesn't know what is one-dimensional array!
+if nd == 1
+    sz = [sz, 1]; % Matlab doesn't know what is one-dimensional array!
 end
 
-hasdata = all(loc>0, 2);
+hasdata = all(loc > 0, 2);
 if ~isempty(AccumData)
-    count = accumarray(loc(hasdata,:), AccumData(hasdata), sz, Fun{:});
+    count = accumarray(loc(hasdata, :), AccumData(hasdata), sz, Fun{:});
 else
-    count = accumarray(loc(hasdata,:), 1, sz);
+    count = accumarray(loc(hasdata, :), 1, sz);
 end
 
 return

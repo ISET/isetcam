@@ -12,32 +12,34 @@ function merged = cellMerge(varargin);
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
-if isempty(varargin), merged = []; return; end
+if isempty(varargin), merged = [];
+    return;
+end
 
 n = length(varargin);
-for ii=1:n
-    if ~isempty(varargin{ii}) & ~iscell(varargin{ii}), 
-        error('All arguments must be cell arrays'); 
+for ii = 1:n
+    if ~isempty(varargin{ii}) & ~iscell(varargin{ii}),
+        error('All arguments must be cell arrays');
+        end
+        eachLength(ii) = length(varargin{ii});
     end
-    eachLength(ii) = length(varargin{ii});
-end
 
-totalLength = sum(eachLength);
+    totalLength = sum(eachLength);
 
-this = 1;
-for ii=1:n
-    % Empty cell arrays are permitted
-    if eachLength(ii) > 0
-        for jj=1:eachLength(ii)
-            merged{this} = varargin{ii}{jj};
-            this = this+1;
+    this = 1;
+    for ii = 1:n
+        % Empty cell arrays are permitted
+        if eachLength(ii) > 0
+            for jj = 1:eachLength(ii)
+                merged{this} = varargin{ii}{jj};
+                this = this + 1;
+            end
         end
     end
-end
 
-return;
+    return;
 
-a = {'a','b'};
-b = {'c'};
-cellMerge(a,b);
-cellMerge(a,b,c)
+    a = {'a', 'b'};
+    b = {'c'};
+    cellMerge(a, b);
+    cellMerge(a, b, c)

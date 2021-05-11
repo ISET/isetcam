@@ -13,7 +13,7 @@
 % the sensor.  The conversion of the scene radiance to spectral
 % radiance is largely determined by the parameters of the
 % *optics*.  The optics object is attached to the oi object.
-% 
+%
 % See also:  t_oiCompute, oiCompute, t_oiIntroduction,
 % t_sceneIntroduction, t_optics<TAB>
 %
@@ -25,16 +25,18 @@ ieInit;
 %% Create a scene and oi (irradiance) image from an array of points
 
 % For a basic scene, we normally only see this
-scene = sceneCreate('point array');   
-scene = sceneSet(scene,'hfov',1);  
-ieAddObject(scene); sceneWindow;
+scene = sceneCreate('point array');
+scene = sceneSet(scene, 'hfov', 1);
+ieAddObject(scene);
+sceneWindow;
 
 % Diffraction limited optics
-oi = oiCreate;                        
+oi = oiCreate;
 
 % Compute optical image and show it
-oi = oiCompute(scene,oi);
-ieAddObject(oi); oiWindow;
+oi = oiCompute(scene, oi);
+ieAddObject(oi);
+oiWindow;
 
 %% The inner workings exposed
 %
@@ -46,44 +48,46 @@ ieAddObject(oi); oiWindow;
 % Here is what happens inside there
 
 % Compute the basic parameters of the oi from the scene parameters.
-oi = oiSet(oi,'wangular',sceneGet(scene,'wangular'));
+oi = oiSet(oi, 'wangular', sceneGet(scene, 'wangular'));
 
 % The wavelength sampling of the oi is set to match that of the
 % scene
-oi = oiSet(oi,'optics spectrum',sceneGet(scene,'spectrum'));
-        
+oi = oiSet(oi, 'optics spectrum', sceneGet(scene, 'spectrum'));
+
 % Compute and set the irradiance
-optics = oiGet(oi,'optics');
-oi = oiSet(oi,'photons',oiCalculateIrradiance(scene,oi));
+optics = oiGet(oi, 'optics');
+oi = oiSet(oi, 'photons', oiCalculateIrradiance(scene, oi));
 
 % Compute the illumination fall of
 oi = opticsCos4th(oi);
 
 % Blur based on the OTF
-oi = opticsOTF(oi,scene);
+oi = opticsOTF(oi, scene);
 
 % Then we check if there is an IR/diffuser filter and apply it
 % (not shown here)
 
 %% At this point, we are mostly done with calculation
 
-oi = oiSet(oi,'name','Almost final');
-ieAddObject(oi); oiWindow;
+oi = oiSet(oi, 'name', 'Almost final');
+ieAddObject(oi);
+oiWindow;
 
 %% The final steps involve naming and dealing with the depth map
 %
 % We usually attach the luminance image
 %
-oi = oiSet(oi,'illuminance',oiCalculateIlluminance(oi));
+oi = oiSet(oi, 'illuminance', oiCalculateIlluminance(oi));
 %
 % Indicate scene it is derived from
-oi = oiSet(oi,'name',sceneGet(scene,'name'));
+oi = oiSet(oi, 'name', sceneGet(scene, 'name'));
 %
 % Pad the scene dpeth map and attach it to the oi.   The padded values are
 % set to 0, though perhaps we should pad them with the mean distance.
-oi = oiSet(oi,'depth map',oiPadDepthMap(scene));
+oi = oiSet(oi, 'depth map', oiPadDepthMap(scene));
 
-oi = oiSet(oi,'name','Final');
-ieAddObject(oi); oiWindow;
+oi = oiSet(oi, 'name', 'Final');
+ieAddObject(oi);
+oiWindow;
 
 %%

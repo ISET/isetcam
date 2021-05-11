@@ -1,4 +1,4 @@
-function oi = oiFromFile(imageData,imageType, meanLuminance, dispCal, wList)
+function oi = oiFromFile(imageData, imageType, meanLuminance, dispCal, wList)
 % Read an RGB file (e.g. from Code V) and insert it into an optical image
 %
 % Synopsis
@@ -30,19 +30,19 @@ function oi = oiFromFile(imageData,imageType, meanLuminance, dispCal, wList)
 
 % Examples:
 %{
-  filename = 'eagle.jpg';
-  oi = oiFromFile(filename,'rgb');
-  oiWindow(oi);
+filename = 'eagle.jpg';
+oi = oiFromFile(filename,'rgb');
+oiWindow(oi);
 %}
 %{
-  filename = 'StuffedAnimals_tungsten-hdrs.mat';
-  oi = oiFromFile(filename,'multispectral');
-  oiWindow(oi);
+filename = 'StuffedAnimals_tungsten-hdrs.mat';
+oi = oiFromFile(filename,'multispectral');
+oiWindow(oi);
 %}
 %{
-  filename = 'ISO-Chart1.png';
-  oi = oiFromFile(filename,'monochrome');
-  oiWindow(oi);
+filename = 'ISO-Chart1.png';
+oi = oiFromFile(filename,'monochrome');
+oiWindow(oi);
 %}
 
 %% Parse
@@ -50,16 +50,18 @@ function oi = oiFromFile(imageData,imageType, meanLuminance, dispCal, wList)
 if notDefined('imageData')
     % If imageData is not sent in, we ask the user for a filename.
     % The user may or may not have set the imageType.  Sigh.
-    if notDefined('imageType'), [imageData,imageType] = vcSelectImage;
+    if notDefined('imageType'), [imageData, imageType] = vcSelectImage;
     else, imageData = vcSelectImage(imageType);
     end
-    if isempty(imageData), oi = []; return; end
+    if isempty(imageData), oi = [];
+        return;
+    end
 end
 
 if ischar(imageData)
     % I is a file name.  Check that it exists on the path
-    filename = which(imageData); 
-    if ~exist(filename,'file'), error('%s not found\n',filename); end
+    filename = which(imageData);
+    if ~exist(filename, 'file'), error('%s not found\n', filename); end
 end
 if notDefined('imageType'), error('Image type specification required.'); end
 imageType = ieParamFormat(imageType);
@@ -69,21 +71,20 @@ if notDefined('meanLuminance'), meanLuminance = []; end
 if notDefined('wList'), wList = 400:10:700; end
 
 %%  Read the file as a scene
-scene = sceneFromFile(filename,imageType,meanLuminance,dispCal,wList);
-scene = sceneAdjustIlluminant(scene,'D65');
+scene = sceneFromFile(filename, imageType, meanLuminance, dispCal, wList);
+scene = sceneAdjustIlluminant(scene, 'D65');
 
 %% Convert the scene photons to optical image photons, scaling by pi
 oi = oiCreate;
-oi = oiSet(oi,'wave',sceneGet(scene,'wave'));
-oi = oiSet(oi,'fov',sceneGet(scene,'fov'));
-oi = oiSet(oi,'optics model','Ray trace');
+oi = oiSet(oi, 'wave', sceneGet(scene, 'wave'));
+oi = oiSet(oi, 'fov', sceneGet(scene, 'fov'));
+oi = oiSet(oi, 'optics model', 'Ray trace');
 
 % Ray trace optics parameters could be set here
 %
 disp('Suggest setting ray trace optical parameters');
 
 % Scale the photons for the radiance to irradiance change
-oi = oiSet(oi,'photons',sceneGet(scene,'photons')/pi);
+oi = oiSet(oi, 'photons', sceneGet(scene, 'photons')/pi);
 
 end
-

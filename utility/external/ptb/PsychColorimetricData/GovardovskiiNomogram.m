@@ -1,4 +1,4 @@
-function T_absorbance = GovardovskiiNomogram(S,lambdaMax)
+function T_absorbance = GovardovskiiNomogram(S, lambdaMax)
 % T_absorbance = GovardovskiiNomogram(S,lambdaMax)
 %
 % Compute normalized absorbance according to the
@@ -56,55 +56,55 @@ Abeta = 0.26;
 % Get wls argument.
 wls = MakeItWls(S);
 
-[nWls,nil] = size(wls);
-[nT,nil] = size(lambdaMax);
-T_absorbance = zeros(nT,nWls);
+[nWls, nil] = size(wls);
+[nT, nil] = size(lambdaMax);
+T_absorbance = zeros(nT, nWls);
 
 for i = 1:nT
     theMax = lambdaMax(i);
     if (theMax > lmaxLow && theMax < lmaxHigh)
-        
+
         % alpha-band polynomial
         %
         % Parameter a depends on lambdamax, see equation (2) (page 515)
-        a = 0.8795 + 0.0459*exp(-(theMax-300)^2/11940);
+        a = 0.8795 + 0.0459 * exp(-(theMax - 300)^2/11940);
         a_b_c = [a, b_c];
-        
-        x = theMax./wls;
-        
+
+        x = theMax ./ wls;
+
         % midStepN, N = 1, 2, ... are the middle steps in the caculation.
-        midStep1 = exp (ones(nWls,1)*(A_B_C.*a_b_c) - x*A_B_C);
-        midStep2 = sum(midStep1,2) + D;
-        
+        midStep1 = exp(ones(nWls, 1)*(A_B_C .* a_b_c)-x*A_B_C);
+        midStep2 = sum(midStep1, 2) + D;
+
         % Result of equation (1) (page 515)
-        S_x = 1./midStep2;
-        
+        S_x = 1 ./ midStep2;
+
         % Beta-band polynomial
-        
+
         % Parameter bbeta depends on lambdamax, see equation (5b) (page 516)
-        bbeta = -40.5 + 0.195*theMax;
-        
+        bbeta = -40.5 + 0.195 * theMax;
+
         % Conversion of lambdamax to parameter lambdaMaxbeta, see equation (5a) (page 516)
-        lambdaMaxbeta = 189 + 0.315*theMax;
-        
+        lambdaMaxbeta = 189 + 0.315 * theMax;
+
         % midStepN, N = 1, 2, ... are the middle steps in the caculation.
-        midStep1 = -((wls - lambdaMaxbeta * ones (nWls,1)) / bbeta).^2;
-        midStep2 = Abeta * exp (midStep1);
-        
+        midStep1 = -((wls - lambdaMaxbeta * ones (nWls, 1)) / bbeta).^2;
+        midStep2 = Abeta * exp(midStep1);
+
         % Result of equation (4) (page 516)
         S_beta = midStep2;
-        
+
         % alpha band and beta band together.
-        T_absorbance(i,:) = (S_x + S_beta)';
-        
+        T_absorbance(i, :) = (S_x + S_beta)';
+
         % Zero sensitivity outsize valid range.
         index = find(wls < Lmin);
-        T_absorbance(i,index) = zeros(size(index))';
+        T_absorbance(i, index) = zeros(size(index))';
         index = find(wls > Lmax);
-        T_absorbance(i,index) = zeros(size(index))';
-        
+        T_absorbance(i, index) = zeros(size(index))';
+
     else
-        error(sprintf('Lambda Max %g not in range of nomogram\n',theMax));
+        error(sprintf('Lambda Max %g not in range of nomogram\n', theMax));
     end
-    
+
 end

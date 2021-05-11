@@ -1,4 +1,4 @@
-function cal = UpdateAmbient(cal,newP_ambient,ADD)
+function cal = UpdateAmbient(cal, newP_ambient, ADD)
 % cal = UpdateAmbient(cal,newP_ambient,[ADD])
 %
 % Update the ambient light used in the conversions.  The
@@ -34,7 +34,7 @@ function cal = UpdateAmbient(cal,newP_ambient,ADD)
 
 % Set default on optional argument.
 if (nargin < 3 || isempty(ADD))
-	ADD = 0;
+    ADD = 0;
 end
 
 % Check that passed data are compatible
@@ -42,27 +42,25 @@ oldP_ambient = cal.P_ambient;
 T_ambient = cal.T_ambient;
 S_ambient = cal.S_ambient;
 if (isempty(oldP_ambient) || isempty(T_ambient) || isempty(S_ambient))
-	error('Calibration structure does not contain ambient data');
+    error('Calibration structure does not contain ambient data');
 end
-[nOld,mOld] = size(oldP_ambient);
-[nNew,mNew] = size(newP_ambient);
+[nOld, mOld] = size(oldP_ambient);
+[nNew, mNew] = size(newP_ambient);
 if (nOld ~= nNew || mOld ~= mNew)
-	error('Old and new ambient specifications are not in same units');
+    error('Old and new ambient specifications are not in same units');
 end
 
 % Update
 if (~ADD)
-	cal.P_ambient = newP_ambient;
+    cal.P_ambient = newP_ambient;
 else
-	cal.P_ambient = cal.P_ambient + newP_ambient;
+    cal.P_ambient = cal.P_ambient + newP_ambient;
 end
 
 % Get conversion matrix and convert
 M_ambient_linear = cal.M_ambient_linear;
 if (isempty(M_ambient_linear))
-	error('SetColorSpace has not been called on this calibration structure');
+    error('SetColorSpace has not been called on this calibration structure');
 end
-ambient_linear = M_ambient_linear*cal.P_ambient;
+ambient_linear = M_ambient_linear * cal.P_ambient;
 cal.ambient_linear = ambient_linear;
-
-

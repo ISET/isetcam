@@ -1,4 +1,4 @@
-function m = ieMemoryCheck(unit,level)
+function m = ieMemoryCheck(unit, level)
 %Calculate the memory use in the calling routine or base
 %
 %    m = ieMemoryCheck(unit,level)
@@ -15,8 +15,8 @@ function m = ieMemoryCheck(unit,level)
 if ieNotDefined('unit'), unit = 'b'; end
 if ieNotDefined('level'), level = 'caller'; end
 
-m = 0; 
-t = evalin(level,'whos');  
+m = 0;
+t = evalin(level, 'whos');
 for ss = 1:length(t), m = m + (t(ss).bytes); end
 
 switch lower(unit)
@@ -28,6 +28,6 @@ switch lower(unit)
         s = 1
 end
 
-fprintf('Memory %f %s\n',m/s,unit);
+fprintf('Memory %f %s\n', m/s, unit);
 
 return;

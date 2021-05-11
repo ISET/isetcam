@@ -17,7 +17,7 @@ weight1 = 0.684;
 weight2 = 0.587;
 sigma1 = 0.443;
 sigma2 = 2.035;
-lsf = weight1*normpdf(distance,0,sigma1) + ...
-       weight2*normpdf(distance,0,sigma2);
-  
-lsf = lsf/max(lsf(:));
+lsf = weight1 * normpdf(distance, 0, sigma1) + ...
+    weight2 * normpdf(distance, 0, sigma2);
+
+lsf = lsf / max(lsf(:));

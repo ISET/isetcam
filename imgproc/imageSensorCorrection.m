@@ -1,4 +1,4 @@
-function [img,vci] = imageSensorCorrection(img,vci,sensor)
+function [img, vci] = imageSensorCorrection(img, vci, sensor)
 % Convert sensor color data (img) to a calibrated internal color space
 %
 %   [img,vci] = imageSensorCorrection(img,vci,sensor)
@@ -66,80 +66,83 @@ function [img,vci] = imageSensorCorrection(img,vci,sensor)
 
 if ieNotDefined('img'), error('Image required'); end
 
-param = ieParamFormat(ipGet(vci,'conversion method sensor'));
+param = ieParamFormat(ipGet(vci, 'conversion method sensor'));
 switch param
-    case {'none','sensor'}
+    case {'none', 'sensor'}
         % This case can be trouble when there are more than 3 color
         % channels.  In this condition, we don't have a plan for how to get
         % the data into sRGB space.
-        N = ipGet(vci,'nSensorInputs');
-        
+        N = ipGet(vci, 'nSensorInputs');
+
         if N > 3
             % warndlg('Warning.  No sensor conversion but n sensors > 3');
         end
         % We are told not to transform, so set it to identity with
         % dimension of the sensor input
-        vci = ipSet(vci,'conversion transform sensor',eye(N,N));
-        
-    case {'mccoptimized','esseroptimized','multisurface'}
+        vci = ipSet(vci, 'conversion transform sensor', eye(N, N));
+
+    case {'mccoptimized', 'esseroptimized', 'multisurface'}
         % Find a linear transformation using  the sensor spectral
         % sensitivities into the internal color space.  The transform is
         % chosen to optimize the representation of the surfaces in a
         % Macbeth Color Checker under a D65 illuminant.
-        ics = ipGet(vci,'internal Color Space');
-        
+        ics = ipGet(vci, 'internal Color Space');
+
         % This routine calculates the matrix transform between the two
         % spaces for an illuminant (D65) and some selection of surfaces.
         switch param
-            case {'mccoptimized','mcc'}
+            case {'mccoptimized', 'mcc'}
                 % Small, industry standard data set
-                T = ieColorTransform(sensor,ics,'D65','mcc');
-            case {'esseroptimized','esser'}
+                T = ieColorTransform(sensor, ics, 'D65', 'mcc');
+            case {'esseroptimized', 'esser'}
                 % Used for IR calculations
-                T = ieColorTransform(sensor,ics,'D65','esser');
+                T = ieColorTransform(sensor, ics, 'D65', 'esser');
             case 'multisurface'
                 % Larger, better random selection of surfaces
-                T = ieColorTransform(sensor,ics,'D65','multisurface');
+                T = ieColorTransform(sensor, ics, 'D65', 'multisurface');
         end
-        
+
         % Apply the transform to the image data
-        img = imageLinearTransform(img,T);
-        
+        img = imageLinearTransform(img, T);
+
         % Do not allow negative values
-        img = ieClip(img,0,[]);
-        
+        img = ieClip(img, 0, []);
+
         % Set the maximum value in the ICS to 1.
         mx = max(img(:));
-        img = img/mx; T = T/mx;
-        
+        img = img / mx;
+        T = T / mx;
+
         % Store the transform.  Note that because of clipping, this
         % transform alone may not do precisely the same job.
-        vci = ipSet(vci,'conversion transform sensor',T);
-        
-        
-    case {'new','manualmatrixentry'}
-        
+        vci = ipSet(vci, 'conversion transform sensor', T);
+
+
+    case {'new', 'manualmatrixentry'}
+
         % User types in a matrix
-        Torig = ipGet(vci,'combined transform');
-        Torig = Torig/max(Torig(:));
-        T = ieReadMatrix(Torig,'%.3f   ','Color Transform');
-        if isempty(T), img = []; return; end
-        
+        Torig = ipGet(vci, 'combined transform');
+        Torig = Torig / max(Torig(:));
+        T = ieReadMatrix(Torig, '%.3f   ', 'Color Transform');
+        if isempty(T), img = [];
+            return;
+        end
+
         % Store and apply this transform.
-        vci = ipSet(vci,'conversion transform sensor',T);
-        img = imageLinearTransform(img,T);  % vcNewGraphWin; imagesc(img)
-        
+        vci = ipSet(vci, 'conversion transform sensor', T);
+        img = imageLinearTransform(img, T); % vcNewGraphWin; imagesc(img)
+
         % Set the other transforms to empty.
-        vci = ipSet(vci,'correction method illuminant',[]);
-        vci = ipSet(vci,'ics2display',[]);
-        
+        vci = ipSet(vci, 'correction method illuminant', []);
+        vci = ipSet(vci, 'ics2display', []);
+
     case 'currentmatrix'
         % Use the stored transform matrix, don't recompute.
-        T   = ipGet(vci,'prodT');
-        img = imageLinearTransform(img,T);
-        
+        T = ipGet(vci, 'prodT');
+        img = imageLinearTransform(img, T);
+
     otherwise
-        error('Unknown sensor conversion transform method: ß%s\n', param)
+        error('Unknown sensor conversion transform method: ÃŸ%s\n', param)
 end
 
 end

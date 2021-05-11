@@ -1,6 +1,6 @@
-function image = CalFormatToImage(calFormat,nX,nY)
+function image = CalFormatToImage(calFormat, nX, nY)
 % image = CalFormatToImage(calFormat,nX,nY)
-% 
+%
 % Convert a calibration format image back to a real
 % image.
 %
@@ -14,5 +14,5 @@ function image = CalFormatToImage(calFormat,nX,nY)
 % 9/1/09   dhb  Update help.
 % 10/2/09  dhb  Try again on making help clear.
 
-k = size(calFormat,1);
-image = reshape(calFormat',nY,nX,k);
+k = size(calFormat, 1);
+image = reshape(calFormat', nY, nX, k);

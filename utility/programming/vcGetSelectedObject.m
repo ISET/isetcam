@@ -1,4 +1,4 @@
-function [val,sOBJECT] = vcGetSelectedObject(objType)
+function [val, sOBJECT] = vcGetSelectedObject(objType)
 %Returns the number of the currently selected object of some type
 %
 %   [val,sOBJECT] = vcGetSelectedObject(objType)
@@ -40,26 +40,26 @@ val = [];
 
 switch lower(objType)
     case 'scene'
-        if checkfields(vcSESSION,'SELECTED','SCENE'), val = vcSESSION.SELECTED.SCENE;  end
-    case {'opticalimage','oi','optics'}
+        if checkfields(vcSESSION, 'SELECTED', 'SCENE'), val = vcSESSION.SELECTED.SCENE; end
+    case {'opticalimage', 'oi', 'optics'}
         % Gets the OI or the optics attached to the oi
-        if checkfields(vcSESSION,'SELECTED','OPTICALIMAGE'), val = vcSESSION.SELECTED.OPTICALIMAGE;  end
-    case {'isa','sensor','pixel'}
+        if checkfields(vcSESSION, 'SELECTED', 'OPTICALIMAGE'), val = vcSESSION.SELECTED.OPTICALIMAGE; end
+    case {'isa', 'sensor', 'pixel'}
         % Gets the sensor or the pixel attached to the sensor
-        if checkfields(vcSESSION,'SELECTED','ISA'), val = vcSESSION.SELECTED.ISA;  end
-    case {'vcimage','ip','imgproc','ipdisplay'}
+        if checkfields(vcSESSION, 'SELECTED', 'ISA'), val = vcSESSION.SELECTED.ISA; end
+    case {'vcimage', 'ip', 'imgproc', 'ipdisplay'}
         % Gets the ip or the display attached to the ip
-        if checkfields(vcSESSION,'SELECTED','VCIMAGE'), val = vcSESSION.SELECTED.VCIMAGE;  end
+        if checkfields(vcSESSION, 'SELECTED', 'VCIMAGE'), val = vcSESSION.SELECTED.VCIMAGE; end
     case {'display'}
         % This is a real display object, as in the displayWindow
-        if checkfields(vcSESSION,'SELECTED','VCIMAGE'), val = vcSESSION.SELECTED.DISPLAY;  end
+        if checkfields(vcSESSION, 'SELECTED', 'VCIMAGE'), val = vcSESSION.SELECTED.DISPLAY; end
     otherwise
         error('Unknown object type.');
 end
 
 
 if nargout == 2
-    sOBJECT = vcGetObject(objType,val);
+    sOBJECT = vcGetObject(objType, val);
 end
 
 end

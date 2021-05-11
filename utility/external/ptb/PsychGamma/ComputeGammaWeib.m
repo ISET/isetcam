@@ -1,4 +1,4 @@
-function output = ComputeGammaWeib(x,input)
+function output = ComputeGammaWeib(x, input)
 % output = ComputeGammaWeib(x,input)
 %
 % Compute gamma table using Weibull function.
@@ -10,8 +10,6 @@ function output = ComputeGammaWeib(x,input)
 alpha = x(1);
 beta = x(2);
 
-z = (input./ alpha) .^ beta;
-output = ( 1.0 - exp( - z ) );
+z = (input ./ alpha).^beta;
+output = (1.0 - exp(-z));
 output = NormalizeGamma(output);
-
-

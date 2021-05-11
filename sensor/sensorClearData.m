@@ -14,11 +14,11 @@ function sensor = sensorClearData(sensor)
 %
 
 
-if checkfields(sensor,'data'),           sensor = sensorSet(sensor,'data',[]); end
-if checkfields(sensor,'offsetFPNimage'), sensor = sensorSet(sensor,'offsetFPNimage',[]); end
-if checkfields(sensor,'gainFPNimage'),   sensor = sensorSet(sensor,'gainFPNimage',[]); end
-if checkfields(sensor,'colOffset'),      sensor = sensorSet(sensor,'coloffsetfpnvector',[]); end
-if checkfields(sensor,'colGain'),        sensor = sensorSet(sensor,'colgainfpnvector',[]); end
-if checkfields(sensor,'etendue'),        sensor = sensorSet(sensor,'etendue',[]); end
+if checkfields(sensor, 'data'), sensor = sensorSet(sensor, 'data', []); end
+if checkfields(sensor, 'offsetFPNimage'), sensor = sensorSet(sensor, 'offsetFPNimage', []); end
+if checkfields(sensor, 'gainFPNimage'), sensor = sensorSet(sensor, 'gainFPNimage', []); end
+if checkfields(sensor, 'colOffset'), sensor = sensorSet(sensor, 'coloffsetfpnvector', []); end
+if checkfields(sensor, 'colGain'), sensor = sensorSet(sensor, 'colgainfpnvector', []); end
+if checkfields(sensor, 'etendue'), sensor = sensorSet(sensor, 'etendue', []); end
 
 end

@@ -6,9 +6,9 @@ function [xyY] = XYZToxyY(XYZ)
 %
 % 8/24/09  dhb  Speed it up vastly for large arrays.
 
-denom = sum(XYZ,1);
-xy = XYZ(1:2,:)./denom([1 1]',:);
-xyY = [xy ; XYZ(2,:)];
+denom = sum(XYZ, 1);
+xy = XYZ(1:2, :) ./ denom([1, 1]', :);
+xyY = [xy; XYZ(2, :)];
 
 % [m,n] = size(XYZ);
 % xyY = zeros(m,n);
@@ -17,4 +17,3 @@ xyY = [xy ; XYZ(2,:)];
 %  xyY(2,i) = XYZ(2,i)./sum(XYZ(:,i));
 %  xyY(3,i) = XYZ(2,i);
 % end
-

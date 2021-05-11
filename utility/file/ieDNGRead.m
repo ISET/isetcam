@@ -1,4 +1,4 @@
-function [img,info] = ieDNGRead(fname,varargin)
+function [img, info] = ieDNGRead(fname, varargin)
 % Read a DNG file data
 %
 % Synopsis
@@ -16,34 +16,34 @@ function [img,info] = ieDNGRead(fname,varargin)
 %   img:  Image data mosaic
 %   info: The header information.  I am unsure whether exposure time is in
 %         seconds, I think.
-%   
+%
 % See also
 %   sensorDNGRead, dcrawRead
 
 % Examples:
 %{
-  fname = 'MCC-centered.dng';
-  [img,info] = ieDNGRead(fname);
+fname = 'MCC-centered.dng';
+[img,info] = ieDNGRead(fname);
 %}
 %{
-  [~,info] = ieDNGRead(fname,'simple info',true,'only info',true);
+[~,info] = ieDNGRead(fname,'simple info',true,'only info',true);
 %}
 %{
-  [img,info] = ieDNGRead(fname,'simple info',true);
+[img,info] = ieDNGRead(fname,'simple info',true);
 %}
 
 %% Parse inputs
 varargin = ieParamFormat(varargin);
 p = inputParser;
 
-vFunc = @(x)(exist(x,'file'));
-p.addRequired('fname',vFunc);
+vFunc = @(x)(exist(x, 'file'));
+p.addRequired('fname', vFunc);
 
-p.addParameter('onlyinfo',false);
-p.addParameter('simpleinfo',false);
-p.parse(fname,varargin{:});
+p.addParameter('onlyinfo', false);
+p.addParameter('simpleinfo', false);
+p.parse(fname, varargin{:});
 
-onlyInfo   = p.Results.onlyinfo;
+onlyInfo = p.Results.onlyinfo;
 simpleInfo = p.Results.simpleinfo;
 
 %% Read the info with imfinfo (Matlab)
@@ -55,18 +55,18 @@ allInfo = imfinfo(fname);
 if simpleInfo
     % Pull out a few fields. We are aware of two types of info structs at
     % present.  More may appear over time.
-    if checkfields(allInfo,'DigitalCamera')
+    if checkfields(allInfo, 'DigitalCamera')
         % For camera app on the Google Pixel 4a
-        infoSimple.isoSpeed     = allInfo.DigitalCamera.ISOSpeedRatings;
+        infoSimple.isoSpeed = allInfo.DigitalCamera.ISOSpeedRatings;
         infoSimple.exposureTime = allInfo.DigitalCamera.ExposureTime;
-        infoSimple.blackLevel   = allInfo.SubIFDs{1}.BlackLevel;
-        infoSimple.orientation  = allInfo.Orientation;
+        infoSimple.blackLevel = allInfo.SubIFDs{1}.BlackLevel;
+        infoSimple.orientation = allInfo.Orientation;
     else
         % For openCam files
-        infoSimple.isoSpeed     = allInfo.ISOSpeedRatings;
+        infoSimple.isoSpeed = allInfo.ISOSpeedRatings;
         infoSimple.exposureTime = allInfo.ExposureTime;
-        infoSimple.blackLevel   = allInfo.BlackLevel;
-        infoSimple.orientation  = allInfo.Orientation;
+        infoSimple.blackLevel = allInfo.BlackLevel;
+        infoSimple.orientation = allInfo.Orientation;
     end
     info = infoSimple;
 else
@@ -77,7 +77,7 @@ end
 
 if onlyInfo
     img = [];
-    return; 
+    return;
 else
     % If fname has any spaces in it, dcraw is unhappy.
     try

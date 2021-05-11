@@ -1,4 +1,4 @@
-function [camera,img] = cameraCompute(camera,pType,mode,sensorResize)
+function [camera, img] = cameraCompute(camera, pType, mode, sensorResize)
 % Compute an image of a scene using a camera model
 %
 %   [camera,img] = cameraCompute(camera,pType,mode,sensorResize)
@@ -18,7 +18,7 @@ function [camera,img] = cameraCompute(camera,pType,mode,sensorResize)
 %                 At the end of the calculation, the result field in the ip
 %                 contains an sRGB image?  Or an lRGB image?
 %   'ideal xyz' - Replaces the sensor with an ideal (noise-free) sensor
-%                 that has XYZ filters. 
+%                 that has XYZ filters.
 %  sensorResize - True (default) or false By default, we adjust the sensor
 %                 size to match the scene field of view.
 %
@@ -108,13 +108,17 @@ adjustScale = 0;
 if ieNotDefined('camera'), error('Camera structure required.'); end
 if ieNotDefined('pType'), pType = 'sensor';
 elseif isstruct(pType)
-    if strcmp(sceneGet(pType,'type'),'scene'), scene = pType; pType = 'scene';
-    else,                                      error('Bad input object %s\n',pType);
+    if strcmp(sceneGet(pType, 'type'), 'scene'), scene = pType;
+        pType = 'scene';
+    else, error('Bad input object %s\n', pType);
     end
 end
 
-if ieNotDefined('mode'),  mode  = 'normal'; end
-if ~ischar(mode), lrgbScale = mode; mode = 'normal'; adjustScale = 1; end
+if ieNotDefined('mode'), mode = 'normal'; end
+if ~ischar(mode), lrgbScale = mode;
+    mode = 'normal';
+    adjustScale = 1;
+end
 
 if ieNotDefined('sensorResize'), sensorResize = true; end
 
@@ -122,72 +126,73 @@ mode  = ieParamFormat(mode);
 pType = ieParamFormat(pType);
 
 switch mode
-    %% Normal camera operation (not ideal XYZ case)
+
+        %% Normal camera operation (not ideal XYZ case)
     case 'normal'
         switch pType
             case 'scene'
-                oi     = cameraGet(camera,'oi');
-                sensor = cameraGet(camera,'sensor');
-                vci    = cameraGet(camera,'vci');
-                
+                oi = cameraGet(camera, 'oi');
+                sensor = cameraGet(camera, 'sensor');
+                vci = cameraGet(camera, 'vci');
+
                 % Warn when FOV from scene and camera don't match
-                hfovScene     = sceneGet(scene,'fov horizontal');
-                hfovCamera    = sensorGet(sensor(1),'fov horizontal',scene,oi);
+                hfovScene = sceneGet(scene, 'fov horizontal');
+                hfovCamera = sensorGet(sensor(1), 'fov horizontal', scene, oi);
                 if sensorResize
-                    vfovScene = sceneGet(scene,'vfov');
-                    vfovCamera = sensorGet(sensor(1),'fov vertical',scene,oi);
-                    
-                    if abs((hfovScene - hfovCamera)/hfovScene) > 0.01 || ...
-                        abs((vfovScene - vfovCamera)/vfovScene) > 0.01
-                        
+                    vfovScene = sceneGet(scene, 'vfov');
+                    vfovCamera = sensorGet(sensor(1), 'fov vertical', scene, oi);
+
+                    if abs((hfovScene-hfovCamera)/hfovScene) > 0.01 || ...
+                            abs((vfovScene-vfovCamera)/vfovScene) > 0.01
+
                         % More than 1% off.  A little off because of
                         % requirements for the CFA is OK.
-                        % warning('ISET:Camera','Resizing sensor to match scene FOV (%.1f)',hfovScene);                        
-                        fov = [hfovScene,vfovScene];
+                        % warning('ISET:Camera','Resizing sensor to match scene FOV (%.1f)',hfovScene);
+                        fov = [hfovScene, vfovScene];
                         N = length(sensor);
-                        for ii=1:N
-                            sensor(ii) = sensorSetSizeToFOV(sensor(ii),fov,oi);
+                        for ii = 1:N
+                            sensor(ii) = sensorSetSizeToFOV(sensor(ii), fov, oi);
                         end
                     end
                 end
-                
+
                 % Compute
-                oi     = oiCompute(oi,scene);
-                sensor = sensorCompute(sensor,oi);
-                vci    = ipCompute(vci,sensor);
-                
-                camera = cameraSet(camera,'oi',oi);
-                camera = cameraSet(camera,'sensor',sensor);
-                
+                oi = oiCompute(oi, scene);
+                sensor = sensorCompute(sensor, oi);
+                vci = ipCompute(vci, sensor);
+
+                camera = cameraSet(camera, 'oi', oi);
+                camera = cameraSet(camera, 'sensor', sensor);
+
             case 'oi'
-                
+
                 % Load camera properties
-                oi     = cameraGet(camera,'oi');
-                sensor = cameraGet(camera,'sensor');
-                vci    = cameraGet(camera,'ip');
-                
+                oi = cameraGet(camera, 'oi');
+                sensor = cameraGet(camera, 'sensor');
+                vci = cameraGet(camera, 'ip');
+
                 % Compute
-                sensor = sensorCompute(sensor,oi);
-                vci    = ipCompute(vci,sensor);
-                
-                camera = cameraSet(camera,'sensor',sensor);
-                
+                sensor = sensorCompute(sensor, oi);
+                vci = ipCompute(vci, sensor);
+
+                camera = cameraSet(camera, 'sensor', sensor);
+
             case 'sensor'
-                
+
                 % Load camera properties
-                sensor = cameraGet(camera,'sensor');
+                sensor = cameraGet(camera, 'sensor');
                 % ieAddObject(sensor); sensorWindow('scale',1);
-                vci = cameraGet(camera,'vci');
+                vci = cameraGet(camera, 'vci');
                 % vci = ipSet(vci,'color balance method','gray world');
                 % ieAddObject(vci); ipWindow;
-                
+
                 % Compute
-                vci    = ipCompute(vci,sensor);
-                
+                vci = ipCompute(vci, sensor);
+
             otherwise
-                error('Unknown pType conditions %s\n',pType);
+                error('Unknown pType conditions %s\n', pType);
         end
-        
+
         % Adjust scale of rendered lrgb image to match mean of passed in
         % image.  Generally the rendered images need to be scaled for
         % display.  By scaling to match the mean of another image, the two
@@ -196,64 +201,65 @@ switch mode
         if adjustScale
             lrgb = ipGet(vci, 'result');
             % Ignore pixels within 10 pixels of edges of image
-            meanlrgb      = mean(mean(mean(lrgb(11:end-10,11:end-10,:))));
-            meanlrgbScale = mean(mean(mean(lrgbScale(11:end-10,11:end-10,:))));
+            meanlrgb = mean(mean(mean(lrgb(11:end - 10, 11:end - 10, :))));
+            meanlrgbScale = mean(mean(mean(lrgbScale(11:end - 10, 11:end - 10, :))));
             lrgb = lrgb * meanlrgbScale / meanlrgb;
             vci = ipSet(vci, 'result', lrgb);
         end
-        
+
         % Store vci into camera
-        camera = cameraSet(camera,'vci',vci);
-        
-        if nargout > 1, img    = ipGet(vci,'result'); end
-        
+        camera = cameraSet(camera, 'vci', vci);
+
+        if nargout > 1, img = ipGet(vci, 'result'); end
+
     case 'idealxyz'
-        
+
         %% Use optics and sensor but compute with sensor XYZQuanta
         % The returned values are not mosaicked and there is no processing.
         % We just return the XYZ values at the same spatial/optical
         % resolution as the camera. This is useful for training and
         % testing.
-        oi     = cameraGet(camera,'oi');
-        sensor = cameraGet(camera,'sensor');
-        
+        oi = cameraGet(camera, 'oi');
+        sensor = cameraGet(camera, 'sensor');
+
         % Turn off noise, quantization, gain ...
-        sensor = sensorSet(sensor,'NoiseFlag',-1);
-        
+        sensor = sensorSet(sensor, 'NoiseFlag', -1);
+
         % Set the field of view of the camera to match our best guess about
         % the scene.
-        fovScene = oiGet(oi,'fov')*(1/1.2);
-        tmp = sceneCreate; tmp = sceneSet(tmp,'fov',fovScene);
-        fovCamera    = sensorGet(sensor,'fov',tmp,oi);
-        if abs((fovScene - fovCamera)/fovScene) > 0.01
+        fovScene = oiGet(oi, 'fov') * (1 / 1.2);
+        tmp = sceneCreate;
+        tmp = sceneSet(tmp, 'fov', fovScene);
+        fovCamera = sensorGet(sensor, 'fov', tmp, oi);
+        if abs((fovScene-fovCamera)/fovScene) > 0.01
             % More than 1% off.  A little off because of
             % requirements for the CFA is OK.
-            warning('ISET:Camera','FOV for scene %.1f and camera %.1f do not match',fovScene,fovCamera)
+            warning('ISET:Camera', 'FOV for scene %.1f and camera %.1f do not match', fovScene, fovCamera)
+            end
+
+            %
+            switch pType
+                case 'scene'
+                    % Compute
+                    oi = oiCompute(oi, scene);
+                    camera = cameraSet(camera, 'oi', oi);
+
+                case 'oi'
+                    % Compute
+
+                otherwise
+                    error('Unknown pType conditions %s\n', pType);
+            end
+
+            % Load and interpolate filters
+            wave = oiGet(oi, 'wave');
+            transmissivities = ieReadSpectra('XYZQuanta', wave);
+            sensor = sensorSet(sensor, 'wave', wave);
+            img = sensorComputeFullArray(sensor, oi, transmissivities);
+
+            %%
+        otherwise
+            error('Unknown mode conditions %s\n', mode);
         end
-       
-        %
-        switch pType
-            case 'scene'
-                % Compute
-                oi     = oiCompute(oi,scene);
-                camera = cameraSet(camera,'oi',oi);
-                
-            case 'oi'
-                % Compute
-                
-            otherwise
-                error('Unknown pType conditions %s\n',pType);
-        end
-        
-        % Load and interpolate filters
-        wave = oiGet(oi,'wave');
-        transmissivities = ieReadSpectra('XYZQuanta',wave);
-        sensor = sensorSet(sensor,'wave',wave);
-        img = sensorComputeFullArray(sensor,oi,transmissivities);
-        
-        %%
-    otherwise
-        error('Unknown mode conditions %s\n',mode);
-end
 
 end

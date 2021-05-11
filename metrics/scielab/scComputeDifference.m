@@ -1,4 +1,4 @@
-function result = scComputeDifference(xyz1,xyz2,whitePt,deltaEVer)
+function result = scComputeDifference(xyz1, xyz2, whitePt, deltaEVer)
 % Compute various forms of deltaE values for a pair of XYZ images
 %
 %     result = scComputeDifference(xyz1,xyz2,whitePt,deltaEVer);
@@ -18,7 +18,7 @@ function result = scComputeDifference(xyz1,xyz2,whitePt,deltaEVer)
 % It is also possible to request the luminance, chrominance, or hue errors
 % that go into the computation of the dE 2000.  This are returned if you
 % ask for deltaEVer = 'chrominance' or deltaEVer = 'luminance' or deltaEVer
-% = 'hue'. These components are always based on the CIELAB 2000 code. 
+% = 'hue'. These components are always based on the CIELAB 2000 code.
 %
 % If you would like both the deltaE and the components, you cans set
 % deltaEVer to 'all'.  Then result.dE will be the deltaE and
@@ -32,10 +32,12 @@ function result = scComputeDifference(xyz1,xyz2,whitePt,deltaEVer)
 %
 % Copyright Imageval 2005
 
-if ieNotDefined('deltaEVer'), deltaEVer='2000'; end;
+if ieNotDefined('deltaEVer'), deltaEVer = '2000';
+end;
 
 if ~iscell(whitePt)
-    tmp{1} = whitePt; tmp{2} = whitePt;
+    tmp{1} = whitePt;
+    tmp{2} = whitePt;
     whitePt = tmp;
 end
 
@@ -44,19 +46,19 @@ end
 % xyz2 = ClipXYZImage(xyz2, whitePt{2});
 
 switch deltaEVer
-    case {'2000','1994','1976'}
+    case {'2000', '1994', '1976'}
         result = deltaEab(xyz1, xyz2, whitePt, deltaEVer);
 
-    case {'luminance','chrominance','hue'}
+    case {'luminance', 'chrominance', 'hue'}
         [result, components] = deltaEab(xyz1, xyz2, whitePt, deltaEVer);
-        if strcmpi(deltaEVer,'luminance'), result = components.dL;
-        elseif strcmpi(deltaEVer,'chrominance'), result = components.dC;
-        elseif strcmpi(deltaEVer,'hue'), result = components.dH;
+        if strcmpi(deltaEVer, 'luminance'), result = components.dL;
+        elseif strcmpi(deltaEVer, 'chrominance'), result = components.dC;
+        elseif strcmpi(deltaEVer, 'hue'), result = components.dH;
         end
     case {'all'}
         [result.dE, result.components] = deltaEab(xyz1, xyz2, whitePt, deltaEVer);
     otherwise
-        error('Unknown deltaEVer %s\n',deltaEVer);
+        error('Unknown deltaEVer %s\n', deltaEVer);
 end
 
 return

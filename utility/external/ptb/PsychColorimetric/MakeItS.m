@@ -13,17 +13,15 @@ function S = MakeItS(wls)
 % 7/26/02  dhb  Allow struct format too.
 
 % Force passed description to S format.
-[m,n] = size(wls);
+[m, n] = size(wls);
 if (isstruct(wls))
-	S = [wls.start wls.step wls.numberSamples];
+    S = [wls.start, wls.step, wls.numberSamples];
 elseif (m == 1 && n == 3)
-  if (wls(1) >= 0 && wls(3) > 0)
-    S = wls;
-  else
-    error('Passed wls is not interpretable');
-  end
+    if (wls(1) >= 0 && wls(3) > 0)
+        S = wls;
+    else
+        error('Passed wls is not interpretable');
+    end
 else
-  S = WlsToS(wls);
+    S = WlsToS(wls);
 end
-
-

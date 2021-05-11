@@ -1,4 +1,4 @@
-function rgbImage = MonoImageToSRGB(monoImage,xy,SCALE)
+function rgbImage = MonoImageToSRGB(monoImage, xy, SCALE)
 % rgbImage = MonoImageToSRGB(monoImage,xy,[SCALE])
 %
 % Take a single plane image in and convert to an sRGB standard
@@ -21,14 +21,14 @@ end
 
 % First step.  Project input plane to CIE XYZ tristimulus image
 % at specified chromaticity.
-XYZ0 = xyYToXYZ([xy ; 1]);
+XYZ0 = xyYToXYZ([xy; 1]);
 
 % String out monochrome image values as a single row.
-[monoImageCalFormat,nX,nY] = ImageToCalFormat(monoImage);
+[monoImageCalFormat, nX, nY] = ImageToCalFormat(monoImage);
 
 % Now convert to a 3 by n matrix, where each column is a scaled
 % version of the target XYZ0 values
-xyzImageUnscaledCalFormat = XYZ0*monoImageCalFormat;
+xyzImageUnscaledCalFormat = XYZ0 * monoImageCalFormat;
 
 % Convert to sRGB
 rgbImagePrimaryCalFormat = XYZToSRGBPrimary(xyzImageUnscaledCalFormat);
@@ -37,8 +37,7 @@ rgbImagePrimaryCalFormat = XYZToSRGBPrimary(xyzImageUnscaledCalFormat);
 % RGB values comes out at 255.  Thus it is not so good for calibrated
 % image processing, where we might want to preserve overall intensity
 % differences.  But for just looking at stuff, it seems about right.
-RGBImageCalFormat = uint8(SRGBGammaCorrect(rgbImagePrimaryCalFormat,SCALE));
+RGBImageCalFormat = uint8(SRGBGammaCorrect(rgbImagePrimaryCalFormat, SCALE));
 
 % Turn it back into an image
-rgbImage = CalFormatToImage(RGBImageCalFormat,nX,nY);
-
+rgbImage = CalFormatToImage(RGBImageCalFormat, nX, nY);

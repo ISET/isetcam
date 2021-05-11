@@ -18,8 +18,8 @@ function combinedOtf = makeCombinedOtf(otf, sampleSf)
 %	here and multiply it times the MTF at every wavelength.
 %
 
-a =  0.1212;		%Parameters of the fit
-w1 = 0.3481;		%Exponential term weights
+a = 0.1212; %Parameters of the fit
+w1 = 0.3481; %Exponential term weights
 w2 = 0.6519;
-williamsFactor =  w1*ones(size(sampleSf)) + w2*exp( - a*sampleSf );
-combinedOtf = otf*diag(williamsFactor);
+williamsFactor = w1 * ones(size(sampleSf)) + w2 * exp(-a*sampleSf);
+combinedOtf = otf * diag(williamsFactor);

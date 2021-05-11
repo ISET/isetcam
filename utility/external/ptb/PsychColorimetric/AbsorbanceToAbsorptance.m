@@ -1,5 +1,5 @@
-function [absorptanceSpectra, absorptanceSpectraWls] =...
-	AbsorbanceToAbsorptance(absorbanceSpectra, absorbanceSpectraWls, axialOpticalDensities)
+function [absorptanceSpectra, absorptanceSpectraWls] = ...
+    AbsorbanceToAbsorptance(absorbanceSpectra, absorbanceSpectraWls, axialOpticalDensities)
 % [absorptanceSpectra, absorptanceSpectraWls] =...
 %   AbsorbanceToAbsorptance(absorbanceSpectra, absorbanceSpectraWls, axialOpticalDensities)
 %
@@ -40,12 +40,12 @@ function [absorptanceSpectra, absorptanceSpectraWls] =...
 % 12/02/13 dhb      Fix spelling of "absorptance" in routine names and throughout.
 
 % Check that dimensions match properly
-if (size(absorbanceSpectra,1) ~= length(axialOpticalDensities))
-	error('Number of spectra does not match number of densities');
+if (size(absorbanceSpectra, 1) ~= length(axialOpticalDensities))
+    error('Number of spectra does not match number of densities');
 end
 
 % Equation: absorptanceSpectra = 1 - 10.^(-OD * absorbanceSpectra)
-absorptanceSpectra = 1 - 10.^(-diag(axialOpticalDensities)*absorbanceSpectra);
+absorptanceSpectra = 1 - 10.^(-diag(axialOpticalDensities) * absorbanceSpectra);
 
 % Wls of absorptanceSpectra
 absorptanceSpectraWls = absorbanceSpectraWls;

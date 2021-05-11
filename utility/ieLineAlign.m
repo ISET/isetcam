@@ -1,4 +1,4 @@
-function [estP, estY] = ieLineAlign(D1,D2)
+function [estP, estY] = ieLineAlign(D1, D2)
 % Aligns the data in D1 and D2 by a shift and scale
 %
 % Synopsis
@@ -16,13 +16,13 @@ function [estP, estY] = ieLineAlign(D1,D2)
 %
 % Description
 %  The two data sets are related by a shift and scale of the x-axis such
-%  that: 
+%  that:
 %
 %     D2.x = p(1)*(D1.x - p(2))
 %
-%  The y-values are built on the same function, 
+%  The y-values are built on the same function,
 %
-%     D1.y = func(D1.x) 
+%     D1.y = func(D1.x)
 %     D2.y = func(D2.x) = func(p(1)*(D1.x - p(2)));
 %
 %  *ieLineAlign* estimates the scale and shift parameters (p). If they are
@@ -55,7 +55,7 @@ s1 = 1.2; s2 = 3;
 ssX = s1*(D1.x - s2);
 
 % The function with some noise.
-D2.y = (func(ssX) + randn(size(ssX))*5); 
+D2.y = (func(ssX) + randn(size(ssX))*5);
 
 plot(D1.x,D1.y,'k--',D2.x,D2.y,'r-');
 
@@ -76,21 +76,21 @@ set(gca,'xlim',[-40 40]);
 
 % This also can work with a third term to scale the y output.
 % Maybe I should work harder at it. (BW).
-p = [1,0];
+p = [1, 0];
 
 options = optimset(@fminsearch);
 
-estP = fminsearch(@sseval,p,options,D1,D2);
+estP = fminsearch(@sseval, p, options, D1, D2);
 
 if nargout == 2
-    [~,estY] = sseval(estP,D1,D2);
+    [~, estY] = sseval(estP, D1, D2);
 end
 
 end
 
 %%
-function [e, est] = sseval(p,D1,D2)
-% Shift and scale the x-axis to match D1 to D2.  
+function [e, est] = sseval(p, D1, D2)
+% Shift and scale the x-axis to match D1 to D2.
 %
 % Synopsis
 %   e = sseval(p,D1,D2)
@@ -136,6 +136,6 @@ l = ~isnan(est);
 % scale?
 % A = mean(D1.y(l));
 % B = mean(est(l));
-e = sum( (D1.y(l) - est(l)).^2);
+e = sum((D1.y(l) - est(l)).^2);
 
 end

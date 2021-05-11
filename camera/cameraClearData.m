@@ -9,14 +9,14 @@ function camera = cameraClearData(camera)
 
 if ieNotDefined('camera'), error('Camera required.'); end
 
-oi     = oiClearData(cameraGet(camera,'oi'));
-sensor = sensorClearData(cameraGet(camera,'sensor'));
+oi = oiClearData(cameraGet(camera, 'oi'));
+sensor = sensorClearData(cameraGet(camera, 'sensor'));
 ip     = ipClearData(cameraGet(camera,'ip'));
-L3     = L3ClearData(cameraGet(camera,'ip L3'));
+L3 = L3ClearData(cameraGet(camera, 'ip L3'));
 
-camera = cameraSet(camera,'oi',oi);
-camera = cameraSet(camera,'sensor',sensor);
-camera = cameraSet(camera,'ip',ip);
-camera = cameraSet(camera,'ip L3',L3);
+camera = cameraSet(camera, 'oi', oi);
+camera = cameraSet(camera, 'sensor', sensor);
+camera = cameraSet(camera, 'ip', ip);
+camera = cameraSet(camera, 'ip L3', L3);
 
 end

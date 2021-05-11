@@ -1,4 +1,4 @@
-function [B] = MakeFourierBasis(wls,nbasis);
+function [B] = MakeFourierBasis(wls, nbasis);
 % [B] = MakeFourierBasis(wls,nbasis);
 %
 % Make a fourier basis set.
@@ -9,22 +9,22 @@ function [B] = MakeFourierBasis(wls,nbasis);
 
 % Get domain for sinusoids
 wls = MakeItWls(wls);
-[n,m] = size(wls);
-freqarg = (0:n-1)'/n;
+[n, m] = size(wls);
+freqarg = (0:n - 1)' / n;
 
 % Make DC
-B(:,1) = 0.5*ones(n,1);
+B(:, 1) = 0.5 * ones(n, 1);
 
 % Make cos/sin pairs
 k = 1;
 freq = 1;
-while ( k < nbasis )
-  k = k+1;
-  B(:,k) = cos( 2*pi*freq*freqarg );
-  k = k+1;
-  B(:,k) = sin( 2*pi*freq*freqarg );
-	freq = freq+1;
+while (k < nbasis)
+    k = k + 1;
+    B(:, k) = cos(2*pi*freq*freqarg);
+    k = k + 1;
+    B(:, k) = sin(2*pi*freq*freqarg);
+    freq = freq + 1;
 end
 
 % Truncate basis set to desired size
-B = B(:,1:nbasis);
+B = B(:, 1:nbasis);

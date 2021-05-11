@@ -1,4 +1,4 @@
-function [figH,m, cbH] = imageMontage(hc, slices, numCols, figNum)
+function [figH, m, cbH] = imageMontage(hc, slices, numCols, figNum)
 %Create a window with a montage of the slices in the hypercube data
 %
 % [figH,m,cbH] = imageMontage(hc, [slices=[]],   [numCols=[]], figNum=figure )
@@ -18,19 +18,19 @@ function [figH,m, cbH] = imageMontage(hc, slices, numCols, figNum)
 %   [figH, m] = imageMontage(d.hc,1:10:nWave);
 %   colormap(gray)
 %
-% See also:  imageMakeMontage, 
+% See also:  imageMakeMontage,
 %
 % (c) Imageval, 2012
 
 if ieNotDefined('slices'), slices = []; end
-if(~exist('numCols','var')), numCols = [];end
-if(~exist('figNum','var')), figH = figure;
-else                        figH = figure(figNum);
+if (~exist('numCols', 'var')), numCols = []; end
+if (~exist('figNum', 'var')), figH = figure;
+else figH = figure(figNum);
 end
 
-%% 
+%%
 
-m = imageMakeMontage(hc,slices,[],numCols);
+m = imageMakeMontage(hc, slices, [], numCols);
 imagesc(double(m));
 axis image;
 cbH = colorbar;

@@ -1,4 +1,4 @@
-function T = imageIlluminantCorrection(vci,vciTarget)
+function T = imageIlluminantCorrection(vci, vciTarget)
 % Linear transform from sensor catch to desired representation
 %
 %  T = imageIlluminantCorrection(vci,vciTarget)
@@ -15,17 +15,17 @@ function T = imageIlluminantCorrection(vci,vciTarget)
 % Copyright ImagEval Consultants, LLC, 2011.
 
 %% Argument checking
-if ieNotDefined('vci'),      vci = vcGetObject('vci'); end
-if ieNotDefined('vciTarget'),error('vciTarget required'); end
+if ieNotDefined('vci'), vci = vcGetObject('vci'); end
+if ieNotDefined('vciTarget'), error('vciTarget required'); end
 
-tData = ipGet(vciTarget,'result');
-oData = ipGet(vci,'result');
+tData = ipGet(vciTarget, 'result');
+oData = ipGet(vci, 'result');
 
 tData = RGB2XWFormat(tData);
 oData = RGB2XWFormat(oData);
 
 % Matrix inversion - no correction for noise or white weighting
-% desired = T*actual 
+% desired = T*actual
 T = tData' / oData';
 
 % predicted = T*oData;

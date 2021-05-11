@@ -12,9 +12,9 @@ function cData = imageContrast(data)
 
 cData = zeros(size(data));
 
-for ii=1:size(data,3)
-    m = mean(mean(data(:,:,ii)));
-    cData(:,:,ii) = (data(:,:,ii) - m) / m;
+for ii = 1:size(data, 3)
+    m = mean(mean(data(:, :, ii)));
+    cData(:, :, ii) = (data(:, :, ii) - m) / m;
 end
 
 return;

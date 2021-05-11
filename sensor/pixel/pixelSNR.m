@@ -1,4 +1,4 @@
-function [SNR, volts, SNRshot, SNRread] = pixelSNR(sensor,volts)
+function [SNR, volts, SNRshot, SNRread] = pixelSNR(sensor, volts)
 %Compute pixel SNR as a function of pixel voltage
 %
 %   [SNR, volts, SNRshot, SNRread] = pixelSNR(sensor,volts)
@@ -10,13 +10,13 @@ function [SNR, volts, SNRshot, SNRread] = pixelSNR(sensor,volts)
 % The formula for pixel signal-to-noise ratio is
 %
 %    SNR = 10 * log10(signalPower./noisePower);
-% 
+%
 % where
-%  
-%  signalPower:   the square of the number of electrons (volts/convGain).^2; 
+%
+%  signalPower:   the square of the number of electrons (volts/convGain).^2;
 %
 %  noisePower:    the sum of the read noise variance and shot noise
-%  variance (readSD.^2 + shotSD.^2), both in electrons.  
+%  variance (readSD.^2 + shotSD.^2), both in electrons.
 %
 % If no voltage levels are passed in, we choose volts to be logarithmically
 % spaced across the pixel voltage range.
@@ -31,7 +31,7 @@ function [SNR, volts, SNRshot, SNRread] = pixelSNR(sensor,volts)
 %   [SNR, volts] = pixelSNR(sensor); semilogx(volts,SNR);
 %   [SNR, volts, SNRshot, SNRread] = pixelSNR(sensor);
 %
-%   vcNewGraphWin; 
+%   vcNewGraphWin;
 %   semilogx(volts,SNRshot,'g--',volts,SNRread,'r-',volts,SNR,'k-');
 %   legend('Shot noise SNR','Read noise SNR','Total SNR');
 %   grid on
@@ -41,27 +41,27 @@ function [SNR, volts, SNRshot, SNRread] = pixelSNR(sensor,volts)
 %
 % Copyright ImagEval Consultants, LLC, 2005
 
-if ieNotDefined('sensor'), [val,sensor] = vcGetSelectedObject('ISA'); end
+if ieNotDefined('sensor'), [val, sensor] = vcGetSelectedObject('ISA'); end
 
-pixel = sensorGet(sensor,'pixel');
-if ieNotDefined('volts'), 
-    voltageSwing = pixelGet(pixel,'voltageswing');
-    volts = logspace(-4,0)*voltageSwing; 
+pixel = sensorGet(sensor, 'pixel');
+if ieNotDefined('volts'),
+    voltageSwing = pixelGet(pixel, 'voltageswing');
+    volts = logspace(-4, 0) * voltageSwing;
 end
 
-convGain = pixelGet(pixel,'conversionGain');       % V/e-
-readSD = pixelGet(pixel,'readNoiseElectrons');     % e-
+convGain = pixelGet(pixel, 'conversionGain'); % V/e-
+readSD = pixelGet(pixel, 'readNoiseElectrons'); % e-
 
 % Shot noise is Poisson when measured in units of electrons. Conversion
 % gain has units of v/e-.  So volts/convGain is the mean number of
 % electrons.  This number is also the Poisson variance. The variance has
 % units of electrons squared. The standard deviation is the square root of
-% the mean and it has units of electrons. 
-shotSD = sqrt(volts/convGain);                      % signal SD e-
+% the mean and it has units of electrons.
+shotSD = sqrt(volts/convGain); % signal SD e-
 
 % The power has units of electrons squared
-signalPower = (volts/convGain).^2;                  % e-^2
-noisePower = readSD.^2 + shotSD.^2;                 % e-^2
+signalPower = (volts / convGain).^2; % e-^2
+noisePower = readSD.^2 + shotSD.^2; % e-^2
 
 % 10 instead of 20 because we have squared the signal above and are using
 % signal Power.
@@ -69,7 +69,7 @@ SNR = 10 * log10(signalPower./noisePower);
 
 if nargout > 2
     % User asked for shot noise contribution alone
-    noisePower = shotSD.^2;                 % e-
+    noisePower = shotSD.^2; % e-
     SNRshot = 10 * log10(signalPower./noisePower);
 end
 
@@ -78,7 +78,7 @@ if nargout > 3
     if readSD == 0
         SNRread = Inf;
     else
-        noisePower = readSD.^2;                 % e-
+        noisePower = readSD.^2; % e-
         SNRread = 10 * log10(signalPower./noisePower);
     end
 end

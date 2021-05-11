@@ -17,43 +17,44 @@
 % demonstrate some of its properties here.
 %
 % See also:   mlensCreate, mlensSet, mlensGet, mlRadiance,
-%             mlensWindw, sensorCreate, 
+%             mlensWindw, sensorCreate,
 %
 % Copyright ImagEval Consultants, LLC, 2015
 
-%% 
+%%
 ieInit
 
 %% Create oi and sensor
 
 % Default oi
-oi = oiCreate; ieAddObject(oi);
+oi = oiCreate;
+ieAddObject(oi);
 
 % Large field of view
 sensor = sensorCreate;
-sensor = sensorSet(sensor,'fov',30);
+sensor = sensorSet(sensor, 'fov', 30);
 ieAddObject(sensor);
 
 %% Illustrate microlens gets and sets
 
 mlens = mlensCreate;
 
-mlensGet(mlens,'name')
-mlensGet(mlens,'type')
+mlensGet(mlens, 'name')
+mlensGet(mlens, 'type')
 
-mlensGet(mlens,'source fnumber')
-mlensGet(mlens,'source diameter','meters')
-mlensGet(mlens,'source diameter','microns')
+mlensGet(mlens, 'source fnumber')
+mlensGet(mlens, 'source diameter', 'meters')
+mlensGet(mlens, 'source diameter', 'microns')
 
-mlensGet(mlens,'ml fnumber')
-mlensGet(mlens,'ml diameter','meters')
-mlensGet(mlens,'ml diameter','microns')
+mlensGet(mlens, 'ml fnumber')
+mlensGet(mlens, 'ml diameter', 'meters')
+mlensGet(mlens, 'ml diameter', 'microns')
 
-mlensGet(mlens,'source fnumber')
-mlensGet(mlens,'chief ray angle')
+mlensGet(mlens, 'source fnumber')
+mlensGet(mlens, 'chief ray angle')
 
-mlens = mlensSet(mlens,'chief ray angle',10);
-mlensGet(mlens,'chief ray angle')
+mlens = mlensSet(mlens, 'chief ray angle', 10);
+mlensGet(mlens, 'chief ray angle')
 
 %% Radiance estimates
 
@@ -66,13 +67,17 @@ mlens = mlensCreate;
 % Show the distribution as an image
 mlIrradianceImage(mlens)
 
-plotML(mlens,'mesh pixel irradiance')
+plotML(mlens, 'mesh pixel irradiance')
 
-sIrradiance = mlensGet(mlens,'source irradiance');
-x = mlensGet(mlens,'x coordinate');
-vcNewGraphWin; mesh(x,x,sIrradiance);
-h = hot(255); colormap(h(50:250,:)); colorbar;
+sIrradiance = mlensGet(mlens, 'source irradiance');
+x = mlensGet(mlens, 'x coordinate');
+vcNewGraphWin;
+mesh(x, x, sIrradiance);
+h = hot(255);
+colormap(h(50:250, :));
+colorbar;
 xlabel('Position (um)');
+
 %%  Bring up the microlens window
 
 microLensWindow;

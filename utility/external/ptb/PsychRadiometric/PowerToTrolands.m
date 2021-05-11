@@ -1,4 +1,4 @@
-function trolands = PowerToTrolands(wl,power,S_vLambda,vLambda)
+function trolands = PowerToTrolands(wl, power, S_vLambda, vLambda)
 % trolands = PowerToTrolands(wl,power,S_vLambda,vLambda)
 %
 % Convert from power (in watts/deg-2) to trolands for a
@@ -11,4 +11,4 @@ function trolands = PowerToTrolands(wl,power,S_vLambda,vLambda)
 
 wls_vLambda = MakeItWls(S_vLambda);
 index = find(wl == wls_vLambda);
-trolands = power*vLambda(index)*2.242e12;
+trolands = power * vLambda(index) * 2.242e12;

@@ -1,4 +1,4 @@
-function macbethChart = macbethReadReflectance(wave,patchList)
+function macbethChart = macbethReadReflectance(wave, patchList)
 % Read the macbeth surface reflectances into the standard format
 %
 % Synopsis
@@ -11,20 +11,20 @@ function macbethChart = macbethReadReflectance(wave,patchList)
 %
 % The upper left corner (:,1) is brown, the upper right (:,21) is cyan
 % The third row is Blue, green, red, yellow, magenta, light blue
-% 
-% The examples and tutorials calculat images and other values with the MCC 
+%
+% The examples and tutorials calculat images and other values with the MCC
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 %
-% See also: 
-%   t_SurfaceModels and macbethChartCreate 
+% See also:
+%   t_SurfaceModels and macbethChartCreate
 
 % Examples:
 %{
-   wave = 400:10:700;
-   macbethReflectance = macbethReadReflectance(wave);
-   plot(wave,macbethReflectance), xlabel('Wavelength (nm)')
-   ylabel('Reflectance'); grid on
+wave = 400:10:700;
+macbethReflectance = macbethReadReflectance(wave);
+plot(wave,macbethReflectance), xlabel('Wavelength (nm)')
+ylabel('Reflectance'); grid on
 %}
 
 if ieNotDefined('wave'), wave = (400:700); end
@@ -33,10 +33,8 @@ if ieNotDefined('patchList'), patchList = 1:24; end
 % Stored in data/surfaces/reflectances
 fName = which('macbethChart.mat');
 
-macbethChart = ieReadSpectra(fName,wave);
+macbethChart = ieReadSpectra(fName, wave);
 
-macbethChart = macbethChart(:,patchList);
+macbethChart = macbethChart(:, patchList);
 
 end
-
-

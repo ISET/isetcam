@@ -1,4 +1,4 @@
-function [data,newFilterNames,fileData] = ieReadColorFilter(wave,fname)
+function [data, newFilterNames, fileData] = ieReadColorFilter(wave, fname)
 %Read transmission data and names for a set of color filters
 %
 %   [data,newFilterNames,fileData] = ieReadColorFilter(wave,fname);
@@ -14,7 +14,7 @@ function [data,newFilterNames,fileData] = ieReadColorFilter(wave,fname)
 % user is asked to adjust the data.
 %
 % If the user presses Cancel in the uigetfile interface, the returned
-% variables are set to null. 
+% variables are set to null.
 %
 % In some cases, users add additional data to the file for user-defined
 % reasons.  All of the variables in the data file are returned in the
@@ -36,18 +36,21 @@ function [data,newFilterNames,fileData] = ieReadColorFilter(wave,fname)
 
 if ieNotDefined('wave'), wave = 400:10:700; end
 if ieNotDefined('fname')
-    fname = vcSelectDataFile('sensor'); 
-    if isempty(fname), data = []; newFilterNames = []; return; end
+    fname = vcSelectDataFile('sensor');
+    if isempty(fname), data = [];
+        newFilterNames = [];
+        return;
+    end
 end
 
 % Read the spectral data at the requested wavelength resolution
-data = ieReadSpectra(fname,wave);
+data = ieReadSpectra(fname, wave);
 if isempty(data)
-    error('Cannot find %s\n',fname);
-elseif ( (max(data(:)) > 1) || (min(data(:)) < 0))
+    error('Cannot find %s\n', fname);
+elseif ((max(data(:)) > 1) || (min(data(:)) < 0))
     if min(data(:)) >= 0
-        questdlg('Data values greater than 1. Scaling data to a maximum of 1.','Read Data','OK','OK');
-        data = ieScale(data,1);
+        questdlg('Data values greater than 1. Scaling data to a maximum of 1.', 'Read Data', 'OK', 'OK');
+        data = ieScale(data, 1);
     else
         errordlg('Data values less than 0. Adjust the data file.');
     end
@@ -58,10 +61,10 @@ end
 % sensorColorOrder, rgbcmyw.  We could/should check (enforce) this here.
 if nargout >= 2
     fileData = load(fname);
-    if checkfields(fileData,'filterNames')
+    if checkfields(fileData, 'filterNames')
         newFilterNames = fileData.filterNames;
     else
-        warndlg(sprintf('No filter names found in file %s.',fname));
+        warndlg(sprintf('No filter names found in file %s.', fname));
         newFilterNames = [];
     end
 end

@@ -1,4 +1,4 @@
-function mm = DegreesToRetinalMM(degs,eyeLengthMM,fulltrig)
+function mm = DegreesToRetinalMM(degs, eyeLengthMM, fulltrig)
 %  mm = DegreesToRetinalMM(degs,eyeLengthMM,[fulltrig])
 %
 % Convert foveal extent in degrees to mm of retina in the fovea.
@@ -36,8 +36,8 @@ if (nargin < 3 || isempty(fulltrig))
 end
 
 if (~fulltrig)
-    factor = 2*tan((pi/180)*1/2)*eyeLengthMM;
-    mm = factor*degs;
-else  
-    mm = 2*tan((pi/180)*degs/2)*eyeLengthMM;
+    factor = 2 * tan((pi/180)*1/2) * eyeLengthMM;
+    mm = factor * degs;
+else
+    mm = 2 * tan((pi/180)*degs/2) * eyeLengthMM;
 end

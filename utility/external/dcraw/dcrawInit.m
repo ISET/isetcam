@@ -13,7 +13,7 @@ function [s, msg] = dcrawInit(ext)
 % Notes:
 %   To compile dcraw on mac, use:
 %      llvm-gcc -o dcraw dcraw.c -lm -DNO_JPEG -DNO_LCMS -DNO_JASPER
-% 
+%
 % Example:
 %   dcraw
 %
@@ -25,9 +25,9 @@ if ~iscell(ext), ext = {ext}; end
 
 % Check if dcraw executable works
 if ismac
-    fp = fullfile(isetRootPath,'utility', 'external', 'dcraw', 'dcraw_mac');
+    fp = fullfile(isetRootPath, 'utility', 'external', 'dcraw', 'dcraw_mac');
 elseif isunix
-    fp = fullfile(isetRootPath,'utility', 'external', 'dcraw', 'dcraw_linux');
+    fp = fullfile(isetRootPath, 'utility', 'external', 'dcraw', 'dcraw_linux');
 elseif ispc
     fp = fullfile(isetRootPath, 'utility', 'external', 'dcraw', 'dcraw_win64.exe');
 else
@@ -38,12 +38,13 @@ if exist(fp, 'file') == 2
     [s, msg] = system(fp);
     if s == 1, s = 0; end
 else
-    s = -1; msg = 'file not exist';
+    s = -1;
+    msg = 'file not exist';
     return
 end
 
 % Register dcraw for imformats
-for ii = 1 : length(ext)
+for ii = 1:length(ext)
     if isempty(imformats(ext{ii}))
         formatS.ext = ext{ii};
         formatS.isa = @(x) true; % determine image format by its extension

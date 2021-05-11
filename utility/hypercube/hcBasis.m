@@ -1,4 +1,4 @@
-function [imgMean, basis, coef, varExplained] = hcBasis(hc,bType,mType)
+function [imgMean, basis, coef, varExplained] = hcBasis(hc, bType, mType)
 % Create wavelength basis functions and coefficients for an hc image
 %
 % Synopsis
@@ -13,8 +13,8 @@ function [imgMean, basis, coef, varExplained] = hcBasis(hc,bType,mType)
 %  hc:    Hypercube data
 %  bType: Basis calculation type
 %           if < 1, a fraction specifying required variance explained
-%           if >= 1, a number of bases 
-%  mType:  Mean removal computation  
+%           if >= 1, a number of bases
+%  mType:  Mean removal computation
 %           'mean svd'  - pull out the mean before the svd
 %           'canonical' - leave the mean as part of the basis calculation (default)
 %                         In this case imgMean is returned as empty.
@@ -35,7 +35,7 @@ function [imgMean, basis, coef, varExplained] = hcBasis(hc,bType,mType)
 %
 % Copyright ImagEval Consultants, LLC, 2012.
 %
-% See also:  
+% See also:
 %   hcimage, and hc<TAB>, s_sceneHCCompress, ieSaveMultiSpectralImage
 %
 
@@ -68,40 +68,40 @@ switch mType
         % row vector, p = [R,G,B] the matrix transforms each color point,
         % p, to an output vector pT
 
-        [row,col,~] = size(hc);
+        [row, col, ~] = size(hc);
         % Convert so rows are space and columns are wavelength
         hc = RGB2XWFormat(hc);
-        
+
         % Remove the mean
-        imgMean = mean(hc,1);   % vcNewGraphWin; plot(imgMean)
-        hc = hc - repmat(imgMean,row*col,1);
+        imgMean = mean(hc, 1); % vcNewGraphWin; plot(imgMean)
+        hc = hc - repmat(imgMean, row*col, 1);
         %
         % Compute the svd.  hc = U * S * basis'
-        [~, S, basis] = svd(hc,'econ');
+        [~, S, basis] = svd(hc, 'econ');
         S = diag(S);
-        relativeVariance = cumsum(S.^2)/sum(S.^2);
-        
+        relativeVariance = cumsum(S.^2) / sum(S.^2);
+
         % Find the number of bases to keep
         if bType < 1
             % Percent explained sent in
-            nbases = find(relativeVariance > bType, 1 );
+            nbases = find(relativeVariance > bType, 1);
         elseif bType >= 1
             % Person just told us how many bases
             nbases = bType;
         end
 
         % Clip the unwanted basis terms
-        basis = basis(:,1:nbases);
+        basis = basis(:, 1:nbases);
         % vcNewGraphWin; plot(basis(:,1:nbases))
-        
+
         % Find the basis coefficients
-        coef = hc*basis;
-       
+        coef = hc * basis;
+
         % Have a look:   hcimage(XW2RGBFormat(d,row,col))
-        
+
         % Make the coefficients an RGB image so we can use
         % imageLinearTransform in vcReadImage
-        coef = XW2RGBFormat(coef,row,col);
+        coef = XW2RGBFormat(coef, row, col);
         %
         % tmp = imageLinearTransform(coef,basis');
         % tmp = RGB2XWFormat(tmp);
@@ -112,40 +112,40 @@ switch mType
         % Do not pull out the mean.  Just fit
         %  d = C*weights, where the columns of C are the basis functions.
         %  The first one will be pretty close to the mean.
-        [row,col,~] = size(hc);
+        [row, col, ~] = size(hc);
         % Convert so rows are space and columns are wavelength
         hc = RGB2XWFormat(hc);
-        
+
         % Compute the svd.  hc = U * S * basis'
-        [~, S, basis] = svd(hc,'econ');
+        [~, S, basis] = svd(hc, 'econ');
         S = diag(S);
-        relativeVariance = cumsum(S.^2)/sum(S.^2);
-        
+        relativeVariance = cumsum(S.^2) / sum(S.^2);
+
         % Find the number of bases to keep
         if bType < 1
             % Percent explained sent in
-            nbases = find(relativeVariance > bType, 1 );
+            nbases = find(relativeVariance > bType, 1);
         elseif bType >= 1
             % Person just told us how many bases
             nbases = bType;
         end
 
         % Clip the unwanted basis terms
-        basis = basis(:,1:nbases);
+        basis = basis(:, 1:nbases);
         % vcNewGraphWin; plot(basis(:,1:nbases))
-        
+
         % Find the basis coefficients
-        coef = hc*basis;
+        coef = hc * basis;
         % To get back to the original hc data
         %  d = coef*basis'+ repmat(imgMean,row*col,1);
         % Have a look:   hcimage(XW2RGBFormat(d,row,col))
-        
+
         % Make the coefficients an RGB image so we can use
         % imageLinearTransform in vcReadImage
-        coef = XW2RGBFormat(coef,row,col);
-        
+        coef = XW2RGBFormat(coef, row, col);
+
     otherwise
-        error('Unknown method %s\n',mType);
+        error('Unknown method %s\n', mType);
 end
 varExplained = relativeVariance(nbases);
 

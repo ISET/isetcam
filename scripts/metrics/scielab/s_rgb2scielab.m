@@ -23,23 +23,24 @@ ieInit
 % rd = RdtClient('isetbio');
 % rd.crp('/resources/scenes/hyperspectral/stanford_database/fruit');
 
-file1 = fullfile(isetRootPath, 'data','images','rgb','hats.jpg');
-file2 = fullfile(isetRootPath, 'data','images','rgb','hatsC.jpg');
+file1 = fullfile(isetRootPath, 'data', 'images', 'rgb', 'hats.jpg');
+file2 = fullfile(isetRootPath, 'data', 'images', 'rgb', 'hatsC.jpg');
 
 %% some important viewing conditions
-vDist = 0.3;          % 12 inch viewing distance
-dispCal = 'crt.mat';   % Calibrated display
+vDist = 0.3; % 12 inch viewing distance
+dispCal = 'crt.mat'; % Calibrated display
 
 %% the scielab calculation (again, see s_scielabExample.m for a more detailed calculation
-[eImage,s1,s2] = scielabRGB(file1, file2, dispCal, vDist);
+[eImage, s1, s2] = scielabRGB(file1, file2, dispCal, vDist);
 
 % This is the mean delta E
 mean(eImage(:))
 
 % Show the RGB images as scenes, illustrating how the RGB data were
 % converted to SPDs using the calibrated display
-vcAddAndSelectObject(s1); vcAddAndSelectObject(s2);sceneWindow;
-
+vcAddAndSelectObject(s1);
+vcAddAndSelectObject(s2);
+sceneWindow;
 
 %% Examining and interpreting the results.
 vcNewGraphWin;
@@ -48,26 +49,25 @@ colorbar('vert');
 title('S-CIELAB error map')
 
 vcNewGraphWin;
-hist(eImage(:),100)
+hist(eImage(:), 100)
 title('S-CIELAB delta E histogram')
-
 
 %% calculate the mean DE for values greater than 2
 count = 0;
 DEdifs = 0;
-rows = max(size(eImage(:,1)));
-cols = max(size(eImage(1,:)));
+rows = max(size(eImage(:, 1)));
+cols = max(size(eImage(1, :)));
 for ii = 1:max(rows)
-    for jj = 1: max(cols)
-        if eImage(ii,jj) > 2.0
-            DEdifs = eImage(ii,jj) + DEdifs;
-             count = count +1;
-    end
+    for jj = 1:max(cols)
+        if eImage(ii, jj) > 2.0
+            DEdifs = eImage(ii, jj) + DEdifs;
+            count = count + 1;
+        end
     end
 end
 MeanAbove2 = mean(DEdifs/count);
-percent = (count/ (rows * cols ))* 100;
-fprintf('Mean of Delta E with values greater than 2: %f\n',MeanAbove2);
-fprintf('Percent of Delta E with values greater than 2: %f\n',percent);
+percent = (count / (rows * cols)) * 100;
+fprintf('Mean of Delta E with values greater than 2: %f\n', MeanAbove2);
+fprintf('Percent of Delta E with values greater than 2: %f\n', percent);
 
 %%

@@ -1,4 +1,4 @@
-function [absorbanceSpectra, absorbanceSpectraWls] =...
+function [absorbanceSpectra, absorbanceSpectraWls] = ...
     AbsorptanceToAbsorbance(absorptanceSpectra, absorptanceSpectraWls, axialOpticalDensities, NORMALIZE)
 % [absorbanceSpectra, absorbanceSpectraWls] =...
 %   AbsorptanceToAbsorbance(absorptanceSpectra, absorptanceSpectraWls, axialOpticalDensities, [NORMALIZE])
@@ -39,21 +39,31 @@ function [absorbanceSpectra, absorbanceSpectraWls] =...
 
 
 % Some arg checks
-if ~exist('absorptanceSpectra','var'); help AbsorptanceToAbsorbance; return; end
-if ~exist('axialOpticalDensities','var'); disp('axialOpticalDensities is required.'); return; end
-if ~exist('absorptanceSpectraWls','var'); absorptanceSpectraWls = []; end
-if ~exist('NORMALIZE','var'); NORMALIZE = true; end
+if ~exist('absorptanceSpectra', 'var');
+    help AbsorptanceToAbsorbance;
+    return;
+end
+if ~exist('axialOpticalDensities', 'var');
+    disp('axialOpticalDensities is required.');
+    return;
+end
+if ~exist('absorptanceSpectraWls', 'var');
+    absorptanceSpectraWls = [];
+end
+if ~exist('NORMALIZE', 'var');
+    NORMALIZE = true;
+end
 
 % Convert each entry
-for i = 1:size(absorptanceSpectra,1)
+for i = 1:size(absorptanceSpectra, 1)
     % Normalize absorptanceSpectance so that returned absorbance has peak of 1, no matter what
-    % normalization was applied to the absorptance spectrum.  
+    % normalization was applied to the absorptance spectrum.
     if (NORMALIZE)
-        absorptanceSpectra(i,:) = absorptanceSpectra(i,:) ./ max(absorptanceSpectra(i,:)) * (1-10^-axialOpticalDensities(i));
+        absorptanceSpectra(i, :) = absorptanceSpectra(i, :) ./ max(absorptanceSpectra(i, :)) * (1 - 10^-axialOpticalDensities(i));
     end
-    
+
     % Invert the absorbance to absorptance computation
-    absorbanceSpectra(i,:) = (- 1 ./ axialOpticalDensities(i)) .* log10(absorptanceSpectra(i,:) - 1);
+    absorbanceSpectra(i, :) = (-1 ./ axialOpticalDensities(i)) .* log10(absorptanceSpectra(i, :)-1);
 end
 
 % Deal with some possible numerical error
@@ -61,4 +71,3 @@ absorbanceSpectra = real(absorbanceSpectra); % remove small value of imaginary n
 
 % Pass wavelengths back through
 absorbanceSpectraWls = absorptanceSpectraWls;
-

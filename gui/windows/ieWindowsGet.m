@@ -14,7 +14,7 @@ function [wPos, wState] = ieWindowsGet(saveFlag)
 %  wPos = ieWindowsGet; % Find positions of open windows
 %  save wPos fullfile(isetRootpath,'gui','windows',<wPosFileName>');
 %  ieWindowsGet(true);  % Find positions and save in ISET prefs
-%   
+%
 %
 % Copyright Imageval Consulting, LLC 2013
 
@@ -25,19 +25,19 @@ wPos = ieSessionGet('wpos');
 
 w = ieSessionGet('main window');
 if ~isempty(w) && isvalid(w)
-    wPos{1} = w.figure1.Position; 
+    wPos{1} = w.figure1.Position;
     wState{1} = w.figure1.WindowState;
 end
 
 w = ieSessionGet('scene window');
 if ~isempty(w) && isvalid(w)
-    wPos{2} = w.figure1.Position; 
+    wPos{2} = w.figure1.Position;
     wState{2} = w.figure1.WindowState;
 end
 
 w = ieSessionGet('oi window');
 if ~isempty(w) && isvalid(w)
-    wPos{3} = w.figure1.Position; 
+    wPos{3} = w.figure1.Position;
     wState{3} = w.figure1.WindowState;
 end
 
@@ -57,21 +57,20 @@ end
 % if ~isempty(w), wPos{6} = w.figure1.Position; end
 w = ieSessionGet('camdesign window');
 if ~isempty(w) && isvalid(w)
-    wPos{6} = w.figure1.Position; 
+    wPos{6} = w.figure1.Position;
     wState{6} = w.figure1.WindowState;
 end
 
 w = ieSessionGet('imageexplore window');
 if ~isempty(w) && isvalid(w)
-    wPos{7} = w.UIFigure.Position; 
+    wPos{7} = w.UIFigure.Position;
     wState{7} = w.UIFigure.WindowState;
 end
 
 
 if saveFlag
-    setpref('ISET','wPos',wPos);  
-    setpref('ISET','wState',wState);  
+    setpref('ISET', 'wPos', wPos);
+    setpref('ISET', 'wState', wState);
 end
 
 end
-

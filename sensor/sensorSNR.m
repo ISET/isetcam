@@ -1,4 +1,4 @@
-function [SNR, volts, SNRshot, SNRread, SNRdsnu, SNRprnu] = sensorSNR(ISA,volts)
+function [SNR, volts, SNRshot, SNRread, SNRdsnu, SNRprnu] = sensorSNR(ISA, volts)
 %Calculate sensor SNR over a range of voltage levels
 %
 %   [SNR, volts, SNRshot, SNRread, SNRdsnu, SNRprnu] = sensorSNR(ISA,volts)
@@ -10,7 +10,7 @@ function [SNR, volts, SNRshot, SNRread, SNRdsnu, SNRprnu] = sensorSNR(ISA,volts)
 % We compute this in units of electrons.  The definitions of signalPower
 % and noisePower are:
 %
-%  signalPower:  the number of signal electrons squared. 
+%  signalPower:  the number of signal electrons squared.
 %    signalPower = (volts/convGain).^2;
 %
 %  noisePower:   the sum of the variance of the shot noise, read noise,
@@ -23,13 +23,13 @@ function [SNR, volts, SNRshot, SNRread, SNRdsnu, SNRprnu] = sensorSNR(ISA,volts)
 % Various noise quantities are signal-dependent, such as the Poisson
 % variability in the number of electrons (shot noise) and the
 % photo-response nonuniformity (prnu).  Other noise factors are signal
-% indpendent (readSD, dsnuSD). 
+% indpendent (readSD, dsnuSD).
 %
 % See comments in the code for more information about the calculation.
 %
 % If no voltage levels are sent in we calculate as a function across the
 % voltage swing. This function is similar to pixelSNR, but also includes
-% DSNU and PRNU. 
+% DSNU and PRNU.
 %
 % This routine can also return the SNR limits imposed by the individual
 % noise sources. If the modeling sets  readSD, dsnuSD, prnuSD to  we
@@ -39,26 +39,26 @@ function [SNR, volts, SNRshot, SNRread, SNRdsnu, SNRprnu] = sensorSNR(ISA,volts)
 %
 % Examples:
 %   sensor = vcGetObject('sensor');
-%   [SNR, volts] = sensorSNR(sensor); 
+%   [SNR, volts] = sensorSNR(sensor);
 %   vcNewGraphWin; semilogx(volts,SNR);
 %   peakSNR = sensorSNR(sensor,saturationVoltage);
 %
 % Copyright ImagEval Consultants, LLC, 2005
 
-if ieNotDefined('ISA'), [val,ISA] = vcGetSelectedObject('ISA'); end
-pixel = sensorGet(ISA,'pixel');
+if ieNotDefined('ISA'), [val, ISA] = vcGetSelectedObject('ISA'); end
+pixel = sensorGet(ISA, 'pixel');
 
-if ~exist('volts','var'), volts = logspace(-4,0)*pixelGet(pixel,'voltageswing'); end % Volts
+if ~exist('volts', 'var'), volts = logspace(-4, 0) * pixelGet(pixel, 'voltageswing'); end % Volts
 
-convGain = pixelGet(pixel,'conversionGain');        % V/e-
-readSD = pixelGet(pixel,'readnoiseElectrons');      % e-
+convGain = pixelGet(pixel, 'conversionGain'); % V/e-
+readSD = pixelGet(pixel, 'readnoiseElectrons'); % e-
 
-% Gain std as a percentage change in the voltage slope. 
+% Gain std as a percentage change in the voltage slope.
 % gainImage = 1 + randn()*(sigmaGainFPN/100)
-gainSD = sensorGet(ISA,'gainSD');
-gainSD = gainSD/100;
+gainSD = sensorGet(ISA, 'gainSD');
+gainSD = gainSD / 100;
 
-offsetSD = sensorGet(ISA,'offsetSD');    % V
+offsetSD = sensorGet(ISA, 'offsetSD'); % V
 
 % We compute the standard deviations in electrons for shot noise, PRNU and
 % DSNU
@@ -67,16 +67,16 @@ offsetSD = sensorGet(ISA,'offsetSD');    % V
 % to the variance because the value is Poisson.  The variance has units of
 % electrons squared.  We take the square root to obtain the SD, and this
 % has units of electrons.
-shotSD = sqrt(volts/convGain);           % Poisson std dev in electrons
+shotSD = sqrt(volts/convGain); % Poisson std dev in electrons
 
 % We specify the PRNU and DSNU levels as standard deviations with respect
 % to volts.  So, we convert the volt SD to electron SD
-prnuSD = gainSD.*(volts/convGain);       % SD of slope in v/(v/e) = e
-dsnuSD = offsetSD/convGain;              % offset std dev in electrons
+prnuSD = gainSD .* (volts / convGain); % SD of slope in v/(v/e) = e
+dsnuSD = offsetSD / convGain; % offset std dev in electrons
 
 % Calculate signal power for each voltage level.
-% The signal power has units of electrons squared. 
-signalPower = (volts/convGain).^2;
+% The signal power has units of electrons squared.
+signalPower = (volts / convGain).^2;
 
 % The noise power is the variance of the various noise sources.
 % We add these.
@@ -114,7 +114,7 @@ if nargout > 4
     end
 end
 if nargout > 5
-    if isequal(prnuSD,0)
+    if isequal(prnuSD, 0)
         % SNRprnu = SNRshot + 20;
         SNRprnu = Inf;
     else

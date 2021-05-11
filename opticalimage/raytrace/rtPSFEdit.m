@@ -1,4 +1,4 @@
-function optics = rtPSFEdit(optics,cntr,rot,visualizeFlag)
+function optics = rtPSFEdit(optics, cntr, rot, visualizeFlag)
 %Adjust PSF data so that it is rotated and or made center on the grid
 %
 %  optics = rtPSFEdit(optics,centerFlag,rot90Deg,visualizeFlag);
@@ -7,7 +7,7 @@ function optics = rtPSFEdit(optics,cntr,rot,visualizeFlag)
 % If 1, the psf is rotated 90 degrees CCW.
 % If rot is false (0), there is no rotation.
 %
-% If cntr is true, the psf is centered on the sampling grid using 
+% If cntr is true, the psf is centered on the sampling grid using
 %
 %    psf = (psf + flipud(psf))/2;
 %    psf = (psf + fliplr(psf))/2;
@@ -27,35 +27,34 @@ function optics = rtPSFEdit(optics,cntr,rot,visualizeFlag)
 %
 % Copyright ImagEval, LLC, 2005
 
-if ieNotDefined('optics'), oi = vcGetObject('oi'); optics = oiGet(oi,'optics'); end
+if ieNotDefined('optics'), oi = vcGetObject('oi');
+    optics = oiGet(oi, 'optics');
+end
 if ieNotDefined('visualizeFlag'), visualizeFlag = 0; end
-if ieNotDefined('rot'),  rot = 0; end
+if ieNotDefined('rot'), rot = 0; end
 if ieNotDefined('cntr'), cntr = 0; end
 
-psf = opticsGet(optics,'rtpsfdata'); 
+psf = opticsGet(optics, 'rtpsfdata');
 
-fprintf('cntr %.0f, rot %.0f\n',cntr,rot);
+fprintf('cntr %.0f, rot %.0f\n', cntr, rot);
 
-[r,c,h,w] = size(psf);
-for ii=1:h
-    for jj=1:w
-        tmp = psf(:,:,ii,jj);
+[r, c, h, w] = size(psf);
+for ii = 1:h
+    for jj = 1:w
+        tmp = psf(:, :, ii, jj);
         if cntr
-            tmp = 0.5*(tmp + flipud(tmp));
-            tmp = 0.5*(tmp + fliplr(tmp));
+            tmp = 0.5 * (tmp + flipud(tmp));
+            tmp = 0.5 * (tmp + fliplr(tmp));
         end
         if rot
-            tmp = rot90(tmp,rot);  
+            tmp = rot90(tmp, rot);
         end
-        psf(:,:,ii,jj) = tmp;
+        psf(:, :, ii, jj) = tmp;
     end
 end
 
-optics = opticsSet(optics,'rtpsfdata',psf);
+optics = opticsSet(optics, 'rtpsfdata', psf);
 
-if visualizeFlag, rtPSFVisualize(optics,visualizeFlag); end
+if visualizeFlag, rtPSFVisualize(optics, visualizeFlag); end
 
 return;
-
-
-

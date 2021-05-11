@@ -1,5 +1,5 @@
-function [pointLoc,pt] = iePointSelect(obj,msg,nPoints)
-% Select point locations from an ISET window. 
+function [pointLoc, pt] = iePointSelect(obj, msg, nPoints)
+% Select point locations from an ISET window.
 %
 %   [pointLoc, pt] = iePointSelect(obj,[msg],[nPoints])
 %
@@ -13,7 +13,7 @@ function [pointLoc,pt] = iePointSelect(obj,msg,nPoints)
 %            selection process.  The upper left is (1,1).
 %
 % Description:
-%  
+%
 %
 % Example:
 %   pointLoc = vcPointSelect(vcGetObject('OI'))
@@ -35,20 +35,22 @@ if ieNotDefined('nPoints'), nPoints = 1; end
 % Find the app and its main axis
 [app, appAxis] = ieAppGet(obj);
 
-% Select a points  
-ieInWindowMessage(msg,app); 
+% Select a points
+ieInWindowMessage(msg, app);
 
-x = zeros(nPoints,1);
-y = zeros(nPoints,1);
+x = zeros(nPoints, 1);
+y = zeros(nPoints, 1);
 
 axis(appAxis);
-for ii=1:nPoints
+for ii = 1:nPoints
     pt = drawpoint(appAxis);
-    x(ii) = round(pt.Position(1)); y(ii) = round(pt.Position(2));
+    x(ii) = round(pt.Position(1));
+    y(ii) = round(pt.Position(2));
 end
 
-ieInWindowMessage('',app); 
+ieInWindowMessage('', app);
 
-pointLoc(:,1) = x(:); pointLoc(:,2) = y(:);
+pointLoc(:, 1) = x(:);
+pointLoc(:, 2) = y(:);
 
 end

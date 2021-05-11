@@ -1,4 +1,4 @@
-function f = vectorLength(m,dim)
+function f = vectorLength(m, dim)
 % Calculate vector length for matrix in specific dimension
 %
 %    f = vectorlength(m,dim)
@@ -13,7 +13,7 @@ function f = vectorLength(m,dim)
 % (in which case the output is a scalar).
 %
 % We ignore NaNs gracefully.
-% 
+%
 % Note weird cases:
 %   vectorLength([]) is [].
 %   vectorLength([NaN NaN]) is 0
@@ -31,15 +31,15 @@ m(isnan(m)) = 0;
 
 % handle weird case up front
 if isempty(m)
-  f = [];
-  return;
+    f = [];
+    return;
 end
 
 % do it
-if ~exist('dim','var') || isempty(dim)
-  f = sqrt(dot(m(:),m(:),1));
+if ~exist('dim', 'var') || isempty(dim)
+    f = sqrt(dot(m(:), m(:), 1));
 else
-  f = sqrt(dot(m,m,dim));
+    f = sqrt(dot(m, m, dim));
 end
 
 end

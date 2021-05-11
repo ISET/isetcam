@@ -19,13 +19,13 @@
 %
 % The scene describes the spectral radiance field.  For the present
 % tutorial we  work with a simple planar radiance image, such as the image
-% on a display surface.  
+% on a display surface.
 %
 % We have substantially extended ISETCam for implementations for 3D scenes
-% in the github repository (iset3d).  
+% in the github repository (iset3d).
 %
 % *Note*
-% 
+%
 % * Use t_<TAB> to see the list of ISET tutorials
 % * Use s_<TAB> to see the list of ISET scripts.
 %
@@ -35,10 +35,10 @@
 %
 % * <http://www.mathworks.com/help/matlab/matlab_oop/getting-familiar-with-classes.html Matlab classes>
 % * <http://en.wikipedia.org/wiki/Scene_(perception) scenes in perception>
-%  
-% *See also* 
+%
+% *See also*
 %  sceneFromFile, sceneGet, sceneSet, scenePlot, sceneCreate,
-%  t_IntroductionOI.m  
+%  t_IntroductionOI.m
 %
 
 %%
@@ -51,7 +51,7 @@ ieInit
 
 % ISET sceneCreate builds a number of predefined scenes
 % You can see the range of possibilities by typing
-%    
+%
 %  *help sceneCreate* , or
 %  *doc sceneScreate*
 %
@@ -78,23 +78,24 @@ sceneWindow;
 %
 %   sceneWindow(scene);
 %
-% is equivalent to 
+% is equivalent to
 %
 %   ieAddObject(scene); sceneWindow;
 %
+
 %% The way to interact with an object is through gets and sets.
 % For example, each object has a name and a type.
-name  = sceneGet(scene,'name')
+name = sceneGet(scene, 'name')
 
 %% There are many other scene parameters you can get
 % For example a scene has a horizontal field of view
-hFOV = sceneGet(scene,'hfov')
+hFOV = sceneGet(scene, 'hfov')
 
 %% Use sceneSet to change a scene property
-scene = sceneSet(scene,'hfov',0.5);  % In degrees of visual angle
+scene = sceneSet(scene, 'hfov', 0.5); % In degrees of visual angle
 
 % Confirm that the set worked
-hFOV  = sceneGet(scene,'hfov')
+hFOV = sceneGet(scene, 'hfov')
 
 %% Philosophical interlude - programming issues
 % There are always more parameters to "get" than are to "set".  This is
@@ -114,6 +115,7 @@ hFOV  = sceneGet(scene,'hfov')
 % You can see the scene structure and its parameters simply by
 % typing
 scene
+
 %% Use sets and gets to interact with ISET objects
 
 % While the objects in ISET can be addressed directly - please don't.
@@ -132,28 +134,29 @@ scene
 % To see an example of the dependence, consider the effect of scene
 % distance, which we can get, on scene sample spacing.
 dist    = sceneGet(scene,'distance','mm');
-spacing = sceneGet(scene,'sample spacing','mm');
+spacing = sceneGet(scene, 'sample spacing', 'mm');
 dist
 
 % If we move the scene closer, and we maintain the same number of row and
 % column samples, the spacing changes.
-scene = sceneSet(scene,'distance',0.6);
-sceneGet(scene,'sample spacing','mm');
+scene = sceneSet(scene, 'distance', 0.6);
+sceneGet(scene, 'sample spacing', 'mm');
 
 %% Change the distance and horizontal field of view (hFOV)
 
 % This will change the sample spacing as well.
-scene = sceneSet(scene,'hfov',hFOV/2);
-sceneGet(scene,'sample spacing','mm')
+scene = sceneSet(scene, 'hfov', hFOV/2);
+sceneGet(scene, 'sample spacing', 'mm')
 
 %% Specifying units
 
 % In this example, we specified the units of the sample spacing as
 % millimemters (mm). We could have specified microns.
-sceneGet(scene,'sample spacing','um')
+sceneGet(scene, 'sample spacing', 'um')
+
 %%
 % or we could have specified the return in meters.
-sceneGet(scene,'sample spacing','m')
+sceneGet(scene, 'sample spacing', 'm')
 
 %% Creating a scene from a file
 
@@ -161,15 +164,16 @@ sceneGet(scene,'sample spacing','m')
 % default distribution only includes one example.  We have another 100 or
 % so that are available.
 
-fname = fullfile(isetRootPath,'data','images','multispectral','StuffedAnimals_tungsten-hdrs.mat');
-scene = sceneFromFile(fname,'multispectral');
+fname = fullfile(isetRootPath, 'data', 'images', 'multispectral', 'StuffedAnimals_tungsten-hdrs.mat');
+scene = sceneFromFile(fname, 'multispectral');
 sceneWindow(scene);
+
 %% Plot scene properties
 
 % Many scene properties that can be plotted either from the scene Window or
 % using scenePlot. For example, ISET scenes specify a uniform illuminant by
 % default.  You can plot the illuminant in energy units by this command.
-scenePlot(scene,'illuminant energy');
+scenePlot(scene, 'illuminant energy');
 
 % The scenePlot command above is equivalent to
 %  wave = sceneGet(scene,'wave');
@@ -182,14 +186,14 @@ scenePlot(scene,'illuminant energy');
 
 % In this case, we create a blackbody illuminant and reilluminate the
 % scene.
-bb = blackbody(sceneGet(scene,'wave'),6500,'energy');
-scene = sceneAdjustIlluminant(scene,bb);
+bb = blackbody(sceneGet(scene, 'wave'), 6500, 'energy');
+scene = sceneAdjustIlluminant(scene, bb);
 sceneWindow(scene);
 
 %%  ISET keeps track of units
 
 % In this case, we plot the illuminant in units of photons, rather than
 % energy.
-scenePlot(scene,'illuminant photons');
+scenePlot(scene, 'illuminant photons');
 
 %% END

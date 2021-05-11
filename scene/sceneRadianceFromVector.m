@@ -1,4 +1,4 @@
-function radiance = sceneRadianceFromVector(radiance,row,col)
+function radiance = sceneRadianceFromVector(radiance, row, col)
 % Convert a vector of radiance to a 3D matrix of scene radiance
 %
 % Syntax
@@ -14,7 +14,7 @@ function radiance = sceneRadianceFromVector(radiance,row,col)
 %
 % Returns
 %   radiance:  A 3D matrix of the correct size
-%   
+%
 % Description
 %
 % See also
@@ -23,7 +23,7 @@ function radiance = sceneRadianceFromVector(radiance,row,col)
 
 %% Just a reminder about how to expand 1D into the right 3D format
 
-radiance = repmat(radiance(:),1,row,col);
-radiance = permute(radiance,[2 3 1]);
+radiance = repmat(radiance(:), 1, row, col);
+radiance = permute(radiance, [2, 3, 1]);
 
 end

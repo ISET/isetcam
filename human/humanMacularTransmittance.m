@@ -9,17 +9,16 @@ function oi = humanMacularTransmittance(oi, dens)
 % Copyright ImagEval Consultants, LLC, 2003.
 
 % This density is assumed in Smith-Pokorny and Stockman, I think
-if ieNotDefined('dens'), dens = 0.35; end    
+if ieNotDefined('dens'), dens = 0.35; end
 if ieNotDefined('oi'), oi = vcGetObject('OI'); end
 
-optics = oiGet(oi,'optics');
-wave   = opticsGet(oi,'wave');
+optics = oiGet(oi, 'optics');
+wave = opticsGet(oi, 'wave');
 
-t = macular(dens,wave);
+t = macular(dens, wave);
 
-optics = opticsSet(optics,'transmittance',t.transmittance);
+optics = opticsSet(optics, 'transmittance', t.transmittance);
 
-oi = oiSet(oi,'optics',optics);
+oi = oiSet(oi, 'optics', optics);
 
 return;
-

@@ -11,7 +11,7 @@ function rgb = displayShowImage(thisD, varargin)
 %
 % Outputs
 %   rgb:   The images
-%  
+%
 % Examples:
 %   thisD   = displayCreate('LCD-Apple');
 %   scene = sceneCreate; rgb = sceneGet(scene,'rgb');
@@ -25,7 +25,9 @@ function rgb = displayShowImage(thisD, varargin)
 
 %% Get parameters
 
-if isempty(thisD), cla; return;  end
+if isempty(thisD), cla;
+    return;
+end
 if isempty(varargin), app = ieAppGet(thisD);
 else, app = varargin{1};
 end
@@ -34,27 +36,30 @@ end
 
 % We convert the stored rgb image into a scene using the display
 % characteristics.
-rgb = displayGet(thisD,'rgb');
+rgb = displayGet(thisD, 'rgb');
 if ~isempty(rgb)
     scene = sceneFromFile(rgb, 'rgb', [], thisD);
-    rgb   = sceneGet(scene, 'rgb');
+    rgb = sceneGet(scene, 'rgb');
 else
     scene = sceneCreate;
-    rgb = sceneGet(scene,'rgb');
-    thisD = displaySet(thisD,'rgb',rgb);
+    rgb = sceneGet(scene, 'rgb');
+    thisD = displaySet(thisD, 'rgb', rgb);
     ieReplaceObject(thisD);
 end
 
 switch class(app)
     case 'displayWindow_App'
         axis(app.displayImage);
-        imshow(rgb); axis image; axis off
+        imshow(rgb);
+        axis image;
+        axis off
     case 'matlab.ui.figure'
-        imshow(app,rgb); axis image; axis off
+        imshow(app, rgb);
+        axis image;
+        axis off
     otherwise
-        error('Unknown type of display window %s\n',class(app));
+        error('Unknown type of display window %s\n', class(app));
 end
 
 
 end
-

@@ -1,4 +1,4 @@
-function [file,nfile] = FileFromFolder(folder,mode,f_ext)
+function [file, nfile] = FileFromFolder(folder, mode, f_ext)
 % [file,nfile] = FileFromFolder(folder,mode,ext)
 %
 % Returns struct with all files in directory FOLDER.
@@ -23,52 +23,51 @@ function [file,nfile] = FileFromFolder(folder,mode,f_ext)
 % 2011-06-07 DN  Can now also filter for files with no extension
 % 2012-06-04 DN  Now also have ssilent mode for no output at all
 
-if nargin >= 2 && strcmp(mode,'silent')
+if nargin >= 2 && strcmp(mode, 'silent')
     silent = 1;
-elseif nargin >= 2 && strcmp(mode,'ssilent')
+elseif nargin >= 2 && strcmp(mode, 'ssilent')
     silent = 2;
 else
     silent = 0;
 end
 
 
-file        = dir(folder);
-file        = file(~[file.isdir]);  % get rid of folders. This also skips '..' and '.', which are marked as dirs
+file = dir(folder);
+file = file(~[file.isdir]); % get rid of folders. This also skips '..' and '.', which are marked as dirs
 
 if ~isempty(file)
     % get file name and extension
-    [name,ext]  = cellfun(@SplitFName,{file.name},'UniformOutput',false);
-    [file.fname]= name{:};
-    [file.ext]  = ext{:};
+    [name, ext] = cellfun(@SplitFName, {file.name}, 'UniformOutput', false);
+    [file.fname] = name{:};
+    [file.ext] = ext{:};
 
     % if filter, use it
     if nargin >= 3
-        q_ext   = ismember(ext,f_ext);
-        file    = file(q_ext);
+        q_ext = ismember(ext, f_ext);
+        file = file(q_ext);
     end
 end
 
-nfile       = length(file);
+nfile = length(file);
 
-if nfile==0
-    if silent==1
-        fprintf('FileFromFolder: No files found in: %s\n',folder);
+if nfile == 0
+    if silent == 1
+        fprintf('FileFromFolder: No files found in: %s\n', folder);
         file = [];
     elseif ~silent
-        error('FileFromFolder: No files found in: %s',folder);
+        error('FileFromFolder: No files found in: %s', folder);
     end
 end
-
 
 
 % helpers
-function [name,ext] = SplitFName(name)
-% Look for EXTENSION part
-ind = find(name == '.', 1, 'last');
+    function [name, ext] = SplitFName(name)
+        % Look for EXTENSION part
+        ind = find(name == '.', 1, 'last');
 
-if isempty(ind)
-    ext = '';
-else
-    ext = name(ind+1:end);
-    name(ind:end) = [];
-end
+        if isempty(ind)
+            ext = '';
+        else
+            ext = name(ind+1:end);
+            name(ind:end) = [];
+        end

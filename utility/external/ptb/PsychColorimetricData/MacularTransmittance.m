@@ -1,4 +1,4 @@
-function [macTransmit,macDensity] = MacularTransmittance(S,species,source,fieldSizeDegrees)
+function [macTransmit, macDensity] = MacularTransmittance(S, species, source, fieldSizeDegrees)
 % [macTransmit,macDensity] = MacularTransmittance(S,[species],[source],[fieldSizeDegrees])
 %
 % Return an estimate of the transmittance of the macular pigment transmittance
@@ -19,7 +19,7 @@ function [macTransmit,macDensity] = MacularTransmittance(S,species,source,fieldS
 %
 % The Bone values that we use a the basis for this calculation
 % match those in  CIE 170-1:2006, Table 6.4 for a 2-degree observer.
-% 
+%
 % The answer is returned in a row vector.  This function
 % depends on data contained in directory
 % PsychColorimetricData:PsychColorimetricMatFiles.
@@ -44,10 +44,10 @@ function [macTransmit,macDensity] = MacularTransmittance(S,species,source,fieldS
 
 % Default
 if (nargin < 2 || isempty(species))
-	species = 'Human';
+    species = 'Human';
 end
 if (nargin < 3 || isempty(source))
-	source = 'CIE';
+    source = 'CIE';
 end
 if (nargin < 4 || isempty(fieldSizeDegrees))
     fieldSizeDegrees = 2;
@@ -55,27 +55,27 @@ end
 
 % Load correction for macular pigment density
 switch (species)
-	case 'Human',
-		switch (source)
-			case 'None',
-				macTransmit = ones(S(3),1)';
-                macDensity = zeros(S(3),1)';
-			case 'WyszeckiStiles',
-				load den_mac_ws;
-				macDensity = SplineSrf(S_mac_ws,den_mac_ws,S,2)';
-				macTransmit = 10.^(-macDensity);
-			case 'Vos',
-				load den_mac_vos;
-				macDensity = SplineSrf(S_mac_vos,den_mac_vos,S,2)';
-				macTransmit = 10.^(-macDensity);
-			case 'Bone',
-				load den_mac_bone;
-				macDensity = SplineSrf(S_mac_bone,den_mac_bone,S,2)';
-				macTransmit = 10.^(-macDensity);
+    case 'Human',
+        switch (source)
+            case 'None',
+                macTransmit = ones(S(3), 1)';
+                macDensity = zeros(S(3), 1)';
+            case 'WyszeckiStiles',
+                load den_mac_ws;
+                macDensity = SplineSrf(S_mac_ws, den_mac_ws, S, 2)';
+                macTransmit = 10.^(-macDensity);
+            case 'Vos',
+                load den_mac_vos;
+                macDensity = SplineSrf(S_mac_vos, den_mac_vos, S, 2)';
+                macTransmit = 10.^(-macDensity);
+            case 'Bone',
+                load den_mac_bone;
+                macDensity = SplineSrf(S_mac_bone, den_mac_bone, S, 2)';
+                macTransmit = 10.^(-macDensity);
             case 'CIE'
                 load den_mac_bone;
-				macDensity = SplineSrf(S_mac_bone,den_mac_bone,S,2)';
-                
+                macDensity = SplineSrf(S_mac_bone, den_mac_bone, S, 2)';
+
                 % Adjust for field size by adjusting peak optical density.
                 % This is a multiplicative adjustment, which is pretty
                 % easy to derive from first principles.  See Rodieck, pp. 443-445.
@@ -85,22 +85,21 @@ switch (species)
                 % formula.  And, the peak density of 0.35 is in fact obtained by
                 % applying the CIE formula for a 2 degree field.  For tabulated
                 % values to check this against, see CIE 170-1:2006, p.  29, Table 6.4.
-                densityAdjustFieldSize = 0.485*exp(-fieldSizeDegrees/6.132) / (0.485*exp(-2/6.132));
-                macDensity = macDensity*densityAdjustFieldSize;
+                densityAdjustFieldSize = 0.485 * exp(-fieldSizeDegrees/6.132) / (0.485 * exp(-2 / 6.132));
+                macDensity = macDensity * densityAdjustFieldSize;
                 macDensity(macDensity < 0) = 0;
-                
-				macTransmit = 10.^(-macDensity);
-			otherwise,
-				error('Unsupported macular pigment density estimate specified');
-		end
 
-	otherwise,
-		switch (source)
-			case ('None'),
-				macTransmit = ones(S(3),1)';
-                macDensity = zeros(S(3),1)';
-			otherwise,
-				error('Unsupported species specified');
+                macTransmit = 10.^(-macDensity);
+            otherwise,
+                error('Unsupported macular pigment density estimate specified');
+        end
+
+    otherwise,
+        switch (source)
+            case ('None'),
+                macTransmit = ones(S(3), 1)';
+                macDensity = zeros(S(3), 1)';
+            otherwise,
+                error('Unsupported species specified');
         end
 end
-

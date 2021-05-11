@@ -1,25 +1,25 @@
-function nRemaining = ieDeleteObject(objType,val)
+function nRemaining = ieDeleteObject(objType, val)
 % Delete the specified object type of at position val
 %
 %    nRemaining = ieDeleteObject(objType,[val])
 %
-% The ISET objects that can be deleted by this call are: 
+% The ISET objects that can be deleted by this call are:
 %   SCENE, OPTICALIMAGE (OI), VCIMAGE (IMGPROC), ISA (SENSOR).
 %
 % Input:
 %   objType:  A string or an object struct with objType.type defined
 %   val:      Integer defining which object in the database list to
 %             delete. If val is not passed in this call is equivalent
-%             to vcDeleteSelectedObject  
+%             to vcDeleteSelectedObject
 % Outputs:
 %    nRemaining: How many objects of that type remain in the database
 %
 % Examples:
 %   scene = sceneCreate; ieAddObject(scene); sceneWindow;
 %   ieDeleteObject(scene); sceneWindow;
-%   ieAddObject(scene); sceneWindow; 
+%   ieAddObject(scene); sceneWindow;
 %   ieDeleteObject('SCENE',1); sceneWindow;
-%   ieAddObject(scene); ieAddObject(scene); sceneWindow; 
+%   ieAddObject(scene); ieAddObject(scene); sceneWindow;
 %   ieDeleteObject('SCENE',2); sceneWindow;
 %
 % Copyright ImagEval Consultants, LLC, 2005.
@@ -36,8 +36,8 @@ if ieNotDefined('val')
 end
 
 % Set val to the selected object
-if exist('val','var') && ~isempty(val)
-    vcSetSelectedObject(objType,val)
+if exist('val', 'var') && ~isempty(val)
+    vcSetSelectedObject(objType, val)
 end
 
 % Delete the selected object

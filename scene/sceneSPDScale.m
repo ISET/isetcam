@@ -1,4 +1,4 @@
-function [scene,fullName] = sceneSPDScale(scene,fullName,op,skipIlluminant)
+function [scene, fullName] = sceneSPDScale(scene, fullName, op, skipIlluminant)
 % Multiply, Divide, Add or Subtract the scene radiance data
 %
 %    scene = sceneSPDScale(scene,fullName,op,skipIlluminant);
@@ -8,14 +8,14 @@ function [scene,fullName] = sceneSPDScale(scene,fullName,op,skipIlluminant)
 %  the scene. The data in the file fullName are assumed to represent a
 %  spectral distribution in energy units. Hence, if you send in data with
 %  all 1's in the energy term, the returned values will be  unchanged.
-%  
+%
 %  The fullName parameter:
 %
 %  Ordinarily, the term for multiplying is contained in a file, fullName.
 %  This file has data in units of energy.  The data are interpolated
 %  according to the information in scene.
 %
-%  If fullname is not passed in , the user is asked to select the file.  
+%  If fullname is not passed in , the user is asked to select the file.
 %  The parameter op is set to '/', '*','+', or '-' to specify the
 %  operation.  The routine name should be changed to sceneSPDOp or
 %  something.
@@ -33,10 +33,10 @@ function [scene,fullName] = sceneSPDScale(scene,fullName,op,skipIlluminant)
 %  with the photon data in scene.  The values are in energy units because
 %  that is the way most of the official formulae and data are provided by
 %  standards organizations.
-%  
+%
 % N.B. Please note this feature of photon/energy units.  If you wish to use
 % a divisor that is all 1's photon units, the data will be changed. The 1's
-% in photons are not 1's in energy. 
+% in photons are not 1's in energy.
 %
 % Example
 %   [scene,fullName] = sceneSPDScale(scene,'D65','*');
@@ -59,19 +59,19 @@ function [scene,fullName] = sceneSPDScale(scene,fullName,op,skipIlluminant)
 
 if ieNotDefined('scene'), [~, scene] = vcGetSelectedObject('SCENE'); end
 if ieNotDefined('fullName'), fullName = vcSelectDataFile('lights'); end
-if ieNotDefined('skipIlluminant'),  skipIlluminant = 0; end
+if ieNotDefined('skipIlluminant'), skipIlluminant = 0; end
 if isempty(fullName), return; end
 
 % NOTE:  Check that the wavelength representations of the different objects
 % agree
 
-energy  = double(sceneGet(scene,'energy'));
-wave    = sceneGet(scene,'wave');
-nWave   = sceneGet(scene,'nwave');
+energy = double(sceneGet(scene, 'energy'));
+wave = sceneGet(scene, 'wave');
+nWave = sceneGet(scene, 'nwave');
 
 % If the spd is sent in, it must be in energy units
-if ischar(fullName),    spd = ieReadSpectra(fullName,wave);
-else                    spd = fullName;
+if ischar(fullName), spd = ieReadSpectra(fullName, wave);
+else spd = fullName;
 end
 
 % OK, this is awkward.  Almost all of the data we have stored on disk are
@@ -84,50 +84,50 @@ end
 % If the scene has a current illuminant, say it is a multispectral scene,
 % then we change the illuminant information also for multiply and divide.
 switch op
-    % I think these operations might be handled using RGB2XWFormat more
-    % efficiently.
-    case {'/','divide'}
+        % I think these operations might be handled using RGB2XWFormat more
+        % efficiently.
+    case {'/', 'divide'}
         % for ii=1:nWave
         %    energy(:,:,ii) = energy(:,:,ii)/spd(ii);
         % end
-        energy = bsxfun(@rdivide, energy, reshape(spd, [1 1 nWave]));
+        energy = bsxfun(@rdivide, energy, reshape(spd, [1, 1, nWave]));
         if ~skipIlluminant
-            illE = sceneGet(scene,'illuminant energy');
-            illE = illE(:)./spd(:);
+            illE = sceneGet(scene, 'illuminant energy');
+            illE = illE(:) ./ spd(:);
         end
 
-    case {'multiply','*'}
+    case {'multiply', '*'}
         % for ii=1:nWave
         %     energy(:,:,ii) = energy(:,:,ii)*spd(ii);
         % end
-        energy = bsxfun(@times, energy, reshape(spd, [1 1 nWave]));
+        energy = bsxfun(@times, energy, reshape(spd, [1, 1, nWave]));
         if ~skipIlluminant
-            illE = sceneGet(scene,'illuminant energy');
+            illE = sceneGet(scene, 'illuminant energy');
             if isempty(illE)
                 error('No illuminant data');
             end
-            illE = illE(:).*spd(:);
+            illE = illE(:) .* spd(:);
         end
 
-    case {'add','+','sum', 'plus'}
-        energy = bsxfun(@plus, energy, reshape(spd, [1 1 nWave]));
-    case {'subtract','-', 'minus'}
-        energy = bsxfun(@minus, energy, reshape(spd, [1 1 nWave]));
+    case {'add', '+', 'sum', 'plus'}
+        energy = bsxfun(@plus, energy, reshape(spd, [1, 1, nWave]));
+    case {'subtract', '-', 'minus'}
+        energy = bsxfun(@minus, energy, reshape(spd, [1, 1, nWave]));
     otherwise
         error('Unknown operation.')
 end
 
 % Place the adjusted data in the scene structure
-[XW,r,c,~] = RGB2XWFormat(energy);
-photons = XW2RGBFormat(Energy2Quanta(wave,XW')',r,c);
+[XW, r, c, ~] = RGB2XWFormat(energy);
+photons = XW2RGBFormat(Energy2Quanta(wave, XW')', r, c);
 scene   = sceneSet(scene,'photons',photons);
 if ~skipIlluminant
-    scene   = sceneSet(scene,'illuminant energy',illE);
+    scene = sceneSet(scene, 'illuminant energy', illE);
 end
 
 % Update the scene luminance information
-[lum,meanL] = sceneCalculateLuminance(scene);
-scene = sceneSet(scene,'luminance',lum);
-scene = sceneSet(scene,'meanl',meanL);
+[lum, meanL] = sceneCalculateLuminance(scene);
+scene = sceneSet(scene, 'luminance', lum);
+scene = sceneSet(scene, 'meanl', meanL);
 
 end

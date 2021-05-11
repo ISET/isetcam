@@ -19,13 +19,13 @@ ieInit
 %% Overview of the scielab call
 
 % Set up to read an image and a JPEG compressed version of it
-file1 = fullfile(isetRootPath, 'data','images','RGB','hats.jpg');
-file2 = fullfile(isetRootPath, 'data','images','RGB','hatsC.jpg');
+file1 = fullfile(isetRootPath, 'data', 'images', 'RGB', 'hats.jpg');
+file2 = fullfile(isetRootPath, 'data', 'images', 'RGB', 'hatsC.jpg');
 
 % We will treat the two images as if they are on a CRT display seen from 12
 % inches.
-vDist = 0.3;          % 12 inches
-dispCal = 'LCD-Apple.mat';   % Calibrated display
+vDist = 0.3; % 12 inches
+dispCal = 'LCD-Apple.mat'; % Calibrated display
 
 %% Spatial scielab reads the RGB files and calibrated display
 
@@ -33,14 +33,14 @@ dispCal = 'LCD-Apple.mat';   % Calibrated display
 % The returns are an error image and two scenes containing the two images
 % The display variable is the implicit display we used to transform the RGB
 % images into the spectral image.  It does nt play a further role.
-[eImage,scene1,scene2,display] = scielabRGB(file1, file2, dispCal, vDist);
+[eImage, scene1, scene2, display] = scielabRGB(file1, file2, dispCal, vDist);
 
 % Show the RGB images as scenes. This illustrates how the RGB data were
 % converted to SPDs using the calibrated display
-ieAddObject(scene1); 
-ieAddObject(scene2);sceneWindow;
+ieAddObject(scene1);
+ieAddObject(scene2);
+sceneWindow;
 
-imageMultiview('scene',[1 2],true);
-
+imageMultiview('scene', [1, 2], true);
 
 %% End

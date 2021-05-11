@@ -19,9 +19,9 @@ function w = humanAchromaticOTF(sampleSF)
 
 if ieNotDefined('sampleSF'), sampleSF = 0:50; end
 
-a =  0.1212;		%Parameters of the fit
-w1 = 0.3481;		%Exponential term weights
+a = 0.1212; %Parameters of the fit
+w1 = 0.3481; %Exponential term weights
 w2 = 0.6519;
-w =  w1*ones(size(sampleSF)) + w2*exp( - a*sampleSF );
+w = w1 * ones(size(sampleSF)) + w2 * exp(-a*sampleSF);
 
 return

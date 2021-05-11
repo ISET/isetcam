@@ -1,4 +1,4 @@
-function scene = sceneSet(scene,parm,val,varargin)
+function scene = sceneSet(scene, parm, val, varargin)
 %Set scene parameter values
 %
 %   scene = sceneSet(scene,parm,val,varargin)
@@ -55,7 +55,7 @@ function scene = sceneSet(scene,parm,val,varargin)
 % Some multispectral scenes have information about the illuminant
 %     'illuminant'  - Scene illumination structure
 %      'illuminant Energy'  - Illuminant spd in energy is stored W/sr/nm/sec
-%      'illuminant Photons' - Photons are converted to energy and stored 
+%      'illuminant Photons' - Photons are converted to energy and stored
 %      'illuminant Comment' - Comment
 %      'illuminant Name'    - Identifier for illuminant.
 %
@@ -72,13 +72,13 @@ function scene = sceneSet(scene,parm,val,varargin)
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
-if ~exist('parm','var') || isempty(parm), error('Param must be defined.'); end
-if ~exist('val','var'), error('Value field required.'); end  % empty is OK
+if ~exist('parm', 'var') || isempty(parm), error('Param must be defined.'); end
+if ~exist('val', 'var'), error('Value field required.'); end % empty is OK
 
 parm = ieParamFormat(parm);
 
-switch parm 
-    case {'name','scenename'}
+switch parm
+    case {'name', 'scenename'}
         scene.name = val;
     case 'type'
         scene.type = val;
@@ -87,7 +87,7 @@ switch parm
         % Happens, perhaps, when reading multispectral image data.
         % Infrequently used.
         scene.filename = val;
-    case {'consistency','computationalconsistency'}
+    case {'consistency', 'computationalconsistency'}
         % When parameters are changed, the consistency flag on the optical
         % image changes.  This is irrelevant for the scene case.
         scene.consistency = val;
@@ -99,20 +99,20 @@ switch parm
         % eventdata = [];
         sceneW.editGamma.Value = num2str(val);
         sceneW.refresh;
-    case {'renderflag','displaymode'}
+    case {'renderflag', 'displaymode'}
         % sceneSet(scene,'display mode','hdr');
         app = ieSessionGet('scene window');
         if isempty(app)
             warning('Render flag is only set when the sceneWindow is open');
         else
             switch val
-                case {'hdr',3}
+                case {'hdr', 3}
                     val = 3;
-                case {'rgb',1}
+                case {'rgb', 1}
                     val = 1;
-                case {'gray',2}
+                case {'gray', 2}
                     val = 2;
-                case {'clip',4}
+                case {'clip', 4}
                     val = 4;
                 otherwise
                     fprintf('Permissible display modes: rgb, gray, hdr, clip\n');
@@ -120,14 +120,16 @@ switch parm
             app.popupRender.Value = app.popupRender.Items{val};
             app.refresh;
         end
-        
-    case {'distance' }
+
+    case {'distance'}
         % Positive for scenes, negative for optical images
         scene.distance = val;
 
-    case {'wangular','widthangular','hfov','horizontalfieldofview','fov'}
-        if val > 180,   val = 180 - eps; warndlg('Warning: fov > 180');
-        elseif val < 0, val = eps; warndlg('Warning fov < 0');
+    case {'wangular', 'widthangular', 'hfov', 'horizontalfieldofview', 'fov'}
+        if val > 180, val = 180 - eps;
+            warndlg('Warning: fov > 180');
+        elseif val < 0, val = eps;
+            warndlg('Warning fov < 0');
         end
         scene.wAngular = val;
 
@@ -136,9 +138,9 @@ switch parm
         if val ~= 1, warndlg('Scene must have magnification 1'); end
         scene.magnification = 1;
 
-    case {'data','datastructure'}
+    case {'data', 'datastructure'}
         scene.data = val;
-        
+
     case {'photons'}
         % scene = sceneSet(scene,'photons',val);
         % sceneSet(scene,'photons',val,[wave])
@@ -148,58 +150,59 @@ switch parm
         % I think (BW).
         bitDepth = sceneGet(scene, 'bitDepth');
         if isempty(bitDepth)
-            scene = sceneSet(scene,'bit depth',32);
+            scene = sceneSet(scene, 'bit depth', 32);
         end
         if ~isempty(varargin)
             idx = ieFindWaveIndex(sceneGet(scene, 'wave'), varargin{1});
             idx = logical(idx);
         end
-        
+
         switch bitDepth
             case 64 % Double
                 if isempty(varargin)
                     scene.data.photons = val;
                 else
-                    scene.data.photons(:,:,idx) = val;
+                    scene.data.photons(:, :, idx) = val;
                 end
             case 32 % Single
                 if isempty(varargin)
                     scene.data.photons = single(val);
                 else
-                    scene.data.photons(:,:,idx) = single(val);
+                    scene.data.photons(:, :, idx) = single(val);
                 end
             otherwise
-                error('Unsupported data bit depth %f\n',bitDepth);
+                error('Unsupported data bit depth %f\n', bitDepth);
         end
 
         % Clear out luminance computation
         scene = sceneSet(scene, 'luminance', []);
-        
+
     case 'energy'
         % scene = sceneSet(scene,'energy',energy,wave);
-        % 
+        %
         % The user specified the scene in units of energy.  We convert to
         % photons and set the data as photons.
         %
-        wave = sceneGet(scene,'wave');
+        wave = sceneGet(scene, 'wave');
         photons = zeros(size(val));
-        [r,c,w] = size(photons);
+        [r, c, w] = size(photons);
         if w ~= length(wave), error('Data mismatch'); end
-        
+
         % h = waitbar(0,'Energy to photons');
-        for ii=1:w
-            % waitbar(ii/w,h);           
+        for ii = 1:w
+            % waitbar(ii/w,h);
             % Get the first image plane from the energy hypercube.
             % Make it a row vector
-            tmp = val(:,:,ii); tmp = tmp(:)';
+            tmp = val(:, :, ii);
+            tmp = tmp(:)';
             % Convert the rwo vector from energy to photons
-            tmp = Energy2Quanta(wave(ii),tmp);
+            tmp = Energy2Quanta(wave(ii), tmp);
             % Reshape it and place it in the photon hypercube
-            photons(:,:,ii) = reshape(tmp,r,c);
+            photons(:, :, ii) = reshape(tmp, r, c);
         end
         % close(h);
-        scene = sceneSet(scene,'photons',photons);
-        
+        scene = sceneSet(scene, 'photons', photons);
+
     case 'roiphotons'
         % Place new scene radiance data into an ROI
         %
@@ -214,52 +217,52 @@ switch parm
         if isempty(varargin), error('ROI required')
         else, roi = varargin{1};
         end
-        if size(roi,2) == 4, roiLocs = ieRect2Locs(roi);
-        else,                roiLocs = roi;
+        if size(roi, 2) == 4, roiLocs = ieRect2Locs(roi);
+        else, roiLocs = roi;
         end
 
-        wave = sceneGet(scene,'wave');
+        wave = sceneGet(scene, 'wave');
         photons = zeros(size(val));
-        [~,w] = size(photons);
+        [~, w] = size(photons);
         if w ~= length(wave), error('Data mismatch'); end
-        
-        photons = sceneGet(scene,'photons');
+
+        photons = sceneGet(scene, 'photons');
         [photons, r, c] = RGB2XWFormat(photons);
 
-        sz = sceneGet(scene,'size');
-        roiLocs(:,1) = ieClip(roiLocs(:,1),1,r);
-        roiLocs(:,2) = ieClip(roiLocs(:,2),1,c);
+        sz = sceneGet(scene, 'size');
+        roiLocs(:, 1) = ieClip(roiLocs(:, 1), 1, r);
+        roiLocs(:, 2) = ieClip(roiLocs(:, 2), 1, c);
 
-        imgLocs = sub2ind([sz(1),sz(2)],roiLocs(:,1),roiLocs(:,2));
-        photons(imgLocs,:) = val;
-        photons = XW2RGBFormat(photons,sz(1),sz(2));
+        imgLocs = sub2ind([sz(1), sz(2)], roiLocs(:, 1), roiLocs(:, 2));
+        photons(imgLocs, :) = val;
+        photons = XW2RGBFormat(photons, sz(1), sz(2));
 
-        scene = sceneSet(scene,'photons',photons);
-        
+        scene = sceneSet(scene, 'photons', photons);
+
     case 'roienergy'
         % Place new scene radiance data into an ROI.  The ROI is
         % specified as either an ROI box or as a set of roilocs.  The
         % radiance data must be in XW format.
         %
         %    scene = sceneSet(scene,'roi energy',energy, roi);
-        % 
+        %
         % The user specified the scene radiance in units of energy.
         %
         % The ROI is specified as either an ROI box or as a set of
         % roilocs. If an ROI box then size(roi,2)is 4. If ROI Locs
         % then size(roi,2) is 2 (roiLocs is Nx2).
         %
-        
+
         if isempty(varargin), error('ROI required')
         else, roi = varargin{1};
         end
-        
-        wave = sceneGet(scene,'wave');
+
+        wave = sceneGet(scene, 'wave');
         photons = zeros(size(val));
-        [~,w] = size(photons);
+        [~, w] = size(photons);
         if w ~= length(wave), error('Data mismatch'); end
-        
-        photons = Energy2Quanta(wave,val')';
+
+        photons = Energy2Quanta(wave, val')';
         %
         %         % h = waitbar(0,'Energy to photons');
         %         for ii=1:w
@@ -272,35 +275,35 @@ switch parm
         %             % Reshape it and place it in the photon hypercube
         %             photons(:,:,ii) = reshape(tmp,r,c);
         %         end
-        
-        % close(h);
-        scene = sceneSet(scene,'roi photons',photons,roi);
-        
 
-    case {'peakradiance','peakphotonradiance'}
+        % close(h);
+        scene = sceneSet(scene, 'roi photons', photons, roi);
+
+
+    case {'peakradiance', 'peakphotonradiance'}
         % Deprecated, I think.
         % Used with monochromatic scenes to set the radiance in photons.
         % scene = sceneSet(scene,'peak radiance',1e17);
-        oldPeak = sceneGet(scene,'peak radiance');
-        p  = sceneGet(scene,'photons');
-        scene = sceneSet(scene,'photons',val*(p/oldPeak));
+        oldPeak = sceneGet(scene, 'peak radiance');
+        p = sceneGet(scene, 'photons');
+        scene = sceneSet(scene, 'photons', val*(p / oldPeak));
     case {'depthmap'}
         % Depth map is always in meters
         scene.depthMap = val;
-        
-    case {'datamin','dmin'}
+
+    case {'datamin', 'dmin'}
         % These are photons (radiance)
         scene.data.dmin = val;
-    case {'datamax','dmax'}
+    case {'datamax', 'dmax'}
         % These are photon (radiance)
         scene.data.dmax = val;
     case 'bitdepth'
         scene.data.bitDepth = val;
         % scene = sceneClearData(scene);
-        
+
         % Not sure this is used much or at all any more.  It is in
         % sceneIlluminantScale alone, as far as I can tell. - BW
-        
+
     case 'roi'
         % Sometimes we want to attach a roi to a scene because we
         % processed the data with respect to that region of interest.  This
@@ -312,81 +315,82 @@ switch parm
         % w. This information is used to set the illuminant level properly
         % and to keep track of reflectances.
         if length(val) ~= 4 || val(1) > 1 || val(1) < 0
-            error('known reflectance is [reflectance,row,col,wave]'); 
+            error('known reflectance is [reflectance,row,col,wave]');
         end
         scene.data.knownReflectance = val;
-        
-    % See sceneReflectanceChart 
-    % Reflectance chart parameters are stored here.
+
+        % See sceneReflectanceChart
+        % Reflectance chart parameters are stored here.
     case {'chartparameters'}
         scene.chartP = val;
-    case {'cornerpoints','chartcornerpoints','chartcorners'}
+    case {'cornerpoints', 'chartcornerpoints', 'chartcorners'}
         % fourPoints = sceneGet(scene,'chart corner points');
         scene.chartP.cornerPoints = val;
-    case {'chartrects','chartrectangles'}
+    case {'chartrects', 'chartrectangles'}
         scene.chartP.rects = val;
     case {'currentrect'}
         % [colMin rowMin width height]
         % Used for ROI display and management.
         scene.chartP.currentRect = val;
-        
-    case {'luminance','lum'}
+
+    case {'luminance', 'lum'}
         % sceneSet(scene,'luminance',array)
         % The luminance array is stored.  But this parameter is dangerous
         % because this value could be inconsistent with the photons if we
         % are not careful.
-        if isempty(val), scene.data.luminance = val; return; 
-        elseif ~isequal(size(val),size(scene.data.photons(:,:,1)))
+        if isempty(val), scene.data.luminance = val;
+            return;
+        elseif ~isequal(size(val), size(scene.data.photons(:, :, 1)))
             error('Lminance array does not match photon array size.');
         else
             scene.data.luminance = val;
         end
-    case {'meanluminance','meanl'}
+    case {'meanluminance', 'meanl'}
         % scene = sceneSet(scene,'mean luminance',val)
-        scene = sceneAdjustLuminance(scene,val);
+        scene = sceneAdjustLuminance(scene, val);
         scene.data.meanL = val;
-    case {'maxluminance','maxl'}
+    case {'maxluminance', 'maxl'}
         % sceneSet(scene,'max luminance',val);
-        lum = sceneGet(scene,'luminance');
-        meanL = sceneGet(scene,'mean luminance');
+        lum = sceneGet(scene, 'luminance');
+        meanL = sceneGet(scene, 'mean luminance');
         currentMax = max(lum(:));
-        newMean = meanL*(val/currentMax);
-        scene = sceneAdjustLuminance(scene,newMean);
-    case {'spectrum','wavespectrum','wavelengthspectrumstructure'}
-        scene.spectrum  = val;
-    case {'wave','wavelength','wavelengthnanometers'}
-        % scene = sceneSet(scene,'wave',wave); 
+        newMean = meanL * (val / currentMax);
+        scene = sceneAdjustLuminance(scene, newMean);
+    case {'spectrum', 'wavespectrum', 'wavelengthspectrumstructure'}
+        scene.spectrum = val;
+    case {'wave', 'wavelength', 'wavelengthnanometers'}
+        % scene = sceneSet(scene,'wave',wave);
         %
         % If there are photon data, we interpolate the data as well as
         % setting the wavelength. If there are no photon data, we just set
         % the wavelength.
 
-        if ~checkfields(scene,'data','photons') || isempty(scene.data.photons)
+        if ~checkfields(scene, 'data', 'photons') || isempty(scene.data.photons)
             % No data, so just set the spectrum
             scene.spectrum.wave = val;
         else
             % Because there are data present, we must interpolate the
             % photon data
-            scene = sceneInterpolateW(scene,val);
+            scene = sceneInterpolateW(scene, val);
         end
-        
+
         % Scene illumination information
     case {'illuminant'}
         % The whole structure
         scene.illuminant = val;
-    case {'illuminantdata','illuminantenergy'}
+    case {'illuminantdata', 'illuminantenergy'}
         % This set changes the illuminant, but it does not change the
         % radiance SPD.  Hence, changing the illuminant (implicitly)
         % changes the reflectance. This might not be what you want.  If you
         % want to change the scene as if it is illuminanted differently,
         % use the function: sceneAdjustIlluminant()
-        
+
         % The data can be a vector (one SPD for the whole image) or they
         % can be in spatial spectral format SPD with a different illuminant
         % at each position.
-        illuminant = sceneGet(scene,'illuminant');
-        illuminant = illuminantSet(illuminant,'energy',val);
-        scene = sceneSet(scene,'illuminant',illuminant);
+        illuminant = sceneGet(scene, 'illuminant');
+        illuminant = illuminantSet(illuminant, 'energy', val);
+        scene = sceneSet(scene, 'illuminant', illuminant);
     case {'illuminantphotons'}
         % See comment above about sceneAdjustIlluminant.
         %
@@ -395,27 +399,27 @@ switch parm
         % We have to handle the spectral and the spatial spectral cases
         % within the illuminantSet.  At this point, val can be a vector or
         % an RGB format matrix.
-        if checkfields(scene,'illuminant')
-            scene.illuminant = illuminantSet(scene.illuminant,'photons',val);
+        if checkfields(scene, 'illuminant')
+            scene.illuminant = illuminantSet(scene.illuminant, 'photons', val);
         else
             % We use a default d65.  The user must change to be consistent
-            wave = sceneGet(scene,'wave');
-            scene.illuminant = illuminantCreate('d65',wave);
-            scene.illuminant = illuminantSet(scene.illuminant,'photons',val);
+            wave = sceneGet(scene, 'wave');
+            scene.illuminant = illuminantCreate('d65', wave);
+            scene.illuminant = illuminantSet(scene.illuminant, 'photons', val);
         end
     case {'illuminantname'}
-        scene.illuminant = illuminantSet(scene.illuminant,'name',val);
+        scene.illuminant = illuminantSet(scene.illuminant, 'name', val);
     case {'illuminantcomment'}
         scene.illuminant.comment = val;
     case {'illuminantspectrum'}
         scene.illuminant.spectrum = val;
-        
+
     case {'rect'}
         % scene = sceneSet(scene,'rect',[x y h w]);
         % An ROI rect.
         scene.rect = val;
     case {'mccrecthandles'}
-        if checkfields(scene,'mccRectHandles')
+        if checkfields(scene, 'mccRectHandles')
             if ~isempty(scene.mccRectHandles)
                 try delete(scene.mccRectHandles(:));
                 catch
@@ -427,7 +431,7 @@ switch parm
         scene.mccCornerPoints = val;
 
     otherwise
-        disp(['Unknown sceneSet parameter: ',parm]);
+        disp(['Unknown sceneSet parameter: ', parm]);
 end
 
 return;

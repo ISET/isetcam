@@ -1,4 +1,4 @@
-function bool = ieVarInFile(fullname,varName)
+function bool = ieVarInFile(fullname, varName)
 % Check whether a variable is in a particular Matlab file
 %
 %   bool = ieVarInFile(fullnameOrVariables,varName)
@@ -31,13 +31,13 @@ function bool = ieVarInFile(fullname,varName)
 bool = 0;
 
 % Decide if fullname is a file or a list of variables
-if ischar(fullname) && ~isstruct(fullname), variables = whos('-file',fullname);
-elseif isstruct(fullname),                  variables = fullname;
+if ischar(fullname) && ~isstruct(fullname), variables = whos('-file', fullname);
+elseif isstruct(fullname), variables = fullname;
 end
 
 % Check, one-by-one, returning true if found
-for ii=1:length(variables)
-    if strcmp(variables(ii).name,varName)
+for ii = 1:length(variables)
+    if strcmp(variables(ii).name, varName)
         bool = 1;
         break;
     end

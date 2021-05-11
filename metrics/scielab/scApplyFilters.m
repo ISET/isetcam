@@ -14,10 +14,10 @@ function dstImage = scApplyFilters(srcImage, filters, dimension, imgPadMethod)
 % Typically the srcImage is in opponent-colors space so that the first
 % dimension is luminance, the other two are red-green and blue yellow.
 %
-% Before filtering, the function matches the sizes of the image and the 
-% filters. If image size is larger than filter size, the filter will be 
+% Before filtering, the function matches the sizes of the image and the
+% filters. If image size is larger than filter size, the filter will be
 % padded with zeros. However, in case that the image size is smaller than
-% the filter size, we pad the image using the symmetric padding method. We 
+% the filter size, we pad the image using the symmetric padding method. We
 % let the user the option to pad the image with black or white. This
 % is determined by the argument 'imgPadMethod'. The user can insert '0' to
 % pad with zeros or '1' to pad with ones (i.e. max value of the image).
@@ -34,23 +34,25 @@ function dstImage = scApplyFilters(srcImage, filters, dimension, imgPadMethod)
 % Copyright ImagEval Consultants, LLC, 2000.
 
 %%
-if ieNotDefined('srcImage'),  error('src image required'); end
-if ieNotDefined('filters'),   error('smoothing filters required'); end
+if ieNotDefined('srcImage'), error('src image required'); end
+if ieNotDefined('filters'), error('smoothing filters required'); end
 if ieNotDefined('dimension'), dimension = 2; end
 if ieNotDefined('imgPadMethod'), imgPadMethod = 'symmetric'; end
 if (dimension == 1), error('Why is dimension 1?'); end
 
 %% Initialize parameters
-[M N L] = size(srcImage);
-if ~ (L == 3)
+[M, N, L] = size(srcImage);
+if ~(L == 3)
     warning('Source image is not opponent');
 end
 
 % Make sure the filters are in a cell array format
 if ~iscell(filters)
-    temp = filters; clear filters;
-    filters=cell(1,3);
-    for ii=1:L, filters{ii}=temp; end;
+    temp = filters;
+    clear filters;
+    filters = cell(1, 3);
+    for ii = 1:L, filters{ii} = temp;
+    end;
 end;
 
 % these varaibles are needed in order to determine the size of the padding
@@ -68,21 +70,21 @@ colFiltPad = 0;
 % size are close to one another in size.  We should probably warn the user
 % in this case - when the image size and the filter size differ, but are
 % close.
-fSize   = size(filters{1});
-imgSize = size(srcImage(:,:,1));
+fSize = size(filters{1});
+imgSize = size(srcImage(:, :, 1));
 
 %% If the filter and image size aren't equal, do stuff
-if ~isequal(fSize,imgSize)
-    
+if ~isequal(fSize, imgSize)
+
     % If fSize is only a little different from imgSize, we should probably
     % just change fSize to be imgSize and move on.  This would need to be
     % done in the code that creates the filters.
-    
+
     % Filter is larger than image - pad image
     if fSize(1) > imgSize(1) || fSize(2) > imgSize(2)
 
-        rowImgPad = max(0,fSize(1) - imgSize(1));
-        colImgPad = max(0,fSize(2) - imgSize(2));
+        rowImgPad = max(0, fSize(1)-imgSize(1));
+        colImgPad = max(0, fSize(2)-imgSize(2));
         % fprintf('Padding image (row %d, col %d)\n',rowImgPad,colImgPad);
 
         % If row or col is odd, we remove a row/col from the srcImage This
@@ -90,31 +92,31 @@ if ~isequal(fSize,imgSize)
         % the filter will shift the image data. We would rather kill off a
         % row or column in the image.
         if isodd(rowImgPad)
-            srcImage = srcImage(1:(end-1),:,:);
+            srcImage = srcImage(1:(end -1), :, :);
             rowImgPad = rowImgPad + 1;
         end
         if isodd(colImgPad)
-            srcImage = srcImage(:,1:(end-1),:);
+            srcImage = srcImage(:, 1:(end -1), :);
             colImgPad = colImgPad + 1;
         end
     end
-    
+
     % Image is larger than filter - pad filter
     if fSize(1) < imgSize(1) || fSize(2) < imgSize(2)
         % How unequal are they?
-        rowFiltPad = max(0,imgSize(1) - fSize(1));
-        colFiltPad = max(0,imgSize(2) - fSize(2));
+        rowFiltPad = max(0, imgSize(1)-fSize(1));
+        colFiltPad = max(0, imgSize(2)-fSize(2));
 
         % If row or col is odd, we remove a row/col from the srcImage This
         % is because padding filter symmetrically is preferred. Otherwise
         % the filter will shift the image data. We would rather kill off a
         % row or column in the image.
         if isodd(rowFiltPad)
-            srcImage = srcImage(1:(end-1),:,:);
+            srcImage = srcImage(1:(end -1), :, :);
             rowFiltPad = rowFiltPad - 1;
         end
         if isodd(colFiltPad)
-            srcImage = srcImage(:,1:(end-1),:);
+            srcImage = srcImage(:, 1:(end -1), :);
             colFiltPad = colFiltPad - 1;
         end
         % fprintf('Padding filter (row %d, col %d)\n',rowFiltPad,colFiltPad);
@@ -124,32 +126,32 @@ end
 
 %% Apply the filters using fft2
 dstImage = zeros(size(srcImage));
-for ii=1:L
-    
-    thisImage = srcImage(:,:,ii);
+for ii = 1:L
+
+    thisImage = srcImage(:, :, ii);
     % image needs to be padded
     if rowImgPad || colImgPad
         % imgPadMethod = 1 => pad with max image value
         if imgPadMethod == 1
             imgPadMethod = max(thisImage(:));
         end
-        thisImage = padarray(thisImage,[rowImgPad/2, colImgPad/2], imgPadMethod);
+        thisImage = padarray(thisImage, [rowImgPad / 2, colImgPad / 2], imgPadMethod);
     end
 
     thisFilter = filters{ii};
     %filter needs to be padded
     if rowFiltPad || colFiltPad
-        thisFilter = padarray(thisFilter,[rowFiltPad/2, colFiltPad/2]);
+        thisFilter = padarray(thisFilter, [rowFiltPad / 2, colFiltPad / 2]);
     end
 
     % Don't we need some fft-shifting here?
     % thisImage = ones(3,3); thisImage = padarray(thisImage,[1,1]);
     % thisFilter = zeros(5,5); thisFilter(1,1) = 1;
     dstPadImg = ifftshift(real(ifft2( ...
-          fft2(fftshift(thisImage)) ...
-        .*fft2(fftshift(thisFilter)))));
-    
-    dstImage(:,:,ii) = dstPadImg(rowImgPad/2+1:end-rowImgPad/2,...
+        fft2(fftshift(thisImage)) ...
+        .* fft2(fftshift(thisFilter)))));
+
+    dstImage(:, :, ii) = dstPadImg(rowImgPad/2+1:end-rowImgPad/2, ...
         colImgPad/2+1:end-colImgPad/2);
     % dstImage(:, :, ii) = real(ifft2(fft2(thisFilter).*fft2(thisImage)));
     % dstImage(:, :, ii) = ieConv2FFT(srcImage(:, :, ii), filters{ii}, 'same');

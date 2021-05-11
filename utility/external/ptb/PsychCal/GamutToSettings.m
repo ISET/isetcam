@@ -3,7 +3,7 @@ function settings = GamutToSettings(cal, gamut)
 %
 % Find the best device settings to produce
 % the passed linear device coordinates.
-% 
+%
 % The passed coordinates should be in the range [0,1].
 % The returned settings also run from [0,1], but after
 % inversion of the device's gamma measurements.
@@ -23,22 +23,22 @@ function settings = GamutToSettings(cal, gamut)
 
 % Error checking
 if isempty(cal.gammaTable)
-	error('No gamma table present in calibration structure');
+    error('No gamma table present in calibration structure');
 end
 if isempty(cal.gammaMode)
-	error('SetGammaMethod has not been called on calibration structure');
+    error('SetGammaMethod has not been called on calibration structure');
 end
 
 if cal.gammaMode == 0
-	settings = GamutToSettingsSch(cal.gammaInput, cal.gammaTable, gamut);
+    settings = GamutToSettingsSch(cal.gammaInput, cal.gammaTable, gamut);
 elseif cal.gammaMode == 1
-	%iGammaTable = cal.iGammaTable;
-	if isempty(cal.iGammaTable)
-		error('Inverse gamma table not present for gammaMode == 1');
-	end
-	settings = GamutToSettingsTbl(cal.iGammaTable, gamut);
-elseif cal.gammaMode == 2
-    settings = GamutToSettingsExhaust(cal.gammaInput, cal.gammaTable, gamut);
-else
-	error('Requested gamma inversion mode %g is not yet implemented', cal.gammaMode);
-end
+    %iGammaTable = cal.iGammaTable;
+    if isempty(cal.iGammaTable)
+        error('Inverse gamma table not present for gammaMode == 1');
+        end
+        settings = GamutToSettingsTbl(cal.iGammaTable, gamut);
+    elseif cal.gammaMode == 2
+        settings = GamutToSettingsExhaust(cal.gammaInput, cal.gammaTable, gamut);
+    else
+        error('Requested gamma inversion mode %g is not yet implemented', cal.gammaMode);
+    end

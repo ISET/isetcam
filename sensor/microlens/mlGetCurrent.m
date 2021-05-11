@@ -14,7 +14,6 @@ function ml = mlGetCurrent()
 % the window and elsewhere
 
 % Get the sensor microlens, fill it with the window data
-ml = sensorGet(vcGetObject('sensor'),'micro lens');
+ml = sensorGet(vcGetObject('sensor'), 'micro lens');
 
 end
-

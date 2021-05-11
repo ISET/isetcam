@@ -1,4 +1,4 @@
-function [dkl] = ConeIncToDKL(coneInc,bg)
+function [dkl] = ConeIncToDKL(coneInc, bg)
 % [dkl] = ConeIncToDKL(coneInc,bg)
 %
 % Convert from incremental cone coordinates to DKL
@@ -20,10 +20,4 @@ M = ComputeDKL_M(bg);
 
 % Multiply the vectors we wish to
 % convert by M to obtain its DKL coordinates.
-dkl = M*coneInc;
-
-
-
-
-						 
-
+dkl = M * coneInc;

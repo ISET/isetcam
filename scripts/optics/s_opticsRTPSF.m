@@ -24,10 +24,10 @@ wbStatus = ieSessionGet('waitbar');
 % ieSessionSet('waitbar','on');
 
 %% Scene
-scene = sceneCreate('pointArray',512,32);
-scene = sceneInterpolateW(scene,450:100:650);
-scene = sceneSet(scene,'hfov',10);
-scene = sceneSet(scene,'name','psf Point Array');
+scene = sceneCreate('pointArray', 512, 32);
+scene = sceneInterpolateW(scene, 450:100:650);
+scene = sceneSet(scene, 'hfov', 10);
+scene = sceneSet(scene, 'name', 'psf Point Array');
 
 sceneWindow(scene);
 
@@ -35,36 +35,37 @@ sceneWindow(scene);
 oi = oiCreate('ray trace');
 
 % Load the example Zemax file
-fname = fullfile(isetRootPath,'data','optics','rtZemaxExample.mat');
-load(fname,'optics'); 
+fname = fullfile(isetRootPath, 'data', 'optics', 'rtZemaxExample.mat');
+load(fname, 'optics');
 
-oi = oiSet(oi,'name','ray trace case');
-oi = oiSet(oi,'optics',optics);
+oi = oiSet(oi, 'name', 'ray trace case');
+oi = oiSet(oi, 'optics', optics);
 
 %% Compute
-oi = oiSet(oi,'optics model','ray trace');
-oi = oiCompute(scene,oi);
-oi = oiSet(oi,'name','ray trace case');
+oi = oiSet(oi, 'optics model', 'ray trace');
+oi = oiCompute(scene, oi);
+oi = oiSet(oi, 'name', 'ray trace case');
 oiWindow(oi);
 
 %% Compute the diffraction limited case
 
-oiDL = oiSet(oi,'name','diffraction case');
-optics = oiGet(oiDL,'optics');
-fNumber = opticsGet(optics,'rt fnumber');
-optics = opticsSet(optics,'fnumber',fNumber*0.8);
-oiDL = oiSet(oiDL,'optics',optics);
+oiDL = oiSet(oi, 'name', 'diffraction case');
+optics = oiGet(oiDL, 'optics');
+fNumber = opticsGet(optics, 'rt fnumber');
+optics = opticsSet(optics, 'fnumber', fNumber*0.8);
+oiDL = oiSet(oiDL, 'optics', optics);
 
-oiDL = oiSet(oiDL,'optics model','diffraction limited');
-oiDL = oiCompute(scene,oiDL);
-oiDL = oiSet(oiDL,'name','psf diffraction case');
-ieAddObject(oiDL); oiWindow;
+oiDL = oiSet(oiDL, 'optics model', 'diffraction limited');
+oiDL = oiCompute(scene, oiDL);
+oiDL = oiSet(oiDL, 'name', 'psf diffraction case');
+ieAddObject(oiDL);
+oiWindow;
 
 %% Render the images
-imageMultiview('oi',[1 2],1); truesize;
+imageMultiview('oi', [1, 2], 1);
+truesize;
 
 %% Reset the original wait bar status
-ieSessionSet('waitbar',wbStatus);
+ieSessionSet('waitbar', wbStatus);
 
 %%
-

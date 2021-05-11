@@ -1,13 +1,13 @@
-function t = macular(macDensity,wave)
+function t = macular(macDensity, wave)
 % Returns several measures of the macular pigment
 %
 %     t = macular(macDensity,wave)
 %
-%  The human retina contains a pigment that covers the central (macular) region. 
+%  The human retina contains a pigment that covers the central (macular) region.
 %  This macular pigment passes certain wavelengths of light more than
 %  others.  The pigment varies in density from central vision, where it is
 %  highest, to increasingly peripheral vision.
-%  
+%
 %  This function returns several measures of the macular pigment wavelength
 %  properties as a function of macular pigment density (high in the fovea,
 %  lower in the near fovea).
@@ -40,12 +40,12 @@ function t = macular(macDensity,wave)
 
 if ieNotDefined('wave'), wave = [400:700]'; end
 t.wave = wave;
-t.density  = ieReadSpectra('macularPigment.mat',wave);
+t.density = ieReadSpectra('macularPigment.mat', wave);
 
 % Typical peak macular density, Estimated by Sharpe in VR paper, 1999 is
 % 0.28.  Yet, the data they provide are at 0.3521.  It is probably not
 % important to return the unit density, but we do.
-if ~exist('macDensity','var'), macDensity = 0.3521; end 
+if ~exist('macDensity', 'var'), macDensity = 0.3521; end
 
 % I don't understand this, but the download from the web site has a peak
 % spectral density at 460 of 0.3521, not the average estimated in the
@@ -53,7 +53,7 @@ if ~exist('macDensity','var'), macDensity = 0.3521; end
 t.unitDensity = t.density / 0.3521;
 
 % Here is the density, given the macular density passed in.
-t.density = t.unitDensity*macDensity;
+t.density = t.unitDensity * macDensity;
 
 % Here is the fraction transmitted through the macular pigment
 t.transmittance = 10.^(-t.density);
@@ -62,5 +62,3 @@ t.transmittance = 10.^(-t.density);
 t.absorption = 1 - t.transmittance;
 
 return;
-
-

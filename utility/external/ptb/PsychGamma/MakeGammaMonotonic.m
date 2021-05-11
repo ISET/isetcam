@@ -15,22 +15,20 @@ function output = MakeGammaMonotonic(input)
 % 3/08/10 dhb  Actually do the enforcement of 1.
 % 5/27/10 dhb  Use a larger bump, 100*eps
 
-[m,n] = size(input);
+[m, n] = size(input);
 
 output = input;
 for j = 1:n
-	for i = 1:m-1
-	  if (output(i,j) >= output(i+1,j))
-	    output(i+1,j) = output(i,j)+100*eps;
-	  end
+    for i = 1:m - 1
+        if (output(i, j) >= output(i + 1, j))
+            output(i+1, j) = output(i, j) + 100 * eps;
+        end
     end
-    
-    output(m,j) = 1;
+
+    output(m, j) = 1;
     for i = m:-1:2
-	  if (output(i,j) <= output(i-1,j))
-	    output(i-1,j) = output(i,j)-100*eps;
-	  end
+        if (output(i, j) <= output(i - 1, j))
+            output(i-1, j) = output(i, j) - 100 * eps;
+        end
     end
 end
-
-  

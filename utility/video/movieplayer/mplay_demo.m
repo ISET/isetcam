@@ -17,10 +17,10 @@ load video2
 Q = int2struct(I);
 
 % RGB movie array: 4-D array, MxNx3xF
-P = int2rgbm(R,G,B);
+P = int2rgbm(R, G, B);
 
 % MATLAB movie structure, containing RGB images
-R = int2struct(R,G,B);
+R = int2struct(R, G, B);
 
 whos
 
@@ -33,8 +33,7 @@ mplay(Q);
 % Also, try this:
 %   crulspin  % or, logospin
 % Run logospin, a standard MATLAB demo of a rotating L-shaped
-% membrane.  Watch as the movie being is constructed and 
+% membrane.  Watch as the movie being is constructed and
 % watch the standard MATLAB movie playback.  Then, use MPLAY.
 % logospin; mplay(m)
 % crulspin; mplay(m)
-

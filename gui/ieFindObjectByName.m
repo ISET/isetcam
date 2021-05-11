@@ -1,4 +1,4 @@
-function val = ieFindObjectByName(objType,objName)
+function val = ieFindObjectByName(objType, objName)
 %Return an object number given its type and name
 %
 %    val = ieFindObjectByName(objType,objName)
@@ -14,13 +14,13 @@ function val = ieFindObjectByName(objType,objName)
 
 obj = vcGetObjects(objType);
 if length(obj) == 1 & isempty(obj{1})
-    warning(sprintf('No objects of type %s',objType));
+    warning(sprintf('No objects of type %s', objType));
     return;
 end
 
 val = [];
-for ii=1:length(obj)
-    if strcmp(obj{ii}.name,objName)
+for ii = 1:length(obj)
+    if strcmp(obj{ii}.name, objName)
         val = ii;
         return;
     end

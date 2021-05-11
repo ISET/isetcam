@@ -1,5 +1,5 @@
-function [roiLocs,roi] = ieROISelect(obj,varargin)
-% Select a rectangular region of interest (ROI)  
+function [roiLocs, roi] = ieROISelect(obj, varargin)
+% Select a rectangular region of interest (ROI)
 %
 % Syntax
 %   [roiLocs,roi] = ieROISelect(obj,varargin)
@@ -22,25 +22,25 @@ function [roiLocs,roi] = ieROISelect(obj,varargin)
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 %
-% See also: 
+% See also:
 %   ieRoiDraw, ieRect2Locs, ieRoiCreate
 
 % Examples:
 %{
- scene = sceneCreate; sceneWindow(scene);
- [~,rect] = ieROISelect(scene);
- r = ieROIDraw('scene','shape','rect','shape data',rect);
- delete(r);
+scene = sceneCreate; sceneWindow(scene);
+[~,rect] = ieROISelect(scene);
+r = ieROIDraw('scene','shape','rect','shape data',rect);
+delete(r);
 %}
 %{
- ip = ieGetObject('ip');
- [roiLocs, rect] = ieROISelect(ip);
- r = ieROIDraw('ip','shape','rect','shape data',rect);
+ip = ieGetObject('ip');
+[roiLocs, rect] = ieROISelect(ip);
+r = ieROIDraw('ip','shape','rect','shape data',rect);
 %}
 %{
- ip = ieGetObject('ip');
- ip = ipSet(ip,'roi',rect);
- ipPlot(ip,'roi');
+ip = ieGetObject('ip');
+ip = ipSet(ip,'roi',rect);
+ipPlot(ip,'roi');
 %}
 
 %%
@@ -57,9 +57,9 @@ end
 % Tell the user
 % Select an ROI graphically. This should become a switch statement for the
 % shape, ultimately.
-ieInWindowMessage('Select a rectangle.',app)
-roi  = drawrectangle(appAxis);
-ieInWindowMessage('',app)
+ieInWindowMessage('Select a rectangle.', app)
+roi = drawrectangle(appAxis);
+ieInWindowMessage('', app)
 
 rect = round(roi.Position);
 

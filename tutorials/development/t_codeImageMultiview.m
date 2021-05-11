@@ -8,7 +8,7 @@
 %
 % Copyright Imageval LLC, 2013
 
-%% 
+%%
 ieInit
 
 %% To start debugging I ran s_imageIlluminantCorrection
@@ -23,24 +23,24 @@ s_ipIlluminantCorrection
 % This example shows several of the scene images.  No user interaction
 % required.
 objType = 'scene';
-whichObj = [2 3 5];
-imageMultiview(objType,whichObj);
+whichObj = [2, 3, 5];
+imageMultiview(objType, whichObj);
 
 singleWindow = true;
-imageMultiview(objType,whichObj,singleWindow);
+imageMultiview(objType, whichObj, singleWindow);
 
 %% This one allows you to select which ones you want to compare
 oiWindow;
 singleWindow = true;
-imageMultiview('oi',[],singleWindow);
+imageMultiview('oi', [], singleWindow);
 
 %%
 sensorWindow;
-imageMultiview('sensor',[ 1 4]);
+imageMultiview('sensor', [1, 4]);
 
 %%  Show images in a single window, rather than in separate windows.
 ipWindow
 singleWindow = true;
-imageMultiview('vci',[1 2 3 4],singleWindow);
+imageMultiview('vci', [1, 2, 3, 4], singleWindow);
 
 %% End

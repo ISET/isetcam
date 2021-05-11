@@ -18,34 +18,34 @@ ieInit
 scene  = sceneCreate('reflectance chart');
 scene  = sceneSet(scene,'hfov',10);
 
-oi     = oiCreate;
+oi = oiCreate;
 sensor = sensorCreate;
-sensor = sensorSetSizeToFOV(sensor,10,oi);
+sensor = sensorSetSizeToFOV(sensor, 10, oi);
 ip     = ipCreate;
 
-oi     = oiCompute(oi,scene);
-sensor = sensorCompute(sensor,oi);
+oi = oiCompute(oi, scene);
+sensor = sensorCompute(sensor, oi);
 ip     = ipCompute(ip,sensor);
 
 %% Get data in some format from the image processor
 
 % The sRGB is a standard display format, and this is what we show in the
 % window.
-result = ipGet(ip,'srgb');
+result = ipGet(ip, 'srgb');
 vcNewGraphWin;
 image(result)
 
 %% It is also possible to get the linear RGB values
 %
 % These are stored in the result, and they do not correct for the
-% display characteristics. 
-raw = ipGet(ip,'result');
+% display characteristics.
+raw = ipGet(ip, 'result');
 vcNewGraphWin;
 image(raw)
 
 %% Once you have the data, use standard Matlab utilities to write the file
 fname = 'deleteMe.jpg';
-imwrite(result,fname,'jpeg');
+imwrite(result, fname, 'jpeg');
 delete(fname);
 
 %%

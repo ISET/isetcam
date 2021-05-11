@@ -4,7 +4,6 @@
 %
 % Copyright Imageval, LLC 2014
 
-
 %%
 ieInit
 
@@ -12,10 +11,9 @@ ieInit
 
 scene = sceneCreate;
 camera = cameraCreate('default');
-camera = cameraCompute(camera,scene);
-cameraWindow(camera,'ip');
+camera = cameraCompute(camera, scene);
+cameraWindow(camera, 'ip');
 
-cameraWindow(camera,'sensor');
-
+cameraWindow(camera, 'sensor');
 
 %%

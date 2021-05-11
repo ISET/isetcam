@@ -7,6 +7,6 @@ function [gammaOut] = NormalizeGamma(gamma)
 % 3/15/94	dhb, jms Normalize to last value, not max value.
 % 5/27/10   dhb   Cosmetic
 
-[m,nil] = size(gamma); %#ok<NASGU>
-normVals = gamma(m,:);
-gammaOut = gamma ./ (ones(m,1)*normVals);
+[m, nil] = size(gamma); %#ok<NASGU>
+normVals = gamma(m, :);
+gammaOut = gamma ./ (ones(m, 1) * normVals);

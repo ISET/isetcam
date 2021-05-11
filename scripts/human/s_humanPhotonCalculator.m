@@ -27,38 +27,40 @@
 %     190,000 cd/m2 at 580 nm in the scene, produces
 %     10^19 photons m^-2 s^-1 at the retina.
 %
+
 %%
 ieInit
- 
-meanluminance   = 190000;  % Cd/m2
-monochormeWave  = 580;     % 
-pupilsize       = 2;       % mm
- 
+
+meanluminance = 190000; % Cd/m2
+monochormeWave = 580; %
+pupilsize = 2; % mm
+
 %% set uniform monochromatic scene
- 
+
 scene = sceneCreate('uniformmonochromatic');
-scene = initDefaultSpectrum(scene,'custom', monochormeWave);
-scene = sceneSet(scene,'mean luminance', meanluminance);   % Cd/m2
- 
-vcAddAndSelectObject(scene);  sceneWindow(scene);
- 
+scene = initDefaultSpectrum(scene, 'custom', monochormeWave);
+scene = sceneSet(scene, 'mean luminance', meanluminance); % Cd/m2
+
+vcAddAndSelectObject(scene);
+sceneWindow(scene);
+
 %% create an optical image of human eye
 oi = oiCreate('human');
-optics = opticsCreate('human', pupilsize / 2 / 1000);
-oi = oiSet(oi,'optics',optics);
- 
-oi = oiCompute(scene,oi);
+optics = opticsCreate('human', pupilsize/2/1000);
+oi = oiSet(oi, 'optics', optics);
+
+oi = oiCompute(scene, oi);
 vcAddAndSelectObject(oi);
 oiWindow(oi);
- 
+
 %% calc irradiance at 580 nm
-centerPoints = round(size(oi.depthMap) ./ 2 ) ;
-irradiance = vcGetROIData(oi,centerPoints,'photons');
-irradiance = mean(irradiance);  % quanta / sec / m^2 /nm
-str = sprintf('Irradiance: %.3e (q/s/m^2/nm)  at %.0f nm',irradiance,monochormeWave);
+centerPoints = round(size(oi.depthMap)./2);
+irradiance = vcGetROIData(oi, centerPoints, 'photons');
+irradiance = mean(irradiance); % quanta / sec / m^2 /nm
+str = sprintf('Irradiance: %.3e (q/s/m^2/nm)  at %.0f nm', irradiance, monochormeWave);
 disp(str);
- 
-strLog = sprintf('Irradiance: 10^%1.1f (q/s/m^2/nm)  at %.0f nm',log10(irradiance),monochormeWave);
+
+strLog = sprintf('Irradiance: 10^%1.1f (q/s/m^2/nm)  at %.0f nm', log10(irradiance), monochormeWave);
 disp(strLog);
- 
+
 %% End

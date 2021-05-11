@@ -1,4 +1,4 @@
-function Zi = qinterp2(X,Y,Z,xi,yi,methodflag)
+function Zi = qinterp2(X, Y, Z, xi, yi, methodflag)
 %QINTERP2 2-dimensional fast interpolation
 % qinterp2 provides a speedup over interp2 in the same way that
 % qinterp1 provides a speedup over interp1
@@ -49,25 +49,25 @@ function Zi = qinterp2(X,Y,Z,xi,yi,methodflag)
 %   See qinterp1
 
 % Search array error checking
-if ~isequal(size(xi),size(yi))
+if ~isequal(size(xi), size(yi))
     if isvector(xi) && isvector(yi)
         % Could check that isequal(sort(X),X)
         % Could check diff(X) is constant
-        [xi yi] = meshgrid(xi,yi);
+        [xi, yi] = meshgrid(xi, yi);
     else
-        error('%s and %s must be equal size',inputname(4),inputname(5));
+        error('%s and %s must be equal size', inputname(4), inputname(5));
     end
 end
 
 if isvector(X) && isvector(Y)
     % Could check that isequal(sort(X),X)
     % Could check diff(X) is constant
-    [X Y] = meshgrid(X,Y);
+    [X, Y] = meshgrid(X, Y);
 end
 
 % Library array error checking (size only)
-if ~isequal(size(X),size(Y))
-    error('%s and %s must have the same size',inputname(1),inputname(2));
+if ~isequal(size(X), size(Y))
+    error('%s and %s must have the same size', inputname(1), inputname(2));
 end
 
 librarySize = size(X);
@@ -84,55 +84,60 @@ end
 %}
 
 % Decide the interpolation method
-if nargin>=6
+if nargin >= 6
     method = methodflag;
 else
     method = 2; % Default to bilinear
 end
 
 % Get X and Y library array spacing
-ndx = 1/(X(1,2)-X(1,1));    ndy = 1/(Y(2,1)-Y(1,1));
+ndx = 1 / (X(1, 2) - X(1, 1));
+ndy = 1 / (Y(2, 1) - Y(1, 1));
 % Begin mapping xi and yi vectors onto index space by subtracting library
 % array minima and scaling to index spacing
-xi = (xi - X(1,1))*ndx;       yi = (yi - Y(1,1))*ndy;
+xi = (xi - X(1, 1)) * ndx;
+yi = (yi - Y(1, 1)) * ndy;
 
 % Fill Zi with NaNs
-Zi = NaN*ones(size(xi));
+Zi = NaN * ones(size(xi));
 
 switch method
-    
-    % Nearest-neighbor method
+
+        % Nearest-neighbor method
     case 0
         % Find the nearest point in index space
-        rxi = round(xi)+1;  ryi = round(yi)+1;
+        rxi = round(xi) + 1;
+        ryi = round(yi) + 1;
         % Find points that are in X,Y range
-        flag = rxi>0 & rxi<=librarySize(2) & ~isnan(rxi) &...
-            ryi>0 & ryi<=librarySize(1) & ~isnan(ryi);
+        flag = rxi > 0 & rxi <= librarySize(2) & ~isnan(rxi) & ...
+            ryi > 0 & ryi <= librarySize(1) & ~isnan(ryi);
         % Map subscripts to indices
-        ind = ryi + librarySize(1)*(rxi-1);
+        ind = ryi + librarySize(1) * (rxi - 1);
         Zi(flag) = Z(ind(flag));
-        
-    % Linear method
+
+        % Linear method
     case 1
         % Split the square bounded by (x_i,y_i) & (x_i+1,y_i+1) into two
         % triangles.  The interpolation is given by finding the function plane
         % defined by the three triangle vertices
-        fxi = floor(xi)+1;  fyi = floor(yi)+1;   % x_i and y_i
-        dfxi = xi-fxi+1;    dfyi = yi-fyi+1;     % Location in unit square
-        
-        ind1 = fyi + librarySize(1)*(fxi-1);     % Indices of (  x_i  ,  y_i  )
-        ind2 = fyi + librarySize(1)*fxi;         % Indices of ( x_i+1 ,  y_i  )
-        ind3 = fyi + 1 + librarySize(1)*fxi;     % Indices of ( x_i+1 , y_i+1 )
-        ind4 = fyi + 1 + librarySize(1)*(fxi-1); % Indices of (  x_i  , y_i+1 )
-        
+        fxi = floor(xi) + 1;
+        fyi = floor(yi) + 1; % x_i and y_i
+        dfxi = xi - fxi + 1;
+        dfyi = yi - fyi + 1; % Location in unit square
+
+        ind1 = fyi + librarySize(1) * (fxi - 1); % Indices of (  x_i  ,  y_i  )
+        ind2 = fyi + librarySize(1) * fxi; % Indices of ( x_i+1 ,  y_i  )
+        ind3 = fyi + 1 + librarySize(1) * fxi; % Indices of ( x_i+1 , y_i+1 )
+        ind4 = fyi + 1 + librarySize(1) * (fxi - 1); % Indices of (  x_i  , y_i+1 )
+
         % flagIn determines whether the requested location is inside of the
         % library arrays
-        flagIn = fxi>0 & fxi<librarySize(2) & ~isnan(fxi) &...
-            fyi>0 & fyi<librarySize(1) & ~isnan(fyi);
-        
+        flagIn = fxi > 0 & fxi < librarySize(2) & ~isnan(fxi) & ...
+            fyi > 0 & fyi < librarySize(1) & ~isnan(fyi);
+
         % flagCompare determines which triangle the requested location is in
-        flagCompare = dfxi>=dfyi;
-        
+        flagCompare = dfxi >= dfyi;
+
         % This is the interpolation value in the x>=y triangle
         % Note that the equation
         %  A. Is linear, and
@@ -142,46 +147,50 @@ switch method
         % From http://osl.iu.edu/~tveldhui/papers/MAScThesis/node33.html
         flag1 = flagIn & flagCompare;
         Zi(flag1) = ...
-            Z(ind1(flag1)).*(1-dfxi(flag1)) +...
-            Z(ind2(flag1)).*(dfxi(flag1)-dfyi(flag1)) +...
-            Z(ind3(flag1)).*dfyi(flag1);
-        
+            Z(ind1(flag1)) .* (1 - dfxi(flag1)) + ...
+            Z(ind2(flag1)) .* (dfxi(flag1) - dfyi(flag1)) + ...
+            Z(ind3(flag1)) .* dfyi(flag1);
+
         % And the y>x triangle
         flag2 = flagIn & ~flagCompare;
         Zi(flag2) = ...
-            Z(ind1(flag2)).*(1-dfyi(flag2)) +...
-            Z(ind4(flag2)).*(dfyi(flag2)-dfxi(flag2)) +...
-            Z(ind3(flag2)).*dfxi(flag2);
+            Z(ind1(flag2)) .* (1 - dfyi(flag2)) + ...
+            Z(ind4(flag2)) .* (dfyi(flag2) - dfxi(flag2)) + ...
+            Z(ind3(flag2)) .* dfxi(flag2);
 
     case 2 % Bilinear interpolation
         % Code is cloned from above for speed
         % Transform to unit square
-        fxi = floor(xi)+1;  fyi = floor(yi)+1;   % x_i and y_i
-        dfxi = xi-fxi+1;    dfyi = yi-fyi+1;     % Location in unit square
-        
+        fxi = floor(xi) + 1;
+        fyi = floor(yi) + 1; % x_i and y_i
+        dfxi = xi - fxi + 1;
+        dfyi = yi - fyi + 1; % Location in unit square
+
         % flagIn determines whether the requested location is inside of the
         % library arrays
-        flagIn = fxi>0 & fxi<librarySize(2) & ~isnan(fxi) &...
-            fyi>0 & fyi<librarySize(1) & ~isnan(fyi);
-        
+        flagIn = fxi > 0 & fxi < librarySize(2) & ~isnan(fxi) & ...
+            fyi > 0 & fyi < librarySize(1) & ~isnan(fyi);
+
         % Toss all out-of-bounds variables now to save time
-        fxi = fxi(flagIn); fyi = fyi(flagIn);
-        dfxi = dfxi(flagIn); dfyi = dfyi(flagIn);
-        
+        fxi = fxi(flagIn);
+        fyi = fyi(flagIn);
+        dfxi = dfxi(flagIn);
+        dfyi = dfyi(flagIn);
+
         % Find bounding vertices
-        ind1 = fyi + librarySize(1)*(fxi-1);     % Indices of (  x_i  ,  y_i  )
-        ind2 = fyi + librarySize(1)*fxi;         % Indices of ( x_i+1 ,  y_i  )
-        ind3 = fyi + 1 + librarySize(1)*fxi;     % Indices of ( x_i+1 , y_i+1 )
-        ind4 = fyi + 1 + librarySize(1)*(fxi-1); % Indices of (  x_i  , y_i+1 )
-        
+        ind1 = fyi + librarySize(1) * (fxi - 1); % Indices of (  x_i  ,  y_i  )
+        ind2 = fyi + librarySize(1) * fxi; % Indices of ( x_i+1 ,  y_i  )
+        ind3 = fyi + 1 + librarySize(1) * fxi; % Indices of ( x_i+1 , y_i+1 )
+        ind4 = fyi + 1 + librarySize(1) * (fxi - 1); % Indices of (  x_i  , y_i+1 )
+
         % Bilinear interpolation.  See
         % http://en.wikipedia.org/wiki/Bilinear_interpolation
-        Zi(flagIn) = Z(ind1).*(1-dfxi).*(1-dfyi) + ...
-            Z(ind2).*dfxi.*(1-dfyi) + ...
-            Z(ind4).*(1-dfxi).*dfyi + ...
-            Z(ind3).*dfxi.*dfyi;
-        
+        Zi(flagIn) = Z(ind1) .* (1 - dfxi) .* (1 - dfyi) + ...
+            Z(ind2) .* dfxi .* (1 - dfyi) + ...
+            Z(ind4) .* (1 - dfxi) .* dfyi + ...
+            Z(ind3) .* dfxi .* dfyi;
+
     otherwise
         error('Invalid method flag');
-        
+
 end %switch

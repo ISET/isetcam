@@ -1,4 +1,4 @@
-function newPathList = ieRemovePathDir(pathList,dName)
+function newPathList = ieRemovePathDir(pathList, dName)
 % Removes any .svn directories from the pathList.
 %
 %   newPathList = RemoveSVNPaths(pathList)
@@ -21,8 +21,8 @@ function newPathList = ieRemovePathDir(pathList,dName)
 % 18.12.10 Ported to ISET, changing the defaults and updating (BW)
 %
 
-if ~exist('pathList','var') || isempty('pathList'), pathList = path; end
-if ~exist('dName','var') || isempty('dName'), dName = '.svn'; end
+if ~exist('pathList', 'var') || isempty('pathList'), pathList = path; end
+if ~exist('dName', 'var') || isempty('dName'), dName = '.svn'; end
 
 % Break the path list into individual path elements.
 pathElements = strread(pathList, '%s', 'delimiter', pathsep);
@@ -31,9 +31,9 @@ pathElements = strread(pathList, '%s', 'delimiter', pathsep);
 % then we add it to the end of our new path list.
 newPathList = [];
 for ii = 1:length(pathElements)
-    if isempty(strfind(pathElements{ii}, [filesep dName]))
+    if isempty(strfind(pathElements{ii}, [filesep, dName]))
         newPathList = [newPathList, pathElements{ii}, pathsep]; %#ok<AGROW>
-    % else fprintf('Removing %s\n',pathElements{ii});
+        % else fprintf('Removing %s\n',pathElements{ii});
     end
 end
 

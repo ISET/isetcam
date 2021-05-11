@@ -30,25 +30,25 @@ try
     % the functions used inside this block are not available in Matlab-5
     % and GNU/Octave. Our catch - block provides fail-safe behaviour for
     % that case.
-    
+
     % Break the path list into individual path elements.
     if IsOctave
-        pathElements = strsplit(pathList,pathsep,true);
+        pathElements = strsplit(pathList, pathsep, true);
     else
         pathElements = textscan(pathList, '%s', 'delimiter', pathsep);
         pathElements = pathElements{1}.';
     end
-    
+
     % Look at each element from the path.  If it doesn't contain a matching
     % folder then we add it to the end of our new path list.
-    isNotMatching = cellfun(@isempty,strfind(pathElements,matchString));
+    isNotMatching = cellfun(@isempty, strfind(pathElements, matchString));
     pathElements = pathElements(isNotMatching);
-    
+
     if ~isempty(pathElements)
         % generate new pathList
-        pathElements = [pathElements; repmat({pathsep},1,length(pathElements))];
-        newPathList  = [pathElements{:}];
-        
+        pathElements = [pathElements; repmat({pathsep}, 1, length(pathElements))];
+        newPathList = [pathElements{:}];
+
         % drop last separator
         newPathList(end) = [];
     end

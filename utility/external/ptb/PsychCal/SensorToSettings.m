@@ -1,4 +1,4 @@
-function [settings,badIndex] = SensorToSettings(cal,sensor)
+function [settings, badIndex] = SensorToSettings(cal, sensor)
 % [settings,badIndex] = SensorToSettings(cal,sensor)
 %
 % Convert from sensor color space coordinates to device
@@ -12,7 +12,6 @@ function [settings,badIndex] = SensorToSettings(cal,sensor)
 % 4/5/02     dhb, ly  New calling convention.
 % 10/31/11   dhb      Added "See also".
 
-primary = SensorToPrimary(cal,sensor);
-[gamut,badIndex] = PrimaryToGamut(cal,primary);
-settings = GamutToSettings(cal,gamut);
-
+primary = SensorToPrimary(cal, sensor);
+[gamut, badIndex] = PrimaryToGamut(cal, primary);
+settings = GamutToSettings(cal, gamut);

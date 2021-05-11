@@ -1,4 +1,4 @@
-function dataXYZ = imageRGB2XYZ(ip,RGB)
+function dataXYZ = imageRGB2XYZ(ip, RGB)
 % Convert values in an RGB Format data into XYZ values (also RGB Format)
 %
 %   dataXYZ = imageRGB2XYZ(ip,RGB)
@@ -20,18 +20,18 @@ function dataXYZ = imageRGB2XYZ(ip,RGB)
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
-%% Argument checking and set input data format flag 
+%% Argument checking and set input data format flag
 if ~(ismatrix(RGB))
     % XW format is a matrix.  RGB format is not.
     % If you are here, we are RGB format.
-    [RGB, row, col]= RGB2XWFormat(RGB); 
-    RGBFlag = 1; 
+    [RGB, row, col] = RGB2XWFormat(RGB);
+    RGBFlag = 1;
 else, RGBFlag = 0;
 end
 
 %% Calculate
-spd  = ipGet(ip,'display rgb spd');
-wave = ipGet(ip,'display wave');
+spd = ipGet(ip, 'display rgb spd');
+wave = ipGet(ip, 'display wave');
 
 % The display value is always in the unit cube.  Even if the sensor data
 % are quantized, we maintain the data in the unit cube. The RGB values are
@@ -39,13 +39,13 @@ wave = ipGet(ip,'display wave');
 % RGB/rgbMax is a number between 0 and 1 defining how much the particular
 % primary is excited, relative to the maximum value.  Hence, the spd of the
 % primaries are the measurements when the primary is at maximum intensity.
-energy = RGB*spd';
+energy = RGB * spd';
 
-dataXYZ = ieXYZFromEnergy(energy,wave);
+dataXYZ = ieXYZFromEnergy(energy, wave);
 
 %% Return the right format
 if RGBFlag
-    dataXYZ = XW2RGBFormat(dataXYZ,row,col);
+    dataXYZ = XW2RGBFormat(dataXYZ, row, col);
 end
 
 end

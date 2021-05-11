@@ -1,4 +1,4 @@
-function trolands = QuantaToTrolands(wl,quanta,S_vLambda,vLambda)
+function trolands = QuantaToTrolands(wl, quanta, S_vLambda, vLambda)
 % trolands = QuantaToTrolands(wl,quanta,S_vLambda,vLambda)
 %
 % Convert from quanta (sec-1 deg-2) to to trolands for a
@@ -11,4 +11,4 @@ function trolands = QuantaToTrolands(wl,quanta,S_vLambda,vLambda)
 
 wls_vLambda = MakeItWls(S_vLambda);
 index = find(wl == wls_vLambda);
-trolands = (quanta/(wl*1e-9))*vLambda(index)*4.454e-13;
+trolands = (quanta / (wl * 1e-9)) * vLambda(index) * 4.454e-13;

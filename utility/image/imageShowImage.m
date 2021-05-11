@@ -1,4 +1,4 @@
-function img = imageShowImage(ip,gam,trueSizeFlag,app)
+function img = imageShowImage(ip, gam, trueSizeFlag, app)
 % Calculate and display the image from an image processor struct.
 %
 % Synopsis:
@@ -9,8 +9,8 @@ function img = imageShowImage(ip,gam,trueSizeFlag,app)
 %  gam:            Gamma for the image display
 %  trueSizeFlag:
 %  app:   Either an ipWindow_App object
-%         an existing Matlab ui figure, 
-%         or 0.  
+%         an existing Matlab ui figure,
+%         or 0.
 %
 %         If 0, the rgb values are returned but not displayed.  If a figure
 %         the data are shown in the figure.  If the ipWindow_App the data
@@ -42,45 +42,48 @@ function img = imageShowImage(ip,gam,trueSizeFlag,app)
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 %
-% See also: 
+% See also:
 %   xyz2srgb, lrgb2srgb, srgb2lrgb, imageDataXYZ, ipGet
 %
 
 %% Figure out what the user wants
 
-if ieNotDefined('ip'), cla; return;  end
+if ieNotDefined('ip'), cla;
+    return;
+end
 if ieNotDefined('trueSizeFlag'), trueSizeFlag = 0; end
 if ieNotDefined('app')
     % User told us nothing. We think the user wants it in the IP window
-    [app,appAxis] = ieAppGet('ip');
-elseif isa(app,'ipWindow_App')
+    [app, appAxis] = ieAppGet('ip');
+elseif isa(app, 'ipWindow_App')
     % In this case, they gave us the app window
     appAxis = app.ipImage;
-elseif isa(app,'matlab.ui.Figure')
+elseif isa(app, 'matlab.ui.Figure')
     % Not sure why we are ever here.  Maybe the user had a pre-defined
     % window?
     appAxis = [];
-elseif isequal(app,0)
+elseif isequal(app, 0)
     % User sent in a 0. Just return the values and do not show anywhere.
     appAxis = [];
 end
 
-if ieNotDefined('gam'), gam = ipGet(ip,'gamma'); end
+if ieNotDefined('gam'), gam = ipGet(ip, 'gamma'); end
 
-%% Test and then convert the linear RGB values stored in result to XYZ.  
+%% Test and then convert the linear RGB values stored in result to XYZ.
 
-img = ipGet(ip,'result');
+img = ipGet(ip, 'result');
 
 if isempty(img)
     % I don't think we get here much, or ever.
-    cla; sprintf('There is no result image in vci.');
+    cla;
+    sprintf('There is no result image in vci.');
     return;
-elseif max(img(:)) > ipGet(ip,'max sensor')
+elseif max(img(:)) > ipGet(ip, 'max sensor')
     % Checking for another bad condition in result
-    if ~ipGet(ip,'scale display')
+    if ~ipGet(ip, 'scale display')
         warning('Image max (%.2f) exceeds volt swing (%.2f).\n', ...
-            max(img(:)),ipGet(ip,'max sensor'));
-        ip = ipSet(ip,'scale display',true);
+            max(img(:)), ipGet(ip, 'max sensor'));
+        ip = ipSet(ip, 'scale display', true);
     end
 end
 
@@ -91,9 +94,9 @@ end
 img = xyz2srgb(imageDataXYZ(ip));
 
 % Puzzled by this.  If it is srgb, how can it be anything but 3?
-if   ismatrix(img),     ipType = 'monochrome';
+if ismatrix(img), ipType = 'monochrome';
 elseif ndims(img) == 3, ipType = 'rgb';
-else,                   ipType = 'multisensor';
+else, ipType = 'multisensor';
 end
 
 switch ipType
@@ -106,41 +109,45 @@ switch ipType
         %
         % We  do this by converting srgb to lrgb, then scaling to 1, then
         % putting back to srgb.
-        if ipGet(ip,'scaleDisplay')
-            img = srgb2lrgb(img); 
+        if ipGet(ip, 'scaleDisplay')
+            img = srgb2lrgb(img);
             mxImage = max(img(:));
-            img = img/mxImage;
+            img = img / mxImage;
             img = lrgb2srgb(img);
         end
-        
+
         % There may be some negative numbers or numbers
         % > 1 because of processing noise and saturation + noise.
-        img = ieClip(img,0,1);
-        
+        img = ieClip(img, 0, 1);
+
         % This is the gamma the user asks for on the ISET window
         % Normally it is 1 because the display data are already
         % in sRGB mode.
-        if gam ~=1, img = img.^gam; end
-        
-    otherwise
-        error('No display method for %s.',ipType);
-end
+        if gam ~= 1, img = img.^gam; end
 
-% Either show it in the app window or in a graph window
-if isa(appAxis,'matlab.ui.control.UIAxes')
-    % Show it in the window
-    % axis(appAxis);
-    image(appAxis,img); axis image; axis off;
-elseif isequal(app,0)
-    % Just return;
-    return;
-elseif isa(app,'matlab.ui.Figure')
-    figure(app); 
-    image(img); axis image; axis off;
-    if trueSizeFlag
-        truesize;
-    end
-end
+    otherwise
+        error('No display method for %s.', ipType);
+        end
+
+        % Either show it in the app window or in a graph window
+        if isa(appAxis, 'matlab.ui.control.UIAxes')
+            % Show it in the window
+            % axis(appAxis);
+            image(appAxis, img);
+            axis image;
+            axis off;
+        elseif isequal(app, 0)
+            % Just return;
+            return;
+        elseif isa(app, 'matlab.ui.Figure')
+            figure(app);
+            image(img);
+            axis image;
+            axis off;
+            if trueSizeFlag
+                truesize;
+            end
+        end
 
 
 end

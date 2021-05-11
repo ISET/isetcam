@@ -1,4 +1,4 @@
-function T_absorbance = PhotopigmentNomogram(S,lambdaMax,source)
+function T_absorbance = PhotopigmentNomogram(S, lambdaMax, source)
 % T_absorbance = PhotopigmentNomogram(S,lambdaMax,[source])
 %
 % Compute normalized absorbance according to various
@@ -13,25 +13,25 @@ function T_absorbance = PhotopigmentNomogram(S,lambdaMax,source)
 % 7/16/03  dhb  Add StockmanSharpe.
 
 if (nargin < 3 || isempty(source))
-	source = 'Govardovskii';
+    source = 'Govardovskii';
 end
 
 switch (source)
-	case {'Govardovskii'}
-		T_absorbance = ...
-			GovardovskiiNomogram(S,lambdaMax);	
-	case {'Dawis'}
-		T_absorbance = ...
-			DawisNomogram(S,lambdaMax);	
-	case {'Baylor'}
-		T_absorbance = ...
-			BaylorNomogram(S,lambdaMax);
-	case 'Lamb'
-		T_absorbance = ...
-			LambNomogram(S,lambdaMax);
-	case 'StockmanSharpe'
-		T_absorbance = ...
-			StockmanSharpeNomogram(S,lambdaMax);
-	otherwise
-		error('Unknown source for photopigment nomogram');
-end
+    case {'Govardovskii'}
+        T_absorbance = ...
+            GovardovskiiNomogram(S, lambdaMax);
+    case {'Dawis'}
+        T_absorbance = ...
+            DawisNomogram(S, lambdaMax);
+    case {'Baylor'}
+        T_absorbance = ...
+            BaylorNomogram(S, lambdaMax);
+    case 'Lamb'
+        T_absorbance = ...
+            LambNomogram(S, lambdaMax);
+    case 'StockmanSharpe'
+        T_absorbance = ...
+            StockmanSharpeNomogram(S, lambdaMax);
+    otherwise
+        error('Unknown source for photopigment nomogram');
+        end

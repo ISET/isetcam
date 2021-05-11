@@ -1,4 +1,4 @@
-function [xSfGridCyclesDeg,ySfGridCyclesDeg,otf] = PsfToOtf(xGridMinutes,yGridMinutes,psf,varargin)
+function [xSfGridCyclesDeg, ySfGridCyclesDeg, otf] = PsfToOtf(xGridMinutes, yGridMinutes, psf, varargin)
 % Convert a 2D point spread function to a 2D optical transfer fucntion.
 %    [xSfGridCyclesDeg,ySfGridCyclesDeg,otf] = PsfToOtf([xGridMinutes,yGridMinutes],psf,varargin)
 %
@@ -58,48 +58,48 @@ function [xSfGridCyclesDeg,ySfGridCyclesDeg,otf] = PsfToOtf(xGridMinutes,yGridMi
 if (~isempty(xGridMinutes) & ~isempty(yGridMinutes))
     % They can both be passed as non-empty, in which case we do a set of sanity
     % checks and then do the conversion.
-    [m,n] = size(xGridMinutes);
+    [m, n] = size(xGridMinutes);
     centerPosition = floor(n/2) + 1;
     if (m ~= n)
         error('psf must be passed on a square array');
     end
-    [m1,n1] = size(yGridMinutes);
+    [m1, n1] = size(yGridMinutes);
     if (m1 ~= m || n1 ~= n)
         error('x and y positions are not consistent');
     end
-    [m2,n2] = size(psf);
+    [m2, n2] = size(psf);
     if (m2 ~= m || n2 ~= n)
         error('x and y positions are not consistent');
     end
-    if (~all(xGridMinutes(:,centerPosition) == 0))
+    if (~all(xGridMinutes(:, centerPosition) == 0))
         error('Zero position is not in right place in the passed xGrid');
     end
-    if (~all(yGridMinutes(centerPosition,:) == 0))
+    if (~all(yGridMinutes(centerPosition, :) == 0))
         error('Zero position is not in right place in the passed yGrid');
     end
-    if (xGridMinutes(1,centerPosition) ~= yGridMinutes(centerPosition,1))
+    if (xGridMinutes(1, centerPosition) ~= yGridMinutes(centerPosition, 1))
         error('Spatial extent of x and y grids does not match');
     end
-    diffX = diff(xGridMinutes(:,centerPosition));
+    diffX = diff(xGridMinutes(:, centerPosition));
     if (any(diffX ~= diffX(1)))
         error('X positions not evenly spaced');
     end
-    diffY = diff(yGridMinutes(centerPosition,:));
+    diffY = diff(yGridMinutes(centerPosition, :));
     if (any(diffY ~= diffY(1)))
         error('Y positions not evenly spaced');
     end
     if (diffX(1) ~= diffY(1))
-        error('Spatial sampling in x and y not matched');e
+        error('Spatial sampling in x and y not matched'); e
     end
-    
+
     % Generate spatial frequency grids
-    [xSfGridCyclesDeg,ySfGridCyclesDeg] = PositionGridMinutesToSfGridCyclesDeg(xGridMinutes,yGridMinutes);
-    
+    [xSfGridCyclesDeg, ySfGridCyclesDeg] = PositionGridMinutesToSfGridCyclesDeg(xGridMinutes, yGridMinutes);
+
 elseif (isempty(xGridMinutes) & isempty(yGridMinutes))
     % This case is OK, we set the output grids to empty
     xSfGridCyclesDeg = [];
     ySfGridCyclesDeg = [];
-    
+
 else
     % This case is not allowable
     error('Either both position grids must be empty, or neither');

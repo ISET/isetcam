@@ -11,12 +11,13 @@ rd = RdtClient('isetbio');
 rd.crp('/resources/scenes/multiband/scien/2004');
 
 %% List the scenes
-sList = rd.listArtifacts('printID',true);
+sList = rd.listArtifacts('printID', true);
 
 %% Download, convert, and show one
 ii = 8;
 data  = rd.readArtifact(sList(ii).artifactId);
 scene = sceneFromBasis(data);
-ieAddObject(scene); sceneWindow;
+ieAddObject(scene);
+sceneWindow;
 
 %%

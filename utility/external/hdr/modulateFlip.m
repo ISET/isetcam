@@ -11,9 +11,9 @@ function [hfilt] = modulateFlipShift(lfilt)
 
 lfilt = lfilt(:);
 
-sz = size(lfilt,1);
+sz = size(lfilt, 1);
 sz2 = ceil(sz/2);
 
 ind = [sz:-1:1]';
 
-hfilt = lfilt(ind) .* (-1).^(ind-sz2);
+hfilt = lfilt(ind) .* (-1).^(ind - sz2);

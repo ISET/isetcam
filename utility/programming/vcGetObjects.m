@@ -1,4 +1,4 @@
-function [obj,nObj] = vcGetObjects(objType)
+function [obj, nObj] = vcGetObjects(objType)
 %Retrieve cell larray of objects of objType
 %
 % Synopsis
@@ -19,7 +19,7 @@ function [obj,nObj] = vcGetObjects(objType)
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 %
-%  See Also:  
+%  See Also:
 %     ieGetObject, vcCountObjects
 
 global vcSESSION;
@@ -28,8 +28,8 @@ global vcSESSION;
 % This routine also forces upper case on the object type, as required.
 objType = vcEquivalentObjtype(objType);
 
-if checkfields(vcSESSION,objType),  eval(['obj = vcSESSION.',objType,';']);
-else,                               obj{1} = []; 
+if checkfields(vcSESSION, objType), eval(['obj = vcSESSION.', objType, ';']);
+else, obj{1} = [];
 end
 
 if nargout == 2, nObj = length(obj); end

@@ -18,12 +18,14 @@ function D = humanWaveDefocus(wave)
 % Constants for formula to compute defocus in diopters (D) as a function of
 % wavelength for human eye.  Need citation, but the curve is in my book.
 % Not sure where the formula comes from.
-q1 = 1.7312; q2 = 0.63346; q3 = 0.21410;
+q1 = 1.7312;
+q2 = 0.63346;
+q3 = 0.21410;
 
 % This is the human defocus as a function of wavelength.  This formula
 % converts the wave in nanometers to wave in microns.  D is in diopters.
-D = q1 - (q2./(wave*1e-3 - q3));        
-% plot(wave,D); 
+D = q1 - (q2 ./ (wave * 1e-3 - q3));
+% plot(wave,D);
 % grid; xlabel('Wavelength (nm)'); ylabel('relative defocus (diopters)');
 
 return

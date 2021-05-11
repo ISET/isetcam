@@ -1,11 +1,11 @@
-function [cones,macularCorrection,wave] = humanCones(fileName,wave,macularDensity,includedDensity)
+function [cones, macularCorrection, wave] = humanCones(fileName, wave, macularDensity, includedDensity)
 %Return human cone data corrected for macular pigment density.
 %
-%     *********** INTEGRATE WITH HIROSHI'S FUNCTIONS 
+%     *********** INTEGRATE WITH HIROSHI'S FUNCTIONS
 %     ************ THOSE ARE PROBABLY RIGHT.
 %     ************ WE DEFINITELY NEED TO DEAL WITH QUANTA/ENERGY ISSUE
 %
-%  [cones, macularCorrection, wave] = 
+%  [cones, macularCorrection, wave] =
 %        humanCones(fileName,wave,macularDensity,includedDensity)
 %
 % The human cone data are read from an existing file, fileName.   We adjust
@@ -35,7 +35,9 @@ function [cones,macularCorrection,wave] = humanCones(fileName,wave,macularDensit
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
-if ieNotDefined('fileName'), fileName = 'stockmanAbs'; includedDensity = 0.35; end
+if ieNotDefined('fileName'), fileName = 'stockmanAbs';
+    includedDensity = 0.35;
+end
 if ieNotDefined('wave'), wave = 370:1:730; end
 
 % Do not adjust for macular if it is not sent in.  If it is sent in, but
@@ -44,19 +46,18 @@ if ieNotDefined('wave'), wave = 370:1:730; end
 if ieNotDefined('macularDensity'), macularDensity = []; end
 if ieNotDefined('includedDensity'), includedDensity = 0.35; end
 
-cones = ieReadSpectra(fileName,wave);
+cones = ieReadSpectra(fileName, wave);
 
 % If macularDensity is empty, the user simply accepts the cones.
 if isempty(macularDensity)
-    macularCorrection = ones(size(cones(:,1))); 
-    return; 
-else 
+    macularCorrection = ones(size(cones(:, 1)));
+    return;
+else
     % If macularDensity has a value, then we strip off the included density
     % and include a new density corresponding to the included value.
-    t = macular(includedDensity,wave);
-    macularCorrection = 10 .^ -(t.unitDensity * (macularDensity - includedDensity));
-    cones = diag(macularCorrection)*cones;
+    t = macular(includedDensity, wave);
+    macularCorrection = 10.^-(t.unitDensity * (macularDensity - includedDensity));
+    cones = diag(macularCorrection) * cones;
 end
 
 end
-

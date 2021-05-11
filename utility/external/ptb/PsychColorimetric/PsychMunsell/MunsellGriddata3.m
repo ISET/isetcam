@@ -1,4 +1,4 @@
-function [w,X,tri,v] = MunsellGriddata3(x,y,z,v,xi,yi,zi,method,options,X,tri)
+function [w, X, tri, v] = MunsellGriddata3(x, y, z, v, xi, yi, zi, method, options, X, tri)
 % [w,X,tri] = MunsellGriddata3(x,y,z,v,xi,yi,zi,method,options,X,tri)
 %
 % This is a modified version of the Matlab function griddata3.  We modified
@@ -13,17 +13,17 @@ function [w,X,tri,v] = MunsellGriddata3(x,y,z,v,xi,yi,zi,method,options,X,tri)
 %   specified by (XI,YI,ZI) to produce W.
 %
 %   (XI,YI,ZI) is usually a uniform grid (as produced by MESHGRID) and is
-%   where GRIDDATA3 gets its name. 
+%   where GRIDDATA3 gets its name.
 %
 %   [...] = GRIDDATA3(X,Y,Z,V,XI,YI,ZI,METHOD) where METHOD is one of
 %       'linear'    - Tessellation-based linear interpolation (default)
 %       'nearest'   - Nearest neighbor interpolation
 %
-%   defines the type of surface fit to the data. 
+%   defines the type of surface fit to the data.
 %   All the methods are based on a Delaunay triangulation of the data.
 %   If METHOD is [], then the default 'linear' method will be used.
 %
-%   [...] = GRIDDATA3(X,Y,Z,V,XI,YI,ZI,METHOD,OPTIONS) specifies a cell 
+%   [...] = GRIDDATA3(X,Y,Z,V,XI,YI,ZI,METHOD,OPTIONS) specifies a cell
 %   array of strings OPTIONS to be used as options in Qhull via DELAUNAYN.
 %   If OPTIONS is [], the default options will be used.
 %   If OPTIONS is {''}, no options will be used, not even the default.
@@ -49,18 +49,18 @@ function [w,X,tri,v] = MunsellGriddata3(x,y,z,v,xi,yi,zi,method,options,X,tri)
 %   $Revision: 1.11.4.7 $  $Date: 2007/06/14 05:11:20 $
 
 if nargin < 7
-  error('MATLAB:griddata3:NotEnoughInputs', 'Needs at least 7 inputs.');
+    error('MATLAB:griddata3:NotEnoughInputs', 'Needs at least 7 inputs.');
 end
-if ( nargin == 7 || isempty(method) )
-	method = 'linear';
-elseif ~strncmpi(method,'l',1) && ~strncmpi(method,'n',1)
-  error('MATLAB:griddata3:InvalidMethod',...
+if (nargin == 7 || isempty(method))
+    method = 'linear';
+elseif ~strncmpi(method, 'l', 1) && ~strncmpi(method, 'n', 1)
+    error('MATLAB:griddata3:InvalidMethod', ...
         'METHOD must be one of ''linear'', or ''nearest''.');
 end
 if nargin == 9
     if ~iscellstr(options)
-        error('MATLAB:griddata3:OptsNotStringCell',...
-              'OPTIONS should be cell array of strings.');           
+        error('MATLAB:griddata3:OptsNotStringCell', ...
+            'OPTIONS should be cell array of strings.');
     end
     opt = options;
 else
@@ -68,140 +68,141 @@ else
 end
 
 if ndims(x) > 3 || ndims(y) > 3 || ndims(z) > 3 || ndims(xi) > 3 || ndims(yi) > 3 || ndims(zi) > 3
-    error('MATLAB:griddata3:HigherDimArray',...
-          'X,Y,Z and XI,YI,ZI cannot be arrays of dimension greater than three.');
+    error('MATLAB:griddata3:HigherDimArray', ...
+        'X,Y,Z and XI,YI,ZI cannot be arrays of dimension greater than three.');
 end
 
 % This thread computes the triangulation
 if (nargin < 10)
 
-    x = x(:); y=y(:); z=z(:); v = v(:);
+    x = x(:);
+    y = y(:);
+    z = z(:);
+    v = v(:);
     m = length(x);
-    if m < 3, error('MATLAB:griddata3:NotEnoughPts','Not enough points.'); end
+    if m < 3, error('MATLAB:griddata3:NotEnoughPts', 'Not enough points.'); end
     if m ~= length(y) || m ~= length(z) || m ~= length(v)
-        error('MATLAB:griddata3:InputSizeMismatch',...
+        error('MATLAB:griddata3:InputSizeMismatch', ...
             'X,Y,Z,V must all have the same size.');
     end
 
-    X = [x y z];
+    X = [x, y, z];
 
     % Sort (x,y,z) so duplicate points can be averaged before passing to delaunay
 
     [X, ind] = sortrows(X);
     v = v(ind);
-    ind = all(diff(X)'==0);
+    ind = all(diff(X)' == 0);
     if any(ind)
-        warning('MATLAB:griddata3:DuplicateDataPoints',['Duplicate x data points ' ...
+        warning('MATLAB:griddata3:DuplicateDataPoints', ['Duplicate x data points ', ...
             'detected: using average of the v values.']);
-        ind = [0 ind];
+        ind = [0, ind];
         ind1 = diff(ind);
-        fs = find(ind1==1);
-        fe = find(ind1==-1);
+        fs = find(ind1 == 1);
+        fe = find(ind1 == -1);
         if fs(end) == length(ind1) % add an extra term if the last one start at end
-            fe = [fe fs(end)+1];
+            fe = [fe, fs(end) + 1];
         end
 
-        for i = 1 : length(fs)
+        for i = 1:length(fs)
             % averaging v values
             v(fe(i)) = mean(v(fs(i):fe(i)));
         end
-        X = X(~ind(2:end),:);
+        X = X(~ind(2:end), :);
         v = v(~ind(2:end));
     end
 
     switch lower(method(1)),
         case 'l'
-            [w,tri] = linear(X,v,[xi(:) yi(:) zi(:)],opt);
+            [w, tri] = linear(X, v, [xi(:), yi(:), zi(:)], opt);
         case 'n'
-            w = nearest(X,v,[xi(:) yi(:) zi(:)],opt);
+            w = nearest(X, v, [xi(:), yi(:), zi(:)], opt);
         otherwise
             error('MATLAB:griddata3:UnknownMethod', 'Unknown method.');
     end
-    w = reshape(w,size(xi));
+    w = reshape(w, size(xi));
 
-% If nargin == 11, then we passed the precomputed triangulation and we don't need to do it again.
+    % If nargin == 11, then we passed the precomputed triangulation and we don't need to do it again.
 else
-    [w] = linearwithtri(X,v,[xi(:) yi(:) zi(:)],tri);
-    w = reshape(w,size(xi));
+    [w] = linearwithtri(X, v, [xi(:), yi(:), zi(:)], tri);
+    w = reshape(w, size(xi));
 end
-
 
 
 %------------------------------------------------------------
-function [zi,tri] = linear(x,y,xi,opt)
-%LINEAR Triangle-based linear interpolation
+    function [zi, tri] = linear(x, y, xi, opt)
+        %LINEAR Triangle-based linear interpolation
 
-%   Reference: David F. Watson, "Contouring: A guide
-%   to the analysis and display of spacial data", Pergamon, 1994.
+        %   Reference: David F. Watson, "Contouring: A guide
+        %   to the analysis and display of spacial data", Pergamon, 1994.
 
-% Triangularize the data
-if isempty(opt)
-  tri = delaunayn(x);
-else
-  tri = delaunayn(x,opt);
-end
-if isempty(tri),
-  warning('MATLAB:griddata3:CannotTriangulate','Data cannot be triangulated.');
-  zi = NaN*zeros(size(xi));
-  return
-end
+        % Triangularize the data
+        if isempty(opt)
+            tri = delaunayn(x);
+        else
+            tri = delaunayn(x, opt);
+        end
+        if isempty(tri),
+            warning('MATLAB:griddata3:CannotTriangulate', 'Data cannot be triangulated.');
+            zi = NaN * zeros(size(xi));
+            return
+        end
 
-% Find the nearest triangle (t)
-[t,p] = tsearchn(x,tri,xi);
+        % Find the nearest triangle (t)
+        [t, p] = tsearchn(x, tri, xi);
 
-m1 = size(xi,1);
-onev = ones(1,size(x,2)+1);
-zi = NaN*zeros(m1,1);
+        m1 = size(xi, 1);
+        onev = ones(1, size(x, 2)+1);
+        zi = NaN * zeros(m1, 1);
 
-for i = 1:m1
-  if ~isnan(t(i))
-     zi(i) = p(i,:)*y(tri(t(i),:));
-  end
-end
+        for i = 1:m1
+            if ~isnan(t(i))
+                zi(i) = p(i, :) * y(tri(t(i), :));
+            end
+        end
 
-%------------------------------------------------------------
-function [zi] = linearwithtri(x,y,xi,tri)
-%LINEAR Triangle-based linear interpolation, takes tri directly.
+        %------------------------------------------------------------
+            function [zi] = linearwithtri(x, y, xi, tri)
+                %LINEAR Triangle-based linear interpolation, takes tri directly.
 
 
-% Find the nearest triangle (t)
-[t,p] = tsearchn(x,tri,xi);
+                % Find the nearest triangle (t)
+                [t, p] = tsearchn(x, tri, xi);
 
-m1 = size(xi,1);
-onev = ones(1,size(x,2)+1);
-zi = NaN*zeros(m1,1);
+                m1 = size(xi, 1);
+                onev = ones(1, size(x, 2)+1);
+                zi = NaN * zeros(m1, 1);
 
-for i = 1:m1
-  if ~isnan(t(i))
-     zi(i) = p(i,:)*y(tri(t(i),:));
-  end
-end
+                for i = 1:m1
+                    if ~isnan(t(i))
+                        zi(i) = p(i, :) * y(tri(t(i), :));
+                    end
+                end
 
-%------------------------------------------------------------
-function zi = nearest(x,y,xi,opt)
-%NEAREST Triangle-based nearest neightbor interpolation
+                %------------------------------------------------------------
+                    function zi = nearest(x, y, xi, opt)
+                        %NEAREST Triangle-based nearest neightbor interpolation
 
-%   Reference: David F. Watson, "Contouring: A guide
-%   to the analysis and display of spacial data", Pergamon, 1994.
+                        %   Reference: David F. Watson, "Contouring: A guide
+                        %   to the analysis and display of spacial data", Pergamon, 1994.
 
-% Triangularize the data
-if isempty(opt)
-  tri = delaunayn(x);
-else
-  tri = delaunayn(x,opt);
-end
-if isempty(tri), 
-  warning('MATLAB:griddata3:CannotTriangulate','Data cannot be triangulated.');
-  zi = repmat(NaN,size(xi));
-  return
-end
+                        % Triangularize the data
+                        if isempty(opt)
+                            tri = delaunayn(x);
+                        else
+                            tri = delaunayn(x, opt);
+                        end
+                        if isempty(tri),
+                            warning('MATLAB:griddata3:CannotTriangulate', 'Data cannot be triangulated.');
+                            zi = repmat(NaN, size(xi));
+                            return
+                        end
 
-% Find the nearest vertex
-k = dsearchn(x,tri,xi);
+                        % Find the nearest vertex
+                        k = dsearchn(x, tri, xi);
 
-zi = k;
-d = find(isfinite(k));
-zi(d) = y(k(d));
+                        zi = k;
+                        d = find(isfinite(k));
+                        zi(d) = y(k(d));
 
-%----------------------------------------------------------
-
+                        %----------------------------------------------------------

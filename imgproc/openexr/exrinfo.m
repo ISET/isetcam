@@ -1,4 +1,4 @@
-function exrinfo( filename )
+function exrinfo(filename)
 %EXRINFO    Read metadata from the header of an OpenEXR image.
 %   INFO = EXRINFO(FILENAME) reads the header of the given OpenEXR
 %   file and returns a struct with the following fields:

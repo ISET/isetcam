@@ -1,4 +1,4 @@
-function output = ComputeGammaPoly(x,input)
+function output = ComputeGammaPoly(x, input)
 % output = ComputeGammaPoly(x,input)
 %
 % Compute gamma table using polynomial function.
@@ -17,8 +17,8 @@ if (max(input) ~= 1)
 end
 
 % Compute output on full range, make it monotonic.
-xP = [x ; 0];
-output = MakeMonotonic(HalfRect(polyval(xP',input)));
+xP = [x; 0];
+output = MakeMonotonic(HalfRect(polyval(xP', input)));
 if (max(output) ~= 0)
-  output = NormalizeGamma(output);
+    output = NormalizeGamma(output);
 end

@@ -13,7 +13,7 @@ function selectedObjs = imageMultiview(objType, selectedObjs, singlewindow)
 %
 % Inputs:
 %    objType      - Which window (scene, oi, or vcimage)
-%    selectedObjs - (Optional) List of the selected object numbers, e.g., 
+%    selectedObjs - (Optional) List of the selected object numbers, e.g.,
 %                   [1 3 5]. Default is all of the objects in ObjList.
 %    singlewindow - (Optional) Whether or not to plot all of the images in
 %                   the same figure in subplots (true), or in different
@@ -37,12 +37,12 @@ function selectedObjs = imageMultiview(objType, selectedObjs, singlewindow)
 %
 % Examples:
 %{
-    scene = sceneCreate; ieAddObject(scene); 
-    scene = sceneCreate('macbeth tungsten');
-    ieAddObject(scene); 
-    objType = 'scene';
-    imageMultiview(objType,[1 2],true);
-    imageMultiview(objType,[1 2]);
+scene = sceneCreate; ieAddObject(scene);
+scene = sceneCreate('macbeth tungsten');
+ieAddObject(scene);
+objType = 'scene';
+imageMultiview(objType,[1 2],true);
+imageMultiview(objType,[1 2]);
 %}
 
 if notDefined('objType'), error('Object type required.'); end
@@ -53,7 +53,7 @@ objType = vcEquivalentObjtype(objType);
 
 % Get the objects
 [objList, nObj] = vcGetObjects(objType);
-if  isempty(objList)
+if isempty(objList)
     fprintf('No objects of type %s\n', objType);
     return;
 end
@@ -80,15 +80,15 @@ else
     rWin = [];
     fType = 'upper left';
 end
-gam = 1;  % Figure out a rationale for this.
-subCount = 1;  % Which subplot are we in
+gam = 1; % Figure out a rationale for this.
+subCount = 1; % Which subplot are we in
 
 %% This is the display loop
 for ii = selectedObjs
     if (~singlewindow || subCount == 1)
         % If not a single window, always call.  Or if the first time
         % through, call
-        thisFig = ieNewGraphWin([], fType); 
+        thisFig = ieNewGraphWin([], fType);
     end
     if singlewindow
         % If we are in a single window, pick the subplot.
@@ -103,19 +103,23 @@ for ii = selectedObjs
 
         case 'OPTICALIMAGE'
             oiShowImage(objList{ii}, true, gam);
-            t =sprintf('OI %d - %s', ii, oiGet(objList{ii}, 'name'));
+            t = sprintf('OI %d - %s', ii, oiGet(objList{ii}, 'name'));
 
         case 'VCIMAGE'
-            img = imageShowImage(objList{ii},gam,true,0);
-            t =sprintf('IP %d - %s', ii, ipGet(objList{ii}, 'name'));
-            image(img); axis image; axis off;
-            
+            img = imageShowImage(objList{ii}, gam, true, 0);
+            t = sprintf('IP %d - %s', ii, ipGet(objList{ii}, 'name'));
+            image(img);
+            axis image;
+            axis off;
+
         otherwise
             error('Unsupported object type %s\n', objType);
     end
 
     % Label the image or window
-    if singlewindow, title(t); else, set(gcf, 'name', t); end
+    if singlewindow, title(t);
+    else, set(gcf, 'name', t);
+    end
 
 end
 

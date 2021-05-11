@@ -1,4 +1,4 @@
-function oi = oiCompute(scene,oi,opticsModel)
+function oi = oiCompute(scene, oi, opticsModel)
 % Gateway routine for optical image irradiance calculation
 %
 % Syntax
@@ -15,9 +15,9 @@ function oi = oiCompute(scene,oi,opticsModel)
 % for light spreading from the edge of the scene.  The amount of padding is
 % specified in oiApplyOTF, line 80, as
 %
-%   imSize   = oiGet(oi,'size'); 
+%   imSize   = oiGet(oi,'size');
 %   padSize  = round(imSize/8); padSize(3) = 0;
-%   sDist = sceneGet(scene,'distance'); 
+%   sDist = sceneGet(scene,'distance');
 %   oi = oiPad(oi,padSize,sDist);
 %
 % To remove the padded region, you can use oiCrop.
@@ -25,7 +25,7 @@ function oi = oiCompute(scene,oi,opticsModel)
 % Optical models:
 %
 % Three types of optical calculations are implemented .  These are selected
-% from the interface in the oiWindow, or they can be set via 
+% from the interface in the oiWindow, or they can be set via
 %    optics = opticsSet(optics,'model', parameter)
 %
 % This function calls the relevant model depending on the setting in
@@ -96,7 +96,7 @@ function oi = oiCompute(scene,oi,opticsModel)
 % on the scene window
 %
 % The optical image is padded by 1/8th of the scene size on all sides.
-% So the eliminate the black border, we need to crop a rect that is 
+% So the eliminate the black border, we need to crop a rect that is
 %
 %  rect = [row col height width]
 %  oiSize = sceneSize * (1 + 1/4))
@@ -105,36 +105,39 @@ function oi = oiCompute(scene,oi,opticsModel)
 %  [sceneSize(1)/8 sceneSize(2)/8 sceneSize(1) sceneSize(2)]
 %
 
-if ~exist('scene','var') || isempty(scene), error('Scene required.'); end
-if ~exist('oi','var') || isempty(oi), error('Opticalimage required.'); end
-if strcmp(oi.type,'scene') && strcmp(scene.type,'opticalimage')
+if ~exist('scene', 'var') || isempty(scene), error('Scene required.'); end
+if ~exist('oi', 'var') || isempty(oi), error('Opticalimage required.'); end
+if strcmp(oi.type, 'scene') && strcmp(scene.type, 'opticalimage')
     % disp('oiCompute: flipping arguments')
-    tmp = scene; scene = oi; oi = tmp; clear tmp
+    tmp = scene;
+    scene = oi;
+    oi = tmp;
+    clear tmp
 end
-if ~exist('opticsModel','var') || isempty(opticsModel)
-    optics = oiGet(oi,'optics'); 
-    opticsModel = opticsGet(optics,'model'); 
+if ~exist('opticsModel', 'var') || isempty(opticsModel)
+    optics = oiGet(oi, 'optics');
+    opticsModel = opticsGet(optics, 'model');
 end
 
 % Compute according to the selected model
 opticsModel = ieParamFormat(opticsModel);
 switch opticsModel
-    case {'diffractionlimited','dlmtf', 'skip'}
+    case {'diffractionlimited', 'dlmtf', 'skip'}
         % The skip case is handled by the DL case
-        oi = opticsDLCompute(scene,oi);
+        oi = opticsDLCompute(scene, oi);
     case 'shiftinvariant'
-        oi = opticsSICompute(scene,oi);
+        oi = opticsSICompute(scene, oi);
     case 'raytrace'
-        oi = opticsRayTrace(scene,oi);
+        oi = opticsRayTrace(scene, oi);
     otherwise
         error('Unknown optics model')
 end
 
 % Indicate scene it is derived from
-oi = oiSet(oi,'name',sceneGet(scene,'name'));
+oi = oiSet(oi, 'name', sceneGet(scene, 'name'));
 
 % Pad the scene dpeth map and attach it to the oi.   The padded values are
 % set to 0, though perhaps we should pad them with the mean distance.
-oi = oiSet(oi,'depth map',oiPadDepthMap(scene));
+oi = oiSet(oi, 'depth map', oiPadDepthMap(scene));
 
 end

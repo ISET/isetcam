@@ -1,4 +1,4 @@
-function [WOut,X,U] = mlPropagate(d,n,lambda,WIn,X,U,propagationType,type)
+function [WOut, X, U] = mlPropagate(d, n, lambda, WIn, X, U, propagationType, type)
 %Tranforms the Wigner PS diagram due to free-space propagation
 %
 %   [WOut,X,U] = mlPropagate(d,n,lambda,WIn,X,U,propagationType,type)
@@ -8,25 +8,28 @@ function [WOut,X,U] = mlPropagate(d,n,lambda,WIn,X,U,propagationType,type)
 
 %% Which type of calculation?
 switch lower(type)
-    case('angle')
+    case ('angle')
         k = 1;
-    case('frequency')
-        k = 2*pi/lambda;
+    case ('frequency')
+        k = 2 * pi / lambda;
 end
 
-x = X(1,:); u = U(:,1);
+x = X(1, :);
+u = U(:, 1);
 
 %% Propagation corrected for the index of refraction in the propagation
 % medium (both paraxial and non-paraxial)
 switch lower(propagationType)
-    case('paraxial')    % ABCD (paraxial)
+    case ('paraxial') % ABCD (paraxial)
         % WOut = griddata(X,U,WIn,X-d/(n*k)*U,U);
-        z = [X(:)-d/(n*k)*U(:), U(:)]; f = WIn(:); 
-        WOut = ffndgrid(z,f,-length(x),[min(x) max(x) min(u) max(u)],1);
-    case('non-paraxial') % non-ABCD (non-paraxial)
+        z = [X(:) - d / (n * k) * U(:), U(:)];
+        f = WIn(:);
+        WOut = ffndgrid(z, f, -length(x), [min(x), max(x), min(u), max(u)], 1);
+    case ('non-paraxial') % non-ABCD (non-paraxial)
         % WOut = griddata(X,U,WIn,X-d*tan(asin(U/(n*k))),U);
-        z = [X(:) - d*tan(asin(U(:)/(n*k))), U(:)]; f = WIn(:); 
-        WOut = ffndgrid(z,f,-length(x),[min(x) max(x) min(u) max(u)],1);
+        z = [X(:) - d * tan(asin(U(:)/(n * k))), U(:)];
+        f = WIn(:);
+        WOut = ffndgrid(z, f, -length(x), [min(x), max(x), min(u), max(u)], 1);
 end
 
 % Convert from sparse to full matrix (This could be done later if we need

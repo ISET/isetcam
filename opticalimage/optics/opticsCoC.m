@@ -1,6 +1,6 @@
-function circ = opticsCoC( optics, oDist, unit )
+function circ = opticsCoC(optics, oDist, unit)
 % Calculate the circle of confusion diameter on the sensor surface for the optics
-%   
+%
 %  Syntax:
 %    circ = opticsCoC(optics, oDist, [unit='m'])
 %
@@ -23,14 +23,14 @@ function circ = opticsCoC( optics, oDist, unit )
 % The half angle swept out by cone of rays through a point at fP is
 % calculated from the right triangle with sides A/2 and fP.
 %
-% Then we calculate the distance on the sensor surface given the 
-% 
+% Then we calculate the distance on the sensor surface given the
+%
 % Programming: Perhaps this should just be a call
 %
 %      opticsGet(optics,'coc',dist,unit)
 %
 %  and perhaps we should never let this be smaller than the
-%  diffraction limit, and there should be a call 
+%  diffraction limit, and there should be a call
 %
 %      opticsGet(optics,'diffraction limit diameter');
 %
@@ -55,32 +55,28 @@ function circ = opticsCoC( optics, oDist, unit )
 if ieNotDefined('unit'), unit = 'm'; end
 
 % Basic numbers
-A = opticsGet(optics,'diameter');
-f = opticsGet(optics,'focal length');
+A = opticsGet(optics, 'diameter');
+f = opticsGet(optics, 'focal length');
 
 % Image point of P
-fp = oDist*f / (oDist - f);      
+fp = oDist * f / (oDist - f);
 
 % Angle of the cone rays
 % tan(phi) = (A/2)/fP = tan(phi)
-phi = atan2(A/2,fp);
+phi = atan2(A/2, fp);
 
 % Size of the image on the sensor
 % tan(phi) = opp/abs(f - fP)
-circ = tan(phi)*abs(f-fp);
+circ = tan(phi) * abs(f-fp);
 
 % This was only the half angle, so double the c
-circ = circ*2;
+circ = circ * 2;
 
 % This is the magnification.  The cone of confusion back in object space is
 % the circ times the magnification.
 % magnification = fp / oDist;
 
 % Deal with the units
-circ = circ*ieUnitScaleFactor(unit);
+circ = circ * ieUnitScaleFactor(unit);
 
 end
-
-
-    
-

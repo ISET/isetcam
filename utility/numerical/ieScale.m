@@ -1,4 +1,4 @@
-function [im,mn,mx] = ieScale(im,b1,b2)
+function [im, mn, mx] = ieScale(im, b1, b2)
 % Scale the value in im into a specified range
 %
 %   [im,mn,mx] = ieScale(im,b1,b2)
@@ -18,7 +18,7 @@ function [im,mn,mx] = ieScale(im,b1,b2)
 %   [min(im(:)),max(im(:))]
 %   im = ieScale(im,20,90);
 %   [min(im(:)),max(im(:))]
-% 
+%
 % Copyright ImagEval Consultants, LLC, 2005.
 
 if ieNotDefined('im'), error('Input data must be defined.'); end
@@ -29,12 +29,12 @@ mn = min(im(:));
 
 % If only one bounds argument, just set peak value
 if nargin == 2
-    im = im*(b1/mx);
+    im = im * (b1 / mx);
     return;
 end
 
 % If 0 or 2 bounds arguments, we first scale data to 0,1
-im = (im - mn)/(mx - mn);
+im = (im - mn) / (mx - mn);
 
 if nargin == 1
     % No bounds arguments, assume 0,1
@@ -48,6 +48,6 @@ end
 
 % Put the (0,1) data into the range
 range = b2 - b1;
-im = range*im + b1;
+im = range * im + b1;
 
 return;

@@ -14,11 +14,11 @@
 
 %% Make sure we don't have both isetcam and isetbio in our path
 %  This test is not great.   But the idea is that imgproc is not in isetbio.
-if ieContains(path,'imgproc') && ieContains(path,'cones')
+if ieContains(path, 'imgproc') && ieContains(path, 'cones')
     error("Isetcam & Isetbio contain over-lapping functionality. Only one at a time should be in your path");
 end
 
-if ieContains(version,'2019b')
+if ieContains(version, '2019b')
     warning('Windows do not run correctly under version 2019b');
 end
 
@@ -31,7 +31,7 @@ ieMainClose;
 close all
 
 % Clear vcSESSION
-clear global;  % Made consistent with ISETBIO
+clear global; % Made consistent with ISETBIO
 
 % There has been some indecision about whether to clear all or not in this
 % command.  So, I am making it a settable preference for now.  I had a need
@@ -40,8 +40,7 @@ clear global;  % Made consistent with ISETBIO
 
 % In ISETBIO this is false.
 % Determine if you want to clear session variables
-if ieSessionGet('init clear'), clearvars;  end
-
+if ieSessionGet('init clear'), clearvars; end
 
 %% Initialize ISET database variable
 

@@ -4,16 +4,16 @@
 %AUTHOR:   R. Koehler, X. Zhang, B. Wandell
 %DATE:     02.25.97
 %CONCEPTS:
-% 
+%
 % This tutorial illustrates how to use halftoning to achieve the
 % visual illusion of gray-levels in a binary display system.
 % You will learn about two approaches:  thresholding approaches
 % using dither patterns and the computational method called error
-% diffusion. 
-% 
+% diffusion.
+%
 % Matlab 7:  Checked 01.08.06
 % Matlab 5:  Checked 01.06.98
-% 
+%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Most printers place a binary mark at each spot on the page:
@@ -46,14 +46,14 @@
 % cell that illustrates the idea.
 
 halfToneCell_4 = ...
-		[15 5 12 14
-		10 3 2 8
-		7 1 4 11
-		13 9 6 16];
+    [15, 5, 12, 14; ...
+    10, 3, 2, 8; ...
+    7, 1, 4, 11; ...
+    13, 9, 6, 16];
 
 % Suppose we have a 4x4 image region that has a hight density,
-% say 12.  
-im = 12*ones(4,4);
+% say 12.
+im = 12 * ones(4, 4);
 
 % To print this section of the image, we compare the density in
 % the image with the thresholds in the halftone cell,
@@ -62,23 +62,24 @@ cmp = halfToneCell_4 < im
 %  The locations set to one are printed with a black dot, and the
 % locations with 0 are unprinted (white).  Because of Matlab's
 % ordering, we will add 1 to cmp and build the binary color map
-% as 
-bMap = [1 1 1; 0 0 0]
+% as
+bMap = [1, 1, 1; 0, 0, 0]
 
-figure; 
-colormap(bMap); image( cmp + 1 );
+figure;
+colormap(bMap);
+image(cmp+1);
 
 % For this high density, we print most of the halftone cell as
 % black.  Now, let's see how the halftone cell would print at a
 % set of increasing densities:
 
-cnt = 1; 
+cnt = 1;
 for density = 1:16
-  im = ones(4,4)*density;
-  cmp = (halfToneCell_4 < im);
-  subplot(4,4,cnt)
-  image(cmp + 1);
-  cnt = cnt + 1;
+    im = ones(4, 4) * density;
+    cmp = (halfToneCell_4 < im);
+    subplot(4, 4, cnt)
+    image(cmp+1);
+    cnt = cnt + 1;
 end
 
 % As the mean image density varies from low (light) to high
@@ -93,9 +94,9 @@ grayStrips = 8;
 bw_range = [0, 1];
 sweep_size = 128;
 
-% 
-[x,y] = meshgrid(0:sweep_size-1, 0:sweep_size-1);
-y = fix(y * grayStrips / sweep_size) / grayStrips;
+%
+[x, y] = meshgrid(0:sweep_size-1, 0:sweep_size-1);
+y = fix(y*grayStrips/sweep_size) / grayStrips;
 x = x / (sweep_size * grayStrips);
 sweep_8 = ones(sweep_size, sweep_size) - (x + y);
 
@@ -115,7 +116,7 @@ imshow(sweep_8);
 % correction). We use a gamma value = 2.
 
 monitorGamma = 2;
-sweep_8_linear = sweep_8 .^ monitorGamma;
+sweep_8_linear = sweep_8.^monitorGamma;
 HTsweep_4 = HalfToneImage(halfToneCell_4, sweep_8_linear);
 imshow(HTsweep_4);
 
@@ -137,45 +138,45 @@ type HalfToneImage.m
 % The halftone does a worse job tracking the gray levels if the
 % halftone cell is smaller.
 
-halfToneCell_2 = [ 4 3; 2 1];
+halfToneCell_2 = [4, 3; 2, 1];
 HTsweep_2 = HalfToneImage(halfToneCell_2, sweep_8_linear);
 imshow(HTsweep_2);
 
 % We can also scale up these two images to see how the halftones are formed.
-% 
-scale_sweep_2 = kron(HTsweep_2, ones(3,3));
+%
+scale_sweep_2 = kron(HTsweep_2, ones(3, 3));
 imshow(scale_sweep_2);
 
-scale_sweep_4 = kron(HTsweep_4, ones(3,3));
+scale_sweep_4 = kron(HTsweep_4, ones(3, 3));
 imshow(scale_sweep_4);
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
 % Bayer dithering
-% 
-%%%%%%%%% %%%%%%%%% %%%%%%%%% %%%%%%%%% %%%%%%%%% 
+%
+%%%%%%%%% %%%%%%%%% %%%%%%%%% %%%%%%%%% %%%%%%%%%
 
 % In the supplemental reading, Bayer describes a halftone cell
 % for Figure 2: "imitation halftone pattern."  We enter it as:
 
 halfToneCell_B2 = ...
-		[7 6 5 16 17 18 19 20
-		8 1 4 15 28 29 30 21
-		9 2 3 14 27 32 31 22
-		10 11 12 13 26 25 24 23
-		17 18 19 20 7 6 5 16
-		28 29 30 21 8 1 4 15
-		27 32 31 22 9 2 3 14
-		26 25 24 23 10 11 12 13];
+    [7, 6, 5, 16, 17, 18, 19, 20; ...
+    8, 1, 4, 15, 28, 29, 30, 21; ...
+    9, 2, 3, 14, 27, 32, 31, 22; ...
+    10, 11, 12, 13, 26, 25, 24, 23; ...
+    17, 18, 19, 20, 7, 6, 5, 16; ...
+    28, 29, 30, 21, 8, 1, 4, 15; ...
+    27, 32, 31, 22, 9, 2, 3, 14; ...
+    26, 25, 24, 23, 10, 11, 12, 13];
 
-colormap(bMap) 
-cnt = 1; 
+colormap(bMap)
+cnt = 1;
 for density = 1:32
-  im = ones(8,8)*density;
-  cmp = (halfToneCell_B2 < im);
-  subplot(6,6,cnt)
-  image(cmp + 1);
-  cnt = cnt + 1;
+    im = ones(8, 8) * density;
+    cmp = (halfToneCell_B2 < im);
+    subplot(6, 6, cnt)
+    image(cmp+1);
+    cnt = cnt + 1;
 end
 
 % This pattern is much like the simple cluster dot, except it
@@ -191,24 +192,24 @@ imshow(HTsweep_B2);
 % dispersed in a random array.
 
 halfToneCell_B4 = ...
-		[1 17 5 21 2 18 6 22
-		25 9 29 13 26 10 30 14
-		7 23 3 19 8 24 4 20
-		31 15 27 11 32 16 28 12
-		2 18 6 22 1 17 5 21
-		26 10 30 14 25 9 29 13
-		8 24 4 20 7 23 3 19
-		32 16 28 12 31 15 27 11];
+    [1, 17, 5, 21, 2, 18, 6, 22; ...
+    25, 9, 29, 13, 26, 10, 30, 14; ...
+    7, 23, 3, 19, 8, 24, 4, 20; ...
+    31, 15, 27, 11, 32, 16, 28, 12; ...
+    2, 18, 6, 22, 1, 17, 5, 21; ...
+    26, 10, 30, 14, 25, 9, 29, 13; ...
+    8, 24, 4, 20, 7, 23, 3, 19; ...
+    32, 16, 28, 12, 31, 15, 27, 11];
 
 figure;
-colormap(bMap) 
-cnt = 1; 
+colormap(bMap)
+cnt = 1;
 for density = 1:32
-  im = ones(8,8)*density;
-  cmp = (halfToneCell_B4 < im);
-  subplot(6,6,cnt)
-  image(cmp + 1);
-  cnt = cnt + 1;
+    im = ones(8, 8) * density;
+    cmp = (halfToneCell_B4 < im);
+    subplot(6, 6, cnt)
+    image(cmp+1);
+    cnt = cnt + 1;
 end
 
 clf
@@ -220,12 +221,13 @@ close all;
 
 % These halftones can also be applied to a real image.
 
-D = load('jpegFiles/einstein.mat'); img = D.X;
+D = load('jpegFiles/einstein.mat');
+img = D.X;
 img = img / 256;
 imshow(img);
 
 % gamma correction
-img_linear = img .^ monitorGamma;
+img_linear = img.^monitorGamma;
 
 HTimg_B4 = HalfToneImage(halfToneCell_B4, img_linear);
 imshow(HTimg_B4);
@@ -236,7 +238,7 @@ imshow(HTimg_B4);
 % not simple constant patterns. The image changes density rapidly
 % over sapce and the dots reflect the correct image density.
 
-scale_img_B4 = kron(HTimg_B4, ones(3,3));
+scale_img_B4 = kron(HTimg_B4, ones(3, 3));
 imshow(scale_img_B4);
 
 % You can see this easily by changing the original sweep to
@@ -244,20 +246,20 @@ imshow(scale_img_B4);
 % cells will not line up on the strip boundaries.
 
 grayStrips = 5;
-[x,y] = meshgrid(0:sweep_size-1, 0:sweep_size-1);
-y = fix(y * grayStrips / sweep_size) / grayStrips;
-x = x/(sweep_size * grayStrips);
+[x, y] = meshgrid(0:sweep_size-1, 0:sweep_size-1);
+y = fix(y*grayStrips/sweep_size) / grayStrips;
+x = x / (sweep_size * grayStrips);
 sweep_5 = ones(sweep_size, sweep_size) - (x + y);
 imshow(sweep_5);
 
 % gamma correction
-% 
-sweep_5_linear = sweep_5 .^ monitorGamma;
+%
+sweep_5_linear = sweep_5.^monitorGamma;
 
 HTsweep_5_4 = HalfToneImage(halfToneCell_4, sweep_5_linear);
 imshow(HTsweep_5_4);
 
-scale_sweep_5_4 = kron(HTsweep_5_4, ones(3,3));
+scale_sweep_5_4 = kron(HTsweep_5_4, ones(3, 3));
 imshow(scale_sweep_5_4);
 
 %% close all image windows
@@ -283,7 +285,7 @@ close all;
 % printed is the error.  That error is diffused to neighboring
 % pixels (to the right and/or down) and the process is repeated.
 % We can use the same images as we did before to see the impact
-% of this type of halftoning.  Actually, this process is usually 
+% of this type of halftoning.  Actually, this process is usually
 % referred to as dithering.  Screening is yet another term which
 % includes both the halftoning described in tutorial part 1 and
 % here.  (Dithering can also refer to the halftoning previously
@@ -310,7 +312,7 @@ close all;
 % The simplest error diffusion is to just pass the error from
 % each pixel to the neighbor to the right.  We can do this with:
 
-FS_1 = [0 0 1];
+FS_1 = [0, 0, 1];
 
 % You can view the implementation of the error diffusion by
 % entering: type FloydSteinberg.m
@@ -323,28 +325,29 @@ imshow(HT_image_1);
 % Now we can apply the matrix specified by Floyd and Steinberg
 % in their paper.
 
-FS_2 =	[0 0 0 7 5; ...
-	3 5 7 5 3; ...
-	1 3 5 3 1];
+FS_2 = [0, 0, 0, 7, 5; ...
+    3, 5, 7, 5, 3; ...
+    1, 3, 5, 3, 1];
 FS_2 = FS_2 / sum(FS_2(:));
 HT_image_2 = FloydSteinberg(FS_2, sweep_8_linear);
 imshow(HT_image_2);
 
 % And we can pick one from Ulichney
-% 
+%
 
-FS_3 =	[0 0 7;  ...
-	3 5 1];
+FS_3 = [0, 0, 7; ...
+    3, 5, 1];
 FS_3 = FS_3 / sum(FS_3(:));
 HT_image_3 = FloydSteinberg(FS_3, sweep_8_linear);
 imshow(HT_image_3);
 
 % Finally, let's look at a real image
-% 
-D = load('jpegFiles/einstein.mat'); img = D.X;
+%
+D = load('jpegFiles/einstein.mat');
+img = D.X;
 img = img / 256;
 imshow(img);
-img_linear = img .^ monitorGamma;
+img_linear = img.^monitorGamma;
 HTimg_2 = FloydSteinberg(FS_2, img_linear);
 imshow(HTimg_2);
 
@@ -359,4 +362,3 @@ imshow(HTimg_2);
 
 
 %%%%%%%END
-

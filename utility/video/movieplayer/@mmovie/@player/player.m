@@ -1,4 +1,4 @@
-function H = player(h,fcns)
+function H = player(h, fcns)
 %PLAYER Constructor for movie Player object
 
 H = mmovie.player;

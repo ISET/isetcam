@@ -10,7 +10,7 @@ function Tc = cct(uvs)
 % the correlated blackbody radiators.
 %
 % This correlated color temperature is often used to summarize the
-% appearance properties of a light source.  
+% appearance properties of a light source.
 %
 % This routine requires the information in the file: cct.mat
 %
@@ -33,45 +33,45 @@ function Tc = cct(uvs)
 % structure.
 
 if ieNotDefined('uvs'), error('uv coordinates are required');
-elseif (size(uvs,1) ~= 2), error('uv must have two rows.'); 
+elseif (size(uvs, 1) ~= 2), error('uv must have two rows.');
 end
 
 cctData = load('cct.mat');
 
-Nd = size(uvs,2);		% Number of uv coordinates
-Nt = size(cctData.table,1);	    % Number of temperatures
+Nd = size(uvs, 2); % Number of uv coordinates
+Nt = size(cctData.table, 1); % Number of temperatures
 
-T  = repmat(cctData.table(:,1),[1 Nd]);
-u  = repmat(cctData.table(:,2),[1 Nd]);
-v  = repmat(cctData.table(:,3),[1 Nd]);
-t  = repmat(cctData.table(:,4),[1 Nd]);
+T = repmat(cctData.table(:, 1), [1, Nd]);
+u = repmat(cctData.table(:, 2), [1, Nd]);
+v = repmat(cctData.table(:, 3), [1, Nd]);
+t = repmat(cctData.table(:, 4), [1, Nd]);
 
-us = repmat(uvs(1,:),[Nt 1]);
-vs = repmat(uvs(2,:),[Nt 1]);
+us = repmat(uvs(1, :), [Nt, 1]);
+vs = repmat(uvs(2, :), [Nt, 1]);
 
-d  = ( (us-u) - t.*(vs-v) ) ./ sqrt( 1+t.^2 );
+d = ((us - u) - t .* (vs - v)) ./ sqrt(1+t.^2);
 
 % Instead of dividing as explained in W&S and
 % checking for negative values.  I look at the
 % signs and took differences.  This avoids
 % divide by zero errors.
 
-% ds is padded by zeros to get the indices 
+% ds is padded by zeros to get the indices
 % correct when doing the find operation.
 
 ds = sign(d);
-ds = ds.*(ds~=0) + 1.*(ds==0);
-ds = [ds; zeros(1,Nd)];	
+ds = ds .* (ds ~= 0) + 1 .* (ds == 0);
+ds = [ds; zeros(1, Nd)];
 
 j  = find( abs(diff(ds)) == 2 )';
 
 if (length(j) ~= Nd)
-   error(['Check input range. ' ...
-         'U [' num2str(u(1,1)) ' ' num2str(u(end,1)) ']. ' ...]
-         'V [' num2str(v(1,1)) ' ' num2str(v(end,1)) '].']);
+    error(['Check input range. ', ...
+        'U [', num2str(u(1, 1)), ' ', num2str(u(end, 1)), ']. ', ... ]
+    'V [', num2str(v(1, 1)), ' ', num2str(v(end, 1)), '].']);
 end
 
 Tc = 1 ./ ...
-   ( 1./T(j) + d(j)./(d(j)-d(j+1)).*(1./T(j+1) - 1./T(j)) );
+    (1 ./ T(j) + d(j) ./ (d(j) - d(j + 1)) .* (1 ./ T(j + 1) - 1 ./ T(j)));
 
 return;

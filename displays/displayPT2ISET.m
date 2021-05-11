@@ -1,4 +1,4 @@
-function d = displayPT2ISET(fname,iWave)
+function d = displayPT2ISET(fname, iWave)
 %Convert PsychToolbox display calibration file to ISET display format
 %
 %    dsp = displayPT2ISET(fname,[iWave])
@@ -42,37 +42,37 @@ function d = displayPT2ISET(fname,iWave)
 %
 % Copyright ImagEval, 2011
 
-if notDefined('fname'), error('No calibration file %s\s',fname); end
+if notDefined('fname'), error('No calibration file %s\s', fname); end
 
 % Initialize the display structure
 d = displayCreate;
-d = displaySet(d,'name',fname);
+d = displaySet(d, 'name', fname);
 
 % Load the file.
 tmp = load(fname);
-cal = tmp.cals{1};  % This is PT format
+cal = tmp.cals{1}; % This is PT format
 
 %  Wavelength samples
 S = cal.S_device;
-wave = (0:(S(3)-1))*S(2) + S(1);
-d = displaySet(d,'wave',wave);
+wave = (0:(S(3) - 1)) * S(2) + S(1);
+d = displaySet(d, 'wave', wave);
 
 % Why interpolate?  Why not leave it in 4nm steps?
 if notDefined('iWave')
     iWave = wave;
     spd = cal.P_device;
 else
-    spd = interp1(wave(:),cal.P_device,iWave);
+    spd = interp1(wave(:), cal.P_device, iWave);
 end
 
 % vcNewGraphWin; plot(iWave,spd)
 % ieLuminanceFromEnergy(spd',iWave)
 
-d = displaySet(d,'spd',spd);
-d = displaySet(d,'wave',iWave);
+d = displaySet(d, 'spd', spd);
+d = displaySet(d, 'wave', iWave);
 
 % Gamma table
-d = displaySet(d,'gamma',cal.gammaTable);
-d = displaySet(d,'dacsize',cal.describe.dacsize);
+d = displaySet(d, 'gamma', cal.gammaTable);
+d = displaySet(d, 'dacsize', cal.describe.dacsize);
 
 return;

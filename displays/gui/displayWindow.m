@@ -5,7 +5,7 @@ function displayW = displayWindow(thisD)
 %   displayW = displayWindow(thisD)
 %
 % Brief description
-%   Opens a displayWindow interface based on the displayWindow_App. 
+%   Opens a displayWindow interface based on the displayWindow_App.
 %
 % Inputs
 %   thisD:  The display you want in the window.  If empty, the currently
@@ -36,16 +36,16 @@ function displayW = displayWindow(thisD)
 
 % Examples
 %{
-   displayWindow;
+displayWindow;
 %}
 %{
-   d = displayCreate;
-   displayWindow(d);
+d = displayCreate;
+displayWindow(d);
 %}
 
 %% Add the scene to the database if it is in the call
 
-if exist('thisD','var')
+if exist('thisD', 'var')
     % A scene was passed in.  We add it to the database and select it.
     % That scene will appear in the window.
     ieAddObject(thisD);
@@ -67,11 +67,11 @@ displayW = ieSessionGet('display window');
 if isempty(displayW)
     % Empty, so create one and put it in the vcSESSION
     displayW = displayWindow_App;
-    ieSessionSet('display window',displayW);
+    ieSessionSet('display window', displayW);
 elseif ~isvalid(displayW)
     % Replace the invalid one
     displayW = displayWindow_App;
-    ieSessionSet('display window',displayW);
+    ieSessionSet('display window', displayW);
 else
     % Just refresh it
     displayW.refresh;

@@ -1,4 +1,4 @@
-function [noisyPhotons,theNoise] = scenePhotonNoise(scene,rectOrLocs)
+function [noisyPhotons, theNoise] = scenePhotonNoise(scene, rectOrLocs)
 % Add Poisson photon noise to the scene radiance data
 %
 %  [noisyPhotons,theNoise] = scenePhotonNoisePhotonNoise(scene,rectOrLocs)
@@ -15,15 +15,15 @@ function [noisyPhotons,theNoise] = scenePhotonNoise(scene,rectOrLocs)
 % See also:  oiPhotonNoise, noiseShot, poissrnd, v_photonNoise
 %
 % Examples:
-%    scene = sceneCreate('uniform'); 
+%    scene = sceneCreate('uniform');
 %    [noisyPhotons,theNoise] = scenePhotonNoise(oi);
 %    vcNewGraphWin; tmp = noisyPhotons(:,:,10); tmp = tmp(tmp > 2*10^13); hist(tmp(:))
 %    imagesc(noisyPhotons(:,:,10)); colormap(gray)
 %
 % Copyright ImagEval Consultants, LLC, 2013.
 
-if ieNotDefined('roiLocs'), photons = sceneGet(scene,'photons');
-else                        photons = sceneGet(scene,'photons',rectOrLocs);
+if ieNotDefined('roiLocs'), photons = sceneGet(scene, 'photons');
+else photons = sceneGet(scene, 'photons', rectOrLocs);
 end
 
 % The Poisson variance is equal to the mean. Randn is unit normal (N(0,1)).
@@ -36,7 +36,7 @@ end
 theNoise = sqrt(photons) .* randn(size(photons));
 
 % We add the mean electron and noise electrons together.
-noisyPhotons = round(photons + theNoise);
+noisyPhotons = round(photons+theNoise);
 % When the signal is very large, say 10^14, the noise is only 10^7.  This
 % is very small and you see basically nothing. But if the signal is small, you have a chance of seeing something in
 % these plots.
@@ -47,20 +47,19 @@ noisyPhotons = round(photons + theNoise);
 % toolbox being present, so we use this Poisson sampler from Knuth. Create
 % and copy the Poisson samples into the noisyImage
 poissonCriterion = 15;
-[r,c] = find(photons < poissonCriterion);
+[r, c] = find(photons < poissonCriterion);
 v = photons(photons < poissonCriterion);
 if ~isempty(v)
-    vn = poissrnd(v);  % Poisson samples
-    for ii=1:length(r)
-        theNoise(r(ii),c(ii))   = vn(ii);
+    vn = poissrnd(v); % Poisson samples
+    for ii = 1:length(r)
+        theNoise(r(ii), c(ii)) = vn(ii);
         % For low mean values, we *replace* the mean value with the Poisson
         % noise; we do not *add* the Poisson noise to the mean. Hence the
         % following line is incorrected and was replaced with the
         % subsequent line:
         % noisyImage(r(ii),c(ii)) = electronImage(r(ii),c(ii)) + vn(ii);
-        noisyPhotons(r(ii),c(ii)) = vn(ii);
+        noisyPhotons(r(ii), c(ii)) = vn(ii);
     end
 end
 
 end
-

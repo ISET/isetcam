@@ -1,4 +1,4 @@
-function [scene,rect] = sceneCrop(scene,rect)
+function [scene, rect] = sceneCrop(scene, rect)
 %Crop scene data.
 %
 % Synopsis
@@ -29,33 +29,31 @@ function [scene,rect] = sceneCrop(scene,rect)
 
 if ieNotDefined('scene'), error('You must define a scene.'); end
 
-if ieNotDefined('rect') 
-    [roiLocs,rect] = vcROISelect(scene); 
+if ieNotDefined('rect')
+    [roiLocs, rect] = vcROISelect(scene);
 else
-    cmin = rect(1); cmax = rect(1)+rect(3);
-    rmin = rect(2); rmax = rect(2)+rect(4);
-    [c,r] = meshgrid(cmin:cmax,rmin:rmax);
-    roiLocs = [r(:),c(:)];
+    cmin = rect(1);
+    cmax = rect(1) + rect(3);
+    rmin = rect(2);
+    rmax = rect(2) + rect(4);
+    [c, r] = meshgrid(cmin:cmax, rmin:rmax);
+    roiLocs = [r(:), c(:)];
 end
 
 % The number of selected columns and rows
-c = rect(3)+1; r = rect(4)+1;
+c = rect(3) + 1;
+r = rect(4) + 1;
 % wave = sceneGet(scene,'nwave');
 
 % These are in XW format.
-photons = vcGetROIData(scene,roiLocs,'photons');
-photons = XW2RGBFormat(photons,r,c);
+photons = vcGetROIData(scene, roiLocs, 'photons');
+photons = XW2RGBFormat(photons, r, c);
 
 % Now build up the new object.
 scene = sceneClearData(scene);
-scene = sceneSet(scene,'photons',photons);
-[luminance, meanL] = sceneCalculateLuminance(scene); 
-scene = sceneSet(scene,'luminance',luminance);
-scene = sceneSet(scene,'meanLuminance',meanL);
+scene = sceneSet(scene, 'photons', photons);
+[luminance, meanL] = sceneCalculateLuminance(scene);
+scene = sceneSet(scene, 'luminance', luminance);
+scene = sceneSet(scene, 'meanLuminance', meanL);
 
 return;
-
-
-
-
-

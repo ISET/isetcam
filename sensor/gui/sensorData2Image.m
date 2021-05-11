@@ -1,10 +1,10 @@
-function img = sensorData2Image(sensor,dataType,gam,scaleMax)
+function img = sensorData2Image(sensor, dataType, gam, scaleMax)
 % Produce the image data displayed in the sensor window.
 %
 % Synopsis
 %   img = sensorData2Image(sensor,[dataType = 'volts'],[gam=1],[scaleMax=0 (false)])
 %
-% This function renders an image of the sensor CFA.  
+% This function renders an image of the sensor CFA.
 %
 % Inputs
 %   sensor
@@ -28,7 +28,7 @@ function img = sensorData2Image(sensor,dataType,gam,scaleMax)
 %  case of multiple exposure durations.
 %
 %  While it is usally used for volts, the routine converts the image from
-%  the 'dv' fields or even 'electrons' (I think). 
+%  the 'dv' fields or even 'electrons' (I think).
 %
 %  The returned images can be written out as a tiff file by sensorSaveImage.
 %
@@ -58,31 +58,31 @@ function img = sensorData2Image(sensor,dataType,gam,scaleMax)
 %
 
 %%
-if ieNotDefined('sensor'),     sensor = vcGetObject('sensor'); end
-if ieNotDefined('dataType'),   dataType = 'volts'; end
-if ieNotDefined('gam') ,       gam = 1; end
-if ieNotDefined('scaleMax'),   scaleMax = 0; end
+if ieNotDefined('sensor'), sensor = vcGetObject('sensor'); end
+if ieNotDefined('dataType'), dataType = 'volts'; end
+if ieNotDefined('gam'), gam = 1; end
+if ieNotDefined('scaleMax'), scaleMax = 0; end
 
-img = sensorGet(sensor,dataType);
+img = sensorGet(sensor, dataType);
 if isempty(img), return; end
 
 %% Determine the scale factor for the maximum of the display
-if scaleMax,     mxImage = max(img(:));
+if scaleMax, mxImage = max(img(:));
 else
     % The maximal value will depend on whether we are working with voltages
-    % or digital values.  
+    % or digital values.
     switch dataType
         case 'volts'
-            mxImage = sensorGet(sensor,'max output');
+            mxImage = sensorGet(sensor, 'max output');
         case 'dv or volts'
             % If we have a digital value, we assume that's the
             % case we are in.  Otherwise we assume volts.
-            mxImage = sensorGet(sensor,'max digital value');
+            mxImage = sensorGet(sensor, 'max digital value');
             if isempty(mxImage)
-                mxImage = sensorGet(sensor,'max output');
+                mxImage = sensorGet(sensor, 'max output');
             end
         otherwise
-            error('Unknown data type %s\n',dataType);
+            error('Unknown data type %s\n', dataType);
     end
 end
 
@@ -95,45 +95,45 @@ end
 % A mosaicked color image.  This is the main routine to convert
 % the planar image to an RGB image.  The conversion depends on the
 % nature of the color filters in the cfa.
-nSensors   = sensorGet(sensor,'nFilters');
-expTimes   = sensorGet(sensor,'expTimes');
-nExposures = sensorGet(sensor,'nExposures');
+nSensors = sensorGet(sensor, 'nFilters');
+expTimes = sensorGet(sensor, 'expTimes');
+nExposures = sensorGet(sensor, 'nExposures');
 
 if nExposures > 1
 
-    pSize = size(sensorGet(sensor,'pattern'));
-    if isequal(pSize,size(expTimes))
+    pSize = size(sensorGet(sensor, 'pattern'));
+    if isequal(pSize, size(expTimes))
         % Each plane goes into a different pixel in the constructed CFA.
         % If the pattern size is (r,c) the first r planes fill the first
         % row in the CFA pattern
         %
         %   ( 1 3 5
         %     2 4 6)
-        nRows = sensorGet(sensor,'rows');
-        nCols = sensorGet(sensor,'cols');
-        cfa   = zeros(nRows,nCols);
-        
+        nRows = sensorGet(sensor, 'rows');
+        nCols = sensorGet(sensor, 'cols');
+        cfa = zeros(nRows, nCols);
+
         whichExposure = 1;
         for cc = 1:pSize(2)
             colSamps = cc:pSize(2):nCols;
-            for rr=1:pSize(1)
+            for rr = 1:pSize(1)
                 rowSamps = rr:pSize(1):nRows;
-                cfa(rowSamps,colSamps) = img(rowSamps,colSamps,whichExposure);
+                cfa(rowSamps, colSamps) = img(rowSamps, colSamps, whichExposure);
                 whichExposure = whichExposure + 1;
             end
         end
         img = cfa;
     else
         % In bracketing case we can select which exposure to render
-        expPlane = sensorGet(sensor,'exposurePlane');
-        img = sensorGet(sensor,dataType);
-        img = img(:,:,expPlane);
+        expPlane = sensorGet(sensor, 'exposurePlane');
+        img = sensorGet(sensor, dataType);
+        img = img(:, :, expPlane);
     end
 end
 
-if nSensors > 1    % A color CFA
+if nSensors > 1 % A color CFA
 
-    img = plane2rgb(img,sensor,0);
+    img = plane2rgb(img, sensor, 0);
 
     % In some cases we find a transformation, T, that maps the existing
     % sensors into RGB colors.  Then we apply that T to the image data.
@@ -147,7 +147,7 @@ if nSensors > 1    % A color CFA
     % a clear (white) filter. rgbw and wrgb are treated the same.  They are
     % both treated as WRGB.
     %
-    % Some thoughts: 
+    % Some thoughts:
     %   We might try to  adjust T to get nice saturated colors.
     % One thought is to find the max value in each row and set that
     % to 1 and set the others to 0. That would handle a lot of
@@ -165,9 +165,9 @@ if nSensors > 1    % A color CFA
     %    T = [1 0 0 ; 0 1 0 ; 0 0 1 ; 0 1 1];
     %
     % We could insert other switches.  For example, we could trap cmy and
-    % cym cases here. 
+    % cym cases here.
 
-    switch sensorGet(sensor,'filterColorLetters')
+    switch sensorGet(sensor, 'filterColorLetters')
         case 'rgb'
             % We just leave rgb data alone.
             % T = eye(3,3);  RGB case
@@ -176,30 +176,30 @@ if nSensors > 1    % A color CFA
             %                 T = sensorDisplayTransform(sensor);
             %                 img = imageLinearTransform(img,T);
         case 'wrgb'
-            T = [1 1 1; 1 0 0; 0 1 0; 0 0 1];  
-            img = imageLinearTransform(img,T);
+            T = [1, 1, 1; 1, 0, 0; 0, 1, 0; 0, 0, 1];
+            img = imageLinearTransform(img, T);
         case 'rgbw'
-            T = [1 0 0; 0 1 0; 0 0 1; 1 1 1];  
-            img = imageLinearTransform(img,T);       
+            T = [1, 0, 0; 0, 1, 0; 0, 0, 1; 1, 1, 1];
+            img = imageLinearTransform(img, T);
         otherwise
             % I think this covers 3 and four color cases.  I am not
             % sure the other cases (above) should be handled
-            % separately.  
+            % separately.
             T = sensorDisplayTransform(sensor);
-            img = imageLinearTransform(img,T);
+            img = imageLinearTransform(img, T);
     end
 
     % Scale the displayed image intensity to the range between 0 and
     % the voltage swing.  RGB images are supposed to run from 0,1.
     %
     % If the dv data are ints, we need to cast the max as a double
-    img = img/double(mxImage);  
-    img = ieClip(img,0,1).^gam;
+    img = img / double(mxImage);
+    img = ieClip(img, 0, 1).^gam;
 
 elseif nSensors == 1
-    % Gray scale images 
-    img = (img/mxImage).^gam;
-    img = ieClip(img,0,[]);
+    % Gray scale images
+    img = (img / mxImage).^gam;
+    img = ieClip(img, 0, []);
 end
 
 %% Convert to an sRGB format

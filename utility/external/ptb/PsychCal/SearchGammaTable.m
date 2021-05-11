@@ -10,7 +10,7 @@ function values = SearchGammaTable(targets, input, table)
 %
 % Works by using Matlab's interp1, with the output as the x values and
 % the input as the f(x) values.
-% 
+%
 % I suspect that this is a fast Matlab implementation, but those who want
 % to try are welcome to try to do better.  (Remember, though, that this
 % routine gains in efficiency the more searches are done at once.
@@ -29,15 +29,15 @@ function values = SearchGammaTable(targets, input, table)
 % 5/26/12       dhb     Improve comment.  This was not doing exhaustive search.
 
 % Check dimensions
-[m,n] = size(targets);
+[m, n] = size(targets);
 if (m ~= 1)
     error('Passed targets should be a row vector');
 end
-[mi,ni] = size(input);
+[mi, ni] = size(input);
 if (ni ~= 1)
     error('Passed input should be a column vector');
 end
-[mt,nt] = size(table);
+[mt, nt] = size(table);
 if (nt ~= 1)
     error('Passed table should be a column vector');
 end
@@ -48,16 +48,14 @@ end
 % Handle problem that for some monitors, the output is 0 for
 % input values up to some threshold.  This causes interp1
 % to crash.  We handle this by getting rid of the intermediate
-% zeros from the input, if they are there.  This choice means 
+% zeros from the input, if they are there.  This choice means
 % that when we ask for 0 out, we get 0 as the answer.
 index = find(table == 0);
 index1 = find(table ~= 0);
 if ~isempty(index)
-    table = table([index(1) ; index1]);
-    input = input([index(1) ; index1]);
+    table = table([index(1); index1]);
+    input = input([index(1); index1]);
 end
 
 % Invert via linearly interpolation of the passed table
 values = interp1(table, input, targets', 'linear')';
-
-

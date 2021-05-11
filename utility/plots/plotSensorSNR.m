@@ -1,4 +1,4 @@
-function [uData,figHdl] = plotSensorSNR(sensor)
+function [uData, figHdl] = plotSensorSNR(sensor)
 %Graph sensor SNR as a function of voltage level
 %
 %    [uData, figHdl] = plotSensorSNR([sensor])
@@ -23,38 +23,47 @@ function [uData,figHdl] = plotSensorSNR(sensor)
 
 if ieNotDefined('sensor'), sensor = vcGetObject('sensor'); end
 
-[snr,volts,snrShot,snrRead,snrDSNU,snrPRNU] = sensorSNR(sensor); 
+[snr, volts, snrShot, snrRead, snrDSNU, snrPRNU] = sensorSNR(sensor);
 uData.volts = volts;
 uData.snr = snr;
 
 figHdl = vcNewGraphWin;
 
 % Plot total with a thick line
-p = semilogx(volts,snr,'k-'); set(p,'linewidth',2); hold on;
+p = semilogx(volts, snr, 'k-');
+set(p, 'linewidth', 2);
+hold on;
 
 % There is always some shot noise
-semilogx(volts,snrShot,'r-'); hold on;
+semilogx(volts, snrShot, 'r-');
+hold on;
 
 % There may be 0 noise for these others.  It is depressing that don't have
 % a separate line for reset noise.  It is just bundled in with read noise,
 % I guess.  Maybe I should change this and separate them out some day.
-if ~isinf(snrRead), semilogx(volts,snrRead,'g-'); hold on; end
-if ~isinf(snrDSNU), semilogx(volts,snrDSNU,'b-'); hold on; end
-if ~isinf(snrPRNU), semilogx(volts,snrPRNU,'m-'); hold on; end
+if ~isinf(snrRead), semilogx(volts, snrRead, 'g-');
+    hold on;
+end
+if ~isinf(snrDSNU), semilogx(volts, snrDSNU, 'b-');
+    hold on;
+end
+if ~isinf(snrPRNU), semilogx(volts, snrPRNU, 'm-');
+    hold on;
+end
 
-lgnd = {'Total','Shot'};
+lgnd = {'Total', 'Shot'};
 if ~isinf(snrRead), lgnd{end+1} = 'Read'; end
 if ~isinf(snrDSNU), lgnd{end+1} = 'DSNU'; end
 if ~isinf(snrPRNU), lgnd{end+1} = 'PRNU'; end
-    
+
 hold off; grid on;
 legend(lgnd);
 
-xlabel('Signal (V)'); 
+xlabel('Signal (V)');
 ylabel('SNR (db)')
 title('Sensor SNR over response range');
 
 % Attach data to the figure
-set(figHdl,'Userdata',uData);
+set(figHdl, 'Userdata', uData);
 
 return;

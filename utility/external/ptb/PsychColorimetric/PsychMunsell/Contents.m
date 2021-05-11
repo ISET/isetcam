@@ -12,4 +12,3 @@
 %   RITAllMunsellData.txt - Table of Munsell data used in interpolation, from RIT.
 
 % Copyright (c) 2008 by David Brainard
-

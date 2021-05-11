@@ -12,10 +12,10 @@ function T = ieInternal2Display(ip)
 %       (displayRGB*displaySPD')*internalCS = internalValues
 %       displayRGB*(displaySPD'*internalCS) = internalValues
 %       displayRGB = internalValues * inv(displaySPD'*internalCS);
-%  So, 
+%  So,
 %       internal2display = inv(displaySPD'*internalCS);
 %
-% Example:  
+% Example:
 %
 %  Suppose result is in the internal color space (e.g., XYZ)
 %
@@ -29,12 +29,12 @@ function T = ieInternal2Display(ip)
 if ieNotDefined('ip'), ip = vcGetObject('vcimage'); end
 
 % These are the color matching functions for the internal color space
-internalCMF = ipGet(ip,'internal cmf');
+internalCMF = ipGet(ip, 'internal cmf');
 % wave = ipGet(vci,'wave'); plot(wave,internalCMF)
 
 % These are the display primaries.  By default they are the sRGB primaries
 % (I think).
-displaySPD  = ipGet(ip,'display rgb spd');
+displaySPD = ipGet(ip, 'display rgb spd');
 
 %  See notes above for explanation.
 T = inv(displaySPD'*internalCMF);

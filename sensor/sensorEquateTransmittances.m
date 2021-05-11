@@ -11,10 +11,10 @@ function filters = sensorEquateTransmittances(filters)
 
 % Divide each by its own area to equate for area
 filterArea = sum(filters);
-filters = filters*diag(1./filterArea);
+filters = filters * diag(1./filterArea);
 
 % Scale to an overall (not individual filter) peak of 1
 filterPeak = max(filters(:));
-filters = filters*(1/filterPeak);
+filters = filters * (1 / filterPeak);
 
 return;

@@ -1,11 +1,11 @@
-function sensor = sensorComputeNoiseFree(sensor,oi)
+function sensor = sensorComputeNoiseFree(sensor, oi)
 %Compute the mean sensor voltage data from the optical image
 %
 %  sensor = sensorComputeNoiseFree(sensor,oi)
 %
 % We calculate the noise free voltage image for a sensor with the specified
 % general characteristics.  The noise free voltage is in the 'volts' field
-% of the sensor.  
+% of the sensor.
 %
 % We prevent all types of noise we can think of. Specifically, we eliminate
 %
@@ -35,57 +35,55 @@ function sensor = sensorComputeNoiseFree(sensor,oi)
 %     imtool(volts/max(volts(:)));
 %
 % Web resources:
-%    
+%
 % See also
 % COMPUTATIONAL OVERVIEW:  See sensorCompute
 %
 % Copyright ImagEval Consultants, LLC, 2009.
 
-
 %% Define and initialize parameters
 if ieNotDefined('sensor'), sensor = vcGet('ISA'); end
-if ieNotDefined('oi'),     oi = vcGetObject('oi'); end
+if ieNotDefined('oi'), oi = vcGetObject('oi'); end
 
 % This turns off photon noise and electrical noise.
-sensor = sensorSet(sensor,'noise flag',0);
+sensor = sensorSet(sensor, 'noise flag', 0);
 
 % Other adjustments that make this  noise free.
 % No quantization
-q      = sensorGet(sensor,'quantization method');
-sensor = sensorSet(sensor,'quantization method','analog');
+q = sensorGet(sensor, 'quantization method');
+sensor = sensorSet(sensor, 'quantization method', 'analog');
 
 % Analog gain set to unity
-ag = sensorGet(sensor,'analog gain');
-ao = sensorGet(sensor,'analog offset');
-sensor = sensorSet(sensor,'analog gain',1);
-sensor = sensorSet(sensor,'analog offset',0);
+ag = sensorGet(sensor, 'analog gain');
+ao = sensorGet(sensor, 'analog offset');
+sensor = sensorSet(sensor, 'analog gain', 1);
+sensor = sensorSet(sensor, 'analog offset', 0);
 
 % Make sure exposure duration is set, no auto-exposure
-if sensorGet(sensor,'autoexposure')
-    t = autoExposure(oi,sensor);
-    sensor = sensorSet(sensor,'exp time',t);
-    warning('sensorNF:Exposure','Auto exposure set off, exposure set to %f s',t);
+if sensorGet(sensor, 'autoexposure')
+    t = autoExposure(oi, sensor);
+    sensor = sensorSet(sensor, 'exp time', t);
+    warning('sensorNF:Exposure', 'Auto exposure set off, exposure set to %f s', t);
 end
 
 % No clipping - we set the voltage swing very high
-pixel  = sensorGet(sensor,'pixel');
-vSwing = pixelGet(pixel,'voltage swing');
-pixel  = pixelSet(pixel,'voltage swing',1e6);
-sensor = sensorSet(sensor,'pixel',pixel);
+pixel = sensorGet(sensor, 'pixel');
+vSwing = pixelGet(pixel, 'voltage swing');
+pixel = pixelSet(pixel, 'voltage swing', 1e6);
+sensor = sensorSet(sensor, 'pixel', pixel);
 
 % Compute
-sensor = sensorCompute(sensor,oi);
+sensor = sensorCompute(sensor, oi);
 
 % Restore the parameters so that the ordinary sensorCompute can be run on
 % the returned sensor.  The noise free voltage images are in the 'volts'
 % field of the sensor.
-pixel = pixelSet(pixel,'voltage swing',vSwing);
-sensor = sensorSet(sensor,'pixel',pixel);
+pixel = pixelSet(pixel, 'voltage swing', vSwing);
+sensor = sensorSet(sensor, 'pixel', pixel);
 
-sensor = sensorSet(sensor,'quantization method',q);
+sensor = sensorSet(sensor, 'quantization method', q);
 
-sensor = sensorSet(sensor,'analog gain',ag);
-sensor = sensorSet(sensor,'analog offset',ao);
+sensor = sensorSet(sensor, 'analog gain', ag);
+sensor = sensorSet(sensor, 'analog offset', ao);
 
 return
-

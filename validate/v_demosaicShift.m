@@ -7,17 +7,18 @@ ieInit
 
 scene = sceneCreate('line ee');
 
-ieAddObject(scene); sceneWindow;
+ieAddObject(scene);
+sceneWindow;
 
 c = cameraCreate;
 
-c = cameraSet(c,'ip demosaic method','bilinear');
-c = cameraCompute(c,scene);
+c = cameraSet(c, 'ip demosaic method', 'bilinear');
+c = cameraCompute(c, scene);
 ieAddObject(c);
 
 
-c = cameraSet(c,'ip demosaic method','Laplacian');
-c = cameraCompute(c,scene);
+c = cameraSet(c, 'ip demosaic method', 'Laplacian');
+c = cameraCompute(c, scene);
 ieAddObject(c.vci);
 
 ipWindow;

@@ -33,35 +33,34 @@ function SaveCalFile(cal, filespec, dir)
 
 % Set the filename
 if nargin < 2 || isempty(filespec)
-	filespec = 'default';
-	filename = ['default.mat'];
+    filespec = 'default';
+    filename = ['default.mat'];
 elseif ischar(filespec)
-	if (length(filespec) >= 5)
-        if (~strcmp(filespec(end-3:end),'.mat'))
-            filename = [filespec '.mat'];
+    if (length(filespec) >= 5)
+        if (~strcmp(filespec(end -3:end), '.mat'))
+            filename = [filespec, '.mat'];
         else
             filename = filespec;
         end
     else
-        filename = [filespec '.mat'];
+        filename = [filespec, '.mat'];
     end
 else
-	filename = [sprintf('screen%d.mat',filespec)];
+    filename = [sprintf('screen%d.mat', filespec)];
 end
 
 if nargin < 3 || isempty(dir)
-	dir = CalDataFolder(0,filename);
+    dir = CalDataFolder(0, filename);
 end
 
 % Load the file to get older calibrations
 [oldCal, oldCals, fullFilename] = LoadCalFile(filespec, [], dir);
 if isempty(oldCals)
-	cals = {cal}; %#ok<NASGU>
-    eval(['save ' QuoteString(fullFilename) ' cals']);
+    cals = {cal}; %#ok<NASGU>
+    eval(['save ', QuoteString(fullFilename), ' cals']);
 else
-	nOldCals = length(oldCals);
-	cals = oldCals;
-	cals{nOldCals+1} = cal; %#ok<NASGU>
-    eval(['save ' QuoteString(fullFilename) ' cals']);
+    nOldCals = length(oldCals);
+    cals = oldCals;
+    cals{nOldCals+1} = cal; %#ok<NASGU>
+    eval(['save ', QuoteString(fullFilename), ' cals']);
 end
-

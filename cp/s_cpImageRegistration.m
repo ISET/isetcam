@@ -10,10 +10,10 @@ img2 = imread('BanteaySrei_02.jpg');
 %    optimizer,metric);
 
 merge = registerImages(rgb2gray(img2), rgb2gray(img1));
-imshowpair(img2,(imwarp(img1, merge.Transformation)), 'diff');
+imshowpair(img2, (imwarp(img1, merge.Transformation)), 'diff');
 
 
-function [MOVINGREG] = registerImages(MOVING,FIXED)
+function [MOVINGREG] = registerImages(MOVING, FIXED)
 %registerImages  Register grayscale images using auto-generated code from Registration Estimator app.
 %  [MOVINGREG] = registerImages(MOVING,FIXED) Register grayscale images
 %  MOVING and FIXED using auto-generated code from the Registration
@@ -33,22 +33,22 @@ fixedRefObj = imref2d(size(FIXED));
 movingRefObj = imref2d(size(MOVING));
 
 % Detect SURF features
-fixedPoints = detectSURFFeatures(FIXED,'MetricThreshold',750.000000,'NumOctaves',3,'NumScaleLevels',5);
-movingPoints = detectSURFFeatures(MOVING,'MetricThreshold',750.000000,'NumOctaves',3,'NumScaleLevels',5);
+fixedPoints = detectSURFFeatures(FIXED, 'MetricThreshold', 750.000000, 'NumOctaves', 3, 'NumScaleLevels', 5);
+movingPoints = detectSURFFeatures(MOVING, 'MetricThreshold', 750.000000, 'NumOctaves', 3, 'NumScaleLevels', 5);
 
 % Extract features
-[fixedFeatures,fixedValidPoints] = extractFeatures(FIXED,fixedPoints,'Upright',false);
-[movingFeatures,movingValidPoints] = extractFeatures(MOVING,movingPoints,'Upright',false);
+[fixedFeatures, fixedValidPoints] = extractFeatures(FIXED, fixedPoints, 'Upright', false);
+[movingFeatures, movingValidPoints] = extractFeatures(MOVING, movingPoints, 'Upright', false);
 
 % Match features
-indexPairs = matchFeatures(fixedFeatures,movingFeatures,'MatchThreshold',50.000000,'MaxRatio',0.500000);
-fixedMatchedPoints = fixedValidPoints(indexPairs(:,1));
-movingMatchedPoints = movingValidPoints(indexPairs(:,2));
+indexPairs = matchFeatures(fixedFeatures, movingFeatures, 'MatchThreshold', 50.000000, 'MaxRatio', 0.500000);
+fixedMatchedPoints = fixedValidPoints(indexPairs(:, 1));
+movingMatchedPoints = movingValidPoints(indexPairs(:, 2));
 MOVINGREG.FixedMatchedFeatures = fixedMatchedPoints;
 MOVINGREG.MovingMatchedFeatures = movingMatchedPoints;
 
 % Apply transformation - Results may not be identical between runs because of the randomized nature of the algorithm
-tform = estimateGeometricTransform(movingMatchedPoints,fixedMatchedPoints,'projective');
+tform = estimateGeometricTransform(movingMatchedPoints, fixedMatchedPoints, 'projective');
 MOVINGREG.Transformation = tform;
 MOVINGREG.RegisteredImage = imwarp(MOVING, movingRefObj, tform, 'OutputView', fixedRefObj, 'SmoothEdges', true);
 
@@ -60,10 +60,9 @@ end
 function checkLicense()
 
 % Check for license to Computer Vision Toolbox
-CVSTStatus = license('test','Video_and_Image_Blockset');
+CVSTStatus = license('test', 'Video_and_Image_Blockset');
 if ~CVSTStatus
     error(message('images:imageRegistration:CVSTRequired'));
 end
 
 end
-

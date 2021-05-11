@@ -26,53 +26,47 @@ wls_in = MakeItWls(wls_in);
 wls_out = MakeItWls(wls_out);
 
 % Spline the whole enchilada
-[null,n] = size(spec_in);
-[m,null] = size(wls_out);
-spec_out = zeros(m,n);
+[null, n] = size(spec_in);
+[m, null] = size(wls_out);
+spec_out = zeros(m, n);
 
 % I decided not to touch the way things were
 % handled for extend == 0,1
 switch (extend)
-    case {0,1}
+    case {0, 1}
         % Check on
-        for i=1:n
-            spec_out(:,i) = spline(wls_in,spec_in(:,i),wls_out);
+        for i = 1:n
+            spec_out(:, i) = spline(wls_in, spec_in(:, i), wls_out);
         end
-        
+
         % Find range of input spectrum
         min_wl = min(wls_in);
         max_wl = max(wls_in);
-        
+
         % Truncate to zero outsize of critical range
         if (extend)
-            index = find( wls_out < min_wl);
+            index = find(wls_out < min_wl);
             if (~isempty(index))
-                for i=1:n
-                    spec_out(index,i) = spec_in(1,i);
+                for i = 1:n
+                    spec_out(index, i) = spec_in(1, i);
                 end
             end
             index = find(wls_out > max_wl);
             if (~isempty(index))
-                for i=1:n
-                    spec_out(index,i) = spec_in(end,i);
+                for i = 1:n
+                    spec_out(index, i) = spec_in(end, i);
                 end
             end
         else
-            index = find( wls_out < min_wl | wls_out > max_wl );
+            index = find(wls_out < min_wl | wls_out > max_wl);
             if (length(index) ~= 0)
-                spec_out(index,:) = zeros(length(index),n);
+                spec_out(index, :) = zeros(length(index), n);
             end
         end
     case 2,
-        for i=1:n
-            spec_out(:,i) = interp1(wls_in,spec_in(:,i),wls_out,'linear','extrap');
+        for i = 1:n
+            spec_out(:, i) = interp1(wls_in, spec_in(:, i), wls_out, 'linear', 'extrap');
         end
     otherwise
         error('Bad value passed for extend argument');
-end
-
-
-
-
-
-
+        end

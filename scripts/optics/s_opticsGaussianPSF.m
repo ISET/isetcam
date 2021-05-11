@@ -23,30 +23,31 @@ wave = (450:100:650);
 nWaves = length(wave);
 
 % Create scene
-scene = sceneCreate('pointArray',128,32);
-scene = sceneInterpolateW(scene,wave);
-scene = sceneSet(scene,'hfov',1);
-scene = sceneSet(scene,'name','psfPointArray');
-ieAddObject(scene); sceneWindow;
+scene = sceneCreate('pointArray', 128, 32);
+scene = sceneInterpolateW(scene, wave);
+scene = sceneSet(scene, 'hfov', 1);
+scene = sceneSet(scene, 'name', 'psfPointArray');
+ieAddObject(scene);
+sceneWindow;
 
 %% Create optical image
 
 oi = oiCreate;
-oi = oiSet(oi,'wave',sceneGet(scene,'wave'));
+oi = oiSet(oi, 'wave', sceneGet(scene, 'wave'));
 
 %% Calculate Gaussian PSF
 
 psfType = 'gaussian';
 
 % We make an elongated Gaussian by setting the xyRatio to 3:1
-xyRatio = 3*ones(1,nWaves);
-waveSpread = wave/wave(1);
-optics = siSynthetic(psfType,oi,waveSpread,xyRatio);
+xyRatio = 3 * ones(1, nWaves);
+waveSpread = wave / wave(1);
+optics = siSynthetic(psfType, oi, waveSpread, xyRatio);
 
 % Put optics back into oi and display "blurred" optical image
-oi = oiSet(oi,'optics',optics);
-oi = oiCompute(scene,oi);
-ieAddObject(oi); 
+oi = oiSet(oi, 'optics', optics);
+oi = oiCompute(scene, oi);
+ieAddObject(oi);
 oiWindow;
 
 %%

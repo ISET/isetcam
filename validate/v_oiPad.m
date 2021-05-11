@@ -10,61 +10,62 @@
 ieInit
 
 %%  Test scene - decent but low resolution
-s = sceneCreate('slanted bar',96);
-s = sceneSet(s,'fov',1);
+s = sceneCreate('slanted bar', 96);
+s = sceneSet(s, 'fov', 1);
 ieAddObject(s);
 
 %% Make oi for testing
 oi = oiCreate('diffraction limited');
-oi = oiCompute(oi,s);
-oiGet(oi,'fov');
-baseSpacing = oiGet(oi,'sample spacing');
+oi = oiCompute(oi, s);
+oiGet(oi, 'fov');
+baseSpacing = oiGet(oi, 'sample spacing');
 
 %% Verify that padding does not change the sample spacing
 
 for padding = 10:10:100
-    oip = oiPad(oi,[padding,padding]);
+    oip = oiPad(oi, [padding, padding]);
     % oiGet(oip,'fov')
-    newSpacing = oiGet(oip,'sample spacing');
+    newSpacing = oiGet(oip, 'sample spacing');
     assert(max(abs(newSpacing - baseSpacing)) < 1e-10)
 end
 disp('v_oiPad succeeds for diffraction limited');
 
-%% Make oi for testing
-oi = oiCreate('shift invariant');
-oi = oiCompute(oi,s);
-oiGet(oi,'fov');
-baseSpacing = oiGet(oi,'sample spacing');
-sz = oiGet(oi,'size');
-% oiWindow(oi);
+    %% Make oi for testing
+    oi = oiCreate('shift invariant');
+    oi = oiCompute(oi, s);
+    oiGet(oi, 'fov');
+    baseSpacing = oiGet(oi, 'sample spacing');
+    sz = oiGet(oi, 'size');
+    % oiWindow(oi);
 
-%% Verify that padding does not change the sample spacing
+    %% Verify that padding does not change the sample spacing
 
-for padding = 10:10:100
-    oip = oiPad(oi,[padding,padding]);
-    % oiGet(oip,'fov')
-    newSpacing = oiGet(oip,'sample spacing');
-    assert(max(abs(newSpacing - baseSpacing)) < 1e-10)
-end
-disp('v_oiPad succeeds for shift invariant');
-%%  Now check for the ray trace oi case, which failed at one time
+    for padding = 10:10:100
+        oip = oiPad(oi, [padding, padding]);
+        % oiGet(oip,'fov')
+        newSpacing = oiGet(oip, 'sample spacing');
+        assert(max(abs(newSpacing - baseSpacing)) < 1e-10)
+    end
+    disp('v_oiPad succeeds for shift invariant');
 
-% Fewer wavelengths for speed
-s = sceneSet(s,'wave',400:100:700);
-s = sceneSet(s,'distance',2);   % Matches the lens
-ieAddObject(s);
+        %%  Now check for the ray trace oi case, which failed at one time
 
-oi = oiCreate('raytrace');
-oi = oiCompute(oi,s);
-baseSpacing = oiGet(oi,'sample spacing');
+        % Fewer wavelengths for speed
+        s = sceneSet(s, 'wave', 400:100:700);
+        s = sceneSet(s, 'distance', 2); % Matches the lens
+        ieAddObject(s);
 
-%%
-for padding = 10:10:100
-    oip = oiPad(oi,[padding,padding]);
-    newSpacing = oiGet(oip,'sample spacing');
-    assert(max(abs(newSpacing - baseSpacing)) < 1e-10)
-end
-disp('v_oiPad succeeds for ray trace');
-ieDeleteObject(s);
+        oi = oiCreate('raytrace');
+        oi = oiCompute(oi, s);
+        baseSpacing = oiGet(oi, 'sample spacing');
 
-%%
+        %%
+        for padding = 10:10:100
+            oip = oiPad(oi, [padding, padding]);
+            newSpacing = oiGet(oip, 'sample spacing');
+            assert(max(abs(newSpacing - baseSpacing)) < 1e-10)
+        end
+        disp('v_oiPad succeeds for ray trace');
+            ieDeleteObject(s);
+
+            %%

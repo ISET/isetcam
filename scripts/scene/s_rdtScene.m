@@ -2,7 +2,7 @@
 %
 % ISET can generate many test scenes to evaluate color, resolution and
 % noise. In addition, we use a Cloud site to store some interesting data
-% that are pubicly available.  
+% that are pubicly available.
 %
 % This script illustrates example scenes.
 %
@@ -21,43 +21,48 @@ ieInit;
 
 % Spatial charts
 scene = sceneCreate('freq orient');
-ieAddObject(scene); sceneWindow;
+ieAddObject(scene);
+sceneWindow;
 
 scene = sceneCreate('slanted bar');
-ieAddObject(scene); sceneWindow;
+ieAddObject(scene);
+sceneWindow;
 
 % A standard color chart
 scene = sceneCreate('macbeth d65');
-ieAddObject(scene); sceneWindow;
+ieAddObject(scene);
+sceneWindow;
 
-% A better reflectance chart 
+% A better reflectance chart
 scene = sceneCreate('reflectance chart');
-ieAddObject(scene); sceneWindow;
+ieAddObject(scene);
+sceneWindow;
 
 %%  We have also stored natural image spectral radiance data
 
 % A large set is stored as part of the ISETBIO project
 rd = RdtClient('isetbio');
-rd.crp ('/resources/scenes/hyperspectral/manchester_database/2004');
-a = rd.listArtifacts('print',true,'type','mat');
+rd.crp('/resources/scenes/hyperspectral/manchester_database/2004');
+a = rd.listArtifacts('print', true, 'type', 'mat');
 
 %% Download an example from the hyperspectral database
-data = rd.readArtifact(a(1));  
+data = rd.readArtifact(a(1));
 
 % These are stored using a linear model.  So we convert from the linear
 % basis to the scene spectral radiance
 scene = sceneFromBasis(data);
-ieAddObject(scene); sceneWindow;
+ieAddObject(scene);
+sceneWindow;
 
 %% We have spectral data for faces
 
-rd.crp ('/resources/scenes/multiband/scien/2008');
-rd.listArtifacts('print',true,'type','mat');
+rd.crp('/resources/scenes/multiband/scien/2008');
+rd.listArtifacts('print', true, 'type', 'mat');
 
-data = rd.readArtifact('CaucasianAsianAfricanAmerican');  
+data = rd.readArtifact('CaucasianAsianAfricanAmerican');
 face = sceneFromBasis(data);
-ieAddObject(face); 
-sceneSet(face,'gamma',0.8);
+ieAddObject(face);
+sceneSet(face, 'gamma', 0.8);
 % sceneWindow;
 
 %% We also have synthetic, computer graphics scenes with 3D information
@@ -70,7 +75,7 @@ rd = RdtClient('scien');
 rd.crp('/sceneoidata');
 
 % Show what we have
-a = rd.listArtifacts('print',true);
+a = rd.listArtifacts('print', true);
 
 %% Load the HDR bench scene and display
 
@@ -78,12 +83,11 @@ a = rd.listArtifacts('print',true);
 data = rd.readArtifact(a(1));
 scene = data.scene;
 
-sceneWindow(scene); 
-scene = sceneSet(scene,'gamma',0.5);
+sceneWindow(scene);
+scene = sceneSet(scene, 'gamma', 0.5);
 
 % A nice property of the synthetic scenes is that we have ground truth
 % depth maps for them.
-scenePlot(scene,'depth map');
-
+scenePlot(scene, 'depth map');
 
 %%

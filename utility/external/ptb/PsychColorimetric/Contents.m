@@ -79,7 +79,7 @@
 %   uvTols              - Convert between CIE u'v' and a cone based (ls) chromaticity.
 %   uvToxy              - Convert between CIE u'v' and CIE xy chromaticity.
 %   uvYToXYZ            - Convert between u'v'Y and XYZ.
-%   WlsToS              - Convert wls wavelength sampling spec to S format. 
+%   WlsToS              - Convert wls wavelength sampling spec to S format.
 %   WlsToT              - Compute identity color matching matrix from wavelength sampling.
 %   xyTouv              - Convert CIE xy chromaticity to CIE u'v' chromaticity.
 %   xyYToXYZ            - Convert between xyY and XYZ.
@@ -91,7 +91,5 @@
 %   XYZTouv             - Compute uv chromaticities from XYZ.
 %   XYZTouvY            - Convert between XYZ and u'v'Y.
 %   XYZToxyY            - Convert between XYZ and xyY.
-  
+
 % Copyright (c) 1996-2013 by David Brainard, Denis Pelli, & Mario Kleiner
-
-

@@ -1,6 +1,6 @@
-function scene = sceneCreateMacbeth(surface,lightSource,scene)
+function scene = sceneCreateMacbeth(surface, lightSource, scene)
 % Create a hyperspectral scene of the Macbeth chart.
-%   
+%
 %   scene = sceneCreateMacbeth(surface,lightSource,[scene])
 %
 % The surface reflectances and light source are specified as arguments.
@@ -11,24 +11,24 @@ function scene = sceneCreateMacbeth(surface,lightSource,scene)
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
-if ~checkfields(lightSource,'spectrum'), error('Bad light source description.');
-elseif ~checkfields(surface,'spectrum'), error('Bad surface description.');
-elseif ~isequal(lightSource.spectrum.wave(:),surface.spectrum.wave(:))
+if ~checkfields(lightSource, 'spectrum'), error('Bad light source description.');
+elseif ~checkfields(surface, 'spectrum'), error('Bad surface description.');
+elseif ~isequal(lightSource.spectrum.wave(:), surface.spectrum.wave(:))
     error('Mis-match between light source and object spectral fields')
 end
 
 % Illuminant photons
-iPhotons      = illuminantGet(lightSource,'photons');
+iPhotons = illuminantGet(lightSource, 'photons');
 
 % Surface in XW format
-[surface,r,c] = RGB2XWFormat(surface.data);
+[surface, r, c] = RGB2XWFormat(surface.data);
 
 % Multiply for radiance and then put back in RGB format
-sPhotons      = surface*diag(iPhotons);
-sPhotons      = XW2RGBFormat(sPhotons,r,c);
+sPhotons = surface * diag(iPhotons);
+sPhotons = XW2RGBFormat(sPhotons, r, c);
 
 % Set the scene photons and light source
-scene = sceneSet(scene,'photons',sPhotons);
-scene = sceneSet(scene,'illuminant',lightSource);
+scene = sceneSet(scene, 'photons', sPhotons);
+scene = sceneSet(scene, 'illuminant', lightSource);
 
 end

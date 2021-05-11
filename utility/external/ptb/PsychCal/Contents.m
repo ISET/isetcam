@@ -73,4 +73,3 @@
 %   UpdateAmbientSensor - Update the ambient used for conversions, in sensor units.
 
 % Copyright (c) 1996-2010 by Denis Pelli & David Brainard
-

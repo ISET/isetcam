@@ -1,4 +1,4 @@
-function imRGB = XW2RGBFormat(imXW,row,col)
+function imRGB = XW2RGBFormat(imXW, row, col)
 % Convert XW format data to RGB format
 %
 %    imRGB = XW2RGBFormat(imXW,row,col);
@@ -24,20 +24,20 @@ function imRGB = XW2RGBFormat(imXW,row,col)
 % Copyright ImagEval Consultants, LLC, 2003.
 
 
-if ~exist('imXW','var')||isempty(imXW), error('No image data.'); end
+if ~exist('imXW', 'var') || isempty(imXW), error('No image data.'); end
 
 % I took this out because it is possible to have a monochrome scene with
 % just one column.
 % if ndims(imXW) ~= 2,  error('XW2RGB:  input should be 2D'); end
 
-if ~exist('row','var')||isempty(row), error('No row size.'); end
-if ~exist('col','var')||isempty(col), error('No col size.'); end
+if ~exist('row', 'var') || isempty(row), error('No row size.'); end
+if ~exist('col', 'var') || isempty(col), error('No col size.'); end
 
-x = size(imXW,1);
-w = size(imXW,2);
+x = size(imXW, 1);
+w = size(imXW, 2);
 
-if row*col ~= x, error('XW2RGBFormat:  Bad row, col values'); end
+if row * col ~= x, error('XW2RGBFormat:  Bad row, col values'); end
 
-imRGB = reshape(imXW,row,col,w);
+imRGB = reshape(imXW, row, col, w);
 
 return;

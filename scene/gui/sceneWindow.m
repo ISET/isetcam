@@ -1,18 +1,18 @@
-function sceneW = sceneWindow(scene,show)
+function sceneW = sceneWindow(scene, show)
 % Wrapper that replaces the GUIDE sceneWindow functionality
 %
 % Synopsis
 %   sceneW = sceneWindow(scene,[show])
 %
 % Brief description
-%   Opens a sceneWindow interface based on the sceneWindow_App. 
+%   Opens a sceneWindow interface based on the sceneWindow_App.
 %
 % Inputs
 %   scene:  The scene you want in the window.  If empty, the currently
 %           selected scene in global vcSESSION is used.  If there is no
-%           selected scene a default scene is created and used. 
+%           selected scene a default scene is created and used.
 %           (Optional, default is currently selected scene)
-%   show:   Executes a drawnow command on exiting.  
+%   show:   Executes a drawnow command on exiting.
 %           (Optional, default true)
 %
 % Outputs
@@ -39,17 +39,16 @@ function sceneW = sceneWindow(scene,show)
 
 % Examples
 %{
-   sceneWindow;
+sceneWindow;
 %}
 %{
-   scene = sceneCreate;
-   sceneWindow(scene);
+scene = sceneCreate;
+sceneWindow(scene);
 %}
-
 
 %% Add the scene to the database if it is in the call
 
-if exist('scene','var')
+if exist('scene', 'var')
     % A scene was passed in.  We add it to the database and select it.
     % That scene will appear in the window.
     ieAddObject(scene);
@@ -71,17 +70,17 @@ sceneW = ieSessionGet('scene window');
 if isempty(sceneW)
     % Empty, so create one and put it in the vcSESSION
     sceneW = sceneWindow_App;
-    ieSessionSet('scene window',sceneW);
+    ieSessionSet('scene window', sceneW);
 elseif ~isvalid(sceneW)
     % Replace the invalid one
     sceneW = sceneWindow_App;
-    ieSessionSet('scene window',sceneW);
+    ieSessionSet('scene window', sceneW);
 else
     % Just refresh it
     sceneW.refresh;
 end
 
 % Assume true if it does not exist.  Or if it is true.
-if ~exist('show','var') || show, drawnow; end
+if ~exist('show', 'var') || show, drawnow; end
 
 end

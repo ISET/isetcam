@@ -17,11 +17,11 @@ function cal = CalibrateMonDrvr(cal, USERPROMPT, whichMeterType, blankOtherScree
 % 					User interface improvements
 % 9/4/94	dhb		Incorporate gamma fitting
 %					improvements from CalibrateMonRoom.
-%			dhb		Add whichScreen variable. 
+%			dhb		Add whichScreen variable.
 %			dhb		Add sync mode variable.
 % 10/20/94	dhb		Add bgColor variable.
-% 11/18/94  ccc     Change the range of LUT from (0,255) to 
-%                   (0, InputLevels-step) with step=nInputLevels/255 
+% 11/18/94  ccc     Change the range of LUT from (0,255) to
+%                   (0, InputLevels-step) with step=nInputLevels/255
 % 11/21/94	dhb, ccc	Further nine-bit modifications.
 % 1/23/95	dhb		Pulled parameter setting out into a calling script,
 %					made user prompting conditional.
@@ -46,7 +46,7 @@ function cal = CalibrateMonDrvr(cal, USERPROMPT, whichMeterType, blankOtherScree
 % 10/23/06  cgb     OS/X, etc.
 % 11/08/06  dhb, cgb Living in the 0-1 world ....
 % 11/10/06  dhb     Get rid of round() around production of input levels.
-% 9/26/08   cgb, dhb Fix dacsize when Bits++ is used.  Fit gamma with full number of levels. 
+% 9/26/08   cgb, dhb Fix dacsize when Bits++ is used.  Fit gamma with full number of levels.
 % 8/19/12   dhb     Add codelet suggested by David Jones to clean up at end.  See comment in CalibrateMonSpd.
 % 8/19/12   mk      Rewrite setup and clut code to be able to better cope with all
 %                   the broken operating systems / drivers / gpus and to also
@@ -74,19 +74,19 @@ end
 
 % User prompt
 if USERPROMPT
-	if cal.describe.whichScreen == 0
-		fprintf('Hit any key to proceed past this message and display a box.\n');
-		fprintf('Focus radiometer on the displayed box.\n');
-		fprintf('Once meter is set up, hit any key - you will get %g seconds\n',...
-                cal.describe.leaveRoomTime);
-		fprintf('to leave room.\n');
+    if cal.describe.whichScreen == 0
+        fprintf('Hit any key to proceed past this message and display a box.\n');
+        fprintf('Focus radiometer on the displayed box.\n');
+        fprintf('Once meter is set up, hit any key - you will get %g seconds\n', ...
+            cal.describe.leaveRoomTime);
+        fprintf('to leave room.\n');
         KbStrokeWait(-1);
-	else
-		fprintf('Focus radiometer on the displayed box.\n');
-		fprintf('Once meter is set up, hit any key - you will get %g seconds\n',...
-                cal.describe.leaveRoomTime);
-		fprintf('to leave room.\n');
-	end
+    else
+        fprintf('Focus radiometer on the displayed box.\n');
+        fprintf('Once meter is set up, hit any key - you will get %g seconds\n', ...
+            cal.describe.leaveRoomTime);
+        fprintf('to leave room.\n');
+    end
 end
 
 % Blank other screen, if requested:
@@ -124,11 +124,11 @@ if (cal.describe.whichScreen == 0)
     HideCursor;
 end
 
-theClut = zeros(256,3);
+theClut = zeros(256, 3);
 if g_usebitspp
     % Load zero theClut into device:
     Screen('LoadNormalizedGammaTable', window, theClut, 2);
-    Screen('Flip', window);    
+    Screen('Flip', window);
 else
     % Load zero lut into regular graphics card:
     Screen('LoadNormalizedGammaTable', window, theClut);
@@ -136,12 +136,12 @@ end
 
 % Draw a box in the center of the screen
 if ~isfield(cal.describe, 'boxRect')
-	boxRect = [0 0 cal.describe.boxSize cal.describe.boxSize];
-	boxRect = CenterRect(boxRect,screenRect);
+    boxRect = [0, 0, cal.describe.boxSize, cal.describe.boxSize];
+    boxRect = CenterRect(boxRect, screenRect);
 else
-	boxRect = cal.describe.boxRect;
+    boxRect = cal.describe.boxRect;
 end
-theClut(2,:) = [1 1 1];
+theClut(2, :) = [1, 1, 1];
 Screen('FillRect', window, 1, boxRect);
 if g_usebitspp
     Screen('LoadNormalizedGammaTable', window, theClut, 2);
@@ -155,91 +155,91 @@ if USERPROMPT == 1
     fprintf('Set up radiometer and hit any key when ready\n');
     KbStrokeWait(-1);
     fprintf('Pausing for %d seconds ...', cal.describe.leaveRoomTime);
-    WaitSecs(cal.describe.leaveRoomTime);
-    fprintf(' done\n');
-end
-
-% Put correct surround for measurements.
-theClut(1,:) = cal.bgColor';
-if g_usebitspp
-    Screen('FillRect', window, 1, boxRect);
-    Screen('LoadNormalizedGammaTable', window, theClut, 2);
-    Screen('Flip', window, 0, 1);
-else
-    Screen('LoadNormalizedGammaTable', window, theClut);
-end
-
-% Start timing
-t0 = clock;
-
-mon = zeros(cal.describe.S(3)*cal.describe.nMeas,cal.nDevices);
-for a = 1:cal.describe.nAverage
-    for i = 1:cal.nDevices
-        disp(sprintf('Monitor device %g',i)); %#ok<*DSPS>
-        Screen('FillRect', window, 1, boxRect);
-        Screen('Flip', window, 0, 1);
-
-        % Measure ambient
-        darkAmbient1 = MeasMonSpd(window, [0 0 0]', cal.describe.S, 0, whichMeterType, theClut);
-
-        % Measure full gamma in random order
-        mGammaInput = zeros(cal.nDevices, cal.describe.nMeas);
-        mGammaInput(i,:) = mGammaInputRaw';
-        sortVals = rand(cal.describe.nMeas,1);
-        [null, sortIndex] = sort(sortVals); %#ok<*ASGLU>
-        %fprintf(1,'MeasMonSpd run %g, device %g\n',a,i);
-        [tempMon, cal.describe.S] = MeasMonSpd(window, mGammaInput(:,sortIndex), ...
-            cal.describe.S, [], whichMeterType, theClut);
-        tempMon(:, sortIndex) = tempMon;
-
-        % Take another ambient reading and average
-        darkAmbient2 = MeasMonSpd(window, [0 0 0]', cal.describe.S, 0, whichMeterType, theClut);
-        darkAmbient = ((darkAmbient1+darkAmbient2)/2)*ones(1, cal.describe.nMeas);
-
-        % Subtract ambient
-        tempMon = tempMon - darkAmbient;
-
-        % Store data
-        mon(:, i) = mon(:, i) + reshape(tempMon,cal.describe.S(3)*cal.describe.nMeas,1);
+        WaitSecs(cal.describe.leaveRoomTime);
+        fprintf(' done\n');
     end
-end
-mon = mon / cal.describe.nAverage;
 
-% Close the screen, restore cluts:
-if g_usebitspp
-    % Load identity clut on Bits++ / DataPixx et al.:
-    BitsPlusPlus('LoadIdentityClut', window);
-    Screen('Flip', window);
-end
+    % Put correct surround for measurements.
+    theClut(1, :) = cal.bgColor';
+    if g_usebitspp
+        Screen('FillRect', window, 1, boxRect);
+        Screen('LoadNormalizedGammaTable', window, theClut, 2);
+        Screen('Flip', window, 0, 1);
+    else
+        Screen('LoadNormalizedGammaTable', window, theClut);
+    end
 
-% Restore graphics card gamma tables to original state:
-RestoreCluts;
+    % Start timing
+    t0 = clock;
 
-% Show hidden cursor:
-if cal.describe.whichScreen == 0
-	ShowCursor;
-end
+    mon = zeros(cal.describe.S(3)*cal.describe.nMeas, cal.nDevices);
+    for a = 1:cal.describe.nAverage
+        for i = 1:cal.nDevices
+            disp(sprintf('Monitor device %g', i)); %#ok<*DSPS>
+            Screen('FillRect', window, 1, boxRect);
+            Screen('Flip', window, 0, 1);
 
-% Close all windows:
-Screen('CloseAll');
+            % Measure ambient
+            darkAmbient1 = MeasMonSpd(window, [0, 0, 0]', cal.describe.S, 0, whichMeterType, theClut);
 
-% Report time
-t1 = clock;
-fprintf('CalibrateMonDrvr measurements took %g minutes\n', etime(t1, t0)/60);
+            % Measure full gamma in random order
+            mGammaInput = zeros(cal.nDevices, cal.describe.nMeas);
+            mGammaInput(i, :) = mGammaInputRaw';
+            sortVals = rand(cal.describe.nMeas, 1);
+            [null, sortIndex] = sort(sortVals); %#ok<*ASGLU>
+            %fprintf(1,'MeasMonSpd run %g, device %g\n',a,i);
+            [tempMon, cal.describe.S] = MeasMonSpd(window, mGammaInput(:, sortIndex), ...
+                cal.describe.S, [], whichMeterType, theClut);
+            tempMon(:, sortIndex) = tempMon;
 
-% Pre-process data to get rid of negative values.
-mon = EnforcePos(mon);
-cal.rawdata.mon = mon;
+            % Take another ambient reading and average
+            darkAmbient2 = MeasMonSpd(window, [0, 0, 0]', cal.describe.S, 0, whichMeterType, theClut);
+            darkAmbient = ((darkAmbient1 + darkAmbient2) / 2) * ones(1, cal.describe.nMeas);
 
-% Use data to compute best spectra according to desired
-% linear model.  We use SVD to find the best linear model,
-% then scale to best approximate maximum
-disp('Computing linear models');
-cal = CalibrateFitLinMod(cal);
+            % Subtract ambient
+            tempMon = tempMon - darkAmbient;
 
-% Fit gamma functions.
-cal.rawdata.rawGammaInput = mGammaInputRaw;
-cal = CalibrateFitGamma(cal, 2^cal.describe.dacsize);
+            % Store data
+            mon(:, i) = mon(:, i) + reshape(tempMon, cal.describe.S(3)*cal.describe.nMeas, 1);
+        end
+    end
+    mon = mon / cal.describe.nAverage;
 
-% Done:
-return;
+    % Close the screen, restore cluts:
+    if g_usebitspp
+        % Load identity clut on Bits++ / DataPixx et al.:
+        BitsPlusPlus('LoadIdentityClut', window);
+        Screen('Flip', window);
+    end
+
+    % Restore graphics card gamma tables to original state:
+    RestoreCluts;
+
+    % Show hidden cursor:
+    if cal.describe.whichScreen == 0
+        ShowCursor;
+    end
+
+    % Close all windows:
+    Screen('CloseAll');
+
+    % Report time
+    t1 = clock;
+    fprintf('CalibrateMonDrvr measurements took %g minutes\n', etime(t1, t0)/60);
+
+    % Pre-process data to get rid of negative values.
+    mon = EnforcePos(mon);
+    cal.rawdata.mon = mon;
+
+    % Use data to compute best spectra according to desired
+    % linear model.  We use SVD to find the best linear model,
+    % then scale to best approximate maximum
+    disp('Computing linear models');
+    cal = CalibrateFitLinMod(cal);
+
+    % Fit gamma functions.
+    cal.rawdata.rawGammaInput = mGammaInputRaw;
+    cal = CalibrateFitGamma(cal, 2^cal.describe.dacsize);
+
+    % Done:
+    return;

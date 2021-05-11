@@ -1,4 +1,4 @@
-function rootPath=isetRootPath()
+function rootPath = isetRootPath()
 % Return the path to the root iset directory
 %
 % This function must reside in the directory at the base of the ISET
@@ -8,7 +8,7 @@ function rootPath=isetRootPath()
 % Example:
 %   fullfile(isetRootPath,'data')
 
-rootPath=which('isetRootPath');
+rootPath = which('isetRootPath');
 
 rootPath = fileparts(rootPath);
 

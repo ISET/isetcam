@@ -11,6 +11,5 @@ function XYZ = SRGBPrimaryToXYZ(rgb)
 % 5/1/04	dhb	 Wrote it.
 % 7/8/10    dhb  To ensure consistency, get matrix from XYZToSRGBPrimary rather than hard coded here.
 
-[nil,M] = XYZToSRGBPrimary([]);
-XYZ = inv(M)*rgb;
-
+[nil, M] = XYZToSRGBPrimary([]);
+XYZ = inv(M) * rgb;

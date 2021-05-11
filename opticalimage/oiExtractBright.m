@@ -16,23 +16,24 @@ function OImax = oiExtractBright(oi)
 if ieNotDefined('oi'), oi = vcGetObject('OI'); end
 
 % Find the brightest part of the scene
-sz = oiGet(oi,'size');
-illuminance = oiGet(oi,'illuminance');
+sz = oiGet(oi, 'size');
+illuminance = oiGet(oi, 'illuminance');
 
 % If illuminance has not been computed, compute it here
-[~,ind] = max(illuminance(:));
-[rect(2),rect(1)] = ind2sub(sz,ind);
-rect(3) = 1; rect(4) = 1;
+[~, ind] = max(illuminance(:));
+[rect(2), rect(1)] = ind2sub(sz, ind);
+rect(3) = 1;
+rect(4) = 1;
 
 % Now, we crop the data to form a small opticalimage  containing only the
-% highest illuminance.  
-OImax = oiCrop(oi,rect);
+% highest illuminance.
+OImax = oiCrop(oi, rect);
 
 % We adjust the optics
-optics = oiGet(OImax,'optics');
-optics = opticsSet(optics,'otfmethod','skip');
-optics = opticsSet(optics,'offaxismethod','skip');
+optics = oiGet(OImax, 'optics');
+optics = opticsSet(optics, 'otfmethod', 'skip');
+optics = opticsSet(optics, 'offaxismethod', 'skip');
 
-OImax = oiSet(OImax,'optics',optics);
+OImax = oiSet(OImax, 'optics', optics);
 
 end

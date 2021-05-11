@@ -7,4 +7,3 @@
 %   DCT, quantization, color space transformations
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-

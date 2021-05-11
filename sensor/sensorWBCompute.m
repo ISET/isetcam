@@ -1,4 +1,4 @@
-function sensor = sensorWBCompute(sensor,workDir,displayFlag)
+function sensor = sensorWBCompute(sensor, workDir, displayFlag)
 % Compute sensor response one waveband at a time (to reduce memory usage)
 %
 %   sensor = sensorWBCompute(sensor,workDir,displayFlag)
@@ -31,23 +31,23 @@ if ieNotDefined('displayFlag'), displayFlag = 0; end
 displayFig = 99;
 
 sensorL = sensorNoNoise(sensor);
-t = dir([workDir,filesep,'oi*.mat']);
+t = dir([workDir, filesep, 'oi*.mat']);
 nWave = length(t);
 chdir(workDir);
-volts = zeros(sensorGet(sensor,'size'));
-wBar = waitbar(0,'oi-sensor waveband compute');
-for ii=1:(nWave-1)
-    waitbar(ii/nWave,wBar);
+volts = zeros(sensorGet(sensor, 'size'));
+wBar = waitbar(0, 'oi-sensor waveband compute');
+for ii = 1:(nWave - 1)
+    waitbar(ii/nWave, wBar);
     load(t(ii).name);
-    
+
     % sensorCompute adjusts the spectral properties of the sensor to match
     % the optical image.  So, in this routine, we create a tmpSensor that
-    % is discarded.  
-    tmpSensor = sensorCompute(sensorL,opticalimage,0);
-    volts = volts + sensorGet(tmpSensor,'volts');
-    if displayFlag, 
-        figure(displayFig); 
-        sensor = sensorSet(sensor,'volts',volts);
+    % is discarded.
+    tmpSensor = sensorCompute(sensorL, opticalimage, 0);
+    volts = volts + sensorGet(tmpSensor, 'volts');
+    if displayFlag,
+        figure(displayFig);
+        sensor = sensorSet(sensor, 'volts', volts);
         sensorShowImage(sensor);
     end
 end
@@ -55,17 +55,17 @@ close(wBar);
 
 % Now compute one step with the noise, but not quantized
 load(t(nWave).name);
-sensor = sensorCompute(sensor,opticalimage,0);
-volts = volts + sensorGet(sensor,'volts');
+sensor = sensorCompute(sensor, opticalimage, 0);
+volts = volts + sensorGet(sensor, 'volts');
 
 % Store volts, possibly quantizing.
-sensor = sensorSet(sensor,'volts',volts);
-qMethod = sensorGet(sensor,'quantizationmethod');
-if ~strcmp(qMethod,'analog')
-    sensor = sensorSet(sensor,'volts',analog2digital(sensor,qMethod));
+sensor = sensorSet(sensor, 'volts', volts);
+qMethod = sensorGet(sensor, 'quantizationmethod');
+if ~strcmp(qMethod, 'analog')
+    sensor = sensorSet(sensor, 'volts', analog2digital(sensor, qMethod));
 end
 
-sensorName = ['wb-',oiGet(opticalimage,'name')];
-sensor = sensorSet(sensor,'name',sensorName);
+sensorName = ['wb-', oiGet(opticalimage, 'name')];
+sensor = sensorSet(sensor, 'name', sensorName);
 
 return;

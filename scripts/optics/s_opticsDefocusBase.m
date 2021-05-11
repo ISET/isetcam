@@ -16,63 +16,68 @@ ieInit;
 
 %% Test scene
 % scene = sceneCreate('sweep frequency');
-scene = sceneCreate('sweep frequency',384,30);
+scene = sceneCreate('sweep frequency', 384, 30);
 
 %% Compute a diffraction limited oi in the shift invariant model
 oi = oiCreate('wvf');
 D = 0;
-oi = oiSet(oi,'wvf zcoeffs',D,'defocus');
-oi = oiCompute(oi,scene);
-ieAddObject(oi); oiWindow;
-oiPlot(oi,'illuminance hline',[1,50]);
-title(sprintf('Defocus %.1f',D));
+oi = oiSet(oi, 'wvf zcoeffs', D, 'defocus');
+oi = oiCompute(oi, scene);
+ieAddObject(oi);
+oiWindow;
+oiPlot(oi, 'illuminance hline', [1, 50]);
+title(sprintf('Defocus %.1f', D));
 
 %%
 D = 8;
-oi = oiSet(oi,'wvf zcoeffs',D,'defocus');
+oi = oiSet(oi, 'wvf zcoeffs', D, 'defocus');
 oi = wvf2oi(wvfComputePSF(oi.wvf));
-oi = oiCompute(oi,scene);
-oi = oiSet(oi,'name',sprintf('Defocus %d',D));
-ieAddObject(oi); oiWindow;
-oiPlot(oi,'illuminance hline',[1,50]);
-title(sprintf('Defocus %.1f D on Power %.1f',D,1/oiGet(oi,'wvf focal length')));
+oi = oiCompute(oi, scene);
+oi = oiSet(oi, 'name', sprintf('Defocus %d', D));
+ieAddObject(oi);
+oiWindow;
+oiPlot(oi, 'illuminance hline', [1, 50]);
+title(sprintf('Defocus %.1f D on Power %.1f', D, 1 / oiGet(oi, 'wvf focal length')));
 
 fprintf('\n---------\n');
-flength = oiGet(oi,'wvf focal length','m');      % 
-pDiameter = oiGet(oi,'wvf pupil diameter','m');  % mm
-fprintf('Focal length   %f m (%f power)\nPupil diameter %f m\n',flength,(1/flength),pDiameter);
-fprintf('F number       %f\n',oiGet(oi,'wvf fnumber'));
+flength = oiGet(oi, 'wvf focal length', 'm'); %
+pDiameter = oiGet(oi, 'wvf pupil diameter', 'm'); % mm
+fprintf('Focal length   %f m (%f power)\nPupil diameter %f m\n', flength, (1 / flength), pDiameter);
+fprintf('F number       %f\n', oiGet(oi, 'wvf fnumber'));
 fprintf('\n---------\n');
 
 %% Change the power, but keep the fnumber
 
 D = 0;
 oi = oiCreate('wvf');
-oi = oiSet(oi,'wvf focal length',flength/2);          % Much higher power
-oi = oiSet(oi,'wvf pupil diameter',1e3*pDiameter/2);  % Much higher power
+oi = oiSet(oi, 'wvf focal length', flength/2); % Much higher power
+oi = oiSet(oi, 'wvf pupil diameter', 1e3*pDiameter/2); % Much higher power
 oi = wvf2oi(wvfComputePSF(oi.wvf));
-oi = oiCompute(oi,scene);
-ieAddObject(oi); oiWindow;
-oiPlot(oi,'illuminance hline',[1,50]);
-title(sprintf('Defocus %.1f D on Power %.1f',D,1/oiGet(oi,'wvf focal length')));
+oi = oiCompute(oi, scene);
+ieAddObject(oi);
+oiWindow;
+oiPlot(oi, 'illuminance hline', [1, 50]);
+title(sprintf('Defocus %.1f D on Power %.1f', D, 1 / oiGet(oi, 'wvf focal length')));
 
 %%  Smaller drop off
 D = 8;
-oi = oiSet(oi,'wvf zcoeffs',D,'defocus');
+oi = oiSet(oi, 'wvf zcoeffs', D, 'defocus');
 oi = wvf2oi(wvfComputePSF(oi.wvf));
-oi = oiCompute(oi,scene);
-ieAddObject(oi); oiWindow;
-oiPlot(oi,'illuminance hline',[1,50]);
-title(sprintf('Defocus %.1f D on Power %.1f',D,1/oiGet(oi,'wvf focal length')));
+oi = oiCompute(oi, scene);
+ieAddObject(oi);
+oiWindow;
+oiPlot(oi, 'illuminance hline', [1, 50]);
+title(sprintf('Defocus %.1f D on Power %.1f', D, 1 / oiGet(oi, 'wvf focal length')));
 
 %%
 D = 16;
-oi = oiSet(oi,'wvf zcoeffs',D,'defocus');
+oi = oiSet(oi, 'wvf zcoeffs', D, 'defocus');
 oi = wvf2oi(wvfComputePSF(oi.wvf));
-oi = oiCompute(oi,scene);
-ieAddObject(oi); oiWindow;
-oiPlot(oi,'illuminance hline',[1,50]);
-title(sprintf('Defocus %.1f D on Power %.1f',D,1/oiGet(oi,'wvf focal length')));
+oi = oiCompute(oi, scene);
+ieAddObject(oi);
+oiWindow;
+oiPlot(oi, 'illuminance hline', [1, 50]);
+title(sprintf('Defocus %.1f D on Power %.1f', D, 1 / oiGet(oi, 'wvf focal length')));
 
 %% Comments and Notes
 %{

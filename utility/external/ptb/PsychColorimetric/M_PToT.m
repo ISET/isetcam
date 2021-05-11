@@ -1,4 +1,4 @@
-function [M,dest] = M_PToT(Psource,Tdest,source)
+function [M, dest] = M_PToT(Psource, Tdest, source)
 % [M] = M_PToT(Psource,Tdest)
 % [M,dest] = M_PToT(Psource,Tdest,source)
 %
@@ -13,7 +13,7 @@ function [M,dest] = M_PToT(Psource,Tdest,source)
 %  (n_chromacy by n_wavelengths)
 % Tdest - destination color matching functions
 %  (n_chromacy by n_wavelengths)
-% 
+%
 % OPTIONAL
 % source - source tristimulus vectors
 %  (n_chromacy by n_lights)
@@ -22,11 +22,10 @@ function [M,dest] = M_PToT(Psource,Tdest,source)
 %
 % 8/2/94		dhb		Fixed variable name bug.
 
-M = Tdest*Psource;
+M = Tdest * Psource;
 
-if ( nargin == 3)
-  dest = M*source;
+if (nargin == 3)
+    dest = M * source;
 else
-  dest = [];
+    dest = [];
 end
-

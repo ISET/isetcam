@@ -25,7 +25,7 @@ function isetPath(isetDir)
 %
 % copyfileright ImagEval Consultants, LLC, 2003.
 
-fprintf('ISET root directory: %s\n',isetDir)
+fprintf('ISET root directory: %s\n', isetDir)
 
 % Adds the root directory of the ISET tree to the user's path
 addpath(isetDir);
@@ -37,7 +37,9 @@ addpath(genpath(isetRootPath));
 vcs_dirs = {'.git', '.svn'};
 for i = 1:length(vcs_dirs)
     vcs_path = fullfile(isetRootPath, vcs_dirs{i});
-    if ~isempty(dir(vcs_path)); rmpath(vcs_path); end
+    if ~isempty(dir(vcs_path));
+        rmpath(vcs_path);
+    end
 end
 
 % Refreshes the path.

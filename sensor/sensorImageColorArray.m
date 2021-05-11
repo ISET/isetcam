@@ -1,8 +1,8 @@
-function [cfaN,cfaMap] = sensorImageColorArray(cfa)
+function [cfaN, cfaMap] = sensorImageColorArray(cfa)
 %Create an image of the color filter array
 %
 %    [cfaN,cfaMap] = sensorImageColorArray(cfa)
-% 
+%
 % The input is a color filter array filled with characters describing the
 % filter position.  This routine returns color filter  numerical values
 % (cfaN and a color map (cfaMap) describing the meaning of these number.
@@ -43,8 +43,9 @@ end
 % If no return was requested, assume the user wanted a picture of the
 % colors
 if nargout == 0
-    figure; 
-    image(cfaN); colormap(cfaMap);
+    figure;
+    image(cfaN);
+    colormap(cfaMap);
     axis image; zoom on
 end
 

@@ -18,11 +18,9 @@ stimulusSizeMrad = DegToMrad(stimulusSizeDeg);
 if (stimulusSizeMrad < 1.5)
     Ce = 1;
 elseif (stimulusSizeMrad > 100)
-    Ce = (stimulusSizeMrad^2)/(1.5*100);
+    Ce = (stimulusSizeMrad^2) / (1.5 * 100);
 else
-    Ce = stimulusSizeMrad/1.5;
+    Ce = stimulusSizeMrad / 1.5;
 end
 
 end
-
-

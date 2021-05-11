@@ -14,11 +14,11 @@ ieInit
 
 %% Illuminant estimate method
 scene = sceneCreate;
-wave = sceneGet(scene,'wave');
+wave = sceneGet(scene, 'wave');
 
 % The whole image is the chart.  Set the cornerpoints and store them in the
 % chartP of the scene.
-[cornerpoints, scene] = chartCornerpoints(scene,true);
+[cornerpoints, scene] = chartCornerpoints(scene, true);
 
 %% Estimate the illuminant photons from the MCC data
 
@@ -26,17 +26,19 @@ illPhotons = macbethIlluminant(scene);
 
 %%  Compare the original and the estimated
 
-illOrig = sceneGet(scene,'illuminant photons');
+illOrig = sceneGet(scene, 'illuminant photons');
 
 ieNewGraphWin;
-loglog(illOrig,illPhotons);
-xlabel('Original'); ylabel('Estimated'); grid on
-assert( max(illOrig./illPhotons) - 1 < 1e-6)
+loglog(illOrig, illPhotons);
+xlabel('Original');
+ylabel('Estimated');
+grid on
+assert(max(illOrig ./ illPhotons)-1 < 1e-6)
 
 %%
 sceneWindow(scene);
-macbethDrawRects(scene,'on');
+macbethDrawRects(scene, 'on');
 pause(1)
-macbethDrawRects(scene,'off');  % Just a refresh.
+macbethDrawRects(scene, 'off'); % Just a refresh.
 
 %% END

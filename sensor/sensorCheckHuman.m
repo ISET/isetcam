@@ -8,8 +8,10 @@ function bool = sensorCheckHuman(sensor)
 bool = 0;
 if ieNotDefined('sensor'), error('sensor required'); end
 
-if     strfind(sensorGet(sensor,'name'),'human'), bool = 1; return; 
-elseif isfield(sensor,'human'), bool = 1; return;
+if strfind(sensorGet(sensor, 'name'), 'human'), bool = 1;
+    return;
+elseif isfield(sensor, 'human'), bool = 1;
+    return;
 end
 
 return

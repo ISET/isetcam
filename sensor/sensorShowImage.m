@@ -1,4 +1,4 @@
-function img = sensorShowImage(sensor,gam,scaleMax,app)
+function img = sensorShowImage(sensor, gam, scaleMax, app)
 % Display the image in a scene structure.
 %
 % Synopsis
@@ -33,8 +33,8 @@ function img = sensorShowImage(sensor,gam,scaleMax,app)
 %  implemented in sensorData2Image.
 %
 %  The final display can be modified by the gamma parameter is read from the
-%  figure setting. 
-%  
+%  figure setting.
+%
 %  The data are either scaled to a maximum of the voltage swing (default) or
 %  if scaleMax = 1 (Scale button is selected in the window) the image data
 %  are scaled to fill up the display range. This option is useful for small
@@ -44,24 +44,25 @@ function img = sensorShowImage(sensor,gam,scaleMax,app)
 % Copyright ImagEval Consultants, LLC, 2003.
 %
 % Examples:
-%   sensorShowImage(sensor,gam); 
-%   sensorShowImage(sensor); 
+%   sensorShowImage(sensor,gam);
+%   sensorShowImage(sensor);
 %
-% See also:  
+% See also:
 %   sensorData2Image, imageShowImage, sceneShowImage, oiShowImage
 %
 
-if ieNotDefined('gam'),      gam = ieSessionGet('sensor gamma'); end
+if ieNotDefined('gam'), gam = ieSessionGet('sensor gamma'); end
 if ieNotDefined('scaleMax'), scaleMax = 0; end
-if ieNotDefined('app'),      app = ieSessionGet('sensor window'); end
+if ieNotDefined('app'), app = ieSessionGet('sensor window'); end
 
-axes(app.imgMain); cla;
-if isempty(sensor),return; end
+axes(app.imgMain);
+cla;
+if isempty(sensor), return; end
 
 % We have the voltage or digital values and we want to render them into an
 % image. We handle various types of cases, include the multiple exposure
 % case.
-img = sensorData2Image(sensor,'dv or volts',gam,scaleMax);
+img = sensorData2Image(sensor, 'dv or volts', gam, scaleMax);
 
 %% We want to handle the cases when the pixel size is not square
 
@@ -79,18 +80,19 @@ img = sensorData2Image(sensor,'dv or volts',gam,scaleMax);
 % Still thinking (ZLy, BW)
 
 % We could be showing the image with ss.x and ss.y.  We would then need to
-% fix vcLineSelect or vcPointSelect. 
+% fix vcLineSelect or vcPointSelect.
 
 % ss  = sensorGet(sensor,'spatial support');
 
 % We assign a value that is not the position, but rather a 'rough' column
 % or 'row' number.
-pSize = sensorGet(sensor,'pixel size');
-rowcol = sensorGet(sensor,'size');
-y = (1:rowcol(1)); x = (1:rowcol(2)); 
-sFactor = pSize(2)/pSize(1);
-if sFactor > 1 , y = y/sFactor;  % rows
-else,            x = x*sFactor;  % columns
+pSize = sensorGet(sensor, 'pixel size');
+rowcol = sensorGet(sensor, 'size');
+y = (1:rowcol(1));
+x = (1:rowcol(2));
+sFactor = pSize(2) / pSize(1);
+if sFactor > 1, y = y / sFactor; % rows
+else, x = x * sFactor; % columns
 end
 
 % If figNum is false, we don't display.  Otherwise, we show the data in
@@ -98,11 +100,14 @@ end
 % safe.
 if ~isempty(img)
     % If the sensor is monochrome, the img is a matrix, not RGB.
-    if ismatrix(img), img = repmat(img,[1,1,3]); end
+    if ismatrix(img), img = repmat(img, [1, 1, 3]); end
 
     % What is this condition on app 0?  Is that do not display?
-    if ~isequal(app,0), image(app.imgMain,x,y,img); axis image; axis off; end
-    if (sensorGet(sensor,'nSensors') == 1), colormap(gray(256)); end
+    if ~isequal(app, 0), image(app.imgMain, x, y, img);
+        axis image;
+        axis off;
+    end
+    if (sensorGet(sensor, 'nSensors') == 1), colormap(gray(256)); end
 end
 
 end

@@ -1,4 +1,4 @@
-function roiLocs = metricsROI(hndl,whichImage)
+function roiLocs = metricsROI(hndl, whichImage)
 %
 %   roiLocs = metricsROI(hndl,whichImage)
 %
@@ -19,17 +19,17 @@ if ieNotDefined('whichImage'), error('Must specify which metrics image.'); end
 roiLocs = [];
 
 switch lower(whichImage)
-    case {'img1','image1','upperleftimage'}
+    case {'img1', 'image1', 'upperleftimage'}
         if isempty(hndl.img1), errordlg('No image 1 data');
-        else                   rect = round(getrect(hndl.img1));
+        else rect = round(getrect(hndl.img1));
         end
-    case {'img2','image2','upperrightimage'}
+    case {'img2', 'image2', 'upperrightimage'}
         if isempty(hndl.img2), errordlg('No image 2 data')
-        else                   rect = round(getrect(hndl.img2));
+        else rect = round(getrect(hndl.img2));
         end
-    case {'metricimage','lowerimage','metricImg'}
+    case {'metricimage', 'lowerimage', 'metricImg'}
         if isempty(hndl.imgMetric), errordlg('No data in metric image');
-        else                          rect = round(getrect(hndl.imgMetric));
+        else rect = round(getrect(hndl.imgMetric));
         end
     otherwise
         error('Unknown metric image handle.');
@@ -37,11 +37,13 @@ end
 
 if isempty(rect), return;
 else
-    cmin = rect(1); cmax = rect(1)+rect(3);
-    rmin = rect(2); rmax = rect(2)+rect(4);
-    
-    [c,r] = meshgrid(cmin:cmax,rmin:rmax);
-    roiLocs = [r(:),c(:)];
+    cmin = rect(1);
+    cmax = rect(1) + rect(3);
+    rmin = rect(2);
+    rmax = rect(2) + rect(4);
+
+    [c, r] = meshgrid(cmin:cmax, rmin:rmax);
+    roiLocs = [r(:), c(:)];
 end
 
 return;

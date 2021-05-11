@@ -1,4 +1,4 @@
-function [averagePSF] = psfAverageMultiple(inputPSFs,CHECKINSFDOMAIN)
+function [averagePSF] = psfAverageMultiple(inputPSFs, CHECKINSFDOMAIN)
 % [averagePSF] = psfAverageMultiple(inputPSFs,[CHECKINSFDOMAIN])
 %
 % Produces an average of passed optical point spread functions.
@@ -14,7 +14,7 @@ function [averagePSF] = psfAverageMultiple(inputPSFs,CHECKINSFDOMAIN)
 % 9/9/11   dhb  Do it in the space domain, optional check in sf domain.
 %          dhb  Take array, not cell array.
 
-averagePSF = mean(inputPSFs,3);
+averagePSF = mean(inputPSFs, 3);
 
 % Optional check in SF domain.
 %
@@ -28,20 +28,19 @@ averagePSF = mean(inputPSFs,3);
 if (nargin < 2 || isempty(CHECKINSFDOMAIN))
     CHECKINSFDOMAIN = 0;
 end
-    
+
 if (CHECKINSFDOMAIN)
-    nInputs = size(inputPSFs,3);
+    nInputs = size(inputPSFs, 3);
     inputOTFs = zeros(size(inputPSFs));
     for i = 1:nInputs
-        inputOTFs(:,:,i) = psf2otf(inputPSFs(:,:,i));
+        inputOTFs(:, :, i) = psf2otf(inputPSFs(:, :, i));
     end
-    averageOTF = mean(inputOTFs,3);
+    averageOTF = mean(inputOTFs, 3);
     averagePSFCheck = otf2psf(averageOTF);
-    checkDiff = averagePSF(:)-averagePSFCheck(:);
+    checkDiff = averagePSF(:) - averagePSFCheck(:);
     if (max(abs(checkDiff)) > 1e-8)
         error('AveragePSF space/sf domain disagreement\n');
     else
         %fprintf('AveragePSF space/sf domain agreement\n');
     end
 end
-

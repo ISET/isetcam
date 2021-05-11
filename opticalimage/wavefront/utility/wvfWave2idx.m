@@ -1,4 +1,4 @@
-function idx = wvfWave2idx(wvf,wList)
+function idx = wvfWave2idx(wvf, wList)
 % Wavelength to index
 %
 %   idx = wvfWave2idx(wvf,wList)
@@ -21,13 +21,12 @@ function idx = wvfWave2idx(wvf,wList)
 % Edited and brought into ISET 2015
 
 % Get the wavelengths in the structure
-wave = wvfGet(wvf,'wavelengths');
+wave = wvfGet(wvf, 'wavelengths');
 
 % Check to within 1 nm
-idx = find(ismember(round(wave),round(wList)));
+idx = find(ismember(round(wave), round(wList)));
 
 % Error if no match
 if isempty(idx), error('wvfWave2idx: No matching wavelength in list'); end
 
 end
-

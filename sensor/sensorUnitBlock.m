@@ -1,4 +1,4 @@
-function unitBlock = sensorUnitBlock(ISA,colorOrder)
+function unitBlock = sensorUnitBlock(ISA, colorOrder)
 % ****OBSOLETE ****
 % Create a spatial unit block of a color filter array
 %
@@ -6,7 +6,7 @@ function unitBlock = sensorUnitBlock(ISA,colorOrder)
 %
 % The spatial unit block of the image sensor array is defined by a small,
 % unit block, that makes up the basic component of a larger array.  The
-% basic configurations are 
+% basic configurations are
 %
 % Monochrome
 % Bayer 1223  (e.g., rggb)
@@ -20,10 +20,10 @@ function unitBlock = sensorUnitBlock(ISA,colorOrder)
 % At one time, we allowed the pixel positions to be arbitrary.  At present
 % we only support rectangular arrays.  We plan to add a transformation to
 % non-rectangular representations.  This transformation is not yet
-% implemented. 
+% implemented.
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
 disp('Obsolete')
-evalin('caller','mfilename')
+evalin('caller', 'mfilename')
 return;

@@ -37,14 +37,14 @@ function T = sensorDisplayTransform(sensor)
 %
 
 % We set the extrapVal to 0.2 because we may have infrared data
-bMatrix = colorBlockMatrix(sensorGet(sensor,'wave'),0.2);
-filterSpectra = sensorGet(sensor,'filterspectra');
+bMatrix = colorBlockMatrix(sensorGet(sensor, 'wave'), 0.2);
+filterSpectra = sensorGet(sensor, 'filterspectra');
 
-filterRGB = bMatrix'*filterSpectra;
+filterRGB = bMatrix' * filterSpectra;
 T = filterRGB';
 % o = ones(1,size(T,1));
 s = max(T(:));
 % s = max((o*T)');
-T = T/s;
+T = T / s;
 
 end

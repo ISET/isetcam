@@ -4,7 +4,7 @@ function [outImage, d] = displayCompute(d, I, sz)
 %    [outImage,d] = displayCompute(d, I, varargin)
 %
 %  Inputs:
-%    display  - could be either display name or display structure, see 
+%    display  - could be either display name or display structure, see
 %               displayCreate for detail
 %    I        - input image, should be M*N*k matrix. k should be equal to
 %               the number of primaries of display
@@ -35,8 +35,9 @@ if ieNotDefined('d'), error('display required'); end
 if ieNotDefined('I'), error('Input image required'); end
 
 if ischar(d), d = displayCreate(d); end
-if ischar(I), I = im2double(imread(I)); else I = double(I); end
-
+if ischar(I), I = im2double(imread(I));
+else I = double(I);
+end
 
 %% Upsampling
 nPrimary = displayGet(d, 'n primaries');
@@ -47,40 +48,41 @@ if ieNotDefined('sz')
     dixelImg = displayGet(d, 'dixel image');
     sz = displayGet(d, 'dixel size');
 else
-    s = round(sz ./ displayGet(d, 'pixels per dixel'));
+    s = round(sz./displayGet(d, 'pixels per dixel'));
     dixelImg = displayGet(d, 'dixel image', sz);
-    assert(all(s>0), 'bad up-sampling sz');
+    assert(all(s > 0), 'bad up-sampling sz');
 end
 
 % check psfs values to be no less than 0
 if isempty(dixelImg), error('psf not defined for display'); end
-assert(min(dixelImg(:)) >= 0, 'psfs values should be non-negative');
+    assert(min(dixelImg(:)) >= 0, 'psfs values should be non-negative');
 
-% If a single matrix, assume it is gray scale
-if ismatrix(I), I = repmat(I, [1 1 nPrimary]); end
+    % If a single matrix, assume it is gray scale
+    if ismatrix(I), I = repmat(I, [1, 1, nPrimary]); end
 
-% Expand the image so there are s samples within each of the pixels,
-% allowing a representation of the psf.
-[M, N, ~] = size(I);
-ppd = displayGet(d, 'pixels per dixel');
-hRender = displayGet(d, 'render function');
+    % Expand the image so there are s samples within each of the pixels,
+    % allowing a representation of the psf.
+    [M, N, ~] = size(I);
+    ppd = displayGet(d, 'pixels per dixel');
+    hRender = displayGet(d, 'render function');
 
-if any(ppd) > 1 && isempty(hRender)
-    error('Render algorithm is required');
+    if any(ppd) > 1 && isempty(hRender)
+        error('Render algorithm is required');
+    end
+
+    if ~isempty(hRender)
+        outImage = hRender(I, d, sz);
+    else
+        outImage = imresize(I, [s(1) * M, s(2) * N], 'nearest');
+    end
+
+    % check the size of outImage
+    assert(size(outImage, 1) == M*s(1) && ...
+        size(outImage, 2) == N*s(2), 'bad outImage size');
+
+    %
+    outImage = outImage .* repmat(dixelImg, [M / ppd(1), N / ppd(2), 1]);
+
 end
 
-if ~isempty(hRender)
-    outImage = hRender(I, d, sz);
-else
-    outImage = imresize(I, [s(1)*M s(2)*N], 'nearest');
-end
-
-% check the size of outImage
-assert(size(outImage, 1) == M*s(1) && ...
-       size(outImage, 2) == N*s(2), 'bad outImage size');
-
-% 
-outImage = outImage .* repmat(dixelImg, [M/ppd(1) N/ppd(2) 1]);
-
-end
 %% END

@@ -1,4 +1,4 @@
-function [sensor,primaryE] = SettingsToSensorAcc(cal,settings)
+function [sensor, primaryE] = SettingsToSensorAcc(cal, settings)
 % [sensor,primaryE] = SettingsToSensorAcc(cal,settings)
 %
 % Convert from device setting coordinates to
@@ -23,10 +23,10 @@ if (isempty(nPrimaryBases))
 end
 
 if (nPrimaryBases == 1)
-    sensor = SettingsToSensor(cal,settings);
+    sensor = SettingsToSensor(cal, settings);
     primaryE = [];
 else
-    settingsE = ExpandSettings(settings,nPrimaryBases);
-    primaryE = SettingsToPrimary(cal,settingsE);
-    sensor = PrimaryToSensor(cal,primaryE);
+    settingsE = ExpandSettings(settings, nPrimaryBases);
+    primaryE = SettingsToPrimary(cal, settingsE);
+    sensor = PrimaryToSensor(cal, primaryE);
 end

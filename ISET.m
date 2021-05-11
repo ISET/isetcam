@@ -22,9 +22,9 @@ global vcSESSION;
 % thisVersion =  1.001;    % Until October 11, 2005
 % this Version = 1.01;     % Started Feb. 20, 2006
 % thisVersion = 3.0;       % Started September, 2007
-thisVersion = 4.0;         % Started August, 2009
+thisVersion = 4.0; % Started August, 2009
 
-ieSessionSet('version',thisVersion);
+ieSessionSet('version', thisVersion);
 
 % Determine whether we are running under MATLAB or Octave.
 if ~isempty(ver('matlab'))
@@ -41,7 +41,7 @@ if verLessThan(interpreter.Name, interpreter.MinimumVersion)
     warning(strcat('ISET requires ', interpreter.Name, ' version ', interpreter.MinimumVersion, ' or higher.'))
 end
 
-disp(['ISET ',num2str(vcSESSION.VERSION),', ', interpreter.Name, ' ' ,interpreter.Version]);
+disp(['ISET ', num2str(vcSESSION.VERSION), ', ', interpreter.Name, ' ', interpreter.Version]);
 
 clear expectedMatlabVersion version matlabVersion
 
@@ -58,13 +58,14 @@ d = dir('iset-*.mat');
 if ~isempty(d), sessionFileName = d(end).name; end
 
 % sessionDir = pwd;
-year = date; year = year(end-3:end);
+year = date;
+year = year(end-3:end);
 fprintf('------------------\n');
-fprintf('Copyright ImagEval Consulting, LLC, 2003-%s\n',year);
+fprintf('Copyright ImagEval Consulting, LLC, 2003-%s\n', year);
 
 ieInitSession;
-ieSessionSet('dir',pwd);
-ieSessionSet('name',sessionFileName);
+ieSessionSet('dir', pwd);
+ieSessionSet('name', sessionFileName);
 
 clear sessionFileName
 clear thisVersion

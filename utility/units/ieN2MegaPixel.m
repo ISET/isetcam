@@ -1,4 +1,4 @@
-function MP = ieN2MegaPixel(N,precision)
+function MP = ieN2MegaPixel(N, precision)
 % Compute megapixel count from N
 %
 % The decimal precision defaults to 1, but you can ask for more.
@@ -11,6 +11,6 @@ function MP = ieN2MegaPixel(N,precision)
 
 if ieNotDefined('precision'), precision = 1; end
 
-MP = round(N*1e-6* (10^precision))/10^precision;
+MP = round(N*1e-6*(10^precision)) / 10^precision;
 
 return;

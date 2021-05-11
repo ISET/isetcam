@@ -8,25 +8,25 @@
 ieInit
 
 %% First, create a simple colorful test scene
-scene  = sceneCreate('macbeth tungsten'); 
-oi     = oiCreate;
+scene  = sceneCreate('macbeth tungsten');
+oi = oiCreate;
 sensor = sensorCreate;
-sensor = sensorSet(sensor,'size',[340 420]);
+sensor = sensorSet(sensor, 'size', [340, 420]);
 
 % Match the scene field of view to the sensor size
-fov = sensorGet(sensor,'fov',sceneGet(scene,'distance'),oi);
+fov = sensorGet(sensor, 'fov', sceneGet(scene, 'distance'), oi);
 scene  = sceneSet(scene,'fov',fov);
 
 % Compute the optical image and sensor from the scene.
-oi     = oiCompute(scene,oi);
-sensor = sensorCompute(sensor,oi);
+oi = oiCompute(scene, oi);
+sensor = sensorCompute(sensor, oi);
 ieAddObject(sensor);
 
 %% We are ready to create and experiment with the image processing calls.
 
-% Create the image processor.  
+% Create the image processor.
 ip = ipCreate;
-ip = ipSet(ip,'name','default');
+ip = ipSet(ip, 'name', 'default');
 
 % First, we compute using the default image processing pipeline.
 % Reading the boxes on the right of the window, we see the default
@@ -46,34 +46,34 @@ ip = ipSet(ip,'name','default');
 %% Set the sensor correction parameters
 
 % Choose the internal color space
-ip = ipSet(ip,'internal cs','XYZ');
+ip = ipSet(ip, 'internal cs', 'XYZ');
 
 % Choose the likely set of signals the sensor will encounter
-ip = ipSet(ip,'conversion method sensor','MCC Optimized');
+ip = ipSet(ip, 'conversion method sensor', 'MCC Optimized');
 
 % Give the image processor a name
-ip = ipSet(ip,'name','MCC-XYZ');
+ip = ipSet(ip, 'name', 'MCC-XYZ');
 
 % Note that at this point we have left illuminant correction to 'None'.  So
 % there will be no illuminant correction at this point.
 
 % Compute from sensor to sRGB
-ip = ipCompute(ip,sensor);
+ip = ipCompute(ip, sensor);
 ipWindow(ip);
 
 %% Set the illuminant correction algorithm
 
-% We have only three default options at this point.  
-ip = ipSet(ip,'illuminant correction method','gray world');
-ip = ipCompute(ip,sensor);
-ip = ipSet(ip,'name','MCC-XYZ-GW');
+% We have only three default options at this point.
+ip = ipSet(ip, 'illuminant correction method', 'gray world');
+ip = ipCompute(ip, sensor);
+ip = ipSet(ip, 'name', 'MCC-XYZ-GW');
 ieAddObject(ip);
 ipWindow;
 
 %% Now, illustrate a different demosaic algorithm
-ip = ipSet(ip,'demosaic method','Adaptive Laplacian');
-ip = ipCompute(ip,sensor);
-ip = ipSet(ip,'name','MCC-XYZ-GW-AL');
+ip = ipSet(ip, 'demosaic method', 'Adaptive Laplacian');
+ip = ipCompute(ip, sensor);
+ip = ipSet(ip, 'name', 'MCC-XYZ-GW-AL');
 ieAddObject(ip);
 ipWindow;
 
@@ -86,19 +86,19 @@ ipWindow;
 %% Interacting with the image processing display
 
 % This is the display structure
-d = ipGet(ip,'display');
+d = ipGet(ip, 'display');
 disp(d)
 
 % There is a separate window for interacting with the display
 % See t_displayIntroduction.
 
 %% This is an image the display gamut in chromaticity coordinates
-displayPlot(d,'gamut');
+displayPlot(d, 'gamut');
 
 %% The display volume in Lab space
-displayPlot(d,'gamut 3d');
+displayPlot(d, 'gamut 3d');
 
 %% Display subpixel pointspreads
-displayPlot(d,'psf')
+displayPlot(d, 'psf')
 
 %% END

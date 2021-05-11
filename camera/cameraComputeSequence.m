@@ -1,4 +1,4 @@
-function [camera,images] = cameraComputeSequence(camera, varargin)
+function [camera, images] = cameraComputeSequence(camera, varargin)
 % Compute an image of one or more scenes shot as a sequence
 % using a camera model. For example bracketing or burst photography
 %
@@ -7,7 +7,7 @@ function [camera,images] = cameraComputeSequence(camera, varargin)
 % various approaches to combine them -- ranging from simple summation
 % to alignment, tone-mapping, fancy AI stuff, and so on.
 %
-% I think that will either mean broadening what the IP can do, or 
+% I think that will either mean broadening what the IP can do, or
 % adding another ISP-type element.
 %
 % Input:
@@ -21,7 +21,7 @@ function [camera,images] = cameraComputeSequence(camera, varargin)
 %
 %   History:
 %       Initial coding: DJC, December, 2020
-% 
+%
 % check for required camera structure
 if ~exist('camera', 'var') || isempty(camera), error('camera struct required'); end
 
@@ -30,7 +30,7 @@ if ~exist('camera', 'var') || isempty(camera), error('camera struct required'); 
 p = inputParser;
 varargin = ieParamFormat(varargin);
 
-p.addParameter('scenes',cameraGet('scene'));
+p.addParameter('scenes', cameraGet('scene'));
 p.addParameter('exposuretimes', 1); % probably should do an Auto-Exposure thing?
 p.addParameter('nframes', 1);
 
@@ -49,27 +49,25 @@ nframes = p.Results.nframes;
 
 if (numels(scenes) > 1 || numels(eposuretimes) > 1) && numels(scenes) ~= numels(exposuretimes)
     error("For multiple scenes and frames, for now they need to be the same");
-else
-    warning("Need to add the ability to a variety of cases like multiple exposures of 1 scene and vice versa");
-end
+    else
+        warning("Need to add the ability to a variety of cases like multiple exposures of 1 scene and vice versa");
+    end
 
-% assume we have rationalized the number of scenes and exposures
-% to be the same
-images = [];
-for index = 1:numels(scenes) % iterate through one or more scenes
-    scene = scenes(index);
-    eTime = exposuretimes(index);
-    
-    % we need to set the exposure time for the camera's current sensor
-    sensor = cameraGet(camera, 'sensor');
-    sensor = sensorSet(sensor, 'exposure time', eTime);
-    camera = cameraSet(camera, 'sensor', sensor);
-    
-    % cameraCompute runs all the way through the pipeline
-    % what if we want to do something 'smarter' about combining them?
-    % the current ip structure doesn't support multiple incoming images
-    [camera, renderedImage] = cameraCompute(camera, scene);
-    images(end+1) = renderedImage; %#ok<AGROW>
-end
+    % assume we have rationalized the number of scenes and exposures
+    % to be the same
+    images = [];
+    for index = 1:numels(scenes) % iterate through one or more scenes
+        scene = scenes(index);
+        eTime = exposuretimes(index);
 
+        % we need to set the exposure time for the camera's current sensor
+        sensor = cameraGet(camera, 'sensor');
+        sensor = sensorSet(sensor, 'exposure time', eTime);
+        camera = cameraSet(camera, 'sensor', sensor);
 
+        % cameraCompute runs all the way through the pipeline
+        % what if we want to do something 'smarter' about combining them?
+        % the current ip structure doesn't support multiple incoming images
+        [camera, renderedImage] = cameraCompute(camera, scene);
+        images(end+1) = renderedImage; %#ok<AGROW>
+    end

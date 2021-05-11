@@ -4,7 +4,7 @@ function oi = oiClearData(oi)
 %   oi = oiClearData(oi)
 %
 % Clear the data from the optical image structure as well as the data in
-% the optics structure within it.  
+% the optics structure within it.
 %
 % Clear the optics data is not necessarily a good idea, as these data are
 % mainly the PSF value.  The optics are treated as a special case in
@@ -15,15 +15,15 @@ function oi = oiClearData(oi)
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
-bitDepth = oiGet(oi,'bit depth');
-oi = oiSet(oi,'data',[]);
-oi = oiSet(oi,'bit depth',bitDepth);
+bitDepth = oiGet(oi, 'bit depth');
+oi = oiSet(oi, 'data', []);
+oi = oiSet(oi, 'bit depth', bitDepth);
 
-oi = oiSet(oi,'wangular',[]);
-oi = oiSet(oi,'depth map',[]);
+oi = oiSet(oi, 'wangular', []);
+oi = oiSet(oi, 'depth map', []);
 
-optics = opticsClearData(oiGet(oi,'optics'));
+optics = opticsClearData(oiGet(oi, 'optics'));
 
-oi = oiSet(oi,'optics',optics);
+oi = oiSet(oi, 'optics', optics);
 
 return;

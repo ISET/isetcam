@@ -1,4 +1,4 @@
-function [h,rgbim] = imagescRGB(rgbim,varargin)
+function [h, rgbim] = imagescRGB(rgbim, varargin)
 % Display a scaled to unit RGB image
 %
 %   [h, rgbimg] = imagescRGB(rgbim,row,col,[gamma])
@@ -7,8 +7,8 @@ function [h,rgbim] = imagescRGB(rgbim,varargin)
 %  scaled to a maximum of 1.
 %
 %  If the exponent gamma is included, then rgbim .^ gamma are displayed;
-% 
-%    The routine accepts data in XW and RGB format.  
+%
+%    The routine accepts data in XW and RGB format.
 %    In XW format case use:                imagescRGB(img,row,col,[gamma])
 %    If the data are in RGB format use:    imagescRGB(img,[gamma])
 %
@@ -32,30 +32,31 @@ function [h,rgbim] = imagescRGB(rgbim,varargin)
 %% This is a theory of display.
 % I am not sure I should be clipping before scaling.  But over the years,
 % that has seemed better.
-rgbim = ieClip(rgbim,0,[]);
+rgbim = ieClip(rgbim, 0, []);
 s = max(rgbim(:));
-if s ~= 0, rgbim = rgbim/max(rgbim(:)); end
+if s ~= 0, rgbim = rgbim / max(rgbim(:)); end
 
 if ismatrix(rgbim)
-    
-    if  nargin - 1 < 2, error('2-dimensional input requires row and col arguments.');
-    else,               row = varargin{1}; col = varargin{2};
+
+    if nargin - 1 < 2, error('2-dimensional input requires row and col arguments.');
+    else, row = varargin{1};
+        col = varargin{2};
     end
-    
-    rgbim = XW2RGBFormat(rgbim,row,col);
+
+    rgbim = XW2RGBFormat(rgbim, row, col);
     if nargin - 1 >= 3
         gam = varargin{3};
-        rgbim = rgbim .^ gam;
+        rgbim = rgbim.^gam;
     end
-    
+
 elseif ndims(rgbim) == 3
-    % row = size(rgbim,1); 
+    % row = size(rgbim,1);
     % col = size(rgbim,2);
     if nargin - 1 >= 1
         gam = varargin{1};
-        rgbim = rgbim .^ gam;
+        rgbim = rgbim.^gam;
     end
-else 
+else
     error('Bad image input');
 end
 

@@ -1,4 +1,4 @@
-function img = rtInsertBlock(img,filteredData,blockSamples,blockPadding,rBlock,cBlock)
+function img = rtInsertBlock(img, filteredData, blockSamples, blockPadding, rBlock, cBlock)
 % Insert a block of data filtered into the irradiance image
 %
 %    img = rtInsertBlock(img,filteredData,blockSamples,blockPadding,rBlock,cBlock)
@@ -16,15 +16,15 @@ function img = rtInsertBlock(img,filteredData,blockSamples,blockPadding,rBlock,c
 dataSize = size(filteredData);
 
 if rBlock == 1, rStart = 1;
-else rStart = (rBlock-1)*blockSamples(1) + 1;
+else rStart = (rBlock - 1) * blockSamples(1) + 1;
 end
-rList = rStart + [0:(dataSize(1)-1)];
+rList = rStart + [0:(dataSize(1) - 1)];
 
 if cBlock == 1, cStart = 1;
-else cStart = (cBlock-1)*blockSamples(2) + 1;
+else cStart = (cBlock - 1) * blockSamples(2) + 1;
 end
-cList = cStart + [0:(dataSize(2)-1)];
+cList = cStart + [0:(dataSize(2) - 1)];
 
-img(rList,cList) = img(rList,cList) + filteredData;
+img(rList, cList) = img(rList, cList) + filteredData;
 
 return;

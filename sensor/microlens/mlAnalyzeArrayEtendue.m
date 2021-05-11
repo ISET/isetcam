@@ -1,12 +1,12 @@
-function sensor = mlAnalyzeArrayEtendue(sensor,method,nAngles)
+function sensor = mlAnalyzeArrayEtendue(sensor, method, nAngles)
 % Analyze the etendue across a sensor array
 %
 % sensor = mlAnalyzeArrayEtendue(sensor,[method = 'centered'],[nAngles = 5])
 %
 %   Calculate the etendue across the sensor surface given the current
 %   microlens properties. The calculation can be performed using the
-%   method argument 
-%   method = 
+%   method argument
+%   method =
 %     optimal:       at the optimal position
 %     centered:      at the pixel center
 %     no microlens:  absent.
@@ -24,7 +24,7 @@ function sensor = mlAnalyzeArrayEtendue(sensor,method,nAngles)
 %   estimated from just a couple of values.
 %
 % Example:
-%   oi = oiCreate; sensor = sensorCreate; 
+%   oi = oiCreate; sensor = sensorCreate;
 %   ieAddObject(oi); ieAddObject(sensor);
 %   sensor = mlAnalyzeArrayEtendue(sensor,'optimal');
 %   optimalE = sensorGet(sensor,'sensorEtendue');
@@ -33,8 +33,8 @@ function sensor = mlAnalyzeArrayEtendue(sensor,method,nAngles)
 %   sensor = mlAnalyzeArrayEtendue(sensor,'no microlens');
 %   nomlE = sensorGet(sensor,'sensorEtendue');
 %   mesh(optimalE ./ nomlE);
-% 
-%   tic, sensor = mlAnalyzeArrayEtendue(sensor,'centered',5); toc;  
+%
+%   tic, sensor = mlAnalyzeArrayEtendue(sensor,'centered',5); toc;
 %   plotSensorEtendue(sensor)
 %
 %   sensor = mlAnalyzeArrayEtendue(sensor,'centered',5);
@@ -51,62 +51,62 @@ showBar = ieSessionGet('waitbar');
 
 % We should also be able to compute this assuming that there is a microlens
 % offset.  At present, we don't.
-ml = sensorGet(sensor,'ml');
+ml = sensorGet(sensor, 'ml');
 if isempty(ml)
     fprintf('** Initializing sensor microlens\n');
-    ml = mlensCreate(sensor); 
+    ml = mlensCreate(sensor);
 end
 
-sensorCRA = sensorGet(sensor,'cra degrees');
+sensorCRA = sensorGet(sensor, 'cra degrees');
 
 % We want to go out to the far corner, so we estimate the etendue beyond
 % the width, all the way out.
-cra = (0:nAngles)/nAngles*max(sensorCRA(:));
+cra = (0:nAngles) / nAngles * max(sensorCRA(:));
 
-if showBar, 
-    h = waitbar(0,sprintf('Calculating etendue at %.0f angles...',nAngles));
+if showBar,
+    h = waitbar(0, sprintf('Calculating etendue at %.0f angles...', nAngles));
 end
 
-etendue   = zeros(size(cra));
-for ii=1:length(cra)
-    ml = mlensSet(ml,'chief ray angle',cra(ii));
+etendue = zeros(size(cra));
+for ii = 1:length(cra)
+    ml = mlensSet(ml, 'chief ray angle', cra(ii));
     method = ieParamFormat(method);
     switch method
         case 'centered'
             % No offset, so centered
-            ml = mlensSet(ml,'offset',0); 
-            ml = mlRadiance(ml,sensor,1);
-        case {'optimized','optimal'}
-            offset = mlensGet(ml,'optimal offset','microns');
-            ml     = mlensSet(ml,'offset',offset);
-            ml     = mlRadiance(ml,sensor,1);
+            ml = mlensSet(ml, 'offset', 0);
+            ml = mlRadiance(ml, sensor, 1);
+        case {'optimized', 'optimal'}
+            offset = mlensGet(ml, 'optimal offset', 'microns');
+            ml = mlensSet(ml, 'offset', offset);
+            ml = mlRadiance(ml, sensor, 1);
         case {'nomicrolens'}
             % Only calculate vignetting, ignore the microlens
-            ml = mlRadiance(ml,sensor,0);
+            ml = mlRadiance(ml, sensor, 0);
         otherwise
             error('Unknown method.');
     end
-    
-    etendue(ii) = mlensGet(ml,'etendue');
-    if showBar, waitbar(ii/length(cra),h); end
+
+    etendue(ii) = mlensGet(ml, 'etendue');
+    if showBar, waitbar(ii/length(cra), h); end
 end
 if showBar, close(h); end
 
 % We interpolate the (many) missing values
-sensorEtendue = interp1(cra,etendue,sensorCRA);
+sensorEtendue = interp1(cra, etendue, sensorCRA);
 
 % We assign the result either to vignetting or etendue depending on whether
 % a microlens was in place.
 switch lower(method)
-    case {'centered','optimal','optimized'}
-        sensor = sensorSet(sensor,'etendue',sensorEtendue);
-    case {'nomicrolens','bare'}
-        sensor = sensorSet(sensor,'etendue',sensorEtendue);
+    case {'centered', 'optimal', 'optimized'}
+        sensor = sensorSet(sensor, 'etendue', sensorEtendue);
+    case {'nomicrolens', 'bare'}
+        sensor = sensorSet(sensor, 'etendue', sensorEtendue);
     otherwise
         error('Unknown method.');
 end
 
 % Update the microlens structure
-sensor = sensorSet(sensor,'ml',ml);
+sensor = sensorSet(sensor, 'ml', ml);
 
 return

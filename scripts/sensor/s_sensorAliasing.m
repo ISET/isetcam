@@ -14,74 +14,78 @@
 %
 % Copyright Imageval Consulting, LLC, 2016
 
-
 %%
 ieInit
 
 %% Set up a sweep frequency
 
 fov = 5;
-scene = sceneCreate('sweep frequency',768,30);
-scene = sceneSet(scene,'fov',fov);
-ieAddObject(scene); sceneWindow;
+scene = sceneCreate('sweep frequency', 768, 30);
+scene = sceneSet(scene, 'fov', fov);
+ieAddObject(scene);
+sceneWindow;
 
 % Set up a high acuity lens
 oi = oiCreate('diffraction limited');
-oi = oiSet(oi,'optics fnumber', 2);
-oi = oiCompute(oi,scene);
-ieAddObject(oi); oiWindow;
+oi = oiSet(oi, 'optics fnumber', 2);
+oi = oiCompute(oi, scene);
+ieAddObject(oi);
+oiWindow;
 
 %% We use a small pixel size and see the scene come through correctly
 
 sensor = sensorCreate('monochrome');
-sensor = sensorSetSizeToFOV(sensor,fov,oi);
+sensor = sensorSetSizeToFOV(sensor, fov, oi);
 
 % Set a two micron pixel
-sensor = sensorSet(sensor,'pixel size constant fill factor',2e-6);
-sensor = sensorCompute(sensor,oi);
+sensor = sensorSet(sensor, 'pixel size constant fill factor', 2e-6);
+sensor = sensorCompute(sensor, oi);
 ieAddObject(sensor);
 sensorWindow;
 
-sensorPlot(sensor,'electrons hline',[5 1]);
+sensorPlot(sensor, 'electrons hline', [5, 1]);
 
 %% Make the sensor pixel under-sample by creating a large pixel.
 
 % Now, notice the aliased signal on the right.  The scene and oi are high
 % spatial frequency, but the sensor capture appears to be low spatial
 % frequency.
-sensor = sensorSet(sensor,'pixel size constant fill factor',6e-6);
-sensor = sensorSetSizeToFOV(sensor,fov,oi);
-sensor = sensorCompute(sensor,oi);
-ieAddObject(sensor); sensorWindow;
+sensor = sensorSet(sensor, 'pixel size constant fill factor', 6e-6);
+sensor = sensorSetSizeToFOV(sensor, fov, oi);
+sensor = sensorCompute(sensor, oi);
+ieAddObject(sensor);
+sensorWindow;
 
-sensorPlot(sensor,'electrons hline',[5 1]);
+sensorPlot(sensor, 'electrons hline', [5, 1]);
 
 %% Now, protect from aliasing by using a blurry lens
 
-oi = oiSet(oi,'optics fnumber', 12);
-oi = oiCompute(oi,scene);
-sensor = sensorCompute(sensor,oi);
-ieAddObject(sensor); sensorWindow;
+oi = oiSet(oi, 'optics fnumber', 12);
+oi = oiCompute(oi, scene);
+sensor = sensorCompute(sensor, oi);
+ieAddObject(sensor);
+sensorWindow;
 
-sensorPlot(sensor,'electrons hline',[5 1])
+sensorPlot(sensor, 'electrons hline', [5, 1])
 
 %% This is what aliasing looks like for the slanted bar target
 
 % This is why people sometimes say 'aliasing' creates 'jaggies'
-scene = sceneCreate('slanted bar',1024);
-scene = sceneSet(scene,'fov',fov);
+scene = sceneCreate('slanted bar', 1024);
+scene = sceneSet(scene, 'fov', fov);
 
-oi = oiSet(oi,'optics fnumber', 2);
-sensor = sensorSet(sensor,'pixel size constant fill factor',6e-6);
-sensor = sensorSetSizeToFOV(sensor,fov,oi);
-oi = oiCompute(oi,scene);
-sensor = sensorCompute(sensor,oi);
-ieAddObject(sensor); sensorWindow;
+oi = oiSet(oi, 'optics fnumber', 2);
+sensor = sensorSet(sensor, 'pixel size constant fill factor', 6e-6);
+sensor = sensorSetSizeToFOV(sensor, fov, oi);
+oi = oiCompute(oi, scene);
+sensor = sensorCompute(sensor, oi);
+ieAddObject(sensor);
+sensorWindow;
 
 %% If we protect against aliasing
 
-oi = oiSet(oi,'optics fnumber', 12);
-oi = oiCompute(oi,scene);
-sensor = sensorCompute(sensor,oi);
-ieAddObject(sensor); sensorWindow;
-
+oi = oiSet(oi, 'optics fnumber', 12);
+oi = oiCompute(oi, scene);
+sensor = sensorCompute(sensor, oi);
+ieAddObject(sensor);
+sensorWindow;

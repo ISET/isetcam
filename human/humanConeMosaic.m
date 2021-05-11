@@ -1,4 +1,4 @@
-function [xy,coneType,densities,rSeed] = humanConeMosaic(sz,densities,umConeWidth,rSeed)
+function [xy, coneType, densities, rSeed] = humanConeMosaic(sz, densities, umConeWidth, rSeed)
 %Create an xy spatial representation of the human cone mosaic
 %
 %  [xy,coneType,densities,rSeed] = humanConeMosaic(sz,densities,umConeWidth,rSeed)
@@ -35,19 +35,19 @@ function [xy,coneType,densities,rSeed] = humanConeMosaic(sz,densities,umConeWidt
 % Copyright ImagEval Consultants, LLC, 2005.
 
 if ieNotDefined('sz'), error('Array size must be defined'); end
-if ieNotDefined('densities') 
-    densities = [0.1 0.55 0.25 0.1];  % Empty, L,M,S cone ratios
+if ieNotDefined('densities')
+    densities = [0.1, 0.55, 0.25, 0.1]; % Empty, L,M,S cone ratios
 end
 if ieNotDefined('umConeWidth'), umConeWidth = 2; end
 if ieNotDefined('rSeed')
-    try  rSeed = rng; 
+    try rSeed = rng;
     catch err
-        rSeed = randn('seed'); 
+        rSeed = randn('seed');
     end
 else
     try rng(rSeed)
     catch err
-        randn('seed',rSeed);
+        randn('seed', rSeed);
     end
 end
 
@@ -55,47 +55,50 @@ nTypes = length(densities);
 
 % densities should be 4D and sum to one.  We patch up some cases here
 s = sum(densities);
-if nTypes == 4, densities = densities/sum(densities);
+if nTypes == 4, densities = densities / sum(densities);
 elseif nTypes == 3
-    if s >= 1 , densities = [0 densities/sum(densities)];
-    else        densities = [1 - s, densities];
+    if s >= 1, densities = [0, densities / sum(densities)];
+    else densities = [1 - s, densities];
     end
 end
 
 % There are always 4 types at this point
 nTypes = 4;
 nLocs = prod(sz);
-nReceptors = zeros(1,nTypes);
+nReceptors = zeros(1, nTypes);
 
 % Figure out how many cones of each type
-for ii=1:nTypes
+for ii = 1:nTypes
     nReceptors(ii) = round(densities(ii)*nLocs);
 end
 
 if sum(nReceptors) < nLocs
     % Add an extra one to the biggest pool.
     % This is the smallest percent difference ...
-    [tmp,ii] = max(nReceptors);
+    [tmp, ii] = max(nReceptors);
     nReceptors(ii) = nReceptors(ii) + nLocs - sum(nReceptors);
 end
 
 % Assign nTypes to a regular arrangement and then randomly permute
-tmp = zeros(nLocs,1);
+tmp = zeros(nLocs, 1);
 start = 1;
-for ii=1:nTypes
-    tmp(start:(start + nReceptors(ii)- 1)) = ii;
+for ii = 1:nTypes
+    tmp(start:(start + nReceptors(ii) - 1)) = ii;
     start = start + nReceptors(ii);
 end
 p = randperm(nLocs);
 coneType = tmp(p);
-coneType = reshape(coneType,sz(1),sz(2));
+coneType = reshape(coneType, sz(1), sz(2));
 
 % Set up the spatial coordinates of the regular sampling grid
 % Units are microns
-r = sz(1); c = sz(2);
-x = (1:c)*umConeWidth; x = x - mean(x);
-y = (1:r)*umConeWidth; y = y - mean(y);
-[X,Y] = meshgrid(x,y);
-xy = [X(:),Y(:)];
+r = sz(1);
+c = sz(2);
+x = (1:c) * umConeWidth;
+x = x - mean(x);
+y = (1:r) * umConeWidth;
+y = y - mean(y);
+[X, Y] = meshgrid(x, y);
+xy = [X(:), Y(:)];
 
 return

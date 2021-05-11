@@ -11,16 +11,16 @@ function rawInfo = dcrawInfo(fname)
 %
 % See also:
 %   dcrawInit
-% 
+%
 
 % Check inputs
 if notDefined('fname'), error('file name required'); end
 
 % Decode file
 if ismac
-    fp = fullfile(isetRootPath,'utility', 'external', 'dcraw', 'dcraw_mac');
+    fp = fullfile(isetRootPath, 'utility', 'external', 'dcraw', 'dcraw_mac');
 elseif isunix
-    fp = fullfile(isetRootPath,'utility', 'external', 'dcraw', 'dcraw_linux');
+    fp = fullfile(isetRootPath, 'utility', 'external', 'dcraw', 'dcraw_linux');
 elseif ispc
     fp = fullfile(isetRootPath, 'utility', 'external', 'dcraw', 'dcraw_win64.exe');
 else
@@ -28,6 +28,6 @@ else
 end
 
 opts = '-i -v';
-[~, rawInfo] = system([fp ' ' opts ' ' fname]);
+[~, rawInfo] = system([fp, ' ', opts, ' ', fname]);
 
 end

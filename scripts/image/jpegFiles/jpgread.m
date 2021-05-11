@@ -1,4 +1,4 @@
-function [r,g,b] = jpgread(filename)
+function [r, g, b] = jpgread(filename)
 %JPGREAD Read a JPEG file from disk.
 %      [R,G,B] = jpgread('filename') reads the specified file
 %      and returns the Red, Green, and Blue intensity matrices.
@@ -8,4 +8,4 @@ function [r,g,b] = jpgread(filename)
 %      Note: IMSHOW and RGB2IND are functions in the Image
 %      Processing Toolbox.
 
-[r,g,b] = jpegread(filename);
+[r, g, b] = jpegread(filename);

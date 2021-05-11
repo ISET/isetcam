@@ -28,7 +28,7 @@ function oi = opticsCos4th(oi)
 optics = oiGet(oi, 'optics');
 
 method = opticsGet(optics, 'cos4th function');
-if isempty(method) || isequal(method,'cos4th')
+if isempty(method) || isequal(method, 'cos4th')
     method = 'cos4th';
     oi = oiSet(oi, 'optics cos4th function', method);
     optics = cos4th(oi);
@@ -43,10 +43,10 @@ end
 oi = oiSet(oi, 'optics', optics);
 
 % Applying cos4th scaling.
-sFactor = opticsGet(optics,'cos4th Data');  % figure(3); mesh(sFactor)
+sFactor = opticsGet(optics, 'cos4th Data'); % figure(3); mesh(sFactor)
 photons = bsxfun(@times, oiGet(oi, 'photons'), sFactor);
 
 % Compress the calculated image and put it back in the structure.
-oi = oiSet(oi, 'photons',photons); 
+oi = oiSet(oi, 'photons', photons);
 
 end

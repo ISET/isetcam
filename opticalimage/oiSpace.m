@@ -1,6 +1,6 @@
-function dPos = oiSpace(oi,sPos,unit)
+function dPos = oiSpace(oi, sPos, unit)
 % Convert sample positions in the oi to distance positions in spatial units
-% 
+%
 %   dPos = oiSpace(oi,sPos,unit)
 %
 % oi:     Optical image
@@ -8,7 +8,7 @@ function dPos = oiSpace(oi,sPos,unit)
 % unit:  'mm','um', and so forth
 %
 % dPos:   The position in units, where the center of the OI is (0,0). Up
-%         and right are positive 
+%         and right are positive
 %
 % Example
 %   scene = sceneCreate; oi = oiCreate; oi = oiCompute(oi,scene);
@@ -17,11 +17,11 @@ function dPos = oiSpace(oi,sPos,unit)
 %
 % Imageval Consulting, LLC 2014
 
-if ~exist('unit','var') || isempty(unit), unit = 'mm'; end
+if ~exist('unit', 'var') || isempty(unit), unit = 'mm'; end
 
-dPerSamp = oiGet(oi,'distance per sample',unit);
-sz       = oiGet(oi,'size');
-middle   = sz/2;
+dPerSamp = oiGet(oi, 'distance per sample', unit);
+sz = oiGet(oi, 'size');
+middle = sz / 2;
 
 dPos(1) = (middle(1) - sPos(1)) * dPerSamp(1);
 dPos(2) = (sPos(2) - middle(2)) * dPerSamp(2);

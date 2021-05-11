@@ -1,5 +1,5 @@
 %% t_codeISETPref.m
-%   
+%
 %  Matlab preserves information for you in environmental variables.
 %  ISET uses these variables to remember certain preferences.  These
 %  preferences are accessed using the ieSessionGet and ieSessionSet
@@ -11,7 +11,7 @@
 
 %% Check your stored ISET preferences
 
-% At present, there are only a small number of stored preferences.  
+% At present, there are only a small number of stored preferences.
 
 % Please use the ieSessionGet/Set functions to read and set the
 % preferences.
@@ -35,12 +35,12 @@ ieSessionGet('font size')
 
 % This is a calculation that takes a few seconds.  To see its progress with
 % a waitbar, you can run
-ieSessionSet('waitbar','on')
+ieSessionSet('waitbar', 'on')
 s_scielabPatches
 drawnow
 
 %% To suppress the waitbar, you can run
-ieSessionSet('waitbar','off')
+ieSessionSet('waitbar', 'off')
 s_scielabPatches
 
 %% The font size
@@ -49,13 +49,14 @@ s_scielabPatches
 % platforms.  If the font is too small or large, you can adjust the size in
 % most of the windows (e.g., scene, oi, sensor, image).  The adjustment in
 % one window will apply to all the windows.  The font size is controlled
-% through the preference 
+% through the preference
 ieSessionGet('font size')
 
 % This number is a increment (or decrement) relative to the default fonts
 % in the Matlab display windows.  Here is the font size in your current
 % scene window
-scene = sceneCreate; ieAddObject(scene);
+scene = sceneCreate;
+ieAddObject(scene);
 sceneWindow;
 drawnow
 pause(2)
@@ -63,18 +64,17 @@ pause(2)
 % To make the font larger, use the pull down  "Edit | Change font size" or
 % use this command
 d = ieSessionGet('font size');
-ieSessionSet('font size',d+2);
+ieSessionSet('font size', d+2);
 sceneWindow
 drawnow
 pause(2)
 
 % To return it to the previous run
 d = ieSessionGet('font size');
-ieSessionSet('font size',d-2);
+ieSessionSet('font size', d-2);
 sceneWindow
 drawnow
 pause(2)
-
 
 %% Finally, you can see the pref list using the Matlab command getpref
 
@@ -83,7 +83,6 @@ iePref = getpref('ISET')
 % But don't do it directly.  Use ieSessionSet/Get as above.
 ieSessionGet('waitbar')
 % And ...
-ieSessionSet('waitbar','on')
-
+ieSessionSet('waitbar', 'on')
 
 %% End

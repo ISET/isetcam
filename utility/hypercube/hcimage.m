@@ -1,4 +1,4 @@
-function figH = hcimage(hc,varargin)
+function figH = hcimage(hc, varargin)
 % Display a hypercube image.
 %
 % Options for display are
@@ -31,27 +31,27 @@ switch dType
         % Most boring default.  Find the mean level across wavelengths and display
         % it as a gray scale image
         vcNewGraphWin;
-        img = mean(hc,3);
+        img = mean(hc, 3);
         imagesc(img); colormap(gray)
         axis image
-    case {'imagemontage','montage'}
-        nWave = size(hc,3);
-        if length(varargin) > 1, slices = varargin{1}; 
+    case {'imagemontage', 'montage'}
+        nWave = size(hc, 3);
+        if length(varargin) > 1, slices = varargin{1};
         else slices = 1:nWave;
         end
 
-        figH = imageMontage(hc,slices);
+        figH = imageMontage(hc, slices);
         colormap(gray)
 
     case 'movie'
         % Show the hypercube data as a movie
-        hc = 256*double(hc/max(hc(:)));
-        mp = mplay(hc); 
+        hc = 256 * double(hc/max(hc(:)));
+        mp = mplay(hc);
         mFig = mp.hfig;
-        set(mFig,'name',sprintf('Hypercube wavebands: %d', size(hc,3)));
-        
+        set(mFig, 'name', sprintf('Hypercube wavebands: %d', size(hc, 3)));
+
     otherwise
-        error('Unknown hc image display type: %s',dType);
+        error('Unknown hc image display type: %s', dType);
 end
 
 

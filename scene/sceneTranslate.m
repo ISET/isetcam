@@ -1,4 +1,4 @@
-function scene = sceneTranslate(scene,dxy,fillValues)
+function scene = sceneTranslate(scene, dxy, fillValues)
 % Translate a scene
 %
 %   scene = sceneTranslate(scene,dxy);
@@ -26,23 +26,22 @@ function scene = sceneTranslate(scene,dxy,fillValues)
 %
 % Copyright Imageval, LLC, 2014
 
-if ~exist('scene','var'), error('Scene required.'); end
-if ~exist('dxy','var'),   error('x,y displacement required'); end
+if ~exist('scene', 'var'), error('Scene required.'); end
+if ~exist('dxy', 'var'), error('x,y displacement required'); end
 if ~exist('fillValues', 'var'), fillValues = 0; end % default
 
 % Calculate the shift in pixels in the row/col directions
 % dxy(2) = rowShift*degPerPixel;
 % dxy(1) = colShift*degPerPixel;
-degPerPixel = sceneGet(scene,'h angular resolution');
+degPerPixel = sceneGet(scene, 'h angular resolution');
 
 % we can now do sub-pixel shifts
 % shift = round(dxy/degPerPixel);   % Discretize step size here
-shift = dxy/degPerPixel;   % Discretize step size here
-p = sceneGet(scene,'photons');
-p = imageTranslate(p,shift, fillValues);
+shift = dxy / degPerPixel; % Discretize step size here
+p = sceneGet(scene, 'photons');
+p = imageTranslate(p, shift, fillValues);
 
-scene = sceneSet(scene,'photons',p);
+scene = sceneSet(scene, 'photons', p);
 % ieAddObject(scene); sceneWindow;
 
 end
-

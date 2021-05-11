@@ -25,31 +25,32 @@
 %%
 ieInit;
 
-%% Set up a MCC scene 
+%% Set up a MCC scene
 scene = sceneCreate;
-scene_lum  = 75;       % mean luminance (candelas)
-scene_fov  = 2.64;     % field of view (degrees)
-scene_dist = 10;       % distance of imager from scene (m)
-scene = sceneAdjustLuminance(scene,scene_lum);
-scene = sceneSet(scene,'fov',scene_fov);
-scene = sceneSet(scene,'distance',scene_dist);
+scene_lum = 75; % mean luminance (candelas)
+scene_fov = 2.64; % field of view (degrees)
+scene_dist = 10; % distance of imager from scene (m)
+scene = sceneAdjustLuminance(scene, scene_lum);
+scene = sceneSet(scene, 'fov', scene_fov);
+scene = sceneSet(scene, 'distance', scene_dist);
 
 % Show scene window
-ieAddObject(scene); sceneWindow;
+ieAddObject(scene);
+sceneWindow;
 
 %% Optics
 
-opt_fnumber = 4;        % f#
+opt_fnumber = 4; % f#
 opt_flength = 20e-3; % 10e-3; % focal length in metres
 
 % Initialize optics and create irradiance image of specified scene
-oi     = oiCreate;
-optics = oiGet(oi,'optics');
-optics = opticsSet(optics,'fnumber',opt_fnumber);
-optics = opticsSet(optics,'focallength',opt_flength);
-optics = opticsSet(optics,'off axis method','skip');
-oi     = oiSet(oi,'optics',optics);
-oi     = oiCompute(scene,oi);
+oi = oiCreate;
+optics = oiGet(oi, 'optics');
+optics = opticsSet(optics, 'fnumber', opt_fnumber);
+optics = opticsSet(optics, 'focallength', opt_flength);
+optics = opticsSet(optics, 'off axis method', 'skip');
+oi = oiSet(oi, 'optics', optics);
+oi = oiCompute(scene, oi);
 
 ieAddObject(oi);
 oiWindow;
@@ -60,10 +61,10 @@ sensor = sensorCreate;
 % figure(1); plot(wave,filterSpectra)
 
 % Match the sensor size to the scene FOV
-sensor = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'),oi);
+sensor = sensorSetSizeToFOV(sensor, sceneGet(scene, 'fov'), oi);
 
 % Compute the image and bring it up.
-sensor = sensorCompute(sensor,oi);
+sensor = sensorCompute(sensor, oi);
 ieAddObject(sensor)
 sensorWindow;
 
@@ -77,35 +78,35 @@ sensorWindow;
 % This routine asks you to select the locations of the outer
 % boundaries of the MCC.  It returns the linear transform that
 % converts the data to a nicely rendered D65 MCC.
-cp = [ 
-    1   244
-   328   246
-   329    28
-     2    27];
-sensor = sensorSet(sensor,'chart corner points',cp);
+cp = [; ...
+    1, 244; ...
+    328, 246; ...
+    329, 28; ...
+    2, 27];
+sensor = sensorSet(sensor, 'chart corner points', cp);
 if ieNotDefined('sensorLocs')
-    [L,sensorLocs] = sensorCCM(sensor,'macbeth');
+    [L, sensorLocs] = sensorCCM(sensor, 'macbeth');
 else
     % If you already figured out sensorLocs, you can just run this
-    [L,sensorLocs] = sensorCCM(sensor,'macbeth',sensorLocs);
+    [L, sensorLocs] = sensorCCM(sensor, 'macbeth', sensorLocs);
 end
 
 %% Create and set the processor window
 vci = ipCreate;
-vci = ipSet(vci,'scale display',1);
-% 
+vci = ipSet(vci, 'scale display', 1);
+%
 % Use the linear transformation derived from sensor space (above) to
 % display the RGB image in the processor window.
-vci = ipSet(vci,'conversion matrix sensor',L);
-vci = ipSet(vci,'correction matrix illuminant',[]);% 
-vci = ipSet(vci,'internal cs 2 display space',[]);  % ICS 2 display
-vci = ipSet(vci,'conversion method sensor','Current matrix');
-vci = ipSet(vci,'internalCS','Sensor');
+vci = ipSet(vci, 'conversion matrix sensor', L);
+vci = ipSet(vci, 'correction matrix illuminant', []); %
+vci = ipSet(vci, 'internal cs 2 display space', []); % ICS 2 display
+vci = ipSet(vci, 'conversion method sensor', 'Current matrix');
+vci = ipSet(vci, 'internalCS', 'Sensor');
 
 % First, compute with the default properties.  This uses bilinear
 % demosaicing, no color conversion or balancing.  The sensor RGB values are
 % simply set to the display RGB values.
-vci = ipCompute(vci,sensor);
+vci = ipCompute(vci, sensor);
 ieAddObject(vci);
 ipWindow;
 
@@ -114,14 +115,14 @@ ipWindow;
 %     vci = vcGetObject('vci')
 
 %% Evaluate the dE and other value sin the processor window
-% 
+%
 % For the case in this script, the locations of the MCC are known
 % and stored here.
 pointLoc = ...
-    [ 4   246
-   328   243
-   327    26
-     3    27];
+    [4, 246; ...
+    328, 243; ...
+    327, 26; ...
+    3, 27];
 
 % If you change the size of the sensor or other spatial parameters, you may
 % have to adjust these.  You can use this routine to interactively click on
@@ -131,7 +132,7 @@ pointLoc = ...
 %    [mRGB, mLocs, pSize, pointLoc] = macbethSelect(vci);
 
 % This produces several evaluations of the errors in the plot.
-[macbethLAB, macbethXYZ, deltaE] = macbethColorError(vci,'D65',pointLoc);
+[macbethLAB, macbethXYZ, deltaE] = macbethColorError(vci, 'D65', pointLoc);
 
 % You can get the raw data from the graphs using get(gcf,'userData')
 %    ipGet(vci,'prodT')
@@ -140,4 +141,4 @@ pointLoc = ...
 %    T{2}
 %    T{3}
 
-%% 
+%%

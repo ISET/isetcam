@@ -10,31 +10,31 @@ scene = sceneCreate('moire orient');
 % scene = sceneCreate('zone plate',[1000,1000]); %sz = number of pixels of scene
 
 meanLuminance = 100;
-fovScene      = 10;
+fovScene = 10;
 
-%% Adjust FOV of camera to match scene, no extra pixels needed. 
-camera = cameraSet(camera,'sensor fov',fovScene);
+%% Adjust FOV of camera to match scene, no extra pixels needed.
+camera = cameraSet(camera, 'sensor fov', fovScene);
 
 %% Change the scene so its wavelength samples matches the camera
-wave = cameraGet(camera,'sensor','wave');
-scene = sceneSet(scene,'wave',wave');
+wave = cameraGet(camera, 'sensor', 'wave');
+scene = sceneSet(scene, 'wave', wave');
 
 %% Change illuminant to D65
-scene = sceneAdjustIlluminant(scene,'D65.mat');
+scene = sceneAdjustIlluminant(scene, 'D65.mat');
 
 %% Set scene FOV and mean luminance
-scene = sceneSet(scene,'hfov',fovScene);
-scene = sceneAdjustLuminance(scene,meanLuminance);
+scene = sceneSet(scene, 'hfov', fovScene);
+scene = sceneAdjustLuminance(scene, meanLuminance);
 
 %% Find white point
-whitept = sceneGet(scene,'illuminant xyz');
-whitept = whitept/max(whitept);
+whitept = sceneGet(scene, 'illuminant xyz');
+whitept = whitept / max(whitept);
 
 %% Calculate camera results
-[camera,xyzIdeal] = cameraCompute(camera,scene,'idealxyz');
-xyzIdeal  = xyzIdeal / max(xyzIdeal(:));
+[camera, xyzIdeal] = cameraCompute(camera, scene, 'idealxyz');
+xyzIdeal = xyzIdeal / max(xyzIdeal(:));
 [srgbIdeal, lrgbIdeal] = xyz2srgb(xyzIdeal);
-[camera,lrgbresult] = cameraCompute(camera,'oi',lrgbIdeal);   % OI is already calculated
+[camera, lrgbresult] = cameraCompute(camera, 'oi', lrgbIdeal); % OI is already calculated
 
 %% Crop border of image
 % This ignores any errors around the edge of the image  (this is similar to
@@ -43,7 +43,7 @@ xyzIdeal = xyzIdeal(11:end-10, 11:end-10, :);
 lrgbresult = lrgbresult(11:end-10, 11:end-10, :);
 
 %% Convert lrgbresult to srgb and xyz
-srgbresult = lrgb2srgb(ieClip(lrgbresult,0,1));
+srgbresult = lrgb2srgb(ieClip(lrgbresult, 0, 1));
 xyzresult = srgb2xyz(srgbresult);
 
 figure
@@ -52,22 +52,22 @@ axis image
 
 %% Convert to Lab
 % xyzIdeal = srgb2xyz(srgbIdeal);
-LabIdeal = ieXYZ2LAB(xyzIdeal,whitept);
-Labim    = ieXYZ2LAB(xyzresult,whitept);
+LabIdeal = ieXYZ2LAB(xyzIdeal, whitept);
+Labim = ieXYZ2LAB(xyzresult, whitept);
 
 %% Moire pattern measurement
 
 % L and ab for Ideal
-gray_Ideal = LabIdeal(:,:,1);
+gray_Ideal = LabIdeal(:, :, 1);
 % vcNewGraphWin; imagesc(gray_Ideal); axis image; % truesize
 % title('gray Ideal image')
 
 
-
-abIdeal=sqrt(LabIdeal(:,:,2).^2+LabIdeal(:,:,3).^2);
-vcNewGraphWin; imagesc(abIdeal); axis image; % truesize
+abIdeal = sqrt(LabIdeal(:, :, 2).^2+LabIdeal(:, :, 3).^2);
+vcNewGraphWin;
+imagesc(abIdeal);
+axis image; % truesize
 title('abIdeal image')
-
 
 
 % R_B_Ideal=srgbIdeal(:,:,1)-srgbIdeal(:,:,3);
@@ -78,8 +78,10 @@ title('abIdeal image')
 % vcNewGraphWin; imagesc(gray_im); axis image; % truesize
 % title('gray image')
 
-abim = sqrt(Labim(:,:,2).^2+Labim(:,:,3).^2);
-vcNewGraphWin; imagesc(abim); axis image; % truesize
+abim = sqrt(Labim(:, :, 2).^2+Labim(:, :, 3).^2);
+vcNewGraphWin;
+imagesc(abim);
+axis image; % truesize
 title('ab Image')
 
 % R_B=Labim(:,:,1)-Labim(:,:,3);
@@ -87,18 +89,18 @@ title('ab Image')
 % title('(R-B) image')
 
 %% Delta E
-deltaEim = deltaEab(xyzIdeal,xyzresult,whitept);
+deltaEim = deltaEab(xyzIdeal, xyzresult, whitept);
 % vcNewGraphWin; imagesc(deltaEim);
 % axis image; % truesize
 % title('Delta E (RGBx)')
 
-delta_e=mean(deltaEim(:));
+delta_e = mean(deltaEim(:));
 
 %% Cut Boundary       This seems to not be needed.
-[R C] = size(gray_Ideal);
-abIdeal=abIdeal(3:R-2,3:C-2,:);
-abim=abim(3:R-2,3:C-2,:);
-deltaEim=deltaEim(3:R-2,3:C-2,:);
+[R, C] = size(gray_Ideal);
+abIdeal = abIdeal(3:R-2, 3:C-2, :);
+abim = abim(3:R-2, 3:C-2, :);
+deltaEim = deltaEim(3:R-2, 3:C-2, :);
 % R_B_Ideal=R_B_Ideal(3:R-2,3:C-2,:);
 % R_B_L3=R_B_L3(3:R-2,3:C-2,:);
 
@@ -113,8 +115,6 @@ deltaEim=deltaEim(3:R-2,3:C-2,:);
 % [data_abIdeal_vertical, data_abL3_vertical, cpd_vertical] = moire_using_vertical(abIdeal, abL3, 'horizontalline');
 
 % draw_result
-
-
 
 %% Binarized?
 % % Binarization

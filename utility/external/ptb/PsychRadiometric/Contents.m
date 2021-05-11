@@ -36,15 +36,12 @@
 %
 % Obsolete
 %   The routines below use specific unit conventions.  I now think it is better not to mix unit conversions
-%   in so intimately with radiometric conversions.  These routines have been reimplemented to call 
+%   in so intimately with radiometric conversions.  These routines have been reimplemented to call
 %   the newer more unit free versions, but since they are used throughout various user programs are
 %   kept here for now.  Someday we may decide to make them go away.
-% 
+%
 %   RadianceToRetIrradiance - See RadianceAndPupilAreaEyeLengthToRetIrradiance.
-%   RetIrradianceToRadiance - 
+%   RetIrradianceToRadiance -
 
-  
+
 % Copyright (c) 1996-2013 by David Brainard, Denis Pelli, & Mario Kleiner
-
-
-

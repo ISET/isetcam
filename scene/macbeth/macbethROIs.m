@@ -1,4 +1,4 @@
-function [patchLocs, rect] = macbethROIs(currentLoc,delta)
+function [patchLocs, rect] = macbethROIs(currentLoc, delta)
 % Derive the locations within a rect region of interest for an MCC chart
 %
 % Synopsic
@@ -7,7 +7,7 @@ function [patchLocs, rect] = macbethROIs(currentLoc,delta)
 % Description
 %
 %   Create the rects from the center of an MCC patch. The spacing between
-%   the centers is delta.  The format of a rect is 
+%   the centers is delta.  The format of a rect is
 %
 %     (colMin,rowMin,width,height).
 %
@@ -21,12 +21,12 @@ function [patchLocs, rect] = macbethROIs(currentLoc,delta)
 %   patchLocs - The locations within the rect, derived by ieRect2Locs
 %   rect - The rect
 %
-% See also: 
+% See also:
 %   macbethRectangles, macbethDrawRects, macbethSensorValues, ieRect2Locs
 %
 
 if ieNotDefined('currentLoc'), error('current location in MCC required'); end
-if ieNotDefined('delta'), delta = 10; end  % Get a better algorithm for size
+if ieNotDefined('delta'), delta = 10; end % Get a better algorithm for size
 
 rect(1) = currentLoc(2) - round(delta/2);
 rect(2) = currentLoc(1) - round(delta/2);

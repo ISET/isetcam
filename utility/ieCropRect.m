@@ -1,4 +1,4 @@
-function cropRect = ieCropRect(oi,scenesize,fov,newFOV,varargin)
+function cropRect = ieCropRect(oi, scenesize, fov, newFOV, varargin)
 % Calculate a rect to crop a scene from its current fov to a new fov
 %
 % Synopsis
@@ -33,13 +33,13 @@ varargin = ieParamFormat(varargin);
 
 p = inputParser;
 
-p.addRequired('oi',@(x)(isequal(x.type,'opticalimage')));
-p.addRequired('scenesize',@isvector);
-p.addRequired('fov',@isnumeric);
-p.addRequired('newFOV',@isnumeric);
+p.addRequired('oi', @(x)(isequal(x.type, 'opticalimage')));
+p.addRequired('scenesize', @isvector);
+p.addRequired('fov', @isnumeric);
+p.addRequired('newFOV', @isnumeric);
 
-p.addParameter('center',[],@isvector);
-p.parse(oi,scenesize,fov,newFOV,varargin{:});
+p.addParameter('center', [], @isvector);
+p.parse(oi, scenesize, fov, newFOV, varargin{:});
 
 center = p.Results.center;
 if isempty(center)
@@ -47,9 +47,8 @@ if isempty(center)
 end
 
 if newFOV > fov
-    error('New field of view (%f) must not exceed current field of view %f\n',newFOV,fov);
+    error('New field of view (%f) must not exceed current field of view %f\n', newFOV, fov);
 end
-
 
 %%
 % Get the image size and aspect ratio (col/row)
@@ -58,18 +57,18 @@ aspectRatio = scenesize(2) / scenesize(1);
 %% Calculate the image resolution for half FOV
 
 % Physical width of the scene (meters)
-objDistance = oiGet(oi,'optics rt object distance');  % meters
+objDistance = oiGet(oi, 'optics rt object distance'); % meters
 
 % Calculate width for halfFOV and fullFOV
-widthNewFOV = 2 * objDistance * tand(newFOV/2); 
-widthFOV    = 2 * objDistance * tand(fov/2); % Same for the full fov
+widthNewFOV = 2 * objDistance * tand(newFOV/2);
+widthFOV = 2 * objDistance * tand(fov/2); % Same for the full fov
 
-nColNewFOV = round(scenesize(2) * widthNewFOV / widthFOV);
-nRowNewFOV = round(nColNewFOV / aspectRatio);
+nColNewFOV = round(scenesize(2)*widthNewFOV/widthFOV);
+nRowNewFOV = round(nColNewFOV/aspectRatio);
 
 %% Crop image for half FOV from center
 
-start    = [round(center(1) - nRowNewFOV/2), round(center(2) - nColNewFOV/2)];
-cropRect = [start(2) + 1, start(1) + 1, nColNewFOV - 1, nRowNewFOV - 1 ];
-         
+start = [round(center(1) - nRowNewFOV / 2), round(center(2) - nColNewFOV / 2)];
+cropRect = [start(2) + 1, start(1) + 1, nColNewFOV - 1, nRowNewFOV - 1];
+
 end

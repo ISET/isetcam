@@ -1,4 +1,4 @@
-function ri = rtRIInterp(optics,wavelength)
+function ri = rtRIInterp(optics, wavelength)
 % Interpolate the relative illumination data
 %
 %   ri = rtRIInterp(optics,wavelength)
@@ -30,14 +30,14 @@ rtPlot(oi,'relative illumination');
 ri = [];
 
 % relillum(distanceMM,wave)
-relillum = opticsGet(optics,'rtri function');   %mm
+relillum = opticsGet(optics, 'rtri function'); %mm
 if isempty(relillum), return; end
 
 % Interpolate using a nearest neighbor method.  We could interpolate, I
 % suppose
-wave = opticsGet(optics,'rtri wavelength');
-[~,waveIdx] = min(abs(wavelength - wave));
+wave = opticsGet(optics, 'rtri wavelength');
+[~, waveIdx] = min(abs(wavelength - wave));
 
-ri = relillum(:,waveIdx);
+ri = relillum(:, waveIdx);
 
 end

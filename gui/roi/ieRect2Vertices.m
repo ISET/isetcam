@@ -1,4 +1,4 @@
-function [xv,yv] = ieRect2Vertices(rect, closeFlag)
+function [xv, yv] = ieRect2Vertices(rect, closeFlag)
 % Convert a rect to the four vertices
 %
 %   [xv,yv] = ieRect2Vertices(rect, closeFlag)
@@ -31,5 +31,5 @@ if closeFlag
     xv(end+1) = xv(1);
     yv(end+1) = yv(1);
 end
-    
+
 end

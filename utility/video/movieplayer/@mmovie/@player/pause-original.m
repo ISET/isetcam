@@ -3,4 +3,4 @@ function pause(H)
 %  Note that the play and pause methods are identical.
 %  Pause is equivalent to calling play.
 
-feval(H.fcns.play,[],[],H.hfig);
+feval(H.fcns.play, [], [], H.hfig);

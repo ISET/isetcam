@@ -5,12 +5,12 @@ function unfreezeColors(h)
 %       colors were previously frozen with freezeColors.
 %
 %   Usage:
-%       unfreezeColors          unfreezes all objects in current axis, 
+%       unfreezeColors          unfreezes all objects in current axis,
 %       unfreezeColors(axh)     same, but works on axis axh. axh can be vector.
 %       unfreezeColors(figh)    same, but for all objects in figure figh.
 %
 %       Has no effect on objects on which freezeColors was not already called.
-%				(Note: if colorbars were frozen using cbfreeze, use cbfreeze('off') to 
+%				(Note: if colorbars were frozen using cbfreeze, use cbfreeze('off') to
 %       unfreeze them. See freezeColors for information on cbfreeze.)
 %
 %
@@ -31,7 +31,7 @@ function unfreezeColors(h)
 %   John Iversen, 2005-10
 %   john_iversen@post.harvard.edu
 
-error(nargchk(0,1,nargin,'struct'))
+error(nargchk(0, 1, nargin, 'struct'))
 
 appdatacode = 'JRI__freezeColorsData';
 
@@ -41,13 +41,13 @@ if nargin < 1,
 end
 
 if ~ishandle(h),
-     error('JRI:unfreezeColors:invalidHandle',...
-            'The argument must be a valid graphics handle to a figure or axis')
+    error('JRI:unfreezeColors:invalidHandle', ...
+        'The argument must be a valid graphics handle to a figure or axis')
 end
 
 %if h is a figure, loop on its axes
-if strcmp(get(h,'type'),'figure'),
-    h = get(h,'children');
+if strcmp(get(h, 'type'), 'figure'),
+    h = get(h, 'children');
 end
 
 for h1 = h', %loop on axes
@@ -55,52 +55,51 @@ for h1 = h', %loop on axes
     %process all children, acting only on those with saved CData
     %   ( in appdata JRI__freezeColorsData)
     ch = findobj(h1);
-    
+
     for hh = ch',
-        
-        %some object handles may be invalidated when their parent changes 
+
+        %some object handles may be invalidated when their parent changes
         %   (e.g. restoring colors of a scattergroup unfortunately changes
         %   the handles of all its children). So, first check to make sure
         %   it's a valid handle
         if ishandle(hh)
-            if isappdata(hh,appdatacode),
-                ad = getappdata(hh,appdatacode);
+            if isappdata(hh, appdatacode),
+                ad = getappdata(hh, appdatacode);
                 %get oroginal cdata
                 %patches have to be handled separately (see note in freezeColors)
-                if ~strcmp(get(hh,'type'),'patch'),
-                    cdata = get(hh,'CData');
+                if ~strcmp(get(hh, 'type'), 'patch'),
+                    cdata = get(hh, 'CData');
                 else
-                    cdata = get(hh,'faceVertexCData');
-                    cdata = permute(cdata,[1 3 2]);
+                    cdata = get(hh, 'faceVertexCData');
+                    cdata = permute(cdata, [1, 3, 2]);
                 end
                 indexed = ad{1};
                 scalemode = ad{2};
-                
+
                 %size consistency check
-                if all(size(indexed) == size(cdata(:,:,1))),
+                if all(size(indexed) == size(cdata(:, :, 1))),
                     %ok, restore indexed cdata
-                    if ~strcmp(get(hh,'type'),'patch'),
-                        set(hh,'CData',indexed);
+                    if ~strcmp(get(hh, 'type'), 'patch'),
+                        set(hh, 'CData', indexed);
                     else
-                        set(hh,'faceVertexCData',indexed);
+                        set(hh, 'faceVertexCData', indexed);
                     end
                     %restore cdatamapping, if needed
                     g = get(hh);
-                    if isfield(g,'CDataMapping'),
-                        set(hh,'CDataMapping',scalemode);
+                    if isfield(g, 'CDataMapping'),
+                        set(hh, 'CDataMapping', scalemode);
                     end
                     %clear appdata
-                    rmappdata(hh,appdatacode)
+                    rmappdata(hh, appdatacode)
                 else
-                    warning('JRI:unfreezeColors:internalCdataInconsistency',...
-                        ['Could not restore indexed data: it is the wrong size. ' ...
+                    warning('JRI:unfreezeColors:internalCdataInconsistency', ...
+                        ['Could not restore indexed data: it is the wrong size. ', ...
                         'Were the axis contents changed since the call to freezeColors?'])
                 end
-                
+
             end %test if has our appdata
-        end %test ishandle
+            end %test ishandle
 
-    end %loop on children
+        end %loop on children
 
-end %loop on axes
-
+    end %loop on axes

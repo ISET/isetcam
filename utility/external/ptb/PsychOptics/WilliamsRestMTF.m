@@ -19,4 +19,4 @@ function mtf = WilliamsRestMTF(s)
 a = 0.1212;
 w1 = 0.3481;
 w2 = 0.6519;
-mtf = w1*ones(size(s)) + w2*exp(-a*s);
+mtf = w1 * ones(size(s)) + w2 * exp(-a*s);

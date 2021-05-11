@@ -1,4 +1,4 @@
-function power = TrolandsToPower(wl,trolands,S_vLambda,vLambda)
+function power = TrolandsToPower(wl, trolands, S_vLambda, vLambda)
 % power = TrolandsToPower(wl,trolands,S_vLambda,vLambda)
 %
 % Convert from photopic trolands to power (watts/degree-2)
@@ -10,4 +10,4 @@ function power = TrolandsToPower(wl,trolands,S_vLambda,vLambda)
 
 wls_vLambda = MakeItWls(S_vLambda);
 index = find(wl == wls_vLambda);
-power = trolands/(vLambda(index)*2.242e12);
+power = trolands / (vLambda(index) * 2.242e12);

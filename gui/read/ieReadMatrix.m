@@ -1,11 +1,11 @@
-function mat = ieReadMatrix(defMatrix,fmt,prompt)
+function mat = ieReadMatrix(defMatrix, fmt, prompt)
 %Enter values of a matrix
 %
 %  mat = ieReadMatrix(defMatrix,[fmt],[prompt])
 %
 % The user  types in a set of matrix entries for a matrix of the size of
 % the default matrix, defMatrix. If this is not passed in then, the
-% defMatrix = eye(3). 
+% defMatrix = eye(3).
 %
 % Example:
 %    d = ieReadMatrix(zeros(3,3));
@@ -13,17 +13,17 @@ function mat = ieReadMatrix(defMatrix,fmt,prompt)
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
-if ieNotDefined('defMatrix'), defMatrix = eye(3);           end
-if ieNotDefined('fmt'),       fmt = '   %.2e';              end
-if ieNotDefined('prompt'),    prompt={'Enter the matrix:'}; end
+if ieNotDefined('defMatrix'), defMatrix = eye(3); end
+if ieNotDefined('fmt'), fmt = '   %.2e'; end
+if ieNotDefined('prompt'), prompt = {'Enter the matrix:'}; end
 
-def={num2str(defMatrix,fmt)};
-dlgTitle='Matrix Reader';
-lineNo=size(defMatrix,1);
+def = {num2str(defMatrix, fmt)};
+dlgTitle = 'Matrix Reader';
+lineNo = size(defMatrix, 1);
 ReSize = 'on';
-answer=inputdlg(prompt,dlgTitle,lineNo,def,ReSize);
+answer = inputdlg(prompt, dlgTitle, lineNo, def, ReSize);
 
-if isempty(answer) 
+if isempty(answer)
     mat = [];
     return;
 else
@@ -36,5 +36,3 @@ if (size(mat) ~= size(defMatrix))
 end
 
 return;
-
-

@@ -1,4 +1,4 @@
-function [optics, opticsFile] = rtImportData(optics,rtProgram,pFileFull)
+function [optics, opticsFile] = rtImportData(optics, rtProgram, pFileFull)
 % Import data from Zemax for optics ray trace calculations
 %
 % Synopsis
@@ -58,7 +58,7 @@ rt.program = rtProgram;
 if ieNotDefined('pFileFull')
     % Full file path to the parameter text file.  If empty, the user is
     % asked to select the file through the GUI.
-    pFileFull = vcSelectDataFile('stayput','r','txt','Select the ISETPARMS.txt file');
+    pFileFull = vcSelectDataFile('stayput', 'r', 'txt', 'Select the ISETPARMS.txt file');
     if isempty(pFileFull)
         disp('User canceled')
         return;
@@ -72,18 +72,18 @@ opticsFile = [];
 
 % As Zemax evolves, and textscan evolves, we have had some issues staying
 % abreast.
-fid = fopen(pFileFull,'r');
-if fid == -1,  error('Unable to open %s\n',pFileFull);
+fid = fopen(pFileFull, 'r');
+if fid == -1, error('Unable to open %s\n', pFileFull);
 else
-    s = fread(fid,'*char');
+    s = fread(fid, '*char');
     fclose(fid);
 end
 
 % This is how we strip out the non-ascii characters and evaluate the text
 % in the file.
-asciiValues = s( (s<128) & (s > 0))';
-eval(asciiValues)   % Keep only the ascii characters
-fprintf('Reduced character count from %d to %d\n',length(s),length(asciiValues));
+asciiValues = s((s < 128) & (s > 0))';
+eval(asciiValues) % Keep only the ascii characters
+fprintf('Reduced character count from %d to %d\n', length(s), length(asciiValues));
 
 % Evaluate the parameters file and set basic parameters
 %
@@ -100,7 +100,7 @@ fprintf('Reduced character count from %d to %d\n',length(s),length(asciiValues))
 % baseLensFileName='EO54852'
 % refWave=587.562;          % REFERENCE WAVELENGTH (NM)
 % fov=26.198448;          % MAXIMUM DIAGONAL HALF FOV (DEGREE)
-% efl=5.999968;          % EFFECTIVE FOCAL LENGTH (MM) 
+% efl=5.999968;          % EFFECTIVE FOCAL LENGTH (MM)
 % fnumber_eff=1.780820;          % EFFECTIVE F-NUMBER
 % fnumber=1.774644;          % F-NUMBER
 
@@ -111,20 +111,20 @@ fprintf('Reduced character count from %d to %d\n',length(s),length(asciiValues))
 % Make sure the psf size is even.  Maybe it should be a power of 2?
 if isodd(psfSize), error('PSF size must be even.'); end %#ok<NODEF>
 
-rt.lensFile = lensFile;                 % *.LEN file
-rt.referenceWavelength = refWave;       % Reference wavelength
-rt.objectDistance = objDist;            % Distance of object?
-rt.mag = -abs(mag);                     % We force it negative.  Problem for microscopes
+rt.lensFile = lensFile; % *.LEN file
+rt.referenceWavelength = refWave; % Reference wavelength
+rt.objectDistance = objDist; % Distance of object?
+rt.mag = -abs(mag); % We force it negative.  Problem for microscopes
 
 % PM should implement these calculations in Zemax if possible
-rt.fNumber = fnumber;                   % f# = (Focal length)/(Entrance pupil diameter)
-rt.effectiveFocalLength = efl;          % Equivalent focal length for multicomponent lens
-rt.effectiveFNumber = fnumber_eff;      % Effectve f# = 0.5/(NUMERICAL APERTURE)
+rt.fNumber = fnumber; % f# = (Focal length)/(Entrance pupil diameter)
+rt.effectiveFocalLength = efl; % Equivalent focal length for multicomponent lens
+rt.effectiveFNumber = fnumber_eff; % Effectve f# = 0.5/(NUMERICAL APERTURE)
 
 % These are the image heights used in the simulation
 % This code assumes that we always start at the center of the image, that
 % is at an image height of zero.
-imgHeight = ((0:(imgHeightNum-1))/(imgHeightNum-1))*imgHeightMax;
+imgHeight = ((0:(imgHeightNum - 1)) / (imgHeightNum - 1)) * imgHeightMax;
 
 % The PSF goes out to the FOV and we treat the readout as a circle.  We
 % have the field of view here. We multiply the number by 2 because in ZeMax
@@ -138,55 +138,55 @@ rt.fov = fov * 2;
 if ismac
     % Sometimes people use PCs.  So we fix the file string by removing the
     % disk drive (e.g., C:) and replacing \ with /.
-    tmp = strsplit(baseLensFileName,':');
-    tmp{2} = strrep(tmp{2},'\','/');
+    tmp = strsplit(baseLensFileName, ':');
+    tmp{2} = strrep(tmp{2}, '\', '/');
 end
-[~,baseName,~] = fileparts(tmp{2});
-[diName,riName,psfNameList] = rtFileNames(baseName,wave,imgHeight); %#ok<NODEF>
+[~, baseName, ~] = fileparts(tmp{2});
+[diName, riName, psfNameList] = rtFileNames(baseName, wave, imgHeight); %#ok<NODEF>
 
 %%  Load the geometry
 
 % diName = 'I-Phone 5_DI_.dat';
-nWave   = length(wave);
+nWave = length(wave);
 nHeight = length(imgHeight);
 
 rt.geometry.fieldHeight = imgHeight(:);
 rt.geometry.wavelength = wave(:); %#ok<IDISVAR>
 
 % Read the geometry distortion file produced by Zemax
-fid = fopen(diName,'r');
-if fid == -1,  error('Unable to open %s\n',diName);
+fid = fopen(diName, 'r');
+if fid == -1, error('Unable to open %s\n', diName);
 else
-    s = fread(fid,'*char');
+    s = fread(fid, '*char');
     fclose(fid);
 end
 
 % Note that the zemaxLoad() uses 129, not 128.
-asciiValues = s( (s < 128) & (s > 0) )';
-dCell = textscan(asciiValues,'%f'); 
+asciiValues = s((s < 128) & (s > 0))';
+dCell = textscan(asciiValues, '%f');
 d = dCell{1};
 
 % The function is stored as (field height x wavelength)
 % For backwards compatibility this is correct (Brian)
-rt.geometry.function = reshape(d,nWave,nHeight)';  
+rt.geometry.function = reshape(d, nWave, nHeight)';
 
 %%  Load the relative illumination
 
 rt.relIllum.fieldHeight = imgHeight(:);
 rt.relIllum.wavelength = wave(:);
-fid = fopen(riName,'r');
-if fid == -1,  error('Unable to open %s\n',diName);
+fid = fopen(riName, 'r');
+if fid == -1, error('Unable to open %s\n', diName);
 else
-    s = fread(fid,'*char');
+    s = fread(fid, '*char');
     fclose(fid);
 end
 
-asciiValues = s( (s < 128) & (s > 0) )';  % This eliminates non-ascii chars
-dCell = textscan(asciiValues,'%f');    % Read and save
+asciiValues = s((s < 128) & (s > 0))'; % This eliminates non-ascii chars
+dCell = textscan(asciiValues, '%f'); % Read and save
 d = dCell{1};
 
 % (field height x wavelength)
-rt.relIllum.function = reshape(d,nWave,nHeight)';  % For backwards compatibility (Brian)
+rt.relIllum.function = reshape(d, nWave, nHeight)'; % For backwards compatibility (Brian)
 
 %% Fill up the psf data
 
@@ -197,54 +197,55 @@ switch lower(rtProgram)
         % number of samples. We check this for every file as we read (see
         % below).  This is true for the Fps command.  (We are experimenting
         % with the Hps command).
-        [psfSpacing, psfArea] = zemaxReadHeader(psfNameList{1,1});
-        psfSize = psfArea/psfSpacing;
+        [psfSpacing, psfArea] = zemaxReadHeader(psfNameList{1, 1});
+        psfSize = psfArea / psfSpacing;
         if round(psfSize) ~= psfSize
-            warning('MATLAB:rtImportSizeError','Sample size and Image delta problem');
+            warning('MATLAB:rtImportSizeError', 'Sample size and Image delta problem');
             psfSize = round(psfSize);
         end
     otherwise
         % We used to allow CODEV.  But we no longer have that.  I left this
         % code here just as a check.
-        errordlg('Unknown rtProgram %s',rtProgram);
+        errordlg('Unknown rtProgram %s', rtProgram);
 end
 
-rt.psf.function = zeros(psfSize,psfSize,nHeight,nWave);
+rt.psf.function = zeros(psfSize, psfSize, nHeight, nWave);
 
 % Load the pointspread function data into a 4D array
 % (row,col,imgHeight,Wavelength)
-[~,baseLensFile] = fileparts(lensFile);
+[~, baseLensFile] = fileparts(lensFile);
 showBar = ieSessionGet('waitbar');
-if showBar, wBar = waitbar(0,'Converting PSF data'); end
+if showBar, wBar = waitbar(0, 'Converting PSF data'); end
 warningGiven = 0;
-for ii=1:length(imgHeight)
+for ii = 1:length(imgHeight)
     if showBar
-        waitbar(ii/nHeight,wBar,sprintf('%s (FH %.2f)',strrep(baseLensFile,'_','-'),imgHeight(ii)));
+        waitbar(ii/nHeight, wBar, sprintf('%s (FH %.2f)', strrep(baseLensFile, '_', '-'), imgHeight(ii)));
     end
-    
-    for jj=1:length(wave)
+
+    for jj = 1:length(wave)
         switch lower(rtProgram)
-            %             case 'code v'
-            %                 % This should become codevLoad(); and include a check for
-            %                 % key
-            %                 rt.psf.function(:,:,ii,jj) = load(psfNameList{ii,jj});
+                %             case 'code v'
+                %                 % This should become codevLoad(); and include a check for
+                %                 % key
+                %                 rt.psf.function(:,:,ii,jj) = load(psfNameList{ii,jj});
             case 'zemax'
-                [testSpacing, testArea] = zemaxReadHeader(psfNameList{ii,jj});
+                [testSpacing, testArea] = zemaxReadHeader(psfNameList{ii, jj});
                 if isempty(testSpacing) || isempty(testArea)
-                    errordlg(sprintf('Bad file: %s',psfNameList{ii,jj}));
+                    errordlg(sprintf('Bad file: %s', psfNameList{ii, jj}));
                 end
                 if (testSpacing == psfSpacing) && (testArea == psfArea)
-                    tmp = zemaxLoad(psfNameList{ii,jj},psfSize);
+                    tmp = zemaxLoad(psfNameList{ii, jj}, psfSize);
                     if sum(tmp(:)) ~= 1 && ~warningGiven
                         warningGiven = 1;
-                        fprintf('Area under psf: %f\n',sum(tmp(:)));
-                        warning('Matlab:rtScalingPSF','Scaling area under psf to 1'); 
-                        tmp = tmp/sum(tmp(:));
+                        fprintf('Area under psf: %f\n', sum(tmp(:)));
+                        warning('Matlab:rtScalingPSF', 'Scaling area under psf to 1');
+                        tmp = tmp / sum(tmp(:));
                     end
-                    rt.psf.function(:,:,ii,jj) = tmp;
+                    rt.psf.function(:, :, ii, jj) = tmp;
                 else
-                    str = sprintf('PSF data have the wrong size: %s',psfNameList{ii,jj});
-                    errordlg(str); return;
+                    str = sprintf('PSF data have the wrong size: %s', psfNameList{ii, jj});
+                    errordlg(str);
+                    return;
                 end
         end
     end
@@ -259,14 +260,14 @@ rt.psf.fieldHeight = imgHeight(:);
 
 % The Zemax sample spacing values are given in microns.  We store them in
 % millimeters like everything else.
-rt.psf.sampleSpacing = [psfSpacing,psfSpacing]/1000;
+rt.psf.sampleSpacing = [psfSpacing, psfSpacing] / 1000;
 
 % Wavelength units are nanometers
 rt.psf.wavelength = wave(:);
 
 % Put all the rt info into the optics.
-optics = opticsSet(optics, 'rayTrace',rt);
-optics = opticsSet(optics, 'model','rayTrace');
+optics = opticsSet(optics, 'rayTrace', rt);
+optics = opticsSet(optics, 'model', 'rayTrace');
 optics = opticsSet(optics, 'focal length', rt.effectiveFocalLength);
 optics = opticsSet(optics, 'fnumber', rt.effectiveFNumber);
 
@@ -274,7 +275,7 @@ optics = opticsSet(optics, 'fnumber', rt.effectiveFNumber);
 
 % We always ask the user about saving the file.  We should fix the
 % interface to allow the user to turn this off or to provide a file.s
-button = questdlg('Save the converted optics?','RT Optics save');
+button = questdlg('Save the converted optics?', 'RT Optics save');
 switch lower(button)
     case 'yes'
         opticsFile = vcSaveObject(optics);
@@ -283,8 +284,3 @@ switch lower(button)
 end
 
 end
-
-
-
-
-

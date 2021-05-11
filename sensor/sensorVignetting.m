@@ -1,4 +1,4 @@
-function sensor = sensorVignetting(sensor,pvFlag,nAngles)
+function sensor = sensorVignetting(sensor, pvFlag, nAngles)
 % Gateway routine for compute pixel vignetting structure
 %
 %   sensor = sensorVignetting(sensor,pvFlag)
@@ -26,23 +26,23 @@ function sensor = sensorVignetting(sensor,pvFlag,nAngles)
 % Copyright ImagEval Consultants, LLC, 2006.
 
 if ieNotDefined('sensor'), sensor = vcGetObject('sensor'); end
-if ieNotDefined('pvFlag'), pvFlag = sensorGet(sensor,'vignetting'); end
-if ieNotDefined('nAngles'),nAngles=5; end
+if ieNotDefined('pvFlag'), pvFlag = sensorGet(sensor, 'vignetting'); end
+if ieNotDefined('nAngles'), nAngles = 5; end
 
 if isempty(pvFlag), pvFlag = 0; end
 
 switch pvFlag
-    case {0, 'skip'}    %skip, so set etendue to 1s
-        sz  = sensorGet(sensor,'size');
-        sensor = sensorSet(sensor,'etendue',ones(sz));
-    case 1   %bare, nomicrolens
-        sensor = mlAnalyzeArrayEtendue(sensor,'no microlens',nAngles);
-    case 2   %centered
-        sensor = mlAnalyzeArrayEtendue(sensor,'centered',nAngles);
-    case 3  %optimal
-        sensor = mlAnalyzeArrayEtendue(sensor,'optimal',nAngles);
+    case {0, 'skip'} %skip, so set etendue to 1s
+        sz = sensorGet(sensor, 'size');
+        sensor = sensorSet(sensor, 'etendue', ones(sz));
+    case 1 %bare, nomicrolens
+        sensor = mlAnalyzeArrayEtendue(sensor, 'no microlens', nAngles);
+    case 2 %centered
+        sensor = mlAnalyzeArrayEtendue(sensor, 'centered', nAngles);
+    case 3 %optimal
+        sensor = mlAnalyzeArrayEtendue(sensor, 'optimal', nAngles);
     otherwise
-        error('Unknown pvFlag %s\n',pvFlag);
+        error('Unknown pvFlag %s\n', pvFlag);
 end
 
 return;

@@ -1,4 +1,4 @@
-function fig = CalibratePlotAmbient(cal,fig)
+function fig = CalibratePlotAmbient(cal, fig)
 % fig = CalibratePlotAmbient(cal,[fig])
 %
 % Make a diagnostic plot of the ambient spectral data
@@ -15,9 +15,9 @@ if (nargin < 2 || isempty(fig))
 end
 
 clf; hold on
-plot(SToWls(cal.S_device),cal.P_ambient(:,1),'k');
+plot(SToWls(cal.S_device), cal.P_ambient(:, 1), 'k');
 xlabel('Wavelength (nm)', 'Fontweight', 'bold');
 ylabel('Power', 'Fontweight', 'bold');
 title('Ambient spectra', 'Fontsize', 13, 'Fontname', 'helvetica', 'Fontweight', 'bold');
-axis([380,780,-Inf,Inf]);
+axis([380, 780, -Inf, Inf]);
 drawnow;

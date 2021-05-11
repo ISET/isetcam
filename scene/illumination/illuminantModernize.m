@@ -16,59 +16,59 @@ function il = illuminantModernize(illuminant)
 %
 % If the illuminant has these string fields, they will be copied too.
 %
-%        comment: 
-%        name:    
+%        comment:
+%        name:
 %
 % We use spd2cct to name the illuminant.
 %
 % (c) Imageval Consulting, LLC 2012
 
-if isfield(illuminant,'type') && ...
-        ~checkfields(illuminant,'data','min') && ...
-        ~checkfields(illuminant,'data','max')
+if isfield(illuminant, 'type') && ...
+        ~checkfields(illuminant, 'data', 'min') && ...
+        ~checkfields(illuminant, 'data', 'max')
     % Has a type and no min/max in data.
     % Must be modern.
     il = illuminant;
     return;
 else
-    if ~isfield(illuminant,'data')
+    if ~isfield(illuminant, 'data')
         error('No illuminant data ');
     end
-    if ~isfield(illuminant,'wavelength')
-        if isfield(illuminant.spectrum,'wave')
+    if ~isfield(illuminant, 'wavelength')
+        if isfield(illuminant.spectrum, 'wave')
             illuminant.wavelength = illuminant.spectrum.wave;
         else
             error('No wavelength or spectrum.wavelength slot');
         end
     end
-    
+
     % Build
     il = illuminantCreate;
-    il = illuminantSet(il,'wavelength',illuminant.wavelength);
-    
+    il = illuminantSet(il, 'wavelength', illuminant.wavelength);
+
     % The data are a mess in older versions.  Sometimes they are in
     % il.data.photons and sometimes just in il.data.  We handle both cases
     % here.
-    if isfield(illuminant.data,'photons')
-        il = illuminantSet(il,'energy',double(illuminant.data.photons));
+    if isfield(illuminant.data, 'photons')
+        il = illuminantSet(il, 'energy', double(illuminant.data.photons));
     elseif isnumeric(illuminant.data)
-        il = illuminantSet(il,'energy',double(illuminant.data));
+        il = illuminantSet(il, 'energy', double(illuminant.data));
     end
-    
-    
-    if isfield(illuminant,'name')
-        il = illuminantSet(il,'name',illuminant.name);
+
+
+    if isfield(illuminant, 'name')
+        il = illuminantSet(il, 'name', illuminant.name);
     else
         % This is a good way to name an unknown illuminant.  Find its
         % correlated color temperature and name it that.
-        w = illuminantGet(il,'wave');
-        spd = illuminantGet(il,'energy');
-        cct = spd2cct(w,spd);
-        il = illuminantSet(il,'name',sprintf('CCT %.0f',cct));
+        w = illuminantGet(il, 'wave');
+        spd = illuminantGet(il, 'energy');
+        cct = spd2cct(w, spd);
+        il = illuminantSet(il, 'name', sprintf('CCT %.0f', cct));
     end
-    
-    if isfield(illuminant,'comment'),
-        il = illuminantSet(il,'comment',illuminant.comment);
+
+    if isfield(illuminant, 'comment'),
+        il = illuminantSet(il, 'comment', illuminant.comment);
     end
 end
 

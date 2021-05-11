@@ -5,13 +5,13 @@ function ipW = ipWindow(ip)
 %   ipW = ipWindow(ip)
 %
 % Brief description
-%   Opens an ipWindow interface based on the ipWindow_App. 
+%   Opens an ipWindow interface based on the ipWindow_App.
 %
 % Inputs
 %   ip:  The image processor you want in the window.  If empty, the currently
 %        selected ip in global vcSESSION is used.  If there is no
 %        selected ip a default ip is created and used.
-%   show:   Executes a drawnow command on exiting.  
+%   show:   Executes a drawnow command on exiting.
 %           (Optional, default true)
 %
 % Outputs
@@ -38,17 +38,17 @@ function ipW = ipWindow(ip)
 
 % Examples
 %{
-   ipWindow;
+ipWindow;
 %}
 %{
-   scene = sceneCreate;
-   oi = oiCreate;  oi = oiCompute(oi,scene);
-   oiWindow(oi);
+scene = sceneCreate;
+oi = oiCreate;  oi = oiCompute(oi,scene);
+oiWindow(oi);
 %}
 
 %% Add a sensor to the database if it is in the call
 
-if exist('ip','var')
+if exist('ip', 'var')
     % An image process was passed in.  We add it to the database and select it.
     % That ip will appear in the window.
     ieAddObject(ip);
@@ -70,17 +70,17 @@ ipW = ieSessionGet('ip window');
 if isempty(ipW)
     % Empty, so create one and put it in the vcSESSION
     ipW = ipWindow_App;
-    ieSessionSet('ip window',ipW);
+    ieSessionSet('ip window', ipW);
 elseif ~isvalid(ipW)
     % Replace the invalid one
     ipW = ipWindow_App;
-    ieSessionSet('ip window',ipW);
+    ieSessionSet('ip window', ipW);
 else
     % Just refresh it
     ipW.refresh;
 end
 
 % Assume true if it does not exist.  Or if it is true.
-if ~exist('show','var') || show, drawnow; end
+if ~exist('show', 'var') || show, drawnow; end
 
 end

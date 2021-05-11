@@ -1,4 +1,4 @@
-function [cornerPoints, obj, rect] = chartCornerpoints(obj,wholeChart)
+function [cornerPoints, obj, rect] = chartCornerpoints(obj, wholeChart)
 % Return the outer corner points of a chart from sensor or ip window
 %
 % Syntax:
@@ -33,24 +33,24 @@ function [cornerPoints, obj, rect] = chartCornerpoints(obj,wholeChart)
 
 % Examples:
 %{
-  sceneWindow;
-  scene = ieGetObject('scene');
-  cp = chartCornerpoints(scene);
-  [rects,mLocs,pSize] = chartRectangles(cp,4,6,0.5);  % MCC parameters
-  chartRectsDraw(scene,rects);
+sceneWindow;
+scene = ieGetObject('scene');
+cp = chartCornerpoints(scene);
+[rects,mLocs,pSize] = chartRectangles(cp,4,6,0.5);  % MCC parameters
+chartRectsDraw(scene,rects);
 %}
 %{
-  scene = sceneCreate;  camera = cameraCreate('default');
-  camera = cameraCompute(camera,scene);
-  cameraWindow(camera,'ip'); ip = cameraGet(camera,'ip');
+scene = sceneCreate;  camera = cameraCreate('default');
+camera = cameraCompute(camera,scene);
+cameraWindow(camera,'ip'); ip = cameraGet(camera,'ip');
 
-  cp = chartCornerpoints(ip,true);
-  sFactor = 0.3;
-  [rects, mLocs, pSize] = chartRectangles(cp, 4,6, sFactor);
-  
-  % Plot the rects
-  rectHandles = chartRectsDraw(ip,rects);
-  % delete(rectHandles);
+cp = chartCornerpoints(ip,true);
+sFactor = 0.3;
+[rects, mLocs, pSize] = chartRectangles(cp, 4,6, sFactor);
+
+% Plot the rects
+rectHandles = chartRectsDraw(ip,rects);
+% delete(rectHandles);
 %}
 
 %%
@@ -62,7 +62,7 @@ if ~wholeChart
     % Make sure this is the selected object.
     ieRefreshWindow(obj.type);
     nPoints = 4;
-    
+
     % The user selects corner points in the window.
     cornerPoints = iePointSelect(obj, ...
         'Select (1) lower left, (2) lower right, (3) upper right, (4) upper left', ...
@@ -75,59 +75,60 @@ end
 switch lower(obj.type)
     case 'scene'
         if wholeChart
-            sz = sceneGet(obj,'size');
-            x = sz(2); y = sz(1);
-            cornerPoints = [1,y; x,y; x,1; 1,1];
+            sz = sceneGet(obj, 'size');
+            x = sz(2);
+            y = sz(1);
+            cornerPoints = [1, y; x, y; x, 1; 1, 1];
         end
-        obj = sceneSet(obj,'chart corner points',cornerPoints);
-        
+        obj = sceneSet(obj, 'chart corner points', cornerPoints);
+
     case 'opticalimage'
         if wholeChart
-            sz = oiGet(obj,'size');
-            x = sz(2); y = sz(1);
-            cornerPoints = [1,y; x,y; x,1; 1,1];
+            sz = oiGet(obj, 'size');
+            x = sz(2);
+            y = sz(1);
+            cornerPoints = [1, y; x, y; x, 1; 1, 1];
         end
-        obj = oiSet(obj,'chart corner points',cornerPoints);
-        
-    case {'isa','sensor'}
+        obj = oiSet(obj, 'chart corner points', cornerPoints);
+
+    case {'isa', 'sensor'}
         % Should set the corner points in this case, too!
         % And clear mccRectHandles, which should become chartRectHandles
         if wholeChart
-            sz = sensorGet(obj,'size');
-            x = sz(2); y = sz(1);
-            cornerPoints = [1,y; x,y; x,1; 1,1];
+            sz = sensorGet(obj, 'size');
+            x = sz(2);
+            y = sz(1);
+            cornerPoints = [1, y; x, y; x, 1; 1, 1];
         end
         % obj = sensorSet(obj,'mccRectHandles',[]);
-        obj = sensorSet(obj,'chart corner points',cornerPoints);
-        
+        obj = sensorSet(obj, 'chart corner points', cornerPoints);
+
     case 'vcimage'
         % Should set the corner points in this case, too!
         % And clear mccRectHandles, which should become chartRectHandles
         if wholeChart
-            sz = ipGet(obj,'size');
-            x = sz(2); y = sz(1);
-            cornerPoints = [1,y; x,y; x,1; 1,1];
+            sz = ipGet(obj, 'size');
+            x = sz(2);
+            y = sz(1);
+            cornerPoints = [1, y; x, y; x, 1; 1, 1];
         end
         % obj = ipSet(obj,'mccRectHandles',[]);
-        obj = ipSet(obj,'cornerpoints',cornerPoints);
-        
+        obj = ipSet(obj, 'cornerpoints', cornerPoints);
+
     otherwise
-        error('Unknown object type %s\n',obj.type);
+        error('Unknown object type %s\n', obj.type);
 end
 
 if nargout == 3
     % Corner Points are lower left, lower right, upper right, upper left
     % Upper left is (x,y)
-    % How far to the right is width 
+    % How far to the right is width
     % How far down is height
-    x = cornerPoints(4,1);
-    y = cornerPoints(4,2);
-    width = cornerPoints(3,1) - cornerPoints(4,1);
-    height = cornerPoints(1,2) - cornerPoints(4,2);
+    x = cornerPoints(4, 1);
+    y = cornerPoints(4, 2);
+    width = cornerPoints(3, 1) - cornerPoints(4, 1);
+    height = cornerPoints(1, 2) - cornerPoints(4, 2);
     rect = [x, y, width, height];
 end
 
 end
-
-
-

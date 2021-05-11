@@ -1,12 +1,12 @@
 function [xy, button] = ieGetXYCoords(obj)
-%Graphical method for selecting xy position in a window. 
+%Graphical method for selecting xy position in a window.
 %
 %   [xy, button]  = ieGetXYCoords(obj)
 %
 % This routine works properly when called from the object window.  But when
 % called from the command line, it doesn't keep focus on the window.  So,
 % we generally use the routines vcLineSelect, vcPointSelect, and
-% vcROISelect. 
+% vcROISelect.
 %
 % But this routine does have some nice features, so we keep it around.
 % First, it is a one click selection.  Second, it uses nice crosshairs.
@@ -34,7 +34,7 @@ if ieNotDefined('obj'), error('You must define an object (isa,oi,scene ...)'); e
 if ieNotDefined('objFig'), objFig = vcGetFigure(obj); end
 
 % Figure out the figure associated with this object type
-if isfield(obj,'type'), t = obj.type; 
+if isfield(obj, 'type'), t = obj.type;
 else error('No object type field');
 end
 
@@ -48,18 +48,18 @@ switch t
     case 'vcimage'
         objFig = ieSessionGet('vcimage figure');
     otherwise
-        error('Bad object type %s\n',t);
+        error('Bad object type %s\n', t);
 end
 
 % Bring up the figure, get the handles, put up a message
 figure(objFig);
 hndl = guihandles(objFig);
-ieInWindowMessage('Select line. Right click to end.',hndl);
+ieInWindowMessage('Select line. Right click to end.', hndl);
 
 % Click for the xy position
-[x,y] = getpts(objFig);
-xy = [round(x(end)),round(y(end))];
+[x, y] = getpts(objFig);
+xy = [round(x(end)), round(y(end))];
 
-ieInWindowMessage('',hndl);
+ieInWindowMessage('', hndl);
 
 return;

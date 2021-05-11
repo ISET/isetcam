@@ -1,4 +1,4 @@
-function [rgb,M] = XYZToSRGBPrimary(XYZ)
+function [rgb, M] = XYZToSRGBPrimary(XYZ)
 % [rgb,M] = XYZToSRGBPrimary(XYZ)
 %
 % Convert between CIE XYZ to sRGB primary
@@ -26,14 +26,12 @@ function [rgb,M] = XYZToSRGBPrimary(XYZ)
 
 % Define the transformation matrix.  Now matching what's at w3.org.  The
 % old matrix is commented out in the second line.
-M = [3.2410 -1.5374 -0.4986 ; -0.9692 1.8760 0.0416 ; 0.0556 -0.2040 1.0570];
+M = [3.2410, -1.5374, -0.4986; -0.9692, 1.8760, 0.0416; 0.0556, -0.2040, 1.0570];
 %M = [3.2406 -1.5372 -0.4986 ; -0.9689 1.8758 0.0415 ; 0.0557 -0.2040 1.0570];
 
 % Do the transform
 if (~isempty(XYZ))
-    rgb = M*XYZ;
+    rgb = M * XYZ;
 else
     rgb = [];
 end
-
-

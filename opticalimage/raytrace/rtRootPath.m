@@ -8,8 +8,8 @@ function rootPath = rtRootPath
 %
 % Copyright ImagEval Consultants, LLC, 2007.
 
-rootPath=which('rtRootPath');
+rootPath = which('rtRootPath');
 
-rootPath=fileparts(rootPath);
+rootPath = fileparts(rootPath);
 
 return;

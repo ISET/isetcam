@@ -1,4 +1,4 @@
-function [diam,area,trolands] = PupilDiameterFromLum(lum,source)
+function [diam, area, trolands] = PupilDiameterFromLum(lum, source)
 % [diam,area,trolands] = PupilDiameterFromLum(lum,[source])
 %
 % Compute pupil diameter and area from photomic luminance.
@@ -29,22 +29,22 @@ function [diam,area,trolands] = PupilDiameterFromLum(lum,source)
 %
 % 	b) In terms of the different methods, Joel Pokorny (1999, personal communication) says:
 %		The average pupil diameter/luminance functions in the literature vary enormously.
-%		This can be seen in the figures in 
+%		This can be seen in the figures in
 %
-%			Moon, P. and D. E. Spencer (1944). "On the Stiles-Crawford Effect." 
+%			Moon, P. and D. E. Spencer (1944). "On the Stiles-Crawford Effect."
 %			Journal of the Optical Society of America 34: 319-329.
 %
 %		and
 %
-%			de Groot, S. G. and J. W. Gebhard (1952). "Pupil size as determined 
-%			by adapting luminance." Journal of the Optical Society of America 	
+%			de Groot, S. G. and J. W. Gebhard (1952). "Pupil size as determined
+%			by adapting luminance." Journal of the Optical Society of America
 %			42: 492-495.
 %
 %		For example, the Reeves (1918, "The visibility of radiation." Transactions of the
 %		Illuminating Engineering Society 13: 101-109) pupil diameter function is displaced
 %		roughly 1.5 log units higher on the luminance axis than Crawford's (1936, "The dependence
 %		of pupil size upon external light stimulus under static and variable conditions."
-%		Proceedings of the Royal Society B (London) 121(B): 376-395) average data.  
+%		Proceedings of the Royal Society B (London) 121(B): 376-395) average data.
 %
 % 	Both Moon and Spenser & DeGroot and Gebhard sought functions which were compromises
 %		between existing data sets.  LeGrand's function shows good correspondence with
@@ -62,21 +62,21 @@ function [diam,area,trolands] = PupilDiameterFromLum(lum,source)
 
 % Set default methods
 if (nargin < 2 || isempty(source))
-	source = 'PokornySmith';
+    source = 'PokornySmith';
 end
 
 % Get diameter according to chosen source
 switch (source)
-	case {'PokornySmith', 'Pokorny_Smith'},
-		diam = 5 - 3*tanh(0.4*log10(lum));
-	case {'DegrootGebhard', 'DeGroot_Gebhard'},
-		diam = 10.^(0.8558-4.01*1e-4*((log10(lum)+8.6).^3));		
-	case {'MoonSpencer', 'Moon_Spencer'},
-		diam = 4.9 - 3*tanh(0.4*(log10(lum)+1));
+    case {'PokornySmith', 'Pokorny_Smith'},
+        diam = 5 - 3 * tanh(0.4*log10(lum));
+    case {'DegrootGebhard', 'DeGroot_Gebhard'},
+        diam = 10.^(0.8558 - 4.01 * 1e-4 * ((log10(lum) + 8.6).^3));
+    case {'MoonSpencer', 'Moon_Spencer'},
+        diam = 4.9 - 3 * tanh(0.4*(log10(lum) + 1));
     case 'PennDog'
         diam = 8;
 end
 
 % Compute ancillary information
-area = pi*(diam/2).^2;
-trolands = lum.*area;
+area = pi * (diam / 2).^2;
+trolands = lum .* area;

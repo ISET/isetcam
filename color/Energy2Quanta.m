@@ -1,4 +1,4 @@
-function photons = Energy2Quanta(wavelength,energy)
+function photons = Energy2Quanta(wavelength, energy)
 % Convert energy (watts) to number of photons.
 %
 %   photons = Energy2Quanta(wavelength,energy)
@@ -25,9 +25,9 @@ function photons = Energy2Quanta(wavelength,energy)
 %   Quanta2Energy()
 %
 % Examples:
-%   wave = 400:10:700;  
+%   wave = 400:10:700;
 %   in = [blackbody(wave,5000,'energy'),blackbody(wave,6000,'energy')];
-%   p = Energy2Quanta(wave,in);  
+%   p = Energy2Quanta(wave,in);
 %   figure; plot(wave,p);
 %
 % Notice that in the return, out becomes a row vector, consistent with XW
@@ -35,33 +35,33 @@ function photons = Energy2Quanta(wavelength,energy)
 % Tragic.
 %
 %   out = Quanta2Energy(wave,p');      % out is a row vector, XW format
-%   figure; plot(wave,in,'ro',wave,out','k-') 
+%   figure; plot(wave,in,'ro',wave,out','k-')
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
-if size(wavelength,2) ~= 1 && size(wavelength,1) ~= 1
-        error('Energy2Quanta:  Wavelength must be a vector');
-else    wavelength = wavelength(:);      % Force to column
+if size(wavelength, 2) ~= 1 && size(wavelength, 1) ~= 1
+    error('Energy2Quanta:  Wavelength must be a vector');
+else wavelength = wavelength(:); % Force to column
 end
 
-% Fundamental constants.  
-h = vcConstants('h');		% Planck's constant [J sec]
-c = vcConstants('c');		% speed of light [m/sec]
+% Fundamental constants.
+h = vcConstants('h'); % Planck's constant [J sec]
+c = vcConstants('c'); % speed of light [m/sec]
 
 if ndims(energy) == 3
-    [n,m,w] = size(energy);
+    [n, m, w] = size(energy);
     if w ~= length(wavelength)
         error('Energy2Quanta:  energy must have third dimension length equal to numWave');
     end
-    energy = reshape(energy,n*m,w)';
-    photons = (energy/(h*c)) .* (1e-9 * wavelength(:,ones(1,n*m)));
-    photons = reshape(photons',n,m,w);
+    energy = reshape(energy, n*m, w)';
+    photons = (energy / (h * c)) .* (1e-9 * wavelength(:, ones(1, n * m)));
+    photons = reshape(photons', n, m, w);
 else
-    [n,m] = size(energy);
+    [n, m] = size(energy);
     if n ~= length(wavelength)
         errordlg('Energy2Quanta:  energy must have row length equal to numWave');
     end
-    photons = (energy/(h*c)) .* (1e-9 * wavelength(:,ones(1,m)));
+    photons = (energy / (h * c)) .* (1e-9 * wavelength(:, ones(1, m)));
 end
 
 return

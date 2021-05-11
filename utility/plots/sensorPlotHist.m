@@ -1,4 +1,4 @@
-function [uData,figNum] = sensorPlotHist(sensor,unitType,roiLocs)
+function [uData, figNum] = sensorPlotHist(sensor, unitType, roiLocs)
 %
 % Syntax
 %  [uData, figNum] = sensorPlotHist(sensor,unitType,roiLocs)
@@ -19,63 +19,66 @@ function [uData,figNum] = sensorPlotHist(sensor,unitType,roiLocs)
 % (c) Imageval Consulting, LLC, 2012
 
 %% Parameters
-if ieNotDefined('sensor'),   sensor = ieGetObject('sensor'); end
+if ieNotDefined('sensor'), sensor = ieGetObject('sensor'); end
 if ieNotDefined('unitType'), unitType = 'electrons'; end
 
 if ieNotDefined('roiLocs')
     % Select the data from the current sensor window
     handles = ieSessionGet('sensor image handle');
-    ieInWindowMessage('Select image region of interest.',handles,[]);
+    ieInWindowMessage('Select image region of interest.', handles, []);
     roiLocs = vcROISelect(sensor);
-    ieInWindowMessage('',handles,[]);
+    ieInWindowMessage('', handles, []);
 end
-sensor = sensorSet(sensor,'roi',roiLocs);
+sensor = sensorSet(sensor, 'roi', roiLocs);
 
-figNum = ieNewGraphWin([],'tall');
+figNum = ieNewGraphWin([], 'tall');
 
-%% Get the data 
+%% Get the data
 switch lower(unitType)
-    case {'v','volts'}
-        data   = sensorGet(sensor,'roi volts',roiLocs);
-    case {'e','electrons'}
-        data   = sensorGet(sensor,'roi electrons',roiLocs);
-    case {'dv','digitalvalues'}
-        data   = sensorGet(sensor,'roi dv',roiLocs);
+    case {'v', 'volts'}
+        data = sensorGet(sensor, 'roi volts', roiLocs);
+    case {'e', 'electrons'}
+        data = sensorGet(sensor, 'roi electrons', roiLocs);
+    case {'dv', 'digitalvalues'}
+        data = sensorGet(sensor, 'roi dv', roiLocs);
     otherwise
         error('Unknown unit type.');
 end
 
 %% Call proper plotting routine
-nSensors = sensorGet(sensor,'nsensors');
+nSensors = sensorGet(sensor, 'nsensors');
 
 if nSensors == 1
-    plotMonochromeSensorHist(data,unitType)
+    plotMonochromeSensorHist(data, unitType)
 else
-    colorOrder = sensorGet(sensor,'filterColorLetters');
-    plotColorSensorHist(data,nSensors,unitType,colorOrder);
+    colorOrder = sensorGet(sensor, 'filterColorLetters');
+    plotColorSensorHist(data, nSensors, unitType, colorOrder);
 end
 
 uData.data = data;
 uData.roiLocs = roiLocs;
 
 end
+
 %%
-function plotColorSensorHist(data,nSensors,unitType,colorOrder)
+function plotColorSensorHist(data, nSensors, unitType, colorOrder)
 % Histogram of volts or electrons
 %
 % Perhaps we should plot the saturation level on the graph?
 %
 
-mxData = max(data(:))*1.1;
-nBins = round(max(20,size(data,1)/25));
-for ii=1:nSensors
-    subplot(nSensors,1,ii)
-    
-    l = ~isnan(data(:,ii)); tmp = data(l,ii);
-    
-    hdl = histogram(tmp(:),nBins);
-    if strcmp(colorOrder(ii) ,'o'), colorOrder(ii) = 'k'; end
-    hdl.EdgeColor= colorOrder(ii); hdl.FaceColor= colorOrder(ii);
+mxData = max(data(:)) * 1.1;
+nBins = round(max(20, size(data, 1) / 25));
+for ii = 1:nSensors
+    subplot(nSensors, 1, ii)
+
+    l = ~isnan(data(:, ii));
+    tmp = data(l, ii);
+
+    hdl = histogram(tmp(:), nBins);
+    if strcmp(colorOrder(ii), 'o'), colorOrder(ii) = 'k'; end
+    hdl.EdgeColor = colorOrder(ii);
+    hdl.FaceColor = colorOrder(ii);
 
     % We might want to show the SNR in db some day.
     %     mn = mean(tmp);
@@ -83,8 +86,8 @@ for ii=1:nSensors
     %     txt = sprintf('Mean: %.02e\nSD:   %.03e\nSNR (db)=%.03f',mn,sd,20*log10(mn/sd));
     %     plotTextString(txt,'ul');  % And I think that 'ul' may not be
     %     working right.
-    
-    set(gca,'xlim',[0 mxData*1.1]); grid on
+
+    set(gca, 'xlim', [0, mxData * 1.1]); grid on
     switch lower(unitType)
         case 'v'
             xlabel('Volts')
@@ -97,14 +100,16 @@ end
 end
 
 %%
-function plotMonochromeSensorHist(data,unitType)
+function plotMonochromeSensorHist(data, unitType)
 % Only one sensor, show the histogram as gray
-% 
-hdl = histogram(data(:,1));
-hdl.FaceColor = [.5 .5 .5]; hdl.EdgeColor = [.5 .5 .5];
+%
+hdl = histogram(data(:, 1));
+hdl.FaceColor = [.5, .5, .5];
+hdl.EdgeColor = [.5, .5, .5];
 grid on
 
-mxData = max(data(:))*1.1; set(gca,'xlim',[0 mxData*1.1]);
+mxData = max(data(:)) * 1.1;
+set(gca, 'xlim', [0, mxData * 1.1]);
 
 switch lower(unitType)
     case 'v'
@@ -115,5 +120,3 @@ end
 ylabel('Count');
 
 end
-
-

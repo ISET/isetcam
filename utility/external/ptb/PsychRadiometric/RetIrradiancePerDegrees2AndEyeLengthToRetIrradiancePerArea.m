@@ -1,4 +1,4 @@
-function retIrradiance_PerArea = RetIrradiancePerDegrees2AndEyeLengthToRetIrradiancePerArea(retIrradiance_PerDegrees2,eyeLength)
+function retIrradiance_PerArea = RetIrradiancePerDegrees2AndEyeLengthToRetIrradiancePerArea(retIrradiance_PerDegrees2, eyeLength)
 % retIrradiance_PerArea = RetIrradiancePerDegrees2AndEyeLengthToRetIrradiancePerArea(retIrradiance_PerDegrees2,eyeLength)
 %
 % Convert retinal irradiance measured in units of Y/deg^2 to units of
@@ -21,9 +21,8 @@ function retIrradiance_PerArea = RetIrradiancePerDegrees2AndEyeLengthToRetIrradi
 % We use DegreesToRetinalMM, rather than RetinalMMToDegrees followed
 % by inversion.  This is because with the former, we can force the number
 % of degrees to be small and get a factor valid in the small angle range.
-% If we do it the other way, when the units of distance are large relative to the 
+% If we do it the other way, when the units of distance are large relative to the
 % eye length, weird things can happen.
-xPerDegree = DegreesToRetinalMM(1,eyeLength);
+xPerDegree = DegreesToRetinalMM(1, eyeLength);
 areaPerDegrees2 = xPerDegree^2;
-retIrradiance_PerArea = retIrradiance_PerDegrees2/areaPerDegrees2;
-
+retIrradiance_PerArea = retIrradiance_PerDegrees2 / areaPerDegrees2;

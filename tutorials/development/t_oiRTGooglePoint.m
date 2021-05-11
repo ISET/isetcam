@@ -4,9 +4,9 @@
 ieInit;
 
 %% Select a smaller rectangle crop
-sceneOne = sceneCreate('point array',1024, 128);
+sceneOne = sceneCreate('point array', 1024, 128);
 sceneOne = sceneSet(sceneOne, 'name', 'Point array with smaller fov');
-sceneOne = sceneSet(sceneOne, 'distance', 0.6); 
+sceneOne = sceneSet(sceneOne, 'distance', 0.6);
 sceneOne = sceneSet(sceneOne, 'wave', 430:50:650);
 
 %% Calculate horizontal FOV set to scene
@@ -25,15 +25,17 @@ nPixels = sz(2);
 % This is the width of the sensor in meters
 width = pixelSize * nPixels;
 
-hfov = 2 * atand(width/(2*focalLength) ); % Scene hFOV
+hfov = 2 * atand(width/(2 * focalLength)); % Scene hFOV
 sceneOne = sceneSet(sceneOne, 'fov', hfov);
 ieAddObject(sceneOne);
 % sceneWindow(sceneOne)
+
 %%
 oiOne = oiCompute(oiOne, sceneOne);
 oiOne = oiSet(oiOne, 'name', 'render with smaller fov');
 oiWindow(oiOne);
 oiImgOne = oiGet(oiOne, 'rgb image');
+
 %% Now let's do the same thing for a larger rectangle crop
 sceneTwo = sceneCreate('point array', 2048, 128);
 sceneTwo = sceneSet(sceneTwo, 'name', 'Point array with larger fov');
@@ -46,7 +48,7 @@ nPixels = sz(2);
 % This is the width of the sensor in meters
 width = pixelSize * nPixels;
 
-hfov = 2 * atand(width/(2*focalLength) ); % Scene hFOV
+hfov = 2 * atand(width/(2 * focalLength)); % Scene hFOV
 sceneTwo = sceneSet(sceneTwo, 'fov', hfov);
 ieAddObject(sceneTwo);
 % sceneWindow(sceneTwo)
@@ -57,7 +59,7 @@ oiTwo = oiSet(oiTwo, 'optics', optics);
 
 %% Double the max fov for lens
 rtFov = opticsGet(optics, 'rtfov');
-oiTwo = oiSet(oiTwo, 'optics rtfov', rtFov * 2);
+oiTwo = oiSet(oiTwo, 'optics rtfov', rtFov*2);
 oiTwo = oiCompute(oiTwo, sceneTwo);
 oiTwo = oiSet(oiTwo, 'name', 'render with larger fov (larger max lens fov)');
 oiWindow(oiTwo);
@@ -73,34 +75,35 @@ sizeImgTwo = size(oiImgTwo);
 oiImgOnePd = imcrop(oiImgOne, [17, 17, 1023, 1023]);
 oiImgTwoPd = imcrop(oiImgTwo, [17, 17, 2047, 2047]);
 
-sizeDiff = (size(oiImgTwoPd) - size(oiImgOnePd))/2;
+sizeDiff = (size(oiImgTwoPd) - size(oiImgOnePd)) / 2;
 
-oiImgTwoPd = imcrop(oiImgTwoPd,...
-            [sizeDiff(1)+1, sizeDiff(2)+1, size(oiImgOnePd, 1)-1, size(oiImgOnePd, 2)-1]);
+oiImgTwoPd = imcrop(oiImgTwoPd, ...
+    [sizeDiff(1) + 1, sizeDiff(2) + 1, size(oiImgOnePd, 1) - 1, size(oiImgOnePd, 2) - 1]);
 
 %{
 
 ieNewGraphWin;
 imshow(oiImgOnePd);
 title(sprintf('Optical image for scene with FOV %.2f',...
-                sceneGet(sceneOne,'hfov')));
+        sceneGet(sceneOne,'hfov')));
 
-ieNewGraphWin;
-imshow(oiImgTwoPd);
-title(sprintf('Optical image for scene with FOV %.2f',...
-                sceneGet(sceneTwo,'hfov')));
-%}
-%%
-oiImgDiff = oiImgTwoPd - oiImgOnePd;
+    ieNewGraphWin;
+    imshow(oiImgTwoPd);
+    title(sprintf('Optical image for scene with FOV %.2f',...
+            sceneGet(sceneTwo,'hfov')));
+        %}
 
-ieNewGraphWin;
-imagesc(oiImgDiff(:,:,1));
-title('Red channel');
+        %%
+        oiImgDiff = oiImgTwoPd - oiImgOnePd;
 
-ieNewGraphWin;
-imagesc(oiImgDiff(:,:,2));
-title('Green channel');
+        ieNewGraphWin;
+        imagesc(oiImgDiff(:, :, 1));
+        title('Red channel');
 
-ieNewGraphWin;
-imagesc(oiImgDiff(:,:,3));
-title('Blue channel');
+        ieNewGraphWin;
+        imagesc(oiImgDiff(:, :, 2));
+        title('Green channel');
+
+        ieNewGraphWin;
+        imagesc(oiImgDiff(:, :, 3));
+        title('Blue channel');

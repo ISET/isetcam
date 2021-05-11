@@ -1,4 +1,4 @@
-function ieSessionSet(param,val,varargin)
+function ieSessionSet(param, val, varargin)
 % Set vcSESSION parameters.
 %
 %     ieSessionSet(param,val,varargin);
@@ -40,7 +40,7 @@ function ieSessionSet(param,val,varargin)
 % Window GUI properties
 %    'scene gamma'  - Gamma display value for scene window (e.g., 0.5)
 %    'scene display flag' - 1 = RGB, 2 = Gray, 3 = HDR, 4 = Clip Highlights
-%    'oi gamma'     - Gamma display value for 
+%    'oi gamma'     - Gamma display value for
 %    'oi display flag' - 1 = RGB, 2 = Gray, 3 = HDR, 4 = Clip Highlights
 %    'sensor gamma'
 %    'ip gamma'
@@ -54,7 +54,7 @@ function ieSessionSet(param,val,varargin)
 % Example:
 %    ieSessionSet('scene gamma'0.3);
 %    ieSessionSet('wait bar',false);
-% 
+%
 % See also: ieSessionGet, vcSetObject
 %
 % Copyright ImagEval Consultants, LLC, 2005.
@@ -62,48 +62,48 @@ function ieSessionSet(param,val,varargin)
 %% Parameters
 global vcSESSION
 
-if ~exist('param','var')||isempty(param), error('You must specify a parameter.'); end
-if ~exist('val','var'),   error('You must specify a value.');     end
+if ~exist('param', 'var') || isempty(param), error('You must specify a parameter.'); end
+if ~exist('val', 'var'), error('You must specify a value.'); end
 
 %% Main switch
 param = ieParamFormat(param);
 switch param
     case {'version'}
         vcSESSION.VERSION = val;
-    case {'name','sessionname'}
+    case {'name', 'sessionname'}
         vcSESSION.NAME = val;
-    case {'dir','sessiondir'}
+    case {'dir', 'sessiondir'}
         vcSESSION.DIR = val;
-    case {'help','inithelp'}
+    case {'help', 'inithelp'}
         % Default for help is true, if the initHelp has not been set.
-        if checkfields(vcSESSION,'initHelp'), vcSESSION.initHelp = val;
-        else, vcSESSION.initHelp = 1; 
+        if checkfields(vcSESSION, 'initHelp'), vcSESSION.initHelp = val;
+        else, vcSESSION.initHelp = 1;
         end
-        
+
         % Matlab setpref values
         %     case {'deltafontsize','fontincrement','increasefontsize','fontdelta','deltafont'}
         %         % Deprecated
         %         setpref('ISET','fontDelta',val);
     case {'fontsize'}
         % GUI window font size
-        setpref('ISET','fontSize',val);
+        setpref('ISET', 'fontSize', val);
     case {'waitbar'}
         % 0 means off, 1 means on
         if ischar(val)
             switch val
-                case 'on',  val = 1;
+                case 'on', val = 1;
                 case 'off', val = 0;
             end
         end
-        setpref('ISET','waitbar',val);
+        setpref('ISET', 'waitbar', val);
         % Because getpref is slow, we also attach it to the session.  Then
         % looping and checking doesn't cost us much time.
         vcSESSION.GUI.waitbar = val;
-    case {'wpos','windowpositions'}
+    case {'wpos', 'windowpositions'}
         % GUI window position and size preferences
         % val should be a cell array, length 6, each 1 x 4, with values
         % that are the relative position of the window on the screen, as
-        % used by set(w,'Position',pos);  
+        % used by set(w,'Position',pos);
         %
         % For example, pos might be [0.1 0.45 0.32 0.41];
         %
@@ -116,14 +116,14 @@ switch param
         % 7 - 'Ask Dave Cardinal??'
         if iscell(val)
             if numel(val) >= 6, val{6} = []; end
-            setpref('ISET','wPos',val);
+            setpref('ISET', 'wPos', val);
         else, error('wPos variable is not a cell array.  %s\n', class(val));
         end
-        
+
     case {'initclear'}
         % Clear workspace variables with ieInit.  True or False.
-        setpref('ISET','initclear',logical(val));
-        
+        setpref('ISET', 'initclear', logical(val));
+
         % Set window information at startup
     case {'mainwindow'}
         vcSESSION.GUI.vcMainWindow.app = val;
@@ -134,7 +134,7 @@ switch param
         vcSESSION.GUI.vcOptImgWindow.app = val;
     case {'sensorwindow'}
         vcSESSION.GUI.vcSensImgWindow.app = val;
-    case {'vcimagewindow','ipwindow'}
+    case {'vcimagewindow', 'ipwindow'}
         vcSESSION.GUI.vcImageWindow.app = val;
     case {'displaywindow'}
         vcSESSION.GUI.vcDisplayWindow.app = val;
@@ -142,47 +142,47 @@ switch param
         vcSESSION.GUI.vcCamDesignWindow.app = val;
     case {'imageexplorewindow'}
         vcSESSION.GUI.vcImageExploreWindow.app = val;
-        
+
     case {'metricswindow'}
         if length(varargin) < 2, error('metrics window requires hObject,eventdata,handles'); end
         vcSESSION.GUI.metricsWindow.hObject = val;
         vcSESSION.GUI.metricsWindow.eventdata = varargin{1};
         vcSESSION.GUI.metricsWindow.handles = varargin{2};
-        
+
         % This graphics window stuff is a mess.  We usually store data using
         % set(gcf,'userdata',XXX) not the guidata.
-    case {'graphwindow','graphwinfigure'}
+    case {'graphwindow', 'graphwinfigure'}
         % This is just the figure number, usually.
         vcSESSION.GRAPHWIN.hObject = val;
-        
+
         % Maybe these should just go away?
-    case {'graphwinstructure','graphwinval'}
+    case {'graphwinstructure', 'graphwinval'}
         vcSESSION.GRAPHWIN = val;
     case {'graphwinhandle'}
         % At present we don't add any objects with handles.  So this is
         % empty. But we might some day.
         vcSESSION.GRAPHWIN.handle = val;
-    
+
         % Set selected object
         % ieSessionSet('scene',val);
         % and so forth
     case {'scene'}
-        vcSetSelectedObject('scene',val);
-    case {'oi','opticalimage'}
-        vcSetSelectedObject('oi',val);
-    case {'sensor','isa'}
-        vcSetSelectedObject('sensor',val);
-    case {'vcimage','ip'}
-        vcSetSelectedObject('ip',val);
+        vcSetSelectedObject('scene', val);
+    case {'oi', 'opticalimage'}
+        vcSetSelectedObject('oi', val);
+    case {'sensor', 'isa'}
+        vcSetSelectedObject('sensor', val);
+    case {'vcimage', 'ip'}
+        vcSetSelectedObject('ip', val);
     case {'display'}
-        vcSetSelectedObject('display',val);
-        
+        vcSetSelectedObject('display', val);
+
         % Miscellaneous from HJ code
     case {'gpu', 'gpucompute', 'gpucomputing'}
         vcSESSION.GPUCOMPUTE = val;
     case {'imagesizethreshold'}
         vcSESSION.imagesizethreshold = val;
-        
+
     otherwise
         error('Unknown parameter')
 end

@@ -1,4 +1,4 @@
-function [imgHeight,maxDataHeight] = rtSampleHeights(allHeights,dataHeight)
+function [imgHeight, maxDataHeight] = rtSampleHeights(allHeights, dataHeight)
 % Find image height values from ray trace that are within the oi field height
 %
 %   [imgHeight,maxDataHeight] = rtSampleHeights(allHeights,dataHeight)
@@ -23,13 +23,13 @@ function [imgHeight,maxDataHeight] = rtSampleHeights(allHeights,dataHeight)
 maxDataHeight = max(dataHeight(:));
 
 % This is the list of ones we will keep
-list = false(length(allHeights),1);
+list = false(length(allHeights), 1);
 
 % Add the next one to the list.  If it is less than the max, keep
 % going.  Otherwise, you are done.
-for ii=1:length(allHeights)
+for ii = 1:length(allHeights)
     list(ii) = 1;
-    if (allHeights(ii) <= maxDataHeight)  % continue
+    if (allHeights(ii) <= maxDataHeight) % continue
     else
         break;
     end

@@ -1,4 +1,4 @@
-function [varExplained, nBases] = sceneToFile(fname,scene,bType,mType,comment)
+function [varExplained, nBases] = sceneToFile(fname, scene, bType, mType, comment)
 % Write scene data in the hyperspectral and multispectralfile format
 %
 %   [varExplained,nBases] = sceneToFile(fname,scene,bType,mType,[comment])
@@ -24,7 +24,7 @@ function [varExplained, nBases] = sceneToFile(fname,scene,bType,mType,comment)
 %         An integer >= 1 specifies the number of basis functions
 % mType:  Mean computation
 %         Remove the mean ('meansvd') or not ('canonical', default) before
-%         calculating svd 
+%         calculating svd
 % comment:  Optional, default is just the scene name
 %
 %Return
@@ -37,76 +37,76 @@ function [varExplained, nBases] = sceneToFile(fname,scene,bType,mType,comment)
 
 % Examples:
 %{
-   scene = sceneCreate;
-   ieAddObject(scene); sceneWindow;
-   sceneToFile('deleteMe',scene,0.999);
-   scene2 = sceneFromFile('deleteMe','multispectral');
-   ieAddObject(scene2); sceneWindow;
+scene = sceneCreate;
+ieAddObject(scene); sceneWindow;
+sceneToFile('deleteMe',scene,0.999);
+scene2 = sceneFromFile('deleteMe','multispectral');
+ieAddObject(scene2); sceneWindow;
 %}
 
 % TODO:
 %   Add depth image as potential output, not just dist
 
 if ieNotDefined('fname'), error('Need output file name for now'); end
-if ieNotDefined('scene'), error('scene structure required'); end
-if ieNotDefined('bType'), bType = [];  end  % See hcBasis
-if ieNotDefined('mType'), mType = 'mean svd';  end  % Remove the mean first
-if ieNotDefined('comment'), comment = sprintf('Scene: %s',sceneGet(scene,'name')); end
+    if ieNotDefined('scene'), error('scene structure required'); end
+    if ieNotDefined('bType'), bType = []; end % See hcBasis
+    if ieNotDefined('mType'), mType = 'mean svd'; end % Remove the mean first
+    if ieNotDefined('comment'), comment = sprintf('Scene: %s', sceneGet(scene, 'name')); end
 
-% We need to save the key variables
-photons    = sceneGet(scene,'photons');
-wave       = sceneGet(scene,'wave');
-illuminant = sceneGet(scene,'illuminant');
-fov        = sceneGet(scene,'fov');
-dist       = sceneGet(scene,'distance');
-name       = sceneGet(scene,'name');
+    % We need to save the key variables
+    photons = sceneGet(scene, 'photons');
+    wave = sceneGet(scene, 'wave');
+    illuminant = sceneGet(scene, 'illuminant');
+    fov = sceneGet(scene, 'fov');
+    dist       = sceneGet(scene,'distance');
+    name = sceneGet(scene, 'name');
 
-spectrum = sceneGet(scene, 'spectrum');
-type     = sceneGet(scene, 'type');
-magnification = sceneGet(scene, 'magnification');
-data = sceneGet(scene, 'data'); 
+    spectrum = sceneGet(scene, 'spectrum');
+    type     = sceneGet(scene, 'type');
+    magnification = sceneGet(scene, 'magnification');
+    data = sceneGet(scene, 'data');
 
-if isempty(bType)
-    % No compression.
-    save(fname,'photons','wave','comment','illuminant','fov','dist','name',...
-        'spectrum', 'type', 'magnification', 'data');
-    varExplained = 1;
-    nBases = length(wave);
-else
-    % Figure out the basis functions using hypercube computation
-    photons = photons(1:3:end,1:3:end,:);
-    [imgMean, basisData, ~, varExplained] = hcBasis(photons,bType,mType);
-    clear photons;
-    
-    %{
-     %Plot the basis functions
-       wList = sceneGet(scene,'wave');
-       vcNewGraphWin;
-       for ii = 1:size(basisData,2)
-           plot(wList,basisData(:,ii)); hold on
-       end   
-    %}
-    
-    photons           = sceneGet(scene,'photons');
-    [photons,row,col] = RGB2XWFormat(photons);
-    switch ieParamFormat(mType)
-        case 'canonical'
-            coef = photons*basisData;
-            
-        case 'meansvd'
-            photons = photons - repmat(imgMean,row*col,1);
-            coef = photons*basisData;
-            
-        otherwise
-            error('Unknown mType: %s\n',mType);
+    if isempty(bType)
+        % No compression.
+        save(fname, 'photons', 'wave', 'comment', 'illuminant', 'fov', 'dist', 'name', ...
+            'spectrum', 'type', 'magnification', 'data');
+        varExplained = 1;
+        nBases = length(wave);
+    else
+        % Figure out the basis functions using hypercube computation
+        photons = photons(1:3:end, 1:3:end, :);
+        [imgMean, basisData, ~, varExplained] = hcBasis(photons, bType, mType);
+        clear photons;
+
+        %{
+        %Plot the basis functions
+        wList = sceneGet(scene,'wave');
+        vcNewGraphWin;
+        for ii = 1:size(basisData,2)
+            plot(wList,basisData(:,ii)); hold on
+        end
+        %}
+
+        photons = sceneGet(scene, 'photons');
+        [photons, row, col] = RGB2XWFormat(photons);
+        switch ieParamFormat(mType)
+            case 'canonical'
+                coef = photons * basisData;
+
+            case 'meansvd'
+                photons = photons - repmat(imgMean, row*col, 1);
+                coef = photons * basisData;
+
+            otherwise
+                error('Unknown mType: %s\n', mType);
+        end
+        coef = XW2RGBFormat(coef, row, col);
+
+        % Save the coefficients and basis
+        basis.basis = basisData;
+        basis.wave = wave;
+        ieSaveMultiSpectralImage(fname, coef, basis, comment, imgMean, illuminant, fov, dist, name);
+        nBases = size(coef, 3);
     end
-    coef = XW2RGBFormat(coef,row,col);
 
-    % Save the coefficients and basis
-    basis.basis = basisData;
-    basis.wave  = wave;
-    ieSaveMultiSpectralImage(fname,coef,basis,comment,imgMean,illuminant,fov,dist,name);
-    nBases = size(coef,3);
-end
-
-end  % End function
+end % End function

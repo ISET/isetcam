@@ -1,4 +1,4 @@
-function [sensorImg,sensorSD,cornerPoints] = macbethSensorValues(sensor,showSelection,cornerPoints)
+function [sensorImg, sensorSD, cornerPoints] = macbethSensorValues(sensor, showSelection, cornerPoints)
 % Deprecated:
 %
 %   Replaced by chart code such as
@@ -40,24 +40,24 @@ fullData = true;
 
 %% Get the raw sensor data
 if ieNotDefined('cornerPoints')
-    [fullRGB, mLocs, pSize, cornerPoints] = macbethSelect(sensor,showSelection,fullData);
+    [fullRGB, mLocs, pSize, cornerPoints] = macbethSelect(sensor, showSelection, fullData);
 else
-    [fullRGB, mLocs, pSize, cornerPoints] = macbethSelect(sensor,showSelection,fullData,cornerPoints);
+    [fullRGB, mLocs, pSize, cornerPoints] = macbethSelect(sensor, showSelection, fullData, cornerPoints);
 end
 
-nSensors   = size(fullRGB{1},2);
-sensorImg  = zeros(24,nSensors);
-if nargout == 2, sensorSD = zeros(24,nSensors); 
-else, sensorSD = []; 
+nSensors = size(fullRGB{1}, 2);
+sensorImg = zeros(24, nSensors);
+if nargout == 2, sensorSD = zeros(24, nSensors);
+else, sensorSD = [];
 end
 
 % Fix up the NaNs for the sensor data
-for ii=1:24  % For each chip
+for ii = 1:24 % For each chip
     tmp = fullRGB{ii};
-    for band = 1:nSensors  % For each band
-        foo = tmp(:,band);
-        sensorImg(ii,band) = mean(foo(~isnan(foo)));
-        if nargout == 2, sensorSD(ii,band) = std(foo(~isnan(foo))); end
+    for band = 1:nSensors % For each band
+        foo = tmp(:, band);
+        sensorImg(ii, band) = mean(foo(~isnan(foo)));
+        if nargout == 2, sensorSD(ii, band) = std(foo(~isnan(foo))); end
     end
 end
 

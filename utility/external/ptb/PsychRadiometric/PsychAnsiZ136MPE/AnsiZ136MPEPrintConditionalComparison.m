@@ -1,4 +1,4 @@
-function AnsiZ136MPEPrintConditionalComparison(string,compareFormat,mainVal,compareVal,LOG10FLAG)
+function AnsiZ136MPEPrintConditionalComparison(string, compareFormat, mainVal, compareVal, LOG10FLAG)
 % AnsiZ136MPEPrintConditionalComparison(string,compareFormat,mainVal,compareVal,[LOG10FLAG])
 %
 % ****************************************************************************
@@ -25,11 +25,11 @@ if (LOG10FLAG)
 end
 
 % Main print
-fprintf(string,mainVal);
+fprintf(string, mainVal);
 
 % Conditional print
 if (compareVal > 0)
-    fprintf([' (cf. ' compareFormat ')\n'],compareVal);
+    fprintf([' (cf. ', compareFormat, ')\n'], compareVal);
 else
     fprintf('\n');
 end

@@ -20,8 +20,7 @@ if (stimulusSizeMrad < 1.5)
 elseif (stimulusSizeMrad > 100)
     T2Sec = 100;
 else
-    T2Sec = 10*10^((stimulusSizeMrad-1.5)/98.5);
+    T2Sec = 10 * 10^((stimulusSizeMrad - 1.5) / 98.5);
 end
 
 end
-

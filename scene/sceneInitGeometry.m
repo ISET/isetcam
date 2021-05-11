@@ -1,5 +1,5 @@
 function scene = sceneInitGeometry(scene)
-% Initialize scene distance parameter.  
+% Initialize scene distance parameter.
 %
 %   scene = sceneInitGeometry(scene);
 %
@@ -13,6 +13,6 @@ function scene = sceneInitGeometry(scene)
 
 
 % Set scene distance in meters
-if ~isfield(scene,'distance')  scene = sceneSet(scene,'distance',1.2); end
+if ~isfield(scene, 'distance') scene = sceneSet(scene, 'distance', 1.2); end
 
 return;

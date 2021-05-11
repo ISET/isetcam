@@ -1,4 +1,4 @@
-function rmse = ComputeRMSE(data,predict,SUPRESS_WARNING)
+function rmse = ComputeRMSE(data, predict, SUPRESS_WARNING)
 % rmse = ComputeRMSE(data,predict,SUPRESS_WARNING)
 %
 % Compute a root fractional SSE between data and prediction.
@@ -41,4 +41,4 @@ if (~SUPRESS_WARNING)
     fprintf('- David Brainard, 13 Jan 2013.\n');
 end
 
-rmse = ComputeRMSE(data,predict);
+rmse = ComputeRMSE(data, predict);

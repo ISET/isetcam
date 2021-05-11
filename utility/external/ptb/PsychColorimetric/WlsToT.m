@@ -1,4 +1,4 @@
-function T = WlsToT(wls,sd)
+function T = WlsToT(wls, sd)
 % T = WlsToT(wls,[sd])
 %
 % Produce the identity color matching matrix associated
@@ -25,11 +25,11 @@ wls = MakeItWls(wls);
 
 [m, n] = size(wls);
 if nargin == 1
-    T = eye(m,m);
+    T = eye(m, m);
 else
-    T = zeros(m,m);
+    T = zeros(m, m);
     for i = 1:m
-        T(i,:) = NormalPDF(wls,wls(i),sd^2)';
-        T(i,:) = T(i,:) / sum(T(i,:)');
+        T(i, :) = NormalPDF(wls, wls(i), sd^2)';
+        T(i, :) = T(i, :) / sum(T(i, :)');
     end
 end

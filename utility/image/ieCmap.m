@@ -1,4 +1,4 @@
-function cm = ieCmap(cName,num,gam)
+function cm = ieCmap(cName, num, gam)
 %Prepare simple color maps
 %
 %  cm = ieCmap(cName,[num],[gam])
@@ -11,7 +11,7 @@ function cm = ieCmap(cName,num,gam)
 %    rg  = ieCmap('rg',256); plot(rg)
 %    by  = ieCmap('by',256); plot(by)
 %    lum = ieCmap('bw',256,0.3); plot(lum)
-%    
+%
 % Copyright ImagEval Consultants, LLC, 2010
 
 
@@ -19,25 +19,25 @@ function cm = ieCmap(cName,num,gam)
 % Could be an option
 
 if ieNotDefined('cName'), cName = 'rg'; end
-if ieNotDefined('num'),   num = 256; end
-if ieNotDefined('gam'),   gam = 1; end
+if ieNotDefined('num'), num = 256; end
+if ieNotDefined('gam'), gam = 1; end
 
 cName = ieParamFormat(cName);
 
 switch cName
-    case {'redgreen','rg'}
-        a = linspace(0,1,num);
-        cm = [a(:), flipud(a(:)), 0.5*ones(size(a(:)))];
-        
-    case {'blueyellow','by'}
-        a = linspace(0,1,num);
+    case {'redgreen', 'rg'}
+        a = linspace(0, 1, num);
+        cm = [a(:), flipud(a(:)), 0.5 * ones(size(a(:)))];
+
+    case {'blueyellow', 'by'}
+        a = linspace(0, 1, num);
         cm = [a(:), a(:), flipud(a(:))];
-        
-    case {'luminance','blackwhite','bw'}
+
+    case {'luminance', 'blackwhite', 'bw'}
         cm = gray(num).^gam;
-        
+
     otherwise
-        error('Unknown color map name %s\n',cName);
+        error('Unknown color map name %s\n', cName);
 end
 
 return

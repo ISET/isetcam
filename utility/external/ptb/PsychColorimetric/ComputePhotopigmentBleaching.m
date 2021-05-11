@@ -1,7 +1,7 @@
-function [fractionBleached] = ComputePhotopigmentBleaching(intensity,receptortype,units,source)
+function [fractionBleached] = ComputePhotopigmentBleaching(intensity, receptortype, units, source)
 % [fractionBleached] = ComputePhtopigmentBleaching(intensity,units,source)
 %
-% Compute fraction of photopigment bleached, given some measure of 
+% Compute fraction of photopigment bleached, given some measure of
 % the intensity of light reaching the eye.
 %
 % As far as I can tell, the fundemantal measurements of the half-bleach
@@ -15,7 +15,7 @@ function [fractionBleached] = ComputePhotopigmentBleaching(intensity,receptortyp
 %
 % It's probably fine to compute bleaching for L and M cones given retinal illuminance
 % in trolands, given that these are effects that matter over log10 units.  But trolands
-% are not going to help much for the S-cones.  According to CVRL there aren't good 
+% are not going to help much for the S-cones.  According to CVRL there aren't good
 % measurements for the half-bleaching constant for S cones because putting enough short-wavelength
 % light onto the retina to bleach the S cones is not good for the eyes.
 %
@@ -29,11 +29,11 @@ function [fractionBleached] = ComputePhotopigmentBleaching(intensity,receptortyp
 % by hand in the code.  These are for the 'Boynton' source.]
 %
 % [ASIDE: I used 10 deg fundamentals because I figure that Rushton's measurements are based
-% on a fairly large field.  Because the macular pigment absorbs a fair amount of light, 
+% on a fairly large field.  Because the macular pigment absorbs a fair amount of light,
 % this matters.  If I compute instead with 2-deg fundamentals, I get that 1 td is 23.7
 % L cone isomerizations/cone-sec and 19.5 M cone isomerizations/cone-sec.   These two
-% numbers are ballpark consistent with Rodiek page 475 who gives 18.3 and 15.9 for a 
-% monochromatic 540 THz light (555 nm)]. 
+% numbers are ballpark consistent with Rodiek page 475 who gives 18.3 and 15.9 for a
+% monochromatic 540 THz light (555 nm)].
 %
 % This routine will do the computation either on the basis of input in trolands or input
 % in isomerization/cone-sec, using the appropirate constant as above.  Note that the
@@ -47,7 +47,7 @@ function [fractionBleached] = ComputePhotopigmentBleaching(intensity,receptortyp
 % As far as I can tell, the computations and analysis of bleaching do not take into account
 % changes in isomerization rate that occur because of change in spectral sensitivity of cones
 % with bleaching.  That is, the measurements are simply of steady state pigment density and are
-% modeled with a formula that assumes monochromatic light (see treatment in Boynton).  
+% modeled with a formula that assumes monochromatic light (see treatment in Boynton).
 %
 % receptortype
 %   'cones'     -- computations for cones. [Default]
@@ -77,7 +77,7 @@ if (nargin < 2 || isempty(units))
     units = 'trolands';
 end
 
-%% Specify source 
+%% Specify source
 if (nargin < 3 || isempty(source))
     source = 'Boynton';
 end
@@ -95,8 +95,8 @@ switch (receptortype)
                     otherwise
                         error('Unkown input units specified');
                 end
-                fractionBleached = (intensity./(intensity + Izero));
-                
+                fractionBleached = (intensity ./ (intensity + Izero));
+
             otherwise
                 error('Unknown source specified');
         end
@@ -110,17 +110,18 @@ end
 % looks like Figure 6.3 (p. 212) in Boyton and Kaiser
 % (red curve in plot with blue overlay) plus a shifted
 % copy in blue.
-TEST  = 0;
+TEST = 0;
 if (TEST)
-    trolands = logspace(0,7,1000);
-    isomerizations = 128*trolands;
-    fractionBleached = ComputePhotopigmentBleaching(trolands,'cones','trolands','Boynton');
-    fractionBleached1 = ComputePhotopigmentBleaching(isomerizations,'cones','isomerizations','Boynton');
-    figure; clf; hold on;
-    plot(log10(trolands),fractionBleached,'r','LineWidth',6);
-    plot(log10(isomerizations),fractionBleached1,'b','LineWidth',6);
-    plot(log10(trolands),fractionBleached1,'b','LineWidth',2);
+    trolands = logspace(0, 7, 1000);
+    isomerizations = 128 * trolands;
+    fractionBleached = ComputePhotopigmentBleaching(trolands, 'cones', 'trolands', 'Boynton');
+    fractionBleached1 = ComputePhotopigmentBleaching(isomerizations, 'cones', 'isomerizations', 'Boynton');
+    figure;
+    clf;
+    hold on;
+    plot(log10(trolands), fractionBleached, 'r', 'LineWidth', 6);
+    plot(log10(isomerizations), fractionBleached1, 'b', 'LineWidth', 6);
+    plot(log10(trolands), fractionBleached1, 'b', 'LineWidth', 2);
 end
 
 end
-

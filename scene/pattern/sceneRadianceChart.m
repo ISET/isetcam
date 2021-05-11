@@ -1,4 +1,4 @@
-function [scene, rcSize] = sceneRadianceChart(wave,radiance,varargin)
+function [scene, rcSize] = sceneRadianceChart(wave, radiance, varargin)
 % Create a radiance chart for testing
 %
 %   [scene, rcSize] = sceneRadianceChart(wave,radiance,...)
@@ -35,128 +35,130 @@ function [scene, rcSize] = sceneRadianceChart(wave,radiance,varargin)
 %
 % Copyright ImagEval Consultants, LLC, 2018.
 %
-% See also: 
+% See also:
 %   macbethChartCreate, sceneReflectanceChart
 %
 
 %Example:
 %{
-% Make up wave and radiance 
-  wave = 400:10:700;  radiance = rand(length(wave),50)*10^16;
-  scene = sceneRadianceChart(wave, radiance,'patch size',20);
-  sceneWindow(scene);
-  sceneGet(scene,'chart parameters')
+% Make up wave and radiance
+wave = 400:10:700;  radiance = rand(length(wave),50)*10^16;
+scene = sceneRadianceChart(wave, radiance,'patch size',20);
+sceneWindow(scene);
+sceneGet(scene,'chart parameters')
 %}
 
 %% Parse input parameters for patch size, gray filling and sampling
 p = inputParser;
 varargin = ieParamFormat(varargin);
 
-p.addRequired('wave',@isvector);
-p.addRequired('radiance',@ismatrix);
+p.addRequired('wave', @isvector);
+p.addRequired('radiance', @ismatrix);
 
-p.addParameter('patchsize',10,@isscalar);
-p.addParameter('sampling','r',@ischar);
-p.addParameter('grayfill',true,@islogical);
-p.addParameter('rowcol',[],@isvector)
-p.addParameter('illuminant',[],@isvector)
+p.addParameter('patchsize', 10, @isscalar);
+p.addParameter('sampling', 'r', @ischar);
+p.addParameter('grayfill', true, @islogical);
+p.addParameter('rowcol', [], @isvector)
+p.addParameter('illuminant', [], @isvector)
 
-p.parse(wave,radiance,varargin{:});
+p.parse(wave, radiance, varargin{:});
 
-pSize    = p.Results.patchsize;
+pSize = p.Results.patchsize;
 grayFill = p.Results.grayfill;
 sampling = p.Results.sampling;
-rowcol   = p.Results.rowcol;
-illuminantPhotons = p.Results.illuminant;  % In photons
+rowcol = p.Results.rowcol;
+illuminantPhotons = p.Results.illuminant; % In photons
 
 %% Default scene
 scene = sceneCreate('empty');
-scene = sceneSet(scene,'wave',wave);
+scene = sceneSet(scene, 'wave', wave);
 nWave = length(wave);
 
-% Radiance is in wave x surface format.  
-nSamples = size(radiance,2);
+% Radiance is in wave x surface format.
+nSamples = size(radiance, 2);
 
 % Spatial arrangement
 if isempty(rowcol)
-    r = ceil(sqrt(nSamples)); c = ceil(nSamples/r);
+    r = ceil(sqrt(nSamples));
+    c = ceil(nSamples/r);
 else
-    r = rowcol(1); c = rowcol(2);
+    r = rowcol(1);
+    c = rowcol(2);
 end
 
-if r*c > nSamples
+if r * c > nSamples
     % We need more samples.  Sample some of the radiance columns and
     % add them the radiance matrix.  We should read the 'sampling'
     % parameter and do this accordingly.  Right now we only have
     % sampling with replacement on for these additional samples.
-    nMissing = r*c - nSamples;
-    lst      = randi(nSamples,[nMissing,1]);
-    extra    = radiance(:,lst);
-    radiance = [radiance,extra];
+    nMissing = r * c - nSamples;
+    lst = randi(nSamples, [nMissing, 1]);
+    extra = radiance(:, lst);
+    radiance = [radiance, extra];
 end
 
 % We might add columns to the radiance matrix with gray radiance.  The
 % level of the radiance is around the level of the radiances in the
 % radiance matrix.
 if grayFill
-    meanLuminance = mean(ieLuminanceFromPhotons(radiance',wave));
+    meanLuminance = mean(ieLuminanceFromPhotons(radiance', wave));
     % Create one column of gray radiances with a dynamic range of 2:1
     % Set the mean luminance level to match the mean luminance of the
     % teeth.  This calculation gets the luminance
-    L = ieLuminanceFromPhotons(ones(nWave,1),wave);
-    
-    s = linspace(0.2,3,r);  % A little darker to 10x lighter
+    L = ieLuminanceFromPhotons(ones(nWave, 1), wave);
+
+    s = linspace(0.2, 3, r); % A little darker to 10x lighter
     % Set the base at the mean luminance; and then scale lower and higher
-    grayColumn = ones(nWave,r)*(meanLuminance/L)*diag(s);
-    
+    grayColumn = ones(nWave, r) * (meanLuminance / L) * diag(s);
+
     % Add the columns
     radiance = [radiance, grayColumn];
     c = c + 1;
-    
+
     % Illuminant
     if isempty(illuminantPhotons)
-        illuminantPhotons = grayColumn(:,end);
+        illuminantPhotons = grayColumn(:, end);
     end
 else
     if isempty(illuminantPhotons)
         % Five times the mean radiance.
-        illuminantPhotons = mean(radiance,2)*5;
+        illuminantPhotons = mean(radiance, 2) * 5;
     end
-    
+
 end
 
-rcSize = [r,c];
+rcSize = [r, c];
 
 % Build up the size of the image regions - still reflectances
 % Turn the radiance into the RGB format.
-sData = XW2RGBFormat(radiance',r,c);
-sData = imageIncreaseImageRGBSize(sData,pSize);
+sData = XW2RGBFormat(radiance', r, c);
+sData = imageIncreaseImageRGBSize(sData, pSize);
 
 % Add data to scene, using equal energy illuminant
-scene = sceneSet(scene,'photons',sData);
+scene = sceneSet(scene, 'photons', sData);
 ill = illuminantCreate;
-ill = illuminantSet(ill,'name','user-defined');
-ill = illuminantSet(ill,'wave',wave);
-ill = illuminantSet(ill,'photons',illuminantPhotons);
-ill = illuminantSet(ill,'comment','scene radiance chart');
-scene = sceneSet(scene,'illuminant',ill);
+ill = illuminantSet(ill, 'name', 'user-defined');
+ill = illuminantSet(ill, 'wave', wave);
+ill = illuminantSet(ill, 'photons', illuminantPhotons);
+ill = illuminantSet(ill, 'comment', 'scene radiance chart');
+scene = sceneSet(scene, 'illuminant', ill);
 
 % scene = sceneSet(scene,'illuminantPhotons',illuminantPhotons);
 % scene = sceneSet(scene,'illuminantComment','User set');
-scene = sceneSet(scene,'name','Radiance Chart (EE)');
+scene = sceneSet(scene, 'name', 'Radiance Chart (EE)');
 % sceneWindow(scene);
 
 % Attach the chart parameters to the scene object so we can easily find the
 % centers later
 chartP.patchSize = pSize;
-chartP.grayFill  = grayFill;
-chartP.sampling  = sampling;
-chartP.rowcol    = rcSize;
-y = rcSize(1)*pSize;
-x = rcSize(2)*pSize;
-chartP.cornerPoints = [1,y; x, y; x, 1; 1,1];
+chartP.grayFill = grayFill;
+chartP.sampling = sampling;
+chartP.rowcol = rcSize;
+y = rcSize(1) * pSize;
+x = rcSize(2) * pSize;
+chartP.cornerPoints = [1, y; x, y; x, 1; 1, 1];
 
-% Consider this:  
+% Consider this:
 % The corner points are (x,y), that is col,row, instead of nearly
 % everything else which is (row,col).  This has something to do with
 % addressing images, historically, but it is mostly annoying.  Always
@@ -171,9 +173,6 @@ chartP.cornerPoints = [1,y; x, y; x, 1; 1,1];
 %     x = rcSize(2)*pSize;
 % end
 
-scene = sceneSet(scene,'chart parameters',chartP);
+scene = sceneSet(scene, 'chart parameters', chartP);
 
 end
-
-
-

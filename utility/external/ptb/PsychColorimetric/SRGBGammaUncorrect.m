@@ -14,15 +14,13 @@ function rgb = SRGBGammaUncorrect(RGB)
 
 % Apply sRGB gamma correction according to formulae
 cutoff = 0.03928;
-RGB = double(RGB)/255;
+RGB = double(RGB) / 255;
 rgb = RGB;
 index = find(RGB < cutoff);
 if (~isempty(index))
-	rgb(index) = RGB(index)/(12.92);
+    rgb(index) = RGB(index) / (12.92);
 end
 index = find(rgb >= cutoff);
 if (~isempty(index))
-    rgb(index) = (((RGB(index))+0.055)/1.055).^2.4;
+    rgb(index) = (((RGB(index)) + 0.055) / 1.055).^2.4;
 end
-
-

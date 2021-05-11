@@ -13,21 +13,21 @@ function outPSF = psfCircularlyAverage(inPSF)
 quantizationFactor = 1;
 
 % Make a circularly symmetric version of average optics.
-[m,n] = size(inPSF);
+[m, n] = size(inPSF);
 if (n ~= m)
     error('Input must be a square matrix');
 end
 nLinearPixels = m;
 
-[peakRow,peakCol] = psfFindPeak(inPSF);
-radiusMat = MakeRadiusMat(nLinearPixels,nLinearPixels,peakCol,peakRow);
-outPSF = zeros(nLinearPixels,nLinearPixels);
+[peakRow, peakCol] = psfFindPeak(inPSF);
+radiusMat = MakeRadiusMat(nLinearPixels, nLinearPixels, peakCol, peakRow);
+outPSF = zeros(nLinearPixels, nLinearPixels);
 nBands = round(nLinearPixels/quantizationFactor);
-radii = linspace(0,0.75*nLinearPixels,nBands);
-for q = 1:length(radii)-1;
-    index = find(radiusMat >= radii(q) & radiusMat < radii(q+1));
+radii = linspace(0, 0.75*nLinearPixels, nBands);
+for q = 1:length(radii) - 1;
+    index = find(radiusMat >= radii(q) & radiusMat < radii(q + 1));
     if (~isempty(index))
         outPSF(index) = mean(inPSF(index));
     end
 end
-outPSF = sum(inPSF(:))*outPSF/sum(outPSF(:));
+outPSF = sum(inPSF(:)) * outPSF / sum(outPSF(:));

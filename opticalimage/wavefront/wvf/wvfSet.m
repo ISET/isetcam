@@ -1,5 +1,5 @@
-function wvf = wvfSet(wvf,parm,val,varargin)
-% Set wavefront parameters 
+function wvf = wvfSet(wvf, parm, val, varargin)
+% Set wavefront parameters
 %
 % Syntax
 %   wvf = wvfSet(wvf,parm,val,varargin)
@@ -22,7 +22,7 @@ function wvf = wvfSet(wvf,parm,val,varargin)
 %   wvf = wvfSet(wvf,'zcoeffs',z);
 %   wvf = wvfSet(wvf,'z pupil diameter',z);   % Pupil size for the z coeff rep
 %   wvf = wvfSet(wvf,'pupil diameter',z);     % For this calculation
-%   
+%
 %
 % Inputs:
 %   wvf   - A wavefront structure
@@ -38,7 +38,7 @@ function wvf = wvfSet(wvf,parm,val,varargin)
 %  Calculations
 %    'zcoeffs' - Zernike coefficients, OSA standard numbering/coords
 %         You can use an Zernike parameter name to specify a particular
-%         coefficient, such as 
+%         coefficient, such as
 %
 %               wvfSet(wvf,'zcoeffs',2,'defocus');
 %               wvfSet(wvf,'zcoeffs',0.5,'oblique_astigmatism');
@@ -51,7 +51,7 @@ function wvf = wvfSet(wvf,parm,val,varargin)
 %
 %  Spatial sampling parameters
 %    'sample interval domain' -
-%       Which domain has sample interval held constant with 
+%       Which domain has sample interval held constant with
 %       wavelength ('psf', 'pupil')
 %    'number spatial samples' -
 %        Number of spatial samples (pixel) for pupil function and psf
@@ -66,7 +66,7 @@ function wvf = wvfSet(wvf,parm,val,varargin)
 %  Based on (DHB/BW) (c) Wavefront Toolbox Team 2011, 2012 Vastly reduced
 %  and simplified by Imageval for basic wavefront calculations.
 %
-% See also: 
+% See also:
 %   wvfCreate, wvfGet, wvfComputePupilFunction, wvfComputePSF, psf2zcoeff
 
 %% Arg checks and parse.
@@ -74,26 +74,26 @@ function wvf = wvfSet(wvf,parm,val,varargin)
 % The switch on what we're setting is broken out into several pieces
 % below to allow use of cells, and so that autoindent does something
 % reasonable with our block comment style.
-if ~exist('parm','var') || isempty(parm), error('Parameter must be defined'); end
-if ~exist('val','var'), error('val must be defined'); end
+if ~exist('parm', 'var') || isempty(parm), error('Parameter must be defined'); end
+if ~exist('val', 'var'), error('val must be defined'); end
 
 parm = ieParamFormat(parm);
 
 %% Set the parameters in a big case statement
 switch parm
-    
-    %% Bookkeeping
+
+        %% Bookkeeping
     case 'name'
         % This specific object's name
         wvf.name = val;
-        
+
     case 'type'
         % Type should always be 'wvf'
-        if (~strcmp(val,'wvf'))
+        if (~strcmp(val, 'wvf'))
             error('Can only set type of wvf structure to ''wvf''');
         end
         wvf.type = val;
-        
+
         %% The measured values
         % These are the values that describe the assumed measurement
         % conditions for the Zernike coefficients.
@@ -109,27 +109,28 @@ switch parm
         % The differences are accounted for in the
         % wvfComputePupilFunction, mainly.  It is possible that there are
         % other functions or scripts that compare the data as well.
-        % 
-    %{
+        %
+        %{
     case {'umperdegree'}
         % Applies to human calculations.
         % This is the factor used to convert between um on the retina and degrees of
         % visual angle. This is typically 300, but we have it as a
         % parameter for historical reasons.  They value does matter.
         wvf.umPerDegree = val;
-    %}        
+        %}
+
         %% Calculation parameters
         %
         %  Zernike coefficients and related
 
-    case {'zcoeffs', 'zcoeff','zcoef'}
+    case {'zcoeffs', 'zcoeff', 'zcoef'}
         % wvfSet(wvf,'zcoeffs',val, jIndex);
         % wvfSet(wvf,'zcoeffs',2,'defocus');
         %  or equivalent: wvfSet(wvf,'zcoeffs',2,4);
         %
         % jIndex is optional, and can be a vector of j values
         % or a string array of coefficient names that are converted to
-        % indices using wvfOSAIndexToVectorIndex. 
+        % indices using wvfOSAIndexToVectorIndex.
         %
         % These specify the measured (or assumed) wavefront aberrations in
         % terms of a Zernike polynomial expansion.  Exanding these gives us
@@ -144,7 +145,7 @@ switch parm
         % Zernike coeffs 0,1,2 (piston, verticle tilt, horizontal tilt) are
         % typically 0 since they are either constant (piston) or only
         % change the point spread location, not quality, as measured in
-        % wavefront aberrations. 
+        % wavefront aberrations.
         %
         % We use the "j" single-index scheme of OSA standards
         %
@@ -167,7 +168,7 @@ switch parm
             % this routine.  Use help on this name to see the relationship
             % between integers and names
             idx = wvfOSAIndexToVectorIndex(varargin{1});
-            
+
             % Check that zcoeffs has enough slots, and if not expand it.
             % Remember that Matlab indexes from 1 but OSA from 0.
             maxidx = max(idx);
@@ -183,15 +184,15 @@ switch parm
     case 'zwavelength'
         % Wavelength for the zcoeff measurements
         wvf.zwls = val;
-    % These parameters are used for the specific calculations with this,
-    % interpolating the measured values that are stored above.
-    case {'pupildiameter','pupilsize'}
+        % These parameters are used for the specific calculations with this,
+        % interpolating the measured values that are stored above.
+    case {'pupildiameter', 'pupilsize'}
         % This value is currently mm.  We should change to meters and
         % account for that everywhere, sigh.
         disp('Pupil diameter in mm.  This will change to meters some day');
-        wvf.pupilDiameter = val;        
+        wvf.pupilDiameter = val;
 
-    case {'focallength','flength'}
+    case {'focallength', 'flength'}
         % wvf = wvfSet(wvf,'focal length',17e-3);
         %
         % When we convert the psf in angle units to spatial samples we may
@@ -200,8 +201,8 @@ switch parm
         % wvf parameter to convert from angle (the natural calculation
         % space of the phase aberrations) to spatial samples.
         wvf.focalLength = val;
-        
-    case {'wave','wavelength','wavelengths'}
+
+    case {'wave', 'wavelength', 'wavelengths'}
         % A vector of wavelengths in nm, forced to be column vector.
         %
         % I removed the SToWls case for PTB users.
@@ -220,7 +221,7 @@ switch parm
         %         else  % A column vector case
         wvf.wls = val(:);
         %         end
-        
+
         %% Spatial sampling parameters
         %
         % In the end, we calculate using discretized sampling.  Because
@@ -263,14 +264,14 @@ switch parm
         % Determine what's held constant with calculated wavelength.
         % Choices are 'psf' and 'pupil'
         wvf.constantSampleIntervalDomain = val;
-        
-    case {'numberspatialsamples','spatialsamples', 'npixels', 'fieldsizepixels'}
+
+    case {'numberspatialsamples', 'spatialsamples', 'npixels', 'fieldsizepixels'}
         % Number of pixels that both pupil and psf planes are discretized
         % with.
         %
         % This is a stored value.
         wvf.nSpatialSamples = val;
-        
+
     case {'refpupilplanesize', 'refpupilplanesizemm', 'fieldsizemm'}
         % Total size of computed field in pupil plane.  This is for the measurement
         % wavelength.  The value can vary with wavelength, but this one
@@ -278,14 +279,14 @@ switch parm
         %
         % This is a stored value.
         wvf.refSizeOfFieldMM = val;
-        
-    case {'refpupilplanesampleinterval', 'refpupilplanesampleintervalmm', 'fieldsamplesize','fieldsamplesizemmperpixel'}
+
+    case {'refpupilplanesampleinterval', 'refpupilplanesampleintervalmm', 'fieldsamplesize', 'fieldsamplesizemmperpixel'}
         % Pixel sampling interval of sample pupil field.  This is for the measurement
         % wavelength.  The value can vary with wavelength, but this one
         % sets the scale for all the other wavelengths.
-        wvf.refSizeOfFieldMM = val*wvf.nSpatialSamples;
-        
-    case {'refpsfsampleinterval' 'refpsfarcminpersample', 'refpsfarcminperpixel'}
+        wvf.refSizeOfFieldMM = val * wvf.nSpatialSamples;
+
+    case {'refpsfsampleinterval', 'refpsfarcminpersample', 'refpsfarcminperpixel'}
         % Arc minutes per pixel of the sampled psf at the measurement
         % wavelength.
         %
@@ -331,12 +332,12 @@ switch parm
         % be a more fundamental reference than the paper above, and for
         % which one wouldn't have to guess quite as much about what is
         % meant.
-        radiansPerPixel = val/(180*60/3.1416);
-        wvf.refSizeOfFieldMM = wvfGet(wvf,'measured wl','mm')/radiansPerPixel;
-        
+        radiansPerPixel = val / (180 * 60 / 3.1416);
+        wvf.refSizeOfFieldMM = wvfGet(wvf, 'measured wl', 'mm') / radiansPerPixel;
+
     otherwise
-        error('Unknown parameter %s\n',parm);
-        
+        error('Unknown parameter %s\n', parm);
+
 end
 
 end

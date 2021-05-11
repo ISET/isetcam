@@ -1,4 +1,4 @@
-function directory=CalDataFolder(forceDemo,calFileName,calDir)
+function directory = CalDataFolder(forceDemo, calFileName, calDir)
 % directory=CalDataFolder([forceDemo],[calFileName],[calDir])
 %
 % Get the path to the CalData folder.
@@ -24,9 +24,9 @@ function directory=CalDataFolder(forceDemo,calFileName,calDir)
 %
 % Denis Pelli 7/25/96
 % Denis Pelli 2/28/98 change "CalDat" to "PsychCalData"
-% 8/14/00  dhb  Add alternate name, change names. 
+% 8/14/00  dhb  Add alternate name, change names.
 % 4/1/07   dhb  Fix subtle bug in error message when there are duplicate cal
-%               folders on path. 
+%               folders on path.
 % 3/7/08   mpr  changed documentation to make it consistent (apparently
 %               "forceDemo" used to be "alt"
 % 4/2/13   dhb  Add calFileName and associated behavior.
@@ -38,23 +38,23 @@ function directory=CalDataFolder(forceDemo,calFileName,calDir)
 
 % Set forceDemo flag
 if (nargin < 1 || isempty(forceDemo))
-	forceDemo = 0;
+    forceDemo = 0;
 end
 if (nargin < 2 || isempty(calFileName))
     calFileName = [];
 end
 
 % Postpend .mat if necessary
-if (~isempty(calFileName) && ~strcmp(calFileName(end-3:end),'.mat'))
-    calFileName = [calFileName '.mat'];
+if (~isempty(calFileName) && ~strcmp(calFileName(end -3:end), '.mat'))
+    calFileName = [calFileName, '.mat'];
 end
 
 % If dir is passed we just use that.  Otherwise
 % do our thing.
-if (nargin < 3 || isempty(calDir)) 
-    name='PsychCalLocalData';
-    alternateName ='PsychCalDemoData';
-    
+if (nargin < 3 || isempty(calDir))
+    name = 'PsychCalLocalData';
+    alternateName = 'PsychCalDemoData';
+
     % Find name.  If not there, find alternate
     if (~forceDemo)
         directory = FindFolder(name);
@@ -63,25 +63,25 @@ if (nargin < 3 || isempty(calDir))
         directory = [];
     end
     if isempty(directory)
-        directory=FindFolder(alternateName);
+        directory = FindFolder(alternateName);
         duplicateMsgName = alternateName;
     end
-    
+
     % If both finds fail, print out error message.  This
     % should never happen as we put 'PsychCalDemoData' in
     % the toolbox distribution.
     if isempty(directory)
-        error(['Can''t find any ''' name ''' or ''' alternateName '''folders in the Matlab path.']);
+        error(['Can''t find any ''', name, ''' or ''', alternateName, '''folders in the Matlab path.']);
     end
-    
+
     % If we found multiple copies of a calibration folder, we warn.
     % This also should never happen.
-    if size(directory,1)>1
-        for i=1:size(directory,1)
-            disp(['DUPLICATE: ''' deblank(directory(i,:)) '''']);
+    if size(directory, 1) > 1
+        for i = 1:size(directory, 1)
+            disp(['DUPLICATE: ''', deblank(directory(i, :)), '''']);
         end
-       fprintf(['Warning: found more than one ''' duplicateMsgName ''' folder in the Matlab path.']);
-       directory = deblank(directory(1,:));
+        fprintf(['Warning: found more than one ''', duplicateMsgName, ''' folder in the Matlab path.']);
+        directory = deblank(directory(1, :));
     end
 else
     directory = calDir;
@@ -92,7 +92,7 @@ end
 if (~isempty(calFileName))
     curDir = pwd;
     cd(directory);
-    
+
     % Is the file we're after here?  If so, we're good
     % and we just return after restoring directory.
     % Otherwise, we look in any subdirectories other
@@ -105,7 +105,7 @@ if (~isempty(calFileName))
     end
     allDirs = dir;
     for i = 1:length(allDirs)
-        if (allDirs(i).isdir && ~strcmp(allDirs(i).name,'xOld') && ~strcmp(allDirs(i).name,'Plots') && allDirs(i).name(1) ~= '.')
+        if (allDirs(i).isdir && ~strcmp(allDirs(i).name, 'xOld') && ~strcmp(allDirs(i).name, 'Plots') && allDirs(i).name(1) ~= '.')
             cd(allDirs(i).name);
             dirRet = dir(calFileName);
             cd('..');
@@ -113,12 +113,11 @@ if (~isempty(calFileName))
                 if (foundOne)
                     error('More than one copy of the desired calibration file found');
                 end
-                directory = [directory allDirs(i).name filesep];
+                directory = [directory, allDirs(i).name, filesep];
                 foundOne = 1;
             end
         end
     end
-    
+
     cd(curDir);
 end
-    

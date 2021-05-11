@@ -1,5 +1,5 @@
-function vcSetObjects(objType,newObj)
-% Set the cell array of a particular type of object.  
+function vcSetObjects(objType, newObj)
+% Set the cell array of a particular type of object.
 %
 % Synopsis
 %  vcSetObjects(objType,newObj);
@@ -27,4 +27,3 @@ objType = vcEquivalentObjtype(objType);
 vcSESSION.(objType) = newObj;
 
 end
-

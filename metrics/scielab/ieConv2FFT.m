@@ -1,4 +1,4 @@
-function z=ieConv2FFT(A, B, method)
+function z = ieConv2FFT(A, B, method)
 %Obsolete: Compute 2d-convolution by FFT => IFFT on 2D data
 %
 %   z = ieConv2FFT(A, B, method)
@@ -21,13 +21,13 @@ function z=ieConv2FFT(A, B, method)
 % padded with zeros, no matter what, to the sum of the two sizes.  This is
 % not good.
 if isempty(method)
-    z = real(ifft2(fft2(A, M+P-1, N+Q-1).*fft2(B, M + P - 1, N + Q - 1)));
+    z = real(ifft2(fft2(A, M + P - 1, N + Q - 1) .* fft2(B, M + P - 1, N + Q - 1)));
 else
     %'same', can reduce some computation
-    dx=floor(Q/2);
-    dy=floor(P/2);
-    z=real(ifft2(fft2(A, M+P-1, N+Q-1).*fft2(B, M + P - 1, N + Q - 1)));
-    z=z(dy+1:dy+M, dx+1:dx+N);
+    dx = floor(Q/2);
+    dy = floor(P/2);
+    z = real(ifft2(fft2(A, M + P - 1, N + Q - 1) .* fft2(B, M + P - 1, N + Q - 1)));
+    z = z(dy+1:dy+M, dx+1:dx+N);
 end;
 
 return;

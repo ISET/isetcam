@@ -61,18 +61,17 @@ txt = addText(txt,newText);
 
 pv = sensorGet(ISA,'vignetting');
 switch(pv)
-    case 0
-        pvState = 'skip';
-    case 1
-        pvState = 'bare';
-    case 2
-        pvState = 'centered';
-    case 3
-        pvState = 'optimal';
+case 0
+pvState = 'skip';
+case 1
+pvState = 'bare';
+case 2
+pvState = 'centered';
+case 3
+pvState = 'optimal';
 end
 newText = sprintf('OE Method: [%s]\n',pvState);
 txt = addText(txt,newText);
 
 return;
 %}
-

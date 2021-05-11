@@ -1,4 +1,4 @@
-function [depthEdges, imageDist, oDefocus] = oiDepthEdges(oi,defocus,inFocusDepth)
+function [depthEdges, imageDist, oDefocus] = oiDepthEdges(oi, defocus, inFocusDepth)
 % Determine depth edges to achieve defocus values
 %
 %  oi:       ISET optics
@@ -6,9 +6,9 @@ function [depthEdges, imageDist, oDefocus] = oiDepthEdges(oi,defocus,inFocusDept
 %  inFocusDepth:  Depth for perfect focus
 %
 % Example:
-%    oi = oiCreate; optics = oiGet(oi,'optics'); 
+%    oi = oiCreate; optics = oiGet(oi,'optics');
 %    f = opticsGet(optics,'focal length','m');
-%    optics = opticsSet(optics,'focal length',5*f);    
+%    optics = opticsSet(optics,'focal length',5*f);
 %
 % The defocus range should always start out as negative because when the
 % image plane is at the focal length infinite distance is in focus and
@@ -20,27 +20,27 @@ function [depthEdges, imageDist, oDefocus] = oiDepthEdges(oi,defocus,inFocusDept
 %
 % depthEdges: depths that achieve the relative defocus spacing when image
 %    is in the focal plane.
-% imageDist: image distance the optics to achieve a best focus at inFocusDepth 
+% imageDist: image distance the optics to achieve a best focus at inFocusDepth
 % oDefocus: the defocus at these depthEdges when the image plane is
-%    imageDist. 
-% 
+%    imageDist.
+%
 % Copyright ImagEval Consultants, LLC, 2011.
 
 
-optics          = oiGet(oi,'optics');
-fLength         = opticsGet(optics,'focal length');
+optics = oiGet(oi, 'optics');
+fLength = opticsGet(optics, 'focal length');
 defocus(defocus >= 0) = -0.01;
 
 % Calculate depths assuming image plane at focal length.
-depthEdges      = opticsDefocusDepth(defocus,optics,fLength);
-[v,idx] = min(abs(inFocusDepth - depthEdges));
+depthEdges = opticsDefocusDepth(defocus, optics, fLength);
+[v, idx] = min(abs(inFocusDepth - depthEdges));
 
 % If the user wants a particular image depth in focus, tell them where the
 % image plane should be.
-oDist           = depthEdges(idx);
-[tmp imageDist] = opticsDepthDefocus(oDist,optics,fLength);
+oDist = depthEdges(idx);
+[tmp, imageDist] = opticsDepthDefocus(oDist, optics, fLength);
 
 % This is the defocus for each depth when the image plane is at imageDist.
-oDefocus  = opticsDepthDefocus(depthEdges,optics,imageDist);
+oDefocus = opticsDepthDefocus(depthEdges, optics, imageDist);
 
 return

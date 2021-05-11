@@ -1,4 +1,4 @@
-function [finalSettings,badIndex,quantized,perError,settings] = SensorToSettingsAcc(cal,sensor)
+function [finalSettings, badIndex, quantized, perError, settings] = SensorToSettingsAcc(cal, sensor)
 % [finalSettings,badIndex,quantized,perError,settings] = SensorToSettingsAcc(cal,sensor)
 %
 % Convert from sensor color space coordinates to device
@@ -25,21 +25,21 @@ nIterations = 10;
 dampingFactor = 1.0;
 
 % Determine sizes
-[nLinear,nTargets] = size(sensor);
+[nLinear, nTargets] = size(sensor);
 if (nTargets ~= 1)
-	error('Only handles one sensor target at a time');
+    error('Only handles one sensor target at a time');
 end
-settings = zeros(nLinear,nIterations);
-quantized = zeros(nLinear,nIterations);
+settings = zeros(nLinear, nIterations);
+quantized = zeros(nLinear, nIterations);
 
 % Get basis information
 nPrimaryBases = cal.nPrimaryBases;
 if (isempty(nPrimaryBases))
-	error('No nPrimaryBases field present in calibration structure');
+    error('No nPrimaryBases field present in calibration structure');
 end
 
 if (nPrimaryBases == 1)
-    [finalSettings,badIndex] = SensorToSettings(cal,sensor);
+    [finalSettings, badIndex] = SensorToSettings(cal, sensor);
     quantized = [];
     perError = [];
     settings = [];
@@ -53,18 +53,18 @@ else
     target = sensor;
     aimfor = target;
     for i = 1:nIterations
-        primary = SensorToPrimary(cal,aimfor);
-        [gamut,badIndex] = PrimaryToGamut(cal,primary);
-        settings(:,i) = GamutToSettings(cal,gamut);
-        [tmpQuantized,primaryE] = SettingsToSensorAcc(cal,settings(:,i));
-        quantized(:,i) = tmpQuantized;
-        calError(:,i) = quantized(:,i) - aimfor;
-        perError(:,i) = quantized(:,i) - target;
-        aimfor = target - dampingFactor*calError(:,i);
+        primary = SensorToPrimary(cal, aimfor);
+        [gamut, badIndex] = PrimaryToGamut(cal, primary);
+        settings(:, i) = GamutToSettings(cal, gamut);
+        [tmpQuantized, primaryE] = SettingsToSensorAcc(cal, settings(:, i));
+        quantized(:, i) = tmpQuantized;
+        calError(:, i) = quantized(:, i) - aimfor;
+        perError(:, i) = quantized(:, i) - target;
+        aimfor = target - dampingFactor * calError(:, i);
     end
-    
+
     % Find minimum error that was encountered and return those settings
     summaryError = diag(perError'*perError);
-    [null,minIndex] = min(summaryError);
-    finalSettings = settings(:,minIndex);
+    [null, minIndex] = min(summaryError);
+    finalSettings = settings(:, minIndex);
 end

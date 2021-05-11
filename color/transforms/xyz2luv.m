@@ -4,7 +4,7 @@ function luv = xyz2luv(xyz, whitepoint)
 %    luv = xyz2luv(xyz, whitepoint)
 %
 % The whitepoint is a 3-vector indicating the XYZ of a white object or
-% patch in the scene. 
+% patch in the scene.
 %
 % xyz:  Can be in XW or RGB format.
 % whitepoint: a 3-vector of the xyz values of the white point.
@@ -28,11 +28,11 @@ function luv = xyz2luv(xyz, whitepoint)
 if ieNotDefined('xyz'), error('XYZ values required.'); end
 if ieNotDefined('whitepoint'), error('White point required.'); end
 
-if ( length(whitepoint)~=3 ),  error('whitepoint must be a three vector'); end
+if (length(whitepoint) ~= 3), error('whitepoint must be a three vector'); end
 
 if ndims(xyz) == 3
     iFormat = 'RGB';
-    [r,c,w] = size(xyz);
+    [r, c, w] = size(xyz);
     xyz = RGB2XWFormat(xyz);
 else
     iFormat = 'XW';
@@ -40,19 +40,16 @@ end
 
 luv = zeros(size(xyz));
 
-luv(:,1) = Y2Lstar(xyz(:,2),whitepoint(2));
-[u,v]    = xyz2uv(xyz);
-[un,vn]  = xyz2uv(whitepoint);
+luv(:, 1) = Y2Lstar(xyz(:, 2), whitepoint(2));
+[u, v] = xyz2uv(xyz);
+[un, vn] = xyz2uv(whitepoint);
 
-luv(:,2) = 13*luv(:,1).*(u - un);
-luv(:,3) = 13*luv(:,1).*(v - vn);
+luv(:, 2) = 13 * luv(:, 1) .* (u - un);
+luv(:, 3) = 13 * luv(:, 1) .* (v - vn);
 
 % return CIELUV in the appropriate format.
 % Currently it is a XW format.  If the input had three dimensions
 % then we need to change it to that format.
-if strcmp(iFormat,'RGB'), luv = XW2RGBFormat(luv,r,c); end
+if strcmp(iFormat, 'RGB'), luv = XW2RGBFormat(luv, r, c); end
 
 return;
-
-
-

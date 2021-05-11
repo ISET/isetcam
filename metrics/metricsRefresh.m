@@ -1,5 +1,5 @@
 function metricsRefresh(handles)
-% Refresh the metrics window. 
+% Refresh the metrics window.
 %
 %   metricsRefresh(handles)
 %
@@ -11,8 +11,8 @@ function metricsRefresh(handles)
 
 % Set the names in the popups on the right to the available vcimages.
 names = vcGetObjectNames('VCIMAGE');
-set(handles.popImageList1,'String',names);
-set(handles.popImageList2,'String',names);
+set(handles.popImageList1, 'String', names);
+set(handles.popImageList2, 'String', names);
 
 % Display the two vci images in the axes
 handles = metricsShowImage(handles);

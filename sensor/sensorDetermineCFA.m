@@ -1,4 +1,4 @@
-function [CFAletters,CFAnumbers,mp] = sensorDetermineCFA(sensor)
+function [CFAletters, CFAnumbers, mp] = sensorDetermineCFA(sensor)
 % Determine the CFA organization for an image sensor
 %
 %   [CFAletters,CFAnumbers,mp] = sensorDetermineCFA(sensor)
@@ -41,7 +41,7 @@ function [CFAletters,CFAnumbers,mp] = sensorDetermineCFA(sensor)
 % Examples:
 %   sensor = vcGetObject('sensor');
 %   [cfa,cfaN] = sensorDetermineCFA(sensor);
-%   [cfa,cfaN,mp] = sensorDetermineCFA; 
+%   [cfa,cfaN,mp] = sensorDetermineCFA;
 %   figure; image(cfaN); colormap(gray);
 %
 % See also: sensorColorOrder, sensorImageColorArray
@@ -62,26 +62,27 @@ if ieNotDefined('sensor'),
     if isempty(sensor), error('no sensor defined'); end
 end
 
-rows = sensorGet(sensor,'rows');
-cols = sensorGet(sensor,'cols');
+rows = sensorGet(sensor, 'rows');
+cols = sensorGet(sensor, 'cols');
 
-pattern = sensorGet(sensor,'pattern');
-if size(pattern,1)  ~= rows || size(pattern,2) ~= cols   
+pattern = sensorGet(sensor, 'pattern');
+if size(pattern, 1) ~= rows || size(pattern, 2) ~= cols
     % We have a cfa pattern that must match the sensor size
-    blockRows = sensorGet(sensor,'unit block rows'); % size(pattern,1);
-    blockCols = sensorGet(sensor,'unit block cols'); % size(pattern,2);
-    
+    blockRows = sensorGet(sensor, 'unit block rows'); % size(pattern,1);
+    blockCols = sensorGet(sensor, 'unit block cols'); % size(pattern,2);
+
     % Make the factor a little bigger than needed
     cFactor = ceil(cols/blockCols);
     rFactor = ceil(rows/blockRows);
-    CFAnumbers = repmat(pattern,rFactor,cFactor);
-    CFAnumbers = CFAnumbers(1:rows,1:cols);
-    
+    CFAnumbers = repmat(pattern, rFactor, cFactor);
+    CFAnumbers = CFAnumbers(1:rows, 1:cols);
+
     %     if (round(cFactor) ~= cFactor) || (round(rFactor) ~= rFactor),
     %         error('Array size must be integer multiples of the size of the unit CFA block');
     %     end
 else
-    rFactor = 1; cFactor = 1;
+    rFactor = 1;
+    cFactor = 1;
     CFAnumbers = pattern;
 end
 
@@ -90,27 +91,26 @@ end
 % Create the list of characters that are hints to the color appearance we
 % should assign to each color filter. These hints can be useful for Matlab
 % plotting routines and some ISET display routines. Get the letters from
-% the first character of the filter name. 
-filterColorLetters = sensorGet(sensor,'filterColorLetters'); 
+% the first character of the filter name.
+filterColorLetters = sensorGet(sensor, 'filterColorLetters');
 
 % Figure out the filters that are OK with the first letter naming
 % convention.
-patternColors = sensorGet(sensor,'patternColors');
+patternColors = sensorGet(sensor, 'patternColors');
 
 % Repeat the small block of letters to be the same size as the whole.
-CFAletters = repmat(patternColors,rFactor,cFactor);
+CFAletters = repmat(patternColors, rFactor, cFactor);
 
 % Return the map
 if nargout > 2
-    [knownColorLetters knownMap] = sensorColorOrder('string');
+    [knownColorLetters, knownMap] = sensorColorOrder('string');
     nLetters = length(filterColorLetters);
-    mp = zeros(nLetters,3);
+    mp = zeros(nLetters, 3);
     % Get this map from the known map
-    for ii=1:nLetters
+    for ii = 1:nLetters
         idx = find(filterColorLetters(ii) == knownColorLetters);
-        mp(ii,:) = knownMap(idx,:);
+        mp(ii, :) = knownMap(idx, :);
     end
 end
 
 return;
-

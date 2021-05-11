@@ -1,4 +1,4 @@
-function cal = CalibrateAmbDrvr(cal,USERPROMPT,whichMeterType,blankOtherScreen)
+function cal = CalibrateAmbDrvr(cal, USERPROMPT, whichMeterType, blankOtherScreen)
 % cal =  CalibrateAmbDrvr(cal,USERPROMPT,whichMeterType,blankOtherScreen)
 %
 % This script does the work for monitor ambient calibration.
@@ -44,24 +44,24 @@ end
 
 % Check meter
 if ~whichMeterType
-	CMCheckInit;
+    CMCheckInit;
 end
 
 % User prompt
 if USERPROMPT
-	if cal.describe.whichScreen == 0
-		fprintf('Hit any key to proceed past this message and display a box.\n');
-		fprintf('Focus radiometer on the displayed box.\n');
-		fprintf('Once meter is set up, hit any key - you will get %g seconds\n',...
-                cal.describe.leaveRoomTime);
-		fprintf('to leave room.\n');
+    if cal.describe.whichScreen == 0
+        fprintf('Hit any key to proceed past this message and display a box.\n');
+        fprintf('Focus radiometer on the displayed box.\n');
+        fprintf('Once meter is set up, hit any key - you will get %g seconds\n', ...
+            cal.describe.leaveRoomTime);
+        fprintf('to leave room.\n');
         KbStrokeWait(-1);
-	else
-		fprintf('Focus radiometer on the displayed box.\n');
-		fprintf('Once meter is set up, hit any key - you will get %g seconds\n',...
-                cal.describe.leaveRoomTime);
-		fprintf('to leave room.\n');
-	end
+    else
+        fprintf('Focus radiometer on the displayed box.\n');
+        fprintf('Once meter is set up, hit any key - you will get %g seconds\n', ...
+            cal.describe.leaveRoomTime);
+        fprintf('to leave room.\n');
+    end
 end
 
 % Blank other screen, if requested:
@@ -99,20 +99,20 @@ if (cal.describe.whichScreen == 0)
     HideCursor;
 end
 
-theClut = zeros(256,3);
+theClut = zeros(256, 3);
 if g_usebitspp
     % Load zero theClut into device:
     Screen('LoadNormalizedGammaTable', window, theClut, 2);
-    Screen('Flip', window);    
+    Screen('Flip', window);
 else
     % Load zero lut into regular graphics card:
     Screen('LoadNormalizedGammaTable', window, theClut);
 end
 
 % Draw a box in the center of the screen
-boxRect = [0 0 cal.describe.boxSize cal.describe.boxSize];
+boxRect = [0, 0, cal.describe.boxSize, cal.describe.boxSize];
 boxRect = CenterRect(boxRect, screenRect);
-theClut(2,:) = [1 1 1];
+theClut(2, :) = [1, 1, 1];
 Screen('FillRect', window, 1, boxRect);
 if g_usebitspp
     Screen('LoadNormalizedGammaTable', window, theClut, 2);
@@ -124,59 +124,59 @@ end
 % Wait for user
 if USERPROMPT == 1
     KbStrokeWait(-1);
-	fprintf('Pausing for %d seconds ...', cal.describe.leaveRoomTime);
-	WaitSecs(cal.describe.leaveRoomTime);
-	fprintf(' done\n');
-end
+    fprintf('Pausing for %d seconds ...', cal.describe.leaveRoomTime);
+        WaitSecs(cal.describe.leaveRoomTime);
+        fprintf(' done\n');
+    end
 
-% Put in appropriate background.
-theClut(2,:) = cal.bgColor';
-if g_usebitspp
-    Screen('FillRect', window, 1, boxRect);
-    Screen('LoadNormalizedGammaTable', window, theClut, 2);
-    Screen('Flip', window, 0, 1);
-else
-    Screen('LoadNormalizedGammaTable', window, theClut);
-end
+    % Put in appropriate background.
+    theClut(2, :) = cal.bgColor';
+    if g_usebitspp
+        Screen('FillRect', window, 1, boxRect);
+        Screen('LoadNormalizedGammaTable', window, theClut, 2);
+        Screen('Flip', window, 0, 1);
+    else
+        Screen('LoadNormalizedGammaTable', window, theClut);
+    end
 
-% Start timing
-t0 = clock;
+    % Start timing
+    t0 = clock;
 
-ambient = zeros(cal.describe.S(3), 1);
-for a = 1:cal.describe.nAverage
-    % Measure ambient
-    ambient = ambient + MeasMonSpd(window, [0 0 0]', cal.describe.S, 0, whichMeterType, theClut);
-end
-ambient = ambient / cal.describe.nAverage;
+    ambient = zeros(cal.describe.S(3), 1);
+    for a = 1:cal.describe.nAverage
+        % Measure ambient
+        ambient = ambient + MeasMonSpd(window, [0, 0, 0]', cal.describe.S, 0, whichMeterType, theClut);
+    end
+    ambient = ambient / cal.describe.nAverage;
 
-% Close the screen, restore cluts:
-if g_usebitspp
-    % Load identity clut on Bits++ / DataPixx et al.:
-    BitsPlusPlus('LoadIdentityClut', window);
-    Screen('Flip', window);
-end
+    % Close the screen, restore cluts:
+    if g_usebitspp
+        % Load identity clut on Bits++ / DataPixx et al.:
+        BitsPlusPlus('LoadIdentityClut', window);
+        Screen('Flip', window);
+    end
 
-% Restore graphics card gamma tables to original state:
-RestoreCluts;
+    % Restore graphics card gamma tables to original state:
+    RestoreCluts;
 
-% Show hidden cursor:
-if cal.describe.whichScreen == 0
-	ShowCursor;
-end
+    % Show hidden cursor:
+    if cal.describe.whichScreen == 0
+        ShowCursor;
+    end
 
-% Close all windows:
-Screen('CloseAll');
+    % Close all windows:
+    Screen('CloseAll');
 
-% Report time:
-t1 = clock;
-fprintf('CalibrateAmbDrvr measurements took %g minutes\n', etime(t1,t0)/60);
+    % Report time:
+    t1 = clock;
+    fprintf('CalibrateAmbDrvr measurements took %g minutes\n', etime(t1, t0)/60);
 
-% Update structure
-Smon = cal.describe.S;
-Tmon = WlsToT(Smon);
-cal.P_ambient = ambient;
-cal.T_ambient = Tmon;
-cal.S_ambient = Smon;
+    % Update structure
+    Smon = cal.describe.S;
+    Tmon = WlsToT(Smon);
+    cal.P_ambient = ambient;
+    cal.T_ambient = Tmon;
+    cal.S_ambient = Smon;
 
-% Done:
-return;
+    % Done:
+    return;

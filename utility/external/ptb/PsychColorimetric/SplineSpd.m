@@ -15,7 +15,7 @@ function [spd_out] = SplineSpd(wls_in, spd_in, wls_out, extend)
 % wls_in and wls_out may be specified as a column vector of
 % wavelengths or as a [start delta n] description.
 %
-% If wls_out is passed as a vector of wavelengths with just one sample, we don't 
+% If wls_out is passed as a vector of wavelengths with just one sample, we don't
 % know what the wavelength sampling is, and we can't do the conversion of
 % power per wavelength band.  This condition is checked for and an error is
 % thrown.  The fix is to pass the wavelengths as an S vector
@@ -34,9 +34,9 @@ function [spd_out] = SplineSpd(wls_in, spd_in, wls_out, extend)
 %         dhb  Put in error check for single wavelength value pass.
 
 if (nargin < 4)
-	extend = [];
+    extend = [];
 end
-spd_raw = SplineRaw(wls_in,spd_in,wls_out,extend);
+spd_raw = SplineRaw(wls_in, spd_in, wls_out, extend);
 
 % Now take change in deltaLambda into account in power measure
 if (length(wls_in(:)) == 1)
@@ -44,18 +44,18 @@ if (length(wls_in(:)) == 1)
     fprintf('Call with S = [theWavelength wavelengthBandWidth 1] rather than just by\n');
     fprintf('passing a single wavelength, where wavelengthBandWidth is the width of\n');
     fprintf('the wavelength band for which power is specified.\n\n');
-    error('Change single passed input wavelength to S format');
-end
-S_in = MakeItS(wls_in);
+        error('Change single passed input wavelength to S format');
+    end
+    S_in = MakeItS(wls_in);
 
-if (length(wls_out(:)) == 1)
-    fprintf('Cannot determine delta lambda when only a single output wavelength is specified.\n');
-    fprintf('Call with S = [theWavelength wavelengthBandWidth 1] rather than just by\n');
-    fprintf('passing a single wavelength, where wavelengthBandWidth is the width of\n');
-    fprintf('the wavelength band for which power is specified.\n\n');
-    error('Change single passed output wavelength to S format');
-end
-S_out= MakeItS(wls_out);
+    if (length(wls_out(:)) == 1)
+        fprintf('Cannot determine delta lambda when only a single output wavelength is specified.\n');
+        fprintf('Call with S = [theWavelength wavelengthBandWidth 1] rather than just by\n');
+        fprintf('passing a single wavelength, where wavelengthBandWidth is the width of\n');
+        fprintf('the wavelength band for which power is specified.\n\n');
+            error('Change single passed output wavelength to S format');
+        end
+        S_out = MakeItS(wls_out);
 
-convertPower = S_out(2)/S_in(2);
-spd_out = convertPower*spd_raw;
+        convertPower = S_out(2) / S_in(2);
+        spd_out = convertPower * spd_raw;

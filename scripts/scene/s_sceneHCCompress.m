@@ -25,57 +25,59 @@ ieInit
 delay = 0.2;
 
 %% Read in the scene
-fName = fullfile(isetRootPath,'data','images','multispectral','StuffedAnimals_tungsten-hdrs');
-scene = sceneFromFile(fName,'multispectral');
+fName = fullfile(isetRootPath, 'data', 'images', 'multispectral', 'StuffedAnimals_tungsten-hdrs');
+scene = sceneFromFile(fName, 'multispectral');
 
 % Have a look at the image
-sceneWindow(scene); pause(delay);
+sceneWindow(scene);
+pause(delay);
 
 % Plot the illuminant
-scenePlot(scene,'illuminant photons');
+scenePlot(scene, 'illuminant photons');
 
 %% Compress the hypercube requiring only 95% of the var explained
 vExplained = 0.95;
-[imgMean, imgBasis, coef] = hcBasis(sceneGet(scene,'photons'),vExplained);
+[imgMean, imgBasis, coef] = hcBasis(sceneGet(scene, 'photons'), vExplained);
 
-%% Save the data 
-wave        = sceneGet(scene,'wave');
+%% Save the data
+wave = sceneGet(scene, 'wave');
 basis.basis = imgBasis;
-basis.wave  = wave;
+basis.wave = wave;
 
 comment = 'Compressed using hcBasis with imgMean)';
-illuminant = sceneGet(scene,'illuminant');
-oFile = fullfile(isetRootPath,'deleteMe.mat');
-ieSaveMultiSpectralImage(oFile,coef,basis,comment,imgMean,illuminant);
+illuminant = sceneGet(scene, 'illuminant');
+oFile = fullfile(isetRootPath, 'deleteMe.mat');
+ieSaveMultiSpectralImage(oFile, coef, basis, comment, imgMean, illuminant);
 
 %% read in the data
 wList = 400:5:700;
-scene2 = sceneFromFile(oFile ,'multispectral',[],[],wList);
+scene2 = sceneFromFile(oFile, 'multispectral', [], [], wList);
 
 % This poor representation produces a very desaturated
 % image
-sceneWindow(scene2); pause(delay);
+sceneWindow(scene2);
+pause(delay);
 
 %% Now require that much more of the variance be explained
 vExplained = 0.99;
-[imgMean, imgBasis, coef] = hcBasis(sceneGet(scene,'photons'),vExplained);
-fprintf('Number of basis functions %.0f\n',size(imgBasis,2));
+[imgMean, imgBasis, coef] = hcBasis(sceneGet(scene, 'photons'), vExplained);
+fprintf('Number of basis functions %.0f\n', size(imgBasis, 2));
 
-%% Save the data 
-wave        = sceneGet(scene,'wave');
+%% Save the data
+wave = sceneGet(scene, 'wave');
 basis.basis = imgBasis;
-basis.wave  = wave;
+basis.wave = wave;
 
 comment = 'Compressed using hcBasis with imgMean)';
 
-illuminant = sceneGet(scene,'illuminant');
+illuminant = sceneGet(scene, 'illuminant');
 % illuminant.wavelength = scene.spectrum.wave;
 % illuminant.data = scene.illuminant.data;
-ieSaveMultiSpectralImage(oFile,coef,basis,comment,imgMean,illuminant);
+ieSaveMultiSpectralImage(oFile, coef, basis, comment, imgMean, illuminant);
 
 %% read in the data
 wList = 400:5:700;
-scene2 = sceneFromFile(oFile ,'multispectral',[],[],wList);
+scene2 = sceneFromFile(oFile, 'multispectral', [], [], wList);
 sceneWindow(scene2); pause(delay)
 
 %% Clean up the temporary file.

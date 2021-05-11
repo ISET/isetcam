@@ -1,4 +1,4 @@
-function imgT = imageTranslate(img,shift, fillValues)
+function imgT = imageTranslate(img, shift, fillValues)
 % Translate image data
 %
 %   imgT = imageTranslate(scene,shift);
@@ -22,8 +22,8 @@ function imgT = imageTranslate(img,shift, fillValues)
 % Copyright Imageval, LLC, 2014
 
 %% Use this form because we may loop on this routine a lot
-if ~exist('img','var')   || isempty(img), error('Image required'); end
-if ~exist('shift','var') || isempty(shift), error('(x,y) Displacement required'); end
+if ~exist('img', 'var') || isempty(img), error('Image required'); end
+if ~exist('shift', 'var') || isempty(shift), error('(x,y) Displacement required'); end
 if ~exist('fillValues', 'var')
     fillValues = 0; % default
 end
@@ -33,9 +33,9 @@ end
 %     warning('Rounding the shift to integer size');
 % end
 
-rcw = size(img);   % Row, column, wavelength
+rcw = size(img); % Row, column, wavelength
 
-%% There should be different cases.  
+%% There should be different cases.
 
 % This is the only one we handle just now, which produces an
 % upward/leftward displacement (both positive). We will need to handle
@@ -48,9 +48,9 @@ rcw = size(img);   % Row, column, wavelength
 % Note that we assume + is up/left, but by default Matlab assumes
 % down/right
 if length(rcw) == 2
-   imgT = imtranslate(img, [-1 * shift(1), -1 * shift(2)], 'FillValues', fillValues);
+    imgT = imtranslate(img, [-1 * shift(1), -1 * shift(2)], 'FillValues', fillValues);
 else
-   imgT = imtranslate(img, [-1 * shift(1), -1 * shift(2), 0], 'FillValues', fillValues);
+    imgT = imtranslate(img, [-1 * shift(1), -1 * shift(2), 0], 'FillValues', fillValues);
 end
 
 % old code
@@ -65,4 +65,3 @@ end
 
 
 end
-

@@ -16,7 +16,7 @@ function energy = Quanta2Energy(wavelength, photons)
 % the energy spectra in the columns.
 %
 % Examples:
-%   wave = 400:10:700;  
+%   wave = 400:10:700;
 %   p = blackbody(wave,3000:1000:8000,'photons');
 %   tic, e = Quanta2Energy(wave,p'); toc
 %   e = diag(1./e(:,11))*e;
@@ -34,26 +34,28 @@ function energy = Quanta2Energy(wavelength, photons)
 %   probably by making the other routine take RGB or XW format as well.
 %   Old legacy issues, sigh.
 
-if isempty(photons), energy = []; return; end
+if isempty(photons), energy = [];
+    return;
+end
 wavelength = wavelength(:)'; % make wave as row vector
 
 % Fundamental constants
-h = vcConstants('h');		% Planck's constant [J sec]
-c = vcConstants('c');		% speed of light [m/sec]
+h = vcConstants('h'); % Planck's constant [J sec]
+c = vcConstants('c'); % speed of light [m/sec]
 
 % Main routine handles RGB or XW formats
 iFormat = vcGetImageFormat(photons, wavelength);
 
 switch iFormat
     case 'RGB'
-        [n,m,w] = size(photons);
+        [n, m, w] = size(photons);
         if w ~= length(wavelength)
             error('Quanta2Energy:  photons third dimension must be nWave');
         end
         photons = RGB2XWFormat(photons);
         % energy = (h*c/(1e-9))*(photons ./ repmat(wavelength,n*m,1) );
-        energy = (h*c/1e-9) * bsxfun(@rdivide, photons, wavelength);
-        energy = XW2RGBFormat(energy,n,m);
+        energy = (h * c / 1e-9) * bsxfun(@rdivide, photons, wavelength);
+        energy = XW2RGBFormat(energy, n, m);
 
     case 'XW'
         % If photons is a vector, it must be a row
@@ -61,7 +63,7 @@ switch iFormat
         if size(photons, 2) ~= length(wavelength)
             error('Quanta2Energy: quanta must have length of nWave');
         end
-        energy = (h*c/1e-9) * bsxfun(@rdivide, photons, wavelength);
+        energy = (h * c / 1e-9) * bsxfun(@rdivide, photons, wavelength);
     otherwise
         error('Unknown image format');
 

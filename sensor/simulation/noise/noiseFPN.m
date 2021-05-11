@@ -1,4 +1,4 @@
-function [noisyImage,dsnuImage,prnuImage] = noiseFPN(sensor)
+function [noisyImage, dsnuImage, prnuImage] = noiseFPN(sensor)
 % Include dsnu and prnu noise into a sensor image
 %
 %    [noisyImage, dsnuImage, prnuImage] = noiseFPN(sensor)
@@ -37,30 +37,30 @@ function [noisyImage,dsnuImage,prnuImage] = noiseFPN(sensor)
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
-if ~exist('sensor','var') || isempty(sensor), sensor = vcGetObject('sensor'); end
+if ~exist('sensor', 'var') || isempty(sensor), sensor = vcGetObject('sensor'); end
 
-isaSize         = sensorGet(sensor,'size');
-gainSD          = sensorGet(sensor,'prnuLevel');   % This is a percentage
-offsetSD        = sensorGet(sensor,'dsnuLevel');   % This is a voltage
-integrationTime = sensorGet(sensor,'integrationTime');
-AE              = sensorGet(sensor,'autoExposure');
+isaSize = sensorGet(sensor, 'size');
+gainSD = sensorGet(sensor, 'prnuLevel'); % This is a percentage
+offsetSD = sensorGet(sensor, 'dsnuLevel'); % This is a voltage
+integrationTime = sensorGet(sensor, 'integrationTime');
+AE = sensorGet(sensor, 'autoExposure');
 
-% Get the fixed pattern noise offset 
-dsnuImage = randn(isaSize)*offsetSD;
+% Get the fixed pattern noise offset
+dsnuImage = randn(isaSize) * offsetSD;
 
 % For CDS calculations we can arrive here with all the
-% integration times are 0 and autoexposure off. 
+% integration times are 0 and autoexposure off.
 % We do a special calculation.
-if isequal(integrationTime,zeros(size(integrationTime))) && ~AE
-    
+if isequal(integrationTime, zeros(size(integrationTime))) && ~AE
+
     % We just return the offset image as the noise.
     noisyImage = dsnuImage;
-    if nargout == 3          % Provide a gainFPN image       
+    if nargout == 3 % Provide a gainFPN image
         % The gainSD is a percentage around the mean.  So divide the
         % gainSD by 100 because the mean is 1.  For example, if the sd
         % is 20 percent, we want the sd of the normal random variable
         % below to be 0.2 (20 percent around a mean of 1).
-        prnuImage = randn(isaSize)*(gainSD/100) + 1;
+        prnuImage = randn(isaSize) * (gainSD / 100) + 1;
     end
     return;
 else
@@ -73,15 +73,15 @@ else
     % gainSD by 100 because the mean is 1.  For example, if the sd
     % is 20 percent, we want the sd of the normal random variable
     % below to be 0.2 (20 percent around a mean of 1).
-    prnuImage = randn(isaSize)*(gainSD/100) + 1;
+    prnuImage = randn(isaSize) * (gainSD / 100) + 1;
 
-    nExposures = sensorGet(sensor,'nExposures');
+    nExposures = sensorGet(sensor, 'nExposures');
     % This is the formula:
     % slopeImage = voltageImage/integrationTime;
     % noisyImage = (slopeImage .* prnuImage) * integrationTime + dsnuImage;
     % But it is equivalent to the simpler (fewer multiplies) formula:
-    voltageImage = sensorGet(sensor,'volts');
-    noisyImage   = voltageImage .* prnuImage  + dsnuImage;
+    voltageImage = sensorGet(sensor, 'volts');
+    noisyImage = voltageImage .* prnuImage + dsnuImage;
     % noisyImage   = voltageImage .* repmat(prnuImage,[1,1,nExposures])  + repmat(dsnuImage,[1,1,nExposures]);
     % std(dsnuImage(:))
 end

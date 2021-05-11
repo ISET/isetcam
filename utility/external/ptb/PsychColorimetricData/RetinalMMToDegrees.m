@@ -1,4 +1,4 @@
-function degs = RetinalMMToDegrees(mm,eyeLengthMM,fulltrig)
+function degs = RetinalMMToDegrees(mm, eyeLengthMM, fulltrig)
 % degs = RetinalMMToDegrees(mm,eyeLengthMM,[fulltrig])
 %
 % Convert fovela extent in mm of retina in the fovea to degrees of visual
@@ -21,7 +21,7 @@ function degs = RetinalMMToDegrees(mm,eyeLengthMM,fulltrig)
 % behavior prior to July 2015. This behavior does not exactly self invert
 % with DegreesToRetinalMM.  Nor does it account for the shape and optics of
 % the eye.
-% 
+%
 % Routine EyeLength returns posterior nodal eye lengths for various
 % species and sources.  Use 'Human' and 'Rodieck' to get the eye
 % length implicit in RetinalEccentricityMMToDegrees and
@@ -39,9 +39,9 @@ if (nargin < 3 || isempty(fulltrig))
 end
 
 if (~fulltrig)
-    factor = 1/DegreesToRetinalMM(1,eyeLengthMM);
-    degs = factor*mm;
+    factor = 1 / DegreesToRetinalMM(1, eyeLengthMM);
+    degs = factor * mm;
 else
-    tanarg = (mm/2)/eyeLengthMM;
-    degs = 2*(180/pi)*atan(tanarg);
+    tanarg = (mm / 2) / eyeLengthMM;
+    degs = 2 * (180 / pi) * atan(tanarg);
 end

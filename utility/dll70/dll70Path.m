@@ -9,8 +9,8 @@ function rootPath = dll70Path
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
-tmp=which('dll70Path');
+tmp = which('dll70Path');
 
-[rootPath,fName,ext]=fileparts(tmp);
+[rootPath, fName, ext] = fileparts(tmp);
 
 return;

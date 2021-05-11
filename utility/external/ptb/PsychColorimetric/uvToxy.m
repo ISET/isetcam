@@ -1,4 +1,4 @@
-function xy = uvToxy(uv,compute1960)
+function xy = uvToxy(uv, compute1960)
 % xy = uvToxy(uv,[compute1960])
 %
 % Convert CIE u'v' chromaticity to CIE xy chromaticity.
@@ -25,8 +25,7 @@ if (nargin < 2 || isempty(compute1960))
 end
 
 %% Do it, using uvYToXYZ as engine
-uvY = [uv ; ones(1,size(uv,2))];
-XYZ = uvYToXYZ(uvY,compute1960);
+uvY = [uv; ones(1, size(uv, 2))];
+XYZ = uvYToXYZ(uvY, compute1960);
 xyY = XYZToxyY(XYZ);
-xy = xyY(1:2,:);
-
+xy = xyY(1:2, :);

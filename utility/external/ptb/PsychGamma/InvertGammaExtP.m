@@ -1,4 +1,4 @@
-function input = InvertGammaExpP(x,maxInput,output)
+function input = InvertGammaExpP(x, maxInput, output)
 % output = InvertGammaExpP(x,input)
 %
 % Invert the gamma table using an extended power function.
@@ -16,5 +16,4 @@ function input = InvertGammaExpP(x,maxInput,output)
 thePow = x(1);
 theOffset = x(2);
 
-input = ((maxInput-theOffset)*(output.^(1/thePow))) + theOffset;
-
+input = ((maxInput - theOffset) * (output.^(1 / thePow))) + theOffset;

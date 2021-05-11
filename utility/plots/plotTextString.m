@@ -1,4 +1,4 @@
-function t = plotTextString(str,position,delta,fontSize)
+function t = plotTextString(str, position, delta, fontSize)
 %
 %   t = plotTextString(str,[position='ur'],[delta=0.2],[fontSize=12])
 %
@@ -24,34 +24,35 @@ function t = plotTextString(str,position,delta,fontSize)
 % set the value of delta.
 
 if ieNotDefined('position'), position = 'ur'; end
-if ieNotDefined('delta'), delta = [0.2,0.2]; end
+if ieNotDefined('delta'), delta = [0.2, 0.2]; end
 if ieNotDefined('fontSize'), fontSize = 12; end
 
-xlim = get(gca,'xlim');
-ylim = get(gca,'ylim');
+xlim = get(gca, 'xlim');
+ylim = get(gca, 'ylim');
 
-xscale = get(gca,'xscale');
-yscale = get(gca,'yscale');
+xscale = get(gca, 'xscale');
+yscale = get(gca, 'yscale');
 
 switch lower(position)
     case 'ul'
-        x = xlim(1) + (xlim(2) - xlim(1))*delta(1); 
-        y = ylim(2) - (ylim(2) - ylim(1))*delta(2);
+        x = xlim(1) + (xlim(2) - xlim(1)) * delta(1);
+        y = ylim(2) - (ylim(2) - ylim(1)) * delta(2);
     case 'll'
-        x = xlim(1) + (xlim(2) - xlim(1))*delta(1); 
-        y = ylim(1) + (ylim(2) - ylim(1))*delta(2);
+        x = xlim(1) + (xlim(2) - xlim(1)) * delta(1);
+        y = ylim(1) + (ylim(2) - ylim(1)) * delta(2);
     case 'ur'
-        x = xlim(2) - (xlim(2) - xlim(1))*delta(1); 
-        y = ylim(2) - (ylim(2) - ylim(1))*delta(2);
+        x = xlim(2) - (xlim(2) - xlim(1)) * delta(1);
+        y = ylim(2) - (ylim(2) - ylim(1)) * delta(2);
     case 'lr'
-        x = xlim(2) - (xlim(2) - xlim(1))*delta(1); 
-        y = ylim(1) + (ylim(2) - ylim(1))*delta(2);
+        x = xlim(2) - (xlim(2) - xlim(1)) * delta(1);
+        y = ylim(1) + (ylim(2) - ylim(1)) * delta(2);
     otherwise
         error('Unknown position');
 end
-x = double(x); y = double(y);
+x = double(x);
+y = double(y);
 % Display
 t = text(x, y, str);
-set(t,'Background','w','Fontsize',fontSize);
+set(t, 'Background', 'w', 'Fontsize', fontSize);
 
 return;

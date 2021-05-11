@@ -23,7 +23,7 @@ objType = vcEquivalentObjtype(objType);
 val = vcGetSelectedObject(objType);
 
 if isempty(val)
-    warning('No object of type %s to delete',objType)
+    warning('No object of type %s to delete', objType)
     return;
 end
 
@@ -36,14 +36,14 @@ if nObj == 1
 else
     % Note the parenthesis, not {}
     obj(val) = [];
-    val = max(1,val-1);
+    val = max(1, val-1);
 end
 
 % Reset the new list of objects
-vcSetObjects(objType,obj);
+vcSetObjects(objType, obj);
 
 % Pick a new selected object
-vcSetSelectedObject(objType,val);
+vcSetSelectedObject(objType, val);
 
 nRemaining = length(obj);
 % fprintf('%.0f remaining objects\n',nRemaining);

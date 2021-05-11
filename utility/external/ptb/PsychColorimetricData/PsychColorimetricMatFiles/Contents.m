@@ -9,7 +9,7 @@
 % All data files are in a standard format.
 %
 % A very useful source for on-line
-% colorimetric data is the CVRL database: 
+% colorimetric data is the CVRL database:
 %   http://cvrl.ioo.ucl.ac.uk/
 % Many of the functions used here were downloaded from
 % that source and then splined to the wavelength sampling
@@ -50,7 +50,7 @@
 %  In some cases, the original data were interpolated or extraploated (with zeros)
 %  to put them data onto the CIE standard [380 5 81] wavelength.
 %
-%  See also: EnergyToQuanta, QuantaToEnergy, MakeItS, MakeItWls, MakeItStruct, 
+%  See also: EnergyToQuanta, QuantaToEnergy, MakeItS, MakeItWls, MakeItStruct,
 %    SplineSpd, SplineSrf, SplineCmf.
 %
 %   B_cieday            - CIE daylight basis functions.
@@ -60,7 +60,7 @@
 %   B_roomillum         - Basis functions for illuminants in Brainard's room.
 %   B_vrhel             - Basis functions for Vrhel surface measurements.
 %   den_lens_ws         - Relative lens density data (re 700 nm).  W&S, Table 1(2.4.6), p. 109.
-%                       -   This is the first data set in the table, not the Norren and Vos 
+%                       -   This is the first data set in the table, not the Norren and Vos
 %                       -   data.  It is for an open pupil.
 %   den_lens_cie_1      - Part one of CIE component lens density function. CIE 170-1:2006, Table 6.10
 %   den_lens_cie_2      - Part two of CIE component lens density function. CIE 170-1:2006, Table 6.10
@@ -122,4 +122,3 @@
 %   T_xyzCIEPhys10      - CIE XYZ CMF's based on CIE 10-deg cone fundamentals.
 %                       -   Obtained in 2016 from CVRL.  At this time, these are proposed.
 %   T_xyzJuddVos        - Judd-Vos modified color matching functions.
-

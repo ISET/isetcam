@@ -1,4 +1,4 @@
-function d = displaySet(d,parm,val,varargin)
+function d = displaySet(d, parm, val, varargin)
 % Set display structure values
 %
 %   d = displaySet(d,parm,val,varargin)
@@ -21,7 +21,7 @@ function d = displaySet(d,parm,val,varargin)
 %   dixel control map  - Not sure
 %   render function    - Not sure
 %
-% See also: 
+% See also:
 %   displayGet, displayCreate, ieLUTDigital, ieLUTLinear
 
 % Examples:
@@ -32,7 +32,7 @@ function d = displaySet(d,parm,val,varargin)
 %  d = displaySet(d,'name','My Display Type');
 %
 
-if notDefined('parm'), error('Parameter not found.');  end
+if notDefined('parm'), error('Parameter not found.'); end
 
 % Convert parameter format
 parm = ieParamFormat(parm);
@@ -42,40 +42,40 @@ switch parm
         d.name = val;
     case {'type'}
         d.type = val;
-    case {'gtable','dv2intensity','gamma'}
+    case {'gtable', 'dv2intensity', 'gamma'}
         % d = displaySet(d,'gamma',val)
         % d = displaySet(d,'gamma','linear');
         % From digital values to primary intensity
         % Should be same number of columns as primaries
         if ischar(val) && strcmp(val, 'linear')
             % User just wants a linear gamma table
-            sz = size(d.gamma,1);
+            sz = size(d.gamma, 1);
             if ~isempty(varargin), sz = varargin{1}; end
-            val = linspace(0,1,sz);
-            val = repmat(val(:),1,displayGet(d, 'nprimaries'));
+            val = linspace(0, 1, sz);
+            val = repmat(val(:), 1, displayGet(d, 'nprimaries'));
         end
         d.gamma = val;
-    case {'wave','wavelength'}  %nanometers
+    case {'wave', 'wavelength'} %nanometers
         % d = displaySet(d,'wave',val);
         % Force column, interpolate SPD, and don't do anything if it turns
         % out that the current wave value is the same as sent in.
         if ~isfield(d, 'wave')
             d.wave = val(:);
-        elseif ~isequal(val(:),d.wave)
+        elseif ~isequal(val(:), d.wave)
             % disp('Interpolating display SPD for consistency with new wave.')
-            spd = displayGet(d,'spd');
-            wave = displayGet(d,'wave');
+            spd = displayGet(d, 'spd');
+            wave = displayGet(d, 'wave');
             newSPD = interp1(wave, spd, val(:), 'linear');
             d.wave = val(:);
-            d = displaySet(d,'spd',newSPD);
+            d = displaySet(d, 'spd', newSPD);
         end
 
-    case {'spd','spdprimaries'}
+    case {'spd', 'spdprimaries'}
         % d = displaySet(d,'spd primaries',val);
         if ~ismatrix(val), error('unknown spd structure'); end
-        if size(val,1) < size(val, 2), val = val'; end
+        if size(val, 1) < size(val, 2), val = val'; end
         d.spd = val;
-        
+
     case {'dpi'}
         % displaySet(d, 'dpi', val);
         % Dots per inch of the pixels (full pixel center-to-center)
@@ -110,11 +110,11 @@ switch parm
     case {'comment'}
         % comment for the display
         d.comment = val;
-    case {'rgb','image'}
+    case {'rgb', 'image'}
         d.image = val;
-        
+
     otherwise
-        error('Unknown parameter %s\n',parm);
+        error('Unknown parameter %s\n', parm);
 end
 
 end

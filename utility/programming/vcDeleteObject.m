@@ -1,9 +1,9 @@
-function nRemaining = vcDeleteObject(objType,val)
+function nRemaining = vcDeleteObject(objType, val)
 % Delete the specified object type of at position val
 %
 %    nRemaining = vcDeleteObject(objType,[val])
 %
-% The ISET objects that can be deleted by this call are: 
+% The ISET objects that can be deleted by this call are:
 %   SCENE, OPTICALIMAGE (OI), VCIMAGE (IMGPROC), ISA (SENSOR).
 %
 % If val is not passed in this call is equivalent to vcDeleteSelectedObject
@@ -19,8 +19,8 @@ if ieNotDefined('objType'), error('Object type required'); end
 objType = vcEquivalentObjtype(objType);
 
 % Set val to as the selected object
-if exist('val','var') && ~isempty(val)
-    vcSetSelectedObject(objType,val)
+if exist('val', 'var') && ~isempty(val)
+    vcSetSelectedObject(objType, val)
 end
 
 % Delete the selected object

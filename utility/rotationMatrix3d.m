@@ -25,33 +25,33 @@ function rMatrix = rotationMatrix3d(angleList, scale)
 %         2003.09.16 Dougherty added scale
 % (c) Stanford VISTA Team
 
-angleList=angleList(:);
-if (length(angleList)~=3), error('Must have 3 angles in the angle list'); end
-if(~exist('scale','var') || isempty(scale)), scale = 1; end
+angleList = angleList(:);
+if (length(angleList) ~= 3), error('Must have 3 angles in the angle list'); end
+if (~exist('scale', 'var') || isempty(scale)), scale = 1; end
 
-if(length(scale)==1),     scale = eye(3)*scale;
-elseif(length(scale)==3), scale = [scale(1) 0 0; 0 scale(2) 0; 0 0 scale(3)];
-else                      error('Scale must be a scalar or 1x3.');
+if (length(scale) == 1), scale = eye(3) * scale;
+elseif (length(scale) == 3), scale = [scale(1), 0, 0; 0, scale(2), 0; 0, 0, scale(3)];
+else error('Scale must be a scalar or 1x3.');
 end
 
-tx=angleList(1);
-ty=angleList(2);
-tz=angleList(3);
+tx = angleList(1);
+ty = angleList(2);
+tz = angleList(3);
 
 % Compute the individual matrices for clarity
-RotX=[ 1 	0 	0;...
-    0 	cos(tx) 	-sin(tx);...
-    0 	sin(tx) 	cos(tx)];
+RotX = [1, 0, 0; ...
+    0, cos(tx), -sin(tx); ...
+    0, sin(tx), cos(tx)];
 
-RotY=[ cos(ty) 	0 	-sin(ty);...
-    0       1   0;...
-    sin(ty) 0 cos(ty)];
+RotY = [cos(ty), 0, -sin(ty); ...
+    0, 1, 0; ...
+    sin(ty), 0, cos(ty)];
 
-RotZ=[cos(tz)  -sin(tz)  0;...
-    sin(tz)  cos(tz)  0;...
-    0     0  1];
+RotZ = [cos(tz), -sin(tz), 0; ...
+    sin(tz), cos(tz), 0; ...
+    0, 0, 1];
 
 % This is what we return;
-rMatrix=RotX*RotY*RotZ*scale;
+rMatrix = RotX * RotY * RotZ * scale;
 
 return

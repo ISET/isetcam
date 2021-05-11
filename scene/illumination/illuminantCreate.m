@@ -1,5 +1,5 @@
 function il = illuminantCreate(ilName, wave, varargin)
-% Create an ISETCam illuminant (light source) structure.  
+% Create an ISETCam illuminant (light source) structure.
 %
 % Synopsis:
 %   il = illuminantCreate(ilName, wave, varargin)
@@ -32,40 +32,40 @@ function il = illuminantCreate(ilName, wave, varargin)
 % See examples:
 %  ieExamplesPrint('illuminantCreate');
 %
-% See also:  
+% See also:
 %  illuminantSet/Get, s_sceneIlluminant, s_sceneIlluminantSpace,
 %  illuminantRead
 %
 
 % Examples:
 %{
-   il = illuminantCreate('d65');
+il = illuminantCreate('d65');
 %}
 %{
-  wave = 400:10:700; cTemp = 3500; luminance = 100; 
-  il = illuminantCreate('blackbody',wave, cTemp,luminance)
+wave = 400:10:700; cTemp = 3500; luminance = 100;
+il = illuminantCreate('blackbody',wave, cTemp,luminance)
 %}
 %{
-  wave = 400:5:700; cTemp = 5500; luminance = 10; 
-  il = illuminantCreate('blackbody',wave,cTemp,luminance)
+wave = 400:5:700; cTemp = 5500; luminance = 10;
+il = illuminantCreate('blackbody',wave,cTemp,luminance)
 %}
 %{
-  wave = 400:10:700; 
-  il = illuminantCreate('illuminant c',wave);
-  plotRadiance(wave,illuminantGet(il,'photons'));
+wave = 400:10:700;
+il = illuminantCreate('illuminant c',wave);
+plotRadiance(wave,illuminantGet(il,'photons'));
 %}
 %{
-  wave = 400:3:700;
-  params.center = 510; params.sd = 5; params.peakEnergy = 10;
-  il = illuminantCreate('gaussian',wave,params);
-  wave = illuminantGet(il,'wave');
-  e = illuminantGet(il,'energy');
-  plotRadiance(wave,e)
+wave = 400:3:700;
+params.center = 510; params.sd = 5; params.peakEnergy = 10;
+il = illuminantCreate('gaussian',wave,params);
+wave = illuminantGet(il,'wave');
+e = illuminantGet(il,'energy');
+plotRadiance(wave,e)
 %}
 
 %% Initialize parameters
-if ~exist('ilName','var')||isempty(ilName), ilName = 'd65'; end
-if ~exist('wave','var')|| isempty(wave), wave = 400:10:700; end
+if ~exist('ilName', 'var') || isempty(ilName), ilName = 'd65'; end
+if ~exist('wave', 'var') || isempty(wave), wave = 400:10:700; end
 
 il.name = ilName;
 il.type = 'illuminant';
@@ -75,64 +75,64 @@ il.spectrum.wave = wave;
 % The absence of a default could be a problem.
 
 switch ieParamFormat(ilName)
-    
-    case {'d65','d50','tungsten','fluorescent','555nm','equalenergy','illuminantc','equalphotons'}
+
+    case {'d65', 'd50', 'tungsten', 'fluorescent', '555nm', 'equalenergy', 'illuminantc', 'equalphotons'}
         % illuminantCreate('d65',luminance)
         illP.name = ilName;
         illP.luminance = 100;
         illP.spectrum.wave = wave;
         if ~isempty(varargin), illP.luminance = varargin{1}; end
-        
-        iEnergy = illuminantRead(illP);		    % [W/(sr m^2 nm)]
-        iPhotons = Energy2Quanta(wave,iEnergy); % Check this step
-        il = illuminantSet(il,'name',illP.name);
+
+        iEnergy = illuminantRead(illP); % [W/(sr m^2 nm)]
+        iPhotons = Energy2Quanta(wave, iEnergy); % Check this step
+        il = illuminantSet(il, 'name', illP.name);
 
     case 'blackbody'
         % illuminantCreate('blackbody',5000,luminance);
         illP.name = 'blackbody';
         illP.temperature = 5000;
-        illP.luminance   = 100;
+        illP.luminance = 100;
         illP.spectrum.wave = wave;
-        
-        if ~isempty(varargin),   illP.temperature = varargin{1};  end
+
+        if ~isempty(varargin), illP.temperature = varargin{1}; end
         if length(varargin) > 1, illP.luminance = varargin{2}; end
-        
-        iEnergy = illuminantRead(illP);		    % [W/(sr m^2 nm)]
-        iPhotons = Energy2Quanta(wave,iEnergy); % Check this step
-        
-        il = illuminantSet(il,'name',sprintf('blackbody-%.0f',illP.temperature));
-        
+
+        iEnergy = illuminantRead(illP); % [W/(sr m^2 nm)]
+        iPhotons = Energy2Quanta(wave, iEnergy); % Check this step
+
+        il = illuminantSet(il, 'name', sprintf('blackbody-%.0f', illP.temperature));
+
     case 'gaussian'
         % illuminantCreate('gaussian',wave,params)
         % params.center(), params.sd(), params.peakEnergy
-        center     = 550; % nm
-        sd         = 20;  % nm 
-        peakEnergy = 25;  % watts/sr/nm/m2
+        center = 550; % nm
+        sd = 20; % nm
+        peakEnergy = 25; % watts/sr/nm/m2
         while ~isempty(varargin)
             switch lower(varargin{1})
                 case 'center'
                     center = varargin{2};
                 case 'sd'
-                    sd= varargin{2};
+                    sd = varargin{2};
                 case 'peakenergy'
                     peakEnergy = varargin{2};
                 otherwise
-                    error(['Unexpected option: ' varargin{1}])
+                    error(['Unexpected option: ', varargin{1}])
             end
             varargin(1:2) = [];
         end
-        
-        il = illuminantSet(il,'name',sprintf('Gaussian %.0f\n',center));
-        iEnergy = peakEnergy * exp(-1/2* ((wave - center)/sd).^2); % [W/(sr m^2 nm)]
-        iPhotons = Energy2Quanta(wave,iEnergy(:)); 
-        
+
+        il = illuminantSet(il, 'name', sprintf('Gaussian %.0f\n', center));
+        iEnergy = peakEnergy * exp(-1/2*((wave - center) / sd).^2); % [W/(sr m^2 nm)]
+        iPhotons = Energy2Quanta(wave, iEnergy(:));
+
     otherwise
-        error('unknown illuminant type %s\n',ilName);
+        error('unknown illuminant type %s\n', ilName);
 end
 
 %% Set the wavelength and photons and return
 
-il = illuminantSet(il,'photons',iPhotons);  % [photons/(s sr m^2 nm)]
-il = illuminantSet(il,'wave',wave);  % nm
+il = illuminantSet(il, 'photons', iPhotons); % [photons/(s sr m^2 nm)]
+il = illuminantSet(il, 'wave', wave); % nm
 
 end

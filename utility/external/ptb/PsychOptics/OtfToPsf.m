@@ -1,4 +1,4 @@
-function [xGridMinutes,yGridMinutes,psf] = OtfToPsf(xSfGridCyclesDeg,ySfGridCyclesDeg,otf,varargin)
+function [xGridMinutes, yGridMinutes, psf] = OtfToPsf(xSfGridCyclesDeg, ySfGridCyclesDeg, otf, varargin)
 %OTFTOPSF  Convert a 2D optical transfer fucntion to a 2D point spread function.
 %    [xSfGridCyclesDeg,ySfGridCyclesDeg,otf] = PsfToOtf([xGridMinutes,yGridMinutes],psf)
 %
@@ -13,7 +13,7 @@ function [xGridMinutes,yGridMinutes,psf] = OtfToPsf(xSfGridCyclesDeg,ySfGridCycl
 %    samples. Spatial frequency (0,0) should be at location floor(n/2)+1 in
 %    each dimension.  The PSF is returned with position (0,0) at location
 %    floor(n/2)+1 in each dimension.  This is the form we mostly want to
-%    look at and use.  
+%    look at and use.
 %
 %    The OTF is assummed to have the DC term in the center poistion,
 %    floor(n/2)+1 of the passed matrix.  If you have your hands on an OTF
@@ -28,7 +28,7 @@ function [xGridMinutes,yGridMinutes,psf] = OtfToPsf(xSfGridCyclesDeg,ySfGridCycl
 %    complain (throw an error) if it is not, to reasonable numerial
 %    precision. If it seems OK, we make sure it is real.
 %
-%    We also make sure that the returned psf is all postive and sums to 
+%    We also make sure that the returned psf is all postive and sums to
 %    1.  In some cases, we found that there were small negative values
 %    and after setting these to zero renormalization was needed.
 %
@@ -66,7 +66,7 @@ function [xGridMinutes,yGridMinutes,psf] = OtfToPsf(xSfGridCyclesDeg,ySfGridCycl
 % See also: PsfToOtf, PsychOpticsTest.
 
 % History:
-%   01/26/18  dhb 
+%   01/26/18  dhb
 %   03/31/18  dhb   Document key/value pair added by someone else.
 %             dhb   Add key/value pair for negative value tolerance.
 %                   This is now 1e-3 rather than 1e-10
@@ -81,51 +81,51 @@ p.parse(varargin{:});
 if (~isempty(xSfGridCyclesDeg) & ~isempty(ySfGridCyclesDeg))
     % They can both be passed as non-empty, in which case we do a set of sanity
     % checks and then do the conversion.
-    [m,n] = size(xSfGridCyclesDeg);
+    [m, n] = size(xSfGridCyclesDeg);
     centerPosition = floor(n/2) + 1;
     if (m ~= n)
         error('psf must be passed on a square array');
     end
-    [m1,n1] = size(ySfGridCyclesDeg);
+    [m1, n1] = size(ySfGridCyclesDeg);
     if (m1 ~= m || n1 ~= n)
         error('x and y positions are not consistent');
     end
-    [m2,n2] = size(otf);
+    [m2, n2] = size(otf);
     if (m2 ~= m || n2 ~= n)
         error('x and y positions are not consistent');
     end
-    if (~all(xSfGridCyclesDeg(:,centerPosition) == 0))
+    if (~all(xSfGridCyclesDeg(:, centerPosition) == 0))
         error('Zero spatial frequency is not in right place in the passed xGrid');
     end
-    if (~all(ySfGridCyclesDeg(centerPosition,:) == 0))
+    if (~all(ySfGridCyclesDeg(centerPosition, :) == 0))
         error('Zero spatial frequency is not in right place in the passed yGrid');
     end
-    if (xSfGridCyclesDeg(1,centerPosition) ~= ySfGridCyclesDeg(centerPosition,1))
+    if (xSfGridCyclesDeg(1, centerPosition) ~= ySfGridCyclesDeg(centerPosition, 1))
         error('Spatial frequency extent of x and y grids does not match');
     end
-    diffX = diff(xSfGridCyclesDeg(:,centerPosition));
+    diffX = diff(xSfGridCyclesDeg(:, centerPosition));
     if (any(diffX ~= diffX(1)))
         error('X positions not evenly spaced');
     end
-    diffY = diff(ySfGridCyclesDeg(centerPosition,:));
+    diffY = diff(ySfGridCyclesDeg(centerPosition, :));
     if (any(diffY ~= diffY(1)))
         error('Y positions not evenly spaced');
     end
     if (diffX(1) ~= diffY(1))
-        error('Spatial frequency sampling in x and y not matched');e
+        error('Spatial frequency sampling in x and y not matched'); e
     end
-    
+
     %% Generate position grids
     %
     % Samples are evenly spaced and the same for both x and y (checked above).
     % Handle even versus odd dimension properly for fft conventions.
-    [xGridMinutes,yGridMinutes] = SfGridCyclesDegToPositionGridMinutes(xSfGridCyclesDeg,ySfGridCyclesDeg);
-    
+    [xGridMinutes, yGridMinutes] = SfGridCyclesDegToPositionGridMinutes(xSfGridCyclesDeg, ySfGridCyclesDeg);
+
 elseif (isempty(xSfGridCyclesDeg) & isempty(ySfGridCyclesDeg))
     % This case is OK, we set the output grids to empty
     xGridMinutes = [];
     yGridMinutes = [];
-    
+
 else
     % This case is not allowable
     error('Either both sf grids must be empty, or neither');
@@ -142,7 +142,7 @@ if (any(abs(imag(psf(:))) > 1e-10))
     error('Computed psf is not sufficiently real');
 end
 if (any(imag(psf(:))) ~= 0)
-    psf = psf - imag(psf)*1i;
+    psf = psf - imag(psf) * 1i;
 end
 
 % Check for large negative psf values, and then set any small
@@ -153,11 +153,11 @@ end
 if (max(psf(:)) <= 0)
     error('Computed PSF has no positive values.  This is not good.');
 end
-if (min(psf(:)) < 0 && abs(min(psf(:))) > p.Results.negativeFractionalTolerance*max(psf(:)))
+if (min(psf(:)) < 0 && abs(min(psf(:))) > p.Results.negativeFractionalTolerance * max(psf(:)))
     if (p.Results.warningInsteadOfErrorForNegativeValuedPSF == 1)
-        fprintf(2,'Mysteriously large negative psf values, min value is %g, relative to max of %g, fraction %g\n',min(psf(:)),max(psf(:)),abs(min(psf(:)))/max(psf(:)));
+        fprintf(2, 'Mysteriously large negative psf values, min value is %g, relative to max of %g, fraction %g\n', min(psf(:)), max(psf(:)), abs(min(psf(:)))/max(psf(:)));
     elseif (p.Results.warningInsteadOfErrorForNegativeValuedPSF == 0)
-        fprintf(2,'Mysteriously large negative psf values: min value is %g, relative to max of %g, fraction %g\n',min(psf(:)),max(psf(:)),abs(min(psf(:)))/max(psf(:)));
+        fprintf(2, 'Mysteriously large negative psf values: min value is %g, relative to max of %g, fraction %g\n', min(psf(:)), max(psf(:)), abs(min(psf(:)))/max(psf(:)));
         error('Mysteriously large negative psf values');
     end
 end
@@ -168,6 +168,6 @@ psf = abs(psf);
 
 % Make sure return sums to 1.  It might not be because of the
 % above fussing with imaginary and negative values.
-psf = psf/sum(psf(:));
+psf = psf / sum(psf(:));
 
 end

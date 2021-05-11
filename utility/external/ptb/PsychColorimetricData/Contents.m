@@ -41,6 +41,5 @@
 %   ShiftPhotopigmentAbsorbance - Shift an absorbance along a log wavelength axis.
 %   StockmanSharpeNomogram    - Stockman/Sharpe photopigment nomogram (not finished).
 %   ValetonVanNorrenParams    - Return parameters of the Valeton-Van Norren model.
-  
-% Copyright (c) 1996-2003 by Denis Pelli & David Brainard
 
+% Copyright (c) 1996-2003 by Denis Pelli & David Brainard

@@ -21,23 +21,23 @@ function dList = displayList(varargin)
 % Copyright Imageval Consulting, 2016
 
 p = inputParser;
-p.addParameter('type','',@ischar);
-p.addParameter('show',true,@islogical);
+p.addParameter('type', '', @ischar);
+p.addParameter('show', true, @islogical);
 p.parse(varargin{:});
 
-dtype  = p.Results.type;
-show   = p.Results.show;
+dtype = p.Results.type;
+show = p.Results.show;
 
 %%
-if isempty(dtype)    % We will add
-    dList = dir(fullfile(isetRootPath,'data','displays','*.mat'));
+if isempty(dtype) % We will add
+    dList = dir(fullfile(isetRootPath, 'data', 'displays', '*.mat'));
 else
-    dList = dir(fullfile(isetRootPath,'data','displays',[dtype,'*.mat']));
+    dList = dir(fullfile(isetRootPath, 'data', 'displays', [dtype, '*.mat']));
 end
 
 % Maybe there should be a flag
 if show
-    for ii=1:length(dList)
+    for ii = 1:length(dList)
         disp(dList(ii).name)
     end
 end

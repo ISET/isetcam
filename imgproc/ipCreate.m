@@ -1,9 +1,9 @@
-function ip = ipCreate(ipName,sensor,display,L3)
+function ip = ipCreate(ipName, sensor, display, L3)
 %Create an image processing (ip) structure with default fields
 %
 % Synopsis
 %  ip = ipCreate(ipName,[sensor = vcGetObject('sensor')],[display = 'lcdExample.mat'])
-% 
+%
 % Input
 %   ipName
 %   sensor
@@ -38,53 +38,51 @@ if ieNotDefined('sensor'), sensor = []; end % sensor = vcGetObject('sensor'); en
 
 % Start building the parts
 ip.name = ipName;
-ip = ipSet(ip,'type','vcimage');
-ip = initDefaultSpectrum(ip,'hyperspectral');
-
+ip = ipSet(ip, 'type', 'vcimage');
+ip = initDefaultSpectrum(ip, 'hyperspectral');
 
 %% Use sensor data if present
 if ~isempty(sensor)
     % If dv is present in sensor, get it.  Otherwise get volts.
-    ip = ipSet(ip,'input',sensorGet(sensor,'dv or volts'));
-    nbits = sensorGet(sensor,'nbits');
+    ip = ipSet(ip, 'input', sensorGet(sensor, 'dv or volts'));
+    nbits = sensorGet(sensor, 'nbits');
     if isempty(nbits)
-        ip = ipSet(ip,'datamax',sensorGet(sensor,'pixel voltageswing'));
+        ip = ipSet(ip, 'datamax', sensorGet(sensor, 'pixel voltageswing'));
     else
-        ip = ipSet(ip,'datamax',2^nbits);
+        ip = ipSet(ip, 'datamax', 2^nbits);
     end
 else
-    ip = ipSet(ip,'input',[]);
+    ip = ipSet(ip, 'input', []);
 end
-
 
 %% Figure out the display.  Could be string or struct
 if ieNotDefined('display')
-    wave = ipGet(ip,'wave');
-    display = displayCreate('lcdExample.mat',wave); 
+    wave = ipGet(ip, 'wave');
+    display = displayCreate('lcdExample.mat', wave);
 elseif ischar(display)
-    wave = ipGet(ip,'wave');
-    display = displayCreate(display,wave);
+    wave = ipGet(ip, 'wave');
+    display = displayCreate(display, wave);
 end
-ip = ipSet(ip,'display',display);
+ip = ipSet(ip, 'display', display);
 
 %% Image processing chain methods. - Changed default May, 2012 (BW)
-ip = ipSet(ip,'transform method','adaptive');
-ip = ipSet(ip,'demosaic method','Bilinear');
-ip = ipSet(ip,'illuminant correction method','None');
-ip = ipSet(ip,'internal CS','XYZ');
-ip = ipSet(ip,'conversion method sensor ','MCC optimized');
+ip = ipSet(ip, 'transform method', 'adaptive');
+ip = ipSet(ip, 'demosaic method', 'Bilinear');
+ip = ipSet(ip, 'illuminant correction method', 'None');
+ip = ipSet(ip, 'internal CS', 'XYZ');
+ip = ipSet(ip, 'conversion method sensor ', 'MCC optimized');
 
-%% Rendering assumptions 
+%% Rendering assumptions
 
 % Turned this off because it opened the window
 % ip = ipSet(ip,'renderGamma',1);  % Maybe it should not do that???
-ip = ipSet(ip','scaleDisplay',1);
+ip = ipSet(ip', 'scaleDisplay', 1);
 % ip = ipSet(ip,'mccRectHandles',[]);
 
 %% Append an L3 structure
-if strncmpi(ipName,'L3',2)
+if strncmpi(ipName, 'L3', 2)
     if ieNotDefined('L3'), L3 = L3Create; end
-    ip = ipSet(ip,'L3',L3);
+    ip = ipSet(ip, 'L3', L3);
 end
 
 end

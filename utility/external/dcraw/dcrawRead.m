@@ -21,7 +21,7 @@ function [I, map] = dcrawRead(fname, opts, varargin)
 %
 % Note:
 %   1) This function is linked as read function for a bunch of raw camera
-%      format in dcrawInit. Thus, if the api needs to be changed, remember 
+%      format in dcrawInit. Thus, if the api needs to be changed, remember
 %      to change dcrawInit also.
 %   2) By dcrawInit, this function is called by imread. For loading images
 %      specifying url, the image format field is required. Otherwise,
@@ -29,7 +29,7 @@ function [I, map] = dcrawRead(fname, opts, varargin)
 %
 % See also:
 %   dcrawInit
-% 
+%
 % HJ, VISTA TEAM, 2015
 
 % Check inputs
@@ -39,9 +39,9 @@ if notDefined('opts'), opts = '-o 0 -D -c -4'; end
 
 % Decode file
 if ismac
-    fp = fullfile(isetRootPath,'utility', 'external', 'dcraw', 'dcraw_mac');
+    fp = fullfile(isetRootPath, 'utility', 'external', 'dcraw', 'dcraw_mac');
 elseif isunix
-    fp = fullfile(isetRootPath,'utility', 'external', 'dcraw', 'dcraw_linux');
+    fp = fullfile(isetRootPath, 'utility', 'external', 'dcraw', 'dcraw_linux');
 elseif ispc
     fp = fullfile(isetRootPath, 'utility', 'external', 'dcraw', 'dcraw_win64.exe');
 else
@@ -49,7 +49,7 @@ else
 end
 
 fout = tempname;
-[s, msg] = system([fp ' ' opts ' ' fname ' > ' fout]);
+[s, msg] = system([fp, ' ', opts, ' ', fname, ' > ', fout]);
 
 if s ~= 0, error(msg); end
 

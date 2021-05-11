@@ -11,15 +11,13 @@ function output = MakeMonotonic(input)
 % 8/03/07 dhb  Old routine just enforced non-decreasing.  Fixed to make strictly increasing.
 % 3/07/10 dhb  Added comment about MakeGammaMonotonic.
 
-[m,n] = size(input);
+[m, n] = size(input);
 
 output = input;
 for j = 1:n
-	for i = 1:m-1
-	  if (output(i,j) >= output(i+1,j))
-	    output(i+1,j) = output(i,j)+eps;
-	  end
-	end
+    for i = 1:m - 1
+        if (output(i, j) >= output(i + 1, j))
+            output(i+1, j) = output(i, j) + eps;
+        end
+    end
 end
-
-  

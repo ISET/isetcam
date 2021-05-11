@@ -1,6 +1,6 @@
-function [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomerizations,adjIndDiffParams,params,staticParams] = ...
-    ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMM,lambdaMax,whichNomogram,LserWeight, ...
-    DORODS,rodAxialDensity,fractionPigmentBleached,indDiffParams)
+function [T_quantalAbsorptionsNormalized, T_quantalAbsorptions, T_quantalIsomerizations, adjIndDiffParams, params, staticParams] = ...
+    ComputeCIEConeFundamentals(S, fieldSizeDegrees, ageInYears, pupilDiameterMM, lambdaMax, whichNomogram, LserWeight, ...
+    DORODS, rodAxialDensity, fractionPigmentBleached, indDiffParams)
 % [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomerizations,adjIndDiffParams,params,staticParams] = ...
 %   ComputeCIEConeFundamentals(S,fieldSizeDegrees,ageInYears,pupilDiameterMM,[lambdaMax],[whichNomogram],[LserWeight], ...
 %   [DORODS],[rodAxialDensity],[fractionPigmentBleached],indDiffParams)
@@ -51,7 +51,7 @@ function [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomeriza
 % whichNomogram can be any source understood by the routine PhotopigmentNomogram.  To obtain
 % the nomogram behavior, pass a lambdaMax vector. You can then also optionally pass a nomogram
 % source (default: StockmanSharpe).  This option (using shifted nomograms) is not part of the
-% CIE standard. See NOTE below for another way to handle individual differences 
+% CIE standard. See NOTE below for another way to handle individual differences
 %
 % The nominal values of lambdaMax to fit the CIE 2-degree fundamentals with the
 % Stockman-Sharpe nomogram are 558.9, 530.3, and 420.7 nm for the LMS cones respectively.
@@ -84,7 +84,7 @@ function [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomeriza
 %   indDiffParams.dphotopigment - vector of deviations in % from CIE
 %     photopigment peak density.
 %   indDiffParams.lambdaMaxShift - vector of values (in nm) to shift lambda max of
-%     each photopigment absorbance by.  
+%     each photopigment absorbance by.
 %   indDiffParams.shiftType - 'linear' (default) or 'log'.
 %
 % You also can shift the absorbances along a wavenumber axis after you have
@@ -92,7 +92,7 @@ function [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomeriza
 % number of entries as the number of absorbances that are used.
 %
 % The adjIndDiffParams outputsis a struct which is populated by ComputeRawConeFundamentals.
-% It contains the actual parameter values for the parameters adjusted using the indDiffParams 
+% It contains the actual parameter values for the parameters adjusted using the indDiffParams
 % input. It contains the following fields:
 %    adjIndDiffParams.mac - the adjusted macular pigment transmittance as a function of wavelength
 %                           as calculated in line 151 of ComputeRawConeFundamentals.
@@ -142,7 +142,7 @@ function [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomeriza
 % CIEConeFundamentalsFieldSizeTest and its header comments, but be aware
 % that you have sailed into little charted territory if you do this.
 %
-% See also: ComputeRawConeFundamentals, CIEConeFundamentalsTest, CIEConeFundamentalsFieldSizeTest, 
+% See also: ComputeRawConeFundamentals, CIEConeFundamentalsTest, CIEConeFundamentalsFieldSizeTest,
 % FitConeFundamentalsTest, FitConeFundamentalsWithNomogram, StockmanSharpeNomogram,
 % ComputePhotopigmentBleaching.
 %
@@ -181,7 +181,7 @@ end
 %% Get some basic parameters.
 %
 %
-% We start with default CIE parameters in 
+% We start with default CIE parameters in
 % the photoreceptors structure, and then override
 % as necessary.
 % then override to match the CIE standard.
@@ -193,7 +193,7 @@ end
 photoreceptors = DefaultPhotoreceptors(whatCalc);
 
 %% Override default values so that FillInPhotoreceptors does
-% our work for us.  The CIE standard uses field size, 
+% our work for us.  The CIE standard uses field size,
 % age, and pupil diameter to computer other values.
 % to compute other quantities.
 photoreceptors.nomogram.S = S;
@@ -209,7 +209,7 @@ if (nargin > 4 && ~isempty(lambdaMax))
     if (nargin < 6 || isempty(whichNomogram))
         whichNomogram = 'StockmanSharpe';
     end
-    photoreceptors = rmfield(photoreceptors,'absorbance');
+    photoreceptors = rmfield(photoreceptors, 'absorbance');
     photoreceptors.nomogram.source = whichNomogram;
     photoreceptors.nomogram.lambdaMax = lambdaMax;
     params.lambdaMax = lambdaMax;
@@ -227,87 +227,87 @@ end
 if (DORODS)
     if (isempty(lambdaMax) || length(lambdaMax) ~= 1)
         error('When computing for rods, must specify exactly one lambda max');
+        end
+        photoreceptors.types = {'Rod'};
+        photoreceptors.nomogram.lambdaMax = lambdaMax;
+        photoreceptors.OSlength.source = 'None';
+        photoreceptors.specificDensity.source = 'None';
+        photoreceptors.axialDensity.source = 'Alpern';
+        params.DORODS = true;
     end
-    photoreceptors.types = {'Rod'};
-    photoreceptors.nomogram.lambdaMax = lambdaMax;
-    photoreceptors.OSlength.source = 'None';
-    photoreceptors.specificDensity.source = 'None';
-    photoreceptors.axialDensity.source = 'Alpern';
-    params.DORODS = true;
-end
 
-%% Pigment bleaching
-%
-% Hope for the best with respect to dimensionality of what is passed.
-% FillInPhotoreceptors will throw an error if the dimension isn't
-% matched to that of the axialDensity value field.
-if (DOBLEACHING)
-    photoreceptors.fractionPigmentBleached.value = fractionPigmentBleached;
-end
+    %% Pigment bleaching
+    %
+    % Hope for the best with respect to dimensionality of what is passed.
+    % FillInPhotoreceptors will throw an error if the dimension isn't
+    % matched to that of the axialDensity value field.
+    if (DOBLEACHING)
+        photoreceptors.fractionPigmentBleached.value = fractionPigmentBleached;
+    end
 
-%% Do the work.  Note that to modify this code, you'll want a good
-% understanding of the order of precedence enforced by FillInPhotoreceptors.
-% This is non-trivial, although the concept is that if a quantity that
-% can be computed is specified directly in the passed structure is
-% actually specified, the speciefied value overrides what could be computed.
-photoreceptors = FillInPhotoreceptors(photoreceptors);
-if (SET_ABSORBANCE)
-    params.absorbance = photoreceptors.absorbance;
-end
+    %% Do the work.  Note that to modify this code, you'll want a good
+    % understanding of the order of precedence enforced by FillInPhotoreceptors.
+    % This is non-trivial, although the concept is that if a quantity that
+    % can be computed is specified directly in the passed structure is
+    % actually specified, the speciefied value overrides what could be computed.
+    photoreceptors = FillInPhotoreceptors(photoreceptors);
+    if (SET_ABSORBANCE)
+        params.absorbance = photoreceptors.absorbance;
+    end
 
-%% Set up for call into the low level routine that computes the CIE fundamentals.
-staticParams.S = photoreceptors.nomogram.S;
-staticParams.fieldSizeDegrees = photoreceptors.fieldSizeDegrees;
-staticParams.ageInYears = photoreceptors.ageInYears;
-staticParams.pupilDiameterMM = photoreceptors.pupilDiameter.value;
-staticParams.lensTransmittance = photoreceptors.lensDensity.transmittance;
-staticParams.macularTransmittance = photoreceptors.macularPigmentDensity.transmittance;
-staticParams.quantalEfficiency = photoreceptors.quantalEfficiency.value;
-CHECK_FOR_AGREEMENT = true;
-if (nargin < 7 || isempty(LserWeight))
-    staticParams.LserWeight = 0.56;
-else
-    staticParams.LserWeight = LserWeight;
-end
-if (DORODS && nargin >= 9 && ~isempty(rodAxialDensity))
-    params.axialDensity = rodAxialDensity;
-    CHECK_FOR_AGREEMENT = false;
-else
-    params.axialDensity = photoreceptors.axialDensity.bleachedValue;
-end
+    %% Set up for call into the low level routine that computes the CIE fundamentals.
+    staticParams.S = photoreceptors.nomogram.S;
+    staticParams.fieldSizeDegrees = photoreceptors.fieldSizeDegrees;
+    staticParams.ageInYears = photoreceptors.ageInYears;
+    staticParams.pupilDiameterMM = photoreceptors.pupilDiameter.value;
+    staticParams.lensTransmittance = photoreceptors.lensDensity.transmittance;
+    staticParams.macularTransmittance = photoreceptors.macularPigmentDensity.transmittance;
+    staticParams.quantalEfficiency = photoreceptors.quantalEfficiency.value;
+    CHECK_FOR_AGREEMENT = true;
+    if (nargin < 7 || isempty(LserWeight))
+        staticParams.LserWeight = 0.56;
+    else
+        staticParams.LserWeight = LserWeight;
+    end
+    if (DORODS && nargin >= 9 && ~isempty(rodAxialDensity))
+        params.axialDensity = rodAxialDensity;
+        CHECK_FOR_AGREEMENT = false;
+    else
+        params.axialDensity = photoreceptors.axialDensity.bleachedValue;
+    end
 
-if (~isfield(params,'absorbance'))
-    if (length(params.lambdaMax) ~= 3 & length(params.lambdaMax) ~= 1)
+    if (~isfield(params, 'absorbance'))
+        if (length(params.lambdaMax) ~= 3 & length(params.lambdaMax) ~= 1)
+            CHECK_FOR_AGREEMENT = false;
+        end
+    end
+
+    % Shift in lambda max bookkeeping.
+    if isfield(params, 'indDiffParams')
         CHECK_FOR_AGREEMENT = false;
     end
-end
 
-% Shift in lambda max bookkeeping.
-if isfield(params,'indDiffParams')
-    CHECK_FOR_AGREEMENT = false;
-end
+    %% Drop into more general routine to compute
+    %
+    % See comment in ComputeRawConeFundamentals about the fact that
+    % we ought to unify this routine and what FillInPhotoreceptors does.
+    [T_quantalAbsorptionsNormalized, T_quantalAbsorptions, T_quantalIsomerizations, adjIndDiffParams] = ComputeRawConeFundamentals(params, staticParams);
 
-%% Drop into more general routine to compute
-%
-% See comment in ComputeRawConeFundamentals about the fact that
-% we ought to unify this routine and what FillInPhotoreceptors does.
-[T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomerizations,adjIndDiffParams] = ComputeRawConeFundamentals(params,staticParams);
-
-%% A little reality check.
-%
-% The call to FillInPhotoreceptors also computes what here is called
-% T_quantal.  It is in the field effectiveAbsorptance.  For cases where
-% we aren't playing games with the parameters after the call to 
-% FillInPhotoreceptors, we can check for agreement.
-if (CHECK_FOR_AGREEMENT)
-    diffs = abs(T_quantalAbsorptions(:)-photoreceptors.effectiveAbsorptance(:));
-    if (max(diffs(:)) > 1e-7)
-        error('Two ways of computing absorption quantal efficiency referred to the cornea DO NOT AGREE');
+    %% A little reality check.
+    %
+    % The call to FillInPhotoreceptors also computes what here is called
+    % T_quantal.  It is in the field effectiveAbsorptance.  For cases where
+    % we aren't playing games with the parameters after the call to
+    % FillInPhotoreceptors, we can check for agreement.
+    if (CHECK_FOR_AGREEMENT)
+        diffs = abs(T_quantalAbsorptions(:)-photoreceptors.effectiveAbsorptance(:));
+        if (max(diffs(:)) > 1e-7)
+            error('Two ways of computing absorption quantal efficiency referred to the cornea DO NOT AGREE');
+        end
+        diffs = abs(T_quantalIsomerizations(:)-photoreceptors.isomerizationAbsorptance(:));
+        if (max(diffs(:)) > 1e-7)
+            error('Two ways of computing isomerization quantal efficiency referred to the cornea DO NOT AGREE');
+        end
     end
-    diffs = abs(T_quantalIsomerizations(:)-photoreceptors.isomerizationAbsorptance(:));
-    if (max(diffs(:)) > 1e-7)
-        error('Two ways of computing isomerization quantal efficiency referred to the cornea DO NOT AGREE');
-    end
-end
 
 end

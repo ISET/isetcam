@@ -1,4 +1,4 @@
-function im = ieClip(im,lowerBound, upperBound)
+function im = ieClip(im, lowerBound, upperBound)
 %Clip data to range specified arguments.
 %
 %    im = ieClip(im,[lowerBound], [upperBound])
@@ -30,18 +30,16 @@ elseif nargin == 2
     % Reads this as [-l,l]
     lowerBound = -abs(lowerBound);
     upperBound = abs(lowerBound);
-    s = sprintf('ieClip:  Setting range to [%.3e,%.3e]',lowerBound,upperBound);
+    s = sprintf('ieClip:  Setting range to [%.3e,%.3e]', lowerBound, upperBound);
     disp(s);
 end
 
-if ~(~exist('lowerBound','var') || isempty(lowerBound))
-    im(im<lowerBound) = lowerBound;
+if ~(~exist('lowerBound', 'var') || isempty(lowerBound))
+    im(im < lowerBound) = lowerBound;
 end
 
 if ~(~exist('upperBound') || isempty(upperBound))
-    im(im>upperBound) = upperBound;
+    im(im > upperBound) = upperBound;
 end
 
 return;
-
-

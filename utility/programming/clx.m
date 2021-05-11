@@ -12,8 +12,8 @@ clear all
 % (sometimes the closerequestfunction on a window
 % is set to something funny -- want to force it
 % to close:)
-figs = get(0,'Children');
-set(figs,'CloseRequestFcn','closereq');
+figs = get(0, 'Children');
+set(figs, 'CloseRequestFcn', 'closereq');
 close all
 if exist('hidden', 'var')
     close hidden

@@ -13,4 +13,4 @@ function str = LiteralUnderscore(instr)
 % 02/17/97  dgp     LiteralUnderscore: new name.
 % 10/21/11  dcn     Now a oneliner, strrep does the job
 
-str = strrep(instr,'_','\_');
+str = strrep(instr, '_', '\_');

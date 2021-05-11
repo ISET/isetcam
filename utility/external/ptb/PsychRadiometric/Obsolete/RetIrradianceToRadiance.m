@@ -1,4 +1,4 @@
-function radianceWattsPerM2Sr = RetIrradianceToRadiance(irradianceWattsPerUm2,irradianceS,pupilAreaMm2,eyeLengthMm)
+function radianceWattsPerM2Sr = RetIrradianceToRadiance(irradianceWattsPerUm2, irradianceS, pupilAreaMm2, eyeLengthMm)
 % radianceWattsPerM2Sr = RetIrradianceToRadiance(irradianceWattsPerUm2,irradianceS,pupilAreaMm2,eyeLengthMm)
 %
 % Perform the geometric calculations necessary to convert a measurement of retinal
@@ -12,7 +12,7 @@ function radianceWattsPerM2Sr = RetIrradianceToRadiance(irradianceWattsPerUm2,ir
 %
 %   Light power may be expressed in watts or quanta-sec or in your
 %   favorite units.  Indeed, it may also be passed as energy rather
-%   than power.  
+%   than power.
 %
 % This conversion does not take absorption in the eye into account,
 % as this is more conveniently foldeded into the spectral absorptance.
@@ -31,32 +31,30 @@ function radianceWattsPerM2Sr = RetIrradianceToRadiance(irradianceWattsPerUm2,ir
 CHECKAGAINSTOLDCODE = 1;
 
 %% Convert units from um^2 to mm^2 base.
-irradianceWattsPerMm2 = irradianceWattsPerUm2*1e6;
+irradianceWattsPerMm2 = irradianceWattsPerUm2 * 1e6;
 
 %% Convert to radiance
-radianceWattsPerMm2Sr = RetIrradianceAndPupilAreaEyeLengthToRadiance(irradianceWattsPerMm2,irradianceS,pupilAreaMm2,eyeLengthMm);
+radianceWattsPerMm2Sr = RetIrradianceAndPupilAreaEyeLengthToRadiance(irradianceWattsPerMm2, irradianceS, pupilAreaMm2, eyeLengthMm);
 
 %% Convert radiance to power/sr-m^2-wlinterval
-radianceWattsPerM2Sr = radianceWattsPerMm2Sr*1e6;
+radianceWattsPerM2Sr = radianceWattsPerMm2Sr * 1e6;
 
 %% Check what we get now against the original implementation
 if (CHECKAGAINSTOLDCODE)
     % Convert units from um^2 to mm^2 base.
-    irradianceWattsPerMm2Check = irradianceWattsPerUm2*1e6;
-    
+    irradianceWattsPerMm2Check = irradianceWattsPerUm2 * 1e6;
+
     % Define factor to convert radiance spectrum to retinal irradiance in watts/mm^2-wlinterval.
     % We then apply this in the opposite direction.  See RadianceToRetIrradiance for the
     % conversion logic.
-    conversionFactor = pupilAreaMm2/(eyeLengthMm^2);
-    radianceWattsPerMm2SrCheck = irradianceWattsPerMm2Check/conversionFactor;
-    
+    conversionFactor = pupilAreaMm2 / (eyeLengthMm^2);
+    radianceWattsPerMm2SrCheck = irradianceWattsPerMm2Check / conversionFactor;
+
     % Convert radiance to power/sr-m^2-wlinterval
-    radianceWattsPerM2SrCheck = radianceWattsPerMm2SrCheck*1e6;
-    
+    radianceWattsPerM2SrCheck = radianceWattsPerMm2SrCheck * 1e6;
+
     % Check
     if (abs(radianceWattsPerM2Sr - radianceWattsPerM2SrCheck) > 1e-16)
         error('New and old ways of computing this quantity do not agree.  Oops!');
     end
 end
-
-

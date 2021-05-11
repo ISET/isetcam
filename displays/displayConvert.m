@@ -1,4 +1,5 @@
 function d = displayConvert(ctDisp, varargin)
+
 %% function d = displayConvert(ctDisplay)
 %    Convert the ctToolbox display structure to the isetbio display
 %    structure
@@ -15,7 +16,7 @@ function d = displayConvert(ctDisp, varargin)
 %                   if filename already exist, whether or not to overwrite
 %                   the file
 %                 - display name
-%                 
+%
 %  Outputs:
 %    d          - ISETBio / ISET display structure
 %
@@ -26,8 +27,12 @@ function d = displayConvert(ctDisp, varargin)
 
 %% Init
 if ieNotDefined('ctDisp'), error('ctToolbox display structure required'); end
-if ischar(ctDisp), ctDisp = load(ctDisp); ctDisp = ctDisp.vDisp; end
-if length(varargin) > 2, ow = varargin{3}; else ow = false; end
+if ischar(ctDisp), ctDisp = load(ctDisp);
+    ctDisp = ctDisp.vDisp;
+end
+if length(varargin) > 2, ow = varargin{3};
+else ow = false;
+end
 
 %% Convert
 % Create default display structure
@@ -38,49 +43,49 @@ d = displaySet(d, 'name', ctDisp.m_strDisplayName);
 
 % Set sampling wavelength
 d = displaySet(d, 'wave', ...
-        ctDisp.sPhysicalDisplay.m_objCDixelStructure.m_aWaveLengthSamples);
-    
+    ctDisp.sPhysicalDisplay.m_objCDixelStructure.m_aWaveLengthSamples);
+
 % Set spectral power distribution
 d = displaySet(d, 'spd', ...
     ctDisp.sPhysicalDisplay.m_objCDixelStructure.m_aSpectrumOfPrimaries');
 
 % Set gamma table
-gTable = cell2mat(...
-        ctDisp.sPhysicalDisplay.m_objCDixelStructure.m_cellGammaStructure);
+gTable = cell2mat( ...
+    ctDisp.sPhysicalDisplay.m_objCDixelStructure.m_cellGammaStructure);
 gTable = cat(1, gTable.vGammaRampLUT)';
 d = displaySet(d, 'gTable', gTable);
 
 % Set psf structure
-psfs = cell2mat(...
-        ctDisp.sPhysicalDisplay.m_objCDixelStructure.m_cellPSFStructure);
-psfImg = zeros([20 20 size(gTable, 2)]);
-for ii = 1 : size(gTable, 2)
-    psfImg(:,:,ii) = imresize(psfs(ii).sCustomData.aRawData, [20 20]);
-    psfImg(:,:,ii) = psfImg(:,:,ii) / sum(sum(psfImg(:,:,ii)));
+psfs = cell2mat( ...
+    ctDisp.sPhysicalDisplay.m_objCDixelStructure.m_cellPSFStructure);
+psfImg = zeros([20, 20, size(gTable, 2)]);
+for ii = 1:size(gTable, 2)
+    psfImg(:, :, ii) = imresize(psfs(ii).sCustomData.aRawData, [20, 20]);
+    psfImg(:, :, ii) = psfImg(:, :, ii) / sum(sum(psfImg(:, :, ii)));
 end
 
 d = displaySet(d, 'psfs', psfImg);
 
 % Set dpi
-d = displaySet(d, 'dpi', 25.4 / ...
-        ctDisp.sPhysicalDisplay.m_objCDixelStructure.m_fPixelSizeInMmX);
+d = displaySet(d, 'dpi', 25.4/ ...
+    ctDisp.sPhysicalDisplay.m_objCDixelStructure.m_fPixelSizeInMmX);
 
 % Set viewing distance
 d = displaySet(d, 'viewing distance', ...
-        ctDisp.sViewingContext.m_fViewingDistance);
+    ctDisp.sViewingContext.m_fViewingDistance);
 
 % Refresh rate
 d = displaySet(d, 'refresh rate', ...
-        ctDisp.sPhysicalDisplay.m_fVerticalRefreshRate);
-    
+    ctDisp.sPhysicalDisplay.m_fVerticalRefreshRate);
+
 %% Adjust sampling wavelength
 if ~isempty(varargin) && ~isempty(varargin{1})
     newWave = varargin{1}(:);
     oldWave = displayGet(d, 'wave');
     oldSpd = displayGet(d, 'spd');
-    newSpd = interp1(oldWave,oldSpd,newWave);
-    d = displaySet(d,'wave',newWave);
-    d = displaySet(d,'spd',newSpd);
+    newSpd = interp1(oldWave, oldSpd, newWave);
+    d = displaySet(d, 'wave', newWave);
+    d = displaySet(d, 'spd', newSpd);
 end
 
 %% Adjust name

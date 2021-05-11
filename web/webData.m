@@ -1,6 +1,6 @@
 classdef webData
     %WEBDATA Fetech various kinds of data into ISET
-    %   Might wind up being a super-class for various kinds of data, but 
+    %   Might wind up being a super-class for various kinds of data, but
     %   keeping it simple for now.
     %   Handles Hyperspectral and Multispectral as separate cases,
     %   since they are in the database (JSON file) separately,
@@ -9,20 +9,20 @@ classdef webData
     %   scenes.
     %
     %   For now they all read from a single JSON file, but it could easily
-    %   be split into several 
-    
+    %   be split into several
+
     properties
         dataType; % whether it is Hyperspectral, Multispectral, or HDR
         ourDataStruct;
         defaultWavelist = 400:10:700; % default wavelengths for display of hyperspectral
-        
-                
+
+
         % where we cache images and scenes -- currently deleted after
         % loading
         webDataCache = fullfile(isetRootPath, 'local', 'webData');
 
     end
-    
+
     methods
         function obj = webData(forType)
             %WEBDATA Construct an instance of this class
@@ -45,20 +45,20 @@ classdef webData
                 warning('Unable to create local cache folder');
             end
         end
-        
-        function outputArg = search(obj,ourTags)
+
+        function outputArg = search(obj, ourTags)
             %METHOD1 Summary of this method goes here
             %   Detailed explanation goes here
-            %outputArg = JSON STRUCT for our scene type   
-            ourKeywords = split(ourTags,",");
+            %outputArg = JSON STRUCT for our scene type
+            ourKeywords = split(ourTags, ",");
             ourDataObject = obj.ourDataStruct
-            
+
             for i = 1:length(ourDataObject)
                 found = true;
                 if isempty(ourDataObject(i).Name) % blank entry
                     found = false;
                 else
-                    for j = 1: length(ourKeywords)
+                    for j = 1:length(ourKeywords)
                         if find(strcmpi(ourDataObject(i).Keywords, strtrim(ourKeywords(j))))
                         elseif isequal(strtrim(ourKeywords(j)), "")
                         else
@@ -77,20 +77,20 @@ classdef webData
                     end
                 end
             end
-            if ~exist('outputArg','var') 
+            if ~exist('outputArg', 'var')
                 outputArg = [];
-            end 
+            end
         end
-        
+
         function displayScene(obj, fPhoto, sceneType)
             % common code for all ISET scene types:
             imageDataURL = obj.getImageURL(fPhoto, 'large');
-            [~,name,ext] = fileparts(imageDataURL);
-            cacheFile = fullfile(obj.webDataCache,[name ext]);
+            [~, name, ext] = fileparts(imageDataURL);
+            cacheFile = fullfile(obj.webDataCache, [name, ext]);
             if isfile(cacheFile)
                 msg = 'You have a downloaded copy of this scene. Would you like to use it?';
                 title = 'Confirm using existing scene copy';
-                selection = questdlg(msg, "Use existing copy?", "Yes", "No","Yes");
+                selection = questdlg(msg, "Use existing copy?", "Yes", "No", "Yes");
                 switch selection
                     case "Yes"
                         sceneFile = cacheFile;
@@ -103,45 +103,45 @@ classdef webData
             switch sceneType
                 case {'Hyperspectral', 'Multispectral'}
                     % I, imType, meanLuminance, dispCal, wList
-                    scene = sceneFromFile(sceneFile,'multispectral',[],[],[]);
+                    scene = sceneFromFile(sceneFile, 'multispectral', [], [], []);
                     scene = sceneSet(scene, 'name', fPhoto.Name);
                     sceneWindow(scene);
                 case 'HDR'
                     % I, imType, meanLuminance, dispCal, wList
-                    scene = sceneFromFile(sceneFile,'multispectral',[],[],getpref('ISET','openRGBwavelist', obj.defaultWavelist));
+                    scene = sceneFromFile(sceneFile, 'multispectral', [], [], getpref('ISET', 'openRGBwavelist', obj.defaultWavelist));
                     scene = sceneSet(scene, 'name', fPhoto.Name);
                     sceneWindow(scene);
                     % try using HDR as default display
-                    sceneSet(scene,'renderflag', 'hdr');
+                    sceneSet(scene, 'renderflag', 'hdr');
 
                 case 'RGB'
                     % I, imType, meanLuminance, dispCal, wList
-                    scene = sceneFromFile(sceneFile,'rgb',[],[],getpref('ISET','openRGBwavelist', obj.defaultWavelist));
+                    scene = sceneFromFile(sceneFile, 'rgb', [], [], getpref('ISET', 'openRGBwavelist', obj.defaultWavelist));
                     scene = sceneSet(scene, 'name', fPhoto.Name);
-                    sceneWindow(scene);               
+                    sceneWindow(scene);
                 otherwise
             end
-            if getpref('ISET','keepDownloads', false) == false
+            if getpref('ISET', 'keepDownloads', false) == false
                 delete(sceneFile);
             end
 
         end
-        
+
         function ourURL = getImageURL(obj, fPhoto, wantSize)
             if isequal(wantSize, 'thumbnail')
                 ourURL = fPhoto.Icon;
             else
                 ourURL = fPhoto.URL;
-            end 
+            end
         end
-        
+
         function ourTitle = getImageTitle(obj, fPhoto)
             ourTitle = fPhoto.Name;
         end
-        
+
         function ourImage = getImage(obj, fPhoto, wantSize)
             ourURL = getImageURL(obj, fPhoto, wantSize);
-            ourImage = webread(ourURL);   
+            ourImage = webread(ourURL);
         end
 
     end

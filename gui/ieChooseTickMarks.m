@@ -1,4 +1,4 @@
-function tickLocs = ieChooseTickMarks(val,nTicks)
+function tickLocs = ieChooseTickMarks(val, nTicks)
 %Choose sensible values for tick marks (or at least try)
 %
 %   tickLocs = ieChooseTickMarks(val,[nTicks = 10])
@@ -24,12 +24,13 @@ mx = round(max(val));
 mn = round(min(val));
 tickSpacing = round((mx-mn)/nTicks);
 
-E = floor(log10(mx-mn)); S = 10^(E-1);
-tickSpacing = S*round(tickSpacing/S);
+E = floor(log10(mx - mn));
+S = 10^(E - 1);
+tickSpacing = S * round(tickSpacing/S);
 
 if mn < 0 & mx > 0
     tickLocs = [0:tickSpacing:mx];
-    tickLocs = [fliplr(-1*[tickSpacing:tickSpacing:abs(mn)]),tickLocs];
+    tickLocs = [fliplr(-1 * [tickSpacing:tickSpacing:abs(mn)]), tickLocs];
 else
     tickLocs = [mn:tickSpacing:mx];
 end

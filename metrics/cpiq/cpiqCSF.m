@@ -22,6 +22,6 @@ csf = a * (v.^c) .* exp(-b*v) / K;
 
 % Normalize to 1.  The normalization is irrelevant for the acutance
 % calculation.
-csf = csf/max(csf(:));
+csf = csf / max(csf(:));
 
 return

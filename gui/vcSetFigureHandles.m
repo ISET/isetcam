@@ -1,4 +1,4 @@
-function vcSetFigureHandles(figType,app)
+function vcSetFigureHandles(figType, app)
 % Set figure handle information at opening window
 %
 %  vcSetFigureHandles(figType,hObject,eventdata,handles);
@@ -15,29 +15,29 @@ function vcSetFigureHandles(figType,app)
 
 switch lower(figType)
     case 'main'
-        ieSessionSet('mainwindow',hObject,eventdata,handles);
-                
+        ieSessionSet('mainwindow', hObject, eventdata, handles);
+
     case 'scene'
-        ieSessionSet('scenewindow',app);
-        
-    case {'oi','opticalimage'}
-        ieSessionSet('oiwindow',hObject,eventdata,handles);
-        
-    case {'isa','sensor'}
-        ieSessionSet('sensorwindow',hObject,eventdata,handles);
-        
+        ieSessionSet('scenewindow', app);
+
+    case {'oi', 'opticalimage'}
+        ieSessionSet('oiwindow', hObject, eventdata, handles);
+
+    case {'isa', 'sensor'}
+        ieSessionSet('sensorwindow', hObject, eventdata, handles);
+
     case {'vcimage'}
-        ieSessionSet('vcimagewindow',hObject,eventdata,handles);
-        
+        ieSessionSet('vcimagewindow', hObject, eventdata, handles);
+
     case {'metrics'}
-        ieSessionSet('metricswindow',hObject,eventdata,handles);
-        
+        ieSessionSet('metricswindow', hObject, eventdata, handles);
+
     case {'camdesign'}
-        ieSessionSet('camdesignwindow',app);
-        
+        ieSessionSet('camdesignwindow', app);
+
     case {'imageexplorer'}
         ieSessionSet('imageexplorewindow', app);
-        
+
     otherwise
         error('Unknown figure type');
 end

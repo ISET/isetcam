@@ -15,15 +15,15 @@ function [illScale, meanSPD] = hcIlluminantScale(hcIlluminant)
 %
 % Example:
 %
-% 
+%
 % See also:  s_hcHyspexToISET
 %
 % Copyright Imageval, LLC , 2013
 
-if ieNotDefined('hcIlluminant'), error('hypercube illuminant required');end
+if ieNotDefined('hcIlluminant'), error('hypercube illuminant required'); end
 
-[hcIlluminant,r,c] = RGB2XWFormat(hcIlluminant);
-meanSPD = mean(hcIlluminant,1);
+[hcIlluminant, r, c] = RGB2XWFormat(hcIlluminant);
+meanSPD = mean(hcIlluminant, 1);
 % vcNewGraphWin; plot(meanSPD)
 
 % In XW format, each column is a SPD at a pixel.  We want to describe all
@@ -35,14 +35,14 @@ meanSPD = mean(hcIlluminant,1);
 %   or
 %      w = e*pinv(m)
 %
-illScale = double(hcIlluminant)*pinv(meanSPD(:)');
-illScale = reshape(illScale,r,c);
+illScale = double(hcIlluminant) * pinv(meanSPD(:)');
+illScale = reshape(illScale, r, c);
 
 % Normalize so that the weights are between 0 and 1, and correct the ill
 % spd so that everything is reasonable.
-mx       = max(illScale(:));
-illScale = illScale/mx;
-meanSPD  = mx*meanSPD;
+mx = max(illScale(:));
+illScale = illScale / mx;
+meanSPD = mx * meanSPD;
 
 % vcNewGraphWin; imagesc(illScale); colormap(gray)
 

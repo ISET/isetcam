@@ -1,4 +1,4 @@
-function T = ieColorTransform(sensor,targetSpace,illuminant,surface)
+function T = ieColorTransform(sensor, targetSpace, illuminant, surface)
 % Gateway routine to transform sensor data into a target color space
 %
 %    T = ieColorTransform(sensor,[targetSpace='XYZ'],[illuminant='D65'],[surface='Macbeth'])
@@ -11,7 +11,7 @@ function T = ieColorTransform(sensor,targetSpace,illuminant,surface)
 % The default method is to find a linear transformation that maps the the
 % sensor responses to the Macbeth ColorChecker into the Macbeth
 % ColorChecker values in XYZ under D65 using a least-squares minimization.
-% 
+%
 % Optionally, the user can send in a spectral file name that contains a
 % different surface set (surface) or a file name that contains a
 % different illuminant (illuminant).
@@ -30,7 +30,7 @@ function T = ieColorTransform(sensor,targetSpace,illuminant,surface)
 % We will aso build more complex maps, based on the Manifold methods,
 % and return a lookup table for the transformation. (Jeff DiCarlo, JOSA
 % paper)
-%    
+%
 % Examples:
 %    sensor = vcGetObject('sensor');
 %    T = ieColorTransform(sensor,'XYZ','D65','mcc')
@@ -44,15 +44,15 @@ function T = ieColorTransform(sensor,targetSpace,illuminant,surface)
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
-if ieNotDefined('targetSpace'), targetSpace = 'XYZ';          end
-if ieNotDefined('illuminant'),  illuminant  = 'D65';          end
-if ieNotDefined('surface'),     surface     = 'multisurface'; end
+if ieNotDefined('targetSpace'), targetSpace = 'XYZ'; end
+if ieNotDefined('illuminant'), illuminant = 'D65'; end
+if ieNotDefined('surface'), surface = 'multisurface'; end
 
-wave     = sensorGet(sensor,'wave');
-sensorQE = sensorGet(sensor,'spectral QE');
+wave = sensorGet(sensor, 'wave');
+sensorQE = sensorGet(sensor, 'spectral QE');
 
 switch lower(targetSpace)
-    case {'stockman','xyz'}
+    case {'stockman', 'xyz'}
         % This transforms the sensor values into a calibrated space -
         % either XYZ or Stockman cone coordinates.  The linear transform is
         % derived by calculating the relationship between the sensor
@@ -60,27 +60,27 @@ switch lower(targetSpace)
         %
         % The linear transformation is chosen by optimizing the match for a
         % specific surface reflectance target under some illuminant.
-        
+
         % Make case correct for filename
-        if     isequal(lower(targetSpace),'xyz'),     targetSpace = 'xyz'; 
-        elseif isequal(lower(targetSpace),'stockman'),targetSpace = 'stockman';
+        if isequal(lower(targetSpace), 'xyz'), targetSpace = 'xyz';
+        elseif isequal(lower(targetSpace), 'stockman'), targetSpace = 'stockman';
         end
-        targetSpace = which(sprintf('%sQuanta.mat',targetSpace));
-        targetQE = ieReadSpectra(targetSpace,wave);
-        
+        targetSpace = which(sprintf('%sQuanta.mat', targetSpace));
+        targetQE = ieReadSpectra(targetSpace, wave);
+
         % This is where the transform is calculated
-        T = imageSensorTransform(sensorQE,targetQE,illuminant,wave,surface);
-        
-    case {'linearsrgb','lrgb'}
+        T = imageSensorTransform(sensorQE, targetQE, illuminant, wave, surface);
+
+    case {'linearsrgb', 'lrgb'}
         % Probably unused
-        T = linearsrgb(sensorQE,illuminant,wave);
+        T = linearsrgb(sensorQE, illuminant, wave);
     case {'sensor'}
         % The internal space is sensor, so we just leave the data alone
-        nSensor = sensorGet(sensor,'nSensors');
-        T = eye(nSensor,nSensor);
+        nSensor = sensorGet(sensor, 'nSensors');
+        T = eye(nSensor, nSensor);
     case 'manifold'
         warning('Not yet implemented -- Returning T = identity'); %#ok<WNTAG>
-        T = eye(3,3);
+        T = eye(3, 3);
     otherwise
         error('Unknown optimization method.');
 end
@@ -92,14 +92,14 @@ end
 end
 
 %----------------------------------------------
-function T = linearsrgb(sensorQE,illuminant,wave)
+function T = linearsrgb(sensorQE, illuminant, wave)
 % Probably unused.
 %
 % Calculate the linear transformation from sensor into linear sRGB values.
 %
 % We read the MCC values in sRGB space (linear RGB).  The patch order in
 % this file is based on ImagEval history, not the official Macbeth
-% definition. 
+% definition.
 %
 % Probably, we should calculate the linear sRGB values for the set of
 % surfaces that are sent in.  I think this is fairly straightforward and
@@ -115,25 +115,25 @@ warning('linear srgb is used');
 % patchSize = 1; patchList = 1:24;
 % macbethChartObject = macbethChartCreate(patchSize,patchList);
 % load('MCClRGB','lrgbValuesMCC','patchOrder');
-if ieNotDefined('wave'), wave = 400:700; end    % nanometers
+if ieNotDefined('wave'), wave = 400:700; end % nanometers
 
-load('macbethChartLinearRGB','mcc');
+load('macbethChartLinearRGB', 'mcc');
 idealMacbeth = mcc.lrgbValuesMCC;
 
 % Get the MCC surface spectra and the illuminant.  Combine them to
 % estimate the sensor responses.
 % fName = fullfile(isetRootPath,'data','surfaces','macbethChart');
-% 
+%
 % surRef = ieReadSpectra(fName,wave);
 surRef = macbethReadReflectance(wave);
 
 % surRef = surRef(:,patchOrder);
-illSpectra  = ieReadSpectra(illuminant,wave);
+illSpectra = ieReadSpectra(illuminant, wave);
 
 % Sensor RGB
-sensorMacbeth = (sensorQE'*diag(illSpectra)*surRef)';
+sensorMacbeth = (sensorQE' * diag(illSpectra) * surRef)';
 
 % Solve: sensorMacbeth*T = lrgbValuesMCC
-T = pinv(sensorMacbeth)*idealMacbeth;
+T = pinv(sensorMacbeth) * idealMacbeth;
 
 end

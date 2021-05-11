@@ -12,7 +12,7 @@ function RGB = ieLUTDigital(DAC, gTable)
 %  * The inverse gamma table maps the display intensity to the digital
 %  values.
 %
-%  A gTable normally has size 2^nBits x 3, a table for each channel 
+%  A gTable normally has size 2^nBits x 3, a table for each channel
 %
 %  If it has size 2^nBits x 1, we assume the three channels are the same.
 %
@@ -34,13 +34,13 @@ function RGB = ieLUTDigital(DAC, gTable)
 
 % Examples:
 %{
-  d = displayCreate; n = size(d.gamma,1);
-  dac = floor(n*rand(10,10,3)) + 1;
-  foo = ieLUTDigital(dac, d.gamma);
-  ieNewGraphWin; plot(foo(:),dac(:),'.')
+d = displayCreate; n = size(d.gamma,1);
+dac = floor(n*rand(10,10,3)) + 1;
+foo = ieLUTDigital(dac, d.gamma);
+ieNewGraphWin; plot(foo(:),dac(:),'.')
 %}
 
-if (nargin==1), gTable = 2.2; end
+if (nargin == 1), gTable = 2.2; end
 
 if (numel(gTable) == 1)
     % Single number.  Raise to a power.
@@ -48,9 +48,9 @@ if (numel(gTable) == 1)
     return;
 end
 
-if max(DAC(:)) > size(gTable,1)
-    error('Max DAC value (%d) exceeds the row dimension (%d) of the gTable',...
-        max(DAC(:)),size(gTable,1));
+if max(DAC(:)) > size(gTable, 1)
+    error('Max DAC value (%d) exceeds the row dimension (%d) of the gTable', ...
+        max(DAC(:)), size(gTable, 1));
 end
 if max(gTable(:)) > 1 || min(gTable(:)) < 0
     error('gTable entries should be between 0 and 1.');
@@ -58,12 +58,11 @@ end
 
 % Convert through the table
 RGB = zeros(size(DAC));
-gTable = repmat(gTable,1,size(DAC,3));
-for ii=1:size(DAC,3)
-    thisTable = gTable(:,ii);
+gTable = repmat(gTable, 1, size(DAC, 3));
+for ii = 1:size(DAC, 3)
+    thisTable = gTable(:, ii);
     % DAC values are usually 0 to 255.  We need them to be 1,256
-    RGB(:,:,ii) = thisTable(DAC(:,:,ii)+1);
+    RGB(:, :, ii) = thisTable(DAC(:, :, ii)+1);
 end
 
 end
-

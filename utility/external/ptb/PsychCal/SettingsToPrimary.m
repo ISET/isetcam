@@ -1,6 +1,6 @@
-function [primary] = SettingsToPrimary(cal,settings)
+function [primary] = SettingsToPrimary(cal, settings)
 % [primary] = SettingsToPrimary(cal,settings)
-% 
+%
 % Convert from device settings coordinates to
 % primary coordinates by inverting
 % the gamma correction.
@@ -21,20 +21,20 @@ function [primary] = SettingsToPrimary(cal,settings)
 gammaTable = cal.gammaTable;
 gammaInput = cal.gammaInput;
 if (isempty(gammaTable))
-	error('No gamma table present in calibration structure');
+    error('No gamma table present in calibration structure');
 end
 
 % Check dimensions and table sizes
-[m,n] = size(settings);
-[mg,ng] = size(gammaTable);
+[m, n] = size(settings);
+[mg, ng] = size(gammaTable);
 if (m > ng)
-  error('Mismatch between primary coordinate dimensions and gamma table');
+    error('Mismatch between primary coordinate dimensions and gamma table');
 end
 
 % Use a search routine to find the best gamma function
-primary = zeros(m,n);
+primary = zeros(m, n);
 for i = 1:m
-  [primary(i,:)] = SearchGammaTable(settings(i,:),gammaTable(:,i),gammaInput);
+    [primary(i, :)] = SearchGammaTable(settings(i, :), gammaTable(:, i), gammaInput);
 end
 
 return
@@ -44,8 +44,8 @@ return
 % Convert settings scale from [0:max-1] to [1:max]
 %settings = settings+ones(m,n);
 
-% Invert the gamma correction:  the settings happen to be the 
-% indices into the gamma table.  Inverting the gamma correction 
+% Invert the gamma correction:  the settings happen to be the
+% indices into the gamma table.  Inverting the gamma correction
 % amounts to returning the elements of the gamma table corresponding
 % to the settings.
 %primary = zeros(m,n);

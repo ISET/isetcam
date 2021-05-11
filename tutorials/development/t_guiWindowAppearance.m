@@ -19,20 +19,21 @@ ieInit
 ISET
 
 % Close the main window using a command that sets the window parameter
-% to off, as in 
-ieMainW('visible','off')
+% to off, as in
+ieMainW('visible', 'off')
 
 % Or bring it back up
-ieMainW('visible','on')
+ieMainW('visible', 'on')
 
-%% You can do the same with other windows 
-scene = sceneCreate; vcAddAndSelectObject(scene);
+%% You can do the same with other windows
+scene = sceneCreate;
+vcAddAndSelectObject(scene);
 
-sceneWindow('visible','on')
+sceneWindow('visible', 'on')
 drawnow
 pause(1)
 
-sceneWindow('visible','off')
+sceneWindow('visible', 'off')
 drawnow
 pause(1)
 
@@ -62,7 +63,7 @@ ieWindowsGet(true);
 % ISET pref variable that is stored across sessions on that computer. (They
 % are in the pref variable
 %
-wPos = getpref('ISET','wPos')
+wPos = getpref('ISET', 'wPos')
 
 % When you open the windows in the future, their default size and position
 % will be the same as the arrangement.
@@ -85,7 +86,7 @@ ieWindowsSet(wPos);
 % the positions overlapped for the videos in videoPos.  Here is how I load
 % and set up for making the tutorials
 
-wPos = load('videoPos',wPos);
+wPos = load('videoPos', wPos);
 ieWindowsSet(wPos);
 
 %% Programming with window handles

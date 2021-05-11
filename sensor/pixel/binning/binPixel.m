@@ -1,4 +1,4 @@
-function sensor = binPixel(sensor,bMethod)
+function sensor = binPixel(sensor, bMethod)
 %Apply pixel binning algorithm to voltage image
 %
 %   sensor = binPixel(sensor,bMethod)
@@ -46,38 +46,38 @@ if ieNotDefined('bMethod'), bMethod = 'kodak2008'; end
 % values become a hybrid of volts and digital values, only becoming the
 % true digital values when we are done.
 switch lower(bMethod)
-    case 'kodak2008'  % Reduces number of columns x 2
+    case 'kodak2008' % Reduces number of columns x 2
         % sensor = vcGetObject('sensor');
-        v = sensorGet(sensor,'volts');
-        binFun = @(x) x*[ 1 0 1 0; 0 1 0 1]';
-        dv = blkproc(v,[4 4],binFun);
-        sensor = sensorSet(sensor,'digitalValues',dv);
+        v = sensorGet(sensor, 'volts');
+        binFun = @(x) x * [1, 0, 1, 0; 0, 1, 0, 1]';
+        dv = blkproc(v, [4, 4], binFun);
+        sensor = sensorSet(sensor, 'digitalValues', dv);
         % On return, we need to average the digital values in the rows
-        
+
     case 'addadjacentblocks' % Reduces rows and cols x 2
         % Combines 4x4 block into a 2x2 block
         %
         % The analog voltages in the corresponding 4 CFA positions are
         % added together.  The resulting sensor voltages are half the size
         % in each dimension, and the voltages from corresponding CFA
-        % positions are summed. 
+        % positions are summed.
         %
         % sensor = vcGetObject('sensor');
-        v = sensorGet(sensor,'volts');
-        binFun = @(x) [1 0 1 0; 0 1 0 1]*x*[ 1 0 1 0; 0 1 0 1]';
-        dv = blkproc(v,[4 4],binFun);
-        sensor = sensorSet(sensor,'digitalValues',dv);
+        v = sensorGet(sensor, 'volts');
+        binFun = @(x) [1, 0, 1, 0; 0, 1, 0, 1] * x * [1, 0, 1, 0; 0, 1, 0, 1]';
+        dv = blkproc(v, [4, 4], binFun);
+        sensor = sensorSet(sensor, 'digitalValues', dv);
         % figure; imagesc(v); axis image;
-        
+
     case 'averageadjacentdigitalblocks'
         % All of the processing is done in binPixelPost.  There we average
         % the quantized data using a method like the one above.
         %
         % To make sure the computation continues, we need to create a value
         % in dv.
-        sensor = sensorSet(sensor,'digitalValues',1);
+        sensor = sensorSet(sensor, 'digitalValues', 1);
     otherwise
-        error('Unknown binning method %s\n',bMethod);
+        error('Unknown binning method %s\n', bMethod);
 end
 
 return;

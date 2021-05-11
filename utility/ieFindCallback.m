@@ -24,7 +24,7 @@ function cb = ieFindCallback(V)
 % Examples:
 %   V = ieSessionGet('sceneWindow');
 %   cb = ieFindCallBack(V);
-%  
+%
 % Not working yet
 % Copyright ImagEval Consultants, LLC, 2007.
 
@@ -56,7 +56,7 @@ if ishandle(V)
     % temporarily set all callbacks to be uiresume
     for i = 1:length(h)
         if ~isempty(cbList{i}) % ignore submenus
-            set(h(i), 'Callback', sprintf('SEL = %i; uiresume;',i));
+            set(h(i), 'Callback', sprintf('SEL = %i; uiresume;', i));
         end
     end
 
@@ -68,7 +68,7 @@ if ishandle(V)
     cb = cbList{SEL};
 
     % restore the menu callbacks / other settings
-    for i=1:length(h), set(h(i), 'Callback', cbList{i}); end
+    for i = 1:length(h), set(h(i), 'Callback', cbList{i}); end
     %     set(V, 'Color', figColor);
     close(hmsg);
 
@@ -89,16 +89,15 @@ end
 return
 
 % ------------------
-function h = getChildUimenus(par)
-% h = getChildUimenus(par);
-% Find all uimenus that belong to a parent figure or uimenu,
-% or a submenu of the parent, and return as a vector in h.
-% ras, 11/05
-h = findobj('Parent', par, 'Type', 'uimenu');
-for i = h(:)'
-    subh = getChildUimenus(i);
-    h = [h; subh];
-end
+    function h = getChildUimenus(par)
+        % h = getChildUimenus(par);
+        % Find all uimenus that belong to a parent figure or uimenu,
+        % or a submenu of the parent, and return as a vector in h.
+        % ras, 11/05
+        h = findobj('Parent', par, 'Type', 'uimenu');
+        for i = h(:)'
+            subh = getChildUimenus(i);
+            h = [h; subh];
+        end
 
-return
-
+        return

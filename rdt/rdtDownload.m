@@ -1,4 +1,5 @@
 function artifacts = rdtDownload(rd, varargin)
+
 %% Download folder and zip the files from remote data server
 %   files = rdtDownload(rd, varargin)
 %
@@ -62,7 +63,7 @@ cd(folderName);
 
 %  download files
 artifacts = rd.listArtifacts();
-for ii = 1 : length(artifacts)
+for ii = 1:length(artifacts)
     if verbose
         fprintf('Downloading %d/%d: %s...\n', ...
             ii, length(artifacts), artifacts(ii).artifactId);
@@ -77,13 +78,13 @@ end
 %  zip
 if isZip
     cd('..');
-    zip([folderName '.zip'], folderName);
+    zip([folderName, '.zip'], folderName);
     rmdir(folderName, 's');
 end
 
 %% Clean up
 % return to previous working directory
 cd(cwd);
-rd.crp(['/' cwrp]);
+rd.crp(['/', cwrp]);
 
 end

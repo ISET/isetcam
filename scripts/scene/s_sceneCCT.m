@@ -28,41 +28,40 @@ ieInit
 %% Plot the light's spectral energy
 
 wave = 400:5:720;
-spd = blackbody(wave,3500);
+spd = blackbody(wave, 3500);
 
-vcNewGraphWin; 
-plot(wave,spd);
+vcNewGraphWin;
+plot(wave, spd);
 grid on; xlabel('Wavelength (nm)'); ylabel('Energy (watts/sr/nm/m^2)')
 
 %% Calculate the correlated color temperature (spd2cct)
 
 cTemp = 3500;
 d = blackbody(wave, cTemp);
-fprintf('Estimated CCT %.1f and actual %.1f\n',spd2cct(wave,d),cTemp)
+fprintf('Estimated CCT %.1f and actual %.1f\n', spd2cct(wave, d), cTemp)
 
 cTemp = 6500;
 d = blackbody(wave, cTemp);
-fprintf('Estimated CCT %.1f and actual %.1f\n',spd2cct(wave,d),cTemp)
+fprintf('Estimated CCT %.1f and actual %.1f\n', spd2cct(wave, d), cTemp)
 
 cTemp = 8500;
 d = blackbody(wave, cTemp);
-fprintf('Estimated CCT %.1f and actual %.1f\n',spd2cct(wave,d),cTemp)
+fprintf('Estimated CCT %.1f and actual %.1f\n', spd2cct(wave, d), cTemp)
 
 %% Calculate and plot several lights at once
 
 cTemps = 4500:1000:8500;
 spd = blackbody(wave, cTemps);
 
-vcNewGraphWin; 
-plot(wave,spd);
+vcNewGraphWin;
+plot(wave, spd);
 grid on; xlabel('Wavelength (nm)'); ylabel('Energy (watts/sr/nm/m^2)')
 
 %% Print out the list
 
-for ii=1:length(cTemps)
+for ii = 1:length(cTemps)
     fprintf('Estimated CCT %.1f and actual CCT %.1f\n', ...
-        spd2cct(wave,spd(:,ii)),cTemps(ii));
+        spd2cct(wave, spd(:, ii)), cTemps(ii));
 end
 
 %%
-

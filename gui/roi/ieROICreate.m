@@ -23,4 +23,3 @@ function roi = ieRoiCreate(varargin)
 %
 % See also
 %    vcROISelect; ieROIDraw, ieRect2Locs
-

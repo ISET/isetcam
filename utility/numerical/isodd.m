@@ -11,6 +11,6 @@ function bool = isodd(x)
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
-bool = mod(x,2);
+bool = mod(x, 2);
 
 return;

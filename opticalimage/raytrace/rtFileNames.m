@@ -1,10 +1,10 @@
-function [diName, riName, psfNameList, craName] = rtFileNames(lensFile,wave,imgHeight)
+function [diName, riName, psfNameList, craName] = rtFileNames(lensFile, wave, imgHeight)
 % Generate ray trace file names produced by Zemax or Code V
 %
 %   [diName, riName, psfNameList, craName] = rtFileNames(lensFile,wave,imgHeight)
 %
 % Create the names of the data files used for converting ray trace data
-% into ISET format. 
+% into ISET format.
 %
 %   The riName is the relative illumination file.
 %   The diName is the distortion file.
@@ -16,21 +16,21 @@ function [diName, riName, psfNameList, craName] = rtFileNames(lensFile,wave,imgH
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
-diName = sprintf('%s_DI_.dat',lensFile);
-riName = sprintf('%s_RI_.dat',lensFile);
-craName = sprintf('%s_CRA_.dat',lensFile);
+diName = sprintf('%s_DI_.dat', lensFile);
+riName = sprintf('%s_RI_.dat', lensFile);
+craName = sprintf('%s_CRA_.dat', lensFile);
 
 % PSF file names
 nWave = length(wave);
 nHeight = length(imgHeight);
-psfNameList = cell(nHeight,nWave);
-for ii=1:nHeight
-    for jj=1:nWave
+psfNameList = cell(nHeight, nWave);
+for ii = 1:nHeight
+    for jj = 1:nWave
         % Get the full path.  We are worried that there may be multiple
         % optics with the same basename.
-        baseName = sprintf('%s_2D_PSF_Fld%.0f_Wave%.0f.dat',lensFile,ii,jj);
-        psfNameList{ii,jj} = which(baseName);
-        rtCheckPSFFile(psfNameList{ii,jj});
+        baseName = sprintf('%s_2D_PSF_Fld%.0f_Wave%.0f.dat', lensFile, ii, jj);
+        psfNameList{ii, jj} = which(baseName);
+        rtCheckPSFFile(psfNameList{ii, jj});
     end
 end
 
@@ -39,7 +39,7 @@ end
 
 %% Verifying the PSF file as being reasonable
 
-function  ok = rtCheckPSFFile(psfFileName)
+function ok = rtCheckPSFFile(psfFileName)
 %
 % Verify file length, maybe some other properties, of the psfFile
 % This is needed because Zemax doesn't always produce PSF files that are
@@ -50,12 +50,12 @@ function  ok = rtCheckPSFFile(psfFileName)
 
 ok = 1;
 
-if ~exist(psfFileName,'file')
-    error('No file named %s\n',psfFileName);
+if ~exist(psfFileName, 'file')
+    error('No file named %s\n', psfFileName);
 else
     test = dir(psfFileName);
     if test.bytes < 1025
-        errordlg(sprintf('Bad PSF file: %s\n',psfFileName));
+        errordlg(sprintf('Bad PSF file: %s\n', psfFileName));
         ok = 0;
     end
 end

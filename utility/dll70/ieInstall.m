@@ -20,13 +20,13 @@ fprintf('ISET mex-file verification.\n');
 %% Test to see whether md5 is running on this computer
 try
     tmp = md5('a');
-    if strcmp(tmp,'0cc175b9c0f1b6a831c399e269772661')
+    if strcmp(tmp, '0cc175b9c0f1b6a831c399e269772661')
         fprintf('  md5 is functioning.\n');
-        
+
         % Check for shadow copy of md5
-        if strcmp(computer,'PCWIN')
-            [p,n,e] = fileparts( which('md5'));
-            if strcmpi(e,'.mexw32')
+        if strcmp(computer, 'PCWIN')
+            [p, n, e] = fileparts(which('md5'));
+            if strcmpi(e, '.mexw32')
                 % Delete the dll version
                 t = which('md5.dll');
                 if ~isempty(t), delete(t); end
@@ -44,13 +44,13 @@ end
 %% Test ieGetMACAddress
 try
     tmp = ieGetMACAddress;
-    if length(tmp)==17
+    if length(tmp) == 17
         fprintf('  ieGetMACAddress is functioning.\n');
 
         % Check for shadow copy of ieGetMACAddress
-        if strcmp(computer,'PCWIN')
-            [p,n,e] = fileparts( which('ieGetMACAddress'));
-            if strcmpi(e,'.mexw32')
+        if strcmp(computer, 'PCWIN')
+            [p, n, e] = fileparts(which('ieGetMACAddress'));
+            if strcmpi(e, '.mexw32')
                 % Delete the dll version
                 t = which('ieGetMACAddress.dll');
                 if ~isempty(t), delete(t); end
@@ -63,10 +63,6 @@ try
 catch ME
     ME.stack
     warndlg('ieGetMACAddress needs to be compiled for this platform.');
-end
-   
-return;
+    end
 
-
-
-
+    return;

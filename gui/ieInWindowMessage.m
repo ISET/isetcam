@@ -1,4 +1,4 @@
-function ieInWindowMessage(str,app,duration)            
+function ieInWindowMessage(str, app, duration)
 % Place a message in a text box within an ISET window
 %
 % Synopsis
@@ -16,11 +16,12 @@ function ieInWindowMessage(str,app,duration)
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
-
 %% Parse
-if (~exist('str','var')||isempty(str)),str = ''; end
-if (~exist('app','var')||isempty(app)),disp(str); return; end
-if (~exist('duration','var')||isempty(duration)),duration = []; end
+if (~exist('str', 'var') || isempty(str)), str = ''; end
+if (~exist('app', 'var') || isempty(app)), disp(str);
+    return;
+end
+if (~exist('duration', 'var') || isempty(duration)), duration = []; end
 
 %% Place the string in the message area.
 app.txtMessage.Text = str;

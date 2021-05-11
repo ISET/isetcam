@@ -18,18 +18,18 @@ function ieVCRedistribution
 %
 
 %% Perform architecture dependent installation
-switch(computer)
+switch (computer)
     case 'PCWIN'
 
         fprintf('Installing Visual Studio C++ 2008 redistribution (x32) package.\n')
         fprintf('This requires the Internet and may require your participation.\n')
 
         % Visual C redistributable library installation
-        visCexe = fullfile(isetRootPath,'dll70','vcredist_x86.exe');
-        [s,r] = dos(visCexe);
-        if s == 1602,  fprintf('Status: already installed.\n');
+        visCexe = fullfile(isetRootPath, 'dll70', 'vcredist_x86.exe');
+        [s, r] = dos(visCexe);
+        if s == 1602, fprintf('Status: already installed.\n');
         elseif s == 0, fprintf('Status: install OK\n');
-        else           fprintf('Status: %d, Result: %s\n',s,r);
+        else fprintf('Status: %d, Result: %s\n', s, r);
         end
 
     case 'PCWIN64'
@@ -41,13 +41,13 @@ switch(computer)
         % the freely downloadable 2008 compiler.
         fprintf('Installing Visual Studio C++ 2008 redistribution (x64) package.\n')
         fprintf('This requires the Internet and may require your participation.\n')
-        
-        visCexe = fullfile(isetRootPath,'dll70','vcredist_x64.exe');
-        [s,r] = dos(visCexe);
 
-        if s == 1602,  fprintf('Status: already installed.\n');
+        visCexe = fullfile(isetRootPath, 'dll70', 'vcredist_x64.exe');
+        [s, r] = dos(visCexe);
+
+        if s == 1602, fprintf('Status: already installed.\n');
         elseif s == 0, fprintf('Status: install OK\n');
-        else           fprintf('Status: %d, Result: %s\n',s,r);
+        else fprintf('Status: %d, Result: %s\n', s, r);
         end
 
     case 'MACI'

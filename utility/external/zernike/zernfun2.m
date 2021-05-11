@@ -1,4 +1,4 @@
-function z = zernfun2(p,r,theta,nflag)
+function z = zernfun2(p, r, theta, nflag)
 %ZERNFUN2 Single-index Zernike functions on the unit circle.
 %   Z = ZERNFUN2(P,R,THETA) returns the Pth Zernike functions evaluated
 %   at positions (R,THETA) on the unit circle.  P is a vector of positive
@@ -14,7 +14,7 @@ function z = zernfun2(p,r,theta,nflag)
 %   for all p.
 %
 %   NOTE: ZERNFUN2 returns the same output as ZERNFUN, for the first 36
-%   Zernike functions (order N<=7).  In some disciplines it is 
+%   Zernike functions (order N<=7).  In some disciplines it is
 %   traditional to label the first 36 functions using a single mode
 %   number P instead of separate numbers for the order N and azimuthal
 %   frequency M.
@@ -46,31 +46,31 @@ function z = zernfun2(p,r,theta,nflag)
 
 % Check and prepare the inputs:
 % -----------------------------
-if min(size(p))~=1
-    error('zernfun2:Pvector','Input P must be vector.')
+if min(size(p)) ~= 1
+    error('zernfun2:Pvector', 'Input P must be vector.')
 end
 
-if any(p)>35
+if any(p) > 35
     error('zernfun2:P36', ...
-          ['ZERNFUN2 only computes the first 36 Zernike functions ' ...
-           '(P = 0 to 35).'])
+        ['ZERNFUN2 only computes the first 36 Zernike functions ', ...
+        '(P = 0 to 35).'])
 end
 
 % Get the order and frequency corresonding to the function number:
 % ----------------------------------------------------------------
 p = p(:);
-n = ceil((-3+sqrt(9+8*p))/2);
-m = 2*p - n.*(n+2);
+n = ceil((-3+sqrt(9 + 8 * p))/2);
+m = 2 * p - n .* (n + 2);
 
 % Pass the inputs to the function ZERNFUN:
 % ----------------------------------------
 switch nargin
     case 3
-        z = zernfun(n,m,r,theta);
+        z = zernfun(n, m, r, theta);
     case 4
-        z = zernfun(n,m,r,theta,nflag);
+        z = zernfun(n, m, r, theta, nflag);
     otherwise
-        error('zernfun2:nargin','Incorrect number of inputs.')
+        error('zernfun2:nargin', 'Incorrect number of inputs.')
 end
 
 % EOF zernfun2

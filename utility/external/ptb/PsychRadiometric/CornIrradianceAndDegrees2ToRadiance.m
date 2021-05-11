@@ -1,4 +1,4 @@
-function radiance_PowerPerSrArea = CornIrradianceAndDegrees2ToRadiance(cornealIrradiance_PowerPerArea,stimulusAreaDegrees2)
+function radiance_PowerPerSrArea = CornIrradianceAndDegrees2ToRadiance(cornealIrradiance_PowerPerArea, stimulusAreaDegrees2)
 % radiance_PowerPerSrArea = CornIrradianceAndDegrees2ToRadiance(cornealIrradiance_PowerPerArea,stimulusAreaDegrees2)
 %
 % Convert the corneal irradiance of a stimulus to radiance, given that we know the area of the stimulus in degrees2.
@@ -22,5 +22,4 @@ stimulusSizeRadians = deg2rad(stimulusSizeDegrees);
 
 % This routine just inverts the simple relation derived in the comments to
 %   RadianceAndDegrees2ToCornIrradiance
-radiance_PowerPerSrArea = cornealIrradiance_PowerPerArea/(stimulusSizeRadians^2);
-
+radiance_PowerPerSrArea = cornealIrradiance_PowerPerArea / (stimulusSizeRadians^2);

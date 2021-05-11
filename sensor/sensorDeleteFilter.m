@@ -1,5 +1,5 @@
-function sensor = sensorDeleteFilter(sensor,whichFilter)
-% Delete a color filter. 
+function sensor = sensorDeleteFilter(sensor, whichFilter)
+% Delete a color filter.
 %
 % Synopsis
 %   sensor = sensorDeleteFilter(sensor,[whichFilter])
@@ -29,32 +29,31 @@ function sensor = sensorDeleteFilter(sensor,whichFilter)
 
 if ieNotDefined('sensor'), sensor = ieGetObject('ISA'); end
 
-if ieNotDefined('whichFilter') 
-    filterNames = sensorGet(sensor,'filterNames');
-    deleteName = ieReadString('Enter filter name to replace:',filterNames{1}); 
+if ieNotDefined('whichFilter')
+    filterNames = sensorGet(sensor, 'filterNames');
+    deleteName = ieReadString('Enter filter name to replace:', filterNames{1});
     if isempty(deleteName), return; end
-    whichFilter = find(strcmpi(deleteName,filterNames));   
+    whichFilter = find(strcmpi(deleteName, filterNames));
     if isempty(whichFilter), return; end
 end
 
-filterSpectra = sensorGet(sensor,'filterspectra');
-nFilters = sensorGet(sensor,'nfilters');
+filterSpectra = sensorGet(sensor, 'filterspectra');
+nFilters = sensorGet(sensor, 'nfilters');
 
-keepList = ones(1,nFilters);
+keepList = ones(1, nFilters);
 keepList(whichFilter) = 0;
 keepList = logical(keepList);
 sensor   = sensorSet(sensor,'filterspectra',filterSpectra(:,keepList));
 
 % The pattern terms bigger than or equal to whichFilter all move down one.
 % The ones lower than whichFilter stay the same.
-pattern = sensorGet(sensor,'pattern');
+pattern = sensorGet(sensor, 'pattern');
 l = find(pattern >= whichFilter);
-pattern(l) = max(1,pattern(l)-1);
-sensor = sensorSet(sensor,'pattern',pattern);
+pattern(l) = max(1, pattern(l)-1);
+sensor = sensorSet(sensor, 'pattern', pattern);
 
-filterNames = sensorGet(sensor,'filternames');
+filterNames = sensorGet(sensor, 'filternames');
 filterNames = filterNames(keepList);
-sensor = sensorSet(sensor,'filternames',filterNames);
+sensor = sensorSet(sensor, 'filternames', filterNames);
 
 end
-

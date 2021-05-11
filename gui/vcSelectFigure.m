@@ -1,5 +1,5 @@
-function figNum = vcSelectFigure(objType,noNewWin)
-% Open an ISET window and return a figure number 
+function figNum = vcSelectFigure(objType, noNewWin)
+% Open an ISET window and return a figure number
 %
 %   figNum = vcSelectFigure(objType,noNewWin)
 %
@@ -26,31 +26,31 @@ function figNum = vcSelectFigure(objType,noNewWin)
 % By default, we assume that the user DOES want a new graph window when
 % this routine is called.  To suppress the call, and return an empty
 % figNum, you must set noNewWin to 1 in the call.
-if ~exist('noNewWin','var'), noNewWin = 0; end
+if ~exist('noNewWin', 'var'), noNewWin = 0; end
 objType = vcEquivalentObjtype(objType);
 
 switch lower(objType)
     case 'graphwin'
         figNum = ieSessionGet('graph win figure');
-        if isempty(figNum) && ~noNewWin, figNum = vcNewGraphWin;  end
-        
+        if isempty(figNum) && ~noNewWin, figNum = vcNewGraphWin; end
+
     case 'scene'
         app = ieSessionGet('scene window');
         if isempty(app) && ~noNewWin, app = sceneWindow_App; end
         figNum = app.figure1;
-        
+
     case {'opticalimage'}
         figNum = ieSessionGet('oi window');
         if isempty(figNum) && ~noNewWin, figNum = oiWindow; end
-        
+
     case {'isa'}
         figNum = ieSessionGet('sensor window');
         if isempty(figNum) && ~noNewWin, figNum = sensorImageWindow; end
-        
+
     case {'vcimage'}
         figNum = ieSessionGet('vcimage window');
         if isempty(figNum) && ~noNewWin, figNum = ipWindow; end
-        
+
     otherwise
         error('Unknown window type.');
 end

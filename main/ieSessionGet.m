@@ -1,4 +1,4 @@
-function val = ieSessionGet(param,varargin)
+function val = ieSessionGet(param, varargin)
 % Get fields from global vcSESSION, including figure handles, guidata ...
 %
 % Synopsis
@@ -7,7 +7,7 @@ function val = ieSessionGet(param,varargin)
 % Description:
 %  The vcSESSION parameter is a global variable that contains information
 %  about the windows, custom processing routines, and related ISET
-%  session information. ieSessionGet retrieves that information.  
+%  session information. ieSessionGet retrieves that information.
 %
 %  A list of the parameters is:
 %
@@ -52,11 +52,11 @@ function val = ieSessionGet(param,varargin)
 %   NOT UPDATED YET
 %
 %   h = ieSessionGet('scene window handle')
-% 
+%
 %   ieSessionSet('wait bar','on');
 %   ieSessionGet('wait bar')
 %
-%   ieSessionGet('font size'); 
+%   ieSessionGet('font size');
 %
 %   % Clear flag when running ieInit
 %   ieSessionGet('init clear')  % True or false
@@ -78,7 +78,7 @@ function val = ieSessionGet(param,varargin)
 %% Parameters
 global vcSESSION
 
-if ~exist('param','var')||isempty(param), error('You must specify a parameter.'); end
+if ~exist('param', 'var') || isempty(param), error('You must specify a parameter.'); end
 val = [];
 
 % Eliminate spaces and make lower case
@@ -89,27 +89,28 @@ param = ieParamFormat(param);
 switch param
     case {'version'}
         val = vcSESSION.VERSION;
-    case {'name','sessionname'}
+    case {'name', 'sessionname'}
         val = vcSESSION.NAME;
-    case {'dir','sessiondir'}
+    case {'dir', 'sessiondir'}
         val = vcSESSION.DIR;
-    case {'help','inithelp'}
+    case {'help', 'inithelp'}
         % Default for help is true, if the initHelp has not been set.
         % I don't know what this does.
-        if checkfields(vcSESSION,'initHelp'), val = vcSESSION.initHelp; 
-        else, vcSESSION.initHelp = 1; val = 1; 
+        if checkfields(vcSESSION, 'initHelp'), val = vcSESSION.initHelp;
+        else, vcSESSION.initHelp = 1;
+            val = 1;
         end
-        
-    % Matlab setpref/getpref 
+
+        % Matlab setpref/getpref
     case {'prefs'}
         val = getpref('ISET');
     case {'fontsize'}
         isetPref = getpref('ISET');
-        if checkfields(isetPref,'fontSize'), val = isetPref.fontSize;
+        if checkfields(isetPref, 'fontSize'), val = isetPref.fontSize;
         else, val = 12;
         end
-        
-    case {'fontincrement','increasefontsize','fontdelta','deltafont'}
+
+    case {'fontincrement', 'increasefontsize', 'fontdelta', 'deltafont'}
         % This should be deprecated
         warning('font delta called.');
         % This value determines whether we change the font size in every window
@@ -118,100 +119,100 @@ switch param
         % if checkfields(vcSESSION,'FONTSIZE'), val = vcSESSION.FONTSIZE;  end
         isetPref = getpref('ISET');
         if ~isempty(isetPref)
-            if checkfields(isetPref,'fontDelta'), val = isetPref.fontDelta; 
+            if checkfields(isetPref, 'fontDelta'), val = isetPref.fontDelta;
             end
-        else 
-            val = 0; 
+        else
+            val = 0;
         end
         if isempty(val), val = 0; end
-        
+
     case {'waitbar'}
         % Used to decide whether we show the waitbars.
-        if checkfields(vcSESSION,'GUI','waitbar')
+        if checkfields(vcSESSION, 'GUI', 'waitbar')
             val = vcSESSION.GUI.waitbar;
         else
-            % The getpref is slow.  So, we attach it to the session 
+            % The getpref is slow.  So, we attach it to the session
             % at start up.  Otherwise, loops that test for it take too
             % long.
             iePref = getpref('ISET');
-            if ~checkfields(iePref,'waitbar')
-                setpref('ISET','waitbar',0);
+            if ~checkfields(iePref, 'waitbar')
+                setpref('ISET', 'waitbar', 0);
                 val = 0;
             else, val = iePref.waitbar;
             end
             vcSESSION.GUI.waitbar = val;
         end
-    case {'windowpositions','wpos'}
+    case {'windowpositions', 'wpos'}
         % Returns preferred window positions and sizes
         % If that has not yet been set, returns the positions and sizes of
         % the currently open windows.
         isetp = getpref('ISET');
-        if checkfields(isetp,'wPos'),  val = isetp.wPos;
+        if checkfields(isetp, 'wPos'), val = isetp.wPos;
         else
-            wPos = cell(1,6);
-            for ii=1:6, wPos{ii} = []; end
-            setpref('ISET','wPos',wPos);
+            wPos = cell(1, 6);
+            for ii = 1:6, wPos{ii} = []; end
+            setpref('ISET', 'wPos', wPos);
             val = wPos;
         end
-        
+
     case {'initclear'}
         % Clear workspace variables with ieInit.  True or False.
         iePref = getpref('ISET');
-        if ~checkfields(iePref,'initclear')
-            setpref('ISET','initclear',true);
+        if ~checkfields(iePref, 'initclear')
+            setpref('ISET', 'initclear', true);
             val = true;
         else, val = iePref.initclear;
         end
-        
-    case {'mainwindow','mainfigure','mainfigures'}
-        if checkfields(vcSESSION,'GUI','vcMainWindow')
+
+    case {'mainwindow', 'mainfigure', 'mainfigures'}
+        if checkfields(vcSESSION, 'GUI', 'vcMainWindow')
             val = vcSESSION.GUI.vcMainWindow.hObject;
         end
-    case {'scenewindow','scenefigure','sceneimagefigure','sceneimagefigures'}
-        if checkfields(vcSESSION,'GUI','vcSceneWindow')
+    case {'scenewindow', 'scenefigure', 'sceneimagefigure', 'sceneimagefigures'}
+        if checkfields(vcSESSION, 'GUI', 'vcSceneWindow')
             val = vcSESSION.GUI.vcSceneWindow.app;
             % val = app.figure1;
             % val = vcSESSION.GUI.vcSceneWindow.hObject;
         end
-    case {'oiwindow','oifigure','opticalimagefigure','oifigures','opticalimagefigures'}
-        if checkfields(vcSESSION,'GUI','vcOptImgWindow')
+    case {'oiwindow', 'oifigure', 'opticalimagefigure', 'oifigures', 'opticalimagefigures'}
+        if checkfields(vcSESSION, 'GUI', 'vcOptImgWindow')
             val = vcSESSION.GUI.vcOptImgWindow.app;
         end
-    case {'sensorwindow','sensorfigure','isafigure','sensorfigures','isafigures','isawindow'}
-        if checkfields(vcSESSION,'GUI','vcSensImgWindow')
+    case {'sensorwindow', 'sensorfigure', 'isafigure', 'sensorfigures', 'isafigures', 'isawindow'}
+        if checkfields(vcSESSION, 'GUI', 'vcSensImgWindow')
             val = vcSESSION.GUI.vcSensImgWindow.app;
         end
-    case {'ipwindow','ipfigure','vcimagefigure','vcimagefigures','vcimagewindow'}
-        if checkfields(vcSESSION,'GUI','vcImageWindow')
+    case {'ipwindow', 'ipfigure', 'vcimagefigure', 'vcimagefigures', 'vcimagewindow'}
+        if checkfields(vcSESSION, 'GUI', 'vcImageWindow')
             val = vcSESSION.GUI.vcImageWindow.app;
         end
     case {'displaywindow'}
-        if checkfields(vcSESSION,'GUI','vcDisplayWindow')
+        if checkfields(vcSESSION, 'GUI', 'vcDisplayWindow')
             val = vcSESSION.GUI.vcDisplayWindow.app;
         end
-    case {'metricswindow','metricsfigure','metricsfigures'}
-        if checkfields(vcSESSION,'GUI','metricsWindow')
+    case {'metricswindow', 'metricsfigure', 'metricsfigures'}
+        if checkfields(vcSESSION, 'GUI', 'metricsWindow')
             val = vcSESSION.GUI.metricsWindow.app;
         end
     case {'camdesignwindow'}
-        if checkfields(vcSESSION,'GUI','vcCamDesignWindow')
+        if checkfields(vcSESSION, 'GUI', 'vcCamDesignWindow')
             val = vcSESSION.GUI.vcCamDesignWindow.app;
         end
     case {'imageexplorewindow'}
-        if checkfields(vcSESSION,'GUI','vcImageExploreWindow')
+        if checkfields(vcSESSION, 'GUI', 'vcImageExploreWindow')
             val = vcSESSION.GUI.vcImageExploreWindow.app;
         end
-        
+
         % Information about current objects
         % ieSessionGet('scene');
         % and so forth
     case {'scene'}
         val = vcGetObject('scene');
-    case {'oi','opticalimage'}
+    case {'oi', 'opticalimage'}
         val = vcGetObject('oi');
-    case {'sensor','isa'}
+    case {'sensor', 'isa'}
         val = vcGetObject('sensor');
-    case {'vcimage','ip'}
+    case {'vcimage', 'ip'}
         val = vcGetObject('ip');
     case {'selected'}
         % ieSessionGet('selected',objType)
@@ -233,8 +234,8 @@ switch param
     case {'names'}
         % ieSessionGet('names',objType)
         if isempty(varargin), error('Please specify object type'); end
-        val = vcGetObjectNames(vcEquivalentObjtype(varargin{1})); 
-        
+        val = vcGetObjectNames(vcEquivalentObjtype(varargin{1}));
+
         % DISPLAY related - may be moved out of here
     case {'imagesizethreshold'}
         % Used by the display code.  This sets a value for when we loop
@@ -247,8 +248,8 @@ switch param
         end
 
     otherwise
-        error('Unknown parameter %s\n',param)
-        
+        error('Unknown parameter %s\n', param)
+
 end
 
 end

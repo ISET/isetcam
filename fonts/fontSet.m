@@ -15,7 +15,7 @@ function font = fontSet(font, param, val, varargin)
 %      'style'     - italics, bold, normal
 %      'dpi'       - dots per inch
 %      'bitmap'    - bit map
-% 
+%
 % Example:
 %   font = fontCreate('v');
 %   font = fontSet(font,'character','g');
@@ -24,18 +24,18 @@ function font = fontSet(font, param, val, varargin)
 % (HJ/BW)  PDCSoft Team, 2014.
 
 if notDefined('param'), error('Parameter must be defined.'); end
-if ~exist('val','var'), error('Parameter must be defined.'); end
+if ~exist('val', 'var'), error('Parameter must be defined.'); end
 
 param = ieParamFormat(param);
 
 switch param
-    
-    % Book keeping
+
+        % Book keeping
     case 'type'
         % Always 'font'
     case 'name'
         font.name = val;
-        
+
     case 'character'
         font.character = val;
     case 'size'
@@ -48,13 +48,13 @@ switch param
         font.dpi = val;
     case 'bitmap'
         font.bitmap = val;
-        
+
     otherwise
-        disp(['Unknown parameter: ',param]);
-        
+        disp(['Unknown parameter: ', param]);
+
 end
 
 % Rebuild the bitmap
-font = fontCreate(font.character,font.family,font.size,font.dpi);
+font = fontCreate(font.character, font.family, font.size, font.dpi);
 
 end

@@ -9,7 +9,6 @@ function photoreceptors = StockmanSharpePhotoreceptors(wave)
 %
 % ISETBIO Team, 2014
 
-
 %% Set up PTB photoreceptors structure
 
 % We'll do the computations at the wavelength spacing passed in for the

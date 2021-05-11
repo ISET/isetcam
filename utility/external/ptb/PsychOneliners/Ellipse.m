@@ -1,10 +1,10 @@
-function bool = Ellipse(a,b,horpow,verpow)
+function bool = Ellipse(a, b, horpow, verpow)
 % Ellipse(a) creates a Circle with
 % diameter == ceil(2*a)
 %
 % Ellipse(a,b) creates an Ellipse with
 % horizontal axis == ceil(2*a) and vertical axis == ceil(2*b)
-%   
+%
 % Ellipse(a,b,power) generates a superEllipse according to the
 % geometric formula (x./a).^power + (y./b).^power < 1
 %
@@ -23,7 +23,7 @@ function bool = Ellipse(a,b,horpow,verpow)
 % DN 2011-08-31 Output wasn't always of right size (ceil(2*input))
 % DN 2016-08-25 Switched from deprecated nargchk to narginchk
 
-narginchk(1,4);
+narginchk(1, 4);
 
 if nargin < 2
     b = a;
@@ -35,10 +35,10 @@ if nargin < 4
     verpow = horpow;
 end
 
-[x,y]   = meshgrid(linspace(-a,a,ceil(2*a)+2),linspace(-b,b,ceil(2*b)+2));
+[x, y] = meshgrid(linspace(-a, a, ceil(2 * a) + 2), linspace(-b, b, ceil(2 * b) + 2));
 
-bool    = abs(x./a).^horpow + abs(y./b).^verpow  < 1;
+bool = abs(x./a).^horpow + abs(y./b).^verpow < 1;
 
 % return in a tight-fitting matrix
-cropcoords  = CropBlackEdges(bool);
-bool        = bool(cropcoords(3):cropcoords(4),cropcoords(1):cropcoords(2));
+cropcoords = CropBlackEdges(bool);
+bool = bool(cropcoords(3):cropcoords(4), cropcoords(1):cropcoords(2));

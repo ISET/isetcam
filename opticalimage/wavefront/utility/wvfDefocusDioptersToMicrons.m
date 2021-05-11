@@ -1,6 +1,6 @@
-function microns = wvfDefocusDioptersToMicrons(diopters,pupilSizeMM)
+function microns = wvfDefocusDioptersToMicrons(diopters, pupilSizeMM)
 % Convert defocus in diopters to defocus in microns, suitable for adding
-% into the 4th Zernike coefficient 
+% into the 4th Zernike coefficient
 %
 %   microns = wvfDefocusDioptersToMicrons(diopters,pupilSizeMM)
 %
@@ -45,6 +45,6 @@ function microns = wvfDefocusDioptersToMicrons(diopters,pupilSizeMM)
 %
 % diopters = (16*sqrt(3))*microns/(pupilSizeMM^2)
 
-microns = diopters*(pupilSizeMM^2)/(16*sqrt(3));
+microns = diopters * (pupilSizeMM^2) / (16 * sqrt(3));
 
 end

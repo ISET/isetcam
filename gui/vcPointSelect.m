@@ -1,7 +1,7 @@
-function [pointLoc,pt] = vcPointSelect(obj,nPoints,msg)
+function [pointLoc, pt] = vcPointSelect(obj, nPoints, msg)
 % Deprecated:  Use iePointSelect
 %
-%   Select point locations from an ISET window. 
+%   Select point locations from an ISET window.
 %
 % Synopsis
 %   [pointLoc, pt] = vcPointSelect(obj,[nPoints = 1],[msg])
@@ -22,7 +22,7 @@ function [pointLoc,pt] = vcPointSelect(obj,nPoints,msg)
 % Text below Needs a re-write ... this is how it used to work.
 %
 %  If nPoints is not specified, then nPoints = 1 is assumed.  In that case,
-%  a single right click is all that is required. 
+%  a single right click is all that is required.
 %
 %  In general, the number of points is checked and a message is printed if
 %  it is incorrect.  But the pointLoc values are still returned.
@@ -50,7 +50,7 @@ end
 
 if ieNotDefined('obj'), error('You must define an object (isa,oi,scene ...)'); end
 
-[app,appAxis] = ieAppGet(obj);
+[app, appAxis] = ieAppGet(obj);
 
 % if isempty(app) || ~isvalid(app)
 %     error('No window open f
@@ -59,22 +59,23 @@ if ieNotDefined('obj'), error('You must define an object (isa,oi,scene ...)'); e
 app.txtMessage.Text = msg;
 
 pt = drawpoint(appAxis);
-x = round(pt.Position(2)); y = round(pt.Position(1));
+x = round(pt.Position(2));
+y = round(pt.Position(1));
 
 app.txtMessage.Text = '';
 
 if length(x) < nPoints
     pointLoc = [];
-    warning('ISET:vcPointSelect1','Returning only %.0f points',length(x));
+    warning('ISET:vcPointSelect1', 'Returning only %.0f points', length(x));
     list = (1:length(x));
-elseif length(x) > (nPoints) 
-    warning('ISET:vcPointSelect2','Returning first of %.0f points',nPoints);
+elseif length(x) > (nPoints)
+    warning('ISET:vcPointSelect2', 'Returning first of %.0f points', nPoints);
     list = (1:nPoints);
 else
     list = (1:nPoints);
 end
 
-pointLoc(:,1) = y(list);
-pointLoc(:,2) = x(list);
+pointLoc(:, 1) = y(list);
+pointLoc(:, 2) = x(list);
 
 end

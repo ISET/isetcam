@@ -1,4 +1,4 @@
-function dimensions = PhotoreceptorDimensions(receptorTypes,whichDimension,species,source)
+function dimensions = PhotoreceptorDimensions(receptorTypes, whichDimension, species, source)
 % dimensions = PhotoreceptorDimensions(receptorTypes,whichDimension,species,source)
 %
 % Return estimates of photoreceptor dimensions.
@@ -55,9 +55,9 @@ end
 
 % Fill in dimensions according to specified source
 if (iscell(receptorTypes))
-    dimensions = zeros(length(receptorTypes),1);
+    dimensions = zeros(length(receptorTypes), 1);
 else
-    dimensions = zeros(1,1);
+    dimensions = zeros(1, 1);
 end
 for i = 1:length(dimensions)
     if (iscell(receptorTypes))
@@ -82,199 +82,199 @@ for i = 1:length(dimensions)
                     dimensions(i) = 2;
                 otherwise
                     error('Unsupported dimension requested');
-            end 
+            end
         case {'Webvision'}
             % http://webvision.med.utah.edu
             switch (whichDimension)
                 case 'ISdiam'
                     switch (type)
-                        % http://webvision.med.utah.edu/book/part-ii-anatomy-and-physiology-of-the-retina/photoreceptors/
-                        % Attributed to Helga Kolb
-                        case {'FovealLCone', 'FovealMCone' 'FovealSCone'}
+                            % http://webvision.med.utah.edu/book/part-ii-anatomy-and-physiology-of-the-retina/photoreceptors/
+                            % Attributed to Helga Kolb
+                        case {'FovealLCone', 'FovealMCone', 'FovealSCone'}
                             dimensions(i) = 1.5;
-                        case {'LCone', 'MCone' 'SCone'}
+                        case {'LCone', 'MCone', 'SCone'}
                             dimensions(i) = 6;
                         case {'Rod'}
                             dimensions(i) = 2;
                         otherwise,
-                            error(sprintf('Unsupported receptor type %s/%s for %s estimates in %s',...
-                                type,whichDimension,source,species));
+                            error(sprintf('Unsupported receptor type %s/%s for %s estimates in %s', ...
+                                    type, whichDimension, source, species));
+                            end
+                        otherwise
+                            error('Unsupported dimension requested');
                     end
-                otherwise
-                    error('Unsupported dimension requested');
-            end
-        case ('PennDog')
-            % Numbers we use for dog eyes at Penn.  Got these from
-            % Gus Aguirre.  See emails sent about 12/5/07.
-            switch (species)
-                case {'Dog'}
-                    switch (whichDimension)
-                        case 'OSlength',
-                            switch (type)
-                                case {'LCone', 'SCone'}
-                                    dimensions(i) = 13;
-                                case {'Rod'}
-                                    dimensions(i) = 13.5;
-                                otherwise,
-                                    error(sprintf('Unsupported receptor type %s/%s for %s estimates in %s',...
-                                        type,whichDimension,source,species));
-                            end
-                        case 'ISdiam'
-                            switch (type)
-                                case {'LCone', 'SCone'}
-                                    dimensions(i) = 2;
-                                case {'Rod'}
-                                    dimensions(i) = 2;
-                                otherwise,
-                                    error(sprintf('Unsupported receptor type %s/%s for %s estimates in %s',...
-                                        type,whichDimension,source,species));
-                            end
-                        case 'OSdiam'
-                            switch (type)
-                                case {'LCone', 'SCone'}
-                                    dimensions(i) = 1.25;
-                                case {'Rod'}
-                                    dimensions(i) = 1;
-                                otherwise,
-                                    error(sprintf('Unsupported receptor type %s/%s for %s estimates in %s',...
-                                        type,whichDimension,source,species));
-                            end
-                        otherwise,
-                            error(sprintf('Unsupported dimension %s requested',whichDimension));
-                    end
-                otherwise,
-                    error(sprintf('%s estimates not available for species %s',source,species));
-            end
-     
-        case ('Rodieck')
-            % From Rodieck's "standard observer", Appendix B
-            % in The First Steps of Seeing.
-            switch (species)
-                case {'Human'}
-                    switch (whichDimension)
-                        case 'OSlength',
-                            switch (type)
-                                case {'FovealLCone', 'FovealMCone', 'FovealSCone'}
-                                    dimensions(i) = 33;
-                                case {'Rod'}
-                                    dimensions(i) = 31.2;
-                                otherwise,
-                                    error(sprintf('Unsupported receptor type %s/%s for %s estimates in %s',...
-                                        type,whichDimension,source,species));
-                            end
-                        case 'ISdiam'
-                            switch (type)
-                                case {'FovealLCone', 'FovealMCone', 'FovealSCone'}
-                                    dimensions(i) = 2.3;
-                                case {'Rod'}
-                                    dimensions(i) = 2.22;
-                                otherwise,
-                                    error(sprintf('Unsupported receptor type %s/%s for %s estimates in %s',...
-                                        type,whichDimension,source,species));
-                            end
-                        otherwise,
-                            error(sprintf('Unsupported dimension %s requested',whichDimension));
-                    end
-                otherwise,
-                    error(sprintf('%s estimates not available for species %s',source,species));
-            end
+                case ('PennDog')
+                    % Numbers we use for dog eyes at Penn.  Got these from
+                    % Gus Aguirre.  See emails sent about 12/5/07.
+                    switch (species)
+                        case {'Dog'}
+                            switch (whichDimension)
+                                case 'OSlength',
+                                    switch (type)
+                                        case {'LCone', 'SCone'}
+                                            dimensions(i) = 13;
+                                        case {'Rod'}
+                                            dimensions(i) = 13.5;
+                                        otherwise,
+                                            error(sprintf('Unsupported receptor type %s/%s for %s estimates in %s', ...
+                                                    type, whichDimension, source, species));
+                                            end
+                                        case 'ISdiam'
+                                            switch (type)
+                                                case {'LCone', 'SCone'}
+                                                    dimensions(i) = 2;
+                                                case {'Rod'}
+                                                    dimensions(i) = 2;
+                                                otherwise,
+                                                    error(sprintf('Unsupported receptor type %s/%s for %s estimates in %s', ...
+                                                            type, whichDimension, source, species));
+                                                    end
+                                                case 'OSdiam'
+                                                    switch (type)
+                                                        case {'LCone', 'SCone'}
+                                                            dimensions(i) = 1.25;
+                                                        case {'Rod'}
+                                                            dimensions(i) = 1;
+                                                        otherwise,
+                                                            error(sprintf('Unsupported receptor type %s/%s for %s estimates in %s', ...
+                                                                    type, whichDimension, source, species));
+                                                            end
+                                                        otherwise,
+                                                            error(sprintf('Unsupported dimension %s requested', whichDimension));
+                                                    end
+                                                otherwise,
+                                                    error(sprintf('%s estimates not available for species %s', source, species));
+                                                    end
 
-        case {'CVRL'}
-            % These numbers are my encapsulations of CVRL's summary of a variety of data.
-            % See CVRL summary text at:
-            %   http://cvrl.ioo.ucl.ac.uk/database/text/intros/introlength.htm.
-            switch (species)
-                case {'Human'}
-                    switch (whichDimension)
-                        case 'OSlength',
-                            switch (type)
-                                case {'FovealLCone', 'FovealMCone'}
-                                    dimensions(i) = 35.5;
-                                case {'FovealSCone'}
-                                    dimensions(i) = 35.5*0.95;
-                                case {'LCone', 'MCone'}
-                                    dimensions(i) = 18;
-                                case {'SCone'}
-                                    dimensions(i) = 18*0.82;
-                                otherwise,
-                                    error(sprintf('Unsupported receptor type %s/%s for %s estimates in %s',...
-                                        type,whichDimension,source,species));
-                            end
-                        otherwise,
-                            error(sprintf('Unsupported dimension %s requested',whichDimension));
-                    end
-                otherwise,
-                    error(sprintf('%s estimates not available for species %s',source,species));
-            end
-       
-        case {'Hendrickson'}
-            % From Hendrickson and Drucker, numbers provided at CVRL database:
-            % http://cvrl.ioo.ucl.ac.uk/database/text/outseg/length.htm.  40 um
-            % is the number provided for mid-peripheral rods, 40-45 is cited for
-            % parafoveal rods.  This routines returns 40.
-            switch (species)
-                case {'Human'}
-                    switch (whichDimension)
-                        case 'OSlength',
-                            switch (type)
-                                case {'Rod'}
-                                    dimensions(i) = 40;
-                                otherwise,
-                                    error(sprintf('Unsupported receptor type %s/%s for %s estimates in %s',...
-                                        type,whichDimension,source,species));
-                            end
-                        otherwise,
-                            error(sprintf('Unsupported dimension %s requested',whichDimension));
-                    end
-                otherwise,
-                    error(sprintf('%s estimates not available for species %s',source,species));
-            end
+                                                case ('Rodieck')
+                                                    % From Rodieck's "standard observer", Appendix B
+                                                    % in The First Steps of Seeing.
+                                                    switch (species)
+                                                        case {'Human'}
+                                                            switch (whichDimension)
+                                                                case 'OSlength',
+                                                                    switch (type)
+                                                                        case {'FovealLCone', 'FovealMCone', 'FovealSCone'}
+                                                                            dimensions(i) = 33;
+                                                                        case {'Rod'}
+                                                                            dimensions(i) = 31.2;
+                                                                        otherwise,
+                                                                            error(sprintf('Unsupported receptor type %s/%s for %s estimates in %s', ...
+                                                                                    type, whichDimension, source, species));
+                                                                            end
+                                                                        case 'ISdiam'
+                                                                            switch (type)
+                                                                                case {'FovealLCone', 'FovealMCone', 'FovealSCone'}
+                                                                                    dimensions(i) = 2.3;
+                                                                                case {'Rod'}
+                                                                                    dimensions(i) = 2.22;
+                                                                                otherwise,
+                                                                                    error(sprintf('Unsupported receptor type %s/%s for %s estimates in %s', ...
+                                                                                            type, whichDimension, source, species));
+                                                                                    end
+                                                                                otherwise,
+                                                                                    error(sprintf('Unsupported dimension %s requested', whichDimension));
+                                                                            end
+                                                                        otherwise,
+                                                                            error(sprintf('%s estimates not available for species %s', source, species));
+                                                                            end
 
-        case {'SterlingLab'}
-            % These are values that Lu Yin provided, based on unpublished
-            % measurements used in the Sterling lab.
-            switch (species)
-                case {'GuineaPig'}
-                    switch (whichDimension)
-                        case 'OSdiam',
-                            switch (type)
-                                case {'LCone', 'MCone', 'SCone'}
-                                    dimensions(i) = 2;
-                                case 'Rod'
-                                    dimensions(i) = 2;
-                                otherwise,
-                                    error(sprintf('Unsupported receptor type %s/%s for %s estimates in %s',...
-                                        type,whichDimension,source,species));
-                            end
-                        case 'ISdiam',
-                            switch (type)
-                                case {'LCone', 'MCone', 'SCone'}
-                                    dimensions(i) = 2.8;
-                                case 'Rod'
-                                    dimensions(i) = 2.4;
-                                otherwise,
-                                    error(sprintf('Unsupported receptor type %s/%s for %s estimates in %s',...
-                                        type,whichDimension,source,species));
-                            end
-                        case 'OSlength',
-                            switch (type)
-                                case {'LCone', 'MCone', 'SCone'}
-                                    dimensions(i) = 8;
-                                case 'Rod'
-                                    dimensions(i) = 16.2;
-                                otherwise,
-                                    error(sprintf('Unsupported receptor type %s/%s for %s estimates in %s',...
-                                        type,whichDimension,source,species));
-                            end
-                        otherwise,
-                            error(sprintf('Unsupported dimension %s requested',whichDimension));
-                    end
-                otherwise,
-                    error(sprintf('%s estimates not available for species %s',source,species));
-            end
+                                                                        case {'CVRL'}
+                                                                            % These numbers are my encapsulations of CVRL's summary of a variety of data.
+                                                                            % See CVRL summary text at:
+                                                                            %   http://cvrl.ioo.ucl.ac.uk/database/text/intros/introlength.htm.
+                                                                            switch (species)
+                                                                                case {'Human'}
+                                                                                    switch (whichDimension)
+                                                                                        case 'OSlength',
+                                                                                            switch (type)
+                                                                                                case {'FovealLCone', 'FovealMCone'}
+                                                                                                    dimensions(i) = 35.5;
+                                                                                                case {'FovealSCone'}
+                                                                                                    dimensions(i) = 35.5 * 0.95;
+                                                                                                case {'LCone', 'MCone'}
+                                                                                                    dimensions(i) = 18;
+                                                                                                case {'SCone'}
+                                                                                                    dimensions(i) = 18 * 0.82;
+                                                                                                otherwise,
+                                                                                                    error(sprintf('Unsupported receptor type %s/%s for %s estimates in %s', ...
+                                                                                                            type, whichDimension, source, species));
+                                                                                                    end
+                                                                                                otherwise,
+                                                                                                    error(sprintf('Unsupported dimension %s requested', whichDimension));
+                                                                                            end
+                                                                                        otherwise,
+                                                                                            error(sprintf('%s estimates not available for species %s', source, species));
+                                                                                            end
 
-            % Nope!
-        otherwise
-            error(sprintf('Unknown source %s for photoreceptor dimension estimates',source));
-    end
-end
+                                                                                        case {'Hendrickson'}
+                                                                                            % From Hendrickson and Drucker, numbers provided at CVRL database:
+                                                                                            % http://cvrl.ioo.ucl.ac.uk/database/text/outseg/length.htm.  40 um
+                                                                                            % is the number provided for mid-peripheral rods, 40-45 is cited for
+                                                                                            % parafoveal rods.  This routines returns 40.
+                                                                                            switch (species)
+                                                                                                case {'Human'}
+                                                                                                    switch (whichDimension)
+                                                                                                        case 'OSlength',
+                                                                                                            switch (type)
+                                                                                                                case {'Rod'}
+                                                                                                                    dimensions(i) = 40;
+                                                                                                                otherwise,
+                                                                                                                    error(sprintf('Unsupported receptor type %s/%s for %s estimates in %s', ...
+                                                                                                                            type, whichDimension, source, species));
+                                                                                                                    end
+                                                                                                                otherwise,
+                                                                                                                    error(sprintf('Unsupported dimension %s requested', whichDimension));
+                                                                                                            end
+                                                                                                        otherwise,
+                                                                                                            error(sprintf('%s estimates not available for species %s', source, species));
+                                                                                                            end
+
+                                                                                                        case {'SterlingLab'}
+                                                                                                            % These are values that Lu Yin provided, based on unpublished
+                                                                                                            % measurements used in the Sterling lab.
+                                                                                                            switch (species)
+                                                                                                                case {'GuineaPig'}
+                                                                                                                    switch (whichDimension)
+                                                                                                                        case 'OSdiam',
+                                                                                                                            switch (type)
+                                                                                                                                case {'LCone', 'MCone', 'SCone'}
+                                                                                                                                    dimensions(i) = 2;
+                                                                                                                                case 'Rod'
+                                                                                                                                    dimensions(i) = 2;
+                                                                                                                                otherwise,
+                                                                                                                                    error(sprintf('Unsupported receptor type %s/%s for %s estimates in %s', ...
+                                                                                                                                            type, whichDimension, source, species));
+                                                                                                                                    end
+                                                                                                                                case 'ISdiam',
+                                                                                                                                    switch (type)
+                                                                                                                                        case {'LCone', 'MCone', 'SCone'}
+                                                                                                                                            dimensions(i) = 2.8;
+                                                                                                                                        case 'Rod'
+                                                                                                                                            dimensions(i) = 2.4;
+                                                                                                                                        otherwise,
+                                                                                                                                            error(sprintf('Unsupported receptor type %s/%s for %s estimates in %s', ...
+                                                                                                                                                    type, whichDimension, source, species));
+                                                                                                                                            end
+                                                                                                                                        case 'OSlength',
+                                                                                                                                            switch (type)
+                                                                                                                                                case {'LCone', 'MCone', 'SCone'}
+                                                                                                                                                    dimensions(i) = 8;
+                                                                                                                                                case 'Rod'
+                                                                                                                                                    dimensions(i) = 16.2;
+                                                                                                                                                otherwise,
+                                                                                                                                                    error(sprintf('Unsupported receptor type %s/%s for %s estimates in %s', ...
+                                                                                                                                                            type, whichDimension, source, species));
+                                                                                                                                                    end
+                                                                                                                                                otherwise,
+                                                                                                                                                    error(sprintf('Unsupported dimension %s requested', whichDimension));
+                                                                                                                                            end
+                                                                                                                                        otherwise,
+                                                                                                                                            error(sprintf('%s estimates not available for species %s', source, species));
+                                                                                                                                            end
+
+                                                                                                                                            % Nope!
+                                                                                                                                        otherwise
+                                                                                                                                            error(sprintf('Unknown source %s for photoreceptor dimension estimates', source));
+                                                                                                                                            end
+                                                                                                                                    end

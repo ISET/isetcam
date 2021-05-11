@@ -10,33 +10,33 @@
 ieInit
 
 %% Get a local image
-fname  = 'hats.jpg';
-ffname = fullfile(isetRootPath,'data','images','rgb',fname);
-img    = imread(ffname);
+fname = 'hats.jpg';
+ffname = fullfile(isetRootPath, 'data', 'images', 'rgb', fname);
+img = imread(ffname);
 
 %% Make a scatter plot image intensity of the r and g channels
-r = img(:,:,1);
-g = img(:,:,2);
+r = img(:, :, 1);
+g = img(:, :, 2);
 X = double([r(:), g(:)]);
-[N, ~,mid] = histcn(X);
+[N, ~, mid] = histcn(X);
 
 vcNewGraphWin;
-imagesc(mid{1:2},N(:,:));
+imagesc(mid{1:2}, N(:, :));
 axis xy; colormap(hot); colorbar
 xlabel('Red channel'); ylabel('Green channel')
-title(sprintf('%s: Channel image histogram',fname))
+title(sprintf('%s: Channel image histogram', fname))
 
 %% RB
-r = img(:,:,1);
-b = img(:,:,3);
+r = img(:, :, 1);
+b = img(:, :, 3);
 X = double([r(:), b(:)]);
 [N, ~, mid] = histcn(X);
 
 vcNewGraphWin;
-imagesc(mid{1:2},N(:,:));
+imagesc(mid{1:2}, N(:, :));
 axis xy; colormap(hot); colorbar
 xlabel('Red channel'); ylabel('Blue channel')
-title(sprintf('%s: Channel image histogram',fname))
+title(sprintf('%s: Channel image histogram', fname))
 
 %% Now call ieHistImage, which relies on this function
 

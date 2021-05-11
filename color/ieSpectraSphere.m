@@ -1,5 +1,5 @@
-function [spectraS, XYZ, XYZ0, sBasis] = ieSpectraSphere(wave,spectrumE,N, sBasis, sFactor)
-%Calculate spectra that produce XYZ in a sphere around spectrumE 
+function [spectraS, XYZ, XYZ0, sBasis] = ieSpectraSphere(wave, spectrumE, N, sBasis, sFactor)
+%Calculate spectra that produce XYZ in a sphere around spectrumE
 %
 %  [spectraS, XYZ, XYZ0, sBasis] = ieSpectraSphere(wave,spectrumE,N, sBasis, sFactor)
 %
@@ -8,7 +8,7 @@ function [spectraS, XYZ, XYZ0, sBasis] = ieSpectraSphere(wave,spectrumE,N, sBasi
 % spectrumE: The spectral radiance (E) of the start point
 % N:         Number of samples
 % sBasis:    Spectral basis used for generating the differences
-% sFactor:   Fractional difference between spectrumE and others 
+% sFactor:   Fractional difference between spectrumE and others
 %           (default = 0.05)
 %
 %Returns
@@ -19,7 +19,7 @@ function [spectraS, XYZ, XYZ0, sBasis] = ieSpectraSphere(wave,spectrumE,N, sBasi
 %            differences
 %
 % The spectraS, which are also in energy units, are about 5% modulations of
-% the spectrumE. 
+% the spectrumE.
 %
 % Use Energy2Quanta and Quanta2Energy to convert between energy and
 % photons. Scenes always store their data in photons.
@@ -36,54 +36,51 @@ function [spectraS, XYZ, XYZ0, sBasis] = ieSpectraSphere(wave,spectrumE,N, sBasi
 %
 % Copyright Imageval 2012
 
-
 %% Set up parameters
 if ieNotDefined('wave'), wave = 400:10:700; end
 if ieNotDefined('spectrumE'), spectrumE = zeros(size(wave)); end
-if ieNotDefined('N'), N = 8; end   % Matches default on sphere
-if ieNotDefined('sBasis'), sBasis = ieReadSpectra('cieDaylightBasis',wave); 
+if ieNotDefined('N'), N = 8; end % Matches default on sphere
+if ieNotDefined('sBasis'), sBasis = ieReadSpectra('cieDaylightBasis', wave);
 elseif ischar(sBasis)
     % If it is a file name, read it. Otherwise, the user sent in the matrix
     % with columns as basis functions
-    sBasis = ieReadSpectra(sBasis,wave);
+    sBasis = ieReadSpectra(sBasis, wave);
 end
 if ieNotDefined('sFactor'), sFactor = 0.05; end
 
-cieXYZ = ieReadSpectra('xyz',wave');
+cieXYZ = ieReadSpectra('xyz', wave');
 
 % Force to column vector.
 spectrumE = spectrumE(:);
 
 %% Make a sphere with sample points are (N+1)*(N+1)
 
-[X Y Z] = sphere(N);
+[X, Y, Z] = sphere(N);
 % surf(X,Y,Z); colormap(hot)
 
 % These will be the change in XYZ around the center
-dXYZ = [X(:),Y(:),Z(:)];
+dXYZ = [X(:), Y(:), Z(:)];
 
 %% Calculate the spectra
 
-% Now, we the find spectral weights on sBasis such that 
+% Now, we the find spectral weights on sBasis such that
 %  dXYZ = cieXYZ'*sBasis*w
-%  w = inv(cieXYZ'*sBasis)*dXYZ'; 
+%  w = inv(cieXYZ'*sBasis)*dXYZ';
 % Or really, the spectra that produce these dXYZ.  These spectra will have
 % negative values.  But we will add in the spectrumE (after scaling
 % for about a 5% change).
-spectraS = sBasis*((cieXYZ'*sBasis)\dXYZ'); 
-spectraS = spectraS * sFactor * norm(spectrumE)/norm(spectraS(:,1));
-spectraS = spectraS + repmat(spectrumE,1,size(spectraS,2));
+spectraS = sBasis * ((cieXYZ' * sBasis) \ dXYZ');
+spectraS = spectraS * sFactor * norm(spectrumE) / norm(spectraS(:, 1));
+spectraS = spectraS + repmat(spectrumE, 1, size(spectraS, 2));
 % vcNewGraphWin; plot(wave,spectraS);
 
 if nargout > 1
-    XYZ = ieXYZFromEnergy(spectraS',wave);
-    XYZ0 = ieXYZFromEnergy(spectrumE',wave);
+    XYZ = ieXYZFromEnergy(spectraS', wave);
+    XYZ0 = ieXYZFromEnergy(spectrumE', wave);
 end
 
-% vcNewGraphWin; 
+% vcNewGraphWin;
 % XYZ = ieXYZFromEnergy(spectraS',wave)
 % plot3(XYZ(:,1),XYZ(:,2),XYZ(:,3),'o'); axis equal
 
 return
-
-

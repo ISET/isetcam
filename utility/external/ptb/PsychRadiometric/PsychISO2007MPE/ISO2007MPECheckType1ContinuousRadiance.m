@@ -1,4 +1,4 @@
-function [IsOverLimit,ISO2007MPEStruct] = ISO2007MPECheckType1ContinuousRadiance(S_in,radiancein_WattsPerSrM2,stimulusDurationSecs,stimulusAreaDegrees2,eyeLengthMm)
+function [IsOverLimit, ISO2007MPEStruct] = ISO2007MPECheckType1ContinuousRadiance(S_in, radiancein_WattsPerSrM2, stimulusDurationSecs, stimulusAreaDegrees2, eyeLengthMm)
 % [IsOverLimit,ISO2007MPEStruct] = ISO2007MPECheckType1ContinuousRadiance(S_in,radiancein_WattsPerSrM2,stimulusDurationSecs,stimulusAreaDegrees2,eyeLengthMm)
 %
 % Run all the checks that apply to a radiance measurement for the ISO 2007 MPE standard, for a Type 1 instrument and continuous exposure.
@@ -27,63 +27,63 @@ end
 %
 % Easiest to cover the whole range covered by the standard,
 % that way we don't have to think.
-S = [200 1 1301];
+S = [200, 1, 1301];
 S = WlsToS((200:2600)');
 
 %% Read in the spectral functions used by the standard
-[~,weightingR,weightingA,weightingS,wls_R,rawWeightingR,wls_A,rawWeightingA,wls_S,rawWeightingS] = ISO2007MPEGetWeighings(S);
+[~, weightingR, weightingA, weightingS, wls_R, rawWeightingR, wls_A, rawWeightingA, wls_S, rawWeightingS] = ISO2007MPEGetWeighings(S);
 
 %% Spline the input spectrum
-radiance_WattsPerSrM2 = SplineSpd(S_in,radiancein_WattsPerSrM2,S);
+radiance_WattsPerSrM2 = SplineSpd(S_in, radiancein_WattsPerSrM2, S);
 
 %% Initialize limit flag
 IsOverLimit = 0;
 
 %% Corenal irradiance weighted UV limit
-[ISO2007MPEStruct.cornealUVWeightedVal_UWattsPerCm2,ISO2007MPEStruct.cornealUVWeightedLimit_UWattsPerCm2] = ISO2007MPEComputeType1ContinuousCornealUVWeightedValue(...
-    S,radiance_WattsPerSrM2,weightingS,stimulusDurationSecs,stimulusAreaDegrees2);
+[ISO2007MPEStruct.cornealUVWeightedVal_UWattsPerCm2, ISO2007MPEStruct.cornealUVWeightedLimit_UWattsPerCm2] = ISO2007MPEComputeType1ContinuousCornealUVWeightedValue( ...
+    S, radiance_WattsPerSrM2, weightingS, stimulusDurationSecs, stimulusAreaDegrees2);
 if (ISO2007MPEStruct.cornealUVWeightedVal_UWattsPerCm2 >= ISO2007MPEStruct.cornealUVWeightedLimit_UWattsPerCm2)
     IsOverLimit = 1;
 end
 
 %% Corenal irradiance uweighted UV limit
-[ISO2007MPEStruct.cornealUVUnweightedVal_UWattsPerCm2,ISO2007MPEStruct.cornealUVUnweightedLimit_UWattsPerCm2] = ISO2007MPEComputeType1ContinuousCornealUVUnweightedValue(...
-S,radiance_WattsPerSrM2,stimulusDurationSecs,stimulusAreaDegrees2);
+[ISO2007MPEStruct.cornealUVUnweightedVal_UWattsPerCm2, ISO2007MPEStruct.cornealUVUnweightedLimit_UWattsPerCm2] = ISO2007MPEComputeType1ContinuousCornealUVUnweightedValue( ...
+    S, radiance_WattsPerSrM2, stimulusDurationSecs, stimulusAreaDegrees2);
 if (ISO2007MPEStruct.cornealUVUnweightedVal_UWattsPerCm2 >= ISO2007MPEStruct.cornealUVUnweightedLimit_UWattsPerCm2)
     IsOverLimit = 1;
 end
 
 %% Retinal irradiance weighted aphakic limit
-[ISO2007MPEStruct.retIrradiancePCWeightedVal_UWattsPerCm2,ISO2007MPEStruct.retIrradiancePCWeightedLimit_UWattsPerCm2] = ISO2007MPEComputeType1ContinuousRetIrradiancePCWeightedValue(...
-    S,radiance_WattsPerSrM2,weightingA,stimulusDurationSecs,eyeLengthMm);
+[ISO2007MPEStruct.retIrradiancePCWeightedVal_UWattsPerCm2, ISO2007MPEStruct.retIrradiancePCWeightedLimit_UWattsPerCm2] = ISO2007MPEComputeType1ContinuousRetIrradiancePCWeightedValue( ...
+    S, radiance_WattsPerSrM2, weightingA, stimulusDurationSecs, eyeLengthMm);
 if (ISO2007MPEStruct.retIrradiancePCWeightedVal_UWattsPerCm2 >= ISO2007MPEStruct.retIrradiancePCWeightedLimit_UWattsPerCm2)
     IsOverLimit = 1;
 end
 
 %% Radiance weighted aphakic limit
-[ISO2007MPEStruct.radiancePCWeightedVal_UWattsPerSrCm2,ISO2007MPEStruct.radiancePCWeightedLimit_UWattsPerSrCm2] = ISO2007MPEComputeType1ContinuousRadiancePCWeightedValue(...
-    S,radiance_WattsPerSrM2,weightingA,stimulusDurationSecs);
+[ISO2007MPEStruct.radiancePCWeightedVal_UWattsPerSrCm2, ISO2007MPEStruct.radiancePCWeightedLimit_UWattsPerSrCm2] = ISO2007MPEComputeType1ContinuousRadiancePCWeightedValue( ...
+    S, radiance_WattsPerSrM2, weightingA, stimulusDurationSecs);
 if (ISO2007MPEStruct.radiancePCWeightedVal_UWattsPerSrCm2 >= ISO2007MPEStruct.radiancePCWeightedLimit_UWattsPerSrCm2)
     IsOverLimit = 1;
 end
 
 %% Corneal irradiance unweighted IR limit
-[ISO2007MPEStruct.cornealIRUnweightedVal_UWattsPerCm2,ISO2007MPEStruct.cornealIRUnweightedLimit_UWattsPerCm2] = ISO2007MPEComputeType1ContinuousCornealIRUnweightedValue(...
-    S,radiance_WattsPerSrM2,stimulusDurationSecs,stimulusAreaDegrees2);
+[ISO2007MPEStruct.cornealIRUnweightedVal_UWattsPerCm2, ISO2007MPEStruct.cornealIRUnweightedLimit_UWattsPerCm2] = ISO2007MPEComputeType1ContinuousCornealIRUnweightedValue( ...
+    S, radiance_WattsPerSrM2, stimulusDurationSecs, stimulusAreaDegrees2);
 if (ISO2007MPEStruct.cornealIRUnweightedVal_UWattsPerCm2 >= ISO2007MPEStruct.cornealIRUnweightedLimit_UWattsPerCm2)
     IsOverLimit = 1;
 end
 
 %% Retinal irradiance weighted thermal limit
-[ISO2007MPEStruct.retIrradianceTHWeightedVal_UWattsPerCm2,ISO2007MPEStruct.retIrradianceTHWeightedLimit_UWattsPerCm2] = ISO2007MPEComputeType1ContinuousRetIrradianceTHWeightedValue(...
-    S,radiance_WattsPerSrM2,weightingR,stimulusDurationSecs,eyeLengthMm);
+[ISO2007MPEStruct.retIrradianceTHWeightedVal_UWattsPerCm2, ISO2007MPEStruct.retIrradianceTHWeightedLimit_UWattsPerCm2] = ISO2007MPEComputeType1ContinuousRetIrradianceTHWeightedValue( ...
+    S, radiance_WattsPerSrM2, weightingR, stimulusDurationSecs, eyeLengthMm);
 if (ISO2007MPEStruct.retIrradianceTHWeightedVal_UWattsPerCm2 >= ISO2007MPEStruct.retIrradianceTHWeightedLimit_UWattsPerCm2)
     IsOverLimit = 1;
 end
 
 %% Radiance weighted thermal limit
-[ISO2007MPEStruct.radianceTHWeightedVal_UWattsPerSrCm2,ISO2007MPEStruct.radianceTHWeightedLimit_UWattsPerSrCm2] = ISO2007MPEComputeType1ContinuousRadianceTHWeightedValue(...
-    S,radiance_WattsPerSrM2,weightingR,stimulusDurationSecs);
+[ISO2007MPEStruct.radianceTHWeightedVal_UWattsPerSrCm2, ISO2007MPEStruct.radianceTHWeightedLimit_UWattsPerSrCm2] = ISO2007MPEComputeType1ContinuousRadianceTHWeightedValue( ...
+    S, radiance_WattsPerSrM2, weightingR, stimulusDurationSecs);
 if (ISO2007MPEStruct.radianceTHWeightedVal_UWattsPerSrCm2 >= ISO2007MPEStruct.radianceTHWeightedLimit_UWattsPerSrCm2)
     IsOverLimit = 1;
 end

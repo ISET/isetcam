@@ -1,4 +1,4 @@
-function Iout = rtOTF(scene,oi)
+function Iout = rtOTF(scene, oi)
 %Optical transfer function computation using ray tracing data
 %
 %    Iout = rtOTF(scene,oi)
@@ -15,7 +15,7 @@ function Iout = rtOTF(scene,oi)
 % The algorithm is
 %
 %   (a) Extract the irradiance image at a single wavelength
-%   (b) Extract data from a block 
+%   (b) Extract data from a block
 %        (number of blocks per field height sample can be set)
 %   (c) Pad the block data
 %   (d) Retrieve the relevant optics PSF and interpolate it to match the block data
@@ -39,7 +39,7 @@ function Iout = rtOTF(scene,oi)
 %     - For each block
 %        -- upsample the block to the PSF resolution
 %        -- find the distance from each point to each PSF
-%        -- output the distance-weighted sum of the PSF convolutions 
+%        -- output the distance-weighted sum of the PSF convolutions
 %        -- downsample the result to the irradiance resolution
 %
 %  This uses a small number of PSFs to calculate a point-by-point
@@ -55,7 +55,7 @@ function Iout = rtOTF(scene,oi)
 %   and similarly colO.
 %
 % The block data we filter have dimensions blockSamples
-% The padded irradiance block data have dimensions 
+% The padded irradiance block data have dimensions
 %   rowF = blockSamples + 2*blockPading
 %
 % Never let the data block size (in microns) limit the extent of the PSF.
@@ -65,94 +65,102 @@ function Iout = rtOTF(scene,oi)
 if ieNotDefined('scene'), error('Scene undefined.'); end
 if ieNotDefined('oi'), error('Optical image undefined.'); end
 
-rows = sceneGet(scene,'rows');  cols = sceneGet(scene,'cols');
-wavelength = sceneGet(scene,'wavelength'); nWave = sceneGet(scene,'nWave');
-optics = oiGet(oi,'optics');
+rows = sceneGet(scene, 'rows');
+cols = sceneGet(scene, 'cols');
+wavelength = sceneGet(scene, 'wavelength');
+nWave = sceneGet(scene, 'nWave');
+optics = oiGet(oi, 'optics');
 
 % We prefer a block size so that we have at least s blocks per field
 % height sample, the #samples is a power of 2, and we have an odd number of
 % section samples. Is this possible?
-stepsFH = opticsGet(optics,'rtBlocksPerFieldHeight');
-[nBlocks, blockSamples, irradPadding] = rtChooseBlockSize(scene,oi,optics,stepsFH);
-blockPadding = blockSamples/2;  % Use this variable to replace secPadding
-rowP = nBlocks*blockSamples(1);
-colP = nBlocks*blockSamples(2);
+stepsFH = opticsGet(optics, 'rtBlocksPerFieldHeight');
+[nBlocks, blockSamples, irradPadding] = rtChooseBlockSize(scene, oi, optics, stepsFH);
+blockPadding = blockSamples / 2; % Use this variable to replace secPadding
+rowP = nBlocks * blockSamples(1);
+colP = nBlocks * blockSamples(2);
 
 % This is the size of the final, output image.
-rowO = rowP + 2*blockPadding(1);
-colO = colP + 2*blockPadding(2);
-Iout = zeros(rowO,colO,nWave);
+rowO = rowP + 2 * blockPadding(1);
+colO = colP + 2 * blockPadding(2);
+Iout = zeros(rowO, colO, nWave);
 
 % Find the spatial support for the PSF and for the filtered block in mm
-% units. 
+% units.
 % TODO:
 % Never let the data block size (in microns) limit the extent of the PSF.
 % Always choose a rowF,colF value that allows the entire PSF to be
 % captured.
 [filteredBlockX, filteredBlockY, mmPerRow, mmPerCol] = ...
-    rtFilteredBlockSupport(oi,blockSamples,blockPadding);
+    rtFilteredBlockSupport(oi, blockSamples, blockPadding);
 rowF = length(filteredBlockY);
 colF = length(filteredBlockX);
 
 % Find image center needed to calculate the field height and field angle.
-imageCenter = [floor(rowP/2) + 1, floor(colP/2) + 1];
+imageCenter = [floor(rowP / 2) + 1, floor(colP / 2) + 1];
 showBar = ieSessionGet('waitbar');
 
-if showBar, wbar = waitbar(0,'Ray Trace OTF'); end
+if showBar, wbar = waitbar(0, 'Ray Trace OTF'); end
 
 tic
 ii = 0;
 for ww = 1:nWave
-    irradiance = oiGet(oi,'photons',wavelength(ww));
-    irradianceP = padarray(irradiance,irradPadding);
+    irradiance = oiGet(oi, 'photons', wavelength(ww));
+    irradianceP = padarray(irradiance, irradPadding);
     str = sprintf('Ray Trace OTF (wave: %.0f)', wavelength(ww));
 
     % Comment out some time
-    figure(1); colormap(gray); imagesc(irradianceP); axis image; axis tight;
+    figure(1);
+    colormap(gray);
+    imagesc(irradianceP);
+    axis image;
+    axis tight;
     r = [0:blockSamples(1):rowP] + 1;
     c = [0:blockSamples(2):colP] + 1;
-    for rr = 1:nBlocks, line([1,colP],[r(rr),r(rr)]); end
-    for cc = 1:nBlocks, line([c(cc),c(cc)], [1,rowP]); end
-    set(gca,'xtick',c,'ytick',r');
+    for rr = 1:nBlocks, line([1, colP], [r(rr), r(rr)]); end
+    for cc = 1:nBlocks, line([c(cc), c(cc)], [1, rowP]); end
+    set(gca, 'xtick', c, 'ytick', r');
 
-    for rBlock=1:nBlocks
+    for rBlock = 1:nBlocks
         for cBlock = 1:nBlocks
-            if showBar, waitbar(ii/(nWave*nBlocks*nBlocks),wbar,str); end
+            if showBar, waitbar(ii/(nWave * nBlocks * nBlocks), wbar, str); end
             ii = ii + 1;
-            [blockData,rList,cList] = rtExtractBlock(irradianceP,blockSamples,rBlock,cBlock);
+            [blockData, rList, cList] = rtExtractBlock(irradianceP, blockSamples, rBlock, cBlock);
             % figure(5); colormap(gray);
             % imagesc(blockData); axis image; axis equal; axis tight
             % max(abs(irradianceP(rList,cList) - blockData))
 
-            d = rtBlockCenter(rBlock,cBlock,blockSamples) - imageCenter;
-            [fieldAngle,fieldHeight] = cart2pol(d(1)*mmPerRow,d(2)*mmPerCol);
+            d = rtBlockCenter(rBlock, cBlock, blockSamples) - imageCenter;
+            [fieldAngle, fieldHeight] = cart2pol(d(1)*mmPerRow, d(2)*mmPerCol);
             fieldAngle = rad2deg(fieldAngle);
             % fieldAngle = 0;
-            
+
             % fprintf('rBlock %.0f cBlock %.0f fieldHeight %.3f (mm) fieldAngle %.0f (deg)\n',...
             %    rBlock,cBlock,fieldHeight,fieldAngle);
-            PSF = rtPSFInterp(optics,...
-                fieldHeight,fieldAngle,wavelength(ww),...
-                filteredBlockX(:)',filteredBlockY(:));
+            PSF = rtPSFInterp(optics, ...
+                fieldHeight, fieldAngle, wavelength(ww), ...
+                filteredBlockX(:)', filteredBlockY(:));
             PSF(isnan(PSF)) = 0;
             % figure; mesh(filteredBlockX(:)',filteredBlockY(:),PSF)
 
             % PSF = fspecial('gaussian',[rowF,colF],(fieldHeight + 1)*(rowF/30));
-            
-            filteredData = padarray(blockData,blockPadding);
+
+            filteredData = padarray(blockData, blockPadding);
             % figure(4); imagesc(filteredData), colormap(gray), axis tight
             % Make sure we are still at unit area
-            k = sum(PSF(:)); 
-            if k > 0, PSF = PSF/k; end
+            k = sum(PSF(:));
+            if k > 0, PSF = PSF / k; end
 
             % If it is worth filtering, do it.  Otherwise, just copy it in.
             if max(PSF(:)) < .98
-                filteredData = conv2(PSF,filteredData,'same');
+                filteredData = conv2(PSF, filteredData, 'same');
             end
 
-            Iout(:,:,ww) = rtInsertBlock(Iout(:,:,ww),filteredData,blockSamples,blockPadding,rBlock,cBlock);
-            figure(6); colormap(gray); imagesc(Iout(:,:,ww));
-            title(sprintf('%.0f',wavelength(ww)));
+            Iout(:, :, ww) = rtInsertBlock(Iout(:, :, ww), filteredData, blockSamples, blockPadding, rBlock, cBlock);
+            figure(6);
+            colormap(gray);
+            imagesc(Iout(:, :, ww));
+            title(sprintf('%.0f', wavelength(ww)));
             pause(0.01);
         end
     end
@@ -165,26 +173,25 @@ if showBar, delete(wbar); end
 return;
 
 %----------------------------------------------------------
-function [blockX, blockY, mmRow, mmCol] = rtFilteredBlockSupport(oi,blockSamples,blockPadding);
+    function [blockX, blockY, mmRow, mmCol] = rtFilteredBlockSupport(oi, blockSamples, blockPadding);
 
-mmRow = oiGet(oi,'hspatialresolution','mm');
-mmCol = oiGet(oi,'wspatialresolution','mm');
+        mmRow = oiGet(oi, 'hspatialresolution', 'mm');
+        mmCol = oiGet(oi, 'wspatialresolution', 'mm');
 
-% This is the size of the filtered section
-rowF = blockSamples(1) + 2*blockPadding(1);
-colF = blockSamples(2) + 2*blockPadding(2);
+        % This is the size of the filtered section
+        rowF = blockSamples(1) + 2 * blockPadding(1);
+        colF = blockSamples(2) + 2 * blockPadding(2);
 
-% Call the middle pixel 0.  The middle pixel is always on the sampling
-% grid.  I am unsure whether the position of the 0 with respect to the
-% sampling grid matters.  But it might shift things.
-blockX = [1:colF]*mmCol;
-blockX = blockX - blockX(floor(colF/2) + 1);
+        % Call the middle pixel 0.  The middle pixel is always on the sampling
+        % grid.  I am unsure whether the position of the 0 with respect to the
+        % sampling grid matters.  But it might shift things.
+        blockX = [1:colF] * mmCol;
+        blockX = blockX - blockX(floor(colF / 2)+1);
 
-blockY = [1:rowF]*mmRow;
-blockY = blockY - blockY(floor(rowF/2) + 1);
+        blockY = [1:rowF] * mmRow;
+        blockY = blockY - blockY(floor(rowF / 2)+1);
 
-blockX =  blockX(:)';
-blockY =  blockY(:);
+        blockX = blockX(:)';
+        blockY = blockY(:);
 
-return;
-
+        return;

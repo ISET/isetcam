@@ -16,12 +16,12 @@ function [sensor] = PolarToSensor(pol)
 % 4/5/02     dhb, ly  New calling interface.
 % 11/6/06    dhb   Only allow one input arguemnt.
 
-[n,m] = size(pol);
+[n, m] = size(pol);
 if (n ~= 3)
-  error('Cannot handle polar coordinates with dimension other than 3');
+    error('Cannot handle polar coordinates with dimension other than 3');
 end
 
-sensor = zeros(n,m);
-sensor(1,:) = pol(1,:).*cos(pol(3,:)).*cos(pol(2,:));
-sensor(2,:) = pol(1,:).*cos(pol(3,:)).*sin(pol(2,:));
-sensor(3,:) = pol(1,:).*sin(pol(3,:));
+sensor = zeros(n, m);
+sensor(1, :) = pol(1, :) .* cos(pol(3, :)) .* cos(pol(2, :));
+sensor(2, :) = pol(1, :) .* cos(pol(3, :)) .* sin(pol(2, :));
+sensor(3, :) = pol(1, :) .* sin(pol(3, :));

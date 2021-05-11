@@ -1,4 +1,4 @@
-function exrreadchannels( filename )
+function exrreadchannels(filename)
 %EXRREADCHANNELS    Read the raw channel data of an OpenEXR image.
 %   M = EXRREADCHANNELS(FILENAME) reads all the channels of the OpenEXR
 %   file and returns a containers.Map object on which the keys are

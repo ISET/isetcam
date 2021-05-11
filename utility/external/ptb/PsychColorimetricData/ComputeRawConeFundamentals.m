@@ -1,4 +1,4 @@
-function [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomerizations,adjIndDiffParams] = ComputeRawConeFundamentals(params,staticParams)
+function [T_quantalAbsorptionsNormalized, T_quantalAbsorptions, T_quantalIsomerizations, adjIndDiffParams] = ComputeRawConeFundamentals(params, staticParams)
 % [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomerizations,adjIndDiffParams] = ComputeRawConeFundamentals(params,staticParams)
 %
 % Function to compute normalized cone quantal sensitivities from underlying
@@ -94,19 +94,19 @@ if (~isempty(index))
 end
 
 % Figure out how many receptor classes we're handling
-if (isfield(params,'absorbance'))
-    nReceptorTypes = size(params.absorbance,1);
+if (isfield(params, 'absorbance'))
+    nReceptorTypes = size(params.absorbance, 1);
 else
     nReceptorTypes = length(params.lambdaMax);
 end
 
 % Fill in null individual differences parameters if they are not passed
 if isempty(params.indDiffParams)
-    params.indDiffParams.lambdaMaxShift = zeros(nReceptorTypes,1);
+    params.indDiffParams.lambdaMaxShift = zeros(nReceptorTypes, 1);
     params.indDiffParams.shiftType = 'linear';
     params.indDiffParams.dlens = 0;
     params.indDiffParams.dmac = 0;
-    params.indDiffParams.dphotopigment = zeros(nReceptorTypes,1);
+    params.indDiffParams.dphotopigment = zeros(nReceptorTypes, 1);
 end
 
 % Handle optional values for lens and macular pigment density
@@ -119,10 +119,10 @@ end
 % adjust lens and mac density was additive, but Asano et al. (2016) do
 % it in a multipilcative fashion, so we need a flag to keep track of what
 % we're going to do with the numbers down below.
-if (~isfield(params,'extraLens'))
+if (~isfield(params, 'extraLens'))
     params.extraLens = 0;
 end
-if (~isfield(params,'extraMac'))
+if (~isfield(params, 'extraMac'))
     params.extraMac = 0;
 end
 if (params.extraLens ~= 0 & params.indDiffParams.dlens ~= 0)
@@ -134,19 +134,19 @@ end
 OLDLENSWAY = true;
 if (params.extraLens == 0)
     OLDLENSWAY = false;
-    params.extraLens = params.indDiffParams.dlens/100;
+    params.extraLens = params.indDiffParams.dlens / 100;
 end
 OLDMACWAY = true;
 if (params.extraMac == 0)
     OLDMACWAY = false;
-    params.extraMac = params.indDiffParams.dmac/100;
+    params.extraMac = params.indDiffParams.dmac / 100;
 end
 
 % Prereceptor transmittance.  Check that passed parameters are not so weird
 % as to lead to transmittances greater than 1, and throw error if so.
 if (OLDLENSWAY)
     fprintf('Using old way of adjusting lens density.  Consider switching to newer implementation via the params.indDiffParams field\n');
-    lens = 10.^-(-log10(staticParams.lensTransmittance)+params.extraLens);
+    lens = 10.^-(-log10(staticParams.lensTransmittance) + params.extraLens);
 else
     lens = 10.^-(-log10(staticParams.lensTransmittance) * (1 + params.extraLens));
 end
@@ -158,7 +158,7 @@ adjIndDiffParams.lens = lens;
 
 if (OLDMACWAY)
     fprintf('Using old way of adjusting macular pigment density.  Consider switching to newer implementation via the params.indDiffParams field\n');
-    mac = 10.^-(-log10(staticParams.macularTransmittance)+params.extraMac);
+    mac = 10.^-(-log10(staticParams.macularTransmittance) + params.extraMac);
 else
     mac = 10.^-(-log10(staticParams.macularTransmittance) * (1 + params.extraMac));
 end
@@ -170,19 +170,19 @@ adjIndDiffParams.mac = mac;
 
 % Compute nomogram if absorbance wasn't passed directly.  We detect
 % a direct pass by the existance of params.absorbance.
-if (isfield(params,'absorbance'))
+if (isfield(params, 'absorbance'))
     absorbance = params.absorbance;
 else
-    absorbance = PhotopigmentNomogram(staticParams.S,params.lambdaMax,staticParams.whichNomogram);
+    absorbance = PhotopigmentNomogram(staticParams.S, params.lambdaMax, staticParams.whichNomogram);
 end
 
 % Shift absorbance, if desired
 if (~isempty(params.indDiffParams.lambdaMaxShift))
-    if (length(params.indDiffParams.lambdaMaxShift) ~= size(absorbance,1))
+    if (length(params.indDiffParams.lambdaMaxShift) ~= size(absorbance, 1))
         error('Length of passed lambdaMaxShift does not match number of absorbances available to shift');
     end
-    
-    absorbance = ShiftPhotopigmentAbsorbance(staticParams.S,absorbance,params.indDiffParams.lambdaMaxShift,params.indDiffParams.shiftType);
+
+    absorbance = ShiftPhotopigmentAbsorbance(staticParams.S, absorbance, params.indDiffParams.lambdaMaxShift, params.indDiffParams.shiftType);
 end
 
 % Compute absorptance
@@ -199,59 +199,59 @@ end
 % We think this is OK, because both the Asano et al. and the fraction
 % bleaching adjustment are multiplicative adjustments of axial density, and
 % multiplication commutes so it doesn't matter what order we do things in.
-if (size(absorbance,1) == 4)
+if (size(absorbance, 1) == 4)
     if (any(params.indDiffParams.dphotopigment ~= 0))
         error('Cannot use Asano et al. individual cone model with our weird 4 cone calling mode');
     end
-    absorptance = AbsorbanceToAbsorptance(absorbance,staticParams.S,...
-        [params.axialDensity(1) ; params.axialDensity(1) ; ...
-        params.axialDensity(2) ; params.axialDensity(3)]);
-elseif (size(absorbance,1) == 3)
+    absorptance = AbsorbanceToAbsorptance(absorbance, staticParams.S, ...
+        [params.axialDensity(1); params.axialDensity(1); ...
+        params.axialDensity(2); params.axialDensity(3)]);
+elseif (size(absorbance, 1) == 3)
     if (length(params.indDiffParams.dphotopigment) ~= 3)
         error('Density adjustment parameter length not right for cones');
-    end
-    LDensity = params.axialDensity(1) * (1 + params.indDiffParams.dphotopigment(1)/100);
-    MDensity = params.axialDensity(2) * (1 + params.indDiffParams.dphotopigment(2)/100);
-    SDensity = params.axialDensity(3) * (1 + params.indDiffParams.dphotopigment(3)/100);
-    absorptance = AbsorbanceToAbsorptance(absorbance,staticParams.S,[LDensity ; MDensity ; SDensity]);
-    adjIndDiffParams.dphotopigment = [LDensity MDensity SDensity];
-elseif (size(absorbance,1) == 1 && params.DORODS)
-    if (length(params.indDiffParams.dphotopigment) ~= 1)
-        error('Density adjustment parameter length not right for rods');
-    end
-    RodDensity = params.axialDensity(1) + params.indDiffParams.dphotopigment(1)/100;
-    absorptance = AbsorbanceToAbsorptance(absorbance,staticParams.S,RodDensity);
-    adjIndDiffParams.dphotopigment = RodDensity;
-else
-    error('Unexpected number of photopigment lambda max values passed');
-end
+        end
+        LDensity = params.axialDensity(1) * (1 + params.indDiffParams.dphotopigment(1) / 100);
+        MDensity = params.axialDensity(2) * (1 + params.indDiffParams.dphotopigment(2) / 100);
+        SDensity = params.axialDensity(3) * (1 + params.indDiffParams.dphotopigment(3) / 100);
+        absorptance = AbsorbanceToAbsorptance(absorbance, staticParams.S, [LDensity; MDensity; SDensity]);
+        adjIndDiffParams.dphotopigment = [LDensity, MDensity, SDensity];
+    elseif (size(absorbance, 1) == 1 && params.DORODS)
+        if (length(params.indDiffParams.dphotopigment) ~= 1)
+            error('Density adjustment parameter length not right for rods');
+            end
+            RodDensity = params.axialDensity(1) + params.indDiffParams.dphotopigment(1) / 100;
+            absorptance = AbsorbanceToAbsorptance(absorbance, staticParams.S, RodDensity);
+            adjIndDiffParams.dphotopigment = RodDensity;
+        else
+            error('Unexpected number of photopigment lambda max values passed');
+        end
 
-%% Put together pre-receptor and receptor parts
-for i = 1:size(absorptance,1)
-    absorptance(i,:) = absorptance(i,:) .* lens .* mac;
-end
+        %% Put together pre-receptor and receptor parts
+        for i = 1:size(absorptance, 1)
+            absorptance(i, :) = absorptance(i, :) .* lens .* mac;
+        end
 
-%% Put it into the right form
-if (size(absorptance,1) == 4)
-    T_quantalAbsorptions = zeros(3,staticParams.S(3));
-    T_quantalAbsorptions(1,:) = staticParams.LserWeight*absorptance(1,:) + ...
-        (1-staticParams.LserWeight)*absorptance(2,:);
-    T_quantalAbsorptions(2,:) = absorptance(3,:);
-    T_quantalAbsorptions(3,:) = absorptance(4,:);
-elseif (size(absorptance,1) == 3)
-    T_quantalAbsorptions = zeros(3,staticParams.S(3));
-    T_quantalAbsorptions(1,:) = absorptance(1,:);
-    T_quantalAbsorptions(2,:) = absorptance(2,:);
-    T_quantalAbsorptions(3,:) = absorptance(3,:);
-elseif (size(absorptance,1) == 1 && params.DORODS)
-    T_quantalAbsorptions = zeros(1,staticParams.S(3));
-    T_quantalAbsorptions(1,:) = absorptance(1,:);
-else
-    error('Unexpected number of photopigment lambda max values passed');
-end
+        %% Put it into the right form
+        if (size(absorptance, 1) == 4)
+            T_quantalAbsorptions = zeros(3, staticParams.S(3));
+            T_quantalAbsorptions(1, :) = staticParams.LserWeight * absorptance(1, :) + ...
+                (1 - staticParams.LserWeight) * absorptance(2, :);
+            T_quantalAbsorptions(2, :) = absorptance(3, :);
+            T_quantalAbsorptions(3, :) = absorptance(4, :);
+        elseif (size(absorptance, 1) == 3)
+            T_quantalAbsorptions = zeros(3, staticParams.S(3));
+            T_quantalAbsorptions(1, :) = absorptance(1, :);
+            T_quantalAbsorptions(2, :) = absorptance(2, :);
+            T_quantalAbsorptions(3, :) = absorptance(3, :);
+        elseif (size(absorptance, 1) == 1 && params.DORODS)
+            T_quantalAbsorptions = zeros(1, staticParams.S(3));
+            T_quantalAbsorptions(1, :) = absorptance(1, :);
+        else
+            error('Unexpected number of photopigment lambda max values passed');
+        end
 
-%% Normalize to max of one for each receptor, and also compute isomerization quantal efficiency.
-for i = 1:size(T_quantalAbsorptions,1)
-    T_quantalIsomerizations = T_quantalAbsorptions*staticParams.quantalEfficiency(i);
-    T_quantalAbsorptionsNormalized(i,:) = T_quantalAbsorptions(i,:)/max(T_quantalAbsorptions(i,:));
-end
+        %% Normalize to max of one for each receptor, and also compute isomerization quantal efficiency.
+        for i = 1:size(T_quantalAbsorptions, 1)
+            T_quantalIsomerizations = T_quantalAbsorptions * staticParams.quantalEfficiency(i);
+            T_quantalAbsorptionsNormalized(i, :) = T_quantalAbsorptions(i, :) / max(T_quantalAbsorptions(i, :));
+        end

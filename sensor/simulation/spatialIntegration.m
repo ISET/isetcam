@@ -1,4 +1,4 @@
-function signalCurrentImage = spatialIntegration(scdi,oi,sensor,gridSpacing) 
+function signalCurrentImage = spatialIntegration(scdi, oi, sensor, gridSpacing)
 % Measure current at each sensor photodetector
 %
 %  signalCurrentImage = spatialIntegration(scdi,oi,sensor,[gridSpacing = 1/5])
@@ -20,12 +20,12 @@ function signalCurrentImage = spatialIntegration(scdi,oi,sensor,gridSpacing)
 %    measured in meters.  In both modes, we represent  the OI and the ISA
 %    sample positions in meters in a spatial coordinate frame with a common
 %    center.  Then we interpolate the values of the OI onto sample points
-%    within the ISA grid (regridOI2ISA).  
+%    within the ISA grid (regridOI2ISA).
 %
 %    The first mode (default).  In this mode the current is computed with
 %    one sample per pixel.  Specifically, the irradiance at each wavelength
 %    is linearly interpolated to obtain a value at the center of the pixel.
-%       
+%
 %    The second mode (high-resolution). This high-resolution mode requires
 %    a great deal more memory than the first mode. In this method a grid is
 %    placed over the sensor and the irradiance field is interpolated to
@@ -58,9 +58,9 @@ function signalCurrentImage = spatialIntegration(scdi,oi,sensor,gridSpacing)
 %
 % This is the spacing within a pixel on the sensor array.
 if ieNotDefined('gridSpacing'), gridSpacing = 1;
-else, gridSpacing = 1/round(1/gridSpacing);
+else, gridSpacing = 1 / round(1/gridSpacing);
 end
-nGridSamples = 1/gridSpacing;
+nGridSamples = 1 / gridSpacing;
 
 % regridOI2ISA puts the optical image pixels in the same coordinate frame
 % as the sensor pixels.  The sensor pixels coordinate frame is simply the
@@ -70,27 +70,27 @@ nGridSamples = 1/gridSpacing;
 % grid samples per pixel.  This can pay a significant penalty in speed and
 % memory usage.
 %
-%  So the default is gridSpacing of 1.  
+%  So the default is gridSpacing of 1.
 %
-flatSCDI = regridOI2ISA(scdi,oi,sensor,gridSpacing);
+flatSCDI = regridOI2ISA(scdi, oi, sensor, gridSpacing);
 
 % Calculate the fractional area of the photodetector within each grid
 % region of each pixel.  If we are super-sampling, we use sensorPDArray.
 % Otherwise, we only need the fill factor.
-if nGridSamples == 1, pdArray = pixelGet(sensorGet(sensor,'pixel'),'fillfactor');
-else,                 pdArray = sensorPDArray(sensor,gridSpacing);
+if nGridSamples == 1, pdArray = pixelGet(sensorGet(sensor, 'pixel'), 'fillfactor');
+else, pdArray = sensorPDArray(sensor, gridSpacing);
 end
 
 % Array pdArray up to match the number of pixels in the array
-ISAsize = sensorGet(sensor,'size');
+ISAsize = sensorGet(sensor, 'size');
 photoDetectorArray = repmat(pdArray, ISAsize);
 
 % Calculate the signal at each pixel by summing across each pixel within
 % the array.
 signalCurrentImageLarge = flatSCDI .* photoDetectorArray;
 
-if nGridSamples == 1 
-    signalCurrentImage = pixelGet(sensor.pixel,'area')*signalCurrentImageLarge;
+if nGridSamples == 1
+    signalCurrentImage = pixelGet(sensor.pixel, 'area') * signalCurrentImageLarge;
 else
     % If the grid samples are super-sampled, we must collapse this image,
     % summing across the pixel and create an image that has the same size
@@ -99,38 +99,38 @@ else
     % We should probably include a check for the condition when
     % nGridSamples is 2. There can be a problem with the filter in that
     % case. It is OK at nGridSamples=3 and higher.
-    % 
-    filt = pixelGet(sensor.pixel,'area')*(ones(nGridSamples,nGridSamples)/(nGridSamples^2));
-    
-    signalCurrentImage = blurSample(signalCurrentImageLarge,filt);
+    %
+    filt = pixelGet(sensor.pixel, 'area') * (ones(nGridSamples, nGridSamples) / (nGridSamples^2));
+
+    signalCurrentImage = blurSample(signalCurrentImageLarge, filt);
 end
 
 return;
 
 %----------------------------------------------
-function sampledData = blurSample(data,filt)
-%
-%   sampledData = blurSample(data,filt)
-%
-% Author: ImagEval
-% Purpose:
-%   Blur the data with filter, and then return the sampled values at the
-%   center of the filter position.
-%
+    function sampledData = blurSample(data, filt)
+        %
+        %   sampledData = blurSample(data,filt)
+        %
+        % Author: ImagEval
+        % Purpose:
+        %   Blur the data with filter, and then return the sampled values at the
+        %   center of the filter position.
+        %
 
-% Blur the data.
-bdata = conv2(data,filt,'same');
+        % Blur the data.
+        bdata = conv2(data, filt, 'same');
 
-fSize = size(filt);
+        fSize = size(filt);
 
-% If the filter is odd, this finds the middle of the sampled data
-s = (1 + fSize)/2;
+        % If the filter is odd, this finds the middle of the sampled data
+        s = (1 + fSize) / 2;
 
-% Sample positions
-[r,c] = size(data);
-rSamples = s(1):fSize(1):r;
-cSamples = s(2):fSize(2):c;
+        % Sample positions
+        [r, c] = size(data);
+        rSamples = s(1):fSize(1):r;
+        cSamples = s(2):fSize(2):c;
 
-sampledData = bdata(rSamples,cSamples);
+        sampledData = bdata(rSamples, cSamples);
 
-return;
+        return;

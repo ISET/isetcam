@@ -1,4 +1,4 @@
-function result = mkInvGammaTable(gTable,numEntries)
+function result = mkInvGammaTable(gTable, numEntries)
 % Compute inverse gamma lookup table (intensity to digital control value)
 %
 %    result = mkInvGammaTable(gTable,numEntries)
@@ -21,7 +21,7 @@ function result = mkInvGammaTable(gTable,numEntries)
 %  In some cases, measurement noise produces non-monotonicities in a gamma
 %  table. This can happen, in particular, at low intensities. On the
 %  assumption  that non-monotonicities are meaningless, this routine sorts
-%  non-monotonic tables and warn the user. 
+%  non-monotonic tables and warn the user.
 %
 %  gTable:      Gamma table from frame-buffer to linear intensity
 %  numEntries:  Number of sample values in the inverse table
@@ -31,7 +31,7 @@ function result = mkInvGammaTable(gTable,numEntries)
 %Example:
 % load('displayGamma','gamma');    % This loads a gamma table
 % invGamma = mkInvGammaTable(gamma,4*size(gamma,1));
-% 
+%
 % Test whether the tables are proper inverses.  Make some linear intensity
 % values.
 %
@@ -41,7 +41,7 @@ function result = mkInvGammaTable(gTable,numEntries)
 % percentError = 100* (light2 - light) ./ light
 %
 % If we repeat the process, we avoid the imperfections of the discrete set
-% of look up table levels. The inversion is then perfect.  
+% of look up table levels. The inversion is then perfect.
 %
 % digital2 = rgb2dac(light2,invGamma)
 % light3 = dac2rgb(digital2,gamma)
@@ -50,51 +50,51 @@ function result = mkInvGammaTable(gTable,numEntries)
 % Copyright ImagEval Consultants, LLC, 2003.
 
 if ieNotDefined('gTable'), error('Gamma table required.'); end
-if ieNotDefined('numEntries'), numEntries = 4*size(gTable,1); end
+if ieNotDefined('numEntries'), numEntries = 4 * size(gTable, 1); end
 
-ncol = size(gTable,2);
-result = zeros(numEntries,ncol);
+ncol = size(gTable, 2);
+result = zeros(numEntries, ncol);
 
 %  Check for monotonicity, and fix if not monotone
-for ii=1:ncol
+for ii = 1:ncol
 
- thisTable = gTable(:,ii);
+    thisTable = gTable(:, ii);
 
-% Find the locations where this table is not monotonic
- list = find(diff(thisTable) <= 0);
+    % Find the locations where this table is not monotonic
+    list = find(diff(thisTable) <= 0);
 
- if length(list) > 0
-  announce = sprintf('Gamma table %d NOT MONOTONIC.  We are adjusting.',ii);
-  disp(announce)
+    if length(list) > 0
+        announce = sprintf('Gamma table %d NOT MONOTONIC.  We are adjusting.', ii);
+        disp(announce)
 
-% We assume that the non-monotonic points only differ due to noise
-% and so we can resort them without any consequences
-%
-  thisTable = sort(thisTable);
+        % We assume that the non-monotonic points only differ due to noise
+        % and so we can resort them without any consequences
+        %
+        thisTable = sort(thisTable);
 
-% Find the sorted locations that are actually increasing.
-% In a sequence of [ 1 1 2 ] the diff operation returns the location 2
-%
-  posLocs = find(diff(thisTable) > 0);
+        % Find the sorted locations that are actually increasing.
+        % In a sequence of [ 1 1 2 ] the diff operation returns the location 2
+        %
+        posLocs = find(diff(thisTable) > 0);
 
-% We now shift these up and add in the first location
-%
-  posLocs = [1; (posLocs + 1)];
-  monTable = thisTable(posLocs,:);
+        % We now shift these up and add in the first location
+        %
+        posLocs = [1; (posLocs + 1)];
+        monTable = thisTable(posLocs, :);
 
- else
+    else
 
-% If we were monotonic, then yea!
-  monTable = thisTable;
-  posLocs = 1:size(thisTable,1);
- end
+        % If we were monotonic, then yea!
+        monTable = thisTable;
+        posLocs = 1:size(thisTable, 1);
+    end
 
-% Interpolate the monotone table out to the proper size
-%
- result(:,ii) = ...
-   reshape( ...
-   interp1(monTable,posLocs-1,[0:(numEntries-1)]/(numEntries-1)),...
-   numEntries,1); 
+    % Interpolate the monotone table out to the proper size
+    %
+    result(:, ii) = ...
+        reshape( ...
+        interp1(monTable, posLocs - 1, [0:(numEntries - 1)] / (numEntries - 1)), ...
+        numEntries, 1);
 
 end
 

@@ -1,4 +1,4 @@
-function sSupport = oiSpatialSupport(oi,units)
+function sSupport = oiSpatialSupport(oi, units)
 %Calculate the spatial positions of the optical image sample points
 %
 %   sSupport = oiSpatialSupport(oi,[units = 'meters'] )
@@ -16,13 +16,15 @@ function sSupport = oiSpatialSupport(oi,units)
 
 if ieNotDefined('units'), units = 'meters'; end
 
-sr = oiGet(oi,'spatialResolution',units);
-nRows = oiGet(oi,'rows');
-nCols = oiGet(oi,'cols');
+sr = oiGet(oi, 'spatialResolution', units);
+nRows = oiGet(oi, 'rows');
+nCols = oiGet(oi, 'cols');
 
-if isempty(nRows) || isempty(nCols), errordlg('No optical image data.'); return; end
+if isempty(nRows) || isempty(nCols), errordlg('No optical image data.');
+    return;
+end
 
-sSupport.y = linspace(-nRows*sr(1)/2 + sr(1)/2, nRows*sr(1)/2 - sr(1)/2,nRows);
-sSupport.x = linspace(-nCols*sr(2)/2 + sr(2)/2,nCols*sr(2)/2 - sr(2)/2,nCols);
-          
+sSupport.y = linspace(-nRows*sr(1)/2+sr(1)/2, nRows*sr(1)/2-sr(1)/2, nRows);
+sSupport.x = linspace(-nCols*sr(2)/2+sr(2)/2, nCols*sr(2)/2-sr(2)/2, nCols);
+
 return;

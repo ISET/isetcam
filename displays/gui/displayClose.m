@@ -10,7 +10,7 @@ function displayClose(varargin)
 global vcSESSION;
 
 if checkfields(vcSESSION, 'GUI', 'vcDisplayWindow')
-    vcSESSION.GUI = rmfield(vcSESSION.GUI,'vcDisplayWindow');
+    vcSESSION.GUI = rmfield(vcSESSION.GUI, 'vcDisplayWindow');
 end
 
 closereq;

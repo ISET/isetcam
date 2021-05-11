@@ -1,11 +1,11 @@
-function T_absorbance = StockmanSharpeNomogram(S,lambdaMax)
+function T_absorbance = StockmanSharpeNomogram(S, lambdaMax)
 % T_absorbance = StockmanSharpeNomogram(S,lambdaMax)
 %
 % Compute normalized absorbance according to the
 % nomogram provided by Stockman and Sharpe:
 %   See Stockman & Sharpe (2000), p. 1730 or http://www.cvrl.org/.
 %
-% The lmax values of the fitted templates that best fits 
+% The lmax values of the fitted templates that best fits
 % to the Stockman and Sharpe (2000) S-, M- and L-cone photopigment
 % spectra are 420.7, 530.3 and 558.9 nm for the
 % S-, M- and L-cones, respectively;
@@ -26,7 +26,7 @@ function T_absorbance = StockmanSharpeNomogram(S,lambdaMax)
 % as in Stockman & Sharpe (2000), Figure 12.  The fit does not look quite so
 % good in my hands on a linear scale or an expanded log scale.
 % I think the deviations occur in part because the tabulated
-% photopigment absorbances for the L are a mixture of the ser/ala 
+% photopigment absorbances for the L are a mixture of the ser/ala
 % pigments, and the nomogram was developed in part on the basis of fitting these
 % as if they corresponded to a single lambda max value. It may also be that
 % the template was built by minimizing the error in log sensitivity, and this
@@ -57,24 +57,23 @@ h = -0.289541500599;
 wls = MakeItWls(S)';
 nWls = length(wls);
 nT = length(lambdaMax);
-T_absorbance = zeros(nT,nWls);
+T_absorbance = zeros(nT, nWls);
 for i = 1:nT
-	% Get lambda max
-	theMax = lambdaMax(i);
-	
-	% Need to normalize wavelengths
-	logWlsNorm = log10(wls)-log10(theMax/558);
-	
-	% Compute log optical density
-	logDensity = a + ...
-						   b*logWlsNorm.^2 + ...
-							 c*logWlsNorm.^4 + ...
-							 d*logWlsNorm.^6 + ...
-							 e*logWlsNorm.^8 + ...
-							 f*logWlsNorm.^10 + ...
-							 g*logWlsNorm.^12 + ...
-							 h*logWlsNorm.^14;
-	logDensity = logDensity;
-	T_absorbance(i,:) = 10.^logDensity;
-end
+    % Get lambda max
+    theMax = lambdaMax(i);
 
+    % Need to normalize wavelengths
+    logWlsNorm = log10(wls) - log10(theMax/558);
+
+    % Compute log optical density
+    logDensity = a + ...
+        b * logWlsNorm.^2 + ...
+        c * logWlsNorm.^4 + ...
+        d * logWlsNorm.^6 + ...
+        e * logWlsNorm.^8 + ...
+        f * logWlsNorm.^10 + ...
+        g * logWlsNorm.^12 + ...
+        h * logWlsNorm.^14;
+    logDensity = logDensity;
+    T_absorbance(i, :) = 10.^logDensity;
+end

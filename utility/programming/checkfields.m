@@ -1,4 +1,4 @@
-function bool = checkfields(s,varargin)
+function bool = checkfields(s, varargin)
 % Check for the presence of a field, possibly nested, in a structure
 %
 %  bool = checkfields(s,varargin)
@@ -13,7 +13,7 @@ function bool = checkfields(s,varargin)
 %
 %      checkfields(pixel,'OP','pd','type')
 %
-% A return value of 1 means the field sequence is present, 
+% A return value of 1 means the field sequence is present,
 % A return value of 0 means the sequence is absent.
 %
 % Copyright ImagEval Consultants, LLC, 2003.
@@ -22,13 +22,13 @@ nArgs = length(varargin);
 str = 's';
 tst = eval(str);
 
-for ii=1:nArgs
-    if isfield(tst,varargin{ii})
+for ii = 1:nArgs
+    if isfield(tst, varargin{ii})
         % Append the argument to the current string
-        str = sprintf('%s.%s',str,varargin{ii});
+        str = sprintf('%s.%s', str, varargin{ii});
 
         % If this is the last one, return succesfully
-        if ii==nArgs
+        if ii == nArgs
             bool = 1;
             return;
         else
@@ -43,5 +43,3 @@ end
 % Should never get here
 error('checkfields: Error')
 return;
-
-

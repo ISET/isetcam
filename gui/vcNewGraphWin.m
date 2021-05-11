@@ -4,11 +4,9 @@ function figHdl = vcNewGraphWin(figHdl, fType, varargin)
 % vcNewGraphWin;
 % vcNewGraphWin([],'wide');
 % vcNewGraphWin([],'tall');
-if ~exist('figHdl','var'), figHdl = []; end
-if ~exist('fType','var'), fType = 'default'; end
+if ~exist('figHdl', 'var'), figHdl = []; end
+if ~exist('fType', 'var'), fType = 'default'; end
 
 figHdl = ieNewGraphWin(figHdl, fType, varargin{:});
 
 end
-
-

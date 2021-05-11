@@ -19,14 +19,14 @@ function SR = pixelSR(pixel)
 
 % Various physical constants are needed.
 q = vcConstants('q');
-h = vcConstants('h'); 
+h = vcConstants('h');
 c = vcConstants('c');
 
-QE      = pixelGet(pixel,'spectralQE');     % e-/ph
-lambda  = pixelGet(pixel,'wave')*(10^-9);   % Wavelength in meters
+QE = pixelGet(pixel, 'spectralQE'); % e-/ph
+lambda = pixelGet(pixel, 'wave') * (10^-9); % Wavelength in meters
 
 % First term is energy at each wavelength (watts).  QE multiplies to give
 % the volts/watt
-SR = (lambda(:)*q)/(h*c) .* QE(:);
+SR = (lambda(:) * q) / (h * c) .* QE(:);
 
 return

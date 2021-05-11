@@ -1,10 +1,10 @@
-function [img,vci] = imageIlluminantCorrection(img,vci)
+function [img, vci] = imageIlluminantCorrection(img, vci)
 %Gateway illuminant correction routine from ICS to display space.
 %
 %    [img,vci] = imageIlluminantCorrection(img,vci);
 %
 % The general processing pipeline has the following steps:
-% 
+%
 %    1.  Sensor data are demosaicked (Demosaic)
 %    2.  The sensor data are converted to the internal color space
 %    (imageSensorCorrection)
@@ -36,49 +36,49 @@ function [img,vci] = imageIlluminantCorrection(img,vci)
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
-iCorrection = ieParamFormat(ipGet(vci,'illuminant correction method'));
+iCorrection = ieParamFormat(ipGet(vci, 'illuminant correction method'));
 
 switch iCorrection
     case {'none'}
 
         % This may be problematic when there are more than 3 sensors!
-        
+
         % The user said no sensor conversion.  So, we leave the data alone.
-        
+
         % But this can create a problem if the number of sensors is not
         % equal to 3, because we need to transform the N-sensor data into
         % sRGB (3 dim) at some point. So, to preserve the data we simply
         % set D to the identity but equal to the number of sensors in the
         % img data.  Then we return without bothering to multiply.
-        N = size(img,3);    % Image data are in RGB format
-        D = eye(N,N);    
-        vci = ipSet(vci,'illuminant correction transform',D);
+        N = size(img, 3); % Image data are in RGB format
+        D = eye(N, N);
+        vci = ipSet(vci, 'illuminant correction transform', D);
         return;
 
     case {'grayworld'}
-        D = grayWorld(img,vci);
+        D = grayWorld(img, vci);
 
     case {'whiteworld'}
-        D = whiteWorld(img,vci);
+        D = whiteWorld(img, vci);
 
-    case {'manualmatrixentry','manual'}
-        D = ipGet(vci,'illuminant correction transform');
-        D = ieReadMatrix(D,'  %.2f');
+    case {'manualmatrixentry', 'manual'}
+        D = ipGet(vci, 'illuminant correction transform');
+        D = ieReadMatrix(D, '  %.2f');
 
     otherwise
-        error('Unknown illuminant correction method %s\n',iCorrection);
+        error('Unknown illuminant correction method %s\n', iCorrection);
 end
 
 % Update the transform in the vci structure
-vci = ipSet(vci,'illuminant correction transform',D);
+vci = ipSet(vci, 'illuminant correction transform', D);
 
 % Convert the data
-img = imageLinearTransform(img,D);
+img = imageLinearTransform(img, D);
 
 end
 
 %-------------------------------------------------------
-function D = grayWorld(img,vci)
+function D = grayWorld(img, vci)
 % Gray world balancing method
 %
 %   D = grayWorld(img,vci)
@@ -92,14 +92,14 @@ function D = grayWorld(img,vci)
 whiteRatio = calcWPScaling(vci);
 
 % This is the number of dimensions in the current representation
-N = size(img,3);
+N = size(img, 3);
 
 % Simple white balancing using "gray-world" assumption
-img = replaceNaN(img,0);
+img = replaceNaN(img, 0);
 
 % Find the average of each color channel.
-avg = zeros(1,N);
-for ii = 1:N,  avg(ii) = mean2(img(:,:,ii)); end
+avg = zeros(1, N);
+for ii = 1:N, avg(ii) = mean2(img(:, :, ii)); end
 % imtool(img(:,:,1))
 
 % We adjust the whiteRatio of each color channel so that the means match the
@@ -109,9 +109,9 @@ for ii = 1:N,  avg(ii) = mean2(img(:,:,ii)); end
 %   Multiply by the mean of the first sensor
 %   Multiply by the desired whiteRatio
 %
-whiteRatio = whiteRatio/whiteRatio(1);  %Normalize w.r.t. the first
-D = zeros(1,N);
-for ii=1:N, D(ii) = whiteRatio(ii)*(avg(1)/avg(ii)); end
+whiteRatio = whiteRatio / whiteRatio(1); %Normalize w.r.t. the first
+D = zeros(1, N);
+for ii = 1:N, D(ii) = whiteRatio(ii) * (avg(1) / avg(ii)); end
 
 % Now put the values into a diagonal for processing.
 D = diag(D);
@@ -119,7 +119,7 @@ D = diag(D);
 end
 
 %-------------------------------------------------------
-function D = whiteWorld(img,vci)
+function D = whiteWorld(img, vci)
 % White world color balancing method
 %
 %  D = whiteWorld(img,vci)
@@ -129,27 +129,27 @@ function D = whiteWorld(img,vci)
 % values in the various color channels equal the values of an equal energy
 % white in the current color space.
 
-img = replaceNaN(img,0);
+img = replaceNaN(img, 0);
 
 % This is the number of dimensions in the current representation
-N = size(img,3);
+N = size(img, 3);
 
 %We find the brightest of the three and use that
-mx = zeros(1,3);
-for ii=1:3, mx(ii) = max(max(img(:,:,ii))); end
+mx = zeros(1, 3);
+for ii = 1:3, mx(ii) = max(max(img(:, :, ii))); end
 
 whiteRatio = calcWPScaling(vci);
 
-[maxBrightness,col] = max(mx);
-brightPlane = img(:,:,col);
+[maxBrightness, col] = max(mx);
+brightPlane = img(:, :, col);
 
 % We need to assign a criterion for bright somehow ??? in the GUI.
 criterion = 0.7;
 
 % Compute the locations of the bright indices.
-brt = zeros(1,N);
-for ii=1:N
-    tmp = img(:,:,ii);
+brt = zeros(1, N);
+for ii = 1:N
+    tmp = img(:, :, ii);
     tmp = tmp(brightPlane >= criterion*maxBrightness);
     brt(ii) = mean(tmp(:));
 end
@@ -163,9 +163,9 @@ end
 %   Multiply by the mean of the first sensor
 %   Multiply by the desired whiteRatio
 %
-whiteRatio = whiteRatio/whiteRatio(1);  %Normalize w.r.t. the first
-D = zeros(1,N);
-for ii=1:N, D(ii) = whiteRatio(ii)*(brt(1)/brt(ii)); end
+whiteRatio = whiteRatio / whiteRatio(1); %Normalize w.r.t. the first
+D = zeros(1, N);
+for ii = 1:N, D(ii) = whiteRatio(ii) * (brt(1) / brt(ii)); end
 
 % Now put the values into a diagonal for processing.
 D = diag(D);
@@ -173,7 +173,7 @@ D = diag(D);
 end
 
 %-------------------------------------------------------
-function whiteRatio = calcWPScaling(vci,target)
+function whiteRatio = calcWPScaling(vci, target)
 %Calculate equal white energy representation in internal color space
 %
 %   whiteRatio = calcWPScaling(vci,target)
@@ -181,27 +181,27 @@ function whiteRatio = calcWPScaling(vci,target)
 
 if ieNotDefined('target'), target = 'D65'; end
 
-internalCMF = ipGet(vci,'internalCMF');
+internalCMF = ipGet(vci, 'internalCMF');
 if isempty(internalCMF)
     % If there is no internal color space (i.e., we are using Sensor, we
     % assume that equal energy produces equal responses in the sensors. It
     % would be better to calculate this with knowledge of the sensors and
     % the illuminant white point.
-    whiteRatio = ones(1,ipGet(vci,'nSensorInputs'));
-    return; 
+    whiteRatio = ones(1, ipGet(vci, 'nSensorInputs'));
+    return;
 end
 
-wave = ipGet(vci,'wavelength');
+wave = ipGet(vci, 'wavelength');
 switch lower(target)
     case 'ee'
-        tData = ones(length(wave),1);
+        tData = ones(length(wave), 1);
     otherwise
         % Normally we use D65 as the target whiteRatio.  We might experiment
         % with other stuff some day.
-        tData = ieReadSpectra(target,wave);
+        tData = ieReadSpectra(target, wave);
 end
 
-whiteRatio = internalCMF'*tData;
-whiteRatio = whiteRatio/max(whiteRatio);
+whiteRatio = internalCMF' * tData;
+whiteRatio = whiteRatio / max(whiteRatio);
 
 end

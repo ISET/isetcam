@@ -1,4 +1,4 @@
-function rmse = ComputeFSSE(data,predict)
+function rmse = ComputeFSSE(data, predict)
 % rmse = ComputeFSSE(data,predict)
 %
 % Compute a root fractional SSE between data and prediction.
@@ -7,9 +7,9 @@ function rmse = ComputeFSSE(data,predict)
 %   diff = predict-data;
 %   rmse = sqrt((diff'*diff)/(data'*data));
 %
-% 7/9/14  dhb  Wrote this.  Will replace calls to old and badly named ComputeRMSE 
+% 7/9/14  dhb  Wrote this.  Will replace calls to old and badly named ComputeRMSE
 %              with calls to this.  This does what ComputeRMSE did, but the
 %              bad name of ComputeRMSE was bugging me too much.
 
-diff = predict-data;
-rmse = sqrt((diff'*diff)/(data'*data));
+diff = predict - data;
+rmse = sqrt((diff'*diff)/(data' * data));

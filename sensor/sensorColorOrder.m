@@ -32,7 +32,7 @@ function [cfaOrdering, cfaMap] = sensorColorOrder(format)
 %
 %  The normal format used to return the list of color letters is a cell
 %  array.  If the input argument (format) is set to 'string', then the
-%  cfaOrdering is returned as a string. 
+%  cfaOrdering is returned as a string.
 %
 %  Example:
 %   [c,mp] = sensorColorOrder('string');
@@ -45,22 +45,22 @@ function [cfaOrdering, cfaMap] = sensorColorOrder(format)
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
-if ~exist('format','var'), format = 'cell'; end
+if ~exist('format', 'var'), format = 'cell'; end
 
-% The x,y,z and place holders, only loosely connected to XYZ.  
-cfaOrdering = {'r','g','b','c','y','m','w','i','u','x','z','o','k'};
+% The x,y,z and place holders, only loosely connected to XYZ.
+cfaOrdering = {'r', 'g', 'b', 'c', 'y', 'm', 'w', 'i', 'u', 'x', 'z', 'o', 'k'};
 
 % The ordering of these color map entries must map cfaOrdering, above.
-cfaMap = [1 0 0; 0 1 0; 0 0 1; 0 1 1; 1 1 0; 1 0 1; 1 1 1; .3 .3 .3; ...
-        .4, .7, .3; .9 .6 .3; .2 .5 .8; 1 .6 0; 0 0 0];
+cfaMap = [1, 0, 0; 0, 1, 0; 0, 0, 1; 0, 1, 1; 1, 1, 0; 1, 0, 1; 1, 1, 1; .3, .3, .3; ...
+    .4, .7, .3; .9, .6, .3; .2, .5, .8; 1, .6, 0; 0, 0, 0];
 
 % If the user asks for the data to be returned as a string, do this.
 % tmp = char(length(cfaOrdering),1);
-if strcmp(format,'string')
-        for ii=1:length(cfaOrdering)
-            tmp(ii)= char(cfaOrdering{ii});  %#ok<AGROW>
-        end
-        cfaOrdering = tmp;
+if strcmp(format, 'string')
+    for ii = 1:length(cfaOrdering)
+        tmp(ii) = char(cfaOrdering{ii}); %#ok<AGROW>
+    end
+    cfaOrdering = tmp;
 end
 
 return;

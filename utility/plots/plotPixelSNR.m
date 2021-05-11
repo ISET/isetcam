@@ -28,15 +28,18 @@ uData.snrRead = SNRread;
 
 figHdl = vcNewGraphWin;
 
-p = semilogx(volts,SNR,'k-'); hold on; set(p,'linewidth',2);
-p = semilogx(volts,SNRshot,'r-',volts,SNRread,'g-'); set(p,'linewidth',1);
+p = semilogx(volts, SNR, 'k-');
+hold on;
+set(p, 'linewidth', 2);
+p = semilogx(volts, SNRshot, 'r-', volts, SNRread, 'g-');
+set(p, 'linewidth', 1);
 hold off
-grid on; 
-xlabel('Signal (V)'); 
+grid on;
+xlabel('Signal (V)');
 ylabel('SNR (db)')
 title('Pixel SNR over response range');
-legend({'Total pixel SNR','Shot noise SNR','Read noise SNR'});
+legend({'Total pixel SNR', 'Shot noise SNR', 'Read noise SNR'});
 
 % Attach data to the figure
-set(figHdl,'Userdata',uData);
+set(figHdl, 'Userdata', uData);
 return;

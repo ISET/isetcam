@@ -1,4 +1,4 @@
-function err = psf2zcoeff(zcoeffs,psfTarget,pupilSizeMM,zpupilDiameterMM,...
+function err = psf2zcoeff(zcoeffs, psfTarget, pupilSizeMM, zpupilDiameterMM, ...
     pupilPlaneSizeMM, thisWaveUM, nPixels)
 % Error function for estimationg Zernike Coeffs from a psf
 %
@@ -47,8 +47,8 @@ ypos = -ypos;
 %
 % And by convention expanding gives us the wavefront aberrations in
 % microns.
-norm_radius = (sqrt(xpos.^2+ypos.^2))/(zpupilDiameterMM/2);
-theta = atan2(ypos,xpos);
+norm_radius = (sqrt(xpos.^2 + ypos.^2)) / (zpupilDiameterMM / 2);
+theta = atan2(ypos, xpos);
 norm_radius_index = norm_radius <= 1;
 
 % We keep the first entry 0 ('piston') because it has no impact on the PSF,
@@ -60,7 +60,7 @@ zcoeffs(1) = 0;
 % term, because we handle that specially and it's easy just to make
 % sure it is there.  This wastes a little time when we just compute
 % diffraction, but that is the least of our worries.
-if (length(zcoeffs) < 5),  zcoeffs(length(zcoeffs)+1:5) = 0; end
+if (length(zcoeffs) < 5), zcoeffs(length(zcoeffs)+1:5) = 0; end
 
 % We don't defocus for human chromatic aberration in ISET.  But we do this
 % sort of thing in ISETBio.
@@ -77,21 +77,21 @@ if (length(zcoeffs) < 5),  zcoeffs(length(zcoeffs)+1:5) = 0; end
 wavefrontAberrationsUM = zeros(size(xpos));
 for k = 1:length(zcoeffs)
     if (zcoeffs(k) ~= 0)
-        osaIndex = k-1;
-        [n,m] = wvfOSAIndexToZernikeNM(osaIndex);
-        wavefrontAberrationsUM(norm_radius_index) =  ...
+        osaIndex = k - 1;
+        [n, m] = wvfOSAIndexToZernikeNM(osaIndex);
+        wavefrontAberrationsUM(norm_radius_index) = ...
             wavefrontAberrationsUM(norm_radius_index) + ...
-            zcoeffs(k)*sqrt(pi)*...
-            zernfun(n,m,norm_radius(norm_radius_index),theta(norm_radius_index),'norm');
+            zcoeffs(k) * sqrt(pi) * ...
+            zernfun(n, m, norm_radius(norm_radius_index), theta(norm_radius_index), 'norm');
     end
 end
 
 % Here is the phase of the pupil function, with unit amplitude
 % everywhere
-pupilfuncphase = exp(-1i * 2 * pi * wavefrontAberrationsUM/thisWaveUM);
+pupilfuncphase = exp(-1i*2*pi*wavefrontAberrationsUM/thisWaveUM);
 
 % Set values outside the pupil we're calculating for to 0 amplitude
-pupilfuncphase(norm_radius > pupilSizeMM/zpupilDiameterMM)=0;
+pupilfuncphase(norm_radius > pupilSizeMM/zpupilDiameterMM) = 0;
 
 % Multiply phase by the pupil function amplitude function.
 % In all of our calculations, we are assuming this (apodization) function
@@ -103,9 +103,9 @@ inten = (amp .* conj(amp));
 psf = real(inten);
 
 % Scale for unit area
-psf = psf/sum(psf(:));
+psf = psf / sum(psf(:));
 
 % RMSE
-err = rms(psfTarget(:) - psf(:));
+err = rms(psfTarget(:)-psf(:));
 
 end

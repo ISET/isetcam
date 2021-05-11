@@ -1,7 +1,7 @@
-function ieInput = ieReadStringOrNumber(prompt,defString) 
+function ieInput = ieReadStringOrNumber(prompt, defString)
 % Query the user for a string or a number.
 %
-%    newFilterName = ieReadString(prompt,defString)     
+%    newFilterName = ieReadString(prompt,defString)
 %
 % If the user cancels,  the returned string is empty.
 %
@@ -15,10 +15,10 @@ if ieNotDefined('defString'), defString = ''; end
 
 ieInput = [];
 
-def={defString};
-dlgTitle= sprintf('IE Read String');
-lineNo=1;
-answer = inputdlg(prompt,dlgTitle,lineNo,def);
+def = {defString};
+dlgTitle = sprintf('IE Read String');
+lineNo = 1;
+answer = inputdlg(prompt, dlgTitle, lineNo, def);
 if ~isempty(answer)
     ieInput = answer{1};
     % if number - convert
@@ -26,6 +26,6 @@ if ~isempty(answer)
         ieInput = str2num(ieInput);
     end
 end
-  
+
 
 return;

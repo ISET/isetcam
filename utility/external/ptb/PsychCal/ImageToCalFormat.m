@@ -1,4 +1,4 @@
-function [calFormat,nX,nY] = ImageToCalFormat(image)
+function [calFormat, nX, nY] = ImageToCalFormat(image)
 % [calFormat,nX,nY] = ImageToCalFormat(image)
 %
 % Take an nX (col dimension) by nY (row dimension) by k image
@@ -15,10 +15,10 @@ function [calFormat,nX,nY] = ImageToCalFormat(image)
 % 7/16/07  dhb  Update help line.
 % 10/2/09  dhb  Try again on making help clear.
 
-[nY,nX,k] = size(image);
+[nY, nX, k] = size(image);
 
-if nY*nX == 1
-	calFormat = squeeze(reshape(image,nY*nX,1,k));
+if nY * nX == 1
+    calFormat = squeeze(reshape(image, nY * nX, 1, k));
 else
-	calFormat = squeeze(reshape(image,nY*nX,1,k))';
+    calFormat = squeeze(reshape(image, nY * nX, 1, k))';
 end

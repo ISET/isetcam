@@ -1,4 +1,4 @@
-function peaks = FindSpectralPeaks(spectrum,S,noiseLevel)
+function peaks = FindSpectralPeaks(spectrum, S, noiseLevel)
 % peaks = FindSpectralPeaks(spectrum,[S],[noiseLevel])
 %
 % Find the local peaks in a spectrum.
@@ -15,30 +15,29 @@ function peaks = FindSpectralPeaks(spectrum,S,noiseLevel)
 % 5/17/99   dhb   Added  noiseLevel parameter.
 
 if (nargin < 2 || isempty(S))
-	S = [380 5 81];
+    S = [380, 5, 81];
 end
 wls = MakeItWls(S);
 if (nargin < 3 || isempty(noiseLevel))
-	noiseLevel = 0;
+    noiseLevel = 0;
 end
 
 indices = [];
-[nWls,nil] = size(spectrum);
-noiseThreshold = noiseLevel*max(spectrum);
-for i = 3:nWls-2
-	if (spectrum(i-2) < spectrum(i-1) && ...
-		  spectrum(i-1) < spectrum(i) && ...
-			spectrum(i+1) < spectrum(i) && ...
-			spectrum(i+2) < spectrum(i+1) && ...
-			spectrum(i) > noiseThreshold)
-		indices = [indices ; i];
-	end
+[nWls, nil] = size(spectrum);
+noiseThreshold = noiseLevel * max(spectrum);
+for i = 3:nWls - 2
+    if (spectrum(i - 2) < spectrum(i - 1) && ...
+            spectrum(i - 1) < spectrum(i) && ...
+            spectrum(i + 1) < spectrum(i) && ...
+            spectrum(i + 2) < spectrum(i + 1) && ...
+            spectrum(i) > noiseThreshold)
+        indices = [indices; i];
+    end
 end
 
 
 peaks = indices;
-[nPeaks,nil] = size(indices);
+[nPeaks, nil] = size(indices);
 for i = 1:nPeaks
-	peaks(i) = wls(indices(i));
+    peaks(i) = wls(indices(i));
 end
-

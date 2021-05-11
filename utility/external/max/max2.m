@@ -1,4 +1,4 @@
-function [maxel,IJ]= max2(M,userows,usecols)
+function [maxel, IJ] = max2(M, userows, usecols)
 % finds the location of the single overall maximum element in a 2-d array
 % usage: [maxel,IJ] = max2(M)
 % usage: [maxel,IJ] = max2(M,userows,usecols)
@@ -65,7 +65,7 @@ function [maxel,IJ]= max2(M,userows,usecols)
 %
 %
 % See also: max2, max, min, find
-% 
+%
 %
 % Author: John D'Errico
 % e-mail: woodchips@rochester.rr.com
@@ -73,53 +73,49 @@ function [maxel,IJ]= max2(M,userows,usecols)
 % Release date: 2/16/09
 
 % check the arguments
-if (nargin<1) || (nargin>3)
-  error('max2 may have 1, 2, or 3 arguments only')
-end
+if (nargin < 1) || (nargin > 3)
+    error('max2 may have 1, 2, or 3 arguments only')
+    end
 
-if length(size(M)) > 2
-  error('M must be a 2-d array or a vector')
-end
-[n,m] = size(M);
+    if length(size(M)) > 2
+        error('M must be a 2-d array or a vector')
+    end
+    [n, m] = size(M);
 
-% default for userows?
-if (nargin<2) || isempty(userows)
-  userows = 1:n;
-else
-  userows = unique(userows);
-  if ~isnumeric(userows) || any(diff(userows)==0) || ...
-      any(userows<1) || any(userows>n) || any(userows~=round(userows))
-    error('userows must be a valid set of indices into the rows of M')
-  end
-end
+    % default for userows?
+    if (nargin < 2) || isempty(userows)
+        userows = 1:n;
+    else
+        userows = unique(userows);
+        if ~isnumeric(userows) || any(diff(userows) == 0) || ...
+                any(userows < 1) || any(userows > n) || any(userows ~= round(userows))
+            error('userows must be a valid set of indices into the rows of M')
+        end
+    end
 
-% default for usecols?
-if (nargin<3) || isempty(usecols)
-  usecols = 1:m;
-else
-  usecols = unique(usecols);
-  if ~isnumeric(usecols) || any(diff(usecols)==0) || ...
-      any(usecols<1) || any(usecols>m) || any(usecols~=round(usecols))
-    error('usecols must be a valid set of indices into the columns of M')
-  end
-end
+    % default for usecols?
+    if (nargin < 3) || isempty(usecols)
+        usecols = 1:m;
+    else
+        usecols = unique(usecols);
+        if ~isnumeric(usecols) || any(diff(usecols) == 0) || ...
+                any(usecols < 1) || any(usecols > m) || any(usecols ~= round(usecols))
+            error('usecols must be a valid set of indices into the columns of M')
+        end
+    end
 
-% restrict the search
-Muse = M(userows,usecols);
+    % restrict the search
+    Muse = M(userows, usecols);
 
-% The maximum down the rows
-[maxrows,rowind] = max(Muse,[],1);
+    % The maximum down the rows
+    [maxrows, rowind] = max(Muse, [], 1);
 
-% find the best of these maxima
-% across the columns
-[maxel,colind] = max(maxrows,[],2);
-rowind = rowind(colind);
+    % find the best of these maxima
+    % across the columns
+    [maxel, colind] = max(maxrows, [], 2);
+    rowind = rowind(colind);
 
-% package the row and column indices
-% together, in terms of the original
-% matrix in case there was a restiction.
-IJ = [userows(rowind),usecols(colind)];
-
-
-
-
+    % package the row and column indices
+    % together, in terms of the original
+    % matrix in case there was a restiction.
+    IJ = [userows(rowind), usecols(colind)];

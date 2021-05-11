@@ -4,15 +4,15 @@ function handles = metricsShowMetric(handles)
 %
 %Author: ImagEval
 %Purpose:
-%  Display the metrics image in the metrics window.  
+%  Display the metrics image in the metrics window.
 %
 % Examples:
 %   metricsShowImage(img,1/2.2)
 
 if ieNotDefined('handles'), error('Metric window handles not valid.'); end
 
-contents = get(handles.popMetric,'String');
-metric = contents{get(handles.popMetric,'Value')};
+contents = get(handles.popMetric, 'String');
+metric = contents{get(handles.popMetric, 'Value')};
 img = handles.metricImage;
 axes(handles.imgMetric);
 
@@ -22,40 +22,39 @@ axes(handles.imgMetric);
 % gam = str2double(get(handles.editGamma,'String'));
 
 switch metric
-    
+
     case 'CIELAB (dE)'
-        
+
         % Only show dE values below 30.
-        img = ieClip(img,0,30);
-        barHndl = imagescM(img,gray(30),'horiz',1); 
+        img = ieClip(img, 0, 30);
+        barHndl = imagescM(img, gray(30), 'horiz', 1);
         axis image; axis off
-        
+
     case 'CIELUV (dE)'
-        
-        img = ieClip(img,0,30);
-        imagescM(img,[],'horiz'); 
+
+        img = ieClip(img, 0, 30);
+        imagescM(img, [], 'horiz');
         axis image; axis off
-        
+
     case 'Spatial CIELAB'
         warning('Spatial CIELAB Not yet implemented.')
-        
+
     case 'DcTune'
         warning('DcTune Not yet implemented.')
 
     case 'RMSE'
-        imagescM(img,[],'horiz',0); 
+        imagescM(img, [], 'horiz', 0);
         axis image; axis off
 
     case 'MSE'
-        imagescM(img,[],'horiz'); 
+        imagescM(img, [], 'horiz');
         axis image; axis off
 
     case 'PSNR'
         axis image; axis off
-        
+
     otherwise
 end
 
 
 return;
-

@@ -1,5 +1,5 @@
 function optics = opticsClearData(optics)
-%Clear OTF and cos4th data from optics.  
+%Clear OTF and cos4th data from optics.
 %
 %   obj = opticsClearData(obj)
 %
@@ -15,9 +15,9 @@ function optics = opticsClearData(optics)
 % Copyright ImagEval Consultants, LLC, 2003.
 
 % Clear cahced OTF data
-optics = opticsSet(optics,'OTF data',[]);
+optics = opticsSet(optics, 'OTF data', []);
 
 % Sometimes we have a lot of cos4th data.
-optics = opticsSet(optics,'cos4th data',[]);
+optics = opticsSet(optics, 'cos4th data', []);
 
 end

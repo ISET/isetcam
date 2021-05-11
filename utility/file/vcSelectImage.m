@@ -1,4 +1,4 @@
-function [fullName, imageType] = vcSelectImage(imageType,imgDir,ext)
+function [fullName, imageType] = vcSelectImage(imageType, imgDir, ext)
 % Return the full path name and type of an ISET image.
 %
 %   [fullName, imageType] = vcSelectImage([imageType],[imgDir],[ext])
@@ -30,20 +30,21 @@ switch lower(imageType)
         fileFilter = '*.*';
     case 'multispectral'
         fileFilter = '*.mat';
-    case {'monochrome','unispectral'}
+    case {'monochrome', 'unispectral'}
         imageType = 'unispectral';
         fileFilter = '*.*';
     otherwise
         fileFilter = '*.*';
 end
 
-windowTitle = sprintf('Select %s file',imageType);
-if ieNotDefined('imgDir'), imgDir = fullfile(isetRootPath,'data','images',imageType); end
+windowTitle = sprintf('Select %s file', imageType);
+if ieNotDefined('imgDir'), imgDir = fullfile(isetRootPath, 'data', 'images', imageType); end
 
 chdir(imgDir)
-fullName = vcSelectDataFile('stayput','r',ext);
+fullName = vcSelectDataFile('stayput', 'r', ext);
 
-if isempty(fullName), imageType = ''; return;
+if isempty(fullName), imageType = '';
+    return;
 elseif nargout == 2
     % Try to determine the image type, if this is requested.
     imageType = ieImageType(fullName);
@@ -52,4 +53,3 @@ end
 chdir(curDir)
 
 return;
-

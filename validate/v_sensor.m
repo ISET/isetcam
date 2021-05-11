@@ -13,21 +13,22 @@ s_sensorSNR
 s_sensorAnalyzeDarkVoltage
 s_sensorSpectralEstimation
 
-if exist('s_sensorExposureCFA','file')
+if exist('s_sensorExposureCFA', 'file')
     s_sensorExposureCFA
 end
 
-if exist('s_sensorExposureBracket','file')
+if exist('s_sensorExposureBracket', 'file')
     s_sensorExposureBracket
 end
 
 %% Test chromaticity plot for sensor
 
-scene = sceneCreate; camera=cameraCreate;
-camera = cameraCompute(camera,scene);
-sensor = cameraGet(camera,'sensor');
+scene = sceneCreate;
+camera = cameraCreate;
+camera = cameraCompute(camera, scene);
+sensor = cameraGet(camera, 'sensor');
 sensorWindow(sensor);
 
-sensorPlot(sensor,'chromaticity',[20 20 40 40]);
+sensorPlot(sensor, 'chromaticity', [20, 20, 40, 40]);
 
 %% End

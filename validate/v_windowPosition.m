@@ -5,14 +5,17 @@
 % See also
 %   s_initWindow
 
-%% 
+%%
 ieInit
 
 %%
-scene = sceneCreate; oi = oiCreate; sensor = sensorCreate; ip = ipCreate;
+scene = sceneCreate;
+oi = oiCreate;
+sensor = sensorCreate;
+ip = ipCreate;
 
-oi     = oiCompute(oi,scene);
-sensor = sensorCompute(sensor,oi);
+oi = oiCompute(oi, scene);
+sensor = sensorCompute(sensor, oi);
 ip     = ipCompute(ip,sensor);
 
 %%

@@ -1,4 +1,4 @@
-function hdl = plotReflectance(wavelength,reflectance,varargin)
+function hdl = plotReflectance(wavelength, reflectance, varargin)
 % Utility to plot and label reflectance data
 %
 % Syntax
@@ -24,12 +24,12 @@ function hdl = plotReflectance(wavelength,reflectance,varargin)
 
 %%
 p = inputParser;
-p.addRequired('wavelength',@isvector);
-p.addRequired('radiance',@isnumeric);
+p.addRequired('wavelength', @isvector);
+p.addRequired('radiance', @isnumeric);
 
-p.addParameter('title','Spectral reflectance',@ischar);
+p.addParameter('title', 'Spectral reflectance', @ischar);
 
-p.parse(wavelength,reflectance,varargin{:});
+p.parse(wavelength, reflectance, varargin{:});
 strTitle = p.Results.title;
 
 %% Open the window
@@ -40,17 +40,17 @@ wavelength = wavelength(:);
 
 % The dimension that matches wavelength is the right one
 nWave = length(wavelength);
-if nWave == size(reflectance,1)
-    plot(wavelength(:),reflectance);
-elseif length(wavelength) == size(reflectance,2)
-    plot(wavelength(:),reflectance');    
+if nWave == size(reflectance, 1)
+    plot(wavelength(:), reflectance);
+elseif length(wavelength) == size(reflectance, 2)
+    plot(wavelength(:), reflectance');
 end
 
 %% Label it
 
 xlabel('Wavelength (nm)');
 ylabel('Reflectance');
-grid on; 
+grid on;
 title(strTitle);
 
 end

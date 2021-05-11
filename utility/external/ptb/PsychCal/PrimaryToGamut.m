@@ -1,4 +1,4 @@
-function [gamut, badIndex] = PrimaryToGamut(cal,primary)
+function [gamut, badIndex] = PrimaryToGamut(cal, primary)
 % [gamut, badIndex] = PrimaryToGamut(cal,primary)
 %
 % Check that primary coordinates are in range [0,1].
@@ -17,30 +17,30 @@ function [gamut, badIndex] = PrimaryToGamut(cal,primary)
 gamut = primary;
 tolerance = 1e-10;
 
-[m,n] = size(primary);
-badIndex = zeros(1,n);
+[m, n] = size(primary);
+badIndex = zeros(1, n);
 
 % Check lower bound by rows
-for (i=1:m)
-  index = find(primary(i,:) < 0);
-  if (~isempty(index))
-    gamut(i,index) = zeros(1,length(index));
-		index = find(primary(i,:) < -tolerance);
-		if (~isempty(index))
-			badIndex(index) = ones(1,length(index));
-		end
-  end
+for (i = 1:m)
+    index = find(primary(i, :) < 0);
+    if (~isempty(index))
+        gamut(i, index) = zeros(1, length(index));
+        index = find(primary(i, :) < -tolerance);
+        if (~isempty(index))
+            badIndex(index) = ones(1, length(index));
+        end
+    end
 end
 
 
 % Check upper bound by rows
-for (i=1:m)
-  index = find(primary(i,:) > 1);
-  if (~isempty(index))
-    gamut(i,index) = ones(1,length(index));
-		index = find(primary(i,:) > 1+tolerance);
-		if (~isempty(index))
-    	badIndex(index) = ones(1,length(index));
-		end
-  end
+for (i = 1:m)
+    index = find(primary(i, :) > 1);
+    if (~isempty(index))
+        gamut(i, index) = ones(1, length(index));
+        index = find(primary(i, :) > 1+tolerance);
+        if (~isempty(index))
+            badIndex(index) = ones(1, length(index));
+        end
+    end
 end

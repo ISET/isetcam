@@ -9,14 +9,14 @@ function [vci1, vci2] = metricsGetVciPair(handles);
 
 global vcSESSION
 
-contents = get(handles.popImageList1,'String');
-vcName{1} = contents(get(handles.popImageList1,'Value'));
-contents = get(handles.popImageList1,'String');
-vcName{2} = contents(get(handles.popImageList2,'Value'));
+contents = get(handles.popImageList1, 'String');
+vcName{1} = contents(get(handles.popImageList1, 'Value'));
+contents = get(handles.popImageList1, 'String');
+vcName{2} = contents(get(handles.popImageList2, 'Value'));
 
 % Find the number of the images that have the two names
-val1 = ieFindObjectByName('vcimage',vcName{1});
-val2 = ieFindObjectByName('vcimage',vcName{2});
+val1 = ieFindObjectByName('vcimage', vcName{1});
+val2 = ieFindObjectByName('vcimage', vcName{2});
 
 % Get the two vc images
 vci1 = vcSESSION.VCIMAGE{val1};

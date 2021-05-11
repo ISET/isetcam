@@ -1,4 +1,4 @@
-function cal = UpdateAmbientSensor(cal,new_ambient_sensor,ADD)
+function cal = UpdateAmbientSensor(cal, new_ambient_sensor, ADD)
 % cal = UpdateAmbientSensor(cal,new_ambient_sensor,[ADD])
 %
 % Update the ambient light used in the conversions.  The
@@ -20,21 +20,19 @@ function cal = UpdateAmbientSensor(cal,new_ambient_sensor,ADD)
 % 5/2/02    dhb, kr  Add ADD flag.
 
 % Primitive dimension check
-if (size(new_ambient_sensor,1) ~= size(cal.ambient_linear,1) || ...
-  size(new_ambient_sensor,2) ~= size(cal.ambient_linear,2) )
-	error('Old and new ambient specifications are not of same dimension');
+if (size(new_ambient_sensor, 1) ~= size(cal.ambient_linear, 1) || ...
+        size(new_ambient_sensor, 2) ~= size(cal.ambient_linear, 2))
+    error('Old and new ambient specifications are not of same dimension');
 end
 
 % Set default on optional argument.
 if (nargin < 3 || isempty(ADD))
-	ADD = 0;
+    ADD = 0;
 end
 
 % Update the structure
 if (~ADD)
-	cal.ambient_linear = new_ambient_sensor;
+    cal.ambient_linear = new_ambient_sensor;
 else
-	cal.ambient_linear = cal.ambient_linear + new_ambient_sensor;
+    cal.ambient_linear = cal.ambient_linear + new_ambient_sensor;
 end
-
-

@@ -1,4 +1,4 @@
-function fName = ieSaveSIDataFile(psf,wave,umPerSamp,fName)
+function fName = ieSaveSIDataFile(psf, wave, umPerSamp, fName)
 %Write file with data for shift-invariant optics
 %
 %  fName = ieSaveSIDataFile(psf,wave,umPerSamp,fName)
@@ -17,17 +17,17 @@ function fName = ieSaveSIDataFile(psf,wave,umPerSamp,fName)
 %      fName = ieSaveSIDataFile(psf,wave,umPerSamp)
 %
 %      oi = vcGetObject('OI');
-%      optics = siSynthetic('custom',oi,fName);  
+%      optics = siSynthetic('custom',oi,fName);
 %
 % Copyright ImagEval Consultants, LLC, 2010
 
-if ieNotDefined('psf'),  error('psf volume required'); end
+if ieNotDefined('psf'), error('psf volume required'); end
 if ieNotDefined('wave'), error('wavelength samples required (nm)'); end
 if ieNotDefined('umPerSamp'), error('Microns per sample(2-vector) required'); end
-if ieNotDefined('fName'), fName = vcSelectDataFile('stayPut','w'); end
+if ieNotDefined('fName'), fName = vcSelectDataFile('stayPut', 'w'); end
 
 notes.timeStamp = datestr(now);
 
-save(fName,'psf','wave','umPerSamp','notes');
+save(fName, 'psf', 'wave', 'umPerSamp', 'notes');
 
 return;

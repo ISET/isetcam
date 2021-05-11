@@ -16,32 +16,32 @@
 %% Read the BMP file
 
 fName = 'Gretag.bmp';
-mosaic = imread(fName);       % We are treating these as sensor volts
-mosaic = double(mosaic)/255;  % imwrite needs [0,1]
+mosaic = imread(fName); % We are treating these as sensor volts
+mosaic = double(mosaic) / 255; % imwrite needs [0,1]
 
 %% Convert to the gb/rg format
 
 % Initialize
-r = size(mosaic,1);
-c = size(mosaic,2);
-sensorMosaic = zeros(r,c);
+r = size(mosaic, 1);
+c = size(mosaic, 2);
+sensorMosaic = zeros(r, c);
 
 % Two green samples
-sensorMosaic(1:2:end,1:2:end) = mosaic(1:2:end,1:2:end,2);
-sensorMosaic(2:2:end,2:2:end) = mosaic(2:2:end,2:2:end,2);
+sensorMosaic(1:2:end, 1:2:end) = mosaic(1:2:end, 1:2:end, 2);
+sensorMosaic(2:2:end, 2:2:end) = mosaic(2:2:end, 2:2:end, 2);
 
 % Blue sample
-sensorMosaic(1:2:end,2:2:end) = mosaic(1:2:end,2:2:end,3);
+sensorMosaic(1:2:end, 2:2:end) = mosaic(1:2:end, 2:2:end, 3);
 
 % Red sample
-sensorMosaic(2:2:end,1:2:end) = mosaic(2:2:end,1:2:end,1);
+sensorMosaic(2:2:end, 1:2:end) = mosaic(2:2:end, 1:2:end, 1);
 
 % A monochrome image, sampled for GBRG format
 % imtool(sensorMosaic)
 
 %% Write the data as a single image plane
 
-fname = fullfile(isetRootPath,'data','sensor','gbrgMCCSensor.tif');
-imwrite(sensorMosaic,fname,'tif');
+fname = fullfile(isetRootPath, 'data', 'sensor', 'gbrgMCCSensor.tif');
+imwrite(sensorMosaic, fname, 'tif');
 
 %%

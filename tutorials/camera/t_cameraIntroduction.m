@@ -1,7 +1,7 @@
 %% t_cameraIntroduction
 %
 % We are introducing a new object, the camera.  The camera object is a
-% structure that includes the oi, sensor, and ip objects. 
+% structure that includes the oi, sensor, and ip objects.
 %
 % The camera object allows the user to run calculate more efficiently than
 % addressing each object separately.  In the first part of this tutorial,
@@ -32,11 +32,11 @@ camera = cameraCreate;
 
 % Create a simple scene
 scene = sceneCreate;
-scene = sceneSet(scene,'fov',8);
+scene = sceneSet(scene, 'fov', 8);
 
 % Compute the camera output.  This combines the scene with the default
 % camera that we created above.
-camera = cameraCompute(camera,scene);
+camera = cameraCompute(camera, scene);
 
 % Camera compute always adjusts the sensor size to make it match the field
 % of view of the scene.  You are alerted to this by a warning.
@@ -44,10 +44,10 @@ camera = cameraCompute(camera,scene);
 %% Visualizing the camera objects
 
 % To see all of the objects and their parameters listed their windows, you
-% can use 
-cameraWindow(camera,'oi');
-cameraWindow(camera,'sensor');
-cameraWindow(camera,'ip');
+% can use
+cameraWindow(camera, 'oi');
+cameraWindow(camera, 'sensor');
+cameraWindow(camera, 'ip');
 
 %% Retrieving specific camera object data
 
@@ -55,35 +55,34 @@ cameraWindow(camera,'ip');
 % but thorough way is to get the object and use the gets/sets and so forth
 % specific to that object, such as
 ip     = cameraGet(camera,'ip');
-sRGB   = ipGet(ip,'data srgb');
+sRGB = ipGet(ip, 'data srgb');
 
-% Have a look at the data, rendered for an sRGB monitor 
+% Have a look at the data, rendered for an sRGB monitor
 % Hopefully the one you are looking at is close to that.
 vcNewGraphWin;
 imagesc(sRGB);
 
 % A more efficient alternative way is get the data from the camera object.
 % The code is shorter, but it may be less transparent for new users.
-sRGB = cameraGet(camera,'ip data srgb');
+sRGB = cameraGet(camera, 'ip data srgb');
 vcNewGraphWin;
 imagesc(sRGB);
-
 
 %% Setting the camera parameters
 
 % A detailed way to set the object properties, such as the optics fnumber,
 % is to retrieve the object, the set property, and reattach the object.
-% For example, 
+% For example,
 
 % Set the value
-camera = cameraSet(camera,'optics fnumber',16);
+camera = cameraSet(camera, 'optics fnumber', 16);
 
 % Compute, get the result, and show
-camera = cameraCompute(camera,scene);
+camera = cameraCompute(camera, scene);
 
 % Now get the image processor sRGB values and display them.
 ip     = cameraGet(camera,'ip');
-sRGB   = ipGet(ip,'data srgb');
+sRGB = ipGet(ip, 'data srgb');
 ieNewGraphWin;
 imagesc(sRGB);
 
@@ -93,27 +92,27 @@ imagesc(sRGB);
 % on the camera object.  In each case, it is possible to pull out the
 % object and perform the actions on the object rather than through the
 % camera.
-camera = cameraSet(camera,'ip illuminant correction method','gray world');
-camera = cameraCompute(camera,scene);
-sRGB   = cameraGet(camera,'ip data srgb');
+camera = cameraSet(camera, 'ip illuminant correction method', 'gray world');
+camera = cameraCompute(camera, scene);
+sRGB = cameraGet(camera, 'ip data srgb');
 
-% Have a look at the data, rendered for an sRGB monitor 
+% Have a look at the data, rendered for an sRGB monitor
 ieNewGraphWin;
 imagesc(sRGB);
 
 %% To speed up the calculation, start from the computed optical image.
 
 fprintf('The whole computation\n');
-tic, cameraCompute(camera,scene); toc
+tic, cameraCompute(camera, scene); toc
 
 fprintf('From the oi\n');
-tic, cameraCompute(camera,'oi'); toc
+tic, cameraCompute(camera, 'oi'); toc
 
 fprintf('From the sensor\n');
-tic, cameraCompute(camera,'sensor'); toc
+tic, cameraCompute(camera, 'sensor'); toc
 
 %% View the processing result
 
-cameraWindow(camera,'ip');
+cameraWindow(camera, 'ip');
 
 %%

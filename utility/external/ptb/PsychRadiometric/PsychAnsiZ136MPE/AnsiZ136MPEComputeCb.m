@@ -17,11 +17,9 @@ function Cb = AnsiZ136MPEComputeCb(stimulusWavelengthNm)
 if (stimulusWavelengthNm >= 400 && stimulusWavelengthNm < 450)
     Cb = 1;
 elseif (stimulusWavelengthNm >= 450 && stimulusWavelengthNm < 600)
-    Cb = 10^(20*(stimulusWavelengthNm/1000-0.450));
+    Cb = 10^(20 * (stimulusWavelengthNm / 1000 - 0.450));
 else
     Cb = NaN;
 end
 
 end
-
-

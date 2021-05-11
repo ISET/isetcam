@@ -13,13 +13,13 @@ rdt = RdtClient('scien');
 %
 artifacts = rdt.listArtifacts;
 rPaths = rdt.listRemotePaths;
-fprintf('SCIEN repository contains\n %d artifacts in %d remote paths\n',length(artifacts),length(rPaths));
+fprintf('SCIEN repository contains\n %d artifacts in %d remote paths\n', length(artifacts), length(rPaths));
 
 %% Summarize ISETBIO
 rdt = RdtClient('isetbio');
 artifacts = rdt.listArtifacts;
 rPaths = rdt.listRemotePaths;
-fprintf('ISETBIO repository contains\n %d artifacts in %d remote paths\n',length(artifacts),length(rPaths));
+fprintf('ISETBIO repository contains\n %d artifacts in %d remote paths\n', length(artifacts), length(rPaths));
 
 %%  Get one artifact from the isetbio repository
 
@@ -40,21 +40,23 @@ data = rdt.readArtifact(testA.artifactId, ...
 dataCell = rdt.readArtifacts(testA);
 data = dataCell{1};
 
-ieAddObject(data.scene); sceneWindow;
+ieAddObject(data.scene);
+sceneWindow;
 
 %% Download via the URL works
-tmp = [tempname,'.mat'];
+tmp = [tempname, '.mat'];
 try % websave version for modern Matlab
-    websave(tmp,testA.url);
-    load(tmp,'scene');
-    ieAddObject(scene); sceneWindow;
+    websave(tmp, testA.url);
+    load(tmp, 'scene');
+    ieAddObject(scene);
+    sceneWindow;
 catch
-    urlwrite(testA.url,tmp);
-    load(tmp,'scene');
-    ieAddObject(scene); sceneWindow;
+    urlwrite(testA.url, tmp);
+    load(tmp, 'scene');
+    ieAddObject(scene);
+    sceneWindow;
 end
 delete(tmp);
-
 
 %% Finding all the artifacts in a specific section
 
@@ -62,7 +64,7 @@ delete(tmp);
 rdt = RdtClient('scien');
 rdt.crp('/L3/Farrell/D200/garden');
 artifacts = rdt.listArtifacts;
-fprintf('%d artifacts returned from L3/Farrell/D200/garden \n',length(artifacts));
+fprintf('%d artifacts returned from L3/Farrell/D200/garden \n', length(artifacts));
 rdt.openBrowser
 
 %%

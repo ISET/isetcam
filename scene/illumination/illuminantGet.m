@@ -1,4 +1,4 @@
-function val = illuminantGet(il,param,varargin)
+function val = illuminantGet(il, param, varargin)
 % Get parameter value from an illuminant structure
 %
 % Synopsis
@@ -11,7 +11,7 @@ function val = illuminantGet(il,param,varargin)
 %   Illuminants have a variety of formats.
 %
 %     spectral - a single vector of wavelength that is applied to the entire
-%             scene.   
+%             scene.
 %     spatial spectral - a 3D representation of the illuminant (r,c,wave)
 %
 %   You can assess the illuminant format of a 'scene', as in
@@ -46,24 +46,24 @@ function val = illuminantGet(il,param,varargin)
 % Examples:
 %   ieExamplesPrint('illuminantGet');
 %
-% See also:  
+% See also:
 %  illuminantCreate, illuminantSet
 
 % Examples:
 %{
-   wave = 400:10:700; cTemp = 5000; luminance = 200;
-   il = illuminantCreate('blackbody',wave,cTemp,luminance);
+wave = 400:10:700; cTemp = 5000; luminance = 200;
+il = illuminantCreate('blackbody',wave,cTemp,luminance);
 
-   illuminantGet(il,'luminance')
-   illuminantGet(il,'name')
-   illuminantGet(il,'type')
-   e = illuminantGet(il,'energy');
-   p = illuminantGet(il,'photons')
+illuminantGet(il,'luminance')
+illuminantGet(il,'name')
+illuminantGet(il,'type')
+e = illuminantGet(il,'energy');
+p = illuminantGet(il,'photons')
 %}
 
 %% Parameter checking
-if ~exist('il','var') || isempty(il), error('illuminant structure required'); end
-if ~exist('param','var') || isempty(param), error('param required'); end
+if ~exist('il', 'var') || isempty(il), error('illuminant structure required'); end
+if ~exist('param', 'var') || isempty(param), error('param required'); end
 
 val = [];
 
@@ -80,21 +80,21 @@ switch param
         % illuminantGet(il,'photons')
         % illuminantGet(il,'photons',wave)
         % Stored as single, returned as double
-        
+
         % We handle the spectral and spatial-spectral the same way.
-        if ~checkfields(il,'data','photons'), return; end
+        if ~checkfields(il, 'data', 'photons'), return; end
         val = il.data.photons;
-        
+
         % There are old-style data sets out there.
         if isa(val, 'uint32')
             val = ieUncompressData(val, il.data.min, il.data.max, 32);
         elseif isa(val, 'uint16')
             val = ieUncompressData(val, il.data.min, il.data.max, 16);
         end
-        
+
         % Return the illuminant as a double
         if isvector(val), val = val(:); end
-        
+
         % interpolate for wave
         if ~isempty(varargin)
             wave = varargin{1};
@@ -106,23 +106,23 @@ switch param
         if ~getpref('ISET', 'useSingle', true)
             val = double(val);
         end
-        
+
     case 'energy'
         % This has to work for spatial spectral and pure spectral
-        
+
         % Get the illuminant as photons and convert to energy
-        p =  illuminantGet(il,'photons');
+        p = illuminantGet(il, 'photons');
         if ndims(p) == 3
             % We manage the spatial spectral case
-            [p,r,c] = RGB2XWFormat(p);
-            val = Quanta2Energy(illuminantGet(il,'wave'),p);
-            val = XW2RGBFormat(val,r,c);
+            [p, r, c] = RGB2XWFormat(p);
+            val = Quanta2Energy(illuminantGet(il, 'wave'), p);
+            val = XW2RGBFormat(val, r, c);
         else
             % This is the spectral vector case
-            val = Quanta2Energy(illuminantGet(il,'wave'),p(:)')';
+            val = Quanta2Energy(illuminantGet(il, 'wave'), p(:)')';
         end
         if isvector(val), val = val(:); end
-        
+
     case 'wave'
         % illuminantGet(il,'wave');
         % illuminantGet(il,'wave',scene);
@@ -130,48 +130,50 @@ switch param
         % If a stand alone illuminant, it has its own spectrum.
         % If it is part of a scene, it may not have a spectrum. In that
         % case we send in the scene spectrum and get the wavelength.
-        if isfield(il,'spectrum'), val = il.spectrum.wave;
-        elseif ~isempty(varargin), val = sceneGet(varargin{1},'wave');
+        if isfield(il, 'spectrum'), val = il.spectrum.wave;
+        elseif ~isempty(varargin), val = sceneGet(varargin{1}, 'wave');
         end
         if isvector(val), val = val(:); end
-        
+
     case 'nwave'
         % nWave = illuminantGet(il,'n wave');
         % Number of wavelength samples
-        
-        val = length(illuminantGet(il,'wave'));
-        
+
+        val = length(illuminantGet(il, 'wave'));
+
     case 'luminance'
         % Return luminance in cd/m2
-        e = illuminantGet(il,'energy');
-        wave = illuminantGet(il,'wave');
-        val = ieLuminanceFromEnergy(e(:)',wave);
+        e = illuminantGet(il, 'energy');
+        wave = illuminantGet(il, 'wave');
+        val = ieLuminanceFromEnergy(e(:)', wave);
         if isvector(val), val = val(:); end
     case 'spatialsize'
         % Needs to be worked out properly ... not working yet ...
-        if ~checkfields(il,'data','photons'), val = []; return; end
+        if ~checkfields(il, 'data', 'photons'), val = [];
+            return;
+        end
         val = size(il.data.photons);
-               
+
     case 'comment'
         val = il.comment;
-        
-    case {'format','illuminantformat'}
+
+    case {'format', 'illuminantformat'}
         % illuminantGet(il,'illuminant format') Returns: spectral, spatial
         % spectral, or empty. In more recent Matlab versions, we can use
         % isvector, ismatrix functions.
-        sz = illuminantGet(il,'spatial size');
+        sz = illuminantGet(il, 'spatial size');
         if length(sz) < 3
-            if prod(sz) == illuminantGet(il,'nwave');
+            if prod(sz) == illuminantGet(il, 'nwave');
                 val = 'spectral';
             end
         else
-            if sz(3) == illuminantGet(il,'nwave')
+            if sz(3) == illuminantGet(il, 'nwave')
                 val = 'spatial spectral';
             end
         end
-        
+
     otherwise
-        error('Unknown illuminant parameter %s\n',param)
+        error('Unknown illuminant parameter %s\n', param)
 end
 
 end

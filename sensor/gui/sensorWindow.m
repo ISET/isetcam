@@ -5,13 +5,13 @@ function sensorW = sensorWindow(sensor)
 %   sensorW = sensorWindow(sensor)
 %
 % Brief description
-%   Opens a sensorWindow interface based on the sensorWindow_App. 
+%   Opens a sensorWindow interface based on the sensorWindow_App.
 %
 % Inputs
 %   sensor: The sensor you want in the window.  If empty, the currently
 %           selected sensor in global vcSESSION is used.  If there is no
 %           selected sensor a default sensor is created and used.
-%   show:   Executes a drawnow command on exiting.  
+%   show:   Executes a drawnow command on exiting.
 %           (Optional, default true)
 %
 % Outputs
@@ -38,17 +38,17 @@ function sensorW = sensorWindow(sensor)
 
 % Examples
 %{
-   sensorWindow;
+sensorWindow;
 %}
 %{
-   scene = sceneCreate;
-   oi = oiCreate;  oi = oiCompute(oi,scene);
-   oiWindow(oi);
+scene = sceneCreate;
+oi = oiCreate;  oi = oiCompute(oi,scene);
+oiWindow(oi);
 %}
 
 %% Add a sensor to the database if it is in the call
 
-if exist('sensor','var')
+if exist('sensor', 'var')
     % A sensor was passed in.  We add it to the database and select it.
     % That sensor will appear in the window.
     ieAddObject(sensor);
@@ -70,17 +70,17 @@ sensorW = ieSessionGet('sensor window');
 if isempty(sensorW)
     % Empty, so create one and put it in the vcSESSION
     sensorW = sensorWindow_App;
-    ieSessionSet('sensor window',sensorW);
+    ieSessionSet('sensor window', sensorW);
 elseif ~isvalid(sensorW)
     % Replace the invalid one
     sensorW = sensorWindow_App;
-    ieSessionSet('sensor window',sensorW);
+    ieSessionSet('sensor window', sensorW);
 else
     % Just refresh it
     sensorW.refresh;
 end
 
 % Assume true if it does not exist.  Or if it is true.
-if ~exist('show','var') || show, drawnow; end
+if ~exist('show', 'var') || show, drawnow; end
 
 end

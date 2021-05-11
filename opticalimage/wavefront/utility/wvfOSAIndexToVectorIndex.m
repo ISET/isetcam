@@ -1,4 +1,4 @@
-function [vectorIndex,jIndex] = wvfOSAIndexToVectorIndex(jIndex)
+function [vectorIndex, jIndex] = wvfOSAIndexToVectorIndex(jIndex)
 % Convert a list of OSA j values (may be strings) to WVF toolbox indices
 %
 %   [vectorIndex,jIndex] = wvfOSAIndexToVectorIndex(jIndex)
@@ -37,7 +37,7 @@ function [vectorIndex,jIndex] = wvfOSAIndexToVectorIndex(jIndex)
 %
 % I would add 'tip' as a synonym for one of the two tilts below, if I
 % knew which one it was.
-% 
+%
 % Validation code
 %   [vectorIndex] = wvfOSAIndexToVectorIndex([0 1 2 3 4 5])
 %   [vectorIndex,jIndex] = wvfOSAIndexToVectorIndex({'piston', 'defocus' 'vertical_astigmatism', 'primary_spherical'})
@@ -51,40 +51,55 @@ if (iscell(jIndex))
     for i = 1:length(jIndex)
         switch (jIndex{i})
             case 'piston'
-                n(i) = 0; m(i) = 0;
+                n(i) = 0;
+                m(i) = 0;
             case {'vertical_tilt'}
-                n(i) = 1; m(i) = -1;
+                n(i) = 1;
+                m(i) = -1;
             case 'horizontal_tilt'
-                n(i) = 1; m(i) = 1;
+                n(i) = 1;
+                m(i) = 1;
             case 'oblique_astigmatism'
-                n(i) = 2; m(i) = -2;
+                n(i) = 2;
+                m(i) = -2;
             case 'defocus'
-                n(i) = 2; m(i) = 0;
+                n(i) = 2;
+                m(i) = 0;
             case 'vertical_astigmatism'
-                n(i) = 2; m(i) = 2;
+                n(i) = 2;
+                m(i) = 2;
             case 'vertical_trefoil'
-                n(i) = 3; m(i) = -3;
+                n(i) = 3;
+                m(i) = -3;
             case 'vertical_coma'
-                n(i) = 3; m(i) = -1;
+                n(i) = 3;
+                m(i) = -1;
             case 'horizontal_coma'
-                n(i) = 3; m(i) = 1;
+                n(i) = 3;
+                m(i) = 1;
             case 'oblique_trefoil'
-                n(i) = 3; m(i) = 3;
+                n(i) = 3;
+                m(i) = 3;
             case 'oblique_quadrafoil'
-                n(i) = 4; m(i) = -4;
+                n(i) = 4;
+                m(i) = -4;
             case 'oblique_secondary_astigmatism'
-                 n(i) = 4; m(i) = -2;
-           case {'primary_spherical','spherical'}
-                n(i) = 4; m(i) = 0;
+                n(i) = 4;
+                m(i) = -2;
+            case {'primary_spherical', 'spherical'}
+                n(i) = 4;
+                m(i) = 0;
             case 'vertical_secondary_astigmatism'
-                n(i) = 4; m(i) = 2;
+                n(i) = 4;
+                m(i) = 2;
             case 'vertical_quadrafoil'
-                n(i) = 4; m(i) = 4;
+                n(i) = 4;
+                m(i) = 4;
             otherwise
                 error('Unknown aberration string specified');
         end
     end
-    jIndex = wvfZernikeNMToOSAIndex(n,m);  
+    jIndex = wvfZernikeNMToOSAIndex(n, m);
 end
 
 vectorIndex = jIndex + 1;

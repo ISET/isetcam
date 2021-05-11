@@ -1,4 +1,4 @@
-function vcReplaceAndSelectObject(obj,val)
+function vcReplaceAndSelectObject(obj, val)
 %Replace an object and set as selected in the vcSESSION variable
 %
 %   vcReplaceAndSelectObject(obj,[val])
@@ -23,7 +23,7 @@ objType = vcGetObjectType(obj);
 if ieNotDefined('val'), val = vcGetSelectedObject(objType); end
 if isempty(val), val = 1; end
 
-vcReplaceObject(obj,val);
-vcSetSelectedObject(objType,val);
+vcReplaceObject(obj, val);
+vcSetSelectedObject(objType, val);
 
 return;

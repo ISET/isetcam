@@ -13,18 +13,18 @@
 % Copyright ImagEval Consultants, LLC, 2011.
 
 %% OTF
-wave = 400:10:700;       % nanometer
-sampleSF = 0:0.5:50;     % cyc/deg
-p  = 0.0015;  % Pupil radius (m)
-D0 = 60;      % Dioptric power of human lens
+wave = 400:10:700; % nanometer
+sampleSF = 0:0.5:50; % cyc/deg
+p = 0.0015; % Pupil radius (m)
+D0 = 60; % Dioptric power of human lens
 
-otf = humanCore(wave,sampleSF,p,D0);
+otf = humanCore(wave, sampleSF, p, D0);
 
 %% Plot the amplitude of the optical transfer function.
 vcNewGraphWin;
 
-mesh(sampleSF,wave,otf)
-view(32.5,14);
+mesh(sampleSF, wave, otf)
+view(32.5, 14);
 xlabel('Spatial freq cy/deg');
 ylabel('Wavelength (nm)');
 zlabel('OTF')
@@ -34,15 +34,14 @@ zlabel('OTF')
 % apparent in these graphs.
 
 vcNewGraphWin;
-waveList = [420 550 670];
-cList = {'b-','g-','r-'};
-for ii=1:length(waveList)
-    plot(sampleSF,otf(ieFindWaveIndex(wave,waveList(ii)),:),cList{ii});
+waveList = [420, 550, 670];
+cList = {'b-', 'g-', 'r-'};
+for ii = 1:length(waveList)
+    plot(sampleSF, otf(ieFindWaveIndex(wave, waveList(ii)), :), cList{ii});
     hold on
 end
 grid on
 
 xlabel('Spatial freq cy/deg');
 ylabel('OTF value');
-legend({'420 nm','550 nm','670 nm'})
-
+legend({'420 nm', '550 nm', '670 nm'})

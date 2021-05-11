@@ -40,8 +40,8 @@ function name = wvfOSAIndexToName(idx)
 
 if ieNotDefined('idx'), doc('wvfOsaIndexToName'); end
 
-name = cell(length(idx),1);
-for ii=1:length(idx)
+name = cell(length(idx), 1);
+for ii = 1:length(idx)
     switch idx(ii)
         case 1
             name{ii} = 'piston';
@@ -66,13 +66,13 @@ for ii=1:length(idx)
         case 11
             name{ii} = 'oblique_secondary_astigmatism';
         case 12
-            name{ii} =  'spherical';
+            name{ii} = 'spherical';
         case 13
             name{ii} = 'vertical_secondary_astigmatism';
         case 14
             name{ii} = 'vertical_quadrafoil';
         otherwise
-            error('Unknown index %f\n',idx(ii));
+            error('Unknown index %f\n', idx(ii));
     end
 end
 

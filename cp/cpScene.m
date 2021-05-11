@@ -33,22 +33,22 @@ classdef cpScene < handle
     %   set up for moving the bunny
     %   then generate a series of scenes based on that
     %{
-    	ourScene = cpScene();
-        ourScene.initialScene = <name of cb_bunny pbrt resource>
-        ourScene.cameraMotion = [0 0 0];
-        % bunny is currently labeled Default_B
-        ourScene.objectMotion = {{'Bunny_O', [1 0 0], [0 0 0]}};
-        ourScene.exposureTimes = [.5 .5 .5 .5];
-        ourScene.cacheName = 'cb_bunny_slide';
-    
-        previewScene = ourScene.preview();
-        renderedScenes = ourScene.render();
+    ourScene = cpScene();
+    ourScene.initialScene = <name of cb_bunny pbrt resource>
+    ourScene.cameraMotion = [0 0 0];
+    % bunny is currently labeled Default_B
+    ourScene.objectMotion = {{'Bunny_O', [1 0 0], [0 0 0]}};
+    ourScene.exposureTimes = [.5 .5 .5 .5];
+    ourScene.cacheName = 'cb_bunny_slide';
+
+    previewScene = ourScene.preview();
+    renderedScenes = ourScene.render();
     %}
-    
+
     % TODO:
     %  * add ability to pass lens models to pbrt & deal with returned oi
     %  instead of scenes
-    
+
     properties
         sceneType = '';
         initialScene = ''; % Ideally this is a PBRT scene, but we also need
@@ -57,68 +57,68 @@ classdef cpScene < handle
         isetScenes = {};
         isetSceneFileNames = [];
         imageFileNames = [];
-        
+
         thisR;
-        
-        scenePath;  % defaults set in constructor if needed
+
+        scenePath; % defaults set in constructor if needed
         sceneName;
-        
+
         resolution; % set in constructor
         numRays; % set in constructor
-        
+
         %numFrames & expTimes are currently over-defined
         %as we compute nF from eT, but leaving both here for possible TBA
         numFrames; % Set in constructor
-        expTimes = [.5];    % single or array of exposure times to use when
+        expTimes = [.5]; % single or array of exposure times to use when
         % generating the rendered images
-        
+
         allowsCameraMotion = true;
         cameraMotion = []; % extent of camera motion in meters per second
         % ['<cameraname>' [tx ty tz] [rx ry rz]]
-        
+
         allowsObjectMotion = false; % default until set by scene type
         objectMotion = []; % none until the user adds some
-        
-        lensFile = '';   % Since PBRT can accept lens models and return an OI
+
+        lensFile = ''; % Since PBRT can accept lens models and return an OI
         apertureDiameter = 5; % passed when using a lens file. in mm.
         % provide the option to specify one here. In this
         % case, instead of returning an array of scenes, we
         % return an array of oi's, that can be fed directly
         % to a sensor. Default is simple "pinhole"
         %{
-            lensfile  = 'dgauss.22deg.50.0mm.json';    % 30 38 18 10
-            thisR.camera = piCameraCreate('realistic','lensFile',lensfile);
+        lensfile  = 'dgauss.22deg.50.0mm.json';    % 30 38 18 10
+        thisR.camera = piCameraCreate('realistic','lensFile',lensfile);
         %}
-        
+
         sceneLuminance; % set in constructor, helps simulate lighting
         cachedRecipeFileName = '';
         originalRecipeFileName = ''; % to put back after we stash copies
         clearTempFiles = true; % by default remove our copy of pbrt scenes after use
-        
+
         focusRange = []; % for when we do focus stacking
         % right now we calculate automatically, but should allow it to be
         % passed in as well
-        
+
         verbosity; % level of chattiness
     end
-    
+
     %% Do the work here
     methods
         function obj = cpScene(sceneType, options)
             arguments
-                sceneType (1,1) string;
+                sceneType(1, 1) string;
                 options.recipe struct = struct([]);
                 options.sceneName char = 'cornell box bunny chart';
                 options.scenePath char = 'Cornell_BoxBunnyChart';
-                options.resolution (1,2) {mustBeNumeric} = [512 512];
-                options.numRays (1,1) {mustBeNumeric} = 64;
-                options.numFrames (1,1) {mustBeNumeric} = 1;
-                options.imageFileNames (1,:) string = [];
-                options.isetScenes (1,:) struct = [];
-                options.isetSceneFileNames (1,:) string = [];
-                options.initialScene (1,:) struct = ([]);
+                options.resolution(1, 2) {mustBeNumeric} = [512, 512];
+                options.numRays(1, 1) {mustBeNumeric} = 64;
+                options.numFrames(1, 1) {mustBeNumeric} = 1;
+                options.imageFileNames(1, :) string = [];
+                options.isetScenes(1, :) struct = [];
+                options.isetSceneFileNames(1, :) string = [];
+                options.initialScene(1, :) struct = ([]);
                 options.lensFile char = '';
-                options.sceneLuminance (1,1) {mustBeNumeric} = 100;
+                options.sceneLuminance(1, 1) {mustBeNumeric} = 100;
                 options.waveLengths {mustBeNumeric} = [400:10:700];
                 options.dispCal char = 'OLED-Sony.mat';
                 options.apertureDiameter {mustBeNumeric} = 5;
@@ -131,21 +131,21 @@ classdef cpScene < handle
             obj.sceneLuminance = options.sceneLuminance;
             obj.apertureDiameter = options.apertureDiameter;
             obj.verbosity = options.verbose;
-            
-            
+
+
             %cpScene Construct an instance of this class
             %   allow whatever init we want to accept in the creation call
             obj.sceneType = sceneType;
             switch obj.sceneType
                 case 'recipe' % we can pass a recipe directly if we already have one loaded
-                    if exist(options.recipe,'var')
+                    if exist(options.recipe, 'var')
                         obj.thisR = options.recipe;
                         if ~isempty(obj.lensFile)
 
-                            obj.thisR.camera = piCameraCreate('realistic',...
-                                'lensFile',obj.lensFile);
-                            obj.thisR.set('film diagonal',66); % sensor mm
-                            
+                            obj.thisR.camera = piCameraCreate('realistic', ...
+                                'lensFile', obj.lensFile);
+                            obj.thisR.set('film diagonal', 66); % sensor mm
+
                         end
                         obj.allowsObjectMotion = true;
                     else
@@ -154,16 +154,16 @@ classdef cpScene < handle
                 case 'pbrt' % pass a pbrt scene
                     obj.scenePath = options.scenePath;
                     obj.sceneName = options.sceneName;
-                    
+
                     if ~piDockerExists, piDockerConfig; end
                     obj.thisR = piRecipeDefault('scene name', obj.sceneName, 'verbose', 0);
                     if ~isempty(options.lensFile)
-                        obj.thisR.camera = piCameraCreate('realistic',...
-                            'lensFile',obj.lensFile);
-                        obj.thisR.set('film diagonal',66); % sensor mm
+                        obj.thisR.camera = piCameraCreate('realistic', ...
+                            'lensFile', obj.lensFile);
+                        obj.thisR.set('film diagonal', 66); % sensor mm
                     end
                     obj.allowsObjectMotion = true;
-                    
+
                     % ideally we should be able to accept an array of scene
                     % files
                 case 'iset scene files'
@@ -172,7 +172,7 @@ classdef cpScene < handle
                     % assume ISET scenes are multispectral, fwiw.
                     obj.isetScenes = [];
                     for ii = 1:numel(obj.isetSceneFileNames)
-                        obj.isetScenes = [obj.isetScenes sceneFromFile(obj.isetSceneFileNames(ii), 'multispectral',...
+                        obj.isetScenes = [obj.isetScenes, sceneFromFile(obj.isetSceneFileNames(ii), 'multispectral', ...
                             [], options.dispCal)];
                     end
                     obj.sceneType = 'iset scenes'; % Since we have now loaded our files into scenes
@@ -182,32 +182,32 @@ classdef cpScene < handle
                     obj.isetScenes = [];
                     obj.imageFileNames = options.imageFileNames;
                     for ii = 1:numel(options.imageFileNames)
-                        obj.isetScenes = [obj.isetScenes sceneFromFile(convertStringsToChars(options.imageFileNames(ii)), 'rgb', ...
+                        obj.isetScenes = [obj.isetScenes, sceneFromFile(convertStringsToChars(options.imageFileNames(ii)), 'rgb', ...
                             [], options.dispCal, options.waveLengths)];
                     end
                     obj.sceneType = 'iset scenes'; % as we now have scene files
                 otherwise
                     error("Unknown Scene Type");
             end
-            
+
         end
-        
+
         %% Main rendering function
         % We know the scene, but need to pass Exposure Time(s),
         % which also gives us numFrames
         % TODO: If there is no camera or object motion, then for burst &
         % stack operations, maybe we should just render once in pbrt to
         % save time?
-        function [sceneObjects, sceneFiles] = render(obj,expTimes, focusDistances, options)
+        function [sceneObjects, sceneFiles] = render(obj, expTimes, focusDistances, options)
             arguments
                 obj cpScene;
-                expTimes (1,:);
+                expTimes(1, :);
                 focusDistances = [10]; % random default focus distance
-                options.previewFlag (1,1) {islogical} = false;
+                options.previewFlag(1, 1) {islogical} = false;
                 % reRender is tricky. You can use it if you are sure
                 % you haven't changed anything in the recipe since last
                 % time
-                options.reRender (1,1) {islogical} = true;
+                options.reRender(1, 1) {islogical} = true;
                 options.filmSize {mustBeNumeric} = 22; % default
             end
             obj.numFrames = numel(expTimes);
@@ -215,12 +215,14 @@ classdef cpScene < handle
             % render uses what we know about the initial
             % image and subsequent motion requests
             % to generate one or more output scene or oi structs
-            
+
             %   If lensmodel is set, in future it will be used with PBRT and
             %   we return an array of oi objects, otherwise scenes
             %   FUTURE
-            
-            if exist('sceneObjects', 'var'); clear(sceneObjects); end
+
+            if exist('sceneObjects', 'var');
+                clear(sceneObjects);
+            end
             % Process based on sceneType.
             switch obj.sceneType
                 case {'pbrt', 'recipe'}
@@ -231,24 +233,24 @@ classdef cpScene < handle
                         % Okay, if we have a lensFile, we need to reapply it here
                         % but it doesn't seem to work?
                         if ~isempty(obj.lensFile)
-                            obj.thisR.camera = piCameraCreate('realistic','lensFile',obj.lensFile);
+                            obj.thisR.camera = piCameraCreate('realistic', 'lensFile', obj.lensFile);
                         end
                     end
-                    
-                    
+
+
                     % Modify the film resolution
                     % FIX: This should be set to the sensor size, ideally
                     % or maybe to a fraction for faster performance
-                    val = recipeSet(obj.thisR,'filmresolution', obj.resolution);
-                    val = recipeSet(obj.thisR,'rays per pixel',obj.numRays);
-                    val = recipeSet(obj.thisR,'film diagonal', round(options.filmSize *1.5));
+                    val = recipeSet(obj.thisR, 'filmresolution', obj.resolution);
+                    val = recipeSet(obj.thisR, 'rays per pixel', obj.numRays);
+                    val = recipeSet(obj.thisR, 'film diagonal', round(options.filmSize * 1.5));
 
                     %% Looks like we still need to add our own light
                     % Add an equal energy distant light for uniform lighting
                     lightSpectrum = 'equalEnergy';
-%                        'light spectrum',lightSpectrum,...
+                    %                        'light spectrum',lightSpectrum,...
                     mainLight = piLightCreate('mainLight', ...
-                        'type','distant',...
+                        'type', 'distant', ...
                         'cameracoordinate', true);
                     obj.thisR.set('light', 'add', mainLight);
                     imageFolderPath = fullfile(isetRootPath, 'local', obj.scenePath, 'images');
@@ -256,11 +258,11 @@ classdef cpScene < handle
                         mkdir(imageFolderPath);
                     end
                     sceneFiles = [];
-                    
+
                     % Okay we have object motion & numframes
                     % but if Motion doesn't work, then we need to translate between
                     % frames
-                    
+
                     % process object motion if allowed
                     if obj.allowsObjectMotion
                         for ii = 1:numel(obj.objectMotion)
@@ -270,10 +272,10 @@ classdef cpScene < handle
                                 obj.thisR.set('asset', ourMotion{1}, 'motion', 'rotation', ourMotion{3});
                             end
                             %thisR.set('asset', bunnyName, 'translation', [moveX, moveY, moveZ]);
-                            
+
                         end
                     end
-                    
+
                     sTime = 0;
                     for ii = 1:numel(focusDistances)
                         if options.previewFlag
@@ -281,8 +283,8 @@ classdef cpScene < handle
                         else
                             imageFilePrefixName = fullfile(imageFolderPath, append("frame_", num2str(ii)));
                         end
-                        imageFileName = append(imageFilePrefixName,  ".mat");
-                        
+                        imageFileName = append(imageFilePrefixName, ".mat");
+
                         % We set the shutter open/close successively
                         % for each frame of the capture, even if we don't
                         % render a frame, as we might need to render subsequent
@@ -291,18 +293,19 @@ classdef cpScene < handle
                         sTime = sTime + obj.expTimes(ii);
                         obj.thisR.set('shutterclose', sTime);
 
-                        obj.thisR.set('focusdistance', focusDistances(ii)); 
+                        obj.thisR.set('focusdistance', focusDistances(ii));
 
                         % process camera motion if allowed
                         % We do this per frame because we want to
                         % allow for some perturbance/shake/etc.
-                        
+
                         % Need to improve by supporting motion during
                         % capture like in: t_piIntro_cameramotion
                         if obj.allowsCameraMotion && ii > 1
                             movePBRTCamera(obj);
                         end
                         %
+
                         %% Render and visualize
                         % we don't want to trip over ourselves by
                         % over-writing the primary copy in local and then
@@ -312,7 +315,7 @@ classdef cpScene < handle
                         [defaultRecipeDirectory, defaultRecipeFile, suffix] = ...
                             fileparts(recipeGet(obj.thisR, 'outputfile'));
 
-                        obj.cachedRecipeFileName = fullfile(tempname(defaultRecipeDirectory), strcat(defaultRecipeFile,suffix));
+                        obj.cachedRecipeFileName = fullfile(tempname(defaultRecipeDirectory), strcat(defaultRecipeFile, suffix));
                         obj.originalRecipeFileName = recipeGet(obj.thisR, 'outputfile');
                         recipeSet(obj.thisR, 'verbose', 0);
                         recipeSet(obj.thisR, 'outputfile', obj.cachedRecipeFileName);
@@ -320,7 +323,7 @@ classdef cpScene < handle
                         piWrite(obj.thisR, 'verbose', 0); % pbrt reads from disk files so we need to write out
                         toc
                         haveCache = false;
-                        
+
                         % Haven't found a good way to cache, so we've added
                         % a reRender flag to override regenerating scenes
                         if options.reRender == true && haveCache == false
@@ -336,35 +339,35 @@ classdef cpScene < handle
                         if obj.clearTempFiles && isfile(obj.cachedRecipeFileName)
                             rmdir(fileparts(obj.cachedRecipeFileName), 's');
                         end
-                        
+
                         if isequal(sceneObject.type, 'scene') && haveCache == false
                             % for debugging
                             sceneWindow(sceneObject);
-                            sceneToFile(imageFileName,sceneObject);
+                            sceneToFile(imageFileName, sceneObject);
                             % this is mostly just for debugging & human inspection
-                            sceneSaveImage(sceneObject,imageFilePrefixName);
+                            sceneSaveImage(sceneObject, imageFilePrefixName);
                             %sprintf("Scene luminance is: %f", sceneGet(sceneObject, 'mean luminance'));
                         elseif isequal(sceneObject.type, 'opticalimage') % we have an optical image
-                            oiSaveImage(sceneObject, append(imageFilePrefixName,'.png'));
-                            save(imageFileName,'sceneObject');
+                            oiSaveImage(sceneObject, append(imageFilePrefixName, '.png'));
+                            save(imageFileName, 'sceneObject');
                             oiWindow(sceneObject);
                         else
                             error("Render seems to have failed.");
                         end
-                        
+
                         if ~exist('sceneObjects', 'var')
                             sceneObjects = {sceneObject};
                         else
                             sceneObjects(end+1) = {sceneObject};
                         end
-                        sceneFiles = [sceneFiles imageFileName];
+                        sceneFiles = [sceneFiles, imageFileName];
                     end
                 case 'iset scenes'
                     sceneFiles = [];
                     if options.previewFlag && numel(expTimes) > 1
                         expTimes = expTimes(1); % no need for more than one when previewing
                     end
-                    
+
                     % we want to generate scenes as needed
                     if numel(expTimes) == numel(obj.isetScenes)
                         % there has got to be a simpler way!
@@ -375,6 +378,7 @@ classdef cpScene < handle
                     elseif numel(expTimes) > 1 && numel(obj.isetScenes) > 1
                         error("If you pass multiple scenes to cpScene, they need to match up with Exposure Times.");
                     elseif numel(expTimes) > 1
+
                         %% Here is the case where we need to add camera motion
                         % we just have one scene so multiply it out
                         if ~isempty(obj.cameraMotion)
@@ -384,7 +388,7 @@ classdef cpScene < handle
                                 sceneObjects{end+1} = movedScene; %#ok<AGROW>
                                 movedScene = moveISETCamera(obj, movedScene, obj.cameraMotion);
                             end
-                            
+
                         else
                             % without camera motion!
                             sceneObjects = num2cell(repmat(obj.isetScenes, 1, numel(expTimes)));
@@ -408,26 +412,26 @@ classdef cpScene < handle
                     error("unsupported scene type");
             end
         end
-        
+
         function movePBRTCamera(obj)
             for ii = 1:numel(obj.cameraMotion)
                 ourMotion = obj.cameraMotion{ii};
                 if ~isempty(ourMotion{2})
                     obj.thisR = piCameraTranslate(obj.thisR, ...
-                        'x shift', ourMotion{2}(1),...
-                        'y shift', ourMotion{2}(2),...
-                        'z shift', ourMotion{2}(3));  % meters
+                        'x shift', ourMotion{2}(1), ...
+                        'y shift', ourMotion{2}(2), ...
+                        'z shift', ourMotion{2}(3)); % meters
                 end
                 if ~isempty(ourMotion{3})
-                    obj.thisR = piCameraRotate(obj.thisR,...
-                        'x rot', ourMotion{3}(1),...
-                        'y rot', ourMotion{3}(2),...
+                    obj.thisR = piCameraRotate(obj.thisR, ...
+                        'x rot', ourMotion{3}(1), ...
+                        'y rot', ourMotion{3}(2), ...
                         'z rot', ourMotion{3}(3));
                 end
-                
+
             end
         end
-        
+
         % we don't really move the camera, but we can move the scene
         function movedScene = moveISETCamera(obj, existingScene, moveCamera)
             arguments
@@ -435,11 +439,11 @@ classdef cpScene < handle
                 existingScene struct;
                 moveCamera;
             end
-            
+
             % We need to make sure all our returned scenes are the same
             % dimensions as our original, or they can't be merged later
             origSize = size(existingScene.data);
-            
+
             %motionHDegrees = 2;
             %motionVDegrees = 0.3;
             if isempty(moveCamera)
@@ -463,7 +467,7 @@ classdef cpScene < handle
             % make sure dimensions match
             %movedScene = resize(movedScene.data, origSize);
             %end
-            
+
             %Some code for when we want to put back "random" motion
             %             tScene = scene; % initial Seed
             %             % translation wants degrees
@@ -475,23 +479,23 @@ classdef cpScene < handle
             %                 tScene = sceneTranslate(scene, motionArray(ii, :), sceneGet(scene, 'mean luminance'));
             %             end
         end
-        
+
         % generate some random scene/camera motion
         function [motionArray] = genMotion(xPixels, yPixels, numFrames)
-            motionArray = 2 * (rand(numFrames, 2)-.5) .* repmat([xPixels yPixels], numFrames, 1);
+            motionArray = 2 * (rand(numFrames, 2) - .5) .* repmat([xPixels, yPixels], numFrames, 1);
         end
-        
+
         function [previewScenes, previewFiles] = preview(obj)
             % get a preview that the camera can use to plan capture
             % settings
             [previewScenes, previewFiles] = obj.render([.1], 'previewFlag', true); % generic exposure time
         end
-        
+
         function infoArray = showInfo(obj)
             infoArray = {'Scene Type: ', obj.sceneType};
             infoArray = [infoArray; {'Scene Name:', obj.sceneName}];
             infoArray = [infoArray; {'Rays per pixel:', obj.numRays}];
-            rez = sprintf("%d by %d",obj.resolution(1), obj.resolution(2));
+            rez = sprintf("%d by %d", obj.resolution(1), obj.resolution(2));
             infoArray = [infoArray; {'Resolution:', rez}];
         end
 
@@ -499,9 +503,8 @@ classdef cpScene < handle
         function delete(obj)
             if isfile(obj.cachedRecipeFileName)
                 [cacheDir, ~, ~] = fileparts(obj.cachedRecipeFileName);
-                rmdir(cacheDir,'s');
+                rmdir(cacheDir, 's');
             end
         end
     end
 end
-

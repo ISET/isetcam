@@ -1,4 +1,4 @@
-function [functionNames, functionStatus ] = ExecuteExamplesInDirectory(parentDir,varargin)
+function [functionNames, functionStatus] = ExecuteExamplesInDirectory(parentDir, varargin)
 % Recursively descend directory tree and execute examples in all functions
 %
 % Syntax:
@@ -47,28 +47,28 @@ function [functionNames, functionStatus ] = ExecuteExamplesInDirectory(parentDir
 
 % Examples:
 %{
-    theDir = fileparts(which('ExecuteExamplesInDirectory'));
-    ExecuteExamplesInDirectory(fullfile(theDir,'TestSubdir'),'verbose',true,'printnoexamples',true);
+theDir = fileparts(which('ExecuteExamplesInDirectory'));
+ExecuteExamplesInDirectory(fullfile(theDir,'TestSubdir'),'verbose',true,'printnoexamples',true);
 %}
 %{
-    % If you use isetbio and also have it on your path, you can try this.
-    if (exist('isetbioRootPath','file'))
-        ExecuteExamplesInDirectory(fullfile(isetbioRootPath,...
-          'isettools','wavefront'),'verbose',true);
+% If you use isetbio and also have it on your path, you can try this.
+if (exist('isetbioRootPath','file'))
+    ExecuteExamplesInDirectory(fullfile(isetbioRootPath,...
+        'isettools','wavefront'),'verbose',true);
 
-        % Although there is an example in synchronizeISETBIOWithRepository,
-        % it contains an "% ETTBSkip" comment and thus is skipped.
-        ExecuteExamplesInDirectory(fullfile(isetbioRootPath,...
-          'external'),'verbose',true);
-    end
+    % Although there is an example in synchronizeISETBIOWithRepository,
+    % it contains an "% ETTBSkip" comment and thus is skipped.
+    ExecuteExamplesInDirectory(fullfile(isetbioRootPath,...
+        'external'),'verbose',true);
+end
 %}
 
 % Input parser
 p = inputParser;
-p.addParameter('verbose',false,@islogical);
-p.addParameter('printnoexamples',false,@islogical);
-p.addParameter('printreport',true,@islogical);
-p.addParameter('closefigs',true,@islogical);
+p.addParameter('verbose', false, @islogical);
+p.addParameter('printnoexamples', false, @islogical);
+p.addParameter('printreport', true, @islogical);
+p.addParameter('closefigs', true, @islogical);
 p.parse(varargin{:});
 
 % Get current directory and change to parentDir
@@ -84,47 +84,47 @@ functionNames = {};
 functionStatus = [];
 for ii = 1:length(theContents)
     %theContents(ii)
-    
+
     % Desend into directory?
     if (theContents(ii).isdir & ...
-            ~strcmp(theContents(ii).name,'.') ...
-            & ~strcmp(theContents(ii).name,'..') ...
-            & isempty(strfind(theContents(ii).name,'underDevelopment')))
+            ~strcmp(theContents(ii).name, '.') ...
+            & ~strcmp(theContents(ii).name, '..') ...
+            & isempty(strfind(theContents(ii).name, 'underDevelopment')))
         if (p.Results.verbose)
-            fprintf('Descending into %s\n',theContents(ii).name)
+            fprintf('Descending into %s\n', theContents(ii).name)
         end
-        
+
         % Recurse!
-        [tempFunctionNames,tempFunctionStatus] = ...
-            ExecuteExamplesInDirectory(fullfile(parentDir,theContents(ii).name),...
-            'printreport',false, ...
-            'verbose',p.Results.verbose, ...
-            'closefigs',p.Results.closefigs);
+        [tempFunctionNames, tempFunctionStatus] = ...
+            ExecuteExamplesInDirectory(fullfile(parentDir, theContents(ii).name), ...
+            'printreport', false, ...
+            'verbose', p.Results.verbose, ...
+            'closefigs', p.Results.closefigs);
         tempNRunFunctions = length(tempFunctionNames);
-        functionNames = {functionNames{:} tempFunctionNames{:}};
-        functionStatus = [functionStatus(:) ; tempFunctionStatus(:)];
+        functionNames = {functionNames{:}, tempFunctionNames{:}};
+        functionStatus = [functionStatus(:); tempFunctionStatus(:)];
         nRunFunctions = nRunFunctions + tempNRunFunctions;
-        
+
         % Run on a .m file? But don't run on self.
     elseif (length(theContents(ii).name) > 2)
-        if (strcmp(theContents(ii).name(end-1:end),'.m') & ...
-                ~strcmp(theContents(ii).name,[mfilename '.m']))
-            
+        if (strcmp(theContents(ii).name(end -1:end), '.m') & ...
+                ~strcmp(theContents(ii).name, [mfilename, '.m']))
+
             % Check examples and report status
             status = ExecuteExamplesInFunction(theContents(ii).name, ...
-                'verbose',p.Results.verbose, ...
-                'closefigs',p.Results.closefigs);
-            nRunFunctions = nRunFunctions+1;
+                'verbose', p.Results.verbose, ...
+                'closefigs', p.Results.closefigs);
+            nRunFunctions = nRunFunctions + 1;
             functionNames{nRunFunctions} = theContents(ii).name(1:end-2);
             functionStatus(nRunFunctions) = status;
         else
             if (p.Results.verbose)
-                fprintf('%s: Ignoring\n',theContents(ii).name);
+                fprintf('%s: Ignoring\n', theContents(ii).name);
             end
         end
     else
         if (p.Results.verbose)
-            fprintf('%s: Ignoring\n',theContents(ii).name);
+            fprintf('%s: Ignoring\n', theContents(ii).name);
         end
     end
 end
@@ -136,23 +136,23 @@ if (p.Results.printreport)
         % Get function name and its status
         name = functionNames{ii};
         status = functionStatus(ii);
-        
+
         % Report as appropriate
         if (status == -1)
-            fprintf(2,'%s: At least one example FAILED!\n',name);
+            fprintf(2, '%s: At least one example FAILED!\n', name);
         elseif (status == 0)
             if (p.Results.printnoexamples)
-                fprintf('%s: No examples found\n',name);
+                fprintf('%s: No examples found\n', name);
             end
         elseif (status > 0)
-            fprintf('%s: Ran %d examples OK!\n',name,status);
+            fprintf('%s: Ran %d examples OK!\n', name, status);
         else
             error('Unexpected value for returned status');
+            end
         end
     end
-end
 
-% Return to calling dir
-cd(curDir);
+    % Return to calling dir
+    cd(curDir);
 
 end

@@ -1,4 +1,4 @@
-function scene = sceneCombine(scene1,scene2,keyval)
+function scene = sceneCombine(scene1, scene2, keyval)
 % Combine a pair of scenes
 %
 % Synopsis
@@ -6,7 +6,7 @@ function scene = sceneCombine(scene1,scene2,keyval)
 % Input
 %   scene1 - The two scenes should have the same wavelength samples
 %   scene2 -
-%    
+%
 % Optional Key/val pairs
 %   direction - horizontal, vertical, or both.
 %
@@ -47,47 +47,48 @@ sceneWindow(scene);
 arguments
     scene1 struct
     scene2 struct
-    keyval.direction {mustBeMember(keyval.direction, {'vertical','horizontal','both','centered'})} = 'horizontal'
+    keyval.direction {mustBeMember(keyval.direction, {'vertical', 'horizontal', 'both', 'centered'})} = 'horizontal'
 end
+
 %%  Determine direction and merge
 
-assert(isequal(sceneGet(scene1,'wave'),sceneGet(scene2,'wave')));
+assert(isequal(sceneGet(scene1, 'wave'), sceneGet(scene2, 'wave')));
 
-if isequal(keyval.direction,'horizontal')
-    
-    assert(isequal(sceneGet(scene1,'rows'),sceneGet(scene2,'rows')));
-    
-    photons = [sceneGet(scene1,'photons'), sceneGet(scene2,'photons')];
-    
+if isequal(keyval.direction, 'horizontal')
+
+    assert(isequal(sceneGet(scene1, 'rows'), sceneGet(scene2, 'rows')));
+
+    photons = [sceneGet(scene1, 'photons'), sceneGet(scene2, 'photons')];
+
     scene = scene1;
-    scene = sceneSet(scene,'photons',photons);
-    scene = sceneSet(scene,'h fov',sceneGet(scene1,'fov') + sceneGet(scene2,'fov'));
-    
-elseif isequal(keyval.direction,'vertical')
-    assert(isequal(sceneGet(scene1,'cols'),sceneGet(scene2,'cols')));
-    
-    photons = [sceneGet(scene1,'photons'); sceneGet(scene2,'photons')];
+    scene = sceneSet(scene, 'photons', photons);
+    scene = sceneSet(scene, 'h fov', sceneGet(scene1, 'fov')+sceneGet(scene2, 'fov'));
+
+elseif isequal(keyval.direction, 'vertical')
+    assert(isequal(sceneGet(scene1, 'cols'), sceneGet(scene2, 'cols')));
+
+    photons = [sceneGet(scene1, 'photons'); sceneGet(scene2, 'photons')];
     scene = scene1;
-    scene = sceneSet(scene,'photons',photons);
+    scene = sceneSet(scene, 'photons', photons);
     % No change in horizontal field of view
 
-elseif isequal(keyval.direction,'both')
-    scene = sceneCombine(scene1,scene2,'direction','horizontal');
-    scene = sceneCombine(scene,scene,'direction','vertical');
-    
-elseif isequal(keyval.direction,'centered')
-    % 3x3 version (scene2 scene1 scene2) in the middle and 
+elseif isequal(keyval.direction, 'both')
+    scene = sceneCombine(scene1, scene2, 'direction', 'horizontal');
+    scene = sceneCombine(scene, scene, 'direction', 'vertical');
+
+elseif isequal(keyval.direction, 'centered')
+    % 3x3 version (scene2 scene1 scene2) in the middle and
     % (scene2, scene2, scene2) across the upper and lower rows
     % Often in this case scene1 = scene2;
-    sceneMid = sceneCombine(scene1,scene2,'direction','horizontal');
-    sceneMid = sceneCombine(scene2,sceneMid,'direction','horizontal');
-    sceneEdge = sceneCombine(scene2,scene2,'direction','horizontal');
-    sceneEdge = sceneCombine(sceneEdge,scene2,'direction','horizontal');
-    scene = sceneCombine(sceneEdge,sceneMid,'direction','vertical');
-    scene = sceneCombine(scene,sceneEdge,'direction','vertical');
-    
+    sceneMid = sceneCombine(scene1, scene2, 'direction', 'horizontal');
+    sceneMid = sceneCombine(scene2, sceneMid, 'direction', 'horizontal');
+    sceneEdge = sceneCombine(scene2, scene2, 'direction', 'horizontal');
+    sceneEdge = sceneCombine(sceneEdge, scene2, 'direction', 'horizontal');
+    scene = sceneCombine(sceneEdge, sceneMid, 'direction', 'vertical');
+    scene = sceneCombine(scene, sceneEdge, 'direction', 'vertical');
+
 else
-    error('Unknown direction %s\n',NameValueArgs.direction);
+    error('Unknown direction %s\n', NameValueArgs.direction);
 end
 
 end

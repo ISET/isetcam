@@ -170,32 +170,32 @@ function imgOut = insertInImage(varargin)
 %           with higher resolution, at the expense of memory/time.
 %
 % Copyright MathWorks, Inc. 2016.
-[baseImage,insertionCommand,PVs,resolution] = parseInputs(varargin{:});
-if isa(PVs,'struct')
-    PVs = [fieldnames(PVs) struct2cell(PVs)]';
+[baseImage, insertionCommand, PVs, resolution] = parseInputs(varargin{:});
+if isa(PVs, 'struct')
+    PVs = [fieldnames(PVs), struct2cell(PVs)]';
     PVs = PVs(:)';
 end
 if ishandle(baseImage)
-    if ~strcmp(get(baseImage,'type'),'image')
-        baseImage = findobj(baseImage,'type','image');
+    if ~strcmp(get(baseImage, 'type'), 'image')
+        baseImage = findobj(baseImage, 'type', 'image');
         baseImage = baseImage(1);
     end
-    baseImage = get(baseImage,'cdata');
+    baseImage = get(baseImage, 'cdata');
 end
-[m,n,~] = size(baseImage);
+[m, n, ~] = size(baseImage);
 %
-thisFig = figure('windowstyle','normal',...
-    'units','pixels',...
-    'menubar','none',...
-    'position',[0 0 n m],...
-    'invertHardcopy','off',...
-    'visible','off',...
-    'color',[0 0 0]);
-axes('units','normalized','position',[0 0 1 1],...
-    'visible','off','activepositionproperty','outerposition');
+thisFig = figure('windowstyle', 'normal', ...
+    'units', 'pixels', ...
+    'menubar', 'none', ...
+    'position', [0, 0, n, m], ...
+    'invertHardcopy', 'off', ...
+    'visible', 'off', ...
+    'color', [0, 0, 0]);
+axes('units', 'normalized', 'position', [0, 0, 1, 1], ...
+    'visible', 'off', 'activepositionproperty', 'outerposition');
 %NOTE: This is for debugging purposes, and can be commented out!
 %thisFig.Visible = 'on';shg;
-imshow(baseImage,'InitialMagnification',100);
+imshow(baseImage, 'InitialMagnification', 100);
 hold on
 %
 if ~iscell(insertionCommand)
@@ -205,44 +205,44 @@ if ~iscell(PVs{1})
     PVs = {PVs};
 end
 for ii = 1:numel(insertionCommand)
-    insertObject(insertionCommand{ii},PVs{ii});
+    insertObject(insertionCommand{ii}, PVs{ii});
 end
 % dpi = get(groot, 'ScreenPixelsPerInch');
-opt = [ '-r' num2str(resolution) ];
-imgOut = print(thisFig,'-RGBImage',opt);%,opt);%'-r300');%opt
+opt = ['-r', num2str(resolution)];
+imgOut = print(thisFig, '-RGBImage', opt); %,opt);%'-r300');%opt
 delete(thisFig);
 % BEGIN NESTED SUBFUNCTIONS
-    function applyPVs(obj,pvarray)
+    function applyPVs(obj, pvarray)
         if isempty(pvarray)
             return;
         end
         for jj = 1:2:numel(pvarray)
-            set(obj,pvarray{jj},pvarray{jj+1});
+            set(obj, pvarray{jj}, pvarray{jj + 1});
         end
-    end %applyPVs
-    function insertObject(thisCommand,thisPV)
-        tmp = feval(thisCommand);
-        if ~isempty(thisPV)
-            % Apply any input Parameter-Value pairs
-            applyPVs(tmp,thisPV);
-            drawnow;
-        end
+end %applyPVs
+        function insertObject(thisCommand, thisPV)
+            tmp = feval(thisCommand);
+            if ~isempty(thisPV)
+                % Apply any input Parameter-Value pairs
+                applyPVs(tmp, thisPV);
+                drawnow;
+            end
     end %insertObject
-    function [baseImage,insertionCommand,PVs,resolution] = parseInputs(varargin)
-        narginchk(2,4);
-        baseImage = varargin{1};
-        validateattributes(baseImage, {'double' 'uint8' 'uint16' 'int16' 'single'}, ...
-            {'3d'}, mfilename, 'baseImage', 1);
-        insertionCommand = varargin{2};
-        validateattributes(insertionCommand,{'function_handle','cell'},{},mfilename,'insertionCommand',2)
-        %Defaults:
-        PVs = [];
-        if nargin > 2
-            PVs = varargin{3};
+            function [baseImage, insertionCommand, PVs, resolution] = parseInputs(varargin)
+                narginchk(2, 4);
+                baseImage = varargin{1};
+                validateattributes(baseImage, {'double', 'uint8', 'uint16', 'int16', 'single'}, ...
+                    {'3d'}, mfilename, 'baseImage', 1);
+                insertionCommand = varargin{2};
+                validateattributes(insertionCommand, {'function_handle', 'cell'}, {}, mfilename, 'insertionCommand', 2)
+                %Defaults:
+                PVs = [];
+                if nargin > 2
+                    PVs = varargin{3};
+                end
+                resolution = get(groot, 'ScreenPixelsPerInch');
+                if nargin > 3
+                    resolution = varargin{4};
+                end
+        end %parseInputs
         end
-        resolution = get(groot, 'ScreenPixelsPerInch');
-        if nargin > 3
-            resolution = varargin{4};
-        end
-    end %parseInputs
-end

@@ -1,4 +1,4 @@
-function pngName = sceneThumbnail(scene,varargin)
+function pngName = sceneThumbnail(scene, varargin)
 % Read a sceneFromFile and produce a png thumbnail
 %
 % Synopsis
@@ -23,9 +23,9 @@ function pngName = sceneThumbnail(scene,varargin)
 
 % Examples:
 %{
-  scene = sceneFromFile('StuffedAnimals_tungsten-hdrs.mat','multispectral');
-  rowSize = 192;  
-  pngFile = sceneThumbnail(scene);
+scene = sceneFromFile('StuffedAnimals_tungsten-hdrs.mat','multispectral');
+rowSize = 192;
+pngFile = sceneThumbnail(scene);
 %}
 
 %% Check inputs
@@ -34,32 +34,32 @@ varargin = ieParamFormat(varargin);
 
 p = inputParser;
 
-p.addRequired('scene',@(x)(isequal(x.type,'scene')));
+p.addRequired('scene', @(x)(isequal(x.type, 'scene')));
 
-p.addParameter('rowsize',192,@isnumeric);  % 192 rows
-p.addParameter('forcesquare',false,@islogical);   % For a square thumbnail by padding or cropping
-p.addParameter('fontsize',9,@isnumeric);   % For a square thumbnail by padding or cropping
-p.addParameter('label',true,@islogical);   % For a square thumbnail by padding or cropping
-p.addParameter('backcolor',[0.0 0.0 0.3],@isvector);
+p.addParameter('rowsize', 192, @isnumeric); % 192 rows
+p.addParameter('forcesquare', false, @islogical); % For a square thumbnail by padding or cropping
+p.addParameter('fontsize', 9, @isnumeric); % For a square thumbnail by padding or cropping
+p.addParameter('label', true, @islogical); % For a square thumbnail by padding or cropping
+p.addParameter('backcolor', [0.0, 0.0, 0.3], @isvector);
 
-p.parse(scene,varargin{:});
+p.parse(scene, varargin{:});
 
-rowSize     = p.Results.rowsize;
+rowSize = p.Results.rowsize;
 forceSquare = p.Results.forcesquare;
-fontSize    = p.Results.fontsize;
-label       = p.Results.label;
-backColor   = p.Results.backcolor; 
+fontSize = p.Results.fontsize;
+label = p.Results.label;
+backColor = p.Results.backcolor;
 
 %%  Read the scene and figure its size
 
 
-rgb = sceneGet(scene,'rgb');
-[r,c,~] = size(rgb);
+rgb = sceneGet(scene, 'rgb');
+[r, c, ~] = size(rgb);
 
 % Preserve the aspect ratio
 colSize = round((rowSize/r)*c);
 
-rgb = imresize(rgb,[rowSize colSize]);
+rgb = imresize(rgb, [rowSize, colSize]);
 
 %% Pad or crop to make the thumbnail square
 
@@ -67,10 +67,10 @@ if forceSquare
     padSize = rowSize - colSize;
     if padSize > 0
         % Too few cols, so pad
-        rgb = padarray(rgb,[0 padSize],0.3,'post');
+        rgb = padarray(rgb, [0, padSize], 0.3, 'post');
     elseif padSize < 0
         % Too many cols, so crop
-        rgb = imcrop(rgb,[1 1 rowSize-1 colSize-1]);
+        rgb = imcrop(rgb, [1, 1, rowSize - 1, colSize - 1]);
     end
 end
 
@@ -79,14 +79,14 @@ end
 %% Write it out
 
 if label
-    rgb = insertInImage(ieScale(rgb,1), @()text(2,8,scene.name),...
-        {'fontweight','bold','color','w','fontsize',fontSize,...
-        'linewidth',1,'margin',1,...
-        'backgroundcolor',backColor});
+    rgb = insertInImage(ieScale(rgb, 1), @()text(2, 8, scene.name), ...
+        {'fontweight', 'bold', 'color', 'w', 'fontsize', fontSize, ...
+        'linewidth', 1, 'margin', 1, ...
+        'backgroundcolor', backColor});
     % ieNewGraphWin; imshow(uint8(mean(rgb,3)));
 end
 
-pngName = [scene.name,'.png'];
-imwrite(rgb,pngName);
+pngName = [scene.name, '.png'];
+imwrite(rgb, pngName);
 
 end

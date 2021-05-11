@@ -1,5 +1,5 @@
-function [fullname, p]  = ieTempfile(ext)
-% Create a temporary ISET file 
+function [fullname, p] = ieTempfile(ext)
+% Create a temporary ISET file
 %
 %  [fullname, tempdir] = ieTempfile(ext)
 %
@@ -17,10 +17,10 @@ function [fullname, p]  = ieTempfile(ext)
 %
 % Copyright Imageval Consulting, 2015
 
-[p,n] = fileparts(tempname);
+[p, n] = fileparts(tempname);
 
-if ieNotDefined('ext'),  ext = ''; end
+if ieNotDefined('ext'), ext = ''; end
 
-fullname = fullfile(p,['ie_',n ,'.', ext]);
+fullname = fullfile(p, ['ie_', n, '.', ext]);
 
 end

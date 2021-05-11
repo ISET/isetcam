@@ -1,9 +1,9 @@
-function [val_UWattsPerSrCm2,limit_UWattsPerSrCm2] = ISO2007MPEComputeType1ContinuousRadiancePCWeightedValue(...
-    S,radiance_WattsPerSrM2,weightingA,stimulusDurationSecs)
+function [val_UWattsPerSrCm2, limit_UWattsPerSrCm2] = ISO2007MPEComputeType1ContinuousRadiancePCWeightedValue( ...
+    S, radiance_WattsPerSrM2, weightingA, stimulusDurationSecs)
 %[val_UWattsPerSrCm2,limit_UWattsPerSrCm2] = ISO2007MPEComputeType1ContinuousRadiancePCWeightedValue(...
 %    S,radiance_WattsPerSrM2,weightingA,stimulusDurationSecs)
 %
-% Compute the weighted aphakic (photochemical) radiance for Type 1 instruments as given on page 8, Table 2, 
+% Compute the weighted aphakic (photochemical) radiance for Type 1 instruments as given on page 8, Table 2,
 % 5.4.1.3.b.
 %
 % Input spectrum is radiance in units of Watts/[sr-m2-wlinterval].
@@ -12,7 +12,7 @@ function [val_UWattsPerSrCm2,limit_UWattsPerSrCm2] = ISO2007MPEComputeType1Conti
 %
 % See page 6 for a definition of a Type 1 instrument.  As far as I can tell, the key
 % criterion is that it doesn't put out more light that exceeds the Type 1 limits.
-% 
+%
 % If the exposure time is longer than 2 hours the specified limits should be reduced by
 % 1/exposureDuration in hours.  This routine implements that adjustment for its returned
 % limit value.  It does not implement a further reduction of of the limit (by a factor of 2)
@@ -40,16 +40,16 @@ function [val_UWattsPerSrCm2,limit_UWattsPerSrCm2] = ISO2007MPEComputeType1Conti
 % 6/26/13  dhb  Wrote it.
 
 %% Specify the limit (from table)
-exposureDurationHours = stimulusDurationSecs/3600;
+exposureDurationHours = stimulusDurationSecs / 3600;
 if (exposureDurationHours <= 2)
-    limit_UWattsPerSrCm2 = 2*(10^3);
+    limit_UWattsPerSrCm2 = 2 * (10^3);
 else
-    limit_UWattsPerSrCm2 = 2*(10^3)/(exposureDurationHours/2);
+    limit_UWattsPerSrCm2 = 2 * (10^3) / (exposureDurationHours / 2);
 end
 
 %% Unit conversion
-radiance_UWattsPerSrM2 = (10^6)*radiance_WattsPerSrM2;
-radiance_UWattsPerSrCm2 = (10^-4)*radiance_UWattsPerSrM2;
+radiance_UWattsPerSrM2 = (10^6) * radiance_WattsPerSrM2;
+radiance_UWattsPerSrCm2 = (10^-4) * radiance_UWattsPerSrM2;
 
 %% Get weighted sum.  The weighting function is zero outside the
 % specified wavelength range, so we don't have to worry about the
@@ -60,5 +60,4 @@ index = find(wls >= 305 & wls <= 700);
 if (isempty(index))
     error('Should not call this routine with no spectral sampling between 305 and 700');
 end
-val_UWattsPerSrCm2 = sum(radiance_UWattsPerSrCm2 .* weightingA);
-
+val_UWattsPerSrCm2 = sum(radiance_UWattsPerSrCm2.*weightingA);

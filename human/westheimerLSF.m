@@ -12,7 +12,7 @@ function [ls, xSec] = westheimerLSF(xSec)
 % LineSpread = 0.47*exp(-3.3 *(x.^2)) + 0.53*exp(-0.93*abs(x));
 %
 % Example:
-%  vcNewGraphWin; 
+%  vcNewGraphWin;
 %  xSec = -300:300; % Open window and set spatial samples
 %  plot(xSec,westheimerLSF(xSec)); grid on % Plot the line spread
 %  xlabel('Position (arc sec)'); ylabel('Relative intensity');
@@ -27,10 +27,10 @@ function [ls, xSec] = westheimerLSF(xSec)
 % Copyright ImagEval Consultants, LLC, 2005.
 
 
-if ieNotDefined('xSec'), xSec = -300:1:300;	 end
+if ieNotDefined('xSec'), xSec = -300:1:300; end
 
-xMin = xSec/60;
-ls = 0.47*exp(-3.3 *(xMin.^2)) + 0.53*exp(-0.93*abs(xMin));
+xMin = xSec / 60;
+ls = 0.47 * exp(-3.3*(xMin.^2)) + 0.53 * exp(-0.93*abs(xMin));
 ls = ls / sum(ls);
 
 end

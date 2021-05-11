@@ -1,4 +1,4 @@
-function ml = mlensSet(ml,param,val,varargin)
+function ml = mlensSet(ml, param, val, varargin)
 %Microlens set interface routine.
 %
 %   ml = mlensSet(ml,param,val,varargin);
@@ -15,7 +15,7 @@ function ml = mlensSet(ml,param,val,varargin)
 % List of parameters
 %
 % General
-%  name - 
+%  name -
 %  wavelength
 %
 % Microlens parameters
@@ -54,85 +54,85 @@ function ml = mlensSet(ml,param,val,varargin)
 if ieNotDefined('param'), error('Parameter field required.'); end
 
 % Empty is an allowed value.  So we don't use ieNotDefined.
-if ~exist('val','var'),   error('Value field required.'); end        
+if ~exist('val', 'var'), error('Value field required.'); end
 
 param = ieParamFormat(param);
 switch lower(param)
-    
-    case {'name','title'}
+
+    case {'name', 'title'}
         ml.name = val;
-       
-    case {'wavelength','sourcewavelength'}
+
+    case {'wavelength', 'sourcewavelength'}
         % What units?   Not nanometers?  What's going on?
         ml.wavelength = val;
-        
-    case {'chiefrayangle','rayangle','chiefrayangledegrees'}
+
+    case {'chiefrayangle', 'rayangle', 'chiefrayangledegrees'}
         % This angle is specified in degrees
         ml.rayAngle = val;
-                
+
         % Source parameters
-    case {'sourcefnumber','sfnumber'}
+    case {'sourcefnumber', 'sfnumber'}
         % Meters
         ml.sourceFNumber = val;
-        
-    case {'sourcefocallength','sourceflength',}
+
+    case {'sourcefocallength', 'sourceflength',}
         % mlLensSet(ml,'source focal length','microns')
         % Meters!!! Change over.  Check, check, check ...
         %
-        if isempty(varargin), ml.sourceFocalLength= val;
+        if isempty(varargin), ml.sourceFocalLength = val;
         else ml.sourceFocalLength = val / ieUnitScaleFactor(varargin{1});
         end
-        
+
     case {'sourceirradiance'}
         ml.sourceIrradiance = val;
-            
+
         % Microlens parameters
-    case {'mlfnumber','fnumber'}
+    case {'mlfnumber', 'fnumber'}
         % mlensSet(ml,'f number',4)
         ml.fnumber = val;
-        
-    case {'mlfocallength','mlflength','microlensfocallength'}
+
+    case {'mlfocallength', 'mlflength', 'microlensfocallength'}
         % Stored in Meters
         % ml = mlensSet(ml,'mlflength',val);
         % Specifying unit is an option, but not preferred.
         if isempty(varargin), ml.focalLength = val;
         else ml.focalLength = val / ieUnitScaleFactor(varargin{1});
         end
-    
-    case {'mloffset','microlensoffset','offset','microlensoffsetmicrons'}
+
+    case {'mloffset', 'microlensoffset', 'offset', 'microlensoffsetmicrons'}
         % Has always been in microns
         % Am switching to meters Feb. 2015
         if isempty(varargin), ml.offset = val;
         else ml.offset = val / ieUnitScaleFactor(varargin{1});
         end
         ml.offset = val;
-        
-    case {'mlrefractiveindex','microlensrefractiveindex','mlrefindx'}
+
+    case {'mlrefractiveindex', 'microlensrefractiveindex', 'mlrefindx'}
         ml.refractiveIndex = val;
 
         % Stuff that we use when we compute.
         % I am worried that these can be inconsistent (BW).
-    case {'xcoordinate','spacecoordinate'}
+    case {'xcoordinate', 'spacecoordinate'}
         % What units?  Microns?  Meters?
         ml.x = val;
-        
-    case {'anglecoordinate','pcoordinate'}
+
+    case {'anglecoordinate', 'pcoordinate'}
         % Degrees?  Radians?
         ml.p = val;
-        
+
         % UNCLEAR WHETHER THESE SHOULD BE HERE
         % Phase-space coordinates
         % Not sure these should be set.  Perhaps it should be computed on
         % the fly (see mlensGet).
-    case {'pixelirradiance','irradiance','pirradiance'}
+    case {'pixelirradiance', 'irradiance', 'pirradiance'}
         ml.pixelIrradiance = val;
-    
+
     case {'etendue'}
         ml.E = val;
-        
+
     otherwise
         error('Unknown parameter');
-        
+
 end
 
 return;

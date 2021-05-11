@@ -1,4 +1,4 @@
-function [sOBJECT,val] = vcGetObject(objType,val)
+function [sOBJECT, val] = vcGetObject(objType, val)
 % Retrieve an object from the ISET global database
 %
 %   [sOBJECT,val] = vcGetObject(objType,[val])
@@ -28,29 +28,29 @@ function [sOBJECT,val] = vcGetObject(objType,val)
 % Copyright ImagEval Consultants, LLC, 2003.
 
 %%  vcSESSION is used in the eval.
-global vcSESSION 
+global vcSESSION
 
 % For speed, do not use ieNotDefined()
-if ~exist('objType','var') || isempty(objType), error('objType must be defined'); end
+if ~exist('objType', 'var') || isempty(objType), error('objType must be defined'); end
 if isempty(vcSESSION)
     errordlg('Please start ISET to initialize vcSESSION.');
     return;
 end
-if ~exist('val','var') || isempty(val), val = vcGetSelectedObject(objType); end
-
+if ~exist('val', 'var') || isempty(val), val = vcGetSelectedObject(objType); end
 
 %%  Find the object
 objType = vcEquivalentObjtype(objType);
 if ~isempty(val)
-    switch(lower(objType))
-        case {'scene','isa','opticalimage','vcimage','display'}
-            eval(['sOBJECT = vcSESSION.',objType,'{val};']);
+    switch (lower(objType))
+        case {'scene', 'isa', 'opticalimage', 'vcimage', 'display'}
+            eval(['sOBJECT = vcSESSION.', objType, '{val};']);
         otherwise
-            error('Unknown object type: %s.',objType);
+            error('Unknown object type: %s.', objType);
     end
 else
     % No val.  Return empty.
-    sOBJECT = []; val = [];
+    sOBJECT = [];
+    val = [];
 end
 
 end

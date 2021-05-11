@@ -1,4 +1,4 @@
-function [sensor, info] = sensorDNGRead(fname,varargin)
+function [sensor, info] = sensorDNGRead(fname, varargin)
 % Read a DNG file with the assumption that the sensor is a Sony IMX363
 %
 % Synopsis
@@ -13,7 +13,7 @@ function [sensor, info] = sensorDNGRead(fname,varargin)
 %   uses that orientation to adjust the CFA pattern (which varies with
 %   camera orientation).
 %
-%   Different camera apps return different formats for the header.  
+%   Different camera apps return different formats for the header.
 %
 % Inputs
 %  fname:  File name of the DNG file
@@ -39,16 +39,16 @@ function [sensor, info] = sensorDNGRead(fname,varargin)
 
 % Examples:
 %{
-   fname = 'MCC-centered.dng';
-   thisRect = [774  1371  1615  1099];
-   [sensor, info] = sensorDNGRead(fname,'crop',thisRect);
-   sensorWindow(sensor);
+fname = 'MCC-centered.dng';
+thisRect = [774  1371  1615  1099];
+[sensor, info] = sensorDNGRead(fname,'crop',thisRect);
+sensorWindow(sensor);
 %}
 %{
-   fname = 'MCC-centered.dng';
-   thisFraction = 0.4;  % Central 40 percent of the image
-   [sensor, info] = sensorDNGRead(fname,'crop',thisFraction);
-   sensorWindow(sensor);
+fname = 'MCC-centered.dng';
+thisFraction = 0.4;  % Central 40 percent of the image
+[sensor, info] = sensorDNGRead(fname,'crop',thisFraction);
+sensorWindow(sensor);
 %}
 
 % The info that is returned includes isoSpeed and black level.
@@ -61,43 +61,43 @@ function [sensor, info] = sensorDNGRead(fname,varargin)
 varargin = ieParamFormat(varargin);
 p = inputParser;
 
-vFunc = @(x)(exist(x,'file'));
-p.addRequired('fname',vFunc);
-p.addParameter('fullinfo',true,@islogical);
+vFunc = @(x)(exist(x, 'file'));
+p.addRequired('fname', vFunc);
+p.addParameter('fullinfo', true, @islogical);
 
-vFunc = @(x)(isnumeric(x) || isa(x,'images.roi.Rectangle'));
-p.addParameter('crop',[],vFunc);
+vFunc = @(x)(isnumeric(x) || isa(x, 'images.roi.Rectangle'));
+p.addParameter('crop', [], vFunc);
 
-p.parse(fname,varargin{:});
+p.parse(fname, varargin{:});
 fullInfo = p.Results.fullinfo;
-crop     = p.Results.crop;
-if isa(crop,'images.roi.Rectangle'), crop = crop.Position; end
+crop = p.Results.crop;
+if isa(crop, 'images.roi.Rectangle'), crop = crop.Position; end
 
 %% Metadata
 [img, info] = ieDNGRead(fname);
 
 % We simplify and standardized the parameter names here
-ieInfo      = ieDNGSimpleInfo(info);
+ieInfo = ieDNGSimpleInfo(info);
 
 if ~fullInfo
     % The user wants just the simpler, standardized version of the full DNG
-    % header 
+    % header
     info = ieInfo;
 end
 
 %% Fix up the data
 
-blackLevel   = ceil(ieInfo.blackLevel(1));
-exposureTime = ieInfo.exposureTime;  % I hope this is in seconds
-img = ieClip(img,blackLevel,[]);   % sets the lower to blacklevel, no upper bound
+blackLevel = ceil(ieInfo.blackLevel(1));
+exposureTime = ieInfo.exposureTime; % I hope this is in seconds
+img = ieClip(img, blackLevel, []); % sets the lower to blacklevel, no upper bound
 isoSpeed = ieInfo.isoSpeed;
 % Stuff the measured raw data into a simulated sensor
 sensor = sensorCreate('IMX363', [], 'isospeed', isoSpeed);
-sensor = sensorSet(sensor,'size',size(img));
-sensor = sensorSet(sensor,'exp time',exposureTime);
-sensor = sensorSet(sensor,'black level',blackLevel);
-sensor = sensorSet(sensor,'name',fname);
-sensor = sensorSet(sensor,'digital values',img); 
+sensor = sensorSet(sensor, 'size', size(img));
+sensor = sensorSet(sensor, 'exp time', exposureTime);
+sensor = sensorSet(sensor, 'black level', blackLevel);
+sensor = sensorSet(sensor, 'name', fname);
+sensor = sensorSet(sensor, 'digital values', img);
 
 %% The Bayer pattern depends on the orientation.
 switch ieInfo.orientation
@@ -105,22 +105,22 @@ switch ieInfo.orientation
         % Counter clockwise 90 deg
         % R G
         % G B
-        sensor = sensorSet(sensor,'pattern',[1 2; 2 3]);
+        sensor = sensorSet(sensor, 'pattern', [1, 2; 2, 3]);
     case 3
         % Clockwise 90 deg
         % B G
         % G R
-        sensor = sensorSet(sensor,'pattern',[3 2; 2 1]);
+        sensor = sensorSet(sensor, 'pattern', [3, 2; 2, 1]);
     case 6
         % Upright
         % G R
         % B G
-        sensor = sensorSet(sensor,'pattern',[2 1; 3 2]);
+        sensor = sensorSet(sensor, 'pattern', [2, 1; 3, 2]);
     case 8
         % Inverted
         % G B
         % R G
-        sensor = sensorSet(sensor,'pattern',[2 3; 1 2]);
+        sensor = sensorSet(sensor, 'pattern', [2, 3; 1, 2]);
     otherwise
         error('Unknown Orientation value');
 end
@@ -135,19 +135,20 @@ if ~isempty(crop)
         % We're good.  It's a rect.
     elseif length(crop) == 1 && crop > 0 && crop < 1
         % Find the percentage of the image they want returned
-        sz = sensorGet(sensor,'size');
-        middlePosition = sz/2;   % Middle position of the image data
-        rowcol = crop*sz;        % Fraction the image to return
-        row = middlePosition(1) - rowcol(1)/2;
-        col = middlePosition(2) - rowcol(2)/2;
-        height = rowcol(1); width = rowcol(2);
+        sz = sensorGet(sensor, 'size');
+        middlePosition = sz / 2; % Middle position of the image data
+        rowcol = crop * sz; % Fraction the image to return
+        row = middlePosition(1) - rowcol(1) / 2;
+        col = middlePosition(2) - rowcol(2) / 2;
+        height = rowcol(1);
+        width = rowcol(2);
         crop = round([row, col, height, width]);
     else
-        error('Bad crop value %f\n',crop);
+        error('Bad crop value %f\n', crop);
     end
-    
+
     % Do the crop
-    sensor = sensorCrop(sensor,crop);
+    sensor = sensorCrop(sensor, crop);
 end
 
 end

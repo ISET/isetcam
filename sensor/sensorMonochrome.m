@@ -1,4 +1,4 @@
-function sensor = sensorMonochrome(sensor,filterFile)
+function sensor = sensorMonochrome(sensor, filterFile)
 %
 %   Create a default monochrome image sensor array structure.
 %
@@ -7,12 +7,12 @@ function sensor = sensorMonochrome(sensor,filterFile)
 % Used in sensorCreate('monochrome')
 %
 
-sensor = sensorSet(sensor,'name',sprintf('monochrome-%.0f', vcCountObjects('sensor')));
+sensor = sensorSet(sensor, 'name', sprintf('monochrome-%.0f', vcCountObjects('sensor')));
 
-[filterSpectra,filterNames] = sensorReadColorFilters(sensor,filterFile);
-sensor = sensorSet(sensor,'filterSpectra',filterSpectra);
-sensor = sensorSet(sensor,'filterNames',filterNames);
+[filterSpectra, filterNames] = sensorReadColorFilters(sensor, filterFile);
+sensor = sensorSet(sensor, 'filterSpectra', filterSpectra);
+sensor = sensorSet(sensor, 'filterNames', filterNames);
 
-sensor = sensorSet(sensor,'cfaPattern',1);      % 'bayer','monochromatic','triangle'
+sensor = sensorSet(sensor, 'cfaPattern', 1); % 'bayer','monochromatic','triangle'
 
 return;

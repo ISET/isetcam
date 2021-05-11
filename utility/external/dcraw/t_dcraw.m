@@ -10,26 +10,29 @@
 
 % This DNG file is from the Pixel 4 camera.  It is checked in and we can always
 % test with this one.
-fname = fullfile(isetRootPath,'data','images','rawcamera','MCC-centered.dng');
+fname = fullfile(isetRootPath, 'data', 'images', 'rawcamera', 'MCC-centered.dng');
 
 % These worked too, once.
 %{
- fname = fullfile(igRootPath,'local','cornellbox','IMG_20200926_111217.dng');
- fname = fullfile(igRootPath,'local','mcc','IMG_20200926_110536_1.dng');
+fname = fullfile(igRootPath,'local','cornellbox','IMG_20200926_111217.dng');
+fname = fullfile(igRootPath,'local','mcc','IMG_20200926_110536_1.dng');
 %}
 
-if ~exist(fname,'file')
-    error('No file found %s\n',fname);
+if ~exist(fname, 'file')
+    error('No file found %s\n', fname);
 else
-    [img]        = dcrawRead(fname);
-    info         = imfinfo(fname);
-    info2        = dcrawInfo(fname);   % Shorter version
-    isoSpeed     = info.DigitalCamera.ISOSpeedRatings;
+    [img] = dcrawRead(fname);
+    info = imfinfo(fname);
+    info2 = dcrawInfo(fname); % Shorter version
+    isoSpeed = info.DigitalCamera.ISOSpeedRatings;
     exposureTime = info.DigitalCamera.ExposureTime;
 end
 
 %
-ieNewGraphWin; imagesc(double(img).^(1/2.2)); axis image; colormap(gray)
+ieNewGraphWin;
+imagesc(double(img).^(1 / 2.2));
+axis image;
+colormap(gray)
 
 %{
 % These are old notes about how we used to read the Nikon files for the L3 code.
@@ -48,7 +51,7 @@ remoteF = 'PGM/DSC_0803.pgm';
 fname = fullfile(remoteD,remoteF);
 [~,status] = urlwrite(fname,'rawFile.pgm');
 raw = imread('rawFile.pgm');
-vcNewGraphWin; imagesc(raw); 
+vcNewGraphWin; imagesc(raw);
 colormap(gray(1024)); axis image
 
 % vcNewGraphWin; hist(single(raw(:)),100)
@@ -63,11 +66,10 @@ fname = fullfile(remoteD,remoteF);
 jpg = imread('jpgFile.jpg');
 % 0803 needs a rotate
 % jpg = imrotate(jpg,90);
-vcNewGraphWin; imagesc(jpg); 
+vcNewGraphWin; imagesc(jpg);
 colormap(gray(1024)); axis image
 
 % vcNewGraphWin; hist(single(jpg(:)),100)
 
 %%
 %}
-

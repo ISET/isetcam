@@ -1,11 +1,11 @@
-function [bool,customOI] = oiCustomCompute(oi);
+function [bool, customOI] = oiCustomCompute(oi);
 % Check whether the user has selected custom compute method
 %
 %     [bool,customOI] = oiCustomCompute(oi);
 %
 % If bool = 1, custom computation is selected. The name of the method can be
-% returned in customOI.  The existence of the method is verified. 
-% 
+% returned in customOI.  The existence of the method is verified.
+%
 % The routine first checks whether the OI stores custom compute
 % information.  If there are no data structures in the OI, then the routine
 % checks the GUI
@@ -24,25 +24,25 @@ warning('oiCustomCompute: Obsolete')
 if ieNotDefined('oi'), oi = vcGetObject('OI'); end
 customOI = [];
 
-bool = oiGet(oi,'customCompute');
+bool = oiGet(oi, 'customCompute');
 if ~bool, return;
 elseif bool && (nargout == 2)
     customOI = oiGet('customComputeMethod');
 elseif isempty(bool)
     handles = ieSessionGet('oiwindowHandles');
-    if ~isempty(handles) && get(handles.btnCustom,'Value')
+    if ~isempty(handles) && get(handles.btnCustom, 'Value')
         bool = 1;
         if nargout == 2
-            contents = get(handles.popCustom,'string');
-            customOI = contents{get(handles.popCustom,'value')};
+            contents = get(handles.popCustom, 'string');
+            customOI = contents{get(handles.popCustom, 'value')};
         end
     end
 end
 
-if (nargout ==2) && (exist(customOI) ~= 2)
+if (nargout == 2) && (exist(customOI) ~= 2)
     errordlg('Customer oiCompute function not found.');
-    bool = 0;
-    return;
-end
+        bool = 0;
+        return;
+    end
 
-return;
+    return;

@@ -8,7 +8,7 @@ function [pol] = SensorToPolar(sensor)
 %
 % See also PolarToSensor, SensorToCyl, CylToSensor.
 %
-% 9/9/93 jms	It didn't work for matrix inputs, because a 
+% 9/9/93 jms	It didn't work for matrix inputs, because a
 %				matrix '^' needed to be a by-element '.^'
 % 9/26/93 dhb   Added calData argument.
 % 2/6/94  jms   Changed 'polar' to 'pol'
@@ -20,17 +20,16 @@ function [pol] = SensorToPolar(sensor)
 % 11/6/06 dhb   Only allow one input argument.
 % 2/10/07 dhb   Finish above fix.
 
-[n,m] = size(sensor);
+[n, m] = size(sensor);
 if (n ~= 3)
-  error('Cannot handle sensor coordinates with dimension other than 3');
+    error('Cannot handle sensor coordinates with dimension other than 3');
 end
 
-pol = zeros(n,m);
-pol(1,:) = sqrt(sensor(1,:).^2 + sensor(2,:).^2 + sensor(3,:).^2);
-pol(2,:) = atan2(sensor(2,:),sensor(1,:));
-index = find(pol(2,:) < 0);
+pol = zeros(n, m);
+pol(1, :) = sqrt(sensor(1, :).^2+sensor(2, :).^2+sensor(3, :).^2);
+pol(2, :) = atan2(sensor(2, :), sensor(1, :));
+index = find(pol(2, :) < 0);
 if (~isempty(index))
-	pol(2,index) = 2*pi*ones(size(index))+pol(2,index);
+    pol(2, index) = 2 * pi * ones(size(index)) + pol(2, index);
 end
-pol(3,:) = atan(sensor(3,:) ./ sqrt(sensor(1,:).^2 + sensor(2,:).^2) );
-
+pol(3, :) = atan(sensor(3, :)./sqrt(sensor(1, :).^2 + sensor(2, :).^2));

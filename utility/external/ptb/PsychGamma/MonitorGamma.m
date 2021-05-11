@@ -1,4 +1,4 @@
-function y=MonitorGamma(x,x0,g)
+function y = MonitorGamma(x, x0, g)
 % y=MonitorGamma(x,x0,gamma)
 %
 % This function is commonly used to describe the "gamma" function of a video
@@ -16,9 +16,9 @@ function y=MonitorGamma(x,x0,g)
 %
 % Denis Pelli 5/28/96
 
-x=(x-x0)./(1-x0);
-y=zeros(size(x));
-i=find(x>0);
+x = (x - x0) ./ (1 - x0);
+y = zeros(size(x));
+i = find(x > 0);
 if ~isempty(i)
-	y(i)=x(i).^g;
+    y(i) = x(i).^g;
 end

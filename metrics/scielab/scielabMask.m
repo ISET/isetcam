@@ -1,4 +1,4 @@
-function [deltaEImage, params, xyz1, xyz2] = scielabMask(image1,image2,whitePt,params)
+function [deltaEImage, params, xyz1, xyz2] = scielabMask(image1, image2, whitePt, params)
 %Spatial CIELAB (S-CIELAB) difference metric
 %
 %  [deltaEImage, params, xyz1, xyz2] = scielabMask(image1,image2,whitePt,[params])
@@ -16,17 +16,17 @@ function [deltaEImage, params, xyz1, xyz2] = scielabMask(image1,image2,whitePt,p
 % were reduced by eliminating the last  row or col prior to the
 % calculation.
 %
-% image1 and image2: 3-D images in XYZ or LMS format. 
+% image1 and image2: 3-D images in XYZ or LMS format.
 % whitePt:     a cell  array containing the white points of the two images.
 %              XYZ images must between between 0 and the whitePt{ii}
 % params:      a structure containing several variables used in the
-%              calculation. The entires are updated and can be returned 
-%              by the routine. 
+%              calculation. The entires are updated and can be returned
+%              by the routine.
 %
 %  params.
 %       sampPerDeg = How many samples per degree of visual angle in the image.
 %                    If the image is, say, 5 deg, and contains 128 samples,
-%                    then this parameter is 512/2. 
+%                    then this parameter is 512/2.
 %                    The default is 224 for historical reasons.  In
 %                    general, the code should be improved to work well at
 %                    low sample rates.
@@ -34,11 +34,11 @@ function [deltaEImage, params, xyz1, xyz2] = scielabMask(image1,image2,whitePt,p
 %                    If these are present, then the filters are used.
 %                    Otherwise, new filters are created. They will be
 %                    returned in params to save time in the next call.
-%       filterSize = usually equal to sampPerDeg. 
+%       filterSize = usually equal to sampPerDeg.
 %       imageFormat= Data format of the input image.
 %             'xyz2', 'xyz10', 'lms2', 'lms10';
 %       deltaEversion  = which version of CIELAB.  (Default is 2000)
-%              Earlier options permit '1976', '1994' and '2000'. 
+%              Earlier options permit '1976', '1994' and '2000'.
 %              Added for special ISET analyses, we allow a request for
 %              CIELAB 2000 'chroma','hue', or 'luminance' component errors.
 %              These are always calculated using CIELAB 2000.
@@ -77,7 +77,7 @@ function [deltaEImage, params, xyz1, xyz2] = scielabMask(image1,image2,whitePt,p
 %   params.filterSize = sampPerDeg;
 %   params.filters = [];             % Not precomputed
 %   [errorImage,params] = scielab(img1LMS, img2LMS, whitePt, params);
-% 
+%
 % Copyright ImagEval Consultants, LLC, 2003.
 
 % TODO:  This routine could operate just by calling scComputeSCIELAB twice,
@@ -89,28 +89,31 @@ function [deltaEImage, params, xyz1, xyz2] = scielabMask(image1,image2,whitePt,p
 if ieNotDefined('image1'), errordlg('Scielab requires image1'); end
 if ieNotDefined('image2'), errordlg('Scielab requires image2'); end
 if ieNotDefined('whitePt'), errordlg('Scielab requires a white point or white point cell array'); end
-if ieNotDefined('params'),  params = scParams;  end
-   
+if ieNotDefined('params'), params = scParams; end
+
 % The white point used in the CIELAB calculation.  This is expected to be a
 % cell array containing a white point for each image.  If it is just a
 % vector, then we convert it to a cell array.
 if ~iscell(whitePt)
-    tmp{1} = whitePt; tmp{2} = whitePt;
+    tmp{1} = whitePt;
+    tmp{2} = whitePt;
     whitePt = tmp;
 end
 
 % If the image and data format are in LMS, we convert them to XYZ here.
-if strncmp(params.imageFormat,'lms',3)
+if strncmp(params.imageFormat, 'lms', 3)
     % We convert the LMS images and white points to XYZ10 space in here.
-    for ii=1:2
+    for ii = 1:2
         % The lms2xyz matrix is based on the Hunt-Pointer-Estevez method.
         T = colorTransformMatrix('hpe2xyz');
-        image1 = imageLinearTransform(image1,T);
-        image2 = imageLinearTransform(image2,T);
-        
+        image1 = imageLinearTransform(image1, T);
+        image2 = imageLinearTransform(image2, T);
+
         % Convert the white points
-        w = whitePt{1}; whitePt{1} = w(:)'*T;
-        w = whitePt{2}; whitePt{2} = w(:)'*T;
+        w = whitePt{1};
+        whitePt{1} = w(:)' * T;
+        w = whitePt{2};
+        whitePt{2} = w(:)' * T;
         params.imageFormat = 'xyz10';
 
     end
@@ -124,16 +127,16 @@ image1 = ClipXYZImage(image1, whitePt{1});
 image2 = ClipXYZImage(image2, whitePt{2});
 
 % These are the filters for spatial blurring.  They can take a
-% while to create (and we should speed that up).   
+% while to create (and we should speed that up).
 if isempty(params.filters)
-    [params.filters, params.support] = scPrepareFilters(params); 
+    [params.filters, params.support] = scPrepareFilters(params);
 end
 % figure; imagesc(params.filters{2})
 
 % Filter the image in opponent-colors space starting from lms or xyz.  The
 % returned image is in XYZ.
-xyz1 = scOpponentFilter(image1,params);  % figure; imagesc(xyz1(:,:,2))
-xyz2 = scOpponentFilter(image2,params);  % figure; imagesc(xyz2(:,:,2))
+xyz1 = scOpponentFilter(image1, params); % figure; imagesc(xyz1(:,:,2))
+xyz2 = scOpponentFilter(image2, params); % figure; imagesc(xyz2(:,:,2))
 
 % This is the place where we should separate the difference into two parts.
 %  One part will just go on to spatial CIELAB as ever.  The other part of
@@ -141,33 +144,32 @@ xyz2 = scOpponentFilter(image2,params);  % figure; imagesc(xyz2(:,:,2))
 %  subtracted out of the error, the S-CIELAB error should be smaller and
 %  the masked error - which will be real but small - will not push the
 %  total error back up to the full value.
- 
+
 % % Find the error xyz2 = xyz1 + E;
 % [r,c,w] = size(xyz2);
 % E = xyz2 - xyz1;
-% 
+%
 % % Break the error into parts.
 % % Find the part of the error that looks like the original:
 % %  Solve:  E = a*xyz1
-% masked    = xyz1(:)\E(:);           % 
+% masked    = xyz1(:)\E(:);           %
 % unmaskedE = E(:) - masked*xyz1(:);  % Perpendicular (unmasked) error
 % unmaskedXYZ2 = xyz1(:) + unmaskedE(:);
 % unmaskedXYZ2 = reshape(unmaskedXYZ2,r,c,w);
 
 % I think the following two calls should be an equivalent computation.  But
 % it is not.  So I should figure out what's going on.
-deltaEImage = scComputeDifference(xyz1,unmaskedXYZ2,whitePt,params.deltaEversion);
+deltaEImage = scComputeDifference(xyz1, unmaskedXYZ2, whitePt, params.deltaEversion);
 % figure; imagesc(deltaEImage); colorbar
 % deltaEImage2 = scComputeDifference(xyz1,xyz2,whitePt,params.deltaEversion);
 % figure; imagesc(deltaEImage2); colorbar
 
 % Now do something with the masked error
 
-
 %% End
 % There are some differences between below and above.  Sigh.  Why.
 %
-% d1 = scComputeSCIELAB(xyz1,whitePt{1},params); 
+% d1 = scComputeSCIELAB(xyz1,whitePt{1},params);
 % r = size(d1,1); c = size(d1,2);
 % d2 = scComputeSCIELAB(xyz2,whitePt{2},params);
 % dE = deltaE2000(RGB2XWFormat(d1),RGB2XWFormat(d2));
@@ -175,4 +177,3 @@ deltaEImage = scComputeDifference(xyz1,unmaskedXYZ2,whitePt,params.deltaEversion
 % figure; imagesc(reshape(dE,r,c)); colorbar
 
 return;
-

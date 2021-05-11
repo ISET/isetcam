@@ -5,7 +5,7 @@ function xyz = srgb2xyz(srgb)
 %
 % Brief description:
 %   Convert sRGB image into CIE XYZ values. The input range for srgb
-%   values is (0,1).  
+%   values is (0,1).
 %
 % Inputs
 %   sRGB:  RGB format image
@@ -31,13 +31,13 @@ function xyz = srgb2xyz(srgb)
 % Data format should be in RGB format
 if ndims(srgb) ~= 3
     error('srgb2xyz:  srgb must be a NxMx3 color image.  Use XW2RGBFormat if needed.');
-end
+    end
 
-% Convert the srgb values to the linear form in the range (0,1)
-lrgb = srgb2lrgb(srgb);  %imtool(lrgb/max(lrgb(:)))
+    % Convert the srgb values to the linear form in the range (0,1)
+    lrgb = srgb2lrgb(srgb); %imtool(lrgb/max(lrgb(:)))
 
-% convert lrgb to xyz 
-matrix = colorTransformMatrix('lrgb2xyz');
-xyz = imageLinearTransform(lrgb, matrix);  
+    % convert lrgb to xyz
+    matrix = colorTransformMatrix('lrgb2xyz');
+    xyz = imageLinearTransform(lrgb, matrix);
 
 end

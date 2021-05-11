@@ -1,4 +1,4 @@
-function obj = cameraWindow(camera,oType)
+function obj = cameraWindow(camera, oType)
 % Open a window showing some of the camera object components
 %
 % Synopsis
@@ -33,7 +33,6 @@ function obj = cameraWindow(camera,oType)
 %
 % (c) Imageval Consulting, LLC 2014
 
-
 %% Arguments
 if ieNotDefined('camera'), error('Camera object required'); end
 if ieNotDefined('oType'), oType = 'ip'; end
@@ -43,20 +42,20 @@ if ieNotDefined('oType'), oType = 'ip'; end
 oType = ieParamFormat(oType);
 
 switch oType
-    case {'oi','opticalimage'}
-        obj = cameraGet(camera,'oi');
+    case {'oi', 'opticalimage'}
+        obj = cameraGet(camera, 'oi');
         oiWindow(obj);
-        
-    case {'sensor','isa'}
-        obj = cameraGet(camera,'sensor');
+
+    case {'sensor', 'isa'}
+        obj = cameraGet(camera, 'sensor');
         sensorWindow(obj);
-        
-    case {'ip','vci','vcimage'}
-        obj = cameraGet(camera,'ip');
+
+    case {'ip', 'vci', 'vcimage'}
+        obj = cameraGet(camera, 'ip');
         ipWindow(obj);
-        
+
     otherwise
-        error('Unknown object type %s\n',oType);
+        error('Unknown object type %s\n', oType);
 end
 
 end

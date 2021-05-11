@@ -18,7 +18,7 @@
 if isempty(which('RdtClient'))
     fprintf('Remote data toolbox from the ISETBIO distribution is required\n');
     return;
-end   
+end
 
 %%
 ieInit
@@ -35,49 +35,54 @@ rd.crp('/L3/Farrell/D200/garden/');
 % Currently only returns 30 elements
 % 'type' is not right because it says jpg when there are nef and pgm files
 % as well
-a = rd.listArtifacts;  
+a = rd.listArtifacts;
 
 % Fetch the image data artifacts, specifying the image type as 'type'
 jpgData = rd.readArtifact(a(1).artifactId, 'type', 'jpg');
-vcNewGraphWin; imagescRGB(double(jpgData));
+vcNewGraphWin;
+imagescRGB(double(jpgData));
 
 %% Turn the jpg image into a scene
 
 % THe data are very large.  So, I am subsampling a lot.
-scene = sceneFromFile(jpgData(1:4:end,1:4:end,:),'rgb',100,displayCreate('OLED-Sony'));
-ieAddObject(scene); sceneWindow;
+scene = sceneFromFile(jpgData(1:4:end, 1:4:end, :), 'rgb', 100, displayCreate('OLED-Sony'));
+ieAddObject(scene);
+sceneWindow;
 
 %%  Now get the raw sensor data and put them in a sensor
 
 % Could tune this to match the Nikon
 sensor = sensorCreate;
-wave   = sensorGet(sensor,'wave');
-nikonF = ieReadColorFilter(wave,'NikonD100');  % Hopefully like D200
-sensor = sensorSet(sensor,'filter spectra',nikonF);
-sensor = sensorSet(sensor,'name','Nikon D100');
+wave = sensorGet(sensor, 'wave');
+nikonF = ieReadColorFilter(wave, 'NikonD100'); % Hopefully like D200
+sensor = sensorSet(sensor, 'filter spectra', nikonF);
+sensor = sensorSet(sensor, 'name', 'Nikon D100');
 
 % Read the raw sensor data.
 rawData = rd.readArtifact(a(1).artifactId, 'type', 'pgm');
-rawData = ieScale(double(rawData),0,1);
-sensor = sensorSet(sensor,'volts',single(rawData));
+rawData = ieScale(double(rawData), 0, 1);
+sensor = sensorSet(sensor, 'volts', single(rawData));
 
 % Show the sensor
-ieAddObject(sensor); sensorWindow;
+ieAddObject(sensor);
+sensorWindow;
 
 %%  Get a decent rendering.  Not as good as L3 (or Nikon)
 
 ip = ipCreate;
-t{1} = [
-    0.800   -0.071    0.041
-    -0.186    0.410   -0.115
-    -0.035   -0.119    0.739];
-t{2} = eye(3); t{3} = eye(3);
-ip = ipSet(ip,'transforms',t);
+t{1} = [; ...
+    0.800, -0.071, 0.041; ...
+    -0.186, 0.410, -0.115; ...
+    -0.035, -0.119, 0.739];
+t{2} = eye(3);
+t{3} = eye(3);
+ip = ipSet(ip, 'transforms', t);
 
 % Use the set transform, non-adaptive
-ip = ipSet(ip,'transform method','current');
-ip = ipCompute(ip,sensor);
+ip = ipSet(ip, 'transform method', 'current');
+ip = ipCompute(ip, sensor);
 
-ieAddObject(ip); ipWindow;
+ieAddObject(ip);
+ipWindow;
 
-%% 
+%%

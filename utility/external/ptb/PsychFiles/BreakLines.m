@@ -1,4 +1,4 @@
-function strArray=BreakLines(str)
+function strArray = BreakLines(str)
 
 % strArray=BreakLines(str)
 %
@@ -9,7 +9,7 @@ function strArray=BreakLines(str)
 %
 %
 % see also: ReplaceLineTerminators
- 
+
 
 % HISTORY
 %
@@ -20,16 +20,16 @@ function strArray=BreakLines(str)
 
 %first substitute in the unix break char no matter what we start out with.
 %this makes BreakLines platform independent
-unixStr=ReplaceLineTerminators(str, 'unix');
-unixBreakChar=char(10);
+unixStr = ReplaceLineTerminators(str, 'unix');
+unixBreakChar = char(10);
 
 %find indices of line bounds
-breakIndices=find(unixStr==unixBreakChar);
-lineStartIndices=[1 breakIndices+length(unixBreakChar)];
-lineEndIndices=[breakIndices-length(unixBreakChar) length(unixStr)];
+breakIndices = find(unixStr == unixBreakChar);
+lineStartIndices = [1, breakIndices + length(unixBreakChar)];
+lineEndIndices = [breakIndices - length(unixBreakChar), length(unixStr)];
 
 % build cell array of strings by gathering between the breakpoints.
-strArray={};
-for i=1:length(lineStartIndices)
-    strArray{i}=unixStr(lineStartIndices(i):lineEndIndices(i)); %divide between line breaks
+strArray = {};
+for i = 1:length(lineStartIndices)
+    strArray{i} = unixStr(lineStartIndices(i):lineEndIndices(i)); %divide between line breaks
 end

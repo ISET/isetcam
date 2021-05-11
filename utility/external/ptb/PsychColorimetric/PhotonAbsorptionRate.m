@@ -1,5 +1,5 @@
-function [photonAbsorptionRate] =...
-	PhotonAbsorptionRate (irradianceInQuanta, irradianceS, absorptanceSpectra, absorptanceSpectraS, collectingDiameter)
+function [photonAbsorptionRate] = ...
+    PhotonAbsorptionRate(irradianceInQuanta, irradianceS, absorptanceSpectra, absorptanceSpectraS, collectingDiameter)
 % [photonAbsorptionRate] =...
 %		PhotonAbsorptionRate (irradianceInQuanta, irradianceS, absorptanceSpectra, absorptanceSpectraS, collectingDiameter)
 %
@@ -14,7 +14,7 @@ function [photonAbsorptionRate] =...
 % Can handle multiple photorceptor types.  Put each absrorbtance spectrum in a row of matrix
 % absorptanceSpectra, put corresponding collecting diameters in column vector collectingDiameter.
 %
-% Units: 
+% Units:
 %   photonAbsorptionRate: quanta/sec/photorecptor
 %   irradianceInQuanta: quanta/um^2-sec-wlinterval
 %   absorptanceSpectra: probability an incident quantum will be absorbed.
@@ -35,8 +35,7 @@ irradianceInQuanta = SplineSpd(irradianceS, irradianceInQuanta, absorptanceSpect
 photonAbsorptionRatePerArea = (absorptanceSpectra * irradianceInQuanta);
 
 % Calculate the photon collecting area of each type of photoreceptors
-collectingArea = pi * (collectingDiameter/2).^2;
+collectingArea = pi * (collectingDiameter / 2).^2;
 
 % Real numbers of photons absorbed for each photoreceptors (quanta/sec)
 photonAbsorptionRate = photonAbsorptionRatePerArea .* collectingArea;
-

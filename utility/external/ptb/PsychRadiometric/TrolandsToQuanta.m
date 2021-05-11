@@ -1,4 +1,4 @@
-function quanta = TrolandsToQuanta(wl,trolands,S_vLambda,vLambda)
+function quanta = TrolandsToQuanta(wl, trolands, S_vLambda, vLambda)
 % quanta = TrolandsToQuanta(wl,trolands,S_vLambda,vLambda)
 %
 % Convert from photopic trolands to quanta (sec-1 degree-2)
@@ -11,4 +11,4 @@ function quanta = TrolandsToQuanta(wl,trolands,S_vLambda,vLambda)
 
 wls_vLambda = MakeItWls(S_vLambda);
 index = find(wl == wls_vLambda);
-quanta = trolands*(wl*1e-9)/(vLambda(index)*4.454e-13);
+quanta = trolands * (wl * 1e-9) / (vLambda(index) * 4.454e-13);

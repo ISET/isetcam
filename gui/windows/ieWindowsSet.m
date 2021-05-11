@@ -27,11 +27,10 @@ function wPos = ieWindowsSet(wPos, wState)
 %
 % Copyright Imageval Consulting, LLC 2013
 
-
 %% The window positions are stored in the Matlab pref structure
 
 % By default, we get the preferred positions and put any open windows there
-if ieNotDefined('wPos') || isempty(wPos), wPos = getpref('ISET','wPos'); end
+if ieNotDefined('wPos') || isempty(wPos), wPos = getpref('ISET', 'wPos'); end
 
 % movegui should just make sure we are on screen, but it actually seems
 % to move the windows again in many cases, which is a waste of time.
@@ -39,12 +38,12 @@ if ieNotDefined('wPos') || isempty(wPos), wPos = getpref('ISET','wPos'); end
 screenProtect = false;
 
 if ~exist('wState', 'var') || isempty(wState)
-    wState = getpref('ISET','wState', []);
+    wState = getpref('ISET', 'wState', []);
     restoreState = false;
 else
     restoreState = true;
     if wState == true
-        wState = getpref('ISET','wState', []);
+        wState = getpref('ISET', 'wState', []);
     end
 end
 
@@ -52,25 +51,29 @@ end
 % windows there.
 if ischar(wPos)
     % File name
-    [p,n,e] = fileparts(wPos); if isempty(e), e = '.mat'; end
-    wPos = fullfile(p,[n,e]);
-    if exist(wPos,'file'), load(wPos,'wPos');
-    else,                  error('No file %s\n',wPos);
+    [p, n, e] = fileparts(wPos);
+    if isempty(e), e = '.mat';
+    end
+    wPos = fullfile(p, [n, e]);
+    if exist(wPos, 'file'), load(wPos, 'wPos');
+    else, error('No file %s\n', wPos);
     end
 end
 
 %% If the window is created and there is a stored value, set the window
 
-w = ieSessionGet('main window'); v = wPos{1};
+w = ieSessionGet('main window');
+v = wPos{1};
 if ~isempty(w) && ~isempty(v) && isvalid(w)
-    w.figure1.Position = v; 
+    w.figure1.Position = v;
     if screenProtect, movegui(w.figure1); end
     if restoreState && ~isempty(wState) && numel(wState) >= 1
         if ~isempty(wState{1}), w.figure1.WindowState = wState{1}; end
     end
 end
 
-w = ieSessionGet('scene window'); v = wPos{2};
+w = ieSessionGet('scene window');
+v = wPos{2};
 if ~isempty(w) && ~isempty(v) && isvalid(w)
     w.figure1.Position = v;
     if screenProtect, movegui(w.figure1); end
@@ -79,7 +82,8 @@ if ~isempty(w) && ~isempty(v) && isvalid(w)
     end
 end
 
-w = ieSessionGet('oi window'); v = wPos{3};
+w = ieSessionGet('oi window');
+v = wPos{3};
 if ~isempty(w) && ~isempty(v) && isvalid(w)
     w.figure1.Position = v;
     if screenProtect, movegui(w.figure1); end
@@ -88,7 +92,8 @@ if ~isempty(w) && ~isempty(v) && isvalid(w)
     end
 end
 
-w = ieSessionGet('sensor window');v = wPos{4};
+w = ieSessionGet('sensor window');
+v = wPos{4};
 if ~isempty(w) && ~isempty(v) && isvalid(w)
     w.figure1.Position = v;
     if screenProtect, movegui(w.figure1); end
@@ -97,7 +102,8 @@ if ~isempty(w) && ~isempty(v) && isvalid(w)
     end
 end
 
-w = ieSessionGet('ip window');v = wPos{5};
+w = ieSessionGet('ip window');
+v = wPos{5};
 if ~isempty(w) && ~isempty(v) && isvalid(w)
     w.figure1.Position = v;
     if screenProtect, movegui(w.figure1); end
@@ -107,30 +113,31 @@ if ~isempty(w) && ~isempty(v) && isvalid(w)
 end
 
 if numel(wPos) > 5
-     w = ieSessionGet('camdesign window');v = wPos{6};
-     if ~isempty(w) && ~isempty(v) && isvalid(w)
-         w.figure1.Position = v;
+    w = ieSessionGet('camdesign window');
+    v = wPos{6};
+    if ~isempty(w) && ~isempty(v) && isvalid(w)
+        w.figure1.Position = v;
         if screenProtect, movegui(w.figure1); end
         if restoreState && ~isempty(wState) && numel(wState) >= 6
             if ~isempty(wState{6}), w.figure1.WindowState = wState{6}; end
         end
-     end
+    end
 end
 
 if numel(wPos) > 6
-     w = ieSessionGet('imageexplore window');v = wPos{7};
-     if ~isempty(w) && ~isempty(v) && isvalid(w)
-         w.UIFigure.Position = v;
-         if screenProtect, movegui(w.UIFigure); end
-         if restoreState && ~isempty(wState) && numel(wState) >= 7
-             if ~isempty(wState{7}), w.UIFigure.WindowState = wState{7}; end
-         end
-     end
+    w = ieSessionGet('imageexplore window');
+    v = wPos{7};
+    if ~isempty(w) && ~isempty(v) && isvalid(w)
+        w.UIFigure.Position = v;
+        if screenProtect, movegui(w.UIFigure); end
+        if restoreState && ~isempty(wState) && numel(wState) >= 7
+            if ~isempty(wState{7}), w.UIFigure.WindowState = wState{7}; end
+        end
+    end
 end
 
-setpref('ISET','wPos',wPos);
+setpref('ISET', 'wPos', wPos);
 % not sure if/when we need to store State here since we use
 % WindowsGet(true)
 
 end
-

@@ -1,4 +1,4 @@
-function PE = photometricExposure(oi,sensor)
+function PE = photometricExposure(oi, sensor)
 %Compute photometric exposure (lux-sec) for a sensor and optical image
 %
 %   PE = photometricExposure(oi,sensor)
@@ -16,6 +16,6 @@ function PE = photometricExposure(oi,sensor)
 if ieNotDefined('oi'), oi = vcGetObject('OI'); end
 if ieNotDefined('sensor'), sensor = vcGetObject('sensor'); end
 
-PE = oiGet(oi,'meanIlluminance')*sensorGet(sensor,'exposureTime');
+PE = oiGet(oi, 'meanIlluminance') * sensorGet(sensor, 'exposureTime');
 
 return;

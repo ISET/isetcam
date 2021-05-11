@@ -1,4 +1,4 @@
-function str = DirList(dirnm,qdispfiles,lim,pref,folderFilter,fileFilter, qRelPath)
+function str = DirList(dirnm, qdispfiles, lim, pref, folderFilter, fileFilter, qRelPath)
 % str = DirList(dirnm,qdispfiles,lim,pref, folderFilter, fileFilter, qRelPath)
 % recursively lists directories en returns the whole shit
 % as a string
@@ -23,60 +23,60 @@ function str = DirList(dirnm,qdispfiles,lim,pref,folderFilter,fileFilter, qRelPa
 
 
 % input checking
-if nargin<7 || isempty(qRelPath)
+if nargin < 7 || isempty(qRelPath)
     qRelPath = false;
 end
-if nargin<6 || isempty(fileFilter)
+if nargin < 6 || isempty(fileFilter)
     fileFilter = '.';
 end
-if nargin<5 || isempty(folderFilter)
+if nargin < 5 || isempty(folderFilter)
     folderFilter = '';
 end
-if nargin<4 || isempty(pref)
+if nargin < 4 || isempty(pref)
     pref = '';
 end
-if nargin<3 || isempty(lim)
+if nargin < 3 || isempty(lim)
     lim = inf;
 end
-if nargin<2 || isempty(qdispfiles)
+if nargin < 2 || isempty(qdispfiles)
     qdispfiles = true;
 end
 
 % init
-str     = [];
-fnms    = dir(dirnm);
+str = [];
+fnms = dir(dirnm);
 
 % do the work
-for p=1:length(fnms)
-    if strcmp(fnms(p).name,'..') || strcmp(fnms(p).name,'.') % always returned by Matlab, never wanted
+for p = 1:length(fnms)
+    if strcmp(fnms(p).name, '..') || strcmp(fnms(p).name, '.') % always returned by Matlab, never wanted
         continue;
     end
-    
-    if qdispfiles && ~isdir([dirnm filesep fnms(p).name])
+
+    if qdispfiles && ~isdir([dirnm, filesep, fnms(p).name])
         % check if not filtered out
-        if isempty(regexp(fnms(p).name,fileFilter, 'once'))
+        if isempty(regexp(fnms(p).name, fileFilter, 'once'))
             continue;
         end
         if qRelPath
-            str = [str pref fnms(p).name char(10)];
+            str = [str, pref, fnms(p).name, char(10)];
         else
-            str = [str pref char(215) ' ' fnms(p).name char(10)];
+            str = [str, pref, char(215), ' ', fnms(p).name, char(10)];
         end
     end
-    if isdir([dirnm filesep fnms(p).name])
+    if isdir([dirnm, filesep, fnms(p).name])
         % check if not filtered out
-        if ~isempty(regexp(fnms(p).name,folderFilter, 'once'))
+        if ~isempty(regexp(fnms(p).name, folderFilter, 'once'))
             continue;
         end
         % append and recurse
         if qRelPath
-            if lim>0
-                str = [str DirList([dirnm filesep fnms(p).name], qdispfiles, lim-1, [pref fnms(p).name '/'],folderFilter,fileFilter,qRelPath)];
+            if lim > 0
+                str = [str, DirList([dirnm, filesep, fnms(p).name], qdispfiles, lim - 1, [pref, fnms(p).name, '/'], folderFilter, fileFilter, qRelPath)];
             end
         else
-            str = [str fnms(p).name char(10)];
-            if lim>0
-                str = [str DirList([dirnm filesep fnms(p).name], qdispfiles, lim-1, [pref '  '],folderFilter,fileFilter,qRelPath)];
+            str = [str, fnms(p).name, char(10)];
+            if lim > 0
+                str = [str, DirList([dirnm, filesep, fnms(p).name], qdispfiles, lim - 1, [pref, '  '], folderFilter, fileFilter, qRelPath)];
             end
         end
     end

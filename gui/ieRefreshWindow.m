@@ -6,7 +6,7 @@ function app = ieRefreshWindow(objType)
 %
 % Input
 %  objType:  A string defining the object type.  If obj is an ISETCam
-%            struct, then this could be obj.type 
+%            struct, then this could be obj.type
 %
 % Output
 %   app:     The window app
@@ -32,11 +32,11 @@ objType = vcEquivalentObjtype(objType);
 switch lower(objType)
     case {'scene'}
         app = ieSessionGet('scene window');
-    case {'opticalimage','oi'}
+    case {'opticalimage', 'oi'}
         app = ieSessionGet('oi window');
-    case {'isa','sensor'}
+    case {'isa', 'sensor'}
         app = ieSessionGet('sensor window');
-    case {'vcimage','ip'}
+    case {'vcimage', 'ip'}
         app = ieSessionGet('ip window');
     otherwise
         error('Unknown object type');

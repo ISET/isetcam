@@ -3,10 +3,10 @@ function vci = ipClearData(vci)
 %
 %   vci = ipClearData(vci)
 %
-% The data field in an image is set to empty. 
+% The data field in an image is set to empty.
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
-vci = ipSet(vci,'data',[]); 
+vci = ipSet(vci, 'data', []);
 
 return;

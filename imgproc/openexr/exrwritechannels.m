@@ -1,4 +1,4 @@
-function exrwritechannels( filename )
+function exrwritechannels(filename)
 %EXRWRITECHANNELS    Write a multichannel OpenEXR image.
 %   EXRWRITECHANNELS(FILENAME, COMPRESSION, PIXELTYPE, ATTRIBS, CHANNELS, DATA)
 %   writes an OpenEXR using the specified compression, storing pixels using the

@@ -16,15 +16,15 @@ oi = oiCompute(oi, scene);
 thisI = illuminantCreate;
 
 %%
-oi = oiSet(oi,'illuminant',thisI);
-testI = oiGet(oi,'illuminant');
-assert(isequal(thisI,testI));
+oi = oiSet(oi, 'illuminant', thisI);
+testI = oiGet(oi, 'illuminant');
+assert(isequal(thisI, testI));
 
 %%  This reads the data in the illuminant and reports the format
-sz = oiGet(oi,'size');
-[X,Y] = meshgrid(1:sz(2),1:sz(1));
-oi = oiIlluminantSS(oi,X);
-oiGet(oi,'illuminant format')
+sz = oiGet(oi, 'size');
+[X, Y] = meshgrid(1:sz(2), 1:sz(1));
+oi = oiIlluminantSS(oi, X);
+oiGet(oi, 'illuminant format')
 
 %%
 illuPhoton = oiGet(oi, 'illuminant photons');
@@ -33,7 +33,4 @@ illuWave = oiGet(oi, 'illuminant wave');
 rgb = imageSPD(illuPhoton, illuWave);
 oiPlot(oi, 'illuminant image');
 
-
 %% END
-
-

@@ -12,60 +12,61 @@
 %
 % Copyright ImagEval Consultants, LLC, 2010
 
-%% 
+%%
 ieInit
 
 %% Plot scene data
 
 scene = sceneCreate('macbethd65');
 ieAddObject(scene);
-sceneWindow; 
+sceneWindow;
 
 % Here are the luminance data from a line
-rows = round(sceneGet(scene,'rows')/2);
+rows = round(sceneGet(scene, 'rows')/2);
 
 %% The plot function returns the data and a handle to the window
-[uData, h] = scenePlot(scene,'luminance hline',[1,rows]);
+[uData, h] = scenePlot(scene, 'luminance hline', [1, rows]);
 
 % This structure contains the data in the graph
 uData
 
 % This structure is also attached to the figure
-get(h,'userdata')
+get(h, 'userdata')
 
 %% Scenes store information about the illuminant
-scenePlot(scene,'illuminant energy');
+scenePlot(scene, 'illuminant energy');
 
 %% You can plot the spectral radiance energy from within an ROI
 
-rect = [51    35    10    11];   % Yellow Macbeth patch
-roiLocs = ieRect2Locs(rect);      % xy locations in scene
-scenePlot(scene,'radiance energy roi',roiLocs);
+rect = [51, 35, 10, 11]; % Yellow Macbeth patch
+roiLocs = ieRect2Locs(rect); % xy locations in scene
+scenePlot(scene, 'radiance energy roi', roiLocs);
 
 %% Or plot the mean quanta (photons) at the same location
 
-scenePlot(scene,'radiance photons roi',roiLocs);
+scenePlot(scene, 'radiance photons roi', roiLocs);
 
 %% Or plot the reflectance
 
-scenePlot(scene,'reflectance',roiLocs);
+scenePlot(scene, 'reflectance', roiLocs);
 
 %% To read the photon data without plotting
 
-radiance = vcGetROIData(scene,roiLocs,'photons');
+radiance = vcGetROIData(scene, roiLocs, 'photons');
 radiance = mean(radiance);
 
-wave = sceneGet(scene,'wave');
+wave = sceneGet(scene, 'wave');
 vcNewGraphWin;
-plot(wave,radiance); grid on
-xlabel('wave (nm)'); ylabel('Radiance (q/s/nm/m^2/sr)');
+plot(wave, radiance); grid on
+xlabel('wave (nm)');
+ylabel('Radiance (q/s/nm/m^2/sr)');
 
 %% Or read the energy data
-radiance = vcGetROIData(scene,roiLocs,'energy');
+radiance = vcGetROIData(scene, roiLocs, 'energy');
 radiance = mean(radiance);
 
 vcNewGraphWin;
-plot(wave,radiance); grid on
+plot(wave, radiance); grid on
 xlabel('wave (nm)');
 ylabel('Radiance (watts/s/m^2/nm/sr)');
 

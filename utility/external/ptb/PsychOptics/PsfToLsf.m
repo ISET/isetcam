@@ -1,4 +1,4 @@
-function lsf = PsfToLsf(psf,varargin)
+function lsf = PsfToLsf(psf, varargin)
 %PSFTOLSF  Convert a line spread function to a point spread function
 %    lsf = PSFTOLSF(psf,varargin)
 %
@@ -12,21 +12,21 @@ function lsf = PsfToLsf(psf,varargin)
 %    See also LSFTOPSF.
 
 % Get passed row and column dimension.
-[m,n] = size(psf);
+[m, n] = size(psf);
 if (m ~= n)
     error('Passed psf should have square support.')
 end
-centerPosition = floor(m/2)+1;
+centerPosition = floor(m/2) + 1;
 
 % Create a 2D image of a line across the center row.
 aLine2D = zeros(size(psf));
-aLine2D(centerPosition,:) = 1;
+aLine2D(centerPosition, :) = 1;
 
 % Convolve with the psf
-aLineConvolved = conv2(aLine2D,psf,'same');
+aLineConvolved = conv2(aLine2D, psf, 'same');
 
 % Extract the center column and normalize
-lsf = aLineConvolved(:,centerPosition);
-lsf = lsf/max(lsf(:));
+lsf = aLineConvolved(:, centerPosition);
+lsf = lsf / max(lsf(:));
 
 end

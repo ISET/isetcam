@@ -1,4 +1,4 @@
-function Acutance = ISOAcutance(cpd,lumMTF)
+function Acutance = ISOAcutance(cpd, lumMTF)
 % Compute Acutance as per the DxO method (is it the ISO method, too?)
 %
 %  Acutance = ISOAcutance(cpd,lumMTF)
@@ -20,10 +20,10 @@ if ieNotDefined('lumMTF'), error('Luminance MTF required'); end
 % (4th column of cMTF) by a standard function given (cpiq) in cyc/deg.
 % Then we sum the result.
 cpiq = cpiqCSF(cpd);
-dv   = cpd(2) - cpd(1);
-A    = sum(lumMTF .* cpiq)*dv;
+dv = cpd(2) - cpd(1);
+A = sum(lumMTF.*cpiq) * dv;
 Ar   = sum(cpiq)*dv;
 
-Acutance = A/Ar;
+Acutance = A / Ar;
 
 return

@@ -22,21 +22,21 @@ if ieNotDefined('fname'), error('File name required.'); end
 
 %% We read the header as a cell array of strings
 % nStrings = 70;
-fid = fopen(fname,'r');
-str = fread(fid,'*char');
+fid = fopen(fname, 'r');
+str = fread(fid, '*char');
 fclose(fid);
-str = str( (str<128) & (str > 0))';
+str = str((str < 128) & (str > 0))';
 
 %% Find the strings
 thisString = 'spacing is ';
-p = strfind(str,thisString) + length(thisString);
-e = strfind(str(p:p+10),' ') - 2;  % Why two?
-psfSpacing = str2double(str(p:(p+e)));
+p = strfind(str, thisString) + length(thisString);
+e = strfind(str(p:p + 10), ' ') - 2; % Why two?
+psfSpacing = str2double(str(p:(p + e)));
 
 thisString = 'area is ';
-p = strfind(str,thisString) + length(thisString);
-e = strfind(str(p:p+10),' ') - 2;  % Why two?
-psfArea = str2double(str(p:(p+e)));
+p = strfind(str, thisString) + length(thisString);
+e = strfind(str(p:p + 10), ' ') - 2; % Why two?
+psfArea = str2double(str(p:(p + e)));
 
 % Go through the strings looking for the key words.  This algorithm could
 % be a lot better.

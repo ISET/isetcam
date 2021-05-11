@@ -6,7 +6,7 @@ function sformatted = ieParamFormat(s)
 %
 % Description:
 %    The string is sent to lower case and spaces are removed.
-%  
+%
 %    If the input argument is a cell array, then ieParamFormat is
 %    called on the odd entries of the array.  This allows conversion
 %    of a varargin that contains only key/value pairs to a form where
@@ -24,23 +24,23 @@ function sformatted = ieParamFormat(s)
 
 % Examples:
 %{
-    ieParamFormat('Exposure Time')
-    keyValuePairs{1} = 'Exposure Time';
-    keyValuePairs{2} = 1;
-    keyValuePairs{3} = 'iWasCamelCase';
-    keyValuePairs{4} = 'Do Not Convert Me';
-    keyValuePairs = ieParamFormat(keyValuePairs)
+ieParamFormat('Exposure Time')
+keyValuePairs{1} = 'Exposure Time';
+keyValuePairs{2} = 1;
+keyValuePairs{3} = 'iWasCamelCase';
+keyValuePairs{4} = 'Do Not Convert Me';
+keyValuePairs = ieParamFormat(keyValuePairs)
 %}
 
 if (~ischar(s) && ~iscell(s))
-    error('s has to be a character array or cell array'); 
+    error('s has to be a character array or cell array');
 end
 
 % Lower case
 if (ischar(s))
     % To lower and remove spaces
     sformatted = lower(s);
-    sformatted = strrep(sformatted,' ','');
+    sformatted = strrep(sformatted, ' ', '');
 else
     if (iscell(s))
         sformatted = s;
@@ -49,5 +49,3 @@ else
         end
     end
 end
-
-

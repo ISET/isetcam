@@ -1,9 +1,9 @@
 %% Validation for scenes
-%  
+%
 % Scripts related to scenes
 %
 % BW:
-% Checked with the new app design implementation.  Runs as of 08.16.2020. 
+% Checked with the new app design implementation.  Runs as of 08.16.2020.
 %
 
 %%
@@ -18,11 +18,11 @@ s_sceneHCCompress
 sceneWindow;
 scene = ieGetObject('scene');
 
-sceneSet(scene,'gamma',0.5);
-sceneSet(scene,'gamma',1);
+sceneSet(scene, 'gamma', 0.5);
+sceneSet(scene, 'gamma', 1);
 
 %% Check sceneCombine
-scene = sceneCombine(sceneCreate,sceneCreate,'direction','horizontal');
+scene = sceneCombine(sceneCreate, sceneCreate, 'direction', 'horizontal');
 sceneWindow(scene);
 
 %% Additional scripts of interest

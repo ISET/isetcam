@@ -1,11 +1,11 @@
-function oiW = oiExtractWaveband(oi,waveList,illuminanceFlag)
+function oiW = oiExtractWaveband(oi, waveList, illuminanceFlag)
 %oiExtractWaveband - Extract wave bands from the scene
 %
 %   oiW = oiExtractWaveband(oi,waveList,illuminanceFlag)
 %
 % The list of evenly-spaced wavelengths, waveList in nm, is extracted from
 % the original optical image (OI). The output OI contains the photons in the
-% wavelength bands. 
+% wavelength bands.
 %
 % By default, the new OI does not have a calculated illuminance, and
 % in fact its illuminance differs from the original OI.  To re-calculate
@@ -28,9 +28,9 @@ if ieNotDefined('waveList'), error('Wave list must be defined'); end
 if ieNotDefined('illuminanceFlag'), illuminanceFlag = 0; end
 
 oiW = oi;
-oiW = oiSet(oiW,'photons',sceneGet(oi,'photons',waveList));
-oiW = oiSet(oiW,'wave',waveList);
+oiW = oiSet(oiW, 'photons', sceneGet(oi, 'photons', waveList));
+oiW = oiSet(oiW, 'wave', waveList);
 
-if illuminanceFlag, oiW = oiSet(oiW,'illuminance',oiCalculateIlluminance(oiW)); end
+if illuminanceFlag, oiW = oiSet(oiW, 'illuminance', oiCalculateIlluminance(oiW)); end
 
 return;

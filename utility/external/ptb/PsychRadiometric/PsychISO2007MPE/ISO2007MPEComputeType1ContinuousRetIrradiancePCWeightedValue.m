@@ -1,9 +1,9 @@
-function [val_UWattsPerCm2,limit_UWattsPerCm2] = ISO2007MPEComputeType1ContinuousRetIrradiancePCWeightedValue(...
-    S,radiance_WattsPerSrM2,weightingA,stimulusDurationSecs,eyeLengthMm)
+function [val_UWattsPerCm2, limit_UWattsPerCm2] = ISO2007MPEComputeType1ContinuousRetIrradiancePCWeightedValue( ...
+    S, radiance_WattsPerSrM2, weightingA, stimulusDurationSecs, eyeLengthMm)
 % function [val_UWattsPerCm2,limit_UWattsPerCm2] = ISO2007MPEComputeType1ContinuousRetIrradiancePCWeightedValue(...
 %   S,radiance_WattsPerSrM2,weightingA,stimulusDurationSecs,[eyeLengthMm])
 %
-% Compute the weighted aphakic (photochemical) retinal irradiance for Type 1 instruments as given on page 8, Table 2, 
+% Compute the weighted aphakic (photochemical) retinal irradiance for Type 1 instruments as given on page 8, Table 2,
 % 5.4.1.3.a.
 %
 % Input spectrum is radiance in units of Watts/[sr-m2-wlinterval].
@@ -12,7 +12,7 @@ function [val_UWattsPerCm2,limit_UWattsPerCm2] = ISO2007MPEComputeType1Continuou
 %
 % See page 6 for a definition of a Type 1 instrument.  As far as I can tell, the key
 % criterion is that it doesn't put out more light that exceeds the Type 1 limits.
-% 
+%
 % If the exposure time is longer than 2 hours the specified limits should be reduced by
 % 1/exposureDuration in hours.  This routine implements that adjustment for its returned
 % limit value.  It does not implement a further reduction of of the limit (by a factor of 2)
@@ -39,14 +39,14 @@ function [val_UWattsPerCm2,limit_UWattsPerCm2] = ISO2007MPEComputeType1Continuou
 if (nargin < 5 || isempty(eyeLengthMm))
     eyeLengthMm = 17;
 end
-eyeLengthM = (10^-3)*eyeLengthMm;
+eyeLengthM = (10^-3) * eyeLengthMm;
 
 %% Specify the limit (from table)
-exposureDurationHours = stimulusDurationSecs/3600;
+exposureDurationHours = stimulusDurationSecs / 3600;
 if (exposureDurationHours <= 2)
     limit_UWattsPerCm2 = 220;
 else
-    limit_UWattsPerCm2 = 220/(exposureDurationHours/2);
+    limit_UWattsPerCm2 = 220 / (exposureDurationHours / 2);
 end
 
 %% Convert radiance to retinal irradiance
@@ -54,12 +54,12 @@ end
 % The standard says to do this with for a 7 mm pupil.  It does
 % not give an eye length to assume.  We assume 17 mm.
 pupilDiameterMm = 7;
-pupilAreaMm2 = pi*((pupilDiameterMm/2)^2);
-pupilAreaM2 = (10^-6)*pupilAreaMm2;
+pupilAreaMm2 = pi * ((pupilDiameterMm / 2)^2);
+pupilAreaM2 = (10^-6) * pupilAreaMm2;
 
-retIrradiance_WattsPerM2 = RadianceAndPupilAreaEyeLengthToRetIrradiance(radiance_WattsPerSrM2,S,pupilAreaM2,eyeLengthM);
-retIrradiance_UWattsPerM2 = (10^6)*retIrradiance_WattsPerM2;
-retIrradiance_UWattsPerCm2 = (10^-4)*retIrradiance_UWattsPerM2;
+retIrradiance_WattsPerM2 = RadianceAndPupilAreaEyeLengthToRetIrradiance(radiance_WattsPerSrM2, S, pupilAreaM2, eyeLengthM);
+retIrradiance_UWattsPerM2 = (10^6) * retIrradiance_WattsPerM2;
+retIrradiance_UWattsPerCm2 = (10^-4) * retIrradiance_UWattsPerM2;
 
 %% Get weighted sum.  The weighting function is zero outside the
 % specified wavelength range, so we don't have to worry about the
@@ -70,5 +70,4 @@ index = find(wls >= 305 & wls <= 700, 1);
 if (isempty(index))
     error('Should not call this routine with no spectral sampling between 305 and 700');
 end
-val_UWattsPerCm2 = sum(retIrradiance_UWattsPerCm2 .* weightingA);
-
+val_UWattsPerCm2 = sum(retIrradiance_UWattsPerCm2.*weightingA);

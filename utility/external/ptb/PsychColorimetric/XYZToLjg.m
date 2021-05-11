@@ -28,42 +28,41 @@ function Ljg = XYZToLjg(XYZ)
 %               The code here is and was correct.
 
 % Define XYZToRGB matrix.
-M_XYZToRGB = [0.799 0.4194 -0.1648 ; 
-						 -0.4493 1.3265 0.0927 ;
-						 -0.1149 0.3394 0.7170];
-RGB = M_XYZToRGB*XYZ;
-RGB3 = RGB.^(1/3);
+M_XYZToRGB = [0.799, 0.4194, -0.1648; ...
+    -0.4493, 1.3265, 0.0927; ...
+    -0.1149, 0.3394, 0.7170];
+RGB = M_XYZToRGB * XYZ;
+RGB3 = RGB.^(1 / 3);
 
 % Compute xyY from XYZ
 xyY = XYZToxyY(XYZ);
 
 % Compute Y0
-x = xyY(1,:);
-y = xyY(2,:);
-Y = xyY(3,:);
-Y0 = Y.* ...
-				  (4.4934*(x.^2)+4.3034*(y.^2)-4.276*(x.*y) ...
-			    -1.3744*x - 2.5643*y + 1.8103);
+x = xyY(1, :);
+y = xyY(2, :);
+Y = xyY(3, :);
+Y0 = Y .* ...
+    (4.4934 * (x.^2) + 4.3034 * (y.^2) - 4.276 * (x .* y) ...
+    -1.3744 * x - 2.5643 * y + 1.8103);
 
 % Compute scriptL.  Note that MacAdam does not correctly
 % handle the case of Y0 < 30.
 scriptL = zeros(size(Y0));
 index = find(Y0 > 30);
 if (~isempty(index))
-	scriptL(index) = 5.9 * ((Y0(index).^(1/3))-(2/3)+0.042*((abs(Y0(index)-30)).^(1/3)));
+    scriptL(index) = 5.9 * ((Y0(index).^(1 / 3)) - (2 / 3) + 0.042 * ((abs(Y0(index) - 30)).^(1 / 3)));
 end
 index = find(Y0 <= 30);
 if (~isempty(index))
-	scriptL(index) = 5.9 * ((Y0(index).^(1/3))-(2/3)-0.042*((abs(Y0(index)-30)).^(1/3)));
+    scriptL(index) = 5.9 * ((Y0(index).^(1 / 3)) - (2 / 3) - 0.042 * ((abs(Y0(index) - 30)).^(1 / 3)));
 end
 
 % Compute C.  Use version that depends on scriptL, as I'm not sure
 % the alternate version is correct for Y0 < 30 (I didn't check).
-C = scriptL./(5.9*((Y0.^(1/3))-(2/3)));
+C = scriptL ./ (5.9 * ((Y0.^(1 / 3)) - (2 / 3)));
 
 % Compute L,g,j.
 Ljg = zeros(size(XYZ));
-Ljg(1,:) = (scriptL-14.4)/sqrt(2);
-Ljg(2,:) = C.*([1.7 8 -9.7]*RGB3);
-Ljg(3,:) = C.*([-13.7 17.7 -4]*RGB3);
-
+Ljg(1, :) = (scriptL - 14.4) / sqrt(2);
+Ljg(2, :) = C .* ([1.7, 8, -9.7] * RGB3);
+Ljg(3, :) = C .* ([-13.7, 17.7, -4] * RGB3);

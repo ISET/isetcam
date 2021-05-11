@@ -1,4 +1,4 @@
-function [scene,I] = sceneFromFile(I, imType, meanLuminance, dispCal, ...
+function [scene, I] = sceneFromFile(I, imType, meanLuminance, dispCal, ...
     wList, varargin)
 % Create an ISETCam scene structure by reading data from a file
 %
@@ -9,7 +9,7 @@ function [scene,I] = sceneFromFile(I, imType, meanLuminance, dispCal, ...
 %
 % Inputs:
 %  imageData: Typically, this is the name of an RGB image file.  But, it
-%             may also be 
+%             may also be
 %              * RGB data, rather than the file name
 %              * A file that contains a scene structure
 %  imageType: 'multispectral' or 'rgb' or 'monochrome'
@@ -21,7 +21,7 @@ function [scene,I] = sceneFromFile(I, imType, meanLuminance, dispCal, ...
 %              (a) If sub-pixel modeling is required varargin{1} is set to
 %                  true, (default is false)
 %              (b) If a reflective display is modeled, the illuminant is
-%                  required and passed in as varargin{2} 
+%                  required and passed in as varargin{2}
 %  wList:     The scene wavelength samples
 %
 % Returns;
@@ -52,47 +52,47 @@ function [scene,I] = sceneFromFile(I, imType, meanLuminance, dispCal, ...
 % Examples:
 %
 %{
-   scene = sceneFromFile;
+scene = sceneFromFile;
 %}
 %{
-   [scene,fname] = sceneFromFile;
+[scene,fname] = sceneFromFile;
 %}
 %{
-   fullFileName = vcSelectImage;
-   imgType = ieImageType(fullFileName);
-   scene = sceneFromFile(fullFileName,imgType);
-   sceneWindow(scene);
+fullFileName = vcSelectImage;
+imgType = ieImageType(fullFileName);
+scene = sceneFromFile(fullFileName,imgType);
+sceneWindow(scene);
 %}
 %{
-   imgType = 'rgb'; meanLuminance = 10;
-   fullFileName = vcSelectImage;
-   scene = sceneFromFile(fullFileName,imgType,meanLuminance);
-   sceneWindow(scene);
+imgType = 'rgb'; meanLuminance = 10;
+fullFileName = vcSelectImage;
+scene = sceneFromFile(fullFileName,imgType,meanLuminance);
+sceneWindow(scene);
 %}
 %{
-   wList = [400:50:700];
-   fullFileName = fullfile(isetRootPath,'data','images', ...
-                   'multispectral','StuffedAnimals_tungsten-hdrs');
-   scene = sceneFromFile(fullFileName,'multispectral',[],[],wList);
-   sceneWindow(scene);
+wList = [400:50:700];
+fullFileName = fullfile(isetRootPath,'data','images', ...
+    'multispectral','StuffedAnimals_tungsten-hdrs');
+scene = sceneFromFile(fullFileName,'multispectral',[],[],wList);
+sceneWindow(scene);
 %}
 %{
-   meanLuminance=[];
-   dispCal = 'OLED-Sony.mat';
-   fName = fullfile(isetRootPath,'data','images','rgb','eagle.jpg');
-   wList = 400:100:700;
-   scene = sceneFromFile(imread(fName),'rgb',100,dispCal,wList);
-   sceneWindow(scene);
+meanLuminance=[];
+dispCal = 'OLED-Sony.mat';
+fName = fullfile(isetRootPath,'data','images','rgb','eagle.jpg');
+wList = 400:100:700;
+scene = sceneFromFile(imread(fName),'rgb',100,dispCal,wList);
+sceneWindow(scene);
 %}
 %{
-  meanLuminance= 10;
-  thisDisplay = displayCreate;
-  h = harmonicP('row',2048,'col',2048);
-  img = imageHarmonic(h);
-  img = floor(ieScale(img,0,255));
-  tic
-  scene = sceneFromFile(img,'monochrome',meanLuminance,thisDisplay,600);
-  toc
+meanLuminance= 10;
+thisDisplay = displayCreate;
+h = harmonicP('row',2048,'col',2048);
+img = imageHarmonic(h);
+img = floor(ieScale(img,0,255));
+tic
+scene = sceneFromFile(img,'monochrome',meanLuminance,thisDisplay,600);
+toc
 %}
 
 %% Parameter set up
@@ -100,26 +100,31 @@ function [scene,I] = sceneFromFile(I, imType, meanLuminance, dispCal, ...
 if notDefined('I')
     % If imageData is not sent in, we ask the user for a filename.
     % The user may or may not have set the imageType.  Sigh.
-    if notDefined('imType'), [I,imType] = vcSelectImage;
+    if notDefined('imType'), [I, imType] = vcSelectImage;
     else, I = vcSelectImage(imType);
     end
-    if isempty(I), scene = []; return; end
+    if isempty(I), scene = [];
+        return;
+    end
 end
 
 if ischar(I)
     % I is a file name.  We determine whether it is a Matlab file and
     % contains a scene variable.  If so, we return that and end
-    [p,n,e] = fileparts(I);
-    
+    [p, n, e] = fileparts(I);
+
     % No extension, so check whether the mat-file exists
-    if isempty(e), I = fullfile(p,[n,'.mat']); end
-    if exist(I,'file') 
-        if strcmp(I((end-2):end),'mat')
-            if ieVarInFile(I, 'scene'), load(I,'scene'); return; end
+    if isempty(e), I = fullfile(p, [n, '.mat']); end
+    if exist(I, 'file')
+        if strcmp(I((end-2):end), 'mat')
+            if ieVarInFile(I, 'scene'), load(I, 'scene');
+                return;
+            end
         end
-    else, error('No file named %s\n',I);
+    else, error('No file named %s\n', I);
     end
 end
+
 %% Determine the photons and illuminant structure
 
 % We need to know the image type (rgb or multispectral).  Try to figure it
@@ -128,36 +133,40 @@ if notDefined('imType'), error('imType required.'); end
 imType = ieParamFormat(imType);
 
 switch lower(imType)
-    case {'monochrome','rgb'}  % 'unispectral'
+    case {'monochrome', 'rgb'} % 'unispectral'
         % init display structure
         if notDefined('dispCal')
             warning('Default display is used to create scene');
             dispCal = displayCreate;
         end
-        
+
         if ischar(dispCal), d = displayCreate(dispCal);
         elseif isstruct(dispCal) && isequal(dispCal.type, 'display')
             d = dispCal;
         else
             error('Bad display information.');
         end
-        
-        if exist('wList','var')
-            d = displaySet(d,'wave',wList);
+
+        if exist('wList', 'var')
+            d = displaySet(d, 'wave', wList);
         end
-        wave  = displayGet(d, 'wave');
+        wave = displayGet(d, 'wave');
 
         % get additional parameter values
-        if ~isempty(varargin), doSub = varargin{1}; else, doSub = false; end
-        if length(varargin) > 2, sz = varargin{3};  else, sz = []; end
-        
+        if ~isempty(varargin), doSub = varargin{1};
+        else, doSub = false;
+        end
+        if length(varargin) > 2, sz = varargin{3};
+        else, sz = [];
+        end
+
         % read radiance / reflectance
         photons = vcReadImage(I, imType, d, doSub, sz);
-        
+
         % Match the display wavelength and the scene wavelength
         scene = sceneCreate('rgb');
         scene = sceneSet(scene, 'wave', wave);
-        
+
         % This code handles both emissive and reflective displays.  The
         % white point is set a little differently.
         %
@@ -165,107 +174,110 @@ switch lower(imType)
         % point of the display if ambient lighting is not set.
         % (b) For reflective display, the illuminant is required and should
         % be passed in in varargin{2}
-        
-        if length(varargin) > 1, il = varargin{2}; else, il = []; end
-        
+
+        if length(varargin) > 1, il = varargin{2};
+        else, il = [];
+        end
+
         % Initialize
         if isempty(il) && ~displayGet(d, 'is emissive')
             error('illuminant required for reflective display');
+            end
+            if isempty(il)
+                il = illuminantCreate('d65', wave);
+                % Replace default with display white point SPD
+                il = illuminantSet(il, 'energy', sum(displayGet(d, 'spd'), 2));
+            end
+            scene = sceneSet(scene, 'illuminant', il);
+
+            % Compute photons for reflective display
+            % For reflective display, until this step the photon variable
+            % stores reflectance information
+            if ~displayGet(d, 'is emissive')
+                il_photons = illuminantGet(il, 'photons', wave);
+                il_photons = reshape(il_photons, [1, 1, length(wave)]);
+                photons = bsxfun(@times, photons, il_photons);
+            end
+
+            % Set viewing distance
+            scene = sceneSet(scene, 'distance', displayGet(d, 'distance'));
+
+            % Set field of view
+            if ischar(I), imgSz = size(imread(I), 2);
+            else, imgSz = size(I, 2);
+            end
+            imgFov = imgSz * displayGet(d, 'deg per dot');
+            scene = sceneSet(scene, 'h fov', imgFov);
+            scene = sceneSet(scene, 'distance', displayGet(d, 'viewing distance'));
+
+        case {'multispectral', 'hyperspectral'}
+            if ~exist(I, 'file'), error('Name of existing file required for multispectral'); end
+                if notDefined('wList'), wList = []; end
+
+                scene = sceneCreate('multispectral');
+
+                % The illuminant structure has photon representation and a
+                % standard Create/Get/Set group of functions.
+                [photons, il, basis] = vcReadImage(I, imType, wList);
+
+                % vcNewGraphWin; imageSPD(photons,basis.wave);
+
+                % Override the default spectrum with the basis function
+                % wavelength sampling.
+                scene = sceneSet(scene, 'wave', basis.wave);
+
+                % Sometimes we store scene names in the file, too
+                if ischar(I) && ieVarInFile(I, 'name')
+                    load(I, 'name')
+                    scene = sceneSet(scene, 'name', name);
+                end
+            otherwise
+                error('Unknown image type')
+            end
+
+            %% Put all the parameters in place and return
+            %{
+            if ieSessionGet('gpu compute')
+                photons = gpuArray(photons);
+            end
+            %}
+
+            if ischar(I)
+                scene = sceneSet(scene, 'filename', I);
+            else
+                scene = sceneSet(scene, 'filename', 'numerical');
+            end
+
+            scene = sceneSet(scene, 'photons', photons);
+            scene = sceneSet(scene, 'illuminant', il);
+
+            % Name the scene with the file name or just announce that we received rgb
+            % data.  Also, check whether the file contains 'fov' and 'dist' variables
+            % and stick them into the scene if they are there
+            if ischar(I)
+                [~, n, ~] = fileparts(I); % This will be the name
+                if strcmp(I((end -2):end), 'mat') && ieVarInFile(I, 'fov')
+                    load(I, 'fov');
+                    scene = sceneSet(scene, 'fov', fov);
+                end
+                if strcmp(I((end -2):end), 'mat') && ieVarInFile(I, 'dist')
+                    load(I, 'dist'), scene = sceneSet(scene, 'distance', dist);
+                end
+            else, n = 'rgb image';
+            end
+
+            if exist('d', 'var'), n = [n, ' - ', displayGet(d, 'name')]; end
+            scene = sceneSet(scene, 'name', n);
+
+            if ~notDefined('meanLuminance')
+                scene = sceneAdjustLuminance(scene, meanLuminance); % Adjust mean
+            end
+
+            if ~notDefined('wList')
+                % I think the scene should match wList by this time.
+                if ~isequal(wList, sceneGet(scene, 'wave'))
+                    scene = sceneSet(scene, 'wave', wList);
+                end
+            end
+
         end
-        if isempty(il)
-            il    = illuminantCreate('d65', wave);
-            % Replace default with display white point SPD
-            il    = illuminantSet(il, 'energy', sum(displayGet(d,'spd'),2));
-        end
-        scene = sceneSet(scene, 'illuminant', il);
-        
-        % Compute photons for reflective display
-        % For reflective display, until this step the photon variable 
-        % stores reflectance information
-        if ~displayGet(d, 'is emissive')
-            il_photons = illuminantGet(il, 'photons', wave);
-            il_photons = reshape(il_photons, [1 1 length(wave)]);
-            photons = bsxfun(@times, photons, il_photons);
-        end
-        
-        % Set viewing distance
-        scene = sceneSet(scene, 'distance', displayGet(d, 'distance'));
-        
-        % Set field of view
-        if ischar(I), imgSz = size(imread(I), 2); 
-        else, imgSz = size(I, 2); 
-        end
-        imgFov = imgSz * displayGet(d, 'deg per dot');
-        scene  = sceneSet(scene, 'h fov', imgFov);
-        scene  = sceneSet(scene,'distance',displayGet(d,'viewing distance'));
-
-    case {'multispectral','hyperspectral'}
-        if ~exist(I,'file'), error('Name of existing file required for multispectral'); end
-        if notDefined('wList'), wList = []; end
-        
-        scene = sceneCreate('multispectral');
-        
-        % The illuminant structure has photon representation and a
-        % standard Create/Get/Set group of functions.
-        [photons, il, basis] = vcReadImage(I,imType,wList);
-        
-        % vcNewGraphWin; imageSPD(photons,basis.wave);
-        
-        % Override the default spectrum with the basis function
-        % wavelength sampling.
-        scene = sceneSet(scene,'wave',basis.wave);
-           
-        % Sometimes we store scene names in the file, too
-        if ischar(I) && ieVarInFile(I,'name')
-            load(I,'name')
-            scene = sceneSet(scene,'name',name);
-        end
-    otherwise
-        error('Unknown image type')
-end
-
-%% Put all the parameters in place and return
-%{
-if ieSessionGet('gpu compute')
-    photons = gpuArray(photons);
-end
-%}
-
-if ischar(I)
-    scene = sceneSet(scene, 'filename', I);
-else
-    scene = sceneSet(scene,'filename','numerical');
-end
-
-scene = sceneSet(scene, 'photons', photons);
-scene = sceneSet(scene, 'illuminant', il);
-
-% Name the scene with the file name or just announce that we received rgb
-% data.  Also, check whether the file contains 'fov' and 'dist' variables
-% and stick them into the scene if they are there
-if ischar(I) 
-    [~, n, ~] = fileparts(I);  % This will be the name
-    if strcmp(I((end-2):end),'mat') && ieVarInFile(I,'fov')
-        load(I,'fov'); scene = sceneSet(scene,'fov',fov);
-    end
-    if strcmp(I((end-2):end),'mat') && ieVarInFile(I,'dist')
-        load(I,'dist'), scene = sceneSet(scene,'distance',dist);
-    end
-else, n = 'rgb image';
-end
-
-if exist('d', 'var'), n = [n ' - ' displayGet(d, 'name')]; end
-scene = sceneSet(scene,'name',n);
-
-if ~notDefined('meanLuminance')
-    scene = sceneAdjustLuminance(scene,meanLuminance); % Adjust mean
-end
-
-if ~notDefined('wList')
-    % I think the scene should match wList by this time.
-    if ~isequal(wList,sceneGet(scene,'wave'))
-        scene = sceneSet(scene, 'wave', wList);
-    end
-end
-
-end

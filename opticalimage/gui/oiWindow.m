@@ -1,17 +1,17 @@
-function oiW = oiWindow(oi,show)
+function oiW = oiWindow(oi, show)
 % Wrapper that replaces the GUIDE oiWindow functionality
 %
 % Synopsis
 %   oiW = oiWindow(oi,show)
 %
 % Brief description
-%   Opens a oiWindow interface based on the oiWindow_App. 
+%   Opens a oiWindow interface based on the oiWindow_App.
 %
 % Inputs
 %   oi:     The oi you want in the window.  If empty, the currently
 %           selected oi in global vcSESSION is used.  If there is no
 %           selected oi a default scene is created and used.
-%   show:   Executes a drawnow command on exiting.  
+%   show:   Executes a drawnow command on exiting.
 %           (Optional, default true)
 %
 % Outputs
@@ -38,17 +38,17 @@ function oiW = oiWindow(oi,show)
 
 % Examples
 %{
-   oiWindow;
+oiWindow;
 %}
 %{
-   scene = sceneCreate;
-   oi = oiCreate;  oi = oiCompute(oi,scene);
-   oiWindow(oi);
+scene = sceneCreate;
+oi = oiCreate;  oi = oiCompute(oi,scene);
+oiWindow(oi);
 %}
 
 %% Add the scene to the database if it is in the call
 
-if exist('oi','var')
+if exist('oi', 'var')
     % An oi was passed in.  We add it to the database and select it.
     % That oi will appear in the window.
     ieAddObject(oi);
@@ -70,17 +70,17 @@ oiW = ieSessionGet('oi window');
 if isempty(oiW)
     % Empty, so create one and put it in the vcSESSION
     oiW = oiWindow_App;
-    ieSessionSet('oi window',oiW);
+    ieSessionSet('oi window', oiW);
 elseif ~isvalid(oiW)
     % Replace the invalid one
     oiW = oiWindow_App;
-    ieSessionSet('oi window',oiW);
+    ieSessionSet('oi window', oiW);
 else
     % Just refresh it
     oiW.refresh;
 end
 
 % Assume true if it does not exist.  Or if it is true.
-if ~exist('show','var') || show, drawnow; end
+if ~exist('show', 'var') || show, drawnow; end
 
 end

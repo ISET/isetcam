@@ -1,4 +1,4 @@
-function uv = xyTouv(xy,compute1960)
+function uv = xyTouv(xy, compute1960)
 % uv = xyTouv(xy,[compute1960])
 %
 % Convert CIE xy chromaticity to CIE u'v' chromaticity.
@@ -22,10 +22,10 @@ if (nargin < 2 || isempty(compute1960))
     compute1960 = 0;
 end
 
-xyY = [xy ; ones(1,size(xy,2))];
+xyY = [xy; ones(1, size(xy, 2))];
 XYZ = xyYToXYZ(xyY);
-uvY = XYZTouvY(XYZ,compute1960);
-uv = uvY(1:2,:);
+uvY = XYZTouvY(XYZ, compute1960);
+uv = uvY(1:2, :);
 
 % One could check with direct computation from
 % published formulae (CIE, Colorimetry, p. 54.)

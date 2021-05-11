@@ -1,4 +1,4 @@
-function [x,y] = ieCirclePoints(radSpacing)
+function [x, y] = ieCirclePoints(radSpacing)
 %Make samples on a circle
 %
 %  [x,y] = ieCirclePoints(radSpacing)
@@ -12,8 +12,8 @@ function [x,y] = ieCirclePoints(radSpacing)
 %
 % Copyright Imageval 2012
 
-theta = (0:radSpacing:2*pi);
-x = cos(theta); y = sin(theta);
+theta = (0:radSpacing:2 * pi);
+x = cos(theta);
+y = sin(theta);
 
 return;
-

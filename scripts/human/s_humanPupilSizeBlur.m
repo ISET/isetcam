@@ -19,7 +19,7 @@
 % because there is less diffraction to contend with.  In the real eye,
 % however, the data go in the other direction.  As the pupil size grows the
 % eye's aberrations play a larger role and there is degradation of the
-% linespread.  
+% linespread.
 %
 % Hence, the model we use here and in humanCore isn't handling pupil radius
 % correctly (demonstrated in the calculations). The data are not bad around
@@ -35,28 +35,29 @@
 % Copyright ImagEval Consultants, LLC, 2010.
 
 %% Create linespread functions for a very large and a slightly small pupil
-p1 = 0.003;    % 6 mm diameter
-p2 = 0.001;    % 2 mm diameter
+p1 = 0.003; % 6 mm diameter
+p2 = 0.001; % 2 mm diameter
 unit = 'um';
-wStep = 5; wave = 400:wStep:700;
-dioptricPower   = 59.9404;
+wStep = 5;
+wave = 400:wStep:700;
+dioptricPower = 59.9404;
 
 % Set up LSF arguments
-lsfBigPupil     = humanLSF(p1,dioptricPower,unit,wave);
-[lsfSmallPupil,xDim,wave] = humanLSF(p2,dioptricPower,unit,wave);
+lsfBigPupil = humanLSF(p1, dioptricPower, unit, wave);
+[lsfSmallPupil, xDim, wave] = humanLSF(p2, dioptricPower, unit, wave);
 
 % You can re-run this for various wavelengths by re-selecting w.  The
 % wavelength range is from 400:700 in 1 nm increments
-for thisWave = [450,550]
+for thisWave = [450, 550]
     fig = vcNewGraphWin;
-    idx = (thisWave - wave(1))/wStep + 1;
-    plot(xDim,lsfSmallPupil(idx,:),'r--',xDim,lsfBigPupil(idx,:),'b-');
+    idx = (thisWave - wave(1)) / wStep + 1;
+    plot(xDim, lsfSmallPupil(idx, :), 'r--', xDim, lsfBigPupil(idx, :), 'b-');
 
     xlabel('Spatial position (um)');
     ylabel('Relative intensity');
 
-    legend(sprintf('Diam = %.1f mm',2*p1*10^3),sprintf('Diam = %.1f mm',2*p2*10^3));
-    title(sprintf('Line spread %.0f nm',wave(idx)));
+    legend(sprintf('Diam = %.1f mm', 2 * p1 * 10^3), sprintf('Diam = %.1f mm', 2 * p2 * 10^3));
+    title(sprintf('Line spread %.0f nm', wave(idx)));
     grid on
 
 end

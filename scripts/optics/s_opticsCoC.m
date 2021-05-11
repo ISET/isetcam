@@ -20,58 +20,58 @@ ieInit
 %% Calculate the circle of confusion diameter for different points
 
 % Points distances
-oDist = logspace(-1.5,1,20);
+oDist = logspace(-1.5, 1, 20);
 
 optics = opticsCreate;
-optics = opticsSet(optics,'fnumber',2);
+optics = opticsSet(optics, 'fnumber', 2);
 c = zeros(size(oDist));
-for ii=1:length(oDist)
-    c(ii) = opticsCoC(optics,oDist(ii),'um');
+for ii = 1:length(oDist)
+    c(ii) = opticsCoC(optics, oDist(ii), 'um');
 end
 
 %% Plot the circle diameter as a function of distance
-vcNewGraphWin([],'big'); 
-semilogy(oDist,c,'b-'); grid on
+vcNewGraphWin([], 'big');
+semilogy(oDist, c, 'b-'); grid on
 % xlabel('Object distance (m)');
 % ylabel('Diameter of circle of confusion (um)')
 
-l = xlabel('Object distance (m)');                  %set(l,'Position',[0.5 0.6,-1]);
+l = xlabel('Object distance (m)'); %set(l,'Position',[0.5 0.6,-1]);
 l = ylabel('Diameter of circle of confusion (um)'); % set(l,'Position',[-0.07 31.6,-1])
 
 %% Change f-number, but not focal length, and recalculate
-optics = opticsSet(optics,'fnumber',4);
+optics = opticsSet(optics, 'fnumber', 4);
 c = zeros(size(oDist));
-for ii=1:length(oDist)
-    c(ii) = opticsCoC(optics,oDist(ii),'um');
+for ii = 1:length(oDist)
+    c(ii) = opticsCoC(optics, oDist(ii), 'um');
 end
 hold on
-semilogy(oDist,c,'g-'); grid on
+semilogy(oDist, c, 'g-'); grid on
 % xlabel('Object distance (m)');
 % ylabel('Diameter of circle of confusion (um)')
 
-l = xlabel('Object distance (m)');                  % set(l,'Position',[0.5 0.7,-1]);
+l = xlabel('Object distance (m)'); % set(l,'Position',[0.5 0.7,-1]);
 l = ylabel('Diameter of circle of confusion (um)'); % set(l,'Position',[-0.06 31.6,-1])
 
 %% Change the f-number once more, keeping focal length fixed
 
-optics = opticsSet(optics,'fnumber',8);
+optics = opticsSet(optics, 'fnumber', 8);
 c = zeros(size(oDist));
-for ii=1:length(oDist)
-    c(ii) = opticsCoC(optics,oDist(ii),'um');
+for ii = 1:length(oDist)
+    c(ii) = opticsCoC(optics, oDist(ii), 'um');
 end
 
 % Why aren't the axes default positions OK?
 hold on
-semilogy(oDist,c,'r-'); grid on
-xlabel('Object distance (m)','fontsize',24);                  % set(l,'Position',[0.5 0.7,-1]);
-ylabel('Diameter of circle of confusion (um)','fontsize',24); % set(l,'Position',[-0.06 31.6,-1])
+semilogy(oDist, c, 'r-'); grid on
+xlabel('Object distance (m)', 'fontsize', 24); % set(l,'Position',[0.5 0.7,-1]);
+ylabel('Diameter of circle of confusion (um)', 'fontsize', 24); % set(l,'Position',[-0.06 31.6,-1])
 
 % diffractionLine
-line([min(oDist),max(oDist)],[2 2],'linestyle',':','color','k');
+line([min(oDist), max(oDist)], [2, 2], 'linestyle', ':', 'color', 'k');
 % In all cases
 % flength = opticsGet(optics,'focal length','mm');
 % title(sprintf('Focal length %.2f mm',flength));
 
-legend({'f=2','f=4','f=8'})
+legend({'f=2', 'f=4', 'f=8'})
 
-%% 
+%%

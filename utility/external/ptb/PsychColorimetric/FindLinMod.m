@@ -1,6 +1,6 @@
-function [B,A] = FindLinMod(X,n_dimension)
+function [B, A] = FindLinMod(X, n_dimension)
 % [B,A] = FindLinMod(X,n_dimension)
-% 
+%
 % Find an n_dimension linear model for the
 % data in the columns of X.
 %
@@ -16,9 +16,9 @@ function [B,A] = FindLinMod(X,n_dimension)
 % Do the singular value decomposition
 % (If X is very large you may need a bigger
 % computer.)
-[U,D,V] = svd(X);
+[U, D, V] = svd(X);
 
 % Extract the appropriate parts of the SVD
-B = U(:,1:n_dimension);
-temp = D*V';
-A = temp(1:n_dimension,:);
+B = U(:, 1:n_dimension);
+temp = D * V';
+A = temp(1:n_dimension, :);

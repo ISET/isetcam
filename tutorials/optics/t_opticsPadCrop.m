@@ -25,7 +25,7 @@ ieInit
 
 scene = sceneCreate('sweep frequency');
 oi = oiCreate;
-oi = oiCompute(oi,scene);
+oi = oiCompute(oi, scene);
 oiWindow(oi);
 
 %% Eliminate the default padding in the OI
@@ -37,34 +37,34 @@ oiWindow(oi);
 %
 %  To eliminate the padding we compute with oiCrop
 %
-paddedSize = oiGet(oi,'size');
-originalSize = paddedSize/1.25;
+paddedSize = oiGet(oi, 'size');
+originalSize = paddedSize / 1.25;
 offset = (paddedSize - originalSize) / 2;
-rect = [offset(2)+1 offset(1)+1 originalSize(2)-1 originalSize(1)-1];
-oiCropped = oiCrop(oi,rect);
+rect = [offset(2) + 1, offset(1) + 1, originalSize(2) - 1, originalSize(1) - 1];
+oiCropped = oiCrop(oi, rect);
 oiWindow(oiCropped);
 
 %% Notice that for sensors, you can crop just by setting the FOV
 
 sensor = sensorCreate;
-sensor = sensorSet(sensor,'fov',sceneGet(scene,'fov'),oi);
+sensor = sensorSet(sensor, 'fov', sceneGet(scene, 'fov'), oi);
 
 % The oi has the padding.  But the sensor is cropped
-sensor = sensorCompute(sensor,oi);
+sensor = sensorCompute(sensor, oi);
 sensorWindow(sensor);
 
 %% So you will have the same result with the cropped oi
 
-sensor = sensorCompute(sensor,oiCropped);
+sensor = sensorCompute(sensor, oiCropped);
 sensorWindow(sensor);
 
-%%  Here is the padded image. 
+%%  Here is the padded image.
 
 % Notice, however, that the FOV is always the horizontal field of view, so
 % we do not get padding in the vertical direction for a rectangular image.
 % Only for a square image.
-sensor = sensorSetSizeToFOV(sensor,oiGet(oi,'fov'),oi);
-sensor = sensorCompute(sensor,oi);
+sensor = sensorSetSizeToFOV(sensor, oiGet(oi, 'fov'), oi);
+sensor = sensorCompute(sensor, oi);
 sensorWindow(sensor);
 
 %% END

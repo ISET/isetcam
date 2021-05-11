@@ -84,7 +84,7 @@ function val = displayGet(d, parm, varargin)
 %  We need to return the size of the subpixel samples in the psf image.
 
 %% Check parameters
-if ~exist('parm','var')||isempty(parm) , error('Parameter not found.');  end
+if ~exist('parm', 'var') || isempty(parm), error('Parameter not found.'); end
 
 % Default is empty when the parameter is not yet defined.
 val = [];
@@ -98,21 +98,21 @@ switch parm
     case {'type'}
         % Type should always be 'display'
         val = d.type;
-    case {'gtable','dv2intensity','gamma','gammatable'}
-        if isfield(d,'gamma'), val = d.gamma; end
+    case {'gtable', 'dv2intensity', 'gamma', 'gammatable'}
+        if isfield(d, 'gamma'), val = d.gamma; end
     case {'inversegamma', 'inversegammatable'}
         if isfield(d, 'gamma')
             % Optional nSteps arg for inverse gamma table
             if (isempty(varargin))
                 val = ieLUTInvert(d.gamma);
             else
-                val = ieLUTInvert(d.gamma,varargin{1});
+                val = ieLUTInvert(d.gamma, varargin{1});
             end
         end
     case {'isemissive'}
         val = true;
         if isfield(d, 'isEmissive'), val = d.isEmissive; end
-    case {'bits','dacsize'}
+    case {'bits', 'dacsize'}
         % color bit depths, e.g. 8 bit / 10 bit
         % This is computed from size of gamma table
         gTable = displayGet(d, 'gTable');
@@ -120,31 +120,31 @@ switch parm
         val = round(log2(size(gTable, 1)));
     case {'nlevels'}
         % Number of levels
-        val = 2^displayGet(d,'bits');
+        val = 2^displayGet(d, 'bits');
     case {'levels'}
         % List of the levels, e.g. 0~255
-        val = 1:displayGet(d,'nlevels') - 1;
-        
+        val = 1:displayGet(d, 'nlevels') - 1;
+
         % SPD calculations
-    case {'wave','wavelength'}  %nanometers
+    case {'wave', 'wavelength'} %nanometers
         % For compatibility with PTB.  We might change .wave to
         % .wavelengths.
-        if checkfields(d,'wave'), val = d.wave(:);
-        elseif checkfields(d,'wavelengths'), val = d.wavelengths(:);
+        if checkfields(d, 'wave'), val = d.wave(:);
+        elseif checkfields(d, 'wavelengths'), val = d.wavelengths(:);
         end
     case {'binwidth'}
         wave = displayGet(d, 'wave');
         if length(wave) > 1
             val = wave(2) - wave(1);
         end
-        
+
     case {'nwave'}
-        val = length(displayGet(d,'wave'));
+        val = length(displayGet(d, 'wave'));
     case {'nprimaries'}
         % SPD is always nWave by nPrimaries
-        spd = displayGet(d,'spd');
-        val = size(spd,2);
-    case {'spd','spdprimaries'}
+        spd = displayGet(d, 'spd');
+        val = size(spd, 2);
+    case {'spd', 'spdprimaries'}
         % Units are energy (watts/....)
         % displayGet(dsp,'spd');
         % displayGet(d,'spd',wave);
@@ -153,22 +153,22 @@ switch parm
         % samples. The PTB uses spectra rather than spd.  This hack makes
         % it compatible.  Or, we could convert displayCreate from spd to
         % spectra some day.
-        if checkfields(d,'spd'),         val = d.spd;
-        elseif checkfields(d,'spectra'), val = d.spectra;
+        if checkfields(d, 'spd'), val = d.spd;
+        elseif checkfields(d, 'spectra'), val = d.spectra;
         end
-        
+
         % Sometimes users put the data in transposed, sigh.  I am one of
         % those users.
-        nWave = displayGet(d,'nwave');
-        if size(val,1) ~= nWave,  val = val'; end
+        nWave = displayGet(d, 'nwave');
+        if size(val, 1) ~= nWave, val = val'; end
         % Should check here!
-        
+
         % Interpolate for alternate wavelength, if requested
         if ~isempty(varargin)
             % Wave interpolation
-            wavelength = displayGet(d,'wave');
+            wavelength = displayGet(d, 'wave');
             wave = varargin{1};
-            val = interp1(wavelength(:), val, wave(:),'linear',0);
+            val = interp1(wavelength(:), val, wave(:), 'linear', 0);
         end
     case {'rgbspd'}
         % displayGet(d,'rgb spd',[wave])
@@ -177,37 +177,37 @@ switch parm
         % primary.  That one is the fourth.  Often we just want the rgb
         % primaries.
         % Do we have a problem here if the display is not emissive?
-        if ~isempty(varargin), wave = varargin{1}; 
-        else, wave = displayGet(d,'wave');
+        if ~isempty(varargin), wave = varargin{1};
+        else, wave = displayGet(d, 'wave');
         end
-        spd = displayGet(d,'spd',wave);
-        val = spd(:,1:3);
-        
+        spd = displayGet(d, 'spd', wave);
+        val = spd(:, 1:3);
+
     case {'whitespd'}
         % SPD when all the primaries are at peak, this is the energy
         if ~isempty(varargin), wave = varargin{1};
-        else                   wave = displayGet(d,'wave');
+        else wave = displayGet(d, 'wave');
         end
-        e = displayGet(d,'spd',wave);
+        e = displayGet(d, 'spd', wave);
         val = sum(e, 2);
-        
+
         % Color conversion
-    case {'rgb2xyz','lrgb2xyz'}
+    case {'rgb2xyz', 'lrgb2xyz'}
         % rgb2xyz = displayGet(dsp,'rgb2xyz',wave)
         % This is the linear rgb to xyz conversion.
-        % 
+        %
         % RGB as a column vector mapped to XYZ column
         %  x(:)' = r(:)' * rgb2xyz
         % Hence, imageLinearTransform(img,rgb2xyz)
         % should work
         %
-        wave = displayGet(d,'wave');
-        spd  = displayGet(d,'spd',wave);        % spd in energy
-        val  = ieXYZFromEnergy(spd',wave);  %         
+        wave = displayGet(d, 'wave');
+        spd = displayGet(d, 'spd', wave); % spd in energy
+        val = ieXYZFromEnergy(spd', wave); %
     case {'rgb2lms'}
         % rgb2lms = displayGet(dsp,'rgb2lms')
         % rgb2lms = displayGet(dsp,'rgb2lms',wave)
-        % 
+        %
         % This is for linear rgb to lms.
         %
         % The matrix is scaled so that L+M of white equals Y of white.
@@ -219,113 +219,113 @@ switch parm
         %
         %   imageLinearTransform(img,rgb2lms)
         %
-        wave = displayGet(d,'wave');
-        coneFile = fullfile(isetRootPath,'data','human','stockman');
-        cones = ieReadSpectra(coneFile,wave);     % plot(wave,spCones)
-        spd = displayGet(d, 'spd', wave);         % plot(wave,displaySPD)
-        val = cones'* spd;                  
+        wave = displayGet(d, 'wave');
+        coneFile = fullfile(isetRootPath, 'data', 'human', 'stockman');
+        cones = ieReadSpectra(coneFile, wave); % plot(wave,spCones)
+        spd = displayGet(d, 'spd', wave); % plot(wave,displaySPD)
+        val = cones' * spd;
         val = val';
-        
+
         % Scale the transform so that sum L and M values sum to Y-value of
-        % white 
+        % white
         %         e = displayGet(d,'white spd',wave);
         %         whiteXYZ = ieXYZFromEnergy(e',wave);
         %         whiteLMS = sum(val);
         %         val = val*(whiteXYZ(2)/(whiteLMS(1)+whiteLMS(2)));
-        
+
     case {'drgb2xyz'}
         % This should be implemented.
         % Take an RGB image of digital values, convert them to linear
         % primary intensities, and then return the XYZ values
-        
-     case {'whitexyz','whitepoint'}
+
+    case {'whitexyz', 'whitepoint'}
         % displayGet(dsp,'white xyz',wave)
-        e = displayGet(d,'white spd');
-        if isempty(varargin), wave = displayGet(d,'wave');
+        e = displayGet(d, 'white spd');
+        if isempty(varargin), wave = displayGet(d, 'wave');
         else, wave = varargin{1};
         end
         % Energy needs to be XW format, so a row vector
-        val = ieXYZFromEnergy(e',wave);
+        val = ieXYZFromEnergy(e', wave);
     case {'peakluminance'}
         % Luminance of the white point in cd/m2
         % displayGet(dsp,'peak luminance')
-        whiteXYZ = displayGet(d,'white xyz');
+        whiteXYZ = displayGet(d, 'white xyz');
         val = whiteXYZ(2);
     case {'whitexy'}
-        val = chromaticity(displayGet(d,'white xyz'));
+        val = chromaticity(displayGet(d, 'white xyz'));
     case {'primariesxyz'}
-        spd  = displayGet(d,'spd primaries');
-        wave = displayGet(d,'wave');
-        val  = ieXYZFromEnergy(spd',wave);
-    case {'primariesrgb','primariessrgb'}
+        spd = displayGet(d, 'spd primaries');
+        wave = displayGet(d, 'wave');
+        val = ieXYZFromEnergy(spd', wave);
+    case {'primariesrgb', 'primariessrgb'}
         % The srgb values of the primaries are in the rows of val
-        xyz = displayGet(d,'primaries xyz');
-        nPrimaries = displayGet(d,'n primaries');
-        val = xyz2srgb(XW2RGBFormat(xyz,nPrimaries,1));
+        xyz = displayGet(d, 'primaries xyz');
+        nPrimaries = displayGet(d, 'n primaries');
+        val = xyz2srgb(XW2RGBFormat(xyz, nPrimaries, 1));
         val = RGB2XWFormat(val);
-        
+
     case {'primariesxy'}
-        xyz = displayGet(d,'primaries xyz');
+        xyz = displayGet(d, 'primaries xyz');
         val = chromaticity(xyz);
-        
+
     case {'whitelms'}
         % displayGet(dsp,'white lms')
-        rgb2lms = displayGet(d,'rgb2lms');        
+        rgb2lms = displayGet(d, 'rgb2lms');
         % Sent back in XW format, so a row vector
         val = sum(rgb2lms);
 
         % Spatial parameters
     case {'dpi', 'ppi'}
-        if checkfields(d,'dpi'), val = d.dpi;
+        if checkfields(d, 'dpi'), val = d.dpi;
         else, val = 96;
         end
     case {'metersperdot'}
         % displayGet(dsp,'meters per dot','m')
         % displayGet(dsp,'meters per dot','mm')
         % Useful for calculating image size in meters
-        dpi = displayGet(d,'dpi');
-        ipm = 1/.0254;   % Inch per meter
-        dpm = dpi*ipm;   % Dots per meter
-        val = 1/dpm;     % meters per dot
-        if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-        
+        dpi = displayGet(d, 'dpi');
+        ipm = 1 / .0254; % Inch per meter
+        dpm = dpi * ipm; % Dots per meter
+        val = 1 / dpm; % meters per dot
+        if ~isempty(varargin), val = val * ieUnitScaleFactor(varargin{1}); end
+
     case {'dotspermeter'}
         % displayGet(dsp,'dots per meter','m')
-        mpd = displayGet(d,'meters per dot');
-        val = 1/mpd;
-        if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-        
-    case {'dotsperdeg','sampperdeg'}
+        mpd = displayGet(d, 'meters per dot');
+        val = 1 / mpd;
+        if ~isempty(varargin), val = val * ieUnitScaleFactor(varargin{1}); end
+
+    case {'dotsperdeg', 'sampperdeg'}
         % Samples per deg
         % displayGet(d,'dots per deg')
-        mpd = displayGet(d,'meters per dot');                      
-        dist = displayGet(d,'Viewing Distance');  % Meters
-        degPerPixel = atand(mpd / dist);
+        mpd = displayGet(d, 'meters per dot');
+        dist = displayGet(d, 'Viewing Distance'); % Meters
+        degPerPixel = atand(mpd/dist);
         val = round(1/degPerPixel);
-        
+
     case {'degperpixel', 'degperdot'}
         % degrees per pixel
         % displayGet(d, 'deg per dot')
-        mpd = displayGet(d,'meters per dot');                      
-        dist = displayGet(d,'Viewing Distance');  % Meters
-        val = atand(mpd / dist);
-        
+        mpd = displayGet(d, 'meters per dot');
+        dist = displayGet(d, 'Viewing Distance'); % Meters
+        val = atand(mpd/dist);
+
     case {'viewingdistance', 'distance'}
         % Viewing distance in meters
-        if checkfields(d,'dist'), val = d.dist;
-        else, val = 0.5;   % Default viewing distance in meters, 19 inches
+        if checkfields(d, 'dist'), val = d.dist;
+        else, val = 0.5; % Default viewing distance in meters, 19 inches
         end
-        
+
     case {'refreshrate'}
         % display refresh rate
         if isfield(d, 'refreshRate'), val = d.refreshRate; end
-        
-    % Dixel (subpixel) information
+
+        % Dixel (subpixel) information
     case {'dixel'}
         % The whole dixel structure
         % displayGet(d, 'dixel')
         if isfield(d, 'dixel'), val = d.dixel; end
-        
+
     case {'dixelsize'}
         % number of samples in one dixel
         % displayGet(d, 'dixel size')
@@ -333,7 +333,7 @@ switch parm
         dixel_image = displayGet(d, 'dixel intensity map');
         val = size(dixel_image);
         val = val(1:2);
-    
+
     case {'oversample', 'osample'}
         % Number of subpixel samples per pixel
         % displayGet(d, 'over sample')
@@ -342,29 +342,29 @@ switch parm
         % number of dixel samples by the number of subpixels, which here
         % are called pixels.  (Inhereted from HJ, but maybe we should
         % update notation).
-        
-        sz  = displayGet(d, 'dixel size');
+
+        sz = displayGet(d, 'dixel size');
         val = sz ./ displayGet(d, 'pixels per dixel');
-        
+
     case {'samplespacing'}
         % spacing between psf samples
         % displayGet(d, 'sample sampling', units)
         val = displayGet(d, 'metersperdot') ./ displayGet(d, 'dixel size');
-        
+
         % adjust for the number of pixels in one dixel
         val = val .* displayGet(d, 'pixels per dixel');
-        
+
         if ~isempty(varargin)
-            val = val*ieUnitScaleFactor(varargin{1});
+            val = val * ieUnitScaleFactor(varargin{1});
         end
-    case {'fillfactor','fillingfactor','subpixelfilling'}
+    case {'fillfactor', 'fillingfactor', 'subpixelfilling'}
         % Fill factor of subpixle for each primary
         % displayGet(d, 'fill factor')
         dixel_image = displayGet(d, 'dixel image');
-        [r,c,~] = size(dixel_image);
-        dixel_image = dixel_image ./ repmat(max(max(dixel_image)), [r c]);
+        [r, c, ~] = size(dixel_image);
+        dixel_image = dixel_image ./ repmat(max(max(dixel_image)), [r, c]);
         dixel_image = dixel_image > 0.2;
-        val = sum(sum(dixel_image))/r/c;
+        val = sum(sum(dixel_image)) / r / c;
         val = val(:);
     case {'subpixelspd'}
         % spectral power distribution for subpixels
@@ -373,13 +373,13 @@ switch parm
         % To get the spd for the whole pixel, use displayGet(d, 'spd')
         % instead
         spd = displayGet(d, 'spd');
-        ff  = displayGet(d, 'filling factor');
-        val = spd ./ repmat(ff(:)', [size(spd, 1) 1]);
+        ff = displayGet(d, 'filling factor');
+        val = spd ./ repmat(ff(:)', [size(spd, 1), 1]);
     case {'pixelsperdixel'}
         % number of (sub)pixels per dixel
         % returns number of pixels in one block (unit repeated pattern)
         % displayGet(d, 'pixels per dixel')
-        % 
+        %
         % The field indicates how many pixels (defined as independent
         % addressable (R,G,B,etc) tuple) in one repeating pattern. In most
         % cases, this field is [1 1], meaning that one dixel contains one
@@ -397,30 +397,31 @@ switch parm
             val = max(dixel_control(:));
         end
     case {'dixelintensitymap', 'dixelimage'}
-        % dixel intensity map  
+        % dixel intensity map
         % This field specify the intensity (scale factor) at each sample
         % point in dixel
         %
         % displayGet(d, 'dixel intensity map')
         dixel = displayGet(d, 'dixel');
         if isempty(dixel) % error('dixel structure does not exist');
-            val = []; return;
+            val = [];
+            return;
         end
         if isfield(dixel, 'intensitymap')
             val = dixel.intensitymap;
         end
-        
+
         % adjust the size of the intensity map if required
         if ~isempty(varargin)
             sz = varargin{1};
-            if isscalar(sz), sz = [sz sz]; end
-            
+            if isscalar(sz), sz = [sz, sz]; end
+
             % resize the intensity map
             val = imresize(val, sz);
-            
+
             % crop the intensity map and make it non-negative
             val(val < 0) = 0;
-            
+
             % scale the intensity map
             scale = prod(sz) ./ sum(sum(val));
             val = bsxfun(@times, val, scale);
@@ -439,11 +440,11 @@ switch parm
         if isfield(dixel, 'controlmap')
             val = dixel.controlmap;
         end
-        
+
         % adjust the size of the control map if required
         if ~isempty(varargin)
             sz = varargin{1};
-            if isscalar(sz), sz = [sz sz]; end
+            if isscalar(sz), sz = [sz, sz]; end
             % resize
             val = imresize(val, sz, 'nearest');
         end
@@ -487,14 +488,14 @@ switch parm
         blackSpd = displayGet(d, 'black spd');
         blackXYZ = ieXYZFromEnergy(blackSpd', displayGet(d, 'wave'));
         val = blackXYZ(2);
-        
+
         % Image data.  Maybe we should add other information?
-    case {'rgb','image'}
+    case {'rgb', 'image'}
         % This is where we store the image that will be rendered into the
         % main axis of the display window.
         val = d.image;
     otherwise
-        error('Unknown parameter %s\n',parm);
+        error('Unknown parameter %s\n', parm);
 end
 
 end

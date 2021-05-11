@@ -13,6 +13,6 @@ function sensor = CylToSensor(cyl)
 % 4/5/02      dhb, ly  Change name.
 % 11/6/06     dhb   Only allow one arg.
 
-sensor(1,:) = cyl(1,:);
-sensor(2,:) = cyl(2,:) .* cos( cyl(3,:) );
-sensor(3,:) = cyl(2,:) .* sin( cyl(3,:) );
+sensor(1, :) = cyl(1, :);
+sensor(2, :) = cyl(2, :) .* cos(cyl(3, :));
+sensor(3, :) = cyl(2, :) .* sin(cyl(3, :));

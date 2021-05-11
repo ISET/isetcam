@@ -15,17 +15,17 @@ function settings = GamutToSettingsExhaust(gammaInput, gammaTable, gamut)
 % 5/26/12  dhb  Wrote it.
 
 % Check dimensions and table sizes
-[m,n] = size(gamut);
-ng = size(gammaTable,2);
+[m, n] = size(gamut);
+ng = size(gammaTable, 2);
 if (m > ng)
-  error('Mismatch between device coordinate dimensions and gamma table');
+    error('Mismatch between device coordinate dimensions and gamma table');
 end
 
 % Use a search routine to find the best gamma function
-settings = zeros(m,n);
+settings = zeros(m, n);
 for i = 1:m
     for j = 1:n
-        [~,index] = min(abs(gammaTable(:,i)-gamut(i,j)));
-        settings(i,j) = gammaInput(index);
+        [~, index] = min(abs(gammaTable(:, i) - gamut(i, j)));
+        settings(i, j) = gammaInput(index);
     end
 end

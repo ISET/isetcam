@@ -1,4 +1,4 @@
-function dat = replaceNaN(dat,val)
+function dat = replaceNaN(dat, val)
 % Replace NaNs with val
 %
 %  dat = replaceNaN(dat,val)

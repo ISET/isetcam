@@ -21,7 +21,7 @@ function ieExamplesRunTextInScript(theScript)
 % Examples are provided in the code.
 %
 % See also:
-%     
+%
 %
 
 % History
@@ -29,25 +29,25 @@ function ieExamplesRunTextInScript(theScript)
 
 % Examples:
 %{
-    ieExamplesRunTextInScript('SimpleScript.m');
+ieExamplesRunTextInScript('SimpleScript.m');
 %}
 %{
-    % Another example.  This is here to help
-    % test function ExecuteExamplesInScript.
-    fprintf('Executing example ');
+% Another example.  This is here to help
+% test function ExecuteExamplesInScript.
+fprintf('Executing example ');
 
-    % More comment
-    fprintf('number two!\n');
+% More comment
+fprintf('number two!\n');
 %}
 
 %{
-    This is a real block comment, and should not be executed as an example.
-    You can tell because it is not contiguous after the real examples above.
+This is a real block comment, and should not be executed as an example.
+You can tell because it is not contiguous after the real examples above.
 %}
 
 % Open file
-theFileH = fopen(theScript,'r');
-theText = {char(fread(theFileH,'uint8=>char')')};
+theFileH = fopen(theScript, 'r');
+theText = {char(fread(theFileH, 'uint8=>char')')};
 fclose(theFileH);
 
 % Evaluate the text
@@ -55,6 +55,6 @@ eval(theText{1});
 
 
 %{
-    And here is another real real block comment, that also should not be executed as an example.
-    You can tell because it is not contiguous after the real examples above.
+And here is another real real block comment, that also should not be executed as an example.
+You can tell because it is not contiguous after the real examples above.
 %}

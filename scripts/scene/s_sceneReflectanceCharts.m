@@ -1,4 +1,4 @@
-%% The Natural-100 reflectance chart 
+%% The Natural-100 reflectance chart
 %
 % We designed a color chart containing 100 natural surfaces
 % reflectances, including a neutral (achromatic) series.
@@ -30,11 +30,11 @@ scene = sceneCreate('reflectance chart');
 ieAddObject(scene);
 sceneWindow;
 
-%% Create your own chart 
+%% Create your own chart
 
-% The files containing the reflectances are in ISET format, readable by 
+% The files containing the reflectances are in ISET format, readable by
 % s = ieReadSpectra(sFiles{1});
-sFiles = cell(1,4);
+sFiles = cell(1, 4);
 sFiles{1} = which('MunsellSamples_Vhrel.mat');
 sFiles{2} = which('Food_Vhrel.mat');
 sFiles{3} = which('DupontPaintChip_Vhrel.mat');
@@ -48,46 +48,51 @@ sFiles{4} = fullfile(isetRootPath,'data','surfaces','reflectances','HyspexSkinRe
 %}
 
 % The number of samples from each of the data sets, respectively
-sSamples = [12,12,24,24];    % 
+sSamples = [12, 12, 24, 24]; %
 
 % How many row/col spatial samples in each patch (they are square)
-pSize    = 24;           % Patch size
-wave     = [];           % Whatever is in the reflectance data file
-grayFlag = 0;            % No gray strip
+pSize = 24; % Patch size
+wave = []; % Whatever is in the reflectance data file
+grayFlag = 0; % No gray strip
 sampling = 'no replacement';
 
-scene = sceneCreate('reflectance chart',pSize,sSamples,sFiles,wave,grayFlag,sampling);
+scene = sceneCreate('reflectance chart', pSize, sSamples, sFiles, wave, grayFlag, sampling);
 
 % The chart parameters are attached to the scene object
-sceneGet(scene,'chart parameters')
+sceneGet(scene, 'chart parameters')
 
 % Show it on the screen
-ieAddObject(scene); sceneWindow;
+ieAddObject(scene);
+sceneWindow;
 
 %% Change the illumination from the default illuminant (equal energy) to D65
 
-wave = sceneGet(scene,'wave');  d65 = ieReadSpectra('D65',wave);
-sceneD65 = sceneAdjustIlluminant(scene,d65);
-sceneD65 = sceneSet(sceneD65,'name','Reflectance Chart D65');
-ieAddObject(sceneD65); sceneWindow;
+wave = sceneGet(scene, 'wave');
+d65 = ieReadSpectra('D65', wave);
+sceneD65 = sceneAdjustIlluminant(scene, d65);
+sceneD65 = sceneSet(sceneD65, 'name', 'Reflectance Chart D65');
+ieAddObject(sceneD65);
+sceneWindow;
 
 %% Add a gray strip column
 
 grayStrip = 1;
-sceneGray = sceneReflectanceChart(sFiles,sSamples,pSize,wave,grayStrip);
-sceneGray = sceneSet(sceneGray,'name','Reflectance Chart EE Gray Strip');
+sceneGray = sceneReflectanceChart(sFiles, sSamples, pSize, wave, grayStrip);
+sceneGray = sceneSet(sceneGray, 'name', 'Reflectance Chart EE Gray Strip');
 
-ieAddObject(sceneGray); sceneWindow;
+ieAddObject(sceneGray);
+sceneWindow;
 
 %% Store the parameters needed to make exactly the same chart
 
-[sceneOriginal, storedSamples] = sceneReflectanceChart(sFiles,sSamples,pSize);
-sceneOriginal = sceneSet(sceneOriginal,'name','Original');
-ieAddObject(sceneOriginal); sceneWindow;
+[sceneOriginal, storedSamples] = sceneReflectanceChart(sFiles, sSamples, pSize);
+sceneOriginal = sceneSet(sceneOriginal, 'name', 'Original');
+ieAddObject(sceneOriginal);
+sceneWindow;
 
-sceneReplica = sceneReflectanceChart(sFiles,storedSamples,pSize);
-sceneReplica = sceneSet(sceneReplica,'name','Replica');
-ieAddObject(sceneReplica); sceneWindow;
+sceneReplica = sceneReflectanceChart(sFiles, storedSamples, pSize);
+sceneReplica = sceneSet(sceneReplica, 'name', 'Replica');
+ieAddObject(sceneReplica);
+sceneWindow;
 
 %%
-

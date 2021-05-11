@@ -1,4 +1,4 @@
-function tf = ieContains(str,pattern)
+function tf = ieContains(str, pattern)
 % Returns 1 (true) if str contains pattern, and returns 0 (false) otherwise.
 %
 % Synopsis:
@@ -7,7 +7,7 @@ function tf = ieContains(str,pattern)
 % Description:
 %    Work around for the Matlab contains function. Written so that it
 %    will work with Matlab versions prior to those with the Matlab function
-%    contains(). 
+%    contains().
 %
 % Inputs
 %   str -  A cell array of strings (or a string)
@@ -19,27 +19,27 @@ function tf = ieContains(str,pattern)
 %
 % DHB/ZL ISETBIO Team
 %
-% See also: 
+% See also:
 %   contains, strfind
-%   
+%
 
 % Examples
 %{
-   ieContains('help','he')
-   ieContains('help','m')
-   ieContains({'help','he','lp'},'he')
+ieContains('help','he')
+ieContains('help','m')
+ieContains({'help','he','lp'},'he')
 %}
 
-if(iscell(str))
-    tf = zeros(1,length(str));
-    
+if (iscell(str))
+    tf = zeros(1, length(str));
+
     % If cell loop through all entries.
     for ii = 1:length(str)
         currStr = str{ii};
         if ~ischar(currStr) && ~isstring(currStr)
             tf(ii) = 0;
         else
-            if (~isempty(strfind(currStr,pattern))) %#ok<*STREMP>
+            if (~isempty(strfind(currStr, pattern))) %#ok<*STREMP>
                 tf(ii) = 1;
             else
                 tf(ii) = 0;
@@ -50,16 +50,15 @@ else
     if ~ischar(str) && ~isstring(str)
         tf = 0;
     else
-        if (~isempty(strfind(str,pattern)))
+        if (~isempty(strfind(str, pattern)))
             tf = 1;
         else
             tf = 0;
         end
     end
-    
+
 end
 
 tf = logical(tf);
 
 end
-

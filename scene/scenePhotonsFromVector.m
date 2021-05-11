@@ -1,4 +1,4 @@
-function radiance = scenePhotonsFromVector(radiance,row,col)
+function radiance = scenePhotonsFromVector(radiance, row, col)
 % Deprecated:  Convert a vector of radiance to a 3D matrix of scene radiance
 %
 %    Use sceneRadianceFromVector
@@ -16,7 +16,7 @@ function radiance = scenePhotonsFromVector(radiance,row,col)
 %
 % Returns
 %   radiance:  A 3D matrix of the correct size
-%   
+%
 % Description
 %
 % See also
@@ -27,7 +27,7 @@ function radiance = scenePhotonsFromVector(radiance,row,col)
 
 warning('Use sceneRadianceFromVector');
 
-radiance = repmat(radiance(:),1,row,col);
-radiance = permute(radiance,[2 3 1]);
+radiance = repmat(radiance(:), 1, row, col);
+radiance = permute(radiance, [2, 3, 1]);
 
 end

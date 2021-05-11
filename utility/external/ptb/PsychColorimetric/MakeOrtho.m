@@ -7,11 +7,11 @@ function out = MakeOrtho(in)
 % same as the span of in(:,1:n) for any n less
 % than the column dimension of in.
 
-[m,n] = size(in);
-ortho = zeros(m,n);
+[m, n] = size(in);
+ortho = zeros(m, n);
 work = in;
 for i = 1:n
-  ortho(:,i) = orth(work(:,i));
-  work = work-ortho*ortho'*work;
+    ortho(:, i) = orth(work(:, i));
+    work = work - ortho * ortho' * work;
 end
 out = ortho;

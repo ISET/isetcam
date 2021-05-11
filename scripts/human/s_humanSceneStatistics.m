@@ -21,62 +21,67 @@
 %% Initialize
 ieInit
 try
-    rng('default');  % To achieve the same result each time
+    rng('default'); % To achieve the same result each time
 catch err
     randn('seed');
 end
+
 %%  We start with a small (2 deg) scene of white noise
 % Each radiance is drawn from a Gaussian
 contrast = 0.5;
-scene =  sceneCreate('white noise',[256 256],contrast);
-scene = sceneSet(scene,'h fov',2);
-vcAddAndSelectObject(scene); sceneWindow;
+scene = sceneCreate('white noise', [256, 256], contrast);
+scene = sceneSet(scene, 'h fov', 2);
+vcAddAndSelectObject(scene);
+sceneWindow;
 
-%% The amplitude of the spatial contrast of the radiance image 
+%% The amplitude of the spatial contrast of the radiance image
 % This is a white noise image, so the amplitude spectrum is flat.  Notice
 % that the contrast means we have removed the mean.  We plot the radiance
 % data at 550 nm, but this would be the same at any wavelength.
-scenePlot(scene,'radiance fft image',550);
+scenePlot(scene, 'radiance fft image', 550);
 
 %%  Create the optical image.  Notice that it is significantly blurred
 % This is because of the human optics
 oi = oiCreate('human');
-oi = oiCompute(scene,oi);
-vcAddAndSelectObject(oi); oiWindow;
+oi = oiCompute(scene, oi);
+vcAddAndSelectObject(oi);
+oiWindow;
 
 %% Set up the human sensor parameters and compute.
 % We will create a series of sensors, each with just one of the three types
 % of cones.  For each, we will compute the spatial mosaic of responsea, and
 % then plot the spatial amplitude spectrum
-params.sz = [256,256];
-params.coneAperture = [2 2 ]*1e-6;     % In meters
-xy = [64,1];
-cType = {'L','M','S'};
-pFFT = cell(3,1); sensor = cell(3,1);
-for ii=1:3
-    params.rgbDensities = [0 0 0 0]; % Empty, L,M,S
-    params.rgbDensities(ii+1) = 1;   % Fill up with L,M or S.
-    
-    sensor{ii} = sensorCreate('human',[],params);
-    
-    sensor{ii} = sensorSet(sensor{ii},'exp time',0.2);
-    sensor{ii} = sensorCompute(sensor{ii},oi);
+params.sz = [256, 256];
+params.coneAperture = [2, 2] * 1e-6; % In meters
+xy = [64, 1];
+cType = {'L', 'M', 'S'};
+pFFT = cell(3, 1);
+sensor = cell(3, 1);
+for ii = 1:3
+    params.rgbDensities = [0, 0, 0, 0]; % Empty, L,M,S
+    params.rgbDensities(ii+1) = 1; % Fill up with L,M or S.
+
+    sensor{ii} = sensorCreate('human', [], params);
+
+    sensor{ii} = sensorSet(sensor{ii}, 'exp time', 0.2);
+    sensor{ii} = sensorCompute(sensor{ii}, oi);
     vcAddAndSelectObject(sensor{ii});
-    
-    p = sensorGet(sensor{ii},'photons');
-    p = reshape(p,params.sz(1),params.sz(2));
-    p = p - mean(p(:));  % Remove mean
-    pFFT{ii} = fftshift(abs(fft2(p)));  % Compute FFT
+
+    p = sensorGet(sensor{ii}, 'photons');
+    p = reshape(p, params.sz(1), params.sz(2));
+    p = p - mean(p(:)); % Remove mean
+    pFFT{ii} = fftshift(abs(fft2(p))); % Compute FFT
 end
 
 %% Plot the three spatial amplitude spectra
-vcNewGraphWin([],'tall');
-for ii=1:3
-    subplot(3,1,ii)
-    imagesc(pFFT{ii}); colormap(hot); colorbar;
+vcNewGraphWin([], 'tall');
+for ii = 1:3
+    subplot(3, 1, ii)
+    imagesc(pFFT{ii});
+    colormap(hot);
+    colorbar;
     axis image; axis off
-    xlabel('Cycles/deg'); ylabel('Cycles/deg');
-    title(sprintf('%s cone spatial amp spectrum',cType{ii}));
+    xlabel('Cycles/deg');
+    ylabel('Cycles/deg');
+    title(sprintf('%s cone spatial amp spectrum', cType{ii}));
 end
-
-

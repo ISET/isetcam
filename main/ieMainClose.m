@@ -11,27 +11,40 @@ function ieMainClose
 
 global vcSESSION
 
-if ~checkfields(vcSESSION,'GUI'); closereq; return; end
+if ~checkfields(vcSESSION, 'GUI');
+    closereq;
+    return;
+end
 
 app = ieSessionGet('scene window');
-if ~isempty(app), delete(app); ieSessionSet('scene window',[]); end
+if ~isempty(app), delete(app);
+    ieSessionSet('scene window', []);
+end
 
 app = ieSessionGet('oi window');
-if ~isempty(app), delete(app); ieSessionSet('oi window',[]); end
+if ~isempty(app), delete(app);
+    ieSessionSet('oi window', []);
+end
 
 app = ieSessionGet('sensor window');
-if ~isempty(app), delete(app); ieSessionSet('sensor window',[]); end
+if ~isempty(app), delete(app);
+    ieSessionSet('sensor window', []);
+end
 
 app = ieSessionGet('ip window');
-if ~isempty(app), delete(app); ieSessionSet('ip window',[]); end
+if ~isempty(app), delete(app);
+    ieSessionSet('ip window', []);
+end
 
 app = ieSessionGet('display window');
-if ~isempty(app), delete(app); ieSessionSet('display window',[]); end
+if ~isempty(app), delete(app);
+    ieSessionSet('display window', []);
+end
 
 % disp('Metrics window NYI');
 %{
-    app = ieSessionGet('metrics window');
-    if ~isempty(app), delete(app); ieSessionSet('metrics window',[]); end
+app = ieSessionGet('metrics window');
+if ~isempty(app), delete(app); ieSessionSet('metrics window',[]); end
 %}
 
 % Empty out the GUI slots.  Not sure why.

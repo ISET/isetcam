@@ -22,7 +22,7 @@ function dpi = mperdot2dpi(mpd)
 
 % 1/mpd is dots per micron
 % 2.54*1e4 is microns per inch
-dpi = (1 /mpd) * (2.54*1e4);   % dots per micron * meters per inch
+dpi = (1 / mpd) * (2.54 * 1e4); % dots per micron * meters per inch
 
 % dpi = (1 /mpd) * (1/39.37007874015748);   % dots per micron * meters per inch
 

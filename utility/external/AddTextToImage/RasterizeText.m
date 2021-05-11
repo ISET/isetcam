@@ -1,4 +1,4 @@
-function Image = RasterizeText(String,Font,FontSize)
+function Image = RasterizeText(String, Font, FontSize)
 
 % Image = RasterizeText(String,Font,FontSize)
 %
@@ -16,30 +16,30 @@ function Image = RasterizeText(String,Font,FontSize)
 % Particle Therapy Cancer Research Institute
 % University of Oxford
 
-if ~exist('String','var')
+if ~exist('String', 'var')
     String = 'No string specified.';
 end
-if ~exist('Font','var')
+if ~exist('Font', 'var')
     Font = 'Arial';
 end
-if ~exist('FontSize','var')
+if ~exist('FontSize', 'var')
     FontSize = 32;
 end
 
 % Preprocess text. Only allowing two types of whitespace: \n and space
 % Replace tab with four spaces. Remove all other ASCII control characters.
-String = strrep(String,sprintf('\t'),sprintf('    '));
-String = strrep(String,sprintf('\r\n'),sprintf('\n'));
-ControlChars = sprintf('%c',[0:9 11:31 127]);
+String = strrep(String, sprintf('\t'), sprintf('    '));
+String = strrep(String, sprintf('\r\n'), sprintf('\n'));
+ControlChars = sprintf('%c', [0:9, 11:31, 127]);
 for i = 1:length(ControlChars)
-    String(String==ControlChars(i)) = [];
+    String(String == ControlChars(i)) = [];
 end
 
 % Create a rasterized font
 Characters = unique(String(String ~= ' ' & String ~= sprintf('\n')));
 if ~isstruct(Font)
-    Font = BitmapFont(Font,FontSize,Characters);
-elseif ~all(ismember(Characters,Font.Characters))
+    Font = BitmapFont(Font, FontSize, Characters);
+elseif ~all(ismember(Characters, Font.Characters))
     error('The font provided is missing some of the necessary characters.');
 end
 
@@ -55,24 +55,24 @@ for i = 1:length(String)
         case ' '
             % Avoid overwriting parts of characters below the baseline on
             % the line above by only assigning one element.
-            Image(l*Font.Size + Font.Size, x + SpaceSize) = false;
-            x = x+SpaceSize;
+            Image(l*Font.Size+Font.Size, x+SpaceSize) = false;
+            x = x + SpaceSize;
         case sprintf('\n')
-            l = l+1;
+            l = l + 1;
             % Unnecessary to grow array, but could help speed. Again, only
             % assign one element.
-            Image(l*Font.Size + Font.Size, size(Image,2)) = false;
+            Image(l*Font.Size+Font.Size, size(Image, 2)) = false;
             x = 0;
         otherwise
-            index = Font.Characters==String(i);
+            index = Font.Characters == String(i);
             CharSize = size(Font.Bitmaps{index});
             % Grow array so can perform boolean OR, which will avoid
             % background of character overwriting characters extending
             % below the baseline on the line above.
-            Image(l*Font.Size + CharSize(1), x + CharSize(2)) = false;
-            Image(l*Font.Size + (1:CharSize(1)), x + (1:CharSize(2))) = ...
-                Image(l*Font.Size + (1:CharSize(1)), x + (1:CharSize(2))) | Font.Bitmaps{index};
-            x = x+CharSize(2);
+            Image(l*Font.Size+CharSize(1), x+CharSize(2)) = false;
+            Image(l*Font.Size+(1:CharSize(1)), x+(1:CharSize(2))) = ...
+                Image(l*Font.Size+(1:CharSize(1)), x+(1:CharSize(2))) | Font.Bitmaps{index};
+            x = x + CharSize(2);
     end
 end
 

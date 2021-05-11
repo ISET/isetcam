@@ -1,4 +1,4 @@
-function cornealIrradiance_PowerPerArea = RadianceAndDegrees2ToCornIrradiance(radiance_PowerPerSrArea,stimulusAreaDegrees2)
+function cornealIrradiance_PowerPerArea = RadianceAndDegrees2ToCornIrradiance(radiance_PowerPerSrArea, stimulusAreaDegrees2)
 % cornealIrradiance_PowerPerArea = RadianceAndDegrees2ToCornIrradiance(radiance_PowerPerSrArea,stimulusAreaDegrees2)
 %
 % Convert the radiance of a stimulus to corneal irradiance, given that we know the area of the stimulus in degrees2.
@@ -32,10 +32,9 @@ stimulusSizeRadians = deg2rad(stimulusSizeDegrees);
 %   stimulusSize/stimulusDistance = stimulusSizeRadians
 % where size and distance are in units like mm, cm, m etc.
 %
-% Note also that 
+% Note also that
 %   cornealIrradiance_PowerPerArea = radiance_PowerPerSrArea*((stimulusSize/stimulusDistance)^2)
 % See comments in RadianceAndDistanceAreaToCornIrradiance for the derivation of this.
 %
 % These two observations yield the answer
-cornealIrradiance_PowerPerArea = radiance_PowerPerSrArea*(stimulusSizeRadians^2);
-
+cornealIrradiance_PowerPerArea = radiance_PowerPerSrArea * (stimulusSizeRadians^2);

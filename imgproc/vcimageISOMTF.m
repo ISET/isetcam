@@ -33,7 +33,6 @@ function vci = vcimageISOMTF(camera)
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
-
 %% We create a version when there is a camera and when there isn't
 if ieNotDefined('camera'), camera = cameraCreate; end
 
@@ -44,14 +43,13 @@ scene  = sceneAdjustLuminance(scene,meanLuminance);
 scene  = sceneSet(scene,'fov',5);
 
 % Make sure the scene and sensor FOV match
-sensor = cameraGet(camera,'sensor');
-sensor = sensorSet(sensor,'fov',5,cameraGet(camera,'oi'));
-camera = cameraSet(camera,'sensor',sensor);
-camera = cameraCompute(camera,scene);
+sensor = cameraGet(camera, 'sensor');
+sensor = sensorSet(sensor, 'fov', 5, cameraGet(camera, 'oi'));
+camera = cameraSet(camera, 'sensor', sensor);
+camera = cameraCompute(camera, scene);
 
 % Compute and then return the vci
-vci    = cameraGet(camera,'vci');
-vci    = ipSet(vci,'name','iso12233');
+vci = cameraGet(camera, 'vci');
+vci = ipSet(vci, 'name', 'iso12233');
 
 end
-

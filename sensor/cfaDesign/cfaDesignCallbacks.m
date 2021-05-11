@@ -11,86 +11,88 @@ function cfaDesignCallbacks(action)
 
 % For now we hard code it as this can be adjusted by the routine that
 % appends the filters to the sensor
-wavelength=380:1068;
+wavelength = 380:1068;
 
 switch action
 
-    %% The initial cfaDesign.m window that has row, col, and color info
+        %% The initial cfaDesign.m window that has row, col, and color info
     case 'init_cancel'
         % get handles from CFA design UI
-        init_fig=findobj('Tag','cfaUI');
+        init_fig = findobj('Tag', 'cfaUI');
         close(init_fig);
 
     case 'init_ok'
         % Find init fig, get relevant info, and close it
-        init_fig = findobj('Tag','cfaUI');
-        h = getappdata(init_fig,'handles');
+        init_fig = findobj('Tag', 'cfaUI');
+        h = getappdata(init_fig, 'handles');
 
-        nRows   = str2num(get(h.init_ed_rows,'string'));
-        nCols   = str2num(get(h.init_ed_cols,'string'));
-        nColors = str2num(get(h.init_ed_colors,'string'));
+        nRows = str2num(get(h.init_ed_rows, 'string'));
+        nCols = str2num(get(h.init_ed_cols, 'string'));
+        nColors = str2num(get(h.init_ed_colors, 'string'));
 
-        if ( isempty(nRows) || isempty(nCols) || isempty(nColors) )
+        if (isempty(nRows) || isempty(nCols) || isempty(nColors))
             warndlg('Please specify all values');
         else
             close(init_fig);
 
             % Call the CFA color-pattern design window
-            cfaDesignUI(nRows,nCols,nColors);
+            cfaDesignUI(nRows, nCols, nColors);
         end
 
         %%-----------------------------------------------------------------
-    %% Callbacks for the main CFA design window from cfaDesignUI.m
-        
-    case 'cfaPattern_help'    
-    %% Bring up a browser window with some tips on UI usage
-        helpFile = fullfile(isetRootPath,...
-            'sensor','cfaDesign','help','help.htm');
-        web(helpFile,'-notoolbar'); 
+
+        %% Callbacks for the main CFA design window from cfaDesignUI.m
+
+    case 'cfaPattern_help'
+
+        %% Bring up a browser window with some tips on UI usage
+        helpFile = fullfile(isetRootPath, ...
+            'sensor', 'cfaDesign', 'help', 'help.htm');
+        web(helpFile, '-notoolbar');
 
     case 'cfaPattern_reset'
-    % We dump everything and redraw the figure with similar cfa attributes
-        hPat.fig = findobj('Tag','cfaPatternUI');
-        hPat     = getappdata(hPat.fig,'handles');
-        nRows    = getappdata(hPat.fig,'nRows');
-        nCols    = getappdata(hPat.fig,'nCols');
-        nColors  = getappdata(hPat.fig,'nColors');
+        % We dump everything and redraw the figure with similar cfa attributes
+        hPat.fig = findobj('Tag', 'cfaPatternUI');
+        hPat = getappdata(hPat.fig, 'handles');
+        nRows = getappdata(hPat.fig, 'nRows');
+        nCols = getappdata(hPat.fig, 'nCols');
+        nColors = getappdata(hPat.fig, 'nColors');
 
-        tmpPosition = get(hPat.fig,'Position');
+        tmpPosition = get(hPat.fig, 'Position');
 
         close(hPat.fig);
-        cfaDesignUI(nRows,nCols,nColors);
-        set(hPat.fig,'Position',tmpPosition);
+        cfaDesignUI(nRows, nCols, nColors);
+        set(hPat.fig, 'Position', tmpPosition);
 
     case 'cfaPattern_resize'
-    % We dump everything and redraw the  figure with new attributes
-        hPat.fig = findobj('Tag','cfaPatternUI');
-        hPat = getappdata(hPat.fig,'handles');
-        oldPosition=get(hPat.fig,'Position');
+        % We dump everything and redraw the  figure with new attributes
+        hPat.fig = findobj('Tag', 'cfaPatternUI');
+        hPat = getappdata(hPat.fig, 'handles');
+        oldPosition = get(hPat.fig, 'Position');
         close(hPat.fig);
 
         cfaDesignUI;
 
-        hPat.fig = findobj('Tag','cfaPatternUI');
-        hPat = getappdata(hPat.fig,'handles');
+        hPat.fig = findobj('Tag', 'cfaPatternUI');
+        hPat = getappdata(hPat.fig, 'handles');
 
         %% Make sure new window opens in the location of the old window
-        newPosition = get(hPat.fig,'Position');
-        set(hPat.fig,'Position',[oldPosition(1:2), newPosition(3:4)]);
+        newPosition = get(hPat.fig, 'Position');
+        set(hPat.fig, 'Position', [oldPosition(1:2), newPosition(3:4)]);
 
     case 'cfaPattern_close'
         % Figure out a way to return the cfaStructure in the calling
         % routine
-        hPat.fig = findobj('Tag','cfaPatternUI');
+        hPat.fig = findobj('Tag', 'cfaPatternUI');
         % cfaStructure = cfaCreateStructure(hPat,wavelength);
         % setappdata(hPat,'cfaStructure',cfaStructure);
         close(hPat.fig);
 
     case 'cfaPattern_cancel'
 
-        hPat.fig = findobj('Tag','cfaPatternUI');
+        hPat.fig = findobj('Tag', 'cfaPatternUI');
         close(hPat.fig);
-        
+
     case 'cfaPattern_import'
 
         % Get an existing CFA design or just the color filter
@@ -100,872 +102,878 @@ switch action
         % will be imported.
 
         %% Get file and check if it is a valid CFA file
-        cfaFile=vcSelectDataFile('stayput','r','mat','Select color filter');
+        cfaFile = vcSelectDataFile('stayput', 'r', 'mat', 'Select color filter');
 
-        if ~exist(cfaFile,'file')
+        if ~exist(cfaFile, 'file')
             warndlg('Please select a valid filter file');
             return
         else
-            cfaStructure=load(cfaFile);
-            if ~isfield(cfaStructure,'filterNames')
+            cfaStructure = load(cfaFile);
+            if ~isfield(cfaStructure, 'filterNames')
                 warndlg('Please select a valid color filter file');
                 return
             end
         end
-        
-        
-        nColors = size(cfaStructure.data,2);
 
-        if nColors==1
+
+        nColors = size(cfaStructure.data, 2);
+
+        if nColors == 1
             warndlg('This looks like a single color filter');
             return
         end
 
-        colorFilters=interp1(cfaStructure.wavelength,...
-            cfaStructure.data,wavelength,'linear',0);
-        
+        colorFilters = interp1(cfaStructure.wavelength, ...
+            cfaStructure.data, wavelength, 'linear', 0);
+
         %% If we get this far everything looks OK in terms of color filter.
+
         %% The imported colors are drawn onto the respective axes
-        
-        
-        % See if CFA design UI was open 
-        hPat.fig = findobj('Tag','cfaPatternUI');
-               
+
+
+        % See if CFA design UI was open
+        hPat.fig = findobj('Tag', 'cfaPatternUI');
+
         if isempty(hPat.fig)
             % This implies import function was called form initial window
             if isfield(cfaStructure, 'filterOrder')
-                noPattern=0;
-                filterOrder=cfaStructure.filterOrder;
-                [nRows,nCols]= size(filterOrder);
+                noPattern = 0;
+                filterOrder = cfaStructure.filterOrder;
+                [nRows, nCols] = size(filterOrder);
             else
-                % Filter structure has no filterOrder and CFA design UI 
+                % Filter structure has no filterOrder and CFA design UI
                 % doesn't exist. In this case set the default array size to
                 % 3x3
-                nRows = 3; nCols = 3;
-                filterOrder=zeros(nRows,nCols);
-                noPattern=1;
+                nRows = 3;
+                nCols = 3;
+                filterOrder = zeros(nRows, nCols);
+                noPattern = 1;
             end
             % Close this initial window now
-            oldUI=findobj('Tag','cfaUI');
+            oldUI = findobj('Tag', 'cfaUI');
             if ~isempty(oldUI), close(oldUI); end
         else
-            hPat = getappdata(hPat.fig,'handles');
-            nRows=getappdata(hPat.fig,'nRows');
-            nCols=getappdata(hPat.fig,'nCols');
-            
+            hPat = getappdata(hPat.fig, 'handles');
+            nRows = getappdata(hPat.fig, 'nRows');
+            nCols = getappdata(hPat.fig, 'nCols');
+
             if isfield(cfaStructure, 'filterOrder')
-                noPattern=0;
-                filterOrder=cfaStructure.filterOrder;
-                [nRows,nCols]= size(filterOrder);
+                noPattern = 0;
+                filterOrder = cfaStructure.filterOrder;
+                [nRows, nCols] = size(filterOrder);
             else
                 % Filter structure has no filterOrder. Use nRows and nCols
                 % from existing cfaDesignUI
-                noPattern=1;
-                filterOrder=zeros(nRows,nCols);
-                
+                noPattern = 1;
+                filterOrder = zeros(nRows, nCols);
+
             end
             % Get location and size of old cfaDesignUI window
-            oldPosition=get(hPat.fig,'Position');
+            oldPosition = get(hPat.fig, 'Position');
             close(hPat.fig);
         end
 
-        % Open new CFA design UI 
-        cfaDesignUI(nRows,nCols,nColors);
-            
-        hPat.fig = findobj('Tag','cfaPatternUI');
-        hPat = getappdata(hPat.fig,'handles');
+        % Open new CFA design UI
+        cfaDesignUI(nRows, nCols, nColors);
 
-        %% If there used to be an older window, ensure that new window 
+        hPat.fig = findobj('Tag', 'cfaPatternUI');
+        hPat = getappdata(hPat.fig, 'handles');
+
+        %% If there used to be an older window, ensure that new window
+
         %% opens in the location of the old window
-        if exist('oldPosition','var')
-            newPosition = get(hPat.fig,'Position');
-            set(hPat.fig,'Position',[oldPosition(1:2), newPosition(3:4)]);
+        if exist('oldPosition', 'var')
+            newPosition = get(hPat.fig, 'Position');
+            set(hPat.fig, 'Position', [oldPosition(1:2), newPosition(3:4)]);
         end
 
         %% Plot the imported color filter transmittances
-        for currentColor=1:nColors
+        for currentColor = 1:nColors
             axes(hPat.colors(currentColor).axes);
             hold off;
-            tran=colorFilters(:,currentColor);
-            plotCFAspectrum(wavelength,tran);
-            ylim([0 1]);
-        
+            tran = colorFilters(:, currentColor);
+            plotCFAspectrum(wavelength, tran);
+            ylim([0, 1]);
+
             % Set buttondown function of all children of the axes such that
             % the axes object is still selectable. If this isn't done, the
             % new plot will gain focus and clicking on it will not select
             % the axes
-            hTmp = findobj(hPat.colors(currentColor).axes,'-depth',1);
-            set(hTmp,...
-                'ButtonDownFcn','cfaDesignCallbacks cfaPattern_color_axes'...
-                 );
+            hTmp = findobj(hPat.colors(currentColor).axes, '-depth', 1);
+            set(hTmp, ...
+                'ButtonDownFcn', 'cfaDesignCallbacks cfaPattern_color_axes' ...
+                );
         end
-                
+
         % Update data
-        setappdata(hPat.fig,'colorFilters',colorFilters);      
-        setappdata(hPat.fig,'filterOrder',filterOrder);
+        setappdata(hPat.fig, 'colorFilters', colorFilters);
+        setappdata(hPat.fig, 'filterOrder', filterOrder);
 
         %% If a pattern was found in the imported cfa structure, go ahead
-        %% and turn on appropriate sample points 
+
+        %% and turn on appropriate sample points
         if ~noPattern
-            cfaSamplePointsFromFilterOrder(hPat,filterOrder);
-            cfaShowCFAImage(hPat,wavelength);
+            cfaSamplePointsFromFilterOrder(hPat, filterOrder);
+            cfaShowCFAImage(hPat, wavelength);
         else
             helpdlg('No CFA pattern was found');
             return;
         end
 
-        
+
     case 'cfaPattern_done'
 
-        hPat.fig = findobj('Tag','cfaPatternUI');
-        hPat = getappdata(hPat.fig,'handles');
-        nRows = getappdata(hPat.fig,'nRows');
-        nCols = getappdata(hPat.fig,'nCols');
-        nColors = getappdata(hPat.fig,'nColors');
-        filterOrder = getappdata(hPat.fig,'filterOrder');
-        colorFilters = getappdata(hPat.fig,'colorFilters');
-
+        hPat.fig = findobj('Tag', 'cfaPatternUI');
+        hPat = getappdata(hPat.fig, 'handles');
+        nRows = getappdata(hPat.fig, 'nRows');
+        nCols = getappdata(hPat.fig, 'nCols');
+        nColors = getappdata(hPat.fig, 'nColors');
+        filterOrder = getappdata(hPat.fig, 'filterOrder');
+        colorFilters = getappdata(hPat.fig, 'colorFilters');
 
         %% cfaCreateStructure first checks if all transmittances and sample
-        %% points have been defined.
-        [cfaStructure,haveAllSamples,haveAllTransmittances] = ...
-            cfaCreateStructure(hPat,wavelength);
-        
 
-        [cfaStructure,haveAllSamples,haveAllTransmittances] = ...
-            cfaCreateStructure(hPat,wavelength);
-        hPat.fig = findobj('Tag','cfaPatternUI');
-        hPat = getappdata(hPat.fig,'handles');        
-        
+        %% points have been defined.
+        [cfaStructure, haveAllSamples, haveAllTransmittances] = ...
+            cfaCreateStructure(hPat, wavelength);
+
+
+        [cfaStructure, haveAllSamples, haveAllTransmittances] = ...
+            cfaCreateStructure(hPat, wavelength);
+        hPat.fig = findobj('Tag', 'cfaPatternUI');
+        hPat = getappdata(hPat.fig, 'handles');
+
         if ~haveAllSamples
-            hWarn=warndlg('Some CFA locations are still unsampled');
+            hWarn = warndlg('Some CFA locations are still unsampled');
             uiwait(hWarn);
             return
         elseif ~haveAllTransmittances
-            hWarn=warndlg('Some transmittances have not been defined');
+            hWarn = warndlg('Some transmittances have not been defined');
             uiwait(hWarn);
             return
         end
         % Although we've saved filterFile, we also put filterFile it in the
         % workspace for immediate use
         %assignin('base','cfaStructure',cfaStructure);
-        set(hPat.menu_view,'Enable','On');
-        set(hPat.menu_save,'Enable','On')
-        
-        % helpdlg('CFA may now be saved and viewed');
-        
-        cfaShowCFAImage(hPat,wavelength);
+        set(hPat.menu_view, 'Enable', 'On');
+        set(hPat.menu_save, 'Enable', 'On')
 
-        
+        % helpdlg('CFA may now be saved and viewed');
+
+        cfaShowCFAImage(hPat, wavelength);
+
+
     case 'cfaPattern_save'
 
-        hPat.fig = findobj('Tag','cfaPatternUI');
-        hPat = getappdata(hPat.fig,'handles');
-        
-        [cfaStructure,haveAllSamples,haveAllTransmittances] = ...
-            cfaCreateStructure(hPat,wavelength);
-        
-            
-        cfaStructure.filters.filename = vcSelectDataFile('data',...
-            'w','mat','Save Color filter as:');
-        
-        if ~isfield(cfaStructure.filters,'filename')
+        hPat.fig = findobj('Tag', 'cfaPatternUI');
+        hPat = getappdata(hPat.fig, 'handles');
+
+        [cfaStructure, haveAllSamples, haveAllTransmittances] = ...
+            cfaCreateStructure(hPat, wavelength);
+
+
+        cfaStructure.filters.filename = vcSelectDataFile('data', ...
+            'w', 'mat', 'Save Color filter as:');
+
+        if ~isfield(cfaStructure.filters, 'filename')
             return
         elseif isempty(cfaStructure.filters.filename)
             return;
         end
-        
+
         %% Disable save button until done is pressed again.
-        set(hPat.menu_save,'Enable','Off');
+        set(hPat.menu_save, 'Enable', 'Off');
 
-        
+
         wavelength = cfaStructure.filters.wavelength;
-        data       = cfaStructure.filters.data;
-        comment    = cfaStructure.filters.comment;
-        filterNames= cfaStructure.filters.filterNames;
-        units      = cfaStructure.filters.units;
-        filterOrder= cfaStructure.filterOrder;
+        data = cfaStructure.filters.data;
+        comment = cfaStructure.filters.comment;
+        filterNames = cfaStructure.filters.filterNames;
+        units = cfaStructure.filters.units;
+        filterOrder = cfaStructure.filterOrder;
 
-        save(cfaStructure.filters.filename,'wavelength','data','comment',...
-            'filterNames','units','filterOrder');
-        assignin('base','cfaStructure',cfaStructure);
-        
+        save(cfaStructure.filters.filename, 'wavelength', 'data', 'comment', ...
+            'filterNames', 'units', 'filterOrder');
+        assignin('base', 'cfaStructure', cfaStructure);
 
-        
+
     case 'cfaPattern_view'
 
         % Find cfaDesign figure and get relevant info.
-        hPat.fig = findobj('Tag','cfaPatternUI');
-        hPat=getappdata(hPat.fig,'handles');
-        nRows=getappdata(hPat.fig,'nRows');
-        nCols=getappdata(hPat.fig,'nCols');
-        nColors=getappdata(hPat.fig,'nColors');
-        filterOrder=getappdata(hPat.fig,'filterOrder');
-        colorFilters=getappdata(hPat.fig,'colorFilters');
-        
+        hPat.fig = findobj('Tag', 'cfaPatternUI');
+        hPat = getappdata(hPat.fig, 'handles');
+        nRows = getappdata(hPat.fig, 'nRows');
+        nCols = getappdata(hPat.fig, 'nCols');
+        nColors = getappdata(hPat.fig, 'nColors');
+        filterOrder = getappdata(hPat.fig, 'filterOrder');
+        colorFilters = getappdata(hPat.fig, 'colorFilters');
+
         % Supress this button again. CFA can only be viewed if all sample
         % points and colors have been specified. This is checked by the
         % done button. Pressing done will enable this button again.
-        
-        set(hPat.menu_view,'Enable','Off');
-        
+
+        set(hPat.menu_view, 'Enable', 'Off');
+
         % Find display RGB values for all colors
-        RGB=zeros(nColors,3);
+        RGB = zeros(nColors, 3);
         for currentColor = 1:nColors
-            RGB(currentColor,:) = ...
-                cfaFindFilterRGB(colorFilters(:,currentColor),wavelength);
+            RGB(currentColor, :) = ...
+                cfaFindFilterRGB(colorFilters(:, currentColor), wavelength);
         end
-        
+
         % If a CFA window exists, reuse it
-        hCFA.fig = findobj('Tag','cfaView');
+        hCFA.fig = findobj('Tag', 'cfaView');
         if ~isempty(hCFA.fig)
-            hCFA=getappdata(hCFA.fig,'handles');
-            oldPosition=get(hCFA.fig,'Position');
+            hCFA = getappdata(hCFA.fig, 'handles');
+            oldPosition = get(hCFA.fig, 'Position');
             close(hCFA.fig);
-            
+
             cfaView(hPat);
-            hCFA.fig = findobj('Tag','cfaView');
-            hCFA=getappdata(hCFA.fig,'handles');
-            set(hCFA.fig,'Position',oldPosition);
+            hCFA.fig = findobj('Tag', 'cfaView');
+            hCFA = getappdata(hCFA.fig, 'handles');
+            set(hCFA.fig, 'Position', oldPosition);
         else
             cfaView(hPat);
-            hCFA.fig = findobj('Tag','cfaView');
-            hCFA=getappdata(hCFA.fig,'handles');
+            hCFA.fig = findobj('Tag', 'cfaView');
+            hCFA = getappdata(hCFA.fig, 'handles');
         end
-        
-       
-        cfaBlock=zeros(nRows,nCols,3);
-        for jj=1:nRows
-            for kk=1:nCols
-                cfaBlock(jj,kk,:)=RGB(filterOrder(jj,kk),:);
+
+
+        cfaBlock = zeros(nRows, nCols, 3);
+        for jj = 1:nRows
+            for kk = 1:nCols
+                cfaBlock(jj, kk, :) = RGB(filterOrder(jj, kk), :);
             end
         end
-        
-        % Try to make an image of a size that makes it easy to visualize 
+
+        % Try to make an image of a size that makes it easy to visualize
         % the CFA
-        if nColors>4
-            rowMult=3; colMult=3;
+        if nColors > 4
+            rowMult = 3;
+            colMult = 3;
         else
-            rowMult=5; colMult=5;
+            rowMult = 5;
+            colMult = 5;
         end
 
-        cfaImage=repmat(cfaBlock,rowMult,colMult);
-        
-       axes(hCFA.axes)
-       image(cfaImage)
+        cfaImage = repmat(cfaBlock, rowMult, colMult);
 
-       
+        axes(hCFA.axes)
+        image(cfaImage)
+
+
     case 'cfaView_close'
-        hCFA.fig = findobj('Tag','cfaView');
+        hCFA.fig = findobj('Tag', 'cfaView');
         close(hCFA.fig);
-        
+
     case 'cfaPattern_color_axes'
-        hPat.fig = findobj('Tag','cfaPatternUI');
-        hPat=getappdata(hPat.fig,'handles');
-        nColors=getappdata(hPat.fig,'nColors');
-        
-        
-        % Here we have to account for the case where the user clicks on 
+        hPat.fig = findobj('Tag', 'cfaPatternUI');
+        hPat = getappdata(hPat.fig, 'handles');
+        nColors = getappdata(hPat.fig, 'nColors');
+
+
+        % Here we have to account for the case where the user clicks on
         % the sensitivity plot instead of the axis. In case a line is
         % clicked, we find it's parent axes and use that information for
         % getting the associated filter number
-        objType = get(gcbo,'Type');
+        objType = get(gcbo, 'Type');
         if objType == 'line'
-            currentAxes = get(gcbo,'Parent');
-            currentColor = getappdata(currentAxes,'currentColor');
+            currentAxes = get(gcbo, 'Parent');
+            currentColor = getappdata(currentAxes, 'currentColor');
         else
-            currentColor = getappdata(gcbo,'currentColor');
+            currentColor = getappdata(gcbo, 'currentColor');
         end
-        
-        
-        
+
+
         % The axes object has been clicked. Highlight it and ensure that
         % no other axes remains selected
         for kk = 1:nColors
             if kk == currentColor
-                set(hPat.colors(kk).axes,'Selected','On');
-                set(hPat.colors(kk).main,...
-                    'Fontweight','Bold',...
-                    'ForegroundColor', 'b'...
+                set(hPat.colors(kk).axes, 'Selected', 'On');
+                set(hPat.colors(kk).main, ...
+                    'Fontweight', 'Bold', ...
+                    'ForegroundColor', 'b' ...
                     );
             else
-                set(hPat.colors(kk).axes,'Selected','Off');
-                set(hPat.colors(kk).main,...
-                    'Fontweight','Normal',...
-                    'ForegroundColor', 'k'...
+                set(hPat.colors(kk).axes, 'Selected', 'Off');
+                set(hPat.colors(kk).main, ...
+                    'Fontweight', 'Normal', ...
+                    'ForegroundColor', 'k' ...
                     );
             end
         end
-        
+
         % Set title of Color panel in side panle to reflect the selected
         % color
-        set(hPat.side_panel_color,'Title',sprintf('Filter %d',currentColor));
-        setappdata(hPat.side_panel_color,'currentColor',currentColor);
-        
-              
+        set(hPat.side_panel_color, 'Title', sprintf('Filter %d', currentColor));
+        setappdata(hPat.side_panel_color, 'currentColor', currentColor);
+
+
     case 'cfaPattern_mean_slider'
-        hPat.fig = findobj('Tag','cfaPatternUI');
-        hPat=getappdata(hPat.fig,'handles');
-        
-        currentMean=get(hPat.side_slider_color_mean,'Value');
-        set(hPat.side_ed_color_mean,'String',num2str(round(currentMean)));
-        
-    case 'cfaPattern_variance_slider'        
-        hPat.fig = findobj('Tag','cfaPatternUI');
-        hPat=getappdata(hPat.fig,'handles');
-        
-        currentVariance=get(hPat.side_slider_color_variance,'Value');
-        set(hPat.side_ed_color_variance,'String',num2str(round(currentVariance)));
-        
-    case 'cfaPattern_peak_slider'        
-        hPat.fig = findobj('Tag','cfaPatternUI');
-        hPat=getappdata(hPat.fig,'handles');
-        
-        currentPeak=get(hPat.side_slider_color_peak,'Value');
-        peakStr=sprintf('%.2f',currentPeak);
-        set(hPat.side_ed_color_peak,'String',num2str(peakStr));
-        
+        hPat.fig = findobj('Tag', 'cfaPatternUI');
+        hPat = getappdata(hPat.fig, 'handles');
+
+        currentMean = get(hPat.side_slider_color_mean, 'Value');
+        set(hPat.side_ed_color_mean, 'String', num2str(round(currentMean)));
+
+    case 'cfaPattern_variance_slider'
+        hPat.fig = findobj('Tag', 'cfaPatternUI');
+        hPat = getappdata(hPat.fig, 'handles');
+
+        currentVariance = get(hPat.side_slider_color_variance, 'Value');
+        set(hPat.side_ed_color_variance, 'String', num2str(round(currentVariance)));
+
+    case 'cfaPattern_peak_slider'
+        hPat.fig = findobj('Tag', 'cfaPatternUI');
+        hPat = getappdata(hPat.fig, 'handles');
+
+        currentPeak = get(hPat.side_slider_color_peak, 'Value');
+        peakStr = sprintf('%.2f', currentPeak);
+        set(hPat.side_ed_color_peak, 'String', num2str(peakStr));
+
     case 'cfaPattern_mean_ed'
-        hPat.fig = findobj('Tag','cfaPatternUI');
-        hPat=getappdata(hPat.fig,'handles');
-        
-        currentMean=str2num(get(hPat.side_ed_color_mean,'String'));
-        
-        min=get(hPat.side_slider_color_mean,'Min');
-        max=get(hPat.side_slider_color_mean,'Max');
+        hPat.fig = findobj('Tag', 'cfaPatternUI');
+        hPat = getappdata(hPat.fig, 'handles');
 
-        if ( (currentMean < min) | (currentMean > max) )
-            helpdlg(sprintf('Mean should be in the range (%d,%d)',min,max));
+        currentMean = str2num(get(hPat.side_ed_color_mean, 'String'));
+
+        min = get(hPat.side_slider_color_mean, 'Min');
+        max = get(hPat.side_slider_color_mean, 'Max');
+
+        if ((currentMean < min) | (currentMean > max))
+            helpdlg(sprintf('Mean should be in the range (%d,%d)', min, max));
             return
         end
-        
-        set(hPat.side_slider_color_mean,'Value',currentMean);
-        
-    case 'cfaPattern_variance_ed'        
-        hPat.fig = findobj('Tag','cfaPatternUI');
-        hPat=getappdata(hPat.fig,'handles');
-        
-        currentVariance=str2num(get(hPat.side_ed_color_variance,'String'));
-        
-        min=get(hPat.side_slider_color_variance,'Min');
-        max=get(hPat.side_slider_color_variance,'Max');
 
-        if ( (currentVariance < min) | (currentVariance > max) )
-            helpdlg(sprintf('Variance should be in the range (%d,%d)',min,max));
+        set(hPat.side_slider_color_mean, 'Value', currentMean);
+
+    case 'cfaPattern_variance_ed'
+        hPat.fig = findobj('Tag', 'cfaPatternUI');
+        hPat = getappdata(hPat.fig, 'handles');
+
+        currentVariance = str2num(get(hPat.side_ed_color_variance, 'String'));
+
+        min = get(hPat.side_slider_color_variance, 'Min');
+        max = get(hPat.side_slider_color_variance, 'Max');
+
+        if ((currentVariance < min) | (currentVariance > max))
+            helpdlg(sprintf('Variance should be in the range (%d,%d)', min, max));
             return
         end
-        
-        set(hPat.side_slider_color_variance,'Value',currentVariance);
-        
-    case 'cfaPattern_peak_ed'        
-        hPat.fig = findobj('Tag','cfaPatternUI');
-        hPat=getappdata(hPat.fig,'handles');
-        
-        currentPeak=str2num(get(hPat.side_ed_color_peak,'String'));
-        
-        min=get(hPat.side_slider_color_peak,'Min');
-        max=get(hPat.side_slider_color_peak,'Max');
 
-        if ( (currentPeak < min) | (currentPeak > max) )
-            helpdlg(sprintf('Peak should be in the range (%.2f,%.2f)',min,max));
+        set(hPat.side_slider_color_variance, 'Value', currentVariance);
+
+    case 'cfaPattern_peak_ed'
+        hPat.fig = findobj('Tag', 'cfaPatternUI');
+        hPat = getappdata(hPat.fig, 'handles');
+
+        currentPeak = str2num(get(hPat.side_ed_color_peak, 'String'));
+
+        min = get(hPat.side_slider_color_peak, 'Min');
+        max = get(hPat.side_slider_color_peak, 'Max');
+
+        if ((currentPeak < min) | (currentPeak > max))
+            helpdlg(sprintf('Peak should be in the range (%.2f,%.2f)', min, max));
             return
         end
-        
-        set(hPat.side_slider_color_peak,'Value',currentPeak);
-        
-        
+
+        set(hPat.side_slider_color_peak, 'Value', currentPeak);
+
+
     case 'color_ok' % get mu and sig and plot transmittance curve
 
-        hPat.fig = findobj('Tag','cfaPatternUI');
-        hPat=getappdata(hPat.fig,'handles');
-        colorFilters = getappdata(hPat.fig,'colorFilters');
-
+        hPat.fig = findobj('Tag', 'cfaPatternUI');
+        hPat = getappdata(hPat.fig, 'handles');
+        colorFilters = getappdata(hPat.fig, 'colorFilters');
 
         %% Find current color and mehod
-        currentColor=getappdata(hPat.side_panel_color,'currentColor');
-        tmp=get(hPat.colors(currentColor).colorOptions,...
+        currentColor = getappdata(hPat.side_panel_color, 'currentColor');
+        tmp = get(hPat.colors(currentColor).colorOptions, ...
             'SelectedObject');
-        currentMethod=get(tmp,'String');
-        
+        currentMethod = get(tmp, 'String');
+
         %% Find mean, variance, and peak
-        mu=str2num(get(hPat.side_ed_color_mean,'String'));
-        sig=str2num(get(hPat.side_ed_color_variance,'String'));
-        peak=str2num(get(hPat.side_ed_color_peak,'String'));
-               
-        if ( isempty(mu) || isempty(sig) )
+        mu = str2num(get(hPat.side_ed_color_mean, 'String'));
+        sig = str2num(get(hPat.side_ed_color_variance, 'String'));
+        peak = str2num(get(hPat.side_ed_color_peak, 'String'));
+
+        if (isempty(mu) || isempty(sig))
             warndlg('Please specify valid values for mean and variance');
-            return;
-        elseif ~(mu >=380 && mu <= 1000)
-            warndlg('Mean must be in the range (380,1000) nm');
-            return;
-        elseif ~(sig >=1 && sig <= 2000)
-            warndlg('Variance must be in the range (1,2000) nm');
-            return;
-        else
-            axes(hPat.colors(currentColor).axes);
-            hold off;
-            
-            switch currentMethod
-                case 'Gaussian'
-                    tran=[peak*exp( -(1/(2*sig^2)) * (wavelength-mu).^2  )]';
-                case 'Pulse'            
-                    tran=peak*ones(length(wavelength),1);
-                    tran(wavelength < round(mu - sig/2))=0;
-                    tran(wavelength > round(mu + sig/2))=0;            
-                case 'Import'
-                    %% Get file and check if it is a valid CFA file
-                   filterFile = vcSelectDataFile(...
-                       'stayput','r','mat','Select color filter');
-                   
-                       if ~exist(filterFile,'file')
-                           warndlg('Please select a valid filter file');
-                           return
-                       else
-                           tmp=load(filterFile);
-                           if ~isfield(tmp,'filterNames')
-                               warndlg('Please select a valid color filter file');
-                               return
-                           end
-                       end
-                       nColors=size(tmp.data,2);
-                       if nColors ~= 1
-                           warndlg('Please choose a file with a single color filter');
-                           return
-                       end
-                       tran=interp1(tmp.wavelength,tmp.data,wavelength,'linear',0);
-            end
-        end
-               
-        plotCFAspectrum(wavelength,tran);
-        ylim([0 1])
-        hTmp = findobj(hPat.colors(currentColor).axes,'-depth',1);
-        set(hTmp,...
-            'ButtonDownFcn','cfaDesignCallbacks cfaPattern_color_axes'...
-            );
-        
-        colorFilters(:,currentColor)=tran;    
-        filterRGB=cfaFindFilterRGB(tran,wavelength);
-        %setappdata(hPat.colors(currentColor).pb_ok,'colorFilter',tran')
-        setappdata(hPat.fig,'colorFilters',colorFilters); 
-  
-    case 'color_points'
-        % Get all handles
-        hPat.main = findobj('Tag','cfaPatternUI');
-        hPat=getappdata(hPat.main,'handles');
+                return;
+            elseif ~(mu >=380 && mu <= 1000)
+                warndlg('Mean must be in the range (380,1000) nm');
+                return;
+            elseif ~(sig >= 1 && sig <= 2000)
+                warndlg('Variance must be in the range (1,2000) nm');
+                return;
+            else
+                axes(hPat.colors(currentColor).axes);
+                hold off;
 
-        nColors=length(hPat.colors);
-        currentColor=getappdata(gcbo,'currentColor');
-        pointIndex=getappdata(gcbo,'pointIndex');
+                switch currentMethod
+                    case 'Gaussian'
+                        tran = [peak * exp(-(1 / (2 * sig^2)) * (wavelength - mu).^2)]';
+                    case 'Pulse'
+                        tran = peak * ones(length(wavelength), 1);
+                        tran(wavelength < round(mu - sig/2)) = 0;
+                        tran(wavelength > round(mu + sig/2)) = 0;
+                    case 'Import'
 
+                        %% Get file and check if it is a valid CFA file
+                        filterFile = vcSelectDataFile( ...
+                            'stayput', 'r', 'mat', 'Select color filter');
 
-        % See if a particular point is sampled. By default it will be
-        % unsampled and black
-        pointSampled=get(gcbo,'Value');
-
-        % Get the size of the button. We need to cover it with a truecolor
-        % image (black if unsampled and white if sampled) and will need to
-        % know its row x col in pixels
-        set(gcbo,'Units','Pixels');
-        temp=floor(get(gcbo,'Position'));
-
-        if pointSampled
-            % This point was not sampled in the current color. We will now
-            % sample it and go and unsample points in the same location
-            % for all other colors. Since we insist on doing this from the
-            % beginning, only ONE other color will be sampled. Our job is
-            % to find that color, set its value to 0 and change its color
-            % to black  
-
-            set(gcbo,'CData',ones(temp(4),temp(3),3));
-            set(gcbo,'Units','Normalized');
-            points=[]; %#ok<NASGU>
-
-            for kk=1:nColors
-                if ~(kk==currentColor)
-                    set(hPat.colors(kk).points(pointIndex),...
-                        'Units','Normalized',...
-                        'Value',0);
-                    set(hPat.colors(kk).points(pointIndex),...
-                        'CData',zeros(temp(4),temp(3),3));
-                    set(zeros(temp(4),temp(3),3),...
-                        'Units','Normalized');
+                        if ~exist(filterFile, 'file')
+                            warndlg('Please select a valid filter file');
+                            return
+                        else
+                            tmp = load(filterFile);
+                            if ~isfield(tmp, 'filterNames')
+                                warndlg('Please select a valid color filter file');
+                                return
+                            end
+                        end
+                        nColors = size(tmp.data, 2);
+                        if nColors ~= 1
+                            warndlg('Please choose a file with a single color filter');
+                            return
+                        end
+                        tran = interp1(tmp.wavelength, tmp.data, wavelength, 'linear', 0);
                 end
-
             end
-        else
-            set(gcbo,'CData',zeros(temp(4),temp(3),3));
-            set(gcbo,'Units','Normalized');
 
-        end % pointSampled
+            plotCFAspectrum(wavelength, tran);
+            ylim([0, 1])
+            hTmp = findobj(hPat.colors(currentColor).axes, '-depth', 1);
+            set(hTmp, ...
+                'ButtonDownFcn', 'cfaDesignCallbacks cfaPattern_color_axes' ...
+                );
 
+            colorFilters(:, currentColor) = tran;
+            filterRGB = cfaFindFilterRGB(tran, wavelength);
+            %setappdata(hPat.colors(currentColor).pb_ok,'colorFilter',tran')
+            setappdata(hPat.fig, 'colorFilters', colorFilters);
 
-end % Main switch
+        case 'color_points'
+            % Get all handles
+            hPat.main = findobj('Tag', 'cfaPatternUI');
+            hPat = getappdata(hPat.main, 'handles');
 
-return;
-
-%%-------------------------------------------------------------------------
-function [cfaStructure,haveAllSamples,haveAllTransmittances] = ...
-    cfaCreateStructure(hPat,wavelength)
-
-
-hPat.fig = findobj('Tag','cfaPatternUI');
-hPat    = getappdata(hPat.fig,'handles');
-nColors = getappdata(hPat.fig,'nColors');
-
-% Initialize cfaStructure
-cfaStructure=[];
-
-% get filterOrder from cfaDesignUIs sample points
-[filterOrder, cfa, haveAllSamples] = cfaFilterOrderFromSamplePoints(hPat);
+            nColors = length(hPat.colors);
+            currentColor = getappdata(gcbo, 'currentColor');
+            pointIndex = getappdata(gcbo, 'pointIndex');
 
 
-% Get color transmittances
-haveAllTransmittances=1; % This wil be set to 0 if any color is missing
+            % See if a particular point is sampled. By default it will be
+            % unsampled and black
+            pointSampled = get(gcbo, 'Value');
 
-colorFilters = getappdata(hPat.fig,'colorFilters'); 
-comment= 'CFA designed in cfaDesignUI.m'; 
-units  = 'photons'; 
-filterNames=cell(1,nColors);
+            % Get the size of the button. We need to cover it with a truecolor
+            % image (black if unsampled and white if sampled) and will need to
+            % know its row x col in pixels
+            set(gcbo, 'Units', 'Pixels');
+            temp = floor(get(gcbo, 'Position'));
 
-for kk=1:nColors;
-    if ~(sum(colorFilters(:,kk)) == 0)
-        % Set an ISET coded filtername
-        filterNames{kk}=cfaAssignFilterName(colorFilters(:,kk),wavelength);
-    else
-        haveAllTransmittances=0;
-        return
-    end
-end
+            if pointSampled
+                % This point was not sampled in the current color. We will now
+                % sample it and go and unsample points in the same location
+                % for all other colors. Since we insist on doing this from the
+                % beginning, only ONE other color will be sampled. Our job is
+                % to find that color, set its value to 0 and change its color
+                % to black
 
-setappdata(hPat.fig,'cfa',cfa);
-setappdata(hPat.fig,'filterOrder',filterOrder);
-setappdata(hPat.fig,'colorFilters',colorFilters);
+                set(gcbo, 'CData', ones(temp(4), temp(3), 3));
+                set(gcbo, 'Units', 'Normalized');
+                points = []; %#ok<NASGU>
 
-% Return the information to the work space
-cfaStructure.filters.data = colorFilters;
-cfaStructure.filters.wavelength = wavelength';
-cfaStructure.filters.comment = comment;
-cfaStructure.filters.units = units;
-cfaStructure.filters.filterNames=filterNames;
+                for kk = 1:nColors
+                    if ~(kk == currentColor)
+                        set(hPat.colors(kk).points(pointIndex), ...
+                            'Units', 'Normalized', ...
+                            'Value', 0);
+                        set(hPat.colors(kk).points(pointIndex), ...
+                            'CData', zeros(temp(4), temp(3), 3));
+                        set(zeros(temp(4), temp(3), 3), ...
+                            'Units', 'Normalized');
+                    end
 
-cfaStructure.filterOrder = filterOrder;
-cfaStructure.cfa_channels = cfa;
+                end
+            else
+                set(gcbo, 'CData', zeros(temp(4), temp(3), 3));
+                set(gcbo, 'Units', 'Normalized');
 
-return;
+            end % pointSampled
 
-%% ------------------------------------------------------------------------
-function cName = cfaAssignFilterName(cFilter,wavelength)
-% Generate a coded ISET filter name for the cfaDesignUI
-%
-%   cFilter - column vector with transmittance of filter.
-%   qeMean - string with mean wavelength of Gaussian transmittance curve
-%   wavelength - vector with range over which curve is defined
-%
-%   Example:
-%     tmp=load(fullfile(isetRootPath,'data','sensor','R'))
-%     cFilter=tmp.data; qeMean=500; wavelength=380:1068;
-%     cName = cfaAssignFilterName(cFilter,qeMean,wavelength)
 
-if ieNotDefined('cFilter'), error('Color filter is required'), end
-if ieNotDefined('wavelength'), error('Wavelength is required'), end
+        end % Main switch
 
-% permissibleNames = sensorColorOrder('string');
-% 'rgbcymwuxzo'
-% Currently we're not using permissibleFilterNames. Instead, individual
-% letters from this string are set for appropriate colors
+        return;
 
-% The bMatrix is blue, green and red in its columns
-bMatrix = colorBlockMatrix(wavelength);
-irWave = zeros(length(wavelength),1);  % Now it is R,G,B,IR
-irWave(wavelength > 700) = 1; irWave = irWave/sum(irWave);
-bMatrix = [bMatrix, irWave];
+        %%-------------------------------------------------------------------------
+        function [cfaStructure, haveAllSamples, haveAllTransmittances] = ...
+                cfaCreateStructure(hPat, wavelength)
 
-thisVector = bMatrix'*cFilter;
-if sum(thisVector)~=0
-    thisVector = thisVector'/max(thisVector(:));
-else
-    thisVector=[0 0 0 0];
-end
 
-thisVector(thisVector > 0.5) = 1;
-thisVector(thisVector <= 0.5) = 0;
+            hPat.fig = findobj('Tag', 'cfaPatternUI');
+            hPat = getappdata(hPat.fig, 'handles');
+            nColors = getappdata(hPat.fig, 'nColors');
 
-% When we turn on IR, unless it is only IR, we assign the visible color.
-% If signal has only IR energy, we make assign it gray
-if thisVector == [0,0,0,0]
-    startLetter='o';
-elseif thisVector == [0,0,0,1]
-    startLetter='o';
-elseif thisVector == [0,0,1,0]
-    startLetter='b';
-elseif thisVector == [0,0,1,1]
-    startLetter='b';
-elseif thisVector == [0,1,0,0]
-    startLetter='g';
-elseif thisVector == [0,1,0,1]
-    startLetter='g';
-elseif thisVector == [0,1,1,0]
-    startLetter='c';
-elseif thisVector == [0,1,1,1]
-    startLetter='c';
-elseif thisVector == [1,0,0,0]
-    startLetter='r';
-elseif thisVector == [1,0,0,1]
-    startLetter='r';
-elseif thisVector == [1,0,1,0]
-    startLetter='m';
-elseif thisVector == [1,0,1,1]
-    startLetter='m';
-elseif thisVector == [1,1,0,0]
-    startLetter='y';
-elseif thisVector == [1,1,0,1]
-    startLetter='y';
-elseif thisVector == [1,1,1,0]
-    startLetter='w';
-elseif thisVector == [1,1,1,1]
-    startLetter='w';
-end
+            % Initialize cfaStructure
+            cfaStructure = [];
 
-cName = sprintf('%s-custom',startLetter);
+            % get filterOrder from cfaDesignUIs sample points
+            [filterOrder, cfa, haveAllSamples] = cfaFilterOrderFromSamplePoints(hPat);
 
-return;
 
-%% ------------------------------------------------------------------------
-function tran=plotCFAspectrum(wavelength,tran)
+            % Get color transmittances
+            haveAllTransmittances = 1; % This wil be set to 0 if any color is missing
 
-% Plots a transmittance curve
-% wavelength - range over which transmittance is defined
-% tran - transmittance curve
+            colorFilters = getappdata(hPat.fig, 'colorFilters');
+            comment = 'CFA designed in cfaDesignUI.m';
+            units  = 'photons';
+            filterNames = cell(1, nColors);
 
-if ieNotDefined('wavelength'),wavelength=380:1068; end
-if ieNotDefined('tran'), tran=ones(size(wavelength)); end
+            for kk = 1:nColors;
+                if ~(sum(colorFilters(:, kk)) == 0)
+                    % Set an ISET coded filtername
+                    filterNames{kk} = cfaAssignFilterName(colorFilters(:, kk), wavelength);
+                else
+                    haveAllTransmittances = 0;
+                    return
+                end
+            end
 
-plot(wavelength,tran,'Color','k','Parent',gca);
-axis tight, hold on;
+            setappdata(hPat.fig, 'cfa', cfa);
+            setappdata(hPat.fig, 'filterOrder', filterOrder);
+            setappdata(hPat.fig, 'colorFilters', colorFilters);
 
-% Load LUT that maps spectral wavelengths to visible colors
-load spectrumLUT
-%                     bbI       1x1377            11016  double
-%                     ggI       1x1377            11016  double
-%                     rrI       1x1377            11016  double
-%                     xxI       1x1377            11016  double
-yyI=interp1(wavelength,tran,xxI); % xxI is resolution of LUT;
-irGrayLevel=0.3;
+            % Return the information to the work space
+            cfaStructure.filters.data = colorFilters;
+            cfaStructure.filters.wavelength = wavelength';
+            cfaStructure.filters.comment = comment;
+            cfaStructure.filters.units = units;
+            cfaStructure.filters.filterNames = filterNames;
 
-for kk=1:length(xxI) %% Fix gray-level in LUT after finalizing it
-    if rrI(kk)==0 && ggI(kk)==0 && bbI(kk)==0
-        rrI(kk)=irGrayLevel;
-        ggI(kk)=irGrayLevel;
-        bbI(kk)=irGrayLevel;
-    end
-    line(repmat(xxI(kk),2,1),[0,yyI(kk)],...
-        'color',[rrI(kk) ggI(kk) bbI(kk)],...
-        'Parent',gca,...
-        'ButtonDownFcn', 'cfaDesignCallbacks cfaPattern_color_axes'...
-        );
-end
-set(gca,'Xtick',[],'Ytick',[]);
+            cfaStructure.filterOrder = filterOrder;
+            cfaStructure.cfa_channels = cfa;
 
-return
-
-%% ------------------------------------------------------------------------
-function RGB = cfaFindFilterRGB(cFilter,wavelength)
-%  Assign an RGB color for displaying the color fo a color filter
-%
-%   cFilter - column vector with transmittance of filter.
-%   wavelength - vector with range over which curve is defined
-%
-%   Example:
-%     tmp=load(fullfile(isetRootPath,'data','sensor','R'))
-%     cFilter=tmp.data; wavelength=380:1068;
-%     cName = cfaFindFilterRGB(cFilter,qeMean,wavelength)
-if ieNotDefined('cFilter'), error('Color filter is required'), end
-if ieNotDefined('wavelength'), error('Wavelength is required'), end
-
-if size(cFilter,1)~=length(wavelength), cFilter=cFilter'; end
-
-% The bMatrix is blue, green and red in its columns
-bMatrix = colorBlockMatrix(wavelength,0.2);
-
-RGB = bMatrix'*cFilter;
-RGB = RGB'/max(RGB(:));
-return;
-
-%% ------------------------------------------------------------------------
-function cfaView(hPat)
-
-% Draw a new figure to display a small section of the CFA
-hCFA=struct;
-hCFA.fig=figure;
-fig_position = get(hCFA.fig,'Position');
-fig_width=250;
-fig_height=275;
-set(hCFA.fig,...
-    'Tag', 'cfaView',...
-    'NumberTitle','Off',...
-    'Resize','Off',...
-    'Position',[fig_position(1:2),fig_width,fig_height],...
-    'Name','Custom CFA',...
-    'Menubar','None'...
-    );
-
-% Make a panel that is parent to axes
-hCFA.main=uipanel(...
-    'Parent',hCFA.fig,...
-    'Position',[0.01 0.15 0.98 0.88],...
-    'BackgroundColor',get(gcf,'Color')...
-    );
-hCFA.pb_close=uicontrol(...
-    'Parent', hCFA.fig,... 
-    'Style','pushbutton',...
-    'String', 'Close',...
-    'Units','Normalized',...
-    'Position',[0.29 0.015 0.4 0.10],...
-    'BackgroundColor','w',...
-    'Callback', 'cfaDesignCallbacks cfaView_close',...
-    'KeyPressFcn', 'cfaDesignCallbacks cfaView_close'...
-    );
-hCFA.axes=axes(...
-    'Parent', hCFA.main,...
-    'Position', [0.01 0.01 0.98 0.98],...
-    'Xtick',[], 'Xcolor','w',...
-    'YTick',[], 'Ycolor','w'...
-    );
-
-    setappdata(hCFA.fig,'handles',hCFA);
-return;
-
-%% ------------------------------------------------------------------------
-function [filterOrder, cfa, haveAllSamples] = ...
-    cfaFilterOrderFromSamplePoints(hPat)
-
-% Finds filterOrder and cfa arrangement from the cfaDesignUI sample points
-
-hPat.fig = findobj('Tag','cfaPatternUI');
-hPat     = getappdata(hPat.fig,'handles');
-nRows    = getappdata(hPat.fig,'nRows');
-nCols    = getappdata(hPat.fig,'nCols');
-nColors  = getappdata(hPat.fig,'nColors');
-
-% Get spatial arrangement
-cfa_tmp=zeros(nRows,nCols,nColors);
-haveAllSamples = 1; % Will be set to 0 if any samples are missing
-
-% Cycle through all sample points and read their 'Value' fields. The sampe
-% points were drawn with the origin at the bottom left. 
-for currentColor=1:nColors
-    for currentCol=1:nCols
-        for currentRow=1:nRows
-            cfa_tmp(currentRow,currentCol,currentColor)=...
-                get(hPat.colors(currentColor).points(...
-                sub2ind([nRows,nCols],currentRow,currentCol)),...
-                'Value');
-        end
-    end
-end
-
-cfa=zeros(size(cfa_tmp));
-for kk=1:nColors
-    cfa(:,:,kk) = flipud(cfa_tmp(:,:,kk));
-end
-
-% filter order information
-filterOrder=zeros(nRows,nCols);
-for kk=1:nRows
-    for jj=1:nCols
-        sampledColor=find(squeeze(cfa(kk,jj,:)) == 1);
-        if ~isempty(sampledColor)
-            filterOrder(kk,jj)=sampledColor;
-        else
-            haveAllSamples=0;
             return;
-        end
-    end
-end
 
-return;
+            %% ------------------------------------------------------------------------
+                function cName = cfaAssignFilterName(cFilter, wavelength)
+                    % Generate a coded ISET filter name for the cfaDesignUI
+                    %
+                    %   cFilter - column vector with transmittance of filter.
+                    %   qeMean - string with mean wavelength of Gaussian transmittance curve
+                    %   wavelength - vector with range over which curve is defined
+                    %
+                    %   Example:
+                    %     tmp=load(fullfile(isetRootPath,'data','sensor','R'))
+                    %     cFilter=tmp.data; qeMean=500; wavelength=380:1068;
+                    %     cName = cfaAssignFilterName(cFilter,qeMean,wavelength)
 
+                    if ieNotDefined('cFilter'), error('Color filter is required'), end
+                    if ieNotDefined('wavelength'), error('Wavelength is required'), end
 
-%% ------------------------------------------------------------------------
-function cfaSamplePointsFromFilterOrder(hPat,filterOrder)
+                    % permissibleNames = sensorColorOrder('string');
+                    % 'rgbcymwuxzo'
+                    % Currently we're not using permissibleFilterNames. Instead, individual
+                    % letters from this string are set for appropriate colors
 
-hPat.fig = findobj('Tag','cfaPatternUI');
-hPat     = getappdata(hPat.fig,'handles');
-nRows    = getappdata(hPat.fig,'nRows');
-nCols    = getappdata(hPat.fig,'nCols');
-nColors  = getappdata(hPat.fig,'nColors');
+                    % The bMatrix is blue, green and red in its columns
+                    bMatrix = colorBlockMatrix(wavelength);
+                    irWave = zeros(length(wavelength), 1); % Now it is R,G,B,IR
+                    irWave(wavelength > 700) = 1;
+                    irWave = irWave / sum(irWave);
+                    bMatrix = [bMatrix, irWave];
 
-% Finds filterOrder and cfa arrangement from the cfaDesignUI sample points
+                    thisVector = bMatrix' * cFilter;
+                    if sum(thisVector) ~= 0
+                        thisVector = thisVector' / max(thisVector(:));
+                    else
+                        thisVector = [0, 0, 0, 0];
+                    end
 
-cfa_tmp=zeros(nRows,nCols,nColors);
+                    thisVector(thisVector > 0.5) = 1;
+                    thisVector(thisVector <= 0.5) = 0;
 
-for kk=1:nRows
-    for jj=1:nCols
-        cfa_tmp(kk,jj,filterOrder(kk,jj)) = 1;
-    end
-end
+                    % When we turn on IR, unless it is only IR, we assign the visible color.
+                    % If signal has only IR energy, we make assign it gray
+                    if thisVector == [0, 0, 0, 0]
+                        startLetter = 'o';
+                    elseif thisVector == [0, 0, 0, 1]
+                        startLetter = 'o';
+                    elseif thisVector == [0, 0, 1, 0]
+                        startLetter = 'b';
+                    elseif thisVector == [0, 0, 1, 1]
+                        startLetter = 'b';
+                    elseif thisVector == [0, 1, 0, 0]
+                        startLetter = 'g';
+                    elseif thisVector == [0, 1, 0, 1]
+                        startLetter = 'g';
+                    elseif thisVector == [0, 1, 1, 0]
+                        startLetter = 'c';
+                    elseif thisVector == [0, 1, 1, 1]
+                        startLetter = 'c';
+                    elseif thisVector == [1, 0, 0, 0]
+                        startLetter = 'r';
+                    elseif thisVector == [1, 0, 0, 1]
+                        startLetter = 'r';
+                    elseif thisVector == [1, 0, 1, 0]
+                        startLetter = 'm';
+                    elseif thisVector == [1, 0, 1, 1]
+                        startLetter = 'm';
+                    elseif thisVector == [1, 1, 0, 0]
+                        startLetter = 'y';
+                    elseif thisVector == [1, 1, 0, 1]
+                        startLetter = 'y';
+                    elseif thisVector == [1, 1, 1, 0]
+                        startLetter = 'w';
+                    elseif thisVector == [1, 1, 1, 1]
+                        startLetter = 'w';
+                    end
 
-cfa_oriented=zeros(size(cfa_tmp));
-for kk=1:nColors
-    cfa_oriented(:,:,kk) = flipud(cfa_tmp(:,:,kk));
-end
+                    cName = sprintf('%s-custom', startLetter);
 
-% Cycle through all sample points and set their 'Value' fields. The sample
-% points were drawn with the origin at the bottom left.
-for currentColor = 1:nColors
-    for currentCol = 1:nCols
-        for currentRow = 1:nRows
-            v = cfa_oriented(currentRow,currentCol,currentColor);
-            hCurrentButton=hPat.colors(currentColor).points(...
-                sub2ind([nRows,nCols],currentRow,currentCol));
-            set(hCurrentButton,'Value',v);
+                    return;
 
-            % Get the size of the button. We need to cover it with a 
-            % truecolor image (black if unsampled and white if sampled) and
-            % will need to know its row x col in pixels
-            set(hCurrentButton,'Units','Pixels');
-            temp=floor(get(hCurrentButton,'Position'));
-            set(hCurrentButton,'CData',v*ones(temp(4),temp(3),3));
-            set(hCurrentButton,'Units','Normalized');
+                    %% ------------------------------------------------------------------------
+                        function tran = plotCFAspectrum(wavelength, tran)
 
-        end
-    end
-end
+                            % Plots a transmittance curve
+                            % wavelength - range over which transmittance is defined
+                            % tran - transmittance curve
 
-return;
+                            if ieNotDefined('wavelength'), wavelength = 380:1068; end
+                            if ieNotDefined('tran'), tran = ones(size(wavelength)); end
 
-%% ------------------------------------------------------------------------
-function cfaShowCFAImage(hPat,wavelength)
+                            plot(wavelength, tran, 'Color', 'k', 'Parent', gca);
+                            axis tight, hold on;
 
-filterOrder=getappdata(hPat.fig,'filterOrder');
-colorFilters=getappdata(hPat.fig,'colorFilters');
+                            % Load LUT that maps spectral wavelengths to visible colors
+                            load spectrumLUT
+                            %                     bbI       1x1377            11016  double
+                            %                     ggI       1x1377            11016  double
+                            %                     rrI       1x1377            11016  double
+                            %                     xxI       1x1377            11016  double
+                            yyI = interp1(wavelength, tran, xxI); % xxI is resolution of LUT;
+                            irGrayLevel = 0.3;
 
-nColors=size(colorFilters,2);
-[nRows,nCols]=size(filterOrder);
+                            for kk = 1:length(xxI) %% Fix gray-level in LUT after finalizing it
+                                if rrI(kk) == 0 && ggI(kk) == 0 && bbI(kk) == 0
+                                    rrI(kk) = irGrayLevel;
+                                    ggI(kk) = irGrayLevel;
+                                    bbI(kk) = irGrayLevel;
+                                end
+                                line(repmat(xxI(kk), 2, 1), [0, yyI(kk)], ...
+                                    'color', [rrI(kk), ggI(kk), bbI(kk)], ...
+                                    'Parent', gca, ...
+                                    'ButtonDownFcn', 'cfaDesignCallbacks cfaPattern_color_axes' ...
+                                    );
+                            end
+                            set(gca, 'Xtick', [], 'Ytick', []);
 
-RGB=zeros(nColors,3);
-for currentColor = 1:nColors
-    RGB(currentColor,:) = ...
-        cfaFindFilterRGB(colorFilters(:,currentColor),wavelength);
-end
-cfaBlock=zeros(nRows,nCols,3);
+                            return
 
-for jj=1:nRows
-    for kk=1:nCols
-        cfaBlock(jj,kk,:)=RGB(filterOrder(jj,kk),:);
-    end
-end
-% Try to make an image of a size that makes it easy to visualize
-% the CFA
-if nColors>4
-    rowMult=2; colMult=2;
-else
-    rowMult=3; colMult=3;
-end
+                            %% ------------------------------------------------------------------------
+                                function RGB = cfaFindFilterRGB(cFilter, wavelength)
+                                    %  Assign an RGB color for displaying the color fo a color filter
+                                    %
+                                    %   cFilter - column vector with transmittance of filter.
+                                    %   wavelength - vector with range over which curve is defined
+                                    %
+                                    %   Example:
+                                    %     tmp=load(fullfile(isetRootPath,'data','sensor','R'))
+                                    %     cFilter=tmp.data; wavelength=380:1068;
+                                    %     cName = cfaFindFilterRGB(cFilter,qeMean,wavelength)
+                                    if ieNotDefined('cFilter'), error('Color filter is required'), end
+                                    if ieNotDefined('wavelength'), error('Wavelength is required'), end
 
-cfaImage=repmat(cfaBlock,rowMult,colMult);
+                                    if size(cFilter, 1) ~= length(wavelength), cFilter = cFilter'; end
 
-axes(hPat.side_axes_cfa)
-image(cfaImage)
+                                    % The bMatrix is blue, green and red in its columns
+                                    bMatrix = colorBlockMatrix(wavelength, 0.2);
 
-return;
+                                    RGB = bMatrix' * cFilter;
+                                    RGB = RGB' / max(RGB(:));
+                                    return;
+
+                                    %% ------------------------------------------------------------------------
+                                        function cfaView(hPat)
+
+                                            % Draw a new figure to display a small section of the CFA
+                                            hCFA = struct;
+                                            hCFA.fig = figure;
+                                            fig_position = get(hCFA.fig, 'Position');
+                                            fig_width = 250;
+                                            fig_height = 275;
+                                            set(hCFA.fig, ...
+                                                'Tag', 'cfaView', ...
+                                                'NumberTitle', 'Off', ...
+                                                'Resize', 'Off', ...
+                                                'Position', [fig_position(1:2), fig_width, fig_height], ...
+                                                'Name', 'Custom CFA', ...
+                                                'Menubar', 'None' ...
+                                                );
+
+                                            % Make a panel that is parent to axes
+                                            hCFA.main = uipanel( ...
+                                                'Parent', hCFA.fig, ...
+                                                'Position', [0.01, 0.15, 0.98, 0.88], ...
+                                                'BackgroundColor', get(gcf, 'Color') ...
+                                                );
+                                            hCFA.pb_close = uicontrol( ...
+                                                'Parent', hCFA.fig, ...
+                                                'Style', 'pushbutton', ...
+                                                'String', 'Close', ...
+                                                'Units', 'Normalized', ...
+                                                'Position', [0.29, 0.015, 0.4, 0.10], ...
+                                                'BackgroundColor', 'w', ...
+                                                'Callback', 'cfaDesignCallbacks cfaView_close', ...
+                                                'KeyPressFcn', 'cfaDesignCallbacks cfaView_close' ...
+                                                );
+                                            hCFA.axes = axes( ...
+                                                'Parent', hCFA.main, ...
+                                                'Position', [0.01, 0.01, 0.98, 0.98], ...
+                                                'Xtick', [], 'Xcolor', 'w', ...
+                                                'YTick', [], 'Ycolor', 'w' ...
+                                                );
+
+                                            setappdata(hCFA.fig, 'handles', hCFA);
+                                            return;
+
+                                            %% ------------------------------------------------------------------------
+                                                function [filterOrder, cfa, haveAllSamples] = ...
+                                                        cfaFilterOrderFromSamplePoints(hPat)
+
+                                                    % Finds filterOrder and cfa arrangement from the cfaDesignUI sample points
+
+                                                    hPat.fig = findobj('Tag', 'cfaPatternUI');
+                                                    hPat = getappdata(hPat.fig, 'handles');
+                                                    nRows = getappdata(hPat.fig, 'nRows');
+                                                    nCols = getappdata(hPat.fig, 'nCols');
+                                                    nColors = getappdata(hPat.fig, 'nColors');
+
+                                                    % Get spatial arrangement
+                                                    cfa_tmp = zeros(nRows, nCols, nColors);
+                                                    haveAllSamples = 1; % Will be set to 0 if any samples are missing
+
+                                                    % Cycle through all sample points and read their 'Value' fields. The sampe
+                                                    % points were drawn with the origin at the bottom left.
+                                                    for currentColor = 1:nColors
+                                                        for currentCol = 1:nCols
+                                                            for currentRow = 1:nRows
+                                                                cfa_tmp(currentRow, currentCol, currentColor) = ...
+                                                                    get(hPat.colors(currentColor).points( ...
+                                                                    sub2ind([nRows, nCols], currentRow, currentCol)), ...
+                                                                    'Value');
+                                                            end
+                                                        end
+                                                    end
+
+                                                    cfa = zeros(size(cfa_tmp));
+                                                    for kk = 1:nColors
+                                                        cfa(:, :, kk) = flipud(cfa_tmp(:, :, kk));
+                                                    end
+
+                                                    % filter order information
+                                                    filterOrder = zeros(nRows, nCols);
+                                                    for kk = 1:nRows
+                                                        for jj = 1:nCols
+                                                            sampledColor = find(squeeze(cfa(kk, jj, :)) == 1);
+                                                            if ~isempty(sampledColor)
+                                                                filterOrder(kk, jj) = sampledColor;
+                                                            else
+                                                                haveAllSamples = 0;
+                                                                return;
+                                                            end
+                                                        end
+                                                    end
+
+                                                    return;
+
+                                                    %% ------------------------------------------------------------------------
+                                                        function cfaSamplePointsFromFilterOrder(hPat, filterOrder)
+
+                                                            hPat.fig = findobj('Tag', 'cfaPatternUI');
+                                                            hPat = getappdata(hPat.fig, 'handles');
+                                                            nRows = getappdata(hPat.fig, 'nRows');
+                                                            nCols = getappdata(hPat.fig, 'nCols');
+                                                            nColors = getappdata(hPat.fig, 'nColors');
+
+                                                            % Finds filterOrder and cfa arrangement from the cfaDesignUI sample points
+
+                                                            cfa_tmp = zeros(nRows, nCols, nColors);
+
+                                                            for kk = 1:nRows
+                                                                for jj = 1:nCols
+                                                                    cfa_tmp(kk, jj, filterOrder(kk, jj)) = 1;
+                                                                end
+                                                            end
+
+                                                            cfa_oriented = zeros(size(cfa_tmp));
+                                                            for kk = 1:nColors
+                                                                cfa_oriented(:, :, kk) = flipud(cfa_tmp(:, :, kk));
+                                                            end
+
+                                                            % Cycle through all sample points and set their 'Value' fields. The sample
+                                                            % points were drawn with the origin at the bottom left.
+                                                            for currentColor = 1:nColors
+                                                                for currentCol = 1:nCols
+                                                                    for currentRow = 1:nRows
+                                                                        v = cfa_oriented(currentRow, currentCol, currentColor);
+                                                                        hCurrentButton = hPat.colors(currentColor).points( ...
+                                                                            sub2ind([nRows, nCols], currentRow, currentCol));
+                                                                        set(hCurrentButton, 'Value', v);
+
+                                                                        % Get the size of the button. We need to cover it with a
+                                                                        % truecolor image (black if unsampled and white if sampled) and
+                                                                        % will need to know its row x col in pixels
+                                                                        set(hCurrentButton, 'Units', 'Pixels');
+                                                                        temp = floor(get(hCurrentButton, 'Position'));
+                                                                        set(hCurrentButton, 'CData', v*ones(temp(4), temp(3), 3));
+                                                                        set(hCurrentButton, 'Units', 'Normalized');
+
+                                                                    end
+                                                                end
+                                                            end
+
+                                                            return;
+
+                                                            %% ------------------------------------------------------------------------
+                                                                function cfaShowCFAImage(hPat, wavelength)
+
+                                                                    filterOrder = getappdata(hPat.fig, 'filterOrder');
+                                                                    colorFilters = getappdata(hPat.fig, 'colorFilters');
+
+                                                                    nColors = size(colorFilters, 2);
+                                                                    [nRows, nCols] = size(filterOrder);
+
+                                                                    RGB = zeros(nColors, 3);
+                                                                    for currentColor = 1:nColors
+                                                                        RGB(currentColor, :) = ...
+                                                                            cfaFindFilterRGB(colorFilters(:, currentColor), wavelength);
+                                                                    end
+                                                                    cfaBlock = zeros(nRows, nCols, 3);
+
+                                                                    for jj = 1:nRows
+                                                                        for kk = 1:nCols
+                                                                            cfaBlock(jj, kk, :) = RGB(filterOrder(jj, kk), :);
+                                                                        end
+                                                                    end
+                                                                    % Try to make an image of a size that makes it easy to visualize
+                                                                    % the CFA
+                                                                    if nColors > 4
+                                                                        rowMult = 2;
+                                                                        colMult = 2;
+                                                                    else
+                                                                        rowMult = 3;
+                                                                        colMult = 3;
+                                                                    end
+
+                                                                    cfaImage = repmat(cfaBlock, rowMult, colMult);
+
+                                                                    axes(hPat.side_axes_cfa)
+                                                                    image(cfaImage)
+
+                                                                    return;

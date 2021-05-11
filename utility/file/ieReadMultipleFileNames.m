@@ -1,4 +1,4 @@
-function fullname = ieReadMultipleFileNames(imgDir,prompt)
+function fullname = ieReadMultipleFileNames(imgDir, prompt)
 % Read the names of multiple NEF files acquired with a single color filter.
 %
 %  fullname = ieReadMultipleFileNames(imgDir,[prompt])
@@ -14,9 +14,9 @@ function fullname = ieReadMultipleFileNames(imgDir,prompt)
 
 if ~exist('prompt'), prompt = ''; end
 
-if ~exist('imgDir','var') | isempty(imgDir)
+if ~exist('imgDir', 'var') | isempty(imgDir)
     imgDir = uigetdir('', 'Directory of NEF files');
-    if isequal(imgDir,0)
+    if isequal(imgDir, 0)
         imgDir = [];
         return;
     end
@@ -24,15 +24,14 @@ end
 
 d = dir(imgDir);
 str = {d.name};
-[s,v] = listdlg('PromptString',prompt,'Name','Select files','ListString',str,'ListSize',[240,600]);
-if isempty(s), 
-    fullname = []; 
+[s, v] = listdlg('PromptString', prompt, 'Name', 'Select files', 'ListString', str, 'ListSize', [240, 600]);
+if isempty(s),
+    fullname = [];
     return;
 else
-    for ii=1:length(s)
-        fullname{ii} = fullfile(imgDir,str{s(ii)}); 
+    for ii = 1:length(s)
+        fullname{ii} = fullfile(imgDir, str{s(ii)});
     end
 end
 
 return;
-

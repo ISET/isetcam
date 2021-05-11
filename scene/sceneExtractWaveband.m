@@ -1,4 +1,4 @@
-function sceneW = sceneExtractWaveband(scene,waveList)
+function sceneW = sceneExtractWaveband(scene, waveList)
 %sceneExtractWaveband - Extract wave bands from the scene
 %
 %   sceneW = sceneExtractWaveband(scene,waveList)
@@ -21,8 +21,8 @@ if ieNotDefined('scene'), scene = vcGetObject('scene'); end
 if ieNotDefined('waveList'), error('Wave list must be defined'); end
 
 sceneW = scene;
-sceneW = sceneSet(sceneW,'photons',sceneGet(scene,'photons',waveList));
-sceneW = sceneSet(sceneW,'wave',waveList);
+sceneW = sceneSet(sceneW, 'photons', sceneGet(scene, 'photons', waveList));
+sceneW = sceneSet(sceneW, 'wave', waveList);
 
 % if length(waveList) == 1,  sceneW = sceneSet(sceneW,'binwidth',1);
 % else                       sceneW = sceneSet(sceneW,'binWidth',waveList(2) - waveList(1));

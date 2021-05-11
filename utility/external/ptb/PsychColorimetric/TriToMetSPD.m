@@ -1,6 +1,6 @@
-function output = TriToMetSPD(input,T,B)
+function output = TriToMetSPD(input, T, B)
 % output = TriToMetSPD(input,T,B)
-% 
+%
 % Convert tristimulus coordinates in a color space
 % specified by a set of known color matching
 % functions to an estimate of the original spectral
@@ -17,12 +17,12 @@ function output = TriToMetSPD(input,T,B)
 
 % Extract the first nchromacy basis functions
 % from the passed model.
-[nchromacy,nwavelengths] = size(T);
-B = B(:,1:nchromacy);
+[nchromacy, nwavelengths] = size(T);
+B = B(:, 1:nchromacy);
 
 % Get the linear model weights from the trisimtulus coordinates
 % This is exactly what the routine CMToPri does
-weights = CMToPri(input,T,B);
+weights = CMToPri(input, T, B);
 
 % Expand the weights back to spectral power distributions
-output = B*weights;
+output = B * weights;

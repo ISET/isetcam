@@ -15,18 +15,16 @@ function vci = displaySetMaxLuminance(vci)
 % TODO:
 % These should be part of displaySet() and displayGet()
 
-if notDefined('vci'), [~,vci] = vcGetSelectedObject('VCIMAGE'); end
+if notDefined('vci'), [~, vci] = vcGetSelectedObject('VCIMAGE'); end
 
-Yw = ipGet(vci,'maxdisplayluminance');
+Yw = ipGet(vci, 'maxdisplayluminance');
 
-maxLum = ieReadNumber('Enter desired max display luminance (Y): ',Yw,'%.2f');
+maxLum = ieReadNumber('Enter desired max display luminance (Y): ', Yw, '%.2f');
 if isempty(maxLum), return; end
 
-sFactor = maxLum/Yw;
-spd = ipGet(vci,'spd');
+sFactor = maxLum / Yw;
+spd = ipGet(vci, 'spd');
 vci = vcimageClearData(vci);
-vci = imageSet(vci,'spd',spd*sFactor);
+vci = imageSet(vci, 'spd', spd*sFactor);
 
 return;
-
-

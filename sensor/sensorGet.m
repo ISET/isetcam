@@ -1,4 +1,4 @@
-function val = sensorGet(sensor,param,varargin)
+function val = sensorGet(sensor, param, varargin)
 %Get properties and derived quantities from ISET sensor object
 %
 %     val = sensorGet(sensor,param,varargin)
@@ -14,13 +14,13 @@ function val = sensorGet(sensor,param,varargin)
 %  Because of the importance of the pixel structure, it is possible to
 %  retrieve the optics parameters from the sensorGet() function using the
 %  syntax
-% 
-%     sensorGet(sensor,'pixel <parameter name>'), 
+%
+%     sensorGet(sensor,'pixel <parameter name>'),
 %     e.g., sensorGet(oi,'pixel voltage swing');
 %
 %  The key structures (scene, oi, sensor, ip, display) are stored in the
 %  ISET database.  To retrieve the currently selected optical image, use
-%      
+%
 %     sensor = vcGetObject('sensor');
 %
 %  A '*' indicates that the syntax oiGet(scene,param,unit) can be used,
@@ -28,8 +28,8 @@ function val = sensorGet(sensor,param,varargin)
 %  'cm', 'mm', 'um', 'nm'.  Default is meters ('m').
 %
 %  There is a limitation in that we can only add one additional argument.
-%  So it is possible to call 
-%    
+%  So it is possible to call
+%
 %    sensorGet(sensor,'pixel size','mm')
 %
 %  But we do not add a second argument to the list. If you need to have a
@@ -52,7 +52,7 @@ function val = sensorGet(sensor,param,varargin)
 %    val = sensorGet(sensor,'filtercolornames')
 %    val = sensorGet(sensor,'exposurePlane'); % For bracketing simulation
 %    val = sensorGet(sensor,'response type'); % {'linear','log'}
-% 
+%
 % List of sensor parameters
 %      'name'                 - this sensor name
 %      'type'                 - always 'sensor'
@@ -237,7 +237,7 @@ function val = sensorGet(sensor,param,varargin)
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
-if ~exist('param','var') || isempty(param), error('Param must be defined.'); end
+if ~exist('param', 'var') || isempty(param), error('Param must be defined.'); end
 
 % Should we check and call sensorArrayGet here?
 % if length(sensor) > 1, val = sensorArrayGet(sensor,param); return; end
@@ -254,55 +254,55 @@ val = [];
 %   opticsGet(optics,param)
 %
 % Parse param to see if it indicates which object.  Store parameter.
-[oType,param] = ieParameterOtype(param);
+[oType, param] = ieParameterOtype(param);
 
 switch oType
     case 'pixel'
         pixel = sensor.pixel;
         if isempty(param), val = pixel;
-        elseif   isempty(varargin), val = pixelGet(pixel,param);
-        else,     val = pixelGet(pixel,param,varargin{1});
+        elseif isempty(varargin), val = pixelGet(pixel, param);
+        else, val = pixelGet(pixel, param, varargin{1});
         end
     otherwise
         param = ieParamFormat(param);
         switch param
-            
+
             case {'name'}
-                if checkfields(sensor,'name'), val = sensor.name; end
+                if checkfields(sensor, 'name'), val = sensor.name; end
             case {'type'}
-                if checkfields(sensor,'type'), val = sensor.type; end
-                
-            case {'rows','row'}
+                if checkfields(sensor, 'type'), val = sensor.type; end
+
+            case {'rows', 'row'}
                 % There should not be a rows/cols field at all, right, unless the
                 % data field is empty?
-                if checkfields(sensor,'data','volts')
-                    val = size(sensor.data.volts,1);
+                if checkfields(sensor, 'data', 'volts')
+                    val = size(sensor.data.volts, 1);
                     return;
-                elseif checkfields(sensor,'rows'), val = sensor.rows;
+                elseif checkfields(sensor, 'rows'), val = sensor.rows;
                 end
-            case {'cols','col'}
+            case {'cols', 'col'}
                 % We keep rows/cols field at all, right, unless the
                 % data field is empty?
-                if checkfields(sensor,'data','volts')
-                    val = size(sensor.data.volts,2);
+                if checkfields(sensor, 'data', 'volts')
+                    val = size(sensor.data.volts, 2);
                     return;
-                elseif checkfields(sensor,'cols'), val = sensor.cols;
+                elseif checkfields(sensor, 'cols'), val = sensor.cols;
                 end
-            case {'size','arrayrowcol'}
+            case {'size', 'arrayrowcol'}
                 % row by col samples
                 % sensorGet(sensor,'size')
-                val = [sensorGet(sensor,'rows'),sensorGet(sensor,'cols')];
-            case {'height','arrayheight'}
-                val = sensorGet(sensor,'rows')*sensorGet(sensor,'deltay');
-                if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-            case {'width','arraywidth'}
-                val = sensorGet(sensor,'cols')*sensorGet(sensor,'deltax');
-                if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
+                val = [sensorGet(sensor, 'rows'), sensorGet(sensor, 'cols')];
+            case {'height', 'arrayheight'}
+                val = sensorGet(sensor, 'rows') * sensorGet(sensor, 'deltay');
+                if ~isempty(varargin), val = val * ieUnitScaleFactor(varargin{1}); end
+            case {'width', 'arraywidth'}
+                val = sensorGet(sensor, 'cols') * sensorGet(sensor, 'deltax');
+                if ~isempty(varargin), val = val * ieUnitScaleFactor(varargin{1}); end
             case {'dimension'}
                 % height by width in length units
                 % sensorGet(sensor,'dimension','mm')
-                val = [sensorGet(sensor,'height'), sensorGet(sensor,'width')];
-                if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
+                val = [sensorGet(sensor, 'height'), sensorGet(sensor, 'width')];
+                if ~isempty(varargin), val = val * ieUnitScaleFactor(varargin{1}); end
             case {'ncaptures'}
                 % sensorGet(sensor,'captures')
                 %
@@ -311,57 +311,57 @@ switch oType
                 % sensor compute this value should be equal to the number
                 % of exposure times.  Before sensor compute it can be
                 % empty.
-                val = sensorGet(sensor,'dv or volts');
+                val = sensorGet(sensor, 'dv or volts');
                 if isempty(val), return;
                 elseif ismatrix(val)
                     val = 1;
                 else
-                    val = size(val,3);
+                    val = size(val, 3);
                 end
                 % The resolutions also represent the center-to-center spacing of the pixels.
-            case {'wspatialresolution','wres','deltax','widthspatialresolution'}
-                PIXEL = sensorGet(sensor,'pixel');
-                val = pixelGet(PIXEL,'width') + pixelGet(PIXEL,'widthGap');
-                if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-                
-            case {'hspatialresolution','hres','deltay','heightspatialresolultion'}
-                PIXEL = sensorGet(sensor,'pixel');
-                val = pixelGet(PIXEL,'height') + pixelGet(PIXEL,'heightGap');
-                if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-                
-            case {'spatialsupport','xyvaluesinmeters'}
+            case {'wspatialresolution', 'wres', 'deltax', 'widthspatialresolution'}
+                PIXEL = sensorGet(sensor, 'pixel');
+                val = pixelGet(PIXEL, 'width') + pixelGet(PIXEL, 'widthGap');
+                if ~isempty(varargin), val = val * ieUnitScaleFactor(varargin{1}); end
+
+            case {'hspatialresolution', 'hres', 'deltay', 'heightspatialresolultion'}
+                PIXEL = sensorGet(sensor, 'pixel');
+                val = pixelGet(PIXEL, 'height') + pixelGet(PIXEL, 'heightGap');
+                if ~isempty(varargin), val = val * ieUnitScaleFactor(varargin{1}); end
+
+            case {'spatialsupport', 'xyvaluesinmeters'}
                 % ss = sensorGet(sensor,'spatialSupport',units)
-                nRows = sensorGet(sensor,'rows');
-                nCols = sensorGet(sensor,'cols');
-                pSize = pixelGet(sensorGet(sensor,'pixel'),'size');
-                val.y = linspace(-nRows*pSize(1)/2 + pSize(1)/2, nRows*pSize(1)/2 - pSize(1)/2,nRows);
-                val.x = linspace(-nCols*pSize(2)/2 + pSize(2)/2,nCols*pSize(2)/2 - pSize(2)/2,nCols);
+                nRows = sensorGet(sensor, 'rows');
+                nCols = sensorGet(sensor, 'cols');
+                pSize = pixelGet(sensorGet(sensor, 'pixel'), 'size');
+                val.y = linspace(-nRows*pSize(1)/2+pSize(1)/2, nRows*pSize(1)/2-pSize(1)/2, nRows);
+                val.x = linspace(-nCols*pSize(2)/2+pSize(2)/2, nCols*pSize(2)/2-pSize(2)/2, nCols);
                 if ~isempty(varargin)
-                    val.y = val.y*ieUnitScaleFactor(varargin{1});
-                    val.x = val.x*ieUnitScaleFactor(varargin{1});
+                    val.y = val.y * ieUnitScaleFactor(varargin{1});
+                    val.x = val.x * ieUnitScaleFactor(varargin{1});
                 end
-                
-            case {'chiefrayangle','cra','chiefrayangleradians','craradians','craradian','chiefrayangleradian'}
+
+            case {'chiefrayangle', 'cra', 'chiefrayangleradians', 'craradians', 'craradian', 'chiefrayangleradian'}
                 % Return the chief ray angle for each pixel in radians
                 % sensorGet(sensor,'chiefRayAngle',sourceFLMeters)
-                support = sensorGet(sensor,'spatialSupport');   %Meters
-                
+                support = sensorGet(sensor, 'spatialSupport'); %Meters
+
                 % Jst flipped .x and .y positions
-                [X,Y] = meshgrid(support.x,support.y);
+                [X, Y] = meshgrid(support.x, support.y);
                 if isempty(varargin)
-                    optics = oiGet(vcGetObject('OI'),'optics');
-                    sourceFL = opticsGet(optics,'focalLength'); % Meters.
+                    optics = oiGet(vcGetObject('OI'), 'optics');
+                    sourceFL = opticsGet(optics, 'focalLength'); % Meters.
                 else
                     sourceFL = varargin{1};
                 end
-                
+
                 % Chief ray angle of every pixel in radians
                 val = atan(sqrt(X.^2 + Y.^2)/sourceFL);
-                
-            case {'chiefrayangledegrees','cradegrees','cradegree','chiefrayangledegree'}
+
+            case {'chiefrayangledegrees', 'cradegrees', 'cradegree', 'chiefrayangledegree'}
                 % sensorGet(sensor,'chiefRayAngleDegrees',sourceFL)
                 % Returns a matrix containing the chief ray angles of each
-                % pixel 
+                % pixel
                 if isempty(varargin)
                     oi = vcGetObject('oi');
                     if isempty(oi)
@@ -369,12 +369,12 @@ switch oType
                         fprintf('To add an oi object use: oi = oiCreate; ieAddObject(oi)');
                         error('No focal length in meters provided');
                     else
-                        sourceFL    = oiGet(oi,'optics focal length');
+                        sourceFL = oiGet(oi, 'optics focal length');
                     end
                 else, sourceFL = varargin{1};
                 end
-                val = rad2deg(sensorGet(sensor,'cra',sourceFL));
-            case {'etendue','sensoretendue'}
+                val = rad2deg(sensorGet(sensor, 'cra', sourceFL));
+            case {'etendue', 'sensoretendue'}
                 % The size of etendue entry matches the row/col size of the sensor
                 % array. The etendue is computed using the chief ray angle at each
                 % pixel and properties of the microlens structure. Routines exist
@@ -384,137 +384,140 @@ switch oType
                 % can be calculated by sensor.etendue/sensor.data.vignetting.  We
                 % need to be careful about clearing these fields and data
                 % consistency.
-                if checkfields(sensor,'etendue'), val = sensor.etendue; end
-                
-            case {'voltage','volts'}
+                if checkfields(sensor, 'etendue'), val = sensor.etendue; end
+
+            case {'voltage', 'volts'}
                 % sensorGet(sensor,'volts',i) gets the ith sensor data in a vector.
                 % sensorGet(sensor,'volts') gets all the sensor data in a plane.
                 % This syntax applies to most of the voltage/electron/dv gets
                 % below.
                 %
-                if checkfields(sensor,'data','volts'), val = sensor.data.volts; end
-                if ~isempty(varargin), val = sensorColorData(val,sensor,varargin{1}); end
-            case{'volts2maxratio','responseratio'}
+                if checkfields(sensor, 'data', 'volts'), val = sensor.data.volts; end
+                if ~isempty(varargin), val = sensorColorData(val, sensor, varargin{1}); end
+            case {'volts2maxratio', 'responseratio'}
                 % sensorGet(sensor,'response ratio')
                 %
                 % Ratio of peak data voltage to voltage swing.  Used in
                 % displayRender to make sure the image display range
                 % matches the sensor data range.
-                v = sensorGet(sensor,'volts');
-                pixel = sensorGet(sensor,'pixel');
-                sm = pixelGet(pixel,'voltage swing');
-                val = max(v(:))/sm;
+                v = sensorGet(sensor, 'volts');
+                pixel = sensorGet(sensor, 'pixel');
+                sm = pixelGet(pixel, 'voltage swing');
+                val = max(v(:)) / sm;
             case {'responsedr'}
                 % sensorGet(sensor,'response dr') - Sensor response dynamic range
                 % Dynamic range of the sensor response (minimum to maximum) In the
                 % case when there is a very small, say zero, voltage value, we use
                 % a 12 bit assumption on the voltage range.
-                v = sensorGet(sensor,'volts');
-                if isempty(v), warndlg('No sensor voltage'); return; end
-                pixel  = sensorGet(sensor,'pixel');
-                vSwing = pixelGet(pixel,'vSwing');
-                vMax = max(v(:)); vMin = max(min(v(:)),vSwing/(2^12));
-                val = vMax/vMin;
-                
-            case {'analoggain','ag'}
-                if checkfields(sensor,'analogGain'), val = sensor.analogGain;
+                v = sensorGet(sensor, 'volts');
+                if isempty(v), warndlg('No sensor voltage');
+                    return;
+                end
+                pixel = sensorGet(sensor, 'pixel');
+                vSwing = pixelGet(pixel, 'vSwing');
+                vMax = max(v(:));
+                vMin = max(min(v(:)), vSwing/(2^12));
+                val = vMax / vMin;
+
+            case {'analoggain', 'ag'}
+                if checkfields(sensor, 'analogGain'), val = sensor.analogGain;
                 else, val = 1;
                 end
-            case {'analogoffset','ao'}
-                if checkfields(sensor,'analogGain'), val = sensor.analogOffset;
-                else,   val = 0;
+            case {'analogoffset', 'ao'}
+                if checkfields(sensor, 'analogGain'), val = sensor.analogOffset;
+                else, val = 0;
                 end
-            case {'dv','digitalvalue','digitalvalues'}
-                if checkfields(sensor,'data','dv'),val = sensor.data.dv; end
+            case {'dv', 'digitalvalue', 'digitalvalues'}
+                if checkfields(sensor, 'data', 'dv'), val = sensor.data.dv; end
                 % Pull out a particular color plane
                 if ~isempty(varargin) && ~isempty(val)
-                    val = sensorColorData(val,sensor,varargin{1});
+                    val = sensorColorData(val, sensor, varargin{1});
                 end
-                
-            case {'electron','electrons','photons'}
+
+            case {'electron', 'electrons', 'photons'}
                 % sensorGet(sensor,'electrons');
                 % sensorGet(sensor,'electrons',2);
                 % This is also used for human case, where we call the data photons,
                 % as in photon absorptions.
-                pixel = sensorGet(sensor,'pixel');
-                val = sensorGet(sensor,'volts')/pixelGet(pixel,'conversionGain');
-                
+                pixel = sensorGet(sensor, 'pixel');
+                val = sensorGet(sensor, 'volts') / pixelGet(pixel, 'conversionGain');
+
                 % Pull out a particular color plane
-                if ~isempty(varargin), val = sensorColorData(val,sensor,varargin{1}); end
+                if ~isempty(varargin), val = sensorColorData(val, sensor, varargin{1}); end
                 % Electrons are ints
                 val = round(val);
-                
+
             case {'dvorvolts'}
-                val = sensorGet(sensor,'dv');
-                if isempty(val), val = sensorGet(sensor,'volts'); end
-                
+                val = sensorGet(sensor, 'dv');
+                if isempty(val), val = sensorGet(sensor, 'volts'); end
+
                 % Region of interest for data handling
-            case {'roi','roilocs'}
+            case {'roi', 'roilocs'}
                 % roiLocs = sensorGet(sensor,'roi');
                 %
                 % The roi is stored either as a rect or as an Nx2 matrix of
                 % row,col locations.  If the oType is roi we return
                 % whatever is there.  If oType is roilocs, we convert the
                 % rect to locs.
-                if checkfields(sensor,'roi')
+                if checkfields(sensor, 'roi')
                     % The data can be stored as a rect or as roiLocs.
                     val = sensor.roi;
                 end
-                
+
                 % Convert to locs because the user specified roilocs
-                if isequal(param,'roilocs') && size(val,2) == 4
-                    val = ieRect2Locs(val); 
+                if isequal(param, 'roilocs') && size(val, 2) == 4
+                    val = ieRect2Locs(val);
                 end
             case {'roirect'}
                 % sensorGet(sensor,'roi rect')
                 % Return ROI as a rect
-                if checkfields(sensor,'roi')
+                if checkfields(sensor, 'roi')
                     % The data can be stored as a rect or as roiLocs.
                     val = sensor.roi;
-                    if size(val,2) ~= 4, val =  ieLocs2Rect(val); end
+                    if size(val, 2) ~= 4, val = ieLocs2Rect(val); end
                 end
-            case {'roivolts','roidata','roidatav','roidatavolts'}
+            case {'roivolts', 'roidata', 'roidatav', 'roidatavolts'}
                 % V = sensorGet(sensor,'roi volts');
                 %
                 % If sensor.roi exists, it is used.  Otherwise, empty
                 % is returned and a warning issued.
-                if checkfields(sensor,'roi')
-                    roiLocs = sensorGet(sensor,'roi locs');
-                    val = vcGetROIData(sensor,roiLocs,'volts');
-                else, warning('ISET:nosensorroi','No sensor.roi field.  Returning empty voltage data.');
+                if checkfields(sensor, 'roi')
+                    roiLocs = sensorGet(sensor, 'roi locs');
+                    val = vcGetROIData(sensor, roiLocs, 'volts');
+                else, warning('ISET:nosensorroi', 'No sensor.roi field.  Returning empty voltage data.');
                 end
-            case {'roielectrons','roidatae','roidataelectrons'}
+            case {'roielectrons', 'roidatae', 'roidataelectrons'}
                 % e = sensorGet(sensor,'roi electrons');
                 %
                 % If sensor.roi exists, it is used.  Otherwise, empty
                 % is returned and a warning issued.
-                if checkfields(sensor,'roi')
-                    roiLocs = sensorGet(sensor,'roi locs');
-                    val = vcGetROIData(sensor,roiLocs,'electrons');
-                else, warning('ISET:nosensorroi','No sensor.roi field.  Returning empty electron data.');
+                if checkfields(sensor, 'roi')
+                    roiLocs = sensorGet(sensor, 'roi locs');
+                    val = vcGetROIData(sensor, roiLocs, 'electrons');
+                else, warning('ISET:nosensorroi', 'No sensor.roi field.  Returning empty electron data.');
                 end
-            case {'roidv','roidigitalcount'}
+            case {'roidv', 'roidigitalcount'}
                 % V = sensorGet(sensor,'roi dv');
                 %
                 % If sensor.roi exists, it is used.  Otherwise, empty
                 % is returned and a warning issued.
-                if checkfields(sensor,'roi')
-                    roiLocs = sensorGet(sensor,'roi locs');
-                    val = vcGetROIData(sensor,roiLocs,'dv');
-                else, warning('ISET:nosensorroi','No sensor.roi field.  Returning empty voltage data.');
+                if checkfields(sensor, 'roi')
+                    roiLocs = sensorGet(sensor, 'roi locs');
+                    val = vcGetROIData(sensor, roiLocs, 'dv');
+                else, warning('ISET:nosensorroi', 'No sensor.roi field.  Returning empty voltage data.');
                 end
-                
+
             case {'roivoltsmean'}
                 % sensorGet(sensor,'roi volts mean')
                 % Mean value for each of the sensor types
                 % sensorGet(sensor,'roi volts mean');
-                d = sensorGet(sensor,'roi volts');
+                d = sensorGet(sensor, 'roi volts');
                 if isempty(d), return;
                 else
-                    nSensor = sensorGet(sensor,'n sensor');
-                    val = zeros(nSensor,1);
-                    for ii=1:nSensor
-                        thisD = d(:,ii);
+                    nSensor = sensorGet(sensor, 'n sensor');
+                    val = zeros(nSensor, 1);
+                    for ii = 1:nSensor
+                        thisD = d(:, ii);
                         val(ii) = mean(thisD(~isnan(thisD)));
                     end
                 end
@@ -523,37 +526,42 @@ switch oType
                 % Estimate the rg sensor chromaticities
                 %
                 % ONLY WORKS WITH Bayer patterns
-                if isempty(varargin), rect = []; 
+                if isempty(varargin), rect = [];
                 else, rect = varargin{1};
                 end
-                
+
                 % Make sure rect starts at odd numbers and height and width
                 % are odd numbers to align with a Bayer pattern.
-                lst = ~isodd(rect); rect(lst) = rect(lst)-1;
-                mosaic   = sensorGet(sensor,'volts');
+                lst = ~isodd(rect);
+                rect(lst) = rect(lst) - 1;
+                mosaic = sensorGet(sensor, 'volts');
                 mosaicDV = sensorGet(sensor, 'dv');
                 if ~isempty(rect)
-                    mosaic = mosaic(rect(2):rect(2)+rect(4),...
-                                    rect(1):rect(1)+rect(3),:); 
+                    mosaic = mosaic(rect(2):rect(2)+rect(4), ...
+                        rect(1):rect(1)+rect(3), :);
                     if ~isempty(mosaicDV)
-                        mosaicDV = mosaicDV(rect(2):rect(2)+rect(4),...
-                                        rect(1):rect(1)+rect(3),:); 
+                        mosaicDV = mosaicDV(rect(2):rect(2)+rect(4), ...
+                            rect(1):rect(1)+rect(3), :);
                     end
                 end
-                
-                val = zeros(size(mosaic, 1) * size(mosaic, 2), 2, size(mosaic, 3));
+
+                val = zeros(size(mosaic, 1)*size(mosaic, 2), 2, size(mosaic, 3));
                 exp = sensorGet(sensor, 'exp time');
-                for ii=1:size(mosaic, 3)
+                for ii = 1:size(mosaic, 3)
                     % Use ipCompute to interpolate the mosaic and produce a
                     % chromaticity value at every point.
-                    sensorC = sensorSet(sensor,'volts',mosaic(:,:,ii));
+                    sensorC = sensorSet(sensor, 'volts', mosaic(:, :, ii));
                     sensorC = sensorSet(sensorC, 'exp time', exp(ii));
-                    sensorC = sensorSet(sensorC, 'dv', mosaicDV(:,:,ii));
-                    ip = ipCreate; ip = ipCompute(ip,sensorC); 
-                    rgb = ipGet(ip,'sensor space');   % Just demosaic'd
-                    s = sum(rgb,3); r = rgb(:,:,1)./s; g = rgb(:,:,2)./s;
+                    sensorC = sensorSet(sensorC, 'dv', mosaicDV(:, :, ii));
+                    ip = ipCreate;
+                    ip = ipCompute(ip, sensorC);
+                    rgb = ipGet(ip, 'sensor space'); % Just demosaic'd
+                    s = sum(rgb, 3);
+                    r = rgb(:, :, 1) ./ s;
+                    g = rgb(:, :, 2) ./ s;
 
-                    val(:,1,ii) = r(:); val(:,2,ii) = g(:);
+                    val(:, 1, ii) = r(:);
+                    val(:, 2, ii) = g(:);
                 end
             case {'roielectronsmean'}
                 % sensorGet(sensor,'roi electrons mean')
@@ -561,88 +569,88 @@ switch oType
                 % sensorGet(sensor,'roi electrons mean');
                 % Mean value for each of the sensor types
                 % sensorGet(sensor,'roi volts mean');
-                d = sensorGet(sensor,'roi electrons');
+                d = sensorGet(sensor, 'roi electrons');
                 if isempty(d), return;
                 else
-                    nSensor = sensorGet(sensor,'n sensor');
-                    val = zeros(nSensor,1);
-                    for ii=1:nSensor
-                        thisD = d(:,ii);
+                    nSensor = sensorGet(sensor, 'n sensor');
+                    val = zeros(nSensor, 1);
+                    for ii = 1:nSensor
+                        thisD = d(:, ii);
                         val(ii) = mean(thisD(~isnan(thisD)));
                     end
                 end
-            case {'hlinevolts','hlineelectrons','vlinevolts','vlineelectrons'}
+            case {'hlinevolts', 'hlineelectrons', 'vlinevolts', 'vlineelectrons'}
                 % sensorGet(sensor,'hline volts',row)
                 % Returns: val.data and val.pos
                 % Each sensor with values on this row in data
                 % The positions of the data in pos.
                 if isempty(varargin), error('Specify row or col.');
-                else, rc = varargin{1};  % Could be a row or col
+                else, rc = varargin{1}; % Could be a row or col
                 end
-                nSensors = sensorGet(sensor,'n sensors');
-                
+                nSensors = sensorGet(sensor, 'n sensors');
+
                 % Check if the data are in sensor
-                if     strfind(param,'volts'), d = sensorGet(sensor,'volts');
-                elseif ieContains(param,'electrons'), d = sensorGet(sensor,'electrons');
+                if strfind(param, 'volts'), d = sensorGet(sensor, 'volts');
+                elseif ieContains(param, 'electrons'), d = sensorGet(sensor, 'electrons');
                 end
                 if isempty(d)
-                    warning('sensorGet:Nolinedata','No data');
+                    warning('sensorGet:Nolinedata', 'No data');
                     return;
                 end
-                
-                support = sensorGet(sensor,'spatial support');
-                d = plane2rgb(d,sensor);
-                if isequal(param(1),'h')
+
+                support = sensorGet(sensor, 'spatial support');
+                d = plane2rgb(d, sensor);
+                if isequal(param(1), 'h')
                     pos = support.x;
-                elseif isequal(param(1),'v')
+                elseif isequal(param(1), 'v')
                     % To handle 'h' and 'v' case, we transpose the  'v' data to the
                     % 'h' format, and we get the y-positions.
                     pos = support.y;
                     d = imageTranspose(d);
                 else, error('Unknown orientation.');
                 end
-                
+
                 % Go get 'em
-                val.data   = cell(nSensors,1);
-                val.pixPos = cell(nSensors,1);
-                for ii=1:nSensors
-                    thisD = d(rc,:,ii);   % OK because we transposed
+                val.data = cell(nSensors, 1);
+                val.pixPos = cell(nSensors, 1);
+                for ii = 1:nSensors
+                    thisD = d(rc, :, ii); % OK because we transposed
                     l = find(~isnan(thisD));
                     if ~isempty(l)
                         val.data{ii} = thisD(l);
-                        val.pos{ii}  = pos(l)';
+                        val.pos{ii} = pos(l)';
                     end
                 end
-                
+
                 % Quantization structure
-            case {'quantization','quantizationstructure'}
+            case {'quantization', 'quantizationstructure'}
                 val = sensor.quantization;
-            case {'nbits','bits'}
-                if checkfields(sensor,'quantization','bits'), val = sensor.quantization.bits; end
-            case {'max','maxoutput','maxvoltage'}
+            case {'nbits', 'bits'}
+                if checkfields(sensor, 'quantization', 'bits'), val = sensor.quantization.bits; end
+            case {'max', 'maxoutput', 'maxvoltage'}
                 % sensorGet(sensor,'max voltage')
-                pixel = sensorGet(sensor,'pixel');
-                val   = pixelGet(pixel,'voltageswing');
+                pixel = sensorGet(sensor, 'pixel');
+                val = pixelGet(pixel, 'voltageswing');
             case {'maxdigitalvalue'}
                 % sensorGet(sensor,'max digital value')
-                nbits = sensorGet(sensor,'nbits');
+                nbits = sensorGet(sensor, 'nbits');
                 if isempty(nbits), return
                 else, val = 2^nbits;
                 end
-                
-            case {'lut','quantizationlut'}
-                if checkfields(sensor,'quantization','lut'), val = sensor.quantization.lut; end
-            case {'qMethod','quantizationmethod'}
-                if checkfields(sensor,'quantization','method'), val = sensor.quantization.method; end
+
+            case {'lut', 'quantizationlut'}
+                if checkfields(sensor, 'quantization', 'lut'), val = sensor.quantization.lut; end
+            case {'qMethod', 'quantizationmethod'}
+                if checkfields(sensor, 'quantization', 'method'), val = sensor.quantization.method; end
             case {'responsetype'}
                 % Values can be 'log' or 'linear'
                 val = 'linear';
-                if checkfields(sensor,'responseType'), val = sensor.responseType; end
-                
+                if checkfields(sensor, 'responseType'), val = sensor.responseType; end
+
                 % Color structure
             case 'color'
                 val = sensor.color;
-            case {'filterspectra','colorfilters','filtertransmissivities'}
+            case {'filterspectra', 'colorfilters', 'filtertransmissivities'}
                 val = sensor.color.filterSpectra;
             case {'filternames'}
                 val = sensor.color.filterNames;
@@ -655,65 +663,65 @@ switch oType
                 %
                 % The pattern field(see below) describes the position for each
                 % filter in the block pattern of color filters.
-                names = sensorGet(sensor,'filter names');
-                for ii=1:length(names), val(ii) = names{ii}(1); end
+                names = sensorGet(sensor, 'filter names');
+                for ii = 1:length(names), val(ii) = names{ii}(1); end
                 val = char(val);
             case {'filtercolorletterscell'}
-                cNames = sensorGet(sensor,'filterColorLetters');
+                cNames = sensorGet(sensor, 'filterColorLetters');
                 nFilters = length(cNames);
-                val = cell(nFilters,1);
-                for ii=1:length(cNames), val{ii} = cNames(ii); end
-                
-            case {'filternamescellarray','filtercolornamescellarray','filternamescell'}
+                val = cell(nFilters, 1);
+                for ii = 1:length(cNames), val{ii} = cNames(ii); end
+
+            case {'filternamescellarray', 'filtercolornamescellarray', 'filternamescell'}
                 % N.B.  The order of filter colors returned here corresponds to
                 % their position in the columns of filterspectra.  The values in
                 % pattern (see below) describes their position in array.
-                names = sensorGet(sensor,'filternames');
-                for ii=1:length(names), val{ii} = char(names{ii}(1)); end
-            case {'filterplotcolor','filterplotcolors'}
+                names = sensorGet(sensor, 'filternames');
+                for ii = 1:length(names), val{ii} = char(names{ii}(1)); end
+            case {'filterplotcolor', 'filterplotcolors'}
                 % Return an allowable plotting color for this filter, based on the
                 % first letter of the filter name.
                 % letter = sensorGet(sensor,'filterPlotColor');
-                letters = sensorGet(sensor,'filterColorLetters');
+                letters = sensorGet(sensor, 'filterColorLetters');
                 if isempty(varargin), val = letters;
-                else                  val = letters(varargin{1});
+                else val = letters(varargin{1});
                 end
                 % Only return an allowable color.  We could allow w (white) but we
                 % don't for now.
-                for ii=1:length(val)
-                    if ~ismember(val(ii),'rgbcmyk'), val(ii) = 'k'; end
+                for ii = 1:length(val)
+                    if ~ismember(val(ii), 'rgbcmyk'), val(ii) = 'k'; end
                 end
-            case {'ncolors','nfilters','nsensors','nsensor'}
-                val = size(sensorGet(sensor,'filterSpectra'),2);
-            case {'ir','infraredfilter','irfilter','otherfilter'}
+            case {'ncolors', 'nfilters', 'nsensors', 'nsensor'}
+                val = size(sensorGet(sensor, 'filterSpectra'), 2);
+            case {'ir', 'infraredfilter', 'irfilter', 'otherfilter'}
                 % We sometimes put other filters, such as macular pigment, in this
                 % slot.  Perhaps we should have an other filter slot.
-                if checkfields(sensor,'color','irFilter'), val = sensor.color.irFilter; end
-            case {'spectralqe','sensorqe','sensorspectralqe'}
+                if checkfields(sensor, 'color', 'irFilter'), val = sensor.color.irFilter; end
+            case {'spectralqe', 'sensorqe', 'sensorspectralqe'}
                 val = sensorSpectralQE(sensor);
-                
+
                 % There should only be a spectrum associated with the
                 % sensor, not with the pixel.  I am not sure how to change over
                 % to a single spectral representation, though.  If pixels never
                 % existed without an sensor, ... well I am not sure how to get the sensor
                 % if only the pixel is passed in.  I am not sure how to enforce
                 % consistency. -- BW
-            case {'spectrum','sensorspectrum'}
+            case {'spectrum', 'sensorspectrum'}
                 val = sensor.spectrum;
-            case {'wave','wavelength'}
+            case {'wave', 'wavelength'}
                 val = sensor.spectrum.wave(:);
-            case {'binwidth','waveresolution','wavelengthresolution'}
-                wave = sensorGet(sensor,'wave');
+            case {'binwidth', 'waveresolution', 'wavelengthresolution'}
+                wave = sensorGet(sensor, 'wave');
                 if length(wave) > 1, val = wave(2) - wave(1);
                 else, val = 1;
                 end
-            case {'nwave','nwaves','numberofwavelengthsamples'}
-                val = length(sensorGet(sensor,'wave'));
-                
+            case {'nwave', 'nwaves', 'numberofwavelengthsamples'}
+                val = length(sensorGet(sensor, 'wave'));
+
                 % Color filter array quantities
-            case {'cfa','colorfilterarray'}
+            case {'cfa', 'colorfilterarray'}
                 val = sensor.cfa;
-                
+
                 % I removed the unitBlock data structure because everything that
                 % was in unit block can be derived from the cfa.pattern entry.  We
                 % are coding the cfa.pattern entry as a small matrix.  So, for
@@ -723,104 +731,106 @@ switch oType
                 % we got rid of them.
             case {'unitblockrows'}
                 % sensorGet(sensor,'unit block rows')
-                
+
                 % Human patterns don't have block sizes.
-                if sensorCheckHuman(sensor), val=1;
-                else, val = size(sensorGet(sensor,'pattern'),1);
+                if sensorCheckHuman(sensor), val = 1;
+                else, val = size(sensorGet(sensor, 'pattern'), 1);
                 end
-                
+
             case 'unitblockcols'
                 % sensorGet(sensor,'unit block cols')
-                
+
                 % Human patterns don't have block sizes.
-                if sensorCheckHuman(sensor), val=1;
-                else, val = size(sensorGet(sensor,'pattern'),2);
+                if sensorCheckHuman(sensor), val = 1;
+                else, val = size(sensorGet(sensor, 'pattern'), 2);
                 end
-                
-            case {'cfasize','unitblocksize'}
+
+            case {'cfasize', 'unitblocksize'}
                 % We use this to make sure the sensor size is an even multiple of
                 % the cfa size. This could be a pair of calls to cols and rows
                 % (above).
-                
+
                 % Human patterns don't have block sizes.
-                if sensorCheckHuman(sensor), val= [1 1];
-                else,    val = size(sensorGet(sensor,'pattern'));
+                if sensorCheckHuman(sensor), val = [1, 1];
+                else, val = size(sensorGet(sensor, 'pattern'));
                 end
-                
+
             case 'unitblockconfig'
                 % val = sensor.cfa.unitBlock.config;
                 % Is this still used?
-                pixel = sensorGet(sensor,'pixel');
-                p = pixelGet(pixel,'pixelSize','m');
-                [X,Y] = meshgrid((0:(size(cfa.pattern,2)-1))*p(2),(0:(size(cfa.pattern,1)-1))*p(1));
-                val = [X(:),Y(:)];
-                
-            case {'patterncolors','pcolors','blockcolors'}
+                pixel = sensorGet(sensor, 'pixel');
+                p = pixelGet(pixel, 'pixelSize', 'm');
+                [X, Y] = meshgrid((0:(size(cfa.pattern, 2) - 1))*p(2), (0:(size(cfa.pattern, 1) - 1))*p(1));
+                val = [X(:), Y(:)];
+
+            case {'patterncolors', 'pcolors', 'blockcolors'}
                 % patternColors = sensorGet(sensor,'patternColors');
                 % Returns letters suggesting the color of each pixel
-                
-                pattern = sensorGet(sensor,'pattern');  %CFA block
-                filterColorLetters = sensorGet(sensor,'filterColorLetters');
+
+                pattern = sensorGet(sensor, 'pattern'); %CFA block
+                filterColorLetters = sensorGet(sensor, 'filterColorLetters');
                 knownColorLetters = sensorColorOrder('string');
-                knownFilters = ismember(filterColorLetters,knownColorLetters);
+                knownFilters = ismember(filterColorLetters, knownColorLetters);
                 % Assign unknown color filter strings to black (k).
                 l = find(~knownFilters, 1);
                 if ~isempty(l), filterColorLetters(l) = 'k'; end
                 % Create a block that has letters instead of numbers
                 val = filterColorLetters(pattern);
-                
-            case {'cfapattern','pattern'}
-                if checkfields(sensor,'cfa','pattern'), val = sensor.cfa.pattern; end
+
+            case {'cfapattern', 'pattern'}
+                if checkfields(sensor, 'cfa', 'pattern'), val = sensor.cfa.pattern; end
             case 'cfaname'
                 % We look up various standard names
                 val = sensorCFAName(sensor);
-                
+
                 % Pixel related parameters
             case 'pixel'
                 val = sensor.pixel;
-                
-            case {'dr','dynamicrange','sensordynamicrange'}
+
+            case {'dr', 'dynamicrange', 'sensordynamicrange'}
                 val = sensorDR(sensor);
-                
+
             case 'diffusionmtf'
                 val = sensor.diffusionMTF;
-                
+
                 % These are pixel-wise FPN parameters
-            case {'fpnparameters','fpn','fpnoffsetgain','fpnoffsetandgain'}
-                val = [sensorGet(sensor,'sigmaOffsetFPN'),sensorGet(sensor,'sigmaGainFPN')];
-            case {'dsnulevel','sigmaoffsetfpn','offsetfpn','offset','offsetsd','dsnusigma','sigmadsnu'}
+            case {'fpnparameters', 'fpn', 'fpnoffsetgain', 'fpnoffsetandgain'}
+                val = [sensorGet(sensor, 'sigmaOffsetFPN'), sensorGet(sensor, 'sigmaGainFPN')];
+            case {'dsnulevel', 'sigmaoffsetfpn', 'offsetfpn', 'offset', 'offsetsd', 'dsnusigma', 'sigmadsnu'}
                 % This value is stored in volts
                 val = sensor.sigmaOffsetFPN;
-            case {'sigmagainfpn','gainfpn','gain','gainsd','prnusigma','sigmaprnu','prnulevel'}
+            case {'sigmagainfpn', 'gainfpn', 'gain', 'gainsd', 'prnusigma', 'sigmaprnu', 'prnulevel'}
                 % This is a percentage, between 0 and 100, always.
                 val = sensor.sigmaGainFPN;
-                
-            case {'dsnuimage','offsetfpnimage'} % Dark signal non uniformity (DSNU) image
+
+            case {'dsnuimage', 'offsetfpnimage'} % Dark signal non uniformity (DSNU) image
                 % These should probably go away because we compute them afresh
                 % every time.
-                if checkfields(sensor,'offsetFPNimage'), val = sensor.offsetFPNimage; end
-            case {'prnuimage','gainfpnimage'}  % Photo response non uniformity (PRNU) image
+                if checkfields(sensor, 'offsetFPNimage'), val = sensor.offsetFPNimage; end
+            case {'prnuimage', 'gainfpnimage'} % Photo response non uniformity (PRNU) image
                 % These should probably go away because we compute them afresh
                 % every time.
-                if checkfields(sensor,'gainFPNimage'), val = sensor.gainFPNimage; end
-                
+                if checkfields(sensor, 'gainFPNimage'), val = sensor.gainFPNimage; end
+
                 % These are column-wise FPN parameters
-            case {'columnfpn','columnfixedpatternnoise','colfpn'}
+            case {'columnfpn', 'columnfixedpatternnoise', 'colfpn'}
                 % This is stored as a vector (offset,gain) standard deviations in
                 % volts.  This is unlike the storage format for array dsnu and prnu.
-                if checkfields(sensor,'columnFPN'), val = sensor.columnFPN;
+                if checkfields(sensor, 'columnFPN'), val = sensor.columnFPN;
                 else
-                    val = [0,0];
+                    val = [0, 0];
                 end
-            case {'columndsnu','columnfpnoffset','colfpnoffset','coldsnu'}
-                tmp = sensorGet(sensor,'columnfpn'); val = tmp(1);
-            case {'columnprnu','columnfpngain','colfpngain','colprnu'}
-                tmp = sensorGet(sensor,'columnfpn'); val = tmp(2);
-            case {'coloffsetfpnvector','coloffsetfpn','coloffset'}
-                if checkfields(sensor,'colOffset'), val = sensor.colOffset; end
-            case {'colgainfpnvector','colgainfpn','colgain'}
-                if checkfields(sensor,'colGain'),val = sensor.colGain; end
-                
+            case {'columndsnu', 'columnfpnoffset', 'colfpnoffset', 'coldsnu'}
+                tmp = sensorGet(sensor, 'columnfpn');
+                val = tmp(1);
+            case {'columnprnu', 'columnfpngain', 'colfpngain', 'colprnu'}
+                tmp = sensorGet(sensor, 'columnfpn');
+                val = tmp(2);
+            case {'coloffsetfpnvector', 'coloffsetfpn', 'coloffset'}
+                if checkfields(sensor, 'colOffset'), val = sensor.colOffset; end
+            case {'colgainfpnvector', 'colgainfpn', 'colgain'}
+                if checkfields(sensor, 'colGain'), val = sensor.colGain; end
+
             case {'blacklevel', 'zerolevel'}
                 % Calculate the zero level for the user, who sent in an
                 % empty value.  This level depends on the analog offset and
@@ -830,65 +840,65 @@ switch oType
                 % In some cases we have a digital zero level in the file
                 % (e.g., DNG data from the pixel4a).  In that case, we
                 % should be able to simply set the value and read it.
-                if checkfields(sensor,'blackLevel')
+                if checkfields(sensor, 'blackLevel')
                     val = sensor.blackLevel;
                 else
                     oiBlack = oiCreate('black');
-                    sensor2 = sensorSet(sensor,'noiseflag','none'); % Little noise
-                    sensor2 = sensorCompute(sensor2,oiBlack);
-                    switch sensorGet(sensor,'quantization method')
+                    sensor2 = sensorSet(sensor, 'noiseflag', 'none'); % Little noise
+                    sensor2 = sensorCompute(sensor2, oiBlack);
+                    switch sensorGet(sensor, 'quantization method')
                         case 'analog'
-                            val = sensorGet(sensor2,'volts');
+                            val = sensorGet(sensor2, 'volts');
                         otherwise
-                            val = sensorGet(sensor2,'dv');
+                            val = sensorGet(sensor2, 'dv');
                     end
                     val = mean(val(:));
                 end
-                
+
                 % Noise management
-            case {'noiseflag','shotnoiseflag'}
+            case {'noiseflag', 'shotnoiseflag'}
                 % 0 means no noise
                 % 1 means shot noise but no electronics noise
                 % 2 means shot noise and electronics noise
-                if checkfields(sensor,'noiseFlag'), val = sensor.noiseFlag;
-                else, val = 2;    % Compute both electronic and shot noise
+                if checkfields(sensor, 'noiseFlag'), val = sensor.noiseFlag;
+                else, val = 2; % Compute both electronic and shot noise
                 end
             case {'reusenoise'}
-                if checkfields(sensor,'reuseNoise'), val = sensor.reuseNoise;
-                else, val = 0;    % Do not reuse
+                if checkfields(sensor, 'reuseNoise'), val = sensor.reuseNoise;
+                else, val = 0; % Do not reuse
                 end
             case {'noiseseed'}
-                if checkfields(sensor,'noiseSeed'), val = sensor.noiseSeed;
+                if checkfields(sensor, 'noiseSeed'), val = sensor.noiseSeed;
                 else
                     try
                         rng('default');
                     catch
                         rng('seed');
-                    end% Compute both electronic and shot noise
+                    end % Compute both electronic and shot noise
                 end
-                
-            case {'ngridsamples','pixelsamples','nsamplesperpixel','npixelsamplesforcomputing'}
+
+            case {'ngridsamples', 'pixelsamples', 'nsamplesperpixel', 'npixelsamplesforcomputing'}
                 % Default is 1.  If not parameter is not set, we return the default.
-                if checkfields(sensor,'samplesPerPixel'),val = sensor.samplesPerPixel;
+                if checkfields(sensor, 'samplesPerPixel'), val = sensor.samplesPerPixel;
                 else, val = 1;
                 end
-                
+
                 % Exposure related
-            case {'exposuremethod','expmethod'}
+            case {'exposuremethod', 'expmethod'}
                 % We plan to re-write the exposure parameters into a sub-structure
                 % that lives inside the sensor, sensor.exposure.XXX
                 % add support for manually setting exposure type
                 if isfield(sensor, 'exposureMethod') && ~isempty(sensor.exposureMethod)
                     val = sensor.exposureMethod;
                 else
-                    tmp = sensorGet(sensor,'exptimes');
-                    p   = sensorGet(sensor,'pattern');
-                    if     isscalar(tmp), val = 'singleExposure';
-                    elseif isvector(tmp),  val = 'bracketedExposure';
-                    elseif isequal(size(p),size(tmp)),  val = 'cfaExposure';
+                    tmp = sensorGet(sensor, 'exptimes');
+                    p = sensorGet(sensor, 'pattern');
+                    if isscalar(tmp), val = 'singleExposure';
+                    elseif isvector(tmp), val = 'bracketedExposure';
+                    elseif isequal(size(p), size(tmp)), val = 'cfaExposure';
                     end
                 end
-            case {'integrationtime','integrationtimes','exptime','exptimes','exposuretimes','exposuretime','exposureduration','exposuredurations'}
+            case {'integrationtime', 'integrationtimes', 'exptime', 'exptimes', 'exposuretimes', 'exposuretime', 'exposureduration', 'exposuredurations'}
                 % This can be a single number, a vector, or a matrix that matches
                 % the size of the pattern slot. Each one of these cases is handled
                 % differently by sensorComputeImage.  The units are seconds by
@@ -897,21 +907,21 @@ switch oType
                 % sensorGet(sensor,'expTime','us')
                 val = sensor.integrationTime;
                 if ~isempty(varargin)
-                    val = val*ieUnitScaleFactor(varargin{1});
+                    val = val * ieUnitScaleFactor(varargin{1});
                 end
-            case {'uniqueintegrationtimes','uniqueexptime','uniqueexptimes'}
+            case {'uniqueintegrationtimes', 'uniqueexptime', 'uniqueexptimes'}
                 val = unique(sensor.integrationTime);
-            case {'centralexposure','geometricmeanexposuretime'}
+            case {'centralexposure', 'geometricmeanexposuretime'}
                 % We return the geometric mean of the exposure times
                 % We should consider making this the geometric mean of the unique
                 % exposures.
-                eTimes = sensorGet(sensor,'exptimes');
-                val = prod(eTimes(:))^(1/length(eTimes(:)));
-            case {'autoexp','autoexposure','automaticexposure'}
+                eTimes = sensorGet(sensor, 'exptimes');
+                val = prod(eTimes(:))^(1 / length(eTimes(:)));
+            case {'autoexp', 'autoexposure', 'automaticexposure'}
                 val = sensor.AE;
             case {'nexposures'}
                 % We can handle multiple exposure times.
-                val = numel(sensorGet(sensor,'expTime'));
+                val = numel(sensorGet(sensor, 'expTime'));
             case {'exposureplane'}
                 % When there are multiple exposures, show the middle integration
                 % time, much like a bracketing idea.
@@ -919,26 +929,26 @@ switch oType
                 % N.B. When there is a different exposure for every
                 % position in the CFA, we wouldn't normally use this.  In
                 % that case we only have a single integrated CFA.
-                if checkfields(sensor,'exposurePlane'), val = sensor.exposurePlane;
-                else, val = floor(sensorGet(sensor,'nExposures')/2) + 1;
+                if checkfields(sensor, 'exposurePlane'), val = sensor.exposurePlane;
+                else, val = floor(sensorGet(sensor, 'nExposures')/2) + 1;
                 end
-                
-            case {'cds','correlateddoublesampling'}
+
+            case {'cds', 'correlateddoublesampling'}
                 val = sensor.CDS;
-                
+
                 % Microlens related
-            case {'vignettingflag','vignetting','bareetendue','sensorbareetendue','nomicrolensetendue'}
+            case {'vignettingflag', 'vignetting', 'bareetendue', 'sensorbareetendue', 'nomicrolensetendue'}
                 % If the vignetting flag has not been set, treat it as 'skip',
                 % which is 0.
-                if checkfields(sensor,'data','vignetting')
+                if checkfields(sensor, 'data', 'vignetting')
                     if isempty(sensor.data.vignetting), val = 0;
-                    else,                            val = sensor.data.vignetting;
+                    else, val = sensor.data.vignetting;
                     end
                 else
                     val = 0;
                 end
             case {'vignettingname'}
-                pvFlag = sensorGet(sensor,'vignettingFlag');
+                pvFlag = sensorGet(sensor, 'vignettingFlag');
                 switch pvFlag
                     case 0
                         val = 'skip';
@@ -951,12 +961,12 @@ switch oType
                     otherwise
                         error('Bad pixel vignetting flag')
                 end
-                
-            case {'microlens','ulens','mlens','ml'}
-                if checkfields(sensor,'ml'), val = sensor.ml; end
-                
+
+            case {'microlens', 'ulens', 'mlens', 'ml'}
+                if checkfields(sensor, 'ml'), val = sensor.ml; end
+
                 % Field of view and sampling density
-            case {'hfov','fov','sensorfov','fovhorizontal','fovh'}
+            case {'hfov', 'fov', 'sensorfov', 'fovhorizontal', 'fovh'}
                 % sensorGet(sensor,'fov',sDist,oi); - Explicit scene dist in m
                 % sensorGet(sensor,'fov',scene,oi); - Explicit scene
                 % sensorGet(sensor,'fov');          - Uses defaults.  Dangerous.
@@ -968,38 +978,38 @@ switch oType
                 % If the scene is at infinity, then the focal distance is
                 % the focal length. But if the scene is close, then we
                 % might correct.
-                % 
+                %
                 % But we should probably just compute it assuming the scene
                 % is infinitely far away and the distance to the lens is
                 % the focal distance.
                 %
                 if isempty(varargin) || isempty(varargin{1})
                     scene = ieGetObject('scene');
-                    if isempty(scene), sDist = 1e6; 
-                    else,              sDist = sceneGet(scene,'distance');
+                    if isempty(scene), sDist = 1e6;
+                    else, sDist = sceneGet(scene, 'distance');
                     end
                 else
                     scene = varargin{1};
-                    if isstruct(scene), sDist = sceneGet(scene,'distance','m');
-                    else,               sDist = scene;
+                    if isstruct(scene), sDist = sceneGet(scene, 'distance', 'm');
+                    else, sDist = scene;
                     end
                 end
-                
+
                 % The image distance depends on the scene distance and
                 % focal length via the lensmaker's formula, (we assume the
                 % sensor is at the proper focal distance).
                 if length(varargin) > 1, oi = varargin{2};
-                else,                    oi = ieGetObject('oi');
+                else, oi = ieGetObject('oi');
                 end
                 if isempty(oi)
-                    distance = opticsGet(opticsCreate,'focal length');
+                    distance = opticsGet(opticsCreate, 'focal length');
                 else
-                    distance = oiGet(oi,'optics focal plane distance',sDist);
+                    distance = oiGet(oi, 'optics focal plane distance', sDist);
                 end
-                width = sensorGet(sensor,'arraywidth');
-                val = rad2deg(2*atan(0.5*width/distance));
-                
-            case {'fovvertical','vfov','fovv'}
+                width = sensorGet(sensor, 'arraywidth');
+                val = rad2deg(2*atan(0.5 * width / distance));
+
+            case {'fovvertical', 'vfov', 'fovv'}
                 % This is  the vertical field of view
                 % sensorGet(sensor,'fov vertical',sDist,oi); - Explicit scene dist in m
                 % sensorGet(sensor,'fov vertical',scene,oi); - Explicit scene
@@ -1014,18 +1024,18 @@ switch oType
                 % then we might correct.
                 %
                 if ~isempty(varargin), scene = varargin{1};
-                else,                  scene = vcGetObject('scene');
+                else, scene = vcGetObject('scene');
                 end
                 if length(varargin) > 1, oi = varargin{2};
-                else,                    oi = vcGetObject('oi');
+                else, oi = vcGetObject('oi');
                 end
                 % If no scene is sent in, assume the scene is infinitely far away.
                 if isempty(scene), sDist = Inf;
                 else
                     % The user might have sent a scene struct or a scene distance
                     % in meters.
-                    if isstruct(scene), sDist = sceneGet(scene,'distance');
-                    else,               sDist = scene;
+                    if isstruct(scene), sDist = sceneGet(scene, 'distance');
+                    else, sDist = scene;
                     end
                 end
                 % If there is no oi, then use the default optics focal length. The
@@ -1033,59 +1043,63 @@ switch oType
                 % the lensmaker's formula, (we assume the sensor is at the proper
                 % focal distance).
                 if isempty(oi)
-                    distance = opticsGet(opticsCreate,'focal length');
+                    distance = opticsGet(opticsCreate, 'focal length');
                     % fprintf('Sensor fov estimated using focal length = %f m\n',distance);
                 else
-                    distance = opticsGet(oiGet(oi,'optics'),'focal plane distance',sDist);
+                    distance = opticsGet(oiGet(oi, 'optics'), 'focal plane distance', sDist);
                 end
-                
-                height = sensorGet(sensor,'array height');
-                val = rad2deg(2*atan(0.5*height/distance));
-                
-            case {'hdegperpixel','degpersample','degreesperpixel'}
+
+                height = sensorGet(sensor, 'array height');
+                val = rad2deg(2*atan(0.5 * height / distance));
+
+            case {'hdegperpixel', 'degpersample', 'degreesperpixel'}
                 % degPerPixel = sensorGet(sensor,'h deg per pixel',oi);
                 %
                 % Horizontal field of view divided by number of pixels
-                sz =  sensorGet(sensor,'size');
-                
+                sz = sensorGet(sensor, 'size');
+
                 if isempty(varargin), oi = vcGetObject('oi');
                 else, oi = varargin{1};
                 end
-                
+
                 % The horizontal field of view should incorporate information from
                 % the optics.
-                sDist = 1e6;   % Assume the scene is very far away.
-                val = sensorGet(sensor,'hfov',sDist,oi)/sz(2);
-            case {'vdegperpixel','vdegreesperpixel'}
-                sz =  sensorGet(sensor,'size');
-                val = sensorGet(sensor,'vfov')/sz(1);
-            case {'hdegperdistance','degperdistance'}
+                sDist = 1e6; % Assume the scene is very far away.
+                val = sensorGet(sensor, 'hfov', sDist, oi) / sz(2);
+            case {'vdegperpixel', 'vdegreesperpixel'}
+                sz = sensorGet(sensor, 'size');
+                val = sensorGet(sensor, 'vfov') / sz(1);
+            case {'hdegperdistance', 'degperdistance'}
                 % sensorGet(sensor,'h deg per distance','mm')
                 % sensorGet(sensor,'h deg per distance','mm',scene,oi);
                 % Degrees of visual angle per meter or other spatial unit
-                if isempty(varargin), unit = 'm'; else unit = varargin{1}; end
-                width = sensorGet(sensor,'width',unit);
-                
+                if isempty(varargin), unit = 'm';
+                else unit = varargin{1};
+                end
+                width = sensorGet(sensor, 'width', unit);
+
                 if length(varargin) < 2, scene = vcGetObject('scene');
                 else, scene = varargin{2};
                 end
-                
+
                 % We want the optics to do this right.
                 if length(varargin) < 3, oi = vcGetObject('oi');
                 else oi = varargin{3};
                 end
-                
-                fov   =  sensorGet(sensor,'fov',scene, oi);
-                val   = fov/width;
-                
+
+                fov = sensorGet(sensor, 'fov', scene, oi);
+                val = fov / width;
+
             case {'vdegperdistance'}
                 % sensorGet(sensor,'v deg per distance','mm') Degrees of visual
                 % angle per meter or other spatial unit
-                if isempty(varargin), unit = 'm'; else unit = varargin{1}; end
-                width = sensorGet(sensor,'height',unit);
-                fov =  sensorGet(sensor,'vfov');
-                val = fov/width;
-                
+                if isempty(varargin), unit = 'm';
+                else unit = varargin{1};
+                end
+                width = sensorGet(sensor, 'height', unit);
+                fov = sensorGet(sensor, 'vfov');
+                val = fov / width;
+
                 % Computational flags
                 %{
             case {'sensorcompute','sensorcomputemethod'}
@@ -1105,18 +1119,18 @@ switch oType
                 %}
             case {'chartparameters'}
                 % Struct of chart parameters
-                if checkfields(sensor,'chartP'), val = sensor.chartP; end
-            case {'cornerpoints','chartcornerpoints','chartcorners'}
+                if checkfields(sensor, 'chartP'), val = sensor.chartP; end
+            case {'cornerpoints', 'chartcornerpoints', 'chartcorners'}
                 % fourPoints = sensorGet(sensor,'chart corner points');
-                if checkfields(sensor,'chartP','cornerPoints'), val = sensor.chartP.cornerPoints; end
-            case {'chartrects','chartrectangles'}
+                if checkfields(sensor, 'chartP', 'cornerPoints'), val = sensor.chartP.cornerPoints; end
+            case {'chartrects', 'chartrectangles'}
                 % rects = sensorGet(sensor,'chart rectangles');
-                if checkfields(sensor,'chartP','rects'), val = sensor.chartP.rects; end
+                if checkfields(sensor, 'chartP', 'rects'), val = sensor.chartP.rects; end
             case {'currentrect'}
                 % [colMin rowMin width height]
                 % Used for ROI display and management.
-                if checkfields(sensor,'chartP','currentRect'), val = sensor.chartP.currentRect; end
-                
+                if checkfields(sensor, 'chartP', 'currentRect'), val = sensor.chartP.currentRect; end
+
                 % Display image
             case {'rgb'}
                 % sensorGet(sensor,'rgb',dataType,gam,scaleMax)
@@ -1126,8 +1140,8 @@ switch oType
                 if ~isempty(varargin), dataType = varargin{1}; end
                 if length(varargin) > 1, gam = varargin{2}; end
                 if length(varargin) > 2, scaleMax = varargin{3}; end
-                val = sensorData2Image(sensor,dataType,gam,scaleMax);
-                
+                val = sensorData2Image(sensor, dataType, gam, scaleMax);
+
             case {'gamma'}
                 % The gamma display in the sensor window
                 % sensorGet(sensor,'gamma')
@@ -1135,63 +1149,63 @@ switch oType
                 if ~isempty(app)
                     val = str2double(app.GammaEditField.Value);
                 end
-            case {'maxbright','scalemax'}
+            case {'maxbright', 'scalemax'}
                 % Scale the displayed image to max (1,1,1)
                 % Returns true (scale to max) or false
                 % sensorGet(sensor,'scale max')
                 app = ieSessionGet('sensor window');
                 val = true;
-                if ~isempty(app) && strcmpi(app.MaxbrightSwitch.Value,'Off')
+                if ~isempty(app) && strcmpi(app.MaxbrightSwitch.Value, 'Off')
                     val = false;
                 end
-                
+
                 % Human cone case
             case {'human'}
                 % Structure containing information about human cone case
                 % Only applies when the name field has the string 'human' in it.
-                if checkfields(sensor,'human'), val = sensor.human; end
-            case {'humancone type','conetype'}
+                if checkfields(sensor, 'human'), val = sensor.human; end
+            case {'humancone type', 'conetype'}
                 % Blank (K) K=1 and L,M,S cone at each position
                 % L=2, M=3 or S=4 (K means none)
                 % Some number of cone types as cone positions.
-                if checkfields(sensor,'human','coneType'), val = sensor.human.coneType; end
-            case {'humanconedensities','densities'}
+                if checkfields(sensor, 'human', 'coneType'), val = sensor.human.coneType; end
+            case {'humanconedensities', 'densities'}
                 %- densities used to generate mosaic (K,L,M,S)
-                if checkfields(sensor,'human','densities'), val = sensor.human.densities; end
-            case   {'humanconelocs','conexy','conelocs','xy'}
+                if checkfields(sensor, 'human', 'densities'), val = sensor.human.densities; end
+            case {'humanconelocs', 'conexy', 'conelocs', 'xy'}
                 %- xy position of the cones in the mosaic
-                if checkfields(sensor,'human','xy'), val = sensor.human.xy; end
-            case {'humanrseed','humanconeseed'}
+                if checkfields(sensor, 'human', 'xy'), val = sensor.human.xy; end
+            case {'humanrseed', 'humanconeseed'}
                 % random seed for generating cone mosaic
                 % Should get rid of humanrseed alias
-                if checkfields(sensor,'human','rSeed'), val = sensor.human.rSeed; end
-                
+                if checkfields(sensor, 'human', 'rSeed'), val = sensor.human.rSeed; end
+
                 % Sensor motion -  used for eye movements or camera shake
-            case {'sensormovement','eyemovement'}
+            case {'sensormovement', 'eyemovement'}
                 % A structure with sensor motion information
-                if checkfields(sensor,'movement')
+                if checkfields(sensor, 'movement')
                     val = sensor.movement;
                 end
-            case {'movementpositions','sensorpositions'}
+            case {'movementpositions', 'sensorpositions'}
                 % Nx2 vector of (x,y) positions in deg
-                if checkfields(sensor,'movement','pos'), val = sensor.movement.pos;
-                else, val = [0,0];
+                if checkfields(sensor, 'movement', 'pos'), val = sensor.movement.pos;
+                else, val = [0, 0];
                 end
             case {'sensorpositionsx'}
-                if checkfields(sensor,'movement','pos')
-                    val = sensor.movement.pos(:,1);
+                if checkfields(sensor, 'movement', 'pos')
+                    val = sensor.movement.pos(:, 1);
                 else, val = 0;
                 end
             case {'sensorpositionsy'}
-                if checkfields(sensor,'movement','pos')
-                    val = sensor.movement.pos(:,2);
+                if checkfields(sensor, 'movement', 'pos')
+                    val = sensor.movement.pos(:, 2);
                 else, val = 0;
                 end
-            case {'framesperposition','exposuretimesperposition','etimeperpos'}
+            case {'framesperposition', 'exposuretimesperposition', 'etimeperpos'}
                 % Exposure frames for each (x,y) position
                 % This is a vector with some number of exposures for each x,y
                 % position (deg)
-                if checkfields(sensor,'movement','framesPerPosition')
+                if checkfields(sensor, 'movement', 'framesPerPosition')
                     val = sensor.movement.framesPerPosition;
                 else
                     val = 1;
@@ -1203,7 +1217,6 @@ switch oType
 end
 
 end
-
 
 
 %--------------------------------
@@ -1237,19 +1250,20 @@ if ieNotDefined('sensor')
     return;
 end
 
-p = sensorGet(sensor,'pattern');
-filterColors = sensorGet(sensor,'filterColorLetters');
+p = sensorGet(sensor, 'pattern');
+filterColors = sensorGet(sensor, 'filterColorLetters');
 filterColors = sort(filterColors);
 
 if length(p(:)) == 1
     cfaName = 'Monochrome';
-elseif ~isequal(size(p),[2,2])
-    cfaName = 'Other'; return;
-elseif strcmp(filterColors,'bgr')
+elseif ~isequal(size(p), [2, 2])
+    cfaName = 'Other';
+    return;
+elseif strcmp(filterColors, 'bgr')
     cfaName = 'Bayer RGB';
-elseif strcmp(filterColors,'cmy')
+elseif strcmp(filterColors, 'cmy')
     cfaName = 'Bayer CMY';
-elseif strcmp(filterColors,'bgrw')
+elseif strcmp(filterColors, 'bgrw')
     cfaName = 'RGBW';
 else
     cfaName = 'Other';
@@ -1268,11 +1282,11 @@ function spectralQE = sensorSpectralQE(sensor)
 % wavelengths in wave.
 %
 
-sensorIR = sensorGet(sensor,'irfilter');
-cf = sensorGet(sensor,'filterspectra');
+sensorIR = sensorGet(sensor, 'irfilter');
+cf = sensorGet(sensor, 'filterspectra');
 % isaWave = sensorGet(sensor,'wave');
 
-pixelQE = pixelGet(sensor.pixel,'qe');
+pixelQE = pixelGet(sensor.pixel, 'qe');
 if isempty(pixelQE)
     warndlg('Empty pixel QE. Assuming QE(lambda) = 1.0');
     pixelQE = ones(size(sensorIR(:)));
@@ -1280,12 +1294,12 @@ end
 
 % Compute the combined wavelength sensitivity including the ir filter, the
 % pixel QE, and the color filters.
-spectralQE = diag(pixelQE(:) .* sensorIR(:)) * cf;
+spectralQE = diag(pixelQE(:).*sensorIR(:)) * cf;
 
 end
 
 %------------------------
-function val = sensorColorData(data,sensor,whichSensor)
+function val = sensorColorData(data, sensor, whichSensor)
 % Retrieve data from one of the sensor planes.
 %
 % The data are returned in a vector, not a plane.
@@ -1307,9 +1321,9 @@ function val = sensorColorData(data,sensor,whichSensor)
 % val = electrons(b);
 
 % The one we have been using
-rgb        = plane2rgb(data,sensor);
-thisSensor = rgb(:,:,whichSensor);
-l   = ~isnan(thisSensor);
+rgb = plane2rgb(data, sensor);
+thisSensor = rgb(:, :, whichSensor);
+l = ~isnan(thisSensor);
 val = thisSensor(l);
 
 end
@@ -1332,4 +1346,3 @@ end
 % integer coordinates are defined by the deltaX and deltaY values.
 %
 % get cfa matrix as letters or numbers via sensorDetermineCFA in here.
-

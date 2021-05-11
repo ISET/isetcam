@@ -1,4 +1,4 @@
-function cal = DropCalBits(cal,whichScreen,forceBits)
+function cal = DropCalBits(cal, whichScreen, forceBits)
 % cal = DropCalBits(cal,whichScreen,[forceBit])
 %
 % Drops the bitdepth of a calibration file if
@@ -22,19 +22,18 @@ function cal = DropCalBits(cal,whichScreen,forceBits)
 % code should use LoadClut, not SetClut, to access
 % full bit depth.
 if (nargin > 2 && ~isempty(forceBits))
-	hardwareBits = forceBits;
+    hardwareBits = forceBits;
 else
-	hardwareBits = Screen(whichScreen,'Preference','DACBits');
+    hardwareBits = Screen(whichScreen, 'Preference', 'DACBits');
 end
 
 % Force calibration down to 8 bits, which is how we plan to use it.
-% Simply refit raw data at correct number of input levels.  
+% Simply refit raw data at correct number of input levels.
 if (cal.describe.dacsize > hardwareBits)
-	cal.describe.dacsize = hardwareBits;
-	nInputLevels = 2^cal.describe.dacsize;
-	cal.rawdata.rawGammaInput = round(linspace(nInputLevels/cal.describe.nMeas,nInputLevels-1,cal.describe.nMeas))';
-	cal = CalibrateFitGamma(cal);
+    cal.describe.dacsize = hardwareBits;
+    nInputLevels = 2^cal.describe.dacsize;
+    cal.rawdata.rawGammaInput = round(linspace(nInputLevels / cal.describe.nMeas, nInputLevels - 1, cal.describe.nMeas))';
+    cal = CalibrateFitGamma(cal);
 elseif (cal.describe.dacsize < hardwareBits)
-	error('Current hardware has greater bit depth than at calibration.');
+    error('Current hardware has greater bit depth than at calibration.');
 end
-	

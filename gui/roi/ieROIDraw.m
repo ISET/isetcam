@@ -1,4 +1,4 @@
-function [shapeHandle,ax] = ieROIDraw(isetobj,varargin)
+function [shapeHandle, ax] = ieROIDraw(isetobj, varargin)
 % Draw a shape in the main axis window of an ISETCam object
 %
 % Syntax
@@ -22,7 +22,7 @@ function [shapeHandle,ax] = ieROIDraw(isetobj,varargin)
 %
 %  parameters for rect:
 %     rect = [row col width height]
-%     linestyle 
+%     linestyle
 %     curvature (at the corners of the rect, default is 0.2)
 %
 %  parameters for circle
@@ -37,68 +37,68 @@ function [shapeHandle,ax] = ieROIDraw(isetobj,varargin)
 %
 % See also
 %   chartROI, chartRectangles, macbethROIs
-%  
+%
 
 % Examples:
 %{
- scene = sceneCreate;
- rect = [20 50 10 5];  % row, col, width, height
- [shapeHandle,ax] = ieROIDraw('scene','shape','rect','shape data',rect,'line width',5);
- shapeHandle.LineStyle = ':';
- delete(shapeHandle);
+scene = sceneCreate;
+rect = [20 50 10 5];  % row, col, width, height
+[shapeHandle,ax] = ieROIDraw('scene','shape','rect','shape data',rect,'line width',5);
+shapeHandle.LineStyle = ':';
+delete(shapeHandle);
 %}
 %{
- rect = [50 50 20 20];
- [shapeHandle,ax] = ieROIDraw('oi','shape','rect','shape data',rect,'line style',':');
- shapeHandle.LineStyle = ':';
- shapeHandle.EdgeColor = 'w';
- delete(shapeHandle);
+rect = [50 50 20 20];
+[shapeHandle,ax] = ieROIDraw('oi','shape','rect','shape data',rect,'line style',':');
+shapeHandle.LineStyle = ':';
+shapeHandle.EdgeColor = 'w';
+delete(shapeHandle);
 %}
 %{
- c = [10 20 20];
- [shapeHandle,ax] = ieROIDraw('oi','shape','circle','shape data',c);
- shapeHandle.LineStyle = ':';
- shapeHandle.EdgeColor = 'w';
- delete(shapeHandle);
+c = [10 20 20];
+[shapeHandle,ax] = ieROIDraw('oi','shape','circle','shape data',c);
+shapeHandle.LineStyle = ':';
+shapeHandle.EdgeColor = 'w';
+delete(shapeHandle);
 %}
 %{
- c = [1 88 70 70];
- [shapeHandle,ax] = ieROIDraw('ip','shape','line','shape data',c);
+c = [1 88 70 70];
+[shapeHandle,ax] = ieROIDraw('ip','shape','line','shape data',c);
 %}
 
 %%
 varargin = ieParamFormat(varargin);
 
 p = inputParser;
-vFunc = @(x)(ischar(x) || (isstruct(x) && isfield(x,'type')));
-p.addRequired('isetobj',vFunc);
-p.addParameter('shape','rect',@ischar);
-p.addParameter('shapedata',[1 1 5 5],@isnumeric);
-p.addParameter('color','w',@ischar);
-p.addParameter('linewidth',2,@isnumeric);
-p.addParameter('linestyle','-',@ischar);
-p.addParameter('curvature',0.2,@isnumeric);
+vFunc = @(x)(ischar(x) || (isstruct(x) && isfield(x, 'type')));
+p.addRequired('isetobj', vFunc);
+p.addParameter('shape', 'rect', @ischar);
+p.addParameter('shapedata', [1, 1, 5, 5], @isnumeric);
+p.addParameter('color', 'w', @ischar);
+p.addParameter('linewidth', 2, @isnumeric);
+p.addParameter('linestyle', '-', @ischar);
+p.addParameter('curvature', 0.2, @isnumeric);
 
-p.parse(isetobj,varargin{:});
+p.parse(isetobj, varargin{:});
 shape = p.Results.shape;
 
 %% Draw the shape
-[~,ax] = ieAppGet(isetobj);
-if ~isvalid(ax), error('Object %s axis is not valid.',isetobj.type); end
+[~, ax] = ieAppGet(isetobj);
+if ~isvalid(ax), error('Object %s axis is not valid.', isetobj.type); end
 
 switch shape
-    case {'rect','rectangle'}
+    case {'rect', 'rectangle'}
         rect = p.Results.shapedata;
 
         % I don't use this because it doesn't allow
         % LineStyle
         %   shapeHandle = drawrectangle(ax,'Position',rect);
-        % 
-        shapeHandle = rectangle(ax,'Position',rect,'Curvature',p.Results.curvature);
+        %
+        shapeHandle = rectangle(ax, 'Position', rect, 'Curvature', p.Results.curvature);
         shapeHandle.EdgeColor = p.Results.color;
         shapeHandle.LineWidth = p.Results.linewidth;
         shapeHandle.LineStyle = p.Results.linestyle;
-        
+
     case 'circle'
         % shape data [r row col]
         % r =  radius
@@ -107,7 +107,7 @@ switch shape
         radius = p.Results.shapedata(1);
         x = p.Results.shapedata(3);
         y = p.Results.shapedata(2);
-        shapeHandle = drawcircle(ax,'Radius',radius,'Center',[x y]);
+        shapeHandle = drawcircle(ax, 'Radius', radius, 'Center', [x, y]);
         %{
         th = 0:pi/50:2*pi;
         xunit = radius * cos(th) + x;
@@ -118,12 +118,12 @@ switch shape
         % shape data for a line are two points on the line
         % [x1 x2 y1 y2]
         pts = p.Results.shapedata;
-        shapeHandle = line(pts(1:2),pts(3:4));
+        shapeHandle = line(pts(1:2), pts(3:4));
         shapeHandle.Color = p.Results.color;
         shapeHandle.LineWidth = p.Results.linewidth;
         shapeHandle.LineStyle = p.Results.linestyle;
     otherwise
-        error('Unknown shape %s\n',shape);
+        error('Unknown shape %s\n', shape);
 end
 
 

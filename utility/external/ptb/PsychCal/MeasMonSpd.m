@@ -1,10 +1,10 @@
-function [spd,S] = MeasMonSpd(window, settings, S, syncMode, whichMeterType, bitsppClut)
+function [spd, S] = MeasMonSpd(window, settings, S, syncMode, whichMeterType, bitsppClut)
 % [spd,S] = MeasMonSpd(window, settings, [S], [syncMode], [whichMeterType], [bitsppClut])
 %
 % Measure the Spd of a series of monitor settings.
 %
 % This routine is specific to go with CalibrateMon,
-% as it depends on the action of SetMon. 
+% as it depends on the action of SetMon.
 %
 % If whichMeterType is passed and set to 0, then the routine
 % returns random spectra.  This is useful for testing when
@@ -27,7 +27,7 @@ function [spd,S] = MeasMonSpd(window, settings, S, syncMode, whichMeterType, bit
 %	        dhb   Change calling conventions to remove unused args.
 % 9/14/00   dhb   Sync mode is not actually used.  Arg still passed for backwards compat.
 % 2/27/02   dhb   Change noMeterAvail to whichMeterType.
-% 8/19/12   mk    Rewrite g_usebitspp path to use PTB imaging pipeline for higher robustness 
+% 8/19/12   mk    Rewrite g_usebitspp path to use PTB imaging pipeline for higher robustness
 %                 and to support more display devices.
 
 % Declare Bits++ box global
@@ -42,14 +42,14 @@ end
 % Check args and make sure window is passed right.
 usageStr = 'Usage: [spd,S] = MeasMonSpd(window, settings, [S], [syncMode], [whichMeterType])';
 if nargin < 2 || nargin > 6 || nargout > 2
-	error(usageStr);
+    error(usageStr);
 end
-if size(window,1) ~= 1 || size(window,2) ~= 1
-	error(usageStr);
+if size(window, 1) ~= 1 || size(window, 2) ~= 1
+    error(usageStr);
 end
 
 % Set defaults
-defaultS = [380 5 81];
+defaultS = [380, 5, 81];
 defaultSync = 0;
 defaultWhichMeterType = 1;
 
@@ -62,42 +62,42 @@ end
 
 % Check args and set defaults
 if nargin < 5 || isempty(whichMeterType)
-	whichMeterType = defaultWhichMeterType;
+    whichMeterType = defaultWhichMeterType;
 end
 if nargin < 4 || isempty(syncMode)
     % FIXME: Not used? MeasSpd() would accept it as argument.
-	syncMode = defaultSync;
+    syncMode = defaultSync;
 end
 if nargin < 3 || isempty(S)
-	S = defaultS;
+    S = defaultS;
 end
 
 [null, nMeas] = size(settings); %#ok<*ASGLU>
 spd = zeros(S(3), nMeas);
 for i = 1:nMeas
     % Set the color.
-    
+
     % Measure spectrum
     switch whichMeterType
         case 0
-            theClut(2,:) = settings(:, i)';
+            theClut(2, :) = settings(:, i)';
             if g_usebitspp
                 Screen('LoadNormalizedGammaTable', window, theClut, 2);
                 Screen('Flip', window, 0, 1);
             else
                 Screen('LoadNormalizedGammaTable', window, theClut);
             end
-            spd(:,i) = sum(settings(:, i)) * ones(S(3), 1);
+            spd(:, i) = sum(settings(:, i)) * ones(S(3), 1);
             WaitSecs(.1);
         case 1
-            theClut(2,:) = settings(:, i)';
+            theClut(2, :) = settings(:, i)';
             if g_usebitspp
                 Screen('LoadNormalizedGammaTable', window, theClut, 2);
                 Screen('Flip', window, 0, 1);
             else
-                Screen('LoadNormalizedGammaTable',window, theClut);
+                Screen('LoadNormalizedGammaTable', window, theClut);
             end
-            spd(:,i) = MeasSpd(S);
+            spd(:, i) = MeasSpd(S);
         case 2
             error('CVI interface not yet ported to PTB-3.');
             % cviCal = LoadCVICalFile;

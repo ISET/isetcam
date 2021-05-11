@@ -1,4 +1,4 @@
-function [res,wave,comment] = vcReadSpectra(fname,wave,extrapVal)
+function [res, wave, comment] = vcReadSpectra(fname, wave, extrapVal)
 % Deprecated.  Use
 %
 %   [res,wave,comment,partialName] = ieReadSpectra(fname,wave,extrapVal)
@@ -15,11 +15,9 @@ function [res,wave,comment] = vcReadSpectra(fname,wave,extrapVal)
 % Copyright ImagEval Consultants, LLC, 2005.
 
 if ieNotDefined('extrapVal')
-    [res,wave,comment] = ieReadSpectra(fname,wave);    
+    [res, wave, comment] = ieReadSpectra(fname, wave);
 else
-    [res,wave,comment] = ieReadSpectra(fname,wave,extrapVal);
+    [res, wave, comment] = ieReadSpectra(fname, wave, extrapVal);
 end
 
 end
-
-

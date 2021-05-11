@@ -1,4 +1,4 @@
-function oi = oiPad(oi,padSize,sDist,direction)
+function oi = oiPad(oi, padSize, sDist, direction)
 % Pad the oi irradiance data with zeros
 %
 %     oi = oiPad(oi,padSize,[sDist],[padDirection])
@@ -6,7 +6,7 @@ function oi = oiPad(oi,padSize,sDist,direction)
 % Description:
 %   For optics calculations we pad the size to catch light spilled
 %   beyond the edge of the scene. We pad the spatial dimensions with
-%   zeroes. 
+%   zeroes.
 %
 %   After changing the row and column numbers, we adjust the
 %   horizontal field of view accordingly.
@@ -33,15 +33,15 @@ function oi = oiPad(oi,padSize,sDist,direction)
 
 % Examples
 %{
-   oi = oiPad(oi,[8,8,0]);
+oi = oiPad(oi,[8,8,0]);
 %}
 
-if ieNotDefined('sDist') 
+if ieNotDefined('sDist')
     scene = vcGetObject('scene');
     if isempty(scene)
         warndlg('oiPad: No scene, assuming 1 m sDist');
         sDist = 1;
-    else,  sDist = sceneGet(scene,'distance'); 
+    else, sDist = sceneGet(scene, 'distance');
     end
 end
 if ieNotDefined('direction'), direction = 'both'; end
@@ -50,32 +50,32 @@ if ieNotDefined('direction'), direction = 'both'; end
 % Probably not necessary.  But ...
 if ismatrix(padSize), padSize(3) = 0; end
 
-photons = oiGet(oi,'photons');
+photons = oiGet(oi, 'photons');
 
 % Probably no longer useful.  Was used for compression issues.
 % Until recently, this was 1e-4.
 % Until Feb. 27, 2018 this was 1e-6.
-padval = oiGet(oi,'data max')*1e-9;
+padval = oiGet(oi, 'data max') * 1e-9;
 
 try
-    newPhotons = padarray(photons,padSize,padval,direction);
+    newPhotons = padarray(photons, padSize, padval, direction);
 catch MEmemory
     disp(MEmemory)
-    
+
     % First, figure out the size of the new, padded array.
     photons = single(photons);
-    [r,c] = size(padarray(photons(:,:,1),padSize,padval,direction));   
+    [r, c] = size(padarray(photons(:, :, 1), padSize, padval, direction));
 
     % Figure out the number of wavebands
-    w = size(photons,3);
-    
+    w = size(photons, 3);
+
     % Now, use single instead of double precision.
-    newPhotons = zeros(r, c , w,'single');
-    for ii=1:w
-        newPhotons(:,:,ii) = ...
-            padarray(photons(:,:,ii),padSize,padval,direction);
+    newPhotons = zeros(r, c, w, 'single');
+    for ii = 1:w
+        newPhotons(:, :, ii) = ...
+            padarray(photons(:, :, ii), padSize, padval, direction);
     end
-    
+
 end
 
 % The sample spacing of the optical image at the surface of the sensor must
@@ -110,16 +110,16 @@ abs(newWidthUM/(oiGet(oi,'cols') + padSize(2)*2) - spaceRes(2))*1e10
 % oi = oiSet(oi,'horizontal field of view',2*atand((0.5*newWidth)/imageDistance));
 
 % New way to update the fov
-old_fov = oiGet(oi,'wangular');
-size_ratio = (oiGet(oi,'cols') + padSize(2)*2)/oiGet(oi,'cols');
-new_fov = 2 * atand(size_ratio * tand(old_fov/2));
-oi = oiSet(oi,'wangular',new_fov);
+old_fov = oiGet(oi, 'wangular');
+size_ratio = (oiGet(oi, 'cols') + padSize(2) * 2) / oiGet(oi, 'cols');
+new_fov = 2 * atand(size_ratio*tand(old_fov / 2));
+oi = oiSet(oi, 'wangular', new_fov);
 
 %{
 w = oiGet(oi,'width','um')
 %}
 % Now we adjust the columns by placing in the new photons
-oi = oiSet(oi,'photons',newPhotons);
+oi = oiSet(oi, 'photons', newPhotons);
 %{
 oiGet(oi,'cols')
 oiGet(oi,'width','um')

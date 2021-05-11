@@ -1,4 +1,4 @@
-function eccMm = DegreesToRetinalEccentricityMM(eccDegrees,species,method,eyeLengthMm)
+function eccMm = DegreesToRetinalEccentricityMM(eccDegrees, species, method, eyeLengthMm)
 % eccMm = DegreesToRetinalEccentricityMM(eccDegrees,[species],[method],[eyeLengthMm])
 %
 % Convert eccentricity in degrees to retinal eccentricity in mm.   By
@@ -26,9 +26,9 @@ function eccMm = DegreesToRetinalEccentricityMM(eccDegrees,species,method,eyeLen
 % These curves, I think, were produced by ray tracing or otherwise solving
 % model eyes.  The eyeLengthMm parameter does not affect what this method
 % does.
-% 
+%
 % The default eye length returned by EyeLength for Human is currently the Rodiek value of
-% 16.1 mm.  Drasdo and Fowler formulae are based on a length of about this, 
+% 16.1 mm.  Drasdo and Fowler formulae are based on a length of about this,
 % so the linear and DaceyPeterson methods are roughly consistent for small
 % angles.  Similarly with the Rhesus default.  Using other EyeLength's will
 % make the two methods inconsistent.
@@ -69,9 +69,9 @@ end
 if (nargin < 4 || isempty(eyeLengthMm))
     switch (species)
         case 'Human'
-            eyeLengthMm = EyeLength(species,'Rodieck');
+            eyeLengthMm = EyeLength(species, 'Rodieck');
         case 'Rhesus'
-            eyeLengthMm = EyeLength(species,'PerryCowey');
+            eyeLengthMm = EyeLength(species, 'PerryCowey');
         otherwise
             error('Unknown species specified');
     end
@@ -90,40 +90,44 @@ switch (method)
         % we tag on comes out right.
         switch (species)
             case 'Human'
-                eyeLengthMm = EyeLength(species,'Rodieck');
+                eyeLengthMm = EyeLength(species, 'Rodieck');
             case 'Rhesus'
-                eyeLengthMm = EyeLength(species,'PerryCowey');
+                eyeLengthMm = EyeLength(species, 'PerryCowey');
             otherwise
                 error('Unknown species specified');
         end
-    
+
         % Set quadratic parameters
         switch (species)
             case 'Human'
-                a = 0.035; b = 3.4; c1 = 0.1; 
+                a = 0.035;
+                b = 3.4;
+                c1 = 0.1;
             case 'Rhesus'
-                a = 0.038; b = 4.21; c1 = 0.1;
-            otherwise 
+                a = 0.038;
+                b = 4.21;
+                c1 = 0.1;
+            otherwise
                 error('Unknown species passed');
         end
-        
+
         % Invert the quadratic
-        c = c1-eccDegrees;
-        eccMm = (-b + sqrt((b^2) - 4*a*c))/(2*a);
-        
+        c = c1 - eccDegrees;
+        eccMm = (-b + sqrt((b^2) - 4 * a * c)) / (2 * a);
+
         % Don't return negative numbers
         eccMm(eccMm < 0) = 0;
-        
+
         % Replace small angles by the linear approximation
         degreeThreshold = 0.2;
         index = find(eccDegrees < degreeThreshold);
         if (~isempty(index))
-            eccMM(index) = DegreesToRetinalMM(eccDegrees(index),eyeLengthMm,false);
+            eccMM(index) = DegreesToRetinalMM(eccDegrees(index), eyeLengthMm, false);
         end
 
     case 'Linear'
-        eccMm = DegreesToRetinalMM(eccDegrees,eyeLengthMm,false);
-        
+        eccMm = DegreesToRetinalMM(eccDegrees, eyeLengthMm, false);
+
     otherwise
         error('Unknown method passed')
 end

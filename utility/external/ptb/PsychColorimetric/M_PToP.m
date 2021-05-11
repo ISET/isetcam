@@ -1,4 +1,4 @@
-function [M,dest] = M_PToP(Psource,Pdest,T,source)
+function [M, dest] = M_PToP(Psource, Pdest, T, source)
 % [M] = M_PToP(Psource,Pdest,T)
 % [M,dest] = M_PToP(Psource,Pdest,T,source)
 %
@@ -25,12 +25,12 @@ function [M,dest] = M_PToP(Psource,Pdest,T,source)
 %
 % 8/2/94		dhb		Fixed bug in optional arg handling.
 
-M1 = M_PToT(Psource,T);
-M2 = M_TToP(T,Pdest);
-M = M2*M1;
+M1 = M_PToT(Psource, T);
+M2 = M_TToP(T, Pdest);
+M = M2 * M1;
 
-if ( nargin == 4)
-  dest = M*source;
+if (nargin == 4)
+    dest = M * source;
 else
-  dest = [];
+    dest = [];
 end

@@ -1,4 +1,4 @@
-function [app, appAxis] = vcGetFigure(obj,select)
+function [app, appAxis] = vcGetFigure(obj, select)
 % Deprecated.   Use ieAppGet
 %
 %   Return the app and main axis associated with an object.
@@ -27,9 +27,9 @@ function [app, appAxis] = vcGetFigure(obj,select)
 
 % Examples:
 %{
- scene = sceneCreate;
- sceneWindow(scene);
- [app,appAxis] = vcGetFigure(scene)
+scene = sceneCreate;
+sceneWindow(scene);
+[app,appAxis] = vcGetFigure(scene)
 %}
 
 warning('Deprecated.  Use ieGetAp()');

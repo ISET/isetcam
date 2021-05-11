@@ -1,7 +1,7 @@
 function mtf = WilliamsMTF(s)
 %WILLIAMSMTF  Compute the MTF measured by Williams et. al.
 %   mtf = WILLIAMSMTF(s)
-% 
+%
 %   Compute the MTF measured by Williams et. al. for 633 nm light,
 %   representing the optical quality of human foveal vision.  The empirical
 %   MTFs were obtained for a 3 mm pupil.
@@ -19,6 +19,6 @@ function mtf = WilliamsMTF(s)
 % 7/11/94		dhb		Wrote it.
 % 7/14/94		dhb		Pulled calculation of rest into separate function.
 
-diff = DiffractionMTF(s,3,633);
+diff = DiffractionMTF(s, 3, 633);
 rest = WilliamsRestMTF(s);
 mtf = diff .* rest;

@@ -1,4 +1,4 @@
-function [val, level] = humanUVSafety(energy,wave,varargin)
+function [val, level] = humanUVSafety(energy, wave, varargin)
 % Calculate the UV hazard safety for an irradiance
 %
 % Synopsis
@@ -20,11 +20,11 @@ function [val, level] = humanUVSafety(energy,wave,varargin)
 %   level - hazardEnergy
 %
 % Method: 'eye'
-%    val   - logical (true/false) 
+%    val   - logical (true/false)
 %    level - the irradiance integrated over wavelength
 %
 % Method:  'bluehazard'
-%    val   - logical (true/false) 
+%    val   - logical (true/false)
 %    level - the dot product of the radiance with the blueLightHazard
 %            function.
 %
@@ -116,18 +116,17 @@ function [val, level] = humanUVSafety(energy,wave,varargin)
 %   s_humanSafetyUVExposure, ieLuminance2Radiance
 %
 
-
 %% Check inputs
 
 varargin = ieParamFormat(varargin);
 
 p = inputParser;
 
-p.addRequired('irradiance',@isvector);
-p.addRequired('wave',@isvector)
-p.addParameter('method','skineye',@(x)(ismember(ieParamFormat(x),{'skineye','eye','bluehazard'})));
-p.addParameter('duration',1,@isnumeric);  % Used for 'eye' method only
-p.parse(energy,wave,varargin{:});
+p.addRequired('irradiance', @isvector);
+p.addRequired('wave', @isvector)
+p.addParameter('method', 'skineye', @(x)(ismember(ieParamFormat(x), {'skineye', 'eye', 'bluehazard'})));
+p.addParameter('duration', 1, @isnumeric); % Used for 'eye' method only
+p.parse(energy, wave, varargin{:});
 
 method = ieParamFormat(p.Results.method);
 duration = p.Results.duration;
@@ -138,16 +137,16 @@ if numel(wave) == 1
     dLambda = 10;
     disp('Assuming 10 nm bandwidth');
 else
-    dLambda  = wave(2) - wave(1);
+    dLambda = wave(2) - wave(1);
 end
 
 %% Load the standard function
 switch method
     case 'skineye'
         fname = which('Actinic.mat');
-        Actinic = ieReadSpectra(fname,wave);
+        Actinic = ieReadSpectra(fname, wave);
         % semilogy(wave,Actinic); xlabel('Wave'); grid on;
-        
+
         %% The UV hazard safety formula
         %
         %    sum (Actinic(lambda,t) irradiance(Lambda)) dLambda dTime
@@ -171,89 +170,90 @@ switch method
         %
         % This standard is defined for 200-400 nm, but we do not have any
         % data that go that short.
-        
+
         % We only evaluate up to a wavelength limit of 400nm
         wLimit = (wave <= 400);
-        hazardEnergy = (dot(Actinic(wLimit),energy(wLimit)) * dLambda);
-        
+        hazardEnergy = (dot(Actinic(wLimit), energy(wLimit)) * dLambda);
+
         % This is the formula from the standard to compute the maximum daily
         % allowable exposure from the hazard energy.
         %{
-         The maximum permissible exposure time per 8 hours for ultraviolet
-          radiation incident upon the unprotected eye or skin shall be computed by:
+        The maximum permissible exposure time per 8 hours for ultraviolet
+            radiation incident upon the unprotected eye or skin shall be computed by:
 
             t_max = 30/E_s   (seconds) (Equation 4.2)
 
-         E_s is the effective ultraviolet irradiance (W/m^2).  The formula for
-         E_s is defined in Equation 4.1.  It is the inner product of the Actinic
-         function and the irradiance function, accounting for time and
-         wavelength sampling.
-        %}
-        
-        % We return the time in minutes.
-        val = (30/hazardEnergy)/60;
-        level = hazardEnergy;
-        
-    case 'eye'
-        %% The calculation in 4.3.2 is specialized for the eye.
-        %
-        % The formula they derive in that case is a maximum irradiance value that
-        % is calculated separately when the eye is exposed for less than 1,000 sec
-        % or more than 1,000 seconds.
-        %
-        % Suppose for an irradiance level that is constant over time we have
-        %
-        %     IR = Integral (E(lambda) dlambda) (Watts/m2)
-        %
-        %  where E(lambda) has units of Watts/nm/m2
-        %
-        %     ExpTime * IR has units of (sec * Watts/m2  = Joules/m^2)
-        %
-        %  Then for times less than 1000 sec, the rule is
-        %
-        %     ExpTime * IR  < 10,000
-        %
-        % For times greater than 1000 sec we require that
-        %
-        %     IR < 10
-        %
-        wLimit = (wave <= 400);
-        level = dLambda * sum(energy(wLimit));
-        
-        % val is set to true for safe and false for not safe
-        val = false;
-        if duration <= 1000   % seconds
-            if level*duration < 10000, val = true; end
-        elseif level < 10    % Duration is long, so level must be low
-            val = true; 
-        end
-    case 'bluehazard'
-        % Retinal blue light hazard, Section 4.3.3 
-        %
-        % Potential for  a photochemically  induced retinal injury
-        % resulting  from radiation  exposure  at  wavelengths primarily
-        % between 400 nm and 500 nm. This  damage mechanism  dominates
-        % over  the  thermal damage mechanism  for  times  exceeding 10
-        % seconds. (Page 15).  
-        %
-        % The standard applies over the wavelength range from 300-700 nm.
-        %
-        fname = which('blueLightHazard.mat');
-        blueHazard = ieReadSpectra(fname,wave);
-        % ieNewGraphWin; plot(wave,blueHazard)
-        
-        level = dLambda*dot(blueHazard,energy);
-        
-        % Equations 4.5a, 4.5b
-        val = false;
-        if duration <= 1e4   % seconds
-            if level*duration < 1e6, val = true; end
-        elseif level < 1e2    % Duration is long, so level must be low
-            val = true; 
-        end
-        
-    otherwise
-        error('Unknown UV safety method %s\n',method);
-end
+            E_s is the effective ultraviolet irradiance (W/m^2).  The formula for
+                E_s is defined in Equation 4.1.  It is the inner product of the Actinic
+                    function and the irradiance function, accounting for time and
+                                wavelength sampling.
+                                %}
 
-end
+                                % We return the time in minutes.
+                                val = (30 / hazardEnergy) / 60;
+                                level = hazardEnergy;
+
+                            case 'eye'
+
+                                %% The calculation in 4.3.2 is specialized for the eye.
+                                %
+                                % The formula they derive in that case is a maximum irradiance value that
+                                % is calculated separately when the eye is exposed for less than 1,000 sec
+                                % or more than 1,000 seconds.
+                                %
+                                % Suppose for an irradiance level that is constant over time we have
+                                %
+                                %     IR = Integral (E(lambda) dlambda) (Watts/m2)
+                                %
+                                %  where E(lambda) has units of Watts/nm/m2
+                                %
+                                %     ExpTime * IR has units of (sec * Watts/m2  = Joules/m^2)
+                                %
+                                %  Then for times less than 1000 sec, the rule is
+                                %
+                                %     ExpTime * IR  < 10,000
+                                %
+                                % For times greater than 1000 sec we require that
+                                %
+                                %     IR < 10
+                                %
+                                wLimit = (wave <= 400);
+                                level = dLambda * sum(energy(wLimit));
+
+                                % val is set to true for safe and false for not safe
+                                val = false;
+                                if duration <= 1000 % seconds
+                                    if level * duration < 10000, val = true; end
+                                elseif level < 10 % Duration is long, so level must be low
+                                    val = true;
+                                end
+                            case 'bluehazard'
+                                % Retinal blue light hazard, Section 4.3.3
+                                %
+                                % Potential for  a photochemically  induced retinal injury
+                                % resulting  from radiation  exposure  at  wavelengths primarily
+                                % between 400 nm and 500 nm. This  damage mechanism  dominates
+                                % over  the  thermal damage mechanism  for  times  exceeding 10
+                                % seconds. (Page 15).
+                                %
+                                % The standard applies over the wavelength range from 300-700 nm.
+                                %
+                                fname = which('blueLightHazard.mat');
+                                blueHazard = ieReadSpectra(fname, wave);
+                                % ieNewGraphWin; plot(wave,blueHazard)
+
+                                level = dLambda * dot(blueHazard, energy);
+
+                                % Equations 4.5a, 4.5b
+                                val = false;
+                                if duration <= 1e4 % seconds
+                                    if level * duration < 1e6, val = true; end
+                                elseif level < 1e2 % Duration is long, so level must be low
+                                    val = true;
+                                end
+
+                            otherwise
+                                error('Unknown UV safety method %s\n', method);
+                            end
+
+                    end

@@ -1,4 +1,4 @@
-function [fold,nfold] = FolderFromFolder(folder,mode)
+function [fold, nfold] = FolderFromFolder(folder, mode)
 % [fold,nfold] = FolderFromFolder(folder,mode)
 %
 % Returns struct with all directories in directory FOLDER.
@@ -16,9 +16,9 @@ function [fold,nfold] = FolderFromFolder(folder,mode)
 %                rid of for loop
 % 2012-06-04 DN  Now also have ssilent mode for no output at all
 
-if nargin >= 2 && strcmp(mode,'silent')
+if nargin >= 2 && strcmp(mode, 'silent')
     silent = 1;
-elseif nargin >= 2 && strcmp(mode,'ssilent')
+elseif nargin >= 2 && strcmp(mode, 'ssilent')
     silent = 2;
 else
     silent = 0;
@@ -28,17 +28,17 @@ fold        = dir(folder);
 fold        = fold([fold.isdir]);
 % now skip '..' and '.', do not want to assume they are the first two
 % elements returned
-qremove     = ismember({fold.name},{'.','..'});
+qremove = ismember({fold.name}, {'.', '..'});
 fold(qremove) = [];
 
 
 nfold = length(fold);
 
-if nfold==0
-    if silent==1
-        fprintf('FolderFromFolder: No folders found in: %s\n',folder);
+if nfold == 0
+    if silent == 1
+        fprintf('FolderFromFolder: No folders found in: %s\n', folder);
         fold = [];
     elseif ~silent
-        error('FolderFromFolder: No folders found in: %s',folder);
+        error('FolderFromFolder: No folders found in: %s', folder);
     end
 end

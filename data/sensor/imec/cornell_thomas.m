@@ -10,6 +10,7 @@ function thisR = cbBoxCreate(varargin)
 % Returns:
 %   thisR   - recipe of cornell box
 %
+
 %%
 varargin = ieParamFormat(varargin);
 p = inputParser;
@@ -19,8 +20,10 @@ surfaceColor = p.Results.surfacecolor;
 
 %% Read recipe
 thisR = piRecipeDefault('scene name', 'cornell box reference');
+
 %% Remove current existing lights
 piLightDelete(thisR, 'all');
+
 %% Turn the object to area light
 
 areaLight = piLightCreate('lamp', 'type', 'area');
@@ -33,7 +36,7 @@ assetName = 'AreaLight_O';
 thisR.set('asset', assetName, 'obj2light', areaLight);
 
 assetNameCube = 'CubeLarge_O';
-thisR.set('asset', assetNameCube, 'scale', [1 1.2 1]);
+thisR.set('asset', assetNameCube, 'scale', [1, 1.2, 1]);
 %{
 wave = 400:10:700;
 lgt = ieReadSpectra(lightName, wave);
@@ -42,6 +45,7 @@ plot(wave, lgt);
 grid on; box on;
 xlabel('Wavelength (nm)'); ylabel('Radiance (Watt/sr/nm/m^2)')
 %}
+
 %% Load spetral reflectance
 wave = 400:10:700;
 refl = ieReadSpectra('cboxSurfaces', wave);
@@ -60,16 +64,17 @@ xlabel('Wavelength (nm)'); ylabel('Reflectance');
 set(gca, 'xlim', [400 700]); set(gca, 'ylim', [0 1]);
 legend('Red wall', 'Green wall', 'White wall')
 %}
+
 %% Load spectral reflectance
 piMaterialList(thisR);
-matList = {'ShieldMat', 'LeftWall', 'RightWall', 'BackWall', 'TopWall',...
-            'BottomWall', 'CubeLarge', 'CubeSmall'};
+matList = {'ShieldMat', 'LeftWall', 'RightWall', 'BackWall', 'TopWall', ...
+    'BottomWall', 'CubeLarge', 'CubeSmall'};
 if isequal(surfaceColor, 'redgreen')
-    reflList = [wRefl, rRefl gRefl wRefl wRefl wRefl wRefl wRefl];
+    reflList = [wRefl, rRefl, gRefl, wRefl, wRefl, wRefl, wRefl, wRefl];
 elseif isequal(surfaceColor, 'white')
-    reflList = [wRefl, wRefl wRefl wRefl wRefl wRefl wRefl wRefl];
+    reflList = [wRefl, wRefl, wRefl, wRefl, wRefl, wRefl, wRefl, wRefl];
 end
-for ii=1:numel(matList)
+for ii = 1:numel(matList)
     thisR = cbAssignMaterial(thisR, matList{ii}, reflList(:, ii));
 end
 end

@@ -1,4 +1,4 @@
-function XYZ = ieXYZFromPhotons(photons,wave)
+function XYZ = ieXYZFromPhotons(photons, wave)
 %Convert photon spectral power distribution into CIE XYZ
 %
 %   XYZ = ieXYZFromPhotons(photons,wave)
@@ -11,7 +11,6 @@ function XYZ = ieXYZFromPhotons(photons,wave)
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
-XYZ = ieXYZFromEnergy(Quanta2Energy(wave,photons),wave);
+XYZ = ieXYZFromEnergy(Quanta2Energy(wave, photons), wave);
 
 end
-

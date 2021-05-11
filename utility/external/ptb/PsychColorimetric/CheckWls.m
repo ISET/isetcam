@@ -1,4 +1,4 @@
-function [errorRet] = CheckWls(wls1,wls2,quiet)
+function [errorRet] = CheckWls(wls1, wls2, quiet)
 % [errorRet] = CheckWls(wls1,wls2,[quiet])
 %
 % Check that two wavelength descriptions are consistent with
@@ -11,7 +11,7 @@ function [errorRet] = CheckWls(wls1,wls2,quiet)
 %   == 0: OK
 %   == 1: Mismatch
 %
-% Arg quiet tells function whether or not to print display to 
+% Arg quiet tells function whether or not to print display to
 % screen notifying user that check failed:
 %     0 => display message
 %   else => keep quiet
@@ -23,20 +23,17 @@ function [errorRet] = CheckWls(wls1,wls2,quiet)
 % 4/22/04  dhb  Make quiet the default.
 
 if nargin < 3 || isempty(quiet)
-  quiet = 1;
+    quiet = 1;
 end
 
 errorRet = 1;
 wls1 = MakeItWls(wls1);
 wls2 = MakeItWls(wls2);
-if (length(wls1)==length(wls2))
-  if (all(wls1 == wls2))
-    errorRet = 0;
-  end
+if (length(wls1) == length(wls2))
+    if (all(wls1 == wls2))
+        errorRet = 0;
+    end
 end
-if (errorRet==1) && ~quiet
-  disp('CheckWls: Wavelength descriptions are not consistent');
+if (errorRet == 1) && ~quiet
+    disp('CheckWls: Wavelength descriptions are not consistent');
 end
-
-
-

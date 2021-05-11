@@ -16,18 +16,19 @@ ieInit
 
 scene = sceneCreate('slanted bar');
 oi = oiCreate;
-oi = oiCompute(oi,scene);
+oi = oiCompute(oi, scene);
 % ieAddObject(oi); oiWindow;
 
 %% Bayer sensor
 
 sensor = sensorCreate;
-sensor = sensorCompute(sensor,oi);
+sensor = sensorCompute(sensor, oi);
 % ieAddObject(sensor); sensorWindow;
+
 %% Standard image processor
 
 ip = ipCreate;
-ip = ipCompute(ip,sensor);
+ip = ipCompute(ip, sensor);
 
 % ieAddObject(ip); ipWindow;
 

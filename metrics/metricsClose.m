@@ -6,8 +6,8 @@ function metricsClose
 
 global vcSESSION;
 
-if checkfields(vcSESSION,'GUI','metricsWindow')
-    vcSESSION.GUI = rmfield(vcSESSION.GUI,'metricsWindow');
+if checkfields(vcSESSION, 'GUI', 'metricsWindow')
+    vcSESSION.GUI = rmfield(vcSESSION.GUI, 'metricsWindow');
 end
 
 closereq;

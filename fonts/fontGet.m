@@ -1,5 +1,5 @@
-function val = fontGet(font,param,varargin)
-%Get font parameters and derived properties 
+function val = fontGet(font, param, varargin)
+%Get font parameters and derived properties
 %
 %     val = fontGet(font,parm,varargin)
 %
@@ -14,13 +14,13 @@ function val = fontGet(font,param,varargin)
 %  'dpi'    - e.g. 96 dots per inch
 %  'bitmap' -  Binary RGB image of the font MxNx3
 %  'i bitmap' - Inverted bitmap (1-font.bitmap)
-%  'padded bitmap' - padded to a size with a pad value 
+%  'padded bitmap' - padded to a size with a pad value
 %          fontGet(font,'padded bitmap', padsize=[7 7],padval=0)
 %
 %
 % Example
 %   font = fontCreate;
-%   vcNewGraphWin; image(fontGet(font,'padded bitmap',[3 3],1)); 
+%   vcNewGraphWin; image(fontGet(font,'padded bitmap',[3 3],1));
 %   axis image
 %
 %  White on black version.  Padd with 1 then invert.
@@ -36,8 +36,8 @@ val = [];
 param = ieParamFormat(param);
 
 switch param
-    
-    % Book keeping
+
+        % Book keeping
     case 'type'
         val = font.type;
     case 'name'
@@ -56,7 +56,7 @@ switch param
     case 'bitmap'
         val = font.bitmap;
 
-    % Derived
+        % Derived
     case 'ibitmap'
         val = 1 - font.bitmap;
     case 'paddedbitmap'
@@ -64,26 +64,26 @@ switch param
         % vcNewGraphWin; imagesc(fontGet(font,'padded bitmap'));axis equal
         if ~isempty(varargin), padsize = varargin{1}; end
         if length(varargin) > 1, padval = varargin{2}; end
-        
-        if notDefined('padsize'), padsize = [7 7]; end
-        if notDefined('padval'),  padval = 1; end
-        
+
+        if notDefined('padsize'), padsize = [7, 7]; end
+        if notDefined('padval'), padval = 1; end
+
         % RGB bitmap
-        bitmap = fontGet(font,'bitmap');
-        
+        bitmap = fontGet(font, 'bitmap');
+
         % Pad and return
-        newSize = size(bitmap); 
-        newSize(1:2) = newSize(1:2) + 2*padsize;
-        val = zeros(newSize);        
-        for ii=1:size(bitmap,3);
-            val(:,:,ii) = padarray(bitmap(:,:,ii),padsize,padval);
+        newSize = size(bitmap);
+        newSize(1:2) = newSize(1:2) + 2 * padsize;
+        val = zeros(newSize);
+        for ii = 1:size(bitmap, 3);
+            val(:, :, ii) = padarray(bitmap(:, :, ii), padsize, padval);
         end
     case 'ipaddedbitmap'
-        val = fontGet(font,'padded bitmap');
+        val = fontGet(font, 'padded bitmap');
         val = 1 - val;
     otherwise
-        disp(['Unknown parameter: ',param]);
-        
- end
+        disp(['Unknown parameter: ', param]);
+
+end
 
 end
