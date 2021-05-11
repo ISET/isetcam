@@ -63,7 +63,7 @@ if ~isequal(oiWave, sensorWave)
     % sensor color channels,  to match the irradiance wavelength sampling.
     % We do not change the sensor wavelength data here.
     if length(sensorWave) > 1
-        spectralQE = interp1(sensorWave, spectralQE, oiWave, 'line', 0);
+        spectralQE = interp1(sensorWave, spectralQE, oiWave, 'linear', 0);
     elseif ~isequal(sensorWave, oiWave)
         errordlg('Mis-match in sensor and oi wavelength functions.');
     end
