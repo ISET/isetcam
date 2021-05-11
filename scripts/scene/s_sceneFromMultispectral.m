@@ -32,8 +32,7 @@
 %
 % Other multispectral and hyperspectral data can be downloaded from 
 %
-%  * http://imageval.com/scene-database/ 
-%  * http://scien.stanford.edu/index.php/hyperspectral-image-data/
+%  https://exhibits.stanford.edu/data/browse/iset-hyperspectral-image-database
 %
 % See also: s_sceneFromRGB, sceneFromFile
 %

@@ -445,7 +445,7 @@ density = [ ...
 828,  0.00000
 829,  0.00000
 830,  0.00000];
-comment = 'Use macular function to interpret these data.  They are from http://cvision.ucsd.edu/ ; Stockman, Sharpe and Fach (1999) adopted this macular density spectrum, which is on measurements provided by Bone.';
+comment = 'Use macular function to interpret these data.  They are from http://vision.ucsd.edu/ ; Stockman, Sharpe and Fach (1999) adopted this macular density spectrum, which is on measurements provided by Bone.';
 wavelength = density(:,1);
 data = density(:,2);
 

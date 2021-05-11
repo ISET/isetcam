@@ -40,7 +40,7 @@ function lum = ieLuminanceFromEnergy(energy,wave,varargin)
 %
 %
 % Online reference:
-%  http://www.optics.arizona.edu/Palmer/rpfaq/rpfaq.htm
+%  https://wp.optics.arizona.edu/jpalmer/radiometry/radiometry-and-photometry-faq/
 %
 % See also
 %  ieLuminance2Radiance, ieLuminanceFromPhotons

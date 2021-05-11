@@ -13,8 +13,7 @@
 % Key functions:  sensorColorFilter
 %
 % To learn more about a particular function, type "help function" as in
-% "help sensorCreate".  There are also online descriptions of the functions
-% at http://www.imageval.com/public/Products/ISET/Manual/ISET_Functions.htm
+% "help sensorCreate".
 %
 % Copyright ImagEval Consultants, LLC, 2010.
 

@@ -25,7 +25,7 @@ function t = macular(macDensity,wave)
 % t.transmittance: The fraction of light transmitted, i.e., 1 - t.absorption
 %
 %  The macular densities values were taken from the Stockman site.  Go to
-%  http://cvision.ucsd.edu, then click on Prereceptoral filters.
+%  http://vision.ucsd.edu, then click on Prereceptoral filters.
 %
 %  The densities were derived by Sharpe and Stockman based on some data from Bone.
 %  The paper describing why they like these is in Vision Research; I
