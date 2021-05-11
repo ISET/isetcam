@@ -50,10 +50,10 @@ if ispc
     % using the dll form of this function.
     str = strread(evalc('!ipconfig -all'),'%s','delimiter','\n'); 
     for ii=1:length(str)
-        n = findstr(str{ii},'Physical Address. . . . . . . . . : ');
+        n = strfind(str{ii},'Physical Address. . . . . . . . . : ');
         if ~isempty(n),
             a = str{ii};
-            c = findstr(str{ii},':');
+            c = strfind(str{ii},':');
             MAC = lower(strrep(a((c+1):end),'-',':'));
             return;
         end
@@ -62,12 +62,12 @@ elseif isunix && ~ismac
     % The first physical address is always read.  We don't yet have a dll
     % form of this function.
     [s, macaddress] = unix('ifconfig |grep -i ether');
-    c = findstr(lower(macaddress),'hwaddr ');
+    c = strfind(lower(macaddress),'hwaddr ');
     enet=c(1);
     MAC = macaddress((enet+7):(enet+23));
 elseif ismac
     [s, macaddress] = unix('ifconfig |grep -i ether');
-    c = findstr(lower(macaddress),'ether ');
+    c = strfind(lower(macaddress),'ether ');
     enet=c(1);
     MAC = macaddress((enet+6):(enet+22));
 else error('Unknown system');

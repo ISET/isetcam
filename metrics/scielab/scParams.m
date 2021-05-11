@@ -28,11 +28,11 @@ params.imageFormat   = 'xyz10';
 %
 %For example, suppose a display has one dot every 212 microns
 %Assume we are 0.5 meters from the display (18 inches)
-%    degPerPixel = ieRad2deg(tan( 0.000212/ 0.5))
+%    degPerPixel = rad2deg(tan( 0.000212/ 0.5))
 %    nPixel = 1/degPerPixel
 % Which is about 41.  
 pixelSpacing = dpi2mperdot(dpi,'m');
-degPerPixel  = ieRad2deg(tan( pixelSpacing/ dist));
+degPerPixel  = rad2deg(tan( pixelSpacing/ dist));
 nPixel = round(1/degPerPixel);
 params.sampPerDeg = nPixel;   % Big numbers are better
 params.filterSize = nPixel;   % 1 deg

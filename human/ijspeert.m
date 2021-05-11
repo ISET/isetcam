@@ -30,7 +30,7 @@ function [MTF, PSF, LSF] = ijspeert(age, p, m, q, phi)
 %    [MTF, PSF] = ijspeert(age, p, m, q, phi) % computes MTF and PSF
 %
 % More examples
-%    age = 30; pupilDiameter = 3; m=0.16; q = (0:60); angRad = (0:50)/50*ieDeg2rad(0.1);
+%    age = 30; pupilDiameter = 3; m=0.16; q = (0:60); angRad = (0:50)/50*deg2rad(0.1);
 %    [MTF, PSF] = ijspeert(age, pupilDiameter, m, q, angRad(:)');
 %    [MTF, PSF, LSF] = ijspeert(age, pupilDiameter, m, q, angRad(:)');
 %    figure(1); semilogy(q,MTF)

@@ -40,7 +40,7 @@ while ~feof(fid)
     line_num = line_num + 1;
     
     % It's simple if no brackets are used.
-    if isempty(findstr(curr_line,'{'))
+    if isempty(strfind(curr_line,'{'))
         match = regexp(curr_line,'(?<var>.+)\s*=\s*(?<val>.+)\>','names');
         
         if ~isempty(match)
@@ -70,7 +70,7 @@ while ~feof(fid)
             vals = {match.vals};
         end
         
-        while isempty(findstr(curr_line,'}'))
+        while isempty(strfind(curr_line,'}'))
             curr_line = fgetl(fid);
             line_num = line_num + 1;
             

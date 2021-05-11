@@ -42,10 +42,10 @@ str = strread(evalc('!ipconfig -all'),'%s','delimiter','\n');
 MAC = '';
 
 for ii=1:length(str)
-    n = findstr(str{ii},'Physical Address. . . . . . . . . : ');
+    n = strfind(str{ii},'Physical Address. . . . . . . . . : ');
     if ~isempty(n),
         a = str{ii};
-        c = findstr(str{ii},':');
+        c = strfind(str{ii},':');
         MAC = lower(strrep(a( (c+1):end),'-',':'));
         return;
     end

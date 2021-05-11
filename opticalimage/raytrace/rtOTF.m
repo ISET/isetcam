@@ -126,7 +126,7 @@ for ww = 1:nWave
 
             d = rtBlockCenter(rBlock,cBlock,blockSamples) - imageCenter;
             [fieldAngle,fieldHeight] = cart2pol(d(1)*mmPerRow,d(2)*mmPerCol);
-            fieldAngle = ieRad2deg(fieldAngle);
+            fieldAngle = rad2deg(fieldAngle);
             % fieldAngle = 0;
             
             % fprintf('rBlock %.0f cBlock %.0f fieldHeight %.3f (mm) fieldAngle %.0f (deg)\n',...

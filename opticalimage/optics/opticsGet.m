@@ -263,7 +263,7 @@ switch parm
         else
             fov = varargin{1};
             imageDistance = opticsGet(optics,'focal plane distance');
-            val = 2*imageDistance*tan(ieDeg2rad(fov/2));
+            val = 2*imageDistance*tan(deg2rad(fov/2));
             if length(varargin) < 2, return;
             else, val = ieUnitScaleFactor(varargin{2})*val;
             end
@@ -277,7 +277,7 @@ switch parm
         else
             fov = varargin{1};
             imageDistance = opticsGet(optics,'focalplanedistance');
-            val = 2*imageDistance*tan(ieDeg2rad(fov/2));
+            val = 2*imageDistance*tan(deg2rad(fov/2));
             if length(varargin) < 2, return;
             else, val = ieUnitScaleFactor(varargin{2})*val;
             end

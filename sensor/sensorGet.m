@@ -373,7 +373,7 @@ switch oType
                     end
                 else, sourceFL = varargin{1};
                 end
-                val = ieRad2deg(sensorGet(sensor,'cra',sourceFL));
+                val = rad2deg(sensorGet(sensor,'cra',sourceFL));
             case {'etendue','sensoretendue'}
                 % The size of etendue entry matches the row/col size of the sensor
                 % array. The etendue is computed using the chief ray angle at each
@@ -997,7 +997,7 @@ switch oType
                     distance = oiGet(oi,'optics focal plane distance',sDist);
                 end
                 width = sensorGet(sensor,'arraywidth');
-                val = ieRad2deg(2*atan(0.5*width/distance));
+                val = rad2deg(2*atan(0.5*width/distance));
                 
             case {'fovvertical','vfov','fovv'}
                 % This is  the vertical field of view
@@ -1040,7 +1040,7 @@ switch oType
                 end
                 
                 height = sensorGet(sensor,'array height');
-                val = ieRad2deg(2*atan(0.5*height/distance));
+                val = rad2deg(2*atan(0.5*height/distance));
                 
             case {'hdegperpixel','degpersample','degreesperpixel'}
                 % degPerPixel = sensorGet(sensor,'h deg per pixel',oi);

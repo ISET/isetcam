@@ -31,7 +31,7 @@ pathElements = strread(pathList, '%s', 'delimiter', pathsep);
 % then we add it to the end of our new path list.
 newPathList = [];
 for ii = 1:length(pathElements)
-    if isempty(findstr(pathElements{ii}, [filesep dName]))
+    if isempty(strfind(pathElements{ii}, [filesep dName]))
         newPathList = [newPathList, pathElements{ii}, pathsep]; %#ok<AGROW>
     % else fprintf('Removing %s\n',pathElements{ii});
     end
