@@ -272,10 +272,10 @@ if strncmpi(funit,'cy/deg',6)
     %
     % The right angle from the viewer to screen produces the equation:
     % Opposite = X; Adjacent = 1;
-    % tan(X/adjacent) = ieDeg2rad(0.5)
-    % X = 2*atan(ieDeg2rad(0.5))*adjacent  is the answer in meters.
+    % tan(X/adjacent) = deg2rad(0.5)
+    % X = 2*atan(deg2rad(0.5))*adjacent  is the answer in meters.
     % Multiply by 1000 to get mm per deg on the display surface
-    mmPerDeg = 2*atan(ieDeg2rad(0.5))*1e+3;
+    mmPerDeg = 2*atan(deg2rad(0.5))*1e+3;
     
     % cyc/mm * mm/deg give us cyc/deg
     freq  = freq *mmPerDeg;

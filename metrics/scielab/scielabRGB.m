@@ -78,7 +78,7 @@ whiteXYZ = displayGet(d,'white point');
 % The FOV depends on the display dpi and image size
 sz = sceneGet(scene1,'size');
 imgWidth = sz(2)*displayGet(d,'meters per dot');  % Image width (meters)
-fov = ieRad2deg(2*atan2(imgWidth/2,vDist));         % In deg
+fov = rad2deg(2*atan2(imgWidth/2,vDist));         % In deg
 
 scene1 = sceneSet(scene1,'fov',fov);
 scene2 = sceneSet(scene2,'fov',fov);

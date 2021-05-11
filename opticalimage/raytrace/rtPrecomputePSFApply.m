@@ -92,7 +92,7 @@ ySupport = flipud(sSupport(:,:,2));
 [dataAngle,dataHeight] = cart2pol(xSupport,ySupport);
 
 % Force data between 0-360 deg and to a resolution of 1 deg
-dataAngle = round(ieRad2deg(dataAngle + pi));
+dataAngle = round(rad2deg(dataAngle + pi));
 
 % Not sure why we need this, but we do. Maybe because of the center
 dataAngle(dataAngle == 0) = 1;  

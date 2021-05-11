@@ -94,7 +94,7 @@ pupilDiameter = 3;
 pigment = 0.142;
 sfRange = (0:60);
 deg = (0:.001:.1);
-[MTF, PSF, LSF] = ijspeert(age, pupilDiameter, pigment, sfRange, ieDeg2rad(deg));
+[MTF, PSF, LSF] = ijspeert(age, pupilDiameter, pigment, sfRange, deg2rad(deg));
 
 vcNewGraphWin;
 plot(sfRange,MTF); grid on

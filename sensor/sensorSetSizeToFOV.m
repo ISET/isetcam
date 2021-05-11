@@ -80,10 +80,10 @@ if isempty(sz) || isequal(sz,[0 0])
 end
 
 % Notes on FOV formula for sensor
-%  val = ieRad2deg(2*atan(0.5*width/distance));
+%  val = rad2deg(2*atan(0.5*width/distance));
 %  desired width is
 %   distance     = opticsGet(oiGet(oi,'optics'),'focallength');
-%   desiredWidth = 2*distance*tan(ieDeg2rad(deg)/2);
+%   desiredWidth = 2*distance*tan(deg2rad(deg)/2);
 
 if length(newFOV) == 1
     

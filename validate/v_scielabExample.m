@@ -93,7 +93,7 @@ img2XYZ = imageLinearTransform(hatsC,rgb2xyz);
 % image size
 dots     = size(hats);
 imgWidth = dots(2)*displayGet(dsp,'meters per dot');  % Image width (meters)
-fov      = ieRad2deg(2*atan2(imgWidth/2,vDist));      % Horizontal fov in deg
+fov      = rad2deg(2*atan2(imgWidth/2,vDist));      % Horizontal fov in deg
 sampPerDeg = dots(2)/fov;
 
 % Run spatial CIELAB using the CIELAB 2000

@@ -56,7 +56,7 @@ imageDistance = opticsGet(oiGet(oi,'optics'),'imageDistance',sDist);
 % Now we compute the new horizontal field of view using the formula that
 % says the opposite over adjacent is the tangent of the angle.  We return
 % the value in degress
-oi = oiSet(oi,'horizontalfieldofview',ieRad2deg(2*atan((0.5*newWidth)/imageDistance)));
+oi = oiSet(oi,'horizontalfieldofview',rad2deg(2*atan((0.5*newWidth)/imageDistance)));
 
 % Now we adjust the columns by placing in the new photons
 oi = oiSet(oi,'photons',photons);

@@ -18,7 +18,7 @@
 %   % DC is at (1,1); we plot with DC in the center.
 %   otf = fftshift(otf);
 %
-% See also: t_opticsPSFPlot, oiCreate, oiPlot, dlMTF, ieRad2deg
+% See also: t_opticsPSFPlot, oiCreate, oiPlot, dlMTF, rad2deg
 %
 % (c) Imageval Consulting, LLC, 2012
 
@@ -51,7 +51,7 @@ title(sprintf('F/# = %.2f  Foc Leng = %.2f (mm)',fNumber,fLength));
 
 vcNewGraphWin;
 posMM = uData.x/1000;              % Microns to mm
-aMinutes = ieRad2deg(atan2(posMM,fLength),'arcmin');   % Angle in radians
+aMinutes = rad2deg(atan2(posMM,fLength),'arcmin');   % Angle in radians
 mesh(aMinutes,uData.wavelength,uData.lsWave);
 view(30,20);
 xlabel('angle (arc min)');
@@ -72,13 +72,13 @@ set(gca,'xlim',[-AiryRingUM AiryRingUM],'ylim',[-AiryRingUM AiryRingUM])
 mid = ceil(r/2);
 psfMid = uData.psf(mid,:);
 posMM = uData.x(mid,:)/1000;               % Microns to mm
-posMinutes = ieRad2deg(atan2(posMM,fLength),'arcmin');
+posMinutes = rad2deg(atan2(posMM,fLength),'arcmin');
 
 vcNewGraphWin;
 plot(posMinutes,psfMid)
 xlabel('Arc min')
 AiryRingMM = AiryRingUM/1000;
-AiryRingMinutes = ieRad2deg(atan2(AiryRingMM,fLength),'arcmin'); % Radians
+AiryRingMinutes = rad2deg(atan2(AiryRingMM,fLength),'arcmin'); % Radians
 set(gca,'xlim',2*[-AiryRingMinutes AiryRingMinutes])
 
 pDiameter = opticsGet(optics,'pupil diameter','mm');
@@ -90,7 +90,7 @@ title(str);
 uData = oiPlot(oi,'lswavelength');
 posMM = uData.x/1000;
 aRadians = atan2(posMM,fLength);    % This is angle in radians
-aMinutes = ieRad2deg(aRadians,'arcmin');          % This is angle in arc min
+aMinutes = rad2deg(aRadians,'arcmin');          % This is angle in arc min
 plot(aMinutes,uData.lsWave(1,:),'-',...
     aMinutes,uData.lsWave(16,:),'r:',...
     aMinutes,uData.lsWave(31,:),'g--')
@@ -109,7 +109,7 @@ set(gca,'xlim',[-AiryRingUM AiryRingUM],'ylim',[-AiryRingUM AiryRingUM])
 mid = ceil(r/2);
 psfMid = uData.psf(mid,:);
 posMM = uData.x(mid,:)/1000;               % Microns to mm
-posMinutes = ieRad2deg(atan2(posMM,fLength),'arcmin');
+posMinutes = rad2deg(atan2(posMM,fLength),'arcmin');
 
 vcNewGraphWin;
 plot(posMinutes,psfMid), xlabel('Arc min'), set(gca,'xlim',[-2 2])
