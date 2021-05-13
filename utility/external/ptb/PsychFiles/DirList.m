@@ -52,7 +52,7 @@ for p = 1:length(fnms)
         continue;
     end
 
-    if qdispfiles && ~isdir([dirnm, filesep, fnms(p).name])
+    if qdispfiles && ~isfolder([dirnm, filesep, fnms(p).name])
         % check if not filtered out
         if isempty(regexp(fnms(p).name, fileFilter, 'once'))
             continue;
@@ -63,7 +63,7 @@ for p = 1:length(fnms)
             str = [str, pref, char(215), ' ', fnms(p).name, char(10)];
         end
     end
-    if isdir([dirnm, filesep, fnms(p).name])
+    if isfolder([dirnm, filesep, fnms(p).name])
         % check if not filtered out
         if ~isempty(regexp(fnms(p).name, folderFilter, 'once'))
             continue;
