@@ -74,7 +74,7 @@ for ii=1:nSensors
     subplot(1,nSensors,ii)
     
     l = ~isnan(data(:,ii)); tmp = data(l,ii);
-    hist(tmp,nBins);
+    histogram(tmp,nBins);
     c = get(gca,'Children');
     if strcmp(colorOrder(ii) ,'o'), colorOrder(ii) = 'k'; end
     set(c,'EdgeColor',colorOrder(ii))
@@ -102,7 +102,7 @@ end
 %---------------
 function plotMonochromeSensorHist(data,unitType)
 
-hist(data(:,1));
+histogram(data(:,1));
 mxData = max(data(:))*1.2;
 
 set(gca,'xlim',[0 mxData*1.1]);

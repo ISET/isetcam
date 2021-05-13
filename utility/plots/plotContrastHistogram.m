@@ -24,10 +24,10 @@ cdata = (data(:) - m) / m;
 
 % If there are no output values, just create a figure and put it up.
 if nargout < 2
-    figure; hist(cdata)
+    figure; histogram(cdata)
 else
     % Otherwise, return the histogram data for plotting
-    [cHistN,cHistX] = hist(cdata);
+    [cHistN,cHistX] = histogram(cdata);
 end
 
 return;

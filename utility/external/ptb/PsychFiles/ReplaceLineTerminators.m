@@ -41,7 +41,7 @@ platforms(win).aliases=upper({platforms(2).name, 'win', 'dos', 'msdos', 'crlf', 
 
 platforms(linux).index=linux;
 platforms(linux).name='Linux';
-platforms(linux).break=char(10);
+platforms(linux).break=newline;
 platforms(linux).aliases=upper({platforms(3).name, 'unix', 'bsd', 'lf', platforms(3).break});
 
 % find the desired terminator from the newTerminator argument.

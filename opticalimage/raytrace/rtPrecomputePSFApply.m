@@ -254,7 +254,7 @@ for ww=1:nWave  % Settle on a wavelength, indexed by ww
         % The radial weight applied to the inner PSF. The outer PSF gets 
         % 1 - wgt1 
         % rWgt = innerWeight(ind1);
-        % figure; hist(rWgt,50); % Fewer pixels near inner radius 
+        % figure; histogram(rWgt,50); % Fewer pixels near inner radius 
 
         for jj=1:length(r1)
             % For every point, jj, in the identified region, form a PSF

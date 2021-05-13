@@ -45,7 +45,7 @@ function photoreceptors = FillInPhotoreceptors(photoreceptors)
 %               a nomogram and an absorbance spectrum.)
 % 8/11/13  dhb  More checking.  Add ability to adjust lens/macular density.  Return energy and quantal fundamentals (normalized to unity).
 % 8/12/13  dhb  Fixed buglet resulting from forgetting to update after copy/paste.
-% 10/16/13  mk  Replace obsolete isstr() by ischar() to future-proof this.
+% 10/16/13  mk  Replace obsolete ischar() by ischar() to future-proof this.
 % 5/24/14  dhb  Compute axialDensity.bleachedValue by fractionPigmentBleached.value field, if the latter exists.
 %               This is set to the axialDensity.value field if no bleaching is provided.  The bleachedValue number is
 %               then passed to AbsorbanceToAbsorptance.

@@ -159,7 +159,7 @@ axis equal
 identityLine
 
 % Nearly perfect.
-% vcNewGraphWin; hist(est(:) - oiData.otf(:),100)
+% vcNewGraphWin; histogram(est(:) - oiData.otf(:),100)
 
 %% Test scene
 

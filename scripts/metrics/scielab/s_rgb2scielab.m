@@ -48,7 +48,7 @@ colorbar('vert');
 title('S-CIELAB error map')
 
 vcNewGraphWin;
-hist(eImage(:),100)
+histogram(eImage(:),100)
 title('S-CIELAB delta E histogram')
 
 

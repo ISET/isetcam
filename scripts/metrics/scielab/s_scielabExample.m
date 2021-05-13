@@ -119,7 +119,7 @@ colorbar('vert');
 title('S-CIELAB error map')
 
 vcNewGraphWin;
-hist(errorImage(:),100)
+histogram(errorImage(:),100)
 title('S-CIELAB delta E histogram')
 
 %% Examine the SCIELAB spatial filters

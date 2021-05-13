@@ -6,14 +6,14 @@
 function cal = GeneratePsychToolboxCalStruct(varargin)
 
     parser = inputParser;
-    parser.addParamValue('name', [], @ischar);
-    parser.addParamValue('dotsPerMeter', [], @isscalar);
-    parser.addParamValue('gammaInput', [], @isvector);
-    parser.addParamValue('gammaTable', [], @ismatrix);
-    parser.addParamValue('wave', [], @isvector);
-    parser.addParamValue('spd', [], @ismatrix);
-    parser.addParamValue('ambientSpd', [], @ismatrix);
-    parser.addParamValue('screenSizeInPixels', [], @isvector);
+    parser.addParameter('name', [], @ischar);
+    parser.addParameter('dotsPerMeter', [], @isscalar);
+    parser.addParameter('gammaInput', [], @isvector);
+    parser.addParameter('gammaTable', [], @ismatrix);
+    parser.addParameter('wave', [], @isvector);
+    parser.addParameter('spd', [], @ismatrix);
+    parser.addParameter('ambientSpd', [], @ismatrix);
+    parser.addParameter('screenSizeInPixels', [], @isvector);
          
     % Execute the parser
     parser.parse(varargin{:});

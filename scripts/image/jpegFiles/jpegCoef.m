@@ -69,7 +69,7 @@ for i=1:8:size(im,1)
   end
 end
 
-% hist(block(:))
-% hist(dctQuant(:))
+% histogram(block(:))
+% histogram(dctQuant(:))
 
 return

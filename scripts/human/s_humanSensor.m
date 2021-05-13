@@ -114,7 +114,7 @@ vcNewGraphWin;
 fColor = {'r','g','b'};
 for ii=1:3
     cData = sensorGet(sensor,'photons',ii+1);
-    [n,xout] = hist(cData,30);
+    [n,xout] = histogram(cData,30);
     bar(xout,n,fColor{ii});
     hold on
 end

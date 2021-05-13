@@ -40,8 +40,8 @@ sLAB = getMiddleMatrix(sLAB,mid);
 m1 = sLAB(:,:,1); m2 = sLAB(:,:,2); m3 = sLAB(:,:,3);
 % figure(1); imagesc(m1);
 % figure(1); 
-% subplot(3,1,1), hist(m1(:),30); subplot(3,1,2); hist(m2(:),30)
-% subplot(3,1,3);  hist(m3(:),30)
+% subplot(3,1,1), histogram(m1(:),30); subplot(3,1,2); hist(m2(:),30)
+% subplot(3,1,3);  histogram(m3(:),30)
 
 % Image standard deviations over the uniform region
 L = std(m1(:))^2; A = std(m2(:))^2; B = std(m3(:))^2;

@@ -69,7 +69,7 @@ switch lower(method)
                 thisBand   = img(:,:,band);  
                 % figure(1); imagesc(thisBand); colormap(gray(255))
                 bandValues = thisBand(cfaN == band);
-                % figure(1);hist(bandValues(:),50)
+                % figure(1);histogram(bandValues(:),50)
 
                 % We interpolate the data.
                 % This should be updated with a triScatteredInterp

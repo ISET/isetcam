@@ -19,7 +19,7 @@ function WriteStructsToText(filename,theStructs)
 % 07/07/13 dhb  Add handling of non-string filename as fid.
 
 % Open the file
-if (isstr(filename))
+if (ischar(filename))
     fid = fopen(filename,'wt');
 else
     fid = filename;
@@ -58,6 +58,6 @@ for j = 1:nStructs
 end
 
 % Close the file.
-if (isstr(filename))
+if (ischar(filename))
     fclose(fid);
 end

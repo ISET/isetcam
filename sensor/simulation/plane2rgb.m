@@ -93,7 +93,7 @@ for ii=1:nPlanes
     l = (cfaN == ii);
     
     % Set the entries at those locations to img(l)
-    tmp(l) = img(l);   % figure(1); hist(tmp(:),50)
+    tmp(l) = img(l);   % figure(1); histogram(tmp(:),50)
     
     % Place the data in tmp into the appropriate location of rgbFormat
     % Here, we make sure that if the data are cmy the order of the planes

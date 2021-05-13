@@ -46,7 +46,7 @@ mn = double(min(mosaic(:)));
 mx = double(max(mosaic(:)));
 vSwing  = sensorGet(sensor,'pixel voltage swing');
 volts = ((double(mosaic) - mn)/(mx - mn))*vSwing; 
-% figure; hist(volts(:),50)
+% figure; histogram(volts(:),50)
 
 sensor = sensorSet(sensor,'size',size(volts));
 sensor = sensorSet(sensor,'volts',volts);

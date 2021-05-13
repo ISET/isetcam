@@ -25,7 +25,7 @@ if ~exist('pathList','var') || isempty('pathList'), pathList = path; end
 if ~exist('dName','var') || isempty('dName'), dName = '.svn'; end
 
 % Break the path list into individual path elements.
-pathElements = strread(pathList, '%s', 'delimiter', pathsep);
+pathElements = textscan(pathList, '%s', 'delimiter', pathsep);
 
 % Look at each element from the path.  If it doesn't contain a .svn folder
 % then we add it to the end of our new path list.

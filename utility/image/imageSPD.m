@@ -110,7 +110,7 @@ elseif method == 4  % Clip the highlights (NYI)
     % Find a reasonable place to clip the highlights
     Y = XYZ(:,:,2);
     yClip = prctile(Y(:),99.5);  % We should parameterize this
-    %vcNewGraphWin; hist(Y(:),100);
+    %vcNewGraphWin; histogram(Y(:),100);
     
     % Clip the XYZ data so that nothing is bigger than yClip
     XYZ = ieClip(XYZ,0,yClip);

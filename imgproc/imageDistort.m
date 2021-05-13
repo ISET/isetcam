@@ -16,7 +16,7 @@ switch dMethod
         else
             nScale = 0.05*max(img(:));  % Noise is five percent of max
         end
-        noise = nScale*randn(size(img));  % vcNewGraphWin; hist(n(:))
+        noise = nScale*randn(size(img));  % vcNewGraphWin; histogram(n(:))
         
         if isinteger(img) && max(img(:)) < 256
             % Case of an 8 bit image
