@@ -111,11 +111,10 @@ f = sensorPlotLine(sensor,[],'photons','space',[1 116]);
 %  noise.
 
 vcNewGraphWin;
-fColor = {'r','g','b'};
+fColor = {'red','green','blue'};
 for ii=1:3
     cData = sensorGet(sensor,'photons',ii+1);
-    [n,xout] = histogram(cData,30);
-    bar(xout,n,fColor{ii});
+    histogram(cData,30,'FaceColor',fColor{ii});
     hold on
 end
 hold off

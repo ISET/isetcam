@@ -5,11 +5,11 @@ function bool = sensorCheckHuman(sensor)
 %
 % (c) Imageval Consulting, LLC 2012
 
-bool = 0;
-if ieNotDefined('sensor'), error('sensor required'); end
-
-if ieContains(sensorGet(sensor,'name'),'human'), bool = 1; return; 
-elseif isfield(sensor,'human'), bool = 1; return;
+if ieNotDefined('sensor')
+    error('sensor required')
 end
+
+sensor_name = sensorGet(sensor,'name');
+bool = ieContains(sensor_name, 'human') || isfield(sensor,'human');
 
 return
