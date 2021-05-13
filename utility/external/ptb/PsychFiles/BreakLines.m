@@ -21,7 +21,7 @@ function strArray = BreakLines(str)
 %first substitute in the unix break char no matter what we start out with.
 %this makes BreakLines platform independent
 unixStr = ReplaceLineTerminators(str, 'unix');
-unixBreakChar = char(10);
+unixBreakChar = newline;
 
 %find indices of line bounds
 breakIndices = find(unixStr == unixBreakChar);

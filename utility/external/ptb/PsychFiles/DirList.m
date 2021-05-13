@@ -58,9 +58,9 @@ for p = 1:length(fnms)
             continue;
         end
         if qRelPath
-            str = [str, pref, fnms(p).name, char(10)];
+            str = [str, pref, fnms(p).name, newline];
         else
-            str = [str, pref, char(215), ' ', fnms(p).name, char(10)];
+            str = [str, pref, char(215), ' ', fnms(p).name, newline];
         end
     end
     if isfolder([dirnm, filesep, fnms(p).name])
@@ -74,7 +74,7 @@ for p = 1:length(fnms)
                 str = [str, DirList([dirnm, filesep, fnms(p).name], qdispfiles, lim - 1, [pref, fnms(p).name, '/'], folderFilter, fileFilter, qRelPath)];
             end
         else
-            str = [str, fnms(p).name, char(10)];
+            str = [str, fnms(p).name, newline];
             if lim > 0
                 str = [str, DirList([dirnm, filesep, fnms(p).name], qdispfiles, lim - 1, [pref, '  '], folderFilter, fileFilter, qRelPath)];
             end
