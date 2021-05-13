@@ -1143,7 +1143,7 @@ return;
 
                                             case {'illuminance'}
                                                 data = vcGetROIData(oi, roiLocs, 'illuminance');
-                                                hist(data(:));
+                                                histogram(data(:));
                                                 uData.illum = data;
                                                 xlabel('Iluminance (lux)');
                                                 ylabel('Count');

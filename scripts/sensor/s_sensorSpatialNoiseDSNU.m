@@ -82,7 +82,7 @@ close(wBar);
 % pixel. This also reduces the standard deviation and thus the DSNU
 % estimate, below the true DSNU.
 vcNewGraphWin;
-hist(volts(:), 100);
+histogram(volts(:), 100);
 
 % So, get rid of all the very very small, basically zero, voltages
 v2 = volts(volts > 1e-6);
@@ -98,7 +98,7 @@ meanOffset = mean(volts, 2);
 
 % The histogram is not the DSNU because of the clipping
 vcNewGraphWin;
-hist(meanOffset, 50)
+histogram(meanOffset, 50)
 grid on;
 title('Offsets averaged across reads');
 

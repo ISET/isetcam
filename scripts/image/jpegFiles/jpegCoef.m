@@ -69,7 +69,7 @@ if r ~= newr | c ~= newc
         end
     end
 
-    % hist(block(:))
-    % hist(dctQuant(:))
+    % histogram(block(:))
+    % histogram(dctQuant(:))
 
     return

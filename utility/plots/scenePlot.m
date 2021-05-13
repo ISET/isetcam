@@ -546,7 +546,7 @@ switch lower(pType)
         data = vcGetROIData(scene, roiLocs, 'luminance');
         udata.lum = data;
         if isempty(data), error('Luminance must be present in the scene structure.'); end
-        hist(data(:), 40);
+        histogram(data(:), 40);
         xlabel('Luminance (cd/m2)');
         ylabel('Count');
         title('Luminance histogram');

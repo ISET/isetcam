@@ -44,7 +44,7 @@ bCoef = jpegCoef(b, qFactor);
 % You can see that we did well in terms of zeroing lots of the
 % coefficients so that the result will be strongly compressed.
 %
-hist(bCoef(:), [-100:10:260])
+histogram(bCoef(:), [-100:10:260])
 title('Histogram of quantized coefficients (b channel)');
 
 % To prove this, let's just consider some of the sizes of things.
@@ -85,8 +85,8 @@ rJPEG = truncate(jpegRGB(rCoef, qFactor), 0, 255);
 gJPEG = truncate(jpegRGB(gCoef, qFactor), 0, 255);
 bJPEG = truncate(jpegRGB(bCoef, qFactor), 0, 255);
 
-% foo = jpegRGB(rCoef,q1); hist(foo(:))
-% hist(rJPEG(:))
+% foo = jpegRGB(rCoef,q1); histogram(foo(:))
+% histogram(rJPEG(:))
 Xjpeg(:, :, 1) = rJPEG;
 Xjpeg(:, :, 2) = gJPEG;
 Xjpeg(:, :, 3) = bJPEG;
@@ -169,21 +169,21 @@ title(sprintf('Chrominance quantization table for Q=%d', Q_factor));
     Cbcoef = jpegCoef(Cb, q2);
     Crcoef = jpegCoef(Cr, q2);
 
-    % hist(Ycoef(:),[-100:10:200])
-    % hist(Cbcoef(:),[-100:10:200])
+    % histogram(Ycoef(:),[-100:10:200])
+    % histogram(Cbcoef(:),[-100:10:200])
 
     yJPEG = jpegRGB(Ycoef, q1);
     CbJPEG = jpegRGB(Cbcoef, q2);
     CrJPEG = jpegRGB(Crcoef, q2);
 
-    % hist(yJPEG(:))
+    % histogram(yJPEG(:))
 
     % Convert the compressed YCbCr image back into RGB format
     rJPEG = truncate(yJPEG+1.4020*CrJPEG, 0, 255);
     gJPEG = truncate(yJPEG-0.3441*CbJPEG-0.7141*CrJPEG, 0, 255);
     bJPEG = truncate(yJPEG+1.7720*CbJPEG-0.0001*CrJPEG, 0, 255);
 
-    % hist(rJPEG(:),[-100:5:200])
+    % histogram(rJPEG(:),[-100:5:200])
     Xjpeg(:, :, 1) = rJPEG;
     Xjpeg(:, :, 2) = gJPEG;
     Xjpeg(:, :, 3) = bJPEG;

@@ -41,7 +41,7 @@ mean(pMean(:));
 
 noisyPhotons = oiGet(oi, 'photons with noise');
 pNoise = noisyPhotons(:, :, 10) - photons(:, :, 10);
-% vcNewGraphWin; hist(pNoise(:))
+% vcNewGraphWin; histogram(pNoise(:))
 
 % This should be close to 1
 t = var(pNoise(:)) / mean(pMean(:));

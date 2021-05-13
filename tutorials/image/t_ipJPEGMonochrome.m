@@ -39,7 +39,7 @@ title('Original Image Data');
 % to a single block. Here is an 8x8 block from the image
 
 block = im(89:96, 105:112)
-vcNewGraphWin; hist(block(:))
+vcNewGraphWin; histogram(block(:))
 title('Histogram of 8x8 block near image center');
 xlabel('Pixel value');
 ylabel('Count');
@@ -64,7 +64,7 @@ title('Selected DCT basis functions');
 % We multiply the columns of the block by the dctMatrix and then
 % we multiply the rows.
 dctCoef = dctMatrix * block * dctMatrix';
-hist(dctCoef(:))
+histogram(dctCoef(:))
 title('DCT coefficient histogram')
 
 % Here is an image of the coefficients.  We use a nonlinear map
@@ -165,7 +165,7 @@ title(sprintf('Luminance quantization table for Q=%d', Q_factor));
         % at a few levels, particularly zero. This makes themm very easy
         % to compress.
         %
-        vcNewGraphWin; hist(dctQuant(:), [-100:5:256])
+        vcNewGraphWin; histogram(dctQuant(:), [-100:5:256])
         title('Histogram for DCT image after quantization');
             xlabel('Value');
             ylabel('Count');
@@ -194,10 +194,10 @@ title(sprintf('Luminance quantization table for Q=%d', Q_factor));
             % out again, but not as spread out as the original.
             vcNewGraphWin;
             subplot(1, 2, 1);
-            hist(block(:));
+            histogram(block(:));
             title('Original')
             subplot(1, 2, 2);
-            hist(blockjpeg(:));
+            histogram(blockjpeg(:));
             title('Compressed')
 
             % If we use the IDCT function in Matlab, the results should be

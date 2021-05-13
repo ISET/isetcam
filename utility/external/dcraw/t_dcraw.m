@@ -54,7 +54,7 @@ raw = imread('rawFile.pgm');
 vcNewGraphWin; imagesc(raw);
 colormap(gray(1024)); axis image
 
-% vcNewGraphWin; hist(single(raw(:)),100)
+% vcNewGraphWin; histogram(single(raw(:)),100)
 
 %% Now get the corresponding JPG data
 
@@ -69,7 +69,7 @@ jpg = imread('jpgFile.jpg');
 vcNewGraphWin; imagesc(jpg);
 colormap(gray(1024)); axis image
 
-% vcNewGraphWin; hist(single(jpg(:)),100)
+% vcNewGraphWin; histogram(single(jpg(:)),100)
 
 %%
 %}

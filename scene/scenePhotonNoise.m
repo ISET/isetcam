@@ -17,7 +17,7 @@ function [noisyPhotons, theNoise] = scenePhotonNoise(scene, rectOrLocs)
 % Examples:
 %    scene = sceneCreate('uniform');
 %    [noisyPhotons,theNoise] = scenePhotonNoise(oi);
-%    vcNewGraphWin; tmp = noisyPhotons(:,:,10); tmp = tmp(tmp > 2*10^13); hist(tmp(:))
+%    vcNewGraphWin; tmp = noisyPhotons(:,:,10); tmp = tmp(tmp > 2*10^13); histogram(tmp(:))
 %    imagesc(noisyPhotons(:,:,10)); colormap(gray)
 %
 % Copyright ImagEval Consultants, LLC, 2013.

@@ -96,7 +96,7 @@ photons = sensorGet(sensor, 'photons', 1);
 fprintf('Computed mean photon rate %e\n', mean(photons(:)))
 
 % Show the distribution
-% vcNewGraphWin; hist(photons(:),50)
+% vcNewGraphWin; histogram(photons(:),50)
 
 c2e = sensorGet(sensor, 'integration time') / q;
 
@@ -116,11 +116,11 @@ val = poissrnd(tRate, nSamp);
 xval = min(photons(:)):max(photons(:));
 
 vcNewGraphWin;
-n = hist(val(:), xval);
+n = histogram(val(:), xval);
 bar(xval, n/sum(n(:)));
 hold on;
 
-[n, c] = hist(photons(:), xval);
+[n, c] = histogram(photons(:), xval);
 n = n / sum(n(:));
 lst = (n > 0);
 plot(c(lst), n(lst), 'ro-', 'linewidth', 2);

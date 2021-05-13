@@ -68,7 +68,7 @@ grid on
 
 % CIELAB error histogram
 subplot(2, 1, 2)
-hist(dE, 15);
+histogram(dE, 15);
 title('Color error');
 xlabel('Delta E_{ab}');
 ylabel('Count');

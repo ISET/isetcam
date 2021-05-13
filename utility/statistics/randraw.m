@@ -13,7 +13,7 @@ function varargout = randraw(distribName, distribParams, varargin)
 %           returns array Y of size = sampleSize of random variates from distribName
 %           distribution with parameters distribParams
 % Example:
-%    Y = randraw('poisson',7,5000); hist(Y,50)
+%    Y = randraw('poisson',7,5000); histogram(Y,50)
 %
 %               ALPHABETICAL LIST OF THE SUPPORTED DISTRIBUTIONS:
 %  ____________________________________________________________________

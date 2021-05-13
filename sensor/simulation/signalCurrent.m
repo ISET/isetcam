@@ -70,10 +70,10 @@ end
 
 %{
 figure
-tmp = signalCurrentImage(1:2:end,1:2:end); subplot(2,2,1), hist(tmp(:))
-tmp = signalCurrentImage(1:2:end,2:2:end); subplot(2,2,2), hist(tmp(:))
-tmp = signalCurrentImage(2:2:end,1:2:end); subplot(2,2,3), hist(tmp(:))
-tmp = signalCurrentImage(2:2:end,2:2:end); subplot(2,2,4), hist(tmp(:))
+tmp = signalCurrentImage(1:2:end,1:2:end); subplot(2,2,1), histogram(tmp(:))
+tmp = signalCurrentImage(1:2:end,2:2:end); subplot(2,2,2), histogram(tmp(:))
+tmp = signalCurrentImage(2:2:end,1:2:end); subplot(2,2,3), histogram(tmp(:))
+tmp = signalCurrentImage(2:2:end,2:2:end); subplot(2,2,4), histogram(tmp(:))
 %}
 
 end

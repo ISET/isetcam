@@ -49,7 +49,7 @@ for kk = 1:nSamp
     sensorN = sensorComputeNoise(sensorNF, []);
     voltImages(:, :, kk) = sensorGet(sensorN, 'volts');
     % v2 = voltImages(:,:,kk); v1 = sensorGet(sensorNF,'volts');
-    % vcNewGraphWin; hist(v1(:)-v2(:),100)
+    % vcNewGraphWin; histogram(v1(:)-v2(:),100)
     if ~mod(kk, 10) && showBar, waitbar(kk/nSamp); end
 end
 if showBar, close(h); end

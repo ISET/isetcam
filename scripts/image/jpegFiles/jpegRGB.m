@@ -56,6 +56,6 @@ for i = 1:8:size(coef, 1)
 end
 
 % mmax(dctRGB)
-% hist(dctRGB(:))
+% histogram(dctRGB(:))
 
 return

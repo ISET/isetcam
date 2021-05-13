@@ -56,7 +56,7 @@ result = ieXYZ2LAB(result, whitePt{1}, useOldCode);
 % figure; imagesc(result(:,:,1));
 % figure; imagesc(result(:,:,2)); colormap(gray), axis image
 % figure; imagesc(result(:,:,3));
-% tmp = getMiddleMatrix(result(:,:,1),[20,20]); hist(tmp(:),50);
-% figure; tmp = result(:,:,1); hist(tmp(:),40);
+% tmp = getMiddleMatrix(result(:,:,1),[20,20]); histogram(tmp(:),50);
+% figure; tmp = result(:,:,1); histogram(tmp(:),40);
 
 return;

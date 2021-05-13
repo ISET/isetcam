@@ -41,7 +41,7 @@ figNum = vcSelectFigure('GRAPHWIN');
 plotSetUpWindow(figNum);
 
 nBins = max(10, length(data(:))/10);
-hist(data(:), nBins);
+histogram(data(:), nBins);
 
 xlabel(plotType);
 ylabel('Count');

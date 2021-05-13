@@ -93,7 +93,7 @@ title('Should be scattered')
 
 % The photon noise, clipping, and quantization errors
 vcNewGraphWin;
-hist(v1(:)-v2(:), 100);
+histogram(v1(:)-v2(:), 100);
 xlabel('Volts')
 ylabel('Pixel count')
 title('Noise photon, clipping, quantization)')

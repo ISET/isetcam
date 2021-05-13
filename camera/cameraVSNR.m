@@ -41,7 +41,7 @@ for ii = 1:length(lightLevels)
     %     sensor = sensorSet(camera.sensor,'exp time',exposureTime);  %
     %     sensor = sensorCompute(sensor,oi);
     %     % v = sensorGet(sensor,'volts',2);
-    %     % vcNewGraphWin; hist(v(:),50);
+    %     % vcNewGraphWin; histogram(v(:),50);
     %
     %     vci    = ipCompute(camera.vci,sensor);
     %     result = ipGet(vci,'result');

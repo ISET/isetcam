@@ -122,7 +122,7 @@ subplot(2, 2, 2)
 
 % We compute the delta E difference between the data and the ideal
 dE = deltaEab(macbethXYZ, idealXYZ, whiteIdealXYZ);
-hist(dE);
+histogram(dE);
 grid on;
 axis square
 title(sprintf('Mean deltaE = %.2f', mean(dE)));
