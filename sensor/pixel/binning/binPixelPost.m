@@ -20,7 +20,7 @@ switch lower(bMethod)
         binFun = @(dv) round(0.5*[1, 0, 1, 0; 0, 1, 0, 1]*dv);
 
         % Apply binFun to [4,2] sections in the digital data
-        dv = blkproc(dv, [4, 2], binFun);
+        dv = blockproc(dv, [4, 2], binFun);
         sensor = sensorSet(sensor, 'digitalValues', dv);
     case 'averageadjacentdigitalblocks'
         % In this case we want to average a 4x4 block down to a 2x2 block.
@@ -31,7 +31,7 @@ switch lower(bMethod)
         binFun = @(x) 0.25 * [1, 0, 1, 0; 0, 1, 0, 1] * x * [1, 0, 1, 0; 0, 1, 0, 1]';
 
         % Apply binFun to [4,2] sections in the digital data
-        dv = blkproc(dv, [4, 4], binFun);
+        dv = blockproc(dv, [4, 4], binFun);
         sensor = sensorSet(sensor, 'digitalValues', dv);
 
     otherwise
