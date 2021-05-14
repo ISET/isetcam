@@ -5,7 +5,7 @@ function oi = oiAdjustIlluminance(oi,newLevel,stat)
 %
 %Purpose:
 %   Adjust the (mean or max) photon level in the optical structure so that
-%   the  mean illuminance level is newLevel, rather than the current level.  
+%   the  mean illuminance level is newLevel, rather than the current level.
 %   The fields oi.data.illuminance and oi.data.newLevel are updated as well.
 %
 % Example:

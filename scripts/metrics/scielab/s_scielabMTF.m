@@ -21,8 +21,8 @@ w1 = 0.0; w2 = 0.0;
 %% Calculate the delta E of S-SCIELAB between a uniform and grating
 
 % Here is a uniform patch (0 contrast)
-parms.freq = fList(1); 
-parms.contrast = 0.0; parms.ph = 0; parms.ang= 0; 
+parms.freq = fList(1);
+parms.contrast = 0.0; parms.ph = 0; parms.ang= 0;
 parms.row = 128; parms.col = 128;
 parms.GaborFlag=0;
 uStandard = sceneCreate('harmonic',parms);
@@ -47,11 +47,11 @@ dE = ones(nFreq,1);
 dES = ones(nFreq,1);
 
 % Create harmonic scene that will add to uniform
-for ii=1:nFreq    
+for ii=1:nFreq
     parms.freq = fList(ii);
     uTest = sceneCreate('harmonic',parms);
     uTest = sceneSet(uTest,'fov',1);
-
+    
     % Funny way to adjust the color.  We should figure out a way that
     % specifies the XYZ of the uniform field directly, without this kind of
     % a cheap trick.

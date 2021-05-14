@@ -15,7 +15,7 @@ function [illScale, meanSPD] = hcIlluminantScale(hcIlluminant)
 %
 % Example:
 %
-% 
+%
 % See also:  s_hcHyspexToISET
 %
 % Copyright Imageval, LLC , 2013

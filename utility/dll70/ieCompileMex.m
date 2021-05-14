@@ -27,7 +27,7 @@ function ieCompileMex(fList)
 % Copyright, ImagEval 2006
 
 if ieNotDefined('fList')
-    % All known files 
+    % All known files
     fList = {'md5','ieGetMACAddress'};
 end
 
@@ -44,7 +44,7 @@ for ii=1:length(fList)
                 which('md5')
                 break;
             end
-
+            
             chdir(fullfile(isetRootPath,'dll70','md5'));
             mex md5.cpp
             if ~exist(['./md5.',mexext],'file')
@@ -53,24 +53,24 @@ for ii=1:length(fList)
                 movefile(['md5.',mexext],fullfile(isetRootPath,'dll70'));
                 path(path)
                 fprintf('\ninstalled %s\n',which('md5'));
-
+                
             end
-
+            
             % Eliminate shadowing problem
             if exist('md5.dll','file')
                 fprintf('Removing old md5.dll: %s\n',which('md5.dll'));
                 delete(which('md5.dll'));
             end
-
+            
             if strcmp(md5('test'),'098f6bcd4621d373cade4e832627b4f6')
                 disp('md5 verified')
             else
                 error('Problem with md5 verification');
             end
-
+            
         case 'ieGetMACAddress'
             fprintf('   ieGetMACAddress...');
-
+            
             % We have problems with move if the file exists, because the
             % file is locked by Matlab and cannot be over-written.
             if exist(['ieGetMACAddress.',mexext],'file')
@@ -93,19 +93,19 @@ for ii=1:length(fList)
                 fprintf('For Linux/Apple architectures\n')
                 fprintf('we use the m-file.\n');
             end
-
+            
             % Eliminate shadowing problem
             if exist('ieGetMACAddress.dll','file')
                 fprintf('Removing old ieGetMACAddress.dll: %s\n',which('ieGetMACAddress.dll'));
                 delete(which('ieGetMACAddress.dll'));
             end
-
+            
             % MAC address
             fprintf('Your MAC address is: %s \n',ieGetMACAddress)
-
+            
         otherwise
             error('Unknown file %s\n',fList{ii});
-
+            
     end
 end
 

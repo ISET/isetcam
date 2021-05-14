@@ -1,5 +1,5 @@
 function vcSaveSESSION(fname)
-% Save the vcSESSION information 
+% Save the vcSESSION information
 %
 %    vcSaveSESSION(fname)
 %
@@ -17,18 +17,18 @@ if ieNotDefined('fname'), fname = ieSessionGet('name'); end
 if checkfields(vcSESSION,'GRAPHWIN'), GRAPHWIN = vcSESSION.GRAPHWIN; else GRAPHWIN = []; end
 if checkfields(vcSESSION,'GUI'), GUI = vcSESSION.GUI; else GUI = []; end
 
-vcSESSION.GRAPHWIN = []; 
+vcSESSION.GRAPHWIN = [];
 vcSESSION.GUI = [];
 
 % Save the session file
 sessionDir = ieSessionGet('dir');
-if ~exist(sessionDir,'dir'), 
+if ~exist(sessionDir,'dir'),
     %  This can happen if a session directory is changed or placed on a different
     %  computer.
     fullSessionFile = vcSelectDataFile('session','w');
     sessionDir = fileparts(fullSessionFile);
     ieSessionSet('dir',sessionDir);
-else  
+else
     fullSessionFile = fullfile(sessionDir,fname);
 end
 

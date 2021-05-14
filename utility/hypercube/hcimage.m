@@ -36,17 +36,17 @@ switch dType
         axis image
     case {'imagemontage','montage'}
         nWave = size(hc,3);
-        if length(varargin) > 1, slices = varargin{1}; 
+        if length(varargin) > 1, slices = varargin{1};
         else slices = 1:nWave;
         end
-
+        
         figH = imageMontage(hc,slices);
         colormap(gray)
-
+        
     case 'movie'
         % Show the hypercube data as a movie
         hc = 256*double(hc/max(hc(:)));
-        mp = mplay(hc); 
+        mp = mplay(hc);
         mFig = mp.hfig;
         set(mFig,'name',sprintf('Hypercube wavebands: %d', size(hc,3)));
         

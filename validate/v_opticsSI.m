@@ -19,7 +19,7 @@ delay = 0.2;
 
 %% Let's work with a small checkerboard scene
 pixPerCheck = 8;
-nChecks = 12; 
+nChecks = 12;
 scene = sceneCreate('checkerboard',pixPerCheck,nChecks);
 wave  = sceneGet(scene,'wave');
 scene = sceneSet(scene,'fov',3);

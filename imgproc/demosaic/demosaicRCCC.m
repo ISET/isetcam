@@ -8,7 +8,7 @@ function demosaicImage = demosaicRCCC(mosaicImage)
 %   Implements an Analog.com algorithm for demosaicking an RCCC sensor into
 %   a monochrome sensor.  The algorithm does not make a lot of sense to BW,
 %   but it exists.  We could try an L3 variant of this, IMHO.
-%  
+%
 % Input
 %  mosaicImage:   RCCC planar sensor image
 %

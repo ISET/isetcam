@@ -10,12 +10,12 @@ function output = ComputeGammaSig(x,input)
 %                   Better be sure that last value is max setting.
 
 if (x(2) <= 0)
-  %disp('Illegal value for x(2)');
-  x(2) = 0.1;
+    %disp('Illegal value for x(2)');
+    x(2) = 0.1;
 end
-if (x(3) <= 0) 
-  %disp('Illegal value for x(3)');
-  x(3) = 0.1;
+if (x(3) <= 0)
+    %disp('Illegal value for x(3)');
+    x(3) = 0.1;
 end
 sinput = (input/x(2)).^x(3);
 output = sinput./(sinput + x(1));

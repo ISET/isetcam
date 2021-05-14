@@ -6,7 +6,7 @@
 % # Create an optical image from the scene
 % # Define a sensor
 % # Evaluate the sensor MTF over a range of possible sensor
-% parameters (pixel size)  
+% parameters (pixel size)
 %
 % We measure the system MTF properties using a simple slanted bar
 % target along with the *ISO 12233* standard methods.
@@ -19,7 +19,7 @@
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
-%% 
+%%
 ieInit
 
 %% Initialize parameters
@@ -56,9 +56,9 @@ sensor = sensorCreate('monochrome');                %Initialize
 sensor = sensorSet(sensor,'autoExposure',1);
 
 % We are now ready to set sensor and pixel parameters to produce a variety
-% of captured images.  
+% of captured images.
 % Set the rendering properties for the monochrome imager. The default does
-% not color convert or color balance, so it is appropriate. 
+% not color convert or color balance, so it is appropriate.
 ip = ipCreate;
 
 % To see the scene, optical image, sensor or virtual camera image in the
@@ -77,7 +77,7 @@ ip = ipCreate;
 %    sensor = sensorSet(sensor,'pixel',pixel);
 %    sensor = sensorSet(sensor,'rows',round(dyeSizeMicrons/pS));
 %    sensor = sensorSet(sensor,'cols',round(dyeSizeMicrons/pS));
-%    sensor = sensorCompute(sensor,oi); 
+%    sensor = sensorCompute(sensor,oi);
 %    vcReplaceObject(sensor); sensorWindow;
 %    vci = ipCompute(vci,sensor);
 %    vcReplaceObject(vci); ipWindow;
@@ -91,22 +91,22 @@ for ii=1:length(pSize)
     
     % Adjust the pixel size (meters)
     sensor = sensorSet(sensor,'pixel size constant fill factor',[pSize(ii) pSize(ii)]*1e-6);
-
+    
     %Adjust the sensor row and column size so that the sensor has a constant
     %field of view.
     sensor = sensorSet(sensor,'rows',round(dyeSizeMicrons/pSize(ii)));
     sensor = sensorSet(sensor,'cols',round(dyeSizeMicrons/pSize(ii)));
-
+    
     sensor = sensorCompute(sensor,oi);
-    vcReplaceObject(sensor); 
-     
+    vcReplaceObject(sensor);
+    
     ip = ipCompute(ip,sensor);
-    vcReplaceObject(ip); 
+    vcReplaceObject(ip);
     % ipWindow;
     
     rect = round(masterRect/pSize(ii));
     roiLocs = ieRect2Locs(rect);
-       
+    
     barImage = vcGetROIData(ip,roiLocs,'results');
     c = rect(3)+1;
     r = rect(4)+1;
@@ -124,7 +124,7 @@ for ii=1:length(pSize)
 end
 
 % The mtfData cell array contains all the information plotted in this
-% figure.  We graph the results, comparing the different pixel size MTFs. 
+% figure.  We graph the results, comparing the different pixel size MTFs.
 vcNewGraphWin;
 c = {'r','g','b','c','m','y','k'};
 for ii=1:length(mtfData)

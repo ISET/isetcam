@@ -1,5 +1,5 @@
 function scdImage = SignalCurrentDensity(OI,ISA)
-% Estimate the signal current density (current/meter^2) across the sensor surface 
+% Estimate the signal current density (current/meter^2) across the sensor surface
 %
 %       scdImage = SignalCurrentDensity(OI,ISA)
 %
@@ -15,11 +15,11 @@ function scdImage = SignalCurrentDensity(OI,ISA)
 % Computational steps:
 %
 %   The irradiance image in photons (quanta) is multiplied by the spectral
-%   QE information. 
+%   QE information.
 %
 %   The calculation treats the input data as photons, estimates the
 %   fraction of these that are effective, and then turns this into a charge
-%   per unit area.  
+%   per unit area.
 %
 %   Subsequent calculations account for the photodetector area.
 %
@@ -32,15 +32,15 @@ function scdImage = SignalCurrentDensity(OI,ISA)
 % Critical size used to decide which computational method is applied.  The
 % computational issue is memory size versus speed (see below).
 % Changed 4x in 2015 because computers are bigger.
-critSize = 2^20;  
+critSize = 2^20;
 
 q = vcConstants('q');       % Charge per electron
 
 % Hack.  But if we use sceneGet, we get all the data back.
-if ~checkfields(OI,'data','photons')   
-    warndlg('Optical image irradiance in photons is required.'); 
+if ~checkfields(OI,'data','photons')
+    warndlg('Optical image irradiance in photons is required.');
     signalCurrentDensityImage = []; %#ok<NASGU>
-    return; 
+    return;
 end
 
 % Optical image variables.
@@ -52,13 +52,13 @@ oiNWave = oiGet(OI,'nwave');
 
 % Sensor variables
 nFilters = sensorGet(ISA,'nfilters');
-spectralQE = sensorGet(ISA,'spectralqe'); 
+spectralQE = sensorGet(ISA,'spectralqe');
 sensorWave = sensorGet(ISA,'wave');
 
 % It is possible that the sensor spectral QE is not specified at the
 % same wavelength sampling resolution as the irradiance.  In that case,
 % we resample to the lower wavelength sampling resolution.
-if ~isequal(oiWave,sensorWave) 
+if ~isequal(oiWave,sensorWave)
     % Adjust the sensor spectral QE wavelength sampling, in all of the
     % sensor color channels,  to match the irradiance wavelength sampling.
     % We do not change the sensor wavelength data here.
@@ -86,7 +86,7 @@ sQE = spectralQE*oiWaveBinwidth;
 % of detail.
 %
 % At present the etendue calculation is incorporated as a single scale
-% factor at each pixel and incorporated in the sensorComputeImage routine. 
+% factor at each pixel and incorporated in the sensorComputeImage routine.
 
 % sQE is a wavelength x nSensor matrix, and it includes a conversion
 % factor that will maps the electrons per square meter into amps per
@@ -127,8 +127,8 @@ else
 end
 
 % Convert the photons into a charge using the constant that defines
-% charge/electron.  This is the signal current density (scd) image 
+% charge/electron.  This is the signal current density (scd) image
 % It has units of quanta/m2/sec/bin * charge/quanta = charge/m2/sec/bin
-scdImage = scdImage * q;  
+scdImage = scdImage * q;
 
 return;

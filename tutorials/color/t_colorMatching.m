@@ -4,11 +4,11 @@
 %    Tutorial:  Color Matching on Displays
 %    Author:    Wandell
 %    Purpose:   Introduce phosphor SPDs, XYZ functions, gamma, matching calculations
-%    Date:      01.02.96	
+%    Date:      01.02.96
 %    Duration:  45 minutes
-%	
+%
 %    Matlab 5:  Checked 01.06.98 BW
-%    Matlab 7:  Checked 01.06.06 GN/BW 
+%    Matlab 7:  Checked 01.06.06 GN/BW
 %
 %  This tutorial  introduces several computational methods in color.  These
 %  are:
@@ -18,9 +18,9 @@
 %  * How to manage the nonlinear relationship between frame
 %    buffer and emitted light output
 %  * How to compute and plot the xy chromaticity values of a display
-%  
+%
 
-%% 
+%%
 ieInit
 
 %% Computing XYZ values of a monitor
@@ -92,7 +92,7 @@ sum(maxXYZ(2,:))
 %  it up.
 
 % We set up again, but this time we suppose the display is only calibrated
-% from 400 to 700 in 5 nm steps.  
+% from 400 to 700 in 5 nm steps.
 wavelength = 400:5:700;
 d = displayCreate('CRT-Dell',wavelength);
 phosphors  = displayGet(d,'spd');
@@ -130,7 +130,7 @@ title('Energy of Red and Blue Phosphors combined');
 % outputs, we only need to multiply the output times the XYZ functions.
 % Hence, there is a matrix that maps the linear monitor intensities into
 % the XYZ values.  This matrix is
-% 
+%
 RGB2XYZ = ieXYZFromEnergy(phosphors',wavelength)';
 
 % Take a look at this matrix and think about its entries.  Notice that the
@@ -152,7 +152,7 @@ marsRGB = XYZ2RGB*marsXYZ'
 ieXYZFromEnergy((phosphors*marsRGB)',wavelength)
 ieXYZFromEnergy(marsSPD',wavelength)
 
-% The spectrum we should display, therefore, is equal to 
+% The spectrum we should display, therefore, is equal to
 ieNewGraphWin;
 subplot(2,1,1)
 plot(wavelength,phosphors*marsRGB)
@@ -161,7 +161,7 @@ set(gca,'ylim',[0 2])
 xlabel('wavelength(nm)');ylabel('Energy (watts/nm/sr/m^2)')
 
 % This will be a visual match to the spectrum
-subplot(2,1,2) 
+subplot(2,1,2)
 plot(wavelength,marsSPD);
 set(gca,'ylim',[0 2])
 title('SPD of original martian image');
@@ -184,7 +184,7 @@ xlabel('wavelength(nm)');ylabel('Energy')
 load cMatch/monitorGam
 ieNewGraphWin;
 plot(1:256,monitorGam(:,1)), grid on
-xlabel('Frame buffer'); 
+xlabel('Frame buffer');
 ylabel('Emitted intensity of red phoshor');
 title('Display "Gamma" function')
 
@@ -350,7 +350,7 @@ hold off
 % of the gamut.  The position of the white point depends on the
 % sum of the (X,Y,Z) values from each of the phosphors.  These
 % are unequal, with the green and blue being the largest.  Hence,
-% the white point is closer to these two corners of the gamut 
+% the white point is closer to these two corners of the gamut
 
 sum(maxXYZ)
 
@@ -366,7 +366,7 @@ title(sprintf('%s gamut',displayGet(d,'name')));
 % USING THE COLOR MATCHING FUNCTIONS
 %
 % Consider a color matching experiment using a CRT monitor with phosphor
-% spectral power distributions (SPD) given by 'phosphors' in 
+% spectral power distributions (SPD) given by 'phosphors' in
 % cMatch/monitor.mat
 %
 % a) Using the CIE-XYZ method, calculate what phosphor intensities you will
@@ -383,13 +383,13 @@ title(sprintf('%s gamut',displayGet(d,'name')));
 % COLOR MONITOR CALIBRATION AND CHROMATICITY
 %
 % a) Let the SPDs of the three phosphors of a color monitor be R, G, and B.
-% Let the value of a pixel be written as a vector x = [r,g,b], where r, g, 
-% and b are between 0 and 1. 
+% Let the value of a pixel be written as a vector x = [r,g,b], where r, g,
+% and b are between 0 and 1.
 %
 % Write the matrix equation that expresses the SPD of a monitor pixel
 % displaying the pixel x.  (Ignore gamma correction)
 %
-% 
+%
 % b) How do the set of spectral power distributions emitted from a pixel
 % compare with the spectral power distributions that are possible in the
 % environment?
@@ -408,14 +408,14 @@ title(sprintf('%s gamut',displayGet(d,'name')));
 % diagram to show what you mean.
 %
 %% Optional questions
-% 
+%
 % Suppose you are an LCD manufacturer, and you know that if you had an
-% ideal LCD, each of the R,G,B color channels would emit light 
+% ideal LCD, each of the R,G,B color channels would emit light
 % according to the SPD given in monitors.mat.  We have already plotted
 % the color gamut of such a monitor.
 %
 % In a real LCD display, the LC gates are not able to block 100% of the
-% light from the backlight.  Suppose that due to such leakage, the 
-% contrast ratio between a fully black and fully white display is 100:1.  
+% light from the backlight.  Suppose that due to such leakage, the
+% contrast ratio between a fully black and fully white display is 100:1.
 % Plot the gamut of colors for this display and explain what happens.
 

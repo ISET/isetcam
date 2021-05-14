@@ -10,7 +10,7 @@ function wvf = wvfCreate(varargin)
 % Returns a wavelength structure
 %  Default:   a diffraction limited PSF for a 3 mm pupil.
 %  varargin:  Parsed as (param, val) pairs to call wvfSet()
-%   
+%
 % The list of settable parameters is in wvfSet.
 %
 % Examples:
@@ -35,7 +35,7 @@ wvf = wvfSet(wvf,'type','wvf');
 % pupil, separated from the image plane.  Consequently the frequency
 % representation at the image plane is wavelength dependent.  This is the
 % only case we run in ISETCam.  ISETBio permits an additional option.
-wvf = wvfSet(wvf,'sample interval domain','pupil');  
+wvf = wvfSet(wvf,'sample interval domain','pupil');
 
 % This was the alternative domain.  All this has me worried (BW).
 % wvf = wvfSet(wvf,'sample interval domain','psf');  % Original default.

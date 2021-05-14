@@ -1,8 +1,8 @@
 function [noisyImage,colDSNU,colPRNU] = binNoiseColumnFPN(ISA)
-%Apply  column fpn to the voltage in the sensor image 
+%Apply  column fpn to the voltage in the sensor image
 %
 %    [noisyImage,colDSNU,colPRNU] = binNoiseColumnFPN(ISA)
-% 
+%
 % The column offset (DSNU) is a Gaussian random variable.
 %
 % The column gain (PRNU) is a random variably around unit slope, i.e.,

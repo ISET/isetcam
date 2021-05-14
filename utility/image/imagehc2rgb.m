@@ -16,7 +16,7 @@ function rgbImages = imagehc2rgb(obj,nBands)
 %
 %  oi = oiCreate; oi = oiCompute(oi,scene);  rgb = imagehc2rgb(oi);
 %  N = size(rgb,4); for ii=1:N, vcNewGraphWin; imagescRGB(rgb(:,:,:,ii)); end
-% 
+%
 %  rgb = imagehc2rgb(scene,10);
 %  N = size(rgb,4); for ii=1:N, vcNewGraphWin; imagescRGB(rgb(:,:,:,ii)); end
 %
@@ -37,7 +37,7 @@ switch obj.type
         r = sceneGet(obj,'rows'); c = sceneGet(obj,'cols');
     case 'opticalimage'
         nWave = oiGet(obj,'nwave');    w = oiGet(obj,'wave');
-        r = oiGet(obj,'rows'); c = oiGet(obj,'cols');      
+        r = oiGet(obj,'rows'); c = oiGet(obj,'cols');
     otherwise
         error('Bad object type %s\n',obj.type);
 end

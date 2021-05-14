@@ -7,7 +7,7 @@ function md5Mex
 % about the name and location of the md5 file.  This file is essential for
 % license verification.
 %
-% Users may need to run 
+% Users may need to run
 %
 %    mex -setup
 %
@@ -18,7 +18,7 @@ function md5Mex
 % Copyright ImagEval Consultants, LLC, 2008.
 
 %TODO:  This has worked many times.  But there can be a problem with the
-%compiler installation.  
+%compiler installation.
 %
 
 chdir(fullfile(isetRootPath,'utility','dll70','md5'));

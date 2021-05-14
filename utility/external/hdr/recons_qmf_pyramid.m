@@ -3,7 +3,7 @@ function [res] = recons_qmf_pyramid(pyr, qmf_length)
 % [res] = recons_qmf_pyramid(pyr, qmf_length)
 % reconstructs an image from a non-decimated qmf pyramid
 % built using [pyr] = qmf_pyramid(pic, nlevels, qmf_length)
-% qmf_length can be 9 or 13, and has to be consistent with 
+% qmf_length can be 9 or 13, and has to be consistent with
 %    the qmf_length used to build the pyramid
 % Yuanzhen Li (yzli@mit.edu), Dec 2004
 
@@ -25,8 +25,8 @@ if qmf_length == 9
     filt_high = modulateFlip(filt_low)'; %[0.02807382 +0.060944743 -0.073386624 -0.41472545 0.7973934 -0.41472545 -0.073386
 elseif qmf_length == 13
     filt_low = [-0.014556438 0.021651438 0.039045125 -0.09800052 ...
-            -0.057827797 0.42995453 0.7737113 0.42995453 -0.057827797 ...
-            -0.09800052 0.039045125 0.021651438 -0.014556438]/sqrt(2);
+        -0.057827797 0.42995453 0.7737113 0.42995453 -0.057827797 ...
+        -0.09800052 0.039045125 0.021651438 -0.014556438]/sqrt(2);
     filt_high = modulateFlip(filt_low)';
 end
 

@@ -10,7 +10,7 @@
 ieInit
 
 %% If setting ip method by hand, do this
-scene = sceneCreate;  
+scene = sceneCreate;
 oi = oiCreate; sensor = sensorCreate; ip = ipCreate;
 oi = oiCompute(oi,scene); sensor = sensorCompute(sensor,oi);
 ip = ipSet(ip,'demosaic method','bilinear');

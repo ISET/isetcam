@@ -20,10 +20,10 @@ function [de00, errComponents] = deltaE2000(Labstd, Labsample, KLCH)
 %   values.  The difference between these is the error measure.  The CIELAB
 %   values are computed from CIE XYZ measurements using standard lab
 %   equipment.
-%   
+%
 %   ImagEval added a new return term (errComponents) that contains the
 %   separate luminance, chromatic, and hue error terms.  These components,
-%   which are scaled and combined 
+%   which are scaled and combined
 %
 %   The original authors and a reference source for this code are cited
 %   below. The comments in the original source code follow:

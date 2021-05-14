@@ -1,6 +1,6 @@
 function bool = mainOpen(hObject,eventdata,handles)
 % Initialize sceneWindow and check for key.
-% 
+%
 %    bool = mainOpen(hObject,eventdata,handles)
 %
 % P-code.

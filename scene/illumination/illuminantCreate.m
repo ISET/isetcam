@@ -1,5 +1,5 @@
 function il = illuminantCreate(ilName, wave, varargin)
-% Create an ISETCam illuminant (light source) structure.  
+% Create an ISETCam illuminant (light source) structure.
 %
 % Synopsis:
 %   il = illuminantCreate(ilName, wave, varargin)
@@ -32,7 +32,7 @@ function il = illuminantCreate(ilName, wave, varargin)
 % See examples:
 %  ieExamplesPrint('illuminantCreate');
 %
-% See also:  
+% See also:
 %  illuminantSet/Get, s_sceneIlluminant, s_sceneIlluminantSpace,
 %  illuminantRead
 %
@@ -42,15 +42,15 @@ function il = illuminantCreate(ilName, wave, varargin)
    il = illuminantCreate('d65');
 %}
 %{
-  wave = 400:10:700; cTemp = 3500; luminance = 100; 
+  wave = 400:10:700; cTemp = 3500; luminance = 100;
   il = illuminantCreate('blackbody',wave, cTemp,luminance)
 %}
 %{
-  wave = 400:5:700; cTemp = 5500; luminance = 10; 
+  wave = 400:5:700; cTemp = 5500; luminance = 10;
   il = illuminantCreate('blackbody',wave,cTemp,luminance)
 %}
 %{
-  wave = 400:10:700; 
+  wave = 400:10:700;
   il = illuminantCreate('illuminant c',wave);
   plotRadiance(wave,illuminantGet(il,'photons'));
 %}
@@ -86,7 +86,7 @@ switch ieParamFormat(ilName)
         iEnergy = illuminantRead(illP);		    % [W/(sr m^2 nm)]
         iPhotons = Energy2Quanta(wave,iEnergy); % Check this step
         il = illuminantSet(il,'name',illP.name);
-
+        
     case 'blackbody'
         % illuminantCreate('blackbody',5000,luminance);
         illP.name = 'blackbody';
@@ -106,7 +106,7 @@ switch ieParamFormat(ilName)
         % illuminantCreate('gaussian',wave,params)
         % params.center(), params.sd(), params.peakEnergy
         center     = 550; % nm
-        sd         = 20;  % nm 
+        sd         = 20;  % nm
         peakEnergy = 25;  % watts/sr/nm/m2
         while ~isempty(varargin)
             switch lower(varargin{1})
@@ -124,7 +124,7 @@ switch ieParamFormat(ilName)
         
         il = illuminantSet(il,'name',sprintf('Gaussian %.0f\n',center));
         iEnergy = peakEnergy * exp(-1/2* ((wave - center)/sd).^2); % [W/(sr m^2 nm)]
-        iPhotons = Energy2Quanta(wave,iEnergy(:)); 
+        iPhotons = Energy2Quanta(wave,iEnergy(:));
         
     otherwise
         error('unknown illuminant type %s\n',ilName);

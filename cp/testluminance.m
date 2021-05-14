@@ -2,7 +2,7 @@ ieInit
 scenePath = 'Cornell_BoxBunnyChart';
 sceneName = 'cornell box bunny chart';
 
-ourCamera = ciBurstCamera(); 
+ourCamera = ciBurstCamera();
 
 if ~piDockerExists, piDockerConfig; end
 
@@ -14,7 +14,7 @@ ourScene = ciScene('pbrt', 'scenePath', scenePath, 'sceneName', sceneName);
 
 autoImage = ourCamera.TakePicture(ourScene, 'Auto',...
     'imageName','Auto Mode');
-ieAddObject(autoImage); 
+ieAddObject(autoImage);
 
 thisR = piRecipeDefault('scene name', sceneName);
 val = recipeSet(thisR,'filmresolution', [128 128]);
@@ -24,4 +24,4 @@ ourScene = ciScene('pbrt', 'scenePath', scenePath, 'sceneName', sceneName);
 
 autoImage = ourCamera.TakePicture(ourScene, 'Auto',...
     'imageName','Auto Mode', 'reRender', false);
-ieAddObject(autoImage); 
+ieAddObject(autoImage);

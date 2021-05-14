@@ -5,7 +5,7 @@ function [uData, g] = plotSensor(sensor, pType, roiLocs, varargin)
 %
 % These plots characterizing the data, sensor parts, or performance of
 % the sensor.  There are many types of plots, and as part of the function
-% they also return the rendered data.  
+% they also return the rendered data.
 %
 % Inputs:
 %  sensor: The image sensor
@@ -21,7 +21,7 @@ function [uData, g] = plotSensor(sensor, pType, roiLocs, varargin)
 % arguments with a string, 'no fig', as in
 %
 %   uData = plotSensor(sensor,'volts vline ',[53 1],'no fig');
-% 
+%
 % In this case, the data will be returned, but no figure will be produced.
 %
 % The main routine, plotSensor, is a gateway to many other characterization
@@ -41,7 +41,7 @@ function [uData, g] = plotSensor(sensor, pType, roiLocs, varargin)
 %  'volts histogram'
 %  'electrons histogram'
 % ' shot noise'
-% 
+%
 % Color filter properties
 %  'cfa block'
 %  'cfa full'
@@ -58,10 +58,10 @@ function [uData, g] = plotSensor(sensor, pType, roiLocs, varargin)
 %  'sensor snr'
 %  'dsnu'
 %  'prnu'
-% 
+%
 % Optics related
 %  'etendue'
-% 
+%
 % % Human
 % 'conemosaic' % Not sure
 %
@@ -114,7 +114,7 @@ end
 % Deal with these:  sensorPlotLine, sensorPlotColor,
 % sensorPlotMultipleLines, sensorPlot
 
-%% Plot 
+%% Plot
 switch pType
     
     % Sensor data related
@@ -127,7 +127,7 @@ switch pType
     case {'voltsvline'}
         [uData, g] = plotSensorLine(sensor, 'v', 'volts', 'space', roiLocs);
     case {'dvvline'}
-        [uData, g] = plotSensorLine(sensor, 'v', 'dv', 'space', roiLocs);    
+        [uData, g] = plotSensorLine(sensor, 'v', 'dv', 'space', roiLocs);
     case {'dvhline'}
         [uData, g] = plotSensorLine(sensor, 'h', 'dv', 'space', roiLocs);
     case {'voltshistogram','voltshist'}
@@ -170,7 +170,7 @@ switch pType
         [uData, g] = imageNoise('dsnu');
     case {'prnu'}
         [uData, g] = imageNoise('prnu');
-
+        
         % Optics related
     case {'etendue'}
         [uData, g] = plotSensorEtendue(sensor);
@@ -265,17 +265,17 @@ if nSensors > 1
         % In the human case or if listed as photons, we plot absorptions,
         % not electrons
         dataType = 'absorptions';
-    end    
+    end
     [uData, figNum] = plotSensorLineColor(xy,pos,data,ori,nSensors,dataType,sORt,fColors);
 elseif nSensors == 1
     % figNum = vcNewGraphWin;
     switch lower(ori)
-    case {'h','horizontal'}
-        data = squeeze(data(xy(2),:));
-    case {'v','vertical'}
-        data = squeeze(data(:,xy(1))); 
-    otherwise
-        error('Unknown orientation')
+        case {'h','horizontal'}
+            data = squeeze(data(xy(2),:));
+        case {'v','vertical'}
+            data = squeeze(data(:,xy(1)));
+        otherwise
+            error('Unknown orientation')
     end
     [uData, figNum] = plotSensorLineMonochrome(xy,pos,data,ori,dataType,sORt);
 end
@@ -307,7 +307,7 @@ end
 
 %% Decide on window shape.
 % If there is only one color filter with data, don't make the window
-% tall. 
+% tall.
 dataSet = 0;
 for ii=1:nSensors
     if ~isempty(find(~isnan(lData{ii}), 1)), dataSet = dataSet + 1; end
@@ -513,23 +513,23 @@ end
 % %   sensorPlotColor(sensor,'rg')
 % %
 % % Copyright ImagEval Consultants, LLC, 2005.
-% 
+%
 % % TODO:  This should be moved into plotSensor as a case statement.  After
 % % we write plotSensor, sigh.
-% 
+%
 % if ieNotDefined('sa'), sa=vcGetObject('isa'); end
 % if ieNotDefined('type'), type = 'rg'; end
 % labels = {'Red sensor','Green sensor','Blue sensor'};
-% 
+%
 % % Demosiac the (R,B) values.
 % wave = sensorGet(sa,'wave');
 % spectralQE = sensorGet(sa,'spectralQE');
-% 
+%
 % % We need a default, target display to do the demosaic'ing
 % demosaicedImage = Demosaic(ipCreate,sa);
-% 
+%
 % figNum =  vcNewGraphWin;
-% 
+%
 % switch lower(type)
 %     case 'rg'
 %         dList = [1,2];
@@ -538,21 +538,21 @@ end
 %     otherwise
 %         error('Unknown plot type.');
 % end
-% 
+%
 % % Make the escatter plot after demosaicing the sensor data
 % d1 = demosaicedImage(:,:,dList(1));
 % d2 = demosaicedImage(:,:,dList(2));
 % d = sqrt(d1.^2 + d2.^2);
 % d = max(d(:));
-% 
+%
 % % We should probably check to see that d1,d2 aren't too big.  If they are
 % % randomly sample.
 % plot(d1(:),d2(:),'.'); axis equal
 % xlabel(labels{dList(1)}); ylabel(labels{dList(2)});
-% 
+%
 % % Estimate the slope for white surfaces at these color temperatures
 % cTemp = [2500,3000,3500,4000,4500,5500,6500,8000,10500];
-% 
+%
 % for ii=1:length(cTemp)
 %     spec = Energy2Quanta(wave,blackbody(wave, cTemp(ii) ));
 %     rgb = spectralQE'*spec;
@@ -562,17 +562,17 @@ end
 %     text(rgb(dList(1))+0.02,rgb(dList(2)),txt)
 % end
 % hold off
-% 
+%
 % set(gca,'xlim',[0 d], 'ylim', [0,d])
 % title('Sensor Color Balance');
 % grid on;
-% 
+%
 % uData.name = 'sensorColorPlot';
 % uData.d1 = d1;
 % uData.d2 = d2;
 % uData.rgb = rgb;
 % set(figNum,'userdata',uData);
-% 
+%
 % end
 
 function [udata, figNum] = plotSpectra(sensor,dataType)
@@ -632,7 +632,7 @@ switch lower(dataType)
         data = sensorGet(sensor,'irfilter');
         filterNames = {'o'};
         ystr = 'Transmittance';
-               
+        
     case {'spectralqe','sensorspectralqe'}
         % Volts/irradiance(photons)
         wave = sensorGet(sensor,'wave');
@@ -663,7 +663,7 @@ for ii=1:size(data,2)
     end
 end
 
-% Label, attach data to the figure 
+% Label, attach data to the figure
 udata.x = wave; udata.y = data;
 set(figNum,'Userdata',udata);
 nameString = get(figNum,'Name');
@@ -699,12 +699,12 @@ switch lower(noiseType)
         [theSignal,theNoise] = noiseShot(sensor);
         nameString = 'ISET:  Shot noise';
         titleString = sprintf('Max/min: [%.2E,%.2E] on voltage swing %.2f',max(theNoise(:)),min(theNoise(:)),voltageswing);
-
+        
     case 'dsnu'
         [noisyImage,theNoise] = noiseFPN(sensor);
         nameString = 'ISET:  DSNU';
         titleString = sprintf('Max/min: [%.2E,%.2E] on voltage swing %.2f',max(theNoise(:)),min(theNoise(:)),voltageswing);
-
+        
     case 'prnu'
         [noisyImage,dsnuNoise,theNoise] = noiseFPN(sensor);
         nameString = 'ISET:  PRNU';
@@ -719,10 +719,10 @@ uData.theNoise = theNoise;
 
 figNum = vcNewGraphWin;
 imagesc(theNoise); colormap(gray(256)); colorbar;
-nameFig    = get(figNum,'Name'); 
+nameFig    = get(figNum,'Name');
 nameString = [nameFig,nameString];
 set(figNum,'Name',nameString);
-title(titleString); 
+title(titleString);
 axis off
 
 end

@@ -3,11 +3,11 @@ function roiLocs = ieRoi2Locs(rect)
 %
 %  roiLocs = ieRoi2Locs(rect)
 %
-% Convert rectangle coordinates into roi locations.  The rect format is 
+% Convert rectangle coordinates into roi locations.  The rect format is
 %
 %    (column,row,width,height).
 %
-% The first data point is drawn from the position [col,row].  
+% The first data point is drawn from the position [col,row].
 %
 % The roiLocs are a Nx2.  The roiLocs have rows in the first column and
 % columns in the 2nd.

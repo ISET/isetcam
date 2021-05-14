@@ -14,7 +14,7 @@ function [D, imgDist] = opticsDepthDefocus(objDist,optics,imgPlaneDist)
 %
 % The lensmaker's equation specifies the relationship between object and
 % image plane distances given the focal length of a thin lens. The
-% lensmaker's equation for a thin lens is 
+% lensmaker's equation for a thin lens is
 %
 %    1/objDist + 1/imgDist = 1/focalLength
 %
@@ -24,8 +24,8 @@ function [D, imgDist] = opticsDepthDefocus(objDist,optics,imgPlaneDist)
 % The equation can be used for various purposes, including specifying the
 % defocus of an object in various imaging conditions.
 %
-% For example, 
-%   * Objects at infinity are imaged in the focal plane. 
+% For example,
+%   * Objects at infinity are imaged in the focal plane.
 %   * If the image plane is at the focal length, then closer objects will
 %   be in defocus and we can assess the degree of defocus.  These will all
 %   be positive.
@@ -43,26 +43,26 @@ function [D, imgDist] = opticsDepthDefocus(objDist,optics,imgPlaneDist)
 %    nSteps = 500; objDist = linspace(fLength*1.5,50*fLength,nSteps);
 %    D0 = opticsGet(optics,'power');
 %
-% Show defocus relative to total lens power 
-%    figure(1) 
+% Show defocus relative to total lens power
+%    figure(1)
 %    [D, imgDist] = opticsDepthDefocus(objDist,optics);
-%    plot(objDist,D/D0); 
+%    plot(objDist,D/D0);
 %    xlabel('Distance to object (m)'); ylabel('Relative dioptric error')
 %
-% Object and image distances 
-%    figure(1) 
+% Object and image distances
+%    figure(1)
 %    [D, imgDist] = opticsDepthDefocus(objDist,optics);
-%    plot(objDist,imgDist); 
+%    plot(objDist,imgDist);
 %    xlabel('Distance to object (m)'); ylabel('Image dist (m)')
 %    line([objDist(1) objDist(end)],[fLength fLength],'Color','k','linestyle','--')
 %
 % Defocus with respect to image plane different from focal image plane
 %    figure(1)
 %    [D, imgDist] = opticsDepthDefocus(objDist,optics,2*fLength);
-%    plot(objDist/fLength,D); 
+%    plot(objDist/fLength,D);
 %    xlabel('Distance to object (re: Focal length)'); ylabel('Dioptric error (1/m)')
 %    [v,ii] = min(abs(D)); fprintf('In focus objDist:  %.3f re fLength %.3f\n',objDist(ii),objDist(ii)/fLength);
-%    figure(1) 
+%    figure(1)
 %
 % See also:  opticsDefocusedMTF, defocusMTF, humanCore
 %
@@ -84,7 +84,7 @@ function [D, imgDist] = opticsDepthDefocus(objDist,optics,imgPlaneDist)
 %
 %   errDist = fLength - fLength * (N/(N-1))
 %   errDist = fLength * (1 - (N/(N-1))
-%   
+%
 % The blurring caused by this difference in best image plane depends on the
 % pupil aperture as well as the focal length.  For small pupil apertures,
 % there is less of a penalty in defocus (e.g., a pinhole).  The

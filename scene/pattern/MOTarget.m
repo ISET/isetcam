@@ -7,7 +7,7 @@ function RGB = MOTarget(pattern,parms)
 %   'squareim', 'sinusoidalim_line', 'squareim_line', 'flat'
 
 % parms:    A structure containing parameters.  These differ by case
-%  
+%
 %  .sceneSize - any case
 %  .????
 %

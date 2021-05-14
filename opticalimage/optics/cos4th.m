@@ -11,9 +11,9 @@ function optics = cos4th(oi)
 %  formula is a good approximation in many cases.  More detailed
 %  calculations for specific lenses can be obtained using ray trace
 %  methods.
-% 
+%
 %  The algorithm in this routine handles the case of a distant image
-%  separately from that of a close image. 
+%  separately from that of a close image.
 %
 % Formula:
 %   d  = distance from the lens to the image plane
@@ -34,7 +34,7 @@ function optics = cos4th(oi)
 optics = oiGet(oi,'optics');
 
 sSupport = oiGet(oi,'spatialsupport');
-x = sSupport(:,:,2); 
+x = sSupport(:,:,2);
 y = sSupport(:,:,1);
 
 imageDistance = opticsGet(optics,'imagedistance');
@@ -47,17 +47,17 @@ sFactor = sqrt(imageDistance.^2 + (x.^2 + y.^2));
 if (imageDistance > 10*imageDiagonal)
     % If image is relatively distance
     % Use if imageDistance >> imageDiagonal
-    spatialFall = (imageDistance./sFactor).^4; 
+    spatialFall = (imageDistance./sFactor).^4;
 else
     % Use if imageDistance ~ imageDiagonal
     % This expression agrees with the other cos4th expression when
     % imageDistance >> imageDiagonal
     magnification =  opticsGet(optics,'magnification');
-   
+    
     cos_phi = (imageDistance ./ sFactor);  %figure(3); mesh(cos_phi)
     sin_phi = sqrt(1-cos_phi.^2);          %figure(3); mesh(sin_phi)
     tan_phi = sin_phi ./ cos_phi;          %figure(3); mesh(tan_phi)
-
+    
     sin_theta = 1 ./ (1 + 4*(fNumber*(1-magnification))^2);
     cos_theta = sqrt(1 - sin_theta.^2);
     tan_theta = sin_theta ./ cos_theta;

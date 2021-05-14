@@ -13,7 +13,7 @@ function DR = pixelDR(ISA,integrationTime)
 %
 %  Note (1). This algorithm takes in the ISA, not just the PIXEL because
 %  pixel DR depends on the integration time, which is attached to the ISA.
-%  
+%
 %
 % Copyright ImagEval Consultants, LLC, 2003
 
@@ -21,9 +21,9 @@ if ieNotDefined('ISA'), ISA = vcGetObject('ISA'); end
 
 pixel = sensorGet(ISA,'pixel');
 
-if ieNotDefined('integrationTime'), 
+if ieNotDefined('integrationTime'),
     integrationTime = sensorGet(ISA,'integrationTime');
-    if integrationTime == 0, 
+    if integrationTime == 0,
         DR = [];
         return;
     end
@@ -62,7 +62,7 @@ return;
 %
 % maxCurrent = (q*wellCapacity/integrationTime) - darkCurrent;
 % minCurrent = (q/integrationTime) * noiseSD;
-% 
+%
 % maxCharge = wellCapacity - (darkCurrent*integrationTime/q);
 % minCharge = noiseSD;
 % if maxCharge < 0 || minCharge == 0,  DR = [];

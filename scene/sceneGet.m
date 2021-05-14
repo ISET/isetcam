@@ -8,7 +8,7 @@ function val = sceneGet(scene,parm,varargin)
 %
 %  The key structures (scene, oi, sensor, ip, display) are stored in the
 %  ISET database.  To retrieve the currently selected optical image, use
-%      
+%
 %     scene = ieGetObject('scene');
 %
 %  A '*' indicates that the syntax sceneGet(scene,param,unit) can be used,
@@ -66,8 +66,8 @@ function val = sceneGet(scene,parm,varargin)
 %
 %        'roi photons'      - spd of the points in a region of interest
 %                               The region can be a rect or xy locs
-%        'roi energy'      - as above, but energy 
-%        'roi reflectance' - as above, but reflectance 
+%        'roi energy'      - as above, but energy
+%        'roi reflectance' - as above, but reflectance
 %        'roi mean energy'        - energy spd averaged within a region of interest
 %        'roi mean photons'       - photons spd averaged within in a region of interest
 %        'roi mean reflectance'   - reflectance spd averaged within in a region of interest
@@ -81,7 +81,7 @@ function val = sceneGet(scene,parm,varargin)
 %        'roi mean luminance'  - mean luminance of the roi'
 %        'xyz'                 - 3D array of XYZ values(CIE 1931, 10 deg)
 %        'lms'                 - 3D array of cone values (Stockman)
-%        
+%
 % Resolution parameters
 %      'sample size'*          - size of each square pixel
 %      'hspatial resolution'*  - height spatial resolution (distance between pixels)
@@ -120,19 +120,19 @@ function val = sceneGet(scene,parm,varargin)
 %        'illuminant name'    - Illuminant name
 %        'illuminant energy'  - energy data
 %        'illuminant photons' - energy data
-%        'illuminant image'   - 
+%        'illuminant image'   -
 %        'illuminant xyz'     - CIE XYZ (1931, 10 deg)
 %        'illuminant comment' - comment
 %        'illuminant format'  - 'spatial spectral' or 'spectral'
-%        'roi illuminant photons'        - illuminant photon spd in a region of interest 
-%        'roi mean illuminant photons'   - illuminant photon spd averaged within in a region of interest 
+%        'roi illuminant photons'        - illuminant photon spd in a region of interest
+%        'roi mean illuminant photons'   - illuminant photon spd averaged within in a region of interest
 %
 % Display
 %      'rgb image'  - RGB image of the scene display
 %
 % Charts
 %       'chart parameters' - Structure of reflectance chart parameters
-%                            sceneCreate('reflectance chart') 
+%                            sceneCreate('reflectance chart')
 %       'corner points'    - Corner points for the any chart.  This will
 %                            replace the MCC calls
 %       'roi'              - Sometimes we store a rect as a region of
@@ -291,7 +291,7 @@ switch parm
         else, roiLocs = varargin{1};
         end
         val = vcGetROIData(scene,roiLocs,'photons');
-                
+        
     case {'reflectance'}
         % Divide the scene photons by the illuminant photons to derive
         % scene reflectance.
@@ -306,9 +306,9 @@ switch parm
         % reflectance = mean(reflectance);
         
         % % No space allocated
-        illPhotons = scene.illuminant.data.photons; 
+        illPhotons = scene.illuminant.data.photons;
         nWave      = sceneGet(scene,'nWave');
-        photons    = scene.data.photons;   
+        photons    = scene.data.photons;
         
         % Direct access to scene data saves memory allocation.
         switch sceneGet(scene,'illuminant format')
@@ -412,7 +412,7 @@ switch parm
         % Default bit depth is 32 (single precision)
         % Considering eliminating the 64 option (double precision)
         if checkfields(scene,'data','bitDepth')
-             val = scene.data.bitDepth; 
+            val = scene.data.bitDepth;
         else val = 32;
         end
         
@@ -461,7 +461,7 @@ switch parm
         % mean spd in energy units
         val = sceneGet(scene,'energy');
         val = mean(RGB2XWFormat(val));
-    
+        
     case {'roimeanphotons'}
         % sceneGet(scene,'roi mean photons', roi)
         % Return the mean photon spd in a region of interest
@@ -507,7 +507,7 @@ switch parm
         end
         roiPhotons = sceneGet(scene, 'roi photons', roiLocs);
         wave = sceneGet(scene, 'wave');
-        val = ieLuminanceFromPhotons(roiPhotons, wave); 
+        val = ieLuminanceFromPhotons(roiPhotons, wave);
         
         if numel(roiLocs) == 4
             val = reshape(val, roiLocs(3)+1, roiLocs(4)+1);
@@ -753,7 +753,7 @@ switch parm
         wave = sceneGet(scene,'wave');
         sz = sceneGet(scene,'size');
         energy = sceneGet(scene,'illuminant energy');
-        if isempty(energy) 
+        if isempty(energy)
             ieInWindowMessage('No illuminant data.',handle);
             close(gcf);
             error('No illuminant data');
@@ -767,7 +767,7 @@ switch parm
         end
         
         % Create an RGB image
-        val = xyz2srgb(ieXYZFromEnergy(energy,wave));       
+        val = xyz2srgb(ieXYZFromEnergy(energy,wave));
         
     case {'illuminantwave'}
         % Must be the same as the scene wave
@@ -807,7 +807,7 @@ switch parm
         
     case {'gamma'}
         % sceneGet(scene,'gamma')
-
+        
         % See if there is a display window
         thisW = ieSessionGet('scene window');
         if isempty(thisW), val = 1;  % Default if no window

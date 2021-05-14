@@ -3,7 +3,7 @@ function [energy, wave] = ieLuminance2Radiance(lum,thisWave,varargin)
 %
 % Synopsis
 %   [energy, photons] = ieLuminance2Radiance(lum,thisWave,varargin)
-% 
+%
 % Inputs
 %   lum:       Luminance of the monochromatic light in cd/m2
 %   thisWave:  Wavelength of the monochromatic light (between 350 and 720)
@@ -22,7 +22,7 @@ function [energy, wave] = ieLuminance2Radiance(lum,thisWave,varargin)
 %   the radiance energy (watts/sr/nm/m2) as a Gaussian centered at that
 %   wavelength.  We then scale the spectral radiance energy so that it has
 %   the desired luminance (cd/m2).
-%  
+%
 % See also
 %   s_humanSafety, ieLuminanceFromEnergy, ieLuminanceFromPhotons,
 %   Energy2Quanta
@@ -32,7 +32,7 @@ function [energy, wave] = ieLuminance2Radiance(lum,thisWave,varargin)
    % These are unit tests.  Make a spectral radiance (energy)
    % with the peak wavelengty and Gaussian spread, as one might find for an
    % LED.  Then check that the energy of the LED model has a luminance that
-   % equals the desired luminance. 
+   % equals the desired luminance.
 
    lum = 10; thisWave = 360;
    [energy,wave] = ieLuminance2Radiance(lum,thisWave);
@@ -77,4 +77,3 @@ energy = energy * (lum/sFactor);
 
 end
 
-    

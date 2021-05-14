@@ -2,7 +2,7 @@
 %
 % Scenes comprising *harmonic patterns and sums of harmonics* are
 % frequently used to evaluate image systems.  *sceneCreate*
-% generates these patterns. 
+% generates these patterns.
 %
 % The parameters set the frequency, contrast, phase, angle, row
 % and col size of the harmonic. The frequency is cycles/image, so
@@ -33,7 +33,7 @@ ieAddObject(scene); sceneWindow;
 
 % Set the slots for freq, contrast, ang, and ph to vectors of the
 % same length to define the multiple harmonics.
-    
+
 params.freq =  [1 5];         % spatial frequencies of 1 and 5
 params.contrast = [0.2, 0.6]; % contrast of the two frequencies
 params.ang  = [0, 0];         % orientations

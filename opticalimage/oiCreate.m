@@ -9,7 +9,7 @@ function [oi,val] = oiCreate(oiType,varargin)
 %  includes a structure that defines the optics.
 %
 % Inputs
-%   oiType - 
+%   oiType -
 %     {'diffraction limited'} -  Diffraction limited optics, no diffuser or
 %                             data (Default)
 %     {'shift invariant'}     -  General high resolution shift-invariant
@@ -59,7 +59,7 @@ validTypes = {'default','diffraction limited','shift invariant','ray trace',...
     'human','uniformd65','uniformEE','wvf'};
 
 %%
-switch ieParamFormat(oiType) 
+switch ieParamFormat(oiType)
     case {'diffractionlimited','diffraction','default'}
         oi = oiSet(oi,'optics',optics);
         
@@ -67,7 +67,7 @@ switch ieParamFormat(oiType)
         % skipped
         oi = oiSet(oi,'diffuser method','skip');
         oi = oiSet(oi,'diffuser blur',2*10^-6);
-
+        
     case {'shiftinvariant'}
         % Rather than using the diffraction limited call to make the OTF,
         % we use some other method, perhaps wavefront.
@@ -77,7 +77,7 @@ switch ieParamFormat(oiType)
         oi = oiSet(oi,'optics',opticsCreate('shift invariant',oi));
         oi = oiSet(oi,'name','SI');
         oi = oiSet(oi,'diffuserMethod','skip');
-
+        
     case {'raytrace'}
         % Create the default ray trace unless a file name is passed in
         oi = oiCreate('default');
@@ -139,7 +139,7 @@ switch ieParamFormat(oiType)
             fprintf('%d: %s\n',ii,validTypes{ii});
         end
         fprintf('-------\n')
-
+        
         error('***Unknown oiType: %s\n',oiType);
 end
 

@@ -19,7 +19,7 @@ function SR = pixelSR(pixel)
 
 % Various physical constants are needed.
 q = vcConstants('q');
-h = vcConstants('h'); 
+h = vcConstants('h');
 c = vcConstants('c');
 
 QE      = pixelGet(pixel,'spectralQE');     % e-/ph

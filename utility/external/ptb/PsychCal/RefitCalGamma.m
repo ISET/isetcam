@@ -38,9 +38,9 @@ DescribeMonCal(cal);
 % Provide information about gamma measurements
 % This is probably not method-independent.
 fprintf('Gamma measurements were made at %g levels\n',...
-	size(cal.rawdata.rawGammaInput,1));
+    size(cal.rawdata.rawGammaInput,1));
 fprintf('Gamma table available at %g levels\n',...
-	size(cal.gammaInput,1));
+    size(cal.gammaInput,1));
 
 % Get new fit type
 fprintf('Old gamma fit type was: %s\n',cal.describe.gamma.fitType);
@@ -69,12 +69,12 @@ fprintf('Old DAC bits was: %d\n',cal.describe.dacsize);
 oldDacsize = cal.describe.dacsize;
 cal.describe.dacsize = input(sprintf('Enter new dacsize: [%d]: ',oldDacsize));
 if (isempty(cal.describe.dacsize))
-	cal.describe.dacsize = oldDacsize;
+    cal.describe.dacsize = oldDacsize;
 end
 
 % Change dacsize?  Used every once in a while.
 if (cal.describe.dacsize ~= oldDacsize)
-	bits = cal.describe.dacsize;
+    bits = cal.describe.dacsize;
 end
 
 % Now refit
@@ -91,7 +91,7 @@ switch (gamma.fitType)
     % possible input settings and then use exhaustive search of the
     % gamma table to invert.  This is where the output of the standard
     % calibration program pushes the raw data into the typical field.
-    % 
+    %
     % This is probably a fairly fragile bit of code and should only be used
     % with caution and knowledge aforethought.
     %
@@ -106,8 +106,8 @@ switch (gamma.fitType)
         cal.gammaTable(cal.gammaTable < 0) = 0;
         cal.gammaTable(cal.gammaTable > 1) = 1;
         
-    % Fit the measured data using standard PTB methods
-    otherwise 
+        % Fit the measured data using standard PTB methods
+    otherwise
         cal = CalibrateFitGamma(cal,2^cal.describe.dacsize);
 end
 
@@ -119,7 +119,7 @@ drawnow;
 % Option to save the refit file
 saveIt = input('Save new fit data (0->no, 1->yes)? [0]: ');
 if (isempty(saveIt))
-	saveIt = 0;
+    saveIt = 0;
 end
 if (saveIt)
     % Prompt for new file name if we're saving to a name.

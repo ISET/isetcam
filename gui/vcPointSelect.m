@@ -1,7 +1,7 @@
 function [pointLoc,pt] = vcPointSelect(obj,nPoints,msg)
 % Deprecated:  Use iePointSelect
 %
-%   Select point locations from an ISET window. 
+%   Select point locations from an ISET window.
 %
 % Synopsis
 %   [pointLoc, pt] = vcPointSelect(obj,[nPoints = 1],[msg])
@@ -22,7 +22,7 @@ function [pointLoc,pt] = vcPointSelect(obj,nPoints,msg)
 % Text below Needs a re-write ... this is how it used to work.
 %
 %  If nPoints is not specified, then nPoints = 1 is assumed.  In that case,
-%  a single right click is all that is required. 
+%  a single right click is all that is required.
 %
 %  In general, the number of points is checked and a message is printed if
 %  it is incorrect.  But the pointLoc values are still returned.
@@ -67,7 +67,7 @@ if length(x) < nPoints
     pointLoc = [];
     warning('ISET:vcPointSelect1','Returning only %.0f points',length(x));
     list = (1:length(x));
-elseif length(x) > (nPoints) 
+elseif length(x) > (nPoints)
     warning('ISET:vcPointSelect2','Returning first of %.0f points',nPoints);
     list = (1:nPoints);
 else

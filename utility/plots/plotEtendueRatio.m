@@ -8,7 +8,7 @@ function plotEtendueRatio(ISA,optimal,bare,zLabel)
 %  the two optical conditions, optimal microlens placement and no
 %  microlens, and summarizes their etendue ratios in a mesh graph.
 %
-%  showing the sensor etendue stored in the ISA structure. 
+%  showing the sensor etendue stored in the ISA structure.
 %  The etendue is usually computed using mlAnalyzeArrayEtendue.
 %
 % Copyright ImagEval Consultants, LLC, 2003.

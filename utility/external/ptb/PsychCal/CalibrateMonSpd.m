@@ -6,9 +6,9 @@
 % power distribution respectively.
 %
 % NOTE (dhb, 8/19/12).  This code is a bit dusty, as it is not
-% being actively maintained.  In particular, the PTB display 
+% being actively maintained.  In particular, the PTB display
 % control has evolved since this was last looked at carefully.
-% In general, you want to calibrate through the same set of 
+% In general, you want to calibrate through the same set of
 % display calls you'll use in your experiment.  Below is some
 % prose written by Mario Kleiner that describes how the PTB
 % currently wants you to control and restore your clut.  In
@@ -23,11 +23,11 @@
 %     and RestoreCluts, which restores to the state before
 %     LoadIdentityClut(). I think "sca" calls that, as well as showing the
 %     cursor and other cleanup actions.
-% 
+%
 %     LoadIdentityClut is also automatically called by PsychImaging etc. if
 %     the image processing pipeline is used for
 %     Bits++/Datapixx/Viewpixx,video attenuators etc.
-% 
+%
 %     It is important to always use LoadIdentityClut() instead of self-made
 %     code. Many (most?) graphics cards on most operating systems have
 %     graphics driver bugs and hardware quirks which cause the self-made
@@ -45,11 +45,11 @@
 %     use of dynamic test patterns like in BitsPlusIdentityClutTest with
 %     Mono++ mode, or special debug functionality as in the
 %     DataPixx/ViewPixx devices.
-% 
+%
 %     I use a DataPixx to test such stuff and PTB has builtin diagnostic to
 %     utilize that hardware to make sure that the video signal is really
 %     untampered.
-% 
+%
 %     LoadIdentityClut also calls special functions in Screen that try to
 %     workaround or fix other hardware interference. E.g., in addition to
 %     cluts messing with pixel passthrough, there is also display dithering
@@ -57,7 +57,7 @@
 %     corrections in latest generation hardware -- Screen can fix this for
 %     some cards on some operating systems, but only when used through
 %     LoadIdentityClut.
-% 
+%
 %     E.g., almost all AMD cards will cause trouble on OSX when the
 %     PsychtoolboxKernelDriver and LoadIdentityClut etc. is not used,
 %     almost all NVidia cards on OSX will cause trouble unless you use some
@@ -65,7 +65,7 @@
 %     Bits+ pages on our wiki. We have/need similar hacks on Windows, e.g.,
 %     PsychGPUControl() for AMD cards. On Linux either PTB's low-level
 %     fixes apply or they are not neccessary.
-% 
+%
 %     So the CalibrateMonSpd etc. should be fixed to use
 %     LoadIdentityClut/RestoreCluts, everything else is just begging for
 %     trouble.
@@ -79,7 +79,7 @@
 % 8/11/00 dhb  Save mon in rawdata.
 % 8/18/00 dhb  More descriptive information saved.
 % 8/20/00 dhb  Automatic check for RADIUS and number of DAC bits.
-% 9/10/00 pbe  Added option to blank another screen while measuring. 
+% 9/10/00 pbe  Added option to blank another screen while measuring.
 % 2/27/02 dhb  Various small fixes, including Radeon support.
 %         dhb  Change noMeterAvail to whichMeterType.
 % 11/08/06 cgb, dhb  OS/X.
@@ -114,26 +114,26 @@ cal = [];
 whichScreen = max(Screen('Screens'));
 whichMeterType = 1;
 cal.describe.leaveRoomTime = 10;
-cal.describe.nAverage = 2;  
+cal.describe.nAverage = 2;
 cal.describe.nMeas = 30;
 cal.describe.boxSize = 400;
 cal.nDevices = 3;
 cal.nPrimaryBases = 1;
 switch whichMeterType
-	case {0,1}
-		cal.describe.S = [380 4 101];
-	case 2
-		cal.describe.S = [380 1 401];
+    case {0,1}
+        cal.describe.S = [380 4 101];
+    case 2
+        cal.describe.S = [380 1 401];
     otherwise
-		cal.describe.S = [380 4 101];
+        cal.describe.S = [380 4 101];
 end
 cal.manual.use = 0;
-		
+
 % Enter screen
 defaultScreen = whichScreen;
 whichScreen = input(sprintf('Which screen to calibrate [%g]: ', defaultScreen));
 if isempty(whichScreen)
-	whichScreen = defaultScreen;
+    whichScreen = defaultScreen;
 end
 cal.describe.whichScreen = whichScreen;
 
@@ -141,15 +141,15 @@ cal.describe.whichScreen = whichScreen;
 defaultBlankOtherScreen = 0;
 blankOtherScreen = input(sprintf('Do you want to blank another screen? (1 for yes, 0 for no) [%g]: ', defaultBlankOtherScreen));
 if isempty(blankOtherScreen)
-	blankOtherScreen = defaultBlankOtherScreen;
+    blankOtherScreen = defaultBlankOtherScreen;
 end
 if blankOtherScreen
-	defaultBlankScreen = 2;
-	whichBlankScreen = input(sprintf('Which screen to blank [%g]: ', defaultBlankScreen));
-	if isempty(whichBlankScreen)
-		whichBlankScreen = defaultBlankScreen;
-	end
-	cal.describe.whichBlankScreen = whichBlankScreen;
+    defaultBlankScreen = 2;
+    whichBlankScreen = input(sprintf('Which screen to blank [%g]: ', defaultBlankScreen));
+    if isempty(whichBlankScreen)
+        whichBlankScreen = defaultBlankScreen;
+    end
+    cal.describe.whichBlankScreen = whichBlankScreen;
 end
 
 % Find out about screen
@@ -160,20 +160,20 @@ nLevels = 2^cal.describe.dacsize;
 % produces one-half of maximum output for a typical CRT.
 defBgColor = [190 190 190]'/255;
 thePrompt = sprintf('Enter RGB values for background (range 0-1) as a row vector [%0.3f %0.3f %0.3f]: ',...
-                    defBgColor(1), defBgColor(2), defBgColor(3));
+    defBgColor(1), defBgColor(2), defBgColor(3));
 while 1
-	cal.bgColor = input(thePrompt)';
-	if isempty(cal.bgColor)
-		cal.bgColor = defBgColor;
-	end
-	[m, n] = size(cal.bgColor);
-	if m ~= 3 || n ~= 1
-		fprintf('\nMust enter values as a row vector (in brackets).  Try again.\n');
+    cal.bgColor = input(thePrompt)';
+    if isempty(cal.bgColor)
+        cal.bgColor = defBgColor;
+    end
+    [m, n] = size(cal.bgColor);
+    if m ~= 3 || n ~= 1
+        fprintf('\nMust enter values as a row vector (in brackets).  Try again.\n');
     elseif (any(defBgColor > 1) || any(defBgColor < 0))
         fprintf('\nValues must be in range (0-1) inclusive.  Try again.\n');
     else
-		break;
-	end
+        break;
+    end
 end
 
 % Get distance from meter to screen.
@@ -181,7 +181,7 @@ defDistance = .80;
 theDataPrompt = sprintf('Enter distance from meter to screen (in meters): [%g]: ', defDistance);
 cal.describe.meterDistance = input(theDataPrompt);
 if isempty(cal.describe.meterDistance)
-  cal.describe.meterDistance = defDistance;
+    cal.describe.meterDistance = defDistance;
 end
 
 % Fill in descriptive information
@@ -200,7 +200,7 @@ cal.describe.hz = hz;
 cal.describe.who = input('Enter your name: ','s');
 cal.describe.date = sprintf('%s %s',date,datestr(now,14));
 cal.describe.program = sprintf('CalibrateMonSpd, background set to [%g,%g,%g]',...
-                               cal.bgColor(1), cal.bgColor(2), cal.bgColor(3));
+    cal.bgColor(1), cal.bgColor(2), cal.bgColor(3));
 cal.describe.comment = input('Describe the calibration: ','s');
 
 % Get name
@@ -218,13 +218,13 @@ cal.describe.gamma.fitBreakThresh = 0.02;
 
 % Initialize
 switch whichMeterType
-	case 0
-	case 1
-		CMCheckInit;
-	case 2
-		CVIOpen;
+    case 0
+    case 1
+        CMCheckInit;
+    case 2
+        CVIOpen;
     otherwise
-		error('Invalid meter type');
+        error('Invalid meter type');
 end
 ClockRandSeed;
 
@@ -236,7 +236,7 @@ cal = CalibrateMonDrvr(cal, USERPROMPT, whichMeterType, blankOtherScreen);
 USERPROMPT = 0;
 cal = CalibrateAmbDrvr(cal, USERPROMPT, whichMeterType, blankOtherScreen);
 
-% Signal end 
+% Signal end
 Snd('Play', sin(0:10000)); WaitSecs(.75); Snd('Play', sin(0:10000)); WaitSecs(.75); Snd('Play', sin(0:20000));
 
 % Save the structure
@@ -267,11 +267,11 @@ drawnow;
 
 % Close down meter
 switch whichMeterType
-	case 0
-	case 1
-		CMClose;
-	case 2
-		CVIClose;
+    case 0
+    case 1
+        CMClose;
+    case 2
+        CVIClose;
     otherwise
-		error('Invalid meter type');
+        error('Invalid meter type');
 end

@@ -11,7 +11,7 @@ baseD  = 50:100:350;    % Diopters of focal length
 deltaD = 1:15;          % Difference from base
 
 vcNewGraphWin;
-set(gca,'yscale','log'); 
+set(gca,'yscale','log');
 hold on
 for ii=1:length(baseD)
     displacement = (1/baseD(ii)) - ( 1 ./ (baseD(ii) + deltaD));

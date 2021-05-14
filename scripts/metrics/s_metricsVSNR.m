@@ -13,7 +13,7 @@
 % processing pipeline (vci).
 %
 % See also:  cameraVSNR, cameraCreate, s_metricsAcutance,
-% s_metricsColorAccuracy 
+% s_metricsColorAccuracy
 %
 % Copyright ImagEval Consultants, LLC, 2012.
 
@@ -54,10 +54,10 @@ end
 set(ax(1),'yticklabel',vsnrLabels)
 set(ax(2),'yticklabel',deLabels)
 
-set(get(ax(1),'Ylabel'),'String','VSNR','fontsize',20) 
-set(get(ax(2),'Ylabel'),'String','\Delta E','fontsize',20) 
+set(get(ax(1),'Ylabel'),'String','VSNR','fontsize',20)
+set(get(ax(2),'Ylabel'),'String','\Delta E','fontsize',20)
 
-%% 
+%%
 
 
 

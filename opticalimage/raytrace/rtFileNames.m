@@ -4,7 +4,7 @@ function [diName, riName, psfNameList, craName] = rtFileNames(lensFile,wave,imgH
 %   [diName, riName, psfNameList, craName] = rtFileNames(lensFile,wave,imgHeight)
 %
 % Create the names of the data files used for converting ray trace data
-% into ISET format. 
+% into ISET format.
 %
 %   The riName is the relative illumination file.
 %   The diName is the distortion file.

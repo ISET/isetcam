@@ -6,7 +6,7 @@
 %
 % The scene illuminant can be a single spectral power
 % distribution, in which case the illuminant is assumed to be the
-% same (constant) across the entire scene.  
+% same (constant) across the entire scene.
 %
 % Alternatively, the scene illuminant can also be a hypercube of
 % the same size as the scene spectral radiance.  In that case,
@@ -38,7 +38,7 @@ illEnergy       = sceneGet(scene,'illuminant energy');
 [illEnergy,r,c] = RGB2XWFormat(illEnergy);
 wave = sceneGet(scene,'wave');
 
-% This is how we show the any SPD (energy) as an image.  
+% This is how we show the any SPD (energy) as an image.
 XYZ  = ieXYZFromEnergy(illEnergy,wave);
 srgb = xyz2srgb(XW2RGBFormat(XYZ,r,c));
 vcNewGraphWin; imagesc(srgb);  % Looks white, I guess
@@ -100,7 +100,7 @@ cc = 1:c;
 illScale = 1 + 0.5*sin(2*pi*(cc/c));
 % vcNewGraphWin; plot(wave,spd);
 
-% Scale the illuminant intensity along the cols 
+% Scale the illuminant intensity along the cols
 for cc=1:c
     illPhotons(:,cc,:) = squeeze(illPhotons(:,cc,:)) * illScale(cc);
 end
@@ -122,7 +122,7 @@ rr       = 1:r;
 freq     = 1;
 illScale = 1 + 0.5*sin(2*pi*freq*(rr/r));
 
-vcNewGraphWin; 
+vcNewGraphWin;
 plot(illScale); grid on
 title('Scale along the rows');
 

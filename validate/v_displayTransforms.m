@@ -4,7 +4,7 @@
 %
 % Check RGB2XYZ and XYZ2LMS and RGB2LMS relationships
 
-%% 
+%%
 ieInit
 
 %% Test display transforms between spaces
@@ -55,7 +55,7 @@ sto2xyz = stockman \ xyz;
 % stockman = XYZ*xyz2sto
 xyz2sto = xyz \ stockman;
 % est = stockman*sto2xyz;
-% 
+%
 % vcNewGraphWin;
 % plot(est(:),xyz(:),'o')
 

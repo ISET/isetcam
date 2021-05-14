@@ -1,17 +1,17 @@
 function scenes = rdtScenesLoad(varargin)
 % Load multispectral multispectral scenes using Remote Data Toolbox
 %
-%   scenes = rdtScenesLoad(varargin)  
+%   scenes = rdtScenesLoad(varargin)
 %
 % Inputs:
 %   varargin - name value pairs for the scene parameters
-%  
+%
 %   'rdtConfigName' - repository name ('isetbio')
 %   'fov'        - Field of view      (10)
 %   'wave'       - Wavelength samples (400:10:680);
 %   'nScenes'    - First n scenes     (1)
-%   'sceneNames' - Specific scene names, these are the artifactId 
-%    
+%   'sceneNames' - Specific scene names, these are the artifactId
+%
 % Outputs:
 %   scenes - cell array of multispectral scenes
 %
@@ -27,7 +27,7 @@ function scenes = rdtScenesLoad(varargin)
 %
 % See also:
 %   scarletScenesLoad
-% 
+%
 % HJ/BW, VISTA TEAM, 2015
 
 %% Parse input parameters
@@ -51,7 +51,7 @@ fov        = p.Results.fov;
 rdt = RdtClient(rdtName);  % using rdt-config-isetbio.json configuration file
 % rdt.crp('/resources/scenes');
 
-% files = rdt.listArtifacts();  
+% files = rdt.listArtifacts();
 % nScenes = min(nScenes, length(files)); % fprintf('Found %d files \n',length(files));
 % for ii=1:length(files)
 %     fprintf('%d %s\n',ii,files(ii).artifactId);

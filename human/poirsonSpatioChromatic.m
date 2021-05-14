@@ -4,11 +4,11 @@ function [lum, rg, by, positions] = poirsonSpatioChromatic(sampPerDeg,dimension)
 % [lum, rg, by, positions] = poirsonSpatioChromatic([sampPerDeg =241],[dimension = 2])
 %
 %  These filters are fitted spatial response, formed by taking the weighted
-%  sum of two or three Gaussians. 
+%  sum of two or three Gaussians.
 %
 % Parameters
 %   sampPerDeg: filter sampling resolution (default=241 samps/deg)
-%   dimension:  filter for 1D or 2D format (default = 2) 
+%   dimension:  filter for 1D or 2D format (default = 2)
 %
 % See the Spatial-CIELAB implementation in ISETCAM for related ideas.
 %
@@ -37,7 +37,7 @@ function [lum, rg, by, positions] = poirsonSpatioChromatic(sampPerDeg,dimension)
 %  freq = [1:length(x)]*minFreq; freq = freq - (max(freq)/2);
 %  [X,Y] = meshgrid(freq,freq);
 %  clf; mesh(X,Y,rgMTF);
-%  set(gca,'xlim',[-40 40],'ylim',[-40 40]); 
+%  set(gca,'xlim',[-40 40],'ylim',[-40 40]);
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
@@ -59,7 +59,7 @@ x1([1 3 5]) = x1([1 3 5]) * sampPerDeg;
 x2([1 3]) = x2([1 3]) * sampPerDeg;
 x3([1 3]) = x3([1 3]) * sampPerDeg;
 
-% Limit the width of filters to 1 degree visual angle, and 
+% Limit the width of filters to 1 degree visual angle, and
 % odd number of sampling points (so that the Gaussians are symmetric.
 width = ceil(sampPerDeg/2) * 2 - 1;
 

@@ -31,7 +31,7 @@ for ii=1:nFrames
     
     % But instead I made a movie of the scene luminance
     imagesc(sceneGet(s,'luminance')); colormap(gray); pause(1/fps);
-     
+    
 end
 
 %%

@@ -15,7 +15,7 @@ function [scoreStats, scoreTable] = expClassify(varargin)
 % the pre-trained network add-in (a supporting package for the Deep Learning toolbox) to be
 % downloaded. Link to the download appears in the script window,
 % or can be found using the add-in explorer
-% 
+%
 % Because they are expensive to calculate, we cache optical images and
 % re-use them if the image name and the optics are the same.
 %
@@ -26,7 +26,7 @@ function [scoreStats, scoreTable] = expClassify(varargin)
 %
 % If elements of the camera are not specified, the current defaults are
 % used.
-% 
+%
 
 %%
 varargin = ieParamFormat(varargin);
@@ -52,7 +52,7 @@ ip = p.Results.ip;
 imageFolder = p.Results.imageFolder;
 scoreClasses = p.Results.scoreClasses;
 progDialog = p.Results.progDialog;
-ipFolder = p.Results.ipOutputFolder; 
+ipFolder = p.Results.ipOutputFolder;
 maxImages = p.Results.maxImages;
 
 %%
@@ -86,7 +86,7 @@ if ~isfolder(imageFolder)
 else
     inputFolder = imageFolder;
 end
-    %inputFolder = fullfile(isetRootPath,'local','images','dogs');
+%inputFolder = fullfile(isetRootPath,'local','images','dogs');
 if ~isempty(inputFolder) && ~isequal(inputFolder,0) && isfolder(inputFolder)
     inputFiles = dir(fullfile(inputFolder,'*.jpg'));
 else
@@ -119,7 +119,7 @@ if isfile(fullfile(outputOIFolder,'cachedOptics.mat'))
         % Save the new optics so that we can check to see if we can re-use the OI cache
         % in future
         cachedOptics = optics;
-        save(fullfile(outputOIFolder,'cachedOptics'),'cachedOptics');        
+        save(fullfile(outputOIFolder,'cachedOptics'),'cachedOptics');
     end
 else
     % Save current optics so that we can check to see if we can re-use the OI cache
@@ -134,7 +134,7 @@ maxImages = min(maxImages, numel(inputFiles));
 for ii = 1:maxImages
     
     sceneFileName = fullfile(inputFiles(ii).folder, inputFiles(ii).name);
-
+    
     initialImage = imread(sceneFileName);
     initialSize = size(initialImage);
     
@@ -222,13 +222,13 @@ for ii=1:numel(oiList)
             sceneFOV = [45 30]; % arbitrary default, but should never get here
         end
         sensor = sensorSetSizeToFOV(sensor,sceneFOV,oi);
-
+        
         if ~isequal(progDialog, '')
             progDialog.Indeterminate = 'off';
             progDialog.Message = "Generating images captured by your Sensor & IP";
             progDialog.Value = ii/numel(oiList);
         end
-
+        
         sensor = sensorCompute(sensor,oi);
         % sensorWindow(sensor);
         
@@ -266,12 +266,12 @@ totalScore = 0;
 ourScoreArray = [];
 for ii = 1:maxImages
     
-        if ~isequal(progDialog, '')
-            progDialog.Indeterminate = 'off';
-            progDialog.Message = "Classifying Images";
-            progDialog.Value = ii/numel(inputFiles);
-        end
-
+    if ~isequal(progDialog, '')
+        progDialog.Indeterminate = 'off';
+        progDialog.Message = "Classifying Images";
+        progDialog.Value = ii/numel(inputFiles);
+    end
+    
     % Classify each of the original downloaded images
     ourGTFileName = fullfile(inputFiles(ii).folder, inputFiles(ii).name);
     ourGTImage = imread(ourGTFileName);
@@ -282,11 +282,11 @@ for ii = 1:maxImages
         % 'color'
         ourGTImage = cat(3, ourGTImage, ourGTImage, ourGTImage);
     end
-
+    
     % in theory we could first resize to our "desiredImageSize" to match
     % the processing of the IP version, but I'm not sure it matters?
     %ourGTImage = imresize(ourGTImage, desiredImageSize(1:2));
-
+    
     % downsize to match the input layer of the NN
     ourGTImage = imresize(ourGTImage,inputSize(1:2));
     [label, scores] = classify(net,ourGTImage);
@@ -316,7 +316,7 @@ for ii = 1:maxImages
     idx = idx(1:scoreClasses);
     classNamesTestTop = net.Layers(end).ClassNames(idx);
     scoresTestTop = scores(idx);
-
+    
     % for now we just output the top classes for each image, but of
     % course would want to do something smart with them & scores
     disp(strcat("Classes for our Simulated Test image: ", ipFileName));
@@ -327,12 +327,12 @@ for ii = 1:maxImages
     
     padCells = cell(scoreClasses,1);
     padCells(:) = {''};
-
+    
     % need to make sure each row we add has the same number of elements
     ourScoreArray = [ourScoreArray ; ["Image Name:" inputFiles(ii).name ourGTFileName ipFileName]];
     ourScoreArray = [ourScoreArray ; [classNamesGTTop classNamesTestTop padCells padCells]];
     ourScoreArray = [ourScoreArray ; ["-----------" strcat("Score: ", string(imageScore)) "..." "..."]];
-
+    
     disp(strcat("Image Matching Score: ", string(imageScore)));
     
 end

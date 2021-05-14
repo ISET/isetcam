@@ -1,10 +1,10 @@
 function b = ieReadBoolean(question)
 %Get a yes or no answer.  If only the world were this simple.
-%  
+%
 %   b = ieReadBoolean(question)
 %
 %Example:
-%  
+%
 %  b = ieReadBoolean('Will you marry me?')
 %
 

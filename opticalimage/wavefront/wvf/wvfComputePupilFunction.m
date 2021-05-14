@@ -10,7 +10,7 @@ function wvf = wvfComputePupilFunction(wvf, showBar)
 %    pupilF = A exp(-1i 2 pi (phase/wavelength));
 %
 % The amplitude, A, is set to 1 here.  The name for the amplitude is XXX (I
-% forget) and we should be able to adjust it in the future.  
+% forget) and we should be able to adjust it in the future.
 %
 % The pupil function is related to the PSF by the Fourier transform. See J.
 % Goodman, Intro to Fourier Optics, 3rd ed, p. 131. (MDL)  This is computed
@@ -34,7 +34,7 @@ function wvf = wvfComputePupilFunction(wvf, showBar)
 %    wvf = wvfCreate;
 %    wvf = wvfComputePupilFunction(wvf);
 %
-% See also: 
+% See also:
 %  wvfCreate, wvfGet, wfvSet, wvfComputePSF
 
 %% Parameter checking
@@ -68,7 +68,7 @@ for ii=1:nWavelengths
     if showBar
         waitbar(ii/nWavelengths,wBar,sprintf('Pupil function for %.0f',thisWave));
     end
-       
+    
     %{
     % Set up pupil coordinates
     %
@@ -107,7 +107,7 @@ for ii=1:nWavelengths
     % not yet.  Someone remind me of the name of this term, please!
     % (Apodization).
     A = ones(nPixels,nPixels);
-
+    
     % Compute longitudinal chromatic aberration (LCA) relative to
     % measurement wavelength and then convert to microns so that we can
     % add this in to the wavefront aberrations.  The LCA is the
@@ -146,7 +146,7 @@ for ii=1:nWavelengths
     % The Zernike polynomials are defined over the unit disk.  At
     % measurement time, the pupil was mapped onto the unit disk, so we
     % do the same normalization here to obtain the expansion over the
-    % disk. 
+    % disk.
     %
     % And by convention expanding gives us the wavefront aberrations in
     % microns.
@@ -154,7 +154,7 @@ for ii=1:nWavelengths
     norm_radius = (sqrt(xpos.^2+ypos.^2))/(zpupilDiameterMM/2);
     theta = atan2(ypos,xpos);
     norm_radius_index = norm_radius <= 1;
-   
+    
     % Get Zernike coefficients and add in appropriate info to defocus
     % Need to make sure the c vector is long enough to contain defocus
     % term, because we handle that specially and it's easy just to make
@@ -162,7 +162,7 @@ for ii=1:nWavelengths
     % diffraction, but that is the least of our worries.
     c = wvfGet(wvf,'zcoeffs');
     if (length(c) < 5),  c(length(c)+1:5) = 0; end
-    % We don't defocus for human chromatic aberration in ISET 
+    % We don't defocus for human chromatic aberration in ISET
     % c(5) = c(5) + lcaMicrons + defocusCorrectionMicrons;
     
     % fprintf('At wavlength %0.1f nm, adding LCA of %0.3f microns to j = 4 (defocus) coefficient\n',thisWave,lcaMicrons);

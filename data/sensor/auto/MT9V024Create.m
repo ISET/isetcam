@@ -35,7 +35,7 @@ wave = 380:10:1080;
 W = interp1(Mono(:,1),Mono(:,2),wave,'linear','extrap');
 W = W/100;
 
-vcNewGraphWin; 
+vcNewGraphWin;
 plot(wave,W,'k-');
 grid on; xlabel('Wavelength (nm)'); ylabel('Responsivity')
 
@@ -53,7 +53,7 @@ ieSaveColorFilter(cf,fullfile(isetRootPath,'data','sensor','colorfilters','auto'
 
 testWave = 400:5:780;
 [data, filterNames] = ieReadColorFilter(testWave,'MT9V024_Mono.mat');
-vcNewGraphWin; 
+vcNewGraphWin;
 plot(testWave,data,'k-');
 grid on; xlabel('Wavelength (nm)'); ylabel('Responsivity')
 filterNames
@@ -73,7 +73,7 @@ G = G/100;
 B = interp1(BlueChannel(:,1),BlueChannel(:,2),wave,'linear','extrap');
 B = B/100;
 
-vcNewGraphWin; 
+vcNewGraphWin;
 plot(wave,R,'r-',wave,G,'g-',wave,B,'b-');
 grid on; xlabel('Wavelength (nm)'); ylabel('Responsivity')
 
@@ -90,7 +90,7 @@ ieSaveColorFilter(cf,fullfile(isetRootPath,'data','sensor','colorfilters','auto'
 
 testWave = 400:5:950;
 [data,filterNames] = ieReadColorFilter(testWave,'MT9V024_RGB.mat');
-vcNewGraphWin; 
+vcNewGraphWin;
 plot(testWave,data,'-');
 grid on; xlabel('Wavelength (nm)'); ylabel('Responsivity')
 filterNames
@@ -106,7 +106,7 @@ load('c_RCCC.mat','c_RCCC')
 C = interp1(c_RCCC(:,1),c_RCCC(:,2),wave,'linear','extrap');
 C = C/100;
 
-vcNewGraphWin; 
+vcNewGraphWin;
 plot(wave,C,'k-',wave,R,'r-');
 grid on; xlabel('Wavelength (nm)'); ylabel('Responsivity')
 
@@ -122,7 +122,7 @@ ieSaveColorFilter(cf,fullfile(isetRootPath,'data','sensor','colorfilters','auto'
 
 testWave = 400:5:950;
 [data,filterNames] = ieReadColorFilter(testWave,'MT9V024_RCCC.mat');
-vcNewGraphWin; 
+vcNewGraphWin;
 plot(testWave,data,'-');
 grid on; xlabel('Wavelength (nm)'); ylabel('Responsivity')
 filterNames
@@ -140,7 +140,7 @@ ieSaveColorFilter(cf,fullfile(isetRootPath,'data','sensor','colorfilters','auto'
 %%
 testWave = 400:5:950;
 [data,filterNames] = ieReadColorFilter(testWave,'MT9V024_RGBW.mat');
-vcNewGraphWin; 
+vcNewGraphWin;
 plot(testWave,data,'-');
 grid on; xlabel('Wavelength (nm)'); ylabel('Responsivity')
 filterNames

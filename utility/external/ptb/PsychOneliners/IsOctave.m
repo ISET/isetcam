@@ -17,8 +17,8 @@ persistent rc;
 
 if isempty(rc)
     % If the built-in variable OCTAVE_VERSION exists, then we are running
-    % under GNU/Octave, otherwise not.                                                                                                                               
-    rc = exist('OCTAVE_VERSION', 'builtin') ~= 0;   
+    % under GNU/Octave, otherwise not.
+    rc = exist('OCTAVE_VERSION', 'builtin') ~= 0;
 end
 
 resultFlag = rc;

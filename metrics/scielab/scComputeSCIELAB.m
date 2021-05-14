@@ -7,11 +7,11 @@ function [result,whitePt] = scComputeSCIELAB(xyz,whitePt,params)
 % whitePt:  the white point of the image
 %           it can be either be a 3-vector or a cell
 %           array whose first entry is a 3-vector.
-% params:   
+% params:
 %
 % By default, deltaEver is the CIELAB 2000 delta E (dE).  For backwards
 % compatibility, it is possible to ask for earlier versions:
-%  deltaEVer = '1976'; or 
+%  deltaEVer = '1976'; or
 %  deltaEVer = '1994';
 %
 % Example:
@@ -33,15 +33,15 @@ if ~iscell(whitePt)
     tmp{1} = whitePt;
     whitePt = tmp;
 end
-% figure(1); 
+% figure(1);
 result = ClipXYZImage(xyz, whitePt{1});
 % figure(1); Y =result(:,:,2); mesh(Y); colormap(jet(255)); mean(Y(:))
 
 % These are the filters for spatial blurring.  They can take a
-% while to create (and we should speed that up).   
+% while to create (and we should speed that up).
 if isempty(params.filters)
     [params.filters, params.support] = scPrepareFilters(params);
-    % figure(1); 
+    % figure(1);
     % subplot(3,1,1), mesh(params.filters{1})
     % subplot(3,1,2), mesh(params.filters{2})
     % subplot(3,1,3), mesh(params.filters{3})

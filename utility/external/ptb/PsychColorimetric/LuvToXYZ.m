@@ -5,7 +5,7 @@ function XYZ = LuvToXYZ(Luv,whiteXYZ)
 % 5/9/02      dhb   Improved help.
 
 % Get white point u and v
-uv0 = XYZTouv(whiteXYZ); 
+uv0 = XYZTouv(whiteXYZ);
 
 % Compute Y
 Y = LxxToY(Luv,whiteXYZ);
@@ -18,7 +18,7 @@ v = (Luv(3,:) ./ (13.0 * Luv(1,:)) ) + uv0(2);
 X = (9.0 / 4.0) * (u./v) .*  Y;
 Z = ( ((4.0 - u).*X)./(3.0*u) ) - (5.0 * Y);
 
-% Put together the answer   
+% Put together the answer
 XYZ = [X ; Y ; Z];
 
 

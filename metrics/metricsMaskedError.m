@@ -21,7 +21,7 @@ switch method
         % Least squared estimate for the whole image
         % E = alpha*imgV
         alpha = imgV(:)\E(:);
-
+        
     otherwise
         error('Unknown method: %s\n',method);
 end

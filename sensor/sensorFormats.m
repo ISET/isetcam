@@ -8,11 +8,11 @@ function sFormat = sensorFormats(formatName)
 %
 %  The imaging area dimensions for standard sensor sizes are
 %  returned in meters. Oddly the sizes are given in inches (e.g.,
-%  halfinch, quarterinch and sixteenthinch) are also stored. 
+%  halfinch, quarterinch and sixteenthinch) are also stored.
 %
-% Row/col sizes for all known sensor formats are returned using:   
+% Row/col sizes for all known sensor formats are returned using:
 %
-%  sFormat = sensorFormats; 
+%  sFormat = sensorFormats;
 %
 % Examples:
 %
@@ -57,7 +57,7 @@ t.uxvga = [1200,1600];   % Not sure about this one.
 % VGA   = [640,  480];
 % CGA   = [320,  200];
 % QVGA  = [320,  240];
-% 
+%
 % MPEG1   = [352 240];
 % iPhone  = [480 320];  % iPhone
 % YouTube = [560 340];  % YouTube
@@ -82,10 +82,10 @@ switch ieParamFormat(formatName)
         
     case 'qcif',
         sFormat = t.qcif;
-                
+        
     case 'cif',
         sFormat = t.cif;
-                
+        
     case 'qqvga',
         sFormat = t.qqvga;
         
@@ -108,20 +108,20 @@ switch ieParamFormat(formatName)
         % Not sure about this one.
         sFormat = t.uxvga;
         
-   %%%%%%%%%%%%%%%%%Size parameters%%%%%%%%%%%%%%%%%
-   % Size units are meters
-
+        %%%%%%%%%%%%%%%%%Size parameters%%%%%%%%%%%%%%%%%
+        % Size units are meters
+        
     case {'halfinch','half'}
         sFormat = t.halfinch;
         
     case {'quarterinch','quarter'}
         % Standard quarter inch format is used in mobile phones.
         sFormat = t.quarterinch;
-                
+        
     case {'sixteenthinch','sixteenth'}
         sFormat = t.sixteenthinch;
         
-    otherwise 
+    otherwise
         disp('Unknown format.  Returning the CIF/VGA list.  Or do you want halfinch or quarterinch?')
         sFormat = t;
 end

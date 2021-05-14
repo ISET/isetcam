@@ -32,7 +32,7 @@ nSamples = 6;
 t = zeros(nSamples,nSamples);
 t(1,1) = 1;
 ft = ifft2(t);
-isreal(ft)  
+isreal(ft)
 
 %% FFT
 %
@@ -41,7 +41,7 @@ isreal(ft)
 % output for an impulse at the center
 s = zeros(nSamples,nSamples);
 s(1,1) = 1;
-fft2(s)     
+fft2(s)
 isreal(s)
 
 % The implications of these representations for using fft2
@@ -80,19 +80,19 @@ subplot(1,3,1); colormap(gray); mesh(g);
 % We can then take the fft2 of the result to produce the OTF.
 %
 % This OTF will have the DC term in the upper left, at (1,1).
-% 
+%
 % If you wanted the DC term in the center, you'd apply fftshift to
 % variable gFT after executing the code below.
 gFT = fft2(ifftshift(g));
-subplot(1,3,2); mesh(abs(gFT)); 
+subplot(1,3,2); mesh(abs(gFT));
 
 % To go back to the original image, take the ifft2 and then apply fftshift
 % to make the psf centered in the spatial domain, as it started.
 %
 % Not that if you had applied fftshift to gFT, to put the DC in the center,
 % then you'd need to apply ifftshift before executing the code below.
-gFTAndBack = fftshift(ifft2(gFT)); 
-subplot(1,3,3); mesh(abs(gFTAndBack)); 
+gFTAndBack = fftshift(ifft2(gFT));
+subplot(1,3,3); mesh(abs(gFTAndBack));
 
 %% Image example
 
@@ -130,10 +130,10 @@ else
     fprintf('FFT phase unexpectedly preserved with insertion of ifftshift\n');
 end
 
-% We are ready to multiply the transformed image and the OTF 
+% We are ready to multiply the transformed image and the OTF
 imgFTgFT = imgFT .* gFT;
 
-% We can return the transform to the space domain.  
+% We can return the transform to the space domain.
 imgConvG = ifft2(imgFTgFT);
 
 % When we do, the image center is still in the (1,1) position.

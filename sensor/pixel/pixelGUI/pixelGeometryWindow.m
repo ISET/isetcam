@@ -27,11 +27,11 @@ function varargout = pixelGeometryWindow(varargin)
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
-                   'gui_Singleton',  gui_Singleton, ...
-                   'gui_OpeningFcn', @pixelGeometryWindow_OpeningFcn, ...
-                   'gui_OutputFcn',  @pixelGeometryWindow_OutputFcn, ...
-                   'gui_LayoutFcn',  [] , ...
-                   'gui_Callback',   []);
+    'gui_Singleton',  gui_Singleton, ...
+    'gui_OpeningFcn', @pixelGeometryWindow_OpeningFcn, ...
+    'gui_OutputFcn',  @pixelGeometryWindow_OutputFcn, ...
+    'gui_LayoutFcn',  [] , ...
+    'gui_Callback',   []);
 if nargin & ischar(varargin{1})
     gui_State.gui_Callback = str2func(varargin{1});
 end
@@ -320,7 +320,7 @@ str = sprintf('%.2f',pixelGet(PIXEL,'pdYpos')*(10^(6))); set(handles.editPDYpos,
 
 % Fill factor
 str = sprintf('%.0f',pixelGet(PIXEL,'fillfactor')*100); set(handles.edit1FillFactor,'String',str);
-             
+
 return;
 
 %----------------------------------------
@@ -362,4 +362,4 @@ set(handles.txtPrct,'Visible','off');
 set(handles.edit1FillFactor,'Visible','off');
 
 return;
-   
+

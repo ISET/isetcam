@@ -3,11 +3,11 @@
 %    AUTHOR:   X. Zhang, B. Wandell
 %    PURPOSE:  Explain the basic features of JPEG compression
 %    DATE:     02.15.96
-% 
+%
 % This tutorial covers the DCT calculation, the dct coefficient
 % quantization, and the inversion process.  We will also cover
 % some issues relating to compression of indexed color images.
-% 
+%
 % Matlab 5:  Checked 01.06.98, BW
 % Matlab 7:  Checked 01.02.08  BW
 %
@@ -18,9 +18,9 @@ ieInit
 %% JPEG compression of a grayscale image
 
 % Let's read in a picture to get started
-% 
-D = load('jpegFiles/einstein.mat');  
-im = D.X;   % Read in as the variable X 
+%
+D = load('jpegFiles/einstein.mat');
+im = D.X;   % Read in as the variable X
 vcNewGraphWin;
 imshow(im,[1,256])
 title('Original Image Data');
@@ -28,7 +28,7 @@ title('Original Image Data');
 % We are ready to start the compression operations.
 
 % 1.  THE DCT STEP
-% 
+%
 % The first step is dividing the image into little 8x8 blocks,
 % and then apply the DCT transformation on each block.  The image
 % size is 256x256, these are multiples of 8, so we are in good
@@ -55,7 +55,7 @@ load jpegFiles/dctMatrix;
 % Each column of this matrix is a cos function at a different
 % spatial frequency.  But they are very coarsely sampled and so
 % they don't really look familiar.
-% 
+%
 plot(1:size(dctMatrix,1),dctMatrix(:,[1 3 5 7]))
 title('Selected DCT basis functions');
 
@@ -79,7 +79,7 @@ title('DCT-transformed image data');
 % negative.  Notice that the higher order coefficients (lower
 % right) are small. They tend to be small in general.
 
-% If we use the DCT function in Matlab to do it, the results are 
+% If we use the DCT function in Matlab to do it, the results are
 % the same, except for some extra scaling that is required for
 % the JPEG standard.
 %
@@ -90,7 +90,7 @@ title('DCT-transformed image data');
 % max(abs(dctCoefm(:) - dctCoef(:)))     % results are the same
 
 %%THE QUANTIZATION STEP.
-% 
+%
 % We started with 64 numbers and we still have 64 numbers.  We
 % are ready to save information by the quantization step. To
 % quantize the dct coefficients, we divide each DCT coefficient
@@ -113,16 +113,16 @@ Q_factor = 90;
 q1 = jpeg_qtables(Q_factor,1)
 
 % To make the picture of the quantization table, I have made
-% light mean preserve the coefficient and black mean lose it 
-colormap(linMap); 
+% light mean preserve the coefficient and black mean lose it
+colormap(linMap);
 
-Q_factor = 80; 
+Q_factor = 80;
 subplot(1,2,1); imagesc(256 -jpeg_qtables(Q_factor,1));
 title(sprintf('Luminance quantization table for Q=%d',Q_factor));
 axis image
 
-Q_factor = 20; 
-subplot(1,2,2); imagesc(256 - jpeg_qtables(Q_factor,1)); 
+Q_factor = 20;
+subplot(1,2,2); imagesc(256 - jpeg_qtables(Q_factor,1));
 title(sprintf('Luminance quantization table for Q=%d',Q_factor));
 axis image
 
@@ -139,8 +139,8 @@ dctQuant = round(dctCoef ./ q1) .* q1
 % The difference between the original dct coefficient and the
 % quantized coefficient will not be larger than quantization step
 % size.  We can check this as follows.
-% 
-round(abs(dctQuant - dctCoef)) 
+%
+round(abs(dctQuant - dctCoef))
 
 
 % Now we will transform-quantize over every block in the image.
@@ -150,11 +150,11 @@ Q_factor = 50;
 q1 = jpeg_qtables(Q_factor,1)
 dctQuant = zeros(size(im));
 for i=1:8:size(im,1)
-  for j=1:8:size(im,2)
-    block = im(i:i+7, j:j+7);
-    dctCoef = dctMatrix*block*dctMatrix';
-    dctQuant(i:i+7, j:j+7) = round(dctCoef ./ q1) .* q1;
-  end
+    for j=1:8:size(im,2)
+        block = im(i:i+7, j:j+7);
+        dctCoef = dctMatrix*block*dctMatrix';
+        dctQuant(i:i+7, j:j+7) = round(dctCoef ./ q1) .* q1;
+    end
 end
 
 % Notice that the quantized coefficients are really concentrated
@@ -172,14 +172,14 @@ xlabel('Value');ylabel('Count');
 % back an image.  To do this, we just need to invert the dct
 % transformation. Again, we apply the decoding step to one 8x8
 % block first to give you an idea of how it works.
-% 
+%
 block = im(89:96, 105:112);
 blockdct = dctQuant(89:96, 105:112);
 blockjpeg = idctMatrix*blockdct*idctMatrix';
 
 % Here are the differences between the original and compressed
-% block 
-round(blockjpeg) - block 		
+% block
+round(blockjpeg) - block
 
 % And here is a picture of the two blocks
 vcNewGraphWin; colormap(linMap)
@@ -200,13 +200,13 @@ subplot(1,2,2); histogram(blockjpeg(:)); title('Compressed')
 % max(abs(blockjpegm(:) - blockjpeg(:)))
 
 % Now we decode the whole image.
-% 
+%
 imjpeg = zeros(size(im));
 for i=1:8:size(im,1)
-  for j=1:8:size(im,2)
-    block = dctQuant(i:i+7, j:j+7);
-    imjpeg(i:i+7, j:j+7) = idctMatrix*block*idctMatrix';
-  end
+    for j=1:8:size(im,2)
+        block = dctQuant(i:i+7, j:j+7);
+        imjpeg(i:i+7, j:j+7) = idctMatrix*block*idctMatrix';
+    end
 end
 
 % The result of inverse DCT transform is not guarranteed to be
@@ -240,9 +240,9 @@ imshow(imjpeg2, gray(256));
 % c) Why is it better to quantize the JPEG-DCT coefficients rather than
 % the intensities of individual pixels?
 %
-% d) Suppose you use a JPEG-DCT compressor to compress an image 
-% (yielding image a); then you uncompress the image and compress it 
-% again using the same compressor and compression settings (yielding 
+% d) Suppose you use a JPEG-DCT compressor to compress an image
+% (yielding image a); then you uncompress the image and compress it
+% again using the same compressor and compression settings (yielding
 % image b). How will the two compressed images (a and b) compare?  Explain.
 %
 % e) What are the main visual artifacts present in JPEG-DCT compressed
@@ -256,7 +256,7 @@ imshow(imjpeg2, gray(256));
 % functions to accomplish this.  Normalize all images to have intensities
 % from 0 to 1 (as opposed to 0 to 255).
 %
-% a) Submit the squared-error image for q=25.  
+% a) Submit the squared-error image for q=25.
 %
 % b) Describe where the error image has the highest values.  Does this
 % agree with your understanding of the JPEG-DCT algorithm?
@@ -265,13 +265,13 @@ imshow(imjpeg2, gray(256));
 % error vs. quantization factor. [You may obtain data for more quantization
 % settings if you like, but this is not required.]
 %
-% d) For each error image, compute the 95th percentile error point.  If 
+% d) For each error image, compute the 95th percentile error point.  If
 % your error image is called errorim, you can find this value as follows:
 %
 %    serr = sort(errorim(:)); % sort the error values
 %    error95 = serr( floor(0.95 * length(serr)) ); % get the 95th percentile
-% 
+%
 % Also plot error vs quantization factor for this method.
 %
-% e) If you were evaluating image quality for this image, which method 
+% e) If you were evaluating image quality for this image, which method
 % (c) or (d) would you use?  Describe why you would use this method.

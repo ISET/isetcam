@@ -11,7 +11,7 @@ function [M, rseed] = imageDeadLeaves(n,sigma,options)
 %   options.nbr_iter put a bound on the number of iteration.
 %   options.shape can be 'disk' or 'square'
 %
-% References : 
+% References :
 %   Dead leaves correct simulation :
 %    http://www.warwick.ac.uk/statsdept/staff/WSK/dead.html
 %
@@ -39,14 +39,14 @@ function [M, rseed] = imageDeadLeaves(n,sigma,options)
  n     = 256;
  sigma = 3;
  [img, rseed] = imageDeadLeaves(n,sigma,options);
- vcNewGraphWin; imagesc(img); 
+ vcNewGraphWin; imagesc(img);
  colormap(gray); axis image; truesize
 %}
 %{
  % Produces exactly the same image.  Use rseed = rng; for new image.
  options.rseed = rseed;
  img = imageDeadLeaves(n,sigma,options);
- vcNewGraphWin; imagesc(img); 
+ vcNewGraphWin; imagesc(img);
  colormap(gray); axis image; truesize
 %}
 %{
@@ -92,18 +92,18 @@ if sigma > 0, r_dist = r_dist - (1/rmax^sigma);
 end
 
 %  Used to be rescale (see below)
-r_dist = ieScale( cumsum(r_dist) ); % in 0-1. 
+r_dist = ieScale( cumsum(r_dist) ); % in 0-1.
 
 m = n^2;
 
 for i=1:nbr_iter
     
-	% compute scaling using inverse mapping
-    r = rand(1);  
-	[~,I] = min( abs(r-r_dist) );
+    % compute scaling using inverse mapping
+    r = rand(1);
+    [~,I] = min( abs(r-r_dist) );
     r = r_list(I);
     
-    x = rand(1); y = rand(1);  % position 
+    x = rand(1); y = rand(1);  % position
     a = rand(1);               % reflectance (albedo)
     
     % Find the disk or square at the random position
@@ -111,7 +111,7 @@ for i=1:nbr_iter
         case 'disk'
             I = find(isinf(M) & ((X-x).^2 + (Y-y).^2) < r^2 );
         case 'square'
-            I = find(isinf(M) & abs(X-x)<r & abs(Y-y) < r );     
+            I = find(isinf(M) & abs(X-x)<r & abs(Y-y) < r );
         otherwise
             error('Unknown shape %s\n',shape);
     end

@@ -112,7 +112,7 @@ switch method
         ind = ryi + librarySize(1)*(rxi-1);
         Zi(flag) = Z(ind(flag));
         
-    % Linear method
+        % Linear method
     case 1
         % Split the square bounded by (x_i,y_i) & (x_i+1,y_i+1) into two
         % triangles.  The interpolation is given by finding the function plane
@@ -152,7 +152,7 @@ switch method
             Z(ind1(flag2)).*(1-dfyi(flag2)) +...
             Z(ind4(flag2)).*(dfyi(flag2)-dfxi(flag2)) +...
             Z(ind3(flag2)).*dfxi(flag2);
-
+        
     case 2 % Bilinear interpolation
         % Code is cloned from above for speed
         % Transform to unit square

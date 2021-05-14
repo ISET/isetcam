@@ -7,7 +7,7 @@ function cal = CalibrateFitLinMod(cal)
 % 3/27/02  dhb  Add case of nPrimaryBases == 0.
 % 2/15/10  dhb  Fix so that first basis vector is good approximation to max
 %               input primary spectrum.
-%          dhb  Normalize basis vectors so that their max power matches that 
+%          dhb  Normalize basis vectors so that their max power matches that
 %               of first component.
 % 4/30/10  dhb  Execute yoked fit if yokedGamma flag is set.
 % 5/25/10  dhb, ar Change yoked field names to match
@@ -21,20 +21,20 @@ monSVs = zeros(min([cal.describe.nMeas cal.describe.S(3)]),cal.nDevices);
 for i = 1:cal.nDevices
     tempMon = reshape(cal.rawdata.mon(:,i),cal.describe.S(3),cal.describe.nMeas);
     monSVs(:,i) = svd(tempMon);
-
+    
     % Build a linear model
     if (cal.nPrimaryBases ~= 0)
         % Get full linear model
         [monB,monW] = FindLinMod(tempMon,cal.nPrimaryBases);
-
+        
         % Express max measurement within the full linear model.
         % This is the first basis function.
         tempB = monB*monW(:,cal.describe.nMeas);
         maxPow = max(abs(tempB));
-
+        
         % Get residuals with respect to first component
         residMon = tempMon-tempB*(tempB\tempMon);
-
+        
         % If linear model dimension is greater than 1,
         % fit linear model of dimension-1 to the residuals.
         % Take this as the higher order terms of the linear model.
@@ -55,14 +55,14 @@ for i = 1:cal.nDevices
         else
             monB = tempB;
         end
-
+        
         % Zero means build one dimensional linear model just taking max measurement
         % as the spectrum.
     else
         cal.nPrimaryBases = 1;
         monB = tempMon(:,cal.describe.nMeas);
     end
-
+    
     % Find weights with respect to adjusted linear model and
     % store
     monW = FindModelWeights(tempMon,monB);

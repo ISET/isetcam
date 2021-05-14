@@ -4,7 +4,7 @@ function xaxisLine(ax)
 % Synopsis
 %   xaxisLine(ax);
 %
-% 
+%
 % See also
 %   identityLine
 %

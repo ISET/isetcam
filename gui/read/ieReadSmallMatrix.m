@@ -4,7 +4,7 @@ function gMat = ieReadSmallMatrix(mSize,defMatrix,fmt,prompt,yxPosition,outVarNa
 %    m = ieReadSmallMatrix(mSize)
 %
 % We create a figure, gMat, that contains edit boxes where the user can
-% enter matrix data.  
+% enter matrix data.
 %
 % The boxes can be slightly colored to indicate, say, the color of the
 % filter or some useful information for the user.
@@ -34,14 +34,14 @@ if ieNotDefined('yxPosition'),yxPosition = [100,500];      end
 if ieNotDefined('outVarName'),outVarName = 'matrixData';   end
 if ieNotDefined('cList'),     cList = [];                  end
 
-%% 
+%%
 % Create the figure and main window
 
 % See if a previous session exists; if so, close it
 tmp = findobj('Tag','cfaExposure');
 if ~isempty(tmp), close(tmp); end
 
-nRows = mSize(1); 
+nRows = mSize(1);
 nCols = mSize(2);
 gMat.fig      = figure;
 gMat.mSize    = mSize;
@@ -68,7 +68,7 @@ gMat.panel = uipanel('Parent',gMat.fig,...
     'BackgroundColor',get(gcf,'Color')...
     );
 
-% Create the boxes 
+% Create the boxes
 % Set dimensions (relative to the dimensions of the main panel) of the
 % editboxes that are used to enter matrix elements
 p1 = 0.9; p2 = 0.1;
@@ -99,7 +99,7 @@ for currentRow = 1:nRows
             'String', str,...
             'Position',[xPos yPos editWidth editHeight],...
             'Callback', editboxCallBack);
-
+        
     end
 end
 
@@ -131,7 +131,7 @@ return
 
 function doneCallback(hObject, eventdata, varargin)
 % The DONE button from the window is the object
-% Reads  values from all the edit boxes 
+% Reads  values from all the edit boxes
 
 gMat       = varargin{1};
 outVarName = varargin{2};

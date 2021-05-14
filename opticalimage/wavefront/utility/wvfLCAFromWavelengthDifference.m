@@ -12,10 +12,10 @@ function lcaDiopters = wvfLCAFromWavelengthDifference(wl1NM,wl2NM,whichCalc)
 % approximation. The differences are just numerical roundoff.
 %
 %   hoferCode {Default} -  The way Heidi Hofer wrote it in the code she
-%                           provided us with. 
+%                           provided us with.
 %   thibosPaper - The calculation as described in Thibos et al, 1992, "The
 %                chromatic eye: ...", Applied Optics, 31, pp 3594-3600.
-%                
+%
 %   iset        -  Bedford and Wyszecki formula, which is always w.r.t
 %                  580nm, that was used in ISET
 %
@@ -46,11 +46,11 @@ function lcaDiopters = wvfLCAFromWavelengthDifference(wl1NM,wl2NM,whichCalc)
 %     closer to the corneal surface.  The index of refraction varies with wavelength though,
 %     so that shorter wavelengths always experience a higher index of refraction and bend more.
 %     So there is always a difference in the power with wavelength:
-% 
+%
 %      F(lamda1) = (n(lamda1)-1)*c
 %      F(lamda2) = (n(lamda2)-1)*c
 %      LCA(lamda2,lamda1) = F(lamda2)-F(lamda1) = c*[n(lamda2)-n(lamda1)]
-% 
+%
 %     so you can see that the LCA (in this case written as a difference in power) between two
 %     wavelengths is proportional to the corneal curvature as well as the difference in
 %     corneal index of refraction at the two wavelengths.  In general the difference in
@@ -94,11 +94,11 @@ function lcaDiopters = wvfLCAFromWavelengthDifference(wl1NM,wl2NM,whichCalc)
 % 8/21/11  dhb  Pulled out from code supplied by Heidi Hofer.
 % 9/5/11   dhb  Rename.  Rewrite for wvfPrams i/o.
 % 5/29/12  dhb  Pulled out just the bit that does the computation of diopters
-% 7/24/12  dhb  Verify against Thibos paper formulae. 
-% 7/29/12  dhb  Add optional args, make Thibos paper version default.  
+% 7/24/12  dhb  Verify against Thibos paper formulae.
+% 7/29/12  dhb  Add optional args, make Thibos paper version default.
 % 2014     bw   Restructured code, eliminated COMPARE, tested again\
 %
-% (c) Wavefront Toolbox Team, 2011 
+% (c) Wavefront Toolbox Team, 2011
 
 %% Set which calculation to use
 if (nargin < 3 || isempty(whichCalc)), whichCalc = 'hoferCode'; end
@@ -110,7 +110,7 @@ switch (whichCalc)
         lcaDiopters = 1.8859 - constant - (0.63346./(0.001*wl2NM-0.2141));
         
     case 'thibosPaper'
-                % Constants from the top of page 3596
+        % Constants from the top of page 3596
         rMM = 5.55 ;          % mm
         rM = rMM*1e-3;
         nD = 1.333;

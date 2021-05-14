@@ -1,5 +1,5 @@
 function sensor = sensorCreateIdeal(idealType,sensorExample)
-%Create an ideal image sensor array based on the sensor example 
+%Create an ideal image sensor array based on the sensor example
 %
 %  sensor = sensorCreateIdeal(idealType,[sensorExample])
 %
@@ -18,7 +18,7 @@ function sensor = sensorCreateIdeal(idealType,sensorExample)
 % Inputs:
 % idealType: The type of ideal sensor array we create is determined by
 %            this parameter and the sensorExample.  The options are
-%   
+%
 %       * match:     - Same as sensor example, but noise turned off
 %       * match xyz: - As above, but also replace color filters with
 %                      XYZQuanta filters
@@ -42,7 +42,7 @@ function sensor = sensorCreateIdeal(idealType,sensorExample)
 %
 %  Or, 3 micron, ideal, stockman, regular grid
 %     pixSize = 2*1e-6;
-%     sensor = sensorCreateIdeal('human',pixSize); 
+%     sensor = sensorCreateIdeal('human',pixSize);
 %
 %  Match a single mosaicked sensor with an array of monochrome sensors that
 %  have the noise terms set to zero.
@@ -66,7 +66,7 @@ switch lower(idealType)
         % We also set the exposure time to be equal to either the first, or
         % the default (if auto exposure is set).
         
-        if ieNotDefined('sensorExample'), error('Example needed'); end 
+        if ieNotDefined('sensorExample'), error('Example needed'); end
         
         % Determine key parameters for the example
         N = sensorGet(sensorExample,'nfilters');
@@ -87,7 +87,7 @@ switch lower(idealType)
         sensorExample = sensorSet(sensorExample,'color filters',cfilters(:,1));
         sensorExample = sensorSet(sensorExample,'pattern',1);
         sensorExample = sensorSet(sensorExample,'filter name',{'dummy'});
-
+        
         for ii=N:-1:1, sensor(ii) = sensorExample; end
         
         % Edit the sensor parameters: monochrome, named, zero noise, and
@@ -103,11 +103,11 @@ switch lower(idealType)
             
             % Equal exposure times.
             sensor(ii) = sensorSet(sensor(ii),'integration time',expTime);
-                 
+            
         end
         
     case 'matchxyz'
-        if ieNotDefined('sensorExample'), error('Example needed'); end 
+        if ieNotDefined('sensorExample'), error('Example needed'); end
         sensor = sensorCreateIdeal('match',sensorExample);
         
         % Replace current filters with XYZQuanta filters.
@@ -120,8 +120,8 @@ switch lower(idealType)
         fname  = fullfile(isetRootPath,'data','human','XYZQuanta.mat');
         wave = sensorGet(sensor(1),'wave');
         transmissivities = ieReadSpectra(fname, wave);   %Load and interpolate filters
-        transmissivities = transmissivities/max(transmissivities(:));        
-        filterNames = {{'rX'}, {'gY'}, {'bZ'}};          %Names for color plots    
+        transmissivities = transmissivities/max(transmissivities(:));
+        filterNames = {{'rX'}, {'gY'}, {'bZ'}};          %Names for color plots
         for ii=1:3
             sensor(ii) = sensorSet(sensor(ii),'filter spectra',transmissivities(:,ii));
             sensor(ii) = sensorSet(sensor(ii),'filter names',filterNames{ii});
@@ -142,7 +142,7 @@ switch lower(idealType)
         sensor = sensorSet(sensor,'pixel',idealPixel(pixel,pixelSizeInMeters));
         sensor = sensorSet(sensor,'noise flag',1);  % Photon noise only
         
-    case {'xyz'}        
+    case {'xyz'}
         % Create an array of XYZ monochrome sensors.
         
         % Creating the last one this way forces 1 and 2 to be the same type
@@ -151,12 +151,12 @@ switch lower(idealType)
         for ii=1:2
             sensor(1) = sensor(3);
             sensor(2) = sensor(3);
-        end       
+        end
         sensorNames = {'CIE-X-ideal','CIE-Y-ideal','CIE-Z-ideal'};
         
         % CIE XYZ quanta fundamentals.
         pixel = sensorGet(sensor(1),'pixel');
-               if ieNotDefined('pixelSizeInMeters')
+        if ieNotDefined('pixelSizeInMeters')
             disp('2.8 micron sensor created');
             pixelSizeInMeters = 2.8e-6;
         end
@@ -173,7 +173,7 @@ switch lower(idealType)
         transmissivities = vcReadSpectra(fname, wave);   %Load and interpolate filters
         transmissivities = transmissivities/max(transmissivities(:));
         
-        filterNames = {{'rX'}, {'gY'}, {'bZ'}};          %Names for color plots    
+        filterNames = {{'rX'}, {'gY'}, {'bZ'}};          %Names for color plots
         
         for ii=1:3
             sensor(ii) = sensorSet(sensor(ii),'pixel',pixel);
@@ -207,4 +207,3 @@ pixel = pixelSet(pixel,'darkVoltage',0);
 pixel = pixelSet(pixel,'voltage swing',1e6);
 
 return
-        

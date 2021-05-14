@@ -42,7 +42,7 @@ p.parse(obj,varargin{:});
 select = p.Results.select;
 
 % Forces the objType string to one of original names below.
-if isstruct(obj), objType = vcEquivalentObjtype(obj.type); 
+if isstruct(obj), objType = vcEquivalentObjtype(obj.type);
 else,             objType = vcEquivalentObjtype(obj);
 end
 

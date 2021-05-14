@@ -10,7 +10,7 @@ function [data,figNum, theRect] = plotSensorHistogram(unitType)
 %
 % Description
 %  Create a multiple panel plot showing the pixel voltages or electrons in
-%  a region selected by the user. 
+%  a region selected by the user.
 %
 %  The data returns the region of interest with electrons or volts.  In
 %  each channel the non-sampled measurements are NaNs.  To get these out,
@@ -94,7 +94,7 @@ for ii=1:nSensors
         case 'e'
             xlabel('Electrons')
     end
-   ylabel('Count');
+    ylabel('Count');
 end
 
 end

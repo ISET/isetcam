@@ -3,17 +3,17 @@
 %   AUTHOR:   X. Zhang, B. Wandell
 %   PURPOSE:  Develop JPEG compression in color
 %   DATE:     02.15.96
-% 
+%
 % We integrate the basic DCT calculations with color
 % transformations.  We introduce YCbCr and some additional
 % discussion of chrominance subsampling and color lookup tables.
 % Finally, we try a simple experiment with jpeg compression by
 % switching the luminance and chrominance quantization tables.
-% 
+%
 % Matlab 5:  Checked 01.06.98, BW
 % Matlab 7:  Checked 01.02.08  BW
 %
-% Copyright Imageval Consulting, LLC 
+% Copyright Imageval Consulting, LLC
 
 %%
 ieInit
@@ -28,8 +28,8 @@ img = D.X;
 vcNewGraphWin;
 imshow(img, map);
 
-% Convert the image into RGB format. 
-% 
+% Convert the image into RGB format.
+%
 [r,g,b] = ind2rgb(img, map);
 
 % Recall that JPEG works on each color plane separately.  Hence,
@@ -43,7 +43,7 @@ bCoef = jpegCoef(b,qFactor);
 
 % You can see that we did well in terms of zeroing lots of the
 % coefficients so that the result will be strongly compressed.
-% 
+%
 histogram(bCoef(:),[-100:10:260])
 title('Histogram of quantized coefficients (b channel)');
 
@@ -53,21 +53,21 @@ title('Histogram of quantized coefficients (b channel)');
 % writing them out as matlab files and then measuring their entropy, or
 % just by trying to compress them.
 
-% (technical note: -v4 forces Matlab to save with no compression and 
-%  not to optimize by changing to a lower-precision data type even 
+% (technical note: -v4 forces Matlab to save with no compression and
+%  not to optimize by changing to a lower-precision data type even
 %  if possible.)
 
 save -v4 rgbImage r g b;
 save -v4 dctCoef rCoef gCoef bCoef;
 
-% We now measure the mathematical entropy of each file.  Entropy can be 
-% interpreted as a measure of the theoretical limit on the compressibility 
-% of data.  A lower entropy means that the data is more compressible.  
+% We now measure the mathematical entropy of each file.  Entropy can be
+% interpreted as a measure of the theoretical limit on the compressibility
+% of data.  A lower entropy means that the data is more compressible.
 
 rgbEntropy = entropy_file('rgbImage.mat')
 dctEntropy = entropy_file('dctCoef.mat')
 
-% If you're not convinced, or you're not familiar with entropy, You might 
+% If you're not convinced, or you're not familiar with entropy, You might
 % also try running these commands, which, in Matlab v7, saves the
 % data in a (lossless) compressed format to see how compressible the data
 % is.
@@ -76,11 +76,11 @@ dctEntropy = entropy_file('dctCoef.mat')
 
 
 % Clean up and go back
-% 
+%
 unix('rm -f dctCoef* rgbImage*');
 
 % Now, we will invert the coefficients and see what the image
-% looks like. 
+% looks like.
 rJPEG = truncate(jpegRGB(rCoef,qFactor),0,255);
 gJPEG = truncate(jpegRGB(gCoef,qFactor),0,255);
 bJPEG = truncate(jpegRGB(bCoef,qFactor),0,255);
@@ -103,13 +103,13 @@ imshow(Xjpeg/255);
 Q_factor = 50;
 q2 = jpeg_qtables(Q_factor,2)
 vcNewGraphWin;
-colormap(gray); 
+colormap(gray);
 imagesc(256 - q2), axis image
 title(sprintf('Chrominance quantization table for Q=%d',Q_factor));
 
 % Again, if you want to know how the scaling of quantization tables was
 % done, look at the code in jpeg_qtables.
-% 
+%
 % type jpeg_qtables
 
 
@@ -134,12 +134,12 @@ title(sprintf('Chrominance quantization table for Q=%d',Q_factor));
 % a matrix
 
 RGB2YCC = ...
-    [ 0.2990 0.5870  0.1140; ...  
-    -0.1687 -0.3313 0.5000; ...  
+    [ 0.2990 0.5870  0.1140; ...
+    -0.1687 -0.3313 0.5000; ...
     0.5000 -0.4187 -0.0813]
 
 % To apply this transformation to the r,g,b image data we do
-% 
+%
 Y =   0.2990*r + 0.5870*g + 0.1140*b;
 Cb = -0.1687*r - 0.3313*g + 0.5000*b;
 Cr =  0.5000*r - 0.4187*g - 0.0813*b;
@@ -149,17 +149,17 @@ Cr =  0.5000*r - 0.4187*g - 0.0813*b;
 % fact, the JPEG-DCT has two default quantization tables: one for
 % the luminance component (Y),
 qFactor = 75;
-q1 = jpeg_qtables(qFactor, 1) 
+q1 = jpeg_qtables(qFactor, 1)
 
-% and the other for the chrominance components (Cb, Cr). 
-% 
-q2 = jpeg_qtables(qFactor, 2) 
+% and the other for the chrominance components (Cb, Cr).
+%
+q2 = jpeg_qtables(qFactor, 2)
 
 % In general, the chrominance quantization table has larger
 % quantization steps sizes than the luminance one.  Also, it is
 % applied to THE SUBSAMPLED chrominance bands.  This saves a
 % great deal of space.  At this moment, this is not implemented
-% in this tutorial, so we will simply use 
+% in this tutorial, so we will simply use
 
 q2 = q1;
 
@@ -177,7 +177,7 @@ CbJPEG  = jpegRGB(Cbcoef,q2);
 CrJPEG  = jpegRGB(Crcoef,q2);
 
 % histogram(yJPEG(:))
- 
+
 % Convert the compressed YCbCr image back into RGB format
 rJPEG = truncate(yJPEG + 1.4020*CrJPEG,0,255);
 gJPEG = truncate(yJPEG - 0.3441*CbJPEG - 0.7141*CrJPEG,0,255);
@@ -193,7 +193,7 @@ vcNewGraphWin; imshow(Xjpeg/255);
 % chromatic planes and saves lots more space.  It also changes
 % the meaning of the spatial frequencies in the q2 quantization
 % table.  All of this should be implemented as part of this
-% tutorial some day. 
+% tutorial some day.
 
 %% BEGIN TUTORIAL QUESTIONS
 %
@@ -202,7 +202,7 @@ vcNewGraphWin; imshow(Xjpeg/255);
 %
 % 2) What property of color visual sensitivity makes it possible to obtain
 % the high compression ratio if we accept lossy compression? How does the
-% YCbCr color space take advantage of this visual system property? 
+% YCbCr color space take advantage of this visual system property?
 %
 % 3)  Explore the visual impact of compressing color images in different
 % spaces.  Specifically, load a color image into R,G and B planes.  Then
@@ -226,19 +226,19 @@ vcNewGraphWin; imshow(Xjpeg/255);
 %   c) To see what the different channels look like, try reconstructing
 %   an image with the CbJPEG set to zero.  Then try it with the CrJPEG set
 %   to zero.  Then try setting the Y channel to all values of 128.  This
-%   is a picture with no luminance, only chrominance.  
+%   is a picture with no luminance, only chrominance.
 %
-% Bonus Question: 
+% Bonus Question:
 %
 %  In the Color Matching tutorial, we investigated the implications of
-%  adding a fourth phosphor (ie, channel) to our color monitor.  
+%  adding a fourth phosphor (ie, channel) to our color monitor.
 %
 %  Assume that the JPEG color gamut is a smaller subset of the visible
 %  gamut, and that the gamut of the three-primary monitor is itself a
-%  smaller subset of the JPEG gamut.  
+%  smaller subset of the JPEG gamut.
 %
 %  In the color matching tutorial, we noted that the the fourth monitor
-%  primary allowed us to cover a larger area of the visible gamut.  
+%  primary allowed us to cover a larger area of the visible gamut.
 %  a) Does the fourth primary help in the display of the JPEG image?
 %
 %  b) How would you modify JPEG to take full advantage of the new primary?

@@ -4,7 +4,7 @@ function handles = metricsShowMetric(handles)
 %
 %Author: ImagEval
 %Purpose:
-%  Display the metrics image in the metrics window.  
+%  Display the metrics image in the metrics window.
 %
 % Examples:
 %   metricsShowImage(img,1/2.2)
@@ -27,13 +27,13 @@ switch metric
         
         % Only show dE values below 30.
         img = ieClip(img,0,30);
-        barHndl = imagescM(img,gray(30),'horiz',1); 
+        barHndl = imagescM(img,gray(30),'horiz',1);
         axis image; axis off
         
     case 'CIELUV (dE)'
         
         img = ieClip(img,0,30);
-        imagescM(img,[],'horiz'); 
+        imagescM(img,[],'horiz');
         axis image; axis off
         
     case 'Spatial CIELAB'
@@ -41,15 +41,15 @@ switch metric
         
     case 'DcTune'
         warning('DcTune Not yet implemented.')
-
+        
     case 'RMSE'
-        imagescM(img,[],'horiz',0); 
+        imagescM(img,[],'horiz',0);
         axis image; axis off
-
+        
     case 'MSE'
-        imagescM(img,[],'horiz'); 
+        imagescM(img,[],'horiz');
         axis image; axis off
-
+        
     case 'PSNR'
         axis image; axis off
         

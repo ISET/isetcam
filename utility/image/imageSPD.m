@@ -8,17 +8,17 @@ function rgb = imageSPD(spd,wList,gam,row,col,displayFlag,xcoords,ycoords,thisW)
 %  The RGB image represents the appearance of the spectral power
 %  distribution (spd) data.  The input spd data should be in RGB format.
 %
-% wList: the sample wavelengths of the SPD 
+% wList: the sample wavelengths of the SPD
 %           (default depends on the number of wavelength samples)
 % gam:   is the display gamma  (default = 1)
 % row,col:  The image size (needed when the data are in XW format)
 %
 % displayFlag: (if value is 0 or negative, don't display)
-%     = 0, +/- 1 compute RGB image 
+%     = 0, +/- 1 compute RGB image
 %     = +/- 2,   compute gray scale for IR
 %     = +/- 3,   use HDR method (hdrRender.m)
-%     = +/- 4,   clip highlights (Set top 0.05 percent of pixels to max) 
-%     
+%     = +/- 4,   clip highlights (Set top 0.05 percent of pixels to max)
+%
 %  xcoords, ycoords: Spatial coords of the image points, to be shown as
 %                    image grid
 %
@@ -45,7 +45,7 @@ function rgb = imageSPD(spd,wList,gam,row,col,displayFlag,xcoords,ycoords,thisW)
 
 % Examples:
 %   imageSPD(spdData,[], 0.5,[],[],1);   % spdData is [r,c,w]
-%   imageSPD(spdData,[], 0.6,128,128);   % spdData is [128*128,w]              
+%   imageSPD(spdData,[], 0.6,128,128);   % spdData is [128*128,w]
 %   rgb = imageSPD(spdData,[], 0.5,[],[],0);  % rgb is calculated, but not displayed
 %
 
@@ -55,10 +55,10 @@ if ~exist('displayFlag','var')||isempty(displayFlag), displayFlag = 1; end
 
 if ~exist('wList','var')||isempty(wList)
     w = size(spd,3);
-    if     w == 31,  wList = (400:10:700); 
+    if     w == 31,  wList = (400:10:700);
     elseif w == 301, wList = (400:1:700);
     elseif w == 37,  wList = (370:10:730);
-    else 
+    else
         wList = sceneGet(vcGetObject('scene'),'wave');
         if length(wList) ~= w
             errordlg('Problem interpreting imageSPD wavelength list.');
@@ -69,7 +69,7 @@ end
 
 %% Parse the display flag
 method = abs(displayFlag);
-    
+
 % Convert the SPD data to a visible range image
 if isequal(method,0) || isequal(method,1)
     
@@ -85,7 +85,7 @@ if isequal(method,0) || isequal(method,1)
     
     % Person asked for a different gamma, so give it to them
     if ~isequal(gam,1), rgb = rgb.^gam; end
-
+    
 elseif method == 2    % Gray scale image, used for SWIR, NIR
     
     rgb = zeros(row,col,3);
@@ -96,14 +96,14 @@ elseif method == 2    % Gray scale image, used for SWIR, NIR
     % We need to scale only for this case.  The othercases handle in their
     % own way.
     rgb = ieScale(rgb,1);
-
+    
 elseif method == 3   % HDR display method
     
     XYZ = ieXYZFromPhotons(spd,wList);
     XYZ = XYZ/max(XYZ(:));
     rgb = xyz2srgb(XYZ);
     rgb = hdrRender(rgb);
-
+    
 elseif method == 4  % Clip the highlights (NYI)
     XYZ = ieXYZFromPhotons(spd,wList);
     
@@ -144,14 +144,14 @@ if displayFlag >= 0
             figure(thisW.figure1);
             cla(thisW.sceneImage);  % Should be called imageAxis
         case 'matlab.ui.Figure'
-            % There is a figure waiting 
+            % There is a figure waiting
             % Perhaps figure(thisW) should be invoked?
         case 'double'
             % Not sure why this is here.
             ieNewGraphWin;
             % cla(thisFig);
     end
-
+    
     if ieNotDefined('xcoords') || ieNotDefined('ycoords')
         imagescRGB(rgb); axis image; axis off
     else
@@ -162,7 +162,7 @@ if displayFlag >= 0
         axis image; grid on;
         set(gca,'xcolor',[.5 .5 .5]);
         set(gca,'ycolor',[.5 .5 .5]);
-    end   
+    end
 end
 
 end

@@ -3,7 +3,7 @@
 %
 % Copyright Imageval Consulting, LLC 2016
 
-%% 
+%%
 ieInit
 
 %%
@@ -24,14 +24,14 @@ sensor = sensorSet(sensor,'auto exposure',true);
 %% Loop on fnumber and crop out the image
 
 rect = [32 24 11 11];
-x = [0:rect(3)]*pSize(1); 
+x = [0:rect(3)]*pSize(1);
 x = x - mean(x(:));
 x = x*1e6;
 vcNewGraphWin; panel = 1;
 for ff = [2 4 8 12]
     oi    = oiSet(oi,'optics fnumber',ff);
-    oi    = oiCompute(oi,scene);    
-    sensor = sensorCompute(sensor,oi);   
+    oi    = oiCompute(oi,scene);
+    sensor = sensorCompute(sensor,oi);
     
     img = sensorData2Image(sensor);
     img = imcrop(img,rect);

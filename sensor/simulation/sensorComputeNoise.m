@@ -8,8 +8,8 @@ function sensor = sensorComputeNoise(sensor,wBar)
 %
 % This routine also adjusts for analog gain, clips, and quantizes.  See
 % sensorCompute() for more information.
-%   
-% To suppress the display of waitbars, set wBar to [].  
+%
+% To suppress the display of waitbars, set wBar to [].
 %
 %  Example:
 %     sensor = sensorComputeNoise(sensor);
@@ -25,7 +25,7 @@ warning('sensorComputeNoise:NoiseIssues','Must be updated for new noise model');
 
 % Use the noiseFlag here for God's sake
 % There are different conditions that should be matched with what we do in
-% sensorCompute   
+% sensorCompute
 %
 
 %% Sensor electrical and photon noise
@@ -52,9 +52,9 @@ if ag ~= 1 || ao ~= 0
 end
 
 
-%% Clipping 
+%% Clipping
 % We clip the voltage because we assume that everything must fall between 0
-% and voltage swing. 
+% and voltage swing.
 pixel  = sensorGet(sensor,'pixel');
 vSwing = pixelGet(pixel,'voltage swing');
 sensor = sensorSet(sensor,'volts',ieClip(sensorGet(sensor,'volts'),0,vSwing));

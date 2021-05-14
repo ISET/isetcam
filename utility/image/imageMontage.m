@@ -18,7 +18,7 @@ function [figH,m, cbH] = imageMontage(hc, slices, numCols, figNum)
 %   [figH, m] = imageMontage(d.hc,1:10:nWave);
 %   colormap(gray)
 %
-% See also:  imageMakeMontage, 
+% See also:  imageMakeMontage,
 %
 % (c) Imageval, 2012
 
@@ -28,7 +28,7 @@ if(~exist('figNum','var')), figH = figure;
 else                        figH = figure(figNum);
 end
 
-%% 
+%%
 
 m = imageMakeMontage(hc,slices,[],numCols);
 imagesc(double(m));

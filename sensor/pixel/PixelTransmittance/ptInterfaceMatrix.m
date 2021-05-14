@@ -8,6 +8,6 @@ function I = ptInterfaceMatrix(rho,tau)
 %
 
 I = [[ones(1,1,length(rho))./tau rho./tau]; ...
-        [rho./tau ones(1,1,length(rho))./tau]];
+    [rho./tau ones(1,1,length(rho))./tau]];
 
 return;

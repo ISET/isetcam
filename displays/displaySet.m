@@ -21,7 +21,7 @@ function d = displaySet(d,parm,val,varargin)
 %   dixel control map  - Not sure
 %   render function    - Not sure
 %
-% See also: 
+% See also:
 %   displayGet, displayCreate, ieLUTDigital, ieLUTLinear
 
 % Examples:
@@ -69,7 +69,7 @@ switch parm
             d.wave = val(:);
             d = displaySet(d,'spd',newSPD);
         end
-
+        
     case {'spd','spdprimaries'}
         % d = displaySet(d,'spd primaries',val);
         if ~ismatrix(val), error('unknown spd structure'); end

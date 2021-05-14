@@ -40,7 +40,7 @@ function ieSessionSet(param,val,varargin)
 % Window GUI properties
 %    'scene gamma'  - Gamma display value for scene window (e.g., 0.5)
 %    'scene display flag' - 1 = RGB, 2 = Gray, 3 = HDR, 4 = Clip Highlights
-%    'oi gamma'     - Gamma display value for 
+%    'oi gamma'     - Gamma display value for
 %    'oi display flag' - 1 = RGB, 2 = Gray, 3 = HDR, 4 = Clip Highlights
 %    'sensor gamma'
 %    'ip gamma'
@@ -54,7 +54,7 @@ function ieSessionSet(param,val,varargin)
 % Example:
 %    ieSessionSet('scene gamma'0.3);
 %    ieSessionSet('wait bar',false);
-% 
+%
 % See also: ieSessionGet, vcSetObject
 %
 % Copyright ImagEval Consultants, LLC, 2005.
@@ -77,7 +77,7 @@ switch param
     case {'help','inithelp'}
         % Default for help is true, if the initHelp has not been set.
         if checkfields(vcSESSION,'initHelp'), vcSESSION.initHelp = val;
-        else, vcSESSION.initHelp = 1; 
+        else, vcSESSION.initHelp = 1;
         end
         
         % Matlab setpref values
@@ -103,7 +103,7 @@ switch param
         % GUI window position and size preferences
         % val should be a cell array, length 6, each 1 x 4, with values
         % that are the relative position of the window on the screen, as
-        % used by set(w,'Position',pos);  
+        % used by set(w,'Position',pos);
         %
         % For example, pos might be [0.1 0.45 0.32 0.41];
         %
@@ -162,7 +162,7 @@ switch param
         % At present we don't add any objects with handles.  So this is
         % empty. But we might some day.
         vcSESSION.GRAPHWIN.handle = val;
-    
+        
         % Set selected object
         % ieSessionSet('scene',val);
         % and so forth

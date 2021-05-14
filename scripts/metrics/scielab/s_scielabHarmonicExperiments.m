@@ -3,7 +3,7 @@
 % S-CIELAB experiments with sweep frequency targets
 %
 % Calculations to illustrate the chromatic-dependent spatial filtering
-% used in S-CIELAB 
+% used in S-CIELAB
 %
 % The first section uses sweep frequencies to illustrate the spatial
 % filtering applied to the opponent-colors channels in S-CIELAB.
@@ -103,7 +103,7 @@ for jj=1:3
     imagesc(result); truesize;  axis off
     title(sprintf('Channel %s error',cName{jj}));
     
-    % max(result(:))  
+    % max(result(:))
     % If you change the parameters, you may need to know
     % the new max
 end

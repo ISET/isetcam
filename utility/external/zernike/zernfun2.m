@@ -14,7 +14,7 @@ function z = zernfun2(p,r,theta,nflag)
 %   for all p.
 %
 %   NOTE: ZERNFUN2 returns the same output as ZERNFUN, for the first 36
-%   Zernike functions (order N<=7).  In some disciplines it is 
+%   Zernike functions (order N<=7).  In some disciplines it is
 %   traditional to label the first 36 functions using a single mode
 %   number P instead of separate numbers for the order N and azimuthal
 %   frequency M.
@@ -52,8 +52,8 @@ end
 
 if any(p)>35
     error('zernfun2:P36', ...
-          ['ZERNFUN2 only computes the first 36 Zernike functions ' ...
-           '(P = 0 to 35).'])
+        ['ZERNFUN2 only computes the first 36 Zernike functions ' ...
+        '(P = 0 to 35).'])
 end
 
 % Get the order and frequency corresonding to the function number:

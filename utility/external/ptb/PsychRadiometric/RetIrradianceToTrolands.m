@@ -1,5 +1,5 @@
 function [trolands] =...
-	RetIrradianceToTrolands(irradianceWatts, irradianceS, photopic, species, source)
+    RetIrradianceToTrolands(irradianceWatts, irradianceS, photopic, species, source)
 % [trolands] =...
 %  	RetIrradianceToTrolands(irradianceWatts,irradianceS,[photopic],[species],[source])
 %
@@ -7,10 +7,10 @@ function [trolands] =...
 % returned in trolands/wlinterval and can be summed to get trolands.
 %
 % See Wyszecki and Stiles, 1982, p. 103 for the conversions.
-% 
+%
 % Input variables: irradianceWatts - retinal irradiance in watts/um2-wlinterval.
 %                  irradianceS - the wavelength sampling information for the relativeSpectrum.
-%                  photopic - what kind of trolands: 'Photopic' (Default), 'JuddVos', 'Scotopic'. 
+%                  photopic - what kind of trolands: 'Photopic' (Default), 'JuddVos', 'Scotopic'.
 %                  species, source - passed directly to EyeLength to determine length of eye in mm.
 %                     These values inherit the default behaviors of EyeLength.
 %
@@ -20,10 +20,10 @@ function [trolands] =...
 
 % Fill in default values
 if (nargin < 3 || isempty(photopic))
-	photopic = 'Photopic';
+    photopic = 'Photopic';
 end
 if (nargin < 4 || isempty(species))
-	species = [];
+    species = [];
 end
 if (nargin < 5 || isempty(source))
     source = [];
@@ -39,20 +39,20 @@ irradianceDeg2 = irradianceMM2*mm2PerDeg2;
 
 % Load appropriate V_lambda for phot/scot
 switch (photopic)
-	case 'Photopic'
-		load T_xyz1931;
-		T_vLambda = SplineCmf(S_xyz1931,T_xyz1931(2,:),S);
-		clear T_xyz1931 S_xyz1931
-		magicFactor = 2.242e12;
-	case 'JuddVos'
-		load T_xyzJuddVos;
-		T_vLambda = SplineCmf(S_JuddVos,T_JuddVos(2,:),S);
-		clear T_JuddVos S_JuddVos
-		magicFactor = 2.242e12;
-	case 'Scotopic'
-		load T_rods;
-		T_vLambda = SplineCmf(S_rods,T_rods,S);
-		magicFactor = 5.581e12;
+    case 'Photopic'
+        load T_xyz1931;
+        T_vLambda = SplineCmf(S_xyz1931,T_xyz1931(2,:),S);
+        clear T_xyz1931 S_xyz1931
+        magicFactor = 2.242e12;
+    case 'JuddVos'
+        load T_xyzJuddVos;
+        T_vLambda = SplineCmf(S_JuddVos,T_JuddVos(2,:),S);
+        clear T_JuddVos S_JuddVos
+        magicFactor = 2.242e12;
+    case 'Scotopic'
+        load T_rods;
+        T_vLambda = SplineCmf(S_rods,T_rods,S);
+        magicFactor = 5.581e12;
 end
 
 % Get trolands

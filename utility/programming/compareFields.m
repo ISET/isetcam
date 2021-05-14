@@ -6,7 +6,7 @@ function bool = compareFields(a,b)
 %Purpose:
 %  Compare the values of the subfields of a structure. We use this to
 %  check, say, whether the spectrum data are equal or not in two different
-%  objects. 
+%  objects.
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
@@ -39,10 +39,10 @@ return;
 % a.spectrum.nWaves = 1
 % a.spectrum.resolution = 1
 % a.spectrum.wave = 600
-% 
+%
 % b = []
 % b.spectrum.nWaves = 1
 % b.spectrum.resolution = 1
 % b.spectrum.wave = 600
-% 
+%
 % compareFields(a.spectrum,b.spectrum)

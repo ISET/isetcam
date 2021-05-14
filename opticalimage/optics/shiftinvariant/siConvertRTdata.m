@@ -3,7 +3,7 @@ function [optics, inName, outName] = siConvertRTdata(inName,fieldHeight,outName)
 %
 %    optics = siConvertRTdata(fName,fieldHeight)
 %
-% fieldHeight specified in meters 
+% fieldHeight specified in meters
 %
 % The RT data are a good source of examples for single PSFs from real
 % lenses.  This routine creates an optic structure used for shift-invariant
@@ -29,7 +29,7 @@ function [optics, inName, outName] = siConvertRTdata(inName,fieldHeight,outName)
 
 if ieNotDefined('inName'),    inName = vcSelectDataFile; end
 if ieNotDefined('fieldHeight')
-    fieldHeight = ieReadNumber('Enter field height (mm)',0,'%.02f'); 
+    fieldHeight = ieReadNumber('Enter field height (mm)',0,'%.02f');
     fieldHeight = fieldHeight/1000;  % fieldHeight must be in meters
 end
 
@@ -45,11 +45,11 @@ nSamples  = size(rtSupport,1);
 nyquistF = 1 ./ (2*dx);   % Line pairs (cycles) per meter
 
 OTF = zeros(nSamples,nSamples,length(rtWave));
-for ii=1:length(rtWave), 
+for ii=1:length(rtWave),
     psf         = opticsGet(rtOptics,'rtpsfdata',fieldHeight,rtWave(ii));
-    psf         = psf/sum(psf(:)); 
-    OTF(:,:,ii) = fftshift(fft2(psf)); 
-    % figure;  
+    psf         = psf/sum(psf(:));
+    OTF(:,:,ii) = fftshift(fft2(psf));
+    % figure;
     % mesh(abs(OTF(:,:,ii)))
     % mesh(abs(fft2(OTF(:,:,ii))))
     % mesh(psf)

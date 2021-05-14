@@ -39,7 +39,7 @@ switch key
         metricsWindow('btnCompute_Callback',hObject,eventData,handles);
     case 17 % ctrl-Q
     case 18 % ctrl-R
-        metricsWindow('menuRefresh_Callback',hObject,eventData,handles) 
+        metricsWindow('menuRefresh_Callback',hObject,eventData,handles)
     case 19 % ctrl-S
     case 20 % ctrl-T
     case 21 % ctrl-U

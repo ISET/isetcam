@@ -39,17 +39,17 @@ oi    = oiCompute(oi,scene);
 
 %% View the PSFs at the various field heights
 
-vcNewGraphWin; 
+vcNewGraphWin;
 % These are the computed PSFs
-svPSF = oiGet(oi,'psf struct');  
+svPSF = oiGet(oi,'psf struct');
 for ii=1:size(svPSF.psf,2)
-    imagesc(svPSF.psf{1,ii,1}), axis image; pause(0.3); 
+    imagesc(svPSF.psf{1,ii,1}), axis image; pause(0.3);
 end
 
 %% These are PSFs at the various sample angles
-vcNewGraphWin; 
+vcNewGraphWin;
 for ii=1:size(svPSF.psf,1)
-    imagesc(svPSF.psf{ii,end,1}); axis image; pause(0.3); 
+    imagesc(svPSF.psf{ii,end,1}); axis image; pause(0.3);
 end
 
 %%  The point spread at two field heights

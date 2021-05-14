@@ -10,7 +10,7 @@ function [coneIsolating, monitor2cones] = humanConeIsolating(dsp)
 %
 % The units used in these calculations are designed around the normalized
 % RGB values from the monitor space.  Hence, the LMS values are not in
-% physical coordinates (e.g., absorptions).  
+% physical coordinates (e.g., absorptions).
 %
 % To calculate this use the display spectral power distribution of the
 % monitor, which is energy units of watts/sr/...
@@ -18,7 +18,7 @@ function [coneIsolating, monitor2cones] = humanConeIsolating(dsp)
 % Example:
 %   dsp = displayCreate('LCD-Apple');
 %   signalDirs = humanConeIsolating(dsp)
-%   coneIsolatingSPD = displayGet(dsp,'spd')*signalDirs; 
+%   coneIsolatingSPD = displayGet(dsp,'spd')*signalDirs;
 %   vcNewGraphWin; plot(displayGet(dsp,'wave'),coneIsolatingSPD);
 %
 % Copyright ImagEval Consultants, LLC, 2005.
@@ -37,7 +37,7 @@ monitor2cones = cones'*spd;
 %
 %    monitor2cones * col1 = (1,0,0)
 %
-% and so forth 
+% and so forth
 coneIsolating = inv(monitor2cones);
 
 

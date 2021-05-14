@@ -25,7 +25,7 @@
 %%
 ieInit;
 
-%% Set up a MCC scene 
+%% Set up a MCC scene
 scene = sceneCreate;
 scene_lum  = 75;       % mean luminance (candelas)
 scene_fov  = 2.64;     % field of view (degrees)
@@ -77,11 +77,11 @@ sensorWindow;
 % This routine asks you to select the locations of the outer
 % boundaries of the MCC.  It returns the linear transform that
 % converts the data to a nicely rendered D65 MCC.
-cp = [ 
+cp = [
     1   244
-   328   246
-   329    28
-     2    27];
+    328   246
+    329    28
+    2    27];
 sensor = sensorSet(sensor,'chart corner points',cp);
 if ieNotDefined('sensorLocs')
     [L,sensorLocs] = sensorCCM(sensor,'macbeth');
@@ -93,11 +93,11 @@ end
 %% Create and set the processor window
 vci = ipCreate;
 vci = ipSet(vci,'scale display',1);
-% 
+%
 % Use the linear transformation derived from sensor space (above) to
 % display the RGB image in the processor window.
 vci = ipSet(vci,'conversion matrix sensor',L);
-vci = ipSet(vci,'correction matrix illuminant',[]);% 
+vci = ipSet(vci,'correction matrix illuminant',[]);%
 vci = ipSet(vci,'internal cs 2 display space',[]);  % ICS 2 display
 vci = ipSet(vci,'conversion method sensor','Current matrix');
 vci = ipSet(vci,'internalCS','Sensor');
@@ -114,14 +114,14 @@ ipWindow;
 %     vci = vcGetObject('vci')
 
 %% Evaluate the dE and other value sin the processor window
-% 
+%
 % For the case in this script, the locations of the MCC are known
 % and stored here.
 pointLoc = ...
     [ 4   246
-   328   243
-   327    26
-     3    27];
+    328   243
+    327    26
+    3    27];
 
 % If you change the size of the sensor or other spatial parameters, you may
 % have to adjust these.  You can use this routine to interactively click on
@@ -140,4 +140,4 @@ pointLoc = ...
 %    T{2}
 %    T{3}
 
-%% 
+%%

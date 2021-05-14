@@ -7,13 +7,13 @@ function [uData, g] = displayPlot(d,param,varargin)
 %    spd  - Spectral power distributions of the primaries
 %    gamma table  - Function from digital value to relative intensity
 %    gamut        - xy chromaticity gamut
-%    gamut 3d     - LAB gamut 
-% 
+%    gamut 3d     - LAB gamut
+%
 % List of displays included in ISET distribution
 %  Dell-Chevron.mat        LCD-HP.mat              OLED-Sony.mat
 %  LCD-Apple.mat           LCD-Samsung-RGBW.mat    crt.mat
 %  CRT-Dell.mat            LCD-Dell.mat            OLED-Samsung-Note3.mat
-%  lcdExample.mat          CRT-HP.mat              LCD-Gechic.mat 
+%  lcdExample.mat          CRT-HP.mat              LCD-Gechic.mat
 %  OLED-Samsung.mat
 %
 %
@@ -120,13 +120,13 @@ switch param
         % plot
         ptx = delTri.Points;
         trisurf(ch, ptx(:,2), ptx(:,3), ptx(:,1), ...
-                'parent', ha, 'Tag', 'gamutPatch');
+            'parent', ha, 'Tag', 'gamutPatch');
         axis image;
         
         % assign color to the patches
         hPat = findobj('Tag', 'gamutPatch', '-and', 'parent', ha);
         
-        for ii = 1 : length(hPat)            
+        for ii = 1 : length(hPat)
             % set color for the vertices
             set(hPat(ii), ...
                 'FaceColor', 'interp', ...
@@ -154,11 +154,11 @@ switch param
         x = (1:dSize(2))*spacing; y = (1:dSize(1))*spacing;
         x = x - mean(x(:)); y = y - mean(y(:));
         
-        vcNewGraphWin([],'wide'); 
+        vcNewGraphWin([],'wide');
         srgb = displayGet(d,'primaries rgb');
         srgb = srgb';
         for ii=1:nPrimaries
-            subplot(1,nPrimaries,ii); 
+            subplot(1,nPrimaries,ii);
             colormap(.6*gray*diag(srgb(:,ii)) + 0.4);
             sPSF = psf(:,:,ii); sPSF = sPSF/max(sPSF(:));
             imagesc(x,y,sPSF); axis image
@@ -173,4 +173,3 @@ end
 
 end
 
-    

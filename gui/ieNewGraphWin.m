@@ -18,7 +18,7 @@ function thisWindow = ieNewGraphWin(thisWindow, fType, titleString, varargin)
 %     set(gcf,param,val);
 %
 % You can set your preferred color order and other properties in the
-% startup, say by using 
+% startup, say by using
 %
 %   groot = get(0);
 %   set(groot,'defaultAxesColorOrder',co)
@@ -28,7 +28,7 @@ function thisWindow = ieNewGraphWin(thisWindow, fType, titleString, varargin)
 % Examples:
 %  ieNewGraphWin;
 %
-%  ieNewGraphWin([],'upper left')   
+%  ieNewGraphWin([],'upper left')
 %  ieNewGraphWin([],'tall')
 %  ieNewGraphWin([],'wide')
 %  ieNewGraphWin([],'upper left big')
@@ -38,19 +38,19 @@ function thisWindow = ieNewGraphWin(thisWindow, fType, titleString, varargin)
 %
 % To set other fields, use
 %  ieNewGraphWin([],'wide','Color',[0.5 0.5 0.5])
-%  g = ieNewGraphWin([],[],'Visible','Off'); 
+%  g = ieNewGraphWin([],[],'Visible','Off');
 %  g.Visible = 'on';
 %
 % Copyright ImagEval Consultants, LLC, 2005
 %
-% See also:  
+% See also:
 %   ieSessionSet
-%  
+%
 
 %%
 if ieNotDefined('thisWindow'), thisWindow = figure; end
-if ieNotDefined('fType')  
-    fType = 'upperleft'; 
+if ieNotDefined('fType')
+    fType = 'upperleft';
 end
 if ieNotDefined('titleString'), titleString = 'ISET GraphWin'; end
 

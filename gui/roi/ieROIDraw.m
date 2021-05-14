@@ -22,7 +22,7 @@ function [shapeHandle,ax] = ieROIDraw(isetobj,varargin)
 %
 %  parameters for rect:
 %     rect = [row col width height]
-%     linestyle 
+%     linestyle
 %     curvature (at the corners of the rect, default is 0.2)
 %
 %  parameters for circle
@@ -37,7 +37,7 @@ function [shapeHandle,ax] = ieROIDraw(isetobj,varargin)
 %
 % See also
 %   chartROI, chartRectangles, macbethROIs
-%  
+%
 
 % Examples:
 %{
@@ -89,11 +89,11 @@ if ~isvalid(ax), error('Object %s axis is not valid.',isetobj.type); end
 switch shape
     case {'rect','rectangle'}
         rect = p.Results.shapedata;
-
+        
         % I don't use this because it doesn't allow
         % LineStyle
         %   shapeHandle = drawrectangle(ax,'Position',rect);
-        % 
+        %
         shapeHandle = rectangle(ax,'Position',rect,'Curvature',p.Results.curvature);
         shapeHandle.EdgeColor = p.Results.color;
         shapeHandle.LineWidth = p.Results.linewidth;

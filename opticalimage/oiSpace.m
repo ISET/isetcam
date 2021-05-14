@@ -1,6 +1,6 @@
 function dPos = oiSpace(oi,sPos,unit)
 % Convert sample positions in the oi to distance positions in spatial units
-% 
+%
 %   dPos = oiSpace(oi,sPos,unit)
 %
 % oi:     Optical image
@@ -8,7 +8,7 @@ function dPos = oiSpace(oi,sPos,unit)
 % unit:  'mm','um', and so forth
 %
 % dPos:   The position in units, where the center of the OI is (0,0). Up
-%         and right are positive 
+%         and right are positive
 %
 % Example
 %   scene = sceneCreate; oi = oiCreate; oi = oiCompute(oi,scene);

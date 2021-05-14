@@ -45,11 +45,11 @@ function varargout = microLensWindow(varargin)
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
-                   'gui_Singleton',  gui_Singleton, ...
-                   'gui_OpeningFcn', @microLensWindow_OpeningFcn, ...
-                   'gui_OutputFcn',  @microLensWindow_OutputFcn, ...
-                   'gui_LayoutFcn',  [] , ...
-                   'gui_Callback',   []);
+    'gui_Singleton',  gui_Singleton, ...
+    'gui_OpeningFcn', @microLensWindow_OpeningFcn, ...
+    'gui_OutputFcn',  @microLensWindow_OutputFcn, ...
+    'gui_LayoutFcn',  [] , ...
+    'gui_Callback',   []);
 if nargin & ischar(varargin{1})
     gui_State.gui_Callback = str2func(varargin{1});
 end
@@ -90,13 +90,13 @@ return;
 % % store the new micro lens information in the sensor window.
 % %
 % ml = mlGetCurrent();
-% 
+%
 % % Time to check all the units in this call, and presumably in several
 % % others.
 % ml = mlRadiance(ml);
-% 
+%
 % mlSetCurrent(ml);
-% 
+%
 % % Indicate that the compute is up to date.
 % set(handles.btnCompute,'ForegroundColor',[ 0 0 0]);
 % mlRefresh(handles,ml);
@@ -128,7 +128,7 @@ return;
 function editMLOffset_Callback(hObject, eventdata, handles)
 % Microlens offset (negative is towards array center)
 % Microns in the window and microns in the object
-% 
+%
 ml = mlGetCurrent();
 v = str2double(get(handles.editMLOffset,'string'));
 ml = mlensSet(ml,'offset',v);
@@ -151,7 +151,7 @@ return;
 function editMLFocalLength_Callback(hObject, eventdata, handles)
 % Microlens focal length (microns in window, meters in object)
 
-ml = mlGetCurrent(); 
+ml = mlGetCurrent();
 v = str2double(get(handles.editMLFocalLength,'string'));
 v = v*1e-6;
 ml = mlensSet(ml,'ml focal length',v);
@@ -187,9 +187,9 @@ return;
 function editImageFocalLength_Callback(hObject, eventdata, handles)
 % Source focal length (mm in window, meters in object)
 
-ml = mlGetCurrent(); 
+ml = mlGetCurrent();
 v = str2double(get(handles.editImageFocalLength,'string'));
-v = v*1e-3;  % Millimeters to meters 
+v = v*1e-3;  % Millimeters to meters
 ml = mlensSet(ml,'source focal length',v);
 mlSetCurrent(ml);
 
@@ -205,7 +205,7 @@ function menuEditInitML_Callback(hObject, eventdata, handles)
 
 mlGetCurrent();
 
-mlFillWindowFromML(handles,ml); 
+mlFillWindowFromML(handles,ml);
 
 mlRefresh(handles,ml);
 return;
@@ -242,7 +242,7 @@ return;
 function editWave_Callback(hObject, eventdata, handles)
 % Edit wavelength box
 
-ml = mlGetCurrent(); 
+ml = mlGetCurrent();
 v = str2double(get(handles.editWave,'string'));
 ml = mlensSet(ml,'wavelength',v);
 mlSetCurrent(ml);
@@ -265,7 +265,7 @@ return;
 function editMLFNumber_Callback(hObject, eventdata, handles)
 % Edit box for microlens fnumber.
 
-ml = mlGetCurrent(); 
+ml = mlGetCurrent();
 v  = str2double(get(handles.editMLFNumber,'string'));
 ml = mlensSet(ml,'ml fnumber',v);
 mlSetCurrent(ml);
@@ -286,7 +286,7 @@ return;
 function editFNumber_Callback(hObject, eventdata, handles)
 % Edit the source fnumber
 
-ml = mlGetCurrent(); 
+ml = mlGetCurrent();
 v  = str2double(get(handles.editFNumber,'string'));
 ml = mlensSet(ml,'source fnumber',v);
 mlSetCurrent(ml);
@@ -304,7 +304,7 @@ function menuFileConsistent_Callback(hObject, eventdata, handles)
 
 fprintf('** Creating microlens from current oi and sensor\n');
 
-% Build a microlens based on the current pixel and optics parameters. 
+% Build a microlens based on the current pixel and optics parameters.
 ml = mlensCreate(vcGetObject('sensor'),vcGetObject('oi'));
 
 % Now adjust any parameters in the microlens window
@@ -330,8 +330,8 @@ return;
 % function menuFileLoadML_Callback(hObject, eventdata, handles)
 % % File | Load
 % % Load microlens parameters from a file and set it as the current microlens
-% % 
-% 
+% %
+%
 % fullName = vcSelectDataFile('stayPut','r');
 % if isempty(fullName), disp('User canceled'); return; end
 % tmp = load(fullName);
@@ -341,7 +341,7 @@ return;
 % else
 %     error('No microlens structure (named ml) in the file.');
 % end
-% 
+%
 % return;
 
 % --------------------------------------------------------------------
@@ -350,22 +350,22 @@ return;
 % % Copy the microlens from the current sensor into this window.
 % % If none is there, we create a default microlens.
 % % We also check if there is an oi.  If not, we create one and use that.
-% 
+%
 % ml = sensorGet(vcGetObject('sensor'),'microlens');
-% 
+%
 % if isempty(ml)
 %     sensor = vcGetObject('sensor');
 %     if isempty(sensor), sensor = sensorCreate; ieAddObject(sensor); end
-% 
+%
 %     oi = vcGetObject('oi');
 %     if isempty(oi), oi = oiCreate; ieAddObject(oi); end
-%     
+%
 %     ml = mlensCreate(sensor,oi);
 % end
-% 
-% % Should have 
+%
+% % Should have
 % mlFillWindowFromML(handles,ml);
-% 
+%
 % return;
 
 % % --------------------------------------------------------------------
@@ -375,14 +375,14 @@ return;
 % % When the parameters are changed in the mlens window, we update the mlens
 % % structure and store it in the sensor window.
 % %
-% 
+%
 % % Get the ml in the sensor
 % ml = mlGetCurrent();
-% 
+%
 % ml = mlUpdate(handles);
-% 
+%
 % mlSetCurrent(ml);
-% 
+%
 % return;
 
 % --------------------------------------------------------------------
@@ -414,7 +414,7 @@ function menuAnalyzeVignetting_Callback(hObject, eventdata, handles)
 
 ml = mlGetCurrent();
 mlSetCurrent(ml);
-sensor = vcGetObject('sensor'); 
+sensor = vcGetObject('sensor');
 sensor = mlAnalyzeArrayEtendue(sensor,'nomicrolens');
 
 % Need units here ... use spatialSupport type call
@@ -432,7 +432,7 @@ function menuAnalyzeEtendueOpt_Callback(hObject, eventdata, handles)
 % Analyze | Efficiency: Optimal Placement
 %
 % This updates the current sensor microlens with information in the ml
-% window 
+% window
 
 s = vcGetObject('sensor');
 s = mlAnalyzeArrayEtendue(s,'optimal');
@@ -448,39 +448,39 @@ return;
 % % --------------------------------------------------------------------
 % function menuAnalyzeOptBare_Callback(hObject, eventdata, handles)
 % %  Analyze | Optimal Vs. No MicroLens
-% 
+%
 % % This updates the sensor microlens with information in the ml window
 % sensor = vcGetObject('sensor');
-% 
+%
 % ISA1     = mlAnalyzeArrayEtendue(sensor,'optimal');
 % optimalE = sensorGet(ISA1,'sensor etendue');
-% 
+%
 % ISA2  = mlAnalyzeArrayEtendue(sensor,'no microlens');
 % bareE = sensorGet(ISA2,'vignetting');
-% 
+%
 % zLabel = 'Optimal-Bare Improvement (%)';
 % plotEtendueRatio(sensor,optimalE,bareE,zLabel);
-% 
+%
 % return;
-% 
+%
 % % --------------------------------------------------------------------
 % function menuAnalyzeOptCent_Callback(hObject, eventdata, handles)
 % %
 % %  Analyze | Optimal Vs. Centered
 % %
-% 
+%
 % % This updates the sensor microlens with information in the ml window
 % sensor = vcGetObject('sensor');
-% 
+%
 % sensor = mlAnalyzeArrayEtendue(sensor,'optimal');
 % optimalE = sensorGet(sensor,'sensorEtendue');
-% 
+%
 % sensor = mlAnalyzeArrayEtendue(sensor,'centered');
 % centeredE = sensorGet(sensor,'sensorEtendue');
 % zLabel = 'Optimal-Centered Improvement (%)';
 % plotEtendueRatio(sensor,optimalE,centeredE,zLabel);
-% 
-% 
+%
+%
 % return;
 % --------------------------------------------------------------------
 function menuPlotOptimalOffset_Callback(hObject, eventdata, handles)
@@ -495,32 +495,32 @@ return;
 % function menuAnalyzeArrayEtendue_Callback(hObject, eventdata, handles)
 % %
 % % Analyze | Etendue (Custom) at the moment this means centered.
-% 
+%
 % disp('Etendue (Custom) not yet implemented.')
-% 
+%
 % % sensor = vcGetObject('sensor');
 % % if isempty(sensor)
-% %     error('No image sensor array.'); 
+% %     error('No image sensor array.');
 % %     return;
 % % end
-% % 
+% %
 % % % Get the current microlens.  It may have more information than just what
 % % % is in the window
 % % ml = sensorGet(sensor,'microlens');
-% % 
+% %
 % % % Use the data in the window, not in the sensor structure.
 % % ml = mlFillMLFromWindow(handles,ml);
 % % sensor = sensorSet(sensor,'microlens',ml);
-% % 
+% %
 % % % Main computation here
 % % sensor = mlAnalyzeArrayEtendue(sensor);
-% % 
+% %
 % % % Put up the figure
 % % plotSensorEtendue(sensor)
-% % 
+% %
 % % % The ml and the sensor have been updated.
 % % vcReplaceObject(sensor);
-% 
+%
 % return;
 
 

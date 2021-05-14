@@ -38,7 +38,7 @@ image(result)
 %% It is also possible to get the linear RGB values
 %
 % These are stored in the result, and they do not correct for the
-% display characteristics. 
+% display characteristics.
 raw = ipGet(ip,'result');
 vcNewGraphWin;
 image(raw)

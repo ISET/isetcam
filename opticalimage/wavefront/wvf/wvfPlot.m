@@ -12,7 +12,7 @@ function [uData, pData, fNum] = wvfPlot(wvfP, pType, varargin)
 %
 %    Plot types:
 %      wvf = wvfCreate;
-%      wvf = wvfComputePSF(wvf); 
+%      wvf = wvfComputePSF(wvf);
 %      wave = wvfGet(wvf, 'measured wavelength');
 %      + psf angle - mesh. wvfPlot(wvf, 'psf angle', 'min', [], wave)
 %      + psf space - mesh  wvfPlot(wvf, 'psf space', 'um', wave, 10)
@@ -36,7 +36,7 @@ function [uData, pData, fNum] = wvfPlot(wvfP, pType, varargin)
 %    wvfP     - Wavefront structure
 %    pType    - Plot type
 %    varargin - These are used to set various parameters of the plot. The
-%               standard format is: units, wavelength, plotRange, 
+%               standard format is: units, wavelength, plotRange,
 %               'window/no-window' This should change by using an argument
 %               reading function for parameters/value pairs.
 %
@@ -75,9 +75,9 @@ function [uData, pData, fNum] = wvfPlot(wvfP, pType, varargin)
     % Start with a clean structure
     wvf = wvfCreate;
     wave = 550;
-    wvf = wvfSet(wvf, 'calc wave', wave); 
+    wvf = wvfSet(wvf, 'calc wave', wave);
     wvf = wvfComputePSF(wvf);
-    unit = 'um'; 
+    unit = 'um';
     % u - data, p- figure properties
     [u, p] = wvfPlot(wvf, '1d psf space', unit, wave);
     set(p, 'color', 'k', 'linewidth', 2)
@@ -86,8 +86,8 @@ function [uData, pData, fNum] = wvfPlot(wvfP, pType, varargin)
     wave = 500;
     wvf = wvfSet(wvf, 'calc wave', wave);
     wvf = wvfComputePSF(wvf);
-    unit = 'um'; 
-    [u, p]= wvfPlot(wvf, '1d psf space', unit, wave); 
+    unit = 'um';
+    [u, p]= wvfPlot(wvf, '1d psf space', unit, wave);
     set(p, 'color', 'k', 'linewidth', 2)
 
     % Plot in an existing window by appending 'no window'
@@ -254,7 +254,7 @@ switch(pType)
         uData.x = samp; uData.y = samp; uData.z = psf;
         set(gcf, 'userdata', uData);
         
-    
+        
     case {'1dpsf', '1dpsfspace', '1dpsfspacenormalized'}
         % wvfPlot(wvfP, '1d psf normalized', waveIdx, plotRangeArcMin);
         if ~isempty(varargin)
@@ -392,13 +392,13 @@ switch(pType)
         plot(freq(positiveCols), abs(otf(middleRow,positiveCols)));
         
         str = sprintf('Freq (lines/%s)', unit);
-        xlabel(str); ylabel(str); 
+        xlabel(str); ylabel(str);
         grid on
         title(sprintf('OTF %.0f', wave));
         uData.fx = freq; uData.fy = freq; uData.otf = abs(otf);
         set(gcf, 'userdata', uData);
         set(gca,'ylim',[0 1.2]);
-                
+        
     case {'1dotfangle'}
         % wvfPlot(wvf0, '1d otf angle', 'deg', wave, 10)
         % Plot the positive frequency part of a slice through the 2D
@@ -431,7 +431,7 @@ switch(pType)
             freq = freq(index);
             otf = otf(index, index);
         end
-      
+        
         % This is a small angle linear approximation.  We could try to
         % find the spacing that is a bit uneven, but that would also
         % be a problem for interpreting the harmonics over any
@@ -499,7 +499,7 @@ switch(pType)
         if ~isempty(varargin)
             [unit, wList, pRange] = wvfReadArg(wvfP, varargin);
         end
-                
+        
         samp = wvfGet(wvfP, 'pupil spatial samples', unit, wList);
         pupilfunc = wvfGet(wvfP, 'pupil function', wList);
         
@@ -573,7 +573,7 @@ function [units, wList, pRange] = wvfReadArg(wvfP, theseArgs)
 %    The idea is to read the varargin in the wvfPlot call.
 %    These are usually unit, wave, plotRange, showPlot
 %    But, it may be that we have only unit, wave, showPlot.
-%    So, we trap that case here. 
+%    So, we trap that case here.
 %
 % Inputs:
 %    wvfP      - wavefront structure
@@ -581,7 +581,7 @@ function [units, wList, pRange] = wvfReadArg(wvfP, theseArgs)
 %
 % Outputs:
 %    units     - Varying unit measurements (Default 'min' for angle and
-%                'mm' for space. 
+%                'mm' for space.
 %                Angle units are 'sec', 'min', or 'deg'     default - 'min'
 %                Space units are 'm', 'cm', 'mm', 'um'      default - 'mm'
 %    wList     - wavelength(s)

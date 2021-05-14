@@ -14,7 +14,7 @@ im = scale(adam,1,nGray);
 compressionFactor
 %
 %	Read in and print out the clown image
-%	
+%
 % Select a region of the image to process for example
 xStart = 35;
 yStart = 110;
@@ -67,13 +67,13 @@ tiffwrite(X,mp,'qBlock.tif');
 [m n] = size(im);
 compressedIm = zeros(size(im));
 for i= 1:8:m-1
- for j=1:8:n-1
-%  [i j]
-  block = im(i:i+7,j:j+7);
-  dctCoef = dctMatrix*block*dctMatrix';
-  qCoef = round(dctCoef .* coefScaleFactor) ./ coefScaleFactor;
-  compressedIm(i:i+7,j:j+7) = idctMatrix*qCoef*idctMatrix';
- end
+    for j=1:8:n-1
+        %  [i j]
+        block = im(i:i+7,j:j+7);
+        dctCoef = dctMatrix*block*dctMatrix';
+        qCoef = round(dctCoef .* coefScaleFactor) ./ coefScaleFactor;
+        compressedIm(i:i+7,j:j+7) = idctMatrix*qCoef*idctMatrix';
+    end
 end
 image(compressedIm)
 axis equal; axis off

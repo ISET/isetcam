@@ -88,7 +88,7 @@ for ww=1:nWave
             lBoth = (lAng & lRad);
             rad2deg(lowerAng)
             rad2deg(higherAng)
-
+            
             if sum(lBoth(:)) < 3, [rr,aa],
             else
                 % The rows and columns containing inside the angle/height
@@ -103,12 +103,12 @@ for ww=1:nWave
                     [theta(1), theta(1), theta(2), theta(2)], ...
                     [radius(1), radius(2), radius(1), radius(2)]);
                 corners = [Xcorners(:), Ycorners(:)];
-
+                
                 % Find the spatial position of these rows and columns and the
                 % spatial distance from each point to these points.
                 x = xSupport(lBoth);
                 y = ySupport(lBoth);
-
+                
                 % Find the distance from each point's (x,y) to the corners.
                 clear distance;
                 for ii=1:4
@@ -116,12 +116,12 @@ for ww=1:nWave
                         (x - corners(ii,1)).^2 + ...
                         (y - corners(ii,2)).^2);
                 end
-
+                
                 % We can try various functions to determine these weights
                 weights = 1./(distance + eps);
                 wNorm = sum(weights');
                 weights = diag(1./wNorm)*weights;
-
+                
                 % What we want i an Nx4 matrix that contains the four PSFs in
                 % the columns, and we want the weights with respect to the four
                 % corners.
@@ -137,16 +137,16 @@ for ww=1:nWave
                 else
                     PSF(:,1) = PSF(:,3); PSF(:,2) = PSF(:,4);
                 end
-
+                
                 tmp = rtPSFInterp(optics,radius(1),-rad2deg(theta(2)),wavelength(ww),xGrid,yGrid);
                 PSF(:,3) = tmp(:);
                 tmp = rtPSFInterp(optics,radius(2),-rad2deg(theta(2)),wavelength(ww),xGrid,yGrid);
                 PSF(:,4) = tmp(:);
                 s = sum(PSF); PSF = PSF*diag(1./s);
-
+                
                 % Compute the spatial point spread by the weighted sum
                 pixelByPixel = PSF*weights';
-
+                
                 % Add these point spread functions, pixel by pixel, into the
                 % output irradiance image.
                 nPixels = size(weights,1);
@@ -161,12 +161,12 @@ for ww=1:nWave
                     outIrrad(outRow,outCol,ww) = outIrrad(outRow,outCol,ww) ...
                         + inIrrad(r(pp),c(pp),ww)*pixelByPixel(:,:,pp);
                 end
-
+                
                 figure(5);colormap(gray);
                 m = max(max(outIrrad(:,:,ww)));
                 imagesc(outIrrad(:,:,ww)/m);
                 pause(0.1)
-
+                
                 % Just for display
                 %             figure(1)
                 %             plot(x,y,'c.',0,0,'rx');
@@ -196,14 +196,14 @@ for ww=1:nWave
                 %                 img = reshape(PSF(:,ii),psfSize(1),psfSize(2));
                 %                 subplot(2,2,ii), imagesc(img), axis image; axis xy
                 %             end
-
+                
                 %             title(sprintf('r%.2f, a%.2f',radius(1),-rad2deg(theta(1))))
                 %             title(sprintf('r%.2f, a%.2f',radius(2),-rad2deg(theta(1))))
                 %             title(sprintf('r%.2f, a%.2f',radius(1),-rad2deg(theta(2))))
                 %             title(sprintf('r%.2f, a%.2f',radius(2),-rad2deg(theta(2))))
-
+                
                 %            pause(1)
-
+                
                 %             figure(4); axis image; axis xy
                 %             for pp = 1:size(pixelByPixel,3)
                 %                 imagesc(squeeze(pixelByPixel(:,:,pp)))

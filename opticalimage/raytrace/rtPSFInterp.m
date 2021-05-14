@@ -1,11 +1,11 @@
 function PSF = rtPSFInterp(optics,fieldHeight,fieldAngle,wavelength,xGrid,yGrid)
-% Interpolate ray trace PSF for the field height and angle.  
+% Interpolate ray trace PSF for the field height and angle.
 %
 %    PSF = rtPSFInterp(optics,fieldHeight,fieldAngle,wavelength)
 %
-% fieldHeight (m)  represents the distance from the center of the image.  
+% fieldHeight (m)  represents the distance from the center of the image.
 % xGrid, yGrid (m) sampling grid in meters
-% fieldAngle  (deg) is the angle.  
+% fieldAngle  (deg) is the angle.
 % wavelength:  Wavelength field of the optics data (nm)
 %
 % When we store the PSF, it has unit area.  The interpolated PSF should
@@ -30,14 +30,14 @@ if isempty(opticsGet(optics,'rayTrace'))
 end
 
 % These values should be in millimeters.
-distimght = opticsGet(optics,'rtdistortionfunction',wavelength,'m');  
+distimght = opticsGet(optics,'rtdistortionfunction',wavelength,'m');
 
 % Convert the field height into an index that can be used to retrieve the
 % proper PSF.
 [idx1,idx2] = ieFieldHeight2Index(distimght,fieldHeight);
 
 % Pack PSF into transform or computational space dimensions
-PSF1 = opticsGet(optics,'rtpsfdata',distimght(idx1),wavelength);  
+PSF1 = opticsGet(optics,'rtpsfdata',distimght(idx1),wavelength);
 PSF2 = opticsGet(optics,'rtpsfdata',distimght(idx2),wavelength);
 
 k = abs(distimght(idx2)-distimght(idx1));
@@ -70,10 +70,10 @@ else
     % Can we use fast n furious here?
     psfSupportX = opticsGet(optics,'rtPsfSupportX','m');
     psfSupportY = opticsGet(optics,'rtPsfSupportY','m');
-    if max(xGrid) > max(psfSupportX(:)), 
-        warning('Possible PSF truncation'); 
+    if max(xGrid) > max(psfSupportX(:)),
+        warning('Possible PSF truncation');
     end
-        
+    
     % Interpolate giving extrapolating out of range values to zero.
     PSF = interp2(psfSupportX(:)',psfSupportY(:),PSF, xGrid,yGrid,'linear');
     % Can use extrapval 0 in interp2 for Matlab 7.  But in 6.5, must

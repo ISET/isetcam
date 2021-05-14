@@ -26,7 +26,7 @@ function [rects,mLocs,pSize] = chartRectangles(cp,nRows,nCols,sFactor,blackEdge)
 %
 % Description
 %   The cornerpoint coordinate frame is the Matlab image coordinates in
-%   which (1,1) is at the upper left.  
+%   which (1,1) is at the upper left.
 %
 %   The four cornerpoints that are selected start with the lower left of
 %   the chart and then the lower right, upper right, and upper left.  This
@@ -35,7 +35,7 @@ function [rects,mLocs,pSize] = chartRectangles(cp,nRows,nCols,sFactor,blackEdge)
 %  ** MCC considerations **
 %   There are some issues when the MCC chart has black borders around the
 %   patches.  In that case the geometry selection needs some adjustment. We
-%   are still working on getting that better.  
+%   are still working on getting that better.
 %
 %   To manage that case we now have a blackEdge flag you can set for the
 %   borders. The patch is treated as the color region plus the added black
@@ -44,7 +44,7 @@ function [rects,mLocs,pSize] = chartRectangles(cp,nRows,nCols,sFactor,blackEdge)
 %   black borders are not part of the data we want.
 %
 % ieExamplesPrint('chartRectangles')
-% 
+%
 % See also
 %   chartCornerpoints, chartRectsDraw, chartROI, sceneRadianceChart
 
@@ -140,12 +140,12 @@ for cc = 1:nCols
         thisRow(2) = thisRow(2) + pSize(2)/2;
         
         thisPoint = round(thisCol + thisRow - cp(4,:));  % (x,y)
-        % drawpoint(ax,'Position',thisPoint,'color','k');  
-
+        % drawpoint(ax,'Position',thisPoint,'color','k');
+        
         % Annoyingly, the mLocs are not in (x,y) format, they are in row,
         % col format.
         mLocs(:,ii) = fliplr(thisPoint);   % (y,x) format, row,col
-
+        
         ii = ii+1;
     end
 end

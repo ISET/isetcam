@@ -4,7 +4,7 @@ function [scene,fName] = sceneFromDDFFile(fName, imType, meanLuminance, dispCal,
 %   Detailed explanation goes here
 
 % First we call the basic scene creation routine
-% it should probably take depth as a parameter, but it seems to have 
+% it should probably take depth as a parameter, but it seems to have
 % a lot of other legacy parameter stuff, so doing it here for now
 if ~exist('meanLuminance', 'var')
     meanLuminance = [];
@@ -13,7 +13,7 @@ if ~exist('imType', 'var')
     imType = 'rgb';
 end
 if ~exist('dispCal', 'var')
-    dispCal = []; 
+    dispCal = [];
 end
 if ~exist('wList', 'var')
     wList = [400:10:700];

@@ -20,7 +20,7 @@
 %% init
 ieInit;
 
-%% Create a point array 
+%% Create a point array
 
 % scene = sceneCreate('slanted bar');
 scene = sceneCreate('point array');
@@ -37,7 +37,7 @@ oiSpacing = oiGet(oi,'hres');
 %
 % The key step of interpolating the irradiance onto the sensor arrays
 % is in spatialIntegration | regridoi2ISA
-% T.  
+% T.
 
 % choose to use the pixel size to be 1, 3, and 5 times the oi
 % resolution.

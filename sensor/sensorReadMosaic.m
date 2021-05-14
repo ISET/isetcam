@@ -40,12 +40,12 @@ function sensor = sensorReadMosaic(sensor,fname,varargin)
  % sensorWindow(sensor,'scale',true);
 
  % Visualize whether the RGB alignment is correct
- ip = ipCreate; 
+ ip = ipCreate;
  ip = ipSet(ip,'illuminant correction method','gray world');
  ip = ipCompute(ip,sensor); ipWindow(ip);
 %}
 
-%% 
+%%
 varargin = ieParamFormat(varargin);
 p = inputParser;
 p.addRequired('sensor',@isstruct);

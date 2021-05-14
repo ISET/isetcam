@@ -1,5 +1,5 @@
 function wvf = wvfSet(wvf,parm,val,varargin)
-% Set wavefront parameters 
+% Set wavefront parameters
 %
 % Syntax
 %   wvf = wvfSet(wvf,parm,val,varargin)
@@ -22,7 +22,7 @@ function wvf = wvfSet(wvf,parm,val,varargin)
 %   wvf = wvfSet(wvf,'zcoeffs',z);
 %   wvf = wvfSet(wvf,'z pupil diameter',z);   % Pupil size for the z coeff rep
 %   wvf = wvfSet(wvf,'pupil diameter',z);     % For this calculation
-%   
+%
 %
 % Inputs:
 %   wvf   - A wavefront structure
@@ -38,7 +38,7 @@ function wvf = wvfSet(wvf,parm,val,varargin)
 %  Calculations
 %    'zcoeffs' - Zernike coefficients, OSA standard numbering/coords
 %         You can use an Zernike parameter name to specify a particular
-%         coefficient, such as 
+%         coefficient, such as
 %
 %               wvfSet(wvf,'zcoeffs',2,'defocus');
 %               wvfSet(wvf,'zcoeffs',0.5,'oblique_astigmatism');
@@ -51,7 +51,7 @@ function wvf = wvfSet(wvf,parm,val,varargin)
 %
 %  Spatial sampling parameters
 %    'sample interval domain' -
-%       Which domain has sample interval held constant with 
+%       Which domain has sample interval held constant with
 %       wavelength ('psf', 'pupil')
 %    'number spatial samples' -
 %        Number of spatial samples (pixel) for pupil function and psf
@@ -66,7 +66,7 @@ function wvf = wvfSet(wvf,parm,val,varargin)
 %  Based on (DHB/BW) (c) Wavefront Toolbox Team 2011, 2012 Vastly reduced
 %  and simplified by Imageval for basic wavefront calculations.
 %
-% See also: 
+% See also:
 %   wvfCreate, wvfGet, wvfComputePupilFunction, wvfComputePSF, psf2zcoeff
 
 %% Arg checks and parse.
@@ -109,19 +109,19 @@ switch parm
         % The differences are accounted for in the
         % wvfComputePupilFunction, mainly.  It is possible that there are
         % other functions or scripts that compare the data as well.
-        % 
-    %{
+        %
+        %{
     case {'umperdegree'}
         % Applies to human calculations.
         % This is the factor used to convert between um on the retina and degrees of
         % visual angle. This is typically 300, but we have it as a
         % parameter for historical reasons.  They value does matter.
         wvf.umPerDegree = val;
-    %}        
+        %}
         %% Calculation parameters
         %
         %  Zernike coefficients and related
-
+        
     case {'zcoeffs', 'zcoeff','zcoef'}
         % wvfSet(wvf,'zcoeffs',val, jIndex);
         % wvfSet(wvf,'zcoeffs',2,'defocus');
@@ -129,7 +129,7 @@ switch parm
         %
         % jIndex is optional, and can be a vector of j values
         % or a string array of coefficient names that are converted to
-        % indices using wvfOSAIndexToVectorIndex. 
+        % indices using wvfOSAIndexToVectorIndex.
         %
         % These specify the measured (or assumed) wavefront aberrations in
         % terms of a Zernike polynomial expansion.  Exanding these gives us
@@ -144,7 +144,7 @@ switch parm
         % Zernike coeffs 0,1,2 (piston, verticle tilt, horizontal tilt) are
         % typically 0 since they are either constant (piston) or only
         % change the point spread location, not quality, as measured in
-        % wavefront aberrations. 
+        % wavefront aberrations.
         %
         % We use the "j" single-index scheme of OSA standards
         %
@@ -176,21 +176,21 @@ switch parm
             end
             wvf.zcoeffs(idx) = val;
         end
-
+        
     case 'zpupildiameter'
         % Pupil diameter for the zcoeff measurements (millimeters)
         wvf.zpupilDiameter = val;
     case 'zwavelength'
         % Wavelength for the zcoeff measurements
         wvf.zwls = val;
-    % These parameters are used for the specific calculations with this,
-    % interpolating the measured values that are stored above.
+        % These parameters are used for the specific calculations with this,
+        % interpolating the measured values that are stored above.
     case {'pupildiameter','pupilsize'}
         % This value is currently mm.  We should change to meters and
         % account for that everywhere, sigh.
         disp('Pupil diameter in mm.  This will change to meters some day');
-        wvf.pupilDiameter = val;        
-
+        wvf.pupilDiameter = val;
+        
     case {'focallength','flength'}
         % wvf = wvfSet(wvf,'focal length',17e-3);
         %

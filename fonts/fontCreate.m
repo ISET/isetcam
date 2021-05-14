@@ -13,7 +13,7 @@ function font = fontCreate(letter,family,sz,dpi,style)
 %
 % Example
 %   font = fontCreate;
-%   font = fontCreate('A','Georgia',24,96); 
+%   font = fontCreate('A','Georgia',24,96);
 %   vcNewGraphWin; imagesc(font.bitmap);
 %
 %   font = fontCreate('l','georgia',14,72);
@@ -25,7 +25,7 @@ if notDefined('sz'), sz = 14; end
 if notDefined('family'), family = 'Georgia'; end
 if notDefined('dpi'), dpi = 96; end
 if notDefined('style'), style = 'NORMAL'; end
-    
+
 font.type       = 'font';
 font.name       = lower(sprintf('%s-%s-%i-%i',letter,family,sz,dpi));
 font.character  = letter;
@@ -38,7 +38,7 @@ font.dpi        = dpi;
 % The dpi will be added and we will read the overscaled (x) fonts.  Then we
 % will put them in the display structure, and maybe filter if we decide to.
 font.bitmap     = fontBitmapGet(font);
-    
+
 end
 
 %%
@@ -71,7 +71,7 @@ try
     fName = sprintf('%s.mat',name);
     fName = fullfile(isetRootPath,'data','fonts',fName);
     load(fName);
-    b = bmSrc.dataIndex;     
+    b = bmSrc.dataIndex;
     b = 1 - b;   %Make black on white
     padsize = 3*ceil(size(b,2)/3) - size(b,2);
     b = padarray(b,[0 padsize],1,'pre');

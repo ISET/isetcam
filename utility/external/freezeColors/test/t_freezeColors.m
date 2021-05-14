@@ -1,6 +1,6 @@
 % test_main Test freezeColors / unfreezeColors
 %
-%   JRI 4/2007 
+%   JRI 4/2007
 
 %   Author:
 %   John Iversen
@@ -58,14 +58,14 @@ imagesc(peaks); axis xy; colormap jet; title('jet colormap, frozen')
 freezeColors
 h=colorbar;
 try
-  cbfreeze(h1)
-	cbfreeze(h)
+    cbfreeze(h1)
+    cbfreeze(h)
 catch
-	disp('cbfreeze is not available, so colorbar colors will not be frozen until you')
-	disp(' go and download it from the file exchange. Sorry for the extra step, but')
-  disp(' it is necessary because of matlab internal changes. Please visit')
-  disp('  http://www.mathworks.com/matlabcentral/fileexchange/24371 to download it.')
-	freezeColors(h) %tests passing an axis handle 
+    disp('cbfreeze is not available, so colorbar colors will not be frozen until you')
+    disp(' go and download it from the file exchange. Sorry for the extra step, but')
+    disp(' it is necessary because of matlab internal changes. Please visit')
+    disp('  http://www.mathworks.com/matlabcentral/fileexchange/24371 to download it.')
+    freezeColors(h) %tests passing an axis handle
 end
 
 disp('>> subplot(3,2,2)')
@@ -114,10 +114,10 @@ subplot(3,2,3); scatter(randn(100,1),randn(100,1),rand(100,1)*100,rand(100,1),'f
 title('scatter, cool'),colormap cool; axis(3*[-1 1 -1 1]);
 freezeColors; h=colorbar;
 try, cbfreeze(h), catch,freezeColors(h), end
-    
+
 subplot(3,2,4); bar(randn(4,4));xlim([0 5]);title('bar, copper')
 colormap copper; freezeColors;
-    
+
 %demonstrate handling of NaNs -- ordinarily these are preserved, but there's a hidden
 %   option to subsitute another color for NaN
 
@@ -147,7 +147,7 @@ disp(' =Hit a key='), pause, disp(' ')
 colormap gray
 unfreezeColors(gcf)
 try
-	cbfreeze('off')
+    cbfreeze('off')
 end
 
 disp('>> colormap gray')

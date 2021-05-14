@@ -17,7 +17,7 @@ function rectHandles = chartRectsDraw(obj,rects)
 %   chartRectangles, chartCornerpoints, sceneRadianceChart
 
 
-%% Find corners of the rectangles.  
+%% Find corners of the rectangles.
 
 % Maybe this should edited to use ieRect2Vertices
 cmin = rects(:,1) - 1; cmax = rects(:,1)+rects(:,3) - 1;

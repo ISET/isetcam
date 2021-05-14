@@ -9,7 +9,7 @@
 %   -a normalization factor,
 %   -a radially-dependent polynomial,
 %   -an azimuthally-dependent sinusoid
-% 
+%
 % For example, one such polynomial (known as Astigmatism along 45
 % degrees) is given by:
 %
@@ -50,7 +50,7 @@ ieInit;
 % this index.
 waveIdx = 1;
 maxMM = 2;
-maxUM = 20;      
+maxUM = 20;
 pupilfuncrangeMM = 5;
 
 %% Use Zernike polynomials to specify a diffraction limited PSF.
@@ -62,7 +62,7 @@ pupilfuncrangeMM = 5;
 % simulating the wavefront PSF for a pupil of 3MM diameter.  This
 % code dumps out the structure so you can get a sense of what is
 % in it.
-% 
+%
 % The validation script v_wvfDiffractionPSF compares the
 % diffraction limited PSFs obtained in this manner with those
 % obtained by computing an Airy disk and shows that they match.
@@ -98,7 +98,7 @@ wvfPlot(wvf0,'2dpsf space normalized','um',wList,maxUM);
 % the corresponding OSA index.  This direct usage is illustrated
 % by the wvfGet call, and the same usage works for the wvfSet.
 % (You can also get via names for the low order terms.)
-oblique_astig = 2;                             
+oblique_astig = 2;
 wvf3 = wvfSet(wvf0,'zcoeffs',oblique_astig,{'oblique_astigmatism'});
 fprintf('Third Zernike coefficient is %g\n',wvfGet(wvf3,'zcoeffs',3));
 
@@ -120,7 +120,7 @@ wvfPlot(wvf3,'2d pupil phase space','mm',wList,pupilfuncrangeMM);
 % prefer to look at the PSF, which gives us an idea of how the
 % pupil will blur an image. This is essentially done by applying
 % a Fourier Transform to the pupil function.
-wvf3 = wvfComputePSF(wvf3); 
+wvf3 = wvfComputePSF(wvf3);
 
 % Now we can plot the normalized PSF for a pupil only whose only
 % aberration is the 45 degree astigmatism.
@@ -137,7 +137,7 @@ wvfPlot(wvf3, '2d psf space normalized','um',wList,maxUM);
 %
 % We can see that unlike the 3rd coefficient, this coefficient
 % for astigmatism is aligned to the x and y axes.
-vertical_astig = 2;                         
+vertical_astig = 2;
 wvf5 = wvfSet(wvf0,'zcoeffs',vertical_astig,{'vertical_astigmatism'});
 wvf5 = wvfComputePSF(wvf5);
 wvfPlot(wvf5,'2d pupil phase space','mm',wList,maxMM);
@@ -165,7 +165,7 @@ wvf0 = wvfCreate;
 
 % pupilfuncrangeMM = 4;
 jindices = 1:9;
-maxUM = 20; 
+maxUM = 20;
 for ii = jindices
     vcNewGraphWin;
     insertCoeff = 2;
@@ -190,7 +190,7 @@ end
 % explictly set the wavelength for which the PSF is calculated to
 % 550 nm (this is also the default.
 wvf0 = wvfCreate;
-wvf0 = wvfSet(wvf0,'wave',550); 
+wvf0 = wvfSet(wvf0,'wave',550);
 
 % It turns out that all aberrations other than "Defocus" are
 % known to vary only slightly with wavelength. As a result, the
@@ -206,7 +206,7 @@ wvf0 = wvfSet(wvf0,'wave',550);
 wvf0 = wvfComputePSF(wvf0);
 wList = wvfGet(wvf0,'wavelengths');
 vcNewGraphWin;
-maxMM = 3; 
+maxMM = 3;
 wvfPlot(wvf0,'1dpsfspacenormalized','mm',wList,maxMM,'no window');
 hold on;
 

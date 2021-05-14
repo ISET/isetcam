@@ -154,9 +154,9 @@ for bb = 1:length(startIndices)
         if (p.Results.verbose)
             fprintf('\tExample %d contains ''%% ETTBSkip'' - skipping.\n',bb);
         end
-    
-    % Have a live example.  Run it.
-    else 
+        
+        % Have a live example.  Run it.
+    else
         % Dump example text if asked
         if (p.Results.printexampletext)
             fprintf('Example text:\n');

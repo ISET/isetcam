@@ -12,7 +12,7 @@ wls_cones = MakeItWls(S_cones);
 n_cones = size(T_cones,1);
 index = find(wl == wls_cones);
 if (isempty(index))
-	error('Passed wavelength not subset of cone wavelengths');
+    error('Passed wavelength not subset of cone wavelengths');
 end
 cones = T_cones(:,index)*energy;
 

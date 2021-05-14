@@ -5,7 +5,7 @@
 %
 % *****************************************************************
 % IMPORTANT:
-%   a) Individuals using these routines must accept full responsibility 
+%   a) Individuals using these routines must accept full responsibility
 %   for light exposures they implement. We recommend that values computed
 %   with these routines be carefully checked against independent calculations.
 %   We have done our best to follow the standard, but it is very complex and
@@ -18,11 +18,11 @@
 %
 %   b) As of March, 2013, these routines are still very much a work
 %   in progress and should thus be treated with special caution.  See
-%   AnsiZ136MPEBasicTest and AnsiZ136MPEDeloriTest, both for test 
+%   AnsiZ136MPEBasicTest and AnsiZ136MPEDeloriTest, both for test
 %   code, and for comments about points of uncertainty.
 %
 %   c) Particularly obscure to me at present is the limiting cone aperture
-%   section described with an asterisk in Table 2 of the 2007 standard 
+%   section described with an asterisk in Table 2 of the 2007 standard
 %   document.
 %
 %   d) The field's knowledge of safe light levels is evolving, and it is important

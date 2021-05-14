@@ -1,5 +1,5 @@
 function [photonAbsorptionRate] =...
-	PhotonAbsorptionRate (irradianceInQuanta, irradianceS, absorptanceSpectra, absorptanceSpectraS, collectingDiameter)
+    PhotonAbsorptionRate (irradianceInQuanta, irradianceS, absorptanceSpectra, absorptanceSpectraS, collectingDiameter)
 % [photonAbsorptionRate] =...
 %		PhotonAbsorptionRate (irradianceInQuanta, irradianceS, absorptanceSpectra, absorptanceSpectraS, collectingDiameter)
 %
@@ -14,7 +14,7 @@ function [photonAbsorptionRate] =...
 % Can handle multiple photorceptor types.  Put each absrorbtance spectrum in a row of matrix
 % absorptanceSpectra, put corresponding collecting diameters in column vector collectingDiameter.
 %
-% Units: 
+% Units:
 %   photonAbsorptionRate: quanta/sec/photorecptor
 %   irradianceInQuanta: quanta/um^2-sec-wlinterval
 %   absorptanceSpectra: probability an incident quantum will be absorbed.

@@ -7,7 +7,7 @@ function cal = CalibrateFitYoked(cal)
 % and doesn't do anything unless some special fields exist
 % in the calibration structure.  It's in the PTB because when we use
 % it, we want to call it from script RefitCalGamma, and that one does
-% belong in the PTB.  
+% belong in the PTB.
 %
 % 4/30/10  dhb, kmo, ar  Wrote it.
 % 5/24/10  dhb           Update comment.
@@ -41,7 +41,7 @@ yokedSpds = cal.yoked.spectra;
 % and project down onto this
 projectedYokedSpd = cal.P_device*(cal.P_device\yokedSpds);
 
-%% Now we have to adjust the linear model so that it has our standard 
+%% Now we have to adjust the linear model so that it has our standard
 % properties.
 
 % Make first three basis functions fit maxSpd exactly
@@ -98,13 +98,13 @@ cal.P_device = currentLinMod;
 % When R=G=B, we just use the common settings.
 if (cal.describe.yokedmethod == 1)
     cal.rawdata.rawGammaInput = cal.yoked.settings(1,:)';
-	cal.rawdata.rawGammaTable = gammaTable';
+    cal.rawdata.rawGammaTable = gammaTable';
     
-% When measurements are at a specified chromaticity, need to interpolate gamma
-% functions so that we have them for each device on a common scale.
+    % When measurements are at a specified chromaticity, need to interpolate gamma
+    % functions so that we have them for each device on a common scale.
 elseif (cal.describe.yokedmethod == 2)
     cal.rawdata.rawGammaInput = cal.yoked.settings';
-	cal.rawdata.rawGammaTable = gammaTable';
+    cal.rawdata.rawGammaTable = gammaTable';
 end
 
 %% Debugging

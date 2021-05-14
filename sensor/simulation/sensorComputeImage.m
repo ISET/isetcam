@@ -17,7 +17,7 @@ function [voltImage, dsnu, prnu] = sensorComputeImage(oi,sensor,wBar)
 %   wBarHandles:  Handle to a waitbar.  If empty or missing, no waitbar shown
 %
 % Outputs
-%  voltImage: the spatial array of volts (not clipped by voltage swing). 
+%  voltImage: the spatial array of volts (not clipped by voltage swing).
 %  dsnu:      the dark signal nonuniformity (fixed pattern offset)
 %  prnu:      the photoresponse nonuniformity (pixel-level gain)
 %
@@ -50,7 +50,7 @@ function [voltImage, dsnu, prnu] = sensorComputeImage(oi,sensor,wBar)
 %   voltage image: voltImage = (voltImage + ao)/ag;
 %
 %   Many more notes on the calculation, including all the units are
-%   embedded in the comments below. 
+%   embedded in the comments below.
 %
 %   If the waitBar handles are provided, they are used to show progress.
 %   Without the waitbar handles, no waitbars are shown.
@@ -73,9 +73,9 @@ pixel = sensorGet(sensor,'pixel');
 
 %% Calculate current
 % This factor converts pixel current to volts for this integration time.
-% The conversion units are  
+% The conversion units are
 %
-%   sec * (V/e) * (e/charge) = sec * V / charge = V / current. 
+%   sec * (V/e) * (e/charge) = sec * V / charge = V / current.
 %
 % Given the basic rule V = IR, k is effectively a measure of resistance
 % that converts current into volts given the exposure duration.
@@ -97,7 +97,7 @@ if numel(cur2volt) == 1
     voltImage = cur2volt*unitSigCurrent;
 else
     % Multiple exposure times, so we copy the unit term into multiple
-    % dimensions 
+    % dimensions
     voltImage = repmat(unitSigCurrent,[1 1 length(cur2volt)]);
     % Multiply each dimension by its own scale factor
     for ii=1:length(cur2volt)
@@ -123,9 +123,9 @@ sensor   = sensorSet(sensor,'volts',voltImage);
 sensor = sensorSet(sensor,'volts',voltImage);
 
 % Something went wrong.  Return data empty,  including the noise images.
-if isempty(voltImage)  
-    dsnu = []; prnu = []; 
-    return; 
+if isempty(voltImage)
+    dsnu = []; prnu = [];
+    return;
 end
 
 %% Add the dark current
@@ -152,7 +152,7 @@ if darkCurrent ~= 0
 end
 sensor = sensorSet(sensor,'volts',voltImage);
 
-%% Add shot noise.  
+%% Add shot noise.
 % Note that you can turn off shot noise in the calculation
 % by setting the shotNoiseFlag to false.  Default is true.  This flag is
 % accessed only through scripts at the moment.  There is no way to turn it
@@ -167,10 +167,10 @@ readNoise = pixelGet(sensor.pixel,'readnoisevolts');
 if readNoise ~= 0,  voltImage = noiseRead(sensor); end
 sensor = sensorSet(sensor,'volts',voltImage);
 
-%% noiseFPN 
+%% noiseFPN
 % This combines the offset and gain (dsnu,prnu) images with
 % the current voltage image to produce a noisier image.  If these images
-% don't yet exist, we compute them. 
+% don't yet exist, we compute them.
 dsnu = sensorGet(sensor,'dsnuImage');
 prnu = sensorGet(sensor,'prnuImage');
 if isempty(dsnu) || isempty(prnu)
@@ -178,7 +178,7 @@ if isempty(dsnu) || isempty(prnu)
     sensor = sensorSet(sensor,'dsnuImage',dsnu);
     sensor = sensorSet(sensor,'prnuImage',prnu);
     % disp('Initiating dsnu and prnu images');
-else  
+else
     voltImage = noiseFPN(sensor);
 end
 sensor = sensorSet(sensor,'volts',voltImage);

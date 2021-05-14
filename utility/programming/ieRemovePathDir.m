@@ -33,7 +33,7 @@ newPathList = [];
 for ii = 1:length(pathElements)
     if isempty(strfind(pathElements{ii}, [filesep dName]))
         newPathList = [newPathList, pathElements{ii}, pathsep]; %#ok<AGROW>
-    % else fprintf('Removing %s\n',pathElements{ii});
+        % else fprintf('Removing %s\n',pathElements{ii});
     end
 end
 

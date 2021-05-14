@@ -9,7 +9,7 @@ function strArray=BreakLines(str)
 %
 %
 % see also: ReplaceLineTerminators
- 
+
 
 % HISTORY
 %

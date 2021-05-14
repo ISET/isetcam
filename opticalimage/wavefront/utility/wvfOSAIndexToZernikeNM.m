@@ -8,7 +8,7 @@ function [n,m] = wvfOSAIndexToZernikeNM(j)
 % m is angular frequency
 %
 % Uses equations 5 and 6 from the OSA numbering document
-% 
+%
 % j can be a vector, in which case so are m and n.
 %
 % See also: wvfOSAIndexToVectorIndex, wvfOSAIndexToZernikeNM, zernfun

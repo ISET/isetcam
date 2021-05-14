@@ -24,7 +24,7 @@ function mov = mplay(varargin)
 %     See 'help getframe' for more information on the MATLAB
 %     movie structure.  Only movies with empty .colormap field
 %     entries are supported.
-%    
+%
 %   Intensity video array (FMT = 'intensity' or 'I')
 %     3-D array organized as MxNxF, where each image is of size
 %     MxN and there are F image frames.  An input with size
@@ -120,13 +120,13 @@ try,
     % fmt: actual movie format to use,
     %      string normalized to proper spelling, capitalization, etc
     [A, fmt] = CheckMovieFormat(A, dfmt);
-
+    
     % Create and load GUI with movie
     hfig = CreateGUI;
     LoadMovie(hfig, A, fmt, inputname(1), fps);
     UpdateGUIControls(hfig);
     AdjustPlayerSize(hfig);
-
+    
     % Return object is LHS requested
     if nargout>0, mov=GetMoviePlayerAPI(hfig); end
     
@@ -157,10 +157,10 @@ end
 set(0,'units','pix');
 screenpos = get(0,'screensize');
 if figpos(3) > screenpos(3),
-   figpos(3) = screenpos(3);
+    figpos(3) = screenpos(3);
 end
 if figpos(4) > screenpos(4),
-   figpos(4) = screenpos(4);
+    figpos(4) = screenpos(4);
 end
 
 set(hfig,'pos',figpos);
@@ -192,7 +192,7 @@ function [A,fmt,fps,msg] = parse_inputs(varargin)
 %     MPLAY(A, FMT)
 %     MPLAY(A, FPS)
 %     MPLAY(A, FMT, FPS)
-% 
+%
 %  Defaults:
 A=[];
 fmt='';   % no format specified
@@ -315,15 +315,15 @@ if isstruct(A),
     %
     i=1;                 % just check first frame
     %for i=1:length(A),  % check all entries in structure
-        if ~isempty(A(i).colormap),
-            error('All colormap fields in structure format must be empty.');
-        end
-        c=class(A(i).cdata);
-        switch c,
-            case {'uint8','double'},
-            otherwise,
-                error('Unsupported data type (%s) found in video frames.', c);
-        end
+    if ~isempty(A(i).colormap),
+        error('All colormap fields in structure format must be empty.');
+    end
+    c=class(A(i).cdata);
+    switch c,
+        case {'uint8','double'},
+        otherwise,
+            error('Unsupported data type (%s) found in video frames.', c);
+    end
     %end
     return
 end
@@ -332,27 +332,27 @@ end
 %
 % NOTE: Disabled color conversion syntax
 if 0,
-if iscell(A),
-    % Convert cell array of color components to 4-D RGB video array
-    % using user-defined conversion function
-    
-    % Default if no conversion function specified: int2rgbm
-    if isempty(dfmt),
-        fmt = @int2rgbm;
-    else
-        fmt = dfmt;
+    if iscell(A),
+        % Convert cell array of color components to 4-D RGB video array
+        % using user-defined conversion function
+        
+        % Default if no conversion function specified: int2rgbm
+        if isempty(dfmt),
+            fmt = @int2rgbm;
+        else
+            fmt = dfmt;
+        end
+        
+        % Try to invoke conversion function
+        A = feval(fmt, A{:});
+        
+        % After the conversion, it is assumed that the video format is RGB
+        fmt  = 'RGB';
+        dfmt = 'RGB';
+        
+        % Fall-through to standard checking-code for N-D array
+        % after conversion function has completed
     end
-    
-    % Try to invoke conversion function
-    A = feval(fmt, A{:});
-    
-    % After the conversion, it is assumed that the video format is RGB
-    fmt  = 'RGB';
-    dfmt = 'RGB';
-    
-    % Fall-through to standard checking-code for N-D array
-    % after conversion function has completed
-end
 end
 
 if ~isnumeric(A),
@@ -377,7 +377,7 @@ elseif nd==3,
     A33 = (sz(3)==3);
     if A33 && isempty(dfmt),
         warning(['Ambiguous movie format: 3rd dimension of 3-D array is 3.' CR ...
-                 'Assuming ''intensity'' format.  Pass format string to suppress warning.']);
+            'Assuming ''intensity'' format.  Pass format string to suppress warning.']);
     end
     fmt='I';
     if ~isempty(dfmt) && ~strcmp(fmt,dfmt),
@@ -681,7 +681,7 @@ function UpdateButtonEnables(hfig)
 % Button states:
 %   Enabled=1
 %   Disabled=0
-%             stopped  paused running 
+%             stopped  paused running
 %       Props          (all 1)
 %       Truesz         (all 1)
 %       Export         (all 1)
@@ -845,7 +845,7 @@ if ud.fbmode,
         ud.currframe = ud.currframe-stepsize;
     end
 else
-    % Not fwd/back mode    
+    % Not fwd/back mode
     
     ud.currframe = ud.currframe - stepsize;
     % Check for backwards wraparound
@@ -893,7 +893,7 @@ if strcmp(get(ud.htimer,'Running'),'on'),
     % Flush changes
     ShowMovieFrame(hfig);
     %UpdateFrameReadout(ud);
-
+    
     % Set play icon, darker
     set(hPlay, ...
         'tooltip', 'Resume', ...
@@ -966,7 +966,7 @@ if ud.fbmode,
         end
     end
 else
-    % Not fwd/back mode    
+    % Not fwd/back mode
     if ud.currframe <= 1,
         if ~ud.loopmode,
             return
@@ -1018,7 +1018,7 @@ if ud.fbmode,
         ud.currframe = ud.currframe-1;
     end
 else
-    % Not fwd/back mode    
+    % Not fwd/back mode
     if ud.currframe >= ud.numFrames,
         if ~ud.loopmode,
             return
@@ -1350,15 +1350,15 @@ function SetFPS(hfig)
 ud = get(hfig,'userdata');
 isRunning = strcmp(get(ud.htimer,'Running'),'on');
 % isPaused = ud.paused;
-if isRunning, 
+if isRunning,
     cb_play([],[],ud.hfig);  % pause
 end
 set(ud.htimer,'Period', 1./ud.fps);
-if isRunning, 
+if isRunning,
     cb_play([],[],ud.hfig);
-%     ud = get(hfig,'userdata');
-%     ud.paused = isPaused;
-%     set(hfig,'userdata',ud);
+    %     ud = get(hfig,'userdata');
+    %     ud.paused = isPaused;
+    %     set(hfig,'userdata',ud);
 end
 UpdateFPSReadout(hfig);
 
@@ -1427,7 +1427,7 @@ ud = get(hfig,'userdata');
 while 1,  % infinite loop in case user enters invalid information
     % Get dialog
     prompt={'Desired playback rate (fps):', ...
-            'Colormap expression:'};
+        'Colormap expression:'};
     def={num2str(ud.fps), ud.cmapexpr};
     dlgTitle='Movie Player Properties';
     lineNo=1;
@@ -1509,7 +1509,7 @@ while 1,  % infinite loop in case user enters invalid information
             % That's because the currently displayed frame may have
             % changed behind our backs.  Even if we re-grab userdata,
             % it's changing all the time.
-                
+            
             % Get properties again, in case something has
             % changed behind our backs while dialog was open
             ud = get(hfig,'userdata');
@@ -1559,7 +1559,7 @@ else
     % Export to workspace
     varname = 'mplay_export';
     fprintf(['Exported current image frame to base workspace\n' ...
-            'Variable name: %s\n\n'], varname);
+        'Variable name: %s\n\n'], varname);
     assignin('base',varname,v);
 end
 
@@ -1581,9 +1581,9 @@ if (ud.currframe == ud.numFrames),
         ud.nextframe = ud.currframe-1;
         shouldStop = 0;
         
-%     elseif ud.fbmode && ud.fbrev,
-%         error('how did this happen? ==end');
-%         shouldStop = 1;
+        %     elseif ud.fbmode && ud.fbrev,
+        %         error('how did this happen? ==end');
+        %         shouldStop = 1;
         
     else
         ud.nextframe = 1;  % loop back to beginning

@@ -48,7 +48,7 @@ remoteF = 'PGM/DSC_0803.pgm';
 fname = fullfile(remoteD,remoteF);
 [~,status] = urlwrite(fname,'rawFile.pgm');
 raw = imread('rawFile.pgm');
-vcNewGraphWin; imagesc(raw); 
+vcNewGraphWin; imagesc(raw);
 colormap(gray(1024)); axis image
 
 % vcNewGraphWin; histogram(single(raw(:)),100)
@@ -63,7 +63,7 @@ fname = fullfile(remoteD,remoteF);
 jpg = imread('jpgFile.jpg');
 % 0803 needs a rotate
 % jpg = imrotate(jpg,90);
-vcNewGraphWin; imagesc(jpg); 
+vcNewGraphWin; imagesc(jpg);
 colormap(gray(1024)); axis image
 
 % vcNewGraphWin; histogram(single(jpg(:)),100)

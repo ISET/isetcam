@@ -1,5 +1,5 @@
 function vcSetObjects(objType,newObj)
-% Set the cell array of a particular type of object.  
+% Set the cell array of a particular type of object.
 %
 % Synopsis
 %  vcSetObjects(objType,newObj);

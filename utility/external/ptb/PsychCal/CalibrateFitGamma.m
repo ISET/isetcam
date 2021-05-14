@@ -169,7 +169,7 @@ switch(cal.describe.gamma.fitType)
         end
         mGammaFit1 = mGammaFit1a;
         cal.gammaInput = linspace(0,1,nInputLevels)';
-  
+        
     case 'betacdf',
         if (~exist('fit','file'))
             error('Fitting with the betacdf requires the curve fitting toolbox\n');
@@ -214,7 +214,7 @@ switch(cal.describe.gamma.fitType)
         end
         mGammaFit1 = mGammaFit1a;
         cal.gammaInput = linspace(0,1,nInputLevels)';
-		
+        
     case 'sigmoid',
         mGammaMassaged = cal.rawdata.rawGammaTable(:,1:cal.nDevices);
         for i = 1:cal.nDevices
@@ -261,8 +261,8 @@ if (cal.nPrimaryBases > 1)
                 cal.gammaInput);
         end
         
-    % This is the code we're currently using.  It works for the case where different input levels are specified for
-    % the measurments for each primary.
+        % This is the code we're currently using.  It works for the case where different input levels are specified for
+        % the measurments for each primary.
     else
         k = 1;
         for j = 1:cal.nDevices*(cal.nPrimaryBases-1)

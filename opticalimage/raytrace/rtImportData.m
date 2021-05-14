@@ -100,7 +100,7 @@ fprintf('Reduced character count from %d to %d\n',length(s),length(asciiValues))
 % baseLensFileName='EO54852'
 % refWave=587.562;          % REFERENCE WAVELENGTH (NM)
 % fov=26.198448;          % MAXIMUM DIAGONAL HALF FOV (DEGREE)
-% efl=5.999968;          % EFFECTIVE FOCAL LENGTH (MM) 
+% efl=5.999968;          % EFFECTIVE FOCAL LENGTH (MM)
 % fnumber_eff=1.780820;          % EFFECTIVE F-NUMBER
 % fnumber=1.774644;          % F-NUMBER
 
@@ -163,12 +163,12 @@ end
 
 % Note that the zemaxLoad() uses 129, not 128.
 asciiValues = s( (s < 128) & (s > 0) )';
-dCell = textscan(asciiValues,'%f'); 
+dCell = textscan(asciiValues,'%f');
 d = dCell{1};
 
 % The function is stored as (field height x wavelength)
 % For backwards compatibility this is correct (Brian)
-rt.geometry.function = reshape(d,nWave,nHeight)';  
+rt.geometry.function = reshape(d,nWave,nHeight)';
 
 %%  Load the relative illumination
 
@@ -238,7 +238,7 @@ for ii=1:length(imgHeight)
                     if sum(tmp(:)) ~= 1 && ~warningGiven
                         warningGiven = 1;
                         fprintf('Area under psf: %f\n',sum(tmp(:)));
-                        warning('Matlab:rtScalingPSF','Scaling area under psf to 1'); 
+                        warning('Matlab:rtScalingPSF','Scaling area under psf to 1');
                         tmp = tmp/sum(tmp(:));
                     end
                     rt.psf.function(:,:,ii,jj) = tmp;

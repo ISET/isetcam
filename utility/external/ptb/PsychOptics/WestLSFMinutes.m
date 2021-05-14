@@ -19,4 +19,4 @@ function lsf = WestLSFMinutes(distance)
 % 9/4/97  dhb  Wrote it.
 
 lsf = 0.47*exp(-3.3*(distance.^2)) + ...
-       0.53*exp(-0.93*(abs(distance)));
+    0.53*exp(-0.93*(abs(distance)));

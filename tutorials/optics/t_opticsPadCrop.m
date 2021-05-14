@@ -58,7 +58,7 @@ sensorWindow(sensor);
 sensor = sensorCompute(sensor,oiCropped);
 sensorWindow(sensor);
 
-%%  Here is the padded image. 
+%%  Here is the padded image.
 
 % Notice, however, that the FOV is always the horizontal field of view, so
 % we do not get padding in the vertical direction for a rectangular image.

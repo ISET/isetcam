@@ -21,7 +21,7 @@ function lum = ieLuminanceFromEnergy(energy,wave,varargin)
 %   (W/m2-sr-nm) into luminance (candelas per meter squared, cd/m2). This
 %   routine accepts RGB or XW (space-wavelength) formatted inputs. In XW
 %   format, the spectral distributions are in the rows of the ENERGY
-%   matrix. 
+%   matrix.
 %
 %   The formula for luminance and illuminance are the same, differing only
 %   in the units of the input. Hence, this routine calculates illuminance
@@ -36,7 +36,7 @@ function lum = ieLuminanceFromEnergy(energy,wave,varargin)
 %      Luminous intensity:    cd from W/sr-nm.
 %
 %   To calculate luminance (or illuminance) from a spectral radiance
-%   distribution in photons, use ieLuminanceFromPhotons() 
+%   distribution in photons, use ieLuminanceFromPhotons()
 %
 %
 % Online reference:
@@ -54,7 +54,7 @@ function lum = ieLuminanceFromEnergy(energy,wave,varargin)
   lum = ieLuminanceFromEnergy(energy,wave)
 %}
 
-%% 
+%%
 p = inputParser;
 varargin = ieParamFormat(varargin);
 p.addRequired('energy',@isnumeric);
@@ -85,7 +85,7 @@ if numel(wave) > 1,  binwidth = wave(2) - wave(1);
 else,                fprintf('%d nm bandwidth\n',binwidth);
 end
 
-% The luminance formula.  
+% The luminance formula.
 if size(xwData,1) == 1 || size(xwData,2) == 1
     % xwData can be a matrix, I suppose.  User better check that it is XW
     % format.
@@ -98,7 +98,7 @@ else
 end
 
 % Compare the luminance and energy data
-% ieNewGraphWin; semilogy(wave,V,'--',wave,xwData,'o'); 
+% ieNewGraphWin; semilogy(wave,V,'--',wave,xwData,'o');
 
 end
 

@@ -70,7 +70,7 @@ eHist = histogram(e(:),'Normalization','probability');
 xlabel('Electrons'); ylabel('Count')
 
 
-%% Poisson formula means it should be fit by a Gaussian and 
+%% Poisson formula means it should be fit by a Gaussian and
 % the std dev should be sqrt(mean)
 %
 sd = sqrt(lambda);

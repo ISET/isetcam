@@ -1,29 +1,29 @@
 %% Color metrics tutorial (Psych 221)
-% 
+%
 %    Class:     Psych 221/EE 362
 %    Tutorial:  Color metrics
 %    Author:    Wandell
 %    Purpose:   Introduce CIELAB metric and some of its uses.
-%    Date:      01.12.98	
+%    Date:      01.12.98
 %    Revised:   05.03.99 by Michael Bax
 %    Checked:   Matlab 7, GN, BW, 2006
 %    Modified for ISET, 2013 (BW).  More to do on this.
 %
 % Duration:  30 minutes
-% 
+%
 % This tutorial explores properties of the CIELAB color metric.
 % In this tutorial, you will
-% 
-% * calculate CIELAB values for some simple surfaces and lights  
+%
+% * calculate CIELAB values for some simple surfaces and lights
 % * plot the relationship between linear intensity values and L*
 % * render CIELAB values on the screen
 % * calculate delta E values in a simple example
-% 
+%
 
 %%
 ieInit
 
-%% Examine  properties of the CIELAB color metric.  
+%% Examine  properties of the CIELAB color metric.
 % This metric is designed to help predict the discriminability between
 % spatially uniform targets.
 
@@ -38,15 +38,15 @@ set(gca,'xlim',[350 750]);
 xlabel('wavelength (nm)'); ylabel('Reflectance')
 title('Spectral Reflectance of 10 Gray Surfaces');
 
-%% Load a light source.  
+%% Load a light source.
 % D65 refers to the color temperature, namely 6500 deg Kelvin.  This is a
 % slightly bluish appearing light source.
 
 lgt = ieReadSpectra('D65',wavelength);
 
 % Illuminate the surfaces with the light source and plot the
-% resulting scattered light 
-% 
+% resulting scattered light
+%
 graySPD = diag(lgt)*graySurfaces;
 
 vcNewGraphWin;
@@ -67,7 +67,7 @@ grayXYZ = grayXYZ * 100 / grayXYZ(2,10)
 
 % To compute the CIELAB values, we will need to use the XYZ values
 % of the white surface.  So, let's save them in a special
-% variable. 
+% variable.
 
 whiteXYZ = grayXYZ(:,10)
 
@@ -89,7 +89,7 @@ xlabel('X'); ylabel('Y'); zlabel('Z');
 title('Linearly-spaced gray reflectances in XYZ color space');
 grid on;
 
-%% Convert these values to LAB values.  
+%% Convert these values to LAB values.
 % We call the routine ieieXYZ2LAB.  You should take a look at the routine to
 % see what it does by invoking "type ieieXYZ2LAB"
 
@@ -103,7 +103,7 @@ plot(1:10,grayLAB(1,:),'o',1:10,grayLAB(1,:),'-');
 xlabel('Surface number');ylabel('L* value')
 title('L* values of surfaces with linearly-spaced reflectances');
 
-%% Plot in 3 dimensions for LAB space.  
+%% Plot in 3 dimensions for LAB space.
 % Notice that the a* and b* coordinates are zero for the gray series.
 vcNewGraphWin;
 plot3(grayLAB(2,:), grayLAB(3,:), grayLAB(1,:),'o',...
@@ -112,13 +112,13 @@ xlabel('a*'); ylabel('b*'); zlabel('L*');
 title('Linearly-spaced gray reflectances in LAB color space');
 grid on; axis([ -10 10 -10 10 0 100]);
 
-%% Examine the chromaticity coordinates of these various surfaces.  
+%% Examine the chromaticity coordinates of these various surfaces.
 % Remember that the chromaticity coordinates represent only two of the
 % three dimensions.  In this case, the surfaces all share a common "shape"
 % spectral power distribution, and they differ only by a scale factor.  So,
 % the surfaces will have the same chromaticity coordinates.
 grayxy = chromaticity(grayXYZ')'
- 
+
 %%  Creating and rendering the Lab values
 
 % The a* and b* describe aspects of the hue and saturation of the
@@ -126,18 +126,18 @@ grayxy = chromaticity(grayXYZ')'
 % and third rows of grayLAB) are all near zero.  Next, we use the
 % methods we developed in the ColorMatching tutorial to create
 % new Lab values and render them on the screen.
-% 
+%
 
 % Let's make a list of Lab values that are the same as the gray
 % values, but that systematically vary the a* range.
-% 
+%
 
 nChips = size(grayLAB,2);
 aRamp = ieScale(1:nChips,-30,30);
 varyAstarLAB = zeros([3, nChips]);
 varyAstarLAB(1,:) = 70;    % L
 varyAstarLAB(2,:) = aRamp; % A = linear ramp
-varyAstarLAB(3,:) = 0; 
+varyAstarLAB(3,:) = 0;
 varyAstarLAB
 
 % To see what these Lab values look like, we will (a) convert the Lab
@@ -175,7 +175,7 @@ plot(whitexy(1),whitexy(2),'k*'); hold off
 d = displayCreate('LCD-Apple',wavelength);
 
 % Now, compute the transformations from XYZ to linear rgb and
-% back for this monitor 
+% back for this monitor
 rgb2xyz = displayGet(d,'rgb2xyz');  % Display primary spectral power distribution
 xyz2rgb = inv(rgb2xyz);
 
@@ -219,7 +219,7 @@ axis off
 
 % Let's make a similar picture as we vary the b* dimension.
 % Because we have various bits of information loaded up already,
-% we can compute a little more quickly.  
+% we can compute a little more quickly.
 
 %% Create the varyBstar values
 %
@@ -246,13 +246,13 @@ axis off
 % Create a simple XYZ difference.  Specifically, this difference is 5
 % units of Y.  We will add this difference into all of the gray series.
 % Notice that we add the same difference to every one of the gray chips.
-deltaXYZ = zeros(size(grayXYZ)); 
+deltaXYZ = zeros(size(grayXYZ));
 deltaXYZ(2,:) = (whiteXYZ(2)/20);
 deltaXYZ
 
-% Measure the Lab differences between the original grayXYZ and these 
+% Measure the Lab differences between the original grayXYZ and these
 % values with the constant difference (deltaXYZ) added into each gray chip.
-% 
+%
 lab1 = ieXYZ2LAB( grayXYZ.', whiteXYZ.' ).';
 lab2 = ieXYZ2LAB( ( grayXYZ + deltaXYZ ).', whiteXYZ.' ).';
 diffLAB = lab1 - lab2;
@@ -277,10 +277,10 @@ legend('Orig', 'Orig+diff', 'Location','NorthEast');
 
 % Now we can compute the magnitude of these differences, which is
 % called delta Eab.
-% 
+%
 nChips = size(grayXYZ,2)
 for i=1:nChips
-  dEab(i) = norm( diffLAB(:,i));   
+    dEab(i) = norm( diffLAB(:,i));
 end
 
 % Recall that the deltaXYZ is the same at all these levels.  But,
@@ -293,15 +293,15 @@ end
 %  in the 3D plot above.)
 %
 vcNewGraphWin; plot(grayXYZ(2,:),dEab,'-o')
-xlabel('Chip Y level'); ylabel('Delta E'); 
+xlabel('Chip Y level'); ylabel('Delta E');
 title('dE values for a constant Y difference')
 grid on
 
 %% End of tutorial
 
-%%% BEGIN TUTORIAL QUESTIONS -- 
+%%% BEGIN TUTORIAL QUESTIONS --
 %
-% Question 1:  
+% Question 1:
 % Suppose you had to choose a set of gray reflectances that are equally
 % spaced in LAB coordinates.  How would you choose the reflectance levels of the
 % gray series?  Explain this qualitatively, based on the CIELAB metric
@@ -312,29 +312,29 @@ grid on
 % of dark surfaces or light surfaces?  Justify your answer using the CIELAB
 % formula. (See Color Appearance Lecture Notes).
 %
-% Question 3: 
-% Suppose we measure the XYZ values of each of a pair of lights.  
+% Question 3:
+% Suppose we measure the XYZ values of each of a pair of lights.
 % According to the CIELAB metric, what other values must we measure before
 % we can predict the discriminability of these lights?  What basic
 % processes in the visual system do these other values represent?
 %
 % Question 4:
-% Set the white point to whiteXYZ = [100,100,100]; 
+% Set the white point to whiteXYZ = [100,100,100];
 % Consider the point pXYZ = [50,100,100];
 % What is the delta E spacing between pXYZ and another point that differs
 % by 5 units in each principal direction (e.g., [55,100,100])?
 %
 % Question 5: USING CIELAB TO COMPARE IMAGES
 %
-% Define the colors 
-%  yellowRGB = [1.0 1.0 0.0] 
+% Define the colors
+%  yellowRGB = [1.0 1.0 0.0]
 %  blueRGB = [0.25 0.625 1.0]
 %  greenRGB = [0.625, 0.8125, 0.5]
 %
-% a) Compute the XYZ values for these colors when displayed on our 
+% a) Compute the XYZ values for these colors when displayed on our
 % standard (linear) monitor (i.e., ignore gamma correction).
 %
-% b) Compute the LAB values for these colors for a white point of 
+% b) Compute the LAB values for these colors for a white point of
 %    whiteXYZ = [95 100 108]
 %
 % Change the white point to whiteXYZ = [108 100 95] and compute the LAB
@@ -344,7 +344,7 @@ grid on
 % c) Using the original white point whiteXYZ = [95 100 108], compute the
 % delta E difference between each combination of the three colors
 % (yellowRGB ...). Based on these results, which pair of colors is most
-% dissimilar? 
+% dissimilar?
 %
 % d) Use the following code to generate three images imYB1, imYB2, and imG.
 % (Do not submit these images, but you may describe what you see.)
@@ -362,7 +362,7 @@ grid on
 %             imYB2(ii:(2*ss):256, :, :) = ...
 %                 repmat(reshape(blueRGB,1,1,3), [256/ss/2 imw]);
 %         end
-% 
+%
 %         imG = repmat(reshape(greenRGB,1,1,3), [256, imw]);
 %
 % Measure the delta E difference between imYB1 and imG, and the difference
@@ -370,14 +370,14 @@ grid on
 % between two images to be the average delta E difference across all
 % pixels.  (Use the white point whiteXYZ = [95 100 108]).
 %
-% Hints: 
+% Hints:
 % - You may find the command
 %   imdata = reshape(im, size(im,1)*size(im,2),3);
-% useful for transforming an m x n x 3 image into an (m*n) x 3 matrix of 
+% useful for transforming an m x n x 3 image into an (m*n) x 3 matrix of
 % pixels.
 %
 % - You can use ieXYZ2LAB to convert XYZ data to LAB data in bulk.
-% ieXYZ2LAB may take an nx3 matrix of XYZ values to LAB values 
+% ieXYZ2LAB may take an nx3 matrix of XYZ values to LAB values
 % (where each row is an XYZ color vector).
 %
 % e) View the images side by side and compare them.  Notice that the
@@ -386,7 +386,7 @@ grid on
 % delta E values diverge. Suggest a way to improve the CIELAB metric so it
 % more accurately reflects the perceived difference.
 %
-%%% END TUTORIAL QUESTIONS -- 
+%%% END TUTORIAL QUESTIONS --
 
 
 

@@ -10,16 +10,16 @@ function [fig,f,jx,jy] = iePlotJitter(x,y,f,fig,pSymbol)
 %
 % Example:
 %
-%  
+%
 
-if ieNotDefined('f'), 
+if ieNotDefined('f'),
     mx = max((max(x(:)) - min(x(:))),max(y(:))-min(y(:)));
     f = mx/200;
 end
 if ieNotDefined('fig'),     fig = vcNewGraphWin; end
 if ieNotDefined('pSymbol'), pSymbol = '.k'; end
 
-% Make the randomly perturned points    
+% Make the randomly perturned points
 N = length(x);
 jx = x(:) + rand(N,1)*f;
 jy = y(:) + rand(N,1)*f;
@@ -27,7 +27,7 @@ jy = y(:) + rand(N,1)*f;
 % Plot them as dots.  I guess the symbols should be a parameter
 if fig>0
     figure(fig), plot(jx,jy,pSymbol)
-
+    
     % Store them and return
     pts.jx = jx; pts.jy = jy;
     set(gca,'userdata',pts);

@@ -2,7 +2,7 @@ function sRGB = ieCTemp2SRGB(cTemp,varargin)
 % Convert spd in energy units into an sRGB value for a display
 %
 %    srgb = ieCTemp2RGB(cTemp,wave)
-% 
+%
 % Description:
 %   Convert a blackbody radiator color temperature into an sRGB value.
 %

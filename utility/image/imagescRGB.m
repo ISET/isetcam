@@ -7,8 +7,8 @@ function [h,rgbim] = imagescRGB(rgbim,varargin)
 %  scaled to a maximum of 1.
 %
 %  If the exponent gamma is included, then rgbim .^ gamma are displayed;
-% 
-%    The routine accepts data in XW and RGB format.  
+%
+%    The routine accepts data in XW and RGB format.
 %    In XW format case use:                imagescRGB(img,row,col,[gamma])
 %    If the data are in RGB format use:    imagescRGB(img,[gamma])
 %
@@ -49,13 +49,13 @@ if ismatrix(rgbim)
     end
     
 elseif ndims(rgbim) == 3
-    % row = size(rgbim,1); 
+    % row = size(rgbim,1);
     % col = size(rgbim,2);
     if nargin - 1 >= 1
         gam = varargin{1};
         rgbim = rgbim .^ gam;
     end
-else 
+else
     error('Bad image input');
 end
 

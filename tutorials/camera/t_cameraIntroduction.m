@@ -1,7 +1,7 @@
 %% t_cameraIntroduction
 %
 % We are introducing a new object, the camera.  The camera object is a
-% structure that includes the oi, sensor, and ip objects. 
+% structure that includes the oi, sensor, and ip objects.
 %
 % The camera object allows the user to run calculate more efficiently than
 % addressing each object separately.  In the first part of this tutorial,
@@ -44,7 +44,7 @@ camera = cameraCompute(camera,scene);
 %% Visualizing the camera objects
 
 % To see all of the objects and their parameters listed their windows, you
-% can use 
+% can use
 cameraWindow(camera,'oi');
 cameraWindow(camera,'sensor');
 cameraWindow(camera,'ip');
@@ -57,7 +57,7 @@ cameraWindow(camera,'ip');
 ip     = cameraGet(camera,'ip');
 sRGB   = ipGet(ip,'data srgb');
 
-% Have a look at the data, rendered for an sRGB monitor 
+% Have a look at the data, rendered for an sRGB monitor
 % Hopefully the one you are looking at is close to that.
 vcNewGraphWin;
 imagesc(sRGB);
@@ -73,7 +73,7 @@ imagesc(sRGB);
 
 % A detailed way to set the object properties, such as the optics fnumber,
 % is to retrieve the object, the set property, and reattach the object.
-% For example, 
+% For example,
 
 % Set the value
 camera = cameraSet(camera,'optics fnumber',16);
@@ -97,7 +97,7 @@ camera = cameraSet(camera,'ip illuminant correction method','gray world');
 camera = cameraCompute(camera,scene);
 sRGB   = cameraGet(camera,'ip data srgb');
 
-% Have a look at the data, rendered for an sRGB monitor 
+% Have a look at the data, rendered for an sRGB monitor
 ieNewGraphWin;
 imagesc(sRGB);
 

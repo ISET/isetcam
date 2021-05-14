@@ -1,5 +1,5 @@
 function g = chromaticityPlot(pts,background,nPix,newFig)
-% Draw points superimposed on an xy chromaticity diagram 
+% Draw points superimposed on an xy chromaticity diagram
 %
 %     g = chromaticityPlot(pts,[background='gray'],[nPix=256], [newFig])
 %
@@ -8,7 +8,7 @@ function g = chromaticityPlot(pts,background,nPix,newFig)
 %
 %  pts        -  xy values of points on the graph
 %  background -  image background color 'gray' (default)
-%  nPix       -  Spatial resolution.  
+%  nPix       -  Spatial resolution.
 %  newFig     -  Plot in a new figure (default = true)
 %
 % Examples:
@@ -22,7 +22,7 @@ function g = chromaticityPlot(pts,background,nPix,newFig)
 %  chromaticityPlot(pts,'black');
 %  chromaticityPlot(pts,'white',384);
 %
-% Compare two types of points 
+% Compare two types of points
 %  pts = [.33,.33];
 %  chromaticityPlot(pts,'gray',256);
 %  hold on, plot(pts(1),pts(2),'.')

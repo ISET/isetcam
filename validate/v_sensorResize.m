@@ -1,6 +1,6 @@
 % v_sensorResize
 %
-% Test resizing the sensor.  Mostly tested with human here.  
+% Test resizing the sensor.  Mostly tested with human here.
 %
 % v_sensorResize
 %

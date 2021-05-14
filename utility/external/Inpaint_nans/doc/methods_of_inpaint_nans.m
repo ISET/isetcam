@@ -3,7 +3,7 @@
 The methods of inpaint_nans
 
 Digital inpainting is the craft of replacing missing elements in an
-"image" array. A Google search on the words "digita inpainting" will turn 
+"image" array. A Google search on the words "digita inpainting" will turn
 up many hits. I just tried this search and found 18300 hits.
 
 If you wish to do inpainting in matlab, one place to start is with my
@@ -60,7 +60,7 @@ A = [0 0 0 0;1 NaN NaN 4;2 3 5 8];
 %   u_xx + u_yy = 0
 %
 % where u_xx is the second partial derivative of u with respect to x,
-% and u_yy is the second partial with respect to y. 
+% and u_yy is the second partial with respect to y.
 %
 % Approximating this PDE using finite differences for the partial
 % derivatives, implies that at any node in the grid, we could replace
@@ -81,7 +81,7 @@ A = [0 0 0 0;1 NaN NaN 4;2 3 5 8];
 %  4*A(2,2)  - A(2,3) = 4
 %  -A(2,2) + 4*A(2,3) = 9
 %
-% We can solve for the unkowns now using 
+% We can solve for the unkowns now using
 u = [4 -1;-1 4]\[4;9]
 
 A(2,2) = u(1);
@@ -115,7 +115,7 @@ title 'A simply inpainted surface'
 %
 %   u_xxxx + 2*u_xxyy + u_yyyy = 0
 %
-% again discretized into a linear system of equations. 
+% again discretized into a linear system of equations.
 
 %%
 

@@ -37,7 +37,7 @@ function [vectorIndex,jIndex] = wvfOSAIndexToVectorIndex(jIndex)
 %
 % I would add 'tip' as a synonym for one of the two tilts below, if I
 % knew which one it was.
-% 
+%
 % Validation code
 %   [vectorIndex] = wvfOSAIndexToVectorIndex([0 1 2 3 4 5])
 %   [vectorIndex,jIndex] = wvfOSAIndexToVectorIndex({'piston', 'defocus' 'vertical_astigmatism', 'primary_spherical'})
@@ -73,8 +73,8 @@ if (iscell(jIndex))
             case 'oblique_quadrafoil'
                 n(i) = 4; m(i) = -4;
             case 'oblique_secondary_astigmatism'
-                 n(i) = 4; m(i) = -2;
-           case {'primary_spherical','spherical'}
+                n(i) = 4; m(i) = -2;
+            case {'primary_spherical','spherical'}
                 n(i) = 4; m(i) = 0;
             case 'vertical_secondary_astigmatism'
                 n(i) = 4; m(i) = 2;
@@ -84,7 +84,7 @@ if (iscell(jIndex))
                 error('Unknown aberration string specified');
         end
     end
-    jIndex = wvfZernikeNMToOSAIndex(n,m);  
+    jIndex = wvfZernikeNMToOSAIndex(n,m);
 end
 
 vectorIndex = jIndex + 1;

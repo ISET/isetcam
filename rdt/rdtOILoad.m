@@ -6,7 +6,7 @@ function ois = rdtOILoad(varargin)
 % Optional Key/value pairs
 %   'rdt name'  - RDT project - default is 'isetbio'
 %   'remote directory' - Default is '/resources/ois/multiband/scien/shapes'
-%   
+%
 %   'n oi'  - Number of scenes or list of integers for the scene list
 %   'wave' - 400:10:680
 %   'fov'  - 10
@@ -20,10 +20,10 @@ function ois = rdtOILoad(varargin)
 %     ois = rdtOILoad();
 %     ois = rdtOILoad('nOI', 5); % Loads 5 optical images
 %
-%     
+%
 % See also:
 %   rdtScenesLoad
-% 
+%
 % HJ/BW, VISTA TEAM, 2015
 
 %{

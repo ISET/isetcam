@@ -12,9 +12,9 @@ function [flatSCDI, newRows, newCols] = regridOI2ISA(scdi,oi,sensor,spacing)
 %
 % Outputs:
 %   flatSCDI: the resampled signal current density image at the
-%             spatial sampling resolution of the sensor. 
+%             spatial sampling resolution of the sensor.
 %   newRows: the spatial positions, in meters, of the sampled points,
-%            where (0,0) is the center of the image sensor array. 
+%            where (0,0) is the center of the image sensor array.
 %   newCols:  as above
 %
 % Note:  ISA means image sensor array.  We shifted to using "sensor" now.
@@ -28,14 +28,14 @@ function [flatSCDI, newRows, newCols] = regridOI2ISA(scdi,oi,sensor,spacing)
 % microns. This routine linearly interpolates the scdi samples to a grid
 % where integer values correspond to the spatial sample positions of the
 % sensor pixels.  The routine uses Matlab's interp1 routine.
-%    
+%
 % This regridding of the representation is needed to calculate the overlap
 % of the signal with the photodector, which only occupies a fraction of the
-% pixel area. 
+% pixel area.
 %
 % The input arguments are the signal current density image (scdi), optical
 % image (oi), sensor and the spacing of the interpolated image that is
-% returned (flatSCDI).  
+% returned (flatSCDI).
 %
 % In earlier versions of ISET, we used very high sampling resolution
 % (spacing = 0.2, meaning we represented the flatSCDI so that there
@@ -71,7 +71,7 @@ if ieNotDefined('spacing'), spacing = 0.2; end
 r = oiGet(oi,'rows'); c = oiGet(oi,'cols');
 rSamples = (0:(r-1));
 cSamples = (0:(c-1));
-oiHeightSpacing = oiGet(oi,'hres'); 
+oiHeightSpacing = oiGet(oi,'hres');
 oiWidthSpacing  = oiGet(oi,'wres');
 
 % Puts the number of rows and columns in units of microns
@@ -87,7 +87,7 @@ r = sensorGet(sensor,'rows'); c = sensorGet(sensor,'cols');
 rSamples = (0:spacing:(r-spacing)) + (spacing/2);
 cSamples = (0:spacing:(c-spacing)) + (spacing/2);
 
-sensorHeightSpacing = sensorGet(sensor,'hres'); 
+sensorHeightSpacing = sensorGet(sensor,'hres');
 sensorWidthSpacing  = sensorGet(sensor,'wres');
 [newRows,newCols]   = sample2space(rSamples,cSamples,sensorHeightSpacing,sensorWidthSpacing);
 [X,Y] = meshgrid(newCols,newRows);
@@ -97,14 +97,14 @@ sensorWidthSpacing  = sensorGet(sensor,'wres');
 flatSCDI = zeros(size(X));
 nFilters = sensorGet(sensor,'nfilters');
 
-% Determine the color filter number at each point on the sensor surface.  
+% Determine the color filter number at each point on the sensor surface.
 interpolatedCFAN = interpcfaSCDI(newRows, newCols, sensor, spacing);
 
 % We add a Gaussian blurring kernel.  We only apply the kernel, however, if the
 % pixel size is much larger than the oi sampling resolution.
 
 % We will use these ratios to define the Gaussian SD (sigma)
-heightSamplesPerPixel = ceil(sensorHeightSpacing / oiHeightSpacing); 
+heightSamplesPerPixel = ceil(sensorHeightSpacing / oiHeightSpacing);
 widthSamplesPerPixel  = ceil(sensorWidthSpacing  / oiWidthSpacing);
 
 % Build the Gaussian kernel.  Assuming a square pixel. (April, 2019)
@@ -116,19 +116,19 @@ widthSamplesPerPixel  = ceil(sensorWidthSpacing  / oiWidthSpacing);
 % just [1,1] so that the Gaussian blur is irrelevant.
 gKernel = fspecial('gaussian', ...
     [heightSamplesPerPixel widthSamplesPerPixel], ...
-    heightSamplesPerPixel/4); 
+    heightSamplesPerPixel/4);
 
 % Other case we should use the average:
 % gKernel = ones(heightRatio, widthRatio)/(heightRatio*widthRatio);
 
 % warning('off','MATLAB:interp1:NaNinY');
-for ii=1:nFilters  
+for ii=1:nFilters
     
     scdi(:,:,ii) = conv2(scdi(:,:,ii), gKernel, 'same');
     %{
     % The logic of the Gaussian blur is this
     %
-    % Suppose the number of OI samples per sensor pixel is bigger than 1 
+    % Suppose the number of OI samples per sensor pixel is bigger than 1
     %
     %        |  |  |  |  |  |  |    OI
     %              ---------
@@ -136,7 +136,7 @@ for ii=1:nFilters
     %             |  Pixel  |
     %             |         |
     %
-    % In this case, the linear interpolation between the two OI samples 
+    % In this case, the linear interpolation between the two OI samples
     % near the center of the pixel is not really what we want.  We want the
     % average across all the OI samples within the pixel.  So we blur
     % by a number of samples that equals the width of the pixel.
@@ -149,18 +149,18 @@ for ii=1:nFilters
     end
     %
     % But, when the OI samples are more widely spaced than the pixel
-    % size, the Gaussian is basically an impulse and has no impact.  
+    % size, the Gaussian is basically an impulse and has no impact.
     % So, we haven't written the code to distinguish, we just let the
     % convolution run in both cases, knowing that when there are few
     % samples per pixel the blur is irrelevant
     %
     %}
-            
+    
     % After the potential Gaussian blurring of the OI to average
     % across the size of the pixel, we then sample using linear
     % interpolation that matches the sample spacing of the pixels on
     % the sensor.
-    tmp = interp2(U,V,scdi(:,:,ii),X,Y,'linear'); 
+    tmp = interp2(U,V,scdi(:,:,ii),X,Y,'linear');
     % vcNewGraphWin; imagesc(newRows,newCols,tmp), colormap(gray);
     
     % In the new world, we just cycle through the filters in order.  The
@@ -168,7 +168,7 @@ for ii=1:nFilters
     % That code should go away and we should get the plot color from a
     % sensorGet() call.
     mask = (interpolatedCFAN == ii);
-
+    
     % When the sensor has only 1 row or column, the interpolated value of
     % tmp could have the wrong shape.  So, we force it to be the same shape
     % as mask.  We don't need to do this if it is a 2D sensor.

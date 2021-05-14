@@ -12,7 +12,7 @@ function ml = mlensCreate(sensor,oi)
 %
 % Copyright Imageval, LLC 2005
 
-if ieNotDefined('sensor'), 
+if ieNotDefined('sensor'),
     sensor = vcGetObject('sensor');
     if isempty(sensor),
         sensor = sensorCreate; ieAddObject(sensor);

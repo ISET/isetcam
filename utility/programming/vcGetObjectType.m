@@ -1,5 +1,5 @@
 function objType = vcGetObjectType(obj)
-% Return the type of ISET object.  
+% Return the type of ISET object.
 %
 %   objType = vcGetObjectType(obj)
 %
@@ -16,8 +16,8 @@ function objType = vcGetObjectType(obj)
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
-if checkfields(obj,'type'), objType = obj.type; return; 
-else, error('Object does not have a type field.'); 
+if checkfields(obj,'type'), objType = obj.type; return;
+else, error('Object does not have a type field.');
 end
 
 end

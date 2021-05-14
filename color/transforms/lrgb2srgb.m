@@ -8,7 +8,7 @@ function rgb = lrgb2srgb(rgb)
 % The rgb data can be in either RGB or XW format.
 %
 % The inputs are linear rgb values, and the returned values are nonlinear
-% framebuffer values. They are in the range [0,1] 
+% framebuffer values. They are in the range [0,1]
 %
 % The  gamValue used in the srgb formula combines with a linear regime that
 % makes an overall approximation of the display gamma as 2.4
@@ -23,12 +23,12 @@ function rgb = lrgb2srgb(rgb)
 % Copyright ImagEval Consultants, LLC, 2005.
 
 if (max(rgb(:)) > 1 || min(rgb(:)) < 0)
-    error('Linear rgb values must be between 0 and 1'); 
+    error('Linear rgb values must be between 0 and 1');
 end
 
 % These are framebuffer values, but they live in [0,1]. The transformation,
 % which has a linear and power part, is intended to approximate a gamma of
-% 2.2 as a whole. 
+% 2.2 as a whole.
 big = (rgb > 0.0031308);
 rgb(~big) = rgb(~big) * 12.92;
 rgb(big) = 1.055*rgb(big).^(1/2.4) - 0.055;

@@ -11,7 +11,7 @@ function rgb = displayShowImage(thisD, varargin)
 %
 % Outputs
 %   rgb:   The images
-%  
+%
 % Examples:
 %   thisD   = displayCreate('LCD-Apple');
 %   scene = sceneCreate; rgb = sceneGet(scene,'rgb');

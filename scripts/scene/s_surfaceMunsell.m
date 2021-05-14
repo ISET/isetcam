@@ -10,7 +10,7 @@
 % represent equally spaced samples in that color system.  The
 % data here represent 261 little surfaces (chips) in that space.
 % The surfaces are at different hue, chroma and value levels.
-% 
+%
 % The data include XYZ values and a specified illuminant ('C').
 % We plot the illuminant and an sRGB rendering of many of the
 % Munsell chips

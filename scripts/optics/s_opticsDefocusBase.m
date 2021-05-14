@@ -38,7 +38,7 @@ oiPlot(oi,'illuminance hline',[1,50]);
 title(sprintf('Defocus %.1f D on Power %.1f',D,1/oiGet(oi,'wvf focal length')));
 
 fprintf('\n---------\n');
-flength = oiGet(oi,'wvf focal length','m');      % 
+flength = oiGet(oi,'wvf focal length','m');      %
 pDiameter = oiGet(oi,'wvf pupil diameter','m');  % mm
 fprintf('Focal length   %f m (%f power)\nPupil diameter %f m\n',flength,(1/flength),pDiameter);
 fprintf('F number       %f\n',oiGet(oi,'wvf fnumber'));

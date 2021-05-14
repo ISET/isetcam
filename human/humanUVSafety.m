@@ -20,11 +20,11 @@ function [val, level] = humanUVSafety(energy,wave,varargin)
 %   level - hazardEnergy
 %
 % Method: 'eye'
-%    val   - logical (true/false) 
+%    val   - logical (true/false)
 %    level - the irradiance integrated over wavelength
 %
 % Method:  'bluehazard'
-%    val   - logical (true/false) 
+%    val   - logical (true/false)
 %    level - the dot product of the radiance with the blueLightHazard
 %            function.
 %
@@ -186,7 +186,7 @@ switch method
 
          E_s is the effective ultraviolet irradiance (W/m^2).  The formula for
          E_s is defined in Equation 4.1.  It is the inner product of the Actinic
-         function and the irradiance function, accounting for time and
+function and the irradiance function, accounting for time and
          wavelength sampling.
         %}
         
@@ -225,16 +225,16 @@ switch method
         if duration <= 1000   % seconds
             if level*duration < 10000, val = true; end
         elseif level < 10    % Duration is long, so level must be low
-            val = true; 
+            val = true;
         end
     case 'bluehazard'
-        % Retinal blue light hazard, Section 4.3.3 
+        % Retinal blue light hazard, Section 4.3.3
         %
         % Potential for  a photochemically  induced retinal injury
         % resulting  from radiation  exposure  at  wavelengths primarily
         % between 400 nm and 500 nm. This  damage mechanism  dominates
         % over  the  thermal damage mechanism  for  times  exceeding 10
-        % seconds. (Page 15).  
+        % seconds. (Page 15).
         %
         % The standard applies over the wavelength range from 300-700 nm.
         %
@@ -249,7 +249,7 @@ switch method
         if duration <= 1e4   % seconds
             if level*duration < 1e6, val = true; end
         elseif level < 1e2    % Duration is long, so level must be low
-            val = true; 
+            val = true;
         end
         
     otherwise

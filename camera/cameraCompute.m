@@ -18,7 +18,7 @@ function [camera,img] = cameraCompute(camera,pType,mode,sensorResize)
 %                 At the end of the calculation, the result field in the ip
 %                 contains an sRGB image?  Or an lRGB image?
 %   'ideal xyz' - Replaces the sensor with an ideal (noise-free) sensor
-%                 that has XYZ filters. 
+%                 that has XYZ filters.
 %  sensorResize - True (default) or false By default, we adjust the sensor
 %                 size to match the scene field of view.
 %
@@ -138,11 +138,11 @@ switch mode
                     vfovCamera = sensorGet(sensor(1),'fov vertical',scene,oi);
                     
                     if abs((hfovScene - hfovCamera)/hfovScene) > 0.01 || ...
-                        abs((vfovScene - vfovCamera)/vfovScene) > 0.01
+                            abs((vfovScene - vfovCamera)/vfovScene) > 0.01
                         
                         % More than 1% off.  A little off because of
                         % requirements for the CFA is OK.
-                        % warning('ISET:Camera','Resizing sensor to match scene FOV (%.1f)',hfovScene);                        
+                        % warning('ISET:Camera','Resizing sensor to match scene FOV (%.1f)',hfovScene);
                         fov = [hfovScene,vfovScene];
                         N = length(sensor);
                         for ii=1:N
@@ -230,7 +230,7 @@ switch mode
             % requirements for the CFA is OK.
             warning('ISET:Camera','FOV for scene %.1f and camera %.1f do not match',fovScene,fovCamera)
         end
-       
+        
         %
         switch pType
             case 'scene'

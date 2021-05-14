@@ -6,15 +6,15 @@
 %
 % For circular pupils and *diffraction-limited* optics, the PSF
 % can be calculated directly from the f-number, focal length,
-% wavelength, and angle.  These quantities are plotted here. 
+% wavelength, and angle.  These quantities are plotted here.
 %
 % The calculation for the diffraction limited case is carried out
 % in the oiPlot and plotOTF call as:
-% 
+%
 %   fSupport = opticsGet(optics,'dl fsupport matrix',thisWave,units,nSamp);
 %   fSupport = fSupport*4;  % Enlarge the frequency support
 %   otf = dlMTF(oi,fSupport,thisWave,units);
-%                 
+%
 %   % DC is at (1,1); we plot with DC in the center.
 %   otf = fftshift(otf);
 %
@@ -61,7 +61,7 @@ ylabel('wavelength (nm)');
 
 % The PSF calculation is done inside of oiPlot again.
 thisWave = 400;
-uData = oiPlot(oi,'psf',[],thisWave); 
+uData = oiPlot(oi,'psf',[],thisWave);
 
 view(2)
 AiryRingUM = (2.44*(thisWave/1000)*fNumber);
@@ -94,12 +94,12 @@ aMinutes = rad2deg(aRadians,'arcmin');          % This is angle in arc min
 plot(aMinutes,uData.lsWave(1,:),'-',...
     aMinutes,uData.lsWave(16,:),'r:',...
     aMinutes,uData.lsWave(31,:),'g--')
-legend('400nm','550nm','700nm'); title('Line spread'); 
+legend('400nm','550nm','700nm'); title('Line spread');
 grid on; xlabel('arc min')
 
 %% For wvf comparison, here is just at 550nm
 thisWave = 550;
-uData = oiPlot(oi,'psf',[],thisWave); 
+uData = oiPlot(oi,'psf',[],thisWave);
 
 view(2)
 AiryRingUM = (2.44*(thisWave/1000)*fNumber);

@@ -38,7 +38,7 @@ function MAC = ieGetMACAddress2
 % f = java.NetworkInterface.getHardwareAdress('')
 % See other stuff at the end of the file
 
-str = textscan(evalc('!ipconfig -all'),'%s','delimiter','\n'); 
+str = textscan(evalc('!ipconfig -all'),'%s','delimiter','\n');
 MAC = '';
 
 for ii=1:length(str)
@@ -53,11 +53,11 @@ end
 
 return;
 
-% % 
-% tic, 
-% for ii=1:2, textscan(evalc('!ipconfig -all'),'%s','delimiter','\n'); end; 
+% %
+% tic,
+% for ii=1:2, textscan(evalc('!ipconfig -all'),'%s','delimiter','\n'); end;
 % toc
-% % 
-% tic, 
-% for ii=1:2, a = evalc('!GetMAC'); end; 
+% %
+% tic,
+% for ii=1:2, a = evalc('!GetMAC'); end;
 % toc

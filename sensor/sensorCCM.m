@@ -13,7 +13,7 @@ function [L,pointLoc] = sensorCCM(sensor,ccmMethod,pointLoc,showSelection)
 %  black, upper right, upper left).  The algorithm extracts the data and
 %  finds the 3x3 that maps the sensor values into an ideal MCC under d65
 %  illuminant (linear srgb).
-% 
+%
 % L: The linear transformation
 % pointLoc: The macbeth method - and perhaps others - may need informaton
 %   about the locations of particular targets in the sensor data.
@@ -28,8 +28,8 @@ function [L,pointLoc] = sensorCCM(sensor,ccmMethod,pointLoc,showSelection)
 %
 % Examples:
 %   User selects corners; the routine makes graphs and prints the linear
-%   transform L into work space 
-%     sensorCCM;        
+%   transform L into work space
+%     sensorCCM;
 %
 %  Returns L, no graphs are displayed
 %     L = sensorCCM;

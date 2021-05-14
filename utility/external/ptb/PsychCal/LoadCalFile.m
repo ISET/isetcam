@@ -2,7 +2,7 @@ function [cal, cals, fullFilename] = LoadCalFile(filespec, whichCal, dir)
 % [cal, cals, fullFilename] = LoadCalFile([filespec], [whichCal], [dir])
 %
 % Load calibration data from saved file in the CalData folder.
-% Will search one level deep in the CalData folder if the 
+% Will search one level deep in the CalData folder if the
 % file does not exist at the top level, but skips subdirs
 % called 'xOld', 'Plots', and those that begin with '.'.
 %
@@ -20,7 +20,7 @@ function [cal, cals, fullFilename] = LoadCalFile(filespec, whichCal, dir)
 %
 % If the specified file cannot be found, returns empty matrix.
 %
-% The returned variable cal is a structure containing calibration 
+% The returned variable cal is a structure containing calibration
 % information.
 %
 % The returned cell array cals contains all of the calibrations
@@ -52,12 +52,12 @@ function [cal, cals, fullFilename] = LoadCalFile(filespec, whichCal, dir)
 
 % Get whichCal
 if nargin < 2 || isempty(whichCal)
-	whichCal = Inf;
+    whichCal = Inf;
 end
 
 % Set filespec
 if (nargin < 1 || isempty(filespec))
-	filename = ['default.mat'];
+    filename = ['default.mat'];
 elseif (ischar(filespec))
     if (length(filespec) < 4 || ~strcmp(filespec(end-3:end),'.mat'))
         filename = [filespec '.mat'];
@@ -65,50 +65,50 @@ elseif (ischar(filespec))
         filename = filespec;
     end
 else
-	filename = [sprintf('screen%d.mat', filespec)];
+    filename = [sprintf('screen%d.mat', filespec)];
 end
 
-% Set the directory if first character of passed filename is not 
+% Set the directory if first character of passed filename is not
 % the filesep character.  In the latter case, we assume that the full
 % path to the desired calibration file was passed.
 if nargin < 3 || isempty(dir)
-	useDir = CalDataFolder(0,filename);
+    useDir = CalDataFolder(0,filename);
 else
-	useDir = CalDataFolder(0,filename,dir);
+    useDir = CalDataFolder(0,filename,dir);
 end
 fullFilename = fullfile(useDir,filename);
 
 % If the file doesn't exist in the usual location, take a look in the
 % secondary location.
 if (~exist(fullFilename, 'file') && (nargin < 3 || isempty(dir)))
-	useDir = CalDataFolder(1,filename);
-	fullFilename = [useDir filename];
+    useDir = CalDataFolder(1,filename);
+    fullFilename = [useDir filename];
 end
 
 % Now read the sucker if it is there.
 if exist(fullFilename, 'file')
     s = warning('off','MATLAB:class:EnumerationNameMissing');
-	eval(['load ' QuoteString(fullFilename)]);
+    eval(['load ' QuoteString(fullFilename)]);
     warning(s.state,'MATLAB:class:EnumerationNameMissing');
-	if isempty(cals) %#ok<NODEF>
-		cal = [];
-	else
-		% Get the number of calibrations.
-		nCals = length(cals);
-		
-		% User the most recent calibration (the last one in the cals cell
-		% array) by default.  If the user specified a particular cal file,
-		% try to retrieve it or return an empty matrix if the cal index is
-		% out of range.
-		if whichCal == Inf
-			cal = cals{nCals};
-		elseif whichCal > nCals || whichCal < 1
-			cal = [];
-		else
-			cal = cals{whichCal};
-		end
-	end
+    if isempty(cals) %#ok<NODEF>
+        cal = [];
+    else
+        % Get the number of calibrations.
+        nCals = length(cals);
+        
+        % User the most recent calibration (the last one in the cals cell
+        % array) by default.  If the user specified a particular cal file,
+        % try to retrieve it or return an empty matrix if the cal index is
+        % out of range.
+        if whichCal == Inf
+            cal = cals{nCals};
+        elseif whichCal > nCals || whichCal < 1
+            cal = [];
+        else
+            cal = cals{whichCal};
+        end
+    end
 else
-	cal = [];
-	cals = {};
+    cal = [];
+    cals = {};
 end

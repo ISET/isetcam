@@ -19,7 +19,7 @@ if ~exist(fName,'file')
     error('No PSF file named %s\n',fName);
 end
 
-%% Read the PSF file. 
+%% Read the PSF file.
 
 % Read the data as a set of uchars.
 fid = fopen(fName,'r'); s = fread(fid,'*char'); fclose(fid);
@@ -40,12 +40,12 @@ data = reshape(data{1},psfSize,psfSize);
 
 % vcNewGraphWin; mesh(data)
 
-%% This is important. 
+%% This is important.
 % We expect the data are written out by the macros if
 % they were along the y-axis.  In the image plane where we use the data,
 % the positive y-axis runs from the origin down, and the x-axis runs from
 % the origin to the left.  So, we rotate the data 90 deg counter-clockwise
-% to get the proper PSF.  
+% to get the proper PSF.
 %
 % I don't think it matters if we do it clockwise or counter-clockwise,
 % really, because of our symmetry assumptions.  But I am trying to keep

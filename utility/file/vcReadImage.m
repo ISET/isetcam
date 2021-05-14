@@ -96,7 +96,7 @@ switch lower(imageType)
         %   where m and n indicates the number of pixels per dixel in row
         %   and columns. This kind of inconsistancy will occur especially
         %   when pixels per dixel is not [1 1].
-        %   
+        %
         %   To be more accurate, please turn off subpixel rendering if the
         %   samples per dixel gets very small.
         %
@@ -156,7 +156,7 @@ switch lower(imageType)
             % we pad 0 here because in most cases, the primary missing in
             % the inImg is black
             inImg = padarray(inImg, ...
-                        [0 0 nprimaries-size(inImg,3)], 0, 'post');
+                [0 0 nprimaries-size(inImg,3)], 0, 'post');
             assert(size(inImg, 3)==nprimaries, 'bad image size');
             
             % Check whether the gTable has enough entries for this
@@ -174,13 +174,13 @@ switch lower(imageType)
                 elseif nbits >= 10, maxDisplay = 2^12;
                 elseif nbits >= 8,  maxDisplay = 2^10;
                 end
-
-		% Resize gTable to match image bits.
+                
+                % Resize gTable to match image bits.
                 x_in = (0:1:size(gTable,1)-1) ./ 255;
                 y_in = gTable;
                 x_out = (0:1:2^(nbits+1)-1) ./ (2^(nbits+1)-1);
                 gTable = interp1(x_in, y_in, x_out, 'spline');
-
+                
                 % Stretch image to match size of gamma table.
                 % This probably isn't necessary
                 inImg = inImg/imgMax;
@@ -227,7 +227,7 @@ switch lower(imageType)
                 photons = zeros(size(xwImg, 1), length(wave));
                 for ii = 1 : length(wave)
                     photons(:, ii) = Energy2Quanta(wave(ii), ...
-                                     (xwImg * spd(ii,:)')')';
+                        (xwImg * spd(ii,:)')')';
                     waitbar(ii/length(wave), wBar);
                 end
                 delete(wBar);
@@ -312,7 +312,7 @@ switch lower(imageType)
                 % illuminant = [];
                 warndlg('No illuminant information in %s\n',fullname);
             end
-
+            
             % Force photons to be positive
             photons = max(photons,0);
             

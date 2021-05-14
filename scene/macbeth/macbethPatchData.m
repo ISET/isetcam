@@ -1,5 +1,5 @@
 function [mRGB,stdRGB] = macbethPatchData(obj,mLocs,delta,fullData,dataType)
-% Return a cell array with the linear RGB values from an ip or sensor 
+% Return a cell array with the linear RGB values from an ip or sensor
 %
 %    [mRGB, stdRGB] = macbethPatchData(obj,mLocs,delta)
 %
@@ -14,9 +14,9 @@ function [mRGB,stdRGB] = macbethPatchData(obj,mLocs,delta,fullData,dataType)
 %  mRGB:   Either a cell array with data from each of the 24 patches or a
 %          matrix (24 x 3) with the mean RGB values from each patch
 % stdRGB:  When mean is returned this matrix contains the corresponding
-%          standard deviatons 
+%          standard deviatons
 %
-% See Also:  
+% See Also:
 %   macbethSelect, ipMCCXYZ, vcGetROIData, macbethColorError
 %
 
@@ -42,14 +42,14 @@ if fullData  % The values from every location in each of the 24 patches
     % cell array.
     mRGB = cell(1,24);
     stdRGB = [];   % Haven't worked out the std dev in this case yet.
-    for ii = 1:24 
+    for ii = 1:24
         theseLocs = macbethROIs(mLocs(:,ii),delta); % List locs for this patch
         mRGB{ii} = vcGetROIData(obj,theseLocs,dataType);
         % stdRGB(ii,:) = nanstd(mRGB{ii});
     end
     
 else  % Mean values from each patch
-
+    
     % In this case, the means have different vector lengths for different
     % data types.  And for scene and oi the mRGB is really mSpectral
     switch(lower(obj.type))
@@ -67,11 +67,11 @@ else  % Mean values from each patch
                 theseData    = vcGetROIData(obj,theseLocs,dataType);
                 mRGB(ii,:)   = nanmean(theseData);
                 stdRGB(ii,:) = nanstd(theseData);
-
+                
             end
         case {'sensor','vcimage'}
             mRGB   = zeros(24,3);  % This should be 24 x nSensors, not 24 x 3
-            stdRGB = zeros(24,3);  % This should be 24 x nSensors           
+            stdRGB = zeros(24,3);  % This should be 24 x nSensors
             for ii = 1:24
                 theseLocs = macbethROIs(mLocs(:,ii),delta);  % List locs for this patch
                 

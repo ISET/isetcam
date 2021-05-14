@@ -18,4 +18,4 @@ function psf = WestPSFMinutes(radius)
 % 7/11/94		dhb		Added comments, changed name.
 
 psf = 0.952*exp(-2.59*(radius.^1.36)) + ...
-       0.048*exp(-2.43*(radius.^1.74));
+    0.048*exp(-2.43*(radius.^1.74));

@@ -1,6 +1,6 @@
 function [XW,r,c,w] = RGB2XWFormat(imRGB)
 % Transform an RGB form matrix into an XW (space-wavelength) matrix
-%    
+%
 %   [XW,r,c,w] = RGB2XWFormat(imRGB)
 %
 % This  routine converts from RGB format to XW format.  The row and

@@ -4,16 +4,16 @@
 % different pixel size. Because all the simulated sensors have the same dye
 % size, it is possible to figure out which row/col values correspond in the
 % different sensors (not shown here).
-% 
+%
 % An HDR algorithm might extract data data from corresponding positions in
 % the different simulated sensors and integrate these values into a single
-% image. 
+% image.
 %
 % See also:  sceneFromFile, sensorCompute, ipWindow, ipCompute
 %
 % Copyright ImagEval Consultants, LLC, 2010
 
-%% 
+%%
 ieInit
 
 %% Read a high dynamic range scene
@@ -45,8 +45,8 @@ sensor = cell(length(pSize),1);
 baseSensor = sensorCreate('monochrome');             % Initialize
 baseSensor = sensorSet(baseSensor,'expTime',0.003);  % 3 ms exposure time
 
-% This is the base processor image. We store the rendered image here 
-baseProcessor = ipCreate;    
+% This is the base processor image. We store the rendered image here
+baseProcessor = ipCreate;
 ip = cell(length(pSize),1);
 
 %% Run the main  loop
@@ -58,29 +58,29 @@ for ii=1:length(pSize)
     
     % Adjust the pixel size (meters), constant fill
     sensor{ii} = sensorSet(baseSensor,'pixel size constant fill factor',[pSize(ii) pSize(ii)]*1e-6);
-
+    
     %Adjust the sensor row and column size so that the sensor has a constant
     %field of view.
     sensor{ii} = sensorSet(sensor{ii},'rows',round(dyeSizeMicrons/pSize(ii)));
     sensor{ii} = sensorSet(sensor{ii},'cols',round(dyeSizeMicrons/pSize(ii)));
-
+    
     sensor{ii} = sensorCompute(sensor{ii},oi);
     sensor{ii} = sensorSet(sensor{ii},'name',sprintf('pSize %.1f',pSize(ii)));
-    ieAddObject(sensor{ii}); 
+    ieAddObject(sensor{ii});
     
     ip{ii} = ipCompute(baseProcessor,sensor{ii});
     ip{ii} = ipSet(ip{ii},'name',sprintf('pSize %.1f',pSize(ii)));
     
-    ieAddObject(ip{ii}); 
+    ieAddObject(ip{ii});
 end
 
 
-%% Look at the series of images that were created. 
+%% Look at the series of images that were created.
 
 % The images have different spatial resolutions and row/col sizes. This
 % brings up the window.  Click around. We suggest setting the display gamma
 % (text box, lower left of the window) to about 0.6
-ipWindow;  
+ipWindow;
 
 % You can extract the raw data from different sources. To read out the
 % voltages from the sensor directly you can use

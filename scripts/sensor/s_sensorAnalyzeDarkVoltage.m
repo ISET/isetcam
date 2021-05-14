@@ -8,17 +8,17 @@
 % In addition to the dark voltage estimate (V/s), we calculate
 % the mean voltage at each exposure duration.
 %
-% The curve plot(expTimes,meanVolts) shows the measured data. 
+% The curve plot(expTimes,meanVolts) shows the measured data.
 %
 % See also:  sceneCreate, sceneAdjustLuminance, oiCreate,
 % sensorCompute, ieSessionGet, ieFitLine
-%   
+%
 % Copyright ImagEval Consultants, LLC, 2005.
 
 %%
 ieInit
 
-%% Make a black (very dark) scene 
+%% Make a black (very dark) scene
 scene     = sceneCreate('uniform ee');
 scene     = sceneSet(scene,'fov',5);  % Five degrees
 darkScene = sceneAdjustLuminance(scene,1e-8);
@@ -29,11 +29,11 @@ if isempty(oi), oi = oiCreate('default',[],[],0); end
 darkOI = oiCompute(darkScene,oi);
 
 
-%% Create a sensor 
+%% Create a sensor
 sensor = sensorCreate;
 
 % Set a range of exposure times
-expTimes = logspace(0,1.5,10); 
+expTimes = logspace(0,1.5,10);
 
 % For the default camera, at the shortest exposure (1 sec), we will see a
 % significant component of noise from other sources.  The other terms,
@@ -50,7 +50,7 @@ nRepeats = length(expTimes);
 showBar = ieSessionGet('waitbar');
 if showBar, wBar = waitbar(0,'Acquiring images'); end
 
-% Compute the sensor responses 
+% Compute the sensor responses
 nSamp = prod(sensorGet(sensor,'size'))/2;
 volts = zeros(nSamp,nRepeats);
 for ii=1:nRepeats
@@ -87,7 +87,7 @@ meanVolts = mean(volts,1);
 vcNewGraphWin;
 title('Measured voltages')
 plot(expTimes(list),meanVolts(list),'-o');
-xlabel('Exposure time (s)'); ylabel('Voltage (v)'); 
+xlabel('Exposure time (s)'); ylabel('Voltage (v)');
 grid on
 
 pixel = sensorGet(sensor,'pixel');
@@ -100,4 +100,4 @@ fprintf('---------------------------\n')
 
 %
 assert(abs(darkVoltageEstimate - trueDV) < trueDV*1e-2,'Bad dark voltage estimate');
-%% 
+%%

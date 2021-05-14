@@ -1,5 +1,5 @@
 function macbethDrawRects(obj,onoff)
-% Draw Macbeth CC rectangles from the stored cornerPoints 
+% Draw Macbeth CC rectangles from the stored cornerPoints
 %
 % Syntax:
 %   macbethDrawRects(obj,[onoff])
@@ -55,7 +55,7 @@ switch onoff
         chartRectsDraw(obj,rects);
         
     case 'off'
-        % This is just a refresh. 
+        % This is just a refresh.
         switch lower(obj.type)
             case 'vcimage'
                 ipWindow;

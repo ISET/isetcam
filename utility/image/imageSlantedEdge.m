@@ -27,7 +27,7 @@ function img = imageSlantedEdge(imSize,slope)
 % Examples:
 %{
  img = imageSlantedEdge;
- ieNewGraphWin; imagesc(img); 
+ ieNewGraphWin; imagesc(img);
  axis image; colormap(gray)
 %}
 %{

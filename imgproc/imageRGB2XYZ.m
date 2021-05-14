@@ -20,12 +20,12 @@ function dataXYZ = imageRGB2XYZ(ip,RGB)
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
-%% Argument checking and set input data format flag 
+%% Argument checking and set input data format flag
 if ~(ismatrix(RGB))
     % XW format is a matrix.  RGB format is not.
     % If you are here, we are RGB format.
-    [RGB, row, col]= RGB2XWFormat(RGB); 
-    RGBFlag = 1; 
+    [RGB, row, col]= RGB2XWFormat(RGB);
+    RGBFlag = 1;
 else, RGBFlag = 0;
 end
 

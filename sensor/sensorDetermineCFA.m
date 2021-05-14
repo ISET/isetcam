@@ -41,7 +41,7 @@ function [CFAletters,CFAnumbers,mp] = sensorDetermineCFA(sensor)
 % Examples:
 %   sensor = vcGetObject('sensor');
 %   [cfa,cfaN] = sensorDetermineCFA(sensor);
-%   [cfa,cfaN,mp] = sensorDetermineCFA; 
+%   [cfa,cfaN,mp] = sensorDetermineCFA;
 %   figure; image(cfaN); colormap(gray);
 %
 % See also: sensorColorOrder, sensorImageColorArray
@@ -66,7 +66,7 @@ rows = sensorGet(sensor,'rows');
 cols = sensorGet(sensor,'cols');
 
 pattern = sensorGet(sensor,'pattern');
-if size(pattern,1)  ~= rows || size(pattern,2) ~= cols   
+if size(pattern,1)  ~= rows || size(pattern,2) ~= cols
     % We have a cfa pattern that must match the sensor size
     blockRows = sensorGet(sensor,'unit block rows'); % size(pattern,1);
     blockCols = sensorGet(sensor,'unit block cols'); % size(pattern,2);
@@ -90,8 +90,8 @@ end
 % Create the list of characters that are hints to the color appearance we
 % should assign to each color filter. These hints can be useful for Matlab
 % plotting routines and some ISET display routines. Get the letters from
-% the first character of the filter name. 
-filterColorLetters = sensorGet(sensor,'filterColorLetters'); 
+% the first character of the filter name.
+filterColorLetters = sensorGet(sensor,'filterColorLetters');
 
 % Figure out the filters that are OK with the first letter naming
 % convention.

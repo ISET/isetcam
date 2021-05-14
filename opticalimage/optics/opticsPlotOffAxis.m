@@ -14,7 +14,7 @@ function oi = opticsPlotOffAxis(oi,thisW)
 %
 % Description
 %   Plot the off-axis fall-off for the current optical image and optics
-%   assumptions.  
+%   assumptions.
 %
 %   The data are stored in the oi{val} if that parameter is sent in.
 %
@@ -29,7 +29,7 @@ if isempty(data)
     % The fall-off data have not been calculated for the current
     % (shift-invariant) optical image.  We calculate the off-axis here and
     % we store it in optics/oi in case the calling return wants to keep
-    % the result.   
+    % the result.
     method = opticsGet(optics,'cos4th function');
     if isempty(method), method = 'cos4th'; end
     switch method

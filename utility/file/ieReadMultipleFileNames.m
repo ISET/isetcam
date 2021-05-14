@@ -25,12 +25,12 @@ end
 d = dir(imgDir);
 str = {d.name};
 [s,v] = listdlg('PromptString',prompt,'Name','Select files','ListString',str,'ListSize',[240,600]);
-if isempty(s), 
-    fullname = []; 
+if isempty(s),
+    fullname = [];
     return;
 else
     for ii=1:length(s)
-        fullname{ii} = fullfile(imgDir,str{s(ii)}); 
+        fullname{ii} = fullfile(imgDir,str{s(ii)});
     end
 end
 

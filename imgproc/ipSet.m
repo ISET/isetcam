@@ -39,19 +39,19 @@ function ip = ipSet(ip,param,val,varargin)
 %         'bilinear','adaptive laplacian','laplacian','nearest neighbor'
 %
 %  Computational approach
-%    'transform method' - 
-%       'current'  - Use the current transform. 
-%       'new'      - Enter a new matrix manually. 
+%    'transform method' -
+%       'current'  - Use the current transform.
+%       'new'      - Enter a new matrix manually.
 %       'adaptive' - Use the image processing algorithms for sensor and
 %                      illuminant corrections to determine the matrix on
-%                      this image  
+%                      this image
 %       'render demosaic only' - Sets the ip so only demosaicing and
 %                                sensor zerolevel subtraction are included.
 %
 %  Correction of the sensor data to a standard space
 %     'conversion sensor '        - Sensor conversion structure
 %     'conversion method sensor'  - Name of the method
-%         Options: 'none', 'manual matrix entry', 
+%         Options: 'none', 'manual matrix entry',
 %                  'mcc optimized', 'esser optimized', 'multisurface'
 %     'conversion matrix sensor'  - The sensor conversion matrix
 %
@@ -72,8 +72,8 @@ function ip = ipSet(ip,param,val,varargin)
 %        'wavelength'
 %
 %      'transforms' - The sensor and illuminant correction transforms
-%                       are stored in this cell array.  
-%       (ip.transform{1}) - sensor conversion transform.  
+%                       are stored in this cell array.
+%       (ip.transform{1}) - sensor conversion transform.
 %              The second is the illuminant correction
 %              The third is the internal color to display
 %
@@ -117,10 +117,10 @@ switch param
     case {'wave','wavelength'}
         ip.spectrum.wave = val;
         
-                
-    % This is a calibrated color space we use for calculating.
-    % Most of the spaces are international standards though we allow the
-    % known sensor spectral QE to be considered calibrated, too.
+        
+        % This is a calibrated color space we use for calculating.
+        % Most of the spaces are international standards though we allow the
+        % known sensor spectral QE to be considered calibrated, too.
     case {'internalcs','internalcolorspace'}
         % Color spaced used for calculations such as color balancing.
         % see ieColorTransform or header of this document for options.
@@ -136,13 +136,13 @@ switch param
         if isempty(val), val = 'none'; end
         ip.demosaic.method = lower(val);
         
-    % Accounting for the difference between the sensors and the internal
-    % color space linear span.
+        % Accounting for the difference between the sensors and the internal
+        % color space linear span.
     case {'sensorconversion','conversionsensor'}
         ip.sensorCorrection = val;
     case {'sensorconversionmethod','conversionmethodsensor'}
         % Options (10/26/2009):
-        %  'manual matrix entry', 'mcc optimized', 
+        %  'manual matrix entry', 'mcc optimized',
         %  'esser optimized', 'multisurface', 'none'
         if isempty(val), val = 'None'; end
         ip.sensorCorrection.method = val;
@@ -151,8 +151,8 @@ switch param
         % ip = imageSet(ip,'colorconversiontransform',val,1);
         ip.data.transforms{1} = val;
         
-    % Accounting for acquisition illuminant.  This will become much more
-    % complex over time.
+        % Accounting for acquisition illuminant.  This will become much more
+        % complex over time.
     case {'illuminantcorrection','correctionilluminant'}
         ip.illuminantCorrection = val;
     case {'illuminantcorrectionmethod','correctionmethodilluminant'}
@@ -164,15 +164,15 @@ switch param
     case {'correctionmatrixilluminant','illuminantcorrectionmatrix','correctiontransformilluminant','illuminantcorrectiontransform'}
         % ip = imageSet(ip,'whitebalancetransform',val,2);
         ip.data.transforms{2} = val;
-
-        % Display properties are managed via displayGet/Set. 
+        
+        % Display properties are managed via displayGet/Set.
     case {'display','displaystructure'}
         ip.display = val;
     case {'displayviewingdistance'}
-        % Subject viewing distance in meters, typically 0.5 meters 
+        % Subject viewing distance in meters, typically 0.5 meters
         d = ipGet(ip,'display');
         d = displaySet(d,'viewing distance',val);
-        ip = ipSet(ip,'display',d);       
+        ip = ipSet(ip,'display',d);
     case {'displaydpi'}
         % Pixel density (dots per inch)
         d   = ipGet(ip,'display');
@@ -186,7 +186,7 @@ switch param
         % A copy of the sensor data is stored here
         ip.data.input = val;
     case {'result','displayrgb','displayoutput'}
-        % The image processed data 
+        % The image processed data
         ip.data.result = val;
     case {'datawhitepoint','datawp'}
         % Hmm.  Probably used for rendering.
@@ -196,7 +196,7 @@ switch param
         % What is this?  Comment, please.  Should probably go away.
         ip.data.sensorspace = val;
     case {'quantization'}
-        % Struct of quantization parameters.  Copied from sensor.  
+        % Struct of quantization parameters.  Copied from sensor.
         %
         % The quantization struct might be used to determine if the
         % input data were really digital values.  Not much used yet.
@@ -245,7 +245,7 @@ switch param
             ip = ipSet(ip,'conversion method sensor','None');
             ip = ipSet(ip,'correction method illuminant','None');
             ip = ipSet(ip, 'transform method', 'current');
-            ip = ipSet(ip,'ics2display transform', eye(3));        
+            ip = ipSet(ip,'ics2display transform', eye(3));
         end
         
     case {'scaledisplay','scaledisplayoutput'}
@@ -262,15 +262,15 @@ switch param
             app.refresh;
         end
         
-    % Consistency (red button)
-    %{
+        % Consistency (red button)
+        %{
     case {'consistency','computationalconsistency','parameterconsistency'}
         ip.consistency = val;
-    %}
-    % Special case for ROIs and macbeth color checker.  This should get
-    % generalized to chart and chart parameter calls.  Too special now for
-    % MCC case.  See related comments in sensorSet.
-    %{
+        %}
+        % Special case for ROIs and macbeth color checker.  This should get
+        % generalized to chart and chart parameter calls.  Too special now for
+        % MCC case.  See related comments in sensorSet.
+        %{
       case {'mccrecthandles'}
         % These are handles to the squares on the MCC selection regions
         % see macbethSelect
@@ -282,15 +282,15 @@ switch param
             end
         end
         ip.mccRectHandles = val;
-    %}
-    %{
+        %}
+        %{
     case {'mccpointlocs','mcccornerpoints'}
         % Corner points for the whole chart.  These have been MCC charts,
         % but we should update to a chartP struct and have these be
         % chartP.cornerPoints.
         warning('use chart corner points')
         ip.mccCornerPoints=  val;
-    %}    
+        %}
     case {'chartparameters'}
         % Reflectance chart parameters are stored here.
         ip.chartP = val;
@@ -303,8 +303,8 @@ switch param
         % [colMin rowMin width height]
         % Used for ROI display and management.
         ip.chartP.currentRect = val;
-
-    % Needs more comments and development    
+        
+        % Needs more comments and development
     case {'combineexposures','combinationmethod'}
         % Method for combining multiple exposures in bracketed or burst case
         % Implemented:
@@ -314,7 +314,7 @@ switch param
         ip.combineExposures = val;
         ip.combinationMethod = val; % this is what the Get routine wants!
         
-    % Special case for L3 work with unconventional CFAs
+        % Special case for L3 work with unconventional CFAs
     case {'l3'}
         % L^3 (local linear learned) method
         % This should contain all values needed for processing.  None of

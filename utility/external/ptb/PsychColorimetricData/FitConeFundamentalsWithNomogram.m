@@ -40,8 +40,8 @@ x = fmincon(@FitConesFun,x0,[],[],[],[],vlb,vub,[],options);
 params = FitConesListToParams(x);
 fitError = FitConesFun(x);
 fitFundamentals = ComputeCIEConeFundamentals(staticParams.S,staticParams.fieldSizeDegrees,staticParams.ageInYears, ...
-            staticParams.pupilDiameterMM,params.lambdaMax,staticParams.whichNomogram ...
-            );
+    staticParams.pupilDiameterMM,params.lambdaMax,staticParams.whichNomogram ...
+    );
 
     function [f] = FitConesFun(x)
         DO_LOG = 1;

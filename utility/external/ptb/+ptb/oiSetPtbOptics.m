@@ -3,7 +3,7 @@ function oi = oiSetPtbOptics(oi,varargin)
 %
 % Syntax:
 %    oi = oiSetPtbOptics(oi)
-% 
+%
 % Description
 %    Psychtoolbox has code to generate a number of standard line spread and
 %    point spread functions.  This routine takes one of those methods and
@@ -43,7 +43,7 @@ function oi = oiSetPtbOptics(oi,varargin)
 %                       angle and um on the retina (default 300). You want
 %                       this value to match the conversions specified in
 %                       the passed oi struct.
-%                       
+%
 % See also:
 %
 
@@ -64,7 +64,7 @@ optics = oiGet(oi,'optics');
 wls = opticsGet(optics,'wave');
 
 %% Check that support is square
-% 
+%
 % Almost surely true, and haven't thought through all the implications if
 % it is not.
 sfValuesCyclesMm = opticsGet(optics,'otf support','mm');

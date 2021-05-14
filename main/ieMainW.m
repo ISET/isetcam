@@ -27,13 +27,13 @@ function varargout = ieMainW(varargin)
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
-                   'gui_Singleton',  gui_Singleton, ...
-                   'gui_OpeningFcn', @ieMainW_OpeningFcn, ...
-                   'gui_OutputFcn',  @ieMainW_OutputFcn, ...
-                   'gui_LayoutFcn',  [], ...
-                   'gui_Callback',   []);
+    'gui_Singleton',  gui_Singleton, ...
+    'gui_OpeningFcn', @ieMainW_OpeningFcn, ...
+    'gui_OutputFcn',  @ieMainW_OutputFcn, ...
+    'gui_LayoutFcn',  [], ...
+    'gui_Callback',   []);
 if nargin && ischar(varargin{1})
-   gui_State.gui_Callback = str2func(varargin{1});
+    gui_State.gui_Callback = str2func(varargin{1});
 end
 
 if nargout
@@ -184,13 +184,13 @@ return
 
 % --------------------------------------------------------------------
 function menuInitVerifyMex_Callback(hObject, eventdata, handles)
-% Init | Verify mex 
+% Init | Verify mex
 ieInstall
 return;
 
 % --------------------------------------------------------------------
 function menuInitMicrosoftLib_Callback(hObject, eventdata, handles)
-% Init | Verify mex 
+% Init | Verify mex
 ieInstall
 return;
 
@@ -199,7 +199,7 @@ function menuLoadSession_Callback(hObject, eventdata, handles)
 % File | Load session
 
 sessionFileName = vcSelectDataFile('session','r','mat');
-cmd = ['load ',sessionFileName]; eval(cmd); 
+cmd = ['load ',sessionFileName]; eval(cmd);
 disp(iePrintSessionInfo);
 refreshMain(handles);
 return

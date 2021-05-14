@@ -29,7 +29,7 @@ img = rgbFormat;   % row x col x nBands
 jFactor = 10e-6;                    % Jiggle factor. See below for griddata
 
 % Create a matrix that size of sensor, cfaN, where each entry indexes the
-% color filter 
+% color filter
 [cfa,cfaN] = sensorDetermineCFA(sensor);
 % figure; image(cfaN); colormap(hsv);
 
@@ -66,11 +66,11 @@ switch lower(method)
             nSamp = length(r);
             if nSamp > 0
                 % The values for this band are in [r,c,img(r,c,band)]
-                thisBand   = img(:,:,band);  
+                thisBand   = img(:,:,band);
                 % figure(1); imagesc(thisBand); colormap(gray(255))
                 bandValues = thisBand(cfaN == band);
                 % figure(1);histogram(bandValues(:),50)
-
+                
                 % We interpolate the data.
                 % This should be updated with a triScatteredInterp
                 % Could do a try/catch for modern programming use.
@@ -80,12 +80,12 @@ switch lower(method)
                 if showBar, waitbar(band/nBands,wbar,sprintf('Band %.0f',band)); end
                 img(:,:,band) = ...
                     griddata(c+randn(size(c))*jFactor,...
-                             r+randn(size(r))*jFactor,...
-                             bandValues,X,Y);
-                         tmp = img(:,:,band);
-                         tmp(isnan(tmp)) = 0; 
-                         img(:,:,band) = tmp;
-                         % figure(1); imagesc(img(:,:,band)); colormap(gray)
+                    r+randn(size(r))*jFactor,...
+                    bandValues,X,Y);
+                tmp = img(:,:,band);
+                tmp(isnan(tmp)) = 0;
+                img(:,:,band) = tmp;
+                % figure(1); imagesc(img(:,:,band)); colormap(gray)
             end
             % imtool(img(:,:,band))
         end
@@ -108,7 +108,7 @@ switch lower(method)
                         % Replace the 0 values with the local average
                         img(row,col,band) = mean(tmp(tmp>0));
                     end
-                end % row 
+                end % row
             end % column
         end % band
         
@@ -185,7 +185,7 @@ switch lower(method)
             if showBar,  waitbar(band/nBands,hWait); end
         end
         if showBar, close(hWait); end
-end 
+end
 
 % Clip any negative numbers.  Then scale so max is 1
 img = ieScale(ieClip(img,0,[]),1);

@@ -11,13 +11,13 @@ function [oi,sd,blurFilter] = oiDiffuser(oi,sd)
 % The sd can be 1 or 2D.  If it is 1D, the degree of blurring is specified
 % as the standard deviation (sd) of a Gaussian (circularly symmetric, units
 % of microns).  For example, if the sensor samples are spaced 4 um apart,
-% then to reduce aliasing the standard deviation might be set to 2um.  
+% then to reduce aliasing the standard deviation might be set to 2um.
 %
 % If the sd is 2D, then we assume sd(1) = row spread and sd(2) is col
 % spread.
 %
 % If no sd is specified, the sd size is set so that the blurring filter
-% full width half max (FWHM) is one pixel width and circularly symmetric.  
+% full width half max (FWHM) is one pixel width and circularly symmetric.
 %
 % The blurFilter can be returned.  The sample spacing of the blur filter is
 % equal to the sample spacing of the optical image in microns,
@@ -31,14 +31,14 @@ function [oi,sd,blurFilter] = oiDiffuser(oi,sd)
 %   ieAddObject(oi); oiWindow;
 %
 %   oi = oiCreate; scene = sceneCreate; scene = sceneSet(scene,'fov',1);
-%   oi = oiCompute(scene,oi); 
+%   oi = oiCompute(scene,oi);
 %   % SD units are FWHM microns,
-%   [oi,sd,blurFilter] = oiDiffuser(oi,[10,2]);  
+%   [oi,sd,blurFilter] = oiDiffuser(oi,[10,2]);
 %   [X,Y] = meshgrid(1:size(blurFilter,2),1:size(blurFilter,1));
 %   wSpatialRes = oiGet(oi,'widthSpatialResolution','microns');
 %   X = X*wSpatialRes;  Y = Y*wSpatialRes;
 %   X = X - mean(X(:)); Y = Y - mean(Y(:));
-%   figure(1); mesh(X,Y,blurFilter); 
+%   figure(1); mesh(X,Y,blurFilter);
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
@@ -48,8 +48,8 @@ if ieNotDefined('sd')
     if ~isempty(sensor)
         pixel = sensorGet(sensor, 'pixel');
         % User is specifying the half height value.  So the standard deviation
-        % is related to the half height value this way. 
-        sd = pixelGet(pixel,'width','microns')*(1.4427/2);   
+        % is related to the half height value this way.
+        sd = pixelGet(pixel,'width','microns')*(1.4427/2);
     else
         errordlg('No sensor.  User must define sd.');
     end
@@ -57,7 +57,7 @@ end
 
 % The sd is specified in microns.  We create a blur filter, however, with
 % respect to the OI sampling grid.  This step converts from microns to a
-% sigma specified with respect to the sampling grid. 
+% sigma specified with respect to the sampling grid.
 wSpatialRes = oiGet(oi,'width spatial resolution','microns');
 sigma = sd/wSpatialRes;
 
@@ -81,7 +81,7 @@ if length(sigma) == 1
     oiRows = oiGet(oi,'rows');
     if hsize >= oiRows, hsize = oiRows; end
     if ~isodd(hsize), hsize = hsize+1; end
-
+    
     % Circularly symmetric blur filter
     blurFilter = fspecial('gaussian',hsize,sigma);
     
@@ -89,12 +89,12 @@ elseif length(sigma) == 2
     oiRows = oiGet(oi,'rows');
     if hsize(1) >= oiRows, hsize(1) = oiRows; end
     if ~isodd(hsize(1)), hsize(1) = hsize(1) + 1; end
-
+    
     oiCols = oiGet(oi,'cols');
     if hsize(2) >= oiCols, hsize(2) = oiCols; end
     if ~isodd(hsize(2)), hsize(2) = hsize(2) + 1; end
-
-    % Oriented diffuser 
+    
+    % Oriented diffuser
     blurFilter = fspecial('gaussian',[hsize(1),1],sigma(1)) * ...
         fspecial('gaussian',[1,hsize(2)],sigma(2));
 else
@@ -107,7 +107,7 @@ photons    = oiGet(oi,'photons');
 % Blur, treating the region outside the image as 0.  I think we can keep
 % the image the same because the region outside is already 0 at this point
 % in the processing.
-% 
+%
 nWave = oiGet(oi,'nwave');
 for ii=1:nWave
     tmp = squeeze(photons(:,:,ii));
@@ -119,7 +119,7 @@ end
 
 oi = oiSet(oi,'photons',photons);
 
-% Must compute illuminance 
+% Must compute illuminance
 illuminance = oiCalculateIlluminance(oi);
 oi = oiSet(oi,'illuminance',illuminance);
 

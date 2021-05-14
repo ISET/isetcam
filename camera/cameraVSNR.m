@@ -33,17 +33,17 @@ for ii=1:length(lightLevels)
     
     c = cameraCompute(camera,scene);
     
-%     oi     = oiCompute(camera.oi,scene);
-%     
-%     % Set exposure to about 0.8 saturation.  
-%     % eTime(ii) = autoExposure(oi,camera.sensor,0.8);
-%     sensor = sensorSet(camera.sensor,'exp time',exposureTime);  %
-%     sensor = sensorCompute(sensor,oi);
-%     % v = sensorGet(sensor,'volts',2);
-%     % vcNewGraphWin; histogram(v(:),50);
-%     
-%     vci    = ipCompute(camera.vci,sensor);
-%     result = ipGet(vci,'result');
+    %     oi     = oiCompute(camera.oi,scene);
+    %
+    %     % Set exposure to about 0.8 saturation.
+    %     % eTime(ii) = autoExposure(oi,camera.sensor,0.8);
+    %     sensor = sensorSet(camera.sensor,'exp time',exposureTime);  %
+    %     sensor = sensorCompute(sensor,oi);
+    %     % v = sensorGet(sensor,'volts',2);
+    %     % vcNewGraphWin; histogram(v(:),50);
+    %
+    %     vci    = ipCompute(camera.vci,sensor);
+    %     result = ipGet(vci,'result');
     
     resultMax  = cameraGet(c,'ip result max');
     sensorMax = cameraGet(c,'ip max sensor');  % Changed this.  Is it right?
@@ -75,7 +75,7 @@ for ii=1:length(lightLevels)
         vSNR(ii) = vcimageVSNR(vci,dpi,dist,rect);
     end
     
-    vci = ipSet(vci,'name',sprintf('Level %.2f',lightLevels(ii))); 
+    vci = ipSet(vci,'name',sprintf('Level %.2f',lightLevels(ii)));
     eAnalysis.vci(ii) = vci;
     
 end

@@ -4,7 +4,7 @@ function txt = pixelDescription(PIXEL)
 %   txt = pixelDescription(PIXEL)
 %
 % Generate text field to be used for pixel description in ISA (sensor)
-% window.   
+% window.
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
@@ -12,7 +12,7 @@ height = pixelGet(PIXEL,'deltay')*10^6;
 width  = pixelGet(PIXEL,'deltax') *10^6;
 txt = sprintf('Pixel (H,W):\t(%.1f,%.1f) um\n',height,width);
 
-newText = sprintf('PD (H,W):\t(%.1f, %.1f) um\n',pixelGet(PIXEL,'pdheight')*10^6,pixelGet(PIXEL,'pdwidth')*10^6); 
+newText = sprintf('PD (H,W):\t(%.1f, %.1f) um\n',pixelGet(PIXEL,'pdheight')*10^6,pixelGet(PIXEL,'pdwidth')*10^6);
 txt = addText(txt,newText);
 
 newText = sprintf('Fill percentage:\t%.0f\n',pixelGet(PIXEL,'fillfactor')*100);

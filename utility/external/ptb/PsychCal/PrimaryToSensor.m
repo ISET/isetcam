@@ -1,7 +1,7 @@
 function [sensor] = PrimaryToSensor(cal,primary)
 % [sensor] = PrimaryToSensor(cal,primary)
 %
-% Convert from primary coordinates to sensor color 
+% Convert from primary coordinates to sensor color
 % space coordinates.  The ambient lighting is added to
 % the color space coordinates of the device.
 %
@@ -20,7 +20,7 @@ function [sensor] = PrimaryToSensor(cal,primary)
 M_device_linear = cal.M_device_linear;
 ambient_linear = cal.ambient_linear;
 if (isempty(M_device_linear) || isempty(ambient_linear))
-	error('SetSensorColorSpace has not been called on calibration structure');
+    error('SetSensorColorSpace has not been called on calibration structure');
 end
 
 % Get size
@@ -29,7 +29,7 @@ end
 % Color space conversion
 [mm,nm] = size(M_device_linear);
 if (m > nm)
-  error ('Incorrect dimensions for M_device_linear');
+    error ('Incorrect dimensions for M_device_linear');
 end
 linear = M_device_linear(:,1:m)*primary;
 
@@ -37,7 +37,7 @@ linear = M_device_linear(:,1:m)*primary;
 [ma,na] = size(ambient_linear);
 [m,n] = size(linear);
 if (ma ~= m || na ~= 1)
-  error('Incorrect dimensions for ambient');
+    error('Incorrect dimensions for ambient');
 end
 sensor = bsxfun(@plus,linear,ambient_linear);
 

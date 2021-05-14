@@ -1,4 +1,4 @@
-%% s_humanConeAbsorptions 
+%% s_humanConeAbsorptions
 %
 % Calculate the cone absorptions rates per second to a range of blackbody
 % radiators.

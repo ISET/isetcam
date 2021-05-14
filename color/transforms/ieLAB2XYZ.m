@@ -39,7 +39,7 @@ if exist('makecform','file') &&  ~useOldCode
     
     % Which version of LAB is this for? 1976.
     % We are worried about the white point.
-
+    
     cform = makecform('lab2xyz','WhitePoint',whitepoint(:)');
     xyz = applycform(lab,cform);
     

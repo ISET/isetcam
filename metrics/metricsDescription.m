@@ -3,7 +3,7 @@ function handles = metricsDescription(handles)
 %
 %    handles = metricsDescription(handles)
 %
-% This text describes information about the metrics calculations. 
+% This text describes information about the metrics calculations.
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
@@ -13,7 +13,7 @@ function handles = metricsDescription(handles)
 
 % White point for each image.
 txt = sprintf('Image 1:\n');
-str = []; 
+str = [];
 str = addText(str,txt);
 
 txt = sprintf('size: (%.0f,%.0f)\n',ipGet(vci1,'size'));

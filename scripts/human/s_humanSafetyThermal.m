@@ -3,7 +3,7 @@
 % Calculate the safety of blue lights for exposure to the eye and to skin.
 %
 % The safety function curves used in these calculations are stored in
-% data/human/safetyStandard. 
+% data/human/safetyStandard.
 %
 %   burnHazard      - Retinal thermal injury (4.3.5 and 4.3.6)
 %
@@ -12,7 +12,7 @@
 %
 %   Actinic         - UV hazard for skin and eye safety The limits for
 %                     exposure to ultraviolet radiation incident upon the
-%                     unprotected skin or eye (4.3.1 and 4.3.2)  
+%                     unprotected skin or eye (4.3.1 and 4.3.2)
 %
 %   blueLightHazard - Eye (retinal) safety (retinal photochemical injury
 %                     from chronic blue-light exposure).  There are
@@ -22,7 +22,7 @@
 % The data for the safety function curves were taken from this paper
 %
 %  ?IEC 62471:2006 Photobiological Safety of Lamps and Lamp Systems.? n.d.
-%  Accessed October 5, 2019. https://webstore.iec.ch/publication/7076 
+%  Accessed October 5, 2019. https://webstore.iec.ch/publication/7076
 %  J.E. Farrell has a copy of this standard
 %
 % Notes:   Near UV is also called UV-A and is 315-400nm.
@@ -64,15 +64,15 @@ Subject: RE: spectroradiometric measurements
 
 Hello Joyce,
 
- It is definitely pi. 
- There is 2*pi solid angle for the hemisphere, but when you integrate 
+ It is definitely pi.
+ There is 2*pi solid angle for the hemisphere, but when you integrate
  you end up getting pi as factor.
 
 See you next week,
 
 Peter
 
-From: Joyce Eileen Farrell [mailto:jefarrel@stanford.edu] 
+From: Joyce Eileen Farrell [mailto:jefarrel@stanford.edu]
 Sent: Tuesday, August 20, 2019 10:58 PM
 To: Peter Bert Catrysse <pcatryss@stanford.edu>
 Subject: Re: spectroradiometric measurements
@@ -80,9 +80,9 @@ Subject: Re: spectroradiometric measurements
 Hi Peter,
 
 Thanks so very much for giving me the conversion from radiance to
-irradiance. 
+irradiance.
 
-is it 
+is it
 E = pi*L/R (where E is irradiance, L is radiance and R is reflectance)
 or
 E=2pi*L/R
@@ -120,9 +120,9 @@ Actinic = ieReadSpectra(fname,wave);
 %
 %     Irradiance units: Watts/m2/nm
 %     Watts = Joules/sec
-%  
+%
 %     Watts/m2/nm * (nm * sec)         % Irradiance summed over nm and time
-%     Joules/sec/m2/nm * (nm * sec)    
+%     Joules/sec/m2/nm * (nm * sec)
 %     Joules/m2                        % Becomes Joules/area
 %
 dLambda  = wave(2) - wave(1);
@@ -130,7 +130,7 @@ duration = 1;                  % Seconds
 hazardEnergy = dot(Actinic,irradiance) * dLambda * duration;
 
 % This is the formula from the standard to compute the maximum daily
-% allowable exposure 
+% allowable exposure
 fprintf('Maximum exposure duration per eight hours:  %f (min)\n',(30/hazardEnergy)/60)
 
 %% An example of a light measured in the lab
@@ -195,7 +195,7 @@ hazardEnergy = dot(Actinic,radiance*pi) * dLambda * duration;
 fprintf('Maximum exposure duration per eight hours:  %f (min)\n',(30/hazardEnergy)/60)
 
 
-%%  Plot the Actinic hazard function 
+%%  Plot the Actinic hazard function
 
 ieNewGraphWin;
 mx = max(irradiance(:));
@@ -208,7 +208,7 @@ legend({'Irradiance','Normalized hazard'});
 
 %%  Near-UV hazard exposure limit
 %{
-This calculation has no weighting function.  
+This calculation has no weighting function.
 
 For times less than 1000 sec, add up the total irradiance
 from 315-400 without any hazard function (Equation 4.3a).  Call this E_UVA.

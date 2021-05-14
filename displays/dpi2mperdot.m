@@ -7,7 +7,7 @@ function mpd = dpi2mperdot(dpi,unit)
 % Brief descriptions
 %   Both dots per inch (dpi) and microns are commonly used to specify
 %   display pixel size. We make it easy to convert from dpi to
-%   microns per dot. 
+%   microns per dot.
 %
 % Inputs
 %   dpi:  Dots per inch
@@ -24,7 +24,7 @@ function mpd = dpi2mperdot(dpi,unit)
 %
 %   dpi = mperdot2dpi(mpd)    % Back again
 %
-% See also: 
+% See also:
 %    mperdot2dpi
 
 if ieNotDefined('unit'), unit = 'um'; end
@@ -35,7 +35,7 @@ if ieNotDefined('unit'), unit = 'um'; end
 % Invert that for microns per dot
 %
 if ~isempty(dpi), mpd = 1 / (dpi * (1/(2.54*1e4)));
-else mpd = []; 
+else mpd = [];
 end
 
 % Put the value in meters and then scale according to the requested unit

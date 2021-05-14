@@ -5,12 +5,12 @@ function unfreezeColors(h)
 %       colors were previously frozen with freezeColors.
 %
 %   Usage:
-%       unfreezeColors          unfreezes all objects in current axis, 
+%       unfreezeColors          unfreezes all objects in current axis,
 %       unfreezeColors(axh)     same, but works on axis axh. axh can be vector.
 %       unfreezeColors(figh)    same, but for all objects in figure figh.
 %
 %       Has no effect on objects on which freezeColors was not already called.
-%				(Note: if colorbars were frozen using cbfreeze, use cbfreeze('off') to 
+%				(Note: if colorbars were frozen using cbfreeze, use cbfreeze('off') to
 %       unfreeze them. See freezeColors for information on cbfreeze.)
 %
 %
@@ -41,8 +41,8 @@ if nargin < 1,
 end
 
 if ~ishandle(h),
-     error('JRI:unfreezeColors:invalidHandle',...
-            'The argument must be a valid graphics handle to a figure or axis')
+    error('JRI:unfreezeColors:invalidHandle',...
+        'The argument must be a valid graphics handle to a figure or axis')
 end
 
 %if h is a figure, loop on its axes
@@ -51,14 +51,14 @@ if strcmp(get(h,'type'),'figure'),
 end
 
 for h1 = h', %loop on axes
-
+    
     %process all children, acting only on those with saved CData
     %   ( in appdata JRI__freezeColorsData)
     ch = findobj(h1);
     
     for hh = ch',
         
-        %some object handles may be invalidated when their parent changes 
+        %some object handles may be invalidated when their parent changes
         %   (e.g. restoring colors of a scattergroup unfortunately changes
         %   the handles of all its children). So, first check to make sure
         %   it's a valid handle
@@ -99,8 +99,8 @@ for h1 = h', %loop on axes
                 
             end %test if has our appdata
         end %test ishandle
-
+        
     end %loop on children
-
+    
 end %loop on axes
 

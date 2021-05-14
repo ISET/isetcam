@@ -23,7 +23,7 @@ function [uData,figHdl] = plotSensorSNR(sensor)
 
 if ieNotDefined('sensor'), sensor = vcGetObject('sensor'); end
 
-[snr,volts,snrShot,snrRead,snrDSNU,snrPRNU] = sensorSNR(sensor); 
+[snr,volts,snrShot,snrRead,snrDSNU,snrPRNU] = sensorSNR(sensor);
 uData.volts = volts;
 uData.snr = snr;
 
@@ -46,11 +46,11 @@ lgnd = {'Total','Shot'};
 if ~isinf(snrRead), lgnd{end+1} = 'Read'; end
 if ~isinf(snrDSNU), lgnd{end+1} = 'DSNU'; end
 if ~isinf(snrPRNU), lgnd{end+1} = 'PRNU'; end
-    
+
 hold off; grid on;
 legend(lgnd);
 
-xlabel('Signal (V)'); 
+xlabel('Signal (V)');
 ylabel('SNR (db)')
 title('Sensor SNR over response range');
 

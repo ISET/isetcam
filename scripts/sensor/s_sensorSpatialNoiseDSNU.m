@@ -2,7 +2,7 @@
 %
 % The method is described in the paper by
 % <http://proceedings.spiedigitallibrary.org/proceeding.aspx?articleid=729171
-% Farrell, Feng and Kavusi, 2006, SPIE>. 
+% Farrell, Feng and Kavusi, 2006, SPIE>.
 %
 % We simulate a large number of short exposure durations to a black scene.
 % We average across the multiple images to eliminate the (presumably
@@ -24,7 +24,7 @@ darkScene = sceneAdjustLuminance(scene,0.1);
 oi = oiCreate('default',[],[],0);
 
 % The scene must always be larger than the sensor field of view.
-sensor = sensorCreate; 
+sensor = sensorCreate;
 sensor = sensorSet(sensor,'size',[196 196]);
 darkScene = sceneSet(darkScene,'fov',sensorGet(sensor,'fov')*1.5);
 
@@ -98,9 +98,9 @@ fprintf('------------\n')
 meanOffset = mean(volts,2);
 
 % The histogram is not the DSNU because of the clipping
-vcNewGraphWin; 
+vcNewGraphWin;
 histogram(meanOffset,50)
 grid on;
 title('Offsets averaged across reads');
 
-%% 
+%%

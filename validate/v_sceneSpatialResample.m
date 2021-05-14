@@ -8,7 +8,7 @@
 ieInit
 
 %% Create a scene
-scene = sceneCreate; 
+scene = sceneCreate;
 scene = sceneSet(scene,'fov',1);
 sceneWindow(scene);
 pause(0.2);
@@ -23,7 +23,7 @@ assert(abs(sr(2) - 50) < 0.05)
 pause(0.2);
 
 %% Create an oi with a larger spatial sample (14 um)
-scene = sceneCreate; 
+scene = sceneCreate;
 scene = sceneSet(scene,'fov',20);
 
 oi = oiCreate;
@@ -39,4 +39,4 @@ oiWindow(oi);
 sr = oiGet(oi,'spatial resolution','um');
 assert(abs(sr(2) - 2) < 0.05)
 
-%% 
+%%

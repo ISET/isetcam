@@ -10,11 +10,11 @@ function XYZ = ieXYZFromEnergy(energy,wave)
 %
 % Notice, that XW is AN UNUSUAL FORMAT for energy.  Often, we put the SPDs
 % into the columns of the matrix.  But in the XW format, the SPDs are in
-% the rows. Sorry. 
+% the rows. Sorry.
 %
 % The returned values, XYZ, are X,Y,Z in the columns of the matrix. Each
 % row of energy has a corresponding XYZ value in the corresponding row of
-% XYZ. This is what we call XW format.  
+% XYZ. This is what we call XW format.
 %
 % ** We are considering whether the return might be put into RGB format if
 % it is sent in that way. **
@@ -32,9 +32,9 @@ function XYZ = ieXYZFromEnergy(energy,wave)
 %    displayXYZ = ieXYZFromEnergy(energy,wave)
 %
 %    patchSize = 1;
-%    macbethChart = sceneCreate('macbeth',patchSize); 
+%    macbethChart = sceneCreate('macbeth',patchSize);
 %    p = sceneGet(macbethChart,'photons'); wave = sceneGet(macbethChart,'wave'); e = Quanta2Energy(wave,p);
-%    XYZ = ieXYZFromEnergy(e,wave);  
+%    XYZ = ieXYZFromEnergy(e,wave);
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 

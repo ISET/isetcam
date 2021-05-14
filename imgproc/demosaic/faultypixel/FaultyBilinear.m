@@ -37,11 +37,11 @@ color    = bayercolor( list );
 bayer_out = bayer_in;
 
 for n=1:size(list,1)
-
+    
     x = list_ex(n,1);
     y = list_ex(n,2);
     c = color(n);
-
+    
     switch (c)
         case {1,3},
             missing = 0.25 * ...
@@ -52,9 +52,9 @@ for n=1:size(list,1)
                 ( bayer_ex(y-1,x-1,c) + bayer_ex(y-1,x+1,c) + ...
                 bayer_ex(y+1,x-1,c) + bayer_ex(y+1,x+1,c) );
     end
-
+    
     bayer_out(list(n,2),list(n,1),c) = missing;
-
+    
 end
 
 return;

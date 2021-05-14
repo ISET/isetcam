@@ -16,7 +16,7 @@ function energy = Quanta2Energy(wavelength, photons)
 % the energy spectra in the columns.
 %
 % Examples:
-%   wave = 400:10:700;  
+%   wave = 400:10:700;
 %   p = blackbody(wave,3000:1000:8000,'photons');
 %   tic, e = Quanta2Energy(wave,p'); toc
 %   e = diag(1./e(:,11))*e;
@@ -54,7 +54,7 @@ switch iFormat
         % energy = (h*c/(1e-9))*(photons ./ repmat(wavelength,n*m,1) );
         energy = (h*c/1e-9) * bsxfun(@rdivide, photons, wavelength);
         energy = XW2RGBFormat(energy,n,m);
-
+        
     case 'XW'
         % If photons is a vector, it must be a row
         if isvector(photons), photons = photons(:)'; end
@@ -64,7 +64,7 @@ switch iFormat
         energy = (h*c/1e-9) * bsxfun(@rdivide, photons, wavelength);
     otherwise
         error('Unknown image format');
-
+        
 end
 
 end

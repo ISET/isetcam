@@ -26,7 +26,7 @@ clear; close all;
 % that way we don't have to think.
 S = [200 1 1301];
 
-%% Load CIE functions.   
+%% Load CIE functions.
 load T_xyz1931
 T_xyz = SplineCmf(S_xyz1931,683*T_xyz1931,S);
 
@@ -91,6 +91,6 @@ ISO2007MPEPrintAnalysis(IsOverLimit,ISO2007MPEStruct)
 % This just makes sure the routine properly throws an error.
 try
     fprintf('\n\nTesting error catch for anterior segment limit for convergent beams\n');
-    [ISO2007MPEStruct.val8_UWattsPerCm2,limit8_UWattsPerCm2] = ISO2007MPEComputeType1ContinuousAntConvrgUnweightedValue(S,NaN,stimulusDurationSecs);   
+    [ISO2007MPEStruct.val8_UWattsPerCm2,limit8_UWattsPerCm2] = ISO2007MPEComputeType1ContinuousAntConvrgUnweightedValue(S,NaN,stimulusDurationSecs);
 catch
 end

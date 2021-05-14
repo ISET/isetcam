@@ -29,11 +29,11 @@ function rect = ISOFindSlantedBar(ip,blurFlag)
 %{
   scene = sceneCreate('slanted edge',512);
   oi = oiCreate; oi = oiCompute(oi,scene);
-  sensor = sensorCreate; 
+  sensor = sensorCreate;
   sensor = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'));
   sensor = sensorCompute(sensor,oi);
   ip = ipCreate; ip = ipCompute(ip,sensor);
-  rect = ISOFindSlantedBar(ip,false); 
+  rect = ISOFindSlantedBar(ip,false);
   ipWindow(ip); h  = ieDrawShape(ip,'rectangle',rect);
 %}
 %{
@@ -58,7 +58,7 @@ im  = sum(im,3);
 im  = im/max(im(:));
 
 % Blur to reduce the impact of noise.  When you blur, assume no black
-% border. 
+% border.
 blackBorder = true;  % Possibly true
 if blurFlag
     sz  = size(im); s = round(min(sz)/10);
@@ -75,11 +75,11 @@ end
 ySums  = sum(im,2);    % vcNewGraphWin; plot(ySums)
 dySums = diff(ySums);  % vcNewGraphWin; plot(dySums)
 
-% Following ignores derivative values between two columns that are both 
+% Following ignores derivative values between two columns that are both
 % below the average column value.  This ignores any large steps between two
 % dark values and preserves steps between bright and dark values.
 % Also, black region must be 5x lower than white region, I am guessing.
-belowAverage = ySums < mean(ySums)/5;  
+belowAverage = ySums < mean(ySums)/5;
 remove = (belowAverage(1:end-1) & belowAverage(2:end));
 dySums(remove) = 0;
 
@@ -103,7 +103,7 @@ else
     % image, just leave off a few lines.
     sz = ipGet(ip,'size');
     skip = round(sz(1)*0.05);
-    rowMin = skip; 
+    rowMin = skip;
     rowMax = sz(1) - skip;
 end
 
@@ -146,7 +146,7 @@ if width < 5 || height < 5
     fprintf('Returning null rect\n');
     rect = [];
     return;
-else 
+else
     % row col changed Nov 11 2019
     rect = [rowMin colMin width height];
 end

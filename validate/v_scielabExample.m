@@ -52,12 +52,12 @@ colorbar;
 
 % Show the RGB images as scenes. This illustrates how the RGB data were
 % converted to SPDs using the calibrated display
-vcAddAndSelectObject(scene1); 
+vcAddAndSelectObject(scene1);
 vcAddAndSelectObject(scene2);sceneWindow;
 imageMultiview('scene',[1 2]);
 
 
-%% Illustrate the processing within the routine, showing explicit calls.  
+%% Illustrate the processing within the routine, showing explicit calls.
 
 % Read the JPEG files with imread.
 % The inputs are 8-bit, so we scale by 255.
@@ -80,8 +80,8 @@ dsp = displayCreate(displayFile);
 % the image function, imageLinearTransform
 rgb2xyz  = displayGet(dsp,'rgb2xyz');       % rowXYZ = rowRGB * rgb2xyz
 
-% Also, we specify the white point of the display. 
-whiteXYZ = displayGet(dsp,'white point');  
+% Also, we specify the white point of the display.
+whiteXYZ = displayGet(dsp,'white point');
 
 %% Convert the linear RGB data to XYZ values
 img1XYZ = imageLinearTransform(hats,rgb2xyz);
@@ -125,7 +125,7 @@ title('S-CIELAB delta E histogram')
 %% Examine the SCIELAB spatial filters
 
 f = vcNewGraphWin;
-filters = params.filters;   % 
+filters = params.filters;   %
 support = params.support;   % Degress
 mx = max(filters{1}(:));
 for ii=1:3
@@ -143,7 +143,7 @@ bigErr = (errorImage > 5);
 
 % The error image can be 1 row or col smaller than the input image.  This
 % might get fixed some day, and is important to deal with.  For now, I
-% handle it this way.  
+% handle it this way.
 %
 % The reason for the difference has to do with matching the filter sizes
 % to the image in scielab, particularly in the scApplyFilters routine.  In
@@ -153,7 +153,7 @@ gImage = hats(:,:,2);
 sz = size(gImage);
 if sz(1) > size(bigErr,1), gImage = gImage(1:(end-1),:); end
 if sz(2) > size(bigErr,2), gImage = gImage(:,1:(end-1)); end
-    
+
 edgeImage = edge(gImage,'prewitt');
 
 % imshow(edgeImage)

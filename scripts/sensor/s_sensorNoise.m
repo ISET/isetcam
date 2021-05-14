@@ -1,4 +1,4 @@
-%% Measure different sensor noise 
+%% Measure different sensor noise
 %
 %   *UPDATING IN PROGRESS*
 %

@@ -22,7 +22,7 @@ if ieNotDefined('unit'), unit = 'um'; end
 % Invert that for microns per dot
 %
 if ~isempty(dpi), mpd = 1 / (dpi * (1/(2.54*1e4)));
-else mpd = []; 
+else mpd = [];
 end
 
 % Put the value in meters and then scale according to the requested unit

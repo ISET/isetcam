@@ -26,26 +26,26 @@ T1 = thisR.set('asset', rootST1.name, 'world translate', [0.012 0.003*2 0]);
 % Add extra light
 lightName = 'new spot light';
 newLight = piLightCreate(lightName,...
-                        'type','distant',...
-                        'spd','equalEnergy',...
-                        'specscale', 1, ...
-                        'cameracoordinate', true);
+    'type','distant',...
+    'spd','equalEnergy',...
+    'specscale', 1, ...
+    'cameracoordinate', true);
 thisR.set('light', 'add', newLight);
 thisR.get('light print');
 
 
 
- 
+
 %% Modify new rendering settings
- %thisR.set('film resolution',[320 320]);
- thisR.set('film resolution',2*[320 320]);
- nRaysPerPixel = 32;
- thisR.set('rays per pixel',nRaysPerPixel);
- thisR.set('nbounces',5); 
+%thisR.set('film resolution',[320 320]);
+thisR.set('film resolution',2*[320 320]);
+nRaysPerPixel = 32;
+thisR.set('rays per pixel',nRaysPerPixel);
+thisR.set('nbounces',5);
 
 %% Adjust the position of the camera
-% The origin is in the bottom center of the box, the depth of the box is 
-% 30 cm, the camera is 25 cm from the front edge. The position of the 
+% The origin is in the bottom center of the box, the depth of the box is
+% 30 cm, the camera is 25 cm from the front edge. The position of the
 % camera should be set to 25 + 15 = 40 cm from the origin
 from = thisR.get('from');
 newFrom = [0 0.125 -0.40]; % This is the place where we can see more
@@ -68,7 +68,7 @@ thisR.set('film diagonal', 7.04); % mm
 
 %% Write and render
 piWrite(thisR);
-% Render 
+% Render
 [oi, result] = piRender(thisR, 'render type', 'radiance');
 oiName = 'CBLens';
 oi = oiSet(oi, 'name', oiName);
@@ -110,18 +110,18 @@ DN = sensorGet(sensor,'digitalvalues');
 
 figure(10);clf;
 imagesc(DN,[0 2^10]); colormap gray
-axis equal 
+axis equal
 
 %% Demosaic
 band=1; %band counter
 for r=1:4
     for c=1:4
         D(:,:,band) = DN(r:4:end,c:4:end);
-       band=band+1;
+        band=band+1;
     end
 end
 
-    
+
 oiWindow(oi)
 fig=figure(11);clf;
 sliceViewer(D.^0.5);

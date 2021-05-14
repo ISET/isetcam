@@ -48,7 +48,7 @@ function [results, fitme, esf, h] = ISO12233(barImage, deltaX, weight, plotOptio
 
 % Examples:
 %{
-  % Interactive usage 
+  % Interactive usage
   ISO12233;
    
   %
@@ -68,7 +68,7 @@ function [results, fitme, esf, h] = ISO12233(barImage, deltaX, weight, plotOptio
   [results, fitme, esf] = ISO12233(barImage,deltaX,wgts,'luminance');
 %}
 
-% PROGRAMMING TODO: 
+% PROGRAMMING TODO:
 %  Rather than decode pixelWidth and dpi based on the value, we should
 %  probably set a flag and be explicit.
 
@@ -97,7 +97,7 @@ if ieNotDefined('barImage')
 elseif isstruct(barImage) && isequal(barImage.type,'vcimage')
     % The barImage is really the image processor (ip)
     ip = barImage;
-    rect = ISOFindSlantedBar(ip); 
+    rect = ISOFindSlantedBar(ip);
     roiLocs = ieRect2Locs(rect);
     barImage = vcGetROIData(ip,roiLocs,'results');
     col = rect(3)+1;
@@ -305,7 +305,7 @@ for color=1:nWave
     % apply window (symmetric Hamming)
     c = win.*c;    % vcNewGraphWin; plot(c)
     
-    % Transform, scale %% The FFT of the point spread, 
+    % Transform, scale %% The FFT of the point spread,
     temp = abs(fft(c, nn));    % vcNewGraphWin; plot(temp)
     mtf(1:nn2, color) = temp(1:nn2)/temp(1);
 end
@@ -370,7 +370,7 @@ switch plotOptions
         % Draw the luminance term
         p = plot(freq( 1:nn2out), mtf(1:nn2out, 1), sym{1});
         set(p,'linewidth',2);
-
+        
         title('ISO 12233');
         xlabel(['Spatial frequency (', funit,')']);
         ylabel('Contrast reduction (SFR)');

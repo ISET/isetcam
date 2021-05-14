@@ -9,7 +9,7 @@
 % the sensor.  The conversion of the scene radiance to spectral
 % radiance is largely determined by the parameters of the
 % *optics*.  The optics object is attached to the oi object.
-% 
+%
 % The oiCompute function governs the computation from scene to
 % the oi.  For a longer discussion see t_oiIntroduction.
 %
@@ -23,12 +23,12 @@ ieInit
 
 %% Create a scene and oi (irradiance) image from an array of points
 
-scene = sceneCreate('point array');   
-scene = sceneSet(scene,'hfov',1);  
+scene = sceneCreate('point array');
+scene = sceneSet(scene,'hfov',1);
 sceneWindow(scene);
 
 %% Diffraction limited optics
-oi = oiCreate;                        
+oi = oiCreate;
 
 % Compute optical image and show it
 oi = oiCompute(scene,oi);

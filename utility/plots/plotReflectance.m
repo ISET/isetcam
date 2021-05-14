@@ -43,14 +43,14 @@ nWave = length(wavelength);
 if nWave == size(reflectance,1)
     plot(wavelength(:),reflectance);
 elseif length(wavelength) == size(reflectance,2)
-    plot(wavelength(:),reflectance');    
+    plot(wavelength(:),reflectance');
 end
 
 %% Label it
 
 xlabel('Wavelength (nm)');
 ylabel('Reflectance');
-grid on; 
+grid on;
 title(strTitle);
 
 end

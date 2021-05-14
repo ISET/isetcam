@@ -98,7 +98,7 @@ switch lower(oType)
     case 'display'
         data = tableDisplay(obj,format);
         extendTitle = " for a Display";
-
+        
     otherwise
         error('Unknown type %s\n',obj.type);
         
@@ -106,7 +106,7 @@ end
 %% Create the table in its own window or embedded format
 
 if isequal(format,'window')
-
+    
     thisWindow.Name = strcat(thisWindow.Name, extendTitle);
     %can't set to normalized in 2020a
     %thisTable = uitable('Parent',thisWindow,'Units','normalized');
@@ -121,12 +121,12 @@ if isequal(format,'window')
     thisTable.Tag = 'IEPTable Table';
     
     mnuTools = uimenu(thisWindow,'Text','File');
- 
+    
     mnuExport = uimenu(mnuTools,'Text','Export...');
     mnuExport.MenuSelectedFcn = @mnuExportSelected;
- 
-
-
+    
+    
+    
 else
     if ~isempty(p.Results.uitable)
         thisTable = p.Results.uitable;
@@ -137,7 +137,7 @@ else
     thisTable.ColumnWidth = {round(thisTable.Position(3)/2),round(thisTable.Position(3)/2)}; %'auto';
     thisTable.FontName    = 'Courier';
     thisTable.FontSize    = getpref('ISET','fontSize') - 3;
-
+    
 end
 
 thisTable.Data    = data;
@@ -299,7 +299,7 @@ switch format
         % When it is the full window, we add in the pixel values.
         pData = tablePixel(sensorGet(sensor,'pixel'),format);
         data = cellCombine(data,pData);
-
+        
     case 'embed'
         precision = 3;
         data = {
@@ -338,7 +338,7 @@ switch format
     case 'embed'
         % Needs to be adjusted for what is already on the screen.
         precision = 3;
-               data = {
+        data = {
             'Width/height (um)',      num2str(pixelGet(pixel, 'width','um'),     precision);
             'Fill factor',            num2str(pixelGet(pixel, 'fill factor'),    precision);
             'Read noise (V)',         num2str(pixelGet(pixel, 'read noise'),     precision);
@@ -347,7 +347,7 @@ switch format
             'Well Capacity (e-)',     num2str(pixelGet(pixel, 'well capacity'),  precision);
             '',''
             };
-    
+        
     otherwise
         error('Unknown table format %s\n',format);
 end
@@ -370,7 +370,7 @@ switch format
             'Display dpi',         num2str(ipGet(ip,'display dpi')),           'dots per inch';
             '--------------------', '-----------------------', '-------------------';
             };
-
+        
     case 'embed'
         precision = 3;
         data = {

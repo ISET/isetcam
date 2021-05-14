@@ -29,33 +29,33 @@ metricname = ieParamFormat(metricname);
 switch(metricname)
     
     % Color accuracy test
-    case {'mcccolor'}                
+    case {'mcccolor'}
         %  Measure the CIELAB delta E values for rendering a Macbeth Color
         %  Checker under a D65 illuminant.
         metric = cameraColorAccuracy(camera);
-
-    % Slanted edge MTF test
+        
+        % Slanted edge MTF test
     case {'slantededge'}
         metric = cameraMTF(camera);
-
-    % Full reference metrics for pre-selected scenes
+        
+        % Full reference metrics for pre-selected scenes
     case {'fullreference'}
         metric = cameraFullReference(camera);
-
-    % Moire starting point
+        
+        % Moire starting point
     case {'moire'}
         metric = cameraMoire(camera);
-
-    % Visible SNR (visibility of noise in uniform area)
+        
+        % Visible SNR (visibility of noise in uniform area)
     case {'vsnr'}
         metric = cameraVSNR_SL(camera);
         
         
-    %Following need more work
-    %% Compute acutance
+        %Following need more work
+        %% Compute acutance
     case {'acutance'}
-
-
+        
+        
         % cycles/mm is the default for the ISO12233 MTF.  We would like to compute
         % cy/deg, which is related by cpd = (cycles/mm) *(1/degPerMM)
         degPerMM = sensorGet(camera.sensor,'h deg per distance','mm');
@@ -63,15 +63,15 @@ switch(metricname)
         lumMTF = cMTF.mtf(:,4);  % This is the MTF in cpd for the luminance
         cpiq = cpiqCSF(cpd);
         Acutance = ISOAcutance(cpd,lumMTF);
-
+        
         vcNewGraphWin([],'tall'); subplot(2,1,1)
         plot(cpd,cpiq,'-k',cpd,lumMTF,'--r');
-        grid on; 
+        grid on;
         hold on;
         xlabel('Cycles per degree'); ylabel('SFR');
         title(sprintf('Acutance %.2f',Acutance))
         legend('CPIQ','MTF')
-
+        
         % Interpolate the standard function to these cpd values, but only up to the
         % Nyquist
         subplot(2,1,2)
@@ -82,16 +82,16 @@ switch(metricname)
         Acutance = ISOAcutance(cpd(idx),lumMTF(idx));
         title(sprintf('Acutance %.2f',Acutance))
         legend('CPIQ','MTF')
-
-%% Lateral chromatic aberration test
-
-%% Relative illumination fall off
-
-%% Geometric distortion
-
+        
+        %% Lateral chromatic aberration test
+        
+        %% Relative illumination fall off
+        
+        %% Geometric distortion
+        
     otherwise
         error('Unknown %s\n',param);
-
+        
 end
 
 %% Remove vci from metric if it exists

@@ -25,9 +25,9 @@ objType = upper(objType);
 if     strcmp(objType,'OI'), objType = 'OPTICALIMAGE';
 elseif strcmp(objType,'SENSOR'), objType = 'ISA';
 elseif strcmp(objType,'IMGPROC') || ...
-       strcmp(objType,'VCI') || ...     % Virtual camera image
-       strcmp(objType,'IP')             % Image processor
-    objType = 'VCIMAGE'; 
+        strcmp(objType,'VCI') || ...     % Virtual camera image
+        strcmp(objType,'IP')             % Image processor
+    objType = 'VCIMAGE';
 elseif strcmp(objType,'CAMERA')
     objType = 'CAMERA';
 end

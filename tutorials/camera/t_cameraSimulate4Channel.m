@@ -1,10 +1,10 @@
 %% t_Simulate4Channel.m
 %
 %  Simulate  a 4-channel sensor and render the data
-% 
+%
 % The script begins by creating a full spectral scene. Then the scene
 % radiance data are passed through the optics to create an irradiance image
-% at the sensor surface.  
+% at the sensor surface.
 %
 % A 4-channel sensor is created with filters containing Gaussian
 % transmittance. The sensor catch is simulated, and the 4-channel data are
@@ -47,10 +47,10 @@ oiWindow(oi);
 %% SENSOR
 
 % Create a set of color filters with Gaussian spectral transmittances
-cfType = 'gaussian'; 
+cfType = 'gaussian';
 cPos   = 450:50:600; width = ones(size(cPos))*25;
 d = struct;
-d.data = sensorColorFilter(cfType,wave, cPos, width); 
+d.data = sensorColorFilter(cfType,wave, cPos, width);
 d.filterNames = {'b','g','y','r'};
 d.comment     = 'Four color simulation for s_Simulate4Channel.m';
 d.wavelength  = wave;
@@ -74,7 +74,7 @@ sensor = sensorSet(sensor,'Name','Camera-Simulation');
 
 % Now load the IR filter
 fullFileName = fullfile(isetRootPath,'data','sensor','irfilters','irFilter_schott.mat');
-irData = ieReadColorFilter(wave,fullFileName); 
+irData = ieReadColorFilter(wave,fullFileName);
 sensor = sensorSet(sensor,'irFilter',irData);
 
 % We are now ready to compute the sensor image
@@ -98,7 +98,7 @@ sensorWindow(sensor);
 %
 % ISET includes a wide array of options for selecting color filters,
 % fill-factors, infrared blocking filters, adjusting pixel properties,
-% color filter array patterns, and exposure modes. 
+% color filter array patterns, and exposure modes.
 %%  PROCESSOR
 %
 % The image processing pipeline is managed by the fourth principal ISET
@@ -121,7 +121,7 @@ vci = ipSet(vci,'correction method illuminant','None');
 vci = ipCompute(vci,sensor);
 
 % This shouldn't be here ... but the 4 channel processing isn't right yet
-o = ipGet(vci,'result'); o = o/max(o(:)); vci = ipSet(vci,'result',o); 
+o = ipGet(vci,'result'); o = o/max(o(:)); vci = ipSet(vci,'result',o);
 
 % As in the other cases, we can bring up a window to view the processed
 % data, this time a full RGB image.
@@ -129,13 +129,13 @@ ipWindow(vci);
 
 %% Sensor conversion
 
-% In the sensor window we used the pulldown under 
-% Analyze | Color | Sensor Conversion Matrix 
+% In the sensor window we used the pulldown under
+% Analyze | Color | Sensor Conversion Matrix
 % to find an optimal transform matrix for the MCC
 m = [...
-   -0.0528   -0.2091    1.5196
+    -0.0528   -0.2091    1.5196
     0.0050    0.3319   -0.0801
-   -0.9505    1.0048   -0.0823
+    -0.9505    1.0048   -0.0823
     2.4197   -0.1467   -0.0339
     ];
 vci = ipSet(vci,'conversion transform sensor',m);

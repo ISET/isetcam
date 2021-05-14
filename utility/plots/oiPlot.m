@@ -19,9 +19,9 @@ function [udata, g] = oiPlot(oi,pType,roiLocs,varargin)
 %    Irradiance
 %     {'irradiance photons roi'} - Irradiance within an ROI of the image
 %     {'irradiance energy roi'}  - Irradiance within an ROI of the image
-%     {'irradiance hline'}  - Horizontal line spectral irradiance (photons) 
+%     {'irradiance hline'}  - Horizontal line spectral irradiance (photons)
 %                            (space x wavelength)
-%     {'irradiance vline'}  - Vertical line spectral irradiance (photons) 
+%     {'irradiance vline'}  - Vertical line spectral irradiance (photons)
 %                            (space x wavelength)
 %     {'irradiance fft'}    - 2D FFT of radiance at some wavelength
 %     {'irradiance image with grid'} - Show spatial grid on irradiance image
@@ -90,7 +90,7 @@ function [udata, g] = oiPlot(oi,pType,roiLocs,varargin)
 
 %% Programming note
 %  This function includes within it the previous functions plotOTF and
-%  plotOIIrradiance. Those have been deprecated.  
+%  plotOIIrradiance. Those have been deprecated.
 
 if ieNotDefined('oi'), oi = vcGetObject('OI'); end
 if ieNotDefined('pType'), pType = 'hlineilluminance'; end
@@ -143,12 +143,12 @@ if ieNotDefined('roiLocs')
         case {'irradianceenergyroi','irradiancephotonsroi', ...
                 'chromaticityroi','illuminanceroi'}
             roiLocs = ieROISelect(oi);
-
+            
         otherwise
             % There are many cases that don't need a position
     end
 end
-   
+
 %% Make the plot window and use this default gray scale map
 
 g = ieNewGraphWin;
@@ -527,7 +527,7 @@ switch pType
     case {'relativeillumination'}
         % Optics relative illumination
         udata = opticsPlotOffAxis(oi,g);
-    case{'lenstransmittance'}  
+    case{'lenstransmittance'}
         udata = opticsPlotTransmittance(oi,g);
         
     case {'otf','otfanywave'}
@@ -560,7 +560,7 @@ switch pType
         % oiPlot(oi,'psf',[],420);
         if isempty(varargin), udata = plotOTF(oi,'psf', 'airy disk', true);
         else, w = varargin{1}; udata = plotOTF(oi,'psf', 'this wave', w,...
-                                                         'airy disk', true);
+                'airy disk', true);
         end
         set(g,'userdata',udata);
         namestr = sprintf('ISET: %s',oiGet(oi,'name'));
@@ -590,7 +590,7 @@ switch pType
                 ieInWindowMessage('Ray trace: ls wavelength not yet implemented.',handles);
                 disp('Not yet implemented')
             otherwise
-                if ~isempty(varargin), nSamps = varargin{1}; 
+                if ~isempty(varargin), nSamps = varargin{1};
                 else, nSamps = 40;
                 end
                 udata = plotOTF(oi,'ls wavelength','nsamp', nSamps);
@@ -623,12 +623,12 @@ switch pType
         wave = oiGet(oi,'wave');
         sz   = oiGet(oi,'size');
         energy = oiGet(oi,'illuminant energy');
-        if isempty(energy) 
+        if isempty(energy)
             ieInWindowMessage('No illuminant data.',handle);
             close(gcf);
             error('No illuminant data');
         end
-
+        
         switch oiGet(oi,'illuminant format')
             case {'spectral'}
                 % Makes a uniform SPD image
@@ -639,9 +639,9 @@ switch pType
         
         % Create an RGB image
         udata.srgb = xyz2srgb(ieXYZFromEnergy(energy,wave));
-        imagesc(sz(1),sz(2),udata.srgb);  
+        imagesc(sz(1),sz(2),udata.srgb);
         grid on; axis off; axis image;
-        title('Illumination image')      
+        title('Illumination image')
         
     otherwise
         error('Unknown oiPlot type %s.',pType);
@@ -802,7 +802,7 @@ switch lower(pType)
         end
         
         X = fSupport(:,:,1); Y = fSupport(:,:,2);
-
+        
         % Select the support and plot the mesh
         % I decided to show the whole thing for now.
         %         sz  = selectPlotSupport(otf,0.005);
@@ -845,7 +845,7 @@ switch lower(pType)
                 
                 % Calculate the OTF using diffraction limited MTF (dlMTF)
                 otf = dlMTF(oi,fSupport,thisWave,units);
-                sSupport = opticsGet(optics,'psf support',fSupport,nSamp);   
+                sSupport = opticsGet(optics,'psf support',fSupport,nSamp);
                 
                 % Derive the psf from the OTF
                 psf = fftshift(ifft2(otf));
@@ -902,9 +902,9 @@ switch lower(pType)
         % Plot it and if diffraction limited, then add the Airy disk
         mesh(sSupport(:,:,1),sSupport(:,:,2),abs(psf));
         if strcmpi(opticsModel,'diffractionlimited') ||...
-                    strcmpi(opticsModel, 'shiftinvariant')
+                strcmpi(opticsModel, 'shiftinvariant')
             ringZ = max(psf(:))*1e-3;
-            hold on; p = plot3(adX,adY,adZ + ringZ,'k-'); 
+            hold on; p = plot3(adX,adY,adZ + ringZ,'k-');
             set(p,'linewidth',3); hold off;
         end
         
@@ -915,7 +915,7 @@ switch lower(pType)
         uData.x = sSupport(:,:,1); uData.y = sSupport(:,:,2);
         uData.psf = psf;
         
-
+        
     case {'lswavelength'}
         % Line spread function at all wavelengths
         units = 'um';

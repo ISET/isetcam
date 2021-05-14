@@ -21,7 +21,7 @@ function [I, map] = dcrawRead(fname, opts, varargin)
 %
 % Note:
 %   1) This function is linked as read function for a bunch of raw camera
-%      format in dcrawInit. Thus, if the api needs to be changed, remember 
+%      format in dcrawInit. Thus, if the api needs to be changed, remember
 %      to change dcrawInit also.
 %   2) By dcrawInit, this function is called by imread. For loading images
 %      specifying url, the image format field is required. Otherwise,
@@ -29,7 +29,7 @@ function [I, map] = dcrawRead(fname, opts, varargin)
 %
 % See also:
 %   dcrawInit
-% 
+%
 % HJ, VISTA TEAM, 2015
 
 % Check inputs

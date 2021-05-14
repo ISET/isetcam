@@ -3,9 +3,9 @@
 % Description:
 %     Basic tests and comparisons of PsychOptics routines, in particular our ability
 %     to go back and forth between LSFs and PSFs and between PSFs and OTFs.
-% 
+%
 %     Also useful for remembering the usage of various routines.
-% 
+%
 %     This also makes some useful plots that compare different estimates of
 %     monochromatic human optics from the older literature.  These estimates
 %     are probably not as good as using wavefront methods (see isetbio at
@@ -17,7 +17,7 @@
 %   01/25/18  dhb   Typo fix on direction of one check conversion.
 
 %% Clear
-clear; close all; 
+clear; close all;
 
 %% LSF <-> PSF conversions
 
@@ -113,7 +113,7 @@ title('Davila-Geisler');
 legend({'Original','Recovered from PSF'},'Location','NorthEast');
 if (max(abs(DavilaGeislerLSF(:)-DavilaGeislerLSFFromPSFDerived(:))) > 5e-3)
     error('DavilaGeisler LSF -> PSF -> LSF is not close enough');
-end    
+end
 
 subplot(2,2,3); hold on
 plot(positionMinutes1D,WestPSFDerived(centerPosition,:)/max(WestPSFDerived(centerPosition,:)),'r','LineWidth',4);
@@ -179,7 +179,7 @@ title('Diffraction Limited OTFs');
 legend({'Derived from Anaytic PSF', 'Analytic OTF'},'Location','NorthEast');
 if (max(abs(Diffraction_3_633_OTFFromPSFAnalytic(:) - Diffraction_3_633_OTFFromAnalytic(:))) > 5e-2)
     error('Diffraction limited analytic and derived OTFs are not close enough');
-end  
+end
 
 % Then the psfs.
 subplot(2,2,2); hold on
@@ -192,7 +192,7 @@ title('Diffraction Limited PSFs')
 legend({'Derived from Anaytic OTF', 'Analytic PSF'},'Location','NorthEast');
 if (max(abs(Diffraction_3_633_PSFFromOTFFromPSFAnalytic(:)/max(Diffraction_3_633_PSFFromOTFFromPSFAnalytic(centerPosition,:)) - Diffraction_3_633_PSFAnalytic(:)/max(Diffraction_3_633_PSFAnalytic(centerPosition,:)))) > 1e-10)
     error('Diffraction limited analytic and derived PSFs are not close enough');
-end  
+end
 
 % Williams otf along with tabulated points from their Table 1.
 % The fit in the paper smooths the measurements and by eye the deviations

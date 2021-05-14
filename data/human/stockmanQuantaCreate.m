@@ -39,4 +39,3 @@ vcNewGraphWin; plot(wave,fSEnergy./fSQuanta); grid on
 %% Do SP cones
 
 %% End
-                

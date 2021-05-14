@@ -3,7 +3,7 @@ function pixel = pixelCreate(pixelType,wave,pixelSizeM)
 %
 %  pixel = pixelCreate(pixelType,[wave],[pixelSizeM])
 %
-% The pixel structure describes the pixel parameters.  
+% The pixel structure describes the pixel parameters.
 %
 % We initialize the values for simplicity and  the user  sets values from
 % data within their own environment.  For example, the photodetector is
@@ -28,8 +28,8 @@ function pixel = pixelCreate(pixelType,wave,pixelSizeM)
 
 if ieNotDefined('pixelType'), pixelType = 'default'; end
 if ieNotDefined('wave')
-    wave = (400:10:700); 
-    wave = wave(:); 
+    wave = (400:10:700);
+    wave = wave(:);
 end
 if ieNotDefined('pixelSizeM'), pixelSizeM = 2.8e-6; end
 
@@ -38,7 +38,7 @@ switch lower(pixelType)
     case 'ideal'
         % Create structure with default parameters
         pixel = pixelAPSInit();
-
+        
         % Set up perfect parameters
         pixel = pixelSet(pixel,'readNoiseVolts',0);
         pixel = pixelSet(pixel,'darkVoltage',0);
@@ -72,7 +72,7 @@ return;
 %----------------------------------------------
 function pixel = pixelAPSInit()
 % A typical 2.8 um active pixel sensor
-%   
+%
 
 pixel.name = 'aps';
 pixel = pixelSet(pixel,'type','pixel');
@@ -99,7 +99,7 @@ pixel = pixelSet(pixel,'voltageSwing',1);           % [V]
 % In volts per pixel per sec: (dkCurDens*pdArea/q)*conversionGain : ((chg/sec)/m2)(m2)/(chg/e-)(V/e-)
 %
 % We set the density so that the well-capacity fills up
-% from dark current in 10 sec. 
+% from dark current in 10 sec.
 % This means in volts/pix/sec we want
 %           0.1 = (dkCurDens*pdArea/q)*conversionGain
 % so:     dkCurDens = 0.1*q/(pdArea*conversionGain);     Units are Amps/m^2
@@ -109,18 +109,18 @@ pixel = pixelSet(pixel,'voltageSwing',1);           % [V]
 % In terms of current density, the dark voltage per pixel per sec is:
 % darkVoltage = 'conversiongain'*'darkcurrentdensity'*'pdarea'/'q';
 % (voltageSwing/10) (q / (convGain*pdArea)) = darkcurrentdensity
-  
+
 % V/sec * Chg/e- / (m^2 * V/e-) = (Chg/sec)/m^2 = Amps/M^2
 pixel = pixelSet(pixel,'darkVoltage',pixelGet(pixel,'voltageSwing')/1000);
 
 % 1 millivolt against 1 V total swing.  not much
 pixel = pixelSet(pixel,'readNoiseVolts',0.001);  % Volts
 
-% Always starts with air and ends with silicon. 
-% We assume in between is silicon nitride and oxide 
+% Always starts with air and ends with silicon.
+% We assume in between is silicon nitride and oxide
 pixel = pixelSet(pixel,'refractiveindices',[1 2 1.46 3.5]);  %
 
-% These thicknesses makes the pixel 7 microns high.  
+% These thicknesses makes the pixel 7 microns high.
 % Peter C thinks they are around 9, but Micron is shorter.
 pixel = pixelSet(pixel,'layerthickness',[2 5]*10^-6);  % In microns.  Air and material are infinite.
 
@@ -161,7 +161,7 @@ pixel = pixelSet(pixel,'darkVoltage',pixelGet(pixel,'voltageSwing')/1000);
 pixel = pixelSet(pixel,'readNoiseVolts',0.001);  % Volts
 
 % Always starts with air and ends with silicon.  We assume in between is
-% silicon nitride and oxide 
+% silicon nitride and oxide
 pixel = pixelSet(pixel,'refractiveindices',[1 2 1.46 3.5]);  %
 
 % These thicknesses makes the pixel 5 microns high.
@@ -171,15 +171,15 @@ return;
 
 %----------------------------------------------
 function pixel = pixelMouse
-% A typical mouse cone. 
+% A typical mouse cone.
 %
 % The mouse has no fovea, this is any retina cone. The cones are
 % much sparser than on the human fovea, since there are many rods
 % interspaced with cones.
 %
-% Data source : "The Major Cell Populations of the Mouse Retina", 
+% Data source : "The Major Cell Populations of the Mouse Retina",
 % Jeon Strettoi Masland, 1998
-%  
+%
 % Contributed by Estelle Comment
 
 pixel.name = 'mousecone';

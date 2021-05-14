@@ -25,7 +25,7 @@ s_initSO;
 sensor = sensorCreate;
 sz = sensorGet(sensor,'pixel size');
 
-% We make the height 
+% We make the height
 sensor = sensorSet(sensor,'pixel width',sz(2)/2);
 
 % Add more columns

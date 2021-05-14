@@ -11,7 +11,7 @@ classdef cpIP < handle
         defaultDisplay = 'OLED-Sony.mat'; % in case this makes a difference
         ip = [];
         insensorIP = false; %merge in RGB space by default
-
+        
     end
     
     methods

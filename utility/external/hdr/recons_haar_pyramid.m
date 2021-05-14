@@ -23,9 +23,9 @@ for ii = nlevels:-1:1
     band_idx = band_idx - 1;
     extend_2 = pad_reflect_neg(pyr(:,:,band_idx), extend_space, extend_space, 1, 0);
     band_idx = band_idx - 1;
-    extend_1 = pad_reflect_neg(pyr(:,:,band_idx), extend_space, extend_space, 0, 1);    
+    extend_1 = pad_reflect_neg(pyr(:,:,band_idx), extend_space, extend_space, 0, 1);
     band_idx = band_idx - 1;
-
+    
     shift_1_1 = 1:ht;
     shift_1_2 = 1:wth;
     shift_2_2 = 1+nspace: wth+nspace;

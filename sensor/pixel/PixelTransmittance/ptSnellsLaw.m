@@ -11,7 +11,7 @@ function thetaOut = ptSnellsLaw(n,thetaIn)
 
 thetaOut(1,1,:) = thetaIn;
 for ii = 2:length(n)
-   thetaOut(1,ii,:) = asin(n(ii-1) * sin(thetaOut(1,ii-1,:) )/n(ii) );
+    thetaOut(1,ii,:) = asin(n(ii-1) * sin(thetaOut(1,ii-1,:) )/n(ii) );
 end
 
 reducedTheta = n(1) * sin(thetaIn);

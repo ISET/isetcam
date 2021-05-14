@@ -1,12 +1,12 @@
 function img  = imgMackay(radialFrequency,imSize)
-% Create a MacKay chart spatial pattern. 
+% Create a MacKay chart spatial pattern.
 %
 %   img  = imgMackay(radialFrequency,imSize)
 %
 % The Mackay chart has lines at many angles and increases in spatial
 % frequency from periphery to center.  This routine is called in creating
 % the Mackay scene (sceneWindw).
-%  
+%
 % Examples
 %  img =  imgMackay;  imagesc(img); colormap(gray); axis image
 %  img  = imgMackay(12,256);  imagesc(img); colormap(gray); axis image

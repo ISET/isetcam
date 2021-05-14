@@ -43,7 +43,7 @@ if isempty(p)
         case {'vci','ip'}
             camera.vci = val;
         otherwise
-            error('Unknown oType with empty param %s\n',oType);            
+            error('Unknown oType with empty param %s\n',oType);
     end
     return;  % We are done.
 end
@@ -66,7 +66,7 @@ switch oType
         camera.vci = ipSet(camera.vci,p,val);
         
     otherwise
-        % oType is probably empty or camera.  This is probably a camera parameter        
+        % oType is probably empty or camera.  This is probably a camera parameter
         switch ieParamFormat(param)
             
             % Book-keeping
@@ -74,9 +74,9 @@ switch oType
                 camera.name = val;
             case {'type'}
                 camera.type = val;
-                               
-            
-            % These are special cases for L3 camera conditions
+                
+                
+                % These are special cases for L3 camera conditions
             case {'l3sensorsize'}
                 % cameraSet(camera,'L3 sensor size',sz)
                 % Adjust size of sensor in camera

@@ -25,7 +25,7 @@ pause(1); delete(h);
 %% Sensor
 sensor = sensorCreate;
 sensor = sensorCompute(sensor,oi);
-ieAddObject(sensor); 
+ieAddObject(sensor);
 sensorWindow;
 sensorWindow;
 h = ieDrawShape(sensor,'rectangle',[10 10 50 50]);

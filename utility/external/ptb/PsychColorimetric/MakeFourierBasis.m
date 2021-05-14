@@ -19,11 +19,11 @@ B(:,1) = 0.5*ones(n,1);
 k = 1;
 freq = 1;
 while ( k < nbasis )
-  k = k+1;
-  B(:,k) = cos( 2*pi*freq*freqarg );
-  k = k+1;
-  B(:,k) = sin( 2*pi*freq*freqarg );
-	freq = freq+1;
+    k = k+1;
+    B(:,k) = cos( 2*pi*freq*freqarg );
+    k = k+1;
+    B(:,k) = sin( 2*pi*freq*freqarg );
+    freq = freq+1;
 end
 
 % Truncate basis set to desired size

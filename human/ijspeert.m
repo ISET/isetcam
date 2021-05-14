@@ -3,7 +3,7 @@ function [MTF, PSF, LSF] = ijspeert(age, p, m, q, phi)
 %
 %      [MTF, PSF, LSF] = Ijspeert(age, p, m, q, phi)
 %
-% The formula is a function of various parameters. 
+% The formula is a function of various parameters.
 %
 %    Parameters:
 %        age - age of person in years
@@ -13,17 +13,17 @@ function [MTF, PSF, LSF] = ijspeert(age, p, m, q, phi)
 %            m=0.16  for mean blue Caucasian eye
 %            m=0.106 for mean brown Caucasian eye
 %            m=0.056 for mean pigmented-skin dark-brown eye
-%        q - spatial frequencies in cycles per degree to compute MTF on 
+%        q - spatial frequencies in cycles per degree to compute MTF on
 %        phi - angles in radians to compute PSF and LSF on
 %
 % Reference:
 %  Ijspeert et al, Vision Res. 1993 Jan;33(1):15-20.  An improved
 %  mathematical description of the foveal visual point spread function with
-%  parameters for age, pupil size and pigmentation.  
+%  parameters for age, pupil size and pigmentation.
 %
 %  See corrections in Drasdo N, Thompson CM, Charman WN. Inconsistencies in
 %  models of the human ocular modulation transfer function.  Vision Res.
-%  1994 May;34(10):1247-53. 
+%  1994 May;34(10):1247-53.
 %
 % Examples:
 %    [MTF] = ijspeert(age = 30, pupilDiameter (mm) = 3, m=.142, q=[0:60])
@@ -37,9 +37,9 @@ function [MTF, PSF, LSF] = ijspeert(age, p, m, q, phi)
 %    figure(1); plot(angRad,PSF)
 %    figure(1); plot(angRad,LSF)
 %
-% Notes - 
+% Notes -
 %           I am suspicious of this because the high sensitivity at 60 cpd
-%         seems wrong.  It is down only 1.5 log units from peak. (BW). 
+%         seems wrong.  It is down only 1.5 log units from peak. (BW).
 %           I am further worried because this function does not provide a
 %         wavelength-dependent PSF, and yet we know that chromatic
 %         aberration is very important.
@@ -48,7 +48,7 @@ function [MTF, PSF, LSF] = ijspeert(age, p, m, q, phi)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% Compute prefactors c(i) and parameters beta(i) for the critical 
+% Compute prefactors c(i) and parameters beta(i) for the critical
 % angle in the functions f_beta
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -57,21 +57,21 @@ function [MTF, PSF, LSF] = ijspeert(age, p, m, q, phi)
 % 	uses: age, m
 % 	produces: AF, c_sa, c_la
 
-D = 70;					% doubling age of long-angle scattering 
-					    % (relative to the central peak)
+D = 70;					% doubling age of long-angle scattering
+% (relative to the central peak)
 
-AF = 1 + (age/D)^4;		% age factor--the increase of 
-					    % long-angle scattering with age
+AF = 1 + (age/D)^4;		% age factor--the increase of
+% long-angle scattering with age
 
 c_sa = 1 / (1 + AF / (1/m - 1));	% sum of two short-angle prefactors
 c_la = 1 / (1 + (1/m - 1) / AF);	% sum of two long-angle prefactors
 
 
-%% Dependence on pupil size 
+%% Dependence on pupil size
 % 	uses: p, AF, c_sa
 % 	produces: c(1), c(2), beta1, beta2
 
-% the expressions for the following three constants were 
+% the expressions for the following three constants were
 % originally obtained by data fitting:
 b = 9000 - 936*(AF^0.5);		% in mm^(-1)
 d = 3.2;				% in mm
@@ -108,34 +108,34 @@ end
 %% Compute PSF if vector angles (phi) are given
 if (nargin > 4)
     
-  sinphi2 = sin(phi).^2; 
-  cosphi2 = cos(phi).^2; 
-  beta2 = beta.^2;
-
-  for i = 1:4,
-      f_beta(i, :) = ...
-          beta(i) ./ ( 2*pi*( sinphi2 ...
-               + beta2(i) * cosphi2 ).^(1.5) );
-  end
-
-  PSF = zeros(1, size(phi, 2));
-  for i = 1:4,
-      PSF = PSF + c(i) * f_beta(i, :);
-  end
-
-  % Compute LSF if asked for
-  if (nargout == 3)
+    sinphi2 = sin(phi).^2;
+    cosphi2 = cos(phi).^2;
+    beta2 = beta.^2;
     
     for i = 1:4,
-        l_beta(i, :) = beta(i) ./ ( pi*( sinphi2 + beta2(i) * cosphi2 ) );
+        f_beta(i, :) = ...
+            beta(i) ./ ( 2*pi*( sinphi2 ...
+            + beta2(i) * cosphi2 ).^(1.5) );
     end
-
-    LSF = zeros(1, size(phi, 2));
+    
+    PSF = zeros(1, size(phi, 2));
     for i = 1:4,
-        LSF = LSF + c(i) * l_beta(i, :);
+        PSF = PSF + c(i) * f_beta(i, :);
     end
-
-  end 	% if (nargout == 3)
+    
+    % Compute LSF if asked for
+    if (nargout == 3)
+        
+        for i = 1:4,
+            l_beta(i, :) = beta(i) ./ ( pi*( sinphi2 + beta2(i) * cosphi2 ) );
+        end
+        
+        LSF = zeros(1, size(phi, 2));
+        for i = 1:4,
+            LSF = LSF + c(i) * l_beta(i, :);
+        end
+        
+    end 	% if (nargout == 3)
 end 	% if (nargin > 4)
 
 return;

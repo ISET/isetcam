@@ -18,7 +18,7 @@ function [calFormat,nX,nY] = ImageToCalFormat(image)
 [nY,nX,k] = size(image);
 
 if nY*nX == 1
-	calFormat = squeeze(reshape(image,nY*nX,1,k));
+    calFormat = squeeze(reshape(image,nY*nX,1,k));
 else
-	calFormat = squeeze(reshape(image,nY*nX,1,k))';
+    calFormat = squeeze(reshape(image,nY*nX,1,k))';
 end

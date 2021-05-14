@@ -4,14 +4,14 @@
 % illustrates how to create a scene of the Macbeth ColorChecker
 % illuminated with a D65 light.  It then illustrates different
 % ways to programmatically interact with the scene object.
-% 
-% We illustrate 
+%
+% We illustrate
 %  * how to display a downsampled (3 color channels)
-%  representation of the scene in the Display window. 
+%  representation of the scene in the Display window.
 %  * Read properties of the scene using *sceneGet* .
 %  * Create a *frequency-orientation* scene target
 %  * Extract and plot scene luminance (cd/m^2) across a row of
-%  that target. 
+%  that target.
 %
 % See also: sceneCreate, s_sceneFromMultispectral, s_sceneFromRGB
 %
@@ -75,7 +75,7 @@ assert(abs(mean(meanPhotons(:)) / 3.7624e+15 - 1) < tolerance,'Mean photon error
 %% Plot the mean radiance
 ieNewGraphWin;
 plot(wave,meanPhotons);
-xlabel('Wavelength (nm)'); ylabel('Radiance (q/sec/nm/sr/m^2'); 
+xlabel('Wavelength (nm)'); ylabel('Radiance (q/sec/nm/sr/m^2');
 grid on
 %% sceneDescriptions
 
@@ -113,7 +113,7 @@ ieNewGraphWin;
 plot(support.x,data,'-');
 xlabel('mm'); ylabel('cd/m2'); grid on
 
-rows = round(sceneGet(sceneTest,'rows')/2); 
+rows = round(sceneGet(sceneTest,'rows')/2);
 assert(rows == 128,'Row test failed')
 scenePlot(sceneTest,'radiance hline',[1,rows]);
 

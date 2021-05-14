@@ -12,7 +12,7 @@ function RGB = ieLUTDigital(DAC, gTable)
 %  * The inverse gamma table maps the display intensity to the digital
 %  values.
 %
-%  A gTable normally has size 2^nBits x 3, a table for each channel 
+%  A gTable normally has size 2^nBits x 3, a table for each channel
 %
 %  If it has size 2^nBits x 1, we assume the three channels are the same.
 %

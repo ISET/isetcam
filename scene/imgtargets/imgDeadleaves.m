@@ -20,7 +20,7 @@ function img = imgDeadleaves(n,sigma,options)
 % Outputs
 %  img - a gray scale image based on dead leaves model.
 %
-% References : 
+% References :
 %   Dead leaves correct simulation :
 %    http://www.warwick.ac.uk/statsdept/staff/WSK/dead.html
 %
@@ -94,13 +94,13 @@ m = n^2;
 %%
 for i=1:nbr_iter
     
-
-	% compute scaling using inverse mapping
-    r = rand(1);  
-	[~,I] = min( abs(r-r_dist) );
+    
+    % compute scaling using inverse mapping
+    r = rand(1);
+    [~,I] = min( abs(r-r_dist) );
     r = r_list(I);
     
-    x = rand(1);    % position 
+    x = rand(1);    % position
     y = rand(1);
     a = rand(1);    % albedo
     

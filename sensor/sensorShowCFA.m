@@ -9,12 +9,12 @@ function [fig, cfaImg] = sensorShowCFA(sensor,fullArray, app, nBlocks)
 %  sensor:    Sensor object
 %  fullArray: Typically an image of just the super pixel pattern is shown.
 %             If fullArray is true, makes an image showing the full pattern.
-%  app:       app for the sensorWindow that has imgCFA as a slot 
+%  app:       app for the sensorWindow that has imgCFA as a slot
 %  nBlocks:   Number of cfa blocks to render
 %
 % Return
 %   fig:    Handle to the figure where data are rendered
-%   cfaImg: RGB image of the CFA array 
+%   cfaImg: RGB image of the CFA array
 %
 % Copyright ImagEval Consultants, LLC, 2010
 %
@@ -23,8 +23,8 @@ function [fig, cfaImg] = sensorShowCFA(sensor,fullArray, app, nBlocks)
 
 % Examples:
 %{
-  s = sceneCreate; oi = oiCreate; sensor = sensorCreate; 
-  oi = oiCompute(oi,s); sensor = sensorCompute(sensor,oi); 
+  s = sceneCreate; oi = oiCreate; sensor = sensorCreate;
+  oi = oiCompute(oi,s); sensor = sensorCompute(sensor,oi);
   img = sensorShowCFA(sensor,false);
   sensor = sensorCreate('human');
   sensorShowCFA(sensor);
@@ -63,7 +63,7 @@ else
     cfaImg = imageIncreaseImageRGBSize(cfaSmall,s);
 end
 
-%% Draw the CFA 
+%% Draw the CFA
 
 cfaImg = ind2rgb(cfaImg,mp);
 if isempty(app)
@@ -80,7 +80,7 @@ end
 
 if tSizeFlag
     if fullArray
-       %  truesize(fig);
+        %  truesize(fig);
     else
         truesize(fig,[92 92]);
     end

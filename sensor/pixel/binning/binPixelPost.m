@@ -13,7 +13,7 @@ if ieNotDefined('bMethod'), error('Binning method required.'); end
 
 switch lower(bMethod)
     case 'kodak2008'
-        % We average digital values 
+        % We average digital values
         dv = sensorGet(sensor,'dv');
         
         % This is the averaging function
@@ -36,7 +36,7 @@ switch lower(bMethod)
         
     otherwise
         % 'addAdjacentBlocks' % Reduces rows and cols x 2
-
+        
         % Do nothing
 end
 

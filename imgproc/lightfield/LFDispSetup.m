@@ -1,29 +1,29 @@
 % LFDispSetup - helper function used to set up a light field display
-% 
-% Usage: 
-% 
+%
+% Usage:
+%
 %     [ImageHandle, FigureHandle] = LFDispSetup( InitialFrame )
 %     [ImageHandle, FigureHandle] = LFDispSetup( InitialFrame, ScaleFactor )
-% 
-% 
+%
+%
 % This sets up a figure for LFDispMousePan and LFDispVidCirc. The figure is configured for
 % high-performance display, and subsequent calls will reuse the same figure, rather than creating a
 % new window on each call. The function should handle both mono and colour images.
-% 
-% 
+%
+%
 % Inputs:
-% 
+%
 %     InitialFrame : a 2D image with which to start the display
-% 
-% Optional Inputs: 
-% 
+%
+% Optional Inputs:
+%
 %     ScaleFactor : Adjusts the size of the display -- 1 means no change, 2 means twice as big, etc.
 %                   Integer values are recommended to avoid scaling artifacts. Note that the scale
 %                   factor is only applied the first time a figure is created -- i.e. the figure
 %                   must be closed to make a change to scale.
-% 
+%
 % Outputs:
-% 
+%
 %     FigureHandle, ImageHandle : handles of the created objects
 %
 %
@@ -36,7 +36,7 @@ function [ImageHandle, FigureHandle] = LFDispSetup( InitialFrame, ScaleFactor )
 
 FigureHandle = findobj('tag','LFDisplay');
 if( isempty(FigureHandle) )
-
+    
     % Get screen size
     set( 0, 'units','pixels' );
     ScreenSize = get( 0, 'screensize' );
@@ -62,14 +62,14 @@ if( isempty(FigureHandle) )
     % Set the axis position and size within the figure
     AxesPos = [0,0,size(InitialFrame,2),size(InitialFrame,1)];
     axes('units','pixels',...
-         'Position', AxesPos,...
-         'xlimmode','manual',...
-         'ylimmode','manual',...
-         'zlimmode','manual',...
-         'climmode','manual',...
-         'alimmode','manual',...
-         'layer','bottom');
-     
+        'Position', AxesPos,...
+        'xlimmode','manual',...
+        'ylimmode','manual',...
+        'zlimmode','manual',...
+        'climmode','manual',...
+        'alimmode','manual',...
+        'layer','bottom');
+    
     ImageHandle = imshow(InitialFrame);
     % If a scaling factor is requested, apply it
     if( exist('ScaleFactor','var') )

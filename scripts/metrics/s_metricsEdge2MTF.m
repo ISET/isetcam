@@ -6,7 +6,7 @@
 % literature).
 %
 % This script also illustrates how to
-% 
+%
 % # define a scene
 % # create an optical image from the scene
 % # define a monochrome sensor
@@ -22,7 +22,7 @@
 % ability to interact with the GUI from scripts.
 %
 % See also:  sensorCompute, sensorCreate, s_pixelSizeMTF,
-% ISOFindSlantedBar, ipCompute, ipCreate, 
+% ISOFindSlantedBar, ipCompute, ipCreate,
 %
 % Copyright ImagEval Consultants, LLC, 2015.
 

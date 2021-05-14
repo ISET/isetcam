@@ -5,13 +5,13 @@
 % involving the CIE functions and human cone quantum absorptions
 %
 % References:
-% The photons and energy are connected by 
+% The photons and energy are connected by
 % <http://en.wikipedia.org/wiki/Planck%27s_relation Planck's Relation>
 %
 %    photons = (energy/(h*c)) .* wavelength);
 %    energy  = (h*c) * photons ./ wavelength;
 %
-% The term h is Planck's constant and c is the speed of light.  
+% The term h is Planck's constant and c is the speed of light.
 %
 % ISET stores these constants so you can find them:
 %
@@ -25,10 +25,10 @@ ieInit
 
 %% Show the wavelength dependency of the conversion from energy to photons
 
-% We can calculate the energy for quanta at different wavelengths by 
+% We can calculate the energy for quanta at different wavelengths by
 % setting up a vector of 1s to represent the photons and then calling
 % function  Quanta2Energy
-wave = 400:5:700;  
+wave = 400:5:700;
 photons = ones(length(wave),1);
 E = Quanta2Energy(wave,photons);
 
@@ -58,7 +58,7 @@ d65Photons = Energy2Quanta(wave(:),d65Energy(:));
 % photons.  That is, the D65 light has about the same number of long
 % (650nm) and middle (550nm) wavelength photons.  But there is more energy
 % in the middle wavelength photons.
-% 
+%
 vcNewGraphWin; plot(wave,d65Photons); grid on
 xlabel('Wavelength (nm)'); ylabel('Photons (q/sr/nm/m2)')
 
@@ -68,7 +68,7 @@ xlabel('Wavelength (nm)'); ylabel('Photons (q/sr/nm/m2)')
 % The CIE 1931 standard curves for XYZ are defined assuming that the input
 % signal is specified in terms of energy.
 XYZEnergy = ieReadSpectra('XYZ',wave);
-vcNewGraphWin; 
+vcNewGraphWin;
 subplot(1,2,1), plot(wave,XYZEnergy); grid on; title('XYZ standard (energy)');
 
 % For good reasons, the ISET sensor calculations are based on a

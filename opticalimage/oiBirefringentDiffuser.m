@@ -1,5 +1,5 @@
 function [oi,umDisp] = oiBirefringentDiffuser(oi,umDisp)
-% Make an anti-alias  bi-refringent filter 
+% Make an anti-alias  bi-refringent filter
 %
 %  [oi,umDisp] = oiBirefringentDiffuser(oi,umDisp)
 %
@@ -9,7 +9,7 @@ function [oi,umDisp] = oiBirefringentDiffuser(oi,umDisp)
 % Four (shifted) copies of the irradiance image are added.  One is the
 % original and three are displaced copies, shifted by 'umDisp' to the
 % right, up, and right and up.  The sum is then divided by four to preserve
-% the total energy.  
+% the total energy.
 %
 % The displacement can be specified.  By default, it is equal to the pixel
 % pitch in the current sensor.
@@ -28,7 +28,7 @@ function [oi,umDisp] = oiBirefringentDiffuser(oi,umDisp)
 % Copyright ImagEval Consultants, LLC, 2009.
 
 if ieNotDefined('oi'), oi = vcGetObject('oi'); end
-if ieNotDefined('umDisp') 
+if ieNotDefined('umDisp')
     sensor = vcGetObject('sensor');
     
     if isempty(sensor)
@@ -38,7 +38,7 @@ if ieNotDefined('umDisp')
         % Shift half pixel to left, right, up and down
         umDisp = pixelGet(sensorGet(sensor,'pixel'),'width','um')/2;
     end
-
+    
 end
 
 % Original irradiance

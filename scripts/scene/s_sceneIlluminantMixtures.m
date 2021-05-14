@@ -9,7 +9,7 @@
 %
 % The scene illuminant can be a single spectral power
 % distribution, in which case the illuminant is assumed to be the
-% same (constant) across the entire scene.  
+% same (constant) across the entire scene.
 %
 % Alternatively, the scene illuminant can also be a hypercube of
 % the same size as the scene spectral radiance.  In that case,
@@ -49,7 +49,7 @@ s = sceneAdjustIlluminant(s1,ill);
 s = sceneSet(s,'name','Mixed illuminant');
 
 ieAddObject(s1);  % Tungsten
-ieAddObject(s2);  % D65 
+ieAddObject(s2);  % D65
 ieAddObject(s);   % Mixed
 % sceneWindow;
 imageMultiview('scene',1:3,true);

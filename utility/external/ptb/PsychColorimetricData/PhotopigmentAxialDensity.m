@@ -10,7 +10,7 @@ function densities = PhotopigmentAxialDensity(receptorTypes,species,source,field
 %
 % The type argument may be a single string or a cell array of strings.  If it
 % is an array, a column vector of values is returned.
-%  
+%
 % The foveal version of cone types is sensible only for primates.  Not all
 % estimate sources support all receptor types.
 %
@@ -22,7 +22,7 @@ function densities = PhotopigmentAxialDensity(receptorTypes,species,source,field
 % PhotopigmentSpecificDensity, PhotopigmentAxialDensity, and PhotoreceptorDimensions.
 % That is to say, for the same source, species, and cone type, you should get
 % a consistent triplet of numbers.
-% 
+%
 % Supported species:
 %		Human (Default).
 %
@@ -49,10 +49,10 @@ function densities = PhotopigmentAxialDensity(receptorTypes,species,source,field
 
 % Fill in defaults
 if (nargin < 2 || isempty(species))
-	species = 'Human';
+    species = 'Human';
 end
 if (nargin < 3 || isempty(source))
-	source = 'Rodieck';
+    source = 'Rodieck';
 end
 if (nargin < 4 || isempty(fieldSizeDegrees))
     fieldSizeDegrees = [];
@@ -60,35 +60,35 @@ end
 
 % Fill in specific density according to specified source
 if (iscell(receptorTypes))
-	densities = zeros(length(receptorTypes),1);
+    densities = zeros(length(receptorTypes),1);
 else
-	densities = zeros(1,1);
+    densities = zeros(1,1);
 end
 for i = 1:length(densities)
-	if (iscell(receptorTypes))
-		type = receptorTypes{i};
-	elseif (i == 1)
-		type = receptorTypes;
-	else
-		error('Argument receptorTypes must be a string or a cell array of strings');
-	end
-
-	switch (source)
-		case {'Rodieck'}
-			switch (species)
-				case {'Human'},
-					% Rodieck, The First Steps in Seeing, Appendix B.
-					switch (type)
-						case {'FovealLCone','FovealMCone','FovealSCone'}
-							densities(i) = 0.50;
-						case 'Rod'
-							densities(i) = 0.47;
-						otherwise,
-							error(sprintf('Unsupported receptor type %s for %s estimates in %s',type,source,species));
-					end
-				otherwise,
-					error(sprintf('%s estimates not available for species %s',source,species));
-            end	
+    if (iscell(receptorTypes))
+        type = receptorTypes{i};
+    elseif (i == 1)
+        type = receptorTypes;
+    else
+        error('Argument receptorTypes must be a string or a cell array of strings');
+    end
+    
+    switch (source)
+        case {'Rodieck'}
+            switch (species)
+                case {'Human'},
+                    % Rodieck, The First Steps in Seeing, Appendix B.
+                    switch (type)
+                        case {'FovealLCone','FovealMCone','FovealSCone'}
+                            densities(i) = 0.50;
+                        case 'Rod'
+                            densities(i) = 0.47;
+                        otherwise,
+                            error(sprintf('Unsupported receptor type %s for %s estimates in %s',type,source,species));
+                    end
+                otherwise,
+                    error(sprintf('%s estimates not available for species %s',source,species));
+            end
             
         case {'Alpern'}
             % This value from the CVRL table of receptor optical density.  There are 3 papers from
@@ -97,84 +97,84 @@ for i = 1:length(densities)
             switch (species)
                 case {'Human'}
                     switch (type)
-						case 'Rod'
-							densities(i) = 0.333;
-						otherwise,
-							error(sprintf('Unsupported receptor type %s for %s estimates in %s',type,source,species));
+                        case 'Rod'
+                            densities(i) = 0.333;
+                        otherwise,
+                            error(sprintf('Unsupported receptor type %s for %s estimates in %s',type,source,species));
                     end
                 otherwise
                     error(sprintf('%s estimates not available for species %s',source,species));
             end
-
-		case {'StockmanSharpe'}
-			switch (species)
-				case {'Human'},
-					% Foveal values from Note c, Table 2, Stockman and Sharpe (2000), Vision Research.  These
-					% are the values they used to produce a fit to their 2-degree fundamentals.  The peripheral
-					% values were provided to me by Andrew Stockman, and were used to produce a fit to their
-					% 10-degree fundamentals.
-					switch (type)
-						case {'FovealLCone','FovealMCone'}
-							densities(i) = 0.50;
-						case 'FovealSCone'
-							densities(i) = 0.40;
-						case {'LCone', 'MCone'}
-							densities(i) = 0.38;
-						case {'SCone'}
-							densities(i) = 0.3;
-						otherwise,
-							error(sprintf('Unsupported receptor type %s for %s estimates in %s',type,source,species));
-					end
-				otherwise,
-					error(sprintf('%s estimates not available for species %s',source,species));
-            end	
+            
+        case {'StockmanSharpe'}
+            switch (species)
+                case {'Human'},
+                    % Foveal values from Note c, Table 2, Stockman and Sharpe (2000), Vision Research.  These
+                    % are the values they used to produce a fit to their 2-degree fundamentals.  The peripheral
+                    % values were provided to me by Andrew Stockman, and were used to produce a fit to their
+                    % 10-degree fundamentals.
+                    switch (type)
+                        case {'FovealLCone','FovealMCone'}
+                            densities(i) = 0.50;
+                        case 'FovealSCone'
+                            densities(i) = 0.40;
+                        case {'LCone', 'MCone'}
+                            densities(i) = 0.38;
+                        case {'SCone'}
+                            densities(i) = 0.3;
+                        otherwise,
+                            error(sprintf('Unsupported receptor type %s for %s estimates in %s',type,source,species));
+                    end
+                otherwise,
+                    error(sprintf('%s estimates not available for species %s',source,species));
+            end
             
         case {'CIE'}
-			switch (species)
-				case {'Human'},
-					% These values computed according to formulae in CIE 170-1:2006.
-					switch (type)
-						case {'FovealLCone','FovealMCone'}
+            switch (species)
+                case {'Human'},
+                    % These values computed according to formulae in CIE 170-1:2006.
+                    switch (type)
+                        case {'FovealLCone','FovealMCone'}
                             if (isempty(fieldSizeDegrees))
                                 fieldSizeDegrees = 2;
                             end
                             densities(i) = 0.38+0.54*exp(-fieldSizeDegrees/1.333);
-						case 'FovealSCone'
-                             if (isempty(fieldSizeDegrees))
+                        case 'FovealSCone'
+                            if (isempty(fieldSizeDegrees))
                                 fieldSizeDegrees = 2;
                             end
-							densities(i) = 0.30+0.45*exp(-fieldSizeDegrees/1.333);
-						case {'LCone', 'MCone'}
-                             if (isempty(fieldSizeDegrees))
+                            densities(i) = 0.30+0.45*exp(-fieldSizeDegrees/1.333);
+                        case {'LCone', 'MCone'}
+                            if (isempty(fieldSizeDegrees))
                                 fieldSizeDegrees = 10;
                             end
-							densities(i) = 0.38+0.54*exp(-fieldSizeDegrees/1.333);
-						case {'SCone'}
-                             if (isempty(fieldSizeDegrees))
+                            densities(i) = 0.38+0.54*exp(-fieldSizeDegrees/1.333);
+                        case {'SCone'}
+                            if (isempty(fieldSizeDegrees))
                                 fieldSizeDegrees = 10;
                             end
-							densities(i) = 0.30+0.45*exp(-fieldSizeDegrees/1.333);
-						otherwise,
-							error(sprintf('Unsupported receptor type %s for %s estimates in %s',type,source,species));
-					end
-				otherwise,
-					error(sprintf('%s estimates not available for species %s',source,species));
-            end	
+                            densities(i) = 0.30+0.45*exp(-fieldSizeDegrees/1.333);
+                        otherwise,
+                            error(sprintf('Unsupported receptor type %s for %s estimates in %s',type,source,species));
+                    end
+                otherwise,
+                    error(sprintf('%s estimates not available for species %s',source,species));
+            end
             
         case {'Tsujimura'}
-			switch (species)
-				case {'Human'},
-					switch (type)
-						case {'Melanopsin'}
-							densities(i) = 0.50;
-						otherwise,
-							error(sprintf('Unsupported receptor type %s for %s estimates in %s',type,source,species));
-					end
-				otherwise,
-					error(sprintf('%s estimates not available for species %s',source,species));
-			end	
-
-		otherwise
-			error(sprintf('Unknown source %s for specific density estimates',source));
-	end
+            switch (species)
+                case {'Human'},
+                    switch (type)
+                        case {'Melanopsin'}
+                            densities(i) = 0.50;
+                        otherwise,
+                            error(sprintf('Unsupported receptor type %s for %s estimates in %s',type,source,species));
+                    end
+                otherwise,
+                    error(sprintf('%s estimates not available for species %s',source,species));
+            end
+            
+        otherwise
+            error(sprintf('Unknown source %s for specific density estimates',source));
+    end
 end

@@ -16,8 +16,8 @@ if ~invert
     sSize   = sceneGet(scene,'size');
     padSize = round(sSize/8); padSize(3) = 0;
     padval  = 0;
-    direction = 'both';    
-    dMap = padarray(dMap,padSize,padval,direction); 
+    direction = 'both';
+    dMap = padarray(dMap,padSize,padval,direction);
     % figure; imagesc(dMap)
 else
     dMap = oiGet(oi,'depth map');
@@ -29,7 +29,7 @@ else
     gData = logical(hData(:)*vData(:)');
     figure; imagesc(gData)
     oMap = dMap(gData);
-%    figure; imagesc(oMap)
+    %    figure; imagesc(oMap)
 end
 
 end

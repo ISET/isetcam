@@ -2,7 +2,7 @@ function [spectralRadiance,wave] = illuminantRead(illP,lightName,wave,luminance)
 %Return spectral radiance of a standard illuminants in energy units
 %
 %    [spectralRadiance,wave] = illuminantRead(illP,lightName,wave,luminance)
-% 
+%
 % Brief description
 %  The illuminant parameters (illP) are stored in the structure illP, or
 %  they  are provided by the lightName, wave and luminance parameters. The
@@ -10,7 +10,7 @@ function [spectralRadiance,wave] = illuminantRead(illP,lightName,wave,luminance)
 %
 %  The illP structure is idiosyncratic and used only here. If you don't
 %  wish to establish illP, but only to get a default SPD for some named
-%  illuminant, you can use the format 
+%  illuminant, you can use the format
 %
 %   illuminantRead([],illuminantName,wave,luminance)
 %
@@ -33,7 +33,7 @@ function [spectralRadiance,wave] = illuminantRead(illP,lightName,wave,luminance)
 % Examples:
 %  ieExamplesPrint('illuminantRead')
 %
-% See also: 
+% See also:
 %   illuminantCreate, illuminantGet/Set
 
 % Examples:
@@ -43,7 +43,7 @@ function [spectralRadiance,wave] = illuminantRead(illP,lightName,wave,luminance)
    plotRadiance(wave,radiance)
 %}
 %{
-   [illSPD,wave] = illuminantRead([],'tungsten'); 
+   [illSPD,wave] = illuminantRead([],'tungsten');
    plotRadiance(wave,illSPD)
 %}
 %{
@@ -75,7 +75,7 @@ if ~exist('illP','var')||isempty(illP)
 else
     % We have the illP
     name      = illP.name;
-    luminance = illP.luminance; 
+    luminance = illP.luminance;
     wave      = illP.spectrum.wave;
 end
 
@@ -90,7 +90,7 @@ switch lower(name)
         thisLight = fullfile(baseDir,'illuminantC.mat');
         SPD = ieReadSpectra(thisLight,wave);
     case {'d50'}
-        thisLight = fullfile(baseDir,'D50.mat');        
+        thisLight = fullfile(baseDir,'D50.mat');
         SPD = ieReadSpectra(thisLight,wave);
     case {'fluorescent'}
         thisLight = fullfile(baseDir,'Fluorescent.mat');
@@ -101,10 +101,10 @@ switch lower(name)
         
     case {'white','uniform','equalenergy'}
         SPD = ones(length(wave),1);
-         
+        
     case {'equalphotons'}
         SPD = Quanta2Energy(wave,ones(1,length(wave)))';
-    
+        
     case 'blackbody'
         if ~checkfields(illP,'temperature')
             temperature = 6500;
@@ -119,14 +119,14 @@ switch lower(name)
         [~,idx] = min(abs(wave - 555));
         SPD(idx) = 1;
         
-    otherwise   
+    otherwise
         error('Illumination:  Unknown light source');
 end
 
 %% Compute the current light source luminance
 
 % Scale the radiance to the desired luminance.
-% The formula for luminance is 
+% The formula for luminance is
 % currentL = 683 * binwidth*(photopicLuminosity' * SPD);
 currentL = ieLuminanceFromEnergy(SPD',wave);
 spectralRadiance = (SPD / currentL) * luminance;

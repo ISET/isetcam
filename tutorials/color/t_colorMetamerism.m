@@ -32,8 +32,8 @@ sceneWindow(uniformScene);
 % The display primary intensities are chosen so that the LCD has the same
 % effect as the D65 on the cone excitations.
 
-% The mean LMS cone values of the original 
-lms     = sceneGet(uniformScene,'lms');    
+% The mean LMS cone values of the original
+lms     = sceneGet(uniformScene,'lms');
 meanLMS = mean(RGB2XWFormat(lms));
 
 % Load a display and use the display primaries as a set of basis
@@ -108,7 +108,7 @@ originalSPD = sceneGet(uniformScene,'mean energy spd');
 % Change the scene SPD to the metamer.
 % Divide by the originalSPD and multiply by the metamer
 skipIlluminant = false;
-uniformScene2 = sceneSPDScale(uniformScene,(double(metamer(:))./double(originalSPD(:))),'*',skipIlluminant); 
+uniformScene2 = sceneSPDScale(uniformScene,(double(metamer(:))./double(originalSPD(:))),'*',skipIlluminant);
 uniformScene2 = sceneSet(uniformScene2,'name','metamer');
 
 % The metamer SPD
@@ -155,7 +155,7 @@ sceneWindow(barS);
 % positions.  They are blurred a little onto the left side by the
 % optics.
 oi = oiCreate('human');
-oi = oiCompute(oi,barS); 
+oi = oiCompute(oi,barS);
 
 midRow = round(oiGet(oi,'rows')/2);
 oiPlot(oi,'h line irradiance',[1,midRow]);

@@ -28,7 +28,7 @@ function [sOBJECT,val] = vcGetObject(objType,val)
 % Copyright ImagEval Consultants, LLC, 2003.
 
 %%  vcSESSION is used in the eval.
-global vcSESSION 
+global vcSESSION
 
 % For speed, do not use ieNotDefined()
 if ~exist('objType','var') || isempty(objType), error('objType must be defined'); end

@@ -60,7 +60,7 @@ switch lower(bMethod)
         % The analog voltages in the corresponding 4 CFA positions are
         % added together.  The resulting sensor voltages are half the size
         % in each dimension, and the voltages from corresponding CFA
-        % positions are summed. 
+        % positions are summed.
         %
         % sensor = vcGetObject('sensor');
         v = sensorGet(sensor,'volts');

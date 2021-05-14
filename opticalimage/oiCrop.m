@@ -99,7 +99,7 @@ wAngularNew = atand(newSz(2) * sampleSpace/2/focalLength) /...
 %}
 wAngularNew = atand(newSz(2) * sampleSpace(2) / 2 / focalLength) * 2;
 
-            
+
 oi = oiSet(oi,'wangular',wAngularNew);
 
 

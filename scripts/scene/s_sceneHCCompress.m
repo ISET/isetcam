@@ -38,7 +38,7 @@ scenePlot(scene,'illuminant photons');
 vExplained = 0.95;
 [imgMean, imgBasis, coef] = hcBasis(sceneGet(scene,'photons'),vExplained);
 
-%% Save the data 
+%% Save the data
 wave        = sceneGet(scene,'wave');
 basis.basis = imgBasis;
 basis.wave  = wave;
@@ -61,7 +61,7 @@ vExplained = 0.99;
 [imgMean, imgBasis, coef] = hcBasis(sceneGet(scene,'photons'),vExplained);
 fprintf('Number of basis functions %.0f\n',size(imgBasis,2));
 
-%% Save the data 
+%% Save the data
 wave        = sceneGet(scene,'wave');
 basis.basis = imgBasis;
 basis.wave  = wave;

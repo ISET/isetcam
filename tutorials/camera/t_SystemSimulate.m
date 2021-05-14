@@ -7,11 +7,11 @@
 %
 % See also: t_IntroductionScene.m and t_IntroductionOI.m
 %
-% To learn more about a particular function, type "help function" as in "help sensorCreate".  
+% To learn more about a particular function, type "help function" as in "help sensorCreate".
 %
 % Copyright ImagEval Consultants, LLC, 2010.
 
-%% Initialize ISET 
+%% Initialize ISET
 ieInit
 
 %% Initialize some parameters
@@ -19,20 +19,20 @@ ieInit
 % In this example, wavelengths range between 400 and 710 nm, sampled every
 % 5 nm. It is also possible to expand the range to include wavelengths in
 % the near infrared (NIR) range. Of course, this would only make sense if your
-% imaging sensor has sensitivity in the NIR range. 
-wave = 400:5:710; 
+% imaging sensor has sensitivity in the NIR range.
+wave = 400:5:710;
 
 %% Scene
 % Create a radiometric description of the scene.
-% There are several ways to create a scene. 
+% There are several ways to create a scene.
 % see scripts/scenes for more information about scenes
 %
-% One is to use the sceneCreate function.  
+% One is to use the sceneCreate function.
 % In the example below, we create a scene of the Macbeth Color Checker
 % illuminated with a tungsten light
 % For a complete list of the types of synthetic scenes type "help sceneCreate"
 %
-% A second method for creating a scene is to read data from a file.  
+% A second method for creating a scene is to read data from a file.
 % ISET includes a few multispectral scenes as part of the distribution.
 % These can be found in the data/image/multispectral directory
 % You can also select the file (or many other files) using the command:
@@ -47,7 +47,7 @@ scene = sceneCreate('macbeth tungsten',patchSize,wave);
 sceneWindow(scene);
 
 %%
-% Each scene has a stored illuminant. 
+% Each scene has a stored illuminant.
 %
 scenePlot(scene,'illuminant energy roi');
 
@@ -80,7 +80,7 @@ scene = sceneInterpolateW(scene,wave,1);  % Resample, preserve luminance
 % method, in which we read in data from Zemax and create a shift-variant
 % set of pointspread functions along with a geometric distortion function.
 %
-% The simplest is method of creating an optical image is to use 
+% The simplest is method of creating an optical image is to use
 % the diffraction-limited lens model.  To create a diffraction-limited
 % optics with an f# of 4, you can call these functions
 oi = oiCreate;
@@ -92,7 +92,7 @@ oi = oiSet(oi,'optics fnumber',4);
 
 % In this example we set the properties of the optics to include cos4th
 % falloff for the off axis vignetting of the imaging lens, and we set the
-% lens focal length to 3 mm. 
+% lens focal length to 3 mm.
 oi = oiSet(oi,'optics off axis method','cos4th');
 oi = oiSet(oi,'optics focal length',3e-3);     % from lens calibration software
 
@@ -133,18 +133,18 @@ pixel =  sensorGet(sensor,'pixel');
 % Here are some of the key pixel properties
 voltageSwing   = 1.15;  % Volts
 wellCapacity   = 9000;  % Electrons
-conversiongain = voltageSwing/wellCapacity;   
+conversiongain = voltageSwing/wellCapacity;
 fillfactor     = 0.45;       % A fraction of the pixel area
 pixelSize      = 2.2*1e-6;   % Meters
 darkvoltage    = 1e-005;     % Volts/sec
 readnoise      = 0.00096;    % Volts
 
 % We set these properties here
-pixel = pixelSet(pixel,'size',[pixelSize pixelSize]);   
-pixel = pixelSet(pixel,'conversiongain', conversiongain);        
-pixel = pixelSet(pixel,'voltageswing',voltageSwing);                                             
-pixel = pixelSet(pixel,'darkvoltage',darkvoltage) ;               
-pixel = pixelSet(pixel,'readnoisevolts',readnoise);  
+pixel = pixelSet(pixel,'size',[pixelSize pixelSize]);
+pixel = pixelSet(pixel,'conversiongain', conversiongain);
+pixel = pixelSet(pixel,'voltageswing',voltageSwing);
+pixel = pixelSet(pixel,'darkvoltage',darkvoltage) ;
+pixel = pixelSet(pixel,'readnoisevolts',readnoise);
 
 %  Now we set some general sensor properties
 % exposureDuration = 0.030; % commented because we set autoexposure
@@ -157,13 +157,13 @@ cols = 642;               % number of pixels in a column
 
 %%  Set these sensor properties
 % sensor = sensorSet(sensor,'exposuretime',exposureDuration); % commented because we set autoexposure
-sensorSet(sensor,'autoExposure',1);  
+sensorSet(sensor,'autoExposure',1);
 sensor = sensorSet(sensor,'rows',rows);
 sensor = sensorSet(sensor,'cols',cols);
-sensor = sensorSet(sensor,'dsnu level',dsnu);  
-sensor = sensorSet(sensor,'prnu level',prnu); 
-sensor = sensorSet(sensor,'analog Gain',analogGain);     
-sensor = sensorSet(sensor,'analog Offset',analogOffset);   
+sensor = sensorSet(sensor,'dsnu level',dsnu);
+sensor = sensorSet(sensor,'prnu level',prnu);
+sensor = sensorSet(sensor,'analog Gain',analogGain);
+sensor = sensorSet(sensor,'analog Offset',analogOffset);
 
 % Stuff the pixel back into the sensor structure
 sensor = sensorSet(sensor,'pixel',pixel);
@@ -177,7 +177,7 @@ wave = sensorGet(sensor,'wave');
 
 % Then we load the calibration data and attach them to the sensor structure
 fullFileName = fullfile(isetRootPath,'data','sensor','colorfilters','nikon','NikonD100.mat');
-[data,filterNames] = ieReadColorFilter(wave,fullFileName); 
+[data,filterNames] = ieReadColorFilter(wave,fullFileName);
 sensor = sensorSet(sensor,'filter spectra',data);
 sensor = sensorSet(sensor,'filter names',filterNames);
 sensor = sensorSet(sensor,'Name','Camera-Simulation');
@@ -202,13 +202,13 @@ sensorWindow(sensor);
 %
 % ISET includes a wide array of options for selecting color filters,
 % fill-factors, infrared blocking filters, adjusting pixel properties,
-% color filter array patterns, and exposure modes. 
+% color filter array patterns, and exposure modes.
 %% Image Processor
 % The sensor array is demosaiced, color-balanced, and rendered on a display
 % The image processing pipeline is managed by the fourth principal ISET
 % structure, the virtual camera image (vci).  This structure allows the
 % user to set a variety of image processing methods, including demosaicking
-% and color balancing.  
+% and color balancing.
 vci = ipCreate;
 
 % The routines for setting and getting image processing parameters are

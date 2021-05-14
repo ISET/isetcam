@@ -30,7 +30,7 @@ sRGB = xyz2srgb(xyz/maxY);
 % Visualize the result
 vcNewGraphWin; image(sRGB)
 
-%% Invert sRGB to XYZ 
+%% Invert sRGB to XYZ
 estXYZ = srgb2xyz(sRGB)*maxY;
 vcNewGraphWin; plot(xyz(:),estXYZ(:),'.');
 
@@ -61,4 +61,4 @@ S2X = inv(colorTransformMatrix('xyz2srgb'))
 
 ones(1,3)*S2X
 
-%% 
+%%

@@ -19,9 +19,9 @@ function [udata, g] = plotOI(oi,pType,roiLocs,varargin)
 %    Irradiance
 %     {'irradiance photons roi'} - Irradiance within an ROI of the image
 %     {'irradiance energy roi'}  - Irradiance within an ROI of the image
-%     {'irradiance vline'}  - Horizontal line spectral irradiance (photons) 
+%     {'irradiance vline'}  - Horizontal line spectral irradiance (photons)
 %                            (space x wavelength)
-%     {'irradiance hline'}  - Vertical line spectral irradiance (photons) 
+%     {'irradiance hline'}  - Vertical line spectral irradiance (photons)
 %                            (space x wavelength)
 %     {'irradiance fft'}    - 2D FFT of radiance at some wavelength
 %     {'irradiance image with grid'} - Show spatial grid on irradiance image
@@ -545,7 +545,7 @@ switch pType
                 ieInWindowMessage('Ray trace: ls wavelength not yet implemented.',handles);
                 disp('Not yet implemented')
             otherwise
-                if ~isempty(varargin), nSamps = varargin{1}; 
+                if ~isempty(varargin), nSamps = varargin{1};
                 else nSamps = 40;
                 end
                 udata = plotOTF(oi,'ls wavelength',[], nSamps);

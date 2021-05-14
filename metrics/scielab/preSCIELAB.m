@@ -1,5 +1,5 @@
 function [refImage,resampledcmpImage] = preSCIELAB(refImage,cmpImage)
-% 
+%
 %  [refImage,resampledcmpImage] = preSCIELAB(refImage,cmpImage)
 %
 % Author: ImagEval
@@ -17,7 +17,7 @@ function [refImage,resampledcmpImage] = preSCIELAB(refImage,cmpImage)
 
 warning('preSCIELAB Probably should be obsolete or at least handled by a different functionality.')
 
-% Resize first 
+% Resize first
 [mRows,mCols,mColors] = size(refImage);
 [nRows,nCols,nColors] = size(cmpImage);
 
@@ -28,12 +28,12 @@ vectorx = linspace(1,mCols,nCols);
 [xi,yi] = meshgrid(1:mCols,1:mRows);
 
 if nColors == 1,
-   resampledcmpImage = interp2(x,y,cmpImage,xi,yi);
+    resampledcmpImage = interp2(x,y,cmpImage,xi,yi);
 else
-   resampledcmpImage(:,:,1) = interp2(x,y,cmpImage(:,:,1),xi,yi);
-   resampledcmpImage(:,:,2) = interp2(x,y,cmpImage(:,:,2),xi,yi);
-   resampledcmpImage(:,:,3) = interp2(x,y,cmpImage(:,:,3),xi,yi);
-end   
+    resampledcmpImage(:,:,1) = interp2(x,y,cmpImage(:,:,1),xi,yi);
+    resampledcmpImage(:,:,2) = interp2(x,y,cmpImage(:,:,2),xi,yi);
+    resampledcmpImage(:,:,3) = interp2(x,y,cmpImage(:,:,3),xi,yi);
+end
 
 % Rescale : set range to [0 1]
 refImage = refImage/max(refImage(:));
@@ -41,12 +41,12 @@ resampledcmpImage = resampledcmpImage/max(resampledcmpImage(:));
 
 % Put output in a form that can be called by spatialCIELAB.m
 if nColors == 1,
-   refImage = [refImage refImage refImage];
-   resampledcmpImage = [resampledcmpImage resampledcmpImage resampledcmpImage];
+    refImage = [refImage refImage refImage];
+    resampledcmpImage = [resampledcmpImage resampledcmpImage resampledcmpImage];
 else
-   refImage = [refImage(:,:,1) refImage(:,:,2) refImage(:,:,3)];
-   resampledcmpImage = ...
-       [resampledcmpImage(:,:,1) resampledcmpImage(:,:,2) resampledcmpImage(:,:,3)];
-end   
+    refImage = [refImage(:,:,1) refImage(:,:,2) refImage(:,:,3)];
+    resampledcmpImage = ...
+        [resampledcmpImage(:,:,1) resampledcmpImage(:,:,2) resampledcmpImage(:,:,3)];
+end
 
 return;

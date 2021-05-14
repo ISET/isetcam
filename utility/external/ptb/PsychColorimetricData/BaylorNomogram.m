@@ -13,7 +13,7 @@ function T = BaylorNomogram(S,lambdaMax)
 % 6/22/96  dhb  Wrote it.
 % 10/16/97 dhb  Add comment about energy units.
 
-% These are the coefficients for the polynomial 
+% These are the coefficients for the polynomial
 % approximation.
 aN = [-5.2734 -87.403 1228.4 -3346.3 -5070.3 30881 -31607];
 
@@ -26,8 +26,8 @@ T = zeros(nT,nWls);
 wlsum = wls/1000;
 
 for i = 1:nT
-	wlsVec = log10( (1 ./ wlsum)*lambdaMax(i)/561)';
-	logS = aN(1) + aN(2)*wlsVec + aN(3)*wlsVec.^2 + aN(4)*wlsVec.^3 + ...
-					 aN(5)*wlsVec.^4 + aN(6)*wlsVec.^5 + aN(7)*wlsVec.^6;
-	T(i,:) = 10.^logS;
+    wlsVec = log10( (1 ./ wlsum)*lambdaMax(i)/561)';
+    logS = aN(1) + aN(2)*wlsVec + aN(3)*wlsVec.^2 + aN(4)*wlsVec.^3 + ...
+        aN(5)*wlsVec.^4 + aN(6)*wlsVec.^5 + aN(7)*wlsVec.^6;
+    T(i,:) = 10.^logS;
 end

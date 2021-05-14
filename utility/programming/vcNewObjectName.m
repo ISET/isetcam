@@ -1,10 +1,10 @@
 function newName = vcNewObjectName(objType)
-% Create a new name that for this object type  
+% Create a new name that for this object type
 %
 %   newName = vcNewObjectName(objType)
 %
 %   The new name is the same as the object type plus a number of how many
-%   objects of this type exist already.  
+%   objects of this type exist already.
 %
 % Example:
 %    nm = vcNewObjectName('SCENE');

@@ -1,7 +1,7 @@
 function [val_UWattsPerCm2,limit_UWattsPerCm2] = ISO2007MPEComputeType1ContinuousCornealUVUnweightedValue(S,radiance_WattsPerSrM2,stimulusDurationSecs,stimulusAreaDegrees2)
 % [val_UWattsPerCm2,limit_UWattsPerCm2] = ISO2007MPEComputeType1ContinuousCornealUVUnweightedValue(S,radiance_WattsPerSrM2,stimulusDurationSecs,stimulusAreaDegrees2)
 %
-% Compute the unweighted UV radiation for Type 1 instruments as given on page 7, Table 2, 
+% Compute the unweighted UV radiation for Type 1 instruments as given on page 7, Table 2,
 % 5.4.1.2.
 %
 % Input spectrum is radiance in units of Watts/[sr-m2-wlinterval].
@@ -10,7 +10,7 @@ function [val_UWattsPerCm2,limit_UWattsPerCm2] = ISO2007MPEComputeType1Continuou
 %
 % See page 6 for a definition of a Type 1 instrument.  As far as I can tell, the key
 % criterion is that it doesn't put out more light that exceeds the Type 1 limits.
-% 
+%
 % If the exposure time is longer than 2 hours the specified limits should be reduced by
 % 1/exposureDuration in hours.  This routine implements that adjustment for its returned
 % limit value.  It does not implement a further reduction of of the limit (by a factor of 2)

@@ -281,7 +281,7 @@ for p=1:numel(in)
     if qDontProcess(p)
         continue;
     end
-
+    
     [idx{1:numel(siz)}] = ind2sub(siz,p);
     namesuff = ['{' Interleave([idx{:}],repmat(',',1,length(idx)-1)) '}'];
     

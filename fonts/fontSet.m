@@ -15,7 +15,7 @@ function font = fontSet(font, param, val, varargin)
 %      'style'     - italics, bold, normal
 %      'dpi'       - dots per inch
 %      'bitmap'    - bit map
-% 
+%
 % Example:
 %   font = fontCreate('v');
 %   font = fontSet(font,'character','g');

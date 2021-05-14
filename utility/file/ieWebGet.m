@@ -14,13 +14,13 @@ function localFile = ieWebGet(varargin)
 % Key/val pairs
 %  op:            The operation to perform {'fetch','read','list','browse'}
 %                 (default: 'fetch')
-%  resource type: 'pbrt', 'hyperspectral', 'multispectral', 'hdr' 
+%  resource type: 'pbrt', 'hyperspectral', 'multispectral', 'hdr'
 %                 (default: 'pbrt')
 %  resource name: File name of the remote file
 %  remove temp files:  Remove local temp file (zip)
 %  unzip:           :  Unzip the file
 %  verbose          :  Print a report to the command window
-% 
+%
 % Output
 %   localFile:  Name of the local download file
 %
@@ -32,7 +32,7 @@ function localFile = ieWebGet(varargin)
 %   The types of resources are listed above.  To see the names of the
 %   resources, use the 'list' operation.
 %
-% See also: 
+% See also:
 %    webImageBrowser_mlapp
 %
 
@@ -79,7 +79,7 @@ unZip          = p.Results.unzip;
 removeTempFiles = p.Results.removetempfiles;
 
 if isempty(localName)
-    localName = resourceName; 
+    localName = resourceName;
 end
 verbose   = p.Results.verbose;
 op        = p.Results.op;
@@ -113,7 +113,7 @@ switch resourceType
                     proceed = confirmDownload(resourceName, resourceURL, localURL);
                     if proceed == false, return, end
                 end
-
+                
                 try
                     websave(localURL, resourceURL);
                     if unZip
@@ -192,8 +192,8 @@ switch resourceType
                             warning("Unable to retrieve %s", resourceURL);
                         end
                         if isequal(op, 'read')
-                        % in this case we are actually returning a Matlab
-                        % array with scene data!
+                            % in this case we are actually returning a Matlab
+                            % array with scene data!
                             stashFile = localFile;
                             localFile = load(stashFile);
                             if removeTempFiles

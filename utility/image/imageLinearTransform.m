@@ -1,5 +1,5 @@
 function imT = imageLinearTransform(im,T)
-% Apply a linear transformation to the color channels of an RGB format image 
+% Apply a linear transformation to the color channels of an RGB format image
 %
 %  imT = imageLinearTransform(im,T)
 %
@@ -13,7 +13,7 @@ function imT = imageLinearTransform(im,T)
 % transform T must have n rows.
 %
 % This routine works with colorTransformMatrix, which provides access to
-% various standard color transformation matrices. 
+% various standard color transformation matrices.
 %
 % This routine works with im in the format (N x M x W) and a T matrix size
 % (W x K), where K is the number of output channels.
@@ -41,7 +41,7 @@ end
 %
 im = RGB2XWFormat(im);
 
-% Then we multiply and reformat. 
+% Then we multiply and reformat.
 imT = im*T;
 imT = XW2RGBFormat(imT,r,c);
 

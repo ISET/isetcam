@@ -1,20 +1,20 @@
 function [DR, maxVoltage, minVoltage] = sensorDR(sensor,integrationTime)
-%Compute sensor dynamic range (in dB)  
+%Compute sensor dynamic range (in dB)
 %
 %   [DR, maxVoltage, minVoltage] = sensorDR(sensor,integrationTime)
 %
 %  This algorithm calculates the ratio of the maximum pixel current divided
-%  by the minimum voltage. 
-%     
+%  by the minimum voltage.
+%
 %      DR = 20 * log10(maxVoltage ./ minVoltage);
-% 
+%
 %  The maximum voltage is determined by the voltage swing minus the
-%  darkvoltage.  
+%  darkvoltage.
 %
 %  The minimum voltage depends on the noise, sqrt(dkVariance + rnVariance +
 %  offsetSD.^2);    Noise is measured in electrons, because these noise
 %  terms are Poisson in electrons (but not in volts).
-%  
+%
 %  The noise is calculated as if we randomly pick a single pixel from the
 %  image sensor array.  For this model, the single pixel has the noise
 %  inherent in the pixel and the noise inherent in the variation across the
@@ -28,7 +28,7 @@ function [DR, maxVoltage, minVoltage] = sensorDR(sensor,integrationTime)
 %
 %  If no integrationTime is specified, the integration time from the sensor
 %  in the argument to the function is used.  If no sensor is specified in
-%  the calling routine, the currently selected sensor is used.  
+%  the calling routine, the currently selected sensor is used.
 %
 %  If the sensor is set to auto-exposure or 0 integration time, an empty DR
 %  value is returned.
@@ -85,7 +85,7 @@ offsetVariance = sensorGet(sensor,'offsetsd')^2;    % V^2
 % Add all the variances up to get the noise standard devaiton
 noiseSD = sqrt(dkVariance + rnVariance + offsetVariance);     % e-
 
-% Heart of the calculation - 
+% Heart of the calculation -
 % The max voltage is the voltage swing minus the dark voltage
 % The noise standard deviation in volts is noiseSD
 maxVoltage = pixelGet(sensor.pixel,'voltageswing') - (darkVoltage*integrationTime);
@@ -93,7 +93,7 @@ minVoltage = noiseSD;
 
 % Some special cases have no noise, so we have infinite DR.  But that is
 % not realistic, just used in some ideal cases.  We protect against an
-% error here. 
+% error here.
 if minVoltage == 0, DR = Inf;
 else DR = 20 * log10(maxVoltage ./ minVoltage);
 end

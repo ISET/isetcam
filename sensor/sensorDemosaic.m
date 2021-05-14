@@ -27,9 +27,9 @@ function imgs = sensorDemosaic(sensor)
 %{
 scene = sceneCreate; scene = sceneSet(scene,'fov',30);
 oi = oiCreate; oi = oiCompute(oi,scene);
-sensor = sensorCreateIMECSSM4x4vis('rowcol',[300 400]); 
+sensor = sensorCreateIMECSSM4x4vis('rowcol',[300 400]);
 sensor = sensorSetSizeToFOV(sensor,30,oi);
-sensor = sensorSet(sensor,'auto exp',true); 
+sensor = sensorSet(sensor,'auto exp',true);
 sensor = sensorCompute(sensor,oi);
 imgs = sensorDemosaic(sensor);
 T = sensorDisplayTransform(sensor);
@@ -46,7 +46,7 @@ end
 % sensorWindow(sensor);
 %}
 
-%% 
+%%
 if ieNotDefined('sensor'), error('sensor required'); end
 
 %% Do the calculation via the ipCompute route

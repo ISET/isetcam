@@ -8,7 +8,7 @@
 %%
 ieInit
 
-%% Rotate points in 3-space. 
+%% Rotate points in 3-space.
 
 % Just testing the model and matrices
 %
@@ -23,7 +23,7 @@ ieInit
 % vcNewGraphWin;
 % plot3(XYZ(:,1),XYZ(:,2),XYZ(:,3),'ro-');
 % angleList = [pi/4 0 0];
-% rXYZ = (rotationMatrix3d(angleList)*XYZ')'; 
+% rXYZ = (rotationMatrix3d(angleList)*XYZ')';
 % hold on;
 % plot3(rXYZ(:,1),rXYZ(:,2),rXYZ(:,3),'bo-');
 % grid on; axis equal
@@ -42,7 +42,7 @@ ieInit
 % Make points that are on the proper side of the Z-plane (away from the
 % center of the camera.
 f = 4;
-XYZ = randi(20,3,9); 
+XYZ = randi(20,3,9);
 XYZ(1,:) = XYZ(1,:) - mean(XYZ(1,:));
 XYZ(2,:) = XYZ(2,:) - mean(XYZ(2,:));
 XYZ(3,:) = XYZ(3,:) + f;
@@ -53,7 +53,7 @@ uv = bsxfun(@times, XYZ(1:2,:), f ./ XYZ(3,:));
 
 % Show the 3d points, the points on the z-plane which is the sensor, and
 % the lines through them pointing at the center.
-vcNewGraphWin; 
+vcNewGraphWin;
 plot3(XYZ(1,:),XYZ(2,:),XYZ(3,:),'bo');
 hold on;
 plot3(uv(1,:),uv(2,:),f*ones(1,size(uv,2)),'rx');
@@ -106,7 +106,7 @@ K = eye(3);
 K(1,1) = f; K(2,2) = f;
 tmp = (K*tmp);
 
-vcNewGraphWin; 
+vcNewGraphWin;
 plot3(tmp(1,:),tmp(2,:),f*ones(1,size(uv,2)),'rx');
 grid on; axis equal
 
@@ -133,5 +133,5 @@ xlabel('X'); ylabel('Y');
 for ii=1:size(XYZ,2)
     line([C(1) ,XYZh(1,ii)],[C(2),XYZh(2,ii)],[C(3), XYZh(3,ii)]);
 end
-        
-    
+
+

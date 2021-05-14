@@ -27,7 +27,7 @@ dampingFactor = 1.0;
 % Determine sizes
 [nLinear,nTargets] = size(sensor);
 if (nTargets ~= 1)
-	error('Only handles one sensor target at a time');
+    error('Only handles one sensor target at a time');
 end
 settings = zeros(nLinear,nIterations);
 quantized = zeros(nLinear,nIterations);
@@ -35,7 +35,7 @@ quantized = zeros(nLinear,nIterations);
 % Get basis information
 nPrimaryBases = cal.nPrimaryBases;
 if (isempty(nPrimaryBases))
-	error('No nPrimaryBases field present in calibration structure');
+    error('No nPrimaryBases field present in calibration structure');
 end
 
 if (nPrimaryBases == 1)

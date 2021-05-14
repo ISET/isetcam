@@ -26,7 +26,7 @@ pixelType = 2;  % R,G,B
 %%  Make a point image on the display
 r = 51;
 img = zeros(r,r,3);
-img((r+1)/2,(r+1)/2,pixelType) = 1;   
+img((r+1)/2,(r+1)/2,pixelType) = 1;
 
 pointScene = sceneFromFile(img,'rgb',[],d);
 % pointScene = sceneSet(pointScene,'distance',10);

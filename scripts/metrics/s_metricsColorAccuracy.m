@@ -10,7 +10,7 @@
 %
 % See also:  cameraColorAccuracy, macbethCompareIdeal,
 %            s_metricsAcutance, macbethDrawRects,
-%            imageIncreaseImageRGBSize 
+%            imageIncreaseImageRGBSize
 %
 % Copyright ImagEval Consultants, LLC, 2012.
 

@@ -1,9 +1,9 @@
 function EV = exposureValue(optics,isa);
-%Compute exposure value for current optics and image sensor array 
+%Compute exposure value for current optics and image sensor array
 %
 %     EV = exposureValue(optics,isa);
 %
-%  Exposure value depends on f-number and exposure duration. 
+%  Exposure value depends on f-number and exposure duration.
 %
 %      EV = log_2( (f#)^2 / expT )
 %

@@ -1,11 +1,11 @@
 %% Review rendering images on a display (Psych 221)
 %
-%    Class:     Psych 221/EE 362 
+%    Class:     Psych 221/EE 362
 %    Tutorial:  Examples of rendering images
-%    Author:    Wandell 
+%    Author:    Wandell
 %    Purpose:   Explain how to render illuminant and surface reflectance
-%               data on a screen. 
-%    Date:      01.02.96 
+%               data on a screen.
+%    Date:      01.02.96
 %    Duration:  20 minutes
 
 %%
@@ -40,7 +40,7 @@ macbethImage = reshape(1:24,4,6);
 lgt = ieReadSpectra('D65',wave);
 
 % Load data for a default monitor and the XYZ functions
-% 
+%
 d = displayCreate('OLED-Samsung',wave);
 phosphors = displayGet(d,'rgb spd');
 XYZ = ieReadSpectra('XYZ',wave);
@@ -110,7 +110,7 @@ macbethRGB = ieLUTLinear(RGB,iGtable);
 % intensities for each one of them.  We place an image that consists
 % of the list of values 1:24, into the frame-buffer.  We set the color
 % table values to the proper r,g,b values.
-% 
+%
 macbethRGB = macbethRGB/max(macbethRGB(:));
 
 % Now, we put up this 6 x 4 matrix and set the image to have the right
@@ -186,7 +186,7 @@ macbethCameraLinearRGB = camera2mon*cameraRGB;
 % render a display.
 
 macbethCameraLinearRGB = ...
-    round(1000*macbethCameraLinearRGB/(max(macbethCameraLinearRGB(:)))); 
+    round(1000*macbethCameraLinearRGB/(max(macbethCameraLinearRGB(:))));
 
 % Because we don't really know the properties of this display, we are
 % going to arrange things so that the known white chip is displayed as
@@ -203,7 +203,7 @@ macbethCameraRGB =  iGtable(round(macbethCameraLinearRGB));
 % intensities for each one of them.  We place an image that consists
 % of the list of values 1:24, into the frame-buffer.  We set the color
 % table values to the proper r,g,b values.
-% 
+%
 macbethCameraColorMap = ieScale(macbethCameraRGB,0,1)';
 vcNewGraphWin; colormap(macbethCameraColorMap)
 image(macbethImage); axis image

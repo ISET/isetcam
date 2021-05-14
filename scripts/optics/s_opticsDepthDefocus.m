@@ -10,7 +10,7 @@
 % diopters assuming the sensor is either at the focal length of the lens,
 % or further away.  The graphs clarify how the depth of field varies as we
 % change the pupil size.
-% 
+%
 % See also: opticsCreate, opticsDepthDefocus
 %
 % Copyright ImagEval Consultants, LLC, 2003.
@@ -19,7 +19,7 @@
 ieInit
 
 %% Use a simple default lens, as one might find in a cell phone camera
-optics  = opticsCreate; 
+optics  = opticsCreate;
 fLength = opticsGet(optics,'focal length','m');
 D0      = opticsGet(optics,'power');
 
@@ -38,7 +38,7 @@ fprintf('Lens power %f and focal length %f (m)\n',D0,fLength);
 
 % Object distance is the distance to the object.
 % Here are the object distance
-nSteps = 500; 
+nSteps = 500;
 objDist = linspace(fLength*1.5,100*fLength,nSteps);
 
 % Calculate defocus (dioptric error) and plot it relative to total lens
@@ -48,7 +48,7 @@ D  = opticsDepthDefocus(objDist,optics);
 vcNewGraphWin;
 semilogx(objDist/fLength,D/D0);
 title('Sensor at focal length')
-xlabel('Distance to object (units: focal length)'); 
+xlabel('Distance to object (units: focal length)');
 ylabel('Relative dioptric error')
 grid on
 t = sprintf('Focal length %.1f (mm)',fLength*ieUnitScaleFactor('mm'));
@@ -100,7 +100,7 @@ fprintf('In focus object is %.3f focal lengths from thin lens.\n',objDist(ii)/fL
 % length
 vcNewGraphWin;
 semilogx(objDist/fLength,D);
-xlabel('Object distance (focal lengths)'); 
+xlabel('Object distance (focal lengths)');
 ylabel('Dioptric error (1/m)')
 grid on
 t = sprintf('Focal length %.1f (mm)',fLength*ieUnitScaleFactor('mm'));

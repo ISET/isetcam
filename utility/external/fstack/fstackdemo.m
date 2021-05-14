@@ -6,7 +6,7 @@ load imdata.mat
 % Show images:
 showimages(imlist, focus);
 close(gcf)
-% Compute extended depth-of-field image with default values 
+% Compute extended depth-of-field image with default values
 % using the selective all-in-focus algorithm [1]:
 im = fstack(imlist, 'focus', focus);
 

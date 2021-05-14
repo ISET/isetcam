@@ -16,8 +16,8 @@ function il = illuminantModernize(illuminant)
 %
 % If the illuminant has these string fields, they will be copied too.
 %
-%        comment: 
-%        name:    
+%        comment:
+%        name:
 %
 % We use spd2cct to name the illuminant.
 %

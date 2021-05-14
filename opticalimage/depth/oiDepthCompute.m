@@ -9,15 +9,15 @@ function [oiD,D] = oiDepthCompute(oi,scene,imageDist,depthEdges,cAberration,disp
 %        image is calculated for each distance.  This cell array of
 %        irradiance images is combined (oiDepthCombine) into a single
 %        image.  The combination is based on picking out the pixels at the
-%        appropriate depth. 
+%        appropriate depth.
 % imageDist:   The distance of the image plane behind the lens (default:
-%              focal length). 
+%              focal length).
 % depthEdges:  A vector of distances from the lens.  The number of
 %              depthEdges defines the number of OIs that are computed.
-% cAberration: Defocus in diopters (chromatic aberration, longitudinal) for 
+% cAberration: Defocus in diopters (chromatic aberration, longitudinal) for
 %              each wavelength (default = 0).
 % displayFlag: Display the defocused images is shown in the oiWindow
-%              (Default=true) 
+%              (Default=true)
 %
 % See also:  oiDepthCombine, oiDepthSegmentMap, s_opticsDepthScene
 %

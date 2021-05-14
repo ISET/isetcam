@@ -11,7 +11,7 @@ function [x,y,z] = ieShape(type,nSamp,varargin)
 %  The units of x,y are meters
 %  fNumber = 2.0; wavelength = 550;
 %  radius = (2.44*fNumber*wavelength*10^-9);
-%  [x,y] = ieShape('circle',200, radius); plot(x,y,'.'); 
+%  [x,y] = ieShape('circle',200, radius); plot(x,y,'.');
 %  axis equal; grid on
 %
 % Imageval Consulting, LLC, 2015

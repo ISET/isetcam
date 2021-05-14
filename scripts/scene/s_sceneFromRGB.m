@@ -1,4 +1,4 @@
-%% Converting typical images to spectral radiance 
+%% Converting typical images to spectral radiance
 %
 % RGB data can be converted to scene spectral radiance, making it
 % possible to many different scenes. Of course, RGB data do not
@@ -11,7 +11,7 @@
 %
 %    1) We assume the RGB data will be displayed on a calibrated
 %    monitor with a known spectral power distribution. The user
-%    can specify the display, or a default is chosen. 
+%    can specify the display, or a default is chosen.
 %
 %    2) The white (R=G=B at max) spectral power distribution of
 %    the display is set to be the scene illuminant.
@@ -21,7 +21,7 @@
 % illuminant spd. These surface reflectances are plausible,
 % as we discovered by many experiments.  See the script
 % *s_sceneFromRGBvsMultispectral* to evaluate how well this
-% method does.  
+% method does.
 %
 % N.B. Once we have plausible scene reflectances we can render
 % the scene under a different illuminant, say a daylight,
@@ -42,9 +42,9 @@ delay = 0.2;
 displayCalFile = 'LCD-Apple.mat';
 load(displayCalFile,'d'); dsp = d;
 wave = displayGet(dsp,'wave');
-spd = displayGet(dsp,'spd'); 
+spd = displayGet(dsp,'spd');
 
-vcNewGraphWin; plot(wave,spd); 
+vcNewGraphWin; plot(wave,spd);
 xlabel('Wave (nm)'); ylabel('Energy'); grid on
 title('Spectral Power Distribution of Display Color Primaries');
 
@@ -79,7 +79,7 @@ sceneWindow(scene); pause(delay);
 
 % Here is the yellow beak region and its reflectance
 rect = [144   198    27    18];
-r = ieDrawShape(scene,'rectangle',rect); 
+r = ieDrawShape(scene,'rectangle',rect);
 set(r,'EdgeColor',[0 0 1]);
 scenePlot(scene,'reflectance roi',rect);
 

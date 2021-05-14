@@ -27,7 +27,7 @@ function val = ipGet(ip,param,varargin)
 %  NOTE:  The display structure attached to the image processor is not
 %  necessarily the same as the ISET display structure.  The ip.display is
 %  typically a simple sRGB model that is used for rendering.  The display
-%  in the main ISET database is the one analyzed in the displayWindow. 
+%  in the main ISET database is the one analyzed in the displayWindow.
 %
 % Image Processor parameters
 %      'name'  - This image processing structure name
@@ -140,8 +140,8 @@ switch oType
         % is in a separate repository.
         
         % If there is no L3, return empty
-        if isfield(ip,'L3'), L3 = ip.L3; 
-        else return; 
+        if isfield(ip,'L3'), L3 = ip.L3;
+        else return;
         end
         
         % Either return L3 or the L3 param
@@ -210,7 +210,7 @@ switch oType
                 
                 % We consider color conversion to mean sensor correction, that is
                 % conversion of sensor data to the internal color space.
-            case {'sensorconversion','conversionsensor'} 
+            case {'sensorconversion','conversionsensor'}
                 val = ip.sensorCorrection;
             case {'sensorconversionmethod','conversionmethodsensor'}
                 val = ip.sensorCorrection.method;
@@ -341,7 +341,7 @@ switch oType
                 % Either the max digital value or 1 if there is no
                 % representation of the nbits.
                 nbits = ipGet(ip,'nbits');
-                if isempty(nbits), val = 1; 
+                if isempty(nbits), val = 1;
                     return
                 else, val = 2^nbits;
                 end
@@ -380,7 +380,7 @@ switch oType
                 val = imageDataXYZ(ip);
             case {'srgb','datasrgb'}
                 % ipGet(ip,'data srgb');
-                % 
+                %
                 val = imageShowImage(ip,[],[],0);
                 %  val = imageDataXYZ(ip);
                 %  val = xyz2srgb(val);

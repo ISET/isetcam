@@ -177,7 +177,7 @@ switch parm
         % primary.  That one is the fourth.  Often we just want the rgb
         % primaries.
         % Do we have a problem here if the display is not emissive?
-        if ~isempty(varargin), wave = varargin{1}; 
+        if ~isempty(varargin), wave = varargin{1};
         else, wave = displayGet(d,'wave');
         end
         spd = displayGet(d,'spd',wave);
@@ -195,7 +195,7 @@ switch parm
     case {'rgb2xyz','lrgb2xyz'}
         % rgb2xyz = displayGet(dsp,'rgb2xyz',wave)
         % This is the linear rgb to xyz conversion.
-        % 
+        %
         % RGB as a column vector mapped to XYZ column
         %  x(:)' = r(:)' * rgb2xyz
         % Hence, imageLinearTransform(img,rgb2xyz)
@@ -203,11 +203,11 @@ switch parm
         %
         wave = displayGet(d,'wave');
         spd  = displayGet(d,'spd',wave);        % spd in energy
-        val  = ieXYZFromEnergy(spd',wave);  %         
+        val  = ieXYZFromEnergy(spd',wave);  %
     case {'rgb2lms'}
         % rgb2lms = displayGet(dsp,'rgb2lms')
         % rgb2lms = displayGet(dsp,'rgb2lms',wave)
-        % 
+        %
         % This is for linear rgb to lms.
         %
         % The matrix is scaled so that L+M of white equals Y of white.
@@ -223,11 +223,11 @@ switch parm
         coneFile = fullfile(isetRootPath,'data','human','stockman');
         cones = ieReadSpectra(coneFile,wave);     % plot(wave,spCones)
         spd = displayGet(d, 'spd', wave);         % plot(wave,displaySPD)
-        val = cones'* spd;                  
+        val = cones'* spd;
         val = val';
         
         % Scale the transform so that sum L and M values sum to Y-value of
-        % white 
+        % white
         %         e = displayGet(d,'white spd',wave);
         %         whiteXYZ = ieXYZFromEnergy(e',wave);
         %         whiteLMS = sum(val);
@@ -238,7 +238,7 @@ switch parm
         % Take an RGB image of digital values, convert them to linear
         % primary intensities, and then return the XYZ values
         
-     case {'whitexyz','whitepoint'}
+    case {'whitexyz','whitepoint'}
         % displayGet(dsp,'white xyz',wave)
         e = displayGet(d,'white spd');
         if isempty(varargin), wave = displayGet(d,'wave');
@@ -270,10 +270,10 @@ switch parm
         
     case {'whitelms'}
         % displayGet(dsp,'white lms')
-        rgb2lms = displayGet(d,'rgb2lms');        
+        rgb2lms = displayGet(d,'rgb2lms');
         % Sent back in XW format, so a row vector
         val = sum(rgb2lms);
-
+        
         % Spatial parameters
     case {'dpi', 'ppi'}
         if checkfields(d,'dpi'), val = d.dpi;
@@ -298,7 +298,7 @@ switch parm
     case {'dotsperdeg','sampperdeg'}
         % Samples per deg
         % displayGet(d,'dots per deg')
-        mpd = displayGet(d,'meters per dot');                      
+        mpd = displayGet(d,'meters per dot');
         dist = displayGet(d,'Viewing Distance');  % Meters
         degPerPixel = atand(mpd / dist);
         val = round(1/degPerPixel);
@@ -306,7 +306,7 @@ switch parm
     case {'degperpixel', 'degperdot'}
         % degrees per pixel
         % displayGet(d, 'deg per dot')
-        mpd = displayGet(d,'meters per dot');                      
+        mpd = displayGet(d,'meters per dot');
         dist = displayGet(d,'Viewing Distance');  % Meters
         val = atand(mpd / dist);
         
@@ -320,7 +320,7 @@ switch parm
         % display refresh rate
         if isfield(d, 'refreshRate'), val = d.refreshRate; end
         
-    % Dixel (subpixel) information
+        % Dixel (subpixel) information
     case {'dixel'}
         % The whole dixel structure
         % displayGet(d, 'dixel')
@@ -333,7 +333,7 @@ switch parm
         dixel_image = displayGet(d, 'dixel intensity map');
         val = size(dixel_image);
         val = val(1:2);
-    
+        
     case {'oversample', 'osample'}
         % Number of subpixel samples per pixel
         % displayGet(d, 'over sample')
@@ -379,7 +379,7 @@ switch parm
         % number of (sub)pixels per dixel
         % returns number of pixels in one block (unit repeated pattern)
         % displayGet(d, 'pixels per dixel')
-        % 
+        %
         % The field indicates how many pixels (defined as independent
         % addressable (R,G,B,etc) tuple) in one repeating pattern. In most
         % cases, this field is [1 1], meaning that one dixel contains one
@@ -397,7 +397,7 @@ switch parm
             val = max(dixel_control(:));
         end
     case {'dixelintensitymap', 'dixelimage'}
-        % dixel intensity map  
+        % dixel intensity map
         % This field specify the intensity (scale factor) at each sample
         % point in dixel
         %

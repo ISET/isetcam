@@ -1,11 +1,11 @@
 function imT = imageFlip(im,flipType)
-% Flip image data - updown or leftright 
+% Flip image data - updown or leftright
 %
 %   imT = imageFlip(im,flipType)
 %
 % The image data, im, size(im) = (r,c,w) can have any value for w.
 % imT contains the data from im, but each color plane is flipped
-% 'updown' or 'leftright' 
+% 'updown' or 'leftright'
 %
 % Example:
 %   imT = imageFlip(im,'upDown');
