@@ -20,7 +20,7 @@ function val = oiGet(oi,parm,varargin)
 %     oi = vcGetObject('oi');
 %
 %  A '*' indicates that the syntax oiGet(scene,param,unit) can be used,
-%  where unit specifies the spatial scale of the returned value:  'm',
+%  where unit specifies the spatial scale of the returned value:  'm'
 %  'cm', 'mm', 'um', 'nm'.  Default is meters ('m').
 %
 %  There is a limitation in that we can only add one additional argument.

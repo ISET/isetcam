@@ -4,7 +4,7 @@ function [ gammaTable1, gammaTable2, displayBaseline, displayRange, displayGamma
 % A simple calibration script for analog photometers.
 %
 % Use CalibrateMonSpd() if you want to do more fancy calibration with
-% different types of photometers or special devices like Bits+ or DataPixx,
+% different types of photometers or special devices like Bits+ or DataPixx
 % assuming you know how to operate CalibrateMonSpd() that is...
 %
 % numMeasures (default: 9) readings are taken manually, and the readings

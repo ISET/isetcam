@@ -3,7 +3,7 @@ function [val_UWattsPerCm2,limit_UWattsPerCm2] = ISO2007MPEComputeType1Continuou
 % function [val_UWattsPerCm2,limit_UWattsPerCm2] = ISO2007MPEComputeType1ContinuousRetIrradiancePCWeightedValue(...
 %   S,radiance_WattsPerSrM2,weightingA,stimulusDurationSecs,[eyeLengthMm])
 %
-% Compute the weighted aphakic (photochemical) retinal irradiance for Type 1 instruments as given on page 8, Table 2,
+% Compute the weighted aphakic (photochemical) retinal irradiance for Type 1 instruments as given on page 8, Table 2
 % 5.4.1.3.a.
 %
 % Input spectrum is radiance in units of Watts/[sr-m2-wlinterval].

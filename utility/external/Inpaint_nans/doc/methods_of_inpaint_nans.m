@@ -54,7 +54,7 @@ A = [0 0 0 0;1 NaN NaN 4;2 3 5 8];
 % would fill in: A(2,2) and A(2,3).
 
 % For an equally spaced grid, the Laplacian equation (or Poisson's equation
-% of heat conduction at steady state if you prefer. Or, for the fickle,
+% of heat conduction at steady state if you prefer. Or, for the fickle
 % Ficke's law of diffusion would apply.) All of these result in the PDE
 %
 %   u_xx + u_yy = 0

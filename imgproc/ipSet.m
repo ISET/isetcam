@@ -285,7 +285,7 @@ switch param
         %}
         %{
     case {'mccpointlocs','mcccornerpoints'}
-        % Corner points for the whole chart.  These have been MCC charts,
+        % Corner points for the whole chart.  These have been MCC charts
         % but we should update to a chartP struct and have these be
         % chartP.cornerPoints.
         warning('use chart corner points')

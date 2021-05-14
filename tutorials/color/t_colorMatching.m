@@ -376,7 +376,7 @@ title(sprintf('%s gamut',displayGet(d,'name')));
 % b) Plot the SPD of the phosphors that would make this match.  Why are
 % these intensities not physically realizable?
 %
-% c) If you wanted to perform an experiment to test the predicted match,
+% c) If you wanted to perform an experiment to test the predicted match
 % what could you do to arrange the viewing conditions?
 %
 %

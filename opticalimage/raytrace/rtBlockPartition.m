@@ -89,7 +89,7 @@ for ww=1:nWave
             rad2deg(lowerAng)
             rad2deg(higherAng)
             
-            if sum(lBoth(:)) < 3, [rr,aa],
+            if sum(lBoth(:)) < 3, [rr,aa]
             else
                 % The rows and columns containing inside the angle/height
                 % ranges.

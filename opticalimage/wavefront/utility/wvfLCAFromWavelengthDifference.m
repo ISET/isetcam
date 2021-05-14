@@ -54,7 +54,7 @@ function lcaDiopters = wvfLCAFromWavelengthDifference(wl1NM,wl2NM,whichCalc)
 %     so you can see that the LCA (in this case written as a difference in power) between two
 %     wavelengths is proportional to the corneal curvature as well as the difference in
 %     corneal index of refraction at the two wavelengths.  In general the difference in
-%     index of refraction across the visible spectrum for the eye is not all that large,
+%     index of refraction across the visible spectrum for the eye is not all that large
 %     and very close to what you would expect if the eye were made of water.
 %     [The numbers in the first 2 equations are taken from a paper by Larry Thibos and colleagues
 %     (1992, Applied Optics, 31, pp. 3594-3600) mainly capture effective index variation of the eye

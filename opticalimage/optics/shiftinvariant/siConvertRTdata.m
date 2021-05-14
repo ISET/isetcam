@@ -45,7 +45,7 @@ nSamples  = size(rtSupport,1);
 nyquistF = 1 ./ (2*dx);   % Line pairs (cycles) per meter
 
 OTF = zeros(nSamples,nSamples,length(rtWave));
-for ii=1:length(rtWave),
+for ii=1:length(rtWave)
     psf         = opticsGet(rtOptics,'rtpsfdata',fieldHeight,rtWave(ii));
     psf         = psf/sum(psf(:));
     OTF(:,:,ii) = fftshift(fft2(psf));

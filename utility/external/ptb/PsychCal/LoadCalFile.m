@@ -97,7 +97,7 @@ if exist(fullFilename, 'file')
         nCals = length(cals);
         
         % User the most recent calibration (the last one in the cals cell
-        % array) by default.  If the user specified a particular cal file,
+        % array) by default.  If the user specified a particular cal file
         % try to retrieve it or return an empty matrix if the cal index is
         % out of range.
         if whichCal == Inf

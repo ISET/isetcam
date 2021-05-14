@@ -65,7 +65,7 @@ function oi = oiCompute(scene,oi,opticsModel)
 %
 % * Historically, we also used a third model is a full ray trace model that
 % allows shift-varying wavelength-dependent point spread functions.  This
-% model includes geometric distortion information, relative illumination,
+% model includes geometric distortion information, relative illumination
 % and field-height and wavelength dependent point spread functions (or
 % OTFS). These are usually imported from a full ray trace program, such as
 % Zemax.  They can also be obtained by the companion CISET program. To set

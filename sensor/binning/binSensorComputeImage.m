@@ -37,7 +37,7 @@ function [dv, voltImage, dsnu, prnu] = binSensorComputeImage(OI,ISA,bMethod,wBar
 %
 %       6.  If column FPN is selected and stored, it is retrieved and
 %       combined into the signal.  If column FPN is selected but not
-%       stored, it is computed and applied. Finally, if it is not selected,
+%       stored, it is computed and applied. Finally, if it is not selected
 %       it is not applied.
 %
 %   Many more notes on the calculation, including all the units are
@@ -112,7 +112,7 @@ ISA       = sensorSet(ISA,'volts',voltImage);
 ISA = sensorSet(ISA,'volts',voltImage);
 
 % Something went wrong.  Return data empty,  including the noise images.
-if isempty(voltImage),
+if isempty(voltImage)
     dsnu = []; prnu = [];
     return;
 end

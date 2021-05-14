@@ -195,7 +195,7 @@ end
 
 end
 
-% This short function forces examples to run in a clean workspace,
+% This short function forces examples to run in a clean workspace
 % and protects the calling workspace.  Also closes any figures that
 % are open if CLOSEFIGS is true, unless the called example clobbers
 % the workspace in which case they are also left open.

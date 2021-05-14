@@ -96,7 +96,7 @@ sensorWindow(sensor);
 % Type 'help iexL2ColorFilter' to find out how to convert data from an
 % Excel Spread Sheet to an ISET color filter file or a spectral file/
 %
-% ISET includes a wide array of options for selecting color filters,
+% ISET includes a wide array of options for selecting color filters
 % fill-factors, infrared blocking filters, adjusting pixel properties,
 % color filter array patterns, and exposure modes.
 %%  PROCESSOR

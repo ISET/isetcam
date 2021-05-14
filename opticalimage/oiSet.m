@@ -232,7 +232,7 @@ switch parm
         % oiSet(oi,'photons',val)
         % Default is to store as single.
         %
-        if ~(isa(val, 'double') || isa(val, 'single') || isa(val, 'gpuArray')),
+        if ~(isa(val, 'double') || isa(val, 'single') || isa(val, 'gpuArray'))
             error('Photons must be type double / single / gpuArray');
         end
         
@@ -382,7 +382,7 @@ switch parm
         % This set changes the illuminant, but it does not change the
         % radiance SPD.  Hence, changing the illuminant (implicitly)
         % changes the reflectance. This might not be what you want.  If you
-        % want to change the scene as if it is illuminanted differently,
+        % want to change the scene as if it is illuminanted differently
         % use the function: sceneAdjustIlluminant()
         
         % The data can be a vector (one SPD for the whole image) or they

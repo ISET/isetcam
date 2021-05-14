@@ -4,7 +4,7 @@ function z = zernfun2(p,r,theta,nflag)
 %   at positions (R,THETA) on the unit circle.  P is a vector of positive
 %   integers between 0 and 35, R is a vector of numbers between 0 and 1,
 %   and THETA is a vector of angles.  R and THETA must have the same
-%   length.  The output Z is a matrix with one column for every P-value,
+%   length.  The output Z is a matrix with one column for every P-value
 %   and one row for every (R,THETA) pair.
 %
 %   Z = ZERNFUN2(P,R,THETA,'norm') returns the normalized Zernike

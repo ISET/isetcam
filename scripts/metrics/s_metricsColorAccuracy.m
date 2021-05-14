@@ -1,6 +1,6 @@
 %% Evaluate the color accuracy of a camera
 %
-% The camera object is a structure with slots for optics (oi),
+% The camera object is a structure with slots for optics (oi)
 % image sensor (sensor), and image processing pipeline (vci).  We
 % frequently use the camera structure to evaluate whole system
 % properties.

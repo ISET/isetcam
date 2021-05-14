@@ -115,7 +115,7 @@ switch lower(idealType)
         % are not in units of candelas/m2.
         %
         % If we don't scale, the numbers are very small after correcting
-        % for pixel area, so that we never get any electrons.  Hence,
+        % for pixel area, so that we never get any electrons.  Hence
         % scaling is required.
         fname  = fullfile(isetRootPath,'data','human','XYZQuanta.mat');
         wave = sensorGet(sensor(1),'wave');
@@ -166,7 +166,7 @@ switch lower(idealType)
         % are not in units of candelas/m2.
         %
         % If we don't scale, the numbers are very small after correcting
-        % for pixel area, so that we never get any electrons.  Hence,
+        % for pixel area, so that we never get any electrons.  Hence
         % scaling is not optional.
         fname  = fullfile(isetRootPath,'data','human','XYZQuanta.mat');
         wave = 400:10:700;

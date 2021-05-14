@@ -53,7 +53,7 @@ xlabel('Wavelength (nm)');ylabel('Energy (watts/sr/nm/m2)')
 d65Photons = Energy2Quanta(wave(:),d65Energy(:));
 
 % Look at the number of photons emitted from the source per square meter
-% and per steradian.  Notice that the overall shape of the curves differ,
+% and per steradian.  Notice that the overall shape of the curves differ
 % with the fall off at longer wavelengths is more rapid for energy than for
 % photons.  That is, the D65 light has about the same number of long
 % (650nm) and middle (550nm) wavelength photons.  But there is more energy

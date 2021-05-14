@@ -22,8 +22,8 @@ function T = imageMCCTransform(sensorQE,targetQE,illuminant,wave)
 % Example:
 %
 % PROGRAMMING TODO:
-%  We should have a variety of ways of computing this linear transform,
-%  including methods that account for known noise, use ridge methods,
+%  We should have a variety of ways of computing this linear transform
+%  including methods that account for known noise, use ridge methods
 %  search to minimize deltaE, and perhaps others.
 %
 %  We should be able to send in illuminant as a vector, not as a name.

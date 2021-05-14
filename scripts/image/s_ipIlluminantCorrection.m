@@ -6,7 +6,7 @@
 % estimate of the sensor data under a standard illuminant (D65 in
 % this case).
 %
-% One could then transform the sensor data into a standard space,
+% One could then transform the sensor data into a standard space
 % such as XYZ, assuming that we know the illuminant (D65).
 %
 % N.B.  There are still some edits to come for the part at the

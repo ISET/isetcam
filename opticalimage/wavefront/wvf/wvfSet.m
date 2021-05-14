@@ -183,7 +183,7 @@ switch parm
     case 'zwavelength'
         % Wavelength for the zcoeff measurements
         wvf.zwls = val;
-        % These parameters are used for the specific calculations with this,
+        % These parameters are used for the specific calculations with this
         % interpolating the measured values that are stored above.
     case {'pupildiameter','pupilsize'}
         % This value is currently mm.  We should change to meters and
@@ -195,7 +195,7 @@ switch parm
         % wvf = wvfSet(wvf,'focal length',17e-3);
         %
         % When we convert the psf in angle units to spatial samples we may
-        % need to know the focal length.  This is necessary, for example,
+        % need to know the focal length.  This is necessary, for example
         % to specific deg per mm on the film (imaging) surface. We use this
         % wvf parameter to convert from angle (the natural calculation
         % space of the phase aberrations) to spatial samples.
@@ -224,7 +224,7 @@ switch parm
         %% Spatial sampling parameters
         %
         % In the end, we calculate using discretized sampling.  Because
-        % the pupil function and the psf are related by a fourier transform,
+        % the pupil function and the psf are related by a fourier transform
         % it is natural to use the same number of spatial samples for both
         % the pupil function and the corresponding psf.   The parameters
         % here specify the sampling.
@@ -295,7 +295,7 @@ switch parm
         % psf.
         %
         % The number of arc minutes per pixel in the sampled PSF is
-        % related to the number of mm per pixel for hte pupil function,
+        % related to the number of mm per pixel for hte pupil function
         % with the relation depending on the wavelength.  The fundamental
         % formula in the pupil plane is that the pixel sampling interval
         % in cycles/radian is:

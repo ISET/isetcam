@@ -6,7 +6,7 @@ function psf = WestPSFMinutes(radius)
 %   of passed radius.  Radius passed in minutes of arc.
 %
 %   Formula from Westheimer G. 1986. The eye as an optical instrument.  In
-%   Handbook of perception and human performance, KR Boff, L Kaufman,
+%   Handbook of perception and human performance, KR Boff, L Kaufman
 %   JP Thomas (eds). New York: Wiley.  Equation 7.
 %
 %   This is only approximately consistent with Westheimer's LSF estimate.

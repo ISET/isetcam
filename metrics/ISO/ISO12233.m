@@ -305,7 +305,7 @@ for color=1:nWave
     % apply window (symmetric Hamming)
     c = win.*c;    % vcNewGraphWin; plot(c)
     
-    % Transform, scale %% The FFT of the point spread,
+    % Transform, scale %% The FFT of the point spread
     temp = abs(fft(c, nn));    % vcNewGraphWin; plot(temp)
     mtf(1:nn2, color) = temp(1:nn2)/temp(1);
 end
@@ -539,7 +539,7 @@ function [nlow, nhigh, status] = clipping(barImage, low, high, thresh1)
 %  barImage= array
 %  low     = low clip value
 %  high    = high clip value
-%  thresh1 = threshhold fraction [0-1] used for warning,
+%  thresh1 = threshhold fraction [0-1] used for warning
 %            if thresh1 = 0, all clipping is reported
 % Peter Burns 5 Aug. 2002
 % Copyright (c) International Imaging Industry Association

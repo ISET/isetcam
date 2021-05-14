@@ -89,7 +89,7 @@ subplot(1,3,2); mesh(abs(gFT));
 % To go back to the original image, take the ifft2 and then apply fftshift
 % to make the psf centered in the spatial domain, as it started.
 %
-% Not that if you had applied fftshift to gFT, to put the DC in the center,
+% Not that if you had applied fftshift to gFT, to put the DC in the center
 % then you'd need to apply ifftshift before executing the code below.
 gFTAndBack = fftshift(ifft2(gFT));
 subplot(1,3,3); mesh(abs(gFTAndBack));

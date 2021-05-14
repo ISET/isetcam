@@ -66,7 +66,7 @@ if showWaitBar, wBar = waitbar(0,'Sensor image:  '); end
 
 %% Integration time
 integrationTime = sensorGet(ISA,'integrationTime');
-if length(integrationTime) > 1,
+if length(integrationTime) > 1
     error('Pixel binning only runs with a single integration time');
 end
 
@@ -104,7 +104,7 @@ else
     ISA = sensorSet(ISA,'digitalValues',dv);
 end
 
-if isempty(sensorGet(ISA,'digitalValues')),
+if isempty(sensorGet(ISA,'digitalValues'))
     % Something went wrong.  Clean up the mess and return control to the main
     % processes.
     disp('No digital values');

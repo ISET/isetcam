@@ -21,9 +21,9 @@ if ieNotDefined('ISA'), ISA = vcGetObject('ISA'); end
 
 pixel = sensorGet(ISA,'pixel');
 
-if ieNotDefined('integrationTime'),
+if ieNotDefined('integrationTime')
     integrationTime = sensorGet(ISA,'integrationTime');
-    if integrationTime == 0,
+    if integrationTime == 0
         DR = [];
         return;
     end

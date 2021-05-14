@@ -40,7 +40,7 @@ theNoise = sqrt(photons) .* randn(size(photons));
 % We add the mean electron and noise electrons together.
 noisyPhotons = round(photons + theNoise);
 % When the signal is very large, say 10^14, the noise is only 10^7.  This
-% is very small and you see basically nothing. But if the signal is small,
+% is very small and you see basically nothing. But if the signal is small
 % you have a chance of seeing something in these plots.
 
 % Now, we find the small mean values and create a Poisson sample. This is

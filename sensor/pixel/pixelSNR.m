@@ -44,7 +44,7 @@ function [SNR, volts, SNRshot, SNRread] = pixelSNR(sensor,volts)
 if ieNotDefined('sensor'), [val,sensor] = vcGetSelectedObject('ISA'); end
 
 pixel = sensorGet(sensor,'pixel');
-if ieNotDefined('volts'),
+if ieNotDefined('volts')
     voltageSwing = pixelGet(pixel,'voltageswing');
     volts = logspace(-4,0)*voltageSwing;
 end

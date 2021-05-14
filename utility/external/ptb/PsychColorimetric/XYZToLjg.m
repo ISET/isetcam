@@ -4,7 +4,7 @@ function Ljg = XYZToLjg(XYZ)
 % Convert XYZ (10 degree) to OSA Ljg coordinates.  Formulae
 % derived from MacAdam (1974, JOSA, 64, pp. 1691-1702).  Note that
 % MacAdam's formulae are in error for the case Y0 less than 30.  The
-% correct formulae may be deduced by examing Semelroth's (JOSA, 1970, 16,
+% correct formulae may be deduced by examing Semelroth's (JOSA, 1970, 16
 % 1685-1689) Eqn. 3, from which MacAdam's incomplete Eqn. 1 is derived.
 %
 % Note that the above problem is propogated into the formulae
@@ -13,7 +13,7 @@ function Ljg = XYZToLjg(XYZ)
 % transformation from scriptL to L.
 %
 % Finally the formualae published in Brainard (2003, Color appearance and
-% color difference specification. In The Science of Color, 2cd edition,
+% color difference specification. In The Science of Color, 2cd edition
 % S. K. Shevell (ed.), Optical Society of America, Washington D.C., 191-216),
 % which correct for the above errors, introduce a new mistake: The coefficient
 % on B^1/3 for the j coordinate in Eq. 5-2 should be -9.7, rather than the

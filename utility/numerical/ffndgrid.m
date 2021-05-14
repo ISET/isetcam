@@ -91,17 +91,17 @@ xyz(2:2:2*D) = max(x,[],1);
 
 % take average of values for each point (default)
 if (nargin < 5)|isempty(aver),     aver = 1; end
-if (nargin >= 4) & ~isempty(limits),
+if (nargin >= 4) & ~isempty(limits)
     nlim = length(limits);
     ind  = find(~isnan(limits(1:min(7,nlim))));
     if any(ind), xyz(ind) = limits(ind);end
 end
-if nargin>=3&~isempty(delta),
+if nargin>=3&~isempty(delta)
     Nd  =length(delta);
     delta =  delta(1:min(Nd,D));
     if Nd ==1, delta = repmat(delta,1,D);end
     ind = find(~(isnan(delta)|delta==0));
-    if any(ind),
+    if any(ind)
         dx(ind)  = real(delta(ind));
         pad = imag(delta(1));
     end
@@ -115,8 +115,8 @@ fU = xyz(end-1);
 n0 = xyz(end);
 
 ind = find(dx<0);
-if any(ind),
-    if any(dx(ind)~=round(dx(ind))),
+if any(ind)
+    if any(dx(ind)~=round(dx(ind)))
         error('Some of Nx1,...NxD in delta are not an integer!'),
     end
     dx(ind) = (xU(ind)-xL(ind))./(abs(dx(ind))-1);
@@ -128,7 +128,7 @@ binx = round((x - xL(ones(N,1),:))./dx(ones(N,1),:)) +1;
 
 fgsiz = ones(1,max(D,2));
 xvec  = cell(1,D);
-for iy=1:D,
+for iy=1:D
     xvec{iy} = xL(iy):dx(iy):xU(iy);
     fgsiz(iy) = length(xvec{iy});
 end
@@ -143,18 +143,18 @@ N    = length(binx); % how many datapoints are left now?
 
 Nf = prod(fgsiz);
 
-if D>1,
+if D>1
     fact = [1 cumprod(fgsiz(1:D-1))];
     binx = sum((binx-1).*fact(ones(N,1),:),2)+1; % linear index to fgrid
 end
 % Fast gridding
 fgrid = sparse(binx,1,f,Nf,1);% z-coordinate
 
-if n0~=0 | aver,
+if n0~=0 | aver
     ngrid = sparse(binx,1,ones(N,1),Nf, 1); % no. of obs per grid cell
     if(n0 < 0),  n0 = -n0*N; end % n0 is given as  percentage
     
-    if n0~=0,
+    if n0~=0
         % Remove outliers
         fgrid(ngrid <= n0) = 0;
         ngrid(ngrid <= n0) = 0;
@@ -164,20 +164,20 @@ end
 
 ind = full(find(fgrid)); % find nonzero values
 
-if aver,
+if aver
     fgrid(ind) = fgrid(ind)./ngrid(ind); % Make average of values for each point
 end
 
-if pad~=0,
+if pad~=0
     Nil=find(fgrid==0);
     fgrid(Nil) = full(fgrid(Nil))+pad; % Empty grid points are set to pad
 end
 
 rho = length(ind)/(Nf); % density of nonzero values in the grid
-if rho>0.4,
+if rho>0.4
     fgrid = full(fgrid);
 end
-if r==1,
+if r==1
     fgrid = fgrid.';
 else
     fgrid = reshape(fgrid,fgsiz);
@@ -194,7 +194,7 @@ if (nargout > 0)
     zzgrid = fgrid;
 elseif D==2,% no output, then plot
     colormap(flipud(hot(64))) %colormap(jet(64))
-    if 1,
+    if 1
         %figure('Position', [100 100 size(fgrid)])
         imagesc(xvec{:}, fgrid)
         set(gca,'YDir','normal')

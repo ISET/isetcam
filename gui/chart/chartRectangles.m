@@ -8,7 +8,7 @@ function [rects,mLocs,pSize] = chartRectangles(cp,nRows,nCols,sFactor,blackEdge)
 %   Help the user select rectangles for a chart, often an MCC.
 %
 % Inputs:
-%   cp:       Cornerpoints of the chart (x,y) format (chartCornerpoints),
+%   cp:       Cornerpoints of the chart (x,y) format (chartCornerpoints)
 %             but flipped up down so that (1,1) is the upper left
 %   nRows:    Number of patches in the rows
 %   nCols:    Number of patches in the columns
@@ -142,7 +142,7 @@ for cc = 1:nCols
         thisPoint = round(thisCol + thisRow - cp(4,:));  % (x,y)
         % drawpoint(ax,'Position',thisPoint,'color','k');
         
-        % Annoyingly, the mLocs are not in (x,y) format, they are in row,
+        % Annoyingly, the mLocs are not in (x,y) format, they are in row
         % col format.
         mLocs(:,ii) = fliplr(thisPoint);   % (y,x) format, row,col
         

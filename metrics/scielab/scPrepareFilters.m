@@ -105,7 +105,7 @@ end
 % Generate the filters
 if (dimension == 1 || dimension == 2)
     
-    % This is the most common case (dimension == 2) for handling an image,
+    % This is the most common case (dimension == 2) for handling an image
     % I think.
     filters{1} = sumGauss([support x1], dimension);
     filters{2} = sumGauss([support x2], dimension);

@@ -26,7 +26,7 @@ end
 % Get the image data.  This should be scaled in some way that we haven't
 % yet really worked through.
 data = metricsGet(figNum,'metricImageData');
-if isempty(data),
+if isempty(data)
     errordlg(sprintf('No metric image data in figure %f\n',figNum));
     return;
 else

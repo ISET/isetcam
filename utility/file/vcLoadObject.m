@@ -74,7 +74,7 @@ switch(lower(objType))
         if isfield(dataArray, 'isa')
             data = dataArray.isa;
             % This is what they rename the variable in Matlab 7.04
-        elseif checkfields(dataArray,'isa_'),
+        elseif checkfields(dataArray,'isa_')
             dataArray.isa = dataArray.isa_;
         elseif isfield(dataArray, 'sensor')
             data = dataArray.sensor;

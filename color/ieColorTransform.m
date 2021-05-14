@@ -27,7 +27,7 @@ function T = ieColorTransform(sensor,targetSpace,illuminant,surface)
 % alternative is to minimize a weighted sum of the mean error and the
 % noise error.  (Ulrich Barnhoefer, SPIE paper).
 %
-% We will aso build more complex maps, based on the Manifold methods,
+% We will aso build more complex maps, based on the Manifold methods
 % and return a lookup table for the transformation. (Jeff DiCarlo, JOSA
 % paper)
 %

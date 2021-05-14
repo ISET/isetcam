@@ -149,7 +149,7 @@ pixel = pixelSet(pixel,'pdWidth',2e-6);
 pixel = pixelSet(pixel,'pdHeight',2e-6);
 pixel = pixelPositionPD(pixel,'center');
 
-% Not sure what this should really be.  It specifies the dynamic range,
+% Not sure what this should really be.  It specifies the dynamic range
 % effectively.
 pixel = pixelSet(pixel,'conversionGain',1.0e-5);    % [V/e-]
 pixel = pixelSet(pixel,'voltageSwing',1);           % [V]
@@ -205,7 +205,7 @@ pixel = pixelSet(pixel,'pdHeight',2e-6);
 pixel = pixelPositionPD(pixel,'center');
 
 % TODO : find appropriate values for this
-% Not sure what this should really be.  It specifies the dynamic range,
+% Not sure what this should really be.  It specifies the dynamic range
 % effectively.
 pixel = pixelSet(pixel,'conversionGain',1.0e-5);    % [V/e-]
 

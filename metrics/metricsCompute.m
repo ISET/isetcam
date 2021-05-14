@@ -47,7 +47,7 @@ switch lower(metricName)
         return;
     case {'cieluv (de)','cieluv'}
         wp = ipGet(vc1,'datawhitepoint');
-        if isempty(wp),
+        if isempty(wp)
             errordlg('No data white point for image 1');
             return;
         end

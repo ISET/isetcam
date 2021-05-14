@@ -12,7 +12,7 @@
 
 % 1. First, create the optical transfer function of the eye for
 % different parameters and assuming that there are no optical
-% aberrations except for chromatic aberration.  It is a perfect eye,
+% aberrations except for chromatic aberration.  It is a perfect eye
 % except for the chromatic aberration problem.
 %
 % The program otf is written in C (for SunOs 4.1.3) and is included

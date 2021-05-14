@@ -27,7 +27,7 @@ if ieNotDefined('sceneAll'), errordlg('You must define the scene.'); return; end
 
 name = sceneGet(sceneAll,'name');
 if ieNotDefined('workDir'), workDir = fullfile(pwd,name);  end
-if ~exist(workDir,'dir'),
+if ~exist(workDir,'dir')
     w = warndlg('Creating work directory.');
     [p, n] = fileparts(workDir);
     chdir(p); mkdir(n); close(w);

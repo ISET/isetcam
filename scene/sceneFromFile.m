@@ -30,7 +30,7 @@ function [scene,I] = sceneFromFile(I, imType, meanLuminance, dispCal, ...
 % Description
 %  The data in the image file are converted into spectral format and placed
 %  in an ISETcam scene data structure. The allowable imageTypes are
-%  monochrome, rgb, multispectral and hyperspectral. If you do not specify,
+%  monochrome, rgb, multispectral and hyperspectral. If you do not specify
 %  and we cannot infer, then you may be asked.
 %
 %  If the image is RGB format, you may specify a display calibration file

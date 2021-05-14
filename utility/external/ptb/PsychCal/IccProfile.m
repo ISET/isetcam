@@ -72,7 +72,7 @@ function icc=IccProfile(command,file)
 %
 % EXPLANATION OF TAG TYPE:
 %
-% Most of the information in a profile is stored as chunks of data,
+% Most of the information in a profile is stored as chunks of data
 % called elements. Each element has a unique 4-character tag name and
 % a 4-character tag type. IccProfile accepts every tag name, and
 % installs a corresponding field in your icc struct, with the same
@@ -133,7 +133,7 @@ function icc=IccProfile(command,file)
 %
 % You can buy a calibration package consisting of a program (e.g.
 % ColorBlind ProveIt! or Monaco EZColor) and a simple colorimeter to
-% easily create an ICC profile for your monitor. Using IccProfile.mex,
+% easily create an ICC profile for your monitor. Using IccProfile.mex
 % it should be easy to use that calibration data to do your color
 % corrections, but we haven't actually tried that yet. Here are a few
 % calibrators that seems to be good, from what we've read. We've

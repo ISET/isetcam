@@ -25,7 +25,7 @@ end
 d = dir(imgDir);
 str = {d.name};
 [s,v] = listdlg('PromptString',prompt,'Name','Select files','ListString',str,'ListSize',[240,600]);
-if isempty(s),
+if isempty(s)
     fullname = [];
     return;
 else

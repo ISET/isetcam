@@ -22,7 +22,7 @@ function val = illuminantGet(il,param,varargin)
 % Inputs
 %
 % il: illuminant structure.
-%  This structure contains a range of information about the illuminant,
+%  This structure contains a range of information about the illuminant
 %  including the wavelength samples and spectral power distribution.  The
 %  illuminant spectral power distribution is stored in ieCompressData
 %  format (32 uint bits).

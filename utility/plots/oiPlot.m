@@ -606,7 +606,7 @@ switch pType
         opticsModel = opticsGet(optics,'model');
         switch lower(opticsModel)
             case 'raytrace'
-                % Not what the user asked for.  Must fix.  Add varargin,
+                % Not what the user asked for.  Must fix.  Add varargin
                 % and make the right plot.  This isn't it.
                 rtPlot(oi,'otf');
             otherwise

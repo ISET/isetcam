@@ -84,7 +84,7 @@ for ii = 1:length(lambda)
     s(ii,:) = (lambda(ii) /(D0*p)) * cSF;
     
     % Methods:  Marimont and Wandell
-    % Related to the defocus specified by w20, which in turn depends on p,
+    % Related to the defocus specified by w20, which in turn depends on p
     % D and D0.
     alpha(ii,:) = (4*pi./(lambda(ii))).*w20(ii).*abs(s(ii,:));
     

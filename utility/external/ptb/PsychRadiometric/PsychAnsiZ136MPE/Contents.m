@@ -34,7 +34,7 @@
 %     Morgan et al., (2009), IOVS, 50, 6015-6022.
 %     Hunter et al., (2012), Prog. Ret. Eye. Res., 31, 28-42.
 %
-%   e) Apparently a new version of the Ansi Z136 standard is forthcoming,
+%   e) Apparently a new version of the Ansi Z136 standard is forthcoming
 %   but I do not have information as to what changed.
 %
 %   f) The Z136 standard is for laser light, which is coherent and monochromatic.

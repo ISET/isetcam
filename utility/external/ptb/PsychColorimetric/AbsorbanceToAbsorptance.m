@@ -20,7 +20,7 @@ function [absorptanceSpectra, absorptanceSpectraWls] =...
 % axialOpticalDensities, and multiple answers are returned in the rows
 % of absorptanceSpectra.
 %
-% Wavelength information may be in any of the available Psychtoolbox representations,
+% Wavelength information may be in any of the available Psychtoolbox representations
 % and the returned wavelength information is in the same format as passed.
 %
 % A useful fact about this conversion is the following.  For small axial optical densities

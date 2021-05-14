@@ -104,7 +104,7 @@ guidata(sceneF)
 % Or you can get the guidata handle directly using
 sceneG = ieSessionGet('scene guidata')
 
-% There are parallel sets/gets for interacting with the other windows (oi,
+% There are parallel sets/gets for interacting with the other windows (oi
 % sensor, ip)
 
 %% END

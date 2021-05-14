@@ -637,7 +637,7 @@ switch lower(pType)
         wave = sceneGet(scene,'wave');
         sz = sceneGet(scene,'size');
         energy = sceneGet(scene,'illuminant energy');
-        if isempty(energy),
+        if isempty(energy)
             ieInWindowMessage('No illuminant data.',handle);
             close(gcf);
             error('No illuminant data');

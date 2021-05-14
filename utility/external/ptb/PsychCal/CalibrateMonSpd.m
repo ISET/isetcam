@@ -19,7 +19,7 @@
 % and CalibrateAmbDrvr so that is where you would look.
 %
 %     We have two functions for this. LoadIdentityClut() for loading an
-%     identity clut and configuring the GPU for identity pixel passthrough,
+%     identity clut and configuring the GPU for identity pixel passthrough
 %     and RestoreCluts, which restores to the state before
 %     LoadIdentityClut(). I think "sca" calls that, as well as showing the
 %     cursor and other cleanup actions.

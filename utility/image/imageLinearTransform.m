@@ -6,7 +6,7 @@ function imT = imageLinearTransform(im,T)
 % The image data (im) are in N x M X W format, (e.g., W=3 if RGB or W = 31
 % if the wavelength samples are 400:10:700). The routine applies a right
 % side multiply to the data. Specifically, if an image point is represented
-% by the row vector, p = [R,G,B] the matrix transforms each color point, p,
+% by the row vector, p = [R,G,B] the matrix transforms each color point, p
 % to an output vector pT.  In this case, T has 3 rows.
 %
 % If the data are viewed as wavelength samples, say [w1,w2,...wn], then the

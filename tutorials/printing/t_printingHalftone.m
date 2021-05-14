@@ -232,7 +232,7 @@ imshow(HTimg_B4);
 
 % If you enlarge this image you should see that the halftone
 % cells are not the same as the basic patterns we saw.  This is
-% because the halftone dot is formed by the space-varying image,
+% because the halftone dot is formed by the space-varying image
 % not simple constant patterns. The image changes density rapidly
 % over sapce and the dots reflect the correct image density.
 
@@ -353,7 +353,7 @@ imshow(HTimg_2);
 % make different halftoning algorithms look better or worse.
 % Choosing a screening process can be quite difficult because
 % methods of deciding on the preference between two images,
-% neither of which is very good, is hard to specify.  Worse yet,
+% neither of which is very good, is hard to specify.  Worse yet
 % even when people do make consistent choices the choice they
 % make can depend on the test image.  Sigh.
 

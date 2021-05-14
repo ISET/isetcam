@@ -6,7 +6,7 @@ function imRGB = XW2RGBFormat(imXW,row,col)
 %   This  routine converts from XW format to RGB format.  The row and
 %   column of the imXW are required input arguments.
 %
-%   We say matrices in (r,c,w) format are in RGB format.  The dimension, w,
+%   We say matrices in (r,c,w) format are in RGB format.  The dimension, w
 %   represents the number of data color bands.  When w=3, the data are an RGB
 %   image. But w can be almost anything (e.g., 31 wavelength samples from
 %   400:10:700).  We use this format frequently for spectral data.

@@ -3,7 +3,7 @@
 % Description:
 %  Uses the wavefront method to create diffraction-limited shift-invariant
 %  optics with a 17 mm focal length (58 D power). Then introduce D diopters
-%  of defocus and recompute.  Repeat this for an 8 mm focal length lens,
+%  of defocus and recompute.  Repeat this for an 8 mm focal length lens
 %  showing the change from the same D diopters.
 %
 %  Show the impact on rendering the radial line scene and show the impact

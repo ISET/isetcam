@@ -26,7 +26,7 @@ if (max(rgb(:)) > 1 || min(rgb(:)) < 0)
     error('Linear rgb values must be between 0 and 1');
 end
 
-% These are framebuffer values, but they live in [0,1]. The transformation,
+% These are framebuffer values, but they live in [0,1]. The transformation
 % which has a linear and power part, is intended to approximate a gamma of
 % 2.2 as a whole.
 big = (rgb > 0.0031308);

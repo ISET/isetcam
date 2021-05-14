@@ -1,6 +1,6 @@
 %% The Airy Disk of a diffraction limited system
 % The *Airy Disk* describes the blur arising from an ideal (diffraction-limited)
-% uniformly illuminated, circular aperture. Its name arises from the astronomer,
+% uniformly illuminated, circular aperture. Its name arises from the astronomer
 % Lord Airy <https://en.wikipedia.org/wiki/Airy_disk (George Biddell Airy)>.
 % This script exposes the code used to calculate and plot the Airy disk for diffraction
 % limited optics.

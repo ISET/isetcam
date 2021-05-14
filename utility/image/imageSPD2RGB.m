@@ -9,7 +9,7 @@ function RGB = imageSPD2RGB(SPD,wList,gam)
 %
 % The data are summed across wavelength bands in order to form an RGB
 % image. The wavelength summation is determined by a matrix built in the
-% function colorBlockMatrix.  We suppress IR information in this rendering,
+% function colorBlockMatrix.  We suppress IR information in this rendering
 % using only the visible parts of the spectrum.
 %
 % See imageSPD for the main use of this function
@@ -45,7 +45,7 @@ error('No longer used.  Call imageSPD which also returns RGB.');
 % RGB = ieClip(RGB,0,[]);
 % s   = max(RGB(:));
 %
-% if s == 0,
+% if s == 0
 % else RGB = RGB/s;
 % end
 %

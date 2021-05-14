@@ -15,7 +15,7 @@ function [oi, oiD, D] = s3dRenderDepthDefocus(scene, oi, imgPlaneDist, depthEdge
 %  (oiD). We blur with the appropriate OTF for that depth plane.  We add up
 %  the results.
 %
-%  This algorithm fails to account for depth edges properly. At such edges,
+%  This algorithm fails to account for depth edges properly. At such edges
 %  light from the background is inappropriately added to the forward
 %  occluding plane. Fix this.  Perhaps we blur, find the locations that are
 %  spread into the foreground plane, and reduce or zero the photons there.

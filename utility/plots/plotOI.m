@@ -561,7 +561,7 @@ switch pType
         opticsModel = opticsGet(optics,'model');
         switch lower(opticsModel)
             case 'raytrace'
-                % Not what the user asked for.  Must fix.  Add varargin,
+                % Not what the user asked for.  Must fix.  Add varargin
                 % and make the right plot.  This isn't it.
                 rtPlot(oi,'otf');
             otherwise
@@ -862,7 +862,7 @@ switch lower(pType)
         % row of the otf to estimate the line spread. This only works if
         % the OTF is circularly symmetric; if it is not, there isn't really
         % a single line spread.
-        for ii=1:nWave,
+        for ii=1:nWave
             % The central line in the otf is the first line
             tmp = otf(1,:,ii);  % figure; imagesc(abs(otf(:,:,ii)))
             

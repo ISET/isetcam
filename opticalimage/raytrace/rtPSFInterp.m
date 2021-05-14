@@ -70,7 +70,7 @@ else
     % Can we use fast n furious here?
     psfSupportX = opticsGet(optics,'rtPsfSupportX','m');
     psfSupportY = opticsGet(optics,'rtPsfSupportY','m');
-    if max(xGrid) > max(psfSupportX(:)),
+    if max(xGrid) > max(psfSupportX(:))
         warning('Possible PSF truncation');
     end
     

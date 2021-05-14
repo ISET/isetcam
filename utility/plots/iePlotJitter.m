@@ -12,7 +12,7 @@ function [fig,f,jx,jy] = iePlotJitter(x,y,f,fig,pSymbol)
 %
 %
 
-if ieNotDefined('f'),
+if ieNotDefined('f')
     mx = max((max(x(:)) - min(x(:))),max(y(:))-min(y(:)));
     f = mx/200;
 end

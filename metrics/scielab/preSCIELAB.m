@@ -3,7 +3,7 @@ function [refImage,resampledcmpImage] = preSCIELAB(refImage,cmpImage)
 %  [refImage,resampledcmpImage] = preSCIELAB(refImage,cmpImage)
 %
 % Author: ImagEval
-% Purpose: pre-process images before performing S-CIELAB evaluation,
+% Purpose: pre-process images before performing S-CIELAB evaluation
 %          including : resize images to have the same size of images
 %                      AND
 %                      rescale images to make them within the same range
@@ -27,7 +27,7 @@ vectorx = linspace(1,mCols,nCols);
 [x,y] = meshgrid(vectorx,vectory);
 [xi,yi] = meshgrid(1:mCols,1:mRows);
 
-if nColors == 1,
+if nColors == 1
     resampledcmpImage = interp2(x,y,cmpImage,xi,yi);
 else
     resampledcmpImage(:,:,1) = interp2(x,y,cmpImage(:,:,1),xi,yi);
@@ -40,7 +40,7 @@ refImage = refImage/max(refImage(:));
 resampledcmpImage = resampledcmpImage/max(resampledcmpImage(:));
 
 % Put output in a form that can be called by spatialCIELAB.m
-if nColors == 1,
+if nColors == 1
     refImage = [refImage refImage refImage];
     resampledcmpImage = [resampledcmpImage resampledcmpImage resampledcmpImage];
 else

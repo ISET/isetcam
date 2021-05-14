@@ -1,7 +1,7 @@
 function [val_UWattsPerCm2,limit_UWattsPerCm2] = ISO2007MPEComputeType1ContinuousAntConvrgUnweightedValue(S,irradiance_UWattsPerCm2,stimulusDurationSecs)
 % [val_UWattsPerCm2,limit_UWattsPerCm2] = ISO2007MPEComputeType1ContinuousAntConvrgUnweightedValue(S,irradiance_uWattsPerCm2,stimulusDurationSecs)
 %
-% Compute the unweighted radiation for anterior segment convergent beam value, for Type 1 instruments as given on page 8, Table 2,
+% Compute the unweighted radiation for anterior segment convergent beam value, for Type 1 instruments as given on page 8, Table 2
 % 5.4.1.5.  This limit applies only to convergent beams, whatever they are.  I'm guessing this is what a Maxwellian view produces,
 % however, as in that case the beam is brought to a waist inside the eye.  In this case, the limit applies to the irradiance
 % at the beam waist over the 1 mm diameter aperture with the highest irradiance.

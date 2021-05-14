@@ -12,7 +12,7 @@ function cal = CalibrateFitGamma(cal,nInputLevels)
 %    sigmoid
 %    weibull
 %
-% Underlying fit routine is FitGamma for functional forms originally supported,
+% Underlying fit routine is FitGamma for functional forms originally supported
 % and these rely on the optimization toolbox.
 %
 % Newer functions (e.g, crtSumPow, betacdf) use the curvefit toolbox and that's just

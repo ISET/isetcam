@@ -44,11 +44,11 @@ out = in;
 outR = inR; outG = inG; outB = inB;
 
 % G channel
-for i=2:2:m-2,
+for i=2:2:m-2
     outG(i,3:2:n-1) = 0.25*(inG(i,2:2:n-2)+inG(i,4:2:n)+inG(i-1,3:2:n-1)+inG(i+1,3:2:n-1));
 end
 
-for i=3:2:m-1,
+for i=3:2:m-1
     outG(i,2:2:n-2) = 0.25*(inG(i,1:2:n-3)+inG(i,3:2:n-1)+inG(i-1,2:2:n-2)+inG(i+1,2:2:n-1));
 end
 
@@ -64,11 +64,11 @@ ind = find(outG>255);
 outG(ind) = 255;
 
 % R channel
-for i=1:2:m-1,
+for i=1:2:m-1
     outR(i,3:2:n-1) = 1/2*outG(i,3:2:n-1).*(inR(i,2:2:n-2)./outG(i,2:2:n-2)+inR(i,4:2:n)./outG(i,4:2:n));
 end
 
-for i=2:2:m-2,
+for i=2:2:m-2
     outR(i,2:2:n) = 1/2*outG(i,2:2:n).*(inR(i-1,2:2:n)./outG(i-1,2:2:n)+inR(i+1,2:2:n)./outG(i+1,2:2:n));
     outR(i,3:2:n-1)= 1/4*outG(i,3:2:n-1).*(inR(i-1,2:2:n-2)./outG(i-1,2:2:n-2)+inR(i-1,4:2:n)./outG(i-1,4:2:n)+inR(i+1,2:2:n-2)./outG(i+1,2:2:n-2)+inR(i+1,4:2:n)./outG(i+1,4:2:n));
 end
@@ -78,11 +78,11 @@ ind = find(outR>255);
 outR(ind) = 255;
 
 % B channel
-for i=2:2:m,
+for i=2:2:m
     outB(i,2:2:n-2) = 1/2*outG(i,2:2:n-1).*(inB(i,1:2:n-3)./outG(i,1:2:n-3)+inB(i,3:2:n-1)./outG(i,3:2:n-1));
 end
 
-for i=3:2:m-1,
+for i=3:2:m-1
     outB(i,1:2:n-1) = 1/2*outG(i,1:2:n-1).*(inB(i-1,1:2:n-1)./outG(i-1,1:2:n-1)+inB(i+1,1:2:n-1)./outG(i+1,1:2:n-1));
     outB(i,2:2:n-2) = 1/4*outG(i,2:2:n-2).*(inB(i-1,1:2:n-3)./outG(i-1,1:2:n-3)+inB(i-1,3:2:n-1)./outG(i-1,3:2:n-1)+inB(i+1,1:2:n-3)./outG(i+1,1:2:n-3)+inB(i+1,3:2:n-1)./outG(i+1,3:2:n-1));
 end

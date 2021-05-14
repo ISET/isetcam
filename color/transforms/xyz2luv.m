@@ -13,7 +13,7 @@ function luv = xyz2luv(xyz, whitepoint)
 % LUV is returned in the same format (RGB or XW) as the input matrix xyz.
 %
 % Formulae are taken from Hunt's book,page 116. I liked the irony that 116
-% is prominent in the formula and that is the page number in Hunt.  Also,
+% is prominent in the formula and that is the page number in Hunt.  Also
 % see Wyszecki and Stiles book.
 %
 % Examples:

@@ -119,7 +119,7 @@ switch parm
         optics.type = val;
         
     case {'model','opticsmodel'}
-        % Valid choices are diffractionLimited, shiftInvariant, rayTrace,
+        % Valid choices are diffractionLimited, shiftInvariant, rayTrace
         % skip, or userSupplied.  The case and spaces do not matter.
         optics.model = ieParamFormat(val);
         
@@ -237,7 +237,7 @@ switch parm
         % s = opticsGet(optics,'rtPSFData',0,450); mesh(s)
         % s = opticsGet(optics,'rtPSFData',1e-3,550); mesh(s)
         % s = opticsGet(optics,'rtPSFData',0,550); mesh(s)
-        if checkfields(optics,'rayTrace','psf','function'),
+        if checkfields(optics,'rayTrace','psf','function')
             if ~isempty(varargin)
                 % Return the psf at a particular field height and wavelength
                 % psf = opticsGet(optics,'rtpsfdata',fieldHeight,wavelength);

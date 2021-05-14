@@ -12,7 +12,7 @@ function val = sceneGet(scene,parm,varargin)
 %     scene = ieGetObject('scene');
 %
 %  A '*' indicates that the syntax sceneGet(scene,param,unit) can be used,
-%  where unit specifies the spatial scale of the returned value:  'm',
+%  where unit specifies the spatial scale of the returned value:  'm'
 %  'cm', 'mm', 'um', 'nm'.  Default length scale is always meters ('m').
 %
 % Examples
@@ -419,7 +419,7 @@ switch parm
     case 'energy'
         % sceneGet(scene,'energy',[wavelength]);
         % Get the energy, possibly just one waveband
-        if isempty(varargin),
+        if isempty(varargin)
             % Save memory using direct access.
             % val = sceneGet(scene,'photons');
             wave = sceneGet(scene,'wave');

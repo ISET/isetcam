@@ -74,7 +74,7 @@ for ii = 1:length(wave)
     %         deg/m * m *          (m/m) * 1/deg  - Dimensionless in the end
     s(ii,:) = (c * wave(ii)*1e-9 /(D0*p)) * sampleSF;
     
-    % Related to the defocus specified by w20, which in turn depends on p,
+    % Related to the defocus specified by w20, which in turn depends on p
     % D and D0.
     alpha(ii,:) = 4*pi./(wave(ii)*1e-9 ).*w20(ii).*s(ii,:);
     

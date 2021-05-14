@@ -24,7 +24,7 @@ function [I, map] = dcrawRead(fname, opts, varargin)
 %      format in dcrawInit. Thus, if the api needs to be changed, remember
 %      to change dcrawInit also.
 %   2) By dcrawInit, this function is called by imread. For loading images
-%      specifying url, the image format field is required. Otherwise,
+%      specifying url, the image format field is required. Otherwise
 %      MATLAB will treat ARW file as TIFF and decoding will fail.
 %
 % See also:

@@ -116,7 +116,7 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %  reflectance, like a typical gray card.
 %
 %  Many of the patterns can have an arbitrary image (row,col) size.  This
-%  is possible for whitenoise, impulse1dee,lined65,
+%  is possible for whitenoise, impulse1dee,lined65
 %
 %         imSize = 128; lineOffset = 25;           % Plus is to the right
 %         scene = sceneCreate('lined65',imSize);
@@ -1072,7 +1072,7 @@ function scene = sceneVernier(scene,sz,width,offset,lineReflectance,backReflecta
 %% Equal photon vernier targets
 %
 % Need to allow changing color of top and bottom, perhaps other features.
-% We will create params structure for parameters in the future, i.e.,
+% We will create params structure for parameters in the future, i.e.
 % params.sz, params.width, params.lineReflectance, ... and so forth
 %
 if ieNotDefined('sz'),     sz = 64;    end
@@ -1169,12 +1169,12 @@ for ii=1:nLines
     x = endPoints(ii,1); y = endPoints(ii,2);
     u = -x; v = -y;
     % Flip so x is the lower one
-    if x > 0,
+    if x > 0
         tmp = [x,y]; x = u; y = v; u = tmp(1); v = tmp(2);
     end
     
     if ~isequal(u,x), slope = (y - v) / (u - x);
-        for jj=x:0.2:u,
+        for jj=x:0.2:u
             kk = round(jj*slope);
             img(round(kk + (imSize/2)) + 1, round(jj + (imSize/2)) + 1) = 1;
         end

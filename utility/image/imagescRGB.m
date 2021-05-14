@@ -30,7 +30,7 @@ function [h,rgbim] = imagescRGB(rgbim,varargin)
 % apply gamma and then scale. That applies here and in other routines.
 
 %% This is a theory of display.
-% I am not sure I should be clipping before scaling.  But over the years,
+% I am not sure I should be clipping before scaling.  But over the years
 % that has seemed better.
 rgbim = ieClip(rgbim,0,[]);
 s = max(rgbim(:));

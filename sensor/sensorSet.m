@@ -73,7 +73,7 @@ function sensor = sensorSet(sensor,param,val,varargin)
 %      'col gain fpn vector'   - column gain fpn data
 %      'col offset fpn vector' - column offset fpn data
 %      'noise flag'            - Read the documentation in the header of
-%               sensorCompute to understand the different flags. Briefly,
+%               sensorCompute to understand the different flags. Briefly
 %               the default noiseFlag value is 2, which includes photon
 %               noise, read/reset, FPN, analog gain/offset, clipping,
 %               quantization, are all included. noiseFlag = -2 is purely

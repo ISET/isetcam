@@ -92,7 +92,7 @@ switch lower(imageType)
         
         % Programming Note (HJ):
         %   scene rendered without subpixel (doSub=false) could be
-        %   different from the one rendered with subpixel of size [m n],
+        %   different from the one rendered with subpixel of size [m n]
         %   where m and n indicates the number of pixels per dixel in row
         %   and columns. This kind of inconsistancy will occur especially
         %   when pixels per dixel is not [1 1].

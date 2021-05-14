@@ -36,17 +36,17 @@ error(nargchk(0,1,nargin,'struct'))
 appdatacode = 'JRI__freezeColorsData';
 
 %default: operate on gca
-if nargin < 1,
+if nargin < 1
     h = gca;
 end
 
-if ~ishandle(h),
+if ~ishandle(h)
     error('JRI:unfreezeColors:invalidHandle',...
         'The argument must be a valid graphics handle to a figure or axis')
 end
 
 %if h is a figure, loop on its axes
-if strcmp(get(h,'type'),'figure'),
+if strcmp(get(h,'type'),'figure')
     h = get(h,'children');
 end
 
@@ -56,18 +56,18 @@ for h1 = h', %loop on axes
     %   ( in appdata JRI__freezeColorsData)
     ch = findobj(h1);
     
-    for hh = ch',
+    for hh = ch'
         
         %some object handles may be invalidated when their parent changes
         %   (e.g. restoring colors of a scattergroup unfortunately changes
         %   the handles of all its children). So, first check to make sure
         %   it's a valid handle
         if ishandle(hh)
-            if isappdata(hh,appdatacode),
+            if isappdata(hh,appdatacode)
                 ad = getappdata(hh,appdatacode);
                 %get oroginal cdata
                 %patches have to be handled separately (see note in freezeColors)
-                if ~strcmp(get(hh,'type'),'patch'),
+                if ~strcmp(get(hh,'type'),'patch')
                     cdata = get(hh,'CData');
                 else
                     cdata = get(hh,'faceVertexCData');
@@ -77,16 +77,16 @@ for h1 = h', %loop on axes
                 scalemode = ad{2};
                 
                 %size consistency check
-                if all(size(indexed) == size(cdata(:,:,1))),
+                if all(size(indexed) == size(cdata(:,:,1)))
                     %ok, restore indexed cdata
-                    if ~strcmp(get(hh,'type'),'patch'),
+                    if ~strcmp(get(hh,'type'),'patch')
                         set(hh,'CData',indexed);
                     else
                         set(hh,'faceVertexCData',indexed);
                     end
                     %restore cdatamapping, if needed
                     g = get(hh);
-                    if isfield(g,'CDataMapping'),
+                    if isfield(g,'CDataMapping')
                         set(hh,'CDataMapping',scalemode);
                     end
                     %clear appdata

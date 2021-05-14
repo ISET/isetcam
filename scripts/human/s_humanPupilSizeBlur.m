@@ -16,7 +16,7 @@
 % But the degradation that we use is not pupil size dependent.  This is a
 % significant limitation in the accuracy of the model.  In fact, for an
 % idealized eye as the pupil size grows, the linespread will sharpen
-% because there is less diffraction to contend with.  In the real eye,
+% because there is less diffraction to contend with.  In the real eye
 % however, the data go in the other direction.  As the pupil size grows the
 % eye's aberrations play a larger role and there is degradation of the
 % linespread.

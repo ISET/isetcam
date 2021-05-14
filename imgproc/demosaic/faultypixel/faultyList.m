@@ -22,7 +22,7 @@ function list = faultyList(row,col,nBadPixels,minSeparation)
 % col = 352;
 % nBadPixels = 10;
 
-if ieNotDefined('row') || ieNotDefined('col'),
+if ieNotDefined('row') || ieNotDefined('col')
     sensor = vcGetObject('sensor');
     if ~isempty(sensor), sz = sensorGet(sensor,'size');
         row = sz(1); col = sz(2);

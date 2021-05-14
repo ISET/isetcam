@@ -156,7 +156,7 @@ sensorFOV = sensorGet(smallSensor,'fov',[],OI);
 % Now, treat the small OI as a large, uniform field that covers the sensor
 smallOI = oiSet(smallOI,'wangular',2*sensorFOV);
 
-% Compute the signal voltage for this small part of the image sensor array,
+% Compute the signal voltage for this small part of the image sensor array
 % using the brightest part of the opticl image, and a 1 sec exposure
 % duration. (Generally, the voltage at 1 sec is larger than the voltage
 % swing.)

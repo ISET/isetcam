@@ -11,9 +11,9 @@
 %       Each column of the matrix represents one quantization table,
 %       in row order (as in C), not zigzag-ed. The first column is
 %       the q-table for luminance channel, the second and third columns
-%       are for chrominance channels. If only one q-table is provided,
+%       are for chrominance channels. If only one q-table is provided
 %       the default q-table will be used (at quality factor 50) for
-%       the chromanance channels; if only two q-tables are provided,
+%       the chromanance channels; if only two q-tables are provided
 %       the second q-table will be used for both chromanance channels.
 %
 %	See also JPGREAD

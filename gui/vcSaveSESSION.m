@@ -22,7 +22,7 @@ vcSESSION.GUI = [];
 
 % Save the session file
 sessionDir = ieSessionGet('dir');
-if ~exist(sessionDir,'dir'),
+if ~exist(sessionDir,'dir')
     %  This can happen if a session directory is changed or placed on a different
     %  computer.
     fullSessionFile = vcSelectDataFile('session','w');

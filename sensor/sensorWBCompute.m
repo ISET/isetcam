@@ -45,7 +45,7 @@ for ii=1:(nWave-1)
     % is discarded.
     tmpSensor = sensorCompute(sensorL,opticalimage,0);
     volts = volts + sensorGet(tmpSensor,'volts');
-    if displayFlag,
+    if displayFlag
         figure(displayFig);
         sensor = sensorSet(sensor,'volts',volts);
         sensorShowImage(sensor);

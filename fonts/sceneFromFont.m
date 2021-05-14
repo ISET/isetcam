@@ -18,7 +18,7 @@ function scene = sceneFromFont(font,dsp,scene, oSample, varargin)
 %% Input arguments
 if notDefined('font'),    font = fontCreate; end
 if notDefined('dsp'), dsp = displayCreate('LCD-Apple'); end
-if notDefined('scene'),
+if notDefined('scene')
     scene = sceneCreate('empty');
     scene = sceneSet(scene,'wave',displayGet(dsp,'wave'));
 end

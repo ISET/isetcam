@@ -69,7 +69,7 @@ switch ieParamFormat(oiType)
         oi = oiSet(oi,'diffuser blur',2*10^-6);
         
     case {'shiftinvariant'}
-        % Rather than using the diffraction limited call to make the OTF,
+        % Rather than using the diffraction limited call to make the OTF
         % we use some other method, perhaps wavefront.
         % Human is a special form of shift-invariant.  We might make
         % shiftinvariant-wvf or just wvf in the near future after

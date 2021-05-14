@@ -102,7 +102,7 @@ switch lower(method)
                     tmpRows = (row-floor(wSize/2)):(row+floor(wSize/2));
                     tmpCols = (col-floor(wSize/2)):(col+floor(wSize/2));
                     
-                    % Data for this band,
+                    % Data for this band
                     tmp = rgbFormat(tmpRows,tmpCols,band);
                     if any(tmp)
                         % Replace the 0 values with the local average

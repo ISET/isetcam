@@ -57,7 +57,7 @@ function [CFAletters,CFAnumbers,mp] = sensorDetermineCFA(sensor)
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
-if ieNotDefined('sensor'),
+if ieNotDefined('sensor')
     sensor = vcGetObject('sensor');
     if isempty(sensor), error('no sensor defined'); end
 end
@@ -77,7 +77,7 @@ if size(pattern,1)  ~= rows || size(pattern,2) ~= cols
     CFAnumbers = repmat(pattern,rFactor,cFactor);
     CFAnumbers = CFAnumbers(1:rows,1:cols);
     
-    %     if (round(cFactor) ~= cFactor) || (round(rFactor) ~= rFactor),
+    %     if (round(cFactor) ~= cFactor) || (round(rFactor) ~= rFactor)
     %         error('Array size must be integer multiples of the size of the unit CFA block');
     %     end
 else

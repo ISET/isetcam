@@ -36,7 +36,7 @@ function oi = rtPSFApply(oi)
 %  every wavelength. This calculation is slow because of the large number
 %  of interp2() and imrotate() calls.
 %
-%  It is possible to speed up the calculation by specifying a resolution,
+%  It is possible to speed up the calculation by specifying a resolution
 %  say 50 microns and 9 deg of angle, and precompute the PSFs for those
 %  values. This would reduce the number of calls to interp2 and imrotate.
 %  Furthermore, we only need to store the first 90 deg and we can use
@@ -112,7 +112,7 @@ units = 'm';
 
 % Confirm the presence of ray trace information
 optics = oiGet(oi,'optics');
-if isempty(opticsGet(optics,'rayTrace')),
+if isempty(opticsGet(optics,'rayTrace'))
     errordlg('No ray trace information.');
     return;
 end

@@ -29,9 +29,9 @@ temp(1:img_r, xFS_c +1:xFS_c+img_c) = image;
 % each row.  The overflow columns are blanked after the error is
 % applied to keep from double counting.
 
-for ir = 1 : img_r,
+for ir = 1 : img_r
     
-    for ic = xFS_c+1 : img_c,
+    for ic = xFS_c+1 : img_c
         error = temp(ir, ic);
         temp(ir, ic) = round(error);
         error = error-temp(ir, ic);
@@ -43,7 +43,7 @@ for ir = 1 : img_r,
     temp(ir:ir+xFS_r-1,img_c+1:img_c+xFS_c) = ...
         temp(ir:ir+xFS_r-1,img_c+1:img_c+xFS_c)+temp(ir+1:ir+xFS_r, 1:xFS_c);
     
-    for ic = img_c+1 : img_c+xFS_c,
+    for ic = img_c+1 : img_c+xFS_c
         error = temp(ir, ic);
         temp(ir, ic) = round(error);
         error = error-temp(ir, ic);

@@ -10,7 +10,7 @@ function [oi,sd,blurFilter] = oiDiffuser(oi,sd)
 %
 % The sd can be 1 or 2D.  If it is 1D, the degree of blurring is specified
 % as the standard deviation (sd) of a Gaussian (circularly symmetric, units
-% of microns).  For example, if the sensor samples are spaced 4 um apart,
+% of microns).  For example, if the sensor samples are spaced 4 um apart
 % then to reduce aliasing the standard deviation might be set to 2um.
 %
 % If the sd is 2D, then we assume sd(1) = row spread and sd(2) is col

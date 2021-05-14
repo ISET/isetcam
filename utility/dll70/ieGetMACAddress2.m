@@ -43,7 +43,7 @@ MAC = '';
 
 for ii=1:length(str)
     n = strfind(str{ii},'Physical Address. . . . . . . . . : ');
-    if ~isempty(n),
+    if ~isempty(n)
         a = str{ii};
         c = strfind(str{ii},':');
         MAC = lower(strrep(a( (c+1):end),'-',':'));

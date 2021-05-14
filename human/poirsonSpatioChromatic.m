@@ -46,7 +46,7 @@ if ieNotDefined('sampPerDeg'),sampPerDeg = 241; end
 if ieNotDefined('dimension'), dimension = 2; end
 
 % The filters are the weighted sum of two or three Gaussian functions.
-% These variables contain the parameters for generating the filters,
+% These variables contain the parameters for generating the filters
 % They represent the Gaussians in the format:
 %     [halfwidth weight halfwidth weight ...]
 % The halfwidths are in degrees of visual angle.

@@ -24,7 +24,7 @@ function [img,vci] = imageIlluminantCorrection(img,vci)
 %
 % The input dimension here can differ, depending on the internal color
 % space.  If that space is, say, XYZ then the input image has three bands.
-% But if the ICS is the sensor space, and it is a multiple channel sensor,
+% But if the ICS is the sensor space, and it is a multiple channel sensor
 % then the input image can be 4 or more bands.  This may be trouble and
 % needs to be recognized by the illuminant correction routines.  More
 % thinking required! - BW

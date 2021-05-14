@@ -55,7 +55,7 @@ function val = ipGet(ip,param,varargin)
 %
 %      'transforms' - All rendering transforms in a cell array
 %        'ics2display transform'      - Internal color space to display (transform{3})
-%        'Combined transform'         - Product of the other 3 matrices,
+%        'Combined transform'         - Product of the other 3 matrices
 %                                             tSC{1}*tIC{2}*tICS2D{3}
 %        'Each transform'             - cell array of three matrices
 %
@@ -136,7 +136,7 @@ switch oType
         end
         
     case 'l3'
-        % L3 object is attached to image processor.  Code for L3, though,
+        % L3 object is attached to image processor.  Code for L3, though
         % is in a separate repository.
         
         % If there is no L3, return empty

@@ -2,7 +2,7 @@ function [res] = range_compression_lum(pic, filt_type, beta, alpha_A, ifsharp)
 % [res] = range_compression_lum(pic, filt_type(optional), beta(optional), alpha_A(optional), ifsharp(optional))
 
 % Dynamic range compression with subband architectures.
-%  An input image is decomposed into subbands, which are rectified, blurred,
+%  An input image is decomposed into subbands, which are rectified, blurred
 %  and summed to give an activity map. A gain map is derived from the
 %  activity map using: gain = activity^(beta-1).*alpha^(1-beta), where
 %  beta and alpha are to be specified. Each subband coefficient is then
@@ -10,7 +10,7 @@ function [res] = range_compression_lum(pic, filt_type, beta, alpha_A, ifsharp)
 %  post-filtered and summed to reconstruct the result image.
 % Input:
 % pic (grayscale) is the input image.
-% filt_type (optional) specifies the type of filters. It can be 'haar',
+% filt_type (optional) specifies the type of filters. It can be 'haar'
 %      'qmf', or 'steerable'. Default: 'haar'.
 % beta (optional) is the power term used to derive gain from subband
 %       activity: gain = activity^(beta-1).*alpha^(1-beta). Default: 0.6.

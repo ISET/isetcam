@@ -9,7 +9,7 @@ function [de94, errComponents] = deltaE94(lab1, lab2, k)
 %   defined in 1994. The latest the CIEDE2000 (see deltaE2000).
 %
 %   K is a 3 vector, in the form [kL, kC, kH]. k =[1 1 1] for the basis
-%   conditions (uniform surround field with L*=50, 1000lx illuminance,
+%   conditions (uniform surround field with L*=50, 1000lx illuminance
 %   homogeneous stimulus >4 degree visual angle, color difference between
 %   0-5 CIELAB units). In the textile industry kL is commonly set to 2.
 %   Default k is [1 1 1];

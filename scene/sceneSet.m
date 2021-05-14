@@ -378,7 +378,7 @@ switch parm
         % This set changes the illuminant, but it does not change the
         % radiance SPD.  Hence, changing the illuminant (implicitly)
         % changes the reflectance. This might not be what you want.  If you
-        % want to change the scene as if it is illuminanted differently,
+        % want to change the scene as if it is illuminanted differently
         % use the function: sceneAdjustIlluminant()
         
         % The data can be a vector (one SPD for the whole image) or they

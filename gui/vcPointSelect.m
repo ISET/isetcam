@@ -21,7 +21,7 @@ function [pointLoc,pt] = vcPointSelect(obj,nPoints,msg)
 %
 % Text below Needs a re-write ... this is how it used to work.
 %
-%  If nPoints is not specified, then nPoints = 1 is assumed.  In that case,
+%  If nPoints is not specified, then nPoints = 1 is assumed.  In that case
 %  a single right click is all that is required.
 %
 %  In general, the number of points is checked and a message is printed if

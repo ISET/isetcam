@@ -36,7 +36,7 @@ function [uData, pData, fNum] = wvfPlot(wvfP, pType, varargin)
 %    wvfP     - Wavefront structure
 %    pType    - Plot type
 %    varargin - These are used to set various parameters of the plot. The
-%               standard format is: units, wavelength, plotRange,
+%               standard format is: units, wavelength, plotRange
 %               'window/no-window' This should change by using an argument
 %               reading function for parameters/value pairs.
 %

@@ -9,7 +9,7 @@ function bool = mainOpen(hObject,eventdata,handles)
 
 bool = 0;
 val = ieKeyVerify;
-if ~strcmp(val{1},md5([num2str(date),'1951'])),
+if ~strcmp(val{1},md5([num2str(date),'1951']))
     errordlg('No key.  Please contact ImagEval');
     close(hObject);
     return;

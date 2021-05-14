@@ -180,7 +180,7 @@ switch (kind)
         % by email, he used Stockman-Sharpe not Govardovskii nomogram
         % for the 2010 paper, despite what the paper says.
         %
-        % The value Tsujimura uses for axial density seems way too high,
+        % The value Tsujimura uses for axial density seems way too high
         % given what the physiologists tell us about the fact that
         % the melanopsin receptors live in a very thin layer in the ganglion
         % cells.

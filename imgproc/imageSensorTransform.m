@@ -26,8 +26,8 @@ function T = imageSensorTransform(sensorQE,targetQE,illuminant,wave, method)
 % Copyright ImagEval Consultants, LLC, 2005.
 
 %% PROGRAMMING TODO:
-%  We should have a variety of ways of computing this linear transform,
-%  including methods that account for known noise, use ridge methods,
+%  We should have a variety of ways of computing this linear transform
+%  including methods that account for known noise, use ridge methods
 %  search to minimize deltaE, and perhaps others.
 %
 

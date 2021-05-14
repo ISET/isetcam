@@ -27,7 +27,7 @@
 %                  Aspect4D : aspect ratio of the light field, default [1 1 1 1]
 %                 Normalize : default true; when enabled the output is normalized so that darkening near image edges is
 %                             removed
-%             FlattenMethod : 'Sum', 'Max' or 'Median', default 'Sum'; when the shifted light field slices are combined,
+%             FlattenMethod : 'Sum', 'Max' or 'Median', default 'Sum'; when the shifted light field slices are combined
 %                             they are by default added together, but median and max can also yield useful results.
 %              InterpMethod : default 'linear'; this is passed on to interpn to determine how shifted light field slices
 %                             are found; other useful settings are 'nearest', 'cubic' and 'spline'

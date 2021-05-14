@@ -5,7 +5,7 @@ function newPathList = ieRemovePathDir(pathList,dName)
 %
 % Removes any directories with the name dName from the pathList.
 %
-% pathList:  The paths. If no pathList is specified,
+% pathList:  The paths. If no pathList is specified
 % then the program sets pathList to the result of the 'path' command.
 % dName:     The directory name for removal.  If none is set, this defaults
 % to .svn

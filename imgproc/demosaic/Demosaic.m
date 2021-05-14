@@ -21,7 +21,7 @@ function demosaicedImage = Demosaic(ip,sensor)
 %
 % If the data come in as (r,c,3) format (i.e., RGB), then plane2rgb() is
 % skipped.  This can happen if there is a routine inserted between
-% sensorCompute() and ipCompute().  When they are in that format,
+% sensorCompute() and ipCompute().  When they are in that format
 % however, we still expect that demosaicking is needed (i.e., many of the
 % values in the RGB format are zero.
 %
@@ -104,7 +104,7 @@ end
 % ip  = ipSet(ip,'input',double(sensorGet(sensor,'volts')));
 img = ipGet(ip,'input');
 
-% If the data are in planar format, put them into RGB format.  Otherwise,
+% If the data are in planar format, put them into RGB format.  Otherwise
 % if they are already in RGB format (i.e. multiplanar) copy them and move
 % on.
 if ismatrix(img),  imgRGB = plane2rgb(img,sensor,0);

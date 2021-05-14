@@ -65,7 +65,7 @@ switch mType
         %
         % The imageLinearTransform routine applies a right side multiply to
         % the data.  Specifically, if an image point is represented by the
-        % row vector, p = [R,G,B] the matrix transforms each color point,
+        % row vector, p = [R,G,B] the matrix transforms each color point
         % p, to an output vector pT
         
         [row,col,~] = size(hc);

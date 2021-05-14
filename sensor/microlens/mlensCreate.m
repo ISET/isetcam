@@ -12,17 +12,17 @@ function ml = mlensCreate(sensor,oi)
 %
 % Copyright Imageval, LLC 2005
 
-if ieNotDefined('sensor'),
+if ieNotDefined('sensor')
     sensor = vcGetObject('sensor');
-    if isempty(sensor),
+    if isempty(sensor)
         sensor = sensorCreate; ieAddObject(sensor);
     end
     fprintf('** Using current ISET sensor %s\n',sensorGet(sensor,'name'));
 end
 
-if ieNotDefined('oi'),
+if ieNotDefined('oi')
     oi = vcGetObject('oi');
-    if isempty(oi),
+    if isempty(oi)
         oi = oiCreate; ieAddObject(oi);
     end
     fprintf('** Using current ISET oi %s\n',oiGet(oi,'name'));

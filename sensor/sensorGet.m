@@ -24,7 +24,7 @@ function val = sensorGet(sensor,param,varargin)
 %     sensor = vcGetObject('sensor');
 %
 %  A '*' indicates that the syntax oiGet(scene,param,unit) can be used,
-%  where unit specifies the spatial scale of the returned value:  'm',
+%  where unit specifies the spatial scale of the returned value:  'm'
 %  'cm', 'mm', 'um', 'nm'.  Default is meters ('m').
 %
 %  There is a limitation in that we can only add one additional argument.
@@ -434,7 +434,7 @@ switch oType
             case {'electron','electrons','photons'}
                 % sensorGet(sensor,'electrons');
                 % sensorGet(sensor,'electrons',2);
-                % This is also used for human case, where we call the data photons,
+                % This is also used for human case, where we call the data photons
                 % as in photon absorptions.
                 pixel = sensorGet(sensor,'pixel');
                 val = sensorGet(sensor,'volts')/pixelGet(pixel,'conversionGain');
@@ -1010,7 +1010,7 @@ switch oType
                 % surface and we also use the sensor array width.
                 % The assumption here is that the sensor is at the proper focal
                 % distance for the scene.  If the scene is at infinity, then the
-                % focal distance is the focal length.  But if the scene is close,
+                % focal distance is the focal length.  But if the scene is close
                 % then we might correct.
                 %
                 if ~isempty(varargin), scene = varargin{1};

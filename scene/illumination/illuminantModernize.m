@@ -67,7 +67,7 @@ else
         il = illuminantSet(il,'name',sprintf('CCT %.0f',cct));
     end
     
-    if isfield(illuminant,'comment'),
+    if isfield(illuminant,'comment')
         il = illuminantSet(il,'comment',illuminant.comment);
     end
 end

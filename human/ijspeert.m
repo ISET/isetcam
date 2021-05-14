@@ -100,7 +100,7 @@ beta(4) = 1;				% in c/rad^(-1)
 M_beta(:, :) = exp(-360*beta(:)*q);
 
 MTF = zeros(1, size(q, 2));
-for i = 1:4,
+for i = 1:4
     MTF = MTF + c(i) * M_beta(i, :);
 end
 
@@ -112,26 +112,26 @@ if (nargin > 4)
     cosphi2 = cos(phi).^2;
     beta2 = beta.^2;
     
-    for i = 1:4,
+    for i = 1:4
         f_beta(i, :) = ...
             beta(i) ./ ( 2*pi*( sinphi2 ...
             + beta2(i) * cosphi2 ).^(1.5) );
     end
     
     PSF = zeros(1, size(phi, 2));
-    for i = 1:4,
+    for i = 1:4
         PSF = PSF + c(i) * f_beta(i, :);
     end
     
     % Compute LSF if asked for
     if (nargout == 3)
         
-        for i = 1:4,
+        for i = 1:4
             l_beta(i, :) = beta(i) ./ ( pi*( sinphi2 + beta2(i) * cosphi2 ) );
         end
         
         LSF = zeros(1, size(phi, 2));
-        for i = 1:4,
+        for i = 1:4
             LSF = LSF + c(i) * l_beta(i, :);
         end
         

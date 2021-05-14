@@ -63,7 +63,7 @@ sensorCRA = sensorGet(sensor,'cra degrees');
 % the width, all the way out.
 cra = (0:nAngles)/nAngles*max(sensorCRA(:));
 
-if showBar,
+if showBar
     h = waitbar(0,sprintf('Calculating etendue at %.0f angles...',nAngles));
 end
 

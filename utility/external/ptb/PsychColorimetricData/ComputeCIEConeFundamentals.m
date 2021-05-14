@@ -193,7 +193,7 @@ end
 photoreceptors = DefaultPhotoreceptors(whatCalc);
 
 %% Override default values so that FillInPhotoreceptors does
-% our work for us.  The CIE standard uses field size,
+% our work for us.  The CIE standard uses field size
 % age, and pupil diameter to computer other values.
 % to compute other quantities.
 photoreceptors.nomogram.S = S;

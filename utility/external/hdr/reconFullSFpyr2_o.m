@@ -1,6 +1,6 @@
 function res = reconFullSFpyr2_o(pyr, pind, nsc, nor, angleCycs, ifSave, levs, bands, twidth)
 %
-% res = reconFullSFpyr2_o(pyr, pind, nsc, nor, angleCycs, ifSave, levs,
+% res = reconFullSFpyr2_o(pyr, pind, nsc, nor, angleCycs, ifSave, levs
 % bands, twidth)
 % reconstruct image from an oversampled (in both space and angle) pyramid
 % built from:

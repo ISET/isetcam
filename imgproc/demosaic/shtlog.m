@@ -42,11 +42,11 @@ out = in;
 outR = inR; outG = inG; outB = inB;
 
 % G channel
-for i=2:2:m-2,
+for i=2:2:m-2
     outG(i,3:2:n-1) = 0.25*(inG(i,2:2:n-2)+inG(i,4:2:n)+inG(i-1,3:2:n-1)+inG(i+1,3:2:n-1));
 end
 
-for i=3:2:m-1,
+for i=3:2:m-1
     outG(i,2:2:n-2) = 0.25*(inG(i,1:2:n-3)+inG(i,3:2:n-1)+inG(i-1,2:2:n-2)+inG(i+1,2:2:n-1));
 end
 
@@ -68,11 +68,11 @@ inB_log = log(inB);
 inR_log = log(inR);
 
 % R channel
-for i=1:2:m-1,
+for i=1:2:m-1
     outR_log(i,3:2:n-1) = outG_log(i,3:2:n-1) + 1/2*(inR_log(i,2:2:n-2)-outG_log(i,2:2:n-2)+inR_log(i,4:2:n)-outG_log(i,4:2:n));
 end
 
-for i=2:2:m-2,
+for i=2:2:m-2
     outR_log(i,2:2:n) = outG_log(i,2:2:n)+1/2*(inR_log(i-1,2:2:n)-outG_log(i-1,2:2:n)+inR_log(i+1,2:2:n)-outG_log(i+1,2:2:n));
     outR_log(i,3:2:n-1) = outG_log(i,3:2:n-1)+1/4*(inR_log(i-1,2:2:n-2)-outG_log(i-1,2:2:n-1)+inR_log(i-1,4:2:n)-outG_log(i-1,4:2:n)+inR_log(i+1,2:2:n-2)-outG_log(i+1,2:2:n-2)+inR_log(i+1,4:2:n)-outG_log(i+1,4:2:n));
 end
@@ -83,11 +83,11 @@ ind = find(outR>255);
 outR(ind) = 255;
 
 % B channel
-for i=2:2:m,
+for i=2:2:m
     outB_log(i,2:2:n-2) = outG_log(i,2:2:n-1)+1/2*(inB_log(i,1:2:n-3)-outG_log(i,1:2:n-3)+inB_log(i,3:2:n-1)-outG_log(i,3:2:n-1));
 end
 
-for i=3:2:m-1,
+for i=3:2:m-1
     outB_log(i,1:2:n-1) = outG_log(i,1:2:n-1)+1/2*(inB_log(i-1,1:2:n-1)-outG_log(i-1,1:2:n-1)+inB_log(i+1,1:2:n-1)-outG_log(i+1,1:2:n-1));
     outB_log(i,2:2:n-2) = outG_log(i,2:2:n-1)+1/4*(inB_log(i-1,1:2:n-3)-outG_log(i-1,1:2:n-3)+inB_log(i-1,3:2:n-1)-outG_log(i-1,3:2:n-1)+inB_log(i+1,1:2:n-3)-outG_log(i+1,1:2:n-3)+inB_log(i+1,3:2:n-1)-outG_log(i+1,3:2:n-1));
 end

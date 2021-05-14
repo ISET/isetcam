@@ -52,7 +52,7 @@ function photoreceptors = FillInPhotoreceptors(photoreceptors)
 
 %% Check that there is a nomogram field with an S subfield
 %
-% Long ago we tucked the wavelength sampling information into the nomogram field,
+% Long ago we tucked the wavelength sampling information into the nomogram field
 % never dreaming that there would come a day when we might pass absorbance or absorptance
 % directly.  So, we need to have the nomogram field because we need the wavelength
 % sampling (S) field, and too much will break if we try to change to a more rational
@@ -66,7 +66,7 @@ else
 end
 S = photoreceptors.nomogram.S;
 
-%% Check that there is a types field.  These are just for people to read,
+%% Check that there is a types field.  These are just for people to read
 % but let's be draconian and make sure they are there.
 if (~isfield(photoreceptors,'types'))
     error('The photoreceptors structure must have a types field')
@@ -215,7 +215,7 @@ else
     end
     
     % Since we have ignored the specific density and OS length, check that
-    % this was intentional.  If there are value fields for either of the components,
+    % this was intentional.  If there are value fields for either of the components
     % throw an error.  The recommended fix is to remove these fields from the structure,
     % or set their source to 'None' or their value fields to empty, before the call to this routine.
     if (isfield(photoreceptors,'OSlength'))
@@ -312,7 +312,7 @@ if (isfield(photoreceptors,'lensDensity'))
         % You may wonder why age and pupil diameter are passed to a routine that computes
         % lens density.  This is because the CIE standard (which is one choice of source)
         % computes density in an age and pupil size dependent fashion.  These fields
-        % are ignored for sources that don't use them, and can be empty in that case.  Indeed,
+        % are ignored for sources that don't use them, and can be empty in that case.  Indeed
         % if you go back to the top of this routine you'll see that they are set to empty if not
         % passed, so that this code doesn't barf.
         [photoreceptors.lensDensity.transmittance,photoreceptors.lensDensity.density] = ...
@@ -345,7 +345,7 @@ if (isfield(photoreceptors,'macularPigmentDensity'))
         % You may wonder why field size is passed to a routine that computes
         % macular density.  This is because the CIE standard (which is one choice of source)
         % computes density in a field size dependent fashion.  This field is
-        % ignored for sources that don't use them, and can be empty in that case.  Indeed,
+        % ignored for sources that don't use them, and can be empty in that case.  Indeed
         % if you go back to the top of this routine you'll see that it is set to empty if not
         % passed, so that this code doesn't barf.
         [photoreceptors.macularPigmentDensity.transmittance,photoreceptors.macularPigmentDensity.density] = ...

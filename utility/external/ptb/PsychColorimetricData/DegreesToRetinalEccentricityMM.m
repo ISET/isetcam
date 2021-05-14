@@ -28,7 +28,7 @@ function eccMm = DegreesToRetinalEccentricityMM(eccDegrees,species,method,eyeLen
 % does.
 %
 % The default eye length returned by EyeLength for Human is currently the Rodiek value of
-% 16.1 mm.  Drasdo and Fowler formulae are based on a length of about this,
+% 16.1 mm.  Drasdo and Fowler formulae are based on a length of about this
 % so the linear and DaceyPeterson methods are roughly consistent for small
 % angles.  Similarly with the Rhesus default.  Using other EyeLength's will
 % make the two methods inconsistent.

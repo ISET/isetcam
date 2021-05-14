@@ -3,7 +3,7 @@ function sFormat = sensorFormats(formatName)
 %
 %        sFormat = sensorFormats([formatName])
 %
-%  The row/col formats specified are qcif, cif, qvga, vga, svga, xvga,
+%  The row/col formats specified are qcif, cif, qvga, vga, svga, xvga
 %  uxvga.
 %
 %  The imaging area dimensions for standard sensor sizes are
@@ -80,10 +80,10 @@ switch ieParamFormat(formatName)
     case 'qqcif'
         sFormat = t.qqcif;
         
-    case 'qcif',
+    case 'qcif'
         sFormat = t.qcif;
         
-    case 'cif',
+    case 'cif'
         sFormat = t.cif;
         
     case 'qqvga',

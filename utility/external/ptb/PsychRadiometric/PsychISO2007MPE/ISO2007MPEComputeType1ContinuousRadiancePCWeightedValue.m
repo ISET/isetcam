@@ -3,7 +3,7 @@ function [val_UWattsPerSrCm2,limit_UWattsPerSrCm2] = ISO2007MPEComputeType1Conti
 %[val_UWattsPerSrCm2,limit_UWattsPerSrCm2] = ISO2007MPEComputeType1ContinuousRadiancePCWeightedValue(...
 %    S,radiance_WattsPerSrM2,weightingA,stimulusDurationSecs)
 %
-% Compute the weighted aphakic (photochemical) radiance for Type 1 instruments as given on page 8, Table 2,
+% Compute the weighted aphakic (photochemical) radiance for Type 1 instruments as given on page 8, Table 2
 % 5.4.1.3.b.
 %
 % Input spectrum is radiance in units of Watts/[sr-m2-wlinterval].

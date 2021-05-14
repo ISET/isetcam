@@ -103,7 +103,7 @@ oi = oiCreate;
 oi = oiSet(oi,'optics fnumber',2.8);
 
 % In this example we set the properties of the optics to include
-% cos4th falloff for the off axis vignetting of the imaging lens,
+% cos4th falloff for the off axis vignetting of the imaging lens
 % and we set the lens focal length to 3 mm.
 oi = oiSet(oi,'optics offaxis method','cos4th');
 oi = oiSet(oi,'optics focal length',3e-3);

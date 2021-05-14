@@ -3,7 +3,7 @@
 % The S-CIELAB color difference matches CIELAB with a uniform background.
 % But for a pattern, they differ.  This shows the difference.
 %
-% See also:  s_scielabPatches - shows no difference for uniform patches,
+% See also:  s_scielabPatches - shows no difference for uniform patches
 % like the 0 spatial frequency in this chart.
 %
 % Copyright Imageval 2012

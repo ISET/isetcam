@@ -27,7 +27,7 @@ function speed = ISOspeed(speedType,ISA)
 % reflector.
 %
 % 2) How is "amount of light" defined?, According to ISO there are two
-% Saturation based ISO speeds defined, one for D65 and one for Tungsten,
+% Saturation based ISO speeds defined, one for D65 and one for Tungsten
 % for the remainder let's stick with D65. a) The technical term for "amount
 % of light" is the photometric quantity "Exposure" measured in lux*s and
 % abreviated with the letter H. b) There is also a more specific definition

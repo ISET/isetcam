@@ -124,7 +124,7 @@ for ii=1:length(wave)
     % end
     
     % Temporary debug statements
-    %  if ~isreal(filteredIMG),
+    %  if ~isreal(filteredIMG)
     %     warning('ISET:complexphotons','Complex photons: %.0f', wave(ii));
     %  end
     

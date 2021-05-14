@@ -63,7 +63,7 @@ macbethXYZ = XYZ'* diag(lgt)* macbethChart;
 
 macbethLinearRGB = inv(XYZ'*phosphors)*macbethXYZ;
 
-% Now, we haven't set any absolute units for this match.  For example,
+% Now, we haven't set any absolute units for this match.  For example
 % we don't know what the absolute intensity of the light source is.
 % In general, we can't match absolute intensities very well across
 % viewing conditions.  For example, if the surface is outdoors the
@@ -160,7 +160,7 @@ cameraRGB = sensors'* colorSignal;
 % phosphor.
 
 % In this case, though, we know the sensors.  So, rather than asking
-% you to do the experiment (but do it if you would like). However,
+% you to do the experiment (but do it if you would like). However
 % given that we know the sensors, we can compute this matrix simply
 % as:
 

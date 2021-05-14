@@ -4,7 +4,7 @@
 % is the more general case where the shape of the point spread function can be
 % anything.
 %
-% This code shows how to create the point spread functions for each wavelength,
+% This code shows how to create the point spread functions for each wavelength
 % place them in an optics structure and then optical image data structure.  We
 % then calculate the effect of the optics on a simple image and display the result
 % in an optical image window.

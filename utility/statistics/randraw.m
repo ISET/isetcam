@@ -1814,10 +1814,10 @@ if strcmp(runMode, 'genRun')
                 chi = distribParams(2);
                 psi = distribParams(3);
                 
-                if lam < 0,
+                if lam < 0
                     validateParam(funcName, 'Generalized Inverse Gaussian', 'gig', '[lambda, chi, psi]', 'chi', chi, {'> 0'});
                     validateParam(funcName, 'Generalized Inverse Gaussian', 'gig', '[lambda, chi, psi]', 'psi', psi, {'>=0'});
-                elseif lam > 0,
+                elseif lam > 0
                     validateParam(funcName, 'Generalized Inverse Gaussian', 'gig', '[lambda, chi, psi]', 'chi', chi, {'>=0'});
                     validateParam(funcName, 'Generalized Inverse Gaussian', 'gig', '[lambda, chi, psi]', 'psi', psi, {'> 0'});
                 else % lam==0
@@ -1825,14 +1825,14 @@ if strcmp(runMode, 'genRun')
                     validateParam(funcName, 'Generalized Inverse Gaussian', 'gig', '[lambda, chi, psi]', 'psi', psi, {'> 0'});
                 end
                 
-                if chi == 0,
+                if chi == 0
                     % Gamma distribution: Gamma(m=0, b=2/psi, lam)
                     out = feval(funcName, 'gamma', [0, 2/psi, lam], sampleSize);
                     varargout{1} = out;
                     return;
                 end
                 
-                if psi == 0,
+                if psi == 0
                     % Reciprocal Gamma distribution: Gamma(m=0, b=2/chi, -lam)
                     out = feval(funcName, 'gamma', [0, 2/chi, -lam], sampleSize);
                     varargout{1} = 1./out;
@@ -2269,7 +2269,7 @@ if strcmp(runMode, 'genRun')
                 if ~isfinite(pmode)
                     varargout{1} = feval(funcName, 'binomial', [n M/N], sampleSize);
                 end
-                if pmode==1,
+                if pmode==1
                     varargout{1} = repmat(mode, sampleSize);
                     return;
                 end
@@ -2340,7 +2340,7 @@ if strcmp(runMode, 'genRun')
                 %   Continuous skewed distribution
                 %
                 % NOTES:
-                %   1. There are several alternate forms for the PDF,
+                %   1. There are several alternate forms for the PDF
                 %      some of which have more than two parameters
                 %   2. The Inverse Gaussian distribution is often called the Inverse Normal
                 %   3. Wald distribution is a special case of The Inverse Gaussian distribution
@@ -2392,7 +2392,7 @@ if strcmp(runMode, 'genRun')
                 %         Journal of the American Statistical Association 63: 1514-1516.
                 %
                 % [2] Michael, J.R., Schucany, W.R. and Haas, R.W. (1976).
-                %     Generating Random Variates Using Transformations with Multiple Roots,
+                %     Generating Random Variates Using Transformations with Multiple Roots
                 %     The American Statistician 30: 88-90.
                 %
                 %
@@ -3820,7 +3820,7 @@ if strcmp(runMode, 'genRun')
                     clear('d1');
                     clear('d2');
                     
-                    % if U < 1/(1+exp(-2*k*sqrt(B))),
+                    % if U < 1/(1+exp(-2*k*sqrt(B)))
                     %       then return S*acos(sqrt(B))
                     %       else return S*acos(-sqrt(B))
                     %     where S is a random sign

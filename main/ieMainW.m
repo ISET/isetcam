@@ -175,7 +175,7 @@ return;
 function menuInitVerify_Callback(hObject, eventdata, handles)
 % Initialize | Key Verify
 val = ieKeyVerify;
-if strcmp(val{1},md5([num2str(date),'1951'])),
+if strcmp(val{1},md5([num2str(date),'1951']))
     ieInWindowMessage('License/Key Verified',handles,5);
 else
     ieInWindowMessage('License/Key Not Verified',handles,[]);

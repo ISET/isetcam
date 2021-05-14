@@ -17,7 +17,7 @@ function [L,pointLoc] = sensorCCM(sensor,ccmMethod,pointLoc,showSelection)
 % L: The linear transformation
 % pointLoc: The macbeth method - and perhaps others - may need informaton
 %   about the locations of particular targets in the sensor data.
-%   Normally, this information is obtained by a user selection,
+%   Normally, this information is obtained by a user selection
 %   and the spatial information is returned in pointLoc.  If you
 %   already know the pointLoc values, you can send them in as an
 %   argument and skip the interactive part.

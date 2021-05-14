@@ -140,7 +140,7 @@ if isempty(opt)
 else
     tri = delaunayn(x,opt);
 end
-if isempty(tri),
+if isempty(tri)
     warning('MATLAB:griddata3:CannotTriangulate','Data cannot be triangulated.');
     zi = NaN*zeros(size(xi));
     return
@@ -190,7 +190,7 @@ if isempty(opt)
 else
     tri = delaunayn(x,opt);
 end
-if isempty(tri),
+if isempty(tri)
     warning('MATLAB:griddata3:CannotTriangulate','Data cannot be triangulated.');
     zi = repmat(NaN,size(xi));
     return

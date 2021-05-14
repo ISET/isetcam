@@ -3,7 +3,7 @@ function [spd,S] = MeasMonSpd(window, settings, S, syncMode, whichMeterType, bit
 %
 % Measure the Spd of a series of monitor settings.
 %
-% This routine is specific to go with CalibrateMon,
+% This routine is specific to go with CalibrateMon
 % as it depends on the action of SetMon.
 %
 % If whichMeterType is passed and set to 0, then the routine

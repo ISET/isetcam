@@ -24,7 +24,7 @@
 % method does.
 %
 % N.B. Once we have plausible scene reflectances we can render
-% the scene under a different illuminant, say a daylight,
+% the scene under a different illuminant, say a daylight
 % tungsten or many other examples.
 %
 % See also: s_sceneFromMultispectral, sceneFromFile,

@@ -61,7 +61,7 @@ if cbType > 0
     end
     
     % Compute the cone responses to a white (anchor_e).  These are the
-    % anchor values for the equal energy stimulus.  In our hands, though,
+    % anchor values for the equal energy stimulus.  In our hands, though
     % we appear to be using the white of the display as whiteXYZ, though
     % this always be the equal energy white.
     anchor_e = reshape(whiteXYZ, [1 3]) * colorTransformMatrix('xyz2lms');

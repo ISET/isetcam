@@ -1,5 +1,5 @@
 classdef ExtraCalData
-    % ExtraCalData holds auxillary information, such as display distance,
+    % ExtraCalData holds auxillary information, such as display distance
     % that is not contained in Brainard Lab calibration files
     %
     %   Currently, the only data present is the distance with default value

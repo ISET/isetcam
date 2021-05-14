@@ -52,7 +52,7 @@ if (nargin < 2 || isempty(source))
     source = 'LeGrand';
 end
 
-% Check if a direct numerical value was passed as a string.  If so,
+% Check if a direct numerical value was passed as a string.  If so
 % ignore everything else and return it.
 if (ischar(source))
     directVal = str2num(source);

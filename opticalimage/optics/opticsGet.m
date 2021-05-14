@@ -27,7 +27,7 @@ function val = opticsGet(optics,parm,varargin)
 %  images we put the center of the image at the center -- of course -- and
 %  we also put the DC value of the OTF in the middle of the image.  Hence,
 %  when we return the frequency support or the spatial support we create
-%  values for frequencies that run from negative to positive.  Similarly,
+%  values for frequencies that run from negative to positive.  Similarly
 %  when we compute the spatial support we create spatial samples that run
 %  below and above zero.
 %
@@ -512,7 +512,7 @@ switch parm
         % opticsGet(optics,'dl fsupport',wave,unit,nSamp)
         % opticsGet(optics,'dl fsupport matrix',wave,unit,nSamp)
         %
-        % Diffraction limited frequency support at a wavelength (i.e.,
+        % Diffraction limited frequency support at a wavelength (i.e.
         % support out to the incoherent cutoff frequency).  This can be
         % used for plotting, for example.
         
@@ -568,7 +568,7 @@ switch parm
         
         % -------   OTF information and specifications.
         %
-        % Th shift-invariant calculations (including diffraction limited,
+        % Th shift-invariant calculations (including diffraction limited
         % human, and custom shift-invariant) use OTF information.  The
         % diffraction-limited case computes the OTF on the fly.  The other
         % cases store the OTF in the slots optics.OTF.[OTF,fx,fy].  The

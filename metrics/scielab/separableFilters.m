@@ -56,7 +56,7 @@ else
 end
 
 
-% These are the parameters for generating the filters,
+% These are the parameters for generating the filters
 % expressed as weighted sum of two or three gaussians,
 % in the format [halfwidth weight halfwidth weight ...].
 % The halfwidths are in degrees of visual angle.

@@ -417,7 +417,7 @@ title('Modulation transfer functions for 3 wavelengths');
 % in the average human eye.  The curves they derived were based on
 % empirical inspection of data sets, and do not have any strong theoretical
 % foundation. Still, they are probably more accurate than the Westheimer
-% function and they are parameterized for the subject's age, pigmentation,
+% function and they are parameterized for the subject's age, pigmentation
 % and pupil diameter.  Hence, for practical computation, these are probably
 % more useful.
 

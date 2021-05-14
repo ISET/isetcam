@@ -36,7 +36,7 @@ sensor = sensorCreate;
 expTimes = logspace(0,1.5,10);
 
 % For the default camera, at the shortest exposure (1 sec), we will see a
-% significant component of noise from other sources.  The other terms,
+% significant component of noise from other sources.  The other terms
 % however, are dominated by the dark voltage.
 
 % How many color filters?

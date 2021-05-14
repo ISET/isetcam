@@ -115,7 +115,7 @@ function [e, est] = sseval(p,D1,D2)
 % The estimate for the shifted and scaled values are
 % est = interp1(D2.x, D2.y, D2.x/p(1) + p(2));
 
-% If we shift and scale D2's x value and measure at D1's x value,
+% If we shift and scale D2's x value and measure at D1's x value
 % we want the new est to match D1.x,D1.y
 % est = interp1(D2.x/p(1) + p(2), D2.y, D1.x);
 est = interp1(p(1)*(D2.x - p(2)), D2.y, D1.x);

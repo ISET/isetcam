@@ -115,7 +115,7 @@ grid on; axis([ -10 10 -10 10 0 100]);
 %% Examine the chromaticity coordinates of these various surfaces.
 % Remember that the chromaticity coordinates represent only two of the
 % three dimensions.  In this case, the surfaces all share a common "shape"
-% spectral power distribution, and they differ only by a scale factor.  So,
+% spectral power distribution, and they differ only by a scale factor.  So
 % the surfaces will have the same chromaticity coordinates.
 grayxy = chromaticity(grayXYZ')'
 
@@ -218,7 +218,7 @@ title('Image of A* Ramp (approximate)');
 axis off
 
 % Let's make a similar picture as we vary the b* dimension.
-% Because we have various bits of information loaded up already,
+% Because we have various bits of information loaded up already
 % we can compute a little more quickly.
 
 %% Create the varyBstar values

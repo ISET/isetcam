@@ -3,7 +3,7 @@
 % The data include the spatial array of L,M, and S cone positions in five
 % subjects.
 %
-% The data also include the estimated pointspread functions for 500, 550,
+% The data also include the estimated pointspread functions for 500, 550
 % and 600nm.  These are all near the fovea (central 1.5 deg).
 %
 % Subject-specific spatial scale and eccentricity of the various PSFs and

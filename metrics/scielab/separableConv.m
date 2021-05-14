@@ -12,7 +12,7 @@ function result = separableConv(im, xkernels, ykernels)
 %
 % This function is useful when a 2-D filter can be represented by
 % a linear combination of several separable filters. If the number
-% of separable filters that form the 2-D filter is not too large,
+% of separable filters that form the 2-D filter is not too large
 % this can be substantially faster than conv2.
 %
 % From (put citation here)

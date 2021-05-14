@@ -251,7 +251,7 @@ return;
 function popName1_Callback(hObject, eventdata, handles)
 %
 % These routines reset the entries in the pattern variable.  We find the
-% name of the selected filter for each position (in this case position 1),
+% name of the selected filter for each position (in this case position 1)
 % and then we place the filter number in that position in isa.cfa.pattern.
 
 % This is the selected filter name

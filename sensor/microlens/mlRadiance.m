@@ -70,7 +70,7 @@ rStack = 1.52;   % Could be computed as the mean of the nStack without air and s
 f = mlensGet(ml,'ml focal length','micron')/rStack;           % [um]
 lensOffset = mlensGet(ml,'offset');                           % [um]
 
-% Source Parameters.  There is only one wavelength for each computation,
+% Source Parameters.  There is only one wavelength for each computation
 % hunh.
 lambda = mlensGet(ml,'wavelength','um');		            % [um]
 sourceChiefRayAngle = mlensGet(ml,'chief ray');              % [deg]

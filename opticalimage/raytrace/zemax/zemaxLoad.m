@@ -47,7 +47,7 @@ data = reshape(data{1},psfSize,psfSize);
 % the origin to the left.  So, we rotate the data 90 deg counter-clockwise
 % to get the proper PSF.
 %
-% I don't think it matters if we do it clockwise or counter-clockwise,
+% I don't think it matters if we do it clockwise or counter-clockwise
 % really, because of our symmetry assumptions.  But I am trying to keep
 % everything straight.
 data = rot90(data);

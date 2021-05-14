@@ -63,7 +63,7 @@ iSamp = iSamp(:);
 psf = zeros(nPix,nPix,nWave);
 
 if showBar, wBar = waitbar(0,'Creating PSF'); end
-for ii=1:nWave,
+for ii=1:nWave
     if showBar, waitbar(ii/nWave,wBar); end
     thisPSF = wvfGet(wvfP,'psf',wave(ii));  % vcNewGraphWin; imagesc(thisPSF)
     

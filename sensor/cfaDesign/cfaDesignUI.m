@@ -49,7 +49,7 @@ set(hPat.fig,...
     'Menubar','None'...
     );
 
-% The UI gets hard to read if there are too many colors. IN such cases,
+% The UI gets hard to read if there are too many colors. IN such cases
 % we let it be resizeable
 if nColors >= 5, set(hPat.fig,'Resize','On'); end
 

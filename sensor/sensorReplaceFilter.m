@@ -17,7 +17,7 @@ function sensor = sensorReplaceFilter(sensor,whichFilter,newFilterFile)
 if ieNotDefined('isa'), sensor = vcGetObject('sensor'); end
 if ieNotDefined('newFilterFile'), newFilterFile = []; end
 
-if ieNotDefined('whichFilter'),
+if ieNotDefined('whichFilter')
     filterNames = sensorGet(sensor,'filterNames');
     replaceName = ieReadString('Enter filter name to replace:',filterNames{1});
     if isempty(replaceName), return; end;

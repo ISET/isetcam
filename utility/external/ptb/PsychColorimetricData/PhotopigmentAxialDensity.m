@@ -35,7 +35,7 @@ function densities = PhotopigmentAxialDensity(receptorTypes,species,source,field
 % The CIE method takes a field size argument.  This
 % overrides the specified foveal or not part of the
 % cone string.  If the field type is not passed and
-% the method is CIE, it is set to 10-degrees for SCone, MCone,
+% the method is CIE, it is set to 10-degrees for SCone, MCone
 % and LcCne, and to 2-degrees for FovealSCone, FovealMCone, and
 % FovealLCone.
 %

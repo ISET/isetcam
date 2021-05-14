@@ -58,7 +58,7 @@ yCoords = yCoords(:)';
 %
 % umDisp and add four times - should displaced image also be blurred?
 % I downloaded qinterp2 from Matlab Centra. This speeds things up over
-% interp2.  I had to make some small modifications to the qinterp2 code,
+% interp2.  I had to make some small modifications to the qinterp2 code
 % commented in the text.
 % Perhaps we should have some blurring here that matches the umDisp??
 for ii=1:nWave

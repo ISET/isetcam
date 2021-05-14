@@ -25,7 +25,7 @@ function outImage = changeColorSpace(inImage,colorMatrix)
 % S-CIELAB code uses changeColorSpace and the old routine, cmatrix,
 % rather than the new routines, colorTransformMatrix and
 % imageLinearTransform.  I haven't changed S-CIELAB over yet.  But it
-% should be changed to use imageLinearTransform and colorTransformMatrix,
+% should be changed to use imageLinearTransform and colorTransformMatrix
 % and then changeColorSpace and cmatrix should be eliminated from the
 % archive.
 %

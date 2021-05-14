@@ -112,7 +112,7 @@ if (stimulusSizeMrad > 11)
     end
     
     %% Case of stimulus smaller than or equal to 11 mradians
-    % The standard gives the limit as corneal irradiance for longer duration stimuli,
+    % The standard gives the limit as corneal irradiance for longer duration stimuli
     % and as radiant exposure for shorter durations, with the breakpoint being 100 seconds.
     % The effect of this is to allow irradiance for shorter exposures, or equivalently
     % higher radiant exposure for longer durations.

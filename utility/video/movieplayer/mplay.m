@@ -117,7 +117,7 @@ try,
     [A,dfmt,fps,msg] = parse_inputs(varargin{:});
     error(msg);
     
-    % fmt: actual movie format to use,
+    % fmt: actual movie format to use
     %      string normalized to proper spelling, capitalization, etc
     [A, fmt] = CheckMovieFormat(A, dfmt);
     
@@ -149,17 +149,17 @@ set(hfig,'units','pix');
 figpos = get(hfig,'pos');
 
 % Widen player to minimum width (if movie is very narrow)
-if figpos(3) < min_width,
+if figpos(3) < min_width
     figpos(3) = min_width;
 end
 
 % Shrink movie to screen as needed:
 set(0,'units','pix');
 screenpos = get(0,'screensize');
-if figpos(3) > screenpos(3),
+if figpos(3) > screenpos(3)
     figpos(3) = screenpos(3);
 end
-if figpos(4) > screenpos(4),
+if figpos(4) > screenpos(4)
     figpos(4) = screenpos(4);
 end
 
@@ -205,19 +205,19 @@ if ~isempty(msg), return; end
 
 A = varargin{1};
 
-if nargin > 2,
+if nargin > 2
     % 3 or more inputs
     fmt = varargin{2};
     fps = varargin{3};
     
 elseif nargin==2
     % 2 inputs
-    if ischar(varargin{2}),
+    if ischar(varargin{2})
         fmt = varargin{2};
     else
         % must disambiguate:
         %   (A,@my_func) from (A,fps)
-        if isnumeric(varargin{2}),
+        if isnumeric(varargin{2})
             fps = varargin{2};
         else
             fmt = varargin{2};
@@ -232,16 +232,16 @@ end
 %   NOTE: If A is a cell-array, skip this
 %         FMT could be a conversion function
 %
-if ~iscell(A),
-    if ~isempty(fmt),
-        if ~ischar(fmt),
+if ~iscell(A)
+    if ~isempty(fmt)
+        if ~ischar(fmt)
             msg = 'FMT must be a string.';
             return
         end
         all_in={'intensity','rgb','structure'};  % user format strings
         all_out={'I','RGB','S'};                 % internal format strings
         i=strmatch(lower(fmt), all_in);
-        if isempty(i),
+        if isempty(i)
             msg='Unrecognized FMT string specified.';
             return
         end
@@ -250,7 +250,7 @@ if ~iscell(A),
 end
 
 % Check FPS
-if ~isa(fps,'double') || numel(fps)~=1 || fps<=0,
+if ~isa(fps,'double') || numel(fps)~=1 || fps<=0
     msg='FPS must be a scalar double-precision value > 0.';
     return
 end
@@ -298,14 +298,14 @@ CR = sprintf('\n');
 
 % Check for movie structure format
 %
-if isstruct(A),
+if isstruct(A)
     fmt = 'S';
-    if ~isempty(dfmt) && ~strcmp(fmt,dfmt),
+    if ~isempty(dfmt) && ~strcmp(fmt,dfmt)
         error('Movie format (%s) doesn''t match specified format (%s)',fmt,dfmt);
     end
     
     % Check for required fields
-    if ~isfield(A, 'colormap') || ~isfield(A, 'cdata'),
+    if ~isfield(A, 'colormap') || ~isfield(A, 'cdata')
         error('Invalid movie: structure format does not contain required fields.');
     end
     
@@ -315,7 +315,7 @@ if isstruct(A),
     %
     i=1;                 % just check first frame
     %for i=1:length(A),  % check all entries in structure
-    if ~isempty(A(i).colormap),
+    if ~isempty(A(i).colormap)
         error('All colormap fields in structure format must be empty.');
     end
     c=class(A(i).cdata);
@@ -331,13 +331,13 @@ end
 % Check for cell-array arguments
 %
 % NOTE: Disabled color conversion syntax
-if 0,
-    if iscell(A),
+if 0
+    if iscell(A)
         % Convert cell array of color components to 4-D RGB video array
         % using user-defined conversion function
         
         % Default if no conversion function specified: int2rgbm
-        if isempty(dfmt),
+        if isempty(dfmt)
             fmt = @int2rgbm;
         else
             fmt = dfmt;
@@ -355,7 +355,7 @@ if 0,
     end
 end
 
-if ~isnumeric(A),
+if ~isnumeric(A)
     error('Unrecognized movie format.');
 end
 
@@ -363,30 +363,30 @@ end
 %
 nd = ndims(A);
 sz = size(A);
-if nd==4,
+if nd==4
     A33 = (sz(3)==3);
-    if ~A33,
+    if ~A33
         error('Invalid movie format: 3rd dimension of array must be 3.');
     end
     fmt = 'RGB';
-    if ~isempty(dfmt) && ~strcmp(fmt,dfmt),
+    if ~isempty(dfmt) && ~strcmp(fmt,dfmt)
         error('Movie format (%s) doesn''t match specified format (%s)',fmt,dfmt);
     end
     return
-elseif nd==3,
+elseif nd==3
     A33 = (sz(3)==3);
-    if A33 && isempty(dfmt),
+    if A33 && isempty(dfmt)
         warning(['Ambiguous movie format: 3rd dimension of 3-D array is 3.' CR ...
             'Assuming ''intensity'' format.  Pass format string to suppress warning.']);
     end
     fmt='I';
-    if ~isempty(dfmt) && ~strcmp(fmt,dfmt),
+    if ~isempty(dfmt) && ~strcmp(fmt,dfmt)
         error('Movie format (%s) doesn''t match specified format (%s)',fmt,dfmt);
     end
     return
 else  % 2-D input
     fmt='I';
-    if ~isempty(dfmt) && ~strcmp(fmt,dfmt),
+    if ~isempty(dfmt) && ~strcmp(fmt,dfmt)
         error('Movie format (%s) doesn''t match specified format (%s)',fmt,dfmt);
     end
     return
@@ -396,7 +396,7 @@ end
 function hfig = CreateGUI
 
 % Determine renderer mode
-if 0 & opengl('info'),
+if 0 & opengl('info')
     renderer='opengl';
 else
     renderer='painters';
@@ -525,7 +525,7 @@ function DeleteFcn(hcb, eventStruct)
 %    delete(h)
 hfig=gcbf;
 ud = get(hfig,'userdata');
-if ~isempty(ud),
+if ~isempty(ud)
     stop(ud.htimer); % Shut off timer if running
 end
 delete(hfig);    % Close window
@@ -543,7 +543,7 @@ frame_rt  = frame_pos(1)+frame_pos(3)-2;
 delta = fig_pos(3)-frame_rt;
 
 % Adjust positions:
-for i=1:length(hAll),
+for i=1:length(hAll)
     pos = get(hAll(i),'pos');
     pos(1) = pos(1) + delta;
     set(hAll(i),'pos',pos);
@@ -710,7 +710,7 @@ else              ena = [0 1 1 0];
 end
 
 hchild = flipud(get(ud.htoolbar,'children'));
-for i=1:4,
+for i=1:4
     if ena(i), s='on'; else s='off'; end
     set(hchild(5+i),'enable',s);
 end
@@ -739,7 +739,7 @@ hexp=uipushtool(htoolbar, ...
     'click', @cb_export_imview);
 
 % Check for IMVIEW
-if ~exist('imview','file'),
+if ~exist('imview','file')
     % set(hexp,'enable','off');
     set(hexp,'tooltip', 'Export to Workspace');
 end
@@ -825,11 +825,11 @@ if nargin<3, hfig  = gcbf; end
 ud = get(hfig,'userdata');
 stepsize = 10;
 
-if ud.fbmode,
+if ud.fbmode
     % fwd/back playback mode
-    if ud.fbrev,
+    if ud.fbrev
         % in reverse ... increment
-        if ud.currframe >= ud.numFrames-stepsize,
+        if ud.currframe >= ud.numFrames-stepsize
             % hit last frame ... go to reverse
             ud.currframe = ud.numFrames;
             ud.fbrev=0;  % no more reverse playback
@@ -838,7 +838,7 @@ if ud.fbmode,
         end
     else
         % not in reverse ... decrement
-        if ud.currframe <= stepsize,
+        if ud.currframe <= stepsize
             ud.fbrev=1;  % hit reverse playback
             ud.currframe = stepsize+1;  % so next subtraction brings us to frame 1
         end
@@ -849,9 +849,9 @@ else
     
     ud.currframe = ud.currframe - stepsize;
     % Check for backwards wraparound
-    if ud.currframe < 1,
-        if ~ud.loopmode,
-            if ud.currframe == 1-stepsize,
+    if ud.currframe < 1
+        if ~ud.loopmode
+            if ud.currframe == 1-stepsize
                 return
             end
             ud.currframe = 1;
@@ -880,7 +880,7 @@ icons = get_icons_from_fig(hfig);
 hPlay = findobj(ud.htoolbar, 'tag','Play/Pause');
 
 % Check if timer is already running
-if strcmp(get(ud.htimer,'Running'),'on'),
+if strcmp(get(ud.htimer,'Running'),'on')
     % Movie already playing
     %  - Move to Pause mode
     %  - Show Play icon (currently must be pause indicator)
@@ -900,7 +900,7 @@ if strcmp(get(ud.htimer,'Running'),'on'),
         'cdata', icons.play_off);
 else
     % Not running
-    if ud.paused,
+    if ud.paused
         % Paused - move to play
         ud.nextframe = ud.currframe;
     else
@@ -929,7 +929,7 @@ ud.paused = 0;  % we're stopped, not paused
 set(hfig,'userdata',ud);
 
 isRunning = strcmp(get(ud.htimer,'Running'),'on');
-if isRunning,
+if isRunning
     stop(ud.htimer);
 else
     % Allow stop even when movie not running
@@ -944,18 +944,18 @@ function cb_step_back(hbutton, eventStruct, hfig)
 if nargin<3, hfig  = gcbf; end
 ud = get(hfig,'userdata');
 
-if ud.fbmode,
+if ud.fbmode
     % fwd/back playback mode
-    if ud.fbrev,
+    if ud.fbrev
         % in reverse ... increment
-        if ud.currframe == ud.numFrames-1,
+        if ud.currframe == ud.numFrames-1
             % will hit last frame ... go to normal playback
             ud.fbrev=0;  % normal playback
         end
         ud.currframe = ud.currframe+1;
     else
         % not in reverse ... decrement
-        if ud.currframe == 1,
+        if ud.currframe == 1
             % fwd/back hit when frame 2 displayed
             %   move to frame 1 in non-reverse mode, then go to reverse
             %   mode
@@ -967,8 +967,8 @@ if ud.fbmode,
     end
 else
     % Not fwd/back mode
-    if ud.currframe <= 1,
-        if ~ud.loopmode,
+    if ud.currframe <= 1
+        if ~ud.loopmode
             return
         end
         ud.currframe = ud.numFrames;
@@ -997,11 +997,11 @@ function cb_step_fwd(hbutton, eventStruct, hfig)
 if nargin<3, hfig  = gcbf; end
 ud = get(hfig,'userdata');
 
-if ud.fbmode,
+if ud.fbmode
     % fwd/back playback mode
-    if ~ud.fbrev,
+    if ~ud.fbrev
         % not in reverse ... increment fwd
-        if ud.currframe >= ud.numFrames,
+        if ud.currframe >= ud.numFrames
             % hit last frame ... go to reverse
             ud.currframe = ud.currframe-1;
             ud.fbrev=1;  % reverse playback
@@ -1010,7 +1010,7 @@ if ud.fbmode,
         end
     else
         % in reverse ... decrement
-        if ud.currframe == 2,
+        if ud.currframe == 2
             % fwd/back hit when frame 2 displayed
             %   move to frame 1 in reverse mode
             ud.fbrev=0;  % no more reverse playback
@@ -1019,8 +1019,8 @@ if ud.fbmode,
     end
 else
     % Not fwd/back mode
-    if ud.currframe >= ud.numFrames,
-        if ~ud.loopmode,
+    if ud.currframe >= ud.numFrames
+        if ~ud.loopmode
             return
         end
         ud.currframe = 1;
@@ -1043,11 +1043,11 @@ if nargin<3, hfig  = gcbf; end
 ud = get(hfig,'userdata');
 stepsize = 10;
 
-if ud.fbmode,
+if ud.fbmode
     % In fwd/rev playback mode
-    if ~ud.fbrev,
+    if ~ud.fbrev
         % not in reverse ... increment fwd
-        if ud.currframe >= ud.numFrames-stepsize,
+        if ud.currframe >= ud.numFrames-stepsize
             % hit last frame ... go to reverse
             ud.currframe = ud.numFrames;
             ud.fbrev=1;  % reverse playback
@@ -1056,7 +1056,7 @@ if ud.fbmode,
         end
     else
         % in reverse mode
-        if ud.currframe <= stepsize,
+        if ud.currframe <= stepsize
             ud.fbrev=0;  % no more reverse playback
             ud.currframe = stepsize+1;  % so next subtraction brings us to frame 1
         end
@@ -1065,9 +1065,9 @@ if ud.fbmode,
 else
     % Not in fwd/rev playback mode
     ud.currframe = ud.currframe + stepsize;
-    if ud.currframe > ud.numFrames,
-        if ~ud.loopmode,
-            if ud.currframe == ud.numFrames+stepsize,
+    if ud.currframe > ud.numFrames
+        if ~ud.loopmode
+            if ud.currframe == ud.numFrames+stepsize
                 return
             end
             ud.currframe = ud.numFrames;
@@ -1093,7 +1093,7 @@ function cb_goto_end(hbutton, eventStruct, hfig)
 
 if nargin<3, hfig  = gcbf; end
 ud = get(hfig,'userdata');
-if ud.currframe ~= ud.numFrames,
+if ud.currframe ~= ud.numFrames
     ud.currframe = ud.numFrames;
     ud.nextframe = ud.currframe;
     set(hfig,'userdata',ud);
@@ -1135,7 +1135,7 @@ function ReactToStoredLoopMode(hfig)
 
 icons = get_icons_from_fig(hfig);
 ud = get(hfig,'userdata');
-if ud.loopmode,
+if ud.loopmode
     icon = icons.loop_on;
     tip = 'Repeat: On';
 else
@@ -1151,7 +1151,7 @@ function ReactToStoredFBMode(hfig)
 % Update button icon/tip
 icons = get_icons_from_fig(hfig);
 ud = get(hfig,'userdata');
-if ud.fbmode,
+if ud.fbmode
     icon = icons.fwdbk_play_on;
     tip = 'Forward/backward playback';
 else
@@ -1255,8 +1255,8 @@ ud = get(hfig,'userdata');
 feval(ud.UpdateImageFcn, ud);
 
 % Update frame counter
-if (nargin > 1) && fast,
-    if (ud.currframe==1) || (rem(ud.currframe,10)==0),
+if (nargin > 1) && fast
+    if (ud.currframe==1) || (rem(ud.currframe,10)==0)
         UpdateFrameReadout(ud);
     end
 else
@@ -1350,11 +1350,11 @@ function SetFPS(hfig)
 ud = get(hfig,'userdata');
 isRunning = strcmp(get(ud.htimer,'Running'),'on');
 % isPaused = ud.paused;
-if isRunning,
+if isRunning
     cb_play([],[],ud.hfig);  % pause
 end
 set(ud.htimer,'Period', 1./ud.fps);
-if isRunning,
+if isRunning
     cb_play([],[],ud.hfig);
     %     ud = get(hfig,'userdata');
     %     ud.paused = isPaused;
@@ -1391,8 +1391,8 @@ function UpdateFrameReadout(ud)
 %  where + means fwd play, - means bkwd play
 
 str = sprintf('%d:%d',ud.currframe,ud.numFrames);
-if ud.fbmode,
-    if ud.fbrev,
+if ud.fbmode
+    if ud.fbrev
         dir='-';
     else
         dir='+';
@@ -1405,7 +1405,7 @@ set(ud.hStatusBar.FrameNum, 'string', str);
 function UpdateFrameReadoutTooltip(ud)
 
 tStr = 'Current Frame : Total Frames';
-if ud.fbmode,
+if ud.fbmode
     tStr = [tStr sprintf('\n') '+: Fwd dir, -:Bkwd dir'];
 end
 set(ud.hStatusBar.FrameNum, 'tooltip', tStr);
@@ -1442,7 +1442,7 @@ while 1,  % infinite loop in case user enters invalid information
         % Frame rate:
         %
         new_fps = str2num(answer{1});
-        if new_fps > 0,
+        if new_fps > 0
             if ~isequal(new_fps, ud.fps),  % change made?
                 % Grab userdata now in case changes were made
                 %   while dialog was open
@@ -1458,7 +1458,7 @@ while 1,  % infinite loop in case user enters invalid information
         %
         new_cmapexpr = deblank(answer{2});
         new_cmap = eval(new_cmapexpr, '[]');
-        if isempty(new_cmap),
+        if isempty(new_cmap)
             hwarn = warndlg('Invalid colormap expression.','Movie Player Error','modal');
             waitfor(hwarn);
             continue;
@@ -1504,10 +1504,10 @@ while 1,  % infinite loop in case user enters invalid information
         % Currently Displayed Frame:
         %
         new_jumpto = str2num(answer{1});
-        if (new_jumpto > 0) && (new_jumpto <= ud.numFrames),
+        if (new_jumpto > 0) && (new_jumpto <= ud.numFrames)
             % Note: always perform update, even if value remains the same
             % That's because the currently displayed frame may have
-            % changed behind our backs.  Even if we re-grab userdata,
+            % changed behind our backs.  Even if we re-grab userdata
             % it's changing all the time.
             
             % Get properties again, in case something has
@@ -1548,7 +1548,7 @@ function cb_export_imview(hco, eventStruct)
 hfig = gcbf;
 ud = get(hfig,'userdata');
 v = GetExportFrame(ud);
-if exist('imview','file'),
+if exist('imview','file')
     try
         imview(v);
     catch
@@ -1573,7 +1573,7 @@ ud.currframe = ud.nextframe;
 ShowMovieFrame(hfig, 1);  % "fast" display
 
 % Increment frame or stop playback if finished
-if (ud.currframe == ud.numFrames),
+if (ud.currframe == ud.numFrames)
     % Last frame of movie just displayed
     
     if ud.fbmode % && ~ud.fbrev,  % unnecessary qualifier --- always will be false here
@@ -1581,7 +1581,7 @@ if (ud.currframe == ud.numFrames),
         ud.nextframe = ud.currframe-1;
         shouldStop = 0;
         
-        %     elseif ud.fbmode && ud.fbrev,
+        %     elseif ud.fbmode && ud.fbrev
         %         error('how did this happen? ==end');
         %         shouldStop = 1;
         
@@ -1598,9 +1598,9 @@ if (ud.currframe == ud.numFrames),
     % Turn off pause:
     ud.paused = 0;
     
-elseif (ud.currframe == 1),
+elseif (ud.currframe == 1)
     % First frame of movie just displayed
-    if ud.fbmode && ud.fbrev,
+    if ud.fbmode && ud.fbrev
         ud.fbrev = 0;  % going into fwd playback mode
         ud.nextframe = ud.currframe+1;
         shouldStop = 1;
@@ -1610,7 +1610,7 @@ elseif (ud.currframe == 1),
     end
     
 else
-    if ud.fbmode && ud.fbrev,
+    if ud.fbmode && ud.fbrev
         ud.nextframe = ud.nextframe - 1;  % next frame, reverse play
     else
         ud.nextframe = ud.nextframe + 1;  % next frame, fwd play
@@ -1666,9 +1666,9 @@ function z = mergefields(varargin)
 % $Revision: 1.3 $ $Date: 2005/03/31 00:39:48 $
 
 z=varargin{1};
-for i=2:nargin,
+for i=2:nargin
     f=fieldnames(varargin{i});
-    for j=1:length(f),
+    for j=1:length(f)
         z.(f{j}) = varargin{i}.(f{j});
     end
 end

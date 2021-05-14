@@ -17,7 +17,7 @@ function [figNum, uData] = sensorPlotLine(sensor, ori, dataType, sORt, xy)
 %  ori:      Orientation of line ('h' or 'v', default: 'h')
 %  dataType: {'electrons','photons'},'volts','dv'  (Default: 'electrons').
 %             If a human sensor, 'electrons' plots label the y axis as
-%            'absorptions'. Human is determined if there is a sensor field,
+%            'absorptions'. Human is determined if there is a sensor field
 %            'human'.
 %  sORt:     Plot the space or transform domain.  Transform (frequency) is
 %           weird and doesn't work properly for human.  Default: 'space'
@@ -88,7 +88,7 @@ if nSensors > 1
     fColors = sensorGet(sensor,'filterPlotColors');
     if strcmp(dataType,'electrons') && isfield(sensor,'human')  || ...
             strcmp(dataType,'photons') || strcmp(dataType,'absorptions')
-        % In the human case or if listed as photons, we plot absorptions,
+        % In the human case or if listed as photons, we plot absorptions
         % not electrons
         dataType = 'absorptions';
     end
