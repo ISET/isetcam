@@ -46,7 +46,7 @@ end
 
 hold off; grid on
 xlabel('Wavelength (nm)'); ylabel('Transmissivity'); title('Current filters');
-hndl = legend(lgnd,0); set(hndl,'FontSize',6); figure(handles.figure1);
+hndl = legend(lgnd,'Location', 'Best'); set(hndl,'FontSize',6); figure(handles.figure1);
 
 return;
 
