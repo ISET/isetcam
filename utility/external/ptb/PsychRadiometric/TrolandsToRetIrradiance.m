@@ -34,17 +34,17 @@ S = relativeSpectrumS;
 % Load appropriate V_lambda for phot/scot
 switch (photopic)
     case 'Photopic'
-        load T_xyz1931;
+        load('T_xyz1931.mat', 'S_xyz1931', 'T_xyz1931');
         T_vLambda = SplineCmf(S_xyz1931,T_xyz1931(2,:),S);
         clear T_xyz1931 S_xyz1931
         magicFactor = 2.242e12;
     case 'JuddVos'
-        load T_xyzJuddVos;
+        load('T_xyzJuddVos.mat', 'S_xyzJuddVos', 'T_xyzJuddVos');
         T_vLambda = SplineCmf(S_xyzJuddVos,T_xyzJuddVos(2,:),S);
-        clear T_JuddVos S_JuddVos
+        clear T_xyzJuddVos S_xyzJuddVos
         magicFactor = 2.242e12;
     case 'Scotopic'
-        load T_rods;
+        load('T_rods.mat', 'S_rods', 'T_rods');
         T_vLambda = SplineCmf(S_rods,T_rods,S);
         magicFactor = 5.581e12;
 end

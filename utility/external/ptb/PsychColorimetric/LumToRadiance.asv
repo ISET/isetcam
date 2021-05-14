@@ -27,12 +27,12 @@ switch (photopic)
         clear T_xyz1931 S_xyz1931
         magicFactor = 683;
     case 'JuddVos'
-        load('T_xyzJuddVos.mat', 'S_xyzJuddVos', 'T_xyzJuddVos');
-        T_vLambda = SplineCmf(S_xyzJuddVos,T_xyzJuddVos(2,:),S);
+        load('T_xyzJuddVos.mat', 'S_JuddVos', '
+        T_vLambda = SplineCmf(S_JuddVos,T_JuddVos(2,:),S);
         clear T_JuddVos S_JuddVos
         magicFactor = 683;
     case 'Scotopic'
-        load('T_rods.mat', 'S_rods', 'T_rods');
+        load T_rods;
         T_vLambda = SplineCmf(S_rods,T_rods,S);
         magicFactor = 1700;
 end

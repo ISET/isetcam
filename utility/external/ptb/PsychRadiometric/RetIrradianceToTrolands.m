@@ -40,17 +40,17 @@ irradianceDeg2 = irradianceMM2*mm2PerDeg2;
 % Load appropriate V_lambda for phot/scot
 switch (photopic)
     case 'Photopic'
-        load T_xyz1931;
+        load('T_xyz1931.mat', 'S_xyz1931', 'T_xyz1931');
         T_vLambda = SplineCmf(S_xyz1931,T_xyz1931(2,:),S);
         clear T_xyz1931 S_xyz1931
         magicFactor = 2.242e12;
     case 'JuddVos'
-        load T_xyzJuddVos;
-        T_vLambda = SplineCmf(S_JuddVos,T_JuddVos(2,:),S);
+        load('T_xyzJuddVos.mat', 'S_xyzJuddVos', 'T_xyzJuddVos');
+        T_vLambda = SplineCmf(S_xyzJuddVos,T_xyzJuddVos(2,:),S);
         clear T_JuddVos S_JuddVos
         magicFactor = 2.242e12;
     case 'Scotopic'
-        load T_rods;
+        load('T_rods.mat', 'S_rods', 'T_rods');
         T_vLambda = SplineCmf(S_rods,T_rods,S);
         magicFactor = 5.581e12;
 end

@@ -68,9 +68,6 @@ end
 % Filled in if we save.  Otherwise, left empty.
 opticsFile = [];
 
-% Read by ISETPARAMS.TXT
-wave = [];
-
 %% Read the file, which was written out by Zemax.
 
 % As Zemax evolves, and textscan evolves, we have had some issues staying
@@ -144,8 +141,8 @@ if ismac
     tmp = strsplit(baseLensFileName,':');
     tmp{2} = strrep(tmp{2},'\','/');
 end
-
 [~,baseName,~] = fileparts(tmp{2});
+if exist('wave','var')
 [diName,riName,psfNameList] = rtFileNames(baseName,wave,imgHeight); 
 
 %%  Load the geometry
