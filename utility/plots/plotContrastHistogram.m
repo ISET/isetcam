@@ -27,7 +27,7 @@ if nargout < 2
     figure; histogram(cdata)
 else
     % Otherwise, return the histogram data for plotting
-    [cHistN,cHistX] = histogram(cdata);
+    [cHistN,cHistX] = hist(cdata);
 end
 
 return;

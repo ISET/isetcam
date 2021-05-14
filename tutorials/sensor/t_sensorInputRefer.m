@@ -116,9 +116,9 @@ val = poissrnd(tRate,nSamp);
 xval =  min(photons(:)):max(photons(:));
 
 vcNewGraphWin;
-n = histogram(val(:),xval); bar(xval,n/sum(n(:))); hold on;
+n = hist(val(:),xval); bar(xval,n/sum(n(:))); hold on;
 
-[n,c] = histogram(photons(:),xval);
+[n,c] = hist(photons(:),xval);
 n = n/sum(n(:)); lst = (n > 0);
 plot(c(lst),n(lst),'ro-','linewidth',2);
 

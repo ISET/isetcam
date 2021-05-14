@@ -10,7 +10,7 @@ hcall = zeros( size(0:255) );
 
 while (~ feof(fid) )
     c = fread(fid, 8192); % read a small section of the file
-    hc = histogram(c, 0:255 ); % take the histogram of it.
+    hc = hist(c, 0:255 ); % take the histogram of it.
     hcall = hcall + hc; % combine it with the rest of the file
 end
 fclose(fid);
