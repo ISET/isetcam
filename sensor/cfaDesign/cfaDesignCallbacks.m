@@ -46,7 +46,7 @@ switch action
         %% Bring up a browser window with some tips on UI usage
         helpFile = fullfile(isetRootPath,...
             'sensor','cfaDesign','help','help.htm');
-        web(helpFile,'-notoolbar');
+        web(helpFile,'-notoolbar','-browser');
         
     case 'cfaPattern_reset'
         % We dump everything and redraw the figure with similar cfa attributes

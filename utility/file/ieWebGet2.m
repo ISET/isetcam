@@ -98,7 +98,7 @@ if ismember(ieParamFormat(varargin{1}),{'browse','list','url'})
     end
     if isequal(ieParamFormat(varargin{1}),'browse')
         % assume for now that means we are looking on the web
-        web(baseURL);
+        web(baseURL,'-browser');
         localFile = '';
         return;
     elseif isequal(ieParamFormat(varargin{1}),'list')

@@ -133,7 +133,7 @@ switch resourceType
                 end
             case 'browse'
                 % assume for now that means we are listing
-                web(baseURL);
+                web(baseURL,'-browser');
                 localFile = '';
             case 'list'
                 % simply read the pre-loaded list of resources
@@ -159,7 +159,7 @@ switch resourceType
         end
         switch op
             case 'browse'
-                web(baseURL);
+                web(baseURL,'-browser');
             case {'read', 'fetch'}
                 options = weboptions('Timeout', 60);
                 if ~endsWith(resourceName, "." + lettersPattern)
