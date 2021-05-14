@@ -30,7 +30,12 @@ end
 % Search to find best fit
 options = optimset('fmincon');
 options = optimset(options,'Diagnostics','off','Display','off','LargeScale','off','Algorithm','active-set');
-if (exist('IsCluster') && IsCluster && matlabpool('size') > 1) %#ok<EXIST>
+p = gcp('nocreate'); % If no pool, do not create new one.
+poolsize = 0;
+if ~isempty(p)
+    poolsize = p.NumWorkers
+end
+if (exist('IsCluster') && IsCluster && poolsize > 1) %#ok<EXIST>
     options = optimset(options,'UseParallel','always');
 end
 x = fmincon(@FitConesFun,x0,[],[],[],[],vlb,vub,[],options);
