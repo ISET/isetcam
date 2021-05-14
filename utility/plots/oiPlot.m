@@ -152,7 +152,7 @@ end
 %% Make the plot window and use this default gray scale map
 
 g = ieNewGraphWin;
-mp = 0.4*gray + 0.4*ones(size(gray));
+mp = 0.4*gray(64) + 0.4*ones(size(gray(64)));
 colormap(mp);
 
 switch pType

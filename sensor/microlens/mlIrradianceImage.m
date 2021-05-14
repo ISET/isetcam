@@ -26,7 +26,7 @@ pIrrad(l,:) = 1;   pIrrad(:,l) = 1;
 pIrrad(l,:) = 1;   pIrrad(:,l) = 1;
 
 % Here it is
-imagesc(x,x,pIrrad); colormap('hot'); axis image
+imagesc(x,x,pIrrad); colormap(hot(64)); axis image
 
 % Set up the axes
 fontSize = 18;

@@ -48,7 +48,7 @@ vcNewGraphWin;
 thisWave = 600;
 oiPlot(oi,'psf',[],thisWave);
 set(gca,'xlim',[-20 20],'ylim',[-20 20]);
-colormap(0.5*copper + 0.5*ones(size(copper)));
+colormap(0.5*copper(64) + 0.5*ones(size(copper(64))));
 
 %% Plot the irradiance image
 
@@ -64,7 +64,7 @@ vcNewGraphWin;
 oiPlot(oi2,'psf',[],thisWave);
 set(gca,'xlim',[-20 20],'ylim',[-20 20])
 
-colormap(0.5*copper + 0.5*ones(size(copper)))
+colormap(0.5*copper(64) + 0.5*ones(size(copper(64))))
 title(sprintf('F-number = %d',fnBig))
 
 vcNewGraphWin;

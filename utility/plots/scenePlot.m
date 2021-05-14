@@ -161,7 +161,7 @@ end
 
 % Make the plot window and use set a default gray scale map.
 g = vcNewGraphWin;
-mp = 0.4*gray + 0.3*ones(size(gray));
+mp = 0.4*gray(64) + 0.3*ones(size(gray(64)));
 colormap(mp);
 nTicks = 4;   % For the images and graphs
 

@@ -92,15 +92,15 @@ identityLine;
 
 %%
 voltsDiff = sensorGet(sensorLinear1, 'volts') - sensorGet(sensorGauss, 'volts');
-ieNewGraphWin; imagesc(voltsDiff); colormap('gray'); colorbar; axis off;
+ieNewGraphWin; imagesc(voltsDiff); colormap(gray(64)); colorbar; axis off;
 ieNewGraphWin; histogram(voltsDiff(:), 'BinLimits', [-1e-3, 1e-3], 'BinWidth', 5e-5);
 %%
 voltsDiffT = unitSigCurrent1 - unitSigCurrent2;
-ieNewGraphWin; imagesc(voltsDiffT); colormap('gray'); colorbar; axis off;
+ieNewGraphWin; imagesc(voltsDiffT); colormap(gray(64)); colorbar; axis off;
 ieNewGraphWin; histogram(voltsDiffT(:), 'BinLimits', [-1e-3, 1e-3], 'BinWidth', 5e-5);
 %%
 voltsDiffL = sensorGet(sensorLinear1, 'volts') - sensorGet(sensorLinear2, 'volts');
-ieNewGraphWin; imagesc(voltsDiffL); colormap('gray'); colorbar; axis off;
+ieNewGraphWin; imagesc(voltsDiffL); colormap(gray(64)); colorbar; axis off;
 ieNewGraphWin; histogram(voltsDiffL(:), 'BinLimits', [-1e-3, 1e-3], 'BinWidth', 5e-5);
 %%
 ip = ipCreate;

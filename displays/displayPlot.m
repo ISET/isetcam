@@ -159,7 +159,7 @@ switch param
         srgb = srgb';
         for ii=1:nPrimaries
             subplot(1,nPrimaries,ii);
-            colormap(.6*gray*diag(srgb(:,ii)) + 0.4);
+            colormap(.6*gray(64)*diag(srgb(:,ii)) + 0.4);
             sPSF = psf(:,:,ii); sPSF = sPSF/max(sPSF(:));
             imagesc(x,y,sPSF); axis image
             xlabel('mm'); ylabel('mm'); grid on;
