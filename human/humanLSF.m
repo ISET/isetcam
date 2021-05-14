@@ -20,14 +20,14 @@ function [lineSpread,xDim,wave] = humanLSF(pupilRadius,dioptricPower,unit,wave)
 %   p. 3113-3122 -- see also Foundations of Vision by Wandell, 1995.
 %
 % Examples:
-%  [lsf,xDim,wave]  = humanLSF; colormap(jet); mesh(xDim,wave,lsf);
+%  [lsf,xDim,wave]  = humanLSF; colormap(jet(64)); mesh(xDim,wave,lsf);
 %  xlabel('wave'); ylabel('mm')
-%  [lsf,xDim,wave]  = humanLSF([],[],[],'mm'); colormap(jet); mesh(xDim,wave,lsf)
+%  [lsf,xDim,wave]  = humanLSF([],[],[],'mm'); colormap(jet(64)); mesh(xDim,wave,lsf)
 %
 %  radius = 0.003/2;  % In meters
 %  dioptricPower = 60;% In diopters (1/m)
 %  unit = 'mm';
-%  [lsf,xDim,wave]  = humanLSF([],radius,dioptricPower,'mm'); colormap(jet); mesh(xDim,wave,lsf)
+%  [lsf,xDim,wave]  = humanLSF([],radius,dioptricPower,'mm'); colormap(jet(64)); mesh(xDim,wave,lsf)
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 

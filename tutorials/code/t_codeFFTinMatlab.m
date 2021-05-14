@@ -73,7 +73,7 @@ isreal(s)
 theDim = 129;
 g = fspecial('gaussian',theDim,2);
 vcNewGraphWin([],'wide');
-subplot(1,3,1); colormap(gray); mesh(g);
+subplot(1,3,1); colormap(gray(64)); mesh(g);
 
 % To calculate the OTF of the point spread function, we should place the
 % center of the image in the (1,1) position.  We do this using ifftshift.
@@ -102,7 +102,7 @@ cmap = gray(128);
 imgC = cmap(tmp.X);
 imgC = imgC(1:theDim,1:theDim);
 vcNewGraphWin([],'wide');
-subplot(1,4,1); colormap(gray); imagesc(imgC); axis image
+subplot(1,4,1); colormap(gray(64)); imagesc(imgC); axis image
 
 % Before we transform the image, we want to place its center in the (1,1)
 % position.  This produces a weird looking beast, but it is what fft2 wants
@@ -137,7 +137,7 @@ imgFTgFT = imgFT .* gFT;
 imgConvG = ifft2(imgFTgFT);
 
 % When we do, the image center is still in the (1,1) position.
-subplot(1,4,3); colormap(gray); imagesc(imgConvG); axis image
+subplot(1,4,3); colormap(gray(64)); imagesc(imgConvG); axis image
 
 % We want the center in the center.  So we apply fftshift.
 imgConvGCentered = fftshift(imgConvG);

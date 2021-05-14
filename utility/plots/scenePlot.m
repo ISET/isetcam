@@ -229,7 +229,7 @@ switch lower(pType)
             ylabel('Wavelength (nm)'); zlabel('Radiance (q/s/nm/m^2)');
             grid on; set(gca,'xtick',ieChooseTickMarks(pos.x,nTicks))
         end
-        colormap(cool)
+        colormap(cool(64))
         
         udata.wave = wave; udata.pos = pos.x; udata.data = data';
         udata.cmd = 'mesh(pos,wave,data)';
@@ -257,7 +257,7 @@ switch lower(pType)
             ylabel('Wavelength (nm)'); zlabel('Radiance (q/s/nm/m^2)');
             grid on; set(gca,'xtick',ieChooseTickMarks(pos.y,nTicks))
         end
-        colormap(cool)
+        colormap(cool(64))
         
         udata.wave = wave; udata.pos = pos.y; udata.data = data';
         udata.cmd = 'mesh(pos,wave,data)';
@@ -304,7 +304,7 @@ switch lower(pType)
         udata.z = fftshift(abs(fft2(data)));
         udata.cmd = 'mesh(x,y,z)';
         mesh(udata.x,udata.y,udata.z);
-        colormap(hot)
+        colormap(hot(64))
         xlabel('Cycles/image'); ylabel('Cycles/image'); zlabel('Amplitude');
         str = sprintf('Amplitude spectrum at %.0f nm', selectedWave);
         title(str);
@@ -334,7 +334,7 @@ switch lower(pType)
         imagesc(udata.x,udata.y,udata.z);
         xlabel('Cycles/image'); ylabel('Cycles/image'); zlabel('Amplitude');
         str = sprintf('Amplitude spectrum at %.0f nm', selectedWave);
-        title(str); colormap(hot);
+        title(str); colormap(hot(64));
         
     case {'radianceimagewithgrid','radianceimage'}
         % scene = vcGetObject('SCENE');
@@ -719,11 +719,11 @@ switch lower(pType)
         dmap = sceneGet(scene,'depth map');
         if isempty(dmap), error('No depth map')
         else
-            imagesc(dmap); colormap(flipud(gray)); % Near dark, far light
+            imagesc(dmap); colormap(flipud(gray(64))); % Near dark, far light
             axis off; set(g,'Name','ISET: Depth map (m)');
             % Far is dark, close is light
             
-            colormap(flipud(gray));
+            colormap(flipud(gray(64)));
             axis image; cb = colorbar;
             set(get(cb,'label'),'string','Meters','Rotation',90)
         end
@@ -738,7 +738,7 @@ switch lower(pType)
         dmap = 1 - dmap;   % Make near light, far dark
         drgb = cat(3,dmap,dmap,dmap);
         
-        imagesc(drgb); hold on; colormap(flipud(gray));
+        imagesc(drgb); hold on; colormap(flipud(gray(64)));
         v = (1:n)/n; contour(dmap,v);
         hold off
         namestr = sprintf('ISET: Depth map (max = %.1f m)',mx);

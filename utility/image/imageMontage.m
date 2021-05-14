@@ -16,7 +16,7 @@ function [figH,m, cbH] = imageMontage(hc, slices, numCols, figNum)
 %   d = load(fname,'hc');
 %   nWave = size(d.hc,3);
 %   [figH, m] = imageMontage(d.hc,1:10:nWave);
-%   colormap(gray)
+%   colormap(gray(64))
 %
 % See also:  imageMakeMontage,
 %

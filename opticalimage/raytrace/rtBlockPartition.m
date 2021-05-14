@@ -162,7 +162,7 @@ for ww=1:nWave
                         + inIrrad(r(pp),c(pp),ww)*pixelByPixel(:,:,pp);
                 end
                 
-                figure(5);colormap(gray);
+                figure(5);colormap(gray(64));
                 m = max(max(outIrrad(:,:,ww)));
                 imagesc(outIrrad(:,:,ww)/m);
                 pause(0.1)

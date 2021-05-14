@@ -34,7 +34,7 @@ end
 
 ieNewGraphWin;
 imagesc(double(img).^(1/2.2)); axis image;
-colormap(gray)
+colormap(gray(64))
 
 %% We remove the digital offset
 blackLevelDigital = 1024;

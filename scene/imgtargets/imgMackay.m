@@ -8,8 +8,8 @@ function img  = imgMackay(radialFrequency,imSize)
 % the Mackay scene (sceneWindw).
 %
 % Examples
-%  img =  imgMackay;  imagesc(img); colormap(gray); axis image
-%  img  = imgMackay(12,256);  imagesc(img); colormap(gray); axis image
+%  img =  imgMackay;  imagesc(img); colormap(gray(64)); axis image
+%  img  = imgMackay(12,256);  imagesc(img); colormap(gray(64)); axis image
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 

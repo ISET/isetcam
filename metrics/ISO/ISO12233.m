@@ -178,7 +178,7 @@ for color=1:nWave                       % Loop for each color
     %     else pname =[' Red ' 'Green'  'Blue ' ' Lum '];
     %     end
     c = deriv1(barImage(:,:,color), nRow, nCol, fil1);
-    % vcNewGraphWin; imagesc(c); colormap(gray)
+    % vcNewGraphWin; imagesc(c); colormap(gray(64))
     % compute centroid for derivative array for each line in ROI. NOTE WINDOW array 'win'
     for n=1:nRow
         % -0.5 shift for FIR phase
@@ -291,7 +291,7 @@ esf = zeros(nn,nWave);
 for color=1:nWave
     % project and bin data in 4x sampled array
     point = project(barImage(:,:,color), loc(color, 1), fitme(color,1), nbin);
-    % vcNewGraphWin; plot(point); colormap(gray)
+    % vcNewGraphWin; plot(point); colormap(gray(64))
     esf(:,color) = point;  % Not sure what esf stands for. Estimated spatial frequency?
     
     % compute first derivative via FIR (1x3) filter fil
@@ -722,16 +722,16 @@ disp(' ');
 temp = class(array);
 if ~strcmp(temp(1:5),'uint8')
     imagesc( double(array)/double(max(max(max(array))))),
-    colormap('gray'),
+    colormap(gray(64)),
     title('Select ROI');
 else
     if nWave == 1
         imagesc(array),
-        colormap('gray'),
+        colormap(gray(64)),
         title('Select ROI');
     else
         imagesc(array),
-        colormap('gray'),
+        colormap(gray(64)),
         title('Select ROI');
     end
 end

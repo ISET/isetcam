@@ -16,7 +16,7 @@ function img  = imgRamp(imSize,dynamicRange)
    vcNewGraphWin;
    sz = 1024; dRange = 1024;
    img  = imgRamp(sz,dRange);
-   imagesc(img); colormap(gray); axis image
+   imagesc(img); colormap(gray(64)); axis image
 %
    vcNewGraphWin; mesh(img);
 %}

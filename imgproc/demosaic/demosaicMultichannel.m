@@ -31,7 +31,7 @@ jFactor = 10e-6;                    % Jiggle factor. See below for griddata
 % Create a matrix that size of sensor, cfaN, where each entry indexes the
 % color filter
 [cfa,cfaN] = sensorDetermineCFA(sensor);
-% figure; image(cfaN); colormap(hsv);
+% figure; image(cfaN); colormap(hsv(64));
 
 
 % The first band in the img is from the first color filter.  It will have a
@@ -85,7 +85,7 @@ switch lower(method)
                 tmp = img(:,:,band);
                 tmp(isnan(tmp)) = 0;
                 img(:,:,band) = tmp;
-                % figure(1); imagesc(img(:,:,band)); colormap(gray)
+                % figure(1); imagesc(img(:,:,band)); colormap(gray(64))
             end
             % imtool(img(:,:,band))
         end

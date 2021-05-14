@@ -40,14 +40,14 @@ function [M, rseed] = imageDeadLeaves(n,sigma,options)
  sigma = 3;
  [img, rseed] = imageDeadLeaves(n,sigma,options);
  vcNewGraphWin; imagesc(img);
- colormap(gray); axis image; truesize
+ colormap(gray(64)); axis image; truesize
 %}
 %{
  % Produces exactly the same image.  Use rseed = rng; for new image.
  options.rseed = rseed;
  img = imageDeadLeaves(n,sigma,options);
  vcNewGraphWin; imagesc(img);
- colormap(gray); axis image; truesize
+ colormap(gray(64)); axis image; truesize
 %}
 %{
  % This is the original function.

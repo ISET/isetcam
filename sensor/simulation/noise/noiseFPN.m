@@ -33,7 +33,7 @@ function [noisyImage,dsnuImage,prnuImage] = noiseFPN(sensor)
 %
 % Example:
 %    [noisyImage,dsnuImage,prnuImage] = noiseFPN(vcGetObject('sensor'));
-%    imagesc(noisyImage); colormap(gray)
+%    imagesc(noisyImage); colormap(gray(64))
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 

@@ -22,7 +22,7 @@ if ieNotDefined('rect')
     tmp = sqrt(double(img(:,:,cPlane)));
     tmp = tmp/max(tmp(:));
     f = ieNewGraphWin;
-    imagesc(tmp); colormap(hot); axis image
+    imagesc(tmp); colormap(hot(64)); axis image
     [d,rect] = imcrop;
     close(f)
 else

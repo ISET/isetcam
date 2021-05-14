@@ -36,7 +36,7 @@ load -ascii otf.text
 
 save otf otf wave sampleSf
 
-% colormap(cool)
+% colormap(cool(64))
 % mesh(sampleSf,wave,otf);
 % view([45 30])
 % xlabel('Spatial frequency'); ylabel('Wavelength'); zlabel('Modulation')
@@ -69,7 +69,7 @@ combinedOtf = otf*diag(williamsFactor);
 
 save combinedOtf combinedOtf wave sampleSf
 
-% colormap(cool)
+% colormap(cool(64))
 % mesh(sampleSf,wave,combinedOtf)
 % view([45 30])
 %
@@ -104,7 +104,7 @@ spatialExtentDeg = 2*(1 / sampleSf(2));
 xDim = [-(nSf-1):1:(nSf-1)];
 xDim = ( xDim/ (length(xDim)-1)) * spatialExtentDeg;
 
-colormap(cool)
+colormap(cool(64))
 mesh(xDim,wave,lineSpread);
 view([45 30])
 set(gca,'ylim',[min(wave) max(wave)]);

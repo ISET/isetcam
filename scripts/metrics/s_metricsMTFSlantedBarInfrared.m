@@ -138,7 +138,7 @@ barImage = vcGetROIData(vci,roiLocs,'results');
 c = masterRect(3)+1;
 r = masterRect(4)+1;
 barImage = reshape(barImage,r,c,3);
-% figure; imagesc(barImage(:,:,1)); axis image; colormap(gray);
+% figure; imagesc(barImage(:,:,1)); axis image; colormap(gray(64));
 % pause;
 
 dx = sensorGet(sensor,'pixel width','mm');

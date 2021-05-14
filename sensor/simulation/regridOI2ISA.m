@@ -161,7 +161,7 @@ for ii=1:nFilters
     % interpolation that matches the sample spacing of the pixels on
     % the sensor.
     tmp = interp2(U,V,scdi(:,:,ii),X,Y,'linear');
-    % vcNewGraphWin; imagesc(newRows,newCols,tmp), colormap(gray);
+    % vcNewGraphWin; imagesc(newRows,newCols,tmp), colormap(gray(64));
     
     % In the new world, we just cycle through the filters in order.  The
     % old code had us figuring out which is which using sensorFilterType.

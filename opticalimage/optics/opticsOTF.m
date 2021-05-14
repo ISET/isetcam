@@ -99,7 +99,7 @@ otfM = oiCalculateOTF(oi, wave, unit);  % Took changes from ISETBio.
 for ii=1:length(wave)
     % img = oiGet(oi,'photons',wave(ii));
     img = p(:, :, ii);
-    % figure(1); imagesc(img); colormap(gray);
+    % figure(1); imagesc(img); colormap(gray(64));
     
     % For diffraction limited we calculate the OTF.  For other optics
     % models we look up the stored OTF.  Remember, DC is in the (1,1)
@@ -113,7 +113,7 @@ for ii=1:length(wave)
     % imgFFT = fft2(fftshift(img));
     % figure(1); imagesc(abs(imgFFT));
     % figure(2); imagesc(abs(otf));
-    % colormap(gray)
+    % colormap(gray(64))
     
     % Multiply the transformed otf and the image.
     % Then invert and put the image center in  the center of the matrix
@@ -132,7 +132,7 @@ for ii=1:length(wave)
     % We got rid of it by an abs() operator.  It should never be there.
     % But we think it arises because of rounding error.  We haven't seen
     % this in years, however.
-    % figure(1); imagesc(abs(filteredIMG)); colormap(gray)
+    % figure(1); imagesc(abs(filteredIMG)); colormap(gray(64))
     %
     % oi = oiSet(oi,'photons',filteredIMG,wave(ii));
     p(:,:,ii) = filteredIMG;

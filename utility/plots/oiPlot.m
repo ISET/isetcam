@@ -195,7 +195,7 @@ switch pType
         udata.wave = wave; udata.pos = posMicrons.x; udata.data = double(data');
         udata.cmd = 'mesh(pos,wave,data)';
         set(g,'Name',sprintf('ISET GraphWin: line %.0f',roiLocs(2)));
-        colormap(jet);
+        colormap(jet(64));
         
     case {'irradiancevline','vline','vlineirradiance',}
         % oiPlot(oi,'irradiance vline')
@@ -224,7 +224,7 @@ switch pType
         % Attach data to the figure
         udata.wave = wave; udata.pos = posMicrons.y; udata.data = double(data');
         set(g,'Name',sprintf('Line %.0f',roiLocs(1)));
-        colormap(jet);
+        colormap(jet(64));
         
     case {'irradiancefft'}
         % plot(oi,'irradiance fft',roiLocs,wave)
@@ -262,7 +262,7 @@ switch pType
         str = sprintf('Amplitude spectrum at %.0f nm', selectedWave);
         title(str);
         set(g,'Name',sprintf('Irradiance with grid'));
-        colormap(jet)
+        colormap(jet(64))
         
     case {'irradianceimagewave','irradianceimagewavegrid'}
         % oiPlot(oi,'irradianceImageWave',wave,gSpacing);
@@ -284,7 +284,7 @@ switch pType
             if isempty(gSpacing), return; end
         end
         
-        imagesc(xCoords,yCoords,irrad); colormap(gray)
+        imagesc(xCoords,yCoords,irrad); colormap(gray(64))
         xlabel('Position (um)'); ylabel('Position (um)');
         
         udata.irrad = irrad;
@@ -465,7 +465,7 @@ switch pType
         udata.wave = wave; udata.pos = posMicrons.x; udata.data = double(data');
         udata.cmd = 'mesh(pos,wave,data)';
         set(g,'Name',sprintf('Line %.0f',roiLocs(2)));
-        colormap(jet)
+        colormap(jet(64))
         
     case {'contrastvline','vlinecontrast'} % Done
         % oiPlot(oi,'contrast vline')
@@ -503,10 +503,10 @@ switch pType
         dmap = oiGet(oi,'depth map');
         if isempty(dmap),  close(g); error('No depth map')
         else
-            imagesc(dmap); colormap(flipud(gray))
+            imagesc(dmap); colormap(flipud(gray(64)))
             namestr = sprintf('Depth map (max=%.1f)',max(dmap(:)));
             set(g,'Name',namestr);
-            colormap(flipud(gray));
+            colormap(flipud(gray(64)));
             axis image; cb = colorbar;
             set(get(cb,'label'),'string','Meters','Rotation',90)
         end
@@ -517,7 +517,7 @@ switch pType
         dmap = ieScale(dmap,0,1); mx = max(dmap(:));
         drgb = cat(3,dmap,dmap,dmap);
         
-        image(drgb); colormap(flipud(gray)); hold on
+        image(drgb); colormap(flipud(gray(64))); hold on
         n = 4; v = (1:n)/n; contour(dmap,v);
         hold off
         namestr = sprintf('ISET: Depth map (max = %.1f m)',mx);
@@ -546,14 +546,14 @@ switch pType
         end
         set(g,'userdata',udata);
         set(g,'name','OTF');
-        colormap(jet)
+        colormap(jet(64))
         
     case {'otf550'}
         % OTF at 550 nm
         udata = plotOTF(oi,'otf 550');
         set(g,'userdata',udata);
         set(g,'name','OTF 550');
-        colormap(jet)
+        colormap(jet(64))
         
     case {'psf'}
         % Point spread function at selected wavelength
@@ -565,7 +565,7 @@ switch pType
         set(g,'userdata',udata);
         namestr = sprintf('ISET: %s',oiGet(oi,'name'));
         set(g,'Name',namestr);
-        colormap(jet)
+        colormap(jet(64))
         
     case {'psf550'}
         % PSF at 550nm spatial units are microns
@@ -573,7 +573,7 @@ switch pType
         set(g,'userdata',udata);
         namestr = sprintf('ISET: %s',oiGet(oi,'name'));
         set(g,'Name',namestr);
-        colormap(jet)
+        colormap(jet(64))
         
     case {'lswavelength','lsfwavelength'}
         % uData = oiPlot(oi,pType,[],nSpatialSamps)
@@ -597,7 +597,7 @@ switch pType
                 set(g,'userdata',udata);
         end
         set(g,'name','LS by Wave');
-        colormap(jet)
+        colormap(jet(64))
         
     case{'otfwavelength','mtfwavelength'}
         % One dimensional otf at all wavelengths as  mesh plot.
@@ -614,7 +614,7 @@ switch pType
                 set(g,'userdata',udata);
         end
         set(g,'name','OTF by Wave');
-        colormap(jet)
+        colormap(jet(64))
         
     case {'illuminantimage'}
         % oiPlot(oi,'illuminant image')

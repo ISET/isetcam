@@ -25,7 +25,7 @@ function [noisyImage,offsetFPNImage,gainFPNImage] = binNoiseFPN(ISA)
 %
 % Example:
 %    [noisyImage,offsetFPNImage,gainFPNImage] = noiseFPN(vcGetObject('ISA'));
-%    imagesc(noisyImage); colormap(gray)
+%    imagesc(noisyImage); colormap(gray(64))
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 

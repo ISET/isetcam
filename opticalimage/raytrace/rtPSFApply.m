@@ -290,7 +290,7 @@ for ww=1:nWave
             totalPixels = totalPixels - 1;
             if ~mod(totalPixels,150)  || (totalPixels == 1)
                 figure(upDateFig);
-                colormap(gray);
+                colormap(gray(64));
                 set(gcf,'Units','normalized','Position',[.55 .6 .42 .32]);
                 set(gcf,'Name','PSF Status','NumberTitle','off');
                 

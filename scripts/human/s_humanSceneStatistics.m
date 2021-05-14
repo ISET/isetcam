@@ -73,7 +73,7 @@ end
 vcNewGraphWin([],'tall');
 for ii=1:3
     subplot(3,1,ii)
-    imagesc(pFFT{ii}); colormap(hot); colorbar;
+    imagesc(pFFT{ii}); colormap(hot(64)); colorbar;
     axis image; axis off
     xlabel('Cycles/deg'); ylabel('Cycles/deg');
     title(sprintf('%s cone spatial amp spectrum',cType{ii}));

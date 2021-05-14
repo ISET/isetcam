@@ -57,7 +57,7 @@ spectrumE = spectrumE(:);
 %% Make a sphere with sample points are (N+1)*(N+1)
 
 [X Y Z] = sphere(N);
-% surf(X,Y,Z); colormap(hot)
+% surf(X,Y,Z); colormap(hot(64))
 
 % These will be the change in XYZ around the center
 dXYZ = [X(:),Y(:),Z(:)];

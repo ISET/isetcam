@@ -50,7 +50,7 @@ sceneGet(sceneMacbethD65,'meanLuminance')
 luminance = sceneGet(sceneMacbethD65,'luminance');
 
 ieNewGraphWin;
-imagesc(luminance); axis image; colormap(gray);
+imagesc(luminance); axis image; colormap(gray(64));
 
 % To access directly the photons in the image, do this:
 photons = sceneGet(sceneMacbethD65,'photons');

@@ -68,7 +68,7 @@ function demosaicedImage = Demosaic(ip,sensor)
  oi = oiCompute(oi,scene); sensor = sensorCompute(sensor,oi);
  ip = ipSet(ip,'demosaic method','bilinear');
  d = Demosaic(ip,sensor);
- ieNewGraphWin; imagesc(d); colormap(gray);
+ ieNewGraphWin; imagesc(d); colormap(gray(64));
 %}
 %{
 % For more than 3 (multichannel) data this works

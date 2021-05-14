@@ -32,7 +32,7 @@ switch dType
         % it as a gray scale image
         vcNewGraphWin;
         img = mean(hc,3);
-        imagesc(img); colormap(gray)
+        imagesc(img); colormap(gray(64))
         axis image
     case {'imagemontage','montage'}
         nWave = size(hc,3);
@@ -41,7 +41,7 @@ switch dType
         end
         
         figH = imageMontage(hc,slices);
-        colormap(gray)
+        colormap(gray(64))
         
     case 'movie'
         % Show the hypercube data as a movie

@@ -49,7 +49,7 @@ fprintf('-----\n')
 %{
     pSize = 25;
     deimage = imageIncreaseImageRGBSize(dE,pSize);
-    vcNewGraphWin; imagesc(deimage); colormap(gray)
+    vcNewGraphWin; imagesc(deimage); colormap(gray(64))
     colorbar; axis image; axis off
     title('\DeltaE values')
 %}

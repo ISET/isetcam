@@ -42,7 +42,7 @@ function [CFAletters,CFAnumbers,mp] = sensorDetermineCFA(sensor)
 %   sensor = vcGetObject('sensor');
 %   [cfa,cfaN] = sensorDetermineCFA(sensor);
 %   [cfa,cfaN,mp] = sensorDetermineCFA;
-%   figure; image(cfaN); colormap(gray);
+%   figure; image(cfaN); colormap(gray(64));
 %
 % See also: sensorColorOrder, sensorImageColorArray
 %

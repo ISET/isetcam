@@ -45,7 +45,7 @@ for ii=1:w
 end
 close(h)
 
-% subplot(1,2,1), imagesc(tmp); axis image; colormap(gray);
-% subplot(1,2,2), imagesc(foo); axis image; colormap(gray);
+% subplot(1,2,1), imagesc(tmp); axis image; colormap(gray(64));
+% subplot(1,2,2), imagesc(foo); axis image; colormap(gray(64));
 %
 return

@@ -7,8 +7,8 @@ function img  = imgSweep(imSize,maxFreq)
 % top row and decreases down the rows. Used by sceneWindow.
 %
 %Example:
-%  img  = imgSweep(256,16);  imagesc(img); colormap(gray); axis image
-%  img =  imgSweep;  imagesc(img); colormap(gray); axis image
+%  img  = imgSweep(256,16);  imagesc(img); colormap(gray(64)); axis image
+%  img =  imgSweep;  imagesc(img); colormap(gray(64)); axis image
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 

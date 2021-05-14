@@ -65,7 +65,7 @@ nCircleSamples = 200;
 x = sSupport(:,:,1); y = sSupport(:,:,2);
 vcNewGraphWin;
 mesh(x,y,psf);
-colormap(jet)
+colormap(jet(64))
 
 % Label the graph and draw the Airy disk
 ringZ = max(psf(:))*1e-3;

@@ -103,7 +103,7 @@ imshow(Xjpeg/255);
 Q_factor = 50;
 q2 = jpeg_qtables(Q_factor,2)
 vcNewGraphWin;
-colormap(gray);
+colormap(gray(64));
 imagesc(256 - q2), axis image
 title(sprintf('Chrominance quantization table for Q=%d',Q_factor));
 

@@ -44,6 +44,6 @@ mx       = max(illScale(:));
 illScale = illScale/mx;
 meanSPD  = mx*meanSPD;
 
-% vcNewGraphWin; imagesc(illScale); colormap(gray)
+% vcNewGraphWin; imagesc(illScale); colormap(gray(64))
 
 end

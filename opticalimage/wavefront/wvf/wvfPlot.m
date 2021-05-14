@@ -212,7 +212,7 @@ switch(pType)
         
         % Put up the image
         pData = imagesc(samp, samp, psf);
-        colormap(hot); axis image; grid(gca, 'on');
+        colormap(hot(64)); axis image; grid(gca, 'on');
         set(gca, 'xcolor', [.5 .5 .5]);
         set(gca, 'ycolor', [.5 .5 .5]);
         s = sprintf('Position (%s)', unit);
@@ -244,7 +244,7 @@ switch(pType)
         
         % Put up the image
         pData =  imagesc(samp, samp, psf);
-        colormap(hot); axis image; grid(gca, 'on');
+        colormap(hot(64)); axis image; grid(gca, 'on');
         set(gca, 'xcolor', [.5 .5 .5]);
         set(gca, 'ycolor', [.5 .5 .5]);
         s = sprintf('Position (%s)', unit);

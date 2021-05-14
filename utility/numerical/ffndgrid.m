@@ -44,7 +44,7 @@ function [zzgrid, xvec] = ffndgrid(x, f, delta,limits,aver)
 % dx = [diff(xv{1}(1:2)) diff(xv{2}(1:2))];
 % contourf(xv{:}, nc/(N*prod(dx))) % 2-D probability density plot.
 % colorbar
-% colormap jet
+% colormap(jet(64))
 %
 % See also: griddata
 
@@ -193,7 +193,7 @@ end
 if (nargout > 0)
     zzgrid = fgrid;
 elseif D==2,% no output, then plot
-    colormap(flipud(hot)) %colormap jet
+    colormap(flipud(hot(64))) %colormap(jet(64))
     if 1,
         %figure('Position', [100 100 size(fgrid)])
         imagesc(xvec{:}, fgrid)

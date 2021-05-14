@@ -324,7 +324,7 @@ for ww=1:nWave  % Settle on a wavelength, indexed by ww
             % speed the calculation.
             %
             % vcNewGraphWin;
-            % imagesc(outIrrad(:,:,ww)); colormap(gray); axis image
+            % imagesc(outIrrad(:,:,ww)); colormap(gray(64)); axis image
         end
     end
     outIrrad(:,:,ww) = thisOut;

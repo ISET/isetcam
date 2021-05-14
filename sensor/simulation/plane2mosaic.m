@@ -115,7 +115,7 @@ return;
 %     % that corresponds to its filter.  So, if the g filter is in the first
 %     % column, then the g data should be in rgbFormat(:,:,1).
 %     rgbFormat(:,:,ii) = reshape(tmp,rows,cols);
-%     % figure(1); imagesc(rgbFormat(1:6,1:6,ii)); colormap(gray)
+%     % figure(1); imagesc(rgbFormat(1:6,1:6,ii)); colormap(gray(64))
 % end
 %
 % % The function unique sorts the results so that we now know which color

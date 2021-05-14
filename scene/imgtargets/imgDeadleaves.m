@@ -43,7 +43,7 @@ function img = imgDeadleaves(n,sigma,options)
 %{
  n = 256; sigma = 3; options = [];
  img = sceneDeadleaves(n,sigma,options);
- ieNewGraphWin; imagesc(img); axis image; colormap(gray)
+ ieNewGraphWin; imagesc(img); axis image; colormap(gray(64))
 %}
 
 %% Parameters - TODO:  Use parser

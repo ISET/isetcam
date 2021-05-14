@@ -188,7 +188,7 @@ for ss=1:length(sensorArray)   % Number of sensors
     sensor    = sensorVignetting(sensor);
     etendue   = sensorGet(sensor,'sensorEtendue');  % vcNewGraphWin; imagesc(etendue)
     voltImage = voltImage .* repmat(etendue,[1 1 sensorGet(sensor,'nExposures')]);
-    % ieNewGraphWin; imagesc(voltImage); colormap(gray)
+    % ieNewGraphWin; imagesc(voltImage); colormap(gray(64))
     
     responseType = sensorGet(sensor,'response type');
     switch responseType

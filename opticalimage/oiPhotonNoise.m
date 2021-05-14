@@ -18,7 +18,7 @@ function [noisyPhotons,theNoise] = oiPhotonNoise(oi)
 %    scene = sceneCreate('uniform'); oi = oiCreate;  oi = oiCompute(scene,oi);
 %    [noisyPhotons,theNoise] = oiPhotonNoise(oi);
 %    vcNewGraphWin; tmp = noisyPhotons(:,:,10); tmp = tmp(tmp > 2*10^13); histogram(tmp(:))
-%    imagesc(noisyPhotons(:,:,10)); colormap(gray)
+%    imagesc(noisyPhotons(:,:,10)); colormap(gray(64))
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 

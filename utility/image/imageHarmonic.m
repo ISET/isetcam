@@ -24,19 +24,19 @@ function [img,parms] = imageHarmonic(parms)
 %
 % Example:
 %   [img,p] = imageHarmonic;
-%   figure; imagesc(img), colormap(gray); axis image
+%   figure; imagesc(img), colormap(gray(64)); axis image
 %
 %   parms.row = 32; parms.col = 32; parms.contrast = 1;
 %   parms.ph = pi/2; parms.freq = 2; parms.ang = pi/6;
 %   parms.GaborFlag = 0.2;
 %   [img,p] = imageHarmonic(parms);
-%   vcNewGraphWin; imagesc(img), colormap(gray); axis image
+%   vcNewGraphWin; imagesc(img), colormap(gray(64)); axis image
 %
 % Now, for a sum of two harmonics
 %   parms.freq(2) = 3; parms.ang(2) = parms.ang(1);
 %   parms.contrast(2) = 1; parms.ph(2) = pi/2;
 %   [img,p] = imageHarmonic(parms);
-%   vcNewGraphWin; imagesc(img), colormap(gray); axis image
+%   vcNewGraphWin; imagesc(img), colormap(gray(64)); axis image
 %   plot(img(16,:))
 %
 % Copyright ImagEval Consultants, LLC, 2003.
@@ -88,6 +88,6 @@ if min(img(:) < 0)
     warning('Harmonics have negative sum, not realizable');
 end
 
-% figure; imagesc(img); colormap(gray); axis image
+% figure; imagesc(img); colormap(gray(64)); axis image
 
 end

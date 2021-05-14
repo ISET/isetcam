@@ -42,7 +42,7 @@ disp('  This is normal Matlab behavior.')
 disp(' =Hit a key='), pause, disp(' ')
 
 disp('>> colormap jet')
-colormap jet
+colormap(jet(64))
 
 % ============================================================================ %
 
@@ -88,7 +88,7 @@ disp('  This shows that freezeColor is working as intended because the frozen')
 disp('  plot is no longer affected by the colormap.')
 disp(' =Hit a key='), pause, disp(' ')
 
-colormap cool
+colormap(cool(64))
 
 disp('>> colormap cool')
 
@@ -144,7 +144,7 @@ disp('All plots are restored to the unfrozen state and are once again')
 disp('  influenced by the colormap.')
 disp(' =Hit a key='), pause, disp(' ')
 
-colormap gray
+colormap(gray(64))
 unfreezeColors(gcf)
 try
     cbfreeze('off')

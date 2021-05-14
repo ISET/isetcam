@@ -29,7 +29,7 @@ else
 end
 
 %
-ieNewGraphWin; imagesc(double(img).^(1/2.2)); axis image; colormap(gray)
+ieNewGraphWin; imagesc(double(img).^(1/2.2)); axis image; colormap(gray(64))
 
 %{
 % These are old notes about how we used to read the Nikon files for the L3 code.

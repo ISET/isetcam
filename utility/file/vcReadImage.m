@@ -299,7 +299,7 @@ switch lower(imageType)
                 end
                 
                 photons = double(XW2RGBFormat(photons',r,c));
-                % figure(1); imagesc(sum(img,3)); axis image; colormap(gray)
+                % figure(1); imagesc(sum(img,3)); axis image; colormap(gray(64))
                 
             else
                 disp('Saved using svd method');

@@ -67,7 +67,7 @@ if blurFlag
     blackBorder = false;
 end
 
-% vcNewGraphWin; imagesc(im); colormap(gray)
+% vcNewGraphWin; imagesc(im); colormap(gray(64))
 
 % Find the sums across the x-dimension (columns)
 % Maybe the following line should be mean instead of sum because sum is not

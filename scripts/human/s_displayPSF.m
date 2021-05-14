@@ -65,10 +65,10 @@ ieNewGraphWin([],'tall');
 subplot(2,1,1)
 sz = sensorGet(sensor,'size');
 v = reshape(v,sz(1),sz(2));
-imagesc(v); axis image; colormap(gray)
+imagesc(v); axis image; colormap(gray(64))
 
 subplot(2,1,2)
-mesh(v); colormap(jet)
+mesh(v); colormap(jet(64))
 
 %%  Now show the white point spread, just as an illustration
 
@@ -88,10 +88,10 @@ ieNewGraphWin([],'tall');
 subplot(2,1,1)
 sz = sensorGet(sensor,'size');
 v = reshape(v,sz(1),sz(2));
-imagesc(v); axis image; colormap(gray)
+imagesc(v); axis image; colormap(gray(64))
 
 subplot(2,1,2)
-mesh(v); colormap(jet)
+mesh(v); colormap(jet(64))
 
 m = getMiddleMatrix(v,127);
 

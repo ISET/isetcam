@@ -68,5 +68,5 @@ r_conv(:,end,:)= [];
 
 % Combined the clear with the red interpolated
 demosaicImage = c + r_conv;
-% ieNewGraphWin; imagesc(demosaicImage); colormap(gray)
+% ieNewGraphWin; imagesc(demosaicImage); colormap(gray(64))
 end

@@ -109,7 +109,7 @@ DN = sensorGet(sensor,'digitalvalues');
 
 
 figure(10);clf;
-imagesc(DN,[0 2^10]); colormap gray
+imagesc(DN,[0 2^10]); colormap(gray(64))
 axis equal
 
 %% Demosaic
@@ -126,4 +126,4 @@ oiWindow(oi)
 fig=figure(11);clf;
 sliceViewer(D.^0.5);
 fig.Position=[200 201 594 499];
-colormap gray
+colormap(gray(64))

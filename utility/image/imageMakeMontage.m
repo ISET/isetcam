@@ -31,7 +31,7 @@ function  [img,coords] = imageMakeMontage(hc, sliceList, nCols, backVal)
 %{
  [img,coords] = imageMakeMontage(hc);
  ieNewGraphWin; imagesc(img);
- colormap(gray); axis equal; axis off;
+ colormap(gray(64)); axis equal; axis off;
 %}
 
 %%

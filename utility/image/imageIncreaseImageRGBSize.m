@@ -9,7 +9,7 @@ function t = imageIncreaseImageRGBSize(im,s)
 % Example:
 %    [img,p] = imageHarmonic;
 %    t = imageIncreaseImageRGBSize(img,3);
-%    imagesc(t); colormap(gray)
+%    imagesc(t); colormap(gray(64))
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 

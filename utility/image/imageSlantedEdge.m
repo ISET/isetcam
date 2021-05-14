@@ -28,11 +28,11 @@ function img = imageSlantedEdge(imSize,slope)
 %{
  img = imageSlantedEdge;
  ieNewGraphWin; imagesc(img);
- axis image; colormap(gray)
+ axis image; colormap(gray(64))
 %}
 %{
  img = imageSlantedEdge([256,128],2.3);
- ieNewGraphWin; imagesc(img); axis image; colormap(gray)
+ ieNewGraphWin; imagesc(img); axis image; colormap(gray(64))
  truesize;
 %}
 

@@ -98,7 +98,7 @@ close(w)
 
 %% These are the individual sensor frames
 
-ieNewGraphWin; colormap(gray); axis image; axis off
+ieNewGraphWin; colormap(gray(64)); axis image; axis off
 fps = 7;
 for ii=1:nFrames
     imagesc(v(:,:,ii)); pause(1/fps);
@@ -117,7 +117,7 @@ z = zeros(nFrames,1);
 z(slist) = 1;
 
 % Sum across a sliding temporal range
-ieNewGraphWin; colormap(gray); axis image; axis off
+ieNewGraphWin; colormap(gray(64)); axis image; axis off
 fps = 7;
 for rr = 1:sz(1)
     slist = slist+1;

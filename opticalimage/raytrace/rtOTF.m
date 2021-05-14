@@ -108,7 +108,7 @@ for ww = 1:nWave
     str = sprintf('Ray Trace OTF (wave: %.0f)', wavelength(ww));
     
     % Comment out some time
-    figure(1); colormap(gray); imagesc(irradianceP); axis image; axis tight;
+    figure(1); colormap(gray(64)); imagesc(irradianceP); axis image; axis tight;
     r = [0:blockSamples(1):rowP] + 1;
     c = [0:blockSamples(2):colP] + 1;
     for rr = 1:nBlocks, line([1,colP],[r(rr),r(rr)]); end
@@ -120,7 +120,7 @@ for ww = 1:nWave
             if showBar, waitbar(ii/(nWave*nBlocks*nBlocks),wbar,str); end
             ii = ii + 1;
             [blockData,rList,cList] = rtExtractBlock(irradianceP,blockSamples,rBlock,cBlock);
-            % figure(5); colormap(gray);
+            % figure(5); colormap(gray(64));
             % imagesc(blockData); axis image; axis equal; axis tight
             % max(abs(irradianceP(rList,cList) - blockData))
             
@@ -140,7 +140,7 @@ for ww = 1:nWave
             % PSF = fspecial('gaussian',[rowF,colF],(fieldHeight + 1)*(rowF/30));
             
             filteredData = padarray(blockData,blockPadding);
-            % figure(4); imagesc(filteredData), colormap(gray), axis tight
+            % figure(4); imagesc(filteredData), colormap(gray(64)), axis tight
             % Make sure we are still at unit area
             k = sum(PSF(:));
             if k > 0, PSF = PSF/k; end
@@ -151,7 +151,7 @@ for ww = 1:nWave
             end
             
             Iout(:,:,ww) = rtInsertBlock(Iout(:,:,ww),filteredData,blockSamples,blockPadding,rBlock,cBlock);
-            figure(6); colormap(gray); imagesc(Iout(:,:,ww));
+            figure(6); colormap(gray(64)); imagesc(Iout(:,:,ww));
             title(sprintf('%.0f',wavelength(ww)));
             pause(0.01);
         end
