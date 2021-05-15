@@ -86,8 +86,8 @@ for ww=1:nWave
             lowerAng = imgAngle(aa-1); higherAng = imgAngle(aa);
             lAng = (fieldAngle  >= lowerAng ) & (fieldAngle  < higherAng);
             lBoth = (lAng & lRad);
-            ieRad2deg(lowerAng)
-            ieRad2deg(higherAng)
+            rad2deg(lowerAng)
+            rad2deg(higherAng)
 
             if sum(lBoth(:)) < 3, [rr,aa],
             else
@@ -125,22 +125,22 @@ for ww=1:nWave
                 % What we want i an Nx4 matrix that contains the four PSFs in
                 % the columns, and we want the weights with respect to the four
                 % corners.
-                % I am not sure why we need the -1 in front of ieRad2deg.
+                % I am not sure why we need the -1 in front of rad2deg.
                 % Also, it is possible that the PSF is rotated by 90 deg.
                 if aa == 2
-                    tmp = rtPSFInterp(optics,radius(1),-ieRad2deg(theta(1)),...
+                    tmp = rtPSFInterp(optics,radius(1),-rad2deg(theta(1)),...
                         wavelength(ww),xGrid,yGrid);
                     PSF(:,1) = tmp(:);
-                    tmp = rtPSFInterp(optics,radius(2),-ieRad2deg(theta(1)),...
+                    tmp = rtPSFInterp(optics,radius(2),-rad2deg(theta(1)),...
                         wavelength(ww),xGrid,yGrid);
                     PSF(:,2) = tmp(:);
                 else
                     PSF(:,1) = PSF(:,3); PSF(:,2) = PSF(:,4);
                 end
 
-                tmp = rtPSFInterp(optics,radius(1),-ieRad2deg(theta(2)),wavelength(ww),xGrid,yGrid);
+                tmp = rtPSFInterp(optics,radius(1),-rad2deg(theta(2)),wavelength(ww),xGrid,yGrid);
                 PSF(:,3) = tmp(:);
-                tmp = rtPSFInterp(optics,radius(2),-ieRad2deg(theta(2)),wavelength(ww),xGrid,yGrid);
+                tmp = rtPSFInterp(optics,radius(2),-rad2deg(theta(2)),wavelength(ww),xGrid,yGrid);
                 PSF(:,4) = tmp(:);
                 s = sum(PSF); PSF = PSF*diag(1./s);
 
@@ -197,10 +197,10 @@ for ww=1:nWave
                 %                 subplot(2,2,ii), imagesc(img), axis image; axis xy
                 %             end
 
-                %             title(sprintf('r%.2f, a%.2f',radius(1),-ieRad2deg(theta(1))))
-                %             title(sprintf('r%.2f, a%.2f',radius(2),-ieRad2deg(theta(1))))
-                %             title(sprintf('r%.2f, a%.2f',radius(1),-ieRad2deg(theta(2))))
-                %             title(sprintf('r%.2f, a%.2f',radius(2),-ieRad2deg(theta(2))))
+                %             title(sprintf('r%.2f, a%.2f',radius(1),-rad2deg(theta(1))))
+                %             title(sprintf('r%.2f, a%.2f',radius(2),-rad2deg(theta(1))))
+                %             title(sprintf('r%.2f, a%.2f',radius(1),-rad2deg(theta(2))))
+                %             title(sprintf('r%.2f, a%.2f',radius(2),-rad2deg(theta(2))))
 
                 %            pause(1)
 

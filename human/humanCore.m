@@ -47,7 +47,7 @@ w20 = p^2/2*(D0.*D)./(D0+D);
 % We use this factor to convert from the input spatial frequency units
 % (cycles/deg) to cycles/meter needed for the Hopkins eye
 % c = 3434.07;            % degrees per meter for human eye
-c = 1/(tan(ieDeg2rad(1))*(1/D0));  % deg per meter    
+c = 1/(tan(deg2rad(1))*(1/D0));  % deg per meter    
 
 % This is the general OTF, independent of wavelength.  The curve here is
 % derived from data obtained by Dave Williams.  It could come from some

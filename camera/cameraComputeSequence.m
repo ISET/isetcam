@@ -49,9 +49,8 @@ nframes = p.Results.nframes;
 
 if (numels(scenes) > 1 || numels(eposuretimes) > 1) && numels(scenes) ~= numels(exposuretimes)
     error("For multiple scenes and frames, for now they need to be the same");
-elseif
-    % need to add the ability to a variety of cases
-    % like multiple exposures of 1 scene and vice versa
+else
+    warning("Need to add the ability to a variety of cases like multiple exposures of 1 scene and vice versa");
 end
 
 % assume we have rationalized the number of scenes and exposures

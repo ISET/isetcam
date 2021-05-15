@@ -12,7 +12,7 @@ function [noisyPhotons,theNoise] = scenePhotonNoise(scene,rectOrLocs)
 % it throughout.  Matlab has one in the stats toolbox, but we don't want to
 % impose the stats toolbox requirement on others.
 %
-% See also:  oiPhotonNoise, noiseShot, iePoisson, v_photonNoise
+% See also:  oiPhotonNoise, noiseShot, poissrnd, v_photonNoise
 %
 % Examples:
 %    scene = sceneCreate('uniform'); 
@@ -50,7 +50,7 @@ poissonCriterion = 15;
 [r,c] = find(photons < poissonCriterion);
 v = photons(photons < poissonCriterion);
 if ~isempty(v)
-    vn = iePoisson(v);  % Poisson samples
+    vn = poissrnd(v);  % Poisson samples
     for ii=1:length(r)
         theNoise(r(ii),c(ii))   = vn(ii);
         % For low mean values, we *replace* the mean value with the Poisson

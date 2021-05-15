@@ -346,7 +346,7 @@ switch oType
                 % We only store the width FOV.  We insist that the pixels are square
                 h = oiGet(oi,'height');              % Height in meters
                 d = oiGet(oi,'distance');            % Distance to lens
-                val = ieRad2deg(2*atan((0.5*h)/d));  % Vertical field of view
+                val = rad2deg(2*atan((0.5*h)/d));  % Vertical field of view
                 
             case {'dangular','diagonalangular','diagonalfieldofview'}
                 val = sqrt(oiGet(oi,'wAngular')^2 + oiGet(oi,'hAngular')^2);
@@ -680,8 +680,8 @@ switch oType
                             aSupport.x = aSupport.x*60*60;
                             aSupport.y = aSupport.y*60*60;
                         case 'radians'
-                            aSupport.x = ieDeg2rad(aSupport.x);
-                            aSupport.y = ieDeg2rad(aSupport.y);
+                            aSupport.x = deg2rad(aSupport.x);
+                            aSupport.y = deg2rad(aSupport.y);
                         otherwise
                             error('Unknown angular unit %s\n',unit);
                     end
@@ -692,10 +692,10 @@ switch oType
                 %
             case {'hangularresolution','heightangularresolution'}
                 % Angular degree per pixel -- in degrees
-                val = 2*ieRad2deg(atan((oiGet(oi,'hspatialResolution')/oiGet(oi,'distance'))/2));
+                val = 2*rad2deg(atan((oiGet(oi,'hspatialResolution')/oiGet(oi,'distance'))/2));
             case {'wangularresolution','widthangularresolution'}
                 % Angle (degree) per pixel -- width
-                val = 2*ieRad2deg(atan((oiGet(oi,'wspatialResolution')/oiGet(oi,'distance'))/2));
+                val = 2*rad2deg(atan((oiGet(oi,'wspatialResolution')/oiGet(oi,'distance'))/2));
             case {'angularresolution','degperpixel','degpersample','degreepersample','degreeperpixel'}
                 % Height and width
                 val = [oiGet(oi,'hangularresolution'), oiGet(oi,'wangularresolution')];

@@ -142,7 +142,7 @@ ySupport = flipud(sSupport(:,:,2));
 
 % Determine the  angle and field height of every irradiance position.  
 [dataAngle,dataHeight] = cart2pol(xSupport,ySupport);
-dataAngleDeg = ieRad2deg(dataAngle);
+dataAngleDeg = rad2deg(dataAngle);
 
 % Reduce imgHeights to only those within the height of the image.
 imgHeight = rtSampleHeights(imgHeight,dataHeight);

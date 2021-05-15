@@ -193,7 +193,7 @@ switch parm
         % square
         h = sceneGet(scene,'height');      % Height in meters
         d = sceneGet(scene,'distance');    % Distance in meters
-        val = ieRad2deg(2*atan((0.5*h)/d));  % Vertical field of view
+        val = rad2deg(2*atan((0.5*h)/d));  % Vertical field of view
         
     case {'dangular','diagonalangular','diagonalfieldofview'}
         % For large field of views, we do the tangent computation.  When
@@ -205,12 +205,12 @@ switch parm
         %  tan(r) = opp/adj, where adj is viewing distance (vd)
         %  opp1 = vd*tan(r1), opp2 = vd*tan(r2)
         %  d = sqrt((opp1^2) + (opp1^2))
-        %  diagonalFOV = ieRad2deg(atan2(d,vd))
+        %  diagonalFOV = rad2deg(atan2(d,vd))
         vd = sceneGet(scene,'distance');
-        rW = ieDeg2rad(sceneGet(scene,'wAngular'));
-        rH = ieDeg2rad(sceneGet(scene,'hAngular'));
+        rW = deg2rad(sceneGet(scene,'wAngular'));
+        rH = deg2rad(sceneGet(scene,'hAngular'));
         d = sqrt( (vd*tan(rW))^2 + (vd*tan(rH))^2 );
-        val = ieRad2deg(atan2(d,vd));
+        val = rad2deg(atan2(d,vd));
         
     case 'aspectratio'
         r = sceneGet(scene,'rows'); c = sceneGet(scene,'cols');
@@ -564,7 +564,7 @@ switch parm
         % Maybe we should use the same method as in 'height'?
         d = sceneGet(scene,'distance');
         w = sceneGet(scene,'wangular');  % Field of view (horizontal, width)
-        val = 2*d*tan(ieDeg2rad(w/2));
+        val = 2*d*tan(deg2rad(w/2));
         if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
         
     case {'diagonal','diagonalsize'}
@@ -632,10 +632,10 @@ switch parm
         
     case {'hangularresolution','heightangularresolution'}
         % Angular degree per pixel --
-        val = 2*ieRad2deg(atan((sceneGet(scene,'hspatialResolution')/sceneGet(scene,'distance'))/2));
+        val = 2*rad2deg(atan((sceneGet(scene,'hspatialResolution')/sceneGet(scene,'distance'))/2));
     case {'wangularresolution','widthangularresolution'}
         % Angular degree per pixel --
-        val = 2*ieRad2deg(atan((sceneGet(scene,'wspatialResolution')/sceneGet(scene,'distance'))/2));
+        val = 2*rad2deg(atan((sceneGet(scene,'wspatialResolution')/sceneGet(scene,'distance'))/2));
     case {'angularresolution'}
         % Height and width
         val = [sceneGet(scene,'hangularresolution'), sceneGet(scene,'wangularresolution')];

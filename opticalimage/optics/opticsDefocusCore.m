@@ -43,7 +43,7 @@ w20 = (p^2/2)*(D0.*D)./(D0+D);
 % Re-write so we can get sampleSF in cycles/mm directly without these two
 % steps.
 c = opticsGet(optics,'deg per dist','m');
-% 1/(atan(ieDeg2rad(1)) * (1/D0));  %  deg per meter (rad/meter)
+% 1/(atan(deg2rad(1)) * (1/D0));  %  deg per meter (rad/meter)
 
 % The units are: 
 % cycles/meter = (cycles/deg) * (deg/meter) 
@@ -104,7 +104,7 @@ otf(l) = 0;
 
 % Convert to cyc/mm, which is used in opticsGet/Set
 % We convert (1/D0)*1000 to make it in millimeters, rather than meters.
-degPerMillimeter = (1/(tan(ieDeg2rad(1)) * (1/D0)*1000));
+degPerMillimeter = (1/(tan(deg2rad(1)) * (1/D0)*1000));
 %             cyc/deg * deg/mm
 sampleSFmm = sampleSF * degPerMillimeter;
 

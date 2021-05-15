@@ -90,7 +90,7 @@ ySupport = ySupport - cPosition(2);
 
 % Determine the angle and field height of every irradiance position.  
 [~,dataHeight] = cart2pol(xSupport,ySupport);
-% dataAngleDeg = ieRad2deg(dataAngle);
+% dataAngleDeg = rad2deg(dataAngle);
 
 % Reduce imgHeights to those within the image height
 imgHeight     = rtSampleHeights(imgHeight,dataHeight);
