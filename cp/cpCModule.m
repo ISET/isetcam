@@ -56,8 +56,8 @@ classdef cpCModule
                     expTimes = expTimes;
                 end
                 
-            else
-                warning("Unsupported scene type for focus -- Future work");
+            else % assume we only have an iset scene(s) and can use whatever distance(s) it/they have
+                focusDistances = aCPScene.isetScenes(:).distance;
             end
         end
         
