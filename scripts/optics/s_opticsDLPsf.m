@@ -51,7 +51,6 @@ title(sprintf('F/# = %.2f  Foc Leng = %.2f (mm)',fNumber,fLength));
 
 vcNewGraphWin;
 posMM = uData.x/1000;              % Microns to mm
-aMinutes = rad2deg(atan2(posMM,fLength),'arcmin');   % Angle in radians
 aMinutes = rad2deg(atan2(posMM,fLength)) * 3437.75;   % Angle in arcminutes.
 mesh(aMinutes,uData.wavelength,uData.lsWave);
 view(30,20);
