@@ -52,6 +52,7 @@ title(sprintf('F/# = %.2f  Foc Leng = %.2f (mm)',fNumber,fLength));
 vcNewGraphWin;
 posMM = uData.x/1000;              % Microns to mm
 aMinutes = rad2deg(atan2(posMM,fLength),'arcmin');   % Angle in radians
+aMinutes = rad2deg(atan2(posMM,fLength)) * 3437.75;   % Angle in arcminutes.
 mesh(aMinutes,uData.wavelength,uData.lsWave);
 view(30,20);
 xlabel('angle (arc min)');
@@ -68,17 +69,17 @@ AiryRingUM = (2.44*(thisWave/1000)*fNumber);
 set(gca,'xlim',[-AiryRingUM AiryRingUM],'ylim',[-AiryRingUM AiryRingUM])
 
 %% Show a slice through the psf as a function of angle
-[r,c] = size(uData.x);
+[r,~] = size(uData.x);
 mid = ceil(r/2);
 psfMid = uData.psf(mid,:);
 posMM = uData.x(mid,:)/1000;               % Microns to mm
-posMinutes = rad2deg(atan2(posMM,fLength),'arcmin');
+posMinutes = rad2deg(atan2(posMM,fLength)) * 3437.75;
 
 vcNewGraphWin;
 plot(posMinutes,psfMid)
 xlabel('Arc min')
 AiryRingMM = AiryRingUM/1000;
-AiryRingMinutes = rad2deg(atan2(AiryRingMM,fLength),'arcmin'); % Radians
+AiryRingMinutes = rad2deg(atan2(AiryRingMM,fLength)) * 3437.75; % Radians
 set(gca,'xlim',2*[-AiryRingMinutes AiryRingMinutes])
 
 pDiameter = opticsGet(optics,'pupil diameter','mm');
@@ -90,7 +91,7 @@ title(str);
 uData = oiPlot(oi,'lswavelength');
 posMM = uData.x/1000;
 aRadians = atan2(posMM,fLength);    % This is angle in radians
-aMinutes = rad2deg(aRadians,'arcmin');          % This is angle in arc min
+aMinutes = rad2deg(aRadians) * 3437.75;          % This is angle in arc min
 plot(aMinutes,uData.lsWave(1,:),'-',...
     aMinutes,uData.lsWave(16,:),'r:',...
     aMinutes,uData.lsWave(31,:),'g--')
@@ -109,7 +110,7 @@ set(gca,'xlim',[-AiryRingUM AiryRingUM],'ylim',[-AiryRingUM AiryRingUM])
 mid = ceil(r/2);
 psfMid = uData.psf(mid,:);
 posMM = uData.x(mid,:)/1000;               % Microns to mm
-posMinutes = rad2deg(atan2(posMM,fLength),'arcmin');
+posMinutes = rad2deg(atan2(posMM,fLength)) * 3437.75;
 
 vcNewGraphWin;
 plot(posMinutes,psfMid), xlabel('Arc min'), set(gca,'xlim',[-2 2])
