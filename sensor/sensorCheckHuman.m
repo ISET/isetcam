@@ -1,15 +1,15 @@
-function bool = sensorCheckHuman(sensor)
+function isHuman = sensorCheckHuman(sensor)
 %Determine if this is a human sensor model
 %
-%   bool = sensorCheckHuman(sensor)
+%   isHuman = sensorCheckHuman(sensor)
 %
 % (c) Imageval Consulting, LLC 2012
 
-bool = 0;
+isHuman = 0;
 if ieNotDefined('sensor'), error('sensor required'); end
-
-if     strfind(sensorGet(sensor,'name'),'human'), bool = 1; return; 
-elseif isfield(sensor,'human'), bool = 1; return;
+sName = sensorGet(sensor,'name');
+if (~isempty(sName) && (ieContains(sName,'human'))) || isfield(sensor,'human')
+    isHuman = 1;
 end
 
 return
