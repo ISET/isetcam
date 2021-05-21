@@ -1,6 +1,6 @@
 function output = TriToMetSPD(input,T,B)
 % output = TriToMetSPD(input,T,B)
-% 
+%
 % Convert tristimulus coordinates in a color space
 % specified by a set of known color matching
 % functions to an estimate of the original spectral

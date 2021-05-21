@@ -1,4 +1,4 @@
-%% 
+%%
 % ISET can build shift invariant representations based on
 % wavefront aberrations specified by Zernike polynomials. This
 % allows us to create shift invariant representations that are
@@ -43,7 +43,7 @@ wvfPlot(wvfP,'2d psf space','um',thisWave,pRange);
 title(sprintf('Calculated pupil diameter %.1f mm',pupilMM));
 
 % This is the radius of the Airy disk for this fnumber
-fNumber = wvfGet(wvfP,'focal length','mm')/pupilMM;   
+fNumber = wvfGet(wvfP,'focal length','mm')/pupilMM;
 radius = (2.44*fNumber*thisWave*10^-9)/2 * ieUnitScaleFactor('um');
 nSamp = 200;
 [adX,adY,adZ] = ieShape('circle',nSamp,radius);
@@ -66,7 +66,7 @@ y = getMiddleMatrix(uData.y,50);
 psf = getMiddleMatrix(uData.psf,50);
 vcNewGraphWin; mesh(x,y,psf)
 
-fNumber = oiGet(oi,'optics fnumber');   
+fNumber = oiGet(oi,'optics fnumber');
 radius = (2.44*fNumber*thisWave*10^-9)/2 * ieUnitScaleFactor('um');
 nSamp = 200;
 [adX,adY,adZ] = ieShape('circle',nSamp,radius);
@@ -159,7 +159,7 @@ axis equal
 identityLine
 
 % Nearly perfect.
-% vcNewGraphWin; hist(est(:) - oiData.otf(:),100)
+% vcNewGraphWin; histogram(est(:) - oiData.otf(:),100)
 
 %% Test scene
 
@@ -194,4 +194,4 @@ oiDD = oiCompute(oiDD,s);
 oiDD = oiSet(oiDD,'name',sprintf('Z defocus %.1f',def));
 ieAddObject(oiDD); oiWindow;
 
-%% 
+%%

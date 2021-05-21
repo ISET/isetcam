@@ -25,7 +25,7 @@ oi = oiCreate; oi = oiCompute(oi,scene);
 %% Run the sensor simulation
 
 % First in single auto exposure mode
-sensor = sensorCreate; 
+sensor = sensorCreate;
 sensor = sensorSet(sensor,'fov',sceneGet(scene,'fov'),oi);
 sensor = sensorCompute(sensor,oi);
 sensor = sensorSet(sensor,'name','Auto exposure');
@@ -33,10 +33,10 @@ sensorWindow(sensor);
 sensorSet(sensor,'gamma',0.3);
 
 %%
-ip = ipCreate; 
+ip = ipCreate;
 ip = ipCompute(ip,sensor); ipWindow(ip);
 rgb = hdrRender(ipGet(ip,'srgb'));
-figH = ieNewGraphWin([],'wide'); 
+figH = ieNewGraphWin([],'wide');
 subplot(1,2,1); imagescRGB(rgb); title('Auto exposure')
 
 %%  Now in MEV mode

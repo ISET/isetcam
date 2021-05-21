@@ -5,13 +5,13 @@ function sensorW = sensorWindow(sensor)
 %   sensorW = sensorWindow(sensor)
 %
 % Brief description
-%   Opens a sensorWindow interface based on the sensorWindow_App. 
+%   Opens a sensorWindow interface based on the sensorWindow_App.
 %
 % Inputs
 %   sensor: The sensor you want in the window.  If empty, the currently
 %           selected sensor in global vcSESSION is used.  If there is no
 %           selected sensor a default sensor is created and used.
-%   show:   Executes a drawnow command on exiting.  
+%   show:   Executes a drawnow command on exiting.
 %           (Optional, default true)
 %
 % Outputs

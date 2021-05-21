@@ -19,11 +19,11 @@ function sensor = sensorCreateIMECSSM4x4vis(varargin)
 %   wavelength range XXX.
 %   The imec sensor is a CMOSIS CMV2000 sensor. See https://ams.com/cmv2000
 %   for technical specifications.
-%   A useful calibration document: https://ams.com/documents/20143/36005/CMVxxx_AN000355_1-00.pdf/05fbbca0-fb6c-ad32-1078-3719ce658884    
+%   A useful calibration document: https://ams.com/documents/20143/36005/CMVxxx_AN000355_1-00.pdf/05fbbca0-fb6c-ad32-1078-3719ce658884
 %-
 % Gain Description CMV2000
 %   The CMV2000 has multiple gains that can be applied to the output signal: the analog gain and
-%   the ACD/digital gain. 
+%   the ACD/digital gain.
 %
 %   ADC gain: A slower clock signal means a higher ADC_gain register value for an
 %              actual ADC gain of 1x. Also at higher register values, the actual ADC gain will increase in bigger steps. So fine-tuning the
@@ -34,7 +34,7 @@ function sensor = sensorCreateIMECSSM4x4vis(varargin)
 %   Analog gain: 1, 1.2, 1.4, 1.6, 2, 2.4, 2.8, 3.2, 4
 %
 %
-%   
+%
 %
 % See also
 %    sensorIMX363, sensorCreate
@@ -58,14 +58,14 @@ p = inputParser;
 % Set the default values here
 p.addParameter('rowcol',[1016 2040],@isvector);
 p.addParameter('pixelsize',5.5 *1e-6,@isnumeric);
-p.addParameter('analoggain',1.4 *1e-6,@(x)(ismember(x,[1, 1.2, 1.4, 1.6, 2, 2.4, 2.8, 3.2, 4]))); 
+p.addParameter('analoggain',1.4 *1e-6,@(x)(ismember(x,[1, 1.2, 1.4, 1.6, 2, 2.4, 2.8, 3.2, 4])));
 %p.addParameter('isospeed',270,@isnumeric);
-p.addParameter('quantization','10 bit',@(x)(ismember(x,{'10 bit','8 bit'}))); % 
+p.addParameter('quantization','10 bit',@(x)(ismember(x,{'10 bit','8 bit'}))); %
 p.addParameter('dsnu',0,@isnumeric); % 0.0726
 p.addParameter('prnu',0.7,@isnumeric);
 p.addParameter('fillfactor',0.42,@isnumeric);
 p.addParameter('darkcurrent',125,@isnumeric);   % Electrons/s (at 25 degrees celcius)   doubling per 6.5°C increase
-%p.addParameter('digitalblacklevel', 64, @isnumeric); 
+%p.addParameter('digitalblacklevel', 64, @isnumeric);
 %p.addParameter('digitalwhitelevel', 2^10, @isnumeric); % TG: should depend on quantization?Add
 p.addParameter('exposuretime',1/60,@isnumeric);
 p.addParameter('wave',460:620,@isnumeric);
@@ -104,17 +104,17 @@ qefilename   = p.Results.qefilename;    % QE curve file name
 voltageswing = p.Results.voltageswing;  % pixel voltage swing
 wellcapacity= p.Results.wellcapacity;
 
-% Implicit parameters 
+% Implicit parameters
 conversiongain = (voltageswing/wellcapacity); % volts per electron
 darkvoltage  = conversiongain*darkcurrent;  %volts/second = volts/electron * electrons/second
 
 
 % Check : bitsperelectron*wellcapacity = 2^10 (approximately)
-%bitsperelectron = 0.075 ; % bits/electron 
+%bitsperelectron = 0.075 ; % bits/electron
 %voltsperlsb  = voltageswing / (2^10); % (should be per 2^quantization)
 
 
-%% Start to set the parameters for the pixel and sensor 
+%% Start to set the parameters for the pixel and sensor
 
 
 % Sensor create

@@ -1,5 +1,5 @@
 function val = opticsGet(optics,parm,varargin)
-% Get optics parameters 
+% Get optics parameters
 %
 %      val = opticsGet(optics,parm,varargin)
 %
@@ -27,12 +27,12 @@ function val = opticsGet(optics,parm,varargin)
 %  images we put the center of the image at the center -- of course -- and
 %  we also put the DC value of the OTF in the middle of the image.  Hence,
 %  when we return the frequency support or the spatial support we create
-%  values for frequencies that run from negative to positive.  Similarly,
+%  values for frequencies that run from negative to positive.  Similarly
 %  when we compute the spatial support we create spatial samples that run
 %  below and above zero.
 %
 % Example:
-%   oi = oiCreate; optics = oiGet(oi,'optics'); 
+%   oi = oiCreate; optics = oiGet(oi,'optics');
 %   oi = oiSet(oi,'wave',400:10:700);
 %
 %   NA = opticsGet(optics,'numerical aperture');   % Numerical aperture
@@ -42,9 +42,9 @@ function val = opticsGet(optics,parm,varargin)
 %   psf = opticsGet(optics,'psf Data',600);  % Shift invariant data
 %   vcNewGraphWin; mesh(sSupport(:,:,1),sSupport(:,:,2),psf);
 %
-%   otf = opticsGet(optics,'otf data',oi, 'mm',450); 
+%   otf = opticsGet(optics,'otf data',oi, 'mm',450);
 %   vcNewGraphWin; mesh(fftshift(abs(otf)));
-%         
+%
 %   otfAll = opticsGet(optics,'otf data',oi);
 %
 %   otfSupport = oiGet(oi,'fsupport','mm');  % Cycles/mm
@@ -169,14 +169,14 @@ if ~exist('parm','var')   || isempty(parm),    error('No parameter specified.');
 % trace model.
 rt = 0;
 if checkfields(optics,'rayTrace') && ~isempty(optics.rayTrace)
-    % If there are ray trace data, and the current model is ray trace, 
+    % If there are ray trace data, and the current model is ray trace,
     % set rt to 1.
     if strcmpi(optics.model,'raytrace'), rt = 1; end
 end
 
 parm = ieParamFormat(parm);
 switch parm
-
+    
     case 'name'
         val = optics.name;
     case 'type'
@@ -186,7 +186,7 @@ switch parm
         % This is the f# assuming an object is infinitely far away.
         if rt
             if checkfields(optics,'rayTrace','fNumber')
-                val = optics.rayTrace.fNumber; 
+                val = optics.rayTrace.fNumber;
             end
         else, val = optics.fNumber;
         end
@@ -212,10 +212,10 @@ switch parm
         % opticsGet(optics,'flength',units);
         if rt,  val = opticsGet(optics, 'RTeffectiveFocalLength');
         elseif strcmpi(opticsGet(optics,'model'),'skip')
- 
+            
             % If you choose 'skip' because you want to treat the
             % optics/lens as a pinhole, you must have a scene and in that
-            % case we use the proper distance (half the scene distance). 
+            % case we use the proper distance (half the scene distance).
             % When you are just skipping to save time, you may not have a
             % scene.  In that case, use the optics focal length.
             scene = vcGetObject('scene');
@@ -226,7 +226,7 @@ switch parm
         else, val = optics.focalLength;
         end
         if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-
+        
     case {'power','diopters'}
         % opticsGet(optics,'power','mm')
         % Diopters (1/m).
@@ -235,7 +235,7 @@ switch parm
         units = 'm';
         if ~isempty(varargin), units = varargin{1}; end
         val = 1/opticsGet(optics,'focallength',units);
-
+        
     case {'imagedistance','focalplane','focalplanedistance'}
         % Lensmaker's equation calculation of focal plane distance from the
         % center of a thin lens.  If no source distance is provided, we
@@ -243,7 +243,7 @@ switch parm
         %
         % opticsGet(optics,'focalplane',sDist); -- sDist is sourceDistance
         % opticsGet(optics,'focalplanedistance');  --   Infinite source dist
-            
+        
         % No need to check rt because focal length parameter checks,
         % returning RTeffectiveFocalLength.
         %
@@ -268,7 +268,7 @@ switch parm
             else, val = ieUnitScaleFactor(varargin{2})*val;
             end
         end
-
+        
     case {'imagewidth'}
         % opticsGet(optics,'imagewidth',fov) -- fov in degrees
         % opticsGet(optics,'imagewidth',fov,'mm') -- fov in degrees, output
@@ -282,7 +282,7 @@ switch parm
             else, val = ieUnitScaleFactor(varargin{2})*val;
             end
         end
-
+        
     case {'imagediagonal','diagonal'}
         % opticsGet(optics,'imagediagonal',fov)  -- fov in degrees
         if isempty(varargin), return;
@@ -295,7 +295,7 @@ switch parm
         if length(varargin) < 2, return;
         else, val = ieUnitScaleFactor(varargin{2})*val;
         end
-
+        
     case {'na','numericalaperture'}
         % Should this be a call to effective f#?
         val=1/(2*opticsGet(optics,'fnumber'));
@@ -309,7 +309,7 @@ switch parm
     case {'aperturearea','pupilarea'}
         val = pi*((opticsGet(optics,'focalLength')/opticsGet(optics,'fnumber'))*(1/2))^2;
         if ~isempty(varargin), val = ieUnitScaleFactor(varargin{1})^2*val; end
-
+        
     case {'magnification','mag'}
         % If the ray trace magnification is present, use that.  Otherwise
         % make a magnification estimate using the source distance and focal
@@ -341,15 +341,15 @@ switch parm
         % Also M = f / (f - distObj), where f is focal length of the lens
         % and distObj is the distance to the object.
         %
-        % If you want the M to be -2, then 
-        %   -2*f + 2*distObj = f, 
+        % If you want the M to be -2, then
+        %   -2*f + 2*distObj = f,
         %    2*distObj = 3*f
         %    distObj = 3f/2
         %
         % and in general distObj = (-M+1)f/(-M) * f
         val = -(opticsGet(optics,'focal Plane Distance',sDist))/sDist;
-
-        case {'otf','otfdata','optical transfer function'}
+        
+    case {'otf','otfdata','optical transfer function'}
         % You can ask for a particular wavelength with the syntax
         %    opticsGet(optics,'otfData',oi, spatialUnits, wave)
         %
@@ -361,11 +361,11 @@ switch parm
         % We are having some issues on this point for shift-invariant and
         % diffraction limited models.  Apparently there is a problem with
         % fftshift???
-       
+        
         opticsModel = opticsGet(optics,'model');
         switch lower(opticsModel)
             case 'diffractionlimited'
-                % For diffraction limited case, the call must be 
+                % For diffraction limited case, the call must be
                 % otf = opticsGet(optics,'otf data',oi, fSupport, [wave]);
                 
                 if isempty(varargin)
@@ -384,7 +384,7 @@ switch parm
                 % compute it on the fly.
                 val = dlMTF(oi,fSupport,thisWave,units);
                 return
-
+                
             case 'shiftinvariant'
                 % For the shift invariant case we store the OTF.
                 % Ugly: the calling syntax for this model differs from the
@@ -392,9 +392,9 @@ switch parm
                 %
                 %   opticsGet(optics,'otf data',thisWave);
                 %
-                if ~isempty(varargin), thisWave = varargin{1}; 
+                if ~isempty(varargin), thisWave = varargin{1};
                 else, thisWave = []; end
-
+                
                 if checkfields(optics,'OTF','OTF'), OTF = optics.OTF.OTF;
                 else, val = []; return;  % No OTF found.
                 end
@@ -415,13 +415,13 @@ switch parm
                     % No specified wavelength, so return the entire OTF
                     val = OTF;
                 end
-        
+                
             case 'raytrace'
                 error('opticsGet(optics,''OTF'') not supported for ray trace');
                 
             otherwise
                 error('OTFData not implemented for %s model',opticsModel);
-        end        
+        end
         
     case {'degreesperdistance','degperdist'}
         % opticsGet(optics,'deg per dist','mm')
@@ -433,22 +433,22 @@ switch parm
         % Given the power, D0, in units of 1/meters, the focal plane is
         % (1/D0) meters from the lens.  This is really just the focal
         % distance.  Call this the  adjacent edge of the right triangle
-        % from the image plane to the lens. 
+        % from the image plane to the lens.
         %
         % From geometry, 1 deg of visual angle has an opposite over
         % adjacent of
         %
         %   (opp/(1/D0)) = tand(1)
-        % 
+        %
         % So for 1 deg this is the distance (dist/deg)
-        %   tand(1)*(1/D0)    
-        %   
+        %   tand(1)*(1/D0)
+        %
         % Finally, deg/distance is 1 / (tand(1)*(1/D0))
         %
         % The conversion is: (cycles/rad) * (rad/meter) = cycles/meter
-        units = 'm'; 
+        units = 'm';
         if ~isempty(varargin), units = varargin{1}; end
-        D0 = opticsGet(optics,'power',units); 
+        D0 = opticsGet(optics,'power',units);
         val = (1/D0) * tand(1);     % deg/dist
         val = 1/val;
         
@@ -467,9 +467,9 @@ switch parm
             val = (1/(1 - (efn/fn)))*opticsGet(optics,'rtmagnification');
         else, val = 1;
         end
-
+        
     case {'transmittancescale','transmittance'}
-        % opticsGet(optics,'transmittance',[wave]) 
+        % opticsGet(optics,'transmittance',[wave])
         %
         % The lens transmittance, potentially interpolated or event
         % extrapolated to the requested wavelength samples
@@ -482,16 +482,16 @@ switch parm
             newWave = varargin{1};
             wave = optics.transmittance.wave;
             scale = optics.transmittance.scale;
-
+            
             if min(newWave(:))< min(wave(:)) || max(newWave(:)) > max(wave(:))
-                % Extrapolation required. 
+                % Extrapolation required.
                 disp('Extrapolating lens transmittance with 1''s')
                 val = interp1(wave,scale,newWave,'linear',1)';
             else
                 val = interp1(wave,scale,newWave,'linear')';
             end
         end
-
+        
     case {'transmittancewave'}
         % opticsGet(optics,'transmittance wave')
         %
@@ -511,20 +511,20 @@ switch parm
         %  val  = fSupport(:,:,:);
         % opticsGet(optics,'dl fsupport',wave,unit,nSamp)
         % opticsGet(optics,'dl fsupport matrix',wave,unit,nSamp)
-        % 
-        % Diffraction limited frequency support at a wavelength (i.e.,
+        %
+        % Diffraction limited frequency support at a wavelength (i.e.
         % support out to the incoherent cutoff frequency).  This can be
         % used for plotting, for example.
-
+        
         if length(varargin) < 1, error('Must specify wavelength'); else, thisWave = varargin{1}; end
         if length(varargin) < 2, units = 'mm'; else, units = varargin{2}; end
         if length(varargin) < 3, nSamp = 30; else, nSamp = varargin{3}; end
-
+        
         % Sometimes the optics wavelength hasn't been defined because, say,
         % we haven't run through a scene.  So we trap that case here.
         waveList = opticsGet(optics,'wavelength');
         idx  = ieFindWaveIndex(waveList,thisWave);
-        inCutoff = opticsGet(optics,'inCutoff',units); 
+        inCutoff = opticsGet(optics,'inCutoff',units);
         inCutoff = inCutoff(idx);
         
         % There are 2*nSamp frequencies out from +/- the incoherent cutoff
@@ -532,7 +532,7 @@ switch parm
         fSamp = (-nSamp:(nSamp-1))/(nSamp);
         val{1} = fSamp*inCutoff;
         val{2} = fSamp*inCutoff;
-
+        
         % Alternative return format
         if ieContains(parm,'matrix')
             [valMatrix(:,:,1),valMatrix(:,:,2)] = meshgrid(val{1},val{2});
@@ -546,18 +546,18 @@ switch parm
         apertureDiameter = opticsGet(optics,'aperturediameter');
         imageDistance    = opticsGet(optics,'focalplanedistance');
         wavelength       = opticsGet(optics,'wavelength','meters');
-
+        
         % Sometimes the optics wavelength have not been assigned because
         % there is no scene and no oiCompute has been run.  So, we can just
         % choose a sample set.
         if isempty(wavelength), wavelength = (400:10:700)*10^-9; end
-
+        
         % See dlCore.m for a description of the formula.  We divide by the
         % scale factor, instead of multiplying, because these are
         % frequencies (1/m), not distances.
         val = (apertureDiameter / imageDistance) ./ wavelength;
         if ~isempty(varargin), val = val/ieUnitScaleFactor(varargin{1}); end
-
+        
     case {'maxincoherentcutoffspatialfrequency','maxincutfreq','maxincutoff'}
         % Used particularly for calculating diffraction-limited OTF
         %   opticsGet(optics,'maxincutoff','m')
@@ -565,10 +565,10 @@ switch parm
         if isempty(varargin), val = max(opticsGet(optics,'incutoff'));
         else, val = max(opticsGet(optics,'incutoff',varargin{1}));
         end
-
-        % -------   OTF information and specifications.  
-        % 
-        % Th shift-invariant calculations (including diffraction limited, 
+        
+        % -------   OTF information and specifications.
+        %
+        % Th shift-invariant calculations (including diffraction limited
         % human, and custom shift-invariant) use OTF information.  The
         % diffraction-limited case computes the OTF on the fly.  The other
         % cases store the OTF in the slots optics.OTF.[OTF,fx,fy].  The
@@ -576,7 +576,7 @@ switch parm
         %
         % The ray trace structures below are used for non shift-invariant
         % cases derived from Zemax or Code V data sets.
-
+        
     case {'otfsupport','otfsupportmatrix'}
         % val = opticsGet(optics,'otf support','mm');
         %
@@ -585,7 +585,7 @@ switch parm
         % form then returned as fSupport(:,:,1) for X and fSupport(:,:,2)
         % for Y.
         %
-        %     [val.X,val.Y] = meshgrid(val.fy,val.fx) 
+        %     [val.X,val.Y] = meshgrid(val.fy,val.fx)
         %
         %
         % Frequency is stored in non-standard units of cycles/mm. This will
@@ -594,8 +594,8 @@ switch parm
         if ~isempty(varargin), units = varargin{1}; end
         val.fy = opticsGet(optics,'otf fy',units);
         val.fx = opticsGet(optics,'otf fx',units);
-
-        % If called with matrix, then 
+        
+        % If called with matrix, then
         if ieContains(parm,'matrix') %#ok<*STRIFCND>
             [X,Y] = meshgrid(val.fy,val.fx); % Not sure about order yet!
             fSupport(:,:,1) = X; fSupport(:,:,2) = Y;
@@ -617,13 +617,13 @@ switch parm
         if checkfields(optics,'OTF','OTF')
             tmp = size(optics.OTF.OTF); val = tmp(1:2);
         end
-
+        
     case {'otfwave','otfwavelength','wave','wavelength'}
         % opticsGet(optics,'otf wave','nm');
         % nm is the default.
         % The optics has several functions that are wavelength dependent.
-        % If the optics is diffraction limited, and no 
-        if checkfields(optics,'OTF','wave'), val = optics.OTF.wave; 
+        % If the optics is diffraction limited, and no
+        if checkfields(optics,'OTF','wave'), val = optics.OTF.wave;
         else, val = 400:10:700;
         end
         if ~isempty(varargin)
@@ -650,11 +650,11 @@ switch parm
         % Pointspread function data at a wavelength in specific units
         % The DL case and SI cases are handled differently.
         thisWave = opticsGet(optics,'wave'); units = 'um'; nSamp = 25;
-
+        
         if length(varargin) >= 1, thisWave = varargin{1}; end
         if length(varargin) >= 2, units = varargin{2}; end
         if length(varargin) >= 3, nSamp = varargin{3}; end
-
+        
         oModel = opticsGet(optics,'model');
         switch lower(oModel)
             case 'diffractionlimited'
@@ -680,7 +680,7 @@ switch parm
                     end
                 end
                 sSupport = opticsGet(optics,'psf support',fSupport, nSamp);
-
+                
             case 'shiftinvariant'
                 % val = opticsGet(optics,'psf data',thisWave,'um');
                 % What do we do about the units???  The OTF values are
@@ -748,7 +748,7 @@ switch parm
             case 'shiftinvariant'
                 % Use the stored fx values
                 % Warning:  We are assuming that fx and fy have the same peak
-                % spatial frequency and spatial sampling. 
+                % spatial frequency and spatial sampling.
                 % The fx values are stored in cyc/mm by default.  Unusual
                 % and should be fixed.  If the fx is sent in with different
                 % units, then the spacing is in those units.
@@ -813,7 +813,7 @@ switch parm
         % Numerical values.  Should change field to data from value.  I
         % don't think this is ever used, is it?
         if checkfields(optics,'cos4th','value'), val = optics.cos4th.value; end
-
+        
         % ---------------  Ray Trace information.
         % The ray trace computations differ from those above because they
         % are not shift-invariant.  When we use a custom PSF/OTF that is
@@ -827,7 +827,7 @@ switch parm
         if checkfields(optics,'rayTrace','program'), val = optics.rayTrace.program; end
     case {'lensfile','rtlensfile'}
         if checkfields(optics,'rayTrace','lensFile'), val = optics.rayTrace.lensFile;end
-
+        
     case {'rteffectivefnumber','rtefff#'}
         if checkfields(optics,'rayTrace','effectiveFNumber'), val = optics.rayTrace.effectiveFNumber;end
     case {'rtfnumber'}
@@ -844,7 +844,7 @@ switch parm
             val = optics.rayTrace.objectDistance/1000;
         end
         if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-
+        
     case {'rtfov'}
         % Maximum field of view for the ray trace calculation (not
         % the computed image).
@@ -860,7 +860,7 @@ switch parm
             val = optics.rayTrace.effectiveFocalLength/1000;
         end
         if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-
+        
     case {'rtpsf'}
         if checkfields(optics,'rayTrace','psf'), val = optics.rayTrace.psf; end
     case {'rtpsffunction','rtpsfdata'}
@@ -878,7 +878,7 @@ switch parm
                 fhIdx   = ieFieldHeight2Index(opticsGet(optics,'rtPSFfieldHeight'),varargin{1});
                 waveIdx = ieWave2Index(opticsGet(optics,'rtpsfwavelength'),varargin{2});
                 val = optics.rayTrace.psf.function(:,:,fhIdx,waveIdx);
-             else
+            else
                 % Return the entire psf data
                 % psfFunction = opticsGet(optics,'rtpsfdata');
                 val = optics.rayTrace.psf.function;
@@ -899,13 +899,13 @@ switch parm
             val = optics.rayTrace.psf.fieldHeight/1000;
         end
         if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-
+        
     case {'rtpsfsamplespacing','rtpsfspacing'}
         % opticsGet(optics,'rtPsfSpacing','um')
         if checkfields(optics,'rayTrace','psf','sampleSpacing')
             % The 1000 is necessary because it is stored in mm
             val = optics.rayTrace.psf.sampleSpacing/1000;
-        end 
+        end
         if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
     case {'rtsupport','rtpsfsupport'}
         % Return the (x,y) positions of the PSF samples.
@@ -928,7 +928,7 @@ switch parm
         % Useful to be a column for interpolation.  Maybe they should
         % always be columns?
         val = val(:);
-
+        
     case {'rtpsfsupportcol','rtpsfsupportx'}
         psfSize = opticsGet(optics,'rtPSFSize');
         if isempty(varargin), units = 'm'; else, units = varargin{1}; end
@@ -975,7 +975,7 @@ switch parm
             val = optics.rayTrace.relIllum.fieldHeight/1000;
         end
         if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-
+        
     case {'rtgeometry'}
         if checkfields(optics,'rayTrace','geometry'), val = optics.rayTrace.geometry; end
     case {'rtgeomfunction','rtgeometryfunction','rtdistortionfunction','rtgeomdistortion'}
@@ -998,7 +998,7 @@ switch parm
                     val = optics.rayTrace.geometry.function;
                 end
             end
-   
+            
             % Stored in millimeters. Convert to meters.
             val = val/1000;
             % If there is a second varargin, it specifieds the units.
@@ -1006,12 +1006,12 @@ switch parm
                 val = val*ieUnitScaleFactor(varargin{2});
             end
         end
-
+        
     case {'rtgeomwavelength','rtgeometrywavelength'}
-        % The wavelength used for ray trace geometry distortions. 
+        % The wavelength used for ray trace geometry distortions.
         % The units is nanometers
         if checkfields(optics,'rayTrace','geometry','wavelength')
-            val = optics.rayTrace.geometry.wavelength; 
+            val = optics.rayTrace.geometry.wavelength;
         end
     case {'rtgeomfieldheight','rtgeometryfieldheight'}
         % val = opticsGet(optics,'rtGeomFieldHeight','mm');
@@ -1023,14 +1023,14 @@ switch parm
             val = optics.rayTrace.geometry.fieldHeight/1000;
         end
         if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-
+        
     case {'rtgeommaxfieldheight','rtmaximumfieldheight','rtmaxfieldheight'}
         % val = opticsGet(optics,'rtGeomMaxFieldHeight','mm');
         % The maximum field height.
         fh = opticsGet(optics,'rtgeometryfieldheight');  % Returned in meters
         val = max(fh(:));
         if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-
+        
     case {'rtcomputespacing'}
         % Spacing of the point spread function samples.
         % Is this really stored in meters, not millimeters like other
@@ -1039,10 +1039,10 @@ switch parm
             val = optics.rayTrace.computation.psfSpacing;
             if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
         end
-
+        
     otherwise
         error('Unknown optics parameter.');
-
+        
 end
 
 end

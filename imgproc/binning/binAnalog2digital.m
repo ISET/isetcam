@@ -1,11 +1,11 @@
 function [quantImg,quantizationError] = binAnalog2digital(ISA,method)
 %Analog-to-digital conversion for voltage data in a sensory array
-%  
+%
 %  [qImage,qError] = binAnalog2digital(ISA,method)
 %
 %  Various quantization schemes are implemented. This routine calculates
-%  the quantized image and the quantization error, if requested. 
-%   
+%  the quantized image and the quantization error, if requested.
+%
 % Example:
 %
 % [qImage,qError] = binAnalog2digital(ISA,method);
@@ -41,7 +41,7 @@ switch lower(method)
         end
         
     case {'lin','linear'}
-        nBits = sensorGet(ISA,'nbits'); 
+        nBits = sensorGet(ISA,'nbits');
         if isempty(nBits), nBits = 8; warning('ISET:Quantization0','Assuming %d bits.',nBits); end
         quantizationStep = voltageSwing / (2^nBits);	    % [mV/DN]
         quantImg = round(img/quantizationStep);             % [DV]

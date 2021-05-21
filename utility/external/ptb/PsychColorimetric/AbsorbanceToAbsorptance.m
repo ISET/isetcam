@@ -1,5 +1,5 @@
 function [absorptanceSpectra, absorptanceSpectraWls] =...
-	AbsorbanceToAbsorptance(absorbanceSpectra, absorbanceSpectraWls, axialOpticalDensities)
+    AbsorbanceToAbsorptance(absorbanceSpectra, absorbanceSpectraWls, axialOpticalDensities)
 % [absorptanceSpectra, absorptanceSpectraWls] =...
 %   AbsorbanceToAbsorptance(absorbanceSpectra, absorbanceSpectraWls, axialOpticalDensities)
 %
@@ -20,7 +20,7 @@ function [absorptanceSpectra, absorptanceSpectraWls] =...
 % axialOpticalDensities, and multiple answers are returned in the rows
 % of absorptanceSpectra.
 %
-% Wavelength information may be in any of the available Psychtoolbox representations,
+% Wavelength information may be in any of the available Psychtoolbox representations
 % and the returned wavelength information is in the same format as passed.
 %
 % A useful fact about this conversion is the following.  For small axial optical densities
@@ -41,7 +41,7 @@ function [absorptanceSpectra, absorptanceSpectraWls] =...
 
 % Check that dimensions match properly
 if (size(absorbanceSpectra,1) ~= length(axialOpticalDensities))
-	error('Number of spectra does not match number of densities');
+    error('Number of spectra does not match number of densities');
 end
 
 % Equation: absorptanceSpectra = 1 - 10.^(-OD * absorbanceSpectra)

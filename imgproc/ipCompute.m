@@ -13,17 +13,17 @@ function ip = ipCompute(ip,sensor)
 %   sensor:  The sensor struct
 %
 % Description
-%  
+%
 %  The sensor data (either the voltage or digital values) are processed by
 %  a series of stages in ipCompute. A sequence of images are stored within
 %  the ip.data slot.
-% 
+%
 %  input:  contains the voltage (or digital values, dv) from the sensor
-%          object.   
+%          object.
 %  sensorspace:  The demosaicked data from input
 %  result:       The processed data in lrgb format (between 0 and 1), ready
 %                for conversion to srgb as part of the display
-%  
+%
 %  By default the ip applies demosaic, sensor color conversion to an
 %  internal representation, and illuminant correction towards a specific
 %  display (in that order).  Which algorithms are applied is controlled by
@@ -53,17 +53,17 @@ function ip = ipCompute(ip,sensor)
 
 %% Check arguments
 if ~exist('ip','var') || isempty(ip)
- error('Image process structure is required.'); 
+    error('Image process structure is required.');
 end
 if ~exist('sensor','var') || isempty(sensor) % need to make sure it has at least one!
-    error('Sensor structure is required.'); 
+    error('Sensor structure is required.');
 end
 
 
-%% Assign a name if the current one is 'default' or a copy.  
+%% Assign a name if the current one is 'default' or a copy.
 % Maybe we should always assign the sensor name whenever we compute?
-if strcmpi(ipGet(ip,'name'),'default') || ... 
-    strcmpi(ipGet(ip,'name'),'copy')
+if strcmpi(ipGet(ip,'name'),'default') || ...
+        strcmpi(ipGet(ip,'name'),'copy')
     ip = ipSet(ip,'name',sensorGet(sensor(1),'name'));
 end
 
@@ -80,7 +80,7 @@ end
 %% Classic CFA mosaic. Get the sensor data.
 
 % We demosaick the quantized sensor values.  If this field is empty, use the
-% continuous voltages 
+% continuous voltages
 ip = ipSet(ip,'input',double(sensorGet(sensor,'dv or volts')));
 
 %  The max is either the max digital value or the voltage swing, depending
@@ -121,7 +121,7 @@ if strncmpi(pType,'l3',2)
     
     L3 = ipGet(ip,'L3');
     [L3xyz,lumIdx,satIdx,clusterIdx] = L3render(L3,sensor,mode);
-
+    
     % Convert the results and save in the L3 structure and ip.
     % Shouldn't we be saving the srgb?  Or using xyz2lrgb?
     [srgb, lrgb] = xyz2srgb(L3xyz); %#ok<ASGLU>
@@ -173,11 +173,11 @@ if nFilters == 1 && nSensors == 1
     % The image data are RGB, even though the sensor is monochrome.
     ip = ipSet(ip,'result',repmat(img,[1,1,3]));
     return;
-
+    
 elseif nFilters == 2
     % For 2-color filter case, we only Demosaic, like the monochrome case
-    % (above). 
-    % 
+    % (above).
+    %
     % The only computational path we have now is for the demosaic algorithm
     % 'analog rccc'.
     if ~isequal(ieParamFormat(ipGet(ip,'demosaic method')),ieParamFormat('analog rccc'))
@@ -194,7 +194,7 @@ elseif nFilters >= 3 || nSensors > 1
     % 0.  Some sensor designs expect the zero level (response to a black
     % scene) should be a positive value.  If we store that level in the
     % sensor structure, the IP should subtract the zero level prior to
-    % processing.  
+    % processing.
     %
     % We do that here by adjusting the ip.data.input by the zero level
     % amount, making sure that we do not have any negative values.  This
@@ -205,7 +205,7 @@ elseif nFilters >= 3 || nSensors > 1
     if zerolevel ~= 0
         ip.data.input = max( (ip.data.input - zerolevel) ,0);
     end
- 
+    
     %1.  Demosaic in sensor space. The data remain in the sensor
     % channels and there is no scaling.
     if ndims(ip.data.input) == nFilters, img = ip.data.input;
@@ -218,7 +218,7 @@ elseif nFilters >= 3 || nSensors > 1
     % for adaptation of color balance for IR enabled sensors
     % if shooting bracketed, where did we get de-mosaiced?
     ip = ipSet(ip,'sensor space',img);    % saveimg = img;
-
+    
     % Decide if we are using the current matrix or we are in a processing
     % chain for balancing and rendering, or whether we are using the
     % current matrix.
@@ -240,23 +240,23 @@ elseif nFilters >= 3 || nSensors > 1
             % Allow the user to specify a matrix from the GUI. When set this
             % way, the sensor correction transform is the only one used to
             % convert from sensor to display.
-
+            
             Torig = ipGet(ip,'combined transform');
             Torig = Torig/max(Torig(:));
             T = ieReadMatrix(Torig,'%.3f   ','Color Transform');
             if isempty(T), return; end
-
+            
             % Store and apply this transform.
             ip = ipSet(ip,'conversion matrix sensor',T);
             img = imageLinearTransform(img,T);  % vcNewGraphWin; imagesc(img)
-
+            
             % Set the other transforms to empty.
             ip = ipSet(ip,'correction matrix illuminant',[]);
             % ip = ipSet(ip,'sensor correction transform',[]);
             ip = ipSet(ip,'ics2display',[]);
         case 'adaptive'
             % Recompute a transform based, in part, on process the image
-            % data and with knowledge of the multiple color filters.  
+            % data and with knowledge of the multiple color filters.
             %
             
             % 2.  Convert the demosaicked img data into an internal color
@@ -273,12 +273,12 @@ elseif nFilters >= 3 || nSensors > 1
                 filterSpectra = zeros(sensorGet(s,'n wave'),N);
                 for ii=1:N
                     filterSpectra(:,ii) = sensorGet(sensor(ii),'filter spectra');
-                end    
+                end
                 s = sensorSet(s,'filter spectra',filterSpectra);
             else
                 s = sensor;
             end
-    
+            
             [img,ip] = imageSensorCorrection(img,ip,s);
             if isempty(img), disp('User canceled'); return; end
             % imtool(img/max(img(:))); ii = 3; imtool(img(:,:,ii))
@@ -287,7 +287,7 @@ elseif nFilters >= 3 || nSensors > 1
             % The operation is governed by the 'illuminant correction method'
             % parameter.
             [img,ip] = imageIlluminantCorrection(img,ip);
-
+            
             % 4.  Convert from the img data in the internal color space
             % into display space.  The display space is sRGB.  The data are
             % scaled so that the largest value in display space (0,1) is
@@ -341,7 +341,7 @@ switch combinationMethod
         % Choose the max at each point
         [img,loc] = max(img,[],3);
         expByLoc  = expTimes(loc);
-        img = img ./ expByLoc;    
+        img = img ./ expByLoc;
         %% DJC Maybe we have to normalize here, or we get over-saturated values?
     otherwise
         error('Unknown combination method: %s\n', combinationMethod)
@@ -405,7 +405,7 @@ for kk = 1:nExps
     % vectorized form) comes from the kkth exposure plane
     tmp = zeros(nRows,nCols);
     
-    [ii,jj] = ind2sub(cfaSize,kk);   
+    [ii,jj] = ind2sub(cfaSize,kk);
     rows = ii:cfaSize(1):nRows;
     cols = jj:cfaSize(2):nCols;
     
@@ -413,13 +413,13 @@ for kk = 1:nExps
     
     % Check to see if any of these pixels are saturated
     satInd = (tmp > 0.99*sensorMax);
-
+    
     % Normalize intensity values to get intensity/s
     tmp = tmp/expTimes(ii,jj);
     
     % Set saturated pixels to the maximum possible pixel value
     tmp(satInd) = mx;
-
+    
     % Now replace the rows and columns corresponding to the current color
     % into identical positions in newImg
     newImg(rows,cols) = tmp(rows,cols);

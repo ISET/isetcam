@@ -5,7 +5,7 @@ function list = faultyList(row,col,nBadPixels,minSeparation)
 %
 % The list of faulty pixels is an Nx2 matrix of (row,col) positions.  This
 % list is taken as input by FaultyBilinear and the other faulty pixel
-% demosaicing replacement routines. 
+% demosaicing replacement routines.
 %
 % Input arguments:
 %   row, col:       Sensor size (default = current sensor size)
@@ -22,7 +22,7 @@ function list = faultyList(row,col,nBadPixels,minSeparation)
 % col = 352;
 % nBadPixels = 10;
 
-if ieNotDefined('row') || ieNotDefined('col'),
+if ieNotDefined('row') || ieNotDefined('col')
     sensor = vcGetObject('sensor');
     if ~isempty(sensor), sz = sensorGet(sensor,'size');
         row = sz(1); col = sz(2);

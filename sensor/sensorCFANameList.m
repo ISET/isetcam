@@ -6,7 +6,7 @@ function cfaName = sensorCFANameList
 % At this time, we support a short list of color filter array types.
 % This returns the valid list, and it is used to define the popup boxes in
 % sensorWindow. The list will grow in the future.
-%   
+%
 % Examples:
 %   cfaNames = sensorCFANameList
 %
@@ -15,7 +15,7 @@ function cfaName = sensorCFANameList
 disp('CFA name list');
 cfaName = {'Bayer RGB','Bayer CMY','RGBW','Monochrome','Other'};
 % ...
-    {'bayer-grbg','bayer-rggb','bayer-bggr','bayer-gbrg',...
-    'bayer-ycmy','Monochrome','Four Color','Other'}; 
+{'bayer-grbg','bayer-rggb','bayer-bggr','bayer-gbrg',...
+    'bayer-ycmy','Monochrome','Four Color','Other'};
 
 end

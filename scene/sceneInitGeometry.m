@@ -1,5 +1,5 @@
 function scene = sceneInitGeometry(scene)
-% Initialize scene distance parameter.  
+% Initialize scene distance parameter.
 %
 %   scene = sceneInitGeometry(scene);
 %

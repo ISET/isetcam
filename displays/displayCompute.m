@@ -4,7 +4,7 @@ function [outImage, d] = displayCompute(d, I, sz)
 %    [outImage,d] = displayCompute(d, I, varargin)
 %
 %  Inputs:
-%    display  - could be either display name or display structure, see 
+%    display  - could be either display name or display structure, see
 %               displayCreate for detail
 %    I        - input image, should be M*N*k matrix. k should be equal to
 %               the number of primaries of display
@@ -77,9 +77,9 @@ end
 
 % check the size of outImage
 assert(size(outImage, 1) == M*s(1) && ...
-       size(outImage, 2) == N*s(2), 'bad outImage size');
+    size(outImage, 2) == N*s(2), 'bad outImage size');
 
-% 
+%
 outImage = outImage .* repmat(dixelImg, [M/ppd(1) N/ppd(2) 1]);
 
 end

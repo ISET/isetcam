@@ -24,7 +24,7 @@ oiWindow;
 % Current f number
 oiGet(oi,'optics f number')
 
-% The larger f/# blurs the image more 
+% The larger f/# blurs the image more
 % It has larger depth of field, however, because the aperture is smaller.
 oi = oiSet(oi,'optics fnumber',12);
 oi = oiSet(oi,'name','Large f/#');

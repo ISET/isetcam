@@ -9,7 +9,7 @@ function oi = opticsOTF(oi,scene)
 % ray trace approach.
 %
 % The  spatial (frequency) support of the OTF is computed from the OI
-% information. 
+% information.
 %
 % The OTF data are not stored or returned.  The OTF can be quite large.  It
 % represents every spatial frequency in every waveband.  So we  compute the
@@ -43,10 +43,10 @@ switch lower(opticsModel)
     case {'skip','skipotf'}
         irradianceImage = oiGet(oi,'photons');
         oi = oiSet(oi,'photons',irradianceImage);
-
+        
     case {'dlmtf','diffractionlimited'}
         oi = oiApplyOTF(oi,scene);
-           
+        
     case {'shiftinvariant','custom','humanotf'}
         oi = oiApplyOTF(oi,scene,'mm');
         
@@ -99,8 +99,8 @@ otfM = oiCalculateOTF(oi, wave, unit);  % Took changes from ISETBio.
 for ii=1:length(wave)
     % img = oiGet(oi,'photons',wave(ii));
     img = p(:, :, ii);
-    % figure(1); imagesc(img); colormap(gray); 
-
+    % figure(1); imagesc(img); colormap(gray(64));
+    
     % For diffraction limited we calculate the OTF.  For other optics
     % models we look up the stored OTF.  Remember, DC is in the (1,1)
     % position.
@@ -111,28 +111,28 @@ for ii=1:length(wave)
     % Put the image center in (1,1) and take the transform.
     imgFFT = fft2(img);
     % imgFFT = fft2(fftshift(img));
-    % figure(1); imagesc(abs(imgFFT));  
+    % figure(1); imagesc(abs(imgFFT));
     % figure(2); imagesc(abs(otf));
-    % colormap(gray)
+    % colormap(gray(64))
     
-    % Multiply the transformed otf and the image.  
-    % Then invert and put the image center in  the center of the matrix 
+    % Multiply the transformed otf and the image.
+    % Then invert and put the image center in  the center of the matrix
     filteredIMG = abs(ifft2(otf .* imgFFT));
     % filteredIMG = abs(ifftshift(ifft2(otf .* imgFFT)));
     % if  (sum(filteredIMG(:))/sum(img(:)) - 1) > 1e-10  % Should be 1 if DC is correct
     %   warning('DC poorly accounted for');
     % end
-
+    
     % Temporary debug statements
-    %  if ~isreal(filteredIMG),
+    %  if ~isreal(filteredIMG)
     %     warning('ISET:complexphotons','Complex photons: %.0f', wave(ii));
     %  end
-       
+    
     % Sometimes we had  annoying complex values left after this filtering.
     % We got rid of it by an abs() operator.  It should never be there.
     % But we think it arises because of rounding error.  We haven't seen
     % this in years, however.
-    % figure(1); imagesc(abs(filteredIMG)); colormap(gray)
+    % figure(1); imagesc(abs(filteredIMG)); colormap(gray(64))
     %
     % oi = oiSet(oi,'photons',filteredIMG,wave(ii));
     p(:,:,ii) = filteredIMG;

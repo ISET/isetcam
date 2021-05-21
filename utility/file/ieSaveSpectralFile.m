@@ -7,15 +7,15 @@ function fullpathname = ieSaveSpectralFile(wavelength,data,comment,fullpathname,
 %  The data can be read by ieReadSpectra at a later time.
 %
 %     wavelength:  An N-vector of wavelengths
-%     data:        A matrix, NxM, of spectral functions in the columns, 
+%     data:        A matrix, NxM, of spectral functions in the columns,
 %     comment:     A string with a comment.
 %  [fullpathname]: Optional full path name for output file.
 %     dFormat:     Data format.  Default is double.  Other options are
-%                  single, compressed32, compressed16 
+%                  single, compressed32, compressed16
 %
 % Example:
 %    ieSaveSpectralFile(wave,cones,'Stockman Fundamentals from XXX');
-% 
+%
 %    c = 'foo';
 %    wavelength = [400,500,600]';
 %    variable = [1,1,1]';

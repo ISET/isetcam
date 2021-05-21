@@ -23,11 +23,11 @@ end
 end
 
 function checkem(in)
-psychassert(isdir(in),'Directory %s not found',in);          % Directory doesn't exist; error.
+psychassert(isfolder(in),'Directory %s not found',in);          % Directory doesn't exist; error.
 end
 
 function makedirs(in)
-if ~isdir(in)
+if ~isfolder(in)
     mkdir(in);                                              % Directory doesn't exist; create.
     disp(sprintf('Directory %s created.',in));
 end

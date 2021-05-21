@@ -30,7 +30,7 @@ ieInit
 wave = 400:5:720;
 spd = blackbody(wave,3500);
 
-vcNewGraphWin; 
+vcNewGraphWin;
 plot(wave,spd);
 grid on; xlabel('Wavelength (nm)'); ylabel('Energy (watts/sr/nm/m^2)')
 
@@ -53,7 +53,7 @@ fprintf('Estimated CCT %.1f and actual %.1f\n',spd2cct(wave,d),cTemp)
 cTemps = 4500:1000:8500;
 spd = blackbody(wave, cTemps);
 
-vcNewGraphWin; 
+vcNewGraphWin;
 plot(wave,spd);
 grid on; xlabel('Wavelength (nm)'); ylabel('Energy (watts/sr/nm/m^2)')
 

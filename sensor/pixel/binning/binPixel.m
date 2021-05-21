@@ -50,7 +50,7 @@ switch lower(bMethod)
         % sensor = vcGetObject('sensor');
         v = sensorGet(sensor,'volts');
         binFun = @(x) x*[ 1 0 1 0; 0 1 0 1]';
-        dv = blkproc(v,[4 4],binFun);
+        dv = blockproc(v,[4 4],binFun);
         sensor = sensorSet(sensor,'digitalValues',dv);
         % On return, we need to average the digital values in the rows
         
@@ -60,12 +60,12 @@ switch lower(bMethod)
         % The analog voltages in the corresponding 4 CFA positions are
         % added together.  The resulting sensor voltages are half the size
         % in each dimension, and the voltages from corresponding CFA
-        % positions are summed. 
+        % positions are summed.
         %
         % sensor = vcGetObject('sensor');
         v = sensorGet(sensor,'volts');
         binFun = @(x) [1 0 1 0; 0 1 0 1]*x*[ 1 0 1 0; 0 1 0 1]';
-        dv = blkproc(v,[4 4],binFun);
+        dv = blockproc(v,[4 4],binFun);
         sensor = sensorSet(sensor,'digitalValues',dv);
         % figure; imagesc(v); axis image;
         

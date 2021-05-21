@@ -6,9 +6,9 @@ function [depthEdges, imageDist, oDefocus] = oiDepthEdges(oi,defocus,inFocusDept
 %  inFocusDepth:  Depth for perfect focus
 %
 % Example:
-%    oi = oiCreate; optics = oiGet(oi,'optics'); 
+%    oi = oiCreate; optics = oiGet(oi,'optics');
 %    f = opticsGet(optics,'focal length','m');
-%    optics = opticsSet(optics,'focal length',5*f);    
+%    optics = opticsSet(optics,'focal length',5*f);
 %
 % The defocus range should always start out as negative because when the
 % image plane is at the focal length infinite distance is in focus and
@@ -20,10 +20,10 @@ function [depthEdges, imageDist, oDefocus] = oiDepthEdges(oi,defocus,inFocusDept
 %
 % depthEdges: depths that achieve the relative defocus spacing when image
 %    is in the focal plane.
-% imageDist: image distance the optics to achieve a best focus at inFocusDepth 
+% imageDist: image distance the optics to achieve a best focus at inFocusDepth
 % oDefocus: the defocus at these depthEdges when the image plane is
-%    imageDist. 
-% 
+%    imageDist.
+%
 % Copyright ImagEval Consultants, LLC, 2011.
 
 

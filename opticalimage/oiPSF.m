@@ -14,7 +14,7 @@ function val = oiPSF(oi,param,varargin)
 % param options
 %    area:       Area of the PSF that exceeds a threshold of max PSF
 %    diameter:   Diameter of the PSF that exceeds a threshold
-%  
+%
 % See also
 %  isetlens-s_isetauto
 
@@ -37,7 +37,7 @@ switch param
         % Estimate the diameter of the point spread (illuminance). If the
         % PSF is roughly circular, then this is a meaningful estimate of
         % the PSF diameter.  Perhaps we should check the circularity.
-        % 
+        %
         ill = oiGet(oi,'illuminance');
         
         % Find all the points that are at least 10 percent the amplitude of
@@ -58,11 +58,11 @@ switch param
         % Estimate the diameter of the point spread (illuminance). If the
         % PSF is roughly circular, then this is a meaningful estimate of
         % the PSF diameter.  Perhaps we should check the circularity.
-        % 
+        %
         psArea = oiPSF(oi,'area',...
             'units',p.Results.units,...
             'threshold',p.Results.threshold);
-
+        
         % circleArea = pi*radius^2 = pi*(diameter/2)^2
         %
         %   diameter = 2*sqrt(circleArea/pi)

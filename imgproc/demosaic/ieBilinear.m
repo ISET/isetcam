@@ -1,5 +1,5 @@
 function rgb = ieBilinear( bayer, cfaPattern )
-% Bilinear demosaic algorithm 
+% Bilinear demosaic algorithm
 %
 %    rgb = ieBilinear( bayer, cfaPattern )
 %
@@ -14,7 +14,7 @@ function rgb = ieBilinear( bayer, cfaPattern )
 % image. In the previous version, the output image was smaller
 %
 % bayer:       The Bayer pattern image
-% cfaPattern:  
+% cfaPattern:
 %
 % TODO:
 %  We should also implement a combined channel bilinear algorithm
@@ -52,10 +52,10 @@ rgb = zeros(r,c,nPlanes);
 for ii=1:nPlanes
     thisPlane = bayer_ex(:,:,ii);
     l = (cfaPattern == ii);
-    if ( l(1) == 1 && l(4) == 1) || (l(2) == 1 && l(3) == 1)   
+    if ( l(1) == 1 && l(4) == 1) || (l(2) == 1 && l(3) == 1)
         % Data are in opposite corner positions
-        rgb(:,:,ii) = conv2(thisPlane, [0 1/4 0; 1/4 1 1/4; 0 1/4 0], 'valid');        
-    else  
+        rgb(:,:,ii) = conv2(thisPlane, [0 1/4 0; 1/4 1 1/4; 0 1/4 0], 'valid');
+    else
         % Otherwise data are in every other position
         thisPlane   = conv2(thisPlane, [1/2 1 1/2] , 'valid');
         rgb(:,:,ii) = conv2(thisPlane, [1/2 1 1/2]', 'valid');

@@ -8,7 +8,7 @@ function fName = sceneSaveImage(scene,fName)
 %  Save out an 8-bit RGB image of the photon image as a png file.  If the
 %  name is not passed in, then the user is queried to select the fullpath
 %  name of the output file.  This routine is used for scenes.   The image
-%  is not displayed.  
+%  is not displayed.
 %
 %  The rgb image is obtained from the scene via sceneShowImage, which uses
 %  the same method to render as determined by the parameters in the

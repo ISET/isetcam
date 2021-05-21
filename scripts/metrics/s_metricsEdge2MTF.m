@@ -6,7 +6,7 @@
 % literature).
 %
 % This script also illustrates how to
-% 
+%
 % # define a scene
 % # create an optical image from the scene
 % # define a monochrome sensor
@@ -22,7 +22,7 @@
 % ability to interact with the GUI from scripts.
 %
 % See also:  sensorCompute, sensorCreate, s_pixelSizeMTF,
-% ISOFindSlantedBar, ipCompute, ipCreate, 
+% ISOFindSlantedBar, ipCompute, ipCreate,
 %
 % Copyright ImagEval Consultants, LLC, 2015.
 
@@ -78,7 +78,7 @@ c = masterRect(3)+1;
 r = masterRect(4)+1;
 barImage = reshape(barImage,r,c,3);
 
-vcNewGraphWin; imagesc(barImage(:,:,1)); axis image; colormap(gray);
+vcNewGraphWin; imagesc(barImage(:,:,1)); axis image; colormap(gray(64));
 for ii=1:r
     plot(barImage(ii,:,1));
     hold on;
@@ -91,7 +91,7 @@ img = barImage(:,:,2);
 dimg = diff(img,1,2);
 dimg = abs(dimg);
 
-vcNewGraphWin; imagesc(dimg); axis image; colormap(hot)
+vcNewGraphWin; imagesc(dimg); axis image; colormap(hot(64))
 col = size(dimg,2);
 row = size(dimg,1);
 dimgS = zeros(size(dimg));
@@ -104,7 +104,7 @@ for rr = 1:row
     [~,ii] = max(c);
     dimgS(rr,:) = circshift(dimg(rr,:)',lags(ii))';
 end
-vcNewGraphWin; imagesc(dimgS); axis image; colormap(hot)
+vcNewGraphWin; imagesc(dimgS); axis image; colormap(hot(64))
 
 % Here is the mean after aligning
 mn = mean(dimgS);

@@ -154,10 +154,10 @@ hCFAExp = cfaGetExposure;
                     
                     u = log10(expTime);
                     
-                    if u >= 0,
+                    if u >= 0
                         str = sprintf('%.2f',expTime);
                         set(hUnits,'string','sec');
-                    elseif u >= -3,
+                    elseif u >= -3
                         str = sprintf('%.2f',expTime*10^3);
                         set(hUnits,'string','ms');
                     else

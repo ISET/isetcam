@@ -12,7 +12,7 @@ function radianceWattsPerM2Sr = RetIrradianceToRadiance(irradianceWattsPerUm2,ir
 %
 %   Light power may be expressed in watts or quanta-sec or in your
 %   favorite units.  Indeed, it may also be passed as energy rather
-%   than power.  
+%   than power.
 %
 % This conversion does not take absorption in the eye into account,
 % as this is more conveniently foldeded into the spectral absorptance.

@@ -8,7 +8,7 @@
 %   s_sceneDemo                           - Illustrate how to create and interact with scenes
 %   s_sceneExamples                       - Show examples of built-in scenes
 %   s_sceneFromMultispectral              - Reading multispectral and hyperspectral scenes
-%   s_sceneFromRGB                        - Converting typical images to spectral radiance 
+%   s_sceneFromRGB                        - Converting typical images to spectral radiance
 %   s_sceneFromRGBvsMultispectral         - How well does sceneFromRGB perform?
 %   s_sceneHarmonics                      - Creating scenes with spatial frequency (harmonic) patterns
 %   s_sceneHCCompress                     - Compressing hyperspectral data (hypercube)
@@ -17,10 +17,10 @@
 %   s_sceneIlluminantSpace                - The spatial-spectral illumination representation
 %   s_sceneIncreaseSize                   - Increase the number of scene spatial samples
 %   s_sceneMonochrome                     - Read in a monochrome image
-%   s_sceneReflectanceChartBasisFunctions - A scene color chart from specific reflectances.  
-%   s_sceneReflectanceCharts              - The Natural-100 reflectance chart 
+%   s_sceneReflectanceChartBasisFunctions - A scene color chart from specific reflectances.
+%   s_sceneReflectanceCharts              - The Natural-100 reflectance chart
 %   s_sceneReflectanceSamples             - Creating your own reflectance chart
-%   s_sceneRender                         - Rendering a scene 
+%   s_sceneRender                         - Rendering a scene
 %   s_sceneRoi                            - Extracting region of interest (ROI) scene data
 %   s_sceneRotate                         - Rotate a scene
 %   s_sceneSlantedBar                     - Create the spatial resolution slanted bar target ISO 12233

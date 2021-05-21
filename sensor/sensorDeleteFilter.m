@@ -1,5 +1,5 @@
 function sensor = sensorDeleteFilter(sensor,whichFilter)
-% Delete a color filter. 
+% Delete a color filter.
 %
 % Synopsis
 %   sensor = sensorDeleteFilter(sensor,[whichFilter])
@@ -29,11 +29,11 @@ function sensor = sensorDeleteFilter(sensor,whichFilter)
 
 if ieNotDefined('sensor'), sensor = ieGetObject('ISA'); end
 
-if ieNotDefined('whichFilter') 
+if ieNotDefined('whichFilter')
     filterNames = sensorGet(sensor,'filterNames');
-    deleteName = ieReadString('Enter filter name to replace:',filterNames{1}); 
+    deleteName = ieReadString('Enter filter name to replace:',filterNames{1});
     if isempty(deleteName), return; end
-    whichFilter = find(strcmpi(deleteName,filterNames));   
+    whichFilter = find(strcmpi(deleteName,filterNames));
     if isempty(whichFilter), return; end
 end
 

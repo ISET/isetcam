@@ -15,8 +15,8 @@ function m = ieMemoryCheck(unit,level)
 if ieNotDefined('unit'), unit = 'b'; end
 if ieNotDefined('level'), level = 'caller'; end
 
-m = 0; 
-t = evalin(level,'whos');  
+m = 0;
+t = evalin(level,'whos');
 for ss = 1:length(t), m = m + (t(ss).bytes); end
 
 switch lower(unit)

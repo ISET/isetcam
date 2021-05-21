@@ -3,9 +3,9 @@ function g = sumGauss(params, dimension)
 %
 %    g = sumGauss(params, dimension)
 %
-% params: 
+% params:
 %    [support, halfwidth1, weight1, halfwidth2, weight2, halfwidth3, weight3]
-% 
+%
 % dimension: determines whether required sum of gaussians is 1-D or 2-D.
 %            1 => 1-D; 2 => 2-D.
 %            Default is 1.
@@ -42,14 +42,14 @@ end
 % ieHwhm2SD function as well.  But we leave these here for now because in
 % the future we might use oriented Gaussians.
 for ii=1:nGauss
-  halfwidth = params(2*ii);
-  weight    = params(2*ii + 1);
-  if (dimension==2)
-    g0 = gauss2(halfwidth, width, halfwidth, width);
-  else
-    g0 = gauss(halfwidth, width);
-  end
-  g = g + weight * g0;
+    halfwidth = params(2*ii);
+    weight    = params(2*ii + 1);
+    if (dimension==2)
+        g0 = gauss2(halfwidth, width, halfwidth, width);
+    else
+        g0 = gauss(halfwidth, width);
+    end
+    g = g + weight * g0;
 end
 
 % Make sure the summed Gaussians equals precisely to 1.

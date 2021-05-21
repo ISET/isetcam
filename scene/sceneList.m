@@ -14,14 +14,14 @@
 %
 % Reflectance chart
 %    sceneCreate('reflectance chart',pSize,sSamples,sFiles);
-%    
+%
 % Monochromatic test
 %    scene = sceneCreate('uniform monochromatic',wave,imsize);
 %    scene = sceneCreate('multispectral')
 %    scene = sceneCreate('rgb')
 %
 % Patterns
-%    sceneCreate('rings rays',radialF,imsize)            
+%    sceneCreate('rings rays',radialF,imsize)
 %    sceneCreate('harmonic',paramStruct)
 %    sceneCreate{'sweep frequency',imSize,maxFreq)
 %

@@ -2,7 +2,7 @@
 %
 % The ROIs can be drawn and deleted. This is the beginning of building up
 % ROI capabilities.
-% 
+%
 % The key routines are in the gui/roi directory.
 %
 % Wandell
@@ -13,16 +13,16 @@ ieInit
 
 %% Create the baseline windows
 
-scene = sceneCreate; 
+scene = sceneCreate;
 sceneWindow(scene);
 
-oi  = oiCreate; oi = oiCompute(oi,scene); 
+oi  = oiCreate; oi = oiCompute(oi,scene);
 oiWindow(oi);
 
-sensor = sensorCreate; sensor = sensorCompute(sensor,oi); 
+sensor = sensorCreate; sensor = sensorCompute(sensor,oi);
 sensorWindow(sensor);
 
-ip = ipCreate; ip = ipCompute(ip,sensor); 
+ip = ipCreate; ip = ipCompute(ip,sensor);
 ipWindow(ip);
 
 %% Rect on a scene

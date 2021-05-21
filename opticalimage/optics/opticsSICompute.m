@@ -23,7 +23,7 @@ function oi = opticsSICompute(scene,oi)
 % Example
 %    scene = vcGetObject('scene');
 %    oi    = vcGetObject('oi');
-%    
+%
 % Copyright ImagEval Consultants, LLC, 2005
 
 if ieNotDefined('scene'), error('Scene required.'); end
@@ -80,11 +80,11 @@ oi = opticsOTF(oi,scene);
 
 switch lower(oiGet(oi,'diffuserMethod'))
     case 'blur'
-       if showWbar, waitbar(0.75,wBar,'Diffuser'); end
+        if showWbar, waitbar(0.75,wBar,'Diffuser'); end
         blur = oiGet(oi,'diffuserBlur','um');
         if ~isempty(blur), oi = oiDiffuser(oi,blur); end
     case 'birefringent'
-       if showWbar, waitbar(0.75,wBar,'Birefringent Diffuser'); end
+        if showWbar, waitbar(0.75,wBar,'Birefringent Diffuser'); end
         oi = oiBirefringentDiffuser(oi);
     case 'skip'
         

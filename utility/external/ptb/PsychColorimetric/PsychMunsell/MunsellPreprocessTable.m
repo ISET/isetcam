@@ -1,6 +1,6 @@
 function munsellData = MunsellPreprocessTable
 % munsellData = MunsellPreprocessTable
-% 
+%
 % Load in Munsell renotation table from RIT site and convert it to the form where we will
 % actually use it.
 %
@@ -13,7 +13,7 @@ function munsellData = MunsellPreprocessTable
 % 11/21/08  dhb, ijk  Finished from ijk initial version.
 % 11/25/08  dhb, ijk  Wrap table.
 
-% Open file and throw away first line (column headers).  
+% Open file and throw away first line (column headers).
 fid = fopen('RITAllMunsellData.txt','r');
 firstLine = fgetl(fid);
 
@@ -22,7 +22,7 @@ firstLine = fgetl(fid);
 nRecords = 4995;
 munsellData = zeros(nRecords,6);
 
-% Read lines one at a time and extract 
+% Read lines one at a time and extract
 nRecordsCheck = 0;
 for i = 1:nRecords
     theLine = fgetl(fid);
@@ -35,7 +35,7 @@ for i = 1:nRecords
     chroma = theLineCell{3};
     x = theLineCell{4};
     y = theLineCell{5};
-    Y = theLineCell{6};  
+    Y = theLineCell{6};
     munsellData(i,:) = [angle value chroma x y Y];
     nRecordsCheck = nRecordsCheck+1;
 end

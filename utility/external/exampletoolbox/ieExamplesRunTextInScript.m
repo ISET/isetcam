@@ -21,7 +21,7 @@ function ieExamplesRunTextInScript(theScript)
 % Examples are provided in the code.
 %
 % See also:
-%     
+%
 %
 
 % History

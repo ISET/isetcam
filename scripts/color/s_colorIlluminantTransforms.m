@@ -28,17 +28,17 @@ nbb = length(bbRange);
 T = cell(nbb,nbb);   % This is the transform table
 
 % We calculate using about 100 different reflectances
-s = sceneCreate('reflectance chart'); 
+s = sceneCreate('reflectance chart');
 wave = sceneGet(s,'wave');
 
 %% Set the base illuminant as D65
 for jj = 1:nbb   % To jj
     bb = blackbody(wave,bbRange(jj));
     s1 = sceneAdjustIlluminant(s,bb);
-
+    
     XYZ1 = sceneGet(s1,'XYZ');
     XYZ1 = RGB2XWFormat(XYZ1);
-
+    
     for ii = 1:nbb   % From ii
         bb = blackbody(wave,bbRange(ii));
         s2 = sceneAdjustIlluminant(s,bb);
@@ -68,13 +68,13 @@ end
 comment = '3x3 transforms between different blackbody illuminants.  See s_colorILluminantTransforms.m';
 fname = fullfile(isetRootPath,'data','lights','transformTable.mat');
 save(fname,'bbRange','transformList','comment');
-%% Buddha image transform 
+%% Buddha image transform
 
-% This was the 3x3 transform we found for the Buddha image 
+% This was the 3x3 transform we found for the Buddha image
 B = [0.9245    0.0241   -0.0649
     0.2679    0.9485    0.1341
-   -0.1693    0.0306    0.9078];
-   
+    -0.1693    0.0306    0.9078];
+
 % C is the cosine of the angle between the transforms
 B = unitLength(B(:));
 C = transformList'* B(:);
@@ -96,7 +96,7 @@ F = [ 0.9570   -0.0727   -0.0347
 
 % C is the cosine of the angle between the transforms
 F = unitLength(F(:));
-C = transformList'* F(:);   
+C = transformList'* F(:);
 C = reshape(C,nbb,nbb);
 
 % Show the cosines as an image.

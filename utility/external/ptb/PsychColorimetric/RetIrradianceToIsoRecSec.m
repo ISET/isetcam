@@ -1,5 +1,5 @@
 function [isoPerConeSec,absPerConeSec,photoreceptors] = ...
-	RetIrradianceToIsoRecSec(irradianceWatts,irradianceS,photoreceptors)
+    RetIrradianceToIsoRecSec(irradianceWatts,irradianceS,photoreceptors)
 % [isoPerConeSec,absPerConeSec,photoreceptors] = ...
 %		RetIrradianceToIsoRecSec(irradianceWatts,irradianceS,[photoreceptors])
 %
@@ -12,7 +12,7 @@ function [isoPerConeSec,absPerConeSec,photoreceptors] = ...
 % values.
 %
 % Default values return estimates for human L, M, and S foveal cones.
-% 
+%
 % In many cases, data can either be specified by numerical value or by
 % source string.  When both are passed, values override strings.
 %
@@ -25,8 +25,8 @@ function [isoPerConeSec,absPerConeSec,photoreceptors] = ...
 % 7/25/03  dhb  Wrote it by pulling in code from elsewhere.
 
 if (nargin < 3 || isempty(photoreceptors))
-	photoreceptors = DefaultPhotoreceptors('LivingHumanFovea');
-	photoreceptors = FillInPhotoreceptors(photoreceptors);
+    photoreceptors = DefaultPhotoreceptors('LivingHumanFovea');
+    photoreceptors = FillInPhotoreceptors(photoreceptors);
 end
 
 % Define common wavelength sampling for this function.
@@ -37,7 +37,7 @@ irradianceQuanta = EnergyToQuanta(S,irradianceWatts);
 
 % Compute rate at which photons are absorbed.
 absPerConeSec = PhotonAbsorptionRate(irradianceQuanta,S, ...
-	photoreceptors.effectiveAbsorptance,S,photoreceptors.ISdiameter.value);
+    photoreceptors.effectiveAbsorptance,S,photoreceptors.ISdiameter.value);
 isoPerConeSec = PhotonAbsorptionRate(irradianceQuanta,S, ...
-	photoreceptors.isomerizationAbsorptance,S,photoreceptors.ISdiameter.value);
+    photoreceptors.isomerizationAbsorptance,S,photoreceptors.ISdiameter.value);
 

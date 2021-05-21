@@ -30,7 +30,7 @@ warning('Deprecated.');
 if ~exist('mn','var'), mn = min(data(:)); end
 if ~exist('mx','var'), mx = max(data(:)); end
 
-%% bitDepth should be 16 or 32.  
+%% bitDepth should be 16 or 32.
 % The case of 32 becomes single precision, which has a 32 bit range (with a
 % sign bit).  The case of 16 becomes uint16, which is what we used for many
 % years.
@@ -56,7 +56,7 @@ switch bitDepth
                 cData(:,:,ii) = uint32(round(mxCompress*(data(:,:,ii) - mn)/(s)));
             end
         else
-            % All at once.  
+            % All at once.
             cData = uint32(round(mxCompress * (data - mn)/(s)));
         end
     case 16
@@ -71,7 +71,7 @@ switch bitDepth
             % Do it all at once.
             cData = uint16(round(mxCompress * (data - mn)/(s)));
         end
-
+        
     otherwise
         error('Unknown bit depth.');
 end

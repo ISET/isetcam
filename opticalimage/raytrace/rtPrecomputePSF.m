@@ -11,9 +11,9 @@ function svPSF = rtPrecomputePSF(oi, angStepSize, cPosition)
 %
 % The svPSF contains the point spreads functions (psf) for all the image
 % height, wavelength, and angles in the optical image.
-% 
+%
 % The psf dimensionality is [nAngles, M radial heights, and W wavelengths].
-% The M radial heights are at the heights of the original PSF estimates. 
+% The M radial heights are at the heights of the original PSF estimates.
 %
 % Angles are measured every angStepSize (degrees).  The default is 1 deg.
 % The angles represented are [0:angStepSize:360], to include both 0 and
@@ -27,7 +27,7 @@ function svPSF = rtPrecomputePSF(oi, angStepSize, cPosition)
 %   angStep = 10;     % Set angle step
 %   psfStruct = rtPrecomputePSF(oi,angStep);  % PSF is single precision
 %   oi = oiSet(oi,'psfStruct',psfStruct);
-%   
+%
 % Copyright ImagEval, LLC, 2005
 
 if ieNotDefined('oi'), oi = vcGetObject('oi'); oiGet(oi,'name'), end
@@ -37,7 +37,7 @@ if ieNotDefined('angStepSize'), angStepSize = 1; end    % Angular step size in d
 % with an emphasis on the periphery.  But the default is to be on-axis.
 % center position units are m, to match the spatial sampling positions
 % below.
-if ieNotDefined('cPosition'), cPosition = [0,0]; end    
+if ieNotDefined('cPosition'), cPosition = [0,0]; end
 
 scene = ieGetObject('scene');
 if isempty(scene)
@@ -88,7 +88,7 @@ ySupport = flipud(sSupport(:,:,2));
 xSupport = xSupport - cPosition(1);
 ySupport = ySupport - cPosition(2);
 
-% Determine the angle and field height of every irradiance position.  
+% Determine the angle and field height of every irradiance position.
 [~,dataHeight] = cart2pol(xSupport,ySupport);
 % dataAngleDeg = rad2deg(dataAngle);
 
@@ -108,7 +108,7 @@ if psfSize(1) < 7
     disp('Suggest increasing scene sampling or decreasing field of view')
     svPSF = [];
     return;
-elseif psfSize(1) < 20 
+elseif psfSize(1) < 20
     % This criterion of 20 was done by experimenting with just one
     % lens and a uniform image. The number may not be general.
     warndlg('Coarse scene spatial sampling;increase scene sampling for more precision.');
@@ -135,13 +135,13 @@ svPSF.wavelength = wavelength;
 
 % Compute the svPSFs
 for ww=1:nWave
-
+    
     for hh=1:nFieldHeights
         if showWaitBar
             str = sprintf('Computing psfs: Wave: %.0f nm Height: %.0f (um)',wavelength(ww),imgHeight(hh)*1e6);
-            wBar = waitbar(hh/nFieldHeights,wBar,str); 
+            wBar = waitbar(hh/nFieldHeights,wBar,str);
         end
-            
+        
         % Field height units are meters. Wave in nanometers.
         tmpPSF = opticsGet(optics,'rtpsfdata',imgHeight(hh),wavelength(ww));
         % tmpPSF = fliplr(flipud(tmpPSF));
@@ -150,9 +150,9 @@ for ww=1:nWave
         for aa = 1:nAngles
             
             % Compute the different angles.  But, don't rotate the inner
-            % two bands. 
+            % two bands.
             % Try only hh ==1, not also hh == 2
-            if (hh==1 || hh==2), thisAngle=sampAngles(1); 
+            if (hh==1 || hh==2), thisAngle=sampAngles(1);
             else,                thisAngle = svPSF.sampAngles(aa);
             end
             
@@ -160,7 +160,7 @@ for ww=1:nWave
             % way to speed it up.
             PSF = imrotate(tmpPSF,thisAngle,'bilinear','crop');
             
-            %Smooth noise introduced by rotation 
+            %Smooth noise introduced by rotation
             PSF = imfilter(PSF,smooth,'replicate');
             
             %Match the optical image resolution

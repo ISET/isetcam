@@ -29,8 +29,8 @@ function [scene,rect] = sceneCrop(scene,rect)
 
 if ieNotDefined('scene'), error('You must define a scene.'); end
 
-if ieNotDefined('rect') 
-    [roiLocs,rect] = vcROISelect(scene); 
+if ieNotDefined('rect')
+    [roiLocs,rect] = vcROISelect(scene);
 else
     cmin = rect(1); cmax = rect(1)+rect(3);
     rmin = rect(2); rmax = rect(2)+rect(4);
@@ -49,7 +49,7 @@ photons = XW2RGBFormat(photons,r,c);
 % Now build up the new object.
 scene = sceneClearData(scene);
 scene = sceneSet(scene,'photons',photons);
-[luminance, meanL] = sceneCalculateLuminance(scene); 
+[luminance, meanL] = sceneCalculateLuminance(scene);
 scene = sceneSet(scene,'luminance',luminance);
 scene = sceneSet(scene,'meanLuminance',meanL);
 

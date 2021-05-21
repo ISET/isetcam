@@ -15,7 +15,7 @@ function Iout = rtOTF(scene,oi)
 % The algorithm is
 %
 %   (a) Extract the irradiance image at a single wavelength
-%   (b) Extract data from a block 
+%   (b) Extract data from a block
 %        (number of blocks per field height sample can be set)
 %   (c) Pad the block data
 %   (d) Retrieve the relevant optics PSF and interpolate it to match the block data
@@ -39,7 +39,7 @@ function Iout = rtOTF(scene,oi)
 %     - For each block
 %        -- upsample the block to the PSF resolution
 %        -- find the distance from each point to each PSF
-%        -- output the distance-weighted sum of the PSF convolutions 
+%        -- output the distance-weighted sum of the PSF convolutions
 %        -- downsample the result to the irradiance resolution
 %
 %  This uses a small number of PSFs to calculate a point-by-point
@@ -55,7 +55,7 @@ function Iout = rtOTF(scene,oi)
 %   and similarly colO.
 %
 % The block data we filter have dimensions blockSamples
-% The padded irradiance block data have dimensions 
+% The padded irradiance block data have dimensions
 %   rowF = blockSamples + 2*blockPading
 %
 % Never let the data block size (in microns) limit the extent of the PSF.
@@ -84,7 +84,7 @@ colO = colP + 2*blockPadding(2);
 Iout = zeros(rowO,colO,nWave);
 
 % Find the spatial support for the PSF and for the filtered block in mm
-% units. 
+% units.
 % TODO:
 % Never let the data block size (in microns) limit the extent of the PSF.
 % Always choose a rowF,colF value that allows the entire PSF to be
@@ -106,24 +106,24 @@ for ww = 1:nWave
     irradiance = oiGet(oi,'photons',wavelength(ww));
     irradianceP = padarray(irradiance,irradPadding);
     str = sprintf('Ray Trace OTF (wave: %.0f)', wavelength(ww));
-
+    
     % Comment out some time
-    figure(1); colormap(gray); imagesc(irradianceP); axis image; axis tight;
+    figure(1); colormap(gray(64)); imagesc(irradianceP); axis image; axis tight;
     r = [0:blockSamples(1):rowP] + 1;
     c = [0:blockSamples(2):colP] + 1;
     for rr = 1:nBlocks, line([1,colP],[r(rr),r(rr)]); end
     for cc = 1:nBlocks, line([c(cc),c(cc)], [1,rowP]); end
     set(gca,'xtick',c,'ytick',r');
-
+    
     for rBlock=1:nBlocks
         for cBlock = 1:nBlocks
             if showBar, waitbar(ii/(nWave*nBlocks*nBlocks),wbar,str); end
             ii = ii + 1;
             [blockData,rList,cList] = rtExtractBlock(irradianceP,blockSamples,rBlock,cBlock);
-            % figure(5); colormap(gray);
+            % figure(5); colormap(gray(64));
             % imagesc(blockData); axis image; axis equal; axis tight
             % max(abs(irradianceP(rList,cList) - blockData))
-
+            
             d = rtBlockCenter(rBlock,cBlock,blockSamples) - imageCenter;
             [fieldAngle,fieldHeight] = cart2pol(d(1)*mmPerRow,d(2)*mmPerCol);
             fieldAngle = rad2deg(fieldAngle);
@@ -136,22 +136,22 @@ for ww = 1:nWave
                 filteredBlockX(:)',filteredBlockY(:));
             PSF(isnan(PSF)) = 0;
             % figure; mesh(filteredBlockX(:)',filteredBlockY(:),PSF)
-
+            
             % PSF = fspecial('gaussian',[rowF,colF],(fieldHeight + 1)*(rowF/30));
             
             filteredData = padarray(blockData,blockPadding);
-            % figure(4); imagesc(filteredData), colormap(gray), axis tight
+            % figure(4); imagesc(filteredData), colormap(gray(64)), axis tight
             % Make sure we are still at unit area
-            k = sum(PSF(:)); 
+            k = sum(PSF(:));
             if k > 0, PSF = PSF/k; end
-
+            
             % If it is worth filtering, do it.  Otherwise, just copy it in.
             if max(PSF(:)) < .98
                 filteredData = conv2(PSF,filteredData,'same');
             end
-
+            
             Iout(:,:,ww) = rtInsertBlock(Iout(:,:,ww),filteredData,blockSamples,blockPadding,rBlock,cBlock);
-            figure(6); colormap(gray); imagesc(Iout(:,:,ww));
+            figure(6); colormap(gray(64)); imagesc(Iout(:,:,ww));
             title(sprintf('%.0f',wavelength(ww)));
             pause(0.01);
         end

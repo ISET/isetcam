@@ -21,7 +21,7 @@ function retIrradiance_PerArea = RetIrradiancePerDegrees2AndEyeLengthToRetIrradi
 % We use DegreesToRetinalMM, rather than RetinalMMToDegrees followed
 % by inversion.  This is because with the former, we can force the number
 % of degrees to be small and get a factor valid in the small angle range.
-% If we do it the other way, when the units of distance are large relative to the 
+% If we do it the other way, when the units of distance are large relative to the
 % eye length, weird things can happen.
 xPerDegree = DegreesToRetinalMM(1,eyeLength);
 areaPerDegrees2 = xPerDegree^2;

@@ -73,7 +73,7 @@ switch param
         [uData, g] = plotDisplayColor(ip,'RGB');
     case 'rgb3d'
         [uData, g] = plotDisplayColor(ip,'rgb3d');
-
+        
     case {'roi'}
         % [uData,g] = ipPlot(ip,'roi');
         %
@@ -88,7 +88,7 @@ switch param
         % Make sure the sensor window is selected
         ipWindow;
         g = ieROIDraw('ip','shape','rect','shape data',ipGet(ip,'roi'));
-                
+        
     otherwise
         error('Uknown parameter %s\n',param);
 end

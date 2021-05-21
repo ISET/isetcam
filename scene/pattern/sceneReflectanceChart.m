@@ -9,12 +9,12 @@ function [scene, sSamples, reflectance, rcSize] = sceneReflectanceChart(sFiles,s
 % scene use: sceneGet(scene,'chart parameters');
 %
 % Inputs
-%  The surfaces are drawn from the cell array of sFiles{}.  
+%  The surfaces are drawn from the cell array of sFiles{}.
 %  sFiles:   Cell array of file names with reflectance spectra
 %            It is also possible to set sFiles to a matrix of reflectances.
 %  sSamples: This can either be
 %      - Vector indicating how many surfaces to sample from each file
-%      - A cell array specifying the list of samples from each file 
+%      - A cell array specifying the list of samples from each file
 %  pSize:    The number of pixels on the side of each square patch
 %  wave:     Wavelength Samples
 %  grayFlag: Fill the last part of the chart with gray surfaces, the last
@@ -34,7 +34,7 @@ function [scene, sSamples, reflectance, rcSize] = sceneReflectanceChart(sFiles,s
 %
 % Copyright ImagEval Consultants, LLC, 2010.
 %
-% See also: 
+% See also:
 %   macbethChartCreate, sceneRadianceChart
 
 % Examples:
@@ -55,7 +55,7 @@ function [scene, sSamples, reflectance, rcSize] = sceneReflectanceChart(sFiles,s
 %}
 
 %%
-if ieNotDefined('sFiles'), error('Surface files required'); 
+if ieNotDefined('sFiles'), error('Surface files required');
 else,                      nFiles = length(sFiles);
 end
 
@@ -99,7 +99,7 @@ r = ceil(sqrt(nSamples)); c = ceil(nSamples/r);
 if grayFlag
     % Create a column of gray surfaces, from 100% reflectance scaling down
     % in steps of 0.5 (0.3 log unit)
-    s = logspace(0,log10(0.05),r); 
+    s = logspace(0,log10(0.05),r);
     g = ones(nWave,r)*diag(s);
     reflectance = [reflectance, g];
     c = c + 1;
@@ -118,7 +118,7 @@ illuminantPhotons = diag(e2pFactors)*ones(nWave,1);
 % Data from first file are in the left columns, second file next set of
 % cols, and so forth. There may be a gray strip at the end.
 % Scale reflectances by incorporating energy to photon scale factr
-radiance = diag(e2pFactors)*reflectance;    
+radiance = diag(e2pFactors)*reflectance;
 
 % Calculate the scene radiance data.  These are in photon units, but
 % they are not scaled to reasonable photon values.

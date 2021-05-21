@@ -33,7 +33,7 @@
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
-%% Sensor Parameters:  
+%% Sensor Parameters:
 
 % You can set the parameters here according to your technology
 % properties Each pixel size has associated noise
@@ -61,7 +61,7 @@ for ii=1:length(pixelSize)
     pixel = pixelSet(pixel,'readNoiseSTDvolts',readNoiseSD(ii));
     pixel = pixelSet(pixel,'voltageSwing',voltageSwing(ii));
     pixel = pixelSet(pixel,'darkVoltage',darkVoltage(ii));
-
+    
     sensor = sensorSet(sensor,'pixel',pixel);
     [SNR{ii},luxsec{ii}] =  pixelSNRluxsec(sensor);
 end

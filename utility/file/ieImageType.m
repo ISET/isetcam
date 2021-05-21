@@ -6,8 +6,8 @@ function imageType = ieImageType(fullName)
 % Description
 % - Check the file extensions for an RGB type (e.g. jpeg,jpg,tif,gif,bmp).
 % - If not, read the directory name. If it contains one of the image type
-%   strings (see below), return that string. 
-% - Finally, ask the user to identify the type of data. 
+%   strings (see below), return that string.
+% - Finally, ask the user to identify the type of data.
 %
 % Examples:
 %{
@@ -62,7 +62,7 @@ imTypes = {'monochrome','rgb','multispectral'};
     'ListString',imTypes);
 
 if ok, imageType = imTypes{v};
-else,  disp('User canceled'); imageType = ''; return; 
+else,  disp('User canceled'); imageType = ''; return;
 end
 
 end

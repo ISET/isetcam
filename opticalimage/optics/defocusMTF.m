@@ -21,13 +21,13 @@ function OTF = defocusMTF(optics,frequencySupport,defocus)
 %
 %  See also:  opticsDepthDefocus, opticsDefocusedMTF, humanCore,
 %  s_opticsDepthDefocus
-%    
+%
 % Discussion.
 %  The defocus in diopters for different thin lens to sensor distances is
 %  computed in opticsDepthDefocus. The defocus for human chromatic
-%  aberration is computed in the humanCore code. 
+%  aberration is computed in the humanCore code.
 %
-%  The depth and defocus relation involves using the lensmaker's 
+%  The depth and defocus relation involves using the lensmaker's
 %  equation. The degree of defocus depends on the aperture size. See around
 %  pages 123-4 in Joe Goodman's book for the case of a square aperture, and
 %  there is a formula in the humanCore code for a circular aperture.  This
@@ -41,16 +41,16 @@ function OTF = defocusMTF(optics,frequencySupport,defocus)
 %  people from linepairs/mm to cycles per degree. We specify the MTF for an
 %  object at infinity, assuming the image plane is at the focal distance.
 %  Obviously, if there is defocus (the object is not at infinity), then
-%  this MTF needs to be recalculated. 
-% 
+%  this MTF needs to be recalculated.
+%
 %  We will put in a hook so that if we decide to have a different object
-%  distance (and thus a different image distance), we can recalculate. 
-% 
+%  distance (and thus a different image distance), we can recalculate.
+%
 %   We expect this routine to be very quick so we can quickly get the 2D
 %   MTF of the lens and multiply it with the spectrum of the image (freq by
 %   freq).  We may end up using some indexing/rounding and table-lookup to
-%   make this go faster. 
-% 
+%   make this go faster.
+%
 % INPUT  : optics [structure]
 %          wavelength [array]
 %          frequencySupport [nRows x nCols x 2]
@@ -98,7 +98,7 @@ for ii=1:nWaves
     
     % See comments in humanCore and opticsDefocusedMTF.
     % dimensionless.  Runs between -2 and 2.
-    s(:,:,ii)     = 2*cos(phi);  
+    s(:,:,ii)     = 2*cos(phi);
     
     %                      (1/m)           m        dimensionless
     alpha(:,:,ii) = 4*pi./wavelength(ii).*w20(ii).*s(:,:,ii);

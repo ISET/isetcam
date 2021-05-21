@@ -3,7 +3,7 @@
 % Downloaded the raw data from here
 %
 %  http://www.cs.columbia.edu/CAVE/databases/multispectral/
-% 
+%
 % Put the unzipped files in isetcam/local/Yasuma-Nayar
 %
 % Built up the scenes as below, and then pushed them up to the

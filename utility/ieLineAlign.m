@@ -16,13 +16,13 @@ function [estP, estY] = ieLineAlign(D1,D2)
 %
 % Description
 %  The two data sets are related by a shift and scale of the x-axis such
-%  that: 
+%  that:
 %
 %     D2.x = p(1)*(D1.x - p(2))
 %
-%  The y-values are built on the same function, 
+%  The y-values are built on the same function,
 %
-%     D1.y = func(D1.x) 
+%     D1.y = func(D1.x)
 %     D2.y = func(D2.x) = func(p(1)*(D1.x - p(2)));
 %
 %  *ieLineAlign* estimates the scale and shift parameters (p). If they are
@@ -55,7 +55,7 @@ s1 = 1.2; s2 = 3;
 ssX = s1*(D1.x - s2);
 
 % The function with some noise.
-D2.y = (func(ssX) + randn(size(ssX))*5); 
+D2.y = (func(ssX) + randn(size(ssX))*5);
 
 plot(D1.x,D1.y,'k--',D2.x,D2.y,'r-');
 
@@ -90,7 +90,7 @@ end
 
 %%
 function [e, est] = sseval(p,D1,D2)
-% Shift and scale the x-axis to match D1 to D2.  
+% Shift and scale the x-axis to match D1 to D2.
 %
 % Synopsis
 %   e = sseval(p,D1,D2)
@@ -115,7 +115,7 @@ function [e, est] = sseval(p,D1,D2)
 % The estimate for the shifted and scaled values are
 % est = interp1(D2.x, D2.y, D2.x/p(1) + p(2));
 
-% If we shift and scale D2's x value and measure at D1's x value,
+% If we shift and scale D2's x value and measure at D1's x value
 % we want the new est to match D1.x,D1.y
 % est = interp1(D2.x/p(1) + p(2), D2.y, D1.x);
 est = interp1(p(1)*(D2.x - p(2)), D2.y, D1.x);

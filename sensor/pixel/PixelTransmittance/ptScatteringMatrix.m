@@ -7,7 +7,7 @@ function S = ptScatteringMatrix(n,d,thetaIn,lambda,polarization)
 %
 %       1       2       M-1     M
 %       |       |       |       |
-%   0   |   1   | ..... |  N-1  |   N 
+%   0   |   1   | ..... |  N-1  |   N
 %       |       |       |       |
 %
 

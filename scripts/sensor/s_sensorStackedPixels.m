@@ -3,11 +3,11 @@
 % The method here is also useful for those times we want to estimate sensor
 % responses in the absence of demosaicking.
 %
-% Foveon and Langfelder use this design. 
+% Foveon and Langfelder use this design.
 %
 % See also: ipCompute
 %
-% Copyright ImagEval Consultants, LLC, 2012_ 
+% Copyright ImagEval Consultants, LLC, 2012_
 
 %%
 ieInit
@@ -59,7 +59,7 @@ end
 sensorMonochrome = sensorCompute(sensorMonochrome,oi);
 
 sz = sensorGet(sensorMonochrome(1),'size');
-nChannels = size(fSpectra,2); 
+nChannels = size(fSpectra,2);
 im = zeros(sz(1),sz(2),nChannels);
 for ii=1:3
     im(:,:,ii) = sensorGet(sensorMonochrome(ii),'volts');

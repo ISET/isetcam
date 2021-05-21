@@ -3,8 +3,8 @@ function vci = vcimageSRGB(sceneName)
 %
 %   vci = vcimageSRGB([sceneName = 'macbethD65'])
 %
-% The sceneName can be any valid argument to sceneCreate. 
-% 
+% The sceneName can be any valid argument to sceneCreate.
+%
 % The scene is computed using the current oi and sensor.  If none exist,
 % then the default oi and sensor are created and used. The sRGB image is
 % created using an image processing step that has the properties:
@@ -33,7 +33,7 @@ oi = vcGetObject('oi');
 if isempty(oi), oi = oiCreate; end
 oi = oiCompute(scene,oi);
 
-% Create an XYZ sensor, I guess.  
+% Create an XYZ sensor, I guess.
 sensor = vcGetObject('isa');
 if isempty(sensor), sensor = sensorCreate; end
 

@@ -10,7 +10,7 @@
 %
 %   Edit | Adjust SPD | Change illuminant
 %
-% Illuminants can vary across the scene. 
+% Illuminants can vary across the scene.
 %
 % See also: sceneAdjustIlluminant, s_Illuminant, s_sceneIlluminantSpace
 %
@@ -20,7 +20,7 @@
 ieInit
 delay = 0.2;
 %% Create a default scene
- 
+
 % sceneCreate creates a scene object. In this case, without any
 % arguments, sceneCreate simulates a Macbeth ColorChecker
 % uniformly illuminated with daylight 6500 (D65)

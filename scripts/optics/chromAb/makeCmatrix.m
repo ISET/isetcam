@@ -17,5 +17,5 @@ Cmatrices = zeros(9,maxSF + 1);
 % Each Cmatrix is then reshaped as a single column with 9 elements, and
 % put together in Cmatrices.
 for f = 1:(maxSF + 1)
-  Cmatrices(:,f) = reshape(receptor'*diag(otf(:,f))*monitorSPD,9,1);
+    Cmatrices(:,f) = reshape(receptor'*diag(otf(:,f))*monitorSPD,9,1);
 end

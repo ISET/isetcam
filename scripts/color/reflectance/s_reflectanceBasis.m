@@ -59,7 +59,7 @@ plot(wave,approx,'--',wave,reflectances,':'); grid on;
 xlabel('Wave (nm)'); ylabel('Reflectance');
 % title(thisFile{1});
 
-%%  
+%%
 
 ieNewGraphWin;
 plot(approx(:),reflectances(:),'.');

@@ -9,9 +9,9 @@ function [dv, voltImage, dsnu, prnu] = binSensorComputeImage(OI,ISA,bMethod,wBar
 % many parts of the calculation.
 %
 % The spatial array of volts is routined by this routine.  In addition,
-% the fixed pattern offset (dsnu) and photoresponse nonuniformity (prnu) 
-% can also be returned.  
-%   
+% the fixed pattern offset (dsnu) and photoresponse nonuniformity (prnu)
+% can also be returned.
+%
 % To suppress the display of waitbars, set showWaitBar to 0.  Default is 1.
 %
 %   COMPUTATIONAL OVERVIEW
@@ -37,11 +37,11 @@ function [dv, voltImage, dsnu, prnu] = binSensorComputeImage(OI,ISA,bMethod,wBar
 %
 %       6.  If column FPN is selected and stored, it is retrieved and
 %       combined into the signal.  If column FPN is selected but not
-%       stored, it is computed and applied. Finally, if it is not selected,
+%       stored, it is computed and applied. Finally, if it is not selected
 %       it is not applied.
 %
 %   Many more notes on the calculation, including all the units are
-%   embedded in the comments below. 
+%   embedded in the comments below.
 %
 %   If the waitBar handles are provided, they are used to show progress.
 %   Without the waitbar handles, no waitbars are shown.
@@ -61,11 +61,11 @@ if ieNotDefined('bMethod'), bMethod = 'kodak2008'; end
 q = vcConstants('q');                       %Charge/electron
 pixel = sensorGet(ISA,'pixel');
 
-%% Define current 
+%% Define current
 % This factor converts pixel current to volts for this integration time.
-% The conversion units are  
+% The conversion units are
 %
-%   sec * (V/e) * (e/charge) = sec * V / charge = V / current. 
+%   sec * (V/e) * (e/charge) = sec * V / charge = V / current.
 %
 % Given the basic rule V = IR, k is effectively a measure of resistance
 % that converts current into volts given the exposure duration.
@@ -86,7 +86,7 @@ if numel(cur2volt) == 1
     voltImage = cur2volt*unitSigCurrent;
 else
     % Multiple exposure times, so we copy the unit term into multiple
-    % dimensions 
+    % dimensions
     voltImage = repmat(unitSigCurrent,[1 1 length(cur2volt)]);
     % Multiply each dimension by its own scale factor
     for ii=1:length(cur2volt)
@@ -112,9 +112,9 @@ ISA       = sensorSet(ISA,'volts',voltImage);
 ISA = sensorSet(ISA,'volts',voltImage);
 
 % Something went wrong.  Return data empty,  including the noise images.
-if isempty(voltImage),  
-    dsnu = []; prnu = []; 
-    return; 
+if isempty(voltImage)
+    dsnu = []; prnu = [];
+    return;
 end
 
 %% Add the dark current
@@ -141,7 +141,7 @@ if darkCurrent ~= 0
 end
 ISA = sensorSet(ISA,'volts',voltImage);
 
-%% Add shot noise.  
+%% Add shot noise.
 % Note that you can turn off shot noise in the calculation
 % by setting the shotNoiseFlag to false.  Default is true.  This flag is
 % accessed only through scripts at the moment.  There is no way to turn it
@@ -170,7 +170,7 @@ ISA = binPixel(ISA,bMethod);
 %% Fixed pattern noises - DSNU and PRNU
 % noiseFPN combines the offset and gain (dsnu,prnu) images with
 % the current voltage image to produce a noisier image.  If these images
-% don't yet exist, we compute them. 
+% don't yet exist, we compute them.
 dsnu = sensorGet(ISA,'dsnuImage');
 prnu = sensorGet(ISA,'prnuImage');
 

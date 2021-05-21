@@ -3,7 +3,7 @@ function [T, actual, desired, whiteCMF] = imageSensorConversion(sensor,CMF,surfa
 %
 %  [T, actual, desired, whiteCMF] = imageSensorConversion(sensor,CMF,surfaces,illuminant)
 %
-% The transformation, T, converts sensor data into the CMF representation. 
+% The transformation, T, converts sensor data into the CMF representation.
 %
 %      correctedData(3xN) = T(3x3) * actualData(3xN)
 %
@@ -19,7 +19,7 @@ function [T, actual, desired, whiteCMF] = imageSensorConversion(sensor,CMF,surfa
 %  actual:    The sensor responses to the surfaces under an illuminant
 %  desired:   The CMF values of the surfaces under an illuminant
 %  whiteCMF:  The CMF value to a white reflectance.  Useful for CIE
-%             calculations 
+%             calculations
 %
 % See also: s_ipSensorConversion, imageSensorCorrection
 %
@@ -41,7 +41,7 @@ actual  = spectralQE'*diag(illuminant)*surfaces;
 desired = CMF'*diag(illuminant)*surfaces;
 
 % Matrix inversion - no correction for noise or white weighting
-% desired = T*actual 
+% desired = T*actual
 T = desired / actual;
 
 % predicted = T*actual;

@@ -28,7 +28,7 @@ oi = oiCreate; oi = oiCompute(oi,scene);
 %% Run the sensor simulation
 
 % First in auto exposure mode.  Kind of a lousy image.
-sensor = sensorCreate; 
+sensor = sensorCreate;
 sensor = sensorSet(sensor,'fov',sceneGet(scene,'fov'),oi);
 sensor = sensorCompute(sensor,oi);
 

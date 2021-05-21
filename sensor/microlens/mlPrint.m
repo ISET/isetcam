@@ -9,9 +9,9 @@ function mlPrint(ml)
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
-if ieNotDefined('ml'), 
-    ISA = vcGetObject('ISA'); 
-    ml  = sensorGet(ISA,'ml'); 
+if ieNotDefined('ml')
+    ISA = vcGetObject('ISA');
+    ml  = sensorGet(ISA,'ml');
 end
 
 fprintf('\nMicrolens properties:\n--------------------\n');

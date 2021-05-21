@@ -34,7 +34,7 @@ function sensor = sensorSet(sensor,param,val,varargin)
 %      'cols' - number of cols
 %      'size' - [rows,cols]
 %      'fov'  - horizontal field of view.  NOTE: Also adjusts row/col!
-%      
+%
 % Color
 %      'color'  - structure containing color information
 %        'filter transmissivities'   - color filter transmissivities
@@ -45,7 +45,7 @@ function sensor = sensorSet(sensor,param,val,varargin)
 %        'wavelength'       - wavelength samples
 %      'color filter array' - color filter array structure
 %        'cfa pattern'          - color filter array (cfa) pattern
-%        'cfa pattern and size' - set cfa pattern and adjust sensor size if 
+%        'cfa pattern and size' - set cfa pattern and adjust sensor size if
 %                                   there is a new block size
 %
 % Electrical and imaging
@@ -56,10 +56,10 @@ function sensor = sensorSet(sensor,param,val,varargin)
 %      'analog offset'      - Transform volts
 %            Formula for offset and gain: (v + analogOffset)/analogGain)
 %
-%      'roi'                - region of interest information 
+%      'roi'                - region of interest information
 %                               (roiLocs, Nx2, or rect 1x4 format)
 %      'cds'                - correlated double sampling flat
-%      'quantization method'- method used for quantization 
+%      'quantization method'- method used for quantization
 %                               ('analog', '10 bit', '8 bit', '12 bit')
 %      'response type'  - We allow a 'log' sensor type.  Default is
 %                          'linear'.  For the 'log' type, we convert
@@ -73,12 +73,12 @@ function sensor = sensorSet(sensor,param,val,varargin)
 %      'col gain fpn vector'   - column gain fpn data
 %      'col offset fpn vector' - column offset fpn data
 %      'noise flag'            - Read the documentation in the header of
-%               sensorCompute to understand the different flags. Briefly,
+%               sensorCompute to understand the different flags. Briefly
 %               the default noiseFlag value is 2, which includes photon
 %               noise, read/reset, FPN, analog gain/offset, clipping,
 %               quantization, are all included. noiseFlag = -2 is purely
 %               photon noise.  -1 is no noise at all. Read the
-%               documentation in sensorCompute! 
+%               documentation in sensorCompute!
 %
 %      'reuse noise'        - Generate noise from current seed
 %      'noise seed'         - Saved noise seed for randn()
@@ -106,10 +106,10 @@ function sensor = sensorSet(sensor,param,val,varargin)
 %      'consistency'
 %
 % Sensor motion
-%     'sensor movement'  - A structure with sensor motion information 
+%     'sensor movement'  - A structure with sensor motion information
 %     'movement positions' - Nx2 vector of (x,y) positions in deg
 %     'framesPerPosition'- Exposure times per (x,y) position
-%  
+%
 % Window display
 %     'gamma'           - Display gamma for the window
 %     'scale intensity' - Scale display intensity to max
@@ -157,10 +157,10 @@ end
 
 param = ieParamFormat(param);  % Lower case and remove spaces
 switch lower(param)
-
+    
     case {'name','title'}
         sensor.name = val;
-
+        
     case {'rows','row'}
         % sensor = sensorSet(sensor,'rows',r);
         
@@ -175,7 +175,7 @@ switch lower(param)
         sensor = sensorClearData(sensor);
     case {'cols','col'}
         % sensor = sensorSet(sensor,'cols',c);
-
+        
         % Set sensor cols, but make sure that we align with the proper
         % block size.
         ubCols = sensorGet(sensor,'unit block cols');
@@ -213,7 +213,7 @@ switch lower(param)
         % The sensor data are cleared by these routines, too.
         sensor = sensorSet(sensor,'rows',val(1));
         sensor = sensorSet(sensor,'cols',val(2));
-
+        
         % In the case of human, resetting the size requires rebuilding the
         % cone mosaic - Could be removed and use only ISETBio
         thisName = sensorGet(sensor,'name');
@@ -233,15 +233,15 @@ switch lower(param)
                 sensor = sensorSet(sensor,'pattern',coneType);
             end
         end
-
+        
     case {'fov','horizontalfieldofview'}
         % sensor = sensorSet(sensor,'fov',newFOV,oi);
         %
         % This set is dangerous because it changes the sensor size. A
-        % preferred usage might be: 
+        % preferred usage might be:
         %  [sensor,actualFOV] = sensorSetSizeToFOV(sensor,newFOV,oi);
         %
-        if ~isempty(varargin), oi    = varargin{1}; 
+        if ~isempty(varargin), oi    = varargin{1};
         else, oi = ieGetObject('oi');
         end
         if isempty(oi), error('oi required to set sensor fov'); end
@@ -274,11 +274,11 @@ switch lower(param)
         nWave = sensorGet(sensor,'nWave');
         if length(val(:)) == nWave, val = val(:); end
         sensor.color.irFilter = val;
-
+        
     case {'spectrum'}
         sensor.spectrum = val;
     case {'wavelength','wave','wavelengthsamples'}
-        % sensorSet(sensor,'wave',wave) 
+        % sensorSet(sensor,'wave',wave)
         % The pixel structure wave is, unfortunately, a mirror of the
         % sensor wave. So we have to change them both.  We also have to
         % interpolate the other wavelength-dependent filter functions
@@ -291,14 +291,14 @@ switch lower(param)
         pixel  = sensorGet(sensor,'pixel');        % Adjust pixel wave
         pixel  = pixelSet(pixel,'wave',val(:));
         
-        % Interpolate  other wavelength dependent filters 
+        % Interpolate  other wavelength dependent filters
         if checkfields(sensor,'color')
             cFilters = sensorGet(sensor,'filter spectra');  % Color filters
             cFilters = interp1(oldWave,cFilters,newWave,'linear',0);
             sensor = sensorSet(sensor,'filter spectra',cFilters);
         end
         
-        if checkfields(sensor,'color')    
+        if checkfields(sensor,'color')
             cFilters = sensorGet(sensor,'ir filter');  % IR filter
             cFilters = interp1(oldWave,cFilters,newWave,'linear',0);
             sensor   = sensorSet(sensor,'ir filter',cFilters);
@@ -344,7 +344,7 @@ switch lower(param)
                 sensor.integrationTime = 0;
             end
         end
-
+        
     case {'cds','correlateddoublesampling'}
         sensor.CDS = val;
     case {'vignetting','sensorvignetting','bareetendue','sensorbareetendue','nomicrolensetendue'}
@@ -354,7 +354,7 @@ switch lower(param)
         % the light due to the microlens is calculated from sensor.etendue ./
         % sensor.data.vignetting.
         sensor.data.vignetting = val;
-
+        
     case {'data'}
         sensor.data = val;
     case {'voltage','volts'}
@@ -417,7 +417,7 @@ switch lower(param)
         if isempty(val), sensor.colOffset = val;
         elseif length(val) == sensorGet(sensor,'cols'), sensor.colOffset = val;
         else, error('Bad column offset data');
-        end        
+        end
         % Noise management
     case {'blacklevel', 'zerolevel'}
         % In some cases we have a black level handed to us by the header of
@@ -517,11 +517,11 @@ switch lower(param)
         if sz(2) ~= c*round(sz(2)/c)
             sensor = sensorSet(sensor,'col',c*ceil(sz(2)/c));
         end
-
+        
     case {'pixel','imagesensorarraypixel'}
         sensor.pixel = val;
     case {'pixelsize'}
-        % sensorSet(sensor,'pixel size',2-vectorInmeters); 
+        % sensorSet(sensor,'pixel size',2-vectorInmeters);
         % Adjust the pixel size while maintaining the photodetector fill
         % factor The size is specified in meters. It is supposed to be a
         % 2-vector, but if a single number is sent in we convert it to a
@@ -532,7 +532,7 @@ switch lower(param)
         ff     = pixelGet(pixel,'fill factor');
         sensor = sensorSet(sensor,'pixel',pixel);
         sensor = pixelCenterFillPD(sensor, ff);
-
+        
         % Microlens related
     case {'microlens','ml'}
         sensor.ml = val;
@@ -546,12 +546,12 @@ switch lower(param)
         % because the pixels are usually in microns.  This may have to
         % change to meters at some point for consistency.
         sensor.mlOffset = val;
-
+        
     case {'consistency','sensorconsistency'}
         sensor.consistency = val;
     case {'sensorcompute','sensorcomputemethod'}
         sensor.sensorComputeMethod = val;
-
+        
         % Chart parameters for MCC and other general cases
     case {'chartparameters'}
         % Reflectance chart parameters are stored here.
@@ -574,7 +574,7 @@ switch lower(param)
             app.GammaEditField.Value = num2str(val);
             app.refresh;
         end
-            
+        
     case {'scaleintensity'}
         % Set the button on intensity scale on or off.  Refresh the
         % sensor window.
@@ -588,7 +588,7 @@ switch lower(param)
             end
             app.refresh;
         end
-
+        
         % Human cone structure - Should be removed and used only in ISETBio
     case {'human'}
         % Structure containing information about human cone case
@@ -608,7 +608,7 @@ switch lower(param)
     case {'humanrseed','rseed'}
         % random seed for generating mosaic
         sensor.human.rSeed = val;
-
+        
         % Sensor motion -  used for eye movements or camera shake
     case {'sensormovement','eyemovement'}
         % A structure with sensor motion information
@@ -621,7 +621,7 @@ switch lower(param)
         % This is a vector with some number of exposures for each x,y
         % position (deg)
         sensor.movement.framesPerPosition = val;
-
+        
         
     otherwise
         error('Unknown parameter.');

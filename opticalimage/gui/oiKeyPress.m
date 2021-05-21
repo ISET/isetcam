@@ -7,7 +7,7 @@ function oiKeyPress
 %    ctl-D -- Delete current optical image
 %    ctl-N -- Edit optical image name
 %    ctl-R -- Refresh OI window
-%    
+%
 %  This routine is not called from the command line.
 %
 % Copyright ImagEval Consultants, LLC, 2005.
@@ -26,7 +26,7 @@ switch key
     case {8 127} % Backspace and Delete
     case 3  % ctrl-C
     case 4  % ctrl-D
-       oiWindow('oiDelete',hObject,eventData,handles);
+        oiWindow('oiDelete',hObject,eventData,handles);
     case 5  % ctrl-E
     case 6  % ctrl-F
     case 7  % ctrl-G
@@ -37,13 +37,13 @@ switch key
     case 12  % ctrl-L
     case 13  % ctrl-M
     case 14 % ctrl-N
-        oiWindow('menuEditName_Callback',hObject,eventData,handles) 
+        oiWindow('menuEditName_Callback',hObject,eventData,handles)
     case 15 % ctrl-O
     case 16 % ctrl-P
         
     case 17 % ctrl-Q
     case 18 % ctrl-R
-        oiWindow('oiRefresh',hObject,eventData,handles) 
+        oiWindow('oiRefresh',hObject,eventData,handles)
     case 19 % ctrl-S
     case 20 % ctrl-T
     case 21 % ctrl-U

@@ -5,7 +5,7 @@ function LFbuffer = LFImage2buffer(img,ydim,xdim)
 %    LFbuffer = LFImage2buffer(img,ydim,xdim)
 %
 % Brief Description
-%   
+%
 % Inputs
 %   img - dimensions (yRes,xRes,N)
 %   S,T - microlens array dimensions
@@ -26,11 +26,11 @@ function LFbuffer = LFImage2buffer(img,ydim,xdim)
 %
 % U,V are the size of the microlens, i.e. the number of pixels underneath
 % (typically 9x9)
-% S,T are the number of microlens 
+% S,T are the number of microlens
 
 
 [yRes,xRes,C] = size(img);
-V = yRes/xdim; 
+V = yRes/xdim;
 U = xRes/ydim;
 
 LFbuffer = zeros(xdim,ydim,V,U,C);

@@ -9,9 +9,9 @@ function g = biNormal(xSpread,ySpread,theta,N)
 % by the x and y spreads, (b) rotate the result.
 %
 % Example
-%   g = biNormal(5,10,0,128); imagesc(g), axis image; 
-%   g = biNormal(5,10,45,128); imagesc(g), axis image; 
-%   g = biNormal(5,10,45,16); imagesc(g), axis image; 
+%   g = biNormal(5,10,0,128); imagesc(g), axis image;
+%   g = biNormal(5,10,45,128); imagesc(g), axis image;
+%   g = biNormal(5,10,45,16); imagesc(g), axis image;
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 

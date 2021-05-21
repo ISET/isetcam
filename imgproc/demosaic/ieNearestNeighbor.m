@@ -5,11 +5,11 @@ function [ rgb ] = ieNearestNeighbor(bayer, bPattern)
 %
 % Demosaicking algorithms estimate missing color information by
 % interpolation of the known color information across different color
-% planes.  
+% planes.
 %
 % This algorithm replicates the color information that is closest to the
 % missing information.  This implementation only works for grbg bayer
-% patterns.  
+% patterns.
 %
 %
 % Copyright ImagEval Consultants, LLC, 2005.

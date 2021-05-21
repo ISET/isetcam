@@ -4,7 +4,7 @@ function [siData, wvfP] = wvf2PSF(wvfP, showBar)
 %    [siData, wvfP] = wvf2PSF(wvfP)
 %
 % For examples of how to convert to an optical image, which is perhaps more
-% practical, see wvf2oi.m 
+% practical, see wvf2oi.m
 %
 % For each wavelength in wvf, compute the PSF with proper units and
 % place it in an ISET shift-invariant PSF format that can be used for human
@@ -17,7 +17,7 @@ function [siData, wvfP] = wvf2PSF(wvfP, showBar)
 % The data can be saved in ISET format using ieSaveSIDataFile as in the
 % example below. which loads the standard human data for a particular pupil
 % size. Alternatively, the siData can be converted to an optics structure
-% with the function siSynthetic.  
+% with the function siSynthetic.
 %
 % Example:
 %    pupilMM = 3; zCoefs = wvfLoadThibosVirtualEyes(pupilMM);
@@ -27,8 +27,8 @@ function [siData, wvfP] = wvf2PSF(wvfP, showBar)
 %    [d, wvfP] = wvf2PSF(wvfP);
 %    fName = sprintf('psfSI-%s',wvfGet(wvfP,'name'));
 %    ieSaveSIDataFile(d.psf,d.wave,d.umPerSamp,fName);
-%  
-%    oi = oiCreate('human'); 
+%
+%    oi = oiCreate('human');
 %    optics = siSynthetic('custom',oi,d);
 %    flength = 0.017;  % Human focal length is 17 mm
 %    oi = oiSet(oi,'optics fnumber',flength/pupilMM);
@@ -63,7 +63,7 @@ iSamp = iSamp(:);
 psf = zeros(nPix,nPix,nWave);
 
 if showBar, wBar = waitbar(0,'Creating PSF'); end
-for ii=1:nWave,
+for ii=1:nWave
     if showBar, waitbar(ii/nWave,wBar); end
     thisPSF = wvfGet(wvfP,'psf',wave(ii));  % vcNewGraphWin; imagesc(thisPSF)
     
@@ -91,10 +91,10 @@ end
 % Now, write out a file containing the relevant point spread function
 % data, along with related variables.
 % umPerSample = [0.25,0.25];                % Sample spacing
-% 
+%
 % % Point spread is a little square in the middle of the image
 % h = zeros(128,128); h(48:79,48:79) = 1; h = h/sum(h(:));
 % for ii=1:length(wave), psf(:,:,ii) = h; end     % PSF data
-% 
+%
 % % Save the data
 % ieSaveSIDataFile(psf,wave,umPerSample,'SI-pillBox');

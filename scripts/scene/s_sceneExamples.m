@@ -8,7 +8,7 @@
 % are set when you call the *sceneCreate* function.  This script
 % illustrates how to set thses parameters.  You can learn how to
 % create these scenes by using
-% 
+%
 %   doc('sceneCreate')
 %
 % See also:  s_sceneDemo, sceneCreate, s_sceneFromMultispectral,
@@ -50,7 +50,7 @@ scene = sceneCreate('checkerboard',period,spacing,spectralType);
 sceneWindow(scene); pause(0.1);
 
 %% Single line
-imageSize = 128; 
+imageSize = 128;
 scene = sceneCreate('lined65',imageSize);
 sceneWindow(scene); pause(0.1);
 
@@ -104,4 +104,4 @@ sz = 256; dRange = 1024;
 scene = sceneCreate('exponential intensity ramp',sz,dRange);
 sceneWindow(scene); pause(0.1);
 
-%% 
+%%

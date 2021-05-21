@@ -18,34 +18,34 @@ function psychassert(varargin)
 % 01/06/09 mk Wrote it. Based on the specification of assert in Matlab 7.3.
 
 if exist('assert', 'builtin')==5
-  % Call builtin implementation:
-  builtin('assert', varargin{:});
+    % Call builtin implementation:
+    builtin('assert', varargin{:});
 else
-  % Use our fallback-implementation:
-  if nargin < 1
-      error('Not enough input arguments.');
-  else
-      expression = varargin{1};
-      if ~isscalar(expression) || ~islogical(expression)
-          error('The condition input argument must be a scalar logical.');
-      end
-      
-      % Expression true?
-      if ~expression
-          % Assertion failed:
-          if nargin < 2
-              error('Assertion failed.');
-          else
-              if nargin < 3
-                  emsg = sprintf('%s\n', varargin{2});
-                  error(emsg); %#ok<SPERR>
-              else
-                  emsg = sprintf(varargin{2}, varargin{3:end});
-                  error(emsg); %#ok<SPERR>                  
-              end
-          end
-      end
-  end
+    % Use our fallback-implementation:
+    if nargin < 1
+        error('Not enough input arguments.');
+    else
+        expression = varargin{1};
+        if ~isscalar(expression) || ~islogical(expression)
+            error('The condition input argument must be a scalar logical.');
+        end
+        
+        % Expression true?
+        if ~expression
+            % Assertion failed:
+            if nargin < 2
+                error('Assertion failed.');
+            else
+                if nargin < 3
+                    emsg = sprintf('%s\n', varargin{2});
+                    error(emsg); %#ok<SPERR>
+                else
+                    emsg = sprintf(varargin{2}, varargin{3:end});
+                    error(emsg); %#ok<SPERR>
+                end
+            end
+        end
+    end
 end
 
 return;

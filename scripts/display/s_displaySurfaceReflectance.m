@@ -1,6 +1,6 @@
 %% s_displaySurfaceReflectance
 %
-% Create a meaningful surface reflectance display 
+% Create a meaningful surface reflectance display
 %
 %  Such that an sRGB image will have D65 light and surface reflectance
 %  basis functions.
@@ -62,7 +62,7 @@ rgbPrimaries = rgbPrimaries*(100/peakL);
 d = displaySet(d,'spd',rgbPrimaries);
 peakL = displayGet(d,'peak luminance');
 
-%% Set the gamma of the display 
+%% Set the gamma of the display
 
 % When we read in the image we will be applying the gamma correction for
 % some display when we compute the radiance.  Maybe we should be using

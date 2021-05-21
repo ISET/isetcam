@@ -12,12 +12,12 @@ function [responsivity,sFactor] = ieResponsivityConvert(responsivity, wave, meth
 %   ISET uses photons as the basis for nearly all response calculations.
 %
 %   But some important sensors are defined with respect to signal energy.
-%   The most important of these are the XYZ sensors. These are specified 
+%   The most important of these are the XYZ sensors. These are specified
 %   with respect to energy. It is also the case the the human cone
-%   responses are specified with respect to energy units.  
+%   responses are specified with respect to energy units.
 %
 %   In some cases in the code, we convert the input signal in photons to
-%   energy and use the standard XYZ values. 
+%   energy and use the standard XYZ values.
 %
 %   In other cases, however, we have many inputs and it is easier to
 %   convert the specification of the XYZ functions into a form that is
@@ -30,14 +30,14 @@ function [responsivity,sFactor] = ieResponsivityConvert(responsivity, wave, meth
 %
 %      response = transE'*inE = (transE'*(1/E2Q)) * (E2Q*inE) = transQ'*inQ
 %
-%    We can see that transQ is related to transE as transQ' = transE' * (1/E2Q).  
+%    We can see that transQ is related to transE as transQ' = transE' * (1/E2Q).
 %
 %   This routine converts responsivities measured in energy units (respE) to
 %   responsivities appropriate for photons calculations (respQ).
 %
 %   These issues are handled explicitly in ieLuminanceFromEnergy,
 %   ieLuminanceFromPhotons and ieXYZFromEnergy
-%   
+%
 %   To specify filter transmissivities, it is not necessary to pay attention
 %   to the input signal units (photons or energy).  Filters transmit a
 %   fraction of the photons and they transmit the same fraction of the
@@ -55,7 +55,7 @@ function [responsivity,sFactor] = ieResponsivityConvert(responsivity, wave, meth
 %       conesE = humanCones('stockmanAbs',wave);
 %       [conesP,sFactor] = ieFilterConvert(conesE,wave,'e2q');
 %       % These two calculations produce equal results
-%       vP = conesP'*signalPhotons(:)  
+%       vP = conesP'*signalPhotons(:)
 %       vE = conesE'*signalEnergy(:)
 %
 % See also:  ieLuminanceFromEnergy,

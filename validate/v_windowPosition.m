@@ -5,7 +5,7 @@
 % See also
 %   s_initWindow
 
-%% 
+%%
 ieInit
 
 %%

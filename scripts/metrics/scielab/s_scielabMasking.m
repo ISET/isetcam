@@ -1,13 +1,13 @@
 %% s_scielabMasking
 %
 % In s_scielabMTF, we calculate the delta E between
-% a uniform patch and a targets with different frequencies at 50% contrast.  
+% a uniform patch and a targets with different frequencies at 50% contrast.
 % Plotting delta E as function of target frequency gives us an MTF
 %
-% In this script,we keep the frequency and contrast of a background (mask) constant and 
+% In this script,we keep the frequency and contrast of a background (mask) constant and
 % increase the contrast of the target until we reach a fixed delta E value
 % (e.g. DE = 5).  We record this as contrast treshold and plot it as a
-% function of the background contrast 
+% function of the background contrast
 
 %
 % Copyright Imageval 2012
@@ -15,7 +15,7 @@
 %%  Initialize ISET and the parameters
 ieInit
 
-%% 
+%%
 % List of frequencies to test
 fList = [2,4,8,16,32];
 nFreq = length(fList);
@@ -31,12 +31,12 @@ dE = ones(nTargetContrast,1);
 dES = ones(nTargetContrast,1);
 
 %% fixed parameters
-    parms.ph = 0; parms.ang= 0;
-    parms.row = 128; parms.col = 128;
-    parms.GaborFlag=0;
-%% could vary frequency later 
- parms.freq = fList(2);
-%% 
+parms.ph = 0; parms.ang= 0;
+parms.row = 128; parms.col = 128;
+parms.GaborFlag=0;
+%% could vary frequency later
+parms.freq = fList(2);
+%%
 maskContrast = 0.8;
 parms.contrast = maskContrast;
 Mask = sceneCreate('harmonic',parms);

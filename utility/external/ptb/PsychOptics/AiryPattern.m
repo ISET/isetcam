@@ -1,7 +1,7 @@
 function intensity = AiryPattern(angles,pupil,nm)
 %AIRYPATTERN  Comptue the radial Airy pattern
 %   intensity = AiryPattern((angles,pupil,nm)
-% 
+%
 %   Compute the radial Airy pattern for diffraction by
 %   a circular aperature.
 %
@@ -29,5 +29,5 @@ besselarg = k*a*sin(angles);
 intensity = ones(size(angles));
 index = find(besselarg ~= 0);
 if (~isempty(index))
-		intensity(index) = abs((2*besselj(1,besselarg(index))./besselarg(index))).^2;
+    intensity(index) = abs((2*besselj(1,besselarg(index))./besselarg(index))).^2;
 end

@@ -6,7 +6,7 @@ function [xGrid,yGrid,hRes] = rtPSFGrid(oi,units)
 % The PSF is sampled at a high resolution (128x128) 0.25 micron spacing.
 % Ordinarly, the optical image is sampled at a much lower resolution.  We
 % return the number of grid samples at the optical image resolution to use
-% when adding a ray-trace PSF into the output image 
+% when adding a ray-trace PSF into the output image
 %
 % Called by rtPSFApply
 %
@@ -30,7 +30,7 @@ xGrid1 = 0:hRes(1):psfSupportX(end);
 tmp    = -1*fliplr((0:hRes(1):abs(psfSupportX(1))));
 xGrid1 = [tmp(1:(end-1)), xGrid1];
 
-yGrid1 = (0:hRes(2):psfSupportY(end)); 
+yGrid1 = (0:hRes(2):psfSupportY(end));
 tmp    = -1*fliplr((0:hRes(2):abs(psfSupportY(1))));
 yGrid1 = [tmp(1:(end-1)), yGrid1];
 

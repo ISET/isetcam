@@ -3,13 +3,13 @@ function nRemaining = vcDeleteSomeObjects(objType,deleteList)
 %
 %    nRemaining = vcDeleteSomeObjects(objType,[deleteList])
 %
-%  The ISET object types that can be deleted by this call are: 
+%  The ISET object types that can be deleted by this call are:
 %    SCENE, OPTICS, VCIMAGE, ISA.
 %
 %  If deleteList is empty or missing, a list dialog appears for the user to
 %  choose the entries.  The list is populated by the object names.
 %
-%  The number of remaining objects of objType is returned. 
+%  The number of remaining objects of objType is returned.
 %
 % Example:
 %   vcDeleteSomeObjects('SCENE'); sceneWindow();

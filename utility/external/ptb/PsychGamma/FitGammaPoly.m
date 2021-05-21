@@ -15,23 +15,23 @@ fit_out = zeros(mOut,nOut);
 index = find(measurements ~= 0.0);
 
 if (~isempty(index))
-	useIndex = index(1);
-	useIn = values_in(useIndex:mIn,1);
-	useMeas = measurements(useIndex:mIn,1);
-	
-	% Get initial values
-	x0 = InitialXPoly(useIn,useMeas);
-	x = x0;
-		
-	% Compute fit values and error to data for return
-	zeroThresh = values_in(useIndex);
-	fitOutIndex = find(values_out >= zeroThresh);
-	fitInIndex = find(values_in >= zeroThresh);  
-	fit_out(fitOutIndex) = ComputeGammaPoly(x,values_out(fitOutIndex));
-	fit_in = ComputeGammaPoly(x,values_in(fitInIndex));
-	err = ComputeFSSE(fit_in,measurements(fitInIndex));
+    useIndex = index(1);
+    useIn = values_in(useIndex:mIn,1);
+    useMeas = measurements(useIndex:mIn,1);
+    
+    % Get initial values
+    x0 = InitialXPoly(useIn,useMeas);
+    x = x0;
+    
+    % Compute fit values and error to data for return
+    zeroThresh = values_in(useIndex);
+    fitOutIndex = find(values_out >= zeroThresh);
+    fitInIndex = find(values_in >= zeroThresh);
+    fit_out(fitOutIndex) = ComputeGammaPoly(x,values_out(fitOutIndex));
+    fit_in = ComputeGammaPoly(x,values_in(fitInIndex));
+    err = ComputeFSSE(fit_in,measurements(fitInIndex));
 else
-	x = [];
-	err = 0.0;
+    x = [];
+    err = 0.0;
 end
 

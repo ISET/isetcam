@@ -14,7 +14,7 @@ function [data,newFilterNames,fileData] = ieReadColorFilter(wave,fname)
 % user is asked to adjust the data.
 %
 % If the user presses Cancel in the uigetfile interface, the returned
-% variables are set to null. 
+% variables are set to null.
 %
 % In some cases, users add additional data to the file for user-defined
 % reasons.  All of the variables in the data file are returned in the
@@ -36,7 +36,7 @@ function [data,newFilterNames,fileData] = ieReadColorFilter(wave,fname)
 
 if ieNotDefined('wave'), wave = 400:10:700; end
 if ieNotDefined('fname')
-    fname = vcSelectDataFile('sensor'); 
+    fname = vcSelectDataFile('sensor');
     if isempty(fname), data = []; newFilterNames = []; return; end
 end
 

@@ -2,9 +2,9 @@ function foreWeight=GratingNull(device,message,forePart,blendPeriodPix,foreColor
 % foreWeight=GratingNull(device,message,forePart,blendPeriodPix,[foreColor],[backColor],[viewingDistanceM],[dpi])
 % GratingNull obtains visual matches that allow calibration of a video monitor's gamma.
 % Finds the "matchColor" (dac triplet) that produces a visual match to a two-color optical mixture
-% of foreColor and backColor of which the proportion forePart is the 
-% "foreground" color. The matchColor is a weighted average, with the weight adjusted by the viewer,
-% of foreColor and backColor. 
+% of foreColor and backColor of which the proportion forePart is the
+% "foreground" color. The matchColor is a weighted average, with the weight adjusted by the viewer
+% of foreColor and backColor.
 % matchColor=foreWeight*foreColor+(1-foreWeight)*backColor;
 % The program returns foreWeight.
 % The blend grating is very fine (normally 60 c/deg).
@@ -21,36 +21,36 @@ function foreWeight=GratingNull(device,message,forePart,blendPeriodPix,foreColor
 % 5/28/96 dgp updated to use new GetMouse, that flushes mouse events
 % 6/1/97  dgp updated to use FlushEvents and CopyWindows, which is MUCH faster.
 % 6/1/97  dgp Added 'message' argument, to allow indication of progress, e.g. '1 of 6'.
-% 8/14/97 dhb Make call to ischar conditional on Version 5, since it fails in version 4. 
+% 8/14/97 dhb Make call to ischar conditional on Version 5, since it fails in version 4.
 % 8/16/97	dgp	Changed "text" to "theText" to avoid conflict with TEXT function.
 % 4/10/98 dhb Change TIMER to WaitSecs.
 % 7/14/99 dgp At least some parts of VisualGammaDemo assume 8-bit pixelsize, so i'm forcing it here.
-% 4/06/02 awi  -Check all elements of the new multi-element button vector returned   
+% 4/06/02 awi  -Check all elements of the new multi-element button vector returned
 %               by GetMouse on Windows.
 %              -Replace Chicago font with Arial because it's available on both Mac and Windows
 
 PsychDefaultSetup(1);
 
 if sscanf(version,'%f',1)<5
-	if nargin<4 || nargin>8 || nargout>1 || ~ischar(message)
-		error('Usage:	foreWeight=GratingNull(device,message,forePart,blendPeriodPix,[foreColor],[backColor],[viewingDistanceM],[dpi])');
-	end
+    if nargin<4 || nargin>8 || nargout>1 || ~ischar(message)
+        error('Usage:	foreWeight=GratingNull(device,message,forePart,blendPeriodPix,[foreColor],[backColor],[viewingDistanceM],[dpi])');
+    end
 else
-	if nargin<4 || nargin>8 || nargout>1 || ~ischar(message)
-		error('Usage:	foreWeight=GratingNull(device,message,forePart,blendPeriodPix,[foreColor],[backColor],[viewingDistanceM],[dpi])');
-	end
+    if nargin<4 || nargin>8 || nargout>1 || ~ischar(message)
+        error('Usage:	foreWeight=GratingNull(device,message,forePart,blendPeriodPix,[foreColor],[backColor],[viewingDistanceM],[dpi])');
+    end
 end
 if nargin<8
-	dpi=66;
+    dpi=66;
 end
 if nargin<7
-	distanceM=0.0254*blendPeriodPix*57*dpi/60;
+    distanceM=0.0254*blendPeriodPix*57*dpi/60;
 end
 if nargin<6
-	backColor=[0 0 0];
+    backColor=[0 0 0];
 end
 if nargin<5
-	foreColor=[255 255 255];
+    foreColor=[255 255 255];
 end
 pixelDeg=57/(dpi*distanceM/0.0254);
 % 7/14/99 dgp At least some parts of VisualGammaDemo assume 8-bit pixelsize, so i'm forcing it here.
@@ -69,9 +69,9 @@ Screen(window,'SetClut',clut);
 % Create a 3 c/deg squarewave grating in which even bars are a blend of
 % foreColor and backColor, and
 % odd bars are uniform and viewer-adjustable, to match the even bars.
-% The spatial frequency of the grating (3 c/deg) is chosen to 
+% The spatial frequency of the grating (3 c/deg) is chosen to
 % optimize visual contrast sensitivity.
-% The blend is produced at the highest possible spatial 
+% The blend is produced at the highest possible spatial
 % frequency, alternating lines vertically, rather than pixels
 % horizontally, to minimize retinal contrast, while staying well
 % below the display's video bandwidth.
@@ -92,9 +92,9 @@ Screen(window,'PutImage',pure,barRect2);
 barRect=UnionRect(barRect,barRect2);
 barRect2=OffsetRect(barRect,RectWidth(barRect),0);
 while RectWidth(barRect)<RectWidth(screenRect)
-	Screen('CopyWindow',window,window,barRect,barRect2);
-	barRect=UnionRect(barRect,barRect2);
-	barRect2=OffsetRect(barRect,RectWidth(barRect),0);
+    Screen('CopyWindow',window,window,barRect,barRect2);
+    barRect=UnionRect(barRect,barRect2);
+    barRect2=OffsetRect(barRect,RectWidth(barRect),0);
 end
 Screen(window,'FillRect',0,OffsetRect(testRect,RectWidth(testRect),0))
 
@@ -113,7 +113,7 @@ textRect=SetRect(0,0,Screen(window,'TextWidth',theText(2,:)),size(theText,1)*s);
 textRect=CenterRect(textRect,screenRect);
 textRect=OffsetRect(textRect,RectWidth(screenRect)/4+20/4,0);
 for i=1:size(theText,1)
-	Screen(window,'DrawText',theText(i,:),textRect(RectLeft),textRect(RectTop)+s*i,255);
+    Screen(window,'DrawText',theText(i,:),textRect(RectLeft),textRect(RectTop)+s*i,255);
 end
 
 % animate
@@ -128,22 +128,22 @@ Screen(window,'FillRect',0,sliderRect);
 Screen(window,'FrameRect',255,sliderRect);
 Screen('Flip', window, [], 1);
 while 1
-	[x,y,button]=GetMouse;
-	foreWeight=(sliderRect(bottom)-y)/RectHeight(sliderRect);
-	Screen(window,'SetClut',foreWeight*foreColor+(1-foreWeight)*backColor,1);
-	dy=y-(knobRect(top)+knobRect(bottom))/2;
-	residue=knobRect;
-	if dy>0
-		residue(bottom)=residue(top)+dy;
-	else
-		residue(top)=residue(bottom)+dy;
-	end
-	knobRect=OffsetRect(knobRect,0,dy);
-	Screen(window,'FillRect',0,residue);
-	Screen(window,'FillRect',255,knobRect);
+    [x,y,button]=GetMouse;
+    foreWeight=(sliderRect(bottom)-y)/RectHeight(sliderRect);
+    Screen(window,'SetClut',foreWeight*foreColor+(1-foreWeight)*backColor,1);
+    dy=y-(knobRect(top)+knobRect(bottom))/2;
+    residue=knobRect;
+    if dy>0
+        residue(bottom)=residue(top)+dy;
+    else
+        residue(top)=residue(bottom)+dy;
+    end
+    knobRect=OffsetRect(knobRect,0,dy);
+    Screen(window,'FillRect',0,residue);
+    Screen(window,'FillRect',255,knobRect);
     Screen('Flip', window, [], 1);
-
-	if any(button)break;end;
-	WaitSecs(.01); % make sure we miss some frames, so mouse gets updated
+    
+    if any(button)break;end;
+    WaitSecs(.01); % make sure we miss some frames, so mouse gets updated
 end
 Screen('CloseAll');

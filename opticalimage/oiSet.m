@@ -24,9 +24,9 @@ function oi = oiSet(oi,parm,val,varargin)
 %   oiSet(oi,'optics param',val) where param is the optics parameter.
 %
 % Starting April 2014, the new synatx is available to replace the older
-% style  
+% style
 %
-%    optics = oiGet(oi,'optics'); 
+%    optics = oiGet(oi,'optics');
 %    optics = opticsSet(optics,'param',val);
 %    oi = oiSet(oi,'optics',optics);
 %
@@ -60,7 +60,7 @@ function oi = oiSet(oi,parm,val,varargin)
 % Optics
 %      {'optics'}  - Main optics structure
 %      {'optics model'} - Optics computation
-%         One of raytrace, diffractionlimited, or shiftinvariant 
+%         One of raytrace, diffractionlimited, or shiftinvariant
 %         Spaces and case variation is allowed, i.e.
 %         oiSet(oi,'optics model','diffraction limited');
 %         The proper data must be loaded to run oiCompute.
@@ -83,10 +83,10 @@ function oi = oiSet(oi,parm,val,varargin)
 %      {'depth map'}         - Distance of original scene pixel (meters)
 %
 % Some OI rendered by ISET3D have information about the spatial-spectral
-% illuminant 
+% illuminant
 %    'illuminant'           - Illuminant structure
 %      'illuminant Energy'  - Illuminant spd in energy is stored W/sr/nm/sec
-%      'illuminant Photons' - Photons are converted to energy and stored 
+%      'illuminant Photons' - Photons are converted to energy and stored
 %      'illuminant Comment' - Comment
 %      'illuminant Name'    - Identifier for illuminant.
 %
@@ -116,7 +116,7 @@ function oi = oiSet(oi,parm,val,varargin)
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 %
-% See also:  oiGet, oiCompute, wvf2oi, wvfCreate, 
+% See also:  oiGet, oiCompute, wvf2oi, wvfCreate,
 %            rt<> (Ray Trace functions)
 
 % Examples:
@@ -157,8 +157,8 @@ elseif isequal(oType,'wvf')
             oi.wvf = wvfSet(oi.wvf,parm,val,varargin{1},varargin{2});
         end
         % Should we always do this here before returning?
-         wvf = wvfComputePSF(oi.wvf);
-         oi = wvf2oi(wvf);
+        wvf = wvfComputePSF(oi.wvf);
+        oi = wvf2oi(wvf);
         return;
     end
 elseif isempty(parm)
@@ -211,28 +211,28 @@ switch parm
     case {'distance' }
         % Positive for scenes, negative for optical images
         oi.distance = val;
-
+        
     case {'wangular','widthangular','hfov','horizontalfieldofview','fov'}
         % Angular field of view for the OI width.  In degrees.
         oi.wAngular = val;
-
+        
     case 'magnification'
         % Optical images have other mags calculated from the optics.
         evalin('caller','mfilename')
         warndlg('Setting oi magnification.  Bad idea.')
         oi.magnification = val;
-
+        
     case {'optics','opticsstructure'}
         oi.optics = val;
-
+        
     case {'data','datastructure'}
         oi.data = val;
-
+        
     case {'photons'}
         % oiSet(oi,'photons',val)
         % Default is to store as single.
         %
-        if ~(isa(val, 'double') || isa(val, 'single') || isa(val, 'gpuArray')),
+        if ~(isa(val, 'double') || isa(val, 'single') || isa(val, 'gpuArray'))
             error('Photons must be type double / single / gpuArray');
         end
         
@@ -261,10 +261,10 @@ switch parm
             otherwise
                 error('Unsupported bit depth %f',bitDepth);
         end
-
+        
         % Clear out derivative luminance/illuminance computations
         oi = oiSet(oi,'illuminance', []);
-
+        
     case {'datamin','dmin'}
         % Only used by compressed photons.  Not by user.
         oi.data.dmin = val;
@@ -275,11 +275,11 @@ switch parm
         % Only used by compressed photons.  Not by user.
         oi.data.bitDepth = val;
         % oi = oiClearData(oi);
-
+        
     case {'illuminance','illum'}
         % The value is stored for efficiency.
         oi.data.illuminance = val;
-
+        
     case {'meanillum','meanilluminance'}
         % Set the whole illuminance
         % The mean will be derived in oiGet.
@@ -295,13 +295,13 @@ switch parm
         % If there are photon data, we interpolate the data as well as
         % setting the wavelength. If there are no photon data, we just set
         % the wavelength.
-
+        
         if ~checkfields(oi,'data','photons') || isempty(oi.data.photons)
             oi.spectrum.wave = val(:);
         elseif ~isequal(val, oiGet(oi, 'wave'))
             oi = oiInterpolateW(oi, val);
         end
-
+        
         % Optical methods
     case {'opticsmodel'}
         % oi = oiSet(oi,'optics model', 'ray trace');
@@ -310,10 +310,10 @@ switch parm
         % Spacing and case variation is allowed.
         val = ieParamFormat(val);
         oi.optics.model = val;
-
+        
         % Glass diffuser properties
     case {'diffusermethod'}
-        % This determines calculation 
+        % This determines calculation
         % 0 - skip, 1 - gaussian blur, 2 - birefringent
         % We haven't set up the interface yet (12/2009)
         oi.diffuser.method = val;
@@ -321,7 +321,7 @@ switch parm
         % Should be in meters.  The value is set for shift invariant blur.
         % The value for birefringent could come from here, too.
         oi.diffuser.blur = val;
-
+        
         % For the 'wvf' model case, under development
     case {'zernike'}
         % Store the Zernike polynomial coefficients.  Maybe we should
@@ -334,7 +334,7 @@ switch parm
         % wvfSet/wvfGet.
         oi.wvf = val;
         
-        % Precomputed shift-variant (sv) psf and related parameters          
+        % Precomputed shift-variant (sv) psf and related parameters
     case {'psfstruct','shiftvariantstructure'}
         % This structure
         oi.psf = val;
@@ -342,7 +342,7 @@ switch parm
         % The precomputed shift-variant psfs
         oi.psf.psf = val;
     case {'psfanglestep','psfsampleangles'}
-        % Vector of sample angles  
+        % Vector of sample angles
         oi.psf.sampAngles= val;
     case {'psfopticsname','raytraceopticsname'}
         % Name of the optics data are derived from
@@ -354,12 +354,12 @@ switch parm
         % Wavelengths for this calculation. Should match the optics, I
         % think.  Not sure why it is duplicated.
         oi.psf.wavelength = val;
-
+        
     case 'depthmap'
         % Depth map, usuaully inherited from scene, in meters
         % oiSet(oi,'depth map',dMap);
         oi.depthMap = val;
-       
+        
         % Chart parameters for MCC and other cases
     case {'chartparameters'}
         % Reflectance chart parameters are stored here.
@@ -374,7 +374,7 @@ switch parm
         % Used for ROI display and management.
         oi.chartP.currentRect = val;
         
-    % Illuminant (spatial-spectral) for ISET3D case
+        % Illuminant (spatial-spectral) for ISET3D case
     case {'illuminant'}
         % The whole structure
         oi.illuminant = val;
@@ -382,7 +382,7 @@ switch parm
         % This set changes the illuminant, but it does not change the
         % radiance SPD.  Hence, changing the illuminant (implicitly)
         % changes the reflectance. This might not be what you want.  If you
-        % want to change the scene as if it is illuminanted differently,
+        % want to change the scene as if it is illuminanted differently
         % use the function: sceneAdjustIlluminant()
         
         % The data can be a vector (one SPD for the whole image) or they

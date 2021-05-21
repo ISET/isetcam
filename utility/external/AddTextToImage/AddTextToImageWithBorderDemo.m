@@ -14,8 +14,8 @@ Iterations = 200;
 Strings = {'text','image'};
 
 FontNames = {'Arial','Times New Roman','Comic Sans MS','Century Gothic',...
-         'Script MT Bold','Courier New','OCR A Extended','Verdana',...
-         'Gill Sans MT','Calibri','Cambria'};
+    'Script MT Bold','Courier New','OCR A Extended','Verdana',...
+    'Gill Sans MT','Calibri','Cambria'};
 
 FontSizes = 10:20:150;
 

@@ -4,7 +4,7 @@ function iFormat = vcGetImageFormat(data,wave)
 %  iFormat = vcGetImageFormat(data,wave)
 %
 % All 3-d arrays are RGB format, and the length of wave must equal the 3rd
-% dimension. 
+% dimension.
 %
 % The algorithm is this:  If DATA is a 3D matrix and the length of wave
 % matches the third dimension, then iFormat is RGB.
@@ -38,7 +38,7 @@ elseif ismatrix(data) && (length(wave) == size(data,2))
 elseif length(data) == length(wave)
     % The data is a vector with the same number of entries as wave.  We
     % assume this is XW for one point, and we make sure the data are
-    % formatted so things will 
+    % formatted so things will
     iFormat = 'XW';
 else
     iFormat = [];

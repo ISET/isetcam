@@ -20,7 +20,7 @@ function [noisyImage,theNoise] = noiseShot(ISA)
 %
 % Examples:
 %    [noisyImage,theNoise] = noiseShot(vcGetObject('sensor'));
-%    imagesc(theNoise); colormap(gray)
+%    imagesc(theNoise); colormap(gray(64))
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 

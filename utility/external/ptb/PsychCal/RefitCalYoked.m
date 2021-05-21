@@ -26,15 +26,15 @@ DescribeMonCal(cal);
 % Provide information about gamma measurements
 % This is probably not method-independent.
 fprintf('Gamma measurements were made at %g levels\n',...
-	size(cal.rawdata.rawGammaInput,1));
+    size(cal.rawdata.rawGammaInput,1));
 fprintf('Gamma table available at %g levels\n',...
-	size(cal.gammaInput,1));
+    size(cal.gammaInput,1));
 
 % Get yoked method
 oldMethod = cal.describe.yokedmethod;
 yokedMethod = input(sprintf('Enter yoked method (0 for not yoked): [%d]: ',cal.describe.yokedmethod));
 if (isempty(fitType))
-	cal.describe.yokedmethod = oldMethod;
+    cal.describe.yokedmethod = oldMethod;
 end
 
 % Fit
@@ -49,7 +49,7 @@ CalibratePlotGamma(cal,figure(2));
 % Option to save the refit file
 saveIt = input('Save new fit data (0->no, 1 -> yes)? [0]: ');
 if (isempty(saveIt))
-	saveIt = 0;
+    saveIt = 0;
 end
 if (saveIt)
     % Prompt for new file name if we're saving to a name.

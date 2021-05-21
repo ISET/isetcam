@@ -15,5 +15,5 @@ IsInt = isinteger(LF);
 LF = cast(LF, Precision);
 
 if( IsInt )
-	LF = LF ./ cast(intmax(OrigClass), Precision);
+    LF = LF ./ cast(intmax(OrigClass), Precision);
 end

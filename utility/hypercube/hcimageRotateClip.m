@@ -4,11 +4,11 @@ function [cImg, cPixels] = hcimageRotateClip(hc,clipPrctile,nRot)
 %  hc:          Hypercube image data, uint16 usually
 %  clipPrctile:  0-100, percentile for clipping
 %  nRot:         Number of counter-clockwise rotation steps, usually 0 or 1.
-%  
+%
 % Example:
 %
-%  
-%  clipPrctile = 99.9; nRot = 1; 
+%
+%  clipPrctile = 99.9; nRot = 1;
 %  [hc,cPixels] = hcimageRotateClip(img,clipPrctile,nRot);
 %  vcNewGraphWin; imagesc(cPixels)
 %
@@ -45,7 +45,7 @@ for ii=1:w
 end
 close(h)
 
-% subplot(1,2,1), imagesc(tmp); axis image; colormap(gray);
-% subplot(1,2,2), imagesc(foo); axis image; colormap(gray);
-% 
+% subplot(1,2,1), imagesc(tmp); axis image; colormap(gray(64));
+% subplot(1,2,2), imagesc(foo); axis image; colormap(gray(64));
+%
 return

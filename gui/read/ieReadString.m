@@ -1,7 +1,7 @@
-function ieString = ieReadString(prompt,defString) 
+function ieString = ieReadString(prompt,defString)
 % Query the user for a string.
 %
-%    newFilterName = ieReadString(prompt,defString)     
+%    newFilterName = ieReadString(prompt,defString)
 %
 % If the user cancels,  the returned string is empty.
 %

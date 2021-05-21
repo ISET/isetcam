@@ -53,7 +53,7 @@ classdef cpCamera < handle
             %obj.focusMode = options.focusMode;
             %obj.focusParam = options.focusParam;
             
-            if ~isempty(options.imageName) 
+            if ~isempty(options.imageName)
                 obj.isp.ip = ipSet(obj.isp.ip, 'name', options.imageName);
             end
             
@@ -106,7 +106,7 @@ classdef cpCamera < handle
             % image from the sensor
             ourPicture = obj.computePhoto(sensorImages, intent, ...
                 'insensorIP', options.insensorIP, 'scene', aCPScene, ...
-                'focusDistances', focusDistances);            
+                'focusDistances', focusDistances);
             
         end
         
@@ -123,12 +123,12 @@ classdef cpCamera < handle
             end
             ourPhoto = obj.isp.ispCompute(sensorImages, intent, 'insensorIP', ...
                 options.insensorIP, 'scene', options.scene, ...
-                'focusDistances',options.focusDistances); 
+                'focusDistances',options.focusDistances);
         end
-       
+        
         % A key element of modern computational cameras is their ability
-        % to use statistics from the scene (in this case via preview 
-        % image(s) to plan how many frames to capture and with what settings. 
+        % to use statistics from the scene (in this case via preview
+        % image(s) to plan how many frames to capture and with what settings.
         function [expTimes] = planCaptures(obj, previewImages, intent)
             switch intent
                 case {'Auto', 'Portrait', 'Scenic', 'Action', ...
@@ -136,7 +136,7 @@ classdef cpCamera < handle
                     % split these apart as they are implemented
                     % we might also want to add more "techie" intents
                     
-                    % For now assume we're a very simple camera!                    
+                    % For now assume we're a very simple camera!
                     % And we can do AutoExposure to get our time.
                     % We also only use a single preview image
                     if isequal(previewImages{1}.type, 'opticalimage')

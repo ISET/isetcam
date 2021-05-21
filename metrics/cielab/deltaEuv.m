@@ -8,14 +8,14 @@ function dEuv = deltaEuv(xyz1,xyz2,whitePnt)
 % XYZ data sets.
 %
 % ARGUMENTS
-%   xyz matrices are either XW  or RGB Image format.  
-%      If the data are XW format, then they a are (n*m, 3) matrices. 
-%      In RGB image format they are 3D arrays of n x m x 3.  
+%   xyz matrices are either XW  or RGB Image format.
+%      If the data are XW format, then they a are (n*m, 3) matrices.
+%      In RGB image format they are 3D arrays of n x m x 3.
 %   whitePnt is the white point for the CIELAB calculation.  1x3 or 3x1 is OK.
-% 
+%
 % RETURNS
 %    dEuv is an array of delta E values. It has the same format as the
-%    input xyz (XW or RGB). 
+%    input xyz (XW or RGB).
 %
 % Example:
 %
@@ -36,7 +36,7 @@ elseif ndims(xyz1) == 2
     end
 end
 
-if iscell(whitePnt) 
+if iscell(whitePnt)
     a = xyz2luv(xyz1,whitePnt{1});
     b = xyz2luv(xyz2,whitePnt{2});
 else

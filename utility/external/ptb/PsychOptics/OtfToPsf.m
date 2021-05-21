@@ -13,7 +13,7 @@ function [xGridMinutes,yGridMinutes,psf] = OtfToPsf(xSfGridCyclesDeg,ySfGridCycl
 %    samples. Spatial frequency (0,0) should be at location floor(n/2)+1 in
 %    each dimension.  The PSF is returned with position (0,0) at location
 %    floor(n/2)+1 in each dimension.  This is the form we mostly want to
-%    look at and use.  
+%    look at and use.
 %
 %    The OTF is assummed to have the DC term in the center poistion,
 %    floor(n/2)+1 of the passed matrix.  If you have your hands on an OTF
@@ -28,7 +28,7 @@ function [xGridMinutes,yGridMinutes,psf] = OtfToPsf(xSfGridCyclesDeg,ySfGridCycl
 %    complain (throw an error) if it is not, to reasonable numerial
 %    precision. If it seems OK, we make sure it is real.
 %
-%    We also make sure that the returned psf is all postive and sums to 
+%    We also make sure that the returned psf is all postive and sums to
 %    1.  In some cases, we found that there were small negative values
 %    and after setting these to zero renormalization was needed.
 %
@@ -66,7 +66,7 @@ function [xGridMinutes,yGridMinutes,psf] = OtfToPsf(xSfGridCyclesDeg,ySfGridCycl
 % See also: PsfToOtf, PsychOpticsTest.
 
 % History:
-%   01/26/18  dhb 
+%   01/26/18  dhb
 %   03/31/18  dhb   Document key/value pair added by someone else.
 %             dhb   Add key/value pair for negative value tolerance.
 %                   This is now 1e-3 rather than 1e-10

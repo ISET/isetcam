@@ -1,5 +1,5 @@
 function [otf, sampleSFmm] = opticsDefocusCore(optics,sampleSF,D)
-%Compute the optical transfer function for dioptric power D0 and defocus D 
+%Compute the optical transfer function for dioptric power D0 and defocus D
 %
 %   [otf, sampleSFmm] = opticsDefocusCore(optics,sampleSF,D)
 %
@@ -38,15 +38,15 @@ D0 = opticsGet(optics,'diopters','m');
 % The explanation for this formula is in Marimont and Wandell, Appendix C:
 % Converting from w20 to Defocus in diopters
 w20 = (p^2/2)*(D0.*D)./(D0+D);
-% plot(wave,w20); 
+% plot(wave,w20);
 
 % Re-write so we can get sampleSF in cycles/mm directly without these two
 % steps.
 c = opticsGet(optics,'deg per dist','m');
 % 1/(atan(deg2rad(1)) * (1/D0));  %  deg per meter (rad/meter)
 
-% The units are: 
-% cycles/meter = (cycles/deg) * (deg/meter) 
+% The units are:
+% cycles/meter = (cycles/deg) * (deg/meter)
 cSF = sampleSF * c;
 
 % The formulae in the opticsDefocusedMTF appears to have a problem handling
@@ -81,10 +81,10 @@ for ii = 1:length(lambda)
     % Appendix B from Marimont and Wandell
     % Compute the reduced spatial frequency (0,2)
     %            m *        (m/m) *    cy/m  - Dimensionless in the end
-    s(ii,:) = (lambda(ii) /(D0*p)) * cSF; 
+    s(ii,:) = (lambda(ii) /(D0*p)) * cSF;
     
     % Methods:  Marimont and Wandell
-    % Related to the defocus specified by w20, which in turn depends on p,
+    % Related to the defocus specified by w20, which in turn depends on p
     % D and D0.
     alpha(ii,:) = (4*pi./(lambda(ii))).*w20(ii).*abs(s(ii,:));
     

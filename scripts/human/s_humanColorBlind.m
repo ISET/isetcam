@@ -1,5 +1,5 @@
 %% s_HumanColorBlind
-% 
+%
 % Render images using the Brettell, Vienot, Mollon 1997
 % method for showing appearance to the color blind.
 %
@@ -10,7 +10,7 @@
 
 %% Create an image and get the XYZ of the image and white
 
-scene    = sceneCreate; 
+scene    = sceneCreate;
 imgXYZ   = sceneGet(scene,'xyz');
 whiteXYZ = sceneGet(scene,'illuminant xyz');
 vcAddAndSelectObject(scene); sceneWindow
@@ -30,7 +30,7 @@ end
 % Brettell algorithm, the data are in a bi-plane, not a single plane.  In
 % this case, the biplane is onlyk visible for the tritan data, not the
 % protan or deutan data.
-vcNewGraphWin; 
+vcNewGraphWin;
 for cbType = 1:3
     lms =  xyz2lms(imgXYZ, cbType, whiteXYZ);
     cbXYZ = imageLinearTransform(lms, colorTransformMatrix('lms2xyz'));
@@ -55,26 +55,26 @@ end
 
 %%
 
-   sFiles = cell(1,4);
-   sFiles{1} = which('MunsellSamples_Vhrel.mat');
-   sFiles{2} = which('Food_Vhrel.mat');
-   sFiles{3} = which('DupontPaintChip_Vhrel.mat');
-   sFiles{4} = which('HyspexSkinReflectance.mat');
-   %{
+sFiles = cell(1,4);
+sFiles{1} = which('MunsellSamples_Vhrel.mat');
+sFiles{2} = which('Food_Vhrel.mat');
+sFiles{3} = which('DupontPaintChip_Vhrel.mat');
+sFiles{4} = which('HyspexSkinReflectance.mat');
+%{
    sFiles{1} = fullfile(isetRootPath,'data','surfaces','reflectances','MunsellSamples_Vhrel.mat');
    sFiles{2} = fullfile(isetRootPath,'data','surfaces','reflectances','Food_Vhrel.mat');
    sFiles{3} = fullfile(isetRootPath,'data','surfaces','reflectances','DupontPaintChip_Vhrel.mat');
    sFiles{4} = fullfile(isetRootPath,'data','surfaces','reflectances','HyspexSkinReflectance.mat');
-   %}
-   sSamples = [12,12,25,25]*5; nSamples = sum(sSamples);
-   pSize = 24; 
- 
-   [scene, samples] = sceneReflectanceChart(sFiles,sSamples,pSize);
-   scene = sceneAdjustLuminance(scene,100);
-   vcAddAndSelectObject(scene); sceneWindow;
-   
-   imgXYZ   = sceneGet(scene,'xyz');
-   whiteXYZ = sceneGet(scene,'illuminant xyz');
+%}
+sSamples = [12,12,25,25]*5; nSamples = sum(sSamples);
+pSize = 24;
+
+[scene, samples] = sceneReflectanceChart(sFiles,sSamples,pSize);
+scene = sceneAdjustLuminance(scene,100);
+vcAddAndSelectObject(scene); sceneWindow;
+
+imgXYZ   = sceneGet(scene,'xyz');
+whiteXYZ = sceneGet(scene,'illuminant xyz');
 
 vcNewGraphWin;
 for cbType = 1:3

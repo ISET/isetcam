@@ -22,7 +22,7 @@ end
 % daylight, 6500 K.  We set the field of view to one degree.
 %
 % The optics are the estimated human optics, as per Marimont and Wandell in
-% the mid-90s. 
+% the mid-90s.
 %
 % The sensor has an approximation to the human cones, with random positions
 % of the three cone types.
@@ -57,8 +57,8 @@ y = sensorGet(sensor,'cols')/2;
 xy = [0 y];
 sensorPlotLine(sensor,'h','photons','space',xy);
 
-%% Show the  450 nm image 
-vcAddAndSelectObject(sensor); 
+%% Show the  450 nm image
+vcAddAndSelectObject(sensor);
 sensorWindow;
 
 %% Show the spread of the line at 550 nm
@@ -72,7 +72,7 @@ y = sensorGet(sensor,'cols')/2;
 xy = [0 y];
 sensorPlotLine(sensor,'h','photons','space',xy);
 
-%% Show the 550 nm image 
+%% Show the 550 nm image
 sensorWindow(sensor);
 
 

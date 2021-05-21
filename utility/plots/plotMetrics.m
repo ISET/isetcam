@@ -1,8 +1,8 @@
 function plotMetrics(handles,plotType)
-% Gateway routine to plot summary values from a metrics image. 
+% Gateway routine to plot summary values from a metrics image.
 %
 %    plotMetrics(handles,plotType)
-% 
+%
 % At present only delta EAb is implemented.
 %
 %
@@ -25,7 +25,7 @@ metricAxis = metricsGet(handles,'metricAxes');
 axes(metricAxis);
 
 % Have the user choose the ROI
-set(handles.txtMessage,'Fontsize',6); 
+set(handles.txtMessage,'Fontsize',6);
 set(handles.txtMessage,'Fontweight','bold');
 set(handles.txtMessage,'String','Select region in metrics image');
 roiLocs = vcROISelect([],metricAxis);
@@ -39,9 +39,9 @@ figNum =  vcSelectFigure('GRAPHWIN');
 plotSetUpWindow(figNum);
 
 nBins = max(10,length(data(:))/10);
-hist(data(:),nBins);
+histogram(data(:),nBins);
 
-xlabel(plotType); ylabel('Count'); 
+xlabel(plotType); ylabel('Count');
 title(sprintf('ROI: %s and %s ',fname1,fname2));
 txt = sprintf('Mean   %.02f\nMedian %.02f\nSD     %.02f\nMin    %.02f\nMax   %.02f',...
     mean(data(:)),median(data(:)),std(data(:)),min(data(:)),max(data(:)));

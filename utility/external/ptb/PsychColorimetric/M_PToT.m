@@ -13,7 +13,7 @@ function [M,dest] = M_PToT(Psource,Tdest,source)
 %  (n_chromacy by n_wavelengths)
 % Tdest - destination color matching functions
 %  (n_chromacy by n_wavelengths)
-% 
+%
 % OPTIONAL
 % source - source tristimulus vectors
 %  (n_chromacy by n_lights)
@@ -25,8 +25,8 @@ function [M,dest] = M_PToT(Psource,Tdest,source)
 M = Tdest*Psource;
 
 if ( nargin == 3)
-  dest = M*source;
+    dest = M*source;
 else
-  dest = [];
+    dest = [];
 end
 

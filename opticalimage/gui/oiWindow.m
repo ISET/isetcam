@@ -5,13 +5,13 @@ function oiW = oiWindow(oi,show)
 %   oiW = oiWindow(oi,show)
 %
 % Brief description
-%   Opens a oiWindow interface based on the oiWindow_App. 
+%   Opens a oiWindow interface based on the oiWindow_App.
 %
 % Inputs
 %   oi:     The oi you want in the window.  If empty, the currently
 %           selected oi in global vcSESSION is used.  If there is no
 %           selected oi a default scene is created and used.
-%   show:   Executes a drawnow command on exiting.  
+%   show:   Executes a drawnow command on exiting.
 %           (Optional, default true)
 %
 % Outputs

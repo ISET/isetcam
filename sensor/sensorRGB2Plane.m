@@ -22,7 +22,7 @@ function [sensorPlane, sensor] = sensorRGB2Plane(rgbData,  cfaPattern)
 % cfaPattern variable.  We  call sensorDetermineCFA to figure out which
 % positions in the sensor plane have which filters.  We fill the planar
 % array (sensorPlane) with the data from the rgbData (multiple band).
-% 
+%
 % Example:
 %    rgbData = rand(16,16,4);
 %    cfaPattern = [ 1 2 3 4; 3 4 2 1];

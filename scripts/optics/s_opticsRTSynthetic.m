@@ -12,7 +12,7 @@
 %
 % (c) Imageval Consulting LLC, 2012
 
-%% 
+%%
 ieInit
 
 %% Create a test scene

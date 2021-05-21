@@ -7,14 +7,14 @@
 %       Byte format (big or little endian)
 %       Number of pixels in the rows and columns
 %       Color filter array pattern
-%           bayer-bggr 
+%           bayer-bggr
 %           bayer-rggb
 %           bayer-grbg
 %           bayer-gbrg
 
 % You can test this script using raw data available at
-%            www.imageval/public/Products/ISET/download/RawSensorData/DeviceA_and_B 
-%   The data are: 
+%            www.imageval/public/Products/ISET/download/RawSensorData/DeviceA_and_B
+%   The data are:
 %       Two files from Device A ('DeviceA_MCC.raw' and 'DeviceA_ISO.raw') have
 %           10 bit data
 %           Byte Format is big endian
@@ -22,7 +22,7 @@
 %           Color filter array (cfa) is 'bayer-gbrg'
 %       Two files from Device B ('DeviceB_MCC.raw' and 'DeviceB_ISO.raw') have
 %           8 bit data
-%           Byte Format does not matter (use default setting in the menu selections) 
+%           Byte Format does not matter (use default setting in the menu selections)
 %           row = 2048,  col = 1536
 %           Color filter array (cfa) is 'bayer-grbg'
 
@@ -41,23 +41,23 @@ row = str2double(answer{3}); col = str2double(answer{4});
 cfa = answer{5};
 
 %%
-mosaic = LoadRawSensorData(fullName,bpp,format,row,col);  
+mosaic = LoadRawSensorData(fullName,bpp,format,row,col);
 
 mosaic  = double(reshape(mosaic,row,col));
 mosaic = mosaic/max(mosaic(:));  % Normalize to 0-1
 
-% The image is big.  So, we usually crop. 
+% The image is big.  So, we usually crop.
 [mosaic2,rect] = imcrop(mosaic);
 rect = round(rect);
 
 % Adjust the rect so we fall neatly on the bayer sampling grid.
-% We want the (xmin,ymin) values to both be odd. 
+% We want the (xmin,ymin) values to both be odd.
 if ~isodd(rect(1)), rect(1)=rect(1)+1; end
 if ~isodd(rect(2)), rect(2)=rect(2)+1; end
 
 % We want the (width,height) values to both be even.  Matlab's imcrop
 % basically adds one more pixel than you want.  So, annoyingly, we must
-% make the width and height odd, so we get an even number of pixels out. 
+% make the width and height odd, so we get an even number of pixels out.
 if ~isodd(rect(3)),  rect(3)=rect(3)+1; end
 if ~isodd(rect(4)),  rect(4)=rect(4)+1; end
 
@@ -68,7 +68,7 @@ if ~isodd(rect(4)),  rect(4)=rect(4)+1; end
 % sensor = sensorCreate('bayer-gbrg');
 sensor = sensorCreate(cfa);
 
-% Set pixel parameters 
+% Set pixel parameters
 pixel  = sensorGet(sensor,'pixel');
 pixel  = pixelSet(pixel,'widthandheight',[2.2,2.2]*10^-6);
 vSwing = pixelGet(pixel,'voltageSwing');

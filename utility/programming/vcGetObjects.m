@@ -19,7 +19,7 @@ function [obj,nObj] = vcGetObjects(objType)
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 %
-%  See Also:  
+%  See Also:
 %     ieGetObject, vcCountObjects
 
 global vcSESSION;
@@ -29,7 +29,7 @@ global vcSESSION;
 objType = vcEquivalentObjtype(objType);
 
 if checkfields(vcSESSION,objType),  eval(['obj = vcSESSION.',objType,';']);
-else,                               obj{1} = []; 
+else,                               obj{1} = [];
 end
 
 if nargout == 2, nObj = length(obj); end

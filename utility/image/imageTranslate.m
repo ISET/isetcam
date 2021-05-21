@@ -35,7 +35,7 @@ end
 
 rcw = size(img);   % Row, column, wavelength
 
-%% There should be different cases.  
+%% There should be different cases.
 
 % This is the only one we handle just now, which produces an
 % upward/leftward displacement (both positive). We will need to handle
@@ -48,9 +48,9 @@ rcw = size(img);   % Row, column, wavelength
 % Note that we assume + is up/left, but by default Matlab assumes
 % down/right
 if length(rcw) == 2
-   imgT = imtranslate(img, [-1 * shift(1), -1 * shift(2)], 'FillValues', fillValues);
+    imgT = imtranslate(img, [-1 * shift(1), -1 * shift(2)], 'FillValues', fillValues);
 else
-   imgT = imtranslate(img, [-1 * shift(1), -1 * shift(2), 0], 'FillValues', fillValues);
+    imgT = imtranslate(img, [-1 * shift(1), -1 * shift(2), 0], 'FillValues', fillValues);
 end
 
 % old code

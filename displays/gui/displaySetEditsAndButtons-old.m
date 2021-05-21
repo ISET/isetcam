@@ -1,5 +1,5 @@
 function displaySetEditsAndButtons(handles)
-% Fill scene window fields based on the current display information 
+% Fill scene window fields based on the current display information
 %
 %     displaySetEditsAndButtons(handles)
 %
@@ -38,7 +38,7 @@ end
 %% Description box on upper right
 set(handles.txtSummary,'String', displayDescription(d));
 
-%% Redraw the main image 
+%% Redraw the main image
 displayShowImage(d, [], handles.axes1);
 set(handles.txtMessage, 'String', 'Original Image');
 

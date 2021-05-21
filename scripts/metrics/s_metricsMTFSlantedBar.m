@@ -7,7 +7,7 @@
 % # define a scene
 % # create an optical image from the scene
 % # define a monochrome sensor
-% # evaluate the sensor MTF 
+% # evaluate the sensor MTF
 %
 % We measure the system MTF properties using a simple slanted bar
 % target along with the ISO 12233 standard methods.
@@ -65,7 +65,7 @@ sensorC = sensorSet(sensorC,'autoExposure',1);
 % We are now ready to set sensor and pixel parameters to produce a variety
 % of captured images. Set the rendering properties for the monochrome
 % imager. The default does not color convert or color balance, so it is
-% appropriate. 
+% appropriate.
 vci = ipCreate;
 
 % To see the scene, optical image, sensor or virtual camera image in the
@@ -78,7 +78,7 @@ vci = ipCreate;
 % To determine the masterRect size, run this code and use the
 % measured values of masterRect.
 %
-%    sensor = sensorCompute(sensor,oi); 
+%    sensor = sensorCompute(sensor,oi);
 %    vcReplaceObject(sensor);
 %    vci = ipCompute(vci,sensor);
 %    vcReplaceObject(vci); ipWindow;
@@ -89,7 +89,7 @@ vci = ipCreate;
 %% Run the computation for the monochrome sensor
 
 sensor = sensorCompute(sensorC,oi);
-vcReplaceObject(sensor);   
+vcReplaceObject(sensor);
 vci = ipCompute(vci,sensor);
 vcReplaceObject(vci); ipWindow;
 
@@ -101,12 +101,12 @@ barImage = vcGetROIData(vci,masterRect,'results');
 c = masterRect(3)+1;
 r = masterRect(4)+1;
 barImage = reshape(barImage,r,c,3);
-% vcNewGraphWin; imagesc(barImage(:,:,1)); axis image; colormap(gray);
+% vcNewGraphWin; imagesc(barImage(:,:,1)); axis image; colormap(gray(64));
 
 % Run the ISO 12233 code.  The results are stored in the window.
 pixel = sensorGet(sensor,'pixel');
 dx = pixelGet(pixel,'width','mm');
-ISO12233(barImage, dx) 
+ISO12233(barImage, dx)
 
 %% Should be the same, but from the ie routine
 
@@ -115,8 +115,8 @@ ieISO12233(vci);
 %% Now for a monochrome sensor
 
 sensor = sensorCompute(sensorM,oi);
-vcReplaceObject(sensor); 
-    
+vcReplaceObject(sensor);
+
 vci = ipCompute(vci,sensor);
 vcReplaceObject(vci); ipWindow;
 h = ieDrawShape(vci,'rectangle',masterRect);
@@ -127,7 +127,7 @@ barImage = vcGetROIData(vci,masterRect,'results');
 c = masterRect(3)+1;
 r = masterRect(4)+1;
 barImage = reshape(barImage,r,c,3);
-% vcNewGraphWin; imagesc(barImage(:,:,1)); axis image; colormap(gray);
+% vcNewGraphWin; imagesc(barImage(:,:,1)); axis image; colormap(gray(64));
 
 % Run the ISO 12233 code.  The results are stored in the window.
 dx = sensorGet(sensor,'pixel width','mm');

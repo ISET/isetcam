@@ -6,7 +6,7 @@
 %
 % The processing steps illustrated are
 %
-% # Create a slanted bar scene with infrared data 
+% # Create a slanted bar scene with infrared data
 % # Convert the scene to an optical image
 % # Create a sensor with 7 bands and a random spatial CFA and
 % compute the virtual camera image
@@ -19,7 +19,7 @@
 %
 % Copyright ImagEval Consultants, LLC, 2010
 
-%% 
+%%
 ieInit
 
 %% First, create a slanted bar image.  Make the slope some uneven value
@@ -61,10 +61,10 @@ wave   = sceneGet(scene,'wave');
 [filterSpectra,allNames] = ieReadColorFilter(wave,'NikonD200IR.mat');
 
 % This is a way to make artificial color filters, each with a Gaussian
-% sensitivity profile. 
-%    nSensors = 7; minW = 450; maxW = 800; 
-%    cPos = linspace(minW,maxW,nSensors); 
-%    width = ones(size(cPos))*(cPos(2)-cPos(1))/2; cfType = 'gaussian'; 
+% sensitivity profile.
+%    nSensors = 7; minW = 450; maxW = 800;
+%    cPos = linspace(minW,maxW,nSensors);
+%    width = ones(size(cPos))*(cPos(2)-cPos(1))/2; cfType = 'gaussian';
 %    filterSpectra = sensorColorFilter(cfType, wave, cPos, width);
 %    allNames = {'b1','g1','r1','x1','i1','z1','i2'};
 
@@ -113,7 +113,7 @@ vci = ipSet(vci,'render Gamma',0.6);
 % Use the linear transformation derived from sensor space (above) to
 % display the RGB image in the processor window.
 vci = ipSet(vci,'conversion method sensor ','MCC Optimized');
-vci = ipSet(vci,'correction method illuminant ','Gray World');% 
+vci = ipSet(vci,'correction method illuminant ','Gray World');%
 vci = ipSet(vci,'internal CS','XYZ');
 
 % First, compute with the default properties.  This uses bilinear
@@ -124,7 +124,7 @@ ipWindow(vci);
 
 %% Define the rect for the ISO12233 calculation
 
-% Have the user select the edge. 
+% Have the user select the edge.
 masterRect = [39    25    51    65];
 
 % It is also possible to estimate the rectangle automatically using
@@ -138,7 +138,7 @@ barImage = vcGetROIData(vci,roiLocs,'results');
 c = masterRect(3)+1;
 r = masterRect(4)+1;
 barImage = reshape(barImage,r,c,3);
-% figure; imagesc(barImage(:,:,1)); axis image; colormap(gray);
+% figure; imagesc(barImage(:,:,1)); axis image; colormap(gray(64));
 % pause;
 
 dx = sensorGet(sensor,'pixel width','mm');
@@ -152,7 +152,7 @@ ISO12233(barImage, dx);
 
 sensor = sensorSet(sensor,'ir filter',irFilter);
 sensor = sensorCompute(sensor,oi);
-ieAddObject(sensor); 
+ieAddObject(sensor);
 
 %% Compute the MTF with the rectangle selected automatically
 
@@ -161,7 +161,7 @@ mtf = ieISO12233(vci);
 
 % Changed from 77 to 75 on Nov. 11, 2019.  This was part of a fix of the
 % ISOFindSlantedBar code that put the rect more into the center of the
-% edge. 
+% edge.
 assert(abs(mtf.mtf50 - 75) <= 3);
 
 ieAddObject(vci); ipWindow;

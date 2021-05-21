@@ -1,4 +1,4 @@
-function signalCurrentImage = spatialIntegration(scdi,oi,sensor,gridSpacing) 
+function signalCurrentImage = spatialIntegration(scdi,oi,sensor,gridSpacing)
 % Measure current at each sensor photodetector
 %
 %  signalCurrentImage = spatialIntegration(scdi,oi,sensor,[gridSpacing = 1/5])
@@ -20,12 +20,12 @@ function signalCurrentImage = spatialIntegration(scdi,oi,sensor,gridSpacing)
 %    measured in meters.  In both modes, we represent  the OI and the ISA
 %    sample positions in meters in a spatial coordinate frame with a common
 %    center.  Then we interpolate the values of the OI onto sample points
-%    within the ISA grid (regridOI2ISA).  
+%    within the ISA grid (regridOI2ISA).
 %
 %    The first mode (default).  In this mode the current is computed with
 %    one sample per pixel.  Specifically, the irradiance at each wavelength
 %    is linearly interpolated to obtain a value at the center of the pixel.
-%       
+%
 %    The second mode (high-resolution). This high-resolution mode requires
 %    a great deal more memory than the first mode. In this method a grid is
 %    placed over the sensor and the irradiance field is interpolated to
@@ -70,7 +70,7 @@ nGridSamples = 1/gridSpacing;
 % grid samples per pixel.  This can pay a significant penalty in speed and
 % memory usage.
 %
-%  So the default is gridSpacing of 1.  
+%  So the default is gridSpacing of 1.
 %
 flatSCDI = regridOI2ISA(scdi,oi,sensor,gridSpacing);
 
@@ -89,7 +89,7 @@ photoDetectorArray = repmat(pdArray, ISAsize);
 % the array.
 signalCurrentImageLarge = flatSCDI .* photoDetectorArray;
 
-if nGridSamples == 1 
+if nGridSamples == 1
     signalCurrentImage = pixelGet(sensor.pixel,'area')*signalCurrentImageLarge;
 else
     % If the grid samples are super-sampled, we must collapse this image,
@@ -99,7 +99,7 @@ else
     % We should probably include a check for the condition when
     % nGridSamples is 2. There can be a problem with the filter in that
     % case. It is OK at nGridSamples=3 and higher.
-    % 
+    %
     filt = pixelGet(sensor.pixel,'area')*(ones(nGridSamples,nGridSamples)/(nGridSamples^2));
     
     signalCurrentImage = blurSample(signalCurrentImageLarge,filt);

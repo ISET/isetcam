@@ -52,7 +52,7 @@ cfaSize = sensorGet(sensor,'cfaSize');
 
 % The [x,y, width, height] needs to match the cfaSize.  The cfaSize is
 % [row,col].  So we need to deal with that.
-cfaSize = fliplr(cfaSize);   
+cfaSize = fliplr(cfaSize);
 
 % If the cfa size is even, then the x and y values should be odd The number
 % of entries in numel(x:(x + width)) and numel(y:(y + height)) should be a
@@ -74,11 +74,11 @@ cfaSize = [3,5]; rect = [ 8 11 6 9]  % 10    11     6    10
 %}
 
 %
-% First deal with x = rect(1), width = rect(3).   
+% First deal with x = rect(1), width = rect(3).
 % Then deal with  y = rect(2), height = rect(4)
 %
 for ii=0:1
-    % The x value should start on a multiple of the cfaSize plus 1. 
+    % The x value should start on a multiple of the cfaSize plus 1.
     thisRem = rem(rect(ii+1),cfaSize(ii+1));
     if thisRem ~= 1
         if thisRem == 0

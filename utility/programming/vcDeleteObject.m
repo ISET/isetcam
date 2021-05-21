@@ -3,7 +3,7 @@ function nRemaining = vcDeleteObject(objType,val)
 %
 %    nRemaining = vcDeleteObject(objType,[val])
 %
-% The ISET objects that can be deleted by this call are: 
+% The ISET objects that can be deleted by this call are:
 %   SCENE, OPTICALIMAGE (OI), VCIMAGE (IMGPROC), ISA (SENSOR).
 %
 % If val is not passed in this call is equivalent to vcDeleteSelectedObject

@@ -1,11 +1,11 @@
 function mc = ieGetMatrixCenter(m,center,extent)
-%Obsolete: Another routine to get the center of a matrix. 
+%Obsolete: Another routine to get the center of a matrix.
 %
 % Use getMiddleMatrix
 %
 %    mc = ieGetMatrixCenter(mat,center,extent)
 %
-% Extract data from the center of a matrix.  
+% Extract data from the center of a matrix.
 %
 %   center = [rowCenter, colCenter]
 %   extent = [rowLength, colLength]

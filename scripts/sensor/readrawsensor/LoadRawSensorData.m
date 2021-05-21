@@ -8,11 +8,11 @@ function image = LoadRawSensorData(filename,bpp,byteFormat,row,col)
 % list our best guess about big/little in Notes, below.
 %
 % Example
-%  filename = vcSelectDataFile('stayput','r'); 
+%  filename = vcSelectDataFile('stayput','r');
 %  [p,n,e] = fileparts(filename);[n,e]
 %  img = LoadRawSensorData(filename,10,'big');  % For Example Device A
 %  img = LoadRawSensorData(filename,8);         % For Example Device B
-% 
+%
 %  img = reshape(img,row,col);
 %  imagesc(img); colormap(gray(256));
 %  imtool(img)
@@ -20,7 +20,7 @@ function image = LoadRawSensorData(filename,bpp,byteFormat,row,col)
 % Notes:
 %   DeviceA is 'big endian' and stored as 10 bits
 %   Device B is 8 bits and therefore endian doesn't matter.
-%   
+%
 
 if ~exist('filename', 'var' ), error( 'Need filename'); end
 if ~exist('byteFormat','var'), byteFormat = 'little';  end

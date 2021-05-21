@@ -1,5 +1,5 @@
 %% t_codeISETPref.m
-%   
+%
 %  Matlab preserves information for you in environmental variables.
 %  ISET uses these variables to remember certain preferences.  These
 %  preferences are accessed using the ieSessionGet and ieSessionSet
@@ -11,7 +11,7 @@
 
 %% Check your stored ISET preferences
 
-% At present, there are only a small number of stored preferences.  
+% At present, there are only a small number of stored preferences.
 
 % Please use the ieSessionGet/Set functions to read and set the
 % preferences.
@@ -49,7 +49,7 @@ s_scielabPatches
 % platforms.  If the font is too small or large, you can adjust the size in
 % most of the windows (e.g., scene, oi, sensor, image).  The adjustment in
 % one window will apply to all the windows.  The font size is controlled
-% through the preference 
+% through the preference
 ieSessionGet('font size')
 
 % This number is a increment (or decrement) relative to the default fonts

@@ -1,5 +1,5 @@
 function outputImage = LFAutofocus(lightfield, rect, slopeRange, slopeStep, fastMode)
-% Focus a region of the light field 
+% Focus a region of the light field
 %
 % Syntax:
 %  outputImage = LFAutofocus(lightfield, rect, slopeRange, slopeStep)

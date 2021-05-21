@@ -3,7 +3,7 @@
 % *Illuminant correction* is often performed by calculating a 3x3
 %  matrix that maps the XYZ values for surfaces under one
 % light into the XYZ values under another light.
-% 
+%
 % Here, we create a scene that consists of patches illuminated by
 % light A these patches can be created by randomly sampling
 % surfaces reflectances the selection of surfaces will matter
@@ -18,7 +18,7 @@
 % surfaces under light B.
 %
 % The general 3x3 matrix does a better job than the diagonal (as
-% expected).  
+% expected).
 %
 % Some authors refer to the diagonal 3x3 as
 % <https://en.wikipedia.org/wiki/Von_Kries_Coefficient_Law *von
@@ -26,7 +26,7 @@
 % coordinate frame (XYZ) will not generally be diagonal in
 % another coordinate frame (e.g., LMS or RGB).  Von Kries meant
 % diagonal in LMS.
-% 
+%
 % See also: RGB2XWFormat
 %
 % Copyright ImagEval Consultants, LLC, 2012.

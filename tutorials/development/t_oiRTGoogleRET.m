@@ -16,7 +16,7 @@ optics = rtImportData(optics, 'zemax', isetParmsFile);
 load('isetLensG.mat');
 %% Read in larger images
 imgPathFullFOV = fullfile(isetRootPath, 'local', 'imgsFromGoogle', 'optics',...
-                    'RET_5920_60cm_8M_77HFOV.png');
+    'RET_5920_60cm_8M_77HFOV.png');
 
 imgFullFOV = imread(imgPathFullFOV);
 szFullFOV = size(imgFullFOV); % Get the size of image
@@ -34,10 +34,10 @@ nPixelHeightHalfFOV = nPixelWidthHalfFOV / frameRatio;
 
 %% Crop image for half FOV from center
 szDiff = [floor((szFullFOV(1) - nPixelHeightHalfFOV)/2),...
-            floor((szFullFOV(2) - nPixelWidthHalfFOV)/2)];
+    floor((szFullFOV(2) - nPixelWidthHalfFOV)/2)];
 
 cropRect = [szDiff(2)+1, szDiff(1)+1, floor(nPixelWidthHalfFOV)-1, ...
-             floor(nPixelHeightHalfFOV)];  
+    floor(nPixelHeightHalfFOV)];
 
 imgHalfFOV = imcrop(imgFullFOV, cropRect);
 
@@ -47,13 +47,13 @@ szHalfFOV = size(imgHalfFOV);
 
 %% Save the half fov image
 imgSavePath = fullfile(isetRootPath, 'local', 'imgsFromGoogle', 'optics',...
-                    'RET_5920_60cm_8M_35HFOV_double.png');
+    'RET_5920_60cm_8M_35HFOV_double.png');
 imwrite(imgHalfFOV, imgSavePath);
 
 %% Check if the image is correctly cropped
 imgHalfFOVPd = uint8(zeros(szFullFOV));
 imgHalfFOVPd(cropRect(2):cropRect(2)+cropRect(4),...
-            cropRect(1):cropRect(1)+cropRect(3), :) = imgHalfFOV;
+    cropRect(1):cropRect(1)+cropRect(3), :) = imgHalfFOV;
 
 ieNewGraphWin;
 imagesc(imgFullFOV - imgHalfFOVPd); % Center is empty
@@ -82,7 +82,7 @@ widthHalfFOV = pixelSize * nPixel;
 
 % Calculate scene hFOV
 hHalffov = 2 * atand(widthHalfFOV/(2*focalLength) ); % Scene hFOV
-sceneHalfFOV = sceneSet(sceneHalfFOV, 'fov', hHalffov); 
+sceneHalfFOV = sceneSet(sceneHalfFOV, 'fov', hHalffov);
 ieAddObject(sceneHalfFOV);
 
 % sceneWindow(sceneHalfFOV)
@@ -107,7 +107,7 @@ widthFullFOV = pixelSize * nPixel;
 
 % Calculate scene hFOV
 hFullfov = 2 * atand(widthFullFOV/(2*focalLength) ); % Scene hFOV
-sceneFullFOV = sceneSet(sceneFullFOV, 'fov', hFullfov); 
+sceneFullFOV = sceneSet(sceneFullFOV, 'fov', hFullfov);
 ieAddObject(sceneFullFOV);
 
 % sceneWindow(sceneFullFOV)
@@ -147,16 +147,16 @@ title(sprintf('Optical image with FOV: %.4f', hFullfov));
 
 %% Write out images
 halfFOVSavePath = fullfile(isetRootPath, 'local', 'imgsFromGoogle', 'optics',...
-                    'RET_5920_60cm_8M_35HFOV_OI_ZL.bmp');
+    'RET_5920_60cm_8M_35HFOV_OI_ZL.bmp');
 imwrite(rgbOIHalfFOV, halfFOVSavePath);
 
 fullFOVSavePath = fullfile(isetRootPath, 'local', 'imgsFromGoogle', 'optics',...
-                    'RET_5920_60cm_8M_77HFOV_OI_ZL.bmp');
-imwrite(rgbOIFullFOV, fullFOVSavePath);                
+    'RET_5920_60cm_8M_77HFOV_OI_ZL.bmp');
+imwrite(rgbOIFullFOV, fullFOVSavePath);
 %% Finally compare the difference within half fov region
 rgbOIHalfFOVPd = single(zeros(szFullFOV));
 rgbOIHalfFOVPd(cropRect(2):cropRect(2)+cropRect(4),...
-            cropRect(1):cropRect(1)+cropRect(3), :) = rgbOIHalfFOV;
+    cropRect(1):cropRect(1)+cropRect(3), :) = rgbOIHalfFOV;
 
 % Visualize the difference of the two images
 ieNewGraphWin;
@@ -164,7 +164,7 @@ imagesc(rgbOIFullFOV - rgbOIHalfFOVPd);
 
 %% Or compare the center part of full fov region
 rgbOIFullFOVCrp = rgbOIFullFOV(cropRect(2):cropRect(2)+cropRect(4),...
-            cropRect(1):cropRect(1)+cropRect(3), :);
+    cropRect(1):cropRect(1)+cropRect(3), :);
 
 % Visualize the difference of the two images
 ieNewGraphWin;

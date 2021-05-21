@@ -12,7 +12,7 @@ scene = sceneCreate('moire orient');
 meanLuminance = 100;
 fovScene      = 10;
 
-%% Adjust FOV of camera to match scene, no extra pixels needed. 
+%% Adjust FOV of camera to match scene, no extra pixels needed.
 camera = cameraSet(camera,'sensor fov',fovScene);
 
 %% Change the scene so its wavelength samples matches the camera

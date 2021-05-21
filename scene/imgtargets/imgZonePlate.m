@@ -4,13 +4,13 @@ function img = imgZonePlate(sz, amp, ph)
 % img = ieZonePlate([SZ], [AMP], [PHASE])
 %
 % The zone plate function is  AMP * cos( r^2 + PHASE) + 1
-% 
+%
 % SZ   -- image size (default = 256)
-% AMP  --  (default = 1) 
-% PHASE (default = 0) 
+% AMP  --  (default = 1)
+% PHASE (default = 0)
 %
 % Examples:
-%   img = imgZonePlate(256);  imagesc(img); axis image; colormap(gray(256)); 
+%   img = imgZonePlate(256);  imagesc(img); axis image; colormap(gray(256));
 %   img = imgZonePlate([384,384],255); imagesc(img);    colormap(gray(256));   axis image
 %   img = imgZonePlate([384,384],255,pi/2); imagesc(img); colormap(gray(256)); axis image
 %

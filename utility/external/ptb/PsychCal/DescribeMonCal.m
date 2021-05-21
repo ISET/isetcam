@@ -1,7 +1,7 @@
 function same = DescribeMonCal(cal,file,whichScreen)
 % same = DescribeMonCal(cal,[file],[whichScreen])
-% 
-% Print descriptive information about a calibration 
+%
+% Print descriptive information about a calibration
 % to the command window or file.
 %
 % Argument file is a standard Matlab file descriptor,
@@ -21,22 +21,22 @@ function same = DescribeMonCal(cal,file,whichScreen)
 % 6/29/02  dgp       Use new version of Screen VideoCard.
 % 9/23/02  dhb, jms  Fix small bug in way driver is compared, presumably introduced 6/29/02.
 % 9/29/08  dhb, tyl, ijk Update for OS/X, current computer stuff.
-%                    Comparison of computer name skipped, because it seems to vary with login. 
+%                    Comparison of computer name skipped, because it seems to vary with login.
 % 6/24/11  dhb       Dump out gamma fit type and exponents if gamma function was fit with a simple power function.
 % 5/28/13  dhb       Change output printed format to make it easier to paste into Doku wiki.
 
 % Default args
 if (nargin < 2 || isempty(file))
-	file = 1;
+    file = 1;
 end
 if (nargin < 3 || isempty(whichScreen))
-	file = 1;
-	whichScreen = [];
+    file = 1;
+    whichScreen = [];
 end
 same = [];
 
 if (~isfield(cal,'describe'))
-	error('Calibration structure has no description');
+    error('Calibration structure has no description');
 end
 
 fprintf('Calibration:\n');

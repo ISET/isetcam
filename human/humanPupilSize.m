@@ -1,5 +1,5 @@
 function [diam,area] = humanPupilSize(lum,model)
-% Estimated pupil diameter and area (mm^2) 
+% Estimated pupil diameter and area (mm^2)
 %
 %  [diam,area] = pupilSize(lum,'model')
 %
@@ -10,7 +10,7 @@ function [diam,area] = humanPupilSize(lum,model)
 %    'ms'  - Moon and Spencer (1944)
 %    'dg'  - DeGroot and Gebhard (1952)
 %
-% Related note: 
+% Related note:
 %   According to James E. Birren, Roland C. Casperon, & Jack Botwinick,
 %   Age Changes in Pupil Size, J. Gerontol., #5, 1950, p.216, the following
 %   formula can be used to predict minimum diameter as a function of age.
@@ -22,19 +22,19 @@ function [diam,area] = humanPupilSize(lum,model)
 %
 %   According to Stanley and Davies (The effect of field of view size on
 %   steady-state pupil diameter.) the pupil size should be explained in
-%   cd/m2 per deg  of visual angle.  They offer another formula 
+%   cd/m2 per deg  of visual angle.  They offer another formula
 %
-%      D = 7.75-5.75 [(F/846)0.41/((F/846)0.41 / 2)] 
-%   
+%      D = 7.75-5.75 [(F/846)0.41/((F/846)0.41 / 2)]
+%
 %   where D is the pupil diameter (mm) and F is the corneal flux density
 %   (cdm-2 deg2). Not implemented here, but perhaps it should be.
-% 
+%
 % Example:
 %    [d,a] = humanPupilSize(100,'ms')
 %
 %    lumSteps = logspace(-6,6,20);
-%    [d1,a] = humanPupilSize(lumSteps,'ms');  
-%    [d2,a] = humanPupilSize(lumSteps,'dg');  
+%    [d1,a] = humanPupilSize(lumSteps,'ms');
+%    [d2,a] = humanPupilSize(lumSteps,'dg');
 %    semilogx(lumSteps,d1,'r-',lumSteps,d2,'g--')
 %
 %    age = 30:5:70;

@@ -15,7 +15,7 @@ function lab = ieXYZ2LAB(xyz, whitepoint, useOldCode)
 %
 % Output
 %    lab: The CIELAB values are returned in the same format (RGB or XW) as
-%         the input XYZ. 
+%         the input XYZ.
 %
 % Description
 %   Read about CIELAB formulae in Wyszecki and Stiles, page 167 and other
@@ -39,37 +39,37 @@ if (exist('makecform','file') == 2) &&  ~useOldCode
     if isequal(class(xyz), 'single'), xyz = double(xyz); end
     lab = applycform(xyz,cform);
     return;
-
+    
 else
-    % Before Matlab caught on, we used this code. 
+    % Before Matlab caught on, we used this code.
     % Set the white point values
     if   (length(whitepoint)~=3 ), error('whitepoint must be a three vector')
     else Xn = whitepoint(1); Yn = whitepoint(2); Zn = whitepoint(3);
     end
-
+    
     if ndims(xyz) == 3
         [r,c,w] = size(xyz);
         lab = zeros(r*c,3);
-
+        
         x = xyz(:,:,1)/Xn; x = x(:);
         y = xyz(:,:,2)/Yn; y = y(:);
         z = xyz(:,:,3)/Zn; z = z(:);
-
+        
     elseif ismatrix(xyz)
         x = xyz(:,1)/Xn;
         y = xyz(:,2)/Yn;
         z = xyz(:,3)/Zn;
-
+        
         % allocate space
         lab = zeros(size(xyz));
-
+        
     end
-
+    
     % Find out points < 0.008856
     xx = find(x <= 0.008856);
     yy = find(y <= 0.008856);
     zz = find(z <= 0.008856);
-
+    
     % compute L* values
     % fx, fy, fz represent cases <= 0.008856
     % For a good (obsessive) discussion see the URL
@@ -80,7 +80,7 @@ else
     y = y.^(1/3);
     lab(:,1)   = 116*y - 16;
     lab(yy, 1) = 903.3 * fy;
-
+    
     % a* b* calculation
     fx = 7.787 * x(xx) + 16/116;
     fy = 7.787 * fy + 16/116;
@@ -90,10 +90,10 @@ else
     x(xx) = fx;
     y(yy) = fy;
     z(zz) = fz;
-
+    
     lab(:,2) = 500 * (x - y);
     lab(:,3) = 200 * (y - z);
-
+    
     % return lab in the appropriate shape
     % Currently it is a XW format.  If the input had three dimensions
     % then we need to change it to that format.

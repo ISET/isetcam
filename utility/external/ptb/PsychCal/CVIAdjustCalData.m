@@ -14,7 +14,7 @@ function calData = CVIAdjustCalData(calData,cviData)
 % Make sure calData and PR-650 portion
 % of cviData have same wavelength spacing.
 if (CheckWls(calData.S_device,cviData.pr650.S))
-	error('Wavelength sampling mismatch for PR-650 measurements.');
+    error('Wavelength sampling mismatch for PR-650 measurements.');
 end
 
 % For each phosphor, find scale factor between calibration (calData)
@@ -23,8 +23,8 @@ end
 tempS = cviData.use.S;
 temp = cviData.use.spectra;
 for i = 1:3
-	factor(i) = cviData.pr650.spectra(:,i)\calData.P_device(:,i);
-	temp(:,i) = factor(i)*temp(:,i);	
+    factor(i) = cviData.pr650.spectra(:,i)\calData.P_device(:,i);
+    temp(:,i) = factor(i)*temp(:,i);
 end
 
 % Patch up calibration data
@@ -38,6 +38,6 @@ calData.T_device = eye(tempS(3));
 % and could go wrong in cases where the ambient also had
 % a contribution not from the monitor phosphors.
 calData.P_ambient = ...
-	SplineSpd(calData.S_ambient,calData.P_ambient,tempS);
+    SplineSpd(calData.S_ambient,calData.P_ambient,tempS);
 calData.S_ambient = tempS;
 calData.T_ambient = eye(tempS(3));

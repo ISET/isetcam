@@ -6,7 +6,7 @@ function isa = sensorResampleWave(isa,newWaveSamples)
 % The wavelength dimension of all the sensor spectral data is resampled
 % from the current to newWaveSamples.  If the newWaveSamples are not sent
 % in, the user is queried.  The wave samples must be evenly spaced.
-%   
+%
 % Examples:
 %   isa = sensorResampleWave(isa)
 %
@@ -15,7 +15,7 @@ function isa = sensorResampleWave(isa,newWaveSamples)
 if ieNotDefined('isa'), [val,isa] = vcGetSelectedObject('isa'); end
 
 curWave = sensorGet(isa,'wave');
-if ieNotDefined('newWaveSamples') 
+if ieNotDefined('newWaveSamples')
     prompt={'Start (nm)','Stop (nm)','Spacing (nm)'};
     def={num2str(curWave(1)),num2str(curWave(end)),num2str(sceneGet(isa,'binwidth'))};
     dlgTitle='Wavelength resampling';

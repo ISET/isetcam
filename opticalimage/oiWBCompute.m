@@ -12,7 +12,7 @@ if ieNotDefined('workDir')
     % This is the name of the directory we write the waveband files
     tmp = vcSelectDataFile('stayput','r','*','Choose scene file.');
     if isempty(tmp), return; end
-    [workDir , name] = fileparts(tmp); 
+    [workDir , name] = fileparts(tmp);
 end
 
 if ieNotDefined('oi'), oi = vcGetObject('oi'); end

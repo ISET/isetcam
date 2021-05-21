@@ -13,7 +13,7 @@ function bool = checkfields(s,varargin)
 %
 %      checkfields(pixel,'OP','pd','type')
 %
-% A return value of 1 means the field sequence is present, 
+% A return value of 1 means the field sequence is present,
 % A return value of 0 means the sequence is absent.
 %
 % Copyright ImagEval Consultants, LLC, 2003.
@@ -26,7 +26,7 @@ for ii=1:nArgs
     if isfield(tst,varargin{ii})
         % Append the argument to the current string
         str = sprintf('%s.%s',str,varargin{ii});
-
+        
         % If this is the last one, return succesfully
         if ii==nArgs
             bool = 1;

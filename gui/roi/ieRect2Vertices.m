@@ -31,5 +31,5 @@ if closeFlag
     xv(end+1) = xv(1);
     yv(end+1) = yv(1);
 end
-    
+
 end

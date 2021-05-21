@@ -58,7 +58,7 @@ if sensorGet(sensor,'reuse noise')
         % Initialize with current seed.
         try  rng(noiseSeed);
         catch err
-            randn('seed',noiseSeed); 
+            randn('seed',noiseSeed);
         end
     end
     
@@ -99,7 +99,7 @@ for ii=1:nExposures
         sensor = sensorSet(sensor,'volts',vImage);
     else
         sensor = sensorSet(sensor,'volts',vImage);
-    end      
+    end
     
     % Add shot noise if the noiseFlag is 1 or 2.
     % It must be done after adding the dark current.

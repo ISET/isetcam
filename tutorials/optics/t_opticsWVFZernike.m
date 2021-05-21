@@ -2,12 +2,12 @@
 %
 % ISET includes two ways to calculate defocus, one based on
 % Hopkins and diffraction calculations that was implemented based
-% on the 
+% on the
 % <http://white.stanford.edu/~brian/papers/color/MarimontWandell1994.pdf Marimont and Wandell (1994, JOSA) paper>.
 %
 % More recently, we introduced a method based on wavefront
 % aberrations described in terms of
-% <https://en.wikipedia.org/wiki/Zernike_polynomials Zernike polynomials>.  
+% <https://en.wikipedia.org/wiki/Zernike_polynomials Zernike polynomials>.
 % Some applications of the Zernike polynomial method are explained here.
 %
 % Copyright Imageval Consulting, LLC 2015
@@ -59,7 +59,7 @@ thisWave = 700;   % nanometers
 pRange = 10;      % microns
 wvfPlot(wvf,'2d psf space','um',thisWave,pRange);
 
-%% Convert the wavefront structure to an oi 
+%% Convert the wavefront structure to an oi
 
 oi = wvf2oi(wvf);
 

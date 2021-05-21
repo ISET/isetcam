@@ -1,4 +1,4 @@
-function ieInWindowMessage(str,app,duration)            
+function ieInWindowMessage(str,app,duration)
 % Place a message in a text box within an ISET window
 %
 % Synopsis

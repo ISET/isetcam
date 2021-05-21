@@ -112,7 +112,7 @@ classdef cpCModule
                         % for focus stacking if not done in pbrt. Need to
                         % add a way to pass focal distances.
                         imgPlaneDist = opticsGet(obj.oi.optics,'focal length');
-                        multiplier = 1.01; 
+                        multiplier = 1.01;
                         sceneDepth = max(ourScene.depthMap,[], 'all') - min(ourScene.depthMap,[], 'all');
                         sceneBands = 8;
                         depthEdges = min(ourScene.depthMap,[], 'all'): sceneDepth / sceneBands : max(ourScene.depthMap,[], 'all');

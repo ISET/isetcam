@@ -32,7 +32,7 @@ stimulusSizeRadians = deg2rad(stimulusSizeDegrees);
 %   stimulusSize/stimulusDistance = stimulusSizeRadians
 % where size and distance are in units like mm, cm, m etc.
 %
-% Note also that 
+% Note also that
 %   cornealIrradiance_PowerPerArea = radiance_PowerPerSrArea*((stimulusSize/stimulusDistance)^2)
 % See comments in RadianceAndDistanceAreaToCornIrradiance for the derivation of this.
 %

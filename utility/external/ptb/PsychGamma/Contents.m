@@ -2,8 +2,8 @@
 %
 % help Psychtoolbox % For an overview, triple-click me & hit enter.
 %
-% Routines for fitting "gamma" functions, i.e. the 
-% luminance-vs-voltage of a CRT monitor. 
+% Routines for fitting "gamma" functions, i.e. the
+% luminance-vs-voltage of a CRT monitor.
 %
 % CheckMonotonic
 % ComputeGammaExtP

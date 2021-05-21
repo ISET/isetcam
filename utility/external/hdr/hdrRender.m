@@ -1,7 +1,7 @@
 function [res] = hdrRender(im, filt_type, s_sat, bbeta, aalpha, ifsharp)
 % Compress the dynamic range of an HDR image
 %
-% [res] = hdrRender(im, filt_type(optional), s_sat(optional), 
+% [res] = hdrRender(im, filt_type(optional), s_sat(optional),
 %           beta(optional), alpha(optional), ifsharp (optional))
 %
 % Reference: Yuanzhen Li, Lavanya Sharan, Edward H. Adelson. Compressing
@@ -32,7 +32,7 @@ function [res] = hdrRender(im, filt_type, s_sat, bbeta, aalpha, ifsharp)
 %    smoother looking result with minimal artifacts.
 %
 % calls the following function:
-%        [res] = range_compression_lum(pic, beta(optional), alpha_A(optional), 
+%        [res] = range_compression_lum(pic, beta(optional), alpha_A(optional),
 %                   beta(optional), alpha(optional), filt_type(optional))
 %  refer to it for more info about beta, alpha, filt_type, and more details
 %     about the algorithm.
@@ -41,7 +41,7 @@ function [res] = hdrRender(im, filt_type, s_sat, bbeta, aalpha, ifsharp)
 % Incorporated into ISET distribution, March 1, 2014.
 % The code has not been materially changed.  I added a few
 % comments for clarity, modified the name, and checked for 'var' in the
-% exist function. 
+% exist function.
 
 % Input arguments
 if ~exist('s_sat','var'),     s_sat = 0.7; end
@@ -63,10 +63,10 @@ else
     r_ratio = im(:,:,1)./(im_lum+1e-9);
     g_ratio = im(:,:,2)./(im_lum+1e-9);
     b_ratio = im(:,:,3)./(im_lum+1e-9);
-
+    
     % do range compression on the luminance:
     res_lum = range_compression_lum(im_lum, filt_type, bbeta, aalpha, ifsharp);
-
+    
     % color adjustment
     res_lum = im_norm(res_lum);
     res(:,:,1) = res_lum.*(r_ratio.^s_sat);
@@ -81,8 +81,8 @@ res = (res-low_end)/(high_end-low_end);
 res = min(1, res);
 res = max(0, res);
 
-% we find a trick can often make the result "open up" a bit, the trick 
-% being adding 15% of a histogram equalized layer to the result. 
+% we find a trick can often make the result "open up" a bit, the trick
+% being adding 15% of a histogram equalized layer to the result.
 res = im_norm(final_touch(res));
 
 

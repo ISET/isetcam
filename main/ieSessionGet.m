@@ -7,7 +7,7 @@ function val = ieSessionGet(param,varargin)
 % Description:
 %  The vcSESSION parameter is a global variable that contains information
 %  about the windows, custom processing routines, and related ISET
-%  session information. ieSessionGet retrieves that information.  
+%  session information. ieSessionGet retrieves that information.
 %
 %  A list of the parameters is:
 %
@@ -52,11 +52,11 @@ function val = ieSessionGet(param,varargin)
 %   NOT UPDATED YET
 %
 %   h = ieSessionGet('scene window handle')
-% 
+%
 %   ieSessionSet('wait bar','on');
 %   ieSessionGet('wait bar')
 %
-%   ieSessionGet('font size'); 
+%   ieSessionGet('font size');
 %
 %   % Clear flag when running ieInit
 %   ieSessionGet('init clear')  % True or false
@@ -96,11 +96,11 @@ switch param
     case {'help','inithelp'}
         % Default for help is true, if the initHelp has not been set.
         % I don't know what this does.
-        if checkfields(vcSESSION,'initHelp'), val = vcSESSION.initHelp; 
-        else, vcSESSION.initHelp = 1; val = 1; 
+        if checkfields(vcSESSION,'initHelp'), val = vcSESSION.initHelp;
+        else, vcSESSION.initHelp = 1; val = 1;
         end
         
-    % Matlab setpref/getpref 
+        % Matlab setpref/getpref
     case {'prefs'}
         val = getpref('ISET');
     case {'fontsize'}
@@ -118,10 +118,10 @@ switch param
         % if checkfields(vcSESSION,'FONTSIZE'), val = vcSESSION.FONTSIZE;  end
         isetPref = getpref('ISET');
         if ~isempty(isetPref)
-            if checkfields(isetPref,'fontDelta'), val = isetPref.fontDelta; 
+            if checkfields(isetPref,'fontDelta'), val = isetPref.fontDelta;
             end
-        else 
-            val = 0; 
+        else
+            val = 0;
         end
         if isempty(val), val = 0; end
         
@@ -130,7 +130,7 @@ switch param
         if checkfields(vcSESSION,'GUI','waitbar')
             val = vcSESSION.GUI.waitbar;
         else
-            % The getpref is slow.  So, we attach it to the session 
+            % The getpref is slow.  So, we attach it to the session
             % at start up.  Otherwise, loops that test for it take too
             % long.
             iePref = getpref('ISET');
@@ -233,7 +233,7 @@ switch param
     case {'names'}
         % ieSessionGet('names',objType)
         if isempty(varargin), error('Please specify object type'); end
-        val = vcGetObjectNames(vcEquivalentObjtype(varargin{1})); 
+        val = vcGetObjectNames(vcEquivalentObjtype(varargin{1}));
         
         % DISPLAY related - may be moved out of here
     case {'imagesizethreshold'}
@@ -245,7 +245,7 @@ switch param
         else
             val = 1e6;
         end
-
+        
     otherwise
         error('Unknown parameter %s\n',param)
         

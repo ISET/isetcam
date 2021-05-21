@@ -11,7 +11,7 @@ function depthmap = exiftoolDepthFromFile(fName, varargin)
     implementation. We have been able to read out the depth map using Phil
     Harvey's amazing Exiftool, and take a stab at interpreting its
     RangeInverse encoding to come up with something in meters that ISET can
-    use. 
+    use.
 
     However, it doesn't seem quite right yet. Perhaps there is some scaling
     factor related to it using diopters as the unit of distance? The task
@@ -55,7 +55,7 @@ fImageInfo = jsondecode(exiftoolInfo(fName, 'format', 'json'));
 
 depthmap = single(imread(fout));
 
-% we are assuming our depth map is uint8 
+% we are assuming our depth map is uint8
 depthMax = 255;
 
 textDistance = split(fImageInfo.SubjectDistance, ' '); % by default is in text
@@ -69,18 +69,18 @@ switch fImageInfo.DepthMapUnits
     case 'Meters'
         farMeters = fImageInfo.DepthMapFar;
         nearMeters = fImageInfo.DepthMapNear;
-        depthmap = nearMeters + (single(depthmap)./depthMax .* (farMeters - nearMeters));  
+        depthmap = nearMeters + (single(depthmap)./depthMax .* (farMeters - nearMeters));
     case 'Diopters'
         % assume rangeinverse for now?
         % need to calculate actual diopters
         minDiopters = fImageInfo.DepthMapNear;
         maxDiopters = fImageInfo.DepthMapFar;
-
+        
         % this assumes a regular range map
-        %diopterMap = minDiopters + (single(depthmap)./depthMax .* (maxDiopters - minDiopters));  
-
+        %diopterMap = minDiopters + (single(depthmap)./depthMax .* (maxDiopters - minDiopters));
+        
         % what about an inverse range map
-        %diopterMap = maxDiopters - (single(depthmap)./depthMax .* (maxDiopters - minDiopters));  
+        %diopterMap = maxDiopters - (single(depthmap)./depthMax .* (maxDiopters - minDiopters));
         %depthmap = 1./diopterMap;
         
         % Code from Google doc on RangeInverse
@@ -110,13 +110,13 @@ switch fImageInfo.Orientation
         depthmap = imresize(depthmap, [fImageInfo.ImageHeight, fImageInfo.ImageWidth]);
     case 'Rotate 90 CW'
         %depthmap = imrotate(depthmap, -90);
-        depthmap = imresize(depthmap, [fImageInfo.ImageHeight, fImageInfo.ImageWidth]);        
+        depthmap = imresize(depthmap, [fImageInfo.ImageHeight, fImageInfo.ImageWidth]);
     case 'Rotate 90 CCW'
         %depthmap = imrotate(depthmap, 90);
         depthmap = imresize(depthmap, [fImageInfo.ImageHeight, fImageInfo.ImageWidth]);
     otherwise
         depthmap = imresize(depthmap, [fImageInfo.ImageHeight, fImageInfo.ImageWidth]);
-
+        
 end
 
 

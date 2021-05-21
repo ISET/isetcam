@@ -4,13 +4,13 @@ function Xscaled = ieScaleColumns(X,b1,b2)
 %  Xscaled = ieScaleColumns(X,b1,b2)
 %
 % Description
-%   Call ieScale on each column of X. 
+%   Call ieScale on each column of X.
 %
 % Inputs
 %   X - a matrix
 %   b1
 %   b2
-% 
+%
 %
 % JEF/BW Vistasoft team 2018
 %
@@ -38,4 +38,3 @@ end
 end
 
 
-    

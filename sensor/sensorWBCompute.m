@@ -42,11 +42,11 @@ for ii=1:(nWave-1)
     
     % sensorCompute adjusts the spectral properties of the sensor to match
     % the optical image.  So, in this routine, we create a tmpSensor that
-    % is discarded.  
+    % is discarded.
     tmpSensor = sensorCompute(sensorL,opticalimage,0);
     volts = volts + sensorGet(tmpSensor,'volts');
-    if displayFlag, 
-        figure(displayFig); 
+    if displayFlag
+        figure(displayFig);
         sensor = sensorSet(sensor,'volts',volts);
         sensorShowImage(sensor);
     end

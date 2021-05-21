@@ -15,11 +15,11 @@ expTimes = [.1 .1 .1];   % Seconds
 
 cScenes = cpScene('iset scenes', 'isetScenes', aScenes);
 cScene  = cpScene('iset scenes', 'isetScenes', aScene);
-    
-%% 
+
+%%
 ourCamera = cpCamera();
 
-%% 
+%%
 ourCamera.TakePicture(cScene, 'Auto');
 
 %%

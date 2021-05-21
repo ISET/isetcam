@@ -6,13 +6,13 @@ function [isoPerCone,pupilDiamMm,photoreceptors,irradianceWattsPerM2] = ...
 %    focalLengthMm,integrationTimeSec,[mPigmentAdjustment])
 %
 % Compute LMS human cone isomerizations from scene spectral radiance in
-% Watts/[m2-sr-nm].  
+% Watts/[m2-sr-nm].
 %
 % radiance:            The scene radiance (watts/sr/m2/nm)
 % wave:                The wavelength samples (nm)
 % pupilDiamMm:         Pupil diameter in millimeters
 % focalLengthMm:       Focal length in millimeters
-% integrationTimeSec:  
+% integrationTimeSec:
 % mPigmentAdjustment:  Macular pigment density adjustment. 0 means
 %                      standard amount (which is XXX).
 %
@@ -20,7 +20,7 @@ function [isoPerCone,pupilDiamMm,photoreceptors,irradianceWattsPerM2] = ...
 % isoPerCone:            Isomerizations per cone
 % pupilDiamMm:
 % photoreceptors:        Structure with information about sensors
-% irradianceWattsPerM2:  Irradiance derived from 
+% irradianceWattsPerM2:  Irradiance derived from
 %
 % This routine is set up for a quick commparison to isetbio calculations.
 % The underlying code is demonstrated and (sort of) documented in PTB

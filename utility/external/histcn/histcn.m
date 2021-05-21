@@ -62,7 +62,7 @@ function [count, edges, mid, loc] = histcn(X, varargin)
 %  imagesc(mid{1:2},N); axis xy; identityLine;
 %
 % See also: HIST, ACCUMARRAY
-% 
+%
 % Bruno Luong: <brunoluong@yahoo.com>
 % Last update: 25/August/2011
 
@@ -125,8 +125,8 @@ sz = max([sz; max(loc,[],1)]);
 
 % Compute the mid points
 mid = cellfun(@(e) 0.5*(e(1:end-1)+e(2:end)), edges, ...
-              'UniformOutput', false);
-          
+    'UniformOutput', false);
+
 % Count for points where all coordinates are falling in a corresponding
 % bins
 if nd==1

@@ -1,6 +1,6 @@
 %% s_scielabFilters
 % Illustrate the properties of S-CIELAB filters
-% 
+%
 % See scPrepareFilters for more notes on the filters
 %
 % Copyright ImagEval Consultants, LLC, 2010.
@@ -66,7 +66,7 @@ scP.filterSize    = N;
 [filters,tmp,scParams] = scPrepareFilters(scP);
 imgDeg  = scP.filterSize/scP.sampPerDeg;         % samp/(samp/deg) = deg
 freq    = (1:scP.filterSize) - scP.filterSize/2; % Center around 0
-freqDeg = freq/imgDeg;                           % First cycle is cycles/imgDeg.  
+freqDeg = freq/imgDeg;                           % First cycle is cycles/imgDeg.
 
 tFilter = cell(1,3);
 for ii=1:3
@@ -81,7 +81,7 @@ end
 
 % We can compare two different sets of Gaussian parameters in the
 % distribution.  Three are currently defined.  We will probably add new
-% ones for further experiments.  
+% ones for further experiments.
 scP.sampPerDeg    = 350;
 scP.filterSize    = 200;
 
@@ -94,18 +94,18 @@ scP.filterversion = 'distribution';   % From the Matlab 1996 distribution
 [filters,support,scParams] = scPrepareFilters(scParams);
 imgDeg = scP.filterSize/scP.sampPerDeg;       % samp/(samp/deg) = deg
 freq = (1:scP.filterSize) - scP.filterSize/2; % Center around 0
-freqDeg = freq/imgDeg;                                  % First cycle is cycles/imgDeg.  
+freqDeg = freq/imgDeg;                                  % First cycle is cycles/imgDeg.
 
 tFilters = cell(1,3);
 vcNewGraphWin;
 for ii=1:3
     ps = fftshift(filters{ii});                  % The center should be at ps(1,1)
     tFilters{ii} = fftshift(abs(fft2(ps)));      % plot(support,ps(1,:))
-    subplot(1,3,ii), 
+    subplot(1,3,ii),
     imagesc(freqDeg,freqDeg,tFilters{ii});       % spec = fftshift(tFilters{3});
     axis image;                                  % figure(3); loglog(freqDeg,fftshift(spec(:,1)));
     set(gca,'xlim',[-20 20],'ylim',[-20 20])     % grid on
-    grid on;                                         
+    grid on;
     set(gcf,'Name',sprintf('FFT %s',scP.filterversion));
 end
 

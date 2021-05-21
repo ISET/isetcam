@@ -5,7 +5,7 @@ function idx = wvfWave2idx(wvf,wList)
 %
 % Convert the wavelength list (wList) to indices relative to
 %
-% For example, if wvfGet(wvf,'wave') is [400 500 600],
+% For example, if wvfGet(wvf,'wave') is [400 500 600]
 % and wList is [500,600] then idx is [2,3].
 %
 % Note: Currently only returns exact matches within rouding to 1 nm.

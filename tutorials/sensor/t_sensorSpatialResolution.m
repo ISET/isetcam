@@ -14,11 +14,11 @@
 %%
 ieInit
 
-%% Create a scene with a simple test pattern and put it in the scene window 
+%% Create a scene with a simple test pattern and put it in the scene window
 scene = sceneCreate('sweepFrequency');
 
 % You can set the field of view in a variety of ways to alter the spatial
-% scale of the optical image 
+% scale of the optical image
 scene = sceneSet(scene,'fov',1);
 ieAddObject(scene); sceneWindow;
 
@@ -39,7 +39,7 @@ sensorWindow(sensor);
 
 % Now plot the optical image and the voltage response on a common spatial
 % scale. First, generate a plot of the voltage across the pixels on the
-% sensor, saving the data in sData.  Choose the middle row. 
+% sensor, saving the data in sData.  Choose the middle row.
 row = sensorGet(sensor,'rows'); row = round(row/2);
 [g, sData] = sensorPlotLine(sensor,'h','volts','space',[1,row]);
 if ~isdeployed % close gets an error when we run a Windows EXE
@@ -92,7 +92,7 @@ end
 
 row = sceneGet(oi,'rows'); row = round(row/2);
 
-[oData,g] = oiPlot(oi,'horizontallineilluminance',[1,row]); 
+[oData,g] = oiPlot(oi,'horizontallineilluminance',[1,row]);
 if ~isdeployed % close gets an error when we run a Windows EXE
     close(g);
 end

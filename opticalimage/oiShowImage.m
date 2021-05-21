@@ -5,14 +5,14 @@ function rgb = oiShowImage(oi,displayFlag,gam,oiW)
 %
 % oi:   Optical image
 % displayFlag: (see imageSPD; if value is 0 or negative, don't display)
-%     = 0, +/- 1 compute RGB image 
+%     = 0, +/- 1 compute RGB image
 %     = +/- 2,   compute gray scale for IR
 %     = +/- 3,   use HDR method (hdrRender.m)
-%     = +/- 4,   clip highlights (Set top 0.05 percent of pixels to max) 
+%     = +/- 4,   clip highlights (Set top 0.05 percent of pixels to max)
 % gam: Set display gamma parameter
 %
 % Examples:
-%   oiShowImage(oi);       
+%   oiShowImage(oi);
 %   img = oiShowImage(oi,0);   vcNewGraphWin; image(img)
 %   img = oiShowImage(oi,2);
 %   img = oiShowImage(oi,-2);  img = img/max(img(:)); vcNewGraphWin; imagesc(img);
@@ -27,7 +27,7 @@ if ~exist('oiW','var'), oiW = []; end
 
 if ~isempty(oiW)
     % Make sure it is selected
-    figure(oiW.figure1);   
+    figure(oiW.figure1);
 end
 
 %% Don't duplicate the data
@@ -35,12 +35,12 @@ if checkfields(oi,'data','photons')
     photons = oi.data.photons;
     wList   = oiGet(oi,'wavelength');
     sz      = oiGet(oi,'size');
-else 
+else
     % Object exists, but no data.
     % cla(oiAxis);
     return;
 end
-    
+
 % This displays the image in the GUI.  The displayFlag flag determines how
 % imageSPD converts the data into a displayed image. The data in img are
 % in RGB format.
@@ -48,7 +48,7 @@ end
 % We should probably select the oi window here.
 rgb = imageSPD(photons,wList,gam,sz(1),sz(2),-1*abs(displayFlag),[],[],oiW);
 
-%% If displayFlag value is positive, display the rendered RGB. 
+%% If displayFlag value is positive, display the rendered RGB.
 
 % If negative, we just return the RGB values.
 if displayFlag >= 0
@@ -67,7 +67,7 @@ if displayFlag >= 0
         axis image; grid on;
         set(gca,'xcolor',[.5 .5 .5]);
         set(gca,'ycolor',[.5 .5 .5]);
-    end   
+    end
 end
 
 end

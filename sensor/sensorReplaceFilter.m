@@ -3,10 +3,10 @@ function sensor = sensorReplaceFilter(sensor,whichFilter,newFilterFile)
 %   sensor = sensorReplaceFilter(sensor,[whichFilter],[newFilterFile])
 %
 % Replace a color filter in the isa color filter list.  The data
-% are read from a file. 
+% are read from a file.
 %
 % We don't alter the sensor.cfa.pattern.  We just changed the filter
-% transmissivity and the filter name. 
+% transmissivity and the filter name.
 %
 % Examples:
 %    [val,isa] = vcGetSelectedObject('ISA');
@@ -17,11 +17,11 @@ function sensor = sensorReplaceFilter(sensor,whichFilter,newFilterFile)
 if ieNotDefined('isa'), sensor = vcGetObject('sensor'); end
 if ieNotDefined('newFilterFile'), newFilterFile = []; end
 
-if ieNotDefined('whichFilter'), 
+if ieNotDefined('whichFilter')
     filterNames = sensorGet(sensor,'filterNames');
-    replaceName = ieReadString('Enter filter name to replace:',filterNames{1}); 
+    replaceName = ieReadString('Enter filter name to replace:',filterNames{1});
     if isempty(replaceName), return; end;
-    whichFilter = validatestring(replaceName,filterNames);     
+    whichFilter = validatestring(replaceName,filterNames);
     if isempty(whichFilter), return; end;
 end
 

@@ -5,8 +5,8 @@ function middleM = getMiddleMatrix(m,sz)
 %
 % Data values from the middle of a matrix are returned. The total number
 % of extracted pixels is 1 + round(sz/2)*2.  This is awkward  for small
-% numbers of sz, but OK for bigger numbers.  
-%   
+% numbers of sz, but OK for bigger numbers.
+%
 %  Example:
 %     mat = reshape([1:(9*9)],9,9);
 %     foo = getMiddleMatrix(mat,3)

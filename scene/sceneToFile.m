@@ -24,7 +24,7 @@ function [varExplained, nBases] = sceneToFile(fname,scene,bType,mType,comment)
 %         An integer >= 1 specifies the number of basis functions
 % mType:  Mean computation
 %         Remove the mean ('meansvd') or not ('canonical', default) before
-%         calculating svd 
+%         calculating svd
 % comment:  Optional, default is just the scene name
 %
 %Return
@@ -64,7 +64,7 @@ name       = sceneGet(scene,'name');
 spectrum = sceneGet(scene, 'spectrum');
 type     = sceneGet(scene, 'type');
 magnification = sceneGet(scene, 'magnification');
-data = sceneGet(scene, 'data'); 
+data = sceneGet(scene, 'data');
 
 if isempty(bType)
     % No compression.
@@ -84,7 +84,7 @@ else
        vcNewGraphWin;
        for ii = 1:size(basisData,2)
            plot(wList,basisData(:,ii)); hold on
-       end   
+       end
     %}
     
     photons           = sceneGet(scene,'photons');
@@ -101,7 +101,7 @@ else
             error('Unknown mType: %s\n',mType);
     end
     coef = XW2RGBFormat(coef,row,col);
-
+    
     % Save the coefficients and basis
     basis.basis = basisData;
     basis.wave  = wave;

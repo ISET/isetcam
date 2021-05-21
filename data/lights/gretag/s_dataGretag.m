@@ -30,7 +30,7 @@ illDay = ieReadSpectra('illDay-20201023',wave);
 illDay = ieScale(illDay,1);
 plotRadiance(wave,illDay);
 
-%% 
+%%
 illHor = ieReadSpectra('illHorizon-20180220',wave);
 illHor = ieScale(illHor,1);
 plotRadiance(wave,illHor);

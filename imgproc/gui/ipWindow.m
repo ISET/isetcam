@@ -5,13 +5,13 @@ function ipW = ipWindow(ip)
 %   ipW = ipWindow(ip)
 %
 % Brief description
-%   Opens an ipWindow interface based on the ipWindow_App. 
+%   Opens an ipWindow interface based on the ipWindow_App.
 %
 % Inputs
 %   ip:  The image processor you want in the window.  If empty, the currently
 %        selected ip in global vcSESSION is used.  If there is no
 %        selected ip a default ip is created and used.
-%   show:   Executes a drawnow command on exiting.  
+%   show:   Executes a drawnow command on exiting.
 %           (Optional, default true)
 %
 % Outputs

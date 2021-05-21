@@ -5,7 +5,7 @@ function displayW = displayWindow(thisD)
 %   displayW = displayWindow(thisD)
 %
 % Brief description
-%   Opens a displayWindow interface based on the displayWindow_App. 
+%   Opens a displayWindow interface based on the displayWindow_App.
 %
 % Inputs
 %   thisD:  The display you want in the window.  If empty, the currently

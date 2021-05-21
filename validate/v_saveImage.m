@@ -37,7 +37,7 @@ ip = cameraGet(camera,'ip');
 showImageFlag = true; trueSizeFlag = true;
 fName = ipSaveImage(ip,'deleteMe',showImageFlag,trueSizeFlag);   % PNG is appended
 
-img = imread(fName); 
+img = imread(fName);
 ieNewGraphWin; image(img);
 delete(fName);
 

@@ -8,7 +8,7 @@ function [support, spread, delta] = conePlot(xy,coneType, support, spread, delta
 %  coneTYpe:  an integer from 1:4 where 1 means no cone (K), 2:4 are L,M,S
 %  support:   Gaussian blurring parameters for creating the image
 %    spread
-%    delta  
+%    delta
 %
 % Description
 %   These images can be compared with the ones measured by Hofer et al. in
@@ -38,7 +38,7 @@ fgrid = ffndgrid(xy,coneType,delta);
 fgrid = full(fgrid);
 
 % Find the positions in the cfa of the empty (K) and three cone types
-K = find(fgrid == 1); L = find(fgrid == 2); 
+K = find(fgrid == 1); L = find(fgrid == 2);
 M = find(fgrid == 3); S = find(fgrid == 4);
 
 % Wherever there is a red cone, we put (1,0,0) and so forth for the

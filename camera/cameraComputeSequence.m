@@ -7,7 +7,7 @@ function [camera,images] = cameraComputeSequence(camera, varargin)
 % various approaches to combine them -- ranging from simple summation
 % to alignment, tone-mapping, fancy AI stuff, and so on.
 %
-% I think that will either mean broadening what the IP can do, or 
+% I think that will either mean broadening what the IP can do, or
 % adding another ISP-type element.
 %
 % Input:
@@ -21,7 +21,7 @@ function [camera,images] = cameraComputeSequence(camera, varargin)
 %
 %   History:
 %       Initial coding: DJC, December, 2020
-% 
+%
 % check for required camera structure
 if ~exist('camera', 'var') || isempty(camera), error('camera struct required'); end
 

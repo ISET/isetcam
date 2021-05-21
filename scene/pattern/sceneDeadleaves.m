@@ -17,7 +17,7 @@ function scene = sceneDeadleaves(n,sigma,options)
 % Outputs
 %  img - a gray scale image based on dead leaves model.
 %
-% References : 
+% References :
 %   Dead leaves correct simulation :
 %    http://www.warwick.ac.uk/statsdept/staff/WSK/dead.html
 %

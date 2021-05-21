@@ -55,7 +55,7 @@ function scene = sceneSet(scene,parm,val,varargin)
 % Some multispectral scenes have information about the illuminant
 %     'illuminant'  - Scene illumination structure
 %      'illuminant Energy'  - Illuminant spd in energy is stored W/sr/nm/sec
-%      'illuminant Photons' - Photons are converted to energy and stored 
+%      'illuminant Photons' - Photons are converted to energy and stored
 %      'illuminant Comment' - Comment
 %      'illuminant Name'    - Identifier for illuminant.
 %
@@ -77,7 +77,7 @@ if ~exist('val','var'), error('Value field required.'); end  % empty is OK
 
 parm = ieParamFormat(parm);
 
-switch parm 
+switch parm
     case {'name','scenename'}
         scene.name = val;
     case 'type'
@@ -124,18 +124,18 @@ switch parm
     case {'distance' }
         % Positive for scenes, negative for optical images
         scene.distance = val;
-
+        
     case {'wangular','widthangular','hfov','horizontalfieldofview','fov'}
         if val > 180,   val = 180 - eps; warndlg('Warning: fov > 180');
         elseif val < 0, val = eps; warndlg('Warning fov < 0');
         end
         scene.wAngular = val;
-
+        
     case 'magnification'
         % Scenes should always have a magnification of 1.
         if val ~= 1, warndlg('Scene must have magnification 1'); end
         scene.magnification = 1;
-
+        
     case {'data','datastructure'}
         scene.data = val;
         
@@ -143,7 +143,7 @@ switch parm
         % scene = sceneSet(scene,'photons',val);
         % sceneSet(scene,'photons',val,[wave])
         % val is typically a 3D (row,col,wave) matrix.
-
+        
         % Not sure we want 32/64 option any more.  32 is just good enough,
         % I think (BW).
         bitDepth = sceneGet(scene, 'bitDepth');
@@ -171,13 +171,13 @@ switch parm
             otherwise
                 error('Unsupported data bit depth %f\n',bitDepth);
         end
-
+        
         % Clear out luminance computation
         scene = sceneSet(scene, 'luminance', []);
         
     case 'energy'
         % scene = sceneSet(scene,'energy',energy,wave);
-        % 
+        %
         % The user specified the scene in units of energy.  We convert to
         % photons and set the data as photons.
         %
@@ -188,7 +188,7 @@ switch parm
         
         % h = waitbar(0,'Energy to photons');
         for ii=1:w
-            % waitbar(ii/w,h);           
+            % waitbar(ii/w,h);
             % Get the first image plane from the energy hypercube.
             % Make it a row vector
             tmp = val(:,:,ii); tmp = tmp(:)';
@@ -217,7 +217,7 @@ switch parm
         if size(roi,2) == 4, roiLocs = ieRect2Locs(roi);
         else,                roiLocs = roi;
         end
-
+        
         wave = sceneGet(scene,'wave');
         photons = zeros(size(val));
         [~,w] = size(photons);
@@ -225,15 +225,15 @@ switch parm
         
         photons = sceneGet(scene,'photons');
         [photons, r, c] = RGB2XWFormat(photons);
-
+        
         sz = sceneGet(scene,'size');
         roiLocs(:,1) = ieClip(roiLocs(:,1),1,r);
         roiLocs(:,2) = ieClip(roiLocs(:,2),1,c);
-
+        
         imgLocs = sub2ind([sz(1),sz(2)],roiLocs(:,1),roiLocs(:,2));
         photons(imgLocs,:) = val;
         photons = XW2RGBFormat(photons,sz(1),sz(2));
-
+        
         scene = sceneSet(scene,'photons',photons);
         
     case 'roienergy'
@@ -242,7 +242,7 @@ switch parm
         % radiance data must be in XW format.
         %
         %    scene = sceneSet(scene,'roi energy',energy, roi);
-        % 
+        %
         % The user specified the scene radiance in units of energy.
         %
         % The ROI is specified as either an ROI box or as a set of
@@ -276,7 +276,7 @@ switch parm
         % close(h);
         scene = sceneSet(scene,'roi photons',photons,roi);
         
-
+        
     case {'peakradiance','peakphotonradiance'}
         % Deprecated, I think.
         % Used with monochromatic scenes to set the radiance in photons.
@@ -312,12 +312,12 @@ switch parm
         % w. This information is used to set the illuminant level properly
         % and to keep track of reflectances.
         if length(val) ~= 4 || val(1) > 1 || val(1) < 0
-            error('known reflectance is [reflectance,row,col,wave]'); 
+            error('known reflectance is [reflectance,row,col,wave]');
         end
         scene.data.knownReflectance = val;
         
-    % See sceneReflectanceChart 
-    % Reflectance chart parameters are stored here.
+        % See sceneReflectanceChart
+        % Reflectance chart parameters are stored here.
     case {'chartparameters'}
         scene.chartP = val;
     case {'cornerpoints','chartcornerpoints','chartcorners'}
@@ -335,7 +335,7 @@ switch parm
         % The luminance array is stored.  But this parameter is dangerous
         % because this value could be inconsistent with the photons if we
         % are not careful.
-        if isempty(val), scene.data.luminance = val; return; 
+        if isempty(val), scene.data.luminance = val; return;
         elseif ~isequal(size(val),size(scene.data.photons(:,:,1)))
             error('Lminance array does not match photon array size.');
         else
@@ -355,12 +355,12 @@ switch parm
     case {'spectrum','wavespectrum','wavelengthspectrumstructure'}
         scene.spectrum  = val;
     case {'wave','wavelength','wavelengthnanometers'}
-        % scene = sceneSet(scene,'wave',wave); 
+        % scene = sceneSet(scene,'wave',wave);
         %
         % If there are photon data, we interpolate the data as well as
         % setting the wavelength. If there are no photon data, we just set
         % the wavelength.
-
+        
         if ~checkfields(scene,'data','photons') || isempty(scene.data.photons)
             % No data, so just set the spectrum
             scene.spectrum.wave = val;
@@ -378,7 +378,7 @@ switch parm
         % This set changes the illuminant, but it does not change the
         % radiance SPD.  Hence, changing the illuminant (implicitly)
         % changes the reflectance. This might not be what you want.  If you
-        % want to change the scene as if it is illuminanted differently,
+        % want to change the scene as if it is illuminanted differently
         % use the function: sceneAdjustIlluminant()
         
         % The data can be a vector (one SPD for the whole image) or they
@@ -425,7 +425,7 @@ switch parm
         scene.mccRectHandles = val;
     case {'mcccornerpoints'}
         scene.mccCornerPoints = val;
-
+        
     otherwise
         disp(['Unknown sceneSet parameter: ',parm]);
 end

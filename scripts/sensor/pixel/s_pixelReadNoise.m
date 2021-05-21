@@ -25,19 +25,19 @@
 %
 % Also, notice that if the read noise gets too large, we clip again. Too
 % many little interactions for a beautiful theory.
-%   
+%
 % Copyright ImagEval Consultants, LLC, 2010.
 
 %% Experiment with sensor and pixel parameters
 dsnuLevel = 0.0;        % Std. dev. of offset in volts
 prnuLevel = 0.0;        % Std. dev of gain, around 1, as a percentage
-readNoise = 0.003;      % Read noise in volts   
+readNoise = 0.003;      % Read noise in volts
 analogOffset = 0.005;   % Analog offset (5 mv)
 
 % Set a brief exposure time for DSNU estimation.  Because of the short
 % exposure, the PRNU level is irrelevant.  The read noise can matter.  If
 % it is very large, you must average over more trials.
-expTime = 0.001; 
+expTime = 0.001;
 
 % We acquire the image multiple times so we can average out the read noise
 nRepeats = 25;
@@ -49,7 +49,7 @@ darkScene = sceneAdjustLuminance(scene,meanL);
 
 oi = oiCreate('default',[],[],0);
 
-sensor = sensorCreate; 
+sensor = sensorCreate;
 sensor = sensorSet(sensor,'size',[128 128]);
 
 % Set scene to be larger than the sensor field of view.
@@ -82,11 +82,11 @@ end
 
 %% Estimate the standard deviation at each pixel.
 
-% The std at each pixel.  
+% The std at each pixel.
 pSTD = std(volts,[],2);
 
 % The histogram is the distribution of the estimated pixel read noises
-ieNewGraphWin; 
+ieNewGraphWin;
 histogram(pSTD,50)
 grid on;
 

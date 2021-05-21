@@ -13,9 +13,9 @@ chdir(fullfile(isetRootPath,'data','sensor','colorfilters','auto','ON','RGB'));
 %% RGB version
 
 % Data run out from 350 to 1050
-load('RedChannel.mat');  
+load('RedChannel.mat');
 load('GreenChannel.mat');
-load('BlueChannel.mat'); 
+load('BlueChannel.mat');
 
 wave = 380:1:1000;
 R = interp1(RedChannel(:,1),RedChannel(:,2),wave,'linear','extrap');
@@ -38,9 +38,9 @@ ieSaveColorFilter(cf,fullfile(isetRootPath,'data','sensor','colorfilters','auto'
 chdir(fullfile(isetRootPath,'data','sensor','colorfilters','auto','ON','RGB'));
 
 % Data run out from 350 to 1050
-load('RedChannel.mat');  
+load('RedChannel.mat');
 load('GreenChannel.mat');
-load('BlueChannel.mat'); 
+load('BlueChannel.mat');
 
 chdir(fullfile(isetRootPath,'data','sensor','colorfilters','auto','ON','Mono'));
 load('Mono.mat');

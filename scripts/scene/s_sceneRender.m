@@ -1,4 +1,4 @@
-%% Rendering a scene 
+%% Rendering a scene
 %
 % We show how to render a scene using different illuminants, and
 % then we show how to render an HDR scene.
@@ -9,7 +9,7 @@
 % this as color balancing) Then we calculate the xyz values and
 % use an xyz to linear sRGB final step should be to pass the
 % linear rgb into a display gamma lut
-% 
+%
 % See also: hdrRender, sceneShowImage, sceneFromFile, scenePlot,
 %           ieReadSpectra, sceneAdjustIlluminant, scenePlot
 %

@@ -9,12 +9,12 @@ function pdArray = sensorPDArray(sensor,spacing)
 % photodetector contained within each square in a grid spanning the pixel
 % locations.  The code is used as part of the spatialIntegration
 % calculation.
-%   
+%
 % The spacing indicates the fineness of the grid on a unit region (i.e.,
 % 1 is the center-to-center spacing between pixels.
 %
 % This code assumes the shape of the photodetector is row-col separable
-% (i.e. a rectangle or square). 
+% (i.e. a rectangle or square).
 %
 % When spacing ==1, this is the same as the pixel fill factor (0,1).
 %
@@ -45,7 +45,7 @@ for ii=1:nSquares
     lower = max(gridPositions(ii),normalizedPdMin(1));
     upper = min(gridPositions(ii+1),normalizedPdMax(1));
     inPDRows(ii) = max(0,upper - lower);
-
+    
     lower = max(gridPositions(ii),normalizedPdMin(2));
     upper = min(gridPositions(ii+1),normalizedPdMax(2));
     inPDCols(ii) = max(0,upper - lower);

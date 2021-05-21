@@ -3,7 +3,7 @@ function [otf, achOTF] = humanCore(wave,sampleSF,p,D0)
 %
 %   [otf, achOTF] = humanCore(wave,nWave,sampleSF,p,D0)
 %
-% Calculate the human OTF. 
+% Calculate the human OTF.
 %
 % Inputs
 %  p:         Pupil radius in meters (computed from f/# and focal length)
@@ -21,7 +21,7 @@ function [otf, achOTF] = humanCore(wave,sampleSF,p,D0)
 %                 empirical measurements out of the Williams' lab.
 %
 % Example:
-%   wave = 400:10:700; sampleSF = [0:1:30]; 
+%   wave = 400:10:700; sampleSF = [0:1:30];
 %   p = 0.0015; D0 = 60;
 %   otf = humanCore(wave,sampleSF,p,D0);
 %   mesh(sampleSF,wave,otf)
@@ -41,13 +41,13 @@ D = humanWaveDefocus(wave);
 % given pupil radius in meters, defocus (D, diopters), and dioptric power
 % (D0).  The explanation for this formula is in Marimont and Wandell.
 w20 = p^2/2*(D0.*D)./(D0+D);
-% plot(wave,w20); 
+% plot(wave,w20);
 % grid; xlabel('Wavelength (nm)'); ylabel('relative defocus (Hopkins w20)');
 
 % We use this factor to convert from the input spatial frequency units
 % (cycles/deg) to cycles/meter needed for the Hopkins eye
 % c = 3434.07;            % degrees per meter for human eye
-c = 1/(tan(deg2rad(1))*(1/D0));  % deg per meter    
+c = 1/(tan(deg2rad(1))*(1/D0));  % deg per meter
 
 % This is the general OTF, independent of wavelength.  The curve here is
 % derived from data obtained by Dave Williams.  It could come from some
@@ -63,10 +63,10 @@ for ii = 1:length(wave)
     
     % Compute the reduced spatial frequency (0,2)
     %            m *           (m/m) *  cy/m  - Dimensionless in the end
-    s(ii,:) = ( c * lambda(ii) /(D0*p)) * sampleSF; 
+    s(ii,:) = ( c * lambda(ii) /(D0*p)) * sampleSF;
     % s(ii,:) = ( lambda(ii) /(D0*p)) * sampleSFm;
-
-    % Related to the defocus specified by w20, which in turn depends on p,
+    
+    % Related to the defocus specified by w20, which in turn depends on p
     % D and D0.
     alpha(ii,:) = ((4*pi)./(lambda(ii) )).*w20(ii).*s(ii,:);
     

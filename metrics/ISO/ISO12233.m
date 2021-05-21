@@ -48,7 +48,7 @@ function [results, fitme, esf, h] = ISO12233(barImage, deltaX, weight, plotOptio
 
 % Examples:
 %{
-  % Interactive usage 
+  % Interactive usage
   ISO12233;
    
   %
@@ -68,7 +68,7 @@ function [results, fitme, esf, h] = ISO12233(barImage, deltaX, weight, plotOptio
   [results, fitme, esf] = ISO12233(barImage,deltaX,wgts,'luminance');
 %}
 
-% PROGRAMMING TODO: 
+% PROGRAMMING TODO:
 %  Rather than decode pixelWidth and dpi based on the value, we should
 %  probably set a flag and be explicit.
 
@@ -97,7 +97,7 @@ if ieNotDefined('barImage')
 elseif isstruct(barImage) && isequal(barImage.type,'vcimage')
     % The barImage is really the image processor (ip)
     ip = barImage;
-    rect = ISOFindSlantedBar(ip); 
+    rect = ISOFindSlantedBar(ip);
     roiLocs = ieRect2Locs(rect);
     barImage = vcGetROIData(ip,roiLocs,'results');
     col = rect(3)+1;
@@ -178,7 +178,7 @@ for color=1:nWave                       % Loop for each color
     %     else pname =[' Red ' 'Green'  'Blue ' ' Lum '];
     %     end
     c = deriv1(barImage(:,:,color), nRow, nCol, fil1);
-    % vcNewGraphWin; imagesc(c); colormap(gray)
+    % vcNewGraphWin; imagesc(c); colormap(gray(64))
     % compute centroid for derivative array for each line in ROI. NOTE WINDOW array 'win'
     for n=1:nRow
         % -0.5 shift for FIR phase
@@ -291,7 +291,7 @@ esf = zeros(nn,nWave);
 for color=1:nWave
     % project and bin data in 4x sampled array
     point = project(barImage(:,:,color), loc(color, 1), fitme(color,1), nbin);
-    % vcNewGraphWin; plot(point); colormap(gray)
+    % vcNewGraphWin; plot(point); colormap(gray(64))
     esf(:,color) = point;  % Not sure what esf stands for. Estimated spatial frequency?
     
     % compute first derivative via FIR (1x3) filter fil
@@ -305,7 +305,7 @@ for color=1:nWave
     % apply window (symmetric Hamming)
     c = win.*c;    % vcNewGraphWin; plot(c)
     
-    % Transform, scale %% The FFT of the point spread, 
+    % Transform, scale %% The FFT of the point spread
     temp = abs(fft(c, nn));    % vcNewGraphWin; plot(temp)
     mtf(1:nn2, color) = temp(1:nn2)/temp(1);
 end
@@ -370,7 +370,7 @@ switch plotOptions
         % Draw the luminance term
         p = plot(freq( 1:nn2out), mtf(1:nn2out, 1), sym{1});
         set(p,'linewidth',2);
-
+        
         title('ISO 12233');
         xlabel(['Spatial frequency (', funit,')']);
         ylabel('Contrast reduction (SFR)');
@@ -539,7 +539,7 @@ function [nlow, nhigh, status] = clipping(barImage, low, high, thresh1)
 %  barImage= array
 %  low     = low clip value
 %  high    = high clip value
-%  thresh1 = threshhold fraction [0-1] used for warning,
+%  thresh1 = threshhold fraction [0-1] used for warning
 %            if thresh1 = 0, all clipping is reported
 % Peter Burns 5 Aug. 2002
 % Copyright (c) International Imaging Industry Association
@@ -722,16 +722,16 @@ disp(' ');
 temp = class(array);
 if ~strcmp(temp(1:5),'uint8')
     imagesc( double(array)/double(max(max(max(array))))),
-    colormap('gray'),
+    colormap(gray(64)),
     title('Select ROI');
 else
     if nWave == 1
         imagesc(array),
-        colormap('gray'),
+        colormap(gray(64)),
         title('Select ROI');
     else
         imagesc(array),
-        colormap('gray'),
+        colormap(gray(64)),
         title('Select ROI');
     end
 end
