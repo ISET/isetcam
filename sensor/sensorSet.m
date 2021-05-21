@@ -497,14 +497,14 @@ switch lower(param)
         if ~isempty(sz)
             % Should we adjust the sensor here?
             r = size(val,1); c = size(val,2);
-            if sz(1) ~= r*round(sz(1)/r), warning('CFA row/pattern mis-match');end
-            if sz(2) ~= c*round(sz(2)/c), warning('CFA col/pattern mis-match'); end
+            if sz(1) ~= r*round(sz(1)/r), warning('CFA row/pattern mis-match. Suggest setting ''pattern and size""');end
+            if sz(2) ~= c*round(sz(2)/c), warning('CFA col/pattern mis-match, Suggest setting ''pattern and size""'); end
         end
     case {'cfapatternandsize','patternsize','patternandsize'}
         % sensorSet(sensor,'pattrn and size',pattern)
         %
         % Often, when we set the pattern we then follow by adjusting the
-        % sensor size so that we complete blockss.
+        % sensor size so that we complete the superpixel blocks.
         
         % Set the pattern and then adjust the size up
         sensor.cfa.pattern = val;

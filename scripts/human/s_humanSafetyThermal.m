@@ -135,8 +135,8 @@ fprintf('Maximum exposure duration per eight hours:  %f (min)\n',(30/hazardEnerg
 
 %% An example of a light measured in the lab
 
-fname = fullfile(isetRootPath,'local','blueLedlight30.mat');
-load(fname,'wave','radiance');
+fname = which('LED385nm.mat');
+radiance = ieReadSpectra(fname,wave);
 radiance = mean(radiance,2);
 irradiance = pi*radiance;
 
