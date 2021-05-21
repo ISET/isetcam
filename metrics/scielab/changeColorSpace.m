@@ -5,7 +5,7 @@ function outImage = changeColorSpace(inImage,colorMatrix)
 %
 % The input image is either an RGB image (m x n x 3) or an XW image but with 3 columns.
 % For backwards compatibility the routine also works on an inImage that is
-% a single matrix built from R,G,B, images as 
+% a single matrix built from R,G,B, images as
 %
 %		inImage = [ R G B];
 %
@@ -16,7 +16,7 @@ function outImage = changeColorSpace(inImage,colorMatrix)
 % vectors in the input image representation into column vectors in the
 % output representation.
 %
-%    outImage =   [ inImage ] * colorMatrix' 
+%    outImage =   [ inImage ] * colorMatrix'
 %    Note the TRANSPOSE:  ***EEEK**** Why we shouldn't use any more.
 %
 % where inImage is converted to XW format.
@@ -25,12 +25,12 @@ function outImage = changeColorSpace(inImage,colorMatrix)
 % S-CIELAB code uses changeColorSpace and the old routine, cmatrix,
 % rather than the new routines, colorTransformMatrix and
 % imageLinearTransform.  I haven't changed S-CIELAB over yet.  But it
-% should be changed to use imageLinearTransform and colorTransformMatrix,
+% should be changed to use imageLinearTransform and colorTransformMatrix
 % and then changeColorSpace and cmatrix should be eliminated from the
 % archive.
 %
 % To make these changes will require changing a few routines in the scielab
-% directory. 
+% directory.
 %
 
 insize = size(inImage);
@@ -40,7 +40,7 @@ insize = size(inImage);
 %
 inImage = reshape(inImage, prod(insize)/3, 3);
 
-% We post-multiply by colorMatrix' to convert the pixels to the output 
+% We post-multiply by colorMatrix' to convert the pixels to the output
 % color space
 %
 outImage = inImage*colorMatrix';

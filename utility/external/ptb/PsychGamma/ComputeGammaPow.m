@@ -4,7 +4,7 @@ function output = ComputeGammaPow(x,input)
 % Compute the gamma table using simple gamma function.
 %
 % Largest value in input must be the maximum device
-% setting.  This is wise during measurements in 
+% setting.  This is wise during measurements in
 % any case.
 %
 % output = ((input/maxInput).^x(1));
@@ -20,7 +20,7 @@ thePow = x(1);
 maxInput = max(input);
 minPow = 1e-5;
 if (thePow < minPow)
-  thePow = minPow;
+    thePow = minPow;
 end
 
 output = ((input/maxInput)).^thePow;

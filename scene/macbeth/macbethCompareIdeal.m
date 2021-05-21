@@ -1,6 +1,6 @@
 function [embRGB,mRGB,pSize] = macbethCompareIdeal(ip,mRGB,illType)
 % Create an image of an ideal MCC (color temperature ...) with data embedded
-% 
+%
 %   [embRGB,mRGB,pSize] = macbethCompareIdeal(ip,mRGB,illType)
 %
 % mRGB:    Macbeth RGB values of the data in the ipWindow
@@ -17,11 +17,11 @@ function [embRGB,mRGB,pSize] = macbethCompareIdeal(ip,mRGB,illType)
 % Examples:
 %{
   scene = sceneCreate; oi = oiCreate; oi = oiCompute(oi,scene);
-  sensor = sensorCreate; 
+  sensor = sensorCreate;
   sensor = sensorSet(sensor,'fov',sceneGet(scene,'fov'),oi);
   sensor = sensorCompute(sensor,oi);
   ip = ipCreate; ip = ipCompute(ip,sensor);
-  [embRGB,mRGB,pSize] = macbethCompareIdeal(ip,[],'d65'); 
+  [embRGB,mRGB,pSize] = macbethCompareIdeal(ip,[],'d65');
 %}
 
 %% Arguments
@@ -62,7 +62,7 @@ ieNewGraphWin; imagescRGB(mRGB);
 % MCC assuming an sRGB display.
 ideal     = macbethIdealColor(illType,'lrgb');
 
-% We reshape into a mini-image 
+% We reshape into a mini-image
 idealLRGB = XW2RGBFormat(ideal,4,6);
 
 %% Eliminate absolute level differences.  Scale so max in data is 1
@@ -109,11 +109,11 @@ set(figNum,'name',str);
 set(figNum,'Color',[1 1 1]*.7);
 
 mRGB = lrgb2srgb(mRGB);
-subplot(1,2,1), imagesc(mRGB), 
+subplot(1,2,1), imagesc(mRGB),
 axis image; axis off; title('ISET MCC D65 simulation')
 
 embRGB = lrgb2srgb(embRGB);
-subplot(1,2,2), imagesc(embRGB), 
+subplot(1,2,2), imagesc(embRGB),
 axis image; axis off; title('Simulation embedded in an ideal MCC D65')
 
 end

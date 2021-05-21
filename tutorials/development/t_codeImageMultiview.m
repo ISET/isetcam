@@ -8,7 +8,7 @@
 %
 % Copyright Imageval LLC, 2013
 
-%% 
+%%
 ieInit
 
 %% To start debugging I ran s_imageIlluminantCorrection

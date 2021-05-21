@@ -12,11 +12,11 @@ function outputXYZCalFormat = BasicToneMapCalFormat(inputXYZCalFormat, maxLum)
 index = find(inputXYZCalFormat(2,:) > maxLum);
 
 % If any pixel exceeds maxLum, scale it by 1/Y.  Uses
-% MATLAB's indexing trick of repeating an index to replicate 
+% MATLAB's indexing trick of repeating an index to replicate
 % values.
 outputXYZCalFormat = inputXYZCalFormat;
 if (~isempty(index))
-   outputXYZCalFormat(:, index) = maxLum*(inputXYZCalFormat(:, index)./inputXYZCalFormat([2 2 2]', index)); 
+    outputXYZCalFormat(:, index) = maxLum*(inputXYZCalFormat(:, index)./inputXYZCalFormat([2 2 2]', index));
 end
 
 end

@@ -18,7 +18,7 @@ function sensor = sensorReadFilter(filterType,sensor,fname)
 % This happens on the return in sensorWindow.
 %
 % The wavelength sampling of the data matches the current specification in
-% sensor. 
+% sensor.
 %
 % Inputs
 %  filterType: a string: cfa, pdspectralqe, infrared, colorfilters
@@ -66,10 +66,10 @@ switch lower(filterType)
         sensor = sensorSet(sensor,'pattern',pattern);
     case 'pdspectralqe'
         sensor = sensorSet(sensor,'pixel pd spectral qe',filterSpectra);
-
+        
     case {'infrared','irfilter'}
         sensor = sensorSet(sensor,'infrared',filterSpectra);
-
+        
     case {'colorfilters','colorfilter'}
         % Replace, but pattern entries must not exceed number of filters
         pattern = sensorGet(sensor,'pattern');
@@ -80,7 +80,7 @@ switch lower(filterType)
         sensor = sensorSet(sensor,'filterspectra',filterSpectra);
         sensor = sensorSet(sensor,'filternames',newFilterNames);
         sensor = sensorSet(sensor,'pattern',pattern);
-
+        
     otherwise
         error('Unknown color type.');
 end

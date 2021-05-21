@@ -1,8 +1,8 @@
 function img = imgRadialRamp(sz, expt, origin)
 % imgRadialRamp - Make a radial ramp function
-% 
+%
 %  img = imgRadialRamp(sz, expt, origin)
-% 
+%
 % The radial ramp can be either linear (default) or raised to power EXPT
 % (default = 1).  The origin is normally in the center of the image
 % (default = (size+1)/2, [1 1] = upper left), but its location can be

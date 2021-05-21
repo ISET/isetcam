@@ -1,9 +1,9 @@
 %% Validation for scenes
-%  
+%
 % Scripts related to scenes
 %
 % BW:
-% Checked with the new app design implementation.  Runs as of 08.16.2020. 
+% Checked with the new app design implementation.  Runs as of 08.16.2020.
 %
 
 %%

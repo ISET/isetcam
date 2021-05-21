@@ -1,17 +1,17 @@
 %% Review of sensor estimation for spectral QE (Psych 221)
-% 
+%
 %    Class:     Psych 221/EE 362
 %    Tutorial:  Sensor estimation procedure
 %    Author:    Wandell
 %    Purpose:   Introduce sensor responsivity, linear estimation,
 %      illuminant and surface functions, and sensor spectral estimation
-%    Date:      01.02.97	
+%    Date:      01.02.97
 %    Duration:  20 minutes
-% 
-%    Matlab 5:  Checked 01.06.98 BW
-%    Matlab 7:  Checked 01.04.08 BW 
 %
-% Copyright Imageval Consulting, 
+%    Matlab 5:  Checked 01.06.98 BW
+%    Matlab 7:  Checked 01.04.08 BW
+%
+% Copyright Imageval Consulting,
 
 %%
 ieInit
@@ -24,10 +24,10 @@ ieInit
 % scanner or camera encode light, and how the eye encodes light. Also, part
 % of the tutorial will involve computations with surface reflectances and
 % illuminants that are relevant to the Rendering tutorial.
-% 
+%
 
 %% Surface Reflectance Functions
-% 
+%
 % The Macbeth Color Checker is a set of 24 surfaces commonly used to
 % evaluate color balancing systems.  There is one in the ISEP lab.  The
 % surfaces that make up the Color Checker were selected to have the same
@@ -67,23 +67,23 @@ plot(wavelength,macbethChart(:,redChip),'r');
 
 % And here is a gray surface:
 
-hold on 
-plot(wavelength,macbethChart(:,grayChip),'k'); 
+hold on
+plot(wavelength,macbethChart(:,grayChip),'k');
 legend('Green chip', 'Red chip','Gray chip')
 hold off
 
-%% Creating a spectral power distribution of scattered light 
+%% Creating a spectral power distribution of scattered light
 % This scattered light will be the signal encoded by
 % the scanner.
-% 
+%
 
 % Now, load in an illuminant.  The illuminant spd represent the
-% amount of light present at each wavelength. 
+% amount of light present at each wavelength.
 
 D65 = ieReadSpectra('D65.mat',wavelength);
 
 % Make a plot of D65 a standard illuminant which represents a mix of blue
-% sky and clouds. 
+% sky and clouds.
 
 vcNewGraphWin;
 plot(wavelength,D65,'b'); grid on
@@ -155,13 +155,13 @@ size(rgbResponses)
 % think the values ought to be.
 
 % In order of lightest to darkest, here are the gray surfaces.
-graySeries = 4:4:24; 
+graySeries = 4:4:24;
 
 % And here is how to plot the predicted rgb responses
-% 
+%
 plot(graySeries,rgbResponses(1,graySeries)','ro', ...
-     graySeries,rgbResponses(2,graySeries)','go', ...
-     graySeries,rgbResponses(3,graySeries)','bo')
+    graySeries,rgbResponses(2,graySeries)','go', ...
+    graySeries,rgbResponses(3,graySeries)','bo')
 
 %% ESTIMATE THE SENSOR RESPONSIVITIES
 
@@ -192,8 +192,8 @@ plot(graySeries,rgbResponses(1,graySeries)','ro', ...
 estimate = (rgbResponses*pinv(spectral_signals))';
 
 plot(wavelength,estimate(:,1),'r', ...
-     wavelength,estimate(:,2),'g', ...
-     wavelength,estimate(:,3),'b')
+    wavelength,estimate(:,2),'g', ...
+    wavelength,estimate(:,3),'b')
 grid on
 xlabel('Wavelength'), ylabel('Responsivity')
 title('Estimated sensor responses')
@@ -207,14 +207,14 @@ plot(rgbPred(:),rgbResponses(:),'o')
 grid on
 
 % Suppose we had fewer measurements samples.  How well would we
-% have done on the estimation? 
+% have done on the estimation?
 
 l = 1:5:24;
 estimate = (rgbResponses(:,l)*pinv(spectral_signals(:,l)))';
 
 plot(wavelength,estimate(:,1),'r', ...
-     wavelength,estimate(:,2),'g', ...
-     wavelength,estimate(:,3),'b')
+    wavelength,estimate(:,2),'g', ...
+    wavelength,estimate(:,3),'b')
 grid on
 xlabel('Wavelength'), ylabel('Responsivity')
 title('Estimated sensor responses')
@@ -229,7 +229,7 @@ xlabel('Predicted rgb'); ylabel('Measured rgb');
 grid on
 
 % Try adding in some measurement noise to create a new estimate.
-% 
+%
 randn('seed',0);
 n = 10*randn(size(rgbResponses));
 sig = max(0,rgbResponses + n);
@@ -237,4 +237,4 @@ estimate = (sig(:,l)*pinv(spectral_signals(:,l)))';
 
 %% Plot the estimate and the rgbPredictions to see how well we did.
 
-%% 
+%%

@@ -4,7 +4,7 @@ function result = scResize(orig, newSize, align, padding)
 % result = scResize(orig, newSize, align, padding)
 %
 % if newSize is larger than orig size, pad with padding;
-% if newSize is smaller than orig size, truncate to fit. 
+% if newSize is smaller than orig size, truncate to fit.
 % align specifies alignment. 0=centered
 %                           -1=left (up) aligned
 %                            1=right (down) aligned
@@ -19,17 +19,17 @@ disp('scResize:  Obsolete');
 evalin('caller','mfilename');
 
 if (nargin<3)
-  align = [0 0];
-end 
+    align = [0 0];
+end
 if (nargin<4)
-  padding = 0;
+    padding = 0;
 end
 
 if (length(newSize)==1)
-  newSize = [newSize newSize];
+    newSize = [newSize newSize];
 end
 if (length(align)==1)
-  align = [align align];
+    align = [align align];
 end
 
 [m1,n1] = size(orig);
@@ -44,6 +44,6 @@ start1 = [floor((m1-m)/2*(1+align(1))) floor((n1-n)/2*(1+align(2)))] + 1;
 start2 = [floor((m2-m)/2*(1+align(1))) floor((n2-n)/2*(1+align(2)))] + 1;
 
 result(start2(1):(start2(1)+m-1), start2(2):(start2(2)+n-1)) = ...
-   orig(start1(1):(start1(1)+m-1), start1(2):(start1(2)+n-1));
+    orig(start1(1):(start1(1)+m-1), start1(2):(start1(2)+n-1));
 
 return;

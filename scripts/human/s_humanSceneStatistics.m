@@ -32,7 +32,7 @@ scene =  sceneCreate('white noise',[256 256],contrast);
 scene = sceneSet(scene,'h fov',2);
 vcAddAndSelectObject(scene); sceneWindow;
 
-%% The amplitude of the spatial contrast of the radiance image 
+%% The amplitude of the spatial contrast of the radiance image
 % This is a white noise image, so the amplitude spectrum is flat.  Notice
 % that the contrast means we have removed the mean.  We plot the radiance
 % data at 550 nm, but this would be the same at any wavelength.
@@ -73,7 +73,7 @@ end
 vcNewGraphWin([],'tall');
 for ii=1:3
     subplot(3,1,ii)
-    imagesc(pFFT{ii}); colormap(hot); colorbar;
+    imagesc(pFFT{ii}); colormap(hot(64)); colorbar;
     axis image; axis off
     xlabel('Cycles/deg'); ylabel('Cycles/deg');
     title(sprintf('%s cone spatial amp spectrum',cType{ii}));

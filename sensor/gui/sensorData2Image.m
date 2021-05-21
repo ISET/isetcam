@@ -4,7 +4,7 @@ function img = sensorData2Image(sensor,dataType,gam,scaleMax)
 % Synopsis
 %   img = sensorData2Image(sensor,[dataType = 'volts'],[gam=1],[scaleMax=0 (false)])
 %
-% This function renders an image of the sensor CFA.  
+% This function renders an image of the sensor CFA.
 %
 % Inputs
 %   sensor
@@ -28,7 +28,7 @@ function img = sensorData2Image(sensor,dataType,gam,scaleMax)
 %  case of multiple exposure durations.
 %
 %  While it is usally used for volts, the routine converts the image from
-%  the 'dv' fields or even 'electrons' (I think). 
+%  the 'dv' fields or even 'electrons' (I think).
 %
 %  The returned images can be written out as a tiff file by sensorSaveImage.
 %
@@ -70,7 +70,7 @@ if isempty(img), return; end
 if scaleMax,     mxImage = max(img(:));
 else
     % The maximal value will depend on whether we are working with voltages
-    % or digital values.  
+    % or digital values.
     switch dataType
         case 'volts'
             mxImage = sensorGet(sensor,'max output');
@@ -100,7 +100,7 @@ expTimes   = sensorGet(sensor,'expTimes');
 nExposures = sensorGet(sensor,'nExposures');
 
 if nExposures > 1
-
+    
     pSize = size(sensorGet(sensor,'pattern'));
     if isequal(pSize,size(expTimes))
         % Each plane goes into a different pixel in the constructed CFA.
@@ -132,9 +132,9 @@ if nExposures > 1
 end
 
 if nSensors > 1    % A color CFA
-
+    
     img = plane2rgb(img,sensor,0);
-
+    
     % In some cases we find a transformation, T, that maps the existing
     % sensors into RGB colors.  Then we apply that T to the image data.
     % This algorithm should work for any choice of color filter
@@ -147,7 +147,7 @@ if nSensors > 1    % A color CFA
     % a clear (white) filter. rgbw and wrgb are treated the same.  They are
     % both treated as WRGB.
     %
-    % Some thoughts: 
+    % Some thoughts:
     %   We might try to  adjust T to get nice saturated colors.
     % One thought is to find the max value in each row and set that
     % to 1 and set the others to 0. That would handle a lot of
@@ -165,8 +165,8 @@ if nSensors > 1    % A color CFA
     %    T = [1 0 0 ; 0 1 0 ; 0 0 1 ; 0 1 1];
     %
     % We could insert other switches.  For example, we could trap cmy and
-    % cym cases here. 
-
+    % cym cases here.
+    
     switch sensorGet(sensor,'filterColorLetters')
         case 'rgb'
             % We just leave rgb data alone.
@@ -176,28 +176,28 @@ if nSensors > 1    % A color CFA
             %                 T = sensorDisplayTransform(sensor);
             %                 img = imageLinearTransform(img,T);
         case 'wrgb'
-            T = [1 1 1; 1 0 0; 0 1 0; 0 0 1];  
+            T = [1 1 1; 1 0 0; 0 1 0; 0 0 1];
             img = imageLinearTransform(img,T);
         case 'rgbw'
-            T = [1 0 0; 0 1 0; 0 0 1; 1 1 1];  
-            img = imageLinearTransform(img,T);       
+            T = [1 0 0; 0 1 0; 0 0 1; 1 1 1];
+            img = imageLinearTransform(img,T);
         otherwise
             % I think this covers 3 and four color cases.  I am not
             % sure the other cases (above) should be handled
-            % separately.  
+            % separately.
             T = sensorDisplayTransform(sensor);
             img = imageLinearTransform(img,T);
     end
-
+    
     % Scale the displayed image intensity to the range between 0 and
     % the voltage swing.  RGB images are supposed to run from 0,1.
     %
     % If the dv data are ints, we need to cast the max as a double
-    img = img/double(mxImage);  
+    img = img/double(mxImage);
     img = ieClip(img,0,1).^gam;
-
+    
 elseif nSensors == 1
-    % Gray scale images 
+    % Gray scale images
     img = (img/mxImage).^gam;
     img = ieClip(img,0,[]);
 end

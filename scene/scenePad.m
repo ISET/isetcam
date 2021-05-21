@@ -1,5 +1,5 @@
 function oi = scenePad(oi,padSize,sDist)
-%Replaced with oiPad 
+%Replaced with oiPad
 %
 %     oi = scenePad(oi,padSize,[sDist])
 %
@@ -8,7 +8,7 @@ function oi = scenePad(oi,padSize,sDist)
 % view accordingly.
 %
 % Yes, I know, this should be called oiPad.  Will change some day.
-%   
+%
 % Example:
 %   oi = scenePad(oi,[8,8,0]);
 %

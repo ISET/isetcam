@@ -14,22 +14,22 @@ function val = sensorGet(sensor,param,varargin)
 %  Because of the importance of the pixel structure, it is possible to
 %  retrieve the optics parameters from the sensorGet() function using the
 %  syntax
-% 
-%     sensorGet(sensor,'pixel <parameter name>'), 
+%
+%     sensorGet(sensor,'pixel <parameter name>'),
 %     e.g., sensorGet(oi,'pixel voltage swing');
 %
 %  The key structures (scene, oi, sensor, ip, display) are stored in the
 %  ISET database.  To retrieve the currently selected optical image, use
-%      
+%
 %     sensor = vcGetObject('sensor');
 %
 %  A '*' indicates that the syntax oiGet(scene,param,unit) can be used,
-%  where unit specifies the spatial scale of the returned value:  'm',
+%  where unit specifies the spatial scale of the returned value:  'm'
 %  'cm', 'mm', 'um', 'nm'.  Default is meters ('m').
 %
 %  There is a limitation in that we can only add one additional argument.
-%  So it is possible to call 
-%    
+%  So it is possible to call
+%
 %    sensorGet(sensor,'pixel size','mm')
 %
 %  But we do not add a second argument to the list. If you need to have a
@@ -52,7 +52,7 @@ function val = sensorGet(sensor,param,varargin)
 %    val = sensorGet(sensor,'filtercolornames')
 %    val = sensorGet(sensor,'exposurePlane'); % For bracketing simulation
 %    val = sensorGet(sensor,'response type'); % {'linear','log'}
-% 
+%
 % List of sensor parameters
 %      'name'                 - this sensor name
 %      'type'                 - always 'sensor'
@@ -361,7 +361,7 @@ switch oType
             case {'chiefrayangledegrees','cradegrees','cradegree','chiefrayangledegree'}
                 % sensorGet(sensor,'chiefRayAngleDegrees',sourceFL)
                 % Returns a matrix containing the chief ray angles of each
-                % pixel 
+                % pixel
                 if isempty(varargin)
                     oi = vcGetObject('oi');
                     if isempty(oi)
@@ -434,7 +434,7 @@ switch oType
             case {'electron','electrons','photons'}
                 % sensorGet(sensor,'electrons');
                 % sensorGet(sensor,'electrons',2);
-                % This is also used for human case, where we call the data photons,
+                % This is also used for human case, where we call the data photons
                 % as in photon absorptions.
                 pixel = sensorGet(sensor,'pixel');
                 val = sensorGet(sensor,'volts')/pixelGet(pixel,'conversionGain');
@@ -463,7 +463,7 @@ switch oType
                 
                 % Convert to locs because the user specified roilocs
                 if isequal(param,'roilocs') && size(val,2) == 4
-                    val = ieRect2Locs(val); 
+                    val = ieRect2Locs(val);
                 end
             case {'roirect'}
                 % sensorGet(sensor,'roi rect')
@@ -523,7 +523,7 @@ switch oType
                 % Estimate the rg sensor chromaticities
                 %
                 % ONLY WORKS WITH Bayer patterns
-                if isempty(varargin), rect = []; 
+                if isempty(varargin), rect = [];
                 else, rect = varargin{1};
                 end
                 
@@ -534,10 +534,10 @@ switch oType
                 mosaicDV = sensorGet(sensor, 'dv');
                 if ~isempty(rect)
                     mosaic = mosaic(rect(2):rect(2)+rect(4),...
-                                    rect(1):rect(1)+rect(3),:); 
+                        rect(1):rect(1)+rect(3),:);
                     if ~isempty(mosaicDV)
                         mosaicDV = mosaicDV(rect(2):rect(2)+rect(4),...
-                                        rect(1):rect(1)+rect(3),:); 
+                            rect(1):rect(1)+rect(3),:);
                     end
                 end
                 
@@ -549,10 +549,10 @@ switch oType
                     sensorC = sensorSet(sensor,'volts',mosaic(:,:,ii));
                     sensorC = sensorSet(sensorC, 'exp time', exp(ii));
                     sensorC = sensorSet(sensorC, 'dv', mosaicDV(:,:,ii));
-                    ip = ipCreate; ip = ipCompute(ip,sensorC); 
+                    ip = ipCreate; ip = ipCompute(ip,sensorC);
                     rgb = ipGet(ip,'sensor space');   % Just demosaic'd
                     s = sum(rgb,3); r = rgb(:,:,1)./s; g = rgb(:,:,2)./s;
-
+                    
                     val(:,1,ii) = r(:); val(:,2,ii) = g(:);
                 end
             case {'roielectronsmean'}
@@ -968,14 +968,14 @@ switch oType
                 % If the scene is at infinity, then the focal distance is
                 % the focal length. But if the scene is close, then we
                 % might correct.
-                % 
+                %
                 % But we should probably just compute it assuming the scene
                 % is infinitely far away and the distance to the lens is
                 % the focal distance.
                 %
                 if isempty(varargin) || isempty(varargin{1})
                     scene = ieGetObject('scene');
-                    if isempty(scene), sDist = 1e6; 
+                    if isempty(scene), sDist = 1e6;
                     else,              sDist = sceneGet(scene,'distance');
                     end
                 else
@@ -1010,7 +1010,7 @@ switch oType
                 % surface and we also use the sensor array width.
                 % The assumption here is that the sensor is at the proper focal
                 % distance for the scene.  If the scene is at infinity, then the
-                % focal distance is the focal length.  But if the scene is close,
+                % focal distance is the focal length.  But if the scene is close
                 % then we might correct.
                 %
                 if ~isempty(varargin), scene = varargin{1};

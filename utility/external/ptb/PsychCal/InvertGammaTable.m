@@ -20,4 +20,4 @@ gamutValues = searchValues(ones(nDevices,1),:);
 
 % Make the table
 iGammaTable = GamutToSettingsSch(gammaInput,gammaTable,gamutValues)';
-		
+

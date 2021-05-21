@@ -10,16 +10,16 @@ function S=int2struct(R,G,B)
 % Copyright 2003 The MathWorks, Inc.
 % $Revision: 1.1 $ $Date: 2004/12/17 02:43:25 $
 
-if nargin==1,
+if nargin==1
     % Intensity input
-    for j=1:size(R,3),
+    for j=1:size(R,3)
         S(j).cdata=R(:,:,j);
         S(j).colormap=[];
     end
 else
     % RGB inputs
     error(nargchk(3,3,nargin));
-    for j=1:size(R,3),
+    for j=1:size(R,3)
         S(j).cdata=cat(3,R(:,:,j),G(:,:,j),B(:,:,j));
         S(j).colormap=[];
     end

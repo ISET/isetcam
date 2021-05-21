@@ -1,5 +1,5 @@
 function sensorPlotColor(sensor,type)
-% Plot sensor cross-correlations 
+% Plot sensor cross-correlations
 %
 % Synopsis
 %  sensorColorPlot(sa,[type=RB'])
@@ -21,14 +21,14 @@ if ieNotDefined('type'), type = 'rg'; end
 
 labels = {'Red sensor','Green sensor','Blue sensor'};
 
-% Demosiac the (R,B) values. 
+% Demosiac the (R,B) values.
 wave       = sensorGet(sensor,'wave');
 spectralQE = sensorGet(sensor,'spectral QE');
 
 % We need a default, target display to do the demosaic'ing
 ip = ipCreate;
 ip = ipSet(ip,'input',sensorGet(sensor,'volts'));
-demosaicedImage = Demosaic(ip,sensor); 
+demosaicedImage = Demosaic(ip,sensor);
 
 figNum =  ieNewGraphWin;
 
@@ -52,7 +52,7 @@ d = max(d(:));
 plot(d1(:),d2(:),'.'); axis equal
 xlabel(labels{dList(1)}); ylabel(labels{dList(2)});
 
-% Estimate the slope for white surfaces at these color temperatures 
+% Estimate the slope for white surfaces at these color temperatures
 cTemp = [2500,3000,3500,4000,4500,5500,6500,8000,10500];
 
 for ii=1:length(cTemp)
@@ -67,7 +67,7 @@ hold off
 
 set(gca,'xlim',[0 d], 'ylim', [0,d])
 title('Sensor Color Balance');
-grid on; 
+grid on;
 
 uData.name = 'sensorColorPlot';
 uData.d1 = d1;

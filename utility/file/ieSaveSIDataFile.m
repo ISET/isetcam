@@ -17,7 +17,7 @@ function fName = ieSaveSIDataFile(psf,wave,umPerSamp,fName)
 %      fName = ieSaveSIDataFile(psf,wave,umPerSamp)
 %
 %      oi = vcGetObject('OI');
-%      optics = siSynthetic('custom',oi,fName);  
+%      optics = siSynthetic('custom',oi,fName);
 %
 % Copyright ImagEval Consultants, LLC, 2010
 

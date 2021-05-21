@@ -6,7 +6,7 @@ function idx = oiDepthSegmentMap(oiDmap,depthEdges)
 %
 
 nEdges = length(depthEdges);
-[r,c] = size(oiDmap); 
+[r,c] = size(oiDmap);
 vMap = zeros(r,c,nEdges);
 
 for ii=1:nEdges, vMap(:,:,ii) = oiDmap - depthEdges(ii); end

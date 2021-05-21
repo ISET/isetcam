@@ -22,7 +22,7 @@ function result = colorTransformMatrix(matrixtype,spacetype)
 %    'opp2lms' -- inverse of the above matrix
 %    'xyz2opp' -- xyz to opponent (CIE1931 2 degree XYZ)
 %    'opp2xyz' -- inverse of the above matrix
-% 
+%
 %    Normalized for D65 (lms=[100 100 100] for D65)
 %    'lms2xyz' -- cone coordinate to XYZ (Hunt-Pointer-Estevez transform)
 %    'xyz2lms' -- xyz to LMS             (Hunt-Pointer-Estevez transform)
@@ -107,12 +107,12 @@ switch lower(matrixtype)
         result = [0.9900   -0.1060   -0.0940; ...
             -0.6690    0.7420   -0.0270; ...
             -0.2120   -0.3540    0.9110];
-
+        
     case {'opp2lms'}
         result = inv([0.9900   -0.1060   -0.0940; ...
             -0.6690    0.7420   -0.0270; ...
             -0.2120   -0.3540    0.9110]);
-
+        
         % Gosh, these are old from XZ times.  Replaced with Stockman in
         % 2012, now that we are starting to perform cone calculations.
         %
@@ -122,26 +122,26 @@ switch lower(matrixtype)
         result = inv([.4002  .7076 -.0808; ...
             -.2263 1.1653  .0457; ...
             .0     .0     .9182]);
-
+        
     case {'xyz2hpe'}
         % Inverse of Hunt-Pointer-Estevez transformation from cone
         % to XYZ, normalized for D65 (lms=[100 100 100] for D65).
         result = [0.4002    0.7076   -0.0808; ...
             -0.2263    1.1653    0.0457; ...
             0         0         0.9182];
-
+        
     case {'xyz2sto','xyz2stockman','xyz2lms'}
         % Stockman cone coordinates
         result = [ 0.2689   -0.3962    0.0214;
             0.8518    1.1770   -0.0247;
             -0.0358    0.1055    0.5404]';
-
+        
     case {'stockman2xyz','sto2xyz','lms2xyz'}
         % Stockman cone coordinates
         result = [1.7910    0.6068   -0.0432;
             -1.2884    0.4097    0.0697;
             0.3702   -0.0398    1.8340]';
-
+        
     case {'xyz2opp','opp2xyz'}
         if ieNotDefined('spacetype'), spacetype = 10; end
         if (spacetype == 2)
@@ -154,19 +154,19 @@ switch lower(matrixtype)
                 79.8787 -554.7976  481.4746]/1000;
         end
         if matrixtype(1) == 'o', result = inv(result); end
-
+        
     case {'xyz2yiq','yiq2xyz' }
         result = [     0    1.0000         0; ...
             1.4070   -0.8420   -0.4510; ...
             0.9320   -1.1890    0.2330];
         if matrixtype(1) == 'y', result = inv(result); end
-
+        
     case {'rgb2yuv' , 'yuv2rgb'}
         result = [ 0.299   0.587   0.114; ...
             -0.1687 -0.3313  0.5; ...
             0.5    -0.4187 -0.0813];
         if (matrixtype(1) == 'y'), result = inv(result); end
-
+        
     case{'xyz2srgb','srgb2xyz'}
         % On the Wikipedia page
         % http://en.wikipedia.org/wiki/SRGB
@@ -182,13 +182,13 @@ switch lower(matrixtype)
         % the corresponding original XYZ values are such that white is D65
         % with unit luminance (X,Y,Z = 0.9505, 1.0000, 1.0890).
         % Calculations assume the 2° standard colorimetric observer.[3]
-
+        
         result = [3.241  -1.5374 -0.4986; ...
             -0.9692  1.8760  0.0416; ...
             0.0556 -0.2040  1.0570];
         % If user wanted srgb2xyz, we invert the matrix
         if (matrixtype(1) == 's'), result = inv(result);  end
-
+        
     case{'xyz2lrgb', 'lrgb2xyz'}
         % Only type in the values once.  Here, we get them from the once.
         % For these transformations (see above) RGB and XYZ are supposed to
@@ -199,7 +199,7 @@ switch lower(matrixtype)
             0.0556 -0.2040  1.0570];
         % If user wanted lrgb2xyz, we invert the matrix
         if (matrixtype(1) =='l'),  result = inv(result);    end
-
+        
     case{'cmy2rgb','rgb2cmy'}
         % These are used for sensor display purposes.  Sometimes we have a CMY
         % sensor coded in the 3 plane format.  We would like to display the CMY.

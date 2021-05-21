@@ -4,7 +4,7 @@ function factorPoynting = ptPoyntingFactor(n,thetaIn)
 %
 % Author:  PC
 % 10-07-2002
-% 
+%
 
 theta = ptSnellsLaw(n,thetaIn);
 

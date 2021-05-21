@@ -25,7 +25,7 @@ function [noisyImage,offsetFPNImage,gainFPNImage] = binNoiseFPN(ISA)
 %
 % Example:
 %    [noisyImage,offsetFPNImage,gainFPNImage] = noiseFPN(vcGetObject('ISA'));
-%    imagesc(noisyImage); colormap(gray)
+%    imagesc(noisyImage); colormap(gray(64))
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
@@ -37,7 +37,7 @@ if ieNotDefined('ISA'), ISA = vcGetObject('ISA'); end
 % actual sensor.  Since are processing towards the DV, we put the
 % calculation in dv on the way to completing the final values.
 dv              = sensorGet(ISA,'digitalValues');
-isaSize         = size(dv); 
+isaSize         = size(dv);
 gainSD          = sensorGet(ISA,'prnuLevel');   % This is a percentage
 offsetSD        = sensorGet(ISA,'dsnuLevel');   % This is a voltage
 integrationTime = sensorGet(ISA,'integrationTime');
@@ -45,7 +45,7 @@ integrationTime = sensorGet(ISA,'integrationTime');
 % Get the fixed pattern noise offset or compute it
 offsetFPNImage  = sensorGet(ISA,'dsnuImage');
 if ~isequal(size(offsetFPNImage),isaSize)
-    offsetFPNImage = randn(isaSize)*offsetSD; 
+    offsetFPNImage = randn(isaSize)*offsetSD;
 end
 
 % We handle a correlated double-sampling calculation a little differently
@@ -67,7 +67,7 @@ if integrationTime == 0     % CDS calculation.
     return;
 else
     % A calculation with a positive integration time
-
+    
     % Get the gain image, or compute it
     % The gain image has variation in the slopes. We multiply these by a
     % gainFPN random variable and then integrate out using the new slopes.
@@ -76,13 +76,13 @@ else
         % See notes about the gain image above
         gainFPNImage = randn(isaSize)*(gainSD/100) + 1;
     end
-
+    
     nExposures = sensorGet(ISA,'nExposures');
     % This is the formula:
     % slopeImage = voltageImage/integrationTime;
     % noisyImage = (slopeImage .* gainFPNImage) * integrationTime + offsetFPNImage;
     % But it is equivalent to the simpler (fewer multiplies) formula:
-
+    
     noisyImage   = dv .* repmat(gainFPNImage,[1,1,nExposures])  + repmat(offsetFPNImage,[1,1,nExposures]);
     % std(offsetFPNImage(:))
 end

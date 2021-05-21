@@ -78,5 +78,5 @@ meanIlluminantSPD = sceneGet(scene,'roi mean illuminant photons',roi);
 vcNewGraphWin;
 plot(w,illuminantSPD);
 xlabel('Wavelength (nm)'); ylabel('Photons/s/sr/nm/m^2'); grid on
-        
+
 %%

@@ -9,7 +9,7 @@ function hdl = plotDisplayGamut(ip)
 %
 % Example:
 %   plotDisplayGamut;
-%  
+%
 % See also: plotDisplayColor
 %
 % Copyright ImagEval Consultants, LLC, 2005

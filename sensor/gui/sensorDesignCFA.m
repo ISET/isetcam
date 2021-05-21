@@ -39,12 +39,12 @@ function varargout = sensorDesignCFA(varargin)
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
-                   'gui_Singleton',  gui_Singleton, ...
-                   'gui_OpeningFcn', @sensorDesignCFA_OpeningFcn, ...
-                   'gui_OutputFcn',  @sensorDesignCFA_OutputFcn, ...
-                   'gui_LayoutFcn',  [] , ...
-                   'gui_Callback',   []);
-if nargin & isstr(varargin{1})
+    'gui_Singleton',  gui_Singleton, ...
+    'gui_OpeningFcn', @sensorDesignCFA_OpeningFcn, ...
+    'gui_OutputFcn',  @sensorDesignCFA_OutputFcn, ...
+    'gui_LayoutFcn',  [] , ...
+    'gui_Callback',   []);
+if nargin & ischar(varargin{1})
     gui_State.gui_Callback = str2func(varargin{1});
 end
 
@@ -93,7 +93,7 @@ return;
 
 % --------------------------------------------------------------------
 function menuClose_Callback(hObject, eventdata, handles)
-% 
+%
 % Clean up the filter names and the filter spectra.  If the block was set
 % up to monochrome, get rid of stuff.  If there are any unused filters, get
 % rid of them.
@@ -116,7 +116,7 @@ switch lower(blockSize)
         newFilterNames{1} = filterNames{toKeep};
         filterNames = newFilterNames;
         pattern = 1;
-
+        
     case '2x2'
         
         % See which sensors are used in p attern
@@ -126,7 +126,7 @@ switch lower(blockSize)
         elseif length(usedFilters) < nFilters
             warndlg('Removing unused filters from ISA');
             
-            % Remove the unused spectra 
+            % Remove the unused spectra
             filterSpectra = filterSpectra(:,usedFilters);
             
             % Move the names
@@ -143,7 +143,7 @@ switch lower(blockSize)
                     if ~isempty(l), pattern(l) = pattern(l) - 1; end
                 end
             end
-
+            
         else
             error('The pattern is specifying filters that are not present.');
         end
@@ -251,7 +251,7 @@ return;
 function popName1_Callback(hObject, eventdata, handles)
 %
 % These routines reset the entries in the pattern variable.  We find the
-% name of the selected filter for each position (in this case position 1),
+% name of the selected filter for each position (in this case position 1)
 % and then we place the filter number in that position in isa.cfa.pattern.
 
 % This is the selected filter name

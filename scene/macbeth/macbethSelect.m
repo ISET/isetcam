@@ -21,10 +21,10 @@ function [pData, mLocs, pSize, cornerPoints, pStd] = ...
 %   fullData:  Determines output in mRGB
 %    If fullData = 0, the mean is returned, and mRGB is Nx3
 %     RGB values.  Each row is computed as the mean RGB in a square
-%     region around the center third of the Macbeth target. 
+%     region around the center third of the Macbeth target.
 %    If fullData = 1, the values of every point in each patch is returned.
 %     Use fullData = 1 for sensor images and calculate the means. This will
-%     account for the NaNs that are returned. 
+%     account for the NaNs that are returned.
 %   cornerPoints: Sometimes, the MCC corner point locations are stored in
 %     the scene struct. In that case, this routine will skip the graphical
 %     interaction.
@@ -61,13 +61,13 @@ function [pData, mLocs, pSize, cornerPoints, pStd] = ...
 %
 %   Also (a) more testing, and (b)oi implemented
 %
-% See also:  
+% See also:
 %   macbethSensorValues, macbethRectangles, macbethROIs, chartRectangles,
 %   chartRectsData
 %
 
 % Examples:
-%{ 
+%{
 % Uncomment to run, requires the user to make selections
 %
 %   scene = sceneCreate; sceneWindow(scene);
@@ -96,7 +96,7 @@ function [pData, mLocs, pSize, cornerPoints, pStd] = ...
      2    21];
  ip = ipSet(ip,'mcc corner points',cornerPoints);
  ipWindow(ip); macbethDrawRects(ip,'on');
- data = macbethSelect(ip); 
+ data = macbethSelect(ip);
 %}
 %{
  % See macbethSensorValues() for this functionality.
@@ -199,7 +199,7 @@ end
 %}
 
 
-%% Ask if the rects are OK. 
+%% Ask if the rects are OK.
 if queryUser
     macbethDrawRects(obj);
     rectsOK = ieReadBoolean('Are these rects OK?');
@@ -240,7 +240,7 @@ if queryUser
     end
 end
 
-%% Find rect midpoints and patch size.  
+%% Find rect midpoints and patch size.
 
 % mLocs are the 24 MCC patch middles in (row,col) format.
 [mLocs,delta,pSize] = macbethRectangles(cornerPoints);

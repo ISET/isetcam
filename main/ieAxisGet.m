@@ -33,8 +33,8 @@ p.addRequired('isetobj',vFunc);
 %%  Get the type string if it is a struct
 
 if isstruct(obj)
-    tmp = obj; clear obj; 
-    obj = vcEquivalentObjtype(tmp.type); 
+    tmp = obj; clear obj;
+    obj = vcEquivalentObjtype(tmp.type);
 end
 
 %% Switch through the cases
@@ -55,7 +55,7 @@ switch lower(vcEquivalentObjtype(obj))
         error('Not yet implemented');
     case 'display'
         disp('Implement display in ieAxisGet');
-        error('Not yet implemented');    
+        error('Not yet implemented');
     otherwise
         error('Unknown iset object type %s\n',isetobj);
 end

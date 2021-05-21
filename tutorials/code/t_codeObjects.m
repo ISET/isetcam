@@ -12,7 +12,7 @@
 %   optics
 %   sensors,
 %   pixels
-%   image processor (ip, also called virtual camera image, vci). 
+%   image processor (ip, also called virtual camera image, vci).
 %
 % ISET stores these objects in a global data structure, vcSESSION.
 % These objects are accessed by the related windows.
@@ -25,27 +25,27 @@
 %
 % vcGetObject, ieAddObject, ieSessionSet, ieSessionGet
 % %
-% 
+%
 % %% Example
-% 
+%
 % % Once you run ISET, the vcSESSION variable is created.
 % ISET
-% 
+%
 % %
 % vcSESSION
-% 
+%
 % % This example
 % scene = sceneCreate;
-% 
+%
 % ieAddObject(scene);
 % vcSESSION
-% 
+%
 % scene = vcGetObject('scene');
 % oi    = vcGetObject('oi')
 % optics= vcGetObject('optics');
-% 
+%
 % % Screwing around for now ...
-% 
+%
 % sceneWindow
 % optics = vcGetObject('optics');
 % disp(optics)

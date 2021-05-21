@@ -5,7 +5,7 @@ function ml = mlImportParams(ml,optics,pixel)
 %
 % The optics and pixel sent in should be from the currently selected sensor
 % and oi objects. The values in them are used to plausibly initialize the
-% microlens object. 
+% microlens object.
 %
 % See also: mlensCreate
 %

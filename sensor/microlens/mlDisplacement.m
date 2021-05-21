@@ -20,11 +20,11 @@ x = X(1,:); u = U(:,1);
 switch lower(propagationType)
     case('paraxial') % ABCD (paraxial)
         % WOut = griddata(X,U,WIn,X+d,U);
-        z = [X(:)+d, U(:)]; f = WIn(:); 
+        z = [X(:)+d, U(:)]; f = WIn(:);
         WOut = ffndgrid(z,f,-length(x),[min(x) max(x) min(u) max(u)],1);
     case('non-paraxial') % non-ABCD (non-paraxial)
         % WOut = griddata(X,U,WIn,X+d,U);
-        z = [X(:)+d, U(:)]; f = WIn(:); 
+        z = [X(:)+d, U(:)]; f = WIn(:);
         WOut = ffndgrid(z,f,-length(x),[min(x) max(x) min(u) max(u)],1);
 end
 

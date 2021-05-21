@@ -1,6 +1,6 @@
 function output = FindModelWeights(input,B)
 % output = FindModelWeights(input,B)
-% 
+%
 % Find the linear model weights for a spectral
 % power distribution.
 %

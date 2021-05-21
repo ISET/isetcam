@@ -15,7 +15,7 @@ function  [integrationTime,maxSignalVoltage,smallOI] = autoExposure(oi,sensor,le
 %  level:    Fraction of the voltage swing (default is 0.95)
 %  aeMethod: Which method, default is 'luminance'.  See full set of
 %            options below.
-%  
+%
 % Optional key/value pairs
 %  centerrect:  Central rectangle for 'center' method
 %
@@ -61,7 +61,7 @@ function  [integrationTime,maxSignalVoltage,smallOI] = autoExposure(oi,sensor,le
 %{
  scene = sceneCreate; oi = oiCreate; oi = oiCompute(oi,scene); oiWindow(oi);
  [~,rect] = ieROISelect(oi);
- sensor   = sensorCreate; 
+ sensor   = sensorCreate;
  sensor   = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'),oi);
  eTime  = autoExposure(oi,sensor,0.90,'weighted','center rect',rect);
  sensor = sensorSet(sensor,'exp time',eTime);
@@ -107,16 +107,16 @@ switch lower(aeMethod)
     case 'full'
         [integrationTime,maxSignalVoltage] = aeFull(oi,sensor,level);
     case 'cfa'
-        [integrationTime,maxSignalVoltage] = aeCFA(oi,sensor,level);  
+        [integrationTime,maxSignalVoltage] = aeCFA(oi,sensor,level);
     case 'specular'
-        [integrationTime,maxSignalVoltage] = aeSpecular(oi,sensor,level); 
+        [integrationTime,maxSignalVoltage] = aeSpecular(oi,sensor,level);
     case 'mean'
-        [integrationTime,maxSignalVoltage] = aeMean(oi,sensor,level); 
+        [integrationTime,maxSignalVoltage] = aeMean(oi,sensor,level);
     case 'weighted'
         integrationTime = aeWeighted(oi,sensor,level,'centerrect',centerRect);
     case 'video'
         integrationTime = aeVideo(oi,sensor,level,'center rect',centerRect,'videomax',videoMax);
-
+        
     otherwise
         error('Unknown auto-exposure method')
 end
@@ -156,7 +156,7 @@ sensorFOV = sensorGet(smallSensor,'fov',[],OI);
 % Now, treat the small OI as a large, uniform field that covers the sensor
 smallOI = oiSet(smallOI,'wangular',2*sensorFOV);
 
-% Compute the signal voltage for this small part of the image sensor array,
+% Compute the signal voltage for this small part of the image sensor array
 % using the brightest part of the opticl image, and a 1 sec exposure
 % duration. (Generally, the voltage at 1 sec is larger than the voltage
 % swing.)
@@ -231,7 +231,7 @@ function [integrationTime,maxSignalVoltage] = aeCFA(OI,sensor,level)
 % type in the CFA and return the integration times that produce a value of
 % level times the voltage swing for each position
 %
-% Based on aeFull. 
+% Based on aeFull.
 
 PIXEL = sensorGet(sensor,'pixel');
 voltageSwing  = pixelGet(PIXEL,'voltageSwing');
@@ -250,9 +250,9 @@ signalVoltage = sensorComputeImage(OI,sensor);
 % the CFA
 for jj = 1:nRows
     for kk = 1:nCols
-                
+        
         tmp = signalVoltage(jj:nRows:end, kk:nCols:end);
-                
+        
         maxSignalVoltage(jj,kk) = max(tmp(:));
         integrationTime(jj,kk)  = (level*voltageSwing)/maxSignalVoltage(jj,kk);
         
@@ -296,7 +296,7 @@ end
 
 %-------------------------------
 function [integrationTime, maxSignalVoltage] = aeWeighted(oi,sensor,level,varargin)
-% Choose a region of the image, defined by the center rect, 
+% Choose a region of the image, defined by the center rect,
 
 varargin = ieParamFormat(varargin);
 p = inputParser;

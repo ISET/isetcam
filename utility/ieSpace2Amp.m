@@ -1,5 +1,5 @@
 function [freq,fData] = ieSpace2Amp(pos,data,scaleData)
-% Transform spatial data to amplitudes in cycles per spatial unit  
+% Transform spatial data to amplitudes in cycles per spatial unit
 %
 %   [freq,fData] = ieSpace2Amp(pos,data,scaleData)
 %
@@ -27,7 +27,7 @@ fData = abs(fft(data));
 % Keep an eye on what has changed.
 if scaleData, fData = fData/max(fData(:)); end
 
-% This is the units per image 
+% This is the units per image
 unitPerImage = (max(pos) - min(pos));
 
 % The frequency values are scaled into units. Without scaling the frequency

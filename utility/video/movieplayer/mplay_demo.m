@@ -33,7 +33,7 @@ mplay(Q);
 % Also, try this:
 %   crulspin  % or, logospin
 % Run logospin, a standard MATLAB demo of a rotating L-shaped
-% membrane.  Watch as the movie being is constructed and 
+% membrane.  Watch as the movie being is constructed and
 % watch the standard MATLAB movie playback.  Then, use MPLAY.
 % logospin; mplay(m)
 % crulspin; mplay(m)

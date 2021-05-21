@@ -1,5 +1,5 @@
 function data = chartRectsData(obj,mLocs,delta,fullData,dataType)
-%Return a cell array with the linear RGB values from an ip or sensor 
+%Return a cell array with the linear RGB values from an ip or sensor
 %
 % Syntax:
 %    data = chartRectsData(obj,mLocs,delta,[fullData],[dataType])
@@ -14,7 +14,7 @@ function data = chartRectsData(obj,mLocs,delta,fullData,dataType)
 %
 % Optional parameters
 %   fullData - Return the full data from each sample in a patch (true), or
-%              the mean value  in the patch     (default: false). 
+%              the mean value  in the patch     (default: false).
 %   dataType - Data type to return.  Defaults are
 %                scene  - 'photons'
 %                oi     - 'photons'
@@ -33,7 +33,7 @@ function data = chartRectsData(obj,mLocs,delta,fullData,dataType)
 %
 % Copyright ImagEval Consultants, LLC, 2011.
 %
-% See Also:  
+% See Also:
 %   chartCornerpoints, chartRectsData, macbethCompareIdeal
 
 % Examples:
@@ -54,8 +54,8 @@ function data = chartRectsData(obj,mLocs,delta,fullData,dataType)
  mRGB = chartRectsData(scene,mLocs,pSize(1)*0.8,fullData);
  theseData = mRGB{1};
 % For the synthetic scene all the points are the same.
- ieNewGraphWin; plot(wave,theseData');  
-% 
+ ieNewGraphWin; plot(wave,theseData');
+%
 % When fullData is false, the rows are the mean spectra from each of the
 % different patches.
  fullData = false;

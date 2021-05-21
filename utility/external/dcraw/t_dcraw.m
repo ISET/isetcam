@@ -29,7 +29,7 @@ else
 end
 
 %
-ieNewGraphWin; imagesc(double(img).^(1/2.2)); axis image; colormap(gray)
+ieNewGraphWin; imagesc(double(img).^(1/2.2)); axis image; colormap(gray(64))
 
 %{
 % These are old notes about how we used to read the Nikon files for the L3 code.
@@ -48,10 +48,10 @@ remoteF = 'PGM/DSC_0803.pgm';
 fname = fullfile(remoteD,remoteF);
 [~,status] = urlwrite(fname,'rawFile.pgm');
 raw = imread('rawFile.pgm');
-vcNewGraphWin; imagesc(raw); 
+vcNewGraphWin; imagesc(raw);
 colormap(gray(1024)); axis image
 
-% vcNewGraphWin; hist(single(raw(:)),100)
+% vcNewGraphWin; histogram(single(raw(:)),100)
 
 %% Now get the corresponding JPG data
 
@@ -63,10 +63,10 @@ fname = fullfile(remoteD,remoteF);
 jpg = imread('jpgFile.jpg');
 % 0803 needs a rotate
 % jpg = imrotate(jpg,90);
-vcNewGraphWin; imagesc(jpg); 
+vcNewGraphWin; imagesc(jpg);
 colormap(gray(1024)); axis image
 
-% vcNewGraphWin; hist(single(jpg(:)),100)
+% vcNewGraphWin; histogram(single(jpg(:)),100)
 
 %%
 %}

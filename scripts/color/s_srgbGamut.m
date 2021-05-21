@@ -3,7 +3,7 @@
 % The parameters of an srgb display can be returned with this function
 %
 % In this script we load surfaces that are stored in
-% 
+%
 %     iset/data/surfaces/reflectances
 %
 % directory and then calculate the XYZ values of these surfaces when they
@@ -67,7 +67,7 @@ ieAddObject(scene); sceneWindow;
 %%  Calculate out the XYZ
 
 % Calculate the radiance energy from the scene points
-light = sceneGet(scene,'illuminant energy'); 
+light = sceneGet(scene,'illuminant energy');
 E = diag(light)*reflectances;
 
 % Convert to XYZ
@@ -80,7 +80,7 @@ line(srgbxy(1,:),srgbxy(2,:),'linewidth',1)
 line(adobergbxy(1,:),adobergbxy(2,:),'color','white','linewidth',2);
 title('Natural surfaces under D65')
 
-% vcNewGraphWin; 
+% vcNewGraphWin;
 % subplot(1,2,1), plot(wave,light); grid on; xlabel('Wavelength (nm)');
 % subplot(1,2,2), plot(wave,reflectances); grid on; xlabel('Wavelength (nm)');
 
@@ -103,7 +103,7 @@ line(adobergbxy(1,:),adobergbxy(2,:),'color','white','linewidth',2);
 
 title('Natural surfaces yellow illuminant')
 
-% vcNewGraphWin; 
+% vcNewGraphWin;
 % subplot(1,2,1), plot(wave,light); grid on; xlabel('Wavelength (nm)');
 % subplot(1,2,2), plot(wave,reflectances); grid on; xlabel('Wavelength (nm)');
 
@@ -144,9 +144,9 @@ line(srgbxy(1,:),srgbxy(2,:),'linewidth',1)
 line(adobergbxy(1,:),adobergbxy(2,:),'color','white','linewidth',2);
 title('Synthetic surfaces under D65')
 
-% vcNewGraphWin; 
+% vcNewGraphWin;
 % subplot(1,2,1), plot(wave,light); grid on; xlabel('Wavelength (nm)');
 % subplot(1,2,2), plot(wave,reflectances); grid on; xlabel('Wavelength (nm)');
-% 
+%
 
 %%

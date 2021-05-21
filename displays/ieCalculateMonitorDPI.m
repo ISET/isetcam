@@ -3,10 +3,10 @@ function [dpi, dotPitch]=ieCalculateMonitorDPI(monitorSizeX, monitorSizeY, numPi
 %
 % function dpi=ieCalculateMonitorDPI(monitorSizeX, monitorSizeY,
 % numPixelsX, numPixelsY);
-% Inputs: 
+% Inputs:
 %           monitorSizeX, monitorSizeY: in cm
 %           numPixelsX, numPixelsY: in number of samples
-% Outputs:  
+% Outputs:
 %           dpi : a vector containing the dpi on x and y directions.
 
 fPixelSizeXInMm=monitorSizeX*10/numPixelsX;

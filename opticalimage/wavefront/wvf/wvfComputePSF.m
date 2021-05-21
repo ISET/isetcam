@@ -15,7 +15,7 @@ function wvf = wvfComputePSF(wvf)
 %
 %   The real work for calculating the psf is done in the
 %   wvfComputePupilFunction routine.
-% 
+%
 % Input
 %   wvf - a wavefront structure
 %         The PSF is returned as part of the wvf when returned
@@ -23,7 +23,7 @@ function wvf = wvfComputePSF(wvf)
 % Copyright Wavefront Toolbox Team 2012
 % Heavily edited for ISET, 2015
 %
-% See also: 
+% See also:
 %  wvfGet, wvfCreate, wvfSet, wvfComputePupilFunction
 %
 
@@ -45,11 +45,11 @@ pupilfunc = cell(nWave,1);
 %% Compute the pupil functions for each wavelength
 wvf = wvfComputePupilFunction(wvf, showBar);
 
-%% Compute the psfs 
+%% Compute the psfs
 psf = cell(nWave,1);
 for wl = 1:nWave
     % Converting the pupil function to the PSF requires only an fft2 and
-    % magnitude calculation 
+    % magnitude calculation
     pupilfunc{wl} = wvfGet(wvf,'pupil function',wList(wl));
     
     amp = fftshift(fft2(ifftshift(pupilfunc{wl})));

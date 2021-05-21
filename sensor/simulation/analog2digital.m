@@ -18,7 +18,7 @@ if ieNotDefined('method'), method = sensorGet(sensor,'quantizationMethod'); end
 
 %% Get voltage data and range
 voltageSwing = sensorGet(sensor,'pixel voltage swing');
-img          = sensorGet(sensor,'volts'); 
+img          = sensorGet(sensor,'volts');
 if isempty(img), error('No voltage image'); end
 
 %% Apply method

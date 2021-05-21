@@ -19,13 +19,13 @@ ieInit
 ISET
 
 % Close the main window using a command that sets the window parameter
-% to off, as in 
+% to off, as in
 ieMainW('visible','off')
 
 % Or bring it back up
 ieMainW('visible','on')
 
-%% You can do the same with other windows 
+%% You can do the same with other windows
 scene = sceneCreate; vcAddAndSelectObject(scene);
 
 sceneWindow('visible','on')
@@ -104,7 +104,7 @@ guidata(sceneF)
 % Or you can get the guidata handle directly using
 sceneG = ieSessionGet('scene guidata')
 
-% There are parallel sets/gets for interacting with the other windows (oi,
+% There are parallel sets/gets for interacting with the other windows (oi
 % sensor, ip)
 
 %% END

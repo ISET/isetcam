@@ -11,7 +11,7 @@ function [rx, ry ,bx ,by, g1x, g1y, g2x, g2y] = bayerIndices(bPattern,sz,clip)
 %  bPattern is a string (e.g., 'rggb')
 %  sz:  the array size (e.g., 128).  It can be specified as a single
 %       number or as a 2-vector (row,col)
-%  clip: 
+%  clip:
 %    In some cases, we only want the locations of the pixels in a certain
 %    region of sensor, say in from the edge.  For example in
 %    AdaptiveLaplacian, we want indices that start at 3,4 and end at
@@ -44,7 +44,7 @@ switch lower(bPattern(:)')
         ry  = (1+clip):2:(Vex-clip);
         
         bx  = (1+clip):2:(Hex-clip);
-        by  = (2+clip):2:(Vex-clip); 
+        by  = (2+clip):2:(Vex-clip);
         
         g2x = (2+clip):2:(Hex-clip);
         g2y = (2+clip):2:(Vex-clip);
@@ -57,12 +57,12 @@ switch lower(bPattern(:)')
         ry  = (1+clip):2:(Vex-clip);
         
         bx  = (2+clip):2:(Hex-clip);
-        by  = (2+clip):2:(Vex-clip); 
+        by  = (2+clip):2:(Vex-clip);
         
         g2x = (1+clip):2:(Hex-clip);
         g2y = (2+clip):2:(Vex-clip);
         
-     case 'gbrg'
+    case 'gbrg'
         g1x = (1+clip):2:(Hex-clip);
         g1y = (1+clip):2:(Vex-clip);
         
@@ -70,11 +70,11 @@ switch lower(bPattern(:)')
         ry  = (2+clip):2:(Vex-clip);
         
         bx  = (2+clip):2:(Hex-clip);
-        by  = (1+clip):2:(Vex-clip); 
+        by  = (1+clip):2:(Vex-clip);
         
         g2x = (2+clip):2:(Hex-clip);
         g2y = (2+clip):2:(Vex-clip);
-    
+        
     case 'bggr'
         g1x = (2+clip):2:(Hex-clip);
         g1y = (1+clip):2:(Vex-clip);
@@ -83,7 +83,7 @@ switch lower(bPattern(:)')
         ry  = (2+clip):2:(Vex-clip);
         
         bx  = (1+clip):2:(Hex-clip);
-        by  = (1+clip):2:(Vex-clip); 
+        by  = (1+clip):2:(Vex-clip);
         
         g2x = (1+clip):2:(Hex-clip);
         g2y = (2+clip):2:(Vex-clip);

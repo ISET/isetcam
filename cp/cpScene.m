@@ -141,7 +141,7 @@ classdef cpScene < handle
                     if exist(options.recipe,'var')
                         obj.thisR = options.recipe;
                         if ~isempty(obj.lensFile)
-
+                            
                             obj.thisR.camera = piCameraCreate('realistic',...
                                 'lensFile',obj.lensFile);
                             obj.thisR.set('film diagonal',66); % sensor mm
@@ -242,11 +242,11 @@ classdef cpScene < handle
                     val = recipeSet(obj.thisR,'filmresolution', obj.resolution);
                     val = recipeSet(obj.thisR,'rays per pixel',obj.numRays);
                     val = recipeSet(obj.thisR,'film diagonal', round(options.filmSize *1.5));
-
+                    
                     %% Looks like we still need to add our own light
                     % Add an equal energy distant light for uniform lighting
                     lightSpectrum = 'equalEnergy';
-%                        'light spectrum',lightSpectrum,...
+                    %                        'light spectrum',lightSpectrum,...
                     mainLight = piLightCreate('mainLight', ...
                         'type','distant',...
                         'cameracoordinate', true);
@@ -290,9 +290,9 @@ classdef cpScene < handle
                         obj.thisR.set('shutteropen', sTime);
                         sTime = sTime + obj.expTimes(ii);
                         obj.thisR.set('shutterclose', sTime);
-
-                        obj.thisR.set('focusdistance', focusDistances(ii)); 
-
+                        
+                        obj.thisR.set('focusdistance', focusDistances(ii));
+                        
                         % process camera motion if allowed
                         % We do this per frame because we want to
                         % allow for some perturbance/shake/etc.
@@ -311,7 +311,7 @@ classdef cpScene < handle
                         % expensive, but for now?...
                         [defaultRecipeDirectory, defaultRecipeFile, suffix] = ...
                             fileparts(recipeGet(obj.thisR, 'outputfile'));
-
+                        
                         obj.cachedRecipeFileName = fullfile(tempname(defaultRecipeDirectory), strcat(defaultRecipeFile,suffix));
                         obj.originalRecipeFileName = recipeGet(obj.thisR, 'outputfile');
                         recipeSet(obj.thisR, 'verbose', 0);
@@ -494,7 +494,7 @@ classdef cpScene < handle
             rez = sprintf("%d by %d",obj.resolution(1), obj.resolution(2));
             infoArray = [infoArray; {'Resolution:', rez}];
         end
-
+        
         % remove the cached pbrt scene when we are destroyed
         function delete(obj)
             if isfile(obj.cachedRecipeFileName)

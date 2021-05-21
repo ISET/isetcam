@@ -24,7 +24,7 @@ function scene = sceneAdjustReflectance(scene,newR)
 %   As a special case, when the scene is uniform, newR can be a reflectance
 %   vector that is used at every point in the scene.
 %
-% See also:  
+% See also:
 %  sceneAdjustIlluminant, sceneAdjustLuminance
 %
 
@@ -84,8 +84,8 @@ elseif ndims(newR) == 3
     if ~(length(wave) == size(newR,3))
         error('newR does not match the scene wavelength');
     end
-
-        switch illFormat
+    
+    switch illFormat
         case 'spectral'
             % Format, multiply and reformat
             [newR,row,col] = RGB2XWFormat(newR);
@@ -100,9 +100,9 @@ elseif ndims(newR) == 3
             
         otherwise
             error('Unknown illuminant format %s\n',illFormat);
-        end
+    end
     
-
+    
 end
 
 % Replace the photons.

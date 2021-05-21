@@ -16,10 +16,10 @@ function ls = LMSToMacBoyn(LMS,T_cones,T_lum)
 
 % Scale LMS so that L+M = luminance
 if (nargin == 1)
-	LMS = diag([0.6373 0.3924 1]')*LMS;
+    LMS = diag([0.6373 0.3924 1]')*LMS;
 else
-	factors = (T_cones(1:2,:)'\T_lum');
-	LMS = diag([factors ; 1])*LMS;
+    factors = (T_cones(1:2,:)'\T_lum');
+    LMS = diag([factors ; 1])*LMS;
 end
 
 % Compute ls coordinates from LMS

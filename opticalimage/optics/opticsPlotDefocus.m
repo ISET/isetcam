@@ -7,8 +7,8 @@ function otf = opticsPlotDefocus(Defocus,sampleSf,wave)
 % diffraction-limited system) as a function of defocus. Hence, the output
 % graph has spatial frequency on one axis and defocus on the other.  The
 % height shows the relative amplitude of the transmitted pattern.
-% 
-% The user specifies the spatial frequency range and wavelength. 
+%
+% The user specifies the spatial frequency range and wavelength.
 %
 % Example:
 %  Defocus = [-1:.1:1]; sampleSf = [0:64]; wave = 500;
@@ -38,7 +38,7 @@ end
 OTF = ones(size(otf));
 OTF(isfinite(otf)) = otf(isfinite(otf));
 
-% The otf can be complex, mostly due to rounding error I think.  
+% The otf can be complex, mostly due to rounding error I think.
 mesh(sampleSf,Defocus,abs(otf));
 xlabel('Spatial frequency'); ylabel('Defocus');  zlabel('Transmission')
 

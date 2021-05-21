@@ -18,7 +18,7 @@ classdef webLOC
         function obj = webLOC()
             %WEBLOC Construct an instance of this class
             %   Detailed explanation goes here
-            obj.search_url = 'https://loc.gov/pictures/search/?fo=json&q='; % follow by text and format  
+            obj.search_url = 'https://loc.gov/pictures/search/?fo=json&q='; % follow by text and format
             % included already I think: obj.format = '&fo=json';
             obj.tag_mode = 'all'; % require all keywords (comma separated) for now
             
@@ -31,7 +31,7 @@ classdef webLOC
             per_page = getpref('ISET','maxSearchResults',obj.defaultPerPage);
             ourTags = strrep(ourTags, ",", "+");
             searchResult = webread(strcat(obj.search_url, ourTags, "&c=", ...
-                string(per_page * searchPadding))); % fix per page to whatever it really is!            
+                string(per_page * searchPadding))); % fix per page to whatever it really is!
             fullResults = jsondecode(searchResult).results; % results is the array of image structs
             outputArg = obj.filterResults(fullResults);
         end
@@ -73,7 +73,7 @@ classdef webLOC
                 ourURL = fPhoto.image.thumb;
             else
                 ourURL = fPhoto.image.full;
-            end 
+            end
             if ourURL(1:2) == "//"
                 ourURL = strcat("https:", ourURL); % Matlab doesn't like the raw CDN notation
             end
@@ -81,7 +81,7 @@ classdef webLOC
         
         function ourImage = getImage(obj, fPhoto, wantSize)
             ourURL = getImageURL(obj, fPhoto, wantSize);
-            ourImage = webread(ourURL);   
+            ourImage = webread(ourURL);
         end
     end
 end

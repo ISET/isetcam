@@ -30,8 +30,8 @@ for ii=1:nFrames
     % ieAddObject(s); sceneWindow;
     
     % But instead I made a movie of the scene luminance
-    imagesc(sceneGet(s,'luminance')); colormap(gray); pause(1/fps);
-     
+    imagesc(sceneGet(s,'luminance')); colormap(gray(64)); pause(1/fps);
+    
 end
 
 %%

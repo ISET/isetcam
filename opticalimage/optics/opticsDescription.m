@@ -1,5 +1,5 @@
 function txt = opticsDescription(optics)
-% Text description of the optics properties. 
+% Text description of the optics properties.
 %
 %  txt = opticsDescription(optics)
 %

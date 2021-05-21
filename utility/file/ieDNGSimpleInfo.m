@@ -20,7 +20,7 @@ function infoSimple = ieDNGSimpleInfo(info)
 % Example:
 %{
   fname = 'mcc-Centered.dng';
-  [~, info] = ieDNGRead(fname,'only info',true); 
+  [~, info] = ieDNGRead(fname,'only info',true);
   infoSimple = ieDNGSimpleInfo(info)
 %}
 

@@ -51,7 +51,7 @@ illPhotons = oiGet(oi,'illuminant photons');
 
 for ii=1:nWave
     photons(:,:,ii)    = photons(:,:,ii) .* pattern;
-    illPhotons(:,:,ii) = illPhotons(:,:,ii) .* pattern; 
+    illPhotons(:,:,ii) = illPhotons(:,:,ii) .* pattern;
 end
 
 oi = oiSet(oi,'photons',photons);

@@ -8,7 +8,7 @@ function scene = scenePointArray(scene,sz,pointSpacing,spectralType)
 %
 % SZ defines the row and column size of the image.           (default: 128)
 % pointSpacing defines the distance between points in pixels (default: 16)
-% The spectrum is D65 by default.  
+% The spectrum is D65 by default.
 %   Alternative spectral types are 'ee' (equal energy) and 'ep' (equal photons)
 %
 %Example:

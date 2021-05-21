@@ -14,7 +14,7 @@ function localFile = ieWebGet(varargin)
 %   list ('list'), or shown the web site urls ('url').  The second argument
 %   defines the type of resource ('pbrt', 'hyperspectral', 'multispectral',
 %   'hdr'). The default resource is 'pbrt'.
-%    
+%
 % Key/val pairs
 %  op:            The operation to perform {'fetch','read'}
 %                 (default: 'fetch')
@@ -76,8 +76,8 @@ urlList = ...
     'http://stanford.edu/~david81/ISETData/HDR/'};
 baseURL = urlList{1};
 
-%% Check for the special input arguments 
-% ieWebGet('browse','pbrt'), 
+%% Check for the special input arguments
+% ieWebGet('browse','pbrt'),
 % ieWebGet('browse','hyperspectral')
 if ismember(ieParamFormat(varargin{1}),{'browse','list','url'})
     if numel(varargin) < 2, src = 'pbrt';
@@ -97,8 +97,8 @@ if ismember(ieParamFormat(varargin{1}),{'browse','list','url'})
             error('Unknown resource type %s\n',src);
     end
     if isequal(ieParamFormat(varargin{1}),'browse')
-        % assume for now that means we are looking on the web        
-        web(baseURL);
+        % assume for now that means we are looking on the web
+        web(baseURL,'-browser');
         localFile = '';
         return;
     elseif isequal(ieParamFormat(varargin{1}),'list')
@@ -263,7 +263,7 @@ switch resourceType
                         end
                         
                 end
-           
+                
             otherwise
                 warning("Not Supported yet");
         end

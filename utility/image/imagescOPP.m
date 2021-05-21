@@ -1,16 +1,16 @@
 function [res,cmap] = imagescOPP(oppImg,gam,nTable,varargin)
-% Display three opponent-colors images 
+% Display three opponent-colors images
 %
 % Not yet fully implemented ...
 %
 %   res = imagescOPP(oppImg,[gamma],[nTable],);
-%    
+%
 %  Prior to display negative values are clipped, and the clipped data are
 %  scaled to a maximum of 1.
 %
 %  If the exponent gamma is included, then rgbim .^ gamma are displayed;
-% 
-%    The routine accepts data in XW and RGB format.  
+%
+%    The routine accepts data in XW and RGB format.
 %    In XW format case use:                imagescRGB(img,row,col,[gamma])
 %    If the data are in RGB format use:    imagescRGB(img,[gamma])
 %
@@ -34,13 +34,13 @@ res = zeros(size(oppImg));
 cmap = zeros(nTable,3,3);
 
 % Create the images and the maps Three color maps (cm) are built.  One for
-% black-white (luminance), and others for red/green and blue/yellow. 
+% black-white (luminance), and others for red/green and blue/yellow.
 cm = {'bw','rg','by'};
 
 for ii=1:3
     % Color map with a gamma specified.
     cmap(:,:,ii) = ieCmap(cm{ii},nTable,gam);
-
+    
     tmp = oppImg(:,:,ii);
     mx  = max(abs(tmp(:)));
     
@@ -52,8 +52,8 @@ for ii=1:3
         res(:,:,ii)  = (0.5*(tmp/mx) + 0.5)*nTable;
     end
     
-    vcNewGraphWin; 
-    image(res(:,:,ii)); 
+    vcNewGraphWin;
+    image(res(:,:,ii));
     colormap(cmap(:,:,ii)); axis image; axis off; truesize
 end
 

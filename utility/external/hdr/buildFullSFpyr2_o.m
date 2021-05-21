@@ -5,15 +5,15 @@ function [pyr,pind,steermtx,harmonics] = buildFullSFpyr2_o(im, ht, order, angleC
 % Construct a steerable pyramid on matrix IM, in the Fourier domain.
 % Unlike the standard transform, subdivides the highpass band into
 % orientations.
-% J. Portilla and E. Simoncelli. 
+% J. Portilla and E. Simoncelli.
 % Modified by Yuanzhen Li 05/05, to incorporate spatial and orientaion oversampling.
 % input: ht is the number of scales/levels, num_sc
 % order: the number of orientations minus 1, num_or-1
 % angleCycs: the degree of angle oversampling
-% the widths of the oriented filters are mainly determined by order, 
+% the widths of the oriented filters are mainly determined by order,
 % but the amount of overlap is determined by angleCycs
 % to reconstruct from this highly oversample pyramids:
-% the fifth parameter ifSave: 
+% the fifth parameter ifSave:
 % the pyramid can be huge, because of the oversampling in space and
 % orientations. so we may want to save each band on the way of building the
 % pyramid. normally set to 0.
@@ -24,37 +24,37 @@ function [pyr,pind,steermtx,harmonics] = buildFullSFpyr2_o(im, ht, order, angleC
 max_ht = floor(log2(min(size(im)))+1);
 
 if (exist('ht') ~= 1)
-  ht = max_ht;
+    ht = max_ht;
 else
-  if (ht > max_ht)
-    error(sprintf('Cannot build pyramid higher than %d levels.',max_ht));
-  end
+    if (ht > max_ht)
+        error(sprintf('Cannot build pyramid higher than %d levels.',max_ht));
+    end
 end
 
 if (exist('order') ~= 1)
-  order = 3;
+    order = 3;
 elseif ((order > 15)  | (order < 0))
-  fprintf(1,'Warning: ORDER must be an integer in the range [0,15]. Truncating.\n');
-  order = min(max(order,0),15);
+    fprintf(1,'Warning: ORDER must be an integer in the range [0,15]. Truncating.\n');
+    order = min(max(order,0),15);
 else
-  order = round(order);
+    order = round(order);
 end
 nbands = order+1;
 
 if (exist('twidth') ~= 1)
-  twidth = 1;
+    twidth = 1;
 elseif (twidth <= 0)
-  fprintf(1,'Warning: TWIDTH must be positive.  Setting to 1.\n');
-  twidth = 1;
+    fprintf(1,'Warning: TWIDTH must be positive.  Setting to 1.\n');
+    twidth = 1;
 end
 
 %-----------------------------------------------------------------
 %% Steering stuff:
 
 if (mod((nbands),2) == 0)
-  harmonics = [0:(nbands/2)-1]'*2 + 1;
+    harmonics = [0:(nbands/2)-1]'*2 + 1;
 else
-  harmonics = [0:(nbands-1)/2]'*2;
+    harmonics = [0:(nbands-1)/2]'*2;
 end
 
 steermtx = steer2HarmMtx(harmonics, pi*[0:nbands-1]/nbands, 'even');

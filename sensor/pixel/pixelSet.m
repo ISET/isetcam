@@ -5,24 +5,24 @@ function pixel = pixelSet(pixel,param,val,varargin)
 %
 % The list of parameters is below. Electrical values are specified in
 % volts. Spatial units are meters, except for wavelength which is
-% nanometers. 
+% nanometers.
 %
 % Pixel properties
 %      {'name'}                - Identifier
 %      {'type'}                - Always 'pixel'
-%      {'pixelwidth'}          - width in meters   
-%      {'pixelheight'}   
+%      {'pixelwidth'}          - width in meters
+%      {'pixelheight'}
 %      {'widthandheight'}      - [width,height] in meters.  Fill factor changes
 %      {'sizesamefillfactor'}  - [width,height] in meters, alters photodetector size to preserve fill factor
 %      {'widthgap'}            - gap between pixels (usually 0)
-%      {'heightgap'}  
+%      {'heightgap'}
 %      {'fillfactor'}          - fill factor (area of pd to area of pixel)
 %
 % Photodetector properties
 %      {'pdwidth'}              - photodetector width
 %      {'pdheight'}             - photodetector height
 %      {'pdwidthandheight'}     - photodetector width and height
-%      {'layerthicknesses'}     - 
+%      {'layerthicknesses'}     -
 %      {'refractiveindices'}    -
 %      {'pdxpos'}               - generally assumed in the center
 %      {'pdypos'}               -
@@ -33,7 +33,7 @@ function pixel = pixelSet(pixel,param,val,varargin)
 %
 %  Spectral properties
 %      {'spectrum'}             - Structure
-%        {'wave'}               - Sample wavelengths in nanometers 
+%        {'wave'}               - Sample wavelengths in nanometers
 %        {'pixelspectralqe'}    - Percent of incident photons absorbed as a function of wavelength
 %
 % Examples:
@@ -73,7 +73,7 @@ switch param
         disp('Fill factor may have changed');
     case {'sizeconstantfillfactor','sizekeepfillfactor','sizesamefillfactor'}
         % pixelSet(pixel,'size ConstantFillFactor',newSize);
-        % 
+        %
         % This changes the pixel size and keeps the fill factor constant by
         % also changing the size of the photodetector area.
         %
@@ -84,12 +84,12 @@ switch param
         curSize = pixelGet(pixel,'size');
         sFactor = val ./ curSize;
         pdSize = pixelGet(pixel,'pdSize').*sFactor;
-
+        
         pixel = pixelSet(pixel,'width',val(1));
         pixel = pixelSet(pixel,'height',val(2));
-        pixel = pixelSet(pixel,'pdWidth',pdSize(1)); 
-        pixel = pixelSet(pixel,'pdHeight',pdSize(2)); 
-
+        pixel = pixelSet(pixel,'pdWidth',pdSize(1));
+        pixel = pixelSet(pixel,'pdHeight',pdSize(2));
+        
     case {'widthgap','widthbetweenpixels'} %M
         pixel.widthGap  = val;
     case {'heightgap','heightbetweenpixels'}    %M
@@ -110,7 +110,7 @@ switch param
         % size of the pixel constant.
         pixel = pixelSet(pixel,'pd width',sqrt(val)*pixelGet(pixel,'deltax'));
         pixel = pixelSet(pixel,'pd height',sqrt(val)*pixelGet(pixel,'deltay'));
-
+        
     case {'layerthickness','layerthicknesses'} % M
         pixel.layerThickness = val;
         
@@ -143,12 +143,12 @@ switch param
         pixel.spectrum = val;
     case {'wave','wavelengthsamples'}         %nm
         pixel.spectrum.wave = val(:);
-    
+        
     case {'pixelspectralqe','pixelqe','spectralqe','pixelquantumefficiency','pdspectralqe','qe','photodetectorquantumefficiency','photodetectorspectralquantumefficiency'}
         pixel.spectralQE = val;
         
     otherwise
         error('Unknown param: %s',param);
-end  
+end
 
 end

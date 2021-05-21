@@ -33,7 +33,7 @@ function val = cameraGet(camera,param,varargin)
 %  (we are good for up to 1 varargin in oi for now.  Working to do better).
 %
 %  camera = cameraCreate;
-%  
+%
 %  cameraGet(camera,'oi')
 %  cameraGet(camera,'oi area','mm')
 %
@@ -167,7 +167,7 @@ switch oType
                         error('Only one additional input allowed for metrics.')
                     end
                 end
-                   
+                
             otherwise
                 error('Unknown camera parameter: %s\n',param);
         end

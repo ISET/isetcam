@@ -1,5 +1,5 @@
 function optics = opticsClearData(optics)
-%Clear OTF and cos4th data from optics.  
+%Clear OTF and cos4th data from optics.
 %
 %   obj = opticsClearData(obj)
 %

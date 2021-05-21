@@ -1,11 +1,11 @@
-%% Problems with the experimental approach of measuring PRNU 
+%% Problems with the experimental approach of measuring PRNU
 %
 % Photoreceptor response nonuniformity (PRNU) and dark-signal nonuniformity
 % (DSNU) can be estimated by measuring a uniform scene at several exposure
 % levels, taking care to avoid saturatation or values near zero. Then, one
 % can find the slopes of the pixel responses, normalize them, and estimate
 % the PRNU from the standard deviation of these slopes.
-% 
+%
 % This script simulates that approach.  It shows that the photon noise
 % *corrupts* the estimate.  Even when there is 0 PRNU, the PRNU appears to
 % be on the order of 2 percent in the presence of photon noise.
@@ -50,7 +50,7 @@ scene = sceneSet(scene,'fov',fov);
 oi = oiCreate('default',[],[],0);
 optics = oiSet(oi,'optics offaxis method','skip');  % No relative illumination
 
-sensor = sensorCreate; 
+sensor = sensorCreate;
 sensor = sensorSet(sensor,'size',[196 196]);
 sensor = sensorSet(sensor,'noise flag',2);
 
@@ -114,7 +114,7 @@ offsets = x(2,:);
 
 %% Plot the data and analyze the values.
 
-ieNewGraphWin; 
+ieNewGraphWin;
 t = sprintf('Normalized slopes (photon noise)');
 
 histogram(slopes,50); title(t)

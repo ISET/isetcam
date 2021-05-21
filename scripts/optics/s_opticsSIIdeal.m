@@ -12,7 +12,7 @@
 % This script illustrates several shift-invariant systems, including one
 % that is better than any physically realizable system.  To show this case,
 % we assign an OTF that passes all spatial frequencies, without any loss.
-% Then we create a diffraction-limited OTF.  
+% Then we create a diffraction-limited OTF.
 %
 % We also create a much blurrier OTF with a Gaussian shape.
 %
@@ -39,7 +39,7 @@ ieAddObject(oi); oiWindow;
 fNumber = oiGet(oi,'optics fnumber');
 oiPlot(oi,'PSF 550');
 
-%% Now, replace the OTF with all ones, which is better than diffraction 
+%% Now, replace the OTF with all ones, which is better than diffraction
 %
 
 % Get the original OTF of diffraction case and save for later use

@@ -3,7 +3,7 @@ function [img,ip] = displayRender(img,ip,sensor)
 %
 %   [img,ip] = displayRender(img,ip,sensor);
 %
-% The linear display RGB is between 0 and 1. 
+% The linear display RGB is between 0 and 1.
 %
 % Prior to this call, the ipCompute processing pipeline transforms sensor
 % data by demosaicking, sensor conversion to the internal color space, and
@@ -11,10 +11,10 @@ function [img,ip] = displayRender(img,ip,sensor)
 % converted from the internal color space to the display representation. It
 % is the last step, from the internal, calibrated space to linear display
 % space that is performed here.
-% 
+%
 % The transform from the internal color space to the display values is
 % computed using ieInternal2Display.  This transform is stored in the ip
-% list of transforms. 
+% list of transforms.
 %
 % The maximum intensity of the linear display image is set by making the
 % image data equal to the ratio of the sensor data maximum to the sensor's
@@ -84,10 +84,10 @@ switch qm
         
         imgMax = max(img(:));
         % fprintf('Analog quantization. Scaling result by %f\n',imgMax);
-
+        
         img = (img/imgMax)*sensorGet(sensor,'volts 2 max ratio');
         img = ieClip(img,0,ipGet(ip,'max sensor'));
-
+        
     case 'linear'
         % Digital values
         % But the 'result' field is supposed to be sRGB and thus the
@@ -104,7 +104,7 @@ switch qm
         %
         img = img/max(img(:));
         
-        % How do we choose the biggest value?  
+        % How do we choose the biggest value?
         %
         % ieNewGraphWin; imagescRGB(img);
         % Digital values, so only clip at the bottom.
@@ -118,4 +118,3 @@ end
 
 end
 
-        

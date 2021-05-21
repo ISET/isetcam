@@ -1,6 +1,6 @@
 function ret = checkToolbox(toolboxName)
 % Checks whether certain matlab toolbox has been installed
-% 
+%
 %   ret = checkToolbox(toolboxName)
 %
 % Example:

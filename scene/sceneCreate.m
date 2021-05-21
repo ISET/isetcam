@@ -39,7 +39,7 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %    wave = (380:4:1068)';
 %    scene = sceneCreate('macbethEE_IR',patchSize,wave);
 %
-%      {'macbeth d65'}         - Macbeth D65 image.  
+%      {'macbeth d65'}         - Macbeth D65 image.
 %      {'macbeth d50'}         - D50 illuminant
 %      {'macbeth illc'}        - Illuminant C
 %      {'macbeth fluorescent'} - Fluorescent illuminant
@@ -63,25 +63,25 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %
 %   For a bar width of 50 pixels, 5 bars, at L* levels (1:nBars)-1 * 10, use
 %         scene = sceneCreate('lstar',50,5,10);
-% 
+%
 %   Use sceneAdjustIlluminant() to change the scene SPD.
 %
 % REFLECTANCE CHART
 %
 %   {'reflectance chart'} - Natural-100 reflectance chart.
-%                   
+%
 %   You can also create your own specific chart this way:
 %
 %    sFiles{1} = 'MunsellSamples_Vhrel.mat';
 %    sFiles{2} = 'Food_Vhrel.mat';
-%    pSize = 24; sSamples = [18 18]; 
-%    wave = 400:10:700; grayFlag = 0; sampling = 'r'; 
-%    scene = sceneCreate('reflectance chart',pSize,sSamples,sFiles,wave,grayFlag,sampling); 
+%    pSize = 24; sSamples = [18 18];
+%    wave = 400:10:700; grayFlag = 0; sampling = 'r';
+%    scene = sceneCreate('reflectance chart',pSize,sSamples,sFiles,wave,grayFlag,sampling);
 %
 % NARROWBAND COLOR PATCHES
 %    wave = [600, 610];  sz = 64;
 %    scene = sceneCreate('uniform monochromatic',wave,sz);
-%   
+%
 % SPATIAL TEST PATTERNS:
 %
 %      {'rings rays'}            - Resolution pattern
@@ -116,7 +116,7 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %  reflectance, like a typical gray card.
 %
 %  Many of the patterns can have an arbitrary image (row,col) size.  This
-%  is possible for whitenoise, impulse1dee,lined65,
+%  is possible for whitenoise, impulse1dee,lined65
 %
 %         imSize = 128; lineOffset = 25;           % Plus is to the right
 %         scene = sceneCreate('lined65',imSize);
@@ -166,8 +166,8 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 % EMPTY
 %   For certain programming reasons, it is sometimes useful to have a scene
 %   with no data (no photons). In that case, you can call
-%   
-%     scene = sceneCreate('empty') 
+%
+%     scene = sceneCreate('empty')
 %
 %   which is precisely the same as
 %
@@ -175,8 +175,8 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 %
-% See also:  
-%  sceneFromFile, displayCreate, s_sceneReflectanceCharts.m 
+% See also:
+%  sceneFromFile, displayCreate, s_sceneReflectanceCharts.m
 
 %% Initial definition
 if ~exist('sceneName','var')||isempty(sceneName), sceneName = 'default'; end
@@ -191,13 +191,13 @@ scene.metadata = [];   % Metadata for machine learning apps
 %% Handle the Macbeth parameter cases here
 if strncmp(sceneName,'macbeth',5) || ...
         strcmp(sceneName,'default') || ...
-    strcmp(sceneName,'empty')
-    patchSize = 16; wave = 400:10:700; surfaceFile = 'macbethChart.mat'; 
+        strcmp(sceneName,'empty')
+    patchSize = 16; wave = 400:10:700; surfaceFile = 'macbethChart.mat';
     blackBorder = false;
     if ~isempty(varargin), patchSize = varargin{1}; end  % pixels per patch
     if length(varargin) > 1, wave = varargin{2}; end     % wave
     if length(varargin) > 2, surfaceFile = varargin{3}; end % Reflectances
-    if length(varargin) > 3, blackBorder = varargin{4}; end % 
+    if length(varargin) > 3, blackBorder = varargin{4}; end %
 end
 
 %%
@@ -235,7 +235,7 @@ switch sceneName
         % s = sceneCreate('macbeth custom reflectance',patchSize,wave,surfaceFile)
         % s = sceneCreate('macbeth custom reflectance',32,400:10:700,'macbethChart2.mat');
         scene = sceneDefault(scene,'d65',patchSize,wave,surfaceFile,blackBorder);
-
+        
     case {'reflectancechart'}
         % sceneCreate('reflectance chart',pSize,sSamples,sFiles,wave,grayFlag,sampling);
         % sceneCreate('reflectance chart',chartP);
@@ -252,7 +252,7 @@ switch sceneName
         else
             
             % Default surface files
-            sFiles{1} = which('MunsellSamples_Vhrel.mat'); 
+            sFiles{1} = which('MunsellSamples_Vhrel.mat');
             sFiles{2} = which('Food_Vhrel.mat');
             sFiles{3} = which('HyspexSkinReflectance.mat');
             %{
@@ -280,7 +280,7 @@ switch sceneName
         end
         
         scene = sceneReflectanceChart(sFiles,sSamples,pSize,wave,grayFlag,sampling);
-
+        
     case {'lstar'}
         % For a bar width of 50 pixels, 5 bars, at L* levels (1:nBars)-1 * 10, use
         %   scene = sceneCreate('lstar',50,5,10);
@@ -293,7 +293,7 @@ switch sceneName
         end
         scene = sceneLstarSteps(scene,bSize,nBars,deltaE);
         scene = sceneSet(scene,'name',sprintf('L-star (%d)',deltaE));
-
+        
         % Monochrome,RGB and multispectral add only a little.  Mostly created in sceneFromFile
     case {'monochrome','unispectral'}
         % sceneMonochrome is used for images with only one spectral band.
@@ -337,7 +337,7 @@ switch sceneName
             error('Wrong number of parameters! Input params structure and optional wavelengths.')
         end
     case {'sweep','sweepfrequency'}
-        % sz = 512; maxF = sz/16; 
+        % sz = 512; maxF = sz/16;
         % sceneCreate('sweepFrequency',sz,maxF);
         % These are always equal photon type.  Could add a third argument
         % for spectral type.
@@ -369,9 +369,9 @@ switch sceneName
     case {'uniform','uniformee','uniformequalenergy'}   %Equal energy
         % By default a 32 x 32 with standard wave sampling
         %
-        sz = 32; 
+        sz = 32;
         if ~isempty(varargin) && ~isempty(varargin{1})
-            sz = varargin{1}; 
+            sz = varargin{1};
         end
         if length(varargin) > 1 && ~isempty(varargin{2})
             wave = varargin{2};
@@ -473,17 +473,17 @@ switch sceneName
         if length(varargin) >=3, offset = varargin{3};   end
         if length(varargin) >=4, lineReflectance = varargin{4};   end
         if length(varargin) ==5, backReflectance = varargin{5};   end
-
+        
         scene = sceneVernier(scene,sz,width,offset,lineReflectance,backReflectance);
     case {'whitenoise','noise'}
         % sceneCreate('noise',[128 128])
         sz = 128; contrast = 20;
         if length(varargin) >= 1, sz = varargin{1}; end
         if length(varargin) >= 2, contrast = varargin{2}; end
-
+        
         scene = sceneNoise(scene,sz,contrast);
         scene = sceneSet(scene,'name','white noise');
-
+        
     case {'pointarray','manypoints'}
         % sceneCreate('pointArray',sz,spacing,spectralType);
         sz = 128; spacing = 16; spectralType = 'ep';
@@ -617,11 +617,11 @@ function scene = sceneNoise(scene,sz,contrast)
 %% Make a spatial white noise stimulus
 % contrast is the standard deviation of the N(0,contrast) noise.
 % The noise is shifted to a mean of 0.5, and the level is clipped to a
-% minimum of 0. 
+% minimum of 0.
 
 if ieNotDefined('sz'), sz = [128,128]; end
-if ieNotDefined('contrast'), contrast = 0.20; 
-elseif contrast > 1, contrast = contrast/100; 
+if ieNotDefined('contrast'), contrast = 0.20;
+elseif contrast > 1, contrast = contrast/100;
 end
 
 if numel(sz) == 1, sz(2) = sz(1); end
@@ -638,7 +638,7 @@ il = illuminantCreate('d65',wave,100);
 p  = illuminantGet(il,'photons');
 scene = sceneSet(scene,'illuminant',il);
 
-% 
+%
 photons = zeros(sz(1),sz(2),nWave);
 for ii=1:nWave, photons(:,:,ii) = d*p(ii); end
 
@@ -666,7 +666,7 @@ end
 if ieNotDefined('blackBorder'), blackBorder = false; end
 
 % Create the scene variable and possibly set wavelength
-scene = initDefaultSpectrum(scene,'hyperspectral'); 
+scene = initDefaultSpectrum(scene,'hyperspectral');
 scene = sceneSet(scene,'wave',wave);
 
 % Choose the illuminant type
@@ -984,7 +984,7 @@ return;
 
 %--------------------------------------------------
 function scene = sceneLine(scene,spectralType,sz,offset)
-%% Create a single line scene.  
+%% Create a single line scene.
 % This is used for computing linespreads and OTFs.
 
 if ieNotDefined('spectralType'), spectralType = 'ep'; end
@@ -1015,11 +1015,11 @@ switch lower(spectralType)
         % to the number of photons is just to produce a reasonable energy
         % level.
         il = illuminantCreate('equal energy',wave);
-
+        
     case 'd65'
         % D65 spectra for the line
         il = illuminantCreate('d65',wave);
-
+        
     otherwise
         error('Unknown uniform field type %s.',spectralType);
 end
@@ -1035,7 +1035,7 @@ return;
 
 %--------------------------------------------------
 function scene = sceneBar(scene,sz,width)
-%% Create a single bar scene.  
+%% Create a single bar scene.
 % This is used for computing the effect of scene dot density, say for a
 % display with varying dots per inch.
 
@@ -1072,7 +1072,7 @@ function scene = sceneVernier(scene,sz,width,offset,lineReflectance,backReflecta
 %% Equal photon vernier targets
 %
 % Need to allow changing color of top and bottom, perhaps other features.
-% We will create params structure for parameters in the future, i.e.,
+% We will create params structure for parameters in the future, i.e.
 % params.sz, params.width, params.lineReflectance, ... and so forth
 %
 if ieNotDefined('sz'),     sz = 64;    end
@@ -1091,15 +1091,15 @@ if ~isodd(c), c = c+1; end
 
 % Vernier line size and offset
 % Top and bottom half rows and columns
-% Columns containing top line, shifted offset/2 
-topCols = (1:width) + round((c - width)/2) - floor(offset/2);  
+% Columns containing top line, shifted offset/2
+topCols = (1:width) + round((c - width)/2) - floor(offset/2);
 
 % Columns containing bottom line, shifted offset from top columns
-% With this algorithm, the width of the 
-botCols = topCols + offset; 
+% With this algorithm, the width of the
+botCols = topCols + offset;
 
 % Split the rows, too
-topHalf = round(r/2); 
+topHalf = round(r/2);
 topRows = 1:topHalf; botRows = (topHalf+1):r;
 
 %% Init spectrum
@@ -1169,12 +1169,12 @@ for ii=1:nLines
     x = endPoints(ii,1); y = endPoints(ii,2);
     u = -x; v = -y;
     % Flip so x is the lower one
-    if x > 0,
+    if x > 0
         tmp = [x,y]; x = u; y = v; u = tmp(1); v = tmp(2);
     end
     
     if ~isequal(u,x), slope = (y - v) / (u - x);
-        for jj=x:0.2:u,
+        for jj=x:0.2:u
             kk = round(jj*slope);
             img(round(kk + (imSize/2)) + 1, round(jj + (imSize/2)) + 1) = 1;
         end
@@ -1240,7 +1240,7 @@ il = illuminantCreate('equal photons',sceneGet(scene,'wave'));
 scene = sceneSet(scene,'illuminant',il);
 
 % This routine returns an RGB image.  We base the final image on just the
-% green channel 
+% green channel
 img = repmat(img(:,:,2),[1,1,nWave]);
 [img,r,c] = RGB2XWFormat(img);
 illP = illuminantGet(il,'photons');
@@ -1366,7 +1366,7 @@ il = illuminantCreate('equal energy',wave);
 scene = sceneSet(scene,'illuminant',il);
 illP = illuminantGet(il,'photons');
 
-% Create the scene photons 
+% Create the scene photons
 photons = zeros(size(img,1),size(img,2),nWave);
 for ii=1:nWave, photons(:,:,ii) = img*illP(ii); end
 scene = sceneSet(scene,'photons',photons);
@@ -1428,7 +1428,7 @@ illPhotons = illuminantGet(il,'photons');
 % Now, make the photon image
 photons = ones(1,nBars,nWave);
 for ii=1:nBars
-        photons(1,ii,:) = Y(ii)*illPhotons;
+    photons(1,ii,:) = Y(ii)*illPhotons;
 end
 
 % Adjust the size of the image

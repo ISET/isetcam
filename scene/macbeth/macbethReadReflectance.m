@@ -11,13 +11,13 @@ function macbethChart = macbethReadReflectance(wave,patchList)
 %
 % The upper left corner (:,1) is brown, the upper right (:,21) is cyan
 % The third row is Blue, green, red, yellow, magenta, light blue
-% 
-% The examples and tutorials calculat images and other values with the MCC 
+%
+% The examples and tutorials calculat images and other values with the MCC
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 %
-% See also: 
-%   t_SurfaceModels and macbethChartCreate 
+% See also:
+%   t_SurfaceModels and macbethChartCreate
 
 % Examples:
 %{

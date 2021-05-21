@@ -10,7 +10,7 @@ function [ml, psImage] = mlRadiance(ml,sensor,mlFlag)
 % Inputs
 %  ml:      Microlens structure
 %  sensor:  ISET sensor
-%  mlFlag:  By default the routine includes the microlens (mlFlag = 1). 
+%  mlFlag:  By default the routine includes the microlens (mlFlag = 1).
 %           If mlFlag=0, only vignetting (no microlens included).
 %
 % Returns
@@ -31,7 +31,7 @@ function [ml, psImage] = mlRadiance(ml,sensor,mlFlag)
 %   ml = mlRadiance(ml,sensor,0);    % Bare array, just vignetting
 %   ml = mlRadiance(ml,sensor,1);    % Compute accounting for the microlens
 %
-% See also: mlAnalyzeArrayEtendue, plotML, microLensWindow, v_microlens 
+% See also: mlAnalyzeArrayEtendue, plotML, microLensWindow, v_microlens
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
@@ -44,19 +44,19 @@ sourcefNumber = mlensGet(ml,'source fnumber');
 
 % Get apertures for the pixel, photodetector and microlens aperture in
 % microns
-mlAperture    = mlensGet(ml,'ml diameter','micron'); 
+mlAperture    = mlensGet(ml,'ml diameter','micron');
 if mlAperture <= 0,  errordlg('Bad microlens diameter: %f\n',mlAperture); end
 
 pixelWidth   = sensorGet(sensor,'pixel width','micron');
 pdWidth      = sensorGet(sensor,'pixel photodetector width','micron');
 
 if mlAperture - pixelWidth > 1000*eps
-    fprintf('mlRadiance: MicroLens diameter %.2f exceeds pixel width %.2f.\n',mlAperture,pixelWidth);  
+    fprintf('mlRadiance: MicroLens diameter %.2f exceeds pixel width %.2f.\n',mlAperture,pixelWidth);
 end
 
 % dStack for distance of each layer
 % nStack for index of refraction of each layer
-dStack = sensorGet(sensor,'pixel layer thicknesses','micron'); 
+dStack = sensorGet(sensor,'pixel layer thicknesses','micron');
 nStack = sensorGet(sensor,'pixel refractive indices');
 
 % Initialization Parameters
@@ -70,7 +70,7 @@ rStack = 1.52;   % Could be computed as the mean of the nStack without air and s
 f = mlensGet(ml,'ml focal length','micron')/rStack;           % [um]
 lensOffset = mlensGet(ml,'offset');                           % [um]
 
-% Source Parameters.  There is only one wavelength for each computation,
+% Source Parameters.  There is only one wavelength for each computation
 % hunh.
 lambda = mlensGet(ml,'wavelength','um');		            % [um]
 sourceChiefRayAngle = mlensGet(ml,'chief ray');              % [deg]
@@ -137,7 +137,7 @@ if showBar, delete(h); end
 
 % Map of relative irradiance
 % This is a summary of the ray positions at the photodetector
-% surface.  
+% surface.
 % This is the Phase Space representation on the x-axis (space).
 % vcNewGraphWin; imagesc(x,p,W_detector);
 % xlabel('um'); ylabel('PS thing (between +/-  refractive idx')
@@ -167,10 +167,10 @@ ml = mlensSet(ml,'pixel irradiance',pixelIrradiance);
 % Optical Efficiency calculations
 % Find the part of the input irradiance over the pixel aperture and
 % add it up.
-IrradianceIn  = sum(W_source,1);   
+IrradianceIn  = sum(W_source,1);
 etendueIn = sum(IrradianceIn(abs(x) <   (pixelWidth/2)));
 
-IrradianceOut = sum(W_detector,1); 
+IrradianceOut = sum(W_detector,1);
 etendueOut = sum(IrradianceOut(abs(x) < (pdWidth/2)));
 E = etendueOut/etendueIn;
 
@@ -179,7 +179,7 @@ ml = mlensSet(ml,'etendue',E);
 
 % This is not really the irradiance! We should call it source phase space.
 % (PC)
-ml = mlensSet(ml,'source irradiance',W_source); 
+ml = mlensSet(ml,'source irradiance',W_source);
 ml = mlensSet(ml,'x coordinate',x);
 ml = mlensSet(ml,'p coordinate',p);
 

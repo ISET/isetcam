@@ -15,7 +15,7 @@ function ml = mlensSet(ml,param,val,varargin)
 % List of parameters
 %
 % General
-%  name - 
+%  name -
 %  wavelength
 %
 % Microlens parameters
@@ -54,14 +54,14 @@ function ml = mlensSet(ml,param,val,varargin)
 if ieNotDefined('param'), error('Parameter field required.'); end
 
 % Empty is an allowed value.  So we don't use ieNotDefined.
-if ~exist('val','var'),   error('Value field required.'); end        
+if ~exist('val','var'),   error('Value field required.'); end
 
 param = ieParamFormat(param);
 switch lower(param)
     
     case {'name','title'}
         ml.name = val;
-       
+        
     case {'wavelength','sourcewavelength'}
         % What units?   Not nanometers?  What's going on?
         ml.wavelength = val;
@@ -69,7 +69,7 @@ switch lower(param)
     case {'chiefrayangle','rayangle','chiefrayangledegrees'}
         % This angle is specified in degrees
         ml.rayAngle = val;
-                
+        
         % Source parameters
     case {'sourcefnumber','sfnumber'}
         % Meters
@@ -85,7 +85,7 @@ switch lower(param)
         
     case {'sourceirradiance'}
         ml.sourceIrradiance = val;
-            
+        
         % Microlens parameters
     case {'mlfnumber','fnumber'}
         % mlensSet(ml,'f number',4)
@@ -98,7 +98,7 @@ switch lower(param)
         if isempty(varargin), ml.focalLength = val;
         else ml.focalLength = val / ieUnitScaleFactor(varargin{1});
         end
-    
+        
     case {'mloffset','microlensoffset','offset','microlensoffsetmicrons'}
         % Has always been in microns
         % Am switching to meters Feb. 2015
@@ -109,7 +109,7 @@ switch lower(param)
         
     case {'mlrefractiveindex','microlensrefractiveindex','mlrefindx'}
         ml.refractiveIndex = val;
-
+        
         % Stuff that we use when we compute.
         % I am worried that these can be inconsistent (BW).
     case {'xcoordinate','spacecoordinate'}
@@ -126,7 +126,7 @@ switch lower(param)
         % the fly (see mlensGet).
     case {'pixelirradiance','irradiance','pirradiance'}
         ml.pixelIrradiance = val;
-    
+        
     case {'etendue'}
         ml.E = val;
         

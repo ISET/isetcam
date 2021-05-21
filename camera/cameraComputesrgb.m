@@ -2,7 +2,7 @@ function [srgbResult, srgbIdeal, raw, camera] = ...
     cameraComputesrgb(camera, sceneName, meanLuminance, sz, scenefov, ...
     scaleoutput,plotFlag)
 
-% [srgbResult, srgbIdeal] = 
+% [srgbResult, srgbIdeal] =
 %     cameraComputesrgb(camera, sceneName, meanLuminance, sz, scenefov, ...
 %     scaleoutput,plotFlag)
 %
@@ -14,8 +14,8 @@ function [srgbResult, srgbIdeal, raw, camera] = ...
 %                   Alternatively a scene structure can be passed in.  Then
 %                   the scene is used for computing after adjusting the
 %                   mean luminance and FOV.
-%  meanLuminance:   scalar giving scene mean luminance in cd/m^2 
-%                   (default 100) 
+%  meanLuminance:   scalar giving scene mean luminance in cd/m^2
+%                   (default 100)
 %  sz:              length 2 vector that gives the rows and columns of the
 %                   output image  (default is current sensor size in
 %                   camera, which will be cropped by 10 pixels on each
@@ -34,7 +34,7 @@ function [srgbResult, srgbIdeal, raw, camera] = ...
 %  srgbResult:      Result from camera.  Mean value of lrgb is set to match
 %                   mean value of ideal lrgb image.  Then lrgb is converted
 %                   to srgb.
-%  srgbIdeal:       Ideal image calculated by directly calculating without 
+%  srgbIdeal:       Ideal image calculated by directly calculating without
 %                   noise the  XYZ at each pixel.  Then XYZ is converted to
 %                   srgb.
 %  raw:             RAW sensor values in volts
@@ -72,7 +72,7 @@ end
 if ischar(sceneName)  % If filename of scene is passed in, load it.
     scene = sceneFromFile(sceneName, 'multispectral');
 else  % If scene structure is passed in, use that.
-    scene = sceneName;  
+    scene = sceneName;
 end
 
 % Change illuminant to D65
@@ -87,10 +87,10 @@ else
     % field of view using:  camera = cameraSet(camera,'sensor fov',fov);
     % 20 is added because 10 pixels on each side will be cropped below
 end
-    
+
 % Set scene FOV
 if nargin<5 || isempty(scenefov)
-% Default is that scene's fov is set to match camera's
+    % Default is that scene's fov is set to match camera's
     oi     = cameraGet(camera,'oi');
     sensor = cameraGet(camera,'sensor');
     sDist  = sceneGet(scene,'distance');
@@ -113,7 +113,7 @@ xyzIdeal  = xyzIdeal / max(xyzIdeal(:)) * scaleoutput;
 [camera, lrgbResult] = cameraCompute(camera,'oi',lrgbIdeal);   % OI is already calculated
 srgbResult = lrgb2srgb(ieClip(lrgbResult,0,1));
 
-%% Crop border of image to remove any errors around the edge 
+%% Crop border of image to remove any errors around the edge
 %  (this is similar to L3imcrop but with a fixed width)
 
 srgbResult = srgbResult(11:(end-10), 11:(end-10), :);

@@ -144,7 +144,7 @@ rRatio = calThen.P_device(:,1)\calNow.P_device(:,1);
 gRatio = calThen.P_device(:,2)\calNow.P_device(:,2);
 bRatio = calThen.P_device(:,3)\calNow.P_device(:,3);
 fprintf('Phosphor intensity ratios (now/then): %0.3g, %0.3g, %0.3g\n', ...
-	rRatio,gRatio,bRatio);
+    rRatio,gRatio,bRatio);
 
 %% Plot gamma functions
 %

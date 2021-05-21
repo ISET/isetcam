@@ -7,7 +7,7 @@ function RGB = MOTarget(pattern,parms)
 %   'squareim', 'sinusoidalim_line', 'squareim_line', 'flat'
 
 % parms:    A structure containing parameters.  These differ by case
-%  
+%
 %  .sceneSize - any case
 %  .????
 %
@@ -103,11 +103,11 @@ end
 % figure(1)
 % imagesc(sinusoidalim)
 % axis square
-% colormap(gray)
+% colormap(gray(64))
 % title('Sinusoidal Image')
 %
 % figure(2)
 % imagesc(squareim)
 % axis square
-% colormap(gray)
+% colormap(gray(64))
 % title('Square Image')

@@ -1,11 +1,11 @@
 function fullName = sensorSaveImage(sensor,fullName,dataType,gam,scaleMax)
-%Save out an RGB image of the sensor image as a png file. 
+%Save out an RGB image of the sensor image as a png file.
 %
 %  fullName = sensorSaveImage(isa,fullName,dataType,gam,scaleMax);
 %
 % If the fullName is not passed in, then the user is queried to select the
 % fullpath name of the output file.
-% 
+%
 %Example:
 %  sensorSaveImage(sensor,fullpathname);
 %

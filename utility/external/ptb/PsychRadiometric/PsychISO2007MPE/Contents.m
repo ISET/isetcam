@@ -7,7 +7,7 @@
 %
 % IMPORTANT
 %
-%   Individuals using these routines must accept full responsibility 
+%   Individuals using these routines must accept full responsibility
 %   for light exposures they implement. We recommend that values computed
 %   with these routines be carefully checked against independent calculations.
 %   We have done our best to follow the standard, but it is very complex and
@@ -52,7 +52,7 @@
 %   For input, we typically measure radiance in Watts/[sr-m^22] and all the routines take
 %   radiance as input and convert as necessary (with the help of passed ancilliary arguments).
 %   To match the measurement instrumentation we use, the radiance units are kept in
-%   units of Watts/[sr-m^22], and the routines do the appropriate converstions.  
+%   units of Watts/[sr-m^22], and the routines do the appropriate converstions.
 %   these are the input units expected. The one exception on the input is the convergent beam limit,
 %   where the input is irradiance and should be passed in uWatts/cm^2.   The help text is pretty
 %   clear about what is desired for each routine.

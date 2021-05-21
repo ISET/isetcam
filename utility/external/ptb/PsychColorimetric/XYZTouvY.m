@@ -30,14 +30,14 @@ end
 uvY = NaN*zeros(size(XYZ));
 [m,n] = size(XYZ);
 for i = 1:n
-  denom = (XYZ(1,i) + 15*XYZ(2,i) + 3*XYZ(3,i));
-  uvY(1,i) = 4*XYZ(1,i)/denom;
-  if (compute1960)
-      uvY(2,i) = 6*XYZ(2,i)/denom;
-  else
-      uvY(2,i) = 9*XYZ(2,i)/denom;
-  end
-  uvY(3,i) = XYZ(2,i);
+    denom = (XYZ(1,i) + 15*XYZ(2,i) + 3*XYZ(3,i));
+    uvY(1,i) = 4*XYZ(1,i)/denom;
+    if (compute1960)
+        uvY(2,i) = 6*XYZ(2,i)/denom;
+    else
+        uvY(2,i) = 9*XYZ(2,i)/denom;
+    end
+    uvY(3,i) = XYZ(2,i);
 end
 
 %% This, I think is a vectorized method.  Not

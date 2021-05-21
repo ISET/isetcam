@@ -4,7 +4,7 @@ function T = imageEsserTransform(sensorQE,targetQE,illuminant,wave)
 % of an Esser color checker under a specified illuminant.
 %
 % SENSORQE is a matrix whose columns contain the sensor spectral quantum efficiencies.
-% 
+%
 % TARGETQE a matrix whose columns are the spectral quantum efficiency for the desired
 % system, such as the human visual system (XYZ).
 %
@@ -20,7 +20,7 @@ if ieNotDefined('illuminant'), illuminant = 'D65'; end
 % Read the MCC surface spectra and a target illuminant, say D65.  Combine them.
 %
 % fullfile(isetRootPath,'data','surfaces','esserChart');
-fName = which('esserChart.mat'); 
+fName = which('esserChart.mat');
 surRef = ieReadSpectra(fName,wave);
 illEnergy = ieReadSpectra(illuminant,wave);
 illQuanta = Energy2Quanta(wave,illEnergy);
@@ -30,7 +30,7 @@ illQuanta = Energy2Quanta(wave,illEnergy);
 sensorEsser = (sensorQE'*diag(illQuanta)*surRef)';
 
 % These are the desired sensor responses to the surface reflectance
-% functions under the illuminant in the internal color space.  
+% functions under the illuminant in the internal color space.
 % The sensorMacbeth is an XW format.
 targetEsser = (targetQE'*diag(illQuanta)*surRef)';
 
@@ -38,7 +38,7 @@ targetEsser = (targetQE'*diag(illQuanta)*surRef)';
 % target values, as illustrated in the comment below.
 T = pinv(sensorEsser)*targetEsser;
 
-% pred = sensorMacbeth*T; 
+% pred = sensorMacbeth*T;
 % predImg = XW2RGBFormat(pred,6,4);
 % figure; title('mcc')
 % subplot(1,2,1), imagescRGB(imageIncreaseImageRGBSize(predImg,20));

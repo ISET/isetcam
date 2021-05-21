@@ -2,7 +2,7 @@
 %
 % ISET can generate many test scenes to evaluate color, resolution and
 % noise. In addition, we use a Cloud site to store some interesting data
-% that are pubicly available.  
+% that are pubicly available.
 %
 % This script illustrates example scenes.
 %
@@ -30,7 +30,7 @@ ieAddObject(scene); sceneWindow;
 scene = sceneCreate('macbeth d65');
 ieAddObject(scene); sceneWindow;
 
-% A better reflectance chart 
+% A better reflectance chart
 scene = sceneCreate('reflectance chart');
 ieAddObject(scene); sceneWindow;
 
@@ -42,7 +42,7 @@ rd.crp ('/resources/scenes/hyperspectral/manchester_database/2004');
 a = rd.listArtifacts('print',true,'type','mat');
 
 %% Download an example from the hyperspectral database
-data = rd.readArtifact(a(1));  
+data = rd.readArtifact(a(1));
 
 % These are stored using a linear model.  So we convert from the linear
 % basis to the scene spectral radiance
@@ -54,9 +54,9 @@ ieAddObject(scene); sceneWindow;
 rd.crp ('/resources/scenes/multiband/scien/2008');
 rd.listArtifacts('print',true,'type','mat');
 
-data = rd.readArtifact('CaucasianAsianAfricanAmerican');  
+data = rd.readArtifact('CaucasianAsianAfricanAmerican');
 face = sceneFromBasis(data);
-ieAddObject(face); 
+ieAddObject(face);
 sceneSet(face,'gamma',0.8);
 % sceneWindow;
 
@@ -78,7 +78,7 @@ a = rd.listArtifacts('print',true);
 data = rd.readArtifact(a(1));
 scene = data.scene;
 
-sceneWindow(scene); 
+sceneWindow(scene);
 scene = sceneSet(scene,'gamma',0.5);
 
 % A nice property of the synthetic scenes is that we have ground truth

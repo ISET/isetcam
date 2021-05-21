@@ -3,12 +3,12 @@ function [dEab, errComponents] = deltaEab(xyz1,xyz2,whitePnt,deltaEVer)
 %
 %   [dEab, errComponents] = deltaEab(XYZ1,XYZ2,whitePnt,[deltaEVer='2000'])
 %
-% Calculate the CIE delta E between two different colors in CIELAB space. 
+% Calculate the CIE delta E between two different colors in CIELAB space.
 %
 % The CIE delta E standard is a fundamental tool of color science.  The
 % metric is described in a wide variety of textbooks.  It has gone through
 % a series of refinements over the years.  The latest is this one, the
-% CIEDE2000.  Earlier versions, dating to 1976, were also defined. 
+% CIEDE2000.  Earlier versions, dating to 1976, were also defined.
 %
 % XYZ1 and XYZ2 define the corresponding sets of XYZ data.  These are
 % stored either XW (space-wavelength) or RGB Image format.
@@ -53,7 +53,7 @@ end
 % Compute LAB values
 % Use modern code
 useOldCode = 0;
-if iscell(whitePnt) 
+if iscell(whitePnt)
     a = ieXYZ2LAB(xyz1,whitePnt{1}, useOldCode);
     b = ieXYZ2LAB(xyz2,whitePnt{2}, useOldCode);
 else
@@ -69,7 +69,7 @@ if n == 3
 end;
 
 % We calculate one of several possible delta E formulae. We also check
-% whether the user wants just the luminance, chrominance, or hue errors 
+% whether the user wants just the luminance, chrominance, or hue errors
 errComponents = [];
 switch deltaEVer
     case '2000'
@@ -97,7 +97,7 @@ if n ==3
         errComponents.RT = reshape(errComponents.RT, [ra, ca]);
     end
 elseif n == 2
-    dEab=de;  
+    dEab=de;
 end;
 
 return;

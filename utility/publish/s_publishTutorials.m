@@ -16,7 +16,7 @@ clear all; % Clear at the beginning, but not again.
 % tDir = {str};
 
 % All at once
-tDir = {'camera','code','color','display','introduction','scene','optics','sensor','color','metrics','image','gui'};     
+tDir = {'camera','code','color','display','introduction','scene','optics','sensor','color','metrics','image','gui'};
 maxHeight = 512;
 maxWidth  = 512;
 
@@ -32,7 +32,7 @@ for ss = 1:length(tDir)
     fprintf('Script directory: %s \n',tDir{ss});
     oDir = fullfile('/Users/wandell/Google Drive/Business/Imageval/website/tutorials',tDir{ss});
     % oDir = fullfile(isetRootPath,'local',tDir{ss});
-
+    
     % Run them - later we can publish them, as a group with similar code.
     cd(fullfile(isetRootPath,'tutorials',tDir{ss}));
     allTutorials = dir('*.m');
@@ -43,7 +43,7 @@ for ss = 1:length(tDir)
     for thisTutorial=1:nTutorials
         % Need to re-execute on each loop because of the ieInit commands
         cd(fullfile(isetRootPath,'tutorials',tDir{ss}));
-
+        
         fprintf('%d %s ...',thisTutorial,tutorialNames(thisTutorial).name);
         
         for thisFormat = 1:length(oFormats)
@@ -51,7 +51,7 @@ for ss = 1:length(tDir)
                 'format',oFormats{thisFormat},...
                 'outputDir',oDir, ...
                 'maxHeight',maxHeight,...
-                'maxWidth',maxWidth); 
+                'maxWidth',maxWidth);
         end
         
         fprintf('done\n');
@@ -62,7 +62,7 @@ for ss = 1:length(tDir)
 end
 
 
-%% 
+%%
 function keepScripts = excludeTutorials(these,excludeNames)
 
 cnt = 1;

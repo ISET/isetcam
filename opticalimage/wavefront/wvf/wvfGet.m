@@ -114,7 +114,7 @@ switch parm
         % Conversion factor between um on retina & visual angle in degreees
         % val = wvf.umPerDegree;   % Applies to human case
         
-        val = tand(1) * wvfGet(wvf, 'focal length', 'um'); 
+        val = tand(1) * wvfGet(wvf, 'focal length', 'um');
         
         %% Pupil plane properties
         %
@@ -488,7 +488,7 @@ switch parm
         % if the zwavelength differs from the wavelength, we do not
         % correctly adjust.
         %
-        % So, 
+        % So,
         %
         %  wvfGet(wvf,'psf angular samples',unit,waveIdx)
         % unit = 'min' (default), 'deg', or 'sec'

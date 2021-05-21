@@ -51,7 +51,7 @@ function [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomeriza
 % whichNomogram can be any source understood by the routine PhotopigmentNomogram.  To obtain
 % the nomogram behavior, pass a lambdaMax vector. You can then also optionally pass a nomogram
 % source (default: StockmanSharpe).  This option (using shifted nomograms) is not part of the
-% CIE standard. See NOTE below for another way to handle individual differences 
+% CIE standard. See NOTE below for another way to handle individual differences
 %
 % The nominal values of lambdaMax to fit the CIE 2-degree fundamentals with the
 % Stockman-Sharpe nomogram are 558.9, 530.3, and 420.7 nm for the LMS cones respectively.
@@ -84,7 +84,7 @@ function [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomeriza
 %   indDiffParams.dphotopigment - vector of deviations in % from CIE
 %     photopigment peak density.
 %   indDiffParams.lambdaMaxShift - vector of values (in nm) to shift lambda max of
-%     each photopigment absorbance by.  
+%     each photopigment absorbance by.
 %   indDiffParams.shiftType - 'linear' (default) or 'log'.
 %
 % You also can shift the absorbances along a wavenumber axis after you have
@@ -92,7 +92,7 @@ function [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomeriza
 % number of entries as the number of absorbances that are used.
 %
 % The adjIndDiffParams outputsis a struct which is populated by ComputeRawConeFundamentals.
-% It contains the actual parameter values for the parameters adjusted using the indDiffParams 
+% It contains the actual parameter values for the parameters adjusted using the indDiffParams
 % input. It contains the following fields:
 %    adjIndDiffParams.mac - the adjusted macular pigment transmittance as a function of wavelength
 %                           as calculated in line 151 of ComputeRawConeFundamentals.
@@ -142,7 +142,7 @@ function [T_quantalAbsorptionsNormalized,T_quantalAbsorptions,T_quantalIsomeriza
 % CIEConeFundamentalsFieldSizeTest and its header comments, but be aware
 % that you have sailed into little charted territory if you do this.
 %
-% See also: ComputeRawConeFundamentals, CIEConeFundamentalsTest, CIEConeFundamentalsFieldSizeTest, 
+% See also: ComputeRawConeFundamentals, CIEConeFundamentalsTest, CIEConeFundamentalsFieldSizeTest,
 % FitConeFundamentalsTest, FitConeFundamentalsWithNomogram, StockmanSharpeNomogram,
 % ComputePhotopigmentBleaching.
 %
@@ -181,7 +181,7 @@ end
 %% Get some basic parameters.
 %
 %
-% We start with default CIE parameters in 
+% We start with default CIE parameters in
 % the photoreceptors structure, and then override
 % as necessary.
 % then override to match the CIE standard.
@@ -193,7 +193,7 @@ end
 photoreceptors = DefaultPhotoreceptors(whatCalc);
 
 %% Override default values so that FillInPhotoreceptors does
-% our work for us.  The CIE standard uses field size, 
+% our work for us.  The CIE standard uses field size
 % age, and pupil diameter to computer other values.
 % to compute other quantities.
 photoreceptors.nomogram.S = S;
@@ -297,7 +297,7 @@ end
 %
 % The call to FillInPhotoreceptors also computes what here is called
 % T_quantal.  It is in the field effectiveAbsorptance.  For cases where
-% we aren't playing games with the parameters after the call to 
+% we aren't playing games with the parameters after the call to
 % FillInPhotoreceptors, we can check for agreement.
 if (CHECK_FOR_AGREEMENT)
     diffs = abs(T_quantalAbsorptions(:)-photoreceptors.effectiveAbsorptance(:));

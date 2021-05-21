@@ -19,7 +19,7 @@ function scene = sceneIlluminantSS(scene,pattern)
 %  illuminant, we convert the scene to this spatial spectral format.  Then
 %  we can multiply the illuminant (and radiance) by a scale factor at each
 %  location.
-%  
+%
 %  Without a pattern this routine replicates the single spectrum into the
 %  spatial spectral format so that we can then process the illuminant
 %  across space.
@@ -35,7 +35,7 @@ function scene = sceneIlluminantSS(scene,pattern)
 
 % Examples:
 %{
- scene = sceneCreate;  
+ scene = sceneCreate;
  sceneGet(scene,'illuminant format')
  scene = sceneIlluminantSS(scene);
  sceneGet(scene,'illuminant format')
@@ -63,7 +63,7 @@ switch iFormat
         foo = repmat(iPhotons(:),[1,sz(1),sz(2)]);
         iPhotons = permute(foo,[ 2 3 1]);
         scene = sceneSet(scene,'illuminant photons',iPhotons);
-
+        
     case 'spatial spectral'
         % Already in spatial spectral format
         
@@ -73,7 +73,7 @@ end
 
 %% Apply the spatial pattern to the illuminant
 
-if isempty(pattern), return; 
+if isempty(pattern), return;
 else
     % The user sent in a matrix that defines the illuminant spatial pattern.
     % We apply that pattern to both the illuminant and the scene spectral

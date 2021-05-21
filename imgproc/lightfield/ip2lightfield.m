@@ -14,16 +14,16 @@ function lightfield = ip2lightfield(ip,varargin)
 % Parameters
 %   pinholes:    vector of row/col number of pinholes (microlenses)
 %   colorspace:  Output color space is linear rgb or srgb (default lrgb)
-% 
+%
 % Output:
 %   lightfield:  5-d light field data.  Four spatial dimensions and one
 %                color dimension. The lightfield format is used by the Matlab
-%                Central library 
-%     <https://www.mathworks.com/matlabcentral/fileexchange/49683-light-field-toolbox-v0-4> 
+%                Central library
+%     <https://www.mathworks.com/matlabcentral/fileexchange/49683-light-field-toolbox-v0-4>
 %
 % See also:  s_lfNotes and s_piReadRenderLF in pbrt2ISET; s_lfIntro in CISET
 %
-% HB/BW, SCIEN Stanford 2016 
+% HB/BW, SCIEN Stanford 2016
 
 % Examples:
 %{

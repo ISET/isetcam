@@ -1,15 +1,15 @@
 function [luminance,meanLuminance] = sceneCalculateLuminance(scene)
-% Calculate scene luminance (cd/m^2) 
+% Calculate scene luminance (cd/m^2)
 %
-%  [luminance,meanLuminance] = sceneCalculateLuminance(scene)  
+%  [luminance,meanLuminance] = sceneCalculateLuminance(scene)
 %
 % Calculate the luminance (cd/m^2) at each point in a scene.
 %
 % Calculations of the scene luminance usually begin with
 % photons/sec/nm/sr/m^2 (radiance).  These are converted to energy, and
 % then transformed with the luminosity function and wavelength sampling
-% scale factor. 
-% 
+% scale factor.
+%
 % Copyright ImagEval Consultants, LLC, 2003.
 
 if ~exist('scene','var')||isempty(scene), error('Scene variable required.'); end
@@ -40,20 +40,20 @@ if nRows*nCols*nWaves < (640*640*31)
     % because that may differ depending on memory in that user's computer.
     energy = sceneGet(scene,'energy');
     if isempty(energy)
-       if showBar, waitbar(0.3,h); end
+        if showBar, waitbar(0.3,h); end
         wave = sceneGet(scene,'wave');
         photons = sceneGet(scene,'photons');
         energy = Quanta2Energy(wave(:),photons);
     end
-
+    
     if showBar, waitbar(0.7,h); end
-
+    
     [xwData rows,cols,w] = RGB2XWFormat(energy);
-
+    
     % Convert into luminance using the photopic luminosity curve in V.
     luminance = 683*(xwData*V) * binWidth;
     luminance = XW2RGBFormat(luminance,rows, cols);
-
+    
 else
     % We think we are in this condition because the image is big.  So we
     % convert to energy one waveband at a time and sum  the wavelengths

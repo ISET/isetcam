@@ -67,7 +67,7 @@ for i = 1:length(dimensions)
     else
         error('Argument receptorTypes must be a string or a cell array of strings');
     end
-
+    
     switch (source)
         case {'None'}
             dimensions = [];
@@ -82,7 +82,7 @@ for i = 1:length(dimensions)
                     dimensions(i) = 2;
                 otherwise
                     error('Unsupported dimension requested');
-            end 
+            end
         case {'Webvision'}
             % http://webvision.med.utah.edu
             switch (whichDimension)
@@ -145,7 +145,7 @@ for i = 1:length(dimensions)
                 otherwise,
                     error(sprintf('%s estimates not available for species %s',source,species));
             end
-     
+            
         case ('Rodieck')
             % From Rodieck's "standard observer", Appendix B
             % in The First Steps of Seeing.
@@ -178,7 +178,7 @@ for i = 1:length(dimensions)
                 otherwise,
                     error(sprintf('%s estimates not available for species %s',source,species));
             end
-
+            
         case {'CVRL'}
             % These numbers are my encapsulations of CVRL's summary of a variety of data.
             % See CVRL summary text at:
@@ -206,7 +206,7 @@ for i = 1:length(dimensions)
                 otherwise,
                     error(sprintf('%s estimates not available for species %s',source,species));
             end
-       
+            
         case {'Hendrickson'}
             % From Hendrickson and Drucker, numbers provided at CVRL database:
             % http://cvrl.ioo.ucl.ac.uk/database/text/outseg/length.htm.  40 um
@@ -229,7 +229,7 @@ for i = 1:length(dimensions)
                 otherwise,
                     error(sprintf('%s estimates not available for species %s',source,species));
             end
-
+            
         case {'SterlingLab'}
             % These are values that Lu Yin provided, based on unpublished
             % measurements used in the Sterling lab.
@@ -272,7 +272,7 @@ for i = 1:length(dimensions)
                 otherwise,
                     error(sprintf('%s estimates not available for species %s',source,species));
             end
-
+            
             % Nope!
         otherwise
             error(sprintf('Unknown source %s for photoreceptor dimension estimates',source));

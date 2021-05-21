@@ -1,5 +1,5 @@
 function [reflectances, sSamples, wave] = ieReflectanceSamples(sFiles,sSamples,wave,sampling)
-% Return a sample of surface reflectance functions 
+% Return a sample of surface reflectance functions
 %
 %  [reflectances, sSamples, wave] = ieReflectanceSamples(sFiles,sSamples,[wave],[sampling])
 %
@@ -38,7 +38,7 @@ function [reflectances, sSamples, wave] = ieReflectanceSamples(sFiles,sSamples,w
 %  sFiles = cell(1,2);
 %  sFiles{1} = fullfile(isetRootPath,'data','surfaces','reflectances','MunsellSamples_Vhrel.mat');
 %  sFiles{2} = fullfile(isetRootPath,'data','surfaces','reflectances','DupontPaintChip_Vhrel.mat');
-%  sSamples = [12,12]*5; 
+%  sSamples = [12,12]*5;
 %  [reflectances, sSamples] = ieReflectanceSamples(sFiles,sSamples);
 %  plot(wave,reflectances); grid on
 %
@@ -88,7 +88,7 @@ sampleList = cell(1,nFiles);
 reflectances = zeros(length(wave),nSamples);
 
 for ii=1:nFiles
-
+    
     allSurfaces = ieReadSpectra(sFiles{ii},wave);
     nRef = size(allSurfaces,2);
     

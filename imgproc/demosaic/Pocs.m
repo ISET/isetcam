@@ -162,7 +162,7 @@ for iter=1:iterN
     % To decompose the signal further, set the following to 1
     % DO NOT FORGET TO REMOVE THE COMMENT-OUTS ABOVE TO GET hh0, hh1, gg0, gg1
     DoSecond = 1;
-    if DoSecond == 1,
+    if DoSecond == 1
         [CAA_Rdu, CHH_Rdu, CVV_Rdu, CDD_Rdu] = rdwt2(CA_Rdu,hh0,hh1);
         [CAA_Gdu, CHH_Gdu, CVV_Gdu, CDD_Gdu] = rdwt2(CA_Gdu,hh0,hh1);
         [CAA_Bdu, CHH_Bdu, CVV_Bdu, CDD_Bdu] = rdwt2(CA_Bdu,hh0,hh1);

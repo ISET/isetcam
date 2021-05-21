@@ -7,9 +7,9 @@ function s = ieHwhm2SD(h,gDim)
 %  We calculate the SD for a Gaussian with hwhm of 10; then we plot to show
 %  that it reaches a value of 0.5 at 10 units from the center
 %
-%    s = ieHwhm2SD(10,2); g = fspecial('gauss',50,s); 
+%    s = ieHwhm2SD(10,2); g = fspecial('gauss',50,s);
 %    x = 1:50; x = x - mean(x(:)); mesh(x,x,g/max(g(:))); axis equal
-%  
+%
 % By default, we assume a bivariate Gaussian (gDim = 2)
 %
 %    g2 = (1/(2*pi*sx*sy))*exp(-(1/2)(x/sx)^2 + (y/sy)^2)
@@ -19,7 +19,7 @@ function s = ieHwhm2SD(h,gDim)
 %
 % N.B. The 1D case has not been tested significantly.
 %
-%                             --------------------------- 
+%                             ---------------------------
 % Notes:
 %
 % In the 2D case there is an elliptical curve(hx,hy) where the function is
@@ -32,7 +32,7 @@ function s = ieHwhm2SD(h,gDim)
 %    ln(2) = (1/2)*(hx/sx)^2
 %    sx = hx / sqrt(2*ln(2))
 %
-%                             --------------------------- 
+%                             ---------------------------
 %
 % In the 1D case:  g1 = (1/s sqrt(2pi)) exp(-(x/2s)^2)
 %

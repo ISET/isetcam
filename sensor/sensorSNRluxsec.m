@@ -9,7 +9,7 @@ function [snr,luxsec] = sensorSNRluxsec(ISA)
 %  no graph is produced.
 %
 %  This routine calculates SNR assuming a spatially uniform, spectrally D65
-%  scene and optical image with no cos4th fall-off.  This uniform scene is 
+%  scene and optical image with no cos4th fall-off.  This uniform scene is
 %  processed with the current sensor parameters at a variety of integration
 %  times.  The resulting SNR as a function produces a plot of SNR vs.
 %  lux-sec.
@@ -31,7 +31,7 @@ function [snr,luxsec] = sensorSNRluxsec(ISA)
 if ieNotDefined('ISA'), ISA = vcGetObject('ISA'); end
 
 % Compute the snr as a function of volts.
-[snr,volts] = sensorSNR(ISA); 
+[snr,volts] = sensorSNR(ISA);
 
 % Compute the relationship between volts and lux-sec for a D65 light
 % source.
@@ -42,13 +42,13 @@ for ii=1:nColors, luxsec(:,ii) = volts(:) / voltsPerLuxSec(ii); end
 
 if nargout == 0
     % Make the lux-sec version of the plot in plotSensorSNR
-  
+    
     vcNewGraphWin;
     letters = sensorGet(ISA,'filterColorLetters');
     
     for ii=1:length(letters)
         if strcmp(letters(ii),'w'), letters(ii) = 'k'; end
-        p = semilogx(luxsec(:,ii),snr,[letters(ii),'-']); 
+        p = semilogx(luxsec(:,ii),snr,[letters(ii),'-']);
         set(p,'linewidth',2);
         hold on
     end
@@ -56,18 +56,18 @@ if nargout == 0
     
     % Compute some quantities for the user data
     % Saturation level
-    LuxSecAtSaturation = pixelGet(sensorGet(ISA,'pixel'),'voltageswing') ./ voltsPerLuxSec;    
-
+    LuxSecAtSaturation = pixelGet(sensorGet(ISA,'pixel'),'voltageswing') ./ voltsPerLuxSec;
+    
     % Minimum photometric exposure for 30dB noise level
     thirtyDBLevel = interp1(snr,luxsec,30);
-
+    
     xlabel('lux-sec'); ylabel('SNR (db)');grid on
     title('Sensor SNR vs. Lux-sec (EE light)');
     leg = cell(1,nColors);
     for ii=1:nColors
         leg{ii} = sprintf('Sat %.2f (lux-sec)',LuxSecAtSaturation(ii));
     end
-    legend(leg,'Location','northwest');        
+    legend(leg,'Location','northwest');
     
     udata.luxsec = luxsec;
     udata.snr = snr;

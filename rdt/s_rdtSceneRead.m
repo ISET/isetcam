@@ -1,6 +1,6 @@
 %% s_rdtSceneRead
 %
-%  Reading scene data from the Archiva isetbio repository 
+%  Reading scene data from the Archiva isetbio repository
 %
 % See also:  RdtClient, sceneFromBasis
 % Copyright ImageVal Consulting 2015
@@ -11,7 +11,7 @@ if isempty(which('RdtClient'))
     fprintf('Remote data toolbox from the ISETBIO distribution is required\n');
     return;
 end
-    
+
 %%
 ieInit
 
@@ -29,7 +29,7 @@ rd.crp('/resources/scenes/hyperspectral/stanford_database'); % change remote pat
 % Currently only returns 30 elements
 % 'type' is not right because it says jpg when there are nef and pgm files
 % as well
-a = rd.listArtifacts;  
+a = rd.listArtifacts;
 
 %% Preferred method - send in the whole artifact to readArtifacts (an an s)
 data = rd.readArtifacts(a(2));
@@ -48,4 +48,4 @@ rottenFruitB = rd.readArtifact('RottenFruit_Cx');
 rottenFruit = sceneFromBasis(rottenFruitB);
 ieAddObject(rottenFruit); sceneWindow;
 
-%% 
+%%

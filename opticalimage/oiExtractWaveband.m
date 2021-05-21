@@ -5,7 +5,7 @@ function oiW = oiExtractWaveband(oi,waveList,illuminanceFlag)
 %
 % The list of evenly-spaced wavelengths, waveList in nm, is extracted from
 % the original optical image (OI). The output OI contains the photons in the
-% wavelength bands. 
+% wavelength bands.
 %
 % By default, the new OI does not have a calculated illuminance, and
 % in fact its illuminance differs from the original OI.  To re-calculate

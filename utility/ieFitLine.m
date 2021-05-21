@@ -7,7 +7,7 @@ function [slope, offset] = ieFitLine(x,y,method)
 %   Returns slope (a) and offset (b)
 %
 %   The data must be in the columns of x and y
-%   
+%
 %   methods:
 %   {'oneline','onelineleastsquares','leastsquares'}
 %   {'multiplelines','multiplelinesleastsquares'}
@@ -21,7 +21,7 @@ method = ieParamFormat(method);
 
 nData = size(y,2);
 nSamples = size(y,1);
-   
+
 % We can have one x-variable generating many y-variables, such as one
 % exposure time list producing voltages at many pixels
 if nData > 1 && size(x,2) == 1
@@ -39,12 +39,12 @@ switch method
         % There is a simpler formula.  Must re-derive and use it instead of
         % this.
     case {'multiplelines','multiplelinesleastsquares'}
-
+        
         % y = Ax, so we solve x = A\y;
         onesCol = ones(nSamples,1);
         
-        for ii=1:nData    
-            thisX = [x(:,ii), onesCol]; 
+        for ii=1:nData
+            thisX = [x(:,ii), onesCol];
             val = pinv(thisX)*thisY;
             slope(ii) = val(1);
             offset(ii) = val(2);

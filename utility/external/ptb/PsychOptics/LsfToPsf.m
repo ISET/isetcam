@@ -10,7 +10,7 @@ function psf = LsfToPsf(lsf,varargin)
 %
 %   This method is described by Marchand, 1964, JOSA, 54, 7, pp. 915-919
 %   and is one of several methods provided.  In 1964, taking the Fourier
-%   transform was computationally intense. 
+%   transform was computationally intense.
 %
 %   There is a second paper by Marchand (1965, JOSA, 55, 4, 352-354) which
 %   treats the more general case where you have line spread functions for
@@ -41,7 +41,7 @@ end
 if (any(posValues ~= negValues))
     error('LSF is not spatially symmetric');
 end
-    
+
 % Convert LSF to 1-D MTF
 %
 % Taking the absolute value.  The fftshift calls wrapping the fft lets us

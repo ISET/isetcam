@@ -1,10 +1,10 @@
 function [blockData,rList,cList] = rtExtractBlock(irradPad,blockSamples,rBlock,cBlock)
-%Extract the (rBlock,cBlock) block from an image. 
+%Extract the (rBlock,cBlock) block from an image.
 %
 %     blockData = rtExtractBlock(irradPad,blockSamples,rBlock,cBlock)
 %
 % In the ray trace code, this routine is used to a single wavelength slice
-% from a padded irradiance plane. 
+% from a padded irradiance plane.
 %
 %
 
@@ -13,8 +13,8 @@ cStart = (cBlock-1)*blockSamples(2) + 1;
 rEnd = (rBlock)*blockSamples(1);
 cEnd = (cBlock)*blockSamples(2);
 
-if (rEnd > size(irradPad,1)) || (cEnd > size(irradPad,2)) 
-    error('Block outside of data range'); 
+if (rEnd > size(irradPad,1)) || (cEnd > size(irradPad,2))
+    error('Block outside of data range');
 end
 rList = [rStart:rEnd];
 cList = [cStart:cEnd];

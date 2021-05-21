@@ -4,7 +4,7 @@ function DAC = ieLUTLinear(RGB, gTable)
 %   DAC = ieLUTLinear(RGB, invGammaTable)
 %
 % The RGB values are assumed to be in the range of [0,1].  They are assumed
-% to be linear with respect to radiance (intensity). 
+% to be linear with respect to radiance (intensity).
 %
 % The returned DAC values are digital values with a bit depth that is
 % determined by the entries in the gTable.
@@ -15,14 +15,14 @@ function DAC = ieLUTLinear(RGB, gTable)
 %
 %  We expect a gTable to have size 2^nBits x 3.  If the gTable has size
 %  2^nBits x 1, we assume the three channels are the same. In this
-%  application, we expect that  gTable to be the inverse gamma table. 
+%  application, we expect that  gTable to be the inverse gamma table.
 %
 %  We store the gamma table in display calibration files.  We invert a
 %  typical gTable using ieLUTInvert.
 %
 %  If the gTable is a single number, we raise the data to the power
-% (1/gTable). 
-%  
+% (1/gTable).
+%
 % See also:  ieLUTDigital, ieLUTInvert
 %
 % Example:

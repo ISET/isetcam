@@ -2,7 +2,7 @@ function scene = sceneFromFont(font,dsp,scene, oSample, varargin)
 % Create a scene from a font and display
 %
 %  scene = sceneFromFont(font,[display='LCD-Apple'],[scene], varargin)
-%  
+%
 %  Inputs:
 %    font     - font structure, see fontCreate
 %    display  - display structure, see displayCreate
@@ -18,9 +18,9 @@ function scene = sceneFromFont(font,dsp,scene, oSample, varargin)
 %% Input arguments
 if notDefined('font'),    font = fontCreate; end
 if notDefined('dsp'), dsp = displayCreate('LCD-Apple'); end
-if notDefined('scene'),   
-    scene = sceneCreate('empty'); 
-    scene = sceneSet(scene,'wave',displayGet(dsp,'wave')); 
+if notDefined('scene')
+    scene = sceneCreate('empty');
+    scene = sceneSet(scene,'wave',displayGet(dsp,'wave'));
 end
 if notDefined('oSample'), oSample = [20 20]; end
 if ~isempty(varargin), padsz   = varargin{1}; else padsz = []; end
@@ -38,7 +38,7 @@ end
 paddedBitmap = fontGet(font,'padded bitmap', padsz, padval);
 np = displayGet(dsp, 'n primaries');
 paddedBitmap = padarray(paddedBitmap, ...
-                    [0 0 np - size(paddedBitmap, 3)], 'post');
+    [0 0 np - size(paddedBitmap, 3)], 'post');
 dRGB       = displayCompute(dsp,paddedBitmap, oSample);
 [dRGB,r,c] = RGB2XWFormat(dRGB);
 spd  = displayGet(dsp,'spd');

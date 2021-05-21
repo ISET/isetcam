@@ -15,7 +15,7 @@ volts   = sensorGet(sensor,'volts');
 
 % Read Noise is Gaussian with zero mean and a sd of readNoise (Volts)
 pixel     = sensorGet(sensor,'pixel');
-sigmaRead = pixelGet(pixel,'readNoiseVolts'); 
+sigmaRead = pixelGet(pixel,'readNoiseVolts');
 
 % Read noise image
 theNoise = sigmaRead * randn(size(volts));

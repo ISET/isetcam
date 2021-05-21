@@ -35,13 +35,13 @@ function [scene, rcSize] = sceneRadianceChart(wave,radiance,varargin)
 %
 % Copyright ImagEval Consultants, LLC, 2018.
 %
-% See also: 
+% See also:
 %   macbethChartCreate, sceneReflectanceChart
 %
 
 %Example:
 %{
-% Make up wave and radiance 
+% Make up wave and radiance
   wave = 400:10:700;  radiance = rand(length(wave),50)*10^16;
   scene = sceneRadianceChart(wave, radiance,'patch size',20);
   sceneWindow(scene);
@@ -74,7 +74,7 @@ scene = sceneCreate('empty');
 scene = sceneSet(scene,'wave',wave);
 nWave = length(wave);
 
-% Radiance is in wave x surface format.  
+% Radiance is in wave x surface format.
 nSamples = size(radiance,2);
 
 % Spatial arrangement
@@ -156,7 +156,7 @@ y = rcSize(1)*pSize;
 x = rcSize(2)*pSize;
 chartP.cornerPoints = [1,y; x, y; x, 1; 1,1];
 
-% Consider this:  
+% Consider this:
 % The corner points are (x,y), that is col,row, instead of nearly
 % everything else which is (row,col).  This has something to do with
 % addressing images, historically, but it is mostly annoying.  Always

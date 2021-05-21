@@ -1,6 +1,6 @@
 %% v_displayLUT
 %
-% 
+%
 %
 
 %%
@@ -11,7 +11,7 @@ ieInit
 fName = fullfile(isetRootPath,'data','images','rgb','eagle.jpg');
 photons = vcReadImage(fName,'rgb');
 
-%% Read an 8-bit RGB file.  With a 10-bit gamma table.  
+%% Read an 8-bit RGB file.  With a 10-bit gamma table.
 
 photons = vcReadImage(fName,'rgb','OLED-Sony.mat');
 vcNewGraphWin; imagesc(photons(:,:,10))
@@ -29,4 +29,4 @@ vcAddAndSelectObject(scene); sceneWindow;
 
 %% Add more cases here to check
 
-%% END 
+%% END

@@ -6,7 +6,7 @@ function lsf = WestLSFMinutes(distance)
 %   of passed distance.  Distance passed in minutes of arc.
 %
 %   Formula from Westheimer G. 1986. The eye as an optical instrument.  In
-%   Handbook of perception and human performance, KR Boff, L Kaufman,
+%   Handbook of perception and human performance, KR Boff, L Kaufman
 %   JP Thomas (eds). New York: Wiley.  Equation 8.
 
 %
@@ -19,4 +19,4 @@ function lsf = WestLSFMinutes(distance)
 % 9/4/97  dhb  Wrote it.
 
 lsf = 0.47*exp(-3.3*(distance.^2)) + ...
-       0.53*exp(-0.93*(abs(distance)));
+    0.53*exp(-0.93*(abs(distance)));

@@ -4,7 +4,7 @@ function z = zernfun2(p,r,theta,nflag)
 %   at positions (R,THETA) on the unit circle.  P is a vector of positive
 %   integers between 0 and 35, R is a vector of numbers between 0 and 1,
 %   and THETA is a vector of angles.  R and THETA must have the same
-%   length.  The output Z is a matrix with one column for every P-value,
+%   length.  The output Z is a matrix with one column for every P-value
 %   and one row for every (R,THETA) pair.
 %
 %   Z = ZERNFUN2(P,R,THETA,'norm') returns the normalized Zernike
@@ -14,7 +14,7 @@ function z = zernfun2(p,r,theta,nflag)
 %   for all p.
 %
 %   NOTE: ZERNFUN2 returns the same output as ZERNFUN, for the first 36
-%   Zernike functions (order N<=7).  In some disciplines it is 
+%   Zernike functions (order N<=7).  In some disciplines it is
 %   traditional to label the first 36 functions using a single mode
 %   number P instead of separate numbers for the order N and azimuthal
 %   frequency M.
@@ -52,8 +52,8 @@ end
 
 if any(p)>35
     error('zernfun2:P36', ...
-          ['ZERNFUN2 only computes the first 36 Zernike functions ' ...
-           '(P = 0 to 35).'])
+        ['ZERNFUN2 only computes the first 36 Zernike functions ' ...
+        '(P = 0 to 35).'])
 end
 
 % Get the order and frequency corresonding to the function number:

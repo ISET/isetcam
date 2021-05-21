@@ -23,14 +23,14 @@
 %
 % * basis.basis: [N x M] matrix where N is the number of
 %                wavelength samples and  M is the number of
-%                spectral basis functions 
+%                spectral basis functions
 % * basis.wave:  [1 x N] vector containing the wavelength samples
 % * coefficients:[rows x cols x M] matrix of the model
 %                coefficients
 % * wave:        [1 x N] vector containing the sampled wavelengths
 % * illuminant:  Illuminant structure.  See illuminantCreate.
 %
-% Other multispectral and hyperspectral data can be downloaded from 
+% Other multispectral and hyperspectral data can be downloaded from
 %
 %  https://exhibits.stanford.edu/data/browse/iset-hyperspectral-image-database
 %
@@ -53,7 +53,7 @@ display = [];        % Use default ISET display structure (displayCreate)
 
 %% Read the file and display the scene
 
-scene = sceneFromFile(fullFileName,'multispectral',meanLuminance,display,wList); 
+scene = sceneFromFile(fullFileName,'multispectral',meanLuminance,display,wList);
 ieAddObject(scene); sceneWindow
 
 %%

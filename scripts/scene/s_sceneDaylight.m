@@ -2,7 +2,7 @@
 %
 % First, we use the *daylight* function to create illuminants
 % with a range of correlated color temperatures
-%  
+%
 % Second, we use the CIE daylight basis functions to create
 % examples of daylight spectra.
 %
@@ -27,7 +27,7 @@ lum = ieLuminanceFromPhotons(spd',wave(:));
 spd = spd*diag(100./lum);
 
 %% Plot the spectral power distributions (photons)
-vcNewGraphWin; 
+vcNewGraphWin;
 plot(wave,spd);
 grid on; xlabel('Wavelength'); ylabel('Photons (q/sr/m^2/s)');
 

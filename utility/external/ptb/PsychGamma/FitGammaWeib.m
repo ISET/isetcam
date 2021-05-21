@@ -14,17 +14,17 @@ vub = [1e5  10.0]';
 
 % Check for needed optimization toolbox, and version.
 if (exist('fmincon','file'))
-	options = optimset;
-	options = optimset(options,'Diagnostics','off','Display','off');
-	options = optimset(options,'LargeScale','off');
-	x = fmincon('FitGammaWeibFun',x0,[],[],[],[],vlb,vub,[],options,values_in,measurements);	
+    options = optimset;
+    options = optimset(options,'Diagnostics','off','Display','off');
+    options = optimset(options,'LargeScale','off');
+    x = fmincon('FitGammaWeibFun',x0,[],[],[],[],vlb,vub,[],options,values_in,measurements);
 elseif (exist('constr','file'))
-	options = foptions;
-	options(1) = 0;
-	options(14) = 600;
-	x = constr('FitGammaWeibFun',x0,options,vlb,vub,[],values_in,measurements);
+    options = foptions;
+    options(1) = 0;
+    options(14) = 600;
+    x = constr('FitGammaWeibFun',x0,options,vlb,vub,[],values_in,measurements);
 else
-	error('FitGammaWeib requires the optional Matlab Optimization Toolbox from Mathworks');
+    error('FitGammaWeib requires the optional Matlab Optimization Toolbox from Mathworks');
 end
 
 % Now compute fit values and error to data for return

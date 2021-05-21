@@ -64,7 +64,7 @@ TextMask = RasterizeText(String,Font,FontSize);
 
 if Position(1) < size(Image,1) && Position(2) < size(Image,2) ...
         && Position(1) + size(TextMask,1) > 0 && Position(2) + size(TextMask,2) > 0
-
+    
     if Position(1) + size(TextMask,1) > size(Image,1)
         TextMask = TextMask(1:(size(Image,1)-Position(1)),:);
     end
@@ -82,18 +82,18 @@ if Position(1) < size(Image,1) && Position(2) < size(Image,2) ...
     end
     
     if Position(2) > 0
-		TextMask = cat(2,false(size(TextMask,1),Position(2)),TextMask);
+        TextMask = cat(2,false(size(TextMask,1),Position(2)),TextMask);
     else
         TextMask = TextMask(:,1-Position(2):end);
     end
     
-
+    
     Color = ScaleFactor*Color;
-
+    
     for i=1:length(Color)
         tmp = Image(:,:,i); % to use logical indexing;
         tmp(TextMask) = Color(i);
         Image(:,:,i) = tmp;
     end
-
+    
 end

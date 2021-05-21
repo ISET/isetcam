@@ -32,7 +32,7 @@ camera = cameraCompute(camera,scene);
 % Show the sensor window
 cameraWindow(camera,'sensor');
 
-%% Here are the data transformed by the image processor 
+%% Here are the data transformed by the image processor
 % cameraWindow(camera,'ip');
 
 bayerSensor = sensorCreate;
@@ -54,7 +54,7 @@ camera = cameraSet(camera,'pixel size constant fill factor',pSize);
 camera = cameraCompute(camera,'oi');
 cameraWindow(camera,'sensor');
 
-%% Now show the transformed data again 
+%% Now show the transformed data again
 % cameraWindow(camera,'ip');
 
 %% If you would like a different RGB spatial pattern ...
@@ -68,7 +68,7 @@ camera = cameraSet(camera,'sensor',sensor);
 camera = cameraCompute(camera,'oi');
 cameraWindow(camera,'sensor');
 
-%% Now show the transformed data again 
+%% Now show the transformed data again
 % cameraWindow(camera,'ip');
 
 %%  Now a white pixel
@@ -81,7 +81,7 @@ camera = cameraSet(camera,'pixel size constant fill factor',pSize);
 camera = cameraCompute(camera,'oi');
 cameraWindow(camera,'sensor');
 
-%% Now show the transformed data again 
+%% Now show the transformed data again
 % camera Window(camera,'ip');
 
 %%

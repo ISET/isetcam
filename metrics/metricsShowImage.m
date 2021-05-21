@@ -4,7 +4,7 @@ function handles = metricsShowImage(handles)
 %    handles = metricsShowImage(handles)
 %
 % The images in the vcimages selected in the popup windows and handles.img2
-% are displayed.   
+% are displayed.
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 

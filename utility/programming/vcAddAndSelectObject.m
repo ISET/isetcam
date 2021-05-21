@@ -6,14 +6,14 @@ function val = vcAddAndSelectObject(objType,obj)
 %
 % The object is added to the vcSESSION global variable. The object type
 % can be one of the ISET object types, SCENE, VCIMAGE,  OPTICALIMAGE
-% ISA/SENSOR or their equivalents. 
+% ISA/SENSOR or their equivalents.
 %
-% The new object value is assigned the next new value. 
+% The new object value is assigned the next new value.
 % To see the object in the appropriate window, you can call the window
 % itself.
 %
 % Example:
-%  scene = sceneCreate; 
+%  scene = sceneCreate;
 %  newObjVal = vcAddAndSelectObject(scene);
 %  sceneWindow;
 %
@@ -21,7 +21,7 @@ function val = vcAddAndSelectObject(objType,obj)
 %  newObjVal = vcAddAndSelectObject('OPTICALIMAGE',oi);
 %  vcAddAndSelectObject('SCENE',scene);
 %
-%  
+%
 % Copyright ImagEval Consultants, LLC, 2005.
 
 % Programming Notes:
@@ -31,7 +31,7 @@ global vcSESSION;
 
 % This way, the call can be
 % vcAddAndSelectObject(scene) instead of
-% vcAddAndSelectObject('scene',scene), which was the original 
+% vcAddAndSelectObject('scene',scene), which was the original
 %
 if checkfields(objType,'type'), obj = objType; objType = objType.type;  end
 

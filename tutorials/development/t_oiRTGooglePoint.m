@@ -6,7 +6,7 @@ ieInit;
 %% Select a smaller rectangle crop
 sceneOne = sceneCreate('point array',1024, 128);
 sceneOne = sceneSet(sceneOne, 'name', 'Point array with smaller fov');
-sceneOne = sceneSet(sceneOne, 'distance', 0.6); 
+sceneOne = sceneSet(sceneOne, 'distance', 0.6);
 sceneOne = sceneSet(sceneOne, 'wave', 430:50:650);
 
 %% Calculate horizontal FOV set to scene
@@ -76,7 +76,7 @@ oiImgTwoPd = imcrop(oiImgTwo, [17, 17, 2047, 2047]);
 sizeDiff = (size(oiImgTwoPd) - size(oiImgOnePd))/2;
 
 oiImgTwoPd = imcrop(oiImgTwoPd,...
-            [sizeDiff(1)+1, sizeDiff(2)+1, size(oiImgOnePd, 1)-1, size(oiImgOnePd, 2)-1]);
+    [sizeDiff(1)+1, sizeDiff(2)+1, size(oiImgOnePd, 1)-1, size(oiImgOnePd, 2)-1]);
 
 %{
 
@@ -89,18 +89,18 @@ ieNewGraphWin;
 imshow(oiImgTwoPd);
 title(sprintf('Optical image for scene with FOV %.2f',...
                 sceneGet(sceneTwo,'hfov')));
-%}
-%%
-oiImgDiff = oiImgTwoPd - oiImgOnePd;
-
-ieNewGraphWin;
-imagesc(oiImgDiff(:,:,1));
-title('Red channel');
-
-ieNewGraphWin;
-imagesc(oiImgDiff(:,:,2));
-title('Green channel');
-
-ieNewGraphWin;
-imagesc(oiImgDiff(:,:,3));
-title('Blue channel');
+    %}
+    %%
+    oiImgDiff = oiImgTwoPd - oiImgOnePd;
+    
+    ieNewGraphWin;
+    imagesc(oiImgDiff(:,:,1));
+    title('Red channel');
+    
+    ieNewGraphWin;
+    imagesc(oiImgDiff(:,:,2));
+    title('Green channel');
+    
+    ieNewGraphWin;
+    imagesc(oiImgDiff(:,:,3));
+    title('Blue channel');

@@ -62,4 +62,4 @@ fov   = oiGet(oi,'fov');
 oi    = oiSet(oi,'fov',fov*dx/sr(2));
 
 end
-    
+

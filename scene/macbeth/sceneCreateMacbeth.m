@@ -1,6 +1,6 @@
 function scene = sceneCreateMacbeth(surface,lightSource,scene)
 % Create a hyperspectral scene of the Macbeth chart.
-%   
+%
 %   scene = sceneCreateMacbeth(surface,lightSource,[scene])
 %
 % The surface reflectances and light source are specified as arguments.

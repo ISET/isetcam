@@ -8,7 +8,7 @@ function oi = wvf2oi(wvf)
 %  The wvf structure is used to create a shift-invariant ISET optics
 %  model.  The wvf structure is attached to the optical image
 %  structure. Some of the key parameters from the wvf structure are
-%  copied into the optics structure, for consistency.  
+%  copied into the optics structure, for consistency.
 %
 % Input
 %   wvf:      A wavefront parameters structure with a PSF
@@ -46,7 +46,7 @@ fMax = 0;
 for ww=1:length(wave)
     f = wvfGet(wvf,'otf support','mm',wave(ww));
     if max(f(:)) > fMax
-       fMax = max(f(:)); maxWave = wave(ww);
+        fMax = max(f(:)); maxWave = wave(ww);
     end
 end
 
@@ -83,7 +83,7 @@ for ww=1:length(wave)
     
 end
 
-% I sure wish this was real all the time. Sometimes (often?) it is. 
+% I sure wish this was real all the time. Sometimes (often?) it is.
 %  psf = otf2psf(otf(:,:,ww));
 %  if ~isreal(psf), disp('psf not real'); end
 %  vcNewGraphWin; mesh(psf)

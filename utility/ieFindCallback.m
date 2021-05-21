@@ -24,7 +24,7 @@ function cb = ieFindCallback(V)
 % Examples:
 %   V = ieSessionGet('sceneWindow');
 %   cb = ieFindCallBack(V);
-%  
+%
 % Not working yet
 % Copyright ImagEval Consultants, LLC, 2007.
 
@@ -38,10 +38,10 @@ cb = '';
 if ishandle(V)
     % handle to figure -- get child uimenus
     h = getChildUimenus(V);
-
+    
     % record callbacks to each item
     cbList = get(h, 'Callback');
-
+    
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Set up a uiwait / uiresume dialog %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -52,34 +52,34 @@ if ishandle(V)
     % put up a message
     % msg = 'Select the menu item whose callback you''d like.';
     % hmsg = mrMessage(msg);
-
+    
     % temporarily set all callbacks to be uiresume
     for i = 1:length(h)
         if ~isempty(cbList{i}) % ignore submenus
             set(h(i), 'Callback', sprintf('SEL = %i; uiresume;',i));
         end
     end
-
+    
     % Let the user pick the desired item
     uiwait;
-
+    
     % find the selected menu and get that callback
     SEL = evalin('base', 'SEL');
     cb = cbList{SEL};
-
+    
     % restore the menu callbacks / other settings
     for i=1:length(h), set(h(i), 'Callback', cbList{i}); end
     %     set(V, 'Color', figColor);
     close(hmsg);
-
+    
     % report the callback in the command window:
     fprintf('Selected Menu Item: \n ');
     fprintf('Label: %s \n ', get(h(SEL), 'Label'));
     fprintf('Handle: %f \n Callback: %s\n', h(SEL), cb);
-
+    
     % clean up the temp variable
     evalin('base', 'clear SEL');
-
+    
 else
     help(mfilename);
     error('Invalid argument format.')

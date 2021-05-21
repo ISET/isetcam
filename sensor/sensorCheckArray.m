@@ -3,13 +3,13 @@ function sensorCheckArray(sensor,n)
 %
 %     sensorCheckArray(sensor,n)
 %
-% The routine produces an image that shows the color filter array pattern.  
+% The routine produces an image that shows the color filter array pattern.
 %
 % The image is n x n, where n = 25 by default
 %
 % Example:
 %   sensorCheckArray(sensorCreate,10);
-%        
+%
 % Copyright ImagEval Consultants, LLC, 2003.
 
 if ieNotDefined('n'), n = 25; end

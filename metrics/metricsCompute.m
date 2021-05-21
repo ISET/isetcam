@@ -6,7 +6,7 @@ function [img,val] = metricsCompute(vc1,vc2,metricName)
 % Compute an error image or value between the two selected images in the
 % metrics window.
 %
-% Currently available error images are of these types: 
+% Currently available error images are of these types:
 %
 %     {'cielab'}   - Delta E, requires image white point values
 %     {'cieluv'}   - Delta E, requires image white point
@@ -47,7 +47,7 @@ switch lower(metricName)
         return;
     case {'cieluv (de)','cieluv'}
         wp = ipGet(vc1,'datawhitepoint');
-        if isempty(wp),
+        if isempty(wp)
             errordlg('No data white point for image 1');
             return;
         end
@@ -76,9 +76,9 @@ switch lower(metricName)
         img = [];
         return;
     case {'spatial cielab','spatialcielab','scielab'}
-        % 
+        %
         warning('Not yet implemented.');
-
+        
         return;
     otherwise
         error('Unknown metric method');

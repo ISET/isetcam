@@ -17,9 +17,9 @@ ratio = XYZ ./ (white*ones(1,n));
 lIndex = find(ratio <= 0.008856);
 hIndex = find(ratio > 0.008856);
 if (~isempty(hIndex))
-  F(hIndex) = ratio(hIndex).^(1.0/3.0);
+    F(hIndex) = ratio(hIndex).^(1.0/3.0);
 end
 if (~isempty(lIndex))
-  F(lIndex) = 7.787*ratio(lIndex) + (16.0/116.0)*ones(length(lIndex),1);
+    F(lIndex) = 7.787*ratio(lIndex) + (16.0/116.0)*ones(length(lIndex),1);
 end
 

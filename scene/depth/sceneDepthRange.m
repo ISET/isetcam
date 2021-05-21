@@ -3,14 +3,14 @@ function [scene, dPlane] = sceneDepthRange(scene,depthEdges)
 %
 %  [scene, dPlane] = sceneDepthRange(scene,depthRange)
 %
-%  
+%
 % dPlane:  A mask indicating the locations at this depth plane
 %          dPlane = sceneGet(scene,'depth plane',depthEdges);
 %
 % Example:
 %   Load piano shelf
 %   depthEdges = [0.3625, 0.5289];
-% 
+%
 % Copyright ImagEval Consultants, LLC, 2011.
 
 if ieNotDefined('scene'), error('Scene required'); end
@@ -35,10 +35,10 @@ for ii=1:nWave
     % This should probably be 0, not the mean.  I think it is OK for the
     % edge pixels to have a lower intensity at this point.  When the pixel
     % in front is processed, it will add light here to make up the
-    % difference.  
-    p(~dPlane) = 0;              % Alternative:  
-    %p(~dPlane) = mean(p(:));   % Alternative:  
-    photons(:,:,ii) = p;         % 
+    % difference.
+    p(~dPlane) = 0;              % Alternative:
+    %p(~dPlane) = mean(p(:));   % Alternative:
+    photons(:,:,ii) = p;         %
 end
 % figure; imageSPD(photons,sceneGet(scene,'wave'));
 

@@ -50,7 +50,7 @@ axis off;
 for i = 1:length(Characters)
     % Place each character in the middle of the figure
     texthandle = text(0.5,1,Characters(i),'Units','Normalized','FontName',Name,'FontUnits','pixels','FontSize',Size,'HorizontalAlignment','Center','VerticalAlignment','Top','Interpreter','None','Color',[0 0 0]);
-	drawnow;
+    drawnow;
     % Take a snapshot
     Bitmap = getframe(gcf);
     delete(texthandle);
@@ -63,7 +63,7 @@ for i = 1:length(Characters)
     % Crop width to remove all white space
     Bitmap = Bitmap(:,find(mean(Bitmap,1)~=255,1,'first'):find(mean(Bitmap,1)~=255,1,'last'));
     % Pad with kerning value
-	Bitmap(:,end:(end+Padding)) = 255;
+    Bitmap(:,end:(end+Padding)) = 255;
     % Invert and store in binary format
     Bitmaps{i} = false(size(Bitmap));
     Bitmaps{i}(Bitmap < 160) = true; % This threshold could be changed

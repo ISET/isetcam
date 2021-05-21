@@ -3,7 +3,7 @@ function params = adobergbParameters(varargin)
 %
 %    params = adobergbParameters
 %
-% Return Adobe RGB display parameters.  
+% Return Adobe RGB display parameters.
 %
 % The Adobe display is defined by three primaries with these chromaticity
 % coordinates (x,y,Y) and luminance.  Using the information on wikipedia at
@@ -12,7 +12,7 @@ function params = adobergbParameters(varargin)
 %     R       G     B              White point
 % x  0.64   0.21   0.15               0.3127
 % y  0.33   0.71   0.06               0.3290
-% Y  47.5744   100.3776  12.0320      160 
+% Y  47.5744   100.3776  12.0320      160
 %
 % They also define a black, that we could use someday
 %
@@ -36,8 +36,8 @@ p.parse(varargin{:});
 val = p.Results.val;
 
 adobergbP = [ ....
-     0.64   0.21   0.15      0.3127;
-     0.33   0.71   0.06      0.3290;
+    0.64   0.21   0.15      0.3127;
+    0.33   0.71   0.06      0.3290;
     47.5744   100.3776  12.0320      160];
 
 %%

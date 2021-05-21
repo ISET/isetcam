@@ -4,7 +4,7 @@ function [Sens,fs,ft] = kellySpaceTime(fs,ft)
 %   [Sens,fs,ft] = kellySpaceTime(fs,ft)
 %
 %   Reference: Kelly (1979) JOSA, v. 69, no. 10, p. 1340
-%	Motion and vision.  II. Stabilized spatio-temporal threshold surface 
+%	Motion and vision.  II. Stabilized spatio-temporal threshold surface
 %   The space-time sensitivity function is defined in Equation 8.
 %
 %   fs (cycles per degree) and ft (Hz) are spatial and temporal frequencies.
@@ -23,7 +23,7 @@ if ieNotDefined('ft'), ft = 10 .^ (-.5:.05:1.7); end
 [ft fs] = meshgrid(ft,fs);
 
 % Kelly '79 formula
-alpha = 2*pi*fs;	
+alpha = 2*pi*fs;
 v = ft ./ fs;	%nu
 k = 6.1 + 7.3*(abs(log10( v / 3 ))) .^ 3;
 amax = 45.9 ./ (v + 2);
@@ -42,7 +42,7 @@ return;
 % surf(ft,fs, G)
 % set(gca,'FontName','Bookman')
 % set(gca,'FontSize',16)
-% 
+%
 % view(53,40)
 % set(gca,'zscale','log','xscale','log','yscale','log');
 % set(gca,'zlim',[0.5 300], 'xlim',[mmin(ft) 1.2*mmax(ft)], ...
@@ -53,7 +53,7 @@ return;
 % %
 % %	TO print out for book
 % %
-% 
+%
 % mp = [0.5*gray(64) + .5];
 % colormap(mp)
 
@@ -62,18 +62,18 @@ return;
 %
 % fs = [.1 .2 .4 .8 1.6 3.2 6.4 12.8 25];
 % alpha = 2*pi*fs;
-% 
+%
 % v = 3;
 % k = 6.1 + 7.3*abs(log10(v/3).^3)
 % amax = 45.9 ./ (v+2);
 % G1 = k * v * (alpha .^ 2) .* exp( -2 * (alpha / amax ));
 % plot(fs,G1)
 % set(gca,'xscale','log','yscale','log','xlim',[.15 8],'ylim',[1 1000]);
-% 
+%
 % v = 32;
 % k = 6.1 + 7.3*abs(log10(v/3).^3)
 % amax = 45.9 ./ (v+2);
 % G2 = k * v * (alpha .^ 2) .* exp( -2 * (alpha / amax ));
 % plot(fs,[G1;G2])
 % set(gca,'xscale','log','yscale','log','xlim',[.15 8],'ylim',[1 1000]);
-% 
+%

@@ -8,9 +8,9 @@ function oi = rtGeometry(oi,scene)
 %  image. Distortion and relative illumination are applied. The ray
 %  trace parameters are stored in a ray tracing slot in the optics of
 %  the oi. The data are derived from optics modeling programs such as
-%  Code V and Zemax. 
+%  Code V and Zemax.
 %
-% Example: 
+% Example:
 %   scene = sceneCreate('gridlines');
 %   oi = vcGetObject('oi'); optics = oiGet(oi,'optics');
 %   oi = rtGeometry(oi,scene);
@@ -33,7 +33,7 @@ function oi = rtGeometry(oi,scene)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Load Lens Ideal Image Height, Distorted Image Height, and 
+% Load Lens Ideal Image Height, Distorted Image Height, and
 % Relative Illumination Data
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -46,14 +46,14 @@ ieInWindowMessage('',app,[]);
 
 %% This is the ideal geometrical irradiance with no geometric distortion.
 
-% Irradiance is calculated point by point from the scene radiance.  
+% Irradiance is calculated point by point from the scene radiance.
 irradiance = oiCalculateIrradiance(scene,optics);
 wavelength = sceneGet(scene,'wavelength');
 
 %  Get the image height sample values from the ray trace optics
 imght     = opticsGet(optics,'rtgeom field height','mm');       % mm
 % distimght = opticsGet(optics,'rtgeomfunction');
-% relillum  = opticsGet(optics,'rtrifunction');            
+% relillum  = opticsGet(optics,'rtrifunction');
 % nFieldPositions =size(distimght,1);
 
 % These are the row,col,wavelength indices of the irradiance image.
@@ -62,8 +62,8 @@ imght     = opticsGet(optics,'rtgeom field height','mm');       % mm
 % We need to check that the current scene field of view is smaller than the
 % maxfov of this optical calculation.
 
-%  fovmax used to be fixed  2*26.2;   
-fovmax = sceneGet(scene,'fov');     %Maximum horizontal field of view (deg) 
+%  fovmax used to be fixed  2*26.2;
+fovmax = sceneGet(scene,'fov');     %Maximum horizontal field of view (deg)
 if fovmax > opticsGet(optics,'rtfov')
     str = sprintf('Scene FOV (%.0f) exceeds ray trace analysis (%.0f)',fovmax,opticsGet(optics,'rtfov'));
     ieInWindowMessage(str,oiHandles,[]);
@@ -71,8 +71,8 @@ if fovmax > opticsGet(optics,'rtfov')
 end
 
 % imgdiag = opticsGet(optics,'diagonal',fovmax,'mm');            % In millimmeters
-% ywidth = opticsGet(optics,'imageheight',fovmax,'mm');            
-xwidth = opticsGet(optics,'image width',fovmax,'mm');             
+% ywidth = opticsGet(optics,'imageheight',fovmax,'mm');
+xwidth = opticsGet(optics,'image width',fovmax,'mm');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -80,7 +80,7 @@ xwidth = opticsGet(optics,'image width',fovmax,'mm');
 % rows. The rtGeometry applies relative illumination incorrectly and the
 % bug appears. This can be easily checked by using a slender image as
 % input. Say, a scene composed of 10 rows and 1000 columns with constant
-% illumination      
+% illumination
 % Fixed by H Gonzalez-Banos
 %
 dx = xwidth/colMax;      %x-width of pixel in mm
@@ -88,7 +88,7 @@ dx = xwidth/colMax;      %x-width of pixel in mm
 % pixelfov=fovmax/imax*xwidth/imgdiag*60;  %field of view of one pixel in arc minutes
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Define final geometric image space and final distorted 
+% Define final geometric image space and final distorted
 % image space
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -115,10 +115,10 @@ pixdist = sqrt(C.^2 + R.^2);
 pixang = atan2(C,R);
 
 %Pixel distance in real units (mm) to image center
-pixdistUnits = pixdist*dx;           
+pixdistUnits = pixdist*dx;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Start of Loop to Apply Distortion and Relative 
+% Start of Loop to Apply Distortion and Relative
 % Illumination factor to Input Images
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -172,9 +172,9 @@ for ww = 1:nWave
     ri = rtRIInterp(optics,wavelength(ww));
     polyQ = polyfit(di(:),ri(:),2);
     % figure; plot(polyval(polyQ,di(:)),ri(:),'-x'); grid on
-
+    
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % Apply Distortion Shifts to Ideal Geometric Image.  
+    % Apply Distortion Shifts to Ideal Geometric Image.
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     paddedIrradiance = padarray(irradiance(:,:,ww),[zeropad,zeropad]);
     
@@ -184,13 +184,13 @@ for ww = 1:nWave
     relillumtemp = polyval(polyQ,pixdistUnits);
     
     % These are the coordinates of the distorted image data.  We interpolate
-    % the irradiance values onto the grid, below.  
+    % the irradiance values onto the grid, below.
     padR = rowCenter + imghttemp.*cos(pixang)/dx;  padR = ieClip(padR,1,paddedRowMax);
     padC = colCenter + imghttemp.*sin(pixang)/dx;  padC = ieClip(padC,1,paddedColMax);
     
     % Bilinear Interpolation to determine pixel irradiance
     % This is the slowest part.  I think griddata is even slower, though.
-    A = padR - floor(padR); 
+    A = padR - floor(padR);
     B = padC - floor(padC);
     distortedPaddedIrradiance = zeros(paddedRowMax,paddedColMax);
     for ii=1:(paddedRowMax)

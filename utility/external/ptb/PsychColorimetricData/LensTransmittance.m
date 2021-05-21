@@ -22,7 +22,7 @@ function [lensTransmit,lensDensity] = LensTransmittance(S,species,source,ageInYe
 % as 3.  Sizes greater than 7 are treated as 7.  The interpolation
 % between 3 and 7 doesn't appear to be part of the standard but
 % I coded it in anyway.
-% 
+%
 %
 % 7/8/03  dhb  Made this a separate function.
 % 7/11/03 dhb  Species arg, change name.
@@ -37,33 +37,33 @@ function [lensTransmit,lensDensity] = LensTransmittance(S,species,source,ageInYe
 
 % Default
 if (nargin < 2 || isempty(species))
-	species = 'Human';
+    species = 'Human';
 end
 if (nargin < 3 || isempty(source))
-	source = 'StockmanSharpe';
+    source = 'StockmanSharpe';
 end
 if (nargin < 4 || isempty(ageInYears))
-	ageInYears = 32;
+    ageInYears = 32;
 end
 if (nargin < 5 || isempty(pupilDiameterMM))
-	pupilDiameterMM = 3;
+    pupilDiameterMM = 3;
 end
 
 % Load correction for lens density
 switch (species)
-	case 'Human',
-		switch (source)
-			case 'None',
-				lensTransmit = ones(S(3),1)';
+    case 'Human',
+        switch (source)
+            case 'None',
+                lensTransmit = ones(S(3),1)';
                 lensDensity = zeros(S(3),1)';
-			case 'WyszeckiStiles',
-				load den_lens_ws;
-				lensDensity = SplineSrf(S_lens_ws,den_lens_ws,S,2)';
-				lensTransmit = 10.^(-lensDensity);
-			case 'StockmanSharpe',
-				load den_lens_ssf;
-				lensDensity = SplineSrf(S_lens_ssf,den_lens_ssf,S,2)';
-				lensTransmit = 10.^(-lensDensity);
+            case 'WyszeckiStiles',
+                load den_lens_ws;
+                lensDensity = SplineSrf(S_lens_ws,den_lens_ws,S,2)';
+                lensTransmit = 10.^(-lensDensity);
+            case 'StockmanSharpe',
+                load den_lens_ssf;
+                lensDensity = SplineSrf(S_lens_ssf,den_lens_ssf,S,2)';
+                lensTransmit = 10.^(-lensDensity);
             case 'CIE'
                 % Load CIE age dependent and age independent components
                 load den_lens_cie_1
@@ -100,17 +100,17 @@ switch (species)
                     lensDensity = 0.86207*lensDensity;
                 end
                 lensTransmit = 10.^(-lensDensity);
-          
-			otherwise,
-				error('Unsupported lens density estimate specified');
-		end
-
-	otherwise,
-		switch (source)
-			case ('None'),
-				lensTransmit = ones(S(3),1)';
+                
+            otherwise,
+                error('Unsupported lens density estimate specified');
+        end
+        
+    otherwise,
+        switch (source)
+            case ('None'),
+                lensTransmit = ones(S(3),1)';
                 lensDensity = zeros(S(3),1)';
-			otherwise,
-				error('Unsupported species specified');
-		end
+            otherwise,
+                error('Unsupported species specified');
+        end
 end

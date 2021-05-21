@@ -6,7 +6,7 @@ function coneContrast = humanConeContrast(signalSPD,backgroundSPD,wave,units,mpD
 %   The signal and background are in radiance units of energy
 %   (watts/sr/m2/nm) or photons (q/sr/m2/nm).  The sample wavelengths are
 %   specified in wave (nm). The Stockman cones with a specified macular
-%   pigment density mpDensity are used for the calculation.  
+%   pigment density mpDensity are used for the calculation.
 %
 % Example:
 %   coneContrast = humanConeContrast(signalSPD,backgroundSPD,[400:1:700],'photons')

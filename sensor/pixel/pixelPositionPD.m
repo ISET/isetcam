@@ -6,7 +6,7 @@ function PIXEL = pixelPositionPD(PIXEL,place)
 % Purpose:
 %    Place the photodetector with a given height and width at the center of
 %    the pixel. This routine places the photodetector upper left corner
-%    positions.  
+%    positions.
 %
 %     PIXEL = pixelPositionPD(PIXEL,'center')
 %

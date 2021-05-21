@@ -17,8 +17,8 @@ function [noisyPhotons,theNoise] = oiPhotonNoise(oi)
 % Examples:
 %    scene = sceneCreate('uniform'); oi = oiCreate;  oi = oiCompute(scene,oi);
 %    [noisyPhotons,theNoise] = oiPhotonNoise(oi);
-%    vcNewGraphWin; tmp = noisyPhotons(:,:,10); tmp = tmp(tmp > 2*10^13); hist(tmp(:))
-%    imagesc(noisyPhotons(:,:,10)); colormap(gray)
+%    vcNewGraphWin; tmp = noisyPhotons(:,:,10); tmp = tmp(tmp > 2*10^13); histogram(tmp(:))
+%    imagesc(noisyPhotons(:,:,10)); colormap(gray(64))
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
@@ -40,7 +40,7 @@ theNoise = sqrt(photons) .* randn(size(photons));
 % We add the mean electron and noise electrons together.
 noisyPhotons = round(photons + theNoise);
 % When the signal is very large, say 10^14, the noise is only 10^7.  This
-% is very small and you see basically nothing. But if the signal is small,
+% is very small and you see basically nothing. But if the signal is small
 % you have a chance of seeing something in these plots.
 
 % Now, we find the small mean values and create a Poisson sample. This is

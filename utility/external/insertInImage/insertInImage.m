@@ -142,7 +142,7 @@ function imgOut = insertInImage(varargin)
 % 11/15/13  V2.0 Rearchitected to simplify and improve the extraction
 %           of color information. No longer relies on masking the image
 %           using the bounding box. Now recognizes backgroundColor and
-%           edgeColor for text... Generally, much improved, more robust,
+%           edgeColor for text... Generally, much improved, more robust
 %           and yields better results.
 %
 % 12/3/13   Fixed a typo in the description. Also added an example

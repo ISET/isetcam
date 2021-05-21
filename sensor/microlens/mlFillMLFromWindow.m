@@ -20,9 +20,9 @@ ml = mlensSet(ml,'source focal length',v*1e-3);             % Convert mm to mete
 
 v = str2double(get(handles.editMLFocalLength,'string'))/ieUnitScaleFactor('microns');
 ml = mlensSet(ml,'ml focal length',v);
-           
+
 v = str2double(get(handles.editFNumber,'string'))/ieUnitScaleFactor('microns');
-ml = mlensSet(ml,'ml fnumber',v);        
+ml = mlensSet(ml,'ml fnumber',v);
 
 ml = mlensSet(ml,'offset',str2double(get(handles.editMLOffset,'string')));    %Stored in microns
 

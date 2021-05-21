@@ -18,7 +18,7 @@
 if isempty(which('RdtClient'))
     fprintf('Remote data toolbox from the ISETBIO distribution is required\n');
     return;
-end   
+end
 
 %%
 ieInit
@@ -35,7 +35,7 @@ rd.crp('/L3/Farrell/D200/garden/');
 % Currently only returns 30 elements
 % 'type' is not right because it says jpg when there are nef and pgm files
 % as well
-a = rd.listArtifacts;  
+a = rd.listArtifacts;
 
 % Fetch the image data artifacts, specifying the image type as 'type'
 jpgData = rd.readArtifact(a(1).artifactId, 'type', 'jpg');
@@ -80,4 +80,4 @@ ip = ipCompute(ip,sensor);
 
 ieAddObject(ip); ipWindow;
 
-%% 
+%%

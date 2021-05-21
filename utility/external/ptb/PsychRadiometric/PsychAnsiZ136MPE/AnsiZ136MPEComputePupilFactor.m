@@ -45,12 +45,12 @@ if (stimulusDurationSeconds > 0.07 && stimulusDurationSeconds <= 0.7)
         P = ((stimulusDurationSeconds/0.07)^0.75)*10^(0.0074*(700-stimulusWavelengthNm));
         if (P < 1)
             P = 1;
-        end        
+        end
     else
         error('Logic error in routine, should never get here.');
     end
     
-% Compute for durations greater than 0.7 seconds
+    % Compute for durations greater than 0.7 seconds
 elseif (stimulusDurationSeconds > 0.7)
     if (stimulusWavelengthNm >= 400 && stimulusWavelengthNm < 600)
         P = 5.44;
@@ -60,7 +60,7 @@ elseif (stimulusDurationSeconds > 0.7)
         error('Logic error in routine, should never get here.');
     end
     
-% This should not happen
+    % This should not happen
 else
     error('Logic error in routine, should never get here.');
 end

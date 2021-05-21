@@ -4,15 +4,15 @@ function fullmatrix = upperQuad2FullMatrix(upperRight,nRows,nCols)
 %   fullmatrix = upperQuad2FullMatrix(upperRight,nRows,nCols)
 %
 %   For a full matrix (nRows x nCols), suppose upperRight is the upper
-%   right quadrant of a matrix.   
+%   right quadrant of a matrix.
 %
 %   This routine duplicates the upper right quad in the other quads,
-%   mirroring the data. 
+%   mirroring the data.
 %
 %   If there is an odd number of output cols, the middle data are always
 %   attached to the quadrants on the right side of the data.   If there is
 %   an odd number of rows, the middle data are always attached to the upper
-%   quadrants. 
+%   quadrants.
 %
 %Example:
 %   upperRight = [1,2,3;4,5,6;7,8,9];

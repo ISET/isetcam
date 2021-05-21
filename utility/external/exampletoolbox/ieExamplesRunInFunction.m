@@ -154,9 +154,9 @@ for bb = 1:length(startIndices)
         if (p.Results.verbose)
             fprintf('\tExample %d contains ''%% ETTBSkip'' - skipping.\n',bb);
         end
-    
-    % Have a live example.  Run it.
-    else 
+        
+        % Have a live example.  Run it.
+    else
         % Dump example text if asked
         if (p.Results.printexampletext)
             fprintf('Example text:\n');
@@ -195,7 +195,7 @@ end
 
 end
 
-% This short function forces examples to run in a clean workspace,
+% This short function forces examples to run in a clean workspace
 % and protects the calling workspace.  Also closes any figures that
 % are open if CLOSEFIGS is true, unless the called example clobbers
 % the workspace in which case they are also left open.

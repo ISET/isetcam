@@ -27,12 +27,12 @@ function [snr,luxsec,SNRshot,SNRread,antiluxsec] = pixelSNRluxsec(sensor)
 
 if ieNotDefined('sensor'), sensor = vcGetObject('ISA'); end
 if isempty(sensor)
-    errordlg('No image sensor array sent in or defined.'); 
-    return; 
+    errordlg('No image sensor array sent in or defined.');
+    return;
 end
 
 % Compute the snr as a function of volts.
-[snr,volts,SNRshot,SNRread] = pixelSNR(sensor); 
+[snr,volts,SNRshot,SNRread] = pixelSNR(sensor);
 
 % Compute the relationship between volts and lux-sec for a uniform light
 % source.
@@ -58,7 +58,7 @@ if nargout == 0
     % Make the lux-sec version of the plot
     vcNewGraphWin;
     % filterNames = sensorGet(sensor,'filterNames');
-        
+    
     % Used to be in separate panels.  Let's put them all in one panel and
     % not put in the additional lines.
     letters = sensorGet(sensor,'filterColorLetters');
@@ -74,7 +74,7 @@ if nargout == 0
     %     p = semilogx(luxsec(:,ii),SNRshot,'k--',luxsec(:,ii),SNRread,'k:');
     %     set(p,'linewidth',1);
     %     legend('Total','Shot noise','Read noise');
-        
+    
     title('Pixel SNR as a function of lux-seconds (EE light)')
     xlabel('lux-sec'); ylabel('SNR (db)');
     grid on, hold off
@@ -87,7 +87,7 @@ if nargout == 0
     %     leg{nColors+1} = 'shot noise';
     %     leg{nColors+2} = 'read noise';
     legend(leg,'Location','northwest');
-
+    
     udata.luxsec = luxsec;
     udata.snr = snr;
     set(gcf,'userdata',udata);

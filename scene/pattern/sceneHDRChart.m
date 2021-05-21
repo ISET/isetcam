@@ -4,7 +4,7 @@ function scene = sceneHDRChart(dRange,nLevels,rowsPerLevel,maxL,il)
 %   scene = sceneHDRChart(dRange,nLevels,rowPerLevel,maxL,il)
 %
 % Inputs
-%  dRange:        The dynamic range of the scene 
+%  dRange:        The dynamic range of the scene
 %  nLevels:       Number of luminance steps (log spacing, N=10)
 %  rowsPerLevel:  Rows per luminance level
 %  maxL:          Maximum luminance

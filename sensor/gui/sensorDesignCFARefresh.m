@@ -19,10 +19,10 @@ contents = get(handles.popBlockSize,'String');
 blockSize = contents{get(handles.popBlockSize,'Value')};
 
 switch blockSize
-    case '1 (Monochrome)' 
+    case '1 (Monochrome)'
         setButtons(handles,'off');
     case '2x2'
-        setButtons(handles,'on'); 
+        setButtons(handles,'on');
     otherwise
         error('Hunh?');
 end
@@ -36,9 +36,9 @@ lgnd = [];
 filterNames = sensorGet(sensor,'filterNamesCellArray');
 % allFilterLetters = sensorColorOrder('string');
 for ii=1:nFilters
-
+    
     % Hasn't been checked after change to color filter name management.
-
+    
     plot(wave,filterSpectra(:,ii),[filterNames{ii},'-']); hold on;
     lgnd{ii} = sprintf('%s',filterNames{ii});
     set(gca,'ylim',[0, 1.05]);
@@ -46,7 +46,7 @@ end
 
 hold off; grid on
 xlabel('Wavelength (nm)'); ylabel('Transmissivity'); title('Current filters');
-hndl = legend(lgnd,0); set(hndl,'FontSize',6); figure(handles.figure1);
+hndl = legend(lgnd,'Location', 'Best'); set(hndl,'FontSize',6); figure(handles.figure1);
 
 return;
 
@@ -56,13 +56,13 @@ function setButtons(handles,state)
 switch state
     
     case 'on'
-        set(handles.popName2,'Visible','on'); 
+        set(handles.popName2,'Visible','on');
         set(handles.popName3,'Visible','on');
-        set(handles.popName4,'Visible','on'); 
+        set(handles.popName4,'Visible','on');
         
     case 'off'
-        set(handles.popName2,'Visible','off'); 
-        set(handles.popName3,'Visible','off'); 
+        set(handles.popName2,'Visible','off');
+        set(handles.popName3,'Visible','off');
         set(handles.popName4,'Visible','off');
         
     otherwise

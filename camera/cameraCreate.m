@@ -9,7 +9,7 @@ function camera = cameraCreate(cType,varargin)
 %   L3         - L3 type camera based on sensors in the L3 structure
 %   Ideal      - Diffraction limited, noise free sensor with XYZ
 %   monochrome - A default monochrome sensor
-%   
+%
 %
 % Normally we create a camera from the currently selected oi, sensor, and
 % ip.  If there are none selected, we use the defaults.
@@ -48,7 +48,7 @@ switch cType
         camera = cameraSet(camera,'ip',ip);
         
     case {'current'}
-
+        
         camera.name = 'current';
         camera.type = 'camera';
         
@@ -86,7 +86,7 @@ switch cType
         camera.oi     = oiCreate;
         camera.sensor = sensorCreateIdeal;
         camera.vci    = ipCreate;
-            
+        
     case 'idealmonochrome'
         % Noise-free monochrome.  Photon noise included, though.
         camera.name   = 'ideal monochrome';
@@ -108,7 +108,7 @@ switch cType
         if ~isempty(varargin)
             % An L3 structure was passed in.
             L3 = varargin{1};
-
+            
             % Copy the oi/sensor structures into the camera structure.
             % But don't copy the data
             % Ultimately, the code should always compute on the camera

@@ -7,8 +7,8 @@ function mtf = DiffractionMTF(s,pupil,nm)
 % 	s = spatial frequency in c/deg
 % 	pupil = pupil diameter in mm
 % 	nm = wavelength in nm
-% 
-% Goodman, J. W. (1968) Introduction to Fourier Optics. 
+%
+% Goodman, J. W. (1968) Introduction to Fourier Optics.
 % San Francisco: McGraw-Hill.
 
 % 7/11/94		dhb		Wrote it.

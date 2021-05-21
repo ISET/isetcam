@@ -17,14 +17,14 @@ function [electrons, wellCapacity] = iePixelWellCapacity(pixelSize)
 % Description:
 %
 %{
-% This is the method we used to interpolate full well capacity (FWC) from 
-% pixel sizes based on data from our colleague (Boyd). 
+% This is the method we used to interpolate full well capacity (FWC) from
+% pixel sizes based on data from our colleague (Boyd).
 
-clear wellCapacity; 
-wellCapacity(:,1) = [0.7   0.8 1.0   1.1  2     3       4.2]'; 
+clear wellCapacity;
+wellCapacity(:,1) = [0.7   0.8 1.0   1.1  2     3       4.2]';
 wellCapacity(:,2) = [4000 5500 7500 10000 17500 25000   35000]';
 
-psize = wellCapacity(:,1); electrons = wellCapacity(:,2); 
+psize = wellCapacity(:,1); electrons = wellCapacity(:,2);
 ieNewGraphWin;
 plot(psize,electrons,'ro-'); slope = psize\electrons;
 
@@ -35,15 +35,15 @@ p = polyfit(psize,electrons,2);
 simulatedSize = 0:.1:7;    % This is an extrapolation ...
 simulatedFWC  = polyval(p,simulatedSize);
 
-ieNewGraphWin; 
+ieNewGraphWin;
 plot(psize,electrons,'ro',simulatedSize,simulatedFWC,'b-');
 xlabel('Pixel size (um)'); ylabel('FWC (electrons)'); grid on
 
-clear wellCapacity; 
-wellCapacity(:,1) = simulatedSize(:); 
+clear wellCapacity;
+wellCapacity(:,1) = simulatedSize(:);
 wellCapacity(:,2) = simulatedFWC(:);
 
-% This is what we wrote out in the file we are reading in. 
+% This is what we wrote out in the file we are reading in.
 fname = fullfile(isetRootPath,'data','sensor','wellCapacity');
 save(fname,'wellCapacity');
 
@@ -52,9 +52,9 @@ save(fname,'wellCapacity');
 %    NOTES:  From an older online reference.
 %    http://www.clarkvision.com/articles/digital.sensor.performance.summary/
 %
-%    Boyd says those numbers are way off.  
+%    Boyd says those numbers are way off.
 %
-%    Other values are from the papers cited in 
+%    Other values are from the papers cited in
 %    https://www.cse.wustl.edu/~jain/cse567-11/ftp/imgsens/index.html
 %
 %    And this from the web.  But we are waiting for Boyd.
@@ -101,7 +101,7 @@ electrons = [];
 fname = fullfile(isetRootPath,'data','sensor','wellCapacity');
 
 % Pixel size in microns vs. well capacity in electrons
-% Snagged from the Roger Clark graph at the link above.  
+% Snagged from the Roger Clark graph at the link above.
 % May be updated with newer information from Boyd and others over time.
 load(fname,'wellCapacity');
 

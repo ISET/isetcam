@@ -2,9 +2,9 @@ function B=Expand(A,horizontalFactor,verticalFactor)
 % B=Expand(A,horizontalFactor,[verticalFactor])
 %
 % Expands the ND matrix A by cell replication, and returns the result.
-% If the vertical scale factor is omitted, it is assumed to be 
+% If the vertical scale factor is omitted, it is assumed to be
 % the same as the horizontal. Note that the horizontal-before-vertical
-% ordering of arguments is consistent with image processing, but contrary 
+% ordering of arguments is consistent with image processing, but contrary
 % to Matlab's rows-before-columns convention.
 %
 % We use "Tony's Trick" to replicate a vector, as explained
@@ -17,15 +17,15 @@ function B=Expand(A,horizontalFactor,verticalFactor)
 % 13/06/12 DN Redid internals for significant speedup.
 
 if nargin<2 || nargin>3
-	error('Usage: A=Expand(A,horizontalFactor,[verticalFactor])');
+    error('Usage: A=Expand(A,horizontalFactor,[verticalFactor])');
 end
 if nargin==2
-	verticalFactor=horizontalFactor;
+    verticalFactor=horizontalFactor;
 end
 
-psychassert(round(verticalFactor)  ==verticalFactor   && verticalFactor>=1 && ... 
-            round(horizontalFactor)==horizontalFactor && horizontalFactor>=1, ...
-        	'Expand only supports positive integer factors.');
+psychassert(round(verticalFactor)  ==verticalFactor   && verticalFactor>=1 && ...
+    round(horizontalFactor)==horizontalFactor && horizontalFactor>=1, ...
+    'Expand only supports positive integer factors.');
 psychassert(~isempty(A),'Can''t expand an empty matrix');
 
 
@@ -42,22 +42,22 @@ columnCopyingInstructionsIndex  = columnCopyingInstructionsIndex(:)';
 % The following code uses Matlab's matrix indexing quirks to magnify the
 % matrix.  It is easier to understand how it works by looking at a specific
 % example:
-% 
+%
 % >> n = [1 2; 3 4] % Matlab, please give me a matrix with four elements.
 %
 % n =
-% 
+%
 %      1     2
 %      3     4
-% 
+%
 % >> % Matlab, please generate a new matrix by using the provided copying
 % >> % instructions index.  My copying instructions index says that you
 % >> % should print the first column twice, then print the second column
 % >> % twice.  Thanks.
 % >> m = n(:, [1 1 2 2])
-% 
+%
 % m =
-% 
+%
 %      1     1     2     2
 %      3     3     4     4
 %
@@ -66,9 +66,9 @@ columnCopyingInstructionsIndex  = columnCopyingInstructionsIndex(:)';
 % >> % should print the first row twice, then print the second row
 % >> % twice.  Thanks.
 % >> m = n([1 1 2 2], :)
-% 
+%
 % m =
-% 
+%
 %      1     2
 %      1     2
 %      3     4

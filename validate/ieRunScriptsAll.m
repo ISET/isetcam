@@ -10,7 +10,7 @@ function ieRunScriptsAll
 %   isetRootPath/scripts are run, except that scripts within the directory
 %   'development' are skipped.
 %
-% 
+%
 % 07/26/17  dhb  Wrote this, because we care.
 
 %%  Set for app designer buggy stuff

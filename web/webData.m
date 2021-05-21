@@ -1,6 +1,6 @@
 classdef webData
     %WEBDATA Fetech various kinds of data into ISET
-    %   Might wind up being a super-class for various kinds of data, but 
+    %   Might wind up being a super-class for various kinds of data, but
     %   keeping it simple for now.
     %   Handles Hyperspectral and Multispectral as separate cases,
     %   since they are in the database (JSON file) separately,
@@ -9,18 +9,18 @@ classdef webData
     %   scenes.
     %
     %   For now they all read from a single JSON file, but it could easily
-    %   be split into several 
+    %   be split into several
     
     properties
         dataType; % whether it is Hyperspectral, Multispectral, or HDR
         ourDataStruct;
         defaultWavelist = 400:10:700; % default wavelengths for display of hyperspectral
         
-                
+        
         % where we cache images and scenes -- currently deleted after
         % loading
         webDataCache = fullfile(isetRootPath, 'local', 'webData');
-
+        
     end
     
     methods
@@ -49,7 +49,7 @@ classdef webData
         function outputArg = search(obj,ourTags)
             %METHOD1 Summary of this method goes here
             %   Detailed explanation goes here
-            %outputArg = JSON STRUCT for our scene type   
+            %outputArg = JSON STRUCT for our scene type
             ourKeywords = split(ourTags,",");
             ourDataObject = obj.ourDataStruct
             
@@ -77,9 +77,9 @@ classdef webData
                     end
                 end
             end
-            if ~exist('outputArg','var') 
+            if ~exist('outputArg','var')
                 outputArg = [];
-            end 
+            end
         end
         
         function displayScene(obj, fPhoto, sceneType)
@@ -113,18 +113,18 @@ classdef webData
                     sceneWindow(scene);
                     % try using HDR as default display
                     sceneSet(scene,'renderflag', 'hdr');
-
+                    
                 case 'RGB'
                     % I, imType, meanLuminance, dispCal, wList
                     scene = sceneFromFile(sceneFile,'rgb',[],[],getpref('ISET','openRGBwavelist', obj.defaultWavelist));
                     scene = sceneSet(scene, 'name', fPhoto.Name);
-                    sceneWindow(scene);               
+                    sceneWindow(scene);
                 otherwise
             end
             if getpref('ISET','keepDownloads', false) == false
                 delete(sceneFile);
             end
-
+            
         end
         
         function ourURL = getImageURL(obj, fPhoto, wantSize)
@@ -132,7 +132,7 @@ classdef webData
                 ourURL = fPhoto.Icon;
             else
                 ourURL = fPhoto.URL;
-            end 
+            end
         end
         
         function ourTitle = getImageTitle(obj, fPhoto)
@@ -141,8 +141,8 @@ classdef webData
         
         function ourImage = getImage(obj, fPhoto, wantSize)
             ourURL = getImageURL(obj, fPhoto, wantSize);
-            ourImage = webread(ourURL);   
+            ourImage = webread(ourURL);
         end
-
+        
     end
 end

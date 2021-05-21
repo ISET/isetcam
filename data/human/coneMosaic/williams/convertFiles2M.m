@@ -3,19 +3,19 @@
 % The data include the spatial array of L,M, and S cone positions in five
 % subjects.
 %
-% The data also include the estimated pointspread functions for 500, 550,
+% The data also include the estimated pointspread functions for 500, 550
 % and 600nm.  These are all near the fovea (central 1.5 deg).
 %
 % Subject-specific spatial scale and eccentricity of the various PSFs and
-% cone mosaics are {subject, arcmin/pixel, eccentricity} 
+% cone mosaics are {subject, arcmin/pixel, eccentricity}
 %
 %  If (0,0) is the fovea, then we make nasal,inferio<0, temporal,superior > 0
 subjectInfo = {...
-        {'HS', .113, [-1,0]}, ...
-        {'YY', .124, [-1,1]},...
-        {'AP',.117,[-1.25,0]},...
-        {'MD',.127,-1,0},...
-        {'BS',.120,[-1.25,0]}};
+    {'HS', .113, [-1,0]}, ...
+    {'YY', .124, [-1,1]},...
+    {'AP',.117,[-1.25,0]},...
+    {'MD',.127,-1,0},...
+    {'BS',.120,[-1.25,0]}};
 save subjectInfo subjectInfo
 
 % These are the cone x,y positions for the different types of cones.
@@ -40,7 +40,7 @@ umPerPixel = arcminPerPixel*(1/arcminPerDeg)*umPerDeg;  %um per pixel
 subject = 'HS'
 subNum = 1;
 col = [1,2,3];
-arcminPerPixel = 0.113; 
+arcminPerPixel = 0.113;
 
 % Read and spatially scale xy positions
 nanList = find(isnan(d(:,col(1))));

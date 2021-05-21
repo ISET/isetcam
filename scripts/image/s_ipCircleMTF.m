@@ -4,7 +4,7 @@
 % series of circles of increasing radius.  Measure the MTF as a
 % function of radius.
 %
-% See also: ipCompute, ipGet, 
+% See also: ipCompute, ipGet,
 %
 % Copyright ImagEval Consultants, LLC, 2010
 
@@ -46,13 +46,13 @@ for ii=1:length(rList)
     % Find the points at this distance
     lst = (abs(d2c - rList(ii)) < 1);  % figure; imagesc(l)
     [thisAng, ix]= sort(ang(lst));
-
+    
     thisVal = rImg(lst);
     thisVal = thisVal(ix);
-
+    
     % Compute the spectral power distribution
     spec = abs(fft(thisVal));
-
+    
     % These are the number of points
     n = floor(length(spec)/2);
     
@@ -60,7 +60,7 @@ for ii=1:length(rList)
     % that we are interested in.  But that's too hard to find right now.
     % Do it later. I think it is just the number of cycles in the pattern.
     thisPeak(ii) = max(spec(2:n));
-
+    
     subplot(1,2,1), plot(2:n,spec(2:n),'--');
     xlabel('Freq'); ylabel('Amp');
     
@@ -75,4 +75,4 @@ xlabel('maxRadius - thisRadius')
 ylabel('FFT peak')
 grid on
 
-%% 
+%%

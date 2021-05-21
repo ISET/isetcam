@@ -10,7 +10,7 @@ if (IsOverLimit == 1)
 else
     fprintf('  * Light is UNDER ISO 2007 MPE Type 1 continuous limits\n');
 end
-    
+
 %% Corenal irradiance weighted UV limit
 fprintf('  * Type 1 continuous corneal irradiance UV weighted (5.4.1.1)\n');
 fprintf('    * Value: %0.3f, limit %0.3f (uWatts/cm2)\n',ISO2007MPEStruct.cornealUVWeightedVal_UWattsPerCm2,ISO2007MPEStruct.cornealUVWeightedLimit_UWattsPerCm2);

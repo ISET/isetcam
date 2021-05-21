@@ -20,7 +20,7 @@ pred = xyz*T;
 plot(pred(:),stock(:),'.'); grid on; axis equal
 
 % sto2xyz
-% sto*T = xyz; T = inv(sto)*xyz = sto \ xyz 
+% sto*T = xyz; T = inv(sto)*xyz = sto \ xyz
 T = stock \ xyz;
 pred = stock*T;
 plot(pred(:),xyz(:),'.'); grid on; axis equal

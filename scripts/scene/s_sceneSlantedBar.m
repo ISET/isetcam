@@ -1,4 +1,4 @@
-%% Create a spatial resolution slanted bar target 
+%% Create a spatial resolution slanted bar target
 %
 % *Slanted bar* scenes are used measuring the *ISO 12233* standard
 % for spatial resolution (spatial frequency responce). This

@@ -13,9 +13,9 @@
 % Copyright ImagEval Consultants, LLC, 2010
 
 %%
-ieInit; 
+ieInit;
 
-%% Choose scene surface reflectances  
+%% Choose scene surface reflectances
 
 % Choose reflectance data for testing
 sFiles = cell(1,2);
@@ -27,7 +27,7 @@ sFiles{1} = fullfile(isetRootPath,'data','surfaces','reflectances','MunsellSampl
 sFiles{2} = fullfile(isetRootPath,'data','surfaces','reflectances','Food_Vhrel.mat');
 %}
 % Number of samples from each of the files
-sSamples = [48 16]; 
+sSamples = [48 16];
 % pSize = 16; [scene, samples] = sceneReflectanceChart(sFiles,sSamples,pSize);
 % ieAddObject(scene); sceneWindow;
 
@@ -39,22 +39,22 @@ nIlluminant = length(bbodyList);
 % For plotting CIELAB dE graphs on a common scale
 maxDE = 8;
 
-%% Create a Nikon sensor with an infrared cut filter. 
+%% Create a Nikon sensor with an infrared cut filter.
 
 % Load up  Nikon color filters and an infrared
-nikon = sensorCreate; 
+nikon = sensorCreate;
 wave  = sensorGet(nikon,'wave');
 nikon = sensorSet(nikon,'infrared',ieReadSpectra('infrared2',wave));
 filterFile = 'NikonD70';
 nikon = sensorSet(nikon,'color filters',ieReadSpectra(filterFile,wave));
 
-% Plot the Nikon spectral QE.  
+% Plot the Nikon spectral QE.
 sqe = sensorGet(nikon,'spectral qe');
 
-vcNewGraphWin; 
+vcNewGraphWin;
 p = plot(wave,sqe(:,1),'r-',wave,sqe(:,2),'g-',wave,sqe(:,3),'b-');
 set(p,'linewidth',2); grid on
-xlabel('Wavelength (nm)'); ylabel('Responsivity'); 
+xlabel('Wavelength (nm)'); ylabel('Responsivity');
 title(sprintf('%s spectral QE',filterFile));
 
 %%  Estimated sensor correction transforms for the different illuminants
@@ -66,15 +66,15 @@ desired = cell(1,nIlluminant);
 CMF = ieReadSpectra('XYZ.mat',wave);
 
 % imageSensorConversion returns the transform, T, that converts the sensor
-% data to the desired CMF representation.  
+% data to the desired CMF representation.
 for ii = 1:nIlluminant
     illuminant = blackbody(wave,bbodyList(ii));
     [T{ii}, actual{ii}, desired{ii}, whiteCMF] = ...
-        imageSensorConversion(nikon,CMF,reflectances,illuminant); 
+        imageSensorConversion(nikon,CMF,reflectances,illuminant);
 end
 
 % In this case, the T{ii} matrices convert the Nikon spectral QE to
-% something close to the XYZ. 
+% something close to the XYZ.
 estXYZ = (T{3}*sqe')';
 
 % Let's plot the transformed spectral QE for the 5000K illuminant
@@ -151,17 +151,17 @@ fprintf('Condition number: %f\n',s(1)/s(3));
 %% Create a sensor with different filters.   (CYM)
 
 % Set the sensor of interest here
-sensor = sensorCreate; 
+sensor = sensorCreate;
 wave   = sensorGet(sensor,'wave');
 
-% Load up CYM color filters 
+% Load up CYM color filters
 sensor = sensorSet(sensor,'infrared',ieReadSpectra('infrared2',wave));
 filterFile = 'cym';
 sensor = sensorSet(sensor,'color filters',ieReadSpectra(filterFile,wave));
 sensor = sensorSet(sensor,'name','CMY');
 sqe    = sensorGet(sensor,'spectral qe');
 
-vcNewGraphWin; 
+vcNewGraphWin;
 p = plot(wave,sqe(:,1),'c-',wave,sqe(:,2),'y-',wave,sqe(:,3),'m-');
 set(p,'linewidth',2); grid on
 xlabel('Wavelength (nm)'); ylabel('Responsivity')
@@ -190,7 +190,7 @@ CMF = ieReadSpectra('XYZ.mat',wave);
 for ii = 1:nIlluminant
     illuminant = blackbody(wave,bbodyList(ii));
     [T{ii}, actual{ii}, desired{ii}, whiteCMF] = ...
-        imageSensorConversion(sensor,CMF,reflectances,illuminant);   
+        imageSensorConversion(sensor,CMF,reflectances,illuminant);
 end
 
 % The T{ii} matrices convert the Nikon spectral QE to something close to

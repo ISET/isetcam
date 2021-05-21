@@ -21,40 +21,40 @@ if (exist('fmincon') == 2)
     options = optimset('fmincon');
     options = optimset(options,'Diagnostics','off','Display','off','LargeScale','off','Algorithm','active-set');
     
-	% Search bounds -- XYZ must be positive.
-	vlb = zeros(3,1);
-	vub = [200 100 200]';
-	
-	% Do the search for each passed value.
-	XYZ = zeros(size(Ljg));
-	n = size(XYZ,2);
-	for i = 1:n
-		x0 = xyYToXYZ([.28 .28 30]');
-		x = fmincon('LjgToXYZFun',x0,[],[],[],[],vlb,vub,[],options,Ljg(:,i));
-		XYZ(:,i) = x;
-	end
-
+    % Search bounds -- XYZ must be positive.
+    vlb = zeros(3,1);
+    vub = [200 100 200]';
+    
+    % Do the search for each passed value.
+    XYZ = zeros(size(Ljg));
+    n = size(XYZ,2);
+    for i = 1:n
+        x0 = xyYToXYZ([.28 .28 30]');
+        x = fmincon('LjgToXYZFun',x0,[],[],[],[],vlb,vub,[],options,Ljg(:,i));
+        XYZ(:,i) = x;
+    end
+    
 elseif (exist('constr') == 2)
-	% Search options
-	options = foptions;
-	options(1) = 0;
-	
-	% Search bounds -- XYZ must be positive.
-	vlb = zeros(3,1);
-	vub = [200 100 200]';
-	
-	% Do the search for each passed value.
-	XYZ = zeros(size(Ljg));
-	n = size(XYZ,2);
-	for i = 1:n
-		x0 = xyYToXYZ([.28 .28 30]');
-		x = constr('LjgToXYZFun',x0,options,vlb,vub,[],Ljg(:,i));
-		XYZ(:,i) = x;
-	end
-
-
+    % Search options
+    options = foptions;
+    options(1) = 0;
+    
+    % Search bounds -- XYZ must be positive.
+    vlb = zeros(3,1);
+    vub = [200 100 200]';
+    
+    % Do the search for each passed value.
+    XYZ = zeros(size(Ljg));
+    n = size(XYZ,2);
+    for i = 1:n
+        x0 = xyYToXYZ([.28 .28 30]');
+        x = constr('LjgToXYZFun',x0,options,vlb,vub,[],Ljg(:,i));
+        XYZ(:,i) = x;
+    end
+    
+    
 else
-	error('LjgToXYZ requires the optional Matlab Optimization Toolbox from Mathworks');
+    error('LjgToXYZ requires the optional Matlab Optimization Toolbox from Mathworks');
 end
 
 

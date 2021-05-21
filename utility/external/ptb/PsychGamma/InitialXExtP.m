@@ -13,6 +13,6 @@ function x = InitialXExtP(xp)
 
 x = [2 0]';
 if (nargin == 1)
-  x(1) = xp;
+    x(1) = xp;
 end
 

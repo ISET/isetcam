@@ -1,5 +1,5 @@
 %% Chart validation
-% 
+%
 %  v_chart
 %
 %
@@ -47,10 +47,10 @@ sensorWindow(sensor);
 
 % cornerPoints = chartCornerpoints(sensor);
 cornerPoints = [    9   228
-   309   229
-   307    33
-     9    31];
-      
+    309   229
+    307    33
+    9    31];
+
 rects = chartRectangles(cornerPoints,4,6,0.5);
 sensor = sensorSet(sensor,'chart rectangles',rects);
 sensorGet(sensor,'chart rects')
@@ -65,8 +65,8 @@ ip = ipCompute(ip,sensor);
 
 % ipWindow; cornerPoints = chartCornerpoints(ip);
 cornerPoints = [9   228
-   310   228
-   307    31
+    310   228
+    307    31
     10    32];
 
 rects = chartRectangles(cornerPoints,4,6,0.5);

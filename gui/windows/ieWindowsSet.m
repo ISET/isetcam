@@ -63,7 +63,7 @@ end
 
 w = ieSessionGet('main window'); v = wPos{1};
 if ~isempty(w) && ~isempty(v) && isvalid(w)
-    w.figure1.Position = v; 
+    w.figure1.Position = v;
     if screenProtect, movegui(w.figure1); end
     if restoreState && ~isempty(wState) && numel(wState) >= 1
         if ~isempty(wState{1}), w.figure1.WindowState = wState{1}; end
@@ -107,25 +107,25 @@ if ~isempty(w) && ~isempty(v) && isvalid(w)
 end
 
 if numel(wPos) > 5
-     w = ieSessionGet('camdesign window');v = wPos{6};
-     if ~isempty(w) && ~isempty(v) && isvalid(w)
-         w.figure1.Position = v;
+    w = ieSessionGet('camdesign window');v = wPos{6};
+    if ~isempty(w) && ~isempty(v) && isvalid(w)
+        w.figure1.Position = v;
         if screenProtect, movegui(w.figure1); end
         if restoreState && ~isempty(wState) && numel(wState) >= 6
             if ~isempty(wState{6}), w.figure1.WindowState = wState{6}; end
         end
-     end
+    end
 end
 
 if numel(wPos) > 6
-     w = ieSessionGet('imageexplore window');v = wPos{7};
-     if ~isempty(w) && ~isempty(v) && isvalid(w)
-         w.UIFigure.Position = v;
-         if screenProtect, movegui(w.UIFigure); end
-         if restoreState && ~isempty(wState) && numel(wState) >= 7
-             if ~isempty(wState{7}), w.UIFigure.WindowState = wState{7}; end
-         end
-     end
+    w = ieSessionGet('imageexplore window');v = wPos{7};
+    if ~isempty(w) && ~isempty(v) && isvalid(w)
+        w.UIFigure.Position = v;
+        if screenProtect, movegui(w.UIFigure); end
+        if restoreState && ~isempty(wState) && numel(wState) >= 7
+            if ~isempty(wState{7}), w.UIFigure.WindowState = wState{7}; end
+        end
+    end
 end
 
 setpref('ISET','wPos',wPos);

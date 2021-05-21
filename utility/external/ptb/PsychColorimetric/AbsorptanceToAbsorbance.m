@@ -47,7 +47,7 @@ if ~exist('NORMALIZE','var'); NORMALIZE = true; end
 % Convert each entry
 for i = 1:size(absorptanceSpectra,1)
     % Normalize absorptanceSpectance so that returned absorbance has peak of 1, no matter what
-    % normalization was applied to the absorptance spectrum.  
+    % normalization was applied to the absorptance spectrum.
     if (NORMALIZE)
         absorptanceSpectra(i,:) = absorptanceSpectra(i,:) ./ max(absorptanceSpectra(i,:)) * (1-10^-axialOpticalDensities(i));
     end

@@ -7,7 +7,7 @@ function tf = ieContains(str,pattern)
 % Description:
 %    Work around for the Matlab contains function. Written so that it
 %    will work with Matlab versions prior to those with the Matlab function
-%    contains(). 
+%    contains().
 %
 % Inputs
 %   str -  A cell array of strings (or a string)
@@ -19,9 +19,9 @@ function tf = ieContains(str,pattern)
 %
 % DHB/ZL ISETBIO Team
 %
-% See also: 
+% See also:
 %   contains, strfind
-%   
+%
 
 % Examples
 %{

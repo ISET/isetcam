@@ -1,10 +1,10 @@
 function [s,sPos,sNeg] = MaximizeGamutContrast(dir,white)
 % [s,sPos,sNeg] = MaximizeGamutContrast(dir,white)
-% 
+%
 % Find the scalar that maximizes the contrast around
 % the white point.  Input should be specified in device
 % primary coordinates.
-% 
+%
 % 2/22/94  dhb    Wrote it.
 % 4/3/94   dhb    Analytic version.
 % 4/4/94   dhb    Avoid divide by zero problem.
@@ -41,7 +41,7 @@ useWhite(~useWhite) = 2*verySmall*ones(size(find(~useWhite)));
 
 % Find all of the candidate s values
 s1 = (1-useWhite) ./ dir;		% white + s1*dir = 1
-s2 = (-useWhite) ./ dir;		% white + s2*dir = 0	
+s2 = (-useWhite) ./ dir;		% white + s2*dir = 0
 
 % Get all of the s values together
 allS = [s1 ; s2];

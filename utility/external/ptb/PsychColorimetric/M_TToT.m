@@ -25,9 +25,9 @@ function [M,dest] = M_TToT(Tsource,Tdest,source)
 M = (Tsource' \ Tdest')';
 
 if (nargin == 3)
-  dest = M*source;
+    dest = M*source;
 else
-  dest = [];
+    dest = [];
 end
 
 

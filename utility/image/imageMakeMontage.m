@@ -6,7 +6,7 @@ function  [img,coords] = imageMakeMontage(hc, sliceList, nCols, backVal)
 %
 % Inputs:
 %   hc:         x by y by sliceNum
-%   sliceList:  slices to include. Defaults to all 
+%   sliceList:  slices to include. Defaults to all
 %   nCols:      number of columns in the image montage
 %   backVal:    Background color
 %
@@ -23,15 +23,15 @@ function  [img,coords] = imageMakeMontage(hc, sliceList, nCols, backVal)
 %    be written).
 %
 % (c) Imageval, 2012
-% 
+%
 % See also
-%  
+%
 
 % Examples:
 %{
  [img,coords] = imageMakeMontage(hc);
- ieNewGraphWin; imagesc(img); 
- colormap(gray); axis equal; axis off;
+ ieNewGraphWin; imagesc(img);
+ colormap(gray(64)); axis equal; axis off;
 %}
 
 %%

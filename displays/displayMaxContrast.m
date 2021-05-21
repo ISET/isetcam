@@ -9,7 +9,7 @@ function alpha = displayMaxContrast(signalDir,backDir)
 % useful, for example, in finding the maximum contrast cone-isolating
 % stimulus that can be displayed on a particular monitor.
 %
-%        0 <= alpha*signalDir + backDir 
+%        0 <= alpha*signalDir + backDir
 %            alpha*signalDir + backDir <= 1
 %
 % Copyright ImagEval Consultants, LLC, 2005.

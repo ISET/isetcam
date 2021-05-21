@@ -26,29 +26,29 @@ elseif mn == mx, s = mx;       % In this case, cData should be all zeros
 else             s = (mx - mn);
 end
 if s > mxCompress
-
+    
 end
 
 try
     % Usually we return double precision
     s  = double(s);
     mn = double(mn);
-
+    
     % Compression formula is:   cData = uint(mxCompress * (data - mn)/(s));
     % Uncompression formula is the inverse
     ucData = (s/mxCompress)*double(cData) + mn;
-
-
+    
+    
 catch
     % If we run out of memory, we return single precision and warn user.
     % Hasn't happened in a while at Stanford site.
     s  = single(s);
     mn = single(mn);
-
+    
     % Compression formula is:   cData = uint(mxCompress * (data - mn)/(s));
     % Uncompression formula is the inverse
     ucData = (s/mxCompress)*single(cData) + mn;
-    warning('ISET:ieUncompress','Photons: Single precision'); 
+    warning('ISET:ieUncompress','Photons: Single precision');
 end
 
 return;

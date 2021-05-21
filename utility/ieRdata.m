@@ -6,7 +6,7 @@ function val = ieRdata(func,rd,varargin)
 % INPUTS
 %  func - 'create', 'web site','file get','read image', 'dir'
 %  rd   - rdata object (optional)
-% 
+%
 % OUTPUT
 %  val
 %
@@ -40,17 +40,17 @@ switch f
     case {'create'}
         % rd = ieRdata('create')
         val = rdata('base','http://scarlet.stanford.edu/validation/SCIEN');
-
+        
     case {'website'}
         rd.webSite;
         
     case {'ls','dir'}
         % List the files in the remote data site that are in a directory
-        % matching a specific string 
+        % matching a specific string
         % dirList = ieRdata('ls',rd, DirectoryString);
         if isempty(varargin), error('Pattern required'); end
         val = rd.dirList(varargin{1});
-               
+        
     case {'filesprint'}
         % List the directories and files
         rd.fileList;
@@ -66,7 +66,7 @@ switch f
         destDir = fullfile(isetRootPath,'local');
         if ~exist(destDir,'dir')
             disp('Making local directory')
-            mkdir(destDir); 
+            mkdir(destDir);
         end
         
         dest = fullfile(destDir,fname);
@@ -76,7 +76,7 @@ switch f
         % rdata('read image', rd, fname);
         if isempty(varargin), error('remote image file name required'); end
         val = rd.imageRead(varargin{1});
-
+        
     case 'loaddata'
         % ieRdata('load data',rd,fname,variableName)
         %
@@ -91,7 +91,7 @@ switch f
         if length(varargin) == 2, val = load(dest,varargin{2});
         else val = load(dest);
         end
-
+        
     otherwise
         error('Unknown ieRdata function %s\n',func);
 end

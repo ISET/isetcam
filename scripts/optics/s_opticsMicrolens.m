@@ -17,11 +17,11 @@
 % demonstrate some of its properties here.
 %
 % See also:   mlensCreate, mlensSet, mlensGet, mlRadiance,
-%             mlensWindw, sensorCreate, 
+%             mlensWindw, sensorCreate,
 %
 % Copyright ImagEval Consultants, LLC, 2015
 
-%% 
+%%
 ieInit
 
 %% Create oi and sensor

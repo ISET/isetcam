@@ -7,7 +7,7 @@ function newStr=ReplaceLineTerminators(str, newTerminator)
 % (see below), or any mix thereof are handled as input.
 %
 % The argument "newTerminator" may be either the terminator characters
-% which you want to substitute in or else a string identifying a 
+% which you want to substitute in or else a string identifying a
 % platform. If you provide terminators, these must be a combination of [
 % \f\n\r\t\v], while terminators for the desired platform can be specified
 % by the identifiers in teh middle column below:
@@ -27,7 +27,7 @@ function newStr=ReplaceLineTerminators(str, newTerminator)
 
 mac=1;
 win=2;
-linux=3;        % "unix" is a MATLAB function so we use "linux" instead.  
+linux=3;        % "unix" is a MATLAB function so we use "linux" instead.
 
 platforms(mac).index=mac;
 platforms(mac).name='Macintosh';
@@ -41,7 +41,7 @@ platforms(win).aliases=upper({platforms(2).name, 'win', 'dos', 'msdos', 'crlf', 
 
 platforms(linux).index=linux;
 platforms(linux).name='Linux';
-platforms(linux).break=char(10);
+platforms(linux).break=newline;
 platforms(linux).aliases=upper({platforms(3).name, 'unix', 'bsd', 'lf', platforms(3).break});
 
 % find the desired terminator from the newTerminator argument.
@@ -65,7 +65,7 @@ if platformIndex==0
 end
 
 % if we started out as either Mac, Window, or Linux the result will be
-% either Mac or Linux 
+% either Mac or Linux
 strMacOrLinux=strrep(str,platforms(win).break, platforms(mac).break);
 % if we are given either Mac or Linux the result will be Linux.
 strLinux=strrep(strMacOrLinux, platforms(mac).break, platforms(linux).break);

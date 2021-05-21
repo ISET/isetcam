@@ -4,14 +4,14 @@
 % It is not yet implemented.
 % It will demonstrate how to use cfaDesign functions using a script.
 
-% 
+%
 % [data,wave] = ieReadSpectra('D65',wavelength,0);
 % [XYZ,wave]= ieReadSpectra('XYZ',wavelength,0);
 % spectrumXYZ=tran*XYZ;
 % spectrumXYZ=spectrumXYZ/max(spectrumXYZ(:,2));
 % size(tran)
 % figure, plot(XYZ)
-% 
+%
 % cc=makecform('xyz2srgb');
 % visibleColor=applycform(,cc)
 % % Some problem here with IR. all IR is showing up as red;

@@ -3,7 +3,7 @@ function ip = ipCreate(ipName,sensor,display,L3)
 %
 % Synopsis
 %  ip = ipCreate(ipName,[sensor = vcGetObject('sensor')],[display = 'lcdExample.mat'])
-% 
+%
 % Input
 %   ipName
 %   sensor
@@ -60,7 +60,7 @@ end
 %% Figure out the display.  Could be string or struct
 if ieNotDefined('display')
     wave = ipGet(ip,'wave');
-    display = displayCreate('lcdExample.mat',wave); 
+    display = displayCreate('lcdExample.mat',wave);
 elseif ischar(display)
     wave = ipGet(ip,'wave');
     display = displayCreate(display,wave);
@@ -74,7 +74,7 @@ ip = ipSet(ip,'illuminant correction method','None');
 ip = ipSet(ip,'internal CS','XYZ');
 ip = ipSet(ip,'conversion method sensor ','MCC optimized');
 
-%% Rendering assumptions 
+%% Rendering assumptions
 
 % Turned this off because it opened the window
 % ip = ipSet(ip,'renderGamma',1);  % Maybe it should not do that???

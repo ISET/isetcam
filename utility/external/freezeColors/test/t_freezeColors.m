@@ -1,6 +1,6 @@
 % test_main Test freezeColors / unfreezeColors
 %
-%   JRI 4/2007 
+%   JRI 4/2007
 
 %   Author:
 %   John Iversen
@@ -29,10 +29,10 @@ set(gcf,'color',[1 1 1],'renderer','zbuffer')
 %   This is not desired, so start out with zbuffer mode.
 
 subplot(3,2,1)
-imagesc(peaks); axis xy; colormap hot; title('colors not frozen'); h1=colorbar;
+imagesc(peaks); axis xy; colormap(hot(64)); title('colors not frozen'); h1=colorbar;
 
 disp('>> subplot(3,2,1)')
-disp('>> imagesc(peaks); axis xy; colormap hot; title(''colors not frozen''); colorbar')
+disp('>> imagesc(peaks); axis xy; colormap(hot(64)); title(''colors not frozen''); colorbar')
 
 % ============================================================================ %
 
@@ -41,8 +41,8 @@ disp('Next, if we change the colormap to jet, the plot will change appearance.')
 disp('  This is normal Matlab behavior.')
 disp(' =Hit a key='), pause, disp(' ')
 
-disp('>> colormap jet')
-colormap jet
+disp('>> colormap(jet(64));')
+colormap(jet(64))
 
 % ============================================================================ %
 
@@ -54,22 +54,22 @@ disp('  function must be downloaded separately from the MATLAB Central File Exch
 disp(' =Hit a key='), pause, disp(' ')
 
 subplot(3,2,2)
-imagesc(peaks); axis xy; colormap jet; title('jet colormap, frozen')
+imagesc(peaks); axis xy; colormap(jet(64)); title('jet colormap, frozen')
 freezeColors
 h=colorbar;
 try
-  cbfreeze(h1)
-	cbfreeze(h)
+    cbfreeze(h1)
+    cbfreeze(h)
 catch
-	disp('cbfreeze is not available, so colorbar colors will not be frozen until you')
-	disp(' go and download it from the file exchange. Sorry for the extra step, but')
-  disp(' it is necessary because of matlab internal changes. Please visit')
-  disp('  http://www.mathworks.com/matlabcentral/fileexchange/24371 to download it.')
-	freezeColors(h) %tests passing an axis handle 
+    disp('cbfreeze is not available, so colorbar colors will not be frozen until you')
+    disp(' go and download it from the file exchange. Sorry for the extra step, but')
+    disp(' it is necessary because of matlab internal changes. Please visit')
+    disp('  http://www.mathworks.com/matlabcentral/fileexchange/24371 to download it.')
+    freezeColors(h) %tests passing an axis handle
 end
 
 disp('>> subplot(3,2,2)')
-disp('>> imagesc(p); axis xy; colormap jet; title(''jet colormap, frozen'')')
+disp('>> imagesc(p); axis xy; colormap(jet(64));; title(''jet colormap, frozen'')')
 disp(' ')
 disp('%% The test of freezeColors %%')
 disp('>> freezeColors')
@@ -88,7 +88,7 @@ disp('  This shows that freezeColor is working as intended because the frozen')
 disp('  plot is no longer affected by the colormap.')
 disp(' =Hit a key='), pause, disp(' ')
 
-colormap cool
+colormap(cool(64))
 
 disp('>> colormap cool')
 
@@ -102,33 +102,33 @@ disp(' =Hit a key='), pause, disp(' ')
 
 clf
 
-subplot(3,2,1); imagesc(peaks); axis xy; colormap hsv; title('imagesc, hsv');
+subplot(3,2,1); imagesc(peaks); axis xy; colormap(hsv(64)); title('imagesc, hsv');
 freezeColors; h=colorbar;
-try, cbfreeze(h), catch,freezeColors(h), end
+try cbfreeze(h), catch,freezeColors(h), end
 
-subplot(3,2,2); surf(peaks); shading interp; colormap jet; title('surf, jet');
+subplot(3,2,2); surf(peaks); shading interp; colormap(jet(64)); title('surf, jet');
 freezeColors; h=colorbar;
-try, cbfreeze(h), catch,freezeColors(h), end
+try cbfreeze(h), catch,freezeColors(h), end
 
 subplot(3,2,3); scatter(randn(100,1),randn(100,1),rand(100,1)*100,rand(100,1),'filled');
-title('scatter, cool'),colormap cool; axis(3*[-1 1 -1 1]);
+title('scatter, cool'),colormap(cool(64)); axis(3*[-1 1 -1 1]);
 freezeColors; h=colorbar;
-try, cbfreeze(h), catch,freezeColors(h), end
-    
+try cbfreeze(h), catch,freezeColors(h), end
+
 subplot(3,2,4); bar(randn(4,4));xlim([0 5]);title('bar, copper')
-colormap copper; freezeColors;
-    
+colormap(copper(64)); freezeColors;
+
 %demonstrate handling of NaNs -- ordinarily these are preserved, but there's a hidden
 %   option to subsitute another color for NaN
 
 c = magic(50); c(20:30,20:30) = nan;
-subplot(3,2,5); pcolor(c); shading interp; colormap hot; title('NaNs remain transparent')
+subplot(3,2,5); pcolor(c); shading interp; colormap(hot(64)); title('NaNs remain transparent')
 view(-67,56); %so grid shows through
 set(gca,'color',[0 1 0])
 grid on, box off
 freezeColors
 
-subplot(3,2,6); pcolor(c); shading interp; colormap hot; title('NaN (using ''nancolor'' option)')
+subplot(3,2,6); pcolor(c); shading interp; colormap(hot(64)); title('NaN (using ''nancolor'' option)')
 view(-67,56); %so grid shows through
 set(gca,'color',[0 1 0])
 grid on, box off
@@ -144,10 +144,10 @@ disp('All plots are restored to the unfrozen state and are once again')
 disp('  influenced by the colormap.')
 disp(' =Hit a key='), pause, disp(' ')
 
-colormap gray
+colormap(gray(64))
 unfreezeColors(gcf)
 try
-	cbfreeze('off')
+    cbfreeze('off')
 end
 
 disp('>> colormap gray')

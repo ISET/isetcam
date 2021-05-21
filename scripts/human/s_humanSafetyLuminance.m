@@ -18,7 +18,7 @@ dLambda = 10;     % Spectral band width
 
 % We convert the luminance to energy
 % watts/sr/nm/m2
-[radiance,wave] = ieLuminance2Radiance(lum,thisWave,'sd',dLambda); 
+[radiance,wave] = ieLuminance2Radiance(lum,thisWave,'sd',dLambda);
 
 % Now read the hazard function (Actinic) of the safety standard.  For more
 % information read the comments in s_humanSafety.

@@ -8,7 +8,7 @@
 % larger than the R and B.  We set the illuminant correction.  Then we
 % allow the saturation to occur and use the same illuminant correction
 % scaling.  The white patch becomes purplish, as in the teaching slide.
-% 
+%
 % Copyright Imageval Consulting, LLC, 2015
 
 %%
@@ -42,7 +42,7 @@ sensor = sensorCompute(sensor,oi);
 eTime = sensorGet(sensor,'exposure time');
 % ieAddObject(sensor); sensorWindow('scale',true);
 
-ip = ipCreate; 
+ip = ipCreate;
 % ip = ipSet(ip,'correction method illuminant','gray world');
 ip = ipCompute(ip,sensor);
 ieAddObject(ip); ipWindow;
@@ -66,6 +66,6 @@ sensor = sensorCompute(sensor,oi);
 ip = ipCompute(ip,sensor);
 ieAddObject(ip); ipWindow;
 
-%% 
+%%
 
 

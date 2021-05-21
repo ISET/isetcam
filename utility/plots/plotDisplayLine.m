@@ -10,7 +10,7 @@ function [uData,figNum] = plotDisplayLine(ip,ori,xy)
 %  The line plot must pass through a point xy selected by the user.  The
 %  line orientation (h or v) ori, is passed as a calling argument (ORI).
 %  Monochrome and color data are handled in various ways.
-%   
+%
 %  The plotted values are attached the graph window and can be obtained
 %  using a data = get(figNum,'userdata') call.
 %
@@ -21,7 +21,7 @@ function [uData,figNum] = plotDisplayLine(ip,ori,xy)
 %
 % Outputs
 %   uData - struct with position, values, xy and ori
-%  
+%
 % Examples:
 %    figNum = plotDisplayLine(ip,'h')
 %    figNum = plotDisplayLine(ip,'h',[1,1])
@@ -41,7 +41,7 @@ if ieNotDefined('xy')
         case 'h'
             message = 'Select horizontal line';
         case 'v'
-            message = 'Select vertical line';            
+            message = 'Select vertical line';
         otherwise
             error('Unknown orientation')
     end
@@ -77,7 +77,7 @@ function [figNum, uData] = plotColorDisplayLines(xy,data,ori)
 
 dType = 'digital';
 if max(data(:)) <=1, dType = 'analog'; end
-    
+
 switch lower(ori)
     case {'h','horizontal'}
         lData = squeeze(data(xy(2),:,:));
@@ -117,7 +117,7 @@ uData.pos = pos;
 uData.values = lData;
 set(gcf,'userdata',uData);
 
-% Figure label 
+% Figure label
 set(gcf,'NumberTitle','off');
 set(gcf,'Name',titleString);
 

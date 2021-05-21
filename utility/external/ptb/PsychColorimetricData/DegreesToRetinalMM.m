@@ -38,6 +38,6 @@ end
 if (~fulltrig)
     factor = 2*tan((pi/180)*1/2)*eyeLengthMM;
     mm = factor*degs;
-else  
+else
     mm = 2*tan((pi/180)*degs/2)*eyeLengthMM;
 end

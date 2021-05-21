@@ -49,7 +49,7 @@ elseif (9*360/10 <= angle && angle < 10*360/10)
 else
     error('Logic error in routine, should not be possible to be here');
 end
-    
+
 % Now we need to interpolate the remainder to get H1
 % number passed in H1.
 if (remainder < 0 || remainder >= 360/10)

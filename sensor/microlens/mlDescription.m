@@ -12,11 +12,11 @@ txt = [];
 
 % Row and col position relative to (0,0) at center (CRA = 0)
 cra = mlensGet(ml,'chief ray angle radians');
-sfl = mlensGet(ml,'source focal length','mm');      
+sfl = mlensGet(ml,'source focal length','mm');
 
 %% Pixel size and ml diameter
 
-pixSize = sensorGet(vcGetObject('sensor'),'pixel width','um'); 
+pixSize = sensorGet(vcGetObject('sensor'),'pixel width','um');
 newtxt = sprintf('  Pixel width (um) %.2f\n',pixSize);
 txt = addText(txt,newtxt);
 
@@ -27,7 +27,7 @@ txt = addText(txt,newtxt);
 
 % This is where we are in terms of distance given the CRA
 %
-% The tangent of the chief ray angle is opposite over adjacent 
+% The tangent of the chief ray angle is opposite over adjacent
 %  (X/sfl) = tan(cra)
 %
 % The number of pixels away is opposite divided by pixel size
@@ -44,7 +44,7 @@ txt = addText(txt,newtxt);
 % The Etendue of the pixel
 etendue = mlensGet(ml,'etendue');
 if ~isempty(etendue)
-    newtxt = sprintf('  Etendue: %.3f\n',etendue); 
+    newtxt = sprintf('  Etendue: %.3f\n',etendue);
     txt = addText(txt,newtxt);
 end
 

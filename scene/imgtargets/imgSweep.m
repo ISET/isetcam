@@ -4,12 +4,12 @@ function img  = imgSweep(imSize,maxFreq)
 %     img  = imgSweep(imSize,maxFreq)
 %
 % The frequency increases across the columns; the contrast is high at the
-% top row and decreases down the rows. Used by sceneWindow. 
-%  
+% top row and decreases down the rows. Used by sceneWindow.
+%
 %Example:
-%  img  = imgSweep(256,16);  imagesc(img); colormap(gray); axis image
-%  img =  imgSweep;  imagesc(img); colormap(gray); axis image
-%  
+%  img  = imgSweep(256,16);  imagesc(img); colormap(gray(64)); axis image
+%  img =  imgSweep;  imagesc(img); colormap(gray(64)); axis image
+%
 % Copyright ImagEval Consultants, LLC, 2005.
 
 % Programming Note:

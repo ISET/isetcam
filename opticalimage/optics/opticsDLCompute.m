@@ -16,7 +16,7 @@ function oi = opticsDLCompute(scene,oi)
 % Copyright ImagEval Consultants, LLC, 2005
 
 % TODO:  We should insert a geometric distortion function in this code,
-% rather than using it only in the ray trace methods. 
+% rather than using it only in the ray trace methods.
 if ieNotDefined('scene'), scene = vcGetObject('scene'); end
 if ieNotDefined('oi'),    oi = vcGetObject('oi');       end
 showWaitBar = ieSessionGet('waitbar');
@@ -26,7 +26,7 @@ opticsModel = opticsGet(optics,'model');
 opticsModel = ieParamFormat(opticsModel);
 if ~(strcmpi(opticsModel,'dlmtf') || ...
         strcmpi(opticsModel,'diffractionlimited') ||...
-                    strcmpi(opticsModel, 'skip'))
+        strcmpi(opticsModel, 'skip'))
     error('Bad DL optics model %s',opticsModel);
 else
     if showWaitBar, wStr = 'OI-DL: '; end

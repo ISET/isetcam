@@ -40,7 +40,7 @@ if ~isempty(file)
     [name,ext]  = cellfun(@SplitFName,{file.name},'UniformOutput',false);
     [file.fname]= name{:};
     [file.ext]  = ext{:};
-
+    
     % if filter, use it
     if nargin >= 3
         q_ext   = ismember(ext,f_ext);

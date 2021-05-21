@@ -4,7 +4,7 @@ function [img,vci] = imageIlluminantCorrection(img,vci)
 %    [img,vci] = imageIlluminantCorrection(img,vci);
 %
 % The general processing pipeline has the following steps:
-% 
+%
 %    1.  Sensor data are demosaicked (Demosaic)
 %    2.  The sensor data are converted to the internal color space
 %    (imageSensorCorrection)
@@ -24,7 +24,7 @@ function [img,vci] = imageIlluminantCorrection(img,vci)
 %
 % The input dimension here can differ, depending on the internal color
 % space.  If that space is, say, XYZ then the input image has three bands.
-% But if the ICS is the sensor space, and it is a multiple channel sensor,
+% But if the ICS is the sensor space, and it is a multiple channel sensor
 % then the input image can be 4 or more bands.  This may be trouble and
 % needs to be recognized by the illuminant correction routines.  More
 % thinking required! - BW
@@ -40,7 +40,7 @@ iCorrection = ieParamFormat(ipGet(vci,'illuminant correction method'));
 
 switch iCorrection
     case {'none'}
-
+        
         % This may be problematic when there are more than 3 sensors!
         
         % The user said no sensor conversion.  So, we leave the data alone.
@@ -51,20 +51,20 @@ switch iCorrection
         % set D to the identity but equal to the number of sensors in the
         % img data.  Then we return without bothering to multiply.
         N = size(img,3);    % Image data are in RGB format
-        D = eye(N,N);    
+        D = eye(N,N);
         vci = ipSet(vci,'illuminant correction transform',D);
         return;
-
+        
     case {'grayworld'}
         D = grayWorld(img,vci);
-
+        
     case {'whiteworld'}
         D = whiteWorld(img,vci);
-
+        
     case {'manualmatrixentry','manual'}
         D = ipGet(vci,'illuminant correction transform');
         D = ieReadMatrix(D,'  %.2f');
-
+        
     otherwise
         error('Unknown illuminant correction method %s\n',iCorrection);
 end
@@ -188,7 +188,7 @@ if isempty(internalCMF)
     % would be better to calculate this with knowledge of the sensors and
     % the illuminant white point.
     whiteRatio = ones(1,ipGet(vci,'nSensorInputs'));
-    return; 
+    return;
 end
 
 wave = ipGet(vci,'wavelength');

@@ -65,7 +65,7 @@ function [minel,IJ]= min2(M,userows,usecols)
 %
 %
 % See also: max2, min, max, find
-% 
+%
 %
 % Author: John D'Errico
 % e-mail: woodchips@rochester.rr.com
@@ -74,34 +74,34 @@ function [minel,IJ]= min2(M,userows,usecols)
 
 % check the arguments
 if (nargin<1) || (nargin>3)
-  error('min2 may have 1, 2, or 3 arguments only')
+    error('min2 may have 1, 2, or 3 arguments only')
 end
 
 if length(size(M)) > 2
-  error('M must be a 2-d array or a vector')
+    error('M must be a 2-d array or a vector')
 end
 [n,m] = size(M);
 
 % default for userows?
 if (nargin<2) || isempty(userows)
-  userows = 1:n;
+    userows = 1:n;
 else
-  userows = unique(userows);
-  if ~isnumeric(userows) || any(diff(userows)==0) || ...
-      any(userows<1) || any(userows>n) || any(userows~=round(userows))
-    error('userows must be a valid set of indices into the rows of M')
-  end
+    userows = unique(userows);
+    if ~isnumeric(userows) || any(diff(userows)==0) || ...
+            any(userows<1) || any(userows>n) || any(userows~=round(userows))
+        error('userows must be a valid set of indices into the rows of M')
+    end
 end
 
 % default for usecols?
 if (nargin<3) || isempty(usecols)
-  usecols = 1:m;
+    usecols = 1:m;
 else
-  usecols = unique(usecols);
-  if ~isnumeric(usecols) || any(diff(usecols)==0) || ...
-      any(usecols<1) || any(usecols>m) || any(usecols~=round(usecols))
-    error('usecols must be a valid set of indices into the columns of M')
-  end
+    usecols = unique(usecols);
+    if ~isnumeric(usecols) || any(diff(usecols)==0) || ...
+            any(usecols<1) || any(usecols>m) || any(usecols~=round(usecols))
+        error('usecols must be a valid set of indices into the columns of M')
+    end
 end
 
 % restrict the search

@@ -8,11 +8,11 @@ function mtfData = ieISO12233(ip,sensor,plotOptions)
 %   ip - ISET image processor structure containing a slanted edge .
 %   This routine tries to automatically find a good rectangular region for
 %   the edge.  It then applies the ISO12233 function to the data from the
-%   edge. 
+%   edge.
 %
 % Optional inputs
 %   sensor - ISET sensor structure. Only the pixel size is needed from the
-%            sensor.  
+%            sensor.
 %   plotOptions - 'all', 'luminance', or 'none'
 %
 % Returns
@@ -22,7 +22,7 @@ function mtfData = ieISO12233(ip,sensor,plotOptions)
 % This routine tries to find a good rectangular region for the slanted
 % bar MTF calculation. It then applies the ISO12233 function to the
 % data from the edge.  The routine fails when it cannot automatically
-% identify an appropriate slanted bar region.  
+% identify an appropriate slanted bar region.
 %
 % The sensor pixel size is needed.  If the sensor is not sent in as a
 % parameter, then we look for the currently selected sensor in the
@@ -44,7 +44,7 @@ function mtfData = ieISO12233(ip,sensor,plotOptions)
   scene = sceneCreate('slanted edge',512);
   scene = sceneSet(scene,'fov',5);
   oi = oiCreate; oi = oiCompute(oi,scene);
-  sensor = sensorCreate; 
+  sensor = sensorCreate;
   % Black edge.
   sensor = sensorSetSizeToFOV(sensor,1.5*sceneGet(scene,'fov'));
   sensor = sensorCompute(sensor,oi);
@@ -56,7 +56,7 @@ function mtfData = ieISO12233(ip,sensor,plotOptions)
   ieDrawShape(ip,'rectangle',mtfData.rect);
 
   % If the sensor is in the database, it will be used.
-  ieAddObject(sensor);  
+  ieAddObject(sensor);
   mtf = ieISO12233(ip);
   ipWindow; h = ieDrawShape(ip,'rectangle',mtf.rect);
 
@@ -65,13 +65,13 @@ function mtfData = ieISO12233(ip,sensor,plotOptions)
 %% Input
 if ~exist('ip','var') || isempty(ip)
     ip = vcGetObject('vcimage');
-    if isempty(ip), error('No ip found.'); 
+    if isempty(ip), error('No ip found.');
     else, fprintf('Using selected ip\n');
     end
 end
 if ~exist('sensor','var') || isempty(sensor)
     sensor = vcGetObject('sensor');
-    if isempty(sensor), error('No sensor found.'); 
+    if isempty(sensor), error('No sensor found.');
     else, fprintf('Using selected sensor\n');
     end
 end
@@ -90,14 +90,14 @@ barImage = vcGetROIData(ip,masterRect,'sensor space');
 c = masterRect(3)+1;
 r = masterRect(4)+1;
 barImage = reshape(barImage,r,c,3);
-% vcNewGraphWin; imagesc(barImage(:,:,1)); axis image; colormap(gray);
+% vcNewGraphWin; imagesc(barImage(:,:,1)); axis image; colormap(gray(64));
 
 % Run the ISO 12233 code.
 dx = sensorGet(sensor,'pixel width','mm');
 
 % ISO12233(barImage, deltaX, weight, plotOptions)
 mtfData = ISO12233(barImage, dx, [], plotOptions);
-mtfData.rect = masterRect; % [masterRect(2) masterRect(1) masterRect(4) masterRect(3)]; 
+mtfData.rect = masterRect; % [masterRect(2) masterRect(1) masterRect(4) masterRect(3)];
 
 end
 

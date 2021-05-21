@@ -1,7 +1,7 @@
 function [voltsPerLuxSec,luxsec,meanVolts,voltsPerAntiLuxSec,antiluxsec]...
     = pixelVperLuxSec(sensor,lightType)
 %
-% Compute pixel photometric sensitivity (volts per lux-sec) 
+% Compute pixel photometric sensitivity (volts per lux-sec)
 %
 %    [voltsPerLuxSec,luxsec,meanVolts] = pixelVperLuxSec([sensor])
 %
@@ -14,16 +14,16 @@ function [voltsPerLuxSec,luxsec,meanVolts,voltsPerAntiLuxSec,antiluxsec]...
 % The value of photometrics sensitivity (V/lux-sec) depends on the
 % spectral power distribution of the input.  The lightType variable
 % chooses the light spectral power distribution.  By default, the SPD is
-% equal energy.  It is also possible to use D65. 
+% equal energy.  It is also possible to use D65.
 %
 % See also pixelSNR, pixelSNRluxsec
 %
 % Example:
-%   [vpLS,ls,meanV] = pixelVperLuxSec; 
+%   [vpLS,ls,meanV] = pixelVperLuxSec;
 %   [vpLS,ls,meanV] = pixelVperLuxSec(sensor);
 %
 % Example: (both luxsec and antiluxsec)
-%   [vpLS,ls,meanV,vpALS,als] = pixelVperLuxSec; 
+%   [vpLS,ls,meanV,vpALS,als] = pixelVperLuxSec;
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
@@ -36,7 +36,7 @@ if ieNotDefined('lightType'), lightType = 'ee'; end
 % The 0 flag at the end means don't add the OI to the list.  It will just
 % be a local image.  The default OI is created with cos4th and diff turned
 % off (skip). We should re-write the code with those parameters settable at
-% creation time, I suppose. 
+% creation time, I suppose.
 
 % We used to use this scene.  Maybe we still should make this the default,
 % for compatibility.  For IR, though, we changed to uniformEE.
@@ -46,15 +46,15 @@ switch lower(lightType)
         OI = oiCreate('uniformEE',[],[],0,32,wave);
     case 'd65'
         OI = oiCreate('uniformD65',[],[],0,32,wave);
-end   
+end
 
 % Make optics the same as in the currently selected scene?
 % OI = sceneSet(OI,'optics',vcGetObject('optics'));
 
 % Compute the mean lux
-%[illuminance,lux] = oiCalculateIlluminance(OI); 
+%[illuminance,lux] = oiCalculateIlluminance(OI);
 
-[illuminance,lux,antilux] = oiCalculateIlluminance(OI); 
+[illuminance,lux,antilux] = oiCalculateIlluminance(OI);
 
 % Find and store the auto-exposure time for this image.
 level = 1;      % Level re: pixel voltage swing (1 means all the way)

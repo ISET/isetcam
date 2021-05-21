@@ -1,6 +1,6 @@
 function output = SPDToMetSPD(input,T,B)
 % output = SPDToMetSPD(input,T,B)
-% 
+%
 % Convert spectral power distribution
 % to another metameric spectral power distribution.
 %

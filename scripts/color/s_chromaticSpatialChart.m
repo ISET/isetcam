@@ -11,11 +11,11 @@
 %
 
 %% Parameters
-nRows = 256; 
+nRows = 256;
 nCols = 3*nRows;
 maxFreq = 30;
 cWeights = [0.3, 0.7, 1];     % General color appearance is controlled
-cFreq    = [1, 1.5, 2]*10;    % Causes the color variation.  Change the 10 
+cFreq    = [1, 1.5, 2]*10;    % Causes the color variation.  Change the 10
 cPhase   = [0, 0, 0]*pi;      % Freq differences are enough
 
 %% RGB channels
@@ -50,7 +50,7 @@ W = W/max(W(:));
 
 % RGB = [W ; RGB; W; RGB; W];
 RGB = [W; RGB; W];
-% 
+%
 % ieNewGraphWin;
 % image(RGB)
 % truesize

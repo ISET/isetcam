@@ -58,7 +58,7 @@ setpref('ISET', 'tvhumanStart', tic);
 v_human
 setpref('ISET', 'tvhumanTime', toc(getpref('ISET', 'tvhumanStart')));
 
-%% Image processing 
+%% Image processing
 h = msgbox('Image Processor','ISET Tests','replace');
 set(h,'position',round([36.0000  664.1379  124.7586   50.2759]));
 setpref('ISET', 'tvipStart', tic);
@@ -78,8 +78,8 @@ set(h,'position',round([36.0000  664.1379  124.7586   50.2759]));
 setpref('ISET', 'tvciStart', tic);
 %{
 % Dave:  Needs to be fixed. scene type 'iset scenes' not recognized in
-% the 'focus' method 
-v_cp  
+% the 'focus' method
+v_cp
 %}
 setpref('ISET', 'tvciTime', toc(getpref('ISET', 'tvciStart')));
 
@@ -95,7 +95,7 @@ tTotal = toc(getpref('ISET','tStart'));
 afterTime = cputime;
 beforeTime = getpref('ISET', 'benchmarkstart', 0);
 glData = opengl('data');
-disp(strcat("v_ISET ran  on: ", glData.Vendor, " ", glData.Renderer, "with driver version: ", glData.Version)); 
+disp(strcat("v_ISET ran  on: ", glData.Vendor, " ", glData.Renderer, "with driver version: ", glData.Version));
 disp(strcat("v_ISET ran  in: ", string(afterTime - beforeTime), " seconds of CPU time."));
 disp(strcat("v_ISET ran  in: ", string(tTotal), " total seconds."));
 fprintf("Scenes  ran in: %5.1f seconds.\n", getpref('ISET','tvsceneTime'));

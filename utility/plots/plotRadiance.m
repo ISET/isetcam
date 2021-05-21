@@ -19,7 +19,7 @@ function hdl = plotRadiance(wavelength,radiance,varargin)
 %
 
 % More options to come.  Such as a title.
-% 
+%
 
 %%
 p = inputParser;
@@ -42,14 +42,14 @@ nWave = length(wavelength);
 if nWave == size(radiance,1)
     plot(wavelength(:),radiance);
 elseif length(wavelength) == size(radiance,2)
-    plot(wavelength(:),radiance');    
+    plot(wavelength(:),radiance');
 end
 
 %% Label it
 
 xlabel('Wavelength (nm)');
 ylabel('Radiance (watts/sr/nm/m^2)');
-grid on; 
+grid on;
 title(strTitle);
 
 end

@@ -1,12 +1,12 @@
 %% The Airy Disk of a diffraction limited system
-% The *Airy Disk* describes the blur arising from an ideal (diffraction-limited) 
-% uniformly illuminated, circular aperture. Its name arises from the astronomer, 
-% Lord Airy <https://en.wikipedia.org/wiki/Airy_disk (George Biddell Airy)>.  
-% This script exposes the code used to calculate and plot the Airy disk for diffraction 
+% The *Airy Disk* describes the blur arising from an ideal (diffraction-limited)
+% uniformly illuminated, circular aperture. Its name arises from the astronomer
+% Lord Airy <https://en.wikipedia.org/wiki/Airy_disk (George Biddell Airy)>.
+% This script exposes the code used to calculate and plot the Airy disk for diffraction
 % limited optics.
-% 
+%
 % See also: dlMTF, oiCreate; oiCompute, ieShape, ieDrawShape
-% 
+%
 % Copyright ImagEval Consultants, LLC, 2010.
 
 ieInit
@@ -14,7 +14,7 @@ ieInit
 %%
 scene = sceneCreate;
 oi    = oiCreate;
-oi    = oiCompute(scene,oi); 
+oi    = oiCompute(scene,oi);
 
 % Pull out the optics
 optics = oiGet(oi,'optics');
@@ -28,7 +28,7 @@ val = opticsGet(optics,'dlFSupport',thisWave,units,nSamp);
 
 %Over sample to make a smooth image. This move increases the spatial
 %frequency resolution (highest spatial frequency) by a factor of 4.
-fSupport = fSupport*4;  
+fSupport = fSupport*4;
 
 % Frequency units are cycles/micron. The spatial frequency support runs
 % from -Nyquist:Nyquist. With this support, the Nyquist frequency is
@@ -65,7 +65,7 @@ nCircleSamples = 200;
 x = sSupport(:,:,1); y = sSupport(:,:,2);
 vcNewGraphWin;
 mesh(x,y,psf);
-colormap(jet)
+colormap(jet(64))
 
 % Label the graph and draw the Airy disk
 ringZ = max(psf(:))*1e-3;
@@ -83,5 +83,5 @@ set(gcf,'userdata',udata);
 %% The same result obtains if you use the ISET function
 %%
 f = oiPlot(oi,'psf',[],500,'um');
-%% 
+%%
 %

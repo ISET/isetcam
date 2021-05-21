@@ -1,14 +1,14 @@
-function demosaicedImage = Demosaic(ip,sensor) 
+function demosaicedImage = Demosaic(ip,sensor)
 %Color demosaicking interface routine
 %
-%    demosaicedImage = Demosaic(ip,sensor) 
+%    demosaicedImage = Demosaic(ip,sensor)
 %
-% This routine calls functions for demosaicking a typical CFA sensor. 
+% This routine calls functions for demosaicking a typical CFA sensor.
 %
 % But, first we detect whether sensor is an array that needs no
 % demosaicking. In that case, we simply copy the data from each of the
 % sensors in the array and return that as demosaicedImage.
-% 
+%
 % If sensor is a single sensor with a mosaic, the sensor data were copied
 % into the vci 'input' slot prior to getting here, as part of the
 % ipCompute routine. The input data are stored in a planar image
@@ -21,10 +21,10 @@ function demosaicedImage = Demosaic(ip,sensor)
 %
 % If the data come in as (r,c,3) format (i.e., RGB), then plane2rgb() is
 % skipped.  This can happen if there is a routine inserted between
-% sensorCompute() and ipCompute().  When they are in that format,
+% sensorCompute() and ipCompute().  When they are in that format
 % however, we still expect that demosaicking is needed (i.e., many of the
 % values in the RGB format are zero.
-%    
+%
 % The returned demosaicedImage is a (r,c,w) image. For RGB data w is 3.
 %
 % The available demosaic methods will grow over time. For now they are
@@ -43,18 +43,18 @@ function demosaicedImage = Demosaic(ip,sensor)
 %   plane2rgb(), demosaicMultichannel(), t_ipDemosaic
 %
 
-% Examples: 
+% Examples:
 % Conventional call
 %{
- scene = sceneCreate; camera = cameraCreate; 
+ scene = sceneCreate; camera = cameraCreate;
  camera = cameraCompute(camera,scene);
  sensor = cameraGet(camera,'sensor'); ip = cameraGet(camera,'ip');
- d = Demosaic(ip,sensor); 
+ d = Demosaic(ip,sensor);
  ieNewGraphWin; imagescRGB(d)
 %}
 %{
- scene = sceneCreate; camera = cameraCreate; 
- sensor = sensorCreate('MT9V024',[],'rccc'); 
+ scene = sceneCreate; camera = cameraCreate;
+ sensor = sensorCreate('MT9V024',[],'rccc');
  camera = cameraSet(camera,'sensor',sensor);
  camera = cameraSet(camera,'ip demosaic method','analog rccc');
  camera = cameraCompute(camera,scene);
@@ -67,8 +67,8 @@ function demosaicedImage = Demosaic(ip,sensor)
  sensor = sensorCreate('monochrome'); ip = cameraGet(camera,'ip');
  oi = oiCompute(oi,scene); sensor = sensorCompute(sensor,oi);
  ip = ipSet(ip,'demosaic method','bilinear');
- d = Demosaic(ip,sensor); 
- ieNewGraphWin; imagesc(d); colormap(gray);
+ d = Demosaic(ip,sensor);
+ ieNewGraphWin; imagesc(d); colormap(gray(64));
 %}
 %{
 % For more than 3 (multichannel) data this works
@@ -82,7 +82,7 @@ function demosaicedImage = Demosaic(ip,sensor)
 if length(sensor) > 1
     % Sensor array.  Copy the data from each of the sensors in the array
     % into demosaicedImage. In this case there is no demosaicking, the
-    % multiple sensors each capture the full set of color samples. 
+    % multiple sensors each capture the full set of color samples.
     %
     % This is used for 'ideal' sensor calculations and certain types of
     % imagers such as prismatic sensors, Foveon style sensors, and who
@@ -104,11 +104,11 @@ end
 % ip  = ipSet(ip,'input',double(sensorGet(sensor,'volts')));
 img = ipGet(ip,'input');
 
-% If the data are in planar format, put them into RGB format.  Otherwise,
+% If the data are in planar format, put them into RGB format.  Otherwise
 % if they are already in RGB format (i.e. multiplanar) copy them and move
-% on. 
+% on.
 if ismatrix(img),  imgRGB = plane2rgb(img,sensor,0);
-else,              imgRGB = img; 
+else,              imgRGB = img;
 end
 
 % The planes are in the order of the filterNames. So, if the first filter
@@ -118,7 +118,7 @@ end
 
 % Translator for the demosaic method.  This should get used to clarify the
 % multichannel options below.
-m = ipGet(ip,'demosaicmethod');  
+m = ipGet(ip,'demosaicmethod');
 m = ieParamFormat(m);
 switch lower(m)
     case {'iebilinear','bilinear'}
@@ -150,11 +150,11 @@ end
 cLetters = sensorGet(sensor,'filter Color Letters');
 pattern  = sensorGet(sensor,'pattern');
 bPattern = cLetters(pattern);
-bPattern = bPattern'; 
+bPattern = bPattern';
 bPattern = bPattern(:)';
 
 method = ieParamFormat(method);
-switch lower(method) 
+switch lower(method)
     case {'bilinear','iebilinear'}
         if size(imgRGB,3) == 3 && isequal(size(pattern) ,[2 2])
             % ieBilinear is designed for Bayer 2x2 case.  Otherwise, just use
@@ -163,7 +163,7 @@ switch lower(method)
         else
             demosaicedImage = demosaicMultichannel(imgRGB,sensor,'interpolate');
         end
-
+        
     case 'adaptivelaplacian'
         clipToRange = 0;
         if (strcmp(bPattern,'grbg') || ...
@@ -173,7 +173,7 @@ switch lower(method)
         else
             hdl = ieSessionGet('vcimagehandles');
             str = 'Sensor color format must be rggb or bggr for Laplacian. Using ieBilinear.';
-            ieInWindowMessage(str,hdl)    
+            ieInWindowMessage(str,hdl)
             demosaicedImage = ieBilinear(imgRGB,sensorGet(sensor,'pattern'));
         end
         
@@ -181,14 +181,14 @@ switch lower(method)
         clipToRange = 0;
         demosaicedImage = Laplacian(imgRGB,bPattern,clipToRange);
         
-    % case 'lcc1'
+        % case 'lcc1'
         % Not properly implemented yet.
         % demosaicedImage = lcc1(imgRGB);
         
     case 'nearestneighbor'
         % Should work on CMY, too, no?
         demosaicedImage = ieNearestNeighbor(imgRGB,bPattern);
-                
+        
     case 'pocs'
         % Projection on convex sets
         % Function should be renamed to iePocs
@@ -210,11 +210,11 @@ switch lower(method)
         % means linearly interpolate with griddata, while the other ways
         % may do different demosaicking.
         demosaicedImage = demosaicMultichannel(imgRGB,sensor,'interpolate');
-
+        
     case 'usewideband'
         % Needs comments - MP
         demosaicedImage = demosaic_wideband(imgRGB,sensor);
-    
+        
     case 'analogrccc'
         % Needs testing
         demosaicedImage = demosaicRCCC(imgRGB);

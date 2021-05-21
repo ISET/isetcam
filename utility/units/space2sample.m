@@ -1,5 +1,5 @@
 function [row,col] = space2sample(rMicrons,cMicrons,pixelHeight,pixelWidth)
-% Convert spatial position (microns) into sample position 
+% Convert spatial position (microns) into sample position
 %
 %   [row,col] = space2sample(rMicrons,cMicrons,pixelHeight,pixelWidth)
 %
@@ -8,7 +8,7 @@ function [row,col] = space2sample(rMicrons,cMicrons,pixelHeight,pixelWidth)
 %Example:
 %  [row,col] = ...
 %          space2sample(rMicrons,cMicrons, ...
-%                       sceneGet(oi,'hres'),sceneGet(oi,'wres'))  
+%                       sceneGet(oi,'hres'),sceneGet(oi,'wres'))
 % [X,Y] = meshgrid(cMicrons,rMicrons);
 %
 % OBSOLETE
@@ -17,9 +17,9 @@ function [row,col] = space2sample(rMicrons,cMicrons,pixelHeight,pixelWidth)
 
 disp('obsolete');
 
-% tmp = (1 - 1/2 + rMicrons/pixelHeight); 
+% tmp = (1 - 1/2 + rMicrons/pixelHeight);
 % row = tmp + max(tmp(:));
-% tmp = (1 - 1/2 + cMicrons/pixelWidth);  
+% tmp = (1 - 1/2 + cMicrons/pixelWidth);
 % col = tmp + max(tmp(:));
 
 tmp = rMicrons/pixelHeight; % rescaling

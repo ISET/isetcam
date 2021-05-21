@@ -1,9 +1,9 @@
 %% s_opticsPSF2Zcoeffs.m
-%  
+%
 % PSF 2 Wernike Coefficients
 %
 % Search for the Wernike polynomial coefficients that produce a target PSF.
-% 
+%
 % Note this good Watson tutorial.  But it has no units, wavelength,
 % and such.
 %
@@ -53,7 +53,7 @@ x = fminsearch(f,x0,options);
 
 % Piston comes back as an arbitrary value because the error function
 % ignores it. We force it to zero here.
-x(1) = 0;  
+x(1) = 0;
 
 %% Compare the values
 

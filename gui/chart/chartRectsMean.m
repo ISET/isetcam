@@ -15,7 +15,7 @@ function roiV = chartRectsMean(sensor,rects,dataType)
 %    column.  So if there are 6 rects and 5 sensor bands, the returned
 %    matrix is 5 x 6.
 %
-% See also:  Based on macbethSelect and related routines. 
+% See also:  Based on macbethSelect and related routines.
 %
 % (c) Imageval Consulting, 2012
 

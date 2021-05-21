@@ -19,9 +19,9 @@ if (stimulusDurationSec < 0.7)
 elseif (stimulusDurationSec >= 0.7 && stimulusDurationSec < 100)
     limitingConeAngleMrad = 11;
 elseif (stimulusDurationSec >= 100 && stimulusDurationSec < 1e4)
-   limitingConeAngleMrad = 1.1 * (stimulusDurationSec^0.5);
+    limitingConeAngleMrad = 1.1 * (stimulusDurationSec^0.5);
 elseif (stimulusDurationSec >= 1e4 && stimulusDurationSec < 3e4)
-   limitingConeAngleMrad = 110;
+    limitingConeAngleMrad = 110;
 else
     error('Limiting cone angle not defined for durations greater than 3e4 sec');
 end

@@ -8,7 +8,7 @@ function di = rtDIInterp(optics,wavelength)
 %  wavelength value. The distortions are typically computed in Zemax at a
 %  few wavelengths and stored in the optics.rayTrace.geometry subfields.
 %  The distortion units are millimeters.
-%  
+%
 %  The geometry slot contains the nominal field height (mm), wavelength
 %  (nm), and the distortion function (mm). The distortion function is a
 %  matrix that is (fieldHeight x wavelength).

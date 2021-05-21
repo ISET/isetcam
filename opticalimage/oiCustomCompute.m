@@ -4,8 +4,8 @@ function [bool,customOI] = oiCustomCompute(oi);
 %     [bool,customOI] = oiCustomCompute(oi);
 %
 % If bool = 1, custom computation is selected. The name of the method can be
-% returned in customOI.  The existence of the method is verified. 
-% 
+% returned in customOI.  The existence of the method is verified.
+%
 % The routine first checks whether the OI stores custom compute
 % information.  If there are no data structures in the OI, then the routine
 % checks the GUI

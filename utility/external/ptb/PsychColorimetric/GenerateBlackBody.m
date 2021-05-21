@@ -4,7 +4,7 @@ function [spd] = GenerateBlackBody(T,wls_in)
 % Generate spectral power distributions for black body radiators.
 % Generated according to formula in W+S, pp. 11-12.
 % We compute output as radiant exitance in units of W m-2 nm-1.
-% 
+%
 % INPUT
 %   T - row vector of desired temperaturs in Kelvin.
 %   wls_in - column vector of wavelengths.
