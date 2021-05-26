@@ -22,8 +22,10 @@ function [noisyPhotons,theNoise] = scenePhotonNoise(scene,rectOrLocs)
 %
 % Copyright ImagEval Consultants, LLC, 2013.
 
-if ieNotDefined('roiLocs'), photons = sceneGet(scene,'photons');
-else                        photons = sceneGet(scene,'photons',rectOrLocs);
+if ieNotDefined('roiLocs')
+    photons = sceneGet(scene,'photons');
+else
+    photons = sceneGet(scene,'photons',rectOrLocs);
 end
 
 % The Poisson variance is equal to the mean. Randn is unit normal (N(0,1)).

@@ -1,4 +1,4 @@
- function val = iePoisson(lambda, nSamp, useSeed)
+function val = iePoisson(lambda, nSamp, useSeed)
 % Create a matrix of Poisson samples using rate parameters in lambda
 %
 %   val = iePoisson(lambda,nSamp,useSeed)
@@ -62,7 +62,7 @@ try
         % No seed.
         rng('shuffle'); % seeds the random number generator based on the current time.
     end
-
+    
     % Matlab toolbox version is present. Use it.
     if isscalar(lambda)
         % Returns a vector
@@ -71,9 +71,9 @@ try
         % Returns a matrix
         val = poissrnd(lambda);
     end
-
+    
 catch
-
+    
     % No toolbox.  Sigh.  Check if we have MEX function
     %{
 if (exist('iePoissrnd','file')==3)
@@ -89,11 +89,11 @@ if (exist('iePoissrnd','file')==3)
     return;
 end
     %}
-
+    
     % Use the local ISET methods
     % Simple implementation, this is slow for large lambda
     % Not recommended.
-
+    
     warning('Using slow poisson random variable generation.  Recommend getting stats toolbox.');
     if isscalar(lambda)
         % Scalar version of the routine
@@ -122,11 +122,11 @@ end
             val(ii) = kk - 1;
         end
     end
-
+    
     if ~useSeed
         rng(p);
     end
-
+    
 end
 
 end

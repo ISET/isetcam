@@ -81,9 +81,3 @@ fprintf('Data:    std dev %.2f\n',sigma);
 fprintf('-----\n');
 
 %% END
-
-
-
-
-
-
