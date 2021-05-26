@@ -1,4 +1,4 @@
-function j = wvfOSAIndexToZernikeMN(n,m)
+function j = wvfZernikeNMToOSAIndex(n,m)
 % j = wvfOSAIndexToZernikeMN(n,m)
 %
 % Convert from the Zernike 2 index standard indexing
@@ -13,7 +13,7 @@ function j = wvfOSAIndexToZernikeMN(n,m)
 %
 % See also wvfZernikeNMToOSAIndex, zernfun
 %
-% Validation code s postpended to wvfZernikeNMToOSAIndex
+% Validation code is postpended to wvfZernikeNMToOSAIndex
 %
 % 7/29/12 dhb  Wrote it.
 

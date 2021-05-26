@@ -142,7 +142,6 @@ if nargout == 0
             end
             plotTextString(txt,'ur');
             
-            sensor = ieGetObject('sensor');
             filterType = sensorGet(sensor,'filter names cellarray');
             set(gca,'xtick',1:nSensors,'xticklabel',filterType);
             xlabel('Sensor color type');
