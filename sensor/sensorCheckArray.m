@@ -1,25 +1,44 @@
-function sensorCheckArray(sensor,n)
+function img = sensorCheckArray(sensor,n)
 % Visual check of the color filter array pattern
 %
+% Synopsis
 %     sensorCheckArray(sensor,n)
+%
+% Input:
+%   sensor - ISETCam image sensor
+%   n      - size scale   (default 25)
+%
+% Output
+%   img
 %
 % The routine produces an image that shows the color filter array pattern.
 %
-% The image is n x n, where n = 25 by default
+% See also
+%   sensorData2Image
 %
+
 % Example:
-%   sensorCheckArray(sensorCreate,10);
+%   img = sensorCheckArray(sensorCreate,128);
 %
-% Copyright ImagEval Consultants, LLC, 2003.
 
-if ieNotDefined('n'), n = 25; end
+if ieNotDefined('n'), n = 64; end
 
-% The config field contains (x,y,color) information for the entire array
-% If the ISA array is big, then just plot a portion of it
-cfa = sensorDetermineCFA(sensor);
+% Find the pattern
+pattern = sensorGet(sensor,'pattern');
 
-if size(cfa,1) > n,  cfa = cfa(1:n,1:n); end
+% Create an image with max voltages in each pixel
+mxVolts = sensorGet(sensor,'voltage swing');
+ss = sensorSet(sensor,'volts',mxVolts*ones(size(pattern)));
+cfaSmall = sensorData2Image(ss);
 
-sensorImageColorArray(cfa);
+% Scale the image up in size for visibility
+img = imageIncreaseImageRGBSize(cfaSmall,n);
 
-return;
+% Show it.  Though we should be able to suppress this some day.
+ieNewGraphWin;
+imagescRGB(img);
+
+% This used to be the call, but that is now deprecated.
+% sensorImageColorArray(cfa);
+
+end

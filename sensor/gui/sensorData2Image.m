@@ -7,10 +7,11 @@ function img = sensorData2Image(sensor,dataType,gam,scaleMax)
 % This function renders an image of the sensor CFA.
 %
 % Inputs
-%   sensor
-%   dataType
-%   gam
-%   scaleMax
+%   sensor   - ISETCam sensor
+%   dataType - Default is volts
+%   gam      - Gamma for rendering
+%   scaleMax - Scaling to max display intensity (false, not sure this is
+%              handled correctly in the code!) 
 %
 % Optional key/val
 %   N/A
@@ -133,8 +134,11 @@ end
 
 if nSensors > 1    % A color CFA
     
+    % Converts sensor mosaic into an RGB format img
     img = plane2rgb(img,sensor,0);
     
+    % Color method:
+    %
     % In some cases we find a transformation, T, that maps the existing
     % sensors into RGB colors.  Then we apply that T to the image data.
     % This algorithm should work for any choice of color filter
