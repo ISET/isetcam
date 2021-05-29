@@ -45,8 +45,19 @@ sScale = 32;
 %% Indexed color image of the sensor detectors.
 
 pattern = sensorGet(sensor,'pattern');
+nExposures = sensorGet(sensor,'n exposures');
+
 mxVolts = sensorGet(sensor,'voltage swing');
-ss = sensorSet(sensor,'volts',mxVolts*ones(size(pattern)));
+
+% If we are in the single exposure case
+if nExposures == 1
+    ss = sensorSet(sensor,'volts',mxVolts*ones(size(pattern)));
+else
+    % If we are in the multiple exposure case
+    [r,c] = size(pattern);
+    ss = sensorSet(sensor,'volts',mxVolts*ones(r,c,nExposures));
+end
+
 
 % The color rendering in sensorData2Image depends on whether we use certain
 % filter names (rgb, rgbw, wrgb) and if not then we do our best to
