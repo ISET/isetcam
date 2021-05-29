@@ -49,6 +49,7 @@ nExposures = sensorGet(sensor,'n exposures');
 
 mxVolts = sensorGet(sensor,'voltage swing');
 
+%% Create an image of the sensor CFA
 % If we are in the single exposure case
 if nExposures == 1
     ss = sensorSet(sensor,'volts',mxVolts*ones(size(pattern)));
@@ -58,10 +59,12 @@ else
     ss = sensorSet(sensor,'volts',mxVolts*ones(r,c,nExposures));
 end
 
-
 % The color rendering in sensorData2Image depends on whether we use certain
 % filter names (rgb, rgbw, wrgb) and if not then we do our best to
 % calculate the color rendering.
+%
+% If the sensor is monochrome, the color should be an estimate of the
+% spectral QE
 cfaSmall = sensorData2Image(ss);
 
 % Size scaling should be a parameter.

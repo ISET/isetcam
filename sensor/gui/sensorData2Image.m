@@ -201,17 +201,34 @@ if nSensors > 1    % A color CFA
     img = ieClip(img,0,1).^gam;
     
 elseif nSensors == 1
-    % Gray scale images
+    % img = sensorDisplayTransform(sensor);
+    % img = double(img);
+    if isscalar(img)
+        % In the CFA case, we have a single number, and we change that into
+        % an RGB color
+        img = sensorDisplayTransform(sensor);
+        img = double(img);
+        img = reshape(img,1,1,3);
+    end
+    % The general case of an image
     img = (img/mxImage).^gam;
-    img = ieClip(img,0,[]);
 end
 
 %% Convert to an sRGB format
 
 % At this point, the image is linear with respect to the voltage level in
-% the pixels.  In all the other windows, we use xyz2srgb() to convert from
-% the linear representation to an sRGB representation.  Here, do the same
-% kind of transformation, but ...
-img = lrgb2srgb(img);
+% the pixels.
+img = ieClip(img,0,1);
+
+% If RGB, convert to display.  
+if size(img,3) == 3
+    % If just a monochrome array, leave it alone.
+    
+    % In other windows, we use xyz2srgb() to convert from the linear
+    % representation to an sRGB representation.  Here, do the same kind of
+    % transformation, but assuming we are lrgb, not xyz.
+    img = lrgb2srgb(img);
+end
+
 
 end
