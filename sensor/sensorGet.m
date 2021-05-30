@@ -519,16 +519,29 @@ switch oType
                     end
                 end
             case {'chromaticity'}
-                % rg = sensorGet(sensor,'chromaticity',rect)
-                % Estimate the rg sensor chromaticities
+                % rg = sensorGet(sensor,'chromaticity',rect, mode)
+                % Estimate the sensor chromaticities
                 %
-                % ONLY WORKS WITH Bayer patterns
+                % Options are: varargin{1}: rect. varargin{2}: mode: 2d (matrix) 
+                % or vectorized (vec) chromaticities.
                 if isempty(varargin), rect = [];
                 else, rect = varargin{1};
                 end
                 
+                % By default, mode is vec
+                mode = 'vec';
+                if numel(varargin) == 2
+                    if ismember(varargin{2}, {'vec', 'matrix'})
+                        mode = varargin{2};
+                    else
+                        warning('Mode should be either %s or %s, using matrix', 'vec', 'matrix')
+                    end
+                end
+                
+                
                 % Make sure rect starts at odd numbers and height and width
-                % are odd numbers to align with a Bayer pattern.
+                % are odd numbers to align with a Bayer pattern 
+                % (or at least a even number by even number pattern).
                 lst = ~isodd(rect); rect(lst) = rect(lst)-1;
                 mosaic   = sensorGet(sensor,'volts');
                 mosaicDV = sensorGet(sensor, 'dv');
@@ -541,8 +554,15 @@ switch oType
                     end
                 end
                 
-                val = zeros(size(mosaic, 1) * size(mosaic, 2), 2, size(mosaic, 3));
+                nChannel = numel(unique(sensorGet(sensor, 'pattern')));
                 exp = sensorGet(sensor, 'exp time');
+                switch mode
+                    case 'vec'
+                        res = zeros(size(mosaic, 1) * size(mosaic, 2), nChannel - 1, size(mosaic, 3));
+                    case 'matrix'
+                        res = zeros(size(mosaic, 1), size(mosaic, 2), nChannel - 1, size(mosaic, 3));
+                end
+                                        
                 for ii=1:size(mosaic, 3)
                     % Use ipCompute to interpolate the mosaic and produce a
                     % chromaticity value at every point.
@@ -550,11 +570,24 @@ switch oType
                     sensorC = sensorSet(sensorC, 'exp time', exp(ii));
                     sensorC = sensorSet(sensorC, 'dv', mosaicDV(:,:,ii));
                     ip = ipCreate; ip = ipCompute(ip,sensorC);
-                    rgb = ipGet(ip,'sensor space');   % Just demosaic'd
-                    s = sum(rgb,3); r = rgb(:,:,1)./s; g = rgb(:,:,2)./s;
-                    
-                    val(:,1,ii) = r(:); val(:,2,ii) = g(:);
+                    imgDemos = ipGet(ip,'sensor space');   % Just demosaic'd
+                    s = sum(imgDemos,3); 
+                    for jj=1:nChannel - 1
+                        thisChannelChrom = imgDemos(:,:,jj)./s;
+                        switch mode
+                            case 'vec'
+                                res(:,jj,ii) = thisChannelChrom(:);
+                            case 'matrix'
+                                res(:,:,jj,ii) = thisChannelChrom;
+                        end
+                            
+                    end
                 end
+                
+                val = squeeze(res);
+            case {'roichromaticitymean'}
+                val = sensorGet(sensor, 'chromaticity', varargin{1});
+                val = mean(val(any(~isnan(val), 1),:), 1);
             case {'roielectronsmean'}
                 % sensorGet(sensor,'roi electrons mean')
                 %   Mean value for each of the sensor types
