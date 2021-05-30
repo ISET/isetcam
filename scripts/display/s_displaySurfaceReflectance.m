@@ -1,9 +1,9 @@
 %% s_displaySurfaceReflectance
 %
-% Create a meaningful surface reflectance display
-%
-%  Such that an sRGB image will have D65 light and surface reflectance
-%  basis functions.
+%  Create a display so that an sRGB image presented on this display will
+%  be interpreted as a D65 light with surface reflectance basis functions
+%  matching the 3 basis functions of natural surfaces stored in
+%  reflectanceBasis.mat.
 %
 
 %% Load up the reflectance basis
