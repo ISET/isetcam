@@ -45,7 +45,7 @@ sensor2 = sensorSet(sensor,'filter names',n);
 sensorPlot(sensor2,'cfa block');
 
 %%
-sensorPlot(sensor,'cfa full');
+sensorPlot(sensor,'cfa block');
 
 %%
 sensorPlot(sensor,'etendue');
@@ -66,7 +66,7 @@ sensorPlot(sensor,'electrons hline',[20 20],'capture',1);
 
 %% These should still work
 
-[uData, g] = sensorPlot(sensor,'cfa full');
+[uData, g] = sensorPlot(sensor,'cfa');
 [uData,g] = sensorPlot(sensor,'sensor snr');
 
 %%
