@@ -3,11 +3,12 @@
 %  Illustrates how to create a sensor for dual pixel autofocus experiments
 %  (DPAF).
 %
-%  In other scripts we create thi sensor and put a single microlens on top
-%  of the two pixels.
+%  In s_sensorDPAFMicrolens we create this sensor and put a microlens on
+%  top of the two pixels to create the optics plus sensor combination
+%  needed for dual pixel autofocus.
 %
 % See also
-%  s_sensorDPAFMicrolens
+%   s_sensorDPAFMicrolens
 
 
 %% Initialize a scene and oi
@@ -42,8 +43,6 @@ sensor = sensorSet(sensor,'pattern',[2 2 1 1; 3 3 2 2]);
 % the pixels are rectangular.
 sensor = sensorCompute(sensor,oi);
 sensorWindow(sensor);
-
-%%
 
 %% END
 
