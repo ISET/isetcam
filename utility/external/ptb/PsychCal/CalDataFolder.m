@@ -43,7 +43,7 @@ end
 if (nargin < 2 || isempty(calFileName))
     calFileName = [];
 end
-if (nargin < 4 || iesmpty(noWarning))
+if (nargin < 4 || isempty(noWarning))
     noWarning = false;
 end
 
@@ -86,7 +86,7 @@ if (nargin < 3 || isempty(calDir))
             end
         end
         if (~noWarning)
-            fprintf(['Warning: found more than one ''' duplicateMsgName ''' folder in the Matlab path\n.']);
+            fprintf(['Warning: found more than one ''' duplicateMsgName ''' folder in the Matlab path\nReturning the first one\n.']);
         end
         directory = deblank(directory(1,:));
     end
