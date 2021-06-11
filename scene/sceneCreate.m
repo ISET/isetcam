@@ -124,8 +124,7 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %         sceneCreate('bar',imageSize,width);
 %
 %  Other patterns have different parameters:
-%
-%         sceneCreate('slanted edge',imageSize,edgeSlope);
+%         sceneCreate('slanted edge',imageSize,edgeSlope,fov,wave,darklevel);
 %         sceneCreate('checkerboard',pixelsPerCheck,numberOfChecks)
 %         sceneCreate('grid lines',imageSize,pixelsBetweenLines);
 %         sceneCreate('point array',imageSize,pixelsBetweenPoints);
@@ -406,7 +405,7 @@ switch sceneName
         % We should include an option for wavelength so that we extend into
         % the IR
         if isempty(varargin),  sz = 32;
-        else                   sz = varargin{1};
+        else,                  sz = varargin{1};
         end
         scene = sceneUniform(scene,'D65',sz);
     case {'uniformbb'}
@@ -534,13 +533,16 @@ switch sceneName
     case {'slantedbar','iso12233','slantededge'}
         % scene = sceneCreate('slantedEdge',sz, slope, fieldOfView, wave);
         % scene = sceneCreate('slantedEdge',128,1.33);  % size, slope
-        % scene = sceneCreate('slantedEdge',128,1.33,[], (380:4:1064));  % size, slope, wave
-        barSlope = []; fov = []; wave = []; imSize = [];
+        % scene = sceneCreate('slantedEdge',128,1.33,[], (380:4:1064));       % size, slope, wave
+        % scene = sceneCreate('slantedEdge',128,1.33,[], (380:4:1064), 0.3);  % size, slope, wave, darklevel
+        
+        barSlope = []; fov = []; wave = []; imSize = []; darklevel = 0;
         if length(varargin) >= 1, imSize = varargin{1}; end
         if length(varargin) >= 2, barSlope = varargin{2};  end
         if length(varargin) >= 3, fov = varargin{3}; end
         if length(varargin) >= 4, wave = varargin{4}; end
-        scene = sceneSlantedBar(scene,imSize,barSlope,fov,wave);
+        if length(varargin) >= 5, darklevel = varargin{5}; end
+        scene = sceneSlantedBar(scene,imSize,barSlope,fov,wave,darklevel);
         
     case {'zoneplate'}
         scene = sceneZonePlate(scene,384);
@@ -610,7 +612,7 @@ if checkfields(scene,'data','photons') && ~isempty(scene.data.photons)
     scene = sceneAdjustLuminance(scene,100);
 end
 
-return
+end
 
 %---------------------------------------------------
 function scene = sceneNoise(scene,sz,contrast)
@@ -649,8 +651,7 @@ scene = sceneSet(scene,'photons',photons);
 % sceneInitSpatial() when this returns
 scene = sceneSet(scene,'fov',1);
 
-return
-
+end
 
 %----------------------------------
 function scene = sceneDefault(scene,illuminantType,patchSize,wave,surfaceFile,blackBorder)
@@ -706,7 +707,7 @@ macbethChartObject = macbethChartCreate(patchSize,(1:24),spectrum,surfaceFile,bl
 
 scene = sceneCreateMacbeth(macbethChartObject,lightSource,scene);
 
-return
+end
 
 %--------------------------------------------------
 function scene = sceneMultispectral(scene)
@@ -715,8 +716,7 @@ function scene = sceneMultispectral(scene)
 scene = sceneSet(scene,'name','multispectral');
 scene = initDefaultSpectrum(scene,'multispectral');
 
-return;
-
+end
 %--------------------------------------------------
 function scene = sceneRGB(scene)
 %% Prepare a scene for RGB data.
@@ -733,7 +733,7 @@ wave = sceneGet(scene,'wave');
 il = illuminantCreate('d65',wave,100);
 scene = sceneSet(scene,'illuminant',il);
 
-return;
+end
 
 %--------------------------------------------------
 function scene = sceneMackay(scene,radFreq,sz)
@@ -782,7 +782,7 @@ wave = sceneGet(scene,'wave');
 il = illuminantCreate('equal photons',wave,100);
 scene = sceneSet(scene,'illuminant',il);
 
-return;
+end
 
 %--------------------------------------------------
 function scene = sceneSweep(scene,sz,maxFreq)
@@ -809,8 +809,7 @@ img       = img*diag(illP);
 img       = XW2RGBFormat(img,r,c);
 scene     = sceneSet(scene,'photons',img);
 
-return;
-
+end
 %--------------------------------------------------
 function [scene,p] = sceneHarmonic(scene,parms, wave)
 %% Create a scene of a (windowed) harmonic function.
@@ -868,8 +867,7 @@ img = img*diag(illP);
 img = XW2RGBFormat(img,r,c);
 scene = sceneSet(scene,'photons',img);
 
-return;
-
+end
 %--------------------------------------------------
 function scene = sceneRamp(scene,sz,dynamicRange)
 %% Intensity ramp (see L-star chart for L* steps)
@@ -897,8 +895,7 @@ img = img*diag(illP);
 img = XW2RGBFormat(img,r,c);
 scene = sceneSet(scene,'photons',img);
 
-return;
-
+end
 %--------------------------------------------------
 function scene = sceneExpRamp(scene,sz,dynamicRange)
 % Exponentially increasing intensities with horizontal position
@@ -930,7 +927,7 @@ img = img*diag(illP);
 img = XW2RGBFormat(img,r,c);
 scene = sceneSet(scene,'photons',img);
 
-return;
+end
 
 %--------------------------------------------------
 function scene = sceneUniform(scene,spectralType,sz,varargin)
@@ -980,8 +977,7 @@ for ii=1:nWave, d(:,:,ii) = d(:,:,ii)*illP(ii); end
 
 scene = sceneSet(scene,'photons',d);
 
-return;
-
+end
 %--------------------------------------------------
 function scene = sceneLine(scene,spectralType,sz,offset)
 %% Create a single line scene.
@@ -1030,9 +1026,7 @@ for ii=1:nWave, photons(:,:,ii) = photons(:,:,ii)*p(ii); end
 
 scene = sceneSet(scene,'photons',photons);
 
-
-return;
-
+end
 %--------------------------------------------------
 function scene = sceneBar(scene,sz,width)
 %% Create a single bar scene.
@@ -1065,7 +1059,7 @@ for ii=1:nWave, photons(:,:,ii) = photons(:,:,ii)*p(ii); end
 % Attach the photons to the scene
 scene = sceneSet(scene,'photons',photons);
 
-return
+end
 
 %------------------------
 function scene = sceneVernier(scene,sz,width,offset,lineReflectance,backReflectance)
@@ -1124,8 +1118,7 @@ end
 
 scene = sceneSet(scene,'photons',photons);
 
-return
-
+end
 %------------------------
 function scene = sceneRadialLines(scene,imSize,spectralType,nLines)
 %% sceneCreate('star pattern')
@@ -1178,7 +1171,7 @@ for ii=1:nLines
             kk = round(jj*slope);
             img(round(kk + (imSize/2)) + 1, round(jj + (imSize/2)) + 1) = 1;
         end
-    else img(:, (imSize/2) + 1) = 1;
+    else, img(:, (imSize/2) + 1) = 1;
     end
 end
 
@@ -1216,7 +1209,7 @@ for ii=1:nWave, photons(:,:,ii) = img(:,:)*p(ii); end
 
 scene = sceneSet(scene,'photons',photons);
 
-return;
+end
 
 %-----------------------
 function scene = sceneFOTarget(scene,parms)
@@ -1248,7 +1241,7 @@ img = img*diag(illP);
 img = XW2RGBFormat(img,r,c);
 scene = sceneSet(scene,'photons',img);
 
-return;
+end
 
 %-----------------------
 function scene = sceneMOTarget(scene,parms)
@@ -1277,7 +1270,7 @@ wave = sceneGet(scene,'wave');
 illPhotons = ones(size(wave))*max(scene.data.photons(:));
 scene = sceneSet(scene,'illuminantPhotons',illPhotons);
 
-return;
+end
 
 %-------------------
 function scene = sceneCheckerboard(scene,checkPeriod,nCheckPairs,spectralType)
@@ -1317,10 +1310,9 @@ illP = illuminantGet(il,'photons');
 for ii=1:nWave, img(:,:,ii) = d*illP(ii); end
 scene = sceneSet(scene,'photons',img);
 
-return;
-
+end
 %---------------------------------------------------------------
-function scene = sceneSlantedBar(scene,imSize,barSlope,fieldOfView,wave)
+function scene = sceneSlantedBar(scene,imSize,barSlope,fieldOfView,wave,darklevel)
 %%
 %  Slanted bar, 2 deg field of view
 %  Slope 2.6 (upper left to lower right)
@@ -1332,6 +1324,7 @@ if ieNotDefined('imSize'),      imSize = 384; end
 if ieNotDefined('barSlope'),    barSlope = 2.6; end
 if ieNotDefined('fieldOfView'), fieldOfView = 2; end
 if ieNotDefined('wave'),        wave = 400:10:700; end
+if ieNotDefined('darklevel'),   darklevel = 0; end
 scene = sceneSet(scene,'name','slantedBar');
 
 scene = sceneSet(scene,'wave',wave);
@@ -1339,16 +1332,12 @@ scene = sceneSet(scene,'wave',wave);
 wave = sceneGet(scene,'wave');
 nWave  = sceneGet(scene,'nwave');
 
+img = imageSlantedEdge(imSize, barSlope, darklevel);
+%{
 % Make the image
 imSize = round(imSize/2);
 [X,Y] = meshgrid(-imSize:imSize,-imSize:imSize);
-if getpref('ISET','useSingle',true)
-    X = single(X);
-    Y = single(Y);
-    img = single(zeros(size(X)));
-else
-    img = zeros(size(X));
-end
+img = zeros(size(X));
 %  y = barSlope*x defines the line.  We find all the Y values that are
 %  above the line
 list = (Y > barSlope*X );
@@ -1357,6 +1346,7 @@ list = (Y > barSlope*X );
 % the equal energy illuminant; that is, the SPD is all due to the
 % illuminant
 img( list ) = 1;
+%}
 
 % Prevent dynamic range problem with ieCompressData
 img = ieClip(img,1e-6,1);
@@ -1374,7 +1364,7 @@ scene = sceneSet(scene,'photons',photons);
 % Set the field of view
 scene = sceneSet(scene,'horizontalfieldofview',fieldOfView);
 
-return;
+end
 
 %-----------------------
 function scene = sceneZonePlate(scene,imSize,fieldOfView)
@@ -1395,7 +1385,7 @@ img = ieClip(img,1e-4,1);
 scene = sceneSet(scene,'photons',repmat(img,[1,1,nWave]));
 scene = sceneSet(scene,'horizontalfieldofview',fieldOfView);
 
-return
+end
 
 %-----------------------
 function scene = sceneLstarSteps(scene,bSize,nBars,deltaE)
@@ -1434,11 +1424,11 @@ end
 % Adjust the size of the image
 if length(bSize) == 1,     barWidth = bSize; barHeight = 128;
 elseif length(bSize) == 2, barHeight = bSize(1); barWidth = bSize(2);
-else                       error('Bad bSize %f\n',bSize);
+else,                      error('Bad bSize %f\n',bSize);
 end
 photons = imageIncreaseImageRGBSize(photons,[barHeight,barWidth]);
 
 % On return, the luminance level is scaled to a mean of 100 cd/m2.
 scene = sceneSet(scene,'photons',photons);
 
-return
+end
