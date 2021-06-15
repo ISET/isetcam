@@ -3,11 +3,11 @@
 %  Illustrates how to create a sensor for dual pixel autofocus experiments
 %  (DPAF).
 %
-%  In other scripts we create thi sensor and put a single microlens on top
-%  of the two pixels.
+%  In other scripts within ISET3d we create the sensor and put a single
+%  microlens on top of the two pixels.
 %
 % See also
-%  s_sensorDPAFMicrolens
+%  s_sensorDPAFMicrolens (ISET3d)
 
 
 %% Initialize a scene and oi
