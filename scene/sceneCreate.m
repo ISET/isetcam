@@ -98,7 +98,7 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %      {'slanted edge'} - Used for ISO spatial resolution, equal photon spectrum
 %      {'moire orient'} - Circular Moire pattern
 %      {'zone plate'}   - Circular zone plot, equal photon spectrum
-%      {'star pattern'} - Radial lines used to test printers and displays
+%      {'star pattern'} - Thin radial lines used to test printers and displays
 %
 %  Additional parameters are available for several of the patterns.  For
 %  example, the harmonic call can set the frequency, contrast, phase,
@@ -131,6 +131,7 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %         sceneCreate('moire orient',imageSize,edgeSlope);
 %         sceneCreate('vernier',imageSize,lineWidth,pixelOffset);
 %         sceneCreate('star pattern',imageSize,spectralType,nLines);
+%         sceneCreate('rings rays',radialFreq,imageSize);
 %         sceneCreate('sweep frequency',imageSize,maxFrequency);
 %
 % NOISE ANALYSIS TEST PATTERNS
@@ -492,12 +493,13 @@ switch sceneName
         scene = scenePointArray(scene,sz,spacing,spectralType);
         
     case {'gridlines','distortiongrid'}
-        % sceneCreate('gridlines',sz,spacing,spectralType);
-        sz = 128; spacing = 16; spectralType = 'ep';
-        if length(varargin) >= 1, sz           = varargin{1}; end
-        if length(varargin) >= 2, spacing      = varargin{2}; end
-        if length(varargin) >= 3, spectralType = varargin{3}; end
-        scene = sceneGridLines(scene,sz,spacing,spectralType);
+        % sceneCreate('gridlines',imageSize,spacing,spectralType);
+        sz = 128; spacing = 16; spectralType = 'ep'; lineThickness = 1;
+        if length(varargin) >= 1, sz            = varargin{1}; end
+        if length(varargin) >= 2, spacing       = varargin{2}; end
+        if length(varargin) >= 3, spectralType  = varargin{3}; end
+        if length(varargin) >= 4, lineThickness = varargin{4}; end
+        scene = sceneGridLines(scene,sz,spacing,spectralType,lineThickness);
         
     case {'checkerboard'}
         period = 16; spacing = 8; spectralType = 'ep';
