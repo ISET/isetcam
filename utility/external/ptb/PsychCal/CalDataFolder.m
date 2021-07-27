@@ -1,5 +1,5 @@
-function directory=CalDataFolder(forceDemo,calFileName,calDir)
-% directory=CalDataFolder([forceDemo],[calFileName],[calDir])
+function directory=CalDataFolder(forceDemo,calFileName,calDir,noWarning)
+% directory=CalDataFolder([forceDemo],[calFileName],[calDir],[noWarning])
 %
 % Get the path to the CalData folder.
 %
@@ -43,6 +43,9 @@ end
 if (nargin < 2 || isempty(calFileName))
     calFileName = [];
 end
+if (nargin < 4 || isempty(noWarning))
+    noWarning = false;
+end
 
 % Postpend .mat if necessary
 if (~isempty(calFileName) && ~strcmp(calFileName(end-3:end),'.mat'))
@@ -78,9 +81,13 @@ if (nargin < 3 || isempty(calDir))
     % This also should never happen.
     if size(directory,1)>1
         for i=1:size(directory,1)
-            disp(['DUPLICATE: ''' deblank(directory(i,:)) '''']);
+            if (~noWarning)
+                disp(['DUPLICATE: ''' deblank(directory(i,:)) '''']);
+            end
         end
-        fprintf(['Warning: found more than one ''' duplicateMsgName ''' folder in the Matlab path.']);
+        if (~noWarning)
+            fprintf(['Warning: found more than one ''' duplicateMsgName ''' folder in the Matlab path\nReturning the first one\n.']);
+        end
         directory = deblank(directory(1,:));
     end
 else

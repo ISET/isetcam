@@ -1,5 +1,5 @@
-function [cal, cals, fullFilename] = LoadCalFile(filespec, whichCal, dir)
-% [cal, cals, fullFilename] = LoadCalFile([filespec], [whichCal], [dir])
+function [cal, cals, fullFilename] = LoadCalFile(filespec, whichCal, dir, noWarning)
+% [cal, cals, fullFilename] = LoadCalFile([filespec], [whichCal], [dir], [noWarning])
 %
 % Load calibration data from saved file in the CalData folder.
 % Will search one level deep in the CalData folder if the
@@ -68,20 +68,25 @@ else
     filename = [sprintf('screen%d.mat', filespec)];
 end
 
+% Warning?
+if (nargin < 4 || isempty(noWarning))
+    noWarning = false;
+end
+
 % Set the directory if first character of passed filename is not
 % the filesep character.  In the latter case, we assume that the full
 % path to the desired calibration file was passed.
 if nargin < 3 || isempty(dir)
-    useDir = CalDataFolder(0,filename);
+    useDir = CalDataFolder(0,filename,[],noWarning);
 else
-    useDir = CalDataFolder(0,filename,dir);
+    useDir = CalDataFolder(0,filename,dir,noWarning);
 end
 fullFilename = fullfile(useDir,filename);
 
 % If the file doesn't exist in the usual location, take a look in the
 % secondary location.
 if (~exist(fullFilename, 'file') && (nargin < 3 || isempty(dir)))
-    useDir = CalDataFolder(1,filename);
+    useDir = CalDataFolder(1,filename,[],noWarning);
     fullFilename = [useDir filename];
 end
 
