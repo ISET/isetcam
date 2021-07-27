@@ -1,8 +1,8 @@
-function sensor = sensorCreate(sensorName,pixel,varargin)
+function sensor = sensorCreate(sensorType,pixel,varargin)
 %Create an image sensor array structure
 %
 % Synopsis
-%   sensor = sensorCreate(sensorName,[pixel],varargin)
+%   sensor = sensorCreate(sensorType,[pixel],varargin)
 %
 % Description
 %  The sensor array uses a pixel definition that can be specified in the
@@ -31,6 +31,7 @@ function sensor = sensorCreate(sensorName,pixel,varargin)
 %      {'monochrome'}       - single monochrome sensor
 %      {'monochrome array'} - cell array of monochrome sensors
 %      {'lightfield'}       - RGB to match the resolution of a lightfield oi
+%      {'dualpixel'}        - RGB dual pixel for autofocus (Bayer)
 %
 % Multiple channel sensors can be created
 %      {'grbc'}   - green, red, blue, cyan
@@ -103,7 +104,7 @@ function sensor = sensorCreate(sensorName,pixel,varargin)
 %}
 
 %%
-if ieNotDefined('sensorName'), sensorName = 'default'; end
+if ieNotDefined('sensorType'), sensorType = 'default'; end
 
 sensor.name = [];
 sensor.type = 'sensor';
@@ -113,8 +114,11 @@ if ieNotDefined('pixel')
     pixel  = pixelCreate('default');
     sensor = sensorSet(sensor,'pixel',pixel);
     sensor = sensorSet(sensor,'size',sensorFormats('qqcif'));
-else
+elseif isfield(pixel,'type') && isequal(pixel.type,'pixel')
     sensor = sensorSet(sensor,'pixel',pixel);
+else
+    disp(pixel)
+    error('Bad pixel definition');
 end
 
 % The sensor should always inherit the spectrum of the pixel.  Probably
@@ -137,8 +141,8 @@ sensor = sensorSet(sensor,'gainFPNimage',[]);
 sensor = sensorSet(sensor,'gainFPNimage',[]);
 sensor = sensorSet(sensor,'quantization','analog');
 
-sensorName = ieParamFormat(sensorName);
-switch sensorName
+sensorType = ieParamFormat(sensorType);
+switch sensorType
     case {'default','color','bayer','rgb','bayer(grbg)','bayer-grbg','bayergrbg'}
         filterOrder = [2,1;3,2];
         filterFile = 'RGB';
@@ -194,6 +198,23 @@ switch sensorName
         end
         sensor = sensorLightField(oi);
         sensor = sensorSet(sensor,'name',oiGet(oi,'name'));
+    case {'dualpixel'}
+        % sensor = sensorCreate('dual pixel',[], rowcol);
+        
+        % Default original sensor
+        sensor = sensorCreate;
+        
+        % We make the height bigger than the width
+        sz = sensorGet(sensor,'pixel size');
+        sensor = sensorSet(sensor,'pixel width',sz(2)/2);
+        
+        % Double the number of columns
+        rowcol = sensorGet(sensor,'size');
+        sensor = sensorSet(sensor,'size',[rowcol(1)*2, rowcol(2)*4]);
+
+        % Set the CFA pattern accounting for the new dual pixel
+        % architecture 
+        sensor = sensorSet(sensor,'pattern',[2 2 1 1; 3 3 2 2]);
         
     case {'mt9v024'}
         % ON 6um sensor.  It can be mono, rgb, or rccc
@@ -331,7 +352,7 @@ sensor = sensorSet(sensor,'integrationTime',0);
 sensor = sensorSet(sensor,'autoexposure',1);
 sensor = sensorSet(sensor,'CDS',0);
 
-if ~isequal(sensorName, 'imx363')
+if ~isequal(sensorType, 'imx363')
     % Put in a default infrared filter.  All ones.
     sensor = sensorSet(sensor,'irfilter',ones(sensorGet(sensor,'nwave'),1));
 end

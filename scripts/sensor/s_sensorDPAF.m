@@ -16,11 +16,14 @@ ieInit;
 s_initSO;
 
 %% Make a dual pixel sensor that has rectangular pixels
-%
-% It has twice as many columns as rows.
+
+% The sensor has twice as many columns as rows.
 % Each pixel is rectangular with 2.8 um height and 1.4 micron width.
 
-% Turn this into a function like sensorCreate('dual pixel');
+% This is what happens when you call
+%
+%  sensor = sensorCreate('dual pixel');
+%
 
 sensor = sensorCreate;
 sz = sensorGet(sensor,'pixel size');
@@ -42,8 +45,6 @@ sensor = sensorSet(sensor,'pattern',[2 2 1 1; 3 3 2 2]);
 % the pixels are rectangular.
 sensor = sensorCompute(sensor,oi);
 sensorWindow(sensor);
-
-%%
 
 %% END
 
