@@ -587,7 +587,7 @@ switch oType
                 val = squeeze(res);
             case {'roichromaticitymean'}
                 val = sensorGet(sensor, 'chromaticity', varargin{1});
-                val = mean(val(any(~isnan(val), 1),:), 1);
+                val = nanmean(val, 1);
             case {'roielectronsmean'}
                 % sensorGet(sensor,'roi electrons mean')
                 %   Mean value for each of the sensor types
