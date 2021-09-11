@@ -84,6 +84,7 @@ classdef cpCModule
                 options.focusMode = 'Auto';
                 options.focusParam = '';
                 options.reRender {islogical} = true;
+                options.stackFrames = 1;
             end
             
             % need to know our sensor size to judge film size
@@ -93,6 +94,10 @@ classdef cpCModule
             % then 'sceneObjects' are actually oi structs                                                                                                          -
             
             [focusDistances, expTimes] = focus(obj, aCPScene, expTimes, options.focusMode, options.focusParam);
+            
+            if options.stackFrames ~= numel(focusDistances)
+                options.stackFrames = numel(focusDistances);
+            end
             
             [sceneObjects, sceneFiles] = aCPScene.render(expTimes,...
                 focusDistances,...
