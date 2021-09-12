@@ -86,7 +86,7 @@ classdef cpCModule
                 options.reRender {islogical} = true;
                 options.stackFrames = 1;
             end
-            
+             
             % need to know our sensor size to judge film size
             % however it is in meters and pi wants mm
             filmSize = 1000 * sensorGet(obj.sensor, 'width');
