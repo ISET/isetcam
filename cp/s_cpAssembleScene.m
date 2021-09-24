@@ -40,9 +40,15 @@ simpleScene = cpScene('pbrt', 'scenePath', 'CornellBoxReference', ...
 
 % Add the Stanford bunny to the scene
 bunny = load('bunny.mat');
-simpleScene.thisR.set('asset',1, 'add', bunny.assetTree.Node{1});
+bunnyAsset = bunny.thisR.get('asset', '0002ID_Bunny_B');
+simpleScene.thisR.set('asset',1, 'add', bunnyAsset);
 
-simpleScene.thisR.set('material', 'add', bunny.matList{1});
+%% The next line doesn't work anymore
+%simpleScene.thisR.set('material', 'add', bunny.matList{1});
+%% My attempt to fix it doesn't work either:(
+bunnyMaterial = bunny.thisR.get('materials');
+simpleScene.thisR.set('material', 'add', bunnyMaterial);
+
 piWrite(simpleScene.thisR);
 oi = piRender(simpleScene.thisR);
 ieAddObject(oi); oiWindow(oi);
