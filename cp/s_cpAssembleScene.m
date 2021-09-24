@@ -39,16 +39,15 @@ simpleScene = cpScene('pbrt', 'scenePath', 'CornellBoxReference', ...
     'sceneLuminance', sceneLuminance);
 
 % Add the Stanford bunny to the scene
-bunny = load('bunny.mat');
-bunnyAsset = bunny.thisR.get('asset', '0002ID_Bunny_B');
-simpleScene.thisR.set('asset',1, 'add', bunnyAsset);
+bunny = piAssetLoad('bunny.mat');
+% Zheng: there is an easy way to add bunny in the scene:
+simpleScene.thisR = piRecipeMerge(simpleScene.thisR, bunny.thisR);
 
-%% The next line doesn't work anymore
-%simpleScene.thisR.set('material', 'add', bunny.matList{1});
-%% My attempt to fix it doesn't work either:(
-bunnyMaterial = bunny.thisR.get('materials');
-simpleScene.thisR.set('material', 'add', bunnyMaterial);
+% Zheng: This is another useful feature to place bunny at a targeted
+% position.
+simpleScene.thisR.set('asset', 'Bunny_B', 'world position', [0 0.125 0]);
 
+%%
 piWrite(simpleScene.thisR);
 oi = piRender(simpleScene.thisR);
 ieAddObject(oi); oiWindow(oi);
