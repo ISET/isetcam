@@ -1,6 +1,7 @@
 % sample script to assemble a pbrt test scene for object and camera motion.
 %
-% Feb, 2021
+% Feb, 2021, David Cardinal
+% NEEDS TO BE UPDATED FOR NEW ASSET TREE PARSER
 %
 % We load the "bare" Cornell box, and then (in theory) add the Stanford
 % bunny and the MCC chart (and AF target?) so that we have a full test
