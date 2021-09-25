@@ -15,7 +15,7 @@ function [illScale, meanSPD] = hcIlluminantScale(hcIlluminant)
 %
 % Example:
 %
-% 
+%
 % See also:  s_hcHyspexToISET
 %
 % Copyright Imageval, LLC , 2013
@@ -44,6 +44,6 @@ mx       = max(illScale(:));
 illScale = illScale/mx;
 meanSPD  = mx*meanSPD;
 
-% vcNewGraphWin; imagesc(illScale); colormap(gray)
+% vcNewGraphWin; imagesc(illScale); colormap(gray(64))
 
 end

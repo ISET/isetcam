@@ -15,13 +15,13 @@ function luv = XYZToLuv(xyz,whiteXYZ)
 % Check xyz dimensions
 [m,n] = size(xyz);
 if ( m ~= 3 )
-  error('Array xyz must have three rows')
+    error('Array xyz must have three rows')
 end
 
 % Check white point dimensions
 [m,n] = size(whiteXYZ);
 if ( m ~= 3 || n ~= 1)
-  error('Array white is not a three vector')
+    error('Array white is not a three vector')
 end
 
 % Separate out the compontents
@@ -40,11 +40,11 @@ luv = zeros(m,n);
 lY = find( (Y/Yn) < 0.008856 );
 bY = find( (Y/Yn) >= 0.008856);
 if ( length(bY) ~= 0 )
- luv(1,bY) = 116*(Y(bY)/Yn).^(1/3) - 16;
+    luv(1,bY) = 116*(Y(bY)/Yn).^(1/3) - 16;
 end
 if ( length(lY) ~= 0 )
- luv(1,lY) = 903.3 * (Y(lY)/Yn);
-end  
+    luv(1,lY) = 903.3 * (Y(lY)/Yn);
+end
 
 % Compute u and v
 uv = XYZTouv(xyz);

@@ -3,7 +3,7 @@ function [sqri, hCSF] = ieSQRI(sf, dMTF, L, varargin)
 %
 %   [sqri, hCSF] = ieSQRI(sf, dMTF, L, varargin)
 %
-% Required input:  
+% Required input:
 %  sf   - Spatial frequency steps (cpd).  Barten uses the symbol u.
 %  dMTF - The display MTF with respect to the sf values
 %  L    - The display luminance in cd/m2
@@ -24,18 +24,18 @@ function [sqri, hCSF] = ieSQRI(sf, dMTF, L, varargin)
 %  The SQRI is computed when there is an image on the display, not just for
 %  the display itself. Twice the average image luminance is suggested for L
 %  in the original (Equation 5b).
-%  
+%
 % Reference:
 %     P. G. J. Barten: J. Opt. Soc. Am. A 7 (1990) 2024.
-%     
-% See also:  t_ieSQRI for testing and tutorial. 
-%     Replicates Figures 1-4 of the Barten (1989) and (1990) papers. 
-%     
+%
+% See also:  t_ieSQRI for testing and tutorial.
+%     Replicates Figures 1-4 of the Barten (1989) and (1990) papers.
+%
 % Example
 %   sf = logspace(-1.5,1.5,30);  dMTF = ones(size(sf)); L = 340/pi;
 %   [s, hMTF] = ieSQRI(sf, dMTF, L);
 %   [s, hMTF] = ieSQRI(sf, dMTF, L, 'width',6.5);
-%   vcNewGraphWin; loglog(sf,hMTF); 
+%   vcNewGraphWin; loglog(sf,hMTF);
 %   set(gca,'xlim',[0.01,100],'ylim',[1 1000]); grid on
 %
 % Copyright Imageval Consulting, LLC, 2015
@@ -91,7 +91,7 @@ du = diff(sf);  du = du(:);
 u  = sf(2:end); u  = u(:);
 
 % We compute the integral from the middle of the bins by averaging this
-% way. 
+% way.
 dm = 0.5*(dMTF(1:(end-1)) + dMTF(2:end)); dm = dm(:);  % M(u)
 dh = 0.5*(hCSF(1:(end-1)) + hCSF(2:end)); dh = dh(:);  % 1 / Mt(u)
 

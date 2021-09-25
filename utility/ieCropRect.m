@@ -61,7 +61,7 @@ aspectRatio = scenesize(2) / scenesize(1);
 objDistance = oiGet(oi,'optics rt object distance');  % meters
 
 % Calculate width for halfFOV and fullFOV
-widthNewFOV = 2 * objDistance * tand(newFOV/2); 
+widthNewFOV = 2 * objDistance * tand(newFOV/2);
 widthFOV    = 2 * objDistance * tand(fov/2); % Same for the full fov
 
 nColNewFOV = round(scenesize(2) * widthNewFOV / widthFOV);
@@ -71,5 +71,5 @@ nRowNewFOV = round(nColNewFOV / aspectRatio);
 
 start    = [round(center(1) - nRowNewFOV/2), round(center(2) - nColNewFOV/2)];
 cropRect = [start(2) + 1, start(1) + 1, nColNewFOV - 1, nRowNewFOV - 1 ];
-         
+
 end

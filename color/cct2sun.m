@@ -4,7 +4,7 @@ function spd = cct2sun(wave, cct, units)
 %    SPD = cct2sun( wave, cct, [units = energy'] )
 %
 % Determines daylight/sun spectral power distribution based on correlated
-% color temperature. 
+% color temperature.
 %
 % wave : Wavelength vector of SPD.
 % cct  : Correlated color temperatures. (Can be a vector, but should it?)
@@ -12,7 +12,7 @@ function spd = cct2sun(wave, cct, units)
 %
 % spd  : Daylight/sun SPD in units of (relative) energy or photons
 %
-% Reference: 
+% Reference:
 %    http://en.wikipedia.org/wiki/Standard_illuminant
 %    Judd, Macadam, Wyszecki - http://www.opticsinfobase.org/abstract.cfm?URI=josa-54-8-1031
 % See also: daylight.m
@@ -35,7 +35,7 @@ mask = 1.*(cct>=4000 & cct<7000 ) + 2.*(cct>=7000 & cct<30000);
 
 ind = find(mask == 0, 1);
 if (~isempty(ind))
-   error('At least one CCT is outside the acceptable range [4000-30000]');
+    error('At least one CCT is outside the acceptable range [4000-30000]');
 end
 
 % Look this up and put in a reference to the appropriate W&S pages.
@@ -51,11 +51,11 @@ yd = -3.000*xd.^2 + 2.870*xd - 0.275;
 % basis functions in CIESUN.
 M  = zeros(2,size(cct,2));
 M(1,:) = (-1.3515 - 1.7703*xd + 5.9114*yd)  ./ ...
-   (0.0241 + 0.2562*xd - 0.7341*yd);
+    (0.0241 + 0.2562*xd - 0.7341*yd);
 M(2,:) = (0.0300 - 31.4424*xd + 30.0717*yd) ./ ...
-   (0.0241 + 0.2562*xd - 0.7341*yd);
+    (0.0241 + 0.2562*xd - 0.7341*yd);
 
-% Calculate the final daylight SPD.  
+% Calculate the final daylight SPD.
 % There are currently several daylight basis files in the repository. We
 % need to decide on one, and make sure this matches.
 dayBasis = ieReadSpectra('cieDaylightBasis',wave);

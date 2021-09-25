@@ -4,7 +4,7 @@ function wvf = wvfPrint(wvf,varargin)
 % Print out what's in the wavefront structure.
 %
 % varargin:  Structured as param, val pairs.
-%   
+%
 % See also: wvfSet, wvfGet, sceCreate, sceGet
 %
 % (c) Wavefront Toolbox Team 2011, 2012

@@ -48,7 +48,7 @@ end
 
 %% Corenal irradiance uweighted UV limit
 [ISO2007MPEStruct.cornealUVUnweightedVal_UWattsPerCm2,ISO2007MPEStruct.cornealUVUnweightedLimit_UWattsPerCm2] = ISO2007MPEComputeType1ContinuousCornealUVUnweightedValue(...
-S,radiance_WattsPerSrM2,stimulusDurationSecs,stimulusAreaDegrees2);
+    S,radiance_WattsPerSrM2,stimulusDurationSecs,stimulusAreaDegrees2);
 if (ISO2007MPEStruct.cornealUVUnweightedVal_UWattsPerCm2 >= ISO2007MPEStruct.cornealUVUnweightedLimit_UWattsPerCm2)
     IsOverLimit = 1;
 end

@@ -1,4 +1,4 @@
-%% Calculate the mean absorption rate at a detector  
+%% Calculate the mean absorption rate at a detector
 %
 % Then illustrates how to set the scene luminance of a uniform, equal
 % energy scene to achieve any specified absorption rate.
@@ -8,7 +8,7 @@
 % sensor, or the luminance of an equal energy light in the scene, prior to
 % the optics.
 %
-% See also: signalCurrent, iePoisson, getMiddleMatrix
+% See also: signalCurrent, poissrnd, getMiddleMatrix
 %
 % Copyright Imageval Consulting, LLC 2015
 
@@ -16,7 +16,7 @@
 ieInit
 
 %% A target photon absorption rate for the sensor
-tRate = 2;  
+tRate = 2;
 
 fprintf('Adjusting to a target rate of %.4f\n',tRate);
 
@@ -37,7 +37,7 @@ sensor = sensorSet(sensor,'exp time',1);
 
 % This is a form of the code from signalCurrent.m
 q = vcConstants('q');     %Charge/electron
-    
+
 % signalCurrent estimates volts, like this.  We want current to electrons
 % (which for the human case is current to photons)
 %
@@ -48,13 +48,13 @@ q = vcConstants('q');     %Charge/electron
 %     = S * (V / e) * ( e / (A S)) = (V / A)
 %    c2v = sensorGet(sensor,'integrationTime')*sensorGet(sensor,'pixel conversion gain') / q;
 %
-%   S * (Coulombs / e)^-1 
+%   S * (Coulombs / e)^-1
 %    = S * ( A S / e)^-1
 %    = e / A
 c2e = sensorGet(sensor,'integration time')/ q;
 
 % Signal current returns Amps/pixel/sec
-%   c2e * Amps/pixel/sec 
+%   c2e * Amps/pixel/sec
 %     = (e/A) * (A/pixel/sec)
 %     = e / pixel / sec
 pImage = c2e*signalCurrent(oi,sensor);
@@ -96,12 +96,12 @@ photons = sensorGet(sensor,'photons',1);
 fprintf('Computed mean photon rate %e\n',mean(photons(:)))
 
 % Show the distribution
-% vcNewGraphWin; hist(photons(:),50)
+% vcNewGraphWin; histogram(photons(:),50)
 
 c2e = sensorGet(sensor,'integration time')/ q;
 
 % Signal current returns Amps/pixel/sec
-%   c2e * Amps/pixel/sec 
+%   c2e * Amps/pixel/sec
 %    = (e/A) * (A/pixel/sec)
 %    = e / pixel / sec
 pImage = c2e*signalCurrent(oi,sensor);
@@ -111,7 +111,7 @@ fprintf('Direct calculation of photon rate:  %.4f (target = %.4f)\n',mean(pImage
 %% Histogram of photon numbers and expected Poisson distribution
 
 nSamp = round(max(2*sqrt(tRate)*50,1000));
-val = iePoisson(tRate,nSamp);
+val = poissrnd(tRate,nSamp);
 
 xval =  min(photons(:)):max(photons(:));
 

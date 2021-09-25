@@ -75,9 +75,9 @@ else
                 ptsAndCrv.crv = crv;
                 ptsAndCrv.covariance = E;
             end
-
+            
         case 3
-            pts = plot3(xyData(:,1),xyData(:,2),xyData(:,3),'.'); 
+            pts = plot3(xyData(:,1),xyData(:,2),xyData(:,3),'.');
             hold on;
             s = surfl(reshape(eVec(:,1),sz(1),sz(2)),...
                 reshape(eVec(:,2),sz(1),sz(2)),...
@@ -104,7 +104,7 @@ else
             error('Bad dimensionality of data %d\n',dimensionality);
     end
     axis equal, hold off
-
+    
 end
 
 return;

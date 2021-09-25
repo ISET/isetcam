@@ -6,7 +6,7 @@ function handles = oiImageInitCustomStrings(handles);
 % Purpose:
 %    The popup strings in the OI window are initialized by data in the the
 %    .fig file.  Then, the strings are modified using data contained in the
-%    global variable, vcSESSION.CUSTOM.  
+%    global variable, vcSESSION.CUSTOM.
 %
 %    The popup menu strings can also  maniuplated using the Add Custom line.
 %

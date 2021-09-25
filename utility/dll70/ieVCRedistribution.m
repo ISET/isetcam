@@ -20,10 +20,10 @@ function ieVCRedistribution
 %% Perform architecture dependent installation
 switch(computer)
     case 'PCWIN'
-
+        
         fprintf('Installing Visual Studio C++ 2008 redistribution (x32) package.\n')
         fprintf('This requires the Internet and may require your participation.\n')
-
+        
         % Visual C redistributable library installation
         visCexe = fullfile(isetRootPath,'dll70','vcredist_x86.exe');
         [s,r] = dos(visCexe);
@@ -31,9 +31,9 @@ switch(computer)
         elseif s == 0, fprintf('Status: install OK\n');
         else           fprintf('Status: %d, Result: %s\n',s,r);
         end
-
+        
     case 'PCWIN64'
-
+        
         % We are not sure whether PC compiled the 64-bit files with the
         % 2008 or the 2005 package. We include the 2008 libraries.  If they
         % don't work (we don't have a 64-bit machine to test it with) then
@@ -44,12 +44,12 @@ switch(computer)
         
         visCexe = fullfile(isetRootPath,'dll70','vcredist_x64.exe');
         [s,r] = dos(visCexe);
-
+        
         if s == 1602,  fprintf('Status: already installed.\n');
         elseif s == 0, fprintf('Status: install OK\n');
         else           fprintf('Status: %d, Result: %s\n',s,r);
         end
-
+        
     case 'MACI'
         disp('Mac OSX on x86');
     case 'GLNX86'

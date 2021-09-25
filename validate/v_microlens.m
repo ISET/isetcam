@@ -59,7 +59,7 @@ xlabel('Position (um)');
 x = mlensGet(mlens,'x coordinate');
 p = mlensGet(mlens,'p coordinate');
 
-ieNewGraphWin([],'tall'); 
+ieNewGraphWin([],'tall');
 subplot(4,1,1), imagesc(x,p,psImages.source); axis image;
 subplot(4,1,2), imagesc(x,p,psImages.lens); axis image;
 subplot(4,1,3), imagesc(x,p,psImages.lensOffset); axis image;

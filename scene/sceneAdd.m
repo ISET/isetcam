@@ -6,13 +6,13 @@ function scene1 = sceneAdd(scene1,scene2,addFlag)
 % Add two the radiance from two scenes that match in all ways (row, col,
 % wavelength, so forth).
 %
-% addFlag: 
+% addFlag:
 %  add:     Add the radiance data from the two scenes(default)
 %  remove spatial mean:  Remove mean from scene2 and then add to scene1
 %
 % Copyright Imageval 2012
 %
-% See also: 
+% See also:
 %  s_scielabPatches
 %
 

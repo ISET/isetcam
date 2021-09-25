@@ -5,15 +5,15 @@ function [ rgb ] = AdaptiveLaplacian( bayer_in, bPattern, clipToRange)
 %
 % Demosaicking algorithms estimate missing color information by
 % interpolation of the known color information across different color
-% planes.  
-% 
+% planes.
+%
 % Interpolation is performed only in the direction with the smallest
 % gradient. If the gradient is high, the algorithm does not average across
 % the border.
 %
 % The multiple color band functions like this can have out of range values
 % (beyond 0,1).  Normally, we clip to range.  You can turn this off by
-% setting clipToRange = 0 
+% setting clipToRange = 0
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
@@ -22,13 +22,13 @@ function [ rgb ] = AdaptiveLaplacian( bayer_in, bPattern, clipToRange)
 % grbg.
 %
 % This is only implemented for RGB mosaics.  It should not be run on CMY or
-% 4-color sensors.  The data should be checked. It should be extended. 
+% 4-color sensors.  The data should be checked. It should be extended.
 %
-% The code is unattractive.  And it is hard to debug/understand.  
+% The code is unattractive.  And it is hard to debug/understand.
 
 if ieNotDefined('bayer_in'), error('Bayer rgb data required.'); end
 if ieNotDefined('bPattern'), error('Bayer pattern info required.'); end
-if ieNotDefined('clipToRange'), clipToRange = 1; end 
+if ieNotDefined('clipToRange'), clipToRange = 1; end
 
 % mosaicConverter transforms non-grbg into grbg.  This is the only format
 % that works for the remaining part of the code.

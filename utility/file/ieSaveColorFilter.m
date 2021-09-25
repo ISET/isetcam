@@ -14,7 +14,7 @@ function fullFileName = ieSaveColorFilter(inData,fullFileName)
 %   Alternatively, the input data (inData) may be a structure with the
 % relevant fields.  This is useful if you want to read an existing color
 % filter file, edit a field or two, and then save it out again.
-% 
+%
 % The structure for the color filter contains (minimally)
 %  inData.wavelength;  % Vector of W wavelength samples
 %  inData.data;        % Matrix of filters (W rows, N filter columns)
@@ -47,26 +47,26 @@ function fullFileName = ieSaveColorFilter(inData,fullFileName)
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 %
-% See also: 
+% See also:
 
 %%
 if ieNotDefined('fullFileName'), fullFileName = vcSelectDataFile('sensor','w','mat'); end
 
 %% Sensor and structure cases
 if isfield(inData,'type') && (strcmp(sensorGet(inData,'type'),'ISA')||...
-                              strcmp(sensorGet(inData,'type'),'sensor'))
+        strcmp(sensorGet(inData,'type'),'sensor'))
     
     % Sensor case
     isa = inData;
-
+    
     wavelength  = sensorGet(isa,'wavelength'); %#ok<*NASGU>
     data        = sensorGet(isa,'colorfilters');
     filterNames = sensorGet(isa,'filterNames');
     comment     = ieReadString('Sensor comment field');
     % if ieNotDefined('Units'), units = 'photons'; end
-
+    
     save(fullFileName,'wavelength','data','comment','filterNames');
-
+    
 elseif isfield(inData,'data') && isfield(inData,'wavelength') && isfield(inData,'filterNames')
     
     % CFA and color filter case
@@ -77,7 +77,7 @@ elseif isfield(inData,'data') && isfield(inData,'wavelength') && isfield(inData,
     else    comment = 'No comment';
     end
     save(fullFileName,'wavelength','data','comment','filterNames');
-
+    
     % We now check for additional fields and save those as well.  The user
     % can insert these fields even though they are not stored as part of
     % the usual ISET format.
@@ -87,7 +87,7 @@ elseif isfield(inData,'data') && isfield(inData,'wavelength') && isfield(inData,
     for ii=1:length(fldNames)
         if ~strcmp(fldNames{ii},{'wavelength','data','comment','filterNames','units'})
             eval([fldNames{ii},' = inData.',fldNames{ii},';']);
-            % Write the user-defined field to the file: 
+            % Write the user-defined field to the file:
             % save(fullFileName,'-append',inData.thisField)
             setStr = [fldNames{ii},'= inData.',fldNames{ii}];
             eval(setStr);

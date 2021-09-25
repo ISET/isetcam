@@ -37,8 +37,8 @@ classdef webFlickr
             % 'safe_search', 3,
             per_page = getpref('ISET','maxSearchResults',obj.defaultPerPage);
             outputArg = webread(obj.search_url, 'api_key', obj.api_key, 'tags', ourTags, ...
-            'format', obj.format, 'nojsoncallback', obj.nojsoncallback,  ...
-            'content_type', 1, 'sort', obj.sort, 'per_page', per_page, 'tag_mode', obj.tag_mode, 'license', obj.licenses);            
+                'format', obj.format, 'nojsoncallback', obj.nojsoncallback,  ...
+                'content_type', 1, 'sort', obj.sort, 'per_page', per_page, 'tag_mode', obj.tag_mode, 'license', obj.licenses);
         end
         
         function ourTitle = getImageTitle(obj, fPhoto)
@@ -63,14 +63,14 @@ classdef webFlickr
                 sizeSuffix = 'q'; % 150 px is q, 100,240 px longest side is t,m
             else
                 sizeSuffix = 'b'; % b is 1024 px for now, k = 2048 requires auth
-            end 
+            end
             ourURL = strcat("https://farm", string(fPhoto.farm), ".staticflickr.com/", string(fPhoto.server) + "/", ...
                 string(fPhoto.id), "_" + string(fPhoto.secret), "_" + string(sizeSuffix), ".jpg");
         end
         
         function ourImage = getImage(obj, fPhoto, wantSize)
             ourURL = getImageURL(obj, fPhoto, wantSize);
-            ourImage = webread(ourURL);   
+            ourImage = webread(ourURL);
         end
     end
 end

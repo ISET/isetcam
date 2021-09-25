@@ -3,10 +3,10 @@ function params = vernierP(varargin)
 %
 %   p = vernierP;
 %
-% Parameters to specify a vernier scene.  
+% Parameters to specify a vernier scene.
 %
-% Generally  used with 
-%   
+% Generally  used with
+%
 %      scene = sceneCreate('vernier','display',params), or
 %
 %      oisCreate('vernier', ....)
@@ -26,10 +26,10 @@ function params = vernierP(varargin)
 %   p = vernierP; p.name = 'example'; s = sceneCreate('vernier','display',p);
 %   ieAddObject(s); sceneWindow;
 %
-%   p.bgColor = [1 0 0]; p.barColor = [0 1 0]; 
+%   p.bgColor = [1 0 0]; p.barColor = [0 1 0];
 %   s = sceneCreate('vernier','display',p); ieAddObject(s); sceneWindow;
 %
-%   p.barLength = 8;  
+%   p.barLength = 8;
 %   s = sceneCreate('vernier','display',p); ieAddObject(s); sceneWindow;
 %
 %   x = (-32:32)/64; f = 2;

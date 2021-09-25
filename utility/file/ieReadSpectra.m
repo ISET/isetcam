@@ -27,10 +27,10 @@ function [res,wave,comment,fname] = ieReadSpectra(fname,wave,extrapVal)
 %
 %   ISET spectral files are generally saved in the form: save(fname,'data','wavelength')
 %   and most have comment fields:                        save(fname,'data','wavelength','comment')
-%   
+%
 %   If the FNAME file does not exist, the return variable, res, is empty on return.
 %   If wave is specified, the returned data are interpolated to those values.
-%   If wave is not specified, the data are returned at native resolution of the data file 
+%   If wave is not specified, the data are returned at native resolution of the data file
 %      and the values of wavelength can be returned.
 %
 %   IMPORTANT: Color filters are handled a little differently because we
@@ -74,5 +74,5 @@ if ~exist('wave','var')||isempty(wave),  wave = wavelength; end
 if ~exist('extrapVal','var')||isempty(extrapVal),  extrapVal = 0;  end
 
 res = interp1(wavelength(:), data, wave(:),'linear',extrapVal);
-    
+
 end

@@ -1,11 +1,10 @@
-%% Change the super pixel in a color sensor
+%% Change the super pixel color filter array in a color sensor
 %
-% You can experiment with different color filter array patterns.  This
-% script illustrates how to change the CFA in a sensor.
+% This script illustrates how to change the CFA in a sensor.
 %
-% See also:  sensorShowCFA, sensorPlot, cameraCreate, cameraWindow
+% See also:  
+%  sensorShowCFA, sensorPlot, cameraCreate, cameraWindow
 %
-% Copyright Imageval Consulting, LLC 2016
 
 %%
 ieInit
@@ -32,7 +31,7 @@ camera = cameraCompute(camera,scene);
 % Show the sensor window
 cameraWindow(camera,'sensor');
 
-%% Here are the data transformed by the image processor 
+%% Here are the data transformed by the image processor
 % cameraWindow(camera,'ip');
 
 bayerSensor = sensorCreate;
@@ -54,12 +53,15 @@ camera = cameraSet(camera,'pixel size constant fill factor',pSize);
 camera = cameraCompute(camera,'oi');
 cameraWindow(camera,'sensor');
 
-%% Now show the transformed data again 
+%% Now show the transformed data again
 % cameraWindow(camera,'ip');
 
 %% If you would like a different RGB spatial pattern ...
 sensor = sensorCreate('RGB');
-sensor = sensorSet(sensor,'pattern',[ 2 1 2; 3 2 1; 2 3 2]);
+
+% Notice that we have gone from a 2x2 super pixel to a 3x3.  So we adjust
+% the pattern and the sensor size.
+sensor = sensorSet(sensor,'pattern and size',[ 2 1 2; 3 2 1; 2 3 2]);
 sensor = sensorSet(sensor,'fov',fov,cameraGet(camera,'oi'));
 sensor = sensorSet(sensor,'name','3x3 RGB');
 sensor = sensorSet(sensor,'pixel size constant fill factor',pSize);
@@ -68,7 +70,7 @@ camera = cameraSet(camera,'sensor',sensor);
 camera = cameraCompute(camera,'oi');
 cameraWindow(camera,'sensor');
 
-%% Now show the transformed data again 
+%% Now show the transformed data again
 % cameraWindow(camera,'ip');
 
 %%  Now a white pixel
@@ -81,7 +83,7 @@ camera = cameraSet(camera,'pixel size constant fill factor',pSize);
 camera = cameraCompute(camera,'oi');
 cameraWindow(camera,'sensor');
 
-%% Now show the transformed data again 
+%% Now show the transformed data again
 % camera Window(camera,'ip');
 
 %%
@@ -102,3 +104,4 @@ cameraWindow(camera,'sensor');
 img = cameraGet(camera, 'sensor rgb');
 ieViewer(img);
 
+%% END

@@ -22,7 +22,7 @@ X = double([r(:), g(:)]);
 
 vcNewGraphWin;
 imagesc(mid{1:2},N(:,:));
-axis xy; colormap(hot); colorbar
+axis xy; colormap(hot(64)); colorbar
 xlabel('Red channel'); ylabel('Green channel')
 title(sprintf('%s: Channel image histogram',fname))
 
@@ -34,7 +34,7 @@ X = double([r(:), b(:)]);
 
 vcNewGraphWin;
 imagesc(mid{1:2},N(:,:));
-axis xy; colormap(hot); colorbar
+axis xy; colormap(hot(64)); colorbar
 xlabel('Red channel'); ylabel('Blue channel')
 title(sprintf('%s: Channel image histogram',fname))
 

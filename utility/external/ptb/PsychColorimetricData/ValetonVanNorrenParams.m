@@ -21,7 +21,7 @@ function [params] = ValetonVanNorrenParams(logIsoRate,photoreceptors,trolandType
 %   eyeLengthSource - string or value interpreted by EyeLength.
 %   trolandType - string interpreted by TrolandsToRetIrradiance.
 %   LMRatio - value of L to M cone ratio to assume for original measurements (Default 2).
-% 
+%
 % The parameters are provided in Table 1 of the paper, for a range
 % of troland values.  The model parameters are sigmaL and gamma.
 % and gamma.
@@ -33,15 +33,15 @@ function [params] = ValetonVanNorrenParams(logIsoRate,photoreceptors,trolandType
 
 % Fill in default
 if (nargin < 2 || isempty(photoreceptors))
-	photoreceptors = DefaultPhotoreceptors('LivingHumanFovea');
-	photoreceptors.macularPigmentDensity.source = 'None';	
-	photoreceptors = FillInPhotoreceptors(photoreceptors);
+    photoreceptors = DefaultPhotoreceptors('LivingHumanFovea');
+    photoreceptors.macularPigmentDensity.source = 'None';
+    photoreceptors = FillInPhotoreceptors(photoreceptors);
 end
 if (nargin < 3 || isempty(trolandType))
-	trolandType = 'Photopic';
+    trolandType = 'Photopic';
 end
 if (nargin < 4 || isempty(LMRatio))
-	LMRatio = 2;
+    LMRatio = 2;
 end
 
 % Fill in the values for the photoreceptors structure
@@ -60,7 +60,7 @@ load spd_xenonArc
 % cone per second.  Valeton and Van Norren use human trolands,
 % even though they are studying monkey.
 for i = 1:length(logBackgroundTd)
-	trolands = 10^logBackgroundTd(i);
+    trolands = 10^logBackgroundTd(i);
     if (strcmp(photoreceptors.eyeLengthMM.source,'Value provided directly'))
         irradianceWatts = TrolandsToRetIrradiance(spd_xenonArc,S_xenonArc,trolands, ...
             trolandType,photoreceptors.species,photoreceptors.eyeLengthMM.value);
@@ -68,22 +68,22 @@ for i = 1:length(logBackgroundTd)
         irradianceWatts = TrolandsToRetIrradiance(spd_xenonArc,S_xenonArc,trolands, ...
             trolandType,photoreceptors.species,photoreceptors.eyeLengthMM.source);
     end
-	irradianceWatts = SplineSpd(S_xenonArc,irradianceWatts,S);
-	[isoPerConeSec] = RetIrradianceToIsoRecSec(irradianceWatts,S,photoreceptors);
-	averageRate = (LMRatio/(LMRatio+1))*isoPerConeSec(1) + (1/(LMRatio+1))*isoPerConeSec(2);
-	logBackgroundIsoRate(i) = log10(averageRate);
+    irradianceWatts = SplineSpd(S_xenonArc,irradianceWatts,S);
+    [isoPerConeSec] = RetIrradianceToIsoRecSec(irradianceWatts,S,photoreceptors);
+    averageRate = (LMRatio/(LMRatio+1))*isoPerConeSec(1) + (1/(LMRatio+1))*isoPerConeSec(2);
+    logBackgroundIsoRate(i) = log10(averageRate);
 end
 
 % Now get actual parameters by splining
 if (logIsoRate < logBackgroundIsoRate(1))
-	params.logSigmaAlpha = logSigmaAlpha(1);
-	params.gamma = gamma(1);
+    params.logSigmaAlpha = logSigmaAlpha(1);
+    params.gamma = gamma(1);
 elseif (logIsoRate > logBackgroundIsoRate(end))
-	params.logSigmaAlpha = logSigmaAlpha(end);
-	params.gamma = gamma(end);
+    params.logSigmaAlpha = logSigmaAlpha(end);
+    params.gamma = gamma(end);
 else
-	params.logSigmaAlpha = interp1(logBackgroundIsoRate,logSigmaAlpha,logIsoRate,'linear');
-	params.gamma = interp1(logBackgroundIsoRate,gamma,logIsoRate,'linear');
+    params.logSigmaAlpha = interp1(logBackgroundIsoRate,logSigmaAlpha,logIsoRate,'linear');
+    params.gamma = interp1(logBackgroundIsoRate,gamma,logIsoRate,'linear');
 end
 params.logBackgroundTds = logBackgroundTd;
 params.logBackgroundIsoRates = logBackgroundIsoRate;

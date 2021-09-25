@@ -2,7 +2,7 @@ function [idx1,idx2] = ieWave2Index(waveList,wave)
 %Convert a wavelength to an index into the wave list.
 %
 %    [idx1,idx2] = ieWave2Index(waveList,wave)
-%   
+%
 % If only one return argument is requested, then the index closest to the
 % specified wavelength. If two indices are requested, these are the indices
 % whose wavelength values bound the input wave value.  These are always

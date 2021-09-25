@@ -2,7 +2,7 @@
 %
 % There are sub-directories for
 %
-%  human      images     mouse      processor  sensor     
-%  displays   lights     optics     scenes     surfaces   
+%  human      images     mouse      processor  sensor
+%  displays   lights     optics     scenes     surfaces
 %
 % Copyright ImagEval Consultants, LLC, 2012

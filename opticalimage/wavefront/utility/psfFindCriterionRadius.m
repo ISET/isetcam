@@ -21,7 +21,7 @@ inPSF = psfCenter(inPSF);
 
 % Make the radius matrix
 [n,m] = size(inPSF);
-if (n ~= m) 
+if (n ~= m)
     error('Input must be a square matrix');
 end
 nLinearPixels = n;

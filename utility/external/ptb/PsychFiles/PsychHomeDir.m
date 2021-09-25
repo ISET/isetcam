@@ -81,15 +81,15 @@ if isempty(ThePath)
             'Preferences.  I''m putting them in the current working directory:\n      %s.\n\n'],pwd);
         StringStart = [pwd filesep];
     end
-
+    
     TheDir = strtrim(StringStart);
-
+    
     if exist(TheDir,'dir')
         ThePath = TheDir; %#ok<NASGU>
     else
         error(sprintf('I could not find your home directory as expected in\n\n%s\n\nWhat are the permissions on that folder?',TheDir)); %#ok<SPERR>
     end
-
+    
     ThePath = [ThePath filesep];
     PTBHomePath = ThePath;
 end

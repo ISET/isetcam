@@ -20,5 +20,5 @@ end
 xP = [x ; 0];
 output = MakeMonotonic(HalfRect(polyval(xP',input)));
 if (max(output) ~= 0)
-  output = NormalizeGamma(output);
+    output = NormalizeGamma(output);
 end

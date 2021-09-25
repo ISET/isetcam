@@ -6,7 +6,7 @@ function [sOBJECT,val] = ieGetObject(objType,val)
 % Find the currently selected object of the various possible types:
 %
 %  SCENE, PIXEL,{OPTICALIMAGE,OI}, {IMGPROC,VCIMAGE,VCI},DISPLAY
-%  OPTICS, IPDISPLAY, GRAPHWIN, {ISA,SENSOR},  
+%  OPTICS, IPDISPLAY, GRAPHWIN, {ISA,SENSOR},
 %
 % This routine replaces: [val,sOBJECT] = vcGetSelectedObject('SCENE');
 % This call is shorter as in:

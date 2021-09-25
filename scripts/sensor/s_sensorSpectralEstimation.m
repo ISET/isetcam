@@ -1,5 +1,5 @@
 %% Estimate color filter responsivities
-%  
+%
 % Using a series of test spectral power distributions, we calculate the
 % sensor response and estimate the color filter transmissivities.
 %
@@ -10,7 +10,7 @@
 %%
 ieInit;
 
-%% Make a uniform scene 
+%% Make a uniform scene
 scene = sceneCreate('uniform ee');
 wave  = sceneGet(scene,'wave');
 
@@ -18,7 +18,7 @@ oi = oiCreate('default',[],[],0);
 oi = oiSet(oi,'optics model','diffraction limited');
 oi = oiSet(oi,'optics fnumber',0.01);   % No blurring
 
-sensor = sensorCreate; 
+sensor = sensorCreate;
 sensor = sensorSet(sensor,'size',[64 64]);
 sensor = sensorSet(sensor,'auto exposure',true);
 
@@ -40,13 +40,13 @@ end
 spd = spd*10^16;  % Make them a reasonable number
 
 %% Show the SPDs
-vcNewGraphWin; 
+vcNewGraphWin;
 plot(wave,spd);
 xlabel('Wavelength (nm)');
 ylabel('Reponsivity');
 title('Test lights');
 
-%% Create the series of spectral scenes and compute 
+%% Create the series of spectral scenes and compute
 
 % We compute the oi and the sensor, saving the data
 eTime        = zeros(1,nLights);
@@ -58,7 +58,7 @@ for ii=1:nLights
     
     % Make a scene with a particular spectral power distribution (spd). The
     % code has to arrange the data into the proper 3d matrix format.
-    spdImage = repmat(spd(:,ii),[1,32,32]); 
+    spdImage = repmat(spd(:,ii),[1,32,32]);
     spdImage = permute(spdImage,[2 3 1]);
     scene    = sceneSet(scene,'photons',spdImage);
     % ieAddObject(scene); sceneWindow;
@@ -71,7 +71,7 @@ for ii=1:nLights
     sensor    = sensorCompute(sensor,oi,0);
     eTime(ii) = sensorGet(sensor,'Exposure Time','sec');
     % ieAddObject(sensor); sensorImageWindow;
-
+    
     % Calculate volts/sec for each of the channels at this wavelength
     for jj=1:nFilters
         volts{jj} = sensorGet(sensor,'volts',jj);
@@ -84,7 +84,7 @@ end
 % Use  linear estimation to calculate filters from responsivities
 %
 %    responsivity = filters*spd;
-% 
+%
 % So figure that filters are weighted sums of the spd's
 %
 %   filters = wgt*spd'
@@ -115,4 +115,4 @@ identityLine;
 xlabel('Simulated')
 ylabel('Estimated');
 
-%% 
+%%

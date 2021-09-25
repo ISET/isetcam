@@ -72,7 +72,7 @@ oiWindow;
 
 % Create a color sensor, with the fourth in the IR
 sensor = sensorCreate;
-cfType = 'gaussian'; 
+cfType = 'gaussian';
 cPos = 450:100:850; width = ones(size(cPos))*35;
 nFilters = length(cPos);
 
@@ -85,7 +85,7 @@ for ii=1:nFilters, filterNames{ii} = allNames{ii}; end
 % figure(1); plot(wave,filterSpectra)
 
 % Create a four channel set of filters with RGB and IR
-% cfType = 'gaussian'; 
+% cfType = 'gaussian';
 % cPos   = [450:100:650, 800]; % nm
 % width  = [35 35 35 45];      % nm
 % filterSpectra = sensorColorFilter(cfType,wave, cPos, width);

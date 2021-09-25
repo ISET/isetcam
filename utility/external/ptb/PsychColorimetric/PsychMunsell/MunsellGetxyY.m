@@ -31,16 +31,16 @@ if (nargin == 4)
     end
 else
     if(chroma >= 2.000)
-%         x = MunsellGriddata3(munsellData(:,1),munsellData(:,2),munsellData(:,3),munsellData(:,4),angle,value,chroma,'linear',[],Xx,trix);
-%         y = MunsellGriddata3(munsellData(:,1),munsellData(:,2),munsellData(:,3),munsellData(:,5),angle,value,chroma,'linear',[],Xy,triy);
-%         Y = MunsellGriddata3(munsellData(:,1),munsellData(:,2),munsellData(:,3),munsellData(:,6),angle,value,chroma,'linear',[],XY,triY);
+        %         x = MunsellGriddata3(munsellData(:,1),munsellData(:,2),munsellData(:,3),munsellData(:,4),angle,value,chroma,'linear',[],Xx,trix);
+        %         y = MunsellGriddata3(munsellData(:,1),munsellData(:,2),munsellData(:,3),munsellData(:,5),angle,value,chroma,'linear',[],Xy,triy);
+        %         Y = MunsellGriddata3(munsellData(:,1),munsellData(:,2),munsellData(:,3),munsellData(:,6),angle,value,chroma,'linear',[],XY,triY);
         x = MunsellGriddata3([],[],[],vx,angle,value,chroma,'linear',[],Xx,trix);
         y = MunsellGriddata3([],[],[],vy,angle,value,chroma,'linear',[],Xy,triy);
         Y = MunsellGriddata3([],[],[],vY,angle,value,chroma,'linear',[],XY,triY);
     else
-%         x = MunsellGriddata3(munsellData(:,1),munsellData(:,2),munsellData(:,3),munsellData(:,4),angle,value,2,'linear',[],Xx,trix);
-%         y = MunsellGriddata3(munsellData(:,1),munsellData(:,2),munsellData(:,3),munsellData(:,5),angle,value,2,'linear',[],Xy,triy);
-%         Y = MunsellGriddata3(munsellData(:,1),munsellData(:,2),munsellData(:,3),munsellData(:,6),angle,value,2,'linear',[],XY,triY);
+        %         x = MunsellGriddata3(munsellData(:,1),munsellData(:,2),munsellData(:,3),munsellData(:,4),angle,value,2,'linear',[],Xx,trix);
+        %         y = MunsellGriddata3(munsellData(:,1),munsellData(:,2),munsellData(:,3),munsellData(:,5),angle,value,2,'linear',[],Xy,triy);
+        %         Y = MunsellGriddata3(munsellData(:,1),munsellData(:,2),munsellData(:,3),munsellData(:,6),angle,value,2,'linear',[],XY,triY);
         x = MunsellGriddata3([],[],[],vx,angle,value,2,'linear',[],Xx,trix);
         y = MunsellGriddata3([],[],[],vy,angle,value,2,'linear',[],Xy,triy);
         Y = MunsellGriddata3([],[],[],vY,angle,value,2,'linear',[],XY,triY);

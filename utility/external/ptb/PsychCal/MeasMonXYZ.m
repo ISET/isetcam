@@ -3,8 +3,8 @@ function XYZ = MeasMonXYZ(window,settings,syncMode,whichMeterType)
 %
 % Measure the XYZ of a series of monitor settings.
 %
-% This routine is specific to go with CalibrateMon,
-% as it depends on the action of SetMon. 
+% This routine is specific to go with CalibrateMon
+% as it depends on the action of SetMon.
 %
 % If whichMeterType is passed and set to 0, then the routine
 % returns random spectra.  This is useful for testing when
@@ -34,10 +34,10 @@ function XYZ = MeasMonXYZ(window,settings,syncMode,whichMeterType)
 % Check args and make sure window is passed right.
 usageStr = 'XYZ = MeasMonXYZ(window,settings,[syncMode],[whichMeterType])';
 if (nargin < 2 || nargin > 4 || nargout > 1)
-	error(usageStr);
+    error(usageStr);
 end
 if (size(window,1) ~= 1 || size(window,2) ~= 1)
-	error(usageStr);
+    error(usageStr);
 end
 
 % Set defaults
@@ -46,27 +46,27 @@ defaultWhichMeterType = 1;
 
 % Check args and set defaults
 if (nargin < 4 || isempty(whichMeterType))
-	whichMeterType = defaultWhichMeterType;
+    whichMeterType = defaultWhichMeterType;
 end
 if (nargin < 3 || isempty(syncMode))
-	syncMode = defaultSync;
+    syncMode = defaultSync;
 end
 
 [null,nMeas] = size(settings);
 XYZ = zeros(3,nMeas);
 for i=1:nMeas
-	% Set color
-  SetColor(window,1,settings(:,i));
-	
-	% Make the measurement
-	switch (whichMeterType)
-		case 0,
-			XYZ(:,i) = sum(settings(:,i)*ones(3,1);
-			WaitSecs(0.1);
-		case 1,
-		  XYZ(:,i) = MeasXYZ;
-		otherwise,
-			error('Invalid meter type specified');
-	end
+    % Set color
+    SetColor(window,1,settings(:,i));
+    
+    % Make the measurement
+    switch (whichMeterType)
+        case 0,
+            XYZ(:,i) = sum(settings(:,i))*ones(3,1);
+            WaitSecs(0.1);
+        case 1,
+            XYZ(:,i) = MeasXYZ;
+        otherwise,
+            error('Invalid meter type specified');
+    end
 end
 

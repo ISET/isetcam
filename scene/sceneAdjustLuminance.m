@@ -13,7 +13,7 @@ function scene = sceneAdjustLuminance(scene,meanL,varargin)
 %   scene:  Scene object
 %   param:  Options: 'mean', 'peak', or 'roi' (formerly 'crop')
 %   val:    Luminance value on return
-% 
+%
 % Output
 %   scene
 %
@@ -24,17 +24,17 @@ function scene = sceneAdjustLuminance(scene,meanL,varargin)
 
 % Examples:
 %{
-  scene = sceneCreate; 
+  scene = sceneCreate;
   scene = sceneAdjustLuminance(scene,'mean',10);  % Set to 10 cd/m2.
   sceneGet(scene,'mean luminance')
 %}
 %{
-  scene = sceneCreate; 
+  scene = sceneCreate;
   scene = sceneAdjustLuminance(scene,'peak',200);
   sceneGet(scene,'mean luminance')
 %}
 %{
-  scene = sceneCreate; 
+  scene = sceneCreate;
   scene = sceneAdjustLuminance(scene,'roi',200,rect);
 %}
 %{

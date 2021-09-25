@@ -20,5 +20,5 @@ x=(x-x0)./(1-x0);
 y=zeros(size(x));
 i=find(x>0);
 if ~isempty(i)
-	y(i)=x(i).^g;
+    y(i)=x(i).^g;
 end

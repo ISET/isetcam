@@ -1,14 +1,16 @@
 function rMatrix = rotationMatrix3d(angleList, scale)
 % Returns a 3x3 rotation matrix, possibly with a scale factor
 %
-%     rMatrix = rotationMatrix3d(angleList, [scale])
+% Synopsis
+%   rMatrix = rotationMatrix3d(angleList, [scale])
 %
-% angleList:  3 vector of (x,y,z) rotations in radians
-% scale:      1 vector or 3 vector of x,y,z scale factors
+% Inputs
+%  angleList:  3 vector of (x,y,z) rotations in radians
+%  scale:      1 vector or 3 vector of x,y,z scale factors
 %
-% Returns
+% Output
 %  rMatrix: 3x3 rotation matrix corresponding to the angular rotations
-% around the x,y,z axes (in that order) specified in angleList.
+%  around the x,y,z axes (in that order) specified in angleList.
 %
 % Optionally applies a scale factor, either a global scale (if 'scale' is a
 % scalar), or separate X, Y and Z scales if 'scale' is 1x3.
@@ -31,7 +33,7 @@ if(~exist('scale','var') || isempty(scale)), scale = 1; end
 
 if(length(scale)==1),     scale = eye(3)*scale;
 elseif(length(scale)==3), scale = [scale(1) 0 0; 0 scale(2) 0; 0 0 scale(3)];
-else                      error('Scale must be a scalar or 1x3.');
+else,                     error('Scale must be a scalar or 1x3.');
 end
 
 tx=angleList(1);
@@ -54,4 +56,4 @@ RotZ=[cos(tz)  -sin(tz)  0;...
 % This is what we return;
 rMatrix=RotX*RotY*RotZ*scale;
 
-return
+end

@@ -11,7 +11,7 @@ function rgb = sceneShowImage(scene,renderFlag,gam,app)
 % Inputs
 %  scene:
 %  renderFlag:
-%     absolute value of 0,1 compute RGB image 
+%     absolute value of 0,1 compute RGB image
 %     absolute value of 2,  compute gray scale for IR
 %     absolute value of 3,  HDR rendering method
 %
@@ -55,7 +55,7 @@ if ~exist('gam','var') || isempty(gam),         gam = 1;         end
 if ~exist('renderFlag','var') || isempty(renderFlag), renderFlag = 1; end
 if ~exist('app','var') || isempty(app),      app = [];     end
 
-if renderFlag > 0 
+if renderFlag > 0
     if isempty(app) || isa(app,'sceneWindow_App')
         % User told us nothing. We think the user wants it in the IP window
         [app,appAxis] = ieAppGet('scene');
@@ -73,7 +73,7 @@ end
 %%  Get the data
 if checkfields(scene,'data','photons')
     % Don't duplicate the data.
-    photons = sceneGet(scene,'photons'); 
+    photons = sceneGet(scene,'photons');
     wList   = sceneGet(scene,'wavelength');
     sz      = sceneGet(scene,'size');
 else
@@ -81,7 +81,7 @@ else
     warning('Data are not available');
     return;
 end
-   
+
 %% Display the image in the GUI, or just compute the values
 
 % The absolute value of the displayFlag flag determines how imageSPD

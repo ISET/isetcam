@@ -1,5 +1,5 @@
 function val = vcConstants(con)
-%Return values of physical constants used by ISET. 
+%Return values of physical constants used by ISET.
 %
 %      val = vcConstants(constantName)
 %
@@ -45,30 +45,30 @@ return;
 %
 % % electron charge :
 % vcConstants.q = 1.6e-19; 		         % [C]
-% 
-% % frequency of visible lights (370nm - 730nm) : 
+%
+% % frequency of visible lights (370nm - 730nm) :
 % vcConstants.nu = 3e8./((370:730)'*1e-9);        % [1/s]
-% 
+%
 % % Speed of light
 % vcConstants.c = 2.99792458  * 10^8;            % Meters per second
-% 
+%
 % % Planck's Constant
 % vcConstants.h =  6.6200e-034 ;
-% 
+%
 % % energy of photons in visible range :
 % vcConstants.h_nu = 6.62e-34.*vcConstants.nu; 	 % [J]
-% 
-% % Planck's constant : 
+%
+% % Planck's constant :
 % vcConstants.k =  1.38e-23; 		         % [J/K]
-% 
-% % Room Temperature : 
+%
+% % Room Temperature :
 % vcConstants.T= 300; 			         % [K]
-% 
+%
 % % Permittivity of Si
 % vcConstants.epsilon_s = 10.45e-13;              % [F/cm]
-% 
+%
 % % Permittivity of SiO2
 % vcConstants.epsilon_ox = 34.5e-14;              % [F/cm]
-% 
+%
 % % Energy bandgap of Si :
 % vcConstants.Eg = 1.12;                          % [eVolt]

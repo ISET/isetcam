@@ -1,43 +1,48 @@
 function [rgbFormat, cfaVals] = plane2rgb(img,sensor,emptyVal)
-%Converts a sensor data plane into a (row,col,color) RGB format image 
+%Converts a sensor data plane (r,c,1) into a RGB image (r,c,3)
 %
+% Synopsis
 %   [rgbFormat, cfaVals] = plane2rgb(img,sensor,[emptyVal])
 %
+% Brief
 %  This  routine is  part of demosaicking algorithms. This routine converts
 %  data from a sensor plane that contains interleaved color representation
 %  (m x n x 1) into a RGB format in which every color dimension is in a
-%  different 3rd dimension (m x n x w).  
+%  different 3rd dimension (m x n x w).
 %
-% img:      The vcimage input field, which is typically the the data field
-%           from the sensor.  
-% sensor:   The sensor containing a description of the wavebands. The
-%           number of color planes is equal to the number of different 
-%           color sensors. 
-% emptyVal: default is NaN. In the RGB format the unfilled values are all
-%           set to emptyVal. 
+% Inputs
+%  img:      The vcimage input field, which is typically the the data field
+%            from the sensor.
+%  sensor:   The sensor containing a description of the wavebands. The
+%            number of color planes is equal to the number of different
+%            color sensors.
+%  emptyVal: default is NaN. In the RGB format the unfilled values are all
+%            set to emptyVal.
 %
-% Returns:
-%   
-%  In the returned image each plane represents one color in the color
-%  filter array (cfa).  For example, if the input img is (row,col) and
-%  contains red, green and blue pixels, the returned rgbFormat is (row,col,3)
-%  with each of the image planes containing the red, green or blue data
-%  values.  
+% Output
 %
-%  Empty (unfilled) color entries in the returned matrix are assigned the
-%  value 'emptyVal'. The default is emptyVal = NaN.  
+%  rgbFormat: 
+%   In the returned image each plane represents one color in the color
+%   filter array (cfa).  For example, if the input img is (row,col) and
+%   contains red, green and blue pixels, the returned rgbFormat is (row,col,3)
+%   with each of the image planes containing the red, green or blue data
+%   values.
 %
-%  The cfaVals is a list of characters of the color filter names.  It is
-%  the same as the first letters in the cell array returned by
-%  sensorGet(sensor,'filterString') 
+%   Empty (unfilled) color entries in the returned matrix are assigned the
+%   value 'emptyVal'. The default is emptyVal = NaN.
 %
-% See also:  sensorRGB2Plane
+%  cfaVales
+%   The cfaVals is a list of characters of the color filter names.  It is
+%   the same as the first letters in the cell array returned by
+%   sensorGet(sensor,'filterString')
 %
 % Example:
 %   rgbFormat = plane2rgb(img,sensor,0);
 %   rgbFormat = plane2rgb(img,sensor);  imagescRGB(rgbFormat);
 %
-% Copyright ImagEval Consultants, LLC, 2005.
+% See also:  
+%  sensorRGB2Plane
+%
 
 if ieNotDefined('img'), error('img required - img is the vci input field'); end
 if ieNotDefined('sensor'),   sensor = vcGetObject('sensor'); end
@@ -66,7 +71,7 @@ filterColorLetters = sensorGet(sensor,'filterColorLetters');
 
 % The output has one plane for each color filter in the sensor.
 nPlanes = length(filterColorLetters);
-rows = size(img,1); cols = size(img,2); 
+rows = size(img,1); cols = size(img,2);
 rgbFormat = zeros(rows,cols,nPlanes);
 
 % For pixel binning or other digital value cases, we may have the digital
@@ -82,7 +87,7 @@ end
 % are in RGB format, then plane 1 is R, plane 2 is G and plane 3 is B.  If
 % the filters are in GRB format, then 1 is G, 2 is R and 3 is B.
 for ii=1:nPlanes
-        
+    
     % Set the image plane all to the default value
     tmp = ones(rows,cols)*emptyVal;
     
@@ -93,7 +98,7 @@ for ii=1:nPlanes
     l = (cfaN == ii);
     
     % Set the entries at those locations to img(l)
-    tmp(l) = img(l);   % figure(1); hist(tmp(:),50)
+    tmp(l) = img(l);   % figure(1); histogram(tmp(:),50)
     
     % Place the data in tmp into the appropriate location of rgbFormat
     % Here, we make sure that if the data are cmy the order of the planes
@@ -106,8 +111,8 @@ for ii=1:nPlanes
     % I think the right algorithm is to place the data into the color plane
     % that corresponds to its filter.  So, if the g filter is in the first
     % column, then the g data should be in rgbFormat(:,:,1).
-    rgbFormat(:,:,ii) = reshape(tmp,rows,cols);  
-    % figure(1); imagesc(rgbFormat(1:6,1:6,ii)); colormap(gray)
+    rgbFormat(:,:,ii) = reshape(tmp,rows,cols);
+    % figure(1); imagesc(rgbFormat(1:6,1:6,ii)); colormap(gray(64))
 end
 
 % The function unique sorts the results so that we now know which color

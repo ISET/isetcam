@@ -30,7 +30,7 @@ M2 = M_TToP(T,Pdest);
 M = M2*M1;
 
 if ( nargin == 4)
-  dest = M*source;
+    dest = M*source;
 else
-  dest = [];
+    dest = [];
 end

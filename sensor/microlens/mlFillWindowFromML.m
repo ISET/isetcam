@@ -1,9 +1,9 @@
 function mlFillWindowFromML(handles,ml)
 %Fill Microlens window display values from the microlens structure data
-%   
+%
 %   mlFillWindowFromML(handles,ml)
 %
-% handles:  Handles to the microlens window 
+% handles:  Handles to the microlens window
 % ml:       The microlens structure
 %
 % Imageval Consulting, LLC, 2005
@@ -18,7 +18,7 @@ set(handles.editWave,'string',sprintf('%.0f',val));
 val = mlensGet(ml,'source fnumber');
 set(handles.editFNumber,'string',sprintf('%.2f',val));
 
-val = mlensGet(ml,'source focallength','mm'); 
+val = mlensGet(ml,'source focallength','mm');
 set(handles.editImageFocalLength,'string',sprintf('%.2f',val));
 
 val = mlensGet(ml,'mlfocal length','microns');

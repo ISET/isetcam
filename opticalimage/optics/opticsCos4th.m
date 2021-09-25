@@ -47,6 +47,6 @@ sFactor = opticsGet(optics,'cos4th Data');  % figure(3); mesh(sFactor)
 photons = bsxfun(@times, oiGet(oi, 'photons'), sFactor);
 
 % Compress the calculated image and put it back in the structure.
-oi = oiSet(oi, 'photons',photons); 
+oi = oiSet(oi, 'photons',photons);
 
 end

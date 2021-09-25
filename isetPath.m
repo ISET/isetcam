@@ -30,24 +30,17 @@ fprintf('ISET root directory: %s\n',isetDir)
 % Adds the root directory of the ISET tree to the user's path
 addpath(isetDir);
 
-% Generates a list of the directories below the ISET tree.
-p = genpath(isetRootPath);
+% Generates a list of the directories below the ISET tree and adds them.
+addpath(genpath(isetRootPath));
 
-% Adds all of the directories to the user's path.
-addpath(p);
+% Remove paths related to version control.
+vcs_dirs = {'.git', '.svn'};
+for i = 1:length(vcs_dirs)
+    vcs_path = fullfile(isetRootPath, vcs_dirs{i});
+    if ~isempty(dir(vcs_path)); rmpath(vcs_path); end
+end
 
 % Refreshes the path.
 path(path);
-
-% For people using the svn version - ask for: svnRemovePath;
-% to eliminate the svn directories from the matlab path.
-
-% We must have the proper DLL on the path.  This depends on the version
-% number.  We may need to elaborate this section of the code in the future.
-version = ver('Matlab');
-v = version.Version(1:3);
-versionNumber = str2num(v);
-
-if versionNumber < 7, error('ISET requires version 7 or higher'); end
 
 return;

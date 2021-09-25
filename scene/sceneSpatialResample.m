@@ -69,4 +69,4 @@ fov   = sceneGet(scene,'fov');
 scene = sceneSet(scene,'fov',fov*dx/sr(2));
 
 end
-    
+

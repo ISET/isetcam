@@ -1,5 +1,5 @@
 function [img,parms] = imageHarmonic(parms)
-%Create a windowed spatial harmonic image 
+%Create a windowed spatial harmonic image
 %
 %   [img,parms]  = imgHarmonic(parms)
 %
@@ -8,11 +8,11 @@ function [img,parms] = imageHarmonic(parms)
 %      contrast*window.*cos(2*pi*f([cos(ang)*X + sin(ang)*Y] + ph) + 1
 %
 % The parameters are  in the structure parms. See the fields in the
-% example, below. 
+% example, below.
 %
 % When some of the fields are vectors (freq, contrast, ang, phase) then the
 % return produces the sum of these harmonics.  The sum always has a mean of
-% 1.  
+% 1.
 %
 % The Gabor Flag is used to set the window values (a Gaussian).
 % When the flag is non-zero, the value specifies the standard deviation
@@ -24,21 +24,21 @@ function [img,parms] = imageHarmonic(parms)
 %
 % Example:
 %   [img,p] = imageHarmonic;
-%   figure; imagesc(img), colormap(gray); axis image
+%   figure; imagesc(img), colormap(gray(64)); axis image
 %
-%   parms.row = 32; parms.col = 32; parms.contrast = 1; 
+%   parms.row = 32; parms.col = 32; parms.contrast = 1;
 %   parms.ph = pi/2; parms.freq = 2; parms.ang = pi/6;
 %   parms.GaborFlag = 0.2;
 %   [img,p] = imageHarmonic(parms);
-%   vcNewGraphWin; imagesc(img), colormap(gray); axis image
+%   vcNewGraphWin; imagesc(img), colormap(gray(64)); axis image
 %
 % Now, for a sum of two harmonics
 %   parms.freq(2) = 3; parms.ang(2) = parms.ang(1);
 %   parms.contrast(2) = 1; parms.ph(2) = pi/2;
 %   [img,p] = imageHarmonic(parms);
-%   vcNewGraphWin; imagesc(img), colormap(gray); axis image
+%   vcNewGraphWin; imagesc(img), colormap(gray(64)); axis image
 %   plot(img(16,:))
-% 
+%
 % Copyright ImagEval Consultants, LLC, 2003.
 
 
@@ -55,10 +55,10 @@ if checkfields(parms,'col'), col = parms.col; else col = 64; parms.col = col; en
 % of the Gaussian as a fraction of the image size.  For example, if the
 % image size is 128 and GaborFlag = 0.5, the standard deviation is 64.
 if checkfields(parms,'GaborFlag')
-    GaborFlag = parms.GaborFlag; 
+    GaborFlag = parms.GaborFlag;
 else
-    GaborFlag = 0; 
-    parms.GaborFlag = GaborFlag; 
+    GaborFlag = 0;
+    parms.GaborFlag = GaborFlag;
 end
 
 % Calculate the harmonic
@@ -70,7 +70,7 @@ if GaborFlag
     sigma = GaborFlag*min(row,col);
     g = fspecial('gauss',hsize,sigma);
     g = g/max(g(:));
-else 
+else
     g = ones(size(X));
 end
 
@@ -88,6 +88,6 @@ if min(img(:) < 0)
     warning('Harmonics have negative sum, not realizable');
 end
 
-% figure; imagesc(img); colormap(gray); axis image
+% figure; imagesc(img); colormap(gray(64)); axis image
 
 end

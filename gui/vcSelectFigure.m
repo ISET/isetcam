@@ -1,5 +1,5 @@
 function figNum = vcSelectFigure(objType,noNewWin)
-% Open an ISET window and return a figure number 
+% Open an ISET window and return a figure number
 %
 %   figNum = vcSelectFigure(objType,noNewWin)
 %

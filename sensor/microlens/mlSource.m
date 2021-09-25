@@ -8,7 +8,7 @@ function W = mlSource(x1,x2,u1,u2,X,U)
 % of every position in (x,angle) over which the source extends.
 %
 % x1,x2,u1,u2 are the bounds in phase space.
-% X:    
+% X:
 % U:
 %
 % Returns

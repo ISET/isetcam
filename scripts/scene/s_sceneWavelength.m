@@ -1,14 +1,14 @@
 %% Adjust the scene wavelength representation
 %
 % Wavelengths are adjusted by linear interpolation of the
-% spectral radiance data. 
+% spectral radiance data.
 %
 % (c) Imageval Consulting, LCC 2012
 
 %%
 ieInit
 
-%% 
+%%
 scene = sceneCreate;
 sceneGet(scene,'wave')
 ieAddObject(scene); sceneWindow;
@@ -26,4 +26,4 @@ scene = sceneSet(scene,'name','2 nm narrow band spacing');
 ieAddObject(scene); sceneWindow;
 fprintf('Note the wavelength representation in the window\n');
 
-%% 
+%%

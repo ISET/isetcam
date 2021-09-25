@@ -9,7 +9,7 @@ function outImg = render_oled_samsung(inImg, d, sz)
 %
 % The sub-pixel design is Samsung S-strip, whose repeating unit contains
 % 2x2 pixels
-% 
+%
 % Inputs:
 %   inImg  - input image, size(inImg, 3) should be same as nprimaries
 %   d      - display structure, can be created by displayCreate
@@ -32,7 +32,7 @@ if notDefined('inImg'), error('input image required'); end
 if notDefined('d'), d = displayCreate('OLED-Samsung'); end
 
 %% Render
-% Get parameters from display structure 
+% Get parameters from display structure
 pixels_per_dixel = displayGet(d, 'pixels per dixel');
 nprimaries = size(inImg, 3);
 

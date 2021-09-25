@@ -8,14 +8,14 @@ function imgLMS = xyz2lms(imgXYZ, cbType, varargin)
 %
 % A calculation for color blind can also be performed.  This is set by
 % using format the cbType variable.  The estimate for color blind is done
-% either by 
+% either by
 %
 %  * interpolating the missing cone using the algorithm in Brettel, Vienot
 %  and Mollon JOSA 14/10 1997. The idea in that paper is that the preserved
 %  cones are preserved.  The missing cone is assigned a value that is  a
 %  linear transform of the preserved cones, or
 %
-%  * returning a zero for the missing cone type  
+%  * returning a zero for the missing cone type
 %
 % Inputs:
 %   imgXYZ      = XYZ image to transform
@@ -59,16 +59,16 @@ if cbType > 0
     if isempty(varargin), error('whiteXYZ required');
     else whiteXYZ = varargin{1};
     end
-
+    
     % Compute the cone responses to a white (anchor_e).  These are the
-    % anchor values for the equal energy stimulus.  In our hands, though,
+    % anchor values for the equal energy stimulus.  In our hands, though
     % we appear to be using the white of the display as whiteXYZ, though
     % this always be the equal energy white.
     anchor_e = reshape(whiteXYZ, [1 3]) * colorTransformMatrix('xyz2lms');
-
+    
     % Convert XYZ data to LMS format used by the authors
     imgLMS = imageLinearTransform(imgXYZ, colorTransformMatrix('xyz2lms'));
-
+    
     % These anchor values are derived in the paper and used to compute the
     % missing cone value.  I suppose we could just use the Stockman data
     % that we have rather than these numbers.  Our data do not match these
@@ -105,14 +105,14 @@ if cbType > 0
     %  lms = ieReadSpectra('stockman',400:700);
     %  g = 4; g = (g-1)*3 + 1; diff = lms - ones(301,3)*diag([anchor(g:(g+2))]);
     %  err = sqrt(diag(diff*diff'));[v,idx] = min(err); 400 + idx
-
+    
     % Depending on color blindness type
     switch cbType
         case 1          % Protanopia
             % These formula are Equation (8) in the Bretell paper.
-            % find a,b,c for lambda = 575nm and lambda = 475.  
-            % These are the LMS white values and the anchor values. 
-
+            % find a,b,c for lambda = 575nm and lambda = 475.
+            % These are the LMS white values and the anchor values.
+            
             % We calculate the cross product between the anchor for the
             % white points and this particular type of dichromat.
             % Less than inflection
@@ -124,10 +124,10 @@ if cbType > 0
             a2 = anchor_e(2) * anchor(3) - anchor_e(3) * anchor(2);
             b2 = anchor_e(3) * anchor(1) - anchor_e(1) * anchor(3);
             c2 = anchor_e(1) * anchor(2) - anchor_e(2) * anchor(1);
-
+            
             % Divides the space according to this equal energy anchor
             inflection = (anchor_e(3) / anchor_e(2));
-
+            
             % Interpolate missing L values for protonape
             L = imgLMS(:,:,1); M = imgLMS(:,:,2); S = imgLMS(:,:,3);
             lst = ((S ./ M) < inflection);
@@ -138,7 +138,7 @@ if cbType > 0
             L(~lst) = -(b2*M(~lst) + c2*S(~lst)) / a2;
             imgLMS(:,:,1) = L;
             % vcNewGraphWin; imagescRGB(imgLMS);
-
+            
         case 2          % Deuteranopia
             % find a,b,c for lam=575nm and lam=475, again.
             % Less than inflection
@@ -149,9 +149,9 @@ if cbType > 0
             a2 = anchor_e(2) * anchor(3) - anchor_e(3) * anchor(2);
             b2 = anchor_e(3) * anchor(1) - anchor_e(1) * anchor(3);
             c2 = anchor_e(1) * anchor(2) - anchor_e(2) * anchor(1);
-
+            
             inflection = (anchor_e(3) / anchor_e(1));
-
+            
             % Interpolate missing M values for deuteranope
             L = imgLMS(:,:,1); M = imgLMS(:,:,2); S = imgLMS(:,:,3);
             lst = ((S ./ L) < inflection);
@@ -159,23 +159,23 @@ if cbType > 0
             M(~lst) = -(a2*L(~lst) + c2*S(~lst))/ b2;
             imgLMS(:,:,2) = M;
             % vcNewGraphWin; imagescRGB(imgLMS);title('New formula');
-
+            
         case 3          % Tritanopia
-
+            
             % find for lam=660 and lam=485 */
             % Less than the inflection
             a1 = anchor_e(2) * anchor(12) - anchor_e(3) * anchor(11);
             b1 = anchor_e(3) * anchor(10)  - anchor_e(1) * anchor(12);
             c1 = anchor_e(1) * anchor(11) - anchor_e(2) * anchor(10);
-
+            
             % Greater than the inflection
             a2 = anchor_e(2) * anchor(6)  - anchor_e(3) * anchor(5);
             b2 = anchor_e(3) * anchor(4)  - anchor_e(1) * anchor(6);
             c2 = anchor_e(1) * anchor(5)  - anchor_e(2) * anchor(4);
-
+            
             % Inflection point
             inflection = (anchor_e(2) / anchor_e(1));
-
+            
             % Interpolate missing M values for tritanope
             L = imgLMS(:,:,1); M = imgLMS(:,:,2); S = imgLMS(:,:,3);
             lst = ((M ./ L) < inflection);
@@ -183,10 +183,10 @@ if cbType > 0
             S(~lst) = -(a2*L(~lst) + b2*M(~lst))/ c2;
             imgLMS(:,:,3) = S;
             %vcNewGraphWin; imagescRGB(imgLMS);title('New formula');
-
+            
     end
-
-
+    
+    
 else  % cbType <= 0
     % Place a constant in the missing cone class. Value is set by
     % varargion.
@@ -195,7 +195,7 @@ else  % cbType <= 0
     end
     
     imgLMS = imageLinearTransform(imgXYZ, colorTransformMatrix('xyz2lms'));
-
+    
     switch abs(cbType)
         case 1
             imgLMS(:,:,1) = extrapVal;

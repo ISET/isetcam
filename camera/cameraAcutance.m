@@ -9,7 +9,7 @@ function acutance = cameraAcutance(camera,plotFlag)
 %
 % Runs ISOAcutance
 %
-% Returns 
+% Returns
 %   Acutance, and it may produce a plot showing the CPIQ MTF along with the
 %   camera MTF.  The acutance is the camera MTF weighted by the CPIQ MTF.
 %
@@ -17,7 +17,7 @@ function acutance = cameraAcutance(camera,plotFlag)
 %   camera = cameraCreate;
 %   cameraAcutance(camera)
 %   cameraAcutance(camera,false)
-% 
+%
 %   camera = cameraCreate('monochrome');
 %   cameraAcutance(camera)
 %
@@ -30,7 +30,7 @@ function acutance = cameraAcutance(camera,plotFlag)
 if ieNotDefined('camera'), error('camera required'); end
 if ieNotDefined('plotFlag'), plotFlag = true; end
 
-%% Compute acutance 
+%% Compute acutance
 
 % First, compute the MTF.  Get the luminance term.
 cMTF   = cameraMTF(camera);

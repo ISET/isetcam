@@ -11,7 +11,7 @@ function [de00, errComponents] = deltaE2000(Labstd, Labsample, KLCH)
 %   CIEDE2000.
 %
 %   K is a 3 vector, in the form [kL, kC, kH]. k =[1 1 1] for the basic
-%   conditions (uniform surround field with L*=50, 1000lx illuminance,
+%   conditions (uniform surround field with L*=50, 1000lx illuminance
 %   homogeneous stimulus >4 degree visual angle, color difference between
 %   0-5 CIELAB units). In the textile industry kL is commonly set to 2.
 %   Default k is [1 1 1];
@@ -20,10 +20,10 @@ function [de00, errComponents] = deltaE2000(Labstd, Labsample, KLCH)
 %   values.  The difference between these is the error measure.  The CIELAB
 %   values are computed from CIE XYZ measurements using standard lab
 %   equipment.
-%   
+%
 %   ImagEval added a new return term (errComponents) that contains the
 %   separate luminance, chromatic, and hue error terms.  These components,
-%   which are scaled and combined 
+%   which are scaled and combined
 %
 %   The original authors and a reference source for this code are cited
 %   below. The comments in the original source code follow:
@@ -42,7 +42,7 @@ function [de00, errComponents] = deltaE2000(Labstd, Labsample, KLCH)
 % specified.
 %
 % Based on the article:
-% "The CIEDE2000 Color-Difference Formula: Implementation Notes,
+% "The CIEDE2000 Color-Difference Formula: Implementation Notes
 % Supplementary Test Data, and Mathematical Observations,", G. Sharma,
 % W. Wu, E. N. Dalal, submitted to Color Research and Application,
 % January 2004.

@@ -96,7 +96,7 @@ xlabel('x'); ylabel('y');
 N = 15;
 [L, a, b] = sphere(N);
 % vcNewGraphWin;
-% surf(L,a,b); colormap(hot)
+% surf(L,a,b); colormap(hot(64))
 
 % These are the sphere points at 5 dE
 dLab    = 2*[L(:),a(:),b(:)];

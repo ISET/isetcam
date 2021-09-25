@@ -2,19 +2,19 @@
 %
 % Use the principles of color matching to render an approximation
 % to the visible spectrum on a display.
-% 
+%
 % Class:     Psych 221/EE 362
 % Tutorial:  Spectrum
 % Author:    Wandell
 % Purpose:   An example calculation: making a desaturated rainbow.
-% Date:      01.12.98	
+% Date:      01.12.98
 % Duration:  20 minutes
-% 
+%
 % PURPOSE:
 %    This tutorial uses the color-matching tools to create an image
 %    approaching the appearance the rainbow (the spectral colors) on your
 %    display.
-% 
+%
 
 %%
 ieInit
@@ -29,7 +29,7 @@ XYZ = ieReadSpectra('XYZ.mat',wavelength);
 %% Model a display
 
 % Let's suppose the spectral power distributions of your monitor's
-% phosphors are from the LCD-APple.  
+% phosphors are from the LCD-APple.
 d = displayCreate('LCD-Apple',wavelength);
 phosphors = displayGet(d,'spd');
 
@@ -75,7 +75,7 @@ rgbSpectrum = xyz2rgb*XYZ';
 % equal energy.  But, equal energy monochrome lights do not appear equally
 % bright.  The brightest part of the spectrum is near 550nm, and the blue
 % and red ends are much dimmer (per unit watt).
-% 
+%
 
 %% There is one adjustment I would like to make to the spectral colors.
 
@@ -148,7 +148,7 @@ rgbSpectrum = (rgbSpectrum + grayLevel);
 
 rgbSpectrum = rgbSpectrum/max(rgbSpectrum(:));
 
-vcNewGraphWin; 
+vcNewGraphWin;
 plot(wavelength,rgbSpectrum), grid on
 set(gca,'xlim',[350 750]);
 xlabel('Wavelength (nm)'); ylabel('Lineaer RGB');
@@ -179,7 +179,7 @@ wavelength = wavelength(waveSamp);
 im = 1:size(mp,1);
 
 % and show 'em
-% 
+%
 vcNewGraphWin;
 mp = mp/max(mp(:));
 colormap(mp);image(wavelength,1,im)
@@ -190,7 +190,7 @@ xlabel('wavelength (nm)')
 % such as the scaleFactor and the intensity of the gray
 % background.
 
-%% Here is a plot of the DAC values we ended up with.  
+%% Here is a plot of the DAC values we ended up with.
 vcNewGraphWin;
 plot(wavelength, DAC(waveSamp,1),'-r',...
     wavelength, DAC(waveSamp,2),'-g',...

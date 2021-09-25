@@ -3,7 +3,7 @@ function il = illuminantSet(il,param,val,varargin)
 %
 %   il = illuminantSet(il,param,val,varargin)
 %
-% The illuminant structure has two formats.  
+% The illuminant structure has two formats.
 %
 % It can be a simple vector, which defines an SPD for the entire image.  It
 % can also be an RGB format spectral data set that has a separate
@@ -11,7 +11,7 @@ function il = illuminantSet(il,param,val,varargin)
 % illuminant.
 %
 % Parameters
-%    
+%
 %
 % See also:  illuminantCreate, illuminantGet
 %
@@ -38,9 +38,9 @@ switch param
         if ~strcmpi(val,'illuminant'), error('Type must be illuminant'); end
         il.type = val;
     case 'photons'
-        % il = illuminantSet(il,'photons',data); 
+        % il = illuminantSet(il,'photons',data);
         % Use single precision because we may have an illuminant that is
-        % spectral spatial.                 
+        % spectral spatial.
         il.data.photons = single(val);
         
     case 'energy'
@@ -65,7 +65,7 @@ switch param
         oldW = illuminantGet(il,'wave');
         newW = val(:);
         il.spectrum.wave = newW;
-
+        
         % Now decide what to do with photons
         p = illuminantGet(il,'photons');
         if ~isempty(p)
@@ -79,7 +79,7 @@ switch param
                 % Adjust the sampling.
                 newP = interp1(oldW,p,newW,'linear',min(p(:)*1e-3)');
                 il = illuminantSet(il,'photons',newP);
-            else 
+            else
                 error('Photons and wavelength sample points not interpretable');
             end
             % vcNewGraphWin; plot(newW,newP);

@@ -5,7 +5,7 @@ function sensor = sensorComputeNoiseFree(sensor,oi)
 %
 % We calculate the noise free voltage image for a sensor with the specified
 % general characteristics.  The noise free voltage is in the 'volts' field
-% of the sensor.  
+% of the sensor.
 %
 % We prevent all types of noise we can think of. Specifically, we eliminate
 %
@@ -35,7 +35,7 @@ function sensor = sensorComputeNoiseFree(sensor,oi)
 %     imtool(volts/max(volts(:)));
 %
 % Web resources:
-%    
+%
 % See also
 % COMPUTATIONAL OVERVIEW:  See sensorCompute
 %

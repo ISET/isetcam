@@ -1,7 +1,7 @@
 %% Read in a monochrome image
 %
 % We show how to create a unispectral (single wavelength) scene
-% from a monochrome image. 
+% from a monochrome image.
 %
 % See also:  displayCreate, sceneFromFile, sceneAdjustIlluminant
 %

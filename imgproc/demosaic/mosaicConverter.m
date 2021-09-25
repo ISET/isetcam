@@ -5,7 +5,7 @@ function [bayer_out, outBayerPattern] = mosaicConverter(bayer_in, inBayerPattern
 %
 % We use the same demosaic functions for different types of Bayer patterns.
 % We do this by transforming any pf the four possible input Bayer pattern
-% type into a common format (gr/bg). 
+% type into a common format (gr/bg).
 %
 % This routine does the conversion. It comprises a set of cases that
 % convert different Bayer patterns to another Bayer format. By default the
@@ -52,19 +52,19 @@ switch lower(outBayerPattern)
             case 'bggr'
                 % Turn the image into one we can manage. There is an infelicity in
                 % the first and last rows
-                 bayer_out(1:(end-1),:,:) = bayer_in(2:end,:,:);
+                bayer_out(1:(end-1),:,:) = bayer_in(2:end,:,:);
                 bayer_out(end,:,:)       = bayer_in((end-1),:,:);
             case 'gbrg'
                 % Turn the image into one we can manage. There is an infelicity in
                 % the first and last rows
-                 bayer_out(1:(end-1),1:(end - 1),:) = bayer_in(2:end,2:end,:);
-                 bayer_out(end,:,:)                 = bayer_in((end-1),:,:);
-                 bayer_out(:,end,:)                 = bayer_in(:,(end-1),:);
+                bayer_out(1:(end-1),1:(end - 1),:) = bayer_in(2:end,2:end,:);
+                bayer_out(end,:,:)                 = bayer_in((end-1),:,:);
+                bayer_out(:,end,:)                 = bayer_in(:,(end-1),:);
             otherwise
                 error('Unsupported Bayer RGB pattern');
         end
-            outBayerPattern = 'grbg';
-
+        outBayerPattern = 'grbg';
+        
     case 'rggb'
         switch lower(inBayerPattern)
             case 'grbg'
@@ -75,53 +75,53 @@ switch lower(outBayerPattern)
             case 'bggr'
                 % Turn the image into one we can manage. There is an infelicity in
                 % the first and last rows
-                 bayer_out(1:(end-1),1:(end - 1),:) = bayer_in(2:end,2:end,:);
-                 bayer_out(end,:,:)                 = bayer_in((end-1),:,:);
-                 bayer_out(:,end,:)                 = bayer_in(:,(end-1),:);
+                bayer_out(1:(end-1),1:(end - 1),:) = bayer_in(2:end,2:end,:);
+                bayer_out(end,:,:)                 = bayer_in((end-1),:,:);
+                bayer_out(:,end,:)                 = bayer_in(:,(end-1),:);
             case 'gbrg'
-                 bayer_out(1:(end-1),:,:) = bayer_in(2:end,:,:);
-                 bayer_out(end,:,:)       = bayer_in((end-1),:,:);
+                bayer_out(1:(end-1),:,:) = bayer_in(2:end,:,:);
+                bayer_out(end,:,:)       = bayer_in((end-1),:,:);
             otherwise
                 error('Unsupported Bayer RGB pattern');
         end
-            outBayerPattern = 'rggb';
-
+        outBayerPattern = 'rggb';
+        
     case 'bggr'
         switch lower(inBayerPattern)
             case 'grbg'
                 % Turn the image into one we can manage. There is an infelicity in
                 % the first and last rows
-                 bayer_out(1:(end-1),:,:) = bayer_in(2:end,:,:);
-                 bayer_out(end,:,:)       = bayer_in((end-1),:,:);
+                bayer_out(1:(end-1),:,:) = bayer_in(2:end,:,:);
+                bayer_out(end,:,:)       = bayer_in((end-1),:,:);
             case 'rggb'
                 % Turn the image into one we can manage. There is an infelicity in
                 % the first and last rows
-                 bayer_out(1:(end-1),1:(end - 1),:) = bayer_in(2:end,2:end,:);
-                 bayer_out(end,:,:)                 = bayer_in((end-1),:,:);
-                 bayer_out(:,end,:)                 = bayer_in(:,(end-1),:);
+                bayer_out(1:(end-1),1:(end - 1),:) = bayer_in(2:end,2:end,:);
+                bayer_out(end,:,:)                 = bayer_in((end-1),:,:);
+                bayer_out(:,end,:)                 = bayer_in(:,(end-1),:);
             case 'bggr'
                 % This is the one we can manage
                 bayer_out = bayer_in;
- 
+                
             case 'gbrg'
                 bayer_out(:,1:(end-1),:) = bayer_in(:,2:end,:);
                 bayer_out(:,end,:)       = bayer_in(:,(end-1),:);
             otherwise
                 error('Unsupported Bayer RGB pattern');
         end
-            outBayerPattern = 'bggr';
-
+        outBayerPattern = 'bggr';
+        
     case 'gbrg'
         switch lower(inBayerPattern)
             case 'grbg'
                 % Turn the image into one we can manage. There is an infelicity in
                 % the first and last rows
-                 bayer_out(1:(end-1),1:(end - 1),:) = bayer_in(2:end,2:end,:);
-                 bayer_out(end,:,:)                 = bayer_in((end-1),:,:);
-                 bayer_out(:,end,:)                 = bayer_in(:,(end-1),:);
+                bayer_out(1:(end-1),1:(end - 1),:) = bayer_in(2:end,2:end,:);
+                bayer_out(end,:,:)                 = bayer_in((end-1),:,:);
+                bayer_out(:,end,:)                 = bayer_in(:,(end-1),:);
             case 'rggb'
-                 bayer_out(1:(end-1),:,:) = bayer_in(2:end,:,:);
-                 bayer_out(end,:,:)       = bayer_in((end-1),:,:);
+                bayer_out(1:(end-1),:,:) = bayer_in(2:end,:,:);
+                bayer_out(end,:,:)       = bayer_in((end-1),:,:);
             case 'bggr'
                 bayer_out(:,1:(end-1),:) = bayer_in(:,2:end,:);
                 bayer_out(:,end,:)       = bayer_in(:,(end-1),:);
@@ -131,7 +131,7 @@ switch lower(outBayerPattern)
             otherwise
                 error('Unsupported Bayer RGB pattern');
         end
-            outBayerPattern = 'gbrg';
+        outBayerPattern = 'gbrg';
     otherwise
         error('Unsupported Bayer RGB pattern');
 end

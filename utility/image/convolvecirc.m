@@ -1,11 +1,11 @@
 function Y = convolvecirc(X,h)
-%  Performs 2D circular convolution 
+%  Performs 2D circular convolution
 %
-%  Y = convolvecirc(X,h) 
-% 
+%  Y = convolvecirc(X,h)
+%
 %  The matrix h (kernel) is convolved with the matrix X. The result has the
 %  same size as X. There is probably a Matlab circular convolution by now
-%  in the image processing toolbox. 
+%  in the image processing toolbox.
 %
 %  It is assumed that both the row dimension and column dimension  of h do
 %  not exceed those of X.  The result is the same as zero-padding h out to

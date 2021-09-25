@@ -4,7 +4,7 @@
 % establishing sensor correction values.
 %
 % See also:  s_sceneReflectanceCharts,
-%   s_sceneReflectanceChartBasisFunctions 
+%   s_sceneReflectanceChartBasisFunctions
 %
 % Copyright ImagEval Consultants, LLC, 2013.
 
@@ -13,7 +13,7 @@ ieInit
 
 %% Randomly select reflectances
 
-% The files containing the reflectances are in ISET format, readable by 
+% The files containing the reflectances are in ISET format, readable by
 % s = ieReadSpectra(sFiles{1});
 sFiles = cell(1,4);
 sFiles{1} = which('MunsellSamples_Vhrel.mat');
@@ -28,10 +28,10 @@ sFiles{3} = fullfile(isetRootPath,'data','surfaces','reflectances','DupontPaintC
 sFiles{4} = fullfile(isetRootPath,'data','surfaces','reflectances','HyspexSkinReflectance.mat');
 %}
 % The number of samples from each of the data sets, respectively
-sSamples = [24,24,24,24];  
+sSamples = [24,24,24,24];
 
 % How many row/col spatial samples in each patch (they are square)
-wave     =  400:5:700;      
+wave     =  400:5:700;
 sampling = 'no replacement';
 [reflectance, sSamples] = ieReflectanceSamples(sFiles,sSamples,wave,sampling);
 
@@ -70,7 +70,7 @@ sFiles{2} = fullfile(isetRootPath,'data','surfaces','reflectances','DupontPaintC
 %}
 sSamples = [12,12]*5;
 [reflectances, sList] = ieReflectanceSamples(sFiles,sSamples,wave);
-vcNewGraphWin; plot(wave,reflectances); 
+vcNewGraphWin; plot(wave,reflectances);
 xlabel('Wavelength (nm)');
 ylabel('Reflectance')
 grid on
@@ -81,4 +81,4 @@ vcNewGraphWin; plot(reflectances(:),reflectances2(:),'.')
 xlabel('Set 1')
 ylabel('Set 2')
 
-%% 
+%%

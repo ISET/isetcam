@@ -19,7 +19,7 @@ function d = displayCreate(displayName,varargin)
 %               reflectance of an object is within the first three linear
 %               basis functions of natural surfaces.  Ask me how Joyce and
 %               I did that.  Or read s_displaySurfaceReflectance.
-%  
+%
 % Optional key/value pairs:
 %   Settable display parameters as pairs.  Anything that works in
 %   displaySet will work here
@@ -27,12 +27,12 @@ function d = displayCreate(displayName,varargin)
 % Description
 %   There are various calibrated displays in data/displays.  They contain a
 %   variable ('d') that is a display structure.  See displayGet and
-%   displaySet for the slots. 
+%   displaySet for the slots.
 %
 %   The 'reflectance-display' is designed to work well with sceneFromFile,
 %   producing a scene whose reflectances are within the 3D basis functions
 %   of natural surfaces and a D65 illuminant.
-% 
+%
 % sRGB definitions in terms of xy
 %
 %        Red     Green   Blue   White
@@ -43,10 +43,10 @@ function d = displayCreate(displayName,varargin)
 %  Some displays have psf data, as well.  For example:
 %
 %   d = displayCreate('LCD-Apple');
-%  
+%
 % Copyright ImagEval Consultants, LLC, 2011.
 %
-% See Also:  
+% See Also:
 %   sceneFromFile (RGB read in particular)
 %
 
@@ -85,7 +85,7 @@ switch sParam
         % This is the old default display with block matrix primaries.  The
         % modern default display is the 'reflectance-display'
         d = displayDefault(d);
- 
+        
     case 'equalenergy'
         % Make the primaries all the same and equal energy.  Thus, a
         % monochrome display.
@@ -95,7 +95,7 @@ switch sParam
     otherwise
         % Read a file with calibrated display data.
         % This can include pixel psf data for some displays.
-        if exist(displayName,'file') || exist([displayName,'.mat'],'file') 
+        if exist(displayName,'file') || exist([displayName,'.mat'],'file')
             tmp = load(displayName);
             if ~isfield(tmp,'d')
                 error('No display struct in the file');
@@ -113,7 +113,7 @@ switch sParam
         else
             error('Unknown display %s.',displayName);
         end
-
+        
 end
 
 % Start out without an image.  Until we know what we should use.

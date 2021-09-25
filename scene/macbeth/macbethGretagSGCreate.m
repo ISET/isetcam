@@ -1,4 +1,4 @@
-%% macbethGretagSGCreate.m 
+%% macbethGretagSGCreate.m
 %
 % A script that creates a scene data structure of the Gretag digital color
 % chart SG reflectance target provided by Francisco Imai and Andy Lin July

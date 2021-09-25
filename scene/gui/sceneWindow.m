@@ -5,14 +5,14 @@ function sceneW = sceneWindow(scene,show)
 %   sceneW = sceneWindow(scene,[show])
 %
 % Brief description
-%   Opens a sceneWindow interface based on the sceneWindow_App. 
+%   Opens a sceneWindow interface based on the sceneWindow_App.
 %
 % Inputs
 %   scene:  The scene you want in the window.  If empty, the currently
 %           selected scene in global vcSESSION is used.  If there is no
-%           selected scene a default scene is created and used. 
+%           selected scene a default scene is created and used.
 %           (Optional, default is currently selected scene)
-%   show:   Executes a drawnow command on exiting.  
+%   show:   Executes a drawnow command on exiting.
 %           (Optional, default true)
 %
 % Outputs

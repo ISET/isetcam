@@ -5,7 +5,7 @@ function roiLocs = sensorROI(sensor,roiType);
 %
 % The routine makes it easy to pull out the center locations, or various
 % corners
-% 
+%
 %  roiType is one of 'center','upperLeft','upperRight', ...
 %
 %Example:
@@ -25,11 +25,11 @@ switch lower(roiType)
     case 'center';
         sz = sensorGet(sensor,'size');
         rect(1) = sz(2)/4;
-        rect(2) = sz(1)/4; 
+        rect(2) = sz(1)/4;
         rect(3) = sz(2)/2;
         rect(4) = sz(1)/2;
         rect = round(rect);
-
+        
     otherwise
         errordlg('No ROI Type selected');
 end

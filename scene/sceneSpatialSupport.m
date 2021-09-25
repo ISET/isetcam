@@ -25,5 +25,5 @@ nCols = sceneGet(scene,'cols');
 
 sSupport.y = linspace(-nRows*sr(1)/2 + sr(1)/2, nRows*sr(1)/2 - sr(1)/2,nRows);
 sSupport.x = linspace(-nCols*sr(2)/2 + sr(2)/2, nCols*sr(2)/2 - sr(2)/2,nCols);
-          
+
 return;

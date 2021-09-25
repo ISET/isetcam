@@ -25,7 +25,7 @@ function eccDegrees = RetinalEccentricityMMToDegrees(eccMm,species,method,eyeLen
 %    for rhesus monkey.
 % These curves, I think, were produced by ray tracing or otherwise solving
 % model eyes.
-% 
+%
 % The default eye length returned by EyeLength for Human is currently
 % the Rodiek value of 16.1 mm.  Drasdo and Fowler formulae are based
 % on a length of about this, so the linear and DaceyPeterson methods
@@ -57,8 +57,8 @@ function eccDegrees = RetinalEccentricityMMToDegrees(eccMm,species,method,eyeLen
 % I have not checked the fit to the Perrry and Cowey curve for Rhesus
 % against a digitization of that figure.
 %
-% See also: 
-%  EyeLength, DegreesToRetinalEccentricityMM, DegreesToRetinalMM, 
+% See also:
+%  EyeLength, DegreesToRetinalEccentricityMM, DegreesToRetinalMM,
 %     RetinalMMToDegrees
 %
 % 6/30/2015  dhb  Wrote it.
@@ -108,7 +108,7 @@ switch (method)
                 a = 0.035; b = 3.4; c1 = 0.1;
             case 'Rhesus'
                 a = 0.038; b = 4.21; c1 = 0.1;
-            otherwise 
+            otherwise
                 error('Unknown species passed');
         end
         
@@ -121,7 +121,7 @@ switch (method)
         if (~isempty(index))
             eccDegrees(index) = RetinalMMToDegrees(eccMm(index),eyeLengthMm,false);
         end
-
+        
     case 'Linear'
         eccDegrees = RetinalMMToDegrees(eccMm,eyeLengthMm,false);
         

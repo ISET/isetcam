@@ -8,7 +8,7 @@
 %
 % Tests radiometric calculations and light safety calculations.
 %
-% Reads in tab delimted text file AnsiZ136MPEDeloriTestInput.txt that has a set of 
+% Reads in tab delimted text file AnsiZ136MPEDeloriTestInput.txt that has a set of
 % rows in it.  Each row provides stimulus properties for a monochromtic
 % light and values obtained from Delori's spreadsheet.
 % (There are also some other test values entered by hand in the text file, for
@@ -29,7 +29,7 @@
 %   A key question in going from the number in the 2007 standard and retinal
 %   illuminant is what pupil size was assumed in the standard.  Delori et al.
 %   (2007) give a formula for this, which (I think) goes from the radiant
-%   power in light at the cornea overfilling the pupil to the pupil size. 
+%   power in light at the cornea overfilling the pupil to the pupil size.
 %   See Eq. 8.  That is implemented in this test program.
 %
 %   To get the degree of agreement I obtained, I also had to turn off
@@ -73,7 +73,7 @@ for i = 1:length(conditionStructs)
     eyeLengthMm = conditionStructs(i).eyeLengthMm;
     pupilDiameterMm = conditionStructs(i).pupilDiameterMm;
     ansiEyeLengthMm = conditionStructs(i).ansiEyeLengthMm;
-    ansiPupilDiameterMm = conditionStructs(i).ansiPupilDiameterMm; 
+    ansiPupilDiameterMm = conditionStructs(i).ansiPupilDiameterMm;
     CONELIMITFLAG = conditionStructs(i).CONELIMITFLAG;
     fprintf('**********\nCondition %d\n\tInput retinal illuminance of %0.1f uWatts/cm2\n',i,retinalIlluminanceUWattsPerCm2);
     fprintf('\t\tWavelength %d nm\n',wavelengthNm);
@@ -135,7 +135,7 @@ for i = 1:length(conditionStructs)
     AnsiZ136MPEPrintConditionalComparison('\tConverts to radiance %0.1f mWatts/[cm2-sr]','%0.1f',radianceMWattsPerCm2Sr,deloriRadianceMWattsPerCm2Sr,false);
     AnsiZ136MPEPrintConditionalComparison('\tConverts to corneal irradiance %0.1f uWatts/cm2','%0.1f',cornealIrradianceUWattsPerCm2,deloriCornealIrradianceUWattsPerCm2,false);
     AnsiZ136MPEPrintConditionalComparison('\tConverts to total radiant power in the pupil of %0.2g mW','%0.2g',powerInPupilMWatts,deloriPowerInPupilMWatts,false);
-        
+    
     % Compute MPE, with comparisons when available
     [MPELimitIntegratedRadiance_JoulesPerCm2Sr, ...
         MPELimitRadiance_WattsPerCm2Sr, ...
@@ -173,7 +173,7 @@ for i = 1:length(conditionStructs)
     end
     MPECt = MPECa*MPECa;
     MPET2 = AnsiZ136MPEComputeT2(stimulusDiameterDegrees);
-
+    
     % Print out comparisons when available
     fprintf('\nMPE calculations\n');
     AnsiZ136MPEPrintConditionalComparison('\tUsing pupil factor %0.2f','%0.2f',MPEPupilFactor,deloriMPEPupilFactor,false);
@@ -185,10 +185,10 @@ for i = 1:length(conditionStructs)
     AnsiZ136MPEPrintConditionalComparison('\tMPE power in pupil limit %0.3g mWatts','%0.3g',MPELimitPowerInPupilMWatts,deloriMPEPowerInPupilMWatts,false);
     AnsiZ136MPEPrintConditionalComparison('\tMPE retinal illuminance limit computed as %0.3g Watts/cm2','%0.3g',MPELimitRetinalIlluminanceWattsPerCm2,deloriMPERetinalIrradianceWattsPerCm2,false);
     fprintf('\tLimit - Stimulus log10 difference: %0.1f log10 units\n',log10(MPELimitRetinalIlluminanceWattsPerCm2)-log10(retinalIlluminanceWattsPerCm2));
-
+    
     % Ready for next iteration
     fprintf('\n');
-
+    
 end
 
 %% See if we can match some conversions computed
@@ -210,7 +210,7 @@ end
 % When I plug these numbers (580 nm, 2 degree stimulus, 2 mm pupil diameter, 1 second exposure)
 % into the version of Delori's spreadsheet I got via Ed Pugh (rev 1/10/08), it computes that
 % the stimulus has:
-%   a retinal irradiance of 340 uW/cm2 
+%   a retinal irradiance of 340 uW/cm2
 %   a radiance of 31.28 mW/[cm2 sr]
 %   a corneal irradiance of 29.93 uW/cm2,
 %   total radiant energy in the pupil of 940.33 nJ.
@@ -220,7 +220,7 @@ end
 % plus perhaps a different assumption about eye length can explain the differences, I think.
 
 % The spreadsheet computes the exposure safety limit for this stimulus as:
-%  radiant power in the pupil 2.96 mW 
+%  radiant power in the pupil 2.96 mW
 %  radiant energy in the pupil of 2.96 mJ
 %  retinal irradiance 1.07 W/cm2
 %  retinal exposure of 1.07 J/cm2

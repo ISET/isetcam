@@ -50,7 +50,7 @@ if showWaitbar, waitbar(0.3,wBar,'OI: Calculating off-axis falloff'); end
 % stored inside of data\optics\Lens Design\Standard.
 oi = opticsCos4th(oi);
 
-% Apply the human MTF here.  
+% Apply the human MTF here.
 % waitbar(0.6,wBar,'OI: Applying OTF');
 oi = opticsOTF(oi);
 

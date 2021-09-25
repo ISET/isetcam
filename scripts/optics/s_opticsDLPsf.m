@@ -6,19 +6,19 @@
 %
 % For circular pupils and *diffraction-limited* optics, the PSF
 % can be calculated directly from the f-number, focal length,
-% wavelength, and angle.  These quantities are plotted here. 
+% wavelength, and angle.  These quantities are plotted here.
 %
 % The calculation for the diffraction limited case is carried out
 % in the oiPlot and plotOTF call as:
-% 
+%
 %   fSupport = opticsGet(optics,'dl fsupport matrix',thisWave,units,nSamp);
 %   fSupport = fSupport*4;  % Enlarge the frequency support
 %   otf = dlMTF(oi,fSupport,thisWave,units);
-%                 
+%
 %   % DC is at (1,1); we plot with DC in the center.
 %   otf = fftshift(otf);
 %
-% See also: t_opticsPSFPlot, oiCreate, oiPlot, dlMTF, ieRad2deg
+% See also: t_opticsPSFPlot, oiCreate, oiPlot, dlMTF, rad2deg
 %
 % (c) Imageval Consulting, LLC, 2012
 
@@ -51,7 +51,7 @@ title(sprintf('F/# = %.2f  Foc Leng = %.2f (mm)',fNumber,fLength));
 
 vcNewGraphWin;
 posMM = uData.x/1000;              % Microns to mm
-aMinutes = ieRad2deg(atan2(posMM,fLength),'arcmin');   % Angle in radians
+aMinutes = rad2deg(atan2(posMM,fLength)) * 3437.75;   % Angle in arcminutes.
 mesh(aMinutes,uData.wavelength,uData.lsWave);
 view(30,20);
 xlabel('angle (arc min)');
@@ -61,24 +61,24 @@ ylabel('wavelength (nm)');
 
 % The PSF calculation is done inside of oiPlot again.
 thisWave = 400;
-uData = oiPlot(oi,'psf',[],thisWave); 
+uData = oiPlot(oi,'psf',[],thisWave);
 
 view(2)
 AiryRingUM = (2.44*(thisWave/1000)*fNumber);
 set(gca,'xlim',[-AiryRingUM AiryRingUM],'ylim',[-AiryRingUM AiryRingUM])
 
 %% Show a slice through the psf as a function of angle
-[r,c] = size(uData.x);
+[r,~] = size(uData.x);
 mid = ceil(r/2);
 psfMid = uData.psf(mid,:);
 posMM = uData.x(mid,:)/1000;               % Microns to mm
-posMinutes = ieRad2deg(atan2(posMM,fLength),'arcmin');
+posMinutes = rad2deg(atan2(posMM,fLength)) * 3437.75;
 
 vcNewGraphWin;
 plot(posMinutes,psfMid)
 xlabel('Arc min')
 AiryRingMM = AiryRingUM/1000;
-AiryRingMinutes = ieRad2deg(atan2(AiryRingMM,fLength),'arcmin'); % Radians
+AiryRingMinutes = rad2deg(atan2(AiryRingMM,fLength)) * 3437.75; % Radians
 set(gca,'xlim',2*[-AiryRingMinutes AiryRingMinutes])
 
 pDiameter = opticsGet(optics,'pupil diameter','mm');
@@ -90,16 +90,16 @@ title(str);
 uData = oiPlot(oi,'lswavelength');
 posMM = uData.x/1000;
 aRadians = atan2(posMM,fLength);    % This is angle in radians
-aMinutes = ieRad2deg(aRadians,'arcmin');          % This is angle in arc min
+aMinutes = rad2deg(aRadians) * 3437.75;          % This is angle in arc min
 plot(aMinutes,uData.lsWave(1,:),'-',...
     aMinutes,uData.lsWave(16,:),'r:',...
     aMinutes,uData.lsWave(31,:),'g--')
-legend('400nm','550nm','700nm'); title('Line spread'); 
+legend('400nm','550nm','700nm'); title('Line spread');
 grid on; xlabel('arc min')
 
 %% For wvf comparison, here is just at 550nm
 thisWave = 550;
-uData = oiPlot(oi,'psf',[],thisWave); 
+uData = oiPlot(oi,'psf',[],thisWave);
 
 view(2)
 AiryRingUM = (2.44*(thisWave/1000)*fNumber);
@@ -109,7 +109,7 @@ set(gca,'xlim',[-AiryRingUM AiryRingUM],'ylim',[-AiryRingUM AiryRingUM])
 mid = ceil(r/2);
 psfMid = uData.psf(mid,:);
 posMM = uData.x(mid,:)/1000;               % Microns to mm
-posMinutes = ieRad2deg(atan2(posMM,fLength),'arcmin');
+posMinutes = rad2deg(atan2(posMM,fLength)) * 3437.75;
 
 vcNewGraphWin;
 plot(posMinutes,psfMid), xlabel('Arc min'), set(gca,'xlim',[-2 2])

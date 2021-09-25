@@ -1,5 +1,5 @@
-function directory=CalDataFolder(forceDemo,calFileName,calDir)
-% directory=CalDataFolder([forceDemo],[calFileName],[calDir])
+function directory=CalDataFolder(forceDemo,calFileName,calDir,noWarning)
+% directory=CalDataFolder([forceDemo],[calFileName],[calDir],[noWarning])
 %
 % Get the path to the CalData folder.
 %
@@ -24,9 +24,9 @@ function directory=CalDataFolder(forceDemo,calFileName,calDir)
 %
 % Denis Pelli 7/25/96
 % Denis Pelli 2/28/98 change "CalDat" to "PsychCalData"
-% 8/14/00  dhb  Add alternate name, change names. 
+% 8/14/00  dhb  Add alternate name, change names.
 % 4/1/07   dhb  Fix subtle bug in error message when there are duplicate cal
-%               folders on path. 
+%               folders on path.
 % 3/7/08   mpr  changed documentation to make it consistent (apparently
 %               "forceDemo" used to be "alt"
 % 4/2/13   dhb  Add calFileName and associated behavior.
@@ -38,10 +38,13 @@ function directory=CalDataFolder(forceDemo,calFileName,calDir)
 
 % Set forceDemo flag
 if (nargin < 1 || isempty(forceDemo))
-	forceDemo = 0;
+    forceDemo = 0;
 end
 if (nargin < 2 || isempty(calFileName))
     calFileName = [];
+end
+if (nargin < 4 || isempty(noWarning))
+    noWarning = false;
 end
 
 % Postpend .mat if necessary
@@ -51,7 +54,7 @@ end
 
 % If dir is passed we just use that.  Otherwise
 % do our thing.
-if (nargin < 3 || isempty(calDir)) 
+if (nargin < 3 || isempty(calDir))
     name='PsychCalLocalData';
     alternateName ='PsychCalDemoData';
     
@@ -78,10 +81,14 @@ if (nargin < 3 || isempty(calDir))
     % This also should never happen.
     if size(directory,1)>1
         for i=1:size(directory,1)
-            disp(['DUPLICATE: ''' deblank(directory(i,:)) '''']);
+            if (~noWarning)
+                disp(['DUPLICATE: ''' deblank(directory(i,:)) '''']);
+            end
         end
-       fprintf(['Warning: found more than one ''' duplicateMsgName ''' folder in the Matlab path.']);
-       directory = deblank(directory(1,:));
+        if (~noWarning)
+            fprintf(['Warning: found more than one ''' duplicateMsgName ''' folder in the Matlab path\nReturning the first one\n.']);
+        end
+        directory = deblank(directory(1,:));
     end
 else
     directory = calDir;
@@ -121,4 +128,4 @@ if (~isempty(calFileName))
     
     cd(curDir);
 end
-    
+

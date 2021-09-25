@@ -25,12 +25,12 @@ function newmap = bluewhitered(m)
 %   colormap(bluewhitered)
 %   axis tight
 %
-%   See also HSV, HOT, COOL, BONE, COPPER, PINK, FLAG, 
+%   See also HSV, HOT, COOL, BONE, COPPER, PINK, FLAG,
 %   COLORMAP, RGBPLOT.
 
 
 if nargin < 1
-   m = size(get(gcf,'colormap'),1);
+    m = size(get(gcf,'colormap'),1);
 end
 
 
@@ -105,18 +105,18 @@ else
     end
     
 end
-% 
+%
 % m = 64;
 % new = [bottom; botmiddle; middle; topmiddle; top];
 % % x = 1:m;
-% 
+%
 % oldsteps = linspace(0, 1, 5);
 % newsteps = linspace(0, 1, m);
 % newmap = zeros(m, 3);
-% 
+%
 % for i=1:3
 %     % Interpolate over RGB spaces of colormap
 %     newmap(:,i) = min(max(interp1(oldsteps, new(:,i), newsteps)', 0), 1);
 % end
-% 
+%
 % % set(gcf, 'colormap', newmap), colorbar

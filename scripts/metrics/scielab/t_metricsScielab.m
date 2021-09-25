@@ -37,7 +37,7 @@ dispCal = 'LCD-Apple.mat';   % Calibrated display
 
 % Show the RGB images as scenes. This illustrates how the RGB data were
 % converted to SPDs using the calibrated display
-ieAddObject(scene1); 
+ieAddObject(scene1);
 ieAddObject(scene2);sceneWindow;
 
 imageMultiview('scene',[1 2],true);

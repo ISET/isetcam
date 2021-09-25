@@ -3,21 +3,21 @@ function udata = opticsPlotTransmittance(oi,thisW)
 %
 % Synopsis
 %   udata = opticsPlotTransmittance(oi,thisW)
-% 
+%
 % Inputs
 %       oi:
 %    thisW:
 %
 %
 % Description
-%    Plot the transmittance of the lens and other intervening media. 
+%    Plot the transmittance of the lens and other intervening media.
 %
 %    This slot is used to store the human macular pigment density.  It can
 %    also be used to store the lens transmittance or the combination of the
 %    two.
 %
 % Copyright ImagEval Consultants, LLC, 2003.
-% 
+%
 % See also
 %    oiPlot
 

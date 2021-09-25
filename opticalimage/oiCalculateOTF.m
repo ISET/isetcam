@@ -6,7 +6,7 @@ function [otf,fSupport] = oiCalculateOTF(oi,wave,unit)
 % The optical transfer function (OTF) is derived from the optics parameters
 % of an optical image.  The frequency units are cycles per degree by
 % default.  However, by setting the variable unit='millimeter' or 'micron'
-% the frequency units can be changed to cycles/{millimeter,micron}. 
+% the frequency units can be changed to cycles/{millimeter,micron}.
 %
 % This routine is used for diffraction limited, shift-invariant, or the
 % human otf. Calculations of OTF for ray trace dat are handled in the ray
@@ -39,7 +39,7 @@ switch lower(opticsModel)
         % The key routine is: otf = opticsDefocusCore(optics,sampleSF,D);
         % That has to be slotted in here.
         otf = dlMTF(oi,fSupport,wave,unit);
-    
+        
     case {'custom','shiftinvariant'}
         % Calculate the OTF at each wavelength from the custom data.
         % Also return these OTFs at the specified frequency
@@ -49,11 +49,11 @@ switch lower(opticsModel)
         % the units specified for the custom OTF be the same.  Can we
         % check?
         otf = customOTF(oi,fSupport,wave,unit);
-
+        
     case {'skip','skipotf'}
         % Doesn't really happen.
         warndlg('No OTF method selected.');
-    
+        
     otherwise
         error('Unknown optics model: %s',opticsModel);
 end

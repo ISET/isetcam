@@ -6,14 +6,14 @@ function xyz = xyy2xyz(xyy)
 % Purpose:
 %    It is common to represent the color of a light using xyY (chromaticity
 %    coordinates and luminance). This routine converts from the xyY
-%    representation to the standard XYZ representation. 
+%    representation to the standard XYZ representation.
 %
 %    The values are all represented in n X 3 format.  For XYZ, the first
 %    column is X, second  column is Y and third is Z.  Similarly, the
-%    input columns must be x,y, and Y. 
+%    input columns must be x,y, and Y.
 %
 % Formula:
-%    X = (x/y)*Y, 
+%    X = (x/y)*Y,
 %    Z = ((1 - x - y)/y) * Y
 %    Also, note that Y/y = X+Y+Z
 %

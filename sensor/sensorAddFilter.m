@@ -10,11 +10,11 @@ function sensor = sensorAddFilter(sensor,fname)
 %  color filters in the sensorWindow.
 %
 % Inputs
-% 
+%
 % Output
 %   sensor:  Modified sensor
 %
-% 
+%
 % Examples:
 %    sensor = ieGetObject('sensor');
 %    sensor = sensorAddFilter(sensor);
@@ -37,10 +37,10 @@ if isempty(data), disp('User canceled.'); return; end
 nCols = size(data,2);
 
 if nCols > 1
-   str=sprintf('Data contains %.0f columns.  Choose one.', nCols);
-   whichColumn = ieReadNumber(str);
-   if isempty(whichColumn), return; end
-   data = data(:,whichColumn);
+    str=sprintf('Data contains %.0f columns.  Choose one.', nCols);
+    whichColumn = ieReadNumber(str);
+    if isempty(whichColumn), return; end
+    data = data(:,whichColumn);
 else
     whichColumn = 1;
 end

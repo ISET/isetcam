@@ -6,7 +6,7 @@ function [support, spread, delta] = sensorConePlot(sensor,support,spread,delta)
 % This should only be run when you have a human sensor based on a cone
 % mosaic. This plotting routine will not run correctly (or at all) for
 % non-human mosaics.
-% 
+%
 % The parameters support, spread and delta define the appearance of the
 % plotted cone mosaic.  Each cone is rendered as a small blurry gaussian
 % with support and spread as passed in.  The spatial sampling is delta.

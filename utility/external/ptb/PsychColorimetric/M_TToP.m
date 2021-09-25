@@ -13,7 +13,7 @@ function [M,dest] = M_TToP(Tsource,Pdest,source)
 %  (n_chromacy by n_wavelengths)
 % Pdest - dest primaries spectral power distributions
 %  (n_chromacy by n_wavelengths)
-% 
+%
 % OPTIONAL
 % source - source tristimulus vectors
 %  (n_chromacy by n_lights)
@@ -25,7 +25,7 @@ function [M,dest] = M_TToP(Tsource,Pdest,source)
 M = inv(Tsource*Pdest);
 
 if ( nargin== 3)
-  dest = M*source;
+    dest = M*source;
 else
-  dest = [];
+    dest = [];
 end

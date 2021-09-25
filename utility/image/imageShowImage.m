@@ -9,8 +9,8 @@ function img = imageShowImage(ip,gam,trueSizeFlag,app)
 %  gam:            Gamma for the image display
 %  trueSizeFlag:
 %  app:   Either an ipWindow_App object
-%         an existing Matlab ui figure, 
-%         or 0.  
+%         an existing Matlab ui figure,
+%         or 0.
 %
 %         If 0, the rgb values are returned but not displayed.  If a figure
 %         the data are shown in the figure.  If the ipWindow_App the data
@@ -42,7 +42,7 @@ function img = imageShowImage(ip,gam,trueSizeFlag,app)
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 %
-% See also: 
+% See also:
 %   xyz2srgb, lrgb2srgb, srgb2lrgb, imageDataXYZ, ipGet
 %
 
@@ -67,7 +67,7 @@ end
 
 if ieNotDefined('gam'), gam = ipGet(ip,'gamma'); end
 
-%% Test and then convert the linear RGB values stored in result to XYZ.  
+%% Test and then convert the linear RGB values stored in result to XYZ.
 
 img = ipGet(ip,'result');
 
@@ -100,14 +100,14 @@ switch ipType
     case 'monochrome'
         colormap(gray(256));
         if gam ~= 1, img = img.^(gam); end
-
+        
     case 'rgb'
         % Set the largest srgb to 1.
         %
         % We  do this by converting srgb to lrgb, then scaling to 1, then
         % putting back to srgb.
         if ipGet(ip,'scaleDisplay')
-            img = srgb2lrgb(img); 
+            img = srgb2lrgb(img);
             mxImage = max(img(:));
             img = img/mxImage;
             img = lrgb2srgb(img);
@@ -135,7 +135,7 @@ elseif isequal(app,0)
     % Just return;
     return;
 elseif isa(app,'matlab.ui.Figure')
-    figure(app); 
+    figure(app);
     image(img); axis image; axis off;
     if trueSizeFlag
         truesize;

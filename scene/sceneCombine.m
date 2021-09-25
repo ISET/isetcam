@@ -6,7 +6,7 @@ function scene = sceneCombine(scene1,scene2,keyval)
 % Input
 %   scene1 - The two scenes should have the same wavelength samples
 %   scene2 -
-%    
+%
 % Optional Key/val pairs
 %   direction - horizontal, vertical, or both.
 %
@@ -70,13 +70,13 @@ elseif isequal(keyval.direction,'vertical')
     scene = scene1;
     scene = sceneSet(scene,'photons',photons);
     % No change in horizontal field of view
-
+    
 elseif isequal(keyval.direction,'both')
     scene = sceneCombine(scene1,scene2,'direction','horizontal');
     scene = sceneCombine(scene,scene,'direction','vertical');
     
 elseif isequal(keyval.direction,'centered')
-    % 3x3 version (scene2 scene1 scene2) in the middle and 
+    % 3x3 version (scene2 scene1 scene2) in the middle and
     % (scene2, scene2, scene2) across the upper and lower rows
     % Often in this case scene1 = scene2;
     sceneMid = sceneCombine(scene1,scene2,'direction','horizontal');

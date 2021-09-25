@@ -1,13 +1,25 @@
 function h = ieDrawShape(obj,shape,varargin)
 % Draw a shape on the gui window
 %
+% Synopsis
 %   h = ieDrawShape(obj,shape,varargin)
 %
-% Copyright Imageval, LLC 2015
+% Description
+%   Draws a shape on top of one of the images in the app windows.
 %
-% ieExamplesPrint('ieDrawShape');
+% Input
+%   obj   - An ISET scene, oi, sensor, or ip
+%   shape - circle, rectangle, or line
+%           Additional arguments are needed for the shape parameters
 %
-% See also: 
+%     ieDrawShape(obj,'circle',[20 20],10);    % center, radius in pixels
+%     ieDrawShape(obj,'rectangle',rect);
+%     ieDrawShape(obj,'line',X ,Y);
+%
+% Examples
+%   ieExamplesPrint('ieDrawShape');
+%
+% See also:
 %   ieROIDraw, v_drawShapes
 %
 
@@ -44,15 +56,15 @@ switch shape
         % ieDrawShape(obj,'circle',[20 20],10);
         % nSamplePoints = 100
         % Should update to permit multiple circles.
-        % 
+        %
         hold on;
         pts = circle(varargin{1},varargin{2},100);
         h = plot(pts(:,2),pts(:,1),'k-');
-
+        
     case 'rectangle'
         % rect = [10 10 50 50];
         % ieDrawShape(obj,'rectangle',rect);
-        rects = varargin{1}; 
+        rects = varargin{1};
         nRects = size(rects,1);
         for ii=1:nRects
             h(ii) = rectangle(appAxis,'Position',rects(ii,:),...
@@ -66,7 +78,7 @@ switch shape
         % ieDrawShape(obj,'line',X ,Y);
         h = line(varargin{1},varargin{2},'LineWidth',8);
         
-    otherwise 
+    otherwise
         error('Unknown shape %s\n',shape);
 end
 
@@ -76,9 +88,9 @@ end
 
 function pts = circle(center,r,nPts)
 
-t = linspace(0,2*pi,nPts)'; 
+t = linspace(0,2*pi,nPts)';
 pts = zeros(length(t),2);
-pts(:,1) = r.*cos(t) + center(1); 
+pts(:,1) = r.*cos(t) + center(1);
 pts(:,2) = r.*sin(t) + center(2);
 
 end

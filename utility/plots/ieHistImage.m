@@ -5,7 +5,7 @@ function [img, fhandle] = ieHistImage(X, plotFlag, fhandle)
 %    [img, figHandle] = ieHistImage(X, [plotFlag = true], fhandle)
 %
 % X:  An N x 2 matrix of the scatter plot values.  These are divided into
-%     32 bins at the moment.  
+%     32 bins at the moment.
 %     We need to add arguments to set the number and values of the histogram edges
 %
 % pair of param/val arguments might be
@@ -33,7 +33,7 @@ if ieNotDefined('fhandle'), fhandle = []; end
 
 %% We will allow more parameters here
 if plotFlag
-    if isempty(fhandle), fhandle = ieNewGraphWin; 
+    if isempty(fhandle), fhandle = ieNewGraphWin;
     else,                figure(fhandle)
     end
     

@@ -9,7 +9,7 @@ function [de94, errComponents] = deltaE94(lab1, lab2, k)
 %   defined in 1994. The latest the CIEDE2000 (see deltaE2000).
 %
 %   K is a 3 vector, in the form [kL, kC, kH]. k =[1 1 1] for the basis
-%   conditions (uniform surround field with L*=50, 1000lx illuminance,
+%   conditions (uniform surround field with L*=50, 1000lx illuminance
 %   homogeneous stimulus >4 degree visual angle, color difference between
 %   0-5 CIELAB units). In the textile industry kL is commonly set to 2.
 %   Default k is [1 1 1];
@@ -17,7 +17,7 @@ function [de94, errComponents] = deltaE94(lab1, lab2, k)
 %   In our view, when the CIELAB difference between the two colors is
 %   substantially greater than 10, the scale becomes meaningless.
 %   Anything much larger than 10 is just 'BIG'.  Values less than 2 are
-%   small. 
+%   small.
 %
 %   This routine also can return the separate delta E error components (for
 %   the luminance, chrominance and hue.
@@ -29,13 +29,13 @@ function [de94, errComponents] = deltaE94(lab1, lab2, k)
 
 
 if (nargin<3)
- k = [1 1 1];
+    k = [1 1 1];
 end
 
 m = size(lab1);
 if (m(2)~=3)
-  lab1 = reshape(lab1, prod(m)/3, 3);
-  lab2 = reshape(lab2, prod(m)/3, 3);  
+    lab1 = reshape(lab1, prod(m)/3, 3);
+    lab2 = reshape(lab2, prod(m)/3, 3);
 end
 
 % Compute Chroma Cab and Hue Hab differences
@@ -64,8 +64,8 @@ e = e.*e;
 de94 = sqrt(e(:,1)+e(:,2)+e(:,3));
 
 if (m(2)~=3)
-  m(length(m)) = m(length(m))/3;
-  de94 = reshape(d, m);
+    m(length(m)) = m(length(m))/3;
+    de94 = reshape(d, m);
 end
 
 % User requested error components, not just the delta E summary.

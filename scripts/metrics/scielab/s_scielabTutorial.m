@@ -7,7 +7,7 @@
 % Read an image and process it through S-CIELAB, illustrating the
 % intermediate image results.  You can also experiment to see the effects
 % of changing the viewing distance (size of image in deg)
-% 
+%
 % It is possible to run SCIELAB either on scene data directly (comparing
 % two scenes) or on data from the image processing end of the pipeline.  In
 % both cases, the data can be converted to XYZ format and thus SCIELAB
@@ -25,26 +25,26 @@ ieInit
 
 %% Create a multispectral scene
 fName = fullfile(isetRootPath,'data','images','multispectral','StuffedAnimals_tungsten-hdrs.mat');
-scene = sceneFromFile(fName,'multispectral');        
-scene = sceneSet(scene,'fov',8); 
-ieAddObject(scene); 
+scene = sceneFromFile(fName,'multispectral');
+scene = sceneSet(scene,'fov',8);
+ieAddObject(scene);
 sceneWindow;
 
 %% Optical image
-oi = oiCreate;  
+oi = oiCreate;
 oi = oiCompute(scene,oi);
-ieAddObject(oi); 
+ieAddObject(oi);
 % oiWindow
 
 % Sensor
-sensor = sensorCreate; 
+sensor = sensorCreate;
 sensor = sensorSetSizeToFOV(sensor,1.1*sceneGet(scene,'fov'),oi);
 sensor = sensorCompute(sensor,oi);
 ieAddObject(sensor);
 % sensorImageWindow;
 
 % Rendered image
-vci = ipCreate; 
+vci = ipCreate;
 vci = ipSet(vci,'correction method illuminant','grayworld');
 vci = ipCompute(vci,sensor);
 ieAddObject(vci);
@@ -68,7 +68,7 @@ whiteXYZ = srgb2xyz(ones(1,1,3)); % max(Y(:)); whiteXYZ(2)
 % version is very different from the original.
 scP = scParams;
 N = 50;                    % Try values from 20 to 200, for example
-scP.sampPerDeg    = N;   
+scP.sampPerDeg    = N;
 scP.filterSize    = N;
 % Image size
 fprintf('Image size (deg): %.3f\n',size(imgXYZ,1)/scP.sampPerDeg)
@@ -84,7 +84,7 @@ imagescOPP(imgOpp,gam);
 imagescOPP(imgFilteredOpp,gam);
 
 %% Compare the original and spatially blurred XYZ image, back in srgb space
-vcNewGraphWin; 
+vcNewGraphWin;
 subplot(1,2,1), imagescRGB(xyz2srgb(imgXYZ));
 subplot(1,2,2), imagescRGB(xyz2srgb(imgFilteredXYZ));
 
@@ -104,8 +104,8 @@ subplot(1,2,2), imagescRGB(xyz2srgb(imgFilteredXYZ));
 [result,whitePt] = scComputeSCIELAB(imgXYZ,whiteXYZ,scP);
 imagescOPP(result, gam);
 
-% These are in LAB space.  
+% These are in LAB space.
 % Check rg/by ordering.
 % Add features to imagescOPP
- 
-%% 
+
+%%

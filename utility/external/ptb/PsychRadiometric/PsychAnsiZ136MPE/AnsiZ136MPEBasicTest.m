@@ -101,7 +101,7 @@ grid on
 fprintf('Reproducing Figure 3, p. 93\n');
 durations = logspace(1,4.2);
 for i = 1:length(durations)
-   limitingConeAngles(i) = AnsiZ136MPEComputeLimitingConeAngle(durations(i));
+    limitingConeAngles(i) = AnsiZ136MPEComputeLimitingConeAngle(durations(i));
 end
 figure; clf; hold on
 loglog(log10(durations),log10(limitingConeAngles),'ro','MarkerSize',8,'MarkerFaceColor','r');
@@ -115,7 +115,7 @@ grid on
 %% Figure 7: Test photochemical and thermal limits for extended sources.
 %
 % This code reproduces Figure 7, p. 97.  Figure 7 is for wavelengths between
-% 400 and 700.  The overall limit (but not the photochemical limit) is 
+% 400 and 700.  The overall limit (but not the photochemical limit) is
 % independent of wavelength over this time interval.
 %
 % We only compute/plot down to 10-8 seconds, because our code doesn't
@@ -226,7 +226,7 @@ for s = 1:length(theStimulusSizesMrad)
     end
     stimulusDurationsSec = logspace(minLogDuration,maxLogDuration,1000);
     radiantExposureFig10 = figure; clf; set(gcf,'Position',[770 670 1000 600]);
-
+    
     for w = 1:length(theStimulusWavelengthsNm)
         stimulusWavelengthNm = theStimulusWavelengthsNm(w);
         
@@ -291,7 +291,7 @@ for s = 1:length(theStimulusSizesMrad)
     end
     stimulusDurationsSec = logspace(minLogDuration,maxLogDuration,1000);
     radiantExposureFig11 = figure; clf; set(gcf,'Position',[770 670 1000 600]);
-
+    
     for w = 1:length(theStimulusWavelengthsNm)
         stimulusWavelengthNm = theStimulusWavelengthsNm(w);
         
@@ -349,7 +349,7 @@ for s = 1:length(theStimulusSizesMrad)
     end
     stimulusDurationsSec = logspace(minLogDuration,maxLogDuration,1000);
     radiantExposureFig12 = figure; clf; set(gcf,'Position',[770 670 1000 600]);
-
+    
     for w = 1:length(theStimulusWavelengthsNm)
         stimulusWavelengthNm = theStimulusWavelengthsNm(w);
         
@@ -402,25 +402,25 @@ for s = 1:length(stimulusSizesDeg)
     MPELimitCornealIrradiance_WattsPerCm2(s) = Inf;
     MPELimitCornealRadiantExposure_JoulesPerCm2(s) = Inf;
     for w = 1:length(stimulusWavelengthsNm)
-        stimulusWavelengthNm = stimulusWavelengthsNm(w);  
+        stimulusWavelengthNm = stimulusWavelengthsNm(w);
         for t = 1:length(stimulusDurationsSec)
             stimulusDurationSec = stimulusDurationsSec(t);
-             [temp1, temp2, temp3, temp4] = ...
+            [temp1, temp2, temp3, temp4] = ...
                 AnsiZ136MPEComputeExtendedSourceLimit(stimulusDurationSec,stimulusSizeDeg,stimulusWavelengthNm);
             if (temp1 < MPELimitIntegratedRadiance_JoulesPerCm2Sr(s))
                 MPELimitIntegratedRadiance_JoulesPerCm2Sr(s) = temp1;
-            end 
+            end
             if (temp2 < MPELimitRadiance_WattsPerCm2Sr(s))
                 MPELimitRadiance_WattsPerCm2Sr(s) = temp2;
-            end 
+            end
             if (temp3 < MPELimitCornealIrradiance_WattsPerCm2(s))
                 MPELimitCornealIrradiance_WattsPerCm2(s) = temp3;
             end
-             if (temp4 < MPELimitCornealRadiantExposure_JoulesPerCm2(s))
+            if (temp4 < MPELimitCornealRadiantExposure_JoulesPerCm2(s))
                 MPELimitCornealRadiantExposure_JoulesPerCm2(s) = temp4;
             end
-        end  
-    end   
+        end
+    end
 end
 
 stimulusSizeFig = figure; clf; set(gcf,'Position',[770 670 1000 1000]);

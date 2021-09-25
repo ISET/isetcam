@@ -35,14 +35,14 @@ function [xy,coneType,densities,rSeed] = humanConeMosaic(sz,densities,umConeWidt
 % Copyright ImagEval Consultants, LLC, 2005.
 
 if ieNotDefined('sz'), error('Array size must be defined'); end
-if ieNotDefined('densities') 
+if ieNotDefined('densities')
     densities = [0.1 0.55 0.25 0.1];  % Empty, L,M,S cone ratios
 end
 if ieNotDefined('umConeWidth'), umConeWidth = 2; end
 if ieNotDefined('rSeed')
-    try  rSeed = rng; 
+    try  rSeed = rng;
     catch err
-        rSeed = randn('seed'); 
+        rSeed = randn('seed');
     end
 else
     try rng(rSeed)

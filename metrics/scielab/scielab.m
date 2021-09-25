@@ -4,7 +4,7 @@ function [deltaEImage, params, xyz1, xyz2] = scielab(image1,image2,whitePt,param
 %  [deltaEImage, params, xyz1, xyz2] = scielab(image1,image2,whitePt,[params])
 %
 % Spatial CIELAB was developed by Xuemei Zhang and Brian Wandell in the
-% mid-90s. 
+% mid-90s.
 %
 % The Spatial-CIELAB deltaE image (error map) describes the estimated
 % visibility of differences between image1 and image2.  The metric is
@@ -14,17 +14,17 @@ function [deltaEImage, params, xyz1, xyz2] = scielab(image1,image2,whitePt,param
 % and Wandell, 90s) to account for the visibility of spatial pattern
 % contrast in different color channels.
 %
-% image1 and image2: 3-D images in XYZ or LMS format. 
+% image1 and image2: 3-D images in XYZ or LMS format.
 % whitePt:     a cell  array containing the white points of the two images.
 %              XYZ images must between between 0 and the whitePt{ii}
 % params:      a structure containing several variables used in the
-%              calculation. The entries are updated and can be returned 
-%              by this routine. 
+%              calculation. The entries are updated and can be returned
+%              by this routine.
 %
 %  params.<var>
 %       sampPerDeg = How many samples per degree of visual angle in the image.
 %                    If the image is, say, 5 deg, and contains 128 samples,
-%                    then this parameter is 512/2. 
+%                    then this parameter is 512/2.
 %                    The default is 224 for historical reasons.  In
 %                    general, the code should be improved to work well at
 %                    low sample rates.
@@ -32,11 +32,11 @@ function [deltaEImage, params, xyz1, xyz2] = scielab(image1,image2,whitePt,param
 %                    If these are present, then the filters are used.
 %                    Otherwise, new filters are created. They will be
 %                    returned in params to save time in the next call.
-%       filterSize = usually equal to sampPerDeg. 
+%       filterSize = usually equal to sampPerDeg.
 %       imageFormat= Data format of the input image.
 %             'xyz2', 'xyz10', 'lms2', 'lms10';
 %       deltaEversion  = which version of CIELAB.  (Default is 2000)
-%              Earlier options permit '1976', '1994' and '2000'. 
+%              Earlier options permit '1976', '1994' and '2000'.
 %              Added for special ISET analyses, we allow a request for
 %              CIELAB 2000 'chroma','hue', or 'luminance' component errors.
 %              These are always calculated using CIELAB 2000.
@@ -69,7 +69,7 @@ function [deltaEImage, params, xyz1, xyz2] = scielab(image1,image2,whitePt,param
 %   params.filterSize = sampPerDeg;
 %   params.filters = [];             % Not precomputed
 %   [errorImage,params] = scielab(img1LMS, img2LMS, whitePt, params);
-% 
+%
 % Copyright ImagEval Consultants, LLC, 2003.
 
 % Programming notes:
@@ -99,7 +99,7 @@ if ieNotDefined('image1'), errordlg('Scielab requires image1'); end
 if ieNotDefined('image2'), errordlg('Scielab requires image2'); end
 if ieNotDefined('whitePt'), errordlg('Scielab requires a white point or white point cell array'); end
 if ieNotDefined('params'),  params = scParams;  end
-   
+
 % The white point used in the CIELAB calculation.  This is expected to be a
 % cell array containing a white point for each image.  If it is just a
 % vector, then we convert it to a cell array.
@@ -125,7 +125,7 @@ if strncmp(params.imageFormat,'lms',3)
         w = whitePt{1}; whitePt{1} = w(:)'*T;
         w = whitePt{2}; whitePt{2} = w(:)'*T;
         params.imageFormat = 'xyz10';
-
+        
     end
 end
 
@@ -139,7 +139,7 @@ end
 %
 % If we are in XYZ, we should call and then scComputeSCIELAB. Each
 % dimension is clipped to fall between between 0 and whitePt{ii}. The white
-% point is always biggest because XYZ are all positive. 
+% point is always biggest because XYZ are all positive.
 if min(image1(:)) < 0, error('Negative XYZ values image 1'); end
 if min(image2(:)) < 0, error('Negative XYZ values image 2'); end
 %
@@ -161,13 +161,13 @@ if min(image2(:)) < 0, error('Negative XYZ values image 2'); end
 % end
 
 
-%% Prepare filters for spatial blurring.  
-% They can take a while to create (and we should speed that up).   
+%% Prepare filters for spatial blurring.
+% They can take a while to create (and we should speed that up).
 if isempty(params.filters)
     % We should check here whether the filter parameters for the size are
     % close to the image size.  If they are close, we should probably
     % simply make the filter support equal to the size of the image.
-    [params.filters, params.support] = scPrepareFilters(params); 
+    [params.filters, params.support] = scPrepareFilters(params);
 end
 % figure; imagesc(params.filters{2})
 
@@ -184,7 +184,7 @@ deltaEImage = scComputeDifference(xyz1,xyz2,whitePt,params.deltaEversion);
 
 % There are some differences between below and above.  Sigh.  Why.
 %
-% d1 = scComputeSCIELAB(xyz1,whitePt{1},params); 
+% d1 = scComputeSCIELAB(xyz1,whitePt{1},params);
 % r = size(d1,1); c = size(d1,2);
 % d2 = scComputeSCIELAB(xyz2,whitePt{2},params);
 % dE = deltaE2000(RGB2XWFormat(d1),RGB2XWFormat(d2));

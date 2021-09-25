@@ -12,7 +12,7 @@
 %% Initialize ISET
 ieInit
 % If you want to make the same sensor every time, you could set the random
-% number generator 
+% number generator
 % try
 %     rng('default');  % To achieve the same result each time
 % catch err
@@ -28,9 +28,9 @@ hFov = 1;   % Horizontal field of view (deg)
 scene = sceneSet(scene,'fov',hFov);
 % vcAddAndSelectObject(scene); sceneWindow;
 
-if ieNotDefined('oi'), oi = oiCreate('human'); end
+oi = oiCreate('human');
 oi = oiCompute(scene,oi);
-% vcAddAndSelectObject(oi); oiWindow;
+% vcAddAndSelectObject(oi); oiWindow(oi);
 
 %% Create the human sensor with a size matched to the scene
 % The code here illustrates the complete set of parameters to create a
@@ -39,13 +39,13 @@ oi = oiCompute(scene,oi);
 % bit small.  The spacing between cones is a little big.
 % These are among the unknown parameters across the retinal surface.
 
-coneSpacing = 1.5;                                % um;           
+coneSpacing = 1.5;                                % um;
 coneAperture = [coneSpacing coneSpacing]*1e-6;    % meters
 
 % This is a pretty good number to summarize human optics with a 60 diopter
 % (17 mm) focal length.
 micronPerDegree = 300;
-degPerCone = coneAperture(1)*1e6/micronPerDegree;  
+degPerCone = coneAperture(1)*1e6/micronPerDegree;
 
 % nCones = fov/degPerCone, and we make it a bit larger
 nConesHRealSize = floor((hFov/degPerCone));
@@ -58,7 +58,7 @@ rgbDensities = rgbDensities/sum(rgbDensities);
 
 sz = [nConesVRealSize nConesHRealSize];
 fprintf('Creating  %.0fx%.0f cone mosaic\n',nConesVRealSize,nConesHRealSize);
-  
+
 rSeed = 10;  % So we can always repeat this exactly
 % An alternative call is
 params.sz = sz;
@@ -72,14 +72,14 @@ sensor = sensorCreate('human',[],params);
 % [sensor, xy, coneType, rSeed] = ...
 %     sensorCreateConeMosaic(sensorCreate, sz,rgbDensities,coneAperture,rSeed);
 
-% View the cone mosaic 
-sensorConePlot(sensor); 
+% View the cone mosaic
+sensorConePlot(sensor);
 title('Cone mosaic');
 
 % Check that the FOVs are about equal for the scene and the sensor.
 fprintf('Sensor fov: %f\n',sensorGet(sensor,'fov',scene,oi));
 fprintf('Scene fov: %f\n',sceneGet(scene,'fov'));
-    
+
 %% Adjust pixel properties for human - We need a rationale for values.
 %  Writing these kinds of programs makes it clear that we need better
 %  parameters for these aspects of the cone properties.  Fred Rieke, to the
@@ -111,11 +111,10 @@ f = sensorPlotLine(sensor,[],'photons','space',[1 116]);
 %  noise.
 
 vcNewGraphWin;
-fColor = {'r','g','b'};
+fColor = {'red','green','blue'};
 for ii=1:3
     cData = sensorGet(sensor,'photons',ii+1);
-    [n,xout] = hist(cData,30);
-    bar(xout,n,fColor{ii});
+    histogram(cData,30,'FaceColor',fColor{ii});
     hold on
 end
 hold off
@@ -130,11 +129,11 @@ hold off
 %  of missing a cone class.
 
 params.sz =  [200 200];  % A little smaller
-rgbDensities = [0 0 2 1]; 
+rgbDensities = [0 0 2 1];
 rgbDensities = rgbDensities/sum(rgbDensities);
 params.rgbDensities = rgbDensities;
 sensor = sensorCreate('human',[],params);
 
 sensorConePlot(sensor); title('Protan cone mosaic');
 
-
+%% END

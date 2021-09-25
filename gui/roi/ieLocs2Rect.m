@@ -12,7 +12,7 @@ function rect = ieLocs2Rect(roiLocs)
 %  roiLocs2 = ieLocs2Rect(rect);
 %  isequal(roiLocs,roiLocs2)
 %
-% See also: 
+% See also:
 %   ieGetXYCoords, ieRect2Locs, vcROISelect, vcLineSelect, vcPointSelect
 %
 % (c) Imageval Consulting, LLC 2012
@@ -30,5 +30,5 @@ rect(2) = min(roiLocs(:,1));
 % cWidth and rWidth
 rect(3) = max(roiLocs(:,2)) - rect(1);
 rect(4) = max(roiLocs(:,1)) - rect(2);
-        
+
 end

@@ -1,15 +1,15 @@
 %% Script for testing the sensorPlot routine
 
-%% 
+%%
 ieInit
 
 %% Initialize the sensor structure
-scene = sceneCreate; 
+scene = sceneCreate;
 scene = sceneSet(scene,'fov',4);
 oi = oiCreate; oi = oiCompute(oi,scene);
 
 %%
-sensor = sensorCreate; 
+sensor = sensorCreate;
 sensor = sensorSet(sensor,'qmethod', '10 bit');  % Linear, 10 bits
 sensor = sensorCompute(sensor,oi);
 sensorWindow(sensor);
@@ -18,41 +18,41 @@ sensorWindow(sensor);
 sensorPlot(sensor,'electrons hline',[20 20]);
 
 %%
-[uData, g] = sensorPlot(sensor,'volts vline',[20 20]);
+sensorPlot(sensor,'volts vline',[20 20]);
 
 %%
-[uData, g] = sensorPlot(sensor,'volts hline',[20 20]);
+sensorPlot(sensor,'volts hline',[20 20]);
 
 %%
-[uData, g] = sensorPlot(sensor,'dv hline',[20 20]);
+sensorPlot(sensor,'dv hline',[20 20]);
 
 %%
-[uData,g] = sensorPlot(sensor,'sensor snr');
+sensorPlot(sensor,'sensor snr');
 
-%% 
+%%
 uData = sensorPlot(sensor,'electrons hist',[15 15 45 45]);
 sensorPlot(sensor,'electrons hist',uData.roiLocs)
 
 %%
-uData = sensorPlot(sensor,'pixel snr');
+sensorPlot(sensor,'pixel snr');
 %%
-[uData, g] = sensorPlot(sensor,'cfa block');
+sensorPlot(sensor,'cfa block');
 
 %% Dummy up one of the blocks and check the color
 n = sensorGet(sensor,'filter names');
 n{3} = 'oDefault';
 sensor2 = sensorSet(sensor,'filter names',n);
-[uData, g] = sensorPlot(sensor2,'cfa block');
+sensorPlot(sensor2,'cfa block');
 
 %%
-[uData, g] = sensorPlot(sensor,'cfa full');
+sensorPlot(sensor,'cfa block');
 
 %%
-[uData, g] = sensorPlot(sensor,'etendue');
+sensorPlot(sensor,'etendue');
 
 %%
 human = sensorCreate('human');
-[uData, g] = sensorPlot(human,'cone mosaic');
+sensorPlot(human,'cone mosaic');
 
 %% Check setting line color
 [~,h] = sensorPlot(human,'color filters');
@@ -66,7 +66,7 @@ sensorPlot(sensor,'electrons hline',[20 20],'capture',1);
 
 %% These should still work
 
-[uData, g] = sensorPlot(sensor,'cfa full');
+[uData, g] = sensorPlot(sensor,'cfa');
 [uData,g] = sensorPlot(sensor,'sensor snr');
 
 %%

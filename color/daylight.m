@@ -4,7 +4,7 @@ function [spec, XYZ] = daylight( wave, cct, units )
 % [SPD, XYZ, wave] = daylight( WAVE, cct )
 %
 % Generates a daylight/sun spectral power distribution based on a
-% correlated color temperature (cct). 
+% correlated color temperature (cct).
 %
 % SPD : Daylight/sun SPD.
 % WAVE: Wavelength vector of SPD.
@@ -30,7 +30,7 @@ spec = cct2sun( wave, cct, units );
 units = ieParamFormat(units);
 switch units
     case 'photons'
-        L = ieLuminanceFromPhotons(spec(:,1)',wave);        
+        L = ieLuminanceFromPhotons(spec(:,1)',wave);
     case 'energy'
         L = ieLuminanceFromEnergy(spec(:,1)',wave);
 end

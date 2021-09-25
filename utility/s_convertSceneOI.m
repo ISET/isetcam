@@ -19,7 +19,7 @@ scene = tmp.scene;
 s = sceneCreate;
 s = sceneSet(s,'wave',sceneGet(scene,'wave'));
 
-% Uset the legacy uncompress to find the true photons 
+% Uset the legacy uncompress to find the true photons
 photons = ieUncompressData(scene.data.photons,scene.data.dmin,scene.data.dmax,scene.data.bitDepth);
 
 % Set them in the new format
@@ -54,7 +54,7 @@ scene = tmp.scene;
 s = sceneCreate;
 s = sceneSet(s,'wave',sceneGet(scene,'wave'));
 
-% Uset the legacy uncompress to find the true photons 
+% Uset the legacy uncompress to find the true photons
 photons = ieUncompressData(scene.data.photons,scene.data.dmin,scene.data.dmax,scene.data.bitDepth);
 
 % Set them in the new format

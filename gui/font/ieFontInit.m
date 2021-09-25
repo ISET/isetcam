@@ -9,7 +9,7 @@ function ieFontInit(fig)
 %
 % ISET font size preferences are managed using the preference mechanism in
 % Matlab. The ISET preferences are obtained using getpref('ISET'). The font
-% size is a field, fontDelta, in the ISET preference structure. 
+% size is a field, fontDelta, in the ISET preference structure.
 %
 % This routine is called when an ISET window is opened. We assume that the
 % default Matlab font size is in place, and we apply the preferred change.

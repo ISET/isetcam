@@ -40,7 +40,7 @@ end
 oname = fullfile(isetRootPath,'data','human','xyzQuanta.mat');
 ieSaveSpectralFile(wave,xyzQuanta,'XYZ in a format to calculate with quantal input',oname);
 
-%% Compare the energy and quantal forms.  
+%% Compare the energy and quantal forms.
 
 % Notice that they are similar where
 % there are lots of absorptions, but they differn noticeably at the very
@@ -68,4 +68,3 @@ copyfile('vlambdaQuanta.mat','luminosityQuanta.mat');
 chdir(curDir)
 
 %% End
-                

@@ -26,14 +26,14 @@ function [errorImage, scene1, scene2, d] = scielabRGB(file1,file2,dispCal,vDist)
 % errorImage - SCIELAB error between the two scenes
 % sceneX     - The scenes
 % d - Display model.
-% 
-% Examples:  
+%
+% Examples:
 %   file1 = fullfile(isetRootPath, 'data','images','RGB','hats.jpg');
 %   file2 = fullfile(isetRootPath, 'data','images','RGB','hatsC.jpg');
 %   vDist = 0.38;               % 15 inches
 %   dispCal = 'crt.mat';  % Calibrated display
 %   errorImage = scielabRGB(file1, file2, dispCal, vDist)
-%   
+%
 %   [errorImage,s1,s2] = scielabRGB(file1, file2, dispCal, vDist);
 %   ieAddObject(s1); ieAddObject(s2);sceneWindow;
 %
@@ -64,7 +64,7 @@ elseif isstruct(file1) && isequal(file1.type,'scene')
     sceneXYZ2 = sceneGet(file1,'xyz');
 end
 
-          
+
 %% Read the display white point
 if ischar(dispCal)
     d = displayCreate(dispCal);
@@ -78,7 +78,7 @@ whiteXYZ = displayGet(d,'white point');
 % The FOV depends on the display dpi and image size
 sz = sceneGet(scene1,'size');
 imgWidth = sz(2)*displayGet(d,'meters per dot');  % Image width (meters)
-fov = ieRad2deg(2*atan2(imgWidth/2,vDist));         % In deg
+fov = rad2deg(2*atan2(imgWidth/2,vDist));         % In deg
 
 scene1 = sceneSet(scene1,'fov',fov);
 scene2 = sceneSet(scene2,'fov',fov);

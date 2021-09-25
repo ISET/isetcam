@@ -12,7 +12,7 @@ function [fData, wave] = sensorColorFilter(cfType, wave, varargin)
 % Required Inputs:
 %  cfType:  One of:  Gaussian, irFilter, uvFilter
 %  wave:    Wavelength samples
-%  
+%
 % Optional inputs
 %  if Gaussian:   [cPos,  widths] - Center positions and widths in nm
 %  if uv filter:  [uvCut, smooth] - Cut wavelength and smooth SD (nm)
@@ -23,14 +23,14 @@ function [fData, wave] = sensorColorFilter(cfType, wave, varargin)
 %
 % Copyright ImagEval Consultants, LLC, 2010
 %
-% See also: 
+% See also:
 %  oeSensorCreate
 
-%  
+%
 % Examples:
 %{
 % Gaussian type:
- cfType = 'gaussian'; 
+ cfType = 'gaussian';
  [fData,wave] = sensorColorFilter(cfType);
  vcNewGraphWin; plot(wave,fData)
 %}
@@ -64,37 +64,37 @@ smooth = -1;
 cfType = ieParamFormat(cfType);
 
 switch lower(cfType)
-    case 'gaussian'  
+    case 'gaussian'
         % A set of gaussian filters centered at cPos (vector) and widths
         % (vector)
         
         if length(varargin)<1, cPos = [450,550,650];
         else, cPos = varargin{1}; end
         
-        if length(varargin)<2, widths = ones(size(cPos))*40; 
+        if length(varargin)<2, widths = ones(size(cPos))*40;
         else, widths = varargin{2}; end
-
+        
         nFilters = length(cPos);
         fData = zeros(length(wave),nFilters);
         for ii=1:nFilters
             fData(:,ii) = exp(-1/2*( (wave-cPos(ii))/(widths(ii))).^2);
         end
-
+        
     case 'irfilter'
         % Infrared blocking filter.
-        if length(varargin) < 1, cPos = 700; 
-        else, cPos = varargin{1}; 
+        if length(varargin) < 1, cPos = 700;
+        else, cPos = varargin{1};
         end
         if length(varargin) > 1, smooth = varargin{2}; end
-
+        
         fData = ones(size(wave));
         lst = (wave > cPos);
         fData(lst) = 0;
-
+        
     case 'uvfilter'
         % Ultraviolet blocking filter.
-        if length(varargin) < 1, cPos = 400; 
-        else, cPos = varargin{1}; 
+        if length(varargin) < 1, cPos = 400;
+        else, cPos = varargin{1};
         end
         if length(varargin) > 1, smooth = varargin{2}; end
         

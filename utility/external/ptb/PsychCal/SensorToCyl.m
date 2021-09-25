@@ -31,33 +31,33 @@ cyl(2,:) = sqrt( sensor(2,:).^2 + sensor(3,:).^2 );
 
 index = find( sensor(2,:) == 0.0 & sensor(3,:) == 0.0 );
 if (~isempty(index) )
-  cyl(3,index) = zeros(1,length(index)); 
+    cyl(3,index) = zeros(1,length(index));
 end
 index = find( sensor(2,:) == 0.0 & sensor(3,:) > 0.0 );
 if (~isempty(index) )
-  cyl(3,index) = pi/2*ones(1,length(index));  
+    cyl(3,index) = pi/2*ones(1,length(index));
 end
 index = find( sensor(2,:) == 0.0 & sensor(3,:) < 0.0 );
 if (~isempty(index) )
-  cyl(3,index) = 3*pi/2*ones(1,length(index)); 
-end    
+    cyl(3,index) = 3*pi/2*ones(1,length(index));
+end
 index = find( sensor(2,:) > 0.0 & sensor(3,:) > 0.0 );
 if (~isempty(index) )
-  cyl(3,index) = atan(sensor(3,index) ./ sensor(2,index) ); 
-end    
+    cyl(3,index) = atan(sensor(3,index) ./ sensor(2,index) );
+end
 index = find( sensor(2,:) > 0.0 & sensor(3,:) < 0.0 );
 if (~isempty(index) )
-  cyl(3,index) = 2*pi*ones(1,length(index)) + ...
-                 atan(sensor(3,index) ./ sensor(2,index) ); 
+    cyl(3,index) = 2*pi*ones(1,length(index)) + ...
+        atan(sensor(3,index) ./ sensor(2,index) );
 end
-index = find( sensor(2,:) < 0.0 & sensor(3,:) > 0.0 );   
+index = find( sensor(2,:) < 0.0 & sensor(3,:) > 0.0 );
 if (~isempty(index) )
-  cyl(3,index) = pi*ones(1,length(index)) + ...
-                 atan(sensor(3,index) ./ sensor(2,index) ); 
-end   
-index = find( sensor(2,:) < 0.0 & sensor(3,:) < 0.0 );   
+    cyl(3,index) = pi*ones(1,length(index)) + ...
+        atan(sensor(3,index) ./ sensor(2,index) );
+end
+index = find( sensor(2,:) < 0.0 & sensor(3,:) < 0.0 );
 if (~isempty(index) )
-  cyl(3,index) = pi*ones(1,length(index)) + ...
-                 atan(sensor(3,index) ./ sensor(2,index) ); 
-end   
+    cyl(3,index) = pi*ones(1,length(index)) + ...
+        atan(sensor(3,index) ./ sensor(2,index) );
+end
 

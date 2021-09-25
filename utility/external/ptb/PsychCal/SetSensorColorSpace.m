@@ -11,7 +11,7 @@ function [cal, errorRet] = SetSensorColorSpace(cal, T_sensor, S_sensor,quiet)
 %
 % errorRet indicates status of the operation.
 %   == 0: OK
-%   == 1: Bad condition number on linear/device conversion matrix 
+%   == 1: Bad condition number on linear/device conversion matrix
 %
 % quiet flag suppresses error messages, default 0.
 
@@ -42,7 +42,7 @@ function [cal, errorRet] = SetSensorColorSpace(cal, T_sensor, S_sensor,quiet)
 %                   code.
 
 if nargin < 4 || isempty(quiet)
-  quiet = 1;
+    quiet = 1;
 end
 
 % Set no error condition
@@ -73,21 +73,21 @@ P_ambient = cal.P_ambient;
 T_ambient = cal.T_ambient;
 S_ambient = cal.S_ambient;
 if isempty(P_ambient) || isempty(T_device) || isempty(S_device)
-	error('Calibration structure does not contain ambient data');
+    error('Calibration structure does not contain ambient data');
 end
 
 % Check that wavelength sampling is OK, spline if not.
 if CheckWls(S_device,S_ambient,quiet)
-  if ~quiet
-    disp('InitCal: Splining T_ambient to match T_device');
-  end
-  T_ambient = SplineCmf(S_ambient,T_ambient,S_device);
+    if ~quiet
+        disp('InitCal: Splining T_ambient to match T_device');
+    end
+    T_ambient = SplineCmf(S_ambient,T_ambient,S_device);
 end
 if CheckWls(S_device,S_sensor,quiet)
-  if ~quiet
-    disp('InitCal: Splining T_sensor to match T_device');
-  end
-  T_sensor = SplineCmf(S_sensor,T_sensor,S_device);
+    if ~quiet
+        disp('InitCal: Splining T_sensor to match T_device');
+    end
+    T_sensor = SplineCmf(S_sensor,T_sensor,S_device);
 end
 
 % Compute conversion matrix between device and linear coordinates
@@ -96,18 +96,18 @@ M_device_linear = M_tmp*P_device;
 
 % Pull out only requested nDevices columns of M_device_linear.
 % This is a simple way to define a matrix that maps to device
-% space.  More sophisticated methods are possible, which is 
-% why we carry the nBasesIn variable around.   
+% space.  More sophisticated methods are possible, which is
+% why we carry the nBasesIn variable around.
 tmp_M_device_linear = M_device_linear(:,1:nDevices);
 [m,n] = size(tmp_M_device_linear);
 if (cond(tmp_M_device_linear) > 1e7) || (m > n)
-  errorRet = 1;
-  M_linear_device = pinv(tmp_M_device_linear);
+    errorRet = 1;
+    M_linear_device = pinv(tmp_M_device_linear);
 elseif n > m
-  errorRet = 2;
-  M_linear_device = pinv(tmp_M_device_linear);
+    errorRet = 2;
+    M_linear_device = pinv(tmp_M_device_linear);
 else
-  M_linear_device = inv(tmp_M_device_linear);
+    M_linear_device = inv(tmp_M_device_linear);
 end
 
 % Convert ambient to linear color space

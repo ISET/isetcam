@@ -3,13 +3,13 @@ function scene = sceneAdjustPixelSize(scene, oi, pixelSize)
 % Pixel is in meters.
 %
 % Input:
-%  scene     - 
+%  scene     -
 %  oi        -
 %  pixelSize - in meters.
 %
 % Output:
 %  scene     - scene with adjusted FOV
-% 
+%
 % See also:
 %
 % Examples:
@@ -39,6 +39,6 @@ sensorWidth = pixelSize * nPixel;
 sceneFOV = 2 * atand(sensorWidth/(2*focalLength) ); % Scene hFOV
 
 % With this field of view, we guarantee a precise match
-scene = sceneSet(scene, 'fov', sceneFOV); 
+scene = sceneSet(scene, 'fov', sceneFOV);
 
 end

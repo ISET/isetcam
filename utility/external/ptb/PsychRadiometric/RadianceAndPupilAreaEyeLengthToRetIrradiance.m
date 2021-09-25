@@ -2,7 +2,7 @@ function retIrradiance_PowerPerArea = RadianceAndPupilAreaEyeLengthToRetIrradian
 % retIrradiance_PowerPerArea = RadianceAndPupilAreaEyeLengthToRetIrradiance(radiance_PowerPerAreaSr,radianceS,pupilArea,eyeLength)
 %
 % Perform the geometric calculations necessary to convert a measurement of source
-% radiance to corresponding retinal irradiance. 
+% radiance to corresponding retinal irradiance.
 %
 % Let x be the units of distance (m, cm, mm, um, etc.)
 %
@@ -15,7 +15,7 @@ function retIrradiance_PowerPerArea = RadianceAndPupilAreaEyeLengthToRetIrradian
 %
 %   Light power may be expressed in watts or quanta-sec or in your
 %   favorite units.  Indeed, it may also be passed as energy rather
-%   than power.  
+%   than power.
 %
 % This conversion does not take absorption in the eye into account,
 % as this is more conveniently foldeded into the spectral absorptance.

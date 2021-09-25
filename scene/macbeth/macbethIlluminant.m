@@ -1,5 +1,5 @@
 function illPhotons = macbethIlluminant(scene)
-% Estimate the spectral radiance of the scene illuminant from the MCC (photons) 
+% Estimate the spectral radiance of the scene illuminant from the MCC (photons)
 %
 % Synopsis
 %   illPhotons = macbethIlluminant(scene)
@@ -22,7 +22,7 @@ function illPhotons = macbethIlluminant(scene)
 %   read from the ISETCam data.  These are both in XW format (24 x 31).
 %
 %   Then the illuminant photons are estimated by a simple calculation. The
-%   basic equation is 
+%   basic equation is
 %
 %      spd = reflectance * diag(ill)  % (24 x 31, 24 x 31, 31 x 31)
 %
@@ -54,7 +54,7 @@ illPhotons = zeros(nWave,1);
 for ii=1:nWave
     x = mccReflectance(:,ii);
     y = mccSPD(:,ii);
-
+    
     % y = x*ill
     % x'*y = x'*x*ill
     % (x'*x)^-1*x'*y = ill

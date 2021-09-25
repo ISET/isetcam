@@ -1,8 +1,8 @@
 function res = final_touch(im)
 
 % res = final_touch(im)
-% % we find a trick can often make the result "open up" a bit, the trick 
-% % being adding 15% of a histogram equalized layer to the result. 
+% % we find a trick can often make the result "open up" a bit, the trick
+% % being adding 15% of a histogram equalized layer to the result.
 
 ht = size(im, 1);
 wth = size(im, 2);

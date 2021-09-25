@@ -84,10 +84,10 @@ if isempty(ThePath)
             'Preferences.  I''m putting them in the current working directory:\n      %s.\n\n'],pwd);
         StringStart = [pwd filesep];
     end
-
+    
     StringStart = strtrim(StringStart);
     TheDir = [StringStart 'Psychtoolbox'];
-
+    
     if exist(TheDir,'dir')
         ThePath = TheDir; %#ok<NASGU>
     else
@@ -100,7 +100,7 @@ if isempty(ThePath)
             error(sprintf('I could not create this folder to store your preferences in:\n\n%s\nReason: [%s]\n\nValid filename? What are the permissions on that folder?',TheDir, DirMessage)); %#ok<SPERR>
         end % if exist(TheDir,'dir'); else
     end
-
+    
     ThePath = [ThePath filesep];
     PTBPrefPath = ThePath;
 end

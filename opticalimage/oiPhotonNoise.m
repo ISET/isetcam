@@ -12,13 +12,13 @@ function [noisyPhotons,theNoise] = oiPhotonNoise(oi)
 % it throughout.  Matlab has one in the stats toolbox, but we don't want to
 % impose the stats toolbox requirement on others.
 %
-% See also:  noiseShot, iePoisson, v_photonNoise
+% See also:  noiseShot, poissrnd, v_photonNoise
 %
 % Examples:
 %    scene = sceneCreate('uniform'); oi = oiCreate;  oi = oiCompute(scene,oi);
 %    [noisyPhotons,theNoise] = oiPhotonNoise(oi);
-%    vcNewGraphWin; tmp = noisyPhotons(:,:,10); tmp = tmp(tmp > 2*10^13); hist(tmp(:))
-%    imagesc(noisyPhotons(:,:,10)); colormap(gray)
+%    vcNewGraphWin; tmp = noisyPhotons(:,:,10); tmp = tmp(tmp > 2*10^13); histogram(tmp(:))
+%    imagesc(noisyPhotons(:,:,10)); colormap(gray(64))
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
@@ -40,7 +40,7 @@ theNoise = sqrt(photons) .* randn(size(photons));
 % We add the mean electron and noise electrons together.
 noisyPhotons = round(photons + theNoise);
 % When the signal is very large, say 10^14, the noise is only 10^7.  This
-% is very small and you see basically nothing. But if the signal is small,
+% is very small and you see basically nothing. But if the signal is small
 % you have a chance of seeing something in these plots.
 
 % Now, we find the small mean values and create a Poisson sample. This is
@@ -52,7 +52,7 @@ poissonCriterion = 15;
 [r,c] = find(photons < poissonCriterion);
 v = photons(photons < poissonCriterion);
 if ~isempty(v)
-    vn = iePoisson(v);  % Poisson samples
+    vn = poissrnd(v);  % Poisson samples
     for ii=1:length(r)
         theNoise(r(ii),c(ii))   = vn(ii);
         % For low mean values, we *replace* the mean value with the Poisson

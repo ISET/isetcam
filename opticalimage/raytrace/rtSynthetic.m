@@ -9,10 +9,10 @@ function optics = rtSynthetic(oi,rayTrace,spreadLimits,xyRatio)
 % The point spreads are bivariate normals that increase from center to
 % periphery.  Over time, we will add parameters to the function that
 % control the bivariate normal growth with field height as well as other
-% parameters. 
+% parameters.
 %
 %Example
-%  oi = vcGetObject('oi'); 
+%  oi = vcGetObject('oi');
 %  optics = rtSynthetic(oi,[],[3 5],0.3);
 %  oi = oiSet(oi,'optics',optics); oi = oiSet(oi,'name','Increasing-Gauss');
 %  ieAddObject(oi); oiWindow;
@@ -37,7 +37,7 @@ if ieNotDefined('rayTrace')
     rayTrace.maxfov = 30;
 end
 if ieNotDefined('spreadLimits'), spreadLimits = [1,4]; end
-if ieNotDefined('xyRatio'), xyRatio = 1; end   
+if ieNotDefined('xyRatio'), xyRatio = 1; end
 
 % Field height and wavelenth for all the functions
 fieldHeight = (0:0.05:1);     %mm
@@ -65,7 +65,7 @@ spread     = (spreadLimits(2)-spreadLimits(1));
 normFH  = (fieldHeight/max(fieldHeight));
 
 % The 4 is here because 4 samples is a micron
-xSpread = 4*(spreadLimits(1) + normFH*spread); 
+xSpread = 4*(spreadLimits(1) + normFH*spread);
 
 % The ySpread is proportional to the xSpread.
 ySpread = xyRatio * (xSpread .* (1 + normFH));

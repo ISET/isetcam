@@ -16,7 +16,7 @@ function vcSetFigureHandles(figType,app)
 switch lower(figType)
     case 'main'
         ieSessionSet('mainwindow',hObject,eventdata,handles);
-                
+        
     case 'scene'
         ieSessionSet('scenewindow',app);
         

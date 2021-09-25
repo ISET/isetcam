@@ -39,7 +39,7 @@ for rr = pSize(1):pSize(1):(sz(1)-1)
         p(gg,:,:) = black;
     end
 end
-for gg = (sz(1) - eWidth + 1):sz(1) 
+for gg = (sz(1) - eWidth + 1):sz(1)
     p(gg,:,:) = black;
 end
 

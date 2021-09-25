@@ -1,11 +1,11 @@
 function dCell = cellDelete(c,dList)
-% Delete some cells from a list of cells 
+% Delete some cells from a list of cells
 %
 %   dCell = cellDelete(c,dList);
 %
 %Purpose:
 %  Delete a the cell entries in the integer list, dList.  Return the
-%  (shortened) cell array. 
+%  (shortened) cell array.
 %
 % Example:
 %  a = {'a','b','c','d'}; b = cellDelete(a,[1,3]);
@@ -23,7 +23,7 @@ dCell(dList)=[];
 
 % keepList = logical(ones(1,length(c)));
 % keepList(dList) = 0;
-% 
+%
 % % For some reason, cell arrays don't use the cell{keepList} syntax.  So, we
 % % loop.
 % jj = 1; dCell = [];
@@ -33,7 +33,7 @@ dCell(dList)=[];
 %         jj = jj+1;
 %     end
 % end
-    
+
 end
 
 % Debug

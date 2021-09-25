@@ -5,8 +5,8 @@ function fSize = ieFontSizeSet(fig,fSize)
 %
 % Input
 %  fig:   An app window. Used to be a handle to the
-%         figure of, say, the scene or oi window or the 
-%         
+%         figure of, say, the scene or oi window or the
+%
 %  fSize: The font size you want for this app window
 %        If fSize is 0, we are simply refreshing the window
 %        if fSize is missing, we bring up a window and ask the user
@@ -52,7 +52,7 @@ if ~exist('fSize','var')||isempty(fSize)
     fSize = ieReadNumber('Enter font size (7-25): ',prefSize,' %.0f');
     if isempty(fSize), return; end
 elseif fSize == 0
-    % Refresh condition. Use the ISET pref 
+    % Refresh condition. Use the ISET pref
     fSize = prefSize;
 end
 

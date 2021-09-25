@@ -25,7 +25,7 @@ illuminance = oiGet(oi,'illuminance');
 rect(3) = 1; rect(4) = 1;
 
 % Now, we crop the data to form a small opticalimage  containing only the
-% highest illuminance.  
+% highest illuminance.
 OImax = oiCrop(oi,rect);
 
 % We adjust the optics

@@ -1,5 +1,5 @@
 function [ temp, uv ] = spd2cct( wave, spds )
-% Convert a spectral power distribution to a correlated color temperature 
+% Convert a spectral power distribution to a correlated color temperature
 %
 % [ CCT, uv ] = spd2cct( WAVE, SPDsEnergy )
 %
@@ -18,8 +18,8 @@ function [ temp, uv ] = spd2cct( wave, spds )
 %
 %   d = blackbody(400:10:700, 6500);
 %   spd2cct(400:10:700,d)
-%   
-% 
+%
+%
 %   d = blackbody(400:10:700, 8500);
 %   spd2cct(400:10:700,d)
 %

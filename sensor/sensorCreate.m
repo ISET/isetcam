@@ -1,8 +1,8 @@
-function sensor = sensorCreate(sensorName,pixel,varargin)
+function sensor = sensorCreate(sensorType,pixel,varargin)
 %Create an image sensor array structure
 %
 % Synopsis
-%   sensor = sensorCreate(sensorName,[pixel],varargin)
+%   sensor = sensorCreate(sensorType,[pixel],varargin)
 %
 % Description
 %  The sensor array uses a pixel definition that can be specified in the
@@ -31,6 +31,7 @@ function sensor = sensorCreate(sensorName,pixel,varargin)
 %      {'monochrome'}       - single monochrome sensor
 %      {'monochrome array'} - cell array of monochrome sensors
 %      {'lightfield'}       - RGB to match the resolution of a lightfield oi
+%      {'dualpixel'}        - RGB dual pixel for autofocus (Bayer)
 %
 % Multiple channel sensors can be created
 %      {'grbc'}   - green, red, blue, cyan
@@ -56,7 +57,7 @@ function sensor = sensorCreate(sensorName,pixel,varargin)
 %  Default Bayer RGGB
    sensor = sensorCreate;
    sensor = sensorCreate('default');
-%}  
+%}
 %{
 %  Other types of Bayer arrays
    sensor = sensorCreate('bayer (ycmy)');
@@ -77,7 +78,7 @@ function sensor = sensorCreate(sensorName,pixel,varargin)
 %}
 %{
 %  Human style sensors (but see ISETBIO for more complete control)
-   cone   = pixelCreate('human cone'); 
+   cone   = pixelCreate('human cone');
    sensor = sensorCreate('Monochrome',cone);
    sensor = sensorCreate('human');
    params.sz = [128,192];
@@ -103,7 +104,7 @@ function sensor = sensorCreate(sensorName,pixel,varargin)
 %}
 
 %%
-if ieNotDefined('sensorName'), sensorName = 'default'; end
+if ieNotDefined('sensorType'), sensorType = 'default'; end
 
 sensor.name = [];
 sensor.type = 'sensor';
@@ -113,8 +114,11 @@ if ieNotDefined('pixel')
     pixel  = pixelCreate('default');
     sensor = sensorSet(sensor,'pixel',pixel);
     sensor = sensorSet(sensor,'size',sensorFormats('qqcif'));
-else
+elseif isfield(pixel,'type') && isequal(pixel.type,'pixel')
     sensor = sensorSet(sensor,'pixel',pixel);
+else
+    disp(pixel)
+    error('Bad pixel definition');
 end
 
 % The sensor should always inherit the spectrum of the pixel.  Probably
@@ -137,8 +141,8 @@ sensor = sensorSet(sensor,'gainFPNimage',[]);
 sensor = sensorSet(sensor,'gainFPNimage',[]);
 sensor = sensorSet(sensor,'quantization','analog');
 
-sensorName = ieParamFormat(sensorName);
-switch sensorName
+sensorType = ieParamFormat(sensorType);
+switch sensorType
     case {'default','color','bayer','rgb','bayer(grbg)','bayer-grbg','bayergrbg'}
         filterOrder = [2,1;3,2];
         filterFile = 'RGB';
@@ -179,7 +183,7 @@ switch sensorName
         %   sensorCreate('light field',pixel,oi)
         %
         if isempty(varargin)
-            % 
+            %
             if checkfields(pixel,'type') && strcmp(pixel.type,'opticalimage')
                 oi = pixel;
             else
@@ -191,16 +195,33 @@ switch sensorName
             % pixel size is fixed, however, to match the spatial structure
             % of the oi.
             oi = varargin{1};
-        end  
+        end
         sensor = sensorLightField(oi);
         sensor = sensorSet(sensor,'name',oiGet(oi,'name'));
+    case {'dualpixel'}
+        % sensor = sensorCreate('dual pixel',[], rowcol);
+        
+        % Default original sensor
+        sensor = sensorCreate;
+        
+        % We make the height bigger than the width
+        sz = sensorGet(sensor,'pixel size');
+        sensor = sensorSet(sensor,'pixel width',sz(2)/2);
+        
+        % Double the number of columns
+        rowcol = sensorGet(sensor,'size');
+        sensor = sensorSet(sensor,'size',[rowcol(1)*2, rowcol(2)*4]);
+
+        % Set the CFA pattern accounting for the new dual pixel
+        % architecture 
+        sensor = sensorSet(sensor,'pattern',[2 2 1 1; 3 3 2 2]);
         
     case {'mt9v024'}
         % ON 6um sensor.  It can be mono, rgb, or rccc
         % sensor = sensorCreate('MT9V024',[],'rccc');
         if isempty(varargin)
             colorType = 'rgb';
-        else 
+        else
             colorType = varargin{1};
         end
         sensor = sensorMT9V024(sensor,colorType);
@@ -208,7 +229,7 @@ switch sensorName
         %{
     case {'ar0132at'}
         % ON RGB automotive sensor.
-        % 
+        %
         % See ar0132atCreate
         % sensor = sensorAR0132AT(sensor);
         %}
@@ -230,10 +251,10 @@ switch sensorName
             error('No filter file specified')
         end
         if length(varargin) <= 3 || isempty(varargin{3})
-             sensorSize = size(filterPattern);
+            sensorSize = size(filterPattern);
         else, sensorSize = varargin{3};
         end
-        if length(varargin) == 4, wave = varargin{4}; 
+        if length(varargin) == 4, wave = varargin{4};
         else, wave = 400:10:700;
         end
         sensor = sensorSet(sensor,'wave',wave);
@@ -249,7 +270,7 @@ switch sensorName
             error('No filter file specified')
         end
         sensor = sensorCustom(sensor,filterPattern,filterFile);
-
+        
     case 'monochrome'
         filterFile = 'Monochrome';
         sensor = sensorMonochrome(sensor,filterFile);
@@ -284,7 +305,7 @@ switch sensorName
         if length(varargin) >= 1, params = varargin{1};
         else params = [];
         end
-
+        
         % Assign key fields
         if checkfields(params,'sz'), sz = params.sz;
         else, sz = []; end
@@ -302,7 +323,7 @@ switch sensorName
         % Add the default human pixel with StockmanQuanta filters.
         sensor = sensorSet(sensor,'wave',wave);
         sensor = sensorSet(sensor,'pixel',pixelCreate('human',wave));
-             
+        
         % Build up a human cone mosaic.
         [sensor, xy, coneType, rSeed, rgbDensities] = ...
             sensorCreateConeMosaic(sensor, sz, rgbDensities, coneAperture, rSeed, 'human');
@@ -320,7 +341,7 @@ switch sensorName
         sensor = sensorSet(sensor,'cone type',coneType);
         sensor = sensorSet(sensor,'densities',rgbDensities);
         sensor = sensorSet(sensor,'rSeed',rSeed);
-
+        
     otherwise
         error('Unknown sensor type');
 end
@@ -328,12 +349,12 @@ end
 % Set the exposure time - this needs a CFA to be established to account for
 % CFA exposure mode.
 sensor = sensorSet(sensor,'integrationTime',0);
-sensor = sensorSet(sensor,'autoexposure',1);    
+sensor = sensorSet(sensor,'autoexposure',1);
 sensor = sensorSet(sensor,'CDS',0);
 
-if ~isequal(sensorName, 'imx363')
-% Put in a default infrared filter.  All ones.
-sensor = sensorSet(sensor,'irfilter',ones(sensorGet(sensor,'nwave'),1));
+if ~isequal(sensorType, 'imx363')
+    % Put in a default infrared filter.  All ones.
+    sensor = sensorSet(sensor,'irfilter',ones(sensorGet(sensor,'nwave'),1));
 end
 
 % Place holder for charts, such as the MCC
@@ -437,7 +458,7 @@ switch colorType
         
     case 'rgb'
         % GB/RG
-        name = 'MT9V024SensorRGB';        
+        name = 'MT9V024SensorRGB';
         
     case 'rccc'
         % Three white and one red
@@ -552,15 +573,15 @@ irfilename   = p.Results.irfilename;    % IR cut filter file name
 sensor = sensorCreate('bayer-rggb');
 
 %% Pixel properties
-voltageSwing   = whitelevel * dn2volts; 
+voltageSwing   = whitelevel * dn2volts;
 conversiongain = voltageSwing/wellcapacity; % V/e-
 
-% set the pixel properties  
-sensor = sensorSet(sensor,'pixel size same fill factor',[pixelsize pixelsize]);   
-sensor = sensorSet(sensor,'pixel conversion gain', conversiongain);        
-sensor = sensorSet(sensor,'pixel voltage swing', voltageSwing);                                             
-sensor = sensorSet(sensor,'pixel dark voltage', darkvoltage) ;               
-sensor = sensorSet(sensor,'pixel read noise electrons', readnoise);  
+% set the pixel properties
+sensor = sensorSet(sensor,'pixel size same fill factor',[pixelsize pixelsize]);
+sensor = sensorSet(sensor,'pixel conversion gain', conversiongain);
+sensor = sensorSet(sensor,'pixel voltage swing', voltageSwing);
+sensor = sensorSet(sensor,'pixel dark voltage', darkvoltage) ;
+sensor = sensorSet(sensor,'pixel read noise electrons', readnoise);
 
 % Gain and offset - Principles
 %
@@ -575,7 +596,7 @@ analogGain     = isoUnityGain/isoSpeed; % For Pixel 4, ISO55 = gain of 1
 
 % A second goal is that the offset in digital counts is intended to be a
 % fixed level, no matter what the gain might be.  To achieve that we need
-% to multiply the 64*one_lsb by the analogGain 
+% to multiply the 64*one_lsb by the analogGain
 %
 analogOffset   = (blacklevel * dn2volts) * analogGain; % sensor black level, in volts
 
@@ -594,9 +615,9 @@ analogOffset   = (blacklevel * dn2volts) * analogGain; % sensor black level, in 
 %sensor = sensorSet(sensor,'auto exposure',true);
 sensor = sensorSet(sensor,'rows',rows);
 sensor = sensorSet(sensor,'cols',cols);
-sensor = sensorSet(sensor,'dsnu level',dsnu);  
-sensor = sensorSet(sensor,'prnu level',prnu); 
-sensor = sensorSet(sensor,'analog Gain',analogGain);     
+sensor = sensorSet(sensor,'dsnu level',dsnu);
+sensor = sensorSet(sensor,'prnu level',prnu);
+sensor = sensorSet(sensor,'analog Gain',analogGain);
 sensor = sensorSet(sensor,'analog Offset',analogOffset);
 sensor = sensorSet(sensor,'exp time',exposuretime);
 sensor = sensorSet(sensor,'quantization method', quantization);
@@ -606,7 +627,7 @@ sensor = sensorSet(sensor,'wave', wavelengths);
 sensor = pixelCenterFillPD(sensor,fillfactor);
 
 % import QE curve
-[data,filterNames] = ieReadColorFilter(wavelengths,qefilename); 
+[data,filterNames] = ieReadColorFilter(wavelengths,qefilename);
 sensor = sensorSet(sensor,'filter spectra',data);
 sensor = sensorSet(sensor,'filter names',filterNames);
 sensor = sensorSet(sensor,'Name','IMX363');

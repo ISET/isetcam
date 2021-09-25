@@ -1,5 +1,5 @@
 function fullName = vcSaveObject(obj,fullName)
-% Save an ISET object into a .mat file. 
+% Save an ISET object into a .mat file.
 %
 %   fullName = vcSaveObject(obj,[fullName]);
 %
@@ -9,15 +9,15 @@ function fullName = vcSaveObject(obj,fullName)
 %
 % The object is saved with the proper type of name so that it can be loaded
 % using vcLoadObject() at a later.  When called directly, the parameters
-% and data are all saved.  
+% and data are all saved.
 %
 % If you wish to save only the parameters, without the data, then use
-% vcExportObject and set the clearDataFlag.  
+% vcExportObject and set the clearDataFlag.
 %
-% The ISET objects that can be saved are: 
-% 
+% The ISET objects that can be saved are:
+%
 %   SCENE,OPTICALIMAGE,OPTICS,ISA,PIXEL, or VCIMAGE.
-%   
+%
 % Examples:
 %  fullName = vcSaveObject(scene);
 %  fullName = vcSaveObject(oi,'c:\u\brian\Matlab\myFileName.mat')
@@ -27,7 +27,7 @@ function fullName = vcSaveObject(obj,fullName)
 
 if ieNotDefined('obj'), error('Object required.'); end
 
-objType = vcGetObjectType(obj); 
+objType = vcGetObjectType(obj);
 objType = vcEquivalentObjtype(objType);
 
 if ieNotDefined('fullName'), fullName = vcSelectDataFile(objType,'w','mat'); end
@@ -57,11 +57,11 @@ switch(lower(objType))
     case 'vcimage'
         vcimage = obj;
         save(fullName,'vcimage');
-   
+        
     case 'camera'
         camera = obj;
         save(fullName,'camera');
-
+        
     otherwise
         error('Unknown object type');
 end

@@ -13,8 +13,8 @@ function [imgMean, basis, coef, varExplained] = hcBasis(hc,bType,mType)
 %  hc:    Hypercube data
 %  bType: Basis calculation type
 %           if < 1, a fraction specifying required variance explained
-%           if >= 1, a number of bases 
-%  mType:  Mean removal computation  
+%           if >= 1, a number of bases
+%  mType:  Mean removal computation
 %           'mean svd'  - pull out the mean before the svd
 %           'canonical' - leave the mean as part of the basis calculation (default)
 %                         In this case imgMean is returned as empty.
@@ -35,7 +35,7 @@ function [imgMean, basis, coef, varExplained] = hcBasis(hc,bType,mType)
 %
 % Copyright ImagEval Consultants, LLC, 2012.
 %
-% See also:  
+% See also:
 %   hcimage, and hc<TAB>, s_sceneHCCompress, ieSaveMultiSpectralImage
 %
 
@@ -65,9 +65,9 @@ switch mType
         %
         % The imageLinearTransform routine applies a right side multiply to
         % the data.  Specifically, if an image point is represented by the
-        % row vector, p = [R,G,B] the matrix transforms each color point,
+        % row vector, p = [R,G,B] the matrix transforms each color point
         % p, to an output vector pT
-
+        
         [row,col,~] = size(hc);
         % Convert so rows are space and columns are wavelength
         hc = RGB2XWFormat(hc);
@@ -89,14 +89,14 @@ switch mType
             % Person just told us how many bases
             nbases = bType;
         end
-
+        
         % Clip the unwanted basis terms
         basis = basis(:,1:nbases);
         % vcNewGraphWin; plot(basis(:,1:nbases))
         
         % Find the basis coefficients
         coef = hc*basis;
-       
+        
         % Have a look:   hcimage(XW2RGBFormat(d,row,col))
         
         % Make the coefficients an RGB image so we can use
@@ -129,7 +129,7 @@ switch mType
             % Person just told us how many bases
             nbases = bType;
         end
-
+        
         % Clip the unwanted basis terms
         basis = basis(:,1:nbases);
         % vcNewGraphWin; plot(basis(:,1:nbases))

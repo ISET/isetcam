@@ -18,7 +18,7 @@ RGB = double(RGB)/255;
 rgb = RGB;
 index = find(RGB < cutoff);
 if (~isempty(index))
-	rgb(index) = RGB(index)/(12.92);
+    rgb(index) = RGB(index)/(12.92);
 end
 index = find(rgb >= cutoff);
 if (~isempty(index))

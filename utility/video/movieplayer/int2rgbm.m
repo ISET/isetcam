@@ -1,6 +1,6 @@
 function S=int2rgbm(R,G,B)
 %INT2RGBM Convert intensity arrays to RGB movie.
-%   INT2RGBM(R,G,B) converts separate 3-D intensity movies R, G, 
+%   INT2RGBM(R,G,B) converts separate 3-D intensity movies R, G,
 %   and B, representing the red, green, and blue color planes of
 %   an RGB video, respectively, into a 4-D RGB movie array.
 

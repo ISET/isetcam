@@ -13,7 +13,7 @@ function [s, msg] = dcrawInit(ext)
 % Notes:
 %   To compile dcraw on mac, use:
 %      llvm-gcc -o dcraw dcraw.c -lm -DNO_JPEG -DNO_LCMS -DNO_JASPER
-% 
+%
 % Example:
 %   dcraw
 %

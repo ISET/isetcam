@@ -11,7 +11,7 @@ function [image2dArray, imgCorners] = LFbuffer2SubApertureViews(image4d)
 %   c is the color dimension
 %
 % Create an output image that is the 2d array of subaperture (smaller
-% images) 
+% images)
 %
 % From the Lightfield Toolbox by XXXX
 %

@@ -32,7 +32,7 @@ function irradiance = oiCalculateIrradiance(scene,optics)
 %
 %  Reference:
 %    The formula is derived in Peter Catrysse's dissertation (pp. 150-151).
-%    See also http://eeclass.stanford.edu/ee392b/, course handouts
+%    See also https://web.stanford.edu/class/ee392b/, course handouts
 %    William L. Wolfe, Introduction to Radiometry, SPIE Press, 1998.
 %
 % Example:

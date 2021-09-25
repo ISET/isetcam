@@ -1,11 +1,11 @@
 function [gammaFit,gammaInputFit,fitComment,gammaParams] = ...
-  FitDeviceGamma(gammaRaw,gammaInputRaw,fitType,nInputLevels)
+    FitDeviceGamma(gammaRaw,gammaInputRaw,fitType,nInputLevels)
 % function [gammaFit,gammaInputFit,fitComment,gammaParams] = ...
 %   FitDeviceGamma(gammaRaw,gammaInputRaw,[fitType],[nInputLevels])
 %
 % Fit the measured gamma function.  Appends 0 measurement,
 % arranges data for fit, etc.
-% 
+%
 % The returned gamma functions are normalized to a maximum of 1.
 %
 % If present, argument fitType is passed on to FitGamma.
@@ -32,8 +32,8 @@ nDevices = m;
 gammaInputFit = linspace(0,1,nInputLevels)';
 if (size(gammaInputRaw,2) == 1)
     if (gammaInputRaw(1) ~= 0)
-      gammaInputRaw = [0 ; gammaInputRaw];
-      gammaRaw = [zeros(1,nDevices) ; gammaRaw];
+        gammaInputRaw = [0 ; gammaInputRaw];
+        gammaRaw = [zeros(1,nDevices) ; gammaRaw];
     end
 else
     PAD = 0;
@@ -50,13 +50,13 @@ end
 
 %% Make sure input is monotonic
 for i = 1:size(gammaInputRaw,2)
-	gammaInputRaw(:,i) = MakeGammaMonotonic(gammaInputRaw(:,i));
+    gammaInputRaw(:,i) = MakeGammaMonotonic(gammaInputRaw(:,i));
 end
 
 %% Normalize measurements.  Check that last input was unity
 if (size(gammaInputRaw,2) == 1)
     if (gammaInputRaw(end) ~= 1)
-      error('Surprised that last input value was not unity for gamma measurements');
+        error('Surprised that last input value was not unity for gamma measurements');
     end
 else
     UNITY = 1;
@@ -73,6 +73,6 @@ gammaRawN = NormalizeGamma(gammaRaw);
 
 %% Do the fit
 [gammaFit,gammaParams,fitComment] = FitGamma(gammaInputRaw,gammaRawN,...
-                             gammaInputFit,fitType); %#ok<ASGLU>
+    gammaInputFit,fitType); %#ok<ASGLU>
 
 

@@ -1,7 +1,7 @@
 %% t_codeROI
 %
 % We review how to retrieve data from a region of interest from the scene,
-% oi, sensor or image processor.  
+% oi, sensor or image processor.
 %
 % ISET has a few routines that manage simple, rectangular ROIs.
 %
@@ -34,7 +34,7 @@ roiData = vcGetROIData(scene,roiLocs,'photons');
 
 % To convert the roiData back to a little square region run
 spd = XW2RGBFormat(roiData,rect(4)+1,rect(3)+1);
-ieNewGraphWin; 
+ieNewGraphWin;
 rgb = imageSPD(spd,sceneGet(scene,'wave'));
 imagescRGB(rgb);
 
@@ -72,4 +72,4 @@ radius = c(1)/4;
 h = ieDrawShape(ip,'circle',c(1:2),radius);
 set(h,'color',[0 0 1],'linewidth',3);
 
-%% 
+%%

@@ -44,24 +44,24 @@ end
 
 % Check meter
 if ~whichMeterType
-	CMCheckInit;
+    CMCheckInit;
 end
 
 % User prompt
 if USERPROMPT
-	if cal.describe.whichScreen == 0
-		fprintf('Hit any key to proceed past this message and display a box.\n');
-		fprintf('Focus radiometer on the displayed box.\n');
-		fprintf('Once meter is set up, hit any key - you will get %g seconds\n',...
-                cal.describe.leaveRoomTime);
-		fprintf('to leave room.\n');
+    if cal.describe.whichScreen == 0
+        fprintf('Hit any key to proceed past this message and display a box.\n');
+        fprintf('Focus radiometer on the displayed box.\n');
+        fprintf('Once meter is set up, hit any key - you will get %g seconds\n',...
+            cal.describe.leaveRoomTime);
+        fprintf('to leave room.\n');
         KbStrokeWait(-1);
-	else
-		fprintf('Focus radiometer on the displayed box.\n');
-		fprintf('Once meter is set up, hit any key - you will get %g seconds\n',...
-                cal.describe.leaveRoomTime);
-		fprintf('to leave room.\n');
-	end
+    else
+        fprintf('Focus radiometer on the displayed box.\n');
+        fprintf('Once meter is set up, hit any key - you will get %g seconds\n',...
+            cal.describe.leaveRoomTime);
+        fprintf('to leave room.\n');
+    end
 end
 
 % Blank other screen, if requested:
@@ -103,7 +103,7 @@ theClut = zeros(256,3);
 if g_usebitspp
     % Load zero theClut into device:
     Screen('LoadNormalizedGammaTable', window, theClut, 2);
-    Screen('Flip', window);    
+    Screen('Flip', window);
 else
     % Load zero lut into regular graphics card:
     Screen('LoadNormalizedGammaTable', window, theClut);
@@ -124,9 +124,9 @@ end
 % Wait for user
 if USERPROMPT == 1
     KbStrokeWait(-1);
-	fprintf('Pausing for %d seconds ...', cal.describe.leaveRoomTime);
-	WaitSecs(cal.describe.leaveRoomTime);
-	fprintf(' done\n');
+    fprintf('Pausing for %d seconds ...', cal.describe.leaveRoomTime);
+    WaitSecs(cal.describe.leaveRoomTime);
+    fprintf(' done\n');
 end
 
 % Put in appropriate background.
@@ -161,7 +161,7 @@ RestoreCluts;
 
 % Show hidden cursor:
 if cal.describe.whichScreen == 0
-	ShowCursor;
+    ShowCursor;
 end
 
 % Close all windows:

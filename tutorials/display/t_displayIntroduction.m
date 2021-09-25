@@ -5,7 +5,7 @@
 %
 % Copyright Imageval LLC, 2015
 
-%% 
+%%
 ieInit;
 
 %% Create a display
@@ -73,4 +73,4 @@ scene3 = sceneSet(scene,'illuminant',ill);
 scene3 = sceneSet(scene3,'name','d50');
 sceneWindow(scene3);
 
-%% 
+%%

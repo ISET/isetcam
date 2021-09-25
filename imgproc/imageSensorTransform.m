@@ -1,13 +1,13 @@
 function T = imageSensorTransform(sensorQE,targetQE,illuminant,wave, method)
-% Calculate sensor -> target linear transformation 
+% Calculate sensor -> target linear transformation
 %
 %  T = imageSensorTransform(sensorQE, targetQE,illuminant,wave, method)
-%  
+%
 % sensorQE:   A matrix with columns containing the sensor spectral quantum
-%             efficiencies. 
+%             efficiencies.
 % targetQE:   A matrix with columns containing the spectral quantum efficiency
 %             of the viewer; normally the human visual system (XYZ) but it
-%             could be something else, such as an ideal camera. 
+%             could be something else, such as an ideal camera.
 % illuminant: The name of the illuminant spectral power distribution.
 %             Can be a vector of length(wave) or a name. Default is 'D65'
 % wave:       The sample wavelengths
@@ -15,7 +15,7 @@ function T = imageSensorTransform(sensorQE,targetQE,illuminant,wave, method)
 %             surfaces and perhaps other choices
 %
 % The routine computes a nSensor x nTargetspace transform, T, to convert
-% from sensor space to target space. 
+% from sensor space to target space.
 %
 %  The returned transform can be applied as:
 %
@@ -26,8 +26,8 @@ function T = imageSensorTransform(sensorQE,targetQE,illuminant,wave, method)
 % Copyright ImagEval Consultants, LLC, 2005.
 
 %% PROGRAMMING TODO:
-%  We should have a variety of ways of computing this linear transform,
-%  including methods that account for known noise, use ridge methods,
+%  We should have a variety of ways of computing this linear transform
+%  including methods that account for known noise, use ridge methods
 %  search to minimize deltaE, and perhaps others.
 %
 
@@ -36,12 +36,12 @@ if ieNotDefined('illuminant'), illuminant = 'D65'; end
 if ieNotDefined('wave'), wave = 400:10:700; end
 if ieNotDefined('method'), method = 'multisurface'; end
 
-%% Read the MCC surface spectra and a target illuminant, say D65. 
+%% Read the MCC surface spectra and a target illuminant, say D65.
 if ischar(illuminant)
     % String was sent in
-    ill = illuminantCreate(illuminant,wave); 
+    ill = illuminantCreate(illuminant,wave);
     illQuanta = illuminantGet(ill,'photons');
-else 
+else
     % Data were sent in
     illQuanta = illuminant;
 end
@@ -52,11 +52,11 @@ method = ieParamFormat(method);
 switch method
     case {'mccoptimized','mcc'}
         % fullfile(isetRootPath,'data','surfaces','macbethChart');
-        fName  = which('macbethChart.mat'); 
+        fName  = which('macbethChart.mat');
         surRef = ieReadSpectra(fName,wave);
     case {'esseroptimized','esser'}
         % fullfile(isetRootPath,'data','surfaces','esserChart');
-        fName = which('esserChart.mat');   
+        fName = which('esserChart.mat');
         surRef = ieReadSpectra(fName,wave);
     case {'multisurface'}
         surRef = ieReflectanceSamples([],[],wave);
@@ -85,7 +85,7 @@ targetMacbeth = (targetQE'*diag(illQuanta)*surRef)';
 T = sensorMacbeth \ targetMacbeth;
 
 %% Test code
-% pred = sensorMacbeth*T; 
+% pred = sensorMacbeth*T;
 % predImg = XW2RGBFormat(pred,6,4);
 % figure; title('mcc')
 % subplot(1,2,1), imagescRGB(imageIncreaseImageRGBSize(predImg,20));

@@ -1,4 +1,4 @@
-%% Experiment with changing the surface reflectances in the image 
+%% Experiment with changing the surface reflectances in the image
 %
 % We use convolution by different kernels to blur the surface reflectance
 % functions. The original motivation is to control the image gamut by

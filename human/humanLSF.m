@@ -15,24 +15,24 @@ function [lineSpread,xDim,wave] = humanLSF(pupilRadius,dioptricPower,unit,wave)
 %
 % See also:  humanOTF and discussion therein.
 %
-% Reference: 
-%   Marimont & Wandell (1994 --  J. Opt. Soc. Amer. A,  v. 11, 
+% Reference:
+%   Marimont & Wandell (1994 --  J. Opt. Soc. Amer. A,  v. 11,
 %   p. 3113-3122 -- see also Foundations of Vision by Wandell, 1995.
 %
 % Examples:
-%  [lsf,xDim,wave]  = humanLSF; colormap(jet); mesh(xDim,wave,lsf);
+%  [lsf,xDim,wave]  = humanLSF; colormap(jet(64)); mesh(xDim,wave,lsf);
 %  xlabel('wave'); ylabel('mm')
-%  [lsf,xDim,wave]  = humanLSF([],[],[],'mm'); colormap(jet); mesh(xDim,wave,lsf)
+%  [lsf,xDim,wave]  = humanLSF([],[],[],'mm'); colormap(jet(64)); mesh(xDim,wave,lsf)
 %
 %  radius = 0.003/2;  % In meters
 %  dioptricPower = 60;% In diopters (1/m)
 %  unit = 'mm';
-%  [lsf,xDim,wave]  = humanLSF([],radius,dioptricPower,'mm'); colormap(jet); mesh(xDim,wave,lsf)
+%  [lsf,xDim,wave]  = humanLSF([],radius,dioptricPower,'mm'); colormap(jet(64)); mesh(xDim,wave,lsf)
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
 if ieNotDefined('oi'),            oi = vcGetObject('OI'); end
-if ieNotDefined('pupilRadius'),   p  = 0.0015;   else p = pupilRadius;   end   % Default pupil radius is 3mm 
+if ieNotDefined('pupilRadius'),   p  = 0.0015;   else p = pupilRadius;   end   % Default pupil radius is 3mm
 if ieNotDefined('dioptricPower'), D0 = 59.9404;  else D0 = dioptricPower;end   % dioptric power of unaccomodated eye
 if ieNotDefined('unit'), unit = 'mm';    end
 if ieNotDefined('wave'), wave = 400:700; end  % Default wavelength sampes
@@ -57,14 +57,14 @@ for ii = 1:nWave
     tmp = squeeze(combinedOTF(:,:,ii));
     OTFcenterLine  = tmp(:,1);                     % plot(OTFcenterLine)
     thisLSF = fftshift(abs(ifft(OTFcenterLine)));  % plot(thisLSF)
-    lineSpread(ii,:) = thisLSF; 
+    lineSpread(ii,:) = thisLSF;
     % sum(thisLSF), max(OTFcenterLine)  % I don't understand why this
     % doesn't add up
 end
 
 % The max is the Nyquist frequency (deg/samp)
 % There are two samples at the Nyquist frequency
-deltaSpace       = 1/(2*max(sampleSf(:)));   
+deltaSpace       = 1/(2*max(sampleSf(:)));
 spatialExtentDeg = deltaSpace*size(lineSpread,2);
 fList            = unitFrequencyList(nSamples);
 xDim             = fList * spatialExtentDeg;

@@ -6,8 +6,8 @@ function [ip, yNoise, mRGB] = macbethLuminanceNoise(ip,cp)
 %
 % Inputs:
 %  ip:       image process structure
-%  pointLoc:  Macbeth point locations 
-% 
+%  pointLoc:  Macbeth point locations
+%
 % Outputs:
 %  ip:      Has corner points attached
 %  yNoise:  Luminance noise
@@ -38,7 +38,7 @@ chartRectsDraw(ip,rects);
 fulldata = true;
 mRGB = chartRectsData(ip,mLocs,0.6*pSize(1),fulldata);
 
-%% Compute the std dev and mean for each gray series patch.  
+%% Compute the std dev and mean for each gray series patch.
 
 % The ratio is the contrast noise.
 jj = 1;

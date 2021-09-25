@@ -2,8 +2,8 @@
 %
 % Files
 %   s_opticsCoC              - The circle of confusion
-%   s_opticsDefocus          - Calculating the defocused image 
-%   s_opticsDefocusScene     - Calculating the defocused image (spectral irradiance) of a scene 
+%   s_opticsDefocus          - Calculating the defocused image
+%   s_opticsDefocusScene     - Calculating the defocused image (spectral irradiance) of a scene
 %   s_opticsDepthDefocus     - Calculating defocus and depth of field
 %   s_opticsDLPsf            - Diffraction limited point spread function calculations
 %   s_opticsGaussianPSF      - The shift-invariant optics model for spatial blurring

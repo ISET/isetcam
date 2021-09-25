@@ -14,7 +14,7 @@ ieInit;
 % Frame rate 45 Hz (full resolution)
 
 sensorSize = [960 1280];    % Not important, really, but OK
-pixelSize = 3.751e-6; % 
+pixelSize = 3.751e-6; %
 
 % Fill factor
 

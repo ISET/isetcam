@@ -56,8 +56,8 @@ classdef cpCModule
                     expTimes = expTimes;
                 end
                 
-            else
-                warning("Unsupported scene type for focus -- Future work");
+            else % assume we only have an iset scene(s) and can use whatever distance(s) it/they have
+                focusDistances = aCPScene.isetScenes(:).distance;
             end
         end
         
@@ -84,8 +84,9 @@ classdef cpCModule
                 options.focusMode = 'Auto';
                 options.focusParam = '';
                 options.reRender {islogical} = true;
+                options.stackFrames = 1;
             end
-            
+             
             % need to know our sensor size to judge film size
             % however it is in meters and pi wants mm
             filmSize = 1000 * sensorGet(obj.sensor, 'width');
@@ -93,6 +94,10 @@ classdef cpCModule
             % then 'sceneObjects' are actually oi structs                                                                                                          -
             
             [focusDistances, expTimes] = focus(obj, aCPScene, expTimes, options.focusMode, options.focusParam);
+            
+            if options.stackFrames ~= numel(focusDistances)
+                options.stackFrames = numel(focusDistances);
+            end
             
             [sceneObjects, sceneFiles] = aCPScene.render(expTimes,...
                 focusDistances,...
@@ -112,7 +117,7 @@ classdef cpCModule
                         % for focus stacking if not done in pbrt. Need to
                         % add a way to pass focal distances.
                         imgPlaneDist = opticsGet(obj.oi.optics,'focal length');
-                        multiplier = 1.01; 
+                        multiplier = 1.01;
                         sceneDepth = max(ourScene.depthMap,[], 'all') - min(ourScene.depthMap,[], 'all');
                         sceneBands = 8;
                         depthEdges = min(ourScene.depthMap,[], 'all'): sceneDepth / sceneBands : max(ourScene.depthMap,[], 'all');

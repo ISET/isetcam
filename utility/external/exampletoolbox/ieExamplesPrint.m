@@ -9,7 +9,7 @@ function status = ieExamplesPrint(theFunction,varargin)
 %
 %      % Examples:
 %       %{
-%         ... 
+%         ...
 %       %}
 %       %{
 %         ...
@@ -19,8 +19,8 @@ function status = ieExamplesPrint(theFunction,varargin)
 %    examples block is terminated by a blank line.
 %
 % Inputs:
-%    theFunction - String.  Name of a function on the user's path. 
-%      which(theFunction) should return the full path to the function. 
+%    theFunction - String.  Name of a function on the user's path.
+%      which(theFunction) should return the full path to the function.
 %
 % Outputs:
 %    status - What happened?
@@ -83,7 +83,7 @@ if (isempty(ind))
     return;
 end
 
-% Look for examples 
+% Look for examples
 candidateText = theText{1}(ind(1)+9:end);
 startIndices = strfind(candidateText,'%{');
 endIndices = strfind(candidateText,'%}');

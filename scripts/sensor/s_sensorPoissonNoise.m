@@ -1,5 +1,19 @@
 %% Poisson scaling
 %
+% 1. When the variable of Poisson (mu) is scaled by a factor of 
+%    k(conversion gain * analog gain), the new random variable is no longer
+%    Poisson.
+% 2. The scaled varaible has new mean of (k * mu) and new variance of (k^2
+%    * mu). So the std of the new distribution will be k * (mu)^0.5
+%    new mean = log(k * mu) = log(k) + log(mu)
+%    new std  = log(k * mu^0.5) = log(k) + 0.5 * log(mu)
+% 3. If there is only Poisson noise, the conversion gain can be derived 
+%    given mean and std with several digital values at several levels. 
+%    Plot log(new mean) vs log(sqrt(new mean)) should have a 
+%    slope of 0.5. The offset is the log of the scale factor.
+%    There is only Photon noise and with conversion gain and analog gain,
+%    k should be smaller than 1.
+% 4. If there is electronic noise, the results might be different.
 
 %%  Suppose these are the photon absorptions - without any other noise
 
@@ -8,7 +22,7 @@ nSamp  = 100;
 useSeed = 1;
 photons = zeros(numel(lambda),nSamp);
 for ii=1:numel(lambda)
-    photons(ii,:) = iePoisson(lambda(ii),nSamp,useSeed);
+    photons(ii,:) = poissrnd(lambda(ii),nSamp,useSeed);
 end
 
 %%  In that case, we have the mean and standard deviations as follows

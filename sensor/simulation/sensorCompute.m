@@ -23,12 +23,12 @@ function [outSensor, unitSigCurrent] = sensorCompute(sensor,oi,showBar)
 %  The noise flag is an important way to control the details of the
 %  calculation.  The default value of the noiseFlag is 2.  This case is
 %  standard operating mode with photon noise, read/reset, dsnu, prnu,
-%  analog gain/offset, clipping, quantization, included.  
+%  analog gain/offset, clipping, quantization, included.
 %
 %  Each of the noises can be individually controlled, but the noise flag
 %  simplifies turning off different types of noise for certain experiments
 %
-%   sensor = sensorSet(sensor,'noise flag',noiseFlag);   
+%   sensor = sensorSet(sensor,'noise flag',noiseFlag);
 %
 % The conditions are:
 %
@@ -46,7 +46,7 @@ function [outSensor, unitSigCurrent] = sensorCompute(sensor,oi,showBar)
 % noiseFlag = -2 - photon noise,    no eNoises, no GCQ
 % noiseFlag = -1 - no photon noise, no eNoises, no GCQ
 % noiseFlag =  0 - no photon noise, no eNoises, yes GCQ
-% noiseFlag =  1 - photon noise, no eNoises, yes GCQ 
+% noiseFlag =  1 - photon noise, no eNoises, yes GCQ
 % noiseFlag =  2 - photon noise, yes eNoises,yes GCQ
 %
 % In addition to controlling factors through the noise flag, it is possible
@@ -54,22 +54,22 @@ function [outSensor, unitSigCurrent] = sensorCompute(sensor,oi,showBar)
 % when noiseFlag 0,1,2, you can still control the analog gain/offset noise
 % can be eliminated by setting 'prnu sigma' and 'dsnu sigma' to 0.
 % Similarly you can set the read noise and dark voltage to 0.
-% 
+%
 % Quantization noise can be turned off by setting the quantization method
-% to 'analog' 
+% to 'analog'
 %
 %   * quantization       - set 'quantization method' to 'analog' (default)
 %   * CDS                - set the cds flag to false (default)
 %   * Clipping           - You can avoid clipping high with a large
 %        voltage swing.  But other noise factors might drive the
-%        voltage below 0, and we would clip. 
+%        voltage below 0, and we would clip.
 %
 % COMPUTATIONAL OUTLINE:
 %
 %   1. Check exposure duration: autoExposure default, or use the set
 %      time.
 %   2. Compute the mean image: sensorComputeImage()
-%   3. Etendue calculation to account for pixel vignetting 
+%   3. Etendue calculation to account for pixel vignetting
 %   4. Noise, analog gain, clipping, quantization
 %   5. Correlated double-sampling
 %   6. Macbeth ROI management
@@ -79,13 +79,13 @@ function [outSensor, unitSigCurrent] = sensorCompute(sensor,oi,showBar)
 %
 % Copyright ImagEval Consultants, LLC, 2011
 %
-% See also:  
+% See also:
 %   sensorComputeNoise, sensorAddNoise
 
 % Examples:
 %{
   scene = sceneCreate; scene = sceneSet(scene,'hfov',4);
-  oi = oiCreate; oi = oiCompute(oi,scene); 
+  oi = oiCreate; oi = oiCompute(oi,scene);
   sensor = sensorCreate; sensor = sensorCompute(sensor,oi);
   sensorWindow(sensor);
 %}
@@ -97,7 +97,7 @@ if ~exist('showBar','var') || isempty(showBar), showBar = ieSessionGet('waitbar'
 
 wBar = [];
 
-% We allow sensor arrays as input, though this is rarely used.  
+% We allow sensor arrays as input, though this is rarely used.
 sensorArray = sensor;
 clear sensor;
 
@@ -188,7 +188,7 @@ for ss=1:length(sensorArray)   % Number of sensors
     sensor    = sensorVignetting(sensor);
     etendue   = sensorGet(sensor,'sensorEtendue');  % vcNewGraphWin; imagesc(etendue)
     voltImage = voltImage .* repmat(etendue,[1 1 sensorGet(sensor,'nExposures')]);
-    % ieNewGraphWin; imagesc(voltImage); colormap(gray)
+    % ieNewGraphWin; imagesc(voltImage); colormap(gray(64))
     
     responseType = sensorGet(sensor,'response type');
     switch responseType
@@ -219,17 +219,17 @@ for ss=1:length(sensorArray)   % Number of sensors
     end
     
     %% We have the mean image computed.  Now add noise, clip and quantize
-
+    
     % See sensorComputeNoise to run just this noise section when you have a
     % mean image and just want many noisy, clipped, quantized examples.
     noiseFlag = sensorGet(sensor,'noise flag');
     
     % The noise flag rules for different integer values are described in
-    % the header to this function. 
+    % the header to this function.
     %
     if noiseFlag >= 0
         % Apply this block if noiseFlag >= 0.
-
+        
         % See the comments in the header for the definition of the
         % noiseFlag. N.B. The noiseFlag  governs clipping and
         % quantization, not just noise.
@@ -268,14 +268,14 @@ for ss=1:length(sensorArray)   % Number of sensors
             % If you are one of those people, then when you set the ISETCam
             % analog offset level parameter think of the formula as
             %
-            %   volts/ag + ao = volts/ag + (ao'/ag) 
+            %   volts/ag + ao = volts/ag + (ao'/ag)
             %
             % where ao' is the ISETCam analog offset. Your analog offset
             % (ao) should be equal to the ISETCam analog offset (ao')
             % divided by the gain (ao'/ag).  Thus, the ISETCam analog
             % offset should be ao' = ao*ag.
             %
-            volts = (volts + ao)/ag;   
+            volts = (volts + ao)/ag;
             sensor = sensorSet(sensor,'volts',volts);
         end
         
@@ -301,7 +301,7 @@ for ss=1:length(sensorArray)   % Number of sensors
         sensor = sensorSet(sensor,'noiseFlag',noiseFlag);  % Put it back
     elseif noiseFlag == -1
         % No photon no pixel no system
-
+        
     else
         error('Bad noiseFlag %d\n',noiseFlag);
     end
@@ -355,7 +355,7 @@ for ss=1:length(sensorArray)   % Number of sensors
     %% Macbeth chart management
     
     % Possible overlay showing center of Macbeth chart
-    % sensor = sensorSet(sensor,'mccRectHandles',[]);    
+    % sensor = sensorSet(sensor,'mccRectHandles',[]);
     if showBar, close(wBar); end
     
     % The sensor structure has fields that are not present in the

@@ -15,12 +15,12 @@
 %
 % Copyright ImagEval, LLC 2011
 
-%% 
+%%
 ieInit
 try
     rng('default');  % To achieve the same result each time
 catch err
-    randn('seed');
+    rng('seed');
 end
 
 %%  Create a sample human optics and cone mosaic sensor
@@ -35,13 +35,13 @@ oi = oiCreate('human');
 cSensor = sensorCreate('human');
 sensorConePlot(cSensor);
 
-%%  Compute cone absorption as a function of mean signal level 
+%%  Compute cone absorption as a function of mean signal level
 % We will image uniform fields of monochrome light on a human sensor. Then
 % get the photon absorptions in a 100 ms flash.  THen we plot the
-% absorptions as a 3D graph in the next cell. 
+% absorptions as a 3D graph in the next cell.
 
 % These are the two wavelengths and the list of scene luminance levels
-wSamples = [520  530]; 
+wSamples = [520  530];
 nWave = length(wSamples);
 luminance = [10 50 200];
 nLevels = length(luminance);
@@ -60,20 +60,21 @@ slot = [2 3 4];   % L,M,S positions in the sensor
 scene  = cell(1,nWave);
 sensor = cell(1,nWave);
 
-vcNewGraphWin([],'tall');
+ieNewGraphWin([],'tall');
 for rr = 1:nLevels
     subplot(nLevels,1,rr);
     for ww=1:length(wSamples)
-
+        
         % Create a monochromatic scene and set the radiance
         % The wavelength is specified in wSamples.
         scene{ww} = sceneCreate('uniform monochromatic',wSamples(ww),sceneSize);
         % scene{ww} = sceneSet(scene{ww},'peak photon radiance',peakRadiance(rr));
         scene{ww} = sceneAdjustLuminance(scene{ww},luminance(rr));
-
+        
         % Compute the spectral irradiance at the retina
-        oi = oiCompute(scene{ww},oi);
-
+        oi = oiSet(oi,'photons',[]);
+        oi = oiCompute(oi,scene{ww});
+        
         % Create a human sensor that will integrate for 100 ms
         sensor{ww} = sensorCreate('human');
         sensor{ww} = sensorSet(sensor{ww},'exposure time',0.10);
@@ -83,19 +84,19 @@ for rr = 1:nLevels
         sensor{ww} = sensorSet(sensor{ww},'name',sprintf('wave %.0f',wSamples(ww)));
         
         % If you want to have a look at the image, run this line.
-        % vcAddAndSelectObject(sensor{ww}); sensorWindow;
+        % sensorWindow(sensor{ww});
     end
-
+    
     for ww=1:length(wSamples)
         L{ww} = sensorGet(sensor{ww},'electrons',slot(1));
         M{ww} = sensorGet(sensor{ww},'electrons',slot(2));
         S{ww} = sensorGet(sensor{ww},'electrons',slot(3));
-
+        
         % For simplicity in plotting, make the absorptions same length
         n = min(100,length(L{ww}));
         S{ww} = S{ww}(1:n); M{ww} = M{ww}(1:n); L{ww} = L{ww}(1:n);
     end
-
+    
     % Plot the absorptions
     sym = {'b.','g.','r.'};
     az = 65.5; el = 30;
@@ -106,8 +107,8 @@ for rr = 1:nLevels
         view([az el])
         hold on
     end
-    xlabel('L-absorptions'); ylabel('M-Absorptions'); 
+    xlabel('L-absorptions'); ylabel('M-Absorptions');
     zlabel('S-absorptions'); axis square; grid on
-
+    
 end
 

@@ -63,7 +63,7 @@ legend('Red wall', 'Green wall', 'White wall')
 %% Load spectral reflectance
 piMaterialList(thisR);
 matList = {'ShieldMat', 'LeftWall', 'RightWall', 'BackWall', 'TopWall',...
-            'BottomWall', 'CubeLarge', 'CubeSmall'};
+    'BottomWall', 'CubeLarge', 'CubeSmall'};
 if isequal(surfaceColor, 'redgreen')
     reflList = [wRefl, rRefl gRefl wRefl wRefl wRefl wRefl wRefl];
 elseif isequal(surfaceColor, 'white')

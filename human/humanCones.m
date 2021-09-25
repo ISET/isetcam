@@ -1,11 +1,11 @@
 function [cones,macularCorrection,wave] = humanCones(fileName,wave,macularDensity,includedDensity)
 %Return human cone data corrected for macular pigment density.
 %
-%     *********** INTEGRATE WITH HIROSHI'S FUNCTIONS 
+%     *********** INTEGRATE WITH HIROSHI'S FUNCTIONS
 %     ************ THOSE ARE PROBABLY RIGHT.
 %     ************ WE DEFINITELY NEED TO DEAL WITH QUANTA/ENERGY ISSUE
 %
-%  [cones, macularCorrection, wave] = 
+%  [cones, macularCorrection, wave] =
 %        humanCones(fileName,wave,macularDensity,includedDensity)
 %
 % The human cone data are read from an existing file, fileName.   We adjust
@@ -48,9 +48,9 @@ cones = ieReadSpectra(fileName,wave);
 
 % If macularDensity is empty, the user simply accepts the cones.
 if isempty(macularDensity)
-    macularCorrection = ones(size(cones(:,1))); 
-    return; 
-else 
+    macularCorrection = ones(size(cones(:,1)));
+    return;
+else
     % If macularDensity has a value, then we strip off the included density
     % and include a new density corresponding to the included value.
     t = macular(includedDensity,wave);

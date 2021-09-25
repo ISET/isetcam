@@ -51,7 +51,7 @@ if ieNotDefined('cornerPoints')
     cornerPoints = ipGet(vci,'chart corner points');
     
     % But, if there are cornerpoints, check them here.
-    if ~isempty(cornerPoints)    
+    if ~isempty(cornerPoints)
         % Ask the user if a change is desired.  The current ones may not be
         % satisfactory.
         macbethDrawRects(vci,'on');
@@ -104,13 +104,13 @@ vcNewGraphWin([],'upperleft big'); clf;
 set(gcf,'name',sprintf('VCIMAGE: %s',ipGet(vci,'name')))
 
 %% LAB positions of the patches
-subplot(2,2,1), 
+subplot(2,2,1),
 idealLAB   = ieXYZ2LAB(idealXYZ,whiteIdealXYZ);
 macbethLAB = ieXYZ2LAB(macbethXYZ,whiteMacbethXYZ);
 
 plot(macbethLAB(:,2),macbethLAB(:,3),'o')
 line([idealLAB(:,2),macbethLAB(:,2)]',...
-    [idealLAB(:,3),macbethLAB(:,3)]'); 
+    [idealLAB(:,3),macbethLAB(:,3)]');
 
 xlabel('a (red-green)'); ylabel('b (blue-yellow)')
 grid on; axis square
@@ -120,14 +120,14 @@ title('CIELAB color plane')
 subplot(2,2,2)
 
 % We compute the delta E difference between the data and the ideal
-dE = deltaEab(macbethXYZ,idealXYZ,whiteIdealXYZ);   
-hist(dE); grid on; axis square
+dE = deltaEab(macbethXYZ,idealXYZ,whiteIdealXYZ);
+histogram(dE); grid on; axis square
 title(sprintf('Mean deltaE = %.2f',mean(dE)));
 
 %% Show the gray series L* values
 subplot(2,2,3)
-plot(1:6,macbethLAB(gSeries,1),'-o',1:6,idealLAB(gSeries,1),'x'); 
-xlabel('Gray patch'); ylabel('L*');  axis square; grid on; 
+plot(1:6,macbethLAB(gSeries,1),'-o',1:6,idealLAB(gSeries,1),'x');
+xlabel('Gray patch'); ylabel('L*');  axis square; grid on;
 title('Achromatic series')
 
 %% Lines between chromaticities of the ideal and current Processor data
@@ -136,13 +136,13 @@ subplot(2,2,4)
 
 % Exclude very black surfaces from chromaticity plot.
 list = find(macbethXYZ(:,2) > 0.01);
-xy   = chromaticity(macbethXYZ(list,:)); 
+xy   = chromaticity(macbethXYZ(list,:));
 chromaticityPlot(xy,'gray',256,0);
 
 % Draw little lines to the ideal position
 hold on;
 idealxy = chromaticity(idealXYZ(list,:));
-line([idealxy(:,1),xy(:,1)]',[idealxy(:,2),xy(:,2)]'); 
+line([idealxy(:,1),xy(:,1)]',[idealxy(:,2),xy(:,2)]');
 
 %% Store the data in the figure
 uData.macbethXYZ =  macbethXYZ;

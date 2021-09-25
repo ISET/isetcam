@@ -38,14 +38,14 @@ function MAC = ieGetMACAddress2
 % f = java.NetworkInterface.getHardwareAdress('')
 % See other stuff at the end of the file
 
-str = strread(evalc('!ipconfig -all'),'%s','delimiter','\n'); 
+str = textscan(evalc('!ipconfig -all'),'%s','delimiter','\n');
 MAC = '';
 
 for ii=1:length(str)
-    n = findstr(str{ii},'Physical Address. . . . . . . . . : ');
-    if ~isempty(n),
+    n = strfind(str{ii},'Physical Address. . . . . . . . . : ');
+    if ~isempty(n)
         a = str{ii};
-        c = findstr(str{ii},':');
+        c = strfind(str{ii},':');
         MAC = lower(strrep(a( (c+1):end),'-',':'));
         return;
     end
@@ -53,11 +53,11 @@ end
 
 return;
 
-% % 
-% tic, 
-% for ii=1:2, strread(evalc('!ipconfig -all'),'%s','delimiter','\n'); end; 
+% %
+% tic,
+% for ii=1:2, textscan(evalc('!ipconfig -all'),'%s','delimiter','\n'); end;
 % toc
-% % 
-% tic, 
-% for ii=1:2, a = evalc('!GetMAC'); end; 
+% %
+% tic,
+% for ii=1:2, a = evalc('!GetMAC'); end;
 % toc

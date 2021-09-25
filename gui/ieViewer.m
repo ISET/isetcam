@@ -8,7 +8,7 @@ function ieViewer(rgb)
 
 matlabV = version;
 
-if str2num(matlabV(1)) > 6, 
+if str2num(matlabV(1)) > 6
     % The viewer appears to want monochrome images scaled between 0 and 1.
     % So I rescale.
     if ndims(rgb) == 2, rgb = rgb/max(rgb(:)); end

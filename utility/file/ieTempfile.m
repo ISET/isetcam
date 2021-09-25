@@ -1,5 +1,5 @@
 function [fullname, p]  = ieTempfile(ext)
-% Create a temporary ISET file 
+% Create a temporary ISET file
 %
 %  [fullname, tempdir] = ieTempfile(ext)
 %

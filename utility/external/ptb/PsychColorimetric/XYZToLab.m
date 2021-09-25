@@ -15,13 +15,13 @@ function lab = XYZToLab(xyz,whiteXYZ)
 % Check xyz dimensions
 [m,n] = size(xyz);
 if ( m ~= 3 )
-  error('Array xyz must have three rows')
+    error('Array xyz must have three rows')
 end
 
 % Check white point dimensions
 [m,n] = size(whiteXYZ);
 if ( m ~= 3 || n ~= 1)
-  error('Array white is not a three vector')
+    error('Array white is not a three vector')
 end
 
 % Separate out the compontents
@@ -38,33 +38,33 @@ fZ = zeros(1,n);
 % Calculate fX
 lX = find( (X/Xn) < 0.008856 );
 bX = find( (X/Xn) >= 0.008856);
-if (length(bX) ~= 0) 
- fX(bX) = (X(bX)/Xn) .^(1/3);
+if (length(bX) ~= 0)
+    fX(bX) = (X(bX)/Xn) .^(1/3);
 end
 if (length(lX) ~= 0)
-  fX(lX) = 7.787*(X(lX)/Xn) + 16/116;
+    fX(lX) = 7.787*(X(lX)/Xn) + 16/116;
 end
 
 % Calculate L
 lY = find( (Y/Yn) < 0.008856 );
 bY = find( (Y/Yn) >= 0.008856);
 if ( length(bY) ~= 0 )
- lab(1,bY) = 116*(Y(bY)/Yn).^(1/3) - 16;
- fY(bY) = (Y(bY)/Yn) .^(1/3);
+    lab(1,bY) = 116*(Y(bY)/Yn).^(1/3) - 16;
+    fY(bY) = (Y(bY)/Yn) .^(1/3);
 end
 if ( length(lY) ~= 0 )
- lab(1,lY) = 903.3 * (Y(lY)/Yn);
- fY(lY) = 7.787*(Y(lY)/Yn) + 16/116;
-end  
+    lab(1,lY) = 903.3 * (Y(lY)/Yn);
+    fY(lY) = 7.787*(Y(lY)/Yn) + 16/116;
+end
 
 % Calculate fZ
 lZ = find( (Z/Zn) < 0.008856 );
 bZ = find( (Z/Zn) >= 0.008856);
-if (length(bZ) ~= 0) 
- fZ(bZ) = (Z(bZ)/Zn) .^(1/3);
+if (length(bZ) ~= 0)
+    fZ(bZ) = (Z(bZ)/Zn) .^(1/3);
 end
 if (length(lZ) ~= 0)
-  fZ(lZ) = 7.787*(Z(lZ)/Zn) + 16/116;
+    fZ(lZ) = 7.787*(Z(lZ)/Zn) + 16/116;
 end
 
 % Compute a and b

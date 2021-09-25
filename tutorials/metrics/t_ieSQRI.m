@@ -6,12 +6,12 @@
 %
 % Invented in 1989
 % <http://proceedings.spiedigitallibrary.org/proceeding.aspx?articleid=1257362
-% by Barten in an SPIE paper>. 
+% by Barten in an SPIE paper>.
 %
 % For the calculation here, notice when the display MTF is all
 % ones, we achieve the highest level of SQRI we could obtain for
 % a human in that viewing condition (which depends on the
-% luminance and width parameters, L and w). 
+% luminance and width parameters, L and w).
 %
 % See also: ieSQRI, displayCreate
 %
@@ -155,7 +155,7 @@ title(sprintf('SQRI %.3f',sqri));
 
 % The basic calculation depends only on
 % * dpi, L, width, vDist
-%  
+%
 % So we can fix any two of them and show a surface for the other
 % two. Some of these surfaces correspond to the values in the
 % 1989 publication cited above.

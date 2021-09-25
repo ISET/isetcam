@@ -14,9 +14,9 @@ function varargout = imageSetHarmonic(varargin)
 %      function.  These are frequency, contrast, phase, angle, Gaussian
 %      window, and row,col.  To get them back, I create global parms, read
 %      it, and then destroy it. This is really dumb.  There must be a better way.
-% 
+%
 %          parms.freq, parms.contras, parms.ph, parms.ang, parms.row,
-%          parms.col, parms.GaborFlag  
+%          parms.col, parms.GaborFlag
 %
 %      imageSetHarmonic('CALLBACK',hObject,eventData,handles,...) calls the local
 %      function named CALLBACK in IMAGESETHARMONIC.M with the given input arguments.
@@ -41,12 +41,12 @@ function varargout = imageSetHarmonic(varargin)
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
-                   'gui_Singleton',  gui_Singleton, ...
-                   'gui_OpeningFcn', @imageSetHarmonic_OpeningFcn, ...
-                   'gui_OutputFcn',  @imageSetHarmonic_OutputFcn, ...
-                   'gui_LayoutFcn',  [] , ...
-                   'gui_Callback',   []);
-if nargin & isstr(varargin{1})
+    'gui_Singleton',  gui_Singleton, ...
+    'gui_OpeningFcn', @imageSetHarmonic_OpeningFcn, ...
+    'gui_OutputFcn',  @imageSetHarmonic_OutputFcn, ...
+    'gui_LayoutFcn',  [] , ...
+    'gui_Callback',   []);
+if nargin & ischar(varargin{1})
     gui_State.gui_Callback = str2func(varargin{1});
 end
 

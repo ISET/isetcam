@@ -3,10 +3,10 @@ function fullName = vcSaveMultiSpectralImage(imgDir,fname,mcCOEF,basis,basisLigh
 %   fullName = vcSaveMultiSpectralImage(imgDir,fname,mcCOEF,basis,basisLights,illuminant,comment,imgMean)
 %
 %   Save a Matlab data file containing data for a multi-spectral image
-%   
+%
 %   coefficients (RGB format), basis functions, illuminant information and
-%   a comment. 
-%   In addition, three summary files are created.  These are 
+%   a comment.
+%   In addition, three summary files are created.  These are
 %       (a) a tiff thumbnail of the image
 %       (b) a tiff image showing a plot of the basis functions
 %       (c) a tiff image showing a plot of the basisLights used to calculate the
@@ -16,7 +16,7 @@ function fullName = vcSaveMultiSpectralImage(imgDir,fname,mcCOEF,basis,basisLigh
 %   The full path to the data is returned in fullname.
 %
 %   The SPD of the data can be derived from the coefficients and basis
-%   functions using: 
+%   functions using:
 %
 %   spd = rgbLinearTransform(mcCOEF,basis');
 %
@@ -50,7 +50,7 @@ else
 end
 
 return;
-% 
+%
 % % Write out a thumbnail, too, say we can browse them later and identify them.
 % thumbNail = ieScale(mcCOEF(:,:,1),0,1);
 % r = size(thumbNail,1);
@@ -59,7 +59,7 @@ return;
 % [p,n] = fileparts(fullName);
 % fullName = fullfile(p,[n,'.jpg']);
 % imwrite(thumbNail,fullName,'jpg');
-% 
+%
 % % Write out the basis functions
 % figNum = figure; set(figNum,'Visible','off')
 % plot(basis.wave,ieScale(basis.basis,1));
@@ -71,24 +71,24 @@ return;
 % grid on
 % fullName = fullfile(p,'basis.tiff');
 % print(figNum,'-dtiff','-r72',fullName);
-% 
+%
 % % Summary statistics about the processed image
 % photons = imageLinearTransform(mcCOEF,basis.basis');
 % [xwData, rows,cols,w] = RGB2XWFormat(photons);
-% 
-% % Convert into luminance 
+%
+% % Convert into luminance
 % luminance = ieLuminanceFromPhotons(xwData,basis.wave);
-% 
+%
 % % Summary of the statistics
 % dr = max(luminance(:))/min(luminance(:));
 % meanSPD = mean(xwData);
-% 
+%
 % clf
 % set(figNum,'pos',[ 528   608   300  230]);
 % plot(basis.wave,ieScale(meanSPD,1),'r-');
 % set(gca,'xtick',(400:100:700),'fontsize',14);
 % leg{1} = 'Mean SPD';
-% 
+%
 % % Write out the illuminant.
 % if ~isempty(basisLights)
 %     hold on;
@@ -103,7 +103,7 @@ return;
 % xlabel('Wavelength (nm)')
 % ylabel('Photons (relative)');
 % legend(leg);
-% 
+%
 % grid on
 % str = sprintf('DR:   %.0f',dr);
 % t = text(basis.wave(2),0.9,str);
@@ -111,5 +111,5 @@ return;
 % fullName = fullfile(p,'summary.tiff');
 % print(figNum,'-dtiff','-r72',fullName);
 % close(figNum);
-% 
+%
 % return;

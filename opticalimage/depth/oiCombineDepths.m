@@ -70,10 +70,10 @@ end
 
 % Loop through nearer planes, adding their photons in turn
 % for jj=(nDepths-1):-1:1
-% 
-%     % Combine the OI depth maps 
+%
+%     % Combine the OI depth maps
 %     thisMap = oiGet(oiD{jj},'depth map');
-%     bothMap = thisMap & dMap;    
+%     bothMap = thisMap & dMap;
 %     % Zero out photons from behind this map.
 %     for ii=1:nWave
 %         p = photons(:,:,ii);
@@ -82,21 +82,21 @@ end
 %         photons(:,:,ii) = p;
 %     end
 %     dMap = (dMap | thisMap);     % New cumulative depth map
-% 
-%     % figure; imagesc(thisMap); figure; imagesc(dMap); 
+%
+%     % figure; imagesc(thisMap); figure; imagesc(dMap);
 %     % figure; imagesc(bothMap)
-%     
+%
 %     for ii=1:nWave
-%     
+%
 %         % Photons from this depth plane
 %         nPhotons = oiGet(oiD{jj},'photons',wave(ii));  % New photons
-% 
+%
 %         % Outside of the logical area, we don't want to add
-%         nPhotons(~thisMap) = 0;    
-%         
+%         nPhotons(~thisMap) = 0;
+%
 %         % Accumulate the ones inside the area into the list
 %         photons(:,:,ii) = photons(:,:,ii) + nPhotons;
-% 
+%
 %     end
 %     % figure; imageSPD(photons,wave);
 % end

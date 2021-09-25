@@ -2,7 +2,7 @@
 %
 % There is no difference because S-CIELAB was designed to match CIELAB in
 % the uniform case.
-% 
+%
 % There are differences, however, when there is spatial structure in the
 % image and we compare a point-wise CIELAB with S-CIELAB.
 %
@@ -38,7 +38,7 @@ if showBar, wBar = waitbar(0,'Patches'); end
 
 for ii=1:size(wgts,1)
     if showBar, wBar = waitbar(ii/size(wgts,1),wBar,'Patches'); end
-
+    
     w1 = wgts(ii,1); w2 = wgts(ii,2);
     % fprintf('Weights: %.2f, %.2f\n',w1,w2);
     
@@ -75,10 +75,10 @@ if showBar, close(wBar); end
 
 %% Compare delta E values
 %%
-% 
+%
 % # ITEM1
 % # ITEM2
-% 
+%
 ieNewGraphWin;
 plot(dE(:),dES(:),'o')
 title('CIELAB vs. SCIELAB for uniform patches')

@@ -1,31 +1,31 @@
 % LFDefaultVal - Convenience function to set up default parameter values
-% 
-% Usage: 
-% 
+%
+% Usage:
+%
 %   Var = LFDefaultVal( Var, DefaultVal )
-% 
-% 
+%
+%
 % This provides an elegant way to establish default parameter values. See LFDefaultField for setting
 % up structs with default field values.
 %
 % Inputs:
-% 
+%
 %   Var: string giving the name of the parameter
 %   DefaultVal: default value for the parameter
 %
-% 
+%
 % Outputs:
-% 
+%
 %   Var: if the parameter already existed, the output matches its original value, otherwise the
 %        output takes on the specified default value
-% 
-% Example: 
-% 
+%
+% Example:
+%
 %   clearvars
 %   ExistingVar = 42;
 %   ExistingVar = LFDefaultVal( 'ExistingVar', 3 )
 %   OtherVar = LFDefaultVal( 'OtherVar', 3 )
-% 
+%
 %   Results in :
 %       ExistingVar =
 %           42
@@ -34,7 +34,7 @@
 %
 % Usage for setting up default function arguments is demonstrated in most of the LF Toolbox
 % functions.
-% 
+%
 % See also: LFDefaultField
 
 % Part of LF Toolbox v0.4 released 12-Feb-2015

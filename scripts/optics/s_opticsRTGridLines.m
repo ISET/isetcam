@@ -5,14 +5,14 @@
 %
 %  * geometric distortion
 %  * relative illumination
-%  * field-height and wavelength-dependent PSF  
-% 
+%  * field-height and wavelength-dependent PSF
+%
 % This script illustrates the ray trace calculation, bringing up
 % an array of figures that show different aspects of the
 % calculation.
 %
 % The example is based on an aspherical, 2mm lens whose point
-% spread functions were computed in *Zemax* . 
+% spread functions were computed in *Zemax* .
 %
 % For comparison,  the optical image is also computed using
 % diffraction limited methods (shift-invariant).  The f# and
@@ -59,7 +59,7 @@ oi = oiSet(oi,'wavelength',sceneGet(scene,'wavelength'));
 % Match the scene distance and the rt distance.  They are both essentially
 % infinite.
 scene = sceneSet(scene,'distance',2);  % Two meters - essentially inf
-oi    = oiSet(oi,'optics rtObjectDistance',sceneGet(scene,'distance','mm'));   
+oi    = oiSet(oi,'optics rtObjectDistance',sceneGet(scene,'distance','mm'));
 
 %% Compute the distortion and show it in the OI
 
@@ -97,7 +97,7 @@ ieAddObject(oi); oiWindow;
 % Here is a horizontal line of illuminance
 rtData = oiPlot(oi,'illuminance hline',[1,64]);
 
-%% Compute using the diffraction-limited method 
+%% Compute using the diffraction-limited method
 %
 oiDL   = oiSet(oi,'optics model','diffraction limited');
 optics = oiGet(oiDL,'optics');
@@ -145,5 +145,5 @@ oiDL = oiCompute(sceneSmall,oiDL);
 oiDL = oiSet(oiDL,'name','rt-Small-DL');
 ieAddObject(oiDL); oiWindow;
 
-%% 
+%%
 

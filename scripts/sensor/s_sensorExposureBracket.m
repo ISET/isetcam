@@ -37,7 +37,7 @@ nExposures = length(T1);
 exposurePlane = floor(nExposures/2) + 1;
 sensor = sensorSet(sensor,'exposure plane',exposurePlane);
 sensor = sensorCompute(sensor,oi);
-ieAddObject(sensor);  
+ieAddObject(sensor);
 
 % Notice on the lower right the Bracket, and how there is a slider on the
 % lower left that is labeled 'Exposure'. Adjust the slider on the lower

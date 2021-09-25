@@ -63,7 +63,7 @@ switch ieParamFormat(param)
         oType = 'l3'; return
 end
 
-%% Find the string before the first space or the first '/'.  
+%% Find the string before the first space or the first '/'.
 
 % Special characters are spaces and /
 c1 = strfind(param,' ');   % Find the spaces
@@ -71,7 +71,7 @@ c2 = strfind(param,'/');   % Find the '/'
 c3 = strfind(param,'_');   % Find the '_'
 
 % Find the first space or '/' or '_'  If we checked for whole string, we wouldn't
-% need the bit above.  
+% need the bit above.
 pos = min([c1,c2,c3]);
 
 % Parse and return the string as oType
@@ -101,8 +101,8 @@ if ~isempty(pos)
     % Check for success. Return the parameter, without the prepended term
     % and lower case and no spaces
     if ~isempty(oType)
-        p = ieParamFormat(param((pos+1):end));  
-        return; 
+        p = ieParamFormat(param((pos+1):end));
+        return;
     end
 end
 
@@ -144,7 +144,7 @@ switch p
             'rtpsfsupport','rtpsfsupportrow','rtpsfsupportcol',...
             'rtotfdata','rtrelillum','rtrifunction','rtriwavelength',...
             'rtrifieldheight','rtgeometry','rtgeomfunction','rtgeomwavelength',...
-            'rtgeomfieldheight','rtgeommaxfieldheight'}          
+            'rtgeomfieldheight','rtgeommaxfieldheight'}
         oType= 'optics';
     case {'zcoeffs','constantSampleIntervalDomain','refSizeOfFieldMM'}
         oType = 'wvf';

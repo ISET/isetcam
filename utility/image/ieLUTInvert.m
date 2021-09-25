@@ -5,7 +5,7 @@ function lut = ieLUTInvert(inLUT,resolution)
 %
 % inLUT:      A gamma table that converts linear DAC values to linear RGB.
 % resolution: The display bit depth is log2(size(DAC,1)).  We are going to
-%   make an inverse table with finer resolution.  
+%   make an inverse table with finer resolution.
 %
 % lut:  The returned lookup table.
 % If resolution = 2, then we have twice the number of levels in the

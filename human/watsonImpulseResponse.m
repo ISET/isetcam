@@ -6,7 +6,7 @@ function [impResp,t,tMTF,freq] = watsonImpulseResponse(t,transientFactor)
 %  Calculation for time points t (in sec).  All entries of t must be > 0.
 %
 % Examples:
-%    figure; 
+%    figure;
 %    t = (0.00:0.005:0.5);
 %    [iResp,t]  = watsonImpulseResponse(t);
 %    plot(t,iResp); grid on;

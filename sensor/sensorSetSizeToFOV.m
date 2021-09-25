@@ -33,7 +33,7 @@ function [sensor,actualFOV] = sensorSetSizeToFOV(sensor,newFOV,oi)
 %  The FOV of the sensor depends on the focal length to the optics and the
 %  size of the sensor. Hence, we normally send in the oi.  We should never
 %  have to send in the scene and that will be deprecated.
-% 
+%
 %  We try to handle the human cone array case, which is special, by catching
 %  the string 'human' in the name and saying the block size is one.  This is
 %  managed in the sensorSet/Get operations.  But human work should really be
@@ -80,10 +80,10 @@ if isempty(sz) || isequal(sz,[0 0])
 end
 
 % Notes on FOV formula for sensor
-%  val = ieRad2deg(2*atan(0.5*width/distance));
+%  val = rad2deg(2*atan(0.5*width/distance));
 %  desired width is
 %   distance     = opticsGet(oiGet(oi,'optics'),'focallength');
-%   desiredWidth = 2*distance*tan(ieDeg2rad(deg)/2);
+%   desiredWidth = 2*distance*tan(deg2rad(deg)/2);
 
 if length(newFOV) == 1
     
@@ -136,7 +136,7 @@ end
 % This size adjustment can be a problem when the pattern is, say, random
 % and the cfaSize is the whole size of the original array.  The size
 % adjustment  is only good for block sizes that are small compared to the
-% array.  
+% array.
 
 cfaSize = sensorGet(sensor,'cfaSize');
 if cfaSize ~= sz

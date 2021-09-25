@@ -13,7 +13,7 @@ function scene = sceneFromBasis(sceneS)
 % Matlab scene formatted as a set of basis functions and coefficients.
 %
 % Example:
-%   
+%
 %
 % Copyright Imageval Consulting, LLC 2015
 

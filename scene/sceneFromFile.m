@@ -9,7 +9,7 @@ function [scene,I] = sceneFromFile(I, imType, meanLuminance, dispCal, ...
 %
 % Inputs:
 %  imageData: Typically, this is the name of an RGB image file.  But, it
-%             may also be 
+%             may also be
 %              * RGB data, rather than the file name
 %              * A file that contains a scene structure
 %  imageType: 'multispectral' or 'rgb' or 'monochrome'
@@ -21,7 +21,7 @@ function [scene,I] = sceneFromFile(I, imType, meanLuminance, dispCal, ...
 %              (a) If sub-pixel modeling is required varargin{1} is set to
 %                  true, (default is false)
 %              (b) If a reflective display is modeled, the illuminant is
-%                  required and passed in as varargin{2} 
+%                  required and passed in as varargin{2}
 %  wList:     The scene wavelength samples
 %
 % Returns;
@@ -30,7 +30,7 @@ function [scene,I] = sceneFromFile(I, imType, meanLuminance, dispCal, ...
 % Description
 %  The data in the image file are converted into spectral format and placed
 %  in an ISETcam scene data structure. The allowable imageTypes are
-%  monochrome, rgb, multispectral and hyperspectral. If you do not specify,
+%  monochrome, rgb, multispectral and hyperspectral. If you do not specify
 %  and we cannot infer, then you may be asked.
 %
 %  If the image is RGB format, you may specify a display calibration file
@@ -113,7 +113,7 @@ if ischar(I)
     
     % No extension, so check whether the mat-file exists
     if isempty(e), I = fullfile(p,[n,'.mat']); end
-    if exist(I,'file') 
+    if exist(I,'file')
         if strcmp(I((end-2):end),'mat')
             if ieVarInFile(I, 'scene'), load(I,'scene'); return; end
         end
@@ -146,7 +146,7 @@ switch lower(imType)
             d = displaySet(d,'wave',wList);
         end
         wave  = displayGet(d, 'wave');
-
+        
         % get additional parameter values
         if ~isempty(varargin), doSub = varargin{1}; else, doSub = false; end
         if length(varargin) > 2, sz = varargin{3};  else, sz = []; end
@@ -180,7 +180,7 @@ switch lower(imType)
         scene = sceneSet(scene, 'illuminant', il);
         
         % Compute photons for reflective display
-        % For reflective display, until this step the photon variable 
+        % For reflective display, until this step the photon variable
         % stores reflectance information
         if ~displayGet(d, 'is emissive')
             il_photons = illuminantGet(il, 'photons', wave);
@@ -192,13 +192,13 @@ switch lower(imType)
         scene = sceneSet(scene, 'distance', displayGet(d, 'distance'));
         
         % Set field of view
-        if ischar(I), imgSz = size(imread(I), 2); 
-        else, imgSz = size(I, 2); 
+        if ischar(I), imgSz = size(imread(I), 2);
+        else, imgSz = size(I, 2);
         end
         imgFov = imgSz * displayGet(d, 'deg per dot');
         scene  = sceneSet(scene, 'h fov', imgFov);
         scene  = sceneSet(scene,'distance',displayGet(d,'viewing distance'));
-
+        
     case {'multispectral','hyperspectral'}
         if ~exist(I,'file'), error('Name of existing file required for multispectral'); end
         if notDefined('wList'), wList = []; end
@@ -214,7 +214,7 @@ switch lower(imType)
         % Override the default spectrum with the basis function
         % wavelength sampling.
         scene = sceneSet(scene,'wave',basis.wave);
-           
+        
         % Sometimes we store scene names in the file, too
         if ischar(I) && ieVarInFile(I,'name')
             load(I,'name')
@@ -243,7 +243,7 @@ scene = sceneSet(scene, 'illuminant', il);
 % Name the scene with the file name or just announce that we received rgb
 % data.  Also, check whether the file contains 'fov' and 'dist' variables
 % and stick them into the scene if they are there
-if ischar(I) 
+if ischar(I)
     [~, n, ~] = fileparts(I);  % This will be the name
     if strcmp(I((end-2):end),'mat') && ieVarInFile(I,'fov')
         load(I,'fov'); scene = sceneSet(scene,'fov',fov);

@@ -1,4 +1,4 @@
-%% Calculating the defocused image (spectral irradiance) of a scene 
+%% Calculating the defocused image (spectral irradiance) of a scene
 %
 % This script shows how to compute the defocus for an image in a single
 % depth plane given the *defocus* (blur) in diopters.
@@ -51,14 +51,14 @@ optics = oiGet(oi,'optics');
 optics = opticsSet(optics,'model','shift invariant');
 wave   = opticsGet(optics,'wave');
 
-%% Create the optical transfer function (OTF) for the specified defocus 
+%% Create the optical transfer function (OTF) for the specified defocus
 
 % Initialize the defocus for each wavelength
 defocus = zeros(size(wave));
 D = 5;                     % Defocus
 defocus = defocus + D;     % In units of diopters
 
-% Create the defocused otf 
+% Create the defocused otf
 [otf, sampleSFmm] = opticsDefocusCore(optics,sampleSF,defocus);
 
 % First create the optics with this defocus OTF
@@ -101,7 +101,7 @@ D = actualPower - lensPower;
 defocus = zeros(size(wave));
 defocus = defocus + D;     % In units of diopters
 
-% Create the defocused otf 
+% Create the defocused otf
 [otf, sampleSFmm] = opticsDefocusCore(optics,sampleSF,defocus);
 optics = opticsBuild2Dotf(optics,otf,sampleSFmm);
 
@@ -129,7 +129,7 @@ D = actualPower - lensPower;
 defocus = zeros(size(wave));
 defocus = defocus + D;     % In units of diopters
 
-% Create the defocused otf 
+% Create the defocused otf
 [otf, sampleSFmm] = opticsDefocusCore(optics,sampleSF,defocus);
 optics = opticsBuild2Dotf(optics,otf,sampleSFmm);
 
@@ -147,4 +147,4 @@ imageMultiview('oi',[v1,v2,v3],true);
 % Put back the wait bar status
 ieSessionSet('wait bar','off');
 
-%% 
+%%

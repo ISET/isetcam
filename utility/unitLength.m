@@ -24,7 +24,7 @@ function u = unitLength(v)
 reshapeFlag = 0;
 
 % Make sure vector is a row vector.
-[r,c] = size(v); 
+[r,c] = size(v);
 if c==1, v = v(:)'; reshapeFlag = 1; end
 
 u = diag(1./sqrt(diag(v*v')))*v;
@@ -37,7 +37,7 @@ end
 
 
 % function [f,len,sc] = unitLength(m,dim,flag,wantcaution,sc)
-% 
+%
 % % function [f,len,sc] = unitlength(m,dim,flag,wantcaution,sc)
 % %
 % % <m> is a matrix
@@ -48,7 +48,7 @@ end
 % %   0 means normal case
 % %   1 means make length sqrt(n) where n is number of non-NaN entries
 % %   default: 0
-% % <wantcaution> (optional) is whether to perform special handling of 
+% % <wantcaution> (optional) is whether to perform special handling of
 % %   weird cases where the length of <m> is very small to start with (see zerodiv.m).
 % %   default: 1.
 % % <sc> (optional) is a special case.  supply this and we will use it instead of
@@ -77,12 +77,12 @@ end
 % %  isequalwithequalnans(unitlength(a),[1 0 NaN])
 % %
 % % From Kendrick Kay
-% 
+%
 % % input
 % if ~exist('dim','var') || isempty(dim),   dim = []; end
 % if ~exist('flag','var') || isempty(flag),   flag = 0; end
 % if ~exist('wantcaution','var') || isempty(wantcaution), wantcaution = 1; end
-% 
+%
 % % handle degenerate case up front
 % if isempty(m)
 %   f = [];
@@ -90,13 +90,13 @@ end
 %   sc = [];
 %   return;
 % end
-%   
+%
 % % figure out len and sc
 % if ~exist('sc','var') || isempty(sc)
-% 
+%
 %   % figure out vector length
 %   len = vectorlength(m,dim);
-%   
+%
 %   % figure out scale factor
 %   if flag==1
 %     if isempty(dim)
@@ -108,16 +108,16 @@ end
 %   else
 %     sc = len;
 %   end
-% 
+%
 % else
 %   len = [];
 % end
-% 
+%
 % % ok, do it
 % f = bsxfun(@(x,y) zerodiv(x,y,NaN,wantcaution),m,sc);
-% 
+%
 % end
-% 
+%
 % % HM, IS THIS SLOWER OR FASTER:
 % % if isempty(dim)
 % %   f = zerodiv(m,sc,NaN,wantcaution);

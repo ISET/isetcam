@@ -4,12 +4,12 @@
 % data for the human eye using
 % <https://en.wikipedia.org/wiki/Shack%E2%80%93Hartmann_wavefront_sensor
 % Shack-Hartman wavefront sensors>.  These data were collected at
-% a large pupil diameter. 
+% a large pupil diameter.
 %
 % Here, we set these data into the Zernike coefficients, and
 % then we explore the effects of changing the pupil size. We
 % evaluate the effect by computing the expected pointspread
-% function.  
+% function.
 %
 % See also: wvfLoadThibsVirtualEyes, wvfCreate, wvfPlot
 %
@@ -18,7 +18,7 @@
 %% Initialize
 ieInit;
 
-%% Load the Thibos data for one of the pupil diameter sizes 
+%% Load the Thibos data for one of the pupil diameter sizes
 
 pupilMM = 7.5;        % Could be set to 6, 4.5, or 3 ...
 zCoefs = wvfLoadThibosVirtualEyes(pupilMM);

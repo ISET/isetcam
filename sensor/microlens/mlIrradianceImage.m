@@ -6,7 +6,7 @@ function mlIrradianceImage(ml,newWindow)
 % ml:  Microlens structure
 % newWindow:  Open a new graph window (default = true)
 %
-% 
+%
 % Copyright Imageval Consulting, LLC, 2015
 
 %%
@@ -26,7 +26,7 @@ pIrrad(l,:) = 1;   pIrrad(:,l) = 1;
 pIrrad(l,:) = 1;   pIrrad(:,l) = 1;
 
 % Here it is
-imagesc(x,x,pIrrad); colormap('hot'); axis image
+imagesc(x,x,pIrrad); colormap(hot(64)); axis image
 
 % Set up the axes
 fontSize = 18;
@@ -34,7 +34,7 @@ xlabel('Position (um)','fontsize',fontSize)
 title('Pixel efficiency (normalized)','fontsize',fontSize);
 
 % Set up the color bar
-b = colorbar('vert'); 
+b = colorbar('vert');
 set(b,'ytick',(0:0.25:1));
 
 end

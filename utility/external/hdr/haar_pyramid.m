@@ -20,7 +20,7 @@ for ii = 1:nlevels
     extend_space = max(1, 2^(ii-2));
     nspace = 2^(ii-1);
     extend = pad_reflect(lowpass_prev, extend_space);
-
+    
     if ii > 1
         shift_1 = extend(1:ht, 1:wth);
         shift_2 = extend(1:ht, 1+nspace: wth+nspace);
@@ -32,7 +32,7 @@ for ii = 1:nlevels
         shift_3 = extend(2+nspace:ht+1+nspace, 2:wth+1);
         shift_4 = extend(2+nspace:ht+1+nspace, 2+nspace:wth+nspace+1);
     end
-
+    
     lowpass_prev = (shift_1 + shift_2 + shift_3 + shift_4)/4;
     pyr(:,:,nband) = (shift_1 + shift_2 - shift_3 - shift_4)/4;
     nband = nband+1;

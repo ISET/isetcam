@@ -3,7 +3,7 @@ function params = srgbParameters(varargin)
 %
 %    params = srgbParameters
 %
-% Return sRGB display parameters.  Possible 
+% Return sRGB display parameters.  Possible
 %   The entire matrix
 %
 % The sRGB display is defined by three primaries with these chromaticity

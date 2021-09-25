@@ -3,7 +3,7 @@ function oi = oiMakeEvenRowCol(oi,sDist)
 %
 % There are interpolation problems at the OTF calculation when the row/col
 % size of scene is odd. The OTF calculation is not putting the DC term in
-% the right place.  
+% the right place.
 %
 % For now, until I understand the general way to handle the odd row and col
 % values, we pad the oi to have an even number of rows and columns at the
@@ -14,7 +14,7 @@ function oi = oiMakeEvenRowCol(oi,sDist)
 
 if ieNotDefined('sDist')
     scene = vcGetObject('scene');
-    sDist = sceneGet(scene,'distance'); 
+    sDist = sceneGet(scene,'distance');
 end
 
 sz = oiGet(oi,'size');

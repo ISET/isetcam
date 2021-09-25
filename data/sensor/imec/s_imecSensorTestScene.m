@@ -5,7 +5,7 @@ ieInit;
 
 sensor = sensorCreateIMECSSM4x4vis('rowcol',[300 400]);
 
-%% Create Scene 
+%% Create Scene
 fov = 40;      % what is this?
 %scene  = sceneCreate('reflectance chart');
 scene  = sceneCreate('macbeth d65');

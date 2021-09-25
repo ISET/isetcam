@@ -3,9 +3,9 @@ function voltImages = sensorComputeSamples(sensorNF,nSamp,noiseFlag,showBar)
 %
 %  voltImages = sensorComputeSamples(sensorNF,[nSamp = 10],[noiseFlag=2],[showBar = 1])
 %
-% Compute multiple noisy samples of the sensor voltage image.  
+% Compute multiple noisy samples of the sensor voltage image.
 %
-% sensorNF:  Sensor struct containing noise free voltages 
+% sensorNF:  Sensor struct containing noise free voltages
 % nSamp:     Number of samples, default = 10
 % noiseFlag: photon noise only (1)  all noise (2) Default = 2
 % showBar:   Show waitbar (1) or not (0).  Default from ieSession
@@ -31,7 +31,7 @@ function voltImages = sensorComputeSamples(sensorNF,nSamp,noiseFlag,showBar)
 if ieNotDefined('sensorNF'),  errordlg('Noise free image sensor array required.'); end
 if ieNotDefined('nSamp'),     nSamp = 10;    end
 if ieNotDefined('noiseFlag'), noiseFlag = 2; end       % Photon and electrical
-if ieNotDefined('showBar'),   showBar = ieSessionGet('waitbar'); end 
+if ieNotDefined('showBar'),   showBar = ieSessionGet('waitbar'); end
 
 warning('sensorComputeSamples:NoiseIssue','Needs updating');
 
@@ -48,8 +48,8 @@ if showBar, h = waitbar(0,str); end
 for kk=1:nSamp
     sensorN = sensorComputeNoise(sensorNF,[]);
     voltImages(:,:,kk) = sensorGet(sensorN,'volts');
-    % v2 = voltImages(:,:,kk); v1 = sensorGet(sensorNF,'volts'); 
-    % vcNewGraphWin; hist(v1(:)-v2(:),100)
+    % v2 = voltImages(:,:,kk); v1 = sensorGet(sensorNF,'volts');
+    % vcNewGraphWin; histogram(v1(:)-v2(:),100)
     if ~mod(kk,10) && showBar, waitbar(kk/nSamp); end
 end
 if showBar, close(h); end

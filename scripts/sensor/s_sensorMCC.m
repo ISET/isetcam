@@ -41,12 +41,12 @@ sensor = sensorSet(sensor,'Name','Sensor demo');
 
 %% Attach the volts to the sensor
 % We want to scale the digital values in the croppedMosaic so that the max
-% is equal to the voltage swing and the min is equal to the dark level.  
+% is equal to the voltage swing and the min is equal to the dark level.
 mn = double(min(mosaic(:)));
 mx = double(max(mosaic(:)));
 vSwing  = sensorGet(sensor,'pixel voltage swing');
-volts = ((double(mosaic) - mn)/(mx - mn))*vSwing; 
-% figure; hist(volts(:),50)
+volts = ((double(mosaic) - mn)/(mx - mn))*vSwing;
+% figure; histogram(volts(:),50)
 
 sensor = sensorSet(sensor,'size',size(volts));
 sensor = sensorSet(sensor,'volts',volts);
@@ -66,8 +66,8 @@ sensorWindow;
 % without user interaction.
 cp = [
     15   584
-   782   584
-   784    26
+    782   584
+    784    26
     23    19];
 sensor = sensorSet(sensor,'chart corner points',cp);
 % [L,pointLoc] = sensorCCM(sensor,ccmMethod,pointLoc,showSelection)
@@ -99,14 +99,14 @@ ip = ipCreate;
 ip = ipSet(ip,'name','CCM Correction');
 ip = ipSet(ip,'scaledisplay',1);
 
-% In the sensor window I used the pulldown under 
-%     Analyze | Color | Color Conversion Matrix 
+% In the sensor window I used the pulldown under
+%     Analyze | Color | Color Conversion Matrix
 % to find an optimal linear transform for the sensor data to MCC
 % values
 m = [ ...
-   0.9205   -0.1402   -0.1289
-   -0.0148    0.8763   -0.0132
-   -0.2516   -0.1567    0.6987];
+    0.9205   -0.1402   -0.1289
+    -0.0148    0.8763   -0.0132
+    -0.2516   -0.1567    0.6987];
 ip = ipSet(ip,'conversion transform sensor',m);
 
 % We set  the other transforms to the identity, so that the
@@ -121,9 +121,9 @@ ip = ipSet(ip,'conversion method sensor ','current matrix');
 ip = ipCompute(ip,sensor);
 ieAddObject(ip); ipWindow;
 
-%% There is a nonlinearity 
+%% There is a nonlinearity
 %  So this looks about right!
 ip = ipSet(ip,'render gamma',2.2);
 ieAddObject(ip); ipWindow;
-    
-%% 
+
+%%

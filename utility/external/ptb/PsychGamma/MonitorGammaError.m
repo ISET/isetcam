@@ -9,16 +9,16 @@ function err=MonitorGammaError(p,x,y)
 
 d=0;
 if p(1)<0
-	d=p(1).^2;
-	p(1)=0;
+    d=p(1).^2;
+    p(1)=0;
 end
 if p(1)>1
-	d=(p(1)-1)^.2;
-	p(1)=1;
+    d=(p(1)-1)^.2;
+    p(1)=1;
 end
 if p(2)<0
-	d=d+p(2).^2;
-	p(2)=0;
+    d=d+p(2).^2;
+    p(2)=0;
 end
 err=MonitorGamma(x,p(1),p(2))-y;
 err=mean(mean(err.^2))+d;

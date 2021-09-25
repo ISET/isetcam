@@ -47,8 +47,8 @@ end
 
 nSensors   = size(fullRGB{1},2);
 sensorImg  = zeros(24,nSensors);
-if nargout == 2, sensorSD = zeros(24,nSensors); 
-else, sensorSD = []; 
+if nargout == 2, sensorSD = zeros(24,nSensors);
+else, sensorSD = [];
 end
 
 % Fix up the NaNs for the sensor data

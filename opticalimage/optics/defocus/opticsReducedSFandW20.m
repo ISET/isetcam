@@ -39,8 +39,8 @@ q1 = 1.7312; q2 = 0.63346; q3 = 0.21410;
 
 % This is the human defocus as a function of wavelength.  This formula
 % converts the wave in nanometers to wave in microns.  D is in diopters.
-D = q1 - (q2./(wave*1e-3 - q3));        
-% plot(wave,D); 
+D = q1 - (q2./(wave*1e-3 - q3));
+% plot(wave,D);
 % grid; xlabel('Wavelength (nm)'); ylabel('relative defocus (diopters)');
 
 % Converts the defocus in diopters to the Hopkins w20 parameter for a
@@ -48,7 +48,7 @@ D = q1 - (q2./(wave*1e-3 - q3));
 % (D0).  The explanation for this formula should be in Marimont and
 % Wandell.  I hope.
 w20 = p^2/2*(D0.*D)./(D0+D);
-% plot(wave,w20); 
+% plot(wave,w20);
 % grid; xlabel('Wavelength (nm)'); ylabel('relative defocus (Hopkins w20)');
 
 % There is a typical human OTF scaling we use from the work at Dave
@@ -72,9 +72,9 @@ for ii = 1:length(wave)
     
     % Compute the reduced spatial frequency (0,2)
     %         deg/m * m *          (m/m) * 1/deg  - Dimensionless in the end
-    s(ii,:) = (c * wave(ii)*1e-9 /(D0*p)) * sampleSF; 
+    s(ii,:) = (c * wave(ii)*1e-9 /(D0*p)) * sampleSF;
     
-    % Related to the defocus specified by w20, which in turn depends on p,
+    % Related to the defocus specified by w20, which in turn depends on p
     % D and D0.
     alpha(ii,:) = 4*pi./(wave(ii)*1e-9 ).*w20(ii).*s(ii,:);
     

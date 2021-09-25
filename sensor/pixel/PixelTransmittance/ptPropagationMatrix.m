@@ -10,6 +10,6 @@ k = 2*pi/lambda*n;
 %L = [[ones(1,1,length(theta)) zeros(1,1,length(theta))]; ...
 %        [zeros(1,1,length(theta)) ones(1,1,length(theta))]];
 L = [[exp(i*k*d.*cos(theta)) zeros(1,1,length(theta))];...
-      [zeros(1,1,length(theta)) exp(-i*k*d.*cos(theta))]];
+    [zeros(1,1,length(theta)) exp(-i*k*d.*cos(theta))]];
 
 return;

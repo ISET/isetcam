@@ -38,14 +38,14 @@ function oi = rtPrecomputePSFApply(oi,angStep)
 %% Check the parameters, possibly precompute the shift-variant PSF
 if ieNotDefined('oi'), error('OI required'); end
 
-% Validate that optics has ray trace information 
+% Validate that optics has ray trace information
 if isempty(oiGet(oi,'optics rayTrace'))
     errordlg('No ray trace information.');
     return;
 end
 
 % Get the shift-variant PSF (svPSF) from the OI
-% the svPSF dimensions are svPSF.psf{angle,fieldHeight,wavelength} 
+% the svPSF dimensions are svPSF.psf{angle,fieldHeight,wavelength}
 svPSF = oiGet(oi,'psfStruct');
 
 % If it is empty, precompute it.
@@ -58,17 +58,17 @@ end
 % You can visualize the psfs{angle,field height,wave}
 %{
 % The PSFs across field height.
-vcNewGraphWin; 
+vcNewGraphWin;
 for ii=1:size(svPSF.psf,2), imagesc(svPSF.psf{1,ii,1}), axis image; pause(0.3); end
 %}
 %{
 % One PSF
-vcNewGraphWin; 
+vcNewGraphWin;
 imagesc(svPSF.psf{1,end,1})
 %}
 %{
 % The PSFs across angles
-vcNewGraphWin; 
+vcNewGraphWin;
 for ii=1:size(svPSF.psf,1), imagesc(svPSF.psf{ii,end,1}); axis image; pause(0.3); end
 %}
 
@@ -92,15 +92,15 @@ ySupport = flipud(sSupport(:,:,2));
 [dataAngle,dataHeight] = cart2pol(xSupport,ySupport);
 
 % Force data between 0-360 deg and to a resolution of 1 deg
-dataAngle = round(ieRad2deg(dataAngle + pi));
+dataAngle = round(rad2deg(dataAngle + pi));
 
 % Not sure why we need this, but we do. Maybe because of the center
-dataAngle(dataAngle == 0) = 1;  
+dataAngle(dataAngle == 0) = 1;
 % vcNewGraphWin; imagesc(dataHeight)
 % vcNewGraphWin; imagesc(dataAngle)
 
-% Not sure it is necessary to save space. 
-dataAngle  = double(dataAngle); 
+% Not sure it is necessary to save space.
+dataAngle  = double(dataAngle);
 dataHeight = double(dataHeight);
 
 %% Reduce imgHeights to those levels within the image height
@@ -108,7 +108,7 @@ dataHeight = double(dataHeight);
 % Some confusion.  There are the psf derived from, say, Zemax in the
 % optics. Then there are the psf structure values that are pre-computed.
 % This one is from the Zemax (or other) calculation.
-% 
+%
 % I am not sure that this is right. Perhaps this is from the oi structure
 % of psfield heights?
 imgHeight = oiGet(oi,'optics rt Psf Field Height','mm');
@@ -171,11 +171,11 @@ cExt = floor(psfSize(2)/2);
 %    (extraRow/2 + 1, extraCol/2 + 1)
 %
 % The assignment to the output point is determined within the main
-% computational loop. 
+% computational loop.
 
 % How many extra rows should we add to each size of the image?  We
 % need at least as many as half the extent of the point spread.  We
-% add two more columns and rows, to be safe. 
+% add two more columns and rows, to be safe.
 
 % This one worked for a while.  But not needed any more.
 % extraRow = ceil(psfSize(1)); extraRow = 2*ceil(extraRow/2);
@@ -199,7 +199,7 @@ d = oiGet(oi,'optics focal length','um')
 %}
 
 % Because we have padded (above), I think the outIrrad should be
-% created this way: 
+% created this way:
 %
 %   outIrrad = oiGet(oi,'photons'); size(outIrrad)
 %
@@ -227,14 +227,14 @@ for ww=1:nWave  % Settle on a wavelength, indexed by ww
     thisIrrad = inIrrad(:,:,ww);   % vcNewGraphWin; imagesc(thisIrrad)
     thisOut   = zeros(size(outIrrad,1),size(outIrrad,2));
     
-    for rr = 2:nFieldHeights    % Settle on a field height, indexed by rr    
+    for rr = 2:nFieldHeights    % Settle on a field height, indexed by rr
         
         % Heights are in mm.  We convert to um.
         str = sprintf('Applying psfs: Wave: %.0f nm Height: %.0f (um)', ...
             wavelength(ww),imgHeight(rr)*1e3);
         if showWaitBar, wBar = waitbar(rr/nFieldHeights,wBar,str); end
         % The PSF data are PSF{Angle,ImageHeight,Wavelength}
-
+        
         % Find all the points between the current and last image height.
         % These will be the two indices, rr and rr-1, into the PSF data.
         lBand1 = (dataHeight >= imgHeight(rr-1)) & (dataHeight < imgHeight(rr));
@@ -242,7 +242,7 @@ for ww=1:nWave  % Settle on a wavelength, indexed by ww
         
         [r1,c1] = find(lBand1);  % The 1 index doesn't make sense.
         % ind1 = find(lBand1);     % Indices into the data in the band
-
+        
         % Every point gets a weight that define its distance from the two
         % heights that bound the sample position. We create an image of the
         % weights for the inner PSF at every output position.  Only the
@@ -250,12 +250,12 @@ for ww=1:nWave  % Settle on a wavelength, indexed by ww
         innerDistance = abs(dataHeight - imgHeight(rr-1));
         innerWeight = 1 - (innerDistance / (imgHeight(rr) - imgHeight(rr-1)));
         % vcNewGraphWin; imagesc(innerWeight.*lBand1);
-
-        % The radial weight applied to the inner PSF. The outer PSF gets 
-        % 1 - wgt1 
+        
+        % The radial weight applied to the inner PSF. The outer PSF gets
+        % 1 - wgt1
         % rWgt = innerWeight(ind1);
-        % figure; hist(rWgt,50); % Fewer pixels near inner radius 
-
+        % figure; histogram(rWgt,50); % Fewer pixels near inner radius
+        
         for jj=1:length(r1)
             % For every point, jj, in the identified region, form a PSF
             % that is the weighted sum of four PSFs.  These are the four
@@ -275,14 +275,14 @@ for ww=1:nWave  % Settle on a wavelength, indexed by ww
             
             % Get the PSF at this index and the next for both angle and
             % image height.
-            % These are the two angles. 
+            % These are the two angles.
             tmpPSF1 = (aWgt*rtPSF{aIdx,rr-1,ww})+ ...
                 ((1-aWgt)*rtPSF{aIdx+1,rr-1,ww});
             tmpPSF2 = (aWgt*rtPSF{aIdx,rr,ww})+ ...
                 ((1-aWgt)*rtPSF{aIdx+1,rr,ww});
             % vcNewGraphWin; imagesc(tmpPSF1);
             % vcNewGraphWin; imagesc(tmpPSF2);
-
+            
             % These are the two field heights.
             % I am not sure why we use rr-1 and rr,
             % but we use aIdx and aIdx+1.  Probably OK, but inelegant.
@@ -296,9 +296,9 @@ for ww=1:nWave  % Settle on a wavelength, indexed by ww
             % sum(thisPSF(:))
             
             % Place the result in the proper row and column of the
-            % output irradiance. 
-            % 
-            % Logic:  The psf has an extent that covers -rExt:rExt. 
+            % output irradiance.
+            %
+            % Logic:  The psf has an extent that covers -rExt:rExt.
             % We must shift the (r1,c1) input position by extraRow/2 to
             % account for the row and column padding of the output.
             % The even/odd issue can probably be avoided
@@ -323,8 +323,8 @@ for ww=1:nWave  % Settle on a wavelength, indexed by ww
             % The big summation is slow.  So we give up some space to
             % speed the calculation.
             %
-            % vcNewGraphWin; 
-            % imagesc(outIrrad(:,:,ww)); colormap(gray); axis image
+            % vcNewGraphWin;
+            % imagesc(outIrrad(:,:,ww)); colormap(gray(64)); axis image
         end
     end
     outIrrad(:,:,ww) = thisOut;

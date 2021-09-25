@@ -24,7 +24,7 @@ function pngName = sceneThumbnail(scene,varargin)
 % Examples:
 %{
   scene = sceneFromFile('StuffedAnimals_tungsten-hdrs.mat','multispectral');
-  rowSize = 192;  
+  rowSize = 192;
   pngFile = sceneThumbnail(scene);
 %}
 
@@ -48,7 +48,7 @@ rowSize     = p.Results.rowsize;
 forceSquare = p.Results.forcesquare;
 fontSize    = p.Results.fontsize;
 label       = p.Results.label;
-backColor   = p.Results.backcolor; 
+backColor   = p.Results.backcolor;
 
 %%  Read the scene and figure its size
 

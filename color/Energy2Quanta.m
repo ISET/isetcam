@@ -25,9 +25,9 @@ function photons = Energy2Quanta(wavelength,energy)
 %   Quanta2Energy()
 %
 % Examples:
-%   wave = 400:10:700;  
+%   wave = 400:10:700;
 %   in = [blackbody(wave,5000,'energy'),blackbody(wave,6000,'energy')];
-%   p = Energy2Quanta(wave,in);  
+%   p = Energy2Quanta(wave,in);
 %   figure; plot(wave,p);
 %
 % Notice that in the return, out becomes a row vector, consistent with XW
@@ -35,16 +35,16 @@ function photons = Energy2Quanta(wavelength,energy)
 % Tragic.
 %
 %   out = Quanta2Energy(wave,p');      % out is a row vector, XW format
-%   figure; plot(wave,in,'ro',wave,out','k-') 
+%   figure; plot(wave,in,'ro',wave,out','k-')
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
 if size(wavelength,2) ~= 1 && size(wavelength,1) ~= 1
-        error('Energy2Quanta:  Wavelength must be a vector');
+    error('Energy2Quanta:  Wavelength must be a vector');
 else    wavelength = wavelength(:);      % Force to column
 end
 
-% Fundamental constants.  
+% Fundamental constants.
 h = vcConstants('h');		% Planck's constant [J sec]
 c = vcConstants('c');		% speed of light [m/sec]
 

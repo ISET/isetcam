@@ -6,11 +6,11 @@ function bMatrix = colorBlockMatrix(wList,extrapVal)
 % We render spectral data in the scene and optical image windows as RGB
 % images.  The matrix returned by this routine is used to calculate R,G and
 % B values from the SPD.  The columns of the returned matrix define how to
-% sum across the wavebands.   
+% sum across the wavebands.
 %
 % By default, the wavelengths from 400-490 add to the blue channel, from
 % 500-570 add to the green channel, and 580-700 add to the red channel.
-% Wavelengths outside of this band, by default, do not contribute. 
+% Wavelengths outside of this band, by default, do not contribute.
 %
 % It is possible to generate a contribution from outside the band, say in
 % the infrared. When we are trying to visualize IR, it is useful to set a
@@ -25,14 +25,14 @@ function bMatrix = colorBlockMatrix(wList,extrapVal)
 % vector.
 %
 % bMatrix: The color matrix used for rendering a photon spectrum
-%    displayRGB = photonSPD*bMatrix, 
+%    displayRGB = photonSPD*bMatrix,
 % where photonSPD is a column vector.
 %
 % Examples:
 %    wList = [400:5:700]; bMatrix = colorBlockMatrix(wList);
 %    figure; plot(wList,bMatrix)
 %
-%    wList = [400:5:900]; 
+%    wList = [400:5:900];
 %    bMatrix = colorBlockMatrix(wList,0.1);
 %    figure; plot(wList,bMatrix)
 %
@@ -54,7 +54,7 @@ function bMatrix = colorBlockMatrix(wList,extrapVal)
 %
 % For D65, which isn't that different from equal photons, use:
 %
-%   d65Energy = ieReadSpectra('D65.mat',wList); 
+%   d65Energy = ieReadSpectra('D65.mat',wList);
 %   d65Photons = Energy2Quanta(wList,d65Energy);
 %   d65Photons = d65Photons/max(d65Photons);
 %   bMatrix = colorBlockMatrix(wList,[],d65Photons);
@@ -86,14 +86,14 @@ defaultW = (400:10:700);
 b = 10; g = 8; r = 31 - b - g;
 defaultMatrix = ...
     [zeros(1,b),zeros(1,g),ones(1,r); ...
-     zeros(1,b),ones(1,g),zeros(1,r); ...
-     ones(1,b),zeros(1,g),zeros(1,r)]';
+    zeros(1,b),ones(1,g),zeros(1,r); ...
+    ones(1,b),zeros(1,g),zeros(1,r)]';
 
 % Adjust for any differences in the wave list
 if isequal(wList(:),(400:10:700)')
-     % Set the default matrix columns sum to 1
-     d = sum(defaultMatrix);
-     bMatrix = defaultMatrix*diag(1./d);
+    % Set the default matrix columns sum to 1
+    d = sum(defaultMatrix);
+    bMatrix = defaultMatrix*diag(1./d);
 else
     % Adjust the matrix to match the default over 400-700 but be a small
     % value in the infrared.  The default is 0.  But it could be a non-zero
@@ -103,7 +103,7 @@ else
         bMatrix(:,ii) = ...
             interp1(defaultW(:),defaultMatrix(:,ii),wList(:),'linear',extrapVal);
     end
-    d = sum(bMatrix); 
+    d = sum(bMatrix);
     bMatrix = bMatrix*diag(1./d);
 end
 
@@ -112,14 +112,14 @@ end
 %   ones(1,length(wList)) * bMatrix = (1,1,1)
 
 % Examples below show how to change from default in which equal photon
-% equal to (1,1,1) 
+% equal to (1,1,1)
 
 % We should think about whether we want whiteSPD to persistent
 
 % We used to set this with ieSessionSet and manage it with ieSessionGet and
 % matlab setpref/getpref.  Now, not so much.  This code is left here as a
 % reminder that we might reconsider.
-wp = 'd65';   
+wp = 'd65';
 switch lower(wp)
     case 'ee'
         % Make equal energy (1,1,1)

@@ -2,7 +2,7 @@
 %
 % ISET includes two ways to calculate defocus, one based on
 % Hopkins and diffraction calculations described in
-% <http://white.stanford.edu/~brian/papers/color/MarimontWandell1994.pdf Marimont and Wandell (1994, JOSA)>. 
+% <http://white.stanford.edu/~brian/papers/color/MarimontWandell1994.pdf Marimont and Wandell (1994, JOSA)>.
 %
 % More recently, we introduced a method based on wavefront
 % aberrations described in terms of Zernike polynomials.  This
@@ -40,7 +40,7 @@ pRange = 15;     % Microns
 wvfPlot(wvfP,'2d psf space','um',thisWave,pRange);
 
 % Draw the expected size of the Airy ring
-fNumber = wvfGet(wvfP,'focal length','mm')/pupilMM;   
+fNumber = wvfGet(wvfP,'focal length','mm')/pupilMM;
 radius = (2.44*fNumber*thisWave*10^-9)/2 * ieUnitScaleFactor('um');
 nSamp = 200;
 [adX,adY,adZ] = ieShape('circle',nSamp,radius);
@@ -52,7 +52,7 @@ title(sprintf('wave %.0f radius %.2f um',thisWave,radius));
 thisWave = 700;
 pRange = 15;  % Microns
 wvfPlot(wvfP,'2d psf space','um',thisWave,pRange); % No LCA
-fNumber = wvfGet(wvfP,'focal length','mm')/pupilMM; 
+fNumber = wvfGet(wvfP,'focal length','mm')/pupilMM;
 
 radius = (2.44*fNumber*thisWave*10^-9)/2 * ieUnitScaleFactor('um');
 nSamp = 200;
@@ -79,7 +79,7 @@ fMax = 0;
 for ww=1:length(wave)
     f = wvfGet(wvfP,'otf support','mm',wave(ww));
     if max(f(:)) > fMax
-       fMax = max(f(:)); maxWave = wave(ww);
+        fMax = max(f(:)); maxWave = wave(ww);
     end
 end
 
@@ -116,7 +116,7 @@ for ww=1:length(wave)
     
 end
 
-% I sure wish this was real all the time. Sometimes (often?) it is. 
+% I sure wish this was real all the time. Sometimes (often?) it is.
 psf = otf2psf(otf(:,:,ww));
 if ~isreal(psf), disp('psf not real'); end
 

@@ -68,6 +68,9 @@ end
 % Filled in if we save.  Otherwise, left empty.
 opticsFile = [];
 
+% Read by ISETPARAMS.TXT
+wave = [];
+
 %% Read the file, which was written out by Zemax.
 
 % As Zemax evolves, and textscan evolves, we have had some issues staying
@@ -100,7 +103,7 @@ fprintf('Reduced character count from %d to %d\n',length(s),length(asciiValues))
 % baseLensFileName='EO54852'
 % refWave=587.562;          % REFERENCE WAVELENGTH (NM)
 % fov=26.198448;          % MAXIMUM DIAGONAL HALF FOV (DEGREE)
-% efl=5.999968;          % EFFECTIVE FOCAL LENGTH (MM) 
+% efl=5.999968;          % EFFECTIVE FOCAL LENGTH (MM)
 % fnumber_eff=1.780820;          % EFFECTIVE F-NUMBER
 % fnumber=1.774644;          % F-NUMBER
 
@@ -141,8 +144,9 @@ if ismac
     tmp = strsplit(baseLensFileName,':');
     tmp{2} = strrep(tmp{2},'\','/');
 end
+
 [~,baseName,~] = fileparts(tmp{2});
-[diName,riName,psfNameList] = rtFileNames(baseName,wave,imgHeight); %#ok<NODEF>
+[diName,riName,psfNameList] = rtFileNames(baseName,wave,imgHeight); 
 
 %%  Load the geometry
 
@@ -151,7 +155,7 @@ nWave   = length(wave);
 nHeight = length(imgHeight);
 
 rt.geometry.fieldHeight = imgHeight(:);
-rt.geometry.wavelength = wave(:); %#ok<IDISVAR>
+rt.geometry.wavelength = wave(:); 
 
 % Read the geometry distortion file produced by Zemax
 fid = fopen(diName,'r');
@@ -163,12 +167,12 @@ end
 
 % Note that the zemaxLoad() uses 129, not 128.
 asciiValues = s( (s < 128) & (s > 0) )';
-dCell = textscan(asciiValues,'%f'); 
+dCell = textscan(asciiValues,'%f');
 d = dCell{1};
 
 % The function is stored as (field height x wavelength)
 % For backwards compatibility this is correct (Brian)
-rt.geometry.function = reshape(d,nWave,nHeight)';  
+rt.geometry.function = reshape(d,nWave,nHeight)';
 
 %%  Load the relative illumination
 
@@ -238,7 +242,7 @@ for ii=1:length(imgHeight)
                     if sum(tmp(:)) ~= 1 && ~warningGiven
                         warningGiven = 1;
                         fprintf('Area under psf: %f\n',sum(tmp(:)));
-                        warning('Matlab:rtScalingPSF','Scaling area under psf to 1'); 
+                        warning('Matlab:rtScalingPSF','Scaling area under psf to 1');
                         tmp = tmp/sum(tmp(:));
                     end
                     rt.psf.function(:,:,ii,jj) = tmp;

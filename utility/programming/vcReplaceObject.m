@@ -8,7 +8,7 @@ function vcReplaceObject(obj,val)
 %
 % obj:  The object
 % val:  The number of the object to be replaced.  If val is not
-%       specified, then the currently selected object is replaced. 
+%       specified, then the currently selected object is replaced.
 %
 % When  replacing OPTICS or PIXEL the val refers to the OPTICALIMAGE or
 % SENSOR that contain the OPTICS or PIXEL.
@@ -31,11 +31,11 @@ objType = vcEquivalentObjtype(objType);
 
 %%
 if ieNotDefined('val')
-    val = vcGetSelectedObject(objType); 
+    val = vcGetSelectedObject(objType);
     if isempty(val),  val = 1; end
 end
 
-% Should be handled by ieSessionSet 
+% Should be handled by ieSessionSet
 switch lower(objType)
     case 'scene'
         vcSESSION.SCENE{val} = obj;

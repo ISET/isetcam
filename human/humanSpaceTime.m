@@ -17,13 +17,13 @@ function [sens,fs,ft] = humanSpaceTime(model,fs,ft)
 % Example:
 %    [sens,fs,ft] = humanSpaceTime('kelly79',logspace(-0.2,log10(30),20),logspace(-0.2,log10(60),20));
 %    surf(ft,fs,sens); set(gca,'xscale','log','yscale','log');
-%    set(gca,'xlim',[0 60],'ylim',[0 30]); 
+%    set(gca,'xlim',[0 60],'ylim',[0 30]);
 %    xlabel('Temporal freq (Hz)');ylabel('Spatial freq (cpd)')
-%    
+%
 %    [tMTF,junk,ft] = humanSpaceTime('watsonTMTF',[],[0:60]);
 %    plot(ft,tMTF,'r-o');
 %
-%    t = [0.001:0.002:0.200]; 
+%    t = [0.001:0.002:0.200];
 %    [impResp,junk,t] = humanSpaceTime('watsonImpulseResponse',[],t);
 %    plot(t,impResp)
 %
@@ -54,7 +54,7 @@ switch(lower(model))
         sens = interp1(allFt,tMTF,ft);
     case {'poirsoncolor','wandellpoirsoncolorspace'}
         [lum, rg, by, positions] = poirsonSpatioChromatic([],2);
-        sens.lum = lum; sens.rg = rg; sens.by = by; 
+        sens.lum = lum; sens.rg = rg; sens.by = by;
         fs = positions;
     otherwise
         error('Unknown model');

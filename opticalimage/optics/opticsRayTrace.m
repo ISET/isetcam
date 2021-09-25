@@ -38,7 +38,7 @@ rtFOV = oiGet(oi,'optics rtfov');
 sceneFOV = sceneGet(scene,'diagonalFieldOfView');
 if sceneFOV > rtFOV
     str = sprintf('Scene diag fov (%.0f) exceeds max RT fov (%.0f)',sceneFOV,rtFOV);
-    ieInWindowMessage(str,handles,2); 
+    ieInWindowMessage(str,handles,2);
     fprintf('%s.  Computation canceled.',str);
     return;
 end
@@ -55,8 +55,8 @@ if rtDist ~= sceneDist
     ieInWindowMessage('Adjusting scene distance.',app,delay);
     scene = sceneSet(scene,'distance',rtDist);
     % Update the scene and show it in the window
-    ieReplaceObject(scene); 
-    sceneWindow; 
+    ieReplaceObject(scene);
+    sceneWindow;
 end
 
 % The optics must both have the scene wavelength sampling.
@@ -72,10 +72,10 @@ oi = oiSet(oi,'wangular',sceneGet(scene,'wangular'));
 %}
 %% Calculations
 
-% We calculate the ray traced output in the order of 
-%  (a) Geometric distortion, 
-%  (b) Relative illumination, and 
-%  (c) OTF blurring 
+% We calculate the ray traced output in the order of
+%  (a) Geometric distortion,
+%  (b) Relative illumination, and
+%  (c) OTF blurring
 
 % The function rtGeometry converts the scene radiance into optical
 % irradiance. It also calculates the geometric distortion and relative
@@ -111,7 +111,7 @@ end
 % Apply the OTF to the irrad data.
 % Very bad.  This changed the spatial sampling resolution.  Time to
 % fix!
-fprintf('Applying PSFs.\n');             
+fprintf('Applying PSFs.\n');
 oi = rtPrecomputePSFApply(oi);
 fprintf('Done applying PSFs.\n');
 %{

@@ -6,13 +6,13 @@ classdef cpBurstIP < cpIP
     %
     % Unlike a classic "ip" the BurstIP is capable of a variety of ways of
     % combining frames, including some that produce an RGB image instead of
-    % an ip. 
+    % an ip.
     %
-    % 
+    %
     
     properties
         % sub-class properties here
-
+        
     end
     
     methods
@@ -27,8 +27,8 @@ classdef cpBurstIP < cpIP
             %Compute final image from sensor captures
             aPicture = compute@ciIP(sensorImages);
         end
-
-        % This computes an output photograph. 
+        
+        % This computes an output photograph.
         function ourPhoto = ispCompute(obj, sensorImages, intent, options)
             
             arguments
@@ -125,9 +125,9 @@ classdef cpBurstIP < cpIP
                             % for focus stacking. It is primarily used on
                             % static scenes. Leaving it out for now, but if
                             % needed can copy the code from the HDR case
-
+                            
                             imageFrames{ii} = {obj.ipToImage(tmpIP)};
-
+                            
                         end
                         for ii = 1:numel(imageFrames)
                             imgFiles{ii} = ['foo_', num2str(ii), '.jpg'];
@@ -165,7 +165,7 @@ classdef cpBurstIP < cpIP
                 singleSensor.data.volts(:,:,ii) = sensorArray(ii).data.volts;
             end
         end
-       
+        
         % Seems like there is probably a way to do this in the existing ip
         % code, but I couldn't find it.
         function anImage = ipToImage(obj, anIP)
@@ -173,7 +173,7 @@ classdef cpBurstIP < cpIP
         end
         
         function [alignedImage] = registerRGBImages(obj, movingImage,baseImage)
-
+            
             %  MOVING and FIXED using auto-generated code from the Registration
             %  Estimator app. The values for all registration parameters were set
             %  interactively in the app and result in the registered image stored in the
