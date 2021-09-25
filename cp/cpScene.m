@@ -156,7 +156,7 @@ classdef cpScene < handle
                     obj.sceneName = options.sceneName;
                     
                     if ~piDockerExists, piDockerConfig; end
-                    obj.thisR = piRecipeDefault('scene name', obj.sceneName, 'verbose', 0);
+                    obj.thisR = piRecipeDefault('scene name', obj.sceneName);
                     if ~isempty(options.lensFile)
                         obj.thisR.camera = piCameraCreate('realistic',...
                             'lensFile',obj.lensFile);
