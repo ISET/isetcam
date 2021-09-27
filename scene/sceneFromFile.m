@@ -15,8 +15,15 @@ function [scene,I] = sceneFromFile(I, imType, meanLuminance, dispCal, ...
 %  imageType: 'multispectral' or 'rgb' or 'monochrome'
 %              When 'rgb', the imageData might be RGB format.
 %  dispCal:   A display structure used to convert RGB to spectral data.
+%
 %             For the typical case an emissive display the illuminant SPD is
-%             modeled and set to the white point of the display
+%             modeled and set to the white point of the display.
+%
+%             displayCreate implements a special case (by default) we call
+%             'reflectance-display'.  That display has the properties that
+%             the RGB data are rendered under a D65 illuminant and the
+%             surface reflectances fall within a 3D linear model of natural
+%             surface reflectances.
 %             Unusual cases:
 %              (a) If sub-pixel modeling is required varargin{1} is set to
 %                  true, (default is false)
