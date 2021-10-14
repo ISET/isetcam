@@ -116,6 +116,12 @@ if ieNotDefined('pixel')
     sensor = sensorSet(sensor,'size',sensorFormats('qqcif'));
 elseif isfield(pixel,'type') && isequal(pixel.type,'pixel')
     sensor = sensorSet(sensor,'pixel',pixel);
+elseif isequal('lightfield',ieParamFormat(sensorType)) && isequal(pixel.type,'opticalimage')
+    % Special case of a light field camera
+    varargin{1} = pixel;
+    pixel  = pixelCreate('default');
+    sensor = sensorSet(sensor,'pixel',pixel);
+    sensor = sensorSet(sensor,'size',sensorFormats('qqcif'));
 else
     disp(pixel)
     error('Bad pixel definition');
