@@ -170,8 +170,12 @@ if nFilters == 1 && nSensors == 1
     % data.
     img = ip.data.input / sensorGet(sensor,'max');
     
+    % No need to demosaic, but we put the scaled input into sensorspace
+    ip = ipSet(ip,'sensor space',img);
+    
     % The image data are RGB, even though the sensor is monochrome.
     ip = ipSet(ip,'result',repmat(img,[1,1,3]));
+    ip = ipSet(ip,'sensor space',repmat(img,[1,1,3]));    % saveimg = img;
     return;
     
 elseif nFilters == 2
@@ -186,6 +190,7 @@ elseif nFilters == 2
     
     img = Demosaic(ip,sensor);    % Returns a monochrome image
     ip = ipSet(ip,'result',repmat(img,[1,1,3]));
+    ip = ipSet(ip,'sensor space',repmat(img,[1,1,3]));    % saveimg = img;
     return;
     
 elseif nFilters >= 3 || nSensors > 1

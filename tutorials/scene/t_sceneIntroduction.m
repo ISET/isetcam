@@ -96,6 +96,10 @@ scene = sceneSet(scene,'hfov',0.5);  % In degrees of visual angle
 % Confirm that the set worked
 hFOV  = sceneGet(scene,'hfov')
 
+% Show the changes in the window.
+ieReplaceObject(scene);
+sceneWindow;
+
 %% Philosophical interlude - programming issues
 % There are always more parameters to "get" than are to "set".  This is
 % because there are dependencies among any object parameters.  For example,
