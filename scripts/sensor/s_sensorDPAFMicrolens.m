@@ -5,7 +5,7 @@
 %  Illustrates how to create a sensor for dual pixel autofocus experiments
 %  (DPAF).
 %
-%  In other scripts we create thi sensor and put a single microlens on top
+%  In other scripts we create this sensor and put a single microlens on top
 %  of the two pixels.
 %
 % See also
@@ -117,14 +117,17 @@ leftSensor = sensorSet(leftSensor,'volts',leftVolts);
 leftSensor = sensorSet(leftSensor,'name','left');
 
 sensorWindow(leftSensor);
-%%
+
+%%  Extract the right pixels
 rightSensor = sensorCreate;
 rightSensor = sensorSet(rightSensor,'size',size(rightVolts));
 rightSensor = sensorSet(rightSensor,'volts',rightVolts);
 rightSensor = sensorSet(rightSensor,'name','right');
+
 sensorWindow(rightSensor);
 
-%%
+%%  Plot the data
+
 rightSensorData = sensorPlot(rightSensor,'electrons hline',[88 88]);
 % sensorPlot(rightSensor,'electrons hline',[89 89]);
 c = [1 176 89 89];
@@ -136,29 +139,38 @@ ieNewGraphWin;
 plot(leftSensorData.pos{1},leftSensorData.data{1},'b-',...
     rightSensorData.pos{1},rightSensorData.data{1},'r-');
 
-%%
+%% Make an image by add the left and right sensor images
+
 bothVolts = (leftVolts + rightVolts)/2;
 sensorBoth = rightSensor;
 sensorBoth = sensorSet(sensorBoth,'volts',bothVolts);
 sensorWindow(sensorBoth);
+
+% Convert the sensor data to an ip
 ipBoth = ipCreate;
 ipBoth = ipCompute(ipBoth,sensorBoth);
+ipBoth = ipSet(ipBoth,'name','add sensor data');
 ipWindow(ipBoth);
 
+%%  Now make  image process first, and then extract left/right
 
-
-%%
+% Process the whole image
 ip = ipCreate;
 ip = ipCompute(ip,sensor);
 ipWindow(ip);
 
+% Pull out left
 leftip = ipCreate;
 leftip = ipCompute(leftip,leftSensor);
+leftip = ipSet(leftip,'name','left ip data');
 ipWindow(leftip);
 leftuData = ipPlot(leftip,'horizontal line',[89 89]);
 
+% Pull out right
 rightip = ipCreate;
 rightip = ipCompute(rightip,rightSensor);
+rightip = ipSet(rightip,'name','right ip data');
+
 ipWindow(rightip);
 rightuData = ipPlot(rightip,'horizontal line',[89 89]);
 %% END

@@ -104,3 +104,4 @@ cameraWindow(camera,'sensor');
 img = cameraGet(camera, 'sensor rgb');
 ieViewer(img);
 
+%% END

@@ -20,7 +20,7 @@ ieInit
 try
     rng('default');  % To achieve the same result each time
 catch err
-    randn('seed');
+    rng('seed');
 end
 
 %%  Create a sample human optics and cone mosaic sensor
@@ -60,7 +60,7 @@ slot = [2 3 4];   % L,M,S positions in the sensor
 scene  = cell(1,nWave);
 sensor = cell(1,nWave);
 
-vcNewGraphWin([],'tall');
+ieNewGraphWin([],'tall');
 for rr = 1:nLevels
     subplot(nLevels,1,rr);
     for ww=1:length(wSamples)
@@ -72,7 +72,8 @@ for rr = 1:nLevels
         scene{ww} = sceneAdjustLuminance(scene{ww},luminance(rr));
         
         % Compute the spectral irradiance at the retina
-        oi = oiCompute(scene{ww},oi);
+        oi = oiSet(oi,'photons',[]);
+        oi = oiCompute(oi,scene{ww});
         
         % Create a human sensor that will integrate for 100 ms
         sensor{ww} = sensorCreate('human');
@@ -83,7 +84,7 @@ for rr = 1:nLevels
         sensor{ww} = sensorSet(sensor{ww},'name',sprintf('wave %.0f',wSamples(ww)));
         
         % If you want to have a look at the image, run this line.
-        % vcAddAndSelectObject(sensor{ww}); sensorWindow;
+        % sensorWindow(sensor{ww});
     end
     
     for ww=1:length(wSamples)

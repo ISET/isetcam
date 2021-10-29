@@ -1,11 +1,23 @@
 function h = ieDrawShape(obj,shape,varargin)
 % Draw a shape on the gui window
 %
+% Synopsis
 %   h = ieDrawShape(obj,shape,varargin)
 %
-% Copyright Imageval, LLC 2015
+% Description
+%   Draws a shape on top of one of the images in the app windows.
 %
-% ieExamplesPrint('ieDrawShape');
+% Input
+%   obj   - An ISET scene, oi, sensor, or ip
+%   shape - circle, rectangle, or line
+%           Additional arguments are needed for the shape parameters
+%
+%     ieDrawShape(obj,'circle',[20 20],10);    % center, radius in pixels
+%     ieDrawShape(obj,'rectangle',rect);
+%     ieDrawShape(obj,'line',X ,Y);
+%
+% Examples
+%   ieExamplesPrint('ieDrawShape');
 %
 % See also:
 %   ieROIDraw, v_drawShapes

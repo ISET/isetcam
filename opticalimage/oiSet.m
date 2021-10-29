@@ -295,7 +295,6 @@ switch parm
         % If there are photon data, we interpolate the data as well as
         % setting the wavelength. If there are no photon data, we just set
         % the wavelength.
-        
         if ~checkfields(oi,'data','photons') || isempty(oi.data.photons)
             oi.spectrum.wave = val(:);
         elseif ~isequal(val, oiGet(oi, 'wave'))

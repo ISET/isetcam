@@ -1,43 +1,48 @@
 function [rgbFormat, cfaVals] = plane2rgb(img,sensor,emptyVal)
-%Converts a sensor data plane into a (row,col,color) RGB format image
+%Converts a sensor data plane (r,c,1) into a RGB image (r,c,3)
 %
+% Synopsis
 %   [rgbFormat, cfaVals] = plane2rgb(img,sensor,[emptyVal])
 %
+% Brief
 %  This  routine is  part of demosaicking algorithms. This routine converts
 %  data from a sensor plane that contains interleaved color representation
 %  (m x n x 1) into a RGB format in which every color dimension is in a
 %  different 3rd dimension (m x n x w).
 %
-% img:      The vcimage input field, which is typically the the data field
-%           from the sensor.
-% sensor:   The sensor containing a description of the wavebands. The
-%           number of color planes is equal to the number of different
-%           color sensors.
-% emptyVal: default is NaN. In the RGB format the unfilled values are all
-%           set to emptyVal.
+% Inputs
+%  img:      The vcimage input field, which is typically the the data field
+%            from the sensor.
+%  sensor:   The sensor containing a description of the wavebands. The
+%            number of color planes is equal to the number of different
+%            color sensors.
+%  emptyVal: default is NaN. In the RGB format the unfilled values are all
+%            set to emptyVal.
 %
-% Returns:
+% Output
 %
-%  In the returned image each plane represents one color in the color
-%  filter array (cfa).  For example, if the input img is (row,col) and
-%  contains red, green and blue pixels, the returned rgbFormat is (row,col,3)
-%  with each of the image planes containing the red, green or blue data
-%  values.
+%  rgbFormat: 
+%   In the returned image each plane represents one color in the color
+%   filter array (cfa).  For example, if the input img is (row,col) and
+%   contains red, green and blue pixels, the returned rgbFormat is (row,col,3)
+%   with each of the image planes containing the red, green or blue data
+%   values.
 %
-%  Empty (unfilled) color entries in the returned matrix are assigned the
-%  value 'emptyVal'. The default is emptyVal = NaN.
+%   Empty (unfilled) color entries in the returned matrix are assigned the
+%   value 'emptyVal'. The default is emptyVal = NaN.
 %
-%  The cfaVals is a list of characters of the color filter names.  It is
-%  the same as the first letters in the cell array returned by
-%  sensorGet(sensor,'filterString')
-%
-% See also:  sensorRGB2Plane
+%  cfaVales
+%   The cfaVals is a list of characters of the color filter names.  It is
+%   the same as the first letters in the cell array returned by
+%   sensorGet(sensor,'filterString')
 %
 % Example:
 %   rgbFormat = plane2rgb(img,sensor,0);
 %   rgbFormat = plane2rgb(img,sensor);  imagescRGB(rgbFormat);
 %
-% Copyright ImagEval Consultants, LLC, 2005.
+% See also:  
+%  sensorRGB2Plane
+%
 
 if ieNotDefined('img'), error('img required - img is the vci input field'); end
 if ieNotDefined('sensor'),   sensor = vcGetObject('sensor'); end

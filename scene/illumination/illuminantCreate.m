@@ -109,17 +109,29 @@ switch ieParamFormat(ilName)
         sd         = 20;  % nm
         peakEnergy = 25;  % watts/sr/nm/m2
         while ~isempty(varargin)
-            switch lower(varargin{1})
-                case 'center'
-                    center = varargin{2};
-                case 'sd'
-                    sd= varargin{2};
-                case 'peakenergy'
-                    peakEnergy = varargin{2};
-                otherwise
-                    error(['Unexpected option: ' varargin{1}])
+            % OK, we have params
+            if isstruct(varargin{1})
+                params = varargin{1};
+                if isfield(params,'center'), center = params.center; end
+                if isfield(params,'sd'),     sd = params.sd; end
+                if isfield(params,'peakEnergy'), peakEnergy = params.peakEnergy; end
+                varargin = [];
+            else
+                % Person sent in key/val pairs
+                while ~isempty(varargin)
+                    switch (lower(varargin{1}))
+                        case 'center'
+                            center = varargin{2};
+                        case 'sd'
+                            sd = varargin{2};
+                        case 'peakenergy'
+                            peakEnergy=varargin{2};
+                        otherwise
+                            error('unknown argument %s',varargin{1});
+                    end
+                    varargin(1:2) = [];
+                end
             end
-            varargin(1:2) = [];
         end
         
         il = illuminantSet(il,'name',sprintf('Gaussian %.0f\n',center));

@@ -15,8 +15,8 @@ function [sensorPlane, sensor] = sensorRGB2Plane(rgbData,  cfaPattern)
 % The rgbData is an (m x n x w) matrix filled with sensor values.  These
 % might have been created, say, by looping through a set of monochrome
 % sensors each with its own color filters. We convert the RGB format data
-% into a sensor plane (cfa) according to the sensor color filters in the
-% sensor structure.
+% into a sensor plane (cfa) by selecting data base don the pattern of the
+% sensor color filters in the sensor structure.
 %
 % Specifically, each sensor has a CFA structure determined by the
 % cfaPattern variable.  We  call sensorDetermineCFA to figure out which

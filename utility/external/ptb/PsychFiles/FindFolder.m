@@ -13,6 +13,8 @@ function directory=FindFolder(name)
 % 7/26/96  dgp Wrote it.
 % 12/10/01 awi Set ignoreCase to 1 always.
 % 4/13/02  dgp Updated to use Matlab's predefined separator symbols.
+% 6/05/21  dhb Order of arguments to strfind was backwards. I don't see how
+%              this ever worked.
 
 % Matlab predefines these:
 % PATHSEP = path separator character
@@ -27,8 +29,8 @@ else
     n=name;
     p=paths;
 end
-pathIndex=[1 1+strfind(pathsep,p)];
-nameIndex=[strfind([filesep n filesep],p) strfind([filesep n pathsep],p)];
+pathIndex=[1 1+strfind(p,pathsep)];
+nameIndex=[strfind(p,[filesep n filesep]) strfind(p,[filesep n pathsep])];
 clear n p
 if isempty(nameIndex)
     directory=[];

@@ -83,7 +83,7 @@ switch lower(psfType)
         
         % Convert spread from microns to millimeters because OTF data are stored in
         % line pairs per mm
-        xSpread = xSpread/1000;  ySpread = ySpread/1000;
+        xSpread = double(xSpread/1000);  ySpread = double(ySpread/1000);
         
         for jj = 1:nWave
             % We convert from spread in mm to spread in samples for the
