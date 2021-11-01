@@ -87,7 +87,7 @@ classdef cpScene < handle
         % to a sensor. Default is simple "pinhole"
         %{
             lensfile  = 'dgauss.22deg.50.0mm.json';    % 30 38 18 10
-            thisR.camera = piCameraCreate('realistic','lensFile',lensfile);
+            thisR.camera = piCameraCreate('omni','lensFile',lensfile);
         %}
         
         sceneLuminance; % set in constructor, helps simulate lighting
@@ -142,7 +142,7 @@ classdef cpScene < handle
                         obj.thisR = options.recipe;
                         if ~isempty(obj.lensFile)
                             
-                            obj.thisR.camera = piCameraCreate('realistic',...
+                            obj.thisR.camera = piCameraCreate('omni',...
                                 'lensFile',obj.lensFile);
                             obj.thisR.set('film diagonal',66); % sensor mm
                             
@@ -156,9 +156,9 @@ classdef cpScene < handle
                     obj.sceneName = options.sceneName;
                     
                     if ~piDockerExists, piDockerConfig; end
-                    obj.thisR = piRecipeDefault('scene name', obj.sceneName, 'verbose', 0);
+                    obj.thisR = piRecipeDefault('scene name', obj.sceneName);
                     if ~isempty(options.lensFile)
-                        obj.thisR.camera = piCameraCreate('realistic',...
+                        obj.thisR.camera = piCameraCreate('omni',...
                             'lensFile',obj.lensFile);
                         obj.thisR.set('film diagonal',66); % sensor mm
                     end
@@ -231,7 +231,7 @@ classdef cpScene < handle
                         % Okay, if we have a lensFile, we need to reapply it here
                         % but it doesn't seem to work?
                         if ~isempty(obj.lensFile)
-                            obj.thisR.camera = piCameraCreate('realistic','lensFile',obj.lensFile);
+                            obj.thisR.camera = piCameraCreate('omni','lensFile',obj.lensFile);
                         end
                     end
                     

@@ -11,14 +11,17 @@ function d = displayCreate(displayName,varargin)
 %
 % Inputs:
 %  displayName: Name of a file containing a calibrated display structure.
-%               The default is a special display we created called
-%               'reflectance-display'.  This display converts the RGB
-%               values in the image as if they were to be shown on an sRGB
-%               display.  The display SPD is chosen so that if we assume a
-%               D65 illuminant and those primaries, the estimate surface
-%               reflectance of an object is within the first three linear
-%               basis functions of natural surfaces.  Ask me how Joyce and
-%               I did that.  Or read s_displaySurfaceReflectance.
+%
+%               If no display is specified, the default is a special
+%               display we created called 'reflectance-display'.  This
+%               display converts the RGB values in the image as if they
+%               were to be shown on an sRGB display. We figured out how to
+%               set the SPD of the primaries such that if we assume a D65
+%               illuminant and those primaries, the estimate surface
+%               reflectances are within the first three linear basis
+%               functions of natural surfaces.
+%
+%               To see how we did that, read s_displaySurfaceReflectance.
 %
 % Optional key/value pairs:
 %   Settable display parameters as pairs.  Anything that works in
@@ -65,7 +68,9 @@ function d = displayCreate(displayName,varargin)
 
 %% Arguments
 
-if ~exist('displayName','var')||isempty(displayName), displayName = 'reflectance-display'; end
+if ~exist('displayName','var') || isempty(displayName)
+    displayName = 'reflectance-display'; 
+end
 
 % Identify the object type
 d.type = 'display';
@@ -99,21 +104,22 @@ switch sParam
             tmp = load(displayName);
             if ~isfield(tmp,'d')
                 error('No display struct in the file');
-            else,  d = tmp.d;
+            else
+                d = tmp.d;
+                d = displaySet(d,'name',displayName);
             end
             if isempty(displayGet(d,'dixel'))
                 % Some displays do not have a spatial dixel.  For example,
                 % the reflectance-display is entirely imaginary.  So, we
                 % assign a dixel here from an existing display that was
                 % calibrated.
-                fprintf('Assigning the dixel from LCD-Apple to the %s display.\n', displayGet(d,'name'));
+                fprintf('Assigning the spatial dixel from LCD-Apple to the %s.\n', displayGet(d,'name'));
                 tmp = load('LCD-Apple');
                 d.dixel = tmp.d.dixel;
             end
         else
             error('Unknown display %s.',displayName);
         end
-        
 end
 
 % Start out without an image.  Until we know what we should use.

@@ -1,6 +1,7 @@
 % sample script to assemble a pbrt test scene for object and camera motion.
 %
-% Feb, 2021
+% Feb, 2021, David Cardinal
+% NEEDS TO BE UPDATED FOR NEW ASSET TREE PARSER
 %
 % We load the "bare" Cornell box, and then (in theory) add the Stanford
 % bunny and the MCC chart (and AF target?) so that we have a full test
@@ -38,10 +39,15 @@ simpleScene = cpScene('pbrt', 'scenePath', 'CornellBoxReference', ...
     'sceneLuminance', sceneLuminance);
 
 % Add the Stanford bunny to the scene
-bunny = load('bunny.mat');
-simpleScene.thisR.set('asset',1, 'add', bunny.assetTree.Node{1});
+bunny = piAssetLoad('bunny.mat');
+% Zheng: there is an easy way to add bunny in the scene:
+simpleScene.thisR = piRecipeMerge(simpleScene.thisR, bunny.thisR);
 
-simpleScene.thisR.set('material', 'add', bunny.matList{1});
+% Zheng: This is another useful feature to place bunny at a targeted
+% position.
+simpleScene.thisR.set('asset', 'Bunny_B', 'world position', [0 0.125 0]);
+
+%%
 piWrite(simpleScene.thisR);
 oi = piRender(simpleScene.thisR);
 ieAddObject(oi); oiWindow(oi);

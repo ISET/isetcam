@@ -1,0 +1,889 @@
+% This LaTeX was auto-generated from MATLAB code.
+% To make changes, update the MATLAB code and export to LaTeX again.
+
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{epstopdf}
+\usepackage[table]{xcolor}
+\usepackage{matlab}
+
+\sloppy
+\epstopdfsetup{outdir=./}
+\graphicspath{ {./t_cpCameraIntro_images/} }
+
+\matlabhastoc
+
+\begin{document}
+
+\label{T_C0B1849A}
+\matlabtitle{Introduction to iset's Computational Photography (cp) Framework and Classes}
+
+\begin{par}
+\begin{flushleft}
+cpCamera is one of a set of classes that allow experimentation with computational photography more easily and compactly than directly programming the isetcam structures they encapsulate (scene, optical iimage (oi), sensor, and imaging pipeline (ip)). Along with wrapper classes cpScene, cpCModule, and cpIP, it provides a programmable interface (cpCamera) that allows users to create "computational cameras" that employ a variety of algorithms for generating scene sequences, deciding how to capture a scene based on a preview, capturing the scene in one or more frames, and then processing those frames into a photo, 
+\end{flushleft}
+\end{par}
+
+\begin{par}
+\begin{flushleft}
+Currently, cpCameras are assumed to have a single camera module with a single sensor, but the architecture is designed to allow expansion to multi-module systems.
+\end{flushleft}
+\end{par}
+
+\begin{par}
+\begin{flushleft}
+History: Initial Version: D. Cardinal 12/2020, iset scene support added 1/2021
+\end{flushleft}
+\end{par}
+
+\matlabtableofcontents{Table of Contents}
+
+\vspace{1em}
+
+\vspace{1em}
+\label{H_36889598}
+\matlabheadingthree{Block Diagram of "cp" classes}
+
+\begin{par}
+\begin{flushleft}
+\includegraphics[width=\maxwidth{47.56648268941294em}]{image_0}
+\end{flushleft}
+\end{par}
+
+\label{H_EA9A0A6A}
+\begin{par}
+\begin{flushleft}
+In this tutorial we'll use sub-classes of cpCamera and cpIP that are enhanced to support several different simulation and processing features. cpBurstCamera and cpBurstIP can use a cpScene object to add both camera and object motion to a 3D scene created using ISET3d (which in turn calls pbrt), or add camera motion to any ISET scene or pre-computed image. They can also capture a sequence of images that already have motion incorporated.
+\end{flushleft}
+\end{par}
+
+\begin{par}
+\begin{flushleft}
+Once the initial sensor images are created, cpBurstIP can either use existing ISET ip algorithms to do burst and HDR at the raw sensor level, or employ higher-level image registration and tone mapping algorithms on multiple frames. A main goal of the cp classes is to allow students and researchers to use the default implementations as a jumping off point for projects of various kinds.
+\end{flushleft}
+\end{par}
+
+\label{H_6BEED4CD}
+\matlabheadingtwo{Block Diagram of our "Burst" Camera}
+
+\begin{par}
+\begin{flushleft}
+\includegraphics[width=\maxwidth{46.06121424987456em}]{image_1}
+\end{flushleft}
+\end{par}
+
+
+\label{H_4FAE822A}
+\matlabheading{Initialize our Computational Camera}
+
+\begin{par}
+\begin{flushleft}
+As our first step we'll create a camera object based on the cpBurstCamera sub-class of cpCamera. The sub-class adds support for simple image registration and tone-mapping to the base cpCamera class. After we create the camera, we equip it with a single camera module that includes an off-the-shelf sensor and some default optics.
+\end{flushleft}
+\end{par}
+
+\begin{matlabcode}
+ieInit();
+% some timing code, just to see how fast we run...
+setpref('ISET', 'benchmarkstart', cputime); 
+setpref('ISET', 'tStart', tic);
+
+% cpBurstCamera is a sub-class of cpCamera that implements simple HDR and Burst
+% capture and processing
+ourCamera = cpBurstCamera(); 
+
+% We'll use a pre-defined sensor for our Camera Module, and let it use
+% default optics for now. We can then assign the module to our camera:
+sensor = sensorFromFile('ar0132atSensorRGB'); 
+% Cameras can eventually have more than one module (lens + sensor)
+% but for now, we just create one using our sensor
+ourCamera.cmodules(1) = cpCModule('sensor', sensor); 
+\end{matlabcode}
+
+
+\label{H_2CFE417B}
+\matlabheading{Create our Scene}
+
+\begin{par}
+\begin{flushleft}
+The Cornell Box + Stanford Bunny is part of iset3d, and is set up to help us by labeling the assets in such a way that we can add motion to them as they are rendered by pbrt. You can use the sliders below to control the lighting level (mean luminance) of the rendered scene, as well as the number of rays per pixel pbrt uses and its "film" resolution. We've kept the defaults low to speed up rendering, but for real experiments you may want to increase them:
+\end{flushleft}
+\end{par}
+
+\begin{matlabcode}
+
+sceneLuminance = 200
+\end{matlabcode}
+\begin{matlaboutput}
+sceneLuminance = 200
+\end{matlaboutput}
+\begin{matlabcode}
+numRays = 256
+\end{matlabcode}
+\begin{matlaboutput}
+numRays = 256
+\end{matlaboutput}
+\begin{matlabcode}
+filmResolution = 256
+\end{matlabcode}
+\begin{matlaboutput}
+filmResolution = 256
+\end{matlaboutput}
+\begin{matlabcode}
+pbrtLensFile = false
+\end{matlabcode}
+\begin{matlaboutput}
+pbrtLensFile = 
+   0
+
+\end{matlaboutput}
+\begin{matlabcode}
+sceneChoice = "Cornell Box with Bunny"
+\end{matlabcode}
+\begin{matlaboutput}
+sceneChoice = "Cornell Box with Bunny"
+\end{matlaboutput}
+\begin{matlabcode}
+apertureDiameter = 6% in mm
+\end{matlabcode}
+\begin{matlaboutput}
+apertureDiameter = 6
+\end{matlaboutput}
+\begin{matlabcode}
+% getting the 3D scenes requires knowing their location in iset3D, which we
+% set here:
+if strcmp(sceneChoice, "Cornell Box with Bunny")
+    scenePath = 'Cornell_BoxBunnyChart';        
+    sceneName = 'cornell box bunny chart';
+elseif strcmp(sceneChoice, "CornellBoxReference")
+    scenePath = "CornellBoxReference";
+    sceneName = "CornellBoxReference";
+else
+    scenePath = 'ChessSet';
+    sceneName = 'chessSet';
+end
+
+if pbrtLensFile % support for pbrt lens files is hit and miss
+    pbrtCPScene = cpScene('pbrt', 'scenePath', scenePath, 'sceneName', sceneName, ...
+    'resolution', [filmResolution filmResolution], ...
+    'numRays', numRays, 'sceneLuminance', sceneLuminance, ...
+    'lensFile','dgauss.22deg.6.0mm.json',...
+    'apertureDiameter', apertureDiameter);
+else
+    pbrtCPScene = cpScene('pbrt', 'scenePath', scenePath, 'sceneName', sceneName, ...
+    'resolution', [filmResolution filmResolution], ...
+    'numRays', numRays, 'sceneLuminance', sceneLuminance);
+end
+\end{matlabcode}
+\begin{matlaboutput}
+Warning: output directory does not exist yet
+Read 1 materials.
+Read 1 textures.
+***Scene parsed.
+\end{matlaboutput}
+\begin{matlabcode}
+
+\end{matlabcode}
+
+
+\label{H_2229DB8C}
+\matlabheading{Let's Look at the Camera we've Created}
+
+\begin{par}
+\begin{flushleft}
+Using a simple UI, we can control some aspects of our camera graphically.
+\end{flushleft}
+\end{par}
+
+\begin{matlabcode}
+cpCameraWindow(ourCamera, pbrtCPScene);
+\end{matlabcode}
+\begin{center}
+\includegraphics[width=\maxwidth{85.90065228299046em}]{figure_0.png}
+\end{center}
+
+
+\label{H_6DCAB120}
+\matlabheading{Set an Object in Motion in our PBRT Scene}
+
+\begin{par}
+\begin{flushleft}
+We can set any named object in the asset tree of a pbrt scene in motion using by adding values to the .objectMotion array. Here we'll set the Stanford bunny (labeled as "Default\_B" in the asset tree) into motion with a vertical movement (middle term of the first triplet) and a tiny rotation (the second triplet). Later we'll show how the camera can also be set in motion:
+\end{flushleft}
+\end{par}
+
+\begin{matlabcode}
+% Move the bunny up, with slow rotation
+if strcmp(sceneName, 'cornell box bunny chart')
+    pbrtCPScene.objectMotion = {{'Default_B', [0, 15, 0], [1, 1, 1]}};
+end
+\end{matlabcode}
+
+
+\label{H_03560DC1}
+\matlabheading{Take Pictures using Auto, HDR, and Burst Intents}
+
+\begin{par}
+\begin{flushleft}
+For the simplest case we ask our camera to take some pictures using pre-defined intents. By deault our camera assumes the 'Auto' intent. We also demonstrate 'Burst', which will capture more frames if the camera type we are using supports it. 'HDR' also fires a burst, but bracketed. Our default camera sums the frames in Burst mode, and chooses the highest non-saturated value at each pixel for HDR mode.
+\end{flushleft}
+\end{par}
+
+\begin{matlabcode}
+autoImage = ourCamera.TakePicture(pbrtCPScene, 'Auto',...
+    'imageName','Auto Mode'); 
+\end{matlabcode}
+\begin{matlaboutput}
+Warning: output directory does not exist yet
+Overwriting PBRT file C:\iset\iset3d\local\Cornell_BoxBunnyChart\tpd45e8f9e_89f4_4b70_9af9_1ff6bfa450c2\Cornell_Box_Multiple_Cameras_Bunny_charts.pbrt
+Elapsed time is 1.729829 seconds.
+*** Rendering time for Cornell_Box_Multiple_Cameras_Bunny_charts:  43.6 sec ***
+
+*** Rendering time for Cornell_Box_Multiple_Cameras_Bunny_charts_depth:  12.8 sec ***
+
+Docker container vistalab/pbrt-v3-spectral:latest
+Overwriting PBRT file C:\iset\iset3d\local\Cornell_BoxBunnyChart\Cornell_Box_Multiple_Cameras_Bunny_charts_depth.pbrt
+Docker command
+	docker run -ti --rm -w /Cornell_BoxBunnyChart -v C:/iset/iset3d/local/Cornell_BoxBunnyChart:/Cornell_BoxBunnyChart vistalab/pbrt-v3-spectral:latest pbrt --outfile renderings/Cornell_Box_Multiple_Cameras_Bunny_charts_depth.dat Cornell_Box_Multiple_Cameras_Bunny_charts_depth.pbrt
+*** Rendering time for Cornell_Box_Multiple_Cameras_Bunny_charts_depth:  12.2 sec ***
+
+  Reading image h=256 x w=256 x 31 spectral planes.
+Warning: output directory does not exist yet
+Overwriting PBRT file C:\iset\iset3d\local\Cornell_BoxBunnyChart\tp5d8f95fe_4b12_4ebf_83ed_b0de43cfc4f5\Cornell_Box_Multiple_Cameras_Bunny_charts.pbrt
+Elapsed time is 1.457823 seconds.
+*** Rendering time for Cornell_Box_Multiple_Cameras_Bunny_charts:  41.7 sec ***
+
+*** Rendering time for Cornell_Box_Multiple_Cameras_Bunny_charts_depth:  12.3 sec ***
+\end{matlaboutput}
+\begin{center}
+\includegraphics[width=\maxwidth{77.47114902157551em}]{figure_1.png}
+\end{center}
+\begin{matlabcode}
+imshow(autoImage);
+
+hdrImage = ourCamera.TakePicture(pbrtCPScene, 'HDR',...
+    'numHDRFrames', 3,'imageName','HDR Example', ...
+    'insensorIP', true);
+\end{matlabcode}
+\begin{matlaboutput}
+Warning: output directory does not exist yet
+Overwriting PBRT file C:\iset\iset3d\local\Cornell_BoxBunnyChart\tp704952b8_a803_4d46_8f4a_f07072444864\Cornell_Box_Multiple_Cameras_Bunny_charts.pbrt
+Elapsed time is 1.415820 seconds.
+*** Rendering time for Cornell_Box_Multiple_Cameras_Bunny_charts:  44.9 sec ***
+
+*** Rendering time for Cornell_Box_Multiple_Cameras_Bunny_charts_depth:  13.9 sec ***
+\end{matlaboutput}
+\begin{center}
+\includegraphics[width=\maxwidth{77.47114902157551em}]{figure_2.png}
+\end{center}
+\begin{matlaboutput}
+Docker container vistalab/pbrt-v3-spectral:latest
+Overwriting PBRT file C:\iset\iset3d\local\Cornell_BoxBunnyChart\Cornell_Box_Multiple_Cameras_Bunny_charts_depth.pbrt
+Docker command
+	docker run -ti --rm -w /Cornell_BoxBunnyChart -v C:/iset/iset3d/local/Cornell_BoxBunnyChart:/Cornell_BoxBunnyChart vistalab/pbrt-v3-spectral:latest pbrt --outfile renderings/Cornell_Box_Multiple_Cameras_Bunny_charts_depth.dat Cornell_Box_Multiple_Cameras_Bunny_charts_depth.pbrt
+*** Rendering time for Cornell_Box_Multiple_Cameras_Bunny_charts_depth:  14.7 sec ***
+
+  Reading image h=256 x w=256 x 31 spectral planes.
+Warning: output directory does not exist yet
+Overwriting PBRT file C:\iset\iset3d\local\Cornell_BoxBunnyChart\tpf3b0b856_2597_47cf_a2e0_d17075a7653f\Cornell_Box_Multiple_Cameras_Bunny_charts.pbrt
+Elapsed time is 1.733933 seconds.
+*** Rendering time for Cornell_Box_Multiple_Cameras_Bunny_charts:  51.6 sec ***
+
+*** Rendering time for Cornell_Box_Multiple_Cameras_Bunny_charts_depth:  14.7 sec ***
+Warning: output directory does not exist yet
+Overwriting PBRT file C:\iset\iset3d\local\Cornell_BoxBunnyChart\tp844f66c2_ccc8_4bbf_9488_4928a57af1d6\Cornell_Box_Multiple_Cameras_Bunny_charts.pbrt
+Elapsed time is 1.584652 seconds.
+*** Rendering time for Cornell_Box_Multiple_Cameras_Bunny_charts:  46.3 sec ***
+
+*** Rendering time for Cornell_Box_Multiple_Cameras_Bunny_charts_depth:  13.7 sec ***
+Warning: output directory does not exist yet
+Overwriting PBRT file C:\iset\iset3d\local\Cornell_BoxBunnyChart\tp118fe02f_52d1_4640_afc2_32fb7fccc6df\Cornell_Box_Multiple_Cameras_Bunny_charts.pbrt
+Elapsed time is 1.526031 seconds.
+*** Rendering time for Cornell_Box_Multiple_Cameras_Bunny_charts:  45.0 sec ***
+
+*** Rendering time for Cornell_Box_Multiple_Cameras_Bunny_charts_depth:  13.5 sec ***
+
+Depth 75.98 Defocus -0.01 (1 of 8)
+Depth 72.15 Defocus -0.01 (2 of 8)
+Depth 68.32 Defocus -0.01 (3 of 8)
+Depth 64.49 Defocus -0.02 (4 of 8)
+Depth 60.65 Defocus -0.02 (5 of 8)
+Depth 56.82 Defocus -0.02 (6 of 8)
+Depth 52.99 Defocus -0.02 (7 of 8)
+Depth 49.16 Defocus -0.02 (8 of 8)
+Depth 75.98 Defocus 2.55 (1 of 8)
+Depth 72.15 Defocus 2.55 (2 of 8)
+Depth 68.32 Defocus 2.55 (3 of 8)
+Depth 64.49 Defocus 2.55 (4 of 8)
+Depth 60.65 Defocus 2.55 (5 of 8)
+Depth 56.82 Defocus 2.55 (6 of 8)
+Depth 52.99 Defocus 2.54 (7 of 8)
+Depth 49.16 Defocus 2.54 (8 of 8)
+Depth 75.98 Defocus 5.09 (1 of 8)
+Depth 72.15 Defocus 5.09 (2 of 8)
+Depth 68.32 Defocus 5.09 (3 of 8)
+Depth 64.49 Defocus 5.09 (4 of 8)
+Depth 60.65 Defocus 5.08 (5 of 8)
+Depth 56.82 Defocus 5.08 (6 of 8)
+Depth 52.99 Defocus 5.08 (7 of 8)
+Depth 49.16 Defocus 5.08 (8 of 8)
+Depth 75.98 Defocus -0.01 (1 of 8)
+Depth 72.15 Defocus -0.01 (2 of 8)
+Depth 68.32 Defocus -0.01 (3 of 8)
+Depth 64.49 Defocus -0.02 (4 of 8)
+Depth 60.65 Defocus -0.02 (5 of 8)
+Depth 56.82 Defocus -0.02 (6 of 8)
+Depth 52.99 Defocus -0.02 (7 of 8)
+Depth 49.16 Defocus -0.02 (8 of 8)
+Depth 75.98 Defocus 2.55 (1 of 8)
+Depth 72.15 Defocus 2.55 (2 of 8)
+Depth 68.32 Defocus 2.55 (3 of 8)
+Depth 64.49 Defocus 2.55 (4 of 8)
+Depth 60.65 Defocus 2.55 (5 of 8)
+Depth 56.82 Defocus 2.55 (6 of 8)
+Depth 52.99 Defocus 2.54 (7 of 8)
+Depth 49.16 Defocus 2.54 (8 of 8)
+Depth 75.98 Defocus 5.09 (1 of 8)
+Depth 72.15 Defocus 5.09 (2 of 8)
+Depth 68.32 Defocus 5.09 (3 of 8)
+Depth 64.49 Defocus 5.09 (4 of 8)
+Depth 60.65 Defocus 5.08 (5 of 8)
+Depth 56.82 Defocus 5.08 (6 of 8)
+Depth 52.99 Defocus 5.08 (7 of 8)
+Depth 49.16 Defocus 5.08 (8 of 8)
+Depth 75.98 Defocus -0.01 (1 of 8)
+Depth 72.15 Defocus -0.01 (2 of 8)
+Depth 68.32 Defocus -0.01 (3 of 8)
+Depth 64.49 Defocus -0.02 (4 of 8)
+Depth 60.65 Defocus -0.02 (5 of 8)
+Depth 56.82 Defocus -0.02 (6 of 8)
+Depth 52.99 Defocus -0.02 (7 of 8)
+Depth 49.16 Defocus -0.02 (8 of 8)
+Depth 75.98 Defocus 2.55 (1 of 8)
+Depth 72.15 Defocus 2.55 (2 of 8)
+Depth 68.32 Defocus 2.55 (3 of 8)
+Depth 64.49 Defocus 2.55 (4 of 8)
+Depth 60.65 Defocus 2.55 (5 of 8)
+Depth 56.82 Defocus 2.55 (6 of 8)
+Depth 52.99 Defocus 2.54 (7 of 8)
+Depth 49.16 Defocus 2.54 (8 of 8)
+Depth 75.98 Defocus 5.09 (1 of 8)
+Depth 72.15 Defocus 5.09 (2 of 8)
+Depth 68.32 Defocus 5.09 (3 of 8)
+Depth 64.49 Defocus 5.09 (4 of 8)
+Depth 60.65 Defocus 5.08 (5 of 8)
+Depth 56.82 Defocus 5.08 (6 of 8)
+Depth 52.99 Defocus 5.08 (7 of 8)
+Depth 49.16 Defocus 5.08 (8 of 8)
+\end{matlaboutput}
+\begin{matlabcode}
+ipWindow(hdrImage);
+\end{matlabcode}
+\begin{center}
+\includegraphics[width=\maxwidth{82.08730556949322em}]{figure_3.png}
+\end{center}
+\begin{matlabcode}
+
+hdrImage = ourCamera.TakePicture(pbrtCPScene, 'HDR',...
+    'numHDRFrames', 3,'imageName','HDR Example');
+\end{matlabcode}
+\begin{matlaboutput}
+Warning: output directory does not exist yet
+Overwriting PBRT file C:\iset\iset3d\local\Cornell_BoxBunnyChart\tp94605911_6928_4125_9dc6_f2aecde6df6d\Cornell_Box_Multiple_Cameras_Bunny_charts.pbrt
+Elapsed time is 1.507462 seconds.
+*** Rendering time for Cornell_Box_Multiple_Cameras_Bunny_charts:  49.5 sec ***
+
+*** Rendering time for Cornell_Box_Multiple_Cameras_Bunny_charts_depth:  13.7 sec ***
+\end{matlaboutput}
+\begin{center}
+\includegraphics[width=\maxwidth{77.47114902157551em}]{figure_4.png}
+\end{center}
+\begin{matlaboutput}
+Docker container vistalab/pbrt-v3-spectral:latest
+Overwriting PBRT file C:\iset\iset3d\local\Cornell_BoxBunnyChart\Cornell_Box_Multiple_Cameras_Bunny_charts_depth.pbrt
+Docker command
+	docker run -ti --rm -w /Cornell_BoxBunnyChart -v C:/iset/iset3d/local/Cornell_BoxBunnyChart:/Cornell_BoxBunnyChart vistalab/pbrt-v3-spectral:latest pbrt --outfile renderings/Cornell_Box_Multiple_Cameras_Bunny_charts_depth.dat Cornell_Box_Multiple_Cameras_Bunny_charts_depth.pbrt
+*** Rendering time for Cornell_Box_Multiple_Cameras_Bunny_charts_depth:  13.5 sec ***
+
+  Reading image h=256 x w=256 x 31 spectral planes.
+Warning: output directory does not exist yet
+Overwriting PBRT file C:\iset\iset3d\local\Cornell_BoxBunnyChart\tp1dcfc684_c316_409b_bcd5_a888cb014fd6\Cornell_Box_Multiple_Cameras_Bunny_charts.pbrt
+Elapsed time is 1.951871 seconds.
+*** Rendering time for Cornell_Box_Multiple_Cameras_Bunny_charts:  48.1 sec ***
+
+*** Rendering time for Cornell_Box_Multiple_Cameras_Bunny_charts_depth:  13.9 sec ***
+Warning: output directory does not exist yet
+Overwriting PBRT file C:\iset\iset3d\local\Cornell_BoxBunnyChart\tpa41acf08_573e_4f61_904a_2f9edde4bfcd\Cornell_Box_Multiple_Cameras_Bunny_charts.pbrt
+Elapsed time is 1.605714 seconds.
+*** Rendering time for Cornell_Box_Multiple_Cameras_Bunny_charts:  56.1 sec ***
+
+*** Rendering time for Cornell_Box_Multiple_Cameras_Bunny_charts_depth:  14.3 sec ***
+Warning: output directory does not exist yet
+Overwriting PBRT file C:\iset\iset3d\local\Cornell_BoxBunnyChart\tp178bfe22_e173_496e_bcf0_9bf729d59ca4\Cornell_Box_Multiple_Cameras_Bunny_charts.pbrt
+Elapsed time is 1.623708 seconds.
+*** Rendering time for Cornell_Box_Multiple_Cameras_Bunny_charts:  55.4 sec ***
+
+*** Rendering time for Cornell_Box_Multiple_Cameras_Bunny_charts_depth:  16.6 sec ***
+
+Depth 75.98 Defocus -0.01 (1 of 8)
+Depth 72.15 Defocus -0.01 (2 of 8)
+Depth 68.32 Defocus -0.01 (3 of 8)
+Depth 64.49 Defocus -0.02 (4 of 8)
+Depth 60.65 Defocus -0.02 (5 of 8)
+Depth 56.82 Defocus -0.02 (6 of 8)
+Depth 52.99 Defocus -0.02 (7 of 8)
+Depth 49.16 Defocus -0.02 (8 of 8)
+\end{matlaboutput}
+\begin{center}
+\includegraphics[width=\maxwidth{105.26843953838434em}]{figure_5.png}
+\end{center}
+\begin{matlaboutput}
+Depth 75.98 Defocus 2.55 (1 of 8)
+Depth 72.15 Defocus 2.55 (2 of 8)
+Depth 68.32 Defocus 2.55 (3 of 8)
+Depth 64.49 Defocus 2.55 (4 of 8)
+Depth 60.65 Defocus 2.55 (5 of 8)
+Depth 56.82 Defocus 2.55 (6 of 8)
+Depth 52.99 Defocus 2.54 (7 of 8)
+Depth 49.16 Defocus 2.54 (8 of 8)
+Depth 75.98 Defocus 5.09 (1 of 8)
+Depth 72.15 Defocus 5.09 (2 of 8)
+Depth 68.32 Defocus 5.09 (3 of 8)
+Depth 64.49 Defocus 5.09 (4 of 8)
+Depth 60.65 Defocus 5.08 (5 of 8)
+Depth 56.82 Defocus 5.08 (6 of 8)
+Depth 52.99 Defocus 5.08 (7 of 8)
+Depth 49.16 Defocus 5.08 (8 of 8)
+Depth 75.98 Defocus -0.01 (1 of 8)
+Depth 72.15 Defocus -0.01 (2 of 8)
+Depth 68.32 Defocus -0.01 (3 of 8)
+Depth 64.49 Defocus -0.02 (4 of 8)
+Depth 60.65 Defocus -0.02 (5 of 8)
+Depth 56.82 Defocus -0.02 (6 of 8)
+Depth 52.99 Defocus -0.02 (7 of 8)
+Depth 49.16 Defocus -0.02 (8 of 8)
+Depth 75.98 Defocus 2.55 (1 of 8)
+Depth 72.15 Defocus 2.55 (2 of 8)
+Depth 68.32 Defocus 2.55 (3 of 8)
+Depth 64.49 Defocus 2.55 (4 of 8)
+Depth 60.65 Defocus 2.55 (5 of 8)
+Depth 56.82 Defocus 2.55 (6 of 8)
+Depth 52.99 Defocus 2.54 (7 of 8)
+Depth 49.16 Defocus 2.54 (8 of 8)
+Depth 75.98 Defocus 5.09 (1 of 8)
+Depth 72.15 Defocus 5.09 (2 of 8)
+Depth 68.32 Defocus 5.09 (3 of 8)
+Depth 64.49 Defocus 5.09 (4 of 8)
+Depth 60.65 Defocus 5.08 (5 of 8)
+Depth 56.82 Defocus 5.08 (6 of 8)
+Depth 52.99 Defocus 5.08 (7 of 8)
+Depth 49.16 Defocus 5.08 (8 of 8)
+Depth 75.98 Defocus -0.01 (1 of 8)
+Depth 72.15 Defocus -0.01 (2 of 8)
+Depth 68.32 Defocus -0.01 (3 of 8)
+Depth 64.49 Defocus -0.02 (4 of 8)
+Depth 60.65 Defocus -0.02 (5 of 8)
+Depth 56.82 Defocus -0.02 (6 of 8)
+Depth 52.99 Defocus -0.02 (7 of 8)
+Depth 49.16 Defocus -0.02 (8 of 8)
+Depth 75.98 Defocus 2.55 (1 of 8)
+Depth 72.15 Defocus 2.55 (2 of 8)
+Depth 68.32 Defocus 2.55 (3 of 8)
+Depth 64.49 Defocus 2.55 (4 of 8)
+Depth 60.65 Defocus 2.55 (5 of 8)
+Depth 56.82 Defocus 2.55 (6 of 8)
+Depth 52.99 Defocus 2.54 (7 of 8)
+Depth 49.16 Defocus 2.54 (8 of 8)
+Depth 75.98 Defocus 5.09 (1 of 8)
+Depth 72.15 Defocus 5.09 (2 of 8)
+Depth 68.32 Defocus 5.09 (3 of 8)
+Depth 64.49 Defocus 5.09 (4 of 8)
+Depth 60.65 Defocus 5.08 (5 of 8)
+Depth 56.82 Defocus 5.08 (6 of 8)
+Depth 52.99 Defocus 5.08 (7 of 8)
+Depth 49.16 Defocus 5.08 (8 of 8)
+\end{matlaboutput}
+\begin{center}
+\includegraphics[width=\maxwidth{105.26843953838434em}]{figure_6.png}
+\end{center}
+\begin{matlabcode}
+imshow(hdrImage);
+
+burstImage = ourCamera.TakePicture(pbrtCPScene, 'Burst',...
+    'numBurstFrames', 3, 'imageName','Burst Example');
+\end{matlabcode}
+\begin{matlaboutput}
+Warning: output directory does not exist yet
+Overwriting PBRT file C:\iset\iset3d\local\Cornell_BoxBunnyChart\tp194f733a_c799_408d_9788_ca8bd3303062\Cornell_Box_Multiple_Cameras_Bunny_charts.pbrt
+Elapsed time is 1.762001 seconds.
+*** Rendering time for Cornell_Box_Multiple_Cameras_Bunny_charts:  54.6 sec ***
+
+*** Rendering time for Cornell_Box_Multiple_Cameras_Bunny_charts_depth:  15.2 sec ***
+\end{matlaboutput}
+\begin{center}
+\includegraphics[width=\maxwidth{77.47114902157551em}]{figure_7.png}
+\end{center}
+\begin{matlaboutput}
+Docker container vistalab/pbrt-v3-spectral:latest
+Overwriting PBRT file C:\iset\iset3d\local\Cornell_BoxBunnyChart\Cornell_Box_Multiple_Cameras_Bunny_charts_depth.pbrt
+Docker command
+	docker run -ti --rm -w /Cornell_BoxBunnyChart -v C:/iset/iset3d/local/Cornell_BoxBunnyChart:/Cornell_BoxBunnyChart vistalab/pbrt-v3-spectral:latest pbrt --outfile renderings/Cornell_Box_Multiple_Cameras_Bunny_charts_depth.dat Cornell_Box_Multiple_Cameras_Bunny_charts_depth.pbrt
+*** Rendering time for Cornell_Box_Multiple_Cameras_Bunny_charts_depth:  22.6 sec ***
+
+  Reading image h=256 x w=256 x 31 spectral planes.
+Warning: output directory does not exist yet
+Overwriting PBRT file C:\iset\iset3d\local\Cornell_BoxBunnyChart\tp52796ff6_8c28_4aff_a976_301f97a1e972\Cornell_Box_Multiple_Cameras_Bunny_charts.pbrt
+Elapsed time is 1.992940 seconds.
+*** Rendering time for Cornell_Box_Multiple_Cameras_Bunny_charts:  54.1 sec ***
+
+*** Rendering time for Cornell_Box_Multiple_Cameras_Bunny_charts_depth:  14.6 sec ***
+Warning: output directory does not exist yet
+Overwriting PBRT file C:\iset\iset3d\local\Cornell_BoxBunnyChart\tp5e297efe_0533_4f12_873b_e6e63e411c6e\Cornell_Box_Multiple_Cameras_Bunny_charts.pbrt
+Elapsed time is 1.740420 seconds.
+*** Rendering time for Cornell_Box_Multiple_Cameras_Bunny_charts:  52.1 sec ***
+
+*** Rendering time for Cornell_Box_Multiple_Cameras_Bunny_charts_depth:  13.8 sec ***
+Warning: output directory does not exist yet
+Overwriting PBRT file C:\iset\iset3d\local\Cornell_BoxBunnyChart\tp3b5f48ee_1760_40dd_9fc3_f8de4d7a40b2\Cornell_Box_Multiple_Cameras_Bunny_charts.pbrt
+Elapsed time is 1.288727 seconds.
+*** Rendering time for Cornell_Box_Multiple_Cameras_Bunny_charts:  48.7 sec ***
+
+*** Rendering time for Cornell_Box_Multiple_Cameras_Bunny_charts_depth:  12.6 sec ***
+\end{matlaboutput}
+\begin{center}
+\includegraphics[width=\maxwidth{77.47114902157551em}]{figure_8.png}
+\end{center}
+\begin{matlaboutput}
+Depth 75.98 Defocus -0.01 (1 of 8)
+Depth 72.15 Defocus -0.01 (2 of 8)
+Depth 68.32 Defocus -0.01 (3 of 8)
+Depth 64.49 Defocus -0.02 (4 of 8)
+Depth 60.65 Defocus -0.02 (5 of 8)
+Depth 56.82 Defocus -0.02 (6 of 8)
+Depth 52.99 Defocus -0.02 (7 of 8)
+Depth 49.16 Defocus -0.02 (8 of 8)
+\end{matlaboutput}
+\begin{center}
+\includegraphics[width=\maxwidth{105.26843953838434em}]{figure_9.png}
+\end{center}
+\begin{matlaboutput}
+Depth 75.98 Defocus 2.55 (1 of 8)
+Depth 72.15 Defocus 2.55 (2 of 8)
+Depth 68.32 Defocus 2.55 (3 of 8)
+Depth 64.49 Defocus 2.55 (4 of 8)
+Depth 60.65 Defocus 2.55 (5 of 8)
+Depth 56.82 Defocus 2.55 (6 of 8)
+Depth 52.99 Defocus 2.54 (7 of 8)
+Depth 49.16 Defocus 2.54 (8 of 8)
+Depth 75.98 Defocus 5.09 (1 of 8)
+Depth 72.15 Defocus 5.09 (2 of 8)
+Depth 68.32 Defocus 5.09 (3 of 8)
+Depth 64.49 Defocus 5.09 (4 of 8)
+Depth 60.65 Defocus 5.08 (5 of 8)
+Depth 56.82 Defocus 5.08 (6 of 8)
+Depth 52.99 Defocus 5.08 (7 of 8)
+Depth 49.16 Defocus 5.08 (8 of 8)
+Depth 75.98 Defocus -0.01 (1 of 8)
+Depth 72.15 Defocus -0.01 (2 of 8)
+Depth 68.32 Defocus -0.01 (3 of 8)
+Depth 64.49 Defocus -0.02 (4 of 8)
+Depth 60.65 Defocus -0.02 (5 of 8)
+Depth 56.82 Defocus -0.02 (6 of 8)
+Depth 52.99 Defocus -0.02 (7 of 8)
+Depth 49.16 Defocus -0.02 (8 of 8)
+Depth 75.98 Defocus 2.55 (1 of 8)
+Depth 72.15 Defocus 2.55 (2 of 8)
+Depth 68.32 Defocus 2.55 (3 of 8)
+Depth 64.49 Defocus 2.55 (4 of 8)
+Depth 60.65 Defocus 2.55 (5 of 8)
+Depth 56.82 Defocus 2.55 (6 of 8)
+Depth 52.99 Defocus 2.54 (7 of 8)
+Depth 49.16 Defocus 2.54 (8 of 8)
+Depth 75.98 Defocus 5.09 (1 of 8)
+Depth 72.15 Defocus 5.09 (2 of 8)
+Depth 68.32 Defocus 5.09 (3 of 8)
+Depth 64.49 Defocus 5.09 (4 of 8)
+Depth 60.65 Defocus 5.08 (5 of 8)
+Depth 56.82 Defocus 5.08 (6 of 8)
+Depth 52.99 Defocus 5.08 (7 of 8)
+Depth 49.16 Defocus 5.08 (8 of 8)
+Depth 75.98 Defocus -0.01 (1 of 8)
+Depth 72.15 Defocus -0.01 (2 of 8)
+Depth 68.32 Defocus -0.01 (3 of 8)
+Depth 64.49 Defocus -0.02 (4 of 8)
+Depth 60.65 Defocus -0.02 (5 of 8)
+Depth 56.82 Defocus -0.02 (6 of 8)
+Depth 52.99 Defocus -0.02 (7 of 8)
+Depth 49.16 Defocus -0.02 (8 of 8)
+Depth 75.98 Defocus 2.55 (1 of 8)
+Depth 72.15 Defocus 2.55 (2 of 8)
+Depth 68.32 Defocus 2.55 (3 of 8)
+Depth 64.49 Defocus 2.55 (4 of 8)
+Depth 60.65 Defocus 2.55 (5 of 8)
+Depth 56.82 Defocus 2.55 (6 of 8)
+Depth 52.99 Defocus 2.54 (7 of 8)
+Depth 49.16 Defocus 2.54 (8 of 8)
+Depth 75.98 Defocus 5.09 (1 of 8)
+Depth 72.15 Defocus 5.09 (2 of 8)
+Depth 68.32 Defocus 5.09 (3 of 8)
+Depth 64.49 Defocus 5.09 (4 of 8)
+Depth 60.65 Defocus 5.08 (5 of 8)
+Depth 56.82 Defocus 5.08 (6 of 8)
+Depth 52.99 Defocus 5.08 (7 of 8)
+Depth 49.16 Defocus 5.08 (8 of 8)
+\end{matlaboutput}
+\begin{center}
+\includegraphics[width=\maxwidth{105.26843953838434em}]{figure_10.png}
+\end{center}
+\begin{matlabcode}
+imshow(burstImage);
+\end{matlabcode}
+\begin{center}
+\includegraphics[width=\maxwidth{105.26843953838434em}]{figure_11.png}
+\end{center}
+\begin{matlabcode}
+
+\end{matlabcode}
+
+
+\label{H_2FB7E334}
+\matlabheading{Add Some Camera Motion}
+
+\begin{par}
+\begin{flushleft}
+Note that we don't have a way to move the camera during frames (yet), so it only moves between frames. We also don't have a way to specify multiple cameras yet, so the first parameter is unused:
+\end{flushleft}
+\end{par}
+
+\begin{matlabcode}
+pbrtCPScene.cameraMotion = {{'unused', [1, 0, 0], [2, 2, 2]}};
+
+% now see what the burst looks like with the camera rotating and
+% translating slightly, perhaps mimicing a user's hand motion
+%finalImage = ourCamera.TakePicture(pbrtCPScene, 'Burst', 'numBurstFrames', 3, 'imageName','Burst with Camera Motion');
+%imtool(finalImage);
+
+\end{matlabcode}
+
+
+\label{H_F72A62BD}
+\matlabheading{Look at the changes we've made to our camera}
+
+\begin{matlabcode}
+cpCameraWindow(ourCamera, pbrtCPScene);
+\end{matlabcode}
+
+
+\label{H_CF496F15}
+\matlabheading{Working With ISET Scenes}
+
+\begin{par}
+\begin{flushleft}
+While to get a fully-simulated 3D scene we need to use PBRT to render a Recipe, we can also take advantage of the variety of ISET Scenes (saved in .MAT files, or already loaded into ISET). Using them we can still emulate camera motion by moving the scene. 
+\end{flushleft}
+\end{par}
+
+\begin{matlabcode}
+ourSceneFile = fullfile('Feng_Office-hdrs.mat');
+isetCIScene = cpScene('iset scene files', 'isetSceneFileNames', ourSceneFile, ...
+    'sceneLuminance', sceneLuminance);
+\end{matlabcode}
+\begin{matlaboutput}
+Reading multispectral data with mcCOEF.
+Saved using svd method
+\end{matlaboutput}
+\begin{matlabcode}
+
+% We can use the same Camera object if we want, but with this new scene.
+autoISETImage = ourCamera.TakePicture(isetCIScene, 'Auto',...
+    'imageName','ISET Scene in Auto Mode');
+imtool(autoISETImage); 
+\end{matlabcode}
+\begin{center}
+\includegraphics[width=\maxwidth{18.866031108881085em}]{figure_12.png}
+\end{center}
+\begin{matlabcode}
+
+% Set camera motion, which is simulated for iset scenes 
+% using scene motion
+isetCIScene.cameraMotion = {{'unused', [1, 0, 0], [2, 2, 2]}};
+
+% now see what the burst looks like with the the camera (scene) moving
+finalImage = ourCamera.TakePicture(isetCIScene, 'Burst', 'numBurstFrames', 3, 'imageName','ISET Burst with Camera Motion');
+imtool(finalImage);
+\end{matlabcode}
+\begin{center}
+\includegraphics[width=\maxwidth{18.866031108881085em}]{figure_13.png}
+\end{center}
+
+
+\label{H_E658986A}
+\matlabheading{ Working With Image Files}
+
+\begin{par}
+\begin{flushleft}
+More sophisticated computational imaging algorithms typically rely on large data sets of training and test images. Neither of those exist in pbrt or iset format, so we also support standard RGB image files (.jpg, .png, etc.) We currently don't have a way to simulate object motion for these files, but we do support camera motion through simulating by moving the scene. Here we show an image using default rendering, and then with some camera motion and a burst of images. Note the color artifacts, since the default camera adds photosite values together in the raw sensor, but since the image has shifted, colors aren't correctly aligned:
+\end{flushleft}
+\end{par}
+
+\begin{matlabcode}
+ourImageFile = 'eagle.jpg';
+imageCIScene = cpScene('images', 'imageFileNames', ourImageFile);
+% We can use the same cpCamera if we want
+autoImageCapture = ourCamera.TakePicture(imageCIScene, 'Auto',...
+    'imageName','Image File Captured in Auto Mode');
+imtool(autoImageCapture); 
+\end{matlabcode}
+\begin{center}
+\includegraphics[width=\maxwidth{12.042147516307075em}]{figure_14.png}
+\end{center}
+\begin{matlabcode}
+
+% Set camera motion, which is simulated for iset scenes 
+% using scene motion
+imageCIScene.cameraMotion = {{'unused', [1, 0, 0], [2, 2, 2]}};
+
+% now see what the burst looks like with the camera (scene) moving
+finalImage = ourCamera.TakePicture(imageCIScene, 'Burst', 'numBurstFrames', 3, 'imageName','Burst from Image File with Camera Motion');
+imtool(finalImage);
+\end{matlabcode}
+\begin{center}
+\includegraphics[width=\maxwidth{12.042147516307075em}]{figure_15.png}
+\end{center}
+
+
+\label{H_5726C606}
+\matlabheading{Using Pre-computed Scene and Object Motion}
+
+\begin{par}
+\begin{flushleft}
+If we have access to a series of frames that illustrate either camera or object motion, we want to be able to use them directly. A simple example might be a series of frames from a video. To do that we can pass them as an array, either of ISET scenes or simply as image files
+\end{flushleft}
+\end{par}
+
+\begin{matlabcode}
+burstImageFiles = {'Crane_01.jpg', 'Crane_02.jpg', 'Crane_03.jpg'};
+burstImagesCIScene = cpScene('images', 'imageFileNames', burstImageFiles, ...
+   'resolution',[256, 256]);
+% We can use the same cpCamera if we want
+autoImagesCapture = ourCamera.TakePicture(burstImagesCIScene, 'Auto',...
+    'imageName','Sequence of Image Files Captured in Auto Mode');
+imtool(autoImagesCapture); 
+\end{matlabcode}
+\begin{center}
+\includegraphics[width=\maxwidth{31.209232313095836em}]{figure_16.png}
+\end{center}
+\begin{matlabcode}
+
+% Note that we can't add our own camera or object motion here, as we are
+% simply using pre-computed scenes. Potentially we might want to support
+% additional camera motion options, though?
+
+% now see what the burst looks like with the camera (scene) moving
+burstImage = ourCamera.TakePicture(burstImagesCIScene, 'Burst', 'numBurstFrames', 3, 'imageName','Burst from Image File with Camera Motion');
+imtool(burstImage);
+\end{matlabcode}
+\begin{center}
+\includegraphics[width=\maxwidth{31.209232313095836em}]{figure_17.png}
+\end{center}
+
+
+\label{H_2E9A3CF7}
+\matlabheading{Generate a bracketed sequence from an image}
+
+\begin{par}
+\begin{flushleft}
+Not sure how useful this is, if the original image is already LDR. But if we get some .exr scenes, we could experiment with those.
+\end{flushleft}
+\end{par}
+
+\begin{matlabcode}
+hdrBaseFile = {'BanteaySrei_01.jpg'};
+hdrImageCIScene = cpScene('images', 'imageFileNames', hdrBaseFile, ...
+   'resolution',[256, 256]);
+% We can use the same cpCamera if we want
+hdrImageCapture = ourCamera.TakePicture(hdrImageCIScene, 'HDR',...
+    'imageName','Sequence of Image Files Captured in HDR Mode');
+imtool(hdrImageCapture); 
+\end{matlabcode}
+\begin{center}
+\includegraphics[width=\maxwidth{31.209232313095836em}]{figure_18.png}
+\end{center}
+
+\label{H_A4E8160D}
+\matlabheading{Using previously-captured Bracketed (HDR) Photos}
+
+\begin{par}
+\begin{flushleft}
+We need to decide what to do in this case. The scene has already been captured with specific parameters that differ per frame, so re-capturing gets a bit tricky. Do we use the same exposure times but then "trick" our HDR algorithm by replacing those with the ones from the original photos? Or do something else?
+\end{flushleft}
+\end{par}
+
+\begin{matlabcode}
+% hdrImageFiles = {'BanteaySrei_01.jpg', 'BanteaySrei_02.jpg', 'BanteaySrei_03.jpg'};
+% hdrImagesCIScene = cpScene('images', 'imageFileNames', hdrImageFiles, ...
+%    'resolution',[256, 256]);
+% % We can use the same cpCamera if we want
+% hdrImagesCapture = ourCamera.TakePicture(hdrImagesCIScene, 'HDR',...
+%     'imageName','Sequence of Image Files Captured in HDR Mode');
+% imtool(hdrImagesCapture); 
+\end{matlabcode}
+
+
+\label{H_9966ADC4}
+\matlabheading{Test Focus Stacking code path}
+
+\begin{par}
+\begin{flushleft}
+This doesn't work yet, as we have weird sizing issues with lens files, and trying to use depth for the current bunny scene isn't working because sizes are wrong. Need to use the new bunny asset once we figure out how, and have Brian walk us through lens files.
+\end{flushleft}
+\end{par}
+
+\begin{matlabcode}
+%stackedImage = ourCamera.TakePicture(pbrtCIScene, 'FocusStack',...
+%    'imageName','Pretend Stack');
+%imtool(stackedImage);
+\end{matlabcode}
+
+
+\label{H_239ED718}
+\matlabheading{Print out some timing stats}
+
+\begin{par}
+\begin{flushleft}
+Just for human consumption
+\end{flushleft}
+\end{par}
+
+\begin{matlabcode}
+tTotal = toc(getpref('ISET','tStart'));
+afterTime = cputime;
+beforeTime = getpref('ISET', 'benchmarkstart', 0);
+glData = opengl('data');
+disp(strcat("cpCam ran  on: ", glData.Vendor, " ", glData.Renderer, "with driver version: ", glData.Version)); 
+\end{matlabcode}
+\begin{matlaboutput}
+cpCam ran  on: NVIDIA Corporation Quadro T2000/PCIe/SSE2with driver version: 4.6.0 NVIDIA 510.06
+\end{matlaboutput}
+\begin{matlabcode}
+disp(strcat("cpCam ran  in: ", string(afterTime - beforeTime), " seconds of CPU time."));
+\end{matlabcode}
+\begin{matlaboutput}
+cpCam ran  in: 1444.2344 seconds of CPU time.
+\end{matlaboutput}
+\begin{matlabcode}
+disp(strcat("cpCam ran  in: ", string(tTotal), " total seconds."));
+\end{matlabcode}
+\begin{matlaboutput}
+cpCam ran  in: 1347.802 total seconds.
+\end{matlaboutput}
+
+\end{document}

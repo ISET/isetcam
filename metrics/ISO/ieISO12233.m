@@ -87,12 +87,13 @@ if ~exist('masterRect','var')
 end
 
 %% Get the bar image ready.
+
 % These data are demosaicked but not processed more.
 barImage = vcGetROIData(ip,masterRect,'sensor space');
 c = masterRect(3)+1;
 r = masterRect(4)+1;
-barImage = reshape(barImage,r,c,3);
-% vcNewGraphWin; imagesc(barImage(:,:,1)); axis image; colormap(gray(64));
+barImage = reshape(barImage,r,c,[]);
+% ieNewGraphWin; imagesc(barImage(:,:,1)); axis image; colormap(gray(64));
 
 % Run the ISO 12233 code.
 dx = sensorGet(sensor,'pixel width','mm');

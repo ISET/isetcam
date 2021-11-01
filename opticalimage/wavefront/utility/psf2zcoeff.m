@@ -1,6 +1,6 @@
 function err = psf2zcoeff(zcoeffs,psfTarget,pupilSizeMM,zpupilDiameterMM,...
     pupilPlaneSizeMM, thisWaveUM, nPixels)
-% Error function for estimationg Zernike Coeffs from a psf
+% Error function for estimating Zernike Coeffs from a psf
 %
 % Syntax
 %   This function is called as part of an fminsearch procedure.  See the
