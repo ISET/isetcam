@@ -199,18 +199,21 @@ switch sensorType
         sensor = sensorLightField(oi);
         sensor = sensorSet(sensor,'name',oiGet(oi,'name'));
     case {'dualpixel'}
-        % sensor = sensorCreate('dual pixel',[], rowcol);
+        % sensor = sensorCreate('dual pixel',[], rowcol,halfPixelWidth_micron);
         
         % Default original sensor
         sensor = sensorCreate;
+        halfPixelWidth_micron = varargin{2}; % The is the width of 1 of the two subpixels (hence half)
         
         % We make the height bigger than the width
-        sz = sensorGet(sensor,'pixel size');
-        sensor = sensorSet(sensor,'pixel width',sz(2)/2);
+        sensor = sensorSet(sensor,'pixel height',2*halfPixelWidth_micron);
+        sensor = sensorSet(sensor,'pixel width',halfPixelWidth_micron);
+
         
         % Double the number of columns
-        rowcol = sensorGet(sensor,'size');
-        sensor = sensorSet(sensor,'size',[rowcol(1)*2, rowcol(2)*4]);
+        rowcol= varargin{1}
+        sensor = sensorSet(sensor,'size',[rowcol(1), 2*rowcol(2)]);
+
 
         % Set the CFA pattern accounting for the new dual pixel
         % architecture 
