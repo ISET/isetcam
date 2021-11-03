@@ -1,6 +1,7 @@
 function [pData, mLocs, pSize, cornerPoints, pStd] = ...
     macbethSelect(obj,showSelection,fullData,cornerPoints)
-%Identify Macbeth color checker patch positions from window image
+% Deprecated:  Use chartXXX routines
+% Identify Macbeth color checker patch positions from window image
 %
 % Synopsis
 %  [pData mLocs, pSize, cornerPoints, pStd] =
