@@ -116,7 +116,7 @@ if ieNotDefined('pixel')
     sensor = sensorSet(sensor,'size',sensorFormats('qqcif'));
 elseif isfield(pixel,'type') && isequal(pixel.type,'pixel')
     sensor = sensorSet(sensor,'pixel',pixel);
-elseif isequal('lightfield',ieParamFormat(sensorType)) && isequal(pixel.type,'opticalimage')
+elseif (isequal('lightfield',ieParamFormat(sensorType)) || isequal('dualpixel',ieParamFormat(sensorType))) && isequal(pixel.type,'opticalimage')
     % Special case of a light field camera
     varargin{1} = pixel;
     pixel  = pixelCreate('default');
@@ -205,25 +205,32 @@ switch sensorType
         sensor = sensorLightField(oi);
         sensor = sensorSet(sensor,'name',oiGet(oi,'name'));
     case {'dualpixel'}
-        % sensor = sensorCreate('dual pixel',[], rowcol,halfPixelWidth_micron);
+        % sensor = sensorCreate('dual pixel',oi, rowcol);
+        oi = varargin{1}
+        ss_meters = oiGet(oi,'sample spacing','m');
         
         % Default original sensor
         sensor = sensorCreate;
-        halfPixelWidth_micron = varargin{2}; % The is the width of 1 of the two subpixels (hence half)
+        
+      %  halfPixelWidth_micron = varargin{2}; % The is the width of 1 of the two subpixels (hence half)
         
         % We make the height bigger than the width
-        sensor = sensorSet(sensor,'pixel height',2*halfPixelWidth_micron);
-        sensor = sensorSet(sensor,'pixel width',halfPixelWidth_micron);
+        %sensor = sensorSet(sensor,'pixel size same fill factor',ss(1));
+        sensor = sensorSet(sensor,'pixel height',2*ss_meters(1));
+        sensor = sensorSet(sensor,'pixel width',ss_meters(1));
+    %    fillfactor=1;
 
+       % sensor = pixelCenterFillPD(sensor, fillfactor);
         
         % Double the number of columns
-        rowcol= varargin{1}
+        rowcol= varargin{2}
         sensor = sensorSet(sensor,'size',[rowcol(1), 2*rowcol(2)]);
 
 
         % Set the CFA pattern accounting for the new dual pixel
         % architecture 
         sensor = sensorSet(sensor,'pattern',[2 2 1 1; 3 3 2 2]);
+
         
     case {'mt9v024'}
         % ON 6um sensor.  It can be mono, rgb, or rccc
