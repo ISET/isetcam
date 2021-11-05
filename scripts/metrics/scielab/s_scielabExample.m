@@ -21,8 +21,8 @@ ieInit
 %% Overview of the function call
 
 % Set up to read an image and a JPEG compressed version of it
-file1 = fullfile(isetRootPath, 'data','images','RGB','hats.jpg');
-file2 = fullfile(isetRootPath, 'data','images','RGB','hatsC.jpg');
+file1 = fullfile(isetRootPath, 'data','images','rgb','hats.jpg');
+file2 = fullfile(isetRootPath, 'data','images','rgb','hatsC.jpg');
 
 % We will treat the two images as if they are on a CRT display seen from 12
 % inches.
