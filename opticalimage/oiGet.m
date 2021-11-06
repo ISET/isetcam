@@ -527,7 +527,7 @@ switch oType
                 % Computed from sample size times number of rows.
                 % Sample size is computed from the width.
                 % oiGet(oi,'height','microns')
-                val = oiGet(oi,'sampleSize')*oiGet(oi,'rows');
+                val = oiGet(oi,'sample size')*oiGet(oi,'rows');
                 if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
             case {'width'}
                 % oiGet(oi,'width',units)
@@ -536,7 +536,10 @@ switch oType
                 %
                 % Width in meters is default - We need to handle 'skip' case
                 
-                d   = oiGet(oi,'focal plane distance');  % Distance from lens to image
+                % TG/BW changed this from 'focal plane distance' to
+                % 'optics focal length' (Nov 5 2021).  This might
+                % cause various test failures.
+                d   = oiGet(oi,'optics focal length');   % Distance from lens to image
                 fov = oiGet(oi,'wangular');              % Field of view (horizontal, width)
                 
                 % fov   = 2 * atand((0.5*width)/d) % Opposite over adjacent

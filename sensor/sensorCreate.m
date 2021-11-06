@@ -116,7 +116,9 @@ if ieNotDefined('pixel')
     sensor = sensorSet(sensor,'size',sensorFormats('qqcif'));
 elseif isfield(pixel,'type') && isequal(pixel.type,'pixel')
     sensor = sensorSet(sensor,'pixel',pixel);
-elseif (isequal('lightfield',ieParamFormat(sensorType)) || isequal('dualpixel',ieParamFormat(sensorType))) && isequal(pixel.type,'opticalimage')
+elseif (isequal('lightfield',ieParamFormat(sensorType)) || ...
+        isequal('dualpixel',ieParamFormat(sensorType))) && ...
+        isequal(pixel.type,'opticalimage')
     % Special case of a light field camera
     varargin{1} = pixel;
     pixel  = pixelCreate('default');
@@ -189,7 +191,8 @@ switch sensorType
         %   sensorCreate('light field',pixel,oi)
         %
         if isempty(varargin)
-            %
+            % Sometimes we seem to let people put in an oi rather than
+            % pixel into this slight.
             if checkfields(pixel,'type') && strcmp(pixel.type,'opticalimage')
                 oi = pixel;
             else
@@ -205,27 +208,33 @@ switch sensorType
         sensor = sensorLightField(oi);
         sensor = sensorSet(sensor,'name',oiGet(oi,'name'));
     case {'dualpixel'}
-        % sensor = sensorCreate('dual pixel',oi, rowcol);
-        oi = varargin{1}
+        % sensor = sensorCreate('dual pixel',[], oi, nMicrolens);
+        %   
+        %   nMicrolens is the row and col number of the microlens
+        %   array 
+        %
+        % We set the pixel size to match the spatial sampling of the
+        % optical image in the light field case.  In the dual pixel
+        % case we make a pixel whose height (or width?) is double the
+        % size of the sampling.
+        %
+        % In the future: We should be able to specify the orientation
+        % (h or v) of the dual pixels.
+        %
+        
+        oi = varargin{1};
         ss_meters = oiGet(oi,'sample spacing','m');
         
         % Default original sensor
         sensor = sensorCreate;
         
-      %  halfPixelWidth_micron = varargin{2}; % The is the width of 1 of the two subpixels (hence half)
-        
         % We make the height bigger than the width
-        %sensor = sensorSet(sensor,'pixel size same fill factor',ss(1));
         sensor = sensorSet(sensor,'pixel height',2*ss_meters(1));
         sensor = sensorSet(sensor,'pixel width',ss_meters(1));
-    %    fillfactor=1;
-
-       % sensor = pixelCenterFillPD(sensor, fillfactor);
         
         % Double the number of columns
-        rowcol= varargin{2}
-        sensor = sensorSet(sensor,'size',[rowcol(1), 2*rowcol(2)]);
-
+        nMicrolens = varargin{2};
+        sensor = sensorSet(sensor,'size',[nMicrolens(1), 2*nMicrolens(2)]);
 
         % Set the CFA pattern accounting for the new dual pixel
         % architecture 
