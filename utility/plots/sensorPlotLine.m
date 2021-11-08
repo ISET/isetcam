@@ -234,7 +234,7 @@ switch lower(sORt)
         ystr = sprintf('%s',dataType); ylabel(ystr);
         tickLocs = ieChooseTickMarks(pos);
         set(gca,'xtick',tickLocs);
-        grid on; uData.pos = pos;uData.data = data;
+        grid on; uData.pixPos = pos;uData.pixData = data;
         
     case {'transform','fourier','fourierdomain','fft'}
         % The data come in specified in microns.  We convert to millimeters
