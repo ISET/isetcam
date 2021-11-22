@@ -1,4 +1,4 @@
-function [results, fitme, esf, h] = ISO12233(barImage, deltaX, weight, plotOptions)
+function [results, fitme, esf, h, c] = ISO12233(barImage, deltaX, weight, plotOptions)
 % ISO 12233 (slanted bar) spatial frequency response (SFR) analysis.
 %
 %  [results, fitme, esf, h] = ISO12233(barImage, deltaX, weight,plotOptions);
@@ -306,6 +306,7 @@ for color=1:nWave
     c = win.*c;    % vcNewGraphWin; plot(c)
     
     % Transform, scale %% The FFT of the point spread
+    % c is the line spread function
     temp = abs(fft(c, nn));    % vcNewGraphWin; plot(temp)
     mtf(1:nn2, color) = temp(1:nn2)/temp(1);
 end

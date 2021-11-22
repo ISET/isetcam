@@ -1,4 +1,4 @@
-function mtfData = ieISO12233(ip,sensor,plotOptions,masterRect)
+function [mtfData, lsf] = ieISO12233(ip,sensor,plotOptions,masterRect)
 %Calculate ISO12233 MTF from an image processor and sensor
 %
 % Syntax
@@ -18,6 +18,7 @@ function mtfData = ieISO12233(ip,sensor,plotOptions,masterRect)
 % Returns
 %  mtfData - a structure with several slots that includes the MTF data,
 %            the rect used for tha analysis.
+%  lsf     - line spread function 
 %
 % This routine tries to find a good rectangular region for the slanted
 % bar MTF calculation. It then applies the ISO12233 function to the
@@ -46,7 +47,7 @@ function mtfData = ieISO12233(ip,sensor,plotOptions,masterRect)
   oi = oiCreate; oi = oiCompute(oi,scene);
   sensor = sensorCreate;
   % Black edge.
-  sensor = sensorSetSizeToFOV(sensor,1.5*sceneGet(scene,'fov'));
+  sensor = sensorSetSizeToFOV(sensor,1.5*sceneGet(scene,'fov'), oi);
   sensor = sensorCompute(sensor,oi);
   ip = ipCreate; ip = ipCompute(ip,sensor);
   ipWindow(ip);
@@ -99,7 +100,7 @@ barImage = reshape(barImage,r,c,[]);
 dx = sensorGet(sensor,'pixel width','mm');
 
 % ISO12233(barImage, deltaX, weight, plotOptions)
-mtfData = ISO12233(barImage, dx, [], plotOptions);
+[mtfData, ~, ~, ~, lsf] = ISO12233(barImage, dx, [], plotOptions);
 mtfData.rect = masterRect; % [masterRect(2) masterRect(1) masterRect(4) masterRect(3)];
 
 end
