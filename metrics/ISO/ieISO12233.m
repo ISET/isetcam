@@ -57,6 +57,11 @@ function [mtfData, lsf] = ieISO12233(ip,sensor,plotOptions,masterRect)
   mtfData = ieISO12233(ip,sensor);
   ieDrawShape(ip,'rectangle',mtfData.rect);
 
+  ieNewGraphWin; 
+  plot(mtfData.lsfx*1000, mtfData.lsf);
+  xlabel('Position (um)'); ylabel('Relative intensity');
+  grid on;
+
   % If the sensor is in the database, it will be used.
   ieAddObject(sensor);
   mtf = ieISO12233(ip);
@@ -101,7 +106,7 @@ barImage = reshape(barImage,r,c,[]);
 dx = sensorGet(sensor,'pixel width','mm');
 
 % ISO12233(barImage, deltaX, weight, plotOptions)
-[mtfData, ~, ~, ~, lsf] = ISO12233(barImage, dx, [], plotOptions);
+mtfData = ISO12233(barImage, dx, [], plotOptions);
 mtfData.rect = masterRect; % [masterRect(2) masterRect(1) masterRect(4) masterRect(3)];
 
 end

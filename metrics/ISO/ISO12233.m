@@ -1,10 +1,11 @@
-function [results, fitme, esf, h, lsf] = ISO12233(barImage, deltaX, weight, plotOptions)
+function [results, fitme, esf, h] = ISO12233(barImage, deltaX, weight, plotOptions)
 % ISO 12233 (slanted bar) spatial frequency response (SFR) analysis.
 %
-%  [results, fitme, esf, h, lsf] = ISO12233(barImage, deltaX, weight,plotOptions);
+%  [results, fitme, esf, h] = ISO12233(barImage, deltaX, weight,plotOptions);
 %
 % Slanted-edge and color mis-registration analysis.
 %
+% Inputs
 % barImage:  The RGB image of the slanted bar
 % deltaX:    The sensor sample spacing in millimeters (expected). It
 %   is possible to send in a display spacing in dots per inch (dpi), in
@@ -20,6 +21,12 @@ function [results, fitme, esf, h, lsf] = ISO12233(barImage, deltaX, weight, plot
 %
 % fitme:  The full linear fit to something
 % esf:    Not sure
+%
+% Outputs:
+%   results - THis is a struct that includes the MTF and LSF data.
+%   fitme -
+%   esf -
+%   h - Figure handle
 %
 % Notes:
 %   1 cycle on the sensor has frequency: 1/sensorGet(sensor,'width','mm')

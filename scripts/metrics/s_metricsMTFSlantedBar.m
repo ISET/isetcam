@@ -133,14 +133,17 @@ barImage = reshape(barImage,r,c,3);
 dx = sensorGet(sensor,'pixel width','mm');
 
 % Run the code, and plot
-r = ISO12233(barImage, dx, [], 'all');
+mtfData = ISO12233(barImage, dx, [], 'all');
 
-%% Get the MTF and LSF data
+%% You can also get the MTF and LSF data from figure
 
 % The mtfData variable contains all the information plotted in this figure.
 % We graph the results again just to illustrate what is in the data
 % structure.
-mtfData = get(gcf,'userdata');
+% 
+%  mtfData = get(gcf,'userdata');
+%
+
 
 %% Plot the MTF
 ieNewGraphWin;
