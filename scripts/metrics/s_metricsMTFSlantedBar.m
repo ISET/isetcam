@@ -66,7 +66,7 @@ sensorC = sensorSet(sensorC,'autoExposure',1);
 % of captured images. Set the rendering properties for the monochrome
 % imager. The default does not color convert or color balance, so it is
 % appropriate.
-vci = ipCreate;
+ip = ipCreate;
 
 % To see the scene, optical image, sensor or virtual camera image in the
 % GUI, use these commands
@@ -90,14 +90,14 @@ vci = ipCreate;
 
 sensor = sensorCompute(sensorC,oi);
 vcReplaceObject(sensor);
-vci = ipCompute(vci,sensor);
-vcReplaceObject(vci); ipWindow;
+ip = ipCompute(ip,sensor);
+vcReplaceObject(ip); ipWindow;
 
 % Find a good rectangle
-masterRect = ISOFindSlantedBar(vci);
-h = ieDrawShape(vci,'rectangle',masterRect);
+masterRect = ISOFindSlantedBar(ip);
+h = ieDrawShape(ip,'rectangle',masterRect);
 
-barImage = vcGetROIData(vci,masterRect,'results');
+barImage = vcGetROIData(ip,masterRect,'results');
 c = masterRect(3)+1;
 r = masterRect(4)+1;
 barImage = reshape(barImage,r,c,3);
@@ -110,20 +110,20 @@ ISO12233(barImage, dx)
 
 %% Should be the same, but from the ie routine
 
-ieISO12233(vci);
+ieISO12233(ip);
 
 %% Now for a monochrome sensor
 
 sensor = sensorCompute(sensorM,oi);
 vcReplaceObject(sensor);
 
-vci = ipCompute(vci,sensor);
-vcReplaceObject(vci); ipWindow;
-h = ieDrawShape(vci,'rectangle',masterRect);
+ip = ipCompute(ip,sensor);
+vcReplaceObject(ip); ipWindow;
+h = ieDrawShape(ip,'rectangle',masterRect);
 % To get rid of the bar, use:  delete(h)
 % or just refresh
 
-barImage = vcGetROIData(vci,masterRect,'results');
+barImage = vcGetROIData(ip,masterRect,'results');
 c = masterRect(3)+1;
 r = masterRect(4)+1;
 barImage = reshape(barImage,r,c,3);
@@ -133,16 +133,17 @@ barImage = reshape(barImage,r,c,3);
 dx = sensorGet(sensor,'pixel width','mm');
 
 % Run the code, and plot
-ISO12233(barImage, dx, [], 'all');
+r = ISO12233(barImage, dx, [], 'all');
 
-%% Plot MTF data
+%% Get the MTF and LSF data
 
 % The mtfData variable contains all the information plotted in this figure.
 % We graph the results again just to illustrate what is in the data
 % structure.
 mtfData = get(gcf,'userdata');
 
-vcNewGraphWin;
+%% Plot the MTF
+ieNewGraphWin;
 h = plot(mtfData.freq,mtfData.mtf,'-k');
 hold on
 nfreq = mtfData.nyquistf;
@@ -152,5 +153,12 @@ xlabel('lines/mm');
 ylabel('Relative amplitude');
 title('MTF');
 hold off; grid on
+
+%%
+ieNewGraphWin;
+plot(mtfData.lsfx*1000, mtfData.lsf);
+xlabel('Position (um)'); ylabel('Relative intensity');
+grid on
+
 
 %% END

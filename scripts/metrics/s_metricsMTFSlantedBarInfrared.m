@@ -157,14 +157,15 @@ ieAddObject(sensor);
 ip = ipCompute(ip,sensor);
 
 % Compute the MTF and the Linespread function
-[mtf, lsf, xlsf] = ieISO12233(ip);
+mtf = ieISO12233(ip);
 
 ieNewGraphWin;
-plot(xlsf, lsf);
+mtf.lsfx = mtf.lsfx*1000;  % Convert to microns
+plot(mtf.lsfx, mtf.lsf);
 xlabel('Position (um)'); ylabel('Relative intensity'); grid on;
-dxum = sensorGet(sensor,'pixel width','um');
-nSteps = 10;
-set(gca,'xlim',[-nSteps*dxum nSteps*dxum],'xtick',[-nSteps*dxum:(dxum):nSteps*dxum]);
+dxum = dxmm*1000;
+mxmn = 30;
+set(gca,'xlim',[-mxmn mxmn]);
 
 % Changed from 77 to 75 on Nov. 11, 2019.  This was part of a fix of the
 % ISOFindSlantedBar code that put the rect more into the center of the
@@ -173,8 +174,5 @@ assert(abs(mtf.mtf50 - 75) <= 3);
 
 ipWindow(ip);
 h = ieDrawShape(ip,'rectangle',mtf.rect);
-
-
-% The highest spatial frequency (cy/mm) needs 2 samples
 
 %% END

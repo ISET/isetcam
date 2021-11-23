@@ -1,8 +1,8 @@
-function [mtfData, lsf, lsfSpacing] = ieISO12233(ip,sensor,plotOptions,masterRect)
+function [mtfData, lsf] = ieISO12233(ip,sensor,plotOptions,masterRect)
 %Calculate ISO12233 MTF from an image processor and sensor
 %
 % Syntax
-%   [mtfData, lsf, lsfSpacing] = ieISO12233(ip,sensor,plotOptions);
+%   [mtfData, lsf] = ieISO12233(ip,sensor,plotOptions);
 %
 % Required inputs
 %   ip - ISET image processor structure containing a slanted edge .
@@ -16,27 +16,27 @@ function [mtfData, lsf, lsfSpacing] = ieISO12233(ip,sensor,plotOptions,masterRec
 %   plotOptions - 'all', 'luminance', or 'none'
 %
 % Returns
-%  mtfData    - a structure with several slots that includes the MTF data,
-%               the rect used for tha analysis.
+%  mtfData    - a structure with several slots that includes the MTF
+%      data, the LSF data, the rect used for tha analysis, and some
+%      summary statistics
 %  lsf        - line spread function
-%  lsfSpacing - x-values of the LSF (um).  Centered around 0.
 %
-% This routine tries to find a good rectangular region for the slanted
-% bar MTF calculation. It then applies the ISO12233 function to the
-% data from the edge.  The routine fails when it cannot automatically
-% identify an appropriate slanted bar region.
+% Description:
 %
-% The sensor pixel size is needed.  If the sensor is not sent in as a
-% parameter, then we look for the currently selected sensor in the
-% database. In the future, we should allow a dx in millimeters to be
-% sent in, rather than the whole structure.  Also, we should allow a
-% rect to be selected visually by the user.
+%  This routine tries to find a good rectangular region for the slanted
+%  bar MTF calculation. It then applies the ISO12233 function to the
+%  data from the edge.  The routine fails when it cannot automatically
+%  identify an appropriate slanted bar region.
 %
-% See also:  ISO12233, ISOFindSlantedBar
+%  The sensor pixel size is needed.  If the sensor is not sent in as a
+%  parameter, then we look for the currently selected sensor in the
+%  database. In the future, we should allow a dx in millimeters to be
+%  sent in, rather than the whole structure.  Also, we should allow a
+%  rect to be selected visually by the user.
 %
-% See code for examples
+% See also:  
+%   ISO12233, ISOFindSlantedBar, s_metricsMTFSlantedBar
 %
-% Copyright Imageval, LLC 2015
 
 
 % Examples:
@@ -103,13 +103,6 @@ dx = sensorGet(sensor,'pixel width','mm');
 % ISO12233(barImage, deltaX, weight, plotOptions)
 [mtfData, ~, ~, ~, lsf] = ISO12233(barImage, dx, [], plotOptions);
 mtfData.rect = masterRect; % [masterRect(2) masterRect(1) masterRect(4) masterRect(3)];
-
-% Centered on zero.  In microns.   Logic is that the spatial frequency
-% is in cycles/mm.  The highest spatial frequency requires two
-% samples.  So the spacing must half of the shortest spatial wavelength.
-lsfSpacing = 0.5 * (1/max(mtfData.freq));       % In millimeters
-lsfSpacing = (0:numel(lsf)-1)*lsfSpacing*1000; % All the position, in microns
-lsfSpacing = lsfSpacing - mean(lsfSpacing);    % Center around zero
 
 end
 

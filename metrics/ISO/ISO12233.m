@@ -1,7 +1,7 @@
-function [results, fitme, esf, h, c] = ISO12233(barImage, deltaX, weight, plotOptions)
+function [results, fitme, esf, h, lsf] = ISO12233(barImage, deltaX, weight, plotOptions)
 % ISO 12233 (slanted bar) spatial frequency response (SFR) analysis.
 %
-%  [results, fitme, esf, h] = ISO12233(barImage, deltaX, weight,plotOptions);
+%  [results, fitme, esf, h, lsf] = ISO12233(barImage, deltaX, weight,plotOptions);
 %
 % Slanted-edge and color mis-registration analysis.
 %
@@ -34,7 +34,9 @@ function [results, fitme, esf, h, c] = ISO12233(barImage, deltaX, weight, plotOp
 %   results.freq = results.freq*lpm2cpd;
 %
 % Run like this
-%   ISO12233;
+%
+%     ISO12233;
+%
 % You are prompted for a bar file and other parameters:
 %
 % Reference
@@ -42,31 +44,9 @@ function [results, fitme, esf, h, c] = ISO12233(barImage, deltaX, weight, plotOp
 %  12 August 2003, Copyright (c) International Imaging Industry Association
 %  Substantially re-written by ImagEval Consulting, LLC
 %
-% See also: ieISO12233, ISOFindSlantedBar
+% See also:
+%   ieISO12233, ISOFindSlantedBar, s_metricsMTFSlantedBar
 %
-% Copyright ImagEval Consultants, LLC, 2005.
-
-% Examples:
-%{
-  % Interactive usage
-  ISO12233;
-   
-  %
-  deltaX = 0.006; % Six micron pixel
-  [results, fitme, esf] = ISO12233([],deltaX,[]);
-
-  deltaX = 90; % Dots per inch.  Hunh?
-  [results, fitme, esf] = ISO12233([],deltaX,[]);
-
-  %The whole thing and cpd assuming a 1m viewing distance
-  rectMTF    = [xmin ymin width height];
-  c = rectMTF(3)+1; r = rectMTF(4)+1;
-  roiMTFLocs = ieRect2Locs(rectMTF);
-  barImage   = vcGetROIData(vciBlurred,roiMTFLocs,'results');
-  barImage = reshape(barImage,r,c,3);
-  wgts = [ 0.3 0.6 0.1];
-  [results, fitme, esf] = ISO12233(barImage,deltaX,wgts,'luminance');
-%}
 
 % PROGRAMMING TODO:
 %  Rather than decode pixelWidth and dpi based on the value, we should
@@ -177,12 +157,12 @@ for color=1:nWave                       % Loop for each color
     %     if nWave == 1, pname = ' ';
     %     else pname =[' Red ' 'Green'  'Blue ' ' Lum '];
     %     end
-    c = deriv1(barImage(:,:,color), nRow, nCol, fil1);
+    lsf = deriv1(barImage(:,:,color), nRow, nCol, fil1);
     % vcNewGraphWin; imagesc(c); colormap(gray(64))
     % compute centroid for derivative array for each line in ROI. NOTE WINDOW array 'win'
     for n=1:nRow
         % -0.5 shift for FIR phase
-        loc(color, n) = centroid( c(n, 1:nCol )'.*win1) - 0.5;
+        loc(color, n) = centroid( lsf(n, 1:nCol )'.*win1) - 0.5;
     end
     % clear c
     
@@ -191,7 +171,7 @@ for color=1:nWave                       % Loop for each color
     for n=1:nRow
         place(n) = fitme(color,2) + fitme(color,1)*n;
         win2 = ahamming(nCol, place(n));
-        loc(color, n) = centroid( c(n, 1:nCol )'.*win2) -0.5;
+        loc(color, n) = centroid( lsf(n, 1:nCol )'.*win2) -0.5;
     end
     
     fitme(color,:) = findedge(loc(color,:), nRow);
@@ -295,19 +275,19 @@ for color=1:nWave
     esf(:,color) = point;  % Not sure what esf stands for. Estimated spatial frequency?
     
     % compute first derivative via FIR (1x3) filter fil
-    c = deriv1(point', 1, nn, fil2);  % vcNewGraphWin; plot(c)
-    c = c';
-    mid = centroid(c);
-    temp = cent(c, round(mid));       % shift array so it is centered
-    c = temp;
+    lsf = deriv1(point', 1, nn, fil2);  % vcNewGraphWin; plot(c)
+    lsf = lsf';
+    mid = centroid(lsf);
+    temp = cent(lsf, round(mid));       % shift array so it is centered
+    lsf = temp;
     clear temp;
     
     % apply window (symmetric Hamming)
-    c = win.*c;    % vcNewGraphWin; plot(c)
+    lsf = win.*lsf;    % vcNewGraphWin; plot(c)
     
     % Transform, scale %% The FFT of the point spread
     % c is the line spread function
-    temp = abs(fft(c, nn));    % vcNewGraphWin; plot(temp)
+    temp = abs(fft(lsf, nn));    % vcNewGraphWin; plot(temp)
     mtf(1:nn2, color) = temp(1:nn2)/temp(1);
 end
 
@@ -332,9 +312,17 @@ end
 
 results.freq = freq(1:nn2out);
 results.mtf  = mtf(1:nn2out,:);
-results.nyquistf = nfreq;
-lumMTF = results.mtf(:,end);
+results.nyquistf = nfreq;   % cyc/mm
+results.lsf = lsf;
 
+% Create the spatial samples for the linespread.
+x = (1:numel(lsf)); x = x - mean(x);
+% The highest spatial frequency needs to samples.  So there are two
+% samples per the wavelength of the highest frequency.
+x = x * 0.5 * (1/max(results.freq(:)));
+results.lsfx = x;  % mm
+
+lumMTF = results.mtf(:,end);
 belowNyquist = (results.freq < nfreq);
 
 % Sometimes, if the image is very noisy, lumMTF has a number of NaNs. We
@@ -347,7 +335,7 @@ if ~isnan(lumMTF)
     %   Find the below-nyquist freq closest to an MTF value of 0.5
     iFreq = 0:0.2:results.nyquistf;
     iLumMTF = interp1(results.freq(belowNyquist),lumMTF(belowNyquist),iFreq);
-    [v,idx] = min(abs(iLumMTF - 0.5));
+    [~,idx] = min(abs(iLumMTF - 0.5));
     results.mtf50 = iFreq(idx);
 else
     fprintf('NaN lumMTF values.  No plot is generated.\n');
@@ -366,7 +354,7 @@ end
 switch plotOptions
     case 'all'
         % Set data into the figure
-        h = vcNewGraphWin;
+        h = ieNewGraphWin;
         set(h,'userdata',results);
         % Draw the luminance term
         p = plot(freq( 1:nn2out), mtf(1:nn2out, 1), sym{1});
@@ -434,7 +422,7 @@ switch plotOptions
         error('Unknown plotOptions: %s\n',plotOptions);
 end
 
-return;
+end
 
 %---------------------------------------------------
 % ISO 12233 subroutines
@@ -454,7 +442,7 @@ switch (lower(class(tempBarImage)))
 end
 barImage = getroi(tempBarImage);
 
-return;
+end
 
 %----------------------------------------------------
 function [data] = ahamming(n, mid)
@@ -477,7 +465,7 @@ for i = 1:n
     arg = i-mid;
     data(i) = 0.54 + 0.46*cos( pi*arg/wid );
 end
-return;
+end
 
 %----------------------------------------------------
 function [b] = cent(a, center)
@@ -513,6 +501,8 @@ elseif del < 1
 else, b = a;
 end
 
+end
+
 %----------------------------------------------------
 function [loc] = centroid(x)
 %
@@ -529,7 +519,7 @@ for n=1:length(x), loc = loc + n*x(n); end
 
 if sum(x) == 0, warndlg('Values are all zero.  Invalid centroid'); end
 loc = loc/sum(x);
-return;
+end
 
 %----------------------------------------------------
 function [nlow, nhigh, status] = clipping(barImage, low, high, thresh1)
@@ -580,7 +570,7 @@ nlow = nlow./(nRow*nCol);
 
 if status ~= 1, warndlg('Data clipping errors detected','ClipCheck'); end
 
-return;
+end
 %----------------------------------------------------
 function  [b] = deriv1(a, nRow, nCol, fil)
 %
@@ -602,7 +592,7 @@ for i=1:nRow
     b(i, nn-1) = b(i, nn);
 end
 
-return;
+end
 
 %----------------------------------------------------
 function  [slope, int] = findedge(cent, nRow)
@@ -619,7 +609,7 @@ function  [slope, int] = findedge(cent, nRow)
 
 index = 0:nRow-1;
 [slope, int] = polyfit(index, cent, 1);            % x = f(y)
-return
+end
 
 %----------------------------------------------------
 function [array, status] = getoecf(array, oepath,oename)
@@ -665,7 +655,8 @@ else
         end
     end
 end
-return;
+end
+
 %----------------------------------------------------
 function [select, coord] = getroi(array)
 % [select, coord] = getroi(array)  Select and return region of interest
@@ -770,7 +761,7 @@ end
 select=double( array(ul(2):lr(2), ul(1):lr(1), :) );
 coord = [ul(:,:), lr(:,:)];
 close;
-return;
+end
 
 %----------------------------------------------------
 function [point, status] = project(barImage, loc, slope, fac)
@@ -876,7 +867,7 @@ end
 % This is the returned unified edge profile
 % figure(1); plot(point);
 
-return;
+end
 
 
 %----------------------------------------------------
@@ -914,4 +905,4 @@ if nCol>nRow
     nCol = temp;
 end
 
-return
+end
