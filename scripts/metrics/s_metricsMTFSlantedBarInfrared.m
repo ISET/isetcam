@@ -39,9 +39,7 @@ scene = sceneAdjustLuminance(scene,meanL);    % Candelas/m2
 scene = sceneSet(scene,'distance',viewD);     % meters
 scene = sceneSet(scene,'fov',fov);            % Field of view in degrees
 
-ieAddObject(scene);                  % Add to database
-sceneWindow;
-
+sceneWindow(scene);
 
 %% Create an optical image with some default optics.
 oi = oiCreate;
@@ -99,28 +97,28 @@ sensor = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'),oi);
 
 % Compute the image and bring it up.
 sensor = sensorCompute(sensor,oi);
-ieAddObject(sensor); sensorWindow;
+sensorWindow(sensor);
 
 % Plot a couple of lines
 %    sensorPlotLine(sensor,'h','volts','space',[1,80]);
 %    sensorPlotLine(sensor,'h','volts','space',[1,81]);
 
 %% Create and set the processor window
-vci = ipCreate;
-vci = ipSet(vci,'scale display',1);
-vci = ipSet(vci,'render Gamma',0.6);
+ip = ipCreate;
+ip = ipSet(ip,'scale display',1);
+ip = ipSet(ip,'render Gamma',0.6);
 
 % Use the linear transformation derived from sensor space (above) to
 % display the RGB image in the processor window.
-vci = ipSet(vci,'conversion method sensor ','MCC Optimized');
-vci = ipSet(vci,'correction method illuminant ','Gray World');%
-vci = ipSet(vci,'internal CS','XYZ');
+ip = ipSet(ip,'conversion method sensor ','MCC Optimized');
+ip = ipSet(ip,'correction method illuminant ','Gray World');%
+ip = ipSet(ip,'internal CS','XYZ');
 
 % First, compute with the default properties.  This uses bilinear
 % demosaicing, no color conversion or balancing.  The sensor RGB
 % values are simply set to the display RGB values.
-vci = ipCompute(vci,sensor);
-ipWindow(vci);
+ip = ipCompute(ip,sensor);
+ipWindow(ip);
 
 %% Define the rect for the ISO12233 calculation
 
@@ -134,17 +132,17 @@ masterRect = [39    25    51    65];
 
 roiLocs = ieRect2Locs(masterRect);
 
-barImage = vcGetROIData(vci,roiLocs,'results');
+barImage = vcGetROIData(ip,roiLocs,'results');
 c = masterRect(3)+1;
 r = masterRect(4)+1;
 barImage = reshape(barImage,r,c,3);
 % figure; imagesc(barImage(:,:,1)); axis image; colormap(gray(64));
 % pause;
 
-dx = sensorGet(sensor,'pixel width','mm');
+dxmm = sensorGet(sensor,'pixel width','mm');
 
 % Run the ISO 12233 code.  The results are stored in the window.
-ISO12233(barImage, dx);
+ISO12233(barImage, dxmm);
 
 %% Compare what happens when we place an IR blocking filter in the path
 [irFilter,irName] = ieReadColorFilter(wave,'IRBlocking');
@@ -156,15 +154,27 @@ ieAddObject(sensor);
 
 %% Compute the MTF with the rectangle selected automatically
 
-vci = ipCompute(vci,sensor);
-mtf = ieISO12233(vci);
+ip = ipCompute(ip,sensor);
+
+% Compute the MTF and the Linespread function
+[mtf, lsf, xlsf] = ieISO12233(ip);
+
+ieNewGraphWin;
+plot(xlsf, lsf);
+xlabel('Position (um)'); ylabel('Relative intensity'); grid on;
+dxum = sensorGet(sensor,'pixel width','um');
+nSteps = 10;
+set(gca,'xlim',[-nSteps*dxum nSteps*dxum],'xtick',[-nSteps*dxum:(dxum):nSteps*dxum]);
 
 % Changed from 77 to 75 on Nov. 11, 2019.  This was part of a fix of the
 % ISOFindSlantedBar code that put the rect more into the center of the
 % edge.
 assert(abs(mtf.mtf50 - 75) <= 3);
 
-ieAddObject(vci); ipWindow;
-h = ieDrawShape(vci,'rectangle',mtf.rect);
+ipWindow(ip);
+h = ieDrawShape(ip,'rectangle',mtf.rect);
+
+
+% The highest spatial frequency (cy/mm) needs 2 samples
 
 %% END
