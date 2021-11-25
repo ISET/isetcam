@@ -648,7 +648,7 @@ switch pType
 end
 
 if exist('udata','var'), set(gcf,'userdata',udata); end
-if ~isempty(varargin) && isequal(ieParamFormat(varargin{end}),'nofigure')
+if ~isempty(varargin) && isa(varargin{end},'char') && isequal(ieParamFormat(varargin{end}),'nofigure')
     return;
 else,         g.Visible = 'On';
 end
