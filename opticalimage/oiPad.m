@@ -29,7 +29,8 @@ function oi = oiPad(oi,padSize,sDist,direction)
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 %
-% See also:  oiCompute
+% See also:  
+%   v_oiPad, oiCompute, unpadarray
 
 % Examples
 %{
