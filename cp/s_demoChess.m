@@ -31,6 +31,6 @@ pbrtCPScene = cpScene('pbrt', 'scenePath', scenePath, 'sceneName', sceneName, ..
 % set the camera in motion
 pbrtCPScene.cameraMotion = {{'unused', [1, 0, 0], [2, 2, 2]}};
 
-finalImage = ourCamera.TakePicture(pbrtCPScene, 'Burst', 'numBurstFrames', 3, 'imageName','Burst with Camera Motion');
+finalImage = ourCamera.TakePicture(pbrtCPScene, 'Burst', 'numBurstFrames', numBurstFrames, 'imageName','Burst with Camera Motion');
 imtool(finalImage);
 
