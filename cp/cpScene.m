@@ -234,6 +234,10 @@ classdef cpScene < handle
                             obj.thisR.camera = piCameraCreate('omni','lensFile',obj.lensFile);
                         end
                     end
+
+                    %% We need to write a copy of the recipe in its default
+                    % location also, for future processing
+                    piWrite(obj.thisR);
                     
                     
                     % Modify the film resolution
@@ -309,13 +313,18 @@ classdef cpScene < handle
                         % having other bits of code use it. So TBD is
                         % unique naming & then deletion. Annoying &
                         % expensive, but for now?...
+
+                        % okay, this was annoying locally, but fatal when
+                        % we have a rendering server! So back to the old
+                        % way of overwriting the main copy
+
                         [defaultRecipeDirectory, defaultRecipeFile, suffix] = ...
                             fileparts(recipeGet(obj.thisR, 'outputfile'));
                         
                         obj.cachedRecipeFileName = fullfile(tempname(defaultRecipeDirectory), strcat(defaultRecipeFile,suffix));
                         obj.originalRecipeFileName = recipeGet(obj.thisR, 'outputfile');
                         recipeSet(obj.thisR, 'verbose', 0);
-                        recipeSet(obj.thisR, 'outputfile', obj.cachedRecipeFileName);
+%                        recipeSet(obj.thisR, 'outputfile', obj.cachedRecipeFileName);
                         tic % let's see how much overhead is the copy
                         piWrite(obj.thisR, 'verbose', 0); % pbrt reads from disk files so we need to write out
                         toc
@@ -333,9 +342,9 @@ classdef cpScene < handle
                             sceneObject = sceneFromFile(imageFileName, 'multispectral');
                         end
                         recipeSet(obj.thisR, 'outputfile', obj.originalRecipeFileName);
-                        if obj.clearTempFiles && isfile(obj.cachedRecipeFileName)
-                            rmdir(fileparts(obj.cachedRecipeFileName), 's');
-                        end
+                        %if obj.clearTempFiles && isfile(obj.cachedRecipeFileName)
+                        %    rmdir(fileparts(obj.cachedRecipeFileName), 's');
+                        %end
                         
                         if isequal(sceneObject.type, 'scene') && haveCache == false
                             % for debugging
