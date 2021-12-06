@@ -1,6 +1,6 @@
 %%
 % Demo some advantages of GPU rendering
-% using our computational photograph (cp) framework
+% using our computational photography (cp) framework
 % 
 % Developed by David Cardinal, Stanford University, 2021
 %
@@ -32,10 +32,10 @@ pbrtCPScene = cpScene('pbrt', 'scenePath', scenePath, 'sceneName', sceneName, ..
 pbrtCPScene.cameraMotion = {{'unused', [0, .01, 0], [-1, 0, 0]}};
 
 videoFrames = ourCamera.TakePicture(pbrtCPScene, ...
-    'Video', 'numVideoFrames', 2, 'imageName','Video with Camera Motion');
+    'Video', 'numVideoFrames', 6, 'imageName','Video with Camera Motion');
 %imtool(videoFrames{1});
-chessVideo = VideoWriter('ChessSet.avi', 'MPEG-4');
-chessVideo.FrameRate = 5;
+chessVideo = VideoWriter('ChessSet', 'MPEG-4');
+chessVideo.FrameRate = 2;
 open(chessVideo);
 for ii = 1:numel(videoFrames)
     writeVideo(chessVideo,videoFrames{ii});
