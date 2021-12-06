@@ -281,9 +281,9 @@ classdef cpScene < handle
                     sTime = 0;
                     for ii = 1:numel(focusDistances)
                         if options.previewFlag
-                            imageFilePrefixName = fullfile(imageFolderPath, append("preview_", num2str(ii)));
+                            imageFilePrefixName = fullfile(imageFolderPath, sprintf("preview_%05d", num2str(ii)));
                         else
-                            imageFilePrefixName = fullfile(imageFolderPath, append("frame_", num2str(ii)));
+                            imageFilePrefixName = fullfile(imageFolderPath, sprintf("frame_%05d", num2str(ii)));
                         end
                         imageFileName = append(imageFilePrefixName,  ".mat");
                         

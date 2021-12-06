@@ -10,6 +10,7 @@ classdef cpBurstCamera < cpCamera
         numHDRFrames = 3;
         numBurstFrames = 3;
         numFocusFrames = 5;
+        numVideoFrames = 60;
     end
     
     methods
@@ -17,7 +18,7 @@ classdef cpBurstCamera < cpCamera
             %CPBURSTCAMERA Construct an instance of this class
             obj.cmodules(1) = cpCModule(); % 1 (or more) CModules
             obj.isp = cpBurstIP();     % extended ip
-            obj.supportedIntents = {'Auto', 'HDR', 'Burst', 'Focus'};
+            obj.supportedIntents = {'Auto', 'HDR', 'Burst', 'Focus', 'Video'};
             
         end
         
@@ -30,6 +31,7 @@ classdef cpBurstCamera < cpCamera
                 options.numHDRFrames = 3;
                 options.numBurstFrames = 3;
                 options.numFocusFrames = 3;
+                options.numVideoFrames = 60;
                 options.insensorIP = obj.isp.insensorIP;
                 options.focusMode char = 'Auto';
                 options.focusParam = 'Center'; % for Manual is distance in m
@@ -44,6 +46,7 @@ classdef cpBurstCamera < cpCamera
             end
             obj.numHDRFrames = options.numHDRFrames;
             obj.numBurstFrames = options.numBurstFrames;
+            obj.numVideoFrames = options.numVideoFrames;
             
             varargin=namedargs2cell(camProps);
             switch options.focusMode
@@ -97,8 +100,10 @@ classdef cpBurstCamera < cpCamera
                     % Future: Algorithm here to calculate number of images and
                     % exposure time based on estimated processing power,
                     % lighting, and possibly motion/intent
-                    expTimes = repmat(baseExposure/numFrames, 1, numFrames);
-                    
+                    expTimes = repmat(baseExposure/numFrames, 1, numFrames);   
+                case {'Video'}
+                    numFrames = obj.numVideoFrames;
+                    expTimes = repmat(baseExposure, 1, numFrames);
                 otherwise
                     % just do what the base camera class would do
                     [expTimes] = planCaptures@cpCamera(obj, previewImages, intent);

@@ -1,6 +1,6 @@
 %%
 % Demo some advantages of GPU rendering
-% using our computational photograph (cp) framwork
+% using our computational photograph (cp) framework
 % 
 % Developed by David Cardinal, Stanford University, 2021
 %
@@ -26,11 +26,30 @@ sceneName = 'chessSet';
 
 pbrtCPScene = cpScene('pbrt', 'scenePath', scenePath, 'sceneName', sceneName, ...
     'resolution', [512 512], ...
-    'numRays', 128, 'sceneLuminance', 200);
+    'numRays', 128, 'sceneLuminance', 400);
 
 % set the camera in motion
-pbrtCPScene.cameraMotion = {{'unused', [1, 0, 0], [2, 2, 2]}};
+pbrtCPScene.cameraMotion = {{'unused', [0, .01, 0], [-1, 0, 0]}};
 
-finalImage = ourCamera.TakePicture(pbrtCPScene, 'Burst', 'numBurstFrames', numBurstFrames, 'imageName','Burst with Camera Motion');
-imtool(finalImage);
+videoFrames = ourCamera.TakePicture(pbrtCPScene, ...
+    'Video', 'numVideoFrames', 2, 'imageName','Video with Camera Motion');
+%imtool(videoFrames{1});
+chessVideo = VideoWriter('ChessSet.avi', 'MPEG-4');
+chessVideo.FrameRate = 5;
+open(chessVideo);
+for ii = 1:numel(videoFrames)
+    writeVideo(chessVideo,videoFrames{ii});
+end
+close (chessVideo);
+
+% timing code
+tTotal = toc(getpref('ISET','tStart'));
+afterTime = cputime;
+beforeTime = getpref('ISET', 'benchmarkstart', 0);
+glData = opengl('data');
+disp(strcat("Local cpCam ran  on: ", glData.Vendor, " ", glData.Renderer, "with driver version: ", glData.Version)); 
+disp(strcat("Local cpCam ran  in: ", string(afterTime - beforeTime), " seconds of CPU time."));
+disp(strcat("Total cpCam ran  in: ", string(tTotal), " total seconds."));
+
+
 

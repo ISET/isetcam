@@ -100,7 +100,7 @@ classdef cpCamera < handle
             % Each returns an array of sensor objects with the images
             % pre-computed
             [sensorImages, focusDistances] = obj.cmodules(1).compute(aCPScene, obj.expTimes, 'focusMode', options.focusMode,...
-                'focusParam', options.focusParam);
+                'focusParam', options.focusParam,'intent',intent);
             
             % generic version, currently just prints out each processed
             % image from the sensor

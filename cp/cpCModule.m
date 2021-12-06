@@ -52,7 +52,7 @@ classdef cpCModule
                         expTimes = repelem(expTimes(1), focusParam);
                     end
                 else
-                    focusDistances = repelem(distanceRange(2) - distanceRange(1), numel(expTimes));
+                    focusDistances = repelem((distanceRange(2) + distanceRange(1))/2, numel(expTimes));
                     expTimes = expTimes;
                 end
                 
@@ -85,6 +85,7 @@ classdef cpCModule
                 options.focusParam = '';
                 options.reRender {islogical} = true;
                 options.stackFrames = 1;
+                options.intent = 'Auto';
             end
              
             % need to know our sensor size to judge film size
@@ -95,6 +96,8 @@ classdef cpCModule
             
             [focusDistances, expTimes] = focus(obj, aCPScene, expTimes, options.focusMode, options.focusParam);
             
+            % this assumes we want to stack if we have multiple
+            % focus distances. What about video, though?
             if options.stackFrames ~= numel(focusDistances)
                 options.stackFrames = numel(focusDistances);
             end
@@ -108,7 +111,7 @@ classdef cpCModule
                 
                 ourScene = sceneObjects{ii};
                 if strcmp(ourScene.type, 'scene')
-                    if numel(focusDistances) > 1
+                    if numel(focusDistances) > 1 && isequal(options.intent, 'FocusStack')
                         % DOESN'T WORK. Clearly doing something wrong:( DJC
                         % -- This is the "simple" case where we emulate
                         %    blur. The "advanced" case should use lens

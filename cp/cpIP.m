@@ -76,7 +76,16 @@ classdef cpIP < handle
                     % old ipBurstMotion  = ipCompute(ipBurstMotion,sensorBurstMotion);
                     obj.ip = ipCompute(obj.ip, sensorImage);
                     ourPhoto = obj.ip;
-                    
+                
+                case 'Video' % make a movie!
+                    % We have sensor renders for debugging, but can do the
+                    % IP version here for a video
+                    ourMovie = VideoWriter();
+                    for ii = 1:numel(sensorImages)
+                        ourIP = ipCompute(obj.ip, sensorImages(ii));
+                        
+                    end
+
                 otherwise
                     % This lower-leval routine is called once we have our sensor
                     % image(s), and generates a final image based on the intent
