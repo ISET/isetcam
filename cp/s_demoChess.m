@@ -25,17 +25,18 @@ scenePath = 'ChessSet';
 sceneName = 'chessSet';
 
 pbrtCPScene = cpScene('pbrt', 'scenePath', scenePath, 'sceneName', sceneName, ...
-    'resolution', [512 512], ...
-    'numRays', 128, 'sceneLuminance', 400);
+    'resolution', [1024 1024], ...
+    'numRays', 512, 'sceneLuminance', 400);
 
 % set the camera in motion
-pbrtCPScene.cameraMotion = {{'unused', [0, .01, 0], [-1, 0, 0]}};
+pbrtCPScene.cameraMotion = {{'unused', [0, .005, 0], [-.5, 0, 0]}};
 
 videoFrames = ourCamera.TakePicture(pbrtCPScene, ...
-    'Video', 'numVideoFrames', 6, 'imageName','Video with Camera Motion');
+    'Video', 'numVideoFrames', 60, 'imageName','Video with Camera Motion');
 %imtool(videoFrames{1});
 chessVideo = VideoWriter('ChessSet', 'MPEG-4');
-chessVideo.FrameRate = 2;
+chessVideo.FrameRate = 6;
+chessVideo.Quality = 95;
 open(chessVideo);
 for ii = 1:numel(videoFrames)
     writeVideo(chessVideo,videoFrames{ii});

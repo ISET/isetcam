@@ -138,7 +138,11 @@ classdef cpCModule
                         % we get multiple sizes, which don't merge
                         if ii == 1
                             sceneFOV = [sceneGet(ourScene,'fovhorizontal') sceneGet(ourScene,'fovvertical')];
+                            % this messes up high-rez images?
+                            % serious SERIOUS hack!
                             obj.sensor = sensorSetSizeToFOV(obj.sensor,sceneFOV,opticalImage);
+                            obj.sensor = sensorSet(obj.sensor,'size', sensorGet(obj.sensor, 'size') *2);
+                            
                         end
                     end
                     
