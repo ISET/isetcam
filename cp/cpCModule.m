@@ -110,6 +110,7 @@ classdef cpCModule
             for ii = 1:numel(sceneObjects)
                 
                 ourScene = sceneObjects{ii};
+
                 if strcmp(ourScene.type, 'scene')
                     if numel(focusDistances) > 1 && isequal(options.intent, 'FocusStack')
                         % DOESN'T WORK. Clearly doing something wrong:( DJC
@@ -129,7 +130,8 @@ classdef cpCModule
                             imgPlaneDist = imgPlaneDist*multiplier;
                             % set sensor FOV to match scene.
                             sceneFOV = [sceneGet(ourScene,'fovhorizontal') sceneGet(ourScene,'fovvertical')];
-                            obj.sensor = sensorSetSizeToFOV(obj.sensor,sceneFOV,opticalImage);
+                            % this isn't right as it reduces resolution
+                            %obj.sensor = sensorSetSizeToFOV(obj.sensor,sceneFOV,opticalImage);
                             oiWindow(opticalImage); % Check to see what they look like!
                         end
                     else
@@ -140,8 +142,8 @@ classdef cpCModule
                             sceneFOV = [sceneGet(ourScene,'fovhorizontal') sceneGet(ourScene,'fovvertical')];
                             % this messes up high-rez images?
                             % serious SERIOUS hack!
-                            obj.sensor = sensorSetSizeToFOV(obj.sensor,sceneFOV,opticalImage);
-                            obj.sensor = sensorSet(obj.sensor,'size', sensorGet(obj.sensor, 'size') *2);
+                            %obj.sensor = sensorSetSizeToFOV(obj.sensor,sceneFOV,opticalImage);
+                            %obj.sensor = sensorSet(obj.sensor,'size', sensorGet(obj.sensor, 'size') *2);
                             
                         end
                     end

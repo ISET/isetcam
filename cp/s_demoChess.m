@@ -26,17 +26,21 @@ sceneName = 'chessSet';
 
 pbrtCPScene = cpScene('pbrt', 'scenePath', scenePath, 'sceneName', sceneName, ...
     'resolution', [1024 1024], ...
-    'numRays', 512, 'sceneLuminance', 400);
+    'numRays', 128, 'sceneLuminance', 400);
+
+% set scene FOV to align with camera
+pbrtCPScene.thisR.recipeSet('fov',60);
 
 % set the camera in motion
 pbrtCPScene.cameraMotion = {{'unused', [0, .005, 0], [-.5, 0, 0]}};
 
+
 videoFrames = ourCamera.TakePicture(pbrtCPScene, ...
-    'Video', 'numVideoFrames', 60, 'imageName','Video with Camera Motion');
+    'Video', 'numVideoFrames', 12, 'imageName','Video with Camera Motion');
 %imtool(videoFrames{1});
 chessVideo = VideoWriter('ChessSet', 'MPEG-4');
 chessVideo.FrameRate = 6;
-chessVideo.Quality = 95;
+chessVideo.Quality = 100;
 open(chessVideo);
 for ii = 1:numel(videoFrames)
     writeVideo(chessVideo,videoFrames{ii});
