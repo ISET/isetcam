@@ -38,7 +38,12 @@ pbrtCPScene.cameraMotion = {{'unused', [0, .005, 0], [-.5, 0, 0]}};
 videoFrames = ourCamera.TakePicture(pbrtCPScene, ...
     'Video', 'numVideoFrames', 12, 'imageName','Video with Camera Motion');
 %imtool(videoFrames{1});
-chessVideo = VideoWriter('ChessSet', 'MPEG-4');
+if islinux
+    chessVideo = VideoWriter('ChessSet', 'Motion JPEG AVI');
+else
+    % H.264 only works on Windows and Mac
+    chessVideo = VideoWriter('ChessSet', 'MPEG-4');
+end
 chessVideo.FrameRate = 6;
 chessVideo.Quality = 100;
 open(chessVideo);
