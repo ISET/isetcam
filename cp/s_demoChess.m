@@ -25,8 +25,8 @@ scenePath = 'ChessSet';
 sceneName = 'chessSet';
 
 pbrtCPScene = cpScene('pbrt', 'scenePath', scenePath, 'sceneName', sceneName, ...
-    'resolution', [1024 1024], ...
-    'numRays', 128, 'sceneLuminance', 400);
+    'resolution', [64 64], ...
+    'numRays', 32, 'sceneLuminance', 400);
 
 % set scene FOV to align with camera
 pbrtCPScene.thisR.recipeSet('fov',60);
@@ -36,9 +36,9 @@ pbrtCPScene.cameraMotion = {{'unused', [0, .005, 0], [-.5, 0, 0]}};
 
 
 videoFrames = ourCamera.TakePicture(pbrtCPScene, ...
-    'Video', 'numVideoFrames', 12, 'imageName','Video with Camera Motion');
+    'Video', 'numVideoFrames', 2, 'imageName','Video with Camera Motion');
 %imtool(videoFrames{1});
-if islinux
+if isunix
     chessVideo = VideoWriter('ChessSet', 'Motion JPEG AVI');
 else
     % H.264 only works on Windows and Mac
