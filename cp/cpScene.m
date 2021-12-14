@@ -249,13 +249,10 @@ classdef cpScene < handle
 
                     %% Looks like we still need to add our own light
                     % Add an equal energy distant light for uniform lighting
-<<<<<<< HEAD
                     %lightSpectrum = 'equalEnergy';
                     %                        'light spectrum',lightSpectrum,...
-=======
                     lightSpectrum = 'equalEnergy';
                     %                       'light spectrum',lightSpectrum,...
->>>>>>> 622119e68e1462fb6146531eb896d11e4d3122af
                     mainLight = piLightCreate('mainLight', ...
                         'type','distant',...
                         'cameracoordinate', true);
