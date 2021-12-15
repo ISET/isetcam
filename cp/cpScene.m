@@ -202,7 +202,7 @@ classdef cpScene < handle
             arguments
                 obj cpScene;
                 expTimes (1,:);
-                focusDistances = [10]; % random default focus distance
+                focusDistances = []; % random default focus distance
                 options.previewFlag (1,1) {islogical} = false;
                 % reRender is tricky. You can use it if you are sure
                 % you haven't changed anything in the recipe since last
@@ -249,13 +249,10 @@ classdef cpScene < handle
 
                     %% Looks like we still need to add our own light
                     % Add an equal energy distant light for uniform lighting
-<<<<<<< HEAD
                     %lightSpectrum = 'equalEnergy';
                     %                        'light spectrum',lightSpectrum,...
-=======
                     lightSpectrum = 'equalEnergy';
                     %                       'light spectrum',lightSpectrum,...
->>>>>>> 622119e68e1462fb6146531eb896d11e4d3122af
                     mainLight = piLightCreate('mainLight', ...
                         'type','distant',...
                         'cameracoordinate', true);
@@ -292,7 +289,9 @@ classdef cpScene < handle
                     end
 
                     sTime = 0;
-                    for ii = 1:numel(focusDistances)
+                    % used to be focus distances, but those are broken
+                    % so try this:
+                    for ii = 1:numel(expTimes)
                         if options.previewFlag
                             imageFilePrefixName = fullfile(imageFolderPath, sprintf("preview_%05d", num2str(ii)));
                         else
@@ -308,7 +307,8 @@ classdef cpScene < handle
                         sTime = sTime + obj.expTimes(ii);
                         obj.thisR.set('shutterclose', sTime);
 
-                        obj.thisR.set('focusdistance', focusDistances(ii));
+                        % broken in v4 as we wind up setting focaldistance!
+                        %obj.thisR.set('focusdistance', focusDistances(ii));
 
                         % process camera motion if allowed
                         % We do this per frame because we want to
@@ -350,7 +350,8 @@ classdef cpScene < handle
                             % by default also calc depth, could make that
                             % an option:
 
-                            [sceneObject, results] = piRender(obj.thisR, 'render type', 'both', ...
+                            obj.thisR.set('film render type',{'radiance','depth'});
+                            [sceneObject, results] = piRender(obj.thisR,  ...
                                 'mean luminance', obj.sceneLuminance, 'verbose', obj.verbosity);
                         else
                             sceneObject = sceneFromFile(imageFileName, 'multispectral');

@@ -21,36 +21,48 @@ sensor = sensorFromFile('ar0132atSensorRGB');
 % but for now, we just create one using our sensor
 ourCamera.cmodules(1) = cpCModule('sensor', sensor); 
 
-scenePath = 'ChessSet';
-sceneName = 'chessSet';
+scenePath = 'landscape';
+sceneName = 'landscape';
+%scenePath = 'ChessSet';
+%sceneName = 'ChessSet';
+%scenePath = 'cornell_box';
+%sceneName = 'cornell_box';
 
 pbrtCPScene = cpScene('pbrt', 'scenePath', scenePath, 'sceneName', sceneName, ...
-    'resolution', [64 64], ...
-    'numRays', 32, 'sceneLuminance', 400);
+    'resolution', [512 256], ...
+    'numRays', 12, 'sceneLuminance', 100);
 
 % set scene FOV to align with camera
-pbrtCPScene.thisR.recipeSet('fov',60);
+pbrtCPScene.thisR.recipeSet('fov',120);
+
+ourLight = piLightCreate('ourLight', ...
+                        'type','distant',...
+                        'specscale', 1.0, ...
+                        'cameracoordinate', true);
+pbrtCPScene.thisR.set('light', 'add', ourLight);
 
 % set the camera in motion
+% settings for a nice slow 6fps video:
 pbrtCPScene.cameraMotion = {{'unused', [0, .005, 0], [-.5, 0, 0]}};
+%pbrtCPScene.cameraMotion = {{'unused', [0, .01, 0], [-1, 0, 0]}};
 
 
 videoFrames = ourCamera.TakePicture(pbrtCPScene, ...
     'Video', 'numVideoFrames', 2, 'imageName','Video with Camera Motion');
 %imtool(videoFrames{1});
 if isunix
-    chessVideo = VideoWriter('ChessSet', 'Motion JPEG AVI');
+    demoVideo = VideoWriter('cpDemo', 'Motion JPEG AVI');
 else
     % H.264 only works on Windows and Mac
-    chessVideo = VideoWriter('ChessSet', 'MPEG-4');
+    demoVideo = VideoWriter('cpDemo', 'MPEG-4');
 end
-chessVideo.FrameRate = 6;
-chessVideo.Quality = 100;
-open(chessVideo);
+demoVideo.FrameRate = 6;
+demoVideo.Quality = 99;
+open(demoVideo);
 for ii = 1:numel(videoFrames)
-    writeVideo(chessVideo,videoFrames{ii});
+    writeVideo(demoVideo,videoFrames{ii});
 end
-close (chessVideo);
+close (demoVideo);
 
 % timing code
 tTotal = toc(getpref('ISET','tStart'));
