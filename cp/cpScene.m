@@ -202,7 +202,7 @@ classdef cpScene < handle
             arguments
                 obj cpScene;
                 expTimes (1,:);
-                focusDistances = []; % random default focus distance
+                focusDistances = [1]; % random default focus distance
                 options.previewFlag (1,1) {islogical} = false;
                 % reRender is tricky. You can use it if you are sure
                 % you haven't changed anything in the recipe since last
@@ -292,10 +292,21 @@ classdef cpScene < handle
                     % used to be focus distances, but those are broken
                     % so try this:
                     for ii = 1:numel(expTimes)
+                        % use pinhole for preview to get depth?
+                        % this is wrong, but right now we don't
+                        % get depth back from Omni
                         if options.previewFlag
                             imageFilePrefixName = fullfile(imageFolderPath, sprintf("preview_%05d", num2str(ii)));
+                            userCamera = obj.thisR.camera;
+                            obj.thisR.camera = piCameraCreate('perspective');
                         else
                             imageFilePrefixName = fullfile(imageFolderPath, sprintf("frame_%05d", num2str(ii)));
+                            obj.thisR.set('camera subtype','omni');
+                            obj.thisR.set('focusdistance', focusDistances(ii));
+                            if isfield(obj.thisR.camera, 'focaldistance')
+                                obj.thisR.camera = rmfield(obj.thisR.camera, 'focaldistance');
+                            end
+                            userCamera = obj.thisR.camera;
                         end
                         imageFileName = append(imageFilePrefixName,  ".mat");
 
@@ -307,8 +318,6 @@ classdef cpScene < handle
                         sTime = sTime + obj.expTimes(ii);
                         obj.thisR.set('shutterclose', sTime);
 
-                        % broken in v4 as we wind up setting focaldistance!
-                        %obj.thisR.set('focusdistance', focusDistances(ii));
 
                         % process camera motion if allowed
                         % We do this per frame because we want to
@@ -383,6 +392,8 @@ classdef cpScene < handle
                         end
                         sceneFiles = [sceneFiles imageFileName];
                     end
+                    % put our original camera back
+                    obj.thisR.camera = userCamera;
                 case 'iset scenes'
                     sceneFiles = [];
                     if options.previewFlag && numel(expTimes) > 1

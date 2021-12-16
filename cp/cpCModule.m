@@ -42,6 +42,9 @@ classdef cpCModule
             if isequal(aCPScene.sceneType, 'pbrt') || isequal(aCPScene.sceneType, 'recipe')
                 
                 distanceRange = aCPScene.thisR.get('depthrange');
+
+                % assume camera type for now
+                aCPScene.thisR.set('camera subtype','omni')
                 % if we are focus stacking space out our focus
                 % distances
                 if isequal(focusMode, 'Stack')
