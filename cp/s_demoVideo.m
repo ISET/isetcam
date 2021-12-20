@@ -21,17 +21,17 @@ sensor = sensorFromFile('ar0132atSensorRGB');
 % but for now, we just create one using our sensor
 ourCamera.cmodules(1) = cpCModule('sensor', sensor); 
 
-scenePath = 'bistro';
-sceneName = 'bistro';
-%scenePath = 'landscape';
-%sceneName = 'landscape';
+%scenePath = 'bistro';
+%sceneName = 'bistro';
+scenePath = 'landscape';
+sceneName = 'landscape';
 %scenePath = 'ChessSet';
 %sceneName = 'ChessSet';
 %scenePath = 'cornell_box';
 %sceneName = 'cornell_box';
 
 pbrtCPScene = cpScene('pbrt', 'scenePath', scenePath, 'sceneName', sceneName, ...
-    'resolution', [256 512], ...
+    'resolution', [512 256], ...
     'lensFile','dgauss.22deg.6.0mm.json',...
     'numRays', 12, 'sceneLuminance', 100);
 
