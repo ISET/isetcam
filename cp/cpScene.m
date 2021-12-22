@@ -80,6 +80,7 @@ classdef cpScene < handle
         objectMotion = []; % none until the user adds some
 
         lensFile = '';   % Since PBRT can accept lens models and return an OI
+        filmDiagonal;
         apertureDiameter = 5; % passed when using a lens file. in mm.
         % provide the option to specify one here. In this
         % case, instead of returning an array of scenes, we
@@ -118,6 +119,7 @@ classdef cpScene < handle
                 options.isetSceneFileNames (1,:) string = [];
                 options.initialScene (1,:) struct = ([]);
                 options.lensFile char = '';
+                options.filmDiagonal = 44;
                 options.sceneLuminance (1,1) {mustBeNumeric} = 100;
                 options.waveLengths {mustBeNumeric} = [400:10:700];
                 options.dispCal char = 'OLED-Sony.mat';
@@ -128,7 +130,7 @@ classdef cpScene < handle
             obj.numRays = options.numRays;
             obj.numFrames = options.numFrames;
             obj.lensFile = options.lensFile;
-            obj.sceneLuminance = options.sceneLuminance;
+            obj.filmDiagonal = options.filmDiagonal; % sensor mm           obj.sceneLuminance = options.sceneLuminance;
             obj.apertureDiameter = options.apertureDiameter;
             obj.verbosity = options.verbose;
 
@@ -144,7 +146,7 @@ classdef cpScene < handle
 
                             obj.thisR.camera = piCameraCreate('omni',...
                                 'lensFile',obj.lensFile);
-                            obj.thisR.set('film diagonal',66); % sensor mm
+                            obj.thisR.set('film diagonal', obj.filmDiagonal); % sensor mm
 
                         end
                         obj.allowsObjectMotion = true;
