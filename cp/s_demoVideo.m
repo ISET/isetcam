@@ -30,19 +30,19 @@ sceneName = 'landscape';
 %scenePath = 'cornell_box';
 %sceneName = 'cornell_box';
 
-rez = 512;
-rays = 128;
+rez = 2048;
+rays = 512;
 pbrtCPScene = cpScene('pbrt', 'scenePath', scenePath, 'sceneName', sceneName, ...
     'resolution', [2*rez rez], ...
     'lensFile','wide.77deg.4.38mm.json',...
-    'numRays', rays, 'sceneLuminance', 100);
+    'numRays', rays);
 
 % set scene FOV to align with camera
-pbrtCPScene.thisR.recipeSet('fov',60);
+%pbrtCPScene.thisR.recipeSet('fov',90);
 
 ourLight = piLightCreate('ourLight', ...
                         'type','distant',...
-                        'specscale', 1.0, ...
+                        'specscale', 8, ...
                         'cameracoordinate', true);
 pbrtCPScene.thisR.set('light', 'add', ourLight);
 
@@ -53,7 +53,7 @@ pbrtCPScene.cameraMotion = {{'unused', [0, .005, 0], [-.5, 0, 0]}};
 
 
 videoFrames = ourCamera.TakePicture(pbrtCPScene, ...
-    'Video', 'numVideoFrames', 12, 'imageName','Video with Camera Motion');
+    'Video', 'numVideoFrames', 2, 'imageName','Video with Camera Motion');
 %imtool(videoFrames{1});
 if isunix
     demoVideo = VideoWriter('cpDemo', 'Motion JPEG AVI');
@@ -64,7 +64,7 @@ end
 demoVideo.FrameRate = 6;
 demoVideo.Quality = 99;
 open(demoVideo);
-for ii = 1:numel(videoFrames)
+for ii = 2:numel(videoFrames)
     writeVideo(demoVideo,videoFrames{ii});
 end
 close (demoVideo);

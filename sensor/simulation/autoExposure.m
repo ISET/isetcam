@@ -102,14 +102,14 @@ centerRect = p.Results.centerrect;
 videoMax   = p.Results.videomax;
 
 switch lower(aeMethod)
-    case {'default','luminance'}
+    case 'specular'
+        [integrationTime,maxSignalVoltage] = aeSpecular(oi,sensor,level);
+    case {'luminance', 'default'}
         [integrationTime,maxSignalVoltage,smallOI] = aeLuminance(oi,sensor,level);
     case 'full'
         [integrationTime,maxSignalVoltage] = aeFull(oi,sensor,level);
     case 'cfa'
         [integrationTime,maxSignalVoltage] = aeCFA(oi,sensor,level);
-    case 'specular'
-        [integrationTime,maxSignalVoltage] = aeSpecular(oi,sensor,level);
     case 'mean'
         [integrationTime,maxSignalVoltage] = aeMean(oi,sensor,level);
     case 'weighted'

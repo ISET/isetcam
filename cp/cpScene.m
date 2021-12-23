@@ -81,7 +81,7 @@ classdef cpScene < handle
 
         lensFile = '';   % Since PBRT can accept lens models and return an OI
         filmDiagonal;
-        apertureDiameter = 5; % passed when using a lens file. in mm.
+        apertureDiameter = []; % passed when using a lens file. in mm.
         % provide the option to specify one here. In this
         % case, instead of returning an array of scenes, we
         % return an array of oi's, that can be fed directly
@@ -123,7 +123,7 @@ classdef cpScene < handle
                 options.sceneLuminance (1,1) {mustBeNumeric} = 100;
                 options.waveLengths {mustBeNumeric} = [400:10:700];
                 options.dispCal char = 'OLED-Sony.mat';
-                options.apertureDiameter {mustBeNumeric} = 5;
+                options.apertureDiameter {mustBeNumeric} = [];
                 options.verbose {mustBeNumeric} = 0; % squash output by default
             end
             obj.resolution = options.resolution;
@@ -133,7 +133,7 @@ classdef cpScene < handle
             obj.filmDiagonal = options.filmDiagonal; % sensor mm           obj.sceneLuminance = options.sceneLuminance;
             obj.apertureDiameter = options.apertureDiameter;
             obj.verbosity = options.verbose;
-
+            obj.sceneLuminance = options.sceneLuminance;
 
             %cpScene Construct an instance of this class
             %   allow whatever init we want to accept in the creation call
@@ -258,15 +258,15 @@ classdef cpScene < handle
                     mainLight = piLightCreate('mainLight', ...
                         'type','distant',...
                         'cameracoordinate', true);
+                    % If we need a light
                     obj.thisR.set('light', 'add', mainLight);
-%                     piLightDelete(thisR, 'all'); 
-% try this code from Zhenyi's tutorial instead
-%                     lightName = 'new light';
-%                     newLight = piLightCreate(lightName,...
-%                         'type','infinite',...
-%                         'spd',[0.4 0.3 0.3],...
-%                         'specscale',1);
-%                     obj.thisR.set('light', 'add', newLight);                    
+
+                    lightName = 'new light';
+                    newLight = piLightCreate(lightName,...
+                        'type','infinite',...
+                        'spd',[0.4 0.3 0.3],...
+                        'specscale',1);
+                    obj.thisR.set('light', 'add', newLight);                    
                      imageFolderPath = fullfile(isetRootPath, 'local', obj.scenePath, 'images');
                     if ~isfolder(imageFolderPath)
                         mkdir(imageFolderPath);
@@ -294,22 +294,16 @@ classdef cpScene < handle
                     % used to be focus distances, but those are broken
                     % so try this:
                     for ii = 1:numel(expTimes)
-                        % use pinhole for preview to get depth?
-                        % this is wrong, but right now we don't
-                        % get depth back from Omni
-                        if options.previewFlag
-                            imageFilePrefixName = fullfile(imageFolderPath, sprintf("preview_%05d", num2str(ii)));
-                            userCamera = obj.thisR.camera;
-                            obj.thisR.camera = piCameraCreate('perspective');
-                        else
                             imageFilePrefixName = fullfile(imageFolderPath, sprintf("frame_%05d", num2str(ii)));
                             obj.thisR.set('camera subtype','omni');
+                            if isempty(focusDistances(ii))
+                                focusDistances(ii) = 5; % meters default
+                            end
                             obj.thisR.set('focusdistance', focusDistances(ii));
                             if isfield(obj.thisR.camera, 'focaldistance')
                                 obj.thisR.camera = rmfield(obj.thisR.camera, 'focaldistance');
                             end
-                            userCamera = obj.thisR.camera;
-                        end
+                        
                         imageFileName = append(imageFilePrefixName,  ".mat");
 
                         % We set the shutter open/close successively
@@ -394,8 +388,7 @@ classdef cpScene < handle
                         end
                         sceneFiles = [sceneFiles imageFileName];
                     end
-                    % put our original camera back
-                    obj.thisR.camera = userCamera;
+
                 case 'iset scenes'
                     sceneFiles = [];
                     if options.previewFlag && numel(expTimes) > 1
