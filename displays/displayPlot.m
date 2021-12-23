@@ -40,11 +40,11 @@ switch param
     case 'spd' % Plot spectral power distribution of the display
         spd = displayGet(d,'spd primaries');
         wave = displayGet(d,'wave');
-        g = vcNewGraphWin;
+        g = ieNewGraphWin;
         cOrder = {'r','g','b','k','y'}; % color order
         hold on
         for ii=1:size(spd,2)
-            plot(wave,spd(:,ii),cOrder{ii});
+            plot(wave,spd(:,ii),cOrder{ii},'LineWidth',2);
         end
         
         xlabel('Wavelength (nm)');ylabel('Energy (watts/sr/m2/nm)');
@@ -53,7 +53,7 @@ switch param
         
     case {'gammatable','gamma'} % Plot display Gammut
         gTable = displayGet(d,'gamma table');
-        g = vcNewGraphWin; plot(gTable);
+        g = ieNewGraphWin; plot(gTable);
         xlabel('DAC'); ylabel('Linear');
         grid on
         
@@ -86,7 +86,7 @@ switch param
             disp('Only first 3 primaries are used');
         end
         % create new graph
-        vcNewGraphWin; ha = gca;
+        ieNewGraphWin; ha = gca;
         
         % samples dac values
         nSamp  = 30;
@@ -154,7 +154,7 @@ switch param
         x = (1:dSize(2))*spacing; y = (1:dSize(1))*spacing;
         x = x - mean(x(:)); y = y - mean(y(:));
         
-        vcNewGraphWin([],'wide');
+        ieNewGraphWin([],'wide');
         srgb = displayGet(d,'primaries rgb');
         srgb = srgb';
         for ii=1:nPrimaries
