@@ -16,7 +16,12 @@ ourCamera = cpBurstCamera();
 
 % We'll use a pre-defined sensor for our Camera Module, and let it use
 % default optics for now. We can then assign the module to our camera:
-sensor = sensorFromFile('ar0132atSensorRGB'); 
+%sensor = sensorFromFile('ar0132atSensorRGB'); 
+sensor = sensorCreate('imx363');
+% for some reason we only make it 600 x 800 by default
+sensor.rows = 1200;
+sensor.cols = 1600;
+sensor.noiseFlag = 0;
 % Cameras can eventually have more than one module (lens + sensor)
 % but for now, we just create one using our sensor
 ourCamera.cmodules(1) = cpCModule('sensor', sensor); 
@@ -41,7 +46,7 @@ pbrtCPScene = cpScene('pbrt', 'scenePath', scenePath, 'sceneName', sceneName, ..
 
 ourLight = piLightCreate('ourLight', ...
                         'type','distant',...
-                        'specscale', 8, ...
+                        'specscale', 1, ...
                         'cameracoordinate', true);
 pbrtCPScene.thisR.set('light', 'add', ourLight);
 
