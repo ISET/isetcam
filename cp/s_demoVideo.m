@@ -30,13 +30,12 @@ sceneName = 'landscape';
 %scenePath = 'cornell_box';
 %sceneName = 'cornell_box';
 
-rez = 2048;
-rays = 512;
+rez = 512;
+rays = 128;
 pbrtCPScene = cpScene('pbrt', 'scenePath', scenePath, 'sceneName', sceneName, ...
     'resolution', [2*rez rez], ...
-    'lensFile','wide.77deg.4.38mm.json',...
     'numRays', rays);
-
+% 'lensFile','wide.77deg.4.38mm.json',...
 % set scene FOV to align with camera
 %pbrtCPScene.thisR.recipeSet('fov',90);
 
@@ -53,7 +52,7 @@ pbrtCPScene.cameraMotion = {{'unused', [0, .005, 0], [-.5, 0, 0]}};
 
 
 videoFrames = ourCamera.TakePicture(pbrtCPScene, ...
-    'Video', 'numVideoFrames', 2, 'imageName','Video with Camera Motion');
+    'Video', 'numVideoFrames', 6, 'imageName','Video with Camera Motion');
 %imtool(videoFrames{1});
 if isunix
     demoVideo = VideoWriter('cpDemo', 'Motion JPEG AVI');
@@ -61,7 +60,7 @@ else
     % H.264 only works on Windows and Mac
     demoVideo = VideoWriter('cpDemo', 'MPEG-4');
 end
-demoVideo.FrameRate = 6;
+demoVideo.FrameRate = 3;
 demoVideo.Quality = 99;
 open(demoVideo);
 for ii = 2:numel(videoFrames)

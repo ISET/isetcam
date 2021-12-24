@@ -2,7 +2,21 @@ classdef cpBurstCamera < cpCamera
     %CIBURSTCAMERA Sub-class of cpCamera that adds burst and bracketing
     %   Basic multi-capture functionality, to be used for testing
     %   and as a base class for additional enhancements
-    
+    %
+    % Properties
+    %  numHDRFrames
+    %  numBurstFrames
+    %  numFocusFrames
+    %  numVideoFrames
+    %
+    % Supports Intents:
+    %  'Auto', 'HDR', 'Burst', 'Focus', 'Video'
+    %
+    % Methods:
+    %  planCaptures
+    %  TakePicture
+    %  showInfo
+    %
     % History:
     %   Initial Version: D.Cardinal 12/2020
     

@@ -45,10 +45,6 @@ classdef cpScene < handle
         renderedScenes = ourScene.render();
     %}
 
-    % TODO:
-    %  * add ability to pass lens models to pbrt & deal with returned oi
-    %  instead of scenes
-
     properties
         sceneType = '';
         initialScene = ''; % Ideally this is a PBRT scene, but we also need
@@ -162,8 +158,10 @@ classdef cpScene < handle
                     if ~isempty(options.lensFile)
                         obj.thisR.camera = piCameraCreate('omni',...
                             'lensFile',obj.lensFile);
-                        obj.thisR.set('film diagonal',66); % sensor mm
+                    else
+                        obj.thisR.camera = piCameraCreate('perspective');
                     end
+                    obj.thisR.set('film diagonal',66); % sensor mm
                     obj.allowsObjectMotion = true;
 
                     % ideally we should be able to accept an array of scene
@@ -234,6 +232,8 @@ classdef cpScene < handle
                         % but it doesn't seem to work?
                         if ~isempty(obj.lensFile)
                             obj.thisR.camera = piCameraCreate('omni','lensFile',obj.lensFile);
+                        else
+                            obj.thisR.camera = piCameraCreate('perspective');
                         end
                     end
 
@@ -295,7 +295,8 @@ classdef cpScene < handle
                     % so try this:
                     for ii = 1:numel(expTimes)
                             imageFilePrefixName = fullfile(imageFolderPath, sprintf("frame_%05d", num2str(ii)));
-                            obj.thisR.set('camera subtype','omni');
+                            %we probably need to do this when we create it!
+                            %obj.thisR.set('camera subtype','omni');
                             if isempty(focusDistances(ii))
                                 focusDistances(ii) = 5; % meters default
                             end
