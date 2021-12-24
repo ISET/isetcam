@@ -46,9 +46,10 @@ pbrtCPScene = cpScene('pbrt', 'scenePath', scenePath, 'sceneName', sceneName, ..
 
 ourLight = piLightCreate('ourLight', ...
                         'type','distant',...
-                        'specscale', 1, ...
+                        'rgb spd', [ 1 1 1 ], ...
                         'cameracoordinate', true);
-pbrtCPScene.thisR.set('light', 'add', ourLight);
+% landscape already has an environmental light
+%pbrtCPScene.thisR.set('light', 'add', ourLight);
 
 % set the camera in motion
 % settings for a nice slow 6fps video:
@@ -57,7 +58,7 @@ pbrtCPScene.cameraMotion = {{'unused', [0, .005, 0], [-.5, 0, 0]}};
 
 
 videoFrames = ourCamera.TakePicture(pbrtCPScene, ...
-    'Video', 'numVideoFrames', 6, 'imageName','Video with Camera Motion');
+    'Video', 'numVideoFrames', 2, 'imageName','Video with Camera Motion');
 %imtool(videoFrames{1});
 if isunix
     demoVideo = VideoWriter('cpDemo', 'Motion JPEG AVI');

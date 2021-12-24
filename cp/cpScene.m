@@ -249,7 +249,7 @@ classdef cpScene < handle
                     val = recipeSet(obj.thisR,'rays per pixel',obj.numRays);
                     val = recipeSet(obj.thisR,'film diagonal', round(options.filmSize *1.5));
 
-                    %% Looks like we still need to add our own light
+                    %% IF we still need to add our own light
                     % Add an equal energy distant light for uniform lighting
                     %lightSpectrum = 'equalEnergy';
                     %                        'light spectrum',lightSpectrum,...
@@ -259,14 +259,14 @@ classdef cpScene < handle
                         'type','distant',...
                         'cameracoordinate', true);
                     % If we need a light
-                    obj.thisR.set('light', 'add', mainLight);
+                    %obj.thisR.set('light', 'add', mainLight);
 
                     lightName = 'new light';
                     newLight = piLightCreate(lightName,...
                         'type','infinite',...
                         'spd',[0.4 0.3 0.3],...
                         'specscale',1);
-                    obj.thisR.set('light', 'add', newLight);                    
+                    %obj.thisR.set('light', 'add', newLight);                    
                      imageFolderPath = fullfile(isetRootPath, 'local', obj.scenePath, 'images');
                     if ~isfolder(imageFolderPath)
                         mkdir(imageFolderPath);
