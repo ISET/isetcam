@@ -44,7 +44,7 @@ classdef cpCModule
                 distanceRange = aCPScene.thisR.get('depthrange');
 
                 % assume camera type for now
-                aCPScene.thisR.set('camera subtype','omni')
+                %aCPScene.thisR.set('camera subtype','omni')
                 % if we are focus stacking space out our focus
                 % distances
                 if isequal(focusMode, 'Stack')
@@ -142,24 +142,13 @@ classdef cpCModule
                         % set sensor FOV to match scene, but only once or
                         % we get multiple sizes, which don't merge
                         if ii == 1
-                            sceneFOV = [sceneGet(ourScene,'fovhorizontal') sceneGet(ourScene,'fovvertical')];
-                            % this messes up high-rez images?
-                            % serious SERIOUS hack!
-                            %obj.sensor = sensorSetSizeToFOV(obj.sensor,sceneFOV,opticalImage);
-                            %obj.sensor = sensorSet(obj.sensor,'size', sensorGet(obj.sensor, 'size') *2);
-                            
+                            sceneFOV = [sceneGet(ourScene,'fovhorizontal') sceneGet(ourScene,'fovvertical')];                            
                         end
                     end
                     
                 elseif strcmp(ourScene.type, 'oi') || strcmp(ourScene.type, 'opticalimage')
                     % we already used a lens, so we got back an OI
                     opticalImage = ourScene;
-                    % this gets really broken, as our sensor shows a tiny
-                    % FOV, so set size makes it massive resolution???'
-                    %oiFOV = [oiGet(opticalImage,'hfov'), oiGet(opticalImage,'vfov')];
-                    %obj.sensor = sensorSetSizeToFOV(obj.sensor,oiFOV,opticalImage);
-                    %sensorFOV = sensorGet(obj.sensor, 'fov horizontal');
-                    %oiSet(opticalImage,'fov', sensorFOV);
                 else
                     error("Unknown scene render");
                 end

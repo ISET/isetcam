@@ -16,7 +16,12 @@ ourCamera = cpBurstCamera();
 
 % We'll use a pre-defined sensor for our Camera Module, and let it use
 % default optics for now. We can then assign the module to our camera:
-sensor = sensorFromFile('ar0132atSensorRGB'); 
+%sensor = sensorFromFile('ar0132atSensorRGB'); 
+sensor = sensorCreate('imx363');
+% for some reason we only make it 600 x 800 by default
+sensor.rows = 1200;
+sensor.cols = 1600;
+sensor.noiseFlag = 0;
 % Cameras can eventually have more than one module (lens + sensor)
 % but for now, we just create one using our sensor
 ourCamera.cmodules(1) = cpCModule('sensor', sensor); 
@@ -30,19 +35,18 @@ sceneName = 'landscape';
 %scenePath = 'cornell_box';
 %sceneName = 'cornell_box';
 
-rez = 2048;
-rays = 512;
+rez = 512;
+rays = 128;
 pbrtCPScene = cpScene('pbrt', 'scenePath', scenePath, 'sceneName', sceneName, ...
     'resolution', [2*rez rez], ...
-    'lensFile','wide.77deg.4.38mm.json',...
     'numRays', rays);
-
+% 'lensFile','wide.77deg.4.38mm.json',...
 % set scene FOV to align with camera
 %pbrtCPScene.thisR.recipeSet('fov',90);
 
 ourLight = piLightCreate('ourLight', ...
                         'type','distant',...
-                        'specscale', 8, ...
+                        'specscale', 1, ...
                         'cameracoordinate', true);
 pbrtCPScene.thisR.set('light', 'add', ourLight);
 
@@ -53,7 +57,7 @@ pbrtCPScene.cameraMotion = {{'unused', [0, .005, 0], [-.5, 0, 0]}};
 
 
 videoFrames = ourCamera.TakePicture(pbrtCPScene, ...
-    'Video', 'numVideoFrames', 2, 'imageName','Video with Camera Motion');
+    'Video', 'numVideoFrames', 6, 'imageName','Video with Camera Motion');
 %imtool(videoFrames{1});
 if isunix
     demoVideo = VideoWriter('cpDemo', 'Motion JPEG AVI');
@@ -61,7 +65,7 @@ else
     % H.264 only works on Windows and Mac
     demoVideo = VideoWriter('cpDemo', 'MPEG-4');
 end
-demoVideo.FrameRate = 6;
+demoVideo.FrameRate = 3;
 demoVideo.Quality = 99;
 open(demoVideo);
 for ii = 2:numel(videoFrames)
