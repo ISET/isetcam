@@ -356,8 +356,12 @@ classdef cpScene < handle
                             % an option:
 
                             obj.thisR.set('film render type',{'radiance','depth'});
+                            % we used to set scene luminance here
+                            % but maybe lighting does that for us?
+                            %[sceneObject, results] = piRender(obj.thisR,  ...
+                            %    'mean luminance', obj.sceneLuminance, 'verbose', obj.verbosity);
                             [sceneObject, results] = piRender(obj.thisR,  ...
-                                'mean luminance', obj.sceneLuminance, 'verbose', obj.verbosity);
+                                'verbose', obj.verbosity);
                         else
                             sceneObject = sceneFromFile(imageFileName, 'multispectral');
                         end
