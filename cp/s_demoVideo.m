@@ -19,9 +19,9 @@ ourCamera = cpBurstCamera();
 %sensor = sensorFromFile('ar0132atSensorRGB'); 
 sensor = sensorCreate('imx363');
 % for some reason we only make it 600 x 800 by default
-sensor.rows = 1200;
-sensor.cols = 1600;
-sensor.noiseFlag = 0;
+%sensor.rows = 1200;
+%sensor.cols = 1600;
+sensor.noiseFlag = -1; % no noise I think
 % Cameras can eventually have more than one module (lens + sensor)
 % but for now, we just create one using our sensor
 ourCamera.cmodules(1) = cpCModule('sensor', sensor); 
@@ -44,12 +44,15 @@ pbrtCPScene = cpScene('pbrt', 'scenePath', scenePath, 'sceneName', sceneName, ..
 % set scene FOV to align with camera
 %pbrtCPScene.thisR.recipeSet('fov',90);
 
-ourLight = piLightCreate('ourLight', ...
-                        'type','distant',...
-                        'rgb spd', [ 1 1 1 ], ...
-                        'cameracoordinate', true);
+piLightDelete(pbrtCPScene.thisR, 'all'); 
+lightName = 'We can only hope';
+ourLight = piLightCreate(lightName,...
+                        'type','point',...
+                        'blackbody spd',[0.4 0.3 0.3],...
+                        'specscale',1);
+
 % landscape already has an environmental light
-%pbrtCPScene.thisR.set('light', 'add', ourLight);
+pbrtCPScene.thisR.set('light', 'add', ourLight);
 
 % set the camera in motion
 % settings for a nice slow 6fps video:

@@ -312,7 +312,12 @@ classdef cpScene < handle
                         % render a frame, as we might need to render subsequent
                         % frames
                         obj.thisR.set('shutteropen', sTime);
-                        sTime = sTime + obj.expTimes(ii);
+                        if true %HACK Because scenes look really bright!
+                            % set minimum exposure time to 1/100
+                            sTime = sTime + max(.1, obj.expTimes(ii));
+                        else
+                            sTime = sTime + obj.expTimes(ii);
+                        end
                         obj.thisR.set('shutterclose', sTime);
 
 
