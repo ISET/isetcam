@@ -71,13 +71,13 @@ function [mtfData, lsf] = ieISO12233(ip,sensor,plotOptions,masterRect)
 
 %% Input
 if ~exist('ip','var') || isempty(ip)
-    ip = vcGetObject('vcimage');
+    ip = ieGetObject('vcimage');
     if isempty(ip), error('No ip found.');
     else, fprintf('Using selected ip\n');
     end
 end
 if ~exist('sensor','var') || isempty(sensor)
-    sensor = vcGetObject('sensor');
+    sensor = ieGetObject('sensor');
     if isempty(sensor), error('No sensor found.');
     else, fprintf('Using selected sensor\n');
     end
