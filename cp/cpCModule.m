@@ -101,7 +101,7 @@ classdef cpCModule
             
             % this assumes we want to stack if we have multiple
             % focus distances. What about video, though?
-            if options.stackFrames ~= numel(focusDistances)
+            if ~isequal(options.intent, 'Video') && options.stackFrames ~= numel(focusDistances)
                 options.stackFrames = numel(focusDistances);
             end
             
