@@ -15,7 +15,7 @@
 % Copyright ImagEval Consultants, LLC, 2011.
 
 %% Initialize
-ieInit
+ieInit;
 
 setpref('ISET', 'benchmarkstart', cputime); % if I just put it in a variable it gets cleared:(
 setpref('ISET', 'tStart', tic);
