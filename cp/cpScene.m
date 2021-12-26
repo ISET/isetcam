@@ -96,7 +96,7 @@ classdef cpScene < handle
         % right now we calculate automatically, but should allow it to be
         % passed in as well
 
-        verbosity; % level of chattiness
+        verbosity = getpref('docker','verbosity',1); % level of chattiness
     end
 
     %% Do the work here
@@ -116,7 +116,7 @@ classdef cpScene < handle
                 options.initialScene (1,:) struct = ([]);
                 options.lensFile char = '';
                 options.filmDiagonal = 44;
-                options.sceneLuminance (1,1) {mustBeNumeric} = 100;
+                options.sceneLuminance (1,1) {mustBeNumeric} = 0;
                 options.waveLengths {mustBeNumeric} = [400:10:700];
                 options.dispCal char = 'OLED-Sony.mat';
                 options.apertureDiameter {mustBeNumeric} = [];
@@ -163,7 +163,6 @@ classdef cpScene < handle
                     end
                     obj.thisR.set('film diagonal',66); % sensor mm
                     obj.allowsObjectMotion = true;
-
                     % ideally we should be able to accept an array of scene
                     % files
                 case 'iset scene files'
@@ -312,12 +311,7 @@ classdef cpScene < handle
                         % render a frame, as we might need to render subsequent
                         % frames
                         obj.thisR.set('shutteropen', sTime);
-                        if true %HACK Because scenes look really bright!
-                            % set minimum exposure time to 1/100
-                            sTime = sTime + max(.1, obj.expTimes(ii));
-                        else
-                            sTime = sTime + obj.expTimes(ii);
-                        end
+                        sTime = sTime + max(.1, obj.expTimes(ii));
                         obj.thisR.set('shutterclose', sTime);
 
 
@@ -378,6 +372,9 @@ classdef cpScene < handle
 
                         if isequal(sceneObject.type, 'scene') && haveCache == false
                             % for debugging
+                            if obj.sceneLuminance > 0
+                                sceneObject = sceneSet(sceneObject,'meanluminance', obj.sceneLuminance);
+                            end
                             sceneWindow(sceneObject);
                             sceneToFile(imageFileName,sceneObject);
                             % this is mostly just for debugging & human inspection
