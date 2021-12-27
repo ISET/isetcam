@@ -311,7 +311,7 @@ classdef cpScene < handle
                         % render a frame, as we might need to render subsequent
                         % frames
                         obj.thisR.set('shutteropen', sTime);
-                        sTime = sTime + max(.1, obj.expTimes(ii));
+                        sTime = sTime + max(.001, obj.expTimes(ii));
                         obj.thisR.set('shutterclose', sTime);
 
 

@@ -152,7 +152,9 @@ classdef cpCModule
                 else
                     error("Unknown scene render");
                 end
+                % we have already calculated our exposure times
                 obj.sensor = sensorSet(obj.sensor, 'exposure time', expTimes(ii));
+                obj.sensor = sensorSet(obj.sensor, 'auto exposure', 0);
                 % The OI returned from pbrt sometimes doesn't currently give us a
                 % width or height, so we need to make something up:
                 %% Hack -- DJC
