@@ -39,7 +39,7 @@ sceneName = 'ChessSet';
 %scenePath = 'cornell_box';
 %sceneName = 'cornell_box';
 
-rays = 16;
+rays = 16; %128;
 pbrtCPScene = cpScene('pbrt', 'scenePath', scenePath, 'sceneName', sceneName, ...
     'resolution', [2*rez rez], ...
     'numRays', rays);
@@ -67,12 +67,12 @@ pbrtCPScene.thisR.set('light', 'add', ourLight);
 
 % set the camera in motion
 % settings for a nice slow 6fps video:
-pbrtCPScene.cameraMotion = {{'unused', [0, .005, 0], [-.5, 0, 0]}};
+pbrtCPScene.cameraMotion = {{'unused', [007, .005, 0], [-.4, -.4, 0]}};
 %pbrtCPScene.cameraMotion = {{'unused', [0, .01, 0], [-1, 0, 0]}};
 
 
 videoFrames = ourCamera.TakePicture(pbrtCPScene, ...
-    'Video', 'numVideoFrames', 40, 'imageName','Video with Camera Motion');
+    'Video', 'numVideoFrames', 2, 'imageName','Video with Camera Motion');
 %imtool(videoFrames{1});
 if isunix
     demoVideo = VideoWriter('cpDemo', 'Motion JPEG AVI');
@@ -80,7 +80,7 @@ else
     % H.264 only works on Windows and Mac
     demoVideo = VideoWriter('cpDemo', 'MPEG-4');
 end
-demoVideo.FrameRate = 4;
+demoVideo.FrameRate = 2;
 demoVideo.Quality = 99;
 open(demoVideo);
 for ii = 2:numel(videoFrames)
