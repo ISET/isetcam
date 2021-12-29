@@ -21,7 +21,7 @@ sensor = sensorCreate('imx363');
 % for some reason we only make it 600 x 800 by default
 %sensor = sensorSet(sensor,'pixelsize', ...
 %    sensorGet(sensor,'pixel size')/1);
-rez = 1024;
+rez = 128;
 sensor = sensorSet(sensor,'size',[rez 2*rez]);
 % 
 sensor = sensorSet(sensor,'noiseFlag', 0); % less noise
@@ -61,7 +61,7 @@ ourLight = piLightCreate(lightName,...
                         'type','distant',...
                         'spd spectrum','equalEnergy',...
                         'cameracoordinate', true, ...
-                        'specscale',1.0);
+                        'specscale',2.0);
 
 pbrtCPScene.thisR.set('light', 'add', ourLight);
 
