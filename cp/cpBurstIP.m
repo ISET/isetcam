@@ -134,7 +134,8 @@ classdef cpBurstIP < cpIP
                             imwrite(imageFrames{ii}{1}, imgFiles{ii});
                         end
 
-                        ourPhoto = fstack(imageFrames,'focus', options.focusDistances);
+                        ourPhoto = fstack(imageFrames,'focus', options.focusDistances, ...
+                            'nhsize', numel(options.focusDistances));
                     end
                 case 'Video'
                     % which work is done in ISP and what in camera?
