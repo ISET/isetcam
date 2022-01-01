@@ -197,15 +197,16 @@ classdef cpScene < handle
         % TODO: If there is no camera or object motion, then for burst &
         % stack operations, maybe we should just render once in pbrt to
         % save time?
-        function [sceneObjects, sceneFiles] = render(obj,expTimes, focusDistances, options)
+        function [sceneObjects, sceneFiles] = render(obj,expTimes, options)
             arguments
                 obj cpScene;
                 expTimes (1,:);
-                focusDistances = [1]; % random default focus distance
+                options.focusDistances = [];
                 options.previewFlag (1,1) {islogical} = false;
                 % reRender is tricky. You can use it if you are sure
                 % you haven't changed anything in the recipe since last
                 % time
+
                 options.reRender (1,1) {islogical} = true;
                 options.filmSize {mustBeNumeric} = 22; % default
             end
@@ -265,8 +266,8 @@ classdef cpScene < handle
                         'type','infinite',...
                         'spd',[0.4 0.3 0.3],...
                         'specscale',1);
-                    %obj.thisR.set('light', 'add', newLight);                    
-                     imageFolderPath = fullfile(isetRootPath, 'local', obj.scenePath, 'images');
+                    %obj.thisR.set('light', 'add', newLight);
+                    imageFolderPath = fullfile(isetRootPath, 'local', obj.scenePath, 'images');
                     if ~isfolder(imageFolderPath)
                         mkdir(imageFolderPath);
                     end
@@ -293,17 +294,26 @@ classdef cpScene < handle
                     % used to be focus distances, but those are broken
                     % so try this:
                     for ii = 1:numel(expTimes)
-                            imageFilePrefixName = fullfile(imageFolderPath, sprintf("frame_%05d", num2str(ii)));
-                            %we probably need to do this when we create it!
-                            %obj.thisR.set('camera subtype','omni');
-                            if isempty(focusDistances(ii))
-                                focusDistances(ii) = 5; % meters default
-                            end
-                            obj.thisR.set('focusdistance', focusDistances(ii));
-                            if isfield(obj.thisR.camera, 'focaldistance')
-                                obj.thisR.camera = rmfield(obj.thisR.camera, 'focaldistance');
-                            end
-                        
+                        imageFilePrefixName = fullfile(imageFolderPath, sprintf("frame_%05d", num2str(ii)));
+                        %Some camera subtypes use focal (internal)
+                        % and some use focus (external)
+                        switch (obj.thisR.camera.subtype)
+                            case {'pinhole', 'perspective'}
+                                defaultPinholeFocal = .1; % should probably be allowed to pass?
+                                obj.thisR.set('focaldistance', defaultPinholeFocal);
+                                if isfield(obj.thisR.camera, 'focusdistance')
+                                    obj.thisR.camera = rmfield(obj.thisR.camera, 'focusdistance');
+                                end
+                            case {'omni', 'realistic'}
+                                if isempty(options.focusDistances) || isempty(options.focusDistances(ii))
+                                    options.focusDistances(ii) = 5; % meters default
+                                end
+                                obj.thisR.set('focusdistance', options.focusDistances(ii));
+                                if isfield(obj.thisR.camera, 'focaldistance')
+                                    obj.thisR.camera = rmfield(obj.thisR.camera, 'focaldistance');
+                                end
+                        end
+
                         imageFileName = append(imageFilePrefixName,  ".mat");
 
                         % We set the shutter open/close successively

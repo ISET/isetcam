@@ -21,7 +21,7 @@ sensor = sensorCreate('imx363');
 % for some reason we only make it 600 x 800 by default
 %sensor = sensorSet(sensor,'pixelsize', ...
 %    sensorGet(sensor,'pixel size')/1);
-rez = 128;
+rez = 1024;
 sensor = sensorSet(sensor,'size',[rez 2*rez]);
 % 
 sensor = sensorSet(sensor,'noiseFlag', 0); % less noise
@@ -67,7 +67,7 @@ pbrtCPScene.thisR.set('light', 'add', ourLight);
 
 % set the camera in motion
 % settings for a nice slow 6fps video:
-pbrtCPScene.cameraMotion = {{'unused', [007, .005, 0], [-.4, -.4, 0]}};
+pbrtCPScene.cameraMotion = {{'unused', [.007, .005, 0], [-.4, -.4, 0]}};
 %pbrtCPScene.cameraMotion = {{'unused', [0, .01, 0], [-1, 0, 0]}};
 
 
