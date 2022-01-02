@@ -34,10 +34,10 @@ ourCamera.cmodules(1) = cpCModule('sensor', sensor);
 %sceneName = 'bistro';
 %scenePath = 'landscape';
 %sceneName = 'landscape';
-%scenePath = 'ChessSet';
-%sceneName = 'ChessSet';
-scenePath = 'cornell_box';
-sceneName = 'cornell_box';
+scenePath = 'ChessSet';
+sceneName = 'ChessSet';
+%scenePath = 'cornell_box';
+%sceneName = 'cornell_box';
 
 rays = 16; %128;
 pbrtCPScene = cpScene('pbrt', 'scenePath', scenePath, 'sceneName', sceneName, ...
@@ -59,7 +59,14 @@ if strcmp(scenePath, "cornell_box")
     % position.
     pbrtCPScene.thisR.set('asset', 'Bunny_B', 'world position',...
         [0 0.125 0]);
+elseif isequal(sceneName, 'ChessSet')
+    % try moving a chess piece
+    pbrtCPScene.objectMotion = {{'001_ChessSet_mesh_00005_O', ...
+        [0, .1, 0], [0, 0, 0]}};
+    pbrtCPScene.objectMotion = {{'001_ChessSet_mesh_00004_O', ...
+        [0, 1, 0], [0, 0, 0]}};
 end
+
 
 %     'lensFile','wide.77deg.4.38mm.json',...
 % set scene FOV to align with camera
@@ -87,15 +94,11 @@ pbrtCPScene.thisR.set('light', 'add', ourLight);
 pbrtCPScene.cameraMotion = {{'unused', [.007, .005, 0], [-.45, -.45, 0]}};
 %pbrtCPScene.cameraMotion = {{'unused', [0, .01, 0], [-1, 0, 0]}};
 
-% try moving a chess piece
-%pbrtCPScene.objectMotion = {{'0011D_001_ChessSet_mesh_00005_O', ...
-%    [0, .01, 0], [0, 0, 0]}};
-
 
 
 
 videoFrames = ourCamera.TakePicture(pbrtCPScene, ...
-    'Video', 'numVideoFrames', 6, 'imageName','Video with Camera Motion');
+    'Video', 'numVideoFrames', 12, 'imageName','Video with Camera Motion');
 %imtool(videoFrames{1});
 if isunix
     demoVideo = VideoWriter('cpDemo', 'Motion JPEG AVI');
