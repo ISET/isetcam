@@ -42,6 +42,9 @@ classdef cpCModule
             if isequal(aCPScene.sceneType, 'pbrt') || isequal(aCPScene.sceneType, 'recipe')
                 
                 distanceRange = aCPScene.thisR.get('depthrange');
+
+                % assume camera type for now
+                %aCPScene.thisR.set('camera subtype','omni')
                 % if we are focus stacking space out our focus
                 % distances
                 if isequal(focusMode, 'Stack')
@@ -52,7 +55,7 @@ classdef cpCModule
                         expTimes = repelem(expTimes(1), focusParam);
                     end
                 else
-                    focusDistances = repelem(distanceRange(2) - distanceRange(1), numel(expTimes));
+                    focusDistances = repelem((distanceRange(2) + distanceRange(1))/2, numel(expTimes));
                     expTimes = expTimes;
                 end
                 
@@ -85,6 +88,7 @@ classdef cpCModule
                 options.focusParam = '';
                 options.reRender {islogical} = true;
                 options.stackFrames = 1;
+                options.intent = 'Auto';
             end
              
             % need to know our sensor size to judge film size
@@ -95,20 +99,23 @@ classdef cpCModule
             
             [focusDistances, expTimes] = focus(obj, aCPScene, expTimes, options.focusMode, options.focusParam);
             
-            if options.stackFrames ~= numel(focusDistances)
+            % this assumes we want to stack if we have multiple
+            % focus distances. What about video, though?
+            if ~isequal(options.intent, 'Video') && options.stackFrames ~= numel(focusDistances)
                 options.stackFrames = numel(focusDistances);
             end
             
             [sceneObjects, sceneFiles] = aCPScene.render(expTimes,...
-                focusDistances,...
+                'focusDistances', focusDistances,...
                 'reRender', options.reRender, 'filmSize', filmSize);
             
             cOutput = [];
             for ii = 1:numel(sceneObjects)
                 
                 ourScene = sceneObjects{ii};
+
                 if strcmp(ourScene.type, 'scene')
-                    if numel(focusDistances) > 1
+                    if numel(focusDistances) > 1 && isequal(options.intent, 'FocusStack')
                         % DOESN'T WORK. Clearly doing something wrong:( DJC
                         % -- This is the "simple" case where we emulate
                         %    blur. The "advanced" case should use lens
@@ -126,7 +133,8 @@ classdef cpCModule
                             imgPlaneDist = imgPlaneDist*multiplier;
                             % set sensor FOV to match scene.
                             sceneFOV = [sceneGet(ourScene,'fovhorizontal') sceneGet(ourScene,'fovvertical')];
-                            obj.sensor = sensorSetSizeToFOV(obj.sensor,sceneFOV,opticalImage);
+                            % this isn't right as it reduces resolution
+                            %obj.sensor = sensorSetSizeToFOV(obj.sensor,sceneFOV,opticalImage);
                             oiWindow(opticalImage); % Check to see what they look like!
                         end
                     else
@@ -134,24 +142,19 @@ classdef cpCModule
                         % set sensor FOV to match scene, but only once or
                         % we get multiple sizes, which don't merge
                         if ii == 1
-                            sceneFOV = [sceneGet(ourScene,'fovhorizontal') sceneGet(ourScene,'fovvertical')];
-                            obj.sensor = sensorSetSizeToFOV(obj.sensor,sceneFOV,opticalImage);
+                            sceneFOV = [sceneGet(ourScene,'fovhorizontal') sceneGet(ourScene,'fovvertical')];                            
                         end
                     end
                     
                 elseif strcmp(ourScene.type, 'oi') || strcmp(ourScene.type, 'opticalimage')
                     % we already used a lens, so we got back an OI
                     opticalImage = ourScene;
-                    % this gets really broken, as our sensor shows a tiny
-                    % FOV, so set size makes it massive resolution???'
-                    %oiFOV = [oiGet(opticalImage,'hfov'), oiGet(opticalImage,'vfov')];
-                    %obj.sensor = sensorSetSizeToFOV(obj.sensor,oiFOV,opticalImage);
-                    %sensorFOV = sensorGet(obj.sensor, 'fov horizontal');
-                    %oiSet(opticalImage,'fov', sensorFOV);
                 else
                     error("Unknown scene render");
                 end
+                % we have already calculated our exposure times
                 obj.sensor = sensorSet(obj.sensor, 'exposure time', expTimes(ii));
+                obj.sensor = sensorSet(obj.sensor, 'auto exposure', 0);
                 % The OI returned from pbrt sometimes doesn't currently give us a
                 % width or height, so we need to make something up:
                 %% Hack -- DJC

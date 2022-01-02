@@ -1,7 +1,7 @@
-function sensor = sensorCreateIdeal(idealType,sensorExample)
+function sensor = sensorCreateIdeal(idealType,sensorExample,varargin)
 %Create an ideal image sensor array based on the sensor example
 %
-%  sensor = sensorCreateIdeal(idealType,[sensorExample])
+%  sensor = sensorCreateIdeal(idealType,[sensorExample],varargin)
 %
 % Create an ideal image sensor array. The array contains ideal  pixels (no
 % read noise, dark voltage, 100% fill-factor). Such an array can be used as
@@ -37,8 +37,7 @@ function sensor = sensorCreateIdeal(idealType,sensorExample)
 %
 % Example
 %     pixSize = 3*1e-6;
-%     sensor = sensorCreateIdeal('monochrome',pixSize);       % 3 micron, ideal monochrome
-%     sensor = sensorCreateIdeal('monochrome',pixSize,'rgb'); % 3 micron, ideal rgb pixel
+%     sensor = sensorCreateIdeal('monochrome',[],pixSize); % 3 micron, ideal monochrome
 %
 %  Or, 3 micron, ideal, stockman, regular grid
 %     pixSize = 2*1e-6;
@@ -133,12 +132,16 @@ switch lower(idealType)
         % are not calculated because noise flag is set to 1.
         sensor = sensorCreate('monochrome');
         sensor = sensorSet(sensor,'name','Monochrome');
-        
-        pixel  = sensorGet(sensor,'pixel');
-        if ieNotDefined('pixelSizeInMeters')
-            disp('2.8 micron sensor created');
-            pixelSizeInMeters = 2.8e-6;
+        if ~isempty(varargin)
+            pixelSizeInMeters = varargin{1};
+            sensor = sensorSet(sensor,'pixel size same fill factor',pixelSizeInMeters);
+        else
+            pixelSizeInMeters = sensorGet(sensor,'pixel size');
+            fprintf('Ideal sensor pixel size: %.2e\n',pixelSizeInMeters);
         end
+
+        pixel  = sensorGet(sensor,'pixel');
+
         sensor = sensorSet(sensor,'pixel',idealPixel(pixel,pixelSizeInMeters));
         sensor = sensorSet(sensor,'noise flag',1);  % Photon noise only
         

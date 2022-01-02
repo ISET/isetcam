@@ -70,7 +70,7 @@ for p = 1:P
         imagesG(:,:,p) = im;
     end
     fm(:,:,p) = gfocus(im2double(im), opts.nhsize);
-    fprintf('\b\b\b\b\b[%2.0i%%]',round(100*p/P))
+    %fprintf('\b\b\b\b\b[%2.0i%%]',round(100*p/P));
 end
 t1 = toc;
 
