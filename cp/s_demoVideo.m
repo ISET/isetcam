@@ -34,16 +34,32 @@ ourCamera.cmodules(1) = cpCModule('sensor', sensor);
 %sceneName = 'bistro';
 %scenePath = 'landscape';
 %sceneName = 'landscape';
-scenePath = 'ChessSet';
-sceneName = 'ChessSet';
-%scenePath = 'cornell_box';
-%sceneName = 'cornell_box';
+%scenePath = 'ChessSet';
+%sceneName = 'ChessSet';
+scenePath = 'cornell_box';
+sceneName = 'cornell_box';
 
 rays = 16; %128;
 pbrtCPScene = cpScene('pbrt', 'scenePath', scenePath, 'sceneName', sceneName, ...
     'resolution', [2*rez rez], ...
+    'sceneLuminance', 500, ...
     'numRays', rays);
-%     'sceneLuminance', 200, ...
+
+if strcmp(scenePath, "cornell_box")
+    % Add the Stanford bunny to the scene
+    bunny = piAssetLoad('bunny.mat');
+    bunny.name = 'Bunny';
+    % Zheng: there is an easy way to add bunny in the scene:
+    if isfield(bunny,'thisR')
+        pbrtCPScene.thisR = piRecipeMerge(pbrtCPScene.thisR, bunny.thisR);
+    else
+        piAssetAdd(pbrtCPScene.thisR, '0001ID_root', bunny);
+    end
+    % Zheng: This is another useful feature to place bunny at a targeted
+    % position.
+    pbrtCPScene.thisR.set('asset', 'Bunny', 'world position', [0 0.125 0]);
+end
+
 %     'lensFile','wide.77deg.4.38mm.json',...
 % set scene FOV to align with camera
 pbrtCPScene.thisR.recipeSet('fov',60);
@@ -56,23 +72,29 @@ pbrtCPScene.thisR.recipeSet('fov',60);
 %     LightSource "infinite" "string filename" "lightmap_v4.exr"
 % AttributeEnd
 %piLightDelete(pbrtCPScene.thisR, 'all'); 
-lightName = 'We can only hope';
+lightName = 'on the chess set';
 ourLight = piLightCreate(lightName,...
                         'type','distant',...
                         'spd spectrum','equalEnergy',...
                         'cameracoordinate', true, ...
-                        'specscale',2.0);
+                        'scale',[4.0 4.0 4.0]);
 
 pbrtCPScene.thisR.set('light', 'add', ourLight);
 
 % set the camera in motion
 % settings for a nice slow 6fps video:
-pbrtCPScene.cameraMotion = {{'unused', [.007, .005, 0], [-.4, -.4, 0]}};
+pbrtCPScene.cameraMotion = {{'unused', [.007, .005, 0], [-.45, -.45, 0]}};
 %pbrtCPScene.cameraMotion = {{'unused', [0, .01, 0], [-1, 0, 0]}};
+
+% try moving a chess piece
+%pbrtCPScene.objectMotion = {{'0011D_001_ChessSet_mesh_00005_O', ...
+%    [0, .01, 0], [0, 0, 0]}};
+
+
 
 
 videoFrames = ourCamera.TakePicture(pbrtCPScene, ...
-    'Video', 'numVideoFrames', 2, 'imageName','Video with Camera Motion');
+    'Video', 'numVideoFrames', 6, 'imageName','Video with Camera Motion');
 %imtool(videoFrames{1});
 if isunix
     demoVideo = VideoWriter('cpDemo', 'Motion JPEG AVI');
