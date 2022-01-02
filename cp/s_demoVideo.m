@@ -57,7 +57,8 @@ if strcmp(scenePath, "cornell_box")
     end
     % Zheng: This is another useful feature to place bunny at a targeted
     % position.
-    pbrtCPScene.thisR.set('asset', 'Bunny', 'world position', [0 0.125 0]);
+    pbrtCPScene.thisR.set('asset', 'Bunny_B', 'world position',...
+        [0 0.125 0]);
 end
 
 %     'lensFile','wide.77deg.4.38mm.json',...
