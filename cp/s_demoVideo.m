@@ -21,9 +21,11 @@ sensor = sensorCreate('imx363');
 % for some reason we only make it 600 x 800 by default
 %sensor = sensorSet(sensor,'pixelsize', ...
 %    sensorGet(sensor,'pixel size')/1);
-rez = 128;
-sensor = sensorSet(sensor,'size',[rez 2*rez]);
-% 
+rez = 1024;
+ourRows = rez;
+ourCols = floor((4/3)*rez); % for standard scenes, want 2:1 for Chess
+sensor = sensorSet(sensor,'size',[ourRows ourCols]);
+
 sensor = sensorSet(sensor,'noiseFlag', 0); % less noise
 
 % Cameras can eventually have more than one module (lens + sensor)
@@ -40,9 +42,9 @@ ourCamera.cmodules(1) = cpCModule('sensor', sensor);
 scenePath = 'cornell_box';
 sceneName = 'cornell_box';
 
-rays = 256; %128;
+rays = 128;
 pbrtCPScene = cpScene('pbrt', 'scenePath', scenePath, 'sceneName', sceneName, ...
-    'resolution', [2*rez rez], ...
+    'resolution', [ourCols ourRows], ... % seems like pbrt is "backwards"?
     'sceneLuminance', 500, ...
     'numRays', rays);
 
@@ -91,46 +93,56 @@ piWRS(thisR);
  
 %}
     
+pbrtCPScene.thisR.set('skymap','room.exr');
+
 if strcmp(scenePath, "cornell_box")
     % Add the Stanford bunny to the scene
+%{    
+    % This is a great way to do it, but the .mat assets are currently only
+    % working in v3...
     bunny = piAssetLoad('bunny.mat');
     bunny.name = 'Bunny';
-    % Zheng: there is an easy way to add bunny in the scene:
     if isfield(bunny,'thisR')
-        % default bunny is uber:(
-        bunny.thisR.set('material','delete','BunnyMat');
-        % get us a set of materials to use
-        piMaterialsInsert(bunny.thisR);
-        bunny.thisR.set('asset','001_Bunny_O','material name', 'Red');
         pbrtCPScene.thisR = piRecipeMerge(pbrtCPScene.thisR, bunny.thisR);
     else
         piAssetAdd(pbrtCPScene.thisR, '0001ID_root', bunny);
     end
+%}
+    bunnyR = piRecipeDefault('scene name', 'bunny');
+    %piWRS(bunnyR);
+    pbrtCPScene.thisR = piRecipeMerge(pbrtCPScene.thisR, bunnyR);
 
     % Zheng: This is another useful feature to place bunny at a targeted
     % position.
-    %pbrtCPScene.thisR.set('asset', 'Bunny_B', 'world position',...
-    %    [0 0.125 0]);
+    pbrtCPScene.thisR.set('asset', 'Bunny_B', 'world position',...
+        [0 0 .5]);
+    %take the back wall off for fun
+    pbrtCPScene.thisR.set('asset','003_cornell_box_O','delete');
+    
+    piMaterialsInsert(pbrtCPScene.thisR);
+    pbrtCPScene.thisR.set('asset','001_large_box_O','material name','glass');
+    
+    pbrtCPScene.thisR.set('asset','Bunny_O', 'material name', 'mirror');
+    pbrtCPScene.thisR.set('asset','Bunny_B', 'scale', 2);
+    %pbrtCPScene.thisR.set('fov',30);
+    
 elseif isequal(sceneName, 'ChessSet')
     % try moving a chess piece
     pbrtCPScene.objectMotion = {{'001_ChessSet_mesh_00005_O', ...
         [0, .1, 0], [0, 0, 0]}};
     pbrtCPScene.objectMotion = {{'001_ChessSet_mesh_00004_O', ...
         [0, 1, 0], [0, 0, 0]}};
+    %     'lensFile','wide.77deg.4.38mm.json',...
+    % set scene FOV to align with camera
+    pbrtCPScene.thisR.recipeSet('fov',60);
 end
 
-
-%     'lensFile','wide.77deg.4.38mm.json',...
-% set scene FOV to align with camera
-pbrtCPScene.thisR.recipeSet('fov',60);
-
-lightName = 'on the chess set';
+lightName = 'from camera';
 ourLight = piLightCreate(lightName,...
                         'type','distant',...
                         'spd spectrum','equalEnergy',...
                         'cameracoordinate', true, ...
                         'scale',[4.0 4.0 4.0]);
-
 pbrtCPScene.thisR.set('light', 'add', ourLight);
 
 % set the camera in motion
@@ -142,7 +154,7 @@ pbrtCPScene.cameraMotion = {{'unused', [.007, .005, 0], [-.45, -.45, 0]}};
 
 
 videoFrames = ourCamera.TakePicture(pbrtCPScene, ...
-    'Video', 'numVideoFrames', 12, 'imageName','Video with Camera Motion');
+    'Video', 'numVideoFrames', 4, 'imageName','Video with Camera Motion');
 %imtool(videoFrames{1});
 if isunix
     demoVideo = VideoWriter('cpDemo', 'Motion JPEG AVI');
