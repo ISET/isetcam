@@ -21,7 +21,7 @@ sensor = sensorCreate('imx363');
 % for some reason we only make it 600 x 800 by default
 %sensor = sensorSet(sensor,'pixelsize', ...
 %    sensorGet(sensor,'pixel size')/1);
-rez = 1024;
+rez = 128;
 sensor = sensorSet(sensor,'size',[rez 2*rez]);
 % 
 sensor = sensorSet(sensor,'noiseFlag', 0); % less noise
@@ -97,14 +97,20 @@ if strcmp(scenePath, "cornell_box")
     bunny.name = 'Bunny';
     % Zheng: there is an easy way to add bunny in the scene:
     if isfield(bunny,'thisR')
+        % default bunny is uber:(
+        bunny.thisR.set('material','delete','BunnyMat');
+        % get us a set of materials to use
+        piMaterialsInsert(bunny.thisR);
+        bunny.thisR.set('asset','001_Bunny_O','material name', 'Red');
         pbrtCPScene.thisR = piRecipeMerge(pbrtCPScene.thisR, bunny.thisR);
     else
         piAssetAdd(pbrtCPScene.thisR, '0001ID_root', bunny);
     end
+
     % Zheng: This is another useful feature to place bunny at a targeted
     % position.
-    pbrtCPScene.thisR.set('asset', 'Bunny_B', 'world position',...
-        [0 0.125 0]);
+    %pbrtCPScene.thisR.set('asset', 'Bunny_B', 'world position',...
+    %    [0 0.125 0]);
 elseif isequal(sceneName, 'ChessSet')
     % try moving a chess piece
     pbrtCPScene.objectMotion = {{'001_ChessSet_mesh_00005_O', ...
@@ -118,14 +124,6 @@ end
 % set scene FOV to align with camera
 pbrtCPScene.thisR.recipeSet('fov',60);
 
-% try deleting the default point light
-% but some scenes have environmental lights that work?
-% AttributeBegin
-%     Rotate -120 1 0 0
-%     Rotate 150 0 0 1
-%     LightSource "infinite" "string filename" "lightmap_v4.exr"
-% AttributeEnd
-%piLightDelete(pbrtCPScene.thisR, 'all'); 
 lightName = 'on the chess set';
 ourLight = piLightCreate(lightName,...
                         'type','distant',...
