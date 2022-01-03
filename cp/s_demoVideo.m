@@ -30,21 +30,67 @@ sensor = sensorSet(sensor,'noiseFlag', 0); % less noise
 % but for now, we just create one using our sensor
 ourCamera.cmodules(1) = cpCModule('sensor', sensor); 
 
+%%
 %scenePath = 'bistro';
 %sceneName = 'bistro';
 %scenePath = 'landscape';
 %sceneName = 'landscape';
-scenePath = 'ChessSet';
-sceneName = 'ChessSet';
-%scenePath = 'cornell_box';
-%sceneName = 'cornell_box';
+% scenePath = 'ChessSet';
+% sceneName = 'ChessSet';
+scenePath = 'cornell_box';
+sceneName = 'cornell_box';
 
-rays = 16; %128;
+rays = 256; %128;
 pbrtCPScene = cpScene('pbrt', 'scenePath', scenePath, 'sceneName', sceneName, ...
     'resolution', [2*rez rez], ...
     'sceneLuminance', 500, ...
     'numRays', rays);
 
+%{
+thisR = piRecipeDefault('scene name','cornell_box');
+thisR = piMaterialsInsert(thisR);
+thisR.set('nbounces',6);
+thisR.set('film resolution',[640 640]);
+    thisR.set('rays per pixel',128);
+
+thisR.set('lights','delete','all');
+[~, roomLight] = thisR.set('skymap','room.exr');
+    
+    %
+    % infinite, distant, area light, ...
+    %
+    % thisR.set('skymap','skycommand',param)
+    % thisR.set('skymap','add','room.exr')
+    % thisR.set('skymap','room.exr','delete');
+    % thisR.set('skymap','room.exr','rotate',val)
+    %
+       
+thisR.set('asset','003_cornell_box_O','delete');
+piWRS(thisR);
+
+thisR.set('lights','rotate',roomLight.name,[40 -25 0]);
+r = thisR.get('lights','skymap','rotation');
+r{2}
+piWRS(thisR);
+
+thisR.set('material','cbox_Material','reflectance val',[0.3 0.3 1]);
+
+thisR.set('asset','001_large_box_O','material name','glass');
+thisR.set('asset','003_cornell_box_O','delete');
+        
+
+piWRS(thisR);
+   
+thisR.set('lights','rotation',roomLight.name,[0 45 0 0]);
+
+piWRS(thisR);
+
+piWRS(thisR);
+    
+% We should be able to just look at the environment light.
+ 
+%}
+    
 if strcmp(scenePath, "cornell_box")
     % Add the Stanford bunny to the scene
     bunny = piAssetLoad('bunny.mat');
