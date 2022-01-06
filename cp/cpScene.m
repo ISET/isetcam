@@ -299,11 +299,12 @@ classdef cpScene < handle
                         % and some use focus (external)
                         switch (obj.thisR.camera.subtype)
                             case {'pinhole', 'perspective'}
-                                defaultPinholeFocal = .1; % should probably be allowed to pass?
-                                obj.thisR.set('focaldistance', defaultPinholeFocal);
-                                if isfield(obj.thisR.camera, 'focusdistance')
-                                    obj.thisR.camera = rmfield(obj.thisR.camera, 'focusdistance');
-                                end
+                                % try the default
+                                %defaultPinholeFocal = .1; % should probably be allowed to pass?
+                                %obj.thisR.set('focaldistance', defaultPinholeFocal);
+                                %if isfield(obj.thisR.camera, 'focusdistance')
+                                %    obj.thisR.camera = rmfield(obj.thisR.camera, 'focusdistance');
+                                %end
                             case {'omni', 'realistic'}
                                 if isempty(options.focusDistances) || isempty(options.focusDistances(ii))
                                     options.focusDistances(ii) = 5; % meters default
@@ -370,6 +371,7 @@ classdef cpScene < handle
                             % but maybe lighting does that for us?
                             %[sceneObject, results] = piRender(obj.thisR,  ...
                             %    'mean luminance', obj.sceneLuminance, 'verbose', obj.verbosity);
+                            obj.thisR.set('render type',{'radiance' 'depth'});
                             [sceneObject, results] = piRender(obj.thisR,  ...
                                 'verbose', obj.verbosity);
                         else

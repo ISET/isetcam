@@ -16,7 +16,6 @@ ourCamera = cpBurstCamera();
 
 % We'll use a pre-defined sensor for our Camera Module, and let it use
 % default optics for now. We can then assign the module to our camera:
-%sensor = sensorFromFile('ar0132atSensorRGB'); 
 sensor = sensorCreate('imx363');
 % for some reason we only make it 600 x 800 by default
 %sensor = sensorSet(sensor,'pixelsize', ...
@@ -42,10 +41,11 @@ ourCamera.cmodules(1) = cpCModule('sensor', sensor);
 scenePath = 'cornell_box';
 sceneName = 'cornell_box';
 
+numFrames = 4;
 rays = 128;
 pbrtCPScene = cpScene('pbrt', 'scenePath', scenePath, 'sceneName', sceneName, ...
     'resolution', [ourCols ourRows], ... % seems like pbrt is "backwards"?
-    'sceneLuminance', 500, ...
+    'sceneLuminance', 1500, ...
     'numRays', rays);
 
 %{
@@ -86,20 +86,17 @@ piWRS(thisR);
 thisR.set('lights','rotation',roomLight.name,[0 45 0 0]);
 
 piWRS(thisR);
-
-piWRS(thisR);
     
 % We should be able to just look at the environment light.
  
 %}
     
+pbrtCPScene.thisR.set('lights','delete','all');
 pbrtCPScene.thisR.set('skymap','room.exr');
 
 if strcmp(scenePath, "cornell_box")
     % Add the Stanford bunny to the scene
-%{    
-    % This is a great way to do it, but the .mat assets are currently only
-    % working in v3...
+
     bunny = piAssetLoad('bunny.mat');
     bunny.name = 'Bunny';
     if isfield(bunny,'thisR')
@@ -107,24 +104,20 @@ if strcmp(scenePath, "cornell_box")
     else
         piAssetAdd(pbrtCPScene.thisR, '0001ID_root', bunny);
     end
-%}
-    bunnyR = piRecipeDefault('scene name', 'bunny');
-    %piWRS(bunnyR);
-    pbrtCPScene.thisR = piRecipeMerge(pbrtCPScene.thisR, bunnyR);
-
-    % Zheng: This is another useful feature to place bunny at a targeted
-    % position.
     pbrtCPScene.thisR.set('asset', 'Bunny_B', 'world position',...
-        [0 0 .5]);
+        [0 0 1]);
     %take the back wall off for fun
     pbrtCPScene.thisR.set('asset','003_cornell_box_O','delete');
     
+    % add the basic materials from our library
     piMaterialsInsert(pbrtCPScene.thisR);
+
+    % hide the box so we can see through
     pbrtCPScene.thisR.set('asset','001_large_box_O','material name','glass');
-    
-    pbrtCPScene.thisR.set('asset','Bunny_O', 'material name', 'mirror');
-    pbrtCPScene.thisR.set('asset','Bunny_B', 'scale', 2);
-    %pbrtCPScene.thisR.set('fov',30);
+
+    % change the bunny to a more interesting material
+    pbrtCPScene.thisR.set('asset','001_Bunny_O', 'material name', 'mirror');
+    pbrtCPScene.thisR.set('asset','Bunny_B', 'scale', 3);
     
 elseif isequal(sceneName, 'ChessSet')
     % try moving a chess piece
@@ -142,7 +135,7 @@ ourLight = piLightCreate(lightName,...
                         'type','distant',...
                         'spd spectrum','equalEnergy',...
                         'cameracoordinate', true, ...
-                        'scale',[4.0 4.0 4.0]);
+                        'scale',[8 8 8]); % see if we can make it brighter
 pbrtCPScene.thisR.set('light', 'add', ourLight);
 
 % set the camera in motion
@@ -154,7 +147,7 @@ pbrtCPScene.cameraMotion = {{'unused', [.007, .005, 0], [-.45, -.45, 0]}};
 
 
 videoFrames = ourCamera.TakePicture(pbrtCPScene, ...
-    'Video', 'numVideoFrames', 4, 'imageName','Video with Camera Motion');
+    'Video', 'numVideoFrames', numFrames, 'imageName','Video with Camera Motion');
 %imtool(videoFrames{1});
 if isunix
     demoVideo = VideoWriter('cpDemo', 'Motion JPEG AVI');
