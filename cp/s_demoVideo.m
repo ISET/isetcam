@@ -1,6 +1,10 @@
 %%
 % Demo some advantages of GPU rendering
 % using our computational photography (cp) framework
+% uses a cpBurstCamera in 'video' mode to capture a series
+% of 3D images generated using ISET3d-v4/pbrt-v4.
+% 
+% Camera and object motion are supported.
 % 
 % Developed by David Cardinal, Stanford University, 2021
 %
@@ -20,7 +24,11 @@ sensor = sensorCreate('imx363');
 % for some reason we only make it 600 x 800 by default
 %sensor = sensorSet(sensor,'pixelsize', ...
 %    sensorGet(sensor,'pixel size')/1);
-rez = 1024;
+rez = 1024+512;
+numFrames = 6;
+rays = 12;
+%sensor = sensorSet(sensor, 'fov',45);
+
 ourRows = rez;
 ourCols = floor((4/3)*rez); % for standard scenes, want 2:1 for Chess
 sensor = sensorSet(sensor,'size',[ourRows ourCols]);
@@ -41,11 +49,9 @@ ourCamera.cmodules(1) = cpCModule('sensor', sensor);
 scenePath = 'cornell_box';
 sceneName = 'cornell_box';
 
-numFrames = 4;
-rays = 128;
 pbrtCPScene = cpScene('pbrt', 'scenePath', scenePath, 'sceneName', sceneName, ...
     'resolution', [ourCols ourRows], ... % seems like pbrt is "backwards"?
-    'sceneLuminance', 1500, ...
+    'sceneLuminance', 500, ...
     'numRays', rays);
 
 %{
@@ -54,45 +60,22 @@ thisR = piMaterialsInsert(thisR);
 thisR.set('nbounces',6);
 thisR.set('film resolution',[640 640]);
     thisR.set('rays per pixel',128);
-
-thisR.set('lights','delete','all');
-[~, roomLight] = thisR.set('skymap','room.exr');
-    
-    %
-    % infinite, distant, area light, ...
-    %
-    % thisR.set('skymap','skycommand',param)
-    % thisR.set('skymap','add','room.exr')
-    % thisR.set('skymap','room.exr','delete');
-    % thisR.set('skymap','room.exr','rotate',val)
-    %
-       
-thisR.set('asset','003_cornell_box_O','delete');
-piWRS(thisR);
-
-thisR.set('lights','rotate',roomLight.name,[40 -25 0]);
-r = thisR.get('lights','skymap','rotation');
-r{2}
-piWRS(thisR);
-
-thisR.set('material','cbox_Material','reflectance val',[0.3 0.3 1]);
-
-thisR.set('asset','001_large_box_O','material name','glass');
-thisR.set('asset','003_cornell_box_O','delete');
-        
-
-piWRS(thisR);
-   
-thisR.set('lights','rotation',roomLight.name,[0 45 0 0]);
-
-piWRS(thisR);
-    
-% We should be able to just look at the environment light.
- 
+            
 %}
-    
+
+% add the basic materials from our library
+piMaterialsInsert(pbrtCPScene.thisR);
+
+% put our scene in an interesting room
 pbrtCPScene.thisR.set('lights','delete','all');
-pbrtCPScene.thisR.set('skymap','room.exr');
+pbrtCPScene.thisR.set('skymap','room.exr','rotation val',{[90 0 1 0], [-90 1 0 0]});
+
+lightName = 'from camera';
+ourLight = piLightCreate(lightName,...
+                        'type','distant',...
+                        'cameracoordinate', true);
+
+pbrtCPScene.thisR.set('light', 'add', ourLight);
 
 if strcmp(scenePath, "cornell_box")
     % Add the Stanford bunny to the scene
@@ -105,20 +88,19 @@ if strcmp(scenePath, "cornell_box")
         piAssetAdd(pbrtCPScene.thisR, '0001ID_root', bunny);
     end
     pbrtCPScene.thisR.set('asset', 'Bunny_B', 'world position',...
-        [0 0 1]);
+        [0 0 1.3]);
     %take the back wall off for fun
     pbrtCPScene.thisR.set('asset','003_cornell_box_O','delete');
     
-    % add the basic materials from our library
-    piMaterialsInsert(pbrtCPScene.thisR);
-
     % hide the box so we can see through
     pbrtCPScene.thisR.set('asset','001_large_box_O','material name','glass');
 
     % change the bunny to a more interesting material
-    pbrtCPScene.thisR.set('asset','001_Bunny_O', 'material name', 'mirror');
+%    pbrtCPScene.thisR.set('asset','001_Bunny_O', 'material name', 'mirror');
+    pbrtCPScene.thisR.set('asset','001_Bunny_O', 'material name', 'glass');
     pbrtCPScene.thisR.set('asset','Bunny_B', 'scale', 3);
-    
+    %pbrtCPScene.thisR.recipeSet('fov',60);
+
 elseif isequal(sceneName, 'ChessSet')
     % try moving a chess piece
     pbrtCPScene.objectMotion = {{'001_ChessSet_mesh_00005_O', ...
@@ -130,25 +112,16 @@ elseif isequal(sceneName, 'ChessSet')
     pbrtCPScene.thisR.recipeSet('fov',60);
 end
 
-lightName = 'from camera';
-ourLight = piLightCreate(lightName,...
-                        'type','distant',...
-                        'spd spectrum','equalEnergy',...
-                        'cameracoordinate', true, ...
-                        'scale',[8 8 8]); % see if we can make it brighter
-pbrtCPScene.thisR.set('light', 'add', ourLight);
-
 % set the camera in motion
 % settings for a nice slow 6fps video:
-pbrtCPScene.cameraMotion = {{'unused', [.007, .005, 0], [-.45, -.45, 0]}};
+pbrtCPScene.cameraMotion = {{'unused', [.01, .01, 0], [-.33 -.33 0]}};
 %pbrtCPScene.cameraMotion = {{'unused', [0, .01, 0], [-1, 0, 0]}};
-
-
-
 
 videoFrames = ourCamera.TakePicture(pbrtCPScene, ...
     'Video', 'numVideoFrames', numFrames, 'imageName','Video with Camera Motion');
-%imtool(videoFrames{1});
+
+% optionally, take a peek
+% imtool(videoFrames{1});
 if isunix
     demoVideo = VideoWriter('cpDemo', 'Motion JPEG AVI');
 else
