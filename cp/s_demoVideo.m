@@ -54,15 +54,6 @@ pbrtCPScene = cpScene('pbrt', 'scenePath', scenePath, 'sceneName', sceneName, ..
     'sceneLuminance', 500, ...
     'numRays', rays);
 
-%{
-thisR = piRecipeDefault('scene name','cornell_box');
-thisR = piMaterialsInsert(thisR);
-thisR.set('nbounces',6);
-thisR.set('film resolution',[640 640]);
-    thisR.set('rays per pixel',128);
-            
-%}
-
 % add the basic materials from our library
 piMaterialsInsert(pbrtCPScene.thisR);
 
@@ -96,10 +87,13 @@ if strcmp(scenePath, "cornell_box")
     pbrtCPScene.thisR.set('asset','001_large_box_O','material name','glass');
 
     % change the bunny to a more interesting material
-%    pbrtCPScene.thisR.set('asset','001_Bunny_O', 'material name', 'mirror');
-    pbrtCPScene.thisR.set('asset','001_Bunny_O', 'material name', 'glass');
+    pbrtCPScene.thisR.set('asset','001_Bunny_O', 'material name', 'mirror');
+    %pbrtCPScene.thisR.set('asset','001_Bunny_O', 'material name', 'glass');
     pbrtCPScene.thisR.set('asset','Bunny_B', 'scale', 3);
     %pbrtCPScene.thisR.recipeSet('fov',60);
+
+    % make sure we get enough bounces to show off materials
+    pbrtCPScene.thisR.set('nbounces', 6);
 
 elseif isequal(sceneName, 'ChessSet')
     % try moving a chess piece
