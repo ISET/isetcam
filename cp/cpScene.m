@@ -366,12 +366,7 @@ classdef cpScene < handle
                             % by default also calc depth, could make that
                             % an option:
 
-                            obj.thisR.set('film render type',{'radiance','depth'});
-                            % we used to set scene luminance here
-                            % but maybe lighting does that for us?
-                            %[sceneObject, results] = piRender(obj.thisR,  ...
-                            %    'mean luminance', obj.sceneLuminance, 'verbose', obj.verbosity);
-                            obj.thisR.set('render type',{'radiance' 'depth'});
+                            obj.thisR.set('filmrendertype',{'radiance','depth'});
                             [sceneObject, results] = piRender(obj.thisR,  ...
                                 'verbose', obj.verbosity);
                         else
