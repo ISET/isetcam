@@ -40,6 +40,7 @@ opts = parseInputs(imlist, varargin{:});
 M = opts.size(1);
 N = opts.size(2);
 P = opts.size(3);
+nhSize = numel(imlist);
 
 %********* Read images and compute fmeasure **********
 %Initialize:
@@ -69,7 +70,7 @@ for p = 1:P
     else
         imagesG(:,:,p) = im;
     end
-    fm(:,:,p) = gfocus(im2double(im), opts.nhsize);
+    fm(:,:,p) = gfocus(im2double(im), nhSize);
     %fprintf('\b\b\b\b\b[%2.0i%%]',round(100*p/P));
 end
 t1 = toc;
