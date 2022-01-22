@@ -40,14 +40,14 @@ sensor = sensorSet(sensor,'noiseFlag', 0); % less noise
 ourCamera.cmodules(1) = cpCModule('sensor', sensor); 
 
 %%
-%scenePath = 'bistro';
-%sceneName = 'bistro';
+scenePath = 'bistro';
+sceneName = 'bistro';
 %scenePath = 'landscape';
 %sceneName = 'landscape';
 % scenePath = 'ChessSet';
 % sceneName = 'ChessSet';
-scenePath = 'cornell_box';
-sceneName = 'cornell_box';
+%scenePath = 'cornell_box';
+%sceneName = 'cornell_box';
 
 pbrtCPScene = cpScene('pbrt', 'scenePath', scenePath, 'sceneName', sceneName, ...
     'resolution', [ourCols ourRows], ... % seems like pbrt is "backwards"?
@@ -84,7 +84,7 @@ if strcmp(scenePath, "cornell_box")
     pbrtCPScene.thisR.set('asset','003_cornell_box_O','delete');
     
     % hide the box so we can see through
-    pbrtCPScene.thisR.set('asset','001_large_box_O','material name','glass');
+    pbrtCPScene.thisR.set('asset','001_large_box_O','material name','glass_architectural');
 
     % change the bunny to a more interesting material
     pbrtCPScene.thisR.set('asset','001_Bunny_O', 'material name', 'mirror');
