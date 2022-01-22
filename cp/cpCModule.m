@@ -49,8 +49,14 @@ classdef cpCModule
                 % distances
                 if isequal(focusMode, 'Stack')
                     focusFrames = focusParam;
+                    % we want an evenly spaced set of distances from near
+                    % to far
+                    if distanceRange(1) == distanceRange(2)
+                        focusDistances = repelem(distanceRange(1), focusParam);
+                    else
                     focusDistances = [distanceRange(1):(distanceRange(2)-distanceRange(1))/(focusFrames-1):...
                         distanceRange(2)];
+                    end
                     if numel(expTimes) < focusParam
                         expTimes = repelem(expTimes(1), focusParam);
                     end

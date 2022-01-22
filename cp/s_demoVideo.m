@@ -9,6 +9,12 @@
 % Developed by David Cardinal, Stanford University, 2021
 %
 
+%{
+% Materials Test
+thisR = piRecipeDefault();
+thisR = piMaterialsInsert(thisR);
+piWrite(thisR);
+%}
 ieInit();
 % some timing code, just to see how fast we run...
 setpref('ISET', 'benchmarkstart', cputime); 
@@ -58,7 +64,7 @@ pbrtCPScene = cpScene('pbrt', 'scenePath', scenePath, 'sceneName', sceneName, ..
 piMaterialsInsert(pbrtCPScene.thisR);
 
 % put our scene in an interesting room
-pbrtCPScene.thisR.set('lights','delete','all');
+%pbrtCPScene.thisR.set('lights','delete','all');
 pbrtCPScene.thisR.set('skymap','room.exr','rotation val',{[90 0 1 0], [-90 1 0 0]});
 
 lightName = 'from camera';

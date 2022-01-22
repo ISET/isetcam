@@ -306,7 +306,7 @@ classdef cpScene < handle
                                 %    obj.thisR.camera = rmfield(obj.thisR.camera, 'focusdistance');
                                 %end
                             case {'omni', 'realistic'}
-                                if isempty(options.focusDistances) || isempty(options.focusDistances(ii))
+                                if isempty(options.focusDistances) || numel(options.focusDistances) < ii || isempty(options.focusDistances(ii))
                                     options.focusDistances(ii) = 5; % meters default
                                 end
                                 obj.thisR.set('focusdistance', options.focusDistances(ii));

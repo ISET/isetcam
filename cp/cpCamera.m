@@ -146,7 +146,7 @@ classdef cpCamera < handle
                     end
                     % Compute exposure times if they weren't passed to us
                     if isequal(obj.expTimes, [])
-                        expTimes = [autoExposure(oi, obj.cmodules(1).sensor)];
+                        expTimes = obj.aExposure(oi);
                     else
                         expTimes = obj.expTimes;
                     end
@@ -163,6 +163,19 @@ classdef cpCamera < handle
             end
         end
         
+        function eTimes = aExposure(obj, oi)
+            % pick a rect in the center of the oi
+            iW = oiGet(oi,'cols');
+            iH = oiGet(oi,'rows');
+            fraction = 10; % arbitrary area around the center
+            top = floor((iH / 2) - (iH / (fraction*2)));
+            left = floor((iW / 2) - (iW / (fraction*2)));
+            w = floor(iW / fraction);
+            h = floor(iH / fraction);
+            cRect = [top, left, w, h];
+            eTimes = autoExposure(oi, obj.cmodules(1).sensor, .95, 'weighted','centerrect', cRect);
+        end
+
         function infoArray = showInfo(obj)
             infoArray = {'Camera Type:', class(obj)};
             infoArray = [infoArray; {'Intents', strjoin(obj.supportedIntents)}];
