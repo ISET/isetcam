@@ -151,7 +151,7 @@ end
 
 %% Make the plot window and use this default gray scale map
 
-g = ieNewGraphWin;
+g = ieNewGraphWin; g.Visible = 'off';
 mp = 0.4*gray(64) + 0.4*ones(size(gray(64)));
 colormap(mp);
 
@@ -648,6 +648,10 @@ switch pType
 end
 
 if exist('udata','var'), set(gcf,'userdata',udata); end
+if ~isempty(varargin) && isa(varargin{end},'char') && isequal(ieParamFormat(varargin{end}),'nofigure')
+    return;
+else,         g.Visible = 'On';
+end
 
 end
 

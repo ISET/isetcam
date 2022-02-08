@@ -13,20 +13,23 @@ function [uData, g] = sensorPlot(sensor, ptype, roilocs, varargin)
 %  roilocs:  When needed, specify the region of interest
 %
 % Optional key/val pairs
-%   'no fig'  - Do not plot the figure, just return the uData (logical)
+%   'twolines' - Plot color data from two lines to get RGB, for example
+%   'no fig'   - Do not plot the figure, just return the uData (logical)
 %
-%    Additional parameters may be required for different plot types. I will
-%    try to figure that out and put them here.
+%   Additional parameters may be required for different plot types. I will
+%   try to figure that out and put them here.
 %
 % Outputs:
 %  uData:  Structure of the plotted (user data)
 %  hdl:    Figure handle
 %
-% The main routine, sensorPlot, is a gateway to many other characterization
-% and plotting routines contained within this file.  Sensor plotting should
-% be called from here, if at all possible, so we avoid duplication.
+% Description
 %
-% The properties that can be plotted are:
+%  The main routine, sensorPlot, is a gateway to many other characterization
+%  and plotting routines contained within this file.  Sensor plotting should
+%  be called from here, if at all possible, so we avoid duplication.
+%
+%  The properties that can be plotted are:
 %
 % Sensor Data plots
 %  'electrons hline' - sensorPlot(sensor,'electrons hline',[x y])
@@ -226,7 +229,7 @@ switch pType
         if twoLines
             delete(g); roiLocs(2) = roiLocs(2) + 1;
             [~, uData2] = sensorPlotLine(sensor, 'h', 'electrons', 'space', roiLocs);
-            [g, uData] = sensorPlotTwoLines(sensor,uData,uData2);
+            [g, uData] = sensorPlotTwoLines(sensor,uData,uData2,'electrons');
             title(sprintf('Horizontal line %d',roiLocs(2)-1));
         end
     case {'electronsvline'}
@@ -234,7 +237,7 @@ switch pType
         if twoLines
             delete(g); roiLocs(1) = roiLocs(1) + 1;
             [~, uData2]  = sensorPlotLine(sensor, 'v', 'electrons', 'space', roiLocs);
-            [g, uData] = sensorPlotTwoLines(sensor,uData,uData2);
+            [g, uData] = sensorPlotTwoLines(sensor,uData,uData2,'electrons');
             title(sprintf('Vertical line %d',roiLocs(1)-1));
         end
     case {'voltshline'}
@@ -242,7 +245,7 @@ switch pType
         if twoLines
             delete(g); roiLocs(2) = roiLocs(2) + 1;
             [~,uData2]  = sensorPlotLine(sensor, 'h', 'volts', 'space', roiLocs);
-            [g, uData] = sensorPlotTwoLines(sensor,uData,uData2);
+            [g, uData] = sensorPlotTwoLines(sensor,uData,uData2,'volts');
             title(sprintf('Horizontal line %d',roiLocs(2)-1));
         end
     case {'voltsvline'}
@@ -250,7 +253,7 @@ switch pType
         if twoLines
             delete(g); roiLocs(1) = roiLocs(1) + 1;
             [~,uData2]  = sensorPlotLine(sensor, 'v', 'volts', 'space', roiLocs);
-            [g, uData]= sensorPlotTwoLines(sensor,uData,uData2);
+            [g, uData]= sensorPlotTwoLines(sensor,uData,uData2,'volts');
             title(sprintf('Vertical line %d',roiLocs(1)-1));
         end
     case {'dvvline'}
@@ -538,10 +541,11 @@ axis off
 end
 %%
 
-function [g,uData] = sensorPlotTwoLines(sensor,uData,uData2)
+function [g,uData] = sensorPlotTwoLines(sensor,uData,uData2,varargin)
 % Take data from two line plots and combine
 %
-%
+% We need to know if these are electrons or volts.  If not sent in, we
+% assume 'volts'.
 
 pixColor = [cell2mat(uData.pixColor),cell2mat(uData2.pixColor)];
 pixPos = [uData.pos,uData2.pos];
@@ -565,7 +569,13 @@ for ii=1:numel(pixColor)
     hold on;
 end
 
-xlabel('Position (um)'); ylabel('volts');
+xlabel('Position (um)'); 
+
+% The y-axis can be volts or electrons
+if isempty(varargin), ylabel('volts');
+else, ylabel(varargin{1});
+end
+
 grid on; set(gca,'xlim',[mn mx]);
 
 clear uData;

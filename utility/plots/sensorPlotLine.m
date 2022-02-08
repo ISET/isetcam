@@ -94,7 +94,7 @@ if nSensors > 1
     end
     uData = plotColorISALines(xy,pos,data,ori,nSensors,dataType,sORt,fColors,figNum);
 elseif nSensors == 1
-    figNum = vcNewGraphWin;
+    figNum = ieNewGraphWin;
     uData = plotMonochromeISALines(xy,pos,data,ori,dataType,sORt,figNum);
 end
 

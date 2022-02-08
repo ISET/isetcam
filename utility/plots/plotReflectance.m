@@ -1,8 +1,8 @@
-function hdl = plotReflectance(wavelength,reflectance,varargin)
+function [hdl, thisPlot] = plotReflectance(wavelength,reflectance,varargin)
 % Utility to plot and label reflectance data
 %
 % Syntax
-%   hdl = plotReflectance(wavelength,reflectance,varargin)
+%   [hdl, thisPlot] = plotReflectance(wavelength,reflectance,varargin)
 %
 % Inputs
 %    wavelength  - Wavelength samples (nm)
@@ -12,7 +12,8 @@ function hdl = plotReflectance(wavelength,reflectance,varargin)
 %    title
 %
 % Returns;
-%   hdl
+%   hdl      - ieNewGraphWin handle
+%   thisPlot - Return of the plot command
 %
 % See also
 %   ieNewGraphWin, plotRadiance, plot<X>
@@ -41,9 +42,9 @@ wavelength = wavelength(:);
 % The dimension that matches wavelength is the right one
 nWave = length(wavelength);
 if nWave == size(reflectance,1)
-    plot(wavelength(:),reflectance);
+    thisPlot = plot(wavelength(:),reflectance,'LineWidth',2);
 elseif length(wavelength) == size(reflectance,2)
-    plot(wavelength(:),reflectance');
+    thisPlot = plot(wavelength(:),reflectance','LineWidth',2);
 end
 
 %% Label it

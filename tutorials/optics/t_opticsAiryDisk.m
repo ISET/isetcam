@@ -1,4 +1,5 @@
 %% The Airy Disk of a diffraction limited system
+%
 % The *Airy Disk* describes the blur arising from an ideal (diffraction-limited)
 % uniformly illuminated, circular aperture. Its name arises from the astronomer
 % Lord Airy <https://en.wikipedia.org/wiki/Airy_disk (George Biddell Airy)>.
@@ -9,7 +10,9 @@
 %
 % Copyright ImagEval Consultants, LLC, 2010.
 
+%%
 ieInit
+
 %% Establish a scene and a diffraction limited optics
 %%
 scene = sceneCreate;
@@ -63,7 +66,7 @@ nCircleSamples = 200;
 %% Plot the diffraction limited PSF.
 %%
 x = sSupport(:,:,1); y = sSupport(:,:,2);
-vcNewGraphWin;
+ieNewGraphWin;
 mesh(x,y,psf);
 colormap(jet(64))
 
@@ -75,13 +78,20 @@ xlabel('Position (um)'); ylabel('Position (um)');
 zlabel('Irradiance (relative)');
 title(sprintf('Point spread (%.0f nm)',thisWave));
 
-% Return the plotted values to the user.  They can retrieve these using
+% Store the plotted values.  They can be retrieved using
 %
-% uData = get(gcf,'userData');   %  Note that case sensitivity is ignored
+%   uData = get(gcf,'userData');   
+%
 udata.x = x; udata.y = y; udata.psf = psf;
 set(gcf,'userdata',udata);
+
 %% The same result obtains if you use the ISET function
-%%
-f = oiPlot(oi,'psf',[],500,'um');
+%
+% All of these calculations are embedded in the oiPlot() function
+%
+
+[theData, hdl] = oiPlot(oi,'psf',[],500,'um');
+get(hdl,'userData')
+
 %%
 %
