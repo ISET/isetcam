@@ -320,7 +320,7 @@ end
 results.freq = freq(1:nn2out);
 results.mtf  = mtf(1:nn2out,:);
 results.nyquistf = nfreq;   % cyc/mm
-results.lsf = lsf;
+results.lsf = lsf/max(lsf(:));
 
 % Create the spatial samples for the linespread.
 x = (1:numel(lsf)); x = x - mean(x);
