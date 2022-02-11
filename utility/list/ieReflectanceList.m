@@ -1,4 +1,4 @@
-function [reflFileName, reflData, nSamples] = ieReflectanceList(varargin)
+function [reflFileNames, reflData, nSamples] = ieReflectanceList(varargin)
 %%
 % There are three places to load in the reflectances:
 %   isetcam/data/surfaces/reflectances
@@ -25,7 +25,7 @@ reflFileInfo{2} = dir(fullfile(reflFilePath{2}, '*.mat'));
 reflFileInfo{3} = dir(fullfile(reflFilePath{3}, 'esserChart.mat'));
 
 % reflFileName = cell(1, numel(reflFileInfo));
-reflFileName = {};
+reflFileNames = {};
 reflData = {};
 % sSamples = zeros(1, numel(reflFileName));
 nSamples = [];
@@ -33,11 +33,11 @@ cntRefl = 0;
 for nn=1:numel(reflFileInfo)
     curReflFileInfo = reflFileInfo{nn};
     for ii=1:numel(curReflFileInfo)
-        tmpName = which(curReflFileInfo(ii).name);
+        tmpName = curReflFileInfo(ii).name;
         curData = ieReadSpectra(tmpName, wave, 1);
         if max(curData(:)) <= 1
             cntRefl = cntRefl + 1;
-            reflFileName{cntRefl} = tmpName;
+            reflFileNames{cntRefl} = tmpName;
             nSamples(cntRefl) = size(curData, 2);
             % fprintf('Max reflectance for %s: is : %f\n', tmpName, max(curData(:)));
         end

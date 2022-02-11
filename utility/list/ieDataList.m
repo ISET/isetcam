@@ -12,6 +12,7 @@ switch ieParamFormat(type)
     case {'refl', 'reflectance'}
         [names, data, nSamples] = ieReflectanceList('wave', wave);
     case {'light'}
+        [names, data, nSamples] = ieLightList('wave', wave);
     case {'sensorqe'}
 end
 
