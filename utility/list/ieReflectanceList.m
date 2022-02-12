@@ -39,6 +39,7 @@ for nn=1:numel(reflFileInfo)
             cntRefl = cntRefl + 1;
             reflFileNames{cntRefl} = tmpName;
             nSamples(cntRefl) = size(curData, 2);
+            reflData{cntRefl} = curData;
             % fprintf('Max reflectance for %s: is : %f\n', tmpName, max(curData(:)));
         end
     end
