@@ -64,7 +64,7 @@ if ieNotDefined('grayFlag'), grayFlag = 1; end
 if ieNotDefined('sampling'), sampling = 'r'; end %With replacement by default
 
 %% Default scene
-scene = sceneCreate;
+scene = sceneCreate('empty');
 if ieNotDefined('wave'), wave = sceneGet(scene,'wave');
 else,                    scene = sceneSet(scene,'wave',wave);
 end
