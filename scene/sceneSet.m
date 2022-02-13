@@ -409,6 +409,8 @@ switch parm
         scene.illuminant.comment = val;
     case {'illuminantspectrum'}
         scene.illuminant.spectrum = val;
+    case {'illuminantwave'}
+        scene.illuminant.spectrum.wave = val(:);
         
     case {'rect'}
         % scene = sceneSet(scene,'rect',[x y h w]);
