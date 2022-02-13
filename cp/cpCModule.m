@@ -28,7 +28,7 @@ classdef cpCModule
             %cpCModule Construct an instance of this class
             arguments
                 % if we don't get sensor or oi passed in, use default
-                options.sensor = sensorCreate();
+                options.sensor = sensorCreate('imx363');
                 options.oi = oiCreate();
             end
             obj.sensor = options.sensor;
@@ -99,7 +99,8 @@ classdef cpCModule
              
             % need to know our sensor size to judge film size
             % however it is in meters and pi wants mm
-            filmSize = 1000 * sensorGet(obj.sensor, 'width');
+            % but we need to make sure it is at least 1 for pbrt!
+            filmSize = max(1, 1000 * sensorGet(obj.sensor, 'width'));
             % Render scenes as needed. Note that if pbrt has a lens file                                                                                    -
             % then 'sceneObjects' are actually oi structs                                                                                                          -
             
@@ -170,7 +171,7 @@ classdef cpCModule
                     opticalImage = oiSet(opticalImage, 'wangular', .30);
                 end
                 sensorImage = sensorCompute(obj.sensor, opticalImage);
-                cOutput = [cOutput sensorImage]; %#ok<AGROW>
+                cOutput = [sensorImage, focusDistances]; %#ok<AGROW>
             end
         end
     end

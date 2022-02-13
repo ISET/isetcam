@@ -208,7 +208,7 @@ classdef cpScene < handle
                 % time
 
                 options.reRender (1,1) {islogical} = true;
-                options.filmSize {mustBeNumeric} = 22; % default
+                options.filmSize {mustBeNumeric} = 4; % default
             end
             obj.numFrames = numel(expTimes);
             obj.expTimes = expTimes;

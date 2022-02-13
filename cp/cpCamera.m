@@ -164,6 +164,9 @@ classdef cpCamera < handle
         end
         
         function eTimes = aExposure(obj, oi)
+
+            %{
+            % optional code for center-weighted
             % pick a rect in the center of the oi
             iW = oiGet(oi,'cols');
             iH = oiGet(oi,'rows');
@@ -173,7 +176,8 @@ classdef cpCamera < handle
             w = floor(iW / fraction);
             h = floor(iH / fraction);
             cRect = [top, left, w, h];
-            eTimes = autoExposure(oi, obj.cmodules(1).sensor, .95, 'weighted','centerrect', cRect);
+            %}
+            eTimes = autoExposure(oi, obj.cmodules(1).sensor, .95, 'default');
         end
 
         function infoArray = showInfo(obj)
