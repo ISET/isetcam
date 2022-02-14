@@ -171,7 +171,7 @@ classdef cpCModule
                     opticalImage = oiSet(opticalImage, 'wangular', .30);
                 end
                 sensorImage = sensorCompute(obj.sensor, opticalImage);
-                cOutput = [sensorImage, focusDistances]; %#ok<AGROW>
+                cOutput = [cOutput, sensorImage]; %#ok<AGROW> 
             end
         end
     end

@@ -93,7 +93,11 @@ classdef cpIP < handle
                     % images?
                     for ii=1:numel(sensorImages)
                         %sensorWindow(sensorImages(ii));
-                        ourPhoto = ipCompute(obj.ip, sensorImages(ii));
+                        % ipCompute returns a vcimage object
+                        % in linear RGB (the results can be converted to
+                        % sRGB)
+                        ourPhotoImage = ipCompute(obj.ip, sensorImages(ii));
+                        ourPhoto = ourPhotoImage.data.result;
                     end
             end
             
