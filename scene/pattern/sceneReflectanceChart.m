@@ -64,9 +64,11 @@ if ieNotDefined('grayFlag'), grayFlag = 1; end
 if ieNotDefined('sampling'), sampling = 'r'; end %With replacement by default
 
 %% Default scene
-scene = sceneCreate;
+scene = sceneCreate('empty');
 if ieNotDefined('wave'), wave = sceneGet(scene,'wave');
-else,                    scene = sceneSet(scene,'wave',wave);
+else                   
+    scene = sceneSet(scene,'wave',wave);
+    scene = sceneSet(scene,'illuminant wave',wave);
 end
 nWave = length(wave);
 defaultLuminance = 100;  % cd/m2
