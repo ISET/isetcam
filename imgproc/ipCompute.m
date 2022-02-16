@@ -207,7 +207,7 @@ elseif nFilters >= 3 || nSensors > 1
     % zerolevel = sensorZerolevel(sensor);
     %
     zerolevel = sensorGet(sensor,'zero level');
-    if zerolevel ~= 0
+    if zerolevel ~= 0 && ~isnan(zerolevel)
         ip.data.input = max( (ip.data.input - zerolevel) ,0);
     end
     
