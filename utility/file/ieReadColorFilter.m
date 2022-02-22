@@ -46,7 +46,7 @@ if isempty(data)
     error('Cannot find %s\n',fname);
 elseif ( (max(data(:)) > 1) || (min(data(:)) < 0))
     if min(data(:)) >= 0
-        questdlg('Data values greater than 1. Scaling data to a maximum of 1.','Read Data','OK','OK');
+        warning('Data values greater than 1. Scaling data to a maximum of 1.','Read Data','OK','OK');
         data = ieScale(data,1);
     else
         errordlg('Data values less than 0. Adjust the data file.');
