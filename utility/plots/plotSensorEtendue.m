@@ -37,7 +37,7 @@ end
 support = sensorGet(sensor,'spatialSupport','um');
 mesh(support.x,support.y,sensorEtendue);
 zRange = get(gca,'zlim');
-if zRange(2) - zRange(1) < 0.1;
+if zRange(2) - zRange(1) < 0.1
     zRange(1) = floor(zRange(1)*10)/10;
     zRange(2) = zRange(1) + 0.2;
     set(gca,'zlim',[zRange(1) zRange(2)]);
