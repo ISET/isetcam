@@ -34,6 +34,9 @@ for nn=1:numel(reflFileInfo)
     curReflFileInfo = reflFileInfo{nn};
     for ii=1:numel(curReflFileInfo)
         tmpName = curReflFileInfo(ii).name;
+        if isequal(tmpName, 'reflectanceBasis.mat')
+            continue;
+        end
         curData = ieReadSpectra(tmpName, wave, 1);
         if max(curData(:)) <= 1
             cntRefl = cntRefl + 1;
