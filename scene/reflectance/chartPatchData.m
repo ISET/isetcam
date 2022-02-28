@@ -41,4 +41,4 @@ else  % Mean values from each patch
     end
 end
 
-return
+end
