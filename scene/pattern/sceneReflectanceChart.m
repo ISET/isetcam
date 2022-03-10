@@ -126,7 +126,7 @@ radiance = diag(e2pFactors)*reflectance;
 % they are not scaled to reasonable photon values.
 sData = zeros(rcSize(1),rcSize(2),nWave);
 % ZLY: Addded index map chart to retrive basis function wgts.
-rIdxMap = zeros(size(sData));
+rIdxMap = zeros(size(sData, 1, 2));
 for rr=1:rcSize(1)
     for cc=1:rcSize(2)
         idx = sub2ind(rcSize,rr,cc);
