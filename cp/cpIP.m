@@ -113,6 +113,7 @@ classdef cpIP < handle
                 singleSensor = sensorSet(singleSensor, 'exposure time', ...
                     [sensorGet(singleSensor,'exposure time') sensorGet(sensorArray(ii), 'exposure time')]);
                 singleSensor.data.volts(:,:,ii) = sensorArray(ii).data.volts;
+                singleSensor.data.dv(:,:,ii) = sensorArray(ii).data.dv;
             end
         end
     end

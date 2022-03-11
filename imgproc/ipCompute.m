@@ -337,6 +337,8 @@ sensorMax = ipGet(ip,'maximum sensor value');
 satMax    = satPercentage*sensorMax;
 
 % Set values > saturatation value to -1 in the img array
+% ISSUE: img input may be dv while satMax is in volts
+%   that means all values go to NaN!
 img(img > satMax) = 0;
 
 %% Estimate a sensor value accounting for all of the exposures

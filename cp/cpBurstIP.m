@@ -172,7 +172,10 @@ classdef cpBurstIP < cpIP
             for ii = 2:numel(sensorArray)
                 singleSensor = sensorSet(singleSensor, 'exposure time', ...
                     [sensorGet(singleSensor,'exposure time') sensorGet(sensorArray(ii), 'exposure time')]);
+
+                % need to build array of voltages and digital values
                 singleSensor.data.volts(:,:,ii) = sensorArray(ii).data.volts;
+                singleSensor.data.dv(:,:,ii) = sensorArray(ii).data.dv;
             end
         end
 

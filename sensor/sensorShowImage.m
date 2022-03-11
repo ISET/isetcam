@@ -53,9 +53,14 @@ function img = sensorShowImage(sensor,gam,scaleMax,app)
 
 if ieNotDefined('gam'),      gam = ieSessionGet('sensor gamma'); end
 if ieNotDefined('scaleMax'), scaleMax = 0; end
-if ieNotDefined('app'),      app = ieSessionGet('sensor window'); end
-
-axes(app.imgMain); cla;
+if ieNotDefined('app')
+    app = ieSessionGet('sensor window'); 
+    % if we're called without a sensor Window
+    % then we can't de-reference through app:
+    if ~isequal(app, 0)
+        axes(app.imgMain); cla;
+    end
+end
 if isempty(sensor),return; end
 
 % We have the voltage or digital values and we want to render them into an
