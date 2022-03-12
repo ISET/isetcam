@@ -364,7 +364,7 @@ switch sensorType
         if length(varargin) == 4, wave = varargin{4};
         else, wave = 400:10:700;
         end
-        
+
         sensor = sensorSet(sensor,'wave',wave);
         sensor = sensorCustom(sensor,filterPattern,filterFile);
         sensor = sensorSet(sensor,'size',sensorSize);
@@ -416,7 +416,20 @@ sensor = sensorSet(sensor,'name',sprintf('interleaved-%.0f',vcCountObjects('sens
 sensor = sensorSet(sensor,'cfaPattern',filterPattern);
 
 % Read in a default set of filter spectra
-[filterSpectra,filterNames] = sensorReadColorFilters(sensor,filterFile);
+% [filterSpectra,filterNames] = sensorReadColorFilters(sensor,filterFile);
+if ischar(filterFile) && exist(filterFile,'file')
+    [filterSpectra,filterNames] = sensorReadColorFilters(sensor,filterFile);
+elseif isstruct(filterFile)
+    filterSpectra = filterFile.data;
+    filterNames   = filterFile.filterNames;
+    filterWave    = filterFile.wavelength;
+    extrapVal = 0;
+    filterSpectra = interp1(filterWave, filterSpectra, sensorGet(sensor,'wave'),...
+        'linear',extrapVal);
+else
+    error('Bad format for filterFile variable.');
+end
+
 sensor = sensorSet(sensor,'filterSpectra',filterSpectra);
 sensor = sensorSet(sensor,'filterNames',filterNames);
 
@@ -428,11 +441,24 @@ function sensor = sensorCustom(sensor,filterPattern,filterFile)
 %  Set up a sensor with multiple color filters.
 %
 
+% Add the count
 sensor = sensorSet(sensor,'name',sprintf('custom-%.0f',vcCountObjects('sensor')));
 
+% Spatial pattern
 sensor = sensorSet(sensor,'cfaPattern',filterPattern);
 
-[filterSpectra,filterNames] = sensorReadColorFilters(sensor,filterFile);
+if ischar(filterFile) && exist(filterFile,'file')
+    [filterSpectra,filterNames] = sensorReadColorFilters(sensor,filterFile);
+elseif isstruct(filterFile)
+    filterSpectra = filterFile.data;
+    filterNames   = filterFile.filterNames;
+    filterWave    = filterFile.wavelength;
+    extrapVal = 0;
+    filterSpectra = interp1(filterWave, filterSpectra, sensorGet(sensor,'wave'),...
+        'linear',extrapVal);
+else
+    error('Bad format for filterFile variable.');
+end
 
 % Force the first character of the filter names to be lower case
 % This may not be necessary.  But we had a bug once and it is safer to

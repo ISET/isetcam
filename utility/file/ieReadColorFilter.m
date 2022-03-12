@@ -71,4 +71,4 @@ end
 % structure can contain auxiliary data, saved by ieSaveColorFilter, that
 % the user might have tucked into the file.
 
-return;
+end
