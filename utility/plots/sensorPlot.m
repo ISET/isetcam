@@ -104,6 +104,7 @@ function [uData, g] = sensorPlot(sensor, ptype, roilocs, varargin)
 
 %% Parse arguments
 if ieNotDefined('roilocs'),roilocs = []; end
+if ieNotDefined('sensor'), sensor = ieGetObject('sensor'); end
 
 varargin = ieParamFormat(varargin);
 

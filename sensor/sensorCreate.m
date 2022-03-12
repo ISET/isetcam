@@ -266,25 +266,6 @@ switch sensorType
         % sensorCreate('imx363',[],'row col',[300 400]);
         sensor = sensorIMX363('row col',[600 800], varargin{:});
         
-    case {'custom'}      % Often used for multiple channel
-        % sensorCreate('custom',filterColorLetters,filterPattern,filterFile,wave);
-        if length(varargin) >= 1, filterPattern = varargin{1};
-        else  % Must read it here
-        end
-        if length(varargin) >= 2, filterFile = varargin{2};
-        else % Should read it here, NYI
-            error('No filter file specified')
-        end
-        if length(varargin) <= 3 || isempty(varargin{3})
-            sensorSize = size(filterPattern);
-        else, sensorSize = varargin{3};
-        end
-        if length(varargin) == 4, wave = varargin{4};
-        else, wave = 400:10:700;
-        end
-        sensor = sensorSet(sensor,'wave',wave);
-        sensor = sensorCustom(sensor,filterPattern,filterFile);
-        sensor = sensorSet(sensor,'size',sensorSize);
     case {'fourcolor'}  % Often used for multiple channel
         % sensorCreate('custom',pixel,filterPattern,filterFile);
         if length(varargin) >= 1, filterPattern = varargin{1};
@@ -328,7 +309,7 @@ switch sensorType
         % See example in header.
         %
         if length(varargin) >= 1, params = varargin{1};
-        else params = [];
+        else, params = [];
         end
         
         % Assign key fields
@@ -367,6 +348,27 @@ switch sensorType
         sensor = sensorSet(sensor,'densities',rgbDensities);
         sensor = sensorSet(sensor,'rSeed',rSeed);
         
+    case {'custom'}      % Often used for multiple channel
+        % sensorCreate('custom',filterColorLetters,filterPattern,filterFile,wave);
+        if length(varargin) >= 1, filterPattern = varargin{1};
+        else  % Must read it here
+        end
+        if length(varargin) >= 2, filterFile = varargin{2};
+        else % Should read it here, NYI
+            error('No filter file specified')
+        end
+        if length(varargin) <= 3 || isempty(varargin{3})
+            sensorSize = size(filterPattern);
+        else, sensorSize = varargin{3};
+        end
+        if length(varargin) == 4, wave = varargin{4};
+        else, wave = 400:10:700;
+        end
+        
+        sensor = sensorSet(sensor,'wave',wave);
+        sensor = sensorCustom(sensor,filterPattern,filterFile);
+        sensor = sensorSet(sensor,'size',sensorSize);
+
     otherwise
         error('Unknown sensor type');
 end
