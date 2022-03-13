@@ -328,7 +328,7 @@ switch oType
                 else,                              val = 1;
                 end
             case {'quantization'}
-                if checkfield(ip,'data','quantization')
+                if checkfields(ip,'data','quantization')
                     val = ip.data.quantization;
                 end
             case {'nbits','bits'}
