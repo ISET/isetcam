@@ -344,10 +344,11 @@ end
 satMax    = satPercentage*sensorMax;
 
 % Set values > saturatation value to -1 in the img array
+%   so that we know to set them to sensor max later
 % ISSUE: img input may be dv while satMax is in volts
 %   if nbits (quantization) hasn't been set for the sensor
 %   that means all values go to NaN!
-img(img > satMax) = 0;
+img(img > satMax) = -1;
 
 %% Estimate a sensor value accounting for all of the exposures
 %
@@ -356,6 +357,8 @@ switch combinationMethod
         % Choose the max at each point
         [img,loc] = max(img,[],3);
         expByLoc  = expTimes(loc);
+        % Put back saturated highlights
+        img(img == -1) = sensorMax;
         img = img ./ expByLoc;
     otherwise
         error('Unknown combination method: %s\n', combinationMethod)
@@ -364,8 +367,7 @@ end
 % The largest value we can ever get
 % Note: Not clear if this works for both dv & voltage cases
 ip = ipSet(ip,'sensorMax',sensorMax/min(expTimes));
-%img = img ./ max(img,[],'all'); % scale
-%ip = ipSet(ip, 'sensorMax', max(img,[],'all'));
+
 ip = ipSet(ip,'input',img);
 
 end
