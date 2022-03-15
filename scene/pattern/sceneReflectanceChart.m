@@ -125,11 +125,14 @@ radiance = diag(e2pFactors)*reflectance;
 % Calculate the scene radiance data.  These are in photon units, but
 % they are not scaled to reasonable photon values.
 sData = zeros(rcSize(1),rcSize(2),nWave);
+% ZLY: Addded index map chart to retrive basis function wgts.
+rIdxMap = zeros(size(sData, 1, 2));
 for rr=1:rcSize(1)
     for cc=1:rcSize(2)
         idx = sub2ind(rcSize,rr,cc);
         if idx <= size(radiance,2)
             sData(rr,cc,:) = radiance(:,idx);
+            rIdxMap(rr, cc) = idx;
         else
             sData(rr,cc,:) = 0.2*illuminantPhotons;
         end
@@ -143,6 +146,8 @@ XYZ = ieXYZFromPhotons(sData,wave);
 
 % Build up the size of the image regions - still reflectances
 sData = imageIncreaseImageRGBSize(sData,pSize);
+% ZLY: Resize index map 
+rIdxMap = imageIncreaseImageRGBSize(rIdxMap, pSize);
 
 % Add data to scene, using equal energy illuminant
 scene = sceneSet(scene,'photons',sData);
@@ -166,6 +171,7 @@ chartP.wave     = wave;
 
 chartP.XYZ      = XYZ;
 chartP.rowcol   = rcSize;
+chartP.rIdxMap = rIdxMap;
 
 scene = sceneSet(scene,'chart parameters',chartP);
 

@@ -249,6 +249,12 @@ switch parm
         %
         % What about 'skip' optics case?  Should 'focalLength' call set
         % this to 1/2 the scene distance, which preserves the geometry?
+
+        % ZLY: visited here. I think it should be focalLength
+        if isequal(optics.model, 'skip')
+            val = optics.focalLength;
+            return;
+        end
         fL = opticsGet(optics,'focal length');
         if isempty(varargin), sDist = Inf;
         else,                 sDist = varargin{1};

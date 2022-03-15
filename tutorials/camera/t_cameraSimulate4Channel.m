@@ -56,8 +56,8 @@ d.comment     = 'Four color simulation for s_Simulate4Channel.m';
 d.wavelength  = wave;
 
 % Save them in a tmpFilter file
-filterFile = fullfile(pwd,'tmpFilter.mat');
-ieSaveColorFilter(d,filterFile)
+% filterFile = fullfile(pwd,'tmpFilter.mat');
+% ieSaveColorFilter(d,filterFile)
 
 % How the filters are positioned in the 2x2 block.
 filterOrder = [1 2 ; 3 4];
@@ -65,8 +65,9 @@ pixel = pixelCreate;
 
 % Initialize the sensor structure.  The spectrum is set to match the
 % pixel.spectrum entry.
-sensor = sensorCreate('Custom', pixel, filterOrder, filterFile);
-delete(filterFile);  % Delete to keep the directory clean
+% sensor = sensorCreate('Custom', pixel, filterOrder, filterFile);
+sensor = sensorCreate('Custom', pixel, filterOrder, d);
+% delete(filterFile);  % Delete to keep the directory clean
 
 sensor = sensorSet(sensor,'fov',sceneGet(scene,'fov')*1.1,oi);
 

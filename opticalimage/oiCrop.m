@@ -54,12 +54,21 @@ if ieNotDefined('oi'), error('You must define an optical image.'); end
 
 if ieNotDefined('rect')
     [roiLocs,rect] = ieROISelect(oi);
+elseif isequal(rect, 'roundeven')
+    % Sometimes you may want the oi size to be even, use this then.
+    sz = oiGet(oi, 'size');
+    rect = [1, 1, sz(2) - 1, sz(1) - 1];
+    if isodd(rect(3) - rect(1)),  rect(3) = rect(3) - 1; end
+    if isodd(rect(4) - rect(2)), rect(4) = rect(4) - 1; end
+    roiLocs = ieRect2Locs(rect);
 elseif isequal(rect,'border')
     sz = oiGet(oi,'size');
     % Rects are x,y, not row col.  Not sure why I had to screw
     % around like this with the 1 pixel offsets.  Something about
     % calculating from 1:N instead of 0:N-1
     rect = ceil([sz(2)*0.1 + 1, sz(1)*0.1 + 1, sz(2)* 0.8 - 1, sz(1)*0.8 - 1]);
+    if isodd(rect(3) - rect(1)), rect(3) = rect(3) - 1; end
+    if isodd(rect(4) - rect(2)), rect(4) = rect(4) - 1; end
     roiLocs = ieRect2Locs(rect);
 elseif isvector(rect)
     roiLocs = ieRect2Locs(rect);

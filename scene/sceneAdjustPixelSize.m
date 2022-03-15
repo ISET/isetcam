@@ -40,5 +40,4 @@ sceneFOV = 2 * atand(sensorWidth/(2*focalLength) ); % Scene hFOV
 
 % With this field of view, we guarantee a precise match
 scene = sceneSet(scene, 'fov', sceneFOV);
-
 end
