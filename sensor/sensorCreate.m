@@ -598,6 +598,7 @@ p.addParameter('wave',390:10:710,@isnumeric);
 p.addParameter('readnoise',5,@isnumeric);
 p.addParameter('qefilename', fullfile(isetRootPath,'data','sensor','qe_IMX363_public.mat'), @isfile);
 p.addParameter('irfilename', fullfile(isetRootPath,'data','sensor','ircf_public.mat'), @isfile);
+p.addParameter('nbits', 10, @isnumeric);
 
 % Parse the varargin to get the parameters
 p.parse(varargin{:});
@@ -621,6 +622,8 @@ prnu         = p.Results.prnu;          % Photoresponse nonuniformity
 readnoise    = p.Results.readnoise;     % Read noise in electrons
 qefilename   = p.Results.qefilename;    % QE curve file name
 irfilename   = p.Results.irfilename;    % IR cut filter file name
+nbits        = p.Results.nbits; % needs to be set for bracketing to work
+
 %% Initialize the sensor object
 
 sensor = sensorCreate('bayer-rggb');
@@ -675,6 +678,7 @@ sensor = sensorSet(sensor,'analog Offset',analogOffset);
 sensor = sensorSet(sensor,'exp time',exposuretime);
 sensor = sensorSet(sensor,'quantization method', quantization);
 sensor = sensorSet(sensor,'wave', wavelengths);
+sensor = sensorSet(sensor,'quantization method','10 bit');
 
 % Adjust the pixel fill factor
 sensor = pixelCenterFillPD(sensor,fillfactor);

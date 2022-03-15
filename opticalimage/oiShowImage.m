@@ -1,4 +1,4 @@
-function rgb = oiShowImage(oi,displayFlag,gam,oiW)
+function rgb = oiShowImage(oi,displayFlag,gam,oiW,titleString)
 % Render an image of the oi data
 %
 %    rgb = oiShowImage(oi,displayFlag,gam,oiW)
@@ -24,12 +24,12 @@ if ~exist('oi','var') || isempty(oi) || ~checkfields(oi,'data'), cla; return;  e
 if ~exist('gam','var') || isempty(gam), gam = 1; end
 if ~exist('displayFlag','var'), displayFlag = 1; end
 if ~exist('oiW','var'), oiW = []; end
+if ~exist('titleString','var'), titleString = 'OI Display'; end
 
 if ~isempty(oiW)
     % Make sure it is selected
     figure(oiW.figure1);
 end
-
 %% Don't duplicate the data
 if checkfields(oi,'data','photons')
     photons = oi.data.photons;
@@ -54,7 +54,7 @@ rgb = imageSPD(photons,wList,gam,sz(1),sz(2),-1*abs(displayFlag),[],[],oiW);
 if displayFlag >= 0
     if isempty(oiW)
         % Should be called imageAxis.  Not sure it is needed, really.
-        ieNewGraphWin
+        ieNewGraphWin('','',titleString);
     end
     if ~exist('xcoords','var') || ~exist('ycoords','var') ...
             || isempty(xcoords) || isempty(ycoords)
