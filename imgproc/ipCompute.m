@@ -333,7 +333,7 @@ expTimes      = sensorGet(sensor,'expTimes');
 % Get the data, either as volts or digital values.
 % Indicate which on return
 img       = ipGet(ip,'input');
-
+inputImg = img; % save for debugging
 % We might have gotten either volts or dv.
 % Despite comment above I don't think we know which? So...
 if isfield(sensor.data,'dv') && ~isempty(sensor.data.dv)
@@ -357,16 +357,16 @@ switch combinationMethod
         % Choose the max at each point
         [img,loc] = max(img,[],3);
         expByLoc  = expTimes(loc);
-        % Put back saturated highlights
-        img(img == -1) = sensorMax;
         img = img ./ expByLoc;
+
+        % Put back saturated highlights
+        img(img < 0) = sensorMax/min(expTimes);
+        % Now we need to normalize our data back to a single sensor image value
+        % this doesn't work well? ip = ipSet(ip,'sensorMax',sensorMax/min(expTimes));
+        img = img * min(expTimes);
     otherwise
         error('Unknown combination method: %s\n', combinationMethod)
 end
-
-% The largest value we can ever get
-% Note: Not clear if this works for both dv & voltage cases
-ip = ipSet(ip,'sensorMax',sensorMax/min(expTimes));
 
 ip = ipSet(ip,'input',img);
 

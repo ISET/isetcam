@@ -85,7 +85,7 @@ classdef cpBurstCamera < cpCamera
                 oi = oiCompute(previewImages{1},obj.cmodules(1).oi);
             end
             % by default set our base exposure to simple auto-exposure
-            baseExposure = [autoExposure(oi, obj.cmodules(1).sensor, .95, 'mean')];
+            baseExposure = [autoExposure(oi, obj.cmodules(1).sensor, .95, 'default')];
             
             
             switch intent

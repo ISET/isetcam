@@ -157,7 +157,7 @@ classdef cpCamera < handle
                     % Might force camera to a specific module also?
                     % Zoom is settable, but might be digital??
                     % Aperture also, maybe some shutter modes at some point
-                    expTimes = [.1];
+                    expTimes = [1]; % match default integration time?
                 case 'otherwise'
                     error("Unknown photo intent. You may need a specialized sub-class implementation.");
             end

@@ -110,7 +110,7 @@ switch lower(aeMethod)
         [integrationTime,maxSignalVoltage] = aeFull(oi,sensor,level);
     case 'cfa'
         [integrationTime,maxSignalVoltage] = aeCFA(oi,sensor,level);
-    case 'mean'
+    case {'mean'}
         [integrationTime,maxSignalVoltage] = aeMean(oi,sensor,level);
     case {'weighted','center'}
         integrationTime = aeWeighted(oi,sensor,level,'centerrect',centerRect);
