@@ -64,7 +64,10 @@ thisWave = 400;
 uData = oiPlot(oi,'psf',[],thisWave);
 
 view(2)
+% This is a diameter.
 AiryRingUM = (2.44*(thisWave/1000)*fNumber);
+
+% We make the image big enough to show the whole ing.
 set(gca,'xlim',[-AiryRingUM AiryRingUM],'ylim',[-AiryRingUM AiryRingUM])
 
 %% Show a slice through the psf as a function of angle
