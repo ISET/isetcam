@@ -1,14 +1,15 @@
-function [res,wave,comment,fname] = ieReadSpectra(fname,wave,extrapVal)
+function [res,wave,comment,fname] = ieReadSpectra(fname,wave,extrapVal,makePositive)
 % Read in spectral data and interpolate to the specified wavelengths
 %
 % Synopsis
-%   [res,wave,comment,fName] = ieReadSpectra(fname,wave,extrapVal)
+%   [res,wave,comment,fName] = ieReadSpectra(fname,wave,extrapVal,makePositive)
 %
 % Input:
 %   fname     - File name to read.  If empty, user is asked to pick.
 %   wave      - Wavelength samples (default whatever is in the file)
 %   extrapval - Extrapolation value for wavelengths outside the range in
 %               the file
+%   makePositive - Make sure the first basis is mainly positive
 %
 % Outputs
 %   res    - Interpolated and extrapolated values
@@ -72,7 +73,15 @@ end
 % interpolation will occur.
 if ~exist('wave','var')||isempty(wave),  wave = wavelength; end
 if ~exist('extrapVal','var')||isempty(extrapVal),  extrapVal = 0;  end
+if ~exist('makePositive','var'), makePositive = false; end
 
 res = interp1(wavelength(:), data, wave(:),'linear',extrapVal);
+
+% The first basis mean should be positive when this flag is set.
+if makePositive
+    if mean(res(:,1)) < 0
+        res = -1*res;
+    end
+end
 
 end

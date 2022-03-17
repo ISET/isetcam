@@ -9,22 +9,23 @@ function scene = sceneAdjustIlluminant(scene,illEnergy,preserveMean)
 %
 % Inputs
 %  scene:      A scene structure, or the current scene will be assumed
-%  illEnergy:  Either a file name to spectral data or a vector (same length
-%              as scene wave) defining the illuminant in energy units or an
-%              ISETCam illuminant struct.
+%  illEnergy:  Either a file name to spectral data, or 
+%              an illuminant energy vector (same length as scene wave)
+%              or an ISETCam illuminant struct.
 %  preserveMean:  Scale result to preserve mean illuminant (default true)
 %
 %  Description
-%    The calculation scales the scene radiance by dividing out the current
-%    illuminant and then multiplying by the new illuminant. This preserves
-%    the reflectance. By default, we also preserve the scene mean luminance,
-%    which effectively scales the illuminant level.
+%    The calculation scales the scene radiance by dividing out the
+%    current illuminant and then multiplying by the new illuminant.
+%    This preserves the reflectance. By default, we also preserve the
+%    scene mean luminance, which effectively scales the illuminant
+%    level.
 %
 %    If you do not want the illuminant level to change, then set the
 %    preserveMean flag to false. It is true by default.
 %
-%    If the current scene has no defined illuminant, we assume that the scene
-%    illuminant is D65.
+%    If the current scene has no defined illuminant, we assume that
+%    the scene illuminant is D65.
 %
 %    This appears to work if the scene is a spatial-spectral illuminant
 %    too.
