@@ -25,8 +25,17 @@ p.addRequired('pixelSize', @isvector);
 p.parse(scene, oi, pixelSize);
 
 %%
+% Adjust scene to certain distance
+% There is something I don't understand: why the focal length is not the
+% same as oiGet(oi, 'optics focal length')? I think we want to use the one
+% stored in optics.focalLength.
+scene = sceneSet(scene, 'distance', 2 * oi.optics.focalLength);
+ieAddObject(scene);
+
 % Get focal length
 focalLength = oiGet(oi, 'optics focal length', 'm'); % In meters
+
+
 
 % These are the number of scene sample pixels
 sceneSize = sceneGet(scene, 'size');

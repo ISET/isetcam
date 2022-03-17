@@ -132,7 +132,13 @@ switch ieParamFormat(oiType)
         
         % Add the wvf parameters
         oi.wvf = wvf;
-        
+    case {'pinhole'}
+        % Pinhole camera version of OI
+        oi = oiCreate;
+        oi = oiSet(oi, 'optics model', 'skip');
+        oi = oiSet(oi, 'bit depth', 64);
+        oi = oiSet(oi, 'optics offaxis method', 'skip');
+        oi = oiSet(oi, 'diffuser method', 'skip');
     otherwise
         fprintf('\n--- Valid OI types: ---\n')
         for ii=1:length(validTypes)

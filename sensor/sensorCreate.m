@@ -102,7 +102,6 @@ function sensor = sensorCreate(sensorType,pixel,varargin)
   sensor = sensorCreate('mt9v024');
   % sensor = sensorCreate('ar0132at'); % To be implemented.  See notes.
 %}
-
 %%
 if ieNotDefined('sensorType'), sensorType = 'default'; end
 
@@ -368,7 +367,6 @@ switch sensorType
         sensor = sensorSet(sensor,'wave',wave);
         sensor = sensorCustom(sensor,filterPattern,filterFile);
         sensor = sensorSet(sensor,'size',sensorSize);
-
     otherwise
         error('Unknown sensor type');
 end
