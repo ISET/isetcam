@@ -172,8 +172,13 @@ switch parm
         sz = sceneGet(scene,'size');
         val = [sceneGet(scene,'width')/sz(2) , sceneGet(scene,'height')/sz(1)];
         if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
+    
         
     case {'samplesize'}
+        % This is knotted up with sample spacing (basically the same
+        % thing).  We should untie the knot some day.  It goes
+        % through 'height' and 'width'.  For now, samplesize returns
+        % the same as the first entry of samplespacing.
         w = sceneGet(scene,'width');      % Image width in meters
         c = sceneGet(scene,'cols');       % Number of sample columns
         val = w/c;                        % M/sample
@@ -555,13 +560,12 @@ switch parm
     case 'height'
         % Height in meters is default
         % sceneGet(scene,'distance','microns')
-        s = sceneGet(scene,'sampleSize'); % Each side of a sample, M
+        s = sceneGet(scene,'sample size'); % Each side of a sample, M
         r = sceneGet(scene,'rows');
         val = s*r;
         if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
     case {'width'}
         % Width in meters is default
-        % Maybe we should use the same method as in 'height'?
         d = sceneGet(scene,'distance');
         w = sceneGet(scene,'wangular');  % Field of view (horizontal, width)
         val = 2*d*tan(deg2rad(w/2));

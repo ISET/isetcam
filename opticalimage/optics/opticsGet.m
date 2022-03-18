@@ -213,16 +213,44 @@ switch parm
         if rt,  val = opticsGet(optics, 'RTeffectiveFocalLength');
         elseif strcmpi(opticsGet(optics,'model'),'skip')
             
+
+            % I do not know what 'proper' distance means in these
+            % comments. (BW).
+
+            % Old comments
             % If you choose 'skip' because you want to treat the
-            % optics/lens as a pinhole, you must have a scene and in that
-            % case we use the proper distance (half the scene distance).
-            % When you are just skipping to save time, you may not have a
-            % scene.  In that case, use the optics focal length.
-            scene = vcGetObject('scene');
-            if isempty(scene), val = optics.focalLength;
-            else,              val = sceneGet(scene,'distance')/2;
-            end
+            % optics/lens as a pinhole, you must have a scene and in
+            % that case we use the proper distance (half the scene
+            % distance). 
+            % When you are just skipping to save time, you
+            % may not have a scene.  In that case, use the optics
+            % focal length.
+            % End Old comments 
+            %
+            % Old code.  We used to send back the half the scene
+            % distance.  ANd we never told the user what was
+            % happening. 
+            %
+            % What we used to do (before March 17, 2022)
+            %
+            % if ~isempty(varargin), scene = varargin{1};
+            % else, scene = vcGetObject('scene');
+            % end
+            % 
+            % if isempty(scene), val = optics.focalLength;
+            % else,              val = sceneGet(scene,'distance')/2;
+            % end
             
+            % New comments
+            %
+            % If this is a pinhole, then the focal length is how we
+            % specify the distance to the image plane.  If it is not a
+            % pinhole, here is the focal length.
+            %
+            % End new comments
+
+            val = optics.focalLength;
+
         else, val = optics.focalLength;
         end
         if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end

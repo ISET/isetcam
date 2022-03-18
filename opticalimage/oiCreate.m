@@ -136,9 +136,16 @@ switch ieParamFormat(oiType)
         % Pinhole camera version of OI
         oi = oiCreate;
         oi = oiSet(oi, 'optics model', 'skip');
-        oi = oiSet(oi, 'bit depth', 64);
+        oi = oiSet(oi, 'bit depth', 64);  % Forces double
         oi = oiSet(oi, 'optics offaxis method', 'skip');
         oi = oiSet(oi, 'diffuser method', 'skip');
+
+        % Pinhole do not have a focal length.  In this case, the focal
+        % length is used to say the image plane distance.
+        oi = oiSet(oi, 'optics focal length',NaN);
+        oi = oiSet(oi, 'optics name','pinhole');
+        oi = oiSet(oi, 'name', 'pinhole');
+        
     otherwise
         fprintf('\n--- Valid OI types: ---\n')
         for ii=1:length(validTypes)
