@@ -138,12 +138,12 @@ switch pType
         [uData, g] = imageNoise('shot noise');
         
         % Wavelength and color properties
-    case {'cfa','cfablock'}
-        fullArray = 0;    % Not the full array
-        [g, uData] = sensorShowCFA(sensor,fullArray);
+    case {'cfablock','cfa'}
+        % fullArray = 0;    % Not the full array
+        [g, uData] = sensorShowCFA(sensor);
     case {'cfafull'}
-        fullArray = 1;    % Show the full array
-        [g, uData] = sensorShowCFA(sensor,fullArray);
+        % fullArray = 1;    % Show the full array
+        [g, uData] = sensorShowCFA(sensor);
     case {'colorfilters'}
         [uData, g] = plotSpectra(sensor,'color filters');
     case {'irfilter'}

@@ -11,7 +11,7 @@ function [fig, cfaImg] = sensorShowCFA(sensor, app)
 % Inputs
 %  sensor:    Sensor object
 %  app:       app for the sensorWindow that has imgCFA as a slot
-%  (fullArray was recently deleted.  Maybe it should be put back)
+%           (fullArray was recently deleted.  Maybe it should be put back)
 %
 % Return
 %   fig:    Handle to the figure where data are rendered
@@ -34,7 +34,7 @@ function [fig, cfaImg] = sensorShowCFA(sensor, app)
 
 %%
 if ieNotDefined('sensor'),    sensor = vcGetObject('sensor'); end
-if ieNotDefined('fullArray'), fullArray = false; end
+% if ieNotDefined('fullArray'), fullArray = false; end
 if ieNotDefined('app')
     app = [];
 end
@@ -44,7 +44,7 @@ sScale = 32;
 
 %% Indexed color image of the sensor detectors.
 
-pattern = sensorGet(sensor,'pattern');
+pattern    = sensorGet(sensor,'pattern');
 nExposures = sensorGet(sensor,'n exposures');
 
 mxVolts = sensorGet(sensor,'voltage swing');
@@ -69,32 +69,6 @@ cfaSmall = sensorData2Image(ss);
 
 % Size scaling should be a parameter.
 cfaImg = imageIncreaseImageRGBSize(cfaSmall,sScale);
-
-
-% This was the old approach.  Needs more testing before we delete.
-%
-%{
-[cfaSmall,mp] = sensorImageColorArray(sensorDetermineCFA(sensor));
-if fullArray
-    % Set the image so each pixel is 3x3
-    s = 3;
-    cfaImg = imageIncreaseImageRGBSize(cfaSmall,s);
-else
-    % Get the first block
-    p = sensorGet(sensor,'pattern');
-    
-    % Number of blocks times the size
-    sz = size(p)*nBlocks;
-    cfaSmall = cfaSmall(1:sz(1),1:sz(2));
-    
-    % Make the image pretty big.  If it is a human sensor, the block is
-    % already quite big, so we don't make it too much bigger.
-    if max(size(cfaSmall,1)) < 64, s = 192/round(size(cfaSmall,1));
-    else,                           s = 3;
-    end
-    cfaImg = imageIncreaseImageRGBSize(cfaSmall,s);
-end
-%}
 
 %% Draw the CFA
 
