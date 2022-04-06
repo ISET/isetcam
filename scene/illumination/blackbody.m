@@ -1,4 +1,4 @@
-function [specRad XYZ] = blackbody( wave, temps, unitType , eqWave)
+function [specRad, XYZ] = blackbody( wave, temps, unitType , eqWave)
 %Generate the spectral power distribution of a blackbody radiator
 %
 %  [spec XYZ] = blackbody( wave, colortemperature, [unitType = 'energy'], [eqWave = 550] )
