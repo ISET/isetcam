@@ -103,7 +103,17 @@ switch sParam
         if exist(displayName,'file') || exist([displayName,'.mat'],'file')
             tmp = load(displayName);
             if ~isfield(tmp,'d')
-                error('No display struct in the file');
+                % It might be a spectra/basis function file (ZLY, 2022)
+                if isfield(tmp, 'wavelength') && isfield(tmp, 'data')
+                    [primeSPD, wave] = ieReadSpectra(displayName, [], [], true);
+                    d = displayCreate('default');
+                    d = displaySet(d, 'wave', wave);
+                    d = displaySet(d, 'spd', primeSPD);
+                    % Assume that this will be the final RGB 
+                    d = displaySet(d, 'gamma', 1);
+                else
+                    error('No display struct in the file');
+                end
             else
                 d = tmp.d;
                 d = displaySet(d,'name',displayName);

@@ -1,5 +1,5 @@
 function [scene,I] = sceneFromFile(I, imType, meanLuminance, dispCal, ...
-    wList, varargin)
+    wList, basisAlter, varargin)
 % Create an ISETCam scene structure by reading data from a file
 %
 % Synopsis:
@@ -127,6 +127,11 @@ if ischar(I)
     else, error('No file named %s\n',I);
     end
 end
+
+% Newly added basisalter
+if notDefined('basisAlter')
+    basisAlter = 'none';
+end
 %% Determine the photons and illuminant structure
 
 % We need to know the image type (rgb or multispectral).  Try to figure it
@@ -159,7 +164,50 @@ switch lower(imType)
         if length(varargin) > 2, sz = varargin{3};  else, sz = []; end
         
         % read radiance / reflectance
-        photons = vcReadImage(I, imType, d, doSub, sz);
+        switch ieParamFormat(basisAlter)
+            case 'none'
+                photons = vcReadImage(I, imType, d, doSub, sz);
+            case {'xyzmatch', 'xyznonneg', 'xyznonnegstrict'}
+                % This is the case we want XYZ of image + basis could equal 
+                % to XYZ of img convert from srgb to xyz space.
+                % 
+                srgb2xyz = colorTransformMatrix('srgb2xyz');
+                XYZcmf = ieReadSpectra('XYZEnergy.mat', wave);
+                primarySPD = displayGet(d, 'spd primaries'); % basis
+                if max(I(:)) > 1
+                    I = im2double(I);
+                end
+                [Ixw, r, c] = RGB2XWFormat(I);
+                XYZBasis = XYZcmf' * primarySPD;
+                if isequal(basisAlter, 'xyzmatch')
+                    T = pinv(XYZBasis) * srgb2xyz;
+                elseif isequal(basisAlter, 'xyznonnegstrict')
+                    % XYZBasis = XYZcmf' * primarySPD;
+                    T = zeros(size(primarySPD, 2), size(Ixw, 2));
+                    for ii = 1:size(Ixw, 2)
+                        T(:,ii) = lsqlin(XYZBasis, srgb2xyz(:,ii), -primarySPD,...
+                                        zeros(size(primarySPD, 1), 1));
+                    end
+                elseif isequal(basisAlter, 'xyznonneg')
+                    % XYZBasis = XYZcmf' * primarySPD;
+                    % Downsample the image to size (32, 32, 3) for okay
+                    % speed. Since the image should be blurred, hope the
+                    % downsample won't hurt too much.
+                    Ids = imresize(I, [32, 32]);
+                    Idsxw = RGB2XWFormat(Ids);
+                    T0 = pinv(XYZBasis) * srgb2xyz;
+                    fun = @(T)sum((XYZBasis * T - srgb2xyz).^2, 'all');
+                    nonlcon = @(Tsol)basisConstrainCreate(Tsol, primarySPD, double(Idsxw));
+                    [T, ~] = fmincon(fun, T0, [], [], [], [], [], [], nonlcon);
+                end
+                
+             I = XW2RGBFormat(Ixw * T', r, c);
+             % spdCheck = primarySPD * T * Ixw'; min(spdCheck(:))
+             %{ 
+                recXYZ = XW2RGBFormat((XYZcmf' * primarySPD * T * Ixw')', r, c);
+                ieNewGraphWin; imagesc(recXYZ);
+             %}
+        end
         
         % Match the display wavelength and the scene wavelength
         scene = sceneCreate('rgb');
@@ -275,4 +323,10 @@ if ~notDefined('wList')
     end
 end
 
+end
+
+function [c, ceq] = basisConstrainCreate(T, basis, imgXW)
+% https://www.mathworks.com/matlabcentral/answers/102051-how-do-i-pass-additional-parameters-to-the-constraint-and-objective-functions-in-the-optimization-to
+c = -basis * T * imgXW';
+ceq = [];
 end
