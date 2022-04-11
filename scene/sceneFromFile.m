@@ -1,4 +1,4 @@
-function [scene,I] = sceneFromFile(I, imType, meanLuminance, dispCal, ...
+function [scene,I, basisF] = sceneFromFile(I, imType, meanLuminance, dispCal, ...
     wList, basisAlter, varargin)
 % Create an ISETCam scene structure by reading data from a file
 %
@@ -171,33 +171,43 @@ switch lower(imType)
                 % This is the case we want XYZ of image + basis could equal 
                 % to XYZ of img convert from srgb to xyz space.
                 % 
+                % Get srgb2xyz matrix
                 srgb2xyz = colorTransformMatrix('srgb2xyz');
-                XYZcmf = ieReadSpectra('XYZEnergy.mat', wave);
-                primarySPD = displayGet(d, 'spd primaries'); % basis
+                XYZcmf = double(ieReadSpectra('XYZEnergy.mat', wave));
+                basisF = double(displayGet(d, 'spd primaries')); % basis
                 if max(I(:)) > 1
                     I = im2double(I);
                 end
                 [Ixw, r, c] = RGB2XWFormat(I);
-                XYZBasis = XYZcmf' * primarySPD;
+                % XYZBasis = XYZcmf' * basisF;
+                % For each pixel with p = [R, G, B], the XYZ value would be:
+                % XYZval = srgb2xyz * p';
+                % The goal is to apply a T such that the mapped XYZ will match with sRGB
+                % display:
+                % XYZval =  XYZcmf' * basis * T * p'
+                % So the goal is to make srgb2xyz' = T * XYZcmf' * basis, aka:
+                % XYZcmf' * basis * T = srgb2xyz;
                 if isequal(basisAlter, 'xyzmatch')
                     T = pinv(XYZBasis) * srgb2xyz;
                 elseif isequal(basisAlter, 'xyznonnegstrict')
                     % XYZBasis = XYZcmf' * primarySPD;
-                    T = zeros(size(primarySPD, 2), size(Ixw, 2));
+                    T = zeros(size(basisF, 2), size(Ixw, 2));
                     for ii = 1:size(Ixw, 2)
-                        T(:,ii) = lsqlin(XYZBasis, srgb2xyz(:,ii), -primarySPD,...
-                                        zeros(size(primarySPD, 1), 1));
+                        T(:,ii) = lsqlin(XYZBasis, srgb2xyz(:,ii), -basisF,...
+                                        zeros(size(basisF, 1), 1));
                     end
                 elseif isequal(basisAlter, 'xyznonneg')
+                    warning('Not working very well yet.');
+                    % This is not working as expectedly well yet. (ZLY)
                     % XYZBasis = XYZcmf' * primarySPD;
-                    % Downsample the image to size (32, 32, 3) for okay
+                    % Downsample the image to size (16, 16, 3) for okay
                     % speed. Since the image should be blurred, hope the
                     % downsample won't hurt too much.
-                    Ids = imresize(I, [32, 32]);
+                    Ids = imresize(I, [16, 16]);
                     Idsxw = RGB2XWFormat(Ids);
                     T0 = pinv(XYZBasis) * srgb2xyz;
                     fun = @(T)sum((XYZBasis * T - srgb2xyz).^2, 'all');
-                    nonlcon = @(Tsol)basisConstrainCreate(Tsol, primarySPD, double(Idsxw));
+                    nonlcon = @(Tsol)basisConstrainCreate(Tsol, basisF, double(Idsxw));
                     [T, ~] = fmincon(fun, T0, [], [], [], [], [], [], nonlcon);
                 end
                 
@@ -207,6 +217,8 @@ switch lower(imType)
                 recXYZ = XW2RGBFormat((XYZcmf' * primarySPD * T * Ixw')', r, c);
                 ieNewGraphWin; imagesc(recXYZ);
              %}
+             photonXW = Energy2Quanta(wave, (basisF * T * Ixw'))';
+             photons = XW2RGBFormat(photonXW, r, c);
         end
         
         % Match the display wavelength and the scene wavelength
@@ -313,6 +325,9 @@ if exist('d', 'var'), n = [n ' - ' displayGet(d, 'name')]; end
 scene = sceneSet(scene,'name',n);
 
 if ~notDefined('meanLuminance')
+    curMeanLum = sceneGet(scene, 'mean luminance');
+    lumRatio = meanLuminance/curMeanLum;
+    I = I * lumRatio;
     scene = sceneAdjustLuminance(scene,meanLuminance); % Adjust mean
 end
 
