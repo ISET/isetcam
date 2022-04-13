@@ -172,45 +172,41 @@ switch lower(imType)
                 % to XYZ of img convert from srgb to xyz space.
                 % 
                 % Get srgb2xyz matrix
-                srgb2xyz = colorTransformMatrix('srgb2xyz');
+                lrgb2xyz = colorTransformMatrix('lrgb2xyz');
+                lrgb2xyzCol = lrgb2xyz';
                 XYZcmf = double(ieReadSpectra('XYZEnergy.mat', wave));
                 basisF = double(displayGet(d, 'spd primaries')); % basis
                 if max(I(:)) > 1
                     I = im2double(I);
                 end
                 [Ixw, r, c] = RGB2XWFormat(I);
-                % XYZBasis = XYZcmf' * basisF;
+                XYZBasis = XYZcmf' * basisF;
                 % For each pixel with p = [R, G, B], the XYZ value would be:
-                % XYZval = srgb2xyz * p';
+                % XYZval = lrgb2xyz' * p'; where p is n x 3
                 % The goal is to apply a T such that the mapped XYZ will match with sRGB
                 % display:
                 % XYZval =  XYZcmf' * basis * T * p'
-                % So the goal is to make srgb2xyz' = T * XYZcmf' * basis, aka:
-                % XYZcmf' * basis * T = srgb2xyz;
-                if isequal(basisAlter, 'xyzmatch')
-                    T = pinv(XYZBasis) * srgb2xyz;
-                elseif isequal(basisAlter, 'xyznonnegstrict')
-                    % XYZBasis = XYZcmf' * primarySPD;
-                    T = zeros(size(basisF, 2), size(Ixw, 2));
-                    for ii = 1:size(Ixw, 2)
-                        T(:,ii) = lsqlin(XYZBasis, srgb2xyz(:,ii), -basisF,...
-                                        zeros(size(basisF, 1), 1));
+                % So the goal is to make lrgb2xyz' = T * XYZcmf' * basis, aka:
+                % XYZcmf' * basis * T = lrgb2xyz';
+                T = pinv(XYZBasis) * lrgb2xyzCol;
+                if isequal(basisAlter, 'xyznonneg')
+                    spectraRec = basisF * T * Ixw';
+                    sumF = sum(basisF * T * [1, 1, 1]', 2);
+                    ratio = spectraRec./sumF;
+                    rMin = min(ratio(:));
+                    if rMin < 0
+                        Ixw = Ixw + abs(rMin) + 100 * eps;
                     end
-                elseif isequal(basisAlter, 'xyznonneg')
-                    warning('Not working very well yet.');
-                    % This is not working as expectedly well yet. (ZLY)
-                    % XYZBasis = XYZcmf' * primarySPD;
-                    % Downsample the image to size (16, 16, 3) for okay
-                    % speed. Since the image should be blurred, hope the
-                    % downsample won't hurt too much.
-                    Ids = imresize(I, [16, 16]);
-                    Idsxw = RGB2XWFormat(Ids);
-                    T0 = pinv(XYZBasis) * srgb2xyz;
-                    fun = @(T)sum((XYZBasis * T - srgb2xyz).^2, 'all');
-                    nonlcon = @(Tsol)basisConstrainCreate(Tsol, basisF, double(Idsxw));
-                    [T, ~] = fmincon(fun, T0, [], [], [], [], [], [], nonlcon);
                 end
-                
+             %{
+                img = XW2RGBFormat(Ixw, r, c);
+                ieNewGraphWin; imagesc(img);
+                ieNewGraphWin; imagesc(I);
+                spectraCheck = basisF * T * Ixw';
+                tmp = min(spectraCheck', [], 2);
+                res = find(tmp < 0);
+                size(res)
+             %}
              I = XW2RGBFormat(Ixw * T', r, c);
              % spdCheck = primarySPD * T * Ixw'; min(spdCheck(:))
              %{ 

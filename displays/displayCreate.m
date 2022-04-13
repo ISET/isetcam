@@ -109,8 +109,10 @@ switch sParam
                     d = displayCreate('default');
                     d = displaySet(d, 'wave', wave);
                     d = displaySet(d, 'spd', primeSPD);
-                    % Assume that this will be the final RGB 
-                    d = displaySet(d, 'gamma', 1);
+                    % Use Apple display
+                    dApple = displayCreate('LCD-Apple');
+                    g = displayGet(dApple,'gamma');
+                    d = displaySet(d,'gamma',g);
                 else
                     error('No display struct in the file');
                 end

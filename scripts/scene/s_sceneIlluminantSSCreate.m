@@ -22,10 +22,10 @@ ieNewGraphWin; imagesc(imgH);
 
 %% Convert the image to a hyper spectral cube
 wave = sceneGet(scene,'wave');
-[illScene, wgts, basisF] = sceneFromFile(imgH,'rgb',100,'cieDaylightBasis',...
-                                            wave, 'xyznonnegstrict');
-energy = sceneGet(illuScene, 'energy');
-[wgtXW, r, c] = RGB2XWFormat(wgt);
+[illScene, wgts, basisF] = sceneFromFile(imgH,'rgb',50,'cieDaylightBasis',...
+                                            wave, 'xyznonneg');
+energy = sceneGet(illScene, 'energy');
+[wgtXW, r, c] = RGB2XWFormat(wgts);
 energyBasis = XW2RGBFormat((wgtXW * basisF'), r, c);
 fprintf('Max difference of energy between calculated and recon: %.9f\n',...
         max(energy(:) - energyBasis(:)));
