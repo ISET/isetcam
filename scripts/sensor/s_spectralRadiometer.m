@@ -1,48 +1,71 @@
-%% Build a sensor that is like a spectral radiance meter
+%% Build a sensor that simulates a spectral radiance meter
 %
 %  We will use the data from this sensor to estimate the Photon noise
 %  for different spectral lights
 %
+% See also
+%   s_radiometerCreate;
+
+%% 
+ieInit;
+
+%% Make the OI
+%
+% We can create different scene spectral radiances easily.
+% Maybe we should have
+%
+%   sceneCreate('uniform',specifyRelativeRadiance);
 %
 
+scene = sceneCreate('uniformD65');  % sceneWindow(scene);
+oi = oiCreate;
+oi = oiCompute(oi,scene);
+
 %% Create a radiometer sensor
-
-% This will go into sensorCreate some day.
-
 wave = 400:700;
-cfType = 'gaussian';
-cPos = 400:1:700; width = 5*ones(size(cPos));
 
-d.data = sensorColorFilter(cfType,wave, cPos, width);
-d.wavelength = wave;
-filterNames = cell(1,numel(cPos));
-for ii=1:numel(cPos), filterNames{ii} = sprintf('%d',ii); end
-
-d.filterNames = filterNames;
-d.comment = 'Gaussian filters for spectral radiance meter model';
-
-savedFile = ieSaveColorFilter(d,fullfile(isetRootPath,'data','sensor','colorfilters','radiometer.mat'));
-
-%%
-filterOrder = [1:301];
+[data, filterNames, fileData]  = ieReadColorFilter(wave,'radiometer');
+nFilters = size(data,2);
+filterOrder = 1:nFilters;
 filterFile = fullfile(isetRootPath, 'data', 'sensor', 'colorfilters', 'radiometer.mat');
+wSamples = zeros(size(filterNames));
+for ii=1:numel(filterNames)
+    wSamples(ii) = str2double(filterNames{ii});
+end
+
+
+%% Make the sensor
 pixel = pixelCreate('default', wave);
 pixel = pixelSet(pixel,'fill factor',1);
 pixel = pixelSet(pixel,'size same fill factor',[1.5 1.5]*1e-6);
 
 sensorRadiometer = sensorCreate('custom', pixel, filterOrder, filterFile,[], wave);
-sensorRadiometer = sensorSet(sensorRadiometer,'size',[10 301]);
+sensorRadiometer = sensorSet(sensorRadiometer,'size',[10 nFilters]);
 
-%%
-scene = sceneCreate('uniformD65');  sceneWindow(scene);
-oi = oiCreate;
-oi = oiCompute(oi,scene);
+%% The choice of exposure time matters a lot
+sensorRadiometer = sensorSet(sensorRadiometer,'exposure time',1/1);
+
+sensorRadiometer = sensorSet(sensorRadiometer,'noise flag',-2);
 sensorRadiometer = sensorCompute(sensorRadiometer,oi);
+electrons = sensorGet(sensorRadiometer,'electrons');
 sensorWindow(sensorRadiometer);
+
+sensorRadiometer = sensorSet(sensorRadiometer,'noise flag',-1);
+sensorRadiometer = sensorCompute(sensorRadiometer,oi);
+electronsNoNoise = sensorGet(sensorRadiometer,'electrons');
 
 %% Get the electrons across a line
 
-electrons = sensorGet(sensorRadiometer,'electrons');
-ieNewGraphWin;
-plot(wave,electrons(5,:));
+thisLine = electrons(5,:);
+sd = thisLine .^ 0.5;
+thisLineNoNoise = electronsNoNoise(5,:);
 
+ieNewGraphWin;
+errorbar(wSamples,thisLine,2*sd);
+hold on;
+plot(wSamples,thisLineNoNoise,'k-');
+
+grid on; xlabel('Wavelength (nm)'); ylabel('Electrons');
+set(gca,'ylim',[0 round(1.2*max(thisLine(:)),-1)]);
+
+%%
