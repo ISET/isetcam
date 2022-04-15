@@ -33,7 +33,6 @@ for ii=1:numel(filterNames)
     wSamples(ii) = str2double(filterNames{ii});
 end
 
-
 %% Make the sensor
 pixel = pixelCreate('default', wave);
 pixel = pixelSet(pixel,'fill factor',1);
@@ -43,7 +42,7 @@ sensorRadiometer = sensorCreate('custom', pixel, filterOrder, filterFile,[], wav
 sensorRadiometer = sensorSet(sensorRadiometer,'size',[10 nFilters]);
 
 %% The choice of exposure time matters a lot
-sensorRadiometer = sensorSet(sensorRadiometer,'exposure time',1/1);
+sensorRadiometer = sensorSet(sensorRadiometer,'exposure time',1/100);
 
 sensorRadiometer = sensorSet(sensorRadiometer,'noise flag',-2);
 sensorRadiometer = sensorCompute(sensorRadiometer,oi);
