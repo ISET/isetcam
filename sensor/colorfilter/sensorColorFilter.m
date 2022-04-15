@@ -41,9 +41,9 @@ function [fData, wave] = sensorColorFilter(cfType, wave, varargin)
 %}
 %{
   cfType = 'gaussian'; wave = [350:850];
-  cPos = 450:50:750; width = ones(size(cPos))*25;
+  cPos = 450:20:750; width = ones(size(cPos))*15;
   fData = sensorColorFilter(cfType,wave, cPos, width);
-  plot(wave,fData)
+  ieNewGraphWin; plot(wave,fData)
 %}
 %{
   cfType = 'ir filter'; wave = 400:800; irCut = 680; smooth = 5;
