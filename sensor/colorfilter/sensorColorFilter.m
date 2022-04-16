@@ -35,15 +35,22 @@ function [fData, wave] = sensorColorFilter(cfType, wave, varargin)
  vcNewGraphWin; plot(wave,fData)
 %}
 %{
+% Block filter
+ cfType = 'block';
+ cPos = [400:50:700]; width = ones(size(cPos))*40;
+ [fData,wave] = sensorColorFilter(cfType,wave,cPos,width);
+ ieNewGraphWin; plot(wave,fData)
+%}
+%{
  wave = [400:10:700]; cPos = [500,600]; width = [40,40];
  fData = sensorColorFilter(cfType,wave, cPos, width);
- vcNewGraphWin; plot(wave,fData);
+ ieNewGraphWin; plot(wave,fData);
 %}
 %{
   cfType = 'gaussian'; wave = [350:850];
-  cPos = 450:50:750; width = ones(size(cPos))*25;
+  cPos = 450:20:750; width = ones(size(cPos))*15;
   fData = sensorColorFilter(cfType,wave, cPos, width);
-  plot(wave,fData)
+  ieNewGraphWin; plot(wave,fData)
 %}
 %{
   cfType = 'ir filter'; wave = 400:800; irCut = 680; smooth = 5;
@@ -79,7 +86,21 @@ switch lower(cfType)
         for ii=1:nFilters
             fData(:,ii) = exp(-1/2*( (wave-cPos(ii))/(widths(ii))).^2);
         end
-        
+    case 'block'
+        % A set of block filters centered at cPos (vector) and widths
+        % (vector)
+
+        if length(varargin)<1, cPos = [450,550,650];
+        else, cPos = varargin{1}; end
+
+        if length(varargin)<2, widths = ones(size(cPos))*40;
+        else, widths = varargin{2}; end
+
+        nFilters = length(cPos);
+        fData = zeros(length(wave),nFilters);
+        for ii=1:nFilters
+            fData(:,ii) = abs(wave - cPos(ii)) <= (widths(ii)/2);
+        end
     case 'irfilter'
         % Infrared blocking filter.
         if length(varargin) < 1, cPos = 700;
