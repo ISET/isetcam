@@ -76,7 +76,7 @@ elseif isfield(inData,'data') && isfield(inData,'wavelength') && isfield(inData,
     if isfield(inData,'comment'), comment = inData.comment;
     else    comment = 'No comment';
     end
-    save(fullFileName,'wavelength','data','comment','filterNames');
+    save(fullFileName,'wavelength','data','comment','filterNames', '-v7.3');
     
     % We now check for additional fields and save those as well.  The user
     % can insert these fields even though they are not stored as part of
