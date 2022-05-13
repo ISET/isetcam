@@ -7,4 +7,7 @@ s_metricsMTFSlantedBarInfrared
 v_scielabExample
 s_scielabPatches
 
+% 
+s_metricsSPD
+
 %%
