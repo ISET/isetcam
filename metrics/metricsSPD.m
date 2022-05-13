@@ -20,7 +20,7 @@ function [val, params] = metricsSPD(spd1,spd2,varargin)
 %   distributions in several ways.
 %
 % See also
-%
+%   s_metricsSPD.m, v_metrics.m
 
 % Examples:
 %{
@@ -74,6 +74,7 @@ switch p.Results.metric
     case 'angle'
         CosTheta = max(min(dot(spd1,spd2)/(vecnorm(spd1)*vecnorm(spd2)),1),-1);
         val = real(acosd(CosTheta));
+
     case 'cielab'
         wave = p.Results.wave;
 
@@ -103,9 +104,10 @@ switch p.Results.metric
         params.lab1 = lab1;
         params.lab2 = lab2;
 
-    case 'cct'
-        % Correlated color temperature difference but
+    case {'mired','cct'}
+        % Correlated color temperature difference 
         %  1/ccct1 - 1/cct2
+        % Defined as mired.  See wikipedia.
 
         wave = p.Results.wave;
 
@@ -125,18 +127,5 @@ switch p.Results.metric
         error('Unknown metric %s',metric);
 end
 
-%
-
 end
 
-%{
-
-W =  ieXYZFromEnergy(w(:)',wave);
-X1 = ieXYZFromEnergy(spd1(:)',wave);
-X2 = ieXYZFromEnergy(spd2(:)',wave);
-
-X1LAB = ieXYZ2LAB(X1,W);
-X2LAB = ieXYZ2LAB(X2,W);
-dE = norm(X1LAB - X2LAB);
-
-%}
