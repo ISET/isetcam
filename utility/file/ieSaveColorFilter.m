@@ -74,8 +74,12 @@ elseif isfield(inData,'data') && isfield(inData,'wavelength') && isfield(inData,
     data        = inData.data;
     filterNames = inData.filterNames;
     if isfield(inData,'comment'), comment = inData.comment;
-    else    comment = 'No comment';
+    else,    comment = 'No comment';
     end
+
+    % For compatibility with Python read/writes, we save this file
+    % using version 7.3.  These files can still be read using modern
+    % recent Matlab versions.
     save(fullFileName,'wavelength','data','comment','filterNames', '-v7.3');
     
     % We now check for additional fields and save those as well.  The user
