@@ -1,20 +1,16 @@
-%%
+%% S_DEMOVIDEO
+%
 % Demo some advantages of GPU rendering
 % using our computational photography (cp) framework
 % uses a cpBurstCamera in 'video' mode to capture a series
 % of 3D images generated using ISET3d-v4/pbrt-v4.
 % 
-% Camera and object motion are supported.
+% Camera motion is supported on CPU and GPU.
+% Currently Object Motion is only supported on CPU (PBRT-v4 limitation)
 % 
-% Developed by David Cardinal, Stanford University, 2021
+% Developed by David Cardinal, Stanford University, 2021-2022.
 %
 
-%{
-% Materials Test
-thisR = piRecipeDefault();
-thisR = piMaterialsInsert(thisR);
-piWrite(thisR);
-%}
 ieInit();
 % some timing code, just to see how fast we run...
 setpref('ISET', 'benchmarkstart', cputime); 
@@ -24,59 +20,66 @@ setpref('ISET', 'tStart', tic);
 % capture and processing
 ourCamera = cpBurstCamera(); 
 
+% TODO: Better "meta-data" parameters here, that correlate scene size,
+%       Camera motion, Object Motion, and Frame Rate
+%
 % We'll use a pre-defined sensor for our Camera Module, and let it use
 % default optics for now. We can then assign the module to our camera:
 sensor = sensorCreate('imx363');
-% for some reason we only make it 600 x 800 by default
-%sensor = sensorSet(sensor,'pixelsize', ...
-%    sensorGet(sensor,'pixel size')/1);
-rez = 1024+512;
-numFrames = 6;
-rays = 12;
-%sensor = sensorSet(sensor, 'fov',45);
 
-ourRows = rez;
-ourCols = floor((4/3)*rez); % for standard scenes, want 2:1 for Chess
+% The sensor comes in with a small default resolution, and in any case
+% well want to decide on one for ourselves:
+sensorResolution = 2048;
+aspectRatio = 4/3;  % Set to desired ratio
+
+% Specify the number of frames for our video
+numFrames = 6; % Total number of frames to render
+videoFPS = 1; % How many frames per second to encode
+desiredMovement = 90; % how many degrees do we want to move around the scene
+
+% Rays per pixel (more is slower, but less noisy)
+raysPerPixel = 128;
+
+ourRows = sensorResolution;
+ourCols = floor(aspectRatio * sensorResolution); 
 sensor = sensorSet(sensor,'size',[ourRows ourCols]);
 
-sensor = sensorSet(sensor,'noiseFlag', 0); % less noise
+sensor = sensorSet(sensor,'noiseFlag', 0); % 0 is less noise
 
 % Cameras can eventually have more than one module (lens + sensor)
 % but for now, we just create one using our sensor
 ourCamera.cmodules(1) = cpCModule('sensor', sensor); 
 
 %%
-scenePath = 'bistro';
-sceneName = 'bistro';
-%scenePath = 'landscape';
-%sceneName = 'landscape';
-% scenePath = 'ChessSet';
-% sceneName = 'ChessSet';
+scenePath = 'ChessSet';
+sceneName = 'ChessSet';
+sceneWidth = 1; % rough width of scene in meters
+sceneHeight = .5; % rough height of scene in meters
+
 %scenePath = 'cornell_box';
 %sceneName = 'cornell_box';
 
 pbrtCPScene = cpScene('pbrt', 'scenePath', scenePath, 'sceneName', sceneName, ...
-    'resolution', [ourCols ourRows], ... % seems like pbrt is "backwards"?
+    'resolution', [ourCols ourRows], ... 
     'sceneLuminance', 500, ...
-    'numRays', rays);
+    'numRays', raysPerPixel);
 
 % add the basic materials from our library
 piMaterialsInsert(pbrtCPScene.thisR);
 
 % put our scene in an interesting room
-%pbrtCPScene.thisR.set('lights','delete','all');
-pbrtCPScene.thisR.set('skymap','room.exr','rotation val',{[90 0 1 0], [-90 1 0 0]});
+pbrtCPScene.thisR.set('skymap','room.exr');
 
 lightName = 'from camera';
 ourLight = piLightCreate(lightName,...
                         'type','distant',...
                         'cameracoordinate', true);
 
-pbrtCPScene.thisR.set('light', 'add', ourLight);
+pbrtCPScene.thisR.set('light', ourLight, 'add');
 
 if strcmp(scenePath, "cornell_box")
-    % Add the Stanford bunny to the scene
 
+    % If we have the Cornell box, add the Stanford bunny to the scene
     bunny = piAssetLoad('bunny.mat');
     bunny.name = 'Bunny';
     if isfield(bunny,'thisR')
@@ -103,19 +106,27 @@ if strcmp(scenePath, "cornell_box")
 
 elseif isequal(sceneName, 'ChessSet')
     % try moving a chess piece
+    % NOTE: This is currently ignored when rendering on GPU
     pbrtCPScene.objectMotion = {{'001_ChessSet_mesh_00005_O', ...
         [0, .1, 0], [0, 0, 0]}};
     pbrtCPScene.objectMotion = {{'001_ChessSet_mesh_00004_O', ...
         [0, 1, 0], [0, 0, 0]}};
-    %     'lensFile','wide.77deg.4.38mm.json',...
+
     % set scene FOV to align with camera
     pbrtCPScene.thisR.recipeSet('fov',60);
 end
 
-% set the camera in motion
-% settings for a nice slow 6fps video:
-pbrtCPScene.cameraMotion = {{'unused', [.01, .01, 0], [-.33 -.33 0]}};
-%pbrtCPScene.cameraMotion = {{'unused', [0, .01, 0], [-1, 0, 0]}};
+% set the camera in motion, using meters per second per axis
+% 'unused', then translate, then rotate
+translateXPerFrame = sceneWidth / numFrames;
+translateYPerFrame = sceneHeight / numFrames;
+
+rotateXPerFrame = -1 * (sceneWidth / numFrames);
+rotateYPerFrame = -1 * (sceneHeight / numFrames);
+
+pbrtCPScene.cameraMotion = {{'unused', ...
+    [translateXPerFrame, translateYPerFrame, 0], ...
+    [rotateXPerFrame, rotateYPerFrame, 0]}};
 
 videoFrames = ourCamera.TakePicture(pbrtCPScene, ...
     'Video', 'numVideoFrames', numFrames, 'imageName','Video with Camera Motion');
@@ -128,7 +139,7 @@ else
     % H.264 only works on Windows and Mac
     demoVideo = VideoWriter('cpDemo', 'MPEG-4');
 end
-demoVideo.FrameRate = 2;
+demoVideo.FrameRate = videoFPS;
 demoVideo.Quality = 99;
 open(demoVideo);
 for ii = 2:numel(videoFrames)
