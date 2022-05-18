@@ -172,8 +172,8 @@ switch lower(imType)
                 % to XYZ of img convert from srgb to xyz space.
                 % 
                 % Get srgb2xyz matrix
-                lrgb2xyz = colorTransformMatrix('lrgb2xyz');
-                lrgb2xyzCol = lrgb2xyz';
+                srgb2xyz = colorTransformMatrix('srgb2xyz');
+                srgb2xyzCol = srgb2xyz';
                 XYZcmf = double(ieReadSpectra('XYZEnergy.mat', wave));
                 basisF = double(displayGet(d, 'spd primaries')); % basis
                 if max(I(:)) > 1
@@ -182,13 +182,15 @@ switch lower(imType)
                 [Ixw, r, c] = RGB2XWFormat(I);
                 XYZBasis = XYZcmf' * basisF;
                 % For each pixel with p = [R, G, B], the XYZ value would be:
-                % XYZval = lrgb2xyz' * p'; where p is n x 3
+                % XYZval = srgb2xyz' * p'; where p is n x 3
                 % The goal is to apply a T such that the mapped XYZ will match with sRGB
                 % display:
                 % XYZval =  XYZcmf' * basis * T * p'
-                % So the goal is to make lrgb2xyz' = T * XYZcmf' * basis, aka:
-                % XYZcmf' * basis * T = lrgb2xyz';
-                T = pinv(XYZBasis) * lrgb2xyzCol;
+                % So the goal is to make srgb2xyz' = T * XYZcmf' * basis, aka:
+                % XYZcmf' * basis * T = srgb2xyz';
+                T = pinv(XYZBasis) * srgb2xyzCol;
+                % If current pixel values create negative values, apply a
+                % ratio on three channels to make it nonnegative.
                 if isequal(basisAlter, 'xyznonneg')
                     spectraRec = basisF * T * Ixw';
                     sumF = sum(basisF * T * [1, 1, 1]', 2);
