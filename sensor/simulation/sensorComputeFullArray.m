@@ -44,7 +44,9 @@ for kk=1:numChannels
     s = sensorCompute(s,oi,0);
     
     volts(:,:,kk) = sensorGet(s,'volts');
-    dvs(:,:,kk) = sensorGet(s, 'dv');
+    if ~isequal(sensorGet(s, 'quantization method'), 'analog')
+        dvs(:,:,kk) = sensorGet(s, 'dv');
+    end
 end
 
 end

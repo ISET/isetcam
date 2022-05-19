@@ -2,37 +2,37 @@ function [lgtNames, lgtData, nSamples] = ieLightList(varargin)
 
 %%
 p = inputParser;
+p.addParameter('lightdir', fullfile(isetRootPath, 'data', 'lights'), @ischar);
 p.addParameter('wave', 400:10:700, @isnumeric);
 p.parse(varargin{:});
 wave = p.Results.wave;
-
+lightDir = p.Results.lightdir;
 %%
+%{
 lgtFilePath{1} = fullfile(isetRootPath, 'data', 'lights');
 lgtFilePath{2} = fullfile(isetRootPath, 'data', 'lights', 'gretag');
 
 lgtFileInfo{1} = dir(fullfile(lgtFilePath{1}, '*.mat'));
 lgtFileInfo{2} = dir(fullfile(lgtFilePath{2}, '*.mat'));
-
+%}
+lgtFileInfo = dir(fullfile(lightDir, '**/*.mat'));
 lgtNames = {};
 lgtData = {};
 nSamples = [];
 
 cntLgt = 0;
 
-for nn=1:numel(lgtFileInfo)
-    curLgtFileInfo = lgtFileInfo{nn};
-    for ii=1:numel(curLgtFileInfo)
-        switch curLgtFileInfo(ii).name
-            case {'cct.mat'}
-                continue;
-            otherwise
-                spd = ieReadSpectra(curLgtFileInfo(ii).name, wave);
-                spd(spd == 0) = 1e-8;
-                cntLgt = cntLgt + 1;
-                lgtNames{cntLgt} = curLgtFileInfo(ii).name;
-                lgtData{cntLgt} = spd;
-                nSamples(cntLgt) = size(spd, 2);
-        end
+for ii=1:numel(lgtFileInfo)
+    switch lgtFileInfo(ii).name
+        case {'cct.mat'}
+            continue;
+        otherwise
+            spd = ieReadSpectra(lgtFileInfo(ii).name, wave);
+            spd(spd == 0) = 1e-8;
+            cntLgt = cntLgt + 1;
+            lgtNames{cntLgt} = lgtFileInfo(ii).name;
+            lgtData{cntLgt} = spd;
+            nSamples(cntLgt) = size(spd, 2);
     end
 end
 
