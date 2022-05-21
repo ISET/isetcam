@@ -29,16 +29,23 @@ sensor = sensorCreate('imx363');
 
 % The sensor comes in with a small default resolution, and in any case
 % well want to decide on one for ourselves:
-sensorResolution = 2048;
+nativeSensorResolution = 2048; % about real life
+sensorResolution = 512; % for optional faster rendering
+
+% default lens has 4mm focal length, adjust for
+% our sensor size?
+ourCamera.cmodules.oi.optics.focalLength = ...
+    ourCamera.cmodules.oi.optics.focalLength * ...
+    .1 * (sensorResolution / nativeSensorResolution);
 aspectRatio = 4/3;  % Set to desired ratio
 
 % Specify the number of frames for our video
 numFrames = 6; % Total number of frames to render
-videoFPS = 1; % How many frames per second to encode
-desiredMovement = 90; % how many degrees do we want to move around the scene
+videoFPS = 2; % How many frames per second to encode
+desiredRotation = 90; % how many degrees do we want to move around the scene
 
 % Rays per pixel (more is slower, but less noisy)
-raysPerPixel = 128;
+raysPerPixel = 16;
 
 ourRows = sensorResolution;
 ourCols = floor(aspectRatio * sensorResolution); 
@@ -68,7 +75,7 @@ pbrtCPScene = cpScene('pbrt', 'scenePath', scenePath, 'sceneName', sceneName, ..
 piMaterialsInsert(pbrtCPScene.thisR);
 
 % put our scene in an interesting room
-pbrtCPScene.thisR.set('skymap','room.exr');
+pbrtCPScene.thisR.set('skymap', 'room.exr', 'rotation val', [-90 -90 0]);
 
 lightName = 'from camera';
 ourLight = piLightCreate(lightName,...
@@ -102,7 +109,7 @@ if strcmp(scenePath, "cornell_box")
     %pbrtCPScene.thisR.recipeSet('fov',60);
 
     % make sure we get enough bounces to show off materials
-    pbrtCPScene.thisR.set('nbounces', 6);
+    pbrtCPScene.thisR.set('nbounces', 5);
 
 elseif isequal(sceneName, 'ChessSet')
     % try moving a chess piece
@@ -113,16 +120,18 @@ elseif isequal(sceneName, 'ChessSet')
         [0, 1, 0], [0, 0, 0]}};
 
     % set scene FOV to align with camera
-    pbrtCPScene.thisR.recipeSet('fov',60);
+    % Not clear this does what we want?
+    %pbrtCPScene.thisR.recipeSet('fov',60);
 end
 
 % set the camera in motion, using meters per second per axis
 % 'unused', then translate, then rotate
-translateXPerFrame = sceneWidth / numFrames;
-translateYPerFrame = sceneHeight / numFrames;
+translateXPerFrame = (sceneWidth / numFrames) / 3;
+translateYPerFrame = (sceneHeight / numFrames) / 1;
 
-rotateXPerFrame = -1 * (sceneWidth / numFrames);
-rotateYPerFrame = -1 * (sceneHeight / numFrames);
+% X-axis is 'vertical' rotation, Y-axis is 'horizontal'
+rotateXPerFrame = -.25 * (desiredRotation / numFrames);
+rotateYPerFrame = -.5 * (sceneHeight / numFrames);
 
 pbrtCPScene.cameraMotion = {{'unused', ...
     [translateXPerFrame, translateYPerFrame, 0], ...
