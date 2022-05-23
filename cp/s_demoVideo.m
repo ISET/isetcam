@@ -31,12 +31,6 @@ sensor = sensorCreate('imx363');
 % well want to decide on one for ourselves:
 nativeSensorResolution = 2048; % about real life
 sensorResolution = 512; % for optional faster rendering
-
-% default lens has 4mm focal length, adjust for
-% our sensor size?
-ourCamera.cmodules.oi.optics.focalLength = ...
-    ourCamera.cmodules.oi.optics.focalLength * ...
-    .1 * (sensorResolution / nativeSensorResolution);
 aspectRatio = 4/3;  % Set to desired ratio
 
 % Specify the number of frames for our video
@@ -52,6 +46,12 @@ ourCols = floor(aspectRatio * sensorResolution);
 sensor = sensorSet(sensor,'size',[ourRows ourCols]);
 
 sensor = sensorSet(sensor,'noiseFlag', 0); % 0 is less noise
+
+% make the pixels bigger for previewing:
+nativePSize = pixelGet(sensor.pixel,'pixel width');
+previewPSize = nativePSize * (nativeSensorResolution / sensorResolution);
+sensor.pixel = pixelSet(sensor.pixel,'sizesamefillfactor',[previewPSize previewPSize]);
+
 
 % Cameras can eventually have more than one module (lens + sensor)
 % but for now, we just create one using our sensor
@@ -75,7 +75,7 @@ pbrtCPScene = cpScene('pbrt', 'scenePath', scenePath, 'sceneName', sceneName, ..
 piMaterialsInsert(pbrtCPScene.thisR);
 
 % put our scene in an interesting room
-pbrtCPScene.thisR.set('skymap', 'room.exr', 'rotation val', [-90 -90 0]);
+pbrtCPScene.thisR.set('skymap', 'room.exr', 'rotation val', [-90 90 0]);
 
 lightName = 'from camera';
 ourLight = piLightCreate(lightName,...
@@ -121,7 +121,7 @@ elseif isequal(sceneName, 'ChessSet')
 
     % set scene FOV to align with camera
     % Not clear this does what we want?
-    %pbrtCPScene.thisR.recipeSet('fov',60);
+    %pbrtCPScene.thisR.recipeSet('fov',90);
 end
 
 % set the camera in motion, using meters per second per axis
