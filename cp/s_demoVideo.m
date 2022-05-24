@@ -30,26 +30,30 @@ sensor = sensorCreate('imx363');
 % The sensor comes in with a small default resolution, and in any case
 % well want to decide on one for ourselves:
 nativeSensorResolution = 2048; % about real life
-sensorResolution = 512; % for optional faster rendering
 aspectRatio = 4/3;  % Set to desired ratio
 
 % Specify the number of frames for our video
-numFrames = 6; % Total number of frames to render
-videoFPS = 2; % How many frames per second to encode
+numFrames = 32; % Total number of frames to render
+videoFPS = 4; % How many frames per second to encode
 desiredRotation = 90; % how many degrees do we want to move around the scene
 
 % Rays per pixel (more is slower, but less noisy)
-raysPerPixel = 16;
+raysPerPixel = 128;
 
-ourRows = sensorResolution;
-ourCols = floor(aspectRatio * sensorResolution); 
+% Fast Preview Factor
+fastPreview = 16 ; % multiplierfor optional faster rendering
+
+
+ourRows = floor(nativeSensorResolution / fastPreview);
+ourCols = floor(aspectRatio * ourRows); 
 sensor = sensorSet(sensor,'size',[ourRows ourCols]);
 
 sensor = sensorSet(sensor,'noiseFlag', 0); % 0 is less noise
 
-% make the pixels bigger for previewing:
+% Make the pixels bigger, but keep the sensor the same size
+% This is useful for previewing more quickly:
 nativePSize = pixelGet(sensor.pixel,'pixel width');
-previewPSize = nativePSize * (nativeSensorResolution / sensorResolution);
+previewPSize = nativePSize * fastPreview;
 sensor.pixel = pixelSet(sensor.pixel,'sizesamefillfactor',[previewPSize previewPSize]);
 
 
@@ -75,7 +79,7 @@ pbrtCPScene = cpScene('pbrt', 'scenePath', scenePath, 'sceneName', sceneName, ..
 piMaterialsInsert(pbrtCPScene.thisR);
 
 % put our scene in an interesting room
-pbrtCPScene.thisR.set('skymap', 'room.exr', 'rotation val', [-90 90 0]);
+pbrtCPScene.thisR.set('skymap', 'room.exr', 'rotation val', [-90 180 0]);
 
 lightName = 'from camera';
 ourLight = piLightCreate(lightName,...
@@ -126,12 +130,12 @@ end
 
 % set the camera in motion, using meters per second per axis
 % 'unused', then translate, then rotate
-translateXPerFrame = (sceneWidth / numFrames) / 3;
-translateYPerFrame = (sceneHeight / numFrames) / 1;
+translateXPerFrame = (sceneWidth / numFrames) / 4;
+translateYPerFrame = (sceneHeight / numFrames) / 2;
 
 % X-axis is 'vertical' rotation, Y-axis is 'horizontal'
-rotateXPerFrame = -.25 * (desiredRotation / numFrames);
-rotateYPerFrame = -.5 * (sceneHeight / numFrames);
+rotateXPerFrame = -.4 * (desiredRotation / numFrames);
+rotateYPerFrame = desiredRotation * 1.5 * (sceneWidth / numFrames);
 
 pbrtCPScene.cameraMotion = {{'unused', ...
     [translateXPerFrame, translateYPerFrame, 0], ...
