@@ -43,7 +43,7 @@ desiredYRotation = 90; % how many degrees do we want to move around the scene
 nativeRaysPerPixel = 1024;
 
 % Fast Preview Factor
-fastPreview = 16 ; % multiplierfor optional faster rendering
+fastPreview = 1; % 16 ; % multiplierfor optional faster rendering
 raysPerPixel = floor(nativeRaysPerPixel/fastPreview);
 
 ourRows = floor(nativeSensorResolution / fastPreview);
