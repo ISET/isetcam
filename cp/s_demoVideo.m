@@ -33,16 +33,18 @@ nativeSensorResolution = 2048; % about real life
 aspectRatio = 4/3;  % Set to desired ratio
 
 % Specify the number of frames for our video
-numFrames = 32; % Total number of frames to render
+numFrames = 16; % Total number of frames to render
 videoFPS = 4; % How many frames per second to encode
-desiredRotation = 90; % how many degrees do we want to move around the scene
+
+desiredXRotation = 20; % how many degrees do we want to move around the scene
+desiredYRotation = 90; % how many degrees do we want to move around the scene
 
 % Rays per pixel (more is slower, but less noisy)
-raysPerPixel = 128;
+nativeRaysPerPixel = 1024;
 
 % Fast Preview Factor
 fastPreview = 16 ; % multiplierfor optional faster rendering
-
+raysPerPixel = floor(nativeRaysPerPixel/fastPreview);
 
 ourRows = floor(nativeSensorResolution / fastPreview);
 ourCols = floor(aspectRatio * ourRows); 
@@ -130,15 +132,17 @@ end
 
 % set the camera in motion, using meters per second per axis
 % 'unused', then translate, then rotate
-translateXPerFrame = (sceneWidth / numFrames) / 4;
-translateYPerFrame = (sceneHeight / numFrames) / 2;
+% Z is into scene, Y is up, X is right
+translateZPerFrame = 0; 
+translateYPerFrame = (sceneHeight / numFrames) / 4;
+translateXPerFrame = (sceneWidth / numFrames);
 
 % X-axis is 'vertical' rotation, Y-axis is 'horizontal'
-rotateXPerFrame = -.4 * (desiredRotation / numFrames);
-rotateYPerFrame = desiredRotation * 1.5 * (sceneWidth / numFrames);
+rotateXPerFrame =  -1 * (desiredXRotation / numFrames);
+rotateYPerFrame = -1 * (desiredYRotation / numFrames);
 
 pbrtCPScene.cameraMotion = {{'unused', ...
-    [translateXPerFrame, translateYPerFrame, 0], ...
+    [translateXPerFrame, translateYPerFrame, translateZPerFrame], ...
     [rotateXPerFrame, rotateYPerFrame, 0]}};
 
 videoFrames = ourCamera.TakePicture(pbrtCPScene, ...
