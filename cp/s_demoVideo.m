@@ -38,7 +38,8 @@ videoFPS = 4; % How many frames per second to encode
 
 desiredXRotation = 20; % how many degrees do we want to move around the scene
 desiredYRotation = 90; % how many degrees do we want to move around the scene
-
+xGravity = 1; % Inverse of how many scene widths to move horizontally
+yGravity = 4; % Inverse of how many scene widths to move vertically
 % Rays per pixel (more is slower, but less noisy)
 nativeRaysPerPixel = 1024;
 
@@ -134,8 +135,8 @@ end
 % 'unused', then translate, then rotate
 % Z is into scene, Y is up, X is right
 translateZPerFrame = 0; 
-translateYPerFrame = (sceneHeight / numFrames) / 4;
-translateXPerFrame = (sceneWidth / numFrames);
+translateYPerFrame = (sceneHeight / numFrames) / yGravity;
+translateXPerFrame = (sceneWidth / numFrames) / xGravity;
 
 % X-axis is 'vertical' rotation, Y-axis is 'horizontal'
 rotateXPerFrame =  -1 * (desiredXRotation / numFrames);
