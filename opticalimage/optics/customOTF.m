@@ -67,7 +67,7 @@ if length(wavelength) == 1
     % The fSupport that comes here, however, has the OTF2D from -N:N.
     % To make things match up, we apply an fftshift to the OTF2D data prior to
     % interpolating.
-    %    foo    = interp2(X, Y, fftshift(OTF2D), fx, fy, '*linear');
+    %    foo    = interp2(X, Y, fftshift(OTF2D), fx, fy, 'linear');
     %    figure(1); mesh(fx,fy,foo);
     %    OTF2D = fftshift(foo);
     %    figure(1); mesh(fx,fy,OTF2D); OTF2D(1,1)
@@ -79,7 +79,7 @@ if length(wavelength) == 1
     % case of the filtered font.  We are tracking this down.  Odd and even
     % scene size is an issue.
     % Changed to ifftshift from fftshift on June 19,2011, as per AL
-    OTF2D    = ifftshift(interp2(X, Y, fftshift(OTF2D), fx, fy, '*linear',0));
+    OTF2D    = ifftshift(interp2(X, Y, fftshift(OTF2D), fx, fy, 'linear',0));
     
 else
     % disp('Warning:  unverified customOTF using multiple wavelengths')
@@ -87,7 +87,7 @@ else
     for ii=1:length(wavelength)
         tmp = opticsGet(optics,'otfData',wavelength(ii));
         OTF2D(:,:,ii) = ...
-            fftshift(interp2(X, Y, fftshift(tmp), fx, fy, '*linear',0));
+            fftshift(interp2(X, Y, fftshift(tmp), fx, fy, 'linear',0));
     end
 end
 
