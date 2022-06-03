@@ -1,5 +1,12 @@
 function [names, data, nSamples] = ieDataList(type, varargin)
 
+% Example
+%{
+ieDataList('refl');
+%}
+%{
+ieDataList('light');
+%}
 %% Parser
 varargin = ieParamFormat(varargin);
 p = inputParser;

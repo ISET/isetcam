@@ -1,6 +1,7 @@
 function [lgtNames, lgtData, nSamples] = ieLightList(varargin)
 
 %%
+varargin = ieParamFormat(varargin);
 p = inputParser;
 p.addParameter('lightdir', fullfile(isetRootPath, 'data', 'lights'), @ischar);
 p.addParameter('wave', 400:10:700, @isnumeric);
