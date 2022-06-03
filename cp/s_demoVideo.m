@@ -29,22 +29,36 @@ sensor = sensorCreate('imx363');
 
 % The sensor comes in with a small default resolution, and in any case
 % well want to decide on one for ourselves:
-sensorResolution = 2048;
+nativeSensorResolution = 2048; % about real life
 aspectRatio = 4/3;  % Set to desired ratio
 
 % Specify the number of frames for our video
-numFrames = 6; % Total number of frames to render
-videoFPS = 1; % How many frames per second to encode
-desiredMovement = 90; % how many degrees do we want to move around the scene
+numFrames = 16; % Total number of frames to render
+videoFPS = 4; % How many frames per second to encode
 
+desiredXRotation = 20; % how many degrees do we want to move around the scene
+desiredYRotation = 90; % how many degrees do we want to move around the scene
+xGravity = 1; % Inverse of how many scene widths to move horizontally
+yGravity = 4; % Inverse of how many scene widths to move vertically
 % Rays per pixel (more is slower, but less noisy)
-raysPerPixel = 128;
+nativeRaysPerPixel = 1024;
 
-ourRows = sensorResolution;
-ourCols = floor(aspectRatio * sensorResolution); 
+% Fast Preview Factor
+fastPreview = 1; % 16 ; % multiplierfor optional faster rendering
+raysPerPixel = floor(nativeRaysPerPixel/fastPreview);
+
+ourRows = floor(nativeSensorResolution / fastPreview);
+ourCols = floor(aspectRatio * ourRows); 
 sensor = sensorSet(sensor,'size',[ourRows ourCols]);
 
 sensor = sensorSet(sensor,'noiseFlag', 0); % 0 is less noise
+
+% Make the pixels bigger, but keep the sensor the same size
+% This is useful for previewing more quickly:
+nativePSize = pixelGet(sensor.pixel,'pixel width');
+previewPSize = nativePSize * fastPreview;
+sensor.pixel = pixelSet(sensor.pixel,'sizesamefillfactor',[previewPSize previewPSize]);
+
 
 % Cameras can eventually have more than one module (lens + sensor)
 % but for now, we just create one using our sensor
@@ -68,7 +82,7 @@ pbrtCPScene = cpScene('pbrt', 'scenePath', scenePath, 'sceneName', sceneName, ..
 piMaterialsInsert(pbrtCPScene.thisR);
 
 % put our scene in an interesting room
-pbrtCPScene.thisR.set('skymap','room.exr');
+pbrtCPScene.thisR.set('skymap', 'room.exr', 'rotation val', [-90 180 0]);
 
 lightName = 'from camera';
 ourLight = piLightCreate(lightName,...
@@ -102,7 +116,7 @@ if strcmp(scenePath, "cornell_box")
     %pbrtCPScene.thisR.recipeSet('fov',60);
 
     % make sure we get enough bounces to show off materials
-    pbrtCPScene.thisR.set('nbounces', 6);
+    pbrtCPScene.thisR.set('nbounces', 5);
 
 elseif isequal(sceneName, 'ChessSet')
     % try moving a chess piece
@@ -113,19 +127,23 @@ elseif isequal(sceneName, 'ChessSet')
         [0, 1, 0], [0, 0, 0]}};
 
     % set scene FOV to align with camera
-    pbrtCPScene.thisR.recipeSet('fov',60);
+    % Not clear this does what we want?
+    %pbrtCPScene.thisR.recipeSet('fov',90);
 end
 
 % set the camera in motion, using meters per second per axis
 % 'unused', then translate, then rotate
-translateXPerFrame = sceneWidth / numFrames;
-translateYPerFrame = sceneHeight / numFrames;
+% Z is into scene, Y is up, X is right
+translateZPerFrame = 0; 
+translateYPerFrame = (sceneHeight / numFrames) / yGravity;
+translateXPerFrame = (sceneWidth / numFrames) / xGravity;
 
-rotateXPerFrame = -1 * (sceneWidth / numFrames);
-rotateYPerFrame = -1 * (sceneHeight / numFrames);
+% X-axis is 'vertical' rotation, Y-axis is 'horizontal'
+rotateXPerFrame =  -1 * (desiredXRotation / numFrames);
+rotateYPerFrame = -1 * (desiredYRotation / numFrames);
 
 pbrtCPScene.cameraMotion = {{'unused', ...
-    [translateXPerFrame, translateYPerFrame, 0], ...
+    [translateXPerFrame, translateYPerFrame, translateZPerFrame], ...
     [rotateXPerFrame, rotateYPerFrame, 0]}};
 
 videoFrames = ourCamera.TakePicture(pbrtCPScene, ...
