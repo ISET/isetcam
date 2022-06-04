@@ -22,25 +22,30 @@ function [img,parms] = imageHarmonic(parms)
 % Default parameters are applied if parms is not sent in.  You can see the
 % defaults by requesting them on return as below.
 %
-% Example:
-%   [img,p] = imageHarmonic;
-%   figure; imagesc(img), colormap(gray(64)); axis image
-%
-%   parms.row = 32; parms.col = 32; parms.contrast = 1;
-%   parms.ph = pi/2; parms.freq = 2; parms.ang = pi/6;
-%   parms.GaborFlag = 0.2;
-%   [img,p] = imageHarmonic(parms);
-%   vcNewGraphWin; imagesc(img), colormap(gray(64)); axis image
-%
-% Now, for a sum of two harmonics
-%   parms.freq(2) = 3; parms.ang(2) = parms.ang(1);
-%   parms.contrast(2) = 1; parms.ph(2) = pi/2;
-%   [img,p] = imageHarmonic(parms);
-%   vcNewGraphWin; imagesc(img), colormap(gray(64)); axis image
-%   plot(img(16,:))
-%
-% Copyright ImagEval Consultants, LLC, 2003.
+% See also
 
+% Examples:
+%{
+   [img,p] = imageHarmonic;
+   figure; imagesc(img), colormap(gray(64)); axis image
+%}
+%{
+   parms.row = 32; parms.col = 32; parms.contrast = 1;
+   parms.ph = pi/2; parms.freq = 2; parms.ang = pi/6;
+   parms.GaborFlag = 0.2;
+   [img,p] = imageHarmonic(parms);
+   ieNewGraphWin; imagesc(img), colormap(gray(64)); axis image
+%}
+%{
+% Now, for a sum of two harmonics
+  parms.freq(2) = 5; parms.ang(2) = parms.ang(1)- pi/2;
+  parms.contrast(2) = 1; parms.ph(2) = pi/2;
+  parms.row = 128; parms.col = 128;
+  [img,p] = imageHarmonic(parms);
+  ieNewGraphWin; imagesc(img), colormap(gray(64)); axis image
+  % plot(img(16,:))
+%
+%}
 
 if ~exist('parms','var'), parms = []; end
 
