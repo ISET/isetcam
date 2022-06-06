@@ -34,14 +34,10 @@ aspectRatio = 4/3;  % Set to desired ratio
 
 % Specify the number of frames for our video
 numFrames = 16; % Total number of frames to render
-videoFPS = 4; % How many frames per second to encode
+videoFPS = 8; % How many frames per second to encode
 
-desiredXRotation = 20; % how many degrees do we want to move around the scene
-desiredYRotation = 90; % how many degrees do we want to move around the scene
-xGravity = 1; % Inverse of how many scene widths to move horizontally
-yGravity = 4; % Inverse of how many scene widths to move vertically
 % Rays per pixel (more is slower, but less noisy)
-nativeRaysPerPixel = 1024;
+nativeRaysPerPixel =  512;
 
 % Fast Preview Factor
 fastPreview = 1; % 16 ; % multiplierfor optional faster rendering
@@ -65,13 +61,26 @@ sensor.pixel = pixelSet(sensor.pixel,'sizesamefillfactor',[previewPSize previewP
 ourCamera.cmodules(1) = cpCModule('sensor', sensor); 
 
 %%
+%{
 scenePath = 'ChessSet';
 sceneName = 'ChessSet';
 sceneWidth = 1; % rough width of scene in meters
 sceneHeight = .5; % rough height of scene in meters
+desiredXRotation = 20; % how many degrees do we want to rotate down
+desiredYRotation = 90; % how many degrees do we want to rotate left
+xGravity = 1; % Inverse of how many scene widths to move horizontally
+yGravity = 4; % Inverse of how many scene widths to move vertically
 
-%scenePath = 'cornell_box';
-%sceneName = 'cornell_box';
+%}
+
+scenePath = 'cornell_box';
+sceneName = 'cornell_box';
+sceneWidth = 2; % rough width of scene in meters
+sceneHeight = 1; % rough height of scene in meters
+desiredXRotation = 55; % how many degrees do we want to rotate down
+desiredYRotation = 150; % how many degrees do we want to rotate left
+xGravity = .4; % Inverse of how many scene widths to move horizontally
+yGravity = .9; % Inverse of how many scene widths to move vertically
 
 pbrtCPScene = cpScene('pbrt', 'scenePath', scenePath, 'sceneName', sceneName, ...
     'resolution', [ourCols ourRows], ... 
@@ -81,16 +90,32 @@ pbrtCPScene = cpScene('pbrt', 'scenePath', scenePath, 'sceneName', sceneName, ..
 % add the basic materials from our library
 piMaterialsInsert(pbrtCPScene.thisR);
 
+% clear out any default lights
+pbrtCPScene.thisR = piLightDelete(pbrtCPScene.thisR, 'all');
+
 % put our scene in an interesting room
 pbrtCPScene.thisR.set('skymap', 'room.exr', 'rotation val', [-90 180 0]);
 
 lightName = 'from camera';
+spectrumScale = 3; lightSpectrum = 'equalEnergy';
 ourLight = piLightCreate(lightName,...
-                        'type','distant',...
-                        'cameracoordinate', true);
+                           'type', 'distant',...
+                           'specscale float', spectrumScale,...
+                           'spd spectrum', lightSpectrum,...
+                           'cameracoordinate', true);
 
 pbrtCPScene.thisR.set('light', ourLight, 'add');
 
+%{
+% use smaller film if we are previewing
+% but it doesn't actually seem to make rendering faster?
+if fastPreview > 1
+    pbrtCPScene.thisR.set('filmresolution',pbrtCPScene.thisR.get('filmresolution')\2);
+end
+%}
+
+
+% try leaving out the bunny
 if strcmp(scenePath, "cornell_box")
 
     % If we have the Cornell box, add the Stanford bunny to the scene
@@ -107,16 +132,16 @@ if strcmp(scenePath, "cornell_box")
     pbrtCPScene.thisR.set('asset','003_cornell_box_O','delete');
     
     % hide the box so we can see through
-    pbrtCPScene.thisR.set('asset','001_large_box_O','material name','glass_architectural');
+    pbrtCPScene.thisR.set('asset','001_large_box_O','material name','brickwall001');
 
     % change the bunny to a more interesting material
-    pbrtCPScene.thisR.set('asset','001_Bunny_O', 'material name', 'mirror');
-    %pbrtCPScene.thisR.set('asset','001_Bunny_O', 'material name', 'glass');
+    %pbrtCPScene.thisR.set('asset','001_Bunny_O', 'material name', 'mirror');
+    pbrtCPScene.thisR.set('asset','001_Bunny_O', 'material name', 'glass');
     pbrtCPScene.thisR.set('asset','Bunny_B', 'scale', 3);
     %pbrtCPScene.thisR.recipeSet('fov',60);
 
     % make sure we get enough bounces to show off materials
-    pbrtCPScene.thisR.set('nbounces', 5);
+    pbrtCPScene.thisR.set('nbounces', 5); % up from 5 in case that's why our background is off
 
 elseif isequal(sceneName, 'ChessSet')
     % try moving a chess piece
@@ -130,6 +155,7 @@ elseif isequal(sceneName, 'ChessSet')
     % Not clear this does what we want?
     %pbrtCPScene.thisR.recipeSet('fov',90);
 end
+
 
 % set the camera in motion, using meters per second per axis
 % 'unused', then translate, then rotate
@@ -150,7 +176,7 @@ videoFrames = ourCamera.TakePicture(pbrtCPScene, ...
     'Video', 'numVideoFrames', numFrames, 'imageName','Video with Camera Motion');
 
 % optionally, take a peek
-% imtool(videoFrames{1});
+imtool(videoFrames{4});
 if isunix
     demoVideo = VideoWriter('cpDemo', 'Motion JPEG AVI');
 else

@@ -511,8 +511,10 @@ classdef cpScene < handle
 
         function [previewScenes, previewFiles] = preview(obj)
             % get a preview that the camera can use to plan capture
-            % settings
-            [previewScenes, previewFiles] = obj.render([.1], 'previewFlag', true); % generic exposure time
+            % settings -- tricky setting the guesstimate to use
+            % for the preview. IRL maybe ambient light or continuous
+            % adjustment helps
+            [previewScenes, previewFiles] = obj.render([.5], 'previewFlag', true); % generic exposure time
         end
 
         function infoArray = showInfo(obj)
