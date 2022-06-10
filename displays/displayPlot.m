@@ -4,7 +4,7 @@ function [uData, g] = displayPlot(d,param,varargin)
 %   [uData, g] = displayPlot(d,param,varargin)
 %
 % Types of plots
-%    spd  - Spectral power distributions of the primaries
+%    spd or primaries  - Spectral power distributions of the primaries
 %    gamma table  - Function from digital value to relative intensity
 %    gamut        - xy chromaticity gamut
 %    gamut 3d     - LAB gamut
@@ -37,7 +37,7 @@ if notDefined('d'), error('Display required'); end
 param = ieParamFormat(param);
 
 switch param
-    case 'spd' % Plot spectral power distribution of the display
+    case {'primaries','spd'} % Plot spectral power distribution of the display
         spd = displayGet(d,'spd primaries');
         wave = displayGet(d,'wave');
         g = ieNewGraphWin;
