@@ -99,8 +99,12 @@ classdef cpCamera < handle
             % We want to call our camera module(s).
             % Each returns an array of sensor objects with the images
             % pre-computed
-            [sensorImages, focusDistances] = obj.cmodules(1).compute(aCPScene, obj.expTimes, 'focusMode', options.focusMode,...
+            for ii = 1:numel(obj.cmodules)
+                % We need to add flexibility in setting different exposure
+                % times and other modes per module!
+                [sensorImages, focusDistances] = obj.cmodules(ii).compute(aCPScene, obj.expTimes, 'focusMode', options.focusMode,...
                 'focusParam', options.focusParam,'intent',intent);
+            end
             
             % generic version, currently just prints out each processed
             % image from the sensor
