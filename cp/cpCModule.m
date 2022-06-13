@@ -10,7 +10,16 @@ classdef cpCModule
     %   then the CModule gets back an oi and ignores its own optics.
     
     % History:
-    %   Initial Version: D.Cardinal 12/2020
+    %   Initial Version: D.Cardinal 12/2020, iset3d-v4 port 12/2021
+
+    % Work in Progress:
+    %  Model complex sensors (like Samsung Corner Pixel)
+    %  by simulating them as two sensors within one module
+    %  or two modules within one camera
+    %
+    %  image combination should be done at the IP level
+    %  for maximum flexibility, but could be in sensor for
+    %  trivial HDR and stacking.
     
     properties
         oi; % optics plus their resulting image
