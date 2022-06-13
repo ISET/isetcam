@@ -1,5 +1,5 @@
-function [scene,I] = sceneFromFile(I, imType, meanLuminance, dispCal, ...
-    wList, varargin)
+function [scene,I, basisF] = sceneFromFile(I, imType, meanLuminance, dispCal, ...
+    wList, basisAlter, varargin)
 % Create an ISETCam scene structure by reading data from a file
 %
 % Synopsis:
@@ -127,6 +127,11 @@ if ischar(I)
     else, error('No file named %s\n',I);
     end
 end
+
+% Newly added basisalter
+if notDefined('basisAlter')
+    basisAlter = 'none';
+end
 %% Determine the photons and illuminant structure
 
 % We need to know the image type (rgb or multispectral).  Try to figure it
@@ -159,7 +164,60 @@ switch lower(imType)
         if length(varargin) > 2, sz = varargin{3};  else, sz = []; end
         
         % read radiance / reflectance
-        photons = vcReadImage(I, imType, d, doSub, sz);
+        switch ieParamFormat(basisAlter)
+            case 'none'
+                photons = vcReadImage(I, imType, d, doSub, sz);
+            case {'xyzmatch', 'xyznonneg', 'xyznonnegstrict'}
+                % This is the case we want XYZ of image + basis could equal 
+                % to XYZ of img convert from srgb to xyz space.
+                % 
+                % Get srgb2xyz matrix
+                srgb2xyz = colorTransformMatrix('srgb2xyz');
+                srgb2xyzCol = srgb2xyz';
+                XYZcmf = double(ieReadSpectra('XYZEnergy.mat', wave));
+                basisF = double(displayGet(d, 'spd primaries')); % basis
+                if max(I(:)) > 1
+                    I = im2double(I);
+                end
+                [Ixw, r, c] = RGB2XWFormat(I);
+                XYZBasis = XYZcmf' * basisF;
+                % For each pixel with p = [R, G, B], the XYZ value would be:
+                % XYZval = srgb2xyz' * p'; where p is n x 3
+                % The goal is to apply a T such that the mapped XYZ will match with sRGB
+                % display:
+                % XYZval =  XYZcmf' * basis * T * p'
+                % So the goal is to make srgb2xyz' = T * XYZcmf' * basis, aka:
+                % XYZcmf' * basis * T = srgb2xyz';
+                T = pinv(XYZBasis) * srgb2xyzCol;
+                % If current pixel values create negative values, apply a
+                % ratio on three channels to make it nonnegative.
+                if isequal(basisAlter, 'xyznonneg')
+                    spectraRec = basisF * T * Ixw';
+                    sumF = sum(basisF * T * [1, 1, 1]', 2);
+                    ratio = spectraRec./sumF;
+                    rMin = min(ratio(:));
+                    if rMin < 0
+                        Ixw = Ixw + abs(rMin) + 100 * eps;
+                    end
+                end
+             %{
+                img = XW2RGBFormat(Ixw, r, c);
+                ieNewGraphWin; imagesc(img);
+                ieNewGraphWin; imagesc(I);
+                spectraCheck = basisF * T * Ixw';
+                tmp = min(spectraCheck', [], 2);
+                res = find(tmp < 0);
+                size(res)
+             %}
+             I = XW2RGBFormat(Ixw * T', r, c);
+             % spdCheck = primarySPD * T * Ixw'; min(spdCheck(:))
+             %{ 
+                recXYZ = XW2RGBFormat((XYZcmf' * primarySPD * T * Ixw')', r, c);
+                ieNewGraphWin; imagesc(recXYZ);
+             %}
+             photonXW = Energy2Quanta(wave, (basisF * T * Ixw'))';
+             photons = XW2RGBFormat(photonXW, r, c);
+        end
         
         % Match the display wavelength and the scene wavelength
         scene = sceneCreate('rgb');
@@ -265,6 +323,9 @@ if exist('d', 'var'), n = [n ' - ' displayGet(d, 'name')]; end
 scene = sceneSet(scene,'name',n);
 
 if ~notDefined('meanLuminance')
+    curMeanLum = sceneGet(scene, 'mean luminance');
+    lumRatio = meanLuminance/curMeanLum;
+    I = I * lumRatio;
     scene = sceneAdjustLuminance(scene,meanLuminance); % Adjust mean
 end
 
@@ -275,4 +336,10 @@ if ~notDefined('wList')
     end
 end
 
+end
+
+function [c, ceq] = basisConstrainCreate(T, basis, imgXW)
+% https://www.mathworks.com/matlabcentral/answers/102051-how-do-i-pass-additional-parameters-to-the-constraint-and-objective-functions-in-the-optimization-to
+c = -basis * T * imgXW';
+ceq = [];
 end
