@@ -19,6 +19,7 @@ classdef cpCamera < handle
         cmodules = cpCModule.empty; % 1 (or more) CModules
         isp = [];     % an extended ip
         expTimes = [];
+        fillFactors = [];
         supportedIntents;
     end
     
@@ -43,12 +44,16 @@ classdef cpCamera < handle
                 intent;
                 options.imageName char = '';
                 options.reRender (1,1) {islogical} = true;
+
+                % These should really be at the Camera Module level (oops)
                 options.expTimes = [];
+                options.fillFactors = [];
                 options.insensorIP = obj.isp.insensorIP; % default
                 options.focusMode char = 'Auto';
                 options.focusParam = 'Center'; % for Manual is distance in m
             end
             obj.expTimes = options.expTimes;
+            obj.fillFactors = options.fillFactors;
             % Not sure yet whether we need these at the class level
             %obj.focusMode = options.focusMode;
             %obj.focusParam = options.focusParam;
@@ -103,7 +108,7 @@ classdef cpCamera < handle
                 % We need to add flexibility in setting different exposure
                 % times and other modes per module!
                 [sensorImages, focusDistances] = obj.cmodules(ii).compute(aCPScene, obj.expTimes, 'focusMode', options.focusMode,...
-                'focusParam', options.focusParam,'intent',intent);
+                'focusParam', options.focusParam,'intent',intent, 'fillFactors',obj.fillFactors);
             end
             
             % generic version, currently just prints out each processed

@@ -104,6 +104,7 @@ classdef cpCModule
                 options.reRender {islogical} = true;
                 options.stackFrames = 1;
                 options.intent = 'Auto';
+                options.fillFactors = [];
             end
              
             % need to know our sensor size to judge film size
@@ -170,6 +171,9 @@ classdef cpCModule
                 end
                 % we have already calculated our exposure times
                 obj.sensor = sensorSet(obj.sensor, 'exposure time', expTimes(ii));
+                if ~isempty(options.fillFactors)
+                    obj.sensor = pixelCenterFillPD(obj.sensor, options.fillFactors(ii));
+                end
                 obj.sensor = sensorSet(obj.sensor, 'auto exposure', 0);
                 % The OI returned from pbrt sometimes doesn't currently give us a
                 % width or height, so we need to make something up:

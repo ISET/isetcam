@@ -24,34 +24,42 @@ ourCamera.cmodules(1) = cpCModule('sensor', sensor);
 ourSceneFile = fullfile('StuffedAnimals_tungsten-hdrs.mat');
 extremeSceneFile = fullfile('Feng_Office-hdrs.mat');
 sceneLuminance = 500;
-isetCIScene = cpScene('iset scene files', 'isetSceneFileNames', ourSceneFile, ...
+hdrScene = cpScene('iset scene files', 'isetSceneFileNames', ourSceneFile, ...
     'sceneLuminance', sceneLuminance);
 extremeScene = cpScene('iset scene files', 'isetSceneFileNames', extremeSceneFile, ...
     'sceneLuminance', sceneLuminance);
 
-autoISETImage = ourCamera.TakePicture(isetCIScene, 'Auto',...
+%{
+    alternate for a more extreme case
+    showScene = extremeScene;
+    expTimes = [1 1 1];
+%}
+
+% Relatively simple HDR example
+showScene = hdrScene;
+expTimes = [.1 .1 .1];
+autoISETImage = ourCamera.TakePicture(showScene, 'Auto',...
     'imageName','ISET Scene in Auto Mode');
 imtool(autoISETImage); 
 
 insensorIP = true;
-hdrISETImage = ourCamera.TakePicture(isetCIScene, 'HDR',...
+hdrISETImage = ourCamera.TakePicture(showScene, 'HDR',...
     'insensorIP',insensorIP,'numHDRFrames',5,...
     'imageName','ISET Scene in HDR Mode');
 
-% Experiment with limited size photosites:
-mainModule = ourCamera.cmodules(1);
-mainModule.sensor = pixelCenterFillPD(mainModule.sensor, .01);
-ourCamera.cmodules(1) = mainModule;
-
-expTimes = [1];
-manualISETImage = ourCamera.TakePicture(extremeScene, 'Manual',...
+% right now we manually set exposure times for the Manual
+% mode, so those need to be tweaked as needed
+fillFactors = [.9 .1 .01];
+manualISETImage = ourCamera.TakePicture(showScene, 'Manual',...
     'insensorIP',insensorIP,'numHDRFrames',numel(expTimes),...
-    'expTimes', expTimes, ...
+    'expTimes', expTimes, 'fillFactors', fillFactors, ...
     'imageName','ISET Scene in Manual Mode');
 if insensorIP
     % we're still in gamma=1 space here, so need to use
     % ipWindow to get an accurate look
+    ipWindow(hdrISETImage);
     ipWindow(manualISETImage);
 else
+    imtool(hdrISETImage);
     imtool(manualISETImage);
 end
