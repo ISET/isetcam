@@ -22,8 +22,11 @@ sensor = sensorCreate('imx363'); % pixel sensor
 ourCamera.cmodules(1) = cpCModule('sensor', sensor);
 
 ourSceneFile = fullfile('StuffedAnimals_tungsten-hdrs.mat');
+extremeSceneFile = fullfile('Feng_Office-hdrs.mat');
 sceneLuminance = 500;
 isetCIScene = cpScene('iset scene files', 'isetSceneFileNames', ourSceneFile, ...
+    'sceneLuminance', sceneLuminance);
+extremeScene = cpScene('iset scene files', 'isetSceneFileNames', extremeSceneFile, ...
     'sceneLuminance', sceneLuminance);
 
 autoISETImage = ourCamera.TakePicture(isetCIScene, 'Auto',...
@@ -34,8 +37,16 @@ insensorIP = true;
 hdrISETImage = ourCamera.TakePicture(isetCIScene, 'HDR',...
     'insensorIP',insensorIP,'numHDRFrames',5,...
     'imageName','ISET Scene in HDR Mode');
+
+expTimes = [.05 .1 1 10 100];
+manualISETImage = ourCamera.TakePicture(extremeScene, 'Manual',...
+    'insensorIP',insensorIP,'numHDRFrames',numel(expTimes),...
+    'expTimes', expTimes, ...
+    'imageName','ISET Scene in Manual Mode');
 if insensorIP
-    ipWindow(hdrISETImage);
+    % we're still in gamma=1 space here, so need to use
+    % ipWindow to get an accurate look
+    ipWindow(manualISETImage);
 else
-    imtool(hdrISETImage);
+    imtool(manualISETImage);
 end
