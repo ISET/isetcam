@@ -21,20 +21,21 @@ sensor = sensorCreate('imx363'); % pixel sensor
 % but for now, we just create one using our sensor
 ourCamera.cmodules(1) = cpCModule('sensor', sensor);
 
-scenePath = 'ChessSet';
-sceneName = 'chessSet';
-filmResolution = 360;
+ourSceneFile = fullfile('StuffedAnimals_tungsten-hdrs.mat');
 sceneLuminance = 500;
-numRays = 64;
+isetCIScene = cpScene('iset scene files', 'isetSceneFileNames', ourSceneFile, ...
+    'sceneLuminance', sceneLuminance);
 
-if false % for now... pbrtLensFile % support for pbrt lens files is hit and miss
-    pbrtCPScene = cpScene('pbrt', 'scenePath', scenePath, 'sceneName', sceneName, ...
-        'resolution', [filmResolution filmResolution], ...
-        'numRays', numRays, 'sceneLuminance', sceneLuminance, ...
-        'lensFile','dgauss.22deg.6.0mm.json',...
-        'apertureDiameter', apertureDiameter);
+autoISETImage = ourCamera.TakePicture(isetCIScene, 'Auto',...
+    'imageName','ISET Scene in Auto Mode');
+imtool(autoISETImage); 
+
+insensorIP = true;
+hdrISETImage = ourCamera.TakePicture(isetCIScene, 'HDR',...
+    'insensorIP',insensorIP,'numHDRFrames',5,...
+    'imageName','ISET Scene in HDR Mode');
+if insensorIP
+    imtool(hdrISETImage.data.result);
 else
-    pbrtCPScene = cpScene('pbrt', 'scenePath', scenePath, 'sceneName', sceneName, ...
-        'resolution', [filmResolution filmResolution], ...
-        'numRays', numRays, 'sceneLuminance', sceneLuminance);
+    imtool(hdrISETImage);
 end
