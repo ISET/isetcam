@@ -43,7 +43,7 @@ classdef cpBurstIP < cpIP
             end
 
             switch intent
-                case 'HDR'
+                case {'HDR', 'Manual'}
                     % decide if we want to let the ip combine raw data, or
                     % demosaic it first
                     if options.insensorIP

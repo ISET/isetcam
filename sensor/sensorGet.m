@@ -1,4 +1,4 @@
-function val = sensorGet(sensor,param,varargin)
+function [val, type] = sensorGet(sensor,param,varargin)
 %Get properties and derived quantities from ISET sensor object
 %
 %     val = sensorGet(sensor,param,varargin)
@@ -446,7 +446,12 @@ switch oType
                 
             case {'dvorvolts'}
                 val = sensorGet(sensor,'dv');
-                if isempty(val), val = sensorGet(sensor,'volts'); end
+                if isempty(val)
+                    val = sensorGet(sensor,'volts');
+                    type = 'volts';
+                else
+                    type = 'dv';
+                end
                 
                 % Region of interest for data handling
             case {'roi','roilocs'}

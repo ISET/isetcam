@@ -35,7 +35,7 @@ hdrISETImage = ourCamera.TakePicture(isetCIScene, 'HDR',...
     'insensorIP',insensorIP,'numHDRFrames',5,...
     'imageName','ISET Scene in HDR Mode');
 if insensorIP
-    imtool(hdrISETImage.data.result);
+    ipWindow(hdrISETImage);
 else
     imtool(hdrISETImage);
 end

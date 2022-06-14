@@ -81,13 +81,18 @@ end
 
 % We demosaick the quantized sensor values.  If this field is empty, use the
 % continuous voltages
-ip = ipSet(ip,'input',double(sensorGet(sensor,'dv or volts')));
+[output, type] = sensorGet(sensor,'dv or volts');
+ip = ipSet(ip,'input',double(output));
 
 %  The max is either the max digital value or the voltage swing, depending
 %  on whether we have computed DVs or Volts.  But this value is not
 %  terribly important because we render into an RGB display in the unit
 %  cube.
-ip = ipSet(ip,'datamax',sensorGet(sensor(1),'max'));
+if isequal(type, 'dv')
+    ip = ipSet(ip,'datamax',sensorGet(sensor(1),'maxdigitalvalue'));
+else
+    ip = ipSet(ip,'datamax',sensorGet(sensor(1),'maxvoltage'));
+end
 
 %% Pre-process the multiple exposure durations case
 % Combine the the exposure durations into a single planar array.  Then we
@@ -348,27 +353,32 @@ satMax    = satPercentage*sensorMax;
 % ISSUE: img input may be dv while satMax is in volts
 %   if nbits (quantization) hasn't been set for the sensor
 %   that means all values go to NaN!
-img(img > satMax) = -1;
+workImage = img; % make a copy for debugging
+workImage(workImage > satMax) = -1;
 
 %% Estimate a sensor value accounting for all of the exposures
 %
 switch combinationMethod
     case 'longest'
         % Choose the max at each point
-        [img,loc] = max(img,[],3);
+        [workImage,loc] = max(workImage,[],3);
         expByLoc  = expTimes(loc);
-        img = img ./ expByLoc;
+        workImage = workImage ./ expByLoc;
 
         % Put back saturated highlights
-        img(img < 0) = sensorMax/min(expTimes);
+        workImage(workImage < 0) = sensorMax/min(expTimes);
         % Now we need to normalize our data back to a single sensor image value
         % this doesn't work well? ip = ipSet(ip,'sensorMax',sensorMax/min(expTimes));
-        img = img * min(expTimes);
+        % this under-exposes in many cases
+        %workImage = workImage * min(expTimes);
+        %
+        % so try to simply scale to fit:
+        workImage = workImage * (satMax / max(workImage,[],'all'));
     otherwise
         error('Unknown combination method: %s\n', combinationMethod)
 end
 
-ip = ipSet(ip,'input',img);
+ip = ipSet(ip,'input',workImage);
 
 end
 
