@@ -8,9 +8,10 @@ classdef cpBurstCamera < cpCamera
     %  numBurstFrames
     %  numFocusFrames
     %  numVideoFrames
+    %  expTimes -- Exposure Times as calculated or passed in
     %
     % Supports Intents:
-    %  'Auto', 'HDR', 'Burst', 'Focus', 'Video'
+    %  'Auto', 'HDR', 'Burst', 'Focus', 'Video', WORKING ON: 'Manual'
     %
     % Methods:
     %  planCaptures
@@ -32,7 +33,7 @@ classdef cpBurstCamera < cpCamera
             %CPBURSTCAMERA Construct an instance of this class
             obj.cmodules(1) = cpCModule(); % 1 (or more) CModules
             obj.isp = cpBurstIP();     % extended ip
-            obj.supportedIntents = {'Auto', 'HDR', 'Burst', 'Focus', 'Video'};
+            obj.supportedIntents = {'Auto', 'HDR', 'Burst', 'Focus', 'Video', 'Manual'};
             
         end
         
@@ -118,6 +119,9 @@ classdef cpBurstCamera < cpCamera
                 case {'Video'}
                     numFrames = obj.numVideoFrames;
                     expTimes = repmat(baseExposure, 1, numFrames);
+                case 'Manual'
+                    % For manual we get passed an array of exposure times
+                    expTimes = obj.expTimes;
                 otherwise
                     % just do what the base camera class would do
                     [expTimes] = planCaptures@cpCamera(obj, previewImages, intent);
