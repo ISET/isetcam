@@ -34,10 +34,17 @@ ourCamera.cmodules(1) = cpCModule('sensor', sensor,'oi',oi);
 ourSceneFile = fullfile('StuffedAnimals_tungsten-hdrs.mat');
 extremeSceneFile = fullfile('Feng_Office-hdrs.mat');
 hdrScene = cpScene('iset scene files', 'isetSceneFileNames', ourSceneFile);
-
-%sensorSetSizeToFOV()
-
 extremeScene = cpScene('iset scene files', 'isetSceneFileNames', extremeSceneFile);
+
+% Experiment with a pbrt scene:
+scenePath = 'ChessSet';
+sceneName = 'chessSet';
+numRays = 128; filmResolution = 1024;
+pbrtScene = cpScene('pbrt', 'scenePath', scenePath, 'sceneName', sceneName, ...
+    'resolution', [filmResolution filmResolution], ...
+    'numRays', numRays);
+% put our scene in an interesting room
+pbrtScene.thisR.set('skymap', 'room.exr', 'rotation val', [-90 0 0]);
 
 %{
     alternate for a more extreme case
@@ -45,8 +52,7 @@ extremeScene = cpScene('iset scene files', 'isetSceneFileNames', extremeSceneFil
     expTimes = [1 1 1];
 %}
 
-% Relatively simple HDR example
-% or more extreme example
+% Choose a sample scene to show
 showScene = extremeScene;
 autoISETImage = ourCamera.TakePicture(showScene, 'Auto',...
     'imageName','ISET Scene in Auto Mode');
@@ -62,7 +68,8 @@ hdrISETImage = ourCamera.TakePicture(showScene, 'HDR',...
 % right now we manually set exposure times for the Manual
 % mode, so those need to be tweaked as needed
 fillFactors = [.8 .15];
-expTimes = [.1 .1];
+%expTimes = [.1 .1];
+expTimes = [.01 .01];
 cornerISETImage = ourCamera.TakePicture(showScene, 'Manual',...
     'insensorIP',insensorIP,'numHDRFrames',numel(fillFactors),...
     'expTimes', expTimes, 'fillFactors', fillFactors, ...
@@ -70,14 +77,15 @@ cornerISETImage = ourCamera.TakePicture(showScene, 'Manual',...
 
 % Do a manual multi-exposure to mimic the Corner Pixel case
 fillFactors = [.95 .95];
-expTimes = [.09 .015];
+%expTimes = [.09 .015];
+expTimes = [.009 .0015];
 bracketISETImage = ourCamera.TakePicture(showScene, 'Manual',...
     'insensorIP',insensorIP,'numHDRFrames',numel(expTimes),...
     'expTimes',expTimes, 'fillFactors',fillFactors, ...
     'tonemap', 'largest', ...
     'imageName','Manual Bracketing');
 
-cpCompareImages(bracketISETImage,cornerISETImage,'Corner Pixel');
+cpCompareImages(bracketISETImage,cornerISETImage,'Bracketed & Corner Pixel');
 
 %{
     imtool(brackISETImage);
