@@ -374,6 +374,18 @@ switch combinationMethod
         %
         % so try to simply scale to fit:
         workImage = workImage * (satMax / max(workImage,[],'all'));
+
+    case 'largest'
+        % For the case where we want to "protect" darker areas,
+        % Such as Auto HDR. Experiment with ignoring exposure times
+        [workImage,loc] = max(workImage,[],3);
+
+        % Put back saturated highlights
+        % Don't divide by exposure in this case
+        workImage(workImage < 0) = sensorMax;
+        % For now simply scale to fit:
+        workImage = workImage * (satMax / max(workImage,[],'all'));
+        
     otherwise
         error('Unknown combination method: %s\n', combinationMethod)
 end

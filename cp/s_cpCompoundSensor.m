@@ -77,13 +77,9 @@ bracketISETImage = ourCamera.TakePicture(showScene, 'Manual',...
     'tonemap', 'largest', ...
     'imageName','Manual Bracketing');
 
-if insensorIP
-    % we're still in gamma=1 space here, so need to use
-    % ipWindow to get an accurate look
-    ipWindow(hdrISETImage);
-    ipWindow(bracketISETImage);    
-    ipWindow(cornerISETImage);
-else
-    imtool(hdrISETImage);
+cpCompareImages(bracketISETImage,cornerISETImage,'Corner Pixel');
+
+%{
+    imtool(brackISETImage);
     imtool(cornerISETImage);
-end
+%}
