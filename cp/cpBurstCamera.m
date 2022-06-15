@@ -50,6 +50,7 @@ classdef cpBurstCamera < cpCamera
                 options.insensorIP = obj.isp.insensorIP;
                 options.focusMode char = 'Auto';
                 options.focusParam = 'Center'; % for Manual is distance in m
+                options.tonemap = 'longest'; % for HDR etc.
                 camProps.?cpCamera;
                 camProps.imageName char = '';
                 camProps.reRender (1,1) {islogical} = true;
@@ -72,7 +73,7 @@ classdef cpBurstCamera < cpCamera
             end
             
             ourPicture = TakePicture@cpCamera(obj, aCPScene, intent, ...,
-                'insensorIP', options.insensorIP, 'focusParam', options.focusParam, 'focusMode', options.focusMode, varargin{:});
+                'tonemap', options.tonemap, 'insensorIP', options.insensorIP, 'focusParam', options.focusParam, 'focusMode', options.focusMode, varargin{:});
             
         end
         

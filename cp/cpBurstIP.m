@@ -40,7 +40,9 @@ classdef cpBurstIP < cpIP
                 options.insensorIP = obj.insensorIP;
                 options.focusDistances = [];
                 options.scene = [];
+                options.tonemap = 'longest';
             end
+            obj.insensorIP = options.insensorIP;
 
             switch intent
                 case {'HDR', 'Manual'}
@@ -52,7 +54,7 @@ classdef cpBurstIP < cpIP
                         % so first we merge our sensor array into one sensor
                         sensorImage = obj.mergeSensors(sensorImages);
                         sensorImage = sensorSet(sensorImage,'exposure method', 'bracketing');
-                        obj.ip = ipSet(obj.ip, 'combination method', 'longest');
+                        obj.ip = ipSet(obj.ip, 'combination method', options.tonemap);
                         obj.ip = ipCompute(obj.ip, sensorImage);
                         ourPhoto = obj.ip;
                     else

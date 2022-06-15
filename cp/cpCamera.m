@@ -51,6 +51,7 @@ classdef cpCamera < handle
                 options.insensorIP = obj.isp.insensorIP; % default
                 options.focusMode char = 'Auto';
                 options.focusParam = 'Center'; % for Manual is distance in m
+                options.tonemap = 'longest';
             end
             obj.expTimes = options.expTimes;
             obj.fillFactors = options.fillFactors;
@@ -115,7 +116,7 @@ classdef cpCamera < handle
             % image from the sensor
             ourPicture = obj.computePhoto(sensorImages, intent, ...
                 'insensorIP', options.insensorIP, 'scene', aCPScene, ...
-                'focusDistances', focusDistances);
+                'tonemap',options.tonemap, 'focusDistances', focusDistances);
             
         end
         
@@ -129,9 +130,11 @@ classdef cpCamera < handle
                 options.insensorIP = true;
                 options.scene = [];
                 options.focusDistances = [];
+                options.tonemap = 'longest';
             end
             ourPhoto = obj.isp.ispCompute(sensorImages, intent, 'insensorIP', ...
                 options.insensorIP, 'scene', options.scene, ...
+                'tonemap', options.tonemap, ...
                 'focusDistances',options.focusDistances);
         end
         

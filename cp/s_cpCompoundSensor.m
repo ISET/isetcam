@@ -47,33 +47,43 @@ extremeScene = cpScene('iset scene files', 'isetSceneFileNames', extremeSceneFil
 
 % Relatively simple HDR example
 % or more extreme example
-showScene = hdrScene;
-expTimes = [.1 .1 .1];
+showScene = extremeScene;
 autoISETImage = ourCamera.TakePicture(showScene, 'Auto',...
     'imageName','ISET Scene in Auto Mode');
 imtool(autoISETImage); 
 
 insensorIP = true;
+% Use a traditional HDR bracket
 hdrISETImage = ourCamera.TakePicture(showScene, 'HDR',...
     'insensorIP',insensorIP,'numHDRFrames',3,...
-    'imageName','ISET Scene in HDR Mode');
+    'imageName',sprintf('HDR Mode with %d frames',3));
 
+% Corner Pixel Simulation
 % right now we manually set exposure times for the Manual
 % mode, so those need to be tweaked as needed
-fillFactors = [.9 .1];
-expTimes = [.1 .12];
-manualISETImage = ourCamera.TakePicture(showScene, 'Manual',...
+fillFactors = [.8 .15];
+expTimes = [.1 .1];
+cornerISETImage = ourCamera.TakePicture(showScene, 'Manual',...
     'insensorIP',insensorIP,'numHDRFrames',numel(fillFactors),...
     'expTimes', expTimes, 'fillFactors', fillFactors, ...
-    'imageName','ISET Scene in Manual Mode');
-ipWindow(manualISETImage);
+    'imageName','Corner Pixel Simulation');
+
+% Do a manual multi-exposure to mimic the Corner Pixel case
+fillFactors = [.95 .95];
+expTimes = [.09 .015];
+bracketISETImage = ourCamera.TakePicture(showScene, 'Manual',...
+    'insensorIP',insensorIP,'numHDRFrames',numel(expTimes),...
+    'expTimes',expTimes, 'fillFactors',fillFactors, ...
+    'tonemap', 'largest', ...
+    'imageName','Manual Bracketing');
 
 if insensorIP
     % we're still in gamma=1 space here, so need to use
     % ipWindow to get an accurate look
     ipWindow(hdrISETImage);
-    ipWindow(manualISETImage);
+    ipWindow(bracketISETImage);    
+    ipWindow(cornerISETImage);
 else
     imtool(hdrISETImage);
-    imtool(manualISETImage);
+    imtool(cornerISETImage);
 end
