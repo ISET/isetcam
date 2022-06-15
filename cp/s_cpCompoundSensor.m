@@ -47,7 +47,7 @@ extremeScene = cpScene('iset scene files', 'isetSceneFileNames', extremeSceneFil
 
 % Relatively simple HDR example
 % or more extreme example
-showScene = extremeScene;
+showScene = hdrScene;
 expTimes = [.1 .1 .1];
 autoISETImage = ourCamera.TakePicture(showScene, 'Auto',...
     'imageName','ISET Scene in Auto Mode');

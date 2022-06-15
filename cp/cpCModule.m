@@ -173,6 +173,12 @@ classdef cpCModule
                 obj.sensor = sensorSet(obj.sensor, 'exposure time', expTimes(ii));
                 if ~isempty(options.fillFactors)
                     obj.sensor = pixelCenterFillPD(obj.sensor, options.fillFactors(ii));
+                    % if small fill factor cheat and assume we want it in
+                    % the corner
+                    if options.fillFactors(ii) < .5
+                        % see if corner pixels can work, but not sure this does anything?
+                        obj.sensor.pixel = pixelPositionPD(obj.sensor.pixel,'corner');
+                    end
                 end
                 obj.sensor = sensorSet(obj.sensor, 'auto exposure', 0);
                 % The OI returned from pbrt sometimes doesn't currently give us a
