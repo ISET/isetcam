@@ -4,6 +4,18 @@
 %
 % Initial target is Samsung Corner Pixel Automotive technology
 %
+% In this script we allow comparisons between traditional HDR bracketing
+% (an equal number of stops above and below a base value), manual
+% bracketing with arbitrary exposures, and a simulated "corner pixel"
+% sensor that records a single image but uses a compound pixel that has two
+% different photosites with different properties.
+% 
+% In this case we simulate the compound pixel by allowing multiple
+% exposures with different fill factors, that are treated as a single
+% exposure. However we do allow for the case where the various sub-pixels
+% vary in their exposure time. This is true of the Samsung design, for
+% example, as a way of handling LED flicker.
+%
 
 ieInit();
 % some timing code, just to see how fast we run...
