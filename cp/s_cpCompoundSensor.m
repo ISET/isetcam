@@ -1,6 +1,6 @@
 % Support for sensors with multiple pixel types / exposure times
 %
-% D. Cardinal, Stanford Universidy, June, 2022
+% D. Cardinal, Stanford University, June, 2022
 %
 % Initial target is Samsung Corner Pixel Automotive technology
 %
@@ -18,37 +18,30 @@
 %
 
 ieInit();
-% some timing code, just to see how fast we run...
-setpref('ISET', 'benchmarkstart', cputime);
-setpref('ISET', 'tStart', tic);
 
 % cpBurstCamera is a sub-class of cpCamera that implements simple HDR and Burst
 % capture and processing
 ourCamera = cpBurstCamera();
 
-% We'll use a pre-defined sensor for our Camera Module, and let it use
-% default optics for now. We can then assign the module to our camera:
-%sensor = sensorCreate('imx363'); % pixel sensor
-
-% For Corner Pixel, we want a more Auto-friendly sensor
-% with larger main pixels
+% For Corner Pixel, we want an Auto-friendly sensor
+% with larger main pixels than, for example, a smartphone
 sensor = sensorFromFile('ar0132atSensorRGB.mat');
 
-% for an auto sensor we need different optics
+% for a larger sensor we need different optics
 oi = oiCreate();
 oi = oiSet(oi, 'optics', opticsCreate('standard (1-inch)'));
 
 % Cameras can eventually have more than one module (lens + sensor)
-% but for now, we just create one using our sensor
+% but for now, we just create one using our sensor and optics
 ourCamera.cmodules(1) = cpCModule('sensor', sensor,'oi',oi);
 
-
+% We provide several example iset scenes from which to choose
 ourSceneFile = fullfile('StuffedAnimals_tungsten-hdrs.mat');
 extremeSceneFile = fullfile('Feng_Office-hdrs.mat');
 hdrScene = cpScene('iset scene files', 'isetSceneFileNames', ourSceneFile);
 extremeScene = cpScene('iset scene files', 'isetSceneFileNames', extremeSceneFile);
 
-% Experiment with a pbrt scene:
+% We can also experiment with a 3D pbrt scene:
 scenePath = 'ChessSet';
 sceneName = 'chessSet';
 numRays = 64; filmResolution = 512;
@@ -64,14 +57,14 @@ pbrtScene.thisR.set('skymap', 'room.exr', 'rotation val', [-90 0 0]);
     expTimes = [1 1 1];
 %}
 
-% Choose a sample scene to show
+% Choose one of our example scenes to use
 showScene = extremeScene;
 autoISETImage = ourCamera.TakePicture(showScene, 'Auto',...
     'imageName','ISET Scene in Auto Mode');
 imtool(autoISETImage); 
 
 insensorIP = true;
-% Use a traditional HDR bracket
+% Use a traditional HDR bracket (-1, 0, +1)
 hdrISETImage = ourCamera.TakePicture(showScene, 'HDR',...
     'insensorIP',insensorIP,'numHDRFrames',3,...
     'imageName',sprintf('HDR Mode with %d frames',3));
@@ -107,6 +100,7 @@ caption = sprintf(['Bracket: Fill= %s, %s, %s Exp= %s, %s, %s, Tone: %s\n', ...
 cpCompareImages(bracketISETImage,cornerISETImage,caption);
 
 %{
-    imtool(brackISETImage);
+% Quick code to help analyze the resulting images
+    imtool(bracketISETImage);
     imtool(cornerISETImage);
 %}
