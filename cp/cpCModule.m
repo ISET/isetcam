@@ -127,6 +127,9 @@ classdef cpCModule
                 'reRender', options.reRender, 'filmSize', filmSize);
             
             cOutput = [];
+
+            % store voltage swing as we modify it for fill factors < 1
+            pixelVoltSwing = pixelGet(obj.sensor.pixel,'voltageswing');
             for ii = 1:numel(sceneObjects)
                 
                 ourScene = sceneObjects{ii};
@@ -173,10 +176,10 @@ classdef cpCModule
                 obj.sensor = sensorSet(obj.sensor, 'exposure time', expTimes(ii));
                 if ~isempty(options.fillFactors)
                     obj.sensor = pixelCenterFillPD(obj.sensor, options.fillFactors(ii));
-                    % if small fill factor cheat and assume we want it in
-                    % the corner
+                    obj.sensor.pixel = pixelSet(obj.sensor.pixel,'voltageswing',pixelVoltSwing * options.fillFactors(ii));
                     if options.fillFactors(ii) < .5
-                        % see if corner pixels can work, but not sure this does anything?
+                        % if small fill factor cheat and assume we want it in
+                        % the corner
                         obj.sensor.pixel = pixelPositionPD(obj.sensor.pixel,'corner');
                     end
                 end
@@ -192,6 +195,8 @@ classdef cpCModule
                 sensorImage = sensorCompute(obj.sensor, opticalImage);
                 cOutput = [cOutput, sensorImage]; %#ok<AGROW> 
             end
+            % put back original pixel voltage swing
+            obj.sensor.pixel = pixelSet(obj.sensor.pixel,'voltageswing',pixelVoltSwing);
         end
     end
 end
