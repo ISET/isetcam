@@ -194,9 +194,9 @@ classdef cpCModule
                 end
                 sensorImage = sensorCompute(obj.sensor, opticalImage);
                 cOutput = [cOutput, sensorImage]; %#ok<AGROW> 
+                % put back original pixel voltage swing
+                obj.sensor.pixel = pixelSet(obj.sensor.pixel,'voltageswing',pixelVoltSwing);
             end
-            % put back original pixel voltage swing
-            obj.sensor.pixel = pixelSet(obj.sensor.pixel,'voltageswing',pixelVoltSwing);
         end
     end
 end
