@@ -128,8 +128,9 @@ classdef cpCModule
             
             cOutput = [];
 
-            % store voltage swing as we modify it for fill factors < 1
-            pixelVoltSwing = pixelGet(obj.sensor.pixel,'voltageswing');
+            % store original pixel to restore later
+            originalPixel = obj.sensor.pixel;
+            pixelVoltSwing = pixelGet(originalPixel,'voltage swing');
             for ii = 1:numel(sceneObjects)
                 
                 ourScene = sceneObjects{ii};
@@ -175,7 +176,12 @@ classdef cpCModule
                 % we have already calculated our exposure times
                 obj.sensor = sensorSet(obj.sensor, 'exposure time', expTimes(ii));
                 if ~isempty(options.fillFactors)
-                    obj.sensor = pixelCenterFillPD(obj.sensor, options.fillFactors(ii));
+                    %obj.sensor = pixelCenterFillPD(obj.sensor, options.fillFactors(ii));
+                    newSize = pixelGet(originalPixel,'pixel size') * options.fillFactors(ii);
+                    obj.sensor.pixel = pixelSet(obj.sensor.pixel,'size ConstantFillFactor',newSize);
+                    % Reducing fill factor reduces light received and pd
+                    % size, but we also need to know a smaller well
+                    % capacity
                     obj.sensor.pixel = pixelSet(obj.sensor.pixel,'voltageswing',pixelVoltSwing * options.fillFactors(ii));
                     if options.fillFactors(ii) < .5
                         % if small fill factor cheat and assume we want it in
@@ -194,9 +200,11 @@ classdef cpCModule
                 end
                 sensorImage = sensorCompute(obj.sensor, opticalImage);
                 cOutput = [cOutput, sensorImage]; %#ok<AGROW> 
+                
+                % put back original pixel voltage swing
+                obj.sensor.pixel = originalPixel;
+
             end
-            % put back original pixel voltage swing
-            obj.sensor.pixel = pixelSet(obj.sensor.pixel,'voltageswing',pixelVoltSwing);
         end
     end
 end
