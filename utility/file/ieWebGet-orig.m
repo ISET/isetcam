@@ -1,27 +1,22 @@
-function localFile = ieWebGet2(varargin)
+function localFile = ieWebGet(varargin)
 %% Download a resource from the Stanford web site
 %
 % Synopsis
-%   localFile = ieWebGet2(varargin)
+%   localFile = ieWebGet(varargin)
 %
 % Brief description
 %  Download an ISET zip or mat-file file from the web.  The type of file
 %  and the remote file name define how to get the file.
 %
 % Inputs
-%   varargin{1} -  If the first argument is ,'list','url', you will be
-%   'browse' -  sent to the website 
-%   'list'   -  be returned a list of resources or .  The second argument
-%   'url'     - shown the type of resource at the url ('pbrt',
-%   'hyperspectral', 'multispectral', 'hdr'). The default resource is
-%   'pbrt'.  
-%    
+%  N/A
+%
 % Key/val pairs
-%  op:            The operation to perform {'fetch','read'}
+%  op:            The operation to perform {'fetch','read','list','browse'}
 %                 (default: 'fetch')
 %  resource type: 'pbrt', 'hyperspectral', 'multispectral', 'hdr'
 %                 (default: 'pbrt')
-%  resource name    :  File name of the remote file
+%  resource name: File name of the remote file
 %  remove temp files:  Remove local temp file (zip)
 %  unzip:           :  Unzip the file
 %  verbose          :  Print a report to the command window
@@ -34,108 +29,36 @@ function localFile = ieWebGet2(varargin)
 %   Stanford resource, cardinal.stanford.edu/~SOMEONE.  This routine is a
 %   gateway that allows us to download the files (using fetch).
 %
-%   The types of resources are listed above.  To see the remote web site or
-%   the names of the resources, use the 'list' or 'browse' operations.
+%   The types of resources are listed above.  To see the names of the
+%   resources, use the 'list' operation.
 %
-%   pbrt resources default to being stored under 
-%
-%           iset3d/data/v3/web. 
-%
-%   other resources ('hdr','hyperspectral','multispectral') default to
-%   being stored under 
-%
-%           isetcam/local/scenes/<resourcetype>/. 
-
 % See also:
 %    webImageBrowser_mlapp
 %
 
 % Examples
 %{
-% Browse the remote site
-ieWebGet('browse');
+% NOTE: pbrt scenes default to being stored under iset3d/data/v3/ if available, other
+% scenes default to being stored under isetcam/local/scenes/<resourcetype>/.
 %}
 %{
-ieWebGet('list')
-%}
-%{
- localFile = ieWebGet('resource name','veach-ajar');
-%}
-%{
-    localFile       = ieWebGet2('resourcename', 'ChessSet', 'resourcetype', 'pbrt')
-    data            = ieWebGet2('op', 'read', 'resourcetype', 'hyperspectral', 'resourcename', 'FruitMCC')
-    localFile       = ieWebGet2('op', 'fetch', 'resourcetype', 'hdr', 'resourcename', 'BBQsite1')
-    ~               = ieWebGet2('resourcetype', 'pbrt', 'op', 'browse')
+    localFile       = ieWebGet('resourcename', 'ChessSet', 'resourcetype', 'pbrt')
+    data            = ieWebGet('op', 'read', 'resourcetype', 'hyperspectral', 'resourcename', 'FruitMCC')
+    localFile       = ieWebGet('op', 'fetch', 'resourcetype', 'hdr', 'resourcename', 'BBQsite1')
+    ~               = ieWebGet('resourcetype', 'pbrt', 'op', 'browse')
 %}
 %{
     % Use it to create a list of resources and then select one:
     arrayOfResourceFiles = ieWebGet('op', 'list', 'resourcetype', 'hyperspectral')
-	data = ieWebGet2('op', 'read', 'resource type', 'hyperspectral', 'resource name', arrayOfResourceFiles{ii});
+	data = ieWebGet('op', 'read', 'resource type', 'hyperspectral', 'resource name', arrayOfResourceFiles{ii});
 %}
 
-%% Set up base URL
+%% Decode key/val args
 
-urlList = ...
-    {'http://stanford.edu/~wandell/data/pbrt/', ...
-    'http://stanford.edu/~david81/ISETData/Hyperspectral/', ...
-    'http://stanford.edu/~david81/ISETData/Multispectral/', ...
-    'http://stanford.edu/~david81/ISETData/HDR/'};
-baseURL = urlList{1};
-
-%% Check for the special input arguments 
-% ieWebGet2('browse','pbrt'), 
-% ieWebGet2('browse','hyperspectral')
-if ismember(ieParamFormat(varargin{1}),{'browse','list','url'})
-    if numel(varargin) < 2, src = 'pbrt';
-    else, src = ieParamFormat(varargin{2});
-    end
-    switch src
-        case 'pbrt'
-            baseURL = urlList{1};
-        case 'hyperspectral'
-            baseURL = urlList{2};
-            
-        case 'multispectral'
-            baseURL = urlList{3};
-        case 'hdr'
-            baseURL = urlList{4};
-        otherwise
-            error('Unknown resource type %s\n',src);
-    end
-    if isequal(ieParamFormat(varargin{1}),'browse')
-        % assume for now that means we are looking on the web        
-        web(baseURL);
-        localFile = '';
-        return;
-    elseif isequal(ieParamFormat(varargin{1}),'list')
-        % simply read the pre-loaded list of resources
-        try
-            localFile = webread(strcat(baseURL, 'resourcelist.json'));
-        catch
-            % We should find a better way to do this
-            warning("Unable to load resource list from remote site. Returning webread data");
-            localFile = webread(baseURL);
-        end
-        % we need to filter here as sometimes we only want .MAT files
-        localFile = localFile(contains(localFile, ".mat", 'IgnoreCase', true));
-        return;
-    elseif isequal(ieParamFormat(varargin{1}),'url')
-        
-        fprintf('\nResource URLs\n=================\n\n');
-        for ii=1:numel(urlList)
-            fprintf('%s\n',urlList{ii});
-        end
-        fprintf('\n');
-        return;
-    end
-end
-
-
-%%  Decode key/val args
 varargin = ieParamFormat(varargin);
 
 p = inputParser;
-vFunc = @(x)(ismember(x,{'fetch','read','list'}));
+vFunc = @(x)(ismember(x,{'fetch','read','list','browse'}));
 p.addParameter('op','fetch',vFunc);
 p.addParameter('resourcename', '', @ischar);
 vFunc = @(x)(ismember(x,{'pbrt', 'hyperspectral', 'multispectral', 'hdr','pbrt','v3'}));
@@ -173,10 +96,11 @@ switch resourceType
             error("Need to have either iset3D or isetCam Root set");
         end
         
+        baseURL = 'http://stanford.edu/~wandell/data/pbrt/';
         switch op
             case 'fetch'
                 % for now we only support v3 pbrt files
-                downloadDir = fullfile(downloadRoot,'data','v3','web');
+                downloadDir = fullfile(downloadRoot,'data','v3');
                 if ~isfolder(downloadDir)
                     mkdir(downloadDir);
                 end
@@ -207,13 +131,21 @@ switch resourceType
                     warning("Unable to retrieve: %s", resourceURL);
                     localFile = '';
                 end
-            otherwise
-                error('Unknown operation for PBRT %s\n',op);
+            case 'browse'
+                % assume for now that means we are listing
+                web(baseURL,'-browser');
+                localFile = '';
+            case 'list'
+                % simply read the pre-loaded list of resources
+                try
+                    localFile = webread(strcat(baseURL, 'resourcelist.json'));
+                catch
+                    warning("Unable to load resource list");
+                    localFile = '';
+                end
         end
-        
     case {'hyperspectral', 'multispectral', 'hdr'}
         
-        % We need to adjust the baseurl for these non-pbrt cases
         parentURL = 'http://stanford.edu/~david81/ISETData/';
         % do we want to switch based on browse op or
         % split by type first?
@@ -225,8 +157,9 @@ switch resourceType
             case 'hdr'
                 baseURL = strcat(parentURL, "HDR", '/');
         end
-        
         switch op
+            case 'browse'
+                web(baseURL,'-browser');
             case {'read', 'fetch'}
                 options = weboptions('Timeout', 60);
                 if ~endsWith(resourceName, "." + lettersPattern)
@@ -269,7 +202,18 @@ switch resourceType
                         end
                         
                 end
-           
+            case 'list'
+                % simply read the pre-loaded list of resources
+                try
+                    localFile = webread(strcat(baseURL, 'resourcelist.json'));
+                catch
+                    warning("Unable to load resource list");
+                    localFile = '';
+                    return
+                end
+                % we need to filter here as sometimes we only want .MAT
+                % files
+                localFile = localFile(ieContains(localFile, ".mat", 'IgnoreCase', true));
             otherwise
                 warning("Not Supported yet");
         end

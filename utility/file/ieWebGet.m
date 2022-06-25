@@ -5,32 +5,53 @@ function localFile = ieWebGet(varargin)
 %   localFile = ieWebGet(varargin)
 %
 % Brief description
-%  Download an ISET zip or mat-file file from the web.  The type of file
-%  and the remote file name define how to get the file.
+%  Download an ISET or ISET3d related zip or mat-file file from the web.
+%  We call these files 'resources'.  The resource type and the remote file
+%  name define how to get the file. 
 %
 % Inputs
-%  N/A
+%   N/A
 %
 % Key/val pairs
-%  op:            The operation to perform {'fetch','read','list','browse'}
-%                 (default: 'fetch')
-%  resource type: 'pbrt', 'hyperspectral', 'multispectral', 'hdr'
-%                 (default: 'pbrt')
-%  resource name: File name of the remote file
-%  remove temp files:  Remove local temp file (zip)
-%  unzip:           :  Unzip the file
-%  verbose          :  Print a report to the command window
+%
+%   'url'     - Print resource urls contained in this file.
+%
+%   'browse' -  browse a website for a resource
+%   'list'   -  return the contents of resourceslist.json on the remote
+%               site.  
+%    The following argument (varargin{2}) specifies the resource type
+%    (see below)
+%  
+%    ask first: Confirm with user prior to downloading (default: true)
+%    op:       One of {'fetch','read'}                 (default: 'fetch')
+%    resource type: 
+%        {'pbrtv3', 'pbrtv4','spectral','hyperspectral', 'multispectral', 'hdr'}
+%        (default: 'pbrt')
+%    resource name    :  Remote file name (no default)
+%    remove temp files:  Remove downloaded temporary file (default: true)
+%    unzip:           :  Unzip the local file (default: true)
+%    verbose          :  Print a report to the command window
 %
 % Output
 %   localFile:  Name of the local download file
 %
 % Description
-%   We store various data sets (resources) as zip- and mat-files on the
-%   Stanford resource, cardinal.stanford.edu/~SOMEONE.  This routine is a
-%   gateway that allows us to download the files (using fetch).
+%   We store certain large data sets (resources) as zip- and mat-files on
+%   the Stanford resource, cardinal.stanford.edu.  This routine is a
+%   gateway to download the files.  We store them on cardinal because they
+%   are too large to be conveniently stored on GitHub.
 %
-%   The types of resources are listed above.  To see the names of the
-%   resources, use the 'list' operation.
+%   The type of resources are listed above.  To see the remote web site or
+%   the names of the resources, use the 'browse' option.
+%
+%   Downloading the different types of resources is handled separately for
+%   each resource type. Here is what we do:
+%
+%   pbrtv3 resources are stored in:   iset3d/data/v3/web
+%   pbrtv4 resources are stored in:   iset3d/data/scenes/web
+%
+%   ('spectral,'hdr','hyperspectral','multispectral') are stored in
+%           isetcam/local/scenes/<resourcetype>/. 
 %
 % See also:
 %    webImageBrowser_mlapp
@@ -38,31 +59,108 @@ function localFile = ieWebGet(varargin)
 
 % Examples
 %{
-% NOTE: pbrt scenes default to being stored under iset3d/data/v3/ if available, other
-% scenes default to being stored under isetcam/local/scenes/<resourcetype>/.
+ % Browse the remote site
+ ieWebGet('browse');
+ ieWebGet('browse','pbrtv3');
+ ieWebGet('browse','hyperspectral');
+ ieWebGet('browse','pbrtv4');
 %}
 %{
-    localFile       = ieWebGet('resourcename', 'ChessSet', 'resourcetype', 'pbrt')
-    data            = ieWebGet('op', 'read', 'resourcetype', 'hyperspectral', 'resourcename', 'FruitMCC')
-    localFile       = ieWebGet('op', 'fetch', 'resourcetype', 'hdr', 'resourcename', 'BBQsite1')
-    ~               = ieWebGet('resourcetype', 'pbrt', 'op', 'browse')
+ ieWebGet('list')
 %}
 %{
-    % Use it to create a list of resources and then select one:
-    arrayOfResourceFiles = ieWebGet('op', 'list', 'resourcetype', 'hyperspectral')
+ localFile = ieWebGet('resource name','veach-ajar');
+%}
+%{
+localFile = ieWebGet('resourcename', 'ChessSet', 'resourcetype', 'pbrt')
+data      = ieWebGet('op', 'read', 'resourcetype', 'hyperspectral', 'resourcename', 'FruitMCC')
+localFile = ieWebGet('op', 'fetch', 'resourcetype', 'hdr', 'resourcename', 'BBQsite1')
+%}
+%{
+    % Create a cell array of resources and then select one:
+    arrayOfResourceFiles = ieWebGet('list', 'hyperspectral')
 	data = ieWebGet('op', 'read', 'resource type', 'hyperspectral', 'resource name', arrayOfResourceFiles{ii});
 %}
 
-%% Decode key/val args
+%% Set up base URL
+
+urlList = ...
+    {'http://stanford.edu/~wandell/data/pbrtv3/', ...
+    'http://stanford.edu/~david81/ISETData/Hyperspectral/', ...
+    'http://stanford.edu/~david81/ISETData/Multispectral/', ...
+    'http://stanford.edu/~david81/ISETData/HDR/', ...
+    'http://stanford.edu/~wandell/data/spectral/', ...
+    'http://stanford.edu/~wandell/data/pbrtv4/'};
+
+% By default we go to wandell's pbrt (which is V3).  This should change
+% shortly to pbrtv4.
+baseURL = urlList{1};
+
+%% First, handle the special input arguments: browse, list, url.
+%
+% We parse the arguments below.
+
+if isequal(ieParamFormat(varargin{1}),'url')
+
+    fprintf('\nResource URLs\n=================\n\n');
+    for ii=1:numel(urlList)
+        fprintf('%s\n',urlList{ii});
+    end
+    fprintf('\n');
+    return;
+end
+
+if ismember(ieParamFormat(varargin{1}),{'browse','list'})
+    if numel(varargin) < 2, src = 'pbrtv3';
+    else, src = ieParamFormat(varargin{2});
+    end
+    switch src
+        case 'pbrtv3'
+            baseURL = urlList{1};
+        case 'hyperspectral'
+            baseURL = urlList{2};            
+        case 'multispectral'
+            baseURL = urlList{3};
+        case 'hdr'
+            baseURL = urlList{4};
+        case 'spectral'
+            baseURL = urlList{5};
+        case 'pbrtv4'
+            baseURL = urlList{6};
+        otherwise
+            error('Unknown resource type %s\n',src);
+    end
+
+    if isequal(ieParamFormat(varargin{1}),'browse')
+        % assume for now that means we are looking on the web        
+        web(baseURL);
+        localFile = '';
+        return;
+    elseif isequal(ieParamFormat(varargin{1}),'list')
+        % read the list of resources from the remote site.
+        % This means someone needs to create the resource list.  Uh Oh.
+        try
+            localFile = webread(strcat(baseURL, 'resourcelist.json'));
+        catch
+            % We should find a better way to do this
+            warning("Unable to find resourcelist.json on the remote site. Suggest using browse.");
+            localFile = webread(baseURL);
+        end
+        return;
+    end
+end
+
+
+%%  Normal situation
 
 varargin = ieParamFormat(varargin);
 
 p = inputParser;
-vFunc = @(x)(ismember(x,{'fetch','read','list','browse'}));
+vFunc = @(x)(ismember(x,{'fetch','read','list'}));
 p.addParameter('op','fetch',vFunc);
 p.addParameter('resourcename', '', @ischar);
-vFunc = @(x)(ismember(x,{'pbrt', 'hyperspectral', 'multispectral', 'hdr','pbrt','v3'}));
-p.addParameter('resourcetype', 'pbrt',vFunc);
+vFunc = @(x)(ismember(x,{'pbrtv3', 'spectral','hyperspectral', 'multispectral', 'hdr','pbrtv4'}));
+p.addParameter('resourcetype', 'pbrtv3',vFunc);
 
 p.addParameter('askfirst', true, @islogical);
 p.addParameter('unzip', true, @islogical);  % assume the user wants the resource unzipped, if applicable
@@ -78,74 +176,75 @@ localName      = p.Results.localname;
 unZip          = p.Results.unzip;
 removeTempFiles = p.Results.removetempfiles;
 
-if isempty(localName)
-    localName = resourceName;
-end
+% if isempty(localName)
+%     localName = resourceName;
+% end
 verbose   = p.Results.verbose;
 op        = p.Results.op;
 askFirst  = p.Results.askfirst;
 localFile = '';        % Default local file name
 
 switch resourceType
-    case {'pbrt', 'v3'}
-        if exist('piRootPath','file') && isfolder(piRootPath)
-            downloadRoot = piRootPath;
-        elseif exist('isetRootPath', 'file') && isfolder(isetRootPath)
-            downloadRoot = isetRootPath;
-        else
-            error("Need to have either iset3D or isetCam Root set");
+  
+
+    case {'pbrtv3','pbrtv4'}
+        % PBRT V3 or V4 resources.
+        % We download the file into a directory that is ignored by
+        % git.
+        %
+        % s = ieWebGet('resource type','pbrtv4','resource name','kitchen');
+
+        % This is the only permissible operation for PBRT
+        assert(strcmp(op,'fetch')==1)
+
+        % ISET3d must be on your path.
+        % The download directory is ignored by git in ISET3d.
+        switch resourceType
+            case 'pbrtv3'
+                downloadDir = fullfile(piRootPath,'data','v3','web');
+            case 'pbrtv4'
+                downloadDir = fullfile(piRootPath,'data','scenes','web');
+        end
+
+        % This should never happen. The directory is part of ISET3d and is
+        % a .gitignore directory.
+        if ~isfolder(downloadDir)
+            error('Download directory error: %s',downloadDir); 
+        end
+
+        % We should check if the zip is already there.
+        remoteFileName = strcat(resourceName, '.zip');
+        resourceURL    = strcat(baseURL, remoteFileName);
+        localZIP       = fullfile(downloadDir, remoteFileName);
+
+        if askFirst
+            proceed = confirmDownload(resourceName, resourceURL, localZIP);
+            if proceed == false, return, end
+        end
+
+        try
+            % The pbrt files are zip files.
+            fprintf('Downloading to %s ... \n',localZIP);
+            websave(localZIP, resourceURL);
+            fprintf('Done\n');
+            if unZip
+                unzip(localZIP, downloadDir);
+                if removeTempFiles
+                    delete(localZIP);
+                end
+                % not sure how we "know" what the unzip path is?
+                localFile = fullfile(downloadDir, resourceName);
+            else
+                localFile = localZIP;
+            end
+        catch
+            warning("Failed to retrieve: %s", resourceURL);
+            localFile = '';
         end
         
-        baseURL = 'http://stanford.edu/~wandell/data/pbrt/';
-        switch op
-            case 'fetch'
-                % for now we only support v3 pbrt files
-                downloadDir = fullfile(downloadRoot,'data','v3');
-                if ~isfolder(downloadDir)
-                    mkdir(downloadDir);
-                end
-                
-                remoteFileName = strcat(resourceName, '.zip');
-                resourceURL    = strcat(baseURL, remoteFileName);
-                localURL       = fullfile(downloadDir, remoteFileName);
-                
-                if askFirst
-                    proceed = confirmDownload(resourceName, resourceURL, localURL);
-                    if proceed == false, return, end
-                end
-                
-                try
-                    websave(localURL, resourceURL);
-                    if unZip
-                        unzip(localURL, downloadDir);
-                        if removeTempFiles
-                            delete(localURL);
-                        end
-                        % not sure how we "know" what the unzip path is?
-                        localFile = fullfile(downloadDir, resourceName);
-                    else
-                        localFile = localURL;
-                    end
-                catch
-                    %not much in the way of error handling yet:)
-                    warning("Unable to retrieve: %s", resourceURL);
-                    localFile = '';
-                end
-            case 'browse'
-                % assume for now that means we are listing
-                web(baseURL,'-browser');
-                localFile = '';
-            case 'list'
-                % simply read the pre-loaded list of resources
-                try
-                    localFile = webread(strcat(baseURL, 'resourcelist.json'));
-                catch
-                    warning("Unable to load resource list");
-                    localFile = '';
-                end
-        end
     case {'hyperspectral', 'multispectral', 'hdr'}
         
+        % We need to adjust the baseurl for these non-pbrt cases
         parentURL = 'http://stanford.edu/~david81/ISETData/';
         % do we want to switch based on browse op or
         % split by type first?
@@ -157,9 +256,8 @@ switch resourceType
             case 'hdr'
                 baseURL = strcat(parentURL, "HDR", '/');
         end
+        
         switch op
-            case 'browse'
-                web(baseURL,'-browser');
             case {'read', 'fetch'}
                 options = weboptions('Timeout', 60);
                 if ~endsWith(resourceName, "." + lettersPattern)
@@ -202,18 +300,7 @@ switch resourceType
                         end
                         
                 end
-            case 'list'
-                % simply read the pre-loaded list of resources
-                try
-                    localFile = webread(strcat(baseURL, 'resourcelist.json'));
-                catch
-                    warning("Unable to load resource list");
-                    localFile = '';
-                    return
-                end
-                % we need to filter here as sometimes we only want .MAT
-                % files
-                localFile = localFile(ieContains(localFile, ".mat", 'IgnoreCase', true));
+           
             otherwise
                 warning("Not Supported yet");
         end
@@ -239,9 +326,9 @@ end
 
 %% Query the user to confirm the download
 %
-function proceed = confirmDownload(resourceName, resourceURL, localURL)
-question = sprintf("Okay to download: %s from %s to file %s and if necessary, unzip it?\n This may take some time.", resourceName, resourceURL, localURL);
-answer = questdlg(question, "Confirm Web Resource Download", 'Yes');
+function proceed = confirmDownload(resourceName, resourceURL, localZIP)
+question = sprintf("Confirm download: %s to %s?\n", resourceName, localZIP);
+answer = questdlg(question, "Confirm Download", 'Yes');
 if isequal(answer, 'Yes')
     proceed = true;
 else
