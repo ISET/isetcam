@@ -12,8 +12,9 @@ function [scene,I, basisF] = sceneFromFile(I, imType, meanLuminance, dispCal, ..
 %             may also be
 %              * RGB data, rather than the file name
 %              * A file that contains a scene structure
-%  imageType: 'multispectral' or 'rgb' or 'monochrome'
-%              When 'rgb', the imageData might be RGB format.
+%  imageType: 'spectral', 'rgb' or 'monochrome'
+%              When 'rgb', the imageData might be RGB format. 'spectral'
+%              includes both multispectral and hyperspectral.
 %  dispCal:   A display structure used to convert RGB to spectral data.
 %
 %             For the typical case an emissive display the illuminant SPD is
@@ -264,7 +265,7 @@ switch lower(imType)
         scene  = sceneSet(scene, 'h fov', imgFov);
         scene  = sceneSet(scene,'distance',displayGet(d,'viewing distance'));
         
-    case {'multispectral','hyperspectral'}
+    case {'spectral','multispectral','hyperspectral'}
         if ~exist(I,'file'), error('Name of existing file required for multispectral'); end
         if notDefined('wList'), wList = []; end
         

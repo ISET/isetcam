@@ -37,11 +37,11 @@ function [photons, illuminant, basis, comment, mcCOEF] = vcReadImage(fullname,im
 %     default, doSub is set to False. Note that, for large image, turning
 %     on doSub could be extremely slow.
 %
-%   'multispectral','hyperspectral': In this case the data are stored as
-%     coefficients and basis functions. We build the spectral
-%     representation here. These, along with a comment and measurement of
-%     the scene illuminant (usually measured using a PhotoResearch PR-650
-%     spectral radiometer) can be returned.
+%   'spectral,'multispectral','hyperspectral': 
+%     In this case the data are stored as coefficients and basis functions.
+%     We build the spectral representation here. These, along with a
+%     comment and measurement of the scene illuminant (usually measured
+%     using a PhotoResearch PR-650 spectral radiometer) can be returned.
 %
 % RETURNS
 %  photons:     RGB format of photon data (r,c,w)
@@ -235,7 +235,7 @@ switch lower(imageType)
         end
         photons = XW2RGBFormat(photons,r,c);
         
-    case {'multispectral','hyperspectral'}
+    case {'spectral','multispectral','hyperspectral'}
         
         % These are always there.  Illuminant should be there, too.  But
         % sometimes it isn't, so we check below, separately.
