@@ -82,25 +82,12 @@ localFile = ieWebGet('op', 'fetch', 'resourcetype', 'hdr', 'resourcename', 'BBQs
 	data = ieWebGet('op', 'read', 'resource type', 'hyperspectral', 'resource name', arrayOfResourceFiles{ii});
 %}
 
-%% Set up base URL
-
-urlList = ...
-    {'http://stanford.edu/~wandell/data/pbrtv3/', ...
-    'http://stanford.edu/~david81/ISETData/Hyperspectral/', ...
-    'http://stanford.edu/~david81/ISETData/Multispectral/', ...
-    'http://stanford.edu/~david81/ISETData/HDR/', ...
-    'http://stanford.edu/~wandell/data/spectral/', ...
-    'http://stanford.edu/~wandell/data/pbrtv4/'};
-
-% By default we go to wandell's pbrt (which is V3).  This should change
-% shortly to pbrtv4.
-baseURL = urlList{1};
-
 %% First, handle the special input arguments: browse, list, url.
-%
-% We parse the arguments below.
+
+% General argument parsing happens later.
 
 if isequal(ieParamFormat(varargin{1}),'url')
+    [~,urlList] = urlResource('all');
 
     fprintf('\nResource URLs\n=================\n\n');
     for ii=1:numel(urlList)
@@ -110,46 +97,31 @@ if isequal(ieParamFormat(varargin{1}),'url')
     return;
 end
 
-if ismember(ieParamFormat(varargin{1}),{'browse','list'})
-    if numel(varargin) < 2, src = 'pbrtv3';
-    else, src = ieParamFormat(varargin{2});
-    end
-    switch src
-        case 'pbrtv3'
-            baseURL = urlList{1};
-        case 'hyperspectral'
-            baseURL = urlList{2};            
-        case 'multispectral'
-            baseURL = urlList{3};
-        case 'hdr'
-            baseURL = urlList{4};
-        case 'spectral'
-            baseURL = urlList{5};
-        case 'pbrtv4'
-            baseURL = urlList{6};
-        otherwise
-            error('Unknown resource type %s\n',src);
+if isequal(ieParamFormat(varargin{1}),'browse')
+    % assume for now that means we are looking on the web
+    if numel(varargin) < 2
+        baseURL = urlResource('default');
+    else
+        baseURL = urlResource(varargin{2});
     end
 
-    if isequal(ieParamFormat(varargin{1}),'browse')
-        % assume for now that means we are looking on the web        
-        web(baseURL);
-        localFile = '';
-        return;
-    elseif isequal(ieParamFormat(varargin{1}),'list')
-        % read the list of resources from the remote site.
-        % This means someone needs to create the resource list.  Uh Oh.
-        try
-            localFile = webread(strcat(baseURL, 'resourcelist.json'));
-        catch
-            % We should find a better way to do this
-            warning("Unable to find resourcelist.json on the remote site. Suggest using browse.");
-            localFile = webread(baseURL);
-        end
-        return;
-    end
+    web(baseURL);
+    localFile = '';
+    return;
 end
 
+if isequal(ieParamFormat(varargin{1}),'list')
+    % read the list of resources from the remote site.
+    % This means someone needs to create the resource list.  Uh Oh.
+    try
+        localFile = webread(strcat(baseURL, 'resourcelist.json'));
+    catch
+        % We should find a better way to do this
+        warning("Unable to find resourcelist.json on the remote site. Suggest using browse.");
+        localFile = webread(baseURL);
+    end
+    return;
+end
 
 %%  Normal situation
 
@@ -172,9 +144,11 @@ p.parse(varargin{:});
 
 resourceName   = p.Results.resourcename;
 resourceType   = p.Results.resourcetype;
-localName      = p.Results.localname;
+% localName      = p.Results.localname;
 unZip          = p.Results.unzip;
 removeTempFiles = p.Results.removetempfiles;
+
+baseURL = urlResource(resourceType);
 
 % if isempty(localName)
 %     localName = resourceName;
@@ -218,7 +192,7 @@ switch resourceType
         localZIP       = fullfile(downloadDir, remoteFileName);
 
         if askFirst
-            proceed = confirmDownload(resourceName, resourceURL, localZIP);
+            proceed = confirmDownload(resourceName, localZIP);
             if proceed == false, return, end
         end
 
@@ -242,7 +216,7 @@ switch resourceType
             localFile = '';
         end
         
-    case {'hyperspectral', 'multispectral', 'hdr'}
+    case {'spectral','hyperspectral', 'multispectral', 'hdr'}
         
         % We need to adjust the baseurl for these non-pbrt cases
         parentURL = 'http://stanford.edu/~david81/ISETData/';
@@ -280,7 +254,7 @@ switch resourceType
                         
                         localFile = fullfile(downloadDir, remoteFileName);
                         if askFirst
-                            proceed = confirmDownload(resourceName, resourceURL, localFile);
+                            proceed = confirmDownload(resourceName, localFile);
                             if proceed == false, return, end
                         end
                         
@@ -326,12 +300,50 @@ end
 
 %% Query the user to confirm the download
 %
-function proceed = confirmDownload(resourceName, resourceURL, localZIP)
-question = sprintf("Confirm download: %s to %s?\n", resourceName, localZIP);
-answer = questdlg(question, "Confirm Download", 'Yes');
-if isequal(answer, 'Yes')
-    proceed = true;
-else
-    proceed = false;
+function proceed = confirmDownload(resourceName, localZIP)
+
+question = sprintf('Confirm download: %s to %s\n', resourceName, localZIP);
+answer = questdlg(question, 'Confirm Download: ', 'Yes');
+
+% To change the font size ...
+% questdlg('\fontsize{20}Hello World ?','Hello',struct('Default','','Interpreter','tex'));
+
+if isequal(answer, 'Yes'),  proceed = true;
+else,                       proceed = false;
 end
+
 end
+
+%% Assign URL to resource type
+
+function [baseURL, urlList] = urlResource(resourceType)
+% List the possible URLs here
+
+urlList = ...
+    {'http://stanford.edu/~wandell/data/pbrtv3/', ...
+    'http://stanford.edu/~david81/ISETData/Hyperspectral/', ...
+    'http://stanford.edu/~david81/ISETData/Multispectral/', ...
+    'http://stanford.edu/~david81/ISETData/HDR/', ...
+    'http://stanford.edu/~wandell/data/spectral/', ...
+    'http://stanford.edu/~wandell/data/pbrtv4/'};
+
+switch resourceType
+    case 'all'
+    case 'pbrtv3'
+        baseURL = urlList{1};
+    case 'hyperspectral'
+        baseURL = urlList{2};
+    case 'multispectral'
+        baseURL = urlList{3};
+    case 'hdr'
+        baseURL = urlList{4};
+    case 'spectral'
+        baseURL = urlList{5};
+    case 'pbrtv4'
+        baseURL = urlList{6};
+    otherwise
+        error('Unknown resource type %s\n',src);
+end
+
+end
+
