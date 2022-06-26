@@ -155,7 +155,9 @@ if ieNotDefined('roiLocs')
             end
             
         otherwise
-            % There are some cases that are OK without an roiLocs value or ROI.
+            % There are some cases that are OK without an roiLocs value or
+            % ROI. But we make it exist and be empty.
+            roiLocs = [];
     end
 end
 
