@@ -1,10 +1,11 @@
 %% s_dataLmps
 %
-% Data copied and pasted from
+% Data copied and pasted from the files at:
 %
 %   https://guaix.fis.ucm.es/lamps_spectra
 %
-% Filenames are bulb type and McCamy CCT
+% Filenames are some verbal descriptor and either McCamy CCT or possible a
+% traffic light name.
 %
 % See also
 %
