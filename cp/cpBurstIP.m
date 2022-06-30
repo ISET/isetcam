@@ -52,6 +52,11 @@ classdef cpBurstIP < cpIP
                         % ipCompute for HDR assumes we have an array of voltages
                         % in a single sensor, NOT an array of sensors
                         % so first we merge our sensor array into one sensor
+
+                        % For hybrid sensors (e.g. Corner Pixel) we
+                        % also need to add support for multiple pd sizes
+                        % since less photons in a smaller pd for a fixed
+                        % exposure time indicates a brighter scene TBD
                         sensorImage = obj.mergeSensors(sensorImages);
                         sensorImage = sensorSet(sensorImage,'exposure method', 'bracketing');
                         obj.ip = ipSet(obj.ip, 'combination method', options.tonemap);
