@@ -172,8 +172,14 @@ classdef cpBurstIP < cpIP
         function singleSensor = mergeSensors(obj, sensorArray)
             singleSensor = sensorArray(1);
             for ii = 2:numel(sensorArray)
+                % Build a list of exposure times for later use
+                % This also makes the sensor integrationtime a list
                 singleSensor = sensorSet(singleSensor, 'exposure time', ...
                     [sensorGet(singleSensor,'exposure time') sensorGet(sensorArray(ii), 'exposure time')]);
+                % Build a list of pixels for recombination later
+                % Except the sensor code doesn't like a vector of pixels!
+                %singleSensor = sensorSet(singleSensor, 'pixel', ...
+                %    [sensorGet(singleSensor,'pixel') sensorGet(sensorArray(ii), 'pixel')]);
 
                 % need to build array of voltages and digital values
                 if isfield(singleSensor.data,'volts')
