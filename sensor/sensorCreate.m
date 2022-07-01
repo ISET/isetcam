@@ -37,6 +37,7 @@ function sensor = sensorCreate(sensorType,pixel,varargin)
 %      {'grbc'}   - green, red, blue, cyan
 %      {'rgbw'}   - One transparent channel and 3 RGB.  Same as RGBC
 %                        or RGBW
+%      {'imec44'} - IMEC 16 channel sensor, 5.5 um
 %      {'fourcolor'}
 %      {'custom'}
 %
@@ -57,6 +58,10 @@ function sensor = sensorCreate(sensorType,pixel,varargin)
 %  Default Bayer RGGB
    sensor = sensorCreate;
    sensor = sensorCreate('default');
+%}
+%{
+%  IMEC 16 channel sensor
+   sensor = sensorCreate('imec44',[],[400 400]);
 %}
 %{
 %  Other types of Bayer arrays
@@ -275,7 +280,13 @@ switch sensorType
             error('No filter file specified')
         end
         sensor = sensorCustom(sensor,filterPattern,filterFile);
-        
+    case {'imec44'}
+        % Returns a 400x400 version of the sensor.
+        rowcol = [400 400];
+        if length(varargin) >= 1
+            rowcol = varargin{1};
+        end
+        sensor = sensorCreateIMECSSM4x4vis('row col',rowcol); 
     case 'monochrome'
         filterFile = 'Monochrome';
         sensor = sensorMonochrome(sensor,filterFile);

@@ -14,27 +14,27 @@ function sensor = sensorCreateIMECSSM4x4vis(varargin)
 %    sensor:  ISETCam sensor model for the IMEC SSM 4x4 vis
 %
 % Description
-%   The IMEC SSM is a snap shot sensor.  BY default we create a 4x4
-%   super-pixel that has a series of Lorentzian spectral filters over the
-%   wavelength range XXX.
-%   The imec sensor is a CMOSIS CMV2000 sensor. See https://ams.com/cmv2000
-%   for technical specifications.
-%   A useful calibration document: https://ams.com/documents/20143/36005/CMVxxx_AN000355_1-00.pdf/05fbbca0-fb6c-ad32-1078-3719ce658884
+%   The IMEC SSM is a snap shot sensor.  By default we create a 4x4
+%   super-pixel that has a series of Lorentzian spectral filters over
+%   the wavelength range XXX. The imec sensor is a CMOSIS CMV2000
+%   sensor. 
+% 
+% See https://ams.com/cmv2000 for technical specifications.
+%
+% A useful calibration document:
+% https://ams.com/documents/20143/36005/CMVxxx_AN000355_1-00.pdf/05fbbca0-fb6c-ad32-1078-3719ce658884
 %-
 % Gain Description CMV2000
-%   The CMV2000 has multiple gains that can be applied to the output signal: the analog gain and
-%   the ACD/digital gain.
+%  The CMV2000 has multiple gains that can be applied to the output
+%  signal: the analog gain and the ACD/digital gain.
 %
-%   ADC gain: A slower clock signal means a higher ADC_gain register value for an
-%              actual ADC gain of 1x. Also at higher register values, the actual ADC gain will increase in bigger steps. So fine-tuning the
-%              ADC gain is easier at lower register values.  The datasheet
-%              shows a graph what ADC gain you obtain for a given clock
-%              frequency.
+%  ADC gain: A slower clock signal means a higher ADC_gain register
+%  value for an actual ADC gain of 1x. Also at higher register values,
+%  the actual ADC gain will increase in bigger steps. So fine-tuning
+%  the ADC gain is easier at lower register values.  The datasheet
+%  shows a graph what ADC gain you obtain for a given clock frequency.
 %
-%   Analog gain: 1, 1.2, 1.4, 1.6, 2, 2.4, 2.8, 3.2, 4
-%
-%
-%
+%  Analog gain: 1, 1.2, 1.4, 1.6, 2, 2.4, 2.8, 3.2, 4
 %
 % See also
 %    sensorIMX363, sensorCreate
