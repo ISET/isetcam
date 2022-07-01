@@ -29,7 +29,7 @@ sFiles{2} = fullfile(isetRootPath,'data','surfaces','reflectances','Food_Vhrel.m
 % Number of samples from each of the files
 sSamples = [48 16];
 % pSize = 16; [scene, samples] = sceneReflectanceChart(sFiles,sSamples,pSize);
-% ieAddObject(scene); sceneWindow;
+% sceneWindow(scene);
 
 %% Choose illuminant blackbodies
 
@@ -51,7 +51,7 @@ nikon = sensorSet(nikon,'color filters',ieReadSpectra(filterFile,wave));
 % Plot the Nikon spectral QE.
 sqe = sensorGet(nikon,'spectral qe');
 
-vcNewGraphWin;
+ieNewGraphWin;
 p = plot(wave,sqe(:,1),'r-',wave,sqe(:,2),'g-',wave,sqe(:,3),'b-');
 set(p,'linewidth',2); grid on
 xlabel('Wavelength (nm)'); ylabel('Responsivity');
@@ -78,7 +78,7 @@ end
 estXYZ = (T{3}*sqe')';
 
 % Let's plot the transformed spectral QE for the 5000K illuminant
-vcNewGraphWin;
+ieNewGraphWin;
 p = plot(wave,estXYZ(:,1),'r:',wave,estXYZ(:,2),'g:',wave,estXYZ(:,3),'b:',...
     wave,CMF(:,1),'r-',wave,CMF(:,2),'g-',wave,CMF(:,3),'b');
 set(p,'linewidth',2);
@@ -94,7 +94,7 @@ oi    = oiCreate;
 oi    = oiCompute(oi,scene);
 nikon = sensorSet(nikon,'fov',sceneGet(scene,'fov'),oi);
 nikon = sensorCompute(nikon,oi);
-ieAddObject(nikon); sensorWindow;
+sensorWindow(nikon);
 
 %% Plot the  corrected and desired for each illuminant case
 
@@ -112,7 +112,7 @@ for ii=1:nIlluminant
     allDE = [allDE, dE{ii}]; %#ok<AGROW>
 end
 
-vcNewGraphWin;
+ieNewGraphWin;
 histogram(allDE,50);
 set(gca,'xlim',[0 maxDE])
 xlabel('CIELAB \Delta E'); ylabel('Count')
@@ -135,8 +135,8 @@ for ii=1:nIlluminant
     allDE = [allDE, dE{ii}]; %#ok<AGROW>
 end
 
-
-vcNewGraphWin;
+%%
+ieNewGraphWin;
 histogram(allDE,50);
 set(gca,'xlim',[0 maxDE])
 xlabel('CIELAB \Delta E')
@@ -161,7 +161,7 @@ sensor = sensorSet(sensor,'color filters',ieReadSpectra(filterFile,wave));
 sensor = sensorSet(sensor,'name','CMY');
 sqe    = sensorGet(sensor,'spectral qe');
 
-vcNewGraphWin;
+ieNewGraphWin;
 p = plot(wave,sqe(:,1),'c-',wave,sqe(:,2),'y-',wave,sqe(:,3),'m-');
 set(p,'linewidth',2); grid on
 xlabel('Wavelength (nm)'); ylabel('Responsivity')
@@ -173,11 +173,11 @@ oi    = oiCreate;
 oi    = oiCompute(oi,scene);
 sensor = sensorSet(sensor,'fov',sceneGet(scene,'fov'),oi);
 sensor = sensorCompute(sensor,oi);
-ieAddObject(sensor); sensorWindow;
+sensorWindow(sensor);
 
 ip = ipCreate;
 ip = ipCompute(ip,sensor);
-ieAddObject(ip); ipWindow;
+ipWindow(ip);
 
 %%  Estimated sensor correction transforms for the different illuminants
 
@@ -198,7 +198,7 @@ end
 estXYZ = (T{3}*sqe')';
 
 % Let's plot these for the 5000K illuminant
-vcNewGraphWin;
+ieNewGraphWin;
 p = plot(wave,estXYZ(:,1),'r:',wave,estXYZ(:,2),'g:',wave,estXYZ(:,3),'b:',...
     wave,CMF(:,1),'r-',wave,CMF(:,2),'g-',wave,CMF(:,3),'b');
 set(p,'linewidth',2)
@@ -221,7 +221,7 @@ for ii=1:nIlluminant
 end
 
 % Error in CIELAB space
-vcNewGraphWin;
+ieNewGraphWin;
 histogram(allDE,50);
 set(gca,'xlim',[0 maxDE])
 xlabel('CIELAB \Delta E'); ylabel('Count')
@@ -243,7 +243,7 @@ for ii=1:nIlluminant
     allDE = [allDE, dE{ii}]; %#ok<AGROW>
 end
 
-vcNewGraphWin;
+ieNewGraphWin;
 histogram(allDE,50);
 set(gca,'xlim',[0 maxDE])
 xlabel('CIELAB \Delta E')
