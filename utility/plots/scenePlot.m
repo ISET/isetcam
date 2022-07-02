@@ -419,9 +419,10 @@ switch lower(pType)
         xlabel('Position (mm)'); ylabel('luminance (cd/m^2)');
         grid on; set(gca,'xtick',ieChooseTickMarks(pos.x,nTicks))
         
-        udata.pos = pos.x; udata.data = lum';
+        udata.pos = pos.x; udata.data = lum'; udata.row = roiLocs(2);
         udata.cmd = 'plot(pos,lum)';
-        
+        lineN = sprintf('Row %d',roiLocs(2));
+        legend(({lineN}))
     case {'luminanceffthline'}
         % This is the FFT of the luminance contrast
         % space = sceneGet(scene,'spatialSupport');
@@ -454,9 +455,11 @@ switch lower(pType)
         xlabel('Position (mm)'); ylabel('luminance (cd/m^2)');
         grid on; set(gca,'xtick',ieChooseTickMarks(pos.y,nTicks))
         
-        udata.pos = pos.y; udata.data = lum';
+        udata.pos = pos.y; udata.data = lum'; udata.column = roiLocs(1);
         udata.cmd = 'plot(pos,lum)';
-        
+        lineN = sprintf('Col %d',roiLocs(1));
+        legend(({lineN}))
+
     case {'luminancefftvline'}
         
         % space = sceneGet(scene,'spatialSupport');
