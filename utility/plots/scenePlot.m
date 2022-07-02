@@ -754,9 +754,16 @@ switch lower(pType)
 end
 
 % Add roi information to the window.
-if ~exist('udata','var'), udata = get(gcf,'userdata'); end
-if exist('roiRect','var'), udata.roiRect = roiRect; end
-if exist('roiLocs','var'), udata.roiLocs = roiLocs; end
-set(gcf,'userdata',udata);
+
+% In some cases the udata is the image data (depth map)
+if ~exist('udata','var'),  udata = get(gcf,'userdata'); end
+
+% If it is a struct, then we add some information
+if isstruct(udata)
+    if exist('roiRect','var'), udata.roiRect = roiRect; end
+    if exist('roiLocs','var'), udata.roiLocs = roiLocs; end
+    set(gcf,'userdata',udata);
+end
+
 
 end
