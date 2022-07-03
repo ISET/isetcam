@@ -176,19 +176,23 @@ classdef cpBurstIP < cpIP
         % look at demosaic first and other options
         function singleSensor = mergeSensors(obj, sensorArray)
             singleSensor = sensorArray(1);
+            
+            % see if we can account for different size pixels
+            pixels = sensorArray(:).pixel;
+            maxVSwing = max(pixels(:).voltageSwing);
             for ii = 2:numel(sensorArray)
                 % Build a list of exposure times for later use
                 % This also makes the sensor integrationtime a list
                 singleSensor = sensorSet(singleSensor, 'exposure time', ...
                     [sensorGet(singleSensor,'exposure time') sensorGet(sensorArray(ii), 'exposure time')]);
-                % Build a list of pixels for recombination later
-                % Except the sensor code doesn't like a vector of pixels!
-                %singleSensor = sensorSet(singleSensor, 'pixel', ...
-                %    [sensorGet(singleSensor,'pixel') sensorGet(sensorArray(ii), 'pixel')]);
-
+                
                 % need to build array of voltages and digital values
+                % We'll also try to adapt to pixels with different
+                % possible voltage swings. This should work for
+                % the Corner Pixel case, but is _not_ a general solution.
+                vSwingRatio = maxVSwing/sensorArray(ii).pixel.voltageSwing;
                 if isfield(singleSensor.data,'volts')
-                    singleSensor.data.volts(:,:,ii) = sensorArray(ii).data.volts;
+                    singleSensor.data.volts(:,:,ii) = sensorArray(ii).data.volts * vSwingRatio;
                 end
                 if isfield(singleSensor.data,'dv')
                     singleSensor.data.dv(:,:,ii) = sensorArray(ii).data.dv;
