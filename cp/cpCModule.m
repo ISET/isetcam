@@ -178,7 +178,7 @@ classdef cpCModule
                 if ~isempty(options.fillFactors)
                     %obj.sensor = pixelCenterFillPD(obj.sensor, options.fillFactors(ii));
                     newSize = pixelGet(originalPixel,'pixel size') * options.fillFactors(ii);
-                    obj.sensor.pixel = pixelSet(obj.sensor.pixel,'size ConstantFillFactor',newSize);
+                    obj.sensor.pixel = pixelSet(obj.sensor.pixel,'pdsize',newSize);
                     % Reducing fill factor reduces light received and pd
                     % size, but we also need to know a smaller well
                     % capacity
