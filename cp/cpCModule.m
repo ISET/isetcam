@@ -176,16 +176,17 @@ classdef cpCModule
                 % we have already calculated our exposure times
                 obj.sensor = sensorSet(obj.sensor, 'exposure time', expTimes(ii));
                 if ~isempty(options.fillFactors)
-                    %obj.sensor = pixelCenterFillPD(obj.sensor, options.fillFactors(ii));
-                    newSize = pixelGet(originalPixel,'pixel size') * options.fillFactors(ii);
+                    % reduce pd area by the fillfactor (pdsize is per-side)
+                    newSize = pixelGet(originalPixel,'pdsize') * sqrt(options.fillFactors(ii));
                     obj.sensor.pixel = pixelSet(obj.sensor.pixel,'pdsize',newSize);
                     % Reducing fill factor reduces light received and pd
-                    % size, but we also need to know a smaller well
+                    % size, but we also need to use a smaller well
                     % capacity
                     obj.sensor.pixel = pixelSet(obj.sensor.pixel,'voltageswing',pixelVoltSwing * options.fillFactors(ii));
                     if options.fillFactors(ii) < .5
                         % if small fill factor cheat and assume we want it in
-                        % the corner
+                        % the corner -- although we're not sure it really
+                        % affects the calculations
                         obj.sensor.pixel = pixelPositionPD(obj.sensor.pixel,'corner');
                     end
                 end

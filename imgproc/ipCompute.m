@@ -361,6 +361,10 @@ workImage(workImage > satMax) = -1;
 switch combinationMethod
     case 'longest'
         % Choose the max at each point
+        %
+        % NB: This wasn't originally designed for different size photosites
+        %     So I think it needs help for the Corner Pixel case:(
+        %
         [workImage,loc] = max(workImage,[],3);
         expByLoc  = expTimes(loc);
         workImage = workImage ./ expByLoc;

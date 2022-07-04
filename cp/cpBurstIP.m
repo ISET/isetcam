@@ -178,8 +178,18 @@ classdef cpBurstIP < cpIP
             singleSensor = sensorArray(1);
             
             % see if we can account for different size pixels
-            pixels = sensorArray(:).pixel;
-            maxVSwing = max(pixels(:).voltageSwing);
+            % such as in a compound sensor
+            pixels = [sensorArray(:).pixel];
+            % scale voltages so ipCompute can deal with them
+            % uniformly (it doesn't know how to handle differences)
+            maxVSwing = max([pixels(:).voltageSwing]);
+            sensorSet(singleSensor,'voltageswing',maxVSwing);
+
+            vSwingRatio = maxVSwing/singleSensor.pixel.voltageSwing;
+            if isfield(singleSensor.data,'volts')
+                singleSensor.data.volts(:,:,1) = singleSensor.data.volts(:,:,1) * vSwingRatio;
+            end
+
             for ii = 2:numel(sensorArray)
                 % Build a list of exposure times for later use
                 % This also makes the sensor integrationtime a list
