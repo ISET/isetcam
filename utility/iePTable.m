@@ -147,6 +147,8 @@ end
 
 function data = tableScene(scene,format)
 % iePTable(sceneCreate);
+wave = sceneGet(scene,'wave');
+wave = [wave(1), wave(end), wave(2)-wave(1)];
 switch format
     case 'window'
         precision = 4;
@@ -154,11 +156,12 @@ switch format
             'Name',                     char(sceneGet(scene,'name')),                                '';
             'Field of view (hor)',      num2str(sceneGet(scene,'fov')),                              'deg';
             'Field of view (diag)',     num2str(sceneGet(scene,'diagonal field of view')),           'deg';
-            'Rows & columns',                num2str(sceneGet(scene,'size')),                             'samples';
-            'Height & Width',             num2str(sceneGet(scene,'height and width','mm'),precision),  'mm';
-            'Distance',                num2str(sceneGet(scene,'distance','m'),precision),           'meters';
-            'Angular resolution',              num2str(sceneGet(scene,'angular resolution'),precision),     'deg/samp';
-            'Sample spacing',           num2str(sceneGet(scene,'sample spacing','mm'),precision),    'mm/sample';
+            'Rows & columns',            num2str(sceneGet(scene,'size')),                             'samples';
+            'Height & Width',            num2str(sceneGet(scene,'height and width','mm'),precision),  'mm';
+            'Distance',                  num2str(sceneGet(scene,'distance','m'),precision),           'meters';
+            'Angular resolution',        num2str(sceneGet(scene,'angular resolution'),precision),     'deg/samp';
+            'Sample spacing',            num2str(sceneGet(scene,'sample spacing','mm'),precision),    'mm/sample';
+            'Wave - min,max,delta (nm)', num2str(wave), 'nm';
             'Peak radiance, wave',       sprintf('%e, %.0f',sceneGet(scene,'peakradianceandwave')),   'q/s/sr/m^2, nm';
             'Mean luminance',           num2str(sceneGet(scene,'mean luminance'),precision),         'cd/m^2 (nits)';
             'Dynamic range',            num2str(sceneGet(scene,'luminance dynamic range')),          'dB';
@@ -174,6 +177,7 @@ switch format
             'Distance (m)',             num2str(sceneGet(scene,'distance','m'),precision);
             'Angular res (deg/samp)',   num2str(sceneGet(scene,'angular resolution'),precision);
             'Samp space (mm/sample)',   num2str(sceneGet(scene,'sample spacing','mm'),precision);
+            'Wave (nm)',                num2str(wave);
             'Mean luminance (cd/m^2)',  num2str(sceneGet(scene,'mean luminance'),precision);
             'Illuminant name',          sceneGet(scene,'illuminant name');
             'Lum dynamic range',        num2str(sceneGet(scene,'luminance dynamic range'));

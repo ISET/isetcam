@@ -23,9 +23,9 @@ function localFile = ieWebGet(varargin)
 %    (see below)
 %
 %    ask first: Confirm with user prior to downloading (default: true)
-%    resource type:
-%        {'pbrtv3', 'pbrtv4','spectral','hdr'}
-%        (default: 'pbrtv3')
+%    resource type (default: 'pbrtv4')
+%        {'pbrtv4', 'pbrtv3','spectral','hdr'}
+%    
 %    resource name    :  Remote file name (no default)
 %    remove temp files:  Remove downloaded temporary file (default: true)
 %    unzip:           :  Unzip the local file (default: true)
@@ -66,7 +66,7 @@ function localFile = ieWebGet(varargin)
  ieWebGet('list')
 %}
 %{
- localFile = ieWebGet('resource name','veach-ajar');
+ localFile = ieWebGet('resource name','bmw-m6');
 %}
 %{
 localFile = ieWebGet('resourcename', 'ChessSet', 'resourcetype', 'pbrt')
@@ -124,7 +124,7 @@ varargin = ieParamFormat(varargin);
 p = inputParser;
 p.addParameter('resourcename', '', @ischar);
 vFunc = @(x)(ismember(x,{'pbrtv3', 'spectral','hdr','pbrtv4'}));
-p.addParameter('resourcetype', 'pbrtv3',vFunc);
+p.addParameter('resourcetype', 'pbrtv4',vFunc);
 
 p.addParameter('askfirst', true, @islogical);
 p.addParameter('unzip', true, @islogical);  % assume the user wants the resource unzipped, if applicable
