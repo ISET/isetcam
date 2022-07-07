@@ -24,7 +24,7 @@ function localFile = ieWebGet(varargin)
 %
 %    ask first: Confirm with user prior to downloading (default: true)
 %    resource type (default: 'pbrtv4')
-%        {'pbrtv4', 'pbrtv3','spectral','hdr'}
+%        {'pbrtv4', 'pbrtv3','spectral','hdr','faces'}
 %    
 %    resource name    :  Remote file name (no default)
 %    remove temp files:  Remove downloaded temporary file (default: true)
@@ -123,7 +123,7 @@ varargin = ieParamFormat(varargin);
 
 p = inputParser;
 p.addParameter('resourcename', '', @ischar);
-vFunc = @(x)(ismember(x,{'pbrtv3', 'spectral','hdr','pbrtv4'}));
+vFunc = @(x)(ismember(x,{'pbrtv4','spectral','hdr','faces','pbrtv3'}));
 p.addParameter('resourcetype', 'pbrtv4',vFunc);
 
 p.addParameter('askfirst', true, @islogical);
@@ -200,7 +200,7 @@ switch resourceType
             localFile = '';
         end
 
-    case {'spectral','hdr'}
+    case {'spectral','hdr','faces'}
         % Download mat-files
         % Both are 'spectral' type, but we put the HDR files into a
         % separate directory to make them easier to identify.
@@ -260,6 +260,7 @@ urlList = ...
     'http://stanford.edu/~wandell/data/pbrtv3/', ...
     'http://stanford.edu/~wandell/data/hdr/', ...
     'http://stanford.edu/~wandell/data/spectral/', ...
+    'http://stanford.edu/~wandell/data/faces/'
     };
 
 switch resourceType
@@ -273,6 +274,8 @@ switch resourceType
         baseURL = urlList{3};
     case 'spectral'
         baseURL = urlList{4};
+    case 'faces'
+        baseURL = urlList{5};
     otherwise
         error('Unknown resource type %s\n',src);
 end

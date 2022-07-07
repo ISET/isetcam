@@ -148,7 +148,7 @@ switch sceneGet(scene,'illuminant format')
             scene = sceneSet(scene,'illuminant photons',newIll);
         else
             % This could be an loop across wavelength using interp2()
-            error('No spatial interpolation method yet for spatial spectral illuminants');
+            error('No adjust illuminant method yet for spatial spectral illuminants');
         end
         
 end
