@@ -3,14 +3,14 @@
 % Illustrate how to download some of the spectral face data
 %
 
-ieWebGet('browse','spectral');
+ieWebGet('browse','pbrtv4');
 
 theFile = ieWebGet('resource type','spectral','resource name','CaucasianMale');
 scene = sceneFromFile(theFile,'spectral');
 sceneWindow(scene);
 
 % theFile = fullfile(ieRootPath,'local','scenes','spectral','CaucasianMale.mat');
-theFile = ieWebGet('resource type','faces','resource name','LoResFemale1');
+theFile = ieWebGet('resource type','faces','resource name','LoResFemale6');
 face = sceneFromFile(theFile,'spectral');
 face = sceneSet(face,'wave',420:10:700);
 
@@ -33,7 +33,7 @@ plotRadiance(wave,spectrum);
 
 %% New light
 d65 = ieReadSpectra('d65',wave);   % Energy
-tmp = repmat(d65',187785,1);
+tmp = repmat(d65',row*col,1);
 for ii=1:numel(spatialScale)
     tmp(ii,:) = spatialScale(ii)*tmp(ii,:);
 end
