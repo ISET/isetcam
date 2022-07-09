@@ -12,7 +12,7 @@ function rgbImages = imagehc2rgb(obj,nBands)
 %
 % Example:
 %  scene = sceneCreate; rgb = imagehc2rgb(scene);
-%  N = size(rgb,4); for ii=1:N, vcNewGraphWin; imagescRGB(rgb(:,:,:,ii)); end
+%  N = size(rgb,4); for ii=1:N, ieNewGraphWin; imagescRGB(rgb(:,:,:,ii)); end
 %
 %  oi = oiCreate; oi = oiCompute(oi,scene);  rgb = imagehc2rgb(oi);
 %  N = size(rgb,4); for ii=1:N, vcNewGraphWin; imagescRGB(rgb(:,:,:,ii)); end
@@ -42,12 +42,11 @@ switch obj.type
         error('Bad object type %s\n',obj.type);
 end
 
-wStep  = round(nWave/nBands);
-nBands = round(nWave/wStep) + 1;
+wStep  = floor(nWave/nBands);
+nBands = floor(nWave/wStep);
 wBands = zeros(1,nBands);
 for ii=1:nBands, wBands(ii) = w(1 + (ii-1)*wStep); end
-rgbImages = zeros(r,c,3,nBands-1);
-
+rgbImages = zeros(r,c,3,nBands);
 
 %% Adjust initial scene to waveband and make image
 
