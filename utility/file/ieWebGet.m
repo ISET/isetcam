@@ -141,7 +141,7 @@ removeTempFiles = p.Results.removetempfiles;
 
 baseURL = urlResource(resourceType);
 
-verbose   = p.Results.verbose;
+% verbose   = p.Results.verbose;
 askFirst  = p.Results.askfirst;
 localFile = '';        % Default local file name
 
@@ -232,8 +232,11 @@ function proceed = confirmDownload(resourceName, localFile)
 opts.Default = 'No';
 opts.Interpreter = 'tex';
 
-% Just show the part of the file from isetcam onward
+% Just show the part of the file from isetcam or iset3d onward
 ii = strfind(localFile,'isetcam');
+if isempty(ii)
+    ii = strfind(localFile,'iset3d');
+end
 showFile = localFile(ii:end);
 
 if exist(localFile,'file')
