@@ -47,3 +47,25 @@ face = sceneSet(face,'energy',newEnergy);
 face = sceneSet(face,'illuminant energy',newIll);
 sceneWindow(face);
 
+%% Nonuniform illumination case
+
+% Using Zheng's methods from isetxyz
+
+%  Create a mask
+scene = sceneCreate;
+sz = sceneGet(scene,'size');
+wave = sceneGet(scene,'wave');
+
+mask = scIlluminationMaskGenerate('mask size',sz,'n light',3);
+
+%  Set up the illuminant functions
+iBasis = ieReadSpectra('cieSampledDaylight',wave);
+method = 'reallight';
+nLights = 3;
+lgts = sampleLight(method, nLights, wave, iBasis);
+
+%  Apply them to the scene
+scene2 = nonUniformIlluMix(scene, mask, 'illuminant basis',lgts);
+sceneWindow(scene2);
+
+

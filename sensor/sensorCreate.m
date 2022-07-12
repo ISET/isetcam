@@ -23,9 +23,12 @@ function sensor = sensorCreate(sensorType,pixel,varargin)
 %      {'bayer (cyym)'}
 %
 % Vendor parts calibrated over the years or from the web
-%      {'MT9V024'}  - sensorCreate('MT9V024',[],{'rgb','mono','rccc'})
-%      {'ar0132at'} - An ON sensor used in automotive applications
-%      {'imx363'}   - A widely used Sony digital camera sensor
+%      {'MT9V024'}   - Omnivision
+%                      sensorCreate('MT9V024',[],{'rgb','mono','rccc'})
+%      {'ar0132at'}  - An ON sensor used in automotive applications
+%                      sensorCreate('ar0132at',[],{'rgb','rgbw','rccc'})
+%      {'imx363'}    - A widely used Sony digital camera sensor
+%      {'nikond100'} - An older model Nikon (D100)
 %
 % Other types
 %      {'monochrome'}       - single monochrome sensor
@@ -73,6 +76,9 @@ function sensor = sensorCreate(sensorType,pixel,varargin)
    sensor = sensorCreate('Monochrome');
 %}
 %{
+  sensor = sensorCreate('Nikon D100');
+%}
+%{
 %  A light field sensor matched to an OI rendered from PBRT.  Note that oi
 %  is passed instead of pixel
 %
@@ -83,6 +89,7 @@ function sensor = sensorCreate(sensorType,pixel,varargin)
 %}
 %{
 %  Human style sensors (but see ISETBIO for more complete control)
+
    cone   = pixelCreate('human cone');
    sensor = sensorCreate('Monochrome',cone);
    sensor = sensorCreate('human');
@@ -105,7 +112,7 @@ function sensor = sensorCreate(sensorType,pixel,varargin)
 %{
   sensor = sensorCreate('imx363');
   sensor = sensorCreate('mt9v024');
-  % sensor = sensorCreate('ar0132at'); % To be implemented.  See notes.
+  sensor = sensorCreate('ar0132at'); % To be implemented.  See notes.
 %}
 %%
 if ieNotDefined('sensorType'), sensorType = 'default'; end
@@ -248,20 +255,31 @@ switch sensorType
     case {'mt9v024'}
         % ON 6um sensor.  It can be mono, rgb, or rccc
         % sensor = sensorCreate('MT9V024',[],'rccc');
-        if isempty(varargin)
-            colorType = 'rgb';
-        else
-            colorType = varargin{1};
+        if isempty(varargin), colorType = 'rgb';
+        else,                 colorType = varargin{1};
         end
         sensor = sensorMT9V024(sensor,colorType);
-        
-        %{
+                
     case {'ar0132at'}
         % ON RGB automotive sensor.
         %
-        % See ar0132atCreate
-        % sensor = sensorAR0132AT(sensor);
-        %}
+        % See ar0132atCreate for how these were built.
+        %
+        if isempty(varargin), colorType = 'rgb';
+        else,                 colorType = varargin{1};
+        end
+
+        switch ieParamFormat(colorType)
+            case 'rgb'
+                load('ar0132atSensorRGB.mat','sensor');         
+            case 'rccc'
+                load('ar0132atSensorRCCC','sensor');         
+            case 'rgbw'
+                load('ar0132atSensorRGBW.mat','sensor');         
+            otherwise
+                error('Unknown AR0132at color type:  %s', colorType)
+        end
+
         
     case {'imx363'}
         % A Sony sensor used in many systems
@@ -270,6 +288,13 @@ switch sensorType
         % sensorCreate('imx363',[],'row col',[300 400]);
         sensor = sensorIMX363('row col',[600 800], varargin{:});
         
+    case 'nikond100'
+        % Old model.  I increased the spatial samples before
+        % returning the sensor.
+        load('NikonD100Sensor','isa');
+        sensor = isa;
+        sensor = sensorSet(sensor,'size',[72 88]*4);
+
     case {'fourcolor'}  % Often used for multiple channel
         % sensorCreate('custom',pixel,filterPattern,filterFile);
         if length(varargin) >= 1, filterPattern = varargin{1};
