@@ -547,7 +547,10 @@ switch sceneName
         scene = sceneSlantedBar(scene,imSize,barSlope,fov,wave,darklevel);
         
     case {'zoneplate'}
-        scene = sceneZonePlate(scene,384);
+        imSize = 384;
+        if length(varargin)>=1, imSize = varargin{1}; end
+        scene = sceneZonePlate(scene,imSize);
+        
     case {'starpattern','radiallines'}
         % Thin radial lines - Useful for testing oriented blur
         %
