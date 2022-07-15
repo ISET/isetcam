@@ -234,18 +234,34 @@ switch lower(param)
             end
         end
         
-    case {'fov','horizontalfieldofview'}
+    case {'fov','hfov','horizontalfieldofview'}
         % sensor = sensorSet(sensor,'fov',newFOV,oi);
         %
-        % This set is dangerous because it changes the sensor size. A
-        % preferred usage might be:
+        % This set changes the sensor size.  It does so by a call to
+        %
         %  [sensor,actualFOV] = sensorSetSizeToFOV(sensor,newFOV,oi);
         %
         if ~isempty(varargin), oi    = varargin{1};
-        else, oi = ieGetObject('oi');
+        else, oi = ieGetObject('oi'); warning('Using default oi.')
         end
         if isempty(oi), error('oi required to set sensor fov'); end
         sensor = sensorSetSizeToFOV(sensor,val, oi);
+    case {'vfov','verticalfieldofview'}
+        % sensor = sensorSet(sensor,'vertical field of view');
+        %
+        %   We treat row/col and horizontal field of view as
+        %   fundamental.  The vertical field of view is achieved by
+        %   adjusting the row size relative to the horizontal field of
+        %   view (column size)
+        %
+        hfov = sensorGet(sensor,'fov');
+        sz = sensorGet(sensor,'size');
+        newRows = round((sz(2)/hfov)*val);
+
+        % The actual number of rows is adjusted in this call to make
+        % sure we are aligned with the unit block of the CFA pattern.
+        sensor = sensorSet(sensor,'rows',newRows);
+        
     case 'color'
         sensor.color = val;
     case {'filterspectra','colorfilters','filtertransmissivities'}

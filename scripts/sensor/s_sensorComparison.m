@@ -19,8 +19,9 @@ sceneWindow(sceneS);
 
 scene = sceneCombine(sceneC,sceneS,'direction','horizontal');
 
-fov = 5;
-scene = sceneSet(scene,'fov',fov);
+hfov = 20;
+scene = sceneSet(scene,'fov',hfov);
+vfov = sceneGet(scene,'v fov');
 sceneWindow(scene);
 
 %%
@@ -31,12 +32,18 @@ oiWindow(oi);
 
 %% Now run through some sensors
 
-sensorList = {'bayer-rggb','imx363','rgbw','mt9v024','imec44'};
+sensorList = {'bayer-rggb','imx363','rgbw','mt9v024','mt9v024','imec44'};
 ip = ipCreate;
 
 for ii=1:numel(sensorList)
-    sensor = sensorCreate(sensorList{ii});
-    sensor = sensorSet(sensor,'fov',fov);
+    if ii==5
+        sensor = sensorCreate(sensorList{ii},[],'rccc');
+    else
+        sensor = sensorCreate(sensorList{ii});
+    end
+
+    sensor = sensorSet(sensor,'hfov',hfov,oi);
+    sensor = sensorSet(sensor,'vfov',vfov);
     sensor = sensorCompute(sensor,oi);
     sensorWindow(sensor);
     %{
