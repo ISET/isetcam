@@ -178,11 +178,11 @@ switch sensorType
         filterOrder = [2 3 ; 1 2];
         filterFile = 'RGB';
         sensor = sensorBayer(sensor,filterOrder,filterFile);
-    case {'cmy','bayer(ycmy)','bayer-ycmy'}
+    case {'bayer-ycmy','ycmy','bayer(ycmy)'}
         filterFile = 'cym';
         filterOrder = [2,1; 3,2];
         sensor = sensorBayer(sensor,filterOrder,filterFile);
-    case {'bayer(cyym)','bayer-cyym'}
+    case {'bayer-cyym','bayer(cyym)','cyym'}
         filterFile = 'cym';
         filterOrder = [1 2 ; 2 3];
         sensor = sensorBayer(sensor,filterOrder,filterFile);

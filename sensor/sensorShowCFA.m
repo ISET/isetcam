@@ -1,7 +1,10 @@
-function [fig, cfaImg] = sensorShowCFA(sensor, app)
-%Create an image illustrating the sensor CFA spatial pattern
+function [fig, cfaImg] = sensorShowCFA(sensor, app, sz)
+% Create an image illustrating the sensor CFA spatial pattern (unit
+% block)
 %
-%    [fig, cfaImg] = sensorShowCFA(sensor,[fullArray = 0],app)
+% Synopsis
+%
+%    [fig, cfaImg] = sensorShowCFA(sensor, [app], [sz])
 %
 % Brief description
 %  The plotted colors are based on the letter names of the color filters for
@@ -11,7 +14,8 @@ function [fig, cfaImg] = sensorShowCFA(sensor, app)
 % Inputs
 %  sensor:    Sensor object
 %  app:       app for the sensorWindow that has imgCFA as a slot
-%           (fullArray was recently deleted.  Maybe it should be put back)
+%  sz:        Row/Col for the number of unit blocks to show.  Default
+%             is [1,1]
 %
 % Return
 %   fig:    Handle to the figure where data are rendered
@@ -25,7 +29,8 @@ function [fig, cfaImg] = sensorShowCFA(sensor, app)
 %{
   s = sceneCreate; oi = oiCreate; sensor = sensorCreate;
   oi = oiCompute(oi,s); sensor = sensorCompute(sensor,oi);
-  img = sensorShowCFA(sensor);
+  [~, img] = sensorShowCFA(sensor);
+  [~, img] = sensorShowCFA(sensor,[],[4 4]);
 %}
 %{
   sensor = sensorCreate('human');
@@ -33,11 +38,11 @@ function [fig, cfaImg] = sensorShowCFA(sensor, app)
 %}
 
 %%
-if ieNotDefined('sensor'),    sensor = vcGetObject('sensor'); end
-% if ieNotDefined('fullArray'), fullArray = false; end
+if ieNotDefined('sensor'), sensor = ieGetObject('sensor'); end
 if ieNotDefined('app')
     app = [];
 end
+if ieNotDefined('sz'), sz = []; end
 
 % Should be a parameter
 sScale = 32;
@@ -45,11 +50,16 @@ sScale = 32;
 %% Indexed color image of the sensor detectors.
 
 pattern    = sensorGet(sensor,'pattern');
+if ~isempty(sz)
+    pattern = repmat(pattern,sz(1),sz(2));
+end
+
 nExposures = sensorGet(sensor,'n exposures');
 
 mxVolts = sensorGet(sensor,'voltage swing');
 
 %% Create an image of the sensor CFA
+
 % If we are in the single exposure case
 if nExposures == 1
     ss = sensorSet(sensor,'volts',mxVolts*ones(size(pattern)));
