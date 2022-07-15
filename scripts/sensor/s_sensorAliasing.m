@@ -25,7 +25,7 @@ scene = sceneCreate('sweep frequency',768,30);
 scene = sceneSet(scene,'fov',fov);
 sceneWindow(scene);
 
-% Set up a high acuity lens
+%% Set up a high resolution lens
 oi = oiCreate('diffraction limited');
 oi = oiSet(oi,'optics fnumber', 2);
 oi = oiCompute(oi,scene);
