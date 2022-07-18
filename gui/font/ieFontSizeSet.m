@@ -65,7 +65,7 @@ fSize = ieClip(fSize,minSize,maxSize);
 % Lets us have multiple font sizes and manage them all.
 
 % Find handles to all the objects that have a font size
-h = findobj(fig.figure1,'-property','FontSize');
+h = findobj(fig,'-property','FontSize');
 for ii=1:numel(h)
     h(ii).FontSize = fSize;
 end
