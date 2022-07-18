@@ -148,7 +148,10 @@ end
 function data = tableScene(scene,format)
 % iePTable(sceneCreate);
 wave = sceneGet(scene,'wave');
-wave = [wave(1), wave(end), wave(2)-wave(1)];
+if numel(wave) > 1
+    wave = [wave(1), wave(end), wave(2)-wave(1)];
+end
+
 switch format
     case 'window'
         precision = 4;
@@ -193,8 +196,10 @@ function data = tableOI(oi, format)
 
 if isempty(oi), data = []; return; end
 wave = oiGet(oi,'wave');
-wave = [wave(1), wave(end), wave(2)-wave(1)];
-
+if numel(wave) > 1
+    wave = [wave(1), wave(end), wave(2)-wave(1)];
+end
+  
 switch format
     case 'window'
         % OK, we have an oi so put up the data.
