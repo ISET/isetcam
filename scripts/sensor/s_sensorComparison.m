@@ -1,8 +1,11 @@
 %% s_sensorComparison
 %
-% Run the same OI through multiple sensors, just for comparison
+% Run the same OI through multiple sensors, just for comparison.  BW
+% used this script to create the sensor images for the Ford
+% presentation.
 %
-% Use a test chart
+% Combines two test charts:  Macbeth and a sweep frequency.
+%
 %
 
 %%
