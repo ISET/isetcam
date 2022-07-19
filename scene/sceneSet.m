@@ -20,8 +20,7 @@ function scene = sceneSet(scene,parm,val,varargin)
 %  Examples:
 %    scene = sceneSet(scene,'name','myScene');      % Set the scene name
 %    scene = sceneSet(scene,'fov',3);               % Set scene field of view to 3 deg
-%    oi = sceneSet(oi,'optics',optics);
-%    oi = sceneSet(oi,'oicomputemethod','myOIcompute');
+%    scene = sceneSet(scene,'resize',[1,0.5]);
 %
 % Scene description
 %      'name'          - An informative name describing the scene
@@ -41,6 +40,8 @@ function scene = sceneSet(scene,parm,val,varargin)
 %
 %         'peak photon radiance' - Used for monochromatic scenes mainly;
 %         not a variable, but a function
+%       'resize' - Spatially interpolate to a new size.  The parameters are
+%                  scale factors on the current row and columns
 % Depth
 %      'depthMap' - Stored in meters.
 %
@@ -174,7 +175,15 @@ switch parm
         
         % Clear out luminance computation
         scene = sceneSet(scene, 'luminance', []);
-        
+    case 'resize'
+        % scene = sceneSet(scene,'resize',[rowScale,colScale]);
+        % Resize the scene by spatially interpolating the photon data
+        if numel(val) == 1
+            newSz = [val,val];
+        else
+            newSz = val;
+        end
+        scene = sceneInterpolate(scene,newSz);
     case 'energy'
         % scene = sceneSet(scene,'energy',energy,wave);
         %

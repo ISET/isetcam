@@ -9,13 +9,17 @@
 ieInit
 
 %%
-patchSize = 64;
+patchSize = 96;
 sceneC = sceneCreate('macbethD65',patchSize);
-sceneWindow(sceneC);
 sz = sceneGet(sceneC,'size');
+sceneC = sceneSet(sceneC,'resize',[1, 0.5]);
+sceneWindow(sceneC);
 
-sceneS = sceneCreate('zone plate',sz(1));
+
+sceneS = sceneCreate('sweep frequency',sz(1),sz(1)/16);
 sceneWindow(sceneS);
+
+sceneS = sceneSet(sceneS,'cols',sz(2)*2);
 
 scene = sceneCombine(sceneC,sceneS,'direction','horizontal');
 
@@ -36,6 +40,7 @@ oiWindow(oi);
 
 % Used for Ford talk
 sensorList = {'imx363','mt9v024','cyym'};
+% sensorList = {'imx363'};
 ip = ipCreate;
 
 for ii=1:numel(sensorList)
@@ -48,20 +53,29 @@ for ii=1:numel(sensorList)
     sensor = sensorSet(sensor,'pixel size',1.5e-6);
     sensor = sensorSet(sensor,'hfov',hfov,oi);
     sensor = sensorSet(sensor,'vfov',vfov);
+    sensor = sensorSet(sensor,'auto exposure',true);
     sensor = sensorCompute(sensor,oi);
     sensorWindow(sensor);
 
-    sensor = sensorSet(sensor,'pixel size',4.5e-6);
+    if ii < 2
+        ip = ipCompute(ip,sensor);
+        ipWindow(ip);
+    end
+
+    sensor = sensorSet(sensor,'pixel size constant fill factor',6e-6);
     sensor = sensorSet(sensor,'hfov',hfov,oi);
     sensor = sensorSet(sensor,'vfov',vfov);
+    sensor = sensorSet(sensor,'auto exposure',true);
     sensor = sensorCompute(sensor,oi);
 
-    [~,img] = sensorShowCFA(sensor,[],[3 3]);
+    if ii < 2
+        ip = ipCompute(ip,sensor);
+        ipWindow(ip);
+    end
+
+    % [~,img] = sensorShowCFA(sensor,[],[3 3]);
     sensorWindow(sensor);
-    %{
-     ip = ipCompute(ip,sensor);
-     ipWindow(ip);
-    %}
+
 end
 
 %%
