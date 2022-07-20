@@ -1,15 +1,23 @@
 function scene = sceneInterpolate(scene,sFactor)
 % Spatially interpolate the scene radiance data by sFactor
 %
+% Synopsis
 %     scene = sceneInterpolate(scene,sFactor)
 %
-%  Spatially interpolate data in a scene structure by an amount sFactor.
-%  If sFactor is a single number, then it is a scale factor that is applied
-%  to both the rows and the columns. The result is rounded to an integer.
-%  If sFactor is a 2D vector, the two entries are applied separately to the
-%  row and column dimensions.
+% Description:
 %
-% Copyright ImagEval Consultants, LLC, 2003.
+%  Spatially interpolate data in a scene structure by a scale factor
+%  (sFactor). If sFactor is a single number, then it is a scale factor
+%  that is applied to both the rows and the columns. The result is
+%  rounded to an integer. If sFactor is a 2D vector, the two entries
+%  are applied separately to the row and column dimensions.
+%
+% Inputs:
+%   scene
+%   sFactor - Scale factor for rows and cols
+%
+% See also
+%   sceneSpatialResample
 
 if ieNotDefined('sFactor'), error('sFactor must be defined'); end
 if ieNotDefined('scene'), scene = vcGetObject('scene'); end
@@ -43,4 +51,7 @@ end
 scene = sceneSet(scene,'luminance',luminance);
 scene = sceneSet(scene,'meanLuminance',meanL);
 
-return;
+% Check if the illumination is spectral spatial, and if yes then
+% spatially interpolate.
+
+end

@@ -24,7 +24,8 @@ function il = illuminantSet(il,param,val,varargin)
 %
 % (c) Imageval Consulting, LLC, 2012
 
-%%
+%% Parameter checking
+
 if ~exist('il','var') || isempty(il), error('illuminant structure required'); end
 if ~exist('param','var') || isempty(param), error('param required'); end
 if ~exist('val','var') , error('val is required'); end
@@ -46,7 +47,7 @@ switch param
     case 'energy'
         % User sent in energy.  We convert to photons and set.
         % We need to handle the spatial spectral case properly.
-        % See s_illuminantSpace
+        % See s_sceneIlluminantSpace
         wave = illuminantGet(il,'wave');
         if ndims(val) > 2 %#ok<ISMAT>
             [val,r,c] = RGB2XWFormat(val);

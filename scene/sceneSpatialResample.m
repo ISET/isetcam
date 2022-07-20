@@ -1,11 +1,20 @@
 function scene = sceneSpatialResample(scene,dx,units,method)
 % Spatial resample all wavebands of a scene
 %
+% Synopsis
 %   scene = spatialResample(scene,dx,'units','method')
 %
-% scene:   ISET scene
-% dx:      New sample distance.  Default is meters, but you can specify units
-% method:  linear, cubic or spline interpolation (default = 'linear')
+% Description:
+%   The scene is represented at some spatial sampling separation. This
+%   function resamples to a different spatial sampling density. 
+%
+% Inputs
+%   scene:   ISET scene
+%   dx:      New sample distance.  Default is meters, but you can specify units
+%   method:  linear, cubic or spline interpolation (default = 'linear')
+%
+% Return
+%   scene
 %
 % Example:
 %  scene = sceneCreate; scene = sceneSet(scene,'fov',1);
@@ -14,9 +23,9 @@ function scene = sceneSpatialResample(scene,dx,units,method)
 %  scene = sceneSpatialResample(scene,1e-4);
 %  ieAddObject(scene); sceneWindow;
 %
-% See also: sceneSpatialSupport, oiSpatialResample
+% See also: 
+% sceneSpatialSupport, oiSpatialResample
 %
-% Copyright Imageval Consulting, LLC 2016
 
 %% Set up parameters
 if ieNotDefined('scene'),  error('scene required'); end
