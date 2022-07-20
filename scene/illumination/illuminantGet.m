@@ -161,7 +161,7 @@ switch param
         % isvector, ismatrix functions.
         sz = illuminantGet(il,'spatial size');
         if length(sz) < 3
-            if prod(sz) == illuminantGet(il,'nwave');
+            if prod(sz) == illuminantGet(il,'nwave')
                 val = 'spectral';
             end
         else

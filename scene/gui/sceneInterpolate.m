@@ -1,11 +1,10 @@
 function scene = sceneInterpolate(scene,sFactor)
-% Spatially interpolate the scene radiance data by sFactor
+% Spatially interpolate the scene radiance photons
 %
 % Synopsis
 %     scene = sceneInterpolate(scene,sFactor)
 %
 % Description:
-%
 %  Spatially interpolate data in a scene structure by a scale factor
 %  (sFactor). If sFactor is a single number, then it is a scale factor
 %  that is applied to both the rows and the columns. The result is
@@ -13,7 +12,7 @@ function scene = sceneInterpolate(scene,sFactor)
 %  are applied separately to the row and column dimensions.
 %
 % Inputs:
-%   scene
+%   scene  - ISETCam scene
 %   sFactor - Scale factor for rows and cols
 %
 % See also
@@ -53,5 +52,13 @@ scene = sceneSet(scene,'meanLuminance',meanL);
 
 % Check if the illumination is spectral spatial, and if yes then
 % spatially interpolate.
+switch sceneGet(scene,'illuminant format')
+    case 'spatial spectral'
+        photons = sceneGet(scene,'illuminant photons');
+        photons = imageInterpolate(photons,newRow,newCol);
+        scene = sceneSet(scene,'illuminant photons',photons);
+    otherwise
+        % Do nothing
+end
 
 end
