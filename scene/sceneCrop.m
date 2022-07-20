@@ -46,6 +46,13 @@ c = rect(3)+1; r = rect(4)+1;
 photons = vcGetROIData(scene,roiLocs,'photons');
 photons = XW2RGBFormat(photons,r,c);
 
+% ZLY: Also deal with spatial spectral case
+if isequal(sceneGet(scene, 'illuminant format'), 'spatial spectral')
+    illPhotons = vcGetROIData(scene,roiLocs,'illuminant photons');
+    illPhotons = XW2RGBFormat(illPhotons, r, c);
+    scene = sceneSet(scene, 'illuminant photons', illPhotons);
+end
+
 % Now build up the new object.
 scene = sceneClearData(scene);
 scene = sceneSet(scene,'photons',photons);
