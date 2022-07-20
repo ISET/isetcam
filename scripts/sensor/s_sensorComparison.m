@@ -42,8 +42,8 @@ oiWindow(oi);
 % sensorList = {'bayer-rggb','imx363','rgbw','mt9v024','mt9v024','imec44','cyym','monochrome'};
 
 % Used for Ford talk
-sensorList = {'imx363','mt9v024','cyym'};
-% sensorList = {'imx363'};
+%sensorList = {'imx363','mt9v024','cyym'};
+sensorList = {'imx363'};
 ip = ipCreate;
 
 for ii=1:numel(sensorList)
