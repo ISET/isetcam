@@ -45,9 +45,9 @@ oiWindow(oi);
 % sensorList = {'bayer-rggb','imx363','rgbw','mt9v024','mt9v024','imec44','cyym','monochrome'};
 
 % Used for Ford talk
-%sensorList = {'imx363','mt9v024','cyym'};
-sensorList = {'imx363'};
-ip = ipCreate;
+sensorList = {'imx363','mt9v024','cyym'};
+%sensorList = {'imx363'};
+
 
 for ii=1:numel(sensorList)
     if isequal(sensorList{ii},'mt9v024') 
@@ -63,9 +63,18 @@ for ii=1:numel(sensorList)
     sensor = sensorCompute(sensor,oi);
     sensorWindow(sensor);
 
-    if ii < 2
-        ip = ipCompute(ip,sensor);
-        ipWindow(ip);
+    switch sensorList{ii}
+        case 'imx363'
+            ip = ipCreate('imx363 RGB',sensor);
+            ip = ipCompute(ip,sensor);
+            ipWindow(ip);
+        case 'mt9v024'
+            ip = ipCreate('mt9v024 RCCC', sensor);
+            % NOTE: ipCreate doesn't seem to take its cue from the 
+            %       sensor that it is rccc, so we do it manually
+            ip = ipSet(ip,'demosaic method','analog rccc');
+            ip = ipCompute(ip,sensor);
+            ipWindow(ip);
     end
 
     sensor = sensorSet(sensor,'pixel size constant fill factor',6e-6);
@@ -74,11 +83,20 @@ for ii=1:numel(sensorList)
     sensor = sensorSet(sensor,'auto exposure',true);
     sensor = sensorCompute(sensor,oi);
 
-    if ii < 2
-        ip = ipCompute(ip,sensor);
-        ipWindow(ip);
+    switch sensorList{ii}
+        case 'imx363'
+            ip = ipCreate('imx363 RGB',sensor);
+            ip = ipCompute(ip,sensor);
+            ipWindow(ip);
+        case 'mt9v024'
+            ip = ipCreate('mt9v024 RCCC', sensor);
+            % NOTE: ipCreate doesn't seem to take its cue from the 
+            %       sensor that it is rccc, so we do it manually
+            ip = ipSet(ip,'demosaic method','analog rccc');
+            ip = ipCompute(ip,sensor);
+            ipWindow(ip);
     end
-
+    
     % [~,img] = sensorShowCFA(sensor,[],[3 3]);
     sensorWindow(sensor);
 
