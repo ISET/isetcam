@@ -22,7 +22,10 @@ sceneWindow(sceneC);
 sceneS = sceneCreate('sweep frequency',sz(1),sz(1)/16);
 sceneWindow(sceneS);
 
-sceneS = sceneSet(sceneS,'cols',sz(2)*2);
+% There is no cols parameter, so changed it to 'size'
+% Depending on the desired visual might not need it at all? -- DJC
+%sceneS = sceneSet(sceneS,'cols',sz(2)*2);
+sceneS = sceneSet(sceneS,'size',[sz(1), sz(2)*2]);
 
 scene = sceneCombine(sceneC,sceneS,'direction','horizontal');
 
