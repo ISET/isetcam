@@ -40,8 +40,10 @@ function scene = sceneSet(scene,parm,val,varargin)
 %
 %         'peak photon radiance' - Used for monochromatic scenes mainly;
 %         not a variable, but a function
+%
 %       'resize' - Spatially interpolate to a new size.  The parameters are
-%                  scale factors on the current row and columns
+%                  scale factors on the current row and columns, which
+%                  are rounded to integers in the resize.
 % Depth
 %      'depthMap' - Stored in meters.
 %
@@ -421,6 +423,8 @@ switch parm
     case {'illuminantwave'}
         scene.illuminant.spectrum.wave = val(:);
         
+        % Region of interest ... starting to collect.  Maybe this
+        % should be roi.rect, roi.mccrectHandles ... (BW).
     case {'rect'}
         % scene = sceneSet(scene,'rect',[x y h w]);
         % An ROI rect.
@@ -441,4 +445,4 @@ switch parm
         disp(['Unknown sceneSet parameter: ',parm]);
 end
 
-return;
+end
