@@ -5,8 +5,10 @@ function scene = sceneSpatialResample(scene,dx,units,method)
 %   scene = spatialResample(scene,dx,'units','method')
 %
 % Description:
-%   The scene is represented at some spatial sampling separation. This
-%   function resamples to a different spatial sampling density. 
+%   The scene photons are represented at a spatial sampling separation
+%   in meters. This function resamples the photon data to a different
+%   spatial sampling density.  This changes the number of row and
+%   column samples, but leaves the total size of the scene the same.
 %
 % Inputs
 %   scene:   ISET scene
@@ -16,16 +18,19 @@ function scene = sceneSpatialResample(scene,dx,units,method)
 % Return
 %   scene
 %
-% Example:
-%  scene = sceneCreate; scene = sceneSet(scene,'fov',1);
-%  ieAddObject(scene); sceneWindow;
-%
-%  scene = sceneSpatialResample(scene,1e-4);
-%  ieAddObject(scene); sceneWindow;
-%
 % See also: 
 % sceneSpatialSupport, oiSpatialResample
 %
+
+% Examples:
+%{
+ scene = sceneCreate; 
+ scene = sceneSet(scene,'fov',1);
+ sceneWindow(scene);
+ sRes = sceneGet(scene,'spatial resolution')
+ scene = sceneSpatialResample(scene,sRes(1)*2);
+ sceneWindow(scene);
+%}
 
 %% Set up parameters
 if ieNotDefined('scene'),  error('scene required'); end
