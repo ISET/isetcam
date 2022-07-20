@@ -87,7 +87,6 @@ function val = sceneGet(scene,parm,varargin)
 %      'hspatial resolution'*  - height spatial resolution (distance between pixels)
 %      'wspatial resolution'*  - width spatial resolution
 %      'spatial resolution'*   - (height,width) spatial resolution
-%      'sample spacing'*       - (width,height) spatial resolution (do not use)
 %      'distance per degree'*  - sample spacing per deg of visual angle
 %      'degrees per distance'  - degrees per unit distance, e.g.,  sceneGet(scene,'degPerDist','micron')
 %      'degrees per sample'

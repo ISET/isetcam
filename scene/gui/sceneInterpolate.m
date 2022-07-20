@@ -5,18 +5,21 @@ function scene = sceneInterpolate(scene,sFactor)
 %     scene = sceneInterpolate(scene,sFactor)
 %
 % Description:
-%  Spatially interpolate data in a scene structure by a scale factor
+%  Spatially interpolate photon data in a scene structure by a scale factor
 %  (sFactor). If sFactor is a single number, then it is a scale factor
 %  that is applied to both the rows and the columns. The result is
-%  rounded to an integer. If sFactor is a 2D vector, the two entries
-%  are applied separately to the row and column dimensions.
+%  rounded to an integer. If sFactor is 2D, the entries are applied
+%  separately to the row and column dimensions.
+%
+%  If the illuminant is spatial-spectral, it is spatially interpolated
+%  as well.
 %
 % Inputs:
 %   scene  - ISETCam scene
 %   sFactor - Scale factor for rows and cols
 %
 % See also
-%   sceneSpatialResample
+%   sceneSpatialResample - Similar but specified as new sample spacing
 
 if ieNotDefined('sFactor'), error('sFactor must be defined'); end
 if ieNotDefined('scene'), scene = vcGetObject('scene'); end
