@@ -1,8 +1,8 @@
-function scene = sceneInterpolate(scene,sFactor)
+function scene = sceneInterpolate(scene,newSize)
 % Spatially interpolate the scene radiance photons
 %
 % Synopsis
-%     scene = sceneInterpolate(scene,sFactor)
+%     scene = sceneInterpolate(scene,newSize)
 %
 % Description:
 %  Spatially interpolate photon data in a scene structure by a scale factor
@@ -16,24 +16,29 @@ function scene = sceneInterpolate(scene,sFactor)
 %
 % Inputs:
 %   scene  - ISETCam scene
-%   sFactor - Scale factor for rows and cols
+%   newSize - New number of rows and cols
 %
 % See also
 %   sceneSpatialResample - Similar but specified as new sample spacing
+%
 
-if ieNotDefined('sFactor'), error('sFactor must be defined'); end
-if ieNotDefined('scene'), scene = vcGetObject('scene'); end
+% Examples:
+%{
+ scene = sceneCreate;
+ sceneWindow(scene);
+ sz = sceneGet(scene,'size');
+ scene2 = sceneInterpolate(scene,[1,2].*sz);
+ sceneWindow(scene2);
+%}
+%% Parse
+if ieNotDefined('newSize'), error('sFactor must be defined'); end
+if ieNotDefined('scene'), error('scene must be defined'); end
 
 r = sceneGet(scene,'rows');
 c = sceneGet(scene,'cols');
 
-if length(sFactor) == 1
-    newRow = round(r*sFactor); newCol = round(c*sFactor);
-elseif length(sFactor) == 2
-    newRow = round((sFactor(1)*r)); newCol = round(c*sFactor(2));
-else
-    error('Incorrect sFactor.');
-end
+if numel(newSize) == 1, newSize = [newSize,newSize]; end
+newRow = newSize(1); newCol = newSize(2);
 
 if checkfields(scene,'data','photons')
     photons = sceneGet(scene,'photons');

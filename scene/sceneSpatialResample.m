@@ -19,7 +19,7 @@ function scene = sceneSpatialResample(scene,dx,units,method)
 %   scene
 %
 % See also: 
-% sceneSpatialSupport, oiSpatialResample
+%    sceneSpatialSupport, oiSpatialResample
 %
 
 % Examples:

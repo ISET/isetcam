@@ -35,7 +35,7 @@ function [udata, g] = scenePlot(scene,pType,roiLocs,varargin)
 %     {'luminance fft'}           - 2D fft of scene luminance contrast
 %     {'luminance fft hline'}     - Horizontal line luminance contrast Fourier transform
 %     {'luminance fft vline'}     - Vertical line luminance Fourier transform
-%     {'luminance mesh linear'}
+%     {'luminance mesh linear'}   - Use this to see a luminance image.
 %     {'luminance mesh log10'}
 %     {'chromaticity roi'}        - xy-chromaticity diagram of points in an roi
 %

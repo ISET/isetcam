@@ -20,7 +20,7 @@ function scene = sceneSet(scene,parm,val,varargin)
 %  Examples:
 %    scene = sceneSet(scene,'name','myScene');      % Set the scene name
 %    scene = sceneSet(scene,'fov',3);               % Set scene field of view to 3 deg
-%    scene = sceneSet(scene,'resize',[1,0.5]);
+%    scene = sceneSet(scene,'resize',[256 256]);
 %
 % Scene description
 %      'name'          - An informative name describing the scene
@@ -42,8 +42,7 @@ function scene = sceneSet(scene,parm,val,varargin)
 %         not a variable, but a function
 %
 %       'resize' - Spatially interpolate to a new size.  The parameters are
-%                  scale factors on the current row and columns, which
-%                  are rounded to integers in the resize.
+%                  new rol and col values (must be integers)
 % Depth
 %      'depthMap' - Stored in meters.
 %
@@ -178,7 +177,7 @@ switch parm
         % Clear out luminance computation
         scene = sceneSet(scene, 'luminance', []);
     case 'resize'
-        % scene = sceneSet(scene,'resize',[rowScale,colScale]);
+        % scene = sceneSet(scene,'resize',[newRow,newCol]);
         % Resize the scene by spatially interpolating the photon data
         if numel(val) == 1
             newSz = [val,val];

@@ -46,21 +46,31 @@ c = rect(3)+1; r = rect(4)+1;
 photons = vcGetROIData(scene,roiLocs,'photons');
 photons = XW2RGBFormat(photons,r,c);
 
-% ZLY: Also deal with spatial spectral case
+% Now build up the new object.
+scene = sceneClearData(scene);
+scene = sceneSet(scene,'photons',photons);
+
+% If there is a depth map, we crop it.
+if isfield(scene,'depthMap')
+    dmap  = sceneGet(scene,'depth map');
+    dmap  = imcrop(dmap,rect);
+    scene = sceneSet(scene,'depth map',dmap);
+end
+
+% ZLY: If a spatial spectral illuminant, crop that too.
 if isequal(sceneGet(scene, 'illuminant format'), 'spatial spectral')
     illPhotons = vcGetROIData(scene,roiLocs,'illuminant photons');
     illPhotons = XW2RGBFormat(illPhotons, r, c);
     scene = sceneSet(scene, 'illuminant photons', illPhotons);
 end
 
-% Now build up the new object.
-scene = sceneClearData(scene);
-scene = sceneSet(scene,'photons',photons);
+% Recalculate the luminance
 [luminance, meanL] = sceneCalculateLuminance(scene);
+
 scene = sceneSet(scene,'luminance',luminance);
 scene = sceneSet(scene,'meanLuminance',meanL);
 
-return;
+end
 
 
 
