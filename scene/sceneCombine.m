@@ -2,10 +2,11 @@ function scene = sceneCombine(scene1,scene2,keyval)
 % Combine a pair of scenes
 %
 % Synopsis
+%   scene = sceneCombine(scene1,scene2,keyval)
 %
 % Input
 %   scene1 - The two scenes should have the same wavelength samples
-%   scene2 -
+%   scene2 - There are various ways to combine them.  See below.
 %
 % Optional Key/val pairs
 %   direction - horizontal, vertical, or both.
@@ -24,7 +25,7 @@ function scene = sceneCombine(scene1,scene2,keyval)
 % ieExamplesPrint('sceneCombine');
 %
 % See also
-%
+%   sceneAdd
 
 % Examples:
 %{
@@ -49,6 +50,7 @@ arguments
     scene2 struct
     keyval.direction {mustBeMember(keyval.direction, {'vertical','horizontal','both','centered'})} = 'horizontal'
 end
+
 %%  Determine direction and merge
 
 assert(isequal(sceneGet(scene1,'wave'),sceneGet(scene2,'wave')));
