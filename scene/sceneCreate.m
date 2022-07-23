@@ -188,7 +188,7 @@ scene.type = 'scene';
 sceneName = ieParamFormat(sceneName);
 scene.metadata = [];   % Metadata for machine learning apps
 
-%% Handle the Macbeth parameter cases here
+%% Handle all the Macbeth cases here
 if strncmp(sceneName,'macbeth',5) || ...
         strcmp(sceneName,'default') || ...
         strcmp(sceneName,'empty')
@@ -200,7 +200,7 @@ if strncmp(sceneName,'macbeth',5) || ...
     if length(varargin) > 3, blackBorder = varargin{4}; end %
 end
 
-%%
+%% Create the scene options
 switch sceneName
     case 'default'
         % scene = sceneCreate('default',patchSize,wave);
@@ -578,34 +578,37 @@ if useSingle
     if isfield(scene,'illuminant') && isfield(scene.illuminant,'spectrum')
         scene.illuminant.spectrum.wave = single(scene.illuminant.spectrum.wave);
     end
-    
 end
 % Scenes are initialized to a mean luminance of 100 cd/m2.  The illuminant
-% is adjusted so that dividing the radiance (in photons) by the illuminant
-% (in photons) produces a peak reflectance of 0.9.
+% is adjusted so that dividing the peak reflectance - calculated by
+% dividing radiance (in photons) by the illuminant (in photons) is 0.9.
 %
-% Also, a best guess is made about one known reflectance.
+% Also, a best guess is made about one known reflectance.  This is a very little
+% used feature, and might be deprecated.
 if checkfields(scene,'data','photons') && ~isempty(scene.data.photons)
     
     if isempty(sceneGet(scene,'known reflectance')) && checkfields(scene,'data','photons')
-        % Since there is no known reflectance, we set things up here.  If
-        % there is one, then stuff must have been set up elsewhere.
+        % We set up a known reflectance index here.  If there is one, then
+        % value must have been set up elsewhere.  And I am surprised.  
         
         % If there is no illuminant yet, create one with the same
-        % wavelength samples as the scene and a 100 cd/m2 mean luminance
+        % wavelength samples as the scene radiance. We make the illuminant
+        % with a 100 cd/m2 mean luminance
         if isempty(sceneGet(scene,'illuminant'))
             il = illuminantCreate('equal photons',sceneGet(scene,'wave'),100);
             scene = sceneSet(scene,'illuminant',il);
         end
         
-        % There is no known scene reflectance, so we set the peak radiance
-        % point as if it has a reflectance of 0.9.
+        % Find the location and across all wavelengths in the scene with
+        % the peak radiance.
         v = sceneGet(scene,'peak radiance and wave');
         wave = sceneGet(scene,'wave');
         idxWave = find(wave == v(2));
+
         p = sceneGet(scene,'photons',v(2));
-        [tmp,ij] = max2(p); %#ok<ASGLU>
+        [~,ij] = max2(p);
         v = [0.9 ij(1) ij(2) idxWave];
+        % Store the known reflectance and its row,col,wave value.
         scene = sceneSet(scene,'known reflectance',v);
     end
     
@@ -744,9 +747,9 @@ end
 function scene = sceneMackay(scene,radFreq,sz)
 %% Someone (I think Chris Tyler) told me the ring/ray pattern is also called
 % the Mackay chart.
-%   Reference from Joyce here:
 %
-% Some people call it the Siemens Star pattern (Wueller).
+% Some people call it the Siemens Star pattern.
+% https://en.wikipedia.org/wiki/Siemens_star
 %
 % We fill the central circle with a masking pattern.  The size of the
 % central region is at the point when the rays would start to alias.  The
@@ -819,16 +822,22 @@ end
 function [scene,p] = sceneHarmonic(scene,parms, wave)
 %% Create a scene of a (windowed) harmonic function.
 %
-% Harmonic parameters are: parms.freq, parms.row, parms.col, parms.ang
-% parms.ph, parms.contrast
+% The default parameters are returned in a struct by calling
 %
-% Missing default parameters are supplied by imageHarmonic.
+%  hp = harmonicP;
 %
-% The frequency is with respect to the image (cyces/image).  To determine
-% cycles/deg, use cpd: freq/sceneGet(scene,'fov');
+% Harmonic parameters are: 
+%   parms.freq, parms.row, parms.col, parms.ang, parms.ph, parms.contrast
+%
+% The frequency units are with respect to the image (cyces/image).  To
+% determine cycles/deg (cpd) use
+% 
+%   freq/sceneGet(scene,'fov');
 %
 % The spectral radiance is set to an equal photon radiance (not equal
 % energy).
+
+if ~exist('parms','var'), parms = harmonicP; end
 
 scene = sceneSet(scene,'name','harmonic');
 
@@ -844,35 +853,41 @@ nWave = sceneGet(scene,'nwave');
 % other cases, they are simply attached to the global parameters in
 % vcSESSION.  We can get them by a getappdata call in here, but not if we
 % close the window as part of imageSetHarmonic
-if ieNotDefined('parms')
-    global parms; %#ok<REDEF>
-    h   = imageSetHarmonic; waitfor(h);
-    img = imageHarmonic(parms);
-    p   = parms;
-    clear parms;
-else
-    [img,p] = imageHarmonic(parms);
-end
+%
+% Switched to using the harmonicP method instead of this. (July 2022).
+%
+% if ieNotDefined('parms')
+%     global parms; %#ok<REDEF>
+%     h   = imageSetHarmonic; waitfor(h);
+%     img = imageHarmonic(parms);
+%     p   = parms;
+%     clear parms;
+% else
+%     [img,p] = imageHarmonic(parms);
+% end
+
+[img,p] = imageHarmonic(parms);
 
 % To reduce rounding error problems for large dynamic range, we set the
 % lowest value to something slightly more than zero.  This is due to the
 % ieCompressData scheme.
-img(img==0) = 1e-4;
+img(img==0) = 1e-4;             % Peak is 1.
 img   = img/(2*max(img(:)));    % Forces mean reflectance to 25% gray
 
 % Mean illuminant at 100 cd
-wave = sceneGet(scene,'wave');
-il = illuminantCreate('equal photons',wave,100);
+wave  = sceneGet(scene,'wave');
+il    = illuminantCreate('equal photons',wave,100);
 scene = sceneSet(scene,'illuminant',il);
 
-img = repmat(img,[1,1,nWave]);
+img       = repmat(img,[1,1,nWave]);
 [img,r,c] = RGB2XWFormat(img);
 illP = illuminantGet(il,'photons');
-img = img*diag(illP);
-img = XW2RGBFormat(img,r,c);
+img  = img*diag(illP);
+img  = XW2RGBFormat(img,r,c);
 scene = sceneSet(scene,'photons',img);
 
 end
+
 %--------------------------------------------------
 function scene = sceneRamp(scene,sz,dynamicRange)
 %% Intensity ramp (see L-star chart for L* steps)
