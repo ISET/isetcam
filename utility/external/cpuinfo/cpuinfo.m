@@ -15,6 +15,12 @@ function info = cpuinfo()
 %   Author: Ben Tordoff
 %   Copyright 2011-2021 The MathWorks, Inc.
 
+persistent savedInfo;
+if ~isempty(savedInfo)
+    info = savedInfo;
+    return;
+end
+
 if isunix
     if ismac
         info = cpuInfoMac();
@@ -24,6 +30,7 @@ if isunix
 else
     info = cpuInfoWindows();
 end
+savedInfo = info;
 
 
 %-------------------------------------------------------------------------%
