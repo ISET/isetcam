@@ -579,6 +579,7 @@ if useSingle
         scene.illuminant.spectrum.wave = single(scene.illuminant.spectrum.wave);
     end
 end
+
 % Scenes are initialized to a mean luminance of 100 cd/m2.  The illuminant
 % is adjusted so that dividing the peak reflectance - calculated by
 % dividing radiance (in photons) by the illuminant (in photons) is 0.9.
