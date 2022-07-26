@@ -1,0 +1,25 @@
+function doAlign(obj)
+            
+    for i=1:numel(obj.transcript)
+       if(obj.transcript(i).aligned)
+          for j=1:numel(obj.transcript(i).shots)
+              shotId = obj.transcript(i).shots(j);
+              
+              if(~isempty(obj.transcript(i).description))
+                obj.shots(shotId).description = sprintf('%s\n%s' ...
+                    ,obj.shots(shotId).description,obj.transcript(i).description);
+              end
+              if(~isempty(obj.transcript(i).speaker))
+                  obj.shots
+              end
+              
+              
+          end
+           
+           
+       end
+        
+    end
+            
+
+end

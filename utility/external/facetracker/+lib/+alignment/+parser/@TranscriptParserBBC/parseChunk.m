@@ -1,0 +1,78 @@
+function data = parseChunk(obj,chunk)
+
+data = [];
+data.isSceneStart = false;
+data.actTime = '';
+data.text = '';
+data.description  = '';
+data.speaker = '';
+data.startFrame = 0;
+data.endFrame = 0;
+data.aligned = false;
+data.shots = [];
+
+for i=1:numel(chunk)
+    
+    tline = chunk{i};
+    if(isempty(tline))
+        continue;
+    end
+   
+    if(tline(1) == '#')
+        data.isSceneStart = true;
+        tline = tline(2:end);
+    end
+    tline = strtrim(tline);
+    ele = regexp(tline,'\t\t','split');
+    if(numel(ele)>1)
+        data.actTime = ele{1};
+        tline = ele{2};
+    end
+    
+    idx = ismember(tline,['A':'Z' 'a':'z' '0':'9'])| isstrprop(tline, 'wspace') | isstrprop(tline, 'punct');
+    tline = tline(idx);
+    idx = isstrprop(tline, 'upper') | isstrprop(tline, 'wspace') | isstrprop(tline, 'cntrl')  | isstrprop(tline, 'punct') | ~isstrprop(tline, 'alpha');
+    if(sum(idx)==numel(idx))
+        idx = isstrprop(tline, 'alpha')| isstrprop(tline, 'wspace');
+        
+        ele = regexp(tline,' ','split');
+        if(numel(ele)==1)
+            speaker = ele{1};
+            if(~isempty(strfind(speaker,':')))
+                speaker = speaker(1:end-1);
+            end
+            data.speaker = speaker;
+        else
+            if(~isempty(data.description))
+                data.description = sprintf('%s \n %s',data.description,tline);
+            else
+                data.description = tline;
+            end
+        end
+    else
+        if(~isempty(data.text))
+            data.text = sprintf('%s \n %s',data.text,tline);
+        else
+            data.text = tline;
+        end
+        
+    end
+    
+end
+
+%% if the text is normal cased and no speaker has been assigned
+%% then speaker got assigned to description.
+if(~isempty(data.text) && isempty(data.speaker))
+    tline = data.text;
+    idx = isstrprop(tline, 'upper') | isstrprop(tline, 'wspace') | isstrprop(tline, 'cntrl')  | isstrprop(tline, 'punct') | ~isstrprop(tline, 'alpha');
+    if(sum(idx)~=numel(idx)) %% Entire string is not uppercased
+         speaker = data.description;
+         ele = regexp(speaker,'\n','split');
+         speaker = ele{end};
+            if(~isempty(strfind(speaker,':')))
+                speaker = speaker(1:end-1);
+            end
+         data.speaker = strtrim(speaker);
+    end
+end
+end
