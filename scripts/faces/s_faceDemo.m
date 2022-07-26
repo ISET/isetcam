@@ -6,6 +6,10 @@
 % Default detector is set for faces
 faceDetect = vision.CascadeObjectDetector();
 
+% merge threshhold impacts accuracy (1 finds tons of things, 4 is default, 8 max?)
+% from some simple experiments, 3 seems like a good compromise
+faceDetect.MergeThreshold = 3;
+
 % Read an image or a video frame
 ourImg = imread('multiple_faces.jpg');
 
