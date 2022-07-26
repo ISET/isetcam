@@ -14,5 +14,22 @@ foundFaces = step(faceDetect, ourImg);
 faceOut = insertObjectAnnotation(ourImg,"rectangle",foundFaces,'Face');
 figure, imshow(faceOut), title('Found faces:');
 
+% Fetch some face images using WebImageBrowser or the tool of your choice
+% and put them in local/images/faces
+
+% argh, need to remember the isetcam root call!
+inputFiles = dir(fullfile('b:\iset\isetcam','local','images','faces','*.jpg'));
+if numel(inputFiles) == 0
+    error('no files');
+end
+
+for ii = 1:numel(inputFiles)
+    inFile = inputFiles(ii);
+    ourImg = imread(fullfile(inFile.folder,inFile.name));
+    foundFaces = step(faceDetect, ourImg);
+    faceOut = insertObjectAnnotation(ourImg,"rectangle",foundFaces,'Face');
+    figure, imshow(faceOut), title('Found faces:');
+    pause;
+end
 
 
