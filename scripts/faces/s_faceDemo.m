@@ -24,8 +24,8 @@ figure, imshow(faceOut), title('Found faces:');
 % argh, need to remember the isetcam root call!
 inputFiles = dir(fullfile('b:\iset\isetcam','local','images','faces','*.jpg'));
 if numel(inputFiles) == 0
-    error('no files');
-end
+    warning('no files');
+else
 
 for ii = 1:numel(inputFiles)
     inFile = inputFiles(ii);
@@ -36,4 +36,4 @@ for ii = 1:numel(inputFiles)
     pause;
 end
 
-
+end
