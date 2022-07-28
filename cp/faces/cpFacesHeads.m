@@ -140,12 +140,13 @@ thisR.set('asset','001_head_O','material name','head');
 scenes = [scenes, scene];
 
 % We can loop through and generate a bunch of separate figures
+faceImages = {};
 for ii=1:numel(scenes)
-    cpFacesDetect('scene',scenes{ii});
+    faceImages{ii} = cpFacesDetect('scene',scenes{ii},'interactive',false);
 end
+montage(faceImages);
 
-% Or perhaps we can be smarter about a grid of output images
-% TBD
+% Now we have an array of images
 
 
 %%

@@ -1,15 +1,18 @@
-function  foundFaces = cpFacesDetect(options)
+function  [faceOut, foundFaces] = cpFacesDetect(options)
 %CPFACESDETECT Summary of this function goes here
 %   Detect Faces in images using Viola-Jones algorithm
 %   Requires Vision toolbox
 %
 % D. Cardinal, Stanford University, 2022
-
+%
+% NEXT: Add support for show/noshow of output
+% 
 % Find what we are looking for
 arguments
     options.file = '';
     options.image = [];
     options.scene = '';
+    options.interactive = true; % whether to show results
 end
 
 % Default detector is set for faces
@@ -38,8 +41,11 @@ end
 foundFaces = step(faceDetect, ourImg);
 
 faceOut = insertObjectAnnotation(ourImg,"rectangle",foundFaces,'Face');
-figure, imshow(faceOut), title('Found faces:');
 
+% show result if asked
+if options.interactive
+    figure, imshow(faceOut), title('Found faces:');
+end
 
 end
 
