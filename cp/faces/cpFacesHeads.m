@@ -1,9 +1,9 @@
 %% cpFacesHeads
 %
+% 
+% Use Brian's Heads with Face Detector
 % D.Cardinal, Stanford, 2022
 %
-% Use Brian's Heads with Face Detector
-
 %%
 ieInit;
 if ~piDockerExists, piDockerConfig; end
@@ -15,13 +15,18 @@ thisR = piRecipeDefault('scene name','head');
 thisR.set('rays per pixel',512);
 thisR.set('film resolution',[320 320]*2);
 thisR.set('n bounces',5);
+
+% Set up a list of scenes that we render for later evaluation
+scenes = {};
+
 %% This renders
 [scene, results] = piWRS(thisR);
-
+scenes = [scenes, scene];
 %%
 % Because it is a full 3D head, we can rotate and re-render
 thisR.set('asset','001_head_O','rotate',[5 20 0]);
 [scene, results] = piWRS(thisR);
+scenes = [scenes, scene];
 
 %% Change the camera position
 oFrom = thisR.get('from');
@@ -38,7 +43,7 @@ thisR.set('lights','all','delete');
 % thisR.set('skymap','sky-sun-clouds.exr');   % Needs rotation
 % thisR.set('skymap','sky-rainbow.exr');
 % thisR.set('skymap','sky-sun-clouds');
-% thisR.set('skymap','sky-sunlight.exr');
+thisR.set('skymap','sky-sunlight.exr');
 % thisR.set('skymap','ext_LateAfternoon_Mountains_CSP.exr');
 % thisR.set('skymap','sky-cathedral_interior');
 
@@ -46,6 +51,7 @@ thisR.set('lights','all','delete');
 
 % thisR.set('from',oFrom);
 [scene, results] = piWRS(thisR);
+scenes = [scenes, scene];
 
 %{
 % This adds a small xyz coordinate legend if we want it
@@ -77,12 +83,15 @@ thisR.set('from',oFrom);
 thisR.set('object distance', 1.5);
 thisR.set('from',oFrom + [0 0 0.1]);
 [scene, results] = piWRS(thisR);
+scenes = [scenes, scene];
 
 %%  Materials
 thisR.set('lights','all','delete');
 thisR.set('skymap','sky-brightfences.exr');
 
 [scene, results] = piWRS(thisR);
+scenes = [scenes, scene];
+
 thisR.get('print materials')
 piMaterialsInsert(thisR);
 thisR.show('objects')
@@ -90,28 +99,53 @@ thisR.show('objects')
 %this version produces an error:
 %thisR.set('asset','head','material name','White');
 thisR.set('asset','001_head_O','material name','White');
-piWRS(thisR);
+[scene, results] = piWRS(thisR);
+scenes = [scenes, scene];
+
 thisR.set('asset','001_head_O','material name','marbleBeige');
-piWRS(thisR);
+[scene, results] = piWRS(thisR);
+scenes = [scenes, scene];
+
 thisR.set('asset','001_head_O','material name','mahogany_dark');
-piWRS(thisR);
+[scene, results] = piWRS(thisR);
+scenes = [scenes, scene];
+
 thisR.set('asset','001_head_O','material name','mirror');
-piWRS(thisR);
+[scene, result] = piWRS(thisR);
+scenes = [scenes, scene];
+
 thisR.set('asset','001_head_O','material name','macbethchart');
-piWRS(thisR);
+[scene, results] = piWRS(thisR);
+scenes = [scenes, scene];
+
 thisR.get('texture','macbethchart')
+scenes = [scenes, scene];
+
 % ans.scale -- not sure what this was supposed to be
 thisR.set('texture','macbethchart','scale',0.3);
-piWRS(thisR);
+[scene, results] = piWRS(thisR);
+scenes = [scenes, scene];
+
 thisR.set('texture','macbethchart','uscale',0.3);
 thisR.set('texture','macbethchart','vscale',0.3);
-piWRS(thisR);
+[scene, results] = piWRS(thisR);
+scenes = [scenes, scene];
+
 thisR.set('texture','macbethchart','vscale',10);
 thisR.set('texture','macbethchart','uscale',10);
 
 thisR.set('asset','001_head_O','material name','head');
 
-piWRS(thisR);
+[scene, results] = piWRS(thisR);
+scenes = [scenes, scene];
+
+% We can loop through and generate a bunch of separate figures
+for ii=1:numel(scenes)
+    cpFacesDetect('scene',scenes{ii});
+end
+
+% Or perhaps we can be smarter about a grid of output images
+% TBD
 
 
 %%

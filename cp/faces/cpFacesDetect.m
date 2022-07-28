@@ -25,7 +25,8 @@ if isfile(which(options.file))
 elseif ~isempty(options.image)
     ourImg = options.image;
 elseif ~isempty(options.scene)
-    imgFile = tempname();
+    % get temp png file
+    imgFile = [tempname() '.png'];
     sceneSaveImage(options.scene, imgFile);
     ourImg = imread(imgFile);
     delete(imgFile);
