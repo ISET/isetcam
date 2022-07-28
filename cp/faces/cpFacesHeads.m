@@ -37,21 +37,21 @@ thisR.set('object distance', 1.3);
 
 % relight the scene with a variety of skymaps
 thisR.set('lights','all','delete');
-% Need to un-comment one of these or else we don't have a light:
-% thisR.set('skymap','sky-brightfences');
-% thisR.set('skymap','glacier_latlong.exr');
-% thisR.set('skymap','sky-sun-clouds.exr');   % Needs rotation
-% thisR.set('skymap','sky-rainbow.exr');
-% thisR.set('skymap','sky-sun-clouds');
-thisR.set('skymap','sky-sunlight.exr');
-% thisR.set('skymap','ext_LateAfternoon_Mountains_CSP.exr');
-% thisR.set('skymap','sky-cathedral_interior');
 
-% thisR.show('skymap');
+skymaps = {'sky-brightfences', ...
+    'glacier_latlong.exr', ...
+    'sky-sun-clouds.exr', ...
+    'sky-rainbow.exr', ...
+    'ext_LateAfternoon_Mountains_CSP.exr', ...
+    'sky-cathedral_interior', ...
+    'sky-cathedral_interior'
+    }
 
-% thisR.set('from',oFrom);
-[scene, results] = piWRS(thisR);
-scenes = [scenes, scene];
+for ii = 1:numel(skymaps)
+    thisR.set('skymap',skymaps{ii});
+    [scene, results] = piWRS(thisR);
+    scenes = [scenes, scene];
+end
 
 %{
 % This adds a small xyz coordinate legend if we want it
@@ -89,35 +89,25 @@ scenes = [scenes, scene];
 thisR.set('lights','all','delete');
 thisR.set('skymap','sky-brightfences.exr');
 
-[scene, results] = piWRS(thisR);
-scenes = [scenes, scene];
-
-thisR.get('print materials')
+% grab out list of materials
 piMaterialsInsert(thisR);
-thisR.show('objects')
+thisR.get('print materials')
 
-%this version produces an error:
-%thisR.set('asset','head','material name','White');
-thisR.set('asset','001_head_O','material name','White');
-[scene, results] = piWRS(thisR);
-scenes = [scenes, scene];
+% look to see which objects we have, to assign materials
+%thisR.show('objects')
 
-thisR.set('asset','001_head_O','material name','marbleBeige');
-[scene, results] = piWRS(thisR);
-scenes = [scenes, scene];
+% should be a .get :(
+materialMap = thisR.materials.list;
+materials = values(materialMap);
 
-thisR.set('asset','001_head_O','material name','mahogany_dark');
-[scene, results] = piWRS(thisR);
-scenes = [scenes, scene];
+% Loop through our material list
+for ii = 1:numel(materials)
+    thisR.set('asset','001_head_O','material name',materials{ii}.name);
+    [scene, results] = piWRS(thisR);
+    scenes = [scenes, scene];
+end
 
-thisR.set('asset','001_head_O','material name','mirror');
-[scene, result] = piWRS(thisR);
-scenes = [scenes, scene];
-
-thisR.set('asset','001_head_O','material name','macbethchart');
-[scene, results] = piWRS(thisR);
-scenes = [scenes, scene];
-
+% Now Textures
 thisR.get('texture','macbethchart')
 scenes = [scenes, scene];
 
@@ -158,6 +148,8 @@ montage(faceImages);
 % depthRange = thisR.get('depth range');
 % depthRange = [1 1];
 
+%{
+    we don't handle oi's yet
 % Need to un-comment one lens to have the script run
 thisR.set('lens file','fisheye.87deg.100.0mm.json');
 % lensFiles = lensList;
@@ -170,3 +162,4 @@ thisR.set('focal distance',5);
 thisR.set('film diagonal',33);
 
 oi = piWRS(thisR);
+%}
