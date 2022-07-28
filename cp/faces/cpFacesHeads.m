@@ -13,6 +13,8 @@ if ~piDockerExists, piDockerConfig; end
 thisR = piRecipeDefault('scene name','head');
 
 thisR.set('rays per pixel',512);
+% we probably don't need much resolution, given the low-rez of most 
+% face feature algorithms
 thisR.set('film resolution',[320 320]*2);
 thisR.set('n bounces',5);
 
@@ -63,22 +65,7 @@ thisR.set('asset','mergeNode_B','scale',0.2);
 piWRS(thisR);
 %}
 
-%% Find the vector in the plane perpendicular to up that gets to From
-nUp = null(oUp);
-
-% y = nUp*[a,b]'
-%
-% Add y to oFrom, and it should bring you to To + alpha Up
-%
-% y + oFrom = oTo + alpha oUp
-% y'* (oTo + alpha oUp) = 0
-
-%% We would like to rotate around the 'up' direction!!!
-
-%% Textures on the head.
-%
-% The white is good for the illumination!
-
+% Move closer? Ask Brian:)
 thisR.set('from',oFrom);
 thisR.set('object distance', 1.5);
 thisR.set('from',oFrom + [0 0 0.1]);
@@ -86,12 +73,13 @@ thisR.set('from',oFrom + [0 0 0.1]);
 scenes = [scenes, scene];
 
 %%  Materials
+
+% Use a nice skylight
 thisR.set('lights','all','delete');
 thisR.set('skymap','sky-brightfences.exr');
 
-% grab out list of materials
+% Add our list of materials
 piMaterialsInsert(thisR);
-thisR.get('print materials')
 
 % look to see which objects we have, to assign materials
 %thisR.show('objects')
@@ -107,11 +95,10 @@ for ii = 1:numel(materials)
     scenes = [scenes, scene];
 end
 
-% Now Textures
+%% Now Textures
 thisR.get('texture','macbethchart')
 scenes = [scenes, scene];
 
-% ans.scale -- not sure what this was supposed to be
 thisR.set('texture','macbethchart','scale',0.3);
 [scene, results] = piWRS(thisR);
 scenes = [scenes, scene];
