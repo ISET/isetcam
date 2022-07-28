@@ -159,9 +159,9 @@ montage(faceImages);
 % depthRange = [1 1];
 
 % Need to un-comment one lens to have the script run
-% thisR.set('lens file','fisheye.87deg.100.0mm.json');
+thisR.set('lens file','fisheye.87deg.100.0mm.json');
 % lensFiles = lensList;
-% lensfile = 'fisheye.87deg.100.0mm.json';
+lensfile = 'fisheye.87deg.100.0mm.json';
 % lensfile  = 'dgauss.22deg.50.0mm.json';    % 30 38 18 10
 
 fprintf('Using lens: %s\n',lensfile);
