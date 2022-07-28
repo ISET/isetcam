@@ -1,9 +1,16 @@
-function  foundFaces = cpFacesDetect(imgFile)
+function  foundFaces = cpFacesDetect(options)
 %CPFACESDETECT Summary of this function goes here
 %   Detect Faces in images using Viola-Jones algorithm
 %   Requires Vision toolbox
 %
 % D. Cardinal, Stanford University, 2022
+
+% Find what we are looking for
+arguments
+    options.file = '';
+    options.image = [];
+    options.scene = '';
+end
 
 % Default detector is set for faces
 faceDetect = vision.CascadeObjectDetector();
@@ -13,7 +20,19 @@ faceDetect = vision.CascadeObjectDetector();
 faceDetect.MergeThreshold = 3;
 
 % Read an image or a video frame
-ourImg = imread(imgFile);
+if isfile(which(options.file))
+    ourImg = imread(which(options.file));
+elseif ~isempty(options.image)
+    ourImg = options.image;
+elseif ~isempty(options.scene)
+    imgFile = tempname();
+    sceneSaveImage(options.scene, imgFile);
+    ourImg = imread(imgFile);
+    delete(imgFile);
+else
+    error('Face Detection called with invalid input');
+end
+
 
 foundFaces = step(faceDetect, ourImg);
 
