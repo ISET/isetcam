@@ -45,7 +45,6 @@ skymaps = {'sky-brightfences', ...
     'sky-sun-clouds.exr', ...
     'sky-rainbow.exr', ...
     'ext_LateAfternoon_Mountains_CSP.exr', ...
-    'sky-cathedral_interior', ...
     'sky-cathedral_interior'
     }
 
@@ -121,6 +120,9 @@ faceImages = {};
 for ii=1:numel(scenes)
     faceImages{ii} = cpFacesDetect('scene',scenes{ii},'interactive',false);
 end
+
+%%
+ieNewGraphWin;
 montage(faceImages);
 
 % Now we have an array of images
