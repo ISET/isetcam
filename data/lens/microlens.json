@@ -1,0 +1,24 @@
+{
+    "description": "Exploring microlens options. This one is for a 2 micron pixel.",
+    "name": " Microlens example",
+    "surfaces": [
+        {
+            "ior": 1.649999976158142,
+            "radius": 0.0025,
+            "semi_aperture": 0.001,
+            "thickness": 0.0003
+        },
+        {
+            "ior": 1.649999976158142,
+            "radius": 0.0,
+            "semi_aperture": 0.001,
+            "thickness": 0.0001
+        },
+        {
+            "ior": 1.0,
+            "radius": -1e5,
+            "semi_aperture": 0.001,
+            "thickness": 0.0
+        }
+    ]
+}

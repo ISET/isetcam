@@ -1,0 +1,18 @@
+# Name: tessar.22deg.12.5mm
+# Description: multi element lens
+# Focal length (mm) 
+12.500
+# Each row is a surface.
+# The order of surfaces starts from the image and
+# heads to the sensor.  Zero is the position of the first lens surface.
+# Positive numbers are towards the lens, and negative numbers are towards
+# the image
+#    radius	 axpos	N	aperture
+4.050000	0.750000	1.620000	3.750000
+-72.475000	0.825000	1.000000	3.750000
+-7.312500	0.362500	1.578000	3.125000
+3.450000	0.500000	1.000000	3.125000
+0.000000	0.325000	0.000000	2.850000
+-72.475000	0.275000	1.532000	3.200000
+3.275000	1.100000	1.620000	3.200000
+-5.300000	0.000000	1.000000	3.200000

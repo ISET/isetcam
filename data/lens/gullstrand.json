@@ -1,0 +1,36 @@
+{
+    "description": "    focal length (in mm)     ",
+    "name": " Gullstrand eye, parameters from Navarro's 1985 paper\t\t",
+    "surfaces": [
+        {
+            "ior": 1.3770999908447266,
+            "radius": 7.800000190734863,
+            "semi_aperture": 3.9000000953674316,
+            "thickness": 0.550000011920929
+        },
+        {
+            "ior": 1.337399959564209,
+            "radius": 6.5,
+            "semi_aperture": 3.9000000953674316,
+            "thickness": 3.049999952316284
+        },
+        {
+            "ior": 0.0,
+            "radius": 0.0,
+            "semi_aperture": 5.099999904632568,
+            "thickness": 0.0
+        },
+        {
+            "ior": 1.4199999570846558,
+            "radius": 10.199999809265137,
+            "semi_aperture": 5.099999904632568,
+            "thickness": 4.0
+        },
+        {
+            "ior": 1.3359999656677246,
+            "radius": -6.0,
+            "semi_aperture": 3.0,
+            "thickness": 0.0
+        }
+    ]
+}

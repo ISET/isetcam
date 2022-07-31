@@ -1,0 +1,22 @@
+# Name: petzval.12deg.100.0mm
+# Description: multi element lens
+# units are mm
+# Focal length 
+100.000
+# Each row is a surface.
+# They are ordered from the image to the sensor.
+# Zero is the position of the first lens surface.
+# Positive is towards the sensor (right).
+# Negative is towards the scene (left).
+#  radius	axpos	N	aperture
+170.910000	19.360000	1.517000	72.000000
+-76.880000	6.340000	1.648000	72.000000
+1607.720000	0.970000	1.000000	72.000000
+79.530000	11.620000	1.744000	70.400000
+144.630000	37.350000	1.000000	68.000000
+0.000000	37.000000	0.000000	52.400000
+42.300000	16.540000	1.697000	45.200000
+-77.490000	4.130000	1.673000	45.200000
+121.340000	18.220000	1.000000	45.200000
+-38.450000	2.070000	1.617000	38.600000
+-966.180000	0.000000	1.000000	38.600000

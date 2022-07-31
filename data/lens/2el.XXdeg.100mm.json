@@ -1,0 +1,1 @@
+{"description":"    focal length (in mm)     ","name":" 2 Element simple lens\t\t","surfaces":[{"ior":1.649999976158142,"radius":134,"semi_aperture":25,"thickness":3},{"ior":1.649999976158142,"radius":0,"semi_aperture":25,"thickness":3},{"ior":1,"radius":-134,"semi_aperture":25,"thickness":0}],"metadata":{"focalLength":0.1,"fNumber":20}}

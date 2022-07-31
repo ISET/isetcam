@@ -1,0 +1,76 @@
+{
+  "description": "multi element lens Focal length (mm) ",
+  "name": "dgauss.22deg.50mm",
+  "surfaces": [
+    {
+      "ior": 1.67,
+      "radius": 29.475,
+      "semi_aperture": 12.6,
+      "thickness": 3.76
+    },
+    {
+      "ior": 1,
+      "radius": 84.83,
+      "semi_aperture": 12.6,
+      "thickness": 0.12
+    },
+    {
+      "ior": 1.67,
+      "radius": 19.275,
+      "semi_aperture": 11.5,
+      "thickness": 4.025
+    },
+    {
+      "ior": 1.699,
+      "radius": 40.77,
+      "semi_aperture": 11.5,
+      "thickness": 3.275
+    },
+    {
+      "ior": 1,
+      "radius": 12.75,
+      "semi_aperture": 9.5,
+      "thickness": 5.705
+    },
+    {
+      "ior": 0,
+      "radius": 0,
+      "semi_aperture": 6,
+      "thickness": 4.5
+    },
+    {
+      "ior": 1.603,
+      "radius": -14.495,
+      "semi_aperture": 8.5,
+      "thickness": 1.18
+    },
+    {
+      "ior": 1.658,
+      "radius": 40.77,
+      "semi_aperture": 10,
+      "thickness": 6.065
+    },
+    {
+      "ior": 1,
+      "radius": -20.385,
+      "semi_aperture": 10,
+      "thickness": 0.19
+    },
+    {
+      "ior": 1.717,
+      "radius": 437.065,
+      "semi_aperture": 10,
+      "thickness": 3.22
+    },
+    {
+      "ior": 1,
+      "radius": -39.73,
+      "semi_aperture": 10,
+      "thickness": 0
+    }
+  ],
+  "metadata": {
+    "focalLength": 0.05,
+    "fNumber": 10
+  }
+}

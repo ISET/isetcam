@@ -32,6 +32,13 @@ function sformatted = ieParamFormat(s)
     keyValuePairs = ieParamFormat(keyValuePairs)
 %}
 
+% Numbers just get returned.  Added July 30, 2022 by BW for a case in
+% iset3d.  Perhaps this should be added to ISETBio also.
+if isnumeric(s)
+    sformatted = s;
+    return;
+end
+
 if (~ischar(s) && ~iscell(s))
     error('s has to be a character array or cell array');
 end

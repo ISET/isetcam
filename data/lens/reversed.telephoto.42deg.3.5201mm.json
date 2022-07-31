@@ -1,0 +1,139 @@
+{
+ "name": "reversed.telephoto.42deg.100mm",
+ "description": "description",
+ "type": "multi element lens",
+ "surfaces": [
+  {
+   "radius": 12.18572,
+   "thickness": 0.5834,
+   "ior": 1.67,
+   "semi_aperture": 3.09087
+  },
+  {
+   "radius": 57.34452,
+   "thickness": 0.0274,
+   "ior": 1,
+   "semi_aperture": 2.91525
+  },
+  {
+   "radius": 6.80968,
+   "thickness": 0.55636,
+   "ior": 1.773,
+   "semi_aperture": 2.423525
+  },
+  {
+   "radius": 2.14053,
+   "thickness": 0.46609,
+   "ior": 1,
+   "semi_aperture": 1.68593
+  },
+  {
+   "radius": 4.22915,
+   "thickness": 0.18053,
+   "ior": 1.697,
+   "semi_aperture": 1.68593
+  },
+  {
+   "radius": 2.1183,
+   "thickness": 0.51456,
+   "ior": 1,
+   "semi_aperture": 1.47519
+  },
+  {
+   "radius": 8.414160000000001,
+   "thickness": 0.97327,
+   "ior": 1.668,
+   "semi_aperture": 1.40494
+  },
+  {
+   "radius": -87.38188,
+   "thickness": 0.0144,
+   "ior": 1,
+   "semi_aperture": 1.545435
+  },
+  {
+   "radius": 5.37246,
+   "thickness": 0.15349,
+   "ior": 1.697,
+   "semi_aperture": 1.545435
+  },
+  {
+   "radius": 3.1988,
+   "thickness": 0.2982,
+   "ior": 1,
+   "semi_aperture": 1.545435
+  },
+  {
+   "radius": 4.27218,
+   "thickness": 1.03228,
+   "ior": 1.749,
+   "semi_aperture": 1.55246
+  },
+  {
+   "radius": -31.84857,
+   "thickness": 0.17562,
+   "ior": 1,
+   "semi_aperture": 1.591095
+  },
+  {
+   "radius": 0,
+   "thickness": 0.19283,
+   "ior": 1,
+   "semi_aperture": 1.531385
+  },
+  {
+   "radius": -62.92242,
+   "thickness": 0.55636,
+   "ior": 1.564,
+   "semi_aperture": 1.71754
+  },
+  {
+   "radius": -3.1895,
+   "thickness": 0.65365,
+   "ior": 1,
+   "semi_aperture": 1.650805
+  },
+  {
+   "radius": -3.93584,
+   "thickness": 0.33402,
+   "ior": 1.743,
+   "semi_aperture": 1.605145
+  },
+  {
+   "radius": -3.1988,
+   "thickness": 0.11169,
+   "ior": 1.805,
+   "semi_aperture": 1.49275
+  },
+  {
+   "radius": 7.75584,
+   "thickness": 0.19494,
+   "ior": 1,
+   "semi_aperture": 1.49275
+  },
+  {
+   "radius": -23.74508,
+   "thickness": 0.47311,
+   "ior": 1.743,
+   "semi_aperture": 1.61568
+  },
+  {
+   "radius": -3.06793,
+   "thickness": 0.0144,
+   "ior": 1,
+   "semi_aperture": 1.61568
+  },
+  {
+   "radius": 28.38553,
+   "thickness": 0.51456,
+   "ior": 1.697,
+   "semi_aperture": 1.931795
+  },
+  {
+   "radius": -6.70357,
+   "thickness": 0,
+   "ior": 1,
+   "semi_aperture": 1.931795
+  }
+ ]
+}

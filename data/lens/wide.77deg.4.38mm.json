@@ -1,0 +1,73 @@
+{
+ "name": "wide.56deg.3.0mm",
+ "description": " Description: multi element lens Focal length (mm) ",
+ "type": "multi element lens",
+ "surfaces": [
+  {
+   "radius": 2.2278,
+   "thickness": 0.13558,
+   "ior": 1.639,
+   "semi_aperture": 1.92803
+  },
+  {
+   "radius": 1.4293,
+   "thickness": 2.24145,
+   "ior": 1,
+   "semi_aperture": 1.41741
+  },
+  {
+   "radius": 2.99593,
+   "thickness": 0.57929,
+   "ior": 1.613,
+   "semi_aperture": 0.79234
+  },
+  {
+   "radius": -1.54595,
+   "thickness": 0.19324,
+   "ior": 1.548,
+   "semi_aperture": 0.79234
+  },
+  {
+   "radius": 8.31034,
+   "thickness": 0.01541,
+   "ior": 1,
+   "semi_aperture": 0.39617
+  },
+  {
+   "radius": 0,
+   "thickness": 0.01541,
+   "ior": 0,
+   "semi_aperture": 7.336495
+  },
+  {
+   "radius": -8.16067,
+   "thickness": 0.19016,
+   "ior": 1.548,
+   "semi_aperture": 0.39617
+  },
+  {
+   "radius": 1.51821,
+   "thickness": 0.5696099999999999,
+   "ior": 1.613,
+   "semi_aperture": 0.79234
+  },
+  {
+   "radius": -2.94179,
+   "thickness": 2.20095,
+   "ior": 1,
+   "semi_aperture": 0.79234
+  },
+  {
+   "radius": -1.40288,
+   "thickness": 0.13294,
+   "ior": 1.626,
+   "semi_aperture": 1.377795
+  },
+  {
+   "radius": -2.1763,
+   "thickness": 0,
+   "ior": 1,
+   "semi_aperture": 1.848795
+  }
+ ]
+}

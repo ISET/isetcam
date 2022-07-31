@@ -1,0 +1,21 @@
+# Name: dgauss.22deg.6.0mm
+# Description: multi element lens
+# Focal length (mm) 
+6.000
+# Each row is a surface.
+# The order of surfaces starts from the image and
+# heads to the sensor.  Zero is the position of the first lens surface.
+# Positive numbers are towards the lens, and negative numbers are towards
+# the image
+#    radius	 axpos	N	aperture
+3.537000	0.451200	1.670000	3.024000
+10.179600	0.014400	1.000000	3.024000
+2.313000	0.483000	1.670000	2.760000
+4.892400	0.393000	1.699000	2.760000
+1.530000	0.684600	1.000000	2.280000
+0.000000	0.540000	0.000000	2.046000
+-1.739400	0.141600	1.603000	2.040000
+4.892400	0.727800	1.658000	2.400000
+-2.446200	0.022800	1.000000	2.400000
+52.447800	0.386400	1.717000	2.400000
+-4.767600	0.000000	1.000000	2.400000
