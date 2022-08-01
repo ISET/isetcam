@@ -13,9 +13,9 @@ function [names,status] = ieExamplesRun(str,varargin)
 %{
     % Exercise ExampleTestToolbox
     theDir = fileparts(which('RunExamples'));
-    ExecuteExamplesInFunction(fullfile(theDir,'ExecuteExamplesInDirectory.m'));
-    ExecuteExamplesInFunction(fullfile(theDir,'ExecuteExamplesInFunction.m'));
-    ExecuteExamplesInFunction(fullfile(theDir,'PrintExamples.m'));
+    ieExamplesRunInDirectory(fullfile(theDir,'ExecuteExamplesInDirectory.m'));
+    ieExamplesRunInDirectory(fullfile(theDir,'ExecuteExamplesInFunction.m'));
+    ieExamplesRunInDirectory(fullfile(theDir,'PrintExamples.m'));
 %}
 %{
   % Requires ISETBio on path.

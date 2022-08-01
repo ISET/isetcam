@@ -1,8 +1,12 @@
-function [functionNames, functionStatus ] = ExecuteExamplesInDirectory(parentDir,varargin)
+function [functionNames, functionStatus ] = ieExamplesRunInDirectory(parentDir,varargin)
 % Recursively descend directory tree and execute examples in all functions
 %
+% Brief
+%   Examples are enclosed in block quotes, following a comment line that
+%   starts exactly with "% Examples:". 
+%
 % Syntax:
-%    [functionNames, functionStatus ] = ExecuteExamplesInDirectory(parentDir)
+%    [functionNames, functionStatus] = ieExamplesRunInDirectory(parentDir)
 %
 % Description:
 %    Run ExecuteExamplesInFunction on all of the .m files in a directory,
@@ -48,22 +52,22 @@ function [functionNames, functionStatus ] = ExecuteExamplesInDirectory(parentDir
 % Examples:
 %{
     theDir = fileparts(which('ExecuteExamplesInDirectory'));
-    ExecuteExamplesInDirectory(fullfile(theDir,'TestSubdir'),'verbose',true,'printnoexamples',true);
+    ieExamplesRunInDirectory(fullfile(theDir,'TestSubdir'),'verbose',true,'printnoexamples',true);
 %}
 %{
     % If you use isetbio and also have it on your path, you can try this.
     if (exist('isetbioRootPath','file'))
-        ExecuteExamplesInDirectory(fullfile(isetbioRootPath,...
+        ieExamplesRunInDirectory(fullfile(isetbioRootPath,...
           'isettools','wavefront'),'verbose',true);
 
         % Although there is an example in synchronizeISETBIOWithRepository,
         % it contains an "% ETTBSkip" comment and thus is skipped.
-        ExecuteExamplesInDirectory(fullfile(isetbioRootPath,...
+        ieExamplesRunInDirectory(fullfile(isetbioRootPath,...
           'external'),'verbose',true);
     end
 %}
 
-% Input parser
+%% Input parser
 p = inputParser;
 p.addParameter('verbose',false,@islogical);
 p.addParameter('printnoexamples',false,@islogical);
@@ -78,7 +82,7 @@ cd(parentDir);
 % Get everyting in the directory
 theContents = dir(fullfile('*'));
 
-% Here we go
+%% Here we go
 nRunFunctions = 0;
 functionNames = {};
 functionStatus = [];
