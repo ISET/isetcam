@@ -821,11 +821,14 @@ switch parm
         % val = oiGet(oi,'display flag index')
         %
         % When there is an oiWindow open and set in the vcSESSION,
-        % find the display flag index.  Otherwise return 1.
-        
+        % find the display flag index.  Otherwise return our value
         sceneW = ieSessionGet('scene window');
-        if isempty(sceneW), val = 1;   % Default if no window
-        else, val = find(ieContains(sceneW.popupRender.Items,sceneW.popupRender.Value));
+        if isfield(scene,'renderflag')
+                val = scene.renderflag;
+        elseif ~isempty(sceneW)
+            val = find(ieContains(sceneW.popupRender.Items,sceneW.popupRender.Value));
+        else
+            val = 1;
         end
         
     case {'renderflagstring'}
