@@ -159,7 +159,13 @@ if ieNotDefined('roiLocs')
             % ROI. But we make it exist and be empty.
             roiLocs = [];
     end
+elseif isa(roiLocs,'images.roi.Rectangle')
+    % We now allow sending in a Matlab Rectangle roi
+    roiRect = round(roiLocs.Position);
+    roiLocs = ieRect2Locs(roiRect);
+    ieDrawShape(scene,'rectangle',roiRect);
 end
+
 
 % Make the plot window and use set a default gray scale map.
 g = vcNewGraphWin;
