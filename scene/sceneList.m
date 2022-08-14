@@ -1,5 +1,13 @@
-% Scene types with optional parameters
+function sceneList
+% ISETCam scene types with optional parameters
 %
+% Usage:
+%   help sceneList
+%   doc sceneList
+%
+% Typing sceneList is equivalent to help sceneList
+%
+% Empty
 %   sceneCreate('empty',wave)
 %
 % Macbeth scenes
@@ -55,5 +63,18 @@
 % Text
 %    scene = sceneCreate('letter', 'g', fontSize, fontName, display);
 %
+% To list the PBRT scenes use
+%
+%    dir(piDirGet('scenes'));
+%
+% To browse the PBRT scenes on our local web-site use
+%
+%    ieWebGet('browse','pbrtv4');
+%
+% ieWebGet also leads to other web data resources.
 %
 
+
+help sceneList;
+
+end
