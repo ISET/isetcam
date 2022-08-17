@@ -13,7 +13,9 @@ function fullName = sensorSaveImage(sensor,fullName,dataType,gam,scaleMax)
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
-if ieNotDefined('isa'), sensor = ieGetObject('sensor'); end
+if ieNotDefined('isa') && isempty(sensor)
+    sensor = ieGetObject('sensor'); 
+end
 if ieNotDefined('dataType'), dataType = 'volts'; end
 if ieNotDefined('gam'), gam = 1; end
 if ieNotDefined('scaleMax'), scaleMax = 1; end
