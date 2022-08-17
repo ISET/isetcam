@@ -13,7 +13,8 @@ function fullName = sensorSaveImage(sensor,fullName,dataType,gam,scaleMax)
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
-if ieNotDefined('isa') && isempty(sensor)
+if ieNotDefined('sensor') || isempty(sensor)
+    warning('Using selected (vcSESSION) sensor .')
     sensor = ieGetObject('sensor'); 
 end
 if ieNotDefined('dataType'), dataType = 'volts'; end
