@@ -1,6 +1,7 @@
 %% s_python
 %
 % We installed anaconda with its own installer for the Mac M1
+% (https://www.anaconda.com/).
 %
 % After installing anaconda3, it is in ~/opt/anaconda3 and the conda
 % command is available.
