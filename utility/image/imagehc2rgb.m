@@ -22,11 +22,6 @@ function [rgbImages,rgbOverlays] = imagehc2rgb(obj,nBands,deltaPercent)
 %}
 %{
   scene = sceneCreate;
-  rgb = imagehc2rgb(scene,10);
-  N = size(rgb,4); for ii=1:N, ieNewGraphWin; imagescRGB(rgb(:,:,:,ii)); end
-%}
-%{
-  scene = sceneCreate;
   oi = oiCreate; oi = oiCompute(oi,scene);  rgb = imagehc2rgb(oi);
   N = size(rgb,4); for ii=1:N, ieNewGraphWin; imagescRGB(rgb(:,:,:,ii)); end
 %}
