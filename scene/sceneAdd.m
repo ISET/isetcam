@@ -35,6 +35,12 @@ function sceneOut = sceneAdd(in1,in2,addFlag)
   sceneOut = sceneAdd(scenes,[0.5 0.5 0.3],'add');
   sceneWindow(sceneOut);
 %}
+%{
+  scenes{1} = sceneCreate('rings rays',[],[256 256]);
+  scenes{2} = sceneCreate('sweep frequency',256);
+  sceneOut = sceneAdd(scenes{1},scenes{2});
+  sceneWindow(sceneOut);
+%}
 
 %% We should do more parameter checking rather than just let the thing break.
 if ieNotDefined('in1'), error('in1 required'); end
