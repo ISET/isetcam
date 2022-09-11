@@ -1,5 +1,5 @@
 
-chdir(piGetDir('lens');
+chdir(piGetDir('lens'));
 lensFiles = dir('*.json');
 nFile = numel(lensFiles);
 
