@@ -24,7 +24,7 @@ function [vSNR,rect] = vcimageVSNR(vci,dpi,dist,rect)
 %%
 if ieNotDefined('vci'), vci = vcGetObject('vci'); end
 
-% Dots per inch on the display and subject's viewing distance 
+% Dots per inch on the display and subject's viewing distance
 if ieNotDefined('dpi'),  dpi  = ipGet(vci,'display DPI');   end
 if ieNotDefined('dist'), dist = ipGet(vci,'display Viewing Distance'); end
 
@@ -32,7 +32,7 @@ if ieNotDefined('dist'), dist = ipGet(vci,'display Viewing Distance'); end
 if ieNotDefined('rect')
     [roiLocs,roi] = ieROISelect(vci);
     rect = round(roi.Position);
-else                       
+else
     roiLocs = ieRect2Locs(rect);
 end
 
@@ -45,8 +45,8 @@ c = rect(3)+1;r = rect(4)+1;
 roiXYZ = XW2RGBFormat(roiXYZ,r,c);
 
 %{
- figure(1); 
- Y = roiXYZ(:,:,2); mesh(Y); 
+ figure(1);
+ Y = roiXYZ(:,:,2); mesh(Y);
  colormap(jet(255)); mean(Y(:))
  srgb = xyz2srgb(roiXYZ); imagesc(srgb/255);
 %}

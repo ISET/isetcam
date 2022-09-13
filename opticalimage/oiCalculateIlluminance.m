@@ -57,7 +57,7 @@ end
 try
     % Formula requires irradiance in energy units
     irradianceE = Quanta2Energy(wave,irradianceP);
-
+    
     % Do the calculation.
     img = RGB2XWFormat(irradianceE);
     illuminance = (683*binWidth)*img*V;
@@ -71,7 +71,7 @@ catch ME
     [r,c,w] = size(irradianceP);
     illuminance = zeros(r,c);
     clear irradianceP;
-
+    
     for ii=1:w
         irradianceP = oiGet(oi,'photons',wave(ii));
         illuminance = illuminance + ...
@@ -84,7 +84,7 @@ if nargout >= 2, meanIlluminance = mean(illuminance(:)); end
 
 % Compute the complementary (infrared mainly) illuminance if requested
 if nargout >= 3
-
+    
     shiftedV = V;
     oldPeak = find(V==max(V)); % The luminosity function's peak
     newPeak = find(wave > 750); % Move peak to the right to here
@@ -92,50 +92,50 @@ if nargout >= 3
     else
         rightShift = newPeak(1) - oldPeak;
         shiftedV = circshift(V,rightShift);
-
+        
         try
             % Formula requires irradiance in energy units
             irradianceE = Quanta2Energy(wave,irradianceP);
-
+            
             % Do the calculation.
             img = RGB2XWFormat(irradianceE);
-
+            
             % Invisible energy
             % compIlluminance = (683*binWidth)*img*(1-V);
-
+            
             % Shifted luminosity
             % compIlluminance = (683*binWidth)*img*(shiftedV);
-
+            
             % Total energy
             compIlluminance = (683*binWidth)*img;
-
+            
             compIlluminance = XW2RGBFormat(compIlluminance,sz(1),sz(2));
-        
+            
         catch ME2
             % We are probably here because of a memory problem.  We should
             % check the Matlab Error.  At this point, we simply assume so
             % and then we try the calculation again, but one waveband at a
-            % time 
+            % time
             [r,c,w] = size(irradianceP);
             compIlluminance = zeros(r,c);
             clear irradianceP;
-
+            
             %% m.p. 12/16/2007
             % We need to plug in a function here that describes a new metric
             % for quantifying the effect of IR energy.
-
+            
             for ii=1:w
                 irradianceP = oiGet(oi,'photons',wave(ii));
-
+                
                 % Invisible energy
                 % compIlluminance = compIlluminance + ...
                 % (683*binWidth)*Quanta2Energy(wave(ii),irradianceP .* (1-V(ii)));
-
+                
                 % Total energy
                 compIlluminance = compIlluminance + ...
                     (683*binWidth)*Quanta2Energy(wave(ii),irradianceP*(1-V(ii)));
-
-
+                
+                
                 % Shifted luminosity
                 %             compIlluminance = compIlluminance + ...
                 %                 (683*binWidth)*Quanta2Energy(wave(ii),irradianceP)*(1-shiftedV(ii));

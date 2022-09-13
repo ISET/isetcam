@@ -46,7 +46,7 @@ try
     tmp = ieGetMACAddress;
     if length(tmp)==17
         fprintf('  ieGetMACAddress is functioning.\n');
-
+        
         % Check for shadow copy of ieGetMACAddress
         if strcmp(computer,'PCWIN')
             [p,n,e] = fileparts( which('ieGetMACAddress'));
@@ -64,7 +64,7 @@ catch ME
     ME.stack
     warndlg('ieGetMACAddress needs to be compiled for this platform.');
 end
-   
+
 return;
 
 

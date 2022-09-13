@@ -16,7 +16,7 @@ if strcmp(quadrantType,'upper-right')
     
     % Create coordinates of pixel centers for upper-right quadrant of ISA
     % We assume the center to be located at the center of a pixel if the number
-    % of rows and columns is odd. If the number of rows and columns is even, 
+    % of rows and columns is odd. If the number of rows and columns is even,
     % the center is in between the four center pixels.
     
     if mod(nCols,2) == 0    % even number of columns
@@ -35,9 +35,9 @@ elseif strcmp(quadrantType,'full')
     
     % Create coordinates of pixel centers for full ISA (all 4 quadrants)
     % We assume the center to be located at the center of a pixel if the number
-    % of rows and columns is odd. If the number of rows and columns is even, 
+    % of rows and columns is odd. If the number of rows and columns is even,
     % the center is in between the four center pixels.
-
+    
     if mod(nCols,2) == 0    % even number of columns
         posCoordX = pitchX*(0:(nCols/2-1))+pitchX/2;
         coordX(1:length(posCoordX)) = -fliplr(posCoordX);
@@ -45,13 +45,13 @@ elseif strcmp(quadrantType,'full')
     else                    % odd number of columns
         posCoordX = pitchX*(0:nCols/2);
         coordX(1:length(posCoordX)) = -fliplr(posCoordX);
-        coordX(length(posCoordX):nCols) = posCoordX;        
+        coordX(length(posCoordX):nCols) = posCoordX;
     end
     
     if mod(nRows,2) == 0    % even number of columns
         posCoordY = pitchY*(0:(nRows/2-1))+pitchY/2;
         coordY(1:length(posCoordY)) = -fliplr(posCoordY);
-        coordY(length(posCoordY)+1:nRows) = posCoordY;        
+        coordY(length(posCoordY)+1:nRows) = posCoordY;
     else                    % odd number of columns
         posCoordY = pitchY*(0:nRows/2);
         coordY(1:length(posCoordY)) = -fliplr(posCoordY);

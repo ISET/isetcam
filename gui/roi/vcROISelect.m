@@ -1,7 +1,7 @@
 function [roiLocs,rect] = vcROISelect(obj,app)
 % Deprecated:  Use ieROISelect.
 %
-% Select a region of interest (ROI) from an image and calculate locations  
+% Select a region of interest (ROI) from an image and calculate locations
 %
 %   [roiLocs,rect] = vcROISelect(obj,[objFig])
 %
@@ -9,7 +9,7 @@ function [roiLocs,rect] = vcROISelect(obj,app)
 %  in the Nx2 matrix, roiLocs.
 %
 %  If requested, the selected rectangle (rect) determining the region of
-%  interest, [colmin,rowmin,width,height], is also returned.  
+%  interest, [colmin,rowmin,width,height], is also returned.
 %
 % Example:
 %  vci             = vcGetObject('VCIMAGE');
@@ -28,7 +28,7 @@ warning('Please use ieROISelect');
 %%
 if ieNotDefined('obj'), error('You must define an object (isa,oi,scene ...)'); end
 if ieNotDefined('objFig')
-    [app, appAxis] = ieAppGet(obj); 
+    [app, appAxis] = ieAppGet(obj);
     if isempty(app)
         % We should add ieAddAndSelect()
         ieAddObject(obj);
@@ -48,7 +48,7 @@ if ieNotDefined('objFig')
     end
 end
 
-% Select points.  
+% Select points.
 msg = sprintf('Drag to select a region.');
 ieInWindowMessage(msg,app);
 

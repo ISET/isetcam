@@ -47,7 +47,7 @@ switch key
         vcimageWindow('btnComputeImage_Callback',hObject,eventData,handles);
     case 17 % ctrl-Q
     case 18 % ctrl-R
-        vcimageWindow('vcimageRefresh',hObject,eventData,handles) 
+        vcimageWindow('vcimageRefresh',hObject,eventData,handles)
     case 19 % ctrl-S
     case 20 % ctrl-T
     case 21 % ctrl-U

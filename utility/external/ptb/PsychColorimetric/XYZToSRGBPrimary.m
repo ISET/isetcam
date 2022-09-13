@@ -8,13 +8,13 @@ function [rgb,M] = XYZToSRGBPrimary(XYZ)
 % gamut of the monitor, the numbers will come
 % out in the range 0-1.  You may want to scale
 % the result into the range 0-1 before applying
-% sRGB gamma correction. 
+% sRGB gamma correction.
 %
 % Originally implemented from conversion matrix as specified at:
 %   http://www.srgb.com/basicsofsrgb.htm
-% It turns out this was the draft standard.  The site above is gone
-% You can still find the draft standard at:
-%   http://www.colour.org/tc8-05/Docs/colorspace/61966-2-1.pdf
+%
+% The official standard is available at:
+%   https://www.color.org/sRGB.pdf
 %
 % I can't find the official technical standard on the web, but
 % there is pretty good agreement across web sources.  Wikipedia

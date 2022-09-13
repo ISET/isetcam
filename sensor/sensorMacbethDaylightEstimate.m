@@ -46,7 +46,7 @@ function [illPhotons,cp,wgts,Cstacked,X] = sensorMacbethDaylightEstimate(sensor,
 
    % Create a scene and set its illuminant to be the first daylight
    % component
-   scene = sceneCreate; 
+   scene = sceneCreate;
    wave = sceneGet(scene,'wave');
    dayBasis = ieReadSpectra('cieDaylightBasis.mat',wave);
    wgts = [1,-1,0.3]';
@@ -110,7 +110,7 @@ Cstacked = C(:);
 
 % Convert the illuminant data to a photon basis
 wave     = sensorGet(sensor,'wave');
-dayBasis = ieReadSpectra('cieDaylightBasis.mat',wave); 
+dayBasis = ieReadSpectra('cieDaylightBasis.mat',wave);
 dayBasis = Energy2Quanta(wave,dayBasis);
 
 reflectance   = macbethReadReflectance(wave);
@@ -133,7 +133,7 @@ X1 = sensorFilters'*diag(dayBasis(:,1))*reflectance;
 X2 = sensorFilters'*diag(dayBasis(:,2))*reflectance;
 X3 = sensorFilters'*diag(dayBasis(:,3))*reflectance;
 
-% Stack the three matrices 
+% Stack the three matrices
 X = [X1(:), X2(:), X3(:)];
 
 %% The daylight basis weights are supposed to solve this linear equation

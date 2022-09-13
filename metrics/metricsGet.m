@@ -50,6 +50,6 @@ switch lower(param)
         
     otherwise
         error('Unknown metricsGet parameter.');
-    end
-    
-    return;
+end
+
+return;

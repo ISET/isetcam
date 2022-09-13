@@ -14,7 +14,7 @@ function radiance = sceneRadianceFromVector(radiance,row,col)
 %
 % Returns
 %   radiance:  A 3D matrix of the correct size
-%   
+%
 % Description
 %
 % See also

@@ -1,10 +1,10 @@
 % function Hout = hist2d(D,Xn,Yn,[Xlo Xhi],[Ylo Yhi])
-% 
-% Calculates and returns the 2 Dimensional Histogram of D. 
 %
-% Counts number of points in the bins defined by 
+% Calculates and returns the 2 Dimensional Histogram of D.
+%
+% Counts number of points in the bins defined by
 % X = linspace(Xlo,Xhi,Xn) and
-% Y = linspace(Ylo,Yhi,Yn) 
+% Y = linspace(Ylo,Yhi,Yn)
 %
 % D must be a 2 column or 2 row matrix or an array of complex numbers
 %
@@ -14,7 +14,7 @@
 %
 % Example:
 %  hist2d([randn(1,10000); randn(1,10000)])
-% 
+%
 function Hout = hist2d(D,Xn,Yn,Xrange,Yrange)
 % first supply optional arguments
 if nargin<3
@@ -26,7 +26,7 @@ end
 if ~isreal(D)
     D=[real(D(:)) imag(D(:))];
 end
-    
+
 if (size(D,1)<size(D,2) && size(D,1)>1)
     D=D.';
 end
@@ -41,7 +41,7 @@ if nargin<5
 end
 %
 Xlo = Xrange(1) ; Xhi = Xrange(2) ;
-Ylo = Yrange(1) ; Yhi = Yrange(2) ; 
+Ylo = Yrange(1) ; Yhi = Yrange(2) ;
 X = linspace(Xlo,Xhi,Xn)' ;
 Y = linspace(Ylo,Yhi,Yn)' ;
 
@@ -59,8 +59,8 @@ end ;
 figure , surf(X,Y,H) ;
 % Xmid = 0.5*(X(1:end-1)+X(2:end)) ;
 % Ymid = 0.5*(Y(1:end-1)+Y(2:end)) ;
-% figure , pcolor(Xmid,Ymid,H) ; 
-colorbar ; shading flat ; axis square tight ; 
+% figure , pcolor(Xmid,Ymid,H) ;
+colorbar ; shading flat ; axis square tight ;
 if nargout>0
     Hout=H;
 end

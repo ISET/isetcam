@@ -2,7 +2,7 @@
 %
 % help Psychtoolbox % For an overview, triple-click me & hit enter.
 %
-%   BreakLines              - Break string into lines and terminators. 
+%   BreakLines              - Break string into lines and terminators.
 %   CheckDirs               - Check if specified directories exist and (optionally) creates them if necessary.
 %   DirList                 - Recursively lists all directories (optionally also all files) in the specified directory.
 %   FileFromFolder          - Returns all files in specified folder.
@@ -13,7 +13,7 @@
 %   PsychSaveAsEps          - Save matrix as an EPS file.
 %   QuoteString             - Wraps a string in quotes.
 %   ReadStructsFromText     - Read struct array from a tab delimited text file.
-%   ReplaceLineTerminators  - Strip and Replace line terminators.  
+%   ReplaceLineTerminators  - Strip and Replace line terminators.
 %   Var2Str                 - Wrapper for Var2Str that saves a variable to a text file.
 %   WriteStructsToText      - Write a struct array to a tab delimited text file.
 

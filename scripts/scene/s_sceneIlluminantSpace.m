@@ -6,18 +6,17 @@
 %
 % The scene illuminant can be a single spectral power
 % distribution, in which case the illuminant is assumed to be the
-% same (constant) across the entire scene.  
+% same (constant) across the entire scene.
 %
 % Alternatively, the scene illuminant can also be a hypercube of
 % the same size as the scene spectral radiance.  In that case,
 % the illuminant, which we call spatial-spectral, is allowed to
 % vary across the scene.
 %
-% See also:  s_sceneIlluminant, s_sceneIlluminantMixtures,
-%       sceneIlluminantSS, sceneAdjustIlluminant,
-%       sceneAdjustReflectance
+% See also:  
+%   s_sceneIlluminant, s_sceneIlluminantMixtures, sceneIlluminantSS,
+%     sceneAdjustIlluminant, sceneAdjustReflectance
 %
-% (c) Imageval Consulting, LLC 2012
 
 %%
 ieInit
@@ -25,11 +24,13 @@ ieInit
 %% Create a test scene
 scene = sceneCreate('frequency orientation');
 
-% Store this for later use in normalizing the image data
-illE = sceneGet(scene,'illuminant energy');
+% Store this for later use when transforming the illuminant
+illP = sceneGet(scene,'illuminant photons');
 
 %% Make the scene illuminant spatial spectral
 
+% This converts the illuminant representation to a hypercube that
+% matches the spectral radiance.
 scene = sceneIlluminantSS(scene);
 
 %% Have a look at the scene illuminant - it will look uniform and white
@@ -38,22 +39,25 @@ illEnergy       = sceneGet(scene,'illuminant energy');
 [illEnergy,r,c] = RGB2XWFormat(illEnergy);
 wave = sceneGet(scene,'wave');
 
-% This is how we show the any SPD (energy) as an image.  
+% This is how we show the any SPD (energy) as an image.
 XYZ  = ieXYZFromEnergy(illEnergy,wave);
 srgb = xyz2srgb(XW2RGBFormat(XYZ,r,c));
-vcNewGraphWin; imagesc(srgb);  % Looks white, I guess
+ieNewGraphWin; imagesc(srgb);  % Looks white, I guess
 
-%% Adjust the SPD along the rows to be blackbbody radiators from 6500 to 3000 K
+%% Adjust the SPD along the rows to be blackbody radiators from 6500 to 3000 K
 
 illPhotons = sceneGet(scene,'illuminant photons');
 [r,~,~] = size(illPhotons);
 cTemp   = linspace(6500,3000,r);
-spd     = blackbody(wave,cTemp);
+spd     = blackbody(wave,cTemp,'photons');
 
 % Apply the blackbody illuminants down the rows, scaling by the relative
-% energy in the original
+% energy in the original.  Each illPhotons row starts out as illP,
+% which we saved above.  We divide out by illP and multiply by the new
+% spd for the blackbody calculated just above.  So the new illuminant
+% in photons varies down the rows.
 for rr=1:r
-    illPhotons(rr,:,:) = squeeze(illPhotons(rr,:,:)) * diag((spd(:,rr)./illE(:)));
+    illPhotons(rr,:,:) = squeeze(illPhotons(rr,:,:)) * diag((spd(:,rr)./illP(:)));
 end
 
 % Adjust the scene radiance to preserve the reflectance.
@@ -64,7 +68,7 @@ scene = sceneSet(scene,'photons',p);
 scene = sceneSet(scene,'illuminant photons',illPhotons);
 
 scene = sceneSet(scene,'Name','Temp varies along rows');
-ieAddObject(scene); sceneWindow;
+sceneWindow(scene);
 
 %% Show the illuminant energy as a mesh
 
@@ -87,7 +91,7 @@ wave = sceneGet(scene,'wave');
 XYZ = ieXYZFromEnergy(illEnergy,wave);
 XYZ = XW2RGBFormat(XYZ,r,c);
 srgb = xyz2srgb(XYZ);
-vcNewGraphWin; imagesc(srgb);  % Looks white
+ieNewGraphWin; imagesc(srgb);  % Looks white
 
 %% Make an intensity varying illuminant, starting with spatial spectral
 
@@ -100,7 +104,7 @@ cc = 1:c;
 illScale = 1 + 0.5*sin(2*pi*(cc/c));
 % vcNewGraphWin; plot(wave,spd);
 
-% Scale the illuminant intensity along the cols 
+% Scale the illuminant intensity along the cols
 for cc=1:c
     illPhotons(:,cc,:) = squeeze(illPhotons(:,cc,:)) * illScale(cc);
 end
@@ -122,7 +126,7 @@ rr       = 1:r;
 freq     = 1;
 illScale = 1 + 0.5*sin(2*pi*freq*(rr/r));
 
-vcNewGraphWin; 
+vcNewGraphWin;
 plot(illScale); grid on
 title('Scale along the rows');
 

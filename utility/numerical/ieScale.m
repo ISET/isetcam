@@ -18,7 +18,7 @@ function [im,mn,mx] = ieScale(im,b1,b2)
 %   [min(im(:)),max(im(:))]
 %   im = ieScale(im,20,90);
 %   [min(im(:)),max(im(:))]
-% 
+%
 % Copyright ImagEval Consultants, LLC, 2005.
 
 if ieNotDefined('im'), error('Input data must be defined.'); end

@@ -55,7 +55,7 @@ try
     [window,screenRect]=Screen('OpenWindow',theScreen);
     white=WhiteIndex(window);
     black=BlackIndex(window);
-
+    
     % Instructions
     s=sprintf('Hold your %.1f-%s-wide object against the display.',objectInches/unitInches,unit);
     theText={s,'Press, drag, and release the mouse to draw a bar'...
@@ -71,7 +71,7 @@ try
     textRect(RectRight)=screenRect(RectRight);
     dragText=theText;
     dragTextRect=textRect;
-
+    
     % Animate
     % Track horizontal mouse position to draw a bar of variable width.
     for i=1:length(dragText)

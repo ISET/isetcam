@@ -1,6 +1,6 @@
 function [B,A] = FindLinMod(X,n_dimension)
 % [B,A] = FindLinMod(X,n_dimension)
-% 
+%
 % Find an n_dimension linear model for the
 % data in the columns of X.
 %

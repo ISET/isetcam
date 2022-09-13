@@ -1,6 +1,6 @@
 function mlOpen(hObject,eventdata,handles)
 % Initialize microLensWindow when opening microLensWindow
-% 
+%
 %    mlOpen(hObject,eventdata,handles)
 %
 % The microlens is from the sensor, and it is always attached to the
@@ -32,7 +32,7 @@ if isempty(oi)
     ieAddObject(oi);
     fprintf('Creating and adding default oi.\n');
 end
-   
+
 %% See where we stand with microlens and the sensor
 
 ml = sensorGet(sensor,'microLens');
@@ -45,7 +45,7 @@ else
     sensor = sensorSet(sensor,'ml',ml);
     
     % Put the sensor with the new microlens structure back.
-    vcReplaceObject(sensor); 
+    vcReplaceObject(sensor);
 end
 
 mlRefresh(handles,ml);  % Calls mlFillWindowFromML(handles,ml);

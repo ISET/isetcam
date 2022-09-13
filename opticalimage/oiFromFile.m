@@ -58,7 +58,7 @@ end
 
 if ischar(imageData)
     % I is a file name.  Check that it exists on the path
-    filename = which(imageData); 
+    filename = which(imageData);
     if ~exist(filename,'file'), error('%s not found\n',filename); end
 end
 if notDefined('imageType'), error('Image type specification required.'); end

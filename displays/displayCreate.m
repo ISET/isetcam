@@ -11,15 +11,18 @@ function d = displayCreate(displayName,varargin)
 %
 % Inputs:
 %  displayName: Name of a file containing a calibrated display structure.
-%               The default is a special display we created called
-%               'reflectance-display'.  This display converts the RGB
-%               values in the image as if they were to be shown on an sRGB
-%               display.  The display SPD is chosen so that if we assume a
-%               D65 illuminant and those primaries, the estimate surface
-%               reflectance of an object is within the first three linear
-%               basis functions of natural surfaces.  Ask me how Joyce and
-%               I did that.  Or read s_displaySurfaceReflectance.
-%  
+%
+%               If no display is specified, the default is a special
+%               display we created called 'reflectance-display'.  This
+%               display converts the RGB values in the image as if they
+%               were to be shown on an sRGB display. We figured out how to
+%               set the SPD of the primaries such that if we assume a D65
+%               illuminant and those primaries, the estimate surface
+%               reflectances are within the first three linear basis
+%               functions of natural surfaces.
+%
+%               To see how we did that, read s_displaySurfaceReflectance.
+%
 % Optional key/value pairs:
 %   Settable display parameters as pairs.  Anything that works in
 %   displaySet will work here
@@ -27,12 +30,12 @@ function d = displayCreate(displayName,varargin)
 % Description
 %   There are various calibrated displays in data/displays.  They contain a
 %   variable ('d') that is a display structure.  See displayGet and
-%   displaySet for the slots. 
+%   displaySet for the slots.
 %
 %   The 'reflectance-display' is designed to work well with sceneFromFile,
 %   producing a scene whose reflectances are within the 3D basis functions
 %   of natural surfaces and a D65 illuminant.
-% 
+%
 % sRGB definitions in terms of xy
 %
 %        Red     Green   Blue   White
@@ -43,10 +46,10 @@ function d = displayCreate(displayName,varargin)
 %  Some displays have psf data, as well.  For example:
 %
 %   d = displayCreate('LCD-Apple');
-%  
+%
 % Copyright ImagEval Consultants, LLC, 2011.
 %
-% See Also:  
+% See Also:
 %   sceneFromFile (RGB read in particular)
 %
 
@@ -65,7 +68,9 @@ function d = displayCreate(displayName,varargin)
 
 %% Arguments
 
-if ~exist('displayName','var')||isempty(displayName), displayName = 'reflectance-display'; end
+if ~exist('displayName','var') || isempty(displayName)
+    displayName = 'reflectance-display'; 
+end
 
 % Identify the object type
 d.type = 'display';
@@ -85,7 +90,7 @@ switch sParam
         % This is the old default display with block matrix primaries.  The
         % modern default display is the 'reflectance-display'
         d = displayDefault(d);
- 
+        
     case 'equalenergy'
         % Make the primaries all the same and equal energy.  Thus, a
         % monochrome display.
@@ -95,25 +100,38 @@ switch sParam
     otherwise
         % Read a file with calibrated display data.
         % This can include pixel psf data for some displays.
-        if exist(displayName,'file') || exist([displayName,'.mat'],'file') 
+        if exist(displayName,'file') || exist([displayName,'.mat'],'file')
             tmp = load(displayName);
             if ~isfield(tmp,'d')
-                error('No display struct in the file');
-            else,  d = tmp.d;
+                % It might be a spectra/basis function file (ZLY, 2022)
+                if isfield(tmp, 'wavelength') && isfield(tmp, 'data')
+                    [primeSPD, wave] = ieReadSpectra(displayName, [], [], true);
+                    d = displayCreate('default');
+                    d = displaySet(d, 'wave', wave);
+                    d = displaySet(d, 'spd', primeSPD);
+                    % Use Apple display
+                    dApple = displayCreate('LCD-Apple');
+                    g = displayGet(dApple,'gamma');
+                    d = displaySet(d,'gamma',g);
+                else
+                    error('No display struct in the file');
+                end
+            else
+                d = tmp.d;
+                d = displaySet(d,'name',displayName);
             end
             if isempty(displayGet(d,'dixel'))
                 % Some displays do not have a spatial dixel.  For example,
                 % the reflectance-display is entirely imaginary.  So, we
                 % assign a dixel here from an existing display that was
                 % calibrated.
-                fprintf('Assigning the dixel from LCD-Apple to the %s display.\n', displayGet(d,'name'));
+                fprintf('Assigning the spatial dixel from LCD-Apple to the %s.\n', displayGet(d,'name'));
                 tmp = load('LCD-Apple');
                 d.dixel = tmp.d.dixel;
             end
         else
             error('Unknown display %s.',displayName);
         end
-
 end
 
 % Start out without an image.  Until we know what we should use.

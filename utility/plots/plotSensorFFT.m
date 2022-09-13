@@ -10,11 +10,11 @@ function plotSensorFFT(ori, dataType, figNum)
 %    can be computed as abs(fft(voltageData)).  These are plotted in a
 %    graph window.
 %
-%    The data are extracted from the selected ISA.  
+%    The data are extracted from the selected ISA.
 %
 %    This routine is normally applied to Monochrome sensor data.
 %    We apply the routine to color data by interpolating the data in the color
-%    channels and then computing the separate FFT images. 
+%    channels and then computing the separate FFT images.
 %
 %Example:
 %   plotSensorFFT('h', 'volts')
@@ -45,7 +45,7 @@ end
 
 % Make sure the cursor is in the sensor image (call back) window
 figure(gcbf);
-[x,y,button] = ginput(1); 
+[x,y,button] = ginput(1);
 ieInWindowMessage('',sensorHandle);
 xy = [round(x(end)),round(y(end))];
 
@@ -107,8 +107,8 @@ end
 
 % Build the subplot panels using the appropriate colors.
 for ii=1:nColors
-    subplot(nColors,1,ii);     
-    plot(idx,pixData(:,ii),pixPlot{ii}); 
+    subplot(nColors,1,ii);
+    plot(idx,pixData(:,ii),pixPlot{ii});
     xlabel(xstr);
     ystr = sprintf('%s',dataType);
     ylabel(ystr);
@@ -148,9 +148,9 @@ mn = mean(pixData);
 amp = abs(fft(pixData - mn));
 
 % To derive the true amplitude, we must divide by half the number of samples
-amp = amp/nFreq;        
+amp = amp/nFreq;
 
-plot(cpd,amp(1:nFreq),'b-'); 
+plot(cpd,amp(1:nFreq),'b-');
 xlabel(xstr);
 ylabel('Abs(fft(data))');
 txt = sprintf('Mean: %.4f\nPeak cont. %.4f',mn,max(amp(:))/mn);

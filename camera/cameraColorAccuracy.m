@@ -9,7 +9,7 @@ function [eAnalysis,camera] = cameraColorAccuracy(camera,lum,varargin)
 
 if ieNotDefined('lum'), lum = 100; end   % Candelas for the scene
 
-%% Set up the MCC scene 
+%% Set up the MCC scene
 oi     = cameraGet(camera,'oi');
 sensor = cameraGet(camera,'sensor');
 sDist  = 1000;       % distance of imager from scene (m)

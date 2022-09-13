@@ -11,7 +11,7 @@ function exifInfo = exiftoolInfo(fname, varargin)
 %
 % See also:
 %   ??
-% 
+%
 
 % Check inputs
 if notDefined('fname'), error('file name required'); end

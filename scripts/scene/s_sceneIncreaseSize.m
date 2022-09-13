@@ -2,7 +2,7 @@
 %
 % The number of spatial samples in a scene is one more of its
 % resolution.  Equally important is how many samples there are
-% per degree of visual angle.  
+% per degree of visual angle.
 %
 % This routine increases the number of spatial samples by linear
 % interpolation.

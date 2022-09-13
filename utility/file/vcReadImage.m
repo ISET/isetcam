@@ -37,11 +37,11 @@ function [photons, illuminant, basis, comment, mcCOEF] = vcReadImage(fullname,im
 %     default, doSub is set to False. Note that, for large image, turning
 %     on doSub could be extremely slow.
 %
-%   'multispectral','hyperspectral': In this case the data are stored as
-%     coefficients and basis functions. We build the spectral
-%     representation here. These, along with a comment and measurement of
-%     the scene illuminant (usually measured using a PhotoResearch PR-650
-%     spectral radiometer) can be returned.
+%   'spectral,'multispectral','hyperspectral': 
+%     In this case the data are stored as coefficients and basis functions.
+%     We build the spectral representation here. These, along with a
+%     comment and measurement of the scene illuminant (usually measured
+%     using a PhotoResearch PR-650 spectral radiometer) can be returned.
 %
 % RETURNS
 %  photons:     RGB format of photon data (r,c,w)
@@ -92,11 +92,11 @@ switch lower(imageType)
         
         % Programming Note (HJ):
         %   scene rendered without subpixel (doSub=false) could be
-        %   different from the one rendered with subpixel of size [m n],
+        %   different from the one rendered with subpixel of size [m n]
         %   where m and n indicates the number of pixels per dixel in row
         %   and columns. This kind of inconsistancy will occur especially
         %   when pixels per dixel is not [1 1].
-        %   
+        %
         %   To be more accurate, please turn off subpixel rendering if the
         %   samples per dixel gets very small.
         %
@@ -156,7 +156,7 @@ switch lower(imageType)
             % we pad 0 here because in most cases, the primary missing in
             % the inImg is black
             inImg = padarray(inImg, ...
-                        [0 0 nprimaries-size(inImg,3)], 0, 'post');
+                [0 0 nprimaries-size(inImg,3)], 0, 'post');
             assert(size(inImg, 3)==nprimaries, 'bad image size');
             
             % Check whether the gTable has enough entries for this
@@ -172,9 +172,18 @@ switch lower(imageType)
                 if nbits     >= 14, maxDisplay = 2^16;
                 elseif nbits >= 12, maxDisplay = 2^14;
                 elseif nbits >= 10, maxDisplay = 2^12;
-                elseif nbits >= 8,  maxDisplay = 20^10;
+                elseif nbits >= 8,  maxDisplay = 2^10;
                 end
-                inImg = inImg/maxDisplay;
+                
+                % Resize gTable to match image bits.
+                x_in = (0:1:size(gTable,1)-1) ./ 255;
+                y_in = gTable;
+                x_out = (0:1:2^(nbits+1)-1) ./ (2^(nbits+1)-1);
+                gTable = interp1(x_in, y_in, x_out, 'spline');
+                
+                % Stretch image to match size of gamma table.
+                % This probably isn't necessary
+                inImg = inImg/imgMax;
                 inImg = round(inImg*(size(gTable,1)-1));
             elseif max(inImg(:)) <= 1
                 % DAC values are [0, 2^nBits - 1]
@@ -218,7 +227,7 @@ switch lower(imageType)
                 photons = zeros(size(xwImg, 1), length(wave));
                 for ii = 1 : length(wave)
                     photons(:, ii) = Energy2Quanta(wave(ii), ...
-                                     (xwImg * spd(ii,:)')')';
+                        (xwImg * spd(ii,:)')')';
                     waitbar(ii/length(wave), wBar);
                 end
                 delete(wBar);
@@ -226,7 +235,7 @@ switch lower(imageType)
         end
         photons = XW2RGBFormat(photons,r,c);
         
-    case {'multispectral','hyperspectral'}
+    case {'spectral','multispectral','hyperspectral'}
         
         % These are always there.  Illuminant should be there, too.  But
         % sometimes it isn't, so we check below, separately.
@@ -290,7 +299,7 @@ switch lower(imageType)
                 end
                 
                 photons = double(XW2RGBFormat(photons',r,c));
-                % figure(1); imagesc(sum(img,3)); axis image; colormap(gray)
+                % figure(1); imagesc(sum(img,3)); axis image; colormap(gray(64))
                 
             else
                 disp('Saved using svd method');
@@ -303,7 +312,7 @@ switch lower(imageType)
                 % illuminant = [];
                 warndlg('No illuminant information in %s\n',fullname);
             end
-
+            
             % Force photons to be positive
             photons = max(photons,0);
             

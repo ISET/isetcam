@@ -5,64 +5,126 @@ function localFile = ieWebGet(varargin)
 %   localFile = ieWebGet(varargin)
 %
 % Brief description
-%  Download an ISET zip or mat-file file from the web.  The type of file
-%  and the remote file name define how to get the file.
+%  Download an ISET or ISET3d related zip or mat-file file from the web.
+%  We call these files 'resources'.  The resource type and the remote file
+%  name define how to get the file.
 %
 % Inputs
-%  N/A
+%   N/A
 %
 % Key/val pairs
-%  op:            The operation to perform {'fetch','read','list','browse'}
-%                 (default: 'fetch')
-%  resource type: 'pbrt', 'hyperspectral', 'multispectral', 'hdr' 
-%                 (default: 'pbrt')
-%  resource name: File name of the remote file
-%  remove temp files:  Remove local temp file (zip)
-%  unzip:           :  Unzip the file
-%  verbose          :  Print a report to the command window
-% 
+%
+%   'url'     - Print resource urls contained in this file.
+%
+%   'browse' -  browse a website for a resource
+%   'list'   -  return the contents of resourceslist.json on the remote
+%               site.
+%    The following argument (varargin{2}) specifies the resource type
+%    (see below)
+%
+%    ask first: Confirm with user prior to downloading (default: true)
+%    resource type (default: 'pbrtv4')
+%        {'pbrtv4', 'pbrtv3','spectral','hdr','faces'}
+%    
+%    resource name    :  Remote file name (no default)
+%    remove temp files:  Remove downloaded temporary file (default: true)
+%    unzip:           :  Unzip the local file (default: true)
+%    verbose          :  Print a report to the command window
+%
 % Output
 %   localFile:  Name of the local download file
 %
 % Description
-%   We store various data sets (resources) as zip- and mat-files on the
-%   Stanford resource, cardinal.stanford.edu/~SOMEONE.  This routine is a
-%   gateway that allows us to download the files (using fetch).
+%   We store some large data sets (resources) as zip- and mat-files on the
+%   Stanford resource, cardinal.stanford.edu.  This routine is a gateway to
+%   download those files.  We store them on cardinal because they are too
+%   large to be conveniently stored on GitHub.
 %
-%   The types of resources are listed above.  To see the names of the
-%   resources, use the 'list' operation.
+%   The type of resources are listed above.  To see the remote web site or
+%   the names of the resources, use the 'browse' option.
 %
-% See also: 
+%   'spectral,'hdr','pbrtv4','pbrtv3'
+% 
+%    The spectral scenes were measured with multi or hyperspectral cameras.
+%    The hdr scenes were measured with multiple exposures of a linear,
+%    scientific camera.
+%    The PBRT files are either V3 or V4.
+%
+% See also:
 %    webImageBrowser_mlapp
 %
 
 % Examples
 %{
-% NOTE: pbrt scenes default to being stored under iset3d/data/v3/ if available, other
-% scenes default to being stored under isetcam/local/scenes/<resourcetype>/.
+ % Browse the remote site
+ ieWebGet('browse');
+ ieWebGet('browse','pbrtv3');
+ ieWebGet('browse','hyperspectral');
+ ieWebGet('browse','pbrtv4');
 %}
 %{
-    localFile       = ieWebGet('resourcename', 'ChessSet', 'resourcetype', 'pbrt')
-    data            = ieWebGet('op', 'read', 'resourcetype', 'hyperspectral', 'resourcename', 'FruitMCC')
-    localFile       = ieWebGet('op', 'fetch', 'resourcetype', 'hdr', 'resourcename', 'BBQsite1')
-    ~               = ieWebGet('resourcetype', 'pbrt', 'op', 'browse')
+ ieWebGet('list')
 %}
 %{
-    % Use it to create a list of resources and then select one:
-    arrayOfResourceFiles = ieWebGet('op', 'list', 'resourcetype', 'hyperspectral')
-	data = ieWebGet('op', 'read', 'resource type', 'hyperspectral', 'resource name', arrayOfResourceFiles{ii});
+ localFile = ieWebGet('resource name','bmw-m6');
+%}
+%{
+localFile = ieWebGet('resourcename', 'ChessSet', 'resourcetype', 'pbrt')
+data      = ieWebGet('op', 'read', 'resourcetype', 'hyperspectral', 'resourcename', 'FruitMCC')
+localFile = ieWebGet('op', 'fetch', 'resourcetype', 'hdr', 'resourcename', 'BBQsite1')
 %}
 
-%% Decode key/val args
+%% First, handle the special input arguments: browse, list, url.
+
+% General argument parsing happens later.
+
+if isequal(ieParamFormat(varargin{1}),'url')
+    [~,urlList] = urlResource('all');
+
+    fprintf('\nResource URLs\n=================\n\n');
+    for ii=1:numel(urlList)
+        fprintf('%s\n',urlList{ii});
+    end
+    fprintf('\n');
+    return;
+end
+
+if isequal(ieParamFormat(varargin{1}),'browse')
+    % assume for now that means we are looking on the web
+    if numel(varargin) < 2
+        baseURL = urlResource('default');
+    else
+        baseURL = urlResource(varargin{2});
+    end
+
+    web(baseURL);
+    localFile = '';
+    return;
+end
+
+if isequal(ieParamFormat(varargin{1}),'list')
+    % read the list of resources from the remote site. I think we should
+    % make this option go away because I don't want to maintain the
+    % resource list, and I would like to add more files.
+    baseURL = urlResource(varargin{2});
+    try
+        localFile = webread(strcat(baseURL, 'resourcelist.json'));
+    catch
+        % We should find a better way to do this
+        warning("Unable to find resourcelist.json on the remote site. Suggest using browse.");
+        localFile = webread(baseURL);
+    end
+    return;
+end
+
+%%  Normal situation
 
 varargin = ieParamFormat(varargin);
 
 p = inputParser;
-vFunc = @(x)(ismember(x,{'fetch','read','list','browse'}));
-p.addParameter('op','fetch',vFunc);
 p.addParameter('resourcename', '', @ischar);
-vFunc = @(x)(ismember(x,{'pbrt', 'hyperspectral', 'multispectral', 'hdr','pbrt','v3'}));
-p.addParameter('resourcetype', 'pbrt',vFunc);
+vFunc = @(x)(ismember(x,{'pbrtv4','spectral','hdr','faces','pbrtv3'}));
+p.addParameter('resourcetype', 'pbrtv4',vFunc);
 
 p.addParameter('askfirst', true, @islogical);
 p.addParameter('unzip', true, @islogical);  % assume the user wants the resource unzipped, if applicable
@@ -74,177 +136,152 @@ p.parse(varargin{:});
 
 resourceName   = p.Results.resourcename;
 resourceType   = p.Results.resourcetype;
-localName      = p.Results.localname;
 unZip          = p.Results.unzip;
 removeTempFiles = p.Results.removetempfiles;
 
-if isempty(localName)
-    localName = resourceName; 
-end
-verbose   = p.Results.verbose;
-op        = p.Results.op;
+baseURL = urlResource(resourceType);
+
+% verbose   = p.Results.verbose;
 askFirst  = p.Results.askfirst;
 localFile = '';        % Default local file name
 
+%% Download the resource
+
 switch resourceType
-    case {'pbrt', 'v3'}
-        if exist('piRootPath','file') && isfolder(piRootPath)
-            downloadRoot = piRootPath;
-        elseif exist('isetRootPath', 'file') && isfolder(isetRootPath)
-            downloadRoot = isetRootPath;
-        else
-            error("Need to have either iset3D or isetCam Root set");
-        end
-        
-        baseURL = 'http://stanford.edu/~wandell/data/pbrt/';
-        switch op
-            case 'fetch'
-                % for now we only support v3 pbrt files
-                downloadDir = fullfile(downloadRoot,'data','v3');
-                if ~isfolder(downloadDir)
-                    mkdir(downloadDir);
-                end
-                
-                remoteFileName = strcat(resourceName, '.zip');
-                resourceURL    = strcat(baseURL, remoteFileName);
-                localURL       = fullfile(downloadDir, remoteFileName);
-                
-                if askFirst
-                    proceed = confirmDownload(resourceName, resourceURL, localURL);
-                    if proceed == false, return, end
-                end
 
-                try
-                    websave(localURL, resourceURL);
-                    if unZip
-                        unzip(localURL, downloadDir);
-                        if removeTempFiles
-                            delete(localURL);
-                        end
-                        % not sure how we "know" what the unzip path is?
-                        localFile = fullfile(downloadDir, resourceName);
-                    else
-                        localFile = localURL;
-                    end
-                catch
-                    %not much in the way of error handling yet:)
-                    warning("Unable to retrieve: %s", resourceURL);
-                    localFile = '';
-                end
-            case 'browse'
-                % assume for now that means we are listing
-                web(baseURL);
-                localFile = '';
-            case 'list'
-                % simply read the pre-loaded list of resources
-                try
-                    localFile = webread(strcat(baseURL, 'resourcelist.json'));
-                catch
-                    warning("Unable to load resource list");
-                    localFile = '';
-                end
-        end
-    case {'hyperspectral', 'multispectral', 'hdr'}
-        
-        parentURL = 'http://stanford.edu/~david81/ISETData/';
-        % do we want to switch based on browse op or
-        % split by type first?
+    case {'pbrtv3','pbrtv4'}
+        % PBRT V3 or V4 resources are zip files.
+        %
+        % s = ieWebGet('resource type','pbrtv4','resource name','kitchen');
+
+        % ISET3d must be on your path.
+        % The download directory is ignored by git in ISET3d.
         switch resourceType
-            case 'hyperspectral'
-                baseURL = strcat(parentURL, "Hyperspectral", '/');
-            case 'multispectral'
-                baseURL = strcat(parentURL, "Multispectral", '/');
-            case 'hdr'
-                baseURL = strcat(parentURL, "HDR", '/');
+            case 'pbrtv3'
+                downloadDir = fullfile(piRootPath,'data','v3','web');
+            case 'pbrtv4'
+                downloadDir = fullfile(piRootPath,'data','scenes','web');
         end
-        switch op
-            case 'browse'
-                web(baseURL);
-            case {'read', 'fetch'}
-                options = weboptions('Timeout', 60);
-                if ~endsWith(resourceName, "." + lettersPattern)
-                    remoteFileName = strcat(resourceName, '.mat');
-                else
-                    remoteFileName = resourceName;
-                end
-                resourceURL = strcat(baseURL, remoteFileName);
-                switch op
-                    case {'fetch','read'}
-                        if exist('isetRootPath','file') && isfolder(isetRootPath)
-                            downloadRoot = isetRootPath;
-                            downloadDir = fullfile(downloadRoot, 'local', 'scenes', resourceType);
-                            if ~isfolder(downloadDir)
-                                mkdir(downloadDir)
-                            end
-                        else
-                            error("Need to have root path set for isetcam or isetbio.");
-                        end
-                        
-                        localFile = fullfile(downloadDir, remoteFileName);
-                        if askFirst
-                            proceed = confirmDownload(resourceName, resourceURL, localFile);
-                            if proceed == false, return, end
-                        end
-                        
-                        try
-                            websave(localFile, resourceURL, options);
-                        catch
-                            warning("Unable to retrieve %s", resourceURL);
-                        end
-                        if isequal(op, 'read')
-                        % in this case we are actually returning a Matlab
-                        % array with scene data!
-                            stashFile = localFile;
-                            localFile = load(stashFile);
-                            if removeTempFiles
-                                delete(stashFile);
-                            end
-                        end
-                        
-                end
-            case 'list'
-                % simply read the pre-loaded list of resources
-                try
-                    localFile = webread(strcat(baseURL, 'resourcelist.json'));
-                catch
-                    warning("Unable to load resource list");
-                    localFile = '';
-                    return
-                end
-                % we need to filter here as sometimes we only want .MAT
-                % files
-                localFile = localFile(ieContains(localFile, ".mat", 'IgnoreCase', true));
-            otherwise
-                warning("Not Supported yet");
-        end
-        
-    otherwise
-        error('sceneType %s not supported.',resourceType);
-end
 
-%% Tell the user what happened
-if verbose
-    if ischar(localFile)
-        disp(strcat("Retrieved: ", resourceName, " to: ", localFile));
-    elseif isstruct(localFile)
-        disp(strcat("Retrieved: ", resourceName, " and returned as a struct"));
-    elseif exist('localFile','file') && ~isempty(localFile)
-        disp(strcat("Retrieved: ", resourceName, " and returned it as an array"));
-    elseif ~isequal(op,'list')
-        disp(strcat("Unable to Retrieve: ", resourceName));
-    end
+        % This should never happen. The directory is part of ISET3d and is
+        % a .gitignore directory.
+        if ~isfolder(downloadDir)
+            warning('Making download directory error: %s',downloadDir);
+            mkdir(downloadDir);
+        end
+
+        % We should check if the zip is already there.
+        remoteFileName = strcat(resourceName, '.zip');
+        resourceURL    = strcat(baseURL, remoteFileName);
+        localZIP       = fullfile(downloadDir, remoteFileName);
+
+        if askFirst
+            proceed = confirmDownload(resourceName, localZIP);
+            if proceed == false, return, end
+        end
+
+        try
+            % The pbrt files are zip files.
+            fprintf('Downloading to %s ... \n',localZIP);
+            websave(localZIP, resourceURL);
+            fprintf('Done\n');
+            if unZip
+                unzip(localZIP, downloadDir);
+                if removeTempFiles
+                    delete(localZIP);
+                end
+                % not sure how we "know" what the unzip path is?
+                localFile = fullfile(downloadDir, resourceName);
+            else
+                localFile = localZIP;
+            end
+        catch
+            warning("Failed to retrieve: %s", resourceURL);
+            localFile = '';
+        end
+
+    case {'spectral','hdr','faces'}
+        % Download mat-files
+        % Both are 'spectral' type, but we put the HDR files into a
+        % separate directory to make them easier to identify.
+
+        remoteFileName = strcat(resourceName, '.mat');
+        resourceURL    = strcat(baseURL, remoteFileName);
+        downloadDir = fullfile(isetRootPath,'local','scenes', resourceType);
+        if ~isfolder(downloadDir), mkdir(downloadDir); end
+
+        localFile = fullfile(downloadDir, remoteFileName);
+
+        if askFirst
+            proceed = confirmDownload(resourceName, localFile);
+            if proceed == false, return, end
+        end
+
+        try
+            websave(localFile, resourceURL);
+        catch
+            warning("Unable to retrieve %s", resourceURL);
+        end
 end
 
 end
 
 %% Query the user to confirm the download
-%
-function proceed = confirmDownload(resourceName, resourceURL, localURL)
-question = sprintf("Okay to download: %s from %s to file %s and if necessary, unzip it?\n This may take some time.", resourceName, resourceURL, localURL);
-answer = questdlg(question, "Confirm Web Resource Download", 'Yes');
-if isequal(answer, 'Yes')
-    proceed = true;
+function proceed = confirmDownload(resourceName, localFile)
+
+opts.Default = 'No';
+opts.Interpreter = 'tex';
+
+% Just show the part of the file from isetcam or iset3d onward
+ii = strfind(localFile,'isetcam');
+if isempty(ii)
+    ii = strfind(localFile,'iset3d');
+end
+showFile = localFile(ii:end);
+
+if exist(localFile,'file')
+    question = sprintf('\\fontsize{14}%s \nto\n%s\n', resourceName, showFile);
+    answer = questdlg(question, 'Overwrite? ', 'Yes', 'No', 'Cancel',opts);
 else
-    proceed = false;
+    question = sprintf('\\fontsize{14}%s \nto\n%s', resourceName, showFile);
+    answer = questdlg(question, 'Download? ', 'Yes', 'No', 'Cancel',opts);
 end
+
+if isequal(answer, 'Yes'),  proceed = true;
+else,                       proceed = false;
 end
+
+end
+
+%% Assign URL to resource type
+
+function [baseURL, urlList] = urlResource(resourceType)
+% List the URLs in use here.
+
+urlList = ...
+    {'http://stanford.edu/~wandell/data/pbrtv4/', ...
+    'http://stanford.edu/~wandell/data/pbrtv3/', ...
+    'http://stanford.edu/~wandell/data/hdr/', ...
+    'http://stanford.edu/~wandell/data/spectral/', ...
+    'http://stanford.edu/~wandell/data/faces/'
+    };
+
+switch resourceType
+    case 'all'
+        baseURL = urlList;
+    case 'pbrtv4'
+        baseURL = urlList{1};
+    case 'pbrtv3'
+        baseURL = urlList{2};
+    case 'hdr'
+        baseURL = urlList{3};
+    case 'spectral'
+        baseURL = urlList{4};
+    case 'faces'
+        baseURL = urlList{5};
+    otherwise
+        error('Unknown resource type %s\n',src);
+end
+
+end
+

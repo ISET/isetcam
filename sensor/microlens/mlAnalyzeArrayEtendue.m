@@ -5,8 +5,8 @@ function sensor = mlAnalyzeArrayEtendue(sensor,method,nAngles)
 %
 %   Calculate the etendue across the sensor surface given the current
 %   microlens properties. The calculation can be performed using the
-%   method argument 
-%   method = 
+%   method argument
+%   method =
 %     optimal:       at the optimal position
 %     centered:      at the pixel center
 %     no microlens:  absent.
@@ -24,7 +24,7 @@ function sensor = mlAnalyzeArrayEtendue(sensor,method,nAngles)
 %   estimated from just a couple of values.
 %
 % Example:
-%   oi = oiCreate; sensor = sensorCreate; 
+%   oi = oiCreate; sensor = sensorCreate;
 %   ieAddObject(oi); ieAddObject(sensor);
 %   sensor = mlAnalyzeArrayEtendue(sensor,'optimal');
 %   optimalE = sensorGet(sensor,'sensorEtendue');
@@ -33,8 +33,8 @@ function sensor = mlAnalyzeArrayEtendue(sensor,method,nAngles)
 %   sensor = mlAnalyzeArrayEtendue(sensor,'no microlens');
 %   nomlE = sensorGet(sensor,'sensorEtendue');
 %   mesh(optimalE ./ nomlE);
-% 
-%   tic, sensor = mlAnalyzeArrayEtendue(sensor,'centered',5); toc;  
+%
+%   tic, sensor = mlAnalyzeArrayEtendue(sensor,'centered',5); toc;
 %   plotSensorEtendue(sensor)
 %
 %   sensor = mlAnalyzeArrayEtendue(sensor,'centered',5);
@@ -54,7 +54,7 @@ showBar = ieSessionGet('waitbar');
 ml = sensorGet(sensor,'ml');
 if isempty(ml)
     fprintf('** Initializing sensor microlens\n');
-    ml = mlensCreate(sensor); 
+    ml = mlensCreate(sensor);
 end
 
 sensorCRA = sensorGet(sensor,'cra degrees');
@@ -63,7 +63,7 @@ sensorCRA = sensorGet(sensor,'cra degrees');
 % the width, all the way out.
 cra = (0:nAngles)/nAngles*max(sensorCRA(:));
 
-if showBar, 
+if showBar
     h = waitbar(0,sprintf('Calculating etendue at %.0f angles...',nAngles));
 end
 
@@ -74,7 +74,7 @@ for ii=1:length(cra)
     switch method
         case 'centered'
             % No offset, so centered
-            ml = mlensSet(ml,'offset',0); 
+            ml = mlensSet(ml,'offset',0);
             ml = mlRadiance(ml,sensor,1);
         case {'optimized','optimal'}
             offset = mlensGet(ml,'optimal offset','microns');

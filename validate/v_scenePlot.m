@@ -37,4 +37,4 @@ scenePlot(scene,'chromaticity',roiRect)
 %%
 scenePlot(scene,'illuminant photons');
 
-%%
+%% END

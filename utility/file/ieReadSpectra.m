@@ -1,14 +1,15 @@
-function [res,wave,comment,fname] = ieReadSpectra(fname,wave,extrapVal)
+function [res,wave,comment,fname] = ieReadSpectra(fname,wave,extrapVal,makePositive)
 % Read in spectral data and interpolate to the specified wavelengths
 %
 % Synopsis
-%   [res,wave,comment,fName] = ieReadSpectra(fname,wave,extrapVal)
+%   [res,wave,comment,fName] = ieReadSpectra(fname,wave,extrapVal,makePositive)
 %
 % Input:
 %   fname     - File name to read.  If empty, user is asked to pick.
 %   wave      - Wavelength samples (default whatever is in the file)
 %   extrapval - Extrapolation value for wavelengths outside the range in
 %               the file
+%   makePositive - Make sure the first basis is mainly positive
 %
 % Outputs
 %   res    - Interpolated and extrapolated values
@@ -27,10 +28,10 @@ function [res,wave,comment,fname] = ieReadSpectra(fname,wave,extrapVal)
 %
 %   ISET spectral files are generally saved in the form: save(fname,'data','wavelength')
 %   and most have comment fields:                        save(fname,'data','wavelength','comment')
-%   
+%
 %   If the FNAME file does not exist, the return variable, res, is empty on return.
 %   If wave is specified, the returned data are interpolated to those values.
-%   If wave is not specified, the data are returned at native resolution of the data file 
+%   If wave is not specified, the data are returned at native resolution of the data file
 %      and the values of wavelength can be returned.
 %
 %   IMPORTANT: Color filters are handled a little differently because we
@@ -72,7 +73,15 @@ end
 % interpolation will occur.
 if ~exist('wave','var')||isempty(wave),  wave = wavelength; end
 if ~exist('extrapVal','var')||isempty(extrapVal),  extrapVal = 0;  end
+if ~exist('makePositive','var'), makePositive = false; end
 
 res = interp1(wavelength(:), data, wave(:),'linear',extrapVal);
-    
+
+% The first basis mean should be positive when this flag is set.
+if makePositive
+    if mean(res(:,1)) < 0
+        res = -1*res;
+    end
+end
+
 end

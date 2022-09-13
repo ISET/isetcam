@@ -35,13 +35,13 @@ function weight=ContrastMatch(device,dimWeight,foreColor,backColor)
 PsychDefaultSetup(1);
 
 if nargin<2 || nargout>1
-	error('Usage: weight=GratingMatch(device,dimWeight,[foreColor],[backColor])');
+    error('Usage: weight=GratingMatch(device,dimWeight,[foreColor],[backColor])');
 end
 if nargin<4
-	backColor=[0 0 0];
+    backColor=[0 0 0];
 end
 if nargin<3
-	foreColor=[255 255 255];
+    foreColor=[255 255 255];
 end
 dpi=67;
 distanceM=0.57;
@@ -61,15 +61,15 @@ clut(5,:)=dimWeight*white+(1-dimWeight)*black;
 Screen('SetClut', win, clut);
 
 if 0
-	blend=1:RectHeight(barRect);
-	blend=blend-blendPeriodPix*floor(blend/blendPeriodPix); % modulo the period
-	blend=2+(blend >= round(forePart*blendPeriodPix));
-	blend=Expand(blend',RectWidth(barRect),1);
-	pure=ones(RectHeight(barRect),RectWidth(barRect));
-	Screen('BlitImage255',blend,barRect);
-	barRect=OffsetRect(barRect,RectWidth(barRect),0);
-	Screen('BlitImage255',pure,barRect);
-	barRect=OffsetRect(barRect,RectWidth(barRect),0);
+    blend=1:RectHeight(barRect);
+    blend=blend-blendPeriodPix*floor(blend/blendPeriodPix); % modulo the period
+    blend=2+(blend >= round(forePart*blendPeriodPix));
+    blend=Expand(blend',RectWidth(barRect),1);
+    pure=ones(RectHeight(barRect),RectWidth(barRect));
+    Screen('BlitImage255',blend,barRect);
+    barRect=OffsetRect(barRect,RectWidth(barRect),0);
+    Screen('BlitImage255',pure,barRect);
+    barRect=OffsetRect(barRect,RectWidth(barRect),0);
 end
 
 % Create two 1 c/deg squarewave gratings at different luminances.
@@ -79,15 +79,15 @@ testRect=ScaleRect(screenRect,0.5,0.5);
 testRect=round(AlignRect(testRect,screenRect,RectLeft,RectTop));
 barRect=SetRect(0,0,barWidth,RectHeight(testRect));
 for color=0:2:2
-	barRect=AlignRect(barRect,testRect,RectLeft,RectBottom);
-	for i=0:2:ceil(RectWidth(testRect)/RectWidth(barRect))
-		Screen('FillRect', win, color+1,barRect);
-		barRect=OffsetRect(barRect,RectWidth(barRect),0);
-		Screen('FillRect', win, color+2,barRect);
-		barRect=OffsetRect(barRect,RectWidth(barRect),0);
-	end
-	Screen('FillRect', win, 0,AdjoinRect(testRect,testRect,RectRight))
-	testRect=AdjoinRect(testRect,testRect,RectBottom);
+    barRect=AlignRect(barRect,testRect,RectLeft,RectBottom);
+    for i=0:2:ceil(RectWidth(testRect)/RectWidth(barRect))
+        Screen('FillRect', win, color+1,barRect);
+        barRect=OffsetRect(barRect,RectWidth(barRect),0);
+        Screen('FillRect', win, color+2,barRect);
+        barRect=OffsetRect(barRect,RectWidth(barRect),0);
+    end
+    Screen('FillRect', win, 0,AdjoinRect(testRect,testRect,RectRight))
+    testRect=AdjoinRect(testRect,testRect,RectBottom);
 end
 
 % Print instructions
@@ -120,20 +120,20 @@ bottom=RectBottom;
 Screen('FillRect', win, 0, sliderRect);
 Screen('FrameRect', win, 255, sliderRect);
 while 1
-	[x,y,button]=GetMouse;
-	weight=(sliderRect(bottom)-y)/RectHeight(sliderRect);
-	Screen('SetClut', win, weight*foreColor+(1-weight)*backColor,1);
-	dy=y-(knobRect(top)+knobRect(bottom))/2;
-	residue=knobRect;
-	if dy>0
-		residue(bottom)=residue(top)+dy;
-	else
-		residue(top)=residue(bottom)+dy;
-	end
-	knobRect=OffsetRect(knobRect,0,dy);
-	Screen('FillRect', win, 0,residue);
-	Screen('FillRect', win, 255,knobRect);
-	if(button) break; end;
-	WaitSecs(.01); % make sure we miss some frames, so mouse gets updated
+    [x,y,button]=GetMouse;
+    weight=(sliderRect(bottom)-y)/RectHeight(sliderRect);
+    Screen('SetClut', win, weight*foreColor+(1-weight)*backColor,1);
+    dy=y-(knobRect(top)+knobRect(bottom))/2;
+    residue=knobRect;
+    if dy>0
+        residue(bottom)=residue(top)+dy;
+    else
+        residue(top)=residue(bottom)+dy;
+    end
+    knobRect=OffsetRect(knobRect,0,dy);
+    Screen('FillRect', win, 0,residue);
+    Screen('FillRect', win, 255,knobRect);
+    if(button) break; end;
+    WaitSecs(.01); % make sure we miss some frames, so mouse gets updated
 end
 Screen('CloseAll');

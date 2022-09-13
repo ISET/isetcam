@@ -1,8 +1,11 @@
 function [cfaN,cfaMap] = sensorImageColorArray(cfa)
-%Create an image of the color filter array
+% Deprecated:  Create an image of the color filter array
+%  
+% Plan to deprecate and use sensorData2Image as a replacement.  See
+% sensorShowCFA for how to call sensorData2Image to produce the CFA image.
 %
 %    [cfaN,cfaMap] = sensorImageColorArray(cfa)
-% 
+%
 % The input is a color filter array filled with characters describing the
 % filter position.  This routine returns color filter  numerical values
 % (cfaN and a color map (cfaMap) describing the meaning of these number.
@@ -43,9 +46,9 @@ end
 % If no return was requested, assume the user wanted a picture of the
 % colors
 if nargout == 0
-    figure; 
+    figure;
     image(cfaN); colormap(cfaMap);
     axis image; zoom on
 end
 
-return;
+end

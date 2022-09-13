@@ -45,7 +45,7 @@ axis off; axis image
 
 % We treat represent images using a 3D format (row,col,channels)
 % RGB images have three channels.  SPD images have more channels, equal to
-% the number of wavelength samples. 
+% the number of wavelength samples.
 
 % We convert a vector into the 3D format (which we call RGBFormat) as
 % follows.

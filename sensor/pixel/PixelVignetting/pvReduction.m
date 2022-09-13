@@ -11,9 +11,9 @@ function [ratio] = pvReduction(overlap,numGrid,numGridSpot,diodeLocation,outside
 f = opticsGet(OPTICS,'focallength'); 	% Focal Length [m]
 D = opticsGet(OPTICS,'diameter');       % Diameter [m]
 w = pixelGet(PIXEL,'width');            % Diode size [m]
-h = pixelGet(PIXEL,'depth');                              %            
-                                        % Distance from surface to diode [m]
-% Now we try to find the real overlap region based on the center of 
+h = pixelGet(PIXEL,'depth');                              %
+% Distance from surface to diode [m]
+% Now we try to find the real overlap region based on the center of
 % diode and center of spot.
 diodeCenterX = diodeLocation(:,1);
 diodeCenterY = diodeLocation(:,2);

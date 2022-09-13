@@ -10,7 +10,7 @@ function [rho,tau] = ptReflectionAndTransmission(nIn,nOut,thetaIn,polarization)
 %
 thetaOut = asin(nIn*sin(thetaIn)./nOut);
 
-switch lower(polarization)  
+switch lower(polarization)
     case('s') % perpendicular
         
         rho = (nIn * cos(thetaIn) - nOut * cos(thetaOut))./...

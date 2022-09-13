@@ -27,7 +27,7 @@ function hdl = LFMicrolensGeometry(pixelSize,mLensSize)
 hdl = ieNewGraphWin;
 
 %% We show 5 x 5 array of microlens positions. These are the Positions of
-% the microlens centers. 
+% the microlens centers.
 M = (-2:2)*mLensSize;
 [X,Y] = meshgrid(M,M);
 mLensPos = [X(:),Y(:)];

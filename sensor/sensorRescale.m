@@ -3,12 +3,12 @@ function sensor = sensorRescale(sensor,rowcol,sensorHeightWidth)
 %
 %     newsensor = sensorRescale(sensor,rowcol,sensorHeightWidth)
 %
-% *** Generally, avoid this routine unless you really know what you are doing ***  
-%  
+% *** Generally, avoid this routine unless you really know what you are doing ***
+%
 % In this method, the pixel dimensions are adjusted to accomodate the new
-% sensor row/col, and pixel width/height (meters). 
-%   
-% Current data are cleared because they are incompatible with the 
+% sensor row/col, and pixel width/height (meters).
+%
+% Current data are cleared because they are incompatible with the
 % re-scaled pixel and sensor parameters.
 %
 % Example:
@@ -27,12 +27,12 @@ pixel = pixelSet(pixel,'widthGap',0);
 pixel = pixelSet(pixel,'heightGap',0);
 
 % The new pixel size is chosen to match the sensor dimension and the number
-% of rows and columns.  
+% of rows and columns.
 pixel.width = sensorHeightWidth(2)/rowcol(2);
 pixel.height = sensorHeightWidth(1)/rowcol(1);
 
 %The photodetector is chosen to have a fifty percent fill factor and it is
-%placed in the center of the pixel 
+%placed in the center of the pixel
 pixel = pixelSet(pixel,'pdwidth',sqrt(.5)*pixelGet(pixel,'width'));
 pixel = pixelSet(pixel,'pdheight',sqrt(.5)*pixelGet(pixel,'height'));
 newArea = pixelGet(pixel,'pdarea');

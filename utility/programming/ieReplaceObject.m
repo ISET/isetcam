@@ -3,23 +3,23 @@ function ieReplaceObject(obj,val)
 %
 %    ieReplaceObject(obj,[val])
 %
-% Replace an existing object, either a SCENE,VCIMAGE,OPTICS, PIXEL,
-% OPTICALIMAGE, or ISA, in the vcSESSION global variable.
+% Replace an existing ISETCam struct, either a SCENE, OPTICALIMAGE, OPTICS,
+% SENSOR, PIXEL or IP in the vcSESSION global variable.
 %
-% obj:  The object
+% obj:  The ISETCam object
 % val:  The number of the object to be replaced.  If val is not
-%       specified, then the currently selected object is replaced. 
+%       specified, then the currently selected object is replaced.
 %
 % When  replacing OPTICS or PIXEL the val refers to the OPTICALIMAGE or
 % SENSOR that contain the OPTICS or PIXEL.
 %
-% The object that is replaced (or its parent) are then set to be the
-% selected object.
+% The object that is replaced (or its parent) are set to be the selected
+% object.
 %
 % Examples:
 %   ieReplaceObject(oi,3);
 %   ieReplaceObject(oi);
-%   ieReplaceObject(ISA,val);
+%   ieReplaceObject(sensor,val);
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
@@ -31,11 +31,11 @@ objType = vcEquivalentObjtype(objType);
 
 %%
 if ieNotDefined('val')
-    val = vcGetSelectedObject(objType); 
+    val = vcGetSelectedObject(objType);
     if isempty(val),  val = 1; end
 end
 
-% Should be handled by ieSessionSet 
+% Should be handled by ieSessionSet
 switch lower(objType)
     case 'scene'
         vcSESSION.SCENE{val} = obj;

@@ -9,7 +9,7 @@ ieInit
 %% Build on oi
 s = sceneCreate; oi = oiCreate; oi = oiCompute(oi,s);
 
-%% 
+%%
 sensor = sensorCreate('monochrome');
 sensor = sensorCompute(sensor,oi);
 sensorWindow(sensor);
@@ -18,10 +18,10 @@ sensorWindow(sensor);
 ip = ipCreate;
 ip = ipCompute(ip,sensor); ieAddObject(ip); ipWindow;
 
-%% 
+%%
 sensor = sensorCreate;
 sensor = sensorCompute(sensor,oi);
-sensorWindow(sensor); 
+sensorWindow(sensor);
 
 ip = ipCompute(ip,sensor); ieAddObject(ip); ipWindow;
 

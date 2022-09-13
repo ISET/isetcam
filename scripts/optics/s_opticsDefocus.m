@@ -1,4 +1,4 @@
-%% Calculating a defocused image 
+%% Calculating a defocused image
 %
 % ISET includes two ways to calculate defocus.  One method implements the
 % classic work of Hopkins using *humanCore* and *opticsDefocusCore*. That
@@ -29,7 +29,7 @@ D = zeros(size(wave));             % No defocus (diffraction limited)
 otf = opticsDefocusCore(optics,sampleSF,D);
 
 %%
-vcNewGraphWin; 
+vcNewGraphWin;
 mesh(sampleSF,wave,otf)
 set(gca,'zlim',[0 1]);
 xlabel('Spatial Frequency (cyc/deg)'), ylabel('wave'), zlabel('OTF')
@@ -46,7 +46,7 @@ wave = opticsGet(optics,'wave');
 D = zeros(size(wave));             % No wavelength dependent defocus
 otf = opticsDefocusCore(optics,sampleSF,D);
 
-vcNewGraphWin; 
+vcNewGraphWin;
 mesh(sampleSF,wave,otf)
 set(gca,'zlim',[0 1]);
 xlabel('Spatial Frequency (cyc/deg)'), ylabel('wave'), zlabel('OTF')
@@ -58,7 +58,7 @@ wave = opticsGet(optics,'wave');
 D = humanWaveDefocus(wave);
 otf = opticsDefocusCore(optics,sampleSF,D);
 
-vcNewGraphWin; 
+vcNewGraphWin;
 mesh(sampleSF,wave,otf)
 set(gca,'zlim',[0 1]);
 xlabel('Spatial Frequency (cyc/deg)'), ylabel('wave'), zlabel('OTF')

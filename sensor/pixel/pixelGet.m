@@ -6,11 +6,11 @@ function val = pixelGet(pixel,param,varargin)
 % The list of properties is below.  For many of the size properties, you
 % can request different spatial units by specifying the desired unit in
 % a calling argument.  For example, pixelGet(pixel,'pixelWidth','um')
-% returns the pixel width in microns. 
-% These properties are denoted with a '*' 
+% returns the pixel width in microns.
+% These properties are denoted with a '*'
 %
 % For this and other get routines, capitalization and spacing are
-% irrelevant. 
+% irrelevant.
 %
 % Pixel spatial size
 %      {'pixel width'}          - pixel width (meters)*
@@ -19,7 +19,7 @@ function val = pixelGet(pixel,param,varargin)
 %      {'pixel height gap'}     - height gap between pixels (meters)*
 %      {'pixel size'}           - (width,height) vector
 %      {'pixel area'}           - width*height (meters^2)
-%      {'wspatial resolution'}  - spacing in x-direction (width spatial resolution)*    
+%      {'wspatial resolution'}  - spacing in x-direction (width spatial resolution)*
 %      {'hspatial resolution'}  - spacing in y-direction (height spatial resolution)*
 %      {'xy spacing'}           - dimension is (x,y) but size is (row,col)*
 %
@@ -39,14 +39,14 @@ function val = pixelGet(pixel,param,varargin)
 %      {'layer thicknesses'}    - thickness of different materials (meters)
 %      {'stack height'}         - thickness of different materials (meters)
 %      {'pixel spectrum'}       - spectrum structure for pixel
-%      {'wavelength'}           - wavelength sampling for pixel 
-%      {'bin width'}            - bin width of wavelength 
+%      {'wavelength'}           - wavelength sampling for pixel
+%      {'bin width'}            - bin width of wavelength
 %      {'nwave'}                - number of wavelength samples
 %      {'pd spectral qe'}       - photodetector spectral quantum efficiency
 %
 % Electrical properties
-%      {'conversion gain'}       - volts per electron 
-%      {'voltage swing'}         - maximum voltage 
+%      {'conversion gain'}       - volts per electron
+%      {'voltage swing'}         - maximum voltage
 %      {'well capacity'}         - maximum number of electrons (=vSwing/convGain)
 %      {'dark current density'}  - dark current in (amps/m^2)
 %      {'dark current'}          - dark current per photodetector (=dkDensity*pdarea)
@@ -62,7 +62,7 @@ function val = pixelGet(pixel,param,varargin)
 %   width = pixelGet(pixel,'width','um')
 %   sz = pixelGet(pixel,'size');
 %   dkV = pixelGet(pixel,'darkVoltage')
-%  
+%
 % Copyright ImagEval Consultants, LLC, 2005.
 
 if ~exist('pixel','var') || isempty(pixel), error('Must define pixel.'); end
@@ -90,7 +90,7 @@ switch param
         val = pixel.heightGap;
         if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
         
-    case {'wspatialresolution','deltax'}    
+    case {'wspatialresolution','deltax'}
         val = pixelGet(pixel,'width') + pixelGet(pixel,'widthGap');
         if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
         
@@ -101,13 +101,13 @@ switch param
     case {'xyspacing','dimension'}    % Note:  dimension is (x,y) but size is (row,col)
         val = [pixelGet(pixel,'deltax'), pixelGet(pixel,'deltay')];
         if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-
+        
     case {'pixelsize','size'}
         val = [pixelGet(pixel,'deltay'), pixelGet(pixel,'deltax')];
         if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
         
     case {'pixelarea','area'}
-        % This includes the gap dimension.  
+        % This includes the gap dimension.
         val = prod(pixelGet(pixel,'size'));
         
         % Photodetector sizes and positions
@@ -131,7 +131,7 @@ switch param
         
     case {'stackheight'} %M
         val = sum(pixel.layerThickness);
-        if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end 
+        if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
         
     case {'refractiveindex','refractiveindices','n'} %
         val = pixel.n;
@@ -149,12 +149,12 @@ switch param
         val = [pixelGet(pixel,'pdWidth'),pixelGet(pixel,'pdHeight')];
         if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
         
-  
+        
     case 'pdarea'
-        val = prod(pixelGet(pixel,'pdsize')); 
+        val = prod(pixelGet(pixel,'pdsize'));
     case 'fillfactor';
         val = pixelGet(pixel,'pdArea') / pixelGet(pixel,'area');
-
+        
         % Electrical properties
     case 'conversiongain'  % Volts/e-
         val = pixel.conversionGain;
@@ -181,7 +181,7 @@ switch param
     case {'darkelectrons'}
         % Electrons / pixel / second
         val = pixelGet(pixel,'darkvoltage')/pixelGet(pixel,'conversiongain');
-
+        
     case {'readnoiseelectrons'}         %standard deviation in electrons
         val = pixel.readNoise/pixelGet(pixel,'conversiongain');
     case {'readnoisevolts','readnoise'} %standard deviation in Volts
@@ -212,4 +212,4 @@ switch param
         
     otherwise
         error('Unknown param: %s',param);
-end            
+end

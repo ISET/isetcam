@@ -1,12 +1,12 @@
 function [opticalImage,pixel,optics] = ...
     pixelVignetting(opticalimage,pixel,optics);
-% 
+%
 % [opticalImage,pixel,optics] = ...
 %   pixelVignetting(opticalimage,pixel,optics);
 %
 % AUTHOR:	PC
 % DATE: 	06/20/2003
-% PURPOSE: 
+% PURPOSE:
 %   Apply pixel vignetting due to metal layers. Uses Phase-Space based
 %   method
 %
@@ -123,8 +123,8 @@ mesh(pixelVignetting)
 
 % Applying the pixel vignetting correction
 for ii=1:nWaves
-  filteredIrradianceImage(:,:,ii) = ...
-      pixelVignetting .* irradianceImage(:,:,ii);
+    filteredIrradianceImage(:,:,ii) = ...
+        pixelVignetting .* irradianceImage(:,:,ii);
 end
 opticalImage.data.photons = filteredIrradianceImage;
 

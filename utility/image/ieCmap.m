@@ -11,7 +11,7 @@ function cm = ieCmap(cName,num,gam)
 %    rg  = ieCmap('rg',256); plot(rg)
 %    by  = ieCmap('by',256); plot(by)
 %    lum = ieCmap('bw',256,0.3); plot(lum)
-%    
+%
 % Copyright ImagEval Consultants, LLC, 2010
 
 

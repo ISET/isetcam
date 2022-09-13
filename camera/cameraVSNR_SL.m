@@ -52,7 +52,7 @@ for ii=1:length(meanLuminances)
     % Clip
     % result = ieClip(result, 0, 1);
     
-    % Store the newly transformed lRGB image into the vci.  The one 
+    % Store the newly transformed lRGB image into the vci.  The one
     vci = cameraGet(camera, 'vci');
     vci = ipSet(vci, 'result', result);
     
@@ -63,9 +63,9 @@ for ii=1:length(meanLuminances)
         border   = round(sz(1:2)*0.1);   % Border
         rect = [border(2), border(1), sz(2)-(2*border(2)), sz(1)-(2*border(1))];
     end
-
+    
     % What are the units?  1 / Delta E, I think.
-    vSNR(ii) = vcimageVSNR(vci,dpi,dist,rect);        
+    vSNR(ii) = vcimageVSNR(vci,dpi,dist,rect);
 end
 
 eAnalysis.vSNR = vSNR;

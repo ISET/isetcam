@@ -6,7 +6,7 @@
 %
 % See the header to sensorCompute to understand the meaning of the
 % different noiseFlag values.
-% 
+%
 % Copyright ImagEval, LLC, 2011
 
 %%
@@ -92,12 +92,12 @@ xlabel('No noise'); ylabel('General noise');
 title('Should be scattered')
 
 % The photon noise, clipping, and quantization errors
-vcNewGraphWin; hist(v1(:) - v2(:),100);
+vcNewGraphWin; histogram(v1(:) - v2(:),100);
 xlabel('Volts')
 ylabel('Pixel count')
 title('Noise photon, clipping, quantization)')
 
-%%  Let's try the functions on two or three test scenes.  
+%%  Let's try the functions on two or three test scenes.
 
 % Let's do grid lines
 %
@@ -109,7 +109,7 @@ oi = oiCompute(scene,oi);
 sensor = sensorCreate('bayer-rggb');
 sensor = sensorSet(sensor,'exp time',0.1);
 
-%%  Let's try running twice with no noise  
+%%  Let's try running twice with no noise
 
 % Turn off the noise and create the data
 sensorNew = sensorSet(sensor,'noiseFlag',0);
@@ -118,14 +118,14 @@ sensorNew = sensorSet(sensor,'noiseFlag',0);
 sensorNew1 = sensorCompute(sensorNew,oi);
 sensorNew2 = sensorCompute(sensorNew,oi);
 
-ieAddObject(sensorNew1); 
+ieAddObject(sensorNew1);
 sensorWindow(sensorNew2);
 
 %% Should be IDENTICAL
 
 v1 = sensorGet(sensorNew1,'volts');
 v2 = sensorGet(sensorNew2,'volts');
-vcNewGraphWin; plot(v1(:),v2(:),'.'); 
+vcNewGraphWin; plot(v1(:),v2(:),'.');
 grid on
 xlabel('sensor 1')
 xlabel('sensor 2')
@@ -143,7 +143,7 @@ sensorNewReuse = sensorCompute(sensorNew,oi);
 %%
 v1 = sensorGet(sensorNew,'volts');
 v2 = sensorGet(sensorNewReuse,'volts');
-vcNewGraphWin; plot(v1(:),v2(:),'.'); 
+vcNewGraphWin; plot(v1(:),v2(:),'.');
 grid on
 xlabel('sensor original')
 xlabel('sensor reuse')

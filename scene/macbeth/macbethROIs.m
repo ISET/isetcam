@@ -7,7 +7,7 @@ function [patchLocs, rect] = macbethROIs(currentLoc,delta)
 % Description
 %
 %   Create the rects from the center of an MCC patch. The spacing between
-%   the centers is delta.  The format of a rect is 
+%   the centers is delta.  The format of a rect is
 %
 %     (colMin,rowMin,width,height).
 %
@@ -21,7 +21,7 @@ function [patchLocs, rect] = macbethROIs(currentLoc,delta)
 %   patchLocs - The locations within the rect, derived by ieRect2Locs
 %   rect - The rect
 %
-% See also: 
+% See also:
 %   macbethRectangles, macbethDrawRects, macbethSensorValues, ieRect2Locs
 %
 

@@ -13,7 +13,7 @@ scene = sceneCreate;
 sceneWindow(scene);
 
 %% Pull out the photons from the white patch
-roiRect = [1    50    14    14]; 
+roiRect = [1    50    14    14];
 newPhotons = sceneGet(scene,'roi photons',roiRect);
 
 %% Place the white patch photons into a new location

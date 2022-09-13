@@ -1,22 +1,36 @@
 function scene = sceneSpatialResample(scene,dx,units,method)
 % Spatial resample all wavebands of a scene
 %
+% Synopsis
 %   scene = spatialResample(scene,dx,'units','method')
 %
-% scene:   ISET scene
-% dx:      New sample distance.  Default is meters, but you can specify units
-% method:  linear, cubic or spline interpolation (default = 'linear')
+% Description:
+%   The scene photons are represented at a spatial sampling separation
+%   in meters. This function resamples the photon data to a different
+%   spatial sampling density.  This changes the number of row and
+%   column samples, but leaves the total size of the scene the same.
 %
-% Example:
-%  scene = sceneCreate; scene = sceneSet(scene,'fov',1);
-%  ieAddObject(scene); sceneWindow;
+% Inputs
+%   scene:   ISET scene
+%   dx:      New sample distance.  Default is meters, but you can specify units
+%   method:  linear, cubic or spline interpolation (default = 'linear')
 %
-%  scene = sceneSpatialResample(scene,1e-4);
-%  ieAddObject(scene); sceneWindow;
+% Return
+%   scene
 %
-% See also: sceneSpatialSupport, oiSpatialResample
+% See also: 
+%    sceneSpatialSupport, oiSpatialResample
 %
-% Copyright Imageval Consulting, LLC 2016
+
+% Examples:
+%{
+ scene = sceneCreate; 
+ scene = sceneSet(scene,'fov',1);
+ sceneWindow(scene);
+ sRes = sceneGet(scene,'spatial resolution')
+ scene = sceneSpatialResample(scene,sRes(1)*2);
+ sceneWindow(scene);
+%}
 
 %% Set up parameters
 if ieNotDefined('scene'),  error('scene required'); end
@@ -69,4 +83,4 @@ fov   = sceneGet(scene,'fov');
 scene = sceneSet(scene,'fov',fov*dx/sr(2));
 
 end
-    
+

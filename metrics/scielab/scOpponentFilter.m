@@ -6,7 +6,7 @@ function [filteredXYZ,filteredOpp] = scOpponentFilter(image, params)
 % Spatial CIELAB calculation spatially filters the image data in
 % opponent-colors space. This routine takes in input image in xyz or lms
 % space, converts it to opponent color space, and applies the spatial
-% filtering required by S-CIELAB. 
+% filtering required by S-CIELAB.
 %
 % The returned image, filteredIm, is converted into CIE-XYZ space.
 %
@@ -23,8 +23,8 @@ end
 % Convert XYZ or LMS representation to Poirson & Wandell opponent
 % representation.
 if strncmp(params.imageFormat,'xyz10',5) || ...
-        strncmp(params.imageFormat,'lms10',5), 
-     xyztype = 10;
+        strncmp(params.imageFormat,'lms10',5),
+    xyztype = 10;
 else xyztype = 2;
 end
 
@@ -46,7 +46,7 @@ end
 % figure; imagescRGB(opp);
 
 
-%%  Spatial Filtering 
+%%  Spatial Filtering
 % Apply the filters to the images.
 % Look at the image before filtering:
 % figure(1); Y = opp(:,:,1); mesh(Y); colormap(jet(255)); mean(Y(:))

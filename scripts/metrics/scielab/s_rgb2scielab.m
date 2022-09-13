@@ -48,7 +48,7 @@ colorbar('vert');
 title('S-CIELAB error map')
 
 vcNewGraphWin;
-hist(eImage(:),100)
+histogram(eImage(:),100)
 title('S-CIELAB delta E histogram')
 
 
@@ -61,8 +61,8 @@ for ii = 1:max(rows)
     for jj = 1: max(cols)
         if eImage(ii,jj) > 2.0
             DEdifs = eImage(ii,jj) + DEdifs;
-             count = count +1;
-    end
+            count = count +1;
+        end
     end
 end
 MeanAbove2 = mean(DEdifs/count);

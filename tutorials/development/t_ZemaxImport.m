@@ -6,10 +6,10 @@
 % macro.
 %
 % Before beginning this tutorial, please ensure that you have added all
-% folders and files in the ISET package to the current workspace and that 
+% folders and files in the ISET package to the current workspace and that
 % you have run the ISET_RT_ZEMAX_2D.ZPL macro in ZeMax.  Also, please make
-% sure that the 'baseLensFileName' in the ISETPARMS.txt file identifies the 
-% lens of interest as being in the directory with all of the output ".dat" 
+% sure that the 'baseLensFileName' in the ISETPARMS.txt file identifies the
+% lens of interest as being in the directory with all of the output ".dat"
 % files that will be used for input into ISET.
 %
 % Please ensure that you have the following files in the proper directory:
@@ -20,7 +20,7 @@
 % "<LensName>_2D_PSF_Fld<FldHtIdx>_Wave<WavelengthIdx>.dat"
 %   -- Contains the PSF Information at that Field Height and Wavelength;
 %   these should be numbered sequentially (make sure none are missing).
-% 
+%
 % One thing to note: ISET treats anything ZeMax-related as "raytrace"
 % optics, so the scripts designed to handle this data typically have "rt"
 % as a prefix and are found in the "opticalimage/raytrace" directory.
@@ -54,23 +54,23 @@ optics = rtImportData(optics, 'zemax', isetParmsFile);
 % Use a higher number of samples for better results (though the tradeoff is
 % compute time). Also, use a larger FOV in order to incorporate more
 % "eccentricity bands" (i.e. to utilize more of the PSF's sampled at
-% various image heights)  
+% various image heights)
 %
-% A word of caution:  the higher the FOV, the courser the sampling for the 
+% A word of caution:  the higher the FOV, the courser the sampling for the
 % PSF's.  If the FOV is too large, you will not be able to get a satisfying
-% outcome in the next section.  To offset this, you can increase the 
-% resolution of the scene image (originally set to 1028 here), but that 
+% outcome in the next section.  To offset this, you can increase the
+% resolution of the scene image (originally set to 1028 here), but that
 % will significantly increase the compute time.
 scene = sceneCreate('grid lines', 256);
 scene = sceneSet(scene,'fov',5);               % large FOV
 scene = sceneSet(scene,'distance',10000000);    % not very important
-ieAddObject(scene); 
+ieAddObject(scene);
 sceneWindow;
 
 %% 4) Apply the "RayTrace" Optics and Show in an oiWindow
 %
 % Here you will select the ".mat" file that you output from step 2 above.
-% 
+%
 % The most time consuming portion of this section is the oiCompute() stage.
 % This is where all of the PSF's are applied.  The higher the resolution of
 % the scene, the longer it will take.  Also, the greater the FOV, the more
@@ -80,7 +80,7 @@ rtFileName = vcSelectDataFile('stayput','r','mat',...
     'Select the RT Optics .mat file');
 oi = oiCreate('raytrace', rtFileName);
 oi = oiCompute(scene,oi);
-ieAddObject(oi); 
+ieAddObject(oi);
 oiWindow;
 
 %% End of Tutorial

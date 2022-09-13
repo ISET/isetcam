@@ -1,9 +1,10 @@
 function sensor = sensorLightField(oi)
-% Create a light field sesnsor matched to the oi
+% Create a light field sensor matched to the oi
 %
 % You might want to set the exposure duration on return
 %
-% We might do this as
+% Normally we call this from sensorCreate() using
+%
 %   sensor = sensorCreate('light field',oi);
 %
 % Copyright Imageval, LLC, 2017

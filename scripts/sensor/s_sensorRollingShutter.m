@@ -9,7 +9,7 @@
 
 %%
 ieInit;
-ieSessionSet('wait bar','off');  
+ieSessionSet('wait bar','off');
 
 %%  Set the parameters needed to make a rotating series of star patterns
 iSize  = 128;
@@ -43,11 +43,11 @@ sensor  = sensorSet(sensor,'exp time',expTime);
 % delayed.  This gives every row the same exposure duration, but the
 % acquisition period of each of the rows is delayed in time.
 % To see a bigger effect of the rolling shutter, make this number bigger.
-perRow  = 10e-6;   
+perRow  = 10e-6;
 
 % How many total captures do we need? Number of rows plus enough additional
 % captures for last row
-nFrames = sz(1) + round(expTime/perRow);   
+nFrames = sz(1) + round(expTime/perRow);
 
 % Store the sensor volts from each capture separately, before we assemble.
 v  = zeros(sz(1),sz(2),nFrames);
@@ -55,7 +55,7 @@ v  = zeros(sz(1),sz(2),nFrames);
 % The number of degrees the rays rotate between each row capture (perRow).
 % The deg per second is rate/perRow or in total rotations per second
 % rate/perRow/360.  The faster the rotation, the more the curvature.
-rate = 0.3;  
+rate = 0.3;
 
 fprintf('Computing %i frames\nRotation rate: %.2f (cycles per sec)\n',nFrames,rate/perRow/360);
 
@@ -85,20 +85,20 @@ for ii=1:nFrames
     rect = round([cp(1) - S/2,  cp(2) - S/2,   S,   S]);
     oiC = oiCrop(oi,rect);
     % ieAddObject(oiC); oiWindow;
-
+    
     sensor = sensorCompute(sensor,oiC);
     if ii==1
         % After first capture, set noise to photon only
         sensor = sensorSet(sensor,'noise flag',1);
     end
     
-    v(:,:,ii) = sensorGet(sensor,'volts');    
+    v(:,:,ii) = sensorGet(sensor,'volts');
 end
 close(w)
 
 %% These are the individual sensor frames
 
-ieNewGraphWin; colormap(gray); axis image; axis off
+ieNewGraphWin; colormap(gray(64)); axis image; axis off
 fps = 7;
 for ii=1:nFrames
     imagesc(v(:,:,ii)); pause(1/fps);
@@ -109,21 +109,21 @@ end
 % This is the final, summed voltages for each row.
 final = zeros(sz);
 
-% Each row is read out for some proportion of the capture. 
+% Each row is read out for some proportion of the capture.
 % This is the list of sensor rows that are read out from each image.
 % we will add these in to the final image.
 slist = 1:round(expTime/perRow);
-z = zeros(nFrames,1); 
+z = zeros(nFrames,1);
 z(slist) = 1;
 
 % Sum across a sliding temporal range
-ieNewGraphWin; colormap(gray); axis image; axis off
+ieNewGraphWin; colormap(gray(64)); axis image; axis off
 fps = 7;
 for rr = 1:sz(1)
-    slist = slist+1; 
-    z = zeros(nFrames,1); 
+    slist = slist+1;
+    z = zeros(nFrames,1);
     z(slist) = 1;
-    tmp = squeeze(v(rr,:,:)); 
+    tmp = squeeze(v(rr,:,:));
     final(rr,:) = tmp*z;
     imagesc(final); pause(1/fps);
 end
@@ -138,4 +138,4 @@ ip = ipCompute(ip,srs);
 ieAddObject(ip);
 ipWindow;
 
-%% 
+%%

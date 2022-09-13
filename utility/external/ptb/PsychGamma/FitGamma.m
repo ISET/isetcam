@@ -1,8 +1,8 @@
 function [fit_out,x,fitComment] = ...
-  FitGamma(values_in,measurements,values_out,fitType)
+    FitGamma(values_in,measurements,values_out,fitType)
 % [fit_out,x,fitComment] = ...
 %   FitGamma(values_in,measurements,values_out,[fitType])
-% 
+%
 % Fit a gamma function.  This essentially a driver function.
 % It has two main purposes.
 %
@@ -35,9 +35,9 @@ function [fit_out,x,fitComment] = ...
 % origin for 0 input.  This is because our convention is that gamma
 % correction happens after subtraction of the ambient light.
 %
-% NOTE: FitGammaPow (and perhaps other subroutines) uses CONSTR, which is part of the 
+% NOTE: FitGammaPow (and perhaps other subroutines) uses CONSTR, which is part of the
 % Mathworks Optimization Toolbox.
-% 
+%
 % Also see FitGammaDemo.
 
 % 10/3/93   dhb		Removed polynomial fit from list tried with fitType == 0.
@@ -70,22 +70,22 @@ error = zeros(nFitTypes,nDevices);
 
 % Handle force fittting
 if (nargin < 4 || isempty(fitType))
-  fitType = 0;
+    fitType = 0;
 end
 
 % Fit with simple power function through origin
 if (fitType == 0 || fitType == 1 || fitType == 2)
-  disp('Fitting with simple power function');
-  fit_out1 = zeros(nOut,nDevices);
-  [nParams] = size(InitialXPow,1);
-  x1 = zeros(nParams,nDevices);
-  for i = 1:nDevices
-    x0 = InitialXPow;
-    [fit_out1(:,i),x1(:,i),error(1,i)] = ...
-      FitGammaPow(values_in(:,i),measurements(:,i),values_out,x0);
-    fprintf('Exponent for device %d is %g\n',i,x1(:,i));
-  end
-  fprintf('Simple power function fit, RMSE: %g\n',mean(error(1,i)));
+    disp('Fitting with simple power function');
+    fit_out1 = zeros(nOut,nDevices);
+    [nParams] = size(InitialXPow,1);
+    x1 = zeros(nParams,nDevices);
+    for i = 1:nDevices
+        x0 = InitialXPow;
+        [fit_out1(:,i),x1(:,i),error(1,i)] = ...
+            FitGammaPow(values_in(:,i),measurements(:,i),values_out,x0);
+        fprintf('Exponent for device %d is %g\n',i,x1(:,i));
+    end
+    fprintf('Simple power function fit, RMSE: %g\n',mean(error(1,i)));
 end
 
 % Fit with extended power function.  Use power function
@@ -93,16 +93,16 @@ end
 % vector as input.  This defines the parameters of a good fitting
 % simple power function.
 if (fitType == 0 || fitType == 2)
-  disp('Fitting with extended power function');
-  fit_out2 = zeros(nOut,nDevices);
-  [nParams] = size(InitialXExtP,1);
-  x2 = zeros(nParams,nDevices);
-  for i = 1:nDevices
-    x0 = InitialXExtP(x1(:,i));
-    [fit_out2(:,i),x2(:,i),error(2,i)] = ...
-      FitGammaExtP(values_in(:,i),measurements(:,i),values_out,x0);
-  end
-  fprintf('Extended power function fit, RMSE: %g\n',mean(error(2,i)));
+    disp('Fitting with extended power function');
+    fit_out2 = zeros(nOut,nDevices);
+    [nParams] = size(InitialXExtP,1);
+    x2 = zeros(nParams,nDevices);
+    for i = 1:nDevices
+        x0 = InitialXExtP(x1(:,i));
+        [fit_out2(:,i),x2(:,i),error(2,i)] = ...
+            FitGammaExtP(values_in(:,i),measurements(:,i),values_out,x0);
+    end
+    fprintf('Extended power function fit, RMSE: %g\n',mean(error(2,i)));
 end
 
 % Fit with a sigmoidal shape.  This works well for
@@ -110,31 +110,31 @@ end
 % a two vector as input.  This defines roughly the input for
 % half maximum and the maximum output value.
 if (fitType == 0 || fitType == 3)
-  disp('Fitting with sigmoidal function');
-  fit_out3 = zeros(nOut,nDevices);
-  [nParams] = size(InitialXSig,1);
-  x3 = zeros(nParams,nDevices);
-  for i = 1:nDevices
-    maxVals = max(values_in(:,i));
-    x0 = InitialXSig(maxVals'/2);
-    [fit_out3(:,i),x3(:,i),error(3,i)] = ...
-      FitGammaSig(values_in(:,i),measurements(:,i),values_out,x0);
-  end
-  fprintf('Sigmoidal fit, RMSE: %g\n',mean(error(3,i)));
+    disp('Fitting with sigmoidal function');
+    fit_out3 = zeros(nOut,nDevices);
+    [nParams] = size(InitialXSig,1);
+    x3 = zeros(nParams,nDevices);
+    for i = 1:nDevices
+        maxVals = max(values_in(:,i));
+        x0 = InitialXSig(maxVals'/2);
+        [fit_out3(:,i),x3(:,i),error(3,i)] = ...
+            FitGammaSig(values_in(:,i),measurements(:,i),values_out,x0);
+    end
+    fprintf('Sigmoidal fit, RMSE: %g\n',mean(error(3,i)));
 end
 
 % Fit with Weibull
 if (fitType == 0 || fitType == 4)
-  disp('Fitting with Weibull function');
-  fit_out4 = zeros(nOut,nDevices);
-  [nParams] = size(InitialXWeib(values_in(:,1),measurements(:,1)),1);
-  x4 = zeros(nParams,nDevices);
-  for i = 1:nDevices
-    x0 = InitialXWeib(values_in(:,i),measurements(:,i));
-    [fit_out4(:,i),x4(:,i),error(4,i)] = ...
-      FitGammaWeib(values_in(:,i),measurements(:,i),values_out,x0);
-  end
-  fprintf('Weibull function fit, RMSE: %g\n',mean(error(4,i)));
+    disp('Fitting with Weibull function');
+    fit_out4 = zeros(nOut,nDevices);
+    [nParams] = size(InitialXWeib(values_in(:,1),measurements(:,1)),1);
+    x4 = zeros(nParams,nDevices);
+    for i = 1:nDevices
+        x0 = InitialXWeib(values_in(:,i),measurements(:,i));
+        [fit_out4(:,i),x4(:,i),error(4,i)] = ...
+            FitGammaWeib(values_in(:,i),measurements(:,i),values_out,x0);
+    end
+    fprintf('Weibull function fit, RMSE: %g\n',mean(error(4,i)));
 end
 
 % Fit with polynomial.  InitalXPoly is used mostly for consistency
@@ -142,39 +142,39 @@ end
 % fit to start the search.  But it serves to implicitly defines the
 % order of the polynomial.
 if (fitType == 0 || fitType == 5)
-  disp('Fitting with polynomial');
-  fit_out5 = zeros(nOut,nDevices);
-  [order5] = size(InitialXPoly,1);
-  x5 = zeros(order5,nDevices);
-  for i = 1:nDevices
-    [fit_out5(:,i),x5(:,i),error(5,i)] = ...
-       FitGammaPoly(values_in(:,i),measurements(:,i),values_out);
-  end
-  fprintf('Polynomial fit, order %g, RMSE: %g\n',order5,mean(error(5,i)));
+    disp('Fitting with polynomial');
+    fit_out5 = zeros(nOut,nDevices);
+    [order5] = size(InitialXPoly,1);
+    x5 = zeros(order5,nDevices);
+    for i = 1:nDevices
+        [fit_out5(:,i),x5(:,i),error(5,i)] = ...
+            FitGammaPoly(values_in(:,i),measurements(:,i),values_out);
+    end
+    fprintf('Polynomial fit, order %g, RMSE: %g\n',order5,mean(error(5,i)));
 end
 
 % Linear interpolation.  Variable x is bogus here, but
 % we fill it in to keep the accountants upstream happy.
 if (fitType == 6)
-	disp('Fitting with linear interpolation');
-  fit_out6 = zeros(nOut,nDevices);
-  for i = 1:nDevices
-    [fit_out6(:,i)] = ...
-       FitGammaLin(values_in(:,i),measurements(:,i),values_out);
-  end
-	x6 = [];
+    disp('Fitting with linear interpolation');
+    fit_out6 = zeros(nOut,nDevices);
+    for i = 1:nDevices
+        [fit_out6(:,i)] = ...
+            FitGammaLin(values_in(:,i),measurements(:,i),values_out);
+    end
+    x6 = [];
 end
 
 % Cubic spline.  Variable x is bogus here, but
 % we fill it in to keep the accountants upstream happy.
 if (fitType == 7)
-	disp('Fitting with cubic spline');
-  fit_out7 = zeros(nOut,nDevices);
-  for i = 1:nDevices
-    [fit_out7(:,i)] = ...
-       FitGammaSpline(values_in(:,i),measurements(:,i),values_out);
-  end
-	x7 = [];
+    disp('Fitting with cubic spline');
+    fit_out7 = zeros(nOut,nDevices);
+    for i = 1:nDevices
+        [fit_out7(:,i)] = ...
+            FitGammaSpline(values_in(:,i),measurements(:,i),values_out);
+    end
+    x7 = [];
 end
 
 % If we are not forcing a fit type, find best fit.
@@ -183,49 +183,49 @@ end
 % In principle, could use best fit type for each device.  But
 % that would make the interface tricky.
 if (fitType == 0)
-  meanErr = mean(error,2);
-  [minErr,bestFit] = min(meanErr);
-  fitType = bestFit;
+    meanErr = mean(error,2);
+    [minErr,bestFit] = min(meanErr);
+    fitType = bestFit;
 end
 
 if (fitType == 1)
-  fit_out = fit_out1;
-  x = x1;
-  fitComment = (sprintf('Simple power function fit, RMSE: %g',...
-    mean(error(1,:))));
+    fit_out = fit_out1;
+    x = x1;
+    fitComment = (sprintf('Simple power function fit, RMSE: %g',...
+        mean(error(1,:))));
 elseif (fitType == 2)
-  fit_out = fit_out2;
-  x = x2;
-  fitComment = (sprintf('Extended power function fit, RMSE: %g',...
-    mean(error(2,:))));
+    fit_out = fit_out2;
+    x = x2;
+    fitComment = (sprintf('Extended power function fit, RMSE: %g',...
+        mean(error(2,:))));
 elseif (fitType == 3)
-  fit_out = fit_out3;
-  x = x3;
-  fitComment = (sprintf('Sigmoidal fit, RMSE: %g',...
-    mean(error(3,:))));
+    fit_out = fit_out3;
+    x = x3;
+    fitComment = (sprintf('Sigmoidal fit, RMSE: %g',...
+        mean(error(3,:))));
 elseif (fitType == 4)
-  fit_out = fit_out4;
-  x = x4;
-  fitComment = (sprintf('Weibull fit, RMSE: %g',...
-    mean(error(4,:))));
+    fit_out = fit_out4;
+    x = x4;
+    fitComment = (sprintf('Weibull fit, RMSE: %g',...
+        mean(error(4,:))));
 elseif (fitType == 5)
-  fit_out = fit_out5;
-  x = x5;
-  fitComment = (sprintf('Polynomial fit, RMSE: %g',...
-    mean(error(5,:))));
+    fit_out = fit_out5;
+    x = x5;
+    fitComment = (sprintf('Polynomial fit, RMSE: %g',...
+        mean(error(5,:))));
 elseif (fitType == 6)
-  fit_out = fit_out6;
-  x = x6;
-  fitComment = (sprintf('Linear interpolation fit'));
+    fit_out = fit_out6;
+    x = x6;
+    fitComment = (sprintf('Linear interpolation fit'));
 elseif (fitType == 7)
-  fit_out = fit_out7;
-  x = x7;
-  fitComment = (sprintf('Cubic spline fit'));
+    fit_out = fit_out7;
+    x = x7;
+    fitComment = (sprintf('Cubic spline fit'));
 end
 
 % Check that fit is non-decreasing
 if (CheckMonotonic(fit_out) == 0)
-  disp('Warning, fit is not non-decreasing');
+    disp('Warning, fit is not non-decreasing');
 end
 
 

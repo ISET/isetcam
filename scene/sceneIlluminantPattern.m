@@ -59,7 +59,7 @@ illPhotons = sceneGet(scene,'illuminant photons');
 
 for ii=1:nWave
     photons(:,:,ii)    = photons(:,:,ii) .* pattern;
-    illPhotons(:,:,ii) = illPhotons(:,:,ii) .* pattern; 
+    illPhotons(:,:,ii) = illPhotons(:,:,ii) .* pattern;
 end
 
 scene = sceneSet(scene,'photons',photons);

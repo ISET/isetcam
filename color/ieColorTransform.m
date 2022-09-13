@@ -11,7 +11,7 @@ function T = ieColorTransform(sensor,targetSpace,illuminant,surface)
 % The default method is to find a linear transformation that maps the the
 % sensor responses to the Macbeth ColorChecker into the Macbeth
 % ColorChecker values in XYZ under D65 using a least-squares minimization.
-% 
+%
 % Optionally, the user can send in a spectral file name that contains a
 % different surface set (surface) or a file name that contains a
 % different illuminant (illuminant).
@@ -27,10 +27,10 @@ function T = ieColorTransform(sensor,targetSpace,illuminant,surface)
 % alternative is to minimize a weighted sum of the mean error and the
 % noise error.  (Ulrich Barnhoefer, SPIE paper).
 %
-% We will aso build more complex maps, based on the Manifold methods,
+% We will aso build more complex maps, based on the Manifold methods
 % and return a lookup table for the transformation. (Jeff DiCarlo, JOSA
 % paper)
-%    
+%
 % Examples:
 %    sensor = vcGetObject('sensor');
 %    T = ieColorTransform(sensor,'XYZ','D65','mcc')
@@ -62,7 +62,7 @@ switch lower(targetSpace)
         % specific surface reflectance target under some illuminant.
         
         % Make case correct for filename
-        if     isequal(lower(targetSpace),'xyz'),     targetSpace = 'xyz'; 
+        if     isequal(lower(targetSpace),'xyz'),     targetSpace = 'xyz';
         elseif isequal(lower(targetSpace),'stockman'),targetSpace = 'stockman';
         end
         targetSpace = which(sprintf('%sQuanta.mat',targetSpace));
@@ -99,7 +99,7 @@ function T = linearsrgb(sensorQE,illuminant,wave)
 %
 % We read the MCC values in sRGB space (linear RGB).  The patch order in
 % this file is based on ImagEval history, not the official Macbeth
-% definition. 
+% definition.
 %
 % Probably, we should calculate the linear sRGB values for the set of
 % surfaces that are sent in.  I think this is fairly straightforward and
@@ -123,7 +123,7 @@ idealMacbeth = mcc.lrgbValuesMCC;
 % Get the MCC surface spectra and the illuminant.  Combine them to
 % estimate the sensor responses.
 % fName = fullfile(isetRootPath,'data','surfaces','macbethChart');
-% 
+%
 % surRef = ieReadSpectra(fName,wave);
 surRef = macbethReadReflectance(wave);
 

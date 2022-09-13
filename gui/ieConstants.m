@@ -1,5 +1,5 @@
 function val = ieConstants(con)
-%Return values of physical constants used by ISET. 
+%Return values of physical constants used by ISET.
 %
 %      val = ieConstants(constantName)
 %
@@ -42,13 +42,13 @@ return;
 
 % Other possible constants.
 %
-% % frequency of visible lights (370nm - 730nm) : 
+% % frequency of visible lights (370nm - 730nm) :
 % vcConstants.nu = 3e8./((370:730)'*1e-9);        % [1/s]
-% 
+%
 % % energy of photons in visible range :
 % vcConstants.h_nu = 6.62e-34.*vcConstants.nu; 	 % [J]
-% 
-% % Room Temperature : 
+%
+% % Room Temperature :
 % vcConstants.T= 300; 			         % [K]
-% 
+%
 

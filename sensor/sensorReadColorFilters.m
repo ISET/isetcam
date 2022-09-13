@@ -32,8 +32,8 @@ switch lower(filterFile)
         fname = fullfile(isetRootPath,'data','sensor','colorfilters','GRBC.mat');
     case 'stockmanabs'
         fname = fullfile(isetRootPath,'data','human','stockman.mat');
-%     case 'mousecolorfilters.mat'
-%         fname = '/home/estelle/psych221/mouseColorFilters.mat';
+        %     case 'mousecolorfilters.mat'
+        %         fname = '/home/estelle/psych221/mouseColorFilters.mat';
     otherwise
         if exist(filterFile,'file'), fname = filterFile;
         else                         fname = vcSelectDataFile('sensor','r');

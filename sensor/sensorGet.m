@@ -1,4 +1,4 @@
-function val = sensorGet(sensor,param,varargin)
+function [val, type] = sensorGet(sensor,param,varargin)
 %Get properties and derived quantities from ISET sensor object
 %
 %     val = sensorGet(sensor,param,varargin)
@@ -14,22 +14,22 @@ function val = sensorGet(sensor,param,varargin)
 %  Because of the importance of the pixel structure, it is possible to
 %  retrieve the optics parameters from the sensorGet() function using the
 %  syntax
-% 
-%     sensorGet(sensor,'pixel <parameter name>'), 
+%
+%     sensorGet(sensor,'pixel <parameter name>'),
 %     e.g., sensorGet(oi,'pixel voltage swing');
 %
 %  The key structures (scene, oi, sensor, ip, display) are stored in the
 %  ISET database.  To retrieve the currently selected optical image, use
-%      
+%
 %     sensor = vcGetObject('sensor');
 %
 %  A '*' indicates that the syntax oiGet(scene,param,unit) can be used,
-%  where unit specifies the spatial scale of the returned value:  'm',
+%  where unit specifies the spatial scale of the returned value:  'm'
 %  'cm', 'mm', 'um', 'nm'.  Default is meters ('m').
 %
 %  There is a limitation in that we can only add one additional argument.
-%  So it is possible to call 
-%    
+%  So it is possible to call
+%
 %    sensorGet(sensor,'pixel size','mm')
 %
 %  But we do not add a second argument to the list. If you need to have a
@@ -52,7 +52,7 @@ function val = sensorGet(sensor,param,varargin)
 %    val = sensorGet(sensor,'filtercolornames')
 %    val = sensorGet(sensor,'exposurePlane'); % For bracketing simulation
 %    val = sensorGet(sensor,'response type'); % {'linear','log'}
-% 
+%
 % List of sensor parameters
 %      'name'                 - this sensor name
 %      'type'                 - always 'sensor'
@@ -111,8 +111,7 @@ function val = sensorGet(sensor,param,varargin)
 %           value
 %
 % Sensor roi
-%     'roi' - rectangle representing current region of interest
-%        Additional ROI processing may be inserted in the next few years.
+%     'roi' - rectangle representing current region of interest.
 %
 % Sensor array electrical processing properties
 %      'analog Gain'     - A scale factor that divides the sensor voltage
@@ -362,7 +361,7 @@ switch oType
             case {'chiefrayangledegrees','cradegrees','cradegree','chiefrayangledegree'}
                 % sensorGet(sensor,'chiefRayAngleDegrees',sourceFL)
                 % Returns a matrix containing the chief ray angles of each
-                % pixel 
+                % pixel
                 if isempty(varargin)
                     oi = vcGetObject('oi');
                     if isempty(oi)
@@ -374,7 +373,7 @@ switch oType
                     end
                 else, sourceFL = varargin{1};
                 end
-                val = ieRad2deg(sensorGet(sensor,'cra',sourceFL));
+                val = rad2deg(sensorGet(sensor,'cra',sourceFL));
             case {'etendue','sensoretendue'}
                 % The size of etendue entry matches the row/col size of the sensor
                 % array. The etendue is computed using the chief ray angle at each
@@ -435,7 +434,7 @@ switch oType
             case {'electron','electrons','photons'}
                 % sensorGet(sensor,'electrons');
                 % sensorGet(sensor,'electrons',2);
-                % This is also used for human case, where we call the data photons,
+                % This is also used for human case, where we call the data photons
                 % as in photon absorptions.
                 pixel = sensorGet(sensor,'pixel');
                 val = sensorGet(sensor,'volts')/pixelGet(pixel,'conversionGain');
@@ -447,18 +446,29 @@ switch oType
                 
             case {'dvorvolts'}
                 val = sensorGet(sensor,'dv');
-                if isempty(val), val = sensorGet(sensor,'volts'); end
+                if isempty(val)
+                    val = sensorGet(sensor,'volts');
+                    type = 'volts';
+                else
+                    type = 'dv';
+                end
                 
                 % Region of interest for data handling
             case {'roi','roilocs'}
                 % roiLocs = sensorGet(sensor,'roi');
                 %
-                % This is the default, which is to return the roi as roi
-                % locations, an Nx2 matrix or (r,c) values.
+                % The roi is stored either as a rect or as an Nx2 matrix of
+                % row,col locations.  If the oType is roi we return
+                % whatever is there.  If oType is roilocs, we convert the
+                % rect to locs.
                 if checkfields(sensor,'roi')
                     % The data can be stored as a rect or as roiLocs.
                     val = sensor.roi;
-                    if size(val,2) == 4, val = ieRect2Locs(val); end
+                end
+                
+                % Convert to locs because the user specified roilocs
+                if isequal(param,'roilocs') && size(val,2) == 4
+                    val = ieRect2Locs(val);
                 end
             case {'roirect'}
                 % sensorGet(sensor,'roi rect')
@@ -488,7 +498,7 @@ switch oType
                     val = vcGetROIData(sensor,roiLocs,'electrons');
                 else, warning('ISET:nosensorroi','No sensor.roi field.  Returning empty electron data.');
                 end
-                case {'roidv','roidigitalcount'}
+            case {'roidv','roidigitalcount'}
                 % V = sensorGet(sensor,'roi dv');
                 %
                 % If sensor.roi exists, it is used.  Otherwise, empty
@@ -498,6 +508,7 @@ switch oType
                     val = vcGetROIData(sensor,roiLocs,'dv');
                 else, warning('ISET:nosensorroi','No sensor.roi field.  Returning empty voltage data.');
                 end
+                
             case {'roivoltsmean'}
                 % sensorGet(sensor,'roi volts mean')
                 % Mean value for each of the sensor types
@@ -513,42 +524,75 @@ switch oType
                     end
                 end
             case {'chromaticity'}
-                % rg = sensorGet(sensor,'chromaticity',rect)
-                % Estimate the rg sensor chromaticities
+                % rg = sensorGet(sensor,'chromaticity',rect, mode)
+                % Estimate the sensor chromaticities
                 %
-                % ONLY WORKS WITH Bayer patterns
-                if isempty(varargin), rect = []; 
+                % Options are: varargin{1}: rect. varargin{2}: mode: 2d (matrix) 
+                % or vectorized (vec) chromaticities.
+                if isempty(varargin), rect = [];
                 else, rect = varargin{1};
                 end
                 
+                % By default, mode is vec
+                mode = 'vec';
+                if numel(varargin) == 2
+                    if ismember(varargin{2}, {'vec', 'matrix'})
+                        mode = varargin{2};
+                    else
+                        warning('Mode should be either %s or %s, using matrix', 'vec', 'matrix')
+                    end
+                end
+                
+                
                 % Make sure rect starts at odd numbers and height and width
-                % are odd numbers to align with a Bayer pattern.
+                % are odd numbers to align with a Bayer pattern 
+                % (or at least a even number by even number pattern).
                 lst = ~isodd(rect); rect(lst) = rect(lst)-1;
                 mosaic   = sensorGet(sensor,'volts');
                 mosaicDV = sensorGet(sensor, 'dv');
                 if ~isempty(rect)
                     mosaic = mosaic(rect(2):rect(2)+rect(4),...
-                                    rect(1):rect(1)+rect(3),:); 
+                        rect(1):rect(1)+rect(3),:);
                     if ~isempty(mosaicDV)
                         mosaicDV = mosaicDV(rect(2):rect(2)+rect(4),...
-                                        rect(1):rect(1)+rect(3),:); 
+                            rect(1):rect(1)+rect(3),:);
                     end
                 end
                 
-                val = zeros(size(mosaic, 1) * size(mosaic, 2), 2, size(mosaic, 3));
+                nChannel = numel(unique(sensorGet(sensor, 'pattern')));
                 exp = sensorGet(sensor, 'exp time');
+                switch mode
+                    case 'vec'
+                        res = zeros(size(mosaic, 1) * size(mosaic, 2), nChannel - 1, size(mosaic, 3));
+                    case 'matrix'
+                        res = zeros(size(mosaic, 1), size(mosaic, 2), nChannel - 1, size(mosaic, 3));
+                end
+                                        
                 for ii=1:size(mosaic, 3)
                     % Use ipCompute to interpolate the mosaic and produce a
                     % chromaticity value at every point.
                     sensorC = sensorSet(sensor,'volts',mosaic(:,:,ii));
                     sensorC = sensorSet(sensorC, 'exp time', exp(ii));
                     sensorC = sensorSet(sensorC, 'dv', mosaicDV(:,:,ii));
-                    ip = ipCreate; ip = ipCompute(ip,sensorC); 
-                    rgb = ipGet(ip,'sensor space');   % Just demosaic'd
-                    s = sum(rgb,3); r = rgb(:,:,1)./s; g = rgb(:,:,2)./s;
-
-                    val(:,1,ii) = r(:); val(:,2,ii) = g(:);
+                    ip = ipCreate; ip = ipCompute(ip,sensorC);
+                    imgDemos = ipGet(ip,'sensor space');   % Just demosaic'd
+                    s = sum(imgDemos,3); 
+                    for jj=1:nChannel - 1
+                        thisChannelChrom = imgDemos(:,:,jj)./s;
+                        switch mode
+                            case 'vec'
+                                res(:,jj,ii) = thisChannelChrom(:);
+                            case 'matrix'
+                                res(:,:,jj,ii) = thisChannelChrom;
+                        end
+                            
+                    end
                 end
+                
+                val = squeeze(res);
+            case {'roichromaticitymean'}
+                val = sensorGet(sensor, 'chromaticity', varargin{1});
+                val = nanmean(val, 1);
             case {'roielectronsmean'}
                 % sensorGet(sensor,'roi electrons mean')
                 %   Mean value for each of the sensor types
@@ -828,7 +872,7 @@ switch oType
                     val = sensor.blackLevel;
                 else
                     oiBlack = oiCreate('black');
-                    sensor2 = sensorSet(sensor,'noiseflag','none'); % Little noise
+                    sensor2 = sensorSet(sensor,'noiseflag',0); % Little noise
                     sensor2 = sensorCompute(sensor2,oiBlack);
                     switch sensorGet(sensor,'quantization method')
                         case 'analog'
@@ -962,14 +1006,14 @@ switch oType
                 % If the scene is at infinity, then the focal distance is
                 % the focal length. But if the scene is close, then we
                 % might correct.
-                % 
+                %
                 % But we should probably just compute it assuming the scene
                 % is infinitely far away and the distance to the lens is
                 % the focal distance.
                 %
                 if isempty(varargin) || isempty(varargin{1})
                     scene = ieGetObject('scene');
-                    if isempty(scene), sDist = 1e6; 
+                    if isempty(scene), sDist = 1e6;
                     else,              sDist = sceneGet(scene,'distance');
                     end
                 else
@@ -991,7 +1035,7 @@ switch oType
                     distance = oiGet(oi,'optics focal plane distance',sDist);
                 end
                 width = sensorGet(sensor,'arraywidth');
-                val = ieRad2deg(2*atan(0.5*width/distance));
+                val = rad2deg(2*atan(0.5*width/distance));
                 
             case {'fovvertical','vfov','fovv'}
                 % This is  the vertical field of view
@@ -1004,7 +1048,7 @@ switch oType
                 % surface and we also use the sensor array width.
                 % The assumption here is that the sensor is at the proper focal
                 % distance for the scene.  If the scene is at infinity, then the
-                % focal distance is the focal length.  But if the scene is close,
+                % focal distance is the focal length.  But if the scene is close
                 % then we might correct.
                 %
                 if ~isempty(varargin), scene = varargin{1};
@@ -1034,7 +1078,7 @@ switch oType
                 end
                 
                 height = sensorGet(sensor,'array height');
-                val = ieRad2deg(2*atan(0.5*height/distance));
+                val = rad2deg(2*atan(0.5*height/distance));
                 
             case {'hdegperpixel','degpersample','degreesperpixel'}
                 % degPerPixel = sensorGet(sensor,'h deg per pixel',oi);

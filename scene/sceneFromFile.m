@@ -1,5 +1,5 @@
-function [scene,I] = sceneFromFile(I, imType, meanLuminance, dispCal, ...
-    wList, varargin)
+function [scene,I, basisF] = sceneFromFile(I, imType, meanLuminance, dispCal, ...
+    wList, basisAlter, varargin)
 % Create an ISETCam scene structure by reading data from a file
 %
 % Synopsis:
@@ -9,19 +9,27 @@ function [scene,I] = sceneFromFile(I, imType, meanLuminance, dispCal, ...
 %
 % Inputs:
 %  imageData: Typically, this is the name of an RGB image file.  But, it
-%             may also be 
+%             may also be
 %              * RGB data, rather than the file name
 %              * A file that contains a scene structure
-%  imageType: 'multispectral' or 'rgb' or 'monochrome'
-%              When 'rgb', the imageData might be RGB format.
+%  imageType: 'spectral', 'rgb' or 'monochrome'
+%              When 'rgb', the imageData might be RGB format. 'spectral'
+%              includes both multispectral and hyperspectral.
 %  dispCal:   A display structure used to convert RGB to spectral data.
+%
 %             For the typical case an emissive display the illuminant SPD is
-%             modeled and set to the white point of the display
+%             modeled and set to the white point of the display.
+%
+%             displayCreate implements a special case (by default) we call
+%             'reflectance-display'.  That display has the properties that
+%             the RGB data are rendered under a D65 illuminant and the
+%             surface reflectances fall within a 3D linear model of natural
+%             surface reflectances.
 %             Unusual cases:
 %              (a) If sub-pixel modeling is required varargin{1} is set to
 %                  true, (default is false)
 %              (b) If a reflective display is modeled, the illuminant is
-%                  required and passed in as varargin{2} 
+%                  required and passed in as varargin{2}
 %  wList:     The scene wavelength samples
 %
 % Returns;
@@ -30,7 +38,7 @@ function [scene,I] = sceneFromFile(I, imType, meanLuminance, dispCal, ...
 % Description
 %  The data in the image file are converted into spectral format and placed
 %  in an ISETcam scene data structure. The allowable imageTypes are
-%  monochrome, rgb, multispectral and hyperspectral. If you do not specify,
+%  monochrome, rgb, multispectral and hyperspectral. If you do not specify
 %  and we cannot infer, then you may be asked.
 %
 %  If the image is RGB format, you may specify a display calibration file
@@ -113,12 +121,17 @@ if ischar(I)
     
     % No extension, so check whether the mat-file exists
     if isempty(e), I = fullfile(p,[n,'.mat']); end
-    if exist(I,'file') 
+    if exist(I,'file')
         if strcmp(I((end-2):end),'mat')
             if ieVarInFile(I, 'scene'), load(I,'scene'); return; end
         end
     else, error('No file named %s\n',I);
     end
+end
+
+% Newly added basisalter
+if notDefined('basisAlter')
+    basisAlter = 'none';
 end
 %% Determine the photons and illuminant structure
 
@@ -146,13 +159,66 @@ switch lower(imType)
             d = displaySet(d,'wave',wList);
         end
         wave  = displayGet(d, 'wave');
-
+        
         % get additional parameter values
         if ~isempty(varargin), doSub = varargin{1}; else, doSub = false; end
         if length(varargin) > 2, sz = varargin{3};  else, sz = []; end
         
         % read radiance / reflectance
-        photons = vcReadImage(I, imType, d, doSub, sz);
+        switch ieParamFormat(basisAlter)
+            case 'none'
+                photons = vcReadImage(I, imType, d, doSub, sz);
+            case {'xyzmatch', 'xyznonneg', 'xyznonnegstrict'}
+                % This is the case we want XYZ of image + basis could equal 
+                % to XYZ of img convert from srgb to xyz space.
+                % 
+                % Get srgb2xyz matrix
+                srgb2xyz = colorTransformMatrix('srgb2xyz');
+                srgb2xyzCol = srgb2xyz';
+                XYZcmf = double(ieReadSpectra('XYZEnergy.mat', wave));
+                basisF = double(displayGet(d, 'spd primaries')); % basis
+                if max(I(:)) > 1
+                    I = im2double(I);
+                end
+                [Ixw, r, c] = RGB2XWFormat(I);
+                XYZBasis = XYZcmf' * basisF;
+                % For each pixel with p = [R, G, B], the XYZ value would be:
+                % XYZval = srgb2xyz' * p'; where p is n x 3
+                % The goal is to apply a T such that the mapped XYZ will match with sRGB
+                % display:
+                % XYZval =  XYZcmf' * basis * T * p'
+                % So the goal is to make srgb2xyz' = T * XYZcmf' * basis, aka:
+                % XYZcmf' * basis * T = srgb2xyz';
+                T = pinv(XYZBasis) * srgb2xyzCol;
+                % If current pixel values create negative values, apply a
+                % ratio on three channels to make it nonnegative.
+                if isequal(basisAlter, 'xyznonneg')
+                    spectraRec = basisF * T * Ixw';
+                    sumF = sum(basisF * T * [1, 1, 1]', 2);
+                    ratio = spectraRec./sumF;
+                    rMin = min(ratio(:));
+                    if rMin < 0
+                        Ixw = Ixw + abs(rMin) + 100 * eps;
+                    end
+                end
+             %{
+                img = XW2RGBFormat(Ixw, r, c);
+                ieNewGraphWin; imagesc(img);
+                ieNewGraphWin; imagesc(I);
+                spectraCheck = basisF * T * Ixw';
+                tmp = min(spectraCheck', [], 2);
+                res = find(tmp < 0);
+                size(res)
+             %}
+             I = XW2RGBFormat(Ixw * T', r, c);
+             % spdCheck = primarySPD * T * Ixw'; min(spdCheck(:))
+             %{ 
+                recXYZ = XW2RGBFormat((XYZcmf' * primarySPD * T * Ixw')', r, c);
+                ieNewGraphWin; imagesc(recXYZ);
+             %}
+             photonXW = Energy2Quanta(wave, (basisF * T * Ixw'))';
+             photons = XW2RGBFormat(photonXW, r, c);
+        end
         
         % Match the display wavelength and the scene wavelength
         scene = sceneCreate('rgb');
@@ -180,7 +246,7 @@ switch lower(imType)
         scene = sceneSet(scene, 'illuminant', il);
         
         % Compute photons for reflective display
-        % For reflective display, until this step the photon variable 
+        % For reflective display, until this step the photon variable
         % stores reflectance information
         if ~displayGet(d, 'is emissive')
             il_photons = illuminantGet(il, 'photons', wave);
@@ -192,14 +258,14 @@ switch lower(imType)
         scene = sceneSet(scene, 'distance', displayGet(d, 'distance'));
         
         % Set field of view
-        if ischar(I), imgSz = size(imread(I), 2); 
-        else, imgSz = size(I, 2); 
+        if ischar(I), imgSz = size(imread(I), 2);
+        else, imgSz = size(I, 2);
         end
         imgFov = imgSz * displayGet(d, 'deg per dot');
         scene  = sceneSet(scene, 'h fov', imgFov);
         scene  = sceneSet(scene,'distance',displayGet(d,'viewing distance'));
-
-    case {'multispectral','hyperspectral'}
+        
+    case {'spectral','multispectral','hyperspectral'}
         if ~exist(I,'file'), error('Name of existing file required for multispectral'); end
         if notDefined('wList'), wList = []; end
         
@@ -214,7 +280,7 @@ switch lower(imType)
         % Override the default spectrum with the basis function
         % wavelength sampling.
         scene = sceneSet(scene,'wave',basis.wave);
-           
+        
         % Sometimes we store scene names in the file, too
         if ischar(I) && ieVarInFile(I,'name')
             load(I,'name')
@@ -243,7 +309,7 @@ scene = sceneSet(scene, 'illuminant', il);
 % Name the scene with the file name or just announce that we received rgb
 % data.  Also, check whether the file contains 'fov' and 'dist' variables
 % and stick them into the scene if they are there
-if ischar(I) 
+if ischar(I)
     [~, n, ~] = fileparts(I);  % This will be the name
     if strcmp(I((end-2):end),'mat') && ieVarInFile(I,'fov')
         load(I,'fov'); scene = sceneSet(scene,'fov',fov);
@@ -258,6 +324,9 @@ if exist('d', 'var'), n = [n ' - ' displayGet(d, 'name')]; end
 scene = sceneSet(scene,'name',n);
 
 if ~notDefined('meanLuminance')
+    curMeanLum = sceneGet(scene, 'mean luminance');
+    lumRatio = meanLuminance/curMeanLum;
+    I = I * lumRatio;
     scene = sceneAdjustLuminance(scene,meanLuminance); % Adjust mean
 end
 
@@ -268,4 +337,10 @@ if ~notDefined('wList')
     end
 end
 
+end
+
+function [c, ceq] = basisConstrainCreate(T, basis, imgXW)
+% https://www.mathworks.com/matlabcentral/answers/102051-how-do-i-pass-additional-parameters-to-the-constraint-and-objective-functions-in-the-optimization-to
+c = -basis * T * imgXW';
+ceq = [];
 end

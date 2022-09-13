@@ -25,7 +25,7 @@ tData = RGB2XWFormat(tData);
 oData = RGB2XWFormat(oData);
 
 % Matrix inversion - no correction for noise or white weighting
-% desired = T*actual 
+% desired = T*actual
 T = tData' / oData';
 
 % predicted = T*oData;

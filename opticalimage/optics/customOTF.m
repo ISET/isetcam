@@ -1,6 +1,6 @@
 function [OTF2D, fSupport] = customOTF(oi,fSupport,wavelength,units)
 %Interpolate optics OTF for shift-invariant calculation in optical image
-% 
+%
 %  [OTF2D,fSupport] = customOTF(oi,[fSupport],[wavelength = :],[units='mm'])
 %
 % In the shift-invariant optics model, custom data are stored in the
@@ -12,9 +12,9 @@ function [OTF2D, fSupport] = customOTF(oi,fSupport,wavelength,units)
 % If we ever have a case when the peak is other than the DC, we have a
 % problem with energy conservation - where did the photons go?
 %
-% The units for the frequency support are cycles/millimeters.  
-% Perhaps we should add a 'units' input argument here. 
-% 
+% The units for the frequency support are cycles/millimeters.
+% Perhaps we should add a 'units' input argument here.
+%
 % Copyright ImagEval Consultants, LLC, 2003.
 %
 % See also: oiCalculateOTF, dlCore.m
@@ -24,10 +24,10 @@ if ieNotDefined('oi'),         error('Optical image required.'); end
 if ieNotDefined('wavelength'), wavelength = oiGet(oi,'wavelength'); end
 
 % In the custom case, I think the units should always be millimeters.
-if ieNotDefined('units'),      units = 'mm'; end  
+if ieNotDefined('units'),      units = 'mm'; end
 
 % These numbers appear a little off when the scene size is odd.
-% 
+%
 if ieNotDefined('fSupport'),   fSupport = oiGet(oi,'fSupport',units); end
 
 fx    = fSupport(:,:,1); fy = fSupport(:,:,2);
@@ -47,7 +47,7 @@ optics     = oiGet(oi,'optics');
 % frequencySupport.  There are some inconsistencies that I don't understand
 % and we have to clarify.
 % BW, 2010 May
-otfSupport = opticsGet(optics,'otfSupport');  
+otfSupport = opticsGet(optics,'otfSupport');
 [X,Y]      = meshgrid(otfSupport.fy,otfSupport.fx);
 
 % Find the OTF at each wavelength. We may be interpolating from the custom
@@ -55,19 +55,19 @@ otfSupport = opticsGet(optics,'otfSupport');
 if length(wavelength) == 1
     % Should we be interpolating here?
     OTF2D = opticsGet(optics,'otfData',wavelength);
-    % figure(1); mesh(X,Y,OTF2D); 
+    % figure(1); mesh(X,Y,OTF2D);
     % figure(1); mesh(X,Y,abs(OTF2D))
     
     % See s_FFTinMatlab to understand the logic of the operations here.
     %
     % We interpolate the stored OTF2D onto the support grid for the
-    % optical image. 
+    % optical image.
     % The OTF2D representation is on a frequency representation where DC is
-    % in (1,1), so we would want the fSupport to run from 1:N.  
-    % The fSupport that comes here, however, has the OTF2D from -N:N.  
+    % in (1,1), so we would want the fSupport to run from 1:N.
+    % The fSupport that comes here, however, has the OTF2D from -N:N.
     % To make things match up, we apply an fftshift to the OTF2D data prior to
     % interpolating.
-    %    foo    = interp2(X, Y, fftshift(OTF2D), fx, fy, '*linear');
+    %    foo    = interp2(X, Y, fftshift(OTF2D), fx, fy, 'linear');
     %    figure(1); mesh(fx,fy,foo);
     %    OTF2D = fftshift(foo);
     %    figure(1); mesh(fx,fy,OTF2D); OTF2D(1,1)
@@ -79,15 +79,15 @@ if length(wavelength) == 1
     % case of the filtered font.  We are tracking this down.  Odd and even
     % scene size is an issue.
     % Changed to ifftshift from fftshift on June 19,2011, as per AL
-    OTF2D    = ifftshift(interp2(X, Y, fftshift(OTF2D), fx, fy, '*linear',0));
-
+    OTF2D    = ifftshift(interp2(X, Y, fftshift(OTF2D), fx, fy, 'linear',0));
+    
 else
     % disp('Warning:  unverified customOTF using multiple wavelengths')
     OTF2D = zeros(nY,nX,nWave);
     for ii=1:length(wavelength)
         tmp = opticsGet(optics,'otfData',wavelength(ii));
         OTF2D(:,:,ii) = ...
-            fftshift(interp2(X, Y, fftshift(tmp), fx, fy, '*linear',0));
+            fftshift(interp2(X, Y, fftshift(tmp), fx, fy, 'linear',0));
     end
 end
 

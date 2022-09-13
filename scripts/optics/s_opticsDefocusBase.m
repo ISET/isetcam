@@ -3,7 +3,7 @@
 % Description:
 %  Uses the wavefront method to create diffraction-limited shift-invariant
 %  optics with a 17 mm focal length (58 D power). Then introduce D diopters
-%  of defocus and recompute.  Repeat this for an 8 mm focal length lens,
+%  of defocus and recompute.  Repeat this for an 8 mm focal length lens
 %  showing the change from the same D diopters.
 %
 %  Show the impact on rendering the radial line scene and show the impact
@@ -38,7 +38,7 @@ oiPlot(oi,'illuminance hline',[1,50]);
 title(sprintf('Defocus %.1f D on Power %.1f',D,1/oiGet(oi,'wvf focal length')));
 
 fprintf('\n---------\n');
-flength = oiGet(oi,'wvf focal length','m');      % 
+flength = oiGet(oi,'wvf focal length','m');      %
 pDiameter = oiGet(oi,'wvf pupil diameter','m');  % mm
 fprintf('Focal length   %f m (%f power)\nPupil diameter %f m\n',flength,(1/flength),pDiameter);
 fprintf('F number       %f\n',oiGet(oi,'wvf fnumber'));

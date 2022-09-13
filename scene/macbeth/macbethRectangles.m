@@ -31,7 +31,7 @@ if ieNotDefined('cornerPoints'), error('Point corners required'); end
 
 % cornerpoints are (x,y) (col,row) format.
 cornerPoints = fliplr(cornerPoints);
- 
+
 % cornerPoints contains the positions of the location of the four
 % corners.
 mWhite = cornerPoints(1,:);
@@ -106,6 +106,6 @@ pSize = 2*delta + 1;
 % Debug:
 % Put up the mean locations in the sensor image
 % plot(mLocs(2,:),mLocs(1,:),'wo')
-  
+
 end
 

@@ -27,7 +27,7 @@ function fName = animatedGif(pImg,fName,deltaT,c_map)
 % pImg = 255*pImg;
 % mplay(pImg);
 %
-% 
+%
 % See also:  ctToolbox/ctScripts/presentations/p_Microsoft2013XX
 %
 % BW,HJ PDCSOFT Team 2013
@@ -44,7 +44,7 @@ loops=65535;
 delay1 = deltaT;
 delay2 = deltaT;
 
-for ii=1:size(pImg,3)  
+for ii=1:size(pImg,3)
     M = uint8(pImg(:,:,ii));
     if ii==1
         imwrite(M,c_map,fName,'gif','LoopCount',loops,'DelayTime',delay1)

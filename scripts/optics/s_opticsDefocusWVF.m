@@ -1,4 +1,4 @@
-%% Calculating a diffraction limited, but defocused, image 
+%% Calculating a diffraction limited, but defocused, image
 %
 % s_opticsDefocusWVF
 %

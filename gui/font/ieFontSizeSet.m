@@ -4,22 +4,22 @@ function fSize = ieFontSizeSet(fig,fSize)
 %  fSize = ieFontSizeSet(fig,fSize);
 %
 % Input
-%  fig:   An app window. Used to be a handle to the
-%         figure of, say, the scene or oi window or the 
-%         
+%  fig:   A window. Say, the scene or oi window or the sensor or the
+%         image processor!  Usually this is app.figure1.
+%
 %  fSize: The font size you want for this app window
-%        If fSize is 0, we are simply refreshing the window
-%        if fSize is missing, we bring up a window and ask the user
-%        Otherwise, we uset the actual fSize value
+%        If fSize is 0, we use the saved value in the pref ISET.fontSize 
+%        If fSize is not supplied, we bring up a window and ask the user
+%        If fSize is a value, we use that value. 
 %
 % Output
 %  fSize: The font size that was set
 %
 % Description
-%  The font size is set to all the text in the window.  The first textbox
-%  in the window is the one that is assigned the fSize passed in here. When
-%  the default size for the text is a little bigger or smaller in the
-%  different boxes, the relative amount is preserved.
+%  The font size is set to all the text in the window.  The first
+%  textbox in the window is the one that is assigned the fSize passed
+%  in here. When the default size for the text is a little bigger or
+%  smaller in the different boxes, the relative amount is preserved.
 %
 % Example:
 %  s = sceneCreate; sceneWindow(s);
@@ -35,7 +35,7 @@ function fSize = ieFontSizeSet(fig,fSize)
 
 % Examples:
 %{
-ieFontSizeSet(app,14)
+ieFontSizeSet(app.figure1,14)
 %}
 %% Set up parameters
 
@@ -47,12 +47,12 @@ if checkfields(isetP,'fontSize'),   prefSize = isetP.fontSize;
 else, prefSize = 12;  % Default preference
 end
 
-if ~exist('fSize','var')||isempty(fSize)
+if ~exist('fSize','var') || isempty(fSize)
     % fSize is empty or missing, so ask the user
     fSize = ieReadNumber('Enter font size (7-25): ',prefSize,' %.0f');
     if isempty(fSize), return; end
 elseif fSize == 0
-    % Refresh condition. Use the ISET pref 
+    % Refresh condition. Use the ISET pref
     fSize = prefSize;
 end
 
@@ -65,7 +65,7 @@ fSize = ieClip(fSize,minSize,maxSize);
 % Lets us have multiple font sizes and manage them all.
 
 % Find handles to all the objects that have a font size
-h = findobj(fig.figure1,'-property','FontSize');
+h = findobj(fig,'-property','FontSize');
 for ii=1:numel(h)
     h(ii).FontSize = fSize;
 end

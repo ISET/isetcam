@@ -18,7 +18,7 @@ function [sensor] = PolarToSensor(pol)
 
 [n,m] = size(pol);
 if (n ~= 3)
-  error('Cannot handle polar coordinates with dimension other than 3');
+    error('Cannot handle polar coordinates with dimension other than 3');
 end
 
 sensor = zeros(n,m);

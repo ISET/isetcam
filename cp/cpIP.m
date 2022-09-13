@@ -11,7 +11,7 @@ classdef cpIP < handle
         defaultDisplay = 'OLED-Sony.mat'; % in case this makes a difference
         ip = [];
         insensorIP = false; %merge in RGB space by default
-
+        
     end
     
     methods
@@ -34,7 +34,7 @@ classdef cpIP < handle
         end
         
         % Here we compute the image (in the form of an ip) that we get from
-        % photographing our scene. NOTE: The default ciCamera does not do
+        % photographing our scene. NOTE: The default cpCamera does not do
         % any advanced processing, so it always returns an ip, not an RGB
         % result that has been further processed.
         function ourPhoto = ispCompute(obj, sensorImages, intent, varargin)
@@ -76,7 +76,16 @@ classdef cpIP < handle
                     % old ipBurstMotion  = ipCompute(ipBurstMotion,sensorBurstMotion);
                     obj.ip = ipCompute(obj.ip, sensorImage);
                     ourPhoto = obj.ip;
-                    
+                
+                case 'Video' % make a movie!
+                    % We have sensor renders for debugging, but can do the
+                    % IP version here for a video
+                    ourMovie = VideoWriter();
+                    for ii = 1:numel(sensorImages)
+                        ourIP = ipCompute(obj.ip, sensorImages(ii));
+                        
+                    end
+
                 otherwise
                     % This lower-leval routine is called once we have our sensor
                     % image(s), and generates a final image based on the intent
@@ -84,7 +93,11 @@ classdef cpIP < handle
                     % images?
                     for ii=1:numel(sensorImages)
                         %sensorWindow(sensorImages(ii));
-                        ourPhoto = ipCompute(obj.ip, sensorImages(ii));
+                        % ipCompute returns a vcimage object
+                        % in linear RGB (the results can be converted to
+                        % sRGB)
+                        ourPhotoImage = ipCompute(obj.ip, sensorImages(ii));
+                        ourPhoto = ourPhotoImage.data.result;
                     end
             end
             
@@ -100,6 +113,7 @@ classdef cpIP < handle
                 singleSensor = sensorSet(singleSensor, 'exposure time', ...
                     [sensorGet(singleSensor,'exposure time') sensorGet(sensorArray(ii), 'exposure time')]);
                 singleSensor.data.volts(:,:,ii) = sensorArray(ii).data.volts;
+                singleSensor.data.dv(:,:,ii) = sensorArray(ii).data.dv;
             end
         end
     end

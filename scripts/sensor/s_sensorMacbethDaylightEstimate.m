@@ -11,11 +11,11 @@
 %
 %     C = sum w_i SQE * diag(dayBasis_i) * MCC
 %
-% where 
-%    C are the RGB values of the sensor (3 x 24) 
-%    SQE is the spectral quantum efficiency of the camera, 
-%    dayBasis_i is the ith basis function of the cie daylights, 
-%    MCC columns are the reflectance functions of the Macbeth Color Checker. 
+% where
+%    C are the RGB values of the sensor (3 x 24)
+%    SQE is the spectral quantum efficiency of the camera,
+%    dayBasis_i is the ith basis function of the cie daylights,
+%    MCC columns are the reflectance functions of the Macbeth Color Checker.
 %
 % See also
 %        sensorMacbethDaylightEstimate(sensor,varargin);
@@ -37,7 +37,7 @@ sensorFilters = sensorGet(sensor,'spectral qe');
 
 % Read the daylight basis, which is specified in energy.  Convert the basis
 % terms to photons because we normally compute with photons in ISETCam.
-dayBasis = ieReadSpectra('cieDaylightBasis.mat',wave); 
+dayBasis = ieReadSpectra('cieDaylightBasis.mat',wave);
 dayBasis = Energy2Quanta(wave,dayBasis);
 % plotRadiance(wave,dayBasis);
 
@@ -47,7 +47,7 @@ illuminant = illuminantCreate;
 w = [1 0 0];
 illuminant = illuminantSet(illuminant,'photons',dayBasis*w');
 illPhotons = illuminantGet(illuminant,'photons');
-% plotRadiance(wave,illPhotons); 
+% plotRadiance(wave,illPhotons);
 
 %% Calculate the sensor data
 
@@ -61,7 +61,7 @@ X1 = sensorFilters'*diag(dayBasis(:,1))*reflectance;
 X2 = sensorFilters'*diag(dayBasis(:,2))*reflectance;
 X3 = sensorFilters'*diag(dayBasis(:,3))*reflectance;
 
-%% Stack the three matrices 
+%% Stack the three matrices
 
 % Each matrix is a big column
 X = [X1(:), X2(:), X3(:)];

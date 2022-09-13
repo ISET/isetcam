@@ -39,12 +39,12 @@ function vci = imageSet(vci,param,val,varargin)
 %         'bilinear','adaptive laplacian','laplacian','nearest neighbor'
 %
 %    Computational approach
-%      {'transform method'} - 
-%         'current'  - Use the current transform. 
-%         'new'      - Enter a new matrix manually. 
+%      {'transform method'} -
+%         'current'  - Use the current transform.
+%         'new'      - Enter a new matrix manually.
 %         'adaptive' - Use the image processing algorithms for sensor and
 %                      illuminant corrections to determine the matrix on
-%                      this image  
+%                      this image
 %
 %     Correction of the sensor data to a standard space
 %      {'sensor conversion'}            - Sensor conversion structure
@@ -66,8 +66,8 @@ function vci = imageSet(vci,param,val,varargin)
 %        {'wavelength'}
 %
 %      {'transforms'} - The sensor and illuminant correction transforms
-%                       are stored in this cell array.  
-%       (vci.transform{1}) - sensor conversion transform.  
+%                       are stored in this cell array.
+%       (vci.transform{1}) - sensor conversion transform.
 %              The second is the illuminant correction
 %              The third is the internal color to display
 %
@@ -106,10 +106,10 @@ switch param
     case {'wave','wavelength'}
         vci.spectrum.wave = val;
         
-                
-    % This is a calibrated color space we use for calculating.
-    % Most of the spaces are international standards though we allow the
-    % known sensor spectral QE to be considered calibrated, too.
+        
+        % This is a calibrated color space we use for calculating.
+        % Most of the spaces are international standards though we allow the
+        % known sensor spectral QE to be considered calibrated, too.
     case {'internalcs','internalcolorspace'}
         % Color spaced used for calculations such as color balancing.
         % sensor, XYZ, Stockman, linear srgb
@@ -126,13 +126,13 @@ switch param
         if isempty(val), val = 'None'; end
         vci.demosaic.method = val;
         
-    % Accounting for the difference between the sensors and the internal
-    % color space linear span.
+        % Accounting for the difference between the sensors and the internal
+        % color space linear span.
     case {'conversionsensor'}
         vci.sensorCorrection = val;
     case {'conversionmethodsensor'}
         % Options (10/26/2009):
-        %  'manual matrix entry', 'mcc optimized', 
+        %  'manual matrix entry', 'mcc optimized',
         %  'esser optimized', 'multisurface', 'none'
         if isempty(val), val = 'None'; end
         vci.sensorCorrection.method = val;
@@ -141,13 +141,13 @@ switch param
         % vci = imageSet(vci,'colorconversiontransform',val,1);
         vci.data.transforms{1} = val;
         
-    % Accounting for acquisition illuminant.  This will become much more
-    % complex over time.
+        % Accounting for acquisition illuminant.  This will become much more
+        % complex over time.
     case {'illuminantcorrection','correctionilluminant'}
         vci.illuminantCorrection = val;
     case {'correctionmethodilluminant','illuminantcorrectionmethod'}
         % Possible illuminant correction methods:
-        %  'manual matrix entry', 
+        %  'manual matrix entry',
         %  'grayWorld'
         %  'WhiteWorld'
         %  'None'
@@ -157,15 +157,15 @@ switch param
     case {'illuminantcorrectionmatrix','correctionmatrixilluminant','illuminantcorrectiontransform'}
         % vci = imageSet(vci,'whitebalancetransform',val,2);
         vci.data.transforms{2} = val;
-
-        % Display properties are managed via displayGet/Set. 
+        
+        % Display properties are managed via displayGet/Set.
     case {'display','displaystructure'}
         vci.display = val;
     case {'displayviewingdistance'}
-        % Subject viewing distance in meters, typically 0.5 meters 
+        % Subject viewing distance in meters, typically 0.5 meters
         d = imageGet(vci,'display');
         d = displaySet(d,'viewing distance',val);
-        vci = imageSet(vci,'display',d);       
+        vci = imageSet(vci,'display',d);
     case {'displaydpi'}
         % Pixel density (dots per inch)
         d = imageGet(vci,'display');
@@ -179,7 +179,7 @@ switch param
         % A copy of the sensor data is stored here
         vci.data.input = val;
     case {'result','displayrgb','displayoutput'}
-        % The image processed data 
+        % The image processed data
         vci.data.result = val;
     case {'datawhitepoint','datawp'}
         % Hmm.  Probably used for rendering.
@@ -188,7 +188,7 @@ switch param
     case {'sensorspace'}
         % What is this?  Comment, please.  Should probably go away.
         vci.data.sensorspace = val;
- 
+        
     case {'transforms'}
         % vci = imageSet(vci,'transforms',eye(3),2);
         % vci = imageSet(vci,'transforms',cellArrayOfTransforms);
@@ -220,11 +220,11 @@ switch param
     case {'rendergamma','gamma'}
         vci.render.gamma = val;
         
-    % Consistency (red button)
+        % Consistency (red button)
     case {'consistency','computationalconsistency','parameterconsistency'}
         vci.consistency = val;
-    
-    % Special case for ROIs and macbeth color checker
+        
+        % Special case for ROIs and macbeth color checker
     case {'mccrecthandles'}
         % These are handles to the squares on the MCC selection regions
         % see macbethSelect
@@ -239,14 +239,14 @@ switch param
     case {'mccpointlocs','mcccornerpoints'}
         % Corner points for the whole MCC chart
         vci.mccCornerPoints=  val;
-
-    % Slot for holding a current retangular region of interest    
+        
+        % Slot for holding a current retangular region of interest
     case {'currentrect'}
         % [colMin rowMin width height]
         % Used for ROI display and management.
         vci.currentRect = val;
-
-    % Needs more comments and development    
+        
+        % Needs more comments and development
     case {'combineexposures','combinationmethod'}
         % Method for combining multiple exposures in bracketed case
         % Implemented:
@@ -254,7 +254,7 @@ switch param
         %   Others to come, I hope
         vci.combineExposures = val;
         
-    % Special case for L3 work with unconventional CFAs
+        % Special case for L3 work with unconventional CFAs
     case {'l3'}
         % L^3 (local linear learned) method
         % This should contain all values needed for processing.  None of

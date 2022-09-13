@@ -17,18 +17,18 @@ axis tight
 hold on;
 
 % Load LUT that maps spectral wavelengths to visible colors
-load spectrumLUT 
-%                     bbI       1x1377            11016  double              
-%                     ggI       1x1377            11016  double              
-%                     rrI       1x1377            11016  double              
-%                     xxI       1x1377            11016  double 
+load spectrumLUT
+%                     bbI       1x1377            11016  double
+%                     ggI       1x1377            11016  double
+%                     rrI       1x1377            11016  double
+%                     xxI       1x1377            11016  double
 yyI=interp1(wavelength,tran,xxI); % xxI is resolution of LUT;  may be changed
 irGrayLevel=0.3;
 
 for kk=1:length(xxI) %% Fix gray-level in LUT after finalizing it
     if rrI(kk)==0 && ggI(kk)==0 && bbI(kk)==0
-        rrI(kk)=irGrayLevel; 
-        ggI(kk)=irGrayLevel; 
+        rrI(kk)=irGrayLevel;
+        ggI(kk)=irGrayLevel;
         bbI(kk)=irGrayLevel;
     end
     line(repmat(xxI(kk),2,1),[0,yyI(kk)],...

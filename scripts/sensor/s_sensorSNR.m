@@ -22,10 +22,10 @@
 %    noisePower = shotSD.^2 + readSD.^2 + dsnuSD.^2 + prnuSD.^2;
 %
 % The noise values are all calculated in electrons, not volts, because the
-% shot noise is Poisson in units (but not volts). 
+% shot noise is Poisson in units (but not volts).
 %
 % Some noise quantities are signal-dependent (shot noise, prnu).
-% Other noise quantities are signal-indpendent (readSD, dsnuSD). 
+% Other noise quantities are signal-indpendent (readSD, dsnuSD).
 %
 % For signal-independent noise quantities, the SNR limit for that type of
 % noise increases as the signal increases.  For signal-dependent quantities
@@ -46,7 +46,7 @@ pixel  = sensorGet(sensor,'pixel');
 vSwing = pixelGet(pixel,'voltageSwing');
 volts = logspace(log10(vSwing)-4,log10(vSwing),20);
 
-% Compute the SNR 
+% Compute the SNR
 SNR = sensorSNR(sensor,volts);
 
 % Plot the relation between mean voltage level and SNR
@@ -55,7 +55,7 @@ semilogx(volts,SNR,'k-');
 grid on; ylabel('SNR (db)'); xlabel('Volts')
 
 %% Another way to do the calculation and plot
-vcNewGraphWin; 
+vcNewGraphWin;
 uData = plotSensorSNR(sensor);
 uData
 
@@ -70,7 +70,7 @@ pixel   = pixelSet(pixel,'readNoiseVolts',10*readN);
 sensor2 = sensorSet(sensor,'pixel',pixel);
 
 % In this case, the read noise is the limiter.
-vcNewGraphWin; 
+vcNewGraphWin;
 plotSensorSNR(sensor2);
 
 %% Now we reduce the read noise a lot
@@ -85,7 +85,7 @@ vcNewGraphWin; plotSensorSNR(sensor3); drawnow;
 % Photoresponse nonuniformity is a percentage that describes how much the
 % slope of the photoresponse function varies across pixels.  The value is
 % always set as a percentage.
-sensor4 = sensorSet(sensor,'gainSD',1.0);  
+sensor4 = sensorSet(sensor,'gainSD',1.0);
 
 % When we make the SNR plot, a third line appears to show the SNR limit
 % from this amount of PRNU.  Notice that at this level, it only influences
@@ -96,7 +96,7 @@ vcNewGraphWin; plotSensorSNR(sensor4); drawnow;
 % highest SNR the sensor can achieve.  At lower levels, the read noise is
 % still the dominant factor.  There is a voltage range at which all of the
 % factors matter.
-sensor4 = sensorSet(sensor,'gainSD',4.0);  
+sensor4 = sensorSet(sensor,'gainSD',4.0);
 vcNewGraphWin; plotSensorSNR(sensor4); drawnow;
 
 %% The effect of DSNU
@@ -122,7 +122,7 @@ vcNewGraphWin; plotSensorSNR(sensor5); drawnow;
 pixel   = pixelSet(pixel,'readNoiseVolts',3*readN);
 
 sensor5 = sensorSet(sensor5,'pixel',pixel);
-sensor5 = sensorSet(sensor5,'gainSD',2.0);  
+sensor5 = sensorSet(sensor5,'gainSD',2.0);
 sensor5 = sensorSet(sensor5,'offsetSD',vSwing*0.005);
 vcNewGraphWin; plotSensorSNR(sensor5);drawnow;
 

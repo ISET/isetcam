@@ -16,7 +16,7 @@ if ieNotDefined('str'), str = 'Enter value'; end
 if ieNotDefined('defaultValue'), defaultValue = 1; end
 if ieNotDefined('fmt'), fmt = '  %.2e'; end
 
-prompt={str}; def={num2str(defaultValue,fmt)}; 
+prompt={str}; def={num2str(defaultValue,fmt)};
 dlgTitle= sprintf('ISET read number'); lineNo=1;
 answer = inputdlg(prompt,dlgTitle,lineNo,def,'on');
 

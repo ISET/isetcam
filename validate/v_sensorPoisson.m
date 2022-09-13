@@ -36,7 +36,7 @@ vcNewGraphWin;
 nSamps = length(e(:));
 eHist = histogram(e(:),'Normalization','probability');
 hold on
-val = iePoisson(lambda,nSamps);
+val = poissrnd(lambda,nSamps);
 pHist = histogram(val(:),'Normalization','probability');
 pHist.NumBins = eHist.NumBins*2;
 hold off
@@ -70,7 +70,7 @@ eHist = histogram(e(:),'Normalization','probability');
 xlabel('Electrons'); ylabel('Count')
 
 
-%% Poisson formula means it should be fit by a Gaussian and 
+%% Poisson formula means it should be fit by a Gaussian and
 % the std dev should be sqrt(mean)
 %
 sd = sqrt(lambda);

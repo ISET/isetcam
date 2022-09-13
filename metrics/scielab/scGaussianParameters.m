@@ -9,7 +9,7 @@ function [x1 x2 x3] = scGaussianParameters(sampPerDeg,params)
 %
 %     [halfwidth weight halfwidth weight ...]
 %
-% There are several versions of the parameters that you can use. 
+% There are several versions of the parameters that you can use.
 % At the moment these are: 'original', 'distribution', 'hires'
 %
 % The original parameters defined in Zhang and Wandell (1996), Table on
@@ -52,7 +52,7 @@ function [x1 x2 x3] = scGaussianParameters(sampPerDeg,params)
 % It is possible that the differences in the spread (which is very blurry
 % for all channels, even the luminance) came about because in the early
 % days there was some confusion about the SD, HWHM, and the various
-% formulae. 
+% formulae.
 %
 % Example:
 %  If we have twice as many samples per degree, we have twice the
@@ -74,7 +74,7 @@ end
 
 switch v
     case {'distribution','johnson'}
-
+        
         % These are the same filter parameters in Z-W distribution and
         % printed in Johnson-Fairchild.  The weights (and apparently the
         % spreads) differ from the paper. Normalizing the weights
@@ -83,7 +83,7 @@ switch v
         x1 = [0.05     1.00327     0.225    0.114416   7.0  -0.117686];
         x2 = [0.0685   0.616725    0.826    0.383275];
         x3 = [0.0920   0.567885    0.6451   0.432115];
-
+        
     case {'original','published1996'}
         % From the original publication by Zhang and Wandell.  Notice that
         % these spreads are approximately half the size of the spreads
@@ -93,13 +93,13 @@ switch v
         x1 = [0.0283    0.921    0.133    0.105    4.336   -0.1080];
         x2 = [0.0392    0.531    0.494    0.33];
         x3 = [0.0536    0.488    0.386    0.371];
-
+        
     case {'hires'}
         % Double the resolution
         x1 = [0.0283/2    0.921    0.133/2    0.105    4.336/2   -0.1080];
         x2 = [0.0392/2    0.531    0.494/2    0.33];
         x3 = [0.0536/2    0.488    0.386/2    0.371];
-
+        
     otherwise
         error('Unknown version %s\n',v);
 end

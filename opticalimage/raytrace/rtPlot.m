@@ -58,7 +58,7 @@ set(figNum,'name',opticsName);
 dataType = ieParamFormat(dataType);
 
 switch lower(dataType)
-
+    
     case {'psf','pointspread','psfsurfacegraph'}
         % rtPlot(oi,'psf',550,1);
         % Plotting parameters
@@ -82,18 +82,18 @@ switch lower(dataType)
         x = opticsGet(optics,'rtPsfSupportCol','um');
         % Center the positions.
         x = x - mean(x(:)); y = y - mean(y(:));
-
+        
         % Retrieve the PSF at wave and field height but no angle.  Why not
         % an angle?
-        % 
+        %
         PSF = rtPSFInterp(optics,fh,0,w);
-
+        
         % Plot the PSF in units of microns
         mesh(y,x,PSF);
         xlabel('Position (microns)'); ylabel('Position (microns)');
-        str = sprintf('PSF\nWave - %.0f nm\nField height - %.2f mm',w,fh);   
+        str = sprintf('PSF\nWave - %.0f nm\nField height - %.2f mm',w,fh);
         title(str);
-
+        
         % Make available for user
         uData.xPos = x; uData.yPos = y;
         uData.PSF = PSF;
@@ -108,20 +108,20 @@ switch lower(dataType)
             w  = str2num(answer{1});
             fh = str2num(answer{2});
         end
-
+        
         optics = oiGet(oi,'optics');
-
+        
         % Plot the PSF in units of microns
         % sSpacing = opticsGet(optics,'rtPsfSpacing','um');
-
+        
         % Re-write using rtPsfSupportRow/Col
         psfSupportX = opticsGet(optics,'rtPsfSupportX','um');
         psfSupportY = opticsGet(optics,'rtPsfSupportY','um');
-
+        
         % To change the number of grid points, change 4 to something else.
         xGrid = ieChooseTickMarks(psfSupportX,4);
         yGrid = ieChooseTickMarks(psfSupportY,4);
-
+        
         count = 1;
         for ii=1:length(fh)
             for jj=1:length(w)
@@ -129,7 +129,7 @@ switch lower(dataType)
                 PSF = PSF/sum(PSF(:));
                 subplot(length(fh),length(w),count)
                 imagesc(psfSupportX,psfSupportY,PSF); axis image
-
+                
                 set(gca,'xcolor',[.5 .5 .5]);
                 set(gca,'ycolor',[.5 .5 .5]);
                 set(gca,'xtick',xGrid,'ytick',yGrid);
@@ -158,39 +158,39 @@ switch lower(dataType)
             w = varargin{1};
             fh = varargin{2};
         end
-
+        
         % fa = 0;
-
+        
         optics = oiGet(oi,'optics');
         xFreq = opticsGet(optics,'rtFreqSupportX','mm');
         yFreq = opticsGet(optics,'rtFreqSupportY','mm');
-
+        
         % Retrieve the PSF at the center of the field (0 height and 0
         % angle)
         PSF = rtPSFInterp(optics,fh,0,w);
-
+        
         OTF = abs(fftshift(fft2(PSF)));
-
+        
         % Plot the OTF in units of cycles per millimeter
         mesh(xFreq,yFreq,OTF);
         xlabel('Frequency (c/mm)'); ylabel('Frequency (c/mm)');
         str = sprintf('OTF %.0f at %.1f mm',w,fh);   title(str);
-
+        
         uData.xFreq = xFreq; uData.yFreq = yFreq;
         uData.OTF = OTF;
         set(gcf,'userdata',uData);
-
+        
     case {'otf550','opticaltransferfunction550'}
         % rtPlot(oi,'otf550');
         optics = oiGet(oi,'optics');
-
+        
         % Retrieve the PSF at the center of the field (0 height and 0
         % angle)
         PSF   = rtPSFInterp(optics,0,0,550);
         xFreq = opticsGet(optics,'rtFreqSupportX','mm');
         yFreq = opticsGet(optics,'rtFreqSupportY','mm');
         OTF = abs(fftshift(fft2(PSF)));
-
+        
         % Plot the PSF in units of microns
         mesh(xFreq,yFreq,OTF);
         xlabel('Frequency (c/mm)'); ylabel('Frequency (c/mm)');
@@ -205,22 +205,22 @@ switch lower(dataType)
         % Only the wavelength
         waveList = opticsGet(optics,'rtriwavelength');
         riFH = opticsGet(optics,'rtrifieldheight','mm');
-
+        
         % Relative illumination is ri(fieldHeight, wave)
         ri = opticsGet(optics,'rtrifunction','mm');
-
+        
         % Odd that ri is (fh,wave) in row,col but the surf needs wave
         % by FH.  This is because surf(X,Y,Z), not
         % surf(row,col,height).
         surf(waveList,riFH,ri)
         xlabel('Wavelength (nm)');  ylabel('Distance (mm)');
         title('Relative illumination');
-
+        
         % Store data in the window
         uData.wave = waveList; uData.fieldHeight = riFH;
         uData.relativeIllumination = ri;
         set(gcf,'userdata',uData);
-
+        
     case {'distortion','di','distimght'}
         % At all wavelengths
         FH = opticsGet(optics,'rtgeomfieldheight','mm');
@@ -231,7 +231,7 @@ switch lower(dataType)
         xlabel('Wavelength (nm)');  ylabel('Field height (mm)');
         zlabel('Height distortion (mm)')
         title('Field distortion (mm)');
-
+        
     case {'distortionw','diw','distimghtw'}
         if ~isempty(varargin)
             w = varargin{1};
@@ -244,29 +244,29 @@ switch lower(dataType)
         plot(FH,diFH - FH,'-x'); axis equal; grid on;
         xlabel('Geometric height (mm)');  ylabel('Distance (mm)');
         title(sprintf('Field distortion (mm) at %.0f',w));
-
+        
     case {'psf550','pointspread550','ps550'}
         optics = oiGet(oi,'optics');
         % sSpacing = opticsGet(optics,'rtPsfSpacing','mm');   % Units of mm
-
+        
         % Retrieve the PSF at the center of the field (0 height and 0
         % angle)
         PSF = rtPSFInterp(optics,0,0,550);
         x = opticsGet(optics,'rtPsfSupportCol','um');
         y = opticsGet(optics,'rtPsfSupportRow','um');
         x = x - mean(x(:)); y = y - mean(y(:));
-
+        
         % Plot the PSF in units of microns
         mesh(y,x,PSF);
         xlabel('Position (microns)'); ylabel('Position (microns)');
         str = sprintf('PSF 550nm');   title(str);
-
+        
     case {'ls550','linespreadfunction550','lsf500'}
         disp('Not yet implemented: ls550')
-
+        
     case {'lswavelength','linespreadfunction','lsfwavelength'}
         disp('Not yet implemented: lswavelength')
-
+        
     otherwise
         error('Unknown rtPlot option.')
 end

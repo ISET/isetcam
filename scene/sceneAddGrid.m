@@ -13,7 +13,7 @@ function scene = sceneAddGrid(scene,pSize,gWidth)
 %
 % Example:
 %   scene = sceneAddGrid(sceneCreate,[16,16],1);
-%   ieAddObject(scene); sceneWindow;
+%   sceneWindow(scene);
 %
 % (c) Imageval Consultants, LLC, 2012
 
@@ -39,7 +39,7 @@ for rr = pSize(1):pSize(1):(sz(1)-1)
         p(gg,:,:) = black;
     end
 end
-for gg = (sz(1) - eWidth + 1):sz(1) 
+for gg = (sz(1) - eWidth + 1):sz(1)
     p(gg,:,:) = black;
 end
 

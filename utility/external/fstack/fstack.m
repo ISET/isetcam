@@ -7,23 +7,23 @@ function im = fstack(imlist, varargin)
 %
 % DESCRIPTION:
 % Generate extended depth-of-field image from focus sequence
-% using noise-robust selective all-in-focus algorithm [1]. 
-% Input images may be grayscale or color. For color images, 
+% using noise-robust selective all-in-focus algorithm [1].
+% Input images may be grayscale or color. For color images,
 % the algorithm is applied to each color plane independently
 %
 % OUTPUTS:
 % im,       is a MxN matrix with the all-in-focus (AIF) image.
-% 
+%
 % INPUTS:
-% images,   is a cell array where each cell is a string with the 
+% images,   is a cell array where each cell is a string with the
 %           path of an image.
-% 
-% Options and their values (default in perenthesis) may be any of 
+%
+% Options and their values (default in perenthesis) may be any of
 % the following:
 %   'nhsize',     Size of focus measure window (9).
 %   'focus',      Vector with the focus of each frame.
 %   'alpha',      A scalar in (0,1]. Default is 0.2. See [1] for details.
-%   'sth',        A scalar. Default is 13. See [1] for details.   
+%   'sth',        A scalar. Default is 13. See [1] for details.
 %
 %For further details, see:
 % [1] Pertuz et. al. "Generation of all-in-focus images by
@@ -40,6 +40,7 @@ opts = parseInputs(imlist, varargin{:});
 M = opts.size(1);
 N = opts.size(2);
 P = opts.size(3);
+nhSize = numel(imlist);
 
 %********* Read images and compute fmeasure **********
 %Initialize:
@@ -47,7 +48,7 @@ fm = zeros(opts.size);
 if opts.RGB
     imagesR = zeros(M, N);
     imagesG = zeros(M, N);
-    imagesB = zeros(M, N);    
+    imagesB = zeros(M, N);
 else
     imagesG = zeros(M, N);
 end
@@ -69,8 +70,8 @@ for p = 1:P
     else
         imagesG(:,:,p) = im;
     end
-    fm(:,:,p) = gfocus(im2double(im), opts.nhsize);
-    fprintf('\b\b\b\b\b[%2.0i%%]',round(100*p/P))
+    fm(:,:,p) = gfocus(im2double(im), nhSize);
+    %fprintf('\b\b\b\b\b[%2.0i%%]',round(100*p/P));
 end
 t1 = toc;
 
@@ -95,14 +96,14 @@ S = 20*log10(1./inv_psnr);
 S(isnan(S))=min(S(:));
 fprintf('\nWeights      ')
 phi = 0.5*(1+tanh(opts.alpha*(S-opts.sth)))/...
-   opts.alpha;
+    opts.alpha;
 phi = medfilt2(phi, [3 3]);
 t2 = toc;
 
 %********** Compute weights: ********************
 tic
 fun = @(phi,fm) 0.5 + 0.5*tanh(phi.*(fm-1));
-for p = 1:P    
+for p = 1:P
     fm(:,:,p) = feval(fun, phi, fm(:,:,p));
     fprintf('\b\b\b\b\b[%2.0i%%]',round(100*p/P))
 end
@@ -173,7 +174,7 @@ end
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-function options = parseInputs(imlist, varargin) 
+function options = parseInputs(imlist, varargin)
 
 % Determine image size and type:
 % Add support for directly passing images

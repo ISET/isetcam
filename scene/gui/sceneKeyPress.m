@@ -28,12 +28,12 @@ switch key
     case 12  % ctrl-L
     case 13  % ctrl-M
     case 14 % ctrl-N
-         sceneWindow('menuEditSceneName_Callback',hObject,eventData,handles);
+        sceneWindow('menuEditSceneName_Callback',hObject,eventData,handles);
     case 15 % ctrl-O
     case 16 % ctrl-P
     case 17 % ctrl-Q
     case 18 % ctrl-R
-         sceneWindow('sceneRefresh',hObject,eventData,handles);
+        sceneWindow('sceneRefresh',hObject,eventData,handles);
     case 19 % ctrl-S
     case 20 % ctrl-T
     case 21 % ctrl-U

@@ -29,8 +29,8 @@ function [scene,rect] = sceneCrop(scene,rect)
 
 if ieNotDefined('scene'), error('You must define a scene.'); end
 
-if ieNotDefined('rect') 
-    [roiLocs,rect] = vcROISelect(scene); 
+if ieNotDefined('rect')
+    [roiLocs,rect] = vcROISelect(scene);
 else
     cmin = rect(1); cmax = rect(1)+rect(3);
     rmin = rect(2); rmax = rect(2)+rect(4);
@@ -49,11 +49,28 @@ photons = XW2RGBFormat(photons,r,c);
 % Now build up the new object.
 scene = sceneClearData(scene);
 scene = sceneSet(scene,'photons',photons);
-[luminance, meanL] = sceneCalculateLuminance(scene); 
+
+% If there is a depth map, we crop it.
+if isfield(scene,'depthMap')
+    dmap  = sceneGet(scene,'depth map');
+    dmap  = imcrop(dmap,rect);
+    scene = sceneSet(scene,'depth map',dmap);
+end
+
+% ZLY: If a spatial spectral illuminant, crop that too.
+if isequal(sceneGet(scene, 'illuminant format'), 'spatial spectral')
+    illPhotons = vcGetROIData(scene,roiLocs,'illuminant photons');
+    illPhotons = XW2RGBFormat(illPhotons, r, c);
+    scene = sceneSet(scene, 'illuminant photons', illPhotons);
+end
+
+% Recalculate the luminance
+[luminance, meanL] = sceneCalculateLuminance(scene);
+
 scene = sceneSet(scene,'luminance',luminance);
 scene = sceneSet(scene,'meanLuminance',meanL);
 
-return;
+end
 
 
 

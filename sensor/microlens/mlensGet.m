@@ -6,30 +6,30 @@ function val = mlensGet(ml,param,varargin)
 % Microlens structure interface routine. This is like all of the
 %
 % Microlens fields
-%     'name' 
+%     'name'
 %     'type' - always microlens
 %     'chief ray angle'   - Chief ray angle in degrees
 %     'chief ray angle radians'
 %
 %  ML optics (the microlens on the sensor)
-%     'ml fnumber'        - 
-%     'ml focal length'*  
-%     'ml diameter'*       
+%     'ml fnumber'        -
+%     'ml focal length'*
+%     'ml diameter'*
 %     'ml refractive index'
 %
 %  Source (imaging lens, usually)
 %     'source flength'*
 %     'source fnumber'
 %     'source diameter'*
-%     'source irradiance'       
-%     'source wavelength'*          
+%     'source irradiance'
+%     'source wavelength'*
 %
 %  ML Position and geometry
-%     'ml offset'    
-%     'optimal offsets'       
-%     'optimal offset'         
-%     'pixel irradiance'        
-%     'space coordinate'    
+%     'ml offset'
+%     'optimal offsets'
+%     'optimal offset'
+%     'pixel irradiance'
+%     'space coordinate'
 %     'angle coordinate'
 %     'pixel distance'*
 %     'pixel position'   - pixel (0,h) and (d,d) coordinates
@@ -40,9 +40,9 @@ function val = mlensGet(ml,param,varargin)
 % Examples:
 %    val = mlensGet(ml,'focallength',f);
 %
-%    pixel = vcGetObject('pixel'); 
+%    pixel = vcGetObject('pixel');
 %    mlensGet(ml,'optimalOffset',pixel,'microns')
-%    
+%
 % Copyright ImagEval Consultants, LLC, 2003.
 
 % Programming
@@ -83,7 +83,7 @@ switch lower(param)
     case {'chiefrayangle','rayangle','chiefray','chiefrayangledegrees'}
         % We always store this in degrees (not radians)
         val = ml.rayAngle;
-   
+        
     case {'chiefrayangleradians'}
         % Stored in degrees
         val = deg2rad(ml.rayAngle);
@@ -99,7 +99,7 @@ switch lower(param)
         %
         if isempty(varargin),   val = ml.focalLength;
         else val = ml.focalLength*ieUnitScaleFactor(varargin{1}); end
-    
+        
     case {'mlfnumber','fnumber','microlensfnumber'}
         % mlensGet(ml,'f number')
         val = ml.fnumber;
@@ -111,11 +111,11 @@ switch lower(param)
         if isempty(varargin),   val = diameter;
         else val = diameter*ieUnitScaleFactor(varargin{1}); end
         
-                        
+        
     case {'microlensrefractiveindex','mlrefindx','mlrefractiveindex'}
         % Should always be there, created in mlensCreate
         if checkfields(ml,'refractiveIndex'),  val = ml.refractiveIndex;
-        else                                   val = 1.5;  
+        else                                   val = 1.5;
         end
         
     case {'microlensoffset','mloffset','offset'}
@@ -128,7 +128,7 @@ switch lower(param)
         % Stored in units of meters
         if isempty(varargin),   val = ml.sourceFocalLength;
         else val = ml.sourceFocalLength*ieUnitScaleFactor(varargin{1}); end
-    
+        
     case {'sourcefnumber','sfnumber'}
         % Focal length divided by diameter
         val = ml.sourceFNumber;
@@ -144,7 +144,7 @@ switch lower(param)
         % Computed by mlRadiance.
         if checkfields(ml,'sourceIrradiance'),val = ml.sourceIrradiance; end
         
-
+        
         % Computed quantities
     case {'optimaloffsets','microoptimaloffsetarray','microoptimaloffsets'}
         % optimalOffsets = mlensGet(ml,'optimal offsets');
@@ -158,10 +158,10 @@ switch lower(param)
             ieAddObject(sensor);
         end
         val = mlOptimalOffsets(ml,sensor);
-       
+        
     case {'optimaloffset','microoptimaloffsetpixel','microoptimaloffset'}
         % mlensGet(ml,'optimalOffset',[unit])
-        % 
+        %
         % Optimal offset for the current microlens position (microns)
         % As of Feb. 2015 positive means towards the origin
         
@@ -171,8 +171,8 @@ switch lower(param)
         if isempty(varargin),   unitName = 'microns';
         else                    unitName = varargin{1};
         end
-
-        cra    = mlensGet(ml,'chief ray angle radians'); 
+        
+        cra    = mlensGet(ml,'chief ray angle radians');
         zStack = sensorGet(s,'pixel layer thicknesses',unitName);
         nStack = sensorGet(s,'pixel refractive indices');
         nStack = nStack(2:(end-1));
@@ -181,9 +181,9 @@ switch lower(param)
         val = 0;
         for ii=1:length(zStack)
             val = zStack(ii)*tan(asin(sin(cra)/nStack(ii))) + val;
-        end 
+        end
         % val = -val;  % Changed sign as of Feb. 2015
-
+        
     case {'pixelirradiance','irradiance','pirradiance'}
         % mlensGet(ml,'pixel irradiance')
         % Should we always compute the pixel irradiance first.
@@ -219,9 +219,9 @@ switch lower(param)
         % The number of pixels away is opposite divided by pixel size
         cra = mlensGet(ml,'chief ray angle radians');
         sfl = mlensGet(ml,'source focal length');
-        val = sfl*tan(cra); 
+        val = sfl*tan(cra);
         if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-
+        
     case {'pixelposition','pixelrowcol'}
         % mlensGet(ml,'pixel position')
         %
@@ -234,7 +234,7 @@ switch lower(param)
         pixSize = sensorGet(vcGetObject('sensor'),'pixel width','um');
         val.hPix = round(d/pixSize);
         val.dPix = round(d/(pixSize*sqrt(2)));
-
+        
     otherwise
         error('Unknown parameter:  %s\n',param);
         
@@ -244,7 +244,7 @@ end
 
 %%
 function optimalOffsets = mlOptimalOffsets(ml,sensor)
-% The optimal microlens offsets across the sensor. 
+% The optimal microlens offsets across the sensor.
 %
 %   optimalOffsets = mlOptimalOffsets(ml,sensor)
 %
@@ -254,8 +254,8 @@ function optimalOffsets = mlOptimalOffsets(ml,sensor)
 
 n2       = mlensGet(ml,'microLens RefractiveIndex');       %
 mlFL     = mlensGet(ml,'ml focal length','microns');
-sourceFL = mlensGet(ml,'source Focal Length','microns'); 
-pixWidth = mlensGet(ml,'diameter','meters');      
+sourceFL = mlensGet(ml,'source Focal Length','microns');
+pixWidth = mlensGet(ml,'diameter','meters');
 
 % Adjust the size of the sensor pixel to match the microlens aperture
 sensor = sensorSet(sensor,'pixel width', pixWidth);
@@ -265,9 +265,9 @@ support = sensorGet(sensor,'spatialSupport','um');
 [X,Y] = meshgrid(support.y,support.x);
 
 % Chief ray angle of every pixel in radians
-cra = atan(sqrt(X.^2 + Y.^2)/sourceFL); 
+cra = atan(sqrt(X.^2 + Y.^2)/sourceFL);
 
-% Return offset in microns, negative means towards the center 
+% Return offset in microns, negative means towards the center
 optimalOffsets = mlFL*tan(asin(sin(cra)/n2));
 
 end

@@ -27,11 +27,11 @@ function varargout = cfaDesign(varargin)
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
-                   'gui_Singleton',  gui_Singleton, ...
-                   'gui_OpeningFcn', @cfaDesign_OpeningFcn, ...
-                   'gui_OutputFcn',  @cfaDesign_OutputFcn, ...
-                   'gui_LayoutFcn',  [] , ...
-                   'gui_Callback',   []);
+    'gui_Singleton',  gui_Singleton, ...
+    'gui_OpeningFcn', @cfaDesign_OpeningFcn, ...
+    'gui_OutputFcn',  @cfaDesign_OutputFcn, ...
+    'gui_LayoutFcn',  [] , ...
+    'gui_Callback',   []);
 if nargin && ischar(varargin{1})
     gui_State.gui_Callback = str2func(varargin{1});
 end
@@ -65,7 +65,7 @@ guidata(hObject, handles);
 sensor = vcGetObject('sensor');
 nFilters = sensorGet(sensor,'nFilters');
 cfaPattern = sensorGet(sensor,'pattern');
-[nRows,nCols] = size(cfaPattern); 
+[nRows,nCols] = size(cfaPattern);
 
 set(handles.editFilters,'string',num2str(nFilters));
 set(handles.editRows,'string',num2str(nRows));
@@ -82,7 +82,7 @@ set(handles.editCols,'string',num2str(nCols));
 return;
 
 % --- Outputs from this function are returned to the command line.
-function varargout = cfaDesign_OutputFcn(hObject, eventdata, handles) 
+function varargout = cfaDesign_OutputFcn(hObject, eventdata, handles)
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -148,8 +148,8 @@ function pushCreate_Callback(hObject, eventdata, handles)
 % % hObject    handle to pushImport (see GCBO)
 % % eventdata  reserved - to be defined in a future version of MATLAB
 % % handles    structure with handles and user data (see GUIDATA)
-% 
-% 
+%
+%
 % % --- Executes on button press in pushEdit.
 % function pushbutton10_Callback(hObject, eventdata, handles)
 % % hObject    handle to pushEdit (see GCBO)

@@ -4,16 +4,16 @@ function [uData, g] = displayPlot(d,param,varargin)
 %   [uData, g] = displayPlot(d,param,varargin)
 %
 % Types of plots
-%    spd  - Spectral power distributions of the primaries
+%    spd or primaries  - Spectral power distributions of the primaries
 %    gamma table  - Function from digital value to relative intensity
 %    gamut        - xy chromaticity gamut
-%    gamut 3d     - LAB gamut 
-% 
+%    gamut 3d     - LAB gamut
+%
 % List of displays included in ISET distribution
 %  Dell-Chevron.mat        LCD-HP.mat              OLED-Sony.mat
 %  LCD-Apple.mat           LCD-Samsung-RGBW.mat    crt.mat
 %  CRT-Dell.mat            LCD-Dell.mat            OLED-Samsung-Note3.mat
-%  lcdExample.mat          CRT-HP.mat              LCD-Gechic.mat 
+%  lcdExample.mat          CRT-HP.mat              LCD-Gechic.mat
 %  OLED-Samsung.mat
 %
 %
@@ -37,14 +37,14 @@ if notDefined('d'), error('Display required'); end
 param = ieParamFormat(param);
 
 switch param
-    case 'spd' % Plot spectral power distribution of the display
+    case {'primaries','spd'} % Plot spectral power distribution of the display
         spd = displayGet(d,'spd primaries');
         wave = displayGet(d,'wave');
-        g = vcNewGraphWin;
+        g = ieNewGraphWin;
         cOrder = {'r','g','b','k','y'}; % color order
         hold on
         for ii=1:size(spd,2)
-            plot(wave,spd(:,ii),cOrder{ii});
+            plot(wave,spd(:,ii),cOrder{ii},'LineWidth',2);
         end
         
         xlabel('Wavelength (nm)');ylabel('Energy (watts/sr/m2/nm)');
@@ -53,7 +53,7 @@ switch param
         
     case {'gammatable','gamma'} % Plot display Gammut
         gTable = displayGet(d,'gamma table');
-        g = vcNewGraphWin; plot(gTable);
+        g = ieNewGraphWin; plot(gTable);
         xlabel('DAC'); ylabel('Linear');
         grid on
         
@@ -86,7 +86,7 @@ switch param
             disp('Only first 3 primaries are used');
         end
         % create new graph
-        vcNewGraphWin; ha = gca;
+        ieNewGraphWin; ha = gca;
         
         % samples dac values
         nSamp  = 30;
@@ -120,13 +120,13 @@ switch param
         % plot
         ptx = delTri.Points;
         trisurf(ch, ptx(:,2), ptx(:,3), ptx(:,1), ...
-                'parent', ha, 'Tag', 'gamutPatch');
+            'parent', ha, 'Tag', 'gamutPatch');
         axis image;
         
         % assign color to the patches
         hPat = findobj('Tag', 'gamutPatch', '-and', 'parent', ha);
         
-        for ii = 1 : length(hPat)            
+        for ii = 1 : length(hPat)
             % set color for the vertices
             set(hPat(ii), ...
                 'FaceColor', 'interp', ...
@@ -154,12 +154,12 @@ switch param
         x = (1:dSize(2))*spacing; y = (1:dSize(1))*spacing;
         x = x - mean(x(:)); y = y - mean(y(:));
         
-        vcNewGraphWin([],'wide'); 
+        ieNewGraphWin([],'wide');
         srgb = displayGet(d,'primaries rgb');
         srgb = srgb';
         for ii=1:nPrimaries
-            subplot(1,nPrimaries,ii); 
-            colormap(.6*gray*diag(srgb(:,ii)) + 0.4);
+            subplot(1,nPrimaries,ii);
+            colormap(.6*gray(64)*diag(srgb(:,ii)) + 0.4);
             sPSF = psf(:,:,ii); sPSF = sPSF/max(sPSF(:));
             imagesc(x,y,sPSF); axis image
             xlabel('mm'); ylabel('mm'); grid on;
@@ -173,4 +173,3 @@ end
 
 end
 
-    

@@ -11,7 +11,7 @@ function out = MakeOrtho(in)
 ortho = zeros(m,n);
 work = in;
 for i = 1:n
-  ortho(:,i) = orth(work(:,i));
-  work = work-ortho*ortho'*work;
+    ortho(:,i) = orth(work(:,i));
+    work = work-ortho*ortho'*work;
 end
 out = ortho;

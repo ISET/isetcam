@@ -12,7 +12,7 @@ function C=struct2pairs(S)
 
 
 if iscell(S)
- C=S; return
+    C=S; return
 elseif length(S)>1
     error 'Input must be a scalar struct or cell';
 end

@@ -10,7 +10,16 @@ classdef cpCModule
     %   then the CModule gets back an oi and ignores its own optics.
     
     % History:
-    %   Initial Version: D.Cardinal 12/2020
+    %   Initial Version: D.Cardinal 12/2020, iset3d-v4 port 12/2021
+
+    % Work in Progress:
+    %  Model complex sensors (like Samsung Corner Pixel)
+    %  by simulating them as two sensors within one module
+    %  or two modules within one camera
+    %
+    %  image combination should be done at the IP level
+    %  for maximum flexibility, but could be in sensor for
+    %  trivial HDR and stacking.
     
     properties
         oi; % optics plus their resulting image
@@ -28,7 +37,7 @@ classdef cpCModule
             %cpCModule Construct an instance of this class
             arguments
                 % if we don't get sensor or oi passed in, use default
-                options.sensor = sensorCreate();
+                options.sensor = sensorCreate('imx363');
                 options.oi = oiCreate();
             end
             obj.sensor = options.sensor;
@@ -42,22 +51,31 @@ classdef cpCModule
             if isequal(aCPScene.sceneType, 'pbrt') || isequal(aCPScene.sceneType, 'recipe')
                 
                 distanceRange = aCPScene.thisR.get('depthrange');
+
+                % assume camera type for now
+                %aCPScene.thisR.set('camera subtype','omni')
                 % if we are focus stacking space out our focus
                 % distances
                 if isequal(focusMode, 'Stack')
                     focusFrames = focusParam;
+                    % we want an evenly spaced set of distances from near
+                    % to far
+                    if distanceRange(1) == distanceRange(2)
+                        focusDistances = repelem(distanceRange(1), focusParam);
+                    else
                     focusDistances = [distanceRange(1):(distanceRange(2)-distanceRange(1))/(focusFrames-1):...
                         distanceRange(2)];
+                    end
                     if numel(expTimes) < focusParam
                         expTimes = repelem(expTimes(1), focusParam);
                     end
                 else
-                    focusDistances = repelem(distanceRange(2) - distanceRange(1), numel(expTimes));
+                    focusDistances = repelem((distanceRange(2) + distanceRange(1))/2, numel(expTimes));
                     expTimes = expTimes;
                 end
                 
-            else
-                warning("Unsupported scene type for focus -- Future work");
+            else % assume we only have an iset scene(s) and can use whatever distance(s) it/they have
+                focusDistances = aCPScene.isetScenes(:).distance;
             end
         end
         
@@ -84,26 +102,41 @@ classdef cpCModule
                 options.focusMode = 'Auto';
                 options.focusParam = '';
                 options.reRender {islogical} = true;
+                options.stackFrames = 1;
+                options.intent = 'Auto';
+                options.fillFactors = [];
             end
-            
+             
             % need to know our sensor size to judge film size
             % however it is in meters and pi wants mm
-            filmSize = 1000 * sensorGet(obj.sensor, 'width');
+            % but we need to make sure it is at least 1 for pbrt!
+            filmSize = max(1, 1000 * sensorGet(obj.sensor, 'width'));
             % Render scenes as needed. Note that if pbrt has a lens file                                                                                    -
             % then 'sceneObjects' are actually oi structs                                                                                                          -
             
             [focusDistances, expTimes] = focus(obj, aCPScene, expTimes, options.focusMode, options.focusParam);
             
+            % this assumes we want to stack if we have multiple
+            % focus distances. What about video, though?
+            if ~isequal(options.intent, 'Video') && options.stackFrames ~= numel(focusDistances)
+                options.stackFrames = numel(focusDistances);
+            end
+            
             [sceneObjects, sceneFiles] = aCPScene.render(expTimes,...
-                focusDistances,...
+                'focusDistances', focusDistances,...
                 'reRender', options.reRender, 'filmSize', filmSize);
             
             cOutput = [];
+
+            % store original pixel to restore later
+            originalPixel = obj.sensor.pixel;
+            pixelVoltSwing = pixelGet(originalPixel,'voltage swing');
             for ii = 1:numel(sceneObjects)
                 
                 ourScene = sceneObjects{ii};
+
                 if strcmp(ourScene.type, 'scene')
-                    if numel(focusDistances) > 1
+                    if numel(focusDistances) > 1 && isequal(options.intent, 'FocusStack')
                         % DOESN'T WORK. Clearly doing something wrong:( DJC
                         % -- This is the "simple" case where we emulate
                         %    blur. The "advanced" case should use lens
@@ -112,7 +145,7 @@ classdef cpCModule
                         % for focus stacking if not done in pbrt. Need to
                         % add a way to pass focal distances.
                         imgPlaneDist = opticsGet(obj.oi.optics,'focal length');
-                        multiplier = 1.01; 
+                        multiplier = 1.01;
                         sceneDepth = max(ourScene.depthMap,[], 'all') - min(ourScene.depthMap,[], 'all');
                         sceneBands = 8;
                         depthEdges = min(ourScene.depthMap,[], 'all'): sceneDepth / sceneBands : max(ourScene.depthMap,[], 'all');
@@ -121,7 +154,8 @@ classdef cpCModule
                             imgPlaneDist = imgPlaneDist*multiplier;
                             % set sensor FOV to match scene.
                             sceneFOV = [sceneGet(ourScene,'fovhorizontal') sceneGet(ourScene,'fovvertical')];
-                            obj.sensor = sensorSetSizeToFOV(obj.sensor,sceneFOV,opticalImage);
+                            % this isn't right as it reduces resolution
+                            %obj.sensor = sensorSetSizeToFOV(obj.sensor,sceneFOV,opticalImage);
                             oiWindow(opticalImage); % Check to see what they look like!
                         end
                     else
@@ -129,24 +163,34 @@ classdef cpCModule
                         % set sensor FOV to match scene, but only once or
                         % we get multiple sizes, which don't merge
                         if ii == 1
-                            sceneFOV = [sceneGet(ourScene,'fovhorizontal') sceneGet(ourScene,'fovvertical')];
-                            obj.sensor = sensorSetSizeToFOV(obj.sensor,sceneFOV,opticalImage);
+                            sceneFOV = [sceneGet(ourScene,'fovhorizontal') sceneGet(ourScene,'fovvertical')];                            
                         end
                     end
                     
                 elseif strcmp(ourScene.type, 'oi') || strcmp(ourScene.type, 'opticalimage')
                     % we already used a lens, so we got back an OI
                     opticalImage = ourScene;
-                    % this gets really broken, as our sensor shows a tiny
-                    % FOV, so set size makes it massive resolution???'
-                    %oiFOV = [oiGet(opticalImage,'hfov'), oiGet(opticalImage,'vfov')];
-                    %obj.sensor = sensorSetSizeToFOV(obj.sensor,oiFOV,opticalImage);
-                    %sensorFOV = sensorGet(obj.sensor, 'fov horizontal');
-                    %oiSet(opticalImage,'fov', sensorFOV);
                 else
                     error("Unknown scene render");
                 end
+                % we have already calculated our exposure times
                 obj.sensor = sensorSet(obj.sensor, 'exposure time', expTimes(ii));
+                if ~isempty(options.fillFactors)
+                    % reduce pd area by the fillfactor (pdsize is per-side)
+                    newSize = pixelGet(originalPixel,'pdsize') * sqrt(options.fillFactors(ii));
+                    obj.sensor.pixel = pixelSet(obj.sensor.pixel,'pdsize',newSize);
+                    % Reducing fill factor reduces light received and pd
+                    % size, but we also need to use a smaller well
+                    % capacity
+                    obj.sensor.pixel = pixelSet(obj.sensor.pixel,'voltageswing',pixelVoltSwing * options.fillFactors(ii));
+                    if options.fillFactors(ii) < .5
+                        % if small fill factor cheat and assume we want it in
+                        % the corner -- although we're not sure it really
+                        % affects the calculations
+                        obj.sensor.pixel = pixelPositionPD(obj.sensor.pixel,'corner');
+                    end
+                end
+                obj.sensor = sensorSet(obj.sensor, 'auto exposure', 0);
                 % The OI returned from pbrt sometimes doesn't currently give us a
                 % width or height, so we need to make something up:
                 %% Hack -- DJC
@@ -156,7 +200,11 @@ classdef cpCModule
                     opticalImage = oiSet(opticalImage, 'wangular', .30);
                 end
                 sensorImage = sensorCompute(obj.sensor, opticalImage);
-                cOutput = [cOutput sensorImage]; %#ok<AGROW>
+                cOutput = [cOutput, sensorImage]; %#ok<AGROW> 
+                
+                % put back original pixel voltage swing
+                obj.sensor.pixel = originalPixel;
+
             end
         end
     end

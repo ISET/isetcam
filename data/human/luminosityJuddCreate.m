@@ -1,5 +1,5 @@
 % Script to write out and plot the luminosity function and the Judd 1951
-% luminosity function 
+% luminosity function
 
 % Write Luminosity (V-lambda)
 [XYZ,wave] = ieReadSpectra('XYZ');
@@ -28,46 +28,46 @@ vcNewGraphWin; plot(wave,dataQuanta./vLambda); grid on
 
 %% Now the Judd luminosity function in Energy units
 juddL = [  370,    0.0001
-  380,    0.0004
-  390,    0.0015
-  400,    0.0045
-  410,    0.0093
-  420,    0.0175
-  430,    0.0273
-  440,    0.0379
-  450,    0.0468
-  460,    0.0600
-  470,    0.0910
-  480,    0.1390
-  490,    0.2080
-  500,    0.3230
-  510,    0.5030
-  520,    0.7100
-  530,    0.8620
-  540,    0.9540
-  550,    0.9950
-  560,    0.9950
-  570,    0.9520
-  580,    0.8700
-  590,    0.7570
-  600,    0.6310
-  610,    0.5030
-  620,    0.3810
-  630,    0.2650
-  640,    0.1750
-  650,    0.1070
-  660,    0.0610
-  670,    0.0320
-  680,    0.0170
-  690,    0.0082
-  700,    0.0041
-  710,    0.0021
-  720,    0.0011
-  730,    0.0005
-  740,    0.0002
-  750,    0.0001
-  760,    0.0001
-  770,    0.0000];
+    380,    0.0004
+    390,    0.0015
+    400,    0.0045
+    410,    0.0093
+    420,    0.0175
+    430,    0.0273
+    440,    0.0379
+    450,    0.0468
+    460,    0.0600
+    470,    0.0910
+    480,    0.1390
+    490,    0.2080
+    500,    0.3230
+    510,    0.5030
+    520,    0.7100
+    530,    0.8620
+    540,    0.9540
+    550,    0.9950
+    560,    0.9950
+    570,    0.9520
+    580,    0.8700
+    590,    0.7570
+    600,    0.6310
+    610,    0.5030
+    620,    0.3810
+    630,    0.2650
+    640,    0.1750
+    650,    0.1070
+    660,    0.0610
+    670,    0.0320
+    680,    0.0170
+    690,    0.0082
+    700,    0.0041
+    710,    0.0021
+    720,    0.0011
+    730,    0.0005
+    740,    0.0002
+    750,    0.0001
+    760,    0.0001
+    770,    0.0000];
 
 %% Get ready to store them in a file
 wave = juddL(:,1);
@@ -89,7 +89,7 @@ vcNewGraphWin; plot(wave,dataQuanta./data); grid on
 %% Scratch calculations to verify the accuracy of the curves
 %
 %  We compared the Judd modified luminosity with the CIE luminosity and
-%  with the 2*L + M from the Smith-Pokorny fundamentals.  
+%  with the 2*L + M from the Smith-Pokorny fundamentals.
 %
 %  The Smith-Pokorny are supposed to be (and are) aligned with the Judd
 %  modified luminosity.  The CIE values differs from these in the blue by a

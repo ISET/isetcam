@@ -10,7 +10,7 @@ function scenes = rdtScenesLoad(varargin)
 % Optional key/value pairs
 %   'rdt name'  - RDT project - default is 'isetbio'
 %   'remote directory' - Default is '/resources/scenes/multiband/scien/faces'
-%   
+%
 %   'n scenes'  - Number of scenes or list of integers for the scene list
 %   'wave' - 400:10:680
 %   'fov'  - 10
@@ -28,7 +28,7 @@ function scenes = rdtScenesLoad(varargin)
 % HJ/BW, VISTA TEAM, 2015
 %
 % See also:
-%    rdtOILoad(); 
+%    rdtOILoad();
 
 % TODO
 %   We could allow nScenes to be a cell array of artifact names
@@ -93,8 +93,8 @@ files = rdt.listArtifacts('print',print);
 
 %% Parse the nScenes variable
 if isscalar(nScenes)
-nScenes = min(nScenes, length(files));
-sList = 1:nScenes;
+    nScenes = min(nScenes, length(files));
+    sList = 1:nScenes;
 elseif isvector(nScenes)
     if min(nScenes) > 0 && max(nScenes) <= length(files)
         sList = nScenes;

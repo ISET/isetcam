@@ -1,8 +1,8 @@
-function hdl = plotRadiance(wavelength,radiance,varargin)
+function [hdl, thisPlot] = plotRadiance(wavelength,radiance,varargin)
 % Utility to plot and label radiance data
 %
 % Syntax
-%   hdl = plotRadiance(wavelength,radiance,varargin)
+%   [hdl, thisPlot] = plotRadiance(wavelength,radiance,varargin)
 %
 % Inputs
 %    wavelength  - Wavelength samples (nm)
@@ -12,14 +12,15 @@ function hdl = plotRadiance(wavelength,radiance,varargin)
 %    title
 %
 % Returns;
-%   hdl
+%   hdl      - ieNewGraphWin handle
+%   thisPlot - Return of the plot command
 %
 % See also
 %   ieNewGraphWin, plotX
 %
 
 % More options to come.  Such as a title.
-% 
+%
 
 %%
 p = inputParser;
@@ -40,16 +41,16 @@ wavelength = wavelength(:);
 % The dimension that matches wavelength is the right one
 nWave = length(wavelength);
 if nWave == size(radiance,1)
-    plot(wavelength(:),radiance);
+    thisPlot = plot(wavelength(:),radiance,'LineWidth',2);
 elseif length(wavelength) == size(radiance,2)
-    plot(wavelength(:),radiance');    
+    thisPlot = plot(wavelength(:),radiance','LineWidth',2);
 end
 
 %% Label it
 
 xlabel('Wavelength (nm)');
 ylabel('Radiance (watts/sr/nm/m^2)');
-grid on; 
+grid on;
 title(strTitle);
 
 end

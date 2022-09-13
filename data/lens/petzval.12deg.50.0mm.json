@@ -1,0 +1,73 @@
+{
+ "name": "petzval.12deg.50.0mm",
+ "description": "description",
+ "type": "multi element lens",
+ "surfaces": [
+  {
+   "radius": 85.455,
+   "thickness": 9.68,
+   "ior": 1.517,
+   "semi_aperture": 18
+  },
+  {
+   "radius": -38.44,
+   "thickness": 3.17,
+   "ior": 1.648,
+   "semi_aperture": 18
+  },
+  {
+   "radius": 803.86,
+   "thickness": 0.485,
+   "ior": 1,
+   "semi_aperture": 18
+  },
+  {
+   "radius": 39.765,
+   "thickness": 5.81,
+   "ior": 1.744,
+   "semi_aperture": 17.6
+  },
+  {
+   "radius": 72.315,
+   "thickness": 18.675,
+   "ior": 1,
+   "semi_aperture": 17
+  },
+  {
+   "radius": 0,
+   "thickness": 18.5,
+   "ior": 0,
+   "semi_aperture": 13.1
+  },
+  {
+   "radius": 21.15,
+   "thickness": 8.27,
+   "ior": 1.697,
+   "semi_aperture": 11.3
+  },
+  {
+   "radius": -38.745,
+   "thickness": 2.065,
+   "ior": 1.673,
+   "semi_aperture": 11.3
+  },
+  {
+   "radius": 60.67,
+   "thickness": 9.109999999999999,
+   "ior": 1,
+   "semi_aperture": 11.3
+  },
+  {
+   "radius": -19.225,
+   "thickness": 1.035,
+   "ior": 1.617,
+   "semi_aperture": 9.65
+  },
+  {
+   "radius": -483.09,
+   "thickness": 0,
+   "ior": 1,
+   "semi_aperture": 9.65
+  }
+ ]
+}

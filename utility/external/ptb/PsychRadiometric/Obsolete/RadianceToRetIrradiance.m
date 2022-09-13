@@ -2,7 +2,7 @@ function irradianceWattsPerUm2 = RadianceToRetIrradiance(radianceWattsPerM2Sr,ra
 % irradianceWattsPerUm2 = RadianceToRetIrradiance(radianceWattsPerM2Sr,radianceS,pupilAreaMm2,eyeLengthMm)
 %
 % Perform the geometric calculations necessary to convert a measurement of source
-% radiance to corresponding retinal irradiance. 
+% radiance to corresponding retinal irradiance.
 %
 %   Input radianceWattsPerM2Sr should be in units of power/m^2-sr-wlinterval.
 %   Input radianceS gives the wavelength sampling information.
@@ -12,7 +12,7 @@ function irradianceWattsPerUm2 = RadianceToRetIrradiance(radianceWattsPerM2Sr,ra
 %
 %   Light power may be expressed in watts or quanta-sec or in your
 %   favorite units.  Indeed, it may also be passed as energy rather
-%   than power.  
+%   than power.
 %
 % This conversion does not take absorption in the eye into account,
 % as this is more conveniently foldeded into the spectral absorptance.

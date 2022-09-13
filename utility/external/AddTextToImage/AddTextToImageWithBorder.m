@@ -14,15 +14,15 @@ function Image = AddTextToImageWithBorder(Image,String,Position,Color,Font,FontS
 % University of Oxford
 
 if ~exist('BorderWidth','var')
-	BorderWidth = 1;
+    BorderWidth = 1;
 end
 if ~exist('BorderColor','var')
-	BorderColor = 0;
+    BorderColor = 0;
 end
 
 if BorderWidth == 0
-	Image = AddTextToImage(Image,String,Position,Color,Font,FontSize);
-	return;
+    Image = AddTextToImage(Image,String,Position,Color,Font,FontSize);
+    return;
 end
 
 % uint8 images go from 0 to 255, whereas double ones go from 0 to 1
@@ -45,10 +45,10 @@ ConvElement = double(CircleMask(1+2*BorderWidth,1+2*BorderWidth,BorderWidth+0.5,
 Outline = xor(conv2(double(Mask),ConvElement,'same'),Mask);
 Image = AddTextToImage(Image,String,Position,Color,Font,FontSize);
 
-for i = 1:size(Image,3) 
-tmp = Image(:,:,i); 
-tmp(Outline) = ScaleFactor*BorderColor(i); 
-Image(:,:,i) = tmp; 
+for i = 1:size(Image,3)
+    tmp = Image(:,:,i);
+    tmp(Outline) = ScaleFactor*BorderColor(i);
+    Image(:,:,i) = tmp;
 end
 
 end

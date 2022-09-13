@@ -6,7 +6,7 @@
 %    dcrawRead, imfinfo
 %
 % Dependencies:
-%   isetg repository, only for 
+%   isetg repository, only for
 %
 
 %%
@@ -32,9 +32,9 @@ end
 
 %% These are the raw data
 
-ieNewGraphWin; 
-imagesc(double(img).^(1/2.2)); axis image; 
-colormap(gray)
+ieNewGraphWin;
+imagesc(double(img).^(1/2.2)); axis image;
+colormap(gray(64))
 
 %% We remove the digital offset
 blackLevelDigital = 1024;

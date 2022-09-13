@@ -13,12 +13,18 @@
 %%  Change into the reflectances directory
 
 % List the reflectance files
-chdir(fullfile(isetRootPath,'data','surfaces','reflectances'))
-rFiles = dir('*.mat');
+reflDirCollect = {fullfile(isetRootPath,'data','surfaces','reflectances'),...
+                  fullfile(isetRootPath, 'data', 'surfaces', 'reflectances', 'esser', 'reflectance')};
+rFilenames = {};
+for kk=1:numel(reflDirCollect)              
+    chdir(reflDirCollect{kk})
+    rFiles = dir('*.mat');
 
-rFilenames = cell(numel(rFiles),1);
-for ii=1:numel(rFiles)
-    rFilenames{ii} = rFiles(ii).name;
+    curFilenames = cell(numel(rFiles),1);
+    for ii=1:numel(rFiles)
+        curFilenames{ii} = rFiles(ii).name;
+    end
+    rFilenames = [rFilenames; curFilenames];
 end
 
 disp(rFilenames);
@@ -59,7 +65,7 @@ plot(wave,approx,'--',wave,reflectances,':'); grid on;
 xlabel('Wave (nm)'); ylabel('Reflectance');
 % title(thisFile{1});
 
-%%  
+%%
 
 ieNewGraphWin;
 plot(approx(:),reflectances(:),'.');
@@ -81,7 +87,7 @@ ylabel('Reflectance');
 legend({'1','2','3'},'Location','best');
 
 %%  Save them out in a data file
-fname = fullfile(isetRootPath,'data','surfaces','reflectances','reflectanceBasis.mat');
+fname = fullfile(isetRootPath,'data','surfaces','reflectances', 'basis', 'reflectanceBasis.mat');
 ieSaveSpectralFile(wave,Basis,'Surface reflectance basis functions from s_reflectanceBasis',fname);
 
 %% END

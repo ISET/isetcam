@@ -5,11 +5,11 @@ function ieFormatFigure( fig, fontname, fontsize, figsize, border )
 %
 %  The font style, font size,figure size and border size can be adjusted.
 %  All parameters are optional.  Using this makes it easier to save the
-%  figure in an appropriate format for Adobe Illustrator. 
+%  figure in an appropriate format for Adobe Illustrator.
 %
 % FIG     : Figure handle.
 % FONTNAME: Name of the font as a string.
-% FONTSIZE: Size of the font (points) as a vector. 
+% FONTSIZE: Size of the font (points) as a vector.
 %           Format: [axes_labels tick_labels]
 % FIGSIZE : Size of the figure [width height] (inches) as a vector.
 % BORDER  : Space around the figure (inches) as a vector.
@@ -60,7 +60,7 @@ axs = get( fig, 'CurrentAxes' );
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Get the current figure position.
 
-if (strcmp(get(fig, 'Units'),'inches') == 1),    pos = get(fig, 'Position'); 
+if (strcmp(get(fig, 'Units'),'inches') == 1),    pos = get(fig, 'Position');
 else   pos = [0 0 0 0];   end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -75,15 +75,15 @@ set( fig,         'Color', [1 1 1] );
 % Set the axes properties.
 
 set( get(axs,  'Title'), 'FontName', fontname, ...
-   'FontSize', fontsize(1) );
+    'FontSize', fontsize(1) );
 set( get(axs, 'XLabel'), 'FontName', fontname, ...
-	'FontSize', fontsize(1) );
+    'FontSize', fontsize(1) );
 set( get(axs, 'YLabel'), 'FontName', fontname, ...
-   'FontSize', fontsize(1) );
+    'FontSize', fontsize(1) );
 set( get(axs, 'ZLabel'), 'FontName', fontname, ...
-   'FontSize', fontsize(1) );
+    'FontSize', fontsize(1) );
 set( axs,                'FontName', fontname, ...
-   'FontSize', fontsize(2) );
+    'FontSize', fontsize(2) );
 
 set( axs,    'Units', 'inches' );
 set( axs, 'Position', [border(1:2) (figsize-border(1:2)-border(3:4))] );

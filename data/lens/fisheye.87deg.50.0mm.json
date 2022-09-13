@@ -1,0 +1,109 @@
+{
+ "name": "fisheye.87deg.50.0mm",
+ "description": "description",
+ "type": "multi element lens",
+ "surfaces": [
+  {
+   "radius": 208.97,
+   "thickness": 6.54,
+   "ior": 1.713,
+   "semi_aperture": 80
+  },
+  {
+   "radius": 34.115,
+   "thickness": 28.765,
+   "ior": 1,
+   "semi_aperture": 34
+  },
+  {
+   "radius": 171.4,
+   "thickness": 4.905,
+   "ior": 1.62,
+   "semi_aperture": 37.5
+  },
+  {
+   "radius": 39.2,
+   "thickness": 10.81,
+   "ior": 1,
+   "semi_aperture": 33
+  },
+  {
+   "radius": 48.025,
+   "thickness": 17.3,
+   "ior": 1.669,
+   "semi_aperture": 32
+  },
+  {
+   "radius": -133.93,
+   "thickness": 2.16,
+   "ior": 1,
+   "semi_aperture": 32
+  },
+  {
+   "radius": -79.34,
+   "thickness": 3.09,
+   "ior": 1.694,
+   "semi_aperture": 29
+  },
+  {
+   "radius": 39.115,
+   "thickness": 12.355,
+   "ior": 1.668,
+   "semi_aperture": 27
+  },
+  {
+   "radius": -173.445,
+   "thickness": 1.545,
+   "ior": 1,
+   "semi_aperture": 27
+  },
+  {
+   "radius": 50000,
+   "thickness": 4.635,
+   "ior": 1.518,
+   "semi_aperture": 25
+  },
+  {
+   "radius": 50000,
+   "thickness": 4.265,
+   "ior": 1,
+   "semi_aperture": 25
+  },
+  {
+   "radius": 0,
+   "thickness": 5,
+   "ior": 0,
+   "semi_aperture": 25
+  },
+  {
+   "radius": -2642.85,
+   "thickness": 10.505,
+   "ior": 1.497,
+   "semi_aperture": 22.25
+  },
+  {
+   "radius": -56.9,
+   "thickness": 0.31,
+   "ior": 1,
+   "semi_aperture": 25
+  },
+  {
+   "radius": 330.61,
+   "thickness": 15.445,
+   "ior": 1.487,
+   "semi_aperture": 26
+  },
+  {
+   "radius": -31.75,
+   "thickness": 3.09,
+   "ior": 1.805,
+   "semi_aperture": 26
+  },
+  {
+   "radius": -63.745,
+   "thickness": 0,
+   "ior": 1,
+   "semi_aperture": 28
+  }
+ ]
+}

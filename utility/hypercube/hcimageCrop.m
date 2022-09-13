@@ -19,10 +19,10 @@ if ieNotDefined('cPlane'), cPlane = 1; end
 if ieNotDefined('rect')
     % We use a square root to avoid problems with bright, saturating
     % pixels.
-    tmp = sqrt(double(img(:,:,cPlane))); 
+    tmp = sqrt(double(img(:,:,cPlane)));
     tmp = tmp/max(tmp(:));
     f = ieNewGraphWin;
-    imagesc(tmp); colormap(hot); axis image
+    imagesc(tmp); colormap(hot(64)); axis image
     [d,rect] = imcrop;
     close(f)
 else
@@ -40,7 +40,7 @@ end
 h = waitbar(0,'Cropping');
 for ii=1:w
     waitbar(ii/w,h);
-    hc(:,:,ii) = imcrop(img(:,:,ii),rect); 
+    hc(:,:,ii) = imcrop(img(:,:,ii),rect);
 end
 close(h);
 return

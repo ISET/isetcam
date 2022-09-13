@@ -48,7 +48,7 @@ grid on
 % These basis functions are a lot like the simple SVD functions.
 
 % The columns of U are the basis functions It is nice to make them more
-% positive than negative, on balance.  
+% positive than negative, on balance.
 if sum(U(:,1)) < 0, U = -1*U; end
 
 vcNewGraphWin;
@@ -89,39 +89,39 @@ t = ylabel('Reflectance'); set(t,'fontname','Georgia')
 %% Load XYZ and choose a light for the rendering experiments
 
 XYZ = ieReadSpectra('XYZ',wave);
-lgt = ieReadSpectra('D65',wave);  
+lgt = ieReadSpectra('D65',wave);
 
 % Plot the light
-vcNewGraphWin; 
+vcNewGraphWin;
 plot(wave,lgt); grid on
 xlabel('Wavelength (nm)'); ylabel('Relative power');
 
 % Or try these lights instead
 % lgt  = ieReadSpectra('tungsten',wave);
-% lgt  = ieReadSpectra('FluorescentOffice',wave); 
-% lgt  = ieReadSpectra('Fluorescent2',wave); 
-% lgt  = ieReadSpectra('Fluorescent7',wave); 
+% lgt  = ieReadSpectra('FluorescentOffice',wave);
+% lgt  = ieReadSpectra('Fluorescent2',wave);
+% lgt  = ieReadSpectra('Fluorescent7',wave);
 % lgt  = ieReadSpectra('Fluorescent11',wave);
 
 %% Render the images from the lower dimensional models
 
 [U, S, V] = svd(macbethReflectance);
 W = S*V';
-vcNewGraphWin; 
+vcNewGraphWin;
 for nDims= 1:4  %5:8 %
-
+    
     list = 1:nDims;
     
     % Render for this light, nDims, and set peak Y to 100
     mccXYZ = XYZ'*diag(lgt)*U(:,list)*W(list,:);
     mx = max(mccXYZ(2,:)); mccXYZ = 100*(mccXYZ/mx);
-
+    
     % Pack it into an RGB format
     imRGB = xyz2srgb(XW2RGBFormat(mccXYZ',4,6));
     imRGB = imageFlip(imRGB,'updown');
     imRGB = imageFlip(imRGB,'leftright');
-
-    % 
+    
+    %
     subplot(3,2,nDims)
     imagesc(imRGB); axis image
     set(gca,'xtick',[],'ytick',[])
@@ -139,5 +139,5 @@ imagesc(imRGB); axis image
 set(gca,'xtick',[],'ytick',[])
 title(sprintf('Full rendering'))
 
-%% 
+%%
 

@@ -18,7 +18,7 @@ function params = harmonicP(varargin)
 % To create the sum of two gratings, set these parameters as vectors
 %
 %   ang, contrast, freq and ph
-% 
+%
 % Example
 %   p = harmonicP; p.name = 'example'; s = sceneCreate('harmonic',p);
 %   ieAddObject(s); sceneWindow;
@@ -27,7 +27,7 @@ function params = harmonicP(varargin)
 %   s = sceneCreate('harmonic',p);ieAddObject(s); sceneWindow;
 %
 % See also
-% 
+%
 % BW, ISETBIO Team, 2016
 
 %% Parse arguments
@@ -50,10 +50,10 @@ p.parse(varargin{:});
 params.name      = p.Results.name;
 params.ang       = p.Results.ang;
 params.contrast  = p.Results.contrast;
-params.freq      = p.Results.freq; 
+params.freq      = p.Results.freq;
 params.ph        = p.Results.ph;
-params.row       = p.Results.row; 
-params.col       = p.Results.col; 
+params.row       = p.Results.row;
+params.col       = p.Results.col;
 params.GaborFlag = p.Results.GaborFlag;
 
 end

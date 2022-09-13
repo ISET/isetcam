@@ -2,9 +2,9 @@
 %
 % The barrel distortion is removed in two ways:
 %
-%  1. A common polynominal approach. 
+%  1. A common polynominal approach.
 %     (<http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=351044 Shah et. al. 1994> )
-%  2. A hardware implementation friendly coefficient method. 
+%  2. A hardware implementation friendly coefficient method.
 %     (<http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=6011854&tag=1 Blasinski et al. ICME 2011>)
 %
 % Henryk Blasinski and BW 2012
@@ -62,7 +62,7 @@ CorrectedMax = opticsGet(optics,'rtgeommaxfieldheight','mm');
 % The distortion function depends on the wavelength, here we are somewhat
 % randomly selecting the middle wavelengths distortion curve.
 DistWavelengths = opticsGet(optics,'rtgeomwavelength');
-Distorted = opticsGet(optics,'rtgeomfunction',DistWavelengths(2),'mm'); 
+Distorted = opticsGet(optics,'rtgeomfunction',DistWavelengths(2),'mm');
 
 % Compute a 2nd order polynominal approximation
 polycoefs = polyfit(Corrected,Distorted,2);
@@ -74,7 +74,7 @@ DistImHeight = polyval(polycoefs,CorrImHeight);
 vcNewGraphWin;
 plot(Corrected,Distorted,'x','LineWidth',2); hold on;
 plot(CorrImHeight,DistImHeight,'g');
-xlabel('Corrected image height, mm'); 
+xlabel('Corrected image height, mm');
 ylabel('Distorted image height, mm');
 title('Lens distortion curves');
 legend('Measured','2^{nd} order approx.');
@@ -129,7 +129,7 @@ for y=1:imgRows
 end
 close(h)
 
-vcNewGraphWin; imshow(CorrectedImage); 
+vcNewGraphWin; imshow(CorrectedImage);
 title('Barrel distortion removal - polynominal');
 
 
@@ -141,7 +141,7 @@ CorrectedMax = opticsGet(optics,'rtgeommaxfieldheight','mm');
 CorrImHeight = linspace(0,CorrectedMax,100);
 
 DistWavelengths = opticsGet(optics,'rtgeomwavelength');
-Distorted = opticsGet(optics,'rtgeomfunction',DistWavelengths(2),'mm'); 
+Distorted = opticsGet(optics,'rtgeomfunction',DistWavelengths(2),'mm');
 polycoefs = polyfit(Corrected,Distorted,2);
 
 % Now we define the Cf as a ratio between the distorted and corrected image
@@ -163,7 +163,7 @@ xlabel('{Image height}^2');
 ylabel('C_f');
 title('Coefficient method distortion curve');
 legend('Actual','Approximated');
-        
+
 
 % As previously we extract optical image parameters.
 imgRows = oiGet(oi,'rows');
@@ -208,6 +208,6 @@ end
 close(h)
 
 vcNewGraphWin; imshow(CorrectedImage);
-title('Barrel distortion removal - coefficient');        
+title('Barrel distortion removal - coefficient');
 
-%% 
+%%

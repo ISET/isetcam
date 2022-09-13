@@ -1,29 +1,44 @@
-function scene = sceneInterpolate(scene,sFactor)
-% Spatially interpolate the scene radiance data by sFactor
+function scene = sceneInterpolate(scene,newSize)
+% Spatially interpolate the scene radiance photons
 %
-%     scene = sceneInterpolate(scene,sFactor)
+% Synopsis
+%     scene = sceneInterpolate(scene,newSize)
 %
-%  Spatially interpolate data in a scene structure by an amount sFactor.  
-%  If sFactor is a single number, then it is a scale factor that is applied
-%  to both the rows and the columns. The result is rounded to an integer.
-%  If sFactor is a 2D vector, the two entries are applied separately to the
-%  row and column dimensions.
+% Description:
+%  Spatially interpolate photon data in a scene structure by a scale factor
+%  (sFactor). If sFactor is a single number, then it is a scale factor
+%  that is applied to both the rows and the columns. The result is
+%  rounded to an integer. If sFactor is 2D, the entries are applied
+%  separately to the row and column dimensions.
 %
-% Copyright ImagEval Consultants, LLC, 2003.
+%  If the illuminant is spatial-spectral, it is spatially interpolated
+%  as well.
+%
+% Inputs:
+%   scene  - ISETCam scene
+%   newSize - New number of rows and cols
+%
+% See also
+%   sceneSpatialResample - Similar but specified as new sample spacing
+%
 
-if ieNotDefined('sFactor'), error('sFactor must be defined'); end
-if ieNotDefined('scene'), scene = vcGetObject('scene'); end
+% Examples:
+%{
+ scene = sceneCreate;
+ sceneWindow(scene);
+ sz = sceneGet(scene,'size');
+ scene2 = sceneInterpolate(scene,[1,2].*sz);
+ sceneWindow(scene2);
+%}
+%% Parse
+if ieNotDefined('newSize'), error('sFactor must be defined'); end
+if ieNotDefined('scene'), error('scene must be defined'); end
 
 r = sceneGet(scene,'rows');
 c = sceneGet(scene,'cols');
 
-if length(sFactor) == 1
-    newRow = round(r*sFactor); newCol = round(c*sFactor);
-elseif length(sFactor) == 2
-    newRow = round((sFactor(1)*r)); newCol = round(c*sFactor(2));
-else
-    error('Incorrect sFactor.');
-end
+if numel(newSize) == 1, newSize = [newSize,newSize]; end
+newRow = newSize(1); newCol = newSize(2);
 
 if checkfields(scene,'data','photons')
     photons = sceneGet(scene,'photons');
@@ -43,4 +58,15 @@ end
 scene = sceneSet(scene,'luminance',luminance);
 scene = sceneSet(scene,'meanLuminance',meanL);
 
-return;
+% Check if the illumination is spectral spatial, and if yes then
+% spatially interpolate.
+switch sceneGet(scene,'illuminant format')
+    case 'spatial spectral'
+        photons = sceneGet(scene,'illuminant photons');
+        photons = imageInterpolate(photons,newRow,newCol);
+        scene = sceneSet(scene,'illuminant photons',photons);
+    otherwise
+        % Do nothing
+end
+
+end

@@ -1,0 +1,48 @@
+{
+    "description": " MLD, Page 361\"\t\t\t\r Scaled to 250 mm from 100 mm\t\r EFL = 250 mm\r BFL = ~105 mm\t\t\r",
+    "name": " SIGLER Super achromate telephoto, EFL=254mm, F/5.6\"\t\t\t\r",
+    "surfaces": [
+        {
+            "ior": 1.5290000438690186,
+            "radius": 54.627498626708984,
+            "semi_aperture": 23.75,
+            "thickness": 12.520000457763672
+        },
+        {
+            "ior": 1.5989999771118164,
+            "radius": -86.36499786376953,
+            "semi_aperture": 22.25,
+            "thickness": 3.755000114440918
+        },
+        {
+            "ior": 1.0,
+            "radius": 271.76251220703125,
+            "semi_aperture": 20.75,
+            "thickness": 2.817500114440918
+        },
+        {
+            "ior": 0.0,
+            "radius": 0.0,
+            "semi_aperture": 20.25,
+            "thickness": 67.4124984741211
+        },
+        {
+            "ior": 1.6130000352859497,
+            "radius": -32.130001068115234,
+            "semi_aperture": 15.75,
+            "thickness": 3.755000114440918
+        },
+        {
+            "ior": 1.6030000448226929,
+            "radius": 49.532501220703125,
+            "semi_aperture": 16.75,
+            "thickness": 12.520000457763672
+        },
+        {
+            "ior": 1.0,
+            "radius": -50.94499969482422,
+            "semi_aperture": 18.5,
+            "thickness": 0.0
+        }
+    ]
+}

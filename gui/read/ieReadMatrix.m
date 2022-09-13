@@ -5,7 +5,7 @@ function mat = ieReadMatrix(defMatrix,fmt,prompt)
 %
 % The user  types in a set of matrix entries for a matrix of the size of
 % the default matrix, defMatrix. If this is not passed in then, the
-% defMatrix = eye(3). 
+% defMatrix = eye(3).
 %
 % Example:
 %    d = ieReadMatrix(zeros(3,3));
@@ -23,7 +23,7 @@ lineNo=size(defMatrix,1);
 ReSize = 'on';
 answer=inputdlg(prompt,dlgTitle,lineNo,def,ReSize);
 
-if isempty(answer) 
+if isempty(answer)
     mat = [];
     return;
 else

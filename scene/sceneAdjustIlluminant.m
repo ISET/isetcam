@@ -5,29 +5,30 @@ function scene = sceneAdjustIlluminant(scene,illEnergy,preserveMean)
 %  scene = sceneAdjustIlluminant(scene,illEnergy,preserveMean)
 %
 % Brief Description
-%  Change the scene illuminant.  
+%  Change the scene illuminant.
 %
 % Inputs
 %  scene:      A scene structure, or the current scene will be assumed
-%  illEnergy:  Either a file name to spectral data or a vector (same length
-%              as scene wave) defining the illuminant in energy units or an
-%              ISETCam illuminant struct.
+%  illEnergy:  Either a file name to spectral data, or 
+%              an illuminant energy vector (same length as scene wave)
+%              or an ISETCam illuminant struct.
 %  preserveMean:  Scale result to preserve mean illuminant (default true)
 %
 %  Description
-%    The calculation scales the scene radiance by dividing out the current
-%    illuminant and then multiplying by the new illuminant. This preserves
-%    the reflectance. By default, we also preserve the scene mean luminance,
-%    which effectively scales the illuminant level.
+%    The calculation scales the scene radiance by dividing out the
+%    current illuminant and then multiplying by the new illuminant.
+%    This preserves the reflectance. By default, we also preserve the
+%    scene mean luminance, which effectively scales the illuminant
+%    level.
 %
 %    If you do not want the illuminant level to change, then set the
 %    preserveMean flag to false. It is true by default.
 %
-%    If the current scene has no defined illuminant, we assume that the scene
-%    illuminant is D65.
+%    If the current scene has no defined illuminant, we assume that
+%    the scene illuminant is D65.
 %
 %    This appears to work if the scene is a spatial-spectral illuminant
-%    too.  
+%    too.
 %
 % ieExamplesPrint('sceneAdjustIlluminant');
 %
@@ -105,7 +106,7 @@ end
 
 % Current mean luminance may be preserved
 mLum     = sceneGet(scene,'mean luminance');
-if isnan(mLum) 
+if isnan(mLum)
     [lum, mLum] = sceneCalculateLuminance(scene);
     scene = sceneSet(scene,'luminance',lum);
 end
@@ -117,8 +118,8 @@ switch sceneGet(scene,'illuminant format')
     case 'spectral'
         % In this case the illuminant is a vector.  We convert to photons
         illPhotons = Energy2Quanta(illEnergy,wave);
-
-        % Find the multiplier ratio 
+        
+        % Find the multiplier ratio
         illFactor  = illPhotons ./ curIll;
         
         % Adjust the radiance data and the illuminant by the illFactor
@@ -127,7 +128,7 @@ switch sceneGet(scene,'illuminant format')
         scene = sceneSPDScale(scene,illFactor,'*',skipIlluminant);
         
     case 'spatial spectral'
-               
+        
         if isequal(size(curIll),size(illEnergy))
             [newIll,r,c] = RGB2XWFormat(illEnergy);
             newIll = Energy2Quanta(wave,newIll');
@@ -147,7 +148,7 @@ switch sceneGet(scene,'illuminant format')
             scene = sceneSet(scene,'illuminant photons',newIll);
         else
             % This could be an loop across wavelength using interp2()
-            error('No spatial interpolation method yet for spatial spectral illuminants');
+            error('No adjust illuminant method yet for spatial spectral illuminants');
         end
         
 end

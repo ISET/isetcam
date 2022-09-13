@@ -23,13 +23,13 @@ ieInit
 fov = 5;
 scene = sceneCreate('sweep frequency',768,30);
 scene = sceneSet(scene,'fov',fov);
-ieAddObject(scene); sceneWindow;
+sceneWindow(scene);
 
-% Set up a high acuity lens
+%% Set up a high resolution lens
 oi = oiCreate('diffraction limited');
 oi = oiSet(oi,'optics fnumber', 2);
 oi = oiCompute(oi,scene);
-ieAddObject(oi); oiWindow;
+oiWindow(oi);
 
 %% We use a small pixel size and see the scene come through correctly
 
@@ -39,8 +39,7 @@ sensor = sensorSetSizeToFOV(sensor,fov,oi);
 % Set a two micron pixel
 sensor = sensorSet(sensor,'pixel size constant fill factor',2e-6);
 sensor = sensorCompute(sensor,oi);
-ieAddObject(sensor);
-sensorWindow;
+sensorWindow(sensor);
 
 sensorPlot(sensor,'electrons hline',[5 1]);
 
@@ -52,7 +51,7 @@ sensorPlot(sensor,'electrons hline',[5 1]);
 sensor = sensorSet(sensor,'pixel size constant fill factor',6e-6);
 sensor = sensorSetSizeToFOV(sensor,fov,oi);
 sensor = sensorCompute(sensor,oi);
-ieAddObject(sensor); sensorWindow;
+sensorWindow(sensor);
 
 sensorPlot(sensor,'electrons hline',[5 1]);
 
@@ -61,7 +60,7 @@ sensorPlot(sensor,'electrons hline',[5 1]);
 oi = oiSet(oi,'optics fnumber', 12);
 oi = oiCompute(oi,scene);
 sensor = sensorCompute(sensor,oi);
-ieAddObject(sensor); sensorWindow;
+sensorWindow(sensor);
 
 sensorPlot(sensor,'electrons hline',[5 1])
 
@@ -76,12 +75,13 @@ sensor = sensorSet(sensor,'pixel size constant fill factor',6e-6);
 sensor = sensorSetSizeToFOV(sensor,fov,oi);
 oi = oiCompute(oi,scene);
 sensor = sensorCompute(sensor,oi);
-ieAddObject(sensor); sensorWindow;
+sensorWindow(sensor); drawnow;
 
 %% If we protect against aliasing
 
 oi = oiSet(oi,'optics fnumber', 12);
 oi = oiCompute(oi,scene);
 sensor = sensorCompute(sensor,oi);
-ieAddObject(sensor); sensorWindow;
+sensorWindow(sensor); drawnow;
 
+%% END

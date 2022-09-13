@@ -24,10 +24,10 @@ dpi = 600
 % Suppose we read the paper at a viewing distance (inches)
 viewingDistance = 12
 
-%% The viewing geometry 
+%% The viewing geometry
 
 vcNewGraphWin;
-line([0 viewingDistance 0 0],[0 0 1 0]); 
+line([0 viewingDistance 0 0],[0 0 1 0]);
 axis equal
 set(gca,'xlim',[-2 20]), grid on
 xlabel('Viewing Distance (inch)')
@@ -35,7 +35,7 @@ ylabel('Position between spots on paper (inch)')
 
 %% Geometric angle calculation
 
-%  In radians, the viewing angle, phi, satisfies  
+%  In radians, the viewing angle, phi, satisfies
 %   $tan(\phi) = (opposite/adjacent)$
 
 deg2rad = 2*pi/360;
@@ -71,7 +71,7 @@ SecPerDot = 60*MinPerDot
 
 % Suppose we wish to plot the function by defining the spatial
 % variable, x, in terms of seconds of arc,
-xSec = -300:1:300;	
+xSec = -300:1:300;
 xMin = xSec/60;
 ls = 0.47*exp(-3.3 *(xMin.^2)) + 0.53*exp(-0.93*abs(xMin));
 ls = ls / sum(ls);
@@ -97,7 +97,7 @@ xSec = -300:300;    % 600 sec, total = 10 min
 westheimerOTF = abs(fft(westheimerLSF(xSec)));
 % One cycle spans 10 min of arc, so freq=1 is 6 c/deg
 freq = [0:11]*6;
-vcNewGraphWin; 
+vcNewGraphWin;
 semilogy(freq,westheimerOTF([1:12])); grid on;
 xlabel('Freq (cpd)'); ylabel('Relative contrast');
 set(gca,'ylim',[0 1.1])
@@ -119,7 +119,7 @@ im(1:dotSpacing:length(im)) = ones(size(im(1:dotSpacing:length(im))));
 % (The lines represent a printer dot)
 vcNewGraphWin;
 imshow(im(ones(1,128),1:512))
-title('Image of line stimulus'); 
+title('Image of line stimulus');
 
 % Each line in the physical image adds a unit linespread to the retinal
 % image.  We can compute the retinal image by forming the convolution of
@@ -142,7 +142,7 @@ xlabel('Sec of arc'), ylabel('Image intensity')
 % the eye's optics, there is only a small amount of residual variation in
 % the retinal image.  Because of the blurring, the retinal image is much
 % more likely the image of a bar than it is the image of a set of
-% individual lines. 
+% individual lines.
 
 % In fact, the dots placed on the page are not perfect line samples.  Each
 % ink line has some width.  So, a more realistic input image might be
@@ -159,7 +159,7 @@ title('Image of line stimulus blurred by ink width');
 
 % Notice the very small ripples left in the curve after taking
 % into account the blurring by the physical display and by the
-% eye. 
+% eye.
 vcNewGraphWin;
 plot(retIm), axis square, grid on
 title('Retinal image of blurred lines')
@@ -179,7 +179,7 @@ xlabel('Sec of arc'), ylabel('Intensity')
 % easier to compute with.  Have it extend over 1 deg (60 min) so
 % the Fourier Transform is easier to interpret
 
-xMin = -30:1:29;	
+xMin = -30:1:29;
 ls = 0.47*exp(-3.3 *(xMin.^2)) + 0.53*exp(-0.93*abs(xMin));
 ls = ls / sum(ls);
 
@@ -200,15 +200,15 @@ plot(xMin,harmonic), grid on
 title('Sampled cosinusoid')
 xlabel('Arc sec'), ylabel('Intensity')
 
-%% Cosinusoids at different spatial frequencies.  
+%% Cosinusoids at different spatial frequencies.
 
 % Notice that the amplitude of the cosinusoid falls off as the spatial
 % frequency increases.  We will store the amplitude of the cosinusoid in
 % the variable "peak".
 
 vcNewGraphWin;
-freq =[1 5 10 15]; 
-peak = zeros(1,length(freq)); 
+freq =[1 5 10 15];
+peak = zeros(1,length(freq));
 for i = 1:length(freq)
     harmonic = cos(2*pi*freq(i)*xMin/nSamples);
     retIm = convolvecirc(harmonic,ls);
@@ -229,7 +229,7 @@ set(gca,'ylim',[0 1])
 xlabel('Spatial freq (cpd)'), ylabel('Transfer')
 grid on
 
-%% The Fourier Transform and the linespread function.  
+%% The Fourier Transform and the linespread function.
 
 % Remember, the linespread was built so that it spans 1 deg, hence
 % frequency is in cycles per degree.
@@ -309,7 +309,7 @@ load lineSpread;
 
 vcNewGraphWin;
 plot(xDim, lineSpread(80, :), 'b-', xDim, lineSpread(200,:), ...
-      'g:', xDim, lineSpread(361, :), 'r--' );
+    'g:', xDim, lineSpread(361, :), 'r--' );
 legend('wavelength 450', 'wavelength 570','wavelength 730');
 xlabel('Degrees'); ylabel('Image Intensity');
 title('Linespread functions for three wavelengths');
@@ -319,7 +319,7 @@ title('Linespread functions for three wavelengths');
 lw = 1:10:length(wave);
 vcNewGraphWin;
 colormap(hot(32));
-mesh(xDim, wave(lw), lineSpread(lw,:)); 
+mesh(xDim, wave(lw), lineSpread(lw,:));
 set(gca,'xlim',[-1 1],'ylim',[350 730])
 ylabel('wavelength (nm)'); xlabel('degrees'); zlabel('intensity');
 
@@ -340,12 +340,12 @@ imshow(im(ones(100,1), 1:128));
 % input image (im, size(im) = 1 128) and convolves it with each
 % of the linespread functions in lineSpread size(lineSpread =
 % 361,65).  This results in 361 images (one for each
-% wavelength).  
+% wavelength).
 
 retIm = conv2(im, lineSpread, 'full');
 
 % We must remember the size (in deg) of each sample point this way.
-% 
+%
 X = (-size(retIm,2)/2 : ((size(retIm, 2)/2) - 1)) / 64;
 
 % We can plot the retinal image corresponding to two wavelengths
@@ -393,7 +393,7 @@ mean(retIm(200,:),2)
 load combinedOtf;
 
 % Here is a graph of a few of the MTFs
-% 
+%
 vcNewGraphWin;
 plot(sampleSf, combinedOtf(81, :), 'b-', ...
     sampleSf, combinedOtf(201,:), ...
@@ -410,20 +410,20 @@ title('Modulation transfer functions for 3 wavelengths');
 % "spurious resolution."
 
 
-%% More modern Linespreads, Pointspreads, and MTFs 
+%% More modern Linespreads, Pointspreads, and MTFs
 
 % In recent years, Ijspeert and others in the Netherlands developed a more
 % extensive set of functions to predict the basic image formation variables
 % in the average human eye.  The curves they derived were based on
 % empirical inspection of data sets, and do not have any strong theoretical
 % foundation. Still, they are probably more accurate than the Westheimer
-% function and they are parameterized for the subject's age, pigmentation,
+% function and they are parameterized for the subject's age, pigmentation
 % and pupil diameter.  Hence, for practical computation, these are probably
 % more useful.
 
 % A student in Psych 221 developed the code to compute these
 % values in the function "ijspeert."  Here is an example
-% 
+%
 age = 20; 				    % Subject's age
 pupil = 1.5; 				% diameter in mm
 pigmentation = 0.142; 		% Caucasian
@@ -431,7 +431,7 @@ freqIndexRange = 1:50; 		% The spatial frequency range
 
 % Set the span to be 1 deg, so we know that 1 cycle in the MTF
 % corresponds to 1 cycle per deg
-% 
+%
 angleInDeg = (-.25:.005:.25);
 angleInSec = angleInDeg*3600;
 angleInRad = angleInDeg*deg2rad;
@@ -441,7 +441,7 @@ angleInRad = angleInDeg*deg2rad;
 
 % The functions should be normalized so that the area under the
 % linespread and the first value of the MTF are one.
-% 
+%
 iMTF = iMTF/iMTF(1);
 iLSF = iLSF/sum(iLSF);
 
@@ -462,7 +462,7 @@ ylabel('Intensity');
 set(gca,'xtick',(-500:250:500),'xlim',[-500 500]);
 title('Line spread')
 
-% We can compare the ijspeert and westheimer linespread functions 
+% We can compare the ijspeert and westheimer linespread functions
 xMin = angleInSec/60;
 ls = 0.47*exp(-3.3 *(xMin.^2)) + 0.53*exp(-0.93*abs(xMin));
 ls = ls / sum(ls);
@@ -475,11 +475,11 @@ set(gca,'xtick',(-8:2:8),'xlim',[-6 6]);
 xlabel('Position (min)'), ylabel('Intensity'), title('Linespread')
 grid on
 
-%% Comparison of the MTFs with the Williams data 
+%% Comparison of the MTFs with the Williams data
 
 load williams
 
-subplot(1,2,2) 
+subplot(1,2,2)
 n = length(iMTF);
 freq = 0:(n-1);
 plot(freq,iMTF(1:n),'b-',freq,westMTF(1:n),'r-')
@@ -493,7 +493,7 @@ legend('Ijspeert','Westheimer','Data')
 
 %% What does the pointspread function look like in 2D?
 
-% The PSF is circularly symmetric.  So, we can accumulate 
+% The PSF is circularly symmetric.  So, we can accumulate
 % the 1D values into a 2D surface.
 %
 angleInRad2D = linspace(min(angleInRad)/4,max(angleInRad)/4,length(angleInRad)/4);
@@ -501,7 +501,7 @@ nSamples = length(angleInRad2D);
 [X,Y] = meshgrid(angleInRad2D,angleInRad2D);
 
 % Because the pointspread function is symmetric, we can calculate the value by
-% building a matrix D that measures only the distance from the center of matrix.  
+% building a matrix D that measures only the distance from the center of matrix.
 % Try plotting this distance matrix using the command:
 %
 %   imagesc(D); colorbar; axis image
@@ -513,9 +513,9 @@ D = sqrt(X.^2 + Y.^2);
 %
 iPSF2D = zeros(size(D));
 for ii=1:nSamples
-   a = D(ii,:);
-   [iMTF, iPSF2D(ii,:)] = ijspeert(age, pupil, pigmentation, ...
-      freqIndexRange, a);
+    a = D(ii,:);
+    [iMTF, iPSF2D(ii,:)] = ijspeert(age, pupil, pigmentation, ...
+        freqIndexRange, a);
 end
 
 vcNewGraphWin;
@@ -560,12 +560,12 @@ set(gca,'xlim',[-10 10]);  % Plot radiance at central 1 mm
 %  aperture?
 %
 %  2.  Use ISET to change the focal length, rather than the f-number of the
-%  diffraction-limited lens.  
+%  diffraction-limited lens.
 %      * What is the value of the aperture diameter when you double the
 %      focal length, but do not change the f-number?
 %      * Now, use oiPlot to graph the spectral line spread. How does it
 %      compare with the original line spread?
-%      
+%
 %    Help:
 %      You can read the current focal length and aperture diameter using
 %          oiGet(oi,'optics focal length')
@@ -577,7 +577,7 @@ set(gca,'xlim',[-10 10]);  % Plot radiance at central 1 mm
 %  you cannot adjust the aperture directly.  Two out of three ain't bad.
 %  Suppose you want to configure diffraction-limited optics with an
 %  aperture of 0.1mm and a focal length of 0.4mm.  How would you set the
-%  parameters?  
+%  parameters?
 %    Help:  The f-number is focal length divided by aperture diameter
 %
 %% END

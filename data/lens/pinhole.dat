@@ -1,0 +1,13 @@
+# Name: pinhole
+# Description: multi element lens
+# Focal length (mm) 
+6.000
+# Each row is a surface.
+# The order of surfaces starts from the image and
+# heads to the sensor.  Zero is the position of the first lens surface.
+# Positive numbers are towards the lens, and negative numbers are towards
+# the image
+# radius	 axpos	       N	     aperture
+100000  	5.000000	1.000000	10.000000
+0.000000  	5.000000	1.000000	3.000000
+100000  	0.000000	1.000000	10.000000

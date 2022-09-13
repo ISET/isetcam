@@ -14,10 +14,10 @@ function dstImage = scApplyFilters(srcImage, filters, dimension, imgPadMethod)
 % Typically the srcImage is in opponent-colors space so that the first
 % dimension is luminance, the other two are red-green and blue yellow.
 %
-% Before filtering, the function matches the sizes of the image and the 
-% filters. If image size is larger than filter size, the filter will be 
+% Before filtering, the function matches the sizes of the image and the
+% filters. If image size is larger than filter size, the filter will be
 % padded with zeros. However, in case that the image size is smaller than
-% the filter size, we pad the image using the symmetric padding method. We 
+% the filter size, we pad the image using the symmetric padding method. We
 % let the user the option to pad the image with black or white. This
 % is determined by the argument 'imgPadMethod'. The user can insert '0' to
 % pad with zeros or '1' to pad with ones (i.e. max value of the image).
@@ -80,11 +80,11 @@ if ~isequal(fSize,imgSize)
     
     % Filter is larger than image - pad image
     if fSize(1) > imgSize(1) || fSize(2) > imgSize(2)
-
+        
         rowImgPad = max(0,fSize(1) - imgSize(1));
         colImgPad = max(0,fSize(2) - imgSize(2));
         % fprintf('Padding image (row %d, col %d)\n',rowImgPad,colImgPad);
-
+        
         % If row or col is odd, we remove a row/col from the srcImage This
         % is because padding image symmetrically is preferred. Otherwise
         % the filter will shift the image data. We would rather kill off a
@@ -104,7 +104,7 @@ if ~isequal(fSize,imgSize)
         % How unequal are they?
         rowFiltPad = max(0,imgSize(1) - fSize(1));
         colFiltPad = max(0,imgSize(2) - fSize(2));
-
+        
         % If row or col is odd, we remove a row/col from the srcImage This
         % is because padding filter symmetrically is preferred. Otherwise
         % the filter will shift the image data. We would rather kill off a
@@ -118,7 +118,7 @@ if ~isequal(fSize,imgSize)
             colFiltPad = colFiltPad - 1;
         end
         % fprintf('Padding filter (row %d, col %d)\n',rowFiltPad,colFiltPad);
-
+        
     end
 end
 
@@ -135,25 +135,25 @@ for ii=1:L
         end
         thisImage = padarray(thisImage,[rowImgPad/2, colImgPad/2], imgPadMethod);
     end
-
+    
     thisFilter = filters{ii};
     %filter needs to be padded
     if rowFiltPad || colFiltPad
         thisFilter = padarray(thisFilter,[rowFiltPad/2, colFiltPad/2]);
     end
-
+    
     % Don't we need some fft-shifting here?
     % thisImage = ones(3,3); thisImage = padarray(thisImage,[1,1]);
     % thisFilter = zeros(5,5); thisFilter(1,1) = 1;
     dstPadImg = ifftshift(real(ifft2( ...
-          fft2(fftshift(thisImage)) ...
+        fft2(fftshift(thisImage)) ...
         .*fft2(fftshift(thisFilter)))));
     
     dstImage(:,:,ii) = dstPadImg(rowImgPad/2+1:end-rowImgPad/2,...
         colImgPad/2+1:end-colImgPad/2);
     % dstImage(:, :, ii) = real(ifft2(fft2(thisFilter).*fft2(thisImage)));
     % dstImage(:, :, ii) = ieConv2FFT(srcImage(:, :, ii), filters{ii}, 'same');
-
+    
 end
 
 return;

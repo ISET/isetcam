@@ -12,14 +12,14 @@
 %
 % Copyright ImagEval Consultants, LLC, 2010
 
-%% 
+%%
 ieInit
 
 %% Plot scene data
 
 scene = sceneCreate('macbethd65');
 ieAddObject(scene);
-sceneWindow; 
+sceneWindow;
 
 % Here are the luminance data from a line
 rows = round(sceneGet(scene,'rows')/2);

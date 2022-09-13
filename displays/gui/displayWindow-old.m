@@ -40,13 +40,13 @@ function varargout = displayWindow(varargin)
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
-                   'gui_Singleton',  gui_Singleton, ...
-                   'gui_OpeningFcn', @displayWindow_OpeningFcn, ...
-                   'gui_OutputFcn',  @displayWindow_OutputFcn, ...
-                   'gui_LayoutFcn',  [], ...
-                   'gui_Callback',   []);
+    'gui_Singleton',  gui_Singleton, ...
+    'gui_OpeningFcn', @displayWindow_OpeningFcn, ...
+    'gui_OutputFcn',  @displayWindow_OutputFcn, ...
+    'gui_LayoutFcn',  [], ...
+    'gui_Callback',   []);
 if nargin && ischar(varargin{1})
-   gui_State.gui_Callback = str2func(varargin{1});
+    gui_State.gui_Callback = str2func(varargin{1});
 end
 
 if nargout
@@ -76,7 +76,7 @@ end
 % Refresh image window
 if ~isfield(vcSESSION, 'imgData') || isempty(vcSESSION.imgData)
     I = imread(fullfile(isetRootPath, ...
-                'data', 'images', 'rgb', 'macbeth.tif'));
+        'data', 'images', 'rgb', 'macbeth.tif'));
     I = im2double(I);
     vcSESSION.imgData = I;
 end
@@ -209,10 +209,10 @@ I = I(rect(2): rect(2)+rect(4)-1, rect(1) : rect(1) + rect(3)-1, :);
 % Get scene info
 overSample = displayGet(d, 'over sample');
 answer = inputdlg({'Scene name', 'Up sample (col)', 'Up sample (row)'}, ...
-                   'Scene Info', 1, ...
-                   {sprintf('scene-%s', displayGet(d, 'name')), ...
-                    num2str(overSample(1)), ...
-                    num2str(overSample(2))});
+    'Scene Info', 1, ...
+    {sprintf('scene-%s', displayGet(d, 'name')), ...
+    num2str(overSample(1)), ...
+    num2str(overSample(2))});
 if isempty(answer)
     return;
 else
@@ -255,7 +255,7 @@ end
 
 % Get scene info
 name = inputdlg({'Scene name'}, 'Scene Info', 1, ...
-            {sprintf('scene-%s', displayGet(d, 'name'))});
+    {sprintf('scene-%s', displayGet(d, 'name'))});
 if isempty(name), return; end
 
 % Generate scene
@@ -353,7 +353,7 @@ function menuLCDHorizontalStripesRGB_Callback(~, ~, ~)
 % dpi = 72;
 % dSpacing = 0.001; % sample spacing in mm
 % vDisplayLCD = vDisplayCreate('lcd',dpi,dSpacing,'h','rgb');
-% 
+%
 % displayGD   = ctDisplaySet(displayGD,'vDisplay',vDisplayLCD);  % Add?  Replace?
 % ctSetObject('display', displayGD);
 % ctdpRefreshGUIWindow(hObject);
@@ -369,11 +369,11 @@ displayRefresh(hObject, eventdata, handles);
 function menuLCDVerticalStripesBGR_Callback(~, ~, ~)
 % Display | LCD | Vertical BGR
 % displayGD  = ctGetObject('display');
-% 
+%
 % dpi = 72;
 % dSpacing = 0.001; % sample spacing in mm
 % vDisplayLCD = vDisplayCreate('lcd',dpi,dSpacing,'v','bgr');
-% 
+%
 % displayGD  = ctDisplaySet(displayGD,'vDisplay',vDisplayLCD);  % Add?  Replace?
 % ctSetObject('display', displayGD);
 % ctdpRefreshGUIWindow(hObject);
@@ -383,11 +383,11 @@ warning('NYI');
 function menuLCDHorizontalStripesBGR_Callback(~, ~, ~)
 % Display | LCD | Vertical BGR
 % displayGD   = ctGetObject('display');
-% 
+%
 % dpi = 72;
 % dSpacing = 0.001; % sample spacing in mm
 % vDisplayLCD = vDisplayCreate('lcd',dpi,dSpacing,'h','bgr');
-% 
+%
 % displayGD   = ctDisplaySet(displayGD,'vDisplay',vDisplayLCD);  % Add?  Replace?
 % ctSetObject('display', displayGD);
 % ctdpRefreshGUIWindow(hObject);
@@ -417,7 +417,7 @@ displayRefresh(hObject, eventdata, handles);
 
 % --------------------------------------------------------------------
 function menuEditRenameDisplay_Callback(hObject, eventdata, handles)
-ind = vcGetSelectedObject('display'); 
+ind = vcGetSelectedObject('display');
 if isempty(ind), disp('no display selected'); return; end
 answer = inputdlg('New Display Name');
 if isempty(answer), return; end
@@ -431,7 +431,7 @@ displayRefresh(hObject, eventdata, handles);
 %-----------------------------------------------------
 function editMaxLum_Callback(hObject, eventdata, handles)
 % Edit box for max luminance
-ind = vcGetSelectedObject('display'); 
+ind = vcGetSelectedObject('display');
 if isempty(ind), disp('no display selected'); return; end
 d = vcGetObject('display', ind);
 xyz = displayGet(d, 'white xyz');
@@ -462,7 +462,7 @@ if ispc && isequal(get(hObject,'BackgroundColor'), ...
 end
 
 function editPPI_Callback(hObject, eventdata, handles)
-ind = vcGetSelectedObject('display'); 
+ind = vcGetSelectedObject('display');
 if isempty(ind), disp('no display selected'); return; end
 d = vcGetObject('display', ind);
 newPPI = str2double(get(handles.editPPI, 'String'));
@@ -499,7 +499,7 @@ warning('NYI')
 
 % --------------------------------------------------------------------
 function menuCopyCurrent_Callback(hObject, eventdata, handles)
-ind = vcGetSelectedObject('display'); 
+ind = vcGetSelectedObject('display');
 if isempty(ind), disp('no display selected'); return; end
 d = vcGetObject('display', ind);
 dname = displayGet(d, 'name');
@@ -525,7 +525,7 @@ function SubpixelScale_Callback(hObject, eventdata, handles)
 % hObject    handle to SubpixelScale (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-ind = vcGetSelectedObject('display'); 
+ind = vcGetSelectedObject('display');
 if isempty(ind), disp('no display selected'); return; end
 answer = inputdlg('New samples per pixel (10 ~ 30)');
 if isempty(answer), return; end

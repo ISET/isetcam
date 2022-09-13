@@ -9,7 +9,7 @@ function fullName = vcExportObject(obj,fullName,clearDataFlag)
 % routine exists.  And we may allow exporting the data as well.
 %
 % If fullName is not specified, a GUI opens to choose the name.
-%   
+%
 % Examples
 %  fullName = vcExportObject(scene,'c:\myhome\ISET-Objects\SCENE\myCompany');
 %
@@ -22,7 +22,7 @@ if ieNotDefined('fullName'),    fullName = []; end
 objType = obj.type;
 objType = vcEquivalentObjtype(objType);
 
-switch(lower(objType))     
+switch(lower(objType))
     case {'scene','opticalimage','isa','vcimage'}
         if clearDataFlag, obj.data = []; end
         

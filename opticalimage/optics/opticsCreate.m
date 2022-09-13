@@ -4,7 +4,7 @@ function optics = opticsCreate(opticsType,varargin)
 %   optics = opticsCreate(opticsType,varargin)
 %
 % The optics structure contains a variety of parameters, such as f-number
-% and focal length. 
+% and focal length.
 %
 % Optics structures do not contain a spectrum structure.  Rather this is
 % stored in the optical image that also holds the optics information.
@@ -24,7 +24,7 @@ function optics = opticsCreate(opticsType,varargin)
 %
 %      {'shift invariant'} - A shift invariant representation based on a
 %                            small pillbox PSF
-%      
+%
 % There is one special case of shift-invariant based on human optics.  This
 % creates an optics structure with human OTF data
 %
@@ -48,7 +48,7 @@ switch lower(opticsType)
     case {'diffractionlimited','default','standard(1/4-inch)','quarterinch'}
         % These are all diffraction limited methods.
         optics = opticsDefault;
-
+        
     case {'standard(1/3-inch)','thirdinch'}
         optics = opticsThirdInch;
     case {'standard(1/2-inch)','halfinch'}
@@ -57,7 +57,7 @@ switch lower(opticsType)
         optics = opticsTwoThirdInch;
     case {'standard(1-inch)','oneinch'}
         optics = opticsOneInch;
-    
+        
     case 'shiftinvariant'
         % optics = opticsCreate('shift invariant',oi);
         %
@@ -68,16 +68,16 @@ switch lower(opticsType)
         if ~isempty(varargin), oi = varargin{1}; else, oi = oiCreate; end
         wave = oiGet(oi,'wave');
         if isempty(wave)
-            wave = 400:10:700; 
+            wave = 400:10:700;
             oi = oiSet(oi,'wave',wave);
         end
         psfType = 'gaussian';  waveSpread = wave/wave(1);
         xyRatio = ones(1,length(wave));
         optics = siSynthetic(psfType,oi,waveSpread,xyRatio);
         % psfMovie(optics,ieNewGraphWin);
-  
+        
         % Used to create a pillbox like this
-        % optics = siSynthetic('custom',oi,'SI-pillBox',[]);        
+        % optics = siSynthetic('custom',oi,'SI-pillBox',[]);
         
     case 'human'
         % Pupil radius in meters.  Default is 3 mm
@@ -123,7 +123,7 @@ FOV = 46;
 fLength = inv(tan(FOV/180*pi)/2/sensorDiagonal)/2;
 
 optics = opticsSet(optics,'fnumber',4);  % Ratio of focal length to diameter
-optics = opticsSet(optics,'focalLength', fLength);  
+optics = opticsSet(optics,'focalLength', fLength);
 optics = opticsSet(optics,'otfMethod','dlmtf');
 
 end
@@ -143,7 +143,7 @@ FOV = 46;
 sensorDiagonal = 0.006;
 fLength = inv(tan(FOV/180*pi)/2/sensorDiagonal)/2;
 
-optics = opticsSet(optics,'focalLength', fLength);  
+optics = opticsSet(optics,'focalLength', fLength);
 optics = opticsSet(optics,'otfMethod','dlmtf');
 
 end
@@ -164,7 +164,7 @@ sensorDiagonal = 0.008;
 fLength = inv(tan(FOV/180*pi)/2/sensorDiagonal)/2;
 
 % Standard 1/2-inch sensor has a diagonal of 8 mm
-optics = opticsSet(optics,'focalLength', fLength);  
+optics = opticsSet(optics,'focalLength', fLength);
 optics = opticsSet(optics,'otfMethod','dlmtf');
 
 end
@@ -182,7 +182,7 @@ sensorDiagonal = 0.011;
 fLength = inv(tan(FOV/180*pi)/2/sensorDiagonal)/2;
 
 optics = opticsSet(optics,'fnumber',4);  % Ratio of focal length to diameter
-optics = opticsSet(optics,'focalLength', fLength);  
+optics = opticsSet(optics,'focalLength', fLength);
 optics = opticsSet(optics,'otfMethod','dlmtf');
 
 end
@@ -200,9 +200,9 @@ sensorDiagonal = 0.016;
 fLength = inv(tan(FOV/180*pi)/2/sensorDiagonal)/2;
 
 optics = opticsSet(optics,'fnumber',4);  % Ratio of focal length to diameter
-optics = opticsSet(optics,'focalLength', fLength);  
+optics = opticsSet(optics,'focalLength', fLength);
 optics = opticsSet(optics,'otfMethod','dlmtf');
-        
+
 end
 
 %---------------------------------------
@@ -226,9 +226,9 @@ optics.type = 'optics';
 optics.name = 'human';
 optics      = opticsSet(optics,'model','shiftInvariant');
 
-% Ratio of focal length to diameter.  
-optics = opticsSet(optics,'fnumber',fLength/(2*pupilRadius));  
-optics = opticsSet(optics,'focalLength', fLength);  
+% Ratio of focal length to diameter.
+optics = opticsSet(optics,'fnumber',fLength/(2*pupilRadius));
+optics = opticsSet(optics,'focalLength', fLength);
 
 optics = opticsSet(optics,'otfMethod','humanOTF');
 
@@ -238,10 +238,10 @@ optics = opticsSet(optics,'otfMethod','humanOTF');
 dioptricPower = 1/fLength;      % About 60 diopters
 
 % We used to assign the same wave as in the current scene to optics, if the
-% wave was not yet assigned.  
+% wave was not yet assigned.
 wave = opticsGet(optics,'wave');
 
-% The human optics are an SI case, and we store the OTF at this point.  
+% The human optics are an SI case, and we store the OTF at this point.
 [OTF2D, frequencySupport] = humanOTF(pupilRadius, dioptricPower, [], wave);
 optics = opticsSet(optics,'otfData',OTF2D);
 

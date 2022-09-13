@@ -15,9 +15,9 @@ function oi = oiCompute(scene,oi,opticsModel)
 % for light spreading from the edge of the scene.  The amount of padding is
 % specified in oiApplyOTF, line 80, as
 %
-%   imSize   = oiGet(oi,'size'); 
+%   imSize   = oiGet(oi,'size');
 %   padSize  = round(imSize/8); padSize(3) = 0;
-%   sDist = sceneGet(scene,'distance'); 
+%   sDist = sceneGet(scene,'distance');
 %   oi = oiPad(oi,padSize,sDist);
 %
 % To remove the padded region, you can use oiCrop.
@@ -25,7 +25,7 @@ function oi = oiCompute(scene,oi,opticsModel)
 % Optical models:
 %
 % Three types of optical calculations are implemented .  These are selected
-% from the interface in the oiWindow, or they can be set via 
+% from the interface in the oiWindow, or they can be set via
 %    optics = opticsSet(optics,'model', parameter)
 %
 % This function calls the relevant model depending on the setting in
@@ -65,7 +65,7 @@ function oi = oiCompute(scene,oi,opticsModel)
 %
 % * Historically, we also used a third model is a full ray trace model that
 % allows shift-varying wavelength-dependent point spread functions.  This
-% model includes geometric distortion information, relative illumination,
+% model includes geometric distortion information, relative illumination
 % and field-height and wavelength dependent point spread functions (or
 % OTFS). These are usually imported from a full ray trace program, such as
 % Zemax.  They can also be obtained by the companion CISET program. To set
@@ -96,7 +96,7 @@ function oi = oiCompute(scene,oi,opticsModel)
 % on the scene window
 %
 % The optical image is padded by 1/8th of the scene size on all sides.
-% So the eliminate the black border, we need to crop a rect that is 
+% So the eliminate the black border, we need to crop a rect that is
 %
 %  rect = [row col height width]
 %  oiSize = sceneSize * (1 + 1/4))
@@ -112,8 +112,8 @@ if strcmp(oi.type,'scene') && strcmp(scene.type,'opticalimage')
     tmp = scene; scene = oi; oi = tmp; clear tmp
 end
 if ~exist('opticsModel','var') || isempty(opticsModel)
-    optics = oiGet(oi,'optics'); 
-    opticsModel = opticsGet(optics,'model'); 
+    optics = oiGet(oi,'optics');
+    opticsModel = opticsGet(optics,'model');
 end
 
 % Compute according to the selected model

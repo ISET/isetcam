@@ -1,5 +1,5 @@
 function pixel = pixelIdeal(pixel)
-% Create a matched pixel without any noise 
+% Create a matched pixel without any noise
 %
 %     pixel = pixelIdeal(pixel);
 %
@@ -15,7 +15,7 @@ function pixel = pixelIdeal(pixel)
 %   pixelI = pixelIdeal;
 %
 % Match the pixel, but eliminate the noise
-%   pixel  = pixelCreate; 
+%   pixel  = pixelCreate;
 %   pixel  = pixelSet(pixel,'size same fillfactor',[1.5 1.5]*1e-6);
 %   pixelI = pixelIdeal(pixel);
 %

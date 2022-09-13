@@ -19,6 +19,7 @@ classdef cpCamera < handle
         cmodules = cpCModule.empty; % 1 (or more) CModules
         isp = [];     % an extended ip
         expTimes = [];
+        fillFactors = [];
         supportedIntents;
     end
     
@@ -43,17 +44,22 @@ classdef cpCamera < handle
                 intent;
                 options.imageName char = '';
                 options.reRender (1,1) {islogical} = true;
+
+                % These should really be at the Camera Module level (oops)
                 options.expTimes = [];
+                options.fillFactors = [];
                 options.insensorIP = obj.isp.insensorIP; % default
                 options.focusMode char = 'Auto';
                 options.focusParam = 'Center'; % for Manual is distance in m
+                options.tonemap = 'longest';
             end
             obj.expTimes = options.expTimes;
+            obj.fillFactors = options.fillFactors;
             % Not sure yet whether we need these at the class level
             %obj.focusMode = options.focusMode;
             %obj.focusParam = options.focusParam;
             
-            if ~isempty(options.imageName) 
+            if ~isempty(options.imageName)
                 obj.isp.ip = ipSet(obj.isp.ip, 'name', options.imageName);
             end
             
@@ -99,14 +105,18 @@ classdef cpCamera < handle
             % We want to call our camera module(s).
             % Each returns an array of sensor objects with the images
             % pre-computed
-            [sensorImages, focusDistances] = obj.cmodules(1).compute(aCPScene, obj.expTimes, 'focusMode', options.focusMode,...
-                'focusParam', options.focusParam);
+            for ii = 1:numel(obj.cmodules)
+                % We need to add flexibility in setting different exposure
+                % times and other modes per module!
+                [sensorImages, focusDistances] = obj.cmodules(ii).compute(aCPScene, obj.expTimes, 'focusMode', options.focusMode,...
+                'focusParam', options.focusParam,'intent',intent, 'fillFactors',obj.fillFactors);
+            end
             
             % generic version, currently just prints out each processed
             % image from the sensor
             ourPicture = obj.computePhoto(sensorImages, intent, ...
                 'insensorIP', options.insensorIP, 'scene', aCPScene, ...
-                'focusDistances', focusDistances);            
+                'tonemap',options.tonemap, 'focusDistances', focusDistances);
             
         end
         
@@ -120,15 +130,17 @@ classdef cpCamera < handle
                 options.insensorIP = true;
                 options.scene = [];
                 options.focusDistances = [];
+                options.tonemap = 'longest';
             end
             ourPhoto = obj.isp.ispCompute(sensorImages, intent, 'insensorIP', ...
                 options.insensorIP, 'scene', options.scene, ...
-                'focusDistances',options.focusDistances); 
+                'tonemap', options.tonemap, ...
+                'focusDistances',options.focusDistances);
         end
-       
+        
         % A key element of modern computational cameras is their ability
-        % to use statistics from the scene (in this case via preview 
-        % image(s) to plan how many frames to capture and with what settings. 
+        % to use statistics from the scene (in this case via preview
+        % image(s) to plan how many frames to capture and with what settings.
         function [expTimes] = planCaptures(obj, previewImages, intent)
             switch intent
                 case {'Auto', 'Portrait', 'Scenic', 'Action', ...
@@ -136,7 +148,7 @@ classdef cpCamera < handle
                     % split these apart as they are implemented
                     % we might also want to add more "techie" intents
                     
-                    % For now assume we're a very simple camera!                    
+                    % For now assume we're a very simple camera!
                     % And we can do AutoExposure to get our time.
                     % We also only use a single preview image
                     if isequal(previewImages{1}.type, 'opticalimage')
@@ -146,7 +158,7 @@ classdef cpCamera < handle
                     end
                     % Compute exposure times if they weren't passed to us
                     if isequal(obj.expTimes, [])
-                        expTimes = [autoExposure(oi, obj.cmodules(1).sensor)];
+                        expTimes = obj.aExposure(oi);
                     else
                         expTimes = obj.expTimes;
                     end
@@ -157,12 +169,29 @@ classdef cpCamera < handle
                     % Might force camera to a specific module also?
                     % Zoom is settable, but might be digital??
                     % Aperture also, maybe some shutter modes at some point
-                    expTimes = [.1];
+                    expTimes = [1]; % match default integration time?
                 case 'otherwise'
                     error("Unknown photo intent. You may need a specialized sub-class implementation.");
             end
         end
         
+        function eTimes = aExposure(obj, oi)
+
+            %{
+            % optional code for center-weighted
+            % pick a rect in the center of the oi
+            iW = oiGet(oi,'cols');
+            iH = oiGet(oi,'rows');
+            fraction = 10; % arbitrary area around the center
+            top = floor((iH / 2) - (iH / (fraction*2)));
+            left = floor((iW / 2) - (iW / (fraction*2)));
+            w = floor(iW / fraction);
+            h = floor(iH / fraction);
+            cRect = [top, left, w, h];
+            %}
+            eTimes = autoExposure(oi, obj.cmodules(1).sensor, .95, 'default');
+        end
+
         function infoArray = showInfo(obj)
             infoArray = {'Camera Type:', class(obj)};
             infoArray = [infoArray; {'Intents', strjoin(obj.supportedIntents)}];

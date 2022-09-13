@@ -1,89 +1,96 @@
-function [fig, cfaImg] = sensorShowCFA(sensor,fullArray, app, nBlocks)
-%Create an image illustrating the sensor CFA spatial pattern
+function [fig, cfaImg] = sensorShowCFA(sensor, app, sz)
+% Create an image illustrating the sensor CFA spatial pattern (unit
+% block)
 %
-%    [fig, cfaImg] = sensorShowCFA(sensor,[fullArray = 0],app, nBlocks)
+% Synopsis
 %
-% The plotted colors are based on the letter names of the color filters
-% (not the spectra).
+%    [fig, cfaImg] = sensorShowCFA(sensor, [app], [sz])
 %
+% Brief description
+%  The plotted colors are based on the letter names of the color filters for
+%  rgb, rgbw, and wrgb.  Otherwise, they are calculated from the spectral
+%  transmittance of the color filters
+%
+% Inputs
 %  sensor:    Sensor object
-%  fullArray: Typically an image of just the super pixel pattern is shown.
-%             If fullArray is true, makes an image showing the full pattern.
-%  app:       app for the sensorWindow that has imgCFA as a slot 
-%  nBlocks:   Number of cfa blocks to render
+%  app:       app for the sensorWindow that has imgCFA as a slot
+%  sz:        Row/Col for the number of unit blocks to show.  Default
+%             is [1,1]
 %
 % Return
 %   fig:    Handle to the figure where data are rendered
-%   cfaImg: RGB image of the CFA array 
+%   cfaImg: Color image of the CFA array
 %
-% Copyright ImagEval Consultants, LLC, 2010
-%
-% See also: sensorPlot, sensorImageColorArray, sensorDetermineCFA
+% See also: 
+%  sensorPlot, sensorData2Image, sensorDetermineCFA
 %
 
 % Examples:
 %{
-  s = sceneCreate; oi = oiCreate; sensor = sensorCreate; 
-  oi = oiCompute(oi,s); sensor = sensorCompute(sensor,oi); 
-  img = sensorShowCFA(sensor,false);
+  s = sceneCreate; oi = oiCreate; sensor = sensorCreate;
+  oi = oiCompute(oi,s); sensor = sensorCompute(sensor,oi);
+  [~, img] = sensorShowCFA(sensor);
+  [~, img] = sensorShowCFA(sensor,[],[4 4]);
+%}
+%{
   sensor = sensorCreate('human');
   sensorShowCFA(sensor);
 %}
 
 %%
-if ieNotDefined('sensor'),    sensor = vcGetObject('sensor'); end
-if ieNotDefined('fullArray'), fullArray = false; end
+if ieNotDefined('sensor'), sensor = ieGetObject('sensor'); end
 if ieNotDefined('app')
     app = [];
 end
-if ieNotDefined('nBlocks'), nBlocks = 1; end
+if ieNotDefined('sz'), sz = []; end
+
+% Should be a parameter
+sScale = 32;
 
 %% Indexed color image of the sensor detectors.
 
-% The colors in mp are based on the letters in 'plot filter colors'
-[cfaSmall,mp] = sensorImageColorArray(sensorDetermineCFA(sensor));
-
-if fullArray
-    % Set the image so each pixel is 3x3
-    s = 3;
-    cfaImg = imageIncreaseImageRGBSize(cfaSmall,s);
-else
-    % Get the first block
-    p = sensorGet(sensor,'pattern');
-    
-    % Number of blocks times the size
-    sz = size(p)*nBlocks;
-    cfaSmall = cfaSmall(1:sz(1),1:sz(2));
-    
-    % Make the image pretty big.  If it is a human sensor, the block is
-    % already quite big, so we don't make it too much bigger.
-    if max(size(cfaSmall,1)) < 64, s = 192/round(size(cfaSmall,1));
-    else,                           s = 3;
-    end
-    cfaImg = imageIncreaseImageRGBSize(cfaSmall,s);
+pattern    = sensorGet(sensor,'pattern');
+if ~isempty(sz)
+    pattern = repmat(pattern,sz(1),sz(2));
 end
 
-%% Draw the CFA 
+nExposures = sensorGet(sensor,'n exposures');
 
-cfaImg = ind2rgb(cfaImg,mp);
+mxVolts = sensorGet(sensor,'voltage swing');
+
+%% Create an image of the sensor CFA
+
+% If we are in the single exposure case
+if nExposures == 1
+    ss = sensorSet(sensor,'volts',mxVolts*ones(size(pattern)));
+else
+    % If we are in the multiple exposure case
+    [r,c] = size(pattern);
+    ss = sensorSet(sensor,'volts',mxVolts*ones(r,c,nExposures));
+end
+
+% The color rendering in sensorData2Image depends on whether we use certain
+% filter names (rgb, rgbw, wrgb) and if not then we do our best to
+% calculate the color rendering.
+%
+% If the sensor is monochrome, the color should be an estimate of the
+% spectral QE
+cfaSmall = sensorData2Image(ss);
+
+% Size scaling should be a parameter.
+cfaImg = imageIncreaseImageRGBSize(cfaSmall,sScale);
+
+%% Draw the CFA
+
 if isempty(app)
-    tSizeFlag = true;
     % Set up in a new window
     fig = ieNewGraphWin;
     set(fig,'Name', sensorGet(sensor,'name'),'menubar','None');
     image(cfaImg); axis off
 else
+    % Show it in the sensorWindow app
     app.imageCFA.ImageSource = cfaImg;
     fig = app.figure1;
-    tSizeFlag = false;
-end
-
-if tSizeFlag
-    if fullArray
-       %  truesize(fig);
-    else
-        truesize(fig,[92 92]);
-    end
 end
 
 end

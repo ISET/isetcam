@@ -16,7 +16,7 @@ function [img,info] = ieDNGRead(fname,varargin)
 %   img:  Image data mosaic
 %   info: The header information.  I am unsure whether exposure time is in
 %         seconds, I think.
-%   
+%
 % See also
 %   sensorDNGRead, dcrawRead
 
@@ -77,7 +77,7 @@ end
 
 if onlyInfo
     img = [];
-    return; 
+    return;
 else
     % If fname has any spaces in it, dcraw is unhappy.
     try

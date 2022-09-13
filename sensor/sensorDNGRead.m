@@ -13,7 +13,7 @@ function [sensor, info] = sensorDNGRead(fname,varargin)
 %   uses that orientation to adjust the CFA pattern (which varies with
 %   camera orientation).
 %
-%   Different camera apps return different formats for the header.  
+%   Different camera apps return different formats for the header.
 %
 % Inputs
 %  fname:  File name of the DNG file
@@ -81,7 +81,7 @@ ieInfo      = ieDNGSimpleInfo(info);
 
 if ~fullInfo
     % The user wants just the simpler, standardized version of the full DNG
-    % header 
+    % header
     info = ieInfo;
 end
 
@@ -97,7 +97,7 @@ sensor = sensorSet(sensor,'size',size(img));
 sensor = sensorSet(sensor,'exp time',exposureTime);
 sensor = sensorSet(sensor,'black level',blackLevel);
 sensor = sensorSet(sensor,'name',fname);
-sensor = sensorSet(sensor,'digital values',img); 
+sensor = sensorSet(sensor,'digital values',img);
 
 %% The Bayer pattern depends on the orientation.
 switch ieInfo.orientation

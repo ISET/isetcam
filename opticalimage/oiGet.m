@@ -10,22 +10,22 @@ function val = oiGet(oi,parm,varargin)
 %  Because of the importance of the optics structure, it is possible to
 %  retrieve the optics parameters from the oiGet() function using the
 %  syntax
-% 
-%     oiGet(oi,'optics <parameter name>'), 
+%
+%     oiGet(oi,'optics <parameter name>'),
 %     e.g., oiGet(oi,'optics fnumber');
 %
 %  The key structures (scene, oi, sensor, ip, display) are stored in the
 %  ISET database.  To retrieve the currently selected optical image, use
-%      
+%
 %     oi = vcGetObject('oi');
 %
 %  A '*' indicates that the syntax oiGet(scene,param,unit) can be used,
-%  where unit specifies the spatial scale of the returned value:  'm',
+%  where unit specifies the spatial scale of the returned value:  'm'
 %  'cm', 'mm', 'um', 'nm'.  Default is meters ('m').
 %
 %  There is a limitation in that we can only add one additional argument.
-%  So it is possible to call 
-%    
+%  So it is possible to call
+%
 %    oiGet(oi,'optics focal length','mm')
 %
 %  But we do not add a second argument to the list. If you need to have a
@@ -81,7 +81,7 @@ function val = oiGet(oi,parm,varargin)
 %  N.B. Many of these values can be retrieved from within a spatial region
 %  of interest (ROI). See the function
 %
-%       vcGetROIData(oi,roiLocs,dataType); 
+%       vcGetROIData(oi,roiLocs,dataType);
 %
 %  I added 'roi mean photons', and I may add roiphotons, roienergy, and so
 %  forth here in the future, and make the vcGetROIData call here.
@@ -170,15 +170,15 @@ if ~exist('parm','var') || isempty(parm), error('Param must be defined.'); end
 %   oiGet(oi,'optics param',var1, var2, ...)
 %
 % Equivalent to
-%   optics = oiGet(oi,'optics'); opticsGet(optics,param)   
+%   optics = oiGet(oi,'optics'); opticsGet(optics,param)
 %
 [oType,parm] = ieParameterOtype(parm);  % Object type is read from parm
 
-switch oType   
+switch oType
     case 'optics'
         % If optics, then we either return the optics or an optics
         % parameter.  I think we can handle the longer varargin by
-        % sending in varargin{:}, by the way.  Try 
+        % sending in varargin{:}, by the way.  Try
         % val = opticsGet(optics,parm,varargin{:});
         optics = oi.optics;
         if isempty(parm), val = optics;
@@ -204,7 +204,7 @@ switch oType
     otherwise
         % Must be an oi object.  Format the parameter and move on.
         parm = ieParamFormat(parm);
-
+        
         switch parm
             
             case 'type'
@@ -282,8 +282,8 @@ switch oType
                 %
                 % Calculate the distance from the lens to the focal plane.
                 % We set the scene distance here, and then call
-                %     opticsGet(optics,'image distance') 
-                % 
+                %     opticsGet(optics,'image distance')
+                %
                 % March 11, 2019 (BW) Created the minSize = 10 variable and
                 % set the new logic was 5.  This was in response to an
                 % observation by Zhenyi.
@@ -312,7 +312,7 @@ switch oType
                     % The scene distance was sent in
                     sDist = sceneGet(varargin{1},'distance','m');
                 end
- 
+                
                 % Call the optics version of this routine, with the sDist
                 % set.
                 val = oiGet(oi,'optics image distance',sDist);
@@ -346,7 +346,7 @@ switch oType
                 % We only store the width FOV.  We insist that the pixels are square
                 h = oiGet(oi,'height');              % Height in meters
                 d = oiGet(oi,'distance');            % Distance to lens
-                val = ieRad2deg(2*atan((0.5*h)/d));  % Vertical field of view
+                val = rad2deg(2*atan((0.5*h)/d));  % Vertical field of view
                 
             case {'dangular','diagonalangular','diagonalfieldofview'}
                 val = sqrt(oiGet(oi,'wAngular')^2 + oiGet(oi,'hAngular')^2);
@@ -368,7 +368,7 @@ switch oType
                 % Store the Zernike polynomial coefficients
                 val = oi.zernike;
             case {'wvf'}
-                % The whole wavefront struct.  In process of how to use 
+                % The whole wavefront struct.  In process of how to use
                 % this in programs, with oiComputePSF and
                 % wvfSet/wvfGet.
                 val = oi.wvf;
@@ -404,7 +404,7 @@ switch oType
                 % Wavelengths for this calculation. Should match the optics, I
                 % think.  Not sure why it is duplicated.
                 if checkfields(oi,'psf','wavelength'), val = oi.psf.wavelength; end
-            
+                
                 
                 % optical diffuser properties
             case {'diffusermethod'}
@@ -444,7 +444,7 @@ switch oType
                 
                 roiLocs = varargin{1};  % Either locs or rect is OK
                 val = mean(vcGetROIData(oi,roiLocs));
-
+                
             case {'photonsnoise','photonswithnoise'}
                 % pn = oiGet(oi,'photons noise');
                 % The current photons are the mean.
@@ -463,17 +463,17 @@ switch oType
             case {'datamin','dmin'}
                 val = min(oi.data.photons(:));
             case {'bitdepth','compressbitdepth'}
-                % Should only be single precision (32) storage, I think.  
+                % Should only be single precision (32) storage, I think.
                 % Though, we still allow 64 (double).
                 % Not sure what happens with gpuArray.
-                if checkfields(oi,'data','bitDepth'), val = oi.data.bitDepth; 
+                if checkfields(oi,'data','bitDepth'), val = oi.data.bitDepth;
                 else, val = 32;
                 end
                 
             case 'energy'
                 % Possibly, we should compute the energy from the photons and only
                 % store photons.  Otherwise, there could be an inconsistency.
-                if checkfields(oi,'data','energy'), val = oi.data.energy; 
+                if checkfields(oi,'data','energy'), val = oi.data.energy;
                 else, val = []; end
                 
             case {'meanilluminance','meanillum'}
@@ -487,10 +487,10 @@ switch oType
                 if ~checkfields(oi,'data','illuminance') || isempty(oi.data.illuminance)
                     oi.data.illuminance = oiCalculateIlluminance(oi);
                 end
-                val = max(oi.data.illuminance(:));                
+                val = max(oi.data.illuminance(:));
             case {'illuminance','illum'}
                 if ~checkfields(oi,'data','illuminance') || isempty(oi.data.illuminance)
-                         val = oiCalculateIlluminance(oi);
+                    val = oiCalculateIlluminance(oi);
                 else,    val = oi.data.illuminance;
                 end
                 
@@ -513,7 +513,7 @@ switch oType
             case {'datawave','wave','wavelength'}
                 % oiGet(oi,'wave')
                 % Always a column vector, even if people stick it in the
-                % wrong way. 
+                % wrong way.
                 if checkfields(oi,'spectrum')
                     val = oi.spectrum.wave(:);
                 end
@@ -527,7 +527,7 @@ switch oType
                 % Computed from sample size times number of rows.
                 % Sample size is computed from the width.
                 % oiGet(oi,'height','microns')
-                val = oiGet(oi,'sampleSize')*oiGet(oi,'rows');
+                val = oiGet(oi,'sample size')*oiGet(oi,'rows');
                 if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
             case {'width'}
                 % oiGet(oi,'width',units)
@@ -536,7 +536,10 @@ switch oType
                 %
                 % Width in meters is default - We need to handle 'skip' case
                 
-                d   = oiGet(oi,'focal plane distance');  % Distance from lens to image
+                % TG/BW changed this from 'focal plane distance' to
+                % 'optics focal length' (Nov 5 2021).  This might
+                % cause various test failures.
+                d   = oiGet(oi,'optics focal length');   % Distance from lens to image
                 fov = oiGet(oi,'wangular');              % Field of view (horizontal, width)
                 
                 % fov   = 2 * atand((0.5*width)/d) % Opposite over adjacent
@@ -624,7 +627,7 @@ switch oType
                 % We should probably call:
                 %   opticsGet(optics,'dist per deg',unit)
                 % which is preferable to this call.
-                if isempty(varargin), units = 'm'; 
+                if isempty(varargin), units = 'm';
                 else, units = varargin{1}; end
                 val = oiGet(oi,'distance per degree',units);   % meters
                 val = 1 / val;
@@ -636,7 +639,7 @@ switch oType
                 %
                 % Mesh grid of oi image spatial locations of points
                 % Default unit is meters, center of image is 0,0
-                % val(:,:,[1 2]) where 1 is the x-dimension and 
+                % val(:,:,[1 2]) where 1 is the x-dimension and
                 %                      2 is the y-dimension.
                 %
                 
@@ -651,10 +654,10 @@ switch oType
                 % Default
                 val = oiSpatialSupport(oi);
                 if ~isempty(varargin)
-                    val.x = val.x*ieUnitScaleFactor(varargin{1}); 
-                    val.y = val.y*ieUnitScaleFactor(varargin{1}); 
+                    val.x = val.x*ieUnitScaleFactor(varargin{1});
+                    val.y = val.y*ieUnitScaleFactor(varargin{1});
                 end
-
+                
             case {'angularsupport','angularsamplingpositions'}
                 % Angular values of sample points
                 % Units can be deg (default), min or sec and should include radians
@@ -680,8 +683,8 @@ switch oType
                             aSupport.x = aSupport.x*60*60;
                             aSupport.y = aSupport.y*60*60;
                         case 'radians'
-                            aSupport.x = ieDeg2rad(aSupport.x);
-                            aSupport.y = ieDeg2rad(aSupport.y);
+                            aSupport.x = deg2rad(aSupport.x);
+                            aSupport.y = deg2rad(aSupport.y);
                         otherwise
                             error('Unknown angular unit %s\n',unit);
                     end
@@ -692,10 +695,10 @@ switch oType
                 %
             case {'hangularresolution','heightangularresolution'}
                 % Angular degree per pixel -- in degrees
-                val = 2*ieRad2deg(atan((oiGet(oi,'hspatialResolution')/oiGet(oi,'distance'))/2));
+                val = 2*rad2deg(atan((oiGet(oi,'hspatialResolution')/oiGet(oi,'distance'))/2));
             case {'wangularresolution','widthangularresolution'}
                 % Angle (degree) per pixel -- width
-                val = 2*ieRad2deg(atan((oiGet(oi,'wspatialResolution')/oiGet(oi,'distance'))/2));
+                val = 2*rad2deg(atan((oiGet(oi,'wspatialResolution')/oiGet(oi,'distance'))/2));
             case {'angularresolution','degperpixel','degpersample','degreepersample','degreeperpixel'}
                 % Height and width
                 val = [oiGet(oi,'hangularresolution'), oiGet(oi,'wangularresolution')];
@@ -748,7 +751,7 @@ switch oType
                 %
                 % Get the rgb image shown in the oiWindow as per the
                 % displayFlag
-
+                
                 % Uses oiShowImage() to compute the rgb data consistently
                 % with what is in the oiWindow.  Force the renderFlag to
                 % negative to prevent display.
@@ -815,7 +818,7 @@ switch oType
                 % By default, the units are col/row.
                 % If a unit is specified, they are the physical units
                 % (e.g., 'mm').
-                 
+                
                 img = oiGet(oi,'illuminance');
                 sz  = oiGet(oi,'size');
                 
@@ -850,22 +853,22 @@ switch oType
                 % the oi depth map values are all logical '1' (true).
                 if checkfields(oi,'depthMap'), val = oi.depthMap; end
                 if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-
+                
             case {'depthrange'}
-                % oiGet(oi,'depth map', units) 
+                % oiGet(oi,'depth map', units)
                 % Min and max of the depth values > 0
                 depthmap = oiGet(oi,'depth map');
                 tmp = depthmap(depthmap > 0);
                 val = [min(tmp(:)), max(tmp(:))];
                 if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-
-            % Illuminant methods. Related to ISET3D.
-            %
-            % In some iset3d cases we compute illuminant information.
-            % We run the PBRT Docker container and replace all the surfaces
-            % with a white Lambertian surface.  piRender() in ISET3D
-            % returns the spatial-spectral illuminant.
-            %
+                
+                % Illuminant methods. Related to ISET3D.
+                %
+                % In some iset3d cases we compute illuminant information.
+                % We run the PBRT Docker container and replace all the surfaces
+                % with a white Lambertian surface.  piRender() in ISET3D
+                % returns the spatial-spectral illuminant.
+                %
             case {'illuminant'}
                 % This is the whole illuminant structure.
                 if checkfields(oi,'illuminant'), val = oi.illuminant; end
@@ -874,7 +877,7 @@ switch oType
                 il = oiGet(oi,'illuminant');
                 val = illuminantGet(il,'name');
             case {'illuminantformat'}
-                % oiGet(oi,'illuminant format') 
+                % oiGet(oi,'illuminant format')
                 % Checks whether illuminant is spatial spectral or just an
                 % SPD vector.
                 % Returns: spectral, spatial spectral, or empty
@@ -887,25 +890,25 @@ switch oType
                 % The data field is has illuminant in photon units.
                 il = oiGet(oi,'illuminant');
                 val = illuminantGet(il,'photons');
-                case {'illuminantenergy'}
-                    % The data field is has illuminant in standard energy units.  We
-                    % convert from energy to photons here.  We account for the two
-                    % different illuminant formats (RGW or vector).
-                    W = oiGet(oi,'wave');
-                    switch oiGet(oi,'illuminant format')
-                        case 'spectral'
-                            val = oiGet(oi,'illuminant photons');
-                            val = Quanta2Energy(W,val(:));
-                            val = val(:);
-                        case 'spatial spectral'
-                            % Spatial-spectral format.  Sorry about all the transposes.
-                            val = oiGet(oi,'illuminant photons');
-                            [val,r,c] = RGB2XWFormat(val);
-                            val = Quanta2Energy(W,val);
-                            val = XW2RGBFormat(val,r,c);
-                        otherwise
-                            % No illuminant data
-                    end
+            case {'illuminantenergy'}
+                % The data field is has illuminant in standard energy units.  We
+                % convert from energy to photons here.  We account for the two
+                % different illuminant formats (RGW or vector).
+                W = oiGet(oi,'wave');
+                switch oiGet(oi,'illuminant format')
+                    case 'spectral'
+                        val = oiGet(oi,'illuminant photons');
+                        val = Quanta2Energy(W,val(:));
+                        val = val(:);
+                    case 'spatial spectral'
+                        % Spatial-spectral format.  Sorry about all the transposes.
+                        val = oiGet(oi,'illuminant photons');
+                        [val,r,c] = RGB2XWFormat(val);
+                        val = Quanta2Energy(W,val);
+                        val = XW2RGBFormat(val,r,c);
+                    otherwise
+                        % No illuminant data
+                end
             case {'illuminantwave'}
                 % Must be the same as the oi wave
                 val = oiGet(oi,'wave');

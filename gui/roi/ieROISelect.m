@@ -1,5 +1,5 @@
 function [roiLocs,roi] = ieROISelect(obj,varargin)
-% Select a rectangular region of interest (ROI)  
+% Select a rectangular region of interest (ROI)
 %
 % Syntax
 %   [roiLocs,roi] = ieROISelect(obj,varargin)
@@ -22,7 +22,7 @@ function [roiLocs,roi] = ieROISelect(obj,varargin)
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 %
-% See also: 
+% See also:
 %   ieRoiDraw, ieRect2Locs, ieRoiCreate
 
 % Examples:

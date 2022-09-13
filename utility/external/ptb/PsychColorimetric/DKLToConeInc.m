@@ -2,7 +2,7 @@ function [coneInc] = DKLToConeInc(dkl,bg)
 % [coneInc] = DKLToConeInc(dkl,bg)
 %
 % Convert from DKL to incremental cone coordinates.
-% 
+%
 % The DKL coordinate system convention is (Lum, RG, S)
 %
 % The code follows that published by Brainard
@@ -24,5 +24,5 @@ coneInc = inv(M)*dkl;
 
 
 
-						 
+
 

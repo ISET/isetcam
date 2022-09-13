@@ -7,7 +7,7 @@ function [ rgb ] = Laplacian( bayer_in, bPattern, clipToRange)
 % interpolation of the known color information across different color
 % planes.
 %
-% This is a non-adaptive version of AdaptiveLaplacian. 
+% This is a non-adaptive version of AdaptiveLaplacian.
 %
 % bayerData:   Sensor mosaic data
 % bPattern:    Type of Bayer pattern ('grbg') assumed.
@@ -82,18 +82,18 @@ bayer_ex(:,:,2) = grn;
 % Green pixels: Set red values
 
 rgb(g1y-2,g1x-2,1) = 0.5*(bayer_ex(ry,rx,1) + bayer_ex(ry,rx-2,1)) + ...
-   0.25*(2*bayer_ex(g1y,g1x,2)-bayer_ex(ry,rx-2,2)-bayer_ex(ry,rx,2));
+    0.25*(2*bayer_ex(g1y,g1x,2)-bayer_ex(ry,rx-2,2)-bayer_ex(ry,rx,2));
 
 rgb(g2y-2,g2x-2,1) = 0.5*(bayer_ex(ry,rx,1) + bayer_ex(ry+2,rx,1)) + ...
-   0.25*(2*bayer_ex(g2y,g2x,2)-bayer_ex(ry+2,rx,2)-bayer_ex(ry,rx,2));
+    0.25*(2*bayer_ex(g2y,g2x,2)-bayer_ex(ry+2,rx,2)-bayer_ex(ry,rx,2));
 
 % Green pixels: Set blue values
 
 rgb(g2y-2,g2x-2,3) = 0.5*(bayer_ex(by,bx,3) + bayer_ex(by,bx+2,3)) + ...
-   0.25*(2*bayer_ex(g2y,g2x,2)-bayer_ex(by,bx+2,2)-bayer_ex(by,bx,2));
+    0.25*(2*bayer_ex(g2y,g2x,2)-bayer_ex(by,bx+2,2)-bayer_ex(by,bx,2));
 
 rgb(g1y-2,g1x-2,3) = 0.5*(bayer_ex(by,bx,3) + bayer_ex(by-2,bx,3)) + ...
-   0.25*(2*bayer_ex(g1y,g1x,2)-bayer_ex(by-2,bx,2)-bayer_ex(by,bx,2));
+    0.25*(2*bayer_ex(g1y,g1x,2)-bayer_ex(by-2,bx,2)-bayer_ex(by,bx,2));
 
 % Blue pixels: Set red value
 

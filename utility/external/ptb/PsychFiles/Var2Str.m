@@ -75,7 +75,7 @@ end
 % add LHS if needed
 if ischar(str)
     if nargin==2
-        str = {[varargin{2} ' = ' str ';' char(10)]};
+        str = {[varargin{2} ' = ' str ';' newline]};
     end
 end
 
@@ -87,7 +87,7 @@ function wronginputhandler(input,name)
 if nargin == 1
     at = '';
 else
-    at = [char(10) 'Error at ' name];
+    at = [newline 'Error at ' name];
 end
 switch class(input)
     case 'inline'
@@ -281,7 +281,7 @@ for p=1:numel(in)
     if qDontProcess(p)
         continue;
     end
-
+    
     [idx{1:numel(siz)}] = ind2sub(siz,p);
     namesuff = ['{' Interleave([idx{:}],repmat(',',1,length(idx)-1)) '}'];
     

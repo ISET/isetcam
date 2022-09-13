@@ -7,7 +7,7 @@
 % # define a scene
 % # create an optical image from the scene
 % # define a monochrome sensor
-% # evaluate the sensor MTF 
+% # evaluate the sensor MTF
 %
 % We measure the system MTF properties using a simple slanted bar
 % target along with the ISO 12233 standard methods.
@@ -65,8 +65,8 @@ sensorC = sensorSet(sensorC,'autoExposure',1);
 % We are now ready to set sensor and pixel parameters to produce a variety
 % of captured images. Set the rendering properties for the monochrome
 % imager. The default does not color convert or color balance, so it is
-% appropriate. 
-vci = ipCreate;
+% appropriate.
+ip = ipCreate;
 
 % To see the scene, optical image, sensor or virtual camera image in the
 % GUI, use these commands
@@ -78,7 +78,7 @@ vci = ipCreate;
 % To determine the masterRect size, run this code and use the
 % measured values of masterRect.
 %
-%    sensor = sensorCompute(sensor,oi); 
+%    sensor = sensorCompute(sensor,oi);
 %    vcReplaceObject(sensor);
 %    vci = ipCompute(vci,sensor);
 %    vcReplaceObject(vci); ipWindow;
@@ -89,60 +89,64 @@ vci = ipCreate;
 %% Run the computation for the monochrome sensor
 
 sensor = sensorCompute(sensorC,oi);
-vcReplaceObject(sensor);   
-vci = ipCompute(vci,sensor);
-vcReplaceObject(vci); ipWindow;
+vcReplaceObject(sensor);
+ip = ipCompute(ip,sensor);
+vcReplaceObject(ip); ipWindow;
 
 % Find a good rectangle
-masterRect = ISOFindSlantedBar(vci);
-h = ieDrawShape(vci,'rectangle',masterRect);
+masterRect = ISOFindSlantedBar(ip);
+h = ieDrawShape(ip,'rectangle',masterRect);
 
-barImage = vcGetROIData(vci,masterRect,'results');
+barImage = vcGetROIData(ip,masterRect,'results');
 c = masterRect(3)+1;
 r = masterRect(4)+1;
 barImage = reshape(barImage,r,c,3);
-% vcNewGraphWin; imagesc(barImage(:,:,1)); axis image; colormap(gray);
+% vcNewGraphWin; imagesc(barImage(:,:,1)); axis image; colormap(gray(64));
 
 % Run the ISO 12233 code.  The results are stored in the window.
 pixel = sensorGet(sensor,'pixel');
 dx = pixelGet(pixel,'width','mm');
-ISO12233(barImage, dx) 
+ISO12233(barImage, dx)
 
 %% Should be the same, but from the ie routine
 
-ieISO12233(vci);
+ieISO12233(ip);
 
 %% Now for a monochrome sensor
 
 sensor = sensorCompute(sensorM,oi);
-vcReplaceObject(sensor); 
-    
-vci = ipCompute(vci,sensor);
-vcReplaceObject(vci); ipWindow;
-h = ieDrawShape(vci,'rectangle',masterRect);
+vcReplaceObject(sensor);
+
+ip = ipCompute(ip,sensor);
+vcReplaceObject(ip); ipWindow;
+h = ieDrawShape(ip,'rectangle',masterRect);
 % To get rid of the bar, use:  delete(h)
 % or just refresh
 
-barImage = vcGetROIData(vci,masterRect,'results');
+barImage = vcGetROIData(ip,masterRect,'results');
 c = masterRect(3)+1;
 r = masterRect(4)+1;
 barImage = reshape(barImage,r,c,3);
-% vcNewGraphWin; imagesc(barImage(:,:,1)); axis image; colormap(gray);
+% vcNewGraphWin; imagesc(barImage(:,:,1)); axis image; colormap(gray(64));
 
 % Run the ISO 12233 code.  The results are stored in the window.
 dx = sensorGet(sensor,'pixel width','mm');
 
 % Run the code, and plot
-ISO12233(barImage, dx, [], 'all');
+mtfData = ISO12233(barImage, dx, [], 'all');
 
-%% Plot MTF data
+%% You can also get the MTF and LSF data from figure
 
 % The mtfData variable contains all the information plotted in this figure.
 % We graph the results again just to illustrate what is in the data
 % structure.
-mtfData = get(gcf,'userdata');
+% 
+%  mtfData = get(gcf,'userdata');
+%
 
-vcNewGraphWin;
+
+%% Plot the MTF
+ieNewGraphWin;
 h = plot(mtfData.freq,mtfData.mtf,'-k');
 hold on
 nfreq = mtfData.nyquistf;
@@ -152,5 +156,12 @@ xlabel('lines/mm');
 ylabel('Relative amplitude');
 title('MTF');
 hold off; grid on
+
+%%
+ieNewGraphWin;
+plot(mtfData.lsfx*1000, mtfData.lsf);
+xlabel('Position (um)'); ylabel('Relative intensity');
+grid on
+
 
 %% END

@@ -1,0 +1,21 @@
+# Name: wide.56deg.12.5mm
+# Description: multi element lens
+# Focal length (mm) 
+12.500
+# Each row is a surface.
+# The order of surfaces starts from the image and
+# heads to the sensor.  Zero is the position of the first lens surface.
+# Positive numbers are towards the lens, and negative numbers are towards
+# the image
+#    radius	 axpos	N	aperture
+6.326250	0.385000	1.639000	10.950000
+4.058750	6.365000	1.000000	8.050000
+8.507500	1.645000	1.613000	4.500000
+-4.390000	0.548750	1.548000	4.500000
+23.598750	0.043750	1.000000	2.250000
+0.000000	0.043750	0.000000	1.812500
+-23.173750	0.540000	1.548000	2.250000
+4.311250	1.617500	1.613000	4.500000
+-8.353750	6.250000	1.000000	4.500000
+-3.983750	0.377500	1.626000	7.825000
+-6.180000	0.000000	1.000000	10.500000

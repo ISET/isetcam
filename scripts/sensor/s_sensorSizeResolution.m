@@ -6,7 +6,7 @@
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
-%% 
+%%
 ieInit
 
 %% Here are all the known sensor formats

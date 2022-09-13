@@ -1,9 +1,9 @@
 %% Experiments setting exposure separately for each color channel
 %
 % To control exposure per channel, set exposure times to be a matrix
-% matched in size to the sensor cfa pattern.  
+% matched in size to the sensor cfa pattern.
 %
-% See also: 
+% See also:
 %
 % Copyright Imageval, LLC, 2013
 
@@ -58,4 +58,4 @@ camera = cameraCompute(camera,scene);
 
 cameraWindow(camera,'sensor');
 
-%% 
+%%

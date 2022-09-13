@@ -1,5 +1,5 @@
 function ret = FloydSteinberg(FS, image)
-% FloydSteinberg error diffusion 
+% FloydSteinberg error diffusion
 %
 %   ret = FloydSteinberg(FS, image)
 %
@@ -29,36 +29,36 @@ temp(1:img_r, xFS_c +1:xFS_c+img_c) = image;
 % each row.  The overflow columns are blanked after the error is
 % applied to keep from double counting.
 
-for ir = 1 : img_r,
-
-for ic = xFS_c+1 : img_c,
-error = temp(ir, ic);
-temp(ir, ic) = round(error);
-error = error-temp(ir, ic);
-error_mat = error * FS;
-temp(ir:ir+xFS_r-1, ic-xFS_c:ic+xFS_c) = ...
-temp(ir:ir+xFS_r-1, ic-xFS_c:ic+xFS_c)+error_mat;
-end
-
-temp(ir:ir+xFS_r-1,img_c+1:img_c+xFS_c) = ...
-temp(ir:ir+xFS_r-1,img_c+1:img_c+xFS_c)+temp(ir+1:ir+xFS_r, 1:xFS_c);
-
-for ic = img_c+1 : img_c+xFS_c,
-error = temp(ir, ic);
-temp(ir, ic) = round(error);
-error = error-temp(ir, ic);
-error_mat = error * FS;
-temp(ir:ir+xFS_r-1, ic-xFS_c:ic+xFS_c) = ...
-temp(ir:ir+xFS_r-1, ic-xFS_c:ic+xFS_c)+error_mat;
-end
-
-temp(ir+1:ir+xFS_r, xFS_c+1:2*xFS_c) = ...
-temp(ir+1:ir+xFS_r, xFS_c+1:2*xFS_c) + temp(ir:ir+xFS_r-1,  ...
-img_c+xFS_c+1:img_c+2*xFS_c);
-
-temp(:, 1:xFS_c) = zeros(img_r+xFS_r, xFS_c);
-temp(:, img_c+xFS_c+1:img_c+2*xFS_c) = zeros(img_r+xFS_r, xFS_c);
-
+for ir = 1 : img_r
+    
+    for ic = xFS_c+1 : img_c
+        error = temp(ir, ic);
+        temp(ir, ic) = round(error);
+        error = error-temp(ir, ic);
+        error_mat = error * FS;
+        temp(ir:ir+xFS_r-1, ic-xFS_c:ic+xFS_c) = ...
+            temp(ir:ir+xFS_r-1, ic-xFS_c:ic+xFS_c)+error_mat;
+    end
+    
+    temp(ir:ir+xFS_r-1,img_c+1:img_c+xFS_c) = ...
+        temp(ir:ir+xFS_r-1,img_c+1:img_c+xFS_c)+temp(ir+1:ir+xFS_r, 1:xFS_c);
+    
+    for ic = img_c+1 : img_c+xFS_c
+        error = temp(ir, ic);
+        temp(ir, ic) = round(error);
+        error = error-temp(ir, ic);
+        error_mat = error * FS;
+        temp(ir:ir+xFS_r-1, ic-xFS_c:ic+xFS_c) = ...
+            temp(ir:ir+xFS_r-1, ic-xFS_c:ic+xFS_c)+error_mat;
+    end
+    
+    temp(ir+1:ir+xFS_r, xFS_c+1:2*xFS_c) = ...
+        temp(ir+1:ir+xFS_r, xFS_c+1:2*xFS_c) + temp(ir:ir+xFS_r-1,  ...
+        img_c+xFS_c+1:img_c+2*xFS_c);
+    
+    temp(:, 1:xFS_c) = zeros(img_r+xFS_r, xFS_c);
+    temp(:, img_c+xFS_c+1:img_c+2*xFS_c) = zeros(img_r+xFS_r, xFS_c);
+    
 end
 
 ret = temp(1:img_r, xFS_c+1:xFS_c+img_c);

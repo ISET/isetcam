@@ -96,7 +96,7 @@ d = ieN2MegaPixel(prod(2*HD1080),2)/sensorMP;
 fprintf('sensorMP %d and 2*HD1080 %.2f\n',sensorMP, d);
 
 % In the HD1080 case without demosaicking, we need an 8 Mpix camera to
-% achieve a unit resolution gain 
+% achieve a unit resolution gain
 sensorMP = 8;
 ieN2MegaPixel(prod(2*HD1080),2)/sensorMP;
 fprintf('sensorMP %d and 2*HD1080 %.2f\n',sensorMP,d);
@@ -116,4 +116,4 @@ fprintf('sensorMP %d and 2*HD1080 %.2f\n',sensorMP,d);
 % binning.
 %
 
-%% 
+%%

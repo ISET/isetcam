@@ -1,4 +1,4 @@
-function volts = sensorComputeFullArray(sensor,oi,cFilters)
+function [volts, dvs] = sensorComputeFullArray(sensor,oi,cFilters)
 %Compute voltages for full spatial samples and multiple filters
 %
 %  volts = sensorComputeFullArray(sensor,oi,[cFilters])
@@ -33,6 +33,7 @@ end
 sz = sensorGet(sensor,'size');
 numChannels=size(cFilters,2);
 volts = zeros(sz(1),sz(2),numChannels);
+dvs = zeros(sz(1), sz(2), numChannels);
 sensor = sensorSet(sensor,'pattern',1);  % Makes it a monochrome array
 
 %%
@@ -43,6 +44,9 @@ for kk=1:numChannels
     s = sensorCompute(s,oi,0);
     
     volts(:,:,kk) = sensorGet(s,'volts');
+    if ~isequal(sensorGet(s, 'quantization method'), 'analog')
+        dvs(:,:,kk) = sensorGet(s, 'dv');
+    end
 end
 
 end

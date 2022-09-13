@@ -35,16 +35,16 @@ yscale = get(gca,'yscale');
 
 switch lower(position)
     case 'ul'
-        x = xlim(1) + (xlim(2) - xlim(1))*delta(1); 
+        x = xlim(1) + (xlim(2) - xlim(1))*delta(1);
         y = ylim(2) - (ylim(2) - ylim(1))*delta(2);
     case 'll'
-        x = xlim(1) + (xlim(2) - xlim(1))*delta(1); 
+        x = xlim(1) + (xlim(2) - xlim(1))*delta(1);
         y = ylim(1) + (ylim(2) - ylim(1))*delta(2);
     case 'ur'
-        x = xlim(2) - (xlim(2) - xlim(1))*delta(1); 
+        x = xlim(2) - (xlim(2) - xlim(1))*delta(1);
         y = ylim(2) - (ylim(2) - ylim(1))*delta(2);
     case 'lr'
-        x = xlim(2) - (xlim(2) - xlim(1))*delta(1); 
+        x = xlim(2) - (xlim(2) - xlim(1))*delta(1);
         y = ylim(1) + (ylim(2) - ylim(1))*delta(2);
     otherwise
         error('Unknown position');

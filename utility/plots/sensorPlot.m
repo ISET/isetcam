@@ -5,7 +5,7 @@ function [uData, g] = sensorPlot(sensor, ptype, roilocs, varargin)
 %
 % These plots characterizing the data, sensor parts, or performance of
 % the sensor.  There are many types of plots, and as part of the function
-% they also return the rendered data.  
+% they also return the rendered data.
 %
 % Inputs:
 %  sensor:   An ISETCam sensor
@@ -13,20 +13,23 @@ function [uData, g] = sensorPlot(sensor, ptype, roilocs, varargin)
 %  roilocs:  When needed, specify the region of interest
 %
 % Optional key/val pairs
-%   'no fig'  - Do not plot the figure, just return the uData (logical)
-%   
-%    Additional parameters may be required for different plot types. I will
-%    try to figure that out and put them here.
+%   'twolines' - Plot color data from two lines to get RGB, for example
+%   'no fig'   - Do not plot the figure, just return the uData (logical)
+%
+%   Additional parameters may be required for different plot types. I will
+%   try to figure that out and put them here.
 %
 % Outputs:
 %  uData:  Structure of the plotted (user data)
 %  hdl:    Figure handle
 %
-% The main routine, sensorPlot, is a gateway to many other characterization
-% and plotting routines contained within this file.  Sensor plotting should
-% be called from here, if at all possible, so we avoid duplication.
+% Description
 %
-% The properties that can be plotted are:
+%  The main routine, sensorPlot, is a gateway to many other characterization
+%  and plotting routines contained within this file.  Sensor plotting should
+%  be called from here, if at all possible, so we avoid duplication.
+%
+%  The properties that can be plotted are:
 %
 % Sensor Data plots
 %  'electrons hline' - sensorPlot(sensor,'electrons hline',[x y])
@@ -38,7 +41,7 @@ function [uData, g] = sensorPlot(sensor, ptype, roilocs, varargin)
 %  'volts histogram'
 %  'electrons histogram'
 % ' shot noise'
-% 
+%
 % Color filter properties
 %  'cfa block'
 %  'cfa full'
@@ -53,10 +56,10 @@ function [uData, g] = sensorPlot(sensor, ptype, roilocs, varargin)
 %  'sensor snr'
 %  'dsnu'
 %  'prnu'
-% 
+%
 % Optics related
 %  'etendue'
-% 
+%
 % Human
 % 'conemosaic' % Not sure
 %
@@ -101,6 +104,7 @@ function [uData, g] = sensorPlot(sensor, ptype, roilocs, varargin)
 
 %% Parse arguments
 if ieNotDefined('roilocs'),roilocs = []; end
+if ieNotDefined('sensor'), sensor = ieGetObject('sensor'); end
 
 varargin = ieParamFormat(varargin);
 
@@ -131,9 +135,9 @@ if isempty(ncaptures) || isequal(ncaptures,1)
 elseif capture <= ncaptures
     % Make the sensor like it has just one capture.  We put it back at the
     % end, if needed.
-    store.volts = sensorGet(sensor,'volts'); 
-    sensor = sensorSet(sensor,'volts',store.volts(:,:,capture)); 
-
+    store.volts = sensorGet(sensor,'volts');
+    sensor = sensorSet(sensor,'volts',store.volts(:,:,capture));
+    
     store.dv = sensorGet(sensor,'dv');
     if ~isempty(store.dv)
         sensor = sensorSet(sensor,'dv',store.dv(:,:,capture));
@@ -153,7 +157,7 @@ if isempty(roiLocs)
             roiLocs = iePointSelect(sensor);
             sz = sensorGet(sensor,'size');
             ieROIDraw(sensor,'shape','line','shape data',[1 sz(2) roiLocs(2) roiLocs(2)]);
-
+            
         case {'electronsvline','voltsvline','dvvline'}
             % When the selection ends in a '2' we use this point and the
             % one below it.
@@ -163,24 +167,25 @@ if isempty(roiLocs)
             
         case {'electronshistogram','electronshist'...
                 'voltshistogram','voltshist',...
-                'chromaticity'}
+                'chromaticity','dvhistogram'}
             
             % Region of interest plots
             [roiLocs, roiRect] = ieROISelect(sensor);
-
+            
             % Store the rect for later plotting
             sensor = sensorSet(sensor,'roi',round(roiRect.Position));
+            ieReplaceObject(sensor);
             
             % Why is this commented out?
             % ieROIDraw(sensor,'shape','rect','shape data',roiRect);
-
+            
         otherwise
             % There are plots that are OK without an roiLocs value or ROI.
             % Such as 'snr', spectral qe, and so forth
     end
 end
 
-%% Plot 
+%% Plot
 switch pType
     
     % Sensor data related. roiLocs is (x,y) format
@@ -219,21 +224,21 @@ switch pType
             ieViewer(img);
         end
         
-    % Sensor data related
+        % Sensor data related
     case {'electronshline'}
         [g, uData] = sensorPlotLine(sensor, 'h', 'electrons', 'space', roiLocs);
         if twoLines
             delete(g); roiLocs(2) = roiLocs(2) + 1;
             [~, uData2] = sensorPlotLine(sensor, 'h', 'electrons', 'space', roiLocs);
-            [g, uData] = sensorPlotTwoLines(sensor,uData,uData2);
+            [g, uData] = sensorPlotTwoLines(sensor,uData,uData2,'electrons');
             title(sprintf('Horizontal line %d',roiLocs(2)-1));
         end
     case {'electronsvline'}
-        [g, uData]  = sensorPlotLine(sensor, 'v', 'electrons', 'space', roiLocs);        
+        [g, uData]  = sensorPlotLine(sensor, 'v', 'electrons', 'space', roiLocs);
         if twoLines
             delete(g); roiLocs(1) = roiLocs(1) + 1;
             [~, uData2]  = sensorPlotLine(sensor, 'v', 'electrons', 'space', roiLocs);
-            [g, uData] = sensorPlotTwoLines(sensor,uData,uData2);
+            [g, uData] = sensorPlotTwoLines(sensor,uData,uData2,'electrons');
             title(sprintf('Vertical line %d',roiLocs(1)-1));
         end
     case {'voltshline'}
@@ -241,17 +246,17 @@ switch pType
         if twoLines
             delete(g); roiLocs(2) = roiLocs(2) + 1;
             [~,uData2]  = sensorPlotLine(sensor, 'h', 'volts', 'space', roiLocs);
-            [g, uData] = sensorPlotTwoLines(sensor,uData,uData2);
+            [g, uData] = sensorPlotTwoLines(sensor,uData,uData2,'volts');
             title(sprintf('Horizontal line %d',roiLocs(2)-1));
-        end        
+        end
     case {'voltsvline'}
         [g, uData]  = sensorPlotLine(sensor, 'v', 'volts', 'space', roiLocs);
         if twoLines
             delete(g); roiLocs(1) = roiLocs(1) + 1;
             [~,uData2]  = sensorPlotLine(sensor, 'v', 'volts', 'space', roiLocs);
-            [g, uData]= sensorPlotTwoLines(sensor,uData,uData2);
+            [g, uData]= sensorPlotTwoLines(sensor,uData,uData2,'volts');
             title(sprintf('Vertical line %d',roiLocs(1)-1));
-        end  
+        end
     case {'dvvline'}
         [g, uData]  = sensorPlotLine(sensor, 'v', 'dv', 'space', roiLocs);
         if twoLines
@@ -268,11 +273,15 @@ switch pType
             [g, uData] = sensorPlotTwoLines(sensor,uData,uData2);
             title(sprintf('Horizontal line %d',roiLocs(2)-1));
         end
+        
     case {'voltshistogram','voltshist'}
         [uData,g] = sensorPlotHist(sensor,'v',roiLocs);
     case {'electronshistogram','electronshist'}
         % sensorPlot(sensor,'electrons histogram',rect);
         [uData,g] = sensorPlotHist(sensor,'e',roiLocs);
+    case {'dvhistogram'}
+        [uData,g] = sensorPlotHist(sensor,'dv',roiLocs);
+        
     case {'shotnoise'}
         % Poisson noise at each pixel
         [uData, g] = imageNoise('shot noise');
@@ -287,11 +296,7 @@ switch pType
         
         % Wavelength and color properties
     case {'cfa','cfablock'}
-        fullArray = 0;    % Not the full array
-        [g, uData] = sensorShowCFA(sensor,fullArray);
-    case {'cfafull'}
-        fullArray = 1;    % Show the full array
-        [g, uData] = sensorShowCFA(sensor,fullArray);
+        [g, uData] = sensorShowCFA(sensor);
     case {'colorfilters'}
         [uData, g] = plotSpectra(sensor,'color filters');
     case {'irfilter'}
@@ -314,8 +319,8 @@ switch pType
         [uData, g] = plotPixelSNR(sensor);
     case {'sensorsnr','snr'}
         [uData,g] = plotSensorSNR(sensor);
-
-
+        
+        
         % Optics related
     case {'etendue'}
         [uData, g] = plotSensorEtendue(sensor);
@@ -338,12 +343,12 @@ switch pType
         end
         if numel(roiLocs) == 4
         elseif size(roiLocs,2) == 2
-            roiLocs = ieLocs2Rect(roiLocs); 
+            roiLocs = ieLocs2Rect(roiLocs);
         else
             error('Bad roiLocs');
         end
         rg   = sensorGet(sensor,'chromaticity',roiLocs);
-        ieNewGraphWin; 
+        ieNewGraphWin;
         plot(rg(:,1),rg(:,2),'.');
         grid on; xlabel('r-chromaticity'); ylabel('g-chromaticity');
         uData.rg = rg; uData.rect = roiLocs; clear rg;
@@ -444,7 +449,7 @@ switch lower(dataType)
         data = sensorGet(sensor,'irfilter');
         filterNames = {'o'};
         ystr = 'Transmittance';
-               
+        
     case {'spectralqe','sensorspectralqe'}
         % Volts/irradiance(photons)
         wave = sensorGet(sensor,'wave');
@@ -480,7 +485,7 @@ end
 % happens in the calling routine.
 udata.x = wave; udata.y = data;
 set(fighdl,'Userdata',udata);
-xlabel('Wavelength (nm)'); 
+xlabel('Wavelength (nm)');
 ylabel(ystr);
 grid on;
 
@@ -510,12 +515,12 @@ switch lower(noiseType)
         [theSignal,theNoise] = noiseShot(sensor);
         nameString = 'ISET:  Shot noise';
         titleString = sprintf('Max/min: [%.2E,%.2E] on voltage swing %.2f',max(theNoise(:)),min(theNoise(:)),voltageswing);
-
+        
     case 'dsnu'
         [noisyImage,theNoise] = noiseFPN(sensor);
         nameString = 'ISET:  DSNU';
         titleString = sprintf('Max/min: [%.2E,%.2E] on voltage swing %.2f',max(theNoise(:)),min(theNoise(:)),voltageswing);
-
+        
     case 'prnu'
         [noisyImage,dsnuNoise,theNoise] = noiseFPN(sensor);
         nameString = 'ISET:  PRNU';
@@ -529,18 +534,19 @@ end
 uData.theNoise = theNoise;
 
 figNum = ieNewGraphWin([],[],['ISET: ',nameString]);
-title(titleString); 
-imagesc(theNoise); 
+title(titleString);
+imagesc(theNoise);
 colormap(gray(256)); colorbar;
 axis off
 
 end
 %%
 
-function [g,uData] = sensorPlotTwoLines(sensor,uData,uData2)
+function [g,uData] = sensorPlotTwoLines(sensor,uData,uData2,varargin)
 % Take data from two line plots and combine
 %
-% 
+% We need to know if these are electrons or volts.  If not sent in, we
+% assume 'volts'.
 
 pixColor = [cell2mat(uData.pixColor),cell2mat(uData2.pixColor)];
 pixPos = [uData.pos,uData2.pos];
@@ -564,7 +570,13 @@ for ii=1:numel(pixColor)
     hold on;
 end
 
-xlabel('Position (um)'); ylabel('volts');
+xlabel('Position (um)'); 
+
+% The y-axis can be volts or electrons
+if isempty(varargin), ylabel('volts');
+else, ylabel(varargin{1});
+end
+
 grid on; set(gca,'xlim',[mn mx]);
 
 clear uData;

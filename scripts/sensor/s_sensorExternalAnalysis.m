@@ -27,26 +27,26 @@ dut = sensorSet(dut,'name','My Sensor');
 % photodetector, so forth).  This information is stored in two the
 % 'spectrum' slot of the object. This slot lists the wavelength sample
 % values in nanometers
-%   
+%
 wave = 400:10:700;
 dut = sensorSet(dut,'wave',wave);
 
 % For a sensor, the color and infrared filter transmissivities are stored in dut.color
 %
-%  dut.color.filterSpectra --  a matrix, nWaveSamples x nColorFilters, whose columns 
+%  dut.color.filterSpectra --  a matrix, nWaveSamples x nColorFilters, whose columns
 %    define the filter wavelength tranmissivities
 %  dut.color.filterNames   --  a cell array with nColorFilters names
 %    indicating the character of the filters.  The first character
 %    of the filterName should be 'r','g','b','c','y','m'
 %  dut.color.irFilter      -- a vector with nWaveSamples that defines the infrared
 %    transmissivity.  This is usually initialized to all 1's, but many
-%    cameras use infrared filters and this parameter may be important. 
-%  
+%    cameras use infrared filters and this parameter may be important.
+%
 % To read the color filter data, you must have a spectral file that
 % contains the information.  The file should be in the format defined by
 % ieSaveSpectralFile.
 %
-%% Read the default RGB color filters in the ISET directory.  
+%% Read the default RGB color filters in the ISET directory.
 
 % You may want to read your own data.
 fname = fullfile(isetRootPath,'data','sensor','colorfilters','RGB.mat');
@@ -64,8 +64,8 @@ dut      = sensorSet(dut,'irFilter',irFilter);
 % dut.cfa.  The color filter array is assumed to be described by a unit
 % block that describes the arrangement and positions of the color filters.
 %
-% The dut.cfa has two variables.  
-%  
+% The dut.cfa has two variables.
+%
 % dut.cfa.pattern  -- A vector that lists the order of the color filters in
 %   the block, and
 % dut.cfa.unitBlock -- A structure that contains the number of rows and
@@ -107,12 +107,12 @@ val = ieAddObject(dut); sensorWindow;
 % or by just saving it from the command window by typing
 % dut = vcGetObject('sensor'); objFullFileName = vcExportObject(dut);
 
-%% You only need to create the sensor profile (as above) once.  
+%% You only need to create the sensor profile (as above) once.
 %
 % After it is saved, you can always load the stored image sensor array description.
 % dut = load(objFullFileName);
 %
-% Then, to examine voltage data you just read a file that contains the 
+% Then, to examine voltage data you just read a file that contains the
 % variable 'volts'.  These are stored in the structure, and the window is
 % refreshed. For example, I stored some data in this file.
 

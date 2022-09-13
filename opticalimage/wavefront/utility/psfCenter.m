@@ -6,7 +6,7 @@ function [outPSF,peakRow,peakCol] = psfCenter(inPSF)
 % which came in.
 %
 % There should be an inverse to this.  The extrapolated values are set to
-% 0. 
+% 0.
 %
 % 8/26/07  dhb  Wrote it.
 % 8/22/11  dhb  A 'round' should be a 'floor', I think.

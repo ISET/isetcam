@@ -13,7 +13,7 @@ function img = sensorShowCFAWeights(wgts,sensor,cPos,varargin)
 %  cPos:   The center position of the sensor pattern
 %
 % Inputs (optional, parameter value pairs)
-%  imgSize: Scale final image size to be imgSize*size(wgts) 
+%  imgSize: Scale final image size to be imgSize*size(wgts)
 %
 % Return:
 %   img = RGB image of the weights times the CFA colors
@@ -22,18 +22,18 @@ function img = sensorShowCFAWeights(wgts,sensor,cPos,varargin)
 %  sensor = sensorCreate;
 %  wgts = rand(5,5);
 %  img = sensorShowCFAWeights(wgts,sensor,[1,1],'imgScale',16);
-%  vcNewGraphWin; imagesc(img); 
+%  vcNewGraphWin; imagesc(img);
 %
 %  img = sensorShowCFAWeights(wgts,sensor,[2,1],'imgScale',16);
-%  vcNewGraphWin; imagesc(img); 
+%  vcNewGraphWin; imagesc(img);
 %
 %  img = sensorShowCFAWeights(ones(5,5),sensor,[1,2],'imgScale',32);
-%  vcNewGraphWin; imagesc(img); 
+%  vcNewGraphWin; imagesc(img);
 %
 %  sensor = sensorCreate('cmy');
 %  wgts = rand(5,5);
 %  img = sensorShowCFAWeights(wgts,sensor,[2,1],'imgScale',16);
-%  vcNewGraphWin; imagesc(img); 
+%  vcNewGraphWin; imagesc(img);
 %
 % See also:
 %

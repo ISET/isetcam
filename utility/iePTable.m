@@ -98,7 +98,7 @@ switch lower(oType)
     case 'display'
         data = tableDisplay(obj,format);
         extendTitle = " for a Display";
-
+        
     otherwise
         error('Unknown type %s\n',obj.type);
         
@@ -106,7 +106,7 @@ end
 %% Create the table in its own window or embedded format
 
 if isequal(format,'window')
-
+    
     thisWindow.Name = strcat(thisWindow.Name, extendTitle);
     %can't set to normalized in 2020a
     %thisTable = uitable('Parent',thisWindow,'Units','normalized');
@@ -121,12 +121,12 @@ if isequal(format,'window')
     thisTable.Tag = 'IEPTable Table';
     
     mnuTools = uimenu(thisWindow,'Text','File');
- 
+    
     mnuExport = uimenu(mnuTools,'Text','Export...');
     mnuExport.MenuSelectedFcn = @mnuExportSelected;
- 
-
-
+    
+    
+    
 else
     if ~isempty(p.Results.uitable)
         thisTable = p.Results.uitable;
@@ -137,7 +137,7 @@ else
     thisTable.ColumnWidth = {round(thisTable.Position(3)/2),round(thisTable.Position(3)/2)}; %'auto';
     thisTable.FontName    = 'Courier';
     thisTable.FontSize    = getpref('ISET','fontSize') - 3;
-
+    
 end
 
 thisTable.Data    = data;
@@ -147,6 +147,11 @@ end
 
 function data = tableScene(scene,format)
 % iePTable(sceneCreate);
+wave = sceneGet(scene,'wave');
+if numel(wave) > 1
+    wave = [wave(1), wave(end), wave(2)-wave(1)];
+end
+
 switch format
     case 'window'
         precision = 4;
@@ -154,11 +159,12 @@ switch format
             'Name',                     char(sceneGet(scene,'name')),                                '';
             'Field of view (hor)',      num2str(sceneGet(scene,'fov')),                              'deg';
             'Field of view (diag)',     num2str(sceneGet(scene,'diagonal field of view')),           'deg';
-            'Rows & columns',                num2str(sceneGet(scene,'size')),                             'samples';
-            'Height & Width',             num2str(sceneGet(scene,'height and width','mm'),precision),  'mm';
-            'Distance',                num2str(sceneGet(scene,'distance','m'),precision),           'meters';
-            'Angular resolution',              num2str(sceneGet(scene,'angular resolution'),precision),     'deg/samp';
-            'Sample spacing',           num2str(sceneGet(scene,'sample spacing','mm'),precision),    'mm/sample';
+            'Rows & columns',            num2str(sceneGet(scene,'size')),                             'samples';
+            'Height & Width',            num2str(sceneGet(scene,'height and width','mm'),precision),  'mm';
+            'Distance',                  num2str(sceneGet(scene,'distance','m'),precision),           'meters';
+            'Angular resolution',        num2str(sceneGet(scene,'angular resolution'),precision),     'deg/samp';
+            'Sample spacing',            num2str(sceneGet(scene,'sample spacing','mm'),precision),    'mm/sample';
+            'Wave - min,max,delta (nm)', num2str(wave), 'nm';
             'Peak radiance, wave',       sprintf('%e, %.0f',sceneGet(scene,'peakradianceandwave')),   'q/s/sr/m^2, nm';
             'Mean luminance',           num2str(sceneGet(scene,'mean luminance'),precision),         'cd/m^2 (nits)';
             'Dynamic range',            num2str(sceneGet(scene,'luminance dynamic range')),          'dB';
@@ -174,6 +180,7 @@ switch format
             'Distance (m)',             num2str(sceneGet(scene,'distance','m'),precision);
             'Angular res (deg/samp)',   num2str(sceneGet(scene,'angular resolution'),precision);
             'Samp space (mm/sample)',   num2str(sceneGet(scene,'sample spacing','mm'),precision);
+            'Wave (nm)',                num2str(wave);
             'Mean luminance (cd/m^2)',  num2str(sceneGet(scene,'mean luminance'),precision);
             'Illuminant name',          sceneGet(scene,'illuminant name');
             'Lum dynamic range',        num2str(sceneGet(scene,'luminance dynamic range'));
@@ -188,7 +195,11 @@ function data = tableOI(oi, format)
 % iePTable(oiCreate);
 
 if isempty(oi), data = []; return; end
-
+wave = oiGet(oi,'wave');
+if numel(wave) > 1
+    wave = [wave(1), wave(end), wave(2)-wave(1)];
+end
+  
 switch format
     case 'window'
         % OK, we have an oi so put up the data.
@@ -197,6 +208,7 @@ switch format
             'Optical Image name',         char(oiGet(oi,'name')), '';
             'Rows & cols',       num2str(oiGet(oi,'size')),                             'samples';
             'Horizontal FOV',         num2str(oiGet(oi,'fov')),                              'deg';
+            'Wave (nm)',                num2str(wave), 'nm';
             'Spatial resolution',     num2str(oiGet(oi,'spatial resolution','um'),precision),'um/sample';
             'Mean illuminance',num2str(oiGet(oi,'mean illuminance'),precision),       'lux';
             'Area',            num2str(oiGet(oi,'area','mm'),precision),              'mm^2';
@@ -218,6 +230,7 @@ switch format
         data = {...
             'Rows & columns',              num2str(oiGet(oi,'size'));
             'H FOV (deg)',            num2str(oiGet(oi,'fov'));
+            'Wave (nm)',                num2str(wave);
             'Resolution (um/sample)', num2str(oiGet(oi,'spatial resolution','um'),precision);
             'Mean illuminance (lux)', num2str(oiGet(oi,'mean illuminance'),precision);
             'Area (mm^2)',            num2str(oiGet(oi,'area','mm'),precision)';
@@ -299,7 +312,7 @@ switch format
         % When it is the full window, we add in the pixel values.
         pData = tablePixel(sensorGet(sensor,'pixel'),format);
         data = cellCombine(data,pData);
-
+        
     case 'embed'
         precision = 3;
         data = {
@@ -338,7 +351,7 @@ switch format
     case 'embed'
         % Needs to be adjusted for what is already on the screen.
         precision = 3;
-               data = {
+        data = {
             'Width/height (um)',      num2str(pixelGet(pixel, 'width','um'),     precision);
             'Fill factor',            num2str(pixelGet(pixel, 'fill factor'),    precision);
             'Read noise (V)',         num2str(pixelGet(pixel, 'read noise'),     precision);
@@ -347,7 +360,7 @@ switch format
             'Well Capacity (e-)',     num2str(pixelGet(pixel, 'well capacity'),  precision);
             '',''
             };
-    
+        
     otherwise
         error('Unknown table format %s\n',format);
 end
@@ -370,7 +383,7 @@ switch format
             'Display dpi',         num2str(ipGet(ip,'display dpi')),           'dots per inch';
             '--------------------', '-----------------------', '-------------------';
             };
-
+        
     case 'embed'
         precision = 3;
         data = {

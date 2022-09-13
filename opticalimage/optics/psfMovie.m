@@ -1,5 +1,5 @@
 function psfMovie(optics,figNum,delay)
-%Show a movie of the pointspread functions 
+%Show a movie of the pointspread functions
 %
 %   psfMovie([optics],[figNum=1],[delay = 0.2])
 %
@@ -46,7 +46,7 @@ set(figNum,'name','PSF Movie');
 opticsModel = opticsGet(optics,'model');
 switch lower(opticsModel)
     case {'diffractionlimited', 'shiftinvariant'}
-            
+        
         psfData = opticsGet(optics,'psf data');
         wave  = opticsGet(optics,'wavelength');
         
@@ -62,18 +62,18 @@ switch lower(opticsModel)
             title(sprintf('Wave %.0f nm',wave(ii)));
             pause(delay);
         end
-    
+        
     case 'raytrace'
         name = opticsGet(optics,'rtname');
         set(figNum,'name',sprintf('%s: PSF movie',name));
         colormap(gray(256));
-
+        
         wave   = opticsGet(optics,'rt psf wavelength');
         imgHgt = opticsGet(optics,'rt psf field height','um');
         psf    = opticsGet(optics,'rt psf data');
         c = opticsGet(optics,'rt psf support col','um');
         r = opticsGet(optics,'rt psf support col','um');
-
+        
         % Should we plot them on a single image and move them, or centered
         % like this?
         gColor = [.5 .5 0];

@@ -33,12 +33,14 @@ sensor = sensorSet(sensor,'roi',roiLocs);
 
 figNum = ieNewGraphWin([],'tall');
 
-%% Get the data 
+%% Get the data
 switch lower(unitType)
     case {'v','volts'}
-        data   = sensorGet(sensor,'roivolts',roiLocs);
+        data   = sensorGet(sensor,'roi volts',roiLocs);
     case {'e','electrons'}
-        data   = sensorGet(sensor,'roielectrons',roiLocs);
+        data   = sensorGet(sensor,'roi electrons',roiLocs);
+    case {'dv','digitalvalues'}
+        data   = sensorGet(sensor,'roi dv',roiLocs);
     otherwise
         error('Unknown unit type.');
 end
@@ -74,7 +76,7 @@ for ii=1:nSensors
     hdl = histogram(tmp(:),nBins);
     if strcmp(colorOrder(ii) ,'o'), colorOrder(ii) = 'k'; end
     hdl.EdgeColor= colorOrder(ii); hdl.FaceColor= colorOrder(ii);
-
+    
     % We might want to show the SNR in db some day.
     %     mn = mean(tmp);
     %     sd= std(tmp);
@@ -97,7 +99,7 @@ end
 %%
 function plotMonochromeSensorHist(data,unitType)
 % Only one sensor, show the histogram as gray
-% 
+%
 hdl = histogram(data(:,1));
 hdl.FaceColor = [.5 .5 .5]; hdl.EdgeColor = [.5 .5 .5];
 grid on

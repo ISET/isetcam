@@ -1,5 +1,5 @@
 function metricsRefresh(handles)
-% Refresh the metrics window. 
+% Refresh the metrics window.
 %
 %   metricsRefresh(handles)
 %

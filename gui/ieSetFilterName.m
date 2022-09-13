@@ -23,7 +23,7 @@ if ieNotDefined('isa'), [val,isa] = vcGetSelectedObject('ISA'); end
 
 filterNames = sensorGet(isa,'filterNames');
 filterNames{whichFilter} = 'nofiltername';
-filterNames{whichFilter} = ieAdjustFilterName(newFilterName,filterNames,isa); 
+filterNames{whichFilter} = ieAdjustFilterName(newFilterName,filterNames,isa);
 
 return;
 

@@ -14,7 +14,7 @@ function uv = XYZTouv(XYZ,compute1960)
 % pass this as 1.  It is 0 by default.
 %
 % 10/10/93  dhb   Created by converting CAP C code.
-% 5/06/11   dhb   More extensive comment.  Optional 1960 version. 
+% 5/06/11   dhb   More extensive comment.  Optional 1960 version.
 
 %% Handle optional arg
 if (nargin < 2 || isempty(compute1960))

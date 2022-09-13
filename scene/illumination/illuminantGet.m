@@ -11,7 +11,7 @@ function val = illuminantGet(il,param,varargin)
 %   Illuminants have a variety of formats.
 %
 %     spectral - a single vector of wavelength that is applied to the entire
-%             scene.   
+%             scene.
 %     spatial spectral - a 3D representation of the illuminant (r,c,wave)
 %
 %   You can assess the illuminant format of a 'scene', as in
@@ -22,7 +22,7 @@ function val = illuminantGet(il,param,varargin)
 % Inputs
 %
 % il: illuminant structure.
-%  This structure contains a range of information about the illuminant,
+%  This structure contains a range of information about the illuminant
 %  including the wavelength samples and spectral power distribution.  The
 %  illuminant spectral power distribution is stored in ieCompressData
 %  format (32 uint bits).
@@ -46,7 +46,7 @@ function val = illuminantGet(il,param,varargin)
 % Examples:
 %   ieExamplesPrint('illuminantGet');
 %
-% See also:  
+% See also:
 %  illuminantCreate, illuminantSet
 
 % Examples:
@@ -75,7 +75,7 @@ switch param
     case 'type'
         % Should always be 'illuminant'
         val = il.type;
-
+        
     case 'photons'
         % illuminantGet(il,'photons')
         % illuminantGet(il,'photons',wave)
@@ -151,7 +151,7 @@ switch param
         % Needs to be worked out properly ... not working yet ...
         if ~checkfields(il,'data','photons'), val = []; return; end
         val = size(il.data.photons);
-               
+        
     case 'comment'
         val = il.comment;
         
@@ -161,7 +161,7 @@ switch param
         % isvector, ismatrix functions.
         sz = illuminantGet(il,'spatial size');
         if length(sz) < 3
-            if prod(sz) == illuminantGet(il,'nwave');
+            if prod(sz) == illuminantGet(il,'nwave')
                 val = 'spectral';
             end
         else

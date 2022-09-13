@@ -1,11 +1,11 @@
 function fullName = sensorSaveImage(sensor,fullName,dataType,gam,scaleMax)
-%Save out an RGB image of the sensor image as a png file. 
+%Save out an RGB image of the sensor image as a png file.
 %
 %  fullName = sensorSaveImage(isa,fullName,dataType,gam,scaleMax);
 %
 % If the fullName is not passed in, then the user is queried to select the
 % fullpath name of the output file.
-% 
+%
 %Example:
 %  sensorSaveImage(sensor,fullpathname);
 %
@@ -13,7 +13,10 @@ function fullName = sensorSaveImage(sensor,fullName,dataType,gam,scaleMax)
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
-if ieNotDefined('isa'), sensor = ieGetObject('sensor'); end
+if ieNotDefined('sensor') || isempty(sensor)
+    warning('Using selected (vcSESSION) sensor .')
+    sensor = ieGetObject('sensor'); 
+end
 if ieNotDefined('dataType'), dataType = 'volts'; end
 if ieNotDefined('gam'), gam = 1; end
 if ieNotDefined('scaleMax'), scaleMax = 1; end

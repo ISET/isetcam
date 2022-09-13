@@ -23,9 +23,9 @@ function objNames = vcGetObjectNames(objType,makeUnique)
 %  namesMadeUnique = vcGetObjectNames('scene',true);
 %
 % Copyright ImagEval Consultants, LLC, 2005.
-% 
+%
 % See also
-%  
+%
 
 %% PROGRAMMING
 %
@@ -64,7 +64,7 @@ else
     end
     
     % Every remaining object should have a name.
-    objects = vcGetObjects(objType); 
+    objects = vcGetObjects(objType);
     nObj = length(objects);
     for ii=1:nObj
         if ~checkfields(objects{ii},'name')

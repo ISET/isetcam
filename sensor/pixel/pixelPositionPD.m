@@ -6,7 +6,7 @@ function PIXEL = pixelPositionPD(PIXEL,place)
 % Purpose:
 %    Place the photodetector with a given height and width at the center of
 %    the pixel. This routine places the photodetector upper left corner
-%    positions.  
+%    positions.
 %
 %     PIXEL = pixelPositionPD(PIXEL,'center')
 %
@@ -26,6 +26,10 @@ switch lower(place)
         if (PIXEL.pdXpos < 0) || (PIXEL.pdYpos < 0)
             error('Inconsistent photodetector and pixel sizes.');
         end
+    % Add support for corner positioning ala Samsung Corner Pixel tech
+    case 'corner'
+        PIXEL.pdXpos = 0;
+        PIXEL.pdYpos = 0;
     otherwise
         error('Unknown placement principle %s.',lower(place));
 end

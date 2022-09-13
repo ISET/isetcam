@@ -49,14 +49,14 @@ pixelSize      = 2.2*1e-6;   % Meters
 darkvoltage    = 1e-005;     % Volts/sec
 readnoise      = 0.00096;    % Volts
 
-conversiongain = voltageSwing/wellCapacity;   
+conversiongain = voltageSwing/wellCapacity;
 
 % We set these properties here
-pixel = pixelSet(pixel,'size',[pixelSize pixelSize]);   
-pixel = pixelSet(pixel,'conversiongain', conversiongain);        
-pixel = pixelSet(pixel,'voltageswing',voltageSwing);                                             
-pixel = pixelSet(pixel,'darkvoltage',darkvoltage) ;               
-pixel = pixelSet(pixel,'readnoisevolts',readnoise);  
+pixel = pixelSet(pixel,'size',[pixelSize pixelSize]);
+pixel = pixelSet(pixel,'conversiongain', conversiongain);
+pixel = pixelSet(pixel,'voltageswing',voltageSwing);
+pixel = pixelSet(pixel,'darkvoltage',darkvoltage) ;
+pixel = pixelSet(pixel,'readnoisevolts',readnoise);
 
 %  Set the sensor properties
 exposureDuration = 0.025; % Seconds
@@ -68,13 +68,13 @@ rows = 466;               % number of pixels in a row
 cols = 642;               % number of pixels in a column
 
 % Set these sensor properties
-sensorM = sensorSet(sensorM,'exposuretime',exposureDuration); 
+sensorM = sensorSet(sensorM,'exposuretime',exposureDuration);
 sensorM = sensorSet(sensorM,'rows',rows);
 sensorM = sensorSet(sensorM,'cols',cols);
-sensorM = sensorSet(sensorM,'dsnulevel',dsnu);  
-sensorM = sensorSet(sensorM,'prnulevel',prnu); 
-sensorM = sensorSet(sensorM,'analogGain',analogGain);     
-sensorM = sensorSet(sensorM,'analogOffset',analogOffset);   
+sensorM = sensorSet(sensorM,'dsnulevel',dsnu);
+sensorM = sensorSet(sensorM,'prnulevel',prnu);
+sensorM = sensorSet(sensorM,'analogGain',analogGain);
+sensorM = sensorSet(sensorM,'analogOffset',analogOffset);
 
 % Put the pixel back into the sensor structure, and one more little cleanup
 sensorM = sensorSet(sensorM,'pixel',pixel);
@@ -83,10 +83,10 @@ sensorM = pixelCenterFillPD(sensorM,fillfactor);
 % We are now ready to compute the sensor image
 sensorM = sensorCompute(sensorM,oi);
 
-% We can view the monochrome sensor image in the GUI.  
+% We can view the monochrome sensor image in the GUI.
 sensorWindow(sensorM);
 
-%%  Modify the sensor by placing a CFA array 
+%%  Modify the sensor by placing a CFA array
 
 % Initialize the new color sensor as the monochrome one we built
 sensor = sensorM;
@@ -94,7 +94,7 @@ sensor = sensorSet(sensor,'name','RGGB');
 
 % Load the calibration data and attach them to the sensor structure
 fullFileName = fullfile(isetRootPath,'data','sensor','colorfilters','nikon','NikonD100.mat');
-[data,filterNames] = ieReadColorFilter(wave,fullFileName); 
+[data,filterNames] = ieReadColorFilter(wave,fullFileName);
 sensor = sensorSet(sensor,'filterspectra',data);
 sensor = sensorSet(sensor,'filternames',filterNames);
 sensor = sensorSet(sensor,'cfapattern',[1 2; 2 3]);
@@ -107,7 +107,7 @@ sensor = sensorSet(sensor,'ir filter',irFilter);
 % We are now ready to compute the sensor image
 sensor = sensorCompute(sensor,oi);
 
-% We can view the monochrome sensor image in the GUI.  
+% We can view the monochrome sensor image in the GUI.
 sensorWindow(sensor);
 
 %% Use a different color filter array pattern
@@ -125,7 +125,7 @@ sensor = sensorSet(sensor,'Name','CMYMYCYCM');
 
 % Load the calibration data and attach them to the sensor structure
 fullFileName = fullfile(isetRootPath,'data','sensor','colorfilters','CMY.mat');
-[data,filterNames] = ieReadColorFilter(wave,fullFileName); 
+[data,filterNames] = ieReadColorFilter(wave,fullFileName);
 sensor = sensorSet(sensor,'filterspectra',data);
 sensor = sensorSet(sensor,'filternames',filterNames);
 sensor = sensorSet(sensor,'cfapattern',[1 2; 2 3]);
@@ -137,7 +137,7 @@ sensor = sensorSet(sensor,'ir filter',irFilter);
 % We are now ready to compute the sensor image
 sensor = sensorCompute(sensor,oi);
 
-% We can view the monochrome sensor image in the GUI.  
+% We can view the monochrome sensor image in the GUI.
 sensorWindow(sensor);
 
 %% Evaluate the image with some metrics

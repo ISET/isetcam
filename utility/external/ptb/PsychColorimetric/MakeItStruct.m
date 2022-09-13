@@ -1,6 +1,6 @@
 function wlstruct = MakeItStruct(S)
 % wlstruct = MakeItStruct(S)
-% 
+%
 % Convert a wavelength representation to struct format.
 %
 % See also: MakeItS, MakeItWls, WavelengthSamplingTest.

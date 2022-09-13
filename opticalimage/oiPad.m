@@ -6,7 +6,7 @@ function oi = oiPad(oi,padSize,sDist,direction)
 % Description:
 %   For optics calculations we pad the size to catch light spilled
 %   beyond the edge of the scene. We pad the spatial dimensions with
-%   zeroes. 
+%   zeroes.
 %
 %   After changing the row and column numbers, we adjust the
 %   horizontal field of view accordingly.
@@ -29,19 +29,20 @@ function oi = oiPad(oi,padSize,sDist,direction)
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 %
-% See also:  oiCompute
+% See also:  
+%   v_oiPad, oiCompute, unpadarray
 
 % Examples
 %{
    oi = oiPad(oi,[8,8,0]);
 %}
 
-if ieNotDefined('sDist') 
+if ieNotDefined('sDist')
     scene = vcGetObject('scene');
     if isempty(scene)
         warndlg('oiPad: No scene, assuming 1 m sDist');
         sDist = 1;
-    else,  sDist = sceneGet(scene,'distance'); 
+    else,  sDist = sceneGet(scene,'distance');
     end
 end
 if ieNotDefined('direction'), direction = 'both'; end
@@ -64,8 +65,8 @@ catch MEmemory
     
     % First, figure out the size of the new, padded array.
     photons = single(photons);
-    [r,c] = size(padarray(photons(:,:,1),padSize,padval,direction));   
-
+    [r,c] = size(padarray(photons(:,:,1),padSize,padval,direction));
+    
     % Figure out the number of wavebands
     w = size(photons,3);
     

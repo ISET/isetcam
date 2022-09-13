@@ -4,7 +4,7 @@ function luv = xyz2luv(xyz, whitepoint)
 %    luv = xyz2luv(xyz, whitepoint)
 %
 % The whitepoint is a 3-vector indicating the XYZ of a white object or
-% patch in the scene. 
+% patch in the scene.
 %
 % xyz:  Can be in XW or RGB format.
 % whitepoint: a 3-vector of the xyz values of the white point.
@@ -13,7 +13,7 @@ function luv = xyz2luv(xyz, whitepoint)
 % LUV is returned in the same format (RGB or XW) as the input matrix xyz.
 %
 % Formulae are taken from Hunt's book,page 116. I liked the irony that 116
-% is prominent in the formula and that is the page number in Hunt.  Also,
+% is prominent in the formula and that is the page number in Hunt.  Also
 % see Wyszecki and Stiles book.
 %
 % Examples:

@@ -16,7 +16,7 @@ remote     = fullfile(remoteDir,remoteFile);
 fname      = fullfile([tempname,'.jpg']);
 [~,status] = urlwrite(remote,fname);
 if ~status, error('Could not find remote data'); end
-    
+
 %% Read the local temporary file
 d = displayCreate('LCD-Apple');
 scene = sceneFromFile(fname,'rgb',[],d);

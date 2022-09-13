@@ -8,7 +8,7 @@
 ieInit
 
 %% First, create a simple colorful test scene
-scene  = sceneCreate('macbeth tungsten'); 
+scene  = sceneCreate('macbeth tungsten');
 oi     = oiCreate;
 sensor = sensorCreate;
 sensor = sensorSet(sensor,'size',[340 420]);
@@ -24,7 +24,7 @@ ieAddObject(sensor);
 
 %% We are ready to create and experiment with the image processing calls.
 
-% Create the image processor.  
+% Create the image processor.
 ip = ipCreate;
 ip = ipSet(ip,'name','default');
 
@@ -63,7 +63,7 @@ ipWindow(ip);
 
 %% Set the illuminant correction algorithm
 
-% We have only three default options at this point.  
+% We have only three default options at this point.
 ip = ipSet(ip,'illuminant correction method','gray world');
 ip = ipCompute(ip,sensor);
 ip = ipSet(ip,'name','MCC-XYZ-GW');

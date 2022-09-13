@@ -17,7 +17,7 @@ function fName = ipSaveImage(ip,fName,showImageFlag,trueSizeFlag)
 %{
   % We save the data using the flags in the oiWindow, if it is open.
   % Otherwise, the standard RGB with gam = 1.
-  scene = sceneCreate; 
+  scene = sceneCreate;
   camera = cameraCreate;
   camera = cameraCompute(camera,scene);
   cameraWindow(camera,'ip');

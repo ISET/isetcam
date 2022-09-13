@@ -4,7 +4,7 @@ function oi = oiClearData(oi)
 %   oi = oiClearData(oi)
 %
 % Clear the data from the optical image structure as well as the data in
-% the optics structure within it.  
+% the optics structure within it.
 %
 % Clear the optics data is not necessarily a good idea, as these data are
 % mainly the PSF value.  The optics are treated as a special case in

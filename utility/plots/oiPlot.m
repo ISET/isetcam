@@ -19,9 +19,9 @@ function [udata, g] = oiPlot(oi,pType,roiLocs,varargin)
 %    Irradiance
 %     {'irradiance photons roi'} - Irradiance within an ROI of the image
 %     {'irradiance energy roi'}  - Irradiance within an ROI of the image
-%     {'irradiance hline'}  - Horizontal line spectral irradiance (photons) 
+%     {'irradiance hline'}  - Horizontal line spectral irradiance (photons)
 %                            (space x wavelength)
-%     {'irradiance vline'}  - Vertical line spectral irradiance (photons) 
+%     {'irradiance vline'}  - Vertical line spectral irradiance (photons)
 %                            (space x wavelength)
 %     {'irradiance fft'}    - 2D FFT of radiance at some wavelength
 %     {'irradiance image with grid'} - Show spatial grid on irradiance image
@@ -90,7 +90,7 @@ function [udata, g] = oiPlot(oi,pType,roiLocs,varargin)
 
 %% Programming note
 %  This function includes within it the previous functions plotOTF and
-%  plotOIIrradiance. Those have been deprecated.  
+%  plotOIIrradiance. Those have been deprecated.
 
 if ieNotDefined('oi'), oi = vcGetObject('OI'); end
 if ieNotDefined('pType'), pType = 'hlineilluminance'; end
@@ -143,16 +143,16 @@ if ieNotDefined('roiLocs')
         case {'irradianceenergyroi','irradiancephotonsroi', ...
                 'chromaticityroi','illuminanceroi'}
             roiLocs = ieROISelect(oi);
-
+            
         otherwise
             % There are many cases that don't need a position
     end
 end
-   
+
 %% Make the plot window and use this default gray scale map
 
-g = ieNewGraphWin;
-mp = 0.4*gray + 0.4*ones(size(gray));
+g = ieNewGraphWin; g.Visible = 'off';
+mp = 0.4*gray(64) + 0.4*ones(size(gray(64)));
 colormap(mp);
 
 switch pType
@@ -195,7 +195,7 @@ switch pType
         udata.wave = wave; udata.pos = posMicrons.x; udata.data = double(data');
         udata.cmd = 'mesh(pos,wave,data)';
         set(g,'Name',sprintf('ISET GraphWin: line %.0f',roiLocs(2)));
-        colormap(jet);
+        colormap(jet(64));
         
     case {'irradiancevline','vline','vlineirradiance',}
         % oiPlot(oi,'irradiance vline')
@@ -224,7 +224,7 @@ switch pType
         % Attach data to the figure
         udata.wave = wave; udata.pos = posMicrons.y; udata.data = double(data');
         set(g,'Name',sprintf('Line %.0f',roiLocs(1)));
-        colormap(jet);
+        colormap(jet(64));
         
     case {'irradiancefft'}
         % plot(oi,'irradiance fft',roiLocs,wave)
@@ -262,7 +262,7 @@ switch pType
         str = sprintf('Amplitude spectrum at %.0f nm', selectedWave);
         title(str);
         set(g,'Name',sprintf('Irradiance with grid'));
-        colormap(jet)
+        colormap(jet(64))
         
     case {'irradianceimagewave','irradianceimagewavegrid'}
         % oiPlot(oi,'irradianceImageWave',wave,gSpacing);
@@ -284,7 +284,7 @@ switch pType
             if isempty(gSpacing), return; end
         end
         
-        imagesc(xCoords,yCoords,irrad); colormap(gray)
+        imagesc(xCoords,yCoords,irrad); colormap(gray(64))
         xlabel('Position (um)'); ylabel('Position (um)');
         
         udata.irrad = irrad;
@@ -465,7 +465,7 @@ switch pType
         udata.wave = wave; udata.pos = posMicrons.x; udata.data = double(data');
         udata.cmd = 'mesh(pos,wave,data)';
         set(g,'Name',sprintf('Line %.0f',roiLocs(2)));
-        colormap(jet)
+        colormap(jet(64))
         
     case {'contrastvline','vlinecontrast'} % Done
         % oiPlot(oi,'contrast vline')
@@ -503,10 +503,10 @@ switch pType
         dmap = oiGet(oi,'depth map');
         if isempty(dmap),  close(g); error('No depth map')
         else
-            imagesc(dmap); colormap(flipud(gray))
+            imagesc(dmap); colormap(flipud(gray(64)))
             namestr = sprintf('Depth map (max=%.1f)',max(dmap(:)));
             set(g,'Name',namestr);
-            colormap(flipud(gray));
+            colormap(flipud(gray(64)));
             axis image; cb = colorbar;
             set(get(cb,'label'),'string','Meters','Rotation',90)
         end
@@ -517,7 +517,7 @@ switch pType
         dmap = ieScale(dmap,0,1); mx = max(dmap(:));
         drgb = cat(3,dmap,dmap,dmap);
         
-        image(drgb); colormap(flipud(gray)); hold on
+        image(drgb); colormap(flipud(gray(64))); hold on
         n = 4; v = (1:n)/n; contour(dmap,v);
         hold off
         namestr = sprintf('ISET: Depth map (max = %.1f m)',mx);
@@ -527,7 +527,7 @@ switch pType
     case {'relativeillumination'}
         % Optics relative illumination
         udata = opticsPlotOffAxis(oi,g);
-    case{'lenstransmittance'}  
+    case{'lenstransmittance'}
         udata = opticsPlotTransmittance(oi,g);
         
     case {'otf','otfanywave'}
@@ -546,26 +546,26 @@ switch pType
         end
         set(g,'userdata',udata);
         set(g,'name','OTF');
-        colormap(jet)
+        colormap(jet(64))
         
     case {'otf550'}
         % OTF at 550 nm
         udata = plotOTF(oi,'otf 550');
         set(g,'userdata',udata);
         set(g,'name','OTF 550');
-        colormap(jet)
+        colormap(jet(64))
         
     case {'psf'}
         % Point spread function at selected wavelength
         % oiPlot(oi,'psf',[],420);
         if isempty(varargin), udata = plotOTF(oi,'psf', 'airy disk', true);
         else, w = varargin{1}; udata = plotOTF(oi,'psf', 'this wave', w,...
-                                                         'airy disk', true);
+                'airy disk', true);
         end
         set(g,'userdata',udata);
         namestr = sprintf('ISET: %s',oiGet(oi,'name'));
         set(g,'Name',namestr);
-        colormap(jet)
+        colormap(jet(64))
         
     case {'psf550'}
         % PSF at 550nm spatial units are microns
@@ -573,7 +573,7 @@ switch pType
         set(g,'userdata',udata);
         namestr = sprintf('ISET: %s',oiGet(oi,'name'));
         set(g,'Name',namestr);
-        colormap(jet)
+        colormap(jet(64))
         
     case {'lswavelength','lsfwavelength'}
         % uData = oiPlot(oi,pType,[],nSpatialSamps)
@@ -590,14 +590,14 @@ switch pType
                 ieInWindowMessage('Ray trace: ls wavelength not yet implemented.',handles);
                 disp('Not yet implemented')
             otherwise
-                if ~isempty(varargin), nSamps = varargin{1}; 
+                if ~isempty(varargin), nSamps = varargin{1};
                 else, nSamps = 40;
                 end
                 udata = plotOTF(oi,'ls wavelength','nsamp', nSamps);
                 set(g,'userdata',udata);
         end
         set(g,'name','LS by Wave');
-        colormap(jet)
+        colormap(jet(64))
         
     case{'otfwavelength','mtfwavelength'}
         % One dimensional otf at all wavelengths as  mesh plot.
@@ -606,7 +606,7 @@ switch pType
         opticsModel = opticsGet(optics,'model');
         switch lower(opticsModel)
             case 'raytrace'
-                % Not what the user asked for.  Must fix.  Add varargin,
+                % Not what the user asked for.  Must fix.  Add varargin
                 % and make the right plot.  This isn't it.
                 rtPlot(oi,'otf');
             otherwise
@@ -614,7 +614,7 @@ switch pType
                 set(g,'userdata',udata);
         end
         set(g,'name','OTF by Wave');
-        colormap(jet)
+        colormap(jet(64))
         
     case {'illuminantimage'}
         % oiPlot(oi,'illuminant image')
@@ -623,12 +623,12 @@ switch pType
         wave = oiGet(oi,'wave');
         sz   = oiGet(oi,'size');
         energy = oiGet(oi,'illuminant energy');
-        if isempty(energy) 
+        if isempty(energy)
             ieInWindowMessage('No illuminant data.',handle);
             close(gcf);
             error('No illuminant data');
         end
-
+        
         switch oiGet(oi,'illuminant format')
             case {'spectral'}
                 % Makes a uniform SPD image
@@ -639,15 +639,19 @@ switch pType
         
         % Create an RGB image
         udata.srgb = xyz2srgb(ieXYZFromEnergy(energy,wave));
-        imagesc(sz(1),sz(2),udata.srgb);  
+        imagesc(sz(1),sz(2),udata.srgb);
         grid on; axis off; axis image;
-        title('Illumination image')      
+        title('Illumination image')
         
     otherwise
         error('Unknown oiPlot type %s.',pType);
 end
 
 if exist('udata','var'), set(gcf,'userdata',udata); end
+if ~isempty(varargin) && isa(varargin{end},'char') && isequal(ieParamFormat(varargin{end}),'nofigure')
+    return;
+else,         g.Visible = 'On';
+end
 
 end
 
@@ -802,7 +806,7 @@ switch lower(pType)
         end
         
         X = fSupport(:,:,1); Y = fSupport(:,:,2);
-
+        
         % Select the support and plot the mesh
         % I decided to show the whole thing for now.
         %         sz  = selectPlotSupport(otf,0.005);
@@ -845,7 +849,7 @@ switch lower(pType)
                 
                 % Calculate the OTF using diffraction limited MTF (dlMTF)
                 otf = dlMTF(oi,fSupport,thisWave,units);
-                sSupport = opticsGet(optics,'psf support',fSupport,nSamp);   
+                sSupport = opticsGet(optics,'psf support',fSupport,nSamp);
                 
                 % Derive the psf from the OTF
                 psf = fftshift(ifft2(otf));
@@ -902,9 +906,9 @@ switch lower(pType)
         % Plot it and if diffraction limited, then add the Airy disk
         mesh(sSupport(:,:,1),sSupport(:,:,2),abs(psf));
         if strcmpi(opticsModel,'diffractionlimited') ||...
-                    strcmpi(opticsModel, 'shiftinvariant')
+                strcmpi(opticsModel, 'shiftinvariant')
             ringZ = max(psf(:))*1e-3;
-            hold on; p = plot3(adX,adY,adZ + ringZ,'k-'); 
+            hold on; p = plot3(adX,adY,adZ + ringZ,'k-');
             set(p,'linewidth',3); hold off;
         end
         
@@ -915,7 +919,7 @@ switch lower(pType)
         uData.x = sSupport(:,:,1); uData.y = sSupport(:,:,2);
         uData.psf = psf;
         
-
+        
     case {'lswavelength'}
         % Line spread function at all wavelengths
         units = 'um';

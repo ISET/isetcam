@@ -3,7 +3,7 @@
 % This tutorial generates ISET scenes from RGB file on different displays.
 % It also shows the three different display gamuts as well as approximate
 % renderings of the images.
-%  
+%
 % See also: s_sceneFromRGB, displayCreate
 %
 % Copyright Imageval Consulting, LLC, 2014

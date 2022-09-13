@@ -2184,7 +2184,7 @@ sub GetImageInfo($$)
                 my $f = $file;
                 CleanXML(\$f);
                 print $fp "\n<rdf:Description rdf:about='${f}'";
-                print $fp "\n  xmlns:et='http://ns.exiftool.ca/1.0/'";
+                print $fp "\n  xmlns:et='http://exiftool.org/1.0/'";
                 print $fp " et:toolkit='Image::ExifTool $Image::ExifTool::VERSION'";
                 # define namespaces for all tag groups
                 my (%groups, @groups, $grp0, $grp1);
@@ -2206,7 +2206,7 @@ sub GetImageInfo($$)
                     unless ($grp eq $grp1 and $grp =~ /^(ExifTool|File|Composite|Unknown)$/) {
                         $grp .= "/$grp1";
                     }
-                    print $fp "\n  xmlns:$grp1='http://ns.exiftool.ca/$grp/1.0/'";
+                    print $fp "\n  xmlns:$grp1='http://exiftool.org/$grp/1.0/'";
                 }
                 print $fp '>' if $outFormat < 1; # finish rdf:Description token unless short format
                 $ind = $outFormat >= 0 ? ' ' : '   ';

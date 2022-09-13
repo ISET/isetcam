@@ -3,13 +3,13 @@ function fullName = vcSelectDataFile(dataType,rw,ext,windowTitle)
 %
 %  fullName = vcSelectDataFile(dataType,[rw],[ext],[windowTitle])
 %
-%  dataType is used to suggest the starting directory.  
+%  dataType is used to suggest the starting directory.
 %  Include stayput (i.e., don't change), or sensor, optics,
-%  and any of the directory names inside of data 
+%  and any of the directory names inside of data
 %
 %  To choose a data file for reading or writing, use this routine.  The
 %  parameter dataType is a clue about the proper directory to use to find
-%  or write the file. 
+%  or write the file.
 %
 %  To specify whether the file is for reading or writing, use rw = 'r' for
 %  reading and rw = 'w' for writing. Default is read.
@@ -18,11 +18,11 @@ function fullName = vcSelectDataFile(dataType,rw,ext,windowTitle)
 %  Returns fulName = [] on Cancel.
 %
 %  WINDOWTITLE is a string for the read window to help the user know the
-%  purpose. 
+%  purpose.
 %
 %   The dataType values are:
 %
-%    {'session','stayput'} 
+%    {'session','stayput'}
 %       The last selected directory, or the current working directory if
 %       none was selected previously.
 %    {'data'}        --    data.
@@ -66,7 +66,7 @@ switch lower(dataType)
         end
     case {'data'}
         fullPath = fullfile(isetRootPath,'data');
-
+        
         % Check that directory exists.  If not, try using the last directory.
         % Otherwise, just go to data.
         if ~exist(fullPath,'dir')
@@ -91,11 +91,11 @@ chdir(fullPath);
 fileFilter = ['*.',ext];
 switch lower(rw)
     case 'r'
-        if ieNotDefined('windowTitle'), windowTitle = 'ISET: Read Data'; 
+        if ieNotDefined('windowTitle'), windowTitle = 'ISET: Read Data';
         end
         [fname, pname] = uigetfile(fileFilter, windowTitle);
     case 'w'
-        if ieNotDefined('windowTitle'), windowTitle = 'ISET: Write Data'; 
+        if ieNotDefined('windowTitle'), windowTitle = 'ISET: Write Data';
         end
         [fname, pname] = uiputfile(fileFilter, windowTitle);
     otherwise

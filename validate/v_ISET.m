@@ -15,21 +15,18 @@
 % Copyright ImagEval Consultants, LLC, 2011.
 
 %% Initialize
-ieInit
+ieInit;
 
 setpref('ISET', 'benchmarkstart', cputime); % if I just put it in a variable it gets cleared:(
 setpref('ISET', 'tStart', tic);
 
 %% Scene tests
-h = msgbox('Scene','ISET Tests','replace');
-set(h,'position',round([36.0000  664.1379  124.7586   50.2759]));
+disp('*** Scenes')
 setpref('ISET', 'tvsceneStart', tic);
 v_scene
 setpref('ISET', 'tvsceneTime', toc(getpref('ISET', 'tvsceneStart', 0)));
 %% Optics tests
-h = msgbox('Optics','ISET Tests','replace');
-set(h,'position',round([36.0000  664.1379  124.7586   50.2759]));
-
+disp('*** Optics')
 setpref('ISET', 'tvopticsStart', tic);
 v_oi
 v_diffuser
@@ -38,64 +35,52 @@ v_opticsWVF
 setpref('ISET', 'tvopticsTime', toc(getpref('ISET', 'tvopticsStart')));
 
 %% Sensor tests
-h = msgbox('Sensor','ISET Tests','replace');
-set(h,'position',round([36.0000  664.1379  124.7586   50.2759]));
+disp('*** Sensor')
 setpref('ISET', 'tvsensorStart', tic);
 v_sensor
 setpref('ISET', 'tvsensorTime', toc(getpref('ISET', 'tvsensorStart')));
 
 %% Pixel tests
-h = msgbox('Pixel ','ISET Tests','replace');
-set(h,'position',round([36.0000  664.1379  124.7586   50.2759]));
+disp('*** Pixel')
 setpref('ISET', 'tvpixelStart', tic);
 v_pixel
 setpref('ISET', 'tvpixelTime', toc(getpref('ISET', 'tvpixelStart')));
 
 %% Human visual system tests
-h = msgbox('Human PSF','ISET Tests','replace');
-set(h,'position',round([36.0000  664.1379  124.7586   50.2759]));
+disp('*** Human');
 setpref('ISET', 'tvhumanStart', tic);
 v_human
 setpref('ISET', 'tvhumanTime', toc(getpref('ISET', 'tvhumanStart')));
 
-%% Image processing 
-h = msgbox('Image Processor','ISET Tests','replace');
-set(h,'position',round([36.0000  664.1379  124.7586   50.2759]));
+%% Image processing
+disp('*** IP');
 setpref('ISET', 'tvipStart', tic);
 v_imageProcessor
 setpref('ISET', 'tvipTime', toc(getpref('ISET', 'tvipStart')));
 
 %% Metrics tests
-h = msgbox('Metrics','ISET Tests','replace');
-set(h,'position',round([36.0000  664.1379  124.7586   50.2759]));
+disp('*** Metrics');
 setpref('ISET', 'tvmetricsStart', tic);
 v_metrics
 setpref('ISET', 'tvmetricsTime', toc(getpref('ISET', 'tvmetricsStart')));
 
 %% Computational Imaging tests
-h = msgbox('CI','ISET Tests','replace');
-set(h,'position',round([36.0000  664.1379  124.7586   50.2759]));
+disp('*** CI');
 setpref('ISET', 'tvciStart', tic);
-%{
-% Dave:  Needs to be fixed. scene type 'iset scenes' not recognized in
-% the 'focus' method 
-v_cp  
-%}
 setpref('ISET', 'tvciTime', toc(getpref('ISET', 'tvciStart')));
 
 %% Display window
-h = msgbox('Display','ISET Tests','replace');
-set(h,'position',round([36.0000  664.1379  124.7586   50.2759]));
+disp('*** Display');
 setpref('ISET', 'tvdisplayStart', tic);
 t_displayIntroduction;
 setpref('ISET', 'tvdisplayTime', toc(getpref('ISET', 'tvdisplayStart')));
 
-%% End
+%% Summary
 tTotal = toc(getpref('ISET','tStart'));
 afterTime = cputime;
 beforeTime = getpref('ISET', 'benchmarkstart', 0);
 glData = opengl('data');
-disp(strcat("v_ISET ran  on: ", glData.Vendor, " ", glData.Renderer, "with driver version: ", glData.Version)); 
+disp(strcat("v_ISET ran  on: ", glData.Vendor, " ", glData.Renderer, "with driver version: ", glData.Version));
 disp(strcat("v_ISET ran  in: ", string(afterTime - beforeTime), " seconds of CPU time."));
 disp(strcat("v_ISET ran  in: ", string(tTotal), " total seconds."));
 fprintf("Scenes  ran in: %5.1f seconds.\n", getpref('ISET','tvsceneTime'));
@@ -106,3 +91,5 @@ fprintf("Display ran in: %5.1f seconds.\n", getpref('ISET','tvdisplayTime'));
 fprintf("Metrics ran in: %5.1f seconds.\n", getpref('ISET','tvmetricsTime'));
 fprintf("CI      ran in: %5.1f seconds.\n", getpref('ISET','tvciTime'));
 fprintf("Human   ran in: %5.1f seconds.\n", getpref('ISET','tvhumanTime'));
+
+%% END

@@ -46,7 +46,7 @@ if isscalar(GammaTable)
         disp(['Raising DAC values to a power of ' num2str(GammaTable)]);
     end
     RGB = DAC.^GammaTable;
-
+    
 elseif isequal(size(GammaTable(:)),[3,1])
     fprintf('Using separate gamma values per primary %.3f\n',GammaTable);
     

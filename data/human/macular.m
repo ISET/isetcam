@@ -3,11 +3,11 @@ function t = macular(macDensity,wave)
 %
 %     t = macular(macDensity,wave)
 %
-%  The human retina contains a pigment that covers the central (macular) region. 
+%  The human retina contains a pigment that covers the central (macular) region.
 %  This macular pigment passes certain wavelengths of light more than
 %  others.  The pigment varies in density from central vision, where it is
 %  highest, to increasingly peripheral vision.
-%  
+%
 %  This function returns several measures of the macular pigment wavelength
 %  properties as a function of macular pigment density (high in the fovea,
 %  lower in the near fovea).
@@ -25,7 +25,7 @@ function t = macular(macDensity,wave)
 % t.transmittance: The fraction of light transmitted, i.e., 1 - t.absorption
 %
 %  The macular densities values were taken from the Stockman site.  Go to
-%  http://cvision.ucsd.edu, then click on Prereceptoral filters.
+%  http://vision.ucsd.edu, then click on Prereceptoral filters.
 %
 %  The densities were derived by Sharpe and Stockman based on some data from Bone.
 %  The paper describing why they like these is in Vision Research; I
@@ -45,7 +45,7 @@ t.density  = ieReadSpectra('macularPigment.mat',wave);
 % Typical peak macular density, Estimated by Sharpe in VR paper, 1999 is
 % 0.28.  Yet, the data they provide are at 0.3521.  It is probably not
 % important to return the unit density, but we do.
-if ~exist('macDensity','var'), macDensity = 0.3521; end 
+if ~exist('macDensity','var'), macDensity = 0.3521; end
 
 % I don't understand this, but the download from the web site has a peak
 % spectral density at 460 of 0.3521, not the average estimated in the

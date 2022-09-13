@@ -9,7 +9,7 @@ function [oi,val] = oiCreate(oiType,varargin)
 %  includes a structure that defines the optics.
 %
 % Inputs
-%   oiType - 
+%   oiType -
 %     {'diffraction limited'} -  Diffraction limited optics, no diffuser or
 %                             data (Default)
 %     {'shift invariant'}     -  General high resolution shift-invariant
@@ -59,7 +59,7 @@ validTypes = {'default','diffraction limited','shift invariant','ray trace',...
     'human','uniformd65','uniformEE','wvf'};
 
 %%
-switch ieParamFormat(oiType) 
+switch ieParamFormat(oiType)
     case {'diffractionlimited','diffraction','default'}
         oi = oiSet(oi,'optics',optics);
         
@@ -67,9 +67,9 @@ switch ieParamFormat(oiType)
         % skipped
         oi = oiSet(oi,'diffuser method','skip');
         oi = oiSet(oi,'diffuser blur',2*10^-6);
-
+        
     case {'shiftinvariant'}
-        % Rather than using the diffraction limited call to make the OTF,
+        % Rather than using the diffraction limited call to make the OTF
         % we use some other method, perhaps wavefront.
         % Human is a special form of shift-invariant.  We might make
         % shiftinvariant-wvf or just wvf in the near future after
@@ -77,7 +77,7 @@ switch ieParamFormat(oiType)
         oi = oiSet(oi,'optics',opticsCreate('shift invariant',oi));
         oi = oiSet(oi,'name','SI');
         oi = oiSet(oi,'diffuserMethod','skip');
-
+        
     case {'raytrace'}
         % Create the default ray trace unless a file name is passed in
         oi = oiCreate('default');
@@ -132,6 +132,19 @@ switch ieParamFormat(oiType)
         
         % Add the wvf parameters
         oi.wvf = wvf;
+    case {'pinhole'}
+        % Pinhole camera version of OI
+        oi = oiCreate;
+        oi = oiSet(oi, 'optics model', 'skip');
+        oi = oiSet(oi, 'bit depth', 64);  % Forces double
+        oi = oiSet(oi, 'optics offaxis method', 'skip');
+        oi = oiSet(oi, 'diffuser method', 'skip');
+
+        % Pinhole do not have a focal length.  In this case, the focal
+        % length is used to say the image plane distance.
+        oi = oiSet(oi, 'optics focal length',NaN);
+        oi = oiSet(oi, 'optics name','pinhole');
+        oi = oiSet(oi, 'name', 'pinhole');
         
     otherwise
         fprintf('\n--- Valid OI types: ---\n')
@@ -139,7 +152,7 @@ switch ieParamFormat(oiType)
             fprintf('%d: %s\n',ii,validTypes{ii});
         end
         fprintf('-------\n')
-
+        
         error('***Unknown oiType: %s\n',oiType);
 end
 

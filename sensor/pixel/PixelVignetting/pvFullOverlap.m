@@ -4,15 +4,15 @@ function [overlap,numGrid,numGridSpot] = pvFullOverlap(OPTICS,PIXEL)
 % the focused spot
 %
 % AUTHOR: Peter Catrysse, Brian Wandell, Ting Chen
-% DATE: June 1999, 08/05/99, 03/27/2000 
+% DATE: June 1999, 08/05/99, 03/27/2000
 % Setting up local variables
 f = opticsGet(OPTICS,'focallength'); 	% Focal Length [m]
 D = opticsGet(OPTICS,'diameter');       % Diameter [m]
 w = pixelGet(PIXEL,'width');            % Diode size [m]
 h = pixelGet(PIXEL,'depth');            % Distance from surface to diode [m]
 d = D * (h / f);      		            % Spot size on chip surface
-% Now for diode with index (m,n), one grid point with local 
-% coordinate of (x,y) center at (mL, nL) will have a global 
+% Now for diode with index (m,n), one grid point with local
+% coordinate of (x,y) center at (mL, nL) will have a global
 % coordinate of (mL+x, nL+y)
 % Now we set up the grid for the photodiode
 % We choose an odd number of grid points in
@@ -25,7 +25,7 @@ numGrid = floor(51 * w/d);
 % has to be otherwise we are undersampling the optical spot.
 % We deal with this by choosing numGrid such that numGridSpot = 51
 if (numGrid/2 - round(numGrid/2)) == 0
-        numGrid = numGrid+1;
+    numGrid = numGrid+1;
 end
 %numGrid
 diodeGrid= zeros(numGrid);
@@ -37,7 +37,7 @@ diodeGrid = diodeGrid / length(find((abs(x)<w/2)&(abs(y)<w/2)));
 numGridSpot = floor(d/(w/numGrid));
 % This number has to be odd as well so that we can have a center pixel
 if (numGridSpot/2 - round(numGridSpot/2)) == 0
-        numGridSpot = numGridSpot+1;
+    numGridSpot = numGridSpot+1;
 end
 %numGridSpot
 spot = zeros(numGridSpot);

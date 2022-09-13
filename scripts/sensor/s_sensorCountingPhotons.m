@@ -31,7 +31,7 @@ ieDrawShape(scene,'rectangle',roiRect);
 
 [udata, f] = scenePlot(scene,'radiance photons roi',roiRect);
 
-% The sum of the mean number of photons from all the wavelengths 
+% The sum of the mean number of photons from all the wavelengths
 % q/s/sr/nm/m2
 t = sprintf('Sum of photons across wavelengths %.2e\n',sum(udata.photons(:)));
 title(t);
@@ -49,7 +49,7 @@ fnumbers = [2,4,8,16,32];
 % Store the photon count here
 totalQ = zeros(1,length(fnumbers));
 
-for ff = 1:length(fnumbers) 
+for ff = 1:length(fnumbers)
     oi = oiSet(oi,'optics fnumber',fnumbers(ff));
     oi = oiCompute(scene,oi);
     spectralIrradiance = oiGet(oi,'roi mean photons',roiRect);
@@ -72,4 +72,4 @@ grid on;
 xlabel('f#'); ylabel('Photons/s/m^2')
 title('Total photons vs. f#')
 
-%% 
+%%

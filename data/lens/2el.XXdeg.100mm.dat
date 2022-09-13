@@ -1,0 +1,7 @@
+# 2 Element simple lens		
+#    focal length (in mm)     
+100					
+#    radius	 axpos	N	aperture
+134	3.0	1.65	50
+0	3.0	1.65	50
+-134	0	1	50

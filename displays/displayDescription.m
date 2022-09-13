@@ -1,6 +1,6 @@
 function str = displayDescription(thisD)
 % Text description of the display properties, displayed in display window
-% 
+%
 % This will be replaced by an iePTable call
 %
 % Synopsis
@@ -23,14 +23,14 @@ else
     wave = displayGet(thisD,'wave');
     spacing = displayGet(thisD,'binwidth');
     str = addText(str,sprintf('Wave:\t%d:%d:%d nm\n', ...
-                        min(wave(:)),spacing,max(wave(:))));
+        min(wave(:)),spacing,max(wave(:))));
     str = addText(str, sprintf('# primaries:\t%d\n', ...
-                            displayGet(thisD, 'nprimaries')));
+        displayGet(thisD, 'nprimaries')));
     str = addText(str, sprintf('Color bit depth:\t%d\n', ...
-                            displayGet(thisD, 'bits')));
+        displayGet(thisD, 'bits')));
     rgb = displayGet(thisD,'rgb');
     str = addText(str, sprintf('Image width: %d\t Height: %d', ...
-                            size(rgb, 2), size(rgb, 1)));
+        size(rgb, 2), size(rgb, 1)));
     
 end
 

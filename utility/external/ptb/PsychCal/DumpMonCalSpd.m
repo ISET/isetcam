@@ -91,54 +91,54 @@ drawnow;
 
 % Plot full spectral data for each phosphor
 if (DUMPALL)
-	figure(2+cal_CT.nDevices+1); clf; hold on
-	load T_xyz1931
-	nDontPlotLowPower = 3;
-	T_xyz1931 = SplineCmf(S_xyz1931,683*T_xyz1931,cal_CT.describe.S);
-	
-	for j = 1:cal_CT.nDevices
-		% Get channel measurements into columns of a matrix from raw data in calibration file.
+    figure(2+cal_CT.nDevices+1); clf; hold on
+    load T_xyz1931
+    nDontPlotLowPower = 3;
+    T_xyz1931 = SplineCmf(S_xyz1931,683*T_xyz1931,cal_CT.describe.S);
+    
+    for j = 1:cal_CT.nDevices
+        % Get channel measurements into columns of a matrix from raw data in calibration file.
         tempMon = reshape(cal_CT.rawdata.mon(:,j),cal_CT.describe.S(3),cal_CT.describe.nMeas);
-		
-		% Scale each measurement to the maximum spectrum to allow us to compare shapes visually.
-		maxSpectrum = tempMon(:,end);
-		scaledMon = tempMon;
-		for i = 1:cal_CT.describe.nMeas
-			scaledMon(:,i) = scaledMon(:,i)*(scaledMon(:,i)\maxSpectrum);
-		end
-		
-		% Compute phosphor chromaticities
-		xyYMon = XYZToxyY(T_xyz1931*tempMon);
+        
+        % Scale each measurement to the maximum spectrum to allow us to compare shapes visually.
+        maxSpectrum = tempMon(:,end);
+        scaledMon = tempMon;
+        for i = 1:cal_CT.describe.nMeas
+            scaledMon(:,i) = scaledMon(:,i)*(scaledMon(:,i)\maxSpectrum);
+        end
+        
+        % Compute phosphor chromaticities
+        xyYMon = XYZToxyY(T_xyz1931*tempMon);
         
         % Dump out min and max luminance
         minLum = min(xyYMon(3,:));
         maxLum = max(xyYMon(3,:));
         fprintf('Primary %d, max luminance %0.2f cd/m2, min %0.2f cd/m2\n',j,maxLum,minLum);
-		
-		% Plot raw spectra
-		figure(2+j); clf
+        
+        % Plot raw spectra
+        figure(2+j); clf
         subplot(1,2,1);
-		plot(SToWls(cal_CT.S_device),tempMon);
+        plot(SToWls(cal_CT.S_device),tempMon);
         xlabel('Wavelength (nm)', 'Fontweight', 'bold');
         ylabel('Power', 'Fontweight', 'bold');
         axis([380,780,-Inf,Inf]);
-		
-		% Plot scaled spectra
-		subplot(1,2,2);
-		plot(SToWls(cal_CT.S_device),scaledMon(:,nDontPlotLowPower+1:end));
+        
+        % Plot scaled spectra
+        subplot(1,2,2);
+        plot(SToWls(cal_CT.S_device),scaledMon(:,nDontPlotLowPower+1:end));
         xlabel('Wavelength (nm)', 'Fontweight', 'bold');
         ylabel('Normalized Power', 'Fontweight', 'bold');
         axis([380,780,-Inf,Inf]);
-		drawnow;
+        drawnow;
         
         % Keep singular values
         monSVs(:,i) = svd(tempMon);
-		
-		% Plot chromaticities
-		figure(2+cal_CT.nDevices+1); hold on
-		plot(xyYMon(1,nDontPlotLowPower+1:end)',xyYMon(2,nDontPlotLowPower+1:end)','+');
-
-	end
+        
+        % Plot chromaticities
+        figure(2+cal_CT.nDevices+1); hold on
+        plot(xyYMon(1,nDontPlotLowPower+1:end)',xyYMon(2,nDontPlotLowPower+1:end)','+');
+        
+    end
 end
 
 % Plot chromaticities

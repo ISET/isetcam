@@ -1,6 +1,6 @@
 function image = CalFormatToImage(calFormat,nX,nY)
 % image = CalFormatToImage(calFormat,nX,nY)
-% 
+%
 % Convert a calibration format image back to a real
 % image.
 %

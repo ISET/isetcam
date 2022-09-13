@@ -7,7 +7,7 @@
 %
 %   Actinic         - UV hazard for skin and eye safety The limits for
 %                     exposure to ultraviolet radiation incident upon the
-%                     unprotected skin or eye (4.3.1 and 4.3.2)  
+%                     unprotected skin or eye (4.3.1 and 4.3.2)
 %
 % There are two other types of safety calculations that we include in
 % related scripts
@@ -21,7 +21,7 @@
 % The data for the safety function curves were taken from this paper
 %
 %  ?IEC 62471:2006 Photobiological Safety of Lamps and Lamp Systems.? n.d.
-%  Accessed October 5, 2019. https://webstore.iec.ch/publication/7076 
+%  Accessed October 5, 2019. https://webstore.iec.ch/publication/7076
 %  J.E. Farrell has a copy of this standard
 %
 % Notes:   Near UV is also called UV-A and is 315-400nm.
@@ -32,7 +32,7 @@
 %      Irradiance = Radiance * pi
 %
 % See also
-% 
+%
 
 %% General parameters
 wave = 300:700;
@@ -82,7 +82,7 @@ fprintf('Safe exposure (hours) for 8 hour period is %.2f minutes (%.2f hours)\n'
 lum       = lum405;  % cd/m2, luminance of the 405 LED
 thisWave  = 405;     % nm, center wavelength of the LED
 bandwidth = 12;      % nm, Gaussian standard deviation, FW at roughly 1/2 of the max
-[estRadiance,estWave] = ieLuminance2Radiance(lum,thisWave,'sd',bandwidth); 
+[estRadiance,estWave] = ieLuminance2Radiance(lum,thisWave,'sd',bandwidth);
 plotRadiance(estWave,estRadiance);
 
 % Check the luminance match

@@ -1,4 +1,4 @@
-%% The Natural-100 reflectance chart 
+%% The Natural-100 reflectance chart
 %
 % We designed a color chart containing 100 natural surfaces
 % reflectances, including a neutral (achromatic) series.
@@ -30,9 +30,9 @@ scene = sceneCreate('reflectance chart');
 ieAddObject(scene);
 sceneWindow;
 
-%% Create your own chart 
+%% Create your own chart
 
-% The files containing the reflectances are in ISET format, readable by 
+% The files containing the reflectances are in ISET format, readable by
 % s = ieReadSpectra(sFiles{1});
 sFiles = cell(1,4);
 sFiles{1} = which('MunsellSamples_Vhrel.mat');
@@ -48,7 +48,7 @@ sFiles{4} = fullfile(isetRootPath,'data','surfaces','reflectances','HyspexSkinRe
 %}
 
 % The number of samples from each of the data sets, respectively
-sSamples = [12,12,24,24];    % 
+sSamples = [12,12,24,24];    %
 
 % How many row/col spatial samples in each patch (they are square)
 pSize    = 24;           % Patch size

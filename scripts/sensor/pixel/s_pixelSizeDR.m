@@ -1,21 +1,21 @@
 %% s_pixelSizeDR
-% 
+%
 % Calculate pixel dynamic range assuming various technology properties
 %
 % Pixel dynamic range is an important property that specifies the range of
 % illuminance levels that can be reliably measured by a pixel.
 %
-% The formula for pixel dynamic range is 
+% The formula for pixel dynamic range is
 %
 %     20 log10 ( pixVoltageRange / pixNoise )
 %
 % with definitions
 %
 %  pixVoltageRange:  the max voltage swing minus the accumulated dark
-%  voltage (for a particular integration time) 
+%  voltage (for a particular integration time)
 %
 %  pixNoise: the standard deviation of the combined read noise plus dark
-%  voltage noise.  
+%  voltage noise.
 %
 % The dynamic range depends on the integration time because the dark
 % voltage accumulates over time.  It is possible to calculate the dynamic
@@ -48,7 +48,7 @@ for ii=1:length(pixelSize)
     pixel = pixelSet(pixel,'readNoiseSTDvolts',readNoiseSD(ii));
     pixel = pixelSet(pixel,'voltageSwing',voltageSwing(ii));
     pixel = pixelSet(pixel,'darkVoltage',darkVoltage(ii));
-
+    
     sensor = sensorSet(sensor,'pixel',pixel);
     dr(ii) =  pixelDR(sensor);
 end

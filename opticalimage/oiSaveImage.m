@@ -23,14 +23,14 @@ function fName = oiSaveImage(oi,fName)
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 %
-% See also: 
+% See also:
 %  sceneSaveImage, imageSPD
 
 % Examples:
 %{
   % We save the data using the flags in the oiWindow, if it is open.
   % Otherwise, the standard RGB with gam = 1.
-  scene = sceneCreate; oi = oiCreate; oi = oiCompute(oi,scene); 
+  scene = sceneCreate; oi = oiCreate; oi = oiCompute(oi,scene);
   oiWindow(oi);
   fName = oiSaveImage(oi,'deleteMe');   % PNG is appended
   img = imread(fName); ieNewGraphWin; image(img);

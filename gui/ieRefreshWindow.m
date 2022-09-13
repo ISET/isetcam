@@ -6,7 +6,7 @@ function app = ieRefreshWindow(objType)
 %
 % Input
 %  objType:  A string defining the object type.  If obj is an ISETCam
-%            struct, then this could be obj.type 
+%            struct, then this could be obj.type
 %
 % Output
 %   app:     The window app

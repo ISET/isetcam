@@ -1,5 +1,5 @@
 %% Illustrate CIE xy chromaticity calculations and plots
-% 
+%
 % *Chromaticity* coordinates are widely used to summarize the hue
 % and saturation of a light.  We calculate the chromaticity
 % coordinates and the gamut of light from a display.
@@ -38,4 +38,4 @@ xyz = RGB2XWFormat(xyz);
 chromaticityPlot(chromaticity(xyz));
 title('xy chromaticities of MCC chart')
 
-%% 
+%%

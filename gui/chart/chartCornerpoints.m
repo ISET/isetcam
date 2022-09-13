@@ -118,7 +118,7 @@ end
 if nargout == 3
     % Corner Points are lower left, lower right, upper right, upper left
     % Upper left is (x,y)
-    % How far to the right is width 
+    % How far to the right is width
     % How far down is height
     x = cornerPoints(4,1);
     y = cornerPoints(4,2);

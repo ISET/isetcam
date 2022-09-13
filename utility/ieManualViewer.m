@@ -1,5 +1,5 @@
 function ieManualViewer(mType)
-%View ISET manual information located at ImageVal.com
+%View ISET manual information.
 %
 %   ieManualViewer(mType)
 %

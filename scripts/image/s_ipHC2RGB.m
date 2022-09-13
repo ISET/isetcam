@@ -4,7 +4,7 @@
 %
 % Copyright Imageval Consulting, LLC 2014
 
-%% 
+%%
 ieInit
 
 % Number of wavebands and thus RGB output images

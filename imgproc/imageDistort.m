@@ -12,11 +12,11 @@ dMethod = ieParamFormat(dMethod);
 switch dMethod
     case 'gaussiannoise'
         % imageDistort(img,'gaussian noise',30);
-        if ~isempty(varargin), nScale = varargin{1}; 
+        if ~isempty(varargin), nScale = varargin{1};
         else
             nScale = 0.05*max(img(:));  % Noise is five percent of max
         end
-        noise = nScale*randn(size(img));  % vcNewGraphWin; hist(n(:))
+        noise = nScale*randn(size(img));  % vcNewGraphWin; histogram(n(:))
         
         if isinteger(img) && max(img(:)) < 256
             % Case of an 8 bit image
@@ -31,7 +31,7 @@ switch dMethod
     case 'jpegcompress'
         % imageDistort(img,'jpeg compress',30);
         % Find a proper Matlab function for this
-        if ~isempty(varargin), q = varargin{1}; 
+        if ~isempty(varargin), q = varargin{1};
         else q = 75;
         end
         imwrite(img,'deleteMe.jpg','jpeg','Quality',q);
@@ -40,12 +40,12 @@ switch dMethod
     case 'scalecontrast'
         % imageDistort(img,'scale contrast',0.1);
         % Generally the scalar for the distortion should be -.2 to .2
-        if ~isempty(varargin), s = varargin{1}; 
+        if ~isempty(varargin), s = varargin{1};
         else s = 0.1;
         end
         imgN = img*(1+s);
         
-    otherwise 
+    otherwise
         error('Unknown method: %s\n',dMethod);
 end
 

@@ -19,7 +19,7 @@ oi     = oiCreate;
 optics = oiGet(oi,'optics');
 
 % This large is a little blurry
-fNumber = 12;   
+fNumber = 12;
 optics = opticsSet(optics,'fnumber',fNumber);
 oi     = oiSet(oi,'optics',optics);
 
@@ -80,4 +80,4 @@ colormap(0.5*mp + 0.5*ones(size(mp)))
 xlabel('um'); ylabel('um'); zlabel('Relative intensity');
 
 
-%% 
+%%

@@ -9,12 +9,12 @@ function [scene, sSamples, reflectance, rcSize] = sceneReflectanceChart(sFiles,s
 % scene use: sceneGet(scene,'chart parameters');
 %
 % Inputs
-%  The surfaces are drawn from the cell array of sFiles{}.  
+%  The surfaces are drawn from the cell array of sFiles{}.
 %  sFiles:   Cell array of file names with reflectance spectra
 %            It is also possible to set sFiles to a matrix of reflectances.
 %  sSamples: This can either be
 %      - Vector indicating how many surfaces to sample from each file
-%      - A cell array specifying the list of samples from each file 
+%      - A cell array specifying the list of samples from each file
 %  pSize:    The number of pixels on the side of each square patch
 %  wave:     Wavelength Samples
 %  grayFlag: Fill the last part of the chart with gray surfaces, the last
@@ -34,7 +34,7 @@ function [scene, sSamples, reflectance, rcSize] = sceneReflectanceChart(sFiles,s
 %
 % Copyright ImagEval Consultants, LLC, 2010.
 %
-% See also: 
+% See also:
 %   macbethChartCreate, sceneRadianceChart
 
 % Examples:
@@ -55,7 +55,7 @@ function [scene, sSamples, reflectance, rcSize] = sceneReflectanceChart(sFiles,s
 %}
 
 %%
-if ieNotDefined('sFiles'), error('Surface files required'); 
+if ieNotDefined('sFiles'), error('Surface files required');
 else,                      nFiles = length(sFiles);
 end
 
@@ -64,9 +64,11 @@ if ieNotDefined('grayFlag'), grayFlag = 1; end
 if ieNotDefined('sampling'), sampling = 'r'; end %With replacement by default
 
 %% Default scene
-scene = sceneCreate;
+scene = sceneCreate('empty');
 if ieNotDefined('wave'), wave = sceneGet(scene,'wave');
-else,                    scene = sceneSet(scene,'wave',wave);
+else                   
+    scene = sceneSet(scene,'wave',wave);
+    scene = sceneSet(scene,'illuminant wave',wave);
 end
 nWave = length(wave);
 defaultLuminance = 100;  % cd/m2
@@ -99,7 +101,7 @@ r = ceil(sqrt(nSamples)); c = ceil(nSamples/r);
 if grayFlag
     % Create a column of gray surfaces, from 100% reflectance scaling down
     % in steps of 0.5 (0.3 log unit)
-    s = logspace(0,log10(0.05),r); 
+    s = logspace(0,log10(0.05),r);
     g = ones(nWave,r)*diag(s);
     reflectance = [reflectance, g];
     c = c + 1;
@@ -118,16 +120,19 @@ illuminantPhotons = diag(e2pFactors)*ones(nWave,1);
 % Data from first file are in the left columns, second file next set of
 % cols, and so forth. There may be a gray strip at the end.
 % Scale reflectances by incorporating energy to photon scale factr
-radiance = diag(e2pFactors)*reflectance;    
+radiance = diag(e2pFactors)*reflectance;
 
 % Calculate the scene radiance data.  These are in photon units, but
 % they are not scaled to reasonable photon values.
 sData = zeros(rcSize(1),rcSize(2),nWave);
+% ZLY: Addded index map chart to retrive basis function wgts.
+rIdxMap = zeros(size(sData, 1, 2));
 for rr=1:rcSize(1)
     for cc=1:rcSize(2)
         idx = sub2ind(rcSize,rr,cc);
         if idx <= size(radiance,2)
             sData(rr,cc,:) = radiance(:,idx);
+            rIdxMap(rr, cc) = idx;
         else
             sData(rr,cc,:) = 0.2*illuminantPhotons;
         end
@@ -141,6 +146,8 @@ XYZ = ieXYZFromPhotons(sData,wave);
 
 % Build up the size of the image regions - still reflectances
 sData = imageIncreaseImageRGBSize(sData,pSize);
+% ZLY: Resize index map 
+rIdxMap = imageIncreaseImageRGBSize(rIdxMap, pSize);
 
 % Add data to scene, using equal energy illuminant
 scene = sceneSet(scene,'photons',sData);
@@ -164,6 +171,7 @@ chartP.wave     = wave;
 
 chartP.XYZ      = XYZ;
 chartP.rowcol   = rcSize;
+chartP.rIdxMap = rIdxMap;
 
 scene = sceneSet(scene,'chart parameters',chartP);
 

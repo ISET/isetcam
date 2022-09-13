@@ -36,7 +36,7 @@ function target  = macbethIdealColor(illuminant,colorSpace)
 %   macbethLAB = macbethIdealColor('tungsten','lab');
 %   plot3(macbethLAB(:,1),macbethLAB(:,2),macbethLAB(:,3),'ro'); grid on
 %   gSeries = 4:4:24; hold on
-%   plot3(macbethLAB(gSeries,1),macbethLAB(gSeries,2),macbethLAB(gSeries,3),'kx'); 
+%   plot3(macbethLAB(gSeries,1),macbethLAB(gSeries,2),macbethLAB(gSeries,3),'kx');
 %   xlabel('L'); ylabel('a'); zlabel('b')
 %
 % See also:  macbethCompareIdeal, macbethReadReflectance
@@ -50,7 +50,7 @@ else                           wave = 400:10:700;
 end
 
 % For the order of the reflectances, see the comment in macbethChartCreate
-% or type:  load('macbethChart','comment'); comment 
+% or type:  load('macbethChart','comment'); comment
 patchList = 1:24;
 whitePatch = 4;
 macbethChart = macbethReadReflectance(wave,patchList);
@@ -84,7 +84,7 @@ switch lower(colorSpace)
         [idealSRGB,idealLRGB] = xyz2srgb(XW2RGBFormat(macbethXYZ,1,24)); %#ok<ASGLU>
         idealLRGB = RGB2XWFormat(idealLRGB);
         
-        % Clipping 
+        % Clipping
         target = ieClip(idealLRGB,0,1);
         % vcNewGraphWin; image(XW2RGBFormat(target,4,6))
         

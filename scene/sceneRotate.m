@@ -1,5 +1,5 @@
 function scene = sceneRotate(scene,deg)
-% Rotate a scene 
+% Rotate a scene
 %
 %   scene = sceneRotate(scene,rotParam);
 %
@@ -7,14 +7,14 @@ function scene = sceneRotate(scene,deg)
 % filled with zeros.  The illuminant image is rotated, too.
 %
 % scene:  Spectral scene
-% rotParam: 
+% rotParam:
 %      This can either be a string ('cw', 'ccw'), or
 %      A numeric value in degrees.  If degrees, then counter clockwise is
-%      positive, and clockwise is negative.  
+%      positive, and clockwise is negative.
 %
 % Example:
 %   scene = sceneCreate('star pattern');
-%   deg = 10;                         
+%   deg = 10;
 %   scene = sceneRotate(scene,deg);
 %   ieAddObject(scene); sceneWindow;
 %

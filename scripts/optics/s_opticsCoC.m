@@ -30,7 +30,7 @@ for ii=1:length(oDist)
 end
 
 %% Plot the circle diameter as a function of distance
-vcNewGraphWin([],'big'); 
+vcNewGraphWin([],'big');
 semilogy(oDist,c,'b-'); grid on
 % xlabel('Object distance (m)');
 % ylabel('Diameter of circle of confusion (um)')
@@ -74,4 +74,4 @@ line([min(oDist),max(oDist)],[2 2],'linestyle',':','color','k');
 
 legend({'f=2','f=4','f=8'})
 
-%% 
+%%

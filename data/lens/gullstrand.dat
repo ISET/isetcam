@@ -1,0 +1,9 @@
+# Gullstrand eye, parameters from Navarro's 1985 paper		
+#    focal length (in mm)     
+16					
+#    radius	 axpos	N	aperture
+7.8	0.55	1.3771	7.8
+6.5	3.05	1.3374	7.8
+0	0	0	10.2
+10.2	4	1.42	10.2
+-6	0	1.336	6

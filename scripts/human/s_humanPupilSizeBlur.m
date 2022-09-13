@@ -16,10 +16,10 @@
 % But the degradation that we use is not pupil size dependent.  This is a
 % significant limitation in the accuracy of the model.  In fact, for an
 % idealized eye as the pupil size grows, the linespread will sharpen
-% because there is less diffraction to contend with.  In the real eye,
+% because there is less diffraction to contend with.  In the real eye
 % however, the data go in the other direction.  As the pupil size grows the
 % eye's aberrations play a larger role and there is degradation of the
-% linespread.  
+% linespread.
 %
 % Hence, the model we use here and in humanCore isn't handling pupil radius
 % correctly (demonstrated in the calculations). The data are not bad around
@@ -51,14 +51,14 @@ for thisWave = [450,550]
     fig = vcNewGraphWin;
     idx = (thisWave - wave(1))/wStep + 1;
     plot(xDim,lsfSmallPupil(idx,:),'r--',xDim,lsfBigPupil(idx,:),'b-');
-
+    
     xlabel('Spatial position (um)');
     ylabel('Relative intensity');
-
+    
     legend(sprintf('Diam = %.1f mm',2*p1*10^3),sprintf('Diam = %.1f mm',2*p2*10^3));
     title(sprintf('Line spread %.0f nm',wave(idx)));
     grid on
-
+    
 end
 
 % Note that the LSF of the larger pupil size is sharper than the smaller

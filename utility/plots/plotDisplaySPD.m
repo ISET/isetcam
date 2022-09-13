@@ -1,6 +1,6 @@
 function hdl = plotDisplaySPD(vci)
 %Plot the spectral power distribution of the display primaries
-%  
+%
 %  hdl = plotDisplaySPD(vci)
 %
 % See Also: plotDisplayGamut

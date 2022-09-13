@@ -4,12 +4,12 @@ function t = imageIncreaseImageRGBSize(im,s)
 %    t = imageIncreaseImageRGBSize(im,s)
 %
 % The parameter s is the scale factor.  If the input image is [1,1,w], the
-% output image is [s, s, w].   
-%  
+% output image is [s, s, w].
+%
 % Example:
 %    [img,p] = imageHarmonic;
 %    t = imageIncreaseImageRGBSize(img,3);
-%    imagesc(t); colormap(gray)
+%    imagesc(t); colormap(gray(64))
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
@@ -18,7 +18,7 @@ function t = imageIncreaseImageRGBSize(im,s)
 %
 % if ndims(im)~=3,  error('Input must be rgb image (row x col x w)'); end
 
-if ndims(im) == 3 
+if ndims(im) == 3
     w = size(im,3);
 elseif (ndims(im) == 2)
     w = 1;

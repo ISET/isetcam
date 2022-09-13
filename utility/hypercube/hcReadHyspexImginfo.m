@@ -2,7 +2,7 @@ function info = hcReadHyspexImginfo(filename)
 %Read ENVI image header files
 %
 %   info = hcReadHyspexImginfo(filename)
-% 
+%
 %   Reads the ENVI image header information to a struct in info. If
 %   filename is not a headerfile with extension .hdr, the extension is
 %   changed to .hdr the resulting file is assumed to exist.
@@ -40,7 +40,7 @@ while ~feof(fid)
     line_num = line_num + 1;
     
     % It's simple if no brackets are used.
-    if isempty(findstr(curr_line,'{'))
+    if isempty(strfind(curr_line,'{'))
         match = regexp(curr_line,'(?<var>.+)\s*=\s*(?<val>.+)\>','names');
         
         if ~isempty(match)
@@ -51,13 +51,13 @@ while ~feof(fid)
             if ~isempty(numval)
                 val = numval;
             end
-    
+            
             info.(field) = val;
         else
             warning(['Ignored line ' num2str(line_num)]);
         end
-    % When brackets are used, we need to read each element, possibly on
-    % several lines.
+        % When brackets are used, we need to read each element, possibly on
+        % several lines.
     else
         % Match variable name.
         match = regexp(curr_line,'(?<var>.+)\s*=\s*{(?<vals>.[^}]+)?\s*}?\s*','names');
@@ -70,14 +70,14 @@ while ~feof(fid)
             vals = {match.vals};
         end
         
-        while isempty(findstr(curr_line,'}'))
+        while isempty(strfind(curr_line,'}'))
             curr_line = fgetl(fid);
             line_num = line_num + 1;
             
             match = regexp(curr_line,'\s*(?<vals>.[^}]+)\s*}?\s*','names');
             vals = [vals match.vals];
         end
-
+        
         % Extract each element.
         if ~strcmpi(field,'description')
             vals = [vals{:}];
@@ -95,12 +95,12 @@ while ~feof(fid)
                     all_nums = 0;
                 end
             end
-                
+            
             if all_nums
                 vals = cell2mat(num_vals);
             end
         end
-            
+        
         info.(field) = vals;
     end
 end
@@ -109,7 +109,7 @@ fclose(fid);
 
 % Convert to Matlab.
 fields = fieldnames(info);
-    
+
 if any(strcmpi(fields,'data_type'))
     switch info.data_type
         case 1
@@ -123,10 +123,10 @@ if any(strcmpi(fields,'data_type'))
         case 5
             info.data_type = 'float64';
         case 6
-            info.data_type = 'float32'; 
+            info.data_type = 'float32';
             warning('Data type "2*32 bit complex" not supported by Matlab!');
         case 9
-            info.data_type = 'float64'; 
+            info.data_type = 'float64';
             warning('Data type "2*64 bit complex" not supported by Matlab!');
         case 12
             info.data_type = 'uint16=>uint16';
@@ -140,7 +140,7 @@ if any(strcmpi(fields,'data_type'))
             warning('Data type not supported!');
     end
 end
-        
+
 if any(strcmpi(fields,'byte_order'))
     switch info.byte_order
         case 0

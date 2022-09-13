@@ -1,10 +1,10 @@
 %% Script for testing the oiPlot routine
 
-%% 
+%%
 ieInit;
 
 %% Initialize the oi structure
-scene = sceneCreate; 
+scene = sceneCreate;
 scene = sceneSet(scene,'fov',4);
 oi = oiCreate; oi = oiCompute(oi,scene);
 

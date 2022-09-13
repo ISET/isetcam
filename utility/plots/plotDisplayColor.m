@@ -1,7 +1,7 @@
 function [uData, figHdl] = plotDisplayColor(ip,dataType)
 % Plots for ip (image processor) window color analysis
 %
-% NOTE:  Use ipPlot rather than calling this routine directly.  It will be 
+% NOTE:  Use ipPlot rather than calling this routine directly.  It will be
 %        renamed to displayPlotColor() some day.
 %
 % Syntax:
@@ -34,7 +34,7 @@ function [uData, figHdl] = plotDisplayColor(ip,dataType)
 %
 % ieExamplesPrint('plotDisplayColor')
 %
-% See also:  
+% See also:
 %  plotDisplayGamut
 
 % Examples:
@@ -68,7 +68,7 @@ switch lower(dataType)
         colorlist = {'r','g','b'};
         for ii=1:3
             % The individual panels
-            subplot(1,3,ii); 
+            subplot(1,3,ii);
             nBins = round(max(20,size(RGB,1)/25));
             thisH = histogram(RGB(:,ii),nBins);
             thisH.FaceColor = colorlist{ii};
@@ -81,7 +81,7 @@ switch lower(dataType)
         mn = mean(RGB);
         title(sprintf('RGB histograms; mean = (%.1f,%.1f,%.1f)',mn(1),mn(2),mn(3)));
         uData.RGB = RGB;
-
+        
     case {'rgb3d'}
         plot3(RGB(:,1),RGB(:,2),RGB(:,3),'.');
         xlabel('R'); ylabel('G'); zlabel('B');
@@ -95,16 +95,16 @@ switch lower(dataType)
         
         % Gray background, res of 256, do not start a new figure
         chromaticityPlot(xy,'gray',256,false);
-
+        
         % plotSpectrumLocus(figNum); hold on;
         hold on
-        plot(xy(:,1),xy(:,2),'ko'); 
+        plot(xy(:,1),xy(:,2),'ko');
         grid on;
         
         title('CIE (1931) chromaticities');
         xlabel('x-chromaticity'); ylabel('y-chromaticity');
         axis square;
-
+        
         meanXYZ = mean(dataXYZ);
         
         txt = sprintf(' Mean XYZ \nX = %.02f\nY = %.02f\nZ = %.02f',meanXYZ(1),meanXYZ(2),meanXYZ(3));
@@ -124,7 +124,7 @@ switch lower(dataType)
         stdL = std(luminance);
         txt = sprintf('Mean: %.02f\nSD:   %.03f\nSNR (db)=%.03f',mnL,stdL,20*log10(mnL/stdL));
         plotTextString(txt,'ul');
-
+        
         uData.luminance = luminance;
         uData.meanL = mnL;
         uData.stdLum = stdL;
@@ -153,7 +153,7 @@ switch lower(dataType)
         plot3(dataLUV(:,2), dataLUV(:,3),dataLUV(:,1),'o');
         grid on; axis square
         set(gca,'xlim',[-100 100],'ylim',[-100 100],'zlim',[0,100]);
-
+        
         xlabel('u*'); ylabel('v*'); zlabel('L*');
         title('CIELUV values of selected region');
         

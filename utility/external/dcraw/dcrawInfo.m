@@ -11,7 +11,7 @@ function rawInfo = dcrawInfo(fname)
 %
 % See also:
 %   dcrawInit
-% 
+%
 
 % Check inputs
 if notDefined('fname'), error('file name required'); end

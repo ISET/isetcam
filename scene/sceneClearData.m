@@ -1,5 +1,5 @@
 function scene = sceneClearData(scene)
-%  Clear the scene data entries. 
+%  Clear the scene data entries.
 %
 %   scene = sceneClearData(scene)
 %

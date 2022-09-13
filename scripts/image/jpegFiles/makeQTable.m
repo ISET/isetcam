@@ -15,11 +15,11 @@ function [coefScaleFactor, compressionFactor] = makeQTable(halfMax)
 
 nBits = zeros(8,8);
 for i=1:8
- for j=1:8
-%  nBits(i,j) = 8 - (i^2 + j^2)^0.5;
-   d = i^2 + j^2;
-  nBits(i,j) = 8 -  ( (8*d) / (d + halfMax));
- end
+    for j=1:8
+        %  nBits(i,j) = 8 - (i^2 + j^2)^0.5;
+        d = i^2 + j^2;
+        nBits(i,j) = 8 -  ( (8*d) / (d + halfMax));
+    end
 end
 ma = mmax(nBits);
 mn = mmin(nBits);

@@ -7,7 +7,7 @@ function [srgb,lrgb,maxY] = xyz2srgb(xyz)
 % Brief description:
 %  The CIE XYZ values are converted to sRGB values. Both input XYZ and
 %  output srgb are in RGB Format (row, col, nWave), where nWave is 3 in
-%  this case. 
+%  this case.
 %
 % Inputs
 %   xyz - An RGB format matrix, (row,col,3) containing the X,Y, and Z
@@ -21,7 +21,7 @@ function [srgb,lrgb,maxY] = xyz2srgb(xyz)
 %   lrgb - The linear RGB portion of the sRGB standard
 %   maxY - The brightest Y value in the original, which is used to
 %      scale the XYZ image so that it is within the [0,1] range as
-%      required by the sRGB standard. 
+%      required by the sRGB standard.
 %
 % Description:
 %    The sRGB color space is a display-oriented representation that matches
@@ -53,7 +53,7 @@ function [srgb,lrgb,maxY] = xyz2srgb(xyz)
 %
 %   if you start with XYZ values going to 100 or so, divide them by 100
 %   first, or apply the matrix and then scale by a constant factor to the
-%   [0,1] range).  
+%   [0,1] range).
 %
 % They add
 %
@@ -72,7 +72,7 @@ function [srgb,lrgb,maxY] = xyz2srgb(xyz)
 %% Should do parameter checking here!
 %
 
-%% The matrix converts (R,G,B)*matrix.  
+%% The matrix converts (R,G,B)*matrix.
 
 % This is the transpose of the Wikipedia page.
 matrix = colorTransformMatrix('xyz2srgb');
@@ -86,8 +86,8 @@ matrix = colorTransformMatrix('xyz2srgb');
 % should leave the data alone. If the maximum XYZ value is outside the
 % range, we need to scale. We return the true maximum luminance in the
 % event the user wants to invert, later.
-Y = xyz(:,:,2); maxY = max(Y(:)); 
-if maxY > 1, xyz = xyz/maxY; 
+Y = xyz(:,:,2); maxY = max(Y(:));
+if maxY > 1, xyz = xyz/maxY;
 else, maxY = 1; end
 
 if min(xyz(:)) < 0
@@ -96,7 +96,7 @@ if min(xyz(:)) < 0
 end
 lrgb = imageLinearTransform(xyz, matrix);
 
-% The sRGB values must be clipped to 0,1 range.  
+% The sRGB values must be clipped to 0,1 range.
 % The linear values may be outside the range.  This is also described on
 % the Wikipedia page.
 srgb = lrgb2srgb(ieClip(lrgb,0,1));

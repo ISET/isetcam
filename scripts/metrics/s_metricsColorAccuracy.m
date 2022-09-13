@@ -1,6 +1,6 @@
 %% Evaluate the color accuracy of a camera
 %
-% The camera object is a structure with slots for optics (oi),
+% The camera object is a structure with slots for optics (oi)
 % image sensor (sensor), and image processing pipeline (vci).  We
 % frequently use the camera structure to evaluate whole system
 % properties.
@@ -10,7 +10,7 @@
 %
 % See also:  cameraColorAccuracy, macbethCompareIdeal,
 %            s_metricsAcutance, macbethDrawRects,
-%            imageIncreaseImageRGBSize 
+%            imageIncreaseImageRGBSize
 %
 % Copyright ImagEval Consultants, LLC, 2012.
 
@@ -49,7 +49,7 @@ fprintf('-----\n')
 %{
     pSize = 25;
     deimage = imageIncreaseImageRGBSize(dE,pSize);
-    vcNewGraphWin; imagesc(deimage); colormap(gray)
+    vcNewGraphWin; imagesc(deimage); colormap(gray(64))
     colorbar; axis image; axis off
     title('\DeltaE values')
 %}

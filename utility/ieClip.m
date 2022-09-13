@@ -11,13 +11,17 @@ function im = ieClip(im,lowerBound, upperBound)
 %    ieClip(im,0,[])   sets the lower to 0, no upper bound
 %    ieClip(im)        defaults to 0 1 range
 %    ieClip(im,bound)  sets bound to +/- bound
-% Examples:
-%   im = 2*randn([5,5])
-%   ieClip(im,[],1)
-%   ieClip(im,0,[])
-%   ieClip(im,1.35789)
 %
-% Copyright ImagEval Consultants, LLC, 2003.
+% See also
+%
+
+% Examples:
+%{
+   im = 2*randn([5,5])
+   ieClip(im,[],1)
+   ieClip(im,0,[])
+   ieClip(im,1.35789)
+%}
 
 
 % Set up various

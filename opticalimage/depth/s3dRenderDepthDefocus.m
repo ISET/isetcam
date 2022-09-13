@@ -1,7 +1,7 @@
 function [oi, oiD, D] = s3dRenderDepthDefocus(scene, oi, imgPlaneDist, depthEdges, cAberration)
 %Compute blurred optical image for a scene, optics,and image plane distance
 %
-%  [oi, oiD, D]= s3dRenderDepthDefocus(scene,oi,imgPlaneDist, ... 
+%  [oi, oiD, D]= s3dRenderDepthDefocus(scene,oi,imgPlaneDist, ...
 %                        depthEdges,cAberration)
 %
 % scene:         ISET scene structure
@@ -15,7 +15,7 @@ function [oi, oiD, D] = s3dRenderDepthDefocus(scene, oi, imgPlaneDist, depthEdge
 %  (oiD). We blur with the appropriate OTF for that depth plane.  We add up
 %  the results.
 %
-%  This algorithm fails to account for depth edges properly. At such edges,
+%  This algorithm fails to account for depth edges properly. At such edges
 %  light from the background is inappropriately added to the forward
 %  occluding plane. Fix this.  Perhaps we blur, find the locations that are
 %  spread into the foreground plane, and reduce or zero the photons there.
@@ -23,10 +23,10 @@ function [oi, oiD, D] = s3dRenderDepthDefocus(scene, oi, imgPlaneDist, depthEdge
 % ALTERNATIVE IMPLEMENTATION
 % Another approach is to compute a table of PSFs that depend on wavelength
 % and depth.  This could have the form of a 4D matrix in which
-% (x,y,lambda,depth). 
-%   * The (x,y) dimensions must match the OI spatial dimensions. 
+% (x,y,lambda,depth).
+%   * The (x,y) dimensions must match the OI spatial dimensions.
 %   * For each scene point we form a (x,y,lambda) matrix that is
-% interpolated from the depth dimension.  
+% interpolated from the depth dimension.
 %   * We then compute a weighted sum of these, where the weights are the
 %   wavelength SPD of the point.  We add these to the output photons.
 %
@@ -35,10 +35,10 @@ function [oi, oiD, D] = s3dRenderDepthDefocus(scene, oi, imgPlaneDist, depthEdge
 % Copyright, Stanford, 2011
 
 if ieNotDefined('scene'), error('Scene required'); end
-if ieNotDefined('oi'),    error('oi required'); else optics =  oiGet(oi,'optics');end  
+if ieNotDefined('oi'),    error('oi required'); else optics =  oiGet(oi,'optics');end
 if ieNotDefined('imgPlaneDist')
     optics = oiGet(oi,'optics');
-    imgPlaneDist = opticsGet(optics,'focal length'); 
+    imgPlaneDist = opticsGet(optics,'focal length');
 end
 
 % Set up the depthCenters and Edges
@@ -64,7 +64,7 @@ if ieNotDefined('cAberration'), cAberration = zeros(length(wave),1); end
 % defocus uses the imgPlaneDist, which may not be equal to the focal
 % length.
 D = opticsDepthDefocus(depthCenters,optics,imgPlaneDist);
-% vcNewGraphWin; 
+% vcNewGraphWin;
 % plot(depthCenters,D); xlabel('Object distance (m)'); ylabel('Defocus (diopters)')
 
 % Figure out how many deg per samples.  We use the scene, rather than the
@@ -83,7 +83,7 @@ oiD = cell(1,length(depthCenters));
 %% From the furthest distance to the nearest distance.
 cnt = 0;
 for dd = length(depthCenters):-1:1
-
+    
     cnt = cnt+1;
     fprintf('Depth %.2f Defocus %.2f (%d of %d)\n',depthCenters(dd),D(dd),cnt,length(depthCenters));
     
@@ -91,7 +91,7 @@ for dd = length(depthCenters):-1:1
     defocus = cAberration + ones(size(cAberration))*D(dd);
     
     % Here, we build up the OI
-    % The returned otf is otf(wave,sf) 
+    % The returned otf is otf(wave,sf)
     [otf, sampleSFmm] = opticsDefocusCore(optics,sampleSF,defocus);
     % mesh(sampleSFmm,wave,abs(otf))
     

@@ -1,6 +1,6 @@
 %% v_extHistcn
 %
-% Test the 2D histogram image function histcn
+% Test the 2D histogram image function histcn and scatplot
 %
 % This function probably has more capabilities.  For now we use it for
 % taking a scatter plot and turning it into an image.
@@ -22,7 +22,7 @@ X = double([r(:), g(:)]);
 
 vcNewGraphWin;
 imagesc(mid{1:2},N(:,:));
-axis xy; colormap(hot); colorbar
+axis xy; colormap(hot(64)); colorbar
 xlabel('Red channel'); ylabel('Green channel')
 title(sprintf('%s: Channel image histogram',fname))
 
@@ -34,12 +34,13 @@ X = double([r(:), b(:)]);
 
 vcNewGraphWin;
 imagesc(mid{1:2},N(:,:));
-axis xy; colormap(hot); colorbar
+axis xy; colormap(hot(64)); colorbar
 xlabel('Red channel'); ylabel('Blue channel')
 title(sprintf('%s: Channel image histogram',fname))
 
-%% Now call ieHistImage, which relies on this function
+%% Now call ieHistImage, which relies on histcn
 
-img = ieHistImage(X);
+img = ieHistImage(X,'hist type','histcn');
 
 %%
+img = ieHistImage(X,'hist type','scatplot');

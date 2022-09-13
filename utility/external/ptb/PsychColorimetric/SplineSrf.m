@@ -18,6 +18,6 @@ function [srf_out] = SplineSrf(wls_in, srf_in, wls_out, extend)
 % 8/13/11 dhb  Update comment to reflect changes in SplineRaw.
 
 if (nargin < 4)
-	extend = [];
+    extend = [];
 end
 srf_out = SplineRaw(wls_in,srf_in,wls_out,extend);

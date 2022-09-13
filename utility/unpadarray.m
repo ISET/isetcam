@@ -2,7 +2,7 @@ function outArray = unpadarray(inArray,unpadSize)
 % Inverts padarray.  Not much tested yet.  Work on it.
 %
 % Roughly an inverse.  Tested quite thoroughly.  Hmmm.
-% 
+%
 %
 
 if ieNotDefined('inArray'), error('Input array required'); end

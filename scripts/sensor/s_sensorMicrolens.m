@@ -23,7 +23,7 @@ scene = sceneCreate; ieAddObject(scene);
 
 oi = oiCreate; ieAddObject(oi);
 
-% Create a sensor with default properties.  
+% Create a sensor with default properties.
 sensor = sensorCreate;
 mlens = mlensCreate(sensor,oi);
 sensor = sensorSet(sensor,'microlens',mlens);
@@ -64,7 +64,7 @@ title('Microlens placed optimally on each pixel')
 %% Here is the optimal offset calculation
 
 cra       = sensorGet(sensor,'cra degrees');  % Chief ray angle
-rayAngles = linspace(0,max(cra(:)),10);       % How many angles to sample 
+rayAngles = linspace(0,max(cra(:)),10);       % How many angles to sample
 
 mlens  = sensorGet(sensor,'microlens');
 pixel  = sensorGet(sensor,'pixel');

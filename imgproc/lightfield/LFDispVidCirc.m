@@ -1,43 +1,43 @@
 % LFDispVidCirc - visualize a 4D light field animating a circular path through two dimensions
-% 
-% Usage: 
-% 
+%
+% Usage:
+%
 %     FigureHandle = LFDispVidCirc( LF )
 %     FigureHandle = LFDispVidCirc( LF, PathRadius_percent, FrameDelay )
 %     FigureHandle = LFDispVidCirc( LF, PathRadius_percent, FrameDelay, ScaleFactor )
 %     FigureHandle = LFDispVidCirc( LF, [], [], ScaleFactor )
-% 
-% 
+%
+%
 % A figure is set up for high-performance display, with the tag 'LFDisplay'. Subsequent calls to
 % this function and LFDispVidCirc will reuse the same figure, rather than creating a new window on
 % each call. All parameters except LF are optional -- pass an empty array "[]" to omit an optional
 % parameter.
-% 
-% 
+%
+%
 % Inputs:
-% 
+%
 %     LF : a colour or single-channel light field, and can a floating point or integer format. For
 %          display, it is converted to 8 bits per channel. If LF contains more than three colour
 %          channels, as is the case when a weight channel is present, only the first three are used.
-% 
-% Optional Inputs: 
-% 
+%
+% Optional Inputs:
+%
 %     PathRadius_percent : radius of the circular path taken by the viewpoint. Values that are too
 %                          high can result in collision with the edges of the lenslet image, while
 %                          values that are too small result in a less impressive visualization. The
 %                          default value is 60%.
-% 
+%
 %             FrameDelay : sets the delay between frames, in seconds. The default value is 1/60th of
 %                          a second.
-% 
+%
 %            ScaleFactor : Adjusts the size of the display -- 1 means no change, 2 means twice as
 %                          big, etc. Integer values are recommended to avoid scaling artifacts. Note
 %                          that the scale factor is only applied the first time a figure is created.
 %                          To change the scale factor, close the figure before calling
 %                          LFDispMousePan.
-% 
+%
 % Outputs:
-% 
+%
 %     FigureHandle
 %
 %
@@ -98,19 +98,19 @@ end
 close(FigureHandle);
 
 %% See if the escape key has been pressed
-function val = showTest(figh)
-val = true;
-k = get(figh, 'CurrentKey');
-switch k
-    case 'escape'
-        % When the user presses escape, we return an exit flag
-        val = false;
-    otherwise
-        return;
-end
-% get(figh, 'CurrentCharacter')
-% get(figh, 'CurrentModifier')
-end
+    function val = showTest(figh)
+        val = true;
+        k = get(figh, 'CurrentKey');
+        switch k
+            case 'escape'
+                % When the user presses escape, we return an exit flag
+                val = false;
+            otherwise
+                return;
+        end
+        % get(figh, 'CurrentCharacter')
+        % get(figh, 'CurrentModifier')
+    end
 
 end
 

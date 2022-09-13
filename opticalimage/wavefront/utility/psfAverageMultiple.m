@@ -28,7 +28,7 @@ averagePSF = mean(inputPSFs,3);
 if (nargin < 2 || isempty(CHECKINSFDOMAIN))
     CHECKINSFDOMAIN = 0;
 end
-    
+
 if (CHECKINSFDOMAIN)
     nInputs = size(inputPSFs,3);
     inputOTFs = zeros(size(inputPSFs));

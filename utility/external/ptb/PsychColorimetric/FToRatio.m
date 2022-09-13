@@ -13,9 +13,9 @@ ratio = zeros(m,n);
 hIndex = find( F > 0.206893);
 lIndex = find( F <= 0.206893);
 if (~isempty(hIndex))
-  ratio(hIndex) = F(hIndex).^3.0;
+    ratio(hIndex) = F(hIndex).^3.0;
 end
 if (~isempty(lIndex))
-  ratio(lIndex) = (F(lIndex)-(16.0/116.0)*ones(length(lIndex),1))/7.787;
+    ratio(lIndex) = (F(lIndex)-(16.0/116.0)*ones(length(lIndex),1))/7.787;
 end
-  
+

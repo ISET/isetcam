@@ -8,7 +8,7 @@ function scene = sceneInterpolateW(scene,newWave,pLum)
 %
 % scene:   Input scene
 % newWave: Wavelengths of the output scene (interpolated)
-% pLum:    Preserve the luminance (1, default) 
+% pLum:    Preserve the luminance (1, default)
 %
 % We do not think you should be extrapolating.  We alert you if the newWave
 % is outside of the range of the current scene wavelengths.
@@ -71,7 +71,7 @@ end
 %% Get current data and parameters
 photons = sceneGet(scene,'photons');
 if ~isempty(photons) && pLum
-    meanL   = sceneGet(scene,'mean luminance'); 
+    meanL   = sceneGet(scene,'mean luminance');
 end
 
 il = sceneGet(scene,'illuminant');
@@ -98,7 +98,7 @@ if ~isempty(photons)
     % Not sure how big we should allow this to be
     if r*c*w < (640*640*31)
         % This is wavelength x space, rather than XW as usual
-        photons    = RGB2XWFormat(photons)';     
+        photons    = RGB2XWFormat(photons)';
         newPhotons = interp1(curWave,photons,waveSpectrum.wave, 'linear')';
         % Replaced 2013.09.29 for speed
         % newPhotons = interp1(curWave,photons,...
@@ -124,7 +124,7 @@ if ~isempty(photons)
     
     % Calculate and store the scene luminance
     % scene = sceneSet(scene,'luminance',sceneCalculateLuminance(scene));
-
+    
 end
 if showBar, close(h); end
 

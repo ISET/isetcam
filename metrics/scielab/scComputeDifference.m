@@ -18,7 +18,7 @@ function result = scComputeDifference(xyz1,xyz2,whitePt,deltaEVer)
 % It is also possible to request the luminance, chrominance, or hue errors
 % that go into the computation of the dE 2000.  This are returned if you
 % ask for deltaEVer = 'chrominance' or deltaEVer = 'luminance' or deltaEVer
-% = 'hue'. These components are always based on the CIELAB 2000 code. 
+% = 'hue'. These components are always based on the CIELAB 2000 code.
 %
 % If you would like both the deltaE and the components, you cans set
 % deltaEVer to 'all'.  Then result.dE will be the deltaE and
@@ -46,7 +46,7 @@ end
 switch deltaEVer
     case {'2000','1994','1976'}
         result = deltaEab(xyz1, xyz2, whitePt, deltaEVer);
-
+        
     case {'luminance','chrominance','hue'}
         [result, components] = deltaEab(xyz1, xyz2, whitePt, deltaEVer);
         if strcmpi(deltaEVer,'luminance'), result = components.dL;

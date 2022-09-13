@@ -8,14 +8,14 @@ function [scene,fullName] = sceneSPDScale(scene,fullName,op,skipIlluminant)
 %  the scene. The data in the file fullName are assumed to represent a
 %  spectral distribution in energy units. Hence, if you send in data with
 %  all 1's in the energy term, the returned values will be  unchanged.
-%  
+%
 %  The fullName parameter:
 %
 %  Ordinarily, the term for multiplying is contained in a file, fullName.
 %  This file has data in units of energy.  The data are interpolated
 %  according to the information in scene.
 %
-%  If fullname is not passed in , the user is asked to select the file.  
+%  If fullname is not passed in , the user is asked to select the file.
 %  The parameter op is set to '/', '*','+', or '-' to specify the
 %  operation.  The routine name should be changed to sceneSPDOp or
 %  something.
@@ -33,10 +33,10 @@ function [scene,fullName] = sceneSPDScale(scene,fullName,op,skipIlluminant)
 %  with the photon data in scene.  The values are in energy units because
 %  that is the way most of the official formulae and data are provided by
 %  standards organizations.
-%  
+%
 % N.B. Please note this feature of photon/energy units.  If you wish to use
 % a divisor that is all 1's photon units, the data will be changed. The 1's
-% in photons are not 1's in energy. 
+% in photons are not 1's in energy.
 %
 % Example
 %   [scene,fullName] = sceneSPDScale(scene,'D65','*');
@@ -95,7 +95,7 @@ switch op
             illE = sceneGet(scene,'illuminant energy');
             illE = illE(:)./spd(:);
         end
-
+        
     case {'multiply','*'}
         % for ii=1:nWave
         %     energy(:,:,ii) = energy(:,:,ii)*spd(ii);
@@ -108,7 +108,7 @@ switch op
             end
             illE = illE(:).*spd(:);
         end
-
+        
     case {'add','+','sum', 'plus'}
         energy = bsxfun(@plus, energy, reshape(spd, [1 1 nWave]));
     case {'subtract','-', 'minus'}

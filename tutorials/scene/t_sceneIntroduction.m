@@ -19,13 +19,13 @@
 %
 % The scene describes the spectral radiance field.  For the present
 % tutorial we  work with a simple planar radiance image, such as the image
-% on a display surface.  
+% on a display surface.
 %
 % We have substantially extended ISETCam for implementations for 3D scenes
-% in the github repository (iset3d).  
+% in the github repository (iset3d).
 %
 % *Note*
-% 
+%
 % * Use t_<TAB> to see the list of ISET tutorials
 % * Use s_<TAB> to see the list of ISET scripts.
 %
@@ -35,10 +35,10 @@
 %
 % * <http://www.mathworks.com/help/matlab/matlab_oop/getting-familiar-with-classes.html Matlab classes>
 % * <http://en.wikipedia.org/wiki/Scene_(perception) scenes in perception>
-%  
-% *See also* 
+%
+% *See also*
 %  sceneFromFile, sceneGet, sceneSet, scenePlot, sceneCreate,
-%  t_IntroductionOI.m  
+%  t_IntroductionOI.m
 %
 
 %%
@@ -51,7 +51,7 @@ ieInit
 
 % ISET sceneCreate builds a number of predefined scenes
 % You can see the range of possibilities by typing
-%    
+%
 %  *help sceneCreate* , or
 %  *doc sceneScreate*
 %
@@ -78,7 +78,7 @@ sceneWindow;
 %
 %   sceneWindow(scene);
 %
-% is equivalent to 
+% is equivalent to
 %
 %   ieAddObject(scene); sceneWindow;
 %
@@ -95,6 +95,10 @@ scene = sceneSet(scene,'hfov',0.5);  % In degrees of visual angle
 
 % Confirm that the set worked
 hFOV  = sceneGet(scene,'hfov')
+
+% Show the changes in the window.
+ieReplaceObject(scene);
+sceneWindow;
 
 %% Philosophical interlude - programming issues
 % There are always more parameters to "get" than are to "set".  This is

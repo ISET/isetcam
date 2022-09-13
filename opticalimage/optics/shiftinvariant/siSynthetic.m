@@ -1,5 +1,5 @@
 function optics = siSynthetic(psfType,oi,varargin)
-%Create synthetic shift-invariant optics 
+%Create synthetic shift-invariant optics
 %
 %  optics = siSynthetic(psfType,oi,varargin)
 %
@@ -8,11 +8,11 @@ function optics = siSynthetic(psfType,oi,varargin)
 %
 % By default, the optics (custom) fields are filled in using simple values.
 %
-% psfType:  'gaussian' --  bivariate normals.  
+% psfType:  'gaussian' --  bivariate normals.
 %           'custom'   --  read a file with variables explained below
 % oi:        Optical image
 %
-% varargin for gaussian:                        
+% varargin for gaussian:
 %   waveSpread: size of the PSF spread at each of the wavelength
 %             for gaussian this is in microns (um)
 %   xyRatio:   Ratio of spread in x and y directions
@@ -41,12 +41,12 @@ function optics = siSynthetic(psfType,oi,varargin)
   xyRatio = 2*ones(1,length(wave));
   optics = siSynthetic(psfType,oi,waveSpread,xyRatio);
   psfMovie(optics,ieNewGraphWin);
-%}  
+%}
 %{
 % Convert a custom file to an optics structure
 %  ieSaveSIOpticsFile(rand(128,128,31),(400:10:700),[0.25,0.25],'custom.mat');
 %  inFile = 'custom'; outFile = 'deleteMe.mat'
-%  optics = siSynthetic('custom',oi,'custom',[]);  
+%  optics = siSynthetic('custom',oi,'custom',[]);
 %}
 %{
 %  optics = siSynthetic('custom',oi,inFile,outFile);
@@ -78,13 +78,13 @@ switch lower(psfType)
         xSpread = varargin{1};    % Spread is in units of um here
         xyRatio = varargin{2};
         ySpread  = xSpread(:) .* xyRatio(:);
-        if length(varargin) == 3, outFile = varargin{3}; 
+        if length(varargin) == 3, outFile = varargin{3};
         else, outFile = []; end
         
         % Convert spread from microns to millimeters because OTF data are stored in
         % line pairs per mm
-        xSpread = xSpread/1000;  ySpread = ySpread/1000;
-
+        xSpread = double(xSpread/1000);  ySpread = double(ySpread/1000);
+        
         for jj = 1:nWave
             % We convert from spread in mm to spread in samples for the
             % biNormal calculation.
@@ -94,12 +94,12 @@ switch lower(psfType)
             OTF(:,:,jj) = fft2(psf);
         end
     case 'custom'
-        %% Get PSF data 
+        %% Get PSF data
         if isempty(varargin)
             % Find a file by asking user
             inFile = ...
                 vcSelectDataFile('stayPut','r','mat','Select custom SI optics');
-            if isempty(inFile) 
+            if isempty(inFile)
                 disp('User canceled'); optics = []; return;
             end
         elseif ischar(varargin{1})
@@ -124,7 +124,7 @@ switch lower(psfType)
         
         % Check the parameters for consistency
         [m,n,nWave] = size(psfIn);
-        if length(wave) ~= nWave 
+        if length(wave) ~= nWave
             error('Mis-match between wavelength and psf');
         end
         if m ~= nSamples || n ~= nSamples
@@ -132,14 +132,14 @@ switch lower(psfType)
         end
         
         
-        %% OTF computation 
+        %% OTF computation
         
-        % This is the sampling grid of the psfIn.  
-        % Units are in mm.  
+        % This is the sampling grid of the psfIn.
+        % Units are in mm.
         x = (1:n)*mmPerSamp(2); x = x - mean(x(:));
         y = (1:m)*mmPerSamp(1); y = y - mean(y(:));
         [xInGrid, yInGrid] = meshgrid(x,y);
-
+        
         xOut = (1:nSamples)*dx(2); xOut = xOut - mean(xOut(:));
         yOut = (1:nSamples)*dx(1); yOut = yOut - mean(yOut(:));
         [xOutGrid, yOutGrid] = meshgrid(xOut,yOut);

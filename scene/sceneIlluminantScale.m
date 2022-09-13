@@ -6,12 +6,12 @@ function scene = sceneIlluminantScale(scene)
 % The illuminant level in photons should be consistent with surface
 % reflectance levels of objects in the scene.  This routine sets the level.
 % We use this as a rough approximation because in many cases we don't know
-% the true illuminant everywhere.  
+% the true illuminant everywhere.
 %
 % Here, we assign an illuminant radiance level so that in general the
 % formula
 %
-%      sceneRadiance / illuminantRadiance 
+%      sceneRadiance / illuminantRadiance
 %
 % is a reasonable reflectance, where reasonable means 0,1 and where any
 % known reflectance point is correct.  If there is a known reflectance in

@@ -3,16 +3,16 @@ function RGB = FOTarget(pattern,parms)
 %
 %  target = FOTarget(pattern,parms)
 %
-%Purpose: 
+%Purpose:
 %  This target is a black and white image divided into a set of blocks.
 %  Each block has a different spatial frequency pattern at one of several
 %  orientations. The patterns increase in spatial frequency along the
 %  horizontal dimension and change in orientation along  the vertical
 %  dimension. This pattern is well-suited for evaluating demosaicing and
-%  spatial image processing. 
+%  spatial image processing.
 %
 %  The spatial patterns can be either square waves or sinusoids.  At high spatial
-%  frequencies, the optics in a real camera does not produce square waves.  So, 
+%  frequencies, the optics in a real camera does not produce square waves.  So,
 %  in general we recommend using the sinusoidal format for testing.
 %
 %  The detailed parameters of the harmonic patterns and their orientations
@@ -45,24 +45,24 @@ x = [0:blockSize-1]/blockSize;
 ii = 0; im = [];
 
 switch lower(pattern)
-case 'sine'
-    for f=freqs
-        thisBlock = [];
-        for theta = angles
-            thisBlock = [thisBlock, 0.5*(1 + contrast*sin(2*pi*f*(cos(theta)*X + sin(theta)*Y)))];
+    case 'sine'
+        for f=freqs
+            thisBlock = [];
+            for theta = angles
+                thisBlock = [thisBlock, 0.5*(1 + contrast*sin(2*pi*f*(cos(theta)*X + sin(theta)*Y)))];
+            end
+            im = [im ; thisBlock];
         end
-        im = [im ; thisBlock];
-    end
-case 'square'
-    for f=freqs
-        thisBlock = [];
-        for theta = angles
-            thisBlock = [thisBlock, 0.5*(1 + contrast*square(2*pi*f*(cos(theta)*X + sin(theta)*Y)))];
+    case 'square'
+        for f=freqs
+            thisBlock = [];
+            for theta = angles
+                thisBlock = [thisBlock, 0.5*(1 + contrast*square(2*pi*f*(cos(theta)*X + sin(theta)*Y)))];
+            end
+            im = [im ; thisBlock];
         end
-        im = [im ; thisBlock];
-    end
-otherwise
-    error('FOTarget:  Unrecognized pattern');
+    otherwise
+        error('FOTarget:  Unrecognized pattern');
 end
 
 % We prefer the frequency variation from left to right.

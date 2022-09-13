@@ -1,5 +1,5 @@
 function [irradiance, irradianceS] =...
-	WattsToRetIrradiance(relativeSpectrum, relativeSpectrumS, readingInWatts, radiometer)
+    WattsToRetIrradiance(relativeSpectrum, relativeSpectrumS, readingInWatts, radiometer)
 % [irradiance, irradianceS] =...
 %		WattsToRetIrradiance(relativeSpectrum, relativeSpectrumS, readingInWatts, [radiometer])
 %
@@ -8,7 +8,7 @@ function [irradiance, irradianceS] =...
 % of known size.  This is the situation in the apparatus we use in Sterling's lab.
 %	The routine computes the irradiance (watts/um^2-wlinterval) from the relative spectrum
 % (relative power, not relative quanta) and a measurement of the total power in watts,
-% given the radiometer properties specified. 
+% given the radiometer properties specified.
 %
 % Radiometers do not typically have an ideal flat spectral response, and the actual
 % spectral response is often provided as part of the instrument calibration.  In addition,
@@ -20,8 +20,8 @@ function [irradiance, irradianceS] =...
 % the Sterling lab.  This structure also describes the collecting area of the measurement
 % configuration.
 %
-% This routine could be easily modified to deal with a photometric head. 
-% 
+% This routine could be easily modified to deal with a photometric head.
+%
 % Input variables: relativeSpectrum is the relative power as a function of wavelength.
 %                  relativeSpectrumS is the wavelength sampling information for the relativeSpectrum.
 %								   readingInWatts is the total power measured.
@@ -37,28 +37,28 @@ function [irradiance, irradianceS] =...
 
 % Fill in default radiometer properties.
 if (exist('radiometer', 'var') ~= 1 || isempty(radiometer))
-	% Structure containing radiometer calibration information.
-	% The radiometer is calibrated to give the correct
-	% reading in watts when a source with the relative spectrum
-	% refspectrum is used, and that the intrinsic spectral efficiency
-	% of the radiometer is the specified efficiency.
-	%
-	% The data below describe the Sterling Lab's IL1400A, whose reference
-	% spectrum is a HeNe 633 nm line.	
-	radiometer.pinholeDiameter = 1000;														    % um
-	radiometer.efficiencyS = [350 10 46]; 														% nm
-	radiometer.efficiency = [0.264 0.376 0.486 0.584 0.700...
-													0.766 0.804 0.820 0.834 0.864...
-													0.856 0.848 0.830 0.820 0.820...
-													0.820 0.820 0.814 0.804 0.804...
-													0.818 0.856 0.866 0.856 0.820...
-													0.820 0.822 0.822 0.798 0.784...
-													0.790 0.804 0.850 0.880 0.910...
-													0.920 0.930 0.940 0.930 0.930...
-													0.922 0.930 0.932 0.940 0.944 0.948];
-	radiometer.refSpectrumS = [380 1 401];
-	radiometer.refSpectrum = MakeMonoPrimary(633,radiometer.refSpectrumS);
-	radiometer.measurementArea = pi * (radiometer.pinholeDiameter/2)^2;	% um^2
+    % Structure containing radiometer calibration information.
+    % The radiometer is calibrated to give the correct
+    % reading in watts when a source with the relative spectrum
+    % refspectrum is used, and that the intrinsic spectral efficiency
+    % of the radiometer is the specified efficiency.
+    %
+    % The data below describe the Sterling Lab's IL1400A, whose reference
+    % spectrum is a HeNe 633 nm line.
+    radiometer.pinholeDiameter = 1000;														    % um
+    radiometer.efficiencyS = [350 10 46]; 														% nm
+    radiometer.efficiency = [0.264 0.376 0.486 0.584 0.700...
+        0.766 0.804 0.820 0.834 0.864...
+        0.856 0.848 0.830 0.820 0.820...
+        0.820 0.820 0.814 0.804 0.804...
+        0.818 0.856 0.866 0.856 0.820...
+        0.820 0.822 0.822 0.798 0.784...
+        0.790 0.804 0.850 0.880 0.910...
+        0.920 0.930 0.940 0.930 0.930...
+        0.922 0.930 0.932 0.940 0.944 0.948];
+    radiometer.refSpectrumS = [380 1 401];
+    radiometer.refSpectrum = MakeMonoPrimary(633,radiometer.refSpectrumS);
+    radiometer.measurementArea = pi * (radiometer.pinholeDiameter/2)^2;	% um^2
 end
 
 % Spline to common wavelength representation for computations
