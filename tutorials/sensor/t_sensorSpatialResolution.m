@@ -20,7 +20,7 @@ scene = sceneCreate('sweepFrequency');
 % You can set the field of view in a variety of ways to alter the spatial
 % scale of the optical image
 scene = sceneSet(scene,'fov',1);
-ieAddObject(scene); sceneWindow;
+sceneWindow(scene);
 
 %% Create an optical image and put it in the optical image window
 oi = oiCreate;
@@ -28,7 +28,7 @@ oi = oiSet(oi,'optics fnumber',4);
 oi = oiSet(oi,'optics focal Length',0.004);
 
 oi = oiCompute(scene,oi);
-ieAddObject(oi); oiWindow;
+oiWindow(oi);
 
 %% Create a monochrome sensor, and compute the voltage response
 sensor = sensorCreate('monochrome');
@@ -41,34 +41,28 @@ sensorWindow(sensor);
 % scale. First, generate a plot of the voltage across the pixels on the
 % sensor, saving the data in sData.  Choose the middle row.
 row = sensorGet(sensor,'rows'); row = round(row/2);
-[g, sData] = sensorPlotLine(sensor,'h','volts','space',[1,row]);
-if ~isdeployed % close gets an error when we run a Windows EXE
-    close(g);
-end
+[~, sData] = sensorPlotLine(sensor,'h','volts','space',[1,row]);
 
 %% Generate the optical image plot for illuminance
 row   = sceneGet(oi,'rows'); row = round(row/2);
-[oData,g] = oiPlot(oi,'horizontal line illuminance',[1,row]);
-if ~isdeployed % close gets an error when we run a Windows EXE
-    close(g);
-end
+oData = oiPlot(oi,'horizontal line illuminance',[1,row]);
 
 % One set of data is in volts and the other in illuminance.  Normalize them
 % to a common 0,1 range
-sData.normData = ieScale(sData.data,0,1);
+sData.normData = ieScale(sData.pixData,0,1);
 oData.normData = ieScale(oData.data,0,1);
 
 % Now plot the two curves on the same spatial scale, remembering that the
 % pixel position is in the middle.  That is why we take away 1/2 of the
 % pixel width from the pixel position
 % Plot the varying portion
-vcNewGraphWin;
+ieNewGraphWin;
 pSize = sensorGet(sensor,'pixel width','microns');
-plot(sData.pos - pSize/2,sData.normData,'-o', ...
+plot(sData.pixPos - pSize/2,sData.normData,'-o', ...
     oData.pos-1,oData.normData,'-x')
 set(gca,'xlim',[-40 40])
 xSpacing = 10*pSize;
-xtick = min(sData.pos):xSpacing:max(sData.pos);
+xtick = min(sData.pixPos):xSpacing:max(sData.pixPos);
 set(gca,'xtick',xtick); grid on; title('Coarse pixel')
 
 % Notice the spatial aliasing at the high frequencies.
@@ -85,10 +79,7 @@ sensorWindow(sensorSmall);
 %% Same plotting as above, note the end of the aliasing
 row = sensorGet(sensorSmall,'rows'); row = round(row/2);
 
-[g, sData] = sensorPlotLine(sensorSmall,'h','volts','space',[1,row]);
-if ~isdeployed % close gets an error when we run a Windows EXE
-    close(g);
-end
+[~, sData] = sensorPlotLine(sensorSmall,'h','volts','space',[1,row]);
 
 row = sceneGet(oi,'rows'); row = round(row/2);
 
@@ -96,15 +87,15 @@ row = sceneGet(oi,'rows'); row = round(row/2);
 if ~isdeployed % close gets an error when we run a Windows EXE
     close(g);
 end
-sData.normData = ieScale(sData.data,0,1);
+sData.normData = ieScale(sData.pixData,0,1);
 oData.normData = ieScale(oData.data,0,1);
 pSize = sensorGet(sensorSmall,'pixel width','microns');
 
-vcNewGraphWin;
-plot(sData.pos - pSize/2,sData.normData,'-o', ...
+ieNewGraphWin;
+plot(sData.pixPos - pSize/2,sData.normData,'-o', ...
     oData.pos-1,oData.normData,'-x')
 set(gca,'xlim',[-40 40])
-xtick = min(sData.pos):xSpacing:max(sData.pos);
+xtick = min(sData.pixPos):xSpacing:max(sData.pixPos);
 set(gca,'xtick',xtick); grid on; title('Fine pixel')
 
 %% END

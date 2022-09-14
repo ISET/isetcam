@@ -62,7 +62,7 @@ tList = {'t_oiIntroduction.m','t_opticsImageFormation.m','t_opticsDiffraction.m'
     't_oiRTCompute.m','s_opticsRTGridLines.m','s_opticsRTPSF.m','s_opticsRTPSFView.m',...
     's_opticsRTSynthetic.m','t_opticsBarrelDistortion.m','s_opticsDepthDefocus.m'};
 iePublish(tList,'oi');
-disp('OI is done');
+disp('OI is done');u
 %% Sensor
 chdir(tHome);
 
@@ -80,7 +80,11 @@ disp('Sensor is done')
 
 %% image processing
 chdir(tHome);
-tList = {'t_ip.m','t_ipDemosaic.m','t_ipJPEGMonochrome.m','t_ipJPEGcolor.m'};
+tList = {'t_ip.m','t_ipDemosaic.m',...
+    's_ipCircleMTF.m','s_ipDisplayResolution.m',...
+    's_ipIlluminantCorrection.m','s_ipSensorConversion.m','s_ipHC2RGB',...
+    's_ipGamutReflectance.m','s_ipSRGB.m',...
+    't_ipJPEGMonochrome.m','t_ipJPEGcolor.m','s_ipWrite.m'};
 iePublish(tList,'ip');
 disp('IP is done');
 
@@ -89,7 +93,7 @@ chdir(tHome);
 
 % Problem with publish and't_cielabEllipsoids.m'
 tList = {'t_colorEnergyQuanta.m','t_colorSpectrum.m','t_colorMatching.m',...
-    't_colorMetamerism.m',...
+    't_colorMetamerism.m','t_cielabEllipsoids.m',...
     's_colorIlluminantTransforms.m','t_cieChromaticity.m'};
 iePublish(tList,'color');
 disp('Color is done');

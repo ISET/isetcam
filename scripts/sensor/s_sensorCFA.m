@@ -44,7 +44,7 @@ camera = cameraCompute(camera,'oi');
 cameraWindow(camera,'sensor');
 
 %% Adjust the sensor to a different type
-cmySensor = sensorCreate('cmy');
+cmySensor = sensorCreate('ycmy');
 cmySensor = sensorSet(cmySensor,'fov',fov,cameraGet(camera,'oi'));
 cmySensor = sensorSet(cmySensor,'name','cmy');
 

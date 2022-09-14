@@ -46,7 +46,7 @@ html       = p.Results.html;
 styleSheet = p.Results.stylesheet;
 
 %% Change into the directory for this section
-if ~exist(section,'dir')
+if ~exist(fullfile(pwd,section),'dir')
     mkdir(section); 
     fprintf('Created directory %s in %s\n',section,pwd); 
 end
