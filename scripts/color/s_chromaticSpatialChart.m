@@ -8,6 +8,10 @@
 %  There are various interesting perceptual effects.
 %  Make a sweep frequency across the rows
 %
+%  If you walk about 3-5 m from the screen, you no longer see the
+%  color variation down the rows.
+%
+% See also
 %
 
 %% Parameters

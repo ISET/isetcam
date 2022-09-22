@@ -30,7 +30,7 @@ ip = ipCreate;
 ip = ipSet(ip,'input',sensorGet(sensor,'volts'));
 demosaicedImage = Demosaic(ip,sensor);
 
-figNum =  ieNewGraphWin;
+ieNewGraphWin;
 
 switch lower(type)
     case 'rg'
@@ -41,7 +41,7 @@ switch lower(type)
         error('Unknown plot type.');
 end
 
-% Make the escatter plot after demosaicing the sensor data
+% Make the scatter plot after demosaicing the sensor data
 d1 = demosaicedImage(:,:,dList(1));
 d2 = demosaicedImage(:,:,dList(2));
 d = sqrt(d1.^2 + d2.^2);

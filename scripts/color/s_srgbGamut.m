@@ -16,8 +16,6 @@
 % See also:
 %     xySRGB    = srgbParameters('val','chromaticity')
 %     adobeSRGB = adobergbParameters('val','chromaticity')
-%
-% Copyright Imageval Consulting, LLC 2016
 
 %% Initialize
 
@@ -144,9 +142,10 @@ line(srgbxy(1,:),srgbxy(2,:),'linewidth',1)
 line(adobergbxy(1,:),adobergbxy(2,:),'color','white','linewidth',2);
 title('Synthetic surfaces under D65')
 
-% vcNewGraphWin;
-% subplot(1,2,1), plot(wave,light); grid on; xlabel('Wavelength (nm)');
-% subplot(1,2,2), plot(wave,reflectances); grid on; xlabel('Wavelength (nm)');
-%
+%{
+ ieNewGraphWin([],'wide');
+ subplot(1,2,1), plot(wave,light); grid on; xlabel('Wavelength (nm)');
+ subplot(1,2,2), plot(wave,reflectances); grid on; xlabel('Wavelength (nm)');
+%}
 
 %%
