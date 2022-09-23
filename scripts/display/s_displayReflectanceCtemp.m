@@ -2,6 +2,9 @@
 %
 % DEBUG:  The scale factor on the illuminant is not quite right
 % the reflectances 
+
+%% Make an sRGB image
+
 scene = sceneCreate('macbeth tungsten');
 oi = oiCreate; oi = oiCompute(oi,scene);
 sensor = sensorCreate; 
@@ -11,6 +14,8 @@ ip = ipCreate;
 ip = ipCompute(ip,sensor);
 
 rgb = ipGet(ip,'srgb');
+
+%% Analyze the sRGB image with the new tools
 
 ctemp = srgb2colortemp(rgb);
 [d,spd,illE] = displayReflectance(ctemp);

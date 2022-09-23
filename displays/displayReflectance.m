@@ -30,18 +30,18 @@ function [theDisplay, rgbPrimaries, illEnergy] = displayReflectance(ctemp)
  
 %}
 
-%%
+%%  Read in the natural surface reflectance basis
+
 wave = 400:1:700;
 basis = ieReadSpectra('reflectanceBasis.mat',wave);
 basis(:,1) = -1*basis(:,1);
 % plotReflectance(wave,basis(:,1:3));
 
-%% Load the standard CIE daylight illuminant
+%% Load the blackbody radiator at the specified color temperature
 
-% Loaded as energy.
 illEnergy = blackbody(wave,ctemp,'energy');
 
-%% Radiance basis - 3D
+%% The spectral radiance basis for this illuminant
 %
 % The radiance basis must be  described by these three columns if the light
 % is D65 and the surfaces are within the space spanned by the first three
@@ -50,9 +50,19 @@ illEnergy = blackbody(wave,ctemp,'energy');
 radianceBasis = diag(illEnergy(:,1))*basis(:,1:3);
 % plotRadiance(wave,radianceBasis);
 
+%% To preserve the reflectance scale, we need to scale the illuminant.
+%
+% In principle, a reflectance of 1's should be represented by a radiance of
+% illEnergy.  How do we set the scale?
+%
+%  reflectanceBasis = diag(1./(illEnergy*(100/peakL))*rgbPrimaries*100/peakL
+%
+illEnergy = illEnergy*(100/peakL);
+
+
 %% Find the sRGB XYZ values
 
-% Suppose a point in the rgb file we read is represented by the row vector,
+% Suppose a point in the rgb file is represented by the row vector,
 %
 %    p = [R,G,B]. 
 %
@@ -60,19 +70,22 @@ radianceBasis = diag(illEnergy(:,1))*basis(:,1:3);
 %
 lrgb2xyz = colorTransformMatrix('lrgb2xyz');
 
-% Transposing the matrix gives us the XYZ values of the XYZ values of the
-% sRGB display in the columns.
+% Transposing the matrix gives us the XYZ values of the sRGB display in the
+% columns.
 %
 lXYZinCols = lrgb2xyz';
 
-%% Find a 3x3 T such that the reflectance display and sRGB primaries match
+%% Find a 3x3 T to match the reflectance display and sRGB primaries
 %
 % The match is with respect to XYZ.  The matrix lXYZinCols has the sRGB
 % primaries in the columns.  So we want T that satisfies
 %
 %    lXYZinCols = XYZ'*radianceBasis*T
 %
-%  We will assign the reflectance-display primaries to be radianceBasis*T
+%  By making the reflectance-display primaries to be radianceBasis*T, the
+%  lRGB (linearized sRGB) values produce a radiance that matches the XYZ
+%  values in the new display that they would have produced in the sRGB
+%  display.
 %
 
 % Read in the XYZ functions with respect to energy.
@@ -89,20 +102,12 @@ theDisplay = displaySet(theDisplay,'wave',wave);
 theDisplay = displaySet(theDisplay,'spd',rgbPrimaries);
 
 %% Set the display to a luminance of 100
-
-peakL = displayGet(theDisplay,'peak luminance');
-
 % Scale the primaries and the illuminant.  Before this scaling,
 %
 %   reflectanceBasis = diag(1./illEnergy)*rgbPrimaries
 %
+peakL = displayGet(theDisplay,'peak luminance');
 theDisplay = displaySet(theDisplay,'spd',rgbPrimaries*(100/peakL));
-
-% To preserve the reflectance
-%
-%  reflectanceBasis = diag(1./(illEnergy*(100/peakL))*rgbPrimaries*100/peakL
-%
-illEnergy = illEnergy*(100/peakL);
 
 %% Set the gamma of the display
 

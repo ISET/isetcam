@@ -73,14 +73,17 @@ lrgb2xyz = colorTransformMatrix('lrgb2xyz');
 %
 lXYZinCols = lrgb2xyz';
 
-%% Find a 3x3 T such that the reflectance display and sRGB primaries match
+%% Find a 3x3 T to match the reflectance display and sRGB primaries
 %
 % The match is with respect to XYZ.  The matrix lXYZinCols has the sRGB
-% primaries in the columns.  So we want T that satisfies
+% primaries in its columns.  We want T that satisfies
 %
 %    lXYZinCols = XYZ'*radianceBasis*T
 %
-%  We will assign the reflectance-display primaries to be radianceBasis*T
+%  By making the reflectance-display primaries to be radianceBasis*T, the
+%  lRGB (linearized sRGB) values produce a radiance that matches the XYZ
+%  values in the new display that they would have produced in the sRGB
+%  display.
 %
 
 % Read in the XYZ functions with respect to energy.
