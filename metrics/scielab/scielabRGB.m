@@ -96,9 +96,6 @@ params.filterversion = 'distribution';
 errorImage = scielab(sceneXYZ1, sceneXYZ2, whiteXYZ, params);
 
 end
-<<<<<<< Updated upstream
-=======
 
->>>>>>> Stashed changes
 
 
