@@ -44,7 +44,7 @@ else
     % Before Matlab caught on, we used this code.
     % Set the white point values
     if   (length(whitepoint)~=3 ), error('whitepoint must be a three vector')
-    else Xn = whitepoint(1); Yn = whitepoint(2); Zn = whitepoint(3);
+    else, Xn = whitepoint(1); Yn = whitepoint(2); Zn = whitepoint(3);
     end
     
     if ndims(xyz) == 3
