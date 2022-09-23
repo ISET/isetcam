@@ -29,6 +29,7 @@
 %   display for other lights or surface basis functions.
 %
 %   See also
+%     displayReflectance.m
 %     reflectanceBasis.mat, reflectance-display.mat
 %
 %% Load the reflectance basis for natural surfaces
@@ -103,6 +104,7 @@ plotRadiance(wave,rgbPrimaries);
 d = displayCreate('default');
 d = displaySet(d,'wave',wave);
 d = displaySet(d,'spd',rgbPrimaries);
+
 displayPlot(d,'spd');
 displayGet(d,'white xy')
 peakL = displayGet(d,'peak luminance');
