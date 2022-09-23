@@ -15,7 +15,7 @@
 %
 % Copyright ImagEval, LLC, 2011
 
-%
+%%
 ieInit
 
 %% Overview of the function call
@@ -26,8 +26,9 @@ file2 = fullfile(isetRootPath, 'data','images','rgb','hatsC.jpg');
 
 % We will treat the two images as if they are on a CRT display seen from 12
 % inches.
-vDist = 0.3;          % 12 inches
+vDist = 0.3;           % 12 inches
 dispCal = 'crt.mat';   % Calibrated display
+% dispCal = displayCreate;   % Calibrated display
 
 %% Spatial scielab reads the files and display
 
@@ -47,7 +48,7 @@ mn = mean(eImage(:));
 assert(abs(mn - 1.5118) < 0.01,'Mean error image is off');
 
 % Show the error image
-vcNewGraphWin; imagesc(eImage)
+ieNewGraphWin; imagesc(eImage)
 colorbar;
 
 % Show the RGB images as scenes. This illustrates how the RGB data were
@@ -113,18 +114,18 @@ params.filters = [];
 mean(errorImage(:))
 
 %% Examining and interpreting the results.
-vcNewGraphWin;
+ieNewGraphWin;
 imagesc(errorImage);
 colorbar('vert');
 title('S-CIELAB error map')
 
-vcNewGraphWin;
+ieNewGraphWin;
 histogram(errorImage(:),100)
 title('S-CIELAB delta E histogram')
 
 %% Examine the SCIELAB spatial filters
 
-f = vcNewGraphWin;
+f = ieNewGraphWin;
 filters = params.filters;   %
 support = params.support;   % Degress
 mx = max(filters{1}(:));
@@ -158,7 +159,7 @@ edgeImage = edge(gImage,'prewitt');
 
 % imshow(edgeImage)
 % imshow(bigErr)
-vcNewGraphWin;
+ieNewGraphWin;
 overlay = 1 + edgeImage + 2*bigErr;
 overlayMap = ...
     [0 0 0;
