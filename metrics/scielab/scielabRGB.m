@@ -98,7 +98,6 @@ params.filters = [];
 params.filterversion = 'distribution';
 errorImage = scielab(sceneXYZ1, sceneXYZ2, whiteXYZ, params);
 
-return;
-
+end
 
 
