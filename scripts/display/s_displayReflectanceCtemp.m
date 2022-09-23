@@ -5,7 +5,10 @@
 
 %% Make an sRGB image
 
-scene = sceneCreate('macbeth tungsten');
+scene = sceneCreate('macbeth d65');
+wave = sceneGet(scene,'wave');
+scene = sceneAdjustIlluminant(scene,blackbody(wave,7000,'energy'),true);
+
 oi = oiCreate; oi = oiCompute(oi,scene);
 sensor = sensorCreate; 
 sensor = sensorSet(sensor,'fov',sceneGet(scene,'fov'),oi);
@@ -23,9 +26,17 @@ ctemp = srgb2colortemp(rgb);
 % Figure out how to scale the illuminant, and then put that into
 % displayReflectance.
 %
-%  newScene = sceneFromFile(rgb,'rgb',100,d);
-%  newScene = sceneSet(newScene,'illuminant energy',illE);
+newScene = sceneFromFile(rgb,'rgb',100,d);
+% sceneWindow(newScene);
 
-newScene = sceneFromFile(rgb,'rgb',100);
+newScene = sceneSet(newScene,'illuminant energy',illE);
+% sceneWindow(newScene);
 
+r = sceneGet(newScene,'reflectance');
+max(r(:))
+newScene = sceneSet(newScene,'illuminant energy',illE*max(r(:)));
 sceneWindow(newScene);
+
+
+
+% newScene = sceneFromFile(rgb,'rgb',100);

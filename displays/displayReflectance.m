@@ -35,8 +35,11 @@ function [theDisplay, rgbPrimaries, illEnergy] = displayReflectance(ctemp)
 wave = 400:1:700;
 basis = ieReadSpectra('reflectanceBasis.mat',wave);
 basis(:,1) = -1*basis(:,1);
-% plotReflectance(wave,basis(:,1:3));
-
+% The weights of the basis for a reflectance of 1's
+% ones = basis*y
+% y = basis(:,1:3)\ones(size(basis,1),1);
+% plotReflectance(wave,basis(:,1:3)*y)
+% plotReflectance(wave,basis(:,1:3))
 %% Load the blackbody radiator at the specified color temperature
 
 illEnergy = blackbody(wave,ctemp,'energy');
@@ -49,15 +52,9 @@ illEnergy = blackbody(wave,ctemp,'energy');
 
 radianceBasis = diag(illEnergy(:,1))*basis(:,1:3);
 % plotRadiance(wave,radianceBasis);
-
-%% To preserve the reflectance scale, we need to scale the illuminant.
+% plotRadiance(wave,sum(radianceBasis,2));
+% plotRadiance(wave,illEnergy)
 %
-% In principle, a reflectance of 1's should be represented by a radiance of
-% illEnergy.  How do we set the scale?
-%
-%  reflectanceBasis = diag(1./(illEnergy*(100/peakL))*rgbPrimaries*100/peakL
-%
-illEnergy = illEnergy*(100/peakL);
 
 
 %% Find the sRGB XYZ values
@@ -70,22 +67,23 @@ illEnergy = illEnergy*(100/peakL);
 %
 lrgb2xyz = colorTransformMatrix('lrgb2xyz');
 
-% Transposing the matrix gives us the XYZ values of the sRGB display in the
-% columns.
+% The transpose of this matrix puts the XYZ values of the sRGB display
+% in the columns.  So the XYZ of (1,0,0) is the first column of
+% lXYZinCols.
 %
 lXYZinCols = lrgb2xyz';
 
-%% Find a 3x3 T to match the reflectance display and sRGB primaries
+%% Find a 3x3 (T) to match the reflectance display and sRGB primaries
 %
 % The match is with respect to XYZ.  The matrix lXYZinCols has the sRGB
 % primaries in the columns.  So we want T that satisfies
 %
 %    lXYZinCols = XYZ'*radianceBasis*T
 %
-%  By making the reflectance-display primaries to be radianceBasis*T, the
-%  lRGB (linearized sRGB) values produce a radiance that matches the XYZ
-%  values in the new display that they would have produced in the sRGB
-%  display.
+%  By making the reflectance-display primaries radianceBasis*T, the
+%  lRGB (linearized sRGB) values produce a radiance whose XYZ values
+%  in the reflectance display match the lRGB values when they are in
+%  an sRGB display.
 %
 
 % Read in the XYZ functions with respect to energy.
@@ -93,7 +91,10 @@ XYZ = ieReadSpectra('XYZEnergy.mat',wave);
 
 T = pinv(XYZ'*radianceBasis)*lXYZinCols;
 
-% We use these as the primaries of the theoretical reflectance display.
+% We use these as the primaries of the theoretical reflectance
+% display.  They span the space of illuminant*refBasis, and they are
+% adjusted so that rgbPrimaries*lRGB has the same XYZ as lRGB on an
+% sRGB display.
 rgbPrimaries = radianceBasis*T;
 
 %% Now build the display
@@ -101,13 +102,48 @@ theDisplay = displayCreate('default');
 theDisplay = displaySet(theDisplay,'wave',wave);
 theDisplay = displaySet(theDisplay,'spd',rgbPrimaries);
 
-%% Set the display to a luminance of 100
+%% Set the display primaries to a peak luminance of 100
+
 % Scale the primaries and the illuminant.  Before this scaling,
 %
 %   reflectanceBasis = diag(1./illEnergy)*rgbPrimaries
 %
 peakL = displayGet(theDisplay,'peak luminance');
-theDisplay = displaySet(theDisplay,'spd',rgbPrimaries*(100/peakL));
+rgbPrimaries = rgbPrimaries*(100/peakL);
+theDisplay = displaySet(theDisplay,'spd',rgbPrimaries);
+
+%% Scaling the illuminant for a scene
+%
+% When we use sceneFromFile and theDisplay, we would like to set the
+% scene illuminance to be illEnergy.  This differs from the usual
+% case, when we set the illuminant to be the SPD of the sum of the
+% primaries.  
+% 
+% In this case, we want the scene illuminant to be the blackbody
+% radiator for this color temperature.  We have the relative amount as
+% illEnergy already.  But this curve needs to be scaled so that when
+% the display energy is illEnergy, the estimated reflectance will be
+% roughly 1's.
+%
+%{
+% Suppose spd is the scene radiance
+
+ spd = rgbPrimaries*y 
+     = radianceBasis*T*y
+     = diag(illEnergy)*refBasis*T*y
+
+% When spd is illEnergy, we would like refBasis*T*Y to be close to 1's
+y = (rgbPrimaries'*rgbPrimares)^-1*rgbPrimaries'*illEnergy
+
+% The level of the illEnergy in the scene should satisfy this
+% relationship with the rgbPrimaries 
+1's = rgbPrimaries*(rgbPrimaries'*rgbPrimaries)^-1*rgbPrimaries'*illEnergy
+
+% We calculate the current illEnergy level and scale to make the
+% result close to 1's
+%}
+
+illEnergy = illEnergy*(100/peakL);
 
 %% Set the gamma of the display
 

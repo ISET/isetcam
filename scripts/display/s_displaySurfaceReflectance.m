@@ -91,7 +91,10 @@ XYZ = ieReadSpectra('XYZEnergy.mat',wave);
 
 T = pinv(XYZ'*radianceBasis)*lXYZinCols;
 
-% We use these as the primaries of the theoretical reflectance display.
+% We use these as the primaries of the theoretical reflectance
+% display.  They span the space of illuminant*refBasis, and they are
+% adjusted so that rgbPrimaries*lRGB has the same XYZ as lRGB on an
+% sRGB display.
 rgbPrimaries = radianceBasis*T;
 
 % The primaries are not physically realizable (they have some negative
