@@ -1,7 +1,7 @@
-function [errorImage, scene1, scene2, d] = scielabRGB(file1,file2,dispCal,vDist)
+function [errorImage, scene1, scene2, theDisplay] = scielabRGB(file1,file2,dispCal,vDist)
 % Compute the mean spatial-CIELAB difference between two rgb images
 %
-%  [errorImage, scene1, scene2, d] = scielabRGB(file1,file2,dispCal,vDist)
+%  [errorImage, scene1, scene2, theDisplay] = scielabRGB(file1,file2,dispCal,vDist)
 %
 % Typically, two RGB files are sent in and they are compared as if they
 % were shown on a calibrated display.  It is possible to send in the file
@@ -16,16 +16,13 @@ function [errorImage, scene1, scene2, d] = scielabRGB(file1,file2,dispCal,vDist)
 %  vDist:         Viewing distance  (0.38 meters)
 %
 % Returns
-%  errorImage      - The S-CIELAB error image
-%  scene1, scene2  - The two scenes
-%  d               - The display structure
+% errorImage - SCIELAB error between the two scenes
+% sceneX     - The two scenes
+% theDisplay - Display model.
 %
 % The images are assumed to be displayed on a calibrated display and seen
 % at a specific viewing distance.
 %
-% errorImage - SCIELAB error between the two scenes
-% sceneX     - The scenes
-% d - Display model.
 %
 % Examples:
 %   file1 = fullfile(isetRootPath, 'data','images','RGB','hats.jpg');
@@ -67,17 +64,17 @@ end
 
 %% Read the display white point
 if ischar(dispCal)
-    d = displayCreate(dispCal);
+    theDisplay = displayCreate(dispCal);
 elseif isstruct(dispCal) && isequal(dispCal.type,'display')
-    d = dispCal;
+    theDisplay = dispCal;
 end
-whiteXYZ = displayGet(d,'white point');
+whiteXYZ = displayGet(theDisplay,'white point');
 
 %% Determine scene FOV
 
 % The FOV depends on the display dpi and image size
 sz = sceneGet(scene1,'size');
-imgWidth = sz(2)*displayGet(d,'meters per dot');  % Image width (meters)
+imgWidth = sz(2)*displayGet(theDisplay,'meters per dot');  % Image width (meters)
 fov = rad2deg(2*atan2(imgWidth/2,vDist));         % In deg
 
 scene1 = sceneSet(scene1,'fov',fov);
@@ -99,5 +96,9 @@ params.filterversion = 'distribution';
 errorImage = scielab(sceneXYZ1, sceneXYZ2, whiteXYZ, params);
 
 end
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 
 

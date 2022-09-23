@@ -31,10 +31,10 @@ dispCal = 'crt.mat';   % Calibrated display
 
 %% Spatial scielab reads the files and display
 
-% Convert the RGB files to a scene and then call scielabRGB
-% The returns are an error image and two scenes containing the two images
-% The display variable is the implicit display we used to transform the RGB
-% images into the spectral image.  It does nt play a further role.
+% Convert the RGB files to a scene.
+% Then, calculate an error image between the two scenes.
+% The display variable is used to transform the RGB
+% images into the spectral image.
 [eImage,scene1,scene2,display] = scielabRGB(file1, file2, dispCal, vDist);
 
 % This is the mean delta E
