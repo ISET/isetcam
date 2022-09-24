@@ -1,22 +1,24 @@
 % v_ISET
 %
-% This has now been replaced by ieRunValidateAll.m.  We keep it here for
-% the old-timers who are used to seeing this one instead.
+% This has now been updated to ieRunValidateAll.m.  Still used by the
+% old-timers.
 %
-% Run a subset of the tutorial and validation scripts to check a wide
-% variety of functions. We used to run these whenever there are significant
-% changes to ISET and prior to checking in the new code.  It has not been
-% replaced by the ieRunValidateAll function, which runs all of the
-% validation scripts automatically.
-%
-% We plan to add further assert() checks and functionality to the v_*
-% scripts.
+% Runs a subset of the tutorial and validation scripts to check a wide
+% variety of functions. We used to run these whenever there are
+% significant changes to ISET and prior to checking in the new code.
+% It has not been replaced by the ieRunValidateAll function, which
+% runs all of the validation scripts automatically.
 %
 % Copyright ImagEval Consultants, LLC, 2011.
 
+%% Sometimes we have trouble because of a failure to clear variables
+
+% We save the current status, but we clear the variables in this
+% session.  Then we reset at the end.
+ieSessionSet('init clear',true);
+
 %% Initialize
 ieInit;
-
 setpref('ISET', 'benchmarkstart', cputime); % if I just put it in a variable it gets cleared:(
 setpref('ISET', 'tStart', tic);
 
@@ -91,5 +93,10 @@ fprintf("Display ran in: %5.1f seconds.\n", getpref('ISET','tvdisplayTime'));
 fprintf("Metrics ran in: %5.1f seconds.\n", getpref('ISET','tvmetricsTime'));
 fprintf("CI      ran in: %5.1f seconds.\n", getpref('ISET','tvciTime'));
 fprintf("Human   ran in: %5.1f seconds.\n", getpref('ISET','tvhumanTime'));
+
+%% Sometimes we have trouble because of a failure to clear variables
+
+disp('Setting ieInit clear status to false. Variables not cleared on ieInit.')
+ieSessionSet('init clear',false);
 
 %% END

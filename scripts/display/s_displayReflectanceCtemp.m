@@ -5,7 +5,7 @@
 
 %% Make an sRGB image
 
-setTemp = 7000;
+setTemp = 8000;
 scene = sceneCreate('macbeth d65');
 wave = sceneGet(scene,'wave');
 
@@ -23,18 +23,11 @@ rgb = ipGet(ip,'srgb');
 %% Analyze the sRGB for color temp
 
 estTemp = srgb2colortemp(rgb);
-[d,spd,illE] = displayReflectance(estTemp);
+[theDisplay,spd,illE] = displayReflectance(estTemp,wave);
 
 %% Read the sRGB data using the display
 
-newScene = sceneFromFile(rgb,'rgb',100,d);
-% sceneWindow(newScene);
-
-%% Adjust the illuminant, correcting for reflectance
-
-newScene = sceneSet(newScene,'illuminant energy',illE);
-r = sceneGet(newScene,'reflectance');
-newScene = sceneSet(newScene,'illuminant energy',illE*max(r(:)));
+newScene = sceneFromFile(rgb,'rgb',100,theDisplay,wave,illE);
 sceneWindow(newScene);
 
 %% END

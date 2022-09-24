@@ -54,8 +54,8 @@ end
 % Use modern code
 useOldCode = 0;
 if iscell(whitePnt)
-    a = ieXYZ2LAB(xyz1,whitePnt{1}, useOldCode);
-    b = ieXYZ2LAB(xyz2,whitePnt{2}, useOldCode);
+    a = ieXYZ2LAB(xyz1, whitePnt{1}, useOldCode);
+    b = ieXYZ2LAB(xyz2, whitePnt{2}, useOldCode);
 else
     a = ieXYZ2LAB(xyz1,whitePnt, useOldCode);
     b = ieXYZ2LAB(xyz2,whitePnt, useOldCode);

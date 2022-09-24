@@ -1,4 +1,4 @@
-function [theDisplay, rgbPrimaries, illEnergy] = displayReflectance(ctemp)
+function [theDisplay, rgbPrimaries, illEnergy] = displayReflectance(ctemp,wave)
 % Create a natural surface reflectance display for a given color temp ill
 %
 % Synopsis
@@ -32,7 +32,8 @@ function [theDisplay, rgbPrimaries, illEnergy] = displayReflectance(ctemp)
 
 %%  Read in the natural surface reflectance basis
 
-wave = 400:1:700;
+if notDefined('wave'), wave = 400:1:700; end
+
 basis = ieReadSpectra('reflectanceBasis.mat',wave);
 basis(:,1) = -1*basis(:,1);
 % The weights of the basis for a reflectance of 1's

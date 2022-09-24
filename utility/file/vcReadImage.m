@@ -136,18 +136,18 @@ switch lower(imageType)
             % sent a string, read the file.  If the user sent in the
             % display structure, set it.
             if ischar(dispCal)
-                d = displayCreate(dispCal);
+                theDisplay = displayCreate(dispCal);
             elseif isstruct(dispCal) && isequal(dispCal.type, 'display')
-                d = dispCal;
+                theDisplay = dispCal;
             else
                 error('Unknown display structure');
             end
             
             % Get the parameters from the display
-            wave   = displayGet(d, 'wave');  % Primary wavelengths
-            gTable = displayGet(d, 'gamma table');
+            wave   = displayGet(theDisplay, 'wave');  % Primary wavelengths
+            gTable = displayGet(theDisplay, 'gamma table');
             
-            nprimaries = displayGet(d, 'n primaries');
+            nprimaries = displayGet(theDisplay, 'n primaries');
             if ismatrix(inImg)
                 inImg = repmat(inImg, [1 1 nprimaries]);
             end
@@ -207,14 +207,15 @@ switch lower(imageType)
             
             % Subpixel rendering
             if doSub
-                inImg = displayCompute(d, inImg, sz);
+                inImg = displayCompute(theDisplay, inImg, sz);
             end
-            spd = displayGet(d, 'spd');   % Primary SPD in energy
+            spd = displayGet(theDisplay, 'spd');   % Primary SPD in energy
             
+            % The linearized image is here!!!
             [xwImg,r,c] = RGB2XWFormat(inImg);
             
             % Convert energy units to quanta
-            % This step could be slow, espetially when we use sub-pixel
+            % This step could be slow, especially when we use sub-pixel
             % sampling
             if numel(xwImg) < ieSessionGet('image size threshold') ...
                     || ~ieSessionGet('waitBar') % small image
