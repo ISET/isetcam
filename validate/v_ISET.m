@@ -12,7 +12,6 @@
 % Copyright ImagEval Consultants, LLC, 2011.
 
 %% Sometimes we have trouble because of a failure to clear variables
-clearStatus = ieSessionGet('init clear');
 
 % We save the current status, but we clear the variables in this
 % session.  Then we reset at the end.
@@ -96,5 +95,8 @@ fprintf("CI      ran in: %5.1f seconds.\n", getpref('ISET','tvciTime'));
 fprintf("Human   ran in: %5.1f seconds.\n", getpref('ISET','tvhumanTime'));
 
 %% Sometimes we have trouble because of a failure to clear variables
-ieSessionSet('init clear',clearStatus);
+
+disp('Setting ieInit clear status to false. Variables not cleared on ieInit.')
+ieSessionSet('init clear',false);
+
 %% END
