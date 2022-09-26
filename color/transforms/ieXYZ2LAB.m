@@ -36,7 +36,7 @@ if (exist('makecform','file') == 2) &&  ~useOldCode
     % recent Matlab routines.
     % Matlab's implementation is only for CIELAB 1976
     cform = makecform('xyz2lab','WhitePoint',whitepoint(:)');
-    if isequal(class(xyz), 'single'), disp('xyz to double'); xyz = double(xyz); end
+    if isequal(class(xyz), 'single'), xyz = double(xyz); end
     lab = applycform(xyz,cform);
     return;
     

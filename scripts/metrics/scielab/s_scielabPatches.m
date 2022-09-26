@@ -36,6 +36,7 @@ dES = ones(nPairs,1);
 showBar = ieSessionGet('waitbar');
 if showBar, wBar = waitbar(0,'Patches'); end
 
+%%
 for ii=1:size(wgts,1)
     if showBar, wBar = waitbar(ii/size(wgts,1),wBar,'Patches'); end
     
