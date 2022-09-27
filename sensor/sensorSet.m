@@ -119,6 +119,15 @@ function sensor = sensorSet(sensor,param,val,varargin)
 %     'chart rectangles'    - Rectangle positions in a chart
 %     'chart corner points' - Corner points for the whole chart
 %
+% Metadata
+%   Used when we have a calculated image so that we
+%   know information about it. Stored in .metadata
+%   'metadata sensorname'
+%   'metadata scenename' -- Simple name of scene/recipe
+%                      -- TBD: Other recipe info
+%                      --      Like illumination
+%   'metadata lensname'
+%
 % Private
 %      'editfilternames'
 %
@@ -638,7 +647,14 @@ switch lower(param)
         % position (deg)
         sensor.movement.framesPerPosition = val;
         
-        
+    % populate metadata after compute
+    case 'metadatasensorname'
+        sensor.metadata.sensorname = val;
+    case 'metadatascenename'
+        sensor.metadata.scenename = val;
+    case 'metadataopticsname'
+        sensor.metadata.opticsname = val;
+
     otherwise
         error('Unknown parameter.');
 end
