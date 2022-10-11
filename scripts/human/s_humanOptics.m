@@ -21,7 +21,7 @@ D0 = 60;      % Dioptric power of human lens
 otf = humanCore(wave,sampleSF,p,D0);
 
 %% Plot the amplitude of the optical transfer function.
-vcNewGraphWin;
+ieNewGraphWin;
 
 mesh(sampleSF,wave,otf)
 view(32.5,14);
@@ -33,7 +33,7 @@ zlabel('OTF')
 % The effect of chromatic aberration (defocus in the short) is quite
 % apparent in these graphs.
 
-vcNewGraphWin;
+ieNewGraphWin;
 waveList = [420 550 670];
 cList = {'b-','g-','r-'};
 for ii=1:length(waveList)
@@ -46,3 +46,4 @@ xlabel('Spatial freq cy/deg');
 ylabel('OTF value');
 legend({'420 nm','550 nm','670 nm'})
 
+%% END
