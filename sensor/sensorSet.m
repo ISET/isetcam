@@ -160,6 +160,12 @@ switch lower(param)
     
     case {'name','title'}
         sensor.name = val;
+
+    case 'scene_name'
+        sensor.metadata.scene_name = val;
+
+    case 'lens'
+        sensor.metadata.lens = val;
         
     case {'rows','row'}
         % sensor = sensorSet(sensor,'rows',r);
