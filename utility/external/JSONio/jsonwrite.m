@@ -203,7 +203,11 @@ S = ['"' json '"'];
 %==========================================================================
 function S = jsonwrite_numeric(json)
 if any(imag(json(:)))
-    error('Complex numbers not supported.');
+    % OIs use complex numbers, so we need
+    % to add an encoding here!
+    warning('Complex numbers not supported.');
+    S = jsonwrite_cell({});
+    return;
 end
 if numel(json) == 0
     S = jsonwrite_cell({});

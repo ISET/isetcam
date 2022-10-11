@@ -358,6 +358,14 @@ for ss=1:length(sensorArray)   % Number of sensors
     % sensor = sensorSet(sensor,'mccRectHandles',[]);
     if showBar, close(wBar); end
     
+    % Copy metadata from oi to the sensor
+    sensor = sensorSet(sensor,'metadata sensorname',sensorGet(sensor,'name'));
+    sensor = sensorSet(sensor,'metadata scenename',oiGet(oi,'name'));
+    optics = oiGet(oi,'optics');
+    if ~isempty(optics)
+        sensor = sensorSet(sensor,'metadata opticsname',oiGet(optics,'name'));
+    end
+
     % The sensor structure has fields that are not present in the
     % input sensor. So we have a new outSensor.  There will be as many
     % outSensor members as there are slots in the sensorArray.

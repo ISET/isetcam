@@ -42,4 +42,4 @@ end
 mpd = mpd*1e-6;  % Meters per dot
 mpd = mpd*ieUnitScaleFactor(unit);
 
-return
+end
