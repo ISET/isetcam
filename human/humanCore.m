@@ -11,7 +11,7 @@ function [otf, achOTF] = humanCore(wave,sampleSF,p,D0)
 %  sampleSF:  Spatial frequencies in cycles/deg
 %  wave:      Wavelength in nanometers
 %
-%Returns
+% Returns
 % otf:  Optical transfer function (actually, this is the MTF, just a set of
 %       scale factors.  We assume there is no frequency-dependent phase
 %       shift.
@@ -20,19 +20,26 @@ function [otf, achOTF] = humanCore(wave,sampleSF,p,D0)
 %                 register with human optics.  That factor comes from
 %                 empirical measurements out of the Williams' lab.
 %
-% Example:
-%   wave = 400:10:700; sampleSF = [0:1:30];
-%   p = 0.0015; D0 = 60;
-%   otf = humanCore(wave,sampleSF,p,D0);
-%   mesh(sampleSF,wave,otf)
-%
 % Use the Marimont paper to get more references for this routine, which is
 % mainly based on derivations by Hopkins. There are comments below about
 % the Hopkins formula.  These comments should be placed on a wiki page as
 % well, and perhaps the routine opticsDefocusedMTF.
 %
-% Copyright ImagEval Consultants, LLC, 2005.
+%  ieExamplesPrint('humanCore');
+%
+% See also
+%   s_humanOptics
 
+% Examples:
+%{
+   wave = 400:10:700; sampleSF = [0:1:30];
+   p = 0.0015; D0 = 60;
+   otf = humanCore(wave,sampleSF,p,D0);
+   ieNewGraphWin;
+   mesh(sampleSF,wave,otf)
+%}
+
+%%
 % Retrieve the defocus, in diopters, at each wavelength.  These are classic
 % data.  See the function.
 D = humanWaveDefocus(wave);
