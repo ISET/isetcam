@@ -26,7 +26,7 @@ viewingDistance = 12
 
 %% The viewing geometry
 
-vcNewGraphWin;
+ieNewGraphWin;
 line([0 viewingDistance 0 0],[0 0 1 0]);
 axis equal
 set(gca,'xlim',[-2 20]), grid on
@@ -76,7 +76,7 @@ xMin = xSec/60;
 ls = 0.47*exp(-3.3 *(xMin.^2)) + 0.53*exp(-0.93*abs(xMin));
 ls = ls / sum(ls);
 
-vcNewGraphWin;
+ieNewGraphWin;
 plot(xSec,ls)
 set(gca,'xlim',[-240 240],'xtick',(-240:60:240)), grid  on
 xlabel('Arc sec'), ylabel('Responsivity'), title('Westheimer Linespread')
@@ -97,7 +97,7 @@ xSec = -300:300;    % 600 sec, total = 10 min
 westheimerOTF = abs(fft(westheimerLSF(xSec)));
 % One cycle spans 10 min of arc, so freq=1 is 6 c/deg
 freq = [0:11]*6;
-vcNewGraphWin;
+ieNewGraphWin;
 semilogy(freq,westheimerOTF([1:12])); grid on;
 xlabel('Freq (cpd)'); ylabel('Relative contrast');
 set(gca,'ylim',[0 1.1])
@@ -117,7 +117,7 @@ im(1:dotSpacing:length(im)) = ones(size(im(1:dotSpacing:length(im))));
 
 % Here is an image showing the sampled line positions
 % (The lines represent a printer dot)
-vcNewGraphWin;
+ieNewGraphWin;
 imshow(im(ones(1,128),1:512))
 title('Image of line stimulus');
 
@@ -129,7 +129,7 @@ title('Image of line stimulus');
 
 retIm = conv2(ls,im,'full');
 
-vcNewGraphWin;
+ieNewGraphWin;
 plot(retIm),grid on
 title('The one-dimensional retinal image')
 xlabel('Sec of arc'), ylabel('Image intensity')
@@ -153,14 +153,14 @@ blurIm = conv2(im,gKernel,'full');
 blurIm = ieScale(blurIm,1,32);
 retIm = conv2(blurIm,ls,'full');
 
-vcNewGraphWin;
+ieNewGraphWin;
 imshow(blurIm(ones(1,128),1:512),[]);
 title('Image of line stimulus blurred by ink width');
 
 % Notice the very small ripples left in the curve after taking
 % into account the blurring by the physical display and by the
 % eye.
-vcNewGraphWin;
+ieNewGraphWin;
 plot(retIm), axis square, grid on
 title('Retinal image of blurred lines')
 xlabel('Sec of arc'), ylabel('Intensity')
@@ -183,7 +183,7 @@ xMin = -30:1:29;
 ls = 0.47*exp(-3.3 *(xMin.^2)) + 0.53*exp(-0.93*abs(xMin));
 ls = ls / sum(ls);
 
-vcNewGraphWin;
+ieNewGraphWin;
 plot(xMin,ls), grid on
 xlabel('Min of arc'),ylabel('Linespread value')
 
@@ -195,7 +195,7 @@ nSamples = length(xMin);
 f = 1;
 harmonic = cos(2*pi*f*xMin/nSamples);
 
-vcNewGraphWin;
+ieNewGraphWin;
 plot(xMin,harmonic), grid on
 title('Sampled cosinusoid')
 xlabel('Arc sec'), ylabel('Intensity')
@@ -206,7 +206,7 @@ xlabel('Arc sec'), ylabel('Intensity')
 % frequency increases.  We will store the amplitude of the cosinusoid in
 % the variable "peak".
 
-vcNewGraphWin;
+ieNewGraphWin;
 freq =[1 5 10 15];
 peak = zeros(1,length(freq));
 for i = 1:length(freq)
@@ -223,7 +223,7 @@ end
 % fact that at f = 0 the amplitude = 1 (because the area under
 % the linespread is 1).
 
-vcNewGraphWin;
+ieNewGraphWin;
 plot([0 freq],[1 peak],'-')
 set(gca,'ylim',[0 1])
 xlabel('Spatial freq (cpd)'), ylabel('Transfer')
@@ -259,7 +259,7 @@ xMin = xSec/60;
 ls = 0.47*exp(-3.3 *(xMin.^2)) + 0.53*exp(-0.93*abs(xMin));
 ps = 0.952*exp(-2.59*abs(xMin).^1.36) + 0.048*exp(-2.43*abs(xMin).^1.74);
 
-vcNewGraphWin;
+ieNewGraphWin;
 p = plot(xSec,ps,'r-',xSec,ls,'b--'); grid on
 set(gca,'xlim',[-180 180])
 xlabel('Arc sec'), ylabel('LS or PS amplitude')
@@ -279,7 +279,7 @@ D = X.^2 + Y.^2; D = D.^0.5;
 % Then, compute the pointspread function and make a picture of it
 %
 ps = 0.952*exp(-2.59*abs(D).^1.36) + 0.048*exp(-2.43*abs(D).^1.74);
-vcNewGraphWin;
+ieNewGraphWin;
 colormap(cool(64)), mesh(ps)
 
 % To see the pointspread as an image, rather than as a mesh plot,
@@ -307,7 +307,7 @@ load lineSpread;
 % linespread function is much more spread-out than for the middle
 % and long wavelengths.
 
-vcNewGraphWin;
+ieNewGraphWin;
 plot(xDim, lineSpread(80, :), 'b-', xDim, lineSpread(200,:), ...
     'g:', xDim, lineSpread(361, :), 'r--' );
 legend('wavelength 450', 'wavelength 570','wavelength 730');
@@ -317,7 +317,7 @@ title('Linespread functions for three wavelengths');
 %  Look at the line spread functions for all wavelengths
 
 lw = 1:10:length(wave);
-vcNewGraphWin;
+ieNewGraphWin;
 colormap(hot(32));
 mesh(xDim, wave(lw), lineSpread(lw,:));
 set(gca,'xlim',[-1 1],'ylim',[350 730])
@@ -351,7 +351,7 @@ X = (-size(retIm,2)/2 : ((size(retIm, 2)/2) - 1)) / 64;
 % We can plot the retinal image corresponding to two wavelengths
 % this way.
 
-vcNewGraphWin;
+ieNewGraphWin;
 subplot(2,1,1)
 plot(X,retIm(201,:),'g-')
 set(gca,'ylim',[0 0.5])
@@ -394,7 +394,7 @@ load combinedOtf;
 
 % Here is a graph of a few of the MTFs
 %
-vcNewGraphWin;
+ieNewGraphWin;
 plot(sampleSf, combinedOtf(81, :), 'b-', ...
     sampleSf, combinedOtf(201,:), ...
     'g:', sampleSf, combinedOtf(361, :), 'r--' );
@@ -425,7 +425,7 @@ title('Modulation transfer functions for 3 wavelengths');
 % values in the function "ijspeert."  Here is an example
 %
 age = 20; 				    % Subject's age
-pupil = 1.5; 				% diameter in mm
+pupil = 4; 				    % diameter in mm
 pigmentation = 0.142; 		% Caucasian
 freqIndexRange = 1:50; 		% The spatial frequency range
 
@@ -447,7 +447,7 @@ iLSF = iLSF/sum(iLSF);
 
 % These are the modulation transfer function and linespread
 % for the ijspeert data
-vcNewGraphWin; %clf
+ieNewGraphWin; %clf
 subplot(1,2,1), plot(iMTF); grid on
 set(gca,'xtick',(0:10:80),'xlim',[0 80]);
 xlabel('Spatial frequency (cpd)');
@@ -475,7 +475,7 @@ set(gca,'xtick',(-8:2:8),'xlim',[-6 6]);
 xlabel('Position (min)'), ylabel('Intensity'), title('Linespread')
 grid on
 
-%% Comparison of the MTFs with the Williams data
+% Comparison of the MTFs with the Williams data
 
 load williams
 
@@ -518,7 +518,7 @@ for ii=1:nSamples
         freqIndexRange, a);
 end
 
-vcNewGraphWin;
+ieNewGraphWin;
 colormap(cool(64));
 surf(angleInRad2D,angleInRad2D,iPSF2D);
 
