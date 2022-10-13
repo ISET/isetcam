@@ -471,10 +471,11 @@ switch oType
                 end
                 
             case 'energy'
-                % Possibly, we should compute the energy from the photons and only
+                % We  compute the energy from the photons and only
                 % store photons.  Otherwise, there could be an inconsistency.
-                if checkfields(oi,'data','energy'), val = oi.data.energy;
-                else, val = []; end
+                photons = oiGet(oi,'photons');
+                wave = oiGet(oi,'wave');
+                val = Quanta2Energy(wave,photons);
                 
             case {'meanilluminance','meanillum'}
                 % Derived from the illuminance

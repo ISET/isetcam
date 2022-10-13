@@ -121,6 +121,7 @@ if ieNotDefined('roiLocs')
     
     switch pType
         case {'irradiancehline','hline','hlineirradiance' , ...
+                'irradianceenergyhline','energyhline','hlineirradianceenergy' , ...
                 'illuminancehline','horizontallineilluminance','hlineilluminance', ...
                 'illuminanceffthline',...
                 'contrasthline','hlinecontrast', ...
@@ -134,6 +135,7 @@ if ieNotDefined('roiLocs')
         case {'irradiancevline','vline','vlineirradiance',...
                 'illuminancevline','vlineilluminance', ...
                 'contrastvline','vlinecontrast','illuminancefftvline'}
+            % We need to add the 'energy' case here.
             roiLocs = iePointSelect(oi);
             
             % Draw a line on the oiWindow.  I may be off by 1.
@@ -192,11 +194,45 @@ switch pType
             grid on; set(gca,'xtick',ieChooseTickMarks(posMicrons.x))
         end
         
-        udata.wave = wave; udata.pos = posMicrons.x; udata.data = double(data');
+        udata.roiLocs = roiLocs;
+        udata.wave = wave; 
+        udata.pos = posMicrons.x; udata.data = double(data');
         udata.cmd = 'mesh(pos,wave,data)';
         set(g,'Name',sprintf('ISET GraphWin: line %.0f',roiLocs(2)));
         colormap(jet(64));
         
+    case {'irradianceenergyhline','hlineenergy','hlineirradianceenergy'}
+        % oiPlot('irradiance hline')
+        data = oiGet(oi,'energy');
+        if isempty(data), warndlg(sprintf('Energy data are unavailable.')); return; end
+        
+        wave = oiGet(oi,'wave');
+        data = squeeze(data(roiLocs(2),:,:));
+        if isa(data,'single'), data = double(data); end
+        
+        posMicrons = oiSpatialSupport(oi,'um');
+        
+        if size(data,1) == 1
+            % Manage monochrome data
+            plot(posMicrons.x,data');
+            xlabel('Position (mm)');
+            ylabel('Irradiance (watts/nm/m^2)');
+            title('Monochrome image')
+            grid on; set(gca,'xtick',ieChooseTickMarks(posMicrons.x))
+        else
+            mesh(posMicrons.x,wave,double(double(data')));
+            xlabel('Position (um)');
+            ylabel('Wavelength (nm)'); zlabel('Irradiance (watts/nm/m^2)');
+            grid on; set(gca,'xtick',ieChooseTickMarks(posMicrons.x))
+        end
+        
+        udata.wave = wave; 
+        udata.roiLocs = roiLocs;
+        udata.pos = posMicrons.x; udata.data = double(data');
+        udata.cmd = 'mesh(pos,wave,data)';
+        set(g,'Name',sprintf('ISET GraphWin: line %.0f',roiLocs(2)));
+        colormap(jet(64));
+
     case {'irradiancevline','vline','vlineirradiance',}
         % oiPlot(oi,'irradiance vline')
         data = oiGet(oi,'photons');
@@ -222,7 +258,9 @@ switch pType
         end
         
         % Attach data to the figure
-        udata.wave = wave; udata.pos = posMicrons.y; udata.data = double(data');
+        udata.wave = wave;         
+        udata.roiLocs = roiLocs;
+        udata.pos = posMicrons.y; udata.data = double(data');
         set(g,'Name',sprintf('Line %.0f',roiLocs(1)));
         colormap(jet(64));
         
