@@ -75,7 +75,7 @@ sensor = sensorSet(sensor,'pixel size constant fill factor',6e-6);
 sensor = sensorSetSizeToFOV(sensor,fov,oi);
 oi = oiCompute(oi,scene);
 sensor = sensorCompute(sensor,oi);
-sensorWindow(sensor); drawnow;
+sensorWindow(sensor);
 
 %% If we protect against aliasing
 
