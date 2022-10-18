@@ -106,7 +106,11 @@ if ~isempty(img)
     if ismatrix(img), img = repmat(img,[1,1,3]); end
     
     % What is this condition on app 0?  Is that do not display?
-    if ~isequal(app,0), image(app.imgMain,x,y,img); axis image; axis off; end
+    if ~isequal(app,0)
+        axes(app.imgMain);    % Make sure the gca is in this figure
+        image(app.imgMain,x,y,img); 
+        axis image; axis off; % Sets the gca axis
+    end
     if (sensorGet(sensor,'nSensors') == 1), colormap(gray(256)); end
 end
 
