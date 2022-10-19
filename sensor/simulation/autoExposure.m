@@ -98,10 +98,12 @@ p.addRequired('aemethod',@ischar)
 % Optional Key/val Parameters
 p.addParameter('centerrect',[],@isvector);
 p.addParameter('videomax',1/60,@isscalar);   % Maximum exposure duration sec
+p.addParameter('numframes',1,@isscalar);   % 
 
 p.parse(oi,sensor,level,aeMethod,varargin{:});
 centerRect = p.Results.centerrect;
 videoMax   = p.Results.videomax;
+numFrames = p.Results.numframes; % for autohdr
 
 switch lower(aeMethod)
     case 'specular'
@@ -119,7 +121,7 @@ switch lower(aeMethod)
     case 'video'
         integrationTime = aeVideo(oi,sensor,level,'center rect',centerRect,'videomax',videoMax);
     case 'hdr' % Experimental to get base exposure for hdr scenes
-        [integrationTime,maxSignalVoltage] = aeHDR(oi,sensor,level);
+        [integrationTime,maxSignalVoltage] = aeHDR(oi,sensor,level, numFrames);
         
     otherwise
         error('Unknown auto-exposure method')
@@ -299,7 +301,7 @@ maxSignalVoltage = max(signalVoltage(:));
 end
 
 %-------------------------
-function [integrationTime,maxSignalVoltage] = aeHDR(oi,sensor,level)
+function [integrationTime,maxSignalVoltage] = aeHDR(oi,sensor,level,numFrames)
 % Try to find a way to estimate a good "base" exposure for scenes
 % with much higher dynamic range than the sensor, for use with
 % computational imaging approached such as burst and bracket
@@ -320,7 +322,17 @@ signalVoltage = sensorComputeImage(oi,sensor);
 maxTargetVoltage = prctile(signalVoltage(:),level*1e2);
 minTargetVoltage = prctile(signalVoltage(:),(1-level)*1e2);
 
-integrationTime = (voltageSwing/(maxTargetVoltage-minTargetVoltage));
+% Limit our band to our target voltages
+vSwing = maxTargetVoltage - minTargetVoltage;
+
+if numFrames > 1
+    minTime = vSwing/maxTargetVoltage;
+    maxTime = vSwing/minTargetVoltage;
+    % return an array of times
+    integrationTime = minTime:round(maxTime-minTime/numFrames):maxTime;
+else
+    integrationTime = (vSwing/(maxTargetVoltage-minTargetVoltage));    
+end
 
 maxSignalVoltage = max(signalVoltage(:));
 
