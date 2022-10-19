@@ -29,10 +29,30 @@ conversionGain = pixelGet(ISA.pixel,'conversion gain');
 electronImage  = volts/conversionGain;
 
 % Use the builtin poissrnd if available, otherwise default to the method
-% below.
-if exist('poissrnd','builtin')
-    noisyImage = poissrnd(electronImage);
-    theNoise = noisyImage - electronImage;
+% below. Except the else case also uses it
+% and asking for builtin says no since it is in a toolbox.
+if exist('poissrnd')
+
+    % calculate an average "mean" noise as an approximation
+    meanNoise = sqrt(electronImage) .* randn(size(electronImage));
+   
+    poissonCriterion = 25;
+    % photosites where we want to use the Poisson Noise instead
+    v = electronImage < poissonCriterion;
+    % we don't always need to compute this 
+    if ~isempty(v)
+        poissonNoise = poissrnd(electronImage .* v);
+        meanNoise = meanNoise .* ~v;
+        meanImage = electronImage + meanNoise;
+        % Add back electronImage here
+        noisyImage = poissonNoise + meanImage;
+        theNoise = noisyImage - electronImage;
+    else
+        % We add the mean electron and noise electrons together.
+        noisyImage = round(electronImage + meanNoise);
+
+    end
+
 else
     % N.B. The noise is Poisson in electron  units. But the distribution in
     % voltage units is NOT Poisson.  The voltage signal, however, does have the
