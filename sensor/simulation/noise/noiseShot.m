@@ -13,8 +13,11 @@ function [noisyImage,theNoise] = noiseShot(ISA)
 % more than 25 electrons in the pixel.  It uses the Poisson distribution
 % when there are fewer than 25 electrons.  The Poisson function we have is
 % slow for larger means, so we separate the calculation this way.  If we
-% have a fast Poisson generator, we could use it throughout.  Matlab has
-% one in the stats toolbox, but we don't want to impose that on others.
+% had a fast enough Poisson generator, we could use it throughout.  
+%
+% NOTE: This code relies on the Stats toolbox for poissrnd (which
+% unfortunately is still slower than our Gaussian approximation
+% for larger values)
 %
 % See also:  poissrnd
 %
@@ -23,14 +26,16 @@ function [noisyImage,theNoise] = noiseShot(ISA)
 %    imagesc(theNoise); colormap(gray(64))
 %
 % Copyright ImagEval Consultants, LLC, 2003.
+% Updated 2015, 2022, Stanford University
 
 volts          = sensorGet(ISA,'volts');
 conversionGain = pixelGet(ISA.pixel,'conversion gain');
 electronImage  = volts/conversionGain;
 
 % Use the builtin poissrnd if available, otherwise default to the method
-% below. Except the else case also uses it
+% below. (Except the else case also uses it)
 % and asking for builtin says no since it is in a toolbox.
+% DJC: So if the new code is correct, I think this can be "if true:)"
 if exist('poissrnd')
 
     % calculate an average "mean" noise as an approximation
@@ -39,13 +44,13 @@ if exist('poissrnd')
     poissonCriterion = 25;
     % photosites where we want to use the Poisson Noise instead
     v = electronImage < poissonCriterion;
-    % we don't always need to compute this 
+    % we don't always need to compute Poisson noise 
     if ~isempty(v)
-        poissonNoise = poissrnd(electronImage .* v);
+        poissonImage = poissrnd(electronImage .* v);
         meanNoise = meanNoise .* ~v;
-        meanImage = electronImage + meanNoise;
-        % Add back electronImage here
-        noisyImage = poissonNoise + meanImage;
+        meanImage = electronImage .* ~v;
+        % Add our partial arrays together to get the entire image
+        noisyImage = round(poissonImage + meanNoise + meanImage);
         theNoise = noisyImage - electronImage;
     else
         % We add the mean electron and noise electrons together.
@@ -53,6 +58,7 @@ if exist('poissrnd')
 
     end
 
+    % DJC I think this is deprecated...
 else
     % N.B. The noise is Poisson in electron  units. But the distribution in
     % voltage units is NOT Poisson.  The voltage signal, however, does have the
