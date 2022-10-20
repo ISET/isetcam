@@ -3,11 +3,11 @@ function [noisyImage,theNoise] = noiseShot(sensor)
 %
 %    [noisyImage,theNoise] = noiseShot(sensor)
 %
-% The shot noise is Poisson in units of electrons (but not in other units).
-% Hence, we transform the (mean) voltage image to electrons, create the
-% Poisson noise, and then the signal back to a voltage. The returned
-% voltage signal is not Poisson; it has the same SNR (mean/sd) as the
-% electron image.
+% The shot noise is Poisson in units of electrons (but not in other
+% units). Hence, we transform the (mean) voltage image to electrons,
+% create the Poisson noise, and then the signal back to a voltage. The
+% returned noisy voltage signal is not Poisson; it has the same SNR
+% (mean/sd) as the electron image.
 %
 % This routine uses the normal approximation to the Poisson when there are
 % more than 25 electrons in the pixel.  It uses the Poisson distribution
@@ -21,40 +21,63 @@ function [noisyImage,theNoise] = noiseShot(sensor)
 %
 % See also:  poissrnd
 %
-% Examples:
-%    [noisyImage,theNoise] = noiseShot(vcGetObject('sensor'));
-%    imagesc(theNoise); colormap(gray(64))
-%
-% Copyright ImagEval Consultants, LLC, 2003.
 % Updated 2015, 2022, Stanford University
 
-volts          = sensorGet(sensor,'volts');
-conversionGain = pixelGet(sensor.pixel,'conversion gain');
-electronImage  = volts/conversionGain;
+% Examples:
+%{
+  scene = sceneCreate;
+  scene = sceneSet(scene,'fov',2);
+  oi = oiCreate;
+  oi = oiCompute(oi,scene);
+  sensor = sensorCreate;
+  sensor = sensorCompute(sensor,oi);
+  sensorWindow(sensor);
+  [noisyImage, theNoise] = noiseShot(sensor);
+  ieNewGraphWin; imagesc(theNoise); colormap(gray(64))
+%}
 
-% calculate an average "mean" noise as an approximation
-meanNoise = sqrt(electronImage) .* randn(size(electronImage));
+%% Get the electrons from the sensor
+electronImage    = sensorGet(sensor,'electrons');
 
+% Calculate noise using a Gaussian approximation to the Poisson.
+% Each point has a standard deviation of the sqrt(mean) value
+% The noise will be added (later) to the mean value.
+
+% electronNoise = sqrt(electronImage) .* randn(size(electronImage));
+noisyImage = poissrnd(electronImage);
+electronNoise = noisyImage - electronImage;
+
+%{
+% The Poisson approximation is not absolutely great if the mean is less
+% than 20.  We use the real Poisson for those values
 poissonCriterion = 25;
+
 % photosites where we want to use the Poisson Noise instead
-v = electronImage < poissonCriterion;
-% we don't always need to compute Poisson noise
-if ~isempty(v)
+% v = find(electronImage < poissonCriterion);
+% ~isempty(v)
+
+% Sometimes there are no sites with a low count.
+% In that case, we do not need to compute Poisson noise
+if ~isempty(find(electronImage < poissonCriterion,1))
+    
+    % We have low counts.  Here are the locations 
+    v = (electronImage < poissonCriterion);
+
+    % Poisson noise at those locations.
     poissonImage = poissrnd(electronImage .* v);
-    meanNoise = meanNoise .* ~v;
-    meanImage = electronImage .* ~v;
-    % Add our partial arrays together to get the entire image
-    % NB: round() was used in original code when adding Gaussian noise
-    noisyImage = poissonImage + round(meanImage + meanNoise);
-else
-    % We add the image + noise electrons together.
-    noisyImage = round(electronImage + meanNoise);
+
+    % Replace the Gaussian locations with the poisson values
+    electronNoise(v) = poissonImage(v);
 end
 
-% Convert the noisy electron image back into the voltage signal
-noisyImage = conversionGain*noisyImage;
+% Electron counts are discrete, so we round.
+noisyImage = round(electronImage + electronNoise);
+%}
 
-% return noise also
-theNoise = noisyImage - electronImage;
+% Convert the electron data into voltage signals
+conversionGain = sensorGet(sensor,'pixel conversion gain');
 
+noisyImage = conversionGain*noisyImage;   % In volts
+theNoise   = conversionGain*electronNoise;
 
+end
