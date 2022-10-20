@@ -32,11 +32,11 @@ e = sensorGet(sensor,'electrons');
 lambda = mean(e(:));
 
 %%
-vcNewGraphWin;
+ieNewGraphWin;
 nSamps = length(e(:));
 eHist = histogram(e(:),'Normalization','probability');
 hold on
-val = poissrnd(lambda,nSamps);
+val = poissrnd(repmat(lambda,nSamps,1));
 pHist = histogram(val(:),'Normalization','probability');
 pHist.NumBins = eHist.NumBins*2;
 hold off
