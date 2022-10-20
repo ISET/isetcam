@@ -59,7 +59,7 @@ sensorAllNoise2 = sensorSet(sensorAllNoise2,'name','all noise2');
 
 v1 = sensorGet(sensorAllNoise,'volts');
 v2 = sensorGet(sensorAllNoise2,'volts');
-vcNewGraphWin; plot(v1(:),v2(:),'.')
+ieNewGraphWin; plot(v1(:),v2(:),'.')
 title('Should be identity line')
 assert(max(abs(v1(:) - v2(:))) < 1e-6,'Reused noise difference too large')
 
@@ -70,7 +70,7 @@ sensorAllNoise3 = sensorSet(sensorAllNoise3,'name','all noise2');
 
 v1 = sensorGet(sensorAllNoise,'volts');
 v2 = sensorGet(sensorAllNoise3,'volts');
-vcNewGraphWin; plot(v1(:),v2(:),'.')
+ieNewGraphWin; plot(v1(:),v2(:),'.')
 title('Should be scattered')
 assert(max(abs(v1(:) - v2(:))) > 1e-4,'Reused noise difference too small')
 
@@ -125,7 +125,7 @@ sensorWindow(sensorNew2);
 
 v1 = sensorGet(sensorNew1,'volts');
 v2 = sensorGet(sensorNew2,'volts');
-vcNewGraphWin; plot(v1(:),v2(:),'.');
+ieNewGraphWin; plot(v1(:),v2(:),'.');
 grid on
 xlabel('sensor 1')
 xlabel('sensor 2')
@@ -143,7 +143,7 @@ sensorNewReuse = sensorCompute(sensorNew,oi);
 %%
 v1 = sensorGet(sensorNew,'volts');
 v2 = sensorGet(sensorNewReuse,'volts');
-vcNewGraphWin; plot(v1(:),v2(:),'.');
+ieNewGraphWin; plot(v1(:),v2(:),'.');
 grid on
 xlabel('sensor original')
 xlabel('sensor reuse')

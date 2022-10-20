@@ -186,7 +186,7 @@ switch lower(pType)
         if numel(energy) == 1
             bar(wave,energy); grid on;
         else
-            plot(wave,energy,'-'); grid on;
+            plot(wave,energy,'k-'); grid on;
         end
         
         % Fix an annoying Matlab plotting bug
@@ -207,7 +207,7 @@ switch lower(pType)
         if numel(photons) == 1
             bar(wave,photons); grid on;
         else
-            plot(wave,photons,'-'); grid on;
+            plot(wave,photons,'k-'); grid on;
         end
         
         % Fix an annoying Matlab plotting bug
@@ -279,7 +279,7 @@ switch lower(pType)
         reflectance = mean(reflectance);
         
         % Start the plotting and storage
-        plot(wave,reflectance);
+        plot(wave,reflectance,'k-');
         mxReflectance = max(reflectance(:));
         set(gca,'ylim',[0,max(1.05,mxReflectance)]);
         xlabel('Wavelength (nm)'); ylabel('Reflectance'); grid on
@@ -443,11 +443,11 @@ switch lower(pType)
         [freq,fftlum] = ieSpace2Amp(pos.x,lum,normalize);
         
         % figure(vcSelectFigure('GRAPHWIN'));   clf
-        plot(freq,fftlum,'r-');
+        plot(freq,fftlum,'k-');
         xlabel('Cycles/mm'); ylabel('Normalized amplitude'); grid on
         
         udata.freq = freq; udata.data = fftlum;
-        udata.cmd = 'plot(freq,data,''r-'')';
+        udata.cmd = 'plot(freq,data,''k-'')';
         
     case {'luminancevline','vlineluminance'}
         
@@ -480,11 +480,11 @@ switch lower(pType)
         [freq,fftlum] = ieSpace2Amp(yPosMM.y,lum,normalize);
         
         % figure(vcSelectFigure('GRAPHWIN'));   clf
-        plot(freq,fftlum,'r-');
+        plot(freq,fftlum,'k-');
         xlabel('Cycles/mm'); ylabel('Normalized amplitude'); grid on
         
         udata.freq = freq; udata.data = fftlum;
-        udata.cmd = 'plot(freq,data,''r-'')';
+        udata.cmd = 'plot(freq,data,''k-'')';
         
     case {'luminanceroi','luminance'}
         % Mean luminance of roi
@@ -597,7 +597,7 @@ switch lower(pType)
         % scenePlot(scene,'luminance mesh linear')
         
         if ieContains(pType,'log'), yScale = 'log';
-        else yScale = 'linear';
+        else, yScale = 'linear';
         end
         
         lum = sceneGet(scene,'luminance');
@@ -657,7 +657,7 @@ switch lower(pType)
                 ieInWindowMessage('No illuminant data.',app);
                 close(gcf)
         end
-        plot(wave(:),energy,'-')
+        plot(wave(:),energy,'k-')
         xlabel('Wavelength (nm)');
         ylabel('Energy (watts/sr/nm/m^2)');
         grid on,  title(sprintf('%s Illuminant',sceneGet(scene,'name')));
@@ -690,7 +690,7 @@ switch lower(pType)
         end
         
         % Plot 'em up
-        plot(wave(:),photons,'-')
+        plot(wave(:),photons,'k-')
         xlabel('Wavelength (nm)'); ylabel('Radiance (q/sec/sr/nm/m^2)');
         grid on,  title(sprintf('%s Illuminant',sceneGet(scene,'name')));
         udata.wave = wave; udata.photons = photons;
