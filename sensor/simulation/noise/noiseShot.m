@@ -60,8 +60,10 @@ if ~isempty(find(electronImage < poissonCriterion,1))
     % Poisson noise at those locations.
     poissonImage = poissrnd(electronImage .* v);
 
-    % Replace the Gaussian locations with the poisson values
-    electronNoise(v) = poissonImage(v);
+    % Replace the Gaussian locations with the Poisson values
+    % NOTE:  We subject the electronImage from these values because we add
+    % it back in later when calculating the noisyImage
+    electronNoise(v) = poissonImage(v) - electronImage(v);
 end
 
 % Electron counts are discrete, so we round.

@@ -84,7 +84,7 @@ meanVolts = mean(volts,1);
 % If that is all you have, it will be necessary to find ways to estimate
 % the volts from the digital values.
 
-vcNewGraphWin;
+ieNewGraphWin;
 title('Measured voltages')
 plot(expTimes(list),meanVolts(list),'-o');
 xlabel('Exposure time (s)'); ylabel('Voltage (v)');
