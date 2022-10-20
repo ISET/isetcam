@@ -29,11 +29,6 @@ function scdImage = SignalCurrentDensity(OI,ISA)
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
-% Critical size used to decide which computational method is applied.  The
-% computational issue is memory size versus speed (see below).
-% Changed 4x in 2015 because computers are bigger.
-critSize = 2^20;
-
 q = vcConstants('q');       % Charge per electron
 
 % Hack.  But if we use sceneGet, we get all the data back.
@@ -96,6 +91,12 @@ sQE = spectralQE*oiWaveBinwidth;
 % filters.  Accumulated this way, we form a current density image at every
 % position for all the color filters.
 % Output units: [A/m^2]
+
+% Critical size used to decide which computational method is applied.  The
+% computational issue is memory size versus speed (see below).
+% Changed 4x in 2015 because computers are bigger.
+% Changed again in 2022 because computers are bigger (again:)).
+critSize = 2^26;
 
 if nRows*nCols < critSize
     % This is faster.  But if we are trying to limit the memory size, we
