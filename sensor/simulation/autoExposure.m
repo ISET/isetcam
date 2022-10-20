@@ -53,6 +53,8 @@ function  [integrationTime,maxSignalVoltage,smallOI] = autoExposure(oi,sensor,le
 %      'video'      - Same as weighted, but a maximum exposure time
 %                     sent in by a videomax parameter (default 1/60 s)
 %                     aeVideo).
+%      'hdr'        - Like Specular, but clips from high and low to
+%                     possibly provide a better baseline for hdr processing
 %
 % See also
 %    sensorCompute
@@ -78,7 +80,7 @@ function  [integrationTime,maxSignalVoltage,smallOI] = autoExposure(oi,sensor,le
 %}
 
 
-%% Parse arguments
+%% Parse arguments          
 
 if ieNotDefined('level'), level = 0.95; end
 if ieNotDefined('aeMethod'), aeMethod = 'default'; end
@@ -96,10 +98,12 @@ p.addRequired('aemethod',@ischar)
 % Optional Key/val Parameters
 p.addParameter('centerrect',[],@isvector);
 p.addParameter('videomax',1/60,@isscalar);   % Maximum exposure duration sec
+p.addParameter('numframes',1,@isscalar);   % 
 
 p.parse(oi,sensor,level,aeMethod,varargin{:});
 centerRect = p.Results.centerrect;
 videoMax   = p.Results.videomax;
+numFrames = p.Results.numframes; % for autohdr
 
 switch lower(aeMethod)
     case 'specular'
@@ -116,6 +120,8 @@ switch lower(aeMethod)
         integrationTime = aeWeighted(oi,sensor,level,'centerrect',centerRect);
     case 'video'
         integrationTime = aeVideo(oi,sensor,level,'center rect',centerRect,'videomax',videoMax);
+    case 'hdr' % Experimental to get base exposure for hdr scenes
+        [integrationTime,maxSignalVoltage] = aeHDR(oi,sensor,level, numFrames);
         
     otherwise
         error('Unknown auto-exposure method')
@@ -293,6 +299,45 @@ integrationTime = (voltageSwing/targetVoltage);
 maxSignalVoltage = max(signalVoltage(:));
 
 end
+
+%-------------------------
+function [integrationTime,maxSignalVoltage] = aeHDR(oi,sensor,level,numFrames)
+% Try to find a way to estimate a good "base" exposure for scenes
+% with much higher dynamic range than the sensor, for use with
+% computational imaging approached such as burst and bracket
+%
+% iTime = autoExposure(oi,sensor,0.95,'hdr');
+
+voltageSwing = sensorGet(sensor,'pixel voltage swing');
+
+% No noise and one sec exposure
+sensor = sensorSet(sensor,'noise flag',0);
+sensor = sensorSet(sensor,'exp time',1);
+
+% Not clipped
+signalVoltage = sensorComputeImage(oi,sensor);
+
+% Percentile level is between 0 and 100.  That is why we multiply level by
+% 100.
+maxTargetVoltage = prctile(signalVoltage(:),level*1e2);
+minTargetVoltage = prctile(signalVoltage(:),(1-level)*1e2);
+
+% Limit our band to our target voltages
+vSwing = maxTargetVoltage - minTargetVoltage;
+
+if numFrames > 1
+    minTime = vSwing/maxTargetVoltage;
+    maxTime = vSwing/minTargetVoltage;
+    % return an array of times
+    integrationTime = minTime:round(maxTime-minTime/numFrames):maxTime;
+else
+    integrationTime = (vSwing/(maxTargetVoltage-minTargetVoltage));    
+end
+
+maxSignalVoltage = max(signalVoltage(:));
+
+end
+
 
 %-------------------------------
 function [integrationTime, maxSignalVoltage] = aeWeighted(oi,sensor,level,varargin)

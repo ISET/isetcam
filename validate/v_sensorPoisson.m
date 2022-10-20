@@ -7,6 +7,16 @@
 %%
 ieInit;
 
+%% Compare the timing on a large poissrnd call and a randn call
+e = randn([1024 1024]);
+tic
+randn(size(e)) .* sqrt(e); %#ok<VUNUS> 
+g = toc;
+tic
+poissrnd(e);
+p = toc;
+fprintf('Poisson to Gauss timing ratio for 1M samples:  %f\n',p/g)
+
 %% Make a uniform scene, pretty big
 scene = sceneCreate('uniform');  % Mean luminance is 100 cd/m2
 scene = sceneSet(scene,'fov',10);
@@ -32,11 +42,11 @@ e = sensorGet(sensor,'electrons');
 lambda = mean(e(:));
 
 %%
-vcNewGraphWin;
+ieNewGraphWin;
 nSamps = length(e(:));
 eHist = histogram(e(:),'Normalization','probability');
 hold on
-val = poissrnd(lambda,nSamps);
+val = poissrnd(repmat(lambda,nSamps,1));
 pHist = histogram(val(:),'Normalization','probability');
 pHist.NumBins = eHist.NumBins*2;
 hold off
