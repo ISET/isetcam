@@ -42,19 +42,13 @@ electronImage    = sensorGet(sensor,'electrons');
 % Calculate noise using a Gaussian approximation to the Poisson.
 % Each point has a standard deviation of the sqrt(mean) value
 % The noise will be added (later) to the mean value.
+% We do not call Poisson because it is about 3x slower, even accounting for
+% all the sqrts.
+electronNoise = sqrt(electronImage) .* randn(size(electronImage));
 
-% electronNoise = sqrt(electronImage) .* randn(size(electronImage));
-noisyImage = poissrnd(electronImage);
-electronNoise = noisyImage - electronImage;
-
-%{
 % The Poisson approximation is not absolutely great if the mean is less
 % than 20.  We use the real Poisson for those values
 poissonCriterion = 25;
-
-% photosites where we want to use the Poisson Noise instead
-% v = find(electronImage < poissonCriterion);
-% ~isempty(v)
 
 % Sometimes there are no sites with a low count.
 % In that case, we do not need to compute Poisson noise
@@ -71,13 +65,12 @@ if ~isempty(find(electronImage < poissonCriterion,1))
 end
 
 % Electron counts are discrete, so we round.
-noisyImage = round(electronImage + electronNoise);
-%}
 
 % Convert the electron data into voltage signals
 conversionGain = sensorGet(sensor,'pixel conversion gain');
 
-noisyImage = conversionGain*noisyImage;   % In volts
+% In volts
+noisyImage = conversionGain*round(electronImage + electronNoise);
 theNoise   = conversionGain*electronNoise;
 
 end

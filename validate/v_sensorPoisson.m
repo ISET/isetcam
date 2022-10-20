@@ -7,6 +7,16 @@
 %%
 ieInit;
 
+%% Compare the timing on a large poissrnd call and a randn call
+e = randn([1024 1024]);
+tic
+randn(size(e)) .* sqrt(e); %#ok<VUNUS> 
+g = toc;
+tic
+poissrnd(e);
+p = toc;
+fprintf('Poisson to Gauss timing ratio for 1M samples:  %f\n',p/g)
+
 %% Make a uniform scene, pretty big
 scene = sceneCreate('uniform');  % Mean luminance is 100 cd/m2
 scene = sceneSet(scene,'fov',10);
