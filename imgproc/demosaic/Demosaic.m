@@ -156,7 +156,9 @@ bPattern = bPattern(:)';
 method = ieParamFormat(method);
 switch lower(method)
     case {'bilinear','iebilinear'}
-        if size(imgRGB,3) == 3 && isequal(size(pattern) ,[2 2])
+        % images with depth have 4 channels, so we need to
+        % allow for that
+        if (size(imgRGB,3) == 3 || size(imgRGB,3) == 4) && isequal(size(pattern) ,[2 2])
             % ieBilinear is designed for Bayer 2x2 case.  Otherwise, just use
             % linear interpolation in the next else case.
             demosaicedImage = ieBilinear(imgRGB,sensorGet(sensor,'pattern'));
