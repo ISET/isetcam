@@ -1,8 +1,8 @@
-function [uData, g] = ipPlot(ip,param,xy,varargin)
+function [uData, hdl] = ipPlot(ip,param,xy,varargin)
 % Gatway plotting routine for the image processing structure
 %
 % Syntax
-%   [uData, g] = ipPlot(ip,param,varargin)
+%   [uData, hdl] = ipPlot(ip,param,varargin)
 %
 % Brief description
 %   Image processing (ip) plotting gateway.
@@ -13,7 +13,7 @@ function [uData, g] = ipPlot(ip,param,xy,varargin)
 %   xy     - xy position on the image for plotting a line
 %
 % Key/val pairs
-%
+%   
 % Returns
 %    uData
 %    hdl
@@ -51,28 +51,30 @@ if ieNotDefined('param'), error('plotting parameter required'); end
 if ieNotDefined('xy'), xy = []; end
 
 uData = [];
-g = [];
+
+% Some day this might be unused.
+hdl = []; %#ok<NASGU> 
 
 %%
 param    = ieParamFormat(param);
 switch param
     case 'horizontalline'
         % Set xy
-        [uData, g] = plotDisplayLine(ip,'h',xy);
+        [uData, hdl] = plotDisplayLine(ip,'h',xy);
     case 'verticalline'
-        [uData, g] = plotDisplayLine(ip,'v');
+        [uData, hdl] = plotDisplayLine(ip,'v');
     case 'chromaticity'
-        [uData, g] = plotDisplayColor(ip,'chromaticity');
+        [uData, hdl] = plotDisplayColor(ip,'chromaticity');
     case 'cielab'
-        [uData, g] = plotDisplayColor(ip,'CIELAB');
+        [uData, hdl] = plotDisplayColor(ip,'CIELAB');
     case 'cieluv'
-        [uData, g] = plotDisplayColor(ip,'CIELUV');
+        [uData, hdl] = plotDisplayColor(ip,'CIELUV');
     case 'luminance'
-        [uData, g] = plotDisplayColor(ip,'luminance');
+        [uData, hdl] = plotDisplayColor(ip,'luminance');
     case 'rgbhistogram'
-        [uData, g] = plotDisplayColor(ip,'RGB');
+        [uData, hdl] = plotDisplayColor(ip,'RGB');
     case 'rgb3d'
-        [uData, g] = plotDisplayColor(ip,'rgb3d');
+        [uData, hdl] = plotDisplayColor(ip,'rgb3d');
         
     case {'roi'}
         % [uData,g] = ipPlot(ip,'roi');
@@ -87,11 +89,13 @@ switch param
         
         % Make sure the sensor window is selected
         ipWindow;
-        g = ieROIDraw('ip','shape','rect','shape data',ipGet(ip,'roi'));
+        hdl = ieROIDraw('ip','shape','rect','shape data',ipGet(ip,'roi'));
         
     otherwise
         error('Uknown parameter %s\n',param);
 end
 
+% Attach the user data to the axis too?
+% if exist('uData','var'),set(gca,'UserData',uData); end
 
 end
