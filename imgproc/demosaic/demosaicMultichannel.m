@@ -72,8 +72,6 @@ switch lower(method)
                 % figure(1);histogram(bandValues(:),50)
                 
                 % We interpolate the data.
-                % This should be updated with a triScatteredInterp
-                % Could do a try/catch for modern programming use.
                 % griddata fail when (r,c) are very simple and uniformly
                 % spaced. We jiggled the r,c to handle this case.  Perhaps
                 % we should detect this and use interp2 in that case.
