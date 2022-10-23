@@ -92,11 +92,14 @@ classdef cpBurstIP < cpIP
                     end
                 case 'Burst'
                     % baseline is just sum the voltages, without alignment
+                    % We take our array of sensor images from our frames
+                    % and put them in one sensorImage as a "list"
+                    % for further processing:
                     sensorImage = obj.mergeSensors(sensorImages);
                     sensorImage = sensorSet(sensorImage,'exposure method', 'burst');
 
-                    %obj.ip = ipSet(obj.ip, 'render demosaic only', 'true');
-                    obj.ip = ipSet(obj.ip, 'combination method', 'sum');
+                    % Use our burst of images to improve dynamic range
+                    obj.ip = ipSet(obj.ip, 'combination method', 'hdr');
 
                     % old ipBurstMotion  = ipCompute(ipBurstMotion,sensorBurstMotion);
                     obj.ip = ipCompute(obj.ip, sensorImage);

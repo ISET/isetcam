@@ -108,7 +108,7 @@ switch exposureMethod(1:3)
     case 'cfa'  % cfaExposure
         ip = ipComputeCFA(ip,sensor);
     case 'bur'  % burst of images
-        ip = ipComputeBurst(ip, sensor, 'sum');
+        ip = ipComputeBurst(ip, sensor, 'hdr');
     otherwise
         error('Unknown exposure method %s\n',exposureMethod);
 end
@@ -490,6 +490,18 @@ nExps    = length(expTimes(:));
 img       = ipGet(ip,'input');
 
 switch combinationMethod
+    case 'hdr'
+        % Here we hope the images are aligned and try to
+        % get the maximum dynamic range by combining the
+        % exposures. This is of course too simple for cases
+        % with motion.
+
+        %burstMax = sensorMax * numel(expTimes);
+        maxImg = sum(img,3);
+        
+        newImg = maxImg / numel(expTimes);
+        ip = ipSet(ip, 'input', newImg);
+
     case 'sum'
         % simplest case where we just sum the burst of images
         img = sum(img, 3);
