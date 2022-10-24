@@ -19,12 +19,15 @@ function [deltaEImage, params, xyz1, xyz2] = scielab(image1,image2,whitePt,param
 %              XYZ images must between between 0 and the whitePt{ii}
 % params:      a structure containing several variables used in the
 %              calculation. The entries are updated and can be returned
-%              by this routine.
+%              by this routine. You can initialize params to a default
+%              setting using 
+%
+%                 params = scParams;
 %
 %  params.<var>
 %       sampPerDeg = How many samples per degree of visual angle in the image.
 %                    If the image is, say, 5 deg, and contains 128 samples,
-%                    then this parameter is 512/2.
+%                    then this parameter is 128/5 = 25.
 %                    The default is 224 for historical reasons.  In
 %                    general, the code should be improved to work well at
 %                    low sample rates.
