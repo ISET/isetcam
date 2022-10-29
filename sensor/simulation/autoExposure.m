@@ -285,6 +285,7 @@ voltageSwing = sensorGet(sensor,'pixel voltage swing');
 
 % No noise and one sec exposure
 sensor = sensorSet(sensor,'noise flag',0);
+
 sensor = sensorSet(sensor,'exp time',1);
 
 % Not clipped
