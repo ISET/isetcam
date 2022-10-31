@@ -39,10 +39,7 @@ function [val, level] = humanUVSafety(energy,wave,varargin)
 %
 %    IEC 62471:2006 Photobiological Safety of Lamps and Lamp Systems. n.d.
 %    Accessed October 5, 2019. https://webstore.iec.ch/publication/7076
-%    J.E. Farrell has a copy of this standard
-%
-%  Google Drive:
-%  https://drive.google.com/file/d/1JQC_R7QDGd58vpNByyKvrVlwEfTk5-Uu/view?usp=sharing
+%    J.E. Farrell has a copy of this standard and it is in ISETCam/docs
 %
 %  The document explains the different functions in these sections.
 %
@@ -126,7 +123,7 @@ p = inputParser;
 p.addRequired('irradiance',@isvector);
 p.addRequired('wave',@isvector)
 p.addParameter('method','skineye',@(x)(ismember(ieParamFormat(x),{'skineye','eye','bluehazard'})));
-p.addParameter('duration',1,@isnumeric);  % Used for 'eye' method only
+p.addParameter('duration',1,@isnumeric);
 p.parse(energy,wave,varargin{:});
 
 method = ieParamFormat(p.Results.method);
@@ -154,7 +151,7 @@ switch method
         %
         % Our stimuli are constant over time, so this simplifies to
         %
-        %    T * sum(Actinic(lambda) irradiance(lambda) dLambda
+        %    T * sum(Actinic(lambda) irradiance(lambda) dLambda)
         %
         % where T is the total time.  For simplicty we set T = 1, so we are
         % calculating the total amount of time (in minutes) for a light with this
@@ -186,7 +183,7 @@ switch method
 
          E_s is the effective ultraviolet irradiance (W/m^2).  The formula for
          E_s is defined in Equation 4.1.  It is the inner product of the Actinic
-function and the irradiance function, accounting for time and
+         function and the irradiance function, accounting for time and
          wavelength sampling.
         %}
         
@@ -227,8 +224,12 @@ function and the irradiance function, accounting for time and
         elseif level < 10    % Duration is long, so level must be low
             val = true;
         end
+
     case 'bluehazard'
-        % Retinal blue light hazard, Section 4.3.3
+        % Retinal blue light hazard, Section 4.3.3 - large spatial source
+        %
+        % The manual assumes you are staring at a light source so the units
+        % are radiance (W/sr/m2/nm) 
         %
         % Potential for  a photochemically  induced retinal injury
         % resulting  from radiation  exposure  at  wavelengths primarily
@@ -240,18 +241,42 @@ function and the irradiance function, accounting for time and
         %
         fname = which('blueLightHazard.mat');
         blueHazard = ieReadSpectra(fname,wave);
-        % ieNewGraphWin; plot(wave,blueHazard)
+        % ieNewGraphWin; semilogy(wave,blueHazard)
         
+        % Calculate the level of the energy w.r.t. the blueHazard curve
         level = dLambda*dot(blueHazard,energy);
-        
+
         % Equations 4.5a, 4.5b
-        val = false;
-        if duration <= 1e4   % seconds
-            if level*duration < 1e6, val = true; end
-        elseif level < 1e2    % Duration is long, so level must be low
-            val = true;
+        % Determine if the level times the duration is safe or not
+        % Returns val as true for safe, and false for not safe.
+
+        if duration <= 1e4  && level*duration < 1e6 % seconds
+            val = true;  % Eqn 4.5a
+        elseif duration > 1e4 && level < 100
+            val = true; % Eqn 4.5b
+        else
+            val = false;
         end
+
+        % The max exposure time is given by Eqn 4.6 when level > 100
+        if level > 100  && duration <= 1e4
+            fprintf('Max permissible exposure time in min %f (for durations < 1e4 s)',100/level/60);
+        elseif level > 100 && duration > 1e4
+            fprintf('Level > 100 and duration long.  Standard says it is dangerous.')
+        else
+            %level < 100.   Maybe any amount of time is OK
+            fprintf('The level is less than 100 and the standard says it is safe.')
+        end
+
+        fprintf('')
+    case 'bluehazardsmall'
+        % For an angle < 0.011 radians, which 0.63 deg
+        %
+        % See Section 4.3.4 if you want to implement this case.  It
+        % requires converting the source to the irradiance as explained in
+        % the standards document.  May be simple to do.
         
+
     otherwise
         error('Unknown UV safety method %s\n',method);
 end

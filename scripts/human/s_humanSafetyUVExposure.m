@@ -40,7 +40,7 @@ wave = 300:700;
 %% An example of a light measured in the lab
 fname = which('LED405nm.mat');
 radiance = ieReadSpectra(fname,wave);
-ledRadiance = mean(radiance,2);
+ledRadiance = mean(radiance,2); % 
 ledRadiance(wave > 500) = 0;  % Only noise was measured above 500 nm
 
 lum405 = ieLuminanceFromEnergy(ledRadiance,wave);
@@ -54,6 +54,7 @@ fprintf('Maximum exposure duration per eight hours:  %f (min)\n',exposureMinutes
 
 fname = which('LED385nm.mat');
 radiance = ieReadSpectra(fname,wave);
+plotRadiance(wave,radiance);
 radiance = mean(radiance,2);
 plotRadiance(wave,radiance);
 
