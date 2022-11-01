@@ -144,7 +144,9 @@ switch method
         fname = which('Actinic.mat');
         Actinic = ieReadSpectra(fname,wave);
         % semilogy(wave,Actinic); xlabel('Wave'); grid on;
-        
+        % Notice that the actinic function only goes up to 400
+        % see "4.3.1 Actinic UV hazard exposure limit for the skin and eye" in the EN6247 standard 
+
         %% The UV hazard safety formula
         %
         %    sum (Actinic(lambda,t) irradiance(Lambda)) dLambda dTime
@@ -193,7 +195,6 @@ switch method
         
     case 'eye'
         %% The calculation in 4.3.2 is specialized for the eye.
-        %
         % The formula they derive in that case is a maximum irradiance value that
         % is calculated separately when the eye is exposed for less than 1,000 sec
         % or more than 1,000 seconds.
@@ -242,6 +243,8 @@ switch method
         fname = which('blueLightHazard.mat');
         blueHazard = ieReadSpectra(fname,wave);
         % ieNewGraphWin; semilogy(wave,blueHazard)
+        % Notice that this function is defined beyond 400 nm so it takes
+        % into account the effect of visible and NIR light
         
         % Calculate the level of the energy w.r.t. the blueHazard curve
         level = dLambda*dot(blueHazard,energy);
@@ -275,8 +278,18 @@ switch method
         % See Section 4.3.4 if you want to implement this case.  It
         % requires converting the source to the irradiance as explained in
         % the standards document.  May be simple to do.
-        
-
+    case 'thermalhazardeye'
+        % uses a burn hazard function that we would need to enter
+        % See Section 4.3.5
+        % there is also another specification for retinal thermal hazard
+        % for weak stimuli that do not active an aversion response (i.e. we
+        % do not turn our eyes away) 
+    case 'infraredhazardeye'
+        % 4.3.7
+    case 'thermalhazardskin'
+        % See Section 4.3.8
+        % "This exposure limit is based on skin injury due to a 
+        % rise in tissue temperature and applies only to small area irradiation."
     otherwise
         error('Unknown UV safety method %s\n',method);
 end
