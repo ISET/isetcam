@@ -126,7 +126,7 @@ for ss=1:length(sensorArray)   % Number of sensors
         sensor.integrationTime  = autoExposure(oi,sensor);
         
     elseif isvector(integrationTime)
-        % We are in bracketing mode, do nothing.
+        % We are in bracketing or burst mode, do nothing.
         
     elseif isequal( size(integrationTime),size(pattern) )
         % Find best exposure for each color filter separately
