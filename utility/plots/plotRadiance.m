@@ -9,7 +9,8 @@ function [hdl, thisPlot] = plotRadiance(wavelength,radiance,varargin)
 %    radiance    - Columns of radiances
 %
 % Optional key/value pairs
-%    title
+%    title -
+%    hdl   - Use this hdl instead of ieNewGraphWin
 %
 % Returns;
 %   hdl      - ieNewGraphWin handle
@@ -22,18 +23,23 @@ function [hdl, thisPlot] = plotRadiance(wavelength,radiance,varargin)
 % More options to come.  Such as a title.
 %
 
-%%
+%% Parse
 p = inputParser;
 p.addRequired('wavelength',@isvector);
 p.addRequired('radiance',@isnumeric);
 
 p.addParameter('title','Spectral radiance',@ischar);
-
+p.addParameter('hdl',[],@(x)(isa(x,'matlab.ui.Figure')))
 p.parse(wavelength,radiance,varargin{:});
+
 strTitle = p.Results.title;
+hdl      = p.Results.hdl;
 
 %% Open the window
-hdl = ieNewGraphWin;
+if isempty(hdl)
+    hdl = ieNewGraphWin;
+end
+
 wavelength = wavelength(:);
 
 %% Handle the case of a transpose in radiance
