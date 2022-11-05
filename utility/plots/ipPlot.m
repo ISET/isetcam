@@ -1,5 +1,5 @@
 function [uData, hdl] = ipPlot(ip,param,xy,varargin)
-% Gatway plotting routine for the image processing structure
+% Gateway plotting routine for the image processing structure
 %
 % Syntax
 %   [uData, hdl] = ipPlot(ip,param,varargin)
