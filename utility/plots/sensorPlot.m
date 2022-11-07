@@ -262,7 +262,7 @@ switch pType
         if twoLines
             delete(g); roiLocs(1) = roiLocs(1) + 1;
             [~,uData2]  = sensorPlotLine(sensor, 'v', 'dv', 'space', roiLocs);
-            [g, uData] = sensorPlotTwoLines(sensor,uData,uData2);
+            [g, uData] = sensorPlotTwoLines(sensor,uData,uData2,'digital value');
             title(sprintf('Vertical line %d',roiLocs(1)-1));
         end
     case {'dvhline'}
@@ -270,7 +270,7 @@ switch pType
         if twoLines
             delete(g); roiLocs(2) = roiLocs(2) + 1;
             [~,uData2]  = sensorPlotLine(sensor, 'h', 'dv', 'space', roiLocs);
-            [g, uData] = sensorPlotTwoLines(sensor,uData,uData2);
+            [g, uData] = sensorPlotTwoLines(sensor,uData,uData2,'digital value');
             title(sprintf('Horizontal line %d',roiLocs(2)-1));
         end
         
