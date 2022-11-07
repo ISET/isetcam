@@ -11,14 +11,15 @@ function rgb = sceneShowImage(scene,renderFlag,gam,app)
 % Inputs
 %  scene:
 %  renderFlag:
-%     absolute value of 0,1 compute RGB image
+%     absolute value of 0,1 return sRGB image
 %     absolute value of 2,  compute gray scale for IR
 %     absolute value of 3,  HDR rendering method
+%     absolute value of 4,  return lRGB image (NYI)
 %
-%     If value is negative, do not display, just render the values
-%     into the rgb variable that is returned.
+%     If renderFlag is negative, do not display, just render the values
+%     into the returned rgb variable.
 %
-%  gam:    The gamma value for the rendering
+%  gam:    The gamma value for the rendering, applied after the rendering.
 %  app:    sceneWindow_App class object, or a fig, or 0 (equiv to
 %          renderFlag <= 0)
 %
@@ -51,9 +52,9 @@ function rgb = sceneShowImage(scene,renderFlag,gam,app)
 %%  Input parameters
 if isempty(scene), cla; return;  end
 
-if ~exist('gam','var') || isempty(gam),         gam = 1;         end
+if ~exist('gam','var') || isempty(gam), gam = 1; end
 if ~exist('renderFlag','var') || isempty(renderFlag), renderFlag = 1; end
-if ~exist('app','var') || isempty(app),      app = [];     end
+if ~exist('app','var') || isempty(app), app = []; end
 
 if renderFlag > 0
     if isempty(app) || isa(app,'sceneWindow_App')
@@ -88,8 +89,8 @@ end
 % converts the data into a displayed image.  It is determined from the GUI
 % from the app.
 
-% The displayFlag is always set to negative.  So imageSPD does not show the
-% image.  Rather, we show it upon return here.
+% Here, the displayFlag is always set to negative.  So imageSPD does not
+% show the image.  We show it upon return only.
 rgb = imageSPD(photons,wList,gam,sz(1),sz(2),-1*abs(renderFlag),[],[],app);
 
 %% We could add back ROIs/overlays here, if desired.

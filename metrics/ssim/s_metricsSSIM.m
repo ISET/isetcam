@@ -4,12 +4,14 @@
 
 
 scene = sceneCreate('macbeth',64);
+sceneWindow(scene);
+
 ref = sceneGet(scene,'rgb');
 
 test = ref + 0.1*randn(size(ref));
 test(test>1) = 1;
 
-[val,mp] = ssim(test,ref);
+[val,ssimmap] = ssim(test,ref);
 
 montage({test,ref});
 size(test)
@@ -23,8 +25,13 @@ end
 %}
 %%
 ieNewGraphWin;
-imagesc(1 - mean(mp,3)); axis image;
+% Mean error across the three color channels
+
+% SSIM 1 is highest quality.  We want this to be an error map, so we
+% subtract from one.
+imagesc(1 - mean(ssimmap,3)); axis image;
 title('SSIM Error')
+colorbar;
 
 %% Try S-CIELAB on these images?
 

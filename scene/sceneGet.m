@@ -798,10 +798,12 @@ switch parm
         
         
         % For display purposes
-    case {'rgb','rgbimage'}
+    case {'rgb','rgbimage','srgb'}
         % rgb = sceneGet(scene,'rgb image');
         %
-        % Get the rgb image shown in the window
+        % Get the image shown in the window.  This is an sRGB rendering of
+        % the spectral data, using xyz2srgb().  If gamma is not 1, then the
+        % user is modifying the sRGB data with the gamma.
         
         gam        = sceneGet(scene,'gamma');
         renderFlag = sceneGet(scene,'render flag index');
