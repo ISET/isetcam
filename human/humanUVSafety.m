@@ -1,15 +1,15 @@
-function [val, level] = humanUVSafety(energy,wave,varargin)
+function [val, level, safety] = humanUVSafety(energy,wave,varargin)
 % Calculate the UV hazard safety for an irradiance
 %
 % Synopsis
-%  [val, level] = humanUVSafety(irradiance,wave,varargin)
+%  [val, level, safety] = humanUVSafety(irradiance,wave,varargin)
 %
 % Inputs:
 %   energy - irradiance (skineye, eye) or radiance (bluehazard) (watts/nm/m2)
 %   wave   - wavelength samples of the irradiance
 %
 % Optional key/val pairs
-%   method -  'skineye' or 'eye' (sections 4.3.1 and 4.3.2 of the PDF)
+%   method -  'skineye' (sections 4.3.1), 'eye' (section 4.3.2 ), 'bluehazard' (section 4.3.3)
 %   duration - Stimulus duration in seconds used for 'eye' and 'bluehazard'
 %              methods
 %
@@ -23,10 +23,11 @@ function [val, level] = humanUVSafety(energy,wave,varargin)
 %    val   - logical (true/false)
 %    level - the irradiance integrated over wavelength
 %
-% Method:  'bluehazard'
-%    val   - logical (true/false)
+% Method:  'bluehazard' (Sec 4.3.3)
+%    val   - Maximum safe time in minutes
 %    level - the dot product of the radiance with the blueLightHazard
 %            function.
+%    safety - true/false about passing the safety test
 %
 % Description:
 %
@@ -112,7 +113,7 @@ function [val, level] = humanUVSafety(energy,wave,varargin)
 % See also
 %   s_humanSafetyUVExposure, ieLuminance2Radiance
 %
-
+% Example: 
 
 %% Check inputs
 
@@ -122,7 +123,7 @@ p = inputParser;
 
 p.addRequired('irradiance',@isvector);
 p.addRequired('wave',@isvector)
-p.addParameter('method','skineye',@(x)(ismember(ieParamFormat(x),{'skineye','eye','bluehazard'})));
+p.addParameter('method','skineye',@(x)(ismember(ieParamFormat(x),{'skineye','eye','bluehazard','thermalskin',})));
 p.addParameter('duration',1,@isnumeric);
 p.parse(energy,wave,varargin{:});
 
@@ -194,7 +195,8 @@ switch method
         level = hazardEnergy;
         
     case 'eye'
-        %% The calculation in 4.3.2 is specialized for the eye.
+        %% The calculation in 4.3.2 is specialized for the eye and considers UV only
+        %
         % The formula they derive in that case is a maximum irradiance value that
         % is calculated separately when the eye is exposed for less than 1,000 sec
         % or more than 1,000 seconds.
@@ -228,17 +230,26 @@ switch method
 
     case 'bluehazard'
         % Retinal blue light hazard, Section 4.3.3 - large spatial source
+        % that includes visible light (300 - 700 nm)
         %
-        % The manual assumes you are staring at a light source so the units
-        % are radiance (W/sr/m2/nm) 
+        % The manual assumes you are staring at a an area light source so
+        % the units are radiance (W/sr/m2/nm).  If you do not send in a
+        % duration, we calculate for a 1 sec duration.  For all
+        % calculations here, we assume the light is on at a constant level
+        % (no calculation for time-varying illumination).
         %
-        % Potential for  a photochemically  induced retinal injury
-        % resulting  from radiation  exposure  at  wavelengths primarily
-        % between 400 nm and 500 nm. This  damage mechanism  dominates
-        % over  the  thermal damage mechanism  for  times  exceeding 10
-        % seconds. (Page 15).
+        % This calculate the potential for a photochemically induced
+        % retinal injury resulting from radiation  exposure  at wavelengths
+        % primarily between 400 nm and 500 nm. This  damage mechanism
+        % dominates over  the  thermal damage mechanism  for times
+        % exceeding 10 seconds (see Page 15).
         %
         % The standard applies over the wavelength range from 300-700 nm.
+        %
+        % Example:
+        %   fname = which('light405.mat'); 
+        %   energy = ieReadSpectra(fname,380:500);
+        %   [safeTime, level, safety]= humanUVSafety(energy,380:500,'method','bluehazard','duration',10);
         %
         fname = which('blueLightHazard.mat');
         blueHazard = ieReadSpectra(fname,wave);
@@ -246,52 +257,63 @@ switch method
         % Notice that this function is defined beyond 400 nm so it takes
         % into account the effect of visible and NIR light
         
-        % Calculate the level of the energy w.r.t. the blueHazard curve
-        level = dLambda*dot(blueHazard,energy);
-
         % Equations 4.5a, 4.5b
+        % Calculate the level of the energy w.r.t. the blueHazard curve
+        % We do not calculate for time-varying signals.  So the formula is
+        % really the same in 4.5a and 4.5b.
+        level = dLambda*dot(blueHazard,energy);   % L_B
+
         % Determine if the level times the duration is safe or not
         % Returns val as true for safe, and false for not safe.
-
-        if duration <= 1e4  && level*duration < 1e6 % seconds
-            val = true;  % Eqn 4.5a
+        if duration <= 1e4  && level*duration< 1e6 % seconds
+            safety = true;  % Eqn 4.5a
         elseif duration > 1e4 && level < 100
-            val = true; % Eqn 4.5b
+            safety = true; % Eqn 4.5b
         else
-            val = false;
+            safety = false;
         end
-
+     
         % The max exposure time is given by Eqn 4.6 when level > 100
-        if level > 100  && duration <= 1e4
-            fprintf('Max permissible exposure time in min %f (for durations < 1e4 s)',100/level/60);
-        elseif level > 100 && duration > 1e4
-            fprintf('Level > 100 and duration long.  Standard says it is dangerous.')
+        if level > 100 % this is not computed if the level is < 100
+            if duration <= 1e4 % 
+                % Max permissible exposure time in min (Eqn 4.6)
+                val = 1e6/level/60;
+            else
+                % Level > 100 and duration long.  Standard says it is
+                % dangerous. So we set the time to 0.
+                val = 0;
+                fprintf('Level > 100 and duration long.  Standard says it is dangerous.\n')
+            end
         else
-            %level < 100.   Maybe any amount of time is OK
-            fprintf('The level is less than 100 and the standard says it is safe.')
+            % The level is less than 100. The standard does not specify.
+            % We think that means it is safe.
+            val = Inf;
         end
+        fprintf('Safe time: %0.5f minutes (%0.1f seconds)\n',val,60*val);
 
-        fprintf('')
     case 'bluehazardsmall'
         % For an angle < 0.011 radians, which 0.63 deg
         %
         % See Section 4.3.4 if you want to implement this case.  It
         % requires converting the source to the irradiance as explained in
-        % the standards document.  May be simple to do.
-    case 'thermalhazardeye'
-        % uses a burn hazard function that we would need to enter
-        % See Section 4.3.5
-        % there is also another specification for retinal thermal hazard
-        % for weak stimuli that do not active an aversion response (i.e. we
-        % do not turn our eyes away) 
-    case 'infraredhazardeye'
-        % 4.3.7
-    case 'thermalhazardskin'
-        % See Section 4.3.8
-        % "This exposure limit is based on skin injury due to a 
-        % rise in tissue temperature and applies only to small area irradiation."
-    otherwise
-        error('Unknown UV safety method %s\n',method);
-end
+        % the standards document.  May be simple to 
 
+    case 'thermalskin'
+     % Equation 4.12
+        % This exposure limit is based on skin injury due to a rise in tissue temperature 
+        % and applies only to small area irradiation. 
+        % Exposure limits for periods greater than 10 s are not provided.
+        % dLambda*dot(blueHazard,energy);
+        % duration must be in seconds
+      level = dLambda * duration^0.25 * sum(energy); 
+       val = level;
+        % level should be less than 20000 * duration^0.25
+        % 
+        % Determine if the level times the duration is safe or not
+        % Returns val as true for safe, and false for not safe.
+        if duration <= 10  &&  level < 20000 * duration^0.25 % seconds
+            safety = true;  % Eqn 4.5a
+        else
+            safety = false;
+        end
 end
