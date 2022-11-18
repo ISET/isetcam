@@ -78,13 +78,13 @@ end
 estXYZ = (T{3}*sqe')';
 
 % Let's plot the transformed spectral QE for the 5000K illuminant
-ieNewGraphWin([],'wide');
-sym = {'r','g','b'};
-for ii=1:3
-    subplot(1,3,ii)
-    p = plot(wave,estXYZ(:,ii),[sym{ii},'-'],wave,CMF(:,ii),[sym{ii},':'], 'LineWidth',2);    
-    xlabel('Wavelength (nm)'); ylabel('Responsivity'); grid on;
-end
+ieNewGraphWin;
+p = plot(wave,estXYZ(:,1),'r:',wave,estXYZ(:,2),'g:',wave,estXYZ(:,3),'b:',...
+    wave,CMF(:,1),'r-',wave,CMF(:,2),'g-',wave,CMF(:,3),'b');
+set(p,'linewidth',2);
+xlabel('Wavelength (nm)');
+ylabel('Responsivity');
+hold off; grid on
 
 %% Not correctly implemented
 
@@ -134,14 +134,12 @@ for ii=1:nIlluminant
     allDE = [allDE, dE{ii}]; %#ok<AGROW>
 end
 
-%%  Comparison for many different illuminants
-
+%%
 ieNewGraphWin;
-h = histogram(allDE,50);
+histogram(allDE,50);
 set(gca,'xlim',[0 maxDE])
-xlabel('CIELAB \Delta E'); ylabel('Count');
-grid on;
-
+xlabel('CIELAB \Delta E')
+ylabel('Count')
 title(sprintf('Illuminant-independent sensor correction (%s)',filterFile));
 
 fprintf('%s',filterFile)
@@ -156,10 +154,7 @@ sensor = sensorCreate;
 wave   = sensorGet(sensor,'wave');
 
 % Load up CYM color filters
-
-% Cutting the long wavelength actually helps.
-% But I am not doing it because I want to make a slide.
-% sensor = sensorSet(sensor,'infrared',ieReadSpectra('infrared2',wave));
+sensor = sensorSet(sensor,'infrared',ieReadSpectra('infrared2',wave));
 filterFile = 'cym';
 sensor = sensorSet(sensor,'color filters',ieReadSpectra(filterFile,wave));
 sensor = sensorSet(sensor,'name','CMY');
@@ -169,8 +164,6 @@ ieNewGraphWin;
 p = plot(wave,sqe(:,1),'c-',wave,sqe(:,2),'y-',wave,sqe(:,3),'m-');
 set(p,'linewidth',2); grid on
 xlabel('Wavelength (nm)'); ylabel('Responsivity')
-p(2).Color = [0.8 0.8 0];
-
 title(sprintf('%s spectral QE',filterFile));
 
 %%
@@ -204,13 +197,13 @@ end
 estXYZ = (T{3}*sqe')';
 
 % Let's plot these for the 5000K illuminant
-ieNewGraphWin([],'wide');
-sym = {'r','g','b'};
-for ii=1:3
-    subplot(1,3,ii)
-    p = plot(wave,estXYZ(:,ii),[sym{ii},'-'],wave,CMF(:,ii),[sym{ii},':'], 'LineWidth',2);    
-    xlabel('Wavelength (nm)'); ylabel('Responsivity'); grid on;
-end
+ieNewGraphWin;
+p = plot(wave,estXYZ(:,1),'r:',wave,estXYZ(:,2),'g:',wave,estXYZ(:,3),'b:',...
+    wave,CMF(:,1),'r-',wave,CMF(:,2),'g-',wave,CMF(:,3),'b');
+set(p,'linewidth',2)
+xlabel('Wavelength (nm)'); ylabel('Responsivity');
+l = legend(p([1,4]),{'T*CMY','XYZ'}); set(l,'Box','off','Color','none')
+hold off
 
 %% Plot the  corrected and desired for each illuminant case
 
@@ -228,12 +221,9 @@ end
 
 % Error in CIELAB space
 ieNewGraphWin;
-h = histogram(allDE,50);
+histogram(allDE,50);
 set(gca,'xlim',[0 maxDE])
-xlabel('CIELAB \Delta E'); ylabel('Count');
-grid on;
-h.FaceColor = 'b';
-
+xlabel('CIELAB \Delta E'); ylabel('Count')
 title(sprintf('Illuminant-dependent sensor correction (%s)',filterFile));
 
 %% Use the average of the linear transformations to compute delta E
@@ -253,11 +243,10 @@ for ii=1:nIlluminant
 end
 
 ieNewGraphWin;
-h = histogram(allDE,50);
+histogram(allDE,50);
 set(gca,'xlim',[0 maxDE])
-xlabel('CIELAB \Delta E');  ylabel('Count'); grid on;
-h.FaceColor = 'b';
-
+xlabel('CIELAB \Delta E')
+ylabel('Count')
 title(sprintf('Illuminant-independent sensor correction (%s)',filterFile));
 
 % Tell the user about the condition number
