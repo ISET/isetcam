@@ -1,4 +1,4 @@
-function merged = cellMerge(varargin);
+function merged = cellMerge(varargin)
 %Merge a set of cell arrays into one long cell array
 %
 %   merged = cellMerge(varargin);
