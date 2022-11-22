@@ -83,9 +83,7 @@ if isequal(method,0) || isequal(method,1)
     XYZ = XYZ/max(XYZ(:));
     rgb = xyz2srgb(XYZ);
     
-    % Person asked for a different gamma, so give it to them
-    if ~isequal(gam,1), rgb = rgb.^gam; end
-    
+   
 elseif method == 2    % Gray scale image, used for SWIR, NIR
     
     rgb = zeros(row,col,3);
@@ -104,7 +102,7 @@ elseif method == 3   % HDR display method
     rgb = xyz2srgb(XYZ);
     rgb = hdrRender(rgb);
     
-elseif method == 4  % Clip the highlights (NYI)
+elseif method == 4  % Clip the highlights but use HDR method
     XYZ = ieXYZFromPhotons(spd,wList);
     
     % Find a reasonable place to clip the highlights
@@ -124,6 +122,9 @@ else
 end
 
 %% Deal with gamma
+    
+% Person asked for a different gamma than the usual sRGB, so give it
+% to them
 if ~isequal(gam,1), rgb = rgb.^gam; end
 
 % oiShowImage and sceneShowImage always sets the displayFlag to negative.

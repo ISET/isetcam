@@ -84,8 +84,7 @@ p = plot(wave,estXYZ(:,1),'r:',wave,estXYZ(:,2),'g:',wave,estXYZ(:,3),'b:',...
 set(p,'linewidth',2);
 xlabel('Wavelength (nm)');
 ylabel('Responsivity');
-l = legend(p([1,4]),{'T*Nikon','XYZ'}); set(l,'Box','off','Color','none')
-hold off
+hold off; grid on
 
 %% Not correctly implemented
 

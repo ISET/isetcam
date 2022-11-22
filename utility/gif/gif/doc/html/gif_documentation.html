@@ -1,0 +1,220 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>gif documentation</title><meta name="generator" content="MATLAB 9.9"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-01-30"><meta name="DC.source" content="gif_documentation.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1><tt>gif</tt> documentation</h1><!--introduction--><p>The <tt>gif</tt> function is the simplest way to make gifs. Simply call</p><pre class="language-matlab">gif(<span class="string">'myfile.gif'</span>)
+</pre><p>to first the first frame, and then call</p><pre class="language-matlab">gif
+</pre><p>to write each subsequent frame. That's it.</p><p><a href="CDT_Contents.html">Back to Climate Data Tools Contents</a>.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Syntax</a></li><li><a href="#2">Description</a></li><li><a href="#3">Example</a></li><li><a href="#4">Write the first frame:</a></li><li><a href="#5">Write the rest of the frames</a></li><li><a href="#7">View the gif in Matlab</a></li><li><a href="#8">Speeding up animation creation</a></li><li><a href="#9">Author Info</a></li></ul></div><h2 id="1">Syntax</h2><pre>gif('filename.gif')
+gif(...,'DelayTime',DelayTimeValue,...)
+gif(...,'LoopCount',LoopCountValue,...)
+gif(...,'frame',handle,...)
+gif(...,'resolution',res)
+gif(...,'nodither')
+gif(...,'overwrite',true)
+gif
+gif('clear')</pre><h2 id="2">Description</h2><p><tt>gif('filename.gif')</tt> writes the first frame of a new gif file by the name <tt>filename.gif</tt>.</p><p><tt>gif(...,'DelayTime',DelayTimeValue,...)</tt> specifies a the delay time in seconds between frames. Default delay time is <tt>1/15</tt>.</p><p><tt>gif(...,'LoopCount',LoopCountValue,...)</tt> specifies the number of times the gif animation will play. Default loop count is <tt>Inf</tt>.</p><p><tt>gif(...,'frame',handle,...)</tt> uses the frame of the given figure or set of axes. The default frame handle is <tt>gcf</tt>, meaning the current figure. To turn just one set of axes into a gif, use <tt>'frame',gca</tt>. This behavior changed in Jan 2021, as the default option changed from gca to gcf.</p><p><tt>gif(...,'resolution',res)</tt> specifies the resolution (in dpi) of each frame. This option requires <a href="https://www.mathworks.com/matlabcentral/fileexchange/23629"><tt>export_fig</tt></a>.</p><p><tt>gif(...,'nodither')</tt> maps each color in the original image to the closest color in the new without dithering. Dithering is performed by default to achieve better color resolution, albeit at the expense of spatial resolution.</p><p><tt>gif(...,'overwrite',true)</tt> bypasses a dialoge box that would otherwise verify that you want to overwrite an existing file by the specified name.</p><p><tt>gif</tt> adds a frame to the current gif file.</p><p><tt>gif('clear')</tt> clears the persistent variables associated with the most recent gif.</p><h2 id="3">Example</h2><p>Consider this sample surface that changes over time:</p><pre class="codeinput"><span class="comment">% Some sample data:</span>
+t = sin(linspace(0,2*pi,30));
+[X,Y,Z] = peaks(500);
+
+<span class="comment">% Plot the first frame:</span>
+h = surf(X,Y,Z*t(1));
+shading <span class="string">interp</span>
+axis([-3 3 -3 3 -9 9])
+
+<span class="comment">% Make it fancy:</span>
+camlight
+set(gca,<span class="string">'color'</span>,<span class="string">'k'</span>)
+set(gcf,<span class="string">'color'</span>,<span class="string">'k'</span>)
+caxis([min(Z(:)) max(Z(:))])
+</pre><img vspace="5" hspace="5" src="gif_documentation_01.png" alt=""> <h2 id="4">Write the first frame:</h2><p>When your plot looks the way you want the first frame of the gif to look, create a new gif file and write the first frame like this:</p><pre>gif('myfile.gif')</pre><p>If you want to specify certain options, include them the first time you call <tt>gif</tt>. For example, if you want a 1/24 second delay between each frame, you want the loop to run five times, and you want to use the entire figure window rather than the current axes, specifying all those options would look like this:</p><pre>gif('myfile.gif','DelayTime',1/24,'LoopCount',5)</pre><p>Or, if you want a high-resolution gif that uses <tt>export_fig</tt>, specify a resolution in units of dpi. This option is slower and creates larger files, but in some cases the difference in image quality may be significant. Here's how you might specify 400 dpi:</p><p>gif('myfile.gif','DelayTime',1/24,'resolution',400)</p><h2 id="5">Write the rest of the frames</h2><p>After the first frame has been written, write each subsequent frame simply by calling <tt>gif</tt> without any options. Here we loop through the remaining 29 frames:</p><pre>for k = 2:29
+   set(h,'Zdata',Z*t(k))
+   gif
+end</pre><p>And that's it. Here's what the final product looks like using the default resolution:</p><p><img vspace="5" hspace="5" src="myfile.gif" alt=""> </p><h2 id="7">View the gif in Matlab</h2><p>Did you know you can view gifs in Matlab? Here's how:</p><pre>web('myfile.gif')</pre><h2 id="8">Speeding up animation creation</h2><p>You'll notice that in the loop above, we only changed the bare minimum number of things in the plot. We did not clear the plot and regenerate the plot each time through the loop, because the more things you do, and the more things you plot, the longer it takes for each iteration. As with any loop, try to minimize the number of operations inside the loop.</p><h2 id="9">Author Info</h2><p>This function and supporting documentation were written by <a href="http://www.chadagreene.com">Chad A. Greene</a> of the University of Texas Institute for Geophysics (UTIG), June 2017.</p><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% |gif| documentation
+% The |gif| function is the simplest way to make gifs. Simply call
+% 
+%   gif('myfile.gif') 
+% 
+% to first the first frame, and then call 
+% 
+%   gif
+% 
+% to write each subsequent frame. That's it. 
+% 
+% <CDT_Contents.html Back to Climate Data Tools Contents>.
+%% Syntax
+% 
+%  gif('filename.gif') 
+%  gif(...,'DelayTime',DelayTimeValue,...) 
+%  gif(...,'LoopCount',LoopCountValue,...) 
+%  gif(...,'frame',handle,...) 
+%  gif(...,'resolution',res)
+%  gif(...,'nodither') 
+%  gif(...,'overwrite',true)
+%  gif 
+%  gif('clear') 
+% 
+%% Description 
+% 
+% |gif('filename.gif')| writes the first frame of a new gif file by the name |filename.gif|. 
+% 
+% |gif(...,'DelayTime',DelayTimeValue,...)| specifies a the delay time in seconds between
+% frames. Default delay time is |1/15|. 
+% 
+% |gif(...,'LoopCount',LoopCountValue,...)| specifies the number of times the gif animation 
+% will play. Default loop count is |Inf|. 
+% 
+% |gif(...,'frame',handle,...)| uses the frame of the given figure or set of axes. The default 
+% frame handle is |gcf|, meaning the current figure. To turn just one set of axes into a gif, 
+% use |'frame',gca|. This behavior changed in Jan 2021, as the default option changed from
+% gca to gcf.
+% 
+% |gif(...,'resolution',res)| specifies the resolution (in dpi) of each frame. This option
+% requires <https://www.mathworks.com/matlabcentral/fileexchange/23629 |export_fig|>.
+% 
+% |gif(...,'nodither')| maps each color in the original image to the closest color in the new 
+% without dithering. Dithering is performed by default to achieve better color resolution, 
+% albeit at the expense of spatial resolution.
+% 
+% |gif(...,'overwrite',true)| bypasses a dialoge box that would otherwise verify 
+% that you want to overwrite an existing file by the specified name. 
+%
+% |gif| adds a frame to the current gif file. 
+% 
+% |gif('clear')| clears the persistent variables associated with the most recent gif. 
+% 
+%% Example 
+% Consider this sample surface that changes over time: 
+
+% Some sample data: 
+t = sin(linspace(0,2*pi,30)); 
+[X,Y,Z] = peaks(500); 
+
+% Plot the first frame: 
+h = surf(X,Y,Z*t(1)); 
+shading interp
+axis([-3 3 -3 3 -9 9])
+
+% Make it fancy: 
+camlight
+set(gca,'color','k') 
+set(gcf,'color','k') 
+caxis([min(Z(:)) max(Z(:))])
+
+%% Write the first frame: 
+% When your plot looks the way you want the first frame of the gif to look, create a new gif file
+% and write the first frame like this: 
+% 
+%  gif('myfile.gif') 
+% 
+% If you want to specify certain options, include them the first time you call |gif|. For example, 
+% if you want a 1/24 second delay between each frame, you want the loop to run five times, and you 
+% want to use the entire figure window rather than the current axes, specifying all those options
+% would look like this: 
+% 
+%  gif('myfile.gif','DelayTime',1/24,'LoopCount',5)
+%  
+% Or, if you want a high-resolution gif that uses |export_fig|, specify a resolution
+% in units of dpi. This option is slower and creates larger files, but in some cases
+% the difference in image quality may be significant. Here's how you might specify 400 dpi: 
+% 
+% gif('myfile.gif','DelayTime',1/24,'resolution',400)
+%
+%% Write the rest of the frames 
+% After the first frame has been written, write each subsequent frame simply by calling |gif| without
+% any options. Here we loop through the remaining 29 frames:
+% 
+%  for k = 2:29
+%     set(h,'Zdata',Z*t(k))
+%     gif
+%  end
+% 
+%% 
+% And that's it. Here's what the final product looks like using the default
+% resolution: 
+% 
+% <<myfile.gif>>
+
+%% View the gif in Matlab 
+% Did you know you can view gifs in Matlab? Here's how: 
+% 
+%  web('myfile.gif') 
+
+%% Speeding up animation creation 
+% You'll notice that in the loop above, we only changed the bare minimum number of things in the plot. 
+% We did not clear the plot and regenerate the plot each time through the loop, because the more things
+% you do, and the more things you plot, the longer it takes for each iteration. As with any loop, try to 
+% minimize the number of operations inside the loop. 
+% 
+%% Author Info
+% This function and supporting documentation were written by <http://www.chadagreene.com Chad A. Greene> 
+% of the University of Texas Institute for Geophysics (UTIG), June 2017. 
+
+##### SOURCE END #####
+--></body></html>

@@ -23,6 +23,7 @@ function [img,parms] = imageHarmonic(parms)
 % defaults by requesting them on return as below.
 %
 % See also
+%    harmonicP,
 
 % Examples:
 %{
