@@ -11,27 +11,25 @@
 %%
 ieInit
 
-%%
+%% Make a combined iimage
+
+% MCC side
 patchSize = 96;
 sceneC = sceneCreate('macbethD65',patchSize);
 sz = sceneGet(sceneC,'size');
-sceneC = sceneSet(sceneC,'resize',[1, 0.5]);
+sceneC = sceneSet(sceneC,'resize',round([sz(1), sz(2)/2]));
 sceneWindow(sceneC);
 
-
+% Sweep frequency side
 sceneS = sceneCreate('sweep frequency',sz(1),sz(1)/16);
 sceneWindow(sceneS);
 
-% There is no cols parameter, so changed it to 'size'
-% Depending on the desired visual might not need it at all? -- DJC
-%sceneS = sceneSet(sceneS,'cols',sz(2)*2);
-sceneS = sceneSet(sceneS,'size',[sz(1), sz(2)*2]);
-
+% Combine
 scene = sceneCombine(sceneC,sceneS,'direction','horizontal');
 
 hfov = 20;
 scene = sceneSet(scene,'fov',hfov);
-vfov = sceneGet(scene,'v fov');
+% vfov  = sceneGet(scene,'v fov');
 sceneWindow(scene);
 
 %%
