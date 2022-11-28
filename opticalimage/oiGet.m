@@ -277,17 +277,24 @@ switch oType
                 val = w/c;                  % M/sample
                 if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
                 
-            case {'distance','imagedistance','focalplanedistance'}
+            case {'imagedistance','focalplanedistance','distance'}
                 % oiGet(oi,'focal plane distance',[scene])
                 %
-                % Calculate the distance from the lens to the focal plane.
+                % The distance from the lens to the focal plane.
+                %
                 % We set the scene distance here, and then call
+                %
                 %     opticsGet(optics,'image distance')
                 %
+                % It is unfortunate that 'distance' is a possible get.
+                % Issuing a warning.
+                %
                 % March 11, 2019 (BW) Created the minSize = 10 variable and
-                % set the new logic was 5.  This was in response to an
-                % observation by Zhenyi.
-                
+                % set the new logic. Value was 5.  This was in response to
+                % an observation by Zhenyi.
+                if isequal(parm,'distance')
+                    warning('Returning lens to sensor distance.');
+                end
                 % The focal plane depends on the scene distance.  If there
                 % is no scene, we check the depth map.  If there is no
                 % depth map we assume very far away.

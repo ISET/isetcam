@@ -265,20 +265,22 @@ switch parm
         val = 1/opticsGet(optics,'focallength',units);
         
     case {'imagedistance','focalplane','focalplanedistance'}
-        % Lensmaker's equation calculation of focal plane distance from the
-        % center of a thin lens.  If no source distance is provided, we
-        % assume infinite distance
+        % Lensmaker's equation calculation of distance from the center of a
+        % thin lens to the sensor that brings the object in focus.  
+        % 
+        % If no object distance is provided, we assume infinite distance
         %
-        % opticsGet(optics,'focalplane',sDist); -- sDist is sourceDistance
+        % opticsGet(optics,'focalplane',sDist);    -- sDist is sourceDistance
         % opticsGet(optics,'focalplanedistance');  --   Infinite source dist
         
         % No need to check rt because focal length parameter checks,
         % returning RTeffectiveFocalLength.
-        %
+        
         % What about 'skip' optics case?  Should 'focalLength' call set
-        % this to 1/2 the scene distance, which preserves the geometry?
-
-        % ZLY: visited here. I think it should be focalLength
+        % this to 1/2 the object distance, which preserves the geometry?
+        % (It does?  Not simply the object distance?)
+        % ZLY: visited here. I think it can be focalLength, which is the
+        % distance when the object is at infinity.  Should discuss with BW.
         if isequal(optics.model, 'skip')
             val = optics.focalLength;
             return;
