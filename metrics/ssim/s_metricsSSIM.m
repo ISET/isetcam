@@ -11,35 +11,28 @@ ref = sceneGet(scene,'rgb');
 lumRef = sceneGet(scene,'luminance');
 
 ieNewGraphWin; imshow(ref);
-ieNewGraphWin; imagesc(lumRef); colormap("gray"); axis image
+ieNewGraphWin; imagesc(lumRef); colormap("gray"); axis image; axis off
 
-%%  Noisy scene
-
-energy = sceneGet(scene,'energy');
+%%  Add photon noise
+photons = sceneGet(scene,'photons');
 sz = sceneGet(scene,'size');
 nWave = sceneGet(scene,'n wave');
-noise = randn(sz(1),sz(2),nWave);
+photons2 = photons + randn(sz(1),sz(2),nWave).* photons.*(0.5);
 
-% The noise has a mean close to zero
-noise = noise .* ((energy.^0.5)*0.05);
-
-scene2 = sceneSet(scene,'energy',energy + noise);
+scene2 = sceneSet(scene,'photons',photons2);
 sceneWindow(scene2);
 
 test = sceneGet(scene2,'rgb');
 lumTest = sceneGet(scene2,'luminance');
 
 ieNewGraphWin; imshow(test);
-ieNewGraphWin; imagesc(lumTest); colormap("gray"); axis image
+ieNewGraphWin; imagesc(lumTest); colormap("gray"); axis image; axis off
 
-%%
-montage({test,ref});
-montage({lumTest,lumRef});
+%% 24 patches.  Noise illustrated
 
-
-%%
 ieNewGraphWin;
-plot(test(1:10:end),ref(1:10:end),'.');
+plot(lumRef(1:10:end),lumTest(1:10:end),'k.');
+identityLine; grid on;
 
 %%
 
