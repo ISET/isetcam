@@ -16,7 +16,9 @@
 %%
 ieInit
 wbStatus = ieSessionGet('waitbar');
-% ieSessionSet('waitbar','on');
+
+% Make sure the person sees the waitbar
+ieSessionSet('waitbar','on');
 
 %% Alternatively, you can run an oiCompute in the ray trace mode
 
@@ -36,10 +38,11 @@ oi = oiSet(oi,'optics',rtOptics);
 
 %% Compute the irradiance and space-varying PSF
 oi    = oiCompute(oi,scene);
+oiWindow(oi);
 
 %% View the PSFs at the various field heights
 
-vcNewGraphWin;
+ieNewGraphWin;
 % These are the computed PSFs
 svPSF = oiGet(oi,'psf struct');
 for ii=1:size(svPSF.psf,2)
@@ -47,7 +50,7 @@ for ii=1:size(svPSF.psf,2)
 end
 
 %% These are PSFs at the various sample angles
-vcNewGraphWin;
+ieNewGraphWin;
 for ii=1:size(svPSF.psf,1)
     imagesc(svPSF.psf{ii,end,1}); axis image; pause(0.3);
 end

@@ -21,7 +21,7 @@ ieInit
 % To help the user, turn the wait bar on so they can see the
 % calculation is progressing
 wbStatus = ieSessionGet('waitbar');
-% ieSessionSet('waitbar','on');
+ieSessionSet('waitbar','on');
 
 %% Scene
 scene = sceneCreate('pointArray',512,32);
@@ -58,7 +58,7 @@ oiDL = oiSet(oiDL,'optics',optics);
 oiDL = oiSet(oiDL,'optics model','diffraction limited');
 oiDL = oiCompute(scene,oiDL);
 oiDL = oiSet(oiDL,'name','psf diffraction case');
-ieAddObject(oiDL); oiWindow;
+oiWindow(oiDL);
 
 %% Render the images
 imageMultiview('oi',[1 2],1); truesize;

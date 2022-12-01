@@ -35,7 +35,7 @@ rtPSFVisualize(rtOptics);
 %%
 oi = oiCompute(oi,scene);
 oi = oiSet(oi,'name','Synthetic-RT-Increasing-Gaussian');
-ieAddObject(oi); oiWindow;
+oiWindow(oi);
 
 %% Show the PSF
 rtPlot(oi,'psf',550,0);
