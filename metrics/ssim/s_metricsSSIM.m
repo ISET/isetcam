@@ -3,17 +3,24 @@
 % Scratch for now.  More to come.
 
 
+%%
+ieInit;
+
 %% Reference scene
-scene = sceneCreate('macbeth',64);
+scene = sceneCreate('sweep frequency',512,20);
 sceneWindow(scene);
 
 ref = sceneGet(scene,'rgb');
-lumRef = sceneGet(scene,'luminance');
-
-ieNewGraphWin; imshow(ref);
-ieNewGraphWin; imagesc(lumRef); colormap("gray"); axis image; axis off
+% refLum = sceneGet(scene,'luminance');
+refLum = sum(ref,3)/3;
 
 %%  Add photon noise
+%
+% scene = sceneAddNoise(scene,varargin)
+%
+% Add Poisson noise to the scene photons
+% Or add Gaussian noise with mean and sd specified in varargin
+%
 photons = sceneGet(scene,'photons');
 sz = sceneGet(scene,'size');
 nWave = sceneGet(scene,'n wave');
@@ -23,61 +30,78 @@ scene2 = sceneSet(scene,'photons',photons2);
 sceneWindow(scene2);
 
 test = sceneGet(scene2,'rgb');
-lumTest = sceneGet(scene2,'luminance');
+% testLum = sceneGet(scene2,'luminance');
+testLum = sum(test,3)/3;
 
-ieNewGraphWin; imshow(test);
-ieNewGraphWin; imagesc(lumTest); colormap("gray"); axis image; axis off
+%%
+ieNewGraphWin;
+montage({ref,test});
 
-%% 24 patches.  Noise illustrated
+% To make life simpler, and because SSIM doesn't care, we scale the lum
+mx = max(max(lumTest(:)),max(lumRef(:)));
+lumTest = lumTest/mx;
+lumRef  = lumRef/mx;
+
+ieNewGraphWin;
+montage({lumTest,lumRef});
+
+%% 24 patches.  Poisson noise illustrated
 
 ieNewGraphWin;
 plot(lumRef(1:10:end),lumTest(1:10:end),'k.');
 identityLine; grid on;
 
-%%
+%% The three measures
 
-mean(test(:) - photons(:))
+% None of this closely matches the Matlab calculation.
+% I should figure out why.  So many possible reasons.
 
-test = ref + 0.1*randn(size(ref));
-test(test>1) = 1;
-ieNewGraphWin; imshow(test);
+% SSIM constants when image is scaled between 0 and 1
+C1 = 0.01^2;
+C2 = 0.03^2;
+C3 = C2/2;
+
+ux = mean(lumRef(:));
+uy = mean(lumTest(:));
+
+sdx = std(lumRef(:));
+sdy = std(lumTest(:));
+
+tmp = cov(lumRef,lumTest);
+sxy = tmp(1,2);
+
+% Global formula
+((2*ux*uy + C1)*(2*sxy + C2)) / ((ux^2 + uy^2 + C1)*(sdx^2 + sdy^2 + C2))
 
 %%  Compute the luminance
 
-
-
-
 [val,ssimmap] = ssim(test,ref);
-
-montage({test,ref});
-size(test)
-
-%%
-%{
-for ii=1:3
-    ieNewGraphWin;
-    mesh(mp(:,:,ii));
-end
-%}
-%%
-ieNewGraphWin;
-% Mean error across the three color channels
 
 % SSIM 1 is highest quality.  We want this to be an error map, so we
 % subtract from one.
+ieNewGraphWin;
 imagesc(1 - mean(ssimmap,3)); axis image;
 title('SSIM Error')
-colorbar;
+colorbar; axis image; axis off
+
+%%
+
+ieNewGraphWin;
+mesh(1 - mean(ssimmap,3));
 
 %% Try S-CIELAB on these images?
 
 params = scParams;
-fov = 15;
+fov = 40;
 params.sampPerDeg = round(size(test,1)/fov);
 testXYZ = ieClip(srgb2xyz(test),0,[]);
 refXYZ  = ieClip(srgb2xyz(ref),0,[]);
 
 dEimg = scielab(testXYZ,refXYZ,[.92 .98 .98],params);
+ieNewGraphWin; imagesc(dEimg);
+colorbar; axis image; axis off
+
+
 % ieNewGraphWin;
 % mesh(dEimg);
 % mean(dEimg(:))
