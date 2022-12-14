@@ -88,7 +88,7 @@ for ii = selectedObjs
     if (~singlewindow || subCount == 1)
         % If not a single window, always call.  Or if the first time
         % through, call
-        thisFig = ieNewGraphWin([], fType);
+        if ii==1, thisFig = ieNewGraphWin([], fType); end
     end
     if singlewindow
         % If we are in a single window, pick the subplot.
