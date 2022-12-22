@@ -15,5 +15,4 @@ function [x,y] = ieCirclePoints(radSpacing)
 theta = (0:radSpacing:2*pi);
 x = cos(theta); y = sin(theta);
 
-return;
-
+end
