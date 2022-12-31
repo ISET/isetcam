@@ -755,9 +755,9 @@ function uData = plotOTF(oi,pType,varargin)
 %
 %   plotOTF(oi,[pType], )
 %
-%      {'otf'}          - Optical transfer function, units are lines/mm
+%      {'otf'}           - Optical transfer function, units are lines/mm
 %      {'otf 550'}       - OTF at 550 nm
-%      {'psf'}          - Point spread function at selected wavelength
+%      {'psf'}           - Point spread function at selected wavelength
 %      {'psf 550'}       - PSF at 550nm spatial units are microns
 %      {'ls wavelength'} -  Line spread function at all wavelengths.
 %         Peak spatial frequency can be set for the OTF (default:
