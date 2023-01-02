@@ -33,7 +33,7 @@ scene = sceneSet(scene,'hfov',45);
 scene = sceneSet(scene,'name','rtDemo-Large-grid');
 
 % Show the grid line scene
-ieAddObject(scene); sceneWindow;
+sceneWindow(scene);
 
 %% Import wide angle lens optics.
 
@@ -70,7 +70,7 @@ oi = rtGeometry(oi,scene);
 
 % Copy the resulting data into the optical image structure
 oi = oiSet(oi,'name','Geometry only');
-ieAddObject(oi); oiWindow;
+oiWindow(oi);
 
 %% Precompute the PSF
 %
@@ -81,7 +81,7 @@ oi = oiSet(oi,'psfStruct',svPSF);
 % Apply
 oi = rtPrecomputePSFApply(oi,angStep);
 oi = oiSet(oi,'name','Stepwise-RT');
-ieAddObject(oi); oiWindow;
+oiWindow(oi);
 
 %% We choose ray trace by setting the optics method
 %
@@ -112,7 +112,7 @@ oiDL = oiSet(oiDL,'name','DL method');
 oiDL = oiCompute(scene,oiDL);
 
 % No barrel distortion, less blurring
-ieAddObject(oiDL); oiWindow;
+oiWindow(oiDL);
 
 % Here is a horizontal line of illuminance
 dlData = oiPlot(oiDL,'illuminance hline',[1,64]);
@@ -135,7 +135,7 @@ sceneSmall = sceneSet(sceneSmall,'fov',20);
 % Ray trace calculation with distortion and shift-variant blurring
 oi = oiCompute(sceneSmall,oi);
 oi = oiSet(oi,'name','rt-Small-RT');
-ieAddObject(oi); oiWindow;
+oiWindow(oi);
 
 %% Equivalent diffraction limited
 
@@ -143,7 +143,7 @@ ieAddObject(oi); oiWindow;
 % This calculation is pretty quick.
 oiDL = oiCompute(sceneSmall,oiDL);
 oiDL = oiSet(oiDL,'name','rt-Small-DL');
-ieAddObject(oiDL); oiWindow;
+oiWindow(oiDL);
 
 %%
 

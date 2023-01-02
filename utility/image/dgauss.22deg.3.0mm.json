@@ -1,0 +1,84 @@
+{
+ "name": "dgauss.22deg.3.0mm",
+ "description": "multi element lens Focal length (mm) ",
+ "type": "multi element lens",
+ "surfaces": [
+  {
+   "radius": 1.7685,
+   "thickness": 0.2256,
+   "ior": 1.67,
+   "semi_aperture": 0.756,
+   "conic_constant": []
+  },
+  {
+   "radius": 5.0898,
+   "thickness": 0.0072,
+   "ior": 1,
+   "semi_aperture": 0.756,
+   "conic_constant": []
+  },
+  {
+   "radius": 1.1565,
+   "thickness": 0.2415,
+   "ior": 1.67,
+   "semi_aperture": 0.6899999999999999,
+   "conic_constant": []
+  },
+  {
+   "radius": 2.4462,
+   "thickness": 0.1965,
+   "ior": 1.699,
+   "semi_aperture": 0.6899999999999999,
+   "conic_constant": []
+  },
+  {
+   "radius": 0.765,
+   "thickness": 0.3423,
+   "ior": 1,
+   "semi_aperture": 0.57,
+   "conic_constant": []
+  },
+  {
+   "radius": 0,
+   "thickness": 0.27,
+   "ior": 0,
+   "semi_aperture": 0.5115,
+   "conic_constant": []
+  },
+  {
+   "radius": -0.8697,
+   "thickness": 0.0708,
+   "ior": 1.603,
+   "semi_aperture": 0.51,
+   "conic_constant": []
+  },
+  {
+   "radius": 2.4462,
+   "thickness": 0.3639,
+   "ior": 1.658,
+   "semi_aperture": 0.6,
+   "conic_constant": []
+  },
+  {
+   "radius": -1.2231,
+   "thickness": 0.0114,
+   "ior": 1,
+   "semi_aperture": 0.6,
+   "conic_constant": []
+  },
+  {
+   "radius": 26.2239,
+   "thickness": 0.1932,
+   "ior": 1.717,
+   "semi_aperture": 0.6,
+   "conic_constant": []
+  },
+  {
+   "radius": -2.3838,
+   "thickness": 0,
+   "ior": 1,
+   "semi_aperture": 0.6,
+   "conic_constant": []
+  }
+ ]
+}

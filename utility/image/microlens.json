@@ -1,0 +1,28 @@
+{
+ "name": "microlens",
+ "description": "Exploring microlens options. This one is for a 2 micron pixel.",
+ "type": "multi element lens",
+ "surfaces": [
+  {
+   "radius": 0.0035,
+   "thickness": 0.00042,
+   "ior": 1.65,
+   "semi_aperture": 0.0014,
+   "conic_constant": []
+  },
+  {
+   "radius": 0,
+   "thickness": 0.00014,
+   "ior": 1.65,
+   "semi_aperture": 0.0014,
+   "conic_constant": []
+  },
+  {
+   "radius": -140000,
+   "thickness": 0,
+   "ior": 1,
+   "semi_aperture": 0.0014,
+   "conic_constant": []
+  }
+ ]
+}
