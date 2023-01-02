@@ -351,9 +351,9 @@ switch oType
                 
             case {'hangular','heightangular','vfov','verticalfieldofview'}
                 % We only store the width FOV.  We insist that the pixels are square
-                h = oiGet(oi,'height');              % Height in meters
-                d = oiGet(oi,'distance');            % Distance to lens
-                val = rad2deg(2*atan((0.5*h)/d));  % Vertical field of view
+                h = oiGet(oi,'height');               % Height in meters
+                d = oiGet(oi,'focal plane distance'); % Distance to lens
+                val = rad2deg(2*atan((0.5*h)/d));     % Vertical field of view
                 
             case {'dangular','diagonalangular','diagonalfieldofview'}
                 val = sqrt(oiGet(oi,'wAngular')^2 + oiGet(oi,'hAngular')^2);
@@ -703,10 +703,10 @@ switch oType
                 %
             case {'hangularresolution','heightangularresolution'}
                 % Angular degree per pixel -- in degrees
-                val = 2*rad2deg(atan((oiGet(oi,'hspatialResolution')/oiGet(oi,'distance'))/2));
+                val = 2*rad2deg(atan((oiGet(oi,'hspatialResolution')/oiGet(oi,'focal plane distance'))/2));
             case {'wangularresolution','widthangularresolution'}
                 % Angle (degree) per pixel -- width
-                val = 2*rad2deg(atan((oiGet(oi,'wspatialResolution')/oiGet(oi,'distance'))/2));
+                val = 2*rad2deg(atan((oiGet(oi,'wspatialResolution')/oiGet(oi,'focal plane distance'))/2));
             case {'angularresolution','degperpixel','degpersample','degreepersample','degreeperpixel'}
                 % Height and width
                 val = [oiGet(oi,'hangularresolution'), oiGet(oi,'wangularresolution')];

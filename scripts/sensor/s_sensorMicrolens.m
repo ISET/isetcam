@@ -76,7 +76,7 @@ for ii=1:length(rayAngles)
     offset(ii)  = mlensGet(mlens,'optimal offset','microns');
 end
 
-vcNewGraphWin;
+ieNewGraphWin;
 plot(rayAngles,offset,'k-o');
 xlabel('Ray angle (deg)'); ylabel('Offset towards center (um)');
 title('Optimal offset')
@@ -86,7 +86,7 @@ grid on
 offsets = mlensGet(mlens,'optimal offsets',sensor);  % Units are microns
 sSupport = sensorGet(sensor,'spatial support','um');
 
-vcNewGraphWin;
+ieNewGraphWin;
 mesh(sSupport.y,sSupport.x,offsets);
 xlabel('Sensor position (um)'); ylabel('Sensor position (um)');
 zlabel('Offset towards center (um)')
@@ -99,7 +99,7 @@ fnumber = mlensGet(mlens0,'ml fnumber');
 mlens1 = mlensSet(mlens0,'ml fnumber',0.5*fnumber);
 mlens1 = mlensSet(mlens1,'name','Half fnumber');
 
-vcNewGraphWin([],'tall');
+ieNewGraphWin([],'tall');
 
 offsets0 = mlensGet(mlens0,'optimal offsets');  % Units are microns
 subplot(2,1,1), mesh(sSupport.y,sSupport.x,offsets0);
@@ -118,7 +118,7 @@ max(abs(offsets0(:) - offsets1(:)))
 
 %% What happens when we change the source optics fnumber?
 
-vcNewGraphWin([],'tall');
+ieNewGraphWin([],'tall');
 
 mlens = mlensSet(mlens,'source fnumber',4);
 offsets0 = mlensGet(mlens,'optimal offsets');  % Units are microns
@@ -139,7 +139,7 @@ max(abs(offsets0(:) - offsets1(:)))
 
 %% Illustrate radiance for different chief ray angles
 
-vcNewGraphWin([],'tall');
+ieNewGraphWin([],'tall');
 
 % Initialize the lens
 mlens = mlensCreate;

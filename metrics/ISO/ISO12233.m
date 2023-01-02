@@ -23,7 +23,7 @@ function [results, fitme, esf, h] = ISO12233(barImage, deltaX, weight, plotOptio
 % esf:    Not sure
 %
 % Outputs:
-%   results - THis is a struct that includes the MTF and LSF data.
+%   results - This is a struct that includes the MTF and LSF data.
 %   fitme -
 %   esf -
 %   h - Figure handle

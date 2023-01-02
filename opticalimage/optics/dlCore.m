@@ -18,14 +18,13 @@ function OTF2D = dlCore(rho,inCutFreq)
 % A little more formally, an aberration-free diffraction-limited system
 % with a circular exit pupil can be described as:
 %
-%   di = distance between aperture and detector (meters)
-%   A  = aperture diameter  (meters)
+%   di     = distance between aperture and detector (meters)
+%   A      = aperture diameter  (meters)
 %   lambda = wavelength of incident light (meters)
-%   rho = frequency (cycles per meter)
-%   rho0 = (A/2*lambda*di)  (cycles /meter)
+%   rho    = frequency        (cycles per meter)
+%   rho0   = (A/2*lambda*di)  (cycles per meter)
 %
-% The formula for the OTF at frequency rho and wavelength lambda is often
-% quoted as
+% The formula for the OTF at frequency rho and wavelength lambda is
 %
 %  H(rho,lambda)
 %         =(2/pi)*(acos(rho/(2*rho0)) - (rho/2*rho0)*sqrt(1-(rho/(2*rho0)^2)))

@@ -1,14 +1,14 @@
-function [mtfData, lsf] = ieISO12233(ip,sensor,plotOptions,masterRect)
+function mtfData = ieISO12233(ip,sensor,plotOptions,masterRect)
 %Calculate ISO12233 MTF from an image processor and sensor
 %
 % Syntax
-%   [mtfData, lsf] = ieISO12233(ip,sensor,plotOptions);
+%   mtfData = ieISO12233(ip,sensor,plotOptions);
 %
 % Required inputs
-%   ip - ISET image processor structure containing a slanted edge .
-%   This routine tries to automatically find a good rectangular region for
-%   the edge.  It then applies the ISO12233 function to the data from the
-%   edge.
+%   ip - ISET image processor structure containing a slanted edge.
+%      This routine tries to automatically find a good rectangular region
+%      for the edge.  It then applies the ISO12233 function to the data
+%      from the edge.
 %
 % Optional inputs
 %   sensor - ISET sensor structure. Only the pixel size is needed from the
@@ -16,28 +16,27 @@ function [mtfData, lsf] = ieISO12233(ip,sensor,plotOptions,masterRect)
 %   plotOptions - 'all', 'luminance', or 'none'
 %
 % Returns
-%  mtfData    - a structure with several slots that includes the MTF
-%      data, the LSF data, the rect used for tha analysis, and some
-%      summary statistics
-%  lsf        - line spread function
+%  mtfData - a struct with several slots
+%            mtfData.freq and mtfData.mtf
+%            mtfData.lsfx and mtfData.lsf
+%            the mtfData.rect used for the analysis, 
+%            some summary statistics (aliasing Percentage, nyquist, mtf50)
 %
 % Description:
-%
 %  This routine tries to find a good rectangular region for the slanted
 %  bar MTF calculation. It then applies the ISO12233 function to the
 %  data from the edge.  The routine fails when it cannot automatically
 %  identify an appropriate slanted bar region.
 %
 %  The sensor pixel size is needed.  If the sensor is not sent in as a
-%  parameter, then we look for the currently selected sensor in the
-%  database. In the future, we should allow a dx in millimeters to be
-%  sent in, rather than the whole structure.  Also, we should allow a
+%  parameter, then we look for the currently selected sensor in the ISETCam
+%  global database. In the future, we should allow a dx in millimeters to
+%  be sent in, rather than the whole structure.  Also, we should allow a
 %  rect to be selected visually by the user.
 %
 % See also:  
 %   ISO12233, ISOFindSlantedBar, s_metricsMTFSlantedBar
 %
-
 
 % Examples:
 %{
