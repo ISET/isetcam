@@ -156,8 +156,8 @@ rows = 466;               % number of pixels in a row
 cols = 642;               % number of pixels in a column
 
 %%  Set these sensor properties
-% sensor = sensorSet(sensor,'exposuretime',exposureDuration); % commented because we set autoexposure
-sensorSet(sensor,'autoExposure',1);
+% sensor = sensorSet(sensor,'exposuretime',exposureDuration,method); % commented because we set autoexposure
+sensorSet(sensor,'autoExposure',1,'default');
 sensor = sensorSet(sensor,'rows',rows);
 sensor = sensorSet(sensor,'cols',cols);
 sensor = sensorSet(sensor,'dsnu level',dsnu);

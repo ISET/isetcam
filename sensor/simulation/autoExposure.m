@@ -1,13 +1,17 @@
 function  [integrationTime,maxSignalVoltage,smallOI] = autoExposure(oi,sensor,level,aeMethod,varargin)
-%Gateway routine to auto-exposure methods
+% Gateway routine to auto-exposure methods
 %
 % Syntax:
-%     [integrationTime,maxSignalVoltage,smallOI] = autoExposure(oi,sensor,[level = 0.95],[aeMethod='default'],varargin)
+%   [integrationTime,maxSignalVoltage,smallOI] = autoExposure(oi,sensor,[level = 0.95],[aeMethod='default'],varargin)
 %
 % Brief Description:
-%  Find an integration time (sec) that produces a voltage level at a
-%  fraction (0 < level < 1) of the voltage swing.  The data used to set the
-%  level are from the signal current image plus the dark current image.
+%  Find an integration time (sec) for the optical image and sensor. The
+%  default method produces a voltage level at a fraction (0 < level < 1) of
+%  the voltage swing.  The data used to set the level are from the signal
+%  current image plus the dark current image.
+%
+%  There are additional exposure methods that can be specified using the
+%  aeMethod argument.
 %
 % Inputs:
 %  oi:       The optical image
@@ -37,7 +41,7 @@ function  [integrationTime,maxSignalVoltage,smallOI] = autoExposure(oi,sensor,le
 %                     exposure, and then returns an integration time
 %                     that produces a value of 'level' times the
 %                     voltage swing (aeFull)
-%     'specular'    - Make the mean voltage level as fraction of
+%     'specular'    - Make the mean voltage level a fraction of
 %                     voltage swing. (aeSpecular)
 %     'cfa'         - Compute separately for each color filter type
 %     'mean'        - Finds the sensor intergration time to achieve
@@ -82,16 +86,11 @@ function  [integrationTime,maxSignalVoltage,smallOI] = autoExposure(oi,sensor,le
 
 %% Parse arguments          
 
-if ieNotDefined('level'), level = 0.95; end
-if ieNotDefined('aeMethod'), aeMethod = 'default'; end
-p = inputParser;
-
-% Eliminate spaces and force lower case
 varargin = ieParamFormat(varargin);
 
-% Required parameters
-p.addRequired('oi')
-p.addRequired('sensor');
+p = inputParser;
+p.addRequired('oi',@(x)(isequal(x.type,'opticalimage')));
+p.addRequired('sensor',@(x)(isequal(x.type,'sensor')));
 p.addRequired('level',@isscalar);
 p.addRequired('aemethod',@ischar)
 
@@ -103,7 +102,7 @@ p.addParameter('numframes',1,@isscalar);   %
 p.parse(oi,sensor,level,aeMethod,varargin{:});
 centerRect = p.Results.centerrect;
 videoMax   = p.Results.videomax;
-numFrames = p.Results.numframes; % for autohdr
+numFrames  = p.Results.numframes; % for autohdr
 
 switch lower(aeMethod)
     case 'specular'

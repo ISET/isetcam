@@ -58,14 +58,14 @@ end
 
 % Find and store the auto-exposure time for this image.
 level = 1;      % Level re: pixel voltage swing (1 means all the way)
-saturationExposureTime = autoExposure(OI,sensor,level);
+saturationExposureTime = autoExposure(OI,sensor,level,'default');
 
 % Compute the lux-sec in the image.
 luxsec = lux*saturationExposureTime;
 antiluxsec = antilux*saturationExposureTime;
 
 % Compute the full sensor response at the saturation exposure time
-sensor = sensorSet(sensor,'autoexposure',saturationExposureTime);
+sensor = sensorSet(sensor,'autoexposure',saturationExposureTime,'default');
 sensor = sensorCompute(sensor,OI);
 
 % Pull out the mean voltages of the sensor types

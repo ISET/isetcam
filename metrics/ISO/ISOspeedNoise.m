@@ -7,6 +7,11 @@
 % off is turned off or else this variance will be counted as part of the
 % sensor variance.
 %
+%  scene = sceneCreate('uniform ee');
+%  oi = oiCreate; oi = oiCompute(oi,scene);
+%  ieAddObject(oi);
+%  sensor = sensorCreate; ieAddObject(sensor);
+%
 % Then, set up your sensor parameters in the sensor window.
 % Then, run this script.  The output figure shows the
 % sensor SNR (db) as a function of lux-sec;
@@ -14,39 +19,39 @@
 % commented out in the script.
 
 % We can read this lux value here as the mean illuminance of the scene.
-[valOI, OI] = vcGetSelectedObject('OI');
-[illuminance,lux] = oiCalculateIlluminance(OI);
+[oi,valOI] = ieGetObject('oi');
+[illuminance,lux] = oiCalculateIlluminance(oi);
 
 % In the sensor window, set up the parameters and compute the sensor
 % image.  We  read read the sensor image parameters here.  If you change
 % them in the window, you must re-run this code.
-[valISA, ISA] = vcGetSelectedObject('ISA');
+[sensor,valISA] = ieGetObject('sensor');
 
 % Find the maximum exposure time prior to saturation.
-ISA.integrationTime = autoExposure(OI,ISA);
+sensor.integrationTime = autoExposure(oi,sensor,0.95,'default');
 
 % Choose the exposure times for the experiment, spanning 4 log units.
-expTime = logspace(log10(sensorGet(ISA,'integrationtime'))-4,log10(sensorGet(ISA,'integrationtime')),10);
+expTime = logspace(log10(sensorGet(sensor,'integrationtime'))-4,log10(sensorGet(sensor,'integrationtime')),10);
 
 % I like flipping the times when debugging:
 % expTime = fliplr(expTime);
 
 luxsec = lux*expTime;
 % Turn off auto-exposure
-ISA.AE = 0;
+sensor.AE = 0;
 
 % Perform the experiments
 snr = [];
 for ii=1:length(expTime)
-    ISA.integrationTime = expTime(ii);
-    ISA = sensorCompute(ISA,OI);
-    volts = sensorGet(ISA,'volts');
+    sensor.integrationTime = expTime(ii);
+    sensor = sensorCompute(sensor,oi);
+    volts = sensorGet(sensor,'volts');
     
     % If there are more than one sensor type, compute the
     % SNR separately for each of the sensor classes.
-    nSensors = sensorGet(ISA,'ncolors');
+    nSensors = sensorGet(sensor,'ncolors');
     if nSensors > 1
-        volts = plane2rgb(volts,ISA);
+        volts = plane2rgb(volts,sensor);
         for jj=1:nSensors
             tmp = volts(:,:,jj);
             l = isfinite(tmp);
@@ -63,7 +68,7 @@ end
 
 % Make the lux-sec version of the plot
 figNum = vcNewGraphWin;
-filterType = sensorGet(ISA,'filterType');
+filterType = sensorGet(sensor,'filter color letters');
 switch filterType
     case 'rgb'
         semilogx(luxsec,snr(:,1),'r',luxsec,snr(:,2),'g',luxsec,snr(:,3),'b');

@@ -46,7 +46,7 @@ sensorSet(sensor,'gamma',0.3);
 
 % Still kind of noisy.
 nBursts     = 10;
-expTime     = autoExposure(oi,sensor)/4;
+expTime     = autoExposure(oi,sensor,0.95,'default')/4;
 burstTiming = repmat(expTime,1,nBursts);
 
 sensor      = sensorSet(sensor,'exp time',burstTiming);

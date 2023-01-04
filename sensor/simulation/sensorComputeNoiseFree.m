@@ -62,7 +62,7 @@ sensor = sensorSet(sensor,'analog offset',0);
 
 % Make sure exposure duration is set, no auto-exposure
 if sensorGet(sensor,'autoexposure')
-    t = autoExposure(oi,sensor);
+    t = autoExposure(oi,sensor,0.95,'default');
     sensor = sensorSet(sensor,'exp time',t);
     warning('sensorNF:Exposure','Auto exposure set off, exposure set to %f s',t);
 end

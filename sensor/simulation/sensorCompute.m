@@ -123,7 +123,7 @@ for ss=1:length(sensorArray)   % Number of sensors
         % We could decide that if autoexposure is on and there is a vector of
         % values we replace them with a single value.
         if showBar, wBar = waitbar(0,wBar,'Sensor image: Auto Exposure'); end
-        sensor.integrationTime  = autoExposure(oi,sensor);
+        sensor.integrationTime  = autoExposure(oi,sensor,0.95,'default');
         
     elseif isvector(integrationTime)
         % We are in bracketing or burst mode, do nothing.
@@ -131,7 +131,7 @@ for ss=1:length(sensorArray)   % Number of sensors
     elseif isequal( size(integrationTime),size(pattern) )
         % Find best exposure for each color filter separately
         if sensorGet(sensor,'autoexposure')
-            sensor = sensorSet(sensor,'exp time',autoExposure(oi,sensor,[],'cfa'));
+            sensor = sensorSet(sensor,'exp time',autoExposure(oi,sensor,0.95,'cfa'));
         end
     end
     
