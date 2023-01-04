@@ -1,13 +1,17 @@
 function  [integrationTime,maxSignalVoltage,smallOI] = autoExposure(oi,sensor,level,aeMethod,varargin)
-%Gateway routine to auto-exposure methods
+% Gateway routine to auto-exposure methods
 %
 % Syntax:
-%     [integrationTime,maxSignalVoltage,smallOI] = autoExposure(oi,sensor,[level = 0.95],[aeMethod='default'],varargin)
+%   [integrationTime,maxSignalVoltage,smallOI] = autoExposure(oi,sensor,[level = 0.95],[aeMethod='default'],varargin)
 %
 % Brief Description:
-%  Find an integration time (sec) that produces a voltage level at a
-%  fraction (0 < level < 1) of the voltage swing.  The data used to set the
-%  level are from the signal current image plus the dark current image.
+%  Find an integration time (sec) for the optical image and sensor. The
+%  default method produces a voltage level at a fraction (0 < level < 1) of
+%  the voltage swing.  The data used to set the level are from the signal
+%  current image plus the dark current image.
+%
+%  There are additional exposure methods that can be specified using the
+%  aeMethod argument.
 %
 % Inputs:
 %  oi:       The optical image
@@ -37,7 +41,7 @@ function  [integrationTime,maxSignalVoltage,smallOI] = autoExposure(oi,sensor,le
 %                     exposure, and then returns an integration time
 %                     that produces a value of 'level' times the
 %                     voltage swing (aeFull)
-%     'specular'    - Make the mean voltage level as fraction of
+%     'specular'    - Make the mean voltage level a fraction of
 %                     voltage swing. (aeSpecular)
 %     'cfa'         - Compute separately for each color filter type
 %     'mean'        - Finds the sensor intergration time to achieve
@@ -72,6 +76,12 @@ function  [integrationTime,maxSignalVoltage,smallOI] = autoExposure(oi,sensor,le
  sensorPlot(sensor,'volts hline',[1, 155]);  % (x,y), not (row, col)
 %}
 %{
+ scene = sceneCreate; oi = oiCreate; oi = oiCompute(oi,scene);
+ sensor   = sensorCreate;
+ eTime  = autoExposure(oi,sensor,0.90,'video');
+
+%}
+%{
  eTime  = autoExposure(oi,sensor,0.90,'video','center rect',rect,'video max',1/60);
  sensor = sensorSet(sensor,'exp time',eTime);
  sensor = sensorCompute(sensor,oi);
@@ -82,16 +92,11 @@ function  [integrationTime,maxSignalVoltage,smallOI] = autoExposure(oi,sensor,le
 
 %% Parse arguments          
 
-if ieNotDefined('level'), level = 0.95; end
-if ieNotDefined('aeMethod'), aeMethod = 'default'; end
-p = inputParser;
-
-% Eliminate spaces and force lower case
 varargin = ieParamFormat(varargin);
 
-% Required parameters
-p.addRequired('oi')
-p.addRequired('sensor');
+p = inputParser;
+p.addRequired('oi',@(x)(isequal(x.type,'opticalimage')));
+p.addRequired('sensor',@(x)(isequal(x.type,'sensor')));
 p.addRequired('level',@isscalar);
 p.addRequired('aemethod',@ischar)
 
@@ -103,7 +108,7 @@ p.addParameter('numframes',1,@isscalar);   %
 p.parse(oi,sensor,level,aeMethod,varargin{:});
 centerRect = p.Results.centerrect;
 videoMax   = p.Results.videomax;
-numFrames = p.Results.numframes; % for autohdr
+numFrames  = p.Results.numframes; % for autohdr
 
 switch lower(aeMethod)
     case 'specular'
@@ -309,7 +314,7 @@ function [integrationTime,maxSignalVoltage] = aeHDR(oi,sensor,level,numFrames)
 %
 % iTime = autoExposure(oi,sensor,0.95,'hdr');
 
-voltageSwing = sensorGet(sensor,'pixel voltage swing');
+% voltageSwing = sensorGet(sensor,'pixel voltage swing');
 
 % No noise and one sec exposure
 sensor = sensorSet(sensor,'noise flag',0);
@@ -342,7 +347,11 @@ end
 
 %-------------------------------
 function [integrationTime, maxSignalVoltage] = aeWeighted(oi,sensor,level,varargin)
-% Choose a region of the image, defined by the center rect,
+% Choose a region of the image, defined by the center rect.
+% if rect is empty, the entire image is used.
+%
+% This default seems to apply to various exposure routines in this
+% function.
 
 varargin = ieParamFormat(varargin);
 p = inputParser;
@@ -351,13 +360,15 @@ p.KeepUnmatched = true;  % In video case, we have another parameter
 p.addRequired('oi',@(x)(isequal(x.type,'opticalimage')));
 p.addRequired('sensor',@(x)(isequal(x.type,'sensor')));
 p.addRequired('level',@isscalar);
-p.addParameter('centerrect',[],@isvector);
+p.addParameter('centerrect',[],@(x)(isvector(x) || isempty(x)));
 
 p.parse(oi,sensor,level,varargin{:});
 
 % This is the selected part of the OI.
 rect = p.Results.centerrect;
-centerOI = oiCrop(oi,rect);
+if isempty(rect), centerOI = oi;
+else, centerOI = oiCrop(oi,rect);
+end
 
 % Cut down the sensor size, turn off noise and set to 1 s exposure time
 smallSensor = sensorSetSizeToFOV(sensor,oiGet(centerOI,'fov'),oi);
@@ -379,11 +390,11 @@ end
 %-------------------------------
 % http://hamamatsu.magnet.fsu.edu/articles/readoutandframerates.html
 function integrationTime = aeVideo(oi,sensor,level,varargin)
-% The video exposure time model is not clear to us.  It is possible that
-% there is a rolling shutter readout, so that the first line is exposed and
-% readout, then the second, and so forth.  In this case, the time between
-% readout might be limited only by how long we have to wait between the
-% first line readout.
+% The video exposure time model treats the rolling shutter as irrelevant,
+% rather acting as a global shutter. See the specialized scripts for
+% simulating rolling shutter. 
+%
+% If the center rect is empty, the entire image is used.
 
 % Force lower case and no spaces
 varargin = ieParamFormat(varargin);
@@ -395,13 +406,16 @@ p.addRequired('oi',@(x)(isequal(x.type,'opticalimage')));
 p.addRequired('sensor',@(x)(isequal(x.type,'sensor')));
 p.addRequired('level',@isscalar);
 
-p.addParameter('centerrect',[],@isvector);
+% Empty means use the whole image
+p.addParameter('centerrect',[],@(x)(isvector(x) || isempty(x)));
 p.addParameter('videomax',1/60,@isscalar);   % Maximum exposure duration sec
 
 p.parse(oi,sensor,level,varargin{:});
 
-% This is the selected part of the OI.
+% This is the selected rect of the OI.
 rect     = p.Results.centerrect;
+
+% Longest permissible time
 videomax = p.Results.videomax;
 
 integrationTime = aeWeighted(oi,sensor,level,'center rect',rect);
