@@ -54,7 +54,7 @@ end
 % Compute the mean lux
 %[illuminance,lux] = oiCalculateIlluminance(OI);
 
-[illuminance,lux,antilux] = oiCalculateIlluminance(OI);
+[~,lux,antilux] = oiCalculateIlluminance(OI);
 
 % Find and store the auto-exposure time for this image.
 level = 1;      % Level re: pixel voltage swing (1 means all the way)
@@ -70,6 +70,7 @@ sensor = sensorCompute(sensor,OI);
 
 % Pull out the mean voltages of the sensor types
 nSensors = sensorGet(sensor,'ncolors');
+meanVolts = zeros(nSensors,1);
 for ii=1:nSensors
     meanVolts(ii) = mean(sensorGet(sensor,'volts',ii));
 end
@@ -82,4 +83,4 @@ voltsPerLuxSec = meanVolts / luxsec;
 voltsPerAntiLuxSec = meanVolts / antiluxsec;
 
 
-return
+end
