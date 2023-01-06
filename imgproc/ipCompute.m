@@ -510,5 +510,8 @@ switch combinationMethod
         error("Don't know how to combine burst of images");
 end
 
+% Pass metadata along
+ip.metadata = mergeStructures(ip.metadata,oi.metadata);
+
 %ip = ipSet(ip,'input',newImg);
 end
