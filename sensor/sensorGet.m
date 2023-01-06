@@ -592,7 +592,7 @@ switch oType
                 val = squeeze(res);
             case {'roichromaticitymean'}
                 val = sensorGet(sensor, 'chromaticity', varargin{1});
-                val = nanmean(val, 1);
+                val = mean(val, 1,'omitnan');
             case {'roielectronsmean'}
                 % sensorGet(sensor,'roi electrons mean')
                 %   Mean value for each of the sensor types
@@ -620,7 +620,7 @@ switch oType
                 nSensors = sensorGet(sensor,'n sensors');
                 
                 % Check if the data are in sensor
-                if     strfind(param,'volts'), d = sensorGet(sensor,'volts');
+                if     ieContains(param,'volts'), d = sensorGet(sensor,'volts');
                 elseif ieContains(param,'electrons'), d = sensorGet(sensor,'electrons');
                 end
                 if isempty(d)
@@ -694,6 +694,7 @@ switch oType
                 % The pattern field(see below) describes the position for each
                 % filter in the block pattern of color filters.
                 names = sensorGet(sensor,'filter names');
+                val = blanks(length(names));
                 for ii=1:length(names), val(ii) = names{ii}(1); end
                 val = char(val);
             case {'filtercolorletterscell'}
@@ -707,6 +708,7 @@ switch oType
                 % their position in the columns of filterspectra.  The values in
                 % pattern (see below) describes their position in array.
                 names = sensorGet(sensor,'filternames');
+                val = cell(length(names),1);
                 for ii=1:length(names), val{ii} = char(names{ii}(1)); end
             case {'filterplotcolor','filterplotcolors'}
                 % Return an allowable plotting color for this filter, based on the
@@ -714,7 +716,7 @@ switch oType
                 % letter = sensorGet(sensor,'filterPlotColor');
                 letters = sensorGet(sensor,'filterColorLetters');
                 if isempty(varargin), val = letters;
-                else                  val = letters(varargin{1});
+                else,                 val = letters(varargin{1});
                 end
                 % Only return an allowable color.  We could allow w (white) but we
                 % don't for now.
@@ -1101,7 +1103,7 @@ switch oType
                 % sensorGet(sensor,'h deg per distance','mm')
                 % sensorGet(sensor,'h deg per distance','mm',scene,oi);
                 % Degrees of visual angle per meter or other spatial unit
-                if isempty(varargin), unit = 'm'; else unit = varargin{1}; end
+                if isempty(varargin), unit = 'm'; else, unit = varargin{1}; end
                 width = sensorGet(sensor,'width',unit);
                 
                 if length(varargin) < 2, scene = vcGetObject('scene');
@@ -1110,7 +1112,7 @@ switch oType
                 
                 % We want the optics to do this right.
                 if length(varargin) < 3, oi = vcGetObject('oi');
-                else oi = varargin{3};
+                else, oi = varargin{3};
                 end
                 
                 fov   =  sensorGet(sensor,'fov',scene, oi);
@@ -1119,7 +1121,7 @@ switch oType
             case {'vdegperdistance'}
                 % sensorGet(sensor,'v deg per distance','mm') Degrees of visual
                 % angle per meter or other spatial unit
-                if isempty(varargin), unit = 'm'; else unit = varargin{1}; end
+                if isempty(varargin), unit = 'm'; else, unit = varargin{1}; end
                 width = sensorGet(sensor,'height',unit);
                 fov =  sensorGet(sensor,'vfov');
                 val = fov/width;
