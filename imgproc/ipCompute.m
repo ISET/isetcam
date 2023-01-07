@@ -511,7 +511,7 @@ switch combinationMethod
 end
 
 % Pass metadata along
-ip.metadata = mergeStructures(ip.metadata,oi.metadata);
+ip.metadata = appendStruct(ip.metadata,sensor.metadata);
 
 %ip = ipSet(ip,'input',newImg);
 end
