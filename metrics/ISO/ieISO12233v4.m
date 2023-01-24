@@ -55,6 +55,7 @@ function mtfData = ieISO12233v4(ip,sensor,plotOptions,masterRect)
   % Compute the MTF
   mtfData = ieISO12233v4(ip,sensor);
   ieDrawShape(ip,'rectangle',mtfData.rect);
+  % mtfData = ieISO12233(ip,sensor);
 
   ieNewGraphWin; 
   plot(mtfData.lsfx*1000, mtfData.lsf);
