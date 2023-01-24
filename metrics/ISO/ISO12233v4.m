@@ -1,13 +1,14 @@
-function [results, fitme, esf, h] = ISO12233(barImage, deltaX, weight, plotOptions)
-% ISO 12233 (slanted bar) spatial frequency response (SFR) analysis.
+function [results, fitme, esf, h] = ISO12233v4(barImage, deltaX, weight, plotOptions)
+% ISO 12233 (slanted bar) spatial frequency response (SFR) updated for sfrmat4
 %
-%  [results, fitme, esf, h] = ISO12233(barImage, deltaX, weight,plotOptions);
+%  [results, fitme, esf, h] = ISO12233v4(barImage, deltaX, weight,plotOptions);
 %
-% Slanted-edge and color mis-registration analysis.
+% Brief description
+%   Slanted-edge MTF calculation
 %
 % Inputs
-% barImage:  The RGB image of the slanted bar
-% deltaX:    The sensor sample spacing in millimeters (expected). It
+%  barImage:  The RGB image of the slanted bar
+%  deltaX:    The sensor sample spacing in millimeters (expected). It
 %   is possible to send in a display spacing in dots per inch (dpi), in
 %   which case the number is > 1 (it never is for sensor sample spacing).
 %   In that case, the value returned is cpd on the display at a 1m viewing
@@ -16,11 +17,7 @@ function [results, fitme, esf, h] = ISO12233(barImage, deltaX, weight, plotOptio
 %   See notes below about translating to cyc/deg in the original scene. See
 %   TODO in code about this practice.
 %
-% weight:    The luminance weights; these are [0.3R +  0.6G + 0.1B] by
-%            default.
-%
-% fitme:  The full linear fit to something
-% esf:    Not sure
+%   weight:    RGB weights to calculate luminance
 %
 % Outputs:
 %   results - This is a struct that includes the MTF and LSF data.
@@ -47,9 +44,10 @@ function [results, fitme, esf, h] = ISO12233(barImage, deltaX, weight, plotOptio
 % You are prompted for a bar file and other parameters:
 %
 % Reference
-%  This code originated with Peter Burns, peter.burns@kodak.com
-%  12 August 2003, Copyright (c) International Imaging Industry Association
-%  Substantially re-written by ImagEval Consulting, LLC
+%  This code originated with Peter Burns, now a consultant
+%  http://burnsdigitalimaging.com/software/sfrmat/
+%
+%  Substantially re-written by Wandell (again)
 %
 % See also:
 %   ieISO12233, ISOFindSlantedBar, s_metricsMTFSlantedBar
@@ -134,7 +132,7 @@ if nWave == 3
 end
 
 % rotate horizontal edge to vertical
-[barImage, nRow, nCol, rflag] = rotatev(barImage);
+[barImage, nRow, nCol, rflag] = rotatev2(barImage);
 loc = zeros(nWave, nRow);
 
 % Need 'positive' edge for good centroid calculation
@@ -158,13 +156,13 @@ fitme = zeros(nWave, 2);
 slout = zeros(nWave, 1);
 
 % smoothing window for first part of edge location estimation -
-% to used on each line of ROI
+% to used on each line of ROI (l 317 in sfrmat4)
 win1 = ahamming(nCol, (nCol+1)/2);      % Symmetric window
 for color=1:nWave                       % Loop for each color
     %     if nWave == 1, pname = ' ';
     %     else pname =[' Red ' 'Green'  'Blue ' ' Lum '];
     %     end
-    lsf = deriv1(barImage(:,:,color), nRow, nCol, fil1);
+    lsf = deriv1(barImage(:,:,color), nRow, nCol, fil1); % l 355 in sfrmat4
     % vcNewGraphWin; imagesc(c); colormap(gray(64))
     % compute centroid for derivative array for each line in ROI. NOTE WINDOW array 'win'
     for n=1:nRow
@@ -453,25 +451,30 @@ end
 
 %----------------------------------------------------
 function [data] = ahamming(n, mid)
+% [data] = ahamming(n, mid)
+% function generates a general asymmetric Hamming-type window
+% array. If mid = (n+1)/2 then the usual symmetric Hamming 
+% window is returned
+%  n = length of array
+%  mid = midpoint (maximum) of window function
+%  data = window array (nx1)
 %
-% [data] = ahamming(n, mid)  Generates asymmetrical Hamming window
-%  array. If mid = (n+1)/2 then the usual symmetrical Hamming array
-%  is returned
-%   n = length of array
-%   mid = midpoint (maximum) of window function
-%   data = window array (nx1)
-% Peter Burns 5 Aug. 2002
-% Copyright (c) International Imaging Industry Association
+%  Author: Peter Burns, 1 Oct. 2008
+%  Copyright (c) 2007 Peter D. Burns
 
 data = zeros(n,1);
+%
+mid = mid+0.5;  % added 13 June 2019
 
 wid1 = mid-1;
 wid2 = n-mid;
 wid = max(wid1, wid2);
+pie = pi;
 for i = 1:n
-    arg = i-mid;
-    data(i) = 0.54 + 0.46*cos( pi*arg/wid );
+	arg = i-mid;
+	data(i) = cos( pie*arg/(wid) );
 end
+data = 0.54 + 0.46*data;
 end
 
 %----------------------------------------------------
@@ -578,29 +581,63 @@ nlow = nlow./(nRow*nCol);
 if status ~= 1, warndlg('Data clipping errors detected','ClipCheck'); end
 
 end
-%----------------------------------------------------
-function  [b] = deriv1(a, nRow, nCol, fil)
-%
-% [b] = deriv1(a, nRow, nCol, fil)   First derivative of array
+
+%% Newer deriv1 calculation
+function b = deriv1(a, nRow, nCol, fil)
 %  Computes first derivative via FIR (1xn) filter
 %  Edge effects are suppressed and vector size is preserved
-%  Filter is applied in the nCol direction only
-%   a   = (nRow, nCol) data array
-%   fil = array of filter coefficients, eg [[-0.5 0.5]
-%   b   = output (nRow, nCol) data array
-% Peter Burns 5 Aug. 2002
-% Copyright (c) International Imaging Industry Association
+%  Filter is applied in the npix direction only
+%   a = (nlin, npix) data array
+%   fil = array of filter coefficients, eg [-0.5 0.5]
+%   b = output (nlin, npix) data array
+%  Author: Peter Burns, 1 Oct. 2008
+%                       27 May 2020 updated to use 'same' conv option
+%  Copyright (c) 2020 Peter D. Burns
+%
 
 b = zeros(nRow, nCol);
-nn = length(fil);
-for i=1:nRow
-    temp = conv(fil, a(i,:));
-    b(i, nn:nCol) = temp(nn:nCol);    %ignore edge effects, preserve size
-    b(i, nn-1) = b(i, nn);
+
+% Not sure what PB is doing here (BW).  Probably the 'edge effects'
+for ii=1:nRow
+    temp = squeeze(conv(a(ii,:),fil,'same'));
+
+    b(ii, :)   = temp;
+    b(ii,1)    = b(ii,2);
+    b(ii,nCol) = b(ii,nCol-1);
 end
 
 end
 
+%% findedge2 - seems to be an update on findedge
+function  [p, s, mu] = findedge2(cent, nlin, nn)
+% [slope, int] = findedge2(cent, nlin, nn)  Fits polynomial equation to data
+% Fits poly. equation to data, written to process edge location array
+%   cent = array of (centroid) values
+%   nlin = length of cent
+%   p values are coefficients from the least-square fit
+%    x = int + slope*cent(x)
+%  Note that this is the inverse of the usual cent(x) = int + slope*x
+%  form
+% Author: Peter Burns, pdburns@ieee.org
+% Updated version of findedge using scaled x values 16 July 2019
+% Copyright 2019 by Peter D. Burns. All rights reserved.
+
+if nargin<3
+    nn=1;
+end
+%  if nn>3
+%      disp(['Warning: Polynominal fit to edge is of order ',num2str(nn)]);
+%  end
+index=0:nlin-1;
+% Adding output variable mu makes the fit in centered and scaled x values
+% this improves the fitting, 16 July 2019
+[p, s, mu] = polyfit(index, cent, nn); % x = f(y)
+% Next we 'unscale' the polynomial coefficients so we can use them easily
+% later directly in sfrmat4
+p = polyfit_convert(p, index);
+end
+
+%{
 %----------------------------------------------------
 function  [slope, int] = findedge(cent, nRow)
 % [slope, int] = findedge(cent, nRow)  Fits linear equation to data
@@ -617,6 +654,7 @@ function  [slope, int] = findedge(cent, nRow)
 index = 0:nRow-1;
 [slope, int] = polyfit(index, cent, 1);            % x = f(y)
 end
+%}
 
 %----------------------------------------------------
 function [array, status] = getoecf(array, oepath,oename)
@@ -871,8 +909,108 @@ end
 
 end
 
-
 %----------------------------------------------------
+function [a, nlin, npix, rflag] = rotatev2(a)
+%[a, nlin, npix, rflag] = rotatev2(a)     Rotate edge array vertical
+% Rotate array so that the edge feature is in the vertical orientation
+% Test based on array values not dimensions.
+% a = input array(npix, nlin, ncol)
+% nlin, npix are after rotation if any
+% flag = 0 no roation, = 1 rotation was performed
+%
+% Needs: rotate90
+%
+% 24 Sept. 2008
+% Copyright (c) 2008 Peter D. Burns
+
+dim = size(a);
+nlin = dim(1);
+npix = dim(2);
+a = double(a);
+
+% Select which color record, normally the second (green) is good
+if length(dim) == 3
+    mm = 2;
+else
+    mm =1;
+end
+
+nn = 3;  % Limits test area. Normally not a problem.
+%Compute v, h ranges
+testv = abs(mean(a(end-nn,:,mm))-mean(a(nn,:,mm)));
+testh = abs(mean(a(:,end-nn,mm))-mean(a(:,nn,mm)));
+
+ rflag =0;
+ if testv > testh
+     rflag =1;
+     a = rotate90(a);
+     temp=nlin;
+     nlin = npix;
+     npix = temp;
+ end
+
+ end
+
+%% These could be put inside rotatev2
+
+function out = rotate90(in, n)
+%rotate90: 90 degree counterclockwise rotations of matrix
+%
+%[out] = rotate90(in, n) 
+% in  = input matrix (n,m) or (n,m,k)
+% n   = number of 90 degree rotation
+% out = rotated matrix
+%       default = 1
+% Usage:
+%  out = rotate90(in)
+%  out = rotate90(in, n)
+% Needs:
+%  r90 (in this file)
+%
+% Author: Peter Burns
+% Copyright (c) 2015 Peter D. Burns
+
+if nargin < 2
+ n = 1;
+end
+
+nd = ndims(in);
+
+if nd < 1
+ error('input to rotate90 must be a matrix');
+end
+
+for i = 1:n
+ out = r90(in);
+ in = out;
+end
+
+end
+
+
+%%
+function [out] = r90(in)
+
+[nlin, npix, nc] = size(in);
+temp = zeros (npix, nlin);
+temp = 0*in(:,:,1);
+cl = class(temp);
+arg1=['out = ',cl,'(zeros(npix, nlin, nc));'];
+eval(arg1);
+
+for c = 1: nc
+
+    temp =  in(:,:,c);
+    temp = temp.';
+    out(:,:,c) = temp(npix:-1:1, :);
+                     
+end
+
+out = squeeze(out);
+end
+
+%{
+%-----------------------Deprecated in sfrmat4----------------------
 function [a, nRow, nCol, rflag] = rotatev(a)
 % [a, nRow, nCol, rflag] = rotatev(a)    Rotate array
 %
@@ -908,3 +1046,4 @@ if nCol>nRow
 end
 
 end
+%}
