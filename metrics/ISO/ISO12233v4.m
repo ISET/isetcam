@@ -1,7 +1,7 @@
-function [results, fitme, esf, h] = ISO12233v4(barImage, deltaX, weight, plotOptions)
+function [results, fitme, esf, h, sinfo] = ISO12233v4(barImage, deltaX, weight, plotOptions)
 % ISO 12233 (slanted bar) spatial frequency response (SFR) updated for sfrmat4
 %
-%  [results, fitme, esf, h] = ISO12233v4(barImage, deltaX, weight,plotOptions);
+%  [results, fitme, esf, h, sinfo] = ISO12233v4(barImage, deltaX, weight,plotOptions);
 %
 % Brief description
 %   Slanted-edge MTF calculation
@@ -57,9 +57,11 @@ function [results, fitme, esf, h] = ISO12233v4(barImage, deltaX, weight, plotOpt
 %  Rather than decode pixelWidth and dpi based on the value, we should
 %  probably set a flag and be explicit.
 
-%%
+%% Switch this over to inpurParser
+
 if ieNotDefined('deltaX'), deltaX = .002;  warning('Assuming 2 micron pixel');  end
-if ieNotDefined('weight'), weight = [0.3, 0.6, 0.1]; end  % RGB: Luminance weights
+if ieNotDefined('npol'), npol = 1; end  % Not sure what the default should be (BW)
+if ieNotDefined('weight'), weight = [0.213   0.715   0.072]; end  % RGB: Luminance weights for sfrmat4
 if ieNotDefined('plotOptions'), plotOptions = 'all'; end  % all or luminance or none
 if ieNotDefined('barImage')
     % If there is no image, then you can read a file with the bar image.
@@ -167,20 +169,37 @@ for color=1:nWave                       % Loop for each color
     % compute centroid for derivative array for each line in ROI. NOTE WINDOW array 'win'
     for n=1:nRow
         % -0.5 shift for FIR phase
-        loc(color, n) = centroid( lsf(n, 1:nCol )'.*win1) - 0.5;
+        loc(color, n) = pbCentroid( lsf(n, 1:nCol )'.*win1) - 0.5;
     end
     % clear c
     
-    fitme(color,:) = findedge(loc(color,:), nRow);
+    fitme(color,:) = findedge2(loc(color,:), nRow, npol); %%%%%%%%%%%%%%%%
     place = zeros(nRow,1);
     for n=1:nRow
         place(n) = fitme(color,2) + fitme(color,1)*n;
         win2 = ahamming(nCol, place(n));
-        loc(color, n) = centroid( lsf(n, 1:nCol )'.*win2) -0.5;
+        loc(color, n) = pbCentroid( lsf(n, 1:nCol )'.*win2) -0.5;
     end
     
-    fitme(color,:) = findedge(loc(color,:), nRow);
+    [fitme(color,:)] = findedge2(loc(color,:), nRow, npol);
+    % fitme(color,:) = findedge(loc(color,:), nRow); % OLD
     % fitme(color,:); % used previously to list fit equations
+    
+    % For comparison with linear edge fit (to delete, I think, BW)
+    [fitme1(color,:)] = findedge2(loc(color,:), nRow, 1);
+
+    %{
+    % Not sure this does anything besides print.  It is from the new code,
+    % though.  Maybe y or y1 are used later?
+    if npol>3
+        x = 0: 1: nRow-1;
+        y = polyval(fitme(color,:), x);   %%
+        y1 = polyval(fitme1(color,:),x);  %%   
+        [r2, rmse, merror] = rsquare(y,loc(color,:));
+        disp(['mean error: ',num2str(merror)]);
+        disp(['r2: ',num2str(r2),' rmse: ',num2str(rmse)]);
+    end 
+    %}
 end
 
 summary{1} = ' ';                 % initialize
@@ -188,20 +207,49 @@ nWaveOut = nWave;                 % output edge location listing
 if nWave == 4, nWaveOut = nWave - 1; end
 
 midloc = zeros(nWaveOut,1);
-summary{1} = 'Edge location, slope'; % initialize
-
+summary{1} = 'Edge location, slope';     % initialize
+sinfo.edgelab = 'Edge location, slope';  % New sfrmat4 parameter
 for i=1:nWaveOut
     slout(i) = - 1./fitme(i,1);     % slope is as normally defined in image coords.
-    if rflag==1                     % positive flag it ROI was rotated
+    if rflag==1                     % positive flag if ROI was rotated
         slout(i) =  -fitme(i,1);
     end
     
     % evaluate equation(s) at the middle line as edge location
-    midloc(i) = fitme(i,2) + fitme(i,1)*((nRow-1)/2);
-    
-    summary{i+1} = [midloc(i), slout(i)];
-end
+    % midloc(i) = fitme(i,2) + fitme(i,1)*((nRow-1)/2); % OLD code
+    midloc(i) = polyval(fitme(i,:), (nRow-1)/2); %% Changed for sfrmat4
 
+    summary{i+1} = [midloc(i), slout(i)];
+    sinfo.edgedat = [midloc(i), slout(i)];   % New sfrmat4 parameter
+
+end
+% {
+% Newer code with nWaveOut replacing nWave.  Confused but seems OK. (BW).
+if nWave>2
+    summary{1} = 'Edge location, slope, misregistration (second record, G, is reference)';
+    sinfo.edgelab = 'Edge location, slope, misregistration (second record, G, is reference)';
+    misreg = zeros(nWaveOut,1);
+    temp11 = zeros(nWaveOut,3);
+    for i=1:nWaveOut
+        misreg(i) = midloc(i) - midloc(2);
+        temp11(i,:)   = [midloc(i), slout(i), misreg(i)];
+        summary{i+1}  = [midloc(i), slout(i), misreg(i)];      
+       % fitme(i,end) =  misreg(i);
+    end
+    sinfo.edgedat = temp11;
+    clear temp11
+% Display code, commented out
+%     if io == 5 
+%         disp('Misregistration, with green as reference (R, G, B, Lum) = ');
+%         for i = 1:nWave
+%             fprintf('%10.4f\n', misreg(i))
+%         end
+%     end  % io ==5
+end  % ncol>2
+%}
+
+%{
+% Older code, should be replaced by above above.
 % Could insert a display flag
 % disp('Edge location(s) and slopes = ' ), disp( [midloc(1:nWaveOut), slout(1:nWaveOut)]);
 if nWave>2
@@ -218,7 +266,7 @@ if nWave>2
     %         fprintf('%10.4f\n', misreg(i));
     %     end
 end
-
+%}
 
 % Full linear fit is available as variable fitme. Note that the fit is for
 % the projection onto the X-axis,
@@ -270,19 +318,24 @@ end
 win = ahamming(nbin*nCol,(nbin*nCol+1)/2);      % centered Hamming window
 
 % Loop for each color record.  This variable is returned.  It seems to
-% be the interpolated edge for each of the color channels.
+% be the interpolated edge for each of the color channels. Maybe edge
+% spread function?
 esf = zeros(nn,nWave);
 
 for color=1:nWave
     % project and bin data in 4x sampled array
-    point = project(barImage(:,:,color), loc(color, 1), fitme(color,1), nbin);
+
+    % Old
+    point = project(barImage(:,:,color), loc(color, 1), fitme(color,1), nbin); 
+    % point = project2(barImage(:,:,color), fitme(color,:), nbin);
+
     % vcNewGraphWin; plot(point); colormap(gray(64))
     esf(:,color) = point;  % Not sure what esf stands for. Estimated spatial frequency?
     
     % compute first derivative via FIR (1x3) filter fil
     lsf = deriv1(point', 1, nn, fil2);  % vcNewGraphWin; plot(c)
     lsf = lsf';
-    mid = centroid(lsf);
+    mid = pbCentroid(lsf);
     temp = cent(lsf, round(mid));       % shift array so it is centered
     lsf = temp;
     clear temp;
@@ -514,9 +567,12 @@ end
 end
 
 %----------------------------------------------------
-function [loc] = centroid(x)
+function [loc] = pbCentroid(x)
+% Peter Burns method for finding a centroid
 %
-% [loc] = centroid(x)  Finds centroid of vector
+% [loc] = pbCentroid(x)  
+%
+% (We should try to replace with the Matlab routine)
 %
 %  Returns centroid location of a vector
 %   x   = vector
@@ -533,8 +589,9 @@ end
 
 %----------------------------------------------------
 function [nlow, nhigh, status] = clipping(barImage, low, high, thresh1)
+% Checks for data clipping
 %
-% [n, status] = clipping(a, low, high, thresh1) Checks for data clipping
+% [n, status] = clipping(barImage, low, high, thresh1) 
 %
 % Function checks for clipping of data array
 %  barImage= array
@@ -635,6 +692,109 @@ index=0:nlin-1;
 % Next we 'unscale' the polynomial coefficients so we can use them easily
 % later directly in sfrmat4
 p = polyfit_convert(p, index);
+end
+
+%----------
+function retval = polyfit_convert(p2, x) 
+% Convert scaled polynomial fit vector to unscaled version  
+%  
+% p1 = polyfit(x,y,n); 
+% [p2,S,mu] = polyfit(x,y,n); 
+% p3 = polyfit_convert(p2); 
+%   
+% Peter Burns 5 June 2019
+%             Based on a post by Wilburt van Hamm on Google Groups
+
+n = numel(p2)-1; 
+m = mean(x); 
+s = std(x); 
+
+retval = zeros(size(p2)); 
+for i = 0:n 
+  for j = 0:i 
+     retval(n+1-j) = retval(n+1-j) + p2(n+1-i)*nchoosek(i, j)*(-m)^(i-j)/s^i; 
+  end 
+end
+
+end
+
+%-------------
+function [r2, rmse, merror] = rsquare(y,f,varargin)
+% Compute coefficient of determination of data fit model and RMSE
+%
+% [r2 rmse] = rsquare(y,f)
+% [r2 rmse] = rsquare(y,f,c)
+%
+% RSQUARE computes the coefficient of determination (R-square) value from
+% actual data Y and model data F. The code uses a general version of 
+% R-square, based on comparing the variability of the estimation errors 
+% with the variability of the original values. RSQUARE also outputs the
+% root mean squared error (RMSE) for the user's convenience.
+%
+% Note: RSQUARE ignores comparisons involving NaN values.
+% 
+% INPUTS
+%   Y       : Actual data
+%   F       : Model fit
+%
+% OPTION
+%   C       : Constant term in model
+%             R-square may be a questionable measure of fit when no
+%             constant term is included in the model.
+%   [DEFAULT] TRUE : Use traditional R-square computation
+%            FALSE : Uses alternate R-square computation for model
+%                    without constant term [R2 = 1 - NORM(Y-F)/NORM(Y)]
+%
+% OUTPUT 
+%   R2      : Coefficient of determination
+%   RMSE    : Root mean squared error
+%
+% EXAMPLE
+%   x = 0:0.1:10;
+%   y = 2.*x + 1 + randn(size(x));
+%   p = polyfit(x,y,1);
+%   f = polyval(p,x);
+%   [r2 rmse] = rsquare(y,f);
+%   figure; plot(x,y,'b-');
+%   hold on; plot(x,f,'r-');
+%   title(strcat(['R2 = ' num2str(r2) '; RMSE = ' num2str(rmse)]))
+%   
+% Jered R Wells
+% 11/17/11
+% jered [dot] wells [at] duke [dot] edu
+%
+% v1.2 (02/14/2012)
+%
+% Thanks to John D'Errico for useful comments and insight which has helped
+% to improve this code. His code POLYFITN was consulted in the inclusion of
+% the C-option (REF. File ID: #34765).
+
+if isempty(varargin); c = true; 
+elseif length(varargin)>1; error 'Too many input arguments';
+elseif ~islogical(varargin{1}); error 'C must be logical (TRUE||FALSE)'
+else, c = varargin{1}; 
+end
+
+% Compare inputs
+if ~all(size(y)==size(f)); error 'Y and F must be the same size'; end
+
+% Check for NaN
+tmp = ~or(isnan(y),isnan(f));
+y = y(tmp);
+f = f(tmp);
+
+if c; r2 = max(0,1 - sum((y(:)-f(:)).^2)/sum((y(:)-mean(y(:))).^2));
+else, r2 = 1 - sum((y(:)-f(:)).^2)/sum((y(:)).^2);
+    if r2<0
+    % http://web.maths.unsw.edu.au/~adelle/Garvan/Assays/GoodnessOfFit.html
+        warning('Consider adding a constant term to your model') %#ok<WNTAG>
+        r2 = 0;
+    end
+end
+
+rmse = sqrt(mean((y(:) - f(:)).^2));
+merror = mean(f(:) - y(:));
+
 end
 
 %{
@@ -803,6 +963,301 @@ coord = [ul(:,:), lr(:,:)];
 close;
 end
 
+%---------
+function [point, status] = project2(bb, fitme, fac)
+% [point, status] = project2(bb, fitme, fac)
+% Projects the data in array bb along the direction defined by
+%  npix = (1/slope)*nlin.  Used by sfrmat3, sfrmat4 functions.
+% Data is accumulated in 'bins' that have a width (1/fac) pixel.
+% The smooth, supersampled one-dimensional vector is returned.
+%  bb = input data array
+%  slope and loc are from the least-square fit to edge
+%    y = loc + slope*cent(x)
+%  fitme = polynomial fit for the edge (ncolor, npol+1), npol = polynomial
+%          fit order. For a vertical edge, the fit is x = f(y). For a linear
+%          fit, npol =1, e.g., fitme = [slope, offset]
+%          
+%  fac = oversampling (binning) factor, default = 4
+%  Note that this is the inverse of the usual cent(x) = int + slope*x
+%  status =1;
+%  point = output edge profile vector
+%  status = 1, OK
+%  status = 1, zero counts encountered in binning operation, warning is
+%           printed, but execution continues
+%
+% Copyright (c) Peter D. Burns, 2020
+% Modified on 4 April 2017 to correct zero-count handling
+%             24 June 2020
+status =0;
+[nlin, npix]=size(bb);
+
+if nargin<3
+ fac = 4 ;
+end
+
+slope = fitme(end-1);
+
+nn = floor(npix *fac) ;
+
+ slope =  1/slope;
+  offset =  round(  fac*  (0  - (nlin - 1)/slope )   );
+
+ del = abs(offset);
+ if offset>0
+     offset=0;
+ end
+ bwidth = nn + del+150;
+ barray = zeros(2, bwidth);  %%%%%
+ 
+ % Projection and binning
+ p2 = zeros(nlin,1);
+ 
+for m=1:nlin
+    y = m-1;
+    p2(m) =  polyval(fitme,y)-fitme(end);
+end
+
+% Projection and binning
+
+for n=1:npix
+    for m=1:nlin
+        x = n-1;
+        y = m-1;      
+        ling =   ceil( (x - p2(m))*fac ) + 1 - offset;
+        if ling<1
+           ling = 1;
+        elseif ling>bwidth     
+           ling = bwidth;
+        end
+        barray(1,ling) = barray(1,ling) + 1;
+        barray(2,ling) = barray(2,ling) + bb(m,n);
+    end
+end
+
+ point = zeros(nn,1);
+ start = 1+round(0.5*del); %*********************************
+
+% Check for zero counts
+  nz =0;
+ for i = start:start+nn-1 % ********************************
+% 
+  if barray(1, i) ==0
+   nz = nz +1;
+   status = 0;  
+   if i==1
+    barray(1, i) = barray(1, i+1);
+    barray(2, i) = barray(2, i+1); % Added the following steps
+    elseif i==start+nn-1            
+     barray(1, i) = barray(1, i-1);
+     barray(2, i) = barray(2, i-1);
+     
+   else                           % end of added code
+    barray(1, i) = (barray(1, i-1) + barray(1, i+1))/2;
+    barray(2, i) = (barray(2, i-1) + barray(2, i+1))/2; % Added
+   end
+  end
+ end
+ % 
+ if status ~=0
+  disp('                            WARNING');
+  disp('      Zero count(s) found during projection binning. The edge ')
+  disp('      angle may be large, or you may need more lines of data.');
+  disp('      Execution will continue, but see Users Guide for info.'); 
+  disp(nz);
+ end
+
+ for i = 0:nn-1 
+  point(i+1) = barray(2, i+start)/ barray(1, i+start);
+ end
+point = point';   % 4 Nov. 2019
+end
+
+%--------------------
+function [correct] = fir2fix(n, m)
+% [correct] = fir2fix(n, m);
+% Correction for MTF of derivative (difference) filter
+%  n = frequency data length [0-half-sampling (Nyquist) frequency]
+%  m = length of difference filter
+%       e.g. 2-point difference m=2
+%            3-point difference m=3
+% correct = nx1  MTF correction array (limited to a maximum of 10)
+%
+%Example plotted as the MTF (inverse of the correction)
+%  2-point
+%   [correct2] = fir2fix(50, 2);
+%  3-point
+%   [correct3] = fir2fix(50, 3);
+%   figure,plot(1./correct2), hold on
+%   plot(1./correct3,'--')
+%   legend('2 point','3 point')
+%   xlabel('Frequency index [0-half-sampling]');
+%   ylabel('MTF');
+%   axis([0 length(correct) 0 1])
+%
+% 24 July 2009
+% Copyright (c) Peter D. Burns 2005-2009
+%
+
+correct = ones(n, 1);
+m=m-1;
+scale = 1;
+for i = 2:n
+    correct(i) = abs((pi*i*m/(2*(n+1))) / sin(pi*i*m/(2*(n+1))));
+    correct(i) = 1 + scale*(correct(i)-1);
+  if correct(i) > 10  % Note limiting the correction to the range [1, 10]
+    correct(i) = 10;
+  end
+end
+
+end
+
+function [eff, freqval, sfrval] = sampeff(dat, val, del, fflag, pflag)
+%sampeff(datout{ii}, [0.1, 0.5],  del, 1, 0);
+%[eff, freqval, sfrval] = sampeff2(dat, val, del, fflag, pflag) Sampling efficiency from SFR
+% First clossing method with local interpolation
+%dat   = SFR data n x 2, n x 4 or n x 5 array. First col. is frequency
+%val = (1 x n) vector of SFR threshold values, e.g. [0.1, 0.5]
+%del = sampling interval in mm (default = 1 pixel)
+%fflag = 1 filter [1 1 1 ] filtr applied to sfr
+%      = 0 (default) no filtering
+%pflag = 0 (default) plot results
+%      = 1 no plots
+%
+%Peter Burns 6 Dec. 2005, modified 19 April 2009
+%
+if nargin < 4;
+    pflag = 0;
+    fflag =0;
+end
+if nargin < 3;
+    del = 1;
+end
+if nargin < 2;
+    val = 0.1;
+end
+
+
+%hs = 0.48/del;  changed 19 April 2009
+hs = 0.495/del;
+imax= length(dat(:,1)); % added 19 April 2009
+x = find(dat(:,1) > hs);
+if isempty(x) == 1;
+    disp(' Missing SFR data, frequency up to half-sampling needed')
+    eff = 0;  %%%%%
+    freqval = 0;
+    sfrval = 0;
+    return
+end
+nindex = x(1);  % added 19 April 2009
+%imax = x(1);   % Changed 19 April 2009
+dat = dat(1: imax, :);
+
+[n, m, nc] = size(dat);
+nc = m - 1;
+imax = n;
+nval = length(val);
+eff = zeros(nval, nc);
+freqval = zeros(nval, nc);
+sfrval = zeros(nval, nc);
+
+for v = 1: nval;
+ [freqval(v, :), sfrval(v, :)] = findfreq(dat, val(v), imax, fflag);
+ freqval(v, :)=clip(freqval(v, :),0, hs); %added 19 April 2009 ****************
+for c = 1:nc
+  %eff(v, c) = min(round(100*freqval(v, c)/dat(imax,1)), 100);
+  eff(v, c) = min(round(100*freqval(v, c)/hs), 100); %  ************************
+end
+end
+
+if pflag ~= 0;
+    
+for c =1:nc
+ se = ['Sampling efficiency ',num2str(eff(1,c)),'%'];
+  
+ disp(['  ',se])
+ figure,
+	plot(dat(:,1),dat(:,c+1)),
+	hold on
+    for v = 1:nval
+     plot(freqval(v, c),sfrval(v, c),'r*','Markersize', 12),
+    end
+     plot(dat(:,1),0.1*ones(length(dat(:,1))),'b--'),
+     plot([dat(nindex,1),dat(nindex,1)],[0,.1],'b--'),
+%     title(fn),
+     xlabel('Frequency'),
+     ylabel('SFR'),
+     text(0.8*dat(end,1),0.95, ['SE = ',num2str(eff(1,c)),'%'])
+     axis([0, dat(imax, 1), 0, 1]),
+     hold off
+end
+
+end   
+end
+
+%----------
+function [freqval, sfrval] = findfreq(dat, val , imax, fflag)
+%[freqval, sfrval] = findfreq(dat, val, imax, fflag) find frequency for specified
+%SFR value
+% dat   = SFR data n x 2, n x 4 or n x 5 array. First col. is frequency
+% val = threshold SFR value, e.g. 0.1
+% imax = index of half-sampling frequency (normally n)
+%fflag = 1  filter [1 1 1] SFR data
+%      = 0 no filter (default)
+% freqval = frequency corresponding to val; (1 x ncolor)
+% SFR corresponding to val (normally = val) (1 x ncolor)
+%
+%Peter Burns 6 Dec. 2005
+
+if nargin < 4;
+    fflag = 0;
+end
+
+[n, m, nc] = size(dat);
+nc = m - 1;
+frequval = zeros(1, nc);
+sfrval = zeros(1, nc);
+
+maxf = dat(imax,1);
+fil = [1, 1, 1]/3;
+fil = fil';
+for c = 1:nc;
+    if fflag ~= 0;
+        temp = conv2(dat(:, c+1), fil, 'same');
+	    dat(2:end-1, c+1) = temp(2:end-1);
+    end
+    test = dat(:, c+1) - val;
+	x = find(test < 0) - 1; % First crossing of threshold
+   
+	if isempty(x) == 1 | x(1) == 0;
+        
+		s = maxf;
+        sval = dat(imax, c+1);
+
+		else                 % interpolation
+        x = x(1);
+        sval = dat(x, c+1);
+        s = dat(x,1);
+		y = dat(x, c+1);
+        y2 = dat(x+1, c+1);
+        slope = (y2-y)/dat(2,1);
+        dely =  test(x, 1);
+        s = s - dely/slope;
+        sval = sval - dely; 
+    end
+    if s > maxf;
+       s = maxf;
+       sval = dat(imax, c+1);
+    end
+    
+    freqval(c) = s;
+    sfrval(c) = sval;
+    
+end
+
+end
+
+% {
+% This should be replaced by project2 when I understand it (BW)
 %----------------------------------------------------
 function [point, status] = project(barImage, loc, slope, fac)
 %Projects data along the slanted edge to a common line
@@ -908,7 +1363,7 @@ end
 % figure(1); plot(point);
 
 end
-
+%}
 %----------------------------------------------------
 function [a, nlin, npix, rflag] = rotatev2(a)
 %[a, nlin, npix, rflag] = rotatev2(a)     Rotate edge array vertical
@@ -951,7 +1406,7 @@ testh = abs(mean(a(:,end-nn,mm))-mean(a(:,nn,mm)));
 
  end
 
-%% These could be put inside rotatev2
+%% --------- Could be put inside rotatev2
 
 function out = rotate90(in, n)
 %rotate90: 90 degree counterclockwise rotations of matrix

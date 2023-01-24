@@ -1,9 +1,6 @@
-function [status, dat, e, fitme, esf, nbin, del2] = ieSFRmat4(io, deltaX, npol, weight, barImage)
+function [status, dat, e, fitme, esf, nbin, del2] = sfrmat4(io, del, npol, weight, barImage)
 %******************************************************************
-% Slanted-edge Analysis with polynomial edge fit based on sfrmat4 (v5) 
-%
-%  ieSFRmat4(barImage, deltaX, weight, plotOptions)
-%
+% MATLAB function: sfrmat4 (v5) Slanted-edge Analysis with polynomial edge fit
 %  [status, dat, e, fitme, esf, nbin, del2] = sfrmat4(io, del, npol,weight, a);
 %       From a selected edge area of an image, the program computes
 %       the ISO slanted edge SFR. Input file can be single or
@@ -65,272 +62,34 @@ function [status, dat, e, fitme, esf, nbin, del2] = ieSFRmat4(io, deltaX, npol, 
 % Copyright (c) 2009-2022 Peter D. Burns, pdburns@ieee.org
 %
 %****************************************************************************
-
-if ieNotDefined('deltaX'), deltaX = .002;  warning('Assuming 2 micron pixel');  end
-if ieNotDefined('weight'), weight = [0.213   0.715   0.072]; end  % RGB: Luminance weights
-if ieNotDefined('plotOptions'), plotOptions = 'all'; end  % all or luminance or none
-
-status = 0;
-pflag = 0; %Used for diagnostic plotting, set pflag = 1 for lots of plots
- 
-defpath = path;            % save original path
-home = pwd;                % add current directory to path                   
-
-name =    'sfrmat4';
-version = '5';
-when =    '4 Feb. 2022';
-
-
-%%
-%{
-
-status = 0;
-pflag = 0; %Used for diagnostic plotting, set pflag = 1 for lots of plots
- 
-defpath = path;            % save original path
-home = pwd;                % add current directory to path                   
-
-name =    'sfrmat4';
-version = '5';
-when =    '4 Feb. 2022';
-
-guidefweight =  ['0.213'
-                 '0.715'
-                 '0.072'];
-% Default RGB -> luminance weights            
-defweight = [0.213   0.715   0.072];
-% Default order of polynomial edge fitting
-defnpol = 1;
-oename = 'none';
-
-% Super-sampling factor for binning
-nbin = 4;
-
-% Burns deals with various types of input arguments.  BW adds the comments
-
-switch nargin
-
-    case 0
-     % sfrmat4;
-     io = 0;
-     deltaX = 1;
-     npol = defnpol;
-     weight = guidefweight;
-
-    case 1
-      % sfrmat4(io)
-      if isempty(io) ==1
-          io =0;
-      end
-      deltaX = 1;
-      npol = defnpol;
-      weight = guidefweight;
-
-    case 2
-      % sfrmat4(io, deltaX)
-     if isempty(io) == 1
-         io = 0;
-     end
-     if isempty(deltaX) == 1
-         deltaX = 1;
-     end
-     npol = defnpol;
-     weight = guidefweight;
-     
-    case 3
-      % sfrmat4(io, deltaX, npol)
-
-      if isempty(io) == 1
-         io = 0;
-      end
-      if isempty(deltaX) == 1
-         deltaX = 1;
-      end
-      if isempty(npol) == 1
-         npol = defnpol;  
-      end
-      
-    case 4
-      % sfrmat4(io, deltaX, npol, weight)
-
-      if isempty(io) == 1
-         io = 0;
-      end
-      if isempty(deltaX) == 1
-         deltaX = 1;
-      end
-      if isempty(npol) == 1
-         npol = defnpol;
-      end
-      if isempty(weight) == 1
-         weight = guidefweight;
-      else wsize = size(weight);
-         if wsize ~= [1, 3]
-           weight = guidefweight;
-         end
-      end
-      
-    case 5
-      % sfrmat4(io, deltaX, npol, weight, barImage)
-
-      if isempty(io) == 1
-         io = 0;
-      end
-       if isempty(deltaX) == 1
-         deltaX = 1;
-      end
-      if isempty(npol) == 1
-         npol = defnpol;
-      end
-
-       barImage = double(barImage);
-      
-      if isempty(deltaX) == 1
-         deltaX = 1;
-      end
-      if isempty(weight) == 1
-           weight = guidefweight;
-        else wsize = size(weight);
-           if wsize ~= [1, 3]
-             weight = guidefweight;
-           end
-       end
-        
-    otherwise
-     disp('Incorrect number or arguments. There should be 1 - 6');
-     status = 1;
-     return
-
-end
-
-if exist('npol','var') ~=1
-    norder = input(['Edge fit order? [',num2str(defnpol),']']);
-    if isempty(norder)==1
-        npol = defnpol;
-    else npol = norder;
-    end
-end
-if npol>5
-    disp('* Edge fit order must be 5 or less *')
-    npol = defnpol;
-end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Suppresses interpreting of e.g. filenames
-%  set(0, 'DefaultTextInterpreter', 'none'); 
- 
-%  pflag = 0; %Used for diagnostic plotting
-
-if io ~= 1
-    swin = splash(name, version, when);
-    % Select file name for reading
-    % edit the next line to change the default path for input file selection
-    def ='*.*';
-    drawnow;
-    [status, atemp, ~, pathname, f] = imageread;
-    close(swin); drawnow;
-    if status~=0
-        disp('No file selected. To try again type: > sfrmat4');
-        status = 1;
-        return;
-    end
-    filename = [pathname,f];
-
-    [nlin npix ncol] = size(atemp);
-
-    % input sampling and luminance weights
-    if ncol==1
-        [deltaX, npol] = inbox2(deltaX, npol);
-    else 
-        [deltaX, weight, npol] = inbox4(deltaX, guidefweight, npol); 
-    end
-     if npol>3
-       disp(['Warning: Polynominal fit to edge is of order ',num2str(npol)]);
-    end
-    % used for plotting and listing
-    if deltaX==1
-        sunit = 'pixel';
-        funit =  'cy/pixel';
-    else
-        sunit = 'mm';
-        funit = 'cy/mm';
-    end
-    sinfo.sunit = sunit;
-    sinfo.funit = funit;
-    
-    cname = class(atemp);
-    if cname(1:5) == 'uint1'   % uint16
-        smax = 2^16-1;
-    elseif cname(1:5) == 'uint8'
-        smax = 255;
-    else
-        smax = 1e10;
-    end
-
-    [barImage, roi] = getroi(atemp);
-    barImage = double(barImage);
-
-    % extract Region of interest
-    clear atemp                             % *******************************
-    [nlow, nhigh, cstatus] = clipping(barImage, 0, smax, 0.005);
-    if cstatus ~=1 
-     disp('Fraction low data');
-     disp(nlow);
-     disp('Fraction high data');
-     disp(nhigh);
-    end
-
-%     if oecfdatflag == 1
-%      disp('Applying OECF look-up table');
-%      [a, oestatus] = getoecf(a, oepath, oename);   % Transforms a using OECF LUT from file chosen
-%     end
-
-else                     % when io = 1
-
-    barImage= double(barImage);
-%     if oecfdatflag ~= 0
-%       size(oecfdat)
-%       [a, oestatus] = getoecf(a, oecfdat);
-%      disp('oecfdat applied')
-%     end
-    
-    samp = zeros(1,3);
-    samp(1) = nbin;
-    samp(2) = deltaX; % Image sampling
-    if deltaX > 1
-       deltaX = 25.4/deltaX;  % Assume input was in DPI convert to pitch in mm
-    end
-
-end
-
-[nlin npix ncol] = size(barImage);
+[nRow, nCol, nWave] = size(barImage);
 
 % Form luminance record using the weight vector for red, green and blue
-if ncol ==3
-    lum = zeros(nlin, npix);
+if nWave ==3
+    % lum = zeros(nRow, nCol);
     lum = weight(1)*barImage(:,:,1) + weight(2)*barImage(:,:,2) + weight(3)*barImage(:,:,3); 
-    cc = zeros(nlin, npix*4);
+    % cc = zeros(nRow, nCol*4);
     cc = [ barImage(:, :, 1), barImage(:, :, 2), barImage(:,:, 3), lum];
-    cc = reshape(cc,nlin,npix,4);
+    cc = reshape(cc,nRow,nCol,4);
 
     barImage = cc;
     clear cc;
     clear lum;
-    ncol = 4; 
+    nWave = 4; 
 end
 
 % Rotate horizontal edge so it is vertical
-rflag = 0;
- [barImage, nlin, npix, rflag] = rotatev2(barImage);  %based on data values
+% Deleted: rflag = 0;
+ [barImage, nRow, nCol, rflag] = rotatev2(barImage);  %based on data values
 
-loc = zeros(ncol, nlin);
+loc = zeros(nWave, nRow);
 
 lowhi = 0;
 fil1 = [0.5 -0.5];
 fil2 = [0.5 0 -0.5];
 % We Need 'positive' edge
 tleft  = sum(sum(barImage(:,      1:5,  1),2));
-tright = sum(sum(barImage(:, npix-5:npix,1),2));
+tright = sum(sum(barImage(:, nCol-5:nCol,1),2));
 if tleft>tright
     lowhi = 1;
     fil1 = [-0.5 0.5];
@@ -343,73 +102,40 @@ end
     disp('             lead to high error in the SFR measurement.');
  end
 
-fitme = zeros(ncol, npol+1); %%%%%%%%%%%%%%%%%%%%%
-slout = zeros(ncol, 1);
+fitme = zeros(nWave, npol+1); %%%%%%%%%%%%%%%%%%%%%
+slout = zeros(nWave, 1);
 
 % Smoothing window for first part of edge location estimation - 
 %  to be used on each line of ROI
- win1 = ahamming(npix, (npix+1)/2);    % Symmetric window
+ win1 = ahamming(nCol, (nCol+1)/2);    % Symmetric window
 
-for color=1:ncol                      % Loop for each color
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  
-    if pflag ==1
-        pname = ' ';
-        if ncol~=1
-            pname =[' Red '
-           'Green'
-           'Blue '
-           ' Lum '];
-        end
-        figure(1);
-        ht = 400;
-        rat = npix/nlin;
-        if rat<=0.3
-            rat = 0.3;
-        end
-        wid = round(ht*rat);
-        pos = [25 0 0 0];
-        pos(3) = wid;
-        pos(4) = ht;
-        set(gcf,'Position', pos);
-        imagesc1(barImage(:,:, color));
-        colormap('gray');
-        title(pname(color,:));
-    end % if pflag == 1
-
-    if pflag ==1
-        figure;
-        mesh( barImage(:,:,color) ), colormap('default'), title(pname(color,:));
-        xlabel('pixel'), ylabel('line'), zlabel('value'); % Pause to inspect data
-        disp('********* Hit any key to continue***************');
-        
-    end  % if pflag == 1
+for color=1:nWave                      % Loop for each color
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    c = deriv1(barImage(:,:,color), nlin, npix, fil1);
-    size(barImage);
+    c = deriv1(barImage(:,:,color), nRow, nCol, fil1);
     
 % compute centroid for derivative array for each line in ROI. NOTE WINDOW array 'win1'
-    for n=1:nlin
-        loc(color, n) = centroid( c(n, 1:npix )'.*win1) - 0.5;   % -0.5 shift for FIR phase
+    for n=1:nRow
+        loc(color, n) = centroid( c(n, 1:nCol )'.*win1) - 0.5;   % -0.5 shift for FIR phase
     end
     
-    fitme(color,:) = findedge2(loc(color,:), nlin, npol); %%%%%%%%%%%%%%%%
+    fitme(color,:) = findedge2(loc(color,:), nRow, npol); %%%%%%%%%%%%%%%%
     
-    place = zeros(nlin,1);
-    for n=1:nlin 
+    place = zeros(nRow,1);
+    for n=1:nRow 
         place(n) = polyval(fitme(color,:), n-1);  %%%%%%%%%%%%%%%%%%%%%%%
-        win2 = ahamming(npix, place(n));
-        loc(color, n) = centroid( c(n, 1:npix )'.*win2) -0.5;
+        win2 = ahamming(nCol, place(n));
+        loc(color, n) = centroid( c(n, 1:nCol )'.*win2) -0.5;
     end
    
-    [fitme(color,:)] = findedge2(loc(color,:), nlin, npol);
+    [fitme(color,:)] = findedge2(loc(color,:), nRow, npol);
 % For comparison with linear edge fit
-    [fitme1(color,:)] = findedge2(loc(color,:), nlin, 1);
+    [fitme1(color,:)] = findedge2(loc(color,:), nRow, 1);
 
-%
+%???
     if npol>3
-        x = 0: 1: nlin-1;
+        x = 0: 1: nRow-1;
         y = polyval(fitme(color,:), x);%%
         y1 = polyval(fitme1(color,:),x);%%   
         [r2, rmse, merror] = rsquare(y,loc(color,:));
@@ -417,59 +143,14 @@ for color=1:ncol                      % Loop for each color
         disp(['r2: ',num2str(r2),' rmse: ',num2str(rmse)]);
     end 
  
-    if pflag ==1
-        
-        x = 0: 1: nlin-1;
-        y = polyval(fitme(color,:), x);
-        y1 = polyval(fitme1(color,:),x);  
-        
-        figure;
-        image(barImage(:,:, color)), colormap('gray(256)');
-        axis image
-        hold on
-        np = 8;
-         ln = 1:length(loc(color,:));
-        plot(loc(color,1:np:end),ln(1:np:end), 'ro','MarkerSize',7), hold on,
-        plot(y1,x, 'b--','LineWidth',1);
-        plot(y,x, 'r','LineWidth',1);
-        title(pname(color,:)), xlabel('edge location'),ylabel('line');
-        hold off;
-        disp('Edge  location, pixel');
-        tdat = zeros(nlin,2);
-        tdat(:,1) = (1:nlin)';
-        tdat(:,2) = (loc(color, :))';
-       
-        x = 0: 1: nlin-1;
-        y = polyval(fitme(color,:), x);%%
-        y1 = polyval(fitme1(color,:),x);%%   
-        [r2, rmse, merror] = rsquare(y,loc(color,:));
-        disp(['mean error: ',num2str(merror)]);
-        disp(['r2: ',num2str(r2),' rmse: ',num2str(rmse)])
-        diff = loc(color,:)-y; 
-        
-        figure
-        plot(diff,x,'*');
-        xlabel('Residual, pixel'),ylabel('line');
-        hold on
-        plot([0,0],[0,nlin],'k--')
-        axis ij
-        axis([-10 10 0 nlin])
-        figure
-        histogram(diff,15,'Normalization','probability');
-         xlabel('Residual, pixel'),ylabel('Frequency, prob.');
-        
-%         axis([-1 1 0 nlin])
-                    
-    end   
-
 end                                         % End of loop for each color
 clear c
 summary{1} = ' '; % initialize
 
-midloc = zeros(ncol,1);
+midloc = zeros(nWave,1);
 summary{1} = 'Edge location, slope'; % initialize
 sinfo.edgelab = 'Edge location, slope';
-for i=1:ncol
+for i=1:nWave
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     slout(i) = - 1./(fitme(i,end-1)); %%%%%% slope is as normally defined in image coods.
     if rflag==1                       % positive flag if ROI was rotated
@@ -477,18 +158,18 @@ for i=1:ncol
     end
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % evaluate equation(s) at the middle line as edge location
-    midloc(i) = polyval(fitme(i,:), (nlin-1)/2); %%%%%%%%%
+    midloc(i) = polyval(fitme(i,:), (nRow-1)/2); %%%%%%%%%
     summary{i+1} = [midloc(i), slout(i)];
     sinfo.edgedat = [midloc(i), slout(i)];
 end
 
 
-if ncol>2
+if nWave>2
     summary{1} = 'Edge location, slope, misregistration (second record, G, is reference)';
     sinfo.edgelab = 'Edge location, slope, misregistration (second record, G, is reference)';
-    misreg = zeros(ncol,1);
-    temp11 = zeros(ncol,3);
-    for i=1:ncol
+    misreg = zeros(nWave,1);
+    temp11 = zeros(nWave,3);
+    for i=1:nWave
         misreg(i) = midloc(i) - midloc(2);
         temp11(i,:) = [midloc(i), slout(i), misreg(i)];
         summary{i+1}=[midloc(i), slout(i), misreg(i)];      
@@ -498,7 +179,7 @@ if ncol>2
     clear temp11
     if io == 5 
         disp('Misregistration, with green as reference (R, G, B, Lum) = ');
-        for i = 1:ncol
+        for i = 1:nWave
             fprintf('%10.4f\n', misreg(i))
         end
     end  % io ==5
@@ -513,8 +194,8 @@ end  % ncol>2
 % so the slope is the inverse of the one that you may expect
 
 % Limit number of lines to integer(npix*line slope as per ISO algorithm  
-    nlin1 = round(floor(nlin*abs(fitme(1,end-1)))/abs(fitme(1,end-1))); %%%
-    barImage = barImage(1:nlin1, :, 1:ncol);           
+    nRow1 = round(floor(nRow*abs(fitme(1,end-1)))/abs(fitme(1,end-1))); %%%
+    barImage = barImage(1:nRow1, :, 1:nWave);           
     
 if npol>3
         disp(['Edge fit order = ',num2str(npol)]);
@@ -530,22 +211,22 @@ end
 % For future use
 % nbin = nbin*cos(atan(vslope)); %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-delimage = deltaX;
+delimage = del;
 
 %Correct sampling inverval for sampling normal to edge
 delfac = cos(atan(vslope));
 % delfac = 1; (future use)
-deltaX = deltaX*delfac;  % input pixel sampling normal to the edge   
-del2 = deltaX/nbin;   % Supersampling interval normal to edge
+del = del*delfac;  % input pixel sampling normal to the edge   
+del2 = del/nbin;   % Supersampling interval normal to edge
 
 samp(3) = del2;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ns = length(summary);
 summary{ns+1} = [delimage, del2];
-sinfo.samp = [delimage deltaX del2 nbin];
+sinfo.samp = [delimage del del2 nbin];
 
-nn =   floor(npix *nbin);
-mtf =  zeros(nn, ncol);
+nn =   floor(nCol *nbin);
+mtf =  zeros(nn, nWave);
 nn2 =  floor(nn/2) + 1;
 
 %   disp('Derivative correction')
@@ -559,9 +240,9 @@ nn2out = round(nn2*freqlim/2);
 nfreq = nn/(2*delimage*nn);    % half-sampling frequency
 
 % %%%%%%%%%%%%                      Large SFR loop for each color record
-esf = zeros(nn,ncol);  
+esf = zeros(nn,nWave);  
 
-for color=1:ncol
+for color=1:nWave
   % project and bin data in 4x sampled array  
     [esf, status] = project2(barImage(:,:,color), fitme(color,:), nbin);
     esf = esf';
@@ -614,15 +295,15 @@ for n=1:nn
     freq(n) = (n-1)/(del2*nn);
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-dat = zeros(nn2out, ncol+1);
+dat = zeros(nn2out, nWave+1);
 for i=1:nn2out
     dat(i,:) = [freq(i), mtf(i,:)];
 end
 
 % Add color misregistration to fitme matrix
-temp1 = zeros(ncol, npol+2);
-temp1(1:ncol,1:npol+1) = fitme;
-if ncol>2
+temp1 = zeros(nWave, npol+2);
+temp1(1:nWave,1:npol+1) = fitme;
+if nWave>2
  temp1(:,end) = misreg;
 fitme = temp1;
 end
@@ -650,7 +331,7 @@ if io ==1
     return
 end
 % Plot SFRs on same axes
-if ncol >1
+if nWave >1
   sym{1} = []; 
   sym{1} = '--r';
   sym{2} = '-g';
@@ -672,13 +353,13 @@ figure('Position',pos)
   title(ttext, 'interpreter','none');
   xlabel(['     Frequency, ', funit]);
   ylabel('SFR');
-	if ncol>1
-		for n = 2:ncol-1
+	if nWave>1
+		for n = 2:nWave-1
 			plot( freq( 1:nn2out), mtf(1:nn2out, n), sym{n});
         end
 		ndel = round(nn2out/30);
-		plot(  freq( 1:ndel:nn2out), mtf(1:ndel:nn2out, ncol), 'ok',...
-            freq( 1:nn2out), mtf(1:nn2out, ncol), 'k')
+		plot(  freq( 1:ndel:nn2out), mtf(1:ndel:nn2out, nWave), 'ok',...
+            freq( 1:nn2out), mtf(1:nn2out, nWave), 'k')
 		
             line([nfreq ,nfreq],[.05,0]); 
             h=legend(['r   ',num2str(e(1,1)),'%'],...
@@ -733,6 +414,5 @@ defname = [pathname,'*.xls'];
   path(defpath);           % Restore path to previous list
   cd(home);                % Return to working directory
  
-end
+return;
 
-%}
