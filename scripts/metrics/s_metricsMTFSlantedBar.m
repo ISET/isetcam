@@ -12,14 +12,15 @@
 % We measure the system MTF properties using a simple slanted bar
 % target along with the ISO 12233 standard methods.
 %
-% This script is an example of a complicated (but useful)
-% calculation.  We suggest that you begin programming scripts
-% using other, simpler routines.  We include this script because
-% it shows many features of the scripting language and the
-% ability to interact with the GUI from scripts.
+% This script is an example of a complicated (but useful) calculation.
+% We suggest that you begin programming scripts using other, simpler
+% routines.  We include this script because it shows many features of
+% the scripting language and the ability to interact with the GUI from
+% scripts.
 %
-% See also:  ISO12233, s_pixelSizeMTF, ISOFindSlantedBar,
-% ieDrawShape, ipCompute
+% See also:  
+%   ieISO12233, ieISO12233v4, s_pixelSizeMTF, ISOFindSlantedBar,
+%   ieDrawShape, ipCompute 
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
@@ -40,7 +41,6 @@ scene = sceneCreate('slantedBar',sz,slope);
 scene = sceneAdjustLuminance(scene,meanL);    % Candelas/m2
 scene = sceneSet(scene,'distance',viewD);       % meters
 scene = sceneSet(scene,'fov',fov);            % Field of view in degrees
-% vcAddAndSelectObject(scene); sceneWindow;
 
 %% Create an optical image with some default optics.
 oi = oiCreate;
@@ -53,7 +53,6 @@ oi = oiSet(oi,'optics',optics');
 % Now, compute the optical image from this scene and the current optical
 % image properties
 oi = oiCompute(scene,oi);
-% ieAddObject(oi); oiWindow;
 
 %%  Create a default monochrome image sensor array
 sensorM = sensorCreate('monochrome');   % Monocrhome sensor
@@ -110,7 +109,18 @@ ISO12233(barImage, dx)
 
 %% Should be the same, but from the ie routine
 
-ieISO12233(ip);
+% From the 2001 functions
+ieISO12233(ip,sensor);
+
+%% Updated with with sfrmat4
+mtfData = ieISO12233v4(ip,sensor);
+ieNewGraphWin; plot(mtfData.lsfx*1e3,mtfData.esf); grid on;
+xlabel('Position (microns)'); ylabel('Estimated intensity')
+title('Edge spreads and LSF');
+set(gca,'xtick',-80:10:80)
+hold on;
+plot(mtfData.lsfx*1e3,mtfData.lsf,'ko');
+
 
 %% Now for a monochrome sensor
 

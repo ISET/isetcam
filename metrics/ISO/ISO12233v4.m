@@ -4,7 +4,7 @@ function [results, fitme, esf, h, sinfo] = ISO12233v4(barImage, deltaX, weight, 
 %  [results, fitme, esf, h, sinfo] = ISO12233v4(barImage, deltaX, weight,plotOptions);
 %
 % Brief description
-%   Slanted-edge MTF calculation
+%   Slanted-edge MTF calculation using the sfrmat4 methods.
 %
 % Inputs
 %  barImage:  The RGB image of the slanted bar
@@ -24,6 +24,7 @@ function [results, fitme, esf, h, sinfo] = ISO12233v4(barImage, deltaX, weight, 
 %   fitme -
 %   esf -
 %   h - Figure handle
+%   sinfo -
 %
 % Notes:
 %   1 cycle on the sensor has frequency: 1/sensorGet(sensor,'width','mm')
@@ -50,7 +51,7 @@ function [results, fitme, esf, h, sinfo] = ISO12233v4(barImage, deltaX, weight, 
 %  Substantially re-written by Wandell (again)
 %
 % See also:
-%   ieISO12233, ISOFindSlantedBar, s_metricsMTFSlantedBar
+%   ieISO12233v4, ieISO12233, ISOFindSlantedBar, s_metricsMTFSlantedBar
 %
 
 % PROGRAMMING TODO:
@@ -325,17 +326,18 @@ esf = zeros(nn,nWave);
 for color=1:nWave
     % project and bin data in 4x sampled array
 
-    % Old
-    point = project(barImage(:,:,color), loc(color, 1), fitme(color,1), nbin); 
-    % point = project2(barImage(:,:,color), fitme(color,:), nbin);
+    % Old - some issues with point as a row or col vector
+    % point = project(barImage(:,:,color), loc(color, 1), fitme(color,1), nbin);
+    point2 = project2(barImage(:,:,color), fitme(color,:), nbin);
+    % ieNewGraphWin; plot(point,point2);
 
     % vcNewGraphWin; plot(point); colormap(gray(64))
-    esf(:,color) = point;  % Not sure what esf stands for. Estimated spatial frequency?
+    esf(:,color) = point2(:);  % Maybe edge spread function?
     
     % compute first derivative via FIR (1x3) filter fil
-    lsf = deriv1(point', 1, nn, fil2);  % vcNewGraphWin; plot(c)
+    lsf = deriv1(point2(:)', 1, nn, fil2);
     lsf = lsf';
-    mid = pbCentroid(lsf);
+    mid = pbCentroid(lsf);              % Peter Burns centroid function.
     temp = cent(lsf, round(mid));       % shift array so it is centered
     lsf = temp;
     clear temp;
