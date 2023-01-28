@@ -187,20 +187,8 @@ for color=1:nWave                       % Loop for each color
     % fitme(color,:); % used previously to list fit equations
     
     % For comparison with linear edge fit (to delete, I think, BW)
-    [fitme1(color,:)] = findedge2(loc(color,:), nRow, 1);
+    % [fitme1(color,:)] = findedge2(loc(color,:), nRow, 1);
 
-    %{
-    % Not sure this does anything besides print.  It is from the new code,
-    % though.  Maybe y or y1 are used later?
-    if npol>3
-        x = 0: 1: nRow-1;
-        y = polyval(fitme(color,:), x);   %%
-        y1 = polyval(fitme1(color,:),x);  %%   
-        [r2, rmse, merror] = rsquare(y,loc(color,:));
-        disp(['mean error: ',num2str(merror)]);
-        disp(['r2: ',num2str(r2),' rmse: ',num2str(rmse)]);
-    end 
-    %}
 end
 
 summary{1} = ' ';                 % initialize
@@ -224,8 +212,7 @@ for i=1:nWaveOut
     sinfo.edgedat = [midloc(i), slout(i)];   % New sfrmat4 parameter
 
 end
-% {
-% Newer code with nWaveOut replacing nWave.  Confused but seems OK. (BW).
+
 if nWave>2
     summary{1} = 'Edge location, slope, misregistration (second record, G, is reference)';
     sinfo.edgelab = 'Edge location, slope, misregistration (second record, G, is reference)';
@@ -235,39 +222,11 @@ if nWave>2
         misreg(i) = midloc(i) - midloc(2);
         temp11(i,:)   = [midloc(i), slout(i), misreg(i)];
         summary{i+1}  = [midloc(i), slout(i), misreg(i)];      
-       % fitme(i,end) =  misreg(i);
     end
     sinfo.edgedat = temp11;
     clear temp11
-% Display code, commented out
-%     if io == 5 
-%         disp('Misregistration, with green as reference (R, G, B, Lum) = ');
-%         for i = 1:nWave
-%             fprintf('%10.4f\n', misreg(i))
-%         end
-%     end  % io ==5
 end  % ncol>2
-%}
 
-%{
-% Older code, should be replaced by above above.
-% Could insert a display flag
-% disp('Edge location(s) and slopes = ' ), disp( [midloc(1:nWaveOut), slout(1:nWaveOut)]);
-if nWave>2
-    summary{1} = 'Edge location, slope, misregistration (second record, G, is reference)';
-    misreg = zeros(nWaveOut,1);
-    for i=1:nWaveOut
-        misreg(i) = midloc(i) - midloc(2);
-        summary{i+1}=[midloc(i), slout(i), misreg(i)];
-    end
-    
-    % Turned off display
-    %     disp('Misregistration, with green as reference (R, G, B, Lum) = ');
-    %     for i = 1:nWaveOut
-    %         fprintf('%10.4f\n', misreg(i));
-    %     end
-end
-%}
 
 % Full linear fit is available as variable fitme. Note that the fit is for
 % the projection onto the X-axis,
@@ -295,7 +254,7 @@ freq = zeros(nn, 1);
 for n=1:nn; freq(n) = nbin*(n-1)/(deltaX*nn); end
 % limits plotted sfr to 0-1 cy/pxel freqlim = 2 for all data
 freqlim = 1;
-nn2out = round(nn2*freqlim/2);    % What is this?
+nn2out = round(nn2*freqlim/2);    % The frequency estimates returned
 nfreq = n/(2*deltaX*nn);          % half-sampling (Nyquist) frequency
 
 % If the units are for the display surface, we further convert to cycles
@@ -328,14 +287,14 @@ for color=1:nWave
 
     % Old - some issues with point as a row or col vector
     % point = project(barImage(:,:,color), loc(color, 1), fitme(color,1), nbin);
-    point2 = project2(barImage(:,:,color), fitme(color,:), nbin);
+    point = project2(barImage(:,:,color), fitme(color,:), nbin);
     % ieNewGraphWin; plot(point,point2);
 
     % vcNewGraphWin; plot(point); colormap(gray(64))
-    esf(:,color) = point2(:);  % Maybe edge spread function?
+    esf(:,color) = point(:);  % Maybe edge spread function?
     
     % compute first derivative via FIR (1x3) filter fil
-    lsf = deriv1(point2(:)', 1, nn, fil2);
+    lsf = deriv1(point(:)', 1, nn, fil2);
     lsf = lsf';
     mid = pbCentroid(lsf);              % Peter Burns centroid function.
     temp = cent(lsf, round(mid));       % shift array so it is centered
