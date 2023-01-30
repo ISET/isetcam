@@ -9,8 +9,8 @@ function [results, fitme, esf, h] = ISO12233(barImage, deltaX, weight, plotOptio
 %   allows us to cite the updated code that is more widely used.
 %
 % Inputs
-%  barImage:  Either an image processor struct or an RGB image of the
-%             slanted bar 
+%  barImage:  Either an image processor (ip) struct or an RGB image of the
+%             slanted bar
 %  deltaX:    The sensor sample spacing in millimeters (expected). It
 %   is possible to send in a display spacing in dots per inch (dpi), in
 %   which case the number is > 1 (it never is that large for sensor sample
@@ -59,10 +59,7 @@ function [results, fitme, esf, h] = ISO12233(barImage, deltaX, weight, plotOptio
 
 %% Switch this over to inpurParser
 
-if ieNotDefined('deltaX'), deltaX = .002;  warning('Assuming 2 micron pixel');  end
-if ieNotDefined('npol'), npol = 1; end  % Not sure what the default should be (BW)
-if ieNotDefined('weight'), weight = [0.213   0.715   0.072]; end  % RGB: Luminance weights for sfrmat4
-if ieNotDefined('plotOptions'), plotOptions = 'all'; end  % all or luminance or none
+
 if ieNotDefined('barImage')
     error('Input slanted bar image must be provided.')
 elseif isstruct(barImage) && isequal(barImage.type,'vcimage')
@@ -80,6 +77,11 @@ else
     smax = max(barImage(:));
     % edgeFile = 'Input data';
 end
+
+if ieNotDefined('deltaX'), deltaX = .002;  warning('Assuming 2 micron pixel');  end
+if ieNotDefined('weight'), weight = [0.213   0.715   0.072]; end  % RGB: Luminance weights for sfrmat4
+if ieNotDefined('plotOptions'), plotOptions = 'all'; end  % all or luminance or none
+if ieNotDefined('npol'), npol = 1; end  % Not sure what the default should be (BW)
 
 % Extract region of interest
 [nlow, nhigh, cstatus] = clipping(barImage, 0, smax, 0.005);
@@ -119,7 +121,7 @@ if nWave == 3
 end
 
 % rotate horizontal edge to vertical
-[barImage, nRow, nCol, rflag] = rotatev2(barImage);
+[barImage, nRow, nCol, ~] = rotatev2(barImage);
 loc = zeros(nWave, nRow);
 
 % Need 'positive' edge for good centroid calculation
@@ -149,7 +151,7 @@ for color=1:nWave                       % Loop for each color
     %     else pname =[' Red ' 'Green'  'Blue ' ' Lum '];
     %     end
     lsf = deriv1(barImage(:,:,color), nRow, nCol, fil1); % l 355 in sfrmat4
-    % vcNewGraphWin; imagesc(c); colormap(gray(64))
+
     % compute centroid for derivative array for each line in ROI. NOTE WINDOW array 'win'
     for n=1:nRow
         % -0.5 shift for FIR phase
@@ -168,9 +170,6 @@ for color=1:nWave                       % Loop for each color
     [fitme(color,:)] = findedge2(loc(color,:), nRow, npol);
     % fitme(color,:) = findedge(loc(color,:), nRow); % OLD
     % fitme(color,:); % used previously to list fit equations
-    
-    % For comparison with linear edge fit (to delete, I think, BW)
-    % [fitme1(color,:)] = findedge2(loc(color,:), nRow, 1);
 
 end
 

@@ -1,9 +1,9 @@
-function mtfData = ieISO12233(ip,sensor,plotOptions,masterRect)
+function mtfData = ieISO12233(ip,sensor,plotOptions,masterRect,varargin)
 % Calculate ISO12233 MTF from image processor data and sensor
 % specification
 %
 % Syntax
-%   mtfData = ieISO12233(ip,sensor,plotOptions);
+%   mtfData = ieISO12233(ip,sensor,plotOptions,varargin);
 %
 % Input
 %   ip - ISET image processor structure containing a slanted edge.
@@ -11,12 +11,16 @@ function mtfData = ieISO12233(ip,sensor,plotOptions,masterRect)
 %      for the edge.  It then applies the ISO12233 function to the data
 %      from the edge.
 %
-% Optional inputs
+% Optional main inputs (i.e., they can be empty)
 %   sensor - ISET sensor structure. Only the pixel size is needed from the
 %            sensor.
 %   plotOptions - 'all', 'luminance', or 'none'
 %   masterRect - Use this rect from the ip data rather than trying to find
 %                a rect with the ISOFindSlantedBar method.
+%
+% Key/val pairs
+%  weight - Three weights for RGB -> Luminance ([0.213   0.715   0.072])
+%  npoly - Number of polynomial coefficients for the edge approximation
 %
 % Output
 %  mtfData - a struct with multiple slots
@@ -78,6 +82,8 @@ function mtfData = ieISO12233(ip,sensor,plotOptions,masterRect)
 %}
 
 %% Input
+
+% These are required
 if ~exist('ip','var') || isempty(ip)
     ip = ieGetObject('vcimage');
     if isempty(ip), error('No ip found.');
@@ -100,6 +106,16 @@ if ~exist('masterRect','var')
     masterRect = ISOFindSlantedBar(ip);
     if isempty(masterRect), return; end
 end
+
+varargin = ieParamFormat(varargin);
+p = inputParser;
+p.addRequired('ip',@(x)(isstuct(x) && isequal(x.type,'vcimage')));
+p.addRequired('sensor',@(x)(isstuct(x) && isequal(x.type,'sensor')));
+p.addRequired('plotOptions',@ischar);
+p.addRequired('masterRect',@isvector);
+
+p.addParameter('weight',[0.213   0.715   0.072],@(x)(isvector(x) && isequal(numel(x),3)));
+p.addParameter('npoly',1,@isinteger);
 
 %% Get the bar image ready.
 
