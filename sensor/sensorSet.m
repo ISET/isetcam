@@ -350,8 +350,8 @@ switch lower(param)
         % show in the window.
         sensor.exposurePlane = round(val);
     case {'exposuremethod'}
-        % this allows us to over-ride the automatic setting of bracketing,
-        % for example, so we can do burst photography
+        % Chooses the the autoexposure method.  Used, for example, to
+        % simulate video or burst photography        
         sensor.exposureMethod = val;
     case {'autoexp','autoexposure','automaticexposure'}
         % sensorSet(sensor,'auto exposure',1);

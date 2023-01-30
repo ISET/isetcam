@@ -1,9 +1,12 @@
-function mtfData = ieISO12233(ip,sensor,plotOptions,masterRect,varargin)
-% Calculate ISO12233 MTF from image processor data and sensor
-% specification
+function mtfData = ieISO12233v1(ip,sensor,plotOptions,masterRect)
+%Calculate ISO12233 MTF from an image processor and sensor
 %
 % Syntax
-%   mtfData = ieISO12233(ip,sensor,plotOptions,varargin);
+%   mtfData = ieISO12233v1(ip,sensor,plotOptions);
+%
+% Brief
+%   This has been replaced by ieISO12233 which uses the sfrmat4 code, a
+%   later implementation by Peter Burns.
 %
 % Input
 %   ip - ISET image processor structure containing a slanted edge.
@@ -11,16 +14,12 @@ function mtfData = ieISO12233(ip,sensor,plotOptions,masterRect,varargin)
 %      for the edge.  It then applies the ISO12233 function to the data
 %      from the edge.
 %
-% Optional main inputs (i.e., they can be empty)
+% Optional inputs
 %   sensor - ISET sensor structure. Only the pixel size is needed from the
 %            sensor.
 %   plotOptions - 'all', 'luminance', or 'none'
 %   masterRect - Use this rect from the ip data rather than trying to find
 %                a rect with the ISOFindSlantedBar method.
-%
-% Key/val pairs
-%  weight - Three weights for RGB -> Luminance ([0.213   0.715   0.072])
-%  npoly - Number of polynomial coefficients for the edge approximation
 %
 % Output
 %  mtfData - a struct with multiple slots
@@ -30,24 +29,19 @@ function mtfData = ieISO12233(ip,sensor,plotOptions,masterRect,varargin)
 %        various summary statistics (aliasing Percentage, nyquist, mtf50)
 %
 % Description:
-%  This routine calls the ISO12233 method to calculate the MTF of the
-%  system (optics and sensor).  The method can be applied to an image
-%  processing window (ip), trying to find a good rectangular region for the
-%  slanted bar MTF calculation. Alternatively, the rect can be sent in.
+%  This routine tries to find a good rectangular region for the slanted
+%  bar MTF calculation. It then applies the ISO12233 function to the
+%  data from the edge.  The routine fails when it cannot automatically
+%  identify an appropriate slanted bar region.
 %
-%  The system needs to use the pixel spacing from the sensor, which it
-%  normally gets from the sensor struct.  If the sensor is not sent in,
-%  then it looks in the ISET database for the currently selected sensor.
-% 
-%  Having the dx and the rect, it calls the ISO12233 function with the
-%  plotOptions set.
-%
-%  In the future, we should allow a dx in millimeters to be sent in, rather
-%  than the whole structure.  Also, we should allow a rect to be selected
-%  visually by the user.
+%  The sensor pixel size is needed.  If the sensor is not sent in as a
+%  parameter, then we look for the currently selected sensor in the ISETCam
+%  global database. In the future, we should allow a dx in millimeters to
+%  be sent in, rather than the whole structure.  Also, we should allow a
+%  rect to be selected visually by the user.
 %
 % See also:  
-%   ISO12233, ISOFindSlantedBar, s_metricsMTFSlantedBar, ieISO12233v1
+%   ISO12233, ISOFindSlantedBar, s_metricsMTFSlantedBar
 %
 
 % Examples:
@@ -65,9 +59,8 @@ function mtfData = ieISO12233(ip,sensor,plotOptions,masterRect,varargin)
   ipWindow(ip);
 
   % Compute the MTF
-  mtfData = ieISO12233(ip,sensor);
+  mtfData = ieISO12233v1(ip,sensor);
   ieDrawShape(ip,'rectangle',mtfData.rect);
-  % mtfData = ieISO12233(ip,sensor);
 
   ieNewGraphWin; 
   plot(mtfData.lsfx*1000, mtfData.lsf);
@@ -76,14 +69,12 @@ function mtfData = ieISO12233(ip,sensor,plotOptions,masterRect,varargin)
 
   % If the sensor is in the database, it will be used.
   ieAddObject(sensor);
-  mtf = ieISO12233(ip);
+  mtf = ieISO12233v1(ip);
   ipWindow; h = ieDrawShape(ip,'rectangle',mtf.rect);
 
 %}
 
 %% Input
-
-% These are required
 if ~exist('ip','var') || isempty(ip)
     ip = ieGetObject('vcimage');
     if isempty(ip), error('No ip found.');
@@ -107,16 +98,6 @@ if ~exist('masterRect','var')
     if isempty(masterRect), return; end
 end
 
-varargin = ieParamFormat(varargin);
-p = inputParser;
-p.addRequired('ip',@(x)(isstuct(x) && isequal(x.type,'vcimage')));
-p.addRequired('sensor',@(x)(isstuct(x) && isequal(x.type,'sensor')));
-p.addRequired('plotOptions',@ischar);
-p.addRequired('masterRect',@isvector);
-
-p.addParameter('weight',[0.213   0.715   0.072],@(x)(isvector(x) && isequal(numel(x),3)));
-p.addParameter('npoly',1,@isinteger);
-
 %% Get the bar image ready.
 
 % These data are demosaicked but not processed more.
@@ -130,12 +111,8 @@ barImage = reshape(barImage,r,c,[]);
 dx = sensorGet(sensor,'pixel width','mm');
 
 % ISO12233(barImage, deltaX, weight, plotOptions)
-[mtfData, fitme, esf, h]  = ISO12233(barImage, dx, [], plotOptions);
-
-% Add the parameters to the return structure
+mtfData = ISO12233v1(barImage, dx, [], plotOptions);
 mtfData.rect = masterRect; % [masterRect(2) masterRect(1) masterRect(4) masterRect(3)];
-mtfData.esf = esf;         % Edge spread function, finely sampled, I think
-mtfData.fitme = fitme;
-mtfData.win = h;
+
 end
 
