@@ -1,4 +1,4 @@
-function [status, dat, e, fitme, esf, nbin, del2] = sfrmat4(io, del, npol, weight, barImage)
+function [status, dat, e, fitme, esf, nbin, del2] = sfrmat4Simplified(io, del, npol, weight, barImage)
 %******************************************************************
 % MATLAB function: sfrmat4 (v5) Slanted-edge Analysis with polynomial edge fit
 %  [status, dat, e, fitme, esf, nbin, del2] = sfrmat4(io, del, npol,weight, a);
