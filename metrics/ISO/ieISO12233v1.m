@@ -1,11 +1,14 @@
-function mtfData = ieISO12233v4(ip,sensor,plotOptions,masterRect)
-% Calculate ISO12233 MTF from image processor data and sensor
-% specification
+function mtfData = ieISO12233v1(ip,sensor,plotOptions,masterRect)
+%Calculate ISO12233 MTF from an image processor and sensor
 %
 % Syntax
-%   mtfData = ieISO12233v4(ip,sensor,plotOptions);
+%   mtfData = ieISO12233v1(ip,sensor,plotOptions);
 %
-% Required inputs
+% Brief
+%   This has been replaced by ieISO12233 which uses the sfrmat4 code, a
+%   later implementation by Peter Burns.
+%
+% Input
 %   ip - ISET image processor structure containing a slanted edge.
 %      This routine tries to automatically find a good rectangular region
 %      for the edge.  It then applies the ISO12233 function to the data
@@ -15,17 +18,19 @@ function mtfData = ieISO12233v4(ip,sensor,plotOptions,masterRect)
 %   sensor - ISET sensor structure. Only the pixel size is needed from the
 %            sensor.
 %   plotOptions - 'all', 'luminance', or 'none'
+%   masterRect - Use this rect from the ip data rather than trying to find
+%                a rect with the ISOFindSlantedBar method.
 %
-% Returns
-%  mtfData - a struct with several slots
-%            mtfData.freq and mtfData.mtf
-%            mtfData.lsfx and mtfData.lsf
-%            the mtfData.rect used for the analysis, 
-%            some summary statistics (aliasing Percentage, nyquist, mtf50)
+% Output
+%  mtfData - a struct with multiple slots
+%        mtfData.freq and mtfData.mtf
+%        mtfData.lsfx and mtfData.lsf
+%        mtfData.rect the rect used for the analysis, 
+%        various summary statistics (aliasing Percentage, nyquist, mtf50)
 %
 % Description:
 %  This routine tries to find a good rectangular region for the slanted
-%  bar MTF calculation. It then applies the ISO12233v4 function to the
+%  bar MTF calculation. It then applies the ISO12233 function to the
 %  data from the edge.  The routine fails when it cannot automatically
 %  identify an appropriate slanted bar region.
 %
@@ -36,7 +41,7 @@ function mtfData = ieISO12233v4(ip,sensor,plotOptions,masterRect)
 %  rect to be selected visually by the user.
 %
 % See also:  
-%   ISO12233v4, ISO12233, ieISO12233, ISOFindSlantedBar, s_metricsMTFSlantedBar
+%   ISO12233, ISOFindSlantedBar, s_metricsMTFSlantedBar
 %
 
 % Examples:
@@ -54,9 +59,8 @@ function mtfData = ieISO12233v4(ip,sensor,plotOptions,masterRect)
   ipWindow(ip);
 
   % Compute the MTF
-  mtfData = ieISO12233v4(ip,sensor);
+  mtfData = ieISO12233v1(ip,sensor);
   ieDrawShape(ip,'rectangle',mtfData.rect);
-  % mtfData = ieISO12233(ip,sensor);
 
   ieNewGraphWin; 
   plot(mtfData.lsfx*1000, mtfData.lsf);
@@ -65,7 +69,7 @@ function mtfData = ieISO12233v4(ip,sensor,plotOptions,masterRect)
 
   % If the sensor is in the database, it will be used.
   ieAddObject(sensor);
-  mtf = ieISO12233v4(ip);
+  mtf = ieISO12233v1(ip);
   ipWindow; h = ieDrawShape(ip,'rectangle',mtf.rect);
 
 %}
@@ -107,13 +111,8 @@ barImage = reshape(barImage,r,c,[]);
 dx = sensorGet(sensor,'pixel width','mm');
 
 % ISO12233(barImage, deltaX, weight, plotOptions)
-[mtfData, fitme, esf, h, sinfo]  = ISO12233v4(barImage, dx, [], plotOptions);
-
-% Add the parameters to the return structure
+mtfData = ISO12233v1(barImage, dx, [], plotOptions);
 mtfData.rect = masterRect; % [masterRect(2) masterRect(1) masterRect(4) masterRect(3)];
-mtfData.sinfo = sinfo;     % No idea
-mtfData.esf = esf;         % Edge spread function, finely sampled, I think
-mtfData.fitme = fitme;
-mtfData.win = h;
+
 end
 

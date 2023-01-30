@@ -19,7 +19,7 @@
 % scripts.
 %
 % See also:  
-%   ieISO12233, ieISO12233v4, s_pixelSizeMTF, ISOFindSlantedBar,
+%   ieISO12233, ieISO12233v1, s_pixelSizeMTF, ISOFindSlantedBar,
 %   ieDrawShape, ipCompute 
 %
 % Copyright ImagEval Consultants, LLC, 2005.
@@ -110,11 +110,19 @@ ISO12233(barImage, dx)
 %% Should be the same, but from the ie routine
 
 % From the 2001 functions
-ieISO12233(ip,sensor);
+mtfData = ieISO12233(ip,sensor);
+ieNewGraphWin; 
+plot(mtfData.lsfx*1e3,mtfData.esf); grid on;
+xlabel('Position (microns)'); ylabel('Estimated intensity')
+title('Edge spreads and LSF');
+set(gca,'xtick',-80:10:80)
+hold on;
+plot(mtfData.lsfx*1e3,mtfData.lsf,'ko');
 
 %% Updated with with sfrmat4
-mtfData = ieISO12233v4(ip,sensor);
-ieNewGraphWin; plot(mtfData.lsfx*1e3,mtfData.esf); grid on;
+mtfData = ieISO12233(ip,sensor);
+ieNewGraphWin; 
+plot(mtfData.lsfx*1e3,mtfData.esf); grid on;
 xlabel('Position (microns)'); ylabel('Estimated intensity')
 title('Edge spreads and LSF');
 set(gca,'xtick',-80:10:80)
