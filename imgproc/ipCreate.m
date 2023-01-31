@@ -41,6 +41,10 @@ ip.name = ipName;
 ip = ipSet(ip,'type','vcimage');
 ip = initDefaultSpectrum(ip,'hyperspectral');
 
+ip.metadata = [];
+if isfield(sensor, 'metadata')
+    ip.metadata = appendStruct(ip.metadata, sensor.metadata);
+end
 
 %% Use sensor data if present
 if ~isempty(sensor)

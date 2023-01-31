@@ -137,4 +137,8 @@ oi = oiSet(oi,'name',sceneGet(scene,'name'));
 % set to 0, though perhaps we should pad them with the mean distance.
 oi = oiSet(oi,'depth map',oiPadDepthMap(scene));
 
+% We need to preserve metadata from the scene,
+% But not overwrite oi.metadata if it exists
+oi.metadata = appendStruct(oi.metadata, scene.metadata);
+
 end

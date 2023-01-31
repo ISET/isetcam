@@ -370,8 +370,10 @@ for ss=1:length(sensorArray)   % Number of sensors
     % input sensor. So we have a new outSensor.  There will be as many
     % outSensor members as there are slots in the sensorArray.
     outSensor(ss) = sensor; %#ok<AGROW>
-    
-end
 
+    % Preserve metadata from the OI & originally the scene
+    outSensor(ss).metadata = appendStruct(oi.metadata, sensor.metadata); %#ok<AGROW> 
+
+end
 
 end
