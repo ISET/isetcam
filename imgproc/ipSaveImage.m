@@ -37,11 +37,8 @@ addParameter(p, 'cropborder', false);
 varargin = ieParamFormat(varargin);
 p.parse(varargin{:});
 
-<<<<<<< Updated upstream
-=======
 cropFlag = p.Results.cropborder;
 
->>>>>>> Stashed changes
 %%
 if ~exist('ip','var') || isempty(ip), ip = ieGetObject('ip'); end
 gam     = ipGet(ip,'display gamma');
@@ -63,11 +60,7 @@ if isempty(e), e = '.png'; end
 fName = fullfile(p,[n,e]);
 
 % if we've been asked to crop out a black border
-<<<<<<< Updated upstream
-if p.Results.cropborder
-=======
 if cropFlag
->>>>>>> Stashed changes
     img = imageCropBorder(img);
 end
 
