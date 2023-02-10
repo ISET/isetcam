@@ -20,6 +20,11 @@ Install the latest version of the OpenEXR-Library, e.g. via [Homebrew](http://br
 brew install openexr
 ```
 
+Install the latest verison of the Imath library, e.g. via [Homebrew](http://brew.sh/)
+```bash
+brew install imath
+```
+
 Run `make.m` inside of MATLAB to compile the bindings. If you install  OpenEXR without Homebrew make sure the paths inside of `make.m` point to your OpenEXR installation.
 
 ##### Ceveats
