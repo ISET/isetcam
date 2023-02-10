@@ -43,6 +43,8 @@
 #include <ImfHeader.h>
 #include <ImfChannelList.h>
 #include <ImfNamespace.h>
+#include <ImathMath.h>
+#include <ImfFrameBuffer.h>
 
 #ifdef __clang__
   #pragma clang diagnostic pop

@@ -37,6 +37,11 @@
 #include <ImfInputFile.h>
 #include <ImfChannelList.h>
 #include <ImfNamespace.h>
+#include <ImfExport.h>
+#include <Iex.h>
+#include <ImathMath.h>
+#include <ImfHeader.h>
+#include <ImfFrameBuffer.h>
 
 #ifdef __clang__
   #pragma clang diagnostic pop
