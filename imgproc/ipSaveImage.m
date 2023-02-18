@@ -8,6 +8,7 @@ function fName = ipSaveImage(ip,fName,showImageFlag,trueSizeFlag, varargin)
 %   ip:     image processor struct
 %   fName:  png output file
 %
+%   'cropborder' for whether to remove black areas
 % Description:
 %
 % See also
@@ -36,6 +37,7 @@ addParameter(p, 'cropborder', false);
 % convert our args to ieStandard and parse
 varargin = ieParamFormat(varargin);
 p.parse(varargin{:});
+
 
 cropFlag = p.Results.cropborder;
 
