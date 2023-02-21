@@ -61,11 +61,11 @@ optics = rtImportData(optics, 'zemax', isetParmsFile);
 % outcome in the next section.  To offset this, you can increase the
 % resolution of the scene image (originally set to 1028 here), but that
 % will significantly increase the compute time.
-scene = sceneCreate('grid lines', 256);
-scene = sceneSet(scene,'fov',5);               % large FOV
+scene = sceneCreate('grid lines', 1024);
+scene = sceneSet(scene,'fov',25);               % large FOV
 scene = sceneSet(scene,'distance',10000000);    % not very important
-ieAddObject(scene);
-sceneWindow;
+scene = sceneSet(scene,'wave',450:50:650);
+sceneWindow(scene);
 
 %% 4) Apply the "RayTrace" Optics and Show in an oiWindow
 %
@@ -80,8 +80,7 @@ rtFileName = vcSelectDataFile('stayput','r','mat',...
     'Select the RT Optics .mat file');
 oi = oiCreate('raytrace', rtFileName);
 oi = oiCompute(scene,oi);
-ieAddObject(oi);
-oiWindow;
+oiWindow(oi);
 
 %% End of Tutorial
 %

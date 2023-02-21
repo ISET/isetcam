@@ -38,7 +38,7 @@ rtFOV = oiGet(oi,'optics rtfov');
 sceneFOV = sceneGet(scene,'diagonalFieldOfView');
 if sceneFOV > rtFOV
     str = sprintf('Scene diag fov (%.0f) exceeds max RT fov (%.0f)',sceneFOV,rtFOV);
-    ieInWindowMessage(str,handles,2);
+    ieInWindowMessage(str,app,2);
     fprintf('%s.  Computation canceled.',str);
     return;
 end
