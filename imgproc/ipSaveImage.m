@@ -1,4 +1,4 @@
-function fName = ipSaveImage(ip,fName,showImageFlag,trueSizeFlag)
+function fName = ipSaveImage(ip,fName,showImageFlag,trueSizeFlag, varargin)
 % Save the image in the ipWindow to an 8-bit PNG file
 %
 % Syntax
@@ -8,6 +8,7 @@ function fName = ipSaveImage(ip,fName,showImageFlag,trueSizeFlag)
 %   ip:     image processor struct
 %   fName:  png output file
 %
+%   'cropborder' for whether to remove black areas
 % Description:
 %
 % See also
@@ -28,6 +29,18 @@ function fName = ipSaveImage(ip,fName,showImageFlag,trueSizeFlag)
   delete(fName);
 %}
 
+p = inputParser();
+
+% in case our caller wants us to remove the black border
+addParameter(p, 'cropborder', false);
+
+% convert our args to ieStandard and parse
+varargin = ieParamFormat(varargin);
+p.parse(varargin{:});
+
+
+cropFlag = p.Results.cropborder;
+
 %%
 if ~exist('ip','var') || isempty(ip), ip = ieGetObject('ip'); end
 gam     = ipGet(ip,'display gamma');
@@ -47,6 +60,11 @@ if ieNotDefined('trueSizeFlag'), trueSizeFlag = false; end
 if isempty(p), p = pwd; end
 if isempty(e), e = '.png'; end
 fName = fullfile(p,[n,e]);
+
+% if we've been asked to crop out a black border
+if cropFlag
+    img = imageCropBorder(img);
+end
 
 imwrite(img,fName);
 
