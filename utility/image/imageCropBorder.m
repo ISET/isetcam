@@ -2,7 +2,15 @@ function croppedImage = imageCropBorder(img)
 %IMAGECROPBORDER Crop black border from an image
 
 threshhold = .06; % black level
-grayImage = rgb2gray(img);
+
+if isequal(class(img),'cell')
+    img = img{1};
+end
+try
+    grayImage = rgb2gray(img);
+catch
+    grayImage = im2gray(img);
+end
 binaryImage = imbinarize(grayImage, threshhold);
 [r, c] = find(binaryImage);
 row1 = min(r);
