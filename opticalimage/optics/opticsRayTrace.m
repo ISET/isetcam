@@ -108,18 +108,10 @@ else
 end
 % psfMovie(oiGet(oi,'optics'));
 
-% Apply the OTF to the irrad data.
-% Very bad.  This changed the spatial sampling resolution.  Time to
-% fix!
+% Precompute and then apply
 fprintf('Applying PSFs.\n');
 oi = rtPrecomputePSFApply(oi);
 fprintf('Done applying PSFs.\n');
-%{
- oiGet(oi,'width','um')
- oiGet(oi,'width','um')/sceneGet(scene,'width','um')
- oiGet(oi,'spatial resolution','um')
-%}
-
 % imageSPD(irrad,550:100:650);
 
 % Do we have an anti-alias filter in place?

@@ -211,7 +211,7 @@ outIrrad = double(zeros(oiGet(oi,'row'),oiGet(oi,'col'),length(wavelength)));
 % This worked.
 % outIrrad = double(zeros(imSize(1)+2*extraRow,imSize(2)+2*extraCol,length(wavelength)));
 
-%% Calculate the shift-variant summation of irradiance and blurring
+%% Calculate the shift-variant summation of irradiance 
 % Loop over wavelengths, image height, and image angles.
 nFieldHeights = length(imgHeight);
 showWaitBar = ieSessionGet('waitbar');
@@ -340,7 +340,7 @@ oiGet(oi,'hfov')
 2*atand((oiGet(oi,'width','um')/2) / oiGet(oi,'optics focal length','um'))
 %}
 
-% vcNewGraphWin; oiShowImage(oi);
+% ieNewGraphWin; oiShowImage(oi);
 if showWaitBar, close(wBar); end
 
 end
