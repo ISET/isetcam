@@ -19,12 +19,6 @@ col1 = min(c);
 col2 = max(c);
 
 % crop if we got results
-<<<<<<< Updated upstream
-if (row2 > row1) && (col2 > col1)
-    croppedImage = img(row1:row2, col1:col2, :);
-else
-    croppedImage = img;
-=======
 try
     % sometimes we get an error, but haven't pinned it down
     if (row2 > row1) && (col2 > col1)
@@ -35,6 +29,5 @@ try
 catch ME
     disp('Error Message:')
     disp(ME.message)
->>>>>>> Stashed changes
 end
 
