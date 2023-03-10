@@ -31,7 +31,12 @@ if length(s) < 3
     s(3) = 1;
 end
 
-XW = reshape(imRGB,s(1)*s(2),s(3));
+% Add support for compound OIs:
+if length(s) < 4
+    XW = reshape(imRGB,s(1)*s(2),s(3));
+else
+    XW = reshape(imRGB,s(1)*s(2),s(3), s(4));
+end
 
 r = s(1); c = s(2); w = s(3);
 
