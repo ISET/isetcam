@@ -51,6 +51,8 @@ function [optics, opticsFile] = rtImportData(optics,rtProgram,pFileFull)
 
 %% Argument checking
 
+if ieNotDefined('optics'), optics = opticsCreate; end
+
 if ieNotDefined('rtProgram'), rtProgram = 'zemax'; end
 rt.program = rtProgram;
 
@@ -145,7 +147,15 @@ if ismac
     tmp{2} = strrep(tmp{2},'\','/');
 end
 
+% Remember where we start from
+curDir = pwd;
+
+% The base name of the optics (lens) file
 [~,baseName,~] = fileparts(tmp{2});
+
+% The files will be in the same directory as the ISETPARAM.txt file
+p = fileparts(pFileFull);
+chdir(p);
 [diName,riName,psfNameList] = rtFileNames(baseName,wave,imgHeight); 
 
 %%  Load the geometry
@@ -288,6 +298,9 @@ switch lower(button)
     otherwise
         disp('RT optics not saved.')
 end
+
+%% Return to wherever we started
+chdir(curDir);
 
 end
 

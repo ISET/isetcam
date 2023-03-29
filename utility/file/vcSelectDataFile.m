@@ -57,8 +57,8 @@ switch lower(dataType)
         if isempty(pDir), fullPath = pwd;
         else, fullPath = pDir;
         end
-    case {'algorithm'}
-        fullPath = fullfile(isetRootPath,'ISET-Algorithms');
+    case {'local'}
+        fullPath = fullfile(isetRootPath,'local');
         if ~exist(fullPath,'dir')
             if  ~isempty(pDir), fullPath = pDir;
             else, fullPath = isetRootPath;

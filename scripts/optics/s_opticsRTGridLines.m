@@ -41,7 +41,14 @@ sceneWindow(scene);
 oi = oiCreate;
 
 % Load in the wide angle lens optics file created by Zemax (zm)
+% Does not yet work for zemaxWideAngle from Xin-Yi Pan.  We need to debug!
+% opticsFileName = fullfile(isetRootPath,'data','optics','zemaxDoubleGauss.mat');
+% opticsFileName = fullfile(isetRootPath,'data','optics','zemaxCookeTriplet.mat');
+% opticsFileName = fullfile(isetRootPath,'data','optics','zemaxWideAngle.mat');
+
+% Tested frequently.
 opticsFileName = fullfile(isetRootPath,'data','optics','zmWideAngle.mat');
+
 load(opticsFileName,'optics');
 
 % Set the oi with the optics loaded from the file
@@ -66,6 +73,15 @@ oi    = oiSet(oi,'optics rtObjectDistance',sceneGet(scene,'distance','mm'));
 % We calculate in the order of (a) Distortion, (b) Relative
 % illumination, and then (c) OTF blurring The function rtGeometry
 % calculates the distortion and relative illumination at the same time.
+oFOV = oiGet(oi,'optics rt fov');
+sFOV = sceneGet(scene,'fov');
+fprintf('Optics fov:  %f\n',oFOV);
+fprintf('Scene fov:  %f\n', sFOV);
+if sFOV > oFOV
+    warning('Reducing scene FOV to comply.')
+    scene = sceneSet(scene,'hfov',oFOV - 1);
+end
+
 oi = rtGeometry(oi,scene);
 
 % Copy the resulting data into the optical image structure

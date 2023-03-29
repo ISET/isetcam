@@ -10,9 +10,8 @@ function data = zemaxLoad(fName,psfSize)
 % zemax macro wrote out the data along the y-axis (not the x-axis).  That
 % is how we wrote the macro.
 %
-% p-Code
-%
-% Copyright ImagEval Consultants, LLC, 2005.
+% See also
+%  s_
 
 %% Check that the file exists
 if ~exist(fName,'file')

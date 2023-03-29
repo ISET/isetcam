@@ -221,7 +221,12 @@ switch parm
         % computed image).  This is horizontal field of view.
         % Specified in degrees
         % Dimitry Bakin wants us to change to diagonal.
-        optics.rayTrace.maxfov = val;
+        
+        % This was .maxfov until March 9, 2023. (BW)
+        % The new code from Xin-Yi fills this in as .fov.  I am not
+        % sure how the change came about and perhaps we should put it
+        % back.
+        optics.rayTrace.fov = val;
     case {'rteffectivefocallength','rtefl','rteffectivefl'}
         % Effective focal length computed by the ray trace program.
         optics.rayTrace.effectiveFocalLength = val;
