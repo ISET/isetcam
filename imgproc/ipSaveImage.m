@@ -63,10 +63,14 @@ fName = fullfile(p,[n,e]);
 
 % if we've been asked to crop out a black border
 if cropFlag
-    img = imageCropBorder(img);
+    croppedImg = imageCropBorder(img);
 end
 
-imwrite(img,fName);
+if ~isempty(croppedImg)
+    imwrite(croppedImg);
+else
+    imwrite(img,fName);
+end
 
 %% Show or not, true size or not.
 if showImageFlag
