@@ -9,6 +9,7 @@ function rgb = oiShowImage(oi,displayFlag,gam,oiW,titleString)
 %     = +/- 2,   compute gray scale for IR
 %     = +/- 3,   use HDR method (hdrRender.m)
 %     = +/- 4,   clip highlights (Set top 0.05 percent of pixels to max)
+%     = -5,      clip Highlights aggresively -- 5% (sb parameter instead)
 % gam: Set display gamma parameter
 %
 % Examples:

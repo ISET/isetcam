@@ -18,6 +18,7 @@ function rgb = imageSPD(spd,wList,gam,row,col,displayFlag,xcoords,ycoords,thisW)
 %     = +/- 2,   compute gray scale for IR
 %     = +/- 3,   use HDR method (hdrRender.m)
 %     = +/- 4,   clip highlights (Set top 0.05 percent of pixels to max)
+%     = -5,      agressive clipping 
 %
 %  xcoords, ycoords: Spatial coords of the image points, to be shown as
 %                    image grid
@@ -70,6 +71,12 @@ end
 %% Parse the display flag
 method = abs(displayFlag);
 
+clipLevel = 99.5; % default
+if abs(displayFlag) == 5 
+    clipLevel = 90;
+    method = 4;
+end
+
 % Convert the SPD data to a visible range image
 if isequal(method,0) || isequal(method,1)
     
@@ -107,7 +114,7 @@ elseif method == 4  % Clip the highlights but use HDR method
     
     % Find a reasonable place to clip the highlights
     Y = XYZ(:,:,2);
-    yClip = prctile(Y(:),99.5);  % We should parameterize this
+    yClip = prctile(Y(:),clipLevel);  % We should parameterize this
     %vcNewGraphWin; histogram(Y(:),100);
     
     % Clip the XYZ data so that nothing is bigger than yClip
