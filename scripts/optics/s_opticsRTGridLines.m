@@ -45,6 +45,7 @@ oi = oiCreate;
 % opticsFileName = fullfile(isetRootPath,'data','optics','zemaxDoubleGauss.mat');
 % opticsFileName = fullfile(isetRootPath,'data','optics','zemaxCookeTriplet.mat');
 % opticsFileName = fullfile(isetRootPath,'data','optics','zemaxWideAngle.mat');
+% opticsFileName = fullfile(isetRootPath,'data','optics','zemaxFisheye.mat');
 
 % Tested frequently.
 opticsFileName = fullfile(isetRootPath,'data','optics','zmWideAngle.mat');
@@ -81,6 +82,8 @@ if sFOV > oFOV
     warning('Reducing scene FOV to comply.')
     scene = sceneSet(scene,'hfov',oFOV - 1);
 end
+
+% scene = sceneInterpolateW(scene,(550:100:650));  % Small wavelength sample
 
 oi = rtGeometry(oi,scene);
 
