@@ -9,8 +9,13 @@
 % spectra.  Maybe so.  Read the paper.
 %
 %{
-General information ReDFISh multispectral dataset Contributor: Axel
-CLOUET
+Paper:
+Visible to near infrared multispectral images dataset for image sensors design
+Axel Clouet, Célia Viola, Jérôme Vaillant
+
+Database
+General information ReDFISh multispectral dataset Contributor: 
+Axel CLOUET
 
 Institution: CEA-LETI
 
@@ -28,20 +33,34 @@ for color science.
 % Example file.  All are stored on Google Drive in Backup/Data
 fname = fullfile(isetRootPath,'local','Candle_50nm.h5');
 
-% Not sure if the dat are energy or photons
-energy = h5read(fname,'/Hymage');
-energy = double(energy)/65536;
-img    = double(h5read(fname, '/ColorImage'))/255;
+% The files are reflectance
+reflectance = h5read(fname,'/Hymage');
+reflectance = double(reflectance)/65536;
 wave   = h5read(fname,'/Wavelength');
-imtool(img);
 
-%% Turn it into a scene
+img    = double(h5read(fname, '/ColorImage'))/255;
+% imtool(img);
+
+illuminant = blackbody(wave,6500);  % Energy
+[tmp, r, c] = RGB2XWFormat(reflectance);
+radiance = XW2RGBFormat(tmp*diag(illuminant),r,c);
+
+%% Turn the reflectance data into a scene with a 6500 bb illuminant
 
 scene = sceneCreate('empty');
 scene = sceneSet(scene,'wavelength',wave);
-scene = sceneSet(scene,'energy',energy);
+scene = sceneSet(scene,'energy',radiance);
 scene = sceneSet(scene,'mean luminance',100);
+scene = sceneSet(scene,'illuminant wave',wave);
+scene = sceneSet(scene,'illuminant energy',illuminant(:));
+
 sceneWindow(scene);
+
+%% The data were collected under this illuminant
+
+scene = sceneAdjustIlluminant(scene,blackbody(wave,2900));
+ieReplaceObject(scene);
+sceneWindow;
 
 %{
 cube (uint16)
