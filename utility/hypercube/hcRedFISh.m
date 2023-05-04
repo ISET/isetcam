@@ -2,11 +2,10 @@
 % 
 % https://perscido.univ-grenoble-alpes.fr/datasets/DS289
 %
-% Every 50 nm from 400 to 1050.  Thus, very coarse in the visible
-% range.
-%
-% The repository says these are reflectance spectra, not radiance
-% spectra.  Maybe so.  Read the paper.
+% The data files are reflectance spectra.  They were measured under
+% 2900 deg Kelvin. Sampled every 50 nm from 400 to 1050.  Thus, very
+% coarse in the visible range, but at least they get us some info
+% about the near IR.
 %
 %{
 Paper:
@@ -30,7 +29,8 @@ illumination conditions and exposure setting. They can also be used
 for color science.
 %}
 
-% Example file.  All are stored on Google Drive in Backup/Data
+% Example file.  All the files are stored on Google Drive in
+% Backup/Data 
 fname = fullfile(isetRootPath,'local','Candle_50nm.h5');
 
 % The files are reflectance
