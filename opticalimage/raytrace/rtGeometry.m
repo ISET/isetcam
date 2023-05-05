@@ -66,7 +66,8 @@ imght     = opticsGet(optics,'rtgeom field height','mm');       % mm
 fovmax = sceneGet(scene,'fov');     %Maximum horizontal field of view (deg)
 if fovmax > opticsGet(optics,'rtfov')
     str = sprintf('Scene FOV (%.0f) exceeds ray trace analysis (%.0f)',fovmax,opticsGet(optics,'rtfov'));
-    ieInWindowMessage(str,oiHandles,[]);
+    warning(str);
+    ieInWindowMessage(str,app,[]);
     return;
 end
 

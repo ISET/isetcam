@@ -106,7 +106,8 @@ if nRows*nCols < critSize
     % Changed to reduce memory size.  Not sure about implications for
     % precision.  But no v_ISET failures, so ...
     % irradiance = oiGet(OI,'photons');       % quanta/m2/nm/sec, made
-    irradiance = OI.data.photons;       % quanta/m2/nm/sec, left single
+    % Use irradiance from the initial frame, if there is more than one
+    irradiance = OI.data.photons(:,:,:,1);       % quanta/m2/nm/sec, left single
     
     irradiance = RGB2XWFormat(irradiance);
     

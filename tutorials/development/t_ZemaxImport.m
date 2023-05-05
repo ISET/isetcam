@@ -61,11 +61,10 @@ optics = rtImportData(optics, 'zemax', isetParmsFile);
 % outcome in the next section.  To offset this, you can increase the
 % resolution of the scene image (originally set to 1028 here), but that
 % will significantly increase the compute time.
-scene = sceneCreate('grid lines', 256);
-scene = sceneSet(scene,'fov',5);               % large FOV
+scene = sceneCreate('grid lines', 512);
+scene = sceneSet(scene,'fov',20);               % large FOV
 scene = sceneSet(scene,'distance',10000000);    % not very important
-ieAddObject(scene);
-sceneWindow;
+sceneWindow(scene);
 
 %% 4) Apply the "RayTrace" Optics and Show in an oiWindow
 %
@@ -80,9 +79,16 @@ rtFileName = vcSelectDataFile('stayput','r','mat',...
     'Select the RT Optics .mat file');
 oi = oiCreate('raytrace', rtFileName);
 oi = oiCompute(scene,oi);
-ieAddObject(oi);
-oiWindow;
+oiWindow(oi);
 
+%% Try another scene
+
+scene = sceneCreate('slanted edge',512);
+scene = sceneSet(scene,'fov',15);               % large FOV
+scene = sceneSet(scene,'distance',10000000);    % not very important
+% sceneWindow(scene);
+oi = oiCompute(scene,oi);
+oiWindow(oi);
 %% End of Tutorial
 %
 % You can now use these optics as you would any others in ISET.  You can go

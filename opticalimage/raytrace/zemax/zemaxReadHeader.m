@@ -38,18 +38,4 @@ p = strfind(str,thisString) + length(thisString);
 e = strfind(str(p:p+10),' ') - 2;  % Why two?
 psfArea = str2double(str(p:(p+e)));
 
-% Go through the strings looking for the key words.  This algorithm could
-% be a lot better.
-% for ii=1:length(str)
-%     % Find the Data spacing is 0.25 um stuff
-%     if strcmp('spacing',str{ii})
-%         psfSpacing = str2double(str{ii+2});
-%     end
-%     % Find the Data area is 128 um stuff
-%     if strcmp('area',str{ii})
-%         psfArea = str2double(str{ii+2});
-%         break;
-%     end
-% end
-
-return
+end

@@ -201,10 +201,10 @@ function pixel = idealPixel(pixel,pixelSizeInMeters)
 
 pixel = pixelSet(pixel,'readNoiseVolts',0);
 pixel = pixelSet(pixel,'darkVoltage',0);
-pixel = pixelSet(pixel,'height',pixelSizeInMeters);
-pixel = pixelSet(pixel,'width',pixelSizeInMeters);
-pixel = pixelSet(pixel,'pdwidth',pixelSizeInMeters);
-pixel = pixelSet(pixel,'pdheight',pixelSizeInMeters);
+pixel = pixelSet(pixel,'width',pixelSizeInMeters(2));
+pixel = pixelSet(pixel,'height',pixelSizeInMeters(1));
+pixel = pixelSet(pixel,'pdwidth',pixelSizeInMeters(2));
+pixel = pixelSet(pixel,'pdheight',pixelSizeInMeters(1));
 pixel = pixelPositionPD(pixel,'center');
 pixel = pixelSet(pixel,'darkVoltage',0);
 pixel = pixelSet(pixel,'voltage swing',1e6);

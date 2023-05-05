@@ -43,7 +43,7 @@ oi = oiSet(oi,'optics',optics);
 
 %% Compute
 oi = oiSet(oi,'optics model','ray trace');
-oi = oiCompute(scene,oi);
+oi = oiCompute(oi,scene);
 oi = oiSet(oi,'name','ray trace case');
 oiWindow(oi);
 

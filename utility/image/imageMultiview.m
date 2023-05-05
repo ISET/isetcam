@@ -67,12 +67,12 @@ end
 
 % Set up the subplots or multiple window conditions
 if singlewindow
-    if nObj > 3
-        rWin = ceil(sqrt(length(selectedObjs)));
+    if numel(selectedObjs) > 3
+        rWin = ceil(sqrt(numel(selectedObjs)));
         cWin = rWin;
         fType = 'upper left';
     else
-        rWin = nObj;
+        rWin = numel(selectedObjs);
         cWin = 1;
         fType = 'tall';
     end
@@ -102,7 +102,8 @@ for ii = selectedObjs
                 sceneGet(objList{ii}, 'name'));
             
         case 'OPTICALIMAGE'
-            oiShowImage(objList{ii}, true, gam);
+            oiW.figure1 = thisFig;
+            oiShowImage(objList{ii}, true, gam,oiW);
             t =sprintf('OI %d - %s', ii, oiGet(objList{ii}, 'name'));
             
         case 'VCIMAGE'

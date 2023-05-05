@@ -51,6 +51,8 @@ function [optics, opticsFile] = rtImportData(optics,rtProgram,pFileFull)
 
 %% Argument checking
 
+if ieNotDefined('optics'), optics = opticsCreate; end
+
 if ieNotDefined('rtProgram'), rtProgram = 'zemax'; end
 rt.program = rtProgram;
 
@@ -145,7 +147,15 @@ if ismac
     tmp{2} = strrep(tmp{2},'\','/');
 end
 
+% Remember where we start from
+curDir = pwd;
+
+% The base name of the optics (lens) file
 [~,baseName,~] = fileparts(tmp{2});
+
+% The files will be in the same directory as the ISETPARAM.txt file
+p = fileparts(pFileFull);
+chdir(p);
 [diName,riName,psfNameList] = rtFileNames(baseName,wave,imgHeight); 
 
 %%  Load the geometry
@@ -196,11 +206,12 @@ rt.relIllum.function = reshape(d,nWave,nHeight)';  % For backwards compatibility
 
 switch lower(rtProgram)
     case 'zemax'
-        % For Zemax, we read psfSpacing, usually 0.2500 uM and data area,
-        % usually 32 microns (128*0.25), from the file.  The ratio is the
-        % number of samples. We check this for every file as we read (see
-        % below).  This is true for the Fps command.  (We are experimenting
-        % with the Hps command).
+        % For Zemax, we read psfSpacing, usually 0.2500 uM and data
+        % area, usually 32 microns (128*0.25), from the file.  The
+        % ratio is the number of samples. We check this for every file
+        % as we read (see below).  This is true for the Fps (Fourier
+        % PSF) command.  (We are experimenting with the Hps (Huygens
+        % PSF) command).
         [psfSpacing, psfArea] = zemaxReadHeader(psfNameList{1,1});
         psfSize = psfArea/psfSpacing;
         if round(psfSize) ~= psfSize
@@ -233,6 +244,8 @@ for ii=1:length(imgHeight)
             %                 % key
             %                 rt.psf.function(:,:,ii,jj) = load(psfNameList{ii,jj});
             case 'zemax'
+                % Check the spacing.  Could check the rows/cols of the
+                % PSF, too.
                 [testSpacing, testArea] = zemaxReadHeader(psfNameList{ii,jj});
                 if isempty(testSpacing) || isempty(testArea)
                     errordlg(sprintf('Bad file: %s',psfNameList{ii,jj}));
@@ -285,6 +298,9 @@ switch lower(button)
     otherwise
         disp('RT optics not saved.')
 end
+
+%% Return to wherever we started
+chdir(curDir);
 
 end
 
