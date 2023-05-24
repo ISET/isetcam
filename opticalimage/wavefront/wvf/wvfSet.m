@@ -178,8 +178,12 @@ switch parm
         % other functions or scripts that compare the data as well.
         % 
     case {'measuredpupilsize', 'measuredpupil', 'measuredpupilmm', ...
-            'measuredpupildiameter','pupildiameter'}
-        % Added pupildiameter here.
+            'measuredpupildiameter','pupildiameter','pupilsize'}
+        % Added pupildiameter here (BW).  Also pupil size, but that is
+        % bad.
+        if isequal(parm,'pupilsize')
+            disp('Use (measured) pupil diameter, not size');
+        end
         % Pupil diameter in mm over for which wavefront expansion is valid
         wvf.measpupilMM = val;
         
