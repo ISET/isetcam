@@ -1,73 +1,148 @@
-function wvf = wvfComputePSF(wvf)
-% Compute the psf for the wvf object.
+function wvf = wvfComputePSF(wvf, showBar, varargin)
+% Compute the psf for the wvf object. 
 %
-% Syntax
-%   wvf = wvfComputePSF(wvf)
+% Syntax:
+%   wvf = wvfComputePSF(wvf, [showbar])
 %
-% Description
-%   The point spread function is computed for each wavelength in the input
-%   wvf structure. The PSF computation is based on the Zernike coefficients
-%   specified to the OSA standard.
+% Description:
+%    If the psf is already computed and not stale, this will return fast.
+%    Otherwise it computes and stores.
 %
-%   The computation is the amplitude of the fft of the pupil function at
-%   each wavelength.  The psf is normalized for unit area under the curve
-%   (i.e., no loss of light).
+%    The point spread function is computed for each of the wavelengths
+%    listed in the input wvf structure. The PSF computation is based on 10
+%    orders of Zernike coefficients specified to the OSA standard.
 %
-%   The real work for calculating the psf is done in the
-%   wvfComputePupilFunction routine.
+%    The calculation also assumes that there is chromatic aberration of the
+%    human eye, as embedded in the function wvfLCAFromWavelengthDifference, 
+%    within the code in wvfComputePupilFunction.
 %
-% Input
-%   wvf - a wavefront structure
-%         The PSF is returned as part of the wvf when returned
+%    Based on code provided by Heidi Hofer.
 %
-% Copyright Wavefront Toolbox Team 2012
-% Heavily edited for ISET, 2015
+% Inputs:
+%    wvf     - wavefront object
+%    showbar - (Optional) Boolean dictating whether or not to show the
+%              calculation wait bar. Default false.
 %
-% See also:
-%  wvfGet, wvfCreate, wvfSet, wvfComputePupilFunction
+% Outputs:
+%    wvf     - The wavefront object
+%
+% Optional key/value pairs:
+%    None.
+%
+% See Also:
+%    wvfGet, wvfCreate, wvfSet, wvfComputePupilFunction, 
+%    wvfLCAFromWavelengthDifference
 %
 
-%% Programming
-% We need to get the spatial sampling right.  At present, we aren't
-% sure about the proper relationship between the size of the pupil
-% function and the spatial frequency on the sensor surface.  I think
-% DHB has been looking at this in ISETBIO land.
+% History:
+%    08/20/11  dhb  Rename function and pull out of supplied routine.
+%                   Reformat comments.
+%    09/05/11  dhb  Rename. Rewrite for wvf i/o.
+%    xx/xx/12       Copyright Wavefront Toolbox Team 2012
+%    06/02/12  dhb  Simplify greatly given new get/set conventions.
+%    07/01/12   bw  Adjusted for new wavelength convention
+%    11/08/17  jnm  Comments & formatting
+%    01/18/18  jnm  Formatting update to match Wiki, a couple cosmetic bits
 
-%% Initialize parameters.  These are calc wave.
-if ieNotDefined('wvf'), error('wvf parameters required'); end
+% Examples:
+%{
+    wvf = wvfCreate;
+    wvf = wvfComputePSF(wvf)
+%}
 
-showBar = ieSessionGet('wait bar');
+%% Input parses
+%
+% Run ieParamFormat over varargin before passing to the parser,
+% so that keys are put into standard format
+p = inputParser;
+p.addParameter('nolca',false,@islogical);
+ieVarargin = ieParamFormat(varargin);
+ieVarargin = wvfKeySynonyms(ieVarargin);
+p.parse(ieVarargin{:});
 
-wList = wvfGet(wvf,'wave');
-nWave = wvfGet(wvf,'nwave');
-pupilfunc = cell(nWave,1);
+%% 
+if notDefined('showBar'), showBar = false; end
 
-%% Compute the pupil functions for each wavelength
-wvf = wvfComputePupilFunction(wvf, showBar);
+% Only calculate if we need to -- PSF might already be computed and stored
+if (~isfield(wvf, 'psf') || ~isfield(wvf, 'PSF_STALE') || ...
+        wvf.PSF_STALE || ~isfield(wvf, 'pupilfunc') || ...
+        ~isfield(wvf, 'PUPILFUNCTION_STALE') || wvf.PUPILFUNCTION_STALE) 
+  
+    % Initialize parameters. These are calc wave.
+    wList = wvfGet(wvf, 'calc wave');
+    nWave = wvfGet(wvf, 'calc nwave');
+    flipPSFUpsideDown = wvfGet(wvf, 'flippsfupsidedown');
+    rotatePSF90degs = wvfGet(wvf, 'rotatepsf90degs');
+    pupilfunc = cell(nWave, 1);
 
-%% Compute the psfs
-psf = cell(nWave,1);
-for wl = 1:nWave
-    % Converting the pupil function to the PSF requires only an fft2 and
-    % magnitude calculation
-    pupilfunc{wl} = wvfGet(wvf,'pupil function',wList(wl));
+    % Make sure pupil function is computed. This function incorporates the
+    % chromatic aberration of the human eye.
+    wvf = wvfComputePupilFunction(wvf, showBar,'nolca',p.Results.nolca);
+
+    % wave = wvfGet(wvf, 'wave');
+    psf = cell(nWave, 1);
+    for wl = 1:nWave
+        % Convert the pupil function to the PSF.
+        % Requires only an fft2. 
+        % Scale so that psf sums to unity.
+        pupilfunc{wl} = wvfGet(wvf, 'pupil function', wList(wl));
+
+        % Compute fft of pupil function to obtain the psf.
+        % The insertion of the ifftshift before the fft2 is because the
+        % pupil function is centered on its support, and we think that in
+        % Matlab-land, we should insert ifftshift before transforming
+        % centered data.
+        %
+        % We convert to intensity because that is how Fourier optics works.
+        amp = fftshift(fft2(ifftshift(pupilfunc{wl})));
+        inten = (amp .* conj(amp));
+        
+        % Given the way we computed intensity, should not need to take the
+        % real part, but this way we avoid any very small imaginary bits
+        % that arise because of numerical roundoff.
+        psf{wl} = real(inten);
+        
+        % We used to not use the ifftshift. Indeed, the ifftshift does not
+        % seem to matter here, but my understanding of the way fft2 works, 
+        % we want it.  The reason it doesn't matter is because we don't
+        % care about the phase of the fft.  Set DOCHECKS here to true to
+        % recompute the old way and verify that we get the same answer to
+        % numerical precision. And a few other things.
+        DOCHECKS = false;
+        if (DOCHECKS)
+            amp1 = fft2(pupilfunc{wl});
+            inten1 = fftshift((amp1 .* conj(amp1)));
+            if (max(abs(inten(:) - inten1(:))) > 1e-8 * mean(inten(:)))
+                fprintf(['The ifftshift matters in computation of psf ' ...
+                    'from pupil function\n']);
+            end
+            if (max(abs(amp(:) - amp1(:))) > 1e-8 * mean(amp(:)))
+                fprintf(['The ifftshift matters in computation of amp ' ...
+                    'from pupil function, as expected.\n']);
+            end
+            if (max(abs(imag(inten(:)))) > 1e-8 * mean(inten(:)))
+                fprintf(['Max absolute value of imaginary part of ' ...
+                    'inten is %g\n'], max(abs(imag(inten(:)))));
+            end
+        end
+        
+        % Make sure psf sums to unit volume.
+        psf{wl} = psf{wl} / sum(sum(psf{wl}));
+
+        if (flipPSFUpsideDown)
+            % Flip PSF left right 
+            psf{wl} = fliplr(psf{wl});
+        end
+        
+        if (rotatePSF90degs)
+            % Flip PSF left right 
+            psf{wl} = rot90(psf{wl});
+        end
+        
+    end
     
-    amp = fftshift(fft2(ifftshift(pupilfunc{wl})));
-    inten = (amp .* conj(amp));
-    psf{wl} = real(inten);
-    
-    % Scale for unit area
-    psf{wl} = psf{wl}/sum(sum(psf{wl}));
-    % vcNewGraphWin; imagesc(psf{wl});
+    wvf.psf = psf;
+    wvf.PSF_STALE = false;
 end
 
-% The spatial support for each psf differs when computed in the pupil
-% plane, as we do here.  So to plot these requires specifying the
-% wavelength and getting the wavelength-dependent spatial support.  See
-% wvfPlot().
-wvf.psf = psf;
-
-
 end
-
-

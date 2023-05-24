@@ -1,79 +1,172 @@
 function wvf = wvfCreate(varargin)
 % Create the wavefront parameters structure.
 %
-% Syntax
-%   wvf = wvfCreate([parameter],[value])
+% Syntax:
+%   wvf = wvfCreate;
 %
-% Inputs
-%  None
+% Description:
+%    Create the wavefront parameters structure.
 %
-% Returns a wavelength structure
-%  Default:   a diffraction limited PSF for a 3 mm pupil.
-%  varargin:  Parsed as (param, val) pairs to call wvfSet()
+%    The default parameters will give you diffraction limited PSF
+%    for 550 nm light and a 3 mm pupil.
 %
-% The list of settable parameters is in wvfSet.
+%    Many of the keys specified in the key/value pair section below accept
+%    synonyms. The key listed is our preferred usage, see the code in
+%    wvfKeySynonyms for available synonyms.
+%   
+%    The properties that may be specified here using key/value pairs may
+%    also be set using wvfSet.  And, wvfSet gives more details of what they
+%    mean.
 %
+% Inputs:
+%    None required.
+%
+% Outputs:
+%    wvf      - The wavefront object
+%
+% Optional key/value pairs:
+%     'name'                               - 'default'
+%     'type'                               - 'wvf'
+%     'zcoeffs'                            - 0
+%     'measured pupil'                     - 8
+%     'measured wl'                        - 550
+%     'measured optical axis'              - 0
+%     'measured observer accommodation'    - 0
+%     'measured observer focus correction' - 0
+%     'sample interval domain'             - 'psf'
+%     'spatial samples'                    - 201
+%     'ref pupil plane size'               - 16.212
+%     'calc pupil size'                    - 3
+%     'calc wavelengths'                   - 550
+%     'calc optical axis'                  - 0
+%     'calc observer accommodation'        - 0
+%     'calc observer focus correction'     - 0
+%     'um per degree'                      - 300
+%     'sce params'                         - Struct specifying no sce
+%                                            correction.
+%     'calc cone psf info'                 - Default structure returned by
+%                                            conePsfInfoCreate.
+%
+% Examples are included in the code.     
+%
+% See Also:
+%    wvfSet, wvfGet, wvfKeySynonyms, sceCreate, sceGet
+%
+
+% History:
+%    xx/xx/11       (c) Wavefront Toolbox Team 2011, 2012
+%    07/20/12  dhb  Get rid of weighting spectrum, replace with cone psf
+%                   info structure
+%    12/06/17  dhb  Use input parser to handle key/value pairs. This was
+%                   previously being done in a manner that may not have
+%                   matched up with the documentation.
+%    12/08/17  dhb  Add um per degree. We need control over this to match
+%                   up across calculations. Default is 300, whereas 330
+%                   used to be hard coded in the wvf calculations. The
+%                   difference messed up comparison with oi based
+%                   calculation
+%    07/05/22  npc  Custom LCA
+
 % Examples:
-%    wvf = wvfCreate('wave',[400:10:700],'pupil diameter',5, 'z pupil diameter ', 8);
-%
-% Wandell, Imageval LLC
-%
-% Adapted from wavefront toolbox with DHB
-% Modified heavily for use in ISET, 2015
-% See also
-%    wvfGet, wvfSet, wvfComputePSF
+%{
+	wvf = wvfCreate('calc wavelengths', [400:10:700]);
+%}
 
+%% Input parse
+%
+% Run ieParamFormat over varargin before passing to the parser,
+% so that keys are put into standard format
+p = inputParser;
+p.addParameter('name', 'default', @ischar);
+p.addParameter('type', 'wvf', @ischar);
 
-%% Book-keeping
+% Zernike coefficients and related
+p.addParameter('zcoeffs', 0, @isnumeric);
+p.addParameter('measuredpupil', 8, @isscalar);
+p.addParameter('measuredwl', 550, @isscalar);
+p.addParameter('measuredopticalaxis', 0, @isscalar);
+p.addParameter('measuredobserveraccommodation', 0, @isscalar);
+p.addParameter('measuredobserverfocuscorrection', 0, @isscalar);
+
+% Spatial sampling parameters
+p.addParameter('sampleintervaldomain', 'psf', @ischar);
+p.addParameter('spatialsamples', 201, @isscalar);
+p.addParameter('refpupilplanesize', 16.212, @isscalar);
+
+% Calculation parameters
+p.addParameter('calcpupilsize', 3, @isscalar);
+p.addParameter('calcwavelengths', 550, @isnumeric);
+p.addParameter('calcopticalaxis', 0, @isscalar);
+p.addParameter('calcobserveraccommodation', 0), @isscalar;
+p.addParameter('calcobserverfocuscorrection', 0, @isscalar);
+
+% Retinal parameters
+p.addParameter('umperdegree', 300, @isscalar);
+
+% Custom lca
+p.addParameter('customlca', [], @(x)( (isempty(x)) || (isa(x, 'function_handle')) ));
+
+% SCE parameters
+p.addParameter('sceparams',sceCreate([],'none'), @isstruct);
+
+% Cone PSF information
+p.addParameter('calcconepsfinfo',conePsfInfoCreate,@isstruct);
+
+% Whether to flip the PSF upside/down
+p.addParameter('flipPSFUpsideDown', false, @islogical);
+p.addParameter('rotatePSF90degs', false, @islogical);
+
+% Massage varargin and parse
+ieVarargin = ieParamFormat(varargin);
+ieVarargin = wvfKeySynonyms(ieVarargin);
+p.parse(ieVarargin{:});
+
+%% Now set all of the properties that are specified by the parse above.
+%
+% This is done via wvfSet. 
 wvf = [];
-wvf = wvfSet(wvf,'name','default');
-wvf = wvfSet(wvf,'type','wvf');
+wvf = wvfSet(wvf, 'name', p.Results.name);
+wvf = wvfSet(wvf, 'type', p.Results.type);
 
-%% Spatial sampling parameters
+% Zernike coefficients and related
+wvf = wvfSet(wvf, 'zcoeffs', p.Results.zcoeffs);
+wvf = wvfSet(wvf, 'measured pupil', p.Results.measuredpupil);
+wvf = wvfSet(wvf, 'measured wl', p.Results.measuredwl);
+wvf = wvfSet(wvf, 'measured optical axis', p.Results.measuredopticalaxis);
+wvf = wvfSet(wvf, 'measured observer accommodation', ...
+    p.Results.measuredobserveraccommodation);
+wvf = wvfSet(wvf, 'measured observer focus correction', ...
+    p.Results.measuredobserverfocuscorrection);
 
-% I think this means the calculations are based on the wavefront at the
-% pupil, separated from the image plane.  Consequently the frequency
-% representation at the image plane is wavelength dependent.  This is the
-% only case we run in ISETCam.  ISETBio permits an additional option.
-wvf = wvfSet(wvf,'sample interval domain','pupil');
+% Spatial sampling parameters
+wvf = wvfSet(wvf, 'sample interval domain', ...
+    p.Results.sampleintervaldomain);
+wvf = wvfSet(wvf, 'spatial samples', p.Results.spatialsamples);
+wvf = wvfSet(wvf, 'ref pupil plane size', p.Results.refpupilplanesize);
 
-% This was the alternative domain.  All this has me worried (BW).
-% wvf = wvfSet(wvf,'sample interval domain','psf');  % Original default.
+% Calculation parameters
+wvf = wvfSet(wvf, 'calc pupil size', p.Results.calcpupilsize);
+wvf = wvfSet(wvf, 'calc wavelengths', p.Results.calcwavelengths);
+wvf = wvfSet(wvf, 'calc optical axis', p.Results.calcopticalaxis);
+wvf = wvfSet(wvf, 'calc observer accommodation', ...
+    p.Results.calcobserveraccommodation);
+wvf = wvfSet(wvf, 'calc observer focus correction', ...
+    p.Results.calcobserverfocuscorrection);
 
-wvf = wvfSet(wvf,'spatial samples',201);             % I wonder what happens if we increase/decrease this?
-wvf = wvfSet(wvf,'ref pupil plane size',16.2120);    % Original 16.212.  Not sure what this is.
+% Conversion between degrees of visual angle and mm
+wvf = wvfSet(wvf, 'um per degree',p.Results.umperdegree);
 
-%% Calculation parameters
-wvf = wvfSet(wvf,'pupil size',3);   % Currently mm, but we should change to meters!
-wvf = wvfSet(wvf,'wavelengths',400:10:700);
-wvf = wvfSet(wvf,'focal length', 17e-3);  % This is our estimate near fovea
+% Custom LCA function handle
+wvf = wvfSet(wvf, 'custom lca',p.Results.customlca);
 
-%% Zernike coefficient set up for diffraction limited case.
+% Stiles Crawford Effect parameters
+wvf = wvfSet(wvf, 'sce params', p.Results.sceparams);
 
-% The polynomial coefficients were measured for a particular pupil diameter
-% and a specific wavelength.  Those are stored here.  By default, we assume
-% that the zcoeffs were measured on an 8 mm pupil diameter.  That's because
-% human measurements are often like that.  But the reality could be quite
-% different.
-zcoeffs = zeros(1,15);
-wvf = wvfSet(wvf,'zcoeffs',zcoeffs);
-wvf = wvfSet(wvf,'z pupil diameter',8);
+% Cone PSF information
+wvf = wvfSet(wvf, 'calc cone psf info', p.Results.calcconepsfinfo);
 
-% We are not properly accounting for the difference between the assumed z
-% coefficient measurement wavelength and the calculation.  We do this
-% correctly in ISETBio where we know the defocus as a function of
-% wavelength.  But in ISETCam we do not generally have this information for
-% the lens.
-wvf = wvfSet(wvf,'z wavelength',550);
-
-%% Handle any additional arguments via wvfSet
-if ~isempty(varargin)
-    if isodd(length(varargin))
-        error('Arguments must be (pair, val) pairs');
-    end
-    for ii=1:2:(length(varargin)-1)
-        wvf = wvfSet(wvf,varargin{ii},varargin{ii+1});
-    end
-end
+% Flip PSF upside down
+wvf = wvfSet(wvf, 'flipPSFUpsideDown', p.Results.flipPSFUpsideDown);
+wvf = wvfSet(wvf, 'rotatePSF90degs', p.Results.rotatePSF90degs);
 
 end
