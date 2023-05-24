@@ -562,8 +562,36 @@ switch sceneName
         if length(varargin) >=3, nLines = varargin{3}; end
         scene = sceneRadialLines(scene,imSize,spectralType,nLines);
         
+    case {'deadleaves'}
+        % Dead leaves chart used by Mumford and many others for image
+        % quality assessment
+        %
+        % scene = sceneCreate('dead leaves',512,3);
+        imSize = 256;
+        nFactor = 2;
+        if length(varargin) >= 1, imSize = varargin{1}; end
+        if length(varargin) >= 2, nFactor = varargin{2}; end
+        scene = sceneDeadleaves(imSize,nFactor);
+        
+    case {'letter', 'font'}
+        % Create scene of single letter
+        %
+        % scene = sceneCreate('letter', font, display);
+        
+        % Defaults, both have 96 dpi
+        font = fontCreate;
+        display = 'LCD-Apple'; 
+        
+        % Assign arguments
+        if ~isempty(varargin), font = varargin{1}; end
+        if length(varargin) > 1, display = varargin{2}; end      
+        if ischar(display), display = displayCreate(display); end
+        
+        scene = sceneFromFont(font, display);
+        return; % Do not adjust luminance or other properties
+
     otherwise
-        error('Unknown scene format.');
+        error('Unknown scene format: %s.',sceneName);
 end
 
 % Initialize scene geometry, spatial sampling
