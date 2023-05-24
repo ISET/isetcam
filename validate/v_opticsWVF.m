@@ -64,7 +64,7 @@ uData = oiPlot(oi,'psf',[],thisWave);
 x = getMiddleMatrix(uData.x,50);
 y = getMiddleMatrix(uData.y,50);
 psf = getMiddleMatrix(uData.psf,50);
-vcNewGraphWin; mesh(x,y,psf)
+ieNewGraphWin; mesh(x,y,psf)
 
 fNumber = oiGet(oi,'optics fnumber');
 radius = (2.44*fNumber*thisWave*10^-9)/2 * ieUnitScaleFactor('um');
@@ -83,7 +83,7 @@ wvData = wvfPlot(wvfP,'otf','mm',thisWave,maxF);
 
 % Remember that the DC position must account for whether the
 % length of fx is even or odd
-vcNewGraphWin;
+ieNewGraphWin;
 if isodd(length(wvData.fx)), wvMid = floor(length(wvData.fx)/2) + 1;
 else,                 wvMid = length(wvData.fx)/2 + 1;
 end
@@ -121,7 +121,7 @@ thisWave = 550;
 oiData = oiPlot(oi,'otf',[],thisWave);
 wvData = wvfPlot(wvfP,'2D otf','mm',thisWave);
 
-vcNewGraphWin;
+ieNewGraphWin;
 if isodd(length(wvData.fx)), wvMid = floor(length(wvData.fx)/2) + 1;
 else,                 wvMid = length(wvData.fx)/2 + 1;
 end
@@ -154,12 +154,12 @@ hold on; p = plot3(adX,adY,adZ,'k-'); set(p,'linewidth',3); hold off;
 
 % There are very small differences (~0.005) at a few interpolated values
 est = interp2(wvData.fx,wvData.fy,wvData.otf,oiData.fx,oiData.fy,'cubic',0);
-vcNewGraphWin; plot(est(:),oiData.otf(:),'rx')
+ieNewGraphWin; plot(est(:),oiData.otf(:),'rx')
 axis equal
 identityLine
 
 % Nearly perfect.
-% vcNewGraphWin; histogram(est(:) - oiData.otf(:),100)
+% ieNewGraphWin; histogram(est(:) - oiData.otf(:),100)
 
 %% Test scene
 
@@ -184,7 +184,7 @@ ieAddObject(oiD); oiWindow;
 
 def = 1;
 wvfD = wvfSet(wvfP,'zcoeff',def,'defocus');
-wvfD = wvfSet(wvfD,'z pupil diameter',8);
+wvfD = wvfSet(wvfD,'pupil diameter',8);
 wvfD = wvfComputePSF(wvfD);
 wvfPlot(wvfD,'2d psf space','um',thisWave,pRange);
 title(sprintf('Z defocus parameter %.1f',def));
@@ -194,4 +194,4 @@ oiDD = oiCompute(oiDD,s);
 oiDD = oiSet(oiDD,'name',sprintf('Z defocus %.1f',def));
 ieAddObject(oiDD); oiWindow;
 
-%%
+%% END
