@@ -108,8 +108,8 @@ if (~isfield(wvf, 'pupilfunc') || ~isfield(wvf, 'PUPILFUNCTION_STALE') ...
     
     % Make sure calculation pupil size is less than or equal to the pupil
     % size that gave rise to the measured coefficients.
-    calcPupilSizeMM = wvfGet(wvf, 'calc pupil size', 'mm');
-    measPupilSizeMM = wvfGet(wvf, 'measured pupil size', 'mm');
+    calcPupilSizeMM = wvfGet(wvf, 'calc pupil diameter', 'mm');
+    measPupilSizeMM = wvfGet(wvf, 'measured pupil diameter', 'mm');
     if (calcPupilSizeMM > measPupilSizeMM)
         error(['Calculation pupil (%.2f mm) must not exceed measurement'...
             ' pupil (%.2f mm).'], calcPupilSizeMM, measPupilSizeMM);

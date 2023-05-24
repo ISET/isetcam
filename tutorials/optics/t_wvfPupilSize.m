@@ -26,13 +26,13 @@ zCoefs = wvfLoadThibosVirtualEyes(pupilMM);
 % Create the wvf parameter structure with the appropriate values
 wave = 520';
 wvfP = wvfCreate('wave',wave,'zcoeffs',zCoefs,'name',sprintf('%d-pupil',pupilMM));
-wvfP = wvfSet(wvfP,'pupil diameter',pupilMM);
+wvfP = wvfSet(wvfP,'measured pupil diameter',pupilMM);
 
 %% Calculate the effect of varying the pupil diameter
 
 cPupil = [2,4,7];
 for ii=1:sum(cPupil<=pupilMM)
-    wvfP = wvfSet(wvfP,'pupil diameter',cPupil(ii));
+    wvfP = wvfSet(wvfP,'calc pupil diameter',cPupil(ii));
     wvfP = wvfComputePSF(wvfP);
     wvfPlot(wvfP,'2d psf space','um',wave,20);
     title(sprintf('pupil diameter %.1f mm',cPupil(ii)));

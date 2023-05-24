@@ -29,7 +29,7 @@ Zvals = [Z4(:), Z5(:)];
 %% Vary defocus and vertical astigmatism
 
 % Make a plot of the psf for each case.
-h = vcNewGraphWin;
+h = ieNewGraphWin;
 set(h,'Position',[0.5 0.5 0.45 0.45]);
 wList = 550; % wvfGet(wvfParams,'wave');
 for ii=1:size(Zvals,1)

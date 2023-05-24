@@ -17,13 +17,15 @@ ieInit
 
 %% The wavefront methods relies on the wavefront structure
 
+wave = 400:20:700;
+
 % The default parameters are set here, for a diffraction limited lens.
-wvf = wvfCreate;
+wvf = wvfCreate('wave',wave);
 
 % Before plotting, we need to calculate the PSF
 wvf = wvfComputePSF(wvf);
 
-thisWave = 550;   % nanometers
+thisWave = 540;   % nanometers
 pRange = 10;      % microns
 wvfPlot(wvf,'2d psf space','um',thisWave,pRange);
 
@@ -37,7 +39,7 @@ doc('wvfOSAIndexToName');
 wvf = wvfSet(wvf,'zcoeffs',2,'defocus');
 wvf = wvfComputePSF(wvf);
 
-thisWave = 550;   % nanometers
+thisWave = 540;   % nanometers
 pRange = 10;      % microns
 wvfPlot(wvf,'2d psf space','um',thisWave,pRange);
 

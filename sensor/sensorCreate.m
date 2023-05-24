@@ -358,7 +358,7 @@ switch sensorType
         else, rSeed = [];
         end
         if checkfields(params,'wave'), wave = params.wave;
-        else                           wave = 400:10:700;
+        else,                          wave = 400:10:700;
         end
         
         % Add the default human pixel with StockmanQuanta filters.

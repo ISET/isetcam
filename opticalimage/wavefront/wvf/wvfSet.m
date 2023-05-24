@@ -1,6 +1,17 @@
 function wvf = wvfSet(wvf, parm, val, varargin)
 % Set wavefront parameters to use for calculations
 %
+% NOTE:
+%   There are massive differences between the ISETBio version and
+%   ISETCam version of this and other wavefront functions. BW is still
+%   sorting out what to do.  We have moved the ISETBio version into
+%   ISETCam, and we will try to conform to that because NC and DHB
+%   have relied on them.
+%
+%   But I will try to integrate the simplifications from ISETCam over
+%   time.  I added pupildiameter and focallength.  Waiting to see what
+%   else goes wrong.
+%
 % Syntax:
 %   wvf = wvfSet(wvf, parm, val, [varargin])
 %
@@ -167,7 +178,8 @@ switch parm
         % other functions or scripts that compare the data as well.
         % 
     case {'measuredpupilsize', 'measuredpupil', 'measuredpupilmm', ...
-            'measuredpupildiameter'}
+            'measuredpupildiameter','pupildiameter'}
+        % Added pupildiameter here.
         % Pupil diameter in mm over for which wavefront expansion is valid
         wvf.measpupilMM = val;
         
@@ -363,8 +375,19 @@ switch parm
         wvf.refSizeOfFieldMM = wvfGet(wvf, 'measured wl', 'mm') ...
             / radiansPerPixel;
         wvf.PUPILFUNCTION_STALE = true;
-        
-        
+
+    case {'focallength','flength'}
+        % wvf = wvfSet(wvf,'focal length',17e-3);
+        %
+        % When we convert the psf in angle units to spatial samples we may
+        % need to know the focal length.  This is necessary, for example
+        % to specific deg per mm on the film (imaging) surface. We use this
+        % wvf parameter to convert from angle (the natural calculation
+        % space of the phase aberrations) to spatial samples.
+        %
+        wvf.focalLength = val;
+        wvf.PUPILFUNCTION_STALE = true;
+
     %% Calculation parameters
     % These parameters are used for the specific calculations with this, 
     % interpolating the measured values that are stored above.

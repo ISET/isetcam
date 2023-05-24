@@ -394,7 +394,9 @@ end
 isMeas = true;
 switch (parm)
     case {'zpupildiameter','measuredpupildiameter', 'pupilsizemeasured', ...
-            'measuredpupilsize', 'measuredpupil', 'measuredpupilmm'}
+            'measuredpupilsize', 'measuredpupil', 'measuredpupilmm','pupildiameter','pupilsize'}
+        % Added pupilsize for ISETCam integration (BW).
+        %
         % Pupil diameter in mm over for which wavefront expansion is valid
         % wvfGet(wvf, 'measured pupil', 'mm')
         % wvfGet(wvf, 'measured pupil')
@@ -437,6 +439,26 @@ switch (parm)
     case {'rotatepsf90degs'}
         val = wvf.rotatePSF90degs;
         
+    case {'focallength','flength'}
+        % wvfGet(wvf,'focal length',unit);
+        % We use the focal length (m) to calculate meters per degree in psf
+        % spatial samples.
+        if isfield(wvf,'focalLength'), val = wvf.focalLength; 
+        else
+            warning('Using 17 mm focal length by default.')
+            val = 17e-3;  % 17 mm is default
+        end
+        
+        if ~isempty(varargin)
+            val = val*ieUnitScaleFactor(varargin{1});
+        end
+
+    case {'fnumber'}
+        % If we have a pupil diameter and focal length, we can produce the
+        % fnumber.  Not always appropriate, but sometimes it is
+        fl = wvfGet(wvf,'focal length','m');
+        pd = wvfGet(wvf,'pupil diameter','m');
+        val = fl/pd;
     otherwise
         isMeas = false;
 end

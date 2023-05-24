@@ -1,5 +1,7 @@
 %% Wavefront calculations
 %
+% Try t_wvf* instead.  This seems a bit old.
+%
 % ISET includes two ways to calculate defocus, one based on
 % Hopkins and diffraction calculations described in
 % <http://white.stanford.edu/~brian/papers/color/MarimontWandell1994.pdf Marimont and Wandell (1994, JOSA)>.
@@ -147,7 +149,7 @@ end
 plot(wvData.fx, wvData.otf(:,wvMid),'r-'); hold on;
 
 if isodd(length(oiData.fx)), oiMid = floor(length(oiData.fx)/2) + 1;
-else          oiMid = length(oiData.fx)/2 + 1;
+else,          oiMid = length(oiData.fx)/2 + 1;
 end
 plot(oiData.fx, oiData.otf(:,oiMid),'b-')
 legend({'wvf','oi'})
@@ -170,4 +172,4 @@ mesh(oiData.x(r,c),oiData.y(r,c),abs(oiData.psf(r,c)))
 % Compare with the wavefront plot
 wvfPlot(wvfP,'2d psf space','um',550,pRange);
 
-%%
+%% END
