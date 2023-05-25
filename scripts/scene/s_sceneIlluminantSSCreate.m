@@ -21,9 +21,19 @@ imgH = imgaussfilt(img,h);
 ieNewGraphWin; imagesc(imgH);
 
 %% Convert the image to a hyper spectral cube
+% 
+% This code does not work because of sceneFromFile.  The relevant case
+% was stripped out of sceneFromFile.  It may be in some other branch,
+% or one of the students might have it in their personal space.
+%
+%[illScene, wgts, basisF] = sceneFromFile(imgH,'rgb',50,'cieDaylightBasis',...
+%                                            wave, 'xyznonneg');
+
+%{
 wave = sceneGet(scene,'wave');
-[illScene, wgts, basisF] = sceneFromFile(imgH,'rgb',50,'cieDaylightBasis',...
+illScene = sceneFromFile(imgH,'rgb',50,'cieDaylightBasis',...
                                             wave, 'xyznonneg');
+
 energy = sceneGet(illScene, 'energy');
 [wgtXW, r, c] = RGB2XWFormat(wgts);
 energyBasis = XW2RGBFormat((wgtXW * basisF'), r, c);
@@ -43,5 +53,6 @@ photons = (photons ./ oldIll) .* illP;
 scene = sceneSet(scene,'photons',photons);
 scene = sceneSet(scene,'illuminant photons',illP);
 sceneWindow(scene);
+%}
 
 %%

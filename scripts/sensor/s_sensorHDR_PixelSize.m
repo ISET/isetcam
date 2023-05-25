@@ -22,7 +22,7 @@ fName = fullfile(isetRootPath,'data','images','multispectral','Feng_Office-hdrs.
 
 % Read in a multispectral file with high dynamic range and a mean level of
 % 200 cd/m2
-[scene,fname] = sceneFromFile(fName,'multispectral',200);
+scene = sceneFromFile(fName,'multispectral',200);
 
 % ieAddObject(scene); sceneWindow
 %%  Create an optical image with the default lens parameters (f# = 2.0)

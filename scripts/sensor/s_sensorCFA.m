@@ -20,7 +20,7 @@ pSize = [1.4 1.4]*1e-6;
 % dir(fullfile(isetRootPath,'data','images','rgb'))
 
 % woodDuck.png
-[scene, fname] = sceneFromFile('zebra.jpg','rgb', 300, displayCreate);
+scene = sceneFromFile('zebra.jpg','rgb', 300, displayCreate);
 % Create the scene and calculate with the camera
 % scene  = sceneCreate('reflectance chart');
 scene  = sceneSet(scene,'fov',fov);
@@ -86,14 +86,12 @@ cameraWindow(camera,'sensor');
 %% Now show the transformed data again
 % camera Window(camera,'ip');
 
-%%
-
 %%  Now a quad sensor
 
 quadSensor = sensorCreate;
 % Should be sensorCreateQuad;
 quadSensor = sensorSet(quadSensor,'pattern',[3 3 2 2; 3 3 2 2; 2 2 1 1; 2 2 1 1]);
-quadSensor = sensorSet(quadSensor,'fov',fov,oi);
+quadSensor = sensorSet(quadSensor,'fov',fov,cameraGet(camera,'oi'));
 quadSensor = sensorSet(quadSensor,'name','quad');
 
 camera = cameraSet(camera,'sensor',quadSensor);
