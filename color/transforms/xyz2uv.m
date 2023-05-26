@@ -1,6 +1,7 @@
 function [u,v] = xyz2uv(xyz,format)
 % Convert CIE XYZ to uv chromaticity coordinates
 %
+%   [uvprime] = xyz2uv(xyz,[format])
 %   [uprime,vprime] = xyz2uv(xyz,[format])
 %
 % Convert XYZ to uprime,vprime chromaticity coordinates (uniform
@@ -59,4 +60,8 @@ v(nz) = 9*xyz(nz,2) ./ B(nz);
 
 % Check if the old 1960s (u,v), not (u',v') is being requested.
 if isequal(format,'uv'), v = v/1.5; end
+
+if nargout == 1
+    % Single output, so we put u and v in two rows
+    u = [u;v];
 end

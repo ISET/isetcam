@@ -14,7 +14,7 @@ function [oi,val] = oiCreate(oiType,varargin)
 %                             data (Default)
 %     {'shift invariant'}     -  General high resolution shift-invariant
 %                             model set up. Like human but pillbox OTF
-%     {'wvf'}        - Use the wavefront methods to specify the shift
+%     {'wvf'}        - Use the wavefront methods (diffraction limited)
 %     {'human'}      - Inserts human shift-invariant optics
 %     {'ray trace'}  - Ray trace OI
 %
