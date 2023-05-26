@@ -128,7 +128,7 @@ switch lower(opticsType)
         optics = opticsSet(optics,'model','shiftInvariant');
         optics = opticsSet(optics,'name','human-MW');
 
-    case {'wvfhuman'}
+    case {'wvfhuman','humanwvf'}
         % Optics based on mean Zernike polynomial wavefront model estimated
         % by Thibos, for 3 mm pupil. This is not actually representative of
         % any particular observer, because the mean Zernike polynomials do
@@ -186,6 +186,10 @@ switch lower(opticsType)
 
         % Add default Lens by default
         optics.lens = Lens;
+
+        % Add the wavefront parameters
+        optics.wvf = wvfP;
+
     case 'mouse'
         % Some day might add in a default mouse optics. Here are some
         % guesses about the right parameters:

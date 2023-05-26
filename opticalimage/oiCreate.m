@@ -16,6 +16,7 @@ function [oi,val] = oiCreate(oiType,varargin)
 %                             model set up. Like human but pillbox OTF
 %     {'wvf'}        - Use the wavefront methods (diffraction limited)
 %     {'human'}      - Inserts human shift-invariant optics
+%                      (Marimont-Wandell)
 %     {'ray trace'}  - Ray trace OI
 %
 %  These are used for snr-lux testing
@@ -86,15 +87,21 @@ switch ieParamFormat(oiType)
         load(rtFileName,'optics');
         oi = oiSet(oi,'optics',optics);
         
-    case {'human'}
-        % Marimont and Wandell human optics model.  For more extensive
-        % biological modeling, see the ISETBIO derivative which has now
-        % expanded and diverged from ISET.
+    case {'humanmw'}
+        % Marimont and Wandell human optics model.
         oi = oiCreate('default');
         oi = oiSet(oi,'diffuserMethod','skip');
         oi = oiSet(oi,'consistency',1);
         oi = oiSet(oi,'optics',opticsCreate('human'));
         oi = oiSet(oi,'name','human-MW');
+
+    case {'human','humanwvf'}
+        % Wavefront, Thibos example
+        oi = oiCreate('default');
+        oi = oiSet(oi,'diffuserMethod','skip');
+        oi = oiSet(oi,'consistency',1);
+        oi = oiSet(oi,'optics',opticsCreate('wvf human'));
+        oi = oiSet(oi,'name','human-wvf');
         
     case {'uniformd65'}
         % Uniform, D65 optical image.  No cos4th falloff, huge field of
