@@ -42,10 +42,10 @@ function [optics, wvfP]  = opticsCreate(opticsType,varargin)
 %      {'shift invariant'} - A shift invariant representation based on a
 %                            small pillbox PSF
 %
-%      {'human'}     - Also shift-invariant, but uses Marimont
+%      {'human mw', 'human'} - Also shift-invariant, but uses Marimont
 %                      and Wandell (Hopkins) method
 %
-%      {'wvf human'}  - Uses Wavefront toolbox and Thibos data. Has
+%      {'human wvf'}  - Uses Wavefront toolbox and Thibos data. Has
 %                        varargin parameters for pupil diameter,
 %                        Zernike Coefficients, wavelengths, and
 %                        microns per degree.

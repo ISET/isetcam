@@ -98,8 +98,11 @@ switch ieParamFormat(oiType)
         load(rtFileName,'optics');
         oi = oiSet(oi,'optics',optics);
         
-    case {'humanmw'}
+    case {'humanmw','human'}
+        % 
         % Marimont and Wandell human optics model.
+        % A bit dangerous to have 'human' default to the Marimont and
+        % Wandell case.  But that is what we had historically.
         oi = oiCreate('default');
         oi = oiSet(oi,'diffuserMethod','skip');
         oi = oiSet(oi,'consistency',1);

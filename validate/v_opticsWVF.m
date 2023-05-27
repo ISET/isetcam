@@ -171,14 +171,14 @@ ieAddObject(s);
 
 oi = oiCompute(oi,s);
 oi = oiSet(oi,'name',sprintf('oi f/# %.2f',oiGet(oi,'fnumber')));
-ieAddObject(oi); oiWindow;
+oiWindow(oi);
 
 %% Standard way of creating a diffraction limited optics
 oiD = oiCreate;
 oiD = oiSet(oiD,'optics fnumber',wvfGet(wvfP,'fnumber'));
 oiD = oiCompute(oiD,s);
 oiD = oiSet(oiD,'name',sprintf('wvf f/# %.2f',wvfGet(wvfP,'fnumber')));
-ieAddObject(oiD); oiWindow;
+oiWindow(oiD);
 
 %% Finally, show off with setting a defocus on the wvf structure
 
@@ -192,6 +192,6 @@ title(sprintf('Z defocus parameter %.1f',def));
 oiDD = wvf2oi(wvfD);
 oiDD = oiCompute(oiDD,s);
 oiDD = oiSet(oiDD,'name',sprintf('Z defocus %.1f',def));
-ieAddObject(oiDD); oiWindow;
+oiWindow(oiDD);
 
 %% END
