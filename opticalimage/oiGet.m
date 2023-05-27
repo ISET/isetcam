@@ -188,7 +188,7 @@ switch oType
         elseif length(varargin) == 3, val = opticsGet(optics,parm,varargin{1},varargin{2},varargin{3});
         elseif length(varargin) == 4, val = opticsGet(optics,parm,varargin{1},varargin{2},varargin{3},varargin{4});
         end
-        
+
     case 'wvf'
         % If a wavefront structure, then we either return the wvf or
         % an wvf parameter.  See above for varargin{:}
@@ -370,7 +370,17 @@ switch oType
                 if checkfields(oi,'optics'), val = oi.optics; end
             case 'opticsmodel'
                 if checkfields(oi,'optics','model'), val = oi.optics.model; end
+
+            case 'lens'
+                % ISETBio Lens class.
+                if checkfields(oi, 'optics', 'lens'), lens = oi.optics.lens;
+                else, return;
+                end
                 
+                if isempty(varargin), val = lens; return;
+                else, val = lens.get(parm, varargin{:});
+                end
+
             case {'zernike'}
                 % Store the Zernike polynomial coefficients
                 val = oi.zernike;

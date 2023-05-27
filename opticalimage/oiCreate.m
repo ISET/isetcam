@@ -14,8 +14,13 @@ function [oi,val] = oiCreate(oiType,varargin)
 %                             data (Default)
 %     {'shift invariant'}     -  General high resolution shift-invariant
 %                             model set up. Like human but pillbox OTF
+%     {'wvf human'}  - Human shift-invariant optics based on mean
+%                      wavefront abberration from Thibos et al. (2009,
+%                      Ophthalmic & Physiological Optics). Optional
+%                      parameters can be passed for this case (see below)
+%
 %     {'wvf'}        - Use the wavefront methods (diffraction limited)
-%     {'human'}      - Inserts human shift-invariant optics
+%     {'human mw'}   - Inserts human shift-invariant optics
 %                      (Marimont-Wandell)
 %     {'ray trace'}  - Ray trace OI
 %
@@ -69,6 +74,12 @@ switch ieParamFormat(oiType)
         oi = oiSet(oi,'diffuser method','skip');
         oi = oiSet(oi,'diffuser blur',2*10^-6);
         
+        if checkfields(oi.optics, 'lens')
+            oi.optics = rmfield(oi.optics, 'lens');
+            oi.optics.transmittance.wave = (370:730)';
+            oi.optics.transmittance.scale = ones(length(370:730), 1);
+        end
+        
     case {'shiftinvariant'}
         % Rather than using the diffraction limited call to make the OTF
         % we use some other method, perhaps wavefront.
@@ -95,14 +106,24 @@ switch ieParamFormat(oiType)
         oi = oiSet(oi,'optics',opticsCreate('human'));
         oi = oiSet(oi,'name','human-MW');
 
-    case {'human','humanwvf'}
-        % Wavefront, Thibos example
-        oi = oiCreate('default');
-        oi = oiSet(oi,'diffuserMethod','skip');
-        oi = oiSet(oi,'consistency',1);
-        oi = oiSet(oi,'optics',opticsCreate('wvf human'));
-        oi = oiSet(oi,'name','human-wvf');
-        
+    case {'wvfhuman','humanwvf'}
+        % Wavefront, Human specified from typical Thibos data (see
+        % opticsCreate).
+        %
+        % oi = oiCreate('wvf human', pupilMM, zCoefs, wave)
+
+        oi = oiCreate('diffraction limited');
+        oi = oiSet(oi, 'diffuser method', 'skip');
+        oi = oiSet(oi, 'consistency', 1);
+
+        oi = oiSet(oi, 'optics', opticsCreate('wvf human', varargin{:}));
+        oi = oiSet(oi, 'name', 'human-WVF');
+        oi = oiSet(oi, 'lens', Lens('wave', oiGet(oi, 'optics wave')));
+
+        if checkfields(oi.optics, 'transmittance')
+            oi.optics = rmfield(oi.optics, 'transmittance');
+        end
+
     case {'uniformd65'}
         % Uniform, D65 optical image.  No cos4th falloff, huge field of
         % view (120 deg). Used in lux-sec SNR testing and scripting

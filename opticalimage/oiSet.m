@@ -52,7 +52,8 @@ function oi = oiSet(oi,parm,val,varargin)
 %      {'distance' }
 %      {'horizontal field of view'}
 %      {'magnification'}
-%
+%      {'lens'} - A lens pigment struct.  Should probably be
+%                 integrated into the opticsSet
 %      {'data'}  - Irradiance information
 %        {'cphotons'}   - Compressed photons; can be set one waveband at a
 %                         time: oi = oiSet(oi,'cphotons',data,wavelength);
@@ -228,6 +229,11 @@ switch parm
     case {'data','datastructure'}
         oi.data = val;
         
+    case {'lens', 'lenspigment'}
+        % Imported from ISETBio.  Probably this should be
+        % oiSet(oi,'optics lens',lens);
+        oi.optics.lens = val;
+
     case {'photons'}
         % oiSet(oi,'photons',val)
         % Default is to store as single.
