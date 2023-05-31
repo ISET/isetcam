@@ -123,6 +123,13 @@ switch parm
         % skip, or userSupplied.  The case and spaces do not matter.
         optics.model = ieParamFormat(val);
 
+    case {'lens'}
+        % Lens object used by ISETBio. This should replace
+        % transmittance, or at least be made to work correctly with
+        % transmittance and optics model. For now, we just cram it in
+        % here and hope for the best (BW).
+        optics.lens = val;
+
     case {'fnumber','f#'}
         optics.fNumber = val;
     case {'focallength','flength'}
