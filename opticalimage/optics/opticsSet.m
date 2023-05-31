@@ -110,31 +110,31 @@ if ~exist('val','var'),                        error('No value.'); end
 
 parm = ieParamFormat(parm);
 switch parm
-    
+
     case 'name'
         optics.name = val;
     case 'type'
         % Should always be 'optics'
         if ~strcmp(val,'optics'), warning('Non standard optics type setting'); end
         optics.type = val;
-        
+
     case {'model','opticsmodel'}
         % Valid choices are diffractionLimited, shiftInvariant, rayTrace
         % skip, or userSupplied.  The case and spaces do not matter.
         optics.model = ieParamFormat(val);
-        
+
     case {'fnumber','f#'}
         optics.fNumber = val;
     case {'focallength','flength'}
         optics.focalLength = val;
-        
+
     case {'transmittance','transmittancescale'}
         % opticsSet(optics,'transmittance scale',scaleValues);
         %
         % Default is to set the transmittance to all ones at a high
         % wavelength sampling and then interpolate.  Occasionally people
         % insert a different lens transmittance function.
-        
+
         % The transmittance scale should be [0,1] and match the dimension
         % of the number of wavelengths
         if max(val)>1 || min(val)<0
@@ -142,18 +142,18 @@ switch parm
         elseif length(val) ~= length(optics.transmittance.wave)
             error('Transmittance must match wave dimension');
         end
-        
+
         optics.transmittance.scale = val(:);
-        
+
     case {'transmittancewave'}
         % opticsSet(optics,'transmittance wave',wave)
         oldWave = opticsGet(optics,'transmittance wave');
         oldScale = opticsGet(optics,'transmittance scale');
-        
+
         % Update wavelength and transmittance scale
         optics.transmittance.wave = val(:);
         optics.transmittance.scale = interp1(oldWave,oldScale,val)';
-        
+
         % ---- Relative illumination calculations
     case {'relativeillumination','offaxismethod','cos4thflag'}
         % Flag determining whether you use the cos4th method
@@ -166,7 +166,7 @@ switch parm
     case {'cos4th','cos4thdata','cos4thvalue'}
         % Numerical values.  Should change field to data from value.
         optics.cos4th.value = val;
-        
+
         % ---- OTF information for shift-invariant calculations
     case {'otffunction','otfmethod'}
         % This should probably not be here.
@@ -191,21 +191,21 @@ switch parm
         % Don't we always need to resample the OTF data when we change the
         % wavelength?
         optics.OTF.wave = val;
-        
+
         %---- Ray trace parameters used in non shift-invariant calculations
     case {'raytrace','rt',}
         optics.rayTrace = val;
     case {'rtname'}
         optics.rayTrace.name = val;
-        
+
     case {'opticsprogram','rtopticsprogram'}
         optics.rayTrace.program = val;
     case {'lensfile','rtlensfile'}
         optics.rayTrace.lensFile = val;
-        
+
     case {'rteffectivefnumber','rtefff#'}
         optics.rayTrace.effectiveFNumber = val;
-        
+
     case {'rtfnumber'}
         optics.rayTrace.fNumber = val;
     case {'rtmagnification','rtmag'}
@@ -221,7 +221,7 @@ switch parm
         % computed image).  This is horizontal field of view.
         % Specified in degrees
         % Dimitry Bakin wants us to change to diagonal.
-        
+
         % This was .maxfov until March 9, 2023. (BW)
         % The new code from Xin-Yi fills this in as .fov.  I am not
         % sure how the change came about and perhaps we should put it
@@ -230,7 +230,7 @@ switch parm
     case {'rteffectivefocallength','rtefl','rteffectivefl'}
         % Effective focal length computed by the ray trace program.
         optics.rayTrace.effectiveFocalLength = val;
-        
+
     case {'rtpsf'}
         % Structure with psf information
         optics.rayTrace.psf =val;
@@ -255,11 +255,11 @@ switch parm
                 optics.rayTrace.psf.function = val;
             end
         end
-        
+
     case {'rtpsfwavelength'}
         % PSF wavelengths (nanometers)
         optics.rayTrace.psf.wavelength = val;
-        
+
         % What are the spatial units by default?
     case {'rtpsffieldheight'}
         % Stored in millimeters. Typical value is 0.1 millimeter
@@ -274,7 +274,7 @@ switch parm
         optics.rayTrace.relIllum.function = val;
     case {'rtriwavelength','rtrelativeilluminationwavelength'}
         optics.rayTrace.relIllum.wavelength = val;
-        
+
     case {'rtrifieldheight','rtrelativeilluminationfieldheight'}
         % Stored in millimeters. Typical value 0.1
         optics.rayTrace.relIllum.fieldHeight = val;
@@ -298,8 +298,8 @@ switch parm
         % Doesn't seem to exist any more
         optics.rayTrace.computation.psfSpacing = val;
     otherwise
-        error('Unknown parameter')
+        error('Unknown parameter: %s',parm);
 end
 
-return;
+end
 
