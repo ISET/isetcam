@@ -397,7 +397,7 @@ switch pType
         
         udata.pos = posMicrons.x; udata.data = illum';
         udata.cmd = 'plot(pos,illum)';
-        set(g,'Name',sprintf('Line %.0f',roiLocs(2)));
+        set(g,'Name',sprintf('Line %.0f (%s)',roiLocs(2),oiGet(oi,'name')));
         
     case {'illuminancemeshlog'}
         % Mesh plot of image log illuminance
@@ -439,7 +439,7 @@ switch pType
         
         udata.pos = posMicrons.y; udata.data = illum';
         udata.cmd = 'plot(pos,illum)';
-        set(g,'Name',sprintf('Line %.0f',roiLocs(1)));
+        set(g,'Name',sprintf('Line %.0f (%s)',roiLocs(1),oiGet(oi,'name')));
         
     case {'illuminancefftvline'}
         % oiPlot(oi,'illuminance fft vline')
