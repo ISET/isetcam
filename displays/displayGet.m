@@ -103,6 +103,8 @@ switch parm
     case {'inversegamma', 'inversegammatable'}
         if isfield(d, 'gamma')
             % Optional nSteps arg for inverse gamma table
+            % Divergence between ISETCam and ISETBio.  Testing and need to
+            % resolve (BW).
             if (isempty(varargin))
                 val = ieLUTInvert(d.gamma);
             else

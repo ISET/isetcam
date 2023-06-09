@@ -116,7 +116,7 @@ macbethRGB = macbethRGB/max(macbethRGB(:));
 % Now, we put up this 6 x 4 matrix and set the image to have the right
 % color map.
 
-vcNewGraphWin;
+ieNewGraphWin;
 image(macbethRGB); axis image
 
 % Voila.
@@ -138,7 +138,7 @@ image(macbethRGB); axis image
 % some light.
 
 colorSignal = diag(lgt)*macbethChart;
-vcNewGraphWin; plot(wave,colorSignal)
+ieNewGraphWin; plot(wave,colorSignal)
 
 % For this simulation, we calculate the expected camera rgb signals
 % from each of the color signals.
@@ -205,7 +205,7 @@ macbethCameraRGB =  iGtable(round(macbethCameraLinearRGB));
 % table values to the proper r,g,b values.
 %
 macbethCameraColorMap = ieScale(macbethCameraRGB,0,1)';
-vcNewGraphWin; colormap(macbethCameraColorMap)
+ieNewGraphWin; colormap(macbethCameraColorMap)
 image(macbethImage); axis image
 
 %%

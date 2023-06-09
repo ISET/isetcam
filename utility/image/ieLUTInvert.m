@@ -1,45 +1,75 @@
-function lut = ieLUTInvert(inLUT,resolution)
-% Calculate an inverse lookup table (lut) at a specified sampling resolution
+function lut = ieLUTInvert(inLUT, nSteps)
+% Calculate inverse lookup table from linear RGB intensities to DAC values
 %
-%    lut = ieLUTInvert(inLUT,resolution)
+% Syntax:
+%   lut = ieLUTInvert(inLUT, nSteps)
 %
-% inLUT:      A gamma table that converts linear DAC values to linear RGB.
-% resolution: The display bit depth is log2(size(DAC,1)).  We are going to
-%   make an inverse table with finer resolution.
+% Description:
+%    Calculate inverse lookup table (lut) at certain sampling steps
 %
-% lut:  The returned lookup table.
-% If resolution = 2, then we have twice the number of levels in the
-% returned table.
+% Inputs:
+%    inLUT  - The gamma table that converts DAC values to linear RGB
+%             intensities. The number of rows of this table is taken as the
+%             number of available digital output levels.
+%    nSteps - (Optional) The sampling steps, the returned gamma table is
+%             interpolated to the number of points specified by nSteps.
+%             Default is 2048.
 %
-% Example:
-%   d = displayCreate;
-%   inLUT = d.gamma.^0.6;
-%   lut = ieLUTInvert(inLUT,3);
-%   vcNewGraphWin; plot(lut)
+% Outputs:
+%    lut    - The returned lookup table.
 %
-% See also:  ieLUTDigital, ieLUTLinear
+% Optional key/value pairs:
+%    None.
 %
-% (c) Imageval Consulting, LLC 2013
+% See Also:
+%   ieLUTDigital, ieLUTLinear
+%
 
-if ieNotDefined('inLUT'), error('input lut required'); end
-if ieNotDefined('resolution'), resolution = 0.5; end
+% History:
+%    xx/xx/13       (c) Imageval Consulting, LLC 2013
+%    01/07/15  dhb  Changed convention for passed resolution to be the
+%                   number of samples (nSteps) in the returned table.
+%    04/02/15  dhb  Pull clipping out of loop (cleaner) and clip at the
+%                   correct level (which was wrong).
+%    12/06/17  jnm  Formatting
+%    01/26/18  jnm  Formatting update to match Wiki
 
-x = 1:size(inLUT,1);
-y = inLUT(:,1);
-% Check for monotonicity
-if ~all(diff(y(:))>0) %numeric first derivative
-    % Not monotonic increasing.  So we need to adjust.  This can happen
-    % when we have several equal values.  To handle this we make a string
-    % of really small values that are increasing (one part in a million)
-    % and add them to every term.  Then the terms that are equal differ a
-    % little.
-    s = ((1:length(y))/length(y))*1e-9;
-    y = y(:) + s(:);
+% Examples:
+%{
+    d = displayCreate('CRT-HP');
+    inLUT = displayGet(d, 'gamma');
+    lut = ieLUTInvert(inLUT, 2048);
+    ieNewGraphWin;
+    plot(lut); grid on;
+    xlabel('Input values (RGB intensity)'); ylabel('Output values (DAC)');
+%}
+
+%% Check inputs
+if notDefined('inLUT'), error('input lut required'); end
+if notDefined('nSteps'), nSteps = 2048; end
+
+%% Computes inverse gamma table
+%  Loop over primaries
+nInSteps = size(inLUT, 1);
+y = 1 : nInSteps;
+iY = linspace(0, (nSteps - 1) / nSteps, nSteps);
+lut = zeros(length(iY), size(inLUT, 2));
+for ii = 1 : size(inLUT, 2)
+    % sort inLUT, theoretically, inLUT should be monochrome increasing, but
+    % sometimes, the intensity at very low light levels cannot be measured
+    % and we just set all of them to 0
+    [x, indx] = unique(inLUT(:, ii));
+    lut(:, ii) = interp1(x, y(indx), iY(:), 'pchip');
+    
+    % Handle extrapolation values
+    % ieClip can handle this if black is black for the display. Otherwise, 
+    % we need to handle extrapolation independently
+    lut(iY < min(x), ii) = 0;
+    lut(iY > max(x), ii) = nInSteps;
 end
 
-nbits = log2(length(y));
-m = 2^nbits - 1;
-iY = (0:(1/resolution):m)/(2^nbits);
-lut = interp1(y(:),x(:),iY(:),'PCHIP',m);
+% Clip the output to the max possible value. We take this as the maximum
+% of the input steps.
+lut = ieClip(lut, 0, max(y));
 
 end

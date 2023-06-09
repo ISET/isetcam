@@ -1,5 +1,5 @@
 function RGB = ieLUTDigital(DAC, gTable)
-% Convert DAC values to linear RGB values through a gamma table
+% Convert DAC values to linear RGB intensities through a gamma table
 %
 %   RGB = ieLUTDigital(DAC, gTable)
 %
@@ -27,7 +27,7 @@ function RGB = ieLUTDigital(DAC, gTable)
 %  We invert a typical gTable, which maps from linear intensity to DAC
 %  value, using ieLUTinvert.
 %
-% See also:  ieLUTLinear, ieLUTInvert
+% See also: ieLUTInvert
 %
 % See also
 %
@@ -35,7 +35,7 @@ function RGB = ieLUTDigital(DAC, gTable)
 % Examples:
 %{
   d = displayCreate; n = size(d.gamma,1);
-  dac = floor(n*rand(10,10,3)) + 1;
+  dac = floor(n*rand(10,10,3));
   foo = ieLUTDigital(dac, d.gamma);
   ieNewGraphWin; plot(foo(:),dac(:),'.')
 %}
