@@ -30,7 +30,7 @@ function RGB = ieLUTDigital(DAC, gTable)
 % See also: ieLUTInvert
 %
 % See also
-%
+%  dac2rgb
 
 % Examples:
 %{

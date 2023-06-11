@@ -102,14 +102,17 @@ switch parm
         if isfield(d,'gamma'), val = d.gamma; end
     case {'inversegamma', 'inversegammatable'}
         if isfield(d, 'gamma')
+            gTable = displayGet(d,'gamma table');
+            % Sometimes the gTable has a 4th primary that represents an
+            % additive constant background light
+            gTable = gTable(:,1:3);
             % Optional nSteps arg for inverse gamma table
-            % Divergence between ISETCam and ISETBio.  Testing and need to
-            % resolve (BW).
             if (isempty(varargin))
-                val = ieLUTInvert(d.gamma);
-            else
-                val = ieLUTInvert(d.gamma,varargin{1});
+                nSteps = size(gTable,1);
             end
+            val = ieLUTInvert(gTable,varargin{1});
+        else
+            error('No gamma table for display %s\n',displayGet(d,'name'));
         end
     case {'isemissive'}
         val = true;

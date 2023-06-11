@@ -7,6 +7,7 @@
 %               data on a screen.
 %    Date:      01.02.96
 %    Duration:  20 minutes
+%
 
 %%
 ieInit
@@ -75,7 +76,7 @@ macbethLinearRGB = inv(XYZ'*phosphors)*macbethXYZ;
 % brightest element of the image.  Consequently, we are going to scale
 % the RGB values so that the white surface corresponds to the largest
 % displayable value.
-macbethLinearRGB/(max(macbethLinearRGB(:)));
+macbethLinearRGB = macbethLinearRGB/(max(macbethLinearRGB(:)));
 
 % We are representing the relationship between the linear RGB values
 % and the RGB values in the frame-buffer using a look-up table that
@@ -98,13 +99,13 @@ whiteChip = 4;
 wht = macbethLinearRGB(:,whiteChip);
 
 % Scale ALL of the RGB values so that the white chip has a framebuffer
-% value that is roughly in the (1,1,1) vector direction.
+% value that is roughly (1,1,1).
 macbethLinearRGB = diag( (1 ./ wht )  ) * macbethLinearRGB;
 
 % Correct for the monitor nonlinearity.
 iGtable = displayGet(d,'inverse gamma');
 RGB = XW2RGBFormat(macbethLinearRGB',4,6);
-macbethRGB = ieLUTLinear(RGB,iGtable);
+macbethRGB = rgb2dac(RGB,iGtable);
 
 % There are 24 chips, and we have computed the proper display
 % intensities for each one of them.  We place an image that consists
@@ -118,7 +119,7 @@ macbethRGB = macbethRGB/max(macbethRGB(:));
 
 ieNewGraphWin;
 image(macbethRGB); axis image
-
+title('DAC representation unknown camera')
 % Voila.
 
 %% Render the MCC on a monitor (match rgb)
@@ -196,16 +197,17 @@ macbethCameraLinearRGB = ...
 wht = macbethCameraLinearRGB(:,whiteChip);
 
 macbethCameraLinearRGB = diag( (1 ./ wht )  ) * macbethCameraLinearRGB;
-macbethCameraLinearRGB = ieScale(macbethCameraLinearRGB,1,size(iGtable,1));
-macbethCameraRGB =  iGtable(round(macbethCameraLinearRGB));
+% macbethCameraLinearRGB = ieScale(macbethCameraLinearRGB,1,size(iGtable,1));
+macbethCameraLinearRGB = ieScale(macbethCameraLinearRGB,1);
+macbethCameraRGB = rgb2dac(macbethCameraLinearRGB',iGtable);
 
 % There are 24 chips, and we have computed the proper display
 % intensities for each one of them.  We place an image that consists
 % of the list of values 1:24, into the frame-buffer.  We set the color
 % table values to the proper r,g,b values.
 %
-macbethCameraColorMap = ieScale(macbethCameraRGB,0,1)';
+macbethCameraColorMap = ieScale(macbethCameraRGB,1);
 ieNewGraphWin; colormap(macbethCameraColorMap)
 image(macbethImage); axis image
-
+title(sprintf('Rendered for simulated camera.'))
 %%

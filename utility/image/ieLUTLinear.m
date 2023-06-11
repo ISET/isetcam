@@ -23,15 +23,22 @@ function DAC = ieLUTLinear(RGB, gTable)
 %  If the gTable is a single number, we raise the data to the power
 % (1/gTable).
 %
+% Note:
+%   ieLUTLinear, ieLUTDigital, rgb2dac and dac2rgb have very similar
+%   functionality.  We should deprecate one of the pairs.
+%
 % See also:  ieLUTDigital, ieLUTInvert
 %
-% Example:
-%   d = displayCreate;
-%   rgb = rand(10,10,3);
-%   foo = ieLUTLinear(rgb, d.gamma.^(1/2.2));
-%   vcNewGraphWin; plot(foo(:),rgb(:),'.')
-%
-% (c) Imageval Consulting, LLC 2013
+
+% Examples:
+%{
+%  Not sure what this shows.  d.gamma is a gamma table.
+%  Maybe this shows it is close to a power function?
+   d = displayCreate;
+   rgb = rand(10,10,3);
+   foo = ieLUTLinear(rgb, d.gamma.^(1/2.2));
+   ieNewGraphWin; plot(foo(:),rgb(:),'.')
+%}
 
 if (nargin==1), gTable = 2.2; end
 

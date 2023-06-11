@@ -25,6 +25,10 @@ function lut = ieLUTInvert(inLUT, nSteps)
 %   ieLUTDigital, ieLUTLinear
 %
 
+% Note:
+%   ieLUTLinear, ieLUTDigital, rgb2dac and dac2rgb have very similar
+%   functionality.  We should deprecate one of the pairs.
+%
 % History:
 %    xx/xx/13       (c) Imageval Consulting, LLC 2013
 %    01/07/15  dhb  Changed convention for passed resolution to be the

@@ -1,11 +1,15 @@
 function RGB = dac2rgb(DAC, GammaTable)
-%Convert RGB values to linear RGB intensities via the gamma table.
+% Convert DAC values to linear RGB intensities via the gamma table.
 %
 %     RGB = dac2rgb(DAC, GammaTable)
 %
-% DAC contains the frame buffer values of the primary color planes. DAC
-% values should be in the range [0 1].  They can be in either RGB or XW
-% format.
+% The DAC data can be in either RGB or XW format.
+%
+% The values in DAC represent the frame buffer values of the primary color
+% planes. DAC values can be in the range [0 1], or they can be the actual
+% digital values corresponding to the rows of the GammaTable.  If they are
+% in the range of 0,1 then we scale them to the integer number of rows of
+% the GammaTable.
 %
 % GammaTable -- the look up table that converts DAC to linear RGB
 %    If it has one column, all DAC values are changed according to this
@@ -22,13 +26,14 @@ function RGB = dac2rgb(DAC, GammaTable)
 % Example
 %
 %
-% Copyright Imageval LLC, 2013
+% See also
+%   ieLUTDigital, mkInvGammaTable
 
 if ieNotDefined('GammaTable'), GammaTable = 2.2; end
 
 % Indicate input format, and force into XW format for computing here.  It
 % will be returned in the input format
-if ndims(DAC) == 2
+if ismatrix(DAC)
     dFormat = 'XW';
     nPrimaries = size(DAC,2);
 else
@@ -55,11 +60,13 @@ elseif isequal(size(GammaTable(:)),[3,1])
         RGB(:,ii) = DAC(:,ii).^GammaTable(ii);
     end
     
-elseif ndims(GammaTable) == 2
+elseif ismatrix(GammaTable)
     % A full table was sent in.  We put the primary values in the dac
     % through different lookup tables, one for the R,G and B.
-    DAC = round(DAC * (size(GammaTable,1)-1)) + 1;
-    
+    if max(DAC(:)) <= 1
+        DAC = round(DAC * (size(GammaTable,1)-1)) + 1;
+    end
+
     if (size(GammaTable,2)==1)
         GammaTable = repmat(GammaTable,1,nPrimaries);
     end
@@ -74,4 +81,4 @@ end
 
 if isequal(dFormat,'RGB'), RGB = XW2RGBFormat(RGB,r,c); end
 
-return
+end

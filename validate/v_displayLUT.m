@@ -13,13 +13,12 @@
 %  Use displayList; to get a set of possible displays
 %
 % See also
-%  ieLUTInvert, displayList
+%  ieLUTInvert, ieLUTLinear, ieLUTDigital, displayList, dac2rgb, rgb2dac
 
 %%
 ieInit
 
 %% Get a gamma table from a calibrated display
-
 
 %d = displayCreate('OLED-Sony');
 d = displayCreate('LCD-Apple');
@@ -53,14 +52,31 @@ xlabel('DAC value'); ylabel('Linear rgb'); grid on;
 %% Round trip
 ieNewGraphWin;
 plot(RGB(:,1),estRGB(:,1),'o-');
-ylabel('Estimated linear rgb');
-xlabel('Original linear rgb');
-grid on;
-title('Round trip');
+ylabel('Estimated linear rgb'); xlabel('Original linear rgb');
+grid on; title('Round trip ieLUTLinear,ieLUTDigital');
 identityLine;
 
-%% Check that we are good to less than one percent
+%% Validate
+assert(max(estRGB(:) - RGB(:)) < 0.01);
 
+%% Now use the rgb2dac and dac2rgb variations
+
+RGB = repmat(linspace(0.1,1,10)', 1,3);
+dac = rgb2dac(RGB,igTable);
+ieNewGraphWin; plot(RGB(:,1),dac(:,1),'o');
+xlabel('Linear rgb'); ylabel('DAC value'); grid on;
+
+estRGB = dac2rgb(round(dac),gTable);
+ieNewGraphWin; plot(dac(:,1),estRGB(:,1),'o');
+xlabel('DAC value'); ylabel('Linear rgb'); grid on;
+
+ieNewGraphWin;
+plot(RGB(:,1),estRGB(:,1),'o-');
+ylabel('Estimated linear rgb'); xlabel('Original linear rgb');
+grid on; title('Round trip dac2rgb, rgb2dac');
+identityLine;
+
+%% Validate
 assert(max(estRGB(:) - RGB(:)) < 0.01);
 
 %% END
