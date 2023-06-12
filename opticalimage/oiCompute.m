@@ -89,7 +89,8 @@ function oi = oiCompute(scene,oi,opticsModel)
 %
 % Copyright ImagEval Consultants, LLC, 2005
 %
-% See also: opticsDLCompute, opticsSICompute, opticsRayTrace
+% See also: 
+%   opticsDLCompute, opticsSICompute, opticsRayTrace
 %
 
 % Note about cropping the oi data back to the same size (no black border)

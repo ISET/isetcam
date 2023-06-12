@@ -508,21 +508,22 @@ switch parm
         % column = opticsGet(optics,'transmittance',[wave])
         %
         % The lens transmittance, potentially interpolated or event
-        % extrapolated to the requested wavelength samples
+        % extrapolated to the requested wavelength samples.  This is
+        % usually called with wave = oiGet(oi,'wave');
         %
-        % Historically, we stored transmittance in a separate slot that is
-        % used for camera lenses in ISETCam.  In that case, we have an
-        % optics.transmittance entry.  With the addition of ISETBio, we
-        % store the @Lens class, which has some additional flexibility such
-        % as setting the lens density and various advanced programming
-        % capabilities.  
+        % Historically, we stored transmittance in its own slot that
+        % is used for camera lenses in ISETCam.  In that case, we have
+        % an optics.transmittance entry.  With the new support for
+        % ISETBio, we store the @Lens class, which has some additional
+        % flexibility such as setting the lens density and other
+        % advanced capabilities.
         %
-        % For now, we ask first if we have the transmittance slot, and if
-        % so we use that.  If not, we look to see if we have the lens class
-        % attached and use that. Perhaps we should create separate gets,
-        % such as 'human lens transmittance' and 'lens transmittance' to
-        % distinguish.
-        
+        % To accommodate the change, we ask first if we have the
+        % transmittance slot - if yes we use that.  If not, we look to
+        % see if we have the lens class attached and use that. 
+        % 
+        % Perhaps we should create separate gets, such as 'human lens
+        % transmittance' and 'lens transmittance' to distinguish.        
         
         if isfield(optics,'transmittance')
             % Stored in the transmittance slot
