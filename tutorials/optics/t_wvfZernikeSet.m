@@ -26,9 +26,11 @@ oi = wvf2oi(wvf);
 %% Make an ISET optical image
 
 oi = oiCompute(oi,scene);
-ieAddObject(oi); oiWindow;
+oiWindow(oi);
 
 %% Change the defocus coefficient
+
+% NOT WORKING.  Check the ISETBio case or something!
 
 wvf = wvfCreate;
 D = [0,2];
@@ -36,10 +38,13 @@ for ii=1:length(D)
     wvf = wvfSet(wvf,'zcoeffs',D(ii),{'defocus'});
     wvf = wvfComputePSF(wvf);
     wvfPlot(wvf,'2d psf space','um',550,20);
+
+    % Not working correctly.  wvf2oi does not have the proper PSF in
+    % it, and the images are not blurred.
     oi = wvf2oi(wvf);
     oi = oiCompute(oi,scene);
     oi = oiSet(oi,'name',sprintf('D %.1f',D(ii)));
-    ieAddObject(oi); oiWindow;
+    oiWindow(oi);
 end
 
 %% Increase astigmatism combined with some defocus
@@ -53,7 +58,7 @@ for ii=1:length(A)
     oi = wvf2oi(wvf);
     oi = oiCompute(oi,scene);
     oi = oiSet(oi,'name',sprintf('D %.1f, A %.1f',0.5,A(ii)));
-    ieAddObject(oi); oiWindow;
+    oiWindow(oi);
 end
 
 %%

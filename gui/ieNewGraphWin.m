@@ -1,16 +1,18 @@
 function thisWindow = ieNewGraphWin(thisWindow, fType, titleString, varargin)
-% Open a window for plotting (future of vcNewGraphWin)
+% Open a window for plotting
 %
-%    figHdl = ieNewGraphWin([fig handle],[figure type],[titleString],varargin)
+% figHdl = ieNewGraphWin([fig handle],[figure type],[titleString],varargin)
 %
-% Open a figure.  The figure handle is returned.
+% Open a figure.  The Matlab figure handle is returned.
 %
 % A few figure shapes are pre-defined
 %   fType:  Default - Matlab normal figure position
-%           upper left    Simple
+%           upper left    Simple (default)
 %           tall          (for 2x1 format)
 %           wide          (for 1x2 format)
 %           upperleftbig  (for 2x2 format)
+%           upperright    Simple
+%
 %   This list may grow.
 %
 % The varargin options are a set of (param,val) pairs that are applied
@@ -73,6 +75,12 @@ fType = ieParamFormat(fType);
 switch(fType)
     case {'default','upperleft'}
         thisWindow.Position = [0.007 0.55  0.28 0.36];
+    case 'upperright'
+        thisWindow.Position = [0.7156    0.5611    0.2801    0.3597];
+    case 'lowerleft'
+        thisWindow.Position = [0.0098    0.0403    0.2801    0.3597];
+    case 'lowerright'
+        thisWindow.Position = [0.7098    0.0403    0.2801    0.3597];
     case 'tall'
         thisWindow.Position = [0.007 0.055 0.28 0.85];
     case 'wide'

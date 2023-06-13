@@ -1,8 +1,6 @@
 %% Tutorial on Zernike polynomial calculations (Psych 221)
 %
-% This tutorial is simplified. The extended version is in *ISETBIO*.
-%
-% About the Zernike polynomials
+% Simplified tutorial about the Zernike polynomials
 %
 % Zernike polynomials consist of:
 %   -a weighting coefficient (Zernike coeff),
