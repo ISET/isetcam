@@ -5,12 +5,12 @@
 %    optical transfer function (OTF) for emmetropes and myopes based on
 %    Jaeken & Artal 2012 dataset.
 %
-%    In short, the Jaeken and Artal dataset provides higher order
-%    aberrations along the horizontal meridian (central 80 degrees, sampled
-%    at 1 degree) for both eyes. These data contain 15 zernike coefficients
+%    The Jaeken and Artal dataset provides higher order aberrations
+%    along the horizontal meridian (central 80 degrees, sampled at 1
+%    degree) for both eyes. These data contain 15 zernike coefficients
 %    (OSA j-indices: 0:14) for each sample, for 130 subjects. Data are
-%    based on a 4 mm pupil diameter, measured at 780 nm. No correction for
-%    chromatic aberration.
+%    based on a 4 mm pupil diameter, measured at 780 nm. No correction
+%    for chromatic aberration.
 %
 %    The subjects can be divided into emmetropes based on their mean
 %    central refraction in diopters (central 5 degrees, using the defocus
@@ -70,19 +70,29 @@ whichGroup = 'emmetropes';
     
 %% Plot OTF
 
-% Get [x,y] support for plotting OTF
-otfSupport = wvfGet(wvf, 'otfSupport', 'mm');
+% units, wavelength, plot range
+wvfPlot(wvf,'2d otf','mm',550,500);
 
-ieNewGraphWin;
-surf(otfSupport, otfSupport, fftshift(wvf.otf{1}));
-set(gca, 'XLim', [-100 100], 'YLim', [-100 100])
-xlabel('Freq (lines/mm)');
-ylabel('Freq (lines/mm)');
 title(sprintf('%s: OTF 550 nm, pupil 4 mm, eccen %d deg, %s eye', ...
     whichGroup, eccen, whichEye))
 
+%% We want to shift the PSF to the center
+
+% Not sure why it is off center ...
+wvfPlot(wvf,'psf space','um',550);
+
+psf = wvfGet(wvf,'PSF',550);
+[mx,idx] = max(psf(:));
+[r,c] = ind2sub(size(psf),idx);
+psfSupport = wvfGet(wvf, 'spatial Support', 'um');
+mesh(psfSupport - psfSupport(c), psfSupport - psfSupport(r),psf);
+set(gca,'xlim',[-100 100],'ylim',[-100 100]);
+
+
 %% Get [x,y] support and plot PSF
 psfSupport = wvfGet(wvf, 'spatial Support', 'um');
+surf(psfSupport, psfSupport, wvf.psf{1})
+
 centeredPSF = [wvf.psf{1}(101:end,:);
     wvf.psf{1}(1:100,:)];
 centeredPSFNormalized = centeredPSF./sum(centeredPSF);
@@ -96,13 +106,5 @@ ylabel('Pos (um)');
 title(sprintf('%s: PSF 550 nm, pupil 4 mm, eccen %d deg, %s eye', ...
     whichGroup, eccen, whichEye))
 
-%% Plot normalized PSF
-ieNewGraphWin;
-surf(psfSupport, psfSupport, centeredPSFNormalized)
-set(gca, 'XLim', [-40 40], 'YLim', [-40 40])
-xlabel('Pos (um)');
-ylabel('Pos (um)');
-title(sprintf(strcat("%s: Normalized PSF 550 nm, pupil 4 mm, ", ...
-    "eccen %d deg, %s eye"), whichGroup, eccen, whichEye))
 
 %% END
