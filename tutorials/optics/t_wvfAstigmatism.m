@@ -9,24 +9,6 @@
 % (c) Wavefront Toolbox Team, 2012
 
 %% Initialize
-% ieInit;
-% 
-% %% Range of sizes for for plotting PSFs
-% maxMM  = 1;
-% maxUM  = 8;
-% 
-% %% Set up default parameters structure with diffraction limited default
-% wvfP = wvfCreate;
-% wvfParams = wvfComputePSF(wvfP);
-% z = wvfGet(wvfParams,'zcoeffs');
-% 
-% % The fourth and fifth coefficients are defocus and vertical
-% % astigmatism.
-% zDefocus = -2:2:2; zAstigmatism = -1:1:1;   % Diopters
-% [Z4,Z5] = meshgrid(zDefocus,zAstigmatism);
-% Zvals = [Z4(:), Z5(:)];
-
-%% ISETCam code
 ieInit;
 
 %% Range for plotting

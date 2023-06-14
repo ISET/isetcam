@@ -351,7 +351,7 @@ switch(pType)
         xlabel(str); ylabel(str); title(sprintf('OTF %.0f', wave));
         uData.fx = freq; uData.fy = freq; uData.otf = abs(otf);
         set(gcf, 'userdata', uData);
-        set(gca,'ylim',[0 1.2]);
+        % set(gca,'ylim',[0 1.2]);
         
     case {'1dotf','1dotfspace'}
         % Plot the positive frequency part of a slice through the 2D

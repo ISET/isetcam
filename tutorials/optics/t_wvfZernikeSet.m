@@ -14,14 +14,14 @@
 ieInit;
 
 %% Create a test scene
-scene = sceneCreate('frequency orientation');
+scene = sceneCreate('freq orient',512);
 
 %% Create wavefront object and convert it to an optical image object
 
 wvf = wvfCreate;
 wvf = wvfComputePSF(wvf);
 wvfPlot(wvf,'2d psf space','um',550,20);
-oi = wvf2oi(wvf);
+oi = wvf2oi(wvf,'model','diffraction limited');
 
 %% Make an ISET optical image
 
@@ -30,17 +30,14 @@ oiWindow(oi);
 
 %% Change the defocus coefficient
 
-% NOT WORKING.  Check the ISETBio case or something!
-
 wvf = wvfCreate;
-D = [0,2];
+D = [0 1 2];    % Amount of defocus
 for ii=1:length(D)
     wvf = wvfSet(wvf,'zcoeffs',D(ii),{'defocus'});
     wvf = wvfComputePSF(wvf);
-    wvfPlot(wvf,'2d psf space','um',550,20);
-
-    % Not working correctly.  wvf2oi does not have the proper PSF in
-    % it, and the images are not blurred.
+    wvfPlot(wvf,'2d psf space','um',550,20);  % PSF in micron scale
+    % wvfPlot(wvf,'2d otf','mm',550);  % Lines per millimeter
+    
     oi = wvf2oi(wvf);
     oi = oiCompute(oi,scene);
     oi = oiSet(oi,'name',sprintf('D %.1f',D(ii)));
@@ -49,8 +46,8 @@ end
 
 %% Increase astigmatism combined with some defocus
 
-wvf = wvfCreate;
-A = [-2, 0, 2];
+wvf = wvfCreate();  % Create the struct
+A = [-1, 0, 1];     % Amount of astigmatism
 for ii=1:length(A)
     wvf = wvfSet(wvf,'zcoeffs',[2, A(ii)],{'defocus','vertical_astigmatism'});
     wvf = wvfComputePSF(wvf);

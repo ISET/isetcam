@@ -1,12 +1,12 @@
-function oi = wvf2oi(wvf)
+function oi = wvf2oi(wvf,varargin)
 % Convert wavefront data to ISETBIO optical image with optics
 %
 % Syntax:
 %   oi = wvf2oi(wvf)
 %
 % Description:
-%    Use Zernicke polynomial data in the wvfP structure and create an
-%    ISETBIO optical image whose optics match the wavefront data structure.
+%    Use Zernicke polynomial data in the wvf structure and create an
+%    optical image whose optics match the wavefront data structure.
 %
 %    Before calling this function, compute the PSF of the wvf structure.
 %
@@ -15,11 +15,12 @@ function oi = wvf2oi(wvf)
 % Inputs:
 %    wvf - A wavefront parameters structure (with a computed PSF)
 %
-% Outputs:
-%    oi  - ISETBIO optical image
-%
 % Optional key/value pairs:
-%    None.
+%    oi model - A valid optical image model (see oiCreate('valid'))
+%               default:  'human mw'
+% Outputs:
+%    oi  - Optical image struct
+%
 %
 % Notes:
 %  * [NOTE: DHB - There is an interpolation in the loop that computes the
@@ -69,7 +70,17 @@ function oi = wvf2oi(wvf)
 %}
 
 %% Set up parameters
-if notDefined('wvf'), error('Wavefront structure required.'); end
+varargin = ieParamFormat(varargin);
+
+p = inputParser;
+p.addRequired('wvf',@isstruct);
+validNames = oiCreate('valid');
+p.addParameter('model','humanmw',@(x)(ismember(ieParamFormat(x),validNames)));
+
+p.parse(wvf,varargin{:});
+oiModel = p.Results.model;
+
+%%
 wave = wvfGet(wvf, 'calc wave');
 
 %% First we figure out the frequency support.
@@ -130,11 +141,16 @@ for ww=1:length(wave)
     % accomplish this by applying ifftshift to the wvf centered format.
     otf(:, :, ww) = ifftshift(est);
 end
+% ieNewGraphWin; mesh(X,Y,abs(ifftshift(otf(:,:,ww))));
 
 %% Place the frequency support and OTF data into an ISET structure.
-%
+
 % Build template with standard defaults
-oi = oiCreate;
+% When we integrated with ISETBio, we had a different default oi.
+% This matters a lot, somehow.  Testing now with this default.  We
+% should probably clarify.
+oi = oiCreate(oiModel);
+
 oi = oiSet(oi, 'name', wvfGet(wvf, 'name'));
 
 % Copy the OTF parameters.
