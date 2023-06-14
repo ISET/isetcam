@@ -301,6 +301,8 @@ if (~isfield(wvf, 'pupilfunc') || ~isfield(wvf, 'PUPILFUNCTION_STALE') ...
     
     if showBar, close(wBar); end
     
+    % We think the aberrations are in microns (BW).    But look at
+    % t_wvfWatsonJOV for a comparison and some concern.
     wvf.wavefrontaberrations = wavefrontaberrations;
     wvf.pupilfunc = pupilfunc;
     wvf.areapix = areapix;

@@ -45,7 +45,7 @@ D = [0 1 2];    % Amount of defocus
 for ii=1:length(D)
     wvf = wvfSet(wvf,'zcoeffs',D(ii),{'defocus'});
     wvf = wvfComputePSF(wvf);
-    wvfPlot(wvf,'2d psf space','um',550,20);  % PSF in micron scale
+    wvfPlot(wvf,'2d psf space','um',550,40);  % PSF in micron scale
     % wvfPlot(wvf,'2d otf','mm',550);  % Lines per millimeter
     
     oi = wvf2oi(wvf,'model','wvf human');
@@ -61,7 +61,7 @@ A = [-1, 0, 1];     % Amount of astigmatism
 for ii=1:length(A)
     wvf = wvfSet(wvf,'zcoeffs',[2, A(ii)],{'defocus','vertical_astigmatism'});
     wvf = wvfComputePSF(wvf);
-    wvfPlot(wvf,'2d psf space','um',550,20);
+    wvfPlot(wvf,'2d psf space','um',550,40);
     oi = wvf2oi(wvf,'model','wvf human');
     oi = oiCompute(oi,scene);
     oi = oiSet(oi,'name',sprintf('Human D %.1f, A %.1f',0.5,A(ii)));

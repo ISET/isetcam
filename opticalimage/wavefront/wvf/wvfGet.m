@@ -343,7 +343,7 @@ switch (parm)
         end
         
     case {'pupilfunction', 'pupilfunc', 'pupfun'}
-        % The pupil function is derived from Zernicke coefficients in the
+        % The pupil function is derived from Zernike coefficients in the
         % routine wvfComputePupilFunction
         %
         % If there are multiple wavelengths, then this is a cell array of
