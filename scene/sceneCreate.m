@@ -508,12 +508,13 @@ switch sceneName
         if length(varargin) >= 3, spectralType = varargin{3}; end
         scene = sceneCheckerboard(scene,period,spacing,spectralType);
         
-    case {'demosaictarget','freqorientpattern','frequencyorientation','freqorient'}
+    case {'frequencyorientation','demosaictarget','freqorientpattern','freqorient'}
         %   parms.angles = linspace(0,pi/2,5);
         %   parms.freqs =  [1,2,4,8,16];
         %   parms.blockSize = 64;
         %   parms.contrast = .8;
         % scene = sceneCreate('freqorient',parms);
+
         if isempty(varargin), scene = sceneFOTarget(scene);
         else
             % First argument is parms structure
@@ -1264,7 +1265,8 @@ end
 function scene = sceneFOTarget(scene,parms)
 %% Frequency/Orientation target
 
-if ieNotDefined('parms'), parms = []; end
+% Default params if not sent in
+if ieNotDefined('parms'), parms = FOTParams; end
 
 scene = sceneSet(scene,'name','FOTarget');
 scene = initDefaultSpectrum(scene,'hyperspectral');
@@ -1275,7 +1277,6 @@ img = FOTarget('sine',parms);
 % Prevent dynamic range problem with ieCompressData
 img = ieClip(img,1e-4,1);
 img = img/max(img(:));
-
 
 % Create the illuminant
 il = illuminantCreate('equal photons',sceneGet(scene,'wave'));
