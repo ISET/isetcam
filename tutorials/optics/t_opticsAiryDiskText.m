@@ -6,9 +6,9 @@
 % This script exposes the code used to calculate and plot the Airy disk for diffraction
 % limited optics.
 %
-% See also: dlMTF, oiCreate; oiCompute, ieShape, ieDrawShape
+% See also: 
+%  t_opticsAiryDisk.mlx, dlMTF, oiCreate; oiCompute, ieShape, ieDrawShape
 %
-% Copyright ImagEval Consultants, LLC, 2010.
 
 %%
 ieInit

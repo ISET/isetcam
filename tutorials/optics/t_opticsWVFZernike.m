@@ -1,5 +1,7 @@
 %% Wavefront calculations with the Zernike polynomials
 %
+% This script needs updating
+%
 % ISET includes two ways to calculate defocus, one based on
 % Hopkins and diffraction calculations that was implemented based
 % on the
@@ -47,7 +49,7 @@ wvfPlot(wvf,'2d psf space','um',thisWave,pRange);
 wvf = wvfSet(wvf,'zcoeffs',2,'oblique_astigmatism');
 wvf = wvfComputePSF(wvf);
 
-thisWave = 550;   % nanometers
+thisWave = 540;   % nanometers
 pRange = 10;      % microns
 wvfPlot(wvf,'2d psf space','um',thisWave,pRange);
 
@@ -63,25 +65,26 @@ wvfPlot(wvf,'2d psf space','um',thisWave,pRange);
 
 %% Convert the wavefront structure to an oi
 
-oi = wvf2oi(wvf);
+oi = wvf2oi(wvf,'model','human');
 
 oiData = oiPlot(oi,'psf','um',420);
 
 % Zoom in using the returned oiData
-pRange = 10;
+pRange = 30;
 c = logical(-pRange < oiData.x(1,:)) & logical(oiData.x(1,:) < pRange);
 r = logical(-pRange < oiData.y(:,2)) & logical(oiData.y(:,2) < pRange);
-vcNewGraphWin;
+ieNewGraphWin;
 mesh(oiData.x(r,c),oiData.y(r,c),abs(oiData.psf(r,c)))
 
 %% Plot the psf at 700 nm
 oiData = oiPlot(oi,'psf','um',700);
 
 % Zoom in using the returned oiData
-pRange = 10;
+pRange = 30;
 c = logical(-pRange < oiData.x(1,:)) & logical(oiData.x(1,:) < pRange);
 r = logical(-pRange < oiData.y(:,2)) & logical(oiData.y(:,2) < pRange);
-vcNewGraphWin;
+
+ieNewGraphWin;
 mesh(oiData.x(r,c),oiData.y(r,c),abs(oiData.psf(r,c)))
 
 %%

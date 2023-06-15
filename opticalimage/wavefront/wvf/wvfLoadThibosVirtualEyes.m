@@ -102,7 +102,7 @@ function [sample_mean, sample_cov, subject_coeffs] = ...
 if notDefined('pupilDiameterMM'), pupilDiameterMM = 6; end
 
 %%
-sample_mean = [];
+% sample_mean = [];
 switch pupilDiameterMM
     case 7.5
         load('IASstats75', 'S', 'sample_mean', 'OS', 'OD', 'OU');

@@ -604,8 +604,7 @@ switch pType
             if ~isempty(idx), airydisk = varargin{idx+1};
             else, airydisk = true;
             end
-            udata = plotOTF(oi,'psf', 'this wave', w,...
-                'airy disk', airydisk);
+            udata = plotOTF(oi,'psf', 'this wave', w,'airy disk', airydisk);
         end
         set(g,'userdata',udata);
         namestr = sprintf('ISET: %s',oiGet(oi,'name'));
@@ -798,7 +797,7 @@ p.addParameter('thiswave', 550, @isnumeric);
 p.addParameter('units', 'um', @ischar);
 p.parse(oi, pType, varargin{:});
 
-airyDisk = p.Results.airydisk;
+airydisk = p.Results.airydisk;
 nSamp    = p.Results.nsamp;
 thisWave = p.Results.thiswave;
 units    = p.Results.units;
@@ -940,18 +939,18 @@ switch lower(pType)
                 psf      = psfData.psf;
                 sSupport = psfData.xy;
                 
-                    % Calculate the Airy disk
-                    fNumber = opticsGet(optics,'fNumber');
-                    
-                    % This is the Airy disk radius, by formula
-                    radius = airyDisk(thisWave,fNumber);
-                    radius = radius * ieUnitScaleFactor(units);
-                    % radius = (2.44*fNumber*thisWave*10^-9)/2 * ieUnitScaleFactor(units);
-                    
-                    % Draw a circle at the first zero crossing (Airy disk)
-                    nCircleSamples = 200;
-                    [adX,adY,adZ] = ieShape('circle',nCircleSamples,radius);
-                
+                % Calculate the Airy disk
+                fNumber = opticsGet(optics,'fNumber');
+
+                % This is the Airy disk radius, by formula
+                radius = airyDisk(thisWave,fNumber,'units',units);
+                % radius = radius * ieUnitScaleFactor(units);
+                % radius = (2.44*fNumber*thisWave*10^-9)/2 * ieUnitScaleFactor(units);
+
+                % Draw a circle at the first zero crossing (Airy disk)
+                nCircleSamples = 200;
+                [adX,adY,adZ] = ieShape('circle',nCircleSamples,radius);
+
             case {'raytrace'}
                 % opticsGet(optics,'rtPSFdata') should be
                 % cleaned up for this call.  Spatial support, frequency
@@ -964,7 +963,7 @@ switch lower(pType)
         
         mesh(sSupport(:,:,1),sSupport(:,:,2),abs(psf));
 
-        if airyDisk
+        if airydisk
             % Plot it and if diffraction limited, then add the Airy disk
             if strcmpi(opticsModel,'diffractionlimited') ||...
                     strcmpi(opticsModel, 'shiftinvariant')
