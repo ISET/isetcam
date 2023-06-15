@@ -1,8 +1,8 @@
-function oiW = oiWindow(oi,show)
+function oiW = oiWindow(oi,show, replace)
 % Wrapper that replaces the GUIDE oiWindow functionality
 %
 % Synopsis
-%   oiW = oiWindow(oi,show)
+%   oiW = oiWindow(oi, [show=true], [replace=false])
 %
 % Brief description
 %   Opens a oiWindow interface based on the oiWindow_App.
@@ -11,8 +11,12 @@ function oiW = oiWindow(oi,show)
 %   oi:     The oi you want in the window.  If empty, the currently
 %           selected oi in global vcSESSION is used.  If there is no
 %           selected oi a default scene is created and used.
+%
+% Optional
 %   show:   Executes a drawnow command on exiting.
-%           (Optional, default true)
+%           (default true)
+%   replace: Logical.  If true, then replace the current oi, rather than
+%            adding the oi to the database.  Default: false
 %
 % Outputs
 %   oiW:  An oiWindow_App object.
@@ -48,10 +52,15 @@ function oiW = oiWindow(oi,show)
 
 %% Add the scene to the database if it is in the call
 
+if notDefined('replace'), replace = false; end
+if notDefined('show'), show = true; end
+
 if exist('oi','var')
-    % An oi was passed in.  We add it to the database and select it.
-    % That oi will appear in the window.
-    ieAddObject(oi);
+    % An oi was passed in. We add it to the database and select it.
+    % That oi will appear in the oiWindow.
+    if replace, ieReplaceObject(oi);
+    else,       ieAddObject(oi);
+    end
 else
     % Get the currently selected scene
     oi = ieGetObject('oi');

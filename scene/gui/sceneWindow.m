@@ -1,8 +1,8 @@
-function sceneW = sceneWindow(scene,show)
+function sceneW = sceneWindow(scene,show,replace)
 % Wrapper that replaces the GUIDE sceneWindow functionality
 %
 % Synopsis
-%   sceneW = sceneWindow(scene,[show])
+%   sceneW = sceneWindow(scene,[show=true], [replace=false])
 %
 % Brief description
 %   Opens a sceneWindow interface based on the sceneWindow_App.
@@ -14,6 +14,8 @@ function sceneW = sceneWindow(scene,show)
 %           (Optional, default is currently selected scene)
 %   show:   Executes a drawnow command on exiting.
 %           (Optional, default true)
+%   replace: Logical.  If true, then replace the current scene, rather than
+%            adding the scene to the database.  Default: false
 %
 % Outputs
 %   sceneW:  An sceneWindow_App object.
@@ -48,11 +50,17 @@ function sceneW = sceneWindow(scene,show)
 
 
 %% Add the scene to the database if it is in the call
+%  Or replace the current scene if the third argument is true
+%
+if notDefined('replace'), replace = false; end
+if notDefined('show'), show = true; end
 
 if exist('scene','var')
     % A scene was passed in.  We add it to the database and select it.
     % That scene will appear in the window.
-    ieAddObject(scene);
+    if replace,  ieReplaceObject(scene);
+    else,        ieAddObject(scene);
+    end
 else
     % Get the currently selected scene
     scene = ieGetObject('scene');
