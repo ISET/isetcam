@@ -86,6 +86,8 @@ function [udata, g] = oiPlot(oi,pType,roiLocs,varargin)
 %
 %   uData = oiPlot(oi,'relative illumination');
 %
+%   oiPlot(oi,'psf',[],550,'airydisk',true);
+%
 % Copyright ImagEval Consultants, LLC, 2005.
 
 %% Programming note
@@ -597,8 +599,13 @@ switch pType
         % Point spread function at selected wavelength
         % oiPlot(oi,'psf',[],420);
         if isempty(varargin), udata = plotOTF(oi,'psf', 'airy disk', true);
-        else, w = varargin{1}; udata = plotOTF(oi,'psf', 'this wave', w,...
-                'airy disk', true);
+        else, w = varargin{1}; 
+            idx = find(strcmp('airydisk',varargin));
+            if ~isempty(idx), airydisk = varargin{idx+1};
+            else, airydisk = true;
+            end
+            udata = plotOTF(oi,'psf', 'this wave', w,...
+                'airy disk', airydisk);
         end
         set(g,'userdata',udata);
         namestr = sprintf('ISET: %s',oiGet(oi,'name'));
@@ -767,7 +774,18 @@ function uData = plotOTF(oi,pType,varargin)
 %      {'otfwavelength'} -  One dimensional cut through the OTF at a all
 %          wavelengths.  Units are cycles/mm
 %
-% Copyright ImagEval Consultants, LLC, 2005.
+% Retquired
+%   oi    - optical image struct
+%   pType - Plot type
+%
+% Optional key/val
+%   airydisk - Overlay Airy Disk
+%   nsamp    - Number of samples around the airy disk circle
+%   thiswave - By default 550nm
+%   units    - by default 'um'
+%
+% See also
+%
 
 %%
 varargin = ieParamFormat(varargin);
@@ -905,32 +923,35 @@ switch lower(pType)
                 %                 sSupport(:,:,1) = X*deltaSpace;
                 %                 sSupport(:,:,2) = Y*deltaSpace;
                 
+
                 % Calculate the Airy disk
                 fNumber = opticsGet(optics,'fNumber');
-                
+
                 % This is the Airy disk radius, by formula
                 radius = (2.44*fNumber*thisWave*10^-9)/2 * ieUnitScaleFactor(units);
-                
+
                 % Draw a circle at the first zero crossing (Airy disk)
                 nCircleSamples = 200;
                 [adX,adY,adZ] = ieShape('circle',nCircleSamples,radius);
+
                 
             case {'shiftinvariant'}
                 psfData  = opticsGet(optics,'psf data',thisWave);
                 psf      = psfData.psf;
                 sSupport = psfData.xy;
                 
-                if airyDisk
                     % Calculate the Airy disk
                     fNumber = opticsGet(optics,'fNumber');
                     
                     % This is the Airy disk radius, by formula
-                    radius = (2.44*fNumber*thisWave*10^-9)/2 * ieUnitScaleFactor(units);
+                    radius = airyDisk(thisWave,fNumber);
+                    radius = radius * ieUnitScaleFactor(units);
+                    % radius = (2.44*fNumber*thisWave*10^-9)/2 * ieUnitScaleFactor(units);
                     
                     % Draw a circle at the first zero crossing (Airy disk)
                     nCircleSamples = 200;
                     [adX,adY,adZ] = ieShape('circle',nCircleSamples,radius);
-                end
+                
             case {'raytrace'}
                 % opticsGet(optics,'rtPSFdata') should be
                 % cleaned up for this call.  Spatial support, frequency
@@ -941,15 +962,18 @@ switch lower(pType)
                 error('Unknown otf function: %s\n',opticsModel);
         end
         
-        % Plot it and if diffraction limited, then add the Airy disk
         mesh(sSupport(:,:,1),sSupport(:,:,2),abs(psf));
-        if strcmpi(opticsModel,'diffractionlimited') ||...
-                strcmpi(opticsModel, 'shiftinvariant')
-            ringZ = max(psf(:))*1e-3;
-            hold on; p = plot3(adX,adY,adZ + ringZ,'k-');
-            set(p,'linewidth',3); hold off;
+
+        if airyDisk
+            % Plot it and if diffraction limited, then add the Airy disk
+            if strcmpi(opticsModel,'diffractionlimited') ||...
+                    strcmpi(opticsModel, 'shiftinvariant')
+                ringZ = max(psf(:))*1e-3;
+                hold on; p = plot3(adX,adY,adZ + ringZ,'k-');
+                set(p,'linewidth',3); hold off;
+            end
         end
-        
+
         % Label, store data
         xlabel('Position (um)'); ylabel('Position (um)');
         zlabel('Irradiance (relative)');

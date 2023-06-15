@@ -16,7 +16,7 @@ function oi = wvf2oi(wvf,varargin)
 %    wvf - A wavefront parameters structure (with a computed PSF)
 %
 % Optional key/value pairs:
-%    oi model - A valid optical image model (see oiCreate('valid'))
+%    model - A valid optical image model (see oiCreate('valid'))
 %               default:  'human mw'
 % Outputs:
 %    oi  - Optical image struct
