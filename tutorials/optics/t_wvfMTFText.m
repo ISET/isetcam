@@ -3,6 +3,8 @@
 %  Calculate and plot the MTF for different defocus values on the standard
 %  human wvf
 % 
+% See the LiveScript t_wvfMTF.mlx
+%
 
 %% 
 ieInit
