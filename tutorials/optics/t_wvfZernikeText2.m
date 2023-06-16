@@ -165,7 +165,7 @@ wvf0 = wvfCreate;
 jindices = 1:9;
 maxUM = 20;
 for ii = jindices
-    vcNewGraphWin;
+    ieNewGraphWin;
     insertCoeff = 2;
     wvf = wvfSet(wvf0,'zcoeffs',insertCoeff,ii);
     wvf = wvfComputePSF(wvf);
@@ -203,7 +203,7 @@ wvf0 = wvfSet(wvf0,'wave',550);
 % calclated for.
 wvf0 = wvfComputePSF(wvf0);
 wList = wvfGet(wvf0,'wavelengths');
-vcNewGraphWin;
+ieNewGraphWin;
 maxMM = 3;
 wvfPlot(wvf0,'1dpsfspacenormalized','mm',wList,maxMM,'no window');
 hold on;

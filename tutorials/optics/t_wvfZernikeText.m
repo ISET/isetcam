@@ -218,7 +218,7 @@ pupilfuncrangeMM = 4;
 jindices = 1:9;
 maxMM = 4;
 for ii = jindices
-    vcNewGraphWin;
+    ieNewGraphWin;
     insertCoeff = 0.75;
     wvf = wvfSet(wvf0, 'zcoeffs', insertCoeff, ii);
     wvf = wvfComputePSF(wvf);
@@ -266,7 +266,7 @@ wvf0 = wvfSet(wvf0, 'calc wavelengths', 550);
 % specified) and the wavelength being calclated for.
 wvf0 = wvfComputePSF(wvf0);
 wList = wvfGet(wvf0, 'calc wavelengths');
-vcNewGraphWin;
+ieNewGraphWin;
 maxMM = 3;
 wvfPlot(wvf0, '1dpsfspacenormalized', 'mm', wList, maxMM, 'no window');
 hold on;
@@ -325,7 +325,7 @@ wvf0 = wvfCreate;
 wvf0 = wvfComputePSF(wvf0);
 maxMM = 2; %MM from the center of the PSF
 pupilfuncrangeMM = 5;
-vcNewGraphWin;
+ieNewGraphWin;
 subplot(2, 2, 1);
 wvfPlot(wvf0, '2dpupilamplitudespace', 'mm', [], pupilfuncrangeMM, ...
     'no window');
@@ -334,7 +334,7 @@ wvfPlot(wvf0, '2dpupilphasespace', 'mm', [], pupilfuncrangeMM, ...
     'no window');
 subplot(2, 2, 3:4);
 wvfPlot(wvf0, '2dpsfspace', 'mm', [], maxMM, 'no window');
-sce1DFig = vcNewGraphWin;
+sce1DFig = ieNewGraphWin;
 hold on
 wvfPlot(wvf0, '1dpsfspace', 'mm', [], maxMM, 'no window');
 
@@ -349,7 +349,7 @@ wvfPlot(wvf0, '1dpsfspace', 'mm', [], maxMM, 'no window');
 wvf0SCE = wvfSet(wvf0, 'sceParams', ...
     sceCreate(wvfGet(wvf0, 'calc wave'), 'berendschot_data'));
 wvf0SCE = wvfComputePSF(wvf0SCE);
-vcNewGraphWin;
+ieNewGraphWin;
 subplot(2, 2, 1);
 wvfPlot(wvf0SCE, '2dpupilamplitudespace', 'mm', [], ...
     pupilfuncrangeMM, 'no window');
@@ -367,7 +367,7 @@ set(pData, 'color', 'b', 'linewidth', 1);
 % a PSF with moderate astigmatism along the xy axes.
 wvf5 = wvfSet(wvf0, 'zcoeffs', 0.75, {'vertical_astigmatism'});
 wvf5 = wvfComputePSF(wvf5);
-vcNewGraphWin;
+ieNewGraphWin;
 subplot(2, 2, 1);
 wvfPlot(wvf5, '2dpupilamplitudespace', 'mm', [], pupilfuncrangeMM, ...
     'no window');
@@ -376,7 +376,7 @@ wvfPlot(wvf5, '2dpupilphasespace', 'mm', [], pupilfuncrangeMM, ...
     'no window');
 subplot(2, 2, 3:4);
 wvfPlot(wvf5, '2dpsfspace', 'mm', [], maxMM, 'no window');
-sce1DFig2 = vcNewGraphWin;
+sce1DFig2 = ieNewGraphWin;
 hold on
 wvfPlot(wvf5, '1dpsfspace', 'mm', [], maxMM, 'no window');
 
@@ -387,7 +387,7 @@ wvfPlot(wvf5, '1dpsfspace', 'mm', [], maxMM, 'no window');
 wvf5SCE = wvfSet(wvf5, 'sceParams', sceCreate(wvfGet(wvf5, ...
     'calc wave'), 'berendschot_data'));
 wvf5SCE = wvfComputePSF(wvf5SCE);
-vcNewGraphWin;
+ieNewGraphWin;
 subplot(2, 2, 1);
 wvfPlot(wvf5SCE, '2dpupilamplitudespace', 'mm', [], ...
     pupilfuncrangeMM, 'no window');
@@ -434,7 +434,7 @@ for ii = 1:nSubjects
     wvfHuman = wvfSet(wvfHuman0, 'zcoeffs', theZernikeCoeffs(:, ii));
     wvfHuman = wvfComputePSF(wvfHuman);
 
-    vcNewGraphWin;
+    ieNewGraphWin;
     subplot(2, 2, 1);
     wvfPlot(wvfHuman, '2dpupilamplitudespace', 'mm', [], calcMM, ...
         'no window');
@@ -473,7 +473,7 @@ for ii = 1:nSubjects
     wvfHuman = wvfSet(wvfHuman0, 'zcoeffs', zCoeffs);
     wvfHuman = wvfComputePSF(wvfHuman);
 
-    vcNewGraphWin;
+    ieNewGraphWin;
     subplot(2, 2, 1);
     wvfPlot(wvfHuman, '2dpupilamplitudespace', 'mm', [], calcMM, ...
         'no window');
