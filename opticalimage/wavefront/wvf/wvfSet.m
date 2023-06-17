@@ -178,12 +178,14 @@ switch parm
         % other functions or scripts that compare the data as well.
         % 
     case {'measuredpupilsize', 'measuredpupil', 'measuredpupilmm', ...
-            'measuredpupildiameter','pupildiameter','pupilsize'}
-        % Added pupildiameter here (BW).  Also pupil size, but that is
-        % bad.
-        if isequal(parm,'pupilsize')
-            disp('Use (measured) pupil diameter, not size');
-        end
+            'measuredpupildiameter','pupildiameter'}
+        % TO CHECK: 
+        % Added pupildiameter here (BW).
+        % Removed pure 'pupilsize' because it was ambiguous.  And no
+        % complaints after a couple of years.
+        %         if isequal(parm,'pupilsize')
+        %             disp('Use (measured) pupil diameter, not size');
+        %         end
         % Pupil diameter in mm over for which wavefront expansion is valid
         wvf.measpupilMM = val;
         
@@ -315,6 +317,8 @@ switch parm
         % Total size of computed field in pupil plane. This is for the
         % measurement wavelength. The value can vary with wavelength, but
         % this one sets the scale for all the other wavelengths.
+        %
+        % TO CHECK:  Is this diameter or radius?
         %
         % This is a stored value.
         wvf.refSizeOfFieldMM = val;

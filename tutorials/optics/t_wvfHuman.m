@@ -34,7 +34,7 @@ zCoefs = wvfLoadThibosVirtualEyes(pupilMM);
 wave = (400:10:700)';
 
 %% Create a default human oi structure with wavefront optics
-oiW = oiCreate('human', pupilMM, zCoefs, wave);
+oiW = oiCreate('wvf human', pupilMM, zCoefs, wave);
 
 % Compute with wavefront version and display
 oiW = oiCompute(scene, oiW);

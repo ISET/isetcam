@@ -528,9 +528,12 @@ switch (parm)
         % wvfGet(wvf, 'pupil plane size', units, wList)
         % Total size of computed field in pupil plane, for calculated
         % wavelengths(s)
-        
+        %
+        % BW:  I do not understand this
+        %
+
         % Get wavelengths. What if varargin{2} is empty?
-        wList = varargin{2};
+        wList = varargin{2};        
         waveIdx = wvfWave2idx(wvf, wList);
         wavelengths = wvfGet(wvf, 'calc wavelengths', 'nm');
         
@@ -818,13 +821,14 @@ switch (parm)
         % Spatial support in samples, centered on 0
         % Unit and wavelength must be specified
         
+        % TO CHECK BW/DHB.
         unit = varargin{1};
         wList = varargin{2};
         
         % Get the sampling rate in the pupil plane in space per sample
         spacePerSample = wvfGet(wvf, 'pupil plane size', unit, wList) ...
             / wvfGet(wvf, 'spatial samples');
-        nSamples = wvfGet(wvf, 'spatial samples');
+        nSamples  = wvfGet(wvf, 'spatial samples');
         middleRow = wvfGet(wvf, 'middle row');
         val = spacePerSample * ((1:nSamples) - middleRow);
         
