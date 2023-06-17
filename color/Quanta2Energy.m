@@ -1,16 +1,21 @@
 function energy = Quanta2Energy(wavelength, photons)
 %Convert quanta (photons) to energy (watts)
 %
+% Synopsis
 %  energy = Quanta2Energy(WAVELENGTH,PHOTONS)
 %
-% Convert PHOTONS represented at the sampled WAVELENGTH positions to
-% energy (watts or joules).
+% Brief description
 %
-% WAVELENGTH is a column vector describing the wavelength samples [nm]
-% PHOTONS can be a matrix in either RGB or XW (space-wavelength) format.
-% In the XW format each spatial position is in a row and the wavelength
-% varies across columsn.  The output, ENERGY, [watts or Joules] is
-% returned in  same format as input (RGB or XW).
+%   Convert PHOTONS represented at the sampled WAVELENGTH positions to
+%   energy (watts or joules).
+%
+%   WAVELENGTH is a vector describing the wavelength samples [nm]
+%   PHOTONS can be a matrix in either RGB or XW (space-wavelength)
+%   format. 
+% 
+% In the XW format each spatial position is in a row and the
+% wavelength varies across columsn.  The output, ENERGY, [watts or
+% Joules] is returned in  same format as input (RGB or XW).
 %
 % CAUTION: The input form differs from the Energy2Quanta() call, which has
 % the energy spectra in the columns.
@@ -58,13 +63,16 @@ switch iFormat
     case 'XW'
         % If photons is a vector, it must be a row
         if isvector(photons), photons = photons(:)'; end
-        if size(photons, 2) ~= length(wavelength)
-            error('Quanta2Energy: quanta must have length of nWave');
+        if size(photons, 2) ~= numel(wavelength)
+            error('Photons (Quanta) must be in XW format.');
         end
-        energy = (h*c/1e-9) * bsxfun(@rdivide, photons, wavelength);
+
+        energy = (h*c/1e-9) * bsxfun(@rdivide, photons, wavelength);        
+
     otherwise
         error('Unknown image format');
         
 end
+
 
 end
