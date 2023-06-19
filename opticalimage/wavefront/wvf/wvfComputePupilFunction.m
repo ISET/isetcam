@@ -8,7 +8,9 @@ function wvf = wvfComputePupilFunction(wvf, showBar, varargin)
 %    The pupil function is a complex number that represents the amplitude
 %    and phase of the wavefront across the pupil. The returned pupil
 %    function at a specific wavelength is
+%
 %       pupilF = A exp(-1i 2 pi (phase/wavelength));
+%
 %    The amplitude, A, is calculated entirely based on the assumed
 %    properties of the Stiles-Crawford effect.
 %
@@ -281,7 +283,7 @@ if (~isfield(wvf, 'pupilfunc') || ~isfield(wvf, 'PUPILFUNCTION_STALE') ...
         % Important to zero out before this step, because computation of A
         % doesn't know about the pupil size.
         pupilfunc{ii} = A .* pupilfuncphase;
-        % vcNewGraphWin; imagesc(angle(pupilfunc{ii}))
+        % ieNewGraphWin; imagesc(angle(pupilfunc{ii}))
         
         % We think the ratio of these two quantities tells us how much
         % light is effectively lost in cone absorbtions because of the
