@@ -6,9 +6,9 @@ function wvf = wvfPupilFunction(wvf, varargin)
 %
 % Description:
 %    This version of the pupil function calculation is designed for
-%    the general optics.  See wvfComputePupilFunction for the ISETBio
-%    calculations that include Stiles Crawford and human chromatic
-%    aberration.
+%    general optics.  See wvfComputePupilFunction for the ISETBio
+%    calculations that include Stiles Crawford, human chromatic
+%    aberration and parameters related to typical human pupil sizes.
 %
 %    The pupil function is a complex number that represents the amplitude
 %    and phase of the wavefront across the pupil. The returned pupil
@@ -53,11 +53,20 @@ function wvf = wvfPupilFunction(wvf, varargin)
 %{
  wvf = wvfCreate;    % Diffraction
  A = rand(201,201);
- A = apertureMask(); % Flare
  wvf = wvfPupilFunction(wvf,'amplitude',A);
  wvf = wvfComputePSF(wvf);
  wvfPlot(wvf,'psf','um',550,10);
 %}
+%{
+ wvf = wvfCreate;    % Diffraction
+ nPixels = wvfGet(wvf, 'spatial samples');
+ pupilAmp = wvfPupilAmplitude(nPixels,'nsides',6);
+ % ieNewGraphWin; imagesc(im); colormap(gray); axis image
+ wvfPupilFunction(wvf,'amplitude',pupilAmp);
+ wvf = wvfComputePSF(wvf);
+ wvfPlot(wvf,'psf','um',550,10);
+%}
+
 
 %% Input parse
 %
@@ -70,38 +79,9 @@ p.addParameter('amplitude',[],@ismatrix);  % Pupil amplitude mask
 p.parse(wvf,varargin{:});
 amplitude = p.Results.amplitude;
 
-
-% Make sure calculation pupil size is less than or equal to the pupil
-% size that gave rise to the measured coefficients.
+% We only use the calculation parameters here.  THere are no human
+% measurement parameters to account for.
 calcPupilSizeMM = wvfGet(wvf, 'calc pupil diameter', 'mm');
-measPupilSizeMM = wvfGet(wvf, 'measured pupil diameter', 'mm');
-if (calcPupilSizeMM > measPupilSizeMM)
-    error(['Calculation pupil (%.2f mm) must not exceed measurement'...
-        ' pupil (%.2f mm).'], calcPupilSizeMM, measPupilSizeMM);
-end
-
-% Handle defocus relative to reference wavelength.
-%
-% The defocus correction for the calculation is expressed as the
-% difference (diopters) between the defocus correction at measurement
-% time and the defocus correction for this calculatiion. This models
-% any lenses external to the observer's eye, which affect focus but not
-% the accommodative state.
-%
-% There are also calc and measured observer accommodation parameters,
-% which seem similar to these and I don't think are currently used.
-if (wvfGet(wvf, 'calcobserveraccommodation') ~= wvfGet(wvf, 'measuredobserveraccommodation'))
-    error(['We do not currently know how to deal with values '...
-        'that differ from measurement time']);
-end
-
-defocusCorrectionDiopters = ...
-    wvfGet(wvf, 'calc observer focus correction') - ...
-    wvfGet(wvf, 'measured observer focus correction');
-
-% Convert defocus from diopters to microns
-defocusCorrectionMicrons = wvfDefocusDioptersToMicrons(...
-    defocusCorrectionDiopters, measPupilSizeMM);
 
 % Convert wavelengths in nanometers to wavelengths in microns
 waveUM = wvfGet(wvf, 'calc wavelengths', 'um');
@@ -112,20 +92,26 @@ nWavelengths = wvfGet(wvf, 'number calc wavelengths');
 %
 % This needs to be done separately at each wavelength because the size
 % in the pupil plane that we sample is wavelength dependent.
-
-pupilfunc = cell(nWavelengths, 1);
-areapix = zeros(nWavelengths, 1);
+pupilfunc   = cell(nWavelengths, 1);
+areapix     = zeros(nWavelengths, 1);
 areapixapod = zeros(nWavelengths, 1);
 wavefrontaberrations = cell(nWavelengths, 1);
 
-% Check whether if we are using a custom LCA
-% customLCAfunction = wvfGet(wvf, 'custom lca');
+nPixels = wvfGet(wvf, 'spatial samples');
+
+% Set up the amplitude function.  Only one for all wavelengths.
+if isempty(amplitude), A = ones(nPixels, nPixels);
+else,                  A = imresize(amplitude,[nPixels,nPixels]);
+end
+% ieNewGraphWin; imagesc(A); axis image
+% Apply the aperture polygonal sides to the amplitude function.
+
+pupilDiameterMM = wvfGet(wvf,'calc pupil diameter','mm');
 
 for ii = 1:nWavelengths
     thisWave = waveNM(ii);   
 
     % Set up pupil coordinates
-    nPixels = wvfGet(wvf, 'spatial samples');
     pupilPlaneSizeMM = wvfGet(wvf, 'pupil plane size', 'mm', thisWave);
     pupilPos = (1:nPixels) - (floor(nPixels / 2) + 1);
     pupilPos = pupilPos * (pupilPlaneSizeMM / nPixels);
@@ -135,13 +121,6 @@ for ii = 1:nWavelengths
     [xpos, ypos] = meshgrid(pupilPos);
     ypos = -ypos;
 
-    % Set up the amplitude of the pupil function. This depends
-    % entirely on the Stiles Crawford Effect (SCE) correction. For
-    % x, y positions within the pupil, rho is used to set the
-    % pupil function amplitude.
-    if isempty(amplitude), A = ones(nPixels, nPixels);
-    else,                  A = imresize(amplitude,[nPixels,nPixels]);
-    end
 
     % The Zernike polynomials are defined over the unit disk. At
     % measurement time, the pupil was mapped onto the unit disk, so we
@@ -150,9 +129,13 @@ for ii = 1:nWavelengths
     %
     % And by convention expanding gives us the wavefront aberrations in
     % microns.
-    norm_radius = (sqrt(xpos .^ 2 + ypos .^ 2)) / (measPupilSizeMM / 2);
+    %
+    % Normalized radius here.  Distance from the center divided by the
+    % radius of the pupil.  Only values that are within the unit
+    % circle are valid for the Zernike polynomial.
+    norm_radius = (sqrt(xpos .^ 2 + ypos .^ 2)) / (pupilDiameterMM / 2);
     theta = atan2(ypos, xpos);
-    norm_radius_index = norm_radius <= 1;
+    norm_radius_index = (norm_radius <= 1);
 
     % Get Zernike coefficients and add in appropriate info to defocus
     % Need to make sure the c vector is long enough to contain defocus
@@ -187,15 +170,20 @@ for ii = 1:nWavelengths
     % Here is phase of the pupil function, w/ unit amplitude everywhere
     wavefrontaberrations{ii} = wavefrontAberrationsUM;
     pupilfuncphase = exp(-1i * 2 * pi * wavefrontAberrationsUM / waveUM(ii));
+    % ieNewGraphWin; imagesc(wavefrontAberrationsUM);
 
-    % Set values outside the pupil we're calculating for to 0 amplitude
-    pupilfuncphase(norm_radius > calcPupilSizeMM/measPupilSizeMM)=0;
+    % Set values outside the pupil to 0 amplitude.  Though possibly
+    % this should all be part of the amplitude mask, A.  These are the
+    % values not in the norm_radius_index calculated above.
+    pupilfuncphase(norm_radius>0.5) = 1;
+    % ieNewGraphWin; imagesc(angle(pupilfuncphase));
 
     % Multiply phase by the pupil function amplitude function.
     % Important to zero out before this step, because computation of A
     % doesn't know about the pupil size.
     pupilfunc{ii} = A .* pupilfuncphase;
     % ieNewGraphWin; imagesc(angle(pupilfunc{ii}))
+    % ieNewGraphWin; imagesc(abs(pupilfunc{ii}))
 
     % We think the ratio of these two quantities tells us how much
     % light is effectively lost in cone absorbtions because of the

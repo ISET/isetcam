@@ -1,5 +1,5 @@
 function wvf = wvfComputePupilFunction(wvf, showBar, varargin)
-% Compute the pupil fuction given the wvf
+% Compute the pupil fuction given the wvf for the human eye case
 %
 % Syntax:
 %   wvf = wvfComputePupilFunction(wvf, [showbar])

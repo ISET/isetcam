@@ -82,7 +82,7 @@ function val = wvfGet(wvf, parm, varargin)
 %                                   passed, is should be a single scalar.
 %
 %      Measurement parameters
-%        'measured pupil size'    - Pupil size for wavefront aberration
+%        'measured pupil diameter'- Pupil size for wavefront aberration
 %                                   meaurements (mm, *)
 %        'measured wl'            - Wavefront aberration measurement
 %                                   wavelength (nm, *)
@@ -398,7 +398,7 @@ switch (parm)
         % Added pupilsize for ISETCam integration (BW).
         %
         % Pupil diameter in mm over for which wavefront expansion is valid
-        % wvfGet(wvf, 'measured pupil', 'mm')
+        % wvfGet(wvf, 'measured pupil diameter', 'mm')
         % wvfGet(wvf, 'measured pupil')
         val = wvf.measpupilMM;
         if ~isempty(varargin)
