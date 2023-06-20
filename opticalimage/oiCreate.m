@@ -51,8 +51,19 @@ oi = oiCreate('uniform EE',64,(380:4:1068)); % Set size and wave
 %}
 %
 
+validTypes = {'default','pinhole','diffractionlimited','diffraction', ...
+    'shiftinvariant','raytrace','wvf',...
+    'human','humanmw','wvfhuman','humanwvf',...
+    'uniformd65','uniformee','black'};
+
 % Default is the diffraction limited calculation
-if ieNotDefined('oiType'),  oiType = 'diffraction limited'; end
+if ieNotDefined('oiType'), oiType = 'diffraction limited'; 
+else 
+    if strncmp(oiType,'valid',5)
+        oi = validTypes;
+        return;
+    end
+end
 if ieNotDefined('val'),     val = vcNewObjectValue('OPTICALIMAGE'); end
 if ieNotDefined('optics'),  optics = opticsCreate('default'); end
 
@@ -60,9 +71,6 @@ oi.type = 'opticalimage';
 oi.name = vcNewObjectName('opticalimage');
 oi.metadata = [];  % Store metadata typically for machine-learning apps
 
-% In case there is an error, print out the valid types for the user.
-validTypes = {'default','diffraction limited','shift invariant','ray trace',...
-    'human','uniformd65','uniformEE','wvf'};
 
 %%
 switch ieParamFormat(oiType)

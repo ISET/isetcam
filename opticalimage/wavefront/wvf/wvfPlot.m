@@ -5,9 +5,9 @@ function [uData, pData, fNum] = wvfPlot(wvfP, pType, varargin)
 %   [userData, plotData, fNum] = wvfPlot(wvfP, [pType], [varargin]);
 %
 % Description:
-%    By default, this routine opens a new graph window (vcNewGraphWin). If
+%    By default, this routine opens a new graph window (ieNewGraphWin). If
 %    the final varargin argument is set to 'no window', then the
-%    vcNewGraphWin is suppressed. Hence, you can use this call to plot
+%    ieNewGraphWin is suppressed. Hence, you can use this call to plot
 %    within a subplot of a current window.
 %
 %    Plot types:
@@ -26,6 +26,8 @@ function [uData, pData, fNum] = wvfPlot(wvfP, pType, varargin)
 %      image psf space   - image ('um')
 %      image pupil amp   - image ('mm')
 %      image pupil phase - image ('mm')
+%
+%      image wavefront aberration - image (size of aberration in 'um')
 %
 %      Angle units are 'sec', 'min', or 'deg'   default - 'min'
 %      Space units are 'm', 'cm', 'mm', 'um'    default - 'mm'
@@ -63,7 +65,7 @@ function [uData, pData, fNum] = wvfPlot(wvfP, pType, varargin)
 %    * TODO: Fill out optional key/value pairs section
 %
 % See Also:
-%    wvfComputePSF, v_wvfDiffractionPSF, vcNewGraphWin
+%    wvfComputePSF, v_wvfDiffractionPSF, ieNewGraphWin
 %
 
 % History:
@@ -92,7 +94,7 @@ function [uData, pData, fNum] = wvfPlot(wvfP, pType, varargin)
 
     % Plot in an existing window by appending 'no window'
     % Also, plot normalized and not-normalized.
-    vcNewGraphWin([], 'tall');
+    ieNewGraphWin([], 'tall');
     subplot(3, 1, 1), [u, p] = ...
         wvfPlot(wvf, '1d psf space', unit, wave, 'no window');
     subplot(3, 1, 2), [u, p] = ...
@@ -114,20 +116,27 @@ unit   = 'mm'; % Space is millimeters, but maybe there should be no default
 wList  = wvfGet(wvfP,'wave'); % Wave list is whatever the wvf has
 pRange = Inf;  % Plot range
 
-% Allow the last argument to turn off window opening.
-if ~isempty(varargin) && ischar(varargin{end})
-    % The last argument is not empty, and it is a string
-    v = ieParamFormat(char(varargin{end}));
-    switch v
-        case {'nowindow', 'nofigure', 'noplot', 'nofig'}
-        otherwise
-            fNum = vcNewGraphWin;
+% Allow the last argument to control the window.
+if ~isempty(varargin)
+    lastArg = varargin{end};
+    if isa(lastArg,'matlab.ui.Figure')
+        figure(lastArg.Number);
+    elseif isa(lastArg,'matlab.graphics.layout.TiledChartLayout')
+        figure(lastArg.Parent.Number);
+    elseif ~isempty(varargin) && ischar(varargin{end})
+        % The last argument is not empty, and it is a string
+        switch ieParamFormat(lastArg)
+            case {'nowindow', 'nofigure', 'noplot', 'nofig'}
+            otherwise
+                fNum = ieNewGraphWin;
+        end
+    else
+        fNum = ieNewGraphWin;
     end
-else
-    fNum = vcNewGraphWin;
 end
 
-normalizeFlag = ~isempty(strfind(pType, 'normalized'));
+% Something gets normalized.
+normalizeFlag = contains(pType, 'normalized');
 
 %%
 switch(pType)
@@ -345,13 +354,13 @@ switch(pType)
         end
         
         % Axes, labeling, store data
-        % vcNewGraphWin;
+        % ieNewGraphWin;
         mesh(freq, freq, abs(otf))
         str = sprintf('Freq (lines/%s)', unit);
         xlabel(str); ylabel(str); title(sprintf('OTF %.0f', wave));
         uData.fx = freq; uData.fy = freq; uData.otf = abs(otf);
         set(gcf, 'userdata', uData);
-        set(gca,'ylim',[0 1.2]);
+        % set(gca,'ylim',[0 1.2]);
         
     case {'1dotf','1dotfspace'}
         % Plot the positive frequency part of a slice through the 2D
@@ -386,7 +395,7 @@ switch(pType)
         end
         
         % Axes, labeling, store data
-        % vcNewGraphWin;
+        % ieNewGraphWin;
         middleRow = (freq == 0);
         positiveCols = (freq >= 0);
         plot(freq(positiveCols), abs(otf(middleRow,positiveCols)));
@@ -441,7 +450,7 @@ switch(pType)
         % freq * space/deg = freq / (deg/space)
         
         % Axes, labeling, store data
-        % vcNewGraphWin;
+        % ieNewGraphWin;
         middleRow = (freq == 0);
         positiveCols = (freq >= 0);
         plot(freq(positiveCols), abs(otf(middleRow,positiveCols)));
@@ -453,7 +462,7 @@ switch(pType)
         set(gcf, 'userdata', uData);
         set(gca,'ylim',[0 1.2]);
         
-    case {'imagepupilamp', 'imagepupilampspace', '2dpupilamplitudespace'}
+    case {'imagepupilamp', 'imagepupilamplitude','imagepupilampspace', '2dpupilamplitudespace'}
         % wvfPlot(wvfP, '2d pupil amplitude space', 'mm', pRange)
         % plots the 2d pupil function amplitude for calculated pupil
         % Things to fix
@@ -476,15 +485,10 @@ switch(pType)
             [0 max(abs(pupilfunc(:)))]);
         s = sprintf('Position (%s)', unit);
         % this is a placeholder, need to fix with actual units?
-        xlabel(s);
-        ylabel(s);
-        zlabel('Amplitude');
+        xlabel(s); ylabel(s); zlabel('Amplitude');
         title('Pupil Function Amplitude');
-        colorbar;
-        axis image;
-        uData.x = samp;
-        uData.y = samp;
-        uData.z = abs(pupilfunc);
+        colorbar; axis image;
+        uData.x = samp; uData.y = samp; uData.z = abs(pupilfunc);
         set(gcf, 'userdata', uData);
         
     case {'imagepupilphase', '2dpupilphasespace'}
@@ -512,16 +516,12 @@ switch(pType)
         
         pData = imagesc(samp, samp, angle(pupilfunc), [-pi pi]);
         s = sprintf('Position (%s)', unit);
+
         % this is a placeholder, need to fix with actual units?
-        xlabel(s);
-        ylabel(s);
-        zlabel('Phase');
+        xlabel(s); ylabel(s); zlabel('Phase');
         title('Pupil Function Phase');
-        colorbar;
-        axis image;
-        uData.x = samp;
-        uData.y = samp;
-        uData.z = angle(pupilfunc);
+        colormap('gray'); colorbar; axis image;
+        uData.x = samp; uData.y = samp; uData.z = angle(pupilfunc);
         set(gcf, 'userdata', uData);
         
     case {'imagewavefrontaberrations', '2dwavefrontaberrationsspace'}
@@ -542,24 +542,20 @@ switch(pType)
             wavefront = wavefront(index, index);
         end
         
-        pData = imagesc(samp, samp, wavefront, ...
-            [-max(abs(wavefront(:))) max(abs(wavefront(:)))]);
+        clim = [-max(abs(wavefront(:))) max(abs(wavefront(:)))];
+        if clim(2) <= clim(1), clim(2) = Inf; end
+        pData = imagesc(samp, samp, wavefront,clim);
         s = sprintf('Position (%s)', unit);
-        xlabel(s);
-        ylabel(s);
-        zlabel('Amplitude');
+        xlabel(s); ylabel(s); zlabel('Amplitude');
         title('Wavefront Aberrations (microns)');
-        colorbar;
-        axis image;
-        uData.x = samp;
-        uData.y = samp;
-        uData.z = wavefront;
+        colormap('gray'); colorbar; axis image;
+        uData.x = samp; uData.y = samp; uData.z = wavefront;
         set(gcf, 'userdata', uData);
         
     otherwise
         error('Unknown plot type %s\n', pType);
 end
-return
+
 end
 
 %%% - Interpret the plotting arguments

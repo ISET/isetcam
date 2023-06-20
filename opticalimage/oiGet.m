@@ -454,14 +454,42 @@ switch oType
                         val = double(oi.data.photons(:,:,idx));
                     end
                 end
+
+            case 'roiphotons'
+                if isempty(varargin), error('ROI required')
+                else, roiLocs = varargin{1};
+                end
+                val = vcGetROIData(oi, roiLocs, 'photons');
+
             case 'roimeanphotons'
                 % oiGet(oi,'roi mean photons',roiLocs)
+                % Returned as XW format
+                %
                 % Mean photons at each wavelength (SPD) in the ROI
                 if isempty(varargin), error('ROI required'); end
                 
                 roiLocs = varargin{1};  % Either locs or rect is OK
                 val = mean(vcGetROIData(oi,roiLocs));
-                
+                val = val(:)';
+
+            case 'roienergy'
+                if isempty(varargin), error('ROI required')
+                else, roiLocs = varargin{1};
+                end
+
+                % Check format.
+                val = vcGetROIData(oi, roiLocs, 'energy');
+
+            case 'roimeanenergy'
+                % oiGet(oi,'roi mean energy');
+                % Returned as XW format (row vector)
+                if isempty(varargin), error('ROI required')
+                else, roiLocs = varargin{1};
+                end
+                val = oiGet(oi, 'roienergy', roiLocs);
+                val = mean(val, 1);
+                val = val(:)';
+
             case {'photonsnoise','photonswithnoise'}
                 % pn = oiGet(oi,'photons noise');
                 % The current photons are the mean.

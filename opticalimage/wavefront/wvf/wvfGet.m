@@ -82,7 +82,7 @@ function val = wvfGet(wvf, parm, varargin)
 %                                   passed, is should be a single scalar.
 %
 %      Measurement parameters
-%        'measured pupil size'    - Pupil size for wavefront aberration
+%        'measured pupil diameter'- Pupil size for wavefront aberration
 %                                   meaurements (mm, *)
 %        'measured wl'            - Wavefront aberration measurement
 %                                   wavelength (nm, *)
@@ -343,7 +343,7 @@ switch (parm)
         end
         
     case {'pupilfunction', 'pupilfunc', 'pupfun'}
-        % The pupil function is derived from Zernicke coefficients in the
+        % The pupil function is derived from Zernike coefficients in the
         % routine wvfComputePupilFunction
         %
         % If there are multiple wavelengths, then this is a cell array of
@@ -398,7 +398,7 @@ switch (parm)
         % Added pupilsize for ISETCam integration (BW).
         %
         % Pupil diameter in mm over for which wavefront expansion is valid
-        % wvfGet(wvf, 'measured pupil', 'mm')
+        % wvfGet(wvf, 'measured pupil diameter', 'mm')
         % wvfGet(wvf, 'measured pupil')
         val = wvf.measpupilMM;
         if ~isempty(varargin)
@@ -528,9 +528,12 @@ switch (parm)
         % wvfGet(wvf, 'pupil plane size', units, wList)
         % Total size of computed field in pupil plane, for calculated
         % wavelengths(s)
-        
+        %
+        % BW:  I do not understand this
+        %
+
         % Get wavelengths. What if varargin{2} is empty?
-        wList = varargin{2};
+        wList = varargin{2};        
         waveIdx = wvfWave2idx(wvf, wList);
         wavelengths = wvfGet(wvf, 'calc wavelengths', 'nm');
         
@@ -818,13 +821,14 @@ switch (parm)
         % Spatial support in samples, centered on 0
         % Unit and wavelength must be specified
         
+        % TO CHECK BW/DHB.
         unit = varargin{1};
         wList = varargin{2};
         
         % Get the sampling rate in the pupil plane in space per sample
         spacePerSample = wvfGet(wvf, 'pupil plane size', unit, wList) ...
             / wvfGet(wvf, 'spatial samples');
-        nSamples = wvfGet(wvf, 'spatial samples');
+        nSamples  = wvfGet(wvf, 'spatial samples');
         middleRow = wvfGet(wvf, 'middle row');
         val = spacePerSample * ((1:nSamples) - middleRow);
         

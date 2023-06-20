@@ -1,32 +1,82 @@
 %% v_displayLUT
 %
+%  Illustrate the use of the LUT conversion routines based on display gamma
+%  and display inverse gamma tables. 
+%
+%  * Read a gamma table from a display and plot it
+%  * Invert the gamma table and plot it
+%  * Start with linear RGB and compute the nonlinear DAC (ieLUTLinear)
+%  * Start with the DAC and recover the linear RGB (ieLUTDigital)
+%  * Compare original RGB and recovered RGB
 %
 %
+%  Use displayList; to get a set of possible displays
+%
+% See also
+%  ieLUTInvert, ieLUTLinear, ieLUTDigital, displayList, dac2rgb, rgb2dac
 
 %%
 ieInit
 
-%%  Read an 8bit RGB file and return some photons.
+%% Get a gamma table from a calibrated display
 
-fName = fullfile(isetRootPath,'data','images','rgb','eagle.jpg');
-photons = vcReadImage(fName,'rgb');
+%d = displayCreate('OLED-Sony');
+d = displayCreate('LCD-Apple');
+gTable = displayGet(d,'gamma table');
 
-%% Read an 8-bit RGB file.  With a 10-bit gamma table.
+%% Show the gamma table
+ieNewGraphWin;
+plot(gTable(:,1));
+xlabel('DAC value'); ylabel('Linear intensity'); title('Gamma Table')
+grid on;
 
-photons = vcReadImage(fName,'rgb','OLED-Sony.mat');
-vcNewGraphWin; imagesc(photons(:,:,10))
+%% Show the inverted gamma table
+ieNewGraphWin;
+igTable = ieLUTInvert(gTable,size(gTable,1));
+plot(igTable(:,1));
+ylabel('DAC value'); xlabel('Linear intensity'); title('Inverted Gamma Table')
+grid on;
 
-%%
-scene = sceneFromFile(fName,'rgb',100,'OLED-Sony.mat');
-vcAddAndSelectObject(scene); sceneWindow;
+%% Suppose rgb is
+RGB = repmat(linspace(0.1,1,10)', 1,3);
+dac = ieLUTLinear(RGB,igTable);
+ieNewGraphWin; plot(RGB(:,1),dac(:,1),'o');
+xlabel('Linear rgb'); ylabel('DAC value'); grid on;
 
-%% Try putting in numerical data
+%% Suppose we start with the DAC value and want linear RGB
 
-img = rand(128,128,3);
-scene = sceneFromFile(img,'rgb',100,'OLED-Sony.mat');
-vcAddAndSelectObject(scene); sceneWindow;
+estRGB = ieLUTDigital(round(dac),gTable);
+ieNewGraphWin; plot(dac(:,1),estRGB(:,1),'o');
+xlabel('DAC value'); ylabel('Linear rgb'); grid on;
 
+%% Round trip
+ieNewGraphWin;
+plot(RGB(:,1),estRGB(:,1),'o-');
+ylabel('Estimated linear rgb'); xlabel('Original linear rgb');
+grid on; title('Round trip ieLUTLinear,ieLUTDigital');
+identityLine;
 
-%% Add more cases here to check
+%% Validate
+assert(max(estRGB(:) - RGB(:)) < 0.01);
+
+%% Now use the rgb2dac and dac2rgb variations
+
+RGB = repmat(linspace(0.1,1,10)', 1,3);
+dac = rgb2dac(RGB,igTable);
+ieNewGraphWin; plot(RGB(:,1),dac(:,1),'o');
+xlabel('Linear rgb'); ylabel('DAC value'); grid on;
+
+estRGB = dac2rgb(round(dac),gTable);
+ieNewGraphWin; plot(dac(:,1),estRGB(:,1),'o');
+xlabel('DAC value'); ylabel('Linear rgb'); grid on;
+
+ieNewGraphWin;
+plot(RGB(:,1),estRGB(:,1),'o-');
+ylabel('Estimated linear rgb'); xlabel('Original linear rgb');
+grid on; title('Round trip dac2rgb, rgb2dac');
+identityLine;
+
+%% Validate
+assert(max(estRGB(:) - RGB(:)) < 0.01);
 
 %% END

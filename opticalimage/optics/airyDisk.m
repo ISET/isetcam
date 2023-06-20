@@ -1,13 +1,13 @@
 function val = airyDisk(thisWave, fNumber, varargin)
-% Return the Airy disk size
+% Return the Airy disk radius or diameter
 %
 % Input
 %   wave:     Wavelength in meters or nanometers (both OK).
-%   fnumber:  
+%   fnumber:  Diffraction limited optics f number
 %
 % Optional
-%   'units'     Units of the return
-%   'diameter': If true, returns diameter.  Otherwise returns radius.
+%   'units'     Units of the return ('um','mm','m')
+%   'diameter': If true, returns diameter.  Default:  false.
 %
 % Return
 %   val:   Radius (default) or if diameter is set to true then

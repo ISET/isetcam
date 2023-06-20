@@ -8,13 +8,10 @@ function oi = opticsDLCompute(scene,oi)
 % diffraction limited OTF is calculated on the fly in dlMTF, and applied to
 % the scene image in this routine.
 %
-% See also:  oiCompute, opticsSICompute, opticsRayTrace
-%
-% Examples:
-%  We call this function from oiCompute.
-%
-% Copyright ImagEval Consultants, LLC, 2005
+% See also:  
+%   oiCompute, opticsSICompute, opticsRayTrace
 
+%%
 % TODO:  We should insert a geometric distortion function in this code,
 % rather than using it only in the ray trace methods.
 if ieNotDefined('scene'), scene = vcGetObject('scene'); end

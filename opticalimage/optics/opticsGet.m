@@ -505,28 +505,54 @@ switch parm
         end
         
     case {'transmittancescale','transmittance'}
-        % opticsGet(optics,'transmittance',[wave])
+        % column = opticsGet(optics,'transmittance',[wave])
         %
         % The lens transmittance, potentially interpolated or event
-        % extrapolated to the requested wavelength samples
+        % extrapolated to the requested wavelength samples.  This is
+        % usually called with wave = oiGet(oi,'wave');
+        %
+        % Historically, we stored transmittance in its own slot that
+        % is used for camera lenses in ISETCam.  In that case, we have
+        % an optics.transmittance entry.  With the new support for
+        % ISETBio, we store the @Lens class, which has some additional
+        % flexibility such as setting the lens density and other
+        % advanced capabilities.
+        %
+        % To accommodate the change, we ask first if we have the
+        % transmittance slot - if yes we use that.  If not, we look to
+        % see if we have the lens class attached and use that. 
+        % 
+        % Perhaps we should create separate gets, such as 'human lens
+        % transmittance' and 'lens transmittance' to distinguish.        
         
-        % Stored
-        val = optics.transmittance.scale;
-        
-        % If wavelength samples are requested ... always a column
-        if ~isempty(varargin)
-            newWave = varargin{1};
-            wave = optics.transmittance.wave;
-            scale = optics.transmittance.scale;
-            
-            if min(newWave(:))< min(wave(:)) || max(newWave(:)) > max(wave(:))
-                % Extrapolation required.
-                disp('Extrapolating lens transmittance with 1''s')
-                val = interp1(wave,scale,newWave,'linear',1)';
-            else
-                val = interp1(wave,scale,newWave,'linear')';
+        if isfield(optics,'transmittance')
+            % Stored in the transmittance slot
+            val = optics.transmittance.scale;
+
+            % If wavelength samples are requested ... always a column
+            if ~isempty(varargin)
+                newWave = varargin{1};
+                wave = optics.transmittance.wave;
+                scale = optics.transmittance.scale;
+
+                if min(newWave(:))< min(wave(:)) || max(newWave(:)) > max(wave(:))
+                    % Extrapolation required.
+                    disp('Extrapolating lens transmittance with 1''s')
+                    val = interp1(wave,scale,newWave,'linear',1)';
+                else
+                    val = interp1(wave,scale,newWave,'linear')';
+                end
             end
+        elseif isfield(optics,'lens')
+            % Stored in the lens slot
+            if ~isempty(varargin)
+                optics.lens.wave = varargin{1};
+            end
+            val = optics.lens.transmittance;
+        else            
+            error('No transmittance and no lens slots.')
         end
+        val = val(:);
         
     case {'transmittancewave'}
         % opticsGet(optics,'transmittance wave')
@@ -534,11 +560,22 @@ switch parm
         % Wavelength samples for the lens transmittance function.
         % Typically, these are set and stored once.  When the transmittance
         % is requested for different wavelengths, we interpolate as above.
-        val = optics.transmittance.wave;
-        
+        if isfield(optics,'transmittance')
+            val = optics.transmittance.wave;
+        elseif isfield(optics,'lens')
+            val = optics.lens.wave;
+        else
+            error('No transmittance and no lens slots.')
+        end
     case {'transmittancenwave'}
         % Number of lens transmittance wavelength samples stored
-        val = length(optics.transmittance.wave);
+        if isfield(optics,'transmittance')
+            val = numel(optics.transmittance.wave);
+        elseif isfield(optics,'lens')
+            val = numel(optics.lens.wave);
+        else
+            error('No transmittance and no lens slots.')
+        end
         
         % ----- Diffraction limited parameters
     case {'dlfsupport','dlfsupportmatrix'}

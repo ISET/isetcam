@@ -1,5 +1,5 @@
 function wvf = wvfCreate(varargin)
-% Create the wavefront parameters structure.
+% Create a wavefront parameters structure.
 %
 % Syntax:
 %   wvf = wvfCreate;
