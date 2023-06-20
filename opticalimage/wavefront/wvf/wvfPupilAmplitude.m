@@ -1,4 +1,4 @@
-function [im, params] = wvfPupilAmplitude(imageSize, varargin)
+function [im, params] = wvfPupilAmplitude(wvf, varargin)
 % Synthetic aperture with random dots (dust) and lines (scratches).
 %
 % Synopsis
@@ -40,15 +40,18 @@ function [im, params] = wvfPupilAmplitude(imageSize, varargin)
 
 % Examples:
 %{
-im = wvfPupilAmplitude(512); % Default
+wvf = wvfCreate;
+im = wvfPupilAmplitude(wvf); % Default
 ieNewGraphWin; imagesc(im); colormap(gray); axis image
 %}
 %{
-im = wvfPupilAmplitude(512,'segment length',100); % Default
+wvf = wvfCreate;
+im = wvfPupilAmplitude(wvf,'segment length',100); % Default
 ieNewGraphWin; imagesc(im); colormap(gray); axis image
 %}
 %{
-[im,params] = wvfPupilAmplitude([256],'n sides',8); 
+wvf = wvfCreate;
+[im,params] = wvfPupilAmplitude(wvf,'n sides',8); 
 ieNewGraphWin; imagesc(im); colormap(gray); axis image
 %}
 
@@ -57,7 +60,7 @@ ieNewGraphWin; imagesc(im); colormap(gray); axis image
 varargin = ieParamFormat(varargin);
 
 p = inputParser;
-p.addRequired('imagesize',@isreal);
+p.addRequired('wvf',@isstruct);
 
 p.addParameter('dotmean',20,@isnumeric);
 p.addParameter('dotsd',5,@isnumeric);
@@ -71,9 +74,9 @@ p.addParameter('linewidth',2,@isnumeric);
 
 p.addParameter('segmentlength',600,@isnumeric);
 
-p.addParameter('nsides',0,@isnumeric);
+p.addParameter('nsides',0, @(x)(isnumeric(x) && (x > 2)));
 
-p.parse(imageSize,varargin{:});
+p.parse(wvf,varargin{:});
 dotMean     = p.Results.dotmean;
 dotSD       = p.Results.dotsd;
 dotOpacity  = p.Results.dotopacity;
@@ -85,8 +88,12 @@ lineWidth      = p.Results.linewidth;
 segmentLength  = p.Results.segmentlength;
 nSides         = p.Results.nsides;
 
+% Adjust
+imageSize = wvfGet(wvf, 'spatial samples');
+im = ones([imageSize,imageSize], 'single');
+
+
 if isempty(dotRadius), dotRadius = round(imageSize/200); end
-im = ones(imageSize, 'single');
 
 %% Add dots (circles), simulating dust.
 
@@ -102,6 +109,7 @@ for i = 1:num_dots
     radius = min(radius,max_radius);
     circle_xyr = rand(1, 3, 'single') .* [imageSize, imageSize, radius];
     opacity = dotOpacity + (rand * 0.5);
+    opacity = min(opacity,1);
 
     % Computer vision toolbox
     im = insertShape(im, 'FilledCircle', circle_xyr, 'Color', 'black', ...
@@ -137,10 +145,11 @@ for i = 1:num_lines
         'Color', [opacity, opacity, opacity]);
 end
 
+centerPoint = [imageSize/2 + 1, imageSize/2+1];
+radius = (imageSize - 1)/2;
+
 % Clip the image with a bounding polygon
 if nSides > 0
-    radius = (imageSize - 1)/2;
-    centerPoint = [imageSize/2 + 1, imageSize/2+1];
     % create n-sided polygon
     pgon1 = nsidedpoly(nSides, 'Center', centerPoint, 'radius', radius);
     % create a binary image with the polygon
@@ -148,8 +157,21 @@ if nSides > 0
     im = im.*pgonmask;
 end
 
-im = rgb2gray(im);
+% Color image to gray. In some cases, when there are no dots or scratches,
+% im is just gray scale.
+if ndims(im) == 3
+    im = rgb2gray(im);
+end
 
+% Now make the pattern circular
+[X,Y] = meshgrid((1:imageSize) - centerPoint(1),(1:imageSize) - centerPoint(2));
+imRadius = sqrt(X.^2 + Y.^2);
+% ieNewGraphWin; imagesc(imRadius); colormap(gray); colorbar; axis image
+idx = (imRadius > radius);
+im(idx) = 0;
+% ieNewGraphWin; imagesc(im); colormap(gray); colorbar; axis image
+
+%%
 if nargout == 2
     % Fill in params
     params.dotMean = dotMean;

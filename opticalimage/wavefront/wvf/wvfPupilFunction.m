@@ -59,10 +59,8 @@ function wvf = wvfPupilFunction(wvf, varargin)
 %}
 %{
  wvf = wvfCreate;    % Diffraction
- nPixels = wvfGet(wvf, 'spatial samples');
- pupilAmp = wvfPupilAmplitude(nPixels,'nsides',6);
- % ieNewGraphWin; imagesc(im); colormap(gray); axis image
- wvfPupilFunction(wvf,'amplitude',pupilAmp);
+ pupilAmp = wvfPupilAmplitude(wvf,'nsides',6);
+ wvf = wvfPupilFunction(wvf,'amplitude',pupilAmp);
  wvf = wvfComputePSF(wvf);
  wvfPlot(wvf,'psf','um',550,10);
 %}
@@ -78,10 +76,6 @@ p.addParameter('amplitude',[],@ismatrix);  % Pupil amplitude mask
 % varargin = wvfKeySynonyms(varargin);
 p.parse(wvf,varargin{:});
 amplitude = p.Results.amplitude;
-
-% We only use the calculation parameters here.  THere are no human
-% measurement parameters to account for.
-calcPupilSizeMM = wvfGet(wvf, 'calc pupil diameter', 'mm');
 
 % Convert wavelengths in nanometers to wavelengths in microns
 waveUM = wvfGet(wvf, 'calc wavelengths', 'um');
@@ -99,12 +93,15 @@ wavefrontaberrations = cell(nWavelengths, 1);
 
 nPixels = wvfGet(wvf, 'spatial samples');
 
-% Set up the amplitude function.  Only one for all wavelengths.
-if isempty(amplitude), A = ones(nPixels, nPixels);
-else,                  A = imresize(amplitude,[nPixels,nPixels]);
+% Set up the amplitude function.  Only one function for all wavelengths at
+% this time.  But it should probably be wavelength dependent.
+if isempty(amplitude)
+    A = ones(nPixels, nPixels);
+    A = imageCircular(A);
+else                  
+    A = imresize(amplitude,[nPixels,nPixels]);
 end
 % ieNewGraphWin; imagesc(A); axis image
-% Apply the aperture polygonal sides to the amplitude function.
 
 pupilDiameterMM = wvfGet(wvf,'calc pupil diameter','mm');
 
@@ -121,7 +118,6 @@ for ii = 1:nWavelengths
     [xpos, ypos] = meshgrid(pupilPos);
     ypos = -ypos;
 
-
     % The Zernike polynomials are defined over the unit disk. At
     % measurement time, the pupil was mapped onto the unit disk, so we
     % do the same normalization here to obtain the expansion over the
@@ -131,11 +127,35 @@ for ii = 1:nWavelengths
     % microns.
     %
     % Normalized radius here.  Distance from the center divided by the
-    % radius of the pupil.  Only values that are within the unit
-    % circle are valid for the Zernike polynomial.
+    % pupil radius.
     norm_radius = (sqrt(xpos .^ 2 + ypos .^ 2)) / (pupilDiameterMM / 2);
     theta = atan2(ypos, xpos);
+    % ieNewGraphWin; imagesc(norm_radius); axis square
+
+    % Only values that are within the unit circle are valid for the Zernike
+    % polynomial. 
     norm_radius_index = (norm_radius <= 1);
+    % The indices within the unit radius
+    % ieNewGraphWin; imagesc(norm_radius_index); axis image   
+
+    % We place the amplitude function within the region defined by the
+    % valid radius.  
+    % 
+    % Find the bounding box of the circle. 
+    boundingBox = imageBoundingBox(norm_radius_index);
+
+    % Resize the amplitude mask to the square over the central circle
+    A = imresize(A,[boundingBox(3),boundingBox(4)]);
+   
+    % Pad with zeros to match the pupil phase size.
+    sz = round((nPixels - boundingBox(3))/2);
+    A = padarray(A,[sz,sz],0,'both');    
+    A = imresize(A,[nPixels,nPixels]);
+
+    % Keep the amplitude within bounds
+    A(A > 1) = 1;
+    A(A < 0) = 0;
+    % ieNewGraphWin; imagesc(A); axis image
 
     % Get Zernike coefficients and add in appropriate info to defocus
     % Need to make sure the c vector is long enough to contain defocus
@@ -143,9 +163,7 @@ for ii = 1:nWavelengths
     % sure it is there. This wastes a little time when we just compute
     % diffraction, but that is the least of our worries.
     c = wvfGet(wvf, 'zcoeffs');
-    if (length(c) < 5)
-        c(length(c) + 1:5) = 0;
-    end
+    if (length(c) < 5), c(length(c) + 1:5) = 0; end
 
     % This loop uses the function zernfun to compute the Zernike
     % polynomial of each required order. That function normalizes a bit
@@ -182,8 +200,8 @@ for ii = 1:nWavelengths
     % Important to zero out before this step, because computation of A
     % doesn't know about the pupil size.
     pupilfunc{ii} = A .* pupilfuncphase;
-    % ieNewGraphWin; imagesc(angle(pupilfunc{ii}))
-    % ieNewGraphWin; imagesc(abs(pupilfunc{ii}))
+    % ieNewGraphWin; imagesc(angle(pupilfunc{ii})); axis image
+    % ieNewGraphWin; imagesc(abs(pupilfunc{ii})); axis image;
 
     % We think the ratio of these two quantities tells us how much
     % light is effectively lost in cone absorbtions because of the
