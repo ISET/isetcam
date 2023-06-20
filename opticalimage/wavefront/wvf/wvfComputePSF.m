@@ -63,6 +63,8 @@ p.parse(ieVarargin{:});
 %% 
 if notDefined('showBar'), showBar = false; end
 
+% BW:  Maybe time to get rid of this 'if'
+%
 % Only calculate if we need to -- PSF might already be computed and stored
 if (~isfield(wvf, 'psf') || ~isfield(wvf, 'PSF_STALE') || ...
         wvf.PSF_STALE || ~isfield(wvf, 'pupilfunc') || ...
@@ -102,6 +104,9 @@ if (~isfield(wvf, 'psf') || ~isfield(wvf, 'PSF_STALE') || ...
         % that arise because of numerical roundoff.
         psf{wl} = real(inten);
         
+
+        %{ BW:  Commented out because, well, DOCHECKS = false for
+        % several years.
         % We used to not use the ifftshift. Indeed, the ifftshift does not
         % seem to matter here, but my understanding of the way fft2 works, 
         % we want it.  The reason it doesn't matter is because we don't
@@ -125,7 +130,8 @@ if (~isfield(wvf, 'psf') || ~isfield(wvf, 'PSF_STALE') || ...
                     'inten is %g\n'], max(abs(imag(inten(:)))));
             end
         end
-        
+        %}
+
         % Make sure psf sums to unit volume.
         psf{wl} = psf{wl} / sum(sum(psf{wl}));
 

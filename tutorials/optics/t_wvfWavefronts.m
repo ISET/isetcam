@@ -5,10 +5,9 @@
 % We compare the computed wavefronts in wvf with the Zernike functions they
 % are based on (zernfun), which are downloaded from the web.
 %
-% They are, of course, the same.  Except! there is a flipud somewhere.
-%
-% TO CHECK:  The amplitude is double for the wvf calculations compared to
-% the straight zernfun.  I am not sure about the 
+% They are, of course, the same.  Except! there is a flipud somewhere
+% and there is a scale factor (sqrt(pi) ~ 1.77) in the zernfun that we
+% undo.
 %
 % See also
 %  wvf2oi, wvfCreate, wvfCompute
@@ -18,17 +17,18 @@
 ieInit;
 
 %% Create wavefront object and convert it to an optical image object
+uData = cell(16,1);
 
 ieNewGraphWin([],'upper left big');
 for ii=1:16
     subplot(4,4,ii);
     wvf = wvfCreate;
-    wvf = wvfSet(wvf,'measured pupil size',10);   % This is diameter
-    wvf = wvfSet(wvf,'calc pupil size',10);       % This is diameter
+    wvf = wvfSet(wvf,'measured pupil size',2);   % This is diameter
+    wvf = wvfSet(wvf,'calc pupil size',2);       % This is diameter
     wvf = wvfSet(wvf,'zcoeff',1,ii);
     wvf = wvfComputePSF(wvf);
     [n,m] = wvfOSAIndexToZernikeNM(ii);
-    wvfPlot(wvf,'image wavefront aberrations','mm',550,5,'no window');
+    uData{ii} = wvfPlot(wvf,'image wavefront aberrations','mm',550,1,'no window');
     colormap("gray"); title(sprintf('ZC_{%d}^{%d}',n,m));
 end
 
@@ -36,7 +36,7 @@ end
 
 ieNewGraphWin([],'upper left big');
 
-% Over the unit disk.
+% Over the unit radius disk.  Diameter is 2.
 x = -1:0.01:1;
 [X,Y] = meshgrid(x,x);
 [theta,r] = cart2pol(X,Y);
@@ -45,13 +45,43 @@ idx = r<=1;
 % Makes the outside region 0 (gray)
 z = zeros(size(X));
 
+% zernfun multiplies by 1/sqrt(pi) relative to the OSA standard.  We
+% compensate here.  Maybe we should make our own version of zernfun
+% that does not require this adjustment?
 for ii=1:16
     subplot(4,4,ii);
     [n,m] = wvfOSAIndexToZernikeNM(ii);
-    z(idx) = zernfun(n,m,r(idx),theta(idx)); 
+    z(idx) = sqrt(pi)*zernfun(n,m,r(idx),theta(idx)); 
     imagesc(flipud(z)); axis square;
     colormap('gray'); colorbar;
     title(sprintf('ZC_{%d}^{%d}',n,m));
 end
 
+%% These are some hand tests BW was doing.
+% The goal is to make a direct comparions.
+% The answer is close, but a little different.
+%
+%{
+
+ii = 6;  % I tried for several different ii values
+
+% The zernfun itself
+[n,m]  = wvfOSAIndexToZernikeNM(ii);
+z(idx) = sqrt(pi)*zernfun(n,m,r(idx),theta(idx));
+z = flipud(z);
+
+% These were the computed data (above) using wvfComputePSF
+x = uData{ii}.x; y = uData{ii}.y; w = uData{ii}.z;
+wInt = interp2(x,y,w,X,Y);
+
+% The comparison
+ieNewGraphWin;
+subplot(1,2,1), imagesc(wInt); axis square
+subplot(1,2,2), imagesc(z); axis square
+
+% Something off at the edges. NaNs.  The X,Y goes beyond the calculation
+%
 %%
+plot(wInt(:),z(:),'.');
+
+%}

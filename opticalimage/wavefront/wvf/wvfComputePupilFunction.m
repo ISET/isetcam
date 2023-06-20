@@ -1,10 +1,13 @@
 function wvf = wvfComputePupilFunction(wvf, showBar, varargin)
-% Compute the pupil fuction given the wvf object.
+% Compute the pupil fuction given the wvf for the human eye case
 %
 % Syntax:
 %   wvf = wvfComputePupilFunction(wvf, [showbar])
 %
 % Description:
+%    This version of the pupil function calculation is designed for
+%    the human eye calculations starting in ISETBio.
+%
 %    The pupil function is a complex number that represents the amplitude
 %    and phase of the wavefront across the pupil. The returned pupil
 %    function at a specific wavelength is
@@ -182,10 +185,13 @@ if (~isfield(wvf, 'pupilfunc') || ~isfield(wvf, 'PUPILFUNCTION_STALE') ...
         [xpos, ypos] = meshgrid(pupilPos);
         ypos = -ypos;
  
-        % Set up the amplitude of the pupil function. This depends entirely
-        % on the SCE correction. For x, y positions within the pupil, rho
-        % is used to set the pupil function amplitude.
-        if all(rho) == 0
+        % Set up the amplitude of the pupil function. This depends
+        % entirely on the Stiles Crawford Effect (SCE) correction. For
+        % x, y positions within the pupil, rho is used to set the
+        % pupil function amplitude.
+        if ~all(rho)
+            % Here if all the rho values are 0, which means do not use
+            % SCE calculation.
             A = ones(nPixels, nPixels);
         else
             % Get the wavelength-specific value of rho for the
@@ -233,8 +239,7 @@ if (~isfield(wvf, 'pupilfunc') || ~isfield(wvf, 'PUPILFUNCTION_STALE') ...
         %
         % And by convention expanding gives us the wavefront aberrations in
         % microns.
-        norm_radius = (sqrt(xpos .^ 2 + ypos .^ 2)) / ...
-            (measPupilSizeMM / 2);
+        norm_radius = (sqrt(xpos .^ 2 + ypos .^ 2)) / (measPupilSizeMM / 2);
         theta = atan2(ypos, xpos);
         norm_radius_index = norm_radius <= 1;
         
@@ -252,11 +257,11 @@ if (~isfield(wvf, 'pupilfunc') || ~isfield(wvf, 'PUPILFUNCTION_STALE') ...
         % fprintf('At wavlength %0.1f nm, adding LCA of %0.3f microns to 
         % j = 4 (defocus) coefficient\n', thisWave, lcaMicrons); 
         
-        % This loop uses the function zerfun to compute the Zernike
+        % This loop uses the function zernfun to compute the Zernike
         % polynomial of each required order. That function normalizes a bit
         % differently than the OSA standard, with a factor of 1/sqrt(pi)
         % that is not part of the OSA definition. We correct by
-        % multiplying by the same factor.
+        % multiplying by sqrt(pi).
         %
         % Also, we speed this up by not bothering to compute for c entries
         % that are 0.

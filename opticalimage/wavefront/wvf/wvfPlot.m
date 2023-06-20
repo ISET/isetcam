@@ -462,7 +462,7 @@ switch(pType)
         set(gcf, 'userdata', uData);
         set(gca,'ylim',[0 1.2]);
         
-    case {'imagepupilamp', 'imagepupilampspace', '2dpupilamplitudespace'}
+    case {'imagepupilamp', 'imagepupilamplitude','imagepupilampspace', '2dpupilamplitudespace'}
         % wvfPlot(wvfP, '2d pupil amplitude space', 'mm', pRange)
         % plots the 2d pupil function amplitude for calculated pupil
         % Things to fix
@@ -485,15 +485,10 @@ switch(pType)
             [0 max(abs(pupilfunc(:)))]);
         s = sprintf('Position (%s)', unit);
         % this is a placeholder, need to fix with actual units?
-        xlabel(s);
-        ylabel(s);
-        zlabel('Amplitude');
+        xlabel(s); ylabel(s); zlabel('Amplitude');
         title('Pupil Function Amplitude');
-        colorbar;
-        axis image;
-        uData.x = samp;
-        uData.y = samp;
-        uData.z = abs(pupilfunc);
+        colorbar; axis image;
+        uData.x = samp; uData.y = samp; uData.z = abs(pupilfunc);
         set(gcf, 'userdata', uData);
         
     case {'imagepupilphase', '2dpupilphasespace'}
@@ -521,16 +516,12 @@ switch(pType)
         
         pData = imagesc(samp, samp, angle(pupilfunc), [-pi pi]);
         s = sprintf('Position (%s)', unit);
+
         % this is a placeholder, need to fix with actual units?
-        xlabel(s);
-        ylabel(s);
-        zlabel('Phase');
+        xlabel(s); ylabel(s); zlabel('Phase');
         title('Pupil Function Phase');
-        colorbar;
-        axis image;
-        uData.x = samp;
-        uData.y = samp;
-        uData.z = angle(pupilfunc);
+        colormap('gray'); colorbar; axis image;
+        uData.x = samp; uData.y = samp; uData.z = angle(pupilfunc);
         set(gcf, 'userdata', uData);
         
     case {'imagewavefrontaberrations', '2dwavefrontaberrationsspace'}
@@ -551,12 +542,13 @@ switch(pType)
             wavefront = wavefront(index, index);
         end
         
-        pData = imagesc(samp, samp, wavefront, ...
-            [-max(abs(wavefront(:))) max(abs(wavefront(:)))]);
+        clim = [-max(abs(wavefront(:))) max(abs(wavefront(:)))];
+        if clim(2) <= clim(1), clim(2) = Inf; end
+        pData = imagesc(samp, samp, wavefront,clim);
         s = sprintf('Position (%s)', unit);
         xlabel(s); ylabel(s); zlabel('Amplitude');
         title('Wavefront Aberrations (microns)');
-        colorbar; axis image;
+        colormap('gray'); colorbar; axis image;
         uData.x = samp; uData.y = samp; uData.z = wavefront;
         set(gcf, 'userdata', uData);
         
