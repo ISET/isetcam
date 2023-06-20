@@ -41,14 +41,12 @@ function [uData, pData, fNum] = wvfPlot(wvfP, pType, varargin)
 %               standard format is: units, wavelength, plotRange
 %               'window/no-window' This should change by using an argument
 %               reading function for parameters/value pairs.
-%
+% 
 % Outputs:
 %    uData    - The user data that are plotted
 %    pData    - The handles from the plotted data
 %    fNum     - The figure number
 %
-% Optional key/value pairs:
-%    *Needs attention*
 %
 % Notes:
 %    * [Note: JNM - Reminder: Using ~isempty(strfind(... instead of
@@ -137,6 +135,13 @@ end
 
 % Something gets normalized.
 normalizeFlag = contains(pType, 'normalized');
+airydisk = false;
+if ~isempty(varargin)
+    for ii=1:numel(varargin)
+        airydisk = strcmp(ieParamFormat(varargin{ii}),'airydisk');
+        if airydisk, break; end
+    end
+end
 
 %%
 switch(pType)
@@ -198,6 +203,22 @@ switch(pType)
         uData.y = samp;
         uData.z = psf;
         set(gcf, 'userdata', uData);
+
+        if airydisk
+            % Draw a circle at the first zero crossing (Airy disk) of the
+            % diffraction limited aperture.  We put it at the top because
+            % otherwise it will be obscured by the mesh.
+            if numel(wList) > 1, thisWave = wList(1);
+            else, thisWave = wList;
+            end
+            radius = airyDisk(thisWave,wvfGet(wvfP,'fnumber'),'units',unit);
+            nCircleSamples = 200;
+            [adX,adY,adZ] = ieShape('circle',nCircleSamples,radius);
+            ringZ = max(psf(:));
+            hold on; figure(gcf);
+            p = plot3(adX,adY,adZ + ringZ,'k-');
+            set(p,'linewidth',3); hold off;
+        end
         
     case {'imagepsf', 'imagepsfspace', 'imagepsfspacenormalized'}
         % wvfPlot(wvfP, 'image psf space', unit, waveIdx, plotRangeArcMin);

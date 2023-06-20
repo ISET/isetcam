@@ -210,16 +210,6 @@ for ii = 1:nWavelengths
     areapix(ii) = sum(sum(abs(pupilfuncphase)));
     areapixapod(ii) = sum(sum(abs(pupilfunc{ii})));
     
-    %{
-    % We have not had an error in years.  Deleting this.
-    % Area pix used to be computed in another way, check that we get
-    % same answer.
-    kindex = find(norm_radius <= calcPupilSizeMM / measPupilSizeMM);
-    areapixcheck = numel(kindex);
-    if (max(abs(areapix(ii) - areapixcheck)) > 1e-10)
-        error('Two ways of computing areapix do not agree');
-    end
-    %}
 end
 
 % We think the aberrations are in microns (BW).    But look at

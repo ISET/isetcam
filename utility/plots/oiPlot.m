@@ -964,13 +964,13 @@ switch lower(pType)
         mesh(sSupport(:,:,1),sSupport(:,:,2),abs(psf));
 
         if airydisk
-            % Plot it and if diffraction limited, then add the Airy disk
-            if strcmpi(opticsModel,'diffractionlimited') ||...
-                    strcmpi(opticsModel, 'shiftinvariant')
-                ringZ = max(psf(:))*1e-3;
-                hold on; p = plot3(adX,adY,adZ + ringZ,'k-');
-                set(p,'linewidth',3); hold off;
-            end
+            % No longer check if diffraction limited or shift invariant
+            %  if strcmpi(opticsModel,'diffractionlimited') ||...
+            %     strcmpi(opticsModel, 'shiftinvariant')
+            ringZ = max(psf(:))*1e-3;
+            hold on; p = plot3(adX,adY,adZ + ringZ,'k-');
+            set(p,'linewidth',3); hold off;
+            %  end
         end
 
         % Label, store data

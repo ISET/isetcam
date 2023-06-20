@@ -454,10 +454,14 @@ switch (parm)
         end
 
     case {'fnumber'}
-        % If we have a pupil diameter and focal length, we can produce the
-        % fnumber.  Not always appropriate, but sometimes it is
+        % If we have a pupil diameter and focal length, we can produce
+        % the fnumber.  Not always appropriate, but sometimes it is.
+        %
+        % I think this should be the calc parameters, not the measured
+        % pupil diameter and focal length.
+        % Changed June 2023 by BW.
         fl = wvfGet(wvf,'focal length','m');
-        pd = wvfGet(wvf,'pupil diameter','m');
+        pd = wvfGet(wvf,'calc pupil diameter','m');
         val = fl/pd;
     otherwise
         isMeas = false;
@@ -487,7 +491,7 @@ switch (parm)
         % Total size of computed field in pupil plane. This is for the
         % measurement wavelength and sets the scale for calculations at
         % other wavelengths.
-        %Shouldn't this have 'measured' in the title?
+        % Shouldn't this have 'measured' in the title?
         val = wvf.refSizeOfFieldMM;
         if ~isempty(varargin)
             val = (val * 1e-3) * ieUnitScaleFactor(varargin{1});
@@ -511,7 +515,7 @@ switch (parm)
         % scale for calculations at other wavelengths.
         radiansPerPixel = wvfGet(wvf, 'measured wl', 'mm') / ...
             wvfGet(wvf, 'ref pupil plane size', 'mm');
-        val = (180 * 60 / 3.1416) * radiansPerPixel;
+        val = (180 * 60 / pi) * radiansPerPixel;
         
     otherwise
         isSpatial = false;
@@ -556,12 +560,15 @@ switch (parm)
             val = (val * 1e-3) * ieUnitScaleFactor(varargin{1});
         end
         
-    case {'calcpupildiameter', 'calcpupilsize', 'calculatedpupil'}
+    case {'calcpupildiameter', 'calcpupilsize'}
         % Pupil diameter to use when computing pupil function and PSF.
         % The calc pupil diameter must
         % be less than or equal to measured pupil size.
         %  wvfGet(wvf, 'calculated pupil', 'mm')
         %  wvfGet(wvf, 'calculated pupil', 'um')
+        %
+        % alias deleted June 2023: 'calculatedpupil'
+
         val = wvf.calcpupilMM;
         
         % Adjust units

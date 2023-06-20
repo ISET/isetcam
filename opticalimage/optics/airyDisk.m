@@ -1,6 +1,9 @@
 function val = airyDisk(thisWave, fNumber, varargin)
 % Return the Airy disk radius or diameter
 %
+% Synopsis
+%    val = airyDisk(thisWave, fNumber, varargin)
+%
 % Input
 %   wave:     Wavelength in meters or nanometers (both OK).
 %   fnumber:  Diffraction limited optics f number
