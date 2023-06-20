@@ -21,12 +21,12 @@ subplot(1,3,2); wvfPlot(wvf,'image pupil phase','um',550,'no window');
 subplot(1,3,3); wvfPlot(wvf,'image wavefront aberrations','um',550,'no window');
 
 %% Make a point array scene
-scene = sceneCreate('point array',512,128);
+scene = sceneCreate('point array',512,128,'d65');
 % scene = sceneCreate('grid lines',512,128);
 
 scene = sceneSet(scene,'fov',0.5);
 mn = sceneGet(scene,'mean luminance');
-scene = sceneSet(scene,'mean luminance',mn*1e5);
+scene = sceneSet(scene,'mean luminance',mn*1e8);
 
 sceneWindow(scene);
 
@@ -47,6 +47,7 @@ wvf = wvfSet(wvf,'calc pupil diameter',8);
 % ieNewGraphWin; imagesc(pupilAmp); colormap(gray); axis image
 
 wvf = wvfPupilFunction(wvf,'amplitude',pupilAmp);
+wvf = wvfComputePSF(wvf);
 
 % The amplitude of the pupil function is not scaled correctly for
 % size.
@@ -57,12 +58,10 @@ subplot(1,2,2); wvfPlot(wvf,'image pupil phase','um',550,'no window');
 %}
 
 %% Show the PSF
-wvf = wvfComputePSF(wvf);
-wvfPlot(wvf,'psf','um',550,10);
-oi = wvf2oi(wvf);
 
-oi = oiCompute(oi,scene);
+oi = wvfApply(scene,wvf);
 oiWindow(oi);
+
 % oiPlot(oi,'psf',550);
 
 %%
