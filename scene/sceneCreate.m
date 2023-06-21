@@ -366,7 +366,9 @@ switch sceneName
         
         scene = sceneExpRamp(scene,sz,dynamicRange);
         
-    case {'uniform','uniformee','uniformequalenergy'}   %Equal energy
+    case {'uniform','uniformee','uniformequalenergy'}
+        % scene = sceneCreate('uniform',size,wave);
+        % Equal energy
         % By default a 32 x 32 with standard wave sampling
         %
         sz = 32;
@@ -591,6 +593,22 @@ switch sceneName
         scene = sceneFromFont(font, display);
         return; % Do not adjust luminance or other properties
 
+    case {'hdrchart'}
+        p = inputParser;
+        varargin = ieParamFormat(varargin);
+        p.addParameter('rowsperlevel',12);
+        p.addParameter('nlevels',16);
+        p.addParameter('drange',10^3.5);
+        p.parse(varargin{:});
+        r = p.Results;
+        scene = sceneHDRChart(r.drange,r.nlevels,r.rowsperlevel);
+    case {'hdr','highdynamicrange'}
+        % scene = sceneCreate('hdr',varargin);
+        p = inputParser;
+        varargin = ieParamFormat(varargin);
+        p.addParameter('size',256);
+        p.parse(varargin{:});
+        scene = sceneHDRLights();
     otherwise
         error('Unknown scene format: %s.',sceneName);
 end

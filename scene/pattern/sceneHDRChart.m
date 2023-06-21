@@ -13,17 +13,19 @@ function scene = sceneHDRChart(dRange,nLevels,rowsPerLevel,maxL,il)
 % Returns
 %   scene:         HDR chart as a scene
 %
-%Example:
-%  rowsPerLevel = 12; nLevels = 30; dRange = 10^3.5;
-%  scene = sceneHDRChart(dRange,nLevels,rowsPerLevel);
-%  ieAddObject(scene); sceneWindow;
-%
-%  scene = sceneHDRChart(dRange,nLevels,rowsPerLevel,500);
-%
-%
-% See also: sceneReflectanceChart, macbethChartCreate
-%
-% Copyright ImagEval Consultants, LLC, 2014.
+% See also
+%   sceneReflectanceChart, macbethChartCreate
+
+%Examples:
+%{
+  rowsPerLevel = 12; nLevels = 30; dRange = 10^3.5;
+  scene = sceneHDRChart(dRange,nLevels,rowsPerLevel);
+  sceneWindow(scene);
+%}
+%{
+  scene = sceneHDRChart;
+  sceneWindow(scene);
+%}
 
 if ieNotDefined('dRange'),  dRange  = 10^4; end
 if ieNotDefined('nLevels'), nLevels = 12; end
@@ -31,16 +33,13 @@ if ieNotDefined('rowsPerLevel'),   rowsPerLevel   = 8; end
 
 % Default scene
 scene = sceneCreate;
-if ieNotDefined('wave'), wave = sceneGet(scene,'wave');
-else                     scene = sceneSet(scene,'wave',wave);
-end
+wave = sceneGet(scene,'wave');
 
 if ieNotDefined('il'), il = illuminantCreate('d65',wave); end
 illPhotons = illuminantGet(il,'photons');
 
 % Spatial arrangement
 r = nLevels*rowsPerLevel; c = r;
-rcSize = [r,c];
 nWave = length(wave);
 
 % Convert the scene reflectances into photons assuming an equal energy
@@ -62,7 +61,7 @@ end
 scene = sceneSet(scene,'photons',img);
 
 if ieNotDefined('maxL'), return;
-else scene = sceneSet(scene,'max luminance',maxL);
+else, scene = sceneSet(scene,'max luminance',maxL);
 end
 
 end

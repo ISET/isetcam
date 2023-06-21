@@ -37,15 +37,17 @@ subplot(1,3,3); wvfPlot(wvf,'image wavefront aberrations','um',550,'no window');
 
 %% Compute with a point array scene
 
-scene = sceneCreate('point array',512,128,'d65');
-scene = sceneSet(scene,'fov',0.5);
-
 % Make the points very bright.  It would be better to make them a
 % little bigger, though.
+scene = sceneCreate('point array',512,128,'d65');
 mn = sceneGet(scene,'mean luminance');
 scene = sceneSet(scene,'mean luminance',mn*1e8);
+sceneWindow(scene);
 
-% sceneWindow(scene);
+%% HDR Test scene
+scene = sceneCreate('hdr');
+scene = sceneSet(scene,'fov',2);
+sceneWindow(scene);
 
 %% Experiment with different wavefronts
 
@@ -62,8 +64,8 @@ wvf = wvfSet(wvf,'focal length',0.017);
 
 % There are many parameters on this function, including dot mean, line
 % mean, dot sd, line sd, line opacity.  They are returned in params
-nsides = 3;
-[pupilAmp, params] = wvfPupilAmplitude(wvf,'nsides',3,...
+nsides = 6;
+[pupilAmp, params] = wvfPupilAmplitude(wvf,'nsides',nsides,...
     'dot mean',20, 'dot sd',3, 'dot opacity',0.5, ...
     'line mean',20, 'line sd', 2, 'line opacity',0.5);
 % ieNewGraphWin; imagesc(pupilAmp); colormap(gray); axis image
@@ -84,11 +86,14 @@ oi = wvfApply(scene,wvf);
 oi = oiSet(oi,'name','wvf');
 
 % Show the PSF
+%{
 oiPlot(oi,'psf550');
 set(gca,'xlim',[-10 10],'ylim',[-10 10]);
+%}
 
 oi = oiCrop(oi,'border');
 oiWindow(oi);
+oiSet(oi,'gamma',0.3);
 
 %% The same scene through piFlareApply
 
