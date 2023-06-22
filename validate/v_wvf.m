@@ -9,8 +9,8 @@
 wvf = wvfCreate;
 
 % This increases the spatial resolution.
-fieldsize = wvfGet(wvf,'fieldsizemm');
-wvf = wvfSet(wvf,'fieldsizemm',2*fieldsize);
+%fieldsize = wvfGet(wvf,'fieldsizemm');
+%wvf = wvfSet(wvf,'fieldsizemm',2*fieldsize);
 wvf = wvfComputePSF(wvf);
 wvfPlot(wvf,'psf','um',550,20,'airydisk');
 
@@ -22,9 +22,8 @@ subplot(1,3,3); wvfPlot(wvf,'image wavefront aberrations','um',550,'no window');
 %}
 
 %%  Now with a little defocus
+wvf = wvfCreate;
 wvf = wvfSet(wvf,'zcoeffs',0.5,{'defocus'});
-fieldsize = wvfGet(wvf,'fieldsizemm');
-wvf = wvfSet(wvf,'fieldsizemm',2*fieldsize);
 wvf = wvfComputePSF(wvf);
 wvfPlot(wvf,'psf','um',550,20);
 
@@ -45,16 +44,18 @@ scene = sceneSet(scene,'mean luminance',mn*1e8);
 sceneWindow(scene);
 
 %% HDR Test scene
+%{
 scene = sceneCreate('hdr');
 scene = sceneSet(scene,'fov',2);
 sceneWindow(scene);
+%}
 
 %% Experiment with different wavefronts
 
 % We can start with any Zernike coefficients
 wvf = wvfCreate;
-fieldsize = wvfGet(wvf,'fieldsizemm');
-wvf = wvfSet(wvf,'fieldsizemm',2*fieldsize);
+% fieldsize = wvfGet(wvf,'fieldsizemm');
+% wvf = wvfSet(wvf,'fieldsizemm',2*fieldsize);
 wvf = wvfSet(wvf,'calc pupil diameter',3);
 wvf = wvfSet(wvf,'wave',550);
 wvf = wvfSet(wvf,'focal length',0.017);
@@ -98,12 +99,15 @@ oiSet(oi,'gamma',0.3);
 %% The same scene through piFlareApply
 
 % wvfGet(wvf,'calc pupil diameter','mm')
-oi = piFlareApply(scene,'num sides aperture',nsides, ...
+[oi, pMask, psf] = piFlareApply(scene,'num sides aperture',nsides, ...
     'focal length',wvfGet(wvf,'focal length','m'), ...
     'fnumber',wvfGet(wvf,'fnumber'));
 oi = oiSet(oi,'name','flare');
 oiWindow(oi);
 
+%%
+ieNewGraphWin;
+mesh(getMiddleMatrix(psf(:,:,15),30));
 
 % piFlareApply does not put the proper OTF information in the optical
 % image. Therefore, this plot is not correct.  The photons, though,
