@@ -65,7 +65,7 @@ wvf = wvfSet(wvf,'focal length',0.017);
 
 % There are many parameters on this function, including dot mean, line
 % mean, dot sd, line sd, line opacity.  They are returned in params
-nsides = 6;
+nsides = 3;
 [pupilAmp, params] = wvfPupilAmplitude(wvf,'nsides',nsides,...
     'dot mean',20, 'dot sd',3, 'dot opacity',0.5, ...
     'line mean',20, 'line sd', 2, 'line opacity',0.5);
