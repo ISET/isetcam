@@ -34,12 +34,12 @@ pupilMM = 3;   % Could be 6, 4.5, or 3
 fLengthM = 17e-3;
 
 wvfP  = wvfCreate('wave',thisWave,'name',sprintf('%d-pupil',pupilMM));
-wvfP  = wvfSet(wvfP,'pupil diameter',pupilMM);
+wvfP  = wvfSet(wvfP,'calc pupil diameter',pupilMM);
 wvfP  = wvfComputePSF(wvfP);
 wvfP  = wvfSet(wvfP,'focal length',fLengthM);  % 17 mm focal length for deg per mm
 
-pRange = 15;  % Microns
-wvfPlot(wvfP,'2d psf space','um',thisWave,pRange);
+pRange = 10;  % Microns
+wvfData = wvfPlot(wvfP,'2d psf space','um',thisWave,pRange);
 title(sprintf('Calculated pupil diameter %.1f mm',pupilMM));
 
 % This is the radius of the Airy disk for this fnumber
@@ -55,12 +55,38 @@ title(sprintf('WVF psf at %d',thisWave))
 
 oi = oiCreate('diffraction limited');
 oi = oiSet(oi,'optics focal length',fLengthM);
-oi = oiSet(oi,'optics fnumber', fLengthM*1e+3/pupilMM);  % I think 19 mm in ISET
+oi = oiSet(oi,'optics fnumber', fLengthM*1e+3/pupilMM);
 
 % Check values
 % oiGet(oi,'optics focal length','mm')
 % oiGet(oi,'optics aperture diameter','mm')
 uData = oiPlot(oi,'psf',[],thisWave);
+
+%% Compare wvfData and uData
+
+% We are not calculating the area under the PSF correctly.
+% We are just summing the values, not accounting for the sample
+% spacing of the x,y dimensions.  We want
+% 1 = \sum_xy psf(x,y) dx dy 
+% We are leaving out the dx and dy
+%
+% We should write a function psfArea(psfData)
+%
+
+[X,Y] = meshgrid(wvfData.x,wvfData.y);
+psf = wvfData.z(:)/sum(wvfData.z(:));
+sum(uData.psf(:))
+sum(psf(:))
+
+est = interp2(X,Y,psf,uData.x,uData.y);
+% mesh(uData.x,uData.y,est);
+ieNewGraphWin;
+plot(est(:),uData.psf(:),'o');
+identityLine;
+xlabel('wvf interp'); ylabel('oi data'); grid on;
+
+%%
+%{
 x = getMiddleMatrix(uData.x,50);
 y = getMiddleMatrix(uData.y,50);
 psf = getMiddleMatrix(uData.psf,50);
@@ -73,8 +99,9 @@ nSamp = 200;
 adZ = adZ + max(psf(:))*5e-3;
 hold on; p = plot3(adX,adY,adZ,'k-'); set(p,'linewidth',3); hold off;
 title(sprintf('WVF psf at %d',thisWave))
+%}
 
-% Get the otf data this way
+%% Get the otf data this way
 oiData = oiPlot(oi,'otf',[],thisWave);
 maxF = 2000;
 wvData = wvfPlot(wvfP,'otf','mm',thisWave,maxF);
@@ -147,19 +174,20 @@ nSamp = 200;
 adZ = adZ + max(wvfP.psf{1}(:))*1e-2;
 hold on; p = plot3(adX,adY,adZ,'k-'); set(p,'linewidth',3); hold off;
 
-%% If the OTF data are basically matched, we should be able to interpolate
-
-% That is, we should be able to take the wvf otf data and
-% interpolate them onto the oi otf frequency values.
+%% If the OTF data are basically matched
+% we should be able to take the wvf otf data and interpolate them onto
+% the oi otf frequency values.
 
 % There are very small differences (~0.005) at a few interpolated values
 est = interp2(wvData.fx,wvData.fy,wvData.otf,oiData.fx,oiData.fy,'cubic',0);
 ieNewGraphWin; plot(est(:),oiData.otf(:),'rx')
-axis equal
+axis equal; xlabel('Estimated from wvf'); ylabel('Original OI')
 identityLine
 
+% Some issue because of complex numbers.
 % Nearly perfect.
 % ieNewGraphWin; histogram(est(:) - oiData.otf(:),100)
+ ieNewGraphWin; histogram(abs(est(:)) - abs(oiData.otf(:)),100)
 
 %% Test scene
 
@@ -167,14 +195,14 @@ s = sceneCreate('radial lines');
 s = sceneSet(s,'hfov',2);
 ieAddObject(s);
 
-%% Calculate
-
 oi = oiCompute(oi,s);
 oi = oiSet(oi,'name',sprintf('oi f/# %.2f',oiGet(oi,'fnumber')));
 oiWindow(oi);
 
 %% Standard way of creating a diffraction limited optics
-oiD = oiCreate;
+
+% These do not match!!! BW and DHB to Check!!!
+oiD = oiCreate('diffraction limited');
 oiD = oiSet(oiD,'optics fnumber',wvfGet(wvfP,'fnumber'));
 oiD = oiCompute(oiD,s);
 oiD = oiSet(oiD,'name',sprintf('wvf f/# %.2f',wvfGet(wvfP,'fnumber')));
