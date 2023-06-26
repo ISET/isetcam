@@ -95,16 +95,22 @@ val = sum(psfData(:))*dArea;
 %
 
 [X,Y] = meshgrid(wvfData.x,wvfData.y);
+%{
 dx = wvfData.x(2) - wvfData.x(1);
 dy = wvfData.y(2) - wvfData.y(1);
 A1 = sum(wvfData.z(:))*dx*dy;
 psf1 = wvfData.z/A1;
+%}
+psf1 = wvfData.z/max(wvfData.z(:));
 % mesh(X,Y,psf1);
 
+%{
 dx = uData.x(1,2) - uData.x(1,1);
 dy = uData.y(2,1) - uData.y(1,1);
 A2 = sum(uData.psf(:))*dx*dy;
 psf2 = uData.psf/A2;
+%}
+psf2 = uData.psf/max(uData.psf(:));
 % mesh(X,Y,psf2);
 
 est2 = interp2(X,Y,psf1,uData.x,uData.y);
