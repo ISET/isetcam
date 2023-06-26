@@ -67,21 +67,52 @@ uData = oiPlot(oi,'psf',[],thisWave);
 % We are not calculating the area under the PSF correctly.
 % We are just summing the values, not accounting for the sample
 % spacing of the x,y dimensions.  We want
+%
 % 1 = \sum_xy psf(x,y) dx dy 
+%
 % We are leaving out the dx and dy
 %
-% We should write a function psfArea(psfData)
+% We should write 
+%{
+function val = psfArea(psfData,dArea)
+% Compute the area under a PSF given the area of each sample
+%
+% Synopsis
+%
+%
+% Input
+%  psfData
+%  dArea
+% 
+% Output
+%  
+% See also
+%
+val = sum(psfData(:))*dArea;
+%}
+% For this plot, we can scale the max to 1, which is not a great
+% approximation. 
 %
 
 [X,Y] = meshgrid(wvfData.x,wvfData.y);
-psf = wvfData.z(:)/sum(wvfData.z(:));
-sum(uData.psf(:))
-sum(psf(:))
+dx = wvfData.x(2) - wvfData.x(1);
+dy = wvfData.y(2) - wvfData.y(1);
+A1 = sum(wvfData.z(:))*dx*dy;
+psf1 = wvfData.z/A1;
+% mesh(X,Y,psf1);
 
-est = interp2(X,Y,psf,uData.x,uData.y);
-% mesh(uData.x,uData.y,est);
+dx = uData.x(1,2) - uData.x(1,1);
+dy = uData.y(2,1) - uData.y(1,1);
+A2 = sum(uData.psf(:))*dx*dy;
+psf2 = uData.psf/A2;
+% mesh(X,Y,psf2);
+
+est2 = interp2(X,Y,psf1,uData.x,uData.y);
+% mesh(uData.x,uData.y,est2);
+
+% We do a little better when we scale to a max of 1.
 ieNewGraphWin;
-plot(est(:),uData.psf(:),'o');
+plot(est2(:),psf2(:),'o');
 identityLine;
 xlabel('wvf interp'); ylabel('oi data'); grid on;
 
