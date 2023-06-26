@@ -1,8 +1,8 @@
-function wvf = wvfComputePSF(wvf, showBar, varargin)
+function wvf = wvfComputePSF(wvf, varargin)
 % Compute the psf for the wvf object. 
 %
 % Syntax:
-%   wvf = wvfComputePSF(wvf, [showbar])
+%   wvf = wvfComputePSF(wvf, varargin)
 %
 % Description:
 %    If the psf is already computed and not stale, this will return fast.
@@ -20,14 +20,12 @@ function wvf = wvfComputePSF(wvf, showBar, varargin)
 %
 % Inputs:
 %    wvf     - wavefront object
-%    showbar - (Optional) Boolean dictating whether or not to show the
-%              calculation wait bar. Default false.
 %
 % Outputs:
 %    wvf     - The wavefront object
 %
 % Optional key/value pairs:
-%    None.
+%    showbar - Show a waitbar for the calculations
 %
 % See Also:
 %    wvfGet, wvfCreate, wvfSet, wvfComputePupilFunction, 
@@ -50,25 +48,30 @@ function wvf = wvfComputePSF(wvf, showBar, varargin)
     wvf = wvfComputePSF(wvf)
 %}
 
-%% Input parses
-%
+%% Input parsing
+
 % Run ieParamFormat over varargin before passing to the parser,
 % so that keys are put into standard format
+varargin = ieParamFormat(varargin);
+
 p = inputParser;
-p.addParameter('nolca',false,@islogical);
-ieVarargin = ieParamFormat(varargin);
-ieVarargin = wvfKeySynonyms(ieVarargin);
-p.parse(ieVarargin{:});
+p.addParameter('nolca',false,@islogical);   % Default is to incorporate longitudinal chromatic aberration
+p.addParameter('showbar',false,@islogical); 
+p.addParameter('force',true,@islogical);    % Force computation by default
 
-%% 
-if notDefined('showBar'), showBar = false; end
+varargin = wvfKeySynonyms(varargin);
 
-% BW:  Maybe time to get rid of this 'if'
-%
+p.parse(varargin{:});
+
+showBar = p.Results.showbar;
+
+%% BW:  Maybe time to get rid of this 'if'
+
 % Only calculate if we need to -- PSF might already be computed and stored
 if (~isfield(wvf, 'psf') || ~isfield(wvf, 'PSF_STALE') || ...
         wvf.PSF_STALE || ~isfield(wvf, 'pupilfunc') || ...
-        ~isfield(wvf, 'PUPILFUNCTION_STALE') || wvf.PUPILFUNCTION_STALE) 
+        ~isfield(wvf, 'PUPILFUNCTION_STALE') || wvf.PUPILFUNCTION_STALE || ...
+        p.Results.force) 
   
     % Initialize parameters. These are calc wave.
     wList = wvfGet(wvf, 'calc wave');
@@ -79,7 +82,7 @@ if (~isfield(wvf, 'psf') || ~isfield(wvf, 'PSF_STALE') || ...
 
     % Make sure pupil function is computed. This function incorporates the
     % chromatic aberration of the human eye.
-    wvf = wvfComputePupilFunction(wvf, showBar,'nolca',p.Results.nolca);
+    wvf = wvfComputePupilFunction(wvf, showBar,'nolca',p.Results.nolca,'force',p.Results.force);
 
     % wave = wvfGet(wvf, 'wave');
     psf = cell(nWave, 1);
@@ -149,6 +152,8 @@ if (~isfield(wvf, 'psf') || ~isfield(wvf, 'PSF_STALE') || ...
     
     wvf.psf = psf;
     wvf.PSF_STALE = false;
+else
+    disp('Calculation not needed.')
 end
 
 end

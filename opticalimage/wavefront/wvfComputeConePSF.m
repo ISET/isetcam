@@ -122,7 +122,7 @@ nWls = length(wls);
 % won't crash out if just a single wavelength is used.
 % Since weighting vector is normalized, we can use any
 % delta lambda that isn't zero. Just use 1.
-if length(wls(:) == 1)
+if numel(wls(:)) == 1
     S = [wls(1) 1 1];
 else
     S = WlsToS(wls);

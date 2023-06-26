@@ -97,11 +97,13 @@ function wvf = wvfComputePupilFunction(wvf, showBar, varargin)
 %
 % Run ieParamFormat over varargin before passing to the parser,
 % so that keys are put into standard format
+varargin = ieParamFormat(varargin);
+
 p = inputParser;
-p.addParameter('nolca',false,@islogical);
-ieVarargin = ieParamFormat(varargin);
-ieVarargin = wvfKeySynonyms(ieVarargin);
-p.parse(ieVarargin{:});
+p.addParameter('nolca',false,@islogical);  % Use human longitudinal chromatic aberration by default
+p.addParameter('force',true,@islogical);   % Force computation
+varargin = wvfKeySynonyms(varargin);
+p.parse(varargin{:});
 
 %% Parameter checking
 if notDefined('wvf'), error('wvf required'); end
@@ -109,7 +111,8 @@ if notDefined('showBar'), showBar = ieSessionGet('wait bar'); end
 
 % Only do this if we need to. It might already be computed
 if (~isfield(wvf, 'pupilfunc') || ~isfield(wvf, 'PUPILFUNCTION_STALE') ...
-        || wvf.PUPILFUNCTION_STALE)
+        || wvf.PUPILFUNCTION_STALE || ...
+        p.Results.force)
     
     % Make sure calculation pupil size is less than or equal to the pupil
     % size that gave rise to the measured coefficients.
@@ -218,13 +221,26 @@ if (~isfield(wvf, 'pupilfunc') || ~isfield(wvf, 'PUPILFUNCTION_STALE') ...
         % We flip the sign to describe change in optical power when we pass
         % this through wvfDefocusDioptersToMicrons.
         if (p.Results.nolca)
-            lcaDiopters = 0;
+            % No longitudinal chromatic aberration included.  If we
+            % have only one wavelength, perhaps we should not included
+            % chromatic aberration.  But maybe we should, say for the
+            % human case?
+            disp('No LCA.')
+
+            % The diopters is normally translated into microns, below.
+            % So specificying lcaMicrons is enough, no need for
+            % lcaDiopters.
+            %
+            % lcaDiopters = 0;
+            %
             lcaMicrons = 0;
         else
             if (isempty(customLCAfunction))
+                disp('Using human LCA wvfLCAFromWave...')
                 lcaDiopters = wvfLCAFromWavelengthDifference(wvfGet(wvf, ...
                     'measured wavelength', 'nm'), thisWave);
             else
+                disp('Using a custom LCA...')
                 lcaDiopters = customLCAfunction(wvfGet(wvf, ...
                     'measured wavelength', 'nm'), thisWave);
             end
