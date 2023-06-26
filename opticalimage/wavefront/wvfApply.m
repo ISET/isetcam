@@ -16,6 +16,11 @@ function oi = wvfApply(scene, wvf, varargin)
 % Inputs:
 %   scene: An ISET scene structure.
 %
+% Optional key/val pairs
+%   nolca - No human longitudinal chromatic aberration in wvfComputePSF
+%           (default true)
+%   force - Require wvfComputePSF to run (default true)
+%
 % Output:
 %   opticalImage: An ISET optical image structure.
 %
@@ -61,10 +66,16 @@ varargin = ieParamFormat(varargin);
 p = inputParser;
 p.addRequired('scene', @isstruct);
 p.addRequired('wvf',@isstruct)
+p.addParameter('nolca',true,@islogical);
+p.addParameter('force',true,@islogical);
+
 p.parse(scene,wvf,varargin{:});
 
-wvf = wvfComputePSF(wvf);
+%%
+wvf = wvfComputePSF(wvf,'nolca',p.Results.nolca,'force',p.Results.force);
+
 oi = wvf2oi(wvf);
+
 oi = oiCompute(oi,scene);
 
 end

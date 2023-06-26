@@ -138,7 +138,7 @@ normalizeFlag = contains(pType, 'normalized');
 airydisk = false;
 if ~isempty(varargin)
     for ii=1:numel(varargin)
-        airydisk = strcmp(ieParamFormat(varargin{ii}),'airydisk');
+        airydisk = strncmp(ieParamFormat(varargin{ii}),'airydisk',8);
         if airydisk, break; end
     end
 end
@@ -216,7 +216,11 @@ switch(pType)
             [adX,adY,adZ] = ieShape('circle',nCircleSamples,radius);
             ringZ = max(psf(:));
             hold on; figure(gcf);
+            % Up high
             p = plot3(adX,adY,adZ + ringZ,'k-');
+            set(p,'linewidth',3);
+            % At zero
+            p = plot3(adX,adY,adZ + ringZ*5e-3,'k-');
             set(p,'linewidth',3); hold off;
         end
         
