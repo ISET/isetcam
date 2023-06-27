@@ -36,9 +36,11 @@ nsides = 3;
 % the images below in the block comment.
 wvf = wvfPupilFunction(wvf,'amplitude',pupilAmp);
 
+%{
 % Even if I change the defocus, the amp and phase are OK.
 wvf = wvfSet(wvf,'zcoeff',1,{'defocus'});
 wvf = wvfPupilFunction(wvf,'amplitude',pupilAmp);
+%}
 
 % But computing the PSF incorrectly alters the pupil amplitude
 % function.  And also, it appears, the phase function.

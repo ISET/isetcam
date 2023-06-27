@@ -100,16 +100,18 @@ function wvf = wvfComputePupilFunction(wvf, showBar, varargin)
 varargin = ieParamFormat(varargin);
 
 p = inputParser;
+p.addRequired('wvf',@isstruct);
+p.addParameter('showbar',false,@islogical)
 p.addParameter('nolca',false,@islogical);  % Use human longitudinal chromatic aberration by default
 p.addParameter('force',true,@islogical);   % Force computation
 varargin = wvfKeySynonyms(varargin);
 p.parse(varargin{:});
 
-%% Parameter checking
-if notDefined('wvf'), error('wvf required'); end
-if notDefined('showBar'), showBar = ieSessionGet('wait bar'); end
+showBar = p.Results.showbar;
 
-% Only do this if we need to. It might already be computed
+%% Parameter checking
+
+% Only calculate this if we need to. It might already be computed
 if (~isfield(wvf, 'pupilfunc') || ~isfield(wvf, 'PUPILFUNCTION_STALE') ...
         || wvf.PUPILFUNCTION_STALE || ...
         p.Results.force)
