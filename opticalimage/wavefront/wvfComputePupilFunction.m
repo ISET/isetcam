@@ -225,7 +225,7 @@ if (~isfield(wvf, 'pupilfunc') || ~isfield(wvf, 'PUPILFUNCTION_STALE') ...
             % have only one wavelength, perhaps we should not included
             % chromatic aberration.  But maybe we should, say for the
             % human case?
-            disp('No LCA.')
+            % disp('No LCA.')
 
             % The diopters is normally translated into microns, below.
             % So specificying lcaMicrons is enough, no need for
@@ -236,11 +236,11 @@ if (~isfield(wvf, 'pupilfunc') || ~isfield(wvf, 'PUPILFUNCTION_STALE') ...
             lcaMicrons = 0;
         else
             if (isempty(customLCAfunction))
-                disp('Using human LCA wvfLCAFromWave...')
+                % disp('Using human LCA wvfLCAFromWave...')
                 lcaDiopters = wvfLCAFromWavelengthDifference(wvfGet(wvf, ...
                     'measured wavelength', 'nm'), thisWave);
             else
-                disp('Using a custom LCA...')
+                % disp('Using a custom LCA...')
                 lcaDiopters = customLCAfunction(wvfGet(wvf, ...
                     'measured wavelength', 'nm'), thisWave);
             end
