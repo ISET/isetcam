@@ -223,8 +223,9 @@ oiWindow(oiWVFD);
 
 %% Now include human longitudinal chromatic aberration
 
-wvfDCA = wvfComputePSF(wvfD,'nolca',false,'force',true);   
-oiDCA = wvfApply(radialScene,wvfDCA);
+% This should not have to have two nolca and force cases.
+wvfDCA = wvfComputePSF(wvfD,'no lca',false,'force',true);
+oiDCA = oiCompute(wvf2oi(wvfDCA),radialScene);
 oiDCA = oiSet(oiDCA,'name','Defocus and LCA');
 oiWindow(oiDCA);
 
