@@ -24,9 +24,6 @@ wvf = wvfSet(wvf,'calc pupil diameter',3);
 wvf = wvfSet(wvf,'wave',550);
 wvf = wvfSet(wvf,'focal length',0.017);
 
-% wvf = wvfSet(wvf,'zcoeffs',0.5,{'defocus'});
-% wvf = wvfSet(wvf,'zcoeffs',-2,{'vertical_astigmatism'});
-
 % There are many parameters on this function, including dot mean, line
 % mean, dot sd, line sd, line opacity.  They are returned in params
 nsides = 3;
@@ -35,8 +32,19 @@ nsides = 3;
     'line mean',20, 'line sd', 2, 'line opacity',0.5);
 % ieNewGraphWin; imagesc(pupilAmp); colormap(gray); axis image
 
+% At this point the pupil function is good, which I check by plotting
+% the images below in the block comment.
 wvf = wvfPupilFunction(wvf,'amplitude',pupilAmp);
-wvf = wvfComputePSF(wvf);
+
+% Even if I change the defocus, the amp and phase are OK.
+wvf = wvfSet(wvf,'zcoeff',1,{'defocus'});
+wvf = wvfPupilFunction(wvf,'amplitude',pupilAmp);
+
+% But computing the PSF incorrectly alters the pupil amplitude
+% function.  And also, it appears, the phase function.
+wvf = wvfComputePSF(wvf,'nolca',true,'force',true);
+
+% Consequently, the PSF is no good.
 wvfPlot(wvf,'psf','um',550,10,'airy disk');
 
 %{
@@ -46,7 +54,7 @@ subplot(1,2,2); wvfPlot(wvf,'image pupil phase','um',550,'no window');
 %}
 
 %% Calculate the oi from the scene, but using the wvf
-oi = wvfApply(scene,wvf);
+oi = wvfApply(scene,wvf,'no lca',true);
 
 % Show the oi PSF
 oiPlot(oi,'psf550');
