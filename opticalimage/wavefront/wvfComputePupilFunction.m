@@ -190,10 +190,14 @@ if (~isfield(wvf, 'pupilfunc') || ~isfield(wvf, 'PUPILFUNCTION_STALE') ...
         [xpos, ypos] = meshgrid(pupilPos);
         ypos = -ypos;
  
-        % Set up the amplitude of the pupil function. This depends
-        % entirely on the Stiles Crawford Effect (SCE) correction. For
-        % x, y positions within the pupil, rho is used to set the
-        % pupil function amplitude.
+        % Set up the pupil amplitude function. In the original code,
+        % only the Stiles Crawford Effect (SCE) was implemented this
+        % way. For x, y positions within the pupil, rho is used to set
+        % the pupil function amplitude.  More recently, however, we
+        % added a pupil amplitude slot into the wavefront.  Then the
+        % zcoeffs are used to compute the pupil phase function and the
+        % pupil amplitude slot holds the pupil amplitude function.
+        % Together, they are combined to create the pupilFunction.
         if ~all(rho)
             % Here if all the rho values are 0, which means do not use
             % SCE calculation.
