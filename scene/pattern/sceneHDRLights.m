@@ -1,4 +1,4 @@
-function scene = sceneHDRLights()
+function scene = sceneHDRLights(varargin)
 % Create a HDR chart of circles, squares and lines (lights) on a black
 % background
 %
@@ -19,6 +19,8 @@ function scene = sceneHDRLights()
 %}
 
 %%
+p = inputParser;
+
 imSize = 384;
 
 %% Spatial pattern
