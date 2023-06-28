@@ -1,8 +1,8 @@
-function wvf = wvfComputePupilFunction(wvf, showBar, varargin)
+function wvf = wvfComputePupilFunction(wvf, varargin)
 % Compute the pupil fuction given the wvf for the human eye case
 %
 % Syntax:
-%   wvf = wvfComputePupilFunction(wvf, [showbar])
+%   wvf = wvfComputePupilFunction(wvf, varargin)
 %
 % Description:
 %    This version of the pupil function calculation is designed for
@@ -105,7 +105,7 @@ p.addParameter('showbar',false,@islogical)
 p.addParameter('nolca',false,@islogical);  % Use human longitudinal chromatic aberration by default
 p.addParameter('force',true,@islogical);   % Force computation
 varargin = wvfKeySynonyms(varargin);
-p.parse(varargin{:});
+p.parse(wvf,varargin{:});
 
 showBar = p.Results.showbar;
 
