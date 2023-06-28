@@ -9,6 +9,9 @@ ieInit;
 %% Create some optics with a little defocus and astigmatism
 
 wvf = wvfCreate;    % Default wavefront 5.67 fnumber
+pupilMM = 3; flengthM = 7e-3;
+wvfSet(wvf,'calc pupil diameter',pupilMM);
+wvfSet(wvf,'focal length',flengthM);
 
 % Now create some flare based on the aperture, dust and scratches.
 % There are many parameters for this function, including dot mean, line
@@ -50,7 +53,10 @@ set(gca,'xlim',[-20 20],'ylim',[-20 20]);
 [oiApply, pMask, psf] = piFlareApply(scenePoint,'num sides aperture',nsides, ...
     'focal length',wvfGet(wvf,'focal length','m'), ...
     'fnumber',wvfGet(wvf,'fnumber'));
+
+% piFlareApply psf
 ieNewGraphWin; mesh(getMiddleMatrix(psf(:,:,15),[120,120]));
+title('piFlareApply psf');
 
 % And the effects are therefore quite different.
 oiApply = oiSet(oiApply,'name','flare');
