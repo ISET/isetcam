@@ -26,7 +26,7 @@ darkScene = sceneAdjustLuminance(scene,1e-8);
 %% Compute the optical image
 oi = vcGetObject('opticalimage');
 if isempty(oi), oi = oiCreate('default',[],[],0); end
-darkOI = oiCompute(darkScene,oi);
+darkOI = oiCompute(oi,darkScene);
 
 
 %% Create a sensor

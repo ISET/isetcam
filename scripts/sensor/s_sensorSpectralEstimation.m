@@ -64,7 +64,7 @@ for ii=1:nLights
     % ieAddObject(scene); sceneWindow;
     
     % Compute the optical image
-    oi     = oiCompute(scene,oi);
+    oi     = oiCompute(oi,scene);
     % ieAddObject(oi); oiWindow;
     
     % Compute the sensor response.

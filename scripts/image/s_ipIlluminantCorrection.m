@@ -79,7 +79,7 @@ for ii=1:nIlluminant
     scene = sceneSet(scene,'name',sprintf('surface %.1f',bbodyList(ii)));
     ieAddObject(scene);   % sceneWindow;
     
-    oi = oiCompute(scene,oi);
+    oi = oiCompute(oi,scene);
     ieAddObject(oi);      % oiWindow;
     
     nikon = sensorCompute(nikon,oi);

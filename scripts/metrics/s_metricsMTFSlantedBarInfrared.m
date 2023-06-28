@@ -48,7 +48,7 @@ oi = oiSet(oi,'optics fnumber',fNumber);
 
 % Now, compute the optical image from this scene and the current optical
 % image properties
-oi = oiCompute(scene,oi);
+oi = oiCompute(oi,scene);
 oiWindow(oi);
 
 %% Create sensor

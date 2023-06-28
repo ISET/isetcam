@@ -51,7 +51,7 @@ totalQ = zeros(1,length(fnumbers));
 
 for ff = 1:length(fnumbers)
     oi = oiSet(oi,'optics fnumber',fnumbers(ff));
-    oi = oiCompute(scene,oi);
+    oi = oiCompute(oi,scene);
     spectralIrradiance = oiGet(oi,'roi mean photons',roiRect);
     totalQ(ff) = sum(spectralIrradiance);
 end

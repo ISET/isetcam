@@ -29,7 +29,7 @@ scene = sceneSet(scene,'fov',hFov);
 % vcAddAndSelectObject(scene); sceneWindow;
 
 oi = oiCreate('human');
-oi = oiCompute(scene,oi);
+oi = oiCompute(oi,scene);
 % vcAddAndSelectObject(oi); oiWindow(oi);
 
 %% Create the human sensor with a size matched to the scene

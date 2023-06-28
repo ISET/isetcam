@@ -231,6 +231,6 @@ ieAddObject(scene);
 oi = oiCreate('default');
 oi = oiSet(oi,'optics fnumber',1e-3);
 oi = oiSet(oi,'optics offaxis method','skip');
-oi = oiCompute(scene,oi);
+oi = oiCompute(oi, scene);
 
 return;
