@@ -1,30 +1,32 @@
-%%  Flare simulations using wvf methods
+%% Flare simulation using the wvf method
 % 
+% The flare simulation operates by creating pupil amplitude functions that
+% have non-circular shapes (polygons) and contain scratches and dust in the
+% aperture itself.
 %
 % See also 
-%   v_opticsVWF, piFlareApply
-%
-
+%   v_opticsVWF
 
 %%
 ieInit;
 
-%%
+%% A simple test scene
 scene = sceneCreate('point array',128,32);
 scene = sceneSet(scene,'fov',1);
-sceneWindow(scene);
+% sceneWindow(scene);
 
 %% Experiment with different wavefronts
 
 % We can start with any Zernike coefficients
 wvf = wvfCreate;
-% fieldsize = wvfGet(wvf,'fieldsizemm');
-% wvf = wvfSet(wvf,'fieldsizemm',2*fieldsize);
 wvf = wvfSet(wvf,'calc pupil diameter',3);
 wvf = wvfSet(wvf,'wave',550);
 wvf = wvfSet(wvf,'focal length',0.017);
 
-% There are many parameters on this function, including dot mean, line
+% fieldsize = wvfGet(wvf,'fieldsizemm');
+% wvf = wvfSet(wvf,'fieldsizemm',2*fieldsize);
+
+% There are many parameters for this function, including dot mean, line
 % mean, dot sd, line sd, line opacity.  They are returned in params
 nsides = 3;
 [pupilAmp, params] = wvfPupilAmplitude(wvf,'nsides',nsides,...
@@ -33,16 +35,12 @@ nsides = 3;
 % ieNewGraphWin; imagesc(pupilAmp); colormap(gray); axis image
 
 % At this point the pupil function is good, which I check by plotting
-% the images below in the block comment.
+% the images below in the block comment.  
 wvf = wvfPupilFunction(wvf,'amplitude',pupilAmp);
 
-% Even if I change the defocus, the amp and phase are OK.
-wvf = wvfSet(wvf,'zcoeff',1,{'defocus'});
-wvf = wvfPupilFunction(wvf,'amplitude',pupilAmp);
-
-% But computing the PSF incorrectly alters the pupil amplitude
-% function.  And also, it appears, the phase function.
-wvf = wvfComputePSF(wvf,'nolca',true,'force',true);
+% We do not want the wvfComputePSF to recompute the pupil function.  So it
+% is crucial to set 'force' to false.
+wvf = wvfComputePSF(wvf,'force',false);
 
 % Consequently, the PSF is no good.
 wvfPlot(wvf,'psf','um',550,10,'airy disk');
@@ -53,8 +51,20 @@ subplot(1,2,1); wvfPlot(wvf,'image pupil amp','um',550,'no window');
 subplot(1,2,2); wvfPlot(wvf,'image pupil phase','um',550,'no window');
 %}
 
+%{
+% Even if I change the defocus, the amp and phase are OK.
+wvf = wvfSet(wvf,'zcoeff',1,{'defocus'});
+wvf = wvfPupilFunction(wvf,'amplitude',pupilAmp);
+%}
+
 %% Calculate the oi from the scene, but using the wvf
-oi = wvfApply(scene,wvf,'no lca',true);
+
+%{
+% Also works
+ oi = wvfApply(scene,wvf,'no lca',true,'force',false);
+ oi = oiCompute(oi,scene);
+%}
+oi = oiCompute(wvf,scene);
 
 % Show the oi PSF
 oiPlot(oi,'psf550');
@@ -63,51 +73,26 @@ set(gca,'xlim',[-10 10],'ylim',[-10 10]);
 oi = oiSet(oi,'name',sprintf('wvf-%d',nsides));
 oi = oiCrop(oi,'border');
 oiWindow(oi);
-oiSet(oi,'gamma',0.5);
-
-%% The same scene through piFlareApply
-
-% Seem more blurry, but it should match, no?
-
-[oi, pMask, psf] = piFlareApply(scene,'num sides aperture',nsides, ...
-    'focal length',wvfGet(wvf,'focal length','m'), ...
-    'fnumber',wvfGet(wvf,'fnumber'));
-oi = oiSet(oi,'name',sprintf('flare-%d',nsides));
-oiWindow(oi);
-
-% piFlareApply does not put the proper OTF information in the optical
-% image. Therefore, the oiPlot is not correct.  The photons, though,
-% are approximately correct.
-ieNewGraphWin; 
-mesh(getMiddleMatrix(psf(:,:,15),20));
-grid on;
-%{
-oiPlot(oi,'psf550');
-set(gca,'xlim',[-10 10],'ylim',[-10 10]);
-%}
+oiSet(oi,'gamma',0.5); drawnow;
 
 %% HDR Test scene
-% Uses sceneHDRLights
-% {
+
 scene = sceneCreate('hdr');
 scene = sceneSet(scene,'fov',1);
-% sceneWindow(scene);
-%}
 
-oi = wvfApply(scene,wvf);
+oi = oiCompute(oi,scene);
 oi = oiSet(oi,'name','wvf');
-
 oiWindow(oi);
 oiSet(oi,'gamma',0.5);
 
 %% The same scene through piFlareApply
 
 % wvfGet(wvf,'calc pupil diameter','mm')
-[oi, pMask, psf] = piFlareApply(scene,'num sides aperture',nsides, ...
+[oiApply, pMask, psf] = piFlareApply(scene,'num sides aperture',nsides, ...
     'focal length',wvfGet(wvf,'focal length','m'), ...
     'fnumber',wvfGet(wvf,'fnumber'));
-oi = oiSet(oi,'name','flare');
-oiWindow(oi);
-oiSet(oi,'gamma',0.5);
+oiApply = oiSet(oiApply,'name','flare');
+oiWindow(oiApply);
+oiSet(oiApply,'gamma',0.5);
 
 %%

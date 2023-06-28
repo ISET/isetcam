@@ -1,8 +1,8 @@
-function oi = oiCompute(scene,oi,opticsModel)
+function oi = oiCompute(oi,scene,opticsModel)
 % Gateway routine for optical image irradiance calculation
 %
 % Syntax
-%    oi = oiCompute(scene,oi,[opticsModel])
+%    oi = oiCompute(oi,scene,[opticsModel])
 %
 % Brief description:
 %
@@ -106,12 +106,21 @@ function oi = oiCompute(scene,oi,opticsModel)
 %  [sceneSize(1)/8 sceneSize(2)/8 sceneSize(1) sceneSize(2)]
 %
 
-if ~exist('scene','var') || isempty(scene), error('Scene required.'); end
 if ~exist('oi','var') || isempty(oi), error('Opticalimage required.'); end
+if ~exist('scene','var') || isempty(scene), error('Scene required.'); end
+
+if strcmp(oi.type,'wvf')
+    % User sent in an wvf, not an oi.  We convert it to an oi here
+    oi = wvf2oi(oi);
+end
+
+% Ages ago, we had code that flipped the order of scene and oi.  We catch
+% that here.
 if strcmp(oi.type,'scene') && strcmp(scene.type,'opticalimage')
-    % disp('oiCompute: flipping arguments')
+    warning('flipping oi and scene variables.')
     tmp = scene; scene = oi; oi = tmp; clear tmp
 end
+
 if ~exist('opticsModel','var') || isempty(opticsModel)
     optics = oiGet(oi,'optics');
     opticsModel = opticsGet(optics,'model');

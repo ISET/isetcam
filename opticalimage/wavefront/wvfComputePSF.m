@@ -80,9 +80,16 @@ if (~isfield(wvf, 'psf') || ~isfield(wvf, 'PSF_STALE') || ...
     rotatePSF90degs = wvfGet(wvf, 'rotatepsf90degs');
     pupilfunc = cell(nWave, 1);
 
-    % Make sure pupil function is computed. This function incorporates the
-    % chromatic aberration of the human eye.
-    wvf = wvfComputePupilFunction(wvf, showBar,'nolca',p.Results.nolca,'force',p.Results.force);
+    % Make sure pupil function is computed. 
+    % 
+    % By default, this function incorporates the chromatic aberration of
+    % the human eye.  But we can turn that off with the 'no lca' parameter.
+    %
+    % Also, this function may or may not force a new computation of the
+    % pupil function.  We can turn that off with the 'force' parameter.
+    wvf = wvfComputePupilFunction(wvf,'showbar',p.Results.showbar, ...
+        'nolca',p.Results.nolca,...
+        'force',p.Results.force);
 
     % wave = wvfGet(wvf, 'wave');
     psf = cell(nWave, 1);
