@@ -57,3 +57,5 @@ for ww = 400:50:700
     AD = airyDisk(ww,fNumber,'units','um','diameter',true);
     title(sprintf('Pupil %.2f Airy %.2f',ww,AD));
 end
+
+%%
