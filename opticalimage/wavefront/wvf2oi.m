@@ -21,8 +21,14 @@ function oi = wvf2oi(wvf,varargin)
 % Outputs:
 %    oi  - Optical image struct
 %
+% See also
+%   s_wvfDiffraction
 %
 % Notes:
+%  * BW:  The wvf2oi(wvf) function did not match correctly.  I spent a
+%     bunch of time checking for the diffraction limited case on both
+%     the wvf side and the oi side.  Still more to check (07.01.23).
+%     See s_wvfDiffraction.m
 %  * [NOTE: DHB - There is an interpolation in the loop that computes the
 %     otf wavelength by wavelength.  This appears to be there to handle the
 %     possibility that the frequency support in the wvf structure could be
@@ -80,8 +86,10 @@ p.addParameter('model','humanmw',@(x)(ismember(ieParamFormat(x),validNames)));
 p.parse(wvf,varargin{:});
 oiModel = p.Results.model;
 
-%%
-wave = wvfGet(wvf, 'calc wave');
+%% Collect up basic wvf parameters
+wave    = wvfGet(wvf, 'calc wave');
+fnumber = wvfGet(wvf,'fnumber');
+flength = wvfGet(wvf,'flength','m');
 
 %% First we figure out the frequency support.
 fMax = 0;
@@ -93,16 +101,17 @@ for ww = 1:length(wave)
     end
 end
 
-% Make the frequency support in ISET as the same number of samples with the
-% wavelength with the highest frequency support from WVF.
+% Match the frequency support in ISET with the number of samples with
+% the wavelength with the highest frequency support from WVF.
 %
 % This support is set up with sf 0 at the center of the returned vector,
 % which matches how the wvf object returns the otf.
 %
-% This section is here in case the frequency support for the wvf otf varies
-% with wavelength.  Not sure that it ever does. There is a conditional that
-% skips the inerpolation if the frequency support at a wavelength matches
-% that with the maximum, so this doesn't cost us much time.
+% This section is here in case the frequency support for the WVF otf
+% varies with wavelength.  Not sure that it ever does. There is a
+% conditional that skips the inerpolation if the frequency support at
+% a wavelength matches that with the maximum, so this doesn't cost us
+% much time.
 fx = wvfGet(wvf, 'otf support', 'mm', maxWave);
 fy = fx;
 [X, Y] = meshgrid(fx, fy);
@@ -112,14 +121,15 @@ if (floor(tmpN / 2) + 1 ~= c0)
     error('We do not understand where sf 0 should be in the sf array');
 end
 
-%% Set up the OTF variable for use in the ISETBIO representation
-nWave = length(wave);
+%% Set up the OTF variable
+
+nWave  = length(wave);
 nSamps = length(fx);
-otf = zeros(nSamps, nSamps, nWave);
+otf    = zeros(nSamps, nSamps, nWave);
 
 %% Interpolate the WVF OTF data into the ISET OTF data for each wavelength.
 %
-% The interpolation seems to be here in case there is different frequency
+% The interpolation is here in case there is different frequency
 % support in the wvf structure at different wavelengths.
 for ww=1:length(wave)
     f = wvfGet(wvf, 'otf support', 'mm', wave(ww));
@@ -137,19 +147,24 @@ for ww=1:length(wave)
         est = interp2(f, f', thisOTF, X, Y, 'cubic', 0);
     end
     
-    % Isetbio wants the otf with (0, 0) sf at the upper left.  We
-    % accomplish this by applying ifftshift to the wvf centered format.
+    % ISETBio wants the OTF with (0, 0) sf at the upper left.  We
+    % accomplish this by applying ifftshift to the wvf centered
+    % format.
     otf(:, :, ww) = ifftshift(est);
 end
 % ieNewGraphWin; mesh(X,Y,abs(ifftshift(otf(:,:,ww))));
 
-%% Place the frequency support and OTF data into an ISET structure.
+%% Set the frequency support and OTF data into the OI
 
-% Build template with standard defaults
-% When we integrated with ISETBio, we had a different default oi.
-% This matters a lot, somehow.  Testing now with this default.  We
-% should probably clarify.
+% Build an OI template with standard defaults for this model.
+%
+% I am not sure why the model matters (BW). I think we are going to
+% force the user to specify a model for a while, until we understand
+% this.  The code works pretty well for diffraction limited, at this
+% time.
 oi = oiCreate(oiModel);
+oi = oiSet(oi,'optics fnumber',fnumber);
+oi = oiSet(oi,'optics focal length',flength);
 
 oi = oiSet(oi, 'name', wvfGet(wvf, 'name'));
 
@@ -162,7 +177,9 @@ oi = oiSet(oi, 'wave', wave);
 
 % Set the pupil size
 % Set the fNumber to correspond to the pupil size
+%{
 focalLengthMM = oiGet(oi,'focal length')*1000;
 oi = oiSet(oi, 'optics fnumber', focalLengthMM/wvfGet(wvf,'calc pupil size'));
+%}
 
 end

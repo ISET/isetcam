@@ -199,9 +199,7 @@ switch(pType)
         s = sprintf('Position (%s)', unit);
         xlabel(s); ylabel(s); zlabel('Relative amplitude')
         
-        uData.x = samp;
-        uData.y = samp;
-        uData.z = psf;
+        uData.x = samp; uData.y = samp; uData.z = psf;
         set(gcf, 'userdata', uData);
 
         if airydisk
@@ -217,11 +215,10 @@ switch(pType)
             ringZ = max(psf(:));
             hold on; figure(gcf);
             % Up high
-            p = plot3(adX,adY,adZ + ringZ,'k-');
-            set(p,'linewidth',3);
-            % At zero
-            p = plot3(adX,adY,adZ + ringZ*5e-3,'k-');
-            set(p,'linewidth',3); hold off;
+            p = plot3(adX,adY,adZ + ringZ,'k-'); set(p,'linewidth',3);
+            % Down low
+            p = plot3(adX,adY,adZ + ringZ*0.5,'k-'); set(p,'linewidth',3); 
+            hold off;
         end
         
     case {'imagepsf', 'imagepsfspace', 'imagepsfspacenormalized'}

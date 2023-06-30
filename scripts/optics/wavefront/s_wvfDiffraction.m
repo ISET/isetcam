@@ -11,13 +11,40 @@
 %%
 ieInit;
 
-%%
+%%  The only time this seems to be right is for 17 mm focal length
+
 wvf = wvfCreate;    % Default wavefront 5.67 fnumber
 
-flengthM = 7e-3;
-thisWave = 600;
+flengthMM = 6; flengthM = flengthMM*1e-3;
+fNumber = 3; thisWave = 550;
 wvf = wvfSet(wvf,'measured pupil diameter',20);
+wvf = wvfSet(wvf,'calc pupil diameter',flengthMM/fNumber);
 wvf = wvfSet(wvf,'focal length',flengthM);
+
+wvf = wvfComputePSF(wvf,'lca',false,'force',true);
+wvfPlot(wvf,'2d psf space','um',thisWave,10,'airy disk');
+AD = airyDisk(thisWave,fNumber,'units','um','diameter',true);
+title(sprintf("fNumber %.2f Wave %.0f Airy Diam %.2f",wvfGet(wvf,'fnumber'),wvfGet(wvf,'wave'),AD));
+
+%% The fnumber is converted correctly if we set the model correctly.
+%
+% The default is humanmw.  But it is best to be explicit and in this
+% case use 'diffraction limited'.
+oi = wvf2oi(wvf,'model','diffraction limited');
+% oi = wvf2oi(wvf,'model','humanmw');
+
+uData = oiPlot(oi,'psf',thisWave);
+assert(wvfGet(wvf,'fnumber') == oiGet(oi,'optics fnumber'))
+
+AD = airyDisk(oiGet(oi,'wave'),oiGet(oi,'optics fnumber'),'units','um','diameter',true);
+pRange = ceil(max(uData.x(:)));
+tMarks = round(linspace(-pRange,pRange,5));
+set(gca,'xlim',[-pRange pRange],'xtick',tMarks);
+set(gca,'ylim',[-pRange pRange],'ytick',tMarks);
+title(sprintf("fNumber %.2f Wave %.0f Airy Diam %.2f",oiGet(oi,'optics fnumber'),thisWave,AD));
+
+%% Let's plot a line through the origin for detail.
+oiPlot(oi,'psf xaxis',[],thisWave,'um');
 
 %% Measured and calc waves differ, but no LCA in this section
 wvf = wvfSet(wvf,'calc wave',thisWave);
