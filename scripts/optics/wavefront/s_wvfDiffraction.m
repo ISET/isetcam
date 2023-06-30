@@ -4,7 +4,10 @@
 % Different pupil sizes
 %
 % See also
-%  
+%  oiGet(oi,'optics psf data')
+%  oiGet(oi,'optics psf xaxis')
+%  oiPlot() ...
+
 %%
 ieInit;
 
@@ -136,13 +139,11 @@ grid on; set(gca,'xlim',[-5 5],'xtick',-5:1:5);
 oi = wvf2oi(wvf);
 
 % Show it via OI
-uData = oiPlot(oi,'psf550'); 
-samp = uData.x(1,:);
-foo = interp2(uData.x,uData.y,uData.psf,0,samp);
-
-figure(lineFig);
-hold on; plot(samp,foo,'kx');
+uData = oiGet(oi,'optics psf xaxis'); 
+ieNewGraphWin;
+plot(uData.samp,uData.data,'-k');
 grid on; set(gca,'xlim',[-5 5],'xtick',-5:1:5);
+
 
 %%  This one is correct.
 

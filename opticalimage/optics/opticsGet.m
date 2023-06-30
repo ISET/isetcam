@@ -804,11 +804,22 @@ switch parm
         if length(varargin) >= 3, nSamp = varargin{3}; end
 
         psfData = opticsGet(optics,'psf data',thisWave,units,nSamp);
-        val.data = interp2(psfData.xy(:,:,1),psfData.xy(:,:,2),psfData.psf,0,psfData.xy(1,:));
-        val.samp = psfData.xy(1,:);
+        val.data = interp2(psfData.xy(:,:,1),psfData.xy(:,:,2),psfData.psf,0,psfData.xy(1,:,1));
+        val.samp = psfData.xy(1,:,1); val.samp = val.samp(:);
 
     case {'psfyaxis'}
-        % The psf data just along the yaxis 
+        % The psf data interpolated along the axis
+        thisWave = opticsGet(optics,'wave');
+        if numel(thisWave) > 1, thisWave = 550; end
+        units = 'um'; nSamp = 25;
+
+        if length(varargin) >= 1, thisWave = varargin{1}; end
+        if length(varargin) >= 2, units = varargin{2}; end
+        if length(varargin) >= 3, nSamp = varargin{3}; end
+
+        psfData = opticsGet(optics,'psf data',thisWave,units,nSamp);
+        val.data = interp2(psfData.xy(:,:,1),psfData.xy(:,:,2),psfData.psf,0,psfData.xy(:,1,2));
+        val.samp = psfData.xy(:,1,2); val.samp = val.samp(:);
 
     case {'psfspacing'}
         % opticsGet(optics,'psf spacing',[fx])
