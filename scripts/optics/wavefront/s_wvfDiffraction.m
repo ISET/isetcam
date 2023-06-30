@@ -32,16 +32,10 @@ title(sprintf("fNumber %.2f Wave %.0f Airy Diam %.2f",wvfGet(wvf,'fnumber'),wvfG
 % case use 'diffraction limited'.
 oi = wvf2oi(wvf,'model','diffraction limited');
 % oi = wvf2oi(wvf,'model','humanmw');
-
-uData = oiPlot(oi,'psf',thisWave);
 assert(wvfGet(wvf,'fnumber') == oiGet(oi,'optics fnumber'))
 
-AD = airyDisk(oiGet(oi,'wave'),oiGet(oi,'optics fnumber'),'units','um','diameter',true);
-pRange = ceil(max(uData.x(:)));
-tMarks = round(linspace(-pRange,pRange,5));
-set(gca,'xlim',[-pRange pRange],'xtick',tMarks);
-set(gca,'ylim',[-pRange pRange],'ytick',tMarks);
-title(sprintf("fNumber %.2f Wave %.0f Airy Diam %.2f",oiGet(oi,'optics fnumber'),thisWave,AD));
+[uData, fig] = oiPlot(oi,'psf',thisWave);
+psfPlotRange(fig,oi);
 
 %% Let's plot a line through the origin for detail.
 oiPlot(oi,'psf xaxis',[],thisWave,'um');

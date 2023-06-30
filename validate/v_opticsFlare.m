@@ -39,10 +39,10 @@ nsides = 3;
 wvf = wvfPupilFunction(wvf,'amplitude',pupilAmp);
 
 % We do not want the wvfComputePSF to recompute the pupil function.  So it
-% is crucial to set 'force' to false.
+% is crucial to set 'force' to false.  That way we keep the pupil
+% function and just compute the PSF.
 wvf = wvfComputePSF(wvf,'lca',false,'force',false);
 
-% Consequently, the PSF is no good.
 wvfPlot(wvf,'psf','um',550,10,'airy disk');
 
 %{
@@ -56,6 +56,17 @@ subplot(1,2,2); wvfPlot(wvf,'image pupil phase','um',550,'no window');
 wvf = wvfSet(wvf,'zcoeff',1,{'defocus'});
 wvf = wvfPupilFunction(wvf,'amplitude',pupilAmp);
 %}
+
+%% Convert to an OI
+
+oiHuman = wvf2oi(wvf);
+[uData, fig] = oiPlot(oiHuman,'psf 550');
+psfPlotrange(fig,uData);
+
+title(sprintf("fNumber %.2f Wave %.0f Airy Diam %.2f",oiGet(oi,'optics fnumber'),thisWave,AD));
+
+oiDL = wvf2oi(wvf,'model','diffraction limited');
+oiPlot(oiDL,'psf 550');
 
 %% Calculate the oi from the scene, but using the wvf
 
