@@ -34,8 +34,8 @@ oi = wvf2oi(wvf,'model','diffraction limited');
 % oi = wvf2oi(wvf,'model','humanmw');
 assert(wvfGet(wvf,'fnumber') == oiGet(oi,'optics fnumber'))
 
-[uData, fig] = oiPlot(oi,'psf',thisWave);
-psfPlotRange(fig,oi);
+[~, fig] = oiPlot(oi,'psf',thisWave);
+psfPlotrange(fig,oi);
 
 %% Let's plot a line through the origin for detail.
 oiPlot(oi,'psf xaxis',[],thisWave,'um');
