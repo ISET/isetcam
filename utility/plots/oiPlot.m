@@ -611,6 +611,8 @@ switch pType
         set(g,'Name',namestr);
         colormap(jet(64))
         
+    case {'psfline'}
+        % Plot a line through the psf
     case {'psf550'}
         % PSF at 550nm spatial units are microns
         udata = plotOTF(oi,'psf', 'this wave', 550, 'airy disk', true);
@@ -880,15 +882,19 @@ switch lower(pType)
         uData.otf = otf; uData.fx = X(1,:); uData.fy = Y(:,1);
         
     case {'psf','psf550'}
-        % oiPlot(oi,'psf',[],thisWave,units)  % empty is roiLocs
+        % oiPlot(oi,'psf',[],thisWave,units)  % empty param is roiLocs
         % oiPlot(oi,'psf 550',[],thisWave,units)
-        % Spatial scale is microns.
+        % Spatial scale default is microns.
         
         opticsModel = opticsGet(optics,'model');
         switch lower(opticsModel)
             case {'diffractionlimited'}
-                % oiPlot(oi,'psf',[],thisWave,units)
                 
+                val = opticsGet(oi.optics,'psf data',thisWave,units);
+                psf = val.psf;
+                sSupport = val.xy;
+
+                %{
                 % This could all be opticsGet(optics,'psf data',thisWave)
                 % As below for shift invariant.
                 nSamp = 25;  % We get 2*nSamp base frequency terms
@@ -908,7 +914,8 @@ switch lower(pType)
                 
                 % Derive the psf from the OTF
                 psf = fftshift(ifft2(otf));
-                
+                %}
+
                 % Frequency units are cycles/micron. The spatial frequency support runs
                 % from -Nyquist:Nyquist. With this support, the Nyquist frequency is
                 % actually the highest (peak) frequency value. There are two samples per
@@ -925,9 +932,10 @@ switch lower(pType)
 
                 % Calculate the Airy disk
                 fNumber = opticsGet(optics,'fNumber');
+                radius = airyDisk(thisWave,fNumber,'units',units);
 
                 % This is the Airy disk radius, by formula
-                radius = (2.44*fNumber*thisWave*10^-9)/2 * ieUnitScaleFactor(units);
+                % radius = (2.44*fNumber*thisWave*10^-9)/2 * ieUnitScaleFactor(units);
 
                 % Draw a circle at the first zero crossing (Airy disk)
                 nCircleSamples = 200;

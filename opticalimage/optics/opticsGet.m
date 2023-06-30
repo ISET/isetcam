@@ -793,7 +793,23 @@ switch parm
         end
         val.psf = psf;
         val.xy  = sSupport;
+    case {'psfxaxis'}
+        % The psf data interpolated along the xaxis
+        thisWave = opticsGet(optics,'wave'); 
+        if numel(thisWave) > 1, thisWave = 550; end
+        units = 'um'; nSamp = 25;
         
+        if length(varargin) >= 1, thisWave = varargin{1}; end
+        if length(varargin) >= 2, units = varargin{2}; end
+        if length(varargin) >= 3, nSamp = varargin{3}; end
+
+        psfData = opticsGet(optics,'psf data',thisWave,units,nSamp);
+        val.data = interp2(psfData.xy(:,:,1),psfData.xy(:,:,2),psfData.psf,0,psfData.xy(1,:));
+        val.samp = psfData.xy(1,:);
+
+    case {'psfyaxis'}
+        % The psf data just along the yaxis 
+
     case {'psfspacing'}
         % opticsGet(optics,'psf spacing',[fx])
         %
@@ -886,8 +902,8 @@ switch parm
         % Numerical values.  Should change field to data from value.  I
         % don't think this is ever used, is it?
         if checkfields(optics,'cos4th','value'), val = optics.cos4th.value; end
-        
-        % ---------------  Ray Trace information.
+
+        % ---------------  Ray Trace information   -------------------
         % The ray trace computations differ from those above because they
         % are not shift-invariant.  When we use a custom PSF/OTF that is
         % shift invariant, we still store the information in the main

@@ -386,7 +386,7 @@ switch oType
                 val = oi.zernike;
             case {'wvf'}
                 % The whole wavefront struct.  In process of how to use
-                % this in programs, with oiComputePSF and
+                % this in programs, with wvfComputePSF and
                 % wvfSet/wvfGet.
                 val = oi.wvf;
                 
@@ -394,10 +394,10 @@ switch oType
                 % it here. The angle spacing of the precomputation is
                 % specified here. I think this should go away (BW).
             case {'psfstruct','shiftvariantstructure'}
-                % Entire svPSF structure
+                % Entire svPSF structure (sv = shift-varying)
                 if checkfields(oi,'psf'), val = oi.psf; end
             case {'svpsf','sampledrtpsf','shiftvariantpsf'}
-                % Precomputed shift-variant psfs
+                % Precomputed shift-varying psfs
                 if checkfields(oi,'psf','psf'), val = oi.psf.psf; end
             case {'rtpsfsize'}
                 % Size of each PSF

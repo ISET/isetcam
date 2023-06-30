@@ -14,11 +14,14 @@ function val = wvfGet(wvf, parm, varargin)
 %       length: 'm', 'cm', 'mm', 'um', 'nm'.
 %       angle: 'deg', 'min', 'sec'
 %
-%    The wavefront to psf calculations are fundamentally performed in
-%    angular units. The conversion here to spatial units is done using the
-%    value set in the object's field umPerDegree.  This defaults to 300 in
-%    wvfCreate, which is a reasonable number for the human eye, but can be
-%    set at create time or using wvfSet.
+%    The wavefront to psf calculations are performed in angular units.
+%    The conversion to spatial units is done using the value set in
+%    the object's field umPerDegree.  This defaults to 300 in
+%    wvfCreate, which is a reasonable number for the human eye.  But
+%    it is not a reasonable value for general optics.  In general we
+%    have the tan(a) = opp/flength, so for a = 1 deg, we have
+%
+%               opp = tand(1)*flength = umPerDegree
 %
 %    A leading + indicates that this is a get only parameter and may not
 %    be set directly.
