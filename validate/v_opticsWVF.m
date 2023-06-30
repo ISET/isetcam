@@ -44,7 +44,7 @@ wvfP  = wvfCreate('wave',thisWave,'name',sprintf('%d-pupil',pupilMM));
 wvfP  = wvfSet(wvfP,'calc pupil diameter',pupilMM);
 wvfP  = wvfSet(wvfP,'focal length',fLengthM);  % 17 mm focal length for deg per mm
 
-wvfP  = wvfComputePSF(wvfP,'no lca', true);
+wvfP  = wvfComputePSF(wvfP,'lca', false);
 
 pRange = 10;  % Microns
 wvfData = wvfPlot(wvfP,'2d psf space','um',thisWave,pRange,'airy disk',true);
@@ -130,7 +130,7 @@ wvfP  = wvfCreate('wave',wave,'name',sprintf('%dmm-pupil',pupilMM));
 wvfP  = wvfSet(wvfP,'calc pupil diameter',pupilMM);
 wvfP  = wvfSet(wvfP,'focal length',fLengthM);  % 17 mm focal length for deg per mm
 
-wvfP  = wvfComputePSF(wvfP,'nolca',true);
+wvfP  = wvfComputePSF(wvfP,'lca',false);
 
 % Convert it to OI format
 oi = wvf2oi(wvfP);
@@ -186,7 +186,7 @@ oi = oiSet(oi,'name',sprintf('oi f/# %.2f',oiGet(oi,'fnumber')));
 oiWindow(oi);
 
 % This is the oi computed directly with the wvfP using wvfApply
-oiWVF = wvfApply(radialScene,wvfP,'nolca',true);
+oiWVF = wvfApply(radialScene,wvfP,'lca',false);
 oiWindow(oiWVF);
 
 % Compare the photons
@@ -202,7 +202,7 @@ identityLine; grid on; xlabel('oiCompute'); ylabel('wvfApply');
 defocus = 1;  % Diopters
 wvfD = wvfSet(wvfP,'zcoeff',defocus,'defocus');
 
-wvfD = wvfComputePSF(wvfD,'nolca',true);
+wvfD = wvfComputePSF(wvfD,'lca',false);
 pRange = 20;
 wvfPlot(wvfD,'2d psf space','um',thisWave,pRange);
 title(sprintf('Defocus %.1f D',defocus));
@@ -223,8 +223,7 @@ oiWindow(oiWVFD);
 
 %% Now include human longitudinal chromatic aberration
 
-% This should not have to have two nolca and force cases.
-wvfDCA = wvfComputePSF(wvfD,'no lca',false,'force',true);
+wvfDCA = wvfComputePSF(wvfD,'lca',true,'force',true);
 oiDCA = oiCompute(wvf2oi(wvfDCA),radialScene);
 oiDCA = oiSet(oiDCA,'name','Defocus and LCA');
 oiWindow(oiDCA);

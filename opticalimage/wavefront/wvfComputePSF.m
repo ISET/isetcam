@@ -55,7 +55,7 @@ function wvf = wvfComputePSF(wvf, varargin)
 varargin = ieParamFormat(varargin);
 
 p = inputParser;
-p.addParameter('nolca',false,@islogical);   % Default is to incorporate longitudinal chromatic aberration
+p.addParameter('lca',true,@islogical);      % Incorporate longitudinal chromatic aberration
 p.addParameter('showbar',false,@islogical); 
 p.addParameter('force',true,@islogical);    % Force computation by default
 
@@ -63,7 +63,7 @@ varargin = wvfKeySynonyms(varargin);
 
 p.parse(varargin{:});
 
-showBar = p.Results.showbar;
+% showBar = p.Results.showbar;
 
 %% BW:  Maybe time to get rid of this 'if'
 
@@ -80,15 +80,17 @@ if (~isfield(wvf, 'psf') || ~isfield(wvf, 'PSF_STALE') || ...
     rotatePSF90degs = wvfGet(wvf, 'rotatepsf90degs');
     pupilfunc = cell(nWave, 1);
 
-    % Make sure pupil function is computed. 
+    % Compute the pupil function, if needed.
     % 
-    % By default, this function incorporates the chromatic aberration of
-    % the human eye.  But we can turn that off with the 'no lca' parameter.
+    % By default, wvf uses the chromatic aberration of the human eye.
+    % But we can turn that off here setting 'lca' parameter to false.
+    % The wvfComputePupilFunction only as the 'no lca' parameter,
+    % which is the logical complement.
     %
-    % Also, this function may or may not force a new computation of the
-    % pupil function.  We can turn that off with the 'force' parameter.
+    % Also, this function may not force a new computation of the pupil
+    % function.  We can set the 'force' parameter to true, to force.
     wvf = wvfComputePupilFunction(wvf,'showbar',p.Results.showbar, ...
-        'nolca',p.Results.nolca,...
+        'nolca',~p.Results.lca,...
         'force',p.Results.force);
 
     % wave = wvfGet(wvf, 'wave');

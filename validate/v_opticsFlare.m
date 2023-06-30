@@ -40,7 +40,7 @@ wvf = wvfPupilFunction(wvf,'amplitude',pupilAmp);
 
 % We do not want the wvfComputePSF to recompute the pupil function.  So it
 % is crucial to set 'force' to false.
-wvf = wvfComputePSF(wvf,'force',false);
+wvf = wvfComputePSF(wvf,'lca',false,'force',false);
 
 % Consequently, the PSF is no good.
 wvfPlot(wvf,'psf','um',550,10,'airy disk');
@@ -61,7 +61,7 @@ wvf = wvfPupilFunction(wvf,'amplitude',pupilAmp);
 
 %{
 % Also works
- oi = wvfApply(scene,wvf,'no lca',true,'force',false);
+ oi = wvfApply(scene,wvf,'lca',false,'force',false);
  oi = oiCompute(oi,scene);
 %}
 oi = oiCompute(wvf,scene);
