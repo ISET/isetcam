@@ -855,6 +855,34 @@ switch (parm)
         val = wvfGet(wvf, 'pupil plane size', unit, wList) ...
             / wvfGet(wvf, 'spatial samples');
         
+    case {'psfxaxis'}
+        % wvfGet(wvf,'psf xaxis','mm',wave)
+        unit = 'mm';
+        wList = wvfGet(wvf, 'calc wave');
+        if ~isempty(varargin), unit = varargin{1}; end
+        if length(varargin) > 1, wList = varargin{2}; end
+                
+        psf  = wvfGet(wvf,'psf',wList);
+        samp = wvfGet(wvf,'psf spatial samples',unit,wList);
+
+        % X axis
+        val.samp = samp;
+        val.data = interp2(samp,samp,psf,0,samp);
+        
+    case {'psfyaxis'}
+        % wvfGet(wvf,'psf yaxis','mm',wave)
+        unit = 'mm';
+        wList = wvfGet(wvf, 'calc wave');
+        if ~isempty(varargin), unit = varargin{1}; end
+        if length(varargin) > 1, wList = varargin{2}; end
+                
+        psf  = wvfGet(wvf,'psf',wList);
+        samp = wvfGet(wvf,'psf spatial samples',unit,wList);
+
+        % X axis
+        val.samp = samp;
+        val.data = interp2(samp,samp,psf,samp,0);
+
     case {'middlerow'}
         % This matches conventions for psf and otf when we use the PTB
         % routines to obtain these.

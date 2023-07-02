@@ -125,6 +125,7 @@ if ~isempty(varargin)
         % The last argument is not empty, and it is a string
         switch ieParamFormat(lastArg)
             case {'nowindow', 'nofigure', 'noplot', 'nofig'}
+                fNum = [];
             otherwise
                 fNum = ieNewGraphWin;
         end
@@ -230,15 +231,19 @@ switch(pType)
         end
 
         psf  = wvfGet(wvfP,'psf',wList);
-        samp = wvfGet(wvfP,'psf spatial samples',unit);
+        samp = wvfGet(wvfP,'psf spatial samples',unit,wList);
 
         % X axis
         lineData = interp2(samp,samp,psf,0,samp);
-        radius = airyDisk(550,wvfGet(wvfP,'fnumber'),'units','um','diameter',false);
+        radius = airyDisk(wList,wvfGet(wvfP,'fnumber'),'units','um','diameter',false);
         plot(samp,lineData,'ko-'); hold on; 
         plot([-radius, radius],[0 0],'ro');
         grid on; set(gca,'xlim',[-pRange pRange]);
-        title(sprintf('PSF x-axis (Wave %d).',wList));
+   
+        uData.samp = samp; uData.psf = lineData; uData.wave = wList;
+        if ~isempty(fNum)
+            title(sprintf('PSF x-axis (Wave %d).',wList));
+        end
 
     case {'psfyaxis'}
         % wvfPlot(wvfP,'psf yaxis',unit,wave,plotRange)
@@ -248,15 +253,19 @@ switch(pType)
         end
 
         psf  = wvfGet(wvfP,'psf',wList);
-        samp = wvfGet(wvfP,'psf spatial samples',unit);
+        samp = wvfGet(wvfP,'psf spatial samples',unit,wList);
 
         % X axis
         lineData = interp2(samp,samp,psf,samp,0);
-        radius = airyDisk(550,wvfGet(wvfP,'fnumber'),'units','um','diameter',false);
+        radius = airyDisk(wList,wvfGet(wvfP,'fnumber'),'units','um','diameter',false);
         plot(samp,lineData,'ko-'); hold on; 
         plot([-radius, radius],[0 0],'ro');
         grid on; set(gca,'xlim',[-pRange pRange]);
-        title(sprintf('PSF y-axis (Wave %d).',wList));
+        
+        uData.samp = samp; uData.psf = lineData; uData.wave = wList;
+        if ~isempty(fNum)
+            title(sprintf('PSF y-axis (Wave %d).',wList));
+        end
 
     case {'imagepsf', 'imagepsfspace', 'imagepsfspacenormalized'}
         % wvfPlot(wvfP, 'image psf space', unit, waveIdx, plotRangeArcMin);

@@ -623,8 +623,8 @@ switch pType
         if numel(varargin) > 0, thisWave = varargin{1}; end
         if numel(varargin) > 1, units = varargin{2}; end
 
-        uData = oiGet(oi,'optics psf xaxis',thisWave,units);
-        plot(uData.samp,uData.data,'k-','LineWidth',2); grid on; 
+        udata = oiGet(oi,'optics psf xaxis',thisWave,units);
+        plot(udata.samp,udata.data,'k-','LineWidth',2); grid on; 
         xlabel(sprintf('Pos (%s)',units)); ylabel('Amp (a.u.)');
 
         fNumber = oiGet(oi,'optics fnumber');
@@ -639,8 +639,8 @@ switch pType
         if numel(varargin) > 0, thisWave = varargin{1}; end
         if numel(varargin) > 1, units = varargin{2}; end
 
-        uData = oiGet(oi,'optics psf yaxis',thisWave,units);
-        plot(uData.samp,uData.data,'k-','LineWidth',2); grid on;
+        udata = oiGet(oi,'optics psf yaxis',thisWave,units);
+        plot(udata.samp,udata.data,'k-','LineWidth',2); grid on;
         xlabel(sprintf('Pos (%s)',units)); ylabel('Amp (a.u.)');
 
         fNumber = oiGet(oi,'optics fnumber');
@@ -731,9 +731,18 @@ switch pType
 end
 
 if exist('udata','var'), set(gcf,'userdata',udata); end
-if ~isempty(varargin) && isa(varargin{end},'char') && isequal(ieParamFormat(varargin{end}),'nofigure')
+
+% Suppress showing the window if the final varargin is nofigure
+% or nowindow.  Maybe we should delete the window?
+if ~isempty(varargin) && isa(varargin{end},'char') && ...
+        (isequal(ieParamFormat(varargin{end}),'nofigure') || ...
+        isequal(ieParamFormat(varargin{end}),'nowindow'))
+    % Maybe?
+    delete(g);
     return;
-else,         g.Visible = 'On';
+else
+    % Make it visible.
+    g.Visible = 'On';
 end
 
 end
