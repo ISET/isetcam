@@ -18,6 +18,7 @@ ieInit;
 % wList = linspace(400,700,7);
 
 wList = 400:10:700;
+wList = 550;
 wvf = wvfCreate('wave',wList);    % Default wavefront 5.67 fnumber
 
 flengthMM = 17; flengthM = flengthMM*1e-3;
@@ -28,6 +29,9 @@ wvf = wvfSet(wvf,'focal length',flengthM);
 
 % Turn on LCA.  Compute.
 wvf = wvfComputePSF(wvf,'lca',true,'force',true);
+oi = wvf2oi(wvf,'model','humanmw');
+oiPlot(oi,'psf550'); psfPlotrange(gcf,oi);
+
 %{
 tmp1 = oiGet(wvf2oi(wvf),'optics otf',700);
 ieNewGraphWin; mesh(ifftshift(abs(tmp1)));

@@ -222,6 +222,42 @@ switch(pType)
             title(sprintf('F# %.1f Wave %d',wvfGet(wvfP,'fnumber'),wList));
         end
 
+    case {'psfxaxis'}
+        % wvfPlot(wvfP,'psf xaxis',unit,wave,plotRange)
+        % wvfPlot(wvf,'psf xaxis','um',550,20)
+        if ~isempty(varargin)
+            [unit, wList, pRange] = wvfReadArg(wvfP, varargin);
+        end
+
+        psf  = wvfGet(wvfP,'psf',wList);
+        samp = wvfGet(wvfP,'psf spatial samples',unit);
+
+        % X axis
+        lineData = interp2(samp,samp,psf,0,samp);
+        radius = airyDisk(550,wvfGet(wvfP,'fnumber'),'units','um','diameter',false);
+        plot(samp,lineData,'ko-'); hold on; 
+        plot([-radius, radius],[0 0],'ro');
+        grid on; set(gca,'xlim',[-pRange pRange]);
+        title(sprintf('PSF x-axis (Wave %d).',wList));
+
+    case {'psfyaxis'}
+        % wvfPlot(wvfP,'psf yaxis',unit,wave,plotRange)
+        % wvfPlot(wvf,'psf yaxis','um',550,20)
+        if ~isempty(varargin)
+            [unit, wList, pRange] = wvfReadArg(wvfP, varargin);
+        end
+
+        psf  = wvfGet(wvfP,'psf',wList);
+        samp = wvfGet(wvfP,'psf spatial samples',unit);
+
+        % X axis
+        lineData = interp2(samp,samp,psf,samp,0);
+        radius = airyDisk(550,wvfGet(wvfP,'fnumber'),'units','um','diameter',false);
+        plot(samp,lineData,'ko-'); hold on; 
+        plot([-radius, radius],[0 0],'ro');
+        grid on; set(gca,'xlim',[-pRange pRange]);
+        title(sprintf('PSF y-axis (Wave %d).',wList));
+
     case {'imagepsf', 'imagepsfspace', 'imagepsfspacenormalized'}
         % wvfPlot(wvfP, 'image psf space', unit, waveIdx, plotRangeArcMin);
         if ~isempty(varargin)
