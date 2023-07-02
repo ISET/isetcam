@@ -17,10 +17,12 @@ scene = sceneSet(scene,'fov',1);
 
 %% Experiment with different wavefronts
 
+thisWave = 550;
+
 % We can start with any Zernike coefficients
 wvf = wvfCreate;
 wvf = wvfSet(wvf,'calc pupil diameter',3);
-wvf = wvfSet(wvf,'wave',550);
+wvf = wvfSet(wvf,'wave',thisWave);
 wvf = wvfSet(wvf,'focal length',0.017);
 
 % fieldsize = wvfGet(wvf,'fieldsizemm');
@@ -61,11 +63,26 @@ wvf = wvfPupilFunction(wvf,'amplitude',pupilAmp);
 
 oiHuman = wvf2oi(wvf);
 [uData, fig] = oiPlot(oiHuman,'psf 550');
-psfPlotrange(fig,uData);
-
+psfPlotrange(fig,oiHuman);
+AD = airyDisk(thisWave,wvfGet(wvf,'fnumber'),'diameter',true);
 title(sprintf("fNumber %.2f Wave %.0f Airy Diam %.2f",oiGet(oi,'optics fnumber'),thisWave,AD));
 
+%% This is weird.  
+
+% The difference between diffraction and shiftinvariant is unfortunate.
+% Maybe wvf2oi should never allow diffractionlimited, but only
+% shiftinvariant
 oiDL = wvf2oi(wvf,'model','diffraction limited');
+oiPlot(oiDL,'psf 550');
+
+% These are all OK.
+oiDL = wvf2oi(wvf,'model','shift invariant');
+oiPlot(oiDL,'psf 550');
+
+oiDL = wvf2oi(wvf,'model','wvf human');
+oiPlot(oiDL,'psf 550');
+
+oiDL = wvf2oi(wvf,'model','human mw');
 oiPlot(oiDL,'psf 550');
 
 %% Calculate the oi from the scene, but using the wvf

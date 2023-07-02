@@ -84,10 +84,14 @@ varargin = ieParamFormat(varargin);
 p = inputParser;
 p.addRequired('wvf',@isstruct);
 validNames = oiCreate('valid');
-p.addParameter('model','humanmw',@(x)(ismember(ieParamFormat(x),validNames)));
+p.addParameter('model','shiftinvariant',@(x)(ismember(ieParamFormat(x),validNames)));
 
 p.parse(wvf,varargin{:});
-oiModel = p.Results.model;
+oiModel = ieParamFormat(p.Results.model);
+if strcmp(oiModel,'diffractionlimited')
+    warning('Changing model to shiftinvariant');
+    oiModel = 'shiftinvariant';
+end
 
 %% Collect up basic wvf parameters
 wave    = wvfGet(wvf, 'calc wave');
