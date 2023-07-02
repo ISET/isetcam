@@ -156,6 +156,9 @@ for ff = fl
 end
 
 %% This one is like the one above, but shifted slightly negative
+%{
+% Go to s_wvfOI
+
 oi = wvf2oi(wvf);
 
 % Show it via OI
@@ -175,7 +178,7 @@ foo = interp2(uData.x,uData.y,uData.psf,0,samp);
 figure(fig);
 hold on; plot(samp,foo,'o');
 grid on; set(gca,'xlim',[-5 5],'xtick',-5:1:5);
-
+%}
 %%
 
 
