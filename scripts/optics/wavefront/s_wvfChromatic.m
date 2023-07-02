@@ -15,38 +15,80 @@ ieInit;
 %
 % Maybe because the umPerDegree is wrong?
 
-wvf = wvfCreate;    % Default wavefront 5.67 fnumber
+% wList = linspace(400,700,7);
 
-flengthMM = 6; flengthM = flengthMM*1e-3;
-fNumber = 3; thisWave = 550;
-% wvf = wvfSet(wvf,'measured pupil diameter',20);  % Make room for pupil sizes
+wList = 400:10:700;
+wvf = wvfCreate('wave',wList);    % Default wavefront 5.67 fnumber
+
+flengthMM = 17; flengthM = flengthMM*1e-3;
+fNumber = 3; 
 wvf = wvfSet(wvf,'calc pupil diameter',flengthMM/fNumber);
 wvf = wvfSet(wvf,'focal length',flengthM);
+% wvfGet(wvf,'measured wavelength')
 
-wvf = wvfComputePSF(wvf,'lca',false,'force',true);
-wvfPlot(wvf,'2d psf space','um',thisWave,10,'airy disk');
-AD = airyDisk(thisWave,fNumber,'units','um','diameter',true);
-title(sprintf("fNumber %.2f Wave %.0f Airy Diam %.2f",wvfGet(wvf,'fnumber'),wvfGet(wvf,'wave'),AD));
-
+% Turn on LCA.  Compute.
+wvf = wvfComputePSF(wvf,'lca',true,'force',true);
 %{
- wvfGet(wvf,'um per deg')
- umPerDeg = tand(1)*wvfGet(wvf,'focal length','um');
- wvf = wvfSet(wvf,'um per degree',umPerDeg);
- wvfGet(wvf,'um per deg')
+tmp1 = oiGet(wvf2oi(wvf),'optics otf',700);
+ieNewGraphWin; mesh(ifftshift(abs(tmp1)));
+
+tmp2 = wvfGet(wvf,'otf',700);
+ieNewGraphWin; mesh(ifftshift(abs(tmp1)));
+
+tmp3 = oiGet(oi,'optics otf',700);
+ieNewGraphWin; mesh(ifftshift(abs(tmp1)));
+
+ieNewGraphWin; plot(tmp1(:),tmp2(:),'.');
+identityLine;
 %}
+nPanels = ceil(sqrt(numel(wList)));
+
+ieNewGraphWin; ii = 1;
+for ww = wList
+    wvf = wvfSet(wvf,'calc wave',ww);
+    wvf = wvfComputePSF(wvf,'lca',true,'force',true);
+
+    subplot(nPanels,nPanels,ii)
+    wvfPlot(wvf,'image psf space','um',ww,20,'airy disk','no window');
+    ii = ii + 1;
+
+    fNumber = wvfGet(wvf,'fnumber');
+    AD = airyDisk(ww,fNumber,'units','um','diameter',true);
+    title(sprintf('Wave %.0f AiryD %.2f',ww,AD));
+end
+
+%% Run on an image without LCA
+sceneGrid = sceneCreate('grid lines',384,64);
+sceneGrid = sceneSet(sceneGrid,'fov',1);
+
+oi = wvfApply(sceneGrid,wvf);
+
+oi = wvf2oi(wvf,'model','diffraction limited');
+oi = oiCompute(oi,sceneGrid);
+oiWindow(oi);
+
+wvf = wvfComputePSF(wvf,'lca',true,'force',true);
+oi = wvf2oi(wvf,'model','diffraction limited');
+oi = oiCompute(oi,sceneGrid);
+oiWindow(oi);
+
+
 %% The fnumber is converted correctly if we set the model correctly.
-%
+
 % The default is humanmw.  But it is best to be explicit and in this
 % case use 'diffraction limited'.
 oi = wvf2oi(wvf,'model','diffraction limited');
-% oi = wvf2oi(wvf,'model','humanmw');
 assert(wvfGet(wvf,'fnumber') == oiGet(oi,'optics fnumber'))
 
-[~, fig] = oiPlot(oi,'psf',thisWave);
+thisWave = 400;
+[~,fig] = oiPlot(oi,'psf',[],thisWave);
 psfPlotrange(fig,oi);
 
-%% Let's plot a line through the origin for detail.
-oiPlot(oi,'psf xaxis',[],thisWave,'um');
+thisWave = 700;
+oiPlot(oi,'psf',[],thisWave);
+psfPlotrange(fig,oi);
+
+
 
 %% Measured and calc waves differ, but no LCA in this section
 wvf = wvfSet(wvf,'calc wave',550);
@@ -92,7 +134,7 @@ end
 
 wvf = wvfSet(wvf,'calc pupil diameter',3);
 wList = linspace(400,700,4);
-ieNewGraphWin; ii = 1;
+fig = ieNewGraphWin; ii = 1;
 for ww = wList
     wvf = wvfSet(wvf,'calc wave',ww);
     wvf = wvfComputePSF(wvf,'lca',true,'force',true);

@@ -25,10 +25,13 @@ function oi = wvf2oi(wvf,varargin)
 %   s_wvfDiffraction
 %
 % Notes:
-%  * BW:  The wvf2oi(wvf) function did not match correctly.  I spent a
-%     bunch of time checking for the diffraction limited case on both
-%     the wvf side and the oi side.  Still more to check (07.01.23).
-%     See s_wvfDiffraction.m
+%  * BW:  The wvf2oi(wvf) function did not match the wvf and oi.  I spent a
+%     bunch of time checking for the diffraction limited case on both the
+%     wvf side and the oi side.  Still more to check (07.01.23). But
+%     setting the umPerDeg is important (was not always done properly and
+%     consistently with focal length. Also understanding the different
+%     models (diffraction, humanmw, wvf human) will be important. See
+%     s_wvfDiffraction.m
 %  * [NOTE: DHB - There is an interpolation in the loop that computes the
 %     otf wavelength by wavelength.  This appears to be there to handle the
 %     possibility that the frequency support in the wvf structure could be
@@ -158,10 +161,9 @@ end
 
 % Build an OI template with standard defaults for this model.
 %
-% I am not sure why the model matters (BW). I think we are going to
-% force the user to specify a model for a while, until we understand
-% this.  The code works pretty well for diffraction limited, at this
-% time.
+% I am not sure why the model matters (BW). Let's force the user to specify
+% a model for a while, until we understand this. The code works pretty
+% well for diffraction limited, at this time.
 oi = oiCreate(oiModel);
 oi = oiSet(oi,'optics fnumber',fnumber);
 oi = oiSet(oi,'optics focal length',flength);

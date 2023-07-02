@@ -1,7 +1,10 @@
 function [udata, g] = oiPlot(oi,pType,roiLocs,varargin)
 % Gateway routine for plotting optical image (oi) properties
 %
-%   [udata, g] = oiPlot([oi],[pType='illuminance hline'],[xy],[wave])
+%   [udata, g] = oiPlot([oi],[pType='illuminance hline'],[ROI],[wave])
+%
+% TODO:  Make a 'no figure' option work.  It is stuck in below, but not as
+% effective as the 'no window' in wvfPlot.
 %
 % Gateway routine to plot the irradiance or illuminance data in the optical
 % image. There are many options.

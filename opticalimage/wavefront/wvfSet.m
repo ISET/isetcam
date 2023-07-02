@@ -1,22 +1,11 @@
 function wvf = wvfSet(wvf, parm, val, varargin)
 % Set wavefront parameters to use for calculations
 %
-% NOTE:
-%   There are massive differences between the ISETBio version and
-%   ISETCam version of this and other wavefront functions. BW is still
-%   sorting out what to do.  We have moved the ISETBio version into
-%   ISETCam, and we will try to conform to that because NC and DHB
-%   have relied on them.
-%
-%   But I will try to integrate the simplifications from ISETCam over
-%   time.  I added pupildiameter and focallength.  Waiting to see what
-%   else goes wrong.
-%
 % Syntax:
 %   wvf = wvfSet(wvf, parm, val, [varargin])
 %
 % Description:
-%    Key wavefront properties are stored as parameters here. Many other
+%    Key wavefront parameters are stored in this struct. Many other
 %    properties are computed from these identifiable parameters using other
 %    functions, such as wvfGet.
 %
@@ -26,6 +15,10 @@ function wvf = wvfSet(wvf, parm, val, varargin)
 %
 %    When parameters that influence the pupil function are changed, 
 %    wvf.PUPILFUNCTION_STALE is set too true.
+%
+%    The initial implementation separated parameters into the ones that
+%    were measured and the ones we use for a calculation (from HH). In our
+%    system, we mainly use the 'calc' form of the parameters.
 %
 % Inputs:
 %    wvf      - The wavefront object prior to manipulation.
@@ -89,6 +82,8 @@ function wvf = wvfSet(wvf, parm, val, varargin)
 %                                   and um on retina
 %    Custom LCA
 %       'custom lca'              - function handle for a custom LCA
+%                                   (deprecated or perhaps updated in the
+%                                   future) 
 %
 %    Stiles Crawford Effect
 %       'sce params'              - The Stiles-Crawford Effect structure
@@ -103,17 +98,18 @@ function wvf = wvfSet(wvf, parm, val, varargin)
 %                   dangerous.
 %              dhb  There are two underlying field sizes, one in the pupil
 %                   plane and one in the plane of the retina. The pixel
-%                   dimensions are implicitly linked by the conversion
-%                   between pf and psf, and our conversion code uses the
-%                   same number of pixels in each representation. One could
-%                   get fancier and explicitly specify the units of each
-%                   representation, and appropiately convert. An important
-%                   consideration is for the dimensions to be chosen so
-%                   that both pupil function & psf are adequately sampled.
+%                   dimensions in these two fields are implicitly linked by
+%                   the conversion between pupil function and psf, and our
+%                   conversion code uses the same number of pixels in each
+%                   representation. One could get fancier and explicitly
+%                   specify the units of each representation, and
+%                   appropiately convert. An important consideration is for
+%                   the dimensions to be chosen so that both pupil function
+%                   & psf are adequately sampled.
 %
 % See Also:
 %    wvfGet, wvfCreate, wvfComputePupilFunction, wvfComputePSF, sceCreate,
-%    sceGet
+%    sceGet, s_wvfDiffraction, v_opticsWVF
 %
 
 % History:
@@ -341,14 +337,13 @@ switch parm
         % the fft. Thus the size of the image in pixels is the same for the
         % sampled pupil function and the sampled psf.
         %
-        % The number of arc minutes per pixel in the sampled PSF is
-        % related to the number of mm per pixel for hte pupil function, 
-        % with the relation depending on the wavelength. The fundamental
-        % formula in the pupil plane is that the pixel sampling interval
-        % in cycles/radian is:
+        % The number of arc minutes per pixel in the sampled PSF is related
+        % to the number of mm per pixel for the pupil function, with the
+        % relationship depending on the wavelength. The formula in the
+        % pupil plane is that the pixel sampling interval in cycles/radian
+        % is:
         %
-        %   pupilPlaneCyclesRadianPerPix = pupilPlaneField / ...
-        %       [lambda * npixels]
+        %   pupilPlaneCyclesRadianPerPix = pupilPlaneField/(lambda * npixels)
         %
         % where npixels is the number of linear pixels and lambda is the
         % wavelength. This formula may be found as Eq 10 of Ravikumar et
@@ -357,9 +352,8 @@ switch parm
         % think their quantity d is the size of the pupil plane field being
         % sampled.
         %
-        % If we now remember how units convert when we do the fft, we
-        % obtain that the number of radians in the PSF image is the inverse
-        % of the sampling interval:
+        % Now, remember how units convert when we do the fft. The number of
+        % radians in the PSF image is the inverse of the sampling interval:
         %
         %   radiansInPsfImage = [lambda * npixels] / pupilPlaneField
         %
@@ -379,6 +373,7 @@ switch parm
         % be a more fundamental reference than the paper above, and for
         % which one wouldn't have to guess quite as much about what is
         % meant.
+        % BW: July, 2023.  Reading through here.  Hope to check.
         radiansPerPixel = val / (180 * 60 / 3.1416);
         wvf.refSizeOfFieldMM = wvfGet(wvf, 'measured wl', 'mm') ...
             / radiansPerPixel;
@@ -393,7 +388,11 @@ switch parm
         % wvf parameter to convert from angle (the natural calculation
         % space of the phase aberrations) to spatial samples.
         %
+        % Changing the focal length changes the microns per degree. We make
+        % the adjustment here.
         wvf.focalLength = val;
+        umPerDeg = tand(1)*wvfGet(wvf,'focal length','um');
+        wvf = wvfSet(wvf,'um per degree',umPerDeg);
         wvf.PUPILFUNCTION_STALE = true;
 
     %% Calculation parameters
@@ -463,8 +462,19 @@ switch parm
     case {'umperdegree'}
         % Factor used to convert between um on the retina and degrees of
         % visual angle. It might be that we don't need to set the stale
-        % flag when we change this, but doing so is safe for sure.
+        % flag when we change this, but doing so is safe for sure.  
+        %
+        % We need the ability to manage focal length, too.  So, we added
+        % the duplicative parameter (ugh) but change them in tandem.  Bad,
+        % but there it is for now.  My preference would be just use focal
+        % length.
         wvf.umPerDegree = val;
+
+        % Keep focal length consistent.
+        % tand(1) = opp/adj (right triangle, point at the lens)
+        %   adj = focal length, stored in mm
+        %   opp = umPerDegree
+        wvf.focallength = (val*1e-6/tand(1));  % convert um to m
         wvf.PUPILFUNCTION_STALE = true;
         
     case {'customlca'}

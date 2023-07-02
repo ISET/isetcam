@@ -184,9 +184,7 @@ switch(pType)
         
         samp = wvfGet(wvfP, 'psf spatial samples', unit, wList);
         psf  = wvfGet(wvfP, 'psf', wList);
-        if normalizeFlag
-            psf = psf/max(psf(:));
-        end
+        if normalizeFlag, psf = psf/max(psf(:)); end
         
         % Extract within the range
         if ~isempty(pRange)
@@ -215,12 +213,15 @@ switch(pType)
             ringZ = max(psf(:));
             hold on; figure(gcf);
             % Up high
-            p = plot3(adX,adY,adZ + ringZ,'k-'); set(p,'linewidth',3);
+            % p = plot3(adX,adY,adZ + ringZ,'k-'); set(p,'linewidth',3);
             % Down low
-            p = plot3(adX,adY,adZ + ringZ*0.5,'k-'); set(p,'linewidth',3); 
+            p = plot3(adX,adY,adZ + ringZ*0.05,'k-'); set(p,'linewidth',3); 
             hold off;
+            title(sprintf('F# %.1f Wave %d Airy Radius %.2f',wvfGet(wvfP,'fnumber'),wList, radius));
+        else
+            title(sprintf('F# %.1f Wave %d',wvfGet(wvfP,'fnumber'),wList));
         end
-        
+
     case {'imagepsf', 'imagepsfspace', 'imagepsfspacenormalized'}
         % wvfPlot(wvfP, 'image psf space', unit, waveIdx, plotRangeArcMin);
         if ~isempty(varargin)

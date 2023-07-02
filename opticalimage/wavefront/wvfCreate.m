@@ -93,7 +93,7 @@ p.addParameter('sampleintervaldomain', 'psf', @ischar);
 p.addParameter('spatialsamples', 201, @isscalar);
 p.addParameter('refpupilplanesize', 16.212, @isscalar);
 
-% Calculation parameters
+% Calculation parameters - based on zcoeffs
 p.addParameter('calcpupilsize', 3, @isscalar);
 p.addParameter('calcwavelengths', 550, @isnumeric);
 p.addParameter('calcopticalaxis', 0, @isscalar);
@@ -101,7 +101,10 @@ p.addParameter('calcobserveraccommodation', 0), @isscalar;
 p.addParameter('calcobserverfocuscorrection', 0, @isscalar);
 
 % Retinal parameters
+% Set for consistency with 300 um historical.  When we adjust one or the
+% other via wvfSet(), we keep them in sync.
 p.addParameter('umperdegree', 300, @isscalar);
+p.addParameter('focallength', (300/tand(1))*1e-6, @isscalar);  % In meters. 17 mm
 
 % Custom lca
 p.addParameter('customlca', [], @(x)( (isempty(x)) || (isa(x, 'function_handle')) ));
@@ -154,7 +157,11 @@ wvf = wvfSet(wvf, 'calc observer focus correction', ...
     p.Results.calcobserverfocuscorrection);
 
 % Conversion between degrees of visual angle and mm
+% This also sets the focal length for consistency.
 wvf = wvfSet(wvf, 'um per degree',p.Results.umperdegree);
+
+% If the user specified a different focal length, that will override
+wvf = wvfSet(wvf, 'focal length',p.Results.focallength);
 
 % Custom LCA function handle
 wvf = wvfSet(wvf, 'custom lca',p.Results.customlca);

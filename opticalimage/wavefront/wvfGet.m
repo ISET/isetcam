@@ -272,7 +272,7 @@ switch (parm)
     case 'type'
         val = wvf.type;
         
-    case {'umperdegree'}
+    case {'umperdegree','umperdeg'}
         % Conversion factor between um on retina & visual angle in degreees
         val = wvf.umPerDegree;
         
@@ -873,10 +873,10 @@ switch (parm)
         
         % Compute OTF
         %
-        % Use PTB PsfToOft to convert to (0,0) sf at center otf
-        % representation.  Note that this differs from the isetbio
-        % optics structure convention, where (0,0) sf is at the upper
-        % left, so we then apply ifftshift to put it there.
+        % Use PTB PsfToOtf to convert to (0,0) sf at center otf
+        % representation.  This differs from the ISETCam optics structure
+        % convention, where (0,0) sf is at the upper left. We apply
+        % ifftshift to put 0,0 in the upper left.
         [~,~,val] = PsfToOtf([],[],psf);
         val = ifftshift(val);
         
