@@ -889,8 +889,15 @@ switch (parm)
         val = floor(wvfGet(wvf, 'npixels') / 2) + 1;
         
     case {'otf'}
-        % Return the otf from the psf
         % wvfGet(wvf, 'otf', wave)
+        %
+        % Return the otf from the psf.  Until July, 2023 we computed the
+        % OTF from the PsfToOtf function in Psychtoolbox.
+        %
+        % But the pupilfunction is the OTF for the shift-invariant wvf
+        % model.  So I believe we should be returning the pupilfunction
+        % directly.
+        %
         
         wave = wvfGet(wvf, 'calc wave');
         if ~isempty(varargin), wave = varargin{1}; end
@@ -906,7 +913,9 @@ switch (parm)
         % convention, where (0,0) sf is at the upper left. We apply
         % ifftshift to put 0,0 in the upper left.
         [~,~,val] = PsfToOtf([],[],psf);
-        val = ifftshift(val);
+        
+        % Not sure we should do this here.  Maybe only in wvf2oi.
+        % val = ifftshift(val);
         
         % We used to zero out small imaginary values.  This,
         % however, can cause numerical problems much worse than
@@ -915,13 +924,17 @@ switch (parm)
         
     case {'otfsupport'}
         % wvfGet(wvf, 'otfsupport', unit, wave)
+        %
+        % Spatial frequency support (default cyc/mm) for the OTF
+        %
         unit = 'mm';
         wave = wvfGet(wvf, 'calc wave');
         if ~isempty(varargin), unit = varargin{1}; end
         if length(varargin) > 1, wave = varargin{2}; end
         
         % s = wvfGet(wvf, 'psf spatial sample', unit, wave);
-        % Should specify psf or pupil, but I thik they are the same
+        % Should specify psf or pupil, but I think they are the same
+        %
         % n = wvfGet(wvf, 'nsamples');
         % val = (0:(n - 1)) * (s * n);   % Cycles per unit
         % val = val - mean(val);

@@ -5,12 +5,13 @@ function wvf = wvfComputePupilFunction(wvf, varargin)
 %   wvf = wvfComputePupilFunction(wvf, varargin)
 %
 % Description:
-%    This version of the pupil function calculation is designed for
-%    the human eye calculations starting in ISETBio.
+%    This version of the pupil function calculation was originally designed
+%    for the human eye calculations starting in ISETBio.  We are checking
+%    it for generalization as we integrate into ISETCam.
 %
 %    The pupil function is a complex number that represents the amplitude
-%    and phase of the wavefront across the pupil. The returned pupil
-%    function at a specific wavelength is
+%    and phase of the wavefront across the pupil. The pupil function at a
+%    specific wavelength is
 %
 %       pupilF = A exp(-1i 2 pi (phase/wavelength));
 %

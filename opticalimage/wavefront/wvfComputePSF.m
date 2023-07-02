@@ -101,30 +101,32 @@ if (~isfield(wvf, 'psf') || ~isfield(wvf, 'PSF_STALE') || ...
         % Scale so that psf sums to unity.
         pupilfunc{wl} = wvfGet(wvf, 'pupil function', wList(wl));
 
-        % Compute fft of pupil function to obtain the psf.
-        % The insertion of the ifftshift before the fft2 is because the
-        % pupil function is centered on its support, and we think that in
-        % Matlab-land, we should insert ifftshift before transforming
-        % centered data.
+        % Compute fft of the pupil function to obtain the psf. The
+        % insertion of the ifftshift before the fft2 is because the pupil
+        % function is centered on its support, and in Matlab-land, we need
+        % to insert ifftshift before transforming centered data.
         %
-        % We convert to intensity because that is how Fourier optics works.
         amp = fftshift(fft2(ifftshift(pupilfunc{wl})));
+
+        % We convert to intensity because the PSF is an intensity (real)
+        % valued function. That is how Fourier optics works.
         inten = (amp .* conj(amp));
         
         % Given the way we computed intensity, should not need to take the
         % real part, but this way we avoid any very small imaginary bits
         % that arise because of numerical roundoff.
         psf{wl} = real(inten);
-        
 
-        %{ BW:  Commented out because, well, DOCHECKS = false for
-        % several years.
+        %{ 
+        % BW:  Commented out because, well, DOCHECKS = false for several years.
+        %
         % We used to not use the ifftshift. Indeed, the ifftshift does not
         % seem to matter here, but my understanding of the way fft2 works, 
         % we want it.  The reason it doesn't matter is because we don't
-        % care about the phase of the fft.  Set DOCHECKS here to true to
+        % care about the phase of the fft for the PSF.
+        % We can put this back and set DOCHECKS here to true to
         % recompute the old way and verify that we get the same answer to
-        % numerical precision. And a few other things.
+        % numerical precision. And a few other things.        
         DOCHECKS = false;
         if (DOCHECKS)
             amp1 = fft2(pupilfunc{wl});
@@ -144,7 +146,9 @@ if (~isfield(wvf, 'psf') || ~isfield(wvf, 'PSF_STALE') || ...
         end
         %}
 
-        % Make sure psf sums to unit volume.
+        % Make sure psf sums to unit volume.  This means that a constant
+        % value input passes through the optics with the same constant
+        % value.
         psf{wl} = psf{wl} / sum(sum(psf{wl}));
 
         if (flipPSFUpsideDown)

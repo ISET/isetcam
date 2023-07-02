@@ -59,7 +59,7 @@ function wvf = wvfPupilFunction(wvf, varargin)
 %}
 %{
  wvf = wvfCreate;    % Diffraction
- pupilAmp = wvfPupilAmplitude(wvf,'nsides',6);
+ pupilAmp = wvfAperture(wvf,'nsides',6);
  wvf = wvfPupilFunction(wvf,'amplitude',pupilAmp);
  wvf = wvfComputePSF(wvf);
  wvfPlot(wvf,'psf','um',550,10);

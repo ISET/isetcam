@@ -144,6 +144,11 @@ for ww=1:length(wave)
     % Apply fftshift to convert otf to DC in center, so that interp will
     % work right.
     thisOTF = fftshift(wvfGet(wvf, 'otf', wave(ww)));
+    
+    % BW - Added after change to wvfGet(wvf,'otf').  Maybe we just delete
+    % the fftshift above?
+    thisOTF = ifftshift(thisOTF);
+
     if (all(f == fx))
         est = thisOTF;
     else

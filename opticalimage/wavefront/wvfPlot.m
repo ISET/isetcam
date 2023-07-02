@@ -396,6 +396,7 @@ switch(pType)
         % Get the data and if the string contains normalized ...
         psf = wvfGet(wvfP, 'psf', wave);
         if normalizeFlag
+            warning('Normalized otf plotted.')
             psf = psf / max(psf(:));
         end
         

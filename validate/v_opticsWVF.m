@@ -99,6 +99,7 @@ histogram((estPSF(:) - wvfData.z(:)),20);
 %% Get the otf data from the OI and WVF computed two ways
 
 % Compare the two OTF data sets directly.
+oi = wvf2oi(wvfP);
 oiData = oiPlot(oi,'otf',[],thisWave);
 maxF = 2000;
 wvData = wvfPlot(wvfP,'otf','mm',thisWave,maxF);

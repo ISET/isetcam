@@ -15,15 +15,11 @@
 %%
 ieInit;
 
-%%  The only time this seems to be right is for 17 mm focal length
-%
-% Maybe because the umPerDegree is wrong?
-
+%%
 wvf = wvfCreate;    % Default wavefront 5.67 fnumber
 
 flengthMM = 6; flengthM = flengthMM*1e-3;
 fNumber = 3;
-% wvf = wvfSet(wvf,'measured pupil diameter',20);  % Make room for pupil sizes
 wvf = wvfSet(wvf,'calc pupil diameter',flengthMM/fNumber);
 wvf = wvfSet(wvf,'focal length',flengthM);
 
@@ -35,11 +31,66 @@ wvfPlot(wvf,'psf xaxis','um',550,10);
 hold on;
 
 % Convert to OI and plot the same slice.  With the dx/2 shift, they agree
-% except for a small scale factor.  Which I also don't understand
+% except for a small scale factor.  Which I don't understand
 oi = wvf2oi(wvf,'model','wvf human');
 uData = oiGet(oi,'optics psf xaxis');
 dx = uData.samp(2) - uData.samp(1);
 plot(uData.samp+dx/2,uData.data,'-go');
+
+%% Compare the OTFs - partially done in s_wvfDiffraction
+
+oi = wvf2oi(wvf);
+oiData = oiPlot(oi,'otf',[],thisWave);
+% maxF = 2000;
+wvData = wvfPlot(wvf,'otf','mm',thisWave);
+
+% The DC position must account for whether the length of fx is even or odd
+ieNewGraphWin;
+if isodd(length(wvData.fx)), wvMid = floor(length(wvData.fx)/2) + 1;
+else,                 wvMid = length(wvData.fx)/2 + 1;
+end
+plot(wvData.fx, wvData.otf(:,wvMid),'r-'); hold on;
+
+if isodd(length(oiData.fx)), oiMid = floor(length(oiData.fx)/2) + 1;
+else,          oiMid = length(oiData.fx)/2 + 1;
+end
+plot(oiData.fx, oiData.otf(:,oiMid),'bo')
+legend({'wvf','oi'})
+grid on
+xlabel('Frequency'); ylabel('Amplitude');
+
+%% The wvf plot and wvfGet otfs are the same
+otf = wvfGet(wvf,'otf',thisWave);
+ieNewGraphWin;
+plot(abs(otf(:)),abs(wvData.otf(:)),'.');
+identityLine;
+
+%% Not quite the same
+
+% But the job of wvf2oi is to make the oi the same OTF.
+otf = oiGet(oi,'optics otf',thisWave);
+otf = ifftshift(otf);
+
+ieNewGraphWin;
+plot(abs(otf(:)),abs(wvData.otf(:)),'.');
+identityLine;
+
+%% The pupil function and the OTF should be the same
+
+% Not close.  The PSF is the abs(fft2(pupilfunction))
+% And the PSF is abs(fft2(OTF))
+%
+pf  = wvfGet(wvf,'pupilfunction',thisWave);
+pf = fftshift(pf);
+pf = ifftshift(pf);
+fx = wvfGet(wvf,'otf support');
+[Fx,Fy] = meshgrid(fx,fx);
+ieNewGraphWin;
+mesh(Fx,Fy,abs(fftshift(pf)));
+
+ieNewGraphWin;
+plot(abs(pf(:)),abs(wvData.otf(:)),'.');
+identityLine;
 
 %% Now check across wavelengths 
 waves = 400:50:700;
