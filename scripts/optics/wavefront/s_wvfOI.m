@@ -109,6 +109,8 @@ identityLine;
 
 %% The pupil function and the OTF should be the same
 
+% But they are not.  Why not?
+
 % The PSF is the abs(fft2(pupilfunction))
 % And the PSF is abs(fft2(OTF))
 %

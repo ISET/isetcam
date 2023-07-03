@@ -38,7 +38,7 @@ title(sprintf("fNumber %.2f Wave %.0f Airy Diam %.2f",wvfGet(wvf,'fnumber'),wvfG
 %
 % The default is humanmw.  But it is best to be explicit and in this
 % case use 'diffraction limited'.
-oi = wvf2oi(wvf,'model','diffraction limited');
+oi = wvf2oi(wvf);
 % oi = wvf2oi(wvf,'model','humanmw');
 assert(wvfGet(wvf,'fnumber') == oiGet(oi,'optics fnumber'))
 
@@ -150,7 +150,7 @@ for ff = fl
     wvf = wvfComputePSF(wvf,'force',true,'lca',false);
     wvfPlot(wvf,'2d psf space','um',thisWave,20,'airy disk');
 
-    oiD = wvf2oi(wvf,'model','diffraction limited');
+    oiD = wvf2oi(wvf);
     [~, fig] = oiPlot(oiD,'psf',thisWave); psfPlotrange(fig,oiD);
     oiPlot(oiD,'psf xaxis',thisWave);
 end

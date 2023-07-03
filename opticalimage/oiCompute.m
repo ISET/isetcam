@@ -110,14 +110,8 @@ if ~exist('oi','var') || isempty(oi), error('Opticalimage required.'); end
 if ~exist('scene','var') || isempty(scene), error('Scene required.'); end
 
 if strcmp(oi.type,'wvf')
-    % User sent in an wvf, not an oi.  We convert it to an oi here
-    % assuming it is in the diffraction limited domain.
-    %
-    % This edit, which seems right to BW, breaks the flare
-    % calculation.
-    %
-    % oi = wvf2oi(oi,'model','diffraction limited');
-    %
+    % User sent in an wvf, not an oi.  We convert it to a shift invariant
+    % oi here.  The oi is returned.
     oi = wvf2oi(oi);
 end
 
