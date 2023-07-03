@@ -635,28 +635,31 @@ end
 isPsf = true;
 switch (parm)
     case 'psf'
-        % Get the PSF.
-        %   wvfGet(wvf, 'psf', wList)
+        % wvfGet(wvf, 'psf', wList)
+        %   Get the PSF.
         
         % Force user to code to explicitly compute the PSF if it isn't
         % done. Not ideal but should be OK.
         if (~isfield(wvf, 'psf') || ~isfield(wvf, 'PSF_STALE') || ...
                 wvf.PSF_STALE)
-            error(['Must explicitly compute PSF on wvf structure '...
+            error(['Compute PSF on wvf structure '...
                 'before getting it. Use wvfComputePSF']);
         end
         
-        % Return whole cell array of psfs over wavelength if
-        % no argument passed. If there is just one wavelength, we
-        % return the pupil function as a matrix, rather than as a cell
-        % array with one entry.
+        % Return whole cell array of psfs over wavelength if no varargin
+        % for wave is passed. If there is just one wavelength, we return
+        % the pupil function as a matrix, rather than as a cell array with
+        % one entry.
         if isempty(varargin)
+            % Nothing sent in, but there is only one.
             if (length(wvf.psf) == 1)
                 val = wvf.psf{1};
             else
+                % Nothing sent in, so return the whole psf
                 val = wvf.psf;
             end
         else
+            % Get the wavelength requested
             wList = varargin{1};
             idx = wvfWave2idx(wvf, wList);
             nWave = wvfGet(wvf, 'nwave');
@@ -668,15 +671,15 @@ switch (parm)
         end
         
     case 'diffractionpsf'
-        % Compute and return diffraction limited PSF for the calculation
-        % wavelength  and pupil diameter.
+        % wvfGet(wvf, 'diffraction psf', [wList]);
         %
-        %   wvfGet(wvf, 'diffraction psf', wList);
-        if ~isempty(varargin)
-            wList= varargin{1};
-        else
-            wList = wvfGet(wvf, 'calc wave');
+        % Compute and return diffraction limited PSF for the calculation
+        % wavelength and the wavefront fnumber.
+        %
+        if ~isempty(varargin), wList= varargin{1};
+        else,                  wList = wvfGet(wvf, 'calc wave');
         end
+        fprintf('Diff limited for wave %d and F/# %.1f\n',wList,wvfGet(wvf,'fnumber'));
         zcoeffs = 0;
         wvfTemp = wvfSet(wvf, 'zcoeffs', zcoeffs);
         wvfTemp = wvfSet(wvfTemp, 'wave', wList(1));
@@ -906,23 +909,23 @@ switch (parm)
         end
         psf = wvfGet(wvf, 'psf', wave);
         
-        % Compute OTF
+        % Compute OTF.
+        %
+        % BW:  Why isn't the OTF the same as the (complex) pupil function?
         %
         % Use PTB PsfToOtf to convert to (0,0) sf at center otf
         % representation.  This differs from the ISETCam optics structure
-        % convention, where (0,0) sf is at the upper left. We apply
-        % ifftshift to put 0,0 in the upper left.
+        % convention, where (0,0) sf is at the upper left. 
         [~,~,val] = PsfToOtf([],[],psf);
         
         % BW: July 2023
-        % Not sure we should do this here.  Maybe only in wvf2oi.
-        % Compensated for this change in wvf2oi.
+        % We used to apply ifftshift to put 0,0 in the upper left.
+        % This is only needed in wvf2oi, and we removed it here.
         % val = ifftshift(val);
         
-        % We used to zero out small imaginary values.  This,
-        % however, can cause numerical problems much worse than
-        % having small imaginary values in the otf.  So we don't
-        % do it anymore.
+        % We used to zero out small imaginary values.  This, however, can
+        % cause numerical problems much worse than having small imaginary
+        % values in the otf.  So we don't do it anymore.
         
     case {'otfsupport'}
         % wvfGet(wvf, 'otfsupport', unit, wave)
@@ -971,11 +974,11 @@ switch (parm)
         val = wvfGet(wvf, 'psf spatial samples', unit, wave);
         
     case 'psfcentered'
-        % PSF entered so that peak is at middle position in coordinate grid
+        % PSF has its peak at middle position in coordinate grid
         %   wvfGet(wvf, 'psf centered', wList)
         
-        % Force user to code to explicitly compute the PSF if it isn't
-        % done. Not ideal but should be OK.
+        % Force user to explicitly compute the PSF if it isn't done. Not
+        % ideal but should be OK.
         if (~isfield(wvf, 'psf') || ~isfield(wvf, 'PSF_STALE') || ...
                 wvf.PSF_STALE)
             error(['Must compute PSF on wvf structure before retrieving'...

@@ -688,7 +688,8 @@ switch parm
     case {'otfsize'}
         % Row and col samples
         if checkfields(optics,'OTF','OTF')
-            tmp = size(optics.OTF.OTF); val = tmp(1:2);
+            tmp = size(optics.OTF.OTF); 
+            val = tmp(1:2);
         end
         
     case {'otfwave','otfwavelength','wave','wavelength'}
@@ -765,13 +766,13 @@ switch parm
                         thisWave = varargin{1};
                         otf = opticsGet(optics,'otf data',thisWave);
                         % mesh(fftshift(otf))
-                        psf = fftshift(ifft2(otf));
+                        psf = fftshift(ifft2(otf));                        
                         % mesh(abs(psf))
                     else
                         % All of them
                         psf = zeros(size(optics.OTF.OTF));
                         for ii=1:length(otfWave)
-                            psf(:,:,ii) = fftshift(ifft2(optics.OTF.OTF(:,:,ii)));
+                            psf(:,:,ii) = fftshift(ifft2(optics.OTF.OTF(:,:,ii)));                            
                         end
                     end
                     
@@ -780,6 +781,14 @@ switch parm
                     nSamps = size(psf,1)/2;
                     fSupport = opticsGet(optics,'otf fx',units);
                     sSupport = opticsGet(optics,'psf support',fSupport,nSamps);
+                    
+                    % BW:  July 3, 2023.
+                    % This spatial support is not in perfect alignment with
+                    % the spatial support from the wavefront code.  To make
+                    % things match, we need a shift of dx/2.  Considering
+                    % what to do.  Changing from fftshift to ifftshift does
+                    % not solve the problem, it only changes the direction
+                    % of the shift.  
                     
                     % This is an error check in a way.
                     if ~isreal(val)
@@ -869,14 +878,22 @@ switch parm
         % distance.
         peakF = max(fx(:));
         val = 1/(2*peakF);
-        
+    case {'middlerow'}
+        % This matches conventions for psf and otf when we use the PTB
+        % routines to obtain these.
+        tmp = floor(opticsGet(optics, 'otfsize') / 2) + 1;
+        val = tmp(1);  % The row
+    case {'middlecol'}       
+        % This matches conventions for psf and otf when we use the PTB
+        % routines to obtain these.
+        tmp = floor(opticsGet(optics, 'otfsize') / 2) + 1;
+        val = tmp(2);  % The row        
     case {'psfsupport'}
         % opticsGet(optics,'psf support',fSupport, nSamps)
         %
         % Returns mesh grid of X and Y values.  But maybe we should check
         % the behavior and return the vector and matrix forms on request.
-        %
-        
+        %        
         if length(varargin) < 2, error('fSupport and nSamps required.'); end
         fSupport = varargin{1};
         nSamp    = varargin{2};
@@ -885,7 +902,22 @@ switch parm
         % runs from -Nyquist:Nyquist. With this support, the Nyquist
         % frequency is actually the highest (peak) frequency value. There
         % are two samples per Nyquist, so the sample spacing is 1/(2*peakF)
-        samp = (-nSamp:(nSamp-1));
+        
+        % BW modified: July 2023.
+        if isequal(opticsGet(optics,'model'),'diffractionlimited')
+            % The diffraction limited case is left alone.
+            samp = (-nSamp:(nSamp-1));
+        else
+            % BW TODO:  What to do if OTF is not square?  
+            % The shift invariant case is made consistent with
+            % wvfGet(wvf,'spatial samples') 
+            middleRow = opticsGet(optics,'middle row');
+            tmp = opticsGet(optics,'otf size');
+            assert(tmp(1) == tmp(2));
+            nSamples = tmp(1);
+            samp = (1:nSamples) - middleRow;
+        end
+        
         [X,Y] = meshgrid(samp,samp);
         
         % Same as opticsGet(optics,'psf spacing',peakF);

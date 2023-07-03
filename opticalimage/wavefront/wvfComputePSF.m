@@ -119,8 +119,12 @@ if (~isfield(wvf, 'psf') || ~isfield(wvf, 'PSF_STALE') || ...
         psf{wl} = real(inten);
 
         %{ 
-        % BW:  Commented out because, well, DOCHECKS = false for several years.
+        % BW:  Commented out because DOCHECKS = false for several years.
         %
+        % BW: I set DOCHECKS to true, but commented the code out for now.  
+        % Running tests, the 'as expected' part prints out but not the other two.
+        %
+        % Old notes (maybe DHB?)
         % We used to not use the ifftshift. Indeed, the ifftshift does not
         % seem to matter here, but my understanding of the way fft2 works, 
         % we want it.  The reason it doesn't matter is because we don't
@@ -128,7 +132,7 @@ if (~isfield(wvf, 'psf') || ~isfield(wvf, 'PSF_STALE') || ...
         % We can put this back and set DOCHECKS here to true to
         % recompute the old way and verify that we get the same answer to
         % numerical precision. And a few other things.        
-        DOCHECKS = false;
+        DOCHECKS = true;
         if (DOCHECKS)
             amp1 = fft2(pupilfunc{wl});
             inten1 = fftshift((amp1 .* conj(amp1)));
