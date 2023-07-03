@@ -17,6 +17,7 @@ ieInit;
 
 %%
 wvf = wvfCreate;    % Default wavefront 5.67 fnumber
+thisWave = wvfGet(wvf,'wave');
 
 flengthMM = 6; flengthM = flengthMM*1e-3;
 fNumber = 3;
@@ -67,12 +68,16 @@ identityLine;
 
 %% Not quite the same
 
-% But the job of wvf2oi is to make the oi the same OTF.
-otf = oiGet(oi,'optics otf',thisWave);
-otf = ifftshift(otf);
+% The job of wvf2oi is to make the oi and wvf OTF match.  But they do not.
+% That's weird.  How can this be?  Check wvf2oi() code, which is either a
+% pure copy or an interp2()
+oi = wvf2oi(wvf);
+wvfOTF = wvfGet(wvf,'otf',thisWave);
+oiOTF  = oiGet(oi,'optics otf',thisWave);
+oiOTF  = ifftshift(oiOTF);
 
 ieNewGraphWin;
-plot(abs(otf(:)),abs(wvData.otf(:)),'.');
+plot(abs(oiOTF(:)),abs(wvfOTF(:)),'.');
 identityLine;
 
 %% The pupil function and the OTF should be the same

@@ -914,7 +914,9 @@ switch (parm)
         % ifftshift to put 0,0 in the upper left.
         [~,~,val] = PsfToOtf([],[],psf);
         
+        % BW: July 2023
         % Not sure we should do this here.  Maybe only in wvf2oi.
+        % Compensated for this change in wvf2oi.
         % val = ifftshift(val);
         
         % We used to zero out small imaginary values.  This,

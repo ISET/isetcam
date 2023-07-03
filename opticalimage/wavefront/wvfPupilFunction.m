@@ -5,39 +5,48 @@ function wvf = wvfPupilFunction(wvf, varargin)
 %   wvf = wvfPupilFunction(wvf, varargin)
 %
 % Description:
-%    This version of the pupil function calculation is designed for
-%    general optics.  See wvfComputePupilFunction for the ISETBio
-%    calculations that include Stiles Crawford, human chromatic
-%    aberration and parameters related to typical human pupil sizes.
+%    This version of the pupil function calculation is designed for general
+%    optics.  It allows the user to specify the aperture function of the
+%    pupil. 
 %
-%    The pupil function is a complex number that represents the amplitude
-%    and phase of the wavefront across the pupil. The returned pupil
-%    function at a specific wavelength is
+%    See *wvfComputePupilFunction* for the ISETBio calculations that
+%    include Stiles Crawford, human chromatic aberration and parameters
+%    related to typical human pupil sizes.  That function always creates a
+%    circular aperture function of ones that corresponds to the size of the
+%    human pupil.
+%
+%    The pupil function combines the aperture function (real) and the
+%    wavefront aberrations (imaginary) into a complex number that
+%    represents the amplitude and phase of the wavefront across the pupil.
+%    The pupil function at a specific wavelength is
 %
 %       pupilF = A exp(-1i 2 pi (phase/wavelength));
 %
 %    The pupil function is related to the PSF by the Fourier transform. See
-%    J. Goodman, Intro to Fourier Optics, 3rd ed, p. 131. (MDL)
+%    J. Goodman, Intro to Fourier Optics, 3rd ed, p. 131. (MDL)  It is
+%    computed using wvfComputePSF().
 %
-%    The pupil function is calculated for 10 orders of Zernike coeffcients
-%    specified to the OSA standard, with the convention that we include the
-%    j = 0 term, even though it does not affect the psf. Thus the first
-%    entry of the passed coefficients corresponds to j = 1. Adding in the
-%    j = 0 term does not change the psf. The spatial coordinate system is
-%    also OSA standard.
+%    The wavefront aberrations in ISETCam is calculated for 10 orders of
+%    Zernike coeffcients specified to the OSA standard, with the convention
+%    that we include the j = 0 term, even though it does not affect the
+%    psf. Thus the first entry of the passed coefficients corresponds to j
+%    = 1. Adding in the j = 0 term does not change the psf. The spatial
+%    coordinate system is also OSA standard.
 %
 % Inputs:
 %    wvf     - The wavefront object
 %
 % Optional key/value pairs:
-%    amplitude - An image describing the amplitude.  The default
-%                amplitude across the pupil is assumed to be 1.
+%    amplitude - An image describing the aperture function.  The default
+%                amplitude across the circular pupil is assumed to be 1,
+%                which would be a diffraction limited case.
+%                
 % Outputs:
-%    wvf     - The wavefront object with the computed data
-%
+%    wvf     - The wavefront object with the updated pupilfunction.
 %
 % See Also:
-%    wvfCreate, wvfGet, wfvSet, wvfComputePSF
+%    wvfCreate, wvfGet, wfvSet, wvfComputePSF,wvfComputePupilFunction,
+%    wvfComputePupilFunctionCustomLCA 
 %
 
 % History:
@@ -48,7 +57,7 @@ function wvf = wvfPupilFunction(wvf, varargin)
  wvf = wvfCreate;
  wvf = wvfPupilFunction(wvf);
  wvf = wvfComputePSF(wvf);
- wvfPlot(wvf,'psf','um',550,10);
+ wvfPlot(wvf,'psf','um',550,10,'airy disk',true);
 %}
 %{
  wvf = wvfCreate;    % Diffraction
@@ -59,12 +68,11 @@ function wvf = wvfPupilFunction(wvf, varargin)
 %}
 %{
  wvf = wvfCreate;    % Diffraction
- pupilAmp = wvfAperture(wvf,'nsides',6);
- wvf = wvfPupilFunction(wvf,'amplitude',pupilAmp);
+ apertureFunction = wvfAperture(wvf,'nsides',3);
+ wvf = wvfPupilFunction(wvf,'amplitude',apertureFunction);
  wvf = wvfComputePSF(wvf);
  wvfPlot(wvf,'psf','um',550,10);
 %}
-
 
 %% Input parse
 %

@@ -31,19 +31,19 @@ wvf = wvfSet(wvf,'focal length',0.017);
 % There are many parameters for this function, including dot mean, line
 % mean, dot sd, line sd, line opacity.  They are returned in params
 nsides = 3;
-[pupilAmp, params] = wvfAperture(wvf,'nsides',nsides,...
+[apertureFunction, params] = wvfAperture(wvf,'nsides',nsides,...
     'dot mean',20, 'dot sd',3, 'dot opacity',0.5, ...
     'line mean',20, 'line sd', 2, 'line opacity',0.5);
 % ieNewGraphWin; imagesc(pupilAmp); colormap(gray); axis image
 
 % At this point the pupil function is good, which I check by plotting
 % the images below in the block comment.  
-wvf = wvfPupilFunction(wvf,'amplitude',pupilAmp);
+wvf = wvfPupilFunction(wvf,'amplitude',apertureFunction);
 
 % We do not want the wvfComputePSF to recompute the pupil function.  So it
 % is crucial to set 'force' to false.  That way we keep the pupil
 % function and just compute the PSF.
-wvf = wvfComputePSF(wvf,'lca',false,'force',false);
+wvf = wvfComputePSF(wvf,'lca',false);
 
 wvfPlot(wvf,'psf','um',550,10,'airy disk');
 
@@ -56,7 +56,7 @@ subplot(1,2,2); wvfPlot(wvf,'image pupil phase','um',550,'no window');
 %{
 % Even if I change the defocus, the amp and phase are OK.
 wvf = wvfSet(wvf,'zcoeff',1,{'defocus'});
-wvf = wvfPupilFunction(wvf,'amplitude',pupilAmp);
+wvf = wvfPupilFunction(wvf,'amplitude',apertureFunction);
 %}
 
 %% Convert to an OI

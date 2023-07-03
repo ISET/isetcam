@@ -44,8 +44,9 @@ function wvf = wvfComputePSF(wvf, varargin)
 
 % Examples:
 %{
-    wvf = wvfCreate;
-    wvf = wvfComputePSF(wvf)
+ wvf = wvfCreate;
+ wvf = wvfComputePSF(wvf);
+ wvfPlot(wvf,'psf','um',550,20,'airy disk');
 %}
 
 %% Input parsing
@@ -57,7 +58,7 @@ varargin = ieParamFormat(varargin);
 p = inputParser;
 p.addParameter('lca',true,@islogical);      % Incorporate longitudinal chromatic aberration
 p.addParameter('showbar',false,@islogical); 
-p.addParameter('force',true,@islogical);    % Force computation by default
+p.addParameter('force',false,@islogical);    % Do NOT force computation by default
 
 varargin = wvfKeySynonyms(varargin);
 

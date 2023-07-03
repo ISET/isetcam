@@ -1,4 +1,4 @@
-function [im, params] = wvfAperture(wvf, varargin)
+function [im, params] = wvfPupilAmplitude(wvf, varargin)
 % Deprecated.  Use wvfAperture
 %
 % Synthetic aperture with random dots (dust) and lines (scratches).
@@ -58,6 +58,8 @@ ieNewGraphWin; imagesc(im); colormap(gray); axis image
 %}
 
 error('Use wvfAperture.')
+end
+
 %{
 %% Inputs
 
@@ -203,3 +205,4 @@ theta = rand(1, num_points, 'single') * 2 * pi; % Between 0 and 2pi
 xy = [r .* cos(theta); r .* sin(theta)];  % Convert r,theta to xy
 
 end
+%}

@@ -1,7 +1,8 @@
-%%  Experiments with flare
+%%  Yet more experiments with flare
 % 
-% See also v_wvf which might be moved here or renamed v_wvfFlare
 %
+% See also
+%   s_opticsFlare, v_opticsFlare
 
 %%
 ieInit;

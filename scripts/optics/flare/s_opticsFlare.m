@@ -1,7 +1,9 @@
 %%  Experiments with flare
 % 
-% See also v_wvf which might be moved here or renamed v_wvfFlare
+% A longer version of v_opticsFlare, with more experiments and tests.
 %
+% See also
+%   v_opticsFlare, s_wvfOI
 
 %%
 ieInit;
