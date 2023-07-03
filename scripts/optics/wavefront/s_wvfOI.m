@@ -28,7 +28,7 @@ wvf = wvfComputePSF(wvf,'lca',false,'force',true);
 
 %% Slice through the wvf psf
 
-wvfPlot(wvf,'psf xaxis','um',550,10);
+wvfData = wvfPlot(wvf,'psf xaxis','um',550,10);
 hold on;
 
 % Convert to OI and plot the same slice.  With the dx/2 shift, they agree
@@ -37,6 +37,34 @@ oi = wvf2oi(wvf,'model','wvf human');
 uData = oiGet(oi,'optics psf xaxis');
 dx = uData.samp(2) - uData.samp(1);
 plot(uData.samp+dx/2,uData.data,'-go');
+legend({'wvf','oi'});
+
+%% Here is the slope.
+ieNewGraphWin; plot(wvfData.psf(:),uData.data(:),'ro');
+identityLine;
+
+%% wvfplot xaxis code
+
+% The slight shift in dx is the reason for the mis-match
+psf  = wvfGet(wvf,'psf');
+samp = wvfGet(wvf,'psf spatial samples');
+wvfLineData = interp2(samp,samp,psf,0,samp);
+
+% oiplot xaxis code
+nSamp = 15;   % Does not seem to matter
+thisWave = 550;
+units = 'mm';
+psfData = opticsGet(oi.optics,'psf data',thisWave,units,nSamp);
+
+X = psfData.xy(:,:,1); Y = psfData.xy(:,:,2); oiSamp = psfData.xy(1,:,1);
+dx = oiSamp(2) - oiSamp(1);
+oiLineData = interp2(X+dx/2,Y,psfData.psf,0,oiSamp);
+
+ieNewGraphWin; 
+subplot(1,2,1), plot(wvfLineData,oiLineData,'ro'); identityLine;
+subplot(1,2,2), plot(samp(:),val.samp(:),'bo'); identityLine;
+
+
 
 %% Compare the OTFs - partially done in s_wvfDiffraction
 
@@ -71,12 +99,17 @@ identityLine;
 % The job of wvf2oi is to make the oi and wvf OTF match.  But they do not.
 % That's weird.  How can this be?  Check wvf2oi() code, which is either a
 % pure copy or an interp2()
-oi = wvf2oi(wvf);
-wvfOTF = wvfGet(wvf,'otf',thisWave);
-oiOTF  = oiGet(oi,'optics otf',thisWave);
-oiOTF  = ifftshift(oiOTF);
+wvfOTF = wvfGet(wvf,'otf');
+wvfSupport = wvfGet(wvf,'otf support','um');
 
+oi = wvf2oi(wvf);
+oiOTF  = oiGet(oi,'optics otf');
+
+% Compare with a scatter plot.
 ieNewGraphWin;
+
+% You must use fftshift, not ifftshift, for the data to match.
+oiOTF = fftshift(oiOTF);
 plot(abs(oiOTF(:)),abs(wvfOTF(:)),'.');
 identityLine;
 

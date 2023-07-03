@@ -175,13 +175,18 @@ for ww=1:length(wave)
     thisOTF = wvfGet(wvf,'otf',wave(ww));
     % ieNewGraphWin; mesh(X,Y,abs(thisOTF));
 
-    if (all(f == fx)), est = thisOTF;
-    else,              est = interp2(f, f', thisOTF, X, Y, 'cubic', 0);
+    if (all(f == fx))
+        % Straight assignment.  No interpolation.
+        est = thisOTF;
+    else
+        warning('Interpolating OTF from wvf to oi.')
+        est = interp2(f, f', thisOTF, X, Y, 'cubic', 0);
     end
     
     % ISETCam and ISETBio have the OTF with (0, 0) sf at the upper left. At
     % this point, the data have (0,0) in the center.  Thus we use ifftshift
-    % to the wvf centered format. 
+    % to the wvf centered format. Using fftshift() can invert this
+    % reorganization of the data.
     otf(:, :, ww) = ifftshift(est);
 end
 % Stored format

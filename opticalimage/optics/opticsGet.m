@@ -794,7 +794,9 @@ switch parm
         val.psf = psf;
         val.xy  = sSupport;
     case {'psfxaxis'}
-        % The psf data interpolated along the xaxis
+        % opticsGet(optics,'psf xaxis',thisWave,units,nSamp);
+        %
+        % The psf data interpolated along the xaxis. 
         thisWave = opticsGet(optics,'wave'); 
         if numel(thisWave) > 1, thisWave = 550; end
         units = 'um'; nSamp = 25;
