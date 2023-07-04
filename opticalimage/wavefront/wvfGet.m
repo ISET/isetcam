@@ -306,13 +306,21 @@ switch (parm)
             val = tempcoeffs(idx);
         end
         
-    case {'wavefrontaberrations'}
-        % The wavefront aberrations are derived from Zernicke coefficients
-        % in the routine wvfComputePupilFunction
+    case {'wavefrontaberrations','wavefrontaberration'}
+        % wvfGet(wvf,'wavefront aberration',[thisWave])
+        %
+        % The wavefront aberrations are calculated from Zernicke
+        % coefficients in the routine wvfComputePupilFunction
         %
         % If there are multiple wavelengths, then this is a cell array of
         % matrices wvfGet(wvf, 'wavefront aberrations', wList) This comes
         % back in microns.
+        %
+        % The wavefront aberrations are specified across a support that can
+        % extend past the pupil aperture function.  Returning the
+        % aberration is not precisely the same as returning the phase of
+        % the pupil function, which has the aperture function multiplied
+        % into it.
         
         % You can't do the get unless it has already been computed, and is
         % not stale.
@@ -348,16 +356,19 @@ switch (parm)
             end
         end
         
-    case {'pupilfunction', 'pupilfunc', 'pupfun'}
+    case {'pupilfunction', 'pupilfunc'}
+        %   wvfGet(wvf, 'pupilfunc', wList)
+        %
         % The pupil function is derived from Zernike coefficients in the
-        % routine wvfComputePupilFunction
+        % routine wvfComputePupilFunction, and in some cases (e.g.,
+        % computing with flare) an aperture function is incorporated as the
+        % amplitude component.
         %
         % If there are multiple wavelengths, then this is a cell array of
         % matrices
-        %   wvfGet(wvf, 'pupilfunc', wList)
         
-        % You can't do the get unless it has already been computed and is
-        % not stale.
+        % To do the get, we check whether it has already been computed and
+        % is not stale.
         if (~isfield(wvf, 'pupilfunc') || ...
                 ~isfield(wvf, 'PUPILFUNCTION_STALE') || ...
                 wvf.PUPILFUNCTION_STALE)
@@ -377,19 +388,43 @@ switch (parm)
             end
         else
             wList = varargin{1};
-            if (length(wList) > 1)
-                error('Can only request one wavelength here');
-            end
+            if (length(wList) > 1), error('Request only one wavelength.'); end
             idx = wvfWave2idx(wvf, wList);
             nWave = wvfGet(wvf, 'nwave');
-            if idx > nWave
-                error('idx (%d) > nWave', idx, nWave);
-            else
-                val = wvf.pupilfunc{idx};
+            if idx > nWave, error('idx (%d) > nWave', idx, nWave);
+            else,           val = wvf.pupilfunc{idx};
             end
         end
-        
+    case {'pupilfunctionamplitude'}
+        % wvfGet(wvf,'pupil function amplitude',thisWave);
+        %
+        % Amplitude of the pupil function
+        thisWave = wvfGet(wvf,'wave');
+        if ~isempty(varargin), thisWave = varargin{1}; end
+        pf = wvfGet(wvf,'pupil function',thisWave);
+
+        if iscell(pf),  for ii=1:numel(pf), pf{ii} = abs(pf{ii});  end
+        else,           pf = abs(pf);
+        end
+        val = pf;
+
+    case {'pupilfunctionphase'}
+        % wvfGet(wvf,'pupil function phase',thisWave);
+        %
+        % The pupil function combines the wavefront aberration and the
+        % aperture function.  The pupil function phase is not the same as
+        % the wavefront aperture because the aperture function can limit
+        % the spatial extent of the phase.
+        %
+        thisWave = wvfGet(wvf,'wave');
+        if ~isempty(varargin), thisWave = varargin{1}; end
+        pf = wvfGet(wvf,'pupil function',thisWave);
+        if iscell(pf),  for ii=1:numel(pf), pf{ii} = angle(pf{ii});  end
+        else,           pf = angle(pf);
+        end
+        val = pf;
     otherwise
+        % BW:  What is this?
         isZernike = false;
 end
 
@@ -506,8 +541,25 @@ switch (parm)
             val = (val * 1e-3) * ieUnitScaleFactor(varargin{1});
         end
         
-    case {'pupilsamplespacing','pupilsampleinterval',...
-            'refpupilplanesampleinterval', 'fieldsamplesizemmperpixel', ...
+    case {'pupilsamplespacing','pupilsampleinterval'}
+        % wvfGet(wvf,'pupil sample spacing',unit,wave)
+        % Default unit is 'mm'
+        %
+        % BW: TODO
+        % Not sure about the difference between refpupil and just pupil.
+        % Also there is calc pupil.
+        
+        unit = 'mm';
+        waves = wvfGet(wvf,'wave'); thisWave = waves(1);
+        if ~isempty(varargin), unit = varargin{1}; end
+        if numel(varargin)>1, thisWave = varargin{2}; end
+
+        val = wvfGet(wvf,'pupil plane size','m',thisWave)/wvfGet(wvf,'npixels');
+        if ~isempty(varargin)
+            val = val * ieUnitScaleFactor(unit);
+        end
+
+    case {'refpupilplanesampleinterval', 'fieldsamplesizemmperpixel', ...
             'refpupilplanesampleintervalmm', 'fieldsamplesize'}
         % Pixel sample interval of sample pupil field. This is for the
         % measurement wavelength and sets the scale for calculations at
@@ -542,7 +594,9 @@ switch (parm)
     case {'pupilplanesize', 'pupilplanesizemm'}
         % wvfGet(wvf, 'pupil plane size', units, wList)
         %
-        % BW:  I do not understand this fully
+        % BW: TODO
+        % I do not understand this fully.  Also there is a calc pupil
+        % plane that is probably the same as this.  Fix the overlap!
         %
         wList = wvfGet(wvf,'calc wave');
         unit = 'mm';

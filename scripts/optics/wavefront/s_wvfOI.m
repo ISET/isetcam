@@ -77,7 +77,9 @@ plot(wvData.fx, wvData.otf(:,wvMid),'r-'); hold on;
 if isodd(length(oiData.fx)), oiMid = floor(length(oiData.fx)/2) + 1;
 else,          oiMid = length(oiData.fx)/2 + 1;
 end
-plot(oiData.fx, oiData.otf(:,oiMid),'bo')
+
+% There are some small imaginary parts of the otf
+plot(oiData.fx, abs(oiData.otf(:,oiMid)),'bo')
 legend({'wvf','oi'})
 grid on
 xlabel('Frequency'); ylabel('Amplitude');

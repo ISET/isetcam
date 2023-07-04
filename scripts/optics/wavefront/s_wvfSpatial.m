@@ -1,6 +1,11 @@
 %% s_wvfSpatial
 % 
-% Can we control the sampling spatial resolution?
+% Illustrating the spatial sampling control in various ways.
+% 
+%  * Changing the number of pixels
+%  * Changing the pupil plane size
+%  * Changing the focal length
+%  * Illustrating the pupil function and OTF
 %
 
 %%
@@ -31,14 +36,14 @@ wvfGet(wvf,'psf sample spacing')  % Arcmin
 fprintf('Npix %d delta Arcmin %.5f\n',wvfGet(wvf,'npixels'), wvfGet(wvf,'psf sample spacing'));
 fprintf('um per deg %f\n',wvfGet(wvf,'um per degree'));
 
-wvf = wvfSet(wvf,'npixels',nPixels);
+wvf = wvfSet(wvf,'npixels',nPixels0);
 
 %% Change the ref pupil size
 refPupil0 = wvfGet(wvf,'pupil plane size','mm');
 
-% Changing the refPupil size changes the sample spacing
-% I am confused about the direction of the change.  Increasing the size
-% makes the sample spacing finer in the PSF.
+% Changing the refPupil size changes the sample spacing. But BW is confused
+% about the direction of the change.  Increasing the size makes the sample
+% spacing finer in the PSF.
 
 % Multiply by 4
 wvf = wvfSet(wvf,'pupil plane size',refPupil0*4,'mm');
@@ -72,9 +77,8 @@ wvfPlot(wvf,'2d psf space','um',thisWave,20,'airy disk');
 fprintf('Npix %d delta Arcmin %.5f\n',wvfGet(wvf,'npixels'), wvfGet(wvf,'psf sample spacing'));
 fprintf('um per deg %f\n',wvfGet(wvf,'um per degree'));
 
-%% Loop a bit on focal length
+%% Loop a bit on focal length, showing overlap of wvf and oi curves
 
-% Overlaps the wvf and oi curves.
 fl = linspace(5,20,4)*1e-3;
 for ff = fl
     wvf = wvfSet(wvf,'focal length',ff);
@@ -84,6 +88,7 @@ for ff = fl
     oiPlot(oiD,'psf xaxis',[],thisWave,'um'); 
     hold on;
     wvfPlot(wvf,'psf xaxis','um',thisWave,20,'no window');
+    legend({'oi','airy disk','wvf'});
 end
 
 %% The pupil function and the OTF are connected
@@ -99,16 +104,65 @@ end
 
 % Here is the pupil function
 pf  = wvfGet(wvf,'pupilfunction',thisWave);
-fx = wvfGet(wvf,'otf support');
+fx  = wvfGet(wvf,'otf support');
 [Fx,Fy] = meshgrid(fx,fx);
 
 % Still need to understand.
 ieNewGraphWin;
 mesh(Fx,Fy,abs(pf));    % Aperture function
+%{
+% Equivalent
+pfa = wvfGet(wvf,'pupil function amplitude');
+mesh(Fx,Fy,pfa);
+%}
 
 ieNewGraphWin;
 mesh(Fx,Fy,angle(pf));  % Wavefront aberration
+%{
+ % Equivalent
+ pfp = wvfGet(wvf,'pupil function phase');
+ mesh(Fx,Fy,pfp)
+%}
 
+% The pupil function goes to the PSF and then back to the OTF. I would like
+% a direct route.
 ieNewGraphWin;
 otf = wvfGet(wvf,'otf',thisWave);
 mesh(Fx,Fy,abs(otf));
+
+%% Pupil aperture and phase functions
+
+wvf = wvfCreate;
+wvf = wvfComputePSF(wvf);
+
+pupilPhase = wvfGet(wvf,'pupil function phase');
+apertureFunction = wvfGet(wvf,'pupil function amplitude');
+ieNewGraphWin; colormap("jet");
+subplot(1,2,1), imagesc(apertureFunction); axis image
+subplot(1,2,2), imagesc(pupilPhase); axis image
+
+%% Now with defocus
+
+wave = 400:50:700;
+wvf = wvfCreate('wave',wave);
+wvf = wvfSet(wvf,'zcoeff',1,{'defocus'});
+wvf = wvfComputePSF(wvf);
+
+thisWave = [400,500,600];
+ieNewGraphWin; colormap("jet");
+tcl = tiledlayout(3,3);
+for ii=1:numel(thisWave)
+    % The pupil phase extends over 2*pi.  But the aberration only extnds over
+    % pi.  I am not sure why.
+    pupilPhase = wvfGet(wvf,'pupil function phase',thisWave(ii));
+    apertureFunction = wvfGet(wvf,'pupil function amplitude',thisWave(ii));
+    wavefrontabberration = wvfGet(wvf,'wavefront aberration',thisWave(ii));
+
+    nexttile, imagesc(apertureFunction); axis image; 
+
+    nexttile, imagesc(pupilPhase); axis image;
+    title(sprintf('wave %d',thisWave(ii)));
+
+    nexttile, imagesc(wavefrontabberration); axis image;
+    
+end
