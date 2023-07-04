@@ -493,11 +493,14 @@ switch (parm)
         % not for the number ...
         val = wvf.nSpatialSamples;
         
-    case {'refpupilplanesize', 'refpupilplanesizemm', 'fieldsizemm'}
-        % Total size of computed field in pupil plane. This is for the
-        % measurement wavelength and sets the scale for calculations at
-        % other wavelengths.
-        % Shouldn't this have 'measured' in the title?
+    case {'refpupilplanesize', 'refpupilplanesizemm', 'reffieldsizemm'}
+        % wvfGet(wvf,'pupil plane size',units);
+        %
+        % There is a simple 'pupil plane size' earlier.  I think ref means
+        % the measured (reference?) plane size.        
+        %
+        % Size of computed field in pupil plane. This is for the sets the
+        % scale for calculations at other wavelengths.
         val = wvf.refSizeOfFieldMM;
         if ~isempty(varargin)
             val = (val * 1e-3) * ieUnitScaleFactor(varargin{1});

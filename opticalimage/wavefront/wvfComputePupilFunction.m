@@ -108,7 +108,7 @@ p.addParameter('force',true,@islogical);   % Force computation
 varargin = wvfKeySynonyms(varargin);
 p.parse(wvf,varargin{:});
 
-showBar = p.Results.showbar;
+% showBar = p.Results.showbar;
 
 %% Parameter checking
 
@@ -158,7 +158,7 @@ if (~isfield(wvf, 'pupilfunc') || ~isfield(wvf, 'PUPILFUNCTION_STALE') ...
     %
     % This needs to be done separately at each wavelength because the size
     % in the pupil plane that we sample is wavelength dependent.
-    if showBar, wBar = waitbar(0, 'Computing pupil functions'); end
+    % if showBar, wBar = waitbar(0, 'Computing pupil functions'); end
     
     pupilfunc = cell(nWavelengths, 1);
     areapix = zeros(nWavelengths, 1);
@@ -170,10 +170,10 @@ if (~isfield(wvf, 'pupilfunc') || ~isfield(wvf, 'PUPILFUNCTION_STALE') ...
 
     for ii = 1:nWavelengths
         thisWave = waveNM(ii);
-        if showBar
-            waitbar(ii / nWavelengths, wBar, sprintf(...
-                'Pupil function for %.0f', thisWave));
-        end
+        %         if showBar
+        %             waitbar(ii / nWavelengths, wBar, sprintf(...
+        %                 'Pupil function for %.0f', thisWave));
+        %         end
         
         % Set SCE correction params, if desired
         xo  = wvfGet(wvf, 'scex0');
@@ -181,11 +181,21 @@ if (~isfield(wvf, 'pupilfunc') || ~isfield(wvf, 'PUPILFUNCTION_STALE') ...
         rho = wvfGet(wvf, 'sce rho');
         
         % Set up pupil coordinates
+        %{
+        % This code works.  Trying to use gets and clarify with new code.
         nPixels = wvfGet(wvf, 'spatial samples');
         pupilPlaneSizeMM = wvfGet(wvf, 'pupil plane size', 'mm', thisWave);
         pupilPos = (1:nPixels) - (floor(nPixels / 2) + 1);
-        pupilPos = pupilPos * (pupilPlaneSizeMM / nPixels);
-        
+        dx = (pupilPlaneSizeMM / nPixels);
+        pupilPos = pupilPos * dx;
+        %}
+        % {
+        nPixels = wvfGet(wvf, 'number spatial samples');
+        pupilPos = (1:nPixels) - wvfGet(wvf,'middle row');
+        dx = wvfGet(wvf,'pupil plane size','mm',thisWave)/nPixels;
+        pupilPos = pupilPos * dx; 
+        %}
+
         % Do the meshgrid thing and flip y. Empirically the flip makes
         % things work out right.
         [xpos, ypos] = meshgrid(pupilPos);
@@ -329,7 +339,7 @@ if (~isfield(wvf, 'pupilfunc') || ~isfield(wvf, 'PUPILFUNCTION_STALE') ...
         end
     end
     
-    if showBar, close(wBar); end
+    %     if showBar, close(wBar); end
     
     % We think the aberrations are in microns (BW).    But look at
     % t_wvfWatsonJOV for a comparison and some concern.
