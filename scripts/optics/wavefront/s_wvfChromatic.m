@@ -11,33 +11,28 @@
 %%
 ieInit;
 
-%%  The only time this seems to be right is for 17 mm focal length
-%
-% Maybe because the umPerDegree is wrong?
-
-% wList = linspace(400,700,7);
+%% Multiple wavelengths
 
 wList = 400:10:700;
-% wList = 550;
 wvf = wvfCreate('wave',wList);    % Default wavefront 5.67 fnumber
 
 flengthMM = 17; flengthM = flengthMM*1e-3;
 fNumber = 3; 
 wvf = wvfSet(wvf,'calc pupil diameter',flengthMM/fNumber);
 wvf = wvfSet(wvf,'focal length',flengthM);
-% wvfGet(wvf,'measured wavelength')
 
 % Turn on LCA.  Compute.
 wvf = wvfComputePSF(wvf,'lca',true,'force',true);
 oi = wvf2oi(wvf);
 
-%% Show 4 pointspreads as images
+%% Sample 4 pointspreads as images
 
 wList = linspace(400,700,4);
-ieNewGraphWin;
+ieNewGraphWin; colormap(gray);
 for ii = 1:numel(wList)
     subplot(2,2,ii)
     wvfPlot(wvf,'image psf space','um',wList(ii),60,'airy disk',true,'no window');
+    colormap(gray);
 end
 
 %% Check the OTF relationships between OI and WVF
@@ -68,8 +63,9 @@ ieNewGraphWin([],'upper left big');
 nPanels = ceil(sqrt(numel(wList)));
 
 for ii = 1:numel(wList)
-    subplot(nPanels,nPanels,ii)
+    subplot(nPanels,nPanels,ii);
     wvfPlot(wvf,'image psf space','um',wList(ii),60,'airy disk','no window');    
+    colormap(gray);
 
     fNumber = wvfGet(wvf,'fnumber');
     AD = airyDisk(ww,fNumber,'units','um','diameter',true);

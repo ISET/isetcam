@@ -84,20 +84,6 @@ function val = wvfGet(wvf, parm, varargin)
 %                                   cell array of matrices. If wl is
 %                                   passed, is should be a single scalar.
 %
-%      Measurement parameters
-%        'measured pupil diameter'- Pupil size for wavefront aberration
-%                                   meaurements (mm, *)
-%        'measured wl'            - Wavefront aberration measurement
-%                                   wavelength (nm, *)
-%        'measured optical axis'
-%                                 - Measured optical axis (deg)
-%        'measured observer accommodation'
-%                                 - Observer accommodation at aberration
-%                                   measurement time (diopters)
-%        'measured observer focus correction'
-%                                 - Focus correction added optically for
-%                                   observer at measurement time (diopters)
-%
 %      Spatial sampling parameters
 %        'sample interval domain' - Which domain has sample interval held
 %                                   constant with wavelength. The options
@@ -169,6 +155,21 @@ function val = wvfGet(wvf, parm, varargin)
 %       +'areapixapod'            - Used in computation of sce fraction
 %       +'cone sce fraction'      - SCE fraction for cone psfs
 %
+%      Measurement parameters
+%        'measured pupil diameter'- Pupil size for wavefront aberration
+%                                   meaurements (mm, *)
+%        'measured wl'            - Wavefront aberration measurement
+%                                   wavelength (nm, *)
+%        'measured optical axis'
+%                                 - Measured optical axis (deg)
+%        'measured observer accommodation'
+%                                 - Observer accommodation at aberration
+%                                   measurement time (diopters)
+%        'measured observer focus correction'
+%                                 - Focus correction added optically for
+%                                   observer at measurement time (diopters)
+%
+%
 %      Need to be implemented/checked/documented
 %       +'distanceperpix'          -
 %       +'samplesspace'            -
@@ -207,6 +208,7 @@ function val = wvfGet(wvf, parm, varargin)
 %              dhb  Broke out into multiple switches to start to organize.
 %                   Worked on help text.
 %    07/05/22  npc  Custom LCA
+%    07/03/23  baw  Many comments as part of integration with ISETBio/Cam
 
 % Examples:
 %{
@@ -216,8 +218,8 @@ function val = wvfGet(wvf, parm, varargin)
     wvfPlot(wvfP, 'image psf', 'um', 550);
 
     psf = wvfGet(wvfP, 'diffraction psf', 550);
-    vcNewGraphWin;
-    mesh(psf)
+    support = wvfGet(wvfP,'psf support','um');
+    wvfPlot(wvf,'2d psf space','um',550,15,'airy disk',true);
 %}
 %{
     % Strehl is ratio of diffraction and current
@@ -242,15 +244,16 @@ function val = wvfGet(wvf, parm, varargin)
 %{
 	wvf = wvfCreate;
     wvf = wvfComputePSF(wvf);
-	otf = fftshift(wvfGet(wvf, 'otf'));
+    otf = wvfGet(wvf,'otf',wvfGet(wvf,'wave'));
     f = wvfGet(wvf, 'otf support', 'mm');
-	vcNewGraphWin;
-    mesh(f, f, abs(otf));
-
-	lsf = wvfGet(wvf, 'lsf');
-    x = wvfGet(wvf, 'lsf support', 'mm');
-	vcNewGraphWin;
-    plot(x, lsf);
+	ieNewGraphWin; mesh(f, f, abs(otf));
+%}
+%{
+    wvf = wvfCreate;
+    wvf = wvfComputePSF(wvf);
+	lsf = wvfGet(wvf, 'lsf', wvfGet(wvf,'wave'));
+    x = wvfGet(wvf, 'lsf support', 'um');
+	ieNewGraphWin; plot(x, lsf); grid on; xlabel('Pos (mm)');
 %}
 
 %% Massage parameters
@@ -500,7 +503,8 @@ switch (parm)
             val = (val * 1e-3) * ieUnitScaleFactor(varargin{1});
         end
         
-    case {'refpupilplanesampleinterval', 'fieldsamplesizemmperpixel', ...
+    case {'pupilsamplespacing','pupilsampleinterval',...
+            'refpupilplanesampleinterval', 'fieldsamplesizemmperpixel', ...
             'refpupilplanesampleintervalmm', 'fieldsamplesize'}
         % Pixel sample interval of sample pupil field. This is for the
         % measurement wavelength and sets the scale for calculations at
@@ -511,7 +515,8 @@ switch (parm)
             val = (val * 1e-3) * ieUnitScaleFactor(varargin{1});
         end
         
-    case {'refpsfsampleinterval' 'refpsfarcminpersample', ...
+    case {'psfsamplespacing','psfsampleinterval',...
+            'refpsfsampleinterval' 'refpsfarcminpersample', ...
             'refpsfarcminperpixel'}
         % Arc minutes per pixel of the sampled psf at the measurement
         % wavelength. This is for the measurement wavelength and sets the
@@ -533,14 +538,14 @@ isCalculation = true;
 switch (parm)
     case {'pupilplanesize', 'pupilplanesizemm'}
         % wvfGet(wvf, 'pupil plane size', units, wList)
-        % Total size of computed field in pupil plane, for calculated
-        % wavelengths(s)
         %
-        % BW:  I do not understand this
+        % BW:  I do not understand this fully
         %
+        wList = wvfGet(wvf,'calc wave');
+        unit = 'mm';
+        if ~isempty(varargin),  unit = varargin{1}; end
+        if numel(varargin) > 1, wList = varargin{2}; end
 
-        % Get wavelengths. What if varargin{2} is empty?
-        wList = varargin{2};        
         waveIdx = wvfWave2idx(wvf, wList);
         wavelengths = wvfGet(wvf, 'calc wavelengths', 'nm');
         
@@ -560,7 +565,7 @@ switch (parm)
         % Unit conversion. If varargin{1} is empty, then the units are
         % 'mm' and we leave it alone.
         if ~isempty(varargin)
-            val = (val * 1e-3) * ieUnitScaleFactor(varargin{1});
+            val = (val * 1e-3) * ieUnitScaleFactor(unit);
         end
         
     case {'calcpupildiameter', 'calcpupilsize'}
@@ -767,8 +772,8 @@ switch (parm)
         end
         val = wvfGet(wvf, 'psf angle per sample', unit, wList);
         
-    case {'psfspatialsamples', 'samplesspace', 'supportspace', ...
-            'spatialsupport'}
+    case {'psfsupport','psfspatialsample','psfspatialsamples', ...
+            'samplesspace', 'supportspace','spatialsupport'}
         % wvfGet(wvf, 'samples space', 'um', wList)
         %
         %  Spatial support in samples, centered on 0
@@ -786,16 +791,13 @@ switch (parm)
         % Get the angular samples in degrees
         val = wvfGet(wvf, 'psf angular samples', 'deg', wave);
         
+        % The commented out code seems to be in error.  It did not account
+        % for possible changes in focal length and umPerDeg
+        %
         %{
-         % The next few lines are the previous code, I think it is in
-         % error.  When we ask for the samples in degrees, this will produce
-         % the wrong result.  We should only call this code for unit
-         %             nm um mm cm m km in ft
-         %  When the units are min or sec we should do something else!
-        
          % Convert to meters and then to selected spatial scale 
-         val = val * mPerDeg;  % Sample in meters 
-         val = val * ieUnitScaleFactor(unit);
+         val = val * mPerDeg;  % Convert angle to sample in meters 
+         val = val * ieUnitScaleFactor(unit);  % Convert to spatial scale
         %}
         switch unit
             case {'nm', 'um', 'mm', 'cm', 'm', 'km', 'in', 'ft'}
@@ -812,12 +814,12 @@ switch (parm)
                 error('Bad unit for samples space, %s', unit);
         end
         
-    case {'psfspatialsample'}
-        % This parameter matters for the OTF and PSF quite a bit. It
-        % is the number of um per degree on the retina.
-        mPerDeg = (wvfGet(wvf,'um per degree') * 10^-6);
+        %{
+       % This seems like a duplicate of the code in the previous case. BW
+       % commented it out.
+      case {'psfspatialsample'}
         unit = 'mm';
-        wList = wvfGet(wvf, 'measured wavelength');
+        wList = wvfGet(wvf, 'calc wave');  % BW changed to calc from meas
         if ~isempty(varargin), unit = varargin{1}; end
         if length(varargin) > 1, wList = varargin{2}; end
         if length(wList) > 1, error('One wavelength only'); end
@@ -826,10 +828,12 @@ switch (parm)
         val = wvfGet(wvf, 'psf angular sample', 'deg', wList);
         
         % Convert to meters and then to selected spatial scale
+        mPerDeg = (wvfGet(wvf,'um per degree') * 10^-6);
         val = val * mPerDeg;
         val = val * ieUnitScaleFactor(unit);
-        
-    case {'pupilspatialsamples'}
+        %}
+
+    case {'pupilsupport','pupilspatialsamples'}
         % wvfGet(wvf, 'pupil spatial samples', 'mm', wList)
         % Spatial support in samples, centered on 0
         % Unit and wavelength must be specified
@@ -847,7 +851,7 @@ switch (parm)
         
     case {'pupilspatialsample'}
         % wvfGet(wvf, 'pupil spatial sample', 'mm', wList)
-        % Spatial support in samples, centered on 0
+        %
         
         unit = 'mm';
         wList = wvfGet(wvf, 'calc wave');
@@ -952,18 +956,21 @@ switch (parm)
         
     case {'lsf'}
         % wave = wvfGet(wvf, 'calc wave');
-        % lsf = wvfGet(wvf, 'lsf', unit, wave); vcNewGraphWin; plot(lsf)
+        % lsf = wvfGet(wvf, 'lsf', unit, wave); ieNewGraphWin; plot(lsf)
         % For the moment, this only runs if we have precomputed the PSF and
         % we have a matching wavelength in the measured and calc
         % wavelengths. We need to think this through more.
         wave = wvfGet(wvf, 'calc wave');
         if length(varargin) > 1, wave = varargin{1}; end
-        
-        % Get OTF
+        psf = wvfGet(wvf,'psf',wave);
+        val = psf2lsf(psf);
+
+        % OLD: Get OTF
+        %{
         otf  = fftshift(wvfGet(wvf, 'otf', wave));
         mRow = wvfGet(wvf, 'middle row');
         val  = fftshift(abs(fft(otf(mRow, :))));
-        
+        %}
     case {'lsfsupport'}
         % wvfGet(wvf, 'lsf support');
         %

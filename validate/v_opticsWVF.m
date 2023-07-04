@@ -52,57 +52,23 @@ title(sprintf('Calculated pupil diameter %.1f mm',pupilMM));
 
 %% Now, create the same model using the diffraction limited ISET code
 
-oi = oiCreate('diffraction limited');
-oi = oiSet(oi,'optics focal length',fLengthM);
-oi = oiSet(oi,'optics fnumber', fLengthM*1e+3/pupilMM);
+% Compare wvf and oi methods directly
+wvfData = wvfPlot(wvfP,'psf xaxis','um',thisWave,10);
+hold on;
 
-% Check values
-% oiGet(oi,'optics focal length','mm')
-% oiGet(oi,'optics aperture diameter','mm')
-uData = oiPlot(oi,'psf',[],thisWave);
-
-%% Compare wvf and oi methods directly
-%
-% The spatial sampling of the two methods is NOT matched.  But they
-% both have spatial sampling with real spatial units.  So we can
-% interpolate OI data to match the wvf data.  
-%
-% They are both created to sum to one over their respectively sampling
-% grids.   Thus a constant function on that sampling grid will be
-% unchanged.
-%
-% But the two sampling grids are different!  So to compare we need to
-% put them on the same sampling grid.  We interpolate to the sampling
-% grid of from the higher resolution to lower, and then normalize to
-% sum to 1 on that sampling grid.
-
-[X,Y] = meshgrid(wvfData.x,wvfData.y);
-% ieNewGraphWin; mesh(X,Y,wvfData.z);
-% ieNewGraphWin; mesh(uData.x,uData.y,uData.psf);
-
-% Interpolate from higher resolution (PSF) to lower (WVF)
-estPSF = interp2(uData.x,uData.y,uData.psf,X,Y,'linear',0);
-estPSF = estPSF/sum(estPSF(:));
-
-ieNewGraphWin([],'wide');
-subplot(1,3,1)
-mesh(X,Y,wvfData.z); hold on;
-plot3(X,Y,estPSF,'k.'); grid on;
-
-subplot(1,3,2)
-plot(estPSF(:),wvfData.z(:),'o');
-identityLine; xlabel('wvf interp'); ylabel('oi data'); grid on;
-
-subplot(1,3,3)
-histogram((estPSF(:) - wvfData.z(:)),20);
+% Convert to OI and plot the same slice.  With the dx/2 shift, they agree
+% except for a small scale factor.  Which I don't understand
+oi = wvf2oi(wvfP);
+uData = oiGet(oi,'optics psf xaxis');
+plot(uData.samp,uData.data,'go');
+legend({'wvf','oi'});
 
 %% Get the otf data from the OI and WVF computed two ways
 
 % Compare the two OTF data sets directly.
 oi = wvf2oi(wvfP);
 oiData = oiPlot(oi,'otf',[],thisWave);
-maxF = 2000;
-wvData = wvfPlot(wvfP,'otf','mm',thisWave,maxF);
+wvData = wvfPlot(wvfP,'otf','mm',thisWave);
 
 % Remember that the DC position must account for whether the
 % length of fx is even or odd
@@ -117,8 +83,7 @@ else,          oiMid = length(oiData.fx)/2 + 1;
 end
 plot(oiData.fx, oiData.otf(:,oiMid),'bo')
 legend({'wvf','oi'})
-grid on
-xlabel('Frequency'); ylabel('Amplitude');
+grid on; xlabel('Frequency'); ylabel('Amplitude');
 
 %% Now, make a multispectral wvf (wvfP) and convert it to ISET OI format
 
