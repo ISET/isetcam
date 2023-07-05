@@ -49,7 +49,7 @@ ieNewGraphWin; mesh(abs(wvfOTF));
 wvfOTF = ifftshift(wvfOTF);
 ieNewGraphWin; mesh(abs(wvfOTF));
 
-ieNewGraphWin; plot(oiOTF(:),wvfOTF(:),'.');
+ieNewGraphWin; plot(abs(oiOTF(:)),abs(wvfOTF(:)),'.');
 identityLine;
 
 %% Show multiple point spreads as images
@@ -68,7 +68,7 @@ for ii = 1:numel(wList)
     colormap(gray);
 
     fNumber = wvfGet(wvf,'fnumber');
-    AD = airyDisk(ww,fNumber,'units','um','diameter',true);
+    AD = airyDisk(wList(ii),fNumber,'units','um','diameter',true);
     title(sprintf('Wave %.0f AiryD %.2f',wList(ii),AD));
 end
 
@@ -78,12 +78,14 @@ sceneGrid = sceneCreate('grid lines',384,64);
 sceneGrid = sceneSet(sceneGrid,'fov',1);
 
 oi = oiCompute(wvf,sceneGrid);
+oi = oiSet(oi,'name','LCA on');
 oiWindow(oi);
 
 %% Now try it but compute with LCA turned off
 
 wvf = wvfComputePSF(wvf,'lca',false,'force',true);
 oi = oiCompute(wvf,sceneGrid);
+oi = oiSet(oi,'name','LCA off');
 oiWindow(oi);
 
 %% END
