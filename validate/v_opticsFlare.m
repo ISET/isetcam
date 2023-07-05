@@ -106,6 +106,6 @@ oiSet(oi,'gamma',0.5); drawnow;
 
 oiApply = oiSet(oiApply,'name','piFlare');
 oiWindow(oiApply);
-oiSet(oiApply,'gamma',0.5);
+oiSet(oiApply,'gamma',0.5); drawnow;
 
 %%

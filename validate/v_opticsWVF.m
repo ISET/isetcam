@@ -42,12 +42,13 @@ wvfP = wvfCreate;    % Default wavefront 5.67 fnumber
 fLengthMM = 17; fLengthM = fLengthMM*1e-3;
 fNumber = 5.6; thisWave = 550;
 pupilMM = fLengthMM/fNumber;
+
 wvfP = wvfSet(wvfP,'calc pupil diameter',pupilMM);
 wvfP = wvfSet(wvfP,'focal length',fLengthM);
 wvfP  = wvfComputePSF(wvfP,'lca', false);
 
 pRange = 10;  % Microns
-wvfData = wvfPlot(wvfP,'2d psf space','um',thisWave,pRange,'airy disk',true);
+wvfPlot(wvfP,'2d psf space','um',thisWave,pRange,'airy disk',true);
 title(sprintf('Calculated pupil diameter %.1f mm',pupilMM));
 
 %% Now, create the same model using the diffraction limited ISET code
@@ -202,10 +203,7 @@ wvfVA = wvfSet(wvfVA,'zcoeff',-1,'vertical_astigmatism');
 % We need to compute.
 wvfVA  = wvfComputePSF(wvfVA,'lca', true);
 
-oi = wvf2oi(wvfVA,'model','human mw');  % This works
 oi = wvf2oi(wvfVA,'model','wvf human');  % This works
-
-% oi = wvf2oi(wvfVA,'model','diffraction limited');  % This does not work
 
 oi = oiCompute(oi,radialScene);
 oiWindow(oi);
