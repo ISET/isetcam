@@ -81,7 +81,7 @@ plot(wvData.fx, wvData.otf(:,wvMid),'r-'); hold on;
 if isodd(length(oiData.fx)), oiMid = floor(length(oiData.fx)/2) + 1;
 else,          oiMid = length(oiData.fx)/2 + 1;
 end
-plot(oiData.fx, oiData.otf(:,oiMid),'bo')
+plot(oiData.fx, abs(oiData.otf(:,oiMid)),'bo')
 legend({'wvf','oi'})
 grid on; xlabel('Frequency'); ylabel('Amplitude');
 
@@ -115,7 +115,7 @@ plot(wvData.fx, wvData.otf(:,wvMid),'r-'); hold on;
 if isodd(length(oiData.fx)), oiMid = floor(length(oiData.fx)/2) + 1;
 else,          oiMid = length(oiData.fx)/2 + 1;
 end
-plot(oiData.fx, oiData.otf(:,oiMid),'bo')
+plot(oiData.fx, abs(oiData.otf(:,oiMid)),'bo');
 legend({'wvf','oi'})
 
 %% If the OTF data are basically matched
@@ -128,9 +128,9 @@ est = interp2(wvData.fx,wvData.fy,wvData.otf,oiData.fx,oiData.fy,'cubic',0);
 
 ieNewGraphWin([],'wide');
 subplot(1,2,1)
-plot(est(:),oiData.otf(:),'rx')
+plot(abs(est(:)),abs(oiData.otf(:)),'rx')
 axis equal; xlabel('Estimated from wvf'); ylabel('Original OI')
-identityLine
+identityLine;
 
 % Some issue because of complex numbers.
 % Nearly perfect.  Even though the PSFs are not perfect.  Should try
