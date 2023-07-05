@@ -484,7 +484,7 @@ switch (parm)
         % wvfGet(wvf,'focal length',unit);
         % We use the focal length (m) to calculate meters per degree in psf
         % spatial samples.
-        if isfield(wvf,'focalLength'), val = wvf.focalLength; 
+        if isfield(wvf,'focallength'), val = wvf.focallength; 
         else
             warning('Using 17 mm focal length by default.')
             val = 17e-3;  % 17 mm is default

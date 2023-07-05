@@ -50,9 +50,8 @@ function wvf = wvfComputePupilFunction(wvf, varargin)
 %    wvf     - The wavefront object
 %
 % Optional key/value pairs:
-%     'no lca'                             - If true, do not adjust
-%                                            zcoeffs for LCA. Default
-%                                            false.
+%     'lca'  - If true, apply human longitudinal chromatic aberration.
+%              Default: False
 %
 % Notes:
 %    * If the function is already computed and not stale, this will return
@@ -87,6 +86,7 @@ function wvf = wvfComputePupilFunction(wvf, varargin)
 %    04/29/19  dhb  Add 'nolca' key/value pair and force lca values to zero
 %                   in this case.
 %    07/05/22  npc  Custom LCA
+%    07/05/23  baw  Many.  Changed nolca to lca, removed big 'if'
 
 % Examples:
 %{
@@ -104,8 +104,8 @@ varargin = ieParamFormat(varargin);
 
 p = inputParser;
 p.addRequired('wvf',@isstruct);
-p.addParameter('nolca',false,@islogical);  % Use human longitudinal chromatic aberration by default
-p.addParameter('force',true,@islogical);   % Force computation
+p.addParameter('lca',false,@islogical);   % Apply longitudinal chromatic aberration
+p.addParameter('sce',false,@islogical);   % Apply Stiles Crawford effect to aperture function
 
 varargin = wvfKeySynonyms(varargin);
 
@@ -113,252 +113,264 @@ p.parse(wvf,varargin{:});
 
 %% Parameter checking
 
-% Only calculate this if we need to. It might already be computed
-if (~isfield(wvf, 'pupilfunc') || ~isfield(wvf, 'PUPILFUNCTION_STALE') ...
-        || wvf.PUPILFUNCTION_STALE || ...
-        p.Results.force)
-    
-    % Make sure calculation pupil size is less than or equal to the pupil
-    % size that gave rise to the measured coefficients.
-    calcPupilSizeMM = wvfGet(wvf, 'calc pupil diameter', 'mm');
-    measPupilSizeMM = wvfGet(wvf, 'measured pupil diameter', 'mm');
-    if (calcPupilSizeMM > measPupilSizeMM)
-        error(['Calculation pupil (%.2f mm) must not exceed measurement'...
-            ' pupil (%.2f mm).'], calcPupilSizeMM, measPupilSizeMM);
-    end
-    
-    % Handle defocus relative to reference wavelength.
-    %
-    % The defocus correction for the calculation is expressed as the
-    % difference (diopters) between the defocus correction at measurement
-    % time and the defocus correction for this calculatiion. This models
-    % any lenses external to the observer's eye, which affect focus but not
-    % the accommodative state.
-    %
-    % There are also calc and measured observer accommodation parameters,
-    % which seem similar to these and I don't think are currently used.
-    if (wvfGet(wvf, 'calcobserveraccommodation') ~= wvfGet(wvf, 'measuredobserveraccommodation'))
-        error(['We do not currently know how to deal with values '...
-            'that differ from measurement time']);
-    end
-            
-    defocusCorrectionDiopters = ...
-        wvfGet(wvf, 'calc observer focus correction') - ...
-        wvfGet(wvf, 'measured observer focus correction');
-    
-    % Convert defocus from diopters to microns
-    defocusCorrectionMicrons = wvfDefocusDioptersToMicrons(...
-        defocusCorrectionDiopters, measPupilSizeMM);
-    
-    % Convert wavelengths in nanometers to wavelengths in microns
-    waveUM = wvfGet(wvf, 'calc wavelengths', 'um');
-    waveNM = wvfGet(wvf, 'calc wavelengths', 'nm');
-    nWavelengths = wvfGet(wvf, 'number calc wavelengths');
-    
-    % Compute the pupil function
-    %
-    % This needs to be done separately at each wavelength because the size
-    % in the pupil plane that we sample is wavelength dependent.    
-    pupilfunc = cell(nWavelengths, 1);
-    areapix = zeros(nWavelengths, 1);
-    areapixapod = zeros(nWavelengths, 1);
-    wavefrontaberrations = cell(nWavelengths, 1);
-    
-    % Check whether if we are using a custom LCA
-    customLCAfunction = wvfGet(wvf, 'custom lca');
-
-    for ii = 1:nWavelengths
-        thisWave = waveNM(ii);
-        %         if showBar
-        %             waitbar(ii / nWavelengths, wBar, sprintf(...
-        %                 'Pupil function for %.0f', thisWave));
-        %         end
-        
-        % Set SCE correction params, if desired
-        xo  = wvfGet(wvf, 'scex0');
-        yo  = wvfGet(wvf, 'scey0');
-        rho = wvfGet(wvf, 'sce rho');
-        
-        % Set up pupil coordinates
-        %{
-        % BW: July, 2023
-        % This code works.  But I edited it, using wvfGet, to clarify.
-        % This also brought to my attention some issues in the different
-        % calls to wvfGet that are still a work in progress.  See wvfGet
-        % notes about 'ref' and 'calc' and 'meas'.
-        %
-        nPixels = wvfGet(wvf, 'spatial samples');
-        pupilPlaneSizeMM = wvfGet(wvf, 'pupil plane size', 'mm', thisWave);
-        pupilPos = (1:nPixels) - (floor(nPixels / 2) + 1);
-        dx = (pupilPlaneSizeMM / nPixels);
-        pupilPos = pupilPos * dx;
-        %}
-        
-        nPixels = wvfGet(wvf, 'number spatial samples');
-        pupilPos = (1:nPixels) - wvfGet(wvf,'middle row');
-        dx = wvfGet(wvf,'pupil sample spacing','mm',thisWave);
-        pupilPos = pupilPos * dx;         
-
-        % Do the meshgrid thing and flip y. Empirically the flip makes
-        % things work out right.
-        [xpos, ypos] = meshgrid(pupilPos);
-        ypos = -ypos;
- 
-        % Set up the pupil amplitude function. In the original code,
-        % only the Stiles Crawford Effect (SCE) was implemented this
-        % way. For x, y positions within the pupil, rho is used to set
-        % the pupil function amplitude.  More recently, however, we
-        % added a pupil amplitude slot into the wavefront.  Then the
-        % zcoeffs are used to compute the pupil phase function and the
-        % pupil amplitude slot holds the pupil amplitude function.
-        % Together, they are combined to create the pupilFunction.
-        if ~all(rho)
-            % Here if all the rho values are 0, which means do not use
-            % SCE calculation.
-            apertureFunc = ones(nPixels, nPixels);
-        else
-            % Get the wavelength-specific value of rho for the
-            % Stiles-Crawford effect.
-            rho = wvfGet(wvf, 'sce rho', thisWave);
-            
-            % For the x, y positions within the pupil, the value of rho is
-            % used to set the amplitude. I guess this is where the SCE
-            % stuff matters. We should have a way to expose this for
-            % teaching and in the code.
-            apertureFunc = 10 .^ (-rho * ((xpos - xo) .^ 2 + (ypos - yo) .^ 2));
-        end
-        
-        % Compute longitudinal chromatic aberration (LCA) relative to
-        % measurement wavelength and then convert to microns so that we can
-        % add this in to the wavefront aberrations. The LCA is the
-        % chromatic aberration of the human eye. It is encoded in the
-        % function wvfLCAFromWavelengthDifference. 
-        %
-        % That function returns the difference in refractive power for this
-        % wavelength relative to the measured wavelength (and there should
-        % only be one, although there may be multiple calc wavelengths).
-        %  
-        % We flip the sign to describe change in optical power when we pass
-        % this through wvfDefocusDioptersToMicrons.
-        if (p.Results.nolca)
-            % No longitudinal chromatic aberration included.  If we have
-            % only one wavelength, perhaps we should not include chromatic
-            % aberration.  But maybe we should, say for the human case?
-            % disp('No LCA.')
-
-            % The diopters is normally translated into microns, below.
-            % So specificying lcaMicrons is enough, no need for
-            % lcaDiopters.
-            %
-            % lcaDiopters = 0;
-            %
-            lcaMicrons = 0;
-        else
-            if (isempty(customLCAfunction))
-                % disp('Using human LCA wvfLCAFromWave...')
-                lcaDiopters = wvfLCAFromWavelengthDifference(wvfGet(wvf, ...
-                    'measured wavelength', 'nm'), thisWave);
-            else
-                % disp('Using a custom LCA...')
-                lcaDiopters = customLCAfunction(wvfGet(wvf, ...
-                    'measured wavelength', 'nm'), thisWave);
-            end
-            lcaMicrons = wvfDefocusDioptersToMicrons(-lcaDiopters, ...
-                measPupilSizeMM);
-        end
-        
-        % The Zernike polynomials are defined over the unit disk. At
-        % measurement time, the pupil was mapped onto the unit disk, so we
-        % do the same normalization here to obtain the expansion over the
-        % disk.
-        %
-        % And by convention expanding gives us the wavefront aberrations in
-        % microns.
-        norm_radius = (sqrt(xpos .^ 2 + ypos .^ 2)) / (measPupilSizeMM / 2);
-        theta = atan2(ypos, xpos);
-        norm_radius_index = norm_radius <= 1;
-        
-        % Get Zernike coefficients and add in appropriate info to defocus
-        % Need to make sure the c vector is long enough to contain defocus
-        % term, because we handle that specially and it's easy just to make
-        % sure it is there. This wastes a little time when we just compute
-        % diffraction, but that is the least of our worries.
-        c = wvfGet(wvf, 'zcoeffs');
-        if (length(c) < 5)
-            c(length(c) + 1:5) = 0;
-        end
-
-        % BW: TODO
-        % I am not sure why we separate out the defocus correction for this
-        % code.  There is a defocus slot in the polynomial, so why have it
-        % appear here again?
-        c(5) = c(5) + lcaMicrons + defocusCorrectionMicrons;
-        
-        % fprintf('At wavlength %0.1f nm, adding LCA of %0.3f microns to 
-        % j = 4 (defocus) coefficient\n', thisWave, lcaMicrons); 
-        
-        % This loop uses the zernfun() to compute the Zernike polynomial of
-        % each required order. That function normalizes a bit differently
-        % than the OSA standard, with a factor, 1/sqrt(pi), that is not
-        % part of the OSA definition. We correct that factor, multiplying by
-        % sqrt(pi).
-        %
-        % Also, we speed this up by not bothering to compute for c entries
-        % that are 0.
-        wavefrontAberrationsUM = zeros(size(xpos));
-        for k = 1:length(c)
-            if (c(k) ~= 0)
-                osaIndex = k - 1;
-                [n, m] = wvfOSAIndexToZernikeNM(osaIndex);
-                wavefrontAberrationsUM(norm_radius_index) =  ...
-                    wavefrontAberrationsUM(norm_radius_index) + ...
-                    c(k)*sqrt(pi)*zernfun(n, m, norm_radius(norm_radius_index), ...
-                    theta(norm_radius_index), 'norm');
-            end
-        end
-        
-        % Here is phase of the pupil function, w/ unit amplitude everywhere
-        wavefrontaberrations{ii} = wavefrontAberrationsUM;
-        pupilfuncphase = exp(-1i * 2 * pi * wavefrontAberrationsUM / waveUM(ii));
-        
-        % Set values outside the pupil we're calculating for to 0 amplitude
-        pupilfuncphase(norm_radius > calcPupilSizeMM/measPupilSizeMM)=0;
-        
-        % Multiply phase by the pupil function amplitude function.
-        % Important to zero out before this step, because computation of A
-        % doesn't know about the pupil size.
-        pupilfunc{ii} = apertureFunc .* pupilfuncphase;
-        % ieNewGraphWin; imagesc(angle(pupilfunc{ii}))
-        
-        % We think the ratio of these two quantities tells us how much
-        % light is lost in cone absorbtions because of the Stiles-Crawford
-        % effect. They might as well be computed here, because they depend
-        % only on the pupil function and the sce params
-        areapix(ii) = sum(sum(abs(pupilfuncphase)));
-        areapixapod(ii) = sum(sum(abs(pupilfunc{ii})));
-        
-        % Area pix used to be computed in another way, check that we get
-        % same answer.
-        kindex = find(norm_radius <= calcPupilSizeMM / measPupilSizeMM);
-        areapixcheck = numel(kindex);
-        if (max(abs(areapix(ii) - areapixcheck)) > 1e-10)
-            error('Two ways of computing areapix do not agree');
-        end
-    end
-    
-    % We think the aberrations are in microns (BW).    But look at
-    % t_wvfWatsonJOV for a comparison and some concern.
-    wvf.wavefrontaberrations = wavefrontaberrations;
-    wvf.pupilfunc = pupilfunc;
-    wvf.areapix = areapix;
-    wvf.areapixapod = areapixapod;
-    
-    % Let the rest of the code know we just computed the pupil function and
-    % that a new PSF will be needed.
-    wvf.PUPILFUNCTION_STALE = false;
-    wvf.PSF_STALE = true;
-    
+% Make sure calculation pupil size is less than or equal to the pupil
+% size that gave rise to the measured coefficients.
+calcPupilSizeMM = wvfGet(wvf, 'calc pupil diameter', 'mm');
+measPupilSizeMM = wvfGet(wvf, 'measured pupil diameter', 'mm');
+if (calcPupilSizeMM > measPupilSizeMM)
+    error(['Calculation pupil (%.2f mm) must not exceed measurement'...
+        ' pupil (%.2f mm).'], calcPupilSizeMM, measPupilSizeMM);
 end
+
+% Handle defocus relative to reference wavelength.
+%
+% The defocus correction for the calculation is expressed as the
+% difference (diopters) between the defocus correction at measurement
+% time and the defocus correction for this calculatiion. This models
+% any lenses external to the observer's eye, which affect focus but not
+% the accommodative state.
+%
+% There are also calc and measured observer accommodation parameters,
+% which seem similar to these and I don't think are currently used.
+if (wvfGet(wvf, 'calcobserveraccommodation') ~= wvfGet(wvf, 'measuredobserveraccommodation'))
+    error(['We do not currently know how to deal with values '...
+        'that differ from measurement time']);
+end
+
+%{
+% The original Hofer code allowed that the observer we model might
+% have had a different focus from the observer we measured.  This
+% defocus correction is included here and added later.
+%
+% July 2023, BW thought this was not relevant to our code and
+% commented it out.
+defocusCorrectionDiopters = ...
+    wvfGet(wvf, 'calc observer focus correction') - ...
+    wvfGet(wvf, 'measured observer focus correction');
+
+% Convert defocus from diopters to microns
+defocusCorrectionMicrons = wvfDefocusDioptersToMicrons(...
+    defocusCorrectionDiopters, measPupilSizeMM);
+%}
+
+% Convert wavelengths in nanometers to wavelengths in microns
+waveUM = wvfGet(wvf, 'calc wavelengths', 'um');
+waveNM = wvfGet(wvf, 'calc wavelengths', 'nm');
+nWavelengths = wvfGet(wvf, 'number calc wavelengths');
+
+% Compute the pupil function
+%
+% This needs to be done separately at each wavelength because the size
+% in the pupil plane that we sample is wavelength dependent.
+pupilfunc = cell(nWavelengths, 1);
+areapix = zeros(nWavelengths, 1);
+areapixapod = zeros(nWavelengths, 1);
+wavefrontaberrations = cell(nWavelengths, 1);
+
+% Check whether if we are using a custom LCA
+customLCAfunction = wvfGet(wvf, 'custom lca');
+
+for ii = 1:nWavelengths
+    thisWave = waveNM(ii);
+    %         if showBar
+    %             waitbar(ii / nWavelengths, wBar, sprintf(...
+    %                 'Pupil function for %.0f', thisWave));
+    %         end
+
+    % Set SCE correction params, if desired
+    xo  = wvfGet(wvf, 'scex0');
+    yo  = wvfGet(wvf, 'scey0');
+    rho = wvfGet(wvf, 'sce rho');
+
+    % Set up pupil coordinates
+    %{
+    % BW: July, 2023
+    % The code in this block works.  But I edited it, using wvfGet, to clarify.
+    % This also brought to my attention some issues in the different
+    % calls to wvfGet that are still a work in progress.  See wvfGet
+    % notes about 'ref' and 'calc' and 'meas'.
+    %
+    nPixels = wvfGet(wvf, 'spatial samples');
+    pupilPlaneSizeMM = wvfGet(wvf, 'pupil plane size', 'mm', thisWave);
+    pupilPos = (1:nPixels) - (floor(nPixels / 2) + 1);
+    dx = (pupilPlaneSizeMM / nPixels);
+    pupilPos = pupilPos * dx;
+    %}
+
+    nPixels = wvfGet(wvf, 'number spatial samples');
+    pupilPos = (1:nPixels) - wvfGet(wvf,'middle row');
+    dx = wvfGet(wvf,'pupil sample spacing','mm',thisWave);
+    pupilPos = pupilPos * dx;
+
+    % Do the meshgrid thing and flip y. Empirically the flip makes
+    % things work out right.
+    [xpos, ypos] = meshgrid(pupilPos);
+    ypos = -ypos;
+
+    % Set up the pupil amplitude function. In the original code,
+    % only the Stiles Crawford Effect (SCE) was implemented this
+    % way. For x, y positions within the pupil, rho is used to set
+    % the pupil function amplitude.  More recently, however, we
+    % added a pupil amplitude slot into the wavefront.  Then the
+    % zcoeffs are used to compute the pupil phase function and the
+    % pupil amplitude slot holds the pupil amplitude function.
+    % Together, they are combined to create the pupilFunction.
+    if ~all(rho) && ~p.Results.sce
+        % Here if all the rho values are 0 and the Stiles Crawford
+        % Effect (SCE) flag is false.  The aperture is all 1s.
+        apertureFunc = ones(nPixels, nPixels);
+    else
+        % Get the wavelength-specific value of rho for the
+        % Stiles-Crawford effect.
+        rho = wvfGet(wvf, 'sce rho', thisWave);
+
+        % For the x, y positions within the pupil, the value of rho is
+        % used to set the amplitude. I guess this is where the SCE
+        % stuff matters. We should have a way to expose this for
+        % teaching and in the code.
+        apertureFunc = 10 .^ (-rho * ((xpos - xo) .^ 2 + (ypos - yo) .^ 2));
+    end
+
+    % Compute longitudinal chromatic aberration (LCA) relative to
+    % measurement wavelength and then convert to microns so that we can
+    % add this in to the wavefront aberrations. The LCA is the
+    % chromatic aberration of the human eye. It is encoded in the
+    % function wvfLCAFromWavelengthDifference.
+    %
+    % That function returns the difference in refractive power for this
+    % wavelength relative to the measured wavelength (and there should
+    % only be one, although there may be multiple calc wavelengths).
+    %
+    % We flip the sign to describe change in optical power when we pass
+    % this through wvfDefocusDioptersToMicrons.
+    if p.Results.lca
+        % Apply LCA.  Computes lcaMicrons.
+        if (isempty(customLCAfunction))
+            % disp('Using human LCA wvfLCAFromWave...')
+            lcaDiopters = wvfLCAFromWavelengthDifference(wvfGet(wvf, ...
+                'measured wavelength', 'nm'), thisWave);
+        else
+            % disp('Using a custom LCA...')
+            lcaDiopters = customLCAfunction(wvfGet(wvf, ...
+                'measured wavelength', 'nm'), thisWave);
+        end
+        lcaMicrons = wvfDefocusDioptersToMicrons(-lcaDiopters, ...
+            measPupilSizeMM);
+    else
+        % No longitudinal chromatic aberration.  If we have only one
+        % wavelength, perhaps we should not include chromatic
+        % aberration.  But maybe we should, say for the human case?
+        % disp('No LCA.')
+
+        % The diopters is normally translated into microns, below.
+        % So specificying lcaMicrons is enough, no need for
+        % lcaDiopters.
+        %
+        lcaMicrons = 0;
+    end
+
+    % The Zernike polynomials are defined over the unit disk. At
+    % measurement time, the pupil was mapped onto the unit disk, so we
+    % do the same normalization here to obtain the expansion over the
+    % unit disk.
+    %
+    % And by convention expanding gives us the wavefront aberrations in
+    % microns.
+    norm_radius = (sqrt(xpos .^ 2 + ypos .^ 2)) / (measPupilSizeMM / 2);
+    theta = atan2(ypos, xpos);
+    norm_radius_index = norm_radius <= 1;
+
+    % Get Zernike coefficients
+    % Need to make sure the c vector is long enough to contain defocus
+    % term, because we handle that specially.  But why?
+    % 
+    % This wastes a little time when we just compute diffraction, but
+    % that is the least of our worries.
+    c = wvfGet(wvf, 'zcoeffs');
+    if (length(c) < 5)
+        c(length(c) + 1:5) = 0;
+    end
+
+    %{ 
+    % Add in specific defocus. The original code separated defocus
+    % from measured and calculated. correction for this code.  It did
+    % not seem relevant to us, so I simplified it away.  If you would
+    % like to change the defocus use
+    % wvfSet(wvf,'zcoef',val,{'defocus'});
+    %
+    c(5) = c(5) + lcaMicrons + defocusCorrectionMicrons;
+    %}
+    c(5) = c(5) + lcaMicrons;
+
+    % This loop uses the zernfun() to compute the Zernike polynomial of
+    % each required order. That function normalizes a bit differently
+    % than the OSA standard, with a factor, 1/sqrt(pi), that is not
+    % part of the OSA definition. We correct that factor, multiplying by
+    % sqrt(pi).
+    %
+    % Also, we speed this up by not bothering to compute for c entries
+    % that are 0.
+    wavefrontAberrationsUM = zeros(size(xpos));
+    for k = 1:length(c)
+        if (c(k) ~= 0)
+            osaIndex = k - 1;
+            [n, m] = wvfOSAIndexToZernikeNM(osaIndex);
+            wavefrontAberrationsUM(norm_radius_index) =  ...
+                wavefrontAberrationsUM(norm_radius_index) + ...
+                c(k)*sqrt(pi)*zernfun(n, m, norm_radius(norm_radius_index), ...
+                theta(norm_radius_index), 'norm');
+        end
+    end
+
+    % This is the phase of the pupil function
+    wavefrontaberrations{ii} = wavefrontAberrationsUM;
+    pupilfuncphase = exp(-1i * 2 * pi * wavefrontAberrationsUM / waveUM(ii));
+
+    % Set values outside the pupil diameter to 0 amplitude
+    pupilfuncphase(norm_radius > calcPupilSizeMM/measPupilSizeMM)=0;
+
+    % Create the pupil function, combining the aperture and phase
+    % functions. 
+    pupilfunc{ii} = apertureFunc .* pupilfuncphase;
+    % ieNewGraphWin; imagesc(angle(pupilfunc{ii}))
+
+    % These are special parameters Heidi Hofer calculated.  We do not
+    % use them yet in ISETCam because, well, we don't really
+    % understand them.
+    %
+    % We think the ratio of these two quantities tells us how much
+    % light is lost in cone absorbtions because of the Stiles-Crawford
+    % effect. They might as well be computed here, because they depend
+    % only on the pupil function and the sce params
+    areapix(ii) = sum(sum(abs(pupilfuncphase)));
+    areapixapod(ii) = sum(sum(abs(pupilfunc{ii})));
+
+    %{ 
+    % BW:  July 2023
+    % We haven't had an error here in years.
+    % Area pix used to be computed in another way, check that we get
+    % same answer.
+    kindex = find(norm_radius <= calcPupilSizeMM / measPupilSizeMM);
+    areapixcheck = numel(kindex);
+    if (max(abs(areapix(ii) - areapixcheck)) > 1e-10)
+        error('Two ways of computing areapix do not agree');
+    end
+    %}
+end
+
+% We think the aberrations are in microns (BW).    But look at
+% t_wvfWatsonJOV for a comparison and some concern.
+wvf.wavefrontaberrations = wavefrontaberrations;
+wvf.pupilfunc = pupilfunc;
+wvf.areapix = areapix;
+wvf.areapixapod = areapixapod;
+
+% Let the rest of the code know we just computed the pupil function and
+% that a new PSF will be needed.
+wvf.PUPILFUNCTION_STALE = false;
+
+% The pupil function was recomputed; the PSF must be stale.
+wvf.PSF_STALE = true;
 
 end
 

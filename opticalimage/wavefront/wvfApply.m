@@ -67,12 +67,12 @@ p = inputParser;
 p.addRequired('scene', @isstruct);
 p.addRequired('wvf',@isstruct)
 p.addParameter('lca',false,@islogical);
-p.addParameter('force',true,@islogical);
+p.addParameter('computepupilfunc',true,@islogical);
 
 p.parse(scene,wvf,varargin{:});
 
 %%
-wvf = wvfComputePSF(wvf,'lca',p.Results.lca,'force',p.Results.force);
+wvf = wvfComputePSF(wvf,'lca',p.Results.lca,'computepupilfunc',p.Results.computepupilfunc);
 
 oi = wvf2oi(wvf);
 
