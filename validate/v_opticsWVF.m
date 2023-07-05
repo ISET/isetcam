@@ -42,12 +42,13 @@ wvfP = wvfCreate;    % Default wavefront 5.67 fnumber
 fLengthMM = 17; fLengthM = fLengthMM*1e-3;
 fNumber = 5.6; thisWave = 550;
 pupilMM = fLengthMM/fNumber;
+
 wvfP = wvfSet(wvfP,'calc pupil diameter',pupilMM);
 wvfP = wvfSet(wvfP,'focal length',fLengthM);
 wvfP  = wvfComputePSF(wvfP,'lca', false);
 
 pRange = 10;  % Microns
-wvfData = wvfPlot(wvfP,'2d psf space','um',thisWave,pRange,'airy disk',true);
+wvfPlot(wvfP,'2d psf space','um',thisWave,pRange,'airy disk',true);
 title(sprintf('Calculated pupil diameter %.1f mm',pupilMM));
 
 %% Now, create the same model using the diffraction limited ISET code
@@ -81,7 +82,7 @@ plot(wvData.fx, wvData.otf(:,wvMid),'r-'); hold on;
 if isodd(length(oiData.fx)), oiMid = floor(length(oiData.fx)/2) + 1;
 else,          oiMid = length(oiData.fx)/2 + 1;
 end
-plot(oiData.fx, oiData.otf(:,oiMid),'bo')
+plot(oiData.fx, abs(oiData.otf(:,oiMid)),'bo')
 legend({'wvf','oi'})
 grid on; xlabel('Frequency'); ylabel('Amplitude');
 
@@ -115,7 +116,7 @@ plot(wvData.fx, wvData.otf(:,wvMid),'r-'); hold on;
 if isodd(length(oiData.fx)), oiMid = floor(length(oiData.fx)/2) + 1;
 else,          oiMid = length(oiData.fx)/2 + 1;
 end
-plot(oiData.fx, oiData.otf(:,oiMid),'bo')
+plot(oiData.fx, abs(oiData.otf(:,oiMid)),'bo');
 legend({'wvf','oi'})
 
 %% If the OTF data are basically matched
@@ -128,9 +129,9 @@ est = interp2(wvData.fx,wvData.fy,wvData.otf,oiData.fx,oiData.fy,'cubic',0);
 
 ieNewGraphWin([],'wide');
 subplot(1,2,1)
-plot(est(:),oiData.otf(:),'rx')
+plot(abs(est(:)),abs(oiData.otf(:)),'rx')
 axis equal; xlabel('Estimated from wvf'); ylabel('Original OI')
-identityLine
+identityLine;
 
 % Some issue because of complex numbers.
 % Nearly perfect.  Even though the PSFs are not perfect.  Should try
@@ -202,10 +203,7 @@ wvfVA = wvfSet(wvfVA,'zcoeff',-1,'vertical_astigmatism');
 % We need to compute.
 wvfVA  = wvfComputePSF(wvfVA,'lca', true);
 
-oi = wvf2oi(wvfVA,'model','human mw');  % This works
 oi = wvf2oi(wvfVA,'model','wvf human');  % This works
-
-% oi = wvf2oi(wvfVA,'model','diffraction limited');  % This does not work
 
 oi = oiCompute(oi,radialScene);
 oiWindow(oi);

@@ -1,9 +1,10 @@
 %%  Experiments with flare
 % 
-% A longer version of v_opticsFlare, with more experiments and tests.
+% This is a longer version of v_opticsFlare, with more experiments and
+% tests. 
 %
 % See also
-%   v_opticsFlare, s_wvfOI
+%   v_opticsFlare, s_wvfOI, s_wvfChromatic, 
 
 %%
 ieInit;
@@ -12,8 +13,8 @@ ieInit;
 
 wvf = wvfCreate;    % Default wavefront 5.67 fnumber
 pupilMM = 3; flengthM = 7e-3;
-wvfSet(wvf,'calc pupil diameter',pupilMM);
-wvfSet(wvf,'focal length',flengthM);
+wvf = wvfSet(wvf,'calc pupil diameter',pupilMM);
+wvf = wvfSet(wvf,'focal length',flengthM);
 
 % Now create some flare based on the aperture, dust and scratches.
 % There are many parameters for this function, including dot mean, line
@@ -61,7 +62,7 @@ ieNewGraphWin; mesh(getMiddleMatrix(psf(:,:,15),[120,120]));
 title('piFlareApply psf');
 
 % And the effects are therefore quite different.
-oiApply = oiSet(oiApply,'name','flare');
+oiApply = oiSet(oiApply,'name','piFlare');
 oiWindow(oiApply);
 oiSet(oiApply,'gamma',0.5); drawnow;
 
@@ -80,34 +81,41 @@ oiSet(oi,'gamma',1); drawnow;
 %%
 oi = oiCompute(oiApply,sceneHDR);
 oi = oiCrop(oi,'border');
-oi = oiSet(oi,'name','flare');
+oi = oiSet(oi,'name','piFlare');
+
 oiWindow(oi);
 oiSet(oi,'render flag','hdr');
 oiSet(oi,'gamma',1); drawnow;
 
 %% Change the number of sides
 nsides = 5;
-[apertureFunction, params] = wvfAperture(wvf,'nsides',nsides,...
+apertureFunction = wvfAperture(wvf,'nsides',nsides,...
     'dot mean',20, 'dot sd',3, 'dot opacity',0.5, ...
     'line mean',20, 'line sd', 2, 'line opacity',0.5);
 
 wvf = wvfPupilFunction(wvf,'amplitude',apertureFunction);
 wvf = wvfComputePSF(wvf,'force',false);  % force as false is important
 wvfPlot(wvf,'psf','um',550,20,'airy disk');
+
 scenePoint = sceneSet(scenePoint,'fov',1);
 oi = oiCompute(wvf,scenePoint);
-oi = oiSet(oi,'name',sprintf('wvf-%d',nsides));
+oi = oiSet(oi,'name',sprintf('wvf %d-sides',nsides));
 oi = oiCrop(oi,'border');
 oiWindow(oi); 
 oiSet(oi,'render flag','hdr'); drawnow;
 
-%% 
+%% Now the HDR scene
+
 oi = oiCompute(wvf,sceneHDR);
 oi = oiCrop(oi,'border');
+oi = oiSet(oi,'name',sprintf('wvf %d-sides',nsides));
+
 oiWindow(oi); 
+oiSet(oi,'render flag','hdr'); drawnow;
 
 %% Add some blur
-wvf = wvfSet(wvf,'zcoeffs',1.5,{'defocus'});
+
+wvf = wvfSet(wvf,'zcoeffs',1,{'defocus'});
 
 % Now create some flare based on the aperture, dust and scratches.
 % There are many parameters for this function, including dot mean, line
@@ -122,11 +130,9 @@ wvf = wvfComputePSF(wvf,'force',false);  % force as false is important
 wvfPlot(wvf,'psf','um',550,20,'airy disk');
 
 oi = oiCompute(wvf,sceneHDR);
-oi = oiSet(oi,'name','wvf');
+oi = oiSet(oi,'name','wvf defocus');
 oiWindow(oi);
 oiSet(oi,'render flag','hdr');
 oiSet(oi,'gamma',1); drawnow;
-
-%% Now attend to longitudinal chromatic aberration
 
 %% END
