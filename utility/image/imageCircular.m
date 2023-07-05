@@ -17,14 +17,16 @@ function im = imageCircular(im)
 % See also
 %   wvfPupilAmplitude
 
-imageSize = size(im);
+% The radius is related to the image size
+imageSize   = size(im);
 centerPoint = [imageSize/2 + 1, imageSize/2+1];
-radius = (imageSize - 1)/2;
+radius = (min(imageSize) - 1)/2;
 
 [X,Y] = meshgrid((1:imageSize) - centerPoint(1),(1:imageSize) - centerPoint(2));
 imRadius = sqrt(X.^2 + Y.^2);
 % ieNewGraphWin; imagesc(imRadius); colormap(gray); colorbar; axis image
 
+% Zero out the values beyond the radius
 idx = (imRadius > radius);
 im(idx) = 0;
 % ieNewGraphWin; imagesc(im); colormap(gray); colorbar; axis image

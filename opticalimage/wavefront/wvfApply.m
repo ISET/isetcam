@@ -52,12 +52,12 @@ mn = sceneGet(scene,'mean luminance');
 scene = sceneSet(scene,'mean luminance',mn*1e5);
 
 wvf = wvfCreate;    
-wvf = wvfSet(wvf,'calc pupil diameter',8);
-[pupilAmp, params] = wvfPupilAmplitude(wvf,'nsides',3);
-wvf = wvfPupilFunction(wvf,'amplitude',pupilAmp);
+wvf = wvfSet(wvf,'calc pupil diameter',3);
+[apertureFunction, params] = wvfAperture(wvf,'nsides',3);
+wvf = wvfPupilFunction(wvf,'amplitude',apertureFunction);
 wvf = wvfComputePSF(wvf);
-oi = piFlareApply2(scene,wvf);
-
+oi = oiCompute(wvf,scene);
+oiShowImage(oi);
 %}
 
 %% Parse input

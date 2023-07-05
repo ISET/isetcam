@@ -1,8 +1,10 @@
 function [im, params] = wvfPupilAmplitude(wvf, varargin)
+% Deprecated.  Use wvfAperture
+%
 % Synthetic aperture with random dots (dust) and lines (scratches).
 %
 % Synopsis
-%   [im, params] = wvfPupilAmplitude(imageSize, varargin)
+%   [im, params] = wvfAperture(imageSize, varargin)
 %
 % Brief description:
 %   Designed for the general lens case. A main application is creating
@@ -41,20 +43,24 @@ function [im, params] = wvfPupilAmplitude(wvf, varargin)
 % Examples:
 %{
 wvf = wvfCreate;
-im = wvfPupilAmplitude(wvf); % Default
+im = wvfAperture(wvf); % Default
 ieNewGraphWin; imagesc(im); colormap(gray); axis image
 %}
 %{
 wvf = wvfCreate;
-im = wvfPupilAmplitude(wvf,'segment length',100); % Default
+im = wvfAperture(wvf,'segment length',100); % Default
 ieNewGraphWin; imagesc(im); colormap(gray); axis image
 %}
 %{
 wvf = wvfCreate;
-[im,params] = wvfPupilAmplitude(wvf,'n sides',8); 
+[im,params] = wvfAperture(wvf,'n sides',8); 
 ieNewGraphWin; imagesc(im); colormap(gray); axis image
 %}
 
+error('Use wvfAperture.')
+end
+
+%{
 %% Inputs
 
 varargin = ieParamFormat(varargin);
@@ -199,3 +205,4 @@ theta = rand(1, num_points, 'single') * 2 * pi; % Between 0 and 2pi
 xy = [r .* cos(theta); r .* sin(theta)];  % Convert r,theta to xy
 
 end
+%}

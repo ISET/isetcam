@@ -17,10 +17,12 @@ scene = sceneSet(scene,'fov',1);
 
 %% Experiment with different wavefronts
 
+thisWave = 550;
+
 % We can start with any Zernike coefficients
 wvf = wvfCreate;
 wvf = wvfSet(wvf,'calc pupil diameter',3);
-wvf = wvfSet(wvf,'wave',550);
+wvf = wvfSet(wvf,'wave',thisWave);
 wvf = wvfSet(wvf,'focal length',0.017);
 
 % fieldsize = wvfGet(wvf,'fieldsizemm');
@@ -29,20 +31,20 @@ wvf = wvfSet(wvf,'focal length',0.017);
 % There are many parameters for this function, including dot mean, line
 % mean, dot sd, line sd, line opacity.  They are returned in params
 nsides = 3;
-[pupilAmp, params] = wvfPupilAmplitude(wvf,'nsides',nsides,...
+[apertureFunction, params] = wvfAperture(wvf,'nsides',nsides,...
     'dot mean',20, 'dot sd',3, 'dot opacity',0.5, ...
     'line mean',20, 'line sd', 2, 'line opacity',0.5);
 % ieNewGraphWin; imagesc(pupilAmp); colormap(gray); axis image
 
 % At this point the pupil function is good, which I check by plotting
 % the images below in the block comment.  
-wvf = wvfPupilFunction(wvf,'amplitude',pupilAmp);
+wvf = wvfPupilFunction(wvf,'amplitude',apertureFunction);
 
 % We do not want the wvfComputePSF to recompute the pupil function.  So it
-% is crucial to set 'force' to false.
-wvf = wvfComputePSF(wvf,'lca',false,'force',false);
+% is crucial to set 'force' to false.  That way we keep the pupil
+% function and just compute the PSF.
+wvf = wvfComputePSF(wvf,'lca',false);
 
-% Consequently, the PSF is no good.
 wvfPlot(wvf,'psf','um',550,10,'airy disk');
 
 %{
@@ -54,8 +56,34 @@ subplot(1,2,2); wvfPlot(wvf,'image pupil phase','um',550,'no window');
 %{
 % Even if I change the defocus, the amp and phase are OK.
 wvf = wvfSet(wvf,'zcoeff',1,{'defocus'});
-wvf = wvfPupilFunction(wvf,'amplitude',pupilAmp);
+wvf = wvfPupilFunction(wvf,'amplitude',apertureFunction);
 %}
+
+%% Convert to an OI
+
+oiHuman = wvf2oi(wvf);
+[uData, fig] = oiPlot(oiHuman,'psf 550');
+psfPlotrange(fig,oiHuman);
+AD = airyDisk(thisWave,wvfGet(wvf,'fnumber'),'diameter',true);
+title(sprintf("fNumber %.2f Wave %.0f Airy Diam %.2f",oiGet(oi,'optics fnumber'),thisWave,AD));
+
+%% This is weird.  
+
+% The difference between diffraction and shiftinvariant is unfortunate.
+% Maybe wvf2oi should never allow diffractionlimited, but only
+% shiftinvariant
+oiDL = wvf2oi(wvf,'model','diffraction limited');
+oiPlot(oiDL,'psf 550');
+
+% These are all OK.
+oiDL = wvf2oi(wvf,'model','shift invariant');
+oiPlot(oiDL,'psf 550');
+
+oiDL = wvf2oi(wvf,'model','wvf human');
+oiPlot(oiDL,'psf 550');
+
+oiDL = wvf2oi(wvf,'model','human mw');
+oiPlot(oiDL,'psf 550');
 
 %% Calculate the oi from the scene, but using the wvf
 

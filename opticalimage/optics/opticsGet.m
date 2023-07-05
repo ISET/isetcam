@@ -688,7 +688,8 @@ switch parm
     case {'otfsize'}
         % Row and col samples
         if checkfields(optics,'OTF','OTF')
-            tmp = size(optics.OTF.OTF); val = tmp(1:2);
+            tmp = size(optics.OTF.OTF); 
+            val = tmp(1:2);
         end
         
     case {'otfwave','otfwavelength','wave','wavelength'}
@@ -765,13 +766,13 @@ switch parm
                         thisWave = varargin{1};
                         otf = opticsGet(optics,'otf data',thisWave);
                         % mesh(fftshift(otf))
-                        psf = fftshift(ifft2(otf));
+                        psf = fftshift(ifft2(otf));                        
                         % mesh(abs(psf))
                     else
                         % All of them
                         psf = zeros(size(optics.OTF.OTF));
                         for ii=1:length(otfWave)
-                            psf(:,:,ii) = fftshift(ifft2(optics.OTF.OTF(:,:,ii)));
+                            psf(:,:,ii) = fftshift(ifft2(optics.OTF.OTF(:,:,ii)));                            
                         end
                     end
                     
@@ -780,6 +781,14 @@ switch parm
                     nSamps = size(psf,1)/2;
                     fSupport = opticsGet(optics,'otf fx',units);
                     sSupport = opticsGet(optics,'psf support',fSupport,nSamps);
+                    
+                    % BW:  July 3, 2023.
+                    % This spatial support is not in perfect alignment with
+                    % the spatial support from the wavefront code.  To make
+                    % things match, we need a shift of dx/2.  Considering
+                    % what to do.  Changing from fftshift to ifftshift does
+                    % not solve the problem, it only changes the direction
+                    % of the shift.  
                     
                     % This is an error check in a way.
                     if ~isreal(val)
@@ -793,7 +802,36 @@ switch parm
         end
         val.psf = psf;
         val.xy  = sSupport;
+    case {'psfxaxis'}
+        % opticsGet(optics,'psf xaxis',thisWave,units,nSamp);
+        %
+        % The psf data interpolated along the xaxis. 
+        thisWave = opticsGet(optics,'wave'); 
+        if numel(thisWave) > 1, thisWave = 550; end
+        units = 'um'; nSamp = 25;
         
+        if length(varargin) >= 1, thisWave = varargin{1}; end
+        if length(varargin) >= 2, units = varargin{2}; end
+        if length(varargin) >= 3, nSamp = varargin{3}; end
+
+        psfData = opticsGet(optics,'psf data',thisWave,units,nSamp);
+        val.data = interp2(psfData.xy(:,:,1),psfData.xy(:,:,2),psfData.psf,0,psfData.xy(1,:,1));
+        val.samp = psfData.xy(1,:,1); val.samp = val.samp(:);
+
+    case {'psfyaxis'}
+        % The psf data interpolated along the axis
+        thisWave = opticsGet(optics,'wave');
+        if numel(thisWave) > 1, thisWave = 550; end
+        units = 'um'; nSamp = 25;
+
+        if length(varargin) >= 1, thisWave = varargin{1}; end
+        if length(varargin) >= 2, units = varargin{2}; end
+        if length(varargin) >= 3, nSamp = varargin{3}; end
+
+        psfData = opticsGet(optics,'psf data',thisWave,units,nSamp);
+        val.data = interp2(psfData.xy(:,:,1),psfData.xy(:,:,2),psfData.psf,0,psfData.xy(:,1,2));
+        val.samp = psfData.xy(:,1,2); val.samp = val.samp(:);
+
     case {'psfspacing'}
         % opticsGet(optics,'psf spacing',[fx])
         %
@@ -840,14 +878,22 @@ switch parm
         % distance.
         peakF = max(fx(:));
         val = 1/(2*peakF);
-        
+    case {'middlerow'}
+        % This matches conventions for psf and otf when we use the PTB
+        % routines to obtain these.
+        tmp = floor(opticsGet(optics, 'otfsize') / 2) + 1;
+        val = tmp(1);  % The row
+    case {'middlecol'}       
+        % This matches conventions for psf and otf when we use the PTB
+        % routines to obtain these.
+        tmp = floor(opticsGet(optics, 'otfsize') / 2) + 1;
+        val = tmp(2);  % The row        
     case {'psfsupport'}
         % opticsGet(optics,'psf support',fSupport, nSamps)
         %
         % Returns mesh grid of X and Y values.  But maybe we should check
         % the behavior and return the vector and matrix forms on request.
-        %
-        
+        %        
         if length(varargin) < 2, error('fSupport and nSamps required.'); end
         fSupport = varargin{1};
         nSamp    = varargin{2};
@@ -856,7 +902,22 @@ switch parm
         % runs from -Nyquist:Nyquist. With this support, the Nyquist
         % frequency is actually the highest (peak) frequency value. There
         % are two samples per Nyquist, so the sample spacing is 1/(2*peakF)
-        samp = (-nSamp:(nSamp-1));
+        
+        % BW modified: July 2023.
+        if isequal(opticsGet(optics,'model'),'diffractionlimited')
+            % The diffraction limited case is left alone.
+            samp = (-nSamp:(nSamp-1));
+        else
+            % BW TODO:  What to do if OTF is not square?  
+            % The shift invariant case is made consistent with
+            % wvfGet(wvf,'spatial samples') 
+            middleRow = opticsGet(optics,'middle row');
+            tmp = opticsGet(optics,'otf size');
+            assert(tmp(1) == tmp(2));
+            nSamples = tmp(1);
+            samp = (1:nSamples) - middleRow;
+        end
+        
         [X,Y] = meshgrid(samp,samp);
         
         % Same as opticsGet(optics,'psf spacing',peakF);
@@ -886,8 +947,8 @@ switch parm
         % Numerical values.  Should change field to data from value.  I
         % don't think this is ever used, is it?
         if checkfields(optics,'cos4th','value'), val = optics.cos4th.value; end
-        
-        % ---------------  Ray Trace information.
+
+        % ---------------  Ray Trace information   -------------------
         % The ray trace computations differ from those above because they
         % are not shift-invariant.  When we use a custom PSF/OTF that is
         % shift invariant, we still store the information in the main

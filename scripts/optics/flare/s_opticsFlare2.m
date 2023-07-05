@@ -1,7 +1,8 @@
-%%  Experiments with flare
+%%  Yet more experiments with flare
 % 
-% See also v_wvf which might be moved here or renamed v_wvfFlare
 %
+% See also
+%   s_opticsFlare, v_opticsFlare
 
 %%
 ieInit;
@@ -17,11 +18,11 @@ wvfSet(wvf,'focal length',flengthM);
 % There are many parameters for this function, including dot mean, line
 % mean, dot sd, line sd, line opacity.  They are returned in params
 nsides = 3;
-pupilAmp = wvfPupilAmplitude(wvf,'nsides',nsides,...
+apertureFunc = wvfAperture(wvf,'nsides',nsides,...
     'dot mean',20, 'dot sd',3, 'dot opacity',0.5, ...
     'line mean',20, 'line sd', 2, 'line opacity',0.5);
 
-wvf = wvfPupilFunction(wvf,'amplitude',pupilAmp);
+wvf = wvfPupilFunction(wvf,'amplitude',apertureFunc);
 wvf = wvfComputePSF(wvf,'force',false);  % force as false is important
 wvfPlot(wvf,'psf','um',550,20,'airy disk');
 
@@ -85,11 +86,11 @@ oiSet(oi,'gamma',1); drawnow;
 
 %% Change the number of sides
 nsides = 5;
-[pupilAmp, params] = wvfPupilAmplitude(wvf,'nsides',nsides,...
+[apertureFunc, params] = wvfAperture(wvf,'nsides',nsides,...
     'dot mean',20, 'dot sd',3, 'dot opacity',0.5, ...
     'line mean',20, 'line sd', 2, 'line opacity',0.5);
 
-wvf = wvfPupilFunction(wvf,'amplitude',pupilAmp);
+wvf = wvfPupilFunction(wvf,'amplitude',apertureFunc);
 wvf = wvfComputePSF(wvf,'force',false);  % force as false is important
 wvfPlot(wvf,'psf','um',550,20,'airy disk');
 scenePoint = sceneSet(scenePoint,'fov',1);
@@ -111,11 +112,11 @@ wvf = wvfSet(wvf,'zcoeffs',1.5,{'defocus'});
 % There are many parameters for this function, including dot mean, line
 % mean, dot sd, line sd, line opacity.  They are returned in params
 nsides = 3;
-[pupilAmp, params] = wvfPupilAmplitude(wvf,'nsides',nsides,...
+[apertureFunc, params] = wvfAperture(wvf,'nsides',nsides,...
     'dot mean',20, 'dot sd',3, 'dot opacity',0.5, ...
     'line mean',20, 'line sd', 2, 'line opacity',0.5);
 
-wvf = wvfPupilFunction(wvf,'amplitude',pupilAmp);
+wvf = wvfPupilFunction(wvf,'amplitude',apertureFunc);
 wvf = wvfComputePSF(wvf,'force',false);  % force as false is important
 wvfPlot(wvf,'psf','um',550,20,'airy disk');
 

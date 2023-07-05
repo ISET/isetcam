@@ -113,7 +113,7 @@ switch ieParamFormat(oiType)
         % Wandell case.  But that is what we had historically.
         oi = oiCreate('default');
         oi = oiSet(oi,'diffuserMethod','skip');
-        oi = oiSet(oi,'consistency',1);
+        % oi = oiSet(oi,'consistency',1);
         oi = oiSet(oi,'optics',opticsCreate('human'));
         oi = oiSet(oi,'name','human-MW');
 

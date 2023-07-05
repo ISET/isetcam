@@ -1,7 +1,10 @@
 function [udata, g] = oiPlot(oi,pType,roiLocs,varargin)
 % Gateway routine for plotting optical image (oi) properties
 %
-%   [udata, g] = oiPlot([oi],[pType='illuminance hline'],[xy],[wave])
+%   [udata, g] = oiPlot([oi],[pType='illuminance hline'],[ROI],[wave])
+%
+% TODO:  Make a 'no figure' option work.  It is stuck in below, but not as
+% effective as the 'no window' in wvfPlot.
 %
 % Gateway routine to plot the irradiance or illuminance data in the optical
 % image. There are many options.
@@ -611,6 +614,42 @@ switch pType
         set(g,'Name',namestr);
         colormap(jet(64))
         
+    case {'psfxaxis'}
+        % oiPlot(oi,'psf xaxis',[],[wave=550],[units='um']);
+        %
+        % We also put a red dot at the Airy Disk radius, just to
+        % confirm.
+        thisWave = 550; units = 'um';
+        if numel(varargin) > 0, thisWave = varargin{1}; end
+        if numel(varargin) > 1, units = varargin{2}; end
+
+        udata = oiGet(oi,'optics psf xaxis',thisWave,units);
+        plot(udata.samp,udata.data,'k-','LineWidth',2); grid on; 
+        xlabel(sprintf('Pos (%s)',units)); ylabel('Amp (a.u.)');
+
+        fNumber = oiGet(oi,'optics fnumber');
+        AD = airyDisk(thisWave,fNumber,'units','um','diameter',false);
+        hold on; plot([-AD AD],[0 0],'ro');
+        title(sprintf('F# %.2f Wave %d Airy D %.2f',...
+            fNumber,thisWave,AD));
+        hold off;
+
+    case {'psfyaxis'}
+        thisWave = 550; units = 'um';
+        if numel(varargin) > 0, thisWave = varargin{1}; end
+        if numel(varargin) > 1, units = varargin{2}; end
+
+        udata = oiGet(oi,'optics psf yaxis',thisWave,units);
+        plot(udata.samp,udata.data,'k-','LineWidth',2); grid on;
+        xlabel(sprintf('Pos (%s)',units)); ylabel('Amp (a.u.)');
+
+        fNumber = oiGet(oi,'optics fnumber');
+        AD = airyDisk(thisWave,fNumber,'units','um','diameter',false);
+        hold on; plot([-AD AD],[0 0],'ro');
+        title(sprintf('F# %.2f Wave %d Airy D %.2f',...
+            fNumber,thisWave,AD));
+        hold off;
+
     case {'psf550'}
         % PSF at 550nm spatial units are microns
         udata = plotOTF(oi,'psf', 'this wave', 550, 'airy disk', true);
@@ -692,9 +731,18 @@ switch pType
 end
 
 if exist('udata','var'), set(gcf,'userdata',udata); end
-if ~isempty(varargin) && isa(varargin{end},'char') && isequal(ieParamFormat(varargin{end}),'nofigure')
+
+% Suppress showing the window if the final varargin is nofigure
+% or nowindow.  Maybe we should delete the window?
+if ~isempty(varargin) && isa(varargin{end},'char') && ...
+        (isequal(ieParamFormat(varargin{end}),'nofigure') || ...
+        isequal(ieParamFormat(varargin{end}),'nowindow'))
+    % Maybe?
+    delete(g);
     return;
-else,         g.Visible = 'On';
+else
+    % Make it visible.
+    g.Visible = 'On';
 end
 
 end
@@ -880,39 +928,24 @@ switch lower(pType)
         uData.otf = otf; uData.fx = X(1,:); uData.fy = Y(:,1);
         
     case {'psf','psf550'}
-        % oiPlot(oi,'psf',[],thisWave,units)  % empty is roiLocs
+        % oiPlot(oi,'psf',[],thisWave,units)  % empty param is roiLocs
         % oiPlot(oi,'psf 550',[],thisWave,units)
-        % Spatial scale is microns.
+        % Spatial scale default is microns.
         
         opticsModel = opticsGet(optics,'model');
         switch lower(opticsModel)
             case {'diffractionlimited'}
-                % oiPlot(oi,'psf',[],thisWave,units)
                 
-                % This could all be opticsGet(optics,'psf data',thisWave)
-                % As below for shift invariant.
-                nSamp = 25;  % We get 2*nSamp base frequency terms
-                
-                % Get the basic frequency support
-                val = opticsGet(optics,'dlFSupport',thisWave,units,nSamp);
-                [fSupport(:,:,1),fSupport(:,:,2)] = meshgrid(val{1},val{2});
-                
-                % Increase the spatial frequency range (highest
-                % spatial frequency) by a factor of 4, which yields a
-                % higher spatial resolution estimate of the psf
-                fSupport = fSupport*4;
-                
-                % Calculate the OTF using diffraction limited MTF (dlMTF)
-                otf = dlMTF(oi,fSupport,thisWave,units);
-                sSupport = opticsGet(optics,'psf support',fSupport,nSamp);
-                
-                % Derive the psf from the OTF
-                psf = fftshift(ifft2(otf));
-                
-                % Frequency units are cycles/micron. The spatial frequency support runs
-                % from -Nyquist:Nyquist. With this support, the Nyquist frequency is
-                % actually the highest (peak) frequency value. There are two samples per
-                % Nyquist, so the sample spacing is 1/(2*peakF)
+                val = opticsGet(oi.optics,'psf data',thisWave,units);
+                psf = val.psf;
+                sSupport = val.xy;
+
+                % Frequency units are cycles/micron. The spatial
+                % frequency support runs from -Nyquist:Nyquist. With
+                % this support, the Nyquist frequency is actually the
+                % highest (peak) frequency value. There are two
+                % samples per Nyquist, so the sample spacing is
+                % 1/(2*peakF)
                 %
                 % peakF = max(fSupport(:));
                 % deltaSpace = 1/(2*peakF);
@@ -922,17 +955,13 @@ switch lower(pType)
                 %                 sSupport(:,:,1) = X*deltaSpace;
                 %                 sSupport(:,:,2) = Y*deltaSpace;
                 
-
                 % Calculate the Airy disk
                 fNumber = opticsGet(optics,'fNumber');
-
-                % This is the Airy disk radius, by formula
-                radius = (2.44*fNumber*thisWave*10^-9)/2 * ieUnitScaleFactor(units);
+                radius = airyDisk(thisWave,fNumber,'units',units);
 
                 % Draw a circle at the first zero crossing (Airy disk)
                 nCircleSamples = 200;
                 [adX,adY,adZ] = ieShape('circle',nCircleSamples,radius);
-
                 
             case {'shiftinvariant'}
                 psfData  = opticsGet(optics,'psf data',thisWave);
@@ -979,7 +1008,6 @@ switch lower(pType)
         title(sprintf('Point spread (%.0f nm)',thisWave));
         uData.x = sSupport(:,:,1); uData.y = sSupport(:,:,2);
         uData.psf = psf;
-        
         
     case {'lswavelength'}
         % Line spread function at all wavelengths

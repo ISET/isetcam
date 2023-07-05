@@ -125,6 +125,7 @@ if ~isempty(varargin)
         % The last argument is not empty, and it is a string
         switch ieParamFormat(lastArg)
             case {'nowindow', 'nofigure', 'noplot', 'nofig'}
+                fNum = [];
             otherwise
                 fNum = ieNewGraphWin;
         end
@@ -184,9 +185,7 @@ switch(pType)
         
         samp = wvfGet(wvfP, 'psf spatial samples', unit, wList);
         psf  = wvfGet(wvfP, 'psf', wList);
-        if normalizeFlag
-            psf = psf/max(psf(:));
-        end
+        if normalizeFlag, psf = psf/max(psf(:)); end
         
         % Extract within the range
         if ~isempty(pRange)
@@ -199,9 +198,7 @@ switch(pType)
         s = sprintf('Position (%s)', unit);
         xlabel(s); ylabel(s); zlabel('Relative amplitude')
         
-        uData.x = samp;
-        uData.y = samp;
-        uData.z = psf;
+        uData.x = samp; uData.y = samp; uData.z = psf;
         set(gcf, 'userdata', uData);
 
         if airydisk
@@ -216,14 +213,59 @@ switch(pType)
             [adX,adY,adZ] = ieShape('circle',nCircleSamples,radius);
             ringZ = max(psf(:));
             hold on; figure(gcf);
-            % Up high
-            p = plot3(adX,adY,adZ + ringZ,'k-');
-            set(p,'linewidth',3);
-            % At zero
-            p = plot3(adX,adY,adZ + ringZ*5e-3,'k-');
-            set(p,'linewidth',3); hold off;
+            % Height of the Airy Disk ring.  Still experimenting.
+            % Considering making this a parameter (BW).
+            p = plot3(adX,adY,adZ + ringZ*0.0,'k-'); set(p,'linewidth',5); 
+            hold off;
+            title(sprintf('F# %.1f Wave %d Airy Radius %.2f',wvfGet(wvfP,'fnumber'),wList, radius));
+        else
+            title(sprintf('F# %.1f Wave %d',wvfGet(wvfP,'fnumber'),wList));
         end
+
+    case {'psfxaxis'}
+        % wvfPlot(wvfP,'psf xaxis',unit,wave,plotRange)
+        % wvfPlot(wvf,'psf xaxis','um',550,20)
+        if ~isempty(varargin)
+            [unit, wList, pRange] = wvfReadArg(wvfP, varargin);
+        end
+
+        psf  = wvfGet(wvfP,'psf',wList);
+        samp = wvfGet(wvfP,'psf spatial samples',unit,wList);
+
+        % X axis
+        lineData = interp2(samp,samp,psf,0,samp);
+        radius = airyDisk(wList,wvfGet(wvfP,'fnumber'),'units','um','diameter',false);
+        plot(samp,lineData,'ko-'); hold on; 
+        plot([-radius, radius],[0 0],'ro');
+        grid on; set(gca,'xlim',[-pRange pRange]);
+   
+        uData.samp = samp; uData.psf = lineData; uData.wave = wList;
+        if ~isempty(fNum)
+            title(sprintf('PSF x-axis (Wave %d).',wList));
+        end
+
+    case {'psfyaxis'}
+        % wvfPlot(wvfP,'psf yaxis',unit,wave,plotRange)
+        % wvfPlot(wvf,'psf yaxis','um',550,20)
+        if ~isempty(varargin)
+            [unit, wList, pRange] = wvfReadArg(wvfP, varargin);
+        end
+
+        psf  = wvfGet(wvfP,'psf',wList);
+        samp = wvfGet(wvfP,'psf spatial samples',unit,wList);
+
+        % X axis
+        lineData = interp2(samp,samp,psf,samp,0);
+        radius = airyDisk(wList,wvfGet(wvfP,'fnumber'),'units','um','diameter',false);
+        plot(samp,lineData,'ko-'); hold on; 
+        plot([-radius, radius],[0 0],'ro');
+        grid on; set(gca,'xlim',[-pRange pRange]);
         
+        uData.samp = samp; uData.psf = lineData; uData.wave = wList;
+        if ~isempty(fNum)
+            title(sprintf('PSF y-axis (Wave %d).',wList));
+        end
+
     case {'imagepsf', 'imagepsfspace', 'imagepsfspacenormalized'}
         % wvfPlot(wvfP, 'image psf space', unit, waveIdx, plotRangeArcMin);
         if ~isempty(varargin)
@@ -353,6 +395,7 @@ switch(pType)
         % Get the data and if the string contains normalized ...
         psf = wvfGet(wvfP, 'psf', wave);
         if normalizeFlag
+            warning('Normalized otf plotted.')
             psf = psf / max(psf(:));
         end
         
