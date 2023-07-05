@@ -13,8 +13,8 @@ ieInit;
 
 wvf = wvfCreate;    % Default wavefront 5.67 fnumber
 pupilMM = 3; flengthM = 7e-3;
-wvfSet(wvf,'calc pupil diameter',pupilMM);
-wvfSet(wvf,'focal length',flengthM);
+wvf = wvfSet(wvf,'calc pupil diameter',pupilMM);
+wvf = wvfSet(wvf,'focal length',flengthM);
 
 % Now create some flare based on the aperture, dust and scratches.
 % There are many parameters for this function, including dot mean, line
