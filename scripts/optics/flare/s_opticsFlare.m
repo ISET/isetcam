@@ -1,9 +1,10 @@
 %%  Experiments with flare
 % 
-% A longer version of v_opticsFlare, with more experiments and tests.
+% This is a longer version of v_opticsFlare, with more experiments and
+% tests. 
 %
 % See also
-%   v_opticsFlare, s_wvfOI
+%   v_opticsFlare, s_wvfOI, s_wvfChromatic, 
 
 %%
 ieInit;
@@ -126,7 +127,5 @@ oi = oiSet(oi,'name','wvf');
 oiWindow(oi);
 oiSet(oi,'render flag','hdr');
 oiSet(oi,'gamma',1); drawnow;
-
-%% Now attend to longitudinal chromatic aberration
 
 %% END
