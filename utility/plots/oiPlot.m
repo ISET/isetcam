@@ -733,7 +733,7 @@ end
 if exist('udata','var'), set(gcf,'userdata',udata); end
 
 % Suppress showing the window if the final varargin is nofigure
-% or nowindow.  Maybe we should delete the window?
+% or nowindow.
 if ~isempty(varargin) && isa(varargin{end},'char') && ...
         (isequal(ieParamFormat(varargin{end}),'nofigure') || ...
         isequal(ieParamFormat(varargin{end}),'nowindow'))

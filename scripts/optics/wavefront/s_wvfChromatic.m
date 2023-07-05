@@ -1,12 +1,11 @@
 %% Create different diffraction limited cases
 %
-% Include human LCA and not
-% Different pupil sizes
+%  Different pointspreads as a function of wavelength
+%  With human LCA and no LCA
+%  Run on a grid lines image with and without LCA
 %
 % See also
-%  oiGet(oi,'optics psf data')
-%  oiGet(oi,'optics psf xaxis')
-%  oiPlot() ...
+%   s_wvfDiffraction, v_opticsFlare
 
 %%
 ieInit;
