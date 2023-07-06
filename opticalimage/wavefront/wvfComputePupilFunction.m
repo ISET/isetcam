@@ -117,13 +117,17 @@ p.parse(wvf,varargin{:});
 
 % Make sure calculation pupil size is less than or equal to the pupil
 % size that gave rise to the measured coefficients.
-calcPupilSizeMM = wvfGet(wvf, 'calc pupil diameter', 'mm');
+pupilDiameterMM = wvfGet(wvf, 'calc pupil diameter', 'mm');
+
+% Not sure this is necessary.
 measPupilSizeMM = wvfGet(wvf, 'measured pupil diameter', 'mm');
-if (calcPupilSizeMM > measPupilSizeMM)
+if (pupilDiameterMM > measPupilSizeMM)
     error(['Calculation pupil (%.2f mm) must not exceed measurement'...
-        ' pupil (%.2f mm).'], calcPupilSizeMM, measPupilSizeMM);
+        ' pupil (%.2f mm).'], pupilDiameterMM, measPupilSizeMM);
 end
 
+% Also not sure this is necessary.
+%
 % Handle defocus relative to reference wavelength.
 %
 % The defocus correction for the calculation is expressed as the
@@ -174,11 +178,7 @@ wavefrontaberrations = cell(nWavelengths, 1);
 
 for ii = 1:nWavelengths
     thisWave = waveNM(ii);
-    %         if showBar
-    %             waitbar(ii / nWavelengths, wBar, sprintf(...
-    %                 'Pupil function for %.0f', thisWave));
-    %         end
-
+    
     % Set up pupil coordinates
     %{
     % BW: July, 2023
@@ -204,30 +204,70 @@ for ii = 1:nWavelengths
     [xpos, ypos] = meshgrid(pupilPos);
     ypos = -ypos;
 
-    % Set up the pupil amplitude function. In the original code,
-    % only the Stiles Crawford Effect (SCE) was implemented this
-    % way. For x, y positions within the pupil, rho is used to set
-    % the pupil function amplitude.  More recently, however, we
-    % added a pupil amplitude slot into the wavefront.  Then the
-    % zcoeffs are used to compute the pupil phase function and the
-    % pupil amplitude slot holds the pupil amplitude function.
-    % Together, they are combined to create the pupilFunction.
+    % Set up the pupil aperture function. We added a pupil aperture
+    % function slot into the wavefront.  Then the zcoeffs are used to
+    % compute the pupil phase function and the pupil amplitude slot
+    % holds the pupil amplitude function. Together, they are combined
+    % to create the pupilFunction.
+    %
+    % In the original code, only the Stiles Crawford Effect (SCE) was
+    % implemented.
     if isempty(p.Results.aperturefunction)
         % Here if all the rho values are 0 and the Stiles Crawford
         % Effect (SCE) flag is false.  The aperture is all 1s.
-        apertureFunc = ones(nPixels, nPixels);
+        aperture = ones(nPixels, nPixels);
     else
         % Make sure the aperture function size matches nPixels but also
         % covers only the pupil diameter.
-        apertureFunc = p.Results.aperturefunction;
-        if ~isequal(size(apertureFunc),[nPixels,nPixels])
+        aperture = p.Results.aperturefunction;
+        if ~isequal(size(aperture),[nPixels,nPixels])
             warning('Adjusting aperture function size.');
-            apertureFunc = imresize(apertureFunc,[nPixels,nPixels]);
+            aperture = imresize(aperture,[nPixels,nPixels]);
         end
     end
 
+    % We adjust the apertureFunc so that it covers just the diameter of
+    % the pupil.  
+    %
+    % The Zernike polynomials are defined over the unit disk. At
+    % measurement time, the pupil was mapped onto the unit disk, so we
+    % do the same normalization here to obtain the expansion over the
+    % disk.
+    %
+    % And by convention expanding gives us the wavefront aberrations in
+    % microns.
+    %
+    % Normalized radius here.  Distance from the center divided by the
+    % pupil radius.
+    norm_radius = (sqrt(xpos .^ 2 + ypos .^ 2)) / (pupilDiameterMM / 2);
+    theta = atan2(ypos, xpos);
+    % ieNewGraphWin; imagesc(norm_radius); axis square
+
+    % Only values that are within the unit circle are valid for the
+    % Zernike polynomial.
+    norm_radius_index = (norm_radius <= 1);
+    % ieNewGraphWin; imagesc(norm_radius_index); axis image   
+
+    % We place the aperture function within the region defined by the
+    % valid radius. First, find the bounding box of the circle. 
+    boundingBox = imageBoundingBox(norm_radius_index);
+
+    % Resize the amplitude mask to the bounding box.
+    aperture = imresize(aperture,[boundingBox(3),boundingBox(4)]);
+   
+    % Extend with zeros to match the nPixels pupil size
+    sz = round((nPixels - boundingBox(3))/2);
+    aperture = padarray(aperture,[sz,sz],0,'both');    
+    aperture = imresize(aperture,[nPixels,nPixels]);
+
+    % Keep the amplitude within bounds in case imresize did something.
+    aperture(aperture > 1) = 1;
+    aperture(aperture < 0) = 0;
+    % ieNewGraphWin; imagesc(A); axis image    
+    
     if p.Results.computesce
-        % Set SCE correction params.  Modify the aperture function.
+        % Incorporate the SCE correction params.  Modify the aperture
+        % function.
 
         % Get the wavelength-specific value of rho for the
         % Stiles-Crawford effect.
@@ -240,7 +280,7 @@ for ii = 1:nWavelengths
         % stuff matters. We should have a way to expose this for
         % teaching and in the code.
         sceFunc = 10 .^ (-rho * ((xpos - xo) .^ 2 + (ypos - yo) .^ 2));
-        apertureFunc = apertureFun .* sceFunc;
+        aperture = aperture .* sceFunc;
     end
 
     % Compute longitudinal chromatic aberration (LCA) relative to
@@ -284,64 +324,7 @@ for ii = 1:nWavelengths
         lcaMicrons = 0;
     end
 
-    % The Zernike polynomials are defined over the unit disk. At
-    % measurement time, the pupil was mapped onto the unit disk, so we
-    % do the same normalization here to obtain the expansion over the
-    % unit disk.
-    %
-    % And by convention expanding gives us the wavefront aberrations in
-    % microns.
-    norm_radius = (sqrt(xpos .^ 2 + ypos .^ 2)) / (measPupilSizeMM / 2);
-    theta = atan2(ypos, xpos);
-    norm_radius_index = norm_radius <= 1;
-
-    %{
-    % We have to adjust the apertureFunc so that it covers just the part of
-    % the pupil.  This code is copied from wvfPupilFunction and should be
-    % modified to work here.  It starts the same as the chunk just above.
-    %
-    % The Zernike polynomials are defined over the unit disk. At
-    % measurement time, the pupil was mapped onto the unit disk, so we
-    % do the same normalization here to obtain the expansion over the
-    % disk.
-    %
-    % And by convention expanding gives us the wavefront aberrations in
-    % microns.
-    %
-    % Normalized radius here.  Distance from the center divided by the
-    % pupil radius.
-    norm_radius = (sqrt(xpos .^ 2 + ypos .^ 2)) / (pupilDiameterMM / 2);
-    theta = atan2(ypos, xpos);
-    % ieNewGraphWin; imagesc(norm_radius); axis square
-
-    % Only values that are within the unit circle are valid for the Zernike
-    % polynomial. 
-    norm_radius_index = (norm_radius <= 1);
-    % The indices within the unit radius
-    % ieNewGraphWin; imagesc(norm_radius_index); axis image   
-
-    % THIS SEEMS LIKE THE NEW PART
-    %
-    % We place the amplitude function within the region defined by the
-    % valid radius.  
-    % 
-    % Find the bounding box of the circle. 
-    boundingBox = imageBoundingBox(norm_radius_index);
-
-    % Resize the amplitude mask to the square over the central circle
-    A = imresize(A,[boundingBox(3),boundingBox(4)]);
-   
-    % Pad with zeros to match the pupil phase size.
-    sz = round((nPixels - boundingBox(3))/2);
-    A = padarray(A,[sz,sz],0,'both');    
-    A = imresize(A,[nPixels,nPixels]);
-
-    % Keep the amplitude within bounds
-    A(A > 1) = 1;
-    A(A < 0) = 0;
-    % ieNewGraphWin; imagesc(A); axis image
-    %}
-    %}
+    
     % Get Zernike coefficients
     % Need to make sure the c vector is long enough to contain defocus
     % term, because we handle that specially.  But why?
@@ -389,11 +372,11 @@ for ii = 1:nWavelengths
     pupilfuncphase = exp(-1i * 2 * pi * wavefrontAberrationsUM / waveUM(ii));
 
     % Set values outside the pupil diameter to 0 amplitude
-    pupilfuncphase(norm_radius > calcPupilSizeMM/measPupilSizeMM)=0;
+    pupilfuncphase(norm_radius > pupilDiameterMM/measPupilSizeMM)=0;
 
     % Create the pupil function, combining the aperture and phase
     % functions. 
-    pupilfunc{ii} = apertureFunc .* pupilfuncphase;
+    pupilfunc{ii} = aperture .* pupilfuncphase;
     % ieNewGraphWin; imagesc(angle(pupilfunc{ii}))
 
     % These are special parameters Heidi Hofer calculated.  We do not
