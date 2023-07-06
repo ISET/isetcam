@@ -97,7 +97,7 @@ oiSet(oi,'gamma',1); drawnow;
 %% Change the number of sides
 scenePoint = sceneSet(scenePoint,'fov',1);
 
-nsides = 5;
+nsides = 3;
 apertureFunction = wvfAperture(wvf,'nsides',nsides,...
     'dot mean',20, 'dot sd',3, 'dot opacity',0.5, ...
     'line mean',20, 'line sd', 2, 'line opacity',0.5);

@@ -260,7 +260,7 @@ for ii = 1:nWavelengths
     % Keep the amplitude within bounds in case imresize did something.
     aperture(aperture > 1) = 1;
     aperture(aperture < 0) = 0;
-    % ieNewGraphWin; imagesc(aperture); axis image    
+    % ieNewGraphWin; imagesc(pupilPos,pupilPos,aperture); axis image    
     
     if p.Results.computesce
         % Incorporate the SCE correction params.  Modify the aperture

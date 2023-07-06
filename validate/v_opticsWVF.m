@@ -186,7 +186,7 @@ wvfD = wvfComputePupilFunction(wvfD);
 wvfD = wvfComputePSF(wvfD,'lca',false);
 %}
 pRange = 20;
-wvfPlot(wvfD,'2d psf space','um',thisWave,pRange);
+wvfPlot(wvfD,'psf mesh','um',thisWave,pRange);
 title(sprintf('Defocus %.1f D',defocus));
 
 %% Convert to an OI and render
@@ -206,6 +206,17 @@ oiWindow(oiWVFD);
 %% Include human longitudinal chromatic aberration
 
 wvfDCA = wvfCompute(wvfD,'human lca',true);
+pRange = 50;
+wvfPlot(wvfDCA,'psf mesh','um',450,pRange);
+title('Wave 450');
+pRange = 50;
+wvfPlot(wvfDCA,'psf mesh','um',550,pRange);
+title('Wave 550');
+
+%{
+wvfDCA = wvfComputePupilFunction(wvfD,'human lca',true);
+wvfDCA = wvfComputePSF(wvfDCA);
+%}
 
 %{
 wvfDCA = wvfComputePSF(wvfD,'lca',true,'compute pupil func',true);
