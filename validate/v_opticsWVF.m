@@ -39,11 +39,16 @@ wvf = wvfCreate;    % Default wavefront 5.67 fnumber
 
 % Adjust for testing general case.  At the moment, it only works well with
 % the human parameters.
-fLengthMM = 17; fLengthM = fLengthMM*1e-3;
-fNumber = 5.6; thisWave = 550;
+fLengthMM = 17; fLengthM = fLengthMM*1e-3; fNumber = 3; 
 pupilMM = fLengthMM/fNumber;
 
+thisWave = 550;
+wvf = wvfSet(wvf,'measured wave',thisWave);
+wvf = wvfSet(wvf,'calc wave',thisWave);
+
 wvf = wvfSet(wvf,'calc pupil diameter',pupilMM);
+wvf = wvfSet(wvf,'measured pupil diameter',pupilMM);
+
 wvf = wvfSet(wvf,'focal length',fLengthM);
 wvf  = wvfComputePSF(wvf,'lca', false);
 
@@ -57,7 +62,7 @@ title(sprintf('Calculated pupil diameter %.1f mm',pupilMM));
 wvfData = wvfPlot(wvf,'psf xaxis','um',thisWave,10);
 hold on;
 
-% Convert to OI and plot the same slice.  With the dx/2 shift, they agree
+%% Convert to OI and plot the same slice. 
 % except for a small scale factor.  Which I don't understand
 oi = wvf2oi(wvf);
 uData = oiGet(oi,'optics psf xaxis');
