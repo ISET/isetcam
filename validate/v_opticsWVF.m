@@ -35,7 +35,7 @@ ieInit;
 
 % First, calculate using the wvf code base.
 
-wvfP = wvfCreate;    % Default wavefront 5.67 fnumber
+wvf = wvfCreate;    % Default wavefront 5.67 fnumber
 
 % Adjust for testing general case.  At the moment, it only works well with
 % the human parameters.
@@ -43,23 +43,23 @@ fLengthMM = 17; fLengthM = fLengthMM*1e-3;
 fNumber = 5.6; thisWave = 550;
 pupilMM = fLengthMM/fNumber;
 
-wvfP = wvfSet(wvfP,'calc pupil diameter',pupilMM);
-wvfP = wvfSet(wvfP,'focal length',fLengthM);
-wvfP  = wvfComputePSF(wvfP,'lca', false);
+wvf = wvfSet(wvf,'calc pupil diameter',pupilMM);
+wvf = wvfSet(wvf,'focal length',fLengthM);
+wvf  = wvfComputePSF(wvf,'lca', false);
 
 pRange = 10;  % Microns
-wvfPlot(wvfP,'2d psf space','um',thisWave,pRange,'airy disk',true);
+wvfPlot(wvf,'2d psf space','um',thisWave,pRange,'airy disk',true);
 title(sprintf('Calculated pupil diameter %.1f mm',pupilMM));
 
 %% Now, create the same model using the diffraction limited ISET code
 
 % Compare wvf and oi methods directly
-wvfData = wvfPlot(wvfP,'psf xaxis','um',thisWave,10);
+wvfData = wvfPlot(wvf,'psf xaxis','um',thisWave,10);
 hold on;
 
 % Convert to OI and plot the same slice.  With the dx/2 shift, they agree
 % except for a small scale factor.  Which I don't understand
-oi = wvf2oi(wvfP);
+oi = wvf2oi(wvf);
 uData = oiGet(oi,'optics psf xaxis');
 plot(uData.samp,uData.data,'go');
 legend({'wvf','oi'});
@@ -67,9 +67,9 @@ legend({'wvf','oi'});
 %% Get the otf data from the OI and WVF computed two ways
 
 % Compare the two OTF data sets directly.
-oi = wvf2oi(wvfP);
+oi = wvf2oi(wvf);
 oiData = oiPlot(oi,'otf',[],thisWave);
-wvData = wvfPlot(wvfP,'otf','mm',thisWave);
+wvData = wvfPlot(wvf,'otf','mm',thisWave);
 
 % Remember that the DC position must account for whether the
 % length of fx is even or odd
@@ -93,19 +93,19 @@ wave = (400:50:700);
 pupilMM = 3;   % Could be 6, 4.5, or 3
 fLengthM = 17e-3;
 
-wvfP  = wvfCreate('wave',wave,'name',sprintf('%dmm-pupil',pupilMM));
-wvfP  = wvfSet(wvfP,'calc pupil diameter',pupilMM);
-wvfP  = wvfSet(wvfP,'focal length',fLengthM);  % 17 mm focal length for deg per mm
+wvf  = wvfCreate('wave',wave,'name',sprintf('%dmm-pupil',pupilMM));
+wvf  = wvfSet(wvf,'calc pupil diameter',pupilMM);
+wvf  = wvfSet(wvf,'focal length',fLengthM);  % 17 mm focal length for deg per mm
 
-wvfP  = wvfComputePSF(wvfP,'lca',false);
+wvf  = wvfComputePSF(wvf,'lca',false);
 
 % Convert it to OI format
-oi = wvf2oi(wvfP);
+oi = wvf2oi(wvf);
 
 %% Compare the OTFs
 thisWave = 550;
 oiData = oiPlot(oi,'otf',[],thisWave);
-wvData = wvfPlot(wvfP,'2D otf','mm',thisWave);
+wvData = wvfPlot(wvf,'2D otf','mm',thisWave);
 
 ieNewGraphWin;
 if isodd(length(wvData.fx)), wvMid = floor(length(wvData.fx)/2) + 1;
@@ -147,13 +147,13 @@ radialScene = sceneSet(radialScene,'hfov',2);
 % sceneWindow(radialScene);
 
 % Create the oi
-oi = wvf2oi(wvfP);
+oi = wvf2oi(wvf);
 oi = oiCompute(oi,radialScene);
 oi = oiSet(oi,'name',sprintf('oi f/# %.2f',oiGet(oi,'fnumber')));
 oiWindow(oi);
 
 % This is the oi computed directly with the wvfP using wvfApply
-oiWVF = wvfApply(radialScene,wvfP,'lca',false);
+oiWVF = wvfApply(radialScene,wvf,'lca',false);
 oiWindow(oiWVF);
 
 % Compare the photons
@@ -167,7 +167,7 @@ identityLine; grid on; xlabel('oiCompute'); ylabel('wvfApply');
 %% Finally, show off with setting a defocus on the wvf structure
 
 defocus = 1;  % Diopters
-wvfD = wvfSet(wvfP,'zcoeff',defocus,'defocus');
+wvfD = wvfSet(wvf,'zcoeff',defocus,'defocus');
 
 wvfD = wvfComputePSF(wvfD,'lca',false);
 pRange = 20;
@@ -197,7 +197,7 @@ oiWindow(oiDCA);
 
 %% Now add some astigmatism, leave the LCA on
 
-wvfVA = wvfSet(wvfP,'zcoeff',0.3,'defocus');
+wvfVA = wvfSet(wvf,'zcoeff',0.3,'defocus');
 wvfVA = wvfSet(wvfVA,'zcoeff',-1,'vertical_astigmatism');
 
 % We need to compute.
