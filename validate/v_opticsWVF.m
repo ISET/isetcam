@@ -203,12 +203,12 @@ wvfVA = wvfSet(wvfVA,'zcoeff',-1,'vertical_astigmatism');
 % We need to compute.
 wvfVA  = wvfComputePSF(wvfVA,'lca', true);
 
-oi = wvf2oi(wvfVA,'model','wvf human');  % This works
+oi = oiCompute(wvfVA,radialScene); oiWindow(oi);
 
-oi = oiCompute(oi,radialScene);
-oiWindow(oi);
+testWave = [450,550];
+for ii = 1:numel(testWave)
+    [~, fig] = oiPlot(oi,'psf',[],testWave(ii)); psfPlotrange(fig,oi);
+end
 
-[~, fig] = oiPlot(oi,'psf',thisWave);
-psfPlotrange(fig,oi);
 
 %% END
