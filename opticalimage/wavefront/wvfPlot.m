@@ -215,7 +215,7 @@ switch(pType)
             hold on; figure(gcf);
             % Height of the Airy Disk ring.  Still experimenting.
             % Considering making this a parameter (BW).
-            p = plot3(adX,adY,adZ + ringZ*0.1,'k-'); set(p,'linewidth',5); 
+            p = plot3(adX,adY,adZ + ringZ*0.0,'k-'); set(p,'linewidth',5); 
             hold off;
             title(sprintf('F# %.1f Wave %d Airy Radius %.2f',wvfGet(wvfP,'fnumber'),wList, radius));
         else

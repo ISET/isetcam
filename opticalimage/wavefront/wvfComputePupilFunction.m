@@ -117,11 +117,11 @@ p.parse(wvf,varargin{:});
 
 % Make sure calculation pupil size is less than or equal to the pupil
 % size that gave rise to the measured coefficients.
-calcPupilDiameterMM = wvfGet(wvf, 'calc pupil diameter', 'mm');
+pupilDiameterMM = wvfGet(wvf, 'calc pupil diameter', 'mm');
 measPupilSizeMM = wvfGet(wvf, 'measured pupil diameter', 'mm');
-if (calcPupilDiameterMM > measPupilSizeMM)
+if (pupilDiameterMM > measPupilSizeMM)
     error(['Calculation pupil (%.2f mm) must not exceed measurement'...
-        ' pupil (%.2f mm).'], calcPupilDiameterMM, measPupilSizeMM);
+        ' pupil (%.2f mm).'], pupilDiameterMM, measPupilSizeMM);
 end
 
 %{
@@ -222,10 +222,10 @@ for ii = 1:nWavelengths
             aperture = imresize(aperture,[nPixels,nPixels]);
         end
     end
+    % Not sure about this, but maybe.
+    aperture = imageCircular(aperture);
+    % ieNewGraphWin; imagesc(aperture); axis square
 
-    % We adjust the apertureFunc so that it covers just the diameter of
-    % the pupil.  
-    %
     % The Zernike polynomials are defined over the unit disk. At
     % measurement time, the pupil was mapped onto the unit disk, so we
     % do the same normalization here to obtain the expansion over the
@@ -236,7 +236,7 @@ for ii = 1:nWavelengths
     %
     % Normalized radius here.  Distance from the center divided by the
     % pupil radius.
-    norm_radius = (sqrt(xpos .^ 2 + ypos .^ 2)) / (measPupilSizeMM / 2);
+    norm_radius = (sqrt(xpos .^ 2 + ypos .^ 2)) / (pupilDiameterMM / 2);
     theta = atan2(ypos, xpos);
     % ieNewGraphWin; imagesc(norm_radius); axis square
 
@@ -260,7 +260,7 @@ for ii = 1:nWavelengths
     % Keep the amplitude within bounds in case imresize did something.
     aperture(aperture > 1) = 1;
     aperture(aperture < 0) = 0;
-    % ieNewGraphWin; imagesc(A); axis image    
+    % ieNewGraphWin; imagesc(aperture); axis image    
     
     if p.Results.computesce
         % Incorporate the SCE correction params.  Modify the aperture
@@ -368,13 +368,19 @@ for ii = 1:nWavelengths
     wavefrontaberrations{ii} = wavefrontAberrationsUM;
     pupilfuncphase = exp(-1i * 2 * pi * wavefrontAberrationsUM / waveUM(ii));
 
+    % Old code.  Not sure when this worked.  Maybe just for circular?
     % Set values outside the pupil diameter to 0 amplitude
-    pupilfuncphase(norm_radius > calcPupilDiameterMM/measPupilSizeMM)=0;
+    % pupilfuncphase(norm_radius > pupilDiameterMM/measPupilSizeMM)=0;
+
+    % From wvfPupilFunction
+    % Set values outside the pupil diameter to constant (1)
+    pupilfuncphase(norm_radius > 0.5)=1;
 
     % Create the pupil function, combining the aperture and phase
     % functions. 
     pupilfunc{ii} = aperture .* pupilfuncphase;
-    % ieNewGraphWin; imagesc(angle(pupilfunc{ii}))
+    % ieNewGraphWin; imagesc(angle(pupilfunc{ii})); axis image
+    % ieNewGraphWin; imagesc(abs(pupilfunc{ii})); axis image;
 
     % These are special parameters Heidi Hofer calculated.  We do not
     % use them yet in ISETCam because, well, we don't really

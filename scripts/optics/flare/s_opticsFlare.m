@@ -23,9 +23,12 @@ nsides = 3;
 apertureFunction = wvfAperture(wvf,'nsides',nsides,...
     'dot mean',20, 'dot sd',3, 'dot opacity',0.5, ...
     'line mean',20, 'line sd', 2, 'line opacity',0.5);
+% ieNewGraphWin; imagesc(apertureFunction); axis image;
 
+% This does not yet work.
 wvf = wvfCompute(wvf,'aperture function',apertureFunction);
 %{
+% This works
 wvf = wvfPupilFunction(wvf,'aperture function',apertureFunction);
 wvf = wvfComputePSF(wvf,'compute pupil func',false);  % force as false is important
 %}
@@ -92,21 +95,34 @@ oiSet(oi,'render flag','hdr');
 oiSet(oi,'gamma',1); drawnow;
 
 %% Change the number of sides
+scenePoint = sceneSet(scenePoint,'fov',1);
+
 nsides = 5;
 apertureFunction = wvfAperture(wvf,'nsides',nsides,...
     'dot mean',20, 'dot sd',3, 'dot opacity',0.5, ...
     'line mean',20, 'line sd', 2, 'line opacity',0.5);
 
-wvf = wvfPupilFunction(wvf,'aperture function',apertureFunction);
-wvf = wvfComputePSF(wvf,'compute pupil func',false);  % force as false is important
+% Pupil and PSF
+wvf = wvfCompute(wvf,'aperture function',apertureFunction);
 wvfPlot(wvf,'psf','um',550,20,'airy disk');
 
-scenePoint = sceneSet(scenePoint,'fov',1);
+% {
+wvf2 = wvfPupilFunction(wvf,'aperture function',apertureFunction);
+wvf2 = wvfComputePSF(wvf2,'compute pupil func',false);  % force as false is important
+%}
+
 oi = oiCompute(wvf,scenePoint);
-oi = oiSet(oi,'name',sprintf('wvf %d-sides',nsides));
+oi = oiSet(oi,'name',sprintf('wvf-test %d-sides',nsides));
 oi = oiCrop(oi,'border');
 oiWindow(oi); 
 oiSet(oi,'render flag','hdr'); drawnow;
+
+oi = oiCompute(wvf2,scenePoint);
+oi = oiSet(oi,'name',sprintf('wvf-good %d-sides',nsides));
+oi = oiCrop(oi,'border');
+oiWindow(oi); 
+oiSet(oi,'render flag','hdr'); drawnow;
+
 
 %% Now the HDR scene
 
