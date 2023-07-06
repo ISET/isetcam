@@ -295,6 +295,53 @@ for ii = 1:nWavelengths
     theta = atan2(ypos, xpos);
     norm_radius_index = norm_radius <= 1;
 
+    %{
+    % We have to adjust the apertureFunc so that it covers just the part of
+    % the pupil.  This code is copied from wvfPupilFunction and should be
+    % modified to work here.  It starts the same as the chunk just above.
+    %
+    % The Zernike polynomials are defined over the unit disk. At
+    % measurement time, the pupil was mapped onto the unit disk, so we
+    % do the same normalization here to obtain the expansion over the
+    % disk.
+    %
+    % And by convention expanding gives us the wavefront aberrations in
+    % microns.
+    %
+    % Normalized radius here.  Distance from the center divided by the
+    % pupil radius.
+    norm_radius = (sqrt(xpos .^ 2 + ypos .^ 2)) / (pupilDiameterMM / 2);
+    theta = atan2(ypos, xpos);
+    % ieNewGraphWin; imagesc(norm_radius); axis square
+
+    % Only values that are within the unit circle are valid for the Zernike
+    % polynomial. 
+    norm_radius_index = (norm_radius <= 1);
+    % The indices within the unit radius
+    % ieNewGraphWin; imagesc(norm_radius_index); axis image   
+
+    % THIS SEEMS LIKE THE NEW PART
+    %
+    % We place the amplitude function within the region defined by the
+    % valid radius.  
+    % 
+    % Find the bounding box of the circle. 
+    boundingBox = imageBoundingBox(norm_radius_index);
+
+    % Resize the amplitude mask to the square over the central circle
+    A = imresize(A,[boundingBox(3),boundingBox(4)]);
+   
+    % Pad with zeros to match the pupil phase size.
+    sz = round((nPixels - boundingBox(3))/2);
+    A = padarray(A,[sz,sz],0,'both');    
+    A = imresize(A,[nPixels,nPixels]);
+
+    % Keep the amplitude within bounds
+    A(A > 1) = 1;
+    A(A < 0) = 0;
+    % ieNewGraphWin; imagesc(A); axis image
+    %}
+    %}
     % Get Zernike coefficients
     % Need to make sure the c vector is long enough to contain defocus
     % term, because we handle that specially.  But why?
