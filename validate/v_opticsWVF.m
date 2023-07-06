@@ -37,13 +37,12 @@ ieInit;
 % First, calculate using the wvf code base.
 wvf = wvfCreate;    % Default wavefront 5.67 fnumber
 
-% Adjust for testing general case.  At the moment, it only works well with
-% the human parameters.
 fLengthMM = 17; fLengthM = fLengthMM*1e-3;
-fNumber = 3; thisWave = 550;
+fNumber = 5.67; thisWave = 550;
 pupilMM = fLengthMM/fNumber;
 
 wvf = wvfSet(wvf,'calc pupil diameter',pupilMM);
+wvf = wvfSet(wvf,'measured pupil diameter',10);
 wvf = wvfSet(wvf,'focal length',fLengthM);
 
 % No human lca or sce.  Constant aperture function.

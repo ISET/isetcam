@@ -117,13 +117,11 @@ p.parse(wvf,varargin{:});
 
 % Make sure calculation pupil size is less than or equal to the pupil
 % size that gave rise to the measured coefficients.
-pupilDiameterMM = wvfGet(wvf, 'calc pupil diameter', 'mm');
-
-% Not sure this is necessary.
+calcPupilDiameterMM = wvfGet(wvf, 'calc pupil diameter', 'mm');
 measPupilSizeMM = wvfGet(wvf, 'measured pupil diameter', 'mm');
-if (pupilDiameterMM > measPupilSizeMM)
+if (calcPupilDiameterMM > measPupilSizeMM)
     error(['Calculation pupil (%.2f mm) must not exceed measurement'...
-        ' pupil (%.2f mm).'], pupilDiameterMM, measPupilSizeMM);
+        ' pupil (%.2f mm).'], calcPupilDiameterMM, measPupilSizeMM);
 end
 
 %{
@@ -143,9 +141,7 @@ if (wvfGet(wvf, 'calcobserveraccommodation') ~= wvfGet(wvf, 'measuredobserveracc
     error(['We do not currently know how to deal with values '...
         'that differ from measurement time']);
 end
-%}
 
-%{
 % The original Hofer code allowed that the observer we model might
 % have had a different focus from the observer we measured.  This
 % defocus correction is included here and added later.
@@ -240,7 +236,7 @@ for ii = 1:nWavelengths
     %
     % Normalized radius here.  Distance from the center divided by the
     % pupil radius.
-    norm_radius = (sqrt(xpos .^ 2 + ypos .^ 2)) / (pupilDiameterMM / 2);
+    norm_radius = (sqrt(xpos .^ 2 + ypos .^ 2)) / (calcPupilDiameterMM / 2);
     theta = atan2(ypos, xpos);
     % ieNewGraphWin; imagesc(norm_radius); axis square
 
@@ -373,7 +369,7 @@ for ii = 1:nWavelengths
     pupilfuncphase = exp(-1i * 2 * pi * wavefrontAberrationsUM / waveUM(ii));
 
     % Set values outside the pupil diameter to 0 amplitude
-    pupilfuncphase(norm_radius > pupilDiameterMM/measPupilSizeMM)=0;
+    pupilfuncphase(norm_radius > calcPupilDiameterMM/measPupilSizeMM)=0;
 
     % Create the pupil function, combining the aperture and phase
     % functions. 
