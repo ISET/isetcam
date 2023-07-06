@@ -5,8 +5,8 @@ function wvf = wvfComputePupilFunction(wvf, varargin)
 %   wvf = wvfComputePupilFunction(wvf, varargin)
 %
 % Description:
-%    This version of the pupil function calculation was originally designed
-%    for the human eye calculations starting in ISETBio.  We are checking
+%    This version of the pupil function calculation is designed for
+%    the human eye calculations starting in ISETBio.  We are
 %    it for generalization as we integrate into ISETCam.
 %
 %    The pupil function is a complex number that represents the amplitude
@@ -177,11 +177,6 @@ for ii = 1:nWavelengths
     %                 'Pupil function for %.0f', thisWave));
     %         end
 
-    % Set SCE correction params, if desired
-    xo  = wvfGet(wvf, 'scex0');
-    yo  = wvfGet(wvf, 'scey0');
-    rho = wvfGet(wvf, 'sce rho');
-
     % Set up pupil coordinates
     %{
     % BW: July, 2023
@@ -215,11 +210,17 @@ for ii = 1:nWavelengths
     % zcoeffs are used to compute the pupil phase function and the
     % pupil amplitude slot holds the pupil amplitude function.
     % Together, they are combined to create the pupilFunction.
+
+    rho = wvfGet(wvf, 'sce rho', thisWave);
     if ~all(rho) && ~p.Results.sce
         % Here if all the rho values are 0 and the Stiles Crawford
         % Effect (SCE) flag is false.  The aperture is all 1s.
         apertureFunc = ones(nPixels, nPixels);
-    else
+    elseif p.Results.sce
+        % Set SCE correction params, if desired
+        xo  = wvfGet(wvf, 'scex0');
+        yo  = wvfGet(wvf, 'scey0');
+
         % Get the wavelength-specific value of rho for the
         % Stiles-Crawford effect.
         rho = wvfGet(wvf, 'sce rho', thisWave);

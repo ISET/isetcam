@@ -44,6 +44,12 @@ pupilMM = fLengthMM/fNumber;
 
 wvf = wvfSet(wvf,'calc pupil diameter',pupilMM);
 wvf = wvfSet(wvf,'focal length',fLengthM);
+
+% Try to make this work
+%
+% wvf = wvfCompute(wvf);
+%
+
 wvf = wvfComputePupilFunction(wvf);
 wvf = wvfComputePSF(wvf,'lca', false);
 
@@ -63,6 +69,7 @@ oi = wvf2oi(wvf);
 uData = oiGet(oi,'optics psf xaxis');
 plot(uData.samp,uData.data,'go');
 legend({'wvf','oi'});
+xlabel('Pos (um)'); ylabel('Amp (a.u.)')
 
 %% Get the otf data from the OI and WVF computed two ways
 
@@ -97,13 +104,18 @@ wvf  = wvfCreate('wave',wave,'name',sprintf('%dmm-pupil',pupilMM));
 wvf  = wvfSet(wvf,'calc pupil diameter',pupilMM);
 wvf  = wvfSet(wvf,'focal length',fLengthM);  % 17 mm focal length for deg per mm
 
-wvf  = wvfComputePupilFunction(wvf);
-wvf  = wvfComputePSF(wvf,'lca',false);
+% wvf = wvfCompute(wvf);
+
+% Try to make this work
+%
+% wvf = wvfCompute(wvf);
+%
+wvf = wvfComputePupilFunction(wvf);
+wvf = wvfComputePSF(wvf,'lca', false);
 
 % Convert it to OI format
 oi = wvf2oi(wvf);
 
-%% Compare the OTFs
 thisWave = 550;
 oiData = oiPlot(oi,'otf',[],thisWave);
 wvData = wvfPlot(wvf,'2D otf','mm',thisWave);
@@ -167,7 +179,11 @@ identityLine; grid on; xlabel('oiCompute'); ylabel('wvfApply');
 defocus = 1;  % Diopters
 wvfD = wvfSet(wvf,'zcoeff',defocus,'defocus');
 
-wvfD  = wvfComputePupilFunction(wvfD);
+% Try to make this work
+%
+% wvf = wvfCompute(wvf);
+%
+wvfD = wvfComputePupilFunction(wvfD);
 wvfD = wvfComputePSF(wvfD,'lca',false);
 
 pRange = 20;
@@ -186,7 +202,6 @@ oiWindow(oiD);
 % Worked fine last BW checked.
 oiWVFD = wvfApply(radialScene,wvfD);
 oiWVFD = oiSet(oiWVFD,'name',sprintf('wvfApply Defocus %.1f no LCA',defocus));
-
 oiWindow(oiWVFD);
 %}
 
@@ -201,6 +216,10 @@ oiWindow(oiDCA);
 
 wvfVA = wvfSet(wvf,'zcoeff',0.3,'defocus');
 wvfVA = wvfSet(wvfVA,'zcoeff',-0.5,'vertical_astigmatism');
+
+% Try to make this work
+%
+% wvf = wvfCompute(wvf);
 
 % Compute the pupil function with chromatic aberration
 wvfVA  = wvfComputePSF(wvfVA,'compute pupil func',true,'lca',true);

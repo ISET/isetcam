@@ -174,7 +174,7 @@ switch lower(opticsType)
 
         optics = oiGet(wvf2oi(wvfP), 'optics');
         optics = opticsSet(optics, 'model', 'shift invariant');
-        optics = opticsSet(optics, 'name', 'human-wvf');
+        optics = opticsSet(optics, 'name', sprintf('wvf: %s',wvf.name));
 
         % Convert from pupil size and focal length to f# and focal
         % length, because that is what ISET sets. This implies a

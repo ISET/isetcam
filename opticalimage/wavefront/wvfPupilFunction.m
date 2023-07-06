@@ -4,10 +4,19 @@ function wvf = wvfPupilFunction(wvf, varargin)
 % Syntax:
 %   wvf = wvfPupilFunction(wvf, varargin)
 %
+% Inputs:
+%    wvf - The wavefront struct
+%
+% Optional key/value pairs:
+%    aperture function - An image describing the aperture function.
+%         The default amplitude across the circular pupil is assumed
+%         to be 1, which would be a diffraction limited case.
+%                
+% Outputs:
+%    wvf - The wavefront object with the updated pupilfunction.
+%
 % Description:
-%    This version of the pupil function calculation is designed for general
-%    optics.  It allows the user to specify the aperture function of the
-%    pupil. 
+%    Compute the pupil function. This is designed for general optics.
 %
 %    See *wvfComputePupilFunction* for the ISETBio calculations that
 %    include Stiles Crawford, human chromatic aberration and parameters
@@ -33,17 +42,7 @@ function wvf = wvfPupilFunction(wvf, varargin)
 %    = 1. Adding in the j = 0 term does not change the psf. The spatial
 %    coordinate system is also OSA standard.
 %
-% Inputs:
-%    wvf     - The wavefront object
-%
-% Optional key/value pairs:
-%    amplitude - An image describing the aperture function.  The default
-%                amplitude across the circular pupil is assumed to be 1,
-%                which would be a diffraction limited case.
-%                
-% Outputs:
-%    wvf     - The wavefront object with the updated pupilfunction.
-%
+
 % See Also:
 %    wvfCreate, wvfGet, wfvSet, wvfComputePSF,wvfComputePupilFunction,
 %    wvfComputePupilFunctionCustomLCA 
@@ -79,11 +78,11 @@ function wvf = wvfPupilFunction(wvf, varargin)
 varargin = ieParamFormat(varargin);
 p = inputParser;
 p.addRequired('wvf',@isstruct);
-p.addParameter('amplitude',[],@ismatrix);  % Pupil amplitude mask
+p.addParameter('aperturefunction',[],@ismatrix);  % Pupil amplitude mask
 
 % varargin = wvfKeySynonyms(varargin);
 p.parse(wvf,varargin{:});
-amplitude = p.Results.amplitude;
+amplitude = p.Results.aperturefunction;
 
 % Convert wavelengths in nanometers to wavelengths in microns
 waveUM = wvfGet(wvf, 'calc wavelengths', 'um');
