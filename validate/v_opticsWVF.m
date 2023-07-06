@@ -38,7 +38,7 @@ ieInit;
 wvf = wvfCreate;    % Default wavefront 5.67 fnumber
 
 fLengthMM = 17; fLengthM = fLengthMM*1e-3;
-fNumber = 5.67; thisWave = 550;
+fNumber = 2; thisWave = 550;
 pupilMM = fLengthMM/fNumber;
 
 wvf = wvfSet(wvf,'calc pupil diameter',pupilMM);
@@ -46,9 +46,9 @@ wvf = wvfSet(wvf,'measured pupil diameter',10);
 wvf = wvfSet(wvf,'focal length',fLengthM);
 
 % No human lca or sce.  Constant aperture function.
-wvf = wvfCompute(wvf);
+% wvf = wvfCompute(wvf);
 
-%{
+% {
 wvf = wvfComputePupilFunction(wvf);
 wvf = wvfComputePSF(wvf);
 %}
@@ -56,8 +56,6 @@ wvf = wvfComputePSF(wvf);
 pRange = 10;  % Microns
 wvfPlot(wvf,'psf','um',thisWave,pRange,'airy disk',true);
 title(sprintf('Calculated pupil diameter %.1f mm',pupilMM));
-
-%% Now, create the same model using the diffraction limited ISET code
 
 % Compare wvf and oi methods directly
 wvfData = wvfPlot(wvf,'psf xaxis','um',thisWave,10);
@@ -206,6 +204,12 @@ oiWindow(oiWVFD);
 %% Include human longitudinal chromatic aberration
 
 wvfDCA = wvfCompute(wvfD,'human lca',true);
+
+%{
+wvfDCA = wvfComputePupilFunction(wvfD,'human lca',true);
+wvfDCA = wvfComputePSF(wvfDCA);
+%}
+
 pRange = 50;
 wvfPlot(wvfDCA,'psf mesh','um',450,pRange);
 title('Wave 450');
@@ -213,10 +217,7 @@ pRange = 50;
 wvfPlot(wvfDCA,'psf mesh','um',550,pRange);
 title('Wave 550');
 
-%{
-wvfDCA = wvfComputePupilFunction(wvfD,'human lca',true);
-wvfDCA = wvfComputePSF(wvfDCA);
-%}
+
 
 %{
 wvfDCA = wvfComputePSF(wvfD,'lca',true,'compute pupil func',true);
@@ -232,14 +233,19 @@ wvfVA = wvfSet(wvf,'zcoeff',0.3,'defocus');
 wvfVA = wvfSet(wvfVA,'zcoeff',-0.5,'vertical_astigmatism');
 
 wvfVA = wvfCompute(wvfVA,'human lca',true);
+
+
+%{
+wvfDCA = wvfComputePupilFunction(wvfD,'human lca',true);
+wvfDCA = wvfComputePSF(wvfDCA);
+%}
 oi = oiCompute(wvfVA,radialScene);
 oiWindow(oi);
 
-thisWave = 450;
-[~, fig] = oiPlot(oi,'psf',[],thisWave); psfPlotrange(fig,oi,thisWave);
-
-thisWave = 550;
-[~, fig] = oiPlot(oi,'psf',[],thisWave); psfPlotrange(fig,oi,thisWave);
+testWave = [450,550];
+for ii=1:numel(testWave)
+    [~, fig] = oiPlot(oi,'psf',[],testWave(ii)); psfPlotrange(fig,oi,thisWave);
+end
 
 
 %% END
