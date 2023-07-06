@@ -60,7 +60,7 @@ function wvf = wvfComputePSF(wvf, varargin)
 varargin = ieParamFormat(varargin);
 
 p = inputParser;
-p.addParameter('lca',true,@islogical);      % Use longitudinal chromatic aberration
+p.addParameter('humanlca',false,@islogical);      % Use longitudinal chromatic aberration
 p.addParameter('computepupilfunc',false,@islogical); % Do NOT force pupil function computation
 
 varargin = wvfKeySynonyms(varargin);
@@ -84,7 +84,7 @@ pupilfunc = cell(nWave, 1);
 % Also, this function may not force a new computation of the pupil
 % function.  We can set the 'force' parameter to true, to force.
 if p.Results.computepupilfunc
-    wvf = wvfComputePupilFunction(wvf,'lca',p.Results.lca);
+    wvf = wvfComputePupilFunction(wvf,'human lca',p.Results.humanlca);
 end
 
 % wave = wvfGet(wvf, 'wave');

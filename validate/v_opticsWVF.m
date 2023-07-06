@@ -1,32 +1,33 @@
-%% Comparing oi methods and wvf methods numerically
+%% Testing wvf optical image methods numerically
 %
-% Historically, ISET mainly used diffraction limited calculations
-% directly as a special case.  
+% Historically, ISET used diffraction limited calculations directly as a
+% special case.
 %
-% About 15 years ago, we added the ability to build general shift invariant
-% representations based on wavefront aberrations specified by Zernike
-% polynomials. These shift invariant representations can be diffraction
-% limited (no aberrations) or with various simple aberrations (astigmatism,
-% coma, defocus).
+% About 2020 years ago, we added the ability to build general shift
+% invariant representations based on wavefront aberrations specified by
+% Zernike polynomials. These shift invariant representations can be
+% diffraction limited (no aberrations) or with various simple aberrations
+% (astigmatism, coma, defocus).
 %
-% The code in ISETBio was firmly based on the human data, including the
-% human longitudinal chromatic aberration and the Stiles-Crawford effect.
-% These were always set as the default wavefront creation.
+% The code in ISETBio was firmly based on human data, including the human
+% longitudinal chromatic aberration and the Stiles-Crawford effect. These
+% were also designed to use wavefront calculations from adaptive optics,
+% with a first draft provided by Heidi Hofer.
 %
-% With the merge of ISETBio wavefront into ISETCam, we no longer
-% impose the specific human features, such as longitudinal chromatic
-% aberration, on the wavefront.  These are now optional.
+% With the merge of ISETBio wavefront into ISETCam, we are doing wavefront
+% calculations without requiring the specific human features, such as human
+% longitudinal chromatic aberration or Stiles Crawford, on the wavefront.
+% These are now optional.
 %
-% This validation script test the general wavefront calculations and the
-% original ISETCam diffraction limited calculation (dlMTF).  The dlMTF code
-% has been tested, and we show that the wavefront version matches the
-% results.
+% This script tests the basic wavefront calculations including the
+% diffraction limited calculation for a perfect wavefront, and calculations
+% with some defocus and human lca.
 %
-% At the end of this script, we adjust the Zernike polynomial coefficients
-% to produce different defocus and other wavefront aberrations.
+% Other scripts, particularly related to flare, test the ability to
+% generate aperture functions.
 %
 % See also
-%   
+%   wvfCompute, wvfComputePupilFunction, wvfCreate, wvf2oi
 
 %%
 ieInit;
@@ -45,13 +46,13 @@ pupilMM = fLengthMM/fNumber;
 wvf = wvfSet(wvf,'calc pupil diameter',pupilMM);
 wvf = wvfSet(wvf,'focal length',fLengthM);
 
-% Try to make this work
-%
-% wvf = wvfCompute(wvf);
-%
+% No human lca or sce.  Constant aperture function.
+wvf = wvfCompute(wvf);
 
+%{
 wvf = wvfComputePupilFunction(wvf);
 wvf = wvfComputePSF(wvf,'lca', false);
+%}
 
 pRange = 10;  % Microns
 wvfPlot(wvf,'2d psf space','um',thisWave,pRange,'airy disk',true);
@@ -74,7 +75,6 @@ xlabel('Pos (um)'); ylabel('Amp (a.u.)')
 %% Get the otf data from the OI and WVF computed two ways
 
 % Compare the two OTF data sets directly.
-oi = wvf2oi(wvf);
 oiData = oiPlot(oi,'otf',[],thisWave);
 wvData = wvfPlot(wvf,'otf','mm',thisWave);
 
@@ -95,7 +95,6 @@ grid on; xlabel('Frequency'); ylabel('Amplitude');
 
 %% Now, make a multispectral wvf (wvfP) and convert it to ISET OI format
 
-% Create the wvf parameter structure with the appropriate values
 wave = (400:10:700);
 pupilMM = 3;   % Could be 6, 4.5, or 3
 fLengthM = 17e-3;
@@ -104,14 +103,12 @@ wvf  = wvfCreate('wave',wave,'name',sprintf('%dmm-pupil',pupilMM));
 wvf  = wvfSet(wvf,'calc pupil diameter',pupilMM);
 wvf  = wvfSet(wvf,'focal length',fLengthM);  % 17 mm focal length for deg per mm
 
-% wvf = wvfCompute(wvf);
+wvf = wvfCompute(wvf);
 
-% Try to make this work
-%
-% wvf = wvfCompute(wvf);
-%
+%{
 wvf = wvfComputePupilFunction(wvf);
 wvf = wvfComputePSF(wvf,'lca', false);
+%}
 
 % Convert it to OI format
 oi = wvf2oi(wvf);
@@ -156,15 +153,18 @@ radialScene = sceneCreate('radial lines');
 radialScene = sceneSet(radialScene,'hfov',2);
 % sceneWindow(radialScene);
 
-% Create the oi
-oi = wvf2oi(wvf);
-oi = oiCompute(oi,radialScene);
-oi = oiSet(oi,'name',sprintf('oi f/# %.2f',oiGet(oi,'fnumber')));
-oiWindow(oi);
+% Create the oi 
+oi    = oiCompute(oi, radialScene);
+oiWVF = oiCompute(wvf,radialScene);
+oiWVF = oiSet(oiWVF,'name',sprintf('oi f/# %.2f',oiGet(oi,'fnumber')));
+oiWindow(oiWVF);
 
-% This is the oi computed directly with the wvfP using wvfApply
+%{
+% This is the oi computed directly using wvfApply. 
+% I plan to deprecate.
 oiWVF = wvfApply(radialScene,wvf,'lca',false);
 oiWindow(oiWVF);
+%}
 
 %% Compare the photons
 photons1 = oiGet(oi,'photons');
@@ -181,19 +181,18 @@ wvfD = wvfSet(wvf,'zcoeff',defocus,'defocus');
 
 % Try to make this work
 %
-% wvf = wvfCompute(wvf);
-%
+wvfD = wvfCompute(wvfD);
+%{
 wvfD = wvfComputePupilFunction(wvfD);
 wvfD = wvfComputePSF(wvfD,'lca',false);
-
+%}
 pRange = 20;
 wvfPlot(wvfD,'2d psf space','um',thisWave,pRange);
 title(sprintf('Defocus %.1f D',defocus));
 
 %% Convert to an OI and render
 
-oiD = wvf2oi(wvfD);
-oiD = oiCompute(oiD,radialScene);
+oiD = oiCompute(wvfD,radialScene);
 oiD = oiSet(oiD,'name',sprintf('oiCompute Defocus %.1f no LCA',defocus));
 oiWindow(oiD);
 
@@ -207,7 +206,12 @@ oiWindow(oiWVFD);
 
 %% Include human longitudinal chromatic aberration
 
+wvfDCA = wvfCompute(wvfD,'human lca',true);
+
+%{
 wvfDCA = wvfComputePSF(wvfD,'lca',true,'compute pupil func',true);
+%}
+
 oiDCA = oiCompute(wvfDCA,radialScene);
 oiDCA = oiSet(oiDCA,'name','Defocus and LCA');
 oiWindow(oiDCA);
@@ -217,13 +221,7 @@ oiWindow(oiDCA);
 wvfVA = wvfSet(wvf,'zcoeff',0.3,'defocus');
 wvfVA = wvfSet(wvfVA,'zcoeff',-0.5,'vertical_astigmatism');
 
-% Try to make this work
-%
-% wvf = wvfCompute(wvf);
-
-% Compute the pupil function with chromatic aberration
-wvfVA  = wvfComputePSF(wvfVA,'compute pupil func',true,'lca',true);
-
+wvfVA = wvfCompute(wvfVA,'human lca',true);
 oi = oiCompute(wvfVA,radialScene);
 oiWindow(oi);
 

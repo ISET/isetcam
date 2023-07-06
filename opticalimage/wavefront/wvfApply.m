@@ -1,5 +1,7 @@
 function oi = wvfApply(scene, wvf, varargin)
-% Calculate an OI using a wavefront specification 
+% Deprecated:  Calculate an OI using a wavefront specification 
+%
+%  NO LONGER NEEDED
 %
 % Synopsis:
 %   oi = wvfApply(scene, wvf, varargin)

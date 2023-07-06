@@ -43,22 +43,21 @@ function wvf = wvfComputePupilFunction(wvf, varargin)
 %
 % Inputs:
 %    wvf     - The wavefront object
-%    showbar - (Optional) Boolean indicating whether or not to show the
-%              calculation wait bar
+%
+% Optional key/value pairs:
+%      humanlca   - If true, apply human longitudinal chromatic aberration.
+%                   Default: False
+%      lcafunction - Use this vector as the longitudinal chromatic
+%                    aberration in diopters
+%      aperture function - A matrix for the aperture function
+%      computesce  - Apply the Stiles Crawford affect to the aperture
+%                    function
 %
 % Outputs:
 %    wvf     - The wavefront object
 %
-% Optional key/value pairs:
-%     'lca'  - If true, apply human longitudinal chromatic aberration.
-%              Default: False
-%
-% Notes:
-%    * If the function is already computed and not stale, this will return
-%      fast. Otherwise it computes and stores.
-%
 % See Also:
-%    wvfCreate, wvfGet, wfvSet, wvfComputePSF
+%    wvfCompute, wvfComputePSF, wvfCreate, wvfGet, wfvSet
 %
 
 % History:
@@ -104,8 +103,11 @@ varargin = ieParamFormat(varargin);
 
 p = inputParser;
 p.addRequired('wvf',@isstruct);
-p.addParameter('lca',false,@islogical);   % Apply longitudinal chromatic aberration
-p.addParameter('sce',false,@islogical);   % Apply Stiles Crawford effect to aperture function
+
+p.addParameter('humanlca',false,@islogical);   % Apply longitudinal chromatic aberration
+p.addParameter('lcafunction',[],@ismatrix);
+p.addParameter('aperturefunction',[],@ismatrix);
+p.addParameter('computesce',false,@islogical);   % Apply Stiles Crawford effect to aperture function
 
 varargin = wvfKeySynonyms(varargin);
 
@@ -168,7 +170,7 @@ areapixapod = zeros(nWavelengths, 1);
 wavefrontaberrations = cell(nWavelengths, 1);
 
 % Check whether if we are using a custom LCA
-customLCAfunction = wvfGet(wvf, 'custom lca');
+% customLCAfunction = wvfGet(wvf, 'custom lca');
 
 for ii = 1:nWavelengths
     thisWave = waveNM(ii);
@@ -210,26 +212,35 @@ for ii = 1:nWavelengths
     % zcoeffs are used to compute the pupil phase function and the
     % pupil amplitude slot holds the pupil amplitude function.
     % Together, they are combined to create the pupilFunction.
-
-    rho = wvfGet(wvf, 'sce rho', thisWave);
-    if ~all(rho) && ~p.Results.sce
+    if isempty(p.Results.aperturefunction)
         % Here if all the rho values are 0 and the Stiles Crawford
         % Effect (SCE) flag is false.  The aperture is all 1s.
         apertureFunc = ones(nPixels, nPixels);
-    elseif p.Results.sce
-        % Set SCE correction params, if desired
-        xo  = wvfGet(wvf, 'scex0');
-        yo  = wvfGet(wvf, 'scey0');
+    else
+        % Make sure the aperture function size matches nPixels but also
+        % covers only the pupil diameter.
+        apertureFunc = p.Results.aperturefunction;
+        if ~isequal(size(apertureFunc),[nPixels,nPixels])
+            warning('Adjusting aperture function size.');
+            apertureFunc = imresize(apertureFunc,[nPixels,nPixels]);
+        end
+    end
+
+    if p.Results.computesce
+        % Set SCE correction params.  Modify the aperture function.
 
         % Get the wavelength-specific value of rho for the
         % Stiles-Crawford effect.
         rho = wvfGet(wvf, 'sce rho', thisWave);
+        xo  = wvfGet(wvf, 'scex0');
+        yo  = wvfGet(wvf, 'scey0');
 
         % For the x, y positions within the pupil, the value of rho is
         % used to set the amplitude. I guess this is where the SCE
         % stuff matters. We should have a way to expose this for
         % teaching and in the code.
-        apertureFunc = 10 .^ (-rho * ((xpos - xo) .^ 2 + (ypos - yo) .^ 2));
+        sceFunc = 10 .^ (-rho * ((xpos - xo) .^ 2 + (ypos - yo) .^ 2));
+        apertureFunc = apertureFun .* sceFunc;
     end
 
     % Compute longitudinal chromatic aberration (LCA) relative to
@@ -244,17 +255,20 @@ for ii = 1:nWavelengths
     %
     % We flip the sign to describe change in optical power when we pass
     % this through wvfDefocusDioptersToMicrons.
-    if p.Results.lca
-        % Apply LCA.  Computes lcaMicrons.
-        if (isempty(customLCAfunction))
-            % disp('Using human LCA wvfLCAFromWave...')
-            lcaDiopters = wvfLCAFromWavelengthDifference(wvfGet(wvf, ...
-                'measured wavelength', 'nm'), thisWave);
-        else
-            % disp('Using a custom LCA...')
-            lcaDiopters = customLCAfunction(wvfGet(wvf, ...
-                'measured wavelength', 'nm'), thisWave);
-        end
+    if p.Results.humanlca
+        % disp('Using human LCA wvfLCAFromWave...')
+        lcaDiopters = wvfLCAFromWavelengthDifference(wvfGet(wvf, ...
+            'measured wavelength', 'nm'), thisWave);
+        lcaMicrons = wvfDefocusDioptersToMicrons(-lcaDiopters, ...
+            measPupilSizeMM);
+    elseif ~isempty(p.Results.lcafunction)
+        % disp('Using a custom LCA...')
+        %
+        % Needs to be written.  I think lcaDiopters should simply be
+        % lcafunction.
+        %         lcaDiopters = customLCAfunction(wvfGet(wvf, ...
+        %             'measured wavelength', 'nm'), thisWave);
+        lcaDiopters = p.Results.lcafunction;
         lcaMicrons = wvfDefocusDioptersToMicrons(-lcaDiopters, ...
             measPupilSizeMM);
     else

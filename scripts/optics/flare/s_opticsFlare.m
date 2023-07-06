@@ -24,8 +24,12 @@ apertureFunction = wvfAperture(wvf,'nsides',nsides,...
     'dot mean',20, 'dot sd',3, 'dot opacity',0.5, ...
     'line mean',20, 'line sd', 2, 'line opacity',0.5);
 
+wvf = wvfCompute(wvf,'aperture function',apertureFunction);
+%{
 wvf = wvfPupilFunction(wvf,'aperture function',apertureFunction);
 wvf = wvfComputePSF(wvf,'compute pupil func',false);  % force as false is important
+%}
+
 wvfPlot(wvf,'psf','um',550,20,'airy disk');
 
 %{
