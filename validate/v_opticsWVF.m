@@ -32,6 +32,26 @@
 %%
 ieInit;
 
+%% TEMP
+% First, calculate using the wvf code base.
+
+wvf = wvfCreate;    % Default wavefront 5.67 fnumber
+
+% Adjust for testing general case.  At the moment, it only works well with
+% the human parameters.
+fLengthMM = 17; fLengthM = fLengthMM*1e-3;
+fNumber = 5.6; thisWave = 550;
+pupilMM = fLengthMM/fNumber;
+
+wvf = wvfSet(wvf,'calc pupil diameter',pupilMM);
+wvf = wvfSet(wvf,'focal length',fLengthM);
+wvf = wvfComputePupilFunction(wvf);
+wvf = wvfComputePSF(wvf);
+
+pRange = 10;  % Microns
+wvfPlot(wvf,'2d psf space','um',thisWave,pRange,'airy disk',true);
+title(sprintf('Calculated pupil diameter %.1f mm',pupilMM));
+
 %% Compare wvf and standard OI versions of diffraction limited
 
 % First, calculate using the wvf code base.

@@ -236,7 +236,7 @@ for ii = 1:nWavelengths
     %
     % Normalized radius here.  Distance from the center divided by the
     % pupil radius.
-    norm_radius = (sqrt(xpos .^ 2 + ypos .^ 2)) / (calcPupilDiameterMM / 2);
+    norm_radius = (sqrt(xpos .^ 2 + ypos .^ 2)) / (measPupilSizeMM / 2);
     theta = atan2(ypos, xpos);
     % ieNewGraphWin; imagesc(norm_radius); axis square
 
