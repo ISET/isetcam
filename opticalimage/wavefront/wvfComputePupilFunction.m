@@ -126,6 +126,7 @@ if (pupilDiameterMM > measPupilSizeMM)
         ' pupil (%.2f mm).'], pupilDiameterMM, measPupilSizeMM);
 end
 
+%{
 % Also not sure this is necessary.
 %
 % Handle defocus relative to reference wavelength.
@@ -142,6 +143,7 @@ if (wvfGet(wvf, 'calcobserveraccommodation') ~= wvfGet(wvf, 'measuredobserveracc
     error(['We do not currently know how to deal with values '...
         'that differ from measurement time']);
 end
+%}
 
 %{
 % The original Hofer code allowed that the observer we model might
@@ -213,12 +215,11 @@ for ii = 1:nWavelengths
     % In the original code, only the Stiles Crawford Effect (SCE) was
     % implemented.
     if isempty(p.Results.aperturefunction)
-        % Here if all the rho values are 0 and the Stiles Crawford
-        % Effect (SCE) flag is false.  The aperture is all 1s.
+        % Assume the aperture is all 1's.
         aperture = ones(nPixels, nPixels);
     else
-        % Make sure the aperture function size matches nPixels but also
-        % covers only the pupil diameter.
+        % Use the passed in aperture function. Make sure its size
+        % matches nPixels but also covers only the pupil diameter.
         aperture = p.Results.aperturefunction;
         if ~isequal(size(aperture),[nPixels,nPixels])
             warning('Adjusting aperture function size.');
