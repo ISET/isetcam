@@ -122,11 +122,15 @@ if (~isfield(wvf, 'pupilfunc') || ~isfield(wvf, 'PUPILFUNCTION_STALE') ...
     % size that gave rise to the measured coefficients.
     calcPupilSizeMM = wvfGet(wvf, 'calc pupil diameter', 'mm');
     measPupilSizeMM = wvfGet(wvf, 'measured pupil diameter', 'mm');
+
+    % {
     if (calcPupilSizeMM > measPupilSizeMM)
         error(['Calculation pupil (%.2f mm) must not exceed measurement'...
             ' pupil (%.2f mm).'], calcPupilSizeMM, measPupilSizeMM);
     end
-    
+    %}
+
+    % {
     % Handle defocus relative to reference wavelength.
     %
     % The defocus correction for the calculation is expressed as the
@@ -141,7 +145,7 @@ if (~isfield(wvf, 'pupilfunc') || ~isfield(wvf, 'PUPILFUNCTION_STALE') ...
         error(['We do not currently know how to deal with values '...
             'that differ from measurement time']);
     end
-            
+    
     defocusCorrectionDiopters = ...
         wvfGet(wvf, 'calc observer focus correction') - ...
         wvfGet(wvf, 'measured observer focus correction');
@@ -149,7 +153,8 @@ if (~isfield(wvf, 'pupilfunc') || ~isfield(wvf, 'PUPILFUNCTION_STALE') ...
     % Convert defocus from diopters to microns
     defocusCorrectionMicrons = wvfDefocusDioptersToMicrons(...
         defocusCorrectionDiopters, measPupilSizeMM);
-    
+    %}
+
     % Convert wavelengths in nanometers to wavelengths in microns
     waveUM = wvfGet(wvf, 'calc wavelengths', 'um');
     waveNM = wvfGet(wvf, 'calc wavelengths', 'nm');
