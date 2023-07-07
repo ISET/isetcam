@@ -374,7 +374,7 @@ for ii = 1:nWavelengths
 
     % From wvfPupilFunction
     % Set values outside the pupil diameter to constant (1)
-    pupilfuncphase(norm_radius > 0.5)=1;
+    pupilfuncphase(norm_radius > 0.5) = 0;
 
     % Create the pupil function, combining the aperture and phase
     % functions. 
