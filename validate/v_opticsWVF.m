@@ -42,7 +42,7 @@ thisWave = wvfGet(wvf,'wave');
 fLengthMM = 10; fLengthM = fLengthMM*1e-3; fNumber = 3;
 pupilMM = fLengthMM/fNumber;
 wvf = wvfSet(wvf,'focal length',fLengthM);
-wvf  = wvfComputePSF(wvf,'lca', false);
+wvf  = wvfCompute(wvf,'human lca', false);
 
 pRange = 10;  % Microns
 wvfPlot(wvf,'2d psf space','um',thisWave,pRange,'airy disk',true);
@@ -91,7 +91,7 @@ wvf  = wvfSet(wvf,'calc pupil diameter',pupilMM);
 wvf  = wvfSet(wvf,'focal length',fLengthM);  % 17 mm focal length for deg per mm
 
 % Calculate without human LCA
-wvf  = wvfComputePSF(wvf,'lca',false,'force',true);
+wvf  = wvfCompute(wvf,'human lca',false);
 
 % Convert wvf to OI format
 oi = wvf2oi(wvf);
@@ -137,7 +137,7 @@ oi = oiSet(oi,'name',sprintf('oi f/# %.2f',oiGet(oi,'fnumber')));
 oiWindow(oi);
 
 % This is the oi computed directly with the wvfP using wvfApply
-oiWVF = wvfApply(gridScene,wvf,'lca',false);
+oiWVF = oiCompute(wvf,gridScene);
 oiWindow(oiWVF);
 
 % Compare the photons
@@ -153,7 +153,7 @@ identityLine; grid on; xlabel('oiCompute'); ylabel('wvfApply');
 defocus = 1;  % Diopters
 wvfD = wvfSet(wvf,'zcoeff',defocus,'defocus');
 
-wvfD = wvfComputePSF(wvfD,'lca',false);
+wvfD = wvfCompute(wvfD,'human lca',false);
 pRange = 20;
 wvfPlot(wvfD,'2d psf space','um',thisWave,pRange);
 title(sprintf('Defocus %.1f D',defocus));
@@ -174,7 +174,7 @@ oiWindow(oiWVFD);
 
 %% Now recompute and include human longitudinal chromatic aberration
 
-wvfDCA = wvfComputePSF(wvfD,'lca',true,'force',true);
+wvfDCA = wvfCompute(wvfD,'human lca',true);
 oiDCA = oiCompute(wvfDCA,gridScene);
 oiDCA = oiSet(oiDCA,'name','Defocus and LCA');
 oiWindow(oiDCA);
@@ -185,7 +185,7 @@ wvfVA = wvfSet(wvf,'zcoeff',0.5,'defocus');
 wvfVA = wvfSet(wvfVA,'zcoeff',-0.5,'vertical_astigmatism');
 
 % We need to re-compute.
-wvfVA  = wvfComputePSF(wvfVA,'lca', true);
+wvfVA  = wvfCompute(wvfVA,'human lca', true);
 
 oi = oiCompute(wvfVA,gridScene);
 oi = oiSet(oi,'name','vertical astig');
