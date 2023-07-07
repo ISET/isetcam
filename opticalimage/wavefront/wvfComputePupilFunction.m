@@ -117,11 +117,11 @@ p.parse(wvf,varargin{:});
 
 % Make sure calculation pupil size is less than or equal to the pupil
 % size that gave rise to the measured coefficients.
-pupilDiameterMM = wvfGet(wvf, 'calc pupil diameter', 'mm');
+calcPupilSizeMM = wvfGet(wvf, 'calc pupil diameter', 'mm');
 measPupilSizeMM = wvfGet(wvf, 'measured pupil diameter', 'mm');
-if (pupilDiameterMM > measPupilSizeMM)
+if (calcPupilSizeMM > measPupilSizeMM)
     error(['Calculation pupil (%.2f mm) must not exceed measurement'...
-        ' pupil (%.2f mm).'], pupilDiameterMM, measPupilSizeMM);
+        ' pupil (%.2f mm).'], calcPupilSizeMM, measPupilSizeMM);
 end
 
 %{
@@ -223,7 +223,9 @@ for ii = 1:nWavelengths
         end
     end
     % Not sure about this, but maybe.
-    aperture = imageCircular(aperture);
+    % Deleted to match untitledCorrect
+    % aperture = imageCircular(aperture);
+
     % ieNewGraphWin; imagesc(aperture); axis square
 
     % The Zernike polynomials are defined over the unit disk. At
@@ -236,7 +238,7 @@ for ii = 1:nWavelengths
     %
     % Normalized radius here.  Distance from the center divided by the
     % pupil radius.
-    norm_radius = (sqrt(xpos .^ 2 + ypos .^ 2)) / (pupilDiameterMM / 2);
+    norm_radius = (sqrt(xpos .^ 2 + ypos .^ 2)) / (measPupilSizeMM / 2);
     theta = atan2(ypos, xpos);
     % ieNewGraphWin; imagesc(norm_radius); axis square
 
@@ -245,8 +247,10 @@ for ii = 1:nWavelengths
     norm_radius_index = (norm_radius <= 1);
     % ieNewGraphWin; imagesc(norm_radius_index); axis image   
 
-    % We place the aperture function within the region defined by the
-    % valid radius. First, find the bounding box of the circle. 
+    % We resize the aperture function to fall within the region
+    % defined by the valid radius. 
+    % 
+    % First, find the bounding box of the circle.
     boundingBox = imageBoundingBox(norm_radius_index);
 
     % Resize the amplitude mask to the bounding box.
@@ -374,7 +378,8 @@ for ii = 1:nWavelengths
 
     % From wvfPupilFunction
     % Set values outside the pupil diameter to constant (1)
-    pupilfuncphase(norm_radius > 0.5) = 0;
+    pupilfuncphase(norm_radius > calcPupilSizeMM/measPupilSizeMM)=0;
+    % pupilfuncphase(norm_radius > 0.5) = 0;
 
     % Create the pupil function, combining the aperture and phase
     % functions. 
