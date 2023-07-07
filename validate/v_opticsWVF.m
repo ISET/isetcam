@@ -60,6 +60,8 @@ hold on;
 plot(uData.samp,uData.data,'gs');
 legend({'wvf','Airy','oi'});
 
+% Checksum
+assert(abs(sum(uData.data(:)) - 0.1570) < 1e-4);
 %% Get the otf data from the OI and WVF computed two ways
 
 % Compare the two OTF data sets directly.
@@ -73,6 +75,9 @@ oiOTFS = fftshift(oiOTF);
 plot(abs(oiOTFS(:)),abs(wvfOTF(:)),'.');
 identityLine;
 title('OTF: oi converted to wvf')
+
+% Checksum
+assert(abs(real(sum(oiOTFS(:)))-1.085e+03)<1e-4)
 
 %% Now, make a multispectral wvf and convert it to ISET OI format
 
@@ -127,7 +132,6 @@ gridScene = sceneSet(gridScene,'hfov',1);
 % sceneWindow(gridScene);
 
 % Create the oi
-oi = wvf2oi(wvf);
 oi = oiCompute(oi,gridScene);
 oi = oiSet(oi,'name',sprintf('oi f/# %.2f',oiGet(oi,'fnumber')));
 oiWindow(oi);
@@ -189,7 +193,7 @@ oiWindow(oi);
 
 testWave = [450,550];
 for ii = 1:numel(testWave)
-    [~, fig] = oiPlot(oi,'psf',[],testWave(ii)); 
+    oiPlot(oi,'psf',[],testWave(ii)); 
 end
 
 
