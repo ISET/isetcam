@@ -32,6 +32,31 @@
 %%
 ieInit;
 
+%%
+%% Compare wvf and standard OI versions of diffraction limited
+
+% First, calculate using the wvf code base.
+
+wvf = wvfCreate;
+thisWave = wvfGet(wvf,'wave');
+
+% Set aribtrarily
+fLengthMM = 10; fLengthM = fLengthMM*1e-3; fNumber = 3;
+pupilMM = fLengthMM/fNumber;
+wvf = wvfSet(wvf,'focal length',fLengthM);
+wvf  = wvfCompute(wvf,'lca', false);
+
+pRange = 10;  % Microns
+wvfPlot(wvf,'2d psf space','um',thisWave,pRange,'airy disk',true);
+title(sprintf('Calculated pupil diameter %.1f mm',pupilMM));
+
+%{
+% Planning for asserts
+pupilf = wvfGet(wvf,'pupil function');
+ieNewGraphWin; imagesc(abs(pupilf));
+ieNewGraphWin; imagesc(angle(pupilf));
+%}
+
 %% Compare wvf and standard OI versions of diffraction limited
 
 % First, calculate using the wvf code base.
