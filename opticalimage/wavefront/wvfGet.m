@@ -958,21 +958,16 @@ switch (parm)
         % Return the otf from the psf.  Until July, 2023 we computed the
         % OTF from the PsfToOtf function in Psychtoolbox.
         %
-        % But the pupilfunction is the OTF for the shift-invariant wvf
-        % model.  So I believe we should be returning the pupilfunction
-        % directly.
-        %
-        
+        % What are the spatial units? cyc/mm?
+
         wave = wvfGet(wvf, 'calc wave');
         if ~isempty(varargin), wave = varargin{1}; end
         if (length(wave) > 1)
-            error('Getting otf only works if ask for a single wavelength');
+            error('otf requires a single wavelength');
         end
         psf = wvfGet(wvf, 'psf', wave);
         
         % Compute OTF.
-        %
-        % BW:  Why isn't the OTF the same as the (complex) pupil function?
         %
         % Use PTB PsfToOtf to convert to (0,0) sf at center otf
         % representation.  This differs from the ISETCam optics structure
@@ -1010,7 +1005,19 @@ switch (parm)
         dx = samp(2) - samp(1);
         nyquistF = 1 / (2 * dx);   % Line pairs (cycles) per unit space
         val = unitFrequencyList(nSamp) * nyquistF;
-        
+
+    case {'otfandsupport'}
+        % val = wvfGet(wvf,'otf and support',unit,wave);
+        %
+        % For plotting it is convenient to get both the OTF and its
+        % frequency support
+        unit = 'mm';
+        wave = wvfGet(wvf, 'calc wave');
+        if ~isempty(varargin), unit = varargin{1}; end
+        if length(varargin) > 1, wave = varargin{2}; end
+        val.data = wvfGet(wvf,'otf',wave);
+        val.samp = wvfGet(wvf,'otfsupport',unit,wave);
+
     case {'lsf'}
         % wave = wvfGet(wvf, 'calc wave');
         % lsf = wvfGet(wvf, 'lsf', unit, wave); ieNewGraphWin; plot(lsf)

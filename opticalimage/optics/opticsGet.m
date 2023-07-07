@@ -386,8 +386,11 @@ switch parm
         val = -(opticsGet(optics,'focal Plane Distance',sDist))/sDist;
         
     case {'otf','otfdata','optical transfer function'}
+        %
+        % Shift invariant:  opticsGet(optics,'otf', wave)
+        % Diff limited:  otf = opticsGet(optics,'otf data',oi, fSupport, [wave]);
+        %
         % You can ask for a particular wavelength with the syntax
-        %    opticsGet(optics,'otfData',oi, spatialUnits, wave)
         %
         % OTF values can be complex. They are related to the PSF data by
         %    OTF(:,:,wave) = fft2(psf(:,:,wave))
@@ -458,7 +461,22 @@ switch parm
             otherwise
                 error('OTFData not implemented for %s model',opticsModel);
         end
+    case {'otfandsupport'}
+        % opticsGet(optics,'otf and support',thisWave);
+        % Units are cycles/mm of optics support
         
+        if ~isempty(varargin), thisWave = varargin{1};
+        else, thisWave = []; end
+        otf = opticsGet(optics,'otf data',thisWave);
+        if isempty(otf), error('No OTF data'); end
+
+        % We are returned fSupport(:,:,1/2) for X and Y
+        val.fx = opticsGet(optics,'otf fx');
+        val.fy = opticsGet(optics,'otf fy');
+
+        % Transform so DC is in center
+        val.otf = fftshift(otf);
+
     case {'degreesperdistance','degperdist'}
         % opticsGet(optics,'deg per dist','mm')
         %

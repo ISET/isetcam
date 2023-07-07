@@ -1,7 +1,7 @@
 %% Comparing oi methods and wvf methods numerically
 %
 % Historically, ISET mainly used diffraction limited calculations
-% directly as a special case.  
+% directly as a special case.
 %
 % About 15 years ago, we added the ability to build general shift invariant
 % representations based on wavefront aberrations specified by Zernike
@@ -26,7 +26,7 @@
 % to produce different defocus and other wavefront aberrations.
 %
 % See also
-%   
+%
 
 %%
 ieInit;
@@ -35,20 +35,12 @@ ieInit;
 
 % First, calculate using the wvf code base.
 
-wvf = wvfCreate;    % Default wavefront 5.67 fnumber
+wvf = wvfCreate;
+thisWave = wvfGet(wvf,'wave');
 
-% Adjust for testing general case.  At the moment, it only works well with
-% the human parameters.
-fLengthMM = 17; fLengthM = fLengthMM*1e-3; fNumber = 3; 
+% Set aribtrarily
+fLengthMM = 10; fLengthM = fLengthMM*1e-3; fNumber = 3;
 pupilMM = fLengthMM/fNumber;
-
-thisWave = 550;
-wvf = wvfSet(wvf,'measured wave',thisWave);
-wvf = wvfSet(wvf,'calc wave',thisWave);
-
-wvf = wvfSet(wvf,'calc pupil diameter',pupilMM);
-wvf = wvfSet(wvf,'measured pupil diameter',pupilMM);
-
 wvf = wvfSet(wvf,'focal length',fLengthM);
 wvf  = wvfComputePSF(wvf,'lca', false);
 
@@ -56,109 +48,92 @@ pRange = 10;  % Microns
 wvfPlot(wvf,'2d psf space','um',thisWave,pRange,'airy disk',true);
 title(sprintf('Calculated pupil diameter %.1f mm',pupilMM));
 
-%% Now, create the same model using the diffraction limited ISET code
+%% Compare wvf and oi methods directly
 
-% Compare wvf and oi methods directly
 wvfData = wvfPlot(wvf,'psf xaxis','um',thisWave,10);
-hold on;
 
-%% Convert to OI and plot the same slice. 
+% Convert to OI and plot the same slice.
 % except for a small scale factor.  Which I don't understand
 oi = wvf2oi(wvf);
 uData = oiGet(oi,'optics psf xaxis');
-plot(uData.samp,uData.data,'go');
-legend({'wvf','oi'});
+hold on;
+plot(uData.samp,uData.data,'gs');
+legend({'wvf','Airy','oi'});
 
 %% Get the otf data from the OI and WVF computed two ways
 
 % Compare the two OTF data sets directly.
-oi = wvf2oi(wvf);
-oiData = oiPlot(oi,'otf',[],thisWave);
-wvData = wvfPlot(wvf,'otf','mm',thisWave);
+wvfOTF = wvfGet(wvf,'otf');
+oiOTF  = oiGet(oi,'optics otf');
 
-% Remember that the DC position must account for whether the
-% length of fx is even or odd
+% You must use fftshift, not ifftshift, to convert OI OTF data to
+% match the WVF data.
 ieNewGraphWin;
-if isodd(length(wvData.fx)), wvMid = floor(length(wvData.fx)/2) + 1;
-else,                 wvMid = length(wvData.fx)/2 + 1;
-end
-plot(wvData.fx, wvData.otf(:,wvMid),'r-'); hold on;
+oiOTFS = fftshift(oiOTF);
+plot(abs(oiOTFS(:)),abs(wvfOTF(:)),'.');
+identityLine;
+title('OTF: oi converted to wvf')
 
-if isodd(length(oiData.fx)), oiMid = floor(length(oiData.fx)/2) + 1;
-else,          oiMid = length(oiData.fx)/2 + 1;
-end
-plot(oiData.fx, abs(oiData.otf(:,oiMid)),'bo')
-legend({'wvf','oi'})
-grid on; xlabel('Frequency'); ylabel('Amplitude');
+%% Now, make a multispectral wvf and convert it to ISET OI format
 
-%% Now, make a multispectral wvf (wvfP) and convert it to ISET OI format
-
-% Create the wvf parameter structure with the appropriate values
-wave = (400:50:700);
+wave = linspace(400,700,4);
 pupilMM = 3;   % Could be 6, 4.5, or 3
 fLengthM = 17e-3;
 
+% Create the multispectral wvf
 wvf  = wvfCreate('wave',wave,'name',sprintf('%dmm-pupil',pupilMM));
 wvf  = wvfSet(wvf,'calc pupil diameter',pupilMM);
 wvf  = wvfSet(wvf,'focal length',fLengthM);  % 17 mm focal length for deg per mm
 
-wvf  = wvfComputePSF(wvf,'lca',false);
+% Calculate without human LCA
+wvf  = wvfComputePSF(wvf,'lca',false,'force',true);
 
-% Convert it to OI format
+% Convert wvf to OI format
 oi = wvf2oi(wvf);
 
-%% Compare the OTFs
-thisWave = 550;
-oiData = oiPlot(oi,'otf',[],thisWave);
-wvData = wvfPlot(wvf,'2D otf','mm',thisWave);
+%% Plot the wavelength dependent OTFs
 
 ieNewGraphWin;
-if isodd(length(wvData.fx)), wvMid = floor(length(wvData.fx)/2) + 1;
-else,                 wvMid = length(wvData.fx)/2 + 1;
+tiledlayout(2,2);
+for ii=1:numel(wave)
+    thisWave = wave(ii);
+
+    oiOTF = oiGet(oi,'optics otf and support',thisWave);
+    wvOTF = wvfGet(wvf,'otf and support','mm',thisWave);
+    nexttile;
+    plot(abs(oiOTF.otf(:)),abs(wvOTF.data(:)),'.');
+    title(sprintf('Wave: %d',wave(ii)));
+    identityLine; grid on;
 end
-plot(wvData.fx, wvData.otf(:,wvMid),'r-'); hold on;
 
-if isodd(length(oiData.fx)), oiMid = floor(length(oiData.fx)/2) + 1;
-else,          oiMid = length(oiData.fx)/2 + 1;
-end
-plot(oiData.fx, abs(oiData.otf(:,oiMid)),'bo');
-legend({'wvf','oi'})
-
-%% If the OTF data are basically matched
-
-% We should be able to take the wvf otf data and interpolate them onto
-% the oi otf frequency values.
-
-% There are very small differences (~0.005) at a few interpolated values
-est = interp2(wvData.fx,wvData.fy,wvData.otf,oiData.fx,oiData.fy,'cubic',0);
+%%  Show that the diffraction limited OTFs differ by wavelength
 
 ieNewGraphWin([],'wide');
-subplot(1,2,1)
-plot(abs(est(:)),abs(oiData.otf(:)),'rx')
-axis equal; xlabel('Estimated from wvf'); ylabel('Original OI')
-identityLine;
+otf = oiPlot(oi,'otf',[],wave(1),'mm','no window');
+subplot(1,2,1); mesh(otf.fx,otf.fy,abs(otf.otf));
+title(sprintf('Wave: %d',wave(1)));
+otf = oiPlot(oi,'otf',[],wave(end),'mm','no window');
+subplot(1,2,2); mesh(otf.fx,otf.fy,abs(otf.otf));
+title(sprintf('Wave: %d',wave(end)));
 
-% Some issue because of complex numbers.
-% Nearly perfect.  Even though the PSFs are not perfect.  Should try
-% to understand why.
-%
-subplot(1,2,2)
-histogram(abs(est(:)) - abs(oiData.otf(:)),100)
+%% Compute with the oi and the wvf
 
-%% Compute with the oi and a scene, and then try wvfApply
+% I used this for a while, too.  It was fine.
+% radialScene = sceneCreate('radial lines');
+% radialScene = sceneSet(radialScene,'hfov',2);
 
-radialScene = sceneCreate('radial lines');
-radialScene = sceneSet(radialScene,'hfov',2);
-% sceneWindow(radialScene);
+gridScene = sceneCreate('grid lines',384,128);
+gridScene = sceneSet(gridScene,'hfov',1);
+% sceneWindow(gridScene);
 
 % Create the oi
 oi = wvf2oi(wvf);
-oi = oiCompute(oi,radialScene);
+oi = oiCompute(oi,gridScene);
 oi = oiSet(oi,'name',sprintf('oi f/# %.2f',oiGet(oi,'fnumber')));
 oiWindow(oi);
 
 % This is the oi computed directly with the wvfP using wvfApply
-oiWVF = wvfApply(radialScene,wvf,'lca',false);
+oiWVF = wvfApply(gridScene,wvf,'lca',false);
 oiWindow(oiWVF);
 
 % Compare the photons
@@ -169,7 +144,7 @@ ieNewGraphWin;
 plot(photons1(:),photons2(:),'.');
 identityLine; grid on; xlabel('oiCompute'); ylabel('wvfApply');
 
-%% Finally, show off with setting a defocus on the wvf structure
+%% Setting a defocus on the wvf structure
 
 defocus = 1;  % Diopters
 wvfD = wvfSet(wvf,'zcoeff',defocus,'defocus');
@@ -181,38 +156,40 @@ title(sprintf('Defocus %.1f D',defocus));
 
 %% Convert to an OI and render
 
-oiD = wvf2oi(wvfD);
-oiD = oiCompute(oiD,radialScene);
+oiD = oiCompute(wvfD,gridScene);
 oiD = oiSet(oiD,'name',sprintf('oiCompute Defocus %.1f no LCA',defocus));
 oiWindow(oiD);
 
 %% Compare with wvfApply
-
+%{
 oiWVFD = wvfApply(radialScene,wvfD);
 oiWVFD = oiSet(oiWVFD,'name',sprintf('wvfApply Defocus %.1f no LCA',defocus));
 
 oiWindow(oiWVFD);
+%}
 
-%% Now include human longitudinal chromatic aberration
+%% Now recompute and include human longitudinal chromatic aberration
 
 wvfDCA = wvfComputePSF(wvfD,'lca',true,'force',true);
-oiDCA = oiCompute(wvf2oi(wvfDCA),radialScene);
+oiDCA = oiCompute(wvfDCA,gridScene);
 oiDCA = oiSet(oiDCA,'name','Defocus and LCA');
 oiWindow(oiDCA);
 
-%% Now add some astigmatism, leave the LCA on
+%% Add some astigmatism, still include the human LCA
 
-wvfVA = wvfSet(wvf,'zcoeff',0.3,'defocus');
-wvfVA = wvfSet(wvfVA,'zcoeff',-1,'vertical_astigmatism');
+wvfVA = wvfSet(wvf,'zcoeff',0.5,'defocus');
+wvfVA = wvfSet(wvfVA,'zcoeff',-0.5,'vertical_astigmatism');
 
-% We need to compute.
+% We need to re-compute.
 wvfVA  = wvfComputePSF(wvfVA,'lca', true);
 
-oi = oiCompute(wvfVA,radialScene); oiWindow(oi);
+oi = oiCompute(wvfVA,gridScene);
+oi = oiSet(oi,'name','vertical astig');
+oiWindow(oi);
 
 testWave = [450,550];
 for ii = 1:numel(testWave)
-    [~, fig] = oiPlot(oi,'psf',[],testWave(ii)); psfPlotrange(fig,oi);
+    [~, fig] = oiPlot(oi,'psf',[],testWave(ii)); 
 end
 
 
