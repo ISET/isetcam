@@ -35,6 +35,9 @@ for ii=1:numel(fNumber)
     wvfPlot(wvf,'psf xaxis','um',thisWave,10,'no window');
 end
 
+% Checksum test
+uData = wvfPlot(wvf,'psf xaxis','um',thisWave,10,'no window');
+assert(abs(sum(uData.psf(:)) - 0.0449) < 1e-4);
 
 %% Conversion to OI preserves the PSF and AD
 
@@ -51,6 +54,9 @@ hold on;
 oi = wvf2oi(wvf);
 uData = oiGet(oi,'optics psf xaxis');
 plot(uData.samp,uData.data,'go');
+
+% Checksum
+assert(abs(sum(uData.data(:)) - 0.1570) < 1e-4);
 
 %% We can also show the scatter plot between wvf and oi data
 
