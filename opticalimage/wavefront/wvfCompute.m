@@ -48,7 +48,7 @@ p.addParameter('computepsf',true,@islogical);
 
 p.addParameter('humanlca',false,@islogical);   % Apply longitudinal chromatic aberration
 p.addParameter('lcafunction',[],@ismatrix);
-p.addParameter('aperturefunction',[],@ismatrix);
+p.addParameter('aperture',[],@ismatrix);
 p.addParameter('computesce',false,@islogical);   % Apply Stiles Crawford effect to aperture function
 
 p.parse(wvf,varargin{:});
@@ -65,7 +65,7 @@ if params.computepupilfunction
     % TODO:  Merge wvfPupilFunction into wvfComputePupilFunction    
     wvf  = wvfComputePupilFunction(wvf,...
         'human lca',        params.humanlca, ...
-        'aperture function',params.aperturefunction, ...
+        'aperture',         params.aperture, ...
         'compute sce',      params.computesce, ...
         'lca function',     params.lcafunction);
 else

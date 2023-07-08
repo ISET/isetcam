@@ -49,7 +49,7 @@ function wvf = wvfComputePupilFunction(wvf, varargin)
 %                   Default: False
 %      lcafunction - Use this vector as the longitudinal chromatic
 %                    aberration in diopters
-%      aperture function - A matrix for the aperture function
+%      aperture    - A matrix for the aperture function
 %      computesce  - Apply the Stiles Crawford affect to the aperture
 %                    function
 %
@@ -106,7 +106,7 @@ p.addRequired('wvf',@isstruct);
 
 p.addParameter('humanlca',false,@islogical);   % Apply longitudinal chromatic aberration
 p.addParameter('lcafunction',[],@ismatrix);
-p.addParameter('aperturefunction',[],@ismatrix);
+p.addParameter('aperture',[],@ismatrix);
 p.addParameter('computesce',false,@islogical);   % Apply Stiles Crawford effect to aperture function
 
 varargin = wvfKeySynonyms(varargin);
@@ -210,22 +210,19 @@ for ii = 1:nWavelengths
     %
     % In the original code, only the Stiles Crawford Effect (SCE) was
     % implemented.
-    if isempty(p.Results.aperturefunction)
+    if isempty(p.Results.aperture)
         % Assume the aperture is all 1's.
         aperture = ones(nPixels, nPixels);
+        aperture = imageCircular(aperture);
     else
         % Use the passed in aperture function. Make sure its size
         % matches nPixels but also covers only the pupil diameter.
-        aperture = p.Results.aperturefunction;
+        aperture = p.Results.aperture;
         if ~isequal(size(aperture),[nPixels,nPixels])
             warning('Adjusting aperture function size.');
             aperture = imresize(aperture,[nPixels,nPixels]);
         end
     end
-    % Not sure about this, but maybe.
-    % Deleted to match untitledCorrect
-    % aperture = imageCircular(aperture);
-
     % ieNewGraphWin; imagesc(aperture); axis square
 
     % The Zernike polynomials are defined over the unit disk. At
@@ -245,25 +242,36 @@ for ii = 1:nWavelengths
     % Only values that are within the unit circle are valid for the
     % Zernike polynomial.
     norm_radius_index = (norm_radius <= 1);
-    % ieNewGraphWin; imagesc(norm_radius_index); axis image   
+    % ieNewGraphWin; imagesc(pupilPos,pupilPos,norm_radius_index); axis image   
 
     % We resize the aperture function to fall within the region
     % defined by the valid radius. 
     % 
-    % First, find the bounding box of the circle.
+    % We want the bounding box of the true pupil.  This is the
+    % bounding box for the measured pupil size.  So, let's fix this
+    % tonight.  BW. July 7, 2023.
     boundingBox = imageBoundingBox(norm_radius_index);
 
     % Resize the amplitude mask to the bounding box.
-    aperture = imresize(aperture,[boundingBox(3),boundingBox(4)]);
+    aperture = imresize(aperture,[boundingBox(3),boundingBox(4)],'nearest');
    
     % Extend with zeros to match the nPixels pupil size
     sz = round((nPixels - boundingBox(3))/2);
     aperture = padarray(aperture,[sz,sz],0,'both');    
-    aperture = imresize(aperture,[nPixels,nPixels]);
+    aperture = imresize(aperture,[nPixels,nPixels],'nearest');
+    % ieNewGraphWin; imagesc(pupilPos,pupilPos,aperture); axis image    
 
     % Keep the amplitude within bounds in case imresize did something.
-    aperture(aperture > 1) = 1;
-    aperture(aperture < 0) = 0;
+    % If there are no observed warnings after July 14, delete this
+    % section of code.
+    if max(aperture(:)) > 1
+        fprintf('Max aperture: %f\n',max(aperture(:)));
+        aperture(aperture > 1) = 1; 
+    end
+    if min(aperture(:)) < 0
+        fprintf('Min aperture: %f\n',min(aperture(:)));
+        aperture(aperture < 0) = 0;
+    end
     % ieNewGraphWin; imagesc(pupilPos,pupilPos,aperture); axis image    
     
     if p.Results.computesce
@@ -336,16 +344,6 @@ for ii = 1:nWavelengths
     if (length(c) < 5)
         c(length(c) + 1:5) = 0;
     end
-
-    %{ 
-    % Add in specific defocus. The original code separated defocus
-    % from measured and calculated. correction for this code.  It did
-    % not seem relevant to us, so I simplified it away.  If you would
-    % like to change the defocus use
-    % wvfSet(wvf,'zcoef',val,{'defocus'});
-    %
-    c(5) = c(5) + lcaMicrons + defocusCorrectionMicrons;
-    %}
     c(5) = c(5) + lcaMicrons;
 
     % This loop uses the zernfun() to compute the Zernike polynomial of
@@ -372,21 +370,30 @@ for ii = 1:nWavelengths
     wavefrontaberrations{ii} = wavefrontAberrationsUM;
     pupilfuncphase = exp(-1i * 2 * pi * wavefrontAberrationsUM / waveUM(ii));
 
-    % Old code.  Not sure when this worked.  Maybe just for circular?
-    % Set values outside the pupil diameter to 0 amplitude
-    % pupilfuncphase(norm_radius > pupilDiameterMM/measPupilSizeMM)=0;
-
-    % From wvfPupilFunction
-    % Set values outside the pupil diameter to constant (1)
+    % Set values outside the calc pupil diameter to zero.
+    %
+    % Conceptually, the aperture function should do this job, we
+    % should not do it this way. Using the aperture is better
+    % because this imposes an implicit circular aperture. 
+    % 
+    % I need to fix this soon (July 7, 2023).  Leaving it here for
+    % just now. Until it is fixed, circular apertures seem to work but
+    % flare does not work correctly. (BW).
     pupilfuncphase(norm_radius > calcPupilSizeMM/measPupilSizeMM)=0;
-    % pupilfuncphase(norm_radius > 0.5) = 0;
 
-    % Create the pupil function, combining the aperture and phase
+    % Create the pupil function, combining the aperture and pupil phase
     % functions. 
     pupilfunc{ii} = aperture .* pupilfuncphase;
-    % ieNewGraphWin; imagesc(angle(pupilfunc{ii})); axis image
-    % ieNewGraphWin; imagesc(abs(pupilfunc{ii})); axis image;
-
+    %{
+     ieNewGraphWin; imagesc(pupilPos,pupilPos,aperture); axis image
+     ieNewGraphWin; imagesc(pupilPos,pupilPos,angle(pupilfuncphase)); axis image
+     ieNewGraphWin; imagesc(pupilPos,pupilPos,abs(pupilfuncphase)); axis image
+    %}
+    %{
+     ieNewGraphWin; imagesc(pupilPos,pupilPos,abs(pupilfunc{ii})); axis image
+     ieNewGraphWin; imagesc(pupilPos,pupilPos,angle(pupilfunc{ii})); axis image
+    %}
+    
     % These are special parameters Heidi Hofer calculated.  We do not
     % use them yet in ISETCam because, well, we don't really
     % understand them.

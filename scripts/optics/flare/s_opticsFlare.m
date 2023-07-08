@@ -20,13 +20,13 @@ wvf = wvfSet(wvf,'focal length',flengthM);
 % There are many parameters for this function, including dot mean, line
 % mean, dot sd, line sd, line opacity.  They are returned in params
 nsides = 3;
-apertureFunction = wvfAperture(wvf,'nsides',nsides,...
+aperture = wvfAperture(wvf,'nsides',nsides,...
     'dot mean',20, 'dot sd',3, 'dot opacity',0.5, ...
     'line mean',20, 'line sd', 2, 'line opacity',0.5);
-% ieNewGraphWin; imagesc(apertureFunction); axis image;
+% ieNewGraphWin; imagesc(aperture); axis image;
 
 % This does not yet work.
-wvf = wvfCompute(wvf,'aperture function',apertureFunction);
+wvf = wvfCompute(wvf,'aperture',aperture);
 %{
 % This works
 wvf = wvfPupilFunction(wvf,'aperture function',apertureFunction);
@@ -98,16 +98,16 @@ oiSet(oi,'gamma',1); drawnow;
 scenePoint = sceneSet(scenePoint,'fov',1);
 
 nsides = 3;
-apertureFunction = wvfAperture(wvf,'nsides',nsides,...
+aperture = wvfAperture(wvf,'nsides',nsides,...
     'dot mean',20, 'dot sd',3, 'dot opacity',0.5, ...
     'line mean',20, 'line sd', 2, 'line opacity',0.5);
 
 % Pupil and PSF
-wvf = wvfCompute(wvf,'aperture function',apertureFunction);
+wvf = wvfCompute(wvf,'aperture function',aperture);
 wvfPlot(wvf,'psf','um',550,20,'airy disk');
 
 % {
-wvf2 = wvfPupilFunction(wvf,'aperture function',apertureFunction);
+wvf2 = wvfPupilFunction(wvf,'aperture function',aperture);
 wvf2 = wvfComputePSF(wvf2,'compute pupil func',false);  % force as false is important
 %}
 
@@ -141,11 +141,11 @@ wvf = wvfSet(wvf,'zcoeffs',1,{'defocus'});
 % There are many parameters for this function, including dot mean, line
 % mean, dot sd, line sd, line opacity.  They are returned in params
 nsides = 3;
-[apertureFunction, params] = wvfAperture(wvf,'nsides',nsides,...
+[aperture, params] = wvfAperture(wvf,'nsides',nsides,...
     'dot mean',20, 'dot sd',3, 'dot opacity',0.5, ...
     'line mean',20, 'line sd', 2, 'line opacity',0.5);
 
-wvf = wvfPupilFunction(wvf,'aperture function',apertureFunction);
+wvf = wvfPupilFunction(wvf,'aperture function',aperture);
 wvf = wvfComputePSF(wvf,'compute pupil func',false);  % force as false is important
 wvfPlot(wvf,'psf','um',550,20,'airy disk');
 
