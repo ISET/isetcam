@@ -18,7 +18,7 @@ thisWave = wvfGet(wvf,'wave');
 fNumber = 4; flengthM = 7e-3; flengthMM = flengthM*1e3;
 wvf = wvfSet(wvf,'calc pupil diameter',flengthMM/fNumber);
 wvf = wvfSet(wvf,'focal length',flengthM);
-wvf = wvfComputePSF(wvf);
+wvf = wvfCompute(wvf);
 
 wvfPlot(wvf,'2d psf space','um',thisWave,10,'airy disk');
 fprintf('Npix %d delta Arcmin %.5f\n',wvfGet(wvf,'npixels'), wvfGet(wvf,'psf sample spacing'));
@@ -29,7 +29,7 @@ fprintf('um per deg %f\n',wvfGet(wvf,'um per degree'));
 nPixels0 = wvfGet(wvf,'npixels');
 
 wvf = wvfSet(wvf,'npixels',round(nPixels0/4));
-wvf = wvfComputePSF(wvf);
+wvf = wvfCompute(wvf);
 wvfPlot(wvf,'2d psf space','um',thisWave,10,'airy disk');
 wvfGet(wvf,'npixels')
 wvfGet(wvf,'psf sample spacing')  % Arcmin
@@ -47,7 +47,7 @@ refPupil0 = wvfGet(wvf,'pupil plane size','mm');
 
 % Multiply by 4
 wvf = wvfSet(wvf,'pupil plane size',refPupil0*4,'mm');
-wvf = wvfComputePSF(wvf);
+wvf = wvfCompute(wvf);
 wvfPlot(wvf,'2d psf space','um',thisWave,10,'airy disk');
 
 fprintf('Npix %d delta Arcmin %.5f\n',wvfGet(wvf,'npixels'), wvfGet(wvf,'psf sample spacing'));
@@ -55,7 +55,7 @@ fprintf('um per deg %f\n',wvfGet(wvf,'um per degree'));
 
 % Divide by 4
 wvf = wvfSet(wvf,'pupil plane size',refPupil0/4,'mm');
-wvf = wvfComputePSF(wvf);
+wvf = wvfCompute(wvf);
 wvfPlot(wvf,'2d psf space','um',thisWave,10,'airy disk');
 
 fprintf('Npix %d delta Arcmin %.5f\n',wvfGet(wvf,'npixels'), wvfGet(wvf,'psf sample spacing'));
@@ -67,12 +67,12 @@ wvf = wvfSet(wvf,'pupil plane size',refPupil0);
 %% Change the focal length also changes the umperdegree spacing
 
 wvf = wvfSet(wvf,'focal length',flengthM/2);
-wvf = wvfComputePSF(wvf);
+wvf = wvfCompute(wvf);
 wvfPlot(wvf,'2d psf space','um',thisWave,20,'airy disk');
 fprintf('Npix %d delta Arcmin %.5f\n',wvfGet(wvf,'npixels'), wvfGet(wvf,'psf sample spacing'));
 
 wvf = wvfSet(wvf,'focal length',flengthM*2);
-wvf = wvfComputePSF(wvf);
+wvf = wvfCompute(wvf);
 wvfPlot(wvf,'2d psf space','um',thisWave,20,'airy disk');
 fprintf('Npix %d delta Arcmin %.5f\n',wvfGet(wvf,'npixels'), wvfGet(wvf,'psf sample spacing'));
 fprintf('um per deg %f\n',wvfGet(wvf,'um per degree'));
@@ -84,7 +84,7 @@ for ff = fl
     wvf = wvfSet(wvf,'focal length',ff);
     oiD = wvf2oi(wvf);
 
-    wvf = wvfComputePSF(wvf,'force',true,'lca',false);
+    wvf = wvfCompute(wvf);
     oiPlot(oiD,'psf xaxis',[],thisWave,'um'); 
     hold on;
     wvfPlot(wvf,'psf xaxis','um',thisWave,20,'no window');
@@ -133,7 +133,7 @@ mesh(Fx,Fy,abs(otf));
 %% Pupil aperture and phase functions
 
 wvf = wvfCreate;
-wvf = wvfComputePSF(wvf);
+wvf = wvfCompute(wvf);
 
 pupilPhase = wvfGet(wvf,'pupil function phase');
 apertureFunction = wvfGet(wvf,'pupil function amplitude');
@@ -146,7 +146,7 @@ subplot(1,2,2), imagesc(pupilPhase); axis image
 wave = 400:50:700;
 wvf = wvfCreate('wave',wave);
 wvf = wvfSet(wvf,'zcoeff',1,{'defocus'});
-wvf = wvfComputePSF(wvf);
+wvf = wvfCompute(wvf);
 
 thisWave = [400,500,600];
 ieNewGraphWin; colormap("jet");

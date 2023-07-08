@@ -599,8 +599,9 @@ switch pType
         colormap(jet(64))
         
     case {'psf'}
+        % oiPlot(oi,'psf',[],wave);
         % Point spread function at selected wavelength
-        % oiPlot(oi,'psf',[],420);
+        %
         if isempty(varargin), udata = plotOTF(oi,'psf', 'airy disk', true);
         else, w = varargin{1}; 
             idx = find(strcmp('airydisk',varargin));
@@ -608,11 +609,12 @@ switch pType
             else, airydisk = true;
             end
             udata = plotOTF(oi,'psf', 'this wave', w,'airy disk', airydisk);
+            udata.wave = w;
         end
         set(g,'userdata',udata);
         namestr = sprintf('ISET: %s',oiGet(oi,'name'));
         set(g,'Name',namestr);
-        colormap(jet(64))
+        colormap(jet(128))
         
     case {'psfxaxis'}
         % oiPlot(oi,'psf xaxis',[],[wave=550],[units='um']);
