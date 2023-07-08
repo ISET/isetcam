@@ -1,4 +1,6 @@
 function wvf = wvfPupilFunction(wvf, varargin)
+% Deprecated:  We now use wvfCompute() which calls wvfComputePupilFunction
+% 
 % Compute the pupil fuction from the wvf parameters
 %
 % Syntax:
@@ -146,7 +148,7 @@ for ii = 1:nWavelengths
     % ieNewGraphWin; imagesc(norm_radius_index); axis image   
 
     % We place the amplitude function within the region defined by the
-    % valid radius.  
+    % calculated pupil radius.  
     % 
     % Find the bounding box of the circle. 
     boundingBox = imageBoundingBox(norm_radius_index);

@@ -1,5 +1,5 @@
-function boundingBox = ieBoundingBox(image)
-% Bounding box of a cirle
+function boundingBox = imageBoundingBox(image)
+% Bounding box of an image.
 %
 % Synopsis
 %
@@ -8,16 +8,16 @@ function boundingBox = ieBoundingBox(image)
 
 % Examples:
 %{
-image = zeros(100);
-centerX = 50;
-centerY = 50;
-radius = 30;
+% Build an image
+image = zeros(101);
+centerX = 50; centerY = 50; radius = 35;
 [X, Y] = meshgrid(1:size(image, 2), 1:size(image, 1));
 circle = ((X - centerX).^2 + (Y - centerY).^2) <= radius^2;
 image(circle) = 1;
 
-% Calculate the square bounding box
-boundingBox = ieBoundingBox(image);
+% Calculate the bounding box
+boundingBox = imageBoundingBox(image);
+boundingBox(3)/2 - radius
 %}
 
     % Find the indices of non-zero elements (1s) in the image

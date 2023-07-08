@@ -127,15 +127,15 @@ wvfPlot(wvf,'2d psf space','um',thisWave,20,'airy disk');
 
 %% Loop on focal length a bit
 
-fl = linspace(5,20,4)*1e-3;
+fl = linspace(3,20,6)*1e-3;
 for ff = fl
     wvf = wvfSet(wvf,'focal length',ff);
     wvf = wvfCompute(wvf);
         
-    wvfPlot(wvf,'2d psf space','um',thisWave,20,'airy disk');
+    % wvfPlot(wvf,'2d psf space','um',thisWave,20,'airy disk');
 
     oiD = wvf2oi(wvf);
-    [~, fig] = oiPlot(oiD,'psf',[],thisWave); psfPlotrange(fig,oiD);
+    % [~, fig] = oiPlot(oiD,'psf',[],thisWave); psfPlotrange(fig,oiD);
     
     oiPlot(oiD,'psf xaxis',thisWave);
 end

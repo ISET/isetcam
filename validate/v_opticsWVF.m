@@ -61,7 +61,7 @@ plot(uData.samp,uData.data,'gs');
 legend({'wvf','Airy','oi'});
 
 % Checksum
-assert(abs(sum(uData.data(:)) - 0.1570) < 1e-4);
+assert(abs(sum(uData.data(:)) - 0.1555) < 1e-4);
 %% Get the otf data from the OI and WVF computed two ways
 
 % Compare the two OTF data sets directly.
@@ -77,7 +77,7 @@ identityLine;
 title('OTF: oi converted to wvf')
 
 % Checksum
-assert(abs(real(sum(oiOTFS(:)))-1.085e+03)<1e-4)
+assert(abs(real(sum(oiOTFS(:)))-1.0490e+03)<1e-4)
 
 %% Now, make a multispectral wvf and convert it to ISET OI format
 
@@ -123,10 +123,6 @@ title(sprintf('Wave: %d',wave(end)));
 
 %% Compute with the oi and the wvf
 
-% I used this for a while, too.  It was fine.
-% radialScene = sceneCreate('radial lines');
-% radialScene = sceneSet(radialScene,'hfov',2);
-
 gridScene = sceneCreate('grid lines',384,128);
 gridScene = sceneSet(gridScene,'hfov',1);
 % sceneWindow(gridScene);
@@ -163,14 +159,6 @@ title(sprintf('Defocus %.1f D',defocus));
 oiD = oiCompute(wvfD,gridScene);
 oiD = oiSet(oiD,'name',sprintf('oiCompute Defocus %.1f no LCA',defocus));
 oiWindow(oiD);
-
-%% Compare with wvfApply
-%{
-oiWVFD = wvfApply(radialScene,wvfD);
-oiWVFD = oiSet(oiWVFD,'name',sprintf('wvfApply Defocus %.1f no LCA',defocus));
-
-oiWindow(oiWVFD);
-%}
 
 %% Now recompute and include human longitudinal chromatic aberration
 
