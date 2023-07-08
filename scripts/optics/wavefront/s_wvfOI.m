@@ -28,7 +28,7 @@ for ii=1:numel(fNumber)
     wvf = wvfSet(wvf,'calc pupil diameter',flengthMM/fNumber(ii));
     wvf = wvfSet(wvf,'focal length',flengthM);
 
-    wvf = wvfComputePSF(wvf,'lca',false,'force',true);
+    wvf = wvfCompute(wvf);
 
     % Slice through the psf
     nexttile;
@@ -44,7 +44,7 @@ assert(abs(sum(uData.psf(:)) - 0.0449) < 1e-4);
 wvf = wvfCreate; 
 
 % Recompute the pupil function
-wvf = wvfComputePSF(wvf,'lca',false,'force',true);
+wvf = wvfCompute(wvf);
 
 % Plot a slice through the psf
 wvfData = wvfPlot(wvf,'psf xaxis','um',thisWave,10);
@@ -98,7 +98,7 @@ flengthMM = 17; flengthM = flengthMM*1e-3; fNumber = 5.7;
 wvf = wvfSet(wvf,'calc pupil diameter',flengthMM/fNumber);
 wvf = wvfSet(wvf,'focal length',flengthM);
 
-wvf = wvfComputePSF(wvf,'lca',true,'force',true);
+wvf = wvfCompute(wvf);
 oi = wvf2oi(wvf);
 
 ieNewGraphWin([],'upper left big');
@@ -121,7 +121,7 @@ flengthMM = 17; flengthM = flengthMM*1e-3; fNumber = 5.7;
 wvf = wvfSet(wvf,'calc pupil diameter',flengthMM/fNumber);
 wvf = wvfSet(wvf,'focal length',flengthM);
 
-wvf = wvfComputePSF(wvf,'lca',false,'force',true);
+wvf = wvfCompute(wvf);
 oi = wvf2oi(wvf);
 
 ieNewGraphWin;
