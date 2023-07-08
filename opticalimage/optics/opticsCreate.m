@@ -159,30 +159,33 @@ switch lower(opticsType)
             customLCA = varargin{5};
         end
 
-        % Create wavefront parameters. Be sure to set both measured and
-        % calc pupil size.
+        % Create wavefront parameters. Set both measured and calc
+        % pupil size.
         wvfP = wvfCreate('calc wavelengths', wave, 'zcoeffs', zCoefs, ...
             'name', sprintf('human-%d', pupilDiameterMM), ...
             'umPerDegree', umPerDegree, ...
             'customLCA', customLCA);
         wvfP = wvfSet(wvfP, 'measured pupil size', pupilDiameterMM);
         wvfP = wvfSet(wvfP, 'calc pupil size', pupilDiameterMM);
+
+        % Include human chromatic aberration because this is wvf human
+        wvfP = wvfComputePupilFunction(wvfP,'lca',true);
         wvfP = wvfComputePSF(wvfP);
 
         optics = oiGet(wvf2oi(wvfP), 'optics');
         optics = opticsSet(optics, 'model', 'shift invariant');
-        optics = opticsSet(optics, 'name', 'human-wvf');
+        optics = opticsSet(optics, 'name', sprintf('wvf: %s',wvf.name));
 
-        % Convert from pupil size and focal length to f number and focal
-        % length, because that is what we can set. This implies a number of
-        % mm per degree, and we back it out the other way here so that it
-        % is all consistent.
+        % Convert from pupil size and focal length to f# and focal
+        % length, because that is what ISET sets. This implies a
+        % number of um per degree, and we back it out the other way
+        % here so that it is all consistent.
         focalLengthMM = (umPerDegree * 1e-3) / (2 * tand(0.5));
         fLengthMeters = focalLengthMM * 1e-3;
         pupilRadiusMeters = (pupilDiameterMM / 2) * 1e-3;
         optics = opticsSet(optics, 'fnumber', fLengthMeters / ...
             (2 * pupilRadiusMeters));
-        optics = opticsSet(optics, 'focalLength', fLengthMeters);
+        optics = opticsSet(optics, 'focal length', fLengthMeters);
 
         % Add default Lens by default
         optics.lens = Lens;

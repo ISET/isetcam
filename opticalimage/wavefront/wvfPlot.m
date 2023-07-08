@@ -177,7 +177,7 @@ switch(pType)
         uData.x = samp; uData.y = samp; uData.z = psf;
         set(gcf, 'userdata', uData);
         
-    case {'psf','psfspace','2dpsfspace', '2dpsfspacenormalized'}
+    case {'psf','psfmesh','psfspace','2dpsfspace', '2dpsfspacenormalized'}
         % wvfPlot(wvfP, '2d psf space', ', waveIdx, plotRangeArcMin);
         if ~isempty(varargin)
             [unit, wList, pRange] = wvfReadArg(wvfP, varargin);

@@ -372,7 +372,7 @@ switch parm
         % the adjustment here.  Another problematic interaction.  BW's
         % preference is to only allow a set of one or the other of the
         % parameters, in all of these cases.
-        wvf.focalLength = val;
+        wvf.focallength = val;
         umPerDeg = tand(1)*wvfGet(wvf,'focal length','um');
         wvf = wvfSet(wvf,'um per degree',umPerDeg);
         wvf.PUPILFUNCTION_STALE = true;

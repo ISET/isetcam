@@ -20,20 +20,20 @@ wvf = wvfSet(wvf,'focal length',flengthM);
 % There are many parameters for this function, including dot mean, line
 % mean, dot sd, line sd, line opacity.  They are returned in params
 nsides = 3;
-apertureFunction = wvfAperture(wvf,'nsides',nsides,...
+aperture = wvfAperture(wvf,'nsides',nsides,...
     'dot mean',20, 'dot sd',3, 'dot opacity',0.5, ...
     'line mean',20, 'line sd', 2, 'line opacity',0.5);
+% ieNewGraphWin; imagesc(aperture); axis image;
 
-wvf = wvfPupilFunction(wvf,'amplitude',apertureFunction);
-wvf = wvfComputePSF(wvf,'force',false);  % force as false is important
+% This does not yet work.
+wvf = wvfCompute(wvf,'aperture',aperture);
+
 wvfPlot(wvf,'psf','um',550,20,'airy disk');
 
-%{
 ieNewGraphWin([], 'wide');
 subplot(1,3,1); wvfPlot(wvf,'image pupil amp','um',550,'no window');
 subplot(1,3,2); wvfPlot(wvf,'image pupil phase','um',550,'no window');
 subplot(1,3,3); wvfPlot(wvf,'image wavefront aberrations','um',550,'no window');
-%}
 
 %% Illustrate with a point array
 
@@ -88,18 +88,21 @@ oiSet(oi,'render flag','hdr');
 oiSet(oi,'gamma',1); drawnow;
 
 %% Change the number of sides
+scenePoint = sceneSet(scenePoint,'fov',1);
+
 nsides = 5;
-apertureFunction = wvfAperture(wvf,'nsides',nsides,...
+aperture = wvfAperture(wvf,'nsides',nsides,...
     'dot mean',20, 'dot sd',3, 'dot opacity',0.5, ...
     'line mean',20, 'line sd', 2, 'line opacity',0.5);
 
-wvf = wvfPupilFunction(wvf,'amplitude',apertureFunction);
-wvf = wvfComputePSF(wvf,'force',false);  % force as false is important
+% Pupil and PSF
+wvf = wvfCompute(wvf,'aperture',aperture);
 wvfPlot(wvf,'psf','um',550,20,'airy disk');
 
-scenePoint = sceneSet(scenePoint,'fov',1);
+
+%%
 oi = oiCompute(wvf,scenePoint);
-oi = oiSet(oi,'name',sprintf('wvf %d-sides',nsides));
+oi = oiSet(oi,'name',sprintf('wvf-test %d-sides',nsides));
 oi = oiCrop(oi,'border');
 oiWindow(oi); 
 oiSet(oi,'render flag','hdr'); drawnow;
@@ -121,12 +124,12 @@ wvf = wvfSet(wvf,'zcoeffs',1,{'defocus'});
 % There are many parameters for this function, including dot mean, line
 % mean, dot sd, line sd, line opacity.  They are returned in params
 nsides = 3;
-[apertureFunction, params] = wvfAperture(wvf,'nsides',nsides,...
+[aperture, params] = wvfAperture(wvf,'nsides',nsides,...
     'dot mean',20, 'dot sd',3, 'dot opacity',0.5, ...
     'line mean',20, 'line sd', 2, 'line opacity',0.5);
 
-wvf = wvfPupilFunction(wvf,'amplitude',apertureFunction);
-wvf = wvfComputePSF(wvf,'force',false);  % force as false is important
+wvf = wvfPupilFunction(wvf,'aperture function',aperture);
+wvf = wvfComputePSF(wvf,'compute pupil func',false);  % force as false is important
 wvfPlot(wvf,'psf','um',550,20,'airy disk');
 
 oi = oiCompute(wvf,sceneHDR);

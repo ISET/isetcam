@@ -5,19 +5,17 @@ function oi = wvf2oi(wvf,varargin)
 %   oi = wvf2oi(wvf)
 %
 % Description:
-%    Use Zernicke polynomial data in the wvf structure and create an
-%    optical image whose optics match the wavefront data structure.
+%    Convert a wavefront structure into an optical image whose optics match
+%    the data in wvf.
 %
-%    Before calling this function, compute the PSF of the wvf structure.
+%    Before calling this function, compute the pupil function and PSF,
+%    using wvfComputePupilFunction and wvfComputePSF.
 %
-%    Non-optics aspects of the oi structure take on default values.
+%    Non-optics aspects of the oi structure are assigned default values.
 %
 % Inputs:
-%    wvf - A wavefront parameters structure (with a computed PSF)
+%    wvf - A wavefront parameters structure (with a computed PF and PSF)
 %
-% Optional key/value pairs:
-%    model - A valid optical image model (see oiCreate('valid'))
-%               default:  'human mw'
 % Outputs:
 %    oi  - Optical image struct
 %
@@ -83,19 +81,8 @@ varargin = ieParamFormat(varargin);
 
 p = inputParser;
 p.addRequired('wvf',@isstruct);
-validNames = oiCreate('valid');
-p.addParameter('model','shiftinvariant',@(x)(ismember(ieParamFormat(x),validNames)));
 
 p.parse(wvf,varargin{:});
-
-% The wavefront model should work with shift invariant cases.  The
-% diffraction limited special case in ISETCam does not work this way.  And
-% maybe it should be eliminated.
-oiModel = ieParamFormat(p.Results.model);
-if strcmp(oiModel,'diffractionlimited')
-    warning('Changing model to shiftinvariant');
-    oiModel = 'shiftinvariant';
-end
 
 %% Collect up basic wvf parameters
 wave    = wvfGet(wvf, 'calc wave');
@@ -159,24 +146,13 @@ for ww=1:length(wave)
             'expected location']);
     end
     
-    %{
-    % BW - Edited after implementing a change to wvfGet(wvf,'otf').
-    % 
-    % The purpose was to convert otf to DC in center, so that interp will
-    % work right. No longer needed because that is how the data come from
-    the wvfGet(wvf,'otf') call.
-
-    thisOTF = fftshift(wvfGet(wvf, 'otf', wave(ww)));
-    
-    thisOTF = ifftshift(thisOTF);
-    %}
-
     % The OTF has DC in the center.
     thisOTF = wvfGet(wvf,'otf',wave(ww));
     % ieNewGraphWin; mesh(X,Y,abs(thisOTF));
 
     if (all(f == fx))
-        % Straight assignment.  No interpolation.
+        % Straight assignment.  No interpolation.  This is the usual
+        % path.
         est = thisOTF;
     else
         warning('Interpolating OTF from wvf to oi.')
@@ -189,17 +165,22 @@ for ww=1:length(wave)
     % reorganization of the data.
     otf(:, :, ww) = ifftshift(est);
 end
+
+%{
 % Stored format
-%   ieNewGraphWin; mesh(X,Y,abs(otf(:,:,ww)));
+ieNewGraphWin; mesh(X,Y,abs(otf(:,:,ww)));
 % This plots it centered.
-%   ieNewGraphWin; mesh(X,Y,abs(ifftshift(otf(:,:,ww))));
+ieNewGraphWin; mesh(X,Y,abs(ifftshift(otf(:,:,ww))));
+%}
 
 %% Set the frequency support and OTF data into the optics slot of the OI
 
-% This code works for the shiftinvariant oi model and its variants (wvf
-% human, human mw).  But it does not work with diffraction limited. So, we
-% catch that case and change it at the top of this function.
-oi = oiCreate(oiModel);
+% BW: TODO
+% This code works for the shiftinvariant oi model.  It can also work
+% with humanmw or wvfhuman, but those special cases have different
+% meaning and making it work with that meaning would take some more
+% work.
+oi = oiCreate('shiftinvariant');
 oi = oiSet(oi,'optics fnumber',fnumber);
 oi = oiSet(oi,'optics focal length',flength);
 

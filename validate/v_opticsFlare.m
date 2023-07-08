@@ -17,62 +17,38 @@ scene = sceneSet(scene,'fov',1);
 
 %% Experiment with different wavefronts
 
-thisWave = 550;
+wvf = wvfCreate;    % Default wavefront 5.67 fnumber
+pupilMM = 3; flengthM = 7e-3;
+wvf = wvfSet(wvf,'calc pupil diameter',pupilMM);
+wvf = wvfSet(wvf,'focal length',flengthM);
 
-% We can start with any Zernike coefficients
-wvf = wvfCreate;
-wvf = wvfSet(wvf,'calc pupil diameter',3);
-wvf = wvfSet(wvf,'wave',thisWave);
-wvf = wvfSet(wvf,'focal length',0.017);
-
+% Now create some flare based on the aperture, dust and scratches.
 % There are many parameters for this function, including dot mean, line
 % mean, dot sd, line sd, line opacity.  They are returned in params
 nsides = 3;
-[apertureFunction, params] = wvfAperture(wvf,'nsides',nsides,...
+aperture = wvfAperture(wvf,'nsides',nsides,...
     'dot mean',20, 'dot sd',3, 'dot opacity',0.5, ...
     'line mean',20, 'line sd', 2, 'line opacity',0.5);
-% ieNewGraphWin; imagesc(pupilAmp); colormap(gray); axis image
+% ieNewGraphWin; imagesc(aperture); axis image;
 
-% The pupil function is updated.
-wvf = wvfPupilFunction(wvf,'amplitude',apertureFunction);
+% This does not yet work.
+wvf = wvfCompute(wvf,'aperture',aperture);
 
-% We do not want the wvfComputePSF to recompute the pupil function.
-% So it is crucial to set 'force' to false, which is interpreted as
-% 'do not recompute the pupil function.'  The default pupil function
-% is false, but I include this here to explain why.
-%
-% I think the code should be refactored and 'force' should be renamed.
-% 
-wvf = wvfComputePSF(wvf,'lca',false,'force',false);
-wvfPlot(wvf,'psf','um',550,10,'airy disk');
+wvfPlot(wvf,'psf','um',550,20,'airy disk');
 
 ieNewGraphWin([], 'wide');
-subplot(1,2,1); wvfPlot(wvf,'image pupil amp','um',550,'no window');
-subplot(1,2,2); wvfPlot(wvf,'image pupil phase','um',550,'no window');
+subplot(1,3,1); wvfPlot(wvf,'image pupil amp','um',550,'no window');
+subplot(1,3,2); wvfPlot(wvf,'image pupil phase','um',550,'no window');
+subplot(1,3,3); wvfPlot(wvf,'image wavefront aberrations','um',550,'no window');
 
 %% Convert to an OI
 
-oiHuman = wvf2oi(wvf);
-[uData, fig] = oiPlot(oiHuman,'psf 550');
+oi = wvf2oi(wvf);
+[uData, fig] = oiPlot(oi,'psf 550');
 
-psfPlotrange(fig,oiHuman);
+psfPlotrange(fig,oi);
 AD = airyDisk(thisWave,wvfGet(wvf,'fnumber'),'diameter',true);
 title(sprintf("fNumber %.2f Wave %.0f Airy Diam %.2f",oiGet(oi,'optics fnumber'),thisWave,AD));
-
-%% More conversion tests
-
-% If you use 'diffraction limited' model, we force it to 'shift
-% invariant'
-
-% These are all OK.
-oiDL = wvf2oi(wvf,'model','shift invariant');
-oiPlot(oiDL,'psf 550');
-
-oiDL = wvf2oi(wvf,'model','wvf human');
-oiPlot(oiDL,'psf 550');
-
-oiDL = wvf2oi(wvf,'model','human mw');
-oiPlot(oiDL,'psf 550');
 
 %% oiCompute using the wvf
 
@@ -81,6 +57,8 @@ oi = oiCompute(wvf,scene);
 % Show the oi PSF
 oiPlot(oi,'psf550');
 set(gca,'xlim',[-10 10],'ylim',[-10 10]);
+
+%% Make an image
 
 oi = oiSet(oi,'name',sprintf('wvf-%d',nsides));
 oi = oiCrop(oi,'border');
@@ -94,12 +72,13 @@ scene = sceneSet(scene,'fov',1);
 
 oi = oiCompute(oi,scene);
 oi = oiSet(oi,'name','wvf');
+oi = oiCrop(oi,'border');
 oiWindow(oi);
 oiSet(oi,'gamma',0.5); drawnow;
 
 %% The same scene through Zhenyi's piFlareApply
 
-% Not yet a perfect match.  But getting there.
+% Close match.
 [oiApply, pMask, psf] = piFlareApply(scene,'num sides aperture',nsides, ...
     'focal length',wvfGet(wvf,'focal length','m'), ...
     'fnumber',wvfGet(wvf,'fnumber'));
@@ -108,4 +87,4 @@ oiApply = oiSet(oiApply,'name','piFlare');
 oiWindow(oiApply);
 oiSet(oiApply,'gamma',0.5); drawnow;
 
-%%
+%% END
