@@ -192,10 +192,14 @@ for ii = 1:nWavelengths
     pupilPos = pupilPos * dx;
     %}
 
+    pupilPos = wvfGet(wvf,'pupil positions',thisWave,'mm');
+    
+    %{
     nPixels = wvfGet(wvf, 'number spatial samples');
     pupilPos = (1:nPixels) - wvfGet(wvf,'middle row');
     dx = wvfGet(wvf,'pupil sample spacing','mm',thisWave);
     pupilPos = pupilPos * dx;
+    %}
 
     % Do the meshgrid thing and flip y. Empirically the flip makes
     % things work out right.
@@ -220,6 +224,7 @@ for ii = 1:nWavelengths
     % In the original code, only the Stiles Crawford Effect (SCE) was
     % implemented.  This code allows for a general aperture function, which
     % is crucial for calculation flare.
+    nPixels = wvfGet(wvf, 'number spatial samples');
     if isempty(p.Results.aperture)
         % Assume the aperture is all 1's.
         aperture = ones(nPixels, nPixels);
@@ -252,20 +257,21 @@ for ii = 1:nWavelengths
     % Extend with zeros outside of the cal pupil radius.  
     sz = round((nPixels - boundingBox(3))/2);
     aperture = padarray(aperture,[sz,sz],0,'both');    
-    aperture = imresize(aperture,[nPixels,nPixels],'nearest');
+    aperture = imresize(aperture,[nPixels,nPixels],'bilinear');
     % ieNewGraphWin; imagesc(pupilPos,pupilPos,aperture); axis image    
 
-    % Keep the amplitude within bounds in case imresize did something.
+    % Keep the amplitude within bounds. imresize, with some interpolation,
+    % functions, produce values outside 0,1.  With bilinear we have not
+    % observed this behavior.
+    %
     % If there are no observed warnings after July 14, delete this
     % section of code.
-    if max(aperture(:)) > 1
-        fprintf('Max aperture: %f\n',max(aperture(:)));
-        aperture(aperture > 1) = 1; 
-    end
-    if min(aperture(:)) < 0
-        fprintf('Min aperture: %f\n',min(aperture(:)));
-        aperture(aperture < 0) = 0;
-    end
+    if max(aperture(:)) > 1, warning('>1'); end
+    if max(aperture(:)) < 0, warning('>1'); end
+
+    aperture(aperture > 1) = 1;
+    aperture(aperture < 0) = 0;
+
     % ieNewGraphWin; imagesc(pupilPos,pupilPos,aperture); axis image    
     
     if p.Results.computesce

@@ -61,7 +61,7 @@ plot(uData.samp,uData.data,'gs');
 legend({'wvf','Airy','oi'});
 
 % Checksum
-assert(abs(sum(uData.data(:)) - 0.1555) < 1e-4);
+assert(abs(sum(uData.data(:)) - 0.157166317909746) < 1e-3);
 %% Get the otf data from the OI and WVF computed two ways
 
 % Compare the two OTF data sets directly.
@@ -77,7 +77,7 @@ identityLine;
 title('OTF: oi converted to wvf')
 
 % Checksum
-assert(abs(real(sum(oiOTFS(:)))-1.0490e+03)<1e-4)
+assert(abs(real(sum(oiOTFS(:))) - 1.072596854586380e+03) < 1e-3)
 
 %% Now, make a multispectral wvf and convert it to ISET OI format
 

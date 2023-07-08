@@ -1,8 +1,8 @@
-function [val,psfN] = psfArea(psf,X,Y)
-% Compute the area under a PSF given the spatial samples
+function [val,psfN] = psfVolume(psf,X,Y)
+% Compute the volume under a PSF surface given the spatial samples
 %
 % Synopsis
-%  [val,psf] = psfArea(psf,X,Y)
+%  [val,psf] = psfVolume(psf,X,Y)
 %
 % Brief synopsis
 %  Calculate the volume under under a sampled PSF surface.  We assume

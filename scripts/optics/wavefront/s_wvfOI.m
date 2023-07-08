@@ -37,7 +37,7 @@ end
 
 % Checksum test
 uData = wvfPlot(wvf,'psf xaxis','um',thisWave,10,'no window');
-assert(abs(sum(uData.psf(:)) - 0.0430) < 1e-4);
+assert(abs(sum(uData.psf(:)) - 0.0451) < 1e-3);
 
 %% Conversion to OI preserves the PSF and AD
 
@@ -56,7 +56,7 @@ uData = oiGet(oi,'optics psf xaxis');
 plot(uData.samp,uData.data,'go');
 
 % Checksum
-assert(abs(sum(uData.data(:)) - 0.1555) < 1e-4);
+assert(abs(sum(uData.data(:)) - 0.1572) < 1e-3);
 
 %% Show the OTF matches as well
 

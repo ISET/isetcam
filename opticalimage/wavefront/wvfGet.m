@@ -395,7 +395,7 @@ switch (parm)
             else,           val = wvf.pupilfunc{idx};
             end
         end
-    case {'pupilfunctionamplitude'}
+    case {'pupilfunctionamplitude','aperture'}
         % wvfGet(wvf,'pupil function amplitude',thisWave);
         %
         % Amplitude of the pupil function
@@ -541,6 +541,22 @@ switch (parm)
             val = (val * 1e-3) * ieUnitScaleFactor(varargin{1});
         end
         
+    case {'pupilpositions','pupilpos','pupilsamples'}
+        % wvfGet(wvf,'pupil samples',wave,unit);
+        %
+        % Sample positions in the pupil
+        %
+        thisWave = wvfGet(wvf,'wave');
+        if numel(thisWave)> 1, thisWave = thisWave(1); end
+        unit = 'mm';
+        if ~isempty(varargin), thisWave = varargin{1}; end
+        if numel(varargin) > 1, unit = varargin{2}; end        
+
+        nPixels = wvfGet(wvf, 'number spatial samples');
+        pupilPos = (1:nPixels) - wvfGet(wvf,'middle row');
+        dx = wvfGet(wvf,'pupil sample spacing',unit,thisWave);
+        val = pupilPos * dx;
+
     case {'pupilsamplespacing','pupilsampleinterval'}
         % wvfGet(wvf,'pupil sample spacing',unit,wave)
         % Default unit is 'mm'
