@@ -27,20 +27,13 @@ aperture = wvfAperture(wvf,'nsides',nsides,...
 
 % This does not yet work.
 wvf = wvfCompute(wvf,'aperture',aperture);
-%{
-% This works
-wvf = wvfPupilFunction(wvf,'aperture function',apertureFunction);
-wvf = wvfComputePSF(wvf,'compute pupil func',false);  % force as false is important
-%}
 
 wvfPlot(wvf,'psf','um',550,20,'airy disk');
 
-%{
 ieNewGraphWin([], 'wide');
 subplot(1,3,1); wvfPlot(wvf,'image pupil amp','um',550,'no window');
 subplot(1,3,2); wvfPlot(wvf,'image pupil phase','um',550,'no window');
 subplot(1,3,3); wvfPlot(wvf,'image wavefront aberrations','um',550,'no window');
-%}
 
 %% Illustrate with a point array
 
@@ -106,23 +99,13 @@ aperture = wvfAperture(wvf,'nsides',nsides,...
 wvf = wvfCompute(wvf,'aperture',aperture);
 wvfPlot(wvf,'psf','um',550,20,'airy disk');
 
-% {
-wvf2 = wvfPupilFunction(wvf,'aperture',aperture);
-wvf2 = wvfComputePSF(wvf2,'compute pupil func',false);  % force as false is important
-%}
 
+%%
 oi = oiCompute(wvf,scenePoint);
 oi = oiSet(oi,'name',sprintf('wvf-test %d-sides',nsides));
 oi = oiCrop(oi,'border');
 oiWindow(oi); 
 oiSet(oi,'render flag','hdr'); drawnow;
-
-oi = oiCompute(wvf2,scenePoint);
-oi = oiSet(oi,'name',sprintf('wvf-good %d-sides',nsides));
-oi = oiCrop(oi,'border');
-oiWindow(oi); 
-oiSet(oi,'render flag','hdr'); drawnow;
-
 
 %% Now the HDR scene
 
