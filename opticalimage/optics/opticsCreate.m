@@ -129,18 +129,25 @@ switch lower(opticsType)
         optics = opticsSet(optics,'name','human-MW');
 
     case {'wvfhuman','humanwvf'}
-        % Optics based on mean Zernike polynomial wavefront model estimated
-        % by Thibos, for 3 mm pupil. This is not actually representative of
-        % any particular observer, because the mean Zernike polynomials do
-        % not capture the phase information.
+        % opticsCreate('wvf human',pupilDiameterMM, zCoefs, wave, ...
+        %               umPerDegree, customLCA)
+        %
+        % Default optics based on mean Zernike polynomials estimated
+        % by Thibos, for 3 mm pupil. Chromatic aberration is included.
+        % 
+        % This is not representative of any particular observer, because
+        % the mean Zernike polynomials do not capture the phase
+        % information.
 
         % Defaults
         pupilDiameterMM = 3;
-        zCoefs = wvfLoadThibosVirtualEyes(pupilDiameterMM);
+        
         wave = 400:10:700;
         wave = wave(:);
         umPerDegree = 300;
         customLCA = [];
+        % Thibos
+        zCoefs = wvfLoadThibosVirtualEyes(pupilDiameterMM);
 
         if (~isempty(varargin) && ~isempty(varargin{1}))
             pupilDiameterMM = varargin{1};
@@ -168,14 +175,16 @@ switch lower(opticsType)
         wvfP = wvfSet(wvfP, 'measured pupil size', pupilDiameterMM);
         wvfP = wvfSet(wvfP, 'calc pupil size', pupilDiameterMM);
 
-        % Include human chromatic aberration because this is wvf human
-        wvfP = wvfComputePupilFunction(wvfP,'lca',true);
-        wvfP = wvfComputePSF(wvfP);
+        % Include human chromatic aberration because this is wvf human        
+        wvfP = wvfCompute(wvfP, 'human lca', true);
+        oi = wvf2oi(wvfP);
+        optics = oiGet(oi,'optics');
 
-        optics = oiGet(wvf2oi(wvfP), 'optics');
-        optics = opticsSet(optics, 'model', 'shift invariant');
-        optics = opticsSet(optics, 'name', sprintf('wvf: %s',wvf.name));
-
+        %{
+        % BW:
+        % Is this needed?  Shouldn't it be handled in wvf2oi?  Commenting
+        % this out in July 8, 2023.
+        %
         % Convert from pupil size and focal length to f# and focal
         % length, because that is what ISET sets. This implies a
         % number of um per degree, and we back it out the other way
@@ -186,11 +195,12 @@ switch lower(opticsType)
         optics = opticsSet(optics, 'fnumber', fLengthMeters / ...
             (2 * pupilRadiusMeters));
         optics = opticsSet(optics, 'focal length', fLengthMeters);
+        %}
 
-        % Add default Lens by default
+        % Human, so add default human Lens
         optics.lens = Lens;
 
-        % Add the wavefront parameters
+        % Store the wavefront parameters
         optics.wvf = wvfP;
 
     case 'mouse'

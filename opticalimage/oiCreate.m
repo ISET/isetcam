@@ -1,28 +1,38 @@
 function [oi,val] = oiCreate(oiType,varargin)
-%Create an optical image structure.
+% Create an optical image structure that stores the irradiance at the
+% sensor
 %
 % Syntax
 %   oi = oiCreate(oiType,varargin)
 %
 % Description
-%  The oi structure describe the image irradiance at the sensor.  It
-%  includes a structure that defines the optics.
+%  The oi structure describes the image irradiance at the sensor along with
+%  many optics metadata.  The oi includes the optics structure.
 %
 % Inputs
 %   oiType -
 %     {'diffraction limited'} -  Diffraction limited optics, no diffuser or
-%                             data (Default)
-%     {'shift invariant'}     -  General high resolution shift-invariant
-%                             model set up. Like human but pillbox OTF
+%                         data (Default).  Equivalent to using the wvf or
+%                         shift-invariant with a zero wavefront
+%                         aberrations.
+%     {'shift invariant'}  -  Shift-invariant model, used for wavefront
+%                      calculations in ISETCam and also as the basis for
+%                      the wvf human (wavefront model estimated from
+%                      adaptive optics)
 %     {'wvf human'}  - Human shift-invariant optics based on mean
 %                      wavefront abberration from Thibos et al. (2009,
 %                      Ophthalmic & Physiological Optics). Optional
-%                      parameters can be passed for this case (see below)
-%
-%     {'wvf'}        - Use the wavefront methods (diffraction limited)
-%     {'human mw'}   - Inserts human shift-invariant optics
-%                      (Marimont-Wandell)
-%     {'ray trace'}  - Ray trace OI
+%                      parameters can be passed for this case (see below).
+%                      Also includes the human Lens default.
+%     {'wvf'}        - Use the wavefront measurements to define the optics.
+%     
+%     {'human mw'}   - Human shift-invariant optics model with chromatic
+%                      aberration estimated by Marimont-Wandell
+%     {'ray trace'}  - Ray trace OI, which is a limited form of ray
+%                      tracing. It includes a wavelength-dependent and
+%                      field height dependent PSF, along with relative
+%                      illumination and geometric distortion.  These data
+%                      are derived from Zemax, typically. 
 %
 %  These are used for snr-lux testing
 %     {'uniform d65'} - Turns off offaxis to make uniform D65 image
@@ -37,7 +47,8 @@ function [oi,val] = oiCreate(oiType,varargin)
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 %
-% See also:  sceneCreate
+% See also:  
+%   sceneCreate, oiCompute, oiSet/Get, wvfCreate, wvf2oi
 
 % Example
 %{
@@ -113,20 +124,28 @@ switch ieParamFormat(oiType)
         % Wandell case.  But that is what we had historically.
         oi = oiCreate('default');
         oi = oiSet(oi,'diffuserMethod','skip');
-        % oi = oiSet(oi,'consistency',1);
         oi = oiSet(oi,'optics',opticsCreate('human'));
         oi = oiSet(oi,'name','human-MW');
 
     case {'wvfhuman','humanwvf'}
-        % Wavefront, Human specified from typical Thibos data (see
-        % opticsCreate).
+        % Human optics specified from typical Thibos data and chromatic aberration
+        % (see opticsCreate).
+        %
+        % This is an alternative to human mw, above.
         %
         % oi = oiCreate('wvf human', pupilMM, zCoefs, wave)
 
-        oi = oiCreate('diffraction limited');
-        oi = oiSet(oi, 'diffuser method', 'skip');
-        oi = oiSet(oi, 'consistency', 1);
+        % Build a default OI from a wavefront.  This will be a shift
+        % invariant model
+        % wvf = wvfCreate;
+        % oi = wvf2oi(wvf);
 
+        oi = oiCreate('shift invariant');
+        % No diffuser.
+        oi = oiSet(oi, 'diffuser method', 'skip');
+
+        % These optics will be the Thibox zcoeffs unless varargin has
+        % something else in mind.
         oi = oiSet(oi, 'optics', opticsCreate('wvf human', varargin{:}));
         oi = oiSet(oi, 'name', 'human-WVF');
         oi = oiSet(oi, 'lens', Lens('wave', oiGet(oi, 'optics wave')));
@@ -212,7 +231,7 @@ ieAddObject(scene);
 oi = oiCreate('default');
 oi = oiSet(oi,'optics fnumber',1e-3);
 oi = oiSet(oi,'optics offaxis method','skip');
-oi = oiCompute(scene,oi);
+oi = oiCompute(oi,scene);
 
 
 return;
