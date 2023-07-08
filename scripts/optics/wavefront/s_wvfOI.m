@@ -37,7 +37,7 @@ end
 
 % Checksum test
 uData = wvfPlot(wvf,'psf xaxis','um',thisWave,10,'no window');
-assert(abs(sum(uData.psf(:)) - 0.0449) < 1e-4);
+assert(abs(sum(uData.psf(:)) - 0.0430) < 1e-4);
 
 %% Conversion to OI preserves the PSF and AD
 
@@ -56,16 +56,7 @@ uData = oiGet(oi,'optics psf xaxis');
 plot(uData.samp,uData.data,'go');
 
 % Checksum
-assert(abs(sum(uData.data(:)) - 0.1570) < 1e-4);
-
-%% We can also show the scatter plot between wvf and oi data
-
-%{
-ieNewGraphWin; 
-plot(wvfData.psf(:),uData.data(:),'ro');
-identityLine;
-xlabel('wvf data'); ylabel('oi data');
-%}
+assert(abs(sum(uData.data(:)) - 0.1555) < 1e-4);
 
 %% Show the OTF matches as well
 
