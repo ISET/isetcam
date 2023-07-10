@@ -368,7 +368,7 @@ switch sensorType
         % Build up a human cone mosaic.
         [sensor, xy, coneType, rSeed, rgbDensities] = ...
             sensorCreateConeMosaic(sensor, sz, rgbDensities, coneAperture, rSeed, 'human');
-        %  figure(1); conePlot(xy,coneType);
+        %  figure(1); ieConePlot(xy,coneType);
         
         % We don't want the pixel to saturate
         pixel  = sensorGet(sensor,'pixel');

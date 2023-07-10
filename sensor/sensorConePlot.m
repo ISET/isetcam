@@ -47,7 +47,7 @@ if isempty(xy)
     fullArray = 1;
     sensorShowCFA(sensor,fullArray);
 else
-    [support, spread, delta] = conePlot(xy, coneType, support, spread, delta);
+    [support, spread, delta] = ieConePlot(xy, coneType, support, spread, delta);
 end
 
 end

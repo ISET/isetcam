@@ -1,7 +1,7 @@
-function [support, spread, delta] = conePlot(xy,coneType, support, spread, delta)
+function [support, spread, delta] = ieConePlot(xy,coneType, support, spread, delta)
 % Plot an image of the cone mosaic
 %
-%    [support, spread, delta] = conePlot(xy,coneType, [support], [spread], [delta])
+%    [support, spread, delta] = ieConePlot(xy,coneType, [support], [spread], [delta])
 %
 % Inputs:
 %  xy:        Cone positions (um)
@@ -27,7 +27,7 @@ function [support, spread, delta] = conePlot(xy,coneType, support, spread, delta
 % Examples:
 %{
   [sensor, xy, coneType] = sensorCreateConeMosaic;
-  conePlot(xy,coneType);
+  ieConePlot(xy,coneType);
 %}
 
 if ieNotDefined('delta'),   delta = 0.4; end  % Sampling in microns
