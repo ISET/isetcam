@@ -99,6 +99,7 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %      {'moire orient'} - Circular Moire pattern
 %      {'zone plate'}   - Circular zone plot, equal photon spectrum
 %      {'star pattern'} - Thin radial lines used to test printers and displays
+%      {'letter'}       - Create an image of a letter.
 %
 %  Additional parameters are available for several of the patterns.  For
 %  example, the harmonic call can set the frequency, contrast, phase,
@@ -133,6 +134,7 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %         sceneCreate('star pattern',imageSize,spectralType,nLines);
 %         sceneCreate('rings rays',radialFreq,imageSize);
 %         sceneCreate('sweep frequency',imageSize,maxFrequency);
+%         scene = sceneCreate('letter', font, display);
 %
 % NOISE ANALYSIS TEST PATTERNS
 %
@@ -580,8 +582,13 @@ switch sceneName
         % Create scene of single letter
         %
         % scene = sceneCreate('letter', font, display);
+        % 
+        % font = fontCreate;
+        % font = fontSet(font,'character','ABC');
+        % scene = sceneCreate('letter',font); sceneWindow(scene);
         
-        % Defaults, both have 96 dpi
+        % Defaults, both have 96 dpi.  The default fontCreate is a 'g'
+        % in Georgia font.
         font = fontCreate;
         display = 'LCD-Apple'; 
         

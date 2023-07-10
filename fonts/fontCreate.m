@@ -11,15 +11,18 @@ function font = fontCreate(letter,family,sz,dpi,style)
 % The bitmap of the font is set so the letter is black on a white
 % background.  Use 1 - bitmap to flip it to white on a black background.
 %
-% Example
-%   font = fontCreate;
-%   font = fontCreate('A','Georgia',24,96);
-%   vcNewGraphWin; imagesc(font.bitmap);
-%
-%   font = fontCreate('l','georgia',14,72);
-%
 % (BW) Vistasoft group, 2014
 
+% Examples:
+%{
+   font = fontCreate('A','Georgia',24,96);
+   ieNewGraphWin; imagesc(font.bitmap);
+%}
+%{
+   font = fontCreate('l','georgia',14,72);
+%}
+
+%%
 if notDefined('letter'), letter = 'g'; end
 if notDefined('sz'), sz = 14; end
 if notDefined('family'), family = 'Georgia'; end
