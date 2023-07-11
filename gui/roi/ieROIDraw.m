@@ -31,7 +31,7 @@ function [shapeHandle,ax] = ieROIDraw(isetobj,varargin)
 %
 % Outputs
 %  shapeHandle: Shape with its parameters
-%  ax:           Current axes of the ISET object window
+%  ax:          Current axes of the ISET object window
 %
 % ieExamplesPrint('ieROIDraw');
 %
@@ -71,8 +71,8 @@ varargin = ieParamFormat(varargin);
 
 p = inputParser;
 validApp = {'coneRectWindow_App'};  % These designer apps are handled
-p.addRequired('isetobj',@(x)(isstruct(x) || ischar(x) || ismember(class(x),validApp)));
-% p.addRequired('isetobj',vFunc);
+p.addRequired('isetobj', @(x)(isstruct(x) || ischar(x) ...
+    || ismember(class(x),validApp) || isa(x,'matlab.ui.Figure')));
 p.addParameter('shape','rect',@ischar);
 p.addParameter('shapedata',[1 1 5 5],@isnumeric);
 p.addParameter('color','w',@ischar);
