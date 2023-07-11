@@ -70,8 +70,9 @@ function [shapeHandle,ax] = ieROIDraw(isetobj,varargin)
 varargin = ieParamFormat(varargin);
 
 p = inputParser;
-vFunc = @(x)(ischar(x) || (isstruct(x) && isfield(x,'type')));
-p.addRequired('isetobj',vFunc);
+validApp = {'coneRectWindow_App'};  % These designer apps are handled
+p.addRequired('isetobj',@(x)(isstruct(x) || ischar(x) || ismember(class(x),validApp)));
+% p.addRequired('isetobj',vFunc);
 p.addParameter('shape','rect',@ischar);
 p.addParameter('shapedata',[1 1 5 5],@isnumeric);
 p.addParameter('color','w',@ischar);

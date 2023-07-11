@@ -36,13 +36,18 @@ function [app, appAxis] = ieAppGet(obj,varargin)
 
 %% Parse
 p = inputParser;
-p.addRequired('obj',@(x)(isstruct(x) || ischar(x)));
+
+validApp = {'coneRectWindow_App'};  % These designer apps are handled
+p.addRequired('obj',@(x)(isstruct(x) || ischar(x) || ismember(class(x),validApp)));
 p.addParameter('select',true,@islogical);
 p.parse(obj,varargin{:});
 select = p.Results.select;
 
+if isstruct(obj)
+
+
 % Forces the objType string to one of original names below.
-if isstruct(obj), objType = vcEquivalentObjtype(obj.type);
+if isfield(obj,'type'), objType = vcEquivalentObjtype(obj.type);
 else,             objType = vcEquivalentObjtype(obj);
 end
 
@@ -75,4 +80,13 @@ end
 
 if select, figure(app.figure1); end
 
+else
+    app = obj;  
+    switch class(app)
+        case 'coneRectWindow_App'
+            appAxis = app.imgMain;
+            if select, figure(app.coneMosaicWindow); end
+        otherwise
+            error('Unknown app %s',class(app));
+    end
 end

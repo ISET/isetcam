@@ -32,7 +32,7 @@ if ieNotDefined('msg')
 end
 if ieNotDefined('nPoints'), nPoints = 1; end
 
-% Find the app and its main axis
+% Find the app and its image axis
 [app, appAxis] = ieAppGet(obj);
 
 % Select a points

@@ -1,11 +1,13 @@
 function h = ieDrawShape(obj,shape,varargin)
 % Draw a shape on the gui window
 %
+% TODO:  Check ieROIDraw first.  Maybe deprecate this?
+%
 % Synopsis
 %   h = ieDrawShape(obj,shape,varargin)
 %
 % Description
-%   Draws a shape on top of one of the images in the app windows.
+%   Draws a shape on top of the current axis in the app windows.
 %
 % Input
 %   obj   - An ISET scene, oi, sensor, or ip
@@ -76,7 +78,7 @@ switch shape
     case 'line'
         % X = [0 96]; Y = [32 32];
         % ieDrawShape(obj,'line',X ,Y);
-        h = line(varargin{1},varargin{2},'LineWidth',8);
+        h = line(varargin{1},varargin{2},'LineWidth',4);
         
     otherwise
         error('Unknown shape %s\n',shape);
