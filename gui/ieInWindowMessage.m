@@ -28,8 +28,12 @@ if (~exist('duration','var')||isempty(duration)),duration = []; end
 
 %% Place the string in the message area.
 if isstruct(app)
-    % Old style window, not appdesigner based.  Here for backwards
+    % Older GUIDE window, not appdesigner based.  Here for backwards
     % compatibility. 
+    % 
+    % The window interface is represented as a struct and ISET folks
+    % always have a design element called txtMessage where you can
+    % place a string.
     app.txtMessage.String = str;
 else
     app.txtMessage.Text = str;
