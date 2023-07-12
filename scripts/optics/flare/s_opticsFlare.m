@@ -53,7 +53,13 @@ set(gca,'xlim',[-20 20],'ylim',[-20 20]);
 
 %%  There is a lot of similarity in the PSF, but the spatial scale is not the same
 
-[oiApply, pMask, psf] = piFlareApply(scenePoint,'num sides aperture',nsides, ...
+%% HDR Test scene. Green repeating circles
+
+sceneHDR = sceneCreate('hdr');
+sceneHDR = sceneSet(sceneHDR,'fov',3);
+% sceneWindow(sceneHDR);
+
+[oiApply, pMask, psf] = piFlareApply(sceneHDR,'num sides aperture',nsides, ...
     'focal length',wvfGet(wvf,'focal length','m'), ...
     'fnumber',wvfGet(wvf,'fnumber'));
 
@@ -66,11 +72,7 @@ oiApply = oiSet(oiApply,'name','piFlare');
 oiWindow(oiApply);
 oiSet(oiApply,'gamma',0.5); drawnow;
 
-%% HDR Test scene. Green repeating circles
-
-sceneHDR = sceneCreate('hdr');
-sceneHDR = sceneSet(sceneHDR,'fov',3);
-% sceneWindow(sceneHDR);
+%%
 
 oi = oiCompute(wvf,sceneHDR);
 oi = oiSet(oi,'name','wvf');
