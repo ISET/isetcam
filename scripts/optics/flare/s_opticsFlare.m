@@ -3,6 +3,11 @@
 % This is a longer version of v_opticsFlare, with more experiments and
 % tests. 
 %
+% One of the things to notice is that the long flare lines add
+% constructively in some cases, depending on the shape of the very
+% bright light source.  So the flare pattern we expect depends on the
+% shape of the light.
+%
 % See also
 %   v_opticsFlare, s_wvfOI, s_wvfChromatic, 
 
@@ -114,28 +119,8 @@ oiPlot(oiPoint2,'psf',550);
 
 %%
 
-% piFlareApply psf
-ieNewGraphWin; mesh(getMiddleMatrix(psf(:,:,15),[120,120]));
-title('piFlareApply psf');
-
-% And the effects are therefore quite different.
-oiApply = oiSet(oiApply,'name','piFlare');
-oiWindow(oiApply);
-oiSet(oiApply,'gamma',0.5); drawnow;
-
-%%
-
 oi = oiCompute(wvf,sceneHDR);
 oi = oiSet(oi,'name','wvf');
-oiWindow(oi);
-oiSet(oi,'render flag','hdr');
-oiSet(oi,'gamma',1); drawnow;
-
-%%
-oi = oiCompute(oiApply,sceneHDR);
-oi = oiCrop(oi,'border');
-oi = oiSet(oi,'name','piFlare');
-
 oiWindow(oi);
 oiSet(oi,'render flag','hdr');
 oiSet(oi,'gamma',1); drawnow;
