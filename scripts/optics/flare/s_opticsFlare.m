@@ -11,7 +11,7 @@ ieInit;
 
 %% Create some optics with a little defocus and astigmatism
 
-wvf = wvfCreate;    % Default wavefront 5.67 fnumber
+wvf = wvfCreate;  
 pupilMM = 3; flengthM = 7e-3;
 wvf = wvfSet(wvf,'calc pupil diameter',pupilMM);
 wvf = wvfSet(wvf,'focal length',flengthM);
@@ -31,9 +31,8 @@ wvf = wvfCompute(wvf,'aperture',aperture);
 wvfPlot(wvf,'psf','um',550,20,'airy disk');
 
 ieNewGraphWin([], 'wide');
-subplot(1,3,1); wvfPlot(wvf,'image pupil amp','um',550,'no window');
-subplot(1,3,2); wvfPlot(wvf,'image pupil phase','um',550,'no window');
-subplot(1,3,3); wvfPlot(wvf,'image wavefront aberrations','um',550,'no window');
+subplot(1,2,1); wvfPlot(wvf,'image pupil amp','um',550,'no window');
+subplot(1,2,2); wvfPlot(wvf,'image pupil phase','um',550,'no window');
 
 %% Illustrate with a point array
 
@@ -48,10 +47,9 @@ oiWindow(oi);
 oiSet(oi,'gamma',0.5); drawnow;
 
 %% Show the oi PSF
+
 oiPlot(oi,'psf550');
 set(gca,'xlim',[-20 20],'ylim',[-20 20]);
-
-%%  There is a lot of similarity in the PSF, but the spatial scale is not the same
 
 %% HDR Test scene. Green repeating circles
 
@@ -59,9 +57,56 @@ sceneHDR = sceneCreate('hdr');
 sceneHDR = sceneSet(sceneHDR,'fov',3);
 % sceneWindow(sceneHDR);
 
-[oiApply, pMask, psf] = piFlareApply(sceneHDR,'num sides aperture',nsides, ...
+%% ZL thinks the oi depends on the scene.
+
+% Let's check.  These two scenes are both 384x384.
+[oiHDR, pupilFunctionHDR, psfHDR, psfSupportHDR] = piFlareApply(sceneHDR,'num sides aperture',nsides, ...
     'focal length',wvfGet(wvf,'focal length','m'), ...
     'fnumber',wvfGet(wvf,'fnumber'));
+
+[oiPoint, pupilFunctionPoint, psfPoint,psfSupportPoint] = piFlareApply(scenePoint,'num sides aperture',nsides, ...
+    'focal length',wvfGet(wvf,'focal length','m'), ...
+    'fnumber',wvfGet(wvf,'fnumber'));
+oiWindow(oiPoint);
+
+% The PSFs when plotted as values against one another are the same (3rd panel).
+% But when plotted over real spatial units, they differ.
+ieNewGraphWin([],'wide'); tiledlayout(1,3);
+psfP = psfPoint(:,:,16); psfH = psfHDR(:,:,16);  % 16 is 550 nm
+nexttile; mesh(psfSupportPoint(:,:,1),psfSupportPoint(:,:,2),psfP); title('Point');
+set(gca,'xlim',[-20 20],'ylim',[-20 20]);
+nexttile; mesh(psfSupportHDR(:,:,1),psfSupportHDR(:,:,2),psfH); title('HDR');
+set(gca,'xlim',[-20 20],'ylim',[-20 20]);
+nexttile; plot(psfP(:),psfH(:),'o'); identityLine;                                     
+
+%%  Now, change the spatial samples in the point scene.
+
+% The size of the PSF changes.
+scenePoint2 = sceneCreate('point array',512,128);
+scenePoint2 = sceneSet(scenePoint2,'fov',1);
+
+[oiPoint2, pupilFunctionPoint2, psfPoint2, psfSupportPoint2] = piFlareApply(scenePoint2,'num sides aperture',nsides, ...
+    'focal length',wvfGet(wvf,'focal length','m'), ...
+    'fnumber',wvfGet(wvf,'fnumber'));
+oiWindow(oiPoint2);
+
+% The PSFs are still identical - 16 is a wavelength of 550
+ieNewGraphWin([],'wide'); tiledlayout(1,2);
+psfP2 = psfPoint2(:,:,16);
+nexttile; mesh(psfSupportPoint2(:,:,1),psfSupportPoint2(:,:,2),psfP2); title('Point2');
+set(gca,'xlim',[-20 20],'ylim',[-20 20]);
+nexttile; mesh(psfSupportHDR(:,:,1),psfSupportHDR(:,:,2),psfH); title('HDR');
+set(gca,'xlim',[-20 20],'ylim',[-20 20]);
+size(psfP2)
+size(psfH)
+% The PSFs have dimensions.  So we can't make this plot
+% nexttile; plot(psfP2(:),psfH(:),'o'); identityLine;     
+
+%% Notice that the PSF of the oi, however, does not match the returned psf 
+
+oiPlot(oiPoint2,'psf',550);
+
+%%
 
 % piFlareApply psf
 ieNewGraphWin; mesh(getMiddleMatrix(psf(:,:,15),[120,120]));
