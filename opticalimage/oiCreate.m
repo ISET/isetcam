@@ -117,19 +117,20 @@ switch ieParamFormat(oiType)
         load(rtFileName,'optics');
         oi = oiSet(oi,'optics',optics);
         
-    case {'humanmw','human'}
-        % 
+    case {'humanmw'}
         % Marimont and Wandell human optics model.
-        % A bit dangerous to have 'human' default to the Marimont and
-        % Wandell case.  But that is what we had historically.
+        %
+        % Historically, 'human' defaulted to the Marimont and Wandell
+        % case.  So this could create some trouble.  But good trouble
+        % to create and fix.
         oi = oiCreate('default');
         oi = oiSet(oi,'diffuserMethod','skip');
         oi = oiSet(oi,'optics',opticsCreate('human'));
         oi = oiSet(oi,'name','human-MW');
 
-    case {'wvfhuman','humanwvf'}
-        % Human optics specified from typical Thibos data and chromatic aberration
-        % (see opticsCreate).
+    case {'human','wvfhuman','humanwvf'}
+        % Human optics specified from typical Thibos data and
+        % chromatic aberration (see opticsCreate).
         %
         % This is an alternative to human mw, above.
         %
