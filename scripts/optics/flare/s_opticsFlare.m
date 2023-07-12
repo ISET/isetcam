@@ -30,9 +30,11 @@ wvf = wvfCompute(wvf,'aperture',aperture);
 
 wvfPlot(wvf,'psf','um',550,20,'airy disk');
 
+%{
 ieNewGraphWin([], 'wide');
 subplot(1,2,1); wvfPlot(wvf,'image pupil amp','um',550,'no window');
 subplot(1,2,2); wvfPlot(wvf,'image pupil phase','um',550,'no window');
+%}
 
 %% Illustrate with a point array
 
@@ -57,9 +59,8 @@ sceneHDR = sceneCreate('hdr');
 sceneHDR = sceneSet(sceneHDR,'fov',3);
 % sceneWindow(sceneHDR);
 
-%% ZL thinks the oi depends on the scene.
+%% These two scenes are both 384x384.
 
-% Let's check.  These two scenes are both 384x384.
 [oiHDR, pupilFunctionHDR, psfHDR, psfSupportHDR] = piFlareApply(sceneHDR,'num sides aperture',nsides, ...
     'focal length',wvfGet(wvf,'focal length','m'), ...
     'fnumber',wvfGet(wvf,'fnumber'));
@@ -70,7 +71,8 @@ sceneHDR = sceneSet(sceneHDR,'fov',3);
 oiWindow(oiPoint);
 
 % The PSFs when plotted as values against one another are the same (3rd panel).
-% But when plotted over real spatial units, they differ.
+% But when plotted with respect to real spatial units, they differ.  I
+% don't know why (yet).
 ieNewGraphWin([],'wide'); tiledlayout(1,3);
 psfP = psfPoint(:,:,16); psfH = psfHDR(:,:,16);  % 16 is 550 nm
 nexttile; mesh(psfSupportPoint(:,:,1),psfSupportPoint(:,:,2),psfP); title('Point');
@@ -79,9 +81,12 @@ nexttile; mesh(psfSupportHDR(:,:,1),psfSupportHDR(:,:,2),psfH); title('HDR');
 set(gca,'xlim',[-20 20],'ylim',[-20 20]);
 nexttile; plot(psfP(:),psfH(:),'o'); identityLine;                                     
 
-%%  Now, change the spatial samples in the point scene.
+%%  Another issue: 
+% 
+% We change the spatial samples in the point scene, and the size of
+% the PSF changes. This also suggests we aren't controlling the
+% spatial dimensions correctly in piFlareApply
 
-% The size of the PSF changes.
 scenePoint2 = sceneCreate('point array',512,128);
 scenePoint2 = sceneSet(scenePoint2,'fov',1);
 
@@ -95,15 +100,16 @@ ieNewGraphWin([],'wide'); tiledlayout(1,2);
 psfP2 = psfPoint2(:,:,16);
 nexttile; mesh(psfSupportPoint2(:,:,1),psfSupportPoint2(:,:,2),psfP2); title('Point2');
 set(gca,'xlim',[-20 20],'ylim',[-20 20]);
-nexttile; mesh(psfSupportHDR(:,:,1),psfSupportHDR(:,:,2),psfH); title('HDR');
+nexttile; mesh(psfSupportPoint(:,:,1),psfSupportPoint(:,:,2),psfH); title('Point');
 set(gca,'xlim',[-20 20],'ylim',[-20 20]);
 size(psfP2)
 size(psfH)
 % The PSFs have dimensions.  So we can't make this plot
 % nexttile; plot(psfP2(:),psfH(:),'o'); identityLine;     
 
-%% Notice that the PSF of the oi, however, does not match the returned psf 
+%% Notice that the PSF of the oi does not match the returned psf 
 
+% No signs of the flare.
 oiPlot(oiPoint2,'psf',550);
 
 %%
