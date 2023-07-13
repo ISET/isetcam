@@ -1,6 +1,9 @@
 %% s_humanLSF
 %
-% Calculations illustrating the the human line spread function and OTF.
+% Calculations illustrating the the human line spread function and OTF
+% for the Marimont and Wandell model, first.  Then repeated for the
+% wvf human model based on the Thibos' typical subject.
+%
 % The largest effects are caused by chromatic aberration.
 %
 % Copyright ImagEval Consultants, LLC, 2010.
@@ -12,37 +15,48 @@ ieInit
 imSize = 128;
 scene = sceneCreate('lined65',imSize);     % D65 SPD for a thin line
 scene = sceneSet(scene,'fov',1);  % Small field of view
-vcReplaceObject(scene);
+ieAddObject(scene);
 % sceneWindow;
 
-oi = oiCreate('human');
+oi = oiCreate('human mw');
 oi = oiSet(oi,'wave',sceneGet(scene,'wave'));
 oi = oiCompute(oi,scene);
-vcReplaceObject(oi);
-oiWindow;
+oiWindow(oi);
 
 %% Make OIs for several different wavelengths
 
 scene410 = sceneInterpolateW(scene,410);
-oi = oiCreate('human');
+oi = oiCreate('human mw');
 oi = oiCompute(oi,scene410);
 oi = oiSet(oi,'name','line-410');
-vcAddAndSelectObject(oi);
-oiWindow;
+oiWindow(oi);
 
 scene550 = sceneInterpolateW(scene,550);
-oi = oiCreate('human');
+oi = oiCreate('human mw');
 oi = oiCompute(oi,scene550);
 oi = oiSet(oi,'name','line-550');
-vcAddAndSelectObject(oi);
-oiWindow;
+oiWindow(oi);
 
 scene690 = sceneInterpolateW(scene,690);
-oi = oiCreate('human');
+oi = oiCreate('human mw');
 oi = oiCompute(oi,scene690);
 oi = oiSet(oi,'name','line-690');
-vcAddAndSelectObject(oi);
-oiWindow;
+oiWindow(oi);
+
+%% Now the same but for wvf human (Thibos)
+
+% The values are slightly different.
+oi = oiCreate('human');
+oi = oiCompute(oi,scene410);
+oiWindow(oi);
+
+oi = oiCreate('human');
+oi = oiCompute(oi,scene550);
+oiWindow(oi);
+
+oi = oiCreate('human');
+oi = oiCompute(oi,scene690);
+oiWindow(oi);
 
 %% Calculate the Optical Transfer Function (OTF)  at two wavelengths
 % You can do this from the GUI or can make a plot from this function
@@ -56,7 +70,7 @@ wStep = 5;
 wave = 400:wStep:700;
 [OTF2D, frequencySupport, wave] = humanOTF(pupilRadius,dioptricPower,[],wave);
 
-vcNewGraphWin([],'tall');
+ieNewGraphWin([],'tall');
 
 subplot(2,1,1)
 thisWave = 420;
@@ -82,7 +96,7 @@ westheimerOTF = abs(fft(westheimerLSF(xSec)));
 
 %(One cycle spans 10 min of arc, or freq=1 is 6 cyc/deg)
 freq = (0:11)*6;
-vcNewGraphWin;
+ieNewGraphWin;
 plot(freq,westheimerOTF((1:12))); grid on;
 xlabel('Freq (cpd)'); ylabel('Relative contrast');
 set(gca,'ylim',[-.1 1.1])
@@ -96,14 +110,14 @@ sfRange = (0:60);
 deg = (0:.001:.1);
 [MTF, PSF, LSF] = ijspeert(age, pupilDiameter, pigment, sfRange, deg2rad(deg));
 
-vcNewGraphWin;
+ieNewGraphWin;
 plot(sfRange,MTF); grid on
 xlabel('Freq (cpd)'); ylabel('Relative contrast');
 set(gca,'ytick',(0:.25:1))
 title('Ijspeert - does not include wavelength')
 
 %% Ijspeert slice through pointspread compared with LSF
-vcNewGraphWin;
+ieNewGraphWin;
 LSF = LSF/max(LSF(:));
 PSF = PSF/max(PSF(:));
 plot([fliplr(-deg),deg],[fliplr(PSF),PSF], 'k-',[fliplr(-deg),deg],[fliplr(LSF),LSF],'r--')

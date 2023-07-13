@@ -15,7 +15,7 @@ ieInit
 %%
 scene = sceneCreate;
 oi = oiCreate;
-oi = oiCompute(scene,oi);
+oi = oiCompute(oi,scene);
 
 %%
 sensor = sensorCreate;
@@ -104,8 +104,8 @@ title('Noise photon, clipping, quantization)')
 scene = sceneCreate('grid lines');
 scene = sceneSet(scene,'fov',3);
 
-oi = oiCreate('human');   % Default optics
-oi = oiCompute(scene,oi);
+oi = oiCreate('human mw');   % Default optics
+oi = oiCompute(oi,scene);
 sensor = sensorCreate('bayer-rggb');
 sensor = sensorSet(sensor,'exp time',0.1);
 

@@ -284,10 +284,12 @@ switch parm
         
     case {'roiphotons','roiphotonsspd'}
         % sceneGet(scene,'photons roi',rectOrlocs);
+        %
         % Read photon spd from a region of interest. Data are returned as
-        % doubles.
-        % The roi can be xy locs or it can be a rect,
+        % doubles. The roi can be xy locs or it can be a rect,
+        %
         %  [col, row, height, width]
+        %
         % The number of returned points is (height+1) * (width+1)
         % So, [col,row,0,0] returns 1 point and [col,row,1,1] returns 4
         % points.
@@ -628,11 +630,27 @@ switch parm
     case {'spatialsupport','spatialsamplingpositions'}
         % Spatial locations of points in meters
         % Also, sceneGet(oi,'spatialsupport','microns')
+        units = 'm';
+        if ~isempty(varargin), units = varargin{1}; end
+
         sSupport = sceneSpatialSupport(scene);
         [xSupport, ySupport] = meshgrid(sSupport.x,sSupport.y);
         val(:,:,1) = xSupport; val(:,:,2) = ySupport;
-        if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-        
+        if ~isempty(varargin), val = val*ieUnitScaleFactor(units); end
+    case {'spatialsupportx'}
+        % sceneGet(scene,'spatial support x', units)
+        % A vector.  Units can be specified.
+        units = 'm';
+        if ~isempty(varargin), units = varargin{1}; end
+        sSupport = sceneGet(scene,'spatial support',units);
+        val = sSupport(1,:,1);
+    case {'spatialsupporty'}
+        % sceneGet(scene,'spatial support y',units);
+        % A vector is returned.
+        units = 'm';
+        if ~isempty(varargin), units = varargin{1}; end
+        sSupport = sceneGet(scene,'spatial support',units);
+        val = sSupport(:,1,2);
     case {'hangularresolution','heightangularresolution'}
         % Angular degree per pixel --
         val = 2*rad2deg(atan((sceneGet(scene,'hspatialResolution')/sceneGet(scene,'distance'))/2));

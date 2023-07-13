@@ -77,7 +77,8 @@ oiWindow(oiPoint);
 
 % The PSFs when plotted as values against one another are the same (3rd panel).
 % But when plotted with respect to real spatial units, they differ.  I
-% don't know why (yet).
+% don't know why (yet).  Though possibly because the FOV of the
+% sceneHDR is 3 deg and scenePoint is 1 deg
 ieNewGraphWin([],'wide'); tiledlayout(1,3);
 psfP = psfPoint(:,:,16); psfH = psfHDR(:,:,16);  % 16 is 550 nm
 nexttile; mesh(psfSupportPoint(:,:,1),psfSupportPoint(:,:,2),psfP); title('Point');
@@ -116,6 +117,27 @@ size(psfH)
 
 % No signs of the flare.
 oiPlot(oiPoint2,'psf',550);
+
+
+%% Experiment with the fov 
+
+% When I made the FOV of scenePoint match the FOV of sceneHDR, the
+% PSFs match, too.  So that is the key thing to figure out in
+% piFlareApply. 
+scenePoint3 = sceneSet(scenePoint,'fov',3);
+[oiPoint3, pupilFunctionPoint3, psfPoint3,psfSupportPoint3] = piFlareApply(scenePoint3,'num sides aperture',nsides, ...
+    'focal length',wvfGet(wvf,'focal length','m'), ...
+    'fnumber',wvfGet(wvf,'fnumber'));
+oiWindow(oiPoint3);
+
+ieNewGraphWin([],'wide'); tiledlayout(1,3);
+psfP3 = psfPoint3(:,:,16); 
+nexttile; mesh(psfSupportPoint3(:,:,1),psfSupportPoint3(:,:,2),psfP3); title('Point');
+set(gca,'xlim',[-20 20],'ylim',[-20 20]);
+nexttile; mesh(psfSupportHDR(:,:,1),psfSupportHDR(:,:,2),psfH); title('HDR');
+set(gca,'xlim',[-20 20],'ylim',[-20 20]);
+nexttile; plot(psfP(:),psfH(:),'o'); identityLine;   
+
 
 %%
 

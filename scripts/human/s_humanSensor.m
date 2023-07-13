@@ -93,8 +93,7 @@ pixel = pixelSet(pixel,'voltageSwing',0.02);
 
 sensor = sensorSet(sensor,'pixel',pixel);
 sensor = sensorCompute(sensor,oi);
-vcAddAndSelectObject(sensor);
-sensorWindow;
+sensorWindow(sensor);
 
 %% Show the cone absorption counts across a horizontal image line
 % The absorptions in the L,M, and S are shown as red, green and blue.  The
