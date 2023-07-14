@@ -20,7 +20,7 @@ g = img(:,:,2);
 X = double([r(:), g(:)]);
 [N, ~,mid] = histcn(X);
 
-vcNewGraphWin;
+ieNewGraphWin;
 imagesc(mid{1:2},N(:,:));
 axis xy; colormap(hot(64)); colorbar
 xlabel('Red channel'); ylabel('Green channel')
@@ -32,7 +32,7 @@ b = img(:,:,3);
 X = double([r(:), b(:)]);
 [N, ~, mid] = histcn(X);
 
-vcNewGraphWin;
+ieNewGraphWin;
 imagesc(mid{1:2},N(:,:));
 axis xy; colormap(hot(64)); colorbar
 xlabel('Red channel'); ylabel('Blue channel')

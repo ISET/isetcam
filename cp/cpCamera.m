@@ -154,7 +154,7 @@ classdef cpCamera < handle
                     if isequal(previewImages{1}.type, 'opticalimage')
                         oi = previewImages{1};
                     else
-                        oi = oiCompute(previewImages{1}, obj.cmodules(1).oi);
+                        oi = oiCompute(obj.cmodules(1).oi, previewImages{1});
                     end
                     % Compute exposure times if they weren't passed to us
                     if isequal(obj.expTimes, [])
@@ -169,7 +169,7 @@ classdef cpCamera < handle
                     % Might force camera to a specific module also?
                     % Zoom is settable, but might be digital??
                     % Aperture also, maybe some shutter modes at some point
-                    expTimes = [1]; % match default integration time?
+                    expTimes = 1; % match default integration time?
                 case 'otherwise'
                     error("Unknown photo intent. You may need a specialized sub-class implementation.");
             end
