@@ -188,7 +188,7 @@ switch oType
         elseif length(varargin) == 3, val = opticsGet(optics,parm,varargin{1},varargin{2},varargin{3});
         elseif length(varargin) == 4, val = opticsGet(optics,parm,varargin{1},varargin{2},varargin{3},varargin{4});
         end
-        
+
     case 'wvf'
         % If a wavefront structure, then we either return the wvf or
         % an wvf parameter.  See above for varargin{:}
@@ -370,13 +370,23 @@ switch oType
                 if checkfields(oi,'optics'), val = oi.optics; end
             case 'opticsmodel'
                 if checkfields(oi,'optics','model'), val = oi.optics.model; end
+
+            case 'lens'
+                % ISETBio Lens class.
+                if checkfields(oi, 'optics', 'lens'), lens = oi.optics.lens;
+                else, return;
+                end
                 
+                if isempty(varargin), val = lens; return;
+                else, val = lens.get(parm, varargin{:});
+                end
+
             case {'zernike'}
                 % Store the Zernike polynomial coefficients
                 val = oi.zernike;
             case {'wvf'}
                 % The whole wavefront struct.  In process of how to use
-                % this in programs, with oiComputePSF and
+                % this in programs, with wvfComputePSF and
                 % wvfSet/wvfGet.
                 val = oi.wvf;
                 
@@ -384,10 +394,10 @@ switch oType
                 % it here. The angle spacing of the precomputation is
                 % specified here. I think this should go away (BW).
             case {'psfstruct','shiftvariantstructure'}
-                % Entire svPSF structure
+                % Entire svPSF structure (sv = shift-varying)
                 if checkfields(oi,'psf'), val = oi.psf; end
             case {'svpsf','sampledrtpsf','shiftvariantpsf'}
-                % Precomputed shift-variant psfs
+                % Precomputed shift-varying psfs
                 if checkfields(oi,'psf','psf'), val = oi.psf.psf; end
             case {'rtpsfsize'}
                 % Size of each PSF
@@ -444,14 +454,42 @@ switch oType
                         val = double(oi.data.photons(:,:,idx));
                     end
                 end
+
+            case 'roiphotons'
+                if isempty(varargin), error('ROI required')
+                else, roiLocs = varargin{1};
+                end
+                val = vcGetROIData(oi, roiLocs, 'photons');
+
             case 'roimeanphotons'
                 % oiGet(oi,'roi mean photons',roiLocs)
+                % Returned as XW format
+                %
                 % Mean photons at each wavelength (SPD) in the ROI
                 if isempty(varargin), error('ROI required'); end
                 
                 roiLocs = varargin{1};  % Either locs or rect is OK
                 val = mean(vcGetROIData(oi,roiLocs));
-                
+                val = val(:)';
+
+            case 'roienergy'
+                if isempty(varargin), error('ROI required')
+                else, roiLocs = varargin{1};
+                end
+
+                % Check format.
+                val = vcGetROIData(oi, roiLocs, 'energy');
+
+            case 'roimeanenergy'
+                % oiGet(oi,'roi mean energy');
+                % Returned as XW format (row vector)
+                if isempty(varargin), error('ROI required')
+                else, roiLocs = varargin{1};
+                end
+                val = oiGet(oi, 'roienergy', roiLocs);
+                val = mean(val, 1);
+                val = val(:)';
+
             case {'photonsnoise','photonswithnoise'}
                 % pn = oiGet(oi,'photons noise');
                 % The current photons are the mean.

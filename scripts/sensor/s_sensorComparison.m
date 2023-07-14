@@ -29,7 +29,7 @@ scene = sceneCombine(sceneC,sceneS,'direction','horizontal');
 
 hfov = 20;
 scene = sceneSet(scene,'fov',hfov);
-% vfov  = sceneGet(scene,'v fov');
+vfov  = sceneGet(scene,'v fov');
 sceneWindow(scene);
 
 %%

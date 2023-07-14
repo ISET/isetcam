@@ -55,7 +55,7 @@ colorbar;
 % converted to SPDs using the calibrated display
 vcAddAndSelectObject(scene1);
 vcAddAndSelectObject(scene2);sceneWindow;
-imageMultiview('scene',[1 2]);
+imageMultiview('scene',[1 2],false);
 
 
 %% Illustrate the processing within the routine, showing explicit calls.

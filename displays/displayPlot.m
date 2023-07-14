@@ -47,7 +47,7 @@ switch param
             plot(wave,spd(:,ii),cOrder{ii},'LineWidth',2);
         end
         
-        xlabel('Wavelength (nm)');ylabel('Energy (watts/sr/m2/nm)');
+        xlabel('Wavelength (nm)');ylabel('Energy (watts/sr/m^2/nm)');
         grid on; uData.wave = wave; uData.spd = spd;
         set(g,'userdata',uData);
         

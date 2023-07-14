@@ -58,11 +58,18 @@ if ~exist('app','var') || isempty(app), app = []; end
 
 if renderFlag > 0
     if isempty(app) || isa(app,'sceneWindow_App')
-        % User told us nothing. We think the user wants it in the IP window
-        [app,appAxis] = ieAppGet('scene');
+        % User told us nothing. We think the user wants it in the IP
+        % window. But if not, we suppose there is a window waiting for
+        % it somewhere.
+        try
+            [app,appAxis] = ieAppGet('scene');
+        catch
+            % No app provided. So render in a figure.
+            app = ieNewGraphWin;
+            appAxis = [];
+        end
     elseif isa(app,'matlab.ui.Figure')
-        % Not sure why we are ever here.  Maybe the user had a pre-defined
-        % window?
+        % The user sent in a figure.
         appAxis = [];
     elseif isequal(app,0)
         % User sent in a 0. Just return the values and do not display.

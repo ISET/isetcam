@@ -1,22 +1,38 @@
 function [oi,val] = oiCreate(oiType,varargin)
-%Create an optical image structure.
+% Create an optical image structure that stores the irradiance at the
+% sensor
 %
 % Syntax
 %   oi = oiCreate(oiType,varargin)
 %
 % Description
-%  The oi structure describe the image irradiance at the sensor.  It
-%  includes a structure that defines the optics.
+%  The oi structure describes the image irradiance at the sensor along with
+%  many optics metadata.  The oi includes the optics structure.
 %
 % Inputs
 %   oiType -
 %     {'diffraction limited'} -  Diffraction limited optics, no diffuser or
-%                             data (Default)
-%     {'shift invariant'}     -  General high resolution shift-invariant
-%                             model set up. Like human but pillbox OTF
-%     {'wvf'}        - Use the wavefront methods to specify the shift
-%     {'human'}      - Inserts human shift-invariant optics
-%     {'ray trace'}  - Ray trace OI
+%                         data (Default).  Equivalent to using the wvf or
+%                         shift-invariant with a zero wavefront
+%                         aberrations.
+%     {'shift invariant'}  -  Shift-invariant model, used for wavefront
+%                      calculations in ISETCam and also as the basis for
+%                      the wvf human (wavefront model estimated from
+%                      adaptive optics)
+%     {'wvf human'}  - Human shift-invariant optics based on mean
+%                      wavefront abberration from Thibos et al. (2009,
+%                      Ophthalmic & Physiological Optics). Optional
+%                      parameters can be passed for this case (see below).
+%                      Also includes the human Lens default.
+%     {'wvf'}        - Use the wavefront measurements to define the optics.
+%     
+%     {'human mw'}   - Human shift-invariant optics model with chromatic
+%                      aberration estimated by Marimont-Wandell
+%     {'ray trace'}  - Ray trace OI, which is a limited form of ray
+%                      tracing. It includes a wavelength-dependent and
+%                      field height dependent PSF, along with relative
+%                      illumination and geometric distortion.  These data
+%                      are derived from Zemax, typically. 
 %
 %  These are used for snr-lux testing
 %     {'uniform d65'} - Turns off offaxis to make uniform D65 image
@@ -31,7 +47,8 @@ function [oi,val] = oiCreate(oiType,varargin)
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 %
-% See also:  sceneCreate
+% See also:  
+%   sceneCreate, oiCompute, oiSet/Get, wvfCreate, wvf2oi
 
 % Example
 %{
@@ -45,8 +62,19 @@ oi = oiCreate('uniform EE',64,(380:4:1068)); % Set size and wave
 %}
 %
 
+validTypes = {'default','pinhole','diffractionlimited','diffraction', ...
+    'shiftinvariant','raytrace','wvf',...
+    'human','humanmw','wvfhuman','humanwvf',...
+    'uniformd65','uniformee','black'};
+
 % Default is the diffraction limited calculation
-if ieNotDefined('oiType'),  oiType = 'diffraction limited'; end
+if ieNotDefined('oiType'), oiType = 'diffraction limited'; 
+else 
+    if strncmp(oiType,'valid',5)
+        oi = validTypes;
+        return;
+    end
+end
 if ieNotDefined('val'),     val = vcNewObjectValue('OPTICALIMAGE'); end
 if ieNotDefined('optics'),  optics = opticsCreate('default'); end
 
@@ -54,9 +82,6 @@ oi.type = 'opticalimage';
 oi.name = vcNewObjectName('opticalimage');
 oi.metadata = [];  % Store metadata typically for machine-learning apps
 
-% In case there is an error, print out the valid types for the user.
-validTypes = {'default','diffraction limited','shift invariant','ray trace',...
-    'human','uniformd65','uniformEE','wvf'};
 
 %%
 switch ieParamFormat(oiType)
@@ -67,6 +92,12 @@ switch ieParamFormat(oiType)
         % skipped
         oi = oiSet(oi,'diffuser method','skip');
         oi = oiSet(oi,'diffuser blur',2*10^-6);
+        
+        if checkfields(oi.optics, 'lens')
+            oi.optics = rmfield(oi.optics, 'lens');
+            oi.optics.transmittance.wave = (370:730)';
+            oi.optics.transmittance.scale = ones(length(370:730), 1);
+        end
         
     case {'shiftinvariant'}
         % Rather than using the diffraction limited call to make the OTF
@@ -86,16 +117,44 @@ switch ieParamFormat(oiType)
         load(rtFileName,'optics');
         oi = oiSet(oi,'optics',optics);
         
-    case {'human'}
-        % Marimont and Wandell human optics model.  For more extensive
-        % biological modeling, see the ISETBIO derivative which has now
-        % expanded and diverged from ISET.
+    case {'humanmw'}
+        % Marimont and Wandell human optics model.
+        %
+        % Historically, 'human' defaulted to the Marimont and Wandell
+        % case.  So this could create some trouble.  But good trouble
+        % to create and fix.
         oi = oiCreate('default');
         oi = oiSet(oi,'diffuserMethod','skip');
-        oi = oiSet(oi,'consistency',1);
         oi = oiSet(oi,'optics',opticsCreate('human'));
         oi = oiSet(oi,'name','human-MW');
-        
+
+    case {'human','wvfhuman','humanwvf'}
+        % Human optics specified from typical Thibos data and
+        % chromatic aberration (see opticsCreate).
+        %
+        % This is an alternative to human mw, above.
+        %
+        % oi = oiCreate('wvf human', pupilMM, zCoefs, wave)
+
+        % Build a default OI from a wavefront.  This will be a shift
+        % invariant model
+        % wvf = wvfCreate;
+        % oi = wvf2oi(wvf);
+
+        oi = oiCreate('shift invariant');
+        % No diffuser.
+        oi = oiSet(oi, 'diffuser method', 'skip');
+
+        % These optics will be the Thibox zcoeffs unless varargin has
+        % something else in mind.
+        oi = oiSet(oi, 'optics', opticsCreate('wvf human', varargin{:}));
+        oi = oiSet(oi, 'name', 'human-WVF');
+        oi = oiSet(oi, 'lens', Lens('wave', oiGet(oi, 'optics wave')));
+
+        if checkfields(oi.optics, 'transmittance')
+            oi.optics = rmfield(oi.optics, 'transmittance');
+        end
+
     case {'uniformd65'}
         % Uniform, D65 optical image.  No cos4th falloff, huge field of
         % view (120 deg). Used in lux-sec SNR testing and scripting
@@ -173,7 +232,7 @@ ieAddObject(scene);
 oi = oiCreate('default');
 oi = oiSet(oi,'optics fnumber',1e-3);
 oi = oiSet(oi,'optics offaxis method','skip');
-oi = oiCompute(scene,oi);
+oi = oiCompute(oi,scene);
 
 
 return;
@@ -192,6 +251,6 @@ ieAddObject(scene);
 oi = oiCreate('default');
 oi = oiSet(oi,'optics fnumber',1e-3);
 oi = oiSet(oi,'optics offaxis method','skip');
-oi = oiCompute(scene,oi);
+oi = oiCompute(oi, scene);
 
 return;

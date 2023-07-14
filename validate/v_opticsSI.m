@@ -49,7 +49,7 @@ optics = opticsSet(optics,'model','shiftInvariant');
 oi = oiSet(oi,'optics',optics);
 
 % You can now compute using your current scene.
-oi = oiCompute(scene,oi);
+oi = oiCompute(oi,scene);
 
 % Show the OI window
 vcReplaceAndSelectObject(oi);

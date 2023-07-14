@@ -99,6 +99,7 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %      {'moire orient'} - Circular Moire pattern
 %      {'zone plate'}   - Circular zone plot, equal photon spectrum
 %      {'star pattern'} - Thin radial lines used to test printers and displays
+%      {'letter'}       - Create an image of a letter.
 %
 %  Additional parameters are available for several of the patterns.  For
 %  example, the harmonic call can set the frequency, contrast, phase,
@@ -133,6 +134,7 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %         sceneCreate('star pattern',imageSize,spectralType,nLines);
 %         sceneCreate('rings rays',radialFreq,imageSize);
 %         sceneCreate('sweep frequency',imageSize,maxFrequency);
+%         scene = sceneCreate('letter', font, display);
 %
 % NOISE ANALYSIS TEST PATTERNS
 %
@@ -366,7 +368,9 @@ switch sceneName
         
         scene = sceneExpRamp(scene,sz,dynamicRange);
         
-    case {'uniform','uniformee','uniformequalenergy'}   %Equal energy
+    case {'uniform','uniformee','uniformequalenergy'}
+        % scene = sceneCreate('uniform',size,wave);
+        % Equal energy
         % By default a 32 x 32 with standard wave sampling
         %
         sz = 32;
@@ -508,12 +512,13 @@ switch sceneName
         if length(varargin) >= 3, spectralType = varargin{3}; end
         scene = sceneCheckerboard(scene,period,spacing,spectralType);
         
-    case {'demosaictarget','freqorientpattern','frequencyorientation','freqorient'}
+    case {'frequencyorientation','demosaictarget','freqorientpattern','freqorient'}
         %   parms.angles = linspace(0,pi/2,5);
         %   parms.freqs =  [1,2,4,8,16];
         %   parms.blockSize = 64;
         %   parms.contrast = .8;
         % scene = sceneCreate('freqorient',parms);
+
         if isempty(varargin), scene = sceneFOTarget(scene);
         else
             % First argument is parms structure
@@ -577,8 +582,13 @@ switch sceneName
         % Create scene of single letter
         %
         % scene = sceneCreate('letter', font, display);
+        % 
+        % font = fontCreate;
+        % font = fontSet(font,'character','ABC');
+        % scene = sceneCreate('letter',font); sceneWindow(scene);
         
-        % Defaults, both have 96 dpi
+        % Defaults, both have 96 dpi.  The default fontCreate is a 'g'
+        % in Georgia font.
         font = fontCreate;
         display = 'LCD-Apple'; 
         
@@ -590,6 +600,22 @@ switch sceneName
         scene = sceneFromFont(font, display);
         return; % Do not adjust luminance or other properties
 
+    case {'hdrchart'}
+        p = inputParser;
+        varargin = ieParamFormat(varargin);
+        p.addParameter('rowsperlevel',12);
+        p.addParameter('nlevels',16);
+        p.addParameter('drange',10^3.5);
+        p.parse(varargin{:});
+        r = p.Results;
+        scene = sceneHDRChart(r.drange,r.nlevels,r.rowsperlevel);
+    case {'hdr','highdynamicrange'}
+        % scene = sceneCreate('hdr',varargin);
+        p = inputParser;
+        varargin = ieParamFormat(varargin);
+        p.addParameter('size',256);
+        p.parse(varargin{:});
+        scene = sceneHDRLights();
     otherwise
         error('Unknown scene format: %s.',sceneName);
 end
@@ -1264,7 +1290,8 @@ end
 function scene = sceneFOTarget(scene,parms)
 %% Frequency/Orientation target
 
-if ieNotDefined('parms'), parms = []; end
+% Default params if not sent in
+if ieNotDefined('parms'), parms = FOTParams; end
 
 scene = sceneSet(scene,'name','FOTarget');
 scene = initDefaultSpectrum(scene,'hyperspectral');
@@ -1275,7 +1302,6 @@ img = FOTarget('sine',parms);
 % Prevent dynamic range problem with ieCompressData
 img = ieClip(img,1e-4,1);
 img = img/max(img(:));
-
 
 % Create the illuminant
 il = illuminantCreate('equal photons',sceneGet(scene,'wave'));

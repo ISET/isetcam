@@ -38,11 +38,11 @@ if ~isfield(parms,'contrast'), contrast = 1;   else contrast = parms.contrast;  
 if ~isfield(parms,'blockSize'),blockSize = 32; else blockSize = parms.blockSize; end
 
 % Create the spatial grid
-x = [0:blockSize-1]/blockSize;
+x = (0:blockSize-1)/blockSize;
 [X Y] = meshgrid(x,x);
 
 % Initialize parameters
-ii = 0; im = [];
+im = [];
 
 switch lower(pattern)
     case 'sine'
@@ -70,4 +70,4 @@ im = im';
 RGB = repmat(im,[1 1 3]);
 % imshow(RGB)
 
-return;
+end

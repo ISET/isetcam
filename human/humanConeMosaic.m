@@ -26,11 +26,11 @@ function [xy,coneType,densities,rSeed] = humanConeMosaic(sz,densities,umConeWidt
 %   sz        = [50,50];
 %   densities = [0.14 .5 .3 .06];
 %   [xy, coneType] = humanConeMosaic(sz,densities);
-%   figure(1); conePlot(xy,coneType(:))
+%   figure(1); ieConePlot(xy,coneType(:))
 %
 %   densities = [1 0 0 ];
 %   [xy, coneType, densities] = humanConeMosaic(sz,densities);
-%   figure(1); conePlot(xy,coneType(:))
+%   figure(1); ieConePlot(xy,coneType(:))
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 

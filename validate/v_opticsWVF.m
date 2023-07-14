@@ -1,197 +1,188 @@
-%%
-% ISET can build shift invariant representations based on
-% wavefront aberrations specified by Zernike polynomials. This
-% allows us to create shift invariant representations that are
-% diffraction limited (no aberrations) or with various simple
-% aberrations (astigmatism, coma, defocus).
+%% Comparing oi methods and wvf methods numerically
 %
-% The code in ISET is a simplified form of the wavefront tool in
-% ISETBIO, which always includes the human longitudinal chromatic
-% aberration and the Stiles-Crawford effect.  That tool is
-% designed to apply to human calculations of the wavefront
-% optics.
+% Historically, ISET mainly used diffraction limited calculations
+% directly as a special case.
 %
-% This validation script test the wavefront calculation and the
-% diffraction limited calculation.  The dlMTF code has been
-% tested, and we show that the wavefront version matches the
+% About 15 years ago, we added the ability to build general shift invariant
+% representations based on wavefront aberrations specified by Zernike
+% polynomials. These shift invariant representations can be diffraction
+% limited (no aberrations) or with various simple aberrations (astigmatism,
+% coma, defocus).
+%
+% The code in ISETBio was firmly based on the human data, including the
+% human longitudinal chromatic aberration and the Stiles-Crawford effect.
+% These were always set as the default wavefront creation.
+%
+% With the merge of ISETBio wavefront into ISETCam, we no longer
+% impose the specific human features, such as longitudinal chromatic
+% aberration, on the wavefront.  These are now optional.
+%
+% This validation script test the general wavefront calculations and the
+% original ISETCam diffraction limited calculation (dlMTF).  The dlMTF code
+% has been tested, and we show that the wavefront version matches the
 % results.
 %
-% Then we show how to adjust the Zernike polynomial coefficients
+% At the end of this script, we adjust the Zernike polynomial coefficients
 % to produce different defocus and other wavefront aberrations.
 %
-% Copyright Imageval Consulting, LLC 2015
+% See also
+%
 
 %%
-ieInit
+ieInit;
 
-%% I compared this with the ISETBIO verion of wvfP
-% they are identical at 550, when there is no chromatic
-% abberation
+%% Compare wvf and standard OI versions of diffraction limited
 
-% Create the wvf parameter structure with the appropriate values
-thisWave = 550;
+% First, calculate using the wvf code base.
+
+wvf = wvfCreate;
+thisWave = wvfGet(wvf,'wave');
+
+% Set aribtrarily
+fLengthMM = 10; fLengthM = fLengthMM*1e-3; fNumber = 3;
+pupilMM = fLengthMM/fNumber;
+wvf = wvfSet(wvf,'focal length',fLengthM);
+wvf  = wvfCompute(wvf,'human lca', false);
+
+pRange = 10;  % Microns
+wvfPlot(wvf,'2d psf space','um',thisWave,pRange,'airy disk',true);
+title(sprintf('Calculated pupil diameter %.1f mm',pupilMM));
+
+%% Compare wvf and oi methods directly
+
+wvfData = wvfPlot(wvf,'psf xaxis','um',thisWave,10);
+
+% Convert to OI and plot the same slice.
+% except for a small scale factor.  Which I don't understand
+oi = wvf2oi(wvf);
+uData = oiGet(oi,'optics psf xaxis');
+hold on;
+plot(uData.samp,uData.data,'gs');
+legend({'wvf','Airy','oi'});
+
+% Checksum
+assert(abs(sum(uData.data(:)) - 0.157166317909746) < 1e-3);
+%% Get the otf data from the OI and WVF computed two ways
+
+% Compare the two OTF data sets directly.
+wvfOTF = wvfGet(wvf,'otf');
+oiOTF  = oiGet(oi,'optics otf');
+
+% You must use fftshift, not ifftshift, to convert OI OTF data to
+% match the WVF data.
+ieNewGraphWin;
+oiOTFS = fftshift(oiOTF);
+plot(abs(oiOTFS(:)),abs(wvfOTF(:)),'.');
+identityLine;
+title('OTF: oi converted to wvf')
+
+% Checksum
+assert(abs(real(sum(oiOTFS(:))) - 1.072596854586380e+03) < 1e-3)
+
+%% Now, make a multispectral wvf and convert it to ISET OI format
+
+wave = linspace(400,700,4);
 pupilMM = 3;   % Could be 6, 4.5, or 3
 fLengthM = 17e-3;
 
-wvfP  = wvfCreate('wave',thisWave,'name',sprintf('%d-pupil',pupilMM));
-wvfP  = wvfSet(wvfP,'pupil diameter',pupilMM);
-wvfP  = wvfComputePSF(wvfP);
-wvfP  = wvfSet(wvfP,'focal length',fLengthM);  % 17 mm focal length for deg per mm
+% Create the multispectral wvf
+wvf  = wvfCreate('wave',wave,'name',sprintf('%dmm-pupil',pupilMM));
+wvf  = wvfSet(wvf,'calc pupil diameter',pupilMM);
+wvf  = wvfSet(wvf,'focal length',fLengthM);  % 17 mm focal length for deg per mm
 
-pRange = 15;  % Microns
-wvfPlot(wvfP,'2d psf space','um',thisWave,pRange);
-title(sprintf('Calculated pupil diameter %.1f mm',pupilMM));
+% Calculate without human LCA
+wvf  = wvfCompute(wvf,'human lca',false);
 
-% This is the radius of the Airy disk for this fnumber
-fNumber = wvfGet(wvfP,'focal length','mm')/pupilMM;
-radius = (2.44*fNumber*thisWave*10^-9)/2 * ieUnitScaleFactor('um');
-nSamp = 200;
-[adX,adY,adZ] = ieShape('circle',nSamp,radius);
-adZ = adZ + max(wvfP.psf{1}(:))*5e-3;
-hold on; p = plot3(adX,adY,adZ,'k-'); set(p,'linewidth',3); hold off;
-title(sprintf('WVF psf at %d',thisWave))
+% Convert wvf to OI format
+oi = wvf2oi(wvf);
 
-%% Now, let's compare the psf for the diffraction limited ISET optics
+%% Plot the wavelength dependent OTFs
 
-oi = oiCreate('diffraction limited');
-oi = oiSet(oi,'optics focal length',fLengthM);
-oi = oiSet(oi,'optics fnumber', fLengthM*1e+3/pupilMM);  % I think 19 mm in ISET
+ieNewGraphWin;
+tiledlayout(2,2);
+for ii=1:numel(wave)
+    thisWave = wave(ii);
 
-% Check values
-% oiGet(oi,'optics focal length','mm')
-% oiGet(oi,'optics aperture diameter','mm')
-uData = oiPlot(oi,'psf',[],thisWave);
-x = getMiddleMatrix(uData.x,50);
-y = getMiddleMatrix(uData.y,50);
-psf = getMiddleMatrix(uData.psf,50);
-vcNewGraphWin; mesh(x,y,psf)
-
-fNumber = oiGet(oi,'optics fnumber');
-radius = (2.44*fNumber*thisWave*10^-9)/2 * ieUnitScaleFactor('um');
-nSamp = 200;
-[adX,adY,adZ] = ieShape('circle',nSamp,radius);
-adZ = adZ + max(psf(:))*5e-3;
-hold on; p = plot3(adX,adY,adZ,'k-'); set(p,'linewidth',3); hold off;
-title(sprintf('WVF psf at %d',thisWave))
-
-% Get the otf data this way
-oiData = oiPlot(oi,'otf',[],thisWave);
-maxF = 2000;
-wvData = wvfPlot(wvfP,'otf','mm',thisWave,maxF);
-
-%% Compare ISET and WVF to see how close the OTFs are after interpolation
-
-% Remember that the DC position must account for whether the
-% length of fx is even or odd
-vcNewGraphWin;
-if isodd(length(wvData.fx)), wvMid = floor(length(wvData.fx)/2) + 1;
-else,                 wvMid = length(wvData.fx)/2 + 1;
+    oiOTF = oiGet(oi,'optics otf and support',thisWave);
+    wvOTF = wvfGet(wvf,'otf and support','mm',thisWave);
+    nexttile;
+    plot(abs(oiOTF.otf(:)),abs(wvOTF.data(:)),'.');
+    title(sprintf('Wave: %d',wave(ii)));
+    identityLine; grid on;
 end
-plot(wvData.fx, wvData.otf(:,wvMid),'r-'); hold on;
 
-if isodd(length(oiData.fx)), oiMid = floor(length(oiData.fx)/2) + 1;
-else,          oiMid = length(oiData.fx)/2 + 1;
-end
-plot(oiData.fx, oiData.otf(:,oiMid),'b-')
-legend({'wvf','oi'})
+%%  Show that the diffraction limited OTFs differ by wavelength
 
-%% Now, we make a multispectral wvf and convert the WVF to ISET
+ieNewGraphWin([],'wide');
+otf = oiPlot(oi,'otf',[],wave(1),'mm','no window');
+subplot(1,2,1); mesh(otf.fx,otf.fy,abs(otf.otf));
+title(sprintf('Wave: %d',wave(1)));
+otf = oiPlot(oi,'otf',[],wave(end),'mm','no window');
+subplot(1,2,2); mesh(otf.fx,otf.fy,abs(otf.otf));
+title(sprintf('Wave: %d',wave(end)));
 
-% Create the wvf parameter structure with the appropriate values
-wave = (400:50:700);
-pupilMM = 3;   % Could be 6, 4.5, or 3
-fLengthM = 17e-3;
+%% Compute with the oi and the wvf
 
-wvfP  = wvfCreate('wave',wave,'name',sprintf('%d-pupil',pupilMM));
-wvfP  = wvfSet(wvfP,'pupil diameter',pupilMM);
-wvfP  = wvfComputePSF(wvfP);
-wvfP  = wvfSet(wvfP,'focal length',fLengthM);  % 17 mm focal length for deg per mm
+gridScene = sceneCreate('grid lines',384,128);
+gridScene = sceneSet(gridScene,'hfov',1);
+% sceneWindow(gridScene);
 
-pRange = 15;  % Microns
-thisWave = 550;
-wvfPlot(wvfP,'2d psf space','um',thisWave,pRange);
-title(sprintf('Calculated pupil diameter %.1f mm',pupilMM));
-
-%%
-oi = wvf2oi(wvfP);
-
-%% Compare the OTF plots from the two worlds
-
-thisWave = 550;
-oiData = oiPlot(oi,'otf',[],thisWave);
-wvData = wvfPlot(wvfP,'2D otf','mm',thisWave);
-
-vcNewGraphWin;
-if isodd(length(wvData.fx)), wvMid = floor(length(wvData.fx)/2) + 1;
-else,                 wvMid = length(wvData.fx)/2 + 1;
-end
-plot(wvData.fx, wvData.otf(:,wvMid),'r-'); hold on;
-
-if isodd(length(oiData.fx)), oiMid = floor(length(oiData.fx)/2) + 1;
-else,          oiMid = length(oiData.fx)/2 + 1;
-end
-plot(oiData.fx, oiData.otf(:,oiMid),'b-')
-legend({'wvf','oi'})
-
-
-%% Show the psfs
-oiPlot(oi,'psf550');
-
-% This is the psf and the radius of the Airy disk for this fnumber
-thisWave = 550;
-wvfPlot(wvfP,'2d psf space','um',thisWave,10);
-fNumber = oiGet(oi,'optics fNumber');
-radius = ((2.44*fNumber*thisWave*10^-9)/2) * ieUnitScaleFactor('um');
-nSamp = 200;
-[adX,adY,adZ] = ieShape('circle',nSamp,radius);
-adZ = adZ + max(wvfP.psf{1}(:))*1e-2;
-hold on; p = plot3(adX,adY,adZ,'k-'); set(p,'linewidth',3); hold off;
-
-%% If the OTF data are basically matched, we should be able to interpolate
-
-% That is, we should be able to take the wvf otf data and
-% interpolate them onto the oi otf frequency values.
-
-% There are very small differences (~0.005) at a few interpolated values
-est = interp2(wvData.fx,wvData.fy,wvData.otf,oiData.fx,oiData.fy,'cubic',0);
-vcNewGraphWin; plot(est(:),oiData.otf(:),'rx')
-axis equal
-identityLine
-
-% Nearly perfect.
-% vcNewGraphWin; histogram(est(:) - oiData.otf(:),100)
-
-%% Test scene
-
-s = sceneCreate('radial lines');
-s = sceneSet(s,'hfov',2);
-ieAddObject(s);
-
-%% Calculate
-
-oi = oiCompute(oi,s);
+% Create the oi
+oi = oiCompute(oi,gridScene);
 oi = oiSet(oi,'name',sprintf('oi f/# %.2f',oiGet(oi,'fnumber')));
-ieAddObject(oi); oiWindow;
+oiWindow(oi);
 
-%% Standard way of creating a diffraction limited optics
-oiD = oiCreate;
-oiD = oiSet(oiD,'optics fnumber',wvfGet(wvfP,'fnumber'));
-oiD = oiCompute(oiD,s);
-oiD = oiSet(oiD,'name',sprintf('wvf f/# %.2f',wvfGet(wvfP,'fnumber')));
-ieAddObject(oiD); oiWindow;
+% This is the oi computed directly with the wvfP using wvfApply
+oiWVF = oiCompute(wvf,gridScene);
+oiWindow(oiWVF);
 
-%% Finally, show off with setting a defocus on the wvf structure
+% Compare the photons
+photons1 = oiGet(oi,'photons');
+photons2 = oiGet(oiWVF,'photons');
 
-def = 1;
-wvfD = wvfSet(wvfP,'zcoeff',def,'defocus');
-wvfD = wvfSet(wvfD,'z pupil diameter',8);
-wvfD = wvfComputePSF(wvfD);
+ieNewGraphWin;
+plot(photons1(:),photons2(:),'.');
+identityLine; grid on; xlabel('oiCompute'); ylabel('wvfApply');
+
+%% Setting a defocus on the wvf structure
+
+defocus = 1;  % Diopters
+wvfD = wvfSet(wvf,'zcoeff',defocus,'defocus');
+
+wvfD = wvfCompute(wvfD,'human lca',false);
+pRange = 20;
 wvfPlot(wvfD,'2d psf space','um',thisWave,pRange);
-title(sprintf('Z defocus parameter %.1f',def));
+title(sprintf('Defocus %.1f D',defocus));
 
-oiDD = wvf2oi(wvfD);
-oiDD = oiCompute(oiDD,s);
-oiDD = oiSet(oiDD,'name',sprintf('Z defocus %.1f',def));
-ieAddObject(oiDD); oiWindow;
+%% Convert to an OI and render
 
-%%
+oiD = oiCompute(wvfD,gridScene);
+oiD = oiSet(oiD,'name',sprintf('oiCompute Defocus %.1f no LCA',defocus));
+oiWindow(oiD);
+
+%% Now recompute and include human longitudinal chromatic aberration
+
+wvfDCA = wvfCompute(wvfD,'human lca',true);
+oiDCA = oiCompute(wvfDCA,gridScene);
+oiDCA = oiSet(oiDCA,'name','Defocus and LCA');
+oiWindow(oiDCA);
+
+%% Add some astigmatism, still include the human LCA
+
+wvfVA = wvfSet(wvf,'zcoeff',0.5,'defocus');
+wvfVA = wvfSet(wvfVA,'zcoeff',-0.5,'vertical_astigmatism');
+
+% We need to re-compute.
+wvfVA  = wvfCompute(wvfVA,'human lca', true);
+
+oi = oiCompute(wvfVA,gridScene);
+oi = oiSet(oi,'name','vertical astig');
+oiWindow(oi);
+
+testWave = [450,550];
+for ii = 1:numel(testWave)
+    oiPlot(oi,'psf',[],testWave(ii)); 
+end
+
+
+%% END

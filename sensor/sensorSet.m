@@ -234,7 +234,7 @@ switch lower(param)
         thisName = sensorGet(sensor,'name');
         if isempty(thisName), return;
         elseif ieContains(thisName,'human')
-            disp('Resizing human sensor.  Suggest you use ISETBio.')
+            % disp('Resizing human sensor.  Suggest you use ISETBio.')
             if checkfields(sensor,'human','coneType')
                 d = sensor.human.densities;
                 rSeed = sensor.human.rSeed;

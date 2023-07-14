@@ -386,8 +386,11 @@ switch parm
         val = -(opticsGet(optics,'focal Plane Distance',sDist))/sDist;
         
     case {'otf','otfdata','optical transfer function'}
+        %
+        % Shift invariant:  opticsGet(optics,'otf', wave)
+        % Diff limited:  otf = opticsGet(optics,'otf data',oi, fSupport, [wave]);
+        %
         % You can ask for a particular wavelength with the syntax
-        %    opticsGet(optics,'otfData',oi, spatialUnits, wave)
         %
         % OTF values can be complex. They are related to the PSF data by
         %    OTF(:,:,wave) = fft2(psf(:,:,wave))
@@ -458,7 +461,22 @@ switch parm
             otherwise
                 error('OTFData not implemented for %s model',opticsModel);
         end
+    case {'otfandsupport'}
+        % opticsGet(optics,'otf and support',thisWave);
+        % Units are cycles/mm of optics support
         
+        if ~isempty(varargin), thisWave = varargin{1};
+        else, thisWave = []; end
+        otf = opticsGet(optics,'otf data',thisWave);
+        if isempty(otf), error('No OTF data'); end
+
+        % We are returned fSupport(:,:,1/2) for X and Y
+        val.fx = opticsGet(optics,'otf fx');
+        val.fy = opticsGet(optics,'otf fy');
+
+        % Transform so DC is in center
+        val.otf = fftshift(otf);
+
     case {'degreesperdistance','degperdist'}
         % opticsGet(optics,'deg per dist','mm')
         %
@@ -505,28 +523,54 @@ switch parm
         end
         
     case {'transmittancescale','transmittance'}
-        % opticsGet(optics,'transmittance',[wave])
+        % column = opticsGet(optics,'transmittance',[wave])
         %
         % The lens transmittance, potentially interpolated or event
-        % extrapolated to the requested wavelength samples
+        % extrapolated to the requested wavelength samples.  This is
+        % usually called with wave = oiGet(oi,'wave');
+        %
+        % Historically, we stored transmittance in its own slot that
+        % is used for camera lenses in ISETCam.  In that case, we have
+        % an optics.transmittance entry.  With the new support for
+        % ISETBio, we store the @Lens class, which has some additional
+        % flexibility such as setting the lens density and other
+        % advanced capabilities.
+        %
+        % To accommodate the change, we ask first if we have the
+        % transmittance slot - if yes we use that.  If not, we look to
+        % see if we have the lens class attached and use that. 
+        % 
+        % Perhaps we should create separate gets, such as 'human lens
+        % transmittance' and 'lens transmittance' to distinguish.        
         
-        % Stored
-        val = optics.transmittance.scale;
-        
-        % If wavelength samples are requested ... always a column
-        if ~isempty(varargin)
-            newWave = varargin{1};
-            wave = optics.transmittance.wave;
-            scale = optics.transmittance.scale;
-            
-            if min(newWave(:))< min(wave(:)) || max(newWave(:)) > max(wave(:))
-                % Extrapolation required.
-                disp('Extrapolating lens transmittance with 1''s')
-                val = interp1(wave,scale,newWave,'linear',1)';
-            else
-                val = interp1(wave,scale,newWave,'linear')';
+        if isfield(optics,'transmittance')
+            % Stored in the transmittance slot
+            val = optics.transmittance.scale;
+
+            % If wavelength samples are requested ... always a column
+            if ~isempty(varargin)
+                newWave = varargin{1};
+                wave = optics.transmittance.wave;
+                scale = optics.transmittance.scale;
+
+                if min(newWave(:))< min(wave(:)) || max(newWave(:)) > max(wave(:))
+                    % Extrapolation required.
+                    disp('Extrapolating lens transmittance with 1''s')
+                    val = interp1(wave,scale,newWave,'linear',1)';
+                else
+                    val = interp1(wave,scale,newWave,'linear')';
+                end
             end
+        elseif isfield(optics,'lens')
+            % Stored in the lens slot
+            if ~isempty(varargin)
+                optics.lens.wave = varargin{1};
+            end
+            val = optics.lens.transmittance;
+        else            
+            error('No transmittance and no lens slots.')
         end
+        val = val(:);
         
     case {'transmittancewave'}
         % opticsGet(optics,'transmittance wave')
@@ -534,11 +578,22 @@ switch parm
         % Wavelength samples for the lens transmittance function.
         % Typically, these are set and stored once.  When the transmittance
         % is requested for different wavelengths, we interpolate as above.
-        val = optics.transmittance.wave;
-        
+        if isfield(optics,'transmittance')
+            val = optics.transmittance.wave;
+        elseif isfield(optics,'lens')
+            val = optics.lens.wave;
+        else
+            error('No transmittance and no lens slots.')
+        end
     case {'transmittancenwave'}
         % Number of lens transmittance wavelength samples stored
-        val = length(optics.transmittance.wave);
+        if isfield(optics,'transmittance')
+            val = numel(optics.transmittance.wave);
+        elseif isfield(optics,'lens')
+            val = numel(optics.lens.wave);
+        else
+            error('No transmittance and no lens slots.')
+        end
         
         % ----- Diffraction limited parameters
     case {'dlfsupport','dlfsupportmatrix'}
@@ -651,7 +706,8 @@ switch parm
     case {'otfsize'}
         % Row and col samples
         if checkfields(optics,'OTF','OTF')
-            tmp = size(optics.OTF.OTF); val = tmp(1:2);
+            tmp = size(optics.OTF.OTF); 
+            val = tmp(1:2);
         end
         
     case {'otfwave','otfwavelength','wave','wavelength'}
@@ -728,13 +784,13 @@ switch parm
                         thisWave = varargin{1};
                         otf = opticsGet(optics,'otf data',thisWave);
                         % mesh(fftshift(otf))
-                        psf = fftshift(ifft2(otf));
+                        psf = fftshift(ifft2(otf));                        
                         % mesh(abs(psf))
                     else
                         % All of them
                         psf = zeros(size(optics.OTF.OTF));
                         for ii=1:length(otfWave)
-                            psf(:,:,ii) = fftshift(ifft2(optics.OTF.OTF(:,:,ii)));
+                            psf(:,:,ii) = fftshift(ifft2(optics.OTF.OTF(:,:,ii)));                            
                         end
                     end
                     
@@ -743,6 +799,14 @@ switch parm
                     nSamps = size(psf,1)/2;
                     fSupport = opticsGet(optics,'otf fx',units);
                     sSupport = opticsGet(optics,'psf support',fSupport,nSamps);
+                    
+                    % BW:  July 3, 2023.
+                    % This spatial support is not in perfect alignment with
+                    % the spatial support from the wavefront code.  To make
+                    % things match, we need a shift of dx/2.  Considering
+                    % what to do.  Changing from fftshift to ifftshift does
+                    % not solve the problem, it only changes the direction
+                    % of the shift.  
                     
                     % This is an error check in a way.
                     if ~isreal(val)
@@ -756,7 +820,36 @@ switch parm
         end
         val.psf = psf;
         val.xy  = sSupport;
+    case {'psfxaxis'}
+        % opticsGet(optics,'psf xaxis',thisWave,units,nSamp);
+        %
+        % The psf data interpolated along the xaxis. 
+        thisWave = opticsGet(optics,'wave'); 
+        if numel(thisWave) > 1, thisWave = 550; end
+        units = 'um'; nSamp = 25;
         
+        if length(varargin) >= 1, thisWave = varargin{1}; end
+        if length(varargin) >= 2, units = varargin{2}; end
+        if length(varargin) >= 3, nSamp = varargin{3}; end
+
+        psfData = opticsGet(optics,'psf data',thisWave,units,nSamp);
+        val.data = interp2(psfData.xy(:,:,1),psfData.xy(:,:,2),psfData.psf,0,psfData.xy(1,:,1));
+        val.samp = psfData.xy(1,:,1); val.samp = val.samp(:);
+
+    case {'psfyaxis'}
+        % The psf data interpolated along the axis
+        thisWave = opticsGet(optics,'wave');
+        if numel(thisWave) > 1, thisWave = 550; end
+        units = 'um'; nSamp = 25;
+
+        if length(varargin) >= 1, thisWave = varargin{1}; end
+        if length(varargin) >= 2, units = varargin{2}; end
+        if length(varargin) >= 3, nSamp = varargin{3}; end
+
+        psfData = opticsGet(optics,'psf data',thisWave,units,nSamp);
+        val.data = interp2(psfData.xy(:,:,1),psfData.xy(:,:,2),psfData.psf,0,psfData.xy(:,1,2));
+        val.samp = psfData.xy(:,1,2); val.samp = val.samp(:);
+
     case {'psfspacing'}
         % opticsGet(optics,'psf spacing',[fx])
         %
@@ -803,14 +896,22 @@ switch parm
         % distance.
         peakF = max(fx(:));
         val = 1/(2*peakF);
-        
+    case {'middlerow'}
+        % This matches conventions for psf and otf when we use the PTB
+        % routines to obtain these.
+        tmp = floor(opticsGet(optics, 'otfsize') / 2) + 1;
+        val = tmp(1);  % The row
+    case {'middlecol'}       
+        % This matches conventions for psf and otf when we use the PTB
+        % routines to obtain these.
+        tmp = floor(opticsGet(optics, 'otfsize') / 2) + 1;
+        val = tmp(2);  % The row        
     case {'psfsupport'}
         % opticsGet(optics,'psf support',fSupport, nSamps)
         %
         % Returns mesh grid of X and Y values.  But maybe we should check
         % the behavior and return the vector and matrix forms on request.
-        %
-        
+        %        
         if length(varargin) < 2, error('fSupport and nSamps required.'); end
         fSupport = varargin{1};
         nSamp    = varargin{2};
@@ -819,7 +920,22 @@ switch parm
         % runs from -Nyquist:Nyquist. With this support, the Nyquist
         % frequency is actually the highest (peak) frequency value. There
         % are two samples per Nyquist, so the sample spacing is 1/(2*peakF)
-        samp = (-nSamp:(nSamp-1));
+        
+        % BW modified: July 2023.
+        if isequal(opticsGet(optics,'model'),'diffractionlimited')
+            % The diffraction limited case is left alone.
+            samp = (-nSamp:(nSamp-1));
+        else
+            % BW TODO:  What to do if OTF is not square?  
+            % The shift invariant case is made consistent with
+            % wvfGet(wvf,'spatial samples') 
+            middleRow = opticsGet(optics,'middle row');
+            tmp = opticsGet(optics,'otf size');
+            assert(tmp(1) == tmp(2));
+            nSamples = tmp(1);
+            samp = (1:nSamples) - middleRow;
+        end
+        
         [X,Y] = meshgrid(samp,samp);
         
         % Same as opticsGet(optics,'psf spacing',peakF);
@@ -849,8 +965,8 @@ switch parm
         % Numerical values.  Should change field to data from value.  I
         % don't think this is ever used, is it?
         if checkfields(optics,'cos4th','value'), val = optics.cos4th.value; end
-        
-        % ---------------  Ray Trace information.
+
+        % ---------------  Ray Trace information   -------------------
         % The ray trace computations differ from those above because they
         % are not shift-invariant.  When we use a custom PSF/OTF that is
         % shift invariant, we still store the information in the main

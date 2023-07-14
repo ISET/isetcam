@@ -1,36 +1,72 @@
-function optics = opticsCreate(opticsType,varargin)
+function [optics, wvfP]  = opticsCreate(opticsType,varargin)
 % Create an optics structure
 %
-%   optics = opticsCreate(opticsType,varargin)
+%   [optics, wvfP] = opticsCreate(opticsType,varargin)
 %
-% The optics structure contains a variety of parameters, such as f-number
-% and focal length.
+% Description:
+%    This function is typically called through oiCreate. The optics
+%    structure is attached to the oi and manipulated by oiSet and oiGet.
 %
-% Optics structures do not contain a spectrum structure.  Rather this is
-% stored in the optical image that also holds the optics information.
+%    The optics structure contains a variety of parameters, such as
+%    f-number and focal length. There are two types of optics models:
+%    diffraction limited and shift-invariant. See the discussion in
+%    opticsGet for more detail.
 %
-% For diffraction-limited optics, the only parameter that matters really is
-% the f-number.  The names of the standard types end up producing a variety
-% of sizes that are only loosely connected to the names.
+%    Optics structures do not start out with a wavelength spectrum
+%    structure. This information is stored in the optical image.
 %
+%    For diffraction-limited optics, the only parameter that matters
+%    really is the f-number.  The names of the standard types end up
+%    producing a variety  of sizes that are only loosely connected to
+%    the names. 
+%
+%    Specifying human optics creates a shift-invariant optics structure
+%    with human OTF data.
+%
+%    Human and general shift-invariant models can also be created by
+%    specifying wavefront aberrations using Zernike polynomials. There is a
+%    collection of wavefront methods to help with this (see wvfCreate,
+%    wvf<TAB>). That is the method used here for 'wvf human'.
+%
+% Inputs
+%  opticsType
 %      {'diffraction limited, 'standard (1/4-inch)'} - DEFAULT
 %      {'standard (1/3-inch)'}
 %      {'standard (1/2-inch)'}
 %      {'standard (2/3-inch)'}
 %      {'standard (1-inch)'}
 %
-% There is the general shift invariant formulation that uses
-% non-diffraction limited OTF
+%   There is the general shift invariant formulation that uses
+%   non-diffraction limited OTF
 %
 %      {'shift invariant'} - A shift invariant representation based on a
 %                            small pillbox PSF
 %
-% There is one special case of shift-invariant based on human optics.  This
-% creates an optics structure with human OTF data
-%
-%      {'human'}     - Also shift-invariant, but uses Marimont
+%      {'human mw', 'human'} - Also shift-invariant, but uses Marimont
 %                      and Wandell (Hopkins) method
 %
+%      {'human wvf'}  - Uses Wavefront toolbox and Thibos data. Has
+%                        varargin parameters for pupil diameter,
+%                        Zernike Coefficients, wavelengths, and
+%                        microns per degree.
+%
+%    varargin   - (Optional) Additional arguments, such as the following
+%                 for a wavefront/Thibos human: (in this order)
+%        pupilDiameter: Numeric. Diameter of a human pupil in millimeters.
+%                       Default 3mm.
+%        zCoefs:        The zernike coefficients. Default pulls from
+%                       wvfLoadThibosVirtualEyes.
+%        wave:          Vector. Wavelengths. Default 400:10:700.
+%        umPerDegree:   Retinal parameter, microns per degree. Default 300.
+%        customLCA:     A function handle specifying a custom LCA function
+%
+% Outputs:
+%    optics     - Struct. The created optics structure.
+%    wvf        - If the wvf human case, the wvf struct is returned
+%
+% See Also:
+%   oiCreate, opticsSet, opticsGet
+
 % Example:
 %   optics = opticsCreate('standard (1/4-inch)');
 %   optics = opticsCreate('standard (1-inch)');
@@ -38,17 +74,19 @@ function optics = opticsCreate(opticsType,varargin)
 %   optics = opticsCreate('human');        % 3mm diameter is default
 %   optics = opticsCreate('human',0.002);  % 4 mm diameter
 %
-% Copyright ImagEval Consultants, LLC, 2003.
+% See also
+%
 
+%%
 if ieNotDefined('opticsType'), opticsType = 'default'; end
 
 opticsType = ieParamFormat(opticsType);
 
 switch lower(opticsType)
-    case {'diffractionlimited','default','standard(1/4-inch)','quarterinch'}
+    case {'default','diffractionlimited','standard(1/4-inch)','quarterinch'}
         % These are all diffraction limited methods.
         optics = opticsDefault;
-        
+
     case {'standard(1/3-inch)','thirdinch'}
         optics = opticsThirdInch;
     case {'standard(1/2-inch)','halfinch'}
@@ -57,14 +95,14 @@ switch lower(opticsType)
         optics = opticsTwoThirdInch;
     case {'standard(1-inch)','oneinch'}
         optics = opticsOneInch;
-        
+
     case 'shiftinvariant'
         % optics = opticsCreate('shift invariant',oi);
         %
         % Shift-invariant optics based on a Gaussian.  (Used to use
         % SI-pillBox).  The OTF is represented in terms of fx and fy
         % specified in cycles per millimeter.
-        
+
         if ~isempty(varargin), oi = varargin{1}; else, oi = oiCreate; end
         wave = oiGet(oi,'wave');
         if isempty(wave)
@@ -75,11 +113,11 @@ switch lower(opticsType)
         xyRatio = ones(1,length(wave));
         optics = siSynthetic(psfType,oi,waveSpread,xyRatio);
         % psfMovie(optics,ieNewGraphWin);
-        
+
         % Used to create a pillbox like this
         % optics = siSynthetic('custom',oi,'SI-pillBox',[]);
-        
-    case 'human'
+
+    case {'human','humanmw'}
         % Pupil radius in meters.  Default is 3 mm
         if ~isempty(varargin), pupilRadius = varargin{1};
         else,                  pupilRadius = 0.0015;    % 3mm diameter default
@@ -89,7 +127,115 @@ switch lower(opticsType)
         optics = opticsHuman(pupilRadius);
         optics = opticsSet(optics,'model','shiftInvariant');
         optics = opticsSet(optics,'name','human-MW');
+
+    case {'wvfhuman','humanwvf'}
+        % opticsCreate('wvf human',pupilDiameterMM, zCoefs, wave, ...
+        %               umPerDegree, customLCA)
+        %
+        % Default optics based on mean Zernike polynomials estimated
+        % by Thibos, for 3 mm pupil. Chromatic aberration is included.
+        % 
+        % This is not representative of any particular observer, because
+        % the mean Zernike polynomials do not capture the phase
+        % information.
+
+        % Defaults
+        pupilDiameterMM = 3;
         
+        wave = 400:10:700;
+        wave = wave(:);
+        umPerDegree = 300;
+        customLCA = [];
+        % Thibos
+        zCoefs = wvfLoadThibosVirtualEyes(pupilDiameterMM);
+
+        if (~isempty(varargin) && ~isempty(varargin{1}))
+            pupilDiameterMM = varargin{1};
+        end
+        if (length(varargin) > 1 && ~isempty(varargin{2}))
+            zCoefs = varargin{2};
+        end
+        if (length(varargin) > 2 && ~isempty(varargin{3}))
+            wave = varargin{3};
+            wave = wave(:);
+        end
+        if (length(varargin) > 3 && ~isempty(varargin{4}))
+            umPerDegree = varargin{4};
+        end
+        if (length(varargin) > 4 && ~isempty(varargin{5}))
+            customLCA = varargin{5};
+        end
+
+        % Create wavefront parameters. Set both measured and calc
+        % pupil size.
+        wvfP = wvfCreate('calc wavelengths', wave, 'zcoeffs', zCoefs, ...
+            'name', sprintf('human-%d', pupilDiameterMM), ...
+            'umPerDegree', umPerDegree, ...
+            'customLCA', customLCA);
+        wvfP = wvfSet(wvfP, 'measured pupil size', pupilDiameterMM);
+        wvfP = wvfSet(wvfP, 'calc pupil size', pupilDiameterMM);
+
+        % Include human chromatic aberration because this is wvf human        
+        wvfP = wvfCompute(wvfP, 'human lca', true);
+        oi = wvf2oi(wvfP);
+        optics = oiGet(oi,'optics');
+
+        %{
+        % BW:
+        % Is this needed?  Shouldn't it be handled in wvf2oi?  Commenting
+        % this out in July 8, 2023.
+        %
+        % Convert from pupil size and focal length to f# and focal
+        % length, because that is what ISET sets. This implies a
+        % number of um per degree, and we back it out the other way
+        % here so that it is all consistent.
+        focalLengthMM = (umPerDegree * 1e-3) / (2 * tand(0.5));
+        fLengthMeters = focalLengthMM * 1e-3;
+        pupilRadiusMeters = (pupilDiameterMM / 2) * 1e-3;
+        optics = opticsSet(optics, 'fnumber', fLengthMeters / ...
+            (2 * pupilRadiusMeters));
+        optics = opticsSet(optics, 'focal length', fLengthMeters);
+        %}
+
+        % Human, so add default human Lens
+        optics.lens = Lens;
+
+        % Store the wavefront parameters
+        optics.wvf = wvfP;
+
+    case 'mouse'
+        % Some day might add in a default mouse optics. Here are some
+        % guesses about the right parameters:
+        %
+        % Pupil radius in meters.
+        %   Dilated pupil: 1.009mm = 0.001009m
+        %   Contracted pupil: 0.178 mm
+        %   (Source: From candelas to photoisomerizations in the mouse eye
+        %   by rhodopsin bleaching in situ and the light-rearing dependence
+        %   of the major components of the mouse ERG, Pugh, 2004)
+        % We use a default value, in between: 0.59 mm.
+        %         if ~isempty(varargin)
+        %             pupilRadius = varargin{1};
+        %             if pupilRadius > 0.001009 || pupilRadius < 0.000178
+        %                 warning('Poor pupil size for the  mouse eye.')
+        %             end
+        %         else
+        %             pupilRadius = 0.00059;  % default : 0.59 mm
+        %         end
+        %         % This creates a shift-invariant optics. The other
+        %         % standard forms are diffraction limited.
+        %         optics = opticsMouse(pupilRadius);
+        %         optics = opticsSet(optics, 'model', 'shiftInvariant');
+        %
+        %     case {'standard(1/3-inch)', 'thirdinch'}
+        %         optics = opticsThirdInch;
+        %     case {'standard(1/2-inch)', 'halfinch'}
+        %         optics = opticsHalfInch;
+        %     case {'standard(2/3-inch)', 'twothirdinch'}
+        %         optics = opticsTwoThirdInch;
+        %     case {'standard(1-inch)', 'oneinch'}
+        %         optics = opticsOneInch;
+
     otherwise
         error('Unknown optics type.');
 end
@@ -101,6 +247,46 @@ optics.transmittance.scale = ones(length(370:730),1);
 % Default settings for off axis and pixel vignetting
 optics = opticsSet(optics,'offAxisMethod','cos4th');
 optics.vignetting =    0;   % Pixel vignetting is off
+
+end
+
+%---------------------------------------
+function optics = opticsDiffraction
+% Std. diffraction-limited optics w/ 46 deg. fov & fNumber of 4.
+%
+% Copied over from ISETBio - this appears to be the same as the quarterinch
+% default here.  To check (BW)!  In which case, we should use this
+% one, I think.
+%
+% Syntax:
+%   optics = opticsDiffraction
+%
+% Description:
+%    Standard diffraction limited optics with a 46-deg field of view and
+%    fnumber of 4. Simple digital camera optics are like this.
+%
+% Inputs:
+%    None.
+%
+% Outputs:
+%    optics - Struct. The optics structure.
+%
+% Optional key/value pairs:
+%    None.
+%
+
+optics.type = 'optics';
+optics = opticsSet(optics, 'name', 'ideal (small)');
+optics = opticsSet(optics, 'model', 'diffraction limited');
+
+% Standard 1/4-inch sensor parameters
+sensorDiagonal = 0.004;
+FOV = 46;
+fLength = inv(tan(FOV / 180 * pi) / 2 / sensorDiagonal) / 2;
+
+optics = opticsSet(optics, 'fnumber', 4);  % focal length / diameter
+optics = opticsSet(optics, 'focalLength', fLength);
+optics = opticsSet(optics, 'otfMethod', 'dlmtf');
 
 end
 

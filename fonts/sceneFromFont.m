@@ -50,7 +50,7 @@ energy = XW2RGBFormat(energy,r,c);
 p = Energy2Quanta(wave,energy);
 scene = sceneSet(scene, 'photons', p);   % Compressed photons
 
-% ieAddObject(scene); sceneWindow;
+% sceneWindow(scene);
 
 %% Adjust the scene to match the display resolution
 

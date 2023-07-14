@@ -22,7 +22,8 @@ function val = displayGet(d, parm, varargin)
 %     {'rgb spd'}             - The RGB primaries, excluding the backlight
 %                               and ambient term, which is the 4th.
 %     {'white spd'}           - white point spectral power distribution
-%     {'black spd'}           - spd when display is black
+%     {'black spd'}           - spd when display is black (also called
+%                               ambient spd and black radiance)
 %     {'n primaries'}         - number of primaries
 %
 % Color conversion and metric
@@ -44,6 +45,8 @@ function val = displayGet(d, parm, varargin)
 %     {'dots per meter'}
 %     {'dots per deg'}         - dots per degree visual angle
 %     {'viewing distance'}     - in meters
+%     {'size'}                 - Vector. 1x2 vector of display
+%                                 size in meters [h, v]
 %
 % Subpixel structure
 %     {'dixel'}              - dixel structure describing repeating unit
@@ -102,12 +105,18 @@ switch parm
         if isfield(d,'gamma'), val = d.gamma; end
     case {'inversegamma', 'inversegammatable'}
         if isfield(d, 'gamma')
+            gTable = displayGet(d,'gamma table');
+            % Sometimes the gTable has a 4th primary that represents an
+            % additive constant background light (ambient spd)
+            gTable = gTable(:,1:3);
             % Optional nSteps arg for inverse gamma table
             if (isempty(varargin))
-                val = ieLUTInvert(d.gamma);
-            else
-                val = ieLUTInvert(d.gamma,varargin{1});
+                nSteps = size(gTable,1);
+            else, nSteps = varargin{1};
             end
+            val = ieLUTInvert(gTable,nSteps);
+        else
+            error('No gamma table for display %s\n',displayGet(d,'name'));
         end
     case {'isemissive'}
         val = true;
@@ -279,6 +288,12 @@ switch parm
         if checkfields(d,'dpi'), val = d.dpi;
         else, val = 96;
         end
+    case {'size'}
+        % Display size in meters
+        if checkfields(d, 'size'), val = d.size;
+        else, val = [1024 / 768 * 0.3, 0.3];
+        end
+
     case {'metersperdot'}
         % displayGet(dsp,'meters per dot','m')
         % displayGet(dsp,'meters per dot','mm')
@@ -471,22 +486,35 @@ switch parm
         % displayGet(d, 'dark level')
         gTable = displayGet(d, 'gTable');
         val = gTable(1, :);
-    case {'blackspd', 'blackradiance'}
+    
+    case {'blackspd', 'blackradiance', 'ambientspd'}
         % black radiance
         % computes dark spd (radiance) of the display in units of energy
         % (watts / ...)
         %
-        % displayGet(d, 'black radiance')
-        dark_level = displayGet(d, 'dark level');
-        val = displayGet(d, 'spd') * dark_level';
+        % displayGet(d, 'black radiance', [wave])
+        wave = displayGet(d, 'wave');
+        if isfield(d, 'ambient')
+            val = d.ambient;
+        else
+           %  warning(['black (ambient) SPD is not set for display, ' ...
+           %      'return 0']);
+            val = zeros(size(wave));
+        end
+
+        if ~isempty(varargin)
+            newWave = varargin{1};
+            val = interp1(wave, val, newWave, 'linear', 0);
+        end
+
     case {'darkluminance', 'blackluminance'}
         % dark luminance
-        % returns the luminance of display when all pixels are turned off
+        % returns luminance of display when all pixels are turned off
         %
         % displayGet(d, 'dark luminance')
         blackSpd = displayGet(d, 'black spd');
         blackXYZ = ieXYZFromEnergy(blackSpd', displayGet(d, 'wave'));
-        val = blackXYZ(2);
+        val = blackXYZ(2);       
         
         % Image data.  Maybe we should add other information?
     case {'rgb','image'}

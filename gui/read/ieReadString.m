@@ -10,6 +10,11 @@ function ieString = ieReadString(prompt,defString)
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
+
+%{
+ieString = ieReadString('Test me','Hello World!')
+%}
+
 if ieNotDefined('prompt'), prompt = 'Enter'; end
 if ieNotDefined('defString'), defString = ''; end
 
@@ -21,4 +26,4 @@ lineNo=1;
 answer = inputdlg(prompt,dlgTitle,lineNo,def);
 if ~isempty(answer), ieString = answer{1}; end
 
-return;
+end

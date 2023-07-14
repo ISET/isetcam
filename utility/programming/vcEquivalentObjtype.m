@@ -1,12 +1,20 @@
-function objType = vcEquivalentObjtype(objType)
-%Translate aliases into the name used in vcSESSION variable
+function objType = vcEquivalentObjtype(thisObj)
+% Translate strings into the name used in vcSESSION variable
 %
+% Brief description
+%   In some cases we used alternative strings for the basic ISETCam
+%   classes.  We translate those here into the vcSESSION strings.
+%
+%   In other cases when this is called, we happen to send in a
+%   different type of object, not a string.  In that case, we return
+%   the class(objType).
+%
+% Synopsis
 %   objType = vcEquivalentObjtype(objType);
 %
-% The official object names are SCENE, OPTICALIMAGE, ISA, VCIMAGE,
-% DISPLAY.
+% The vcSESSION object names are SCENE, OPTICALIMAGE, ISA, VCIMAGE, DISPLAY
 %
-% This call translates aliases for we sometimes use for key terms:
+% These are aliases we sometimes use for key terms:
 %
 %   OI           -> OPTICAL IMAGE
 %   SENSOR       -> ISA
@@ -18,18 +26,25 @@ function objType = vcEquivalentObjtype(objType)
 % See also
 %   ieGetObject, ieAddObject
 
-%% Get rid of case-dependence
-objType = upper(objType);
+if ischar(thisObj)
 
-%% These are aliases we use sometimes
-if     strcmp(objType,'OI'), objType = 'OPTICALIMAGE';
-elseif strcmp(objType,'SENSOR'), objType = 'ISA';
-elseif strcmp(objType,'IMGPROC') || ...
-        strcmp(objType,'VCI') || ...     % Virtual camera image
-        strcmp(objType,'IP')             % Image processor
-    objType = 'VCIMAGE';
-elseif strcmp(objType,'CAMERA')
-    objType = 'CAMERA';
+    % Change the string to upper case
+    objType = upper(thisObj);
+
+    %% These are aliases we use sometimes
+    if     strcmp(objType,'OI'), objType = 'OPTICALIMAGE';
+    elseif strcmp(objType,'SENSOR'), objType = 'ISA';
+    elseif strcmp(objType,'IMGPROC') || ...
+            strcmp(objType,'VCI') || ...     % Virtual camera image
+            strcmp(objType,'IP')             % Image processor
+        objType = 'VCIMAGE';
+    elseif strcmp(thisObj,'CAMERA')
+        objType = 'CAMERA';
+    end
+
+else
+    % It is not a string.  Return the class of the object.
+    objType = class(thisObj);
 end
 
 end

@@ -24,7 +24,7 @@ scene  = sceneCreate;
 scene  = sceneSet(scene,'fov',4);
 
 oi     = oiCreate;
-oi     = oiCompute(scene,oi);
+oi     = oiCompute(oi,scene);
 sensor = sensorCreate;
 
 %% Set a range of exposure times

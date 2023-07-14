@@ -29,7 +29,7 @@ scene = sceneSet(scene,'fov',hFov);
 % vcAddAndSelectObject(scene); sceneWindow;
 
 oi = oiCreate('human');
-oi = oiCompute(scene,oi);
+oi = oiCompute(oi,scene);
 % vcAddAndSelectObject(oi); oiWindow(oi);
 
 %% Create the human sensor with a size matched to the scene
@@ -93,8 +93,7 @@ pixel = pixelSet(pixel,'voltageSwing',0.02);
 
 sensor = sensorSet(sensor,'pixel',pixel);
 sensor = sensorCompute(sensor,oi);
-vcAddAndSelectObject(sensor);
-sensorWindow;
+sensorWindow(sensor);
 
 %% Show the cone absorption counts across a horizontal image line
 % The absorptions in the L,M, and S are shown as red, green and blue.  The

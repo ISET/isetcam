@@ -16,9 +16,9 @@ function [pointLoc,pt] = iePointSelect(obj,msg,nPoints)
 %
 %
 % Example:
-%   pointLoc = vcPointSelect(vcGetObject('OI'))
-%   pointLocs = vcPointSelect(vcGetObject('OI'),3)
-%   pointLoc = vcPointSelect(vcGetObject('sensor'),3,'Help me')
+%   pointLoc  = iePointSelect(vcGetObject('OI'))
+%   pointLocs = iePointSelect(vcGetObject('OI'),3)
+%   pointLoc  = iePointSelect(vcGetObject('sensor'),3,'Help me')
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 %
@@ -32,7 +32,7 @@ if ieNotDefined('msg')
 end
 if ieNotDefined('nPoints'), nPoints = 1; end
 
-% Find the app and its main axis
+% Find the app and its image axis
 [app, appAxis] = ieAppGet(obj);
 
 % Select a points

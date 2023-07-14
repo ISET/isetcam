@@ -15,7 +15,7 @@ ieInit
 %%
 scene = sceneCreate;
 oi = oiCreate;
-oi = oiCompute(scene,oi);
+oi = oiCompute(oi,scene);
 
 %%
 sensor = sensorCreate;
@@ -87,12 +87,12 @@ sensorWindow(sensorNoise);
 
 v1 = sensorGet(sensorMean,'volts');
 v2 = sensorGet(sensorNoise,'volts');
-vcNewGraphWin; plot(v1(:),v2(:),'.')
+ieNewGraphWin; plot(v1(:),v2(:),'.')
 xlabel('No noise'); ylabel('General noise');
 title('Should be scattered')
 
 % The photon noise, clipping, and quantization errors
-vcNewGraphWin; histogram(v1(:) - v2(:),100);
+ieNewGraphWin; histogram(v1(:) - v2(:),100);
 xlabel('Volts')
 ylabel('Pixel count')
 title('Noise photon, clipping, quantization)')
@@ -104,8 +104,8 @@ title('Noise photon, clipping, quantization)')
 scene = sceneCreate('grid lines');
 scene = sceneSet(scene,'fov',3);
 
-oi = oiCreate('human');   % Default optics
-oi = oiCompute(scene,oi);
+oi = oiCreate('human mw');   % Default optics
+oi = oiCompute(oi,scene);
 sensor = sensorCreate('bayer-rggb');
 sensor = sensorSet(sensor,'exp time',0.1);
 

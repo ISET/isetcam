@@ -15,7 +15,7 @@ scene = sceneCreate;
 sceneWindow(scene);
 
 oi = oiCreate;
-oi = oiCompute(scene,oi);
+oi = oiCompute(oi,scene);
 
 %% Let the resizing tests begin
 
@@ -50,7 +50,7 @@ sensorWindow(sensor4);
 rows = [-50,0]; cols = [0,0];
 sensor5 = sensorHumanResize(sensor4,rows,cols);
 sensor5 = sensorSet(sensor5,'volts',v(51:end,:));
-% vcNewGraphWin; v2 = sensorGet(sensor5,'volts'); imagesc(v2)
+% ieNewGraphWin; v2 = sensorGet(sensor5,'volts'); imagesc(v2)
 sensorWindow(sensor5);
 
 %% END

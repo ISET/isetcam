@@ -96,5 +96,5 @@ oi = oiSet(oi,'illuminance',oiCalculateIlluminance(oi));
 
 if showWbar, delete(wBar); end
 
-return;
+end
 

@@ -10,11 +10,13 @@ function d = displaySet(d,parm,val,varargin)
 %   spd                - spectral power distribution (average, not peak)
 %   dpi                - dots per inch
 %   dixel              - subpixel structure
+%   size               - Vector. 1x2 vector of [h, v] in meters
 %   viewing distance   - viewing distance
 %   comment            - comments for this display
 %   image              - Image data, typically RGB, to be rendered in the
 %                        display window.
 %
+%   ambient spd        - Light from the screen when rgb = 0
 %   refresh rate       - Temporal refresh rate
 %   pixels per dixel   - Spatial samples per dixel
 %   dixel image        - The display pixel image showing the dixel
@@ -55,19 +57,24 @@ switch parm
             val = repmat(val(:),1,displayGet(d, 'nprimaries'));
         end
         d.gamma = val;
-    case {'wave','wavelength'}  %nanometers
-        % d = displaySet(d,'wave',val);
-        % Force column, interpolate SPD, and don't do anything if it turns
-        % out that the current wave value is the same as sent in.
+    case {'wave', 'wavelength'}  %nanometers
+        % d = displaySet(d, 'wave', val);
+        % Force column, interpolate SPD, and don't do anything if it
+        % turns out that the value was already as sent in.
+        % Manages ambient SPD also.
         if ~isfield(d, 'wave')
             d.wave = val(:);
-        elseif ~isequal(val(:),d.wave)
-            % disp('Interpolating display SPD for consistency with new wave.')
-            spd = displayGet(d,'spd');
-            wave = displayGet(d,'wave');
+        elseif ~isequal(val(:), d.wave)
+            spd = displayGet(d, 'spd');
+            wave = displayGet(d, 'wave');
             newSPD = interp1(wave, spd, val(:), 'linear');
+
+            am = displayGet(d, 'ambient spd');
+            newAM = interp1(wave, am, val(:), 'linear', 0);
+
             d.wave = val(:);
-            d = displaySet(d,'spd',newSPD);
+            d = displaySet(d, 'spd', newSPD);
+            d = displaySet(d, 'ambient spd', newAM);
         end
         
     case {'spd','spdprimaries'}
@@ -80,6 +87,12 @@ switch parm
         % displaySet(d, 'dpi', val);
         % Dots per inch of the pixels (full pixel center-to-center)
         d.dpi = val;
+    case {'size'}
+        % displaySet(d, 'size', val)
+        % [h, v] size in meters
+        if (~ismatrix(val)), error('unknown form for size'); end
+        if (~length(val) == 2), error ('size should be [h, v]'); end
+        d.size = val;
     case {'viewingdistance'}
         % displaySet(d, 'viewing distance', val);
         % viewing distance in meters
@@ -112,7 +125,10 @@ switch parm
         d.comment = val;
     case {'rgb','image'}
         d.image = val;
-        
+    case {'ambientspd'}
+        % ambient spd for display - ISETBio
+        d.ambient = val;
+
     otherwise
         error('Unknown parameter %s\n',parm);
 end

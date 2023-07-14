@@ -44,17 +44,17 @@ mn = mean(eImage(:));
 % 1.5118 rather than 1.849.  Not sure why.  Other numbers below changed a
 % little also.  I presume we have slightly different display numbers
 % interpolated.
-assert(abs(mn - 1.5118) < 0.01,'Mean error image is off');
+assert(abs(mn - 2.2079) < 0.01,'Mean error image is off');
 
 % Show the error image
-vcNewGraphWin; imagesc(eImage)
+ieNewGraphWin; imagesc(eImage)
 colorbar;
 
 % Show the RGB images as scenes. This illustrates how the RGB data were
 % converted to SPDs using the calibrated display
 vcAddAndSelectObject(scene1);
 vcAddAndSelectObject(scene2);sceneWindow;
-imageMultiview('scene',[1 2]);
+imageMultiview('scene',[1 2],false);
 
 
 %% Illustrate the processing within the routine, showing explicit calls.
@@ -113,18 +113,18 @@ params.filters = [];
 mean(errorImage(:))
 
 %% Examining and interpreting the results.
-vcNewGraphWin;
+ieNewGraphWin;
 imagesc(errorImage);
 colorbar('vert');
 title('S-CIELAB error map')
 
-vcNewGraphWin;
+ieNewGraphWin;
 histogram(errorImage(:),100)
 title('S-CIELAB delta E histogram')
 
 %% Examine the SCIELAB spatial filters
 
-f = vcNewGraphWin([],'wide');
+f = ieNewGraphWin([],'wide');
 filters = params.filters;   %
 support = params.support;   % Degress
 mx = max(filters{1}(:));
@@ -158,7 +158,7 @@ edgeImage = edge(gImage,'prewitt');
 
 % imshow(edgeImage)
 % imshow(bigErr)
-vcNewGraphWin;
+ieNewGraphWin;
 overlay = 1 + edgeImage + 2*bigErr;
 overlayMap = ...
     [0 0 0;

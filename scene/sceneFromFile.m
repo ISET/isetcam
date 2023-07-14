@@ -15,7 +15,10 @@ function scene = sceneFromFile(inputData, imType, meanLuminance, dispCal, ...
 %  imageType: 'spectral', 'rgb' or 'monochrome'
 %              When 'rgb', the imageData might be RGB format. 'spectral'
 %              includes both multispectral and hyperspectral.
-%  meanLuminance:
+%  meanLuminance: If a value is sent in, set scene to this meanLuminance.
+%                 If empty, do nothing.  Based on ISETBio. Until June
+%                 2023, ISETCam used a different assumption (set it to
+%                 100 if undefined).
 %  dispCal:   A display structure used to convert RGB to spectral data.
 %
 %             For the typical case an emissive display the illuminant SPD is
@@ -106,7 +109,6 @@ function scene = sceneFromFile(inputData, imType, meanLuminance, dispCal, ...
 
 %% Parameter set up
 
-if notDefined('meanLuminance'), meanLuminance = 100; end
 if notDefined('illEnergy'), illEnergy = []; end
 if notDefined('scaleReflectance'), scaleReflectance = true; end
 
@@ -272,7 +274,10 @@ end
 if exist('theDisplay', 'var'), n = [n ' - ' displayGet(theDisplay, 'name')]; end
 scene = sceneSet(scene,'name',n);
 
-scene = sceneAdjustLuminance(scene,meanLuminance); % Adjust mean
+if ~notDefined('meanLuminance')
+    % We have a value.
+    scene = sceneAdjustLuminance(scene,meanLuminance); % Adjust mean
+end
 
 if scaleReflectance
     % Adjust illuminant level to a max reflectance 0.95. If the
@@ -285,13 +290,6 @@ if scaleReflectance
     end
     disp('Adjusted illuminant level for max reflectance near 1.')
 end
-
-% if ~notDefined('wList')
-%     % I think the scene should match wList by this time.
-%     if ~isequal(wList,sceneGet(scene,'wave'))
-%         scene = sceneSet(scene, 'wave', wList);
-%     end
-% end
 
 end
 

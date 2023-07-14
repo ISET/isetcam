@@ -43,15 +43,15 @@ function [sensor, xy, coneType, rSeed, densities] = sensorCreateConeMosaic(senso
 % Examples:
 %  [sensor, xy, coneType,rSeed] = sensorCreateConeMosaic(sensorCreate);
 %  figure(1); plot(sensorGet(sensor,'wave'),sensorGet(sensor,'spectralQE'));
-%  figure(1); conePlot(xy,coneType);
+%  figure(1); ieConePlot(xy,coneType);
 %  figure(1); sensorConePlot(sensor)
 %
 %  [sensor, xy, coneType,rSeed] = sensorCreateConeMosaic(sensorCreate,[],[],[],rSeed);
-%  figure(1); conePlot(xy,coneType);
+%  figure(1); ieConePlot(xy,coneType);
 %
 %  sz = [72,88]; densities = [0.55, 0.3, 0.1]; coneAperture = [3 3]*1e-6 % Microns
 %  [sensor, xy, coneType] = sensorCreateConeMosaic(sensorCreate,sz,densities,coneAperture);
-%  figure(1); conePlot(xy,coneType);
+%  figure(1); ieConePlot(xy,coneType);
 %
 % See also:  sensorCreate('human'), humanConeMosaic
 %

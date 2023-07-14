@@ -8,7 +8,7 @@ oiPlot(oi,'otf',[],550);
 oiPlot(oi,'otf',[],450);
 
 %% Human optics
-oi = oiCreate('human');
+oi = oiCreate('human mw');
 oiPlot(oi,'psf',[],420);
 oiPlot(oi,'psf',[],550);
 
