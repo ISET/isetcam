@@ -47,6 +47,7 @@ oi = wvf2oi(wvf);
 [uData, fig] = oiPlot(oi,'psf 550');
 
 psfPlotrange(fig,oi);
+thisWave = wvfGet(wvf,'wave');
 AD = airyDisk(thisWave,wvfGet(wvf,'fnumber'),'diameter',true);
 title(sprintf("fNumber %.2f Wave %.0f Airy Diam %.2f",oiGet(oi,'optics fnumber'),thisWave,AD));
 
