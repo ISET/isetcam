@@ -73,11 +73,15 @@ end
 
 %% Run on an image
 
+% This model only has LCA, but no other defocus.  A much more
+% realistic case would be some wavefront aberrations, such as the
+% Thibos model.  We do that at the end.
 sceneGrid = sceneCreate('grid lines',384,64);
 sceneGrid = sceneSet(sceneGrid,'fov',1);
 
 oi = oiCompute(wvf,sceneGrid);
 oi = oiSet(oi,'name','LCA on');
+oiPlot(oi,'lsf wavelength');
 oiWindow(oi);
 
 %% Now try it but compute with LCA turned off
@@ -85,7 +89,26 @@ oiWindow(oi);
 wvf = wvfCompute(wvf,'human lca',false);
 oi = oiCompute(wvf,sceneGrid);
 oi = oiSet(oi,'name','LCA off');
+oiPlot(oi,'lsf wavelength');
 oiWindow(oi);
+
+
+%% Now the Thibos model
+
+oi = oiCreate('human wvf');
+oi = oiCompute(oi,sceneGrid);
+oi = oiSet(oi,'name','Thibos');
+oiPlot(oi,'lsf wavelength');
+oiWindow(oi);
+
+%% Finally, the Marimont-Wandell model
+
+oi = oiCreate('human mw');
+oi = oiCompute(oi,sceneGrid);
+oi = oiSet(oi,'name','Marimont-Wandell');
+oiPlot(oi,'lsf wavelength');
+oiWindow(oi);
+
 
 %% END
 

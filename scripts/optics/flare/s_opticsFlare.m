@@ -9,7 +9,7 @@
 % shape of the light.
 %
 % See also
-%   v_opticsFlare, s_wvfOI, s_wvfChromatic, 
+%   v_opticsFlare, s_wvfOI, s_wvfChromatic, s_wvfDiffraction 
 
 %%
 ieInit;
