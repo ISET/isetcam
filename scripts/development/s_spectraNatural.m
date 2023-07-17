@@ -1,11 +1,12 @@
 % Read a scene with arbitrary spectral radiance functions, say from
 % ISETAuto day
 %
-% Convert the spectra to Natural Spectra principal components, but
-% making sure that the new spectra impact a camera and the human cones
-% the same way that the old spectra would.
+% Convert the spectra to Natural Spectra principal components, making
+% sure that the new spectra impact a camera and the human cones the
+% same way that the old spectra would.
 %
-% Or maybe preserve a couple of cameras?
+% Alternatively, it should also be possible to replace with natural
+% spectra in a way that preserves the response of a couple of cameras.
 %
 % Scratch for now.
 %
