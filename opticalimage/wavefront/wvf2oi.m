@@ -81,8 +81,9 @@ varargin = ieParamFormat(varargin);
 
 p = inputParser;
 p.addRequired('wvf',@isstruct);
-
+p.addParameter('model','shiftinvariant',@(x)(ismember(x,{'shiftinvariant','humanmw','human','wvfhuman','humanwvf'})));
 p.parse(wvf,varargin{:});
+model = p.Results.model;
 
 %% Collect up basic wvf parameters
 wave    = wvfGet(wvf, 'calc wave');
@@ -177,10 +178,8 @@ ieNewGraphWin; mesh(X,Y,abs(ifftshift(otf(:,:,ww))));
 
 % BW: TODO
 % This code works for the shiftinvariant oi model.  It can also work
-% with humanmw or wvfhuman, but those special cases have different
-% meaning and making it work with that meaning would take some more
-% work.
-oi = oiCreate('shiftinvariant');
+% with humanmw or wvfhuman.
+oi = oiCreate(model);
 oi = oiSet(oi,'optics fnumber',fnumber);
 oi = oiSet(oi,'optics focal length',flength);
 
