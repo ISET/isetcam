@@ -125,7 +125,7 @@ switch ieParamFormat(oiType)
         % to create and fix.
         oi = oiCreate('default');
         oi = oiSet(oi,'diffuserMethod','skip');
-        oi = oiSet(oi,'optics',opticsCreate('human'));
+        oi = oiSet(oi,'optics',opticsCreate('human mw'));
         oi = oiSet(oi,'name','human-MW');
 
     case {'human','wvfhuman','humanwvf'}
@@ -145,7 +145,7 @@ switch ieParamFormat(oiType)
         % No diffuser.
         oi = oiSet(oi, 'diffuser method', 'skip');
 
-        % These optics will be the Thibox zcoeffs unless varargin has
+        % These optics will be the Thibos zcoeffs unless varargin has
         % something else in mind.
         oi = oiSet(oi, 'optics', opticsCreate('wvf human', varargin{:}));
         oi = oiSet(oi, 'name', 'human-WVF');

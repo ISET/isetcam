@@ -38,7 +38,7 @@ az = 40.; el = 20; view(az,el);
 %% Example: Human lens fnumber without chromatic aberration or williams factor
 
 sampleSF = 0:60;  % Spatial frequency
-optics = opticsCreate('human');
+optics = opticsCreate('wvf human');   % Changed July 25, 2023
 optics = initDefaultSpectrum(optics);
 wave = opticsGet(optics,'wave');
 
