@@ -134,10 +134,21 @@ switch lower(opticsType)
         %
         % Default optics based on mean Zernike polynomials estimated
         % by Thibos, for 3 mm pupil. Chromatic aberration is included.
+        %
+        % If you pass a different pupil diameter, the routine will read in
+        % Thibos measurements that for a pupil larger than that, and use
+        % those to compute the pupil function for your passed diameter.
         % 
         % This is not representative of any particular observer, because
         % the mean Zernike polynomials do not capture the phase
-        % information.
+        % information, and indeed positive and negative coefficients across
+        % observers will tend to cancel. So as you get serious about a modeling
+        % project, you will likely want to control this more directly.
+        %
+        % If you pass zCoefs, the routine assumes that they correspond to
+        % the same measurement diameter as the requested pupil size.  This
+        % is not necessarily the case for some use cases, so proceed with
+        % caution.
 
         % Defaults
         pupilDiameterMM = 3;
@@ -146,15 +157,44 @@ switch lower(opticsType)
         wave = wave(:);
         umPerDegree = 300;
         customLCA = [];
-        % Thibos
-        zCoefs = wvfLoadThibosVirtualEyes(pupilDiameterMM);
 
+         % Defaults
+        pupilDiameterMM = 3;
+        wave = 400:10:700;
+        wave = wave(:);
+        umPerDegree = 300;
+        customLCA = [];
+
+        % Set pupil size
         if (~isempty(varargin) && ~isempty(varargin{1}))
             pupilDiameterMM = varargin{1};
         end
+        if (pupilDiameterMM > 7.5)
+            error('Do not have Thibos measurements for pupil diameters above 7.5 mm');
+        end
+
+        % Find measurement pupil diameter.  Next biggest available in
+        % Thibos dataset, given the pupil diameter requested
+        thibosPupilDiametersMM = [3 4.5 6 7.5];
+        for dd = 1:length(thibosPupilDiametersMM)
+            if (pupilDiameterMM <= thibosPupilDiametersMM(dd))
+                measPupilDiameterMM = thibosPupilDiametersMM(dd);
+            end
+        end
+
+        % Set zCoefs.  This needs to be done after setting the pupil size.
+        %
+        % If zCoefs are passed, we assume the meas pupil diameter
+        % corresponds to the desired pupil diameter, as we don't have a
+        % better idea for this high level call.
         if (length(varargin) > 1 && ~isempty(varargin{2}))
             zCoefs = varargin{2};
+            measPupilDiameterMM = pupilDiameterMM;
+        else
+            zCoefs = wvfLoadThibosVirtualEyes(measPupilDiameterMM);
         end
+
+        % Other defaults
         if (length(varargin) > 2 && ~isempty(varargin{3}))
             wave = varargin{3};
             wave = wave(:);
@@ -172,7 +212,7 @@ switch lower(opticsType)
             'name', sprintf('human-%d', pupilDiameterMM), ...
             'umPerDegree', umPerDegree, ...
             'customLCA', customLCA);
-        wvfP = wvfSet(wvfP, 'measured pupil size', pupilDiameterMM);
+        wvfP = wvfSet(wvfP, 'measured pupil size', measPupilDiameterMM);
         wvfP = wvfSet(wvfP, 'calc pupil size', pupilDiameterMM);
 
         % Include human chromatic aberration because this is wvf human        
