@@ -123,26 +123,11 @@ switch ieParamFormat(oiType)
         % Historically, 'human' defaulted to the Marimont and Wandell
         % case.  So this could create some trouble.  But good trouble
         % to create and fix.
+        oi = oiCreate('default');
+        oi = oiSet(oi,'diffuserMethod','skip');
+        oi = oiSet(oi,'optics',opticsCreate('human mw'));
+        oi = oiSet(oi,'name','human-MW');
 
-% THIS WAS HERE, EXCEPT I MADE THE MW in opticsCreate explicit.
-%         oi = oiCreate('default');
-%         oi = oiSet(oi,'diffuserMethod','skip');
-%         oi = oiSet(oi,'optics',opticsCreate('humanmw'));
-%         oi = oiSet(oi,'name','human-MW');
-
-% THIS IS HOW THE CLASSIC VERSION DID IT, EXCEPT I MADE THE MW in
-% opticsCreate expicit.
-      oi = oiCreate('diffraction limited');
-      oi = oiSet(oi, 'diffuser method', 'skip');
-      oi = oiSet(oi, 'consistency', 1);
-      oi = oiSet(oi, 'optics', opticsCreate('humanmw'));
-      oi = oiSet(oi, 'name', 'human-MW');
-      oi = oiSet(oi, 'lens', Lens('wave', oiGet(oi, 'optics wave')));
- 
-      if checkfields(oi.optics, 'transmittance')
-          oi.optics = rmfield(oi.optics, 'transmittance');
-      end
- 
     case {'human','wvfhuman','humanwvf'}
         % Human optics specified from typical Thibos data and
         % chromatic aberration (see opticsCreate).
@@ -160,7 +145,7 @@ switch ieParamFormat(oiType)
         % No diffuser.
         oi = oiSet(oi, 'diffuser method', 'skip');
 
-        % These optics will be the Thibox zcoeffs unless varargin has
+        % These optics will be the Thibos zcoeffs unless varargin has
         % something else in mind.
         oi = oiSet(oi, 'optics', opticsCreate('wvf human', varargin{:}));
         oi = oiSet(oi, 'name', 'human-WVF');
