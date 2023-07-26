@@ -1,5 +1,9 @@
 %% s_HumanSensor
 %
+% We are leaving this script here as a historical artifact. At this
+% point, it is best to use scripts and functions in  ISETBio for
+% creating models of the human cone mosaic.  
+%
 % Create a sensor that models the spatial absorptions of the human cone
 % mosaic.  The cone mosaic comprises randomly positioned L,M,S cones at
 % some density (typically 4:2:1) and also some blank positions (K).
@@ -11,13 +15,6 @@
 
 %% Initialize ISET
 ieInit
-% If you want to make the same sensor every time, you could set the random
-% number generator
-% try
-%     rng('default');  % To achieve the same result each time
-% catch err
-%     randn('seed');
-% end
 
 %% Create a test scene and optical image
 % We illustrate a sweep frequency scene that spans 1 deg field of view.
@@ -26,11 +23,11 @@ ieInit
 scene = sceneCreate('sweep');
 hFov = 1;   % Horizontal field of view (deg)
 scene = sceneSet(scene,'fov',hFov);
-% vcAddAndSelectObject(scene); sceneWindow;
+% sceneWindow(scene);
 
 oi = oiCreate('human');
 oi = oiCompute(oi,scene);
-% vcAddAndSelectObject(oi); oiWindow(oi);
+% oiWindow(oi);
 
 %% Create the human sensor with a size matched to the scene
 % The code here illustrates the complete set of parameters to create a
@@ -109,7 +106,7 @@ f = sensorPlotLine(sensor,[],'photons','space',[1 116]);
 %  properties of the sensor to be ideal, so that there is only photon
 %  noise.
 
-vcNewGraphWin;
+ieNewGraphWin;
 fColor = {'red','green','blue'};
 for ii=1:3
     cData = sensorGet(sensor,'photons',ii+1);
