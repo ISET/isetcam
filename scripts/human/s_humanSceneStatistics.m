@@ -20,17 +20,13 @@
 
 %% Initialize
 ieInit
-try
-    rng('default');  % To achieve the same result each time
-catch err
-    randn('seed');
-end
+
 %%  We start with a small (2 deg) scene of white noise
 % Each radiance is drawn from a Gaussian
 contrast = 0.5;
 scene =  sceneCreate('white noise',[256 256],contrast);
 scene = sceneSet(scene,'h fov',2);
-vcAddAndSelectObject(scene); sceneWindow;
+sceneWindow(scene);
 
 %% The amplitude of the spatial contrast of the radiance image
 % This is a white noise image, so the amplitude spectrum is flat.  Notice
@@ -41,8 +37,8 @@ scenePlot(scene,'radiance fft image',550);
 %%  Create the optical image.  Notice that it is significantly blurred
 % This is because of the human optics
 oi = oiCreate('human');
-oi = oiCompute(scene,oi);
-vcAddAndSelectObject(oi); oiWindow;
+oi = oiCompute(oi,scene);
+oiWindow(oi);
 
 %% Set up the human sensor parameters and compute.
 % We will create a series of sensors, each with just one of the three types
@@ -70,13 +66,18 @@ for ii=1:3
 end
 
 %% Plot the three spatial amplitude spectra
-vcNewGraphWin([],'tall');
+ieNewGraphWin([],'tall');
 for ii=1:3
     subplot(3,1,ii)
     imagesc(pFFT{ii}); colormap(hot(64)); colorbar;
     axis image; axis off
     xlabel('Cycles/deg'); ylabel('Cycles/deg');
     title(sprintf('%s cone spatial amp spectrum',cType{ii}));
+    %          hold on;
+    %          sz = size(pFFT{ii});
+    %          x = linspace(0,sz(1),sz(1));
+    %          y = (1 - ieScale(sum(pFFT{ii}),1))*sz(2);
+    %          plot(x,mean(pFFT{ii}),'b-');
 end
 
 
