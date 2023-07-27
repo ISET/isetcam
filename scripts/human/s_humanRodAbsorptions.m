@@ -51,11 +51,29 @@ oiWindow(oi);
 
 %% Make a coneMosaicRect with only one type of receptor
 
+% Make the rhodopsin photopigment
+wave = 400:700;
+tmp = ieReadSpectra('rods.mat',wave);
+rods = repmat(tmp,1,3);
+thisP = photoPigment('wave',wave,'absorbance',rods,'peakEfficiency',[0.66,0.66,0.66], 'opticalDensity',[1 1 1]);
+
+% Make a one receptor mosaic with the rhodopsin pigment
 params = coneMosaicRectParams;
 params.spatialDensity = [0,1,0,0];
+params.pigment = thisP;
 cm = coneMosaicRect(params);
+cm.integrationTime = 1;
+cm.patternSampleSize = [2.2 2.2]*1e-6;
 
+% coneRectPlot(cm,'cone spectral qe');
 
+cm.compute(oi);
+cm.window;
+
+% The numbers are a bit smaller than the ones below.
+%
+
+%%
 % Calc rod responses
 %{
 % rodabsorbance = ieReadSpectra('rodabsorbance.mat',wave);
