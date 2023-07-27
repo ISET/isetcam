@@ -281,15 +281,17 @@ switch parm
         % (It does?  Not simply the object distance?)
         % ZLY: visited here. I think it can be focalLength, which is the
         % distance when the object is at infinity.  Should discuss with BW.
-        if isequal(optics.model, 'skip')
-            val = optics.focalLength;
-            return;
+        switch (opticsGet(optics,'model'))
+            case {'skip', 'shiftinvariant'}
+                val = optics.focalLength;
+                return;
+            otherwise
+                fL = opticsGet(optics,'focal length');
+                if isempty(varargin), sDist = Inf;
+                else,                 sDist = varargin{1};
+                end
+                val = 1 / (1/fL - 1/sDist);   % Lens maker equation
         end
-        fL = opticsGet(optics,'focal length');
-        if isempty(varargin), sDist = Inf;
-        else,                 sDist = varargin{1};
-        end
-        val = 1 / (1/fL - 1/sDist);   % Lens maker equation
         
         % These all need the scene field of view.  They can be computed
         % from the geometry of the image distance and FOV.
