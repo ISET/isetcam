@@ -83,8 +83,14 @@ imSize   = oiGet(oi,'size');
 padSize  = round(imSize/8);
 padSize(3) = 0;
 sDist = sceneGet(scene,'distance');
-oi = oiPad(oi,padSize,sDist);
 
+% ISETBio and ISETCam, historically, used different padding
+% strategies.
+if oiGet(oi,'human'), padType = 'mean photons'; 
+else,                 padType = 'zero photons';
+end
+oi = oiPadValue(oi,padSize,padType,sDist);
+    
 % See s_FFTinMatlab to understand the logic of the operations here.
 % We used to do this one wavelength at a time.  But this could cause
 % dynamic range problems for ieCompressData.  So, for now we are

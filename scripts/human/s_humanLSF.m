@@ -1,8 +1,11 @@
 %% s_humanLSF
 %
-% Calculations illustrating the the human line spread function and OTF
-% for the Marimont and Wandell model, first.  Then repeated for the
-% wvf human model based on the Thibos' typical subject.
+% Calculations illustrating the the human line spread function and
+% OTF.
+%
+% First for the Marimont and Wandell model
+% Second for the wvf human model based on the Thibos' average subject.
+% Third for Ijspeert
 %
 % The largest effects are caused by chromatic aberration.
 %
@@ -28,19 +31,19 @@ oiWindow(oi);
 scene410 = sceneInterpolateW(scene,410);
 oi = oiCreate('human mw');
 oi = oiCompute(oi,scene410);
-oi = oiSet(oi,'name','line-410');
+oi = oiSet(oi,'name','line-410-mw');
 oiWindow(oi);
 
 scene550 = sceneInterpolateW(scene,550);
 oi = oiCreate('human mw');
 oi = oiCompute(oi,scene550);
-oi = oiSet(oi,'name','line-550');
+oi = oiSet(oi,'name','line-550-mw');
 oiWindow(oi);
 
 scene690 = sceneInterpolateW(scene,690);
 oi = oiCreate('human mw');
 oi = oiCompute(oi,scene690);
-oi = oiSet(oi,'name','line-690');
+oi = oiSet(oi,'name','line-690-mw');
 oiWindow(oi);
 
 %% Now the same but for wvf human (Thibos)
@@ -48,17 +51,26 @@ oiWindow(oi);
 % The values are slightly different.
 oi = oiCreate('human');
 oi = oiCompute(oi,scene410);
+oi = oiSet(oi,'name','line-410-thibos');
 oiWindow(oi);
 
 oi = oiCreate('human');
 oi = oiCompute(oi,scene550);
+oi = oiSet(oi,'name','line-550-thibos');
+
 oiWindow(oi);
 
 oi = oiCreate('human');
 oi = oiCompute(oi,scene690);
+oi = oiSet(oi,'name','line-690-thibos');
 oiWindow(oi);
 
+%% Show all the lines in a single figure
+
+imageMultiview('oi',2:7,true);
+
 %% Calculate the Optical Transfer Function (OTF)  at two wavelengths
+
 % You can do this from the GUI or can make a plot from this function
 % The point is that the frequency support at 420 is much smaller than at
 % 520nm.

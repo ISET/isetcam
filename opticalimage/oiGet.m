@@ -211,9 +211,14 @@ switch oType
                 val = oi.type;
             case 'name'
                 val = oi.name;
+            case 'human'
+                if isfield(oi.optics,'lens'), val = true;
+                else,                         val = false;
+                end
             case 'filename'
                 val = oi.filename;
             case 'consistency'
+                % deprecated.
                 val = oi.consistency;
                 
                 

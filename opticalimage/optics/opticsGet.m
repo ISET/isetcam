@@ -522,7 +522,14 @@ switch parm
         else, val = 1;
         end
         
-    case {'transmittancescale','transmittance'}
+    case {'lens'}
+        % opticsGet(optics,'lens')
+        %
+        % Return the Lens object 
+        %
+        if isfield(optics,'lens'), val = optics.lens; end
+           
+    case {'lenstransmittance','transmittancescale','transmittance'}
         % column = opticsGet(optics,'transmittance',[wave])
         %
         % The lens transmittance, potentially interpolated or event
@@ -562,7 +569,8 @@ switch parm
                 end
             end
         elseif isfield(optics,'lens')
-            % Stored in the lens slot
+            % 
+            % Transmittance is stored in the lens slot of the optics
             if ~isempty(varargin)
                 optics.lens.wave = varargin{1};
             end
