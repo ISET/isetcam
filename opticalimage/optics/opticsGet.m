@@ -21,7 +21,7 @@ function val = opticsGet(optics,parm,varargin)
 %
 %  We store the OTF data with DC at the (1,1) position.  This is true
 %  throughout ISET. To understand the implications for certain calculations
-%  see the script and tutorial in s_FFTinMatlab.
+%  see the script and tutorial in t_codeFFTinMatlab.
 %
 %  Although Matlab uses this representation, when we make graphs and
 %  images we put the center of the image at the center -- of course -- and
@@ -31,32 +31,10 @@ function val = opticsGet(optics,parm,varargin)
 %  when we compute the spatial support we create spatial samples that run
 %  below and above zero.
 %
-% Example:
-%   oi = oiCreate; optics = oiGet(oi,'optics');
-%   oi = oiSet(oi,'wave',400:10:700);
-%
-%   NA = opticsGet(optics,'numerical aperture');   % Numerical aperture
-%   f  = opticsGet(optics,'f number');
-%   fLength = opticsGet(optics,'focal length','mm')
-%
-%   psf = opticsGet(optics,'psf Data',600);  % Shift invariant data
-%   vcNewGraphWin; mesh(sSupport(:,:,1),sSupport(:,:,2),psf);
-%
-%   otf = opticsGet(optics,'otf data',oi, 'mm',450);
-%   vcNewGraphWin; mesh(fftshift(abs(otf)));
-%
-%   otfAll = opticsGet(optics,'otf data',oi);
-%
-%   otfSupport = oiGet(oi,'fsupport','mm');  % Cycles/mm
-%   vcNewGraphWin; mesh(otfSupport(:,:,1),otfSupport(:,:,2),fftshift(abs(otf)))
-%
-%   FOV = 10; opticsGet(optics,'image height',FOV,'mm')
-%   FOV = 10; opticsGet(optics,'image diagonal',FOV,'um')
-%
-%  Many ray trace calls begin with rt, as in
+%  N.B. Many ray trace calls begin with rt, as in
 %   psf = opticsGet(optics,'rt PSF',500);     % Shift-variant ray trace
 %
-% N.B. The OTF support does not work for ray trace optics (yet).
+%   The OTF support does not work for ray trace optics (yet).
 %
 % Optics parameters
 %
@@ -150,15 +128,44 @@ function val = opticsGet(optics,parm,varargin)
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
+% TODO:
+%   Many of the rt spatial variables are stored in mm by the
+%   rtImportData function.  So, we are always dividing them by 1000
+%   for return in meters. We should probably just store them in meters
+%   properly inside of rtImportData.
+%
+% Simplify the OTF support functions
 
-% Programming TODO:
-%   Many of the rt spatial variables are stored in mm by the rtImportData
-% function.  So, we are always dividing them by 1000 for return in meters.
-% We should probably just store them in meters properly inside of
-% rtImportData.
-%
-% Simmplify the OTF support functions
-%
+% Examples:
+%{
+   oi = oiCreate; optics = oiGet(oi,'optics');
+   oi = oiSet(oi,'wave',400:10:700);
+   
+   NA = opticsGet(optics,'numerical aperture');   % Numerical aperture
+   f  = opticsGet(optics,'f number');
+   fLength = opticsGet(optics,'focal length','mm')
+
+   psf = opticsGet(optics,'psf Data',600);  % Shift invariant data
+   ieNewGraphWin; mesh(psf.xy(:,:,1),psf.xy(:,:,2),psf.psf);
+%}
+%{
+   oi = oiCreate; optics = oiGet(oi,'optics');
+   otf = opticsGet(optics,'otf data',oi, 'mm',450);
+   ieNewGraphWin; mesh(fftshift(abs(otf)));
+%}
+%{
+   scene = sceneCreate; oi = oiCreate('diffraction limited'); 
+   oi = oiCompute(oi,scene); optics = oiGet(oi,'optics');
+   otf = oiGet(oi,'optics otf data',oi);
+   otf = opticsGet(optics,'otf data',oi);
+   otfSupport = oiGet(oi,'fsupport','mm');  % Cycles/mm
+   ieNewGraphWin; mesh(otfSupport(:,:,1),otfSupport(:,:,2),fftshift(abs(otf(:,:,10))));
+%}
+%   FOV = 10; opticsGet(optics,'image height',FOV,'mm')
+%   FOV = 10; opticsGet(optics,'image diagonal',FOV,'um')
+%}
+
+%% Parameters
 val = [];
 
 if ~exist('optics','var') || isempty(optics),  error('No optics specified.'); end
@@ -209,48 +216,18 @@ switch parm
             val = opticsGet(optics,'fNumber')*(1 - opticsGet(optics,'mag'));
         end
     case {'focallength','flength'}
-        % opticsGet(optics,'flength',units);
+        % opticsGet(optics,'flength',units); If this is a pinhole (no
+        % optics), the focal length is how we specify the distance
+        % from the pinhole to the image plane.  If it is not a
+        % pinhole, it is the effective focal length - which in my mind
+        % is a generalization of the thin lens focal length.
+        %
+        % In the distant past, we thought we should be using a
+        % different value when calculating with a pinhole.  Go back to
+        % before July 2023 to see the old comments.  I think we chose
+        % a focal length equal to the distance to the (planar) object
+        % so that the magnification would be 1. Not quite sure (BW).
         if rt,  val = opticsGet(optics, 'RTeffectiveFocalLength');
-        elseif strcmpi(opticsGet(optics,'model'),'skip')
-            
-
-            % I do not know what 'proper' distance means in these
-            % comments. (BW).
-
-            % Old comments
-            % If you choose 'skip' because you want to treat the
-            % optics/lens as a pinhole, you must have a scene and in
-            % that case we use the proper distance (half the scene
-            % distance). 
-            % When you are just skipping to save time, you
-            % may not have a scene.  In that case, use the optics
-            % focal length.
-            % End Old comments 
-            %
-            % Old code.  We used to send back the half the scene
-            % distance.  ANd we never told the user what was
-            % happening. 
-            %
-            % What we used to do (before March 17, 2022)
-            %
-            % if ~isempty(varargin), scene = varargin{1};
-            % else, scene = vcGetObject('scene');
-            % end
-            % 
-            % if isempty(scene), val = optics.focalLength;
-            % else,              val = sceneGet(scene,'distance')/2;
-            % end
-            
-            % New comments
-            %
-            % If this is a pinhole, then the focal length is how we
-            % specify the distance to the image plane.  If it is not a
-            % pinhole, here is the focal length.
-            %
-            % End new comments
-
-            val = optics.focalLength;
-
         else, val = optics.focalLength;
         end
         if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
@@ -407,12 +384,15 @@ switch parm
         switch lower(opticsModel)
             case 'diffractionlimited'
                 % For diffraction limited case, the call must be
-                % otf = opticsGet(optics,'otf data',oi, fSupport, [wave]);
+                % otf = opticsGet(optics,'otf data',oi, [units], [wave]);
                 
                 if isempty(varargin)
-                    error('opticsGet(optics,''otf data'',oi,fSupport,thisWave');
+                    disp('Using vcSession selected oi.')
+                    oi = ieGetObject('oi');
+                    % error('opticsGet(optics,''otf data'',oi,units,thisWave');
+                else
+                    oi = varargin{1};
                 end
-                oi = varargin{1};
                 if length(varargin) < 2, units = 'mm'; else, units = varargin{2}; end
                 if length(varargin) < 3, thisWave = []; else, thisWave = varargin{3}; end
                 
@@ -564,7 +544,7 @@ switch parm
 
                 if min(newWave(:))< min(wave(:)) || max(newWave(:)) > max(wave(:))
                     % Extrapolation required.
-                    disp('Extrapolating lens transmittance with 1''s')
+                    % disp('Extrapolating lens transmittance with 1''s')
                     val = interp1(wave,scale,newWave,'linear',1)';
                 else
                     val = interp1(wave,scale,newWave,'linear')';

@@ -178,29 +178,39 @@ switch oType
     case 'optics'
         % If optics, then we either return the optics or an optics
         % parameter.  I think we can handle the longer varargin by
-        % sending in varargin{:}, by the way.  Try
-        % val = opticsGet(optics,parm,varargin{:});
+        % sending in varargin{:}, by the way.  Try 
+        % val =  opticsGet(optics,parm,varargin{:});
         optics = oi.optics;
         if isempty(parm), val = optics;
+        else, val = opticsGet(optics,parm,varargin{:});
+        end
+
+        %{
         elseif isempty(varargin), val = opticsGet(optics,parm);
         elseif length(varargin) == 1, val = opticsGet(optics,parm,varargin{1});
         elseif length(varargin) == 2, val = opticsGet(optics,parm,varargin{1},varargin{2});
         elseif length(varargin) == 3, val = opticsGet(optics,parm,varargin{1},varargin{2},varargin{3});
         elseif length(varargin) == 4, val = opticsGet(optics,parm,varargin{1},varargin{2},varargin{3},varargin{4});
         end
+        %}
 
     case 'wvf'
         % If a wavefront structure, then we either return the wvf or
         % an wvf parameter.  See above for varargin{:}
         wvf = oi.wvf;
         if isempty(parm), val = wvf;
+        else, val = wvfGet(wvf,param,varargin{:});
+        end
+        
+        %{
         elseif isempty(varargin), val = wvfGet(wvf,parm);
         elseif length(varargin) == 1, val = wvfGet(wvf,parm,varargin{1});
         elseif length(varargin) == 2, val = wvfGet(wvf,parm,varargin{1},varargin{2});
         elseif length(varargin) == 3, val = wvfGet(wvf,parm,varargin{1},varargin{2},varargin{3});
         elseif length(varargin) == 4, val = wvfGet(wvf,parm,varargin{1},varargin{2},varargin{3},varargin{4});
         end
-        
+        %}
+
     otherwise
         % Must be an oi object.  Format the parameter and move on.
         parm = ieParamFormat(parm);

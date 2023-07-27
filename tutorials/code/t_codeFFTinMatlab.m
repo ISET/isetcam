@@ -1,12 +1,13 @@
-% Explains the Matlab conventions for transforming from space to the
-% frequency domain.
-%
+% t_codeFFTinMatlab
+% 
 % Description:
-%   Tries to elucidate the mysteries of coordinate transform conventions
-%   for fft/ifft in Matlab.
+%   Elucidates the mysteries of coordinate transform conventions for
+%   fft/ifft in Matlab.
+%
+%   Used to be called s_FFTinMatlab
 %
 % See also:
-%
+%   opticsFFT
 
 % History:
 %   12/21/17  dhb  Tried to fix this up to match my current hard won
@@ -44,7 +45,7 @@ s(1,1) = 1;
 fft2(s)
 isreal(s)
 
-% The implications of these representations for using fft2
+%% The implications of these representations for using fft2
 %
 % See Matlab documentation on fft2, ifft2, fftshift and ifftshift
 %
@@ -72,7 +73,7 @@ isreal(s)
 % and see that everything still works for odd dimension.
 theDim = 129;
 g = fspecial('gaussian',theDim,2);
-vcNewGraphWin([],'wide');
+ieNewGraphWin([],'wide');
 subplot(1,3,1); colormap(gray(64)); mesh(g);
 
 % To calculate the OTF of the point spread function, we should place the
@@ -101,7 +102,7 @@ tmp = load('trees');
 cmap = gray(128);
 imgC = cmap(tmp.X);
 imgC = imgC(1:theDim,1:theDim);
-vcNewGraphWin([],'wide');
+ieNewGraphWin([],'wide');
 subplot(1,4,1); colormap(gray(64)); imagesc(imgC); axis image
 
 % Before we transform the image, we want to place its center in the (1,1)
@@ -144,3 +145,4 @@ imgConvGCentered = fftshift(imgConvG);
 subplot(1,4,4); imagesc(imgConvGCentered); axis image
 
 
+%% END
