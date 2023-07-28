@@ -55,8 +55,9 @@ function lum = ieLuminanceFromEnergy(energy,wave,varargin)
 %}
 
 %%
-p = inputParser;
 varargin = ieParamFormat(varargin);
+
+p = inputParser;
 p.addRequired('energy',@isnumeric);
 p.addRequired('wave',@isnumeric);
 p.addParameter('binwidth',10,@isnumeric);

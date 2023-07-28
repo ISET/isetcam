@@ -3,28 +3,21 @@ function oi = opticsOTF(oi,scene)
 %
 %    oi = opticsOTF(oi,scene);
 %
-% The optical transform function (OTF) associated with the optics in the OI
-% is calculated and applied to the scene data.  This function is called for
-% shift-invariant and diffraction-limited models.  It is not called for the
-% ray trace approach.
+% The optical transform function (OTF) associated with the optics in
+% the OI is applied to the scene data.  This function is called for
+% shift-invariant and diffraction-limited models.  It is not called
+% for the ray trace calculation, which uses a different method
+% (pointspreads derived from Zemax). 
 %
-% The  spatial (frequency) support of the OTF is computed from the OI
-% information.
-%
-% The OTF data are not stored or returned.  The OTF can be quite large.  It
-% represents every spatial frequency in every waveband.  So we  compute the
-% OTF and apply it on the fly, without ever representing the whole OTF
-% (support and wavelength).
+% The OTF data are spectral and thus can be rather large.  The
+% spectral OTF represents every spatial frequency in every waveband.
 %
 % The programming issues concerning using Matlab to apply the OTF to the
-% image (rather than convolution in the space domain) are explained both
-% here and in the script s_FFTinMatlab.
+% image (rather than convolution in the space domain) are explained
+% below.
 %
-% In the future, we may permit saving the OTF in the OI structure by
-% setting the otfSaveFlag to true (1).  At present, that flag is not
-% implemented.  But computers seem to be getting bigger and faster.
-%
-% See also:  s_FFTinMatlab, oiCalculateOTF, oiCompute
+% See also
+%  oiCalculateOTF, oiCompute
 %
 % Examples:
 %  oi = opticsOTF(oi);      % Not saved
@@ -83,9 +76,15 @@ imSize   = oiGet(oi,'size');
 padSize  = round(imSize/8);
 padSize(3) = 0;
 sDist = sceneGet(scene,'distance');
-oi = oiPad(oi,padSize,sDist);
 
-% See s_FFTinMatlab to understand the logic of the operations here.
+% ISETBio and ISETCam, historically, used different padding
+% strategies.
+if oiGet(oi,'human'), padType = 'mean photons'; 
+else,                 padType = 'zero photons';
+end
+oi = oiPadValue(oi,padSize,padType,sDist);
+    
+% See t_codeFFTinMatlab to understand the logic of the operations here.
 % We used to do this one wavelength at a time.  But this could cause
 % dynamic range problems for ieCompressData.  So, for now we are
 % experimenting with filtering one at a time but stuffing the whole data

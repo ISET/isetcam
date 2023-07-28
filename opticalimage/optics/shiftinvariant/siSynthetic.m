@@ -25,7 +25,7 @@ function optics = siSynthetic(psfType,oi,varargin)
 % Copyright ImagEval Consultants, LLC, 2005.
 %
 % See also:  s_SIExamples, ieSaveSIOpticsFile
-%  s_FFTinMatlab for an explanation of some of the operations in here.
+%  t_codeFFTinMatlab for an explanation of some of the operations in here.
 %
 
 % Examples:

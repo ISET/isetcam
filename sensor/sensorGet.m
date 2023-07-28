@@ -261,7 +261,7 @@ switch oType
         pixel = sensor.pixel;
         if isempty(param), val = pixel;
         elseif   isempty(varargin), val = pixelGet(pixel,param);
-        else,     val = pixelGet(pixel,param,varargin{1});
+        else,     val = pixelGet(pixel,param,varargin{:}); % July 2023. BW.
         end
     otherwise
         param = ieParamFormat(param);

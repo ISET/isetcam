@@ -49,7 +49,7 @@ function oi = wvf2oi(wvf,varargin)
 %     sampling.]
 %
 % See Also:
-%    oiCreate, oiPlot
+%    oiCreate, opticsCreate, oiPlot
 %
 
 % History:
@@ -176,9 +176,8 @@ ieNewGraphWin; mesh(X,Y,abs(ifftshift(otf(:,:,ww))));
 
 %% Set the frequency support and OTF data into the optics slot of the OI
 
-% BW: TODO
-% This code works for the shiftinvariant oi model.  It can also work
-% with humanmw or wvfhuman.
+% This code works for the shiftinvariant optics, replacing the default
+% OTF.
 oi = oiCreate(model);
 oi = oiSet(oi,'optics fnumber',fnumber);
 oi = oiSet(oi,'optics focal length',flength);

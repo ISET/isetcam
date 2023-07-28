@@ -21,7 +21,7 @@ ieInit
 ieNewGraphWin([],'tall');
 tiledlayout(3,1);
 
-%% OTF
+%% OTF - Using the original human model for Marimont and Wandell
 wave = 400:10:700;       % nanometer
 sampleSF = 0:0.5:50;     % cyc/deg
 p  = 0.0015;  % Pupil radius (m)
@@ -54,7 +54,7 @@ xlabel('Spatial freq cy/deg');
 ylabel('OTF value');
 legend({'420 nm','550 nm','670 nm'})
 
-%% Compare with Thibos wavefront.
+%% Compare with Thibos wavefront average observer
 
 oi = oiCreate('wvf human',3);  % 3 mm pupil
 oi = oiSet(oi,'optics fnumber',5.7);
@@ -72,7 +72,7 @@ ph670 = angle(oiGet(oi,'optics otf',670));
 freq = oiGet(oi,'fsupportx','cyclesPerDegree');
 nSamp = 40;
 
-% Indicate spurious resolution by the sign of the phase
+% Plot spurious resolution by the sign of the phase
 nexttile;
 tmp = sign(ph420(1,1:nSamp)); tmp(1) = 1;
 plot(freq(1:nSamp),OTF420(1,1:nSamp).*tmp,'b-'); hold on;
