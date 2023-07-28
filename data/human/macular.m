@@ -61,6 +61,7 @@ t.transmittance = 10.^(-t.density);
 % Here is the fraction of light absorbed by the macular pigment
 t.absorption = 1 - t.transmittance;
 
-return;
+end
+
 
 

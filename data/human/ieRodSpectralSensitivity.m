@@ -29,6 +29,11 @@ plot(wave,lensT);
 rods  = ieScale(scotopic ./lensT,1);
 ieNewGraphWin; plot(wave,rods)
 
+% We do not divide out the macular pigment because the rods are mainly
+% outside of the macula.  But we could.
+% macP = macular(wave);
+% rods = ieScale(rods ./ macP.transmittance,1);
+
 % Set the peak based on Rodieck. Maybe this should be normalized?
 
 rodPeakAbsorbtance = 0.66;             % from Rodieck
