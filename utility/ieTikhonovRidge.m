@@ -1,5 +1,8 @@
-%% Tikhonov regularizer (ridge, regression) 
+%% Notes:  Tikhonov regularizer (ridge, regression) 
 %
+% We should turn this into a function.  It can be used for solving the
+% Maxwell data and other smooth curves, say as part of Haomiao's
+% spectral estimation.
 %
 % https://en.wikipedia.org/wiki/Ridge_regression#Tikhonov_regularization
 
@@ -21,9 +24,6 @@ identityLine;
 axis square;
 norm(b - A*x )
 
-%% This is what x looks like
-h = ieNewGraphWin; plot(x)
-
 %% The Tikhonov regression
 %
 % Find a shorter solution, x.   How much do we care?  lambda
@@ -34,30 +34,50 @@ h = ieNewGraphWin; plot(x)
 %  The closed form Tikhonov solution.  Notice that the curves shrink
 %  towards the y = 0 line, making the solution smaller.  The error
 %  gets larger as lambda gets larger.
+
+% This is what x looks like, followed by the other, smaller solutions
+h = ieNewGraphWin; plot(x,'-k*')
+lambda = logspace(-1,0.5,5);
+err = zeros(size(lambda));
 for lambda = logspace(-1,0,3)
-    xR = inv(A'*A + lambda^2*eye(size(A,2))) * A' * b;
+    xR = inv(A'*A + lambda(ii)^2*eye(size(A,2))) * A' * b;
     hold on; plot(xR,'-o');
-    norm(b - A*xR)
+    err(ii) = norm(b - A*xR);
 end
+disp(err);
 
 %% Difference operator
+
 
 % We can use an alternative regularizer to impose a different 
 % constraint on the solution, x. We might like a smoothness
 % constraint, say to mimize the first derivative.
 %
-x = argmin |b - Ax|^2 + lambda*|D*x|^2
+% x = argmin |b - Ax|^2 + lambda*|D*x|^2
 
-% In this case, D is the first derivative operator expressed as a matrix, sometimes
-% called the difference operator.  
+% In this case, D is the first derivative operator expressed as a
+% matrix, sometimes called the difference operator. Here is the
+% derivative operator for this size
+n = numel(xR);
+D = - eye(n);
+for ii = 1 : n-1
+    D(ii, ii + 1) = 1;
+end
 
-% There is a direct solution for this case
+% Get rid of last line
+D = D(1:end-1,:);
 
-x = inv(A'*A + lambda^2*D'*D) * A' * b
+% This is what x looks like, followed by the other, smoother solutions
+h = ieNewGraphWin; plot(x,'-k*')
+lambda = logspace(-1,0.5,5);
+err = zeros(size(lambda));
+for ii = 1:numel(lambda)
+    xD = inv(A'*A + lambda(ii)^2*(D'*D)) * A' * b;
+    hold on; plot(xD,'-o');
+    err(ii) = norm(b - A*xD);
+end
+disp(err);
 
+% ieNewGraphWin; semilogx(lambda,err);
 
-% Computational efficiency % %   By SVD, we can avoid the matrix
-inversion and estimate the %   coefficients as [U, D, V'] = svd(X); d
-= diag(D); beta = V * diag(d./(d.^2 + lambda))*U'*y
-
-%}
+%% END
