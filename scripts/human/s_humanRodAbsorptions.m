@@ -97,6 +97,9 @@ cm.compute(oi);
 % and will ask.
 fprintf('Absorptions:\t%.1f for round pixel area = %.3e um^2\n', mean(cm.absorptions(:)),pi*(thisP.width/2)^2);
 
+% Per square micron, off by about 15 percent from below
+mean(cm.absorptions(:))/(pi*(thisP.width*1e-6/2)^2)
+
 % You can look and plot here
 %
 % cm.window;
@@ -156,5 +159,8 @@ elROI  = sensorGet(sensor,'roi electrons');
 
 % mean of electron
 fprintf('Absorptions:\t%.1f for square pixel area %.3e um^2\n',mean(elROI),prod(sensorGet(sensor,'pixel size','um')));
+
+% Per square micron, off by about 15percent.
+mean(elROI) / prod(sensorGet(sensor,'pixel size','um'))
 
 %% END

@@ -22,7 +22,8 @@ wave = 400:700;
 ieNewGraphWin;plot(wave,scotopic);
 
 % Human lens transmittance
-lensT = oiGet(oi,'optics transmittance',wave);
+thisLens = Lens('wave',wave);
+lensT = thisLens.transmittance;
 plot(wave,lensT);
 
 % Divide out the lens
@@ -38,7 +39,9 @@ ieNewGraphWin; plot(wave,rods)
 
 rodPeakAbsorbtance = 0.66;             % from Rodieck
 rods  = rods*rodPeakAbsorbtance;
-ieNewGraphWin; plot(wave,rods)
+ieNewGraphWin; plot(wave,rods); grid on;
+
+%%  Save
 fname = fullfile(isetRootPath,'data','human','rods.mat');
 ieSaveSpectralFile(wave,rods,'Estimated rhodopsin dividing scotopic sensitivity by human lens',fname);
 
