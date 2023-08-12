@@ -61,7 +61,7 @@ set(gca,'xlim',[-20 20],'ylim',[-20 20]);
 %% HDR Test scene. Green repeating circles
 
 sceneHDR = sceneCreate('hdr');
-sceneHDR = sceneSet(sceneHDR,'fov',3);
+sceneHDR = sceneSet(sceneHDR,'fov',1);
 % sceneWindow(sceneHDR);
 
 %% These two scenes are both 384x384.
@@ -89,8 +89,11 @@ nexttile; plot(psfP(:),psfH(:),'o'); identityLine;
 
 %%  Another issue: 
 % 
-% We change the spatial samples in the point scene, and the size of
-% the PSF changes. This also suggests we aren't controlling the
+% If we change the spatial samples in the scene, it used to change the
+% spatial extent of the PSF.  But no more!
+%
+% OLD: We change the spatial samples in the point scene, and the size
+% of the PSF changes. This also suggests we aren't controlling the
 % spatial dimensions correctly in piFlareApply
 
 scenePoint2 = sceneCreate('point array',512,128);
@@ -110,14 +113,18 @@ nexttile; mesh(psfSupportPoint(:,:,1),psfSupportPoint(:,:,2),psfH); title('Point
 set(gca,'xlim',[-20 20],'ylim',[-20 20]);
 size(psfP2)
 size(psfH)
-% The PSFs have dimensions.  So we can't make this plot
+% The PSFs have different dimensions.  So we can't make this plot
+% But we could interpolate and do it.  Some day.
+%
 % nexttile; plot(psfP2(:),psfH(:),'o'); identityLine;     
 
-%% Notice that the PSF of the oi does not match the returned psf 
+%% Notice that the PSF of the oi does not match the returned psf
+%
+% So, my view is we should not return that variable.
+%
 
 % No signs of the flare.
 oiPlot(oiPoint2,'psf',550);
-
 
 %% Experiment with the fov 
 
