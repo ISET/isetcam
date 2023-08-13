@@ -19,10 +19,9 @@ wvf = wvfCreate('wave',wave);
 wvf = wvfSet(wvf,'zcoeffs',.2,'defocus');
 wvf = wvfSet(wvf,'zcoeffs',0,'vertical_astigmatism');
 
-wvf = wvfComputePSF(wvf);
-% wvfPlot(wvf,'image pupil phase','mm')
-wvfPlot(wvf,'image psf space','um')
-% wvfPlot(wvf,'image pupil amp','mm')
+wvf = wvfCompute(wvf);
+
+wvfPlot(wvf,'image psf','unit','um','plot range',15);
 
 %% Get the parameters we need for the search
 
@@ -33,9 +32,12 @@ zpupilDiameterMM = wvfGet(wvf,'z pupil diameter');
 
 pupilPlaneSizeMM = wvfGet(wvf,'pupil plane size','mm',thisWaveNM);
 nPixels   = wvfGet(wvf,'spatial samples');
-wvf       = wvfComputePSF(wvf);
+wvf       = wvfCompute(wvf);
 psfTarget = wvfGet(wvf,'psf');
 
+% Rewrite this function using the validated methods in wvfComputePSF.
+% The current function is a version of that.  Maybe identical, but not
+% validated in the same way.
 f = @(x) psf2zcoeff(x,psfTarget,pupilSizeMM,zpupilDiameterMM,pupilPlaneSizeMM,thisWaveUM, nPixels);
 
 % I should to figure out how to set the tolerances.  Default is 1e-4
@@ -57,19 +59,23 @@ x(1) = 0;
 
 %% Compare the values
 
-fprintf('Estimated\n');
-disp(x)
+fprintf('Estimated\n'); disp(x)
+fprintf('True\n'); disp(zcoeffs(1:nCoeffs))
 
-fprintf('True\n');
-disp(zcoeffs(1:nCoeffs))
+psf = wvfPlot(wvf,'psf','unit','um','plot range',20);
+
+wvfEst = wvfSet(wvf,'zcoeffs',x);
+wvfEst = wvfCompute(wvfEst);
+psfEst = wvfPlot(wvfEst,'psf','unit','um','plot range',20);
+
+ieNewGraphWin;
+plot(psf.z(:),psfEst.z(:),'.');
+identityLine;
 
 %% Show the pupil phase functions
 
-vcNewGraphWin([],'tall');
-subplot(2,1,1), wvfPlot(wvf,'image pupil phase','mm',wave,'no window')
-
-wvf2 = wvfSet(wvf,'zcoeffs',x);
-wvf2     = wvfComputePSF(wvf2);
-subplot(2,1,2), wvfPlot(wvf2,'image pupil phase','mm',wave,'no window')
+ieNewGraphWin([],'tall');
+subplot(2,1,1), wvfPlot(wvf,'image pupil phase','unit','mm','wave',wave,'window',false)
+subplot(2,1,2), wvfPlot(wvfEst,'image pupil phase','unit','mm','wave',wave,'window',false)
 
 %%
