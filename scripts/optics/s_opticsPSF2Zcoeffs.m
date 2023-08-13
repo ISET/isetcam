@@ -30,11 +30,14 @@ thisWaveNM  = wvfGet(wvf,'wave','nm');
 pupilSizeMM = wvfGet(wvf,'pupil size','mm');
 zpupilDiameterMM = wvfGet(wvf,'z pupil diameter');
 
-pupilPlaneSizeMM = wvfGet(wvf,'pupil plane size','unit','mm',thisWaveNM);
+pupilPlaneSizeMM = wvfGet(wvf,'pupil plane size','mm',thisWaveNM);
 nPixels   = wvfGet(wvf,'spatial samples');
 wvf       = wvfCompute(wvf);
 psfTarget = wvfGet(wvf,'psf');
 
+% Rewrite this function using the validated methods in wvfComputePSF.
+% The current function is a version of that.  Maybe identical, but not
+% validated in the same way.
 f = @(x) psf2zcoeff(x,psfTarget,pupilSizeMM,zpupilDiameterMM,pupilPlaneSizeMM,thisWaveUM, nPixels);
 
 % I should to figure out how to set the tolerances.  Default is 1e-4
@@ -56,19 +59,23 @@ x(1) = 0;
 
 %% Compare the values
 
-fprintf('Estimated\n');
-disp(x)
+fprintf('Estimated\n'); disp(x)
+fprintf('True\n'); disp(zcoeffs(1:nCoeffs))
 
-fprintf('True\n');
-disp(zcoeffs(1:nCoeffs))
+psf = wvfPlot(wvf,'psf','unit','um','plot range',20);
+
+wvfEst = wvfSet(wvf,'zcoeffs',x);
+wvfEst = wvfCompute(wvfEst);
+psfEst = wvfPlot(wvfEst,'psf','unit','um','plot range',20);
+
+ieNewGraphWin;
+plot(psf.z(:),psfEst.z(:),'.');
+identityLine;
 
 %% Show the pupil phase functions
 
-vcNewGraphWin([],'tall');
+ieNewGraphWin([],'tall');
 subplot(2,1,1), wvfPlot(wvf,'image pupil phase','unit','mm','wave',wave,'window',false)
-
-wvf2 = wvfSet(wvf,'zcoeffs',x);
-wvf2     = wvfComputePSF(wvf2);
-subplot(2,1,2), wvfPlot(wvf2,'image pupil phase','unit','mm','wave',wave,'window',false)
+subplot(2,1,2), wvfPlot(wvfEst,'image pupil phase','unit','mm','wave',wave,'window',false)
 
 %%
