@@ -162,7 +162,7 @@ switch(pType)
         uData.x = samp; uData.y = samp; uData.z = psf;
         set(gcf, 'userdata', uData);
         
-    case {'psf','psfmesh','psfspace','2dpsfspace', '2dpsfspacenormalized'}
+    case {'psf','psfnormalized'}
         
         samp = wvfGet(wvfP, 'psf spatial samples', unit, wave);
         psf  = wvfGet(wvfP, 'psf', wave);
@@ -298,7 +298,7 @@ switch(pType)
         set(gcf, 'userdata', uData);
         
         
-    case {'1dpsf', '1dpsfspace', '1dpsfspacenormalized'}
+    case {'1dpsf', '1dpsfspace', '1dpsfnormalized'}
         % wvfPlot(wvfP, '1d psf normalized', waveIdx, plotRangeArcMin);
         psfLine = wvfGet(wvfP, '1d psf', wave);
         if normalizeFlag

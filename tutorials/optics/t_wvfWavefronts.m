@@ -26,9 +26,9 @@ for ii=1:16
     wvf = wvfSet(wvf,'measured pupil size',2);   % This is diameter
     wvf = wvfSet(wvf,'calc pupil size',2);       % This is diameter
     wvf = wvfSet(wvf,'zcoeff',1,ii);
-    wvf = wvfComputePSF(wvf);
+    wvf = wvfCompute(wvf);
     [n,m] = wvfOSAIndexToZernikeNM(ii);
-    uData{ii} = wvfPlot(wvf,'image wavefront aberrations','mm',550,1,'no window');
+    uData{ii} = wvfPlot(wvf,'image wavefront aberrations','unit','mm','wave',550,'plot range',1,'window',false);
     colormap("gray"); title(sprintf('ZC_{%d}^{%d}',n,m));
 end
 

@@ -96,7 +96,7 @@ thisGuy = wvfSet(thisGuy, 'measured wavelength', 550);
 
 % Set to column vector
 thisGuy = wvfSet(thisGuy, 'calc wave', [450:100:650]');
-thisGuy = wvfComputePSF(thisGuy);
+thisGuy = wvfCompute(thisGuy);
 
 %% Plot the PSFs of the sample mean subject for several wavelengths
 % These illustrate the strong axial chromatic aberration.
@@ -105,8 +105,8 @@ nWave = wvfGet(thisGuy, 'calc nwave');
 ieNewGraphWin([], 'tall');
 for ii = 1:nWave
     subplot(nWave, 1, ii)
-    wvfPlot(thisGuy, 'image psf space', 'um', wave(ii), maxUM, ...
-        'no window');
+    wvfPlot(thisGuy, 'image psf', 'unit','um', 'wave', wave(ii), 'plot range',maxUM, ...
+        'window', false);
     title(sprintf('%d nm', wave(ii)));
     colorbar
 end
@@ -136,11 +136,11 @@ for ii = 1:nSubjects
     thisGuy = wvfSet(thisGuy, 'zcoeffs', z);  % Zernike
 
     thisGuy = wvfSet(thisGuy, 'calc wave', thisWave);
-    thisGuy = wvfComputePSF(thisGuy);
+    thisGuy = wvfCompute(thisGuy);
 
     subplot(nSubjects, 1, ii)
-    wvfPlot(thisGuy, 'image psf space', 'um', thisWave, maxUM, ...
-        'no window');
+    wvfPlot(thisGuy, 'image psf', 'unit','um', 'wave', thisWave, 'plot range', maxUM, ...
+        'window', false);
     title(sprintf('Subject %i, wave %i\n', ii, thisWave));
     colorbar;
 end
@@ -154,11 +154,11 @@ for ii = 1:nSubjects
     thisGuy = wvfSet(thisGuy, 'zcoeffs', z);  % Zernike
 
     thisGuy = wvfSet(thisGuy, 'calc wave', thisWave);
-    thisGuy = wvfComputePSF(thisGuy);
+    thisGuy = wvfCompute(thisGuy);
 
     subplot(nSubjects, 1, ii)
-    wvfPlot(thisGuy, 'image psf space', 'um', thisWave, maxUM, ...
-        'no window');
+    wvfPlot(thisGuy, 'image psf', 'unit','um', 'wave', thisWave, 'plot range', maxUM, ...
+        'window', false);
     title(sprintf('Subject %i, wave %i\n', ii, thisWave));
     colorbar;
 end

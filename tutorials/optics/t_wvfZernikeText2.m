@@ -2,6 +2,9 @@
 %
 % Simplified tutorial about the Zernike polynomials
 %
+% Needs some more checking/debugging (BW).  Was OK but then the big update
+% to wvfPlot and isetbio and such.
+%
 % Zernike polynomials consist of:
 %   -a weighting coefficient (Zernike coeff),
 %   -a normalization factor,
@@ -74,10 +77,10 @@ wvfPrint(wvf0);
 % The plot shows an airy disk computed from the Zernike
 % polynomials; that is representing the diffraction-limited PSF
 % obtained when the Zernike coefficients are all zero.
-wvf0 = wvfComputePSF(wvf0);
+wvf0 = wvfCompute(wvf0);
 % wList = wvfGet(wvf0,'wave');
 wList = 550;
-wvfPlot(wvf0,'2dpsf space normalized','um',wList,maxUM);
+wvfPlot(wvf0,'psf','unit','um','wave',wList,'plot range',maxUM);
 
 %% Examine how the first non-zero Zernike coefficient contributes to the PSF.
 
@@ -110,7 +113,7 @@ fprintf('Third Zernike coefficient is %g\n',wvfGet(wvf3,'zcoeffs',3));
 % and - 45 degree axes, which makes sense for oblique
 % astigmatism.
 wvf3 = wvfComputePupilFunction(wvf3);
-wvfPlot(wvf3,'2d pupil phase space','mm',wList,pupilfuncrangeMM);
+wvfPlot(wvf3,'2d pupil phase space','unit','mm','wave',wList,'plot range',pupilfuncrangeMM);
 
 %% Plot the PSF
 % While the pupil functions are well specified by Zernike
@@ -118,7 +121,7 @@ wvfPlot(wvf3,'2d pupil phase space','mm',wList,pupilfuncrangeMM);
 % prefer to look at the PSF, which gives us an idea of how the
 % pupil will blur an image. This is essentially done by applying
 % a Fourier Transform to the pupil function.
-wvf3 = wvfComputePSF(wvf3);
+wvf3 = wvfCompute(wvf3);
 
 % Now we can plot the normalized PSF for a pupil only whose only
 % aberration is the 45 degree astigmatism.
@@ -127,7 +130,7 @@ wvf3 = wvfComputePSF(wvf3);
 % diffraction-limited PSF. It has also lost its radial symmetry.
 % We will see that the higher the order of Zernike polynomial,
 % the more complex the associated PSF will be.
-wvfPlot(wvf3, '2d psf space normalized','um',wList,maxUM);
+wvfPlot(wvf3,'psf','unit','um','wave',wList,'plot range',maxUM);
 
 %% Examine effect of the j = 5 (6th entry), which is called vertical
 % astigmatism, along the 0 or 90 degree axis.  Again we begin with
@@ -137,9 +140,9 @@ wvfPlot(wvf3, '2d psf space normalized','um',wList,maxUM);
 % for astigmatism is aligned to the x and y axes.
 vertical_astig = 2;
 wvf5 = wvfSet(wvf0,'zcoeffs',vertical_astig,{'vertical_astigmatism'});
-wvf5 = wvfComputePSF(wvf5);
-wvfPlot(wvf5,'2d pupil phase space','mm',wList,maxMM);
-wvfPlot(wvf5,'2d psf space normalized','um',wList,maxUM);
+wvf5 = wvfCompute(wvf5);
+wvfPlot(wvf5,'2d pupil phase space','unit','mm','wave',wList,'plot range',maxMM);
+wvfPlot(wvf5,'psf','unit','um','wave',wList,'plot range',maxUM);
 
 %% Make plots of various pupil functions
 % And their respective point-spread functions for different
@@ -168,9 +171,9 @@ for ii = jindices
     ieNewGraphWin;
     insertCoeff = 2;
     wvf = wvfSet(wvf0,'zcoeffs',insertCoeff,ii);
-    wvf = wvfComputePSF(wvf);
-    [n,m] = wvfOSAIndexToZernikeNM(ii);
-    wvfPlot(wvf,'2d psf space','um',wList,maxUM,'no window');
+    wvf = wvfCompute(wvf);
+    [n,m] = wvfOSAIndexToZernikeNM(ii);    
+    wvfPlot(wvf,'psf','unit','um','wave',wList,'plot range',maxUM,'window',false);
 end
 
 %% How longitudinal chromatic aberration (LCA) affects the PSF / "Defocus"
@@ -201,11 +204,12 @@ wvf0 = wvfSet(wvf0,'wave',550);
 % difference between the measurement wavelength (for which the
 % defocus coefficient is specified) and the wavelength being
 % calclated for.
-wvf0 = wvfComputePSF(wvf0);
+wvf0 = wvfCompute(wvf0);
 wList = wvfGet(wvf0,'wavelengths');
 ieNewGraphWin;
 maxMM = 3;
-wvfPlot(wvf0,'1dpsfspacenormalized','mm',wList,maxMM,'no window');
+wvfPlot(wvf0,'1dpsfnormalized','unit','mm','wave',wList,'plot range',maxMM,'window',false);
+
 hold on;
 
 % Change the calculated wavelength to 600.
@@ -217,8 +221,8 @@ theWavelength = 600;
 wvf1 = wvfCreate;
 wvf1 = wvfSet(wvf1,'wavelengths',theWavelength);
 wList = wvfGet(wvf1,'wavelengths');
-wvf1 = wvfComputePSF(wvf1);
-wvfPlot(wvf1,'1dpsf space normalized','mm',wList,maxMM,'no window');
+wvf1 = wvfCompute(wvf1);
+wvfPlot(wvf1,'1dpsfnormalized','unit','mm','wave',wList,'plot range',maxMM,'window',false);
 
 % To unpack this, we can do explicitly what is done inside the
 % pupil function calculation.  First we LCA from the wavelength
@@ -234,8 +238,9 @@ wList = wvfGet(wvf2,' wavelengths');
 defocus = wvfGet(wvf2,'zcoeffs',{'defocus'});
 defocus = defocus + lcaMicrons;
 wvf2 = wvfSet(wvf2,'zcoeffs',lcaMicrons,{'defocus'});
-wvf2 = wvfComputePSF(wvf2);
-[udataS, pData] = wvfPlot(wvf2,'1dpsf space normalized','mm',wList,maxMM,'no window');
+wvf2 = wvfCompute(wvf2);
+[udataS, pData] =wvfPlot(wvf2,'1d psf normalized','unit','mm','wave',wList,'plot range',maxMM,'window',false);
+
 set(pData,'color','b','linewidth',2);
 
 %%
