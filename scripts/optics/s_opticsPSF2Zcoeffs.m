@@ -19,10 +19,9 @@ wvf = wvfCreate('wave',wave);
 wvf = wvfSet(wvf,'zcoeffs',.2,'defocus');
 wvf = wvfSet(wvf,'zcoeffs',0,'vertical_astigmatism');
 
-wvf = wvfComputePSF(wvf);
-% wvfPlot(wvf,'image pupil phase','mm')
-wvfPlot(wvf,'image psf space','um')
-% wvfPlot(wvf,'image pupil amp','mm')
+wvf = wvfCompute(wvf);
+
+wvfPlot(wvf,'image psf','unit','um','plot range',15);
 
 %% Get the parameters we need for the search
 
@@ -31,9 +30,9 @@ thisWaveNM  = wvfGet(wvf,'wave','nm');
 pupilSizeMM = wvfGet(wvf,'pupil size','mm');
 zpupilDiameterMM = wvfGet(wvf,'z pupil diameter');
 
-pupilPlaneSizeMM = wvfGet(wvf,'pupil plane size','mm',thisWaveNM);
+pupilPlaneSizeMM = wvfGet(wvf,'pupil plane size','unit','mm',thisWaveNM);
 nPixels   = wvfGet(wvf,'spatial samples');
-wvf       = wvfComputePSF(wvf);
+wvf       = wvfCompute(wvf);
 psfTarget = wvfGet(wvf,'psf');
 
 f = @(x) psf2zcoeff(x,psfTarget,pupilSizeMM,zpupilDiameterMM,pupilPlaneSizeMM,thisWaveUM, nPixels);
@@ -66,10 +65,10 @@ disp(zcoeffs(1:nCoeffs))
 %% Show the pupil phase functions
 
 vcNewGraphWin([],'tall');
-subplot(2,1,1), wvfPlot(wvf,'image pupil phase','mm',wave,'no window')
+subplot(2,1,1), wvfPlot(wvf,'image pupil phase','unit','mm','wave',wave,'window',false)
 
 wvf2 = wvfSet(wvf,'zcoeffs',x);
 wvf2     = wvfComputePSF(wvf2);
-subplot(2,1,2), wvfPlot(wvf2,'image pupil phase','mm',wave,'no window')
+subplot(2,1,2), wvfPlot(wvf2,'image pupil phase','unit','mm','wave',wave,'window',false)
 
 %%

@@ -1,8 +1,8 @@
-function [uData, pData, fNum] = wvfPlot(wvfP, pType, varargin)
+function [uData, pData, fighdl] = wvfPlot(wvfP, pType, varargin)
 % Wavefront plots
 %
 % Syntax:
-%   [userData, plotData, fNum] = wvfPlot(wvfP, [pType], [varargin]);
+%   [userData, plotData, fighdl] = wvfPlot(wvfP, [pType], [varargin]);
 %
 % Description:
 %    By default, this routine opens a new graph window (ieNewGraphWin). If
@@ -37,34 +37,29 @@ function [uData, pData, fNum] = wvfPlot(wvfP, pType, varargin)
 % Inputs:
 %    wvfP     - Wavefront structure
 %    pType    - Plot type
-%    varargin - These are used to set various parameters of the plot. The
-%               standard format is: units, wavelength, plotRange
-%               'window/no-window' This should change by using an argument
-%               reading function for parameters/value pairs.
+%
+% Optional key/val pairs
+%    unit       - Spatial units (default: 'mm')
+%    wave       - Plotting wavelength (default: wvfGet(wvf,'wave'))
+%    plot range - Axis range (default: Inf)
+%    airy disk  - Plot an airy disk (default: false)
+%    window     - Either a figure handle, or a logical (default: true)
 % 
 % Outputs:
 %    uData    - The user data that are plotted
 %    pData    - The handles from the plotted data
-%    fNum     - The figure number
-%
+%    fighdl   - The figure
 %
 % Notes:
-%    * [Note: JNM - Reminder: Using ~isempty(strfind(... instead of
-%      contains due to backwards compatibility with MATLAB 2015B]
-%    * [Note: JNM - The 'imagepupilamp' case below has the following note
-%      about things to fix attached to it: code in other plotting scales
-%      (distances or angles)]
 %    * [Note: JNM - The 'imagepupilphase' below, contains the following
 %      requests to fix:
 %         1. modify colormap so that periodicity of phase is accounted for.
 %         2. code in other plotting scales (distances or angles)
 %         3. confirm plotting: currently 90deg flipped of wikipedia
 %         4. somehow remove the 0 phase areas outside of calculated pupil]
-%    * TODO: Fill out optional key/value pairs section
 %
 % See Also:
 %    wvfComputePSF, v_wvfDiffractionPSF, ieNewGraphWin
-%
 
 % History:
 %    xx/xx/12   bw    (c) Wavefront Toolbox Team
@@ -72,93 +67,83 @@ function [uData, pData, fNum] = wvfPlot(wvfP, pType, varargin)
 
 % Examples:
 %{
-    % Start with a clean structure
-    wvf = wvfCreate;
-    wave = 550;
-    wvf = wvfSet(wvf, 'calc wave', wave);
-    wvf = wvfComputePSF(wvf);
-    unit = 'um';
-    % u - data, p- figure properties
-    [u, p] = wvfPlot(wvf, '1d psf space', unit, wave);
-    set(p, 'color', 'k', 'linewidth', 2)
+wvf = wvfCreate;
+wave = 550;
+wvf = wvfSet(wvf, 'calc wave', wave);
+wvf = wvfCompute(wvf);
+[u, p] = wvfPlot(wvf, '1d psf space');
+wvfPlot(wvf,'psf','airy disk',true,'plot range',10,'unit','um');
+%}
+%{
+wvf = wvfCreate;
 
-    % Change the calculated PSF wavelength and plot again
-    wave = 500;
-    wvf = wvfSet(wvf, 'calc wave', wave);
-    wvf = wvfComputePSF(wvf);
-    unit = 'um';
-    [u, p]= wvfPlot(wvf, '1d psf space', unit, wave);
-    set(p, 'color', 'k', 'linewidth', 2)
-
-    % Plot in an existing window by appending 'no window'
-    % Also, plot normalized and not-normalized.
-    ieNewGraphWin([], 'tall');
-    subplot(3, 1, 1), [u, p] = ...
-        wvfPlot(wvf, '1d psf space', unit, wave, 'no window');
-    subplot(3, 1, 2), [u, p] = ...
-        wvfPlot(wvf, '1d psf space normalized', unit, wave, 'no window');
-    subplot(3, 1, 3), ...
-        wvfPlot(wvf, 'image psf', 'um', wave, 20, 'no window');
+% Change the calculated PSF wavelength and plot again
+wave = 500;
+wvf = wvfSet(wvf, 'calc wave', wave);
+wvf = wvfCompute(wvf);    
+wvfPlot(wvf, '1d psf space', 'unit', 'um');
+wvfPlot(wvf,'image psf','unit','um','wave',wave,'plot range',10);
+wvfPlot(wvf, '1d psf space','window',false);
+wvfPlot(wvf,'psf');
+wvfPlot(wvf,'psf','plot range',10,'unit','um','window',false);
 %}
 
-%%
-if notDefined('wvfP'), error('Wavefront structure required.'); end
-if notDefined('pType'), pType = '1dpsf'; end
+%% Parse
 
-uData = [];
-pType = ieParamFormat(pType);
-fNum  = [];
+varargin = ieParamFormat(varargin);
+p = inputParser;
 
-% Defaults
-unit   = 'mm'; % Space is millimeters, but maybe there should be no default
-wList  = wvfGet(wvfP,'wave'); % Wave list is whatever the wvf has
-pRange = Inf;  % Plot range
+p.addRequired('wvfP',@isstruct);
+p.addRequired('pType',@ischar)
 
-% Allow the last argument to control the window.
-if ~isempty(varargin)
-    lastArg = varargin{end};
-    if isa(lastArg,'matlab.ui.Figure')
-        figure(lastArg.Number);
-    elseif isa(lastArg,'matlab.graphics.layout.TiledChartLayout')
-        figure(lastArg.Parent.Number);
-    elseif ~isempty(varargin) && ischar(varargin{end})
-        % The last argument is not empty, and it is a string
-        switch ieParamFormat(lastArg)
-            case {'nowindow', 'nofigure', 'noplot', 'nofig'}
-                fNum = [];
-            otherwise
-                fNum = ieNewGraphWin;
-        end
-    else
-        fNum = ieNewGraphWin;
-    end
-end
+p.addParameter('unit','mm',@ischar);
+p.addParameter('wave',[],@isvector);
+p.addParameter('plotrange',Inf,@isnumeric);
+p.addParameter('airydisk',false,@islogical);
+p.addParameter('window',true,@(x)(islogical(x) || ...
+    isa(x,'matlab.ui.Figure') || ...
+    isa(x,'matlab.graphics.layout.TiledChartLayout')));
+
+p.parse(wvfP,pType,varargin{:});
+
+pType  = ieParamFormat(pType);
+unit   = p.Results.unit;
+wave   = p.Results.wave;
+pRange = p.Results.plotrange;
+window = p.Results.window;
+airydisk = p.Results.airydisk;
+
+% Wave list is whatever the wvf has
+if isempty(wave), wave  = wvfGet(wvfP,'wave'); end 
 
 % Something gets normalized.
 normalizeFlag = contains(pType, 'normalized');
-airydisk = false;
-if ~isempty(varargin)
-    for ii=1:numel(varargin)
-        airydisk = strncmp(ieParamFormat(varargin{ii}),'airydisk',8);
-        if airydisk, break; end
-    end
+
+% Return defaults
+uData = [];
+fighdl  = [];
+
+% Control the window
+if islogical(window) && ~window
+    fighdl = [];
+elseif (isa(window,'matlab.ui.Figure') || isa(window,'matlab.graphics.layout.TiledChartLayout'))
+    figure(window);
+elseif isempty(window) || window
+    fighdl = ieNewGraphWin;
 end
 
-%%
+%% Switch through the plots
+
 switch(pType)
     
     case {'psfangle', '2dpsfangle', '2dpsfanglenormalized'}
         % wvfPlot(wvfP, '2d psf angle normalized', unit, ...
         %    waveIdx, plotRangeArcMin);
-        if ~isempty(varargin)
-            [unit, wList, pRange] = wvfReadArg(wvfP, varargin);
-        end
-        
-        samp = wvfGet(wvfP, 'psf angular samples', unit, wList);
-        psf  = wvfGet(wvfP, 'psf', wList);
+        samp = wvfGet(wvfP, 'psf angular samples', unit, wave);
+        psf  = wvfGet(wvfP, 'psf', wave);
         
         % Extract within the range
-        if ~isempty(pRange)
+        if ~isinf(pRange)
             index = (abs(samp) < pRange);
             samp = samp(index);
             psf = psf(index, index);
@@ -178,17 +163,13 @@ switch(pType)
         set(gcf, 'userdata', uData);
         
     case {'psf','psfmesh','psfspace','2dpsfspace', '2dpsfspacenormalized'}
-        % wvfPlot(wvfP, '2d psf space', ', waveIdx, plotRangeArcMin);
-        if ~isempty(varargin)
-            [unit, wList, pRange] = wvfReadArg(wvfP, varargin);
-        end
         
-        samp = wvfGet(wvfP, 'psf spatial samples', unit, wList);
-        psf  = wvfGet(wvfP, 'psf', wList);
+        samp = wvfGet(wvfP, 'psf spatial samples', unit, wave);
+        psf  = wvfGet(wvfP, 'psf', wave);
         if normalizeFlag, psf = psf/max(psf(:)); end
         
         % Extract within the range
-        if ~isempty(pRange)
+        if ~isinf(pRange)
             index = (abs(samp) < max(pRange));
             samp = samp(index);
             psf = psf(index, index);
@@ -203,84 +184,74 @@ switch(pType)
 
         if airydisk
             % Draw a circle at the first zero crossing (Airy disk) of the
-            % diffraction limited aperture.  We put it at the top because
-            % otherwise it will be obscured by the mesh.
-            if numel(wList) > 1, thisWave = wList(1);
-            else, thisWave = wList;
+            % diffraction limited aperture.
+            if numel(wave) > 1, thisWave = wave(1);
+            else, thisWave = wave;
             end
             radius = airyDisk(thisWave,wvfGet(wvfP,'fnumber'),'units',unit);
             nCircleSamples = 200;
             [adX,adY,adZ] = ieShape('circle',nCircleSamples,radius);
-            ringZ = max(psf(:));
-            hold on; figure(gcf);
+
             % Height of the Airy Disk ring.  Still experimenting.
             % Considering making this a parameter (BW).
-            p = plot3(adX,adY,adZ + ringZ*0.0,'k-'); set(p,'linewidth',5); 
+            figure(gcf);hold on;
+            ringZ = max(psf(:))*1e-3;
+            p = plot3(adX,adY,adZ + ringZ,'k-'); set(p,'linewidth',5); 
             hold off;
-            title(sprintf('F# %.1f Wave %d Airy Radius %.2f',wvfGet(wvfP,'fnumber'),wList, radius));
+            title(sprintf('F# %.1f Wave %d Airy Radius %.2f',wvfGet(wvfP,'fnumber'),wave, radius));
         else
-            title(sprintf('F# %.1f Wave %d',wvfGet(wvfP,'fnumber'),wList));
+            title(sprintf('F# %.1f Wave %d',wvfGet(wvfP,'fnumber'),wave));
         end
 
     case {'psfxaxis'}
-        % wvfPlot(wvfP,'psf xaxis',unit,wave,plotRange)
-        % wvfPlot(wvf,'psf xaxis','um',550,20)
-        if ~isempty(varargin)
-            [unit, wList, pRange] = wvfReadArg(wvfP, varargin);
-        end
+        % wvfPlot(wvfP,'psf xaxis','unit',unit,'wave',wave,'p range',plotRange)
+        % wvfPlot(wvf,'psf xaxis','unit','um','wave',550,'prange',20)
 
-        psf  = wvfGet(wvfP,'psf',wList);
-        samp = wvfGet(wvfP,'psf spatial samples',unit,wList);
+        psf  = wvfGet(wvfP,'psf',wave);
+        samp = wvfGet(wvfP,'psf spatial samples',unit,wave);
 
         % X axis
         lineData = interp2(samp,samp,psf,0,samp);
-        radius = airyDisk(wList,wvfGet(wvfP,'fnumber'),'units','um','diameter',false);
+        radius = airyDisk(wave,wvfGet(wvfP,'fnumber'),'units','um','diameter',false);
         plot(samp,lineData,'ko-'); hold on; 
         plot([-radius, radius],[0 0],'ro');
         grid on; set(gca,'xlim',[-pRange pRange]);
    
-        uData.samp = samp; uData.psf = lineData; uData.wave = wList;
-        if ~isempty(fNum)
-            title(sprintf('PSF x-axis (Wave %d).',wList));
+        uData.samp = samp; uData.psf = lineData; uData.wave = wave;
+        if ~isempty(fighdl)
+            title(sprintf('PSF x-axis (Wave %d).',wave));
         end
 
     case {'psfyaxis'}
         % wvfPlot(wvfP,'psf yaxis',unit,wave,plotRange)
         % wvfPlot(wvf,'psf yaxis','um',550,20)
-        if ~isempty(varargin)
-            [unit, wList, pRange] = wvfReadArg(wvfP, varargin);
-        end
 
-        psf  = wvfGet(wvfP,'psf',wList);
-        samp = wvfGet(wvfP,'psf spatial samples',unit,wList);
+        psf  = wvfGet(wvfP,'psf',wave);
+        samp = wvfGet(wvfP,'psf spatial samples',unit,wave);
 
         % X axis
         lineData = interp2(samp,samp,psf,samp,0);
-        radius = airyDisk(wList,wvfGet(wvfP,'fnumber'),'units','um','diameter',false);
+        radius = airyDisk(wave,wvfGet(wvfP,'fnumber'),'units','um','diameter',false);
         plot(samp,lineData,'ko-'); hold on; 
         plot([-radius, radius],[0 0],'ro');
         grid on; set(gca,'xlim',[-pRange pRange]);
         
-        uData.samp = samp; uData.psf = lineData; uData.wave = wList;
-        if ~isempty(fNum)
-            title(sprintf('PSF y-axis (Wave %d).',wList));
+        uData.samp = samp; uData.psf = lineData; uData.wave = wave;
+        if ~isempty(fighdl)
+            title(sprintf('PSF y-axis (Wave %d).',wave));
         end
 
-    case {'imagepsf', 'imagepsfspace', 'imagepsfspacenormalized'}
+    case {'imagepsf', 'imagepsfnormalized'}
         % wvfPlot(wvfP, 'image psf space', unit, waveIdx, plotRangeArcMin);
-        if ~isempty(varargin)
-            [unit, wList, pRange] = wvfReadArg(wvfP, varargin);
-        end
-        
-        samp = wvfGet(wvfP, 'psf spatial samples', unit, wList);
-        psf = wvfGet(wvfP, 'psf', wList);
+        samp = wvfGet(wvfP, 'psf spatial samples', unit, wave);
+        psf  = wvfGet(wvfP, 'psf', wave);
         % If the string contains normalized
         if normalizeFlag
             psf = psf / max(psf(:));
         end
         
         % Extract within the range
-        if ~isempty(pRange)
+        if ~isinf(pRange)
             index = (abs(samp) < pRange);
             samp = samp(index);
             psf = psf(index, index);
@@ -300,19 +271,15 @@ switch(pType)
         
     case {'imagepsfangle'}
         % wvfPlot(wvfP, 'image psf angle', unit, waveIdx, plotRangeArcMin);
-        if ~isempty(varargin)
-            [unit, wList, pRange] = wvfReadArg(wvfP, varargin);
-        end
-        
-        samp = wvfGet(wvfP, 'psf angular samples', unit, wList);
-        psf = wvfGet(wvfP, 'psf', wList);
+        samp = wvfGet(wvfP, 'psf angular samples', unit, wave);
+        psf = wvfGet(wvfP, 'psf', wave);
         % If the string contains normalized
         if normalizeFlag
             psf = psf / max(psf(:));
         end
         
         % Extract within the range
-        if ~isempty(pRange)
+        if ~isinf(pRange)
             index = (abs(samp) < pRange);
             samp = samp(index);
             psf = psf(index, index);
@@ -333,19 +300,15 @@ switch(pType)
         
     case {'1dpsf', '1dpsfspace', '1dpsfspacenormalized'}
         % wvfPlot(wvfP, '1d psf normalized', waveIdx, plotRangeArcMin);
-        if ~isempty(varargin)
-            [unit, wList, pRange] = wvfReadArg(wvfP, varargin);
-        end
-        
-        psfLine = wvfGet(wvfP, '1d psf', wList);
+        psfLine = wvfGet(wvfP, '1d psf', wave);
         if normalizeFlag
             psfLine = psfLine / max(psfLine(:));
         end
         
-        samp = wvfGet(wvfP, 'psf spatial samples', unit, wList);
+        samp = wvfGet(wvfP, 'psf spatial samples', unit, wave);
         
         % Make a plot through of the returned PSF in the central region.
-        if ~isempty(pRange)
+        if ~isinf(pRange)
             index = find(abs(samp) < pRange);
             samp = samp(index);
             psfLine = psfLine(index);
@@ -353,7 +316,7 @@ switch(pType)
         
         pData = plot(samp, psfLine,'LineWidth', 2);
         s = sprintf('Position (%s)', unit);
-        xlabel(s); ylabel('PSF slice')
+        xlabel(s); ylabel('PSF slice'); grid on;
         
         % Store the data
         uData.x = samp; uData.y = psfLine;
@@ -361,12 +324,9 @@ switch(pType)
         
     case { '1dpsfangle', '1dpsfanglenormalized'}
         % wvfPlot(wvfP, '1d psf angle', unit, waveIdx, plotRangeArcMin);
-        if ~isempty(varargin)
-            [unit, wList, pRange] = wvfReadArg(wvfP, varargin);
-        end
         
-        psfLine = wvfGet(wvfP, '1d psf', wList);
-        samp = wvfGet(wvfP, 'psf angular samples', unit, wList);
+        psfLine = wvfGet(wvfP, '1d psf', wave);
+        samp = wvfGet(wvfP, 'psf angular samples', unit, wave);
         
         % Make a plot through of the returned PSF in the central region.
         index = find(abs(samp) < pRange);
@@ -388,9 +348,6 @@ switch(pType)
     case {'2dotf', 'otfspace', 'otf'}
         % wvfPlot(wvfP, '2d otf', unit, waveIdx, plotRangeFreq);
         % wvfPlot(wvfP, '2d otf', 'mm', 2, []);
-        if ~isempty(varargin)
-            [unit, wave, pRange] = wvfReadArg(wvfP, varargin);
-        end
         
         % Get the data and if the string contains normalized ...
         psf = wvfGet(wvfP, 'psf', wave);
@@ -415,7 +372,7 @@ switch(pType)
         [~,~,otf] = PsfToOtf([],[],psf);
         
         % Restrict to parameter range
-        if ~isempty(pRange)
+        if ~isinf(pRange)
             index = (abs(freq) < pRange);
             freq = freq(index);
             otf = otf(index, index);
@@ -433,10 +390,6 @@ switch(pType)
     case {'1dotf','1dotfspace'}
         % Plot the positive frequency part of a slice through the 2D
         % OTF.
-        if ~isempty(varargin)
-            [unit, wave, pRange] = wvfReadArg(wvfP, varargin);
-        end
-        
         % Get the data and if the string contains normalized ...
         psf = wvfGet(wvfP, 'psf', wave);
         if normalizeFlag
@@ -456,7 +409,7 @@ switch(pType)
         [~,~,otf] = PsfToOtf([],[],psf);
         
         % Restrict to parameter range
-        if ~isempty(pRange)
+        if ~isinf(pRange)
             index = (abs(freq) < pRange);
             freq = freq(index);
             otf = otf(index, index);
@@ -480,10 +433,7 @@ switch(pType)
         % wvfPlot(wvf0, '1d otf angle', 'deg', wave, 10)
         % Plot the positive frequency part of a slice through the 2D
         % OTF.
-        if ~isempty(varargin)
-            [unit, wave, pRange] = wvfReadArg(wvfP, varargin);
-        end
-        
+
         % Get the data and if the string contains normalized ...
         psf = wvfGet(wvfP, 'psf', wave);
         if normalizeFlag
@@ -503,7 +453,7 @@ switch(pType)
         [~,~,otf] = PsfToOtf([],[],psf);
         
         % Restrict to parameter range
-        if ~isempty(pRange)
+        if ~isinf(pRange)
             index = (abs(freq) < pRange);
             freq = freq(index);
             otf = otf(index, index);
@@ -535,15 +485,12 @@ switch(pType)
         % plots the 2d pupil function amplitude for calculated pupil
         % Things to fix
         %  1. code in other plotting scales (distances or angles)
-        if ~isempty(varargin)
-            [unit, wList, pRange] = wvfReadArg(wvfP, varargin);
-        end
-        
-        samp = wvfGet(wvfP, 'pupil spatial samples', unit, wList);
-        pupilfunc = wvfGet(wvfP, 'pupil function', wList);
+
+        samp = wvfGet(wvfP, 'pupil spatial samples', unit, wave);
+        pupilfunc = wvfGet(wvfP, 'pupil function', wave);
         
         % Extract within the range
-        if ~isempty(pRange)
+        if ~isinf(pRange)
             index = (abs(samp) < pRange);
             samp = samp(index);
             pupilfunc = pupilfunc(index, index);
@@ -568,15 +515,12 @@ switch(pType)
         % 2. code in other plotting scales (distances or angles)
         % 3. confirm plotting: currently 90deg flipped of wikipedia
         % 4. somehow remove the 0 phase areas outside of calculated pupil
-        if ~isempty(varargin)
-            [unit, wList, pRange] = wvfReadArg(wvfP, varargin);
-        end
-        
-        samp = wvfGet(wvfP, 'pupil spatial samples', unit, wList);
-        pupilfunc = wvfGet(wvfP, 'pupil function', wList);
+       
+        samp = wvfGet(wvfP, 'pupil spatial samples', unit, wave);
+        pupilfunc = wvfGet(wvfP, 'pupil function', wave);
         
         % Extract within the range
-        if ~isempty(pRange)
+        if ~isinf(pRange)
             index = (abs(samp) < pRange);
             samp = samp(index);
             pupilfunc = pupilfunc(index, index);
@@ -596,15 +540,12 @@ switch(pType)
         % wvfPlot(wvfP, '2d pwavefront aberrationsspace space', ...
         %    'mm', pRange)
         % plots - 2d wavefront aberrations in microns for calculated pupil
-        if ~isempty(varargin)
-            [unit, wList, pRange] = wvfReadArg(wvfP, varargin);
-        end
         
-        samp = wvfGet(wvfP, 'pupil spatial samples', unit, wList);
-        wavefront = wvfGet(wvfP, 'wavefront aberrations', wList);
+        samp = wvfGet(wvfP, 'pupil spatial samples', unit, wave);
+        wavefront = wvfGet(wvfP, 'wavefront aberrations', wave);
         
         % Extract within the range
-        if ~isempty(pRange)
+        if ~isinf(pRange)
             index = (abs(samp) < pRange);
             samp = samp(index);
             wavefront = wavefront(index, index);
@@ -626,60 +567,60 @@ end
 
 end
 
-%%% - Interpret the plotting arguments
-function [units, wList, pRange] = wvfReadArg(wvfP, theseArgs)
-% Interpret the plotting arguments
-%
-% Syntax:
-%   [units, wList, pRange] = wvfReadArg(wvfP, [theseArgs])
-%
-% Description:
-%    The idea is to read the varargin in the wvfPlot call.
-%    These are usually unit, wave, plotRange, showPlot
-%    But, it may be that we have only unit, wave, showPlot.
-%    So, we trap that case here.
-%
-% Inputs:
-%    wvfP      - wavefront structure
-%    theseArgs - varagin, by another name
-%
-% Outputs:
-%    units     - Varying unit measurements (Default 'min' for angle and
-%                'mm' for space.
-%                Angle units are 'sec', 'min', or 'deg'     default - 'min'
-%                Space units are 'm', 'cm', 'mm', 'um'      default - 'mm'
-%    wList     - wavelength(s)
-%    pRange    - plot Range
-%
-% Notes:
-%    * [Note: BW - Really, this is all BS. We should have parameter, value
-%      pairs and stop this craziness.]
-
-% Units
-if ~isempty(theseArgs), units = theseArgs{1};
-else,                   units = 'min';
-end
-
-% Wavelength list
-if length(theseArgs) > 1, wList = theseArgs{2};
-else,                     wList = [];
-end
-
-if isempty(wList)
-    wList = wvfGet(wvfP, 'wave');
-    if length(wList) > 1
-        warning('WVF:wList', 'Using 1st wave %d\n', wList(1));
-        wList = wList(1);
-    end
-end
-
-% Plot range
-if length(theseArgs) > 2 && isnumeric(theseArgs{3})
-    % Make sure the final argument is not 'no window' or a string. If it
-    % is numeric, then set it to the plot range. Plot range is a 2-vector
-    % of min, max values.
-    pRange = theseArgs{3};
-else
-    pRange = Inf;
-end
-end
+% %%% - Interpret the plotting arguments
+% function [units, wList, pRange] = wvfReadArg(wvfP, theseArgs)
+% % Interpret the plotting arguments
+% %
+% % Syntax:
+% %   [units, wList, pRange] = wvfReadArg(wvfP, [theseArgs])
+% %
+% % Description:
+% %    The idea is to read the varargin in the wvfPlot call.
+% %    These are usually unit, wave, plotRange, showPlot
+% %    But, it may be that we have only unit, wave, showPlot.
+% %    So, we trap that case here.
+% %
+% % Inputs:
+% %    wvfP      - wavefront structure
+% %    theseArgs - varagin, by another name
+% %
+% % Outputs:
+% %    units     - Varying unit measurements (Default 'min' for angle and
+% %                'mm' for space.
+% %                Angle units are 'sec', 'min', or 'deg'     default - 'min'
+% %                Space units are 'm', 'cm', 'mm', 'um'      default - 'mm'
+% %    wList     - wavelength(s)
+% %    pRange    - plot Range
+% %
+% % Notes:
+% %    * [Note: BW - Really, this is all BS. We should have parameter, value
+% %      pairs and stop this craziness.]
+% 
+% % Units
+% if ~isempty(theseArgs), units = theseArgs{1};
+% else,                   units = 'min';
+% end
+% 
+% % Wavelength list
+% if length(theseArgs) > 1, wList = theseArgs{2};
+% else,                     wList = [];
+% end
+% 
+% if isempty(wList)
+%     wList = wvfGet(wvfP, 'wave');
+%     if length(wList) > 1
+%         warning('WVF:wList', 'Using 1st wave %d\n', wList(1));
+%         wList = wList(1);
+%     end
+% end
+% 
+% % Plot range
+% if length(theseArgs) > 2 && isnumeric(theseArgs{3})
+%     % Make sure the final argument is not 'no window' or a string. If it
+%     % is numeric, then set it to the plot range. Plot range is a 2-vector
+%     % of min, max values.
+%     pRange = theseArgs{3};
+% else
+%     pRange = Inf;
+% end
+% end
