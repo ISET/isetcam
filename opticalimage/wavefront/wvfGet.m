@@ -762,7 +762,7 @@ switch (parm)
         zcoeffs = 0;
         wvfTemp = wvfSet(wvf, 'zcoeffs', zcoeffs);
         wvfTemp = wvfSet(wvfTemp, 'wave', wList(1));
-        wvfTemp = wvfComputePSF(wvfTemp);
+        wvfTemp = wvfCompute(wvfTemp);
         val = wvfGet(wvfTemp, 'psf', wList(1));
         
     case {'psfarcminpersample', 'psfarcminperpixel', 'arcminperpix'}
