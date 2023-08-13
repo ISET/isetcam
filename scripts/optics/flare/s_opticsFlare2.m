@@ -1,5 +1,6 @@
 %%  Yet more experiments with flare
 % 
+% Needs updating!
 %
 % See also
 %   s_opticsFlare, v_opticsFlare
@@ -23,8 +24,8 @@ apertureFunc = wvfAperture(wvf,'nsides',nsides,...
     'line mean',20, 'line sd', 2, 'line opacity',0.5);
 
 wvf = wvfPupilFunction(wvf,'amplitude',apertureFunc);
-wvf = wvfComputePSF(wvf,'force',false);  % force as false is important
-wvfPlot(wvf,'psf','um',550,20,'airy disk');
+wvf = wvfCompute(wvf,'force',false);  % force as false is important
+wvfPlot(wvf,'psf','unit','um','wave',550,'plot range',20,'airy disk',true);
 
 %{
 ieNewGraphWin([], 'wide');
@@ -92,7 +93,8 @@ nsides = 5;
 
 wvf = wvfPupilFunction(wvf,'amplitude',apertureFunc);
 wvf = wvfComputePSF(wvf,'force',false);  % force as false is important
-wvfPlot(wvf,'psf','um',550,20,'airy disk');
+wvfPlot(wvf,'psf','unit','um','wave',550,'plot range',20,'airy disk',true);
+
 scenePoint = sceneSet(scenePoint,'fov',1);
 oi = oiCompute(wvf,scenePoint);
 oi = oiSet(oi,'name',sprintf('wvf-%d',nsides));
@@ -118,7 +120,7 @@ nsides = 3;
 
 wvf = wvfPupilFunction(wvf,'amplitude',apertureFunc);
 wvf = wvfComputePSF(wvf,'force',false);  % force as false is important
-wvfPlot(wvf,'psf','um',550,20,'airy disk');
+wvfPlot(wvf,'psf','unit','um','wave',550,'plot range',20,'airy disk',true);
 
 oi = oiCompute(wvf,sceneHDR);
 oi = oiSet(oi,'name','wvf');

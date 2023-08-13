@@ -36,9 +36,9 @@ disp(params);
 
 ieNewGraphWin([], 'wide');
 tiledlayout(1,3);
-nexttile; wvfPlot(wvf,'image pupil amp','um',550,'no window');
-nexttile; wvfPlot(wvf,'image pupil phase','um',550,'no window');
-nexttile; uData = wvfPlot(wvf,'psf','um',550,20);
+nexttile; wvfPlot(wvf,'image pupil amp','unit','um','wave',550,'window',false);
+nexttile; wvfPlot(wvf,'image pupil phase','unit','um','wave',550,'window',false);
+nexttile; uData = wvfPlot(wvf,'psf','unit','um','wave',550,'plot range',20);
 
 %% Illustrate with a point array
 
@@ -174,7 +174,7 @@ aperture = wvfAperture(wvf,'nsides',nsides,...
 
 % Pupil and PSF
 wvf = wvfCompute(wvf,'aperture',aperture);
-wvfPlot(wvf,'psf','um',550,20,'airy disk');
+wvfPlot(wvf,'psf','unit','um','wave',550,'plot range',20,'airy disk',true);
 
 
 %%
@@ -207,7 +207,7 @@ nsides = 3;
 
 wvf = wvfPupilFunction(wvf,'aperture function',aperture);
 wvf = wvfComputePSF(wvf,'compute pupil func',false);  % force as false is important
-wvfPlot(wvf,'psf','um',550,20,'airy disk');
+wvfPlot(wvf,'psf','unit','um','wave',550,'plot range',20,'airy disk',true);
 
 oi = oiCompute(wvf,sceneHDR);
 oi = oiSet(oi,'name','wvf defocus');

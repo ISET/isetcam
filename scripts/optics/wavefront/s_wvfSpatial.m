@@ -20,7 +20,7 @@ wvf = wvfSet(wvf,'calc pupil diameter',flengthMM/fNumber);
 wvf = wvfSet(wvf,'focal length',flengthM);
 wvf = wvfCompute(wvf);
 
-wvfPlot(wvf,'2d psf space','um',thisWave,10,'airy disk');
+wvfPlot(wvf,'psf','unit','um','wave',thisWave,'plot range',10,'airy disk',true);
 fprintf('Npix %d delta Arcmin %.5f\n',wvfGet(wvf,'npixels'), wvfGet(wvf,'psf sample spacing'));
 fprintf('um per deg %f\n',wvfGet(wvf,'um per degree'));
 
@@ -30,7 +30,8 @@ nPixels0 = wvfGet(wvf,'npixels');
 
 wvf = wvfSet(wvf,'npixels',round(nPixels0/4));
 wvf = wvfCompute(wvf);
-wvfPlot(wvf,'2d psf space','um',thisWave,10,'airy disk');
+wvfPlot(wvf,'psf','unit','um','wave',thisWave,'plot range',10,'airy disk',true);
+
 wvfGet(wvf,'npixels')
 wvfGet(wvf,'psf sample spacing')  % Arcmin
 fprintf('Npix %d delta Arcmin %.5f\n',wvfGet(wvf,'npixels'), wvfGet(wvf,'psf sample spacing'));
@@ -48,7 +49,7 @@ refPupil0 = wvfGet(wvf,'pupil plane size','mm');
 % Multiply by 4
 wvf = wvfSet(wvf,'pupil plane size',refPupil0*4,'mm');
 wvf = wvfCompute(wvf);
-wvfPlot(wvf,'2d psf space','um',thisWave,10,'airy disk');
+wvfPlot(wvf,'psf','unit','um','wave',thisWave,'plot range',10,'airy disk',true);
 
 fprintf('Npix %d delta Arcmin %.5f\n',wvfGet(wvf,'npixels'), wvfGet(wvf,'psf sample spacing'));
 fprintf('um per deg %f\n',wvfGet(wvf,'um per degree'));
@@ -56,7 +57,7 @@ fprintf('um per deg %f\n',wvfGet(wvf,'um per degree'));
 % Divide by 4
 wvf = wvfSet(wvf,'pupil plane size',refPupil0/4,'mm');
 wvf = wvfCompute(wvf);
-wvfPlot(wvf,'2d psf space','um',thisWave,10,'airy disk');
+wvfPlot(wvf,'psf','unit','um','wave',thisWave,'plot range',10,'airy disk',true);
 
 fprintf('Npix %d delta Arcmin %.5f\n',wvfGet(wvf,'npixels'), wvfGet(wvf,'psf sample spacing'));
 fprintf('um per deg %f\n',wvfGet(wvf,'um per degree'));
@@ -68,12 +69,14 @@ wvf = wvfSet(wvf,'pupil plane size',refPupil0);
 
 wvf = wvfSet(wvf,'focal length',flengthM/2);
 wvf = wvfCompute(wvf);
-wvfPlot(wvf,'2d psf space','um',thisWave,20,'airy disk');
+wvfPlot(wvf,'psf','unit','um','wave',thisWave,'plot range',20,'airy disk',true);
+
 fprintf('Npix %d delta Arcmin %.5f\n',wvfGet(wvf,'npixels'), wvfGet(wvf,'psf sample spacing'));
 
 wvf = wvfSet(wvf,'focal length',flengthM*2);
 wvf = wvfCompute(wvf);
-wvfPlot(wvf,'2d psf space','um',thisWave,20,'airy disk');
+wvfPlot(wvf,'psf','unit','um','wave',thisWave,'plot range',20,'airy disk',true);
+
 fprintf('Npix %d delta Arcmin %.5f\n',wvfGet(wvf,'npixels'), wvfGet(wvf,'psf sample spacing'));
 fprintf('um per deg %f\n',wvfGet(wvf,'um per degree'));
 
@@ -87,7 +90,8 @@ for ff = fl
     wvf = wvfCompute(wvf);
     oiPlot(oiD,'psf xaxis',[],thisWave,'um'); 
     hold on;
-    wvfPlot(wvf,'psf xaxis','um',thisWave,20,'no window');
+    wvfPlot(wvf,'psf xaxis','unit','um','wave',thisWave,'plot range',20,'airy disk',true,'window',false);
+
     legend({'oi','airy disk','wvf'});
 end
 
