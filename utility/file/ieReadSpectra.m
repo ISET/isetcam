@@ -65,7 +65,7 @@ tmp = load(fname);
 if isfield(tmp,'data'), data = tmp.data; else, data = []; end
 if isfield(tmp,'wavelength'), wavelength = tmp.wavelength; else, wavelength = []; end
 if isfield(tmp,'comment'), comment = tmp.comment; else, comment = []; end
-if length(wavelength) ~= size(data,1)
+if numel(wavelength) ~= size(data,1)
     error('Mis-match between wavelength and data variables in %s',fname);
 end
 

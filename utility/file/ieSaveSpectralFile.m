@@ -37,7 +37,7 @@ if ndims(data) == 3
     if length(wavelength) ~= size(data,3)
         errordlg('The 3rd dimension of data must match number of wavelengths');
     end
-elseif ndims(data) == 2
+elseif ismatrix(data)
     % Data are in the columns
     if length(wavelength) ~= size(data,1)
         errordlg('The row dimension of data must match number of wavelengths');
@@ -51,8 +51,11 @@ if ieNotDefined('fullpathname')
         return;
     end
 end
+
 if ieNotDefined('dFormat'), dFormat = 'double'; end
 
+% This might be deprecated.
+%
 % Manage data format for compression.
 % This was put in for handling the hyperspectral face data.  The file sizes
 % were on the order of 2GB.  For distribution we decided to save them as
@@ -77,5 +80,7 @@ switch dFormat
 end
 
 save(fullpathname,'wavelength','data','comment','dFormat');
-
-return;
+% size(data)
+% size(wavelength)
+%
+end
