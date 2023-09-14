@@ -27,7 +27,8 @@ function sensor = sensorCreate(sensorType,pixel,varargin)
 %                      sensorCreate('MT9V024',[],{'rgb','mono','rccc'})
 %      {'ar0132at'}  - An ON sensor used in automotive applications
 %                      sensorCreate('ar0132at',[],{'rgb','rgbw','rccc'})
-%      {'imx363'}    - A widely used Sony digital camera sensor
+%      {'imx363'}    - A widely used Sony digital camera sensor (used
+%                      in the Google Pixel 4a)
 %      {'nikond100'} - An older model Nikon (D100)
 %
 % Other types
@@ -281,7 +282,7 @@ switch sensorType
         end
 
         
-    case {'imx363'}
+    case {'imx363','googlepixel4a'}
         % A Sony sensor used in many systems
         % To over-ride the row/col default use
         %
