@@ -50,6 +50,11 @@ function [oi,val] = oiCreate(oiType,varargin)
 % See also:  
 %   sceneCreate, oiCompute, oiSet/Get, wvfCreate, wvf2oi
 
+% TODO:
+%   Create a human oi without Thibos based on the diffraction limited
+%   wvf.  It should have the lens class attached.
+%
+
 % Example
 %{
 oi = oiCreate;
