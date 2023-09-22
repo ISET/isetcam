@@ -168,7 +168,7 @@ end
 
 
 % Make the plot window and use set a default gray scale map.
-g = vcNewGraphWin;
+g = ieNewGraphWin;
 mp = 0.4*gray(64) + 0.3*ones(size(gray(64)));
 colormap(mp);
 nTicks = 4;   % For the images and graphs
@@ -664,8 +664,10 @@ switch lower(pType)
         udata.wave = wave; udata.energy = energy;
         udata.comment = sceneGet(scene,'illuminant comment');
         
-    case {'illuminantphotons'}
+    case {'illuminantphotons','illuminantphotonsroi'}
         % scenePlot(scene,'illuminant photons')
+        % scenePlot(scene,'illuminant photons roi')
+        %
         %
         % Used if user knows the scene is not spatial-spectral
         app = ieSessionGet('scenewindow');
@@ -696,6 +698,7 @@ switch lower(pType)
         udata.wave = wave; udata.photons = photons;
         udata.comment = sceneGet(scene,'illuminant comment');
         
+
         % Spatial spectral illumination cases
     case {'illuminantimage'}
         % scenePlot(scene,'illuminant image')
