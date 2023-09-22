@@ -73,9 +73,9 @@ end
 
 %{
 ieNewGraphWin([], 'wide');
-subplot(1,3,1); wvfPlot(wvf,'image pupil amp','um',550,'no window');
-subplot(1,3,2); wvfPlot(wvf,'image pupil phase','um',550,'no window');
-subplot(1,3,3); wvfPlot(wvf,'image wavefront aberrations','um',550,'no window');
+subplot(1,3,1); wvfPlot(wvf,'image pupil amp','unit','um','wave',550,'window',false);
+subplot(1,3,2); wvfPlot(wvf,'image pupil phase','unit','um','wave',550,'window',false);
+subplot(1,3,3); wvfPlot(wvf,'image wavefront aberrations','unit','um','wave',550,'window',false);
 %}
 
 %%

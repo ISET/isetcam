@@ -11,6 +11,7 @@ function val = wvfGet(wvf, parm, varargin)
 %
 %    A '*' indicates that the syntax wvfGet(wvf, param, unit) can be used,
 %    where unit specifies the spatial scale of the returned value:
+%
 %       length: 'm', 'cm', 'mm', 'um', 'nm'.
 %       angle: 'deg', 'min', 'sec'
 %
@@ -177,7 +178,7 @@ function val = wvfGet(wvf, parm, varargin)
 %                                    limited to actual
 %
 % Outputs:
-%    val      - The value associated with the parameter passed via 'parm'
+%    val      - The value of the parameter ('parm')
 %
 % Optional key/value pairs:
 %    *Needs attention*
@@ -761,7 +762,7 @@ switch (parm)
         zcoeffs = 0;
         wvfTemp = wvfSet(wvf, 'zcoeffs', zcoeffs);
         wvfTemp = wvfSet(wvfTemp, 'wave', wList(1));
-        wvfTemp = wvfComputePSF(wvfTemp);
+        wvfTemp = wvfCompute(wvfTemp);
         val = wvfGet(wvfTemp, 'psf', wList(1));
         
     case {'psfarcminpersample', 'psfarcminperpixel', 'arcminperpix'}

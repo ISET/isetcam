@@ -178,29 +178,39 @@ switch oType
     case 'optics'
         % If optics, then we either return the optics or an optics
         % parameter.  I think we can handle the longer varargin by
-        % sending in varargin{:}, by the way.  Try
-        % val = opticsGet(optics,parm,varargin{:});
+        % sending in varargin{:}, by the way.  Try 
+        % val =  opticsGet(optics,parm,varargin{:});
         optics = oi.optics;
         if isempty(parm), val = optics;
+        else, val = opticsGet(optics,parm,varargin{:});
+        end
+
+        %{
         elseif isempty(varargin), val = opticsGet(optics,parm);
         elseif length(varargin) == 1, val = opticsGet(optics,parm,varargin{1});
         elseif length(varargin) == 2, val = opticsGet(optics,parm,varargin{1},varargin{2});
         elseif length(varargin) == 3, val = opticsGet(optics,parm,varargin{1},varargin{2},varargin{3});
         elseif length(varargin) == 4, val = opticsGet(optics,parm,varargin{1},varargin{2},varargin{3},varargin{4});
         end
+        %}
 
     case 'wvf'
         % If a wavefront structure, then we either return the wvf or
         % an wvf parameter.  See above for varargin{:}
         wvf = oi.wvf;
         if isempty(parm), val = wvf;
+        else, val = wvfGet(wvf,param,varargin{:});
+        end
+        
+        %{
         elseif isempty(varargin), val = wvfGet(wvf,parm);
         elseif length(varargin) == 1, val = wvfGet(wvf,parm,varargin{1});
         elseif length(varargin) == 2, val = wvfGet(wvf,parm,varargin{1},varargin{2});
         elseif length(varargin) == 3, val = wvfGet(wvf,parm,varargin{1},varargin{2},varargin{3});
         elseif length(varargin) == 4, val = wvfGet(wvf,parm,varargin{1},varargin{2},varargin{3},varargin{4});
         end
-        
+        %}
+
     otherwise
         % Must be an oi object.  Format the parameter and move on.
         parm = ieParamFormat(parm);
@@ -211,9 +221,14 @@ switch oType
                 val = oi.type;
             case 'name'
                 val = oi.name;
+            case 'human'
+                if isfield(oi.optics,'lens'), val = true;
+                else,                         val = false;
+                end
             case 'filename'
                 val = oi.filename;
             case 'consistency'
+                % deprecated.
                 val = oi.consistency;
                 
                 
@@ -223,8 +238,8 @@ switch oType
                     % disp('Using current scene rows')
                     scene = vcGetObject('scene');
                     if isempty(scene)
-                        disp('oiGet: No scene and no oi.  Using 128 rows.');
-                        val = 128;
+                        disp('oiGet: No scene and no oi data.  Using 256 rows.');
+                        val = 256;
                     else
                         val = sceneGet(scene,'rows');
                     end
@@ -236,8 +251,8 @@ switch oType
                     % disp('Using current scene cols')
                     scene = vcGetObject('scene');
                     if isempty(scene)
-                        disp('No scene and no oi.  Using 128 cols.');
-                        val = 128;
+                        disp('No scene and no oi data.  Using 256 cols.');
+                        val = 256;
                     else
                         val = sceneGet(scene,'cols');
                     end
@@ -256,7 +271,7 @@ switch oType
                     disp('Expected OI size from current scene')
                     scene  = vcGetObject('scene');
                     sz = sceneGet(scene,'size');
-                    if isempty(sz), error('No scene or OI');
+                    if isempty(sz), error('No scene or OI data');
                     else
                         padSize  = round(sz/8);
                         sz = size(padarray(zeros(sz(1),sz(2)),padSize,0,'both'));
@@ -624,8 +639,8 @@ switch oType
                     % This is used when no optical image has been calculated.
                     scene = vcGetObject('scene');
                     if isempty(scene)
-                        disp('oiGet: No scene or oi.  Using 128 rows');
-                        r = 128; % Make something up
+                        disp('oiGet: No scene or oi data.  Using 256 rows');
+                        r = 256; % Make something up
                     else
                         r = oiGet(scene,'rows');
                     end
@@ -644,8 +659,8 @@ switch oType
                     % This is used when no optical image has been calculated.
                     scene = vcGetObject('scene');
                     if isempty(scene)
-                        disp('No scene or oi.  Using 128 cols');
-                        c = 128;
+                        disp('No scene or oi data.  Using 256 cols');
+                        c = 256;
                     else
                         c = oiGet(scene,'cols');
                     end

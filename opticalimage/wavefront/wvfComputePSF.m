@@ -48,9 +48,10 @@ function wvf = wvfComputePSF(wvf, varargin)
 
 % Examples:
 %{
- wvf = wvfCreate;
+ wl = 550;
+ wvf = wvfCreate('wave',wl);
  wvf = wvfComputePSF(wvf,'compute pupil func',true);
- wvfPlot(wvf,'psf','um',550,20,'airy disk');
+ wvfPlot(wvf,'psf','unit','um','wave',wl,'plot range',20,'airy disk',true);
 %}
 
 %% Input parsing

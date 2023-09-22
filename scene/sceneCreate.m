@@ -339,14 +339,18 @@ switch sceneName
             error('Wrong number of parameters! Input params structure and optional wavelengths.')
         end
     case {'sweep','sweepfrequency'}
-        % sz = 512; maxF = sz/16;
         % sceneCreate('sweepFrequency',sz,maxF);
+        % sz = 512; maxF = sz/16;
+        %
         % These are always equal photon type.  Could add a third argument
-        % for spectral type.
+        % for spectral type.  Also, we should make this work with
+        % varargin{1} being a struct with the parameters.
         sz = 128; maxFreq = sz/16;
         if length(varargin) >= 1, sz = varargin{1}; end
         if length(varargin) >= 2, maxFreq = varargin{2}; end
         scene = sceneSweep(scene,sz,maxFreq);
+        parms.sz = sz; 
+        parms.maxFreq = maxFreq;
     case {'ramp','linearintensityramp','rampequalphoton'}
         % scene = sceneCreate('ramp',sz,dynamicRange);
         % The linear ramp has reduced contrast from top to bottom.
@@ -519,11 +523,11 @@ switch sceneName
         %   parms.contrast = .8;
         % scene = sceneCreate('freqorient',parms);
 
-        if isempty(varargin), scene = sceneFOTarget(scene);
-        else
-            % First argument is parms structure
-            scene = sceneFOTarget(scene,varargin{1});
+        if isempty(varargin), params = FOTParams; 
+        else,                 params = varargin{1};
         end
+        % First argument is parms structure
+        scene = sceneFOTarget(scene,params);
         
     case {'moireorient'}
         %% Moire pattern test

@@ -34,6 +34,22 @@
 %
 % Copyright ImagEval Consultants, LLC, 2010.
 
+%% We have a problem
+
+% 
+
+pupilDiameterMM = 6;
+oi = oiCreate('wvf human',pupilDiameterMM);  % The Thibos human model with 6 mm pupil diameter
+oiPlot(oi,'psf',[],550);
+set(gca,'xlim',[-10 10],'ylim',[-10 10]);
+
+pupilDiameterMM = 3;
+oi = oiCreate('wvf human',pupilDiameterMM);  % The Thibos human model with 6 mm pupil diameter
+oiPlot(oi,'psf',[],550);
+set(gca,'xlim',[-10 10],'ylim',[-10 10]);
+
+%% Below here does not seem right to BW
+
 %% Create linespread functions for a very large and a slightly small pupil
 p1 = 0.003;    % 6 mm diameter
 p2 = 0.001;    % 2 mm diameter

@@ -70,7 +70,7 @@ switch param
         if length(val) == 1, val(2) = val(1); end
         pixel = pixelSet(pixel,'width',val(1));
         pixel = pixelSet(pixel,'height',val(2));
-        disp('Fill factor may have changed');
+        disp('Fill factor may have changed. You can use: size same fill factor');
     case {'sizeconstantfillfactor','sizekeepfillfactor','sizesamefillfactor'}
         % pixelSet(pixel,'size ConstantFillFactor',newSize);
         %

@@ -30,7 +30,7 @@ wList = linspace(400,700,4);
 ieNewGraphWin; colormap(gray);
 for ii = 1:numel(wList)
     subplot(2,2,ii)
-    wvfPlot(wvf,'image psf space','um',wList(ii),60,'airy disk',true,'no window');
+    wvfPlot(wvf,'image psf','unit','um','wave',wList(ii),'plot range',60,'airy disk',true,'window',false);
     colormap(gray);
 end
 
@@ -63,7 +63,7 @@ nPanels = ceil(sqrt(numel(wList)));
 
 for ii = 1:numel(wList)
     subplot(nPanels,nPanels,ii);
-    wvfPlot(wvf,'image psf space','um',wList(ii),60,'airy disk','no window');    
+    wvfPlot(wvf,'image psf','unit','um','wave',wList(ii),'plot range',60,'airy disk',true,'window',false);    
     colormap(gray);
 
     fNumber = wvfGet(wvf,'fnumber');

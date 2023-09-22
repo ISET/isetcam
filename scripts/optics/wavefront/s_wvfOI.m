@@ -32,11 +32,11 @@ for ii=1:numel(fNumber)
 
     % Slice through the psf
     nexttile;
-    wvfPlot(wvf,'psf xaxis','um',thisWave,10,'no window');
+    wvfPlot(wvf,'psf xaxis','unit','um','wave',thisWave,'plot range',10,'window',false);
 end
 
 % Checksum test
-uData = wvfPlot(wvf,'psf xaxis','um',thisWave,10,'no window');
+uData = wvfPlot(wvf,'psf xaxis','unit','um','wave',thisWave,'plot range',10,'window',false);
 assert(abs(sum(uData.psf(:)) - 0.0451) < 1e-3);
 
 %% Conversion to OI preserves the PSF and AD
@@ -47,7 +47,7 @@ wvf = wvfCreate;
 wvf = wvfCompute(wvf);
 
 % Plot a slice through the psf
-wvfData = wvfPlot(wvf,'psf xaxis','um',thisWave,10);
+wvfData = wvfPlot(wvf,'psf xaxis','unit','um','wave',thisWave,'plot range',10);
 hold on;
 
 % Convert the wvf to an oi and overlay

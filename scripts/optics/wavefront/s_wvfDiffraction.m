@@ -23,7 +23,7 @@ wvf = wvfSet(wvf,'calc pupil diameter',flengthMM/fNumber);
 wvf = wvfSet(wvf,'focal length',flengthM);
 
 wvf = wvfCompute(wvf);
-wvfPlot(wvf,'2d psf space','um',thisWave,10,'airy disk');
+wvfPlot(wvf,'2d psf space','unit','um','wave',thisWave,'plot range',10,'airy disk',true);
 AD = airyDisk(thisWave,fNumber,'units','um','diameter',true);
 title(sprintf("fNumber %.2f Wave %.0f Airy Diam %.2f",wvfGet(wvf,'fnumber'),wvfGet(wvf,'wave'),AD));
 
@@ -54,7 +54,7 @@ for pp = pupilMM
     wvf = wvfCompute(wvf);
 
     nexttile;
-    wvfPlot(wvf,'image psf space','um',thisWave,5,'airy disk','no window');    
+    wvfPlot(wvf,'image psf','unit','um', 'wave', thisWave,'plot range',5,'airy disk',true,'window',false); 
 
     fNumber = wvfGet(wvf,'fnumber');
     AD = airyDisk(thisWave,fNumber,'units','um','diameter',true);
@@ -74,7 +74,7 @@ for pp = pupilMM
     wvf = wvfCompute(wvf);
 
     nexttile;
-    wvfPlot(wvf,'image psf space','um',thisWave,5,'airy disk','no window');    
+    wvfPlot(wvf,'image psf','unit','um','wave',thisWave,'plot range',5,'airy disk',true,'window',false);
 
     fNumber = wvfGet(wvf,'fnumber');
     AD = airyDisk(thisWave,fNumber,'units','um','diameter',true);
@@ -97,7 +97,7 @@ for ww = wList
     wvf = wvfCompute(wvf,'human lca',true);
 
     nexttile;
-    wvfPlot(wvf,'image psf space','um',ww,20,'airy disk','no window');    
+    wvfPlot(wvf,'image psf','unit','um','wave',ww,'plot range',20,'airy disk',true,'window',false);
 
     fNumber = wvfGet(wvf,'fnumber');
     AD = airyDisk(ww,fNumber,'units','um','diameter',true);
@@ -115,15 +115,15 @@ flengthMM = flengthM*1e3;
 wvf = wvfSet(wvf,'calc pupil diameter',flengthMM/fNumber);
 wvf = wvfSet(wvf,'focal length',flengthM);
 wvf = wvfCompute(wvf);
-wvfPlot(wvf,'2d psf space','um',thisWave,20,'airy disk');
+wvfPlot(wvf,'psf','unit','um','wave',thisWave,'plot range',20,'airy disk',true);
 
 wvf = wvfSet(wvf,'focal length',flengthM/2);
 wvf = wvfCompute(wvf);
-wvfPlot(wvf,'2d psf space','um',thisWave,20,'airy disk');
+wvfPlot(wvf,'image psf','unit','um','wave',thisWave,'plot range',20,'airy disk',true);
 
 wvf = wvfSet(wvf,'focal length',flengthM*2);
 wvf = wvfCompute(wvf);
-wvfPlot(wvf,'2d psf space','um',thisWave,20,'airy disk');
+wvfPlot(wvf,'image psf','unit','um','wave',thisWave,'plot range',20,'airy disk',true);
 
 %% Loop on focal length a bit
 
@@ -131,10 +131,8 @@ fl = linspace(3,20,6)*1e-3;
 for ff = fl
     wvf = wvfSet(wvf,'focal length',ff);
     wvf = wvfCompute(wvf);
-        
-    % wvfPlot(wvf,'2d psf space','um',thisWave,20,'airy disk');
-
     oiD = wvf2oi(wvf);
+
     % [~, fig] = oiPlot(oiD,'psf',[],thisWave); psfPlotrange(fig,oiD);
     
     oiPlot(oiD,'psf xaxis',thisWave);

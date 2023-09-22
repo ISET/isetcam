@@ -50,6 +50,11 @@ function [oi,val] = oiCreate(oiType,varargin)
 % See also:  
 %   sceneCreate, oiCompute, oiSet/Get, wvfCreate, wvf2oi
 
+% TODO:
+%   Create a human oi without Thibos based on the diffraction limited
+%   wvf.  It should have the lens class attached.
+%
+
 % Example
 %{
 oi = oiCreate;
@@ -91,9 +96,11 @@ switch ieParamFormat(oiType)
         % Set up the default glass diffuser with a 2 micron blur circle, but
         % skipped
         oi = oiSet(oi,'diffuser method','skip');
-        oi = oiSet(oi,'diffuser blur',2*10^-6);
+        oi = oiSet(oi,'diffuser blur',2*10^-6);  % If used, 2 um.
         
+        % Camera lenses use transmittance, not human lens.
         if checkfields(oi.optics, 'lens')
+            warning('How did a human lens get in diffraction limited?')
             oi.optics = rmfield(oi.optics, 'lens');
             oi.optics.transmittance.wave = (370:730)';
             oi.optics.transmittance.scale = ones(length(370:730), 1);
@@ -108,7 +115,15 @@ switch ieParamFormat(oiType)
         oi = oiSet(oi,'optics',opticsCreate('shift invariant',oi));
         oi = oiSet(oi,'name','SI');
         oi = oiSet(oi,'diffuserMethod','skip');
-        
+
+        % Camera lenses use transmittance, not human lens.
+        if checkfields(oi.optics, 'lens')
+            warning('How did a human lens get in shift invariant?')
+            oi.optics = rmfield(oi.optics, 'lens');
+            oi.optics.transmittance.wave = (370:730)';
+            oi.optics.transmittance.scale = ones(length(370:730), 1);
+        end
+
     case {'raytrace'}
         % Create the default ray trace unless a file name is passed in
         oi = oiCreate('default');
@@ -121,36 +136,38 @@ switch ieParamFormat(oiType)
         % Marimont and Wandell human optics model.
         %
         % Historically, 'human' defaulted to the Marimont and Wandell
-        % case.  So this could create some trouble.  But good trouble
-        % to create and fix.
+        % case.  Changed July, 2023. So this could create some
+        % trouble. But so far so good.
         oi = oiCreate('default');
         oi = oiSet(oi,'diffuserMethod','skip');
-        oi = oiSet(oi,'optics',opticsCreate('human'));
+        oi = oiSet(oi,'optics',opticsCreate('human mw'));
         oi = oiSet(oi,'name','human-MW');
+        oi = oiSet(oi, 'lens', Lens('wave', oiGet(oi, 'optics wave')));
+
+        % Used by ISETCam, but removed for human lens case.
+        if checkfields(oi.optics, 'transmittance')
+            oi.optics = rmfield(oi.optics, 'transmittance');
+        end
 
     case {'human','wvfhuman','humanwvf'}
-        % Human optics specified from typical Thibos data and
-        % chromatic aberration (see opticsCreate).
-        %
-        % This is an alternative to human mw, above.
-        %
         % oi = oiCreate('wvf human', pupilMM, zCoefs, wave)
-
-        % Build a default OI from a wavefront.  This will be a shift
-        % invariant model
-        % wvf = wvfCreate;
-        % oi = wvf2oi(wvf);
+        %
+        % Human optics specified from Thibos data.  The wavefront
+        % structure has LCA set to use human.
+        %
+        % This is an alternative calculation compared to human mw
+        % (Marimont and Wandell), above.         
 
         oi = oiCreate('shift invariant');
-        % No diffuser.
         oi = oiSet(oi, 'diffuser method', 'skip');
 
-        % These optics will be the Thibox zcoeffs unless varargin has
-        % something else in mind.
+        % These optics default to the Thibos zcoeffs for 3mm, unless
+        % varargin has something else in mind.
         oi = oiSet(oi, 'optics', opticsCreate('wvf human', varargin{:}));
         oi = oiSet(oi, 'name', 'human-WVF');
         oi = oiSet(oi, 'lens', Lens('wave', oiGet(oi, 'optics wave')));
 
+        % Used by ISETCam, but removed for human lens case.
         if checkfields(oi.optics, 'transmittance')
             oi.optics = rmfield(oi.optics, 'transmittance');
         end

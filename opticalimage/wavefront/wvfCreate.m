@@ -53,6 +53,12 @@ function wvf = wvfCreate(varargin)
 %    wvfSet, wvfGet, wvfKeySynonyms, sceCreate, sceGet
 %
 
+% TODO:  Add different types, such as 
+% 
+%    wvfCreate('Thibos standard observer');
+%    wvfCreate('diffraction limited','wave',550);
+%
+
 % History:
 %    xx/xx/11       (c) Wavefront Toolbox Team 2011, 2012
 %    07/20/12  dhb  Get rid of weighting spectrum, replace with cone psf
@@ -66,6 +72,7 @@ function wvf = wvfCreate(varargin)
 %                   difference messed up comparison with oi based
 %                   calculation
 %    07/05/22  npc  Custom LCA
+%    07/20ish/23  bw   TODO. Maybe other formatting things.
 
 % Examples:
 %{

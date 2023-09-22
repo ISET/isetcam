@@ -456,7 +456,7 @@ switch parm
         % tand(1) = opp/adj (right triangle, point at the lens)
         %   adj = focal length, stored in mm
         %   opp = umPerDegree
-        wvf.focallength = (val*1e-6/tand(1));  % convert um to m
+        wvf.focallength = (val*1e-6/tand(1));  % also, convert um to m
         wvf.PUPILFUNCTION_STALE = true;
 
     case {'customlca'}

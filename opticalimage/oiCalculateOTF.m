@@ -3,22 +3,33 @@ function [otf,fSupport] = oiCalculateOTF(oi,wave,unit)
 %
 %   [otf,fSupport] = oiCalculateOTF(oi,[wave],[unit = 'cyclesPerDegree'])
 %
-% The optical transfer function (OTF) is derived from the optics parameters
-% of an optical image.  The frequency units are cycles per degree by
-% default.  However, by setting the variable unit='millimeter' or 'micron'
-% the frequency units can be changed to cycles/{millimeter,micron}.
+% The optical transfer function (OTF) is derived from the optics
+% parameters of an optical image (OI).  The frequency units are cycles
+% per degree by default.  However, by setting the variable
+% unit='millimeter' or 'micron' the frequency units can be changed to
+% cycles/{millimeter,micron}.
 %
-% This routine is used for diffraction limited, shift-invariant, or the
-% human otf. Calculations of OTF for ray trace dat are handled in the ray
+% This routine is used for diffraction limited, shift-invariant, and
+% the human otf. Calculations for ray trace dat are handled in the ray
 % trace routines, rtPlot or rtOTF, and they don't use this routine.
 %
-% Examples:
-%   [otf,fSupport] = oiCalculateOTF(oi);
-%   [otf,fsmm] = oiCalculateOTF(oi,'wave','mm');
-%
-% See also:  applyOTF, oiCalculateOTF, oiCompute, dlMTF, dlCore
+% See also
+%  applyOTF, oiCalculateOTF, oiCompute, dlMTF, dlCore
 %
 % Copyright ImagEval Consultants, LLC, 2005.
+
+% Examples:
+%{
+  scene = sceneCreate; scene = sceneSet(scene,'fov',1);
+  oi = oiCreate('diffraction limited');
+  oi = oiCompute(oi,scene);
+  [otf,fSupport] = oiCalculateOTF(oi);
+  ieNewGraphWin; mesh(fSupport(:,:,1),fSupport(:,:,2),abs(otf(:,:,1)));
+  xlabel('Cycles/deg');
+  [otf,fsmm] = oiCalculateOTF(oi,'wave','mm');
+  ieNewGraphWin; mesh(fsmm(:,:,1),fsmm(:,:,2),abs(otf(:,:,1)));
+  xlabel('Cycles/mm');
+%}
 
 if ieNotDefined('wave'), wave = sceneGet(oi,'wave'); end
 if ieNotDefined('unit'), unit = 'cyclesPerDegree'; end
@@ -42,12 +53,12 @@ switch lower(opticsModel)
         
     case {'custom','shiftinvariant'}
         % Calculate the OTF at each wavelength from the custom data.
-        % Also return these OTFs at the specified frequency
-        % support, which depends on the optical image.
+        % The OTFs are returned at the frequency determined by the
+        % sample spacing in the optical image (see above).
         %
-        % It is important that the units specified for this calculation and
-        % the units specified for the custom OTF be the same.  Can we
-        % check?
+        % It is important that the units specified for this
+        % calculation and the units specified for the custom OTF be
+        % the same.  Can we check?
         otf = customOTF(oi,fSupport,wave,unit);
         
     case {'skip','skipotf'}

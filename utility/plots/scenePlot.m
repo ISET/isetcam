@@ -664,10 +664,10 @@ switch lower(pType)
         udata.wave = wave; udata.energy = energy;
         udata.comment = sceneGet(scene,'illuminant comment');
         
-    case {'illuminantphotonsroi','illuminantphotons'}
+    case {'illuminantphotons'}
         % scenePlot(scene,'illuminant photons')
-        % scenePlot(scene,'illuminant photons roi',roiLocs);
-        % Graph for spectral, image for spatial spectral
+        %
+        % Used if user knows the scene is not spatial-spectral
         app = ieSessionGet('scenewindow');
         ieInWindowMessage('',app);
         wave = sceneGet(scene,'illuminant wave');

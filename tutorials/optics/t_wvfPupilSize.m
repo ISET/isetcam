@@ -46,8 +46,8 @@ wvfP = wvfSet(wvfP,'measured pupil diameter',pupilMM);
 cPupil = [2,4,7];
 for ii=1:sum(cPupil<=pupilMM)
     wvfP = wvfSet(wvfP,'calc pupil diameter',cPupil(ii));
-    wvfP = wvfComputePSF(wvfP);
-    wvfPlot(wvfP,'2d psf space','um',wave,20);
+    wvfP = wvfCompute(wvfP);
+    wvfPlot(wvfP,'psf','unit','um','wave',wave,'plot range',20);
     title(sprintf('pupil diameter %.1f mm',cPupil(ii)));
 end
 
@@ -72,8 +72,8 @@ measPupilMM = 7.5;
 calcPupilMM = [2, 3, 4, 5, 6, 7];
 for ii = 1:sum(calcPupilMM <= measPupilMM)
     wvfP = wvfSet(wvfP, 'calc pupil size', calcPupilMM(ii));
-    wvfP = wvfComputePSF(wvfP);
-    wvfPlot(wvfP, '2dpsfspace', 'um', 550, 20);
+    wvfP = wvfCompute(wvfP);
+    wvfPlot(wvfP, '2dpsfspace', 'unit','um', 'wave', 550, 'plot range', 20);
     title(sprintf(strcat("Measured pupil diameter %0.1f mm, ", ...
         "calculated pupil diameter %.1f mm"), measPupilMM, ...
         calcPupilMM(ii)));
@@ -110,7 +110,7 @@ for ii = 1:sum(measPupilMM >= calcPupilMM)
         'measured pupil size', measPupilMM(ii), ...
         'calc pupil size', calcPupilMM, ...
         'name', sprintf('%d-pupil', measPupilMM(ii)));
-    wvfP = wvfComputePSF(wvfP);
+    wvfP = wvfCompute(wvfP);
     psf{ii} = wvfGet(wvfP, 'psf');
     if (ii > 1)
         maxAbsDiff = max(abs(psf{1}{index550}(:) - psf{ii}{index550}(:)));
@@ -126,7 +126,7 @@ for ii = 1:sum(measPupilMM >= calcPupilMM)
                 calcPupilMM, measPupilMM(1), measPupilMM(ii));
         end
     end
-    wvfPlot(wvfP, '2dpsfspace', 'um', 550, 20);
+    wvfPlot(wvfP, 'psf', 'unit','um', 'wave',550, 'plot range', 20);    
     title(sprintf(strcat("Measured pupil diameter %0.1f mm, ", ...
         "calculated pupil diameter %.1f mm"), measPupilMM(ii), ...
         calcPupilMM));

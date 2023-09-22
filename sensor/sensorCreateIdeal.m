@@ -133,16 +133,21 @@ switch lower(idealType)
         sensor = sensorCreate('monochrome');
         sensor = sensorSet(sensor,'name','Monochrome');
         if ~isempty(varargin)
-            pixelSizeInMeters = varargin{1};
-            sensor = sensorSet(sensor,'pixel size same fill factor',pixelSizeInMeters);
+            pixelSizeM = varargin{1};
+            % In case they assumed square and sent in only one number
+            if numel(pixelSizeM) == 1
+                pixelSizeM = repmat(pixelSizeM,1,2);
+            end
+            sensor = sensorSet(sensor,'pixel size same fill factor',pixelSizeM);
         else
-            pixelSizeInMeters = sensorGet(sensor,'pixel size');
-            fprintf('Ideal sensor pixel size: %.2e\n',pixelSizeInMeters);
+            % They didn't specify.  So we tell them.s
+            pixelSizeM = sensorGet(sensor,'pixel size');
+            fprintf('Ideal sensor pixel size: %.2e\n',pixelSizeM);
         end
 
         pixel  = sensorGet(sensor,'pixel');
 
-        sensor = sensorSet(sensor,'pixel',idealPixel(pixel,pixelSizeInMeters));
+        sensor = sensorSet(sensor,'pixel',idealPixel(pixel,pixelSizeM));
         sensor = sensorSet(sensor,'noise flag',1);  % Photon noise only
         
     case {'xyz'}

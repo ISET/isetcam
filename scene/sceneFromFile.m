@@ -288,7 +288,7 @@ if scaleReflectance
         illEnergy = sceneGet(scene,'illuminant energy');
         scene = sceneSet(scene,'illuminant energy',illEnergy*maxR);
     end
-    disp('Adjusted illuminant level for max reflectance near 1.')
+    % disp('Adjusted illuminant level for max reflectance near 1.')
 end
 
 end

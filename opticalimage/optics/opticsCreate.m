@@ -109,6 +109,8 @@ switch lower(opticsType)
             wave = 400:10:700;
             oi = oiSet(oi,'wave',wave);
         end
+
+        % The default is a Gaussian that is wavelength dependent.
         psfType = 'gaussian';  waveSpread = wave/wave(1);
         xyRatio = ones(1,length(wave));
         optics = siSynthetic(psfType,oi,waveSpread,xyRatio);
@@ -119,6 +121,9 @@ switch lower(opticsType)
 
     case {'human','humanmw'}
         % Pupil radius in meters.  Default is 3 mm
+        %
+        % Significant change on July 26, 2023.  Replaced constant
+        % lens transmittance (which was wrong) with human lens model.
         if ~isempty(varargin), pupilRadius = varargin{1};
         else,                  pupilRadius = 0.0015;    % 3mm diameter default
         end
@@ -128,38 +133,75 @@ switch lower(opticsType)
         optics = opticsSet(optics,'model','shiftInvariant');
         optics = opticsSet(optics,'name','human-MW');
 
+        % Human, so add default human Lens
+        optics.lens = Lens;
+
     case {'wvfhuman','humanwvf'}
         % opticsCreate('wvf human',pupilDiameterMM, zCoefs, wave, ...
         %               umPerDegree, customLCA)
         %
         % Default optics based on mean Zernike polynomials estimated
         % by Thibos, for 3 mm pupil. Chromatic aberration is included.
+        %
+        % If you pass a different pupil diameter, the routine will read in
+        % Thibos measurements that for a pupil larger than that, and use
+        % those to compute the pupil function for your passed diameter.
         % 
         % This is not representative of any particular observer, because
         % the mean Zernike polynomials do not capture the phase
-        % information.
-
-        % Defaults
-        pupilDiameterMM = 3;
+        % information, and indeed positive and negative coefficients across
+        % observers will tend to cancel. So as you get serious about a modeling
+        % project, you will likely want to control this more directly.
+        %
+        % If you pass zCoefs, the routine assumes that they correspond to
+        % the same measurement diameter as the requested pupil size.  This
+        % is not necessarily the case for some use cases, so proceed with
+        % caution.
         
-        wave = 400:10:700;
-        wave = wave(:);
-        umPerDegree = 300;
-        customLCA = [];
-        % Thibos
-        zCoefs = wvfLoadThibosVirtualEyes(pupilDiameterMM);
+         % Defaults
+        pupilDiameterMM = 3;      % Default pupil diameter
+        wave            = 400:10:700;
+        wave            = wave(:);
+        umPerDegree     = 300;    % This corresponds to focal length 17.1mm
+        customLCA       = [];
 
+        % Set pupil size
         if (~isempty(varargin) && ~isempty(varargin{1}))
             pupilDiameterMM = varargin{1};
+            if (pupilDiameterMM > 7.5)
+                error('Thibos measurements are limited to pupil diameters below 7.5 mm');
+            end
         end
+
+        % Find Thibos pupil that is larger than requested.  We use
+        % that as the measured pupil diameter.
+        thibosPupilDiametersMM = [3 4.5 6 7.5];
+        for dd = 1:length(thibosPupilDiametersMM)
+            if (pupilDiameterMM <= thibosPupilDiametersMM(dd))
+                measPupilDiameterMM = thibosPupilDiametersMM(dd);
+            end
+        end
+
+        % If zCoefs are passed, then the pupilDiameter sent in is used
+        % as the measured pupil diameter.
         if (length(varargin) > 1 && ~isempty(varargin{2}))
             zCoefs = varargin{2};
+
+            % If zCoefs are passed, the 'meas pupil diameter' should
+            % describe their reference disk.
+            measPupilDiameterMM = pupilDiameterMM;
+        else
+            % Use the Thibos zCoefs
+            zCoefs = wvfLoadThibosVirtualEyes(measPupilDiameterMM);
         end
+
+        % Other defaults
         if (length(varargin) > 2 && ~isempty(varargin{3}))
             wave = varargin{3};
             wave = wave(:);
         end
         if (length(varargin) > 3 && ~isempty(varargin{4}))
+            % This parameter also sets the focal length.
             umPerDegree = varargin{4};
         end
         if (length(varargin) > 4 && ~isempty(varargin{5}))
@@ -172,31 +214,15 @@ switch lower(opticsType)
             'name', sprintf('human-%d', pupilDiameterMM), ...
             'umPerDegree', umPerDegree, ...
             'customLCA', customLCA);
-        wvfP = wvfSet(wvfP, 'measured pupil size', pupilDiameterMM);
+        wvfP = wvfSet(wvfP, 'measured pupil size', measPupilDiameterMM);
         wvfP = wvfSet(wvfP, 'calc pupil size', pupilDiameterMM);
 
         % Include human chromatic aberration because this is wvf human        
-        wvfP = wvfCompute(wvfP, 'human lca', true);
-        oi = wvf2oi(wvfP);
+        wvfP   = wvfCompute(wvfP, 'human lca', true);
+        oi     = wvf2oi(wvfP);
         optics = oiGet(oi,'optics');
-
-        %{
-        % BW:
-        % Is this needed?  Shouldn't it be handled in wvf2oi?  Commenting
-        % this out in July 8, 2023.
-        %
-        % Convert from pupil size and focal length to f# and focal
-        % length, because that is what ISET sets. This implies a
-        % number of um per degree, and we back it out the other way
-        % here so that it is all consistent.
-        focalLengthMM = (umPerDegree * 1e-3) / (2 * tand(0.5));
-        fLengthMeters = focalLengthMM * 1e-3;
-        pupilRadiusMeters = (pupilDiameterMM / 2) * 1e-3;
-        optics = opticsSet(optics, 'fnumber', fLengthMeters / ...
-            (2 * pupilRadiusMeters));
-        optics = opticsSet(optics, 'focal length', fLengthMeters);
-        %}
-
+        optics = opticsSet(optics,'name','humanwvf');
+        
         % Human, so add default human Lens
         optics.lens = Lens;
 
@@ -204,9 +230,10 @@ switch lower(opticsType)
         optics.wvf = wvfP;
 
     case 'mouse'
+        disp('mouse not yet implemented.');
         % Some day might add in a default mouse optics. Here are some
         % guesses about the right parameters:
-        %
+        %{
         % Pupil radius in meters.
         %   Dilated pupil: 1.009mm = 0.001009m
         %   Contracted pupil: 0.178 mm
@@ -226,15 +253,7 @@ switch lower(opticsType)
         %         % standard forms are diffraction limited.
         %         optics = opticsMouse(pupilRadius);
         %         optics = opticsSet(optics, 'model', 'shiftInvariant');
-        %
-        %     case {'standard(1/3-inch)', 'thirdinch'}
-        %         optics = opticsThirdInch;
-        %     case {'standard(1/2-inch)', 'halfinch'}
-        %         optics = opticsHalfInch;
-        %     case {'standard(2/3-inch)', 'twothirdinch'}
-        %         optics = opticsTwoThirdInch;
-        %     case {'standard(1-inch)', 'oneinch'}
-        %         optics = opticsOneInch;
+        %}        
 
     otherwise
         error('Unknown optics type.');
@@ -250,8 +269,10 @@ optics.vignetting =    0;   % Pixel vignetting is off
 
 end
 
+%{
 %---------------------------------------
 function optics = opticsDiffraction
+% Deprecated
 % Std. diffraction-limited optics w/ 46 deg. fov & fNumber of 4.
 %
 % Copied over from ISETBio - this appears to be the same as the quarterinch
@@ -289,6 +310,7 @@ optics = opticsSet(optics, 'focalLength', fLength);
 optics = opticsSet(optics, 'otfMethod', 'dlmtf');
 
 end
+%}
 
 %---------------------------------------
 function optics = opticsDefault
