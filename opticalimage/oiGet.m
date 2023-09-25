@@ -197,19 +197,12 @@ switch oType
     case 'wvf'
         % If a wavefront structure, then we either return the wvf or
         % an wvf parameter.  See above for varargin{:}
-        wvf = oi.wvf;
+        if isfield(oi,'wvf'),  wvf = oi.wvf;
+        else,                  error('OI does not have a wavefront slot.');
+        end
         if isempty(parm), val = wvf;
-        else, val = wvfGet(wvf,param,varargin{:});
+        else, val = wvfGet(wvf,parm,varargin{:});
         end
-        
-        %{
-        elseif isempty(varargin), val = wvfGet(wvf,parm);
-        elseif length(varargin) == 1, val = wvfGet(wvf,parm,varargin{1});
-        elseif length(varargin) == 2, val = wvfGet(wvf,parm,varargin{1},varargin{2});
-        elseif length(varargin) == 3, val = wvfGet(wvf,parm,varargin{1},varargin{2},varargin{3});
-        elseif length(varargin) == 4, val = wvfGet(wvf,parm,varargin{1},varargin{2},varargin{3},varargin{4});
-        end
-        %}
 
     otherwise
         % Must be an oi object.  Format the parameter and move on.
