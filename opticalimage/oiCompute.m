@@ -17,7 +17,7 @@ function oi = oiCompute(oi,scene,varargin)
 %
 %   crop - Crop the returned OI data to the same size as the scene.
 %            Logical. Default: false;
-%         (We could do a setprefs on this, but BW is resistant.)
+%         (We could do a setprefs on these, but BW is resistant.)
 %
 % Return
 %   oi - The oi with the photon data 
@@ -117,7 +117,12 @@ oi = oiCreate;
 oi = oiCompute(oi,scene,'pad value','zero');
 oiWindow(oi);
 %}
-
+%{
+scene = sceneCreate;
+oi = oiCreate;
+oi = oiCompute(oi,scene,'pad value','mean');
+oiWindow(oi);
+%}
 %% Parse
 varargin = ieParamFormat(varargin);
 p = inputParser;

@@ -25,10 +25,18 @@ function oi = opticsOTF(oi,scene,varargin)
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
-if ieNotDefined('oi'), error('Optical image required.'); end
-if ieNotDefined('scene'), scene = vcGetObject('scene'); end
-% if ieNotDefined('otfSaveFlag'),  otfSaveFlag = 0; end
+%% Parse
 
+varargin = ieParamFormat(varargin);
+p = inputParser;
+
+p.addRequired('oi',@(x)(isstruct(x) && isequal(x.type,'opticalimage')));
+p.addRequired('scene',@(x)(isstruct(x) && isequal(x.type,'scene')));
+p.addParameter('padvalue','zero',@(x)(ischar(x) || isvector(x)));
+
+p.parse(oi,scene,varargin{:});
+
+%%
 optics      = oiGet(oi,'optics');
 opticsModel = opticsGet(optics,'model');
 
@@ -38,10 +46,10 @@ switch lower(opticsModel)
         oi = oiSet(oi,'photons',irradianceImage);
         
     case {'dlmtf','diffractionlimited'}
-        oi = oiApplyOTF(oi,scene);
+        oi = oiApplyOTF(oi,scene,'mm',p.Results.padvalue);
         
     case {'shiftinvariant','custom','humanotf'}
-        oi = oiApplyOTF(oi,scene,'mm');
+        oi = oiApplyOTF(oi,scene,'mm',p.Results.padvalue);
         
     otherwise
         error('Unknown OTF method');
@@ -50,7 +58,7 @@ end
 end
 
 %-------------------------------------------
-function oi = oiApplyOTF(oi,scene,unit)
+function oi = oiApplyOTF(oi,scene,unit,padvalue)
 %Calculate and apply the otf waveband by waveband
 %
 %   oi = oiApplyOTF(oi,method,unit);
@@ -78,9 +86,23 @@ padSize(3) = 0;
 sDist = sceneGet(scene,'distance');
 
 % ISETBio and ISETCam, historically, used different padding
-% strategies.
-if oiGet(oi,'human'), padType = 'mean photons'; 
-else,                 padType = 'zero photons';
+% strategies.  Apparently, we have zero, mean and border implemented -
+% which are not all documented at the top.  We should also allow spd
+% and test it. Zero photons was the default for ISETCam, and mean
+% photons was the default for ISETBio.  
+% 
+% This update is being tested as of 9/25/2023.
+switch padvalue
+    case 'zero'
+        padType = 'zero photons';
+    case 'mean'
+        padType = 'mean photons'; 
+    case 'border'
+        padType = 'border photons'; 
+    case 'spd'
+        error('spd padvalue not yet implemented.')
+    otherwise
+        error('Unknown padvalue %s',padvalue);
 end
 oi = oiPadValue(oi,padSize,padType,sDist);
     
