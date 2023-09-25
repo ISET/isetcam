@@ -160,7 +160,7 @@ oiWindow(oi);
 
 % There is no distortion computed and the scene is small
 % This calculation is pretty quick.
-oiDL = oiCompute(sceneSmall,oiDL);
+oiDL = oiCompute(oiDL,sceneSmall);
 oiDL = oiSet(oiDL,'name','rt-Small-DL');
 oiWindow(oiDL);
 
