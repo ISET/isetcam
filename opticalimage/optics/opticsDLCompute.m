@@ -79,7 +79,7 @@ end
 % characterizing the effect outside of the focal plane and hence, the depth
 % of field.
 if showWaitBar, waitbar(0.6,wBar,[wStr,' Applying OTF']); end
-oi = opticsOTF(oi,scene);
+oi = opticsOTF(oi,scene,varargin);
 
 % Diffuser and illuminance, or just illuminance.  Diffuser always resets
 % the illuminance, which seems proper.

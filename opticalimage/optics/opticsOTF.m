@@ -1,7 +1,7 @@
-function oi = opticsOTF(oi,scene)
+function oi = opticsOTF(oi,scene,varargin)
 % Apply the opticalImage OTF to the photon data
 %
-%    oi = opticsOTF(oi,scene);
+%    oi = opticsOTF(oi,scene,varargin);
 %
 % The optical transform function (OTF) associated with the optics in
 % the OI is applied to the scene data.  This function is called for

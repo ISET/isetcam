@@ -1,7 +1,7 @@
-function oi = opticsSICompute(scene,oi)
+function oi = opticsSICompute(scene,oi,varargin)
 %Calculate OI irradiance using a custom shift-invariant PSF
 %
-%    oi = opticsSICompute(scene,oi)
+%    oi = opticsSICompute(scene,oi,varargin)
 %
 % The shift invariant transform (OTF) is stored in the optics structure in
 % the optics.data.OTF slot.  The representation includes the spatial
@@ -76,7 +76,7 @@ if showWbar, waitbar(0.6,wBar,'OI-SI: Applying OTF'); end
 % If there is a depth plane in the scene, we also blur that and put the
 % 'blurred' depth plane in the oi structure.
 if showWbar, waitbar(0.6,wBar,'Applying OTF-SI'); end
-oi = opticsOTF(oi,scene);
+oi = opticsOTF(oi,scene,varargin);
 
 switch lower(oiGet(oi,'diffuserMethod'))
     case 'blur'
