@@ -9,18 +9,19 @@ function oi = oiCompute(oi,scene,varargin)
 %   scene       - Spectral scene struct
 %
 % Optional key/val
-%   pad value - How to pad the oi.  Options, implemented in routines called
-%               from here are 
+%   pad value - Pad value oi.  
+%       Options, implemented in oiPadValue called via opticsOTF 
 %            zero - pad scene with zeros (Default)
 %            mean - pad scene with mean image spectral radiance
-%            spd  - Use this vector as the SPD 
+%            border - pad with values from near the border
+%            spd  - Use this vector as the SPD (NYI)
 %
-%   crop - Crop the returned OI data to the same size as the scene.
-%            Logical. Default: false;
+%   crop - Crop the OI to the same size as the scene. (Logical)
+%          Default: false;
 %         (We could do a setprefs on these, but BW is resistant.)
 %
 % Return
-%   oi - The oi with the photon data 
+%   oi - The oi with computed photon irradiance
 %
 % Brief description:
 %  We call the spectral irradiance image, on the sensor plane just
@@ -121,6 +122,12 @@ oiWindow(oi);
 scene = sceneCreate;
 oi = oiCreate;
 oi = oiCompute(oi,scene,'pad value','mean');
+oiWindow(oi);
+%}
+%{
+scene = sceneCreate;
+oi = oiCreate;
+oi = oiCompute(oi,scene,'pad value','border','crop',true);
 oiWindow(oi);
 %}
 %% Parse

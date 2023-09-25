@@ -29,6 +29,7 @@ function oi = opticsOTF(oi,scene,varargin)
 
 varargin = ieParamFormat(varargin);
 p = inputParser;
+p.KeepUnmatched = true;
 
 p.addRequired('oi',@(x)(isstruct(x) && isequal(x.type,'opticalimage')));
 p.addRequired('scene',@(x)(isstruct(x) && isequal(x.type,'scene')));
