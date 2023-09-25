@@ -1,7 +1,16 @@
-function oi = opticsDLCompute(scene,oi)
+function oi = opticsDLCompute(scene,oi,varargin)
 %Diffraction limited optical image computation
 %
-%   oi = opticsDLCompute(scene,oi)
+%   oi = opticsDLCompute(scene,oi,varargin)
+%
+% Input
+%   scene
+%   oi
+%
+% Optional key/val
+%
+% Return
+%   oi
 %
 % The diffraction limited optical image calculation uses only a few
 % parameters (f-number, focal length) to calculate the optical image.  The
@@ -11,9 +20,10 @@ function oi = opticsDLCompute(scene,oi)
 % See also:  
 %   oiCompute, opticsSICompute, opticsRayTrace
 
-%%
 % TODO:  We should insert a geometric distortion function in this code,
 % rather than using it only in the ray trace methods.
+
+%%
 if ieNotDefined('scene'), scene = vcGetObject('scene'); end
 if ieNotDefined('oi'),    oi = vcGetObject('oi');       end
 showWaitBar = ieSessionGet('waitbar');
