@@ -162,8 +162,11 @@ switch ieParamFormat(oiType)
         oi = oiSet(oi, 'diffuser method', 'skip');
 
         % These optics default to the Thibos zcoeffs for 3mm, unless
-        % varargin has something else in mind.
-        oi = oiSet(oi, 'optics', opticsCreate('wvf human', varargin{:}));
+        % varargin has something else in mind.  The wvf is attached to
+        % oi.optics.wvf
+        [optics,wvf] = opticsCreate('wvf human', varargin{:});
+        oi = oiSet(oi, 'optics', optics);
+        oi = oiSet(oi,'wvf',wvf);
         oi = oiSet(oi, 'name', 'human-WVF');
         oi = oiSet(oi, 'lens', Lens('wave', oiGet(oi, 'optics wave')));
 
@@ -205,10 +208,11 @@ switch ieParamFormat(oiType)
         
         wvf = wvfCreate;  % This is diffraction limited
         wvf = wvfCompute(wvf);
-        oi = wvf2oi(wvf);
+
+        % The wvf is attached to oi.optics
+        oi  = wvf2oi(wvf);
+        oi = oiSet(oi,'wvf',wvf);
         
-        % Add the wvf parameters
-        oi.wvf = wvf;
     case {'pinhole'}
         % Pinhole camera version of OI
         oi = oiCreate;
