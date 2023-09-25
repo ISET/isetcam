@@ -199,11 +199,12 @@ switch ieParamFormat(oiType)
         oi = oiSet(oi,'fov',100);
         
     case {'wvf'}
-        % A shift-invariant type with a wavefront struct attached that
-        % is used to control the point spread function
+        % A shift-invariant type based on a wavefront struct.
+        % The default wavefront structure is used, and it is attached
+        % to the oi.
         
         wvf = wvfCreate;  % This is diffraction limited
-        wvf = wvfComputePSF(wvf);
+        wvf = wvfCompute(wvf);
         oi = wvf2oi(wvf);
         
         % Add the wvf parameters

@@ -6,14 +6,14 @@ function wvf = wvfCompute(wvf,varargin)
 %
 % Brief description
 %   Wrapper for computing the pupil function and psf for the general
-%   optics calculation.  
+%   optics calculation based on a wavefront and shift-invariant optics.  
 %
 % Input
-%   wvf
+%   wvf - Wavefront struct (wvfCreate for an example)
 %
 % Optional key/val
 %   compute pupil function - Call wvfComputePupilFunction
-%   compute psf   - Call wvfComputePSF
+%   compute psf            - Call wvfComputePSF
 %   aperture function      - Use this aperture function (matrix)
 %   human lca              - Add human longitudinal chromatic aberration
 %                            when computing the pupil function
@@ -23,15 +23,8 @@ function wvf = wvfCompute(wvf,varargin)
 %                            function 
 %
 % Output
-%   wvf - modified wavefront structure
+%   wvf - modified wavefront structure with pupil function and psf
 %
-% Input
-%   wvf
-%
-% Key/val pairs
-%  lca - Add longitudinal chromatic aberration to pupil function
-%  pupil function - Compute pupil function 
-%  aperture function - Use this aperture function
 %
 % See also
 %   wvfComputePSF, wvfComputePupilFunction, wvfAperture
