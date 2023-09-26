@@ -191,4 +191,8 @@ oi = oiSet(oi, 'optics otfdata', otf);
 oi = oiSet(oi, 'optics OTF wave', wave);
 oi = oiSet(oi, 'wave', wave);
 
+% 9/25/2023.  Adding the wvf to the oi.  This already happens in
+% oiCreate('wvf');
+oi = oiSet(oi, 'wvf', wvf);
+
 end
