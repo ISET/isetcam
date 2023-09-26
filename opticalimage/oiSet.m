@@ -158,7 +158,7 @@ elseif isequal(oType,'wvf')
             oi.wvf = wvfSet(oi.wvf,parm,val,varargin{1},varargin{2});
         end
         % Should we always do this here before returning?
-        wvf = wvfComputePSF(oi.wvf);
+        wvf = wvfCompute(oi.wvf);
         oi = wvf2oi(wvf);
         return;
     end

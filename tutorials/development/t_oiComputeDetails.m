@@ -33,7 +33,7 @@ ieAddObject(scene); sceneWindow;
 oi = oiCreate;
 
 % Compute optical image and show it
-oi = oiCompute(scene,oi);
+oi = oiCompute(oi,scene);
 ieAddObject(oi); oiWindow;
 
 %% The inner workings exposed
@@ -50,7 +50,7 @@ oi = oiSet(oi,'wangular',sceneGet(scene,'wangular'));
 
 % The wavelength sampling of the oi is set to match that of the
 % scene
-oi = oiSet(oi,'optics spectrum',sceneGet(scene,'spectrum'));
+oi = oiSet(oi,'optics wave',sceneGet(scene,'wave'));
 
 % Compute and set the irradiance
 optics = oiGet(oi,'optics');
@@ -81,7 +81,8 @@ oi = oiSet(oi,'name',sceneGet(scene,'name'));
 %
 % Pad the scene dpeth map and attach it to the oi.   The padded values are
 % set to 0, though perhaps we should pad them with the mean distance.
-oi = oiSet(oi,'depth map',oiPadDepthMap(scene));
+% CHANGED BUT NOT TESTED YET!
+oi = oiSet(oi,'depth map',oiPadDepthMap(scene,[],'pad','zero'));
 
 oi = oiSet(oi,'name','Final');
 ieAddObject(oi); oiWindow;

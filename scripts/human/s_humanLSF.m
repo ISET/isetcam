@@ -10,6 +10,13 @@
 % The largest effects are caused by chromatic aberration.
 %
 % Copyright ImagEval Consultants, LLC, 2010.
+%
+% Requires ISETBio on the path
+
+if ~exist('isetbioRootPath','file')
+    warning('Requires ISETbio.  Skipping.')
+    return;
+end
 
 %%
 ieInit

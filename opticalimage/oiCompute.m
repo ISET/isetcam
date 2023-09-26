@@ -1,31 +1,53 @@
-function oi = oiCompute(oi,scene,opticsModel)
+function oi = oiCompute(oi,scene,varargin)
 % Gateway routine for optical image irradiance calculation
 %
 % Syntax
-%    oi = oiCompute(oi,scene,[opticsModel])
+%    oi = oiCompute(oi,scene,varargin)
+%
+% Input
+%   oi          - Optical image struct or a wavefront struct
+%   scene       - Spectral scene struct
+%
+% Optional key/val
+%   pad value - Pad value oi.  
+%       Options, implemented in oiPadValue called via opticsOTF 
+%            zero - pad scene with zeros (Default)
+%            mean - pad scene with mean image spectral radiance
+%            border - pad with values from near the border
+%            spd  - Use this vector as the SPD (NYI)
+%
+%   crop - Crop the OI to the same size as the scene. (Logical)
+%          Default: false;
+%         (We could do a setprefs on these, but BW is resistant.)
+%
+% Return
+%   oi - The oi with computed photon irradiance
 %
 % Brief description:
+%  We call the spectral irradiance image, on the sensor plane just
+%  before sensor capture, the ** optical image **.  This spectral
+%  irradiance depends on the scene and the the optics attached to the
+%  optical image structure, oi.
 %
-% The spectral irradiance image, on the sensor plane just before sensor
-% capture, is the optical image.  This spectral irradiance distribution
-% depends on the scene and the the optics attached to the optical image
-% structure, oi.
+%  The returned spectral radiance is padded compared to the scene to
+%  allow for light spreading from the edge of the scene.  The nature
+%  of the padding is specified in by the optional key/value argument
+%  'pad'.  The default padding call is something like this:
 %
-% The returned spectral radiance is padded compared to the scene to allow
-% for light spreading from the edge of the scene.  The amount of padding is
-% specified in oiApplyOTF, line 80, as
+%    imSize   = oiGet(oi,'size');
+%    padSize  = round(imSize/8); padSize(3) = 0;
+%    sDist = sceneGet(scene,'distance');
+%    oi = oiPad(oi,padSize,sDist);
 %
-%   imSize   = oiGet(oi,'size');
-%   padSize  = round(imSize/8); padSize(3) = 0;
-%   sDist = sceneGet(scene,'distance');
-%   oi = oiPad(oi,padSize,sDist);
+%  To remove the padded region, you can use oiCrop, as in
 %
-% To remove the padded region, you can use oiCrop.
+%     oi = oiCrop(oi,'border');
 %
 % Optical models:
 %
-% Three types of optical calculations are implemented .  These are selected
-% from the interface in the oiWindow, or they can be set via
+% Three types of optical calculations are implemented.  These are
+% selected from the interface in the oiWindow, or they can be set via
+%
 %    optics = opticsSet(optics,'model', parameter)
 %
 % This function calls the relevant model depending on the setting in
@@ -63,17 +85,15 @@ function oi = oiCompute(oi,scene,opticsModel)
 % program was derived from ISET, but it is not as extensive and does not
 % include the full set of models.
 %
-% * Historically, we also used a third model is a full ray trace model that
-% allows shift-varying wavelength-dependent point spread functions.  This
-% model includes geometric distortion information, relative illumination
-% and field-height and wavelength dependent point spread functions (or
-% OTFS). These are usually imported from a full ray trace program, such as
-% Zemax.  They can also be obtained by the companion CISET program. To set
-% this method use opticsSet(optics,'model','rayTrace')
+% * Historically, we used a third model, ray trace, to
+% allow **shift-varying** wavelength-dependent point spread functions.
+% This model includes geometric distortion information, relative
+% illumination and field-height and wavelength dependent point spread
+% functions (or OTFS). The main use of this model these days is to
+% import data from a ray trace program, such as Zemax. To set this
+% method use opticsSet(optics,'model','rayTrace').
 %
-% BUT IN RECENT YEARS, we are using iset3d for ray tracing calculations.
-% That method is greatly preferred, and we imagine that rayTrace mode here
-% will be deprecated.
+% Note:  IN RECENT YEARS, we use iset3d for ray trace calculations.
 %
 % Use ieSessionSet('waitbar',0) to turn off waitbar displays
 % Use ieSessionSet('waitbar',1) to turn on waitbar displays
@@ -81,33 +101,46 @@ function oi = oiCompute(oi,scene,opticsModel)
 % Example
 %   oi = oiCompute(scene,oi);
 %
-%   oi = vcGetObject('oi'); scene = vcGetObject('scene');
+%   oi = ieGetObject('oi'); scene = vcGetObject('scene');
 %   load siZemaxExample00
 %   optics = opticsSet(optics,'model','shiftinvariant');
 %   oi = oiSet(oi,'optics',optics);
 %   oi = oiCompute(scene,oi);
 %
-% Copyright ImagEval Consultants, LLC, 2005
-%
 % See also: 
 %   opticsDLCompute, opticsSICompute, opticsRayTrace
 %
 
-% Note about cropping the oi data back to the same size (no black border)
-% on the scene window
-%
-% The optical image is padded by 1/8th of the scene size on all sides.
-% So the eliminate the black border, we need to crop a rect that is
-%
-%  rect = [row col height width]
-%  oiSize = sceneSize * (1 + 1/4))
-%  sceneSize = oiGet(oi,'size')/(1.25);
-%
-%  [sceneSize(1)/8 sceneSize(2)/8 sceneSize(1) sceneSize(2)]
-%
+% Examples:
+%{
+scene = sceneCreate;
+oi = oiCreate;
+oi = oiCompute(oi,scene,'pad value','zero');
+oiWindow(oi);
+%}
+%{
+scene = sceneCreate;
+oi = oiCreate;
+oi = oiCompute(oi,scene,'pad value','mean');
+oiWindow(oi);
+%}
+%{
+scene = sceneCreate;
+oi = oiCreate;
+oi = oiCompute(oi,scene,'pad value','border','crop',true);
+oiWindow(oi);
+%}
+%% Parse
+varargin = ieParamFormat(varargin);
+p = inputParser;
+p.addRequired('oi',@isstruct);
+p.addRequired('scene',@isstruct);
+p.addParameter('padvalue','zero',@(x)(ischar(x) || isvector(x)));
+p.addParameter('crop',false,@islogical);
+p.parse(oi,scene,varargin{:});
 
-if ~exist('oi','var') || isempty(oi), error('Opticalimage required.'); end
-if ~exist('scene','var') || isempty(scene), error('Scene required.'); end
+% if ~exist('oi','var') || isempty(oi), error('Opticalimage required.'); end
+% if ~exist('scene','var') || isempty(scene), error('Scene required.'); end
 
 if strcmp(oi.type,'wvf')
     % User sent in an wvf, not an oi.  We convert it to a shift invariant
@@ -115,28 +148,30 @@ if strcmp(oi.type,'wvf')
     oi = wvf2oi(oi);
 end
 
-% Ages ago, we had code that flipped the order of scene and oi.  We catch
-% that here.
+% Ages ago, we some code flipped the order of scene and oi.  We think
+% we have caught all those cases, but we still test.  Maybe delete
+% this code by January 2024.
 if strcmp(oi.type,'scene') && strcmp(scene.type,'opticalimage')
     warning('flipping oi and scene variables.')
     tmp = scene; scene = oi; oi = tmp; clear tmp
 end
 
-if ~exist('opticsModel','var') || isempty(opticsModel)
-    optics = oiGet(oi,'optics');
-    opticsModel = opticsGet(optics,'model');
-end
+%% Compute according to the selected model.
 
-% Compute according to the selected model
-opticsModel = ieParamFormat(opticsModel);
-switch opticsModel
+% Should we pad the scene before the call to these computes?
+
+% We pass varargin because it may contain the key/val parameters
+% such as pad value and crop. But we only use pad value here.
+opticsModel = oiGet(oi,'optics model');
+switch ieParamFormat(opticsModel)
     case {'diffractionlimited','dlmtf', 'skip'}
         % The skip case is handled by the DL case
-        oi = opticsDLCompute(scene,oi);
+        oi = opticsDLCompute(scene,oi,varargin{:});
     case 'shiftinvariant'
-        oi = opticsSICompute(scene,oi);
+        oi = opticsSICompute(scene,oi,varargin{:});
     case 'raytrace'
-        oi = opticsRayTrace(scene,oi);
+        % We are not using the pad value in this case.
+        oi = opticsRayTrace(scene,oi,varargin{:});
     otherwise
         error('Unknown optics model')
 end
@@ -146,10 +181,16 @@ oi = oiSet(oi,'name',sceneGet(scene,'name'));
 
 % Pad the scene dpeth map and attach it to the oi.   The padded values are
 % set to 0, though perhaps we should pad them with the mean distance.
-oi = oiSet(oi,'depth map',oiPadDepthMap(scene));
+oi = oiSet(oi,'depth map',oiPadDepthMap(scene,[],varargin{:}));
+
+% This crops the photons and the depth map
+if p.Results.crop
+    oi = oiCrop(oi,'border');
+end
 
 % We need to preserve metadata from the scene,
 % But not overwrite oi.metadata if it exists
+% We should probably rename this ieStructAppend
 oi.metadata = appendStruct(oi.metadata, scene.metadata);
 
 end
