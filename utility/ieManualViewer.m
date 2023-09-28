@@ -19,7 +19,7 @@ function ieManualViewer(mType)
 ieManualViewer('github');
 %}
 %{
-ieManualViewer('iset functions');
+ieManualViewer('iset tutorials');
 %}
 %{
 ieManualViewer('scene functions');
@@ -36,9 +36,11 @@ end
 
 mType = ieParamFormat(mType);
 switch mType
-    case {'isetfunctions'}
+    case {'isetcamwiki'}
+        web('https://github.com/iset/isetcam/wiki','-browser');
+    case {'isetfunctions','isettutorials'}
         % m2html overview for old-timers
-        web('https://scarlet.stanford.edu/~brian/isetcam/manuals/index.html','-browser');
+        web('https://github.com/ISET/isetcam/wiki/Tutorials-and-scripts','-browser');
     case {'github'}
         % Main
         web('https://github.com/ISET/isetcam','-browser')
