@@ -249,13 +249,20 @@ for ii = 1:nWavelengths
     boundingBox = imageBoundingBox(calc_radius_index);
 
     % Resize the amplitude mask to the bounding box of the calculated
-    % radius. There were moments I thought should increase the bounding box
-    % by +1. But not today.  The last section of s_wvfDiffraction, staring
-    % at the red circles and the curve, make this seem right.
+    % radius.
     aperture = imresize(aperture,[boundingBox(3),boundingBox(4)],'nearest');
    
-    % Extend with zeros outside of the cal pupil radius.  
-    sz = round((nPixels - boundingBox(3))/2);
+    % Extend with zeros outside of the calc pupil radius.
+    % DHB/BAW: We subtract 2 to pad a little less.  We think one pixel on
+    % each of left/right and top/bottom.  This leaves the pupil as a circle
+    % in the case we looked at, and causes this code to match the old
+    % ISETBio master when no aperture is passed. There is an issue with
+    % s_wvfDiffraction but it doesn't seem to be affected by this change of
+    % subracting 2.
+    %
+    % We might come back and carefully comment all this new code someday,
+    % as well as look more closely at s_wvfDiffraction.
+    sz = round((nPixels - boundingBox(3))/2) - 2;
     aperture = padarray(aperture,[sz,sz],0,'both');    
     aperture = imresize(aperture,[nPixels,nPixels],'bilinear');
     % ieNewGraphWin; imagesc(pupilPos,pupilPos,aperture); axis image    
@@ -381,10 +388,6 @@ for ii = 1:nWavelengths
     % Conceptually, the aperture function should do this job, we
     % should not do it this way. Using the aperture is better
     % because this imposes an implicit circular aperture. 
-    % 
-    % I need to fix this soon (July 7, 2023).  Leaving it here for
-    % just now. Until it is fixed, circular apertures seem to work but
-    % flare does not work correctly. (BW).
     pupilfuncphase(norm_radius > calcPupilSizeMM/measPupilSizeMM) = 0;
 
     % Create the pupil function, combining the aperture and pupil phase
