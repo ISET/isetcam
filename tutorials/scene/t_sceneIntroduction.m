@@ -60,14 +60,9 @@ ieInit
 % Create a scene: Here is a simple scene of a color chart
 scene = sceneCreate('macbeth d65');
 
-% To put the scene object into a window of the graphical user interface
-% (GUI), first we use the command ISET that adds the scene to the ISET
-% database:
-ieAddObject(scene);
-
 % Then we call the function sceneWindow which displays the object This call
 % opens the  graphical interface and displays the current scene
-sceneWindow;
+sceneWindow(scene);
 
 % When the window appears, you can scale the window size and adjust the
 % font size as well (Edit | Change Font Size). There are many other options
@@ -186,7 +181,7 @@ scenePlot(scene,'illuminant energy');
 
 % In this case, we create a blackbody illuminant and reilluminate the
 % scene.
-bb = blackbody(sceneGet(scene,'wave'),6500,'energy');
+bb = blackbody(sceneGet(scene,'wave'),3500,'energy');
 scene = sceneAdjustIlluminant(scene,bb);
 sceneWindow(scene);
 
