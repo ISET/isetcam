@@ -10,28 +10,28 @@ function irradiance = oiCalculateIrradiance(scene,optics)
 %     irradiance = pi /(1 + 4*fN^2*(1+abs(m))^2)*radiance;
 %
 %  where m is the magnification and fN is the f-number of the lens.
-%  Frequently, in online references one sees the simpler formula:
+%  Frequently, in online references one sees the simpler formula, which is
+%  appropriate for almost all on-axis cases.
 %
 %     irradiance = pi /(4*fN^2*(1+abs(m))^2)*radiance;
 %
-% (e.g., Gerald C. Holst, CCD Arrayas, Cameras and Displays, 2nd Edition,
+% (e.g., Gerald C. Holst, CCD Arrays, Cameras and Displays, 2nd Edition,
 % pp. 33-34 (1998))
 %
 %  This second formula is accurate for small angles, say when the sensor
 %  sees only the paraxial rays.  The formula used here is more general and
 %  includes the non-paraxial rays.
 %
-%  On the web one even finds simpler formulae, such as
+%  One also finds even simpler formulae, such as (https://www.opticsthewebsite.com/Radiometry)
 %
 %     irradiance = pi/(4*FN^2) * radiance
 %
-% For example, this formula is used in these online notes
-%
-%   http://www.ece.arizona.edu/~dial/ece425/notes7.pdf
-%   http://www.coe.montana.edu/ee/jshaw/teaching/RSS_S04/Radiometry_geometry_RSS.pdf
+% because the magnification is usually a very small number (the world is
+% big, the film or retinal image is very small) so that (1 + m)^2 is really
+% very close to 1.
 %
 %  Reference:
-%    The formula is derived in Peter Catrysse's dissertation (pp. 150-151).
+%    The general formula is derived in Peter Catrysse's dissertation (pp. 150-151).
 %    See also https://web.stanford.edu/class/ee392b/, course handouts
 %    William L. Wolfe, Introduction to Radiometry, SPIE Press, 1998.
 %
