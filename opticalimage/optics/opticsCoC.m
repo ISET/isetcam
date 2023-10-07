@@ -1,5 +1,6 @@
 function circ = opticsCoC( optics, oDist, unit )
-% Calculate the circle of confusion diameter on the sensor surface for the optics
+% Calculate the circle of confusion diameter on the sensor surface for
+% the optics 
 %
 %  Syntax:
 %    circ = opticsCoC(optics, oDist, [unit='m'])
@@ -35,7 +36,9 @@ function circ = opticsCoC( optics, oDist, unit )
 %      opticsGet(optics,'diffraction limit diameter');
 %
 % http://en.wikipedia.org/wiki/Circle_of_confusion#Determining_a_circle_of_confusion_diameter_from_the_object_field
-% Includes the original wonderful article describing the geometry.
+%
+% Includes the original wonderful article, written in 1866, describing
+% the geometry. 
 %
 % Example:
 %   optics = opticsCreate;
