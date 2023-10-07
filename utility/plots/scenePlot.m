@@ -175,8 +175,12 @@ nTicks = 4;   % For the images and graphs
 
 switch lower(pType)
     case {'radianceenergyroi'}
-        % mean radiance in energy of roi
-        % g = scenePlot(scene,'radiance energy roi',roiLocs);
+        % mean radiance energy in a rectangular roi
+        %
+        %  g = scenePlot(scene,'radiance energy roi',roi);
+        % 
+        % The roi can be a Rectangle object, or a rect, or roiLocs.
+        %
         energy = vcGetROIData(scene,roiLocs,'energy');
         wave   = sceneGet(scene,'wave');
         energy = mean(energy,1);
