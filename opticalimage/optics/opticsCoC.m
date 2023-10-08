@@ -20,6 +20,7 @@ function [circ, xDist] = opticsCoC( optics, oDist, varargin )
 %    unit  - Spatial units of the circle diameter ('m' default)
 %    xDist - Evaluation distances in meters (usually closer and further
 %            than the oDist
+%    nSamples - How many distance samples
 %
 %  Return
 %    circDiameter - Circle of confusion diameter
@@ -108,16 +109,22 @@ p.addRequired('optics',@isstruct);
 p.addRequired('oDist',@(x)(isnumeric(x) && numel(x) == 1));
 p.addParameter('unit','m',@ischar);
 p.addParameter('xdist',[],@isvector);
+p.addParameter('nsamples',21,@isnumeric);   % Odd is a little better
 
 p.parse(optics,oDist,varargin{:});
 
 unit  = p.Results.unit;
 xDist = p.Results.xdist;
+nSamples = p.Results.nsamples;
 
 if isempty(xDist)
-    % 10 logarithmically spaced sample distances around the oDist
-    xDist = 10.^(log10(oDist) + linspace(-1,1,11));
+    % Sample distances around the oDist
+    xDist = 10.^(log10(oDist) + linspace(-0.5,0.5,nSamples));
 end
+
+% But only include object distances beyond the focal length
+fL = opticsGet(optics,'focal length','m');
+xDist = xDist(xDist > fL);
 
 % Lensmaker's Equation that computes the image distance for an object
 % distance x and a thin lens with focal length f.
