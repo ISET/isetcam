@@ -10,7 +10,7 @@
 % circle of confusion see this Wikipedia page>. That page links to
 % the original wonderful article describing the geometry.
 %
-% See also:  opticsCoC, opticsSet, opticsget
+% See also:  opticsCoC, opticsSet, opticsGet
 %
 % Copyright Imageval Consulting, LLC 2015
 
@@ -19,8 +19,8 @@ ieInit
 
 %% Calculate the circle of confusion diameter for different points
 
-% Points distances
-oDist = logspace(-1.5,1,20);
+% Point distances
+oDist = logspace(-1.5,1,20);   % Meters
 
 optics = opticsCreate;
 optics = opticsSet(optics,'fnumber',2);
@@ -30,7 +30,7 @@ for ii=1:length(oDist)
 end
 
 %% Plot the circle diameter as a function of distance
-vcNewGraphWin([],'big');
+ieNewGraphWin([],'big');
 semilogy(oDist,c,'b-'); grid on
 % xlabel('Object distance (m)');
 % ylabel('Diameter of circle of confusion (um)')
