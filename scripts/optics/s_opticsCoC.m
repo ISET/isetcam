@@ -5,7 +5,7 @@
 % size of the *circle of confusion*, which is the diameter of a
 % point image. The function *opticsCoC* calculates the circle of confusion.
 %
-% We plot the circle of confusion here for different F#s and Focal length
+% We semilogy the circle of confusion here for different F#s and Focal length
 % lenses.
 %
 % The depth of field is calculated from the CoC.  One picks a criterion
@@ -41,10 +41,10 @@ for oo = 1:numel(oDist)
     optics = opticsSet(optics,'focal length',fL);
 
     % Set the distance to the inplane focus
-    [c, xDist] = opticsCoC(optics,oDist(oo),'unit','mm');
+    [c, xDist] = opticsCoC(optics,oDist(oo),'unit','mm','n samples',50);
 
     % Plot the circle diameter as a function of distance
-    plot(xDist,c,'b','LineStyle',lineStyle{oo}); grid on;
+    semilogy(xDist,c,'b','LineStyle',lineStyle{oo}); grid on;
     xlabel('Object distance (m)');
     ylabel('Diameter of circle of confusion (mm)')
 
@@ -56,11 +56,11 @@ for oo = 1:numel(oDist)
     optics = opticsSet(optics,'focal length',fL);
 
     % Set the distance to the inplane focus
-    [c, xDist] = opticsCoC(optics,oDist(oo),'unit','mm');
+    [c, xDist] = opticsCoC(optics,oDist(oo),'unit','mm','n samples',50);
 
     % Plot the circle diameter as a function of distance
     hold on;
-    plot(xDist,c,'r','LineStyle',lineStyle(oo)); grid on;
+    semilogy(xDist,c,'r','LineStyle',lineStyle(oo)); grid on;
     xlabel('Object distance (m)');
     ylabel('Diameter of circle of confusion (mm)')
 
@@ -72,15 +72,15 @@ for oo = 1:numel(oDist)
     optics = opticsSet(optics,'focal length',fL);
 
     % Set the distance to the inplane focus
-    [c, xDist] = opticsCoC(optics,oDist(oo),'unit','mm');
+    [c, xDist] = opticsCoC(optics,oDist(oo),'unit','mm','n samples',50);
 
     % Plot the circle diameter as a function of distance
     hold on;
-    plot(xDist,c,'k','LineStyle',lineStyle(oo)); grid on;
+    semilogy(xDist,c,'k','LineStyle',lineStyle(oo)); grid on;
     xlabel('Object distance (m)');
     ylabel('Diameter of circle of confusion (mm)')
 
-    legend({'F# 2 FL 50 mm','F# 8 FL 50 mm','F# 2 FL 200 mm'});
+    legend({'F# 2 FL 50 mm','F# 8 FL 50 mm','F# 2 FL 100 mm'});
 
     title('Circle of Confusion');
     
