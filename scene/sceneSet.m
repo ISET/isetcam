@@ -106,11 +106,11 @@ switch parm
         switch val
             case {'hdr',3}
                 val = 3;
-            case {'rgb',1}
+            case {'rgb','standardrgb',1}
                 val = 1;
-            case {'gray',2}
+            case {'gray','grayscale',2}
                 val = 2;
-            case {'clip',4}
+            case {'clip','cliphighlights',4}
                 val = 4;
             otherwise
                 fprintf('Permissible display modes: rgb, gray, hdr, clip\n');
