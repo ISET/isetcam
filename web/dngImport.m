@@ -1,3 +1,11 @@
+%% This seems to be a scratch file.
+%
+% Perhaps we should deprecate it.  We have put some effort into
+% ieDNGRead and related.
+%
+% BW/JEF 2023
+
+
 [fName, fPath] = uigetfile('*.dng;*.tiff;*.tif');
 % for now we call the one that works for Adobe:
 loadDNG(fullfile(fPath,fName));
