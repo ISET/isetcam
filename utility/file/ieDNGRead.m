@@ -11,9 +11,10 @@ function [img,info] = ieDNGRead(fname,varargin)
 %   only info :    Do not read the data Logical (default: false)
 %   simple info:   Only a few header fields are returned.  exposure, speed,
 %                  orientation and black level  (default: false)
+%   rgb:           Return an RGB image, not the raw image
 %
 % Returns
-%   img:  Image data mosaic
+%   img:  Image data mosaic, or if rgb flag is set an RGB file
 %   info: The header information.  I am unsure whether exposure time is in
 %         seconds, I think.
 %
@@ -41,10 +42,13 @@ p.addRequired('fname',vFunc);
 
 p.addParameter('onlyinfo',false);
 p.addParameter('simpleinfo',false);
+p.addParameter('rgb',false,@islogical);
+
 p.parse(fname,varargin{:});
 
 onlyInfo   = p.Results.onlyinfo;
 simpleInfo = p.Results.simpleinfo;
+rgbflag    = p.Results.rgb;
 
 %% Read the info with imfinfo (Matlab)
 
@@ -79,13 +83,17 @@ if onlyInfo
     img = [];
     return;
 else
-    % If fname has any spaces in it, dcraw is unhappy.
-    try
-        img = dcrawRead(fname);
-    catch
-        % dcraw needs a full path name, often.
-        fname = which(fname);
-        img = dcrawRead(fname);
+    % dcraw needs a full path name, often.
+    fullFile = which(fname); 
+    if isempty(fullFile)
+        error('Cannot find file %s',fname);
+    end
+
+    if rgbflag
+        img = imread(fullFile);
+    else
+        % Raw mosaic will be returned.  This is the default.
+        img = dcrawRead(fullFile);
     end
 end
 

@@ -13,7 +13,7 @@ function [I, map] = dcrawRead(fname, opts, varargin)
 %
 % Example:
 %   I = dcrawRead('DSC01354.ARW');
-%   vcNewGraphWin; imshow(I);
+%   ieNewGraphWin; imshow(I);
 %
 %   base = 'http://scarlet.stanford.edu/validation/SCIEN/L3/SonyRX100';
 %   I = imread([base '/Landscape/DSC01354.ARW'], 'ARW');
