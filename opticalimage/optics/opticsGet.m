@@ -256,11 +256,15 @@ switch parm
         % What about 'skip' optics case?  Should 'focalLength' call set
         % this to 1/2 the object distance, which preserves the geometry?
         % (It does?  Not simply the object distance?)
+        %
         % ZLY: visited here. I think it can be focalLength, which is the
         % distance when the object is at infinity.  Should discuss with BW.
         %
-        % BW: I think shiftinvariant should be the otherwise case,
-        % which uses the lensmaker's equation.
+        % BW: I think shiftinvariant should use the lensmaker's
+        % equation. So we changed the case.  I left ZLY change to
+        % focal length fo the 'skip' case.  Based on conversation with
+        % David B.  But we are a bit uncertain.
+        
         switch (opticsGet(optics,'model'))
             case {'skip'} %,'shiftinvariant'}
                 val = optics.focalLength;
