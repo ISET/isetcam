@@ -259,7 +259,7 @@ switch parm
         % ZLY: visited here. I think it can be focalLength, which is the
         % distance when the object is at infinity.  Should discuss with BW.
         switch (opticsGet(optics,'model'))
-            case {'skip', 'shiftinvariant'}
+            case {'skip'} %,'shiftinvariant'}
                 val = optics.focalLength;
                 return;
             otherwise
