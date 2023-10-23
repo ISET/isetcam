@@ -258,6 +258,9 @@ switch parm
         % (It does?  Not simply the object distance?)
         % ZLY: visited here. I think it can be focalLength, which is the
         % distance when the object is at infinity.  Should discuss with BW.
+        %
+        % BW: I think shiftinvariant should be the otherwise case,
+        % which uses the lensmaker's equation.
         switch (opticsGet(optics,'model'))
             case {'skip'} %,'shiftinvariant'}
                 val = optics.focalLength;
