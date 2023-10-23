@@ -469,7 +469,10 @@ optics = opticsSet(optics,'otfData',OTF2D);
 % microns, so there are about 3 cyc/mm.  To convert from cyc/deg to cyc/mm
 % we divide by 0.3. That is:
 %  (cyc/deg * (1/mm/deg)) cyc/mm.  1/mm/deg = 1/.3
-frequencySupport = frequencySupport * (1/0.3);  % Convert to cyc/mm
+% frequencySupport = frequencySupport * (1/0.3);  % Convert to cyc/mm
+
+% Coordinating with ISETBio code using umPerDegreeForSupport
+frequencySupport = frequencySupport * 3.3703;  % Convert to cyc/mm
 
 fx     = frequencySupport(1,:,1);
 fy     = frequencySupport(:,1,2);
