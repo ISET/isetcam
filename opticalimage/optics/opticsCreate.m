@@ -222,6 +222,17 @@ switch lower(opticsType)
         oi     = wvf2oi(wvfP);
         optics = oiGet(oi,'optics');
         optics = opticsSet(optics,'name','humanwvf');
+
+        % Convert from pupil size and focal length to f number and focal
+        % length, because that is what we can set. This implies a number of
+        % mm per degree, and we back it out the other way here so that it
+        % is all consistent.
+        % focalLengthMM = (umPerDegree * 1e-3) / (2 * tand(0.5));
+        % fLengthMeters = focalLengthMM * 1e-3;
+        % pupilRadiusMeters = (pupilDiameterMM / 2) * 1e-3;
+        % optics = opticsSet(optics, 'fnumber', fLengthMeters / ...
+        %     (2 * pupilRadiusMeters));
+        % optics = opticsSet(optics, 'focalLength', fLengthMeters);
         
         % Human, so add default human Lens
         optics.lens = Lens;
