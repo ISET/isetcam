@@ -179,6 +179,7 @@ switch lower(opticsType)
         for dd = 1:length(thibosPupilDiametersMM)
             if (pupilDiameterMM <= thibosPupilDiametersMM(dd))
                 measPupilDiameterMM = thibosPupilDiametersMM(dd);
+                break;
             end
         end
 
