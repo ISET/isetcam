@@ -127,9 +127,13 @@ switch lower(opticsType)
         if ~isempty(varargin), pupilRadius = varargin{1};
         else,                  pupilRadius = 0.0015;    % 3mm diameter default
         end
+        if length(varargin) > 1, fLengthMeters = varargin{2};
+        else,                  fLengthMeters= 0.017;    % 17 mm focal length default
+        end
+
         % This creates a shift-invariant optics.  The other standard forms
         % are diffraction limited.
-        optics = opticsHuman(pupilRadius);
+        optics = opticsHuman(pupilRadius,fLengthMeters);
         optics = opticsSet(optics,'model','shiftInvariant');
         optics = opticsSet(optics,'name','human-MW');
 
@@ -426,64 +430,48 @@ optics = opticsSet(optics,'otfMethod','dlmtf');
 end
 
 %---------------------------------------
-function optics = opticsHuman(pupilRadius)
+function optics = opticsHuman(pupilRadiusMeters,fLengthMeters)
 % We use the shift-invariant method for the human and add the OTF
-% data to the OTF fields.   We return the units in cyc/mm.  We use 300
-% microns/deg as the conversion factor.
-% EC - 300um/deg corresponds to a distance of 17mm (human focal length)
-
-% We place fnumber and focal length values that
-% are approximate for diffraction-limited in those fields, too.  But they
-% are not a good description, just the DL bounds for this type of a system.
+% data to the OTF fields.   We return the units in cyc/mm.
 %
-% The pupilRadius should be specified in meters
-%
+% The pupilRadiusMeters and focalLengthMeters should be specified in meters
 
-if ieNotDefined('pupilRadius'), pupilRadius = 0.0015; end
-fLength = 0.017;  %Human focal length is 17 mm
+% Convenience conversion
+focalLengthMM = fLengthMeters * 1e3;
 
+% Some basic labeling.
 optics.type = 'optics';
 optics.name = 'human';
 optics      = opticsSet(optics,'model','shiftInvariant');
 
 % Ratio of focal length to diameter.
-optics = opticsSet(optics,'fnumber',fLength/(2*pupilRadius));
-optics = opticsSet(optics,'focalLength', fLength);
-
+optics = opticsSet(optics,'fnumber',fLengthMeters/(2*pupilRadiusMeters));
+optics = opticsSet(optics,'focalLength', fLengthMeters);
 optics = opticsSet(optics,'otfMethod','humanOTF');
 
-% Compute the OTF and store it.  We use a default pupil radius, dioptric
-% power, and so forth.
-
-dioptricPower = 1/fLength;      % About 60 diopters
-
-% We used to assign the same wave as in the current scene to optics, if the
-% wave was not yet assigned.
+% Compute the OTF and store it.
+% 
+% The call to opticsGet on 'wave' gets us default wavelength sampling
+% from the optics code.
+dioptricPower = 1/fLengthMeters;      % About 60 diopters
 wave = opticsGet(optics,'wave');
-
-% The human optics are an SI case, and we store the OTF at this point.
-[OTF2D, frequencySupport] = humanOTF(pupilRadius, dioptricPower, [], wave);
+[OTF2D, frequencySupport] = humanOTF(pupilRadiusMeters, dioptricPower, [], wave);
 optics = opticsSet(optics,'otfData',OTF2D);
 
-% Support is returned in cyc/deg.  At the human retina, 1 deg is about 300
-% microns, so there are about 3 cyc/mm.  To convert from cyc/deg to cyc/mm
-% we divide by 0.3. That is:
-%  (cyc/deg * (1/mm/deg)) cyc/mm.  1/mm/deg = 1/.3
-% frequencySupport = frequencySupport * (1/0.3);  % Convert to cyc/mm
-
-% Coordinating with ISETBio code using umPerDegreeForSupport
-frequencySupport = frequencySupport * 3.37025;  % Convert to cyc/mm
-
+% Coordinating with ISETBio code using umPerDegree.  For 17 mm focal
+% length, the code we're running is, we think, equivalent to the commented
+% out line below.
+% frequencySupport = frequencySupport * 3.37025;  % Convert to cyc/mm
+mmPerDegree = 2 * focalLengthMM * tand(0.5);
+frequencySupport = frequencySupport * (1 / (mmPerDegree));
 fx     = frequencySupport(1,:,1);
 fy     = frequencySupport(:,1,2);
 optics = opticsSet(optics,'otffx',fx(:)');
 optics = opticsSet(optics,'otffy',fy(:)');
-
 optics = opticsSet(optics,'otfWave',wave);
 
 % figure(1); mesh(frequencySupport(:,:,1),frequencySupport(:,:,2),OTF2D(:,:,20));
 % mesh(abs(otf2psf(OTF2D(:,:,15))))
-%
 
 end
 

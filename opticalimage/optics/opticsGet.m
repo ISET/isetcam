@@ -264,7 +264,6 @@ switch parm
         % equation. So we changed the case.  I left ZLY change to
         % focal length fo the 'skip' case.  Based on conversation with
         % David B.  But we are a bit uncertain.
-        
         switch (opticsGet(optics,'model'))
             case {'skip'} %,'shiftinvariant'}
                 val = optics.focalLength;
@@ -279,6 +278,7 @@ switch parm
         
         % These all need the scene field of view.  They can be computed
         % from the geometry of the image distance and FOV.
+    
     case {'imageheight'}
         % opticsGet(optics,'imageheight',fov) -- field of view in degrees
         if isempty(varargin), disp('fov required.'); return;
