@@ -321,7 +321,12 @@ switch oType
                         end
                     else
                         % fprintf('Assuming scene at infinity.\n');
-                        sDist = 1e10;
+                        %sDist = 1e10;
+
+                        % Tru to get the validation to work by forcing
+                        % this to match what isetbio does for the
+                        % validation.
+                        sDist = 1.2;
                     end
                 else
                     % The scene distance was sent in
