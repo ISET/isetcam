@@ -105,8 +105,11 @@ switch padvalue
     otherwise
         error('Unknown padvalue %s',padvalue);
 end
+
+% oiGet(oi,'sample size')
 oi = oiPadValue(oi,padSize,padType,sDist);
-    
+% oiGet(oi,'sample size')
+
 % See t_codeFFTinMatlab to understand the logic of the operations here.
 % We used to do this one wavelength at a time.  But this could cause
 % dynamic range problems for ieCompressData.  So, for now we are
