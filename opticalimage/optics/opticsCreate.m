@@ -18,7 +18,7 @@ function [optics, wvfP]  = opticsCreate(opticsType,varargin)
 %    For diffraction-limited optics, the only parameter that matters
 %    really is the f-number.  The names of the standard types end up
 %    producing a variety  of sizes that are only loosely connected to
-%    the names. 
+%    the names.
 %
 %    Specifying human optics creates a shift-invariant optics structure
 %    with human OTF data.
@@ -77,6 +77,15 @@ function [optics, wvfP]  = opticsCreate(opticsType,varargin)
 % See also
 %
 
+% History
+%   10/24/23  dhb  Purge transmittance field from human optics.  This
+%                  involved both removing it if it is there, and moving the
+%                  ISETCam transmittance setting into the individual non
+%                  human cases. Previously it was set at the end of the
+%                  routine, defeating attempts to remove it earlier.
+%             dhb  Had default transmittance set to wavelength sampling of
+%                  optics object, not a fixed value.
+
 %%
 if ieNotDefined('opticsType'), opticsType = 'default'; end
 
@@ -87,14 +96,37 @@ switch lower(opticsType)
         % These are all diffraction limited methods.
         optics = opticsDefault;
 
+        % Default lens transmittance. 
+        optics.transmittance.wave = opticsGet(optics,'wave');
+        optics.transmittance.scale = ones(size(optics.transmittance.wave));
+
     case {'standard(1/3-inch)','thirdinch'}
         optics = opticsThirdInch;
+
+        % Default lens transmittance. 
+        optics.transmittance.wave = opticsGet(optics,'wave');
+        optics.transmittance.scale = ones(size(optics.transmittance.wave));
+
     case {'standard(1/2-inch)','halfinch'}
         optics = opticsHalfInch;
+
+        % Default lens transmittance. 
+        optics.transmittance.wave = opticsGet(optics,'wave');
+        optics.transmittance.scale = ones(size(optics.transmittance.wave));
+
     case {'standard(2/3-inch)','twothirdinch'}
         optics = opticsTwoThirdInch;
+
+       % Default lens transmittance. 
+        optics.transmittance.wave = opticsGet(optics,'wave');
+        optics.transmittance.scale = ones(size(optics.transmittance.wave));
+
     case {'standard(1-inch)','oneinch'}
         optics = opticsOneInch;
+
+       % Default lens transmittance. 
+        optics.transmittance.wave = opticsGet(optics,'wave');
+        optics.transmittance.scale = ones(size(optics.transmittance.wave));
 
     case 'shiftinvariant'
         % optics = opticsCreate('shift invariant',oi);
@@ -119,6 +151,10 @@ switch lower(opticsType)
         % Used to create a pillbox like this
         % optics = siSynthetic('custom',oi,'SI-pillBox',[]);
 
+        % Default lens transmittance. We use this for generic SI.
+        optics.transmittance.wave = wave;
+        optics.transmittance.scale = ones(size(optics.transmittance.wave));
+
     case {'human','humanmw'}
         % Pupil radius in meters.  Default is 3 mm
         %
@@ -137,8 +173,13 @@ switch lower(opticsType)
         optics = opticsSet(optics,'model','shiftInvariant');
         optics = opticsSet(optics,'name','human-MW');
 
-        % Human, so add default human Lens
+        % Human, so add default human Lens object, and remove the
+        % transmittance field if it is there.  The transmittance field
+        % is an ISETCam thing that we don't want for human ISETBio calcs.
         optics.lens = Lens;
+        if checkfields(optics, 'transmittance')
+            optics = rmfield(optics, 'transmittance');
+        end
 
     case {'wvfhuman','humanwvf'}
         % opticsCreate('wvf human',pupilDiameterMM, zCoefs, wave, ...
@@ -150,7 +191,7 @@ switch lower(opticsType)
         % If you pass a different pupil diameter, the routine will read in
         % Thibos measurements that for a pupil larger than that, and use
         % those to compute the pupil function for your passed diameter.
-        % 
+        %
         % This is not representative of any particular observer, because
         % the mean Zernike polynomials do not capture the phase
         % information, and indeed positive and negative coefficients across
@@ -161,8 +202,8 @@ switch lower(opticsType)
         % the same measurement diameter as the requested pupil size.  This
         % is not necessarily the case for some use cases, so proceed with
         % caution.
-        
-         % Defaults
+
+        % Defaults
         pupilDiameterMM = 3;      % Default pupil diameter
         wave            = 400:10:700;
         wave            = wave(:);
@@ -222,7 +263,7 @@ switch lower(opticsType)
         wvfP = wvfSet(wvfP, 'measured pupil size', measPupilDiameterMM);
         wvfP = wvfSet(wvfP, 'calc pupil size', pupilDiameterMM);
 
-        % Include human chromatic aberration because this is wvf human        
+        % Include human chromatic aberration because this is wvf human
         wvfP   = wvfCompute(wvfP, 'human lca', true);
         oi     = wvf2oi(wvfP);
         optics = oiGet(oi,'optics');
@@ -238,9 +279,13 @@ switch lower(opticsType)
         optics = opticsSet(optics, 'fnumber', fLengthMeters / ...
             (2 * pupilRadiusMeters));
         optics = opticsSet(optics, 'focalLength', fLengthMeters);
-        
-        % Human, so add default human Lens
+
+        % Human, so add default human Lens, and get rid of the ISETCam
+        % transmittance field.
         optics.lens = Lens;
+        if checkfields(optics, 'transmittance')
+            optics = rmfield(optics, 'transmittance');
+        end
 
         % Store the wavefront parameters
         optics.wvf = wvfP;
@@ -269,15 +314,11 @@ switch lower(opticsType)
         %         % standard forms are diffraction limited.
         %         optics = opticsMouse(pupilRadius);
         %         optics = opticsSet(optics, 'model', 'shiftInvariant');
-        %}        
+        %}
 
     otherwise
         error('Unknown optics type.');
 end
-
-% Default lens transmittance.  Not sure why I chose these wavelengths
-optics.transmittance.wave = (370:730)';
-optics.transmittance.scale = ones(length(370:730),1);
 
 % Default settings for off axis and pixel vignetting
 optics = opticsSet(optics,'offAxisMethod','cos4th');
@@ -450,7 +491,7 @@ optics = opticsSet(optics,'focalLength', fLengthMeters);
 optics = opticsSet(optics,'otfMethod','humanOTF');
 
 % Compute the OTF and store it.
-% 
+%
 % The call to opticsGet on 'wave' gets us default wavelength sampling
 % from the optics code.
 dioptricPower = 1/fLengthMeters;      % About 60 diopters
