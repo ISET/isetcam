@@ -284,6 +284,9 @@ switch parm
         if isempty(varargin), disp('fov required.'); return;
         else
             fov = varargin{1};
+            % This is the image width even if the image is not at the
+            % focal length.  To properly estimate this, we need to
+            % know the distance to the location in the scene.  
             imageDistance = opticsGet(optics,'focal plane distance');
             val = 2*imageDistance*tan(deg2rad(fov/2));
             if length(varargin) < 2, return;
@@ -298,6 +301,8 @@ switch parm
         if isempty(varargin), return;
         else
             fov = varargin{1};
+            % This is the image width even if the image is not at the
+            % focal length.
             imageDistance = opticsGet(optics,'focalplanedistance');
             val = 2*imageDistance*tan(deg2rad(fov/2));
             if length(varargin) < 2, return;
@@ -632,6 +637,9 @@ switch parm
         % Cutoff spatial frequency for a diffraction limited lens.  See
         % formulae in dlCore.m
         apertureDiameter = opticsGet(optics,'aperturediameter');
+
+        % Should this be the focal length (i.e., an object distance of
+        % infinity), or do we allow this to be for a different plane?
         imageDistance    = opticsGet(optics,'focalplanedistance');
         wavelength       = opticsGet(optics,'wavelength','meters');
         
