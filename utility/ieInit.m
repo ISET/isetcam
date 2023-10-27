@@ -2,22 +2,18 @@
 %
 % This script
 %
-%   * Closes down any current ISET session
-%   * Clears the workspace
 %   * Starts a fresh version of ISET
+%   * Closes any current ISET session
+%   * Optionally clears the workspace
 %   * Hides the main window
+%   * Initializes the setprefs for ISET
 %
 % We might want to clear out the ISET session file to prevent it from
 % loading with the new ISET session.
 %
 % Copyright ImagEval Consultants, LLC, 2011.
 
-%% Make sure we don't have both isetcam and isetbio in our path
-%  This test is not great.   But the idea is that imgproc is not in isetbio.
-% if ieContains(path,'imgproc') && ieContains(path,'cones')
-%     error("Isetcam & Isetbio contain over-lapping functionality. Only one at a time should be in your path");
-% end
-
+%%
 if ieContains(version,'2019b')
     warning('Windows do not run correctly under version 2019b');
 end
@@ -41,7 +37,6 @@ clear global;  % Made consistent with ISETBIO
 % In ISETBIO this is false.
 % Determine if you want to clear session variables
 if ieSessionGet('init clear'), clearvars;  end
-
 
 %% Initialize ISET database variable
 

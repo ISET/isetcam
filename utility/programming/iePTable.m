@@ -53,12 +53,12 @@ p.addRequired('obj',@isstruct);
 vFunc = @(x)(ismember(x,{'window','embed'}));
 p.addParameter('uitable',[],@(x)(isa(x,'matlab.ui.control.Table')));
 p.addParameter('format','window',vFunc);
-p.addParameter('backgroundcolor',[0.8 0.8 0.8],@isvector);
+% p.addParameter('backgroundcolor',[0.8 0.8 0.8],@isvector);
 p.addParameter('fontsize',14,@isscalar);
 p.parse(obj,varargin{:});
 
 format   = p.Results.format;
-bColor   = p.Results.backgroundcolor;
+% bColor   = p.Results.backgroundcolor;
 FontSize = p.Results.fontsize;
 
 % Main window
