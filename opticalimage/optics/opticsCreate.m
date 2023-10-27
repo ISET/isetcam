@@ -18,7 +18,7 @@ function [optics, wvfP]  = opticsCreate(opticsType,varargin)
 %    For diffraction-limited optics, the only parameter that matters
 %    really is the f-number.  The names of the standard types end up
 %    producing a variety  of sizes that are only loosely connected to
-%    the names. 
+%    the names.
 %
 %    Specifying human optics creates a shift-invariant optics structure
 %    with human OTF data.
@@ -77,6 +77,15 @@ function [optics, wvfP]  = opticsCreate(opticsType,varargin)
 % See also
 %
 
+% History
+%   10/24/23  dhb  Purge transmittance field from human optics.  This
+%                  involved both removing it if it is there, and moving the
+%                  ISETCam transmittance setting into the individual non
+%                  human cases. Previously it was set at the end of the
+%                  routine, defeating attempts to remove it earlier.
+%             dhb  Had default transmittance set to wavelength sampling of
+%                  optics object, not a fixed value.
+
 %%
 if ieNotDefined('opticsType'), opticsType = 'default'; end
 
@@ -87,14 +96,37 @@ switch lower(opticsType)
         % These are all diffraction limited methods.
         optics = opticsDefault;
 
+        % Default lens transmittance. 
+        optics.transmittance.wave = opticsGet(optics,'wave');
+        optics.transmittance.scale = ones(size(optics.transmittance.wave));
+
     case {'standard(1/3-inch)','thirdinch'}
         optics = opticsThirdInch;
+
+        % Default lens transmittance. 
+        optics.transmittance.wave = opticsGet(optics,'wave');
+        optics.transmittance.scale = ones(size(optics.transmittance.wave));
+
     case {'standard(1/2-inch)','halfinch'}
         optics = opticsHalfInch;
+
+        % Default lens transmittance. 
+        optics.transmittance.wave = opticsGet(optics,'wave');
+        optics.transmittance.scale = ones(size(optics.transmittance.wave));
+
     case {'standard(2/3-inch)','twothirdinch'}
         optics = opticsTwoThirdInch;
+
+       % Default lens transmittance. 
+        optics.transmittance.wave = opticsGet(optics,'wave');
+        optics.transmittance.scale = ones(size(optics.transmittance.wave));
+
     case {'standard(1-inch)','oneinch'}
         optics = opticsOneInch;
+
+       % Default lens transmittance. 
+        optics.transmittance.wave = opticsGet(optics,'wave');
+        optics.transmittance.scale = ones(size(optics.transmittance.wave));
 
     case 'shiftinvariant'
         % optics = opticsCreate('shift invariant',oi);
@@ -119,6 +151,10 @@ switch lower(opticsType)
         % Used to create a pillbox like this
         % optics = siSynthetic('custom',oi,'SI-pillBox',[]);
 
+        % Default lens transmittance. We use this for generic SI.
+        optics.transmittance.wave = wave;
+        optics.transmittance.scale = ones(size(optics.transmittance.wave));
+
     case {'human','humanmw'}
         % Pupil radius in meters.  Default is 3 mm
         %
@@ -127,14 +163,23 @@ switch lower(opticsType)
         if ~isempty(varargin), pupilRadius = varargin{1};
         else,                  pupilRadius = 0.0015;    % 3mm diameter default
         end
+        if length(varargin) > 1, fLengthMeters = varargin{2};
+        else,                  fLengthMeters= 0.017;    % 17 mm focal length default
+        end
+
         % This creates a shift-invariant optics.  The other standard forms
         % are diffraction limited.
-        optics = opticsHuman(pupilRadius);
+        optics = opticsHuman(pupilRadius,fLengthMeters);
         optics = opticsSet(optics,'model','shiftInvariant');
         optics = opticsSet(optics,'name','human-MW');
 
-        % Human, so add default human Lens
+        % Human, so add default human Lens object, and remove the
+        % transmittance field if it is there.  The transmittance field
+        % is an ISETCam thing that we don't want for human ISETBio calcs.
         optics.lens = Lens;
+        if checkfields(optics, 'transmittance')
+            optics = rmfield(optics, 'transmittance');
+        end
 
     case {'wvfhuman','humanwvf'}
         % opticsCreate('wvf human',pupilDiameterMM, zCoefs, wave, ...
@@ -146,7 +191,7 @@ switch lower(opticsType)
         % If you pass a different pupil diameter, the routine will read in
         % Thibos measurements that for a pupil larger than that, and use
         % those to compute the pupil function for your passed diameter.
-        % 
+        %
         % This is not representative of any particular observer, because
         % the mean Zernike polynomials do not capture the phase
         % information, and indeed positive and negative coefficients across
@@ -157,8 +202,8 @@ switch lower(opticsType)
         % the same measurement diameter as the requested pupil size.  This
         % is not necessarily the case for some use cases, so proceed with
         % caution.
-        
-         % Defaults
+
+        % Defaults
         pupilDiameterMM = 3;      % Default pupil diameter
         wave            = 400:10:700;
         wave            = wave(:);
@@ -179,6 +224,7 @@ switch lower(opticsType)
         for dd = 1:length(thibosPupilDiametersMM)
             if (pupilDiameterMM <= thibosPupilDiametersMM(dd))
                 measPupilDiameterMM = thibosPupilDiametersMM(dd);
+                break;
             end
         end
 
@@ -217,14 +263,29 @@ switch lower(opticsType)
         wvfP = wvfSet(wvfP, 'measured pupil size', measPupilDiameterMM);
         wvfP = wvfSet(wvfP, 'calc pupil size', pupilDiameterMM);
 
-        % Include human chromatic aberration because this is wvf human        
+        % Include human chromatic aberration because this is wvf human
         wvfP   = wvfCompute(wvfP, 'human lca', true);
         oi     = wvf2oi(wvfP);
         optics = oiGet(oi,'optics');
         optics = opticsSet(optics,'name','humanwvf');
-        
-        % Human, so add default human Lens
+
+        % Convert from pupil size and focal length to f number and focal
+        % length, because that is what we can set. This implies a number of
+        % mm per degree, and we back it out the other way here so that it
+        % is all consistent.
+        focalLengthMM = (umPerDegree * 1e-3) / (2 * tand(0.5));
+        fLengthMeters = focalLengthMM * 1e-3;
+        pupilRadiusMeters = (pupilDiameterMM / 2) * 1e-3;
+        optics = opticsSet(optics, 'fnumber', fLengthMeters / ...
+            (2 * pupilRadiusMeters));
+        optics = opticsSet(optics, 'focalLength', fLengthMeters);
+
+        % Human, so add default human Lens, and get rid of the ISETCam
+        % transmittance field.
         optics.lens = Lens;
+        if checkfields(optics, 'transmittance')
+            optics = rmfield(optics, 'transmittance');
+        end
 
         % Store the wavefront parameters
         optics.wvf = wvfP;
@@ -253,15 +314,11 @@ switch lower(opticsType)
         %         % standard forms are diffraction limited.
         %         optics = opticsMouse(pupilRadius);
         %         optics = opticsSet(optics, 'model', 'shiftInvariant');
-        %}        
+        %}
 
     otherwise
         error('Unknown optics type.');
 end
-
-% Default lens transmittance.  Not sure why I chose these wavelengths
-optics.transmittance.wave = (370:730)';
-optics.transmittance.scale = ones(length(370:730),1);
 
 % Default settings for off axis and pixel vignetting
 optics = opticsSet(optics,'offAxisMethod','cos4th');
@@ -414,61 +471,48 @@ optics = opticsSet(optics,'otfMethod','dlmtf');
 end
 
 %---------------------------------------
-function optics = opticsHuman(pupilRadius)
+function optics = opticsHuman(pupilRadiusMeters,fLengthMeters)
 % We use the shift-invariant method for the human and add the OTF
-% data to the OTF fields.   We return the units in cyc/mm.  We use 300
-% microns/deg as the conversion factor.
-% EC - 300um/deg corresponds to a distance of 17mm (human focal length)
-
-% We place fnumber and focal length values that
-% are approximate for diffraction-limited in those fields, too.  But they
-% are not a good description, just the DL bounds for this type of a system.
+% data to the OTF fields.   We return the units in cyc/mm.
 %
-% The pupilRadius should be specified in meters
-%
+% The pupilRadiusMeters and focalLengthMeters should be specified in meters
 
-if ieNotDefined('pupilRadius'), pupilRadius = 0.0015; end
-fLength = 0.017;  %Human focal length is 17 mm
+% Convenience conversion
+focalLengthMM = fLengthMeters * 1e3;
 
+% Some basic labeling.
 optics.type = 'optics';
 optics.name = 'human';
 optics      = opticsSet(optics,'model','shiftInvariant');
 
 % Ratio of focal length to diameter.
-optics = opticsSet(optics,'fnumber',fLength/(2*pupilRadius));
-optics = opticsSet(optics,'focalLength', fLength);
-
+optics = opticsSet(optics,'fnumber',fLengthMeters/(2*pupilRadiusMeters));
+optics = opticsSet(optics,'focalLength', fLengthMeters);
 optics = opticsSet(optics,'otfMethod','humanOTF');
 
-% Compute the OTF and store it.  We use a default pupil radius, dioptric
-% power, and so forth.
-
-dioptricPower = 1/fLength;      % About 60 diopters
-
-% We used to assign the same wave as in the current scene to optics, if the
-% wave was not yet assigned.
+% Compute the OTF and store it.
+%
+% The call to opticsGet on 'wave' gets us default wavelength sampling
+% from the optics code.
+dioptricPower = 1/fLengthMeters;      % About 60 diopters
 wave = opticsGet(optics,'wave');
-
-% The human optics are an SI case, and we store the OTF at this point.
-[OTF2D, frequencySupport] = humanOTF(pupilRadius, dioptricPower, [], wave);
+[OTF2D, frequencySupport] = humanOTF(pupilRadiusMeters, dioptricPower, [], wave);
 optics = opticsSet(optics,'otfData',OTF2D);
 
-% Support is returned in cyc/deg.  At the human retina, 1 deg is about 300
-% microns, so there are about 3 cyc/mm.  To convert from cyc/deg to cyc/mm
-% we divide by 0.3. That is:
-%  (cyc/deg * (1/mm/deg)) cyc/mm.  1/mm/deg = 1/.3
-frequencySupport = frequencySupport * (1/0.3);  % Convert to cyc/mm
-
+% Coordinating with ISETBio code using umPerDegree.  For 17 mm focal
+% length, the code we're running is, we think, equivalent to the commented
+% out line below.
+% frequencySupport = frequencySupport * 3.37025;  % Convert to cyc/mm
+mmPerDegree = 2 * focalLengthMM * tand(0.5);
+frequencySupport = frequencySupport * (1 / (mmPerDegree));
 fx     = frequencySupport(1,:,1);
 fy     = frequencySupport(:,1,2);
 optics = opticsSet(optics,'otffx',fx(:)');
 optics = opticsSet(optics,'otffy',fy(:)');
-
 optics = opticsSet(optics,'otfWave',wave);
 
 % figure(1); mesh(frequencySupport(:,:,1),frequencySupport(:,:,2),OTF2D(:,:,20));
 % mesh(abs(otf2psf(OTF2D(:,:,15))))
-%
 
 end
 

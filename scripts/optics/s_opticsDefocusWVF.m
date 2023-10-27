@@ -41,11 +41,12 @@ wvf0 = wvfSet(wvf0,'focal length',8e-3);    % Meters
 wvf0 = wvfSet(wvf0,'pupil diameter',3);     % Millimeters
 
 % We need to calculate the pointspread explicitly
-wvf0 = wvfComputePSF(wvf0);
+wvf0 = wvfCompute(wvf0);
 
 % Finally, we convert the wavefront representation to a shift-invariant
 % optical image with this routine.
 oi0 = wvf2oi(wvf0);
+
 oiPlot(oi0,'psf 550');
 
 % Here is the summary
@@ -67,7 +68,7 @@ wvf1 = wvfCreate;
 
 % Make a new one with some defocus
 wvf1 = wvfSet(wvf1,'zcoeffs',1.5,'defocus');
-wvf1 = wvfComputePSF(wvf1);
+wvf1 = wvfCompute(wvf1);
 oi1 = wvf2oi(wvf1);
 oiPlot(oi1,'psf 550');
 
@@ -102,7 +103,7 @@ oiWindow(oi);
   % This is what happens in the oiSet() above
   wvf1 = oiGet(oi,'wvf');
   wvf1 = wvfSet(wvf1,'zcoeffs',1.5,'defocus');
-  wvf1 = wvfComputePSF(wvf1);
+  wvf1 = wvfCompute(wvf1);
   oi1  = wvf2oi(wvf1);
 %}
 %% END

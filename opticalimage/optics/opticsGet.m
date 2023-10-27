@@ -256,10 +256,16 @@ switch parm
         % What about 'skip' optics case?  Should 'focalLength' call set
         % this to 1/2 the object distance, which preserves the geometry?
         % (It does?  Not simply the object distance?)
+        %
         % ZLY: visited here. I think it can be focalLength, which is the
         % distance when the object is at infinity.  Should discuss with BW.
+        %
+        % BW: I think shiftinvariant should use the lensmaker's
+        % equation. So we changed the case.  I left ZLY change to
+        % focal length fo the 'skip' case.  Based on conversation with
+        % David B.  But we are a bit uncertain.
         switch (opticsGet(optics,'model'))
-            case {'skip', 'shiftinvariant'}
+            case {'skip'} %,'shiftinvariant'}
                 val = optics.focalLength;
                 return;
             otherwise
@@ -272,11 +278,15 @@ switch parm
         
         % These all need the scene field of view.  They can be computed
         % from the geometry of the image distance and FOV.
+    
     case {'imageheight'}
         % opticsGet(optics,'imageheight',fov) -- field of view in degrees
         if isempty(varargin), disp('fov required.'); return;
         else
             fov = varargin{1};
+            % This is the image width even if the image is not at the
+            % focal length.  To properly estimate this, we need to
+            % know the distance to the location in the scene.  
             imageDistance = opticsGet(optics,'focal plane distance');
             val = 2*imageDistance*tan(deg2rad(fov/2));
             if length(varargin) < 2, return;
@@ -291,6 +301,8 @@ switch parm
         if isempty(varargin), return;
         else
             fov = varargin{1};
+            % This is the image width even if the image is not at the
+            % focal length.
             imageDistance = opticsGet(optics,'focalplanedistance');
             val = 2*imageDistance*tan(deg2rad(fov/2));
             if length(varargin) < 2, return;
@@ -625,6 +637,9 @@ switch parm
         % Cutoff spatial frequency for a diffraction limited lens.  See
         % formulae in dlCore.m
         apertureDiameter = opticsGet(optics,'aperturediameter');
+
+        % Should this be the focal length (i.e., an object distance of
+        % infinity), or do we allow this to be for a different plane?
         imageDistance    = opticsGet(optics,'focalplanedistance');
         wavelength       = opticsGet(optics,'wavelength','meters');
         

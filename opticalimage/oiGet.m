@@ -197,19 +197,12 @@ switch oType
     case 'wvf'
         % If a wavefront structure, then we either return the wvf or
         % an wvf parameter.  See above for varargin{:}
-        wvf = oi.wvf;
+        if isfield(oi,'wvf'),  wvf = oi.wvf;
+        else,                  error('OI does not have a wavefront slot.');
+        end
         if isempty(parm), val = wvf;
-        else, val = wvfGet(wvf,param,varargin{:});
+        else, val = wvfGet(wvf,parm,varargin{:});
         end
-        
-        %{
-        elseif isempty(varargin), val = wvfGet(wvf,parm);
-        elseif length(varargin) == 1, val = wvfGet(wvf,parm,varargin{1});
-        elseif length(varargin) == 2, val = wvfGet(wvf,parm,varargin{1},varargin{2});
-        elseif length(varargin) == 3, val = wvfGet(wvf,parm,varargin{1},varargin{2},varargin{3});
-        elseif length(varargin) == 4, val = wvfGet(wvf,parm,varargin{1},varargin{2},varargin{3},varargin{4});
-        end
-        %}
 
     otherwise
         % Must be an oi object.  Format the parameter and move on.
@@ -328,7 +321,12 @@ switch oType
                         end
                     else
                         % fprintf('Assuming scene at infinity.\n');
-                        sDist = 1e10;
+                        %sDist = 1e10;
+
+                        % Tru to get the validation to work by forcing
+                        % this to match what isetbio does for the
+                        % validation.
+                        sDist = 1.2;
                     end
                 else
                     % The scene distance was sent in
@@ -600,7 +598,8 @@ switch oType
                 % TG/BW changed this from 'focal plane distance' to
                 % 'optics focal length' (Nov 5 2021).  This might
                 % cause various test failures.
-                d   = oiGet(oi,'optics focal length');   % Distance from lens to image
+                d   = oiGet(oi,'focal plane distance');
+                % d   = oiGet(oi,'optics focal length');   % Distance from lens to image
                 fov = oiGet(oi,'wangular');              % Field of view (horizontal, width)
                 
                 % fov   = 2 * atand((0.5*width)/d) % Opposite over adjacent

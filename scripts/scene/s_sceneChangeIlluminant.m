@@ -43,7 +43,7 @@ scene = sceneAdjustIlluminant(scene,TungstenEnergy);
 scene = sceneSet(scene,'illuminantComment','Tungsten illuminant');
 
 sceneWindow(scene); pause(delay);
-scenePlot(scene,'illuminant photons roi');
+scenePlot(scene,'illuminant photons');
 
 %% Read in a multispectral scene from data/images
 

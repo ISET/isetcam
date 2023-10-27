@@ -34,10 +34,12 @@
 %
 % Copyright ImagEval Consultants, LLC, 2010.
 
+if ~exist('isetbioRootPath','file')
+    warning('Requires ISETbio.  Skipping.')
+    return;
+end
+
 %% We have a problem
-
-% 
-
 pupilDiameterMM = 6;
 oi = oiCreate('wvf human',pupilDiameterMM);  % The Thibos human model with 6 mm pupil diameter
 oiPlot(oi,'psf',[],550);

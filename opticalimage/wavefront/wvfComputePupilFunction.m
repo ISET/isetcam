@@ -248,16 +248,26 @@ for ii = 1:nWavelengths
     % defined by the calculated pupil diameter.  
     boundingBox = imageBoundingBox(calc_radius_index);
 
-    % Resize the amplitude mask to the bounding box of the calculated
-    % radius. There were moments I thought should increase the bounding box
-    % by +1. But not today.  The last section of s_wvfDiffraction, staring
-    % at the red circles and the curve, make this seem right.
+    % Resize the aperture mask to the bounding box of the calculated
+    % radius.  Using nearest neighbor interpolation fixes problems
+    % caused by linear interpolation, where when we start with a mask of
+    % all ones it ends up with some intermediate values.  It is possible
+    % that nearest neighbor is not as desirable when there is a real space
+    % varying pupil aperture mask passed.
     aperture = imresize(aperture,[boundingBox(3),boundingBox(4)],'nearest');
    
-    % Extend with zeros outside of the cal pupil radius.  
-    sz = round((nPixels - boundingBox(3))/2);
+    % Extend with zeros outside of the calcpupil radius.
+    % DHB/BAW: We subtract 1 to pad a little less. This leaves the pupil as a circle
+    % in the case we looked at, and causes this code to match better the old
+    % ISETBio master when no aperture is passed. There is an issue with
+    % s_wvfDiffraction but it doesn't seem to be affected by this change of
+    % subracting 1.
+    %
+    % We might come back and carefully comment all this new code someday,
+    % as well as look more closely at s_wvfDiffraction.
+    sz = round((nPixels - boundingBox(3))/2) - 2;
     aperture = padarray(aperture,[sz,sz],0,'both');    
-    aperture = imresize(aperture,[nPixels,nPixels],'bilinear');
+    aperture = imresize(aperture,[nPixels,nPixels],'nearest');
     % ieNewGraphWin; imagesc(pupilPos,pupilPos,aperture); axis image    
 
     % Keep the amplitude within bounds. imresize, with some interpolation,
@@ -267,7 +277,7 @@ for ii = 1:nWavelengths
     % If there are no observed warnings after July 14, delete this
     % section of code.
     if max(aperture(:)) > 1, warning('>1'); end
-    if max(aperture(:)) < 0, warning('>1'); end
+    if min(aperture(:)) < 0, warning('<0'); end
 
     aperture(aperture > 1) = 1;
     aperture(aperture < 0) = 0;
@@ -381,15 +391,12 @@ for ii = 1:nWavelengths
     % Conceptually, the aperture function should do this job, we
     % should not do it this way. Using the aperture is better
     % because this imposes an implicit circular aperture. 
-    % 
-    % I need to fix this soon (July 7, 2023).  Leaving it here for
-    % just now. Until it is fixed, circular apertures seem to work but
-    % flare does not work correctly. (BW).
     pupilfuncphase(norm_radius > calcPupilSizeMM/measPupilSizeMM) = 0;
 
     % Create the pupil function, combining the aperture and pupil phase
     % functions. 
     pupilfunc{ii} = aperture .* pupilfuncphase;
+    %pupilfunc{ii} = pupilfuncphase;
     %{
      ieNewGraphWin; imagesc(pupilPos,pupilPos,aperture); axis image
      ieNewGraphWin; imagesc(pupilPos,pupilPos,angle(pupilfuncphase)); axis image
