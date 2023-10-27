@@ -1,4 +1,6 @@
 function oi = oiPad(oi,padSize,sDist,direction)
+% Deprecated for oiPadValue()
+%
 % Pad the oi irradiance data with zeros
 %
 %     oi = oiPad(oi,padSize,[sDist],[padDirection])

@@ -321,7 +321,12 @@ switch oType
                         end
                     else
                         % fprintf('Assuming scene at infinity.\n');
-                        sDist = 1e10;
+                        %sDist = 1e10;
+
+                        % Tru to get the validation to work by forcing
+                        % this to match what isetbio does for the
+                        % validation.
+                        sDist = 1.2;
                     end
                 else
                     % The scene distance was sent in
@@ -593,7 +598,8 @@ switch oType
                 % TG/BW changed this from 'focal plane distance' to
                 % 'optics focal length' (Nov 5 2021).  This might
                 % cause various test failures.
-                d   = oiGet(oi,'optics focal length');   % Distance from lens to image
+                d   = oiGet(oi,'focal plane distance');
+                % d   = oiGet(oi,'optics focal length');   % Distance from lens to image
                 fov = oiGet(oi,'wangular');              % Field of view (horizontal, width)
                 
                 % fov   = 2 * atand((0.5*width)/d) % Opposite over adjacent

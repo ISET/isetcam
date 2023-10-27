@@ -155,7 +155,7 @@ switch param
         end
         
     case {'initclear'}
-        % Clear workspace variables with ieInit.  True or False.
+        % Clear workspace variables with ieInit.  Default: True
         iePref = getpref('ISET');
         if ~checkfields(iePref,'initclear')
             setpref('ISET','initclear',true);
