@@ -58,14 +58,15 @@ function [OTF2D, fSupport, wave] = humanOTF(pRadius, D0, fSupport, wave)
 % Example:
 %{
   [OTF2D, fSupport, wave] = humanOTF(0.0015,60);
-  vcNewGraphWin;
+  ieNewGraphWin;
   mesh(fSupport(:,:,1),fSupport(:,:,2),abs(fftshift(OTF2D(:,:,15))));
   title('550 nm'); xlabel('Frequency (cyc/deg)'), zlabel('Relative amp')
-  subplot(1,2,2), mesh(fSupport(:,:,1),fSupport(:,:,2), fftshift(abs(OTF2D(:,:,3))));
+  
+  ieNewGraphWin;
+  mesh(fSupport(:,:,1),fSupport(:,:,2), fftshift(abs(OTF2D(:,:,3))));
   set(gca,'zlim',[-.2,1]);
   xlabel('Frequency (cyc/deg)'), zlabel('Relative amp'); title('400 nm')
 %}
-
 
 % Default human pupil diameter is 3mm.  This code wants the radius.
 if ieNotDefined('pRadius'), p = 0.0015; else p = pRadius; end
@@ -129,4 +130,4 @@ for ii=1:nWave
     OTF2D(:,:,ii) = fftshift(tmp);
 end
 
-return;
+end

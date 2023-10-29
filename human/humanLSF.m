@@ -80,4 +80,4 @@ switch lower(unit)
         error('Unknown unit %s',unit);
 end
 
-return;
+end
