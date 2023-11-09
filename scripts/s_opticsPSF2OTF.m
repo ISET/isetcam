@@ -1,18 +1,33 @@
 %% s_opticsPSF2OTF
 %
-% We start with an image that defines a PSF.  We also define a couple
-% of other parameters (field of view and pixel size).  We then convert
-% the image into a properly labeled OTF that can be attached to a
-% shift-invariant OI.
-%
-% We will test the work using the Flare 7K point spread images
+% Start with an image (e.g., from Flare 7K) that defines a PSF.  Then
+% define the pixel size.  Convert the image into a properly labeled OTF
+% struct that can be attached to a shift-invariant OI.
 %
 % See also
-%
+%   opticsPSF2OTF
 
 %% We first just get the PSF into the OTF format with the proper fftshift
 fname = fullfile(isetRootPath,'data','optics','flare','flare1.png');
+OTF = opticsPSF2OTF(fname,1.2e-6,400:10:700);
 
+%%  Put the OTF struct into OI.optics
+
+scene = sceneCreate('point array',512, 128);
+scene = sceneSet(scene,'hfov',40);
+
+oi = oiCreate('shift invariant');
+oi = oiSet(oi,'optics otf struct',OTF);
+oi = oiCompute(oi,scene);
+
+oiWindow(oi);
+
+%% END
+
+%{
+% Zhenyi/Brian developed the code here and moved it into the function,
+% opticsPSF2OTF 
+%
 img = imread(fname);
 psf = img(:,:,2);   % Use the green channel
 % ieNewGraphWin; imagesc(psf); colormap(gray)
@@ -49,28 +64,4 @@ fy = (-(row/2):( (row/2)-1) ) * (1/imgSizeMM);
 
 % ieNewGraphWin; imagesc(fx,fy,fftshift(abs(otf)));
 % ieNewGraphWin; mesh(fx,fy,fftshift(abs(otf)));
-
-%%  Now we want to put the OTF into an OI
-
-scene = sceneCreate('point array',512, 128);
-scene = sceneSet(scene,'hfov',20);
-oi = oiCreate('shift invariant');
-oi = oiCompute(oi,scene);
-oiWindow(oi);
-% ieNewGraphWin; imagesc(fx,fy,fftshift(abs(oi.optics.OTF.OTF(:,:,15))));
-%%
-wave = oiGet(oi,'wave');
-OTF = zeros(row,col,numel(wave));
-
-for ii=1:numel(wave)
-    OTF(:,:,ii) = otf;
-end
-oi.optics.OTF.OTF = OTF;
-oi.optics.OTF.fx = fx;
-oi.optics.OTF.fy = fy;
-
-%%
-oi = oiCompute(oi,scene);
-oiWindow(oi);
-
-
+%}
