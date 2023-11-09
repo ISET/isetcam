@@ -1,14 +1,22 @@
 function OTF = opticsPSF2OTF(imageFile,pixSizeM,wave)
-% Convert an image into an optics OTF struct 
+% Convert the G channel of an RGB image into an optics OTF struct 
 %
 % Synopsis
+%    OTF = opticsPSF2OTF(imageFile,[pixSizeM=1.2e-6],[wave=400:10:700])
 %
 % Brief Description
+%  We convert the green channel of an RGB image into an OTF struct
+%  that can be used in an OI for oiCompute.  The OTF structure
+%  includes the otf and fx,fy specifications in cycles per millimeter.
+%  And a 'function' slot with the string 'custom'.
 %
 % Inputs
-%   imageFile - RGB file defining the point spread
-%   pixSizeM  - Pixel size in meters
-%   wave      - Wavelength vector
+%   imageFile - RGB file with a G channel that defines the point spread
+%
+% Optional
+%   pixSizeM  - Pixel size in meters  1.2 microns
+%   wave      - Wavelength vector  400:10:700
+%
 % Return
 %   OTF - Struct for optics.OTF
 %
