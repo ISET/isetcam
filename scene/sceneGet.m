@@ -488,6 +488,10 @@ switch parm
         lum = sceneGet(scene,'luminance');
         val = double(mean(lum(:)));
         
+    case {'maxluminance'}
+        lum = sceneGet(scene,'luminance');
+        val = double(max(lum(:)));
+        
     case {'luminanceimage','luminance'}
         % sceneGet(scene,'luminance image');
         if ~checkfields(scene,'data','luminance') || isempty(scene.data.luminance)
