@@ -22,18 +22,21 @@ function [xy,coneType,densities,rSeed] = humanConeMosaic(sz,densities,umConeWidt
 %
 % See also: sensorCreateConeMosaic
 %
-% Examples
-%   sz        = [50,50];
-%   densities = [0.14 .5 .3 .06];
-%   [xy, coneType] = humanConeMosaic(sz,densities);
-%   figure(1); ieConePlot(xy,coneType(:))
-%
-%   densities = [1 0 0 ];
-%   [xy, coneType, densities] = humanConeMosaic(sz,densities);
-%   figure(1); ieConePlot(xy,coneType(:))
-%
-% Copyright ImagEval Consultants, LLC, 2005.
 
+% Examples:
+%{
+ sz        = [50,50];
+ densities = [0.14 .5 .3 .06];
+ [xy, coneType] = humanConeMosaic(sz,densities);
+ ieConePlot(xy,coneType(:))
+%}
+%{
+ densities = [1 0 0 ];
+ [xy, coneType, densities] = humanConeMosaic(sz,densities);
+ ieConePlot(xy,coneType(:))
+%}
+
+%%
 if ieNotDefined('sz'), error('Array size must be defined'); end
 if ieNotDefined('densities')
     densities = [0.1 0.55 0.25 0.1];  % Empty, L,M,S cone ratios

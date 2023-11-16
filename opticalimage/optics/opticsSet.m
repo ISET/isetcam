@@ -175,6 +175,8 @@ switch parm
         optics.cos4th.value = val;
 
         % ---- OTF information for shift-invariant calculations
+    case 'otfstruct'
+        optics.OTF = val;
     case {'otffunction','otfmethod'}
         % This should probably not be here.
         % We should probably only be using the 'model' option

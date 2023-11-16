@@ -1,7 +1,7 @@
 function [udata, g] = scenePlot(scene,pType,roiLocs,varargin)
 % Gateway routine to plot scene radiance properties
 %
-%  [udata, hdl] = scenePlot([scene],[pType='hlineluminance'],[roiLocs])
+%  [udata, hdl] = scenePlot([scene],[pType='luminance hline'],[roiLocs])
 %
 % Various plots of the scene radiance, luminance, contrast, illuminant or
 % depth data in various formats.
