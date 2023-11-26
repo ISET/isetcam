@@ -15,13 +15,17 @@ function [coneIsolating, monitor2cones] = humanConeIsolating(dsp)
 % To calculate this use the display spectral power distribution of the
 % monitor, which is energy units of watts/sr/...
 %
-% Example:
-%   dsp = displayCreate('LCD-Apple');
-%   signalDirs = humanConeIsolating(dsp)
-%   coneIsolatingSPD = displayGet(dsp,'spd')*signalDirs;
-%   vcNewGraphWin; plot(displayGet(dsp,'wave'),coneIsolatingSPD);
+
 %
 % Copyright ImagEval Consultants, LLC, 2005.
+
+% Example
+%{
+    dsp = displayCreate('LCD-Apple');
+    signalDirs = humanConeIsolating(dsp)
+    coneIsolatingSPD = displayGet(dsp,'spd')*signalDirs;
+    vcNewGraphWin; plot(displayGet(dsp,'wave'),coneIsolatingSPD);
+%}
 
 if ieNotDefined('dsp'), dsp = displayCreate;  end
 
