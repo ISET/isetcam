@@ -8,12 +8,17 @@ function coneContrast = humanConeContrast(signalSPD,backgroundSPD,wave,units,mpD
 %   specified in wave (nm). The Stockman cones with a specified macular
 %   pigment density mpDensity are used for the calculation.
 %
-% Example:
-%   coneContrast = humanConeContrast(signalSPD,backgroundSPD,[400:1:700],'photons')
-%   coneContrast = humanConeContrast(signalSPD,backgroundSPD,[380:4:730],'energy')
-%   coneContrast = humanConeContrast(signalSPD,backgroundSPD,[380:4:730],'energy',0)
-%
 % Copyright ImagEval Consultants, LLC, 2005.
+
+% Example:
+%{
+    wls = (400:1:700)';
+    signalSPD = ones(size(wls));
+    backgroundSPD = 0.5*signalSPD;
+    coneContrast = humanConeContrast(signalSPD,backgroundSPD,wls ,'photons')
+    coneContrast = humanConeContrast(signalSPD,backgroundSPD,wls ,'energy')
+    coneContrast = humanConeContrast(signalSPD,backgroundSPD,wls ,'energy',0)
+%}
 
 if ieNotDefined('signalSPD'),     error('Signal spd must be defined'); end
 if ieNotDefined('backgroundSPD'), error('Background spd must be defined.'); end
