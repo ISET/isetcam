@@ -191,6 +191,9 @@ end
 % We need to preserve metadata from the scene,
 % But not overwrite oi.metadata if it exists
 % We should probably rename this ieStructAppend
+if (~isfield(oi,'metadata'))
+    oi.metadata = struct;
+end
 oi.metadata = appendStruct(oi.metadata, scene.metadata);
 
 end
