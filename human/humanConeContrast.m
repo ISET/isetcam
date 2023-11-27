@@ -10,7 +10,7 @@ function coneContrast = humanConeContrast(signalSPD,backgroundSPD,wave,units,mpD
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
-% Example:
+% Examples:
 %{
     wls = (400:1:700)';
     signalSPD = ones(size(wls));

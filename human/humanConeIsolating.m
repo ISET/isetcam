@@ -19,7 +19,7 @@ function [coneIsolating, monitor2cones] = humanConeIsolating(dsp)
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
-% Example
+% Examples:
 %{
     dsp = displayCreate('LCD-Apple');
     signalDirs = humanConeIsolating(dsp)
