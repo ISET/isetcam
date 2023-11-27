@@ -112,14 +112,19 @@ if (strcmp(theFunction,[mfilename '.m']))
     return;
 end
 
-% Look for a comment line with the text " Examples:"
+% Look for a comment line with the text "% Examples:" or "% Example:"
+% This should become a function that is called by all the other Examples
+% tools.  It should accept a number of formats of % Example(s) ...
 ind = strfind(theText{1},'% Examples:');
 if (isempty(ind))
-    if (p.Results.verbose)
-        fprintf('\tNo comment line starting with "%% Examples:" in file\n');
+    ind = strfind(theText{1},'% Example:');
+    if isempty(ind)
+        if (p.Results.verbose)
+            fprintf('\tNo comment line starting with "%% Example(s):" in file\n');
+        end
+        status = 0;
+        return;
     end
-    status = 0;
-    return;
 end
 
 candidateText = theText{1}(ind(1)+9:end);
