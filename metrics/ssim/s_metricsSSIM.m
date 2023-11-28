@@ -11,8 +11,8 @@ ieInit;
 %% Reference scene all the way to a rendered image
 
 % The initial calculation has zero noise
-scene = sceneCreate('sweep frequency',512,20);
-% scene = sceneCreate;
+% scene = sceneCreate('sweep frequency',512,20);
+scene = sceneCreate;
 % sceneWindow(scene);
 
 oi = oiCreate;
@@ -47,7 +47,6 @@ ipWindow(ip);
 
 % Here is the reference luminance
 refsRGB = ipGet(ip,'srgb');
-refLum = sum(refsRGB,3)/3;
 
 %% Allow noise and shorten the exposure duration to create a noisy version
 sensor = sensorSet(sensor,'noise flag',2);
@@ -64,7 +63,6 @@ ip = ipCompute(ip,sensor);
 ipWindow(ip);
 
 testsRGB = ipGet(ip,'srgb');
-testLum = sum(test,3)/3;
 
 %%
 
@@ -76,7 +74,7 @@ montage({refsRGB,testsRGB});
 
 %% Read for metrics
 
-[val,ssimmap] = ssim(testLum,refLum);
+[val,ssimmap] = ssim(testsRGB,refsRGB);
 
 % SSIM 1 is highest quality.  We want this to be an error map, so we
 % subtract from one.
@@ -86,23 +84,36 @@ title('SSIM Error')
 colorbar; axis image; axis off
 
 %%
-
+%{
 ieNewGraphWin;
 mesh(1 - mean(ssimmap,3));
+%}
 
 %% Now try S-CIELAB
 
 params = scParams;
 fov = 10;
-params.sampPerDeg = round(size(test,1)/fov);
-testXYZ = ieClip(srgb2xyz(test),0,[]);
+params.sampPerDeg = round(size(testsRGB,1)/fov);
+testXYZ = ieClip(srgb2xyz(testsRGB),0,[]);
 refXYZ  = ieClip(srgb2xyz(refsRGB),0,[]);
 
-dEimg = scielab(testXYZ,refXYZ,[.92 .98 .98],params);
-ieNewGraphWin; imagesc(dEimg);
+whitePt = [.92 .98 .98];
+clims = [0 20];
+dEimg20 = scielab(testXYZ,refXYZ,whitePt,params);
+ieNewGraphWin; imagesc(dEimg20,clims);
 colorbar; axis image; axis off
 
-ieNewGraphWin;
-mesh(dEimg);
+params = scParams;
+fov = 50;
+params.sampPerDeg = round(size(testsRGB,1)/fov);
+testXYZ = ieClip(srgb2xyz(testsRGB),0,[]);
+refXYZ  = ieClip(srgb2xyz(refsRGB),0,[]);
+
+dEimg50 = scielab(testXYZ,refXYZ,whitePt,params);
+ieNewGraphWin; imagesc(dEimg50,clims);
+colorbar; axis image; axis off
+
+% ieNewGraphWin;
+% mesh(dEimg);
 
 %%
