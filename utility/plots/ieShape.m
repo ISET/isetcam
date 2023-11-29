@@ -5,16 +5,19 @@ function [x,y,z] = ieShape(type,nSamp,varargin)
 %
 % We calculate shapes like circles, ellipses, maybe other stuff later.
 %
-%Example:
-%
-%  Positions of the Airy disk zero crossing for an f# 5.6 lens at 550 nm.
-%  The units of x,y are meters
-%  fNumber = 2.0; wavelength = 550;
-%  radius = (2.44*fNumber*wavelength*10^-9);
-%  [x,y] = ieShape('circle',200, radius); plot(x,y,'.');
-%  axis equal; grid on
+% The source code contains at least one example.
 %
 % Imageval Consulting, LLC, 2015
+
+% Examples:
+%{
+ % Positions of the Airy disk zero crossing for an f# 5.6 lens at 550 nm.
+ % The units of x,y are meters
+ fNumber = 2.0; wavelength = 550;
+ radius = (2.44*fNumber*wavelength*10^-9);
+ [x,y] = ieShape('circle',200, radius); plot(x,y,'.');
+ axis equal; grid on
+%}
 
 if ieNotDefined('type'), type = 'circle'; end
 if ieNotDefined('nSamp'), nSamp = 200; end
