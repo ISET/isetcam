@@ -33,9 +33,12 @@ function [cornerPoints, obj, rect] = chartCornerpoints(obj,wholeChart)
 
 % Examples:
 %{
+  % For this to autorun to completion, can't ask for user input.
+  % So set second argument to chartCornerpoints true here. Set to
+  % false to see user select behavior.
   sceneWindow;
   scene = ieGetObject('scene');
-  cp = chartCornerpoints(scene);
+  cp = chartCornerpoints(scene,true);
   [rects,mLocs,pSize] = chartRectangles(cp,4,6,0.5);  % MCC parameters
   chartRectsDraw(scene,rects);
 %}
