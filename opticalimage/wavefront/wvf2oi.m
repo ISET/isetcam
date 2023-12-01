@@ -178,7 +178,9 @@ ieNewGraphWin; mesh(X,Y,abs(ifftshift(otf(:,:,ww))));
 
 % This code works for the shiftinvariant optics, replacing the default
 % OTF.
-oi = oiCreate(model);
+pupilSize = wvfGet(wvf,'calcpupilsize');
+zcoeffs = wvfGet(wvf,'zcoeffs');
+oi = oiCreate(model,pupilSize,zcoeffs,wave);
 oi = oiSet(oi,'optics fnumber',fnumber);
 oi = oiSet(oi,'optics focal length',flength);
 
