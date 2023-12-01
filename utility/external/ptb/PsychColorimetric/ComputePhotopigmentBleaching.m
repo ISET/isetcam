@@ -1,5 +1,5 @@
 function [fractionBleached] = ComputePhotopigmentBleaching(intensity,receptortype,units,source)
-% [fractionBleached] = ComputePhtopigmentBleaching(intensity,units,source)
+% [fractionBleached] = ComputePhtopigmentBleaching(intensity,receptortype,units,source)
 %
 % Compute fraction of photopigment bleached, given some measure of
 % the intensity of light reaching the eye.
