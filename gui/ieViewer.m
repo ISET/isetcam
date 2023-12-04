@@ -1,5 +1,7 @@
 function ieViewer(rgb)
-%Calls imview or imtool depending on version number
+%Calls imageViewer depending on version number
+%
+% To deprecate
 %
 %   ieViewer(rgb)
 %
@@ -8,13 +10,13 @@ function ieViewer(rgb)
 
 matlabV = version;
 
-if str2num(matlabV(1)) > 6
-    % The viewer appears to want monochrome images scaled between 0 and 1.
+if str2num(matlabV(1)) > 6 %#ok<ST2NM>
+    % The viewer appears to want images scaled between 0 and 1.
     % So I rescale.
-    if ndims(rgb) == 2, rgb = rgb/max(rgb(:)); end
-    imtool(rgb);
+    if ismatrix(rgb), rgb = rgb/max(rgb(:)); end
+    imageViewer(rgb);
 else
-    imview(rgb);
+    imageViewer(rgb);
 end
 
-return;
+end

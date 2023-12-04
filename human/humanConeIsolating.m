@@ -1,53 +1,103 @@
-function [coneIsolating, monitor2cones] = humanConeIsolating(dsp)
-% Monitor colors (R,G,B) for cone isolation
+function [coneIsolating, spd] = humanConeIsolating(dsp)
+% Each column has linear (R, G, B) that is cone isolation
 %
-% [coneIsolating,monitor2cones] = humanConeIsolating(displayStructure)
+% Syntax:
+%   [coneIsolating, spd] = humanConeIsolating(display)
 %
-% Calculate the three monitor RGB vectors that isolate cone responses for
-% the Stockman L,M and S-cones. These RGB values are returned as the
-% columns of the 3x3 coneIsolating matrix. The inverse matrix, mapping from
-% monitor values into LMS space, is given in monitor2cones.
+% Description:
+%    The columns of coneIsolating are the linear RGB vector directions that
+%    isolate the L, M, and S (Stockman) cones. The linear RGB are scaled so
+%    that max(abs(x)) = 0.5, making it possible to add these vectors into a
+%    background with linear RGB of [0.5, 0.5, 0.5]
 %
-% The units used in these calculations are designed around the normalized
-% RGB values from the monitor space.  Hence, the LMS values are not in
-% physical coordinates (e.g., absorptions).
+%    The Examples show how to calculate with the display spectral power
+%    distribution of the monitor to compute cone contrast.
 %
-% To calculate this use the display spectral power distribution of the
-% monitor, which is energy units of watts/sr/...
+%    This function contains examples of usage inline. To access, type 'edit
+%    humanConeIsolating.m' into the Command Window.
+%
+% Inputs:
+%    dsp           - Struct. A display model (displayCreate)
+%
+% Outputs:
+%    coneIsolating - Matrix. The linear RGB cone isolating values, scaled
+%                    to max(abs(x)) = 0.5
+%    spd           - Matrix. The spectral power distributions of the three
+%                    directions (x, y, and z).
+%
+% Optional key/value pairs:
+%    None.
+%
+% Notes:
+%    * [Note: JNM - The first example does not appear to use the function
+%      whatsoever, is there a reason why it is included here?]
+%
+% See Also:
+%    humanConeContrast, displayCreate
 %
 
-%
-% Copyright ImagEval Consultants, LLC, 2005.
+% History:
+%    xx/xx/05       Copyright ImagEval Consultants, LLC, 2005.
+%    06/13/18  jnm  Formatting
 
 % Examples:
 %{
+    % Set the default color order starting with RGB
+    co = [1  0  0;
+      0 0.5 0;
+      0  0  1;
+      0 0.75 0.75;
+      0.75 0 0.75;
+      0.75 0.75 0;
+      0.25 0.25 0.25];
+    set(groot, 'defaultAxesColorOrder', co)
+%}
+%{
+    % Calculate RGB directions for cone isolation on this monitor
     dsp = displayCreate('LCD-Apple');
-    signalDirs = humanConeIsolating(dsp)
-    coneIsolatingSPD = displayGet(dsp,'spd')*signalDirs;
-    vcNewGraphWin; plot(displayGet(dsp,'wave'),coneIsolatingSPD);
+    [rgbDirs, spd] = humanConeIsolating(dsp);
+    disp(rgbDirs)
+%}
+%{
+    % Make it work
+    dsp = displayCreate('LCD-Apple');
+    [rgbDirs, spd] = humanConeIsolating(dsp);
+
+    % Plot the spd
+    wave = displayGet(dsp, 'wave');
+    vcNewGraphWin;
+    plot(wave, spd);
+    grid on
+    xlabel('Wave (nm)');
+    ylabel('Relative energy')
+    legend('L-isolating', 'M-isolating', 'S-isolating');
+%}
+%{
+    % Make it work
+    dsp = displayCreate('LCD-Apple');
+    [rgbDirs, spd] = humanConeIsolating(dsp);
+    wave = displayGet(dsp, 'wave');
+
+    % Check that these spd values are cone isolating
+    coneFile = fullfile(isetbioDataPath, 'human', 'stockman');
+    cones = ieReadSpectra(coneFile, wave);
+    id = cones' * spd;
+    id = id / max(id(:))
 %}
 
-if ieNotDefined('dsp'), dsp = displayCreate;  end
+% This is a row transform, [r, g, b] * rgb2lms
+coneIsolating = displayGet(dsp, 'lms2rgb');
 
-wave = displayGet(dsp,'wave');
-cones = ieReadSpectra('stockman',wave);  % Energy
+% Convert to the column form for easier computing
+coneIsolating = coneIsolating';
 
-spd = displayGet(dsp,'spd');             % Energy
+% Scale so that the largest value in any column is abs(0.5)
+% That way, when we add these into a background that is 0.5, 0.5, 0.5 we
+% get a realizable display stimulus
+mx = max(abs(coneIsolating));
+coneIsolating = coneIsolating ./ (2 * mx);
 
-% cones*spd*(r,g,b)
-monitor2cones = cones'*spd;
+% If the user asked for the three spds, compute them
+if nargout == 2, spd = displayGet(dsp, 'spd') * coneIsolating; end
 
-% First column of coneIsolating, col1, maps into cone isolating direction
-%
-%    monitor2cones * col1 = (1,0,0)
-%
-% and so forth
-coneIsolating = inv(monitor2cones);
-
-
-return;
-
-
-
-
-
+end
