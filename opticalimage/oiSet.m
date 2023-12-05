@@ -232,7 +232,9 @@ switch parm
     case {'lens', 'lenspigment'}
         % Imported from ISETBio.  Probably this should be
         % oiSet(oi,'optics lens',lens);
-        oi.optics.lens = val;
+        warning('Calling oi = oiSet(oi,''optics lens'',val)');
+        oiSet('optics lens',val);
+        % oi.optics.lens = val;
 
     case {'photons'}
         % oiSet(oi,'photons',val)

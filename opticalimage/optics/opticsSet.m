@@ -129,6 +129,10 @@ switch parm
         % transmittance and optics model. For now, we just cram it in
         % here and hope for the best (BW).
         optics.lens = val;
+        if isfield(optics,'transmittance')
+            warning('Adding lens and removing the transmittance slot.')
+            optics = rmfield(optics,'transmittance');
+        end
 
     case {'fnumber','f#'}
         optics.fNumber = val;
