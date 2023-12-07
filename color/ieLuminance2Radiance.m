@@ -41,8 +41,8 @@ function [energy, wave] = ieLuminance2Radiance(lum,thisWave,varargin)
 %}
 %{
    lum = 100; thisWave = 425;
-   energy = ieLuminance2Radiance(lum,thisWave,'sd',20);
-   assert(lum - ieLuminanceFromEnergy(energy,thisWave) < 1e-10)
+   [energy,wave] =  ieLuminance2Radiance(lum,thisWave,'sd',20);
+   assert(lum - ieLuminanceFromEnergy(energy,wave) < 1e-10)
    plotRadiance(wave,energy);
 %}
 
