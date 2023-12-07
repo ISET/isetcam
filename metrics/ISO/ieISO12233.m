@@ -53,11 +53,11 @@ function mtfData = ieISO12233(ip,sensor,plotOptions,masterRect,varargin)
 % Examples:
 %{
   % Create an ip with the slanted bar and compute MTF
-
   scene = sceneCreate('slanted edge',512);
   scene = sceneSet(scene,'fov',5);
   oi = oiCreate; oi = oiCompute(oi,scene);
   sensor = sensorCreate;
+  
   % Black edge.
   sensor = sensorSetSizeToFOV(sensor,1.5*sceneGet(scene,'fov'), oi);
   sensor = sensorCompute(sensor,oi);

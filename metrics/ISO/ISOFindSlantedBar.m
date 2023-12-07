@@ -30,7 +30,7 @@ function rect = ISOFindSlantedBar(ip,blurFlag)
   scene = sceneCreate('slanted edge',512);
   oi = oiCreate; oi = oiCompute(oi,scene);
   sensor = sensorCreate;
-  sensor = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'));
+  sensor = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'),oi);
   sensor = sensorCompute(sensor,oi);
   ip = ipCreate; ip = ipCompute(ip,sensor);
   rect = ISOFindSlantedBar(ip,false);
@@ -40,7 +40,7 @@ function rect = ISOFindSlantedBar(ip,blurFlag)
   scene = sceneCreate('slanted edge',512);
   oi = oiCreate; oi = oiCompute(oi,scene);
   sensor = sensorCreate;
-  sensor = sensorSetSizeToFOV(sensor,1.5*sceneGet(scene,'fov'));
+  sensor = sensorSetSizeToFOV(sensor,1.5*sceneGet(scene,'fov'),oi);
   sensor = sensorCompute(sensor,oi);
   ip = ipCreate; ip = ipCompute(ip,sensor);
   rect = ISOFindSlantedBar(ip,false);

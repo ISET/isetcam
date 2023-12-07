@@ -25,7 +25,7 @@ function [macbethXYZ, whiteXYZ, cornerPoints] = ipMCCXYZ(ip,cornerPoints,method)
 
 % Examples:
 %{
-  ip = ieGetObject('ip');
+ ip = ieGetObject('ip');
  [macbethXYZ, whiteXYZ] = ipMCCXYZ(ip);
  ieNewGraphWin;
  plot3(macbethXYZ(:,1),macbethXYZ(:,2),macbethXYZ(:,3),'o')
@@ -33,7 +33,7 @@ function [macbethXYZ, whiteXYZ, cornerPoints] = ipMCCXYZ(ip,cornerPoints,method)
  clf; plot(xy(:,1),xy(:,2),'o'); hold on; plotSpectrumLocus;
  grid on; axis equal
 
- macbethLAB = ieXYZ2LAB(macbethXYZ,whiteXYZ, 1);
+ macbethLAB = ieXYZ2LAB(macbeditethXYZ,whiteXYZ, 1);
  clf; plot3(macbethLAB(:,1),macbethLAB(:,2), macbethLAB(:,3),'o');
  set(gca,'xlim',[0 105]); grid on
 %}

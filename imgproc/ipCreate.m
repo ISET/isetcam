@@ -25,11 +25,15 @@ function ip = ipCreate(ipName,sensor,display,L3)
 %  In the event that the ipName starts with 'L3', then the L3 rendering
 %  pipeline is used.  These can be either L3 or L3global.
 %
+%  The source code contains examples.
+
 % Example:
-%  ip = ipCreate;               % Name is default
-%  ip = ipCreate('sRGB');       % Name is sRGB
-%  ip = ipCreate('L3 test',sensor,display,L3);  % L3 is attached to ip
-%
+%{
+ ip = ipCreate;               % Name is default
+ ip = ipCreate('sRGB');       % Name is sRGB
+ ip = ipCreate('L3 test',sensor,display,L3);  % L3 is attached to ip
+%}
+
 % Copyright ImagEval Consultants, LLC, 2005.
 
 %%
