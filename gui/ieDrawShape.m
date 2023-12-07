@@ -18,8 +18,7 @@ function h = ieDrawShape(obj,shape,varargin)
 %     ieDrawShape(obj,'rectangle',rect);
 %     ieDrawShape(obj,'line',X ,Y);
 %
-% Examples
-%   ieExamplesPrint('ieDrawShape');
+% The source code contains examples.
 %
 % See also:
 %   ieROIDraw, v_drawShapes

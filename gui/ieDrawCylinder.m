@@ -17,14 +17,14 @@ function hdl = ieDrawCylinder(v, varargin)
 % See also
 %  ieDrawShape
 
-% Example
+% Example:
 %{
-direction = [1, 0.5, 1]; % The desired direction vector
-radius = 5;
-height = 20;
-resolution = 20;
-hdl = ieDrawCylinder(direction/norm(direction));
-line([0,direction(1)]*height,[0,direction(2)]*height,[0,direction(3)]*height);
+    direction = [1, 0.5, 1]; % The desired direction vector
+    radius = 5;
+    height = 20;
+    resolution = 20;
+    hdl = ieDrawCylinder(direction/norm(direction));
+    line([0,direction(1)]*height,[0,direction(2)]*height,[0,direction(3)]*height);
 %}
 
 %% Parse
@@ -86,12 +86,8 @@ end
 
 %%
 function R = rotateVector(a, b)
-% Examples:
-%{
-a = [0 0 1]; b = [1 1 1];
-R = rotateVector(a,b);
-bPrime = R*b;
-%}
+% See ieDrawCylinder above for
+% example of usage.
 
 if isequal(a,b)
     R = eye(3);

@@ -79,14 +79,14 @@ function [coneIsolating, spd] = humanConeIsolating(dsp)
     wave = displayGet(dsp, 'wave');
 
     % Check that these spd values are cone isolating
-    coneFile = fullfile(isetbioDataPath, 'human', 'stockman');
+    coneFile = fullfile(isetRootPath, 'data', 'human', 'stockman');
     cones = ieReadSpectra(coneFile, wave);
     id = cones' * spd;
     id = id / max(id(:))
 %}
 
 % This is a row transform, [r, g, b] * rgb2lms
-coneIsolating = displayGet(dsp, 'lms2rgb');
+coneIsolating = inv(displayGet(dsp, 'rgb2lms'));
 
 % Convert to the column form for easier computing
 coneIsolating = coneIsolating';

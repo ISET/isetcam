@@ -58,7 +58,7 @@ end
 %% Compute the cone contrast
 % The contrast is the ratio of the background cone absorptions to the
 % signal cone absorptions
-coneFile = fullfile(isetbioDataPath, 'human', 'stockman');
+coneFile = fullfile(isetRootPath, 'data', 'human', 'stockman');
 cones = ieReadSpectra(coneFile, wave);
 % plot(wave, spCones)
 
