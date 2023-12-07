@@ -142,7 +142,7 @@ switch ieParamFormat(oiType)
         oi = oiSet(oi,'diffuserMethod','skip');
         oi = oiSet(oi,'optics',opticsCreate('human mw'));
         oi = oiSet(oi,'name','human-MW');
-        oi = oiSet(oi, 'lens', Lens('wave', oiGet(oi, 'optics wave')));
+        oi = oiSet(oi, 'optics lens', Lens('wave', oiGet(oi, 'optics wave')));
 
         % Used by ISETCam, but removed for human lens case.
         if checkfields(oi.optics, 'transmittance')
