@@ -102,17 +102,17 @@ function val = ipGet(ip,param,varargin)
 %                              Returned in a cell array
 %     'L3'                - L3 structure.  Requires L3 repository.
 %
-% Examples:
-%
-%   ipGet  = vcGetObject('ip');
-%   center = ipGet(ipGet,'center')
-%   d2c    = ipGet(ipGet,'distance2Center'); figure; mesh(d2c)
-%
-%   ipGet(ipGet,'combined transform')
-%   ipGet(ipGet,'display')
-%   ipGet(ipGet,'display spd');
-%
 % Copyright ImagEval Consultants, LLC, 2005.
+
+% Examples:
+%{
+  ipGetObj  = vcGetObject('ip');
+  center = ipGet(ipGetObj,'center')
+  d2c    = ipGet(ipGetObj,'distance2Center'); figure; mesh(d2c)
+  ipGet(ipGetObj,'combined transform')
+  ipGet(ipGetObj,'display')
+  ipGet(ipGetObj,'display spd');
+%}
 
 %% Check parameters, deal with display syntax and also apply ieParamFormat
 

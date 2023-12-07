@@ -62,7 +62,7 @@ function demosaicedImage = Demosaic(ip,sensor)
  % cameraWindow(camera,'ip')
 %}
 %{
-% For monochrome, Demosaic does nothing.
+ % For monochrome, Demosaic does nothing.
  scene = sceneCreate; camera = cameraCreate; oi = cameraGet(camera,'oi');
  sensor = sensorCreate('monochrome'); ip = cameraGet(camera,'ip');
  oi = oiCompute(oi,scene); sensor = sensorCompute(sensor,oi);
@@ -71,7 +71,7 @@ function demosaicedImage = Demosaic(ip,sensor)
  ieNewGraphWin; imagesc(d); colormap(gray(64));
 %}
 %{
-% For more than 3 (multichannel) data this works
+  % For more than 3 (multichannel) data this works
   sensor = ieGetObject('sensor'); ip = ieGetObject('ip');
   ip = ipSet(ip,'demosaic method','multichannel');
   d = Demosaic(ip,sensor); imtool(d)
