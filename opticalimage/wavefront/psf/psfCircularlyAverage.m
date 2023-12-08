@@ -32,7 +32,7 @@ function outPSF = psfCircularlyAverage(inPSF)
     wvf0 = wvfCreate;
     oblique_astig = 0.75;
     wvf0 = wvfSet(wvf0, 'zcoeffs', oblique_astig, {'oblique_astigmatism'});
-    wvf0 = wvfComputePSF(wvf0);
+    wvf0 = wvfCompute(wvf0);
     psf0 = wvfGet(wvf0, 'psf');
     psfC = psfCircularlyAverage(psf0);
     figure;

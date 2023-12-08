@@ -149,6 +149,8 @@ function val = opticsGet(optics,parm,varargin)
    ieNewGraphWin; mesh(psf.xy(:,:,1),psf.xy(:,:,2),psf.psf);
 %}
 %{
+   % This example prints out a lot of messages that default
+   % values are being used. No need to panic.
    oi = oiCreate; optics = oiGet(oi,'optics');
    otf = opticsGet(optics,'otf data',oi, 'mm',450);
    ieNewGraphWin; mesh(fftshift(abs(otf)));
@@ -161,8 +163,11 @@ function val = opticsGet(optics,parm,varargin)
    otfSupport = oiGet(oi,'fsupport','mm');  % Cycles/mm
    ieNewGraphWin; mesh(otfSupport(:,:,1),otfSupport(:,:,2),fftshift(abs(otf(:,:,10))));
 %}
-%   FOV = 10; opticsGet(optics,'image height',FOV,'mm')
-%   FOV = 10; opticsGet(optics,'image diagonal',FOV,'um')
+%{
+  oi = oiCreate('diffraction limited'); 
+  optics = oiGet(oi,'optics');
+  FOV = 10; opticsGet(optics,'image height',FOV,'mm')
+  FOV = 10; opticsGet(optics,'image diagonal',FOV,'um')
 %}
 
 %% Parameters

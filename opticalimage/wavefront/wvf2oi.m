@@ -64,14 +64,14 @@ function oi = wvf2oi(wvf,varargin)
 % Examples:
 %{
     wvf = wvfCreate;
-    wvf = wvfComputePSF(wvf);
+    wvf = wvfCompute(wvf);
     oi = wvf2oi(wvf);
     oiPlot(oi, 'psf550');
 %}
 %{
     wvf = wvfCreate('wave', [400 550 700]');
     wvf = wvfSet(wvf, 'zcoeff', 1, 'defocus');
-	wvf = wvfComputePSF(wvf);
+	wvf = wvfCompute(wvf);
     oi = wvf2oi(wvf);
     oiPlot(oi, 'psf550');
 %}

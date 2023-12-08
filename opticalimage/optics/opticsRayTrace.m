@@ -9,8 +9,6 @@ function oi = opticsRayTrace(scene,oi,varargin)
 %
 % See also:  oiCompute, rtPrecomputePSFApply, rtPrecomputePSF
 %
-% Example:
-%
 % Copyright ImagEval Consultants, LLC, 2003.
 
 %% Check parameters

@@ -32,27 +32,30 @@ function optics = siSynthetic(psfType,oi,varargin)
 %{
   wave = 400:10:700; psfType = 'gaussian';  waveSpread = wave/wave(1);
   xyRatio = ones(1,length(wave));
+  oi = oiCreate('shiftinvariant','wave',wave);
   optics = siSynthetic(psfType,oi,waveSpread,xyRatio);
-  psfMovie(optics,ieNewGraphWin);
+  psfMovie(optics,ieNewGraphWin,0.1);
 %}
 %{
-% Make one with an asymmetric Gaussian
+  % Make one with an asymmetric Gaussian
   wave = 400:10:700; psfType = 'gaussian';  waveSpread = wave/wave(1);
   xyRatio = 2*ones(1,length(wave));
+  oi = oiCreate('shiftinvariant','wave',wave);
   optics = siSynthetic(psfType,oi,waveSpread,xyRatio);
   psfMovie(optics,ieNewGraphWin);
 %}
 %{
-% Convert a custom file to an optics structure
-%  ieSaveSIOpticsFile(rand(128,128,31),(400:10:700),[0.25,0.25],'custom.mat');
-%  inFile = 'custom'; outFile = 'deleteMe.mat'
-%  optics = siSynthetic('custom',oi,'custom',[]);
+  % Convert a custom file to an optics structure
+  % Currently relies on a non-existent function, isSaveSIOpticsFile.
+  % ieSaveSIOpticsFile(rand(128,128,31),(400:10:700),[0.25,0.25],'custom.mat');
+  % inFile = 'custom'; outFile = 'deleteMe.mat'
+  % optics = siSynthetic('custom',oi,'custom',[]);
 %}
 %{
-%  optics = siSynthetic('custom',oi,inFile,outFile);
+ % Needs to be elaborated to define all variables being used, or 
+ % deleted.
+ % optics = siSynthetic('custom',oi,inFile,outFile);
 %}
-
-
 
 %% Parameter initializiation
 if ieNotDefined('psfType'), psfType = 'gaussian'; end

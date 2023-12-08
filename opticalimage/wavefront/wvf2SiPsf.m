@@ -108,7 +108,7 @@ function [siData, wvfP] = wvf2SiPsf(wvfP, varargin)
     % as that for imagesc.
     vcNewGraphWin([], 'tall');
     subplot(2, 1, 1);
-    wvfPlot(wvfP, 'image psf', 'um', 550, 15, 'no window');
+    wvfPlot(wvfP, 'image psf', 'unit','um', 'wave', 550, 'plot range', 15, 'window', gcf);
     [m, n, k] = size(siPSFData.psf);
     samplesy = ((1:m)-mean(1:m))*siPSFData.umPerSamp(1);
     samplesx = ((1:n)-mean(1:n))*siPSFData.umPerSamp(2);
@@ -124,7 +124,7 @@ function [siData, wvfP] = wvf2SiPsf(wvfP, varargin)
     % See this tutorial for use with siSynthetic to create an oi with a 
     % PSF from wvf2SiPsf, plus better ways to start with a wvf and get it
     % into an OI.
-    t_opticsGetAndSetPsf
+    % t_opticsGetAndSetPsf
 %}
 
 %% Parameters
@@ -143,7 +143,7 @@ nWave = wvfGet(wvfP, 'calc nwave');
 %
 % And store result back into the wvf structure. We will get this
 % below in a manner that keeps the units clear.
-wvfP = wvfComputePSF(wvfP, p.Results.showBar);
+wvfP = wvfCompute(wvfP);
 
 %% Set up to interpolate the PSFs for passing into isetbio.
 %
