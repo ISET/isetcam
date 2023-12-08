@@ -88,7 +88,7 @@ function [conePsf, coneSceFraction] = wvfComputeConePSF(wvf)
 %{
     % Compute cone weighted PSFs using default parameters for conePsfInfo.
     wvf = wvfCreate('wave', 400:10:700);
-    wvf = wvfComputePSF(wvf);
+    wvf = wvfCompute(wvf,'humanlca',true);
     [cPSF, cSceFrac] = wvfComputeConePSF(wvf);
 
     % Should get the answer using the wvfGet call.

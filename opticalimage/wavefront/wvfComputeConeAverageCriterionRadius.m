@@ -48,9 +48,12 @@ function [coneAvgCriterionRadius, coneCriterionRadii, wvfPOut] = ...
 %{
     % Compute cone weighted PSFs using default parameters for conePsfInfo.
     wvf = wvfCreate('wave', 400:10:700);
-    wvf = wvfComputePSF(wvf);
 
-    % Compute with no defocus
+    % Compute with no defocus.  Note that wvfCompute is called
+    % inside of wvfComputeConeAverageCriterionRadius, so we don't
+    % need to call it in advance.  But since wvf isn't returned,
+    % you would have to call it if you wanted to use wvf at this
+    % level of the code.
     defocusDiopters = 0;
     criterionFraction = 0.5;
     [coneAvgCriterionRadius, coneCriterionRadii] = ...
@@ -70,7 +73,7 @@ pupilDiameterMM = wvfGet(wvfP, 'measured pupil size');
 defocusMicrons = wvfDefocusDioptersToMicrons(defocusDiopters, ...
     pupilDiameterMM);
 wvfPOut = wvfSet(wvfP, 'zcoeffs', defocusMicrons, 'defocus');
-wvfPOut = wvfComputePSF(wvfPOut);
+wvfPOut = wvfCompute(wvfPOut);
 
 % Get the cone weighted PSFs
 conePSF = wvfGet(wvfPOut, 'cone psf');
