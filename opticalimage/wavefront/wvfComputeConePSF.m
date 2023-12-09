@@ -86,19 +86,19 @@ function [conePsf, coneSceFraction] = wvfComputeConePSF(wvf)
 
 % Examples:
 %{
-    % Compute cone weighted PSFs using default parameters for conePsfInfo.
+    Compute cone weighted PSFs using default parameters for conePsfInfo.
     wvf = wvfCreate('wave', 400:10:700);
     wvf = wvfCompute(wvf,'humanlca',true);
     [cPSF, cSceFrac] = wvfComputeConePSF(wvf);
 
-    % Should get the answer using the wvfGet call.
+    Should get the answer using the wvfGet call.
     cPSF1 = wvfGet(wvf, 'conepsf');
     if (any(cPSF(:) ~= cPSF1(:)))
        fprintf('Oops. Call to wvfComputeConePSF does not match wvfGet\n');
     end
 
-    % Look at how blurry that S cone PSF is, even for the diffraction
-    % limited case!
+    Look at how blurry that S cone PSF is, even for the diffraction
+    limited case!
     figure;
     clf;
     hold on

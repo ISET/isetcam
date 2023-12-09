@@ -89,11 +89,14 @@ function wvf = wvfComputePupilFunction(wvf, varargin)
 
 % Examples:
 %{
+ % This example could be improved, or at least produce more
+ % interesting plots, if we put in some actual Zernike values,
+ % so it wouldn't just be uniform.
  wvf = wvfCreate;
- wvf = wvfComputePupilFunction(wvf);
+ wvf = wvfComputePupilFunction(wvf,'humanlca',true);
  ieNewGraphWin;
- subplot(1,2,1); imagesc(wvfGet(wvf,'pupil phase function'));
- subplot(1,2,1); imagesc(wvfGet(wvf,'aperture function)); 
+ subplot(1,2,1); imagesc(wvfGet(wvf,'pupil function phase')); axis('square');
+ subplot(1,2,2); imagesc(wvfGet(wvf,'aperture')); axis('square');
 %}
 
 %% Input parse

@@ -214,18 +214,18 @@ function val = wvfGet(wvf, parm, varargin)
 % Examples:
 %{
     % Compute diffraction limited psf
-    wvfP = wvfCreate;
-    wvfP = wvfComputePSF(wvfP);
-    wvfPlot(wvfP, 'image psf', 'um', 550);
+    wvfP = wvfCreate('wave',550);
+    wvfP = wvfCompute(wvfP);
+    wvfPlot(wvfP,'image psf','wave',550,'plot range',15,'airy disk',true,'unit','um');
 
     psf = wvfGet(wvfP, 'diffraction psf', 550);
     support = wvfGet(wvfP,'psf support','um');
-    wvfPlot(wvf,'2d psf space','um',550,15,'airy disk',true);
+    wvfPlot(wvfP,'image psf','wave',550,'plot range',15,'airy disk',true,'unit','um');
 %}
 %{
     % Strehl is ratio of diffraction and current
     wvfP = wvfCreate;
-    wvfP = wvfComputePSF(wvfP);
+    wvfP = wvfCompute(wvfP,'humanlca',false);
     wvfGet(wvfP, 'strehl', 550)
 %}
 %{
@@ -239,19 +239,19 @@ function val = wvfGet(wvf, parm, varargin)
 	z = wvfGet(wvfP, 'zcoeffs');
     z(5) = 0.3;
     wvfP = wvfSet(wvfP, 'zcoeffs', z);
-	wvfP = wvfComputePSF(wvfP);
+	wvfP = wvfCompute(wvfP,'humanlca',false);
     wvfGet(wvfP, 'strehl', 550)
 %}
 %{
 	wvf = wvfCreate;
-    wvf = wvfComputePSF(wvf);
+    wvf = wvfCompute(wvf);
     otf = wvfGet(wvf,'otf',wvfGet(wvf,'wave'));
     f = wvfGet(wvf, 'otf support', 'mm');
 	ieNewGraphWin; mesh(f, f, abs(otf));
 %}
 %{
     wvf = wvfCreate;
-    wvf = wvfComputePSF(wvf);
+    wvf = wvfCompute(wvf);
 	lsf = wvfGet(wvf, 'lsf', wvfGet(wvf,'wave'));
     x = wvfGet(wvf, 'lsf support', 'um');
 	ieNewGraphWin; plot(x, lsf); grid on; xlabel('Pos (mm)');

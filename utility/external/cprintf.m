@@ -26,11 +26,11 @@ function count = cprintf(style,format,varargin) %#ok<*JAPIMATHWORKS>
 %
 %       'Black','Cyan','Magenta','Blue','Green','Red','Yellow','White'
 %
-%    STYLE beginning with '-' or '_' will be underlined. For example:
+%    STYLE beginning with '-' or '_' will be underlined. For example,
 %          '-Blue' is underlined blue, like 'Hyperlinks';
 %          '_Comments' is underlined green etc.
 %
-%    STYLE beginning with '*' will be bold (R2011b+ only). For example:
+%    STYLE beginning with '*' will be bold (R2011b+ only). For example,
 %          '*Blue' is bold blue;
 %          '*Comments' is bold green etc.
 %    Note: Matlab does not currently support both bold and underline,
@@ -65,6 +65,7 @@ function count = cprintf(style,format,varargin) %#ok<*JAPIMATHWORKS>
    cprintf([1,0.5,0],'and multi-\nline orange\n');
    cprintf('*blue',  'and *bold* (R2011b+ only)\n');
    cprintf('string');  % same as fprintf('string') and cprintf('text','string')
+   fprint('\n');
 %}
 % Bugs and suggestions:
 %    Please send to Yair Altman (altmany at gmail dot com)
