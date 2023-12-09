@@ -51,22 +51,6 @@ function count = cprintf(style,format,varargin) %#ok<*JAPIMATHWORKS>
 %
 %    CPRINTF by itself, without any input parameters, displays a demo
 %
-% Example:
-%{
-   cprintf;   % displays the demo
-   cprintf('text',   'regular black text');
-   cprintf('hyper',  'followed %s','by');
-   cprintf('key',    '%d colored', 4);
-   cprintf('-comment','& underlined');
-   cprintf('err',    'elements\n');
-   cprintf('cyan',   'cyan');
-   cprintf('_green', 'underlined green');
-   cprintf(-[1,0,1], 'underlined magenta');
-   cprintf([1,0.5,0],'and multi-\nline orange\n');
-   cprintf('*blue',  'and *bold* (R2011b+ only)\n');
-   cprintf('string');  % same as fprintf('string') and cprintf('text','string')
-   fprint('\n');
-%}
 % Bugs and suggestions:
 %    Please send to Yair Altman (altmany at gmail dot com)
 %
@@ -125,6 +109,24 @@ function count = cprintf(style,format,varargin) %#ok<*JAPIMATHWORKS>
 % referenced and attributed as such. The original author maintains the right to be solely associated with this work.
 % Programmed and Copyright by Yair M. Altman: altmany(at)gmail.com
 % $Revision: 1.14 $  $Date: 2022/03/26 20:48:51 $
+
+% Examples:
+%{
+   cprintf;   % displays the demo
+   cprintf('text',   'regular black text');
+   cprintf('hyper',  'followed %s','by');
+   cprintf('key',    '%d colored', 4);
+   cprintf('-comment','& underlined');
+   cprintf('err',    'elements\n');
+   cprintf('cyan',   'cyan');
+   cprintf('_green', 'underlined green');
+   cprintf(-[1,0,1], 'underlined magenta');
+   cprintf([1,0.5,0],'and multi-\nline orange\n');
+   cprintf('*blue',  'and *bold* (R2011b+ only)\n');
+   cprintf('string');  % same as fprintf('string') and cprintf('text','string')
+   fprint('\n');
+%}
+
   persistent majorVersion minorVersion
   if isempty(majorVersion)
       %v = version; if str2double(v(1:3)) <= 7.1
