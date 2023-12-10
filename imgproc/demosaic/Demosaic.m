@@ -48,11 +48,13 @@ function demosaicedImage = Demosaic(ip,sensor)
 %{
  scene = sceneCreate; camera = cameraCreate;
  camera = cameraCompute(camera,scene);
- sensor = cameraGet(camera,'sensor'); ip = cameraGet(camera,'ip');
+ sensor = cameraGet(camera,'sensor'); 
+ ip = cameraGet(camera,'ip');
  d = Demosaic(ip,sensor);
  ieNewGraphWin; imagescRGB(d)
 %}
 %{
+ % Tests a specific Demosaic method
  scene = sceneCreate; camera = cameraCreate;
  sensor = sensorCreate('MT9V024',[],'rccc');
  camera = cameraSet(camera,'sensor',sensor);
@@ -66,15 +68,22 @@ function demosaicedImage = Demosaic(ip,sensor)
  scene = sceneCreate; camera = cameraCreate; oi = cameraGet(camera,'oi');
  sensor = sensorCreate('monochrome'); ip = cameraGet(camera,'ip');
  oi = oiCompute(oi,scene); sensor = sensorCompute(sensor,oi);
+ ip = ipCompute(ip,sensor);
  ip = ipSet(ip,'demosaic method','bilinear');
  d = Demosaic(ip,sensor);
  ieNewGraphWin; imagesc(d); colormap(gray(64));
 %}
 %{
   % For more than 3 (multichannel) data this works
-  sensor = ieGetObject('sensor'); ip = ieGetObject('ip');
+  scene = sceneCreate; 
+  camera = cameraCreate;
+  sensor = sensorCreate('imec44');
+  camera = cameraSet(camera,'sensor',sensor);
+  camera = cameraCompute(camera,scene);
+  sensor = cameraGet(camera,'sensor'); sensorWindow(sensor);
+  ip = cameraGet(camera,'ip');
   ip = ipSet(ip,'demosaic method','multichannel');
-  d = Demosaic(ip,sensor); imtool(d)
+  d = Demosaic(ip,sensor); imageViewer(d(:,:,[1,7,14]));
 %}
 
 

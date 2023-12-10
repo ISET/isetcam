@@ -106,12 +106,16 @@ function val = ipGet(ip,param,varargin)
 
 % Examples:
 %{
-  ipGetObj  = vcGetObject('ip');
-  center = ipGet(ipGetObj,'center')
-  d2c    = ipGet(ipGetObj,'distance2Center'); figure; mesh(d2c)
-  ipGet(ipGetObj,'combined transform')
-  ipGet(ipGetObj,'display')
-  ipGet(ipGetObj,'display spd');
+  camera = cameraCreate;
+  scene = sceneCreate;
+  camera = cameraCompute(camera,scene);
+  ip  = cameraGet(camera,'ip');
+  center = ipGet(ip,'center')
+  d2c    = ipGet(ip,'distance2Center'); 
+  ieNewGraphWin; mesh(d2c)
+  ipGet(ip,'combined transform')
+  ipGet(ip,'display')
+  spd = ipGet(ip,'display spd'); plotRadiance(ipGet(ip,'wave'),spd);
 %}
 
 %% Check parameters, deal with display syntax and also apply ieParamFormat
@@ -462,7 +466,7 @@ switch oType
                 % calculate the distance from the center
                 sz = ipGet(ip,'size');
                 if isempty(sz), return; end
-                val = (sz+1)/2;
+                val = (sz(1:2)+1)/2;
             case {'distance2center'}
                 % Distance from the image center in units of pixels
                 % val = ipGet(ip,'distance2center'); figure; surf(val)
