@@ -32,9 +32,9 @@ function scene = sceneAdjustReflectance(scene,newR)
 %{
   scene = sceneCreate('uniform ee');
   wave = sceneGet(scene,'wave');
-  fName  = fullfile(oreyeRootPath,'data','tongue','meanReflectance');
+  fName  = fullfile(isetRootPath,'data','surfaces','reflectances','tongue');
   tongue = ieReadSpectra(fName,wave);
-  scene = sceneAdjustReflectance(scene,tongue);
+  scene = sceneAdjustReflectance(scene,mean(tongue,2));
 %}
 %{
   % We should test sceneAdjustReflectance more

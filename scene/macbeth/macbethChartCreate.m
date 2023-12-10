@@ -51,31 +51,33 @@ function macbethChartObject = macbethChartCreate(patchSize,patchList,spectrum,su
   macbethChartObject = macbethChartCreate(patchSize,patchList);
 %}
 %{
-% To read a different spectral range
+  % To read a different spectral range
   spectrum.wave      = (370:10:730);
   macbethChartObject = macbethChartCreate([],[],spectrum);
 %}
 %{
- % To make an image
+  % To make an image
+  patchSize = 16;
+  patchList = 1:24;
   macbethChartObject = macbethChartCreate(patchSize,patchList);
   spd = macbethChartObject.data; imageSPD(spd);
 %}
 %{
- % To read the chart reflectances
- patchSize = 1; patchList = 1:24;
- macbethChartObject = macbethChartCreate(patchSize,patchList);
- r = macbethChartObject.data; reflectances = RGB2XWFormat(r)';
- ieNewGraphWin; plot(reflectances)
+  % To read the chart reflectances
+  patchSize = 1; patchList = 1:24;
+  macbethChartObject = macbethChartCreate(patchSize,patchList);
+  r = macbethChartObject.data; reflectances = RGB2XWFormat(r)';
+  ieNewGraphWin; plot(reflectances)
 %}
 %{
- % To read just the gray series
- patchSize = 16;
- patchList = 4:4:24;
- macbethChartObject = macbethChartCreate(patchSize,patchList);
- spd = macbethChartObject.data; imageSPD(spd);
+  % To read just the gray series
+  patchSize = 16;
+  patchList = 4:4:24;
+  macbethChartObject = macbethChartCreate(patchSize,patchList);
+  spd = macbethChartObject.data; imageSPD(spd);
 %}
 %{
-% To read an alternative file
+  % To read an alternative file
   patchSize = 32;
   patchList = 1:24;
   spectrum.wave = (370:10:730);

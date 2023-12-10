@@ -51,8 +51,7 @@ function [pData, mLocs, pSize, cornerPoints, pStd] = ...
 %   The 4th entry is the white patch.
 %   The gray series is 4:4:24
 %
-% See examples:
-%  ieExamplesPrint('macbethSelect');
+% There are examples in the source.
 %
 % Programming TODO:
 %   Should be refactored as (p means 'patch')
@@ -100,8 +99,8 @@ function [pData, mLocs, pSize, cornerPoints, pStd] = ...
  data = macbethSelect(ip);
 %}
 %{
- % See macbethSensorValues() for this functionality.
-  sensor = vcGetObject('sensor');
+  % See macbethSensorValues() for this functionality.
+  sensor = sensorCreate;
   [fullRGB,locs,pSize] = macbethSelect(sensor,0,1);
   [fullRGB,locs,pSize] = macbethSelect(sensor);
 %}
