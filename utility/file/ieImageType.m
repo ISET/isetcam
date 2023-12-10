@@ -12,7 +12,7 @@ function imageType = ieImageType(fullName)
 % Examples:
 %{
    fname = fullfile(isetRootPath,'data','images','Monochrome','Fruit-hdrs.mat');
-   ieImageType
+   ieImageType(fname)
    fname = fullfile(isetRootPath,'data','images','Multispectral','Fruit-hdrs.mat');
    ieImageType(fname)
    fname = fullfile(isetRootPath,'data','images','Fruit-hdrs.png');

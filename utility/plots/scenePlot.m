@@ -65,32 +65,43 @@ function [udata, g] = scenePlot(scene,pType,roiLocs,varargin)
 
 % Examples:
 %{
-%  A line plot of the radiance, starting at the (x,y) point [1,rows]
+    % A line plot of the radiance, starting at the (x,y) point [1,rows]
     scene = sceneCreate;
     rows = round(sceneGet(scene,'rows')/2);
     scenePlot(scene,'hline radiance',[1,rows]);
 %}
 %{
-% Commented out because it requires user clicking
-%  scene = sceneCreate; sceneWindow(scene);
-%  scenePlot(scene,'hline radiance');
-%  scenePlot(scene,'vline radiance');
+   % ETTBSkip
+   % Skip because it requires user clicking
+   scene = sceneCreate; sceneWindow(scene);
+   scenePlot(scene,'hline radiance');
+   scenePlot(scene,'vline radiance');
 %}
 %{
-% Fourier Transform of the luminance in the row
-     uData = scenePlot(scene,'luminance fft hline',[1,rows])
+   % Fourier Transform of the luminance in the row
+   scene = sceneCreate;
+   rows = round(sceneGet(scene,'rows')/2);
+   uData = scenePlot(scene,'luminance fft hline',[1,rows])
 %}
 %{
-% Radiance image with an overlaid spatial grid
-     scenePlot(scene,'radiance image with grid')
-     scenePlot(scene,'illuminant photons')
-     scenePlot(scene,'depth map')
+   % ETTBSkip
+   % Skip because it requires user clicking
+   %
+   % Radiance image with an overlaid spatial grid
+   scene = sceneCreate;
+   scenePlot(scene,'radiance image with grid')
+   scenePlot(scene,'illuminant photons')
+   scenePlot(scene,'depth map')
 %}
 %{
-%  Reflectance data from an ROI
-     scene = vcGetObject('scene');
-     [roiLocs, roiRect]  = vcROISelect(scene);
-     [f, uData] = scenePlot(scene,'reflectance',roiLocs);
+   % ETTBSkip
+   % Skip because it requires user clicking
+   %
+   % Reflectance data from an ROI
+   scene = sceneCreate;
+   sceneWindow(scene);
+   [roiLocs, roiRect]  = ieROISelect(scene);
+   [f, uData] = scenePlot(scene,'reflectance',roiLocs);
 %}
 
 if ieNotDefined('scene'), scene = vcGetObject('scene'); end

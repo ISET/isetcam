@@ -43,16 +43,17 @@ function [M, rseed] = imageDeadLeaves(n,sigma,options)
  colormap(gray(64)); axis image; truesize
 %}
 %{
- % Produces exactly the same image.  Use rseed = rng; for new image.
+ % Produces exactly the same image twice.  Use rseed = rng; for new image.
+ options.shape = 'disk';
+ n     = 256;
+ sigma = 3;
+ [img, rseed] = imageDeadLeaves(n,sigma,options);
  options.rseed = rseed;
  img = imageDeadLeaves(n,sigma,options);
  vcNewGraphWin; imagesc(img);
  colormap(gray(64)); axis image; truesize
 %}
-%{
- % This is the original function.
- % img   = compute_dead_leaves_image(n,sigma,options);
-%}
+
 %% Set up options
 options.null = 0;
 

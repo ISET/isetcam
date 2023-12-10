@@ -38,14 +38,17 @@ function rgb = sceneShowImage(scene,renderFlag,gam,app)
    ieNewGraphWin; imagescRGB(rgb);    % Now show
 %}
 %{
+   scene = sceneCreate;
    thisW = sceneWindow;
    sceneShowImage(scene,1,1,thisW);      % Show
 %}
 %{
+   scene = sceneCreate;
    thisW = sceneWindow;
    im = sceneShowImage(scene,2,1,thisW); % Show gray scale version.
 %}
 %{
+   scene = sceneCreate;
    im = sceneShowImage(scene,2,1);       % Create gray scale version.
 %}
 

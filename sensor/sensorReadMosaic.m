@@ -27,7 +27,7 @@ function sensor = sensorReadMosaic(sensor,fname,varargin)
 
 % Examples:
 %{
-% Create an IMX363 sensor and read a DNG file for the sensor data
+ % Create an IMX363 sensor and read a DNG file for the sensor data
  sensor = sensorIMX363('row col',[600 800]);
  fname = which('mcc_direct_sunlight_IMG_20200520_164856.dng');
 

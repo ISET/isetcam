@@ -32,7 +32,8 @@ function [uData, sensor, theRect] = sensorStats(sensor,statType,unitType,quiet)
 
 % Examples:
 %{
-  [stats, sensor, theRect] = sensorStats;
+  sensor = sensorCreate;
+  [stats, sensor, theRect] = sensorStats(sensor);
   theRect.LineStyle = ':';
   delete(theRect);
 %}

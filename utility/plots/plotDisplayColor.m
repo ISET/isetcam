@@ -32,8 +32,6 @@ function [uData, figHdl] = plotDisplayColor(ip,dataType)
 % If ip is empty, then the currently selected image processor data (ip) is
 % used.
 %
-% ieExamplesPrint('plotDisplayColor')
-%
 % See also:
 %  plotDisplayGamut
 

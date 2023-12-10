@@ -29,6 +29,7 @@ function  [img,coords] = imageMakeMontage(hc, sliceList, nCols, backVal)
 
 % Examples:
 %{
+ hc = rand(10,20,3);
  [img,coords] = imageMakeMontage(hc);
  ieNewGraphWin; imagesc(img);
  colormap(gray(64)); axis equal; axis off;

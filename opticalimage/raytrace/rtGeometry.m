@@ -10,15 +10,19 @@ function oi = rtGeometry(oi,scene)
 %  the oi. The data are derived from optics modeling programs such as
 %  Code V and Zemax.
 %
-% Example:
-%   scene = sceneCreate('gridlines');
-%   oi = vcGetObject('oi'); optics = oiGet(oi,'optics');
-%   oi = rtGeometry(oi,scene);
-%   imageSPD(gImage);
+% The source code contains examples
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 %
 % See also:  s_opticsRTGridLines, t_oiRTCompute, rtDIInterp.m
+
+% Example:
+%{
+  scene = sceneCreate('gridlines');
+  oi = oiCreate; %vcGetObject('oi');
+  oi = rtGeometry(oi,scene);
+  imageSPD(gImage);
+%}
 
 % Programming notes:
 %

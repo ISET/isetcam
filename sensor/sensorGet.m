@@ -38,21 +38,6 @@ function [val, type] = sensorGet(sensor,param,varargin)
 %       sensor = sensorGet(sensor,'pixel');
 %       val = pixelGet(pixel,param1,param2);
 %
-% Examples:
-%    sensor = sensorCreate;
-%    val = sensorGet(sensor,'name')
-%    val = sensorGet(sensor,'size');          % row,col
-%    val = sensorGet(sensor,'dimension','um');
-%    val = sensorGet(sensor,'Electrons',2);   % Second color type
-%    val = sensorGet(sensor,'fov horizontal') % degrees
-%    val = sensorGet(sensor,'PIXEL')
-%    val = sensorGet(sensor,'exposureMethod');% Single, bracketed, cfa,
-%    burst
-%    val = sensorGet(sensor,'nExposures')     % Number of exposures
-%    val = sensorGet(sensor,'filtercolornames')
-%    val = sensorGet(sensor,'exposurePlane'); % For bracketing simulation
-%    val = sensorGet(sensor,'response type'); % {'linear','log'}
-%
 % List of sensor parameters
 %      'name'                 - this sensor name
 %      'type'                 - always 'sensor'
@@ -233,9 +218,36 @@ function [val, type] = sensorGet(sensor,param,varargin)
 %     'rgb'               - Display image in sensorWindow
 %     'gamma'             - Display gamma level
 %
+% The source file contains examples.
+%
 % See also:  sensorSet
 %
 % Copyright ImagEval Consultants, LLC, 2005.
+
+% Examples:
+%{
+   scene = sceneCreate;
+   oi = oiCreate;
+   oi = oiCompute(oi,scene);
+   sensor = sensorCreate;
+   sensor = sensorCompute(sensor,oi);
+   val = sensorGet(sensor,'name')
+   val = sensorGet(sensor,'size');          % row,col
+   val = sensorGet(sensor,'dimension','um');
+   val = sensorGet(sensor,'Electrons',2);   % Second color type
+   val = sensorGet(sensor,'fov horizontal') % degrees
+   val = sensorGet(sensor,'PIXEL')
+   val = sensorGet(sensor,'exposureMethod');% Single, bracketed, cfa burst
+   val = sensorGet(sensor,'nExposures')     % Number of exposures
+   val = sensorGet(sensor,'filternames')
+   val = sensorGet(sensor,'exposurePlane'); % For bracketing simulation
+   val = sensorGet(sensor,'response type'); % {'linear','log'}
+%}
+%{
+%   These can't run because sensorCFAName() is not exposed externally.
+%   cfaName = sensorCFAName(sensor)
+%   cfaNames = sensorCFAName
+%}
 
 if ~exist('param','var') || isempty(param), error('Param must be defined.'); end
 
@@ -1265,10 +1277,6 @@ function cfaName = sensorCFAName(sensor)
 %     [2 1; 3 2]
 %   =    2 1
 %        3 2
-%
-% Examples:
-%   cfaName = sensorCFAName(sensor)
-%   cfaNames = sensorCFAName
 %
 % Copyright Imageval Consulting, LLC 2010
 
