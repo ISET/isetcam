@@ -16,7 +16,7 @@ function oi = rtGeometry(oi,scene)
 %
 % See also:  s_opticsRTGridLines, t_oiRTCompute, rtDIInterp.m
 
-% Example:
+% Examples:
 %{
   scene = sceneCreate('gridlines');
   oi = oiCreate; %vcGetObject('oi');
