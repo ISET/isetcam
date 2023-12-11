@@ -25,14 +25,17 @@ function  [img,coords] = imageMakeMontage(hc, sliceList, nCols, backVal)
 % (c) Imageval, 2012
 %
 % See also
-%
+%   hcimage (utility/hypercube)
 
 % Examples:
 %{
- hc = rand(10,20,3);
- [img,coords] = imageMakeMontage(hc);
- ieNewGraphWin; imagesc(img);
- colormap(gray(64)); axis equal; axis off;
+scene = sceneCreate('sweep frequency'); wave = sceneGet(scene,'wave');
+for ii=1:numel(wave)
+    hc(:,:,ii) = sceneGet(scene,'photons',wave(ii));
+end
+[img,coords] = imageMakeMontage(hc);
+ieNewGraphWin; imagesc(img);
+colormap(gray(64)); axis equal; axis off;
 %}
 
 %%

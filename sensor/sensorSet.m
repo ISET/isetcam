@@ -136,12 +136,6 @@ function sensor = sensorSet(sensor,param,val,varargin)
    sensor = sensorSet(sensor,'pixel voltage swing',1.2);
    sensor = sensorSet(sensor,'response type','log'); % 'linear' or 'log'
 %}
-%{
-   % ETTBSkip
-   % This doesn't work because we don't know what baseName should be.
-   sensor = sensorCreate; 
-   sensor = sensorSet(sensor,'sensor compute method',baseName);
-%}
 
 
 %% Check parameters and special cases
