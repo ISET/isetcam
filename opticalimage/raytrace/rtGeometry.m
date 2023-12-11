@@ -1,28 +1,28 @@
 function oi = rtGeometry(oi,scene)
-%Compute the irradiance with ray traced geometric distortion
+% Compute the irradiance with ray traced geometric distortion
 %
+% Synopsis
 %    oi = rtGeometry(oi,scene)
 %
+% Inputs
+%   oi  -  Optical image with ray trace data
+%   scene - Scene
+%
+% The optics in the oi needs to have ray trace data from Zemax or Code V.
+%
 % Description:
-%  The scene radiance is converted to an irradiance in the optical
-%  image. Distortion and relative illumination are applied. The ray
-%  trace parameters are stored in a ray tracing slot in the optics of
-%  the oi. The data are derived from optics modeling programs such as
-%  Code V and Zemax.
+%  The scene radiance is converted to an irradiance in the optical image.
+%  Distortion and relative illumination are applied. The ray trace
+%  parameters are stored in a ray tracing slot in the optics of the oi. The
+%  ray trace data are derived from optics modeling programs such as Code V
+%  and Zemax.
 %
 % The source code contains examples
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 %
-% See also:  s_opticsRTGridLines, t_oiRTCompute, rtDIInterp.m
-
-% Examples:
-%{
-  scene = sceneCreate('gridlines');
-  oi = oiCreate; %vcGetObject('oi');
-  oi = rtGeometry(oi,scene);
-  imageSPD(gImage);
-%}
+% See also:  
+%   s_opticsRTGridLines, t_oiRTCompute, rtDIInterp.m
 
 % Programming notes:
 %

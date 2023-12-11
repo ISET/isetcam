@@ -37,14 +37,21 @@ function [uData, figHdl] = plotDisplayColor(ip,dataType)
 
 % Examples:
 %{
-  ip = ieGetObject('ip');
-  plotDisplayColor(ip,'xy'); userData = get(gcf,'UserData');
-  plotDisplayColor([],'luminance')
-  plotDisplayColor([],'cielab')
+% ETTBSkip
+% Requires user interaction
+scene = sceneCreate; camera = cameraCreate; 
+camera = cameraCompute(camera,scene);
+ip = cameraGet(camera,'ip');
+
+ipWindow(ip);
+plotDisplayColor(ip,'xy'); 
+userData = get(gcf,'UserData');
+plotDisplayColor([],'luminance')
+plotDisplayColor([],'cielab')
 %}
 
 %% Variables
-if ieNotDefined('ip');      ip = vcGetObject('ip'); end
+if ieNotDefined('ip');      ip = ieGetObject('ip'); end
 if ieNotDefined('dataType'), dataType = 'rgbhistogram'; end
 
 %% Select the RGB data from the ROI
