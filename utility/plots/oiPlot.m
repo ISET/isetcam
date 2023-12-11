@@ -74,30 +74,31 @@ function [udata, g] = oiPlot(oi,pType,roiLocs,varargin)
 
 % Examples:
 %{
-  scene = sceneCreate; 
-  oi = oiCreate;
+scene = sceneCreate; oi = oiCreate; oi = oiCompute(oi,scene);
 
-  rows = round(oiGet(oi,'rows')/2);
+rows = round(oiGet(oi,'rows')/2);
 
-  uData = oiPlot(oi,' irradiance hline',[1,rows])
-  uData = oiPlot(oi,'illuminance fft hline',[1,rows])
+uData = oiPlot(oi,' irradiance hline',[1,rows])
+uData = oiPlot(oi,'illuminance fft hline',[1,rows])
 
-  uData = oiPlot(oi,'contrast hline',[1,rows])
+uData = oiPlot(oi,'contrast hline',[1,rows])
 
-  uData = oiPlot(oi,'irradiance image with grid')
-  uData = oiPlot(oi,'irradiance image with grid',[],40)
-  uData = oiPlot(oi,'irradiance image wave',[],500,40);
+% Commented out because it asks the user for a value
+% uData = oiPlot(oi,'irradiance image with grid')
 
-  uData = oiPlot(oi,'irradiance energy roi');
+uData = oiPlot(oi,'irradiance image with grid',[],40)
+uData = oiPlot(oi,'irradiance image wave',[],500,40);
 
-  uData = oiPlot(oi,'psf 550','um')
-  uData = oiPlot(oi,'otf 550','um')
-  uData = oiPlot(oi,'ls wavelength')
+uData = oiPlot(oi,'irradiance energy roi');
 
-  uData = oiPlot(oi,'relative illumination');
+uData = oiPlot(oi,'psf 550','um')
+uData = oiPlot(oi,'otf 550','um')
+uData = oiPlot(oi,'ls wavelength')
 
-  oiPlot(oi,'psf',[],550,'airydisk',true);
-}%
+uData = oiPlot(oi,'relative illumination');
+
+oiPlot(oi,'psf',[],550,'airydisk',true);
+%}
 
 
 %% Programming note

@@ -55,7 +55,7 @@ switch lower(method)
     case {'sensor','mccoptimized', 'esseroptimized'}
         % Apply the final transform from ICS to Display
         % M   = scaleMTransform(M,ip,sensor);
-        ip = imageSet(ip,'ics2display',M);
+        ip = ipSet(ip,'ics2display',M);
         img = imageLinearTransform(img,M);
         
     otherwise

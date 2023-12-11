@@ -5,10 +5,10 @@ function ip = ipCreate(ipName,sensor,display,L3)
 %  ip = ipCreate(ipName,[sensor = vcGetObject('sensor')],[display = 'lcdExample.mat'])
 %
 % Input
-%   ipName
-%   sensor
-%   display
-%   L3
+%   ipName - Name
+%   sensor - Some kind of sensor
+%   display - ISETCam display
+%   L3      - An L3 struct
 %
 % Output
 %   ip:  ISETCam image process struct
@@ -31,7 +31,11 @@ function ip = ipCreate(ipName,sensor,display,L3)
 %{
  ip = ipCreate;               % Name is default
  ip = ipCreate('sRGB');       % Name is sRGB
- ip = ipCreate('L3 test',sensor,display,L3);  % L3 is attached to ip
+ thisDisplay = displayCreate;
+%}
+%{
+ % There are some special L3 methods here that are not tested
+ % ip = ipCreate('L3 test',sensor,thisDisplay,L3);  % L3 is attached to ip
 %}
 
 % Copyright ImagEval Consultants, LLC, 2005.
