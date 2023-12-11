@@ -17,7 +17,7 @@ ieInit
 %%
 scene = sceneCreate;
 oi    = oiCreate;
-oi    = oiCompute(scene,oi);
+oi    = oiCompute(oi,scene);
 
 % Pull out the optics
 optics = oiGet(oi,'optics');

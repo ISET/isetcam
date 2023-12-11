@@ -18,7 +18,7 @@ fov = sensorGet(sensor,'fov',sceneGet(scene,'distance'),oi);
 scene  = sceneSet(scene,'fov',fov);
 
 % Compute the optical image and sensor from the scene.
-oi     = oiCompute(scene,oi);
+oi     = oiCompute(oi,scene);
 sensor = sensorCompute(sensor,oi);
 ieAddObject(sensor);
 

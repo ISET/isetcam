@@ -37,7 +37,7 @@ wave = (400:10:700)';
 oiW = oiCreate('wvf human', pupilMM, zCoefs, wave);
 
 % Compute with wavefront version and display
-oiW = oiCompute(scene, oiW);
+oiW = oiCompute(oiW,scene);
 oiW = oiSet(oiW, 'name', 'Wavefront');
 vcAddAndSelectObject(oiW);
 oiWindow;
@@ -46,7 +46,7 @@ oiWindow;
 oiM = oiCreate('human');
 
 % Compute with M/W version and display
-oiM = oiCompute(scene, oiM);
+oiM = oiCompute(oiM,scene);
 oiM = oiSet(oiM, 'name', 'Marimont');
 vcAddAndSelectObject(oiM);
 oiWindow;

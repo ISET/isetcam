@@ -24,7 +24,7 @@ wave = sceneGet(scene,'wave');
 % Adjust optics and set anti-aliasing parameters here ...
 oi = oiSet(oi,'optics f number',5);
 
-oi = oiCompute(scene,oi);
+oi = oiCompute(oi,scene);
 
 % If you want to visualize what you have, you can run this
 % oiWindow(oi);

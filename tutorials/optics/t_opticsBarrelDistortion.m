@@ -51,7 +51,7 @@ oi = oiSet(oi,'optics',optics);
 oi = oiSet(oi,'optics model','ray trace');
 
 % ieSessionSet('waitbar','on')
-oi = oiCompute(scene,oi);
+oi = oiCompute(oi,scene);
 ieAddObject(oi); oiWindow;
 
 %% Correct the distorted image
