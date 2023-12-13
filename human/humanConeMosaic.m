@@ -76,9 +76,14 @@ function [xy, coneType, densities, rSeed] = ...
 %}
 
 if notDefined('sz'), error('Array size must be defined'); end
-% densities contain the [Empty, L, M, S] cone ratios
+
+% densities specifies the [Empty, L, M, S] cone ratios
 if notDefined('densities'), densities = [0.1 0.55 0.25 0.1]; end
 if notDefined('umConeWidth'), umConeWidth = 2; end
+
+% Always initialize the modern random number generator.  If not, this
+% causes an error.
+rng('default');
 if notDefined('rSeed'), rSeed = rng; else, rng(rSeed); end
 
 nTypes = length(densities);
