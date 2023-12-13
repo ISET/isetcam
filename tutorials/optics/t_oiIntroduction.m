@@ -92,7 +92,7 @@ title(sprintf('Zoomed view: F-number = %d',fnBig))
 % dots now look yellow!
 %%
 oiHuman = oiCreate('human');
-oiHuman = oiCompute(scene,oiHuman);
+oiHuman = oiCompute(oiHuman,scene);
 oiHuman = oiSet(oiHuman,'name','human optics');
 oiWindow(oiHuman);
 %%
