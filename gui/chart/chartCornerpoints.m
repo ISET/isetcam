@@ -51,10 +51,7 @@ function [cornerPoints, obj, rect] = chartCornerpoints(obj,wholeChart)
   cp = chartCornerpoints(ip,true);
   sFactor = 0.3;
   [rects, mLocs, pSize] = chartRectangles(cp, 4,6, sFactor);
-  
-  % Plot the rects
   rectHandles = chartRectsDraw(ip,rects);
-  % delete(rectHandles);
 %}
 
 %%
