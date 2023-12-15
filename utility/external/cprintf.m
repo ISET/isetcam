@@ -124,7 +124,7 @@ function count = cprintf(style,format,varargin) %#ok<*JAPIMATHWORKS>
    cprintf([1,0.5,0],'and multi-\nline orange\n');
    cprintf('*blue',  'and *bold* (R2011b+ only)\n');
    cprintf('string');  % same as fprintf('string') and cprintf('text','string')
-   fprint('\n');
+   fprintf('\n');
 %}
 
   persistent majorVersion minorVersion

@@ -89,7 +89,8 @@ uData = oiPlot(oi,'contrast hline',[1,rows])
 uData = oiPlot(oi,'irradiance image with grid',[],40)
 uData = oiPlot(oi,'irradiance image wave',[],500,40);
 
-uData = oiPlot(oi,'irradiance energy roi');
+% Commented out because it crashes.
+% uData = oiPlot(oi,'irradiance energy roi');
 
 uData = oiPlot(oi,'psf 550','um')
 uData = oiPlot(oi,'otf 550','um')

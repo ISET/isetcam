@@ -143,15 +143,18 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
    scene = sceneCreate('macbethEE_IR',patchSize,wave);
 %}
 %{
-%   The size of the individual patches, or bars, and wavelength sampling
-%   are parameters. They can be set a additional parameters
+    scene = sceneCreate('radialLines');
+%}
+%{
+    % The size of the individual patches, or bars, and wavelength sampling
+    % are parameters. They can be set a additional parameters
     patchSizePixels = 16;
     wave = [380:5:720];
     scene = sceneCreate('macbeth Tungsten',patchSizePixels,wave);
 %}
 %{
-   %   If you would like the color checker to have black borders around the
-   %   patches, then use
+   % If you would like the color checker to have black borders around the
+   % patches, then use
    patchSizePixels = 16; wave = [380:5:720]; blackBorder = true;
    scene = sceneCreate('macbeth d65',patchSizePixels,wave,...
              'macbethChart.mat',blackBorder);
@@ -1221,10 +1224,6 @@ function scene = sceneRadialLines(scene,imSize,spectralType,nLines)
 %   Dieter Wueller thinks this pattern is cool.
 %   Digital camera resolution measurement using sinusoidal Siemens stars
 %   Proc. SPIE, Vol. 6502, 65020N (2007); doi:10.1117/12.703817
-%
-% Examples:
-%  scene = sceneCreate('radialLines');
-%
 
 if ieNotDefined('scene'), error('Scene must be defined'); end
 if ieNotDefined('spectralType'), spectralType = 'ep'; end
@@ -1433,7 +1432,6 @@ list = (Y > barSlope*X );
 % the equal energy illuminant; that is, the SPD is all due to the
 % illuminant
 img( list ) = 1;
-%}
 
 % Prevent dynamic range problem with ieCompressData
 img = ieClip(img,1e-6,1);
