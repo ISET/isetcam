@@ -72,10 +72,10 @@ end
 %% Figure out the display.  Could be string or struct
 if ieNotDefined('display')
     wave = ipGet(ip,'wave');
-    display = displayCreate('lcdExample.mat',wave);
+    display = displayCreate('lcdExample.mat','wave',wave);
 elseif ischar(display)
     wave = ipGet(ip,'wave');
-    display = displayCreate(display,wave);
+    display = displayCreate(display,'wave',wave);
 end
 ip = ipSet(ip,'display',display);
 

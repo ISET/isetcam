@@ -172,7 +172,7 @@ plot(whitexy(1),whitexy(2),'k*'); hold off
 % I have no idea what monitor you are using -- this is a general problem
 % for the industry -- I am going to just make a guess and use a standard
 % set of monitor values.
-d = displayCreate('LCD-Apple',wavelength);
+d = displayCreate('LCD-Apple','wave',wavelength);
 
 % Now, compute the transformations from XYZ to linear rgb and
 % back for this monitor
