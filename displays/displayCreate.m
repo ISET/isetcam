@@ -98,8 +98,17 @@ else
     end
 end
 
+
+
+% Start out without an image.  Until we know what we should use.
+d = displaySet(d,'image',[]);
+
+% This was the ISETBio version, which seems worse.  I like empty
+% as the default for a display.  But keeping code here unless
+% something else breaks.
+%
 % Set the default scene rgb for ISETBIO, using main display image window
-d.mainimage = sceneGet(sceneCreate, 'rgb image');
+%d.mainimage = sceneGet(sceneCreate, 'rgb image');
 
 end % end displayCreate
 
