@@ -28,20 +28,20 @@ function [roiLocs,roi] = ieROISelect(obj,varargin)
 
 % Examples:
 %{
- % ETTPSkip
+ % ETTBSkip
  scene = sceneCreate; sceneWindow(scene);
  [~,rect] = ieROISelect(scene);
  r = ieROIDraw('scene','shape','rect','shape data',rect);
  delete(r);
 %}
 %{
- % ETTPSkip
+ % ETTBSkip
  ip = ieGetObject('ip');
  [roiLocs, rect] = ieROISelect(ip);
  r = ieROIDraw('ip','shape','rect','shape data',rect);
 %}
 %{
- % ETTPSkip
+ % ETTBSkip
  ip = ieGetObject('ip');
  ip = ipSet(ip,'roi',rect);
  ipPlot(ip,'roi');
