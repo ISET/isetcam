@@ -157,6 +157,7 @@ elseif isequal(oType,'wvf')
         elseif length(varargin) == 2
             oi.wvf = wvfSet(oi.wvf,parm,val,varargin{1},varargin{2});
         end
+        
         % Should we always do this here before returning?
         wvf = wvfCompute(oi.wvf);
         oi = wvf2oi(wvf);
