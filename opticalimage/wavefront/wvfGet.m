@@ -886,26 +886,7 @@ switch (parm)
                 % Leave it alone
             otherwise
                 error('Bad unit for samples space, %s', unit);
-        end
-        
-        %{
-       % This seems like a duplicate of the code in the previous case. BW
-       % commented it out.
-      case {'psfspatialsample'}
-        unit = 'mm';
-        wList = wvfGet(wvf, 'calc wave');  % BW changed to calc from meas
-        if ~isempty(varargin), unit = varargin{1}; end
-        if length(varargin) > 1, wList = varargin{2}; end
-        if length(wList) > 1, error('One wavelength only'); end
-        
-        % Get the samples in degrees
-        val = wvfGet(wvf, 'psf angular sample', 'deg', wList);
-        
-        % Convert to meters and then to selected spatial scale
-        mPerDeg = (wvfGet(wvf,'um per degree') * 10^-6);
-        val = val * mPerDeg;
-        val = val * ieUnitScaleFactor(unit);
-        %}
+        end               
 
     case {'pupilsupport','pupilspatialsamples'}
         % wvfGet(wvf, 'pupil spatial samples', 'mm', wList)

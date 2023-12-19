@@ -381,7 +381,7 @@ switch parm
         % and in general distObj = (-M+1)f/(-M) * f
         val = -(opticsGet(optics,'focal Plane Distance',sDist))/sDist;
         
-    case {'otf','otfdata','optical transfer function'}
+    case {'otf','otfdata'}
         %
         % Shift invariant:  opticsGet(optics,'otf', wave)
         % Diff limited:  otf = opticsGet(optics,'otf data',oi, fSupport, [wave]);
@@ -399,59 +399,51 @@ switch parm
         
         opticsModel = opticsGet(optics,'model');
         switch lower(opticsModel)
-            case 'diffractionlimited'
-                % For diffraction limited case, the call must be
-                % otf = opticsGet(optics,'otf data',oi, [units], [wave]);
-                
-                if isempty(varargin)
-                    disp('Using vcSession selected oi.')
-                    oi = ieGetObject('oi');
-                    % error('opticsGet(optics,''otf data'',oi,units,thisWave');
-                else
-                    oi = varargin{1};
-                end
-                if length(varargin) < 2, units = 'mm'; else, units = varargin{2}; end
-                if length(varargin) < 3, thisWave = []; else, thisWave = varargin{3}; end
-                
-                % Could this be XXXXXX  and thus avoid the oi argument?
-                %    opticsGet(optics,'dl fsupport',wave,unit,nSamp)
-                fSupport = oiGet(oi,'fSupport',units);   % 'cycles/mm'
-                % wavelength = oiGet(oi,'wave');
-                
-                % We don't store the OTF for diffraction limited. We
-                % compute it on the fly.
-                val = dlMTF(oi,fSupport,thisWave,units);
-                return
-                
-            case 'shiftinvariant'
-                % For the shift invariant case we store the OTF.
-                % Ugly: the calling syntax for this model differs from the
-                % calling syntax for diffraction limited.  We should fix!
-                %
-                %   opticsGet(optics,'otf data',thisWave);
-                %
-                if ~isempty(varargin), thisWave = varargin{1};
-                else, thisWave = []; end
-                
-                if checkfields(optics,'OTF','OTF'), OTF = optics.OTF.OTF;
-                else, val = []; return;  % No OTF found.
-                end
-                
-                % A wavelength is specified
-                if ~isempty(thisWave)
-                    % If we have that wavelength, return it
-                    [idx1,idx2] = ieWave2Index(opticsGet(optics,'otfWave'),thisWave);
-                    if idx1 == idx2, val = OTF(:,:,idx1);
+            case {'diffractionlimited','shiftinvariant'}
+                 
+                if checkfields(optics,'OTF','OTF')
+                    % We have an OTF 
+                    OTF = optics.OTF.OTF;
+
+                    %   opticsGet(optics,'otf data',thisWave);
+                    if ~isempty(varargin), thisWave = varargin{1};
+                    else, thisWave = []; end
+
+                    % A wavelength is specified
+                    if ~isempty(thisWave)
+                        % If we have that wavelength, return it
+                        [idx1,idx2] = ieWave2Index(opticsGet(optics,'otfWave'),thisWave);
+                        if idx1 == idx2, val = OTF(:,:,idx1);
+                        else
+                            % Interpolate between wavelengths.  Not my favorite idea.
+                            wave = opticsGet(optics,'otfwave');
+                            w   = 1 - ((varargin{1} - wave(idx1))/(wave(idx2) - wave(idx1)));
+                            val = (w*OTF(:,:,idx1) + (1-w)*OTF(:,:,idx2));
+                            % wave(idx1),  varargin{1}, wave(idx2), w
+                        end
                     else
-                        % Interpolate between wavelengths.  Not my favorite idea.
-                        wave = opticsGet(optics,'otfwave');
-                        w   = 1 - ((varargin{1} - wave(idx1))/(wave(idx2) - wave(idx1)));
-                        val = (w*OTF(:,:,idx1) + (1-w)*OTF(:,:,idx2));
-                        % wave(idx1),  varargin{1}, wave(idx2), w
+                        % No specified wavelength, so return the entire OTF
+                        val = OTF;
                     end
+                    return;
                 else
-                    % No specified wavelength, so return the entire OTF
-                    val = OTF;
+                    % The old diffraction limited case, in which we
+                    % compute the OTF on the fly.
+                    %
+                    % In this case the call must include the oi
+                    %
+                    %   otf = opticsGet(optics,'otf data',oi, [units], [wave]);
+
+                    oi = varargin{1};
+                    assert(isequal(oi.type,'opticalimage'))
+
+                    if length(varargin) < 2, units = 'mm'; else, units = varargin{2}; end
+                    if length(varargin) < 3, thisWave = []; else, thisWave = varargin{3}; end
+
+                    fSupport = oiGet(oi,'fSupport',units);   % 'cycles/mm'
+
+                    val = dlMTF(oi,fSupport,thisWave,units);
+                    return;
                 end
                 
             case 'raytrace'
@@ -604,6 +596,9 @@ switch parm
         
         % ----- Diffraction limited parameters
     case {'dlfsupport','dlfsupportmatrix'}
+        % This seems like a problem.  Two return formats?  f support
+        % depends on wavelength?  Oh boy. (BW).
+        %
         % Two different return formats.  Either
         %  val{1} and val{2} as vectors, or
         %  val  = fSupport(:,:,:);

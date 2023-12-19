@@ -1,4 +1,4 @@
-function [oi,val] = oiCreate(oiType,varargin)
+function [oi,wvf] = oiCreate(oiType,varargin)
 % Create an optical image structure that stores the irradiance at the
 % sensor
 %
@@ -45,6 +45,11 @@ function [oi,val] = oiCreate(oiType,varargin)
 %      oi = oiCreate('default');
 %      oi = initDefaultSpectrum('hyperspectral');
 %
+% Optional key/val
+%
+% Returns
+%   oi - The constructed optical image with the optics
+%   val - 
 % Copyright ImagEval Consultants, LLC, 2003.
 %
 % See also:  
@@ -80,18 +85,33 @@ else
         return;
     end
 end
-if ieNotDefined('val'),     val = vcNewObjectValue('OPTICALIMAGE'); end
-if ieNotDefined('optics'),  optics = opticsCreate('default'); end
 
-oi.type = 'opticalimage';
-oi.name = vcNewObjectName('opticalimage');
-oi.metadata = [];  % Store metadata typically for machine-learning apps
+% if ieNotDefined('val'),     val = vcNewObjectValue('OPTICALIMAGE'); end
+% if ieNotDefined('optics'),  optics = opticsCreate('diffraction limited'); end
+
+% oi.type = 'opticalimage';
+% oi.name = vcNewObjectName('opticalimage');
+% oi.metadata = [];  % Store metadata typically for machine-learning apps
 
 
 %%
 switch ieParamFormat(oiType)
-    case {'diffractionlimited','diffraction','default'}
-        oi = oiSet(oi,'optics',optics);
+    case {'empty'}
+        % Just the basic shell of the oi struct
+        % Other terms will get added by the calling function
+        oi.type = 'opticalimage';
+        oi.name = vcNewObjectName('opticalimage');
+        oi.metadata = [];  % Store metadata typically for machine-learning apps
+        oi = oiSet(oi, 'diffuser method', 'skip');
+
+    case {'diffractionlimited','shiftinvariant','diffraction','wvf','default'}
+
+        % We create via the wavefront method.  We convert the
+        % wavefront to an OI, and that process calls opticsCreate to
+        % convert the wvf parameters into an ISETCam optics struct.
+        wvf = wvfCreate('wave',(400:10:700)');
+        wvf = wvfCompute(wvf);
+        oi = wvf2oi(wvf);
         
         % Set up the default glass diffuser with a 2 micron blur circle, but
         % skipped
@@ -104,25 +124,7 @@ switch ieParamFormat(oiType)
             oi.optics = rmfield(oi.optics, 'lens');
             oi.optics.transmittance.wave = (370:730)';
             oi.optics.transmittance.scale = ones(length(370:730), 1);
-        end
-        
-    case {'shiftinvariant'}
-        % Rather than using the diffraction limited call to make the OTF
-        % we use some other method, perhaps wavefront.
-        % Human is a special form of shift-invariant.  We might make
-        % shiftinvariant-wvf or just wvf in the near future after
-        % experimenting some.
-        oi = oiSet(oi,'optics',opticsCreate('shift invariant',oi));
-        oi = oiSet(oi,'name','SI');
-        oi = oiSet(oi,'diffuserMethod','skip');
-
-        % Camera lenses use transmittance, not human lens.
-        if checkfields(oi.optics, 'lens')
-            warning('How did a human lens get in shift invariant?')
-            oi.optics = rmfield(oi.optics, 'lens');
-            oi.optics.transmittance.wave = (370:730)';
-            oi.optics.transmittance.scale = ones(length(370:730), 1);
-        end
+        end        
 
     case {'raytrace'}
         % Create the default ray trace unless a file name is passed in
@@ -138,7 +140,7 @@ switch ieParamFormat(oiType)
         % Historically, 'human' defaulted to the Marimont and Wandell
         % case.  Changed July, 2023. So this could create some
         % trouble. But so far so good.
-        oi = oiCreate('default');
+        oi = oiCreate('shift invariant');
         oi = oiSet(oi,'diffuserMethod','skip');
         oi = oiSet(oi,'optics',opticsCreate('human mw'));
         oi = oiSet(oi,'name','human-MW');
@@ -197,25 +199,26 @@ switch ieParamFormat(oiType)
         wave = 400:10:700; sz = 32;
         if length(varargin) >= 1, sz = varargin{1}; end
         if length(varargin) >= 2, wave = varargin{2}; end
-        oi = oiCreate; oi = oiSet(oi,'wave',wave);
+        oi = oiCreate('shift invariant'); 
+        oi = oiSet(oi,'wave',wave);
         oi = oiSet(oi,'photons',zeros(sz,sz,numel(wave)));
         oi = oiSet(oi,'fov',100);
         
-    case {'wvf'}
-        % A shift-invariant type based on a wavefront struct.
-        % The default wavefront structure is used, and it is attached
-        % to the oi.
-        
-        wvf = wvfCreate;  % This is diffraction limited
-        wvf = wvfCompute(wvf);
-
-        % The wvf is attached to oi.optics
-        oi  = wvf2oi(wvf);
-        oi = oiSet(oi,'wvf',wvf);
+        % case {'wvf'}
+        %     % A shift-invariant type based on a wavefront struct.
+        %     % The default wavefront structure is used, and it is attached
+        %     % to the oi.
+        %
+        %     wvf = wvfCreate;  % This is diffraction limited
+        %     wvf = wvfCompute(wvf);
+        %
+        %     % The wvf is attached to oi.optics
+        %     oi  = wvf2oi(wvf);
+        %     oi = oiSet(oi,'wvf',wvf);
         
     case {'pinhole'}
         % Pinhole camera version of OI
-        oi = oiCreate;
+        oi = oiCreate('shift invariant');
         oi = oiSet(oi, 'optics model', 'skip');
         oi = oiSet(oi, 'bit depth', 64);  % Forces double
         oi = oiSet(oi, 'optics offaxis method', 'skip');
@@ -237,7 +240,7 @@ switch ieParamFormat(oiType)
         error('***Unknown oiType: %s\n',oiType);
 end
 
-return;
+end
 
 %--------------------------------------------
 function oi = oiCreateUniformD65
@@ -257,7 +260,7 @@ oi = oiSet(oi,'optics offaxis method','skip');
 oi = oiCompute(oi,scene);
 
 
-return;
+end
 
 %---------------------------------------------
 function oi = oiCreateUniformEE(sz,wave)
@@ -275,4 +278,4 @@ oi = oiSet(oi,'optics fnumber',1e-3);
 oi = oiSet(oi,'optics offaxis method','skip');
 oi = oiCompute(oi, scene);
 
-return;
+end

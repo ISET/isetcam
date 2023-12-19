@@ -9,7 +9,7 @@ function oi = wvf2oi(wvf,varargin)
 %    the data in wvf.
 %
 %    Before calling this function, compute the pupil function and PSF,
-%    using wvfComputePupilFunction and wvfComputePSF.
+%    using wvfCompute.
 %
 %    Non-optics aspects of the oi structure are assigned default values.
 %
@@ -113,21 +113,6 @@ fx = wvfGet(wvf, 'otf support', 'mm', maxWave);
 fy = fx;
 [X, Y] = meshgrid(fx, fy);
 
-% This check happens within the for loop below.  Why is it here?
-%{
-% This section is here in case the frequency support for the WVF otf
-% varies with wavelength.  Not sure that it ever does. There is a
-% conditional that skips the inerpolation if the frequency support at
-% a wavelength matches that with the maximum, so this doesn't cost us
-% much time.
-%
-c0 = find(X(1, :) == 0);
-tmpN = length(fx);
-if (floor(tmpN / 2) + 1 ~= c0)
-    error('We do not understand where sf 0 should be in the sf array');
-end
-%}
-
 %% Set up the OTF variable
 
 % Allocate space.
@@ -139,6 +124,8 @@ otf    = zeros(length(fx), length(fx), length(wave));
 % support in the wvf structure at different wavelengths.
 for ww=1:length(wave)
 
+
+    %{
     % Over the years, we have not seen this error.  It tests whether f=0
     % (DC) is in the position we expect.
     f = wvfGet(wvf, 'otf support', 'mm', wave(ww));
@@ -146,6 +133,7 @@ for ww=1:length(wave)
         error(['wvf otf support does not have 0 sf in the '
             'expected location']);
     end
+    %}
     
     % The OTF has DC in the center.
     thisOTF = wvfGet(wvf,'otf',wave(ww));
@@ -178,20 +166,21 @@ ieNewGraphWin; mesh(X,Y,abs(ifftshift(otf(:,:,ww))));
 
 % This code works for the shiftinvariant optics, replacing the default
 % OTF.
-pupilSize = wvfGet(wvf,'calcpupilsize');
-zcoeffs = wvfGet(wvf,'zcoeffs');
-oi = oiCreate(model,pupilSize,zcoeffs,wave);
-oi = oiSet(oi,'optics fnumber',fnumber);
-oi = oiSet(oi,'optics focal length',flength);
+% pupilSize = wvfGet(wvf,'calcpupilsize');
+% zcoeffs   = wvfGet(wvf,'zcoeffs');
 
+oi = oiCreate('empty');
+
+optics = wvf2optics(wvf);
+oi = oiSet(oi,'optics',optics);
 oi = oiSet(oi, 'name', wvfGet(wvf, 'name'));
 
 % Copy the OTF parameters.
-oi = oiSet(oi, 'optics OTF fx', fx);
-oi = oiSet(oi, 'optics OTF fy', fy);
-oi = oiSet(oi, 'optics otfdata', otf);
-oi = oiSet(oi, 'optics OTF wave', wave);
-oi = oiSet(oi, 'wave', wave);
+% oi = oiSet(oi, 'optics OTF fx', fx);
+% oi = oiSet(oi, 'optics OTF fy', fy);
+% oi = oiSet(oi, 'optics otfdata', otf);
+% oi = oiSet(oi, 'optics OTF wave', wave);
+% oi = oiSet(oi, 'wave', wave);
 
 % 9/25/2023.  Adding the wvf to the oi.  This already happens in
 % oiCreate('wvf');

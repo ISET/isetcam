@@ -886,29 +886,27 @@ switch lower(pType)
         % Retrieve OTF data (which might be complex) from the optics
         opticsModel = opticsGet(optics,'opticsModel');
         switch lower(opticsModel)
-            case {'dlmtf','diffractionlimited'}
-                % Compute the otf data
-                
-                % Specify frequency support and compute the dl MTF
-                fSupport = opticsGet(optics,'dl fsupport matrix',thisWave,units,nSamp);
-                fSupport = fSupport*4;  % Enlarge the frequency support
-                otf = dlMTF(oi,fSupport,thisWave,units);
-                
-                % DC is at (1,1); we plot with DC in the center.
-                otf = fftshift(otf);
-                figTitle = sprintf('DL OTF at %.0f',thisWave);
-                
-            case {'shiftinvariant'}
-                % In this case, the otf data must be stored
-                otf = opticsGet(optics,'otf data',thisWave);
-                if isempty(otf), error('No OTF data'); end
-                
-                % Units are cycles/mm of optics support
-                % We are returned fSupport(:,:,1/2) for X and Y
-                fSupport = opticsGet(optics,'otf support matrix');
-                
+            case {'dlmtf','diffractionlimited','shiftinvariant'}
+                % Retrieve or compute the otf data
+                if checkfields(optics,'OTF','OTF')
+                    % In this case, the otf data are stored
+                    otf = opticsGet(optics,'otf data',thisWave);
+                    if isempty(otf), error('No OTF data'); end
+
+                    % Units are cycles/mm of optics support
+                    % We are returned fSupport(:,:,1/2) for X and Y
+                    fSupport = opticsGet(optics,'otf support matrix');
+                else
+                    % Specify frequency support and compute the dl MTF
+                    disp('Computing DL OTF')
+                    fSupport = opticsGet(optics,'dl fsupport matrix',thisWave,units,nSamp);
+                    fSupport = fSupport*4;  % Enlarge the frequency support
+                    otf = dlMTF(oi,fSupport,thisWave,units);
+                end
+
                 % Transform so DC is in center
                 otf = fftshift(otf);
+
                 figTitle = sprintf('abs(OTF) at %.0f nm',thisWave);
                 
             case {'raytrace'}
