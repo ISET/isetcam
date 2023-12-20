@@ -117,7 +117,7 @@ function val = wvfGet(wvf, parm, varargin)
 %       +'middle row'             - The middle row of sampled functions
 %
 %      Calculation parameters
-%        'calc pupil size'        - Pupil size for calculation (mm, *)
+%        'calc pupil diameter'    - Pupil size for calculation (mm, *)
 %        'calc optical axis'      - Optical axis to compute for (deg)
 %        'calc observer accommodation'
 %                                 - Observer accommodation at calculation
@@ -792,13 +792,16 @@ switch (parm)
         end
         
     case {'psfanglepersample', 'angleperpixel', 'angperpix'}
-        % Angular extent per pixel in the psf domain, for calculated
-        % wavelength(s).
+        % Angular extent for a single pixel in the psf domain, for
+        % calculated wavelength(s).
         %
         % wvfGet(wvf, 'psf angle per sample', unit, wList)
         % unit = 'min' (default), 'deg', or 'sec'
-        unit  = varargin{1};
-        wList = varargin{2};
+        unit = 'min';
+        wList = wvfGet(wvf, 'measured wavelength');
+        if ~isempty(varargin), unit = varargin{1}; end
+        if (length(varargin) > 1), wList = varargin{2}; end
+        
         val = wvfGet(wvf, 'psf arcmin per sample', wList);
         if ~isempty(unit)
             unit = lower(unit);
@@ -815,11 +818,12 @@ switch (parm)
         end
         
     case {'psfangularsamples'}
+        % Return 1d array of sampled angles for psf, centered on 0, for
+        % a single wavelength
+        %
         % Previously included the following: 'samplesangle',
         % 'samplesarcmin', 'supportarcmin'
         %
-        % Return one-d slice of sampled angles for psf, centered on 0, for
-        % a single wavelength
         % wvfGet(wvf, 'psf angular samples', unit, waveIdx)
         % unit = 'min' (default), 'deg', or 'sec'
         % Should call routine below to get anglePerPix.
@@ -837,10 +841,15 @@ switch (parm)
         val = anglePerPix * ((1:nPixels) - middleRow);
         
     case {'psfangularsample'}
+        % Returns a single angle value that is per pixel step
+        %
         % wvfGet(wvf, 'psf angular sample', unit, waveIdx)
         % unit = 'min' (default), 'deg', or 'sec'
-        unit = varargin{1};
-        wList = varargin{2};
+        unit = 'min';
+        wList = wvfGet(wvf, 'measured wavelength');
+        if ~isempty(varargin), unit = varargin{1}; end
+        if (length(varargin) > 1), wList = varargin{2}; end
+
         if (length(wList) > 1)
             error('This only works for one wavelength at a time');
         end

@@ -184,6 +184,9 @@ oi = oiSet(oi, 'name', wvfGet(wvf, 'name'));
 
 % 9/25/2023.  Adding the wvf to the oi.  This already happens in
 % oiCreate('wvf');
-oi = oiSet(oi, 'wvf', wvf);
+%
+% We decided against because when the oi itself is updated the wvf is
+% not updated.  This leads to mismatches.
+% oi = oiSet(oi, 'wvf', wvf);
 
 end

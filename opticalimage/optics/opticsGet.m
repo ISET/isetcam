@@ -202,6 +202,13 @@ switch parm
             end
         else, val = optics.fNumber;
         end
+    case {'zcoeffs','zernikecoefficients'}
+        % Zernike coefficients w.r.t the diameter below
+        val = optics.zCoeffs;
+    case {'zcoeffsdiameter'}
+        % Zernike polynomial diameter
+        val = optics.zDiameterMM;
+
     case {'model','opticsmodel'}
         if checkfields(optics,'model'), val = optics.model;
         else, val = 'diffractionLimited';

@@ -1,19 +1,20 @@
-function fSupport = oiFrequencySupport(oi,units)
-% Compute spatial frequency support for an optical image
+function fResolution = oiFrequencyResolution(oi,units)
+% Compute spatial frequency resolution for an optical image
 %
-%   fSupport = oiFrequencySupport(oi,units)
+%   fResolution = oiFrequencyResolution(oi,units)
 %
-% Various calculations require knowing the  spatial frequency supported by
-% the sampling density of a specific optical image. This routine computes
-% the spatial frequency support given the sampling density and size of the
-% optical image.  The fx and fy support are returned as arrays in
-% fSupport.fx and fSupport.fy.
+% Various calculations require knowing the  spatial frequency
+% supported by the sampling density of a specific optical image. This
+% routine computes the spatial frequency range and resolution given
+% the sampling density and size of the optical image.  The fx and fy
+% support are returned as arrays in fResolution.fx and fResolution.fy.
 %
-% This frequency support has to be coordinated with the frequency support
-% of the OTF stored in a shift-invariant optics model (e.g., diffraction
-% limited, shift-invariant, human).
+% This frequency resolution has to be coordinated with the frequency
+% support of the OTF stored in a shift-invariant optics model (e.g.,
+% diffraction limited, shift-invariant, human).  See oiGet(oi,'fsupport')
+% and oiGet(oi,'frequency resolution')
 %
-% The default units of fSupport are cycles/deg of visual angle. Other
+% The default units of fResolution are cycles/deg of visual angle. Other
 % options are cycles/distance (e.g., cycles/meter, cycles/mm,
 % cycles/microns).
 %
@@ -22,7 +23,8 @@ function fSupport = oiFrequencySupport(oi,units)
 %    fScpd = oiFrequencySupport(oi,'cycPerDeg');
 %    fScpd = oiFrequencySupport(oi);
 %
-% See also:  sceneFrequencySupport, opticsGet(optics,'otf support')
+% See also:  
+%   sceneFrequencySupport, opticsGet(optics,'otf support')
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
@@ -63,7 +65,7 @@ end
 
 % DC = 1.  The first coefficient, K, past the Nyquist is (K-1) > N/2,
 % K > (N/2 + 1).  This is managed in the unitFrequencyList routine.
-fSupport.fx = unitFrequencyList(nCols)*maxFrequency(1);
-fSupport.fy = unitFrequencyList(nRows)*maxFrequency(2);
+fResolution.fx = unitFrequencyList(nCols)*maxFrequency(1);
+fResolution.fy = unitFrequencyList(nRows)*maxFrequency(2);
 
 end

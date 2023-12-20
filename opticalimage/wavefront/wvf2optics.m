@@ -133,6 +133,13 @@ optics = opticsSet(optics,'otfdata', otf);
 optics = opticsSet(optics,'OTF wave', wave);
 optics = opticsSet(optics,'wave', wave);
 
+% We are planning to compute the OTF for shiftinvariant and
+% diffraction limited on the fly.  We will do that by storing the
+% zcoeffs in the optics.  The pupil aperture can be calculated from
+% the fnumber and focal length (aperture = fLength/fNumber)
+optics = opticsSet(optics,'zcoeffs',wvfGet(wvf,'zcoeffs'));
+optics = opticsSet(optics,'zcoeffs diameter',wvfGet(wvf,'measured pupil diameter'));
+
 % ISETCam transmittance representation initialized as 1s.
 optics.transmittance.wave = opticsGet(optics,'wave');
 optics.transmittance.scale = ones(size(optics.transmittance.wave));

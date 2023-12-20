@@ -41,7 +41,7 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %      {'macbeth EE_IR'}       - Equal energy extends out to the IR
 %      {L star}                - Vertical bars spaced in equal L* steps
 %
-
+%
 %   Use sceneAdjustIlluminant() to change the scene SPD.
 %
 % REFLECTANCE CHART

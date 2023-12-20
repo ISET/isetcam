@@ -108,8 +108,8 @@ switch lower(opticsType)
         wvf = wvfSet(wvf,'focal length',fLengthM);
 
         % Annoying but necessary
-        wvf = wvfSet(wvf,'measuredpupil diameter',pupilDiameterM*1e3);
-        wvf = wvfSet(wvf,'calcpupil diameter',pupilDiameterM*1e3);
+        wvf = wvfSet(wvf,'measured pupil diameter',pupilDiameterM*1e3);
+        wvf = wvfSet(wvf,'calc pupil diameter',pupilDiameterM*1e3);
 
         wvf = wvfCompute(wvf);
        
@@ -232,8 +232,8 @@ switch lower(opticsType)
             'name', sprintf('human-%d', pupilDiameterMM), ...
             'umPerDegree', umPerDegree, ...
             'customLCA', customLCA);
-        wvfP = wvfSet(wvfP, 'measured pupil size', measPupilDiameterMM);
-        wvfP = wvfSet(wvfP, 'calc pupil size', pupilDiameterMM);
+        wvfP = wvfSet(wvfP, 'measured pupil diameter', measPupilDiameterMM);
+        wvfP = wvfSet(wvfP, 'calc pupil diameter', pupilDiameterMM);
 
         % Include human chromatic aberration because this is wvf human
         wvfP   = wvfCompute(wvfP, 'human lca', true);

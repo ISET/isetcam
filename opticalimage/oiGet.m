@@ -789,7 +789,7 @@ switch oType
                 if isempty(varargin), units = 'cyclesPerDegree';
                 else, units = varargin{1};
                 end
-                val = oiFrequencySupport(oi,units);
+                val = oiFrequencyResolution(oi,units);
             case {'maxfrequencyresolution','maxfreqres'}
                 % Default is cycles/deg.  By using
                 % oiGet(oi,'maxfreqres',units) you can get cycles/{meters,mm,microns}
@@ -797,9 +797,9 @@ switch oType
                 if isempty(varargin), units = 'cyclesPerDegree';
                 else, units = varargin{1};
                 end
-                % val = oiFrequencySupport(oi,units);
+                % val = oiFrequencyResolution(oi,units);
                 if isempty(varargin), units = []; end
-                fR = oiGet(oi,'frequencyResolution',units);
+                fR = oiGet(oi,'frequency resolution',units);
                 val = max(max(fR.fx),max(fR.fy));
             case {'frequencysupport','fsupportxy','fsupport2d','fsupport'}
                 % val = oiGet(oi,'frequency support',units);

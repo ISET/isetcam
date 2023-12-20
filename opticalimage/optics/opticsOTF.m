@@ -1,20 +1,31 @@
 function oi = opticsOTF(oi,scene,varargin)
 % Apply the opticalImage OTF to the photon data
 %
+% Synopsis
 %    oi = opticsOTF(oi,scene,varargin);
 %
-% The optical transform function (OTF) associated with the optics in
-% the OI is applied to the scene data.  This function is called for
-% shift-invariant and diffraction-limited models.  It is not called
-% for the ray trace calculation, which uses a different method
-% (pointspreads derived from Zemax). 
+% Inputs
+%   oi
+%  scene
 %
-% The OTF data are spectral and thus can be rather large.  The
-% spectral OTF represents every spatial frequency in every waveband.
+% Optional key/val
 %
-% The programming issues concerning using Matlab to apply the OTF to the
-% image (rather than convolution in the space domain) are explained
-% below.
+% Return
+%   oi
+%
+% Description
+%   The optical transform function (OTF) associated with the optics in
+%   the OI is applied to the scene data.  This function is called for
+%   shift-invariant and diffraction-limited models.  It is not called
+%   for the ray trace calculation, which uses the (ray trace method)
+%   pointspreads derived from Zemax.
+%
+%   The OTF data are spectral and thus can be rather large.  The
+%   spectral OTF represents every spatial frequency in every waveband.
+%
+%   The programming issues concerning using Matlab to apply the OTF to the
+%   image (rather than convolution in the space domain) are explained
+%   below.
 %
 % See also
 %  oiCalculateOTF, oiCompute
@@ -46,10 +57,7 @@ switch lower(opticsModel)
         irradianceImage = oiGet(oi,'photons');
         oi = oiSet(oi,'photons',irradianceImage);
         
-    case {'dlmtf','diffractionlimited'}
-        oi = oiApplyOTF(oi,scene,'mm',p.Results.padvalue);
-        
-    case {'shiftinvariant','custom','humanotf'}
+    case {'dlmtf','diffractionlimited','shiftinvariant','custom','humanotf'}
         oi = oiApplyOTF(oi,scene,'mm',p.Results.padvalue);
         
     otherwise

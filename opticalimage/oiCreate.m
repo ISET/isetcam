@@ -3,7 +3,7 @@ function [oi,wvf] = oiCreate(oiType,varargin)
 % sensor
 %
 % Syntax
-%   oi = oiCreate(oiType,varargin)
+%   [oi, wvf] = oiCreate(oiType,varargin)
 %
 % Description
 %  The oi structure describes the image irradiance at the sensor along with
@@ -62,13 +62,13 @@ function [oi,wvf] = oiCreate(oiType,varargin)
 
 % Example
 %{
-oi = oiCreate;
+[oi,wvf] = oiCreate;
 oi = oiCreate('diffraction limited');  % As above
-oi = oiCreate('human');
-oi = oiCreate('ray trace',rtOpticsFile);
+[oi,wvf] = oiCreate('human');
+% oi = oiCreate('ray trace',rtOpticsFile);
 oi = oiCreate('uniform d65');  % D65 used for lux-sec vs. snr measurements.
 oi = oiCreate('uniform EE');   % Create an equal energy
-oi = oiCreate('uniform EE',64,(380:4:1068)); % Set size and wave
+[oi,wvf] = oiCreate('uniform EE',64,(380:4:1068)); % Set size and wave
 %}
 %
 
@@ -86,14 +86,6 @@ else
     end
 end
 
-% if ieNotDefined('val'),     val = vcNewObjectValue('OPTICALIMAGE'); end
-% if ieNotDefined('optics'),  optics = opticsCreate('diffraction limited'); end
-
-% oi.type = 'opticalimage';
-% oi.name = vcNewObjectName('opticalimage');
-% oi.metadata = [];  % Store metadata typically for machine-learning apps
-
-
 %%
 switch ieParamFormat(oiType)
     case {'empty'}
@@ -103,6 +95,7 @@ switch ieParamFormat(oiType)
         oi.name = vcNewObjectName('opticalimage');
         oi.metadata = [];  % Store metadata typically for machine-learning apps
         oi = oiSet(oi, 'diffuser method', 'skip');
+        wvf = [];
 
     case {'diffractionlimited','shiftinvariant','diffraction','wvf','default'}
 
@@ -126,6 +119,11 @@ switch ieParamFormat(oiType)
             oi.optics.transmittance.scale = ones(length(370:730), 1);
         end        
 
+        % Enables the oiWindow to show fnumber and flength
+        if isequal(ieParamFormat(oiType),'diffractionlimited')
+            oi.optics.model = 'diffractionlimited';
+        end
+
     case {'raytrace'}
         % Create the default ray trace unless a file name is passed in
         oi = oiCreate('default');
@@ -140,7 +138,7 @@ switch ieParamFormat(oiType)
         % Historically, 'human' defaulted to the Marimont and Wandell
         % case.  Changed July, 2023. So this could create some
         % trouble. But so far so good.
-        oi = oiCreate('shift invariant');
+        [oi,wvf] = oiCreate('shift invariant');
         oi = oiSet(oi,'diffuserMethod','skip');
         oi = oiSet(oi,'optics',opticsCreate('human mw'));
         oi = oiSet(oi,'name','human-MW');
@@ -168,7 +166,6 @@ switch ieParamFormat(oiType)
         % oi.optics.wvf
         [optics,wvf] = opticsCreate('wvf human', varargin{:});
         oi = oiSet(oi, 'optics', optics);
-        oi = oiSet(oi,'wvf',wvf);
         oi = oiSet(oi, 'name', 'human-WVF');
         oi = oiSet(oi, 'optics lens', Lens('wave', oiGet(oi, 'optics wave')));
 
@@ -181,7 +178,8 @@ switch ieParamFormat(oiType)
         % Uniform, D65 optical image.  No cos4th falloff, huge field of
         % view (120 deg). Used in lux-sec SNR testing and scripting
         oi = oiCreateUniformD65;
-        
+        wvf = [];
+
     case {'uniformee','uniformeespecify'}
         % Uniform, equal energy optical image. No cos4th falloff. Might be used in
         % lux-sec SNR testing or scripting.  Not really used now
@@ -190,7 +188,8 @@ switch ieParamFormat(oiType)
         if length(varargin) >= 1, sz = varargin{1}; end
         if length(varargin) >= 2, wave = varargin{2}; end
         oi = oiCreateUniformEE(sz,wave);
-        
+        wvf = [];
+
     case {'black'}
         % oi = oiCreate('black',sz,wave);
         %
@@ -202,20 +201,9 @@ switch ieParamFormat(oiType)
         oi = oiCreate('shift invariant'); 
         oi = oiSet(oi,'wave',wave);
         oi = oiSet(oi,'photons',zeros(sz,sz,numel(wave)));
-        oi = oiSet(oi,'fov',100);
-        
-        % case {'wvf'}
-        %     % A shift-invariant type based on a wavefront struct.
-        %     % The default wavefront structure is used, and it is attached
-        %     % to the oi.
-        %
-        %     wvf = wvfCreate;  % This is diffraction limited
-        %     wvf = wvfCompute(wvf);
-        %
-        %     % The wvf is attached to oi.optics
-        %     oi  = wvf2oi(wvf);
-        %     oi = oiSet(oi,'wvf',wvf);
-        
+        oi = oiSet(oi,'fov',100);        
+        wvf = [];
+
     case {'pinhole'}
         % Pinhole camera version of OI
         oi = oiCreate('shift invariant');
@@ -229,7 +217,8 @@ switch ieParamFormat(oiType)
         oi = oiSet(oi, 'optics focal length',NaN);
         oi = oiSet(oi, 'optics name','pinhole');
         oi = oiSet(oi, 'name', 'pinhole');
-        
+        wvf = [];
+
     otherwise
         fprintf('\n--- Valid OI types: ---\n')
         for ii=1:length(validTypes)

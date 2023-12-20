@@ -1,4 +1,4 @@
-function [OTF2D, fSupport] = customOTF(oi,fSupport,wavelength,units)
+function [OTF2D, fSupport] = custom2OTF(oi,fSupport,wavelength,units)
 % Interpolate optics OTF for shift-invariant calculation in optical image
 %
 % Brief
@@ -6,7 +6,7 @@ function [OTF2D, fSupport] = customOTF(oi,fSupport,wavelength,units)
 %  sampling in the optical image.
 %
 % Synopsis
-%  [OTF2D,fSupport] = customOTF(oi,[fSupport],[wavelength = :],[units='mm'])
+%  [OTF2D,fSupport] = custom2OTF(oi,[fSupport],[wavelength = :],[units='mm'])
 %
 % Input
 %  oi         - Optical image
@@ -60,8 +60,21 @@ fx    = fSupport(:,:,1); fy = fSupport(:,:,2);
 nX    = size(fx,2);      nY = size(fy,1);
 nWave = length(wavelength);
 
-optics     = oiGet(oi,'optics');
+optics = oiGet(oi,'optics');
+wvf    = optics2wvf(optics);
 
+%{
+% Can we match the oi support by setting the parameters of the wvf
+% wvfGet(wvf,'psf support','um')
+
+% We want the spatial samples in the wvf to match the spatial sample
+% spacing in the oi
+oiDelta  = oiGet(oi,'sample spacing','um');
+wvfDelta = wvfGet(wvf,'pupil spatial sample','um');
+
+wvf = wvfCompute(wvf);
+
+%}
 % This OTF is a property of the optics and we represent it when we
 % create the original OI.  The frequency sampling may or may not match
 % the frequency sampling we need for the current oi.
@@ -102,7 +115,7 @@ else
     for ii=1:length(wavelength)
         tmp = opticsGet(optics,'otfData',wavelength(ii));
         %  ieNewGraphWin; mesh(X,Y,fftshift(abs(tmp)));
-        %  ieNewGraphWin; mesh(abs(fft2(tmp)));
+        %  ieNewGraphWin; mesh(fftshift(abs(fft2(tmp))));
         % fftshift(interp2(X, Y, fftshift(tmp), fx, fy, 'linear',0));
         OTF2D(:,:,ii) = ...
             fftshift(interp2(X, Y, fftshift(tmp), fx, fy, 'linear',0));
@@ -110,6 +123,7 @@ else
           ieNewGraphWin; 
           mesh(fx,fy,fftshift(abs(OTF2D(:,:,ii))));  
           set(gca,'xlim',[-1000 1000],'ylim',[-1000 1000]);
+          ieNewGraphWin; imagesc(fftshift(abs(fft2(OTF2D(:,:,ii)))));
         %}
     end
 end
