@@ -124,7 +124,6 @@ otf    = zeros(length(fx), length(fx), length(wave));
 % support in the wvf structure at different wavelengths.
 for ww=1:length(wave)
 
-
     %{
     % Over the years, we have not seen this error.  It tests whether f=0
     % (DC) is in the position we expect.
@@ -170,10 +169,12 @@ ieNewGraphWin; mesh(X,Y,abs(ifftshift(otf(:,:,ww))));
 % zcoeffs   = wvfGet(wvf,'zcoeffs');
 
 oi = oiCreate('empty');
+oi = oiSet(oi, 'wave', wave);
 
 optics = wvf2optics(wvf);
 oi = oiSet(oi,'optics',optics);
 oi = oiSet(oi, 'name', wvfGet(wvf, 'name'));
+
 
 % Copy the OTF parameters.
 % oi = oiSet(oi, 'optics OTF fx', fx);

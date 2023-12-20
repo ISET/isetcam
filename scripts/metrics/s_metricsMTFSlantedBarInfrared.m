@@ -132,12 +132,16 @@ masterRect = [39    25    51    65];
 
 roiLocs = ieRect2Locs(masterRect);
 
+% BUG HERE
 barImage = vcGetROIData(ip,roiLocs,'results');
 c = masterRect(3)+1;
 r = masterRect(4)+1;
 barImage = reshape(barImage,r,c,3);
-% figure; imagesc(barImage(:,:,1)); axis image; colormap(gray(64));
-% pause;
+%{
+ieNewGraphWin;
+imagesc(barImage(:,:,1)); 
+axis image; colormap(gray(64));
+%}
 
 dxmm = sensorGet(sensor,'pixel width','mm');
 
@@ -150,7 +154,7 @@ ISO12233(barImage, dxmm);
 
 sensor = sensorSet(sensor,'ir filter',irFilter);
 sensor = sensorCompute(sensor,oi);
-ieAddObject(sensor);
+% ieAddObject(sensor);
 
 %% Compute the MTF with the rectangle selected automatically
 

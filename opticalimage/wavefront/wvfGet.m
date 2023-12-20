@@ -801,7 +801,7 @@ switch (parm)
         wList = wvfGet(wvf, 'measured wavelength');
         if ~isempty(varargin), unit = varargin{1}; end
         if (length(varargin) > 1), wList = varargin{2}; end
-        
+
         val = wvfGet(wvf, 'psf arcmin per sample', wList);
         if ~isempty(unit)
             unit = lower(unit);
@@ -962,10 +962,12 @@ switch (parm)
     case {'otf'}
         % wvfGet(wvf, 'otf', wave)
         %
-        % Return the otf from the psf.  Until July, 2023 we computed the
-        % OTF from the PsfToOtf function in Psychtoolbox.
+        % Compute OTF from the psf, using the PTB routine PsfToOtf
+        %        
+        % The frequency support can be calculated with respect to
+        % different units using
         %
-        % What are the spatial units? cyc/mm?
+        %    wvfGet(wvf, 'otfsupport', unit, wave)
 
         wave = wvfGet(wvf, 'calc wave');
         if ~isempty(varargin), wave = varargin{1}; end
@@ -974,26 +976,26 @@ switch (parm)
         end
         psf = wvfGet(wvf, 'psf', wave);
         
-        % Compute OTF.
+        % Use PTB PsfToOtf to convert to (0,0) sf at the center of the
+        % otf representation.  This differs from the ISETCam optics
+        % structure convention, where (0,0) sf is at the upper left.
         %
-        % Use PTB PsfToOtf to convert to (0,0) sf at center otf
-        % representation.  This differs from the ISETCam optics structure
-        % convention, where (0,0) sf is at the upper left. 
+        % The basic calculation in PsfToOtf is
+        %
+        %   otf = fftshift(fft2(ifftshift(psf)));
+        %
         [~,~,val] = PsfToOtf([],[],psf);
         
-        % BW: July 2023
-        % We used to apply ifftshift to put 0,0 in the upper left.
-        % This is only needed in wvf2oi, and we removed it here.
-        % val = ifftshift(val);
-        
-        % We used to zero out small imaginary values.  This, however, can
-        % cause numerical problems much worse than having small imaginary
-        % values in the otf.  So we don't do it anymore.
+        % From PTB:  We used to zero out small imaginary values.
+        % This, however, can cause numerical problems much worse than
+        % having small imaginary values in the otf.  So we don't do it
+        % anymore.
         
     case {'otfsupport'}
-        % wvfGet(wvf, 'otfsupport', unit, wave)
+        % Spatial frequency support (default cyc/mm) for the OTF.
+        % Different units can be requested.
         %
-        % Spatial frequency support (default cyc/mm) for the OTF
+        % wvfGet(wvf, 'otfsupport', unit, wave)
         %
         unit = 'mm';
         wave = wvfGet(wvf, 'calc wave');

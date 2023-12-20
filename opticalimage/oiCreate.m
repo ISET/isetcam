@@ -95,6 +95,7 @@ switch ieParamFormat(oiType)
         oi.name = vcNewObjectName('opticalimage');
         oi.metadata = [];  % Store metadata typically for machine-learning apps
         oi = oiSet(oi, 'diffuser method', 'skip');
+        oi = oiSet(oi,'wave',[]);
         wvf = [];
 
     case {'diffractionlimited','shiftinvariant','diffraction','wvf','default'}
@@ -104,7 +105,7 @@ switch ieParamFormat(oiType)
         % convert the wvf parameters into an ISETCam optics struct.
         wvf = wvfCreate('wave',(400:10:700)');
         wvf = wvfCompute(wvf);
-        oi = wvf2oi(wvf);
+        oi  = wvf2oi(wvf);
         
         % Set up the default glass diffuser with a 2 micron blur circle, but
         % skipped
