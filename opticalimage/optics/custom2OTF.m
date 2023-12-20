@@ -63,7 +63,7 @@ nWave = length(wavelength);
 optics = oiGet(oi,'optics');
 wvf    = optics2wvf(optics);
 
-%{
+% {
 % Can we match the oi support by setting the parameters of the wvf
 % wvfGet(wvf,'psf support','um')
 
@@ -71,14 +71,23 @@ wvf    = optics2wvf(optics);
 % spacing in the oi
 oiDelta  = oiGet(oi,'sample spacing','mm');
 wvfDelta = wvfGet(wvf,'pupil spatial sample','mm');
-refSizeOfFieldMM = oiGet(oi, 'diagonal','mm');
-nSpatialSamples = ceil(refSizeOfFieldMM/oiDelta(1))
+
+% optics aperture
+refSizeOfFieldMM = wvf.calcpupilMM; % focallength/fnumber
+% whether we should use diagonal of film which we can get with:
+% diagonal = oiGet(oi,'diagonal','mm')
+% Another thing we need to fix is that OTF.*FFT2(image), the size of OTF
+% and Image has to be the same, it means we will pad zeros to image (addition to the original padding?)
+
+nSpatialSamples = ceil(refSizeOfFieldMM/oiDelta(1));
 
 wvf = wvfSet(wvf, 'spatial samples', nSpatialSamples);
-wvf = wvfSet(wvf, 'ref pupil plane size mm', refSizeOfFieldMM);
 wvf = wvfCompute(wvf);
-
+for ii = 1:nWave
+    OTF2D(:,:,ii) = wvfGet(wvf,'otf',wavelength(ii));
+end
 %}
+%{
 % This OTF is a property of the optics and we represent it when we
 % create the original OI.  The frequency sampling may or may not match
 % the frequency sampling we need for the current oi.
@@ -127,9 +136,9 @@ else
           ieNewGraphWin; 
           mesh(fx,fy,fftshift(abs(OTF2D(:,:,ii))));  
           set(gca,'xlim',[-1000 1000],'ylim',[-1000 1000]);
-          ieNewGraphWin; imagesc(fftshift(abs(fft2(OTF2D(:,:,ii)))));
+          ieNewGraphWin; imagesc(fftshift(abs(ifft2(OTF2D(:,:,ii)))));
         %}
     end
 end
-
+%}
 end

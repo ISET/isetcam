@@ -83,13 +83,13 @@ p = inputParser;
 p.addRequired('wvf',@isstruct);
 p.addParameter('model','shiftinvariant',@(x)(ismember(x,{'shiftinvariant','humanmw','human','wvfhuman','humanwvf'})));
 p.parse(wvf,varargin{:});
-model = p.Results.model;
+% model = p.Results.model;
 
 %% Collect up basic wvf parameters
-wave    = wvfGet(wvf, 'calc wave');
-fnumber = wvfGet(wvf,'fnumber');
-flength = wvfGet(wvf,'flength','m');
-
+% wave    = wvfGet(wvf, 'calc wave');
+% fnumber = wvfGet(wvf,'fnumber');
+% flength = wvfGet(wvf,'flength','m');
+%{
 %% First we figure out the frequency support.
 fMax = 0;
 for ww = 1:length(wave)
@@ -153,7 +153,7 @@ for ww=1:length(wave)
     % reorganization of the data.
     otf(:, :, ww) = ifftshift(est);
 end
-
+%}
 %{
 % Stored format
 ieNewGraphWin; mesh(X,Y,abs(otf(:,:,ww)));
@@ -169,7 +169,7 @@ ieNewGraphWin; mesh(X,Y,abs(ifftshift(otf(:,:,ww))));
 % zcoeffs   = wvfGet(wvf,'zcoeffs');
 
 oi = oiCreate('empty');
-oi = oiSet(oi, 'wave', wave);
+oi = oiSet(oi, 'wave', wvfGet(wvf, 'calc wave'));
 
 optics = wvf2optics(wvf);
 oi = oiSet(oi,'optics',optics);
