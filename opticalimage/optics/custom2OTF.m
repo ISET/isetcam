@@ -69,9 +69,13 @@ wvf    = optics2wvf(optics);
 
 % We want the spatial samples in the wvf to match the spatial sample
 % spacing in the oi
-oiDelta  = oiGet(oi,'sample spacing','um');
-wvfDelta = wvfGet(wvf,'pupil spatial sample','um');
+oiDelta  = oiGet(oi,'sample spacing','mm');
+wvfDelta = wvfGet(wvf,'pupil spatial sample','mm');
+refSizeOfFieldMM = oiGet(oi, 'diagonal','mm');
+nSpatialSamples = ceil(refSizeOfFieldMM/oiDelta(1))
 
+wvf = wvfSet(wvf, 'spatial samples', nSpatialSamples);
+wvf = wvfSet(wvf, 'ref pupil plane size mm', refSizeOfFieldMM);
 wvf = wvfCompute(wvf);
 
 %}
