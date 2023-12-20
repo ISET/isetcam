@@ -1,8 +1,9 @@
 %% Evaluating an infrared camera MTF
 %
-% The MTF is calculated using the slanted edge target (ISO 12233
-% calculation).  This is a long (and older) version of the more
-% calculation illustrated in s_metricsMTFSlantedBar.
+% Calculate the ISO12233 MTF the slanted edge target. 
+% 
+% This is a long (and older) version of the more calculation
+% illustrated in s_metricsMTFSlantedBar.
 %
 % The processing steps illustrated are
 %
@@ -15,7 +16,7 @@
 % and spatial CFA
 %
 % See also:  sceneCreate, ieReadColorFilter, ieRect2Locs,
-% vcGetROIData, ISO12233
+%            vcGetROIData, ISO12233
 %
 % Copyright ImagEval Consultants, LLC, 2010
 
@@ -42,7 +43,7 @@ scene = sceneSet(scene,'fov',fov);            % Field of view in degrees
 sceneWindow(scene);
 
 %% Create an optical image with some default optics.
-oi = oiCreate;
+oi = oiCreate('diffraction limited');
 fNumber = 4;
 oi = oiSet(oi,'optics fnumber',fNumber);
 
@@ -74,7 +75,7 @@ wave   = sceneGet(scene,'wave');
 nSensors    = length(allNames);
 filterNames = cell(1,nSensors);
 for ii=1:nSensors, filterNames{ii} = allNames{ii}; end
-% vcNewGraphWin; plot(wave,filterSpectra)
+% ieNewGraphWin; plot(wave,filterSpectra)
 
 % Adjusting the wavelength requires updating several fields - the
 % sensor, the pixel, the photodetector QE, and the infrared
@@ -84,12 +85,12 @@ sensor = sensorSet(sensor,'wave',wave);
 sensor = sensorSet(sensor,'filterSpectra',filterSpectra);
 sensor = sensorSet(sensor,'filterNames',filterNames);
 sensor = sensorSet(sensor,'ir filter',ones(size(wave)));
-% vcNewGraphWin; plot(wave,sensorGet(sensor,'irFilter'))
+% ieNewGraphWin; plot(wave,sensorGet(sensor,'irFilter'))
 
 pixel  = sensorGet(sensor,'pixel');
 pixel  = pixelSet(pixel,'pd spectral qe',ones(size(wave)));
 sensor = sensorSet(sensor,'pixel',pixel);
-% vcNewGraphWin; plot(wave,pixelGet(pixel,'pd spectral qe'))
+% ieNewGraphWin; plot(wave,pixelGet(pixel,'pd spectral qe'))
 
 % Match the sensor size to the scene FOV. Also matches the CFA size to the
 % sensor (I think).
