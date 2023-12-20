@@ -123,7 +123,11 @@ ipWindow(ip);
 %% Define the rect for the ISO12233 calculation
 
 % Have the user select the edge.
-masterRect = [39    25    51    65];
+% masterRect = [39    25    51    65];
+
+% This changed around December 2023.  Not sure why.  Probably some
+% object changed size? (BW)
+masterRect = [166    82   226   303];
 
 % It is also possible to estimate the rectangle automatically using
 % ISOFindSlantedBar, which is called in ieISO12233()
@@ -149,12 +153,12 @@ dxmm = sensorGet(sensor,'pixel width','mm');
 ISO12233(barImage, dxmm);
 
 %% Compare what happens when we place an IR blocking filter in the path
+
 [irFilter,irName] = ieReadColorFilter(wave,'IRBlocking');
-% vcNewGraphWin; plot(wave,irFilter);
+% ieNewGraphWin; plot(wave,irFilter);
 
 sensor = sensorSet(sensor,'ir filter',irFilter);
 sensor = sensorCompute(sensor,oi);
-% ieAddObject(sensor);
 
 %% Compute the MTF with the rectangle selected automatically
 
@@ -166,15 +170,17 @@ mtf = ieISO12233(ip);
 ieNewGraphWin;
 mtf.lsfx = mtf.lsfx*1000;  % Convert to microns
 plot(mtf.lsfx, mtf.lsf);
-xlabel('Position (um)'); ylabel('Relative intensity'); grid on;
+xlabel('Position (um)'); ylabel('Relative intensity'); 
+title('Line spread'); grid on;
 dxum = dxmm*1000;
 mxmn = 30;
-set(gca,'xlim',[-mxmn mxmn]);
+set(gca,'xlim',[-mxmn mxmn],'ylim',[0 1]);
 
 % Changed from 77 to 75 on Nov. 11, 2019.  This was part of a fix of the
 % ISOFindSlantedBar code that put the rect more into the center of the
 % edge.
-assert(abs(mtf.mtf50 - 75) <= 3);
+% Then it changed back to 67 in Dec. 2023.  No idea why.
+assert(abs(mtf.mtf50 - 67) <= 3);
 
 ipWindow(ip);
 h = ieDrawShape(ip,'rectangle',mtf.rect);
