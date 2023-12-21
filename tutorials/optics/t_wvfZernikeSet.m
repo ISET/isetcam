@@ -26,27 +26,30 @@ scene = sceneCreate('freq orient',params);
 scene = sceneSet(scene,'fov',5);
 
 %% Create wavefront object and convert it to an optical image object
-wvf = wvfCreate;
-wvf = wvfCompute(wvf,'human lca',true);
-    wvfPlot(wvf,'psf','unit','um','wave',550,'plotrange',20);  % PSF in micron scale
-oi = wvf2oi(wvf,'model','humanwvf');
+
+% This method attaches the human lens to the optics
+[oi, wvf] = oiCreate('wvf human');
+
+wvfPlot(wvf,'psf','unit','um','wave',550,'plotrange',20);  % PSF in micron scale
+oiPlot(oi,'psf');
 
 %% Make an ISET optical image
 
 oi = oiCompute(oi,scene);
 oi = oiSet(oi,'name','Diffraction');
+
+% OI is quite yellow
 oiWindow(oi);
 
 %% Change the defocus coefficient
 
-wvf = wvfCreate;
+wvf = wvfCreate('wave',sceneGet(scene,'wave'));
 D = [0 1 2];    % Amount of defocus
 for ii=1:length(D)
     wvf = wvfSet(wvf,'zcoeffs',D(ii),{'defocus'});
     wvf = wvfCompute(wvf,'human lca',true);
     wvfPlot(wvf,'psf','unit','um','wave',550,'plotrange',40);  % PSF in micron scale
-    
-    oi = wvf2oi(wvf,'model','humanwvf');
+    oi = wvf2oi(wvf,'human lens',true);
     oi = oiCompute(oi,scene);
     oi = oiSet(oi,'name',sprintf('Human D %.1f',D(ii)));
     oiWindow(oi);
@@ -54,14 +57,14 @@ end
 
 %% Increase astigmatism combined with some defocus
 
-wvf = wvfCreate();  % Create the struct
+% This time, I did not add the human lens.  So the image looks more white.
+wvf = wvfCreate('wave',sceneGet(scene,'wave'));
 A = [-1, 0, 1];     % Amount of astigmatism
 for ii=1:length(A)
     wvf = wvfSet(wvf,'zcoeffs',[2, A(ii)],{'defocus','vertical_astigmatism'});
     wvf = wvfCompute(wvf,'human lca',true);
     wvfPlot(wvf,'psf','unit','um','wave',550,'plotrange',40);  % PSF in micron scale
-    oi = wvf2oi(wvf,'model','humanwvf');
-    oi = oiCompute(oi,scene);
+    oi = oiCompute(wvf,scene);
     oi = oiSet(oi,'name',sprintf('Human D %.1f, A %.1f',0.5,A(ii)));
     oiWindow(oi);
 end

@@ -1,5 +1,5 @@
 function oi = wvf2oi(wvf,varargin)
-% Convert wavefront data to ISETBIO optical image with optics
+% Convert wavefront data to ISETCam optical image
 %
 % Syntax:
 %   oi = wvf2oi(wvf)
@@ -16,13 +16,21 @@ function oi = wvf2oi(wvf,varargin)
 % Inputs:
 %    wvf - A wavefront parameters structure (with a computed PF and PSF)
 %
+% Optional key/val
+%
+%    'human lens' - Replace the standard ISETCam lens transmittance slots
+%                   with the human lens object used by ISETBio
+%
 % Outputs:
 %    oi  - Optical image struct
 %
 % See also
-%   s_wvfDiffraction
+%   oiCreate, s_wvfDiffraction
 %
 % Notes:
+%  * BW:  ZL and I wrote the wvf2optics() method.  We needed it as part of
+%     the deeper integration of wvf with oiCreate. We used it here to make
+%     this function shorter and easier.
 %  * BW:  The wvf2oi(wvf) function did not match the wvf and oi.  I spent a
 %     bunch of time checking for the diffraction limited case on both the
 %     wvf side and the oi side.  Still more to check (07.01.23). But
@@ -75,119 +83,51 @@ function oi = wvf2oi(wvf,varargin)
     oi = wvf2oi(wvf);
     oiPlot(oi, 'psf550');
 %}
+%{
+    wvf = wvfCreate;
+    wvf = wvfCompute(wvf);
+    oi = wvf2oi(wvf,'human lens',true);
+    scene = sceneCreate;
+    oi = oiCompute(oi,scene);
+    oiWindow(oi);
+%}
 
 %% Set up parameters
 varargin = ieParamFormat(varargin);
 
 p = inputParser;
 p.addRequired('wvf',@isstruct);
-p.addParameter('model','shiftinvariant',@(x)(ismember(x,{'shiftinvariant','humanmw','human','wvfhuman','humanwvf'})));
+p.addParameter('humanlens',false,@islogical);
+
 p.parse(wvf,varargin{:});
-% model = p.Results.model;
-
-%% Collect up basic wvf parameters
-% wave    = wvfGet(wvf, 'calc wave');
-% fnumber = wvfGet(wvf,'fnumber');
-% flength = wvfGet(wvf,'flength','m');
-%{
-%% First we figure out the frequency support.
-fMax = 0;
-for ww = 1:length(wave)
-    f = wvfGet(wvf, 'otf support', 'mm', wave(ww));
-    if max(f(:)) > fMax
-       fMax = max(f(:));
-       maxWave = wave(ww);
-    end
-end
-
-% Copy the frequency support from the wvf struct into ISET.  We match the
-% number of frequency samples and wavelength.
-%
-% The wvf otf representation has DC frequency at the center of the matrix.
-% But ISETCam uses OTF with DC represented in the upper left corner (1,1).
-% We manage the difference with fftshift calls.
-%
-
-% Set up the frequency parameters and the X,Y mesh grids.
-fx = wvfGet(wvf, 'otf support', 'mm', maxWave);
-fy = fx;
-[X, Y] = meshgrid(fx, fy);
-
-%% Set up the OTF variable
-
-% Allocate space.
-otf    = zeros(length(fx), length(fx), length(wave));
-
-%% Interpolate the WVF OTF data into the ISET OTF data for each wavelength.
-%
-% The interpolation is here in case there is different frequency
-% support in the wvf structure at different wavelengths.
-for ww=1:length(wave)
-
-    %{
-    % Over the years, we have not seen this error.  It tests whether f=0
-    % (DC) is in the position we expect.
-    f = wvfGet(wvf, 'otf support', 'mm', wave(ww));
-    if (f(floor(length(f) / 2) + 1) ~= 0)
-        error(['wvf otf support does not have 0 sf in the '
-            'expected location']);
-    end
-    %}
-    
-    % The OTF has DC in the center.
-    thisOTF = wvfGet(wvf,'otf',wave(ww));
-    % ieNewGraphWin; mesh(X,Y,abs(thisOTF));
-
-    if (all(f == fx))
-        % Straight assignment.  No interpolation.  This is the usual
-        % path.
-        est = thisOTF;
-    else
-        warning('Interpolating OTF from wvf to oi.')
-        est = interp2(f, f', thisOTF, X, Y, 'cubic', 0);
-    end
-    
-    % ISETCam and ISETBio have the OTF with (0, 0) sf at the upper left. At
-    % this point, the data have (0,0) in the center.  Thus we use ifftshift
-    % to the wvf centered format. Using fftshift() can invert this
-    % reorganization of the data.
-    otf(:, :, ww) = ifftshift(est);
-end
-%}
-%{
-% Stored format
-ieNewGraphWin; mesh(X,Y,abs(otf(:,:,ww)));
-% This plots it centered.
-ieNewGraphWin; mesh(X,Y,abs(ifftshift(otf(:,:,ww))));
-%}
 
 %% Set the frequency support and OTF data into the optics slot of the OI
-
-% This code works for the shiftinvariant optics, replacing the default
-% OTF.
-% pupilSize = wvfGet(wvf,'calcpupilsize');
-% zcoeffs   = wvfGet(wvf,'zcoeffs');
 
 oi = oiCreate('empty');
 oi = oiSet(oi, 'wave', wvfGet(wvf, 'calc wave'));
 
+% Convert the wvf parameters into ISETCam optics struct. The most important
+% is the OTF, but we also manage fnumber and focal length.
 optics = wvf2optics(wvf);
 oi = oiSet(oi,'optics',optics);
 oi = oiSet(oi, 'name', wvfGet(wvf, 'name'));
 
+% Convert the ISETCam lens transmittance to the default human lens
+if p.Results.humanlens
+    oi = oiSet(oi, 'optics lens', Lens('wave', oiGet(oi, 'optics wave')));
+    if checkfields(oi.optics, 'transmittance')
+        oi.optics = rmfield(oi.optics, 'transmittance');
+    end
+end
 
-% Copy the OTF parameters.
-% oi = oiSet(oi, 'optics OTF fx', fx);
-% oi = oiSet(oi, 'optics OTF fy', fy);
-% oi = oiSet(oi, 'optics otfdata', otf);
-% oi = oiSet(oi, 'optics OTF wave', wave);
-% oi = oiSet(oi, 'wave', wave);
-
-% 9/25/2023.  Adding the wvf to the oi.  This already happens in
-% oiCreate('wvf');
+% We used to add the wvf to the oi struct. But, we decided against adding
+% it because when the oi is updated the wvf is not updated. This leads to
+% mismatches. Also, the wvf struct is large because it contains the pupil
+% func and the psfs.
 %
-% We decided against because when the oi itself is updated the wvf is
-% not updated.  This leads to mismatches.
-% oi = oiSet(oi, 'wvf', wvf);
+% Instead, oiCreate returns the wvf as an optional second argument. The
+% user can keep that around if interested.
+%
+% oi = oiSet(oi, 'wvf',wvf);
 
 end

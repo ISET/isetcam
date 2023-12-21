@@ -6,7 +6,7 @@ function optics = wvf2optics(wvf,varargin)
 %
 % Description:
 %    Convert a wavefront structure into an ISETCam optics struct whose
-%    OTF, frequency data and parameters match the wvf.
+%    OTF, frequency data and other parameters match the wvf.
 %
 %    Before calling this function, compute the pupil function and PSF,
 %    using wvfCompute.

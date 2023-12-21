@@ -1,13 +1,12 @@
 function [oi,wvf] = oiCreate(oiType,varargin)
-% Create an optical image structure that stores the irradiance at the
-% sensor
+% Create an optical image structure 
 %
 % Syntax
 %   [oi, wvf] = oiCreate(oiType,varargin)
 %
 % Description
-%  The oi structure describes the image irradiance at the sensor along with
-%  many optics metadata.  The oi includes the optics structure.
+%  The oi structure describes the optics parameters and stores image
+%  irradiance (at the sensor). The oi includes the optics structure.
 %
 % Inputs
 %   oiType -
@@ -15,50 +14,64 @@ function [oi,wvf] = oiCreate(oiType,varargin)
 %                         data (Default).  Equivalent to using the wvf or
 %                         shift-invariant with a zero wavefront
 %                         aberrations.
+%
 %     {'shift invariant'}  -  Shift-invariant model, used for wavefront
 %                      calculations in ISETCam and also as the basis for
 %                      the wvf human (wavefront model estimated from
 %                      adaptive optics)
+%
 %     {'wvf human'}  - Human shift-invariant optics based on mean
 %                      wavefront abberration from Thibos et al. (2009,
 %                      Ophthalmic & Physiological Optics). Optional
 %                      parameters can be passed for this case (see below).
 %                      Also includes the human Lens default.
+%
 %     {'wvf'}        - Use the wavefront measurements to define the optics.
 %     
 %     {'human mw'}   - Human shift-invariant optics model with chromatic
 %                      aberration estimated by Marimont-Wandell
+%
 %     {'ray trace'}  - Ray trace OI, which is a limited form of ray
 %                      tracing. It includes a wavelength-dependent and
 %                      field height dependent PSF, along with relative
 %                      illumination and geometric distortion.  These data
 %                      are derived from Zemax, typically. 
 %
-%  These are used for snr-lux testing
 %     {'uniform d65'} - Turns off offaxis to make uniform D65 image
-%     {'uniform ee'}  - Turns off offaxis and creates uniform EE image
-%     {'black'}        - A black OI used for sensor parameter estimates
 %
-% The wavelength spectrum is normally inherited from the scene.  To
-% specify a spectrum for the optical image use
+%     {'uniform ee'}  - Turns off offaxis and creates uniform EE image
+%
+%     {'black'}       - A black OI used for sensor parameter estimates
+%
+%
+% Optional key/val
+%   
+%   varargin - parameters are used for rayTrace, human wvf, uniform d65,
+%      uniform ee and black.
+% 
+%     rayTrace    - varargin{1} = rtFileName
+%     human wvf   - varargin{:} passed to opticsCreate
+%
+%     uniform d65, uniform ee, black -  
+%          sz = varargin{1}; wave = varargin{2};  
+%
+% Returns
+%   oi  - The constructed optical image with the optics
+%   wvf - The optics structure is created from a wavefront struct. That
+%         struct is optionally returned as the second argument.
+%
+% Description
+%
+%  The wavelength spectrum is normally inherited from the scene.  To
+%  specify a spectrum for the optical image use
 %
 %      oi = oiCreate('default');
 %      oi = initDefaultSpectrum('hyperspectral');
 %
-% Optional key/val
-%
-% Returns
-%   oi - The constructed optical image with the optics
-%   val - 
 % Copyright ImagEval Consultants, LLC, 2003.
 %
 % See also:  
-%   sceneCreate, oiCompute, oiSet/Get, wvfCreate, wvf2oi
-
-% TODO:
-%   Create a human oi without Thibos based on the diffraction limited
-%   wvf.  It should have the lens class attached.
-%
+%   sceneCreate, oiCompute, oiSet/Get, wvfCreate, wvf2oi, wvf2optics
 
 % Example
 %{
@@ -178,7 +191,10 @@ switch ieParamFormat(oiType)
     case {'uniformd65'}
         % Uniform, D65 optical image.  No cos4th falloff, huge field of
         % view (120 deg). Used in lux-sec SNR testing and scripting
-        oi = oiCreateUniformD65;
+        wave = 400:10:700; sz = 32;
+        if length(varargin) >= 1, sz = varargin{1}; end
+        if length(varargin) >= 2, wave = varargin{2}; end
+        oi = oiCreateUniformD65(sz,wave);
         wvf = [];
 
     case {'uniformee','uniformeespecify'}
@@ -233,14 +249,14 @@ end
 end
 
 %--------------------------------------------
-function oi = oiCreateUniformD65
+function oi = oiCreateUniformD65(sz,wave)
 %  Create a spatially uniform, D65 image with a very large field of view.
 %  The optical image is created without any cos4th fall off so it can be
 %  used for lux-sec SNR testing.  The diffraction limited fnumber is set
 %  for no blurring.
 %
 
-scene = sceneCreate('uniform d65');
+scene = sceneCreate('uniform d65',sz,wave);
 scene = sceneSet(scene,'hfov',120);
 ieAddObject(scene);
 
@@ -248,7 +264,6 @@ oi = oiCreate('default');
 oi = oiSet(oi,'optics fnumber',1e-3);
 oi = oiSet(oi,'optics offaxis method','skip');
 oi = oiCompute(oi,scene);
-
 
 end
 
