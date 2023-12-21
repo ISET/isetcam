@@ -269,8 +269,12 @@ for ii = 1:nWavelengths
     % We might come back and carefully comment all this new code someday,
     % as well as look more closely at s_wvfDiffraction.
     sz = round((nPixels - boundingBox(3))/2) - 2;
-    aperture = padarray(aperture,[sz,sz],0,'both');    
+    if sz > 0
+        % In some cases, there is no need to pad.
+        aperture = padarray(aperture,[sz,sz],0,'both');
+    end
     aperture = imresize(aperture,[nPixels,nPixels],'nearest');
+    
     % ieNewGraphWin; imagesc(pupilPos,pupilPos,aperture); axis image    
 
     % Keep the amplitude within bounds. imresize, with some interpolation,

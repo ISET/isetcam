@@ -997,6 +997,8 @@ switch (parm)
         %
         % wvfGet(wvf, 'otfsupport', unit, wave)
         %
+        % The frequency support is wavelength specific
+        %
         unit = 'mm';
         wave = wvfGet(wvf, 'calc wave');
         if ~isempty(varargin), unit = varargin{1}; end
