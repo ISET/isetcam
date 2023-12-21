@@ -1,6 +1,7 @@
 function [otf,fSupport] = oiCalculateOTF(oi,wave,unit)
 %Calculate the optical transfer function for the optical image
 %
+% Synopsis
 %   [otf,fSupport] = oiCalculateOTF(oi,[wave],[unit = 'cyclesPerDegree'])
 %
 % The optical transfer function (OTF) is derived from the optics
@@ -60,6 +61,7 @@ switch lower(opticsModel)
         % calculation and the units specified for the custom OTF be
         % the same.  Can we check?
         otf = customOTF(oi,fSupport,wave,unit);
+        % otf = custom2OTF(oi,fSupport,wave,unit);
         
     case {'skip','skipotf'}
         % Doesn't really happen.

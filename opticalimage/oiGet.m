@@ -182,7 +182,26 @@ switch oType
         % val =  opticsGet(optics,parm,varargin{:});
         optics = oi.optics;
         if isempty(parm), val = optics;
-        else, val = opticsGet(optics,parm,varargin{:});
+        else
+            switch(parm)
+                case {'otf','otfdata'}
+                    % In the old diffraction limited case the fsupport
+                    % comes from an oiGet, so we need to send in the
+                    % oi.  This is bad and we should have fsupport
+                    % available from the optics itself. In general,
+                    % this is not the case.  It would be best if we
+                    % could make the opticsGet() retrieve fsupport
+                    % without using the oi.  And maybe it does because
+                    % there is a dlfsupport get in there.
+                    if ~checkfields(optics,'OTF','OTF')
+                        val = opticsGet(optics,parm,oi,varargin{:});
+                    else
+                        val = opticsGet(optics,parm,varargin{:});
+                    end
+                otherwise
+                    % All other gets.
+                    val = opticsGet(optics,parm,varargin{:});
+            end
         end
 
         %{
@@ -770,7 +789,7 @@ switch oType
                 if isempty(varargin), units = 'cyclesPerDegree';
                 else, units = varargin{1};
                 end
-                val = oiFrequencySupport(oi,units);
+                val = oiFrequencyResolution(oi,units);
             case {'maxfrequencyresolution','maxfreqres'}
                 % Default is cycles/deg.  By using
                 % oiGet(oi,'maxfreqres',units) you can get cycles/{meters,mm,microns}
@@ -778,9 +797,9 @@ switch oType
                 if isempty(varargin), units = 'cyclesPerDegree';
                 else, units = varargin{1};
                 end
-                % val = oiFrequencySupport(oi,units);
+                % val = oiFrequencyResolution(oi,units);
                 if isempty(varargin), units = []; end
-                fR = oiGet(oi,'frequencyResolution',units);
+                fR = oiGet(oi,'frequency resolution',units);
                 val = max(max(fR.fx),max(fR.fy));
             case {'frequencysupport','fsupportxy','fsupport2d','fsupport'}
                 % val = oiGet(oi,'frequency support',units);

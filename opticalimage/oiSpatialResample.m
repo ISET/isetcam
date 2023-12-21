@@ -32,10 +32,11 @@ yN = ymin:dx:ymax;
 % fprintf('Current  dx = %f meters\n',ss.y(2) - ss.y(1));
 % fprintf('Proposed dx = %f meters\n',dx);
 % fprintf('New scene size %d (rows) %d (cols)\n',length(yN),length(xN));
-if length(xN) > 1000 || length(yN) > 1000
-    fprintf('Very large scene.  Any key to continue\n');
-    pause
-end
+
+% Removed Dec. 2023.
+% if length(xN) > 1000 || length(yN) > 1000
+%     warning('Very large scene.');
+% end
 
 %% Interpolate the image for each waveband
 nWave = oiGet(oi,'nwave');

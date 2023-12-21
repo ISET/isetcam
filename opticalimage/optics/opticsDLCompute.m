@@ -45,6 +45,7 @@ oi = oiSet(oi,'wave',sceneGet(scene,'wave'));
 
 oi = oiSet(oi,'optics otf wave',sceneGet(scene,'wave'));
 
+% Delete this by Jan 1 2024.
 % optics = opticsSet(optics,'spectrum',oiGet(oi,'spectrum'));
 % oi     = oiSet(oi,'optics',optics);
 

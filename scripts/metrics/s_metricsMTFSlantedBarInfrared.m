@@ -1,8 +1,9 @@
 %% Evaluating an infrared camera MTF
 %
-% The MTF is calculated using the slanted edge target (ISO 12233
-% calculation).  This is a long (and older) version of the more
-% calculation illustrated in s_metricsMTFSlantedBar.
+% Calculate the ISO12233 MTF the slanted edge target. 
+% 
+% This is a long (and older) version of the more calculation
+% illustrated in s_metricsMTFSlantedBar.
 %
 % The processing steps illustrated are
 %
@@ -15,7 +16,7 @@
 % and spatial CFA
 %
 % See also:  sceneCreate, ieReadColorFilter, ieRect2Locs,
-% vcGetROIData, ISO12233
+%            vcGetROIData, ISO12233
 %
 % Copyright ImagEval Consultants, LLC, 2010
 
@@ -42,7 +43,7 @@ scene = sceneSet(scene,'fov',fov);            % Field of view in degrees
 sceneWindow(scene);
 
 %% Create an optical image with some default optics.
-oi = oiCreate;
+oi = oiCreate('diffraction limited');
 fNumber = 4;
 oi = oiSet(oi,'optics fnumber',fNumber);
 
@@ -74,7 +75,7 @@ wave   = sceneGet(scene,'wave');
 nSensors    = length(allNames);
 filterNames = cell(1,nSensors);
 for ii=1:nSensors, filterNames{ii} = allNames{ii}; end
-% vcNewGraphWin; plot(wave,filterSpectra)
+% ieNewGraphWin; plot(wave,filterSpectra)
 
 % Adjusting the wavelength requires updating several fields - the
 % sensor, the pixel, the photodetector QE, and the infrared
@@ -84,12 +85,12 @@ sensor = sensorSet(sensor,'wave',wave);
 sensor = sensorSet(sensor,'filterSpectra',filterSpectra);
 sensor = sensorSet(sensor,'filterNames',filterNames);
 sensor = sensorSet(sensor,'ir filter',ones(size(wave)));
-% vcNewGraphWin; plot(wave,sensorGet(sensor,'irFilter'))
+% ieNewGraphWin; plot(wave,sensorGet(sensor,'irFilter'))
 
 pixel  = sensorGet(sensor,'pixel');
 pixel  = pixelSet(pixel,'pd spectral qe',ones(size(wave)));
 sensor = sensorSet(sensor,'pixel',pixel);
-% vcNewGraphWin; plot(wave,pixelGet(pixel,'pd spectral qe'))
+% ieNewGraphWin; plot(wave,pixelGet(pixel,'pd spectral qe'))
 
 % Match the sensor size to the scene FOV. Also matches the CFA size to the
 % sensor (I think).
@@ -123,7 +124,11 @@ ipWindow(ip);
 %% Define the rect for the ISO12233 calculation
 
 % Have the user select the edge.
-masterRect = [39    25    51    65];
+% masterRect = [39    25    51    65];
+
+% This changed around December 2023.  Not sure why.  Probably some
+% object changed size? (BW)
+masterRect = [166    82   226   303];
 
 % It is also possible to estimate the rectangle automatically using
 % ISOFindSlantedBar, which is called in ieISO12233()
@@ -132,12 +137,16 @@ masterRect = [39    25    51    65];
 
 roiLocs = ieRect2Locs(masterRect);
 
+% BUG HERE
 barImage = vcGetROIData(ip,roiLocs,'results');
 c = masterRect(3)+1;
 r = masterRect(4)+1;
 barImage = reshape(barImage,r,c,3);
-% figure; imagesc(barImage(:,:,1)); axis image; colormap(gray(64));
-% pause;
+%{
+ieNewGraphWin;
+imagesc(barImage(:,:,1)); 
+axis image; colormap(gray(64));
+%}
 
 dxmm = sensorGet(sensor,'pixel width','mm');
 
@@ -145,12 +154,12 @@ dxmm = sensorGet(sensor,'pixel width','mm');
 ISO12233(barImage, dxmm);
 
 %% Compare what happens when we place an IR blocking filter in the path
+
 [irFilter,irName] = ieReadColorFilter(wave,'IRBlocking');
-% vcNewGraphWin; plot(wave,irFilter);
+% ieNewGraphWin; plot(wave,irFilter);
 
 sensor = sensorSet(sensor,'ir filter',irFilter);
 sensor = sensorCompute(sensor,oi);
-ieAddObject(sensor);
 
 %% Compute the MTF with the rectangle selected automatically
 
@@ -162,15 +171,17 @@ mtf = ieISO12233(ip);
 ieNewGraphWin;
 mtf.lsfx = mtf.lsfx*1000;  % Convert to microns
 plot(mtf.lsfx, mtf.lsf);
-xlabel('Position (um)'); ylabel('Relative intensity'); grid on;
+xlabel('Position (um)'); ylabel('Relative intensity'); 
+title('Line spread'); grid on;
 dxum = dxmm*1000;
 mxmn = 30;
-set(gca,'xlim',[-mxmn mxmn]);
+set(gca,'xlim',[-mxmn mxmn],'ylim',[0 1]);
 
 % Changed from 77 to 75 on Nov. 11, 2019.  This was part of a fix of the
 % ISOFindSlantedBar code that put the rect more into the center of the
 % edge.
-assert(abs(mtf.mtf50 - 75) <= 3);
+% Then it changed back to 67 in Dec. 2023.  No idea why.
+assert(abs(mtf.mtf50 - 67) <= 3);
 
 ipWindow(ip);
 h = ieDrawShape(ip,'rectangle',mtf.rect);

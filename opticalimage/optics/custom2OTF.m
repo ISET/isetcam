@@ -1,12 +1,15 @@
-function [OTF2D, fSupport] = customOTF(oi,fSupport,wavelength,units)
-% Interpolate optics OTF for shift-invariant calculation in optical image
+function [OTF2D, fSupport] = custom2OTF(oi,fSupport,wavelength,units)
+% Calculate the OTF2D and freq support for a specific shift-invariant
+% OI
 %
 % Brief
 %  This routine returns appropriate spectral OTF given the spatial
-%  sampling in the optical image.
+%  sampling in the optical image.  This version supercedes customOTF,
+%  by using the wavefront methods rather than the interp2() methods we
+%  used for many years.
 %
 % Synopsis
-%  [OTF2D,fSupport] = customOTF(oi,[fSupport],[wavelength = :],[units='mm'])
+%  [OTF2D,fSupport] = custom2OTF(oi,[fSupport],[wavelength = :],[units='mm'])
 %
 % Input
 %  oi         - Optical image
@@ -60,8 +63,75 @@ fx    = fSupport(:,:,1); fy = fSupport(:,:,2);
 nX    = size(fx,2);      nY = size(fy,1);
 nWave = length(wavelength);
 
-optics     = oiGet(oi,'optics');
+optics = oiGet(oi,'optics');
+wvf    = optics2wvf(optics);
+wvf    = wvfSet(wvf,'wave',wavelength);
 
+% {
+% Can we match the oi support by setting the parameters of the wvf
+% wvfGet(wvf,'psf support','um')
+
+% We want the OTF and PSF to be nX by nY
+% The 
+
+% We want the spatial samples in the wvf to match the spatial sample
+% spacing in the oi
+oiDelta  = oiGet(oi,'sample spacing','mm');
+
+% This is the 
+% wvfDelta = wvfGet(wvf,'pupil spatial sample','mm');
+
+%{
+  % We want this
+  [OTF.fx,OTF.fy] = wvfSupport(pupilDiameter,focalLength,sampleSpacing,nSamples)
+  OTF.OTF = wvfComputeOTF(zcoefs,pupilDiameter,OTF.fx,OTF.fy,OTF.wave);
+  optics = opticsSet(optics,'otf',OTF)
+%}
+
+% whether we should use diagonal of film which we can get with:
+% diagonal = oiGet(oi,'diagonal','mm')
+% Another thing we need to fix is that OTF .* FFT2(image), the size of OTF
+% and Image has to be the same, it means we will pad zeros to image
+% (addition to the original padding?) 
+
+% nSpatialSamples = ceil(refSizeOfFieldMM/oiDelta(1));
+
+% Match the field size of the OI.  This impacts the sampling density
+% in the PSF representation.  We would like this to match the sampling
+% density of oiDelta.  It matches with 2*oiDelta.  We don't
+% understasnd that, but perhaps it is a radius vs. diameter thing.  We
+% aren't sure why the number of samples has to be 10x either.
+wvf = wvfSet(wvf,'field size mm',10*2*oiDelta(1)*nX);
+
+% This forces the number of spatial samples to be nX
+wvf = wvfSet(wvf, 'spatial samples', 10*nX);
+
+% We need to force the size of the image to be 
+% refSizeOfFieldMM = wvf.calcpupilMM; % focallength/fnumber
+
+wvf = wvfCompute(wvf);  
+% wvfPlot(wvf,'psf','unit','um','wave',550,'plot range',15);
+
+%{
+% These should match
+S = wvfGet(wvf,'otf support','mm',550);
+S(end)
+otfSupport = opticsGet(optics,'otfSupport','mm');
+otfSupport.fx(end)
+
+% These match, but we are not happy about it.
+oiGet(oi,'sample spacing','um')
+wvfGet(wvf,'field sample size','um',550)/2
+
+%}
+
+OTF2D = zeros(nX,nX,nWave);
+for ii = 1:nWave
+    OTF2D(:,:,ii) = wvfGet(wvf,'otf',wavelength(ii));
+end
+
+%}
+%{
 % This OTF is a property of the optics and we represent it when we
 % create the original OI.  The frequency sampling may or may not match
 % the frequency sampling we need for the current oi.
@@ -102,7 +172,7 @@ else
     for ii=1:length(wavelength)
         tmp = opticsGet(optics,'otfData',wavelength(ii));
         %  ieNewGraphWin; mesh(X,Y,fftshift(abs(tmp)));
-        %  ieNewGraphWin; mesh(abs(fft2(tmp)));
+        %  ieNewGraphWin; mesh(fftshift(abs(fft2(tmp))));
         % fftshift(interp2(X, Y, fftshift(tmp), fx, fy, 'linear',0));
         OTF2D(:,:,ii) = ...
             fftshift(interp2(X, Y, fftshift(tmp), fx, fy, 'linear',0));
@@ -110,8 +180,9 @@ else
           ieNewGraphWin; 
           mesh(fx,fy,fftshift(abs(OTF2D(:,:,ii))));  
           set(gca,'xlim',[-1000 1000],'ylim',[-1000 1000]);
+          ieNewGraphWin; imagesc(fftshift(abs(ifft2(OTF2D(:,:,ii)))));
         %}
     end
 end
-
+%}
 end

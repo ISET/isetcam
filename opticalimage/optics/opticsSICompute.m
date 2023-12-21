@@ -37,11 +37,10 @@ optics = oiGet(oi,'optics');
 oi = oiSet(oi,'wangular',sceneGet(scene,'wangular'));
 oi = oiSet(oi,'wave',sceneGet(scene,'wave'));
 
-if isempty(opticsGet(optics,'otfdata')), error('No psf data'); end
+if isempty(opticsGet(optics,'otfdata')), error('No OTF data'); end
 
 % We use the custom data.
-% optics = opticsSet(optics,'spectrum',oiGet(oi,'spectrum'));
-oi     = oiSet(oi,'optics',optics);
+% oi     = oiSet(oi,'optics',optics);
 
 % Convert radiance units to optical image irradiance (photons/(s m^2 nm))
 if showWbar
