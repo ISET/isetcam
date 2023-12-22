@@ -114,14 +114,17 @@ optics = opticsCreate('empty');
 optics = opticsSet(optics, 'name', 'wvf');
 optics = opticsSet(optics, 'model', 'shiftinvariant');
 
-% Standard 1/4-inch sensor parameters
-% sensorDiagonal = 0.004;
-% FOV = 46;
-% fLength = inv(tan(FOV / 180 * pi) / 2 / sensorDiagonal) / 2;
-
 % Collect up basic wvf parameters
 fnumber = wvfGet(wvf,'fnumber');
 flength = wvfGet(wvf,'flength','m');
+%{
+ % wvf2oiSpecial says
+ focalLengthMM = (umPerDegree * 1e-3) / (2 * tand(0.5));
+ focalLengthMeters = focalLengthMM * 1e-3;
+
+ % If so, we should use that formula in wvfGet and not have a special slot
+ % for focal length!  I have asked DHB about this.
+%}
 
 optics = opticsSet(optics, 'fnumber', fnumber);  
 optics = opticsSet(optics, 'focalLength', flength);

@@ -39,8 +39,7 @@ oiW = oiCreate('wvf human', pupilMM, zCoefs, wave);
 % Compute with wavefront version and display
 oiW = oiCompute(oiW,scene);
 oiW = oiSet(oiW, 'name', 'Wavefront');
-vcAddAndSelectObject(oiW);
-oiWindow;
+oiWindow(oiW);
 
 %% The standard default optics, Marimont and Wandell PSF.
 oiM = oiCreate('human');
@@ -48,7 +47,6 @@ oiM = oiCreate('human');
 % Compute with M/W version and display
 oiM = oiCompute(oiM,scene);
 oiM = oiSet(oiM, 'name', 'Marimont');
-vcAddAndSelectObject(oiM);
-oiWindow;
+oiWindow(oiM);
 
 %% END
