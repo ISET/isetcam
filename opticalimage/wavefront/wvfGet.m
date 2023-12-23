@@ -483,17 +483,26 @@ switch (parm)
         
     case {'focallength','flength'}
         % wvfGet(wvf,'focal length',unit);
-        % We use the focal length (m) to calculate meters per degree in psf
-        % spatial samples.
-        if isfield(wvf,'focallength'), val = wvf.focallength; 
-        else
-            warning('Using 17 mm focal length by default.')
-            val = 17e-3;  % 17 mm is default
-        end
-        
-        if ~isempty(varargin)
-            val = val*ieUnitScaleFactor(varargin{1});
-        end
+        %
+        % Default units for focal length is mm
+        %
+        % The focal length is determined by the umPerDeg parameter.
+        %
+        %  op/adj = tand(1); op = tand(1)*adj;
+        %  adj = focalLength; op = umPerDeg
+        %
+        % Not sure how I feel about these two options
+        %  umPerDeg = 2*tand(0.5)*focalLength or
+        %  umPerDeg = tand(1)*focalLength
+        %
+        unit = 'mm';
+        if ~isempty(varargin), unit = varargin{1}; end
+
+        umPerDegree = wvfGet(wvf,'um per degree');
+        val = umPerDegree/(2*tand(0.5));
+
+        % Convert to meters and then scale as per unit
+        val = (val * 1e-6) * ieUnitScaleFactor(unit);
 
     case {'fnumber'}
         % If we have a pupil diameter and focal length, we can produce
