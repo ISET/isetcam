@@ -50,10 +50,15 @@ a = wvfGet(wvf,'fnumber')
 b = wvfGet(wvf,'focal length','mm')/wvfGet(wvf,'calc pupil diameter','mm');
 assert( abs(a/b - 1) < 1e-9);
 
-% Changing the f number adjusts only the pupil, not the focal length.  Our
-% decision.
-wvf = wvfSet(wvf,'fnumber',4);
-assert(abs( 4/wvfGet(wvf,'f number') - 1) < 1e-9);
+% We never change the f number.  We only adjust only the pupil or the focal
+% length. To set the fnumber to 4, we have to decide what to change, the
+% pupil or the focal length.
+%
+% To make the fNumber, say 4, we would do this:
+
+fLength = wvfGet(wvf,'focal length','mm');
+wvf = wvfSet(wvf,'calc pupil diameter',fLength/4,'mm');
+wvfGet(wvf,'fnumber')
 
 wvfGet(wvf,'focal length','mm')
 wvfGet(wvf,'calc pupil diameter','mm')
