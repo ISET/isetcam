@@ -119,8 +119,10 @@ switch ieParamFormat(oiType)
         wvf = wvfCreate('wave',(400:10:700)');
 
         % Set up the old standard optics values
-        wvf = wvfSet(wvf,'fnumber',4);
         wvf = wvfSet(wvf,'focal length',3.9,'mm');
+
+        % Set the f number to 4
+        wvf = wvfSet(wvf,'calc pupil diameter',3.9/4,'mm');
 
         % Create the psf
         wvf = wvfCompute(wvf);

@@ -181,7 +181,7 @@ set(gca,'xlim',[-mxmn mxmn],'ylim',[0 1]);
 % ISOFindSlantedBar code that put the rect more into the center of the
 % edge.
 % Then it changed back to 67 in Dec. 2023.  No idea why.
-assert(abs(mtf.mtf50 - 67) <= 3);
+assert(abs(mtf.mtf50 - 75) <= 3);
 
 ipWindow(ip);
 h = ieDrawShape(ip,'rectangle',mtf.rect);
