@@ -54,25 +54,21 @@ function wvf = wvfPupilFunction(wvf, varargin)
 
 % Examples:
 %{
-% Diffraction limited
+ % Diffraction limited
  wvf = wvfCreate;
  wvf = wvfPupilFunction(wvf);
  wvf = wvfComputePSF(wvf);
- wvfPlot(wvf,'psf','um',550,10,'airy disk',true);
+ wvfPlot(wvf,'psf','unit','um','wave',550,'plotrange',10,'airy disk',true);
 %}
 %{
  wvf = wvfCreate;    % Diffraction
  A = rand(201,201);
- wvf = wvfPupilFunction(wvf,'amplitude',A);
+ wvf = wvfPupilFunction(wvf,'apertureFunction',A);
  wvf = wvfComputePSF(wvf);
- wvfPlot(wvf,'psf','um',550,10);
+ wvfPlot(wvf,'psf','unit','um','wave',550,'plotrange',10);
 %}
 %{
- wvf = wvfCreate;    % Diffraction
- apertureFunction = wvfAperture(wvf,'nsides',3);
- wvf = wvfPupilFunction(wvf,'amplitude',apertureFunction);
- wvf = wvfComputePSF(wvf);
- wvfPlot(wvf,'psf','um',550,10);
+ edit 
 %}
 
 %% Input parse

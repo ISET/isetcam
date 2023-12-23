@@ -18,8 +18,7 @@ function h = ieDrawShape(obj,shape,varargin)
 %     ieDrawShape(obj,'rectangle',rect);
 %     ieDrawShape(obj,'line',X ,Y);
 %
-% Examples
-%   ieExamplesPrint('ieDrawShape');
+% The source code contains examples.
 %
 % See also:
 %   ieROIDraw, v_drawShapes
@@ -27,15 +26,18 @@ function h = ieDrawShape(obj,shape,varargin)
 
 % Examples:
 %{
-  scene = sceneCreate; ieAddObject(scene); sceneWindow;
+  scene = sceneCreate; 
+  sceneWindow(scene);
   h = ieDrawShape(scene,'rectangle',[10 10 50 50]);
   h.EdgeColor = 'r';
   pause(1);
   delete(h);
 %}
 %{
- camera = cameraCreate;  scene = sceneCreate;
- camera = cameraCompute(camera, scene); ip = cameraGet(camera,'ip');
+ camera = cameraCreate;  
+ scene = sceneCreate;
+ camera = cameraCompute(camera, scene); 
+ ip = cameraGet(camera,'ip');
  ipWindow(ip);
  c = ipGet(ip,'center');
  radius = c(1)/4;

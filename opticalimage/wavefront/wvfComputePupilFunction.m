@@ -89,11 +89,14 @@ function wvf = wvfComputePupilFunction(wvf, varargin)
 
 % Examples:
 %{
+ % This example could be improved, or at least produce more
+ % interesting plots, if we put in some actual Zernike values,
+ % so it wouldn't just be uniform.
  wvf = wvfCreate;
- wvf = wvfComputePupilFunction(wvf);
+ wvf = wvfComputePupilFunction(wvf,'humanlca',true);
  ieNewGraphWin;
- subplot(1,2,1); imagesc(wvfGet(wvf,'pupil phase function'));
- subplot(1,2,1); imagesc(wvfGet(wvf,'aperture function)); 
+ subplot(1,2,1); imagesc(wvfGet(wvf,'pupil function phase')); axis('square');
+ subplot(1,2,2); imagesc(wvfGet(wvf,'aperture')); axis('square');
 %}
 
 %% Input parse
@@ -266,8 +269,12 @@ for ii = 1:nWavelengths
     % We might come back and carefully comment all this new code someday,
     % as well as look more closely at s_wvfDiffraction.
     sz = round((nPixels - boundingBox(3))/2) - 2;
-    aperture = padarray(aperture,[sz,sz],0,'both');    
+    if sz > 0
+        % In some cases, there is no need to pad.
+        aperture = padarray(aperture,[sz,sz],0,'both');
+    end
     aperture = imresize(aperture,[nPixels,nPixels],'nearest');
+    
     % ieNewGraphWin; imagesc(pupilPos,pupilPos,aperture); axis image    
 
     % Keep the amplitude within bounds. imresize, with some interpolation,

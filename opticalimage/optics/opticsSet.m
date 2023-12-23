@@ -129,12 +129,23 @@ switch parm
         % transmittance and optics model. For now, we just cram it in
         % here and hope for the best (BW).
         optics.lens = val;
+        if isfield(optics,'transmittance')
+            warning('Adding lens and removing the transmittance slot.')
+            optics = rmfield(optics,'transmittance');
+        end
 
     case {'fnumber','f#'}
         optics.fNumber = val;
     case {'focallength','flength'}
         optics.focalLength = val;
-
+    case {'zcoeffs','zernikecoefficients'}
+        % We store the zernike polynomial coefficients to compute the
+        % OTF on the fly.
+        optics.zCoeffs = val;
+    case {'zcoeffsdiameter'}
+        % This is the diameter (in millimeters) of the circle for the
+        % Zernike polynomial coefficients
+        optics.zDiameterMM = val;
     case {'transmittance','transmittancescale'}
         % opticsSet(optics,'transmittance scale',scaleValues);
         %

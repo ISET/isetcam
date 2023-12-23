@@ -30,24 +30,11 @@ function files = lensList(varargin)
 
 % Examples:
 %{
-   lensNames = lensList;
-   thisLens = lensC('filename',lensNames(18).name);
-   thisLens.draw;
-   thisLens.focalLength
-   wave = thisLens.get('wave');
-   point = psCreate(0,0,-10000);
-   sensor = filmC('position', [0 0 154], ...
-        'size', [5 5], ...
-        'resolution',[300 300],...
-        'wave', wave);
-    camera = psfCameraC('lens',thisLens,'film',sensor,'pointsource',point);
-    camera.autofocus(550,'nm')
-    nLines = 100;
-    jitterFlag = true;
-    camera.estimatePSF('n lines', nLines, 'jitter flag',jitterFlag);
+   lensNames = lensList;   
 %}
 %{
   lensNames = lensList('quiet',true);
+  disp(lensNames);
 %}
 %{
   lensList('star','dgauss*.json')

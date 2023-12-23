@@ -20,24 +20,28 @@ function [roiLocs,roi] = ieROISelect(obj,varargin)
 %   roiLocs:  The list of Nx2 (row,col) locations.
 %   roi:      A Matlab Rectangle object where roi.Position is the rect
 %
-% Copyright ImagEval Consultants, LLC, 2005.
+% We skip the Examples here because they all involve user interaction.  Run
+% them by hand to test.
 %
 % See also:
 %   ieRoiDraw, ieRect2Locs, ieRoiCreate
 
 % Examples:
 %{
+ % ETTBSkip
  scene = sceneCreate; sceneWindow(scene);
  [~,rect] = ieROISelect(scene);
  r = ieROIDraw('scene','shape','rect','shape data',rect);
  delete(r);
 %}
 %{
+ % ETTBSkip
  ip = ieGetObject('ip');
  [roiLocs, rect] = ieROISelect(ip);
  r = ieROIDraw('ip','shape','rect','shape data',rect);
 %}
 %{
+ % ETTBSkip
  ip = ieGetObject('ip');
  ip = ipSet(ip,'roi',rect);
  ipPlot(ip,'roi');

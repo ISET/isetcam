@@ -1,4 +1,6 @@
 function vci = displaySetMaxLuminance(vci)
+% Deprecated?
+% 
 % Set simulated display SPD to match a peak luminance
 %
 %   vci = displaySetMaxLuminance(vci)
@@ -25,8 +27,7 @@ if isempty(maxLum), return; end
 sFactor = maxLum/Yw;
 spd = ipGet(vci,'spd');
 vci = vcimageClearData(vci);
-vci = imageSet(vci,'spd',spd*sFactor);
+vci = ipSet(vci,'spd',spd*sFactor);
 
-return;
-
+end
 

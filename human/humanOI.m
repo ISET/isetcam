@@ -53,7 +53,9 @@ oi = oiSet(oi, 'wave',  sceneGet(scene,  'wave'));
 % this is the only time we ever set the optics spectrum, then we have
 % enforced the equality. But just by having the variable, people can create
 % an inconsistency. Think.
-optics = opticsSet(optics, 'spectrum', sceneGet(scene, 'spectrum'));
+%
+% We had this until 12.05.2023
+% optics = opticsSet(optics, 'spectrum', sceneGet(scene, 'spectrum'));
 oi = oiSet(oi, 'optics', optics);
 
 % Calculate the irradiance of the optical image in photons/(s m^2 nm)
@@ -74,7 +76,7 @@ oi = opticsCos4th(oi);
 
 % Apply the human MTF here.
 % waitbar(0.6, wBar, 'OI: Applying OTF');
-oi = opticsOTF(oi);
+oi = opticsOTF(oi,scene);
 
 % Compute image illuminance (in lux)
 if showWaitbar, waitbar(0.9, wBar, 'OI: Calculating illuminance'); end

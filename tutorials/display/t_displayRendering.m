@@ -42,7 +42,7 @@ lgt = ieReadSpectra('D65',wave);
 
 % Load data for a default monitor and the XYZ functions
 %
-d = displayCreate('OLED-Samsung',wave);
+d = displayCreate('OLED-Samsung','wave',wave);
 phosphors = displayGet(d,'rgb spd');
 XYZ = ieReadSpectra('XYZ',wave);
 

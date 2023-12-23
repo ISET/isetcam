@@ -19,26 +19,12 @@ function [macbethXYZ, whiteXYZ, cornerPoints] = vcimageMCCXYZ(vci,cornerPoints,m
 %
 % The MCC white patch the fourth row, first column.
 %
-% Examples:
-%  vci = vcGetObject('vcimage');
-%  [macbethXYZ, whiteXYZ] = vcimageMCCXYZ(vci);
-%  figure(1); clf; plot3(macbethXYZ(:,1),macbethXYZ(:,2),macbethXYZ(:,3),'o')
-%  xy = chromaticity(macbethXYZ);
-%  clf; plot(xy(:,1),xy(:,2),'o'); hold on; plotSpectrumLocus;
-%  grid on; axis equal
-%
-%  macbethLAB = ieXYZ2LAB(macbethXYZ,whiteXYZ, 1);
-%  clf; plot3(macbethLAB(:,1),macbethLAB(:,2), macbethLAB(:,3),'o');
-%  set(gca,'xlim',[0 105]); grid on
-%
 % Copyright ImagEval Consultants, LLC, 2005.
 %
 % See Also: macbethColorError, macbethEvaluationGraphs
-%
 
-error('Use ieMCCXYZ');
-%
-%{
+error('vcImageMCCXYZ is deprecated. Use ieMCCXYZ');
+
 %% Check input variables
 if ieNotDefined('vci'), vci = vcGetObject('vcimage'); end
 if ieNotDefined('method'), method = 'sRGB'; end

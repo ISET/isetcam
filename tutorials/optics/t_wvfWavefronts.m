@@ -2,8 +2,8 @@
 %
 % https://en.wikipedia.org/wiki/Zernike_polynomials
 %
-% We compare the computed wavefronts in wvf with the Zernike functions they
-% are based on (zernfun), which are downloaded from the web.
+% Compare the computed wavefronts by our wvf with the Zernike functions
+% based on (zernfun).  This is downloaded from the web.
 %
 % They are, of course, the same.  Except! there is a flipud somewhere
 % and there is a scale factor (sqrt(pi) ~ 1.77) in the zernfun that we
@@ -22,7 +22,8 @@ uData = cell(16,1);
 ieNewGraphWin([],'upper left big');
 for ii=1:16
     subplot(4,4,ii);
-    wvf = wvfCreate;
+    wvf = wvfCreate;   % Creates just 0
+    wvf = wvfSet(wvf,'npixels',801);             % Higher resolution
     wvf = wvfSet(wvf,'measured pupil size',2);   % This is diameter
     wvf = wvfSet(wvf,'calc pupil size',2);       % This is diameter
     wvf = wvfSet(wvf,'zcoeff',1,ii);
@@ -57,31 +58,4 @@ for ii=1:16
     title(sprintf('ZC_{%d}^{%d}',n,m));
 end
 
-%% These are some hand tests BW was doing.
-% The goal is to make a direct comparions.
-% The answer is close, but a little different.
-%
-%{
-
-ii = 6;  % I tried for several different ii values
-
-% The zernfun itself
-[n,m]  = wvfOSAIndexToZernikeNM(ii);
-z(idx) = sqrt(pi)*zernfun(n,m,r(idx),theta(idx));
-z = flipud(z);
-
-% These were the computed data (above) using wvfComputePSF
-x = uData{ii}.x; y = uData{ii}.y; w = uData{ii}.z;
-wInt = interp2(x,y,w,X,Y);
-
-% The comparison
-ieNewGraphWin;
-subplot(1,2,1), imagesc(wInt); axis square
-subplot(1,2,2), imagesc(z); axis square
-
-% Something off at the edges. NaNs.  The X,Y goes beyond the calculation
-%
 %%
-plot(wInt(:),z(:),'.');
-
-%}

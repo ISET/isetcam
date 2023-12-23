@@ -126,7 +126,7 @@ switch param
         % see ieColorTransform or header of this document for options.
         ip.internalCS = val;
     case {'ics2display','ics2displaytransform','internalcs2displayspace'}
-        % ip = imageSet(ip,'ics2display',val,3);
+        % ip = ipSet(ip,'ics2display',val,3);
         % Internal color space to display primaries
         ip.data.transforms{3} = val;
         
@@ -148,7 +148,7 @@ switch param
         ip.sensorCorrection.method = val;
     case {'sensorconversionmatrix','conversiontransformsensor','conversionmatrixsensor'}
         % Equivalent to
-        % ip = imageSet(ip,'colorconversiontransform',val,1);
+        % ip = ipSet(ip,'colorconversiontransform',val,1);
         ip.data.transforms{1} = val;
         
         % Accounting for acquisition illuminant.  This will become much more
@@ -162,7 +162,7 @@ switch param
         ip.illuminantCorrection.method = lower(val);
         
     case {'correctionmatrixilluminant','illuminantcorrectionmatrix','correctiontransformilluminant','illuminantcorrectiontransform'}
-        % ip = imageSet(ip,'whitebalancetransform',val,2);
+        % ip = ipSet(ip,'whitebalancetransform',val,2);
         ip.data.transforms{2} = val;
         
         % Display properties are managed via displayGet/Set.

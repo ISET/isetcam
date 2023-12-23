@@ -43,7 +43,7 @@ function radius = psfFindCriterionRadius(inPSF, criterion)
 % Examples:
 %{
     wvfP = wvfCreate;
-    wvfP = wvfComputePSF(wvfP);
+    wvfP = wvfCompute(wvfP);
     myPSF = wvfGet(wvfP, 'psf');
     rad = psfFindCriterionRadius(myPSF, 0.5)
 %}

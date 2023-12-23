@@ -27,7 +27,7 @@ oi = oiCreate;
 oi = oiSet(oi,'optics fnumber',4);
 oi = oiSet(oi,'optics focal Length',0.004);
 
-oi = oiCompute(scene,oi);
+oi = oiCompute(oi,scene);
 oiWindow(oi);
 
 %% Create a monochrome sensor, and compute the voltage response

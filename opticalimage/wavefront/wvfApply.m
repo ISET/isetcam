@@ -56,7 +56,7 @@ scene = sceneSet(scene,'mean luminance',mn*1e5);
 wvf = wvfCreate;    
 wvf = wvfSet(wvf,'calc pupil diameter',3);
 [apertureFunction, params] = wvfAperture(wvf,'nsides',3);
-wvf = wvfPupilFunction(wvf,'amplitude',apertureFunction);
+wvf = wvfPupilFunction(wvf,'apertureFunction',apertureFunction);
 wvf = wvfComputePSF(wvf);
 oi = oiCompute(wvf,scene);
 oiShowImage(oi);

@@ -40,25 +40,25 @@ function [im, params] = wvfAperture(wvf, varargin)
 
 % Examples:
 %{
-wvf = wvfCreate;
-im = wvfPupilAmplitude(wvf); % Default with some scratches and dust.
-ieNewGraphWin; imagesc(im); colormap(gray); axis image
+    wvf = wvfCreate;
+    im = wvfAperture(wvf); % Default with some scratches and dust.
+    ieNewGraphWin; imagesc(im); colormap(gray); axis image
 %}
 %{
-% Diffraction limited, circular (no scratches or dust)
-wvf = wvfCreate;
-im = wvfPupilAmplitude(wvf,'dot mean',0,'dot sd',0,'line mean',0,'line sd',0); 
-ieNewGraphWin; imagesc(im); colormap(gray); axis image
+    % Diffraction limited, circular (no scratches or dust)
+    wvf = wvfCreate;
+    im = wvfAperture(wvf,'dot mean',0,'dot sd',0,'line mean',0,'line sd',0); 
+    ieNewGraphWin; imagesc(im); colormap(gray); axis image
 %}
 %{
-wvf = wvfCreate;
-im = wvfPupilAmplitude(wvf,'segment length',100); % Default
-ieNewGraphWin; imagesc(im); colormap(gray); axis image
+    wvf = wvfCreate;
+    im = wvfAperture(wvf,'segment length',100); % Default
+    ieNewGraphWin; imagesc(im); colormap(gray); axis image
 %}
 %{
-wvf = wvfCreate;
-[im,params] = wvfPupilAmplitude(wvf,'n sides',8); 
-ieNewGraphWin; imagesc(im); colormap(gray); axis image
+    wvf = wvfCreate;
+    [im,params] = wvfAperture(wvf,'n sides',8); 
+    ieNewGraphWin; imagesc(im); colormap(gray); axis image
 %}
 
 %% Inputs

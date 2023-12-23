@@ -32,6 +32,8 @@ function [illPhotons,cp,wgts,Cstacked,X] = sensorMacbethDaylightEstimate(sensor,
 
 % Examples:
 %{
+   % ETTBSkip
+   %
    % User selects cornerpoints of the MCC
    scene = sceneCreate; oi = oiCreate; oi = oiCompute(oi,scene);
    fov = sceneGet(scene,'fov');

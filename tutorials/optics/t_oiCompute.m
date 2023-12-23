@@ -31,14 +31,14 @@ sceneWindow(scene);
 oi = oiCreate;
 
 % Compute optical image and show it
-oi = oiCompute(scene,oi);
+oi = oiCompute(oi,scene);
 oiWindow(oi);
 
 %% Increase the f-number, compute and show the new image
 fnSmall = oiGet(oi,'optics fnumber');
 fnBig   = 1.5 * fnSmall;
 oi2 = oiSet(oi,'optics fnumber',fnBig);
-oi2 = oiCompute(scene,oi2);
+oi2 = oiCompute(oi2,scene);
 oi2 = oiSet(oi2,'name',sprintf('lens f# %d\n',fnBig));
 ieAddObject(oi2); oiWindow;
 

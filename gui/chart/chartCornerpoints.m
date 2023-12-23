@@ -33,30 +33,30 @@ function [cornerPoints, obj, rect] = chartCornerpoints(obj,wholeChart)
 
 % Examples:
 %{
-  sceneWindow;
+  % For this to autorun to completion, can't ask for user input.
+  % So set second argument to chartCornerpoints true here. Set to
+  % false to see user select behavior.
+  scene = sceneCreate; 
+  sceneWindow(scene);
   scene = ieGetObject('scene');
-  cp = chartCornerpoints(scene);
+  cp = chartCornerpoints(scene,true);
   [rects,mLocs,pSize] = chartRectangles(cp,4,6,0.5);  % MCC parameters
   chartRectsDraw(scene,rects);
 %}
 %{
   scene = sceneCreate;  camera = cameraCreate('default');
   camera = cameraCompute(camera,scene);
-  cameraWindow(camera,'ip'); ip = cameraGet(camera,'ip');
-
+  cameraWindow(camera,'ip'); 
+  ip = cameraGet(camera,'ip');
   cp = chartCornerpoints(ip,true);
   sFactor = 0.3;
   [rects, mLocs, pSize] = chartRectangles(cp, 4,6, sFactor);
-  
-  % Plot the rects
   rectHandles = chartRectsDraw(ip,rects);
-  % delete(rectHandles);
 %}
 
 %%
 if ieNotDefined('obj'), error('Scene,oi,sensor or ip object required.'); end
 if ieNotDefined('wholeChart'), wholeChart = false; end
-
 
 if ~wholeChart
     % Make sure this is the selected object.

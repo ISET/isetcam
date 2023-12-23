@@ -42,13 +42,15 @@ function scene = sceneAdjustIlluminant(scene,illEnergy,preserveMean)
     vcReplaceAndSelectObject(scene); sceneWindow;
 %}
 %{
+    scene = sceneCreate;   % Default is MCC under D65
     bb = blackbody(sceneGet(scene,'wave'),3000);
     scene = sceneAdjustIlluminant(scene,bb);
     vcReplaceAndSelectObject(scene); sceneWindow;
 %}
 %{
+    scene = sceneCreate;   % Default is MCC under D65
     bb = blackbody(sceneGet(scene,'wave'),6500,'energy');
-    figure; plot(wave,bb)
+    figure; plot(sceneGet(scene,'wave'),bb)
     scene = sceneAdjustIlluminant(scene,bb);
     vcReplaceAndSelectObject(scene); sceneWindow;
 %}
@@ -66,9 +68,7 @@ if ieNotDefined('illEnergy')
 elseif ischar(illEnergy)
     % Read from the filename sent by the user
     fullName = illEnergy;
-    if ~exist(fullName,'file'), error('No file %s\n',fullName);
-    else, illEnergy = ieReadSpectra(fullName,wave);
-    end
+    illEnergy = ieReadSpectra(fullName,wave);
 elseif isstruct(illEnergy) && isequal(illEnergy.type,'illuminant')
     fullName = illuminantGet(illEnergy,'name');
     illEnergy = illuminantGet(illEnergy,'energy');

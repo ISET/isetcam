@@ -1,7 +1,8 @@
 function [pData, mLocs, pSize, cornerPoints, pStd] = ...
     macbethSelect(obj,showSelection,fullData,cornerPoints)
-% Deprecated:  Use chartXXX routines
 % Identify Macbeth color checker patch positions from window image
+%
+% I would like to deprecate and use chartXXX routines instead.
 %
 % Synopsis
 %  [pData mLocs, pSize, cornerPoints, pStd] =
@@ -51,8 +52,7 @@ function [pData, mLocs, pSize, cornerPoints, pStd] = ...
 %   The 4th entry is the white patch.
 %   The gray series is 4:4:24
 %
-% See examples:
-%  ieExamplesPrint('macbethSelect');
+% There are examples in the source.
 %
 % Programming TODO:
 %   Should be refactored as (p means 'patch')
@@ -63,8 +63,7 @@ function [pData, mLocs, pSize, cornerPoints, pStd] = ...
 %   Also (a) more testing, and (b)oi implemented
 %
 % See also:
-%   macbethSensorValues, macbethRectangles, macbethROIs, chartRectangles,
-%   chartRectsData
+%   macbethIlluminant - The one routine that uses this method
 %
 
 % Examples:
@@ -100,8 +99,8 @@ function [pData, mLocs, pSize, cornerPoints, pStd] = ...
  data = macbethSelect(ip);
 %}
 %{
- % See macbethSensorValues() for this functionality.
-  sensor = vcGetObject('sensor');
+  % See macbethSensorValues() for this functionality.
+  sensor = sensorCreate;
   [fullRGB,locs,pSize] = macbethSelect(sensor,0,1);
   [fullRGB,locs,pSize] = macbethSelect(sensor);
 %}
@@ -127,9 +126,7 @@ function [pData, mLocs, pSize, cornerPoints, pStd] = ...
 if ieNotDefined('obj'), obj = vcGetObject('vcimage'); end
 if ieNotDefined('showSelection'), showSelection = true; end
 if ieNotDefined('fullData'), fullData = 0; end
-
-% This should be a parameter
-queryUser = false;
+if ieNotDefined('queryUser'), queryUser = false; end
 
 %% Corner points
 
@@ -178,27 +175,6 @@ switch lower(obj.type)
 end
 
 %% Deal with the interactive part
-
-%{
-% In this scheme we should never ge here.
-queryUser = false;
-if isempty(cornerPoints)
-    queryUser = true;
-    % The user didn't send in any corner points, and there weren't any in
-    % the structure, then we have the user select them in the window.
-    cornerPoints = vcPointSelect(obj,4,...
-        'Select (1) lower left, (2) lower right, (3) upper right, (4) upper left');
-end
-switch vcEquivalentObjtype(obj.type)
-    case 'VCIMAGE'
-        obj = ipSet(obj,'chart corner points',cornerPoints);
-    case 'ISA'
-        obj = sensorSet(obj,'chart corner points',cornerPoints);
-    case 'SCENE'
-        obj = sceneSet(obj,'chart corner points',cornerPoints);
-end
-%}
-
 
 %% Ask if the rects are OK.
 if queryUser

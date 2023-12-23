@@ -21,12 +21,9 @@ function fSize = ieFontSizeSet(fig,fSize)
 %  in here. When the default size for the text is a little bigger or
 %  smaller in the different boxes, the relative amount is preserved.
 %
-% Example:
-%  s = sceneCreate; sceneWindow(s);
-%  app = ieSessionGet('scene window');
-%  ieFontSizeSet(app, 14);
-%
 % (This is part of replacing ieFontChangeSize)
+%
+% The source code contains examples.
 %
 % Copyright Imageval Consulting, LLC, 2015
 %
@@ -35,8 +32,11 @@ function fSize = ieFontSizeSet(fig,fSize)
 
 % Examples:
 %{
-ieFontSizeSet(app.figure1,14)
+   s = sceneCreate; sceneWindow(s);
+   app = ieSessionGet('scene window');
+   ieFontSizeSet(app, 14);
 %}
+
 %% Set up parameters
 
 if ~exist('fig','var')||isempty(fig), error('Figure required.'); end

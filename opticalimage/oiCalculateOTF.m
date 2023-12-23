@@ -1,6 +1,7 @@
 function [otf,fSupport] = oiCalculateOTF(oi,wave,unit)
 %Calculate the optical transfer function for the optical image
 %
+% Synopsis
 %   [otf,fSupport] = oiCalculateOTF(oi,[wave],[unit = 'cyclesPerDegree'])
 %
 % The optical transfer function (OTF) is derived from the optics

@@ -5,10 +5,10 @@ function ip = ipCreate(ipName,sensor,display,L3)
 %  ip = ipCreate(ipName,[sensor = vcGetObject('sensor')],[display = 'lcdExample.mat'])
 %
 % Input
-%   ipName
-%   sensor
-%   display
-%   L3
+%   ipName - Name
+%   sensor - Some kind of sensor
+%   display - ISETCam display
+%   L3      - An L3 struct
 %
 % Output
 %   ip:  ISETCam image process struct
@@ -25,11 +25,19 @@ function ip = ipCreate(ipName,sensor,display,L3)
 %  In the event that the ipName starts with 'L3', then the L3 rendering
 %  pipeline is used.  These can be either L3 or L3global.
 %
+%  The source code contains examples.
+
 % Example:
-%  ip = ipCreate;               % Name is default
-%  ip = ipCreate('sRGB');       % Name is sRGB
-%  ip = ipCreate('L3 test',sensor,display,L3);  % L3 is attached to ip
-%
+%{
+ ip = ipCreate;               % Name is default
+ ip = ipCreate('sRGB');       % Name is sRGB
+ thisDisplay = displayCreate;
+%}
+%{
+ % There are some special L3 methods here that are not tested
+ % ip = ipCreate('L3 test',sensor,thisDisplay,L3);  % L3 is attached to ip
+%}
+
 % Copyright ImagEval Consultants, LLC, 2005.
 
 %%
@@ -64,10 +72,10 @@ end
 %% Figure out the display.  Could be string or struct
 if ieNotDefined('display')
     wave = ipGet(ip,'wave');
-    display = displayCreate('lcdExample.mat',wave);
+    display = displayCreate('lcdExample.mat','wave',wave);
 elseif ischar(display)
     wave = ipGet(ip,'wave');
-    display = displayCreate(display,wave);
+    display = displayCreate(display,'wave',wave);
 end
 ip = ipSet(ip,'display',display);
 

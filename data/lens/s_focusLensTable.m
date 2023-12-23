@@ -36,18 +36,22 @@
 
 % Examples:
 %{
-% For a single lens file, rather than all the files in the directory, do
-% this 
-
-  fullFile = fullfile(piRootPath,'data','lens','microlens.json');
-  [p,n,~] = fileparts(fullFile);
-  flFile = fullfile(piRootPath,'data','lens',[n,'.FL.mat']);
-  thisLens = lensC('filename',fullFile);
-  dist = logspace(0.1,4,30);
-  for jj=1:numel(dist)
-      focalDistance(jj) = lensFocus(thisLens,dist(jj));
-  end
-  save(flFile,'dist','focalDistance');
+    % ETTBSkip
+    % DHB: This is broken because we don't have piRootPath.  But the header
+    % comment says the whole thing is obsolete, so I'm not going to try
+    % to fix, and instead avoid autocheck with ETTBSkip.
+    %
+    % For a single lens file, rather than all the files in the directory, do
+    % this 
+    fullFile = fullfile(piRootPath,'data','lens','microlens.json');
+    [p,n,~] = fileparts(fullFile);
+    flFile = fullfile(piRootPath,'data','lens',[n,'.FL.mat']);
+    thisLens = lensC('filename',fullFile);
+    dist = logspace(0.1,4,30);
+    for jj=1:numel(dist)
+        focalDistance(jj) = lensFocus(thisLens,dist(jj));
+    end
+    save(flFile,'dist','focalDistance');
 %}
 
 %%  All the lenses in the pbrt2ISET directory

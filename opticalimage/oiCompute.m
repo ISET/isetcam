@@ -144,8 +144,14 @@ p.parse(oi,scene,varargin{:});
 
 if strcmp(oi.type,'wvf')
     % User sent in an wvf, not an oi.  We convert it to a shift invariant
-    % oi here.  The oi is returned.
-    oi = wvf2oi(oi);
+    % oi here whose wavelength matches the scene.  The oi is returned.
+    wvf = oi;
+    if ~isequal(wvfGet(wvf,'wave'),sceneGet(scene,'wave'))
+        warning('The wvf wavelengths should match the scene.  Recomputing');
+        wvf = wvfSet(wvf,'wave',sceneGet(scene,'wave'));
+        wvf = wvfCompute(wvf);
+    end
+    oi = wvf2oi(wvf);
 end
 
 % Ages ago, we some code flipped the order of scene and oi.  We think
@@ -191,6 +197,9 @@ end
 % We need to preserve metadata from the scene,
 % But not overwrite oi.metadata if it exists
 % We should probably rename this ieStructAppend
+if (~isfield(oi,'metadata'))
+    oi.metadata = struct;
+end
 oi.metadata = appendStruct(oi.metadata, scene.metadata);
 
 end

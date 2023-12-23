@@ -26,11 +26,11 @@ function count = cprintf(style,format,varargin) %#ok<*JAPIMATHWORKS>
 %
 %       'Black','Cyan','Magenta','Blue','Green','Red','Yellow','White'
 %
-%    STYLE beginning with '-' or '_' will be underlined. For example:
+%    STYLE beginning with '-' or '_' will be underlined. For example,
 %          '-Blue' is underlined blue, like 'Hyperlinks';
 %          '_Comments' is underlined green etc.
 %
-%    STYLE beginning with '*' will be bold (R2011b+ only). For example:
+%    STYLE beginning with '*' will be bold (R2011b+ only). For example,
 %          '*Blue' is bold blue;
 %          '*Comments' is bold green etc.
 %    Note: Matlab does not currently support both bold and underline,
@@ -50,20 +50,6 @@ function count = cprintf(style,format,varargin) %#ok<*JAPIMATHWORKS>
 %    like handle property names.
 %
 %    CPRINTF by itself, without any input parameters, displays a demo
-%
-% Example:
-%    cprintf;   % displays the demo
-%    cprintf('text',   'regular black text');
-%    cprintf('hyper',  'followed %s','by');
-%    cprintf('key',    '%d colored', 4);
-%    cprintf('-comment','& underlined');
-%    cprintf('err',    'elements\n');
-%    cprintf('cyan',   'cyan');
-%    cprintf('_green', 'underlined green');
-%    cprintf(-[1,0,1], 'underlined magenta');
-%    cprintf([1,0.5,0],'and multi-\nline orange\n');
-%    cprintf('*blue',  'and *bold* (R2011b+ only)\n');
-%    cprintf('string');  % same as fprintf('string') and cprintf('text','string')
 %
 % Bugs and suggestions:
 %    Please send to Yair Altman (altmany at gmail dot com)
@@ -123,6 +109,24 @@ function count = cprintf(style,format,varargin) %#ok<*JAPIMATHWORKS>
 % referenced and attributed as such. The original author maintains the right to be solely associated with this work.
 % Programmed and Copyright by Yair M. Altman: altmany(at)gmail.com
 % $Revision: 1.14 $  $Date: 2022/03/26 20:48:51 $
+
+% Examples:
+%{
+   cprintf;   % displays the demo
+   cprintf('text',   'regular black text');
+   cprintf('hyper',  'followed %s','by');
+   cprintf('key',    '%d colored', 4);
+   cprintf('-comment','& underlined');
+   cprintf('err',    'elements\n');
+   cprintf('cyan',   'cyan');
+   cprintf('_green', 'underlined green');
+   cprintf(-[1,0,1], 'underlined magenta');
+   cprintf([1,0.5,0],'and multi-\nline orange\n');
+   cprintf('*blue',  'and *bold* (R2011b+ only)\n');
+   cprintf('string');  % same as fprintf('string') and cprintf('text','string')
+   fprintf('\n');
+%}
+
   persistent majorVersion minorVersion
   if isempty(majorVersion)
       %v = version; if str2double(v(1:3)) <= 7.1

@@ -61,7 +61,7 @@ function [rects,mLocs,pSize] = chartRectangles(cp,nRows,nCols,sFactor,blackEdge)
 %}
 %{
  scene = sceneCreate; sceneWindow(scene);
- cp = chartCornerpoints(scene);
+ cp = chartCornerpoints(scene,true);
  [rects,mLocs,pSize] = chartRectangles(cp,4,6,0.9);
  chartRectsDraw(scene,rects);
 %}

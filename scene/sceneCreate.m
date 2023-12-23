@@ -32,13 +32,7 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %   changed using the patchSize argument (default - 16 pixels).  The
 %   wavelength  400:10:700 samples, making it efficient to use for experiments.
 %
-%   Example:
-%    scene = sceneCreate('macbeth',32);
-%
-%    patchSize = 8;
-%    wave = (380:4:1068)';
-%    scene = sceneCreate('macbethEE_IR',patchSize,wave);
-%
+%   Here are some options
 %      {'macbeth d65'}         - Macbeth D65 image.
 %      {'macbeth d50'}         - D50 illuminant
 %      {'macbeth illc'}        - Illuminant C
@@ -47,36 +41,12 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %      {'macbeth EE_IR'}       - Equal energy extends out to the IR
 %      {L star}                - Vertical bars spaced in equal L* steps
 %
-%   The size of the individual patches, or bars, and wavelength sampling
-%   are parameters. They can be set a additional parameters
-%
-%         patchSizePixels = 16;
-%         wave = [380:5:720];
-%         scene = sceneCreate('macbeth Tungsten',patchSizePixels,wave);
-%
-%   If you would like the color checker to have black borders around the
-%   patches, then use
-%
-%        patchSizePixels = 16; wave = [380:5:720]; blackBorder = true;
-%        scene = sceneCreate('macbeth d65',patchSizePixels,wave,...
-%                  'macbethChart.mat',blackBorder);
-%
-%   For a bar width of 50 pixels, 5 bars, at L* levels (1:nBars)-1 * 10, use
-%         scene = sceneCreate('lstar',50,5,10);
 %
 %   Use sceneAdjustIlluminant() to change the scene SPD.
 %
 % REFLECTANCE CHART
 %
 %   {'reflectance chart'} - Natural-100 reflectance chart.
-%
-%   You can also create your own specific chart this way:
-%
-%    sFiles{1} = 'MunsellSamples_Vhrel.mat';
-%    sFiles{2} = 'Food_Vhrel.mat';
-%    pSize = 24; sSamples = [18 18];
-%    wave = 400:10:700; grayFlag = 0; sampling = 'r';
-%    scene = sceneCreate('reflectance chart',pSize,sSamples,sFiles,wave,grayFlag,sampling);
 %
 % NARROWBAND COLOR PATCHES
 %    wave = [600, 610];  sz = 64;
@@ -106,11 +76,6 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %  angle, row and col size of the harmonic.  The frequency unit in this
 %  case is cycles/image.  To obtain cycles per degree, divide by the field
 %  of view.
-%
-%        parms.freq = 1; parms.contrast = 1; parms.ph = 0;
-%        parms.ang= 0; parms.row = 128; parms.col = 128;
-%        parms.GaborFlag=0;
-%        [scene,parms] = sceneCreate('harmonic',parms);
 %
 %  See the script s_sceneHarmonics for more examples.  In this example, the
 %  illuminant is set so that the mean of the harmonic has a 20%
@@ -145,19 +110,6 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %      {'uniformd65'}           - D65 SPD
 %      {'whitenoise'}           - Noise pattern for testing
 %
-%    The uniform patterns are small by default (32,32).  If you would like
-%    them at a higher density (not much point), you can use
-%
-%        scene = sceneCreate('uniformD65',256);
-%
-%    Notice that the dynamic range is not in log unit, but rather a
-%    linear dynamic range.  sz is the row/col size of the image
-%
-%        sz = 256; dynamicRange = 1024;
-%        scene = sceneCreate('linear intensity ramp',sz,dynamicRange);
-%
-%        scene = sceneCreate('exponential intensity ramp',sz,dynamicRange);
-%
 % SCENES FROM IMAGE DATA
 %   We create scenes using RGB data in image files and a model display.  In
 %   this approach, we simply read a tiff or jpeg file and create a scene
@@ -177,8 +129,67 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 %
+% The source code contains examples.
+%
 % See also:
 %  sceneFromFile, displayCreate, s_sceneReflectanceCharts.m
+
+% Examples:
+%{
+   scene = sceneCreate('macbeth',32);
+
+   patchSize = 8;
+   wave = (380:4:1068)';
+   scene = sceneCreate('macbethEE_IR',patchSize,wave);
+%}
+%{
+    scene = sceneCreate('radialLines');
+%}
+%{
+    % The size of the individual patches, or bars, and wavelength sampling
+    % are parameters. They can be set a additional parameters
+    patchSizePixels = 16;
+    wave = [380:5:720];
+    scene = sceneCreate('macbeth Tungsten',patchSizePixels,wave);
+%}
+%{
+   % If you would like the color checker to have black borders around the
+   % patches, then use
+   patchSizePixels = 16; wave = [380:5:720]; blackBorder = true;
+   scene = sceneCreate('macbeth d65',patchSizePixels,wave,...
+             'macbethChart.mat',blackBorder);
+%}
+%{
+   % For a bar width of 50 pixels, 5 bars, at L* levels (1:nBars)-1 * 10, use
+   scene = sceneCreate('lstar',50,5,10);
+%}
+%{
+   % You can also create your own specific refelctance chart this way:
+   sFiles{1} = 'MunsellSamples_Vhrel.mat';
+   sFiles{2} = 'Food_Vhrel.mat';
+   pSize = 24; sSamples = [18 18];
+   wave = 400:10:700; grayFlag = 0; sampling = 'r';
+   scene = sceneCreate('reflectance chart',pSize,sSamples,sFiles,wave,grayFlag,sampling);
+%}
+%{
+   % Passing extra params to the 'harmonic' scene create 
+   parms.freq = 1; parms.contrast = 1; parms.ph = 0;
+   parms.ang= 0; parms.row = 128; parms.col = 128;
+   parms.GaborFlag=0;
+   [scene,parms] = sceneCreate('harmonic',parms);
+%}
+%{
+    % The uniform patterns are small by default (32,32).  If you would like
+    % them at a higher density, you can use
+    scene = sceneCreate('uniformD65',256);
+%}
+%{
+    % Notice that the dynamic range is not in log unit, but rather a
+    % linear dynamic range.  sz is the row/col size of the image
+    sz = 256; dynamicRange = 1024;
+    scene = sceneCreate('linear intensity ramp',sz,dynamicRange);
+    scene = sceneCreate('exponential intensity ramp',sz,dynamicRange);
+%}
 
 %% Initial definition
 if ~exist('sceneName','var')||isempty(sceneName), sceneName = 'default'; end
@@ -1213,10 +1224,6 @@ function scene = sceneRadialLines(scene,imSize,spectralType,nLines)
 %   Dieter Wueller thinks this pattern is cool.
 %   Digital camera resolution measurement using sinusoidal Siemens stars
 %   Proc. SPIE, Vol. 6502, 65020N (2007); doi:10.1117/12.703817
-%
-% Examples:
-%  scene = sceneCreate('radialLines');
-%
 
 if ieNotDefined('scene'), error('Scene must be defined'); end
 if ieNotDefined('spectralType'), spectralType = 'ep'; end
@@ -1412,7 +1419,7 @@ wave = sceneGet(scene,'wave');
 nWave  = sceneGet(scene,'nwave');
 
 img = imageSlantedEdge(imSize, barSlope, darklevel);
-%{
+
 % Make the image
 imSize = round(imSize/2);
 [X,Y] = meshgrid(-imSize:imSize,-imSize:imSize);
@@ -1425,7 +1432,6 @@ list = (Y > barSlope*X );
 % the equal energy illuminant; that is, the SPD is all due to the
 % illuminant
 img( list ) = 1;
-%}
 
 % Prevent dynamic range problem with ieCompressData
 img = ieClip(img,1e-6,1);

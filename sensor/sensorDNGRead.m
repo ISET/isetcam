@@ -39,16 +39,16 @@ function [sensor, info] = sensorDNGRead(fname,varargin)
 
 % Examples:
 %{
-   fname = 'MCC-centered.dng';
-   thisRect = [774  1371  1615  1099];
-   [sensor, info] = sensorDNGRead(fname,'crop',thisRect);
-   sensorWindow(sensor);
+fname = 'MCC-centered.dng';
+thisRect = [774  1371  1615  1099];
+[sensor, info] = sensorDNGRead(fname,'crop',thisRect);
+sensorWindow(sensor);
 %}
 %{
-   fname = 'MCC-centered.dng';
-   thisFraction = 0.4;  % Central 40 percent of the image
-   [sensor, info] = sensorDNGRead(fname,'crop',thisFraction);
-   sensorWindow(sensor);
+fname = 'MCC-centered.dng';
+thisFraction = 0.4;  % Central 40 percent of the image
+[sensor, info] = sensorDNGRead(fname,'crop',thisFraction);
+sensorWindow(sensor);
 %}
 
 % The info that is returned includes isoSpeed and black level.

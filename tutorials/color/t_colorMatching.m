@@ -94,7 +94,7 @@ sum(maxXYZ(2,:))
 % We set up again, but this time we suppose the display is only calibrated
 % from 400 to 700 in 5 nm steps.
 wavelength = 400:5:700;
-d = displayCreate('CRT-Dell',wavelength);
+d = displayCreate('CRT-Dell','wave',wavelength);
 phosphors  = displayGet(d,'spd');
 XYZ = ieReadSpectra('XYZ',wavelength);
 

@@ -112,8 +112,6 @@ function [val, level, safety] = humanUVSafety(energy,wave,varargin)
 %
 % See also
 %   s_humanSafetyUVExposure, ieLuminance2Radiance
-%
-% Example: 
 
 %% Check inputs
 

@@ -5,19 +5,19 @@ function [macbethXYZ, whiteXYZ, cornerPoints] = ipMCCXYZ(ip,cornerPoints,method)
 %
 % We assume the ip has an image of the MCC in its output field
 %
-% ip:        The virtual camera image structure
-% pointLoc:  Outer points of the MCC (usually selected by user)
-% method:    We either assume the display is an sRGB display (method =
+% Inputs
+%  ip:        The virtual camera image structure
+%  pointLoc:  Outer points of the MCC (usually selected by user)
+%  method:    We either assume the display is an sRGB display (method =
 %            'sRGB'), or we use the model display in the processor window
 %            (method = 'custom').
 %
-% macbethXYZ:  24 x 3
-% whiteXYZ:    3 x 1, white point, which is macbethXYZ(4,:)
-% pointLoc:    Locations of the points in the image
+% Outputs:
+%  macbethXYZ:  24 x 3
+%  whiteXYZ:    3 x 1, white point, which is macbethXYZ(4,:)
+%  pointLoc:    Locations of the points in the image
 %
 % The MCC white patch the fourth row, first column.
-%
-% ieExamplesPrint('ipMCCXYZ');
 %
 % See Also:
 %    macbethColorError, macbethEvaluationGraphs
@@ -25,17 +25,24 @@ function [macbethXYZ, whiteXYZ, cornerPoints] = ipMCCXYZ(ip,cornerPoints,method)
 
 % Examples:
 %{
-  ip = ieGetObject('ip');
- [macbethXYZ, whiteXYZ] = ipMCCXYZ(ip);
- ieNewGraphWin;
- plot3(macbethXYZ(:,1),macbethXYZ(:,2),macbethXYZ(:,3),'o')
- xy = chromaticity(macbethXYZ);
- clf; plot(xy(:,1),xy(:,2),'o'); hold on; plotSpectrumLocus;
- grid on; axis equal
+ scene = sceneCreate; camera = cameraCreate;
+ camera = cameraCompute(camera,scene);
+ ip = cameraGet(camera,'ip');
+ ipWindow(ip);
+ [macbethXYZ, whiteXYZ] = ipMCCXYZ(ip,'whole chart');
+ ieNewGraphWin; plot3(macbethXYZ(:,1),macbethXYZ(:,2),macbethXYZ(:,3),'o');
+ grid on; xlabel('X'); ylabel('Y'); zlabel('Z');
 
+ hdl = chromaticityPlot; hold on;
+ xy = chromaticity(macbethXYZ); 
+ plot(xy(:,1),xy(:,2),'o'); 
+
+ % 3D.  Put L* into the Z-axis.
+ ieNewGraphWin;
  macbethLAB = ieXYZ2LAB(macbethXYZ,whiteXYZ, 1);
- clf; plot3(macbethLAB(:,1),macbethLAB(:,2), macbethLAB(:,3),'o');
- set(gca,'xlim',[0 105]); grid on
+ plot3(macbethLAB(:,2), macbethLAB(:,3),macbethLAB(:,1),'o');
+ grid on; xlabel('a*'); ylabel('b*'); zlabel('L');
+ set(gca,'zlim',[0 105],'xlim',[-50 50],'ylim',[-50 50]); grid on; rotate3d;
 %}
 
 
@@ -43,24 +50,28 @@ function [macbethXYZ, whiteXYZ, cornerPoints] = ipMCCXYZ(ip,cornerPoints,method)
 if ieNotDefined('ip'), ip = ieGetObject('ip'); end
 if ieNotDefined('method'), method = 'sRGB'; end
 
-% These pointLoc values are the coordinates of the corners of the MCC in
-% the image.
+% The values of the coordinates of the corners of the MCC in the image are
+% needed.  If the user sends in nothing, we expect a selection.
+if ieNotDefined('cornerPoints')
+    cornerPoints = chartCornerpoints(ip);
+end
+
+if ischar(cornerPoints) && isequal(ieParamFormat(cornerPoints),'wholechart')
+    % The user might send in 'whole chart'
+    cornerPoints = chartCornerpoints(ip,true);
+end
+
 % The extracted rgbData from the processor window are assumed to be linear
 % values, not sRGB values or gamma corrected.  They are the linear display
 % primaries.
-if ieNotDefined('cornerPoints')
-    % macbethSelect will prompt the user to identify corners.
-    [rgbData, mLocs, pSize, cornerPoints] = macbethSelect(ip);
-    if isempty(rgbData)
-        fprintf('%s: user canceled\n',mfilename);
-        macbethXYZ = []; whiteXYZ = []; cornerPoints = [];
-        return;
-    end
-    clear mLocs
-    clear pSize
-else
-    % The user is not bothered
-    rgbData = macbethSelect(ip,0,0,cornerPoints);
+[rects, mLocs, pSize] = chartRectangles(cornerPoints, 4,6, 0.3); %#ok<ASGLU>
+% chartRectsDraw(ip,rects);
+fullData = false;
+rgbData = chartRectsData(ip,mLocs,pSize(1),fullData);
+if isempty(rgbData)
+    fprintf('%s: user canceled\n',mfilename);
+    macbethXYZ = []; whiteXYZ = []; cornerPoints = [];
+    return;
 end
 
 %% Compute the
@@ -102,6 +113,5 @@ macbethXYZ = double(RGB2XWFormat(macbethXYZ));
 % structure.
 whiteIndex = 4;
 whiteXYZ   = double(macbethXYZ(whiteIndex,:));
-
 
 end

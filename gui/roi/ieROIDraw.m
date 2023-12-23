@@ -41,28 +41,32 @@ function [shapeHandle,ax] = ieROIDraw(isetobj,varargin)
 
 % Examples:
 %{
- scene = sceneCreate;
- rect = [20 50 10 5];  % row, col, width, height
+ scene = sceneCreate; sceneWindow(scene); drawnow;
+ rect = [20 50 10 10];  % row, col, width, height
  [shapeHandle,ax] = ieROIDraw('scene','shape','rect','shape data',rect,'line width',5);
- shapeHandle.LineStyle = ':';
- delete(shapeHandle);
+ shapeHandle.LineStyle = ':'; drawnow;
 %}
 %{
- rect = [50 50 20 20];
- [shapeHandle,ax] = ieROIDraw('oi','shape','rect','shape data',rect,'line style',':');
+ scene = sceneCreate; sceneWindow(scene); drawnow;
+ rect = [30 30 20 20];
+ [shapeHandle,ax] = ieROIDraw('scene','shape','rect','shape data',rect,'line style',':');
  shapeHandle.LineStyle = ':';
- shapeHandle.EdgeColor = 'w';
- delete(shapeHandle);
+ shapeHandle.EdgeColor = 'w'; drawnow;
 %}
 %{
+ % The circle can be stretched and edited in the oiWindow.  Changes
+ % to the image change the values in shapeHandle
+ scene = sceneCreate; oi = oiCreate; oi = oiCompute(oi,scene); 
+ oiWindow(oi); drawnow;
  c = [10 20 20];
  [shapeHandle,ax] = ieROIDraw('oi','shape','circle','shape data',c);
- shapeHandle.LineStyle = ':';
- shapeHandle.EdgeColor = 'w';
- delete(shapeHandle);
+ shapeHandle.EdgeAlpha = 0.5; shapeHandle.EdgeColor = 'w'; drawnow;
 %}
 %{
- c = [1 88 70 70];
+ scene = sceneCreate; camera = cameraCreate;
+ camera = cameraCompute(camera,scene);
+ ip = cameraGet(camera,'ip'); ipWindow(ip); drawnow;
+ c = [1 242 70 70];
  [shapeHandle,ax] = ieROIDraw('ip','shape','line','shape data',c);
 %}
 

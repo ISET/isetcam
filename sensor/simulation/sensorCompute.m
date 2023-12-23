@@ -40,14 +40,14 @@ function [outSensor, unitSigCurrent] = sensorCompute(sensor,oi,showBar)
 %     2      |   +         +            +         +     +   ('default')
 %
 %  photon noise:  Photon noise
-%  pixel noise:   Electrical noise (read, reset, dark)
-%  system noise:  gain/offset (prnu, dsnu), clipping, quantization
+%  pixel noise:   Electrical noise (read, reset, dark) (eNoise)
+%  system noise:  gain/offset (prnu, dsnu), clipping, quantization (GCQ)
 %
-% noiseFlag = -2 - photon noise,    no eNoises, no GCQ
-% noiseFlag = -1 - no photon noise, no eNoises, no GCQ
-% noiseFlag =  0 - no photon noise, no eNoises, yes GCQ
-% noiseFlag =  1 - photon noise, no eNoises, yes GCQ
-% noiseFlag =  2 - photon noise, yes eNoises,yes GCQ
+% noiseFlag = -2 - +photon noise, -eNoise, -GCQ
+% noiseFlag = -1 - -photon noise, -eNoise, -GCQ
+% noiseFlag =  0 - -photon noise, -eNoise, +GCQ
+% noiseFlag =  1 - +photon noise, -eNoise, +GCQ
+% noiseFlag =  2 - +photon noise, +eNoise, +GCQ
 %
 % In addition to controlling factors through the noise flag, it is possible
 % to manage them by individually setting sensor parameters. For example,

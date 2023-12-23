@@ -34,7 +34,7 @@ sceneWindow(scene);
 % optics.  We compute the irradiance field from the scene.
 %%
 oi = oiCreate;
-oi = oiCompute(scene,oi);
+oi = oiCompute(oi,scene);
 oi = oiSet(oi,'name','Small f number');
 oiWindow(oi);
 %% Increase the f# of the optics and compute again.
@@ -46,7 +46,7 @@ oiWindow(oi);
 fnSmall = oiGet(oi,'optics f number');
 fnBig   = 3*fnSmall;
 oiBigF = oiSet(oi,'optics f number',fnBig);
-oiBigF  = oiCompute(scene,oiBigF);
+oiBigF  = oiCompute(oiBigF,scene);
 
 oiBigF  = oiSet(oiBigF,'name','Big f number');
 oiWindow(oiBigF);
@@ -92,7 +92,7 @@ title(sprintf('Zoomed view: F-number = %d',fnBig))
 % dots now look yellow!
 %%
 oiHuman = oiCreate('human');
-oiHuman = oiCompute(scene,oiHuman);
+oiHuman = oiCompute(oiHuman,scene);
 oiHuman = oiSet(oiHuman,'name','human optics');
 oiWindow(oiHuman);
 %%

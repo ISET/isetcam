@@ -4,7 +4,7 @@
 % blur levels. These values are controlled by the Zernike
 % coefficients in the wavefront toolbox ( *wvf* ) functions.
 %
-% See also:  wvfCreate, wvfComputePSF
+% See also:  wvfCreate, wvfCompute
 %
 % (c) Wavefront Toolbox Team, 2012
 
@@ -23,7 +23,7 @@ maxUM  = 20;
 % through sixth coefficients, the standard deviations (sqrt of variances on
 % the diagonal) range between about 0.25 and about 0.5.
 wvfP = wvfCreate;
-wvfParams = wvfComputePSF(wvfP);
+wvfParams = wvfCompute(wvfP,'human lca',true);
 
 % The fourth and fifth coefficients are defocus and vertical
 % astigmatism.
@@ -42,11 +42,11 @@ wList = 550; % wvfGet(wvfParams,'wave');
 %%
 for ii=1:size(Zvals,1)
     wvfParams = wvfSet(wvfParams,'zcoeffs',Zvals(ii,:),{'defocus' 'vertical_astigmatism'});
-    wvfParams = wvfComputePSF(wvfParams);
+    wvfParams = wvfCompute(wvfParams,'human lca', true);
     
     % Mesh
     subplot(3, 3, ii)
-    wvfPlot(wvfParams, '2dpsfspace', 'um', wList, maxUM, 'nowindow');
+    wvfPlot(wvfParams, 'psf', 'unit','um', 'wave', wList, 'plot range', maxUM, 'window', false);
     title(sprintf('Defocus = %.1f Astig == %.1f\n', Zvals(ii, 1), ...
         Zvals(ii, 2)));
 

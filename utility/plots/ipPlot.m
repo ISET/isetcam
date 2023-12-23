@@ -39,7 +39,7 @@ function [uData, hdl] = ipPlot(ip,param,xy,varargin)
 %{
  camera = cameraCreate;  scene = sceneCreate;
  camera = cameraCompute(camera, scene); ip = cameraGet(camera,'ip');
- ipWindow(ip);
+ % ipWindow(ip);
  [uData,hdl] = ipPlot(ip,'horizontal line',[20 20]);
 %}
 

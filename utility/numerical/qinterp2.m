@@ -16,23 +16,6 @@ function Zi = qinterp2(X,Y,Z,xi,yi,methodflag)
 %   X(:,n) and Y(m,:) must be monotonically and evenly increasing
 %   e.g.,  [X,Y] = meshgrid(-5:5,0:0.025:1);
 %
-% Examples:
-%   % Set up the library data for each example
-%   [X,Y] = meshgrid(-4:0.1:4,-4:0.1:4);
-%   Z = exp(-X.^2-Y.^2);
-%
-%   % Interpolate a line
-%   xi = -4:0.03:4; yi = xi;
-%   Zi = qinterp2(X,Y,Z,xi,yi);
-%   % Plot the interpolant over the library data
-%   figure, mesh(X,Y,Z), hold on, plot3(xi,yi,Zi,'-r');
-%
-%   % Interpolate a region
-%   [xi,yi] = meshgrid(-3:0.3:0,0:0.3:3);
-%   Zi = qinterp2(X,Y,Z,xi,yi);
-%   % Plot the interpolant
-%   figure, mesh(xi,yi,Zi);
-%
 % Error checking
 %   WARNING: Little error checking is performed on the X or Y arrays. If these
 %   are not proper monotonic, evenly increasing plaid arrays, this
@@ -47,6 +30,27 @@ function Zi = qinterp2(X,Y,Z,xi,yi,methodflag)
 %
 % Using with non-evenly spaced arrays:
 %   See qinterp1
+%
+% The source code contains examples
+
+% Examples:
+%{
+  % Set up the library data for each example
+  [X,Y] = meshgrid(-4:0.1:4,-4:0.1:4);
+  Z = exp(-X.^2-Y.^2);
+
+  % Interpolate a line
+  xi = -4:0.03:4; yi = xi;
+  Zi = qinterp2(X,Y,Z,xi,yi);
+  % Plot the interpolant over the library data
+  figure, mesh(X,Y,Z), hold on, plot3(xi,yi,Zi,'-r');
+
+  % Interpolate a region
+  [xi,yi] = meshgrid(-3:0.3:0,0:0.3:3);
+  Zi = qinterp2(X,Y,Z,xi,yi);
+  % Plot the interpolant
+  figure, mesh(xi,yi,Zi);
+%}
 
 % Search array error checking
 if ~isequal(size(xi),size(yi))

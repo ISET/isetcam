@@ -40,7 +40,7 @@ function [averagePSF] = psfAverageMultiple(inputPSFs, CHECKINSFDOMAIN)
 % Examples:
 %{
     wvf0 = wvfCreate('calc wavelength', [400 550 700]');
-    wvf0 = wvfComputePSF(wvf0);
+    wvf0 = wvfCompute(wvf0);
     psfCell = wvfGet(wvf0, 'psf');
     [m, n] = size(psfCell{1});
     p = length(psfCell);
