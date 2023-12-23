@@ -300,40 +300,40 @@ end
 
 
 %---------------------------------------
-% function optics = opticsDefault
-% % Create diffraction limited optics from a wvf structure
-%
-% % optics.type = 'optics';
-% % optics = opticsSet(optics,'name','standard (1/4-inch)');
-% % optics = opticsSet(optics,'model','shiftinvariant');
-%
-% wave = 400:10:700;
-% wvf = wvfCreate('wave', wave);
-%
-% % Standard 1/4-inch sensor parameters
-% % sensorDiagonal = 0.004;
-% % FOV = 46;
-% fLength = 0.039; % inv(tan(FOV/180*pi)/2/sensorDiagonal)/2;
-% fNumber = 4;
-% pupilDiameterM = fLength/fNumber;
-% wvf = wvfSet(wvf,'focal length',fLength);
-%
-% % Annoying but necessary
-% wvf = wvfSet(wvf,'measuredpupil diameter',pupilDiameterM*1e3);
-% wvf = wvfSet(wvf,'calcpupil diameter',pupilDiameterM*1e3);
-% wvf = wvfCompute(wvf);
-% % optics = wvf2optics(wvf);
-%
-% oi = wvf2oi(wvf);
-% % optics = wvf2optics(wvf);
-%
-% optics = oiGet(oi,'optics');
-%
-% % optics = opticsSet(optics,'fnumber',4);  % Ratio of focal length to diameter
-% % optics = opticsSet(optics,'focalLength', fLength);
-% % optics = opticsSet(optics,'otfMethod','dlmtf');
-% %
-% end
+function optics = opticsDefault
+% Create diffraction limited optics from a wvf structure
+
+% optics.type = 'optics';
+% optics = opticsSet(optics,'name','standard (1/4-inch)');
+% optics = opticsSet(optics,'model','shiftinvariant');
+
+wave = 400:10:700;
+wvf = wvfCreate('wave', wave);
+
+% Standard 1/4-inch sensor parameters
+% sensorDiagonal = 0.004;
+% FOV = 46;
+fLength = 0.039; % inv(tan(FOV/180*pi)/2/sensorDiagonal)/2;
+fNumber = 4;
+pupilDiameterM = fLength/fNumber;
+wvf = wvfSet(wvf,'focal length',fLength);
+
+% Annoying but necessary
+wvf = wvfSet(wvf,'measuredpupil diameter',pupilDiameterM*1e3);
+wvf = wvfSet(wvf,'calcpupil diameter',pupilDiameterM*1e3);
+wvf = wvfCompute(wvf);
+% optics = wvf2optics(wvf);
+
+oi = wvf2oi(wvf);
+% optics = wvf2optics(wvf);
+
+optics = oiGet(oi,'optics');
+
+% optics = opticsSet(optics,'fnumber',4);  % Ratio of focal length to diameter
+% optics = opticsSet(optics,'focalLength', fLength);
+% optics = opticsSet(optics,'otfMethod','dlmtf');
+% 
+end
 
 %---------------------------------------
 function optics = opticsHuman(pupilRadiusMeters,fLengthMeters)

@@ -272,17 +272,14 @@ function oi = oiCreateUniformEE(sz,wave)
 %  Create a spatially uniform, equal energy image with a very large field
 %  of view. The optical image is created without any cos4th fall off so it
 %  can be used for lux-sec SNR testing.  The diffraction limited fnumber is
-%  set for very little or no blurring.
+%  set for no blurring.
 
 scene = sceneCreate('uniform EE',sz,wave);
 scene = sceneSet(scene,'hfov',120);
 ieAddObject(scene);
 
-% These values were changed 12/22/2023 with the new wvf methods.  The prior
-% fnumber was 1e-3, which is too small for the wvf to handle easily in
-% oiCompute.
-oi = oiCreate('diffraction limited');
-oi = oiSet(oi,'optics fnumber',0.1);
+oi = oiCreate('default');
+oi = oiSet(oi,'optics fnumber',1e-3);
 oi = oiSet(oi,'optics offaxis method','skip');
 oi = oiCompute(oi, scene);
 

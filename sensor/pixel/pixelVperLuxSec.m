@@ -1,5 +1,6 @@
 function [voltsPerLuxSec,luxsec,meanVolts,voltsPerAntiLuxSec,antiluxsec]...
     = pixelVperLuxSec(sensor,lightType)
+%
 % Compute pixel photometric sensitivity (volts per lux-sec)
 %
 %    [voltsPerLuxSec,luxsec,meanVolts] = pixelVperLuxSec([sensor])
