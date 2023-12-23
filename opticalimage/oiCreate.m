@@ -117,6 +117,12 @@ switch ieParamFormat(oiType)
         % wavefront to an OI, and that process calls opticsCreate to
         % convert the wvf parameters into an ISETCam optics struct.
         wvf = wvfCreate('wave',(400:10:700)');
+
+        % Set up the old standard optics values
+        wvf = wvfSet(wvf,'fnumber',4);
+        wvf = wvfSet(wvf,'focal length',3.9,'mm');
+
+        % Create the psf
         wvf = wvfCompute(wvf);
         oi  = wvf2oi(wvf);
         
