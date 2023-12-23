@@ -66,9 +66,10 @@ for ii=1:length(pixelSize)
     [SNR{ii},luxsec{ii}] =  pixelSNRluxsec(sensor);
 end
 
-% The data were saved in the cell arrays SNR{} and luxsec{}.
-% Here we make a summary plot.
-vcNewGraphWin;
+%% The data were saved in the cell arrays SNR{} and luxsec{}.
+
+% Make a summary plot.
+ieNewGraphWin;
 c = {'r','g','b','c','m','y','k'};
 txt = cell(1,length(SNR));
 for ii=1:length(SNR)
