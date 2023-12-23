@@ -13,12 +13,6 @@
 %  humanOTF, ijspeert
 
 %%
-if ~exist('isetbioRootPath','file')
-    warning('Requires ISETbio.  Skipping.')
-    return;
-end
-
-%%
 ieInit
 
 %% Show the image of a broadband line
