@@ -107,13 +107,7 @@ function oi = oiSet(oi,parm,val,varargin)
 %      {'illuminance'}
 %      {'mean illuminance'}
 %
-% Examples
-%    oi = oiSet(oi,'optics',optics);
-%    oi = oiSet(oi,'name','myName')
-%    oi = oiSet(oi,'filename','test')
-%    oi = oiSet(oi,'wvf zcoeffs',6,'defocus')
-%    oi = oiSet(oi,'wvf pupil diameter',3,'mm')
-%    oiSet(oi,'render flag','hdr');
+% The source code contains examples
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 %
@@ -122,6 +116,16 @@ function oi = oiSet(oi,parm,val,varargin)
 
 % Examples:
 %{
+   oi = oiCreate;
+   optics = oiGet(oi,'optics');
+   oi = oiSet(oi,'optics',optics);
+   oi = oiSet(oi,'name','myName')
+   oi = oiSet(oi,'filename','test')
+   oi = oiSet(oi,'render flag','hdr');
+
+   % These two are not working at present
+   %oi = oiSet(oi,'wvf zcoeffs',6,'defocus')
+   %oi = oiSet(oi,'wvf pupil diameter',3,'mm')
 %}
 
 if ~exist('parm','var') || isempty(parm), error('Param must be defined.'); end
