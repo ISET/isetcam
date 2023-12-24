@@ -118,11 +118,17 @@ switch ieParamFormat(oiType)
         % convert the wvf parameters into an ISETCam optics struct.
         wvf = wvfCreate('wave',(400:10:700)');
 
-        % Set up the old standard optics values
-        wvf = wvfSet(wvf,'focal length',3.9,'mm');
+        % Set up the standard optics values we have used for years
+        % For ISETCam these were 0.039 mm focal length and fnumber 4.
 
-        % Set the f number to 4
-        wvf = wvfSet(wvf,'calc pupil diameter',3.9/4,'mm');
+        % Set the f pupil diameter to this value because, well, DHB says
+        % this is what it was.
+        diameterMM = 9.6569e-01;
+        wvf = wvfSet(wvf,'calc pupil diameter',diameterMM,'mm');
+        
+        % If the f-number is 4, then the focal length must have been
+        % fN = fLength/aperture s0 fLength = fN*aperture
+        wvf = wvfSet(wvf,'focal length',diameterMM*4,'mm');
 
         % Create the psf
         wvf = wvfCompute(wvf);
