@@ -37,9 +37,11 @@ function val = oiGet(oi,parm,varargin)
 %    oi = oiCreate;
 %    oiGet(oi,'rows')
 %    oiGet(oi,'wave')
+%
 %    oiGet(oi,'optics') - Use oiGet(oi,'optics property') to get optics
 %                         parameter
 %    oiGet(oi,'optics fnumber')
+%    oiGet(oi, 'optics otf data','mm',500)
 %
 %    oiGet(oi,'area','mm')
 %    oiGet(oi,'width spatial resolution','microns')
