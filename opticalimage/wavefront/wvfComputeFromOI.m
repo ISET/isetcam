@@ -1,5 +1,5 @@
-function [wvf, scaleFactor] = wvfMatchOI(oi)
-% Match otf support of wvf with the optical image
+function wvf = wvfComputeFromOI(oi, aperture)
+% Match otf support of wvf with the optical image, and compute the wvf
 %
 % Syntax:
 %   wvf = wvfMatchOI(oi)
@@ -48,7 +48,12 @@ focallengthMM = oiGet(oi,'focal length','mm');
 
 ref_wave = 550;
 lambda = ref_wave * 1e-6; % mm
-nPixels = nX;
+
+if nX > nY
+    nPixels = nX;
+else
+    nPixels = nY;
+end
 
 % Sample width on pupil plane is connected to the sample width on PSF
 % plane through Fourier Transform. A narrawer sample on pupile plane means
@@ -81,6 +86,31 @@ wvf = wvfSet(wvf, 'spatial samples', nPixels_scaled);
 
 wvf = wvfSet(wvf,'field size mm',apertureDiameter_scaled);
 
+if isempty(aperture), aperture =[]; end
+
+tic;
+wvf = wvfCompute(wvf,'aperture',aperture);
+toc;
+
+% Resample PSFs, so that we do not need to interpolate them in oiCompute.
+for ww = 1:numel(wvf.psf)
+
+    psf_ww = wvf.psf{ww};
+    [rows, cols] = size(psf_ww);
+    [X, Y] = meshgrid(-cols/2:cols/2-1, -rows/2:rows/2-1);
+
+    % New grid for resampling
+    [Xq, Yq] = meshgrid(-nX/2:nX/2-1, -nY/2:nY/2-1);
+
+    psf_resampled = interp2(X, Y, psf_ww, Xq, Yq, 'cubic');
+
+    psf_resampled = psf_resampled/sum(psf_resampled(:));
+    
+    wvf.psf{ww} = psf_resampled;
+end
+
+wvf.refSizeOfFieldMM = wvf.refSizeOfFieldMM/scaleFactor;
+wvf.nSpatialSamples  = wvf.nSpatialSamples/scaleFactor;
 
 
 end

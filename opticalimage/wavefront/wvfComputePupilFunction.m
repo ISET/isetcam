@@ -236,8 +236,10 @@ for ii = 1:nWavelengths
         % count matches nPixels.
         aperture = p.Results.aperture;
         if ~isequal(size(aperture),[nPixels,nPixels])
-            warning('Adjusting aperture function size.');
+            % warning('Adjusting aperture function size.');
             aperture = imresize(aperture,[nPixels,nPixels]);
+            aperture(aperture > 1) = 1;
+            aperture(aperture < 0) = 0;
         end
     end
     % ieNewGraphWin; imagesc(aperture); axis square
