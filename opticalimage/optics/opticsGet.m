@@ -389,7 +389,6 @@ switch parm
         val = -(opticsGet(optics,'focal Plane Distance',sDist))/sDist;
         
     case {'otf','otfdata'}
-        %
         % Shift invariant:  opticsGet(optics,'otf', wave)
         % Diff limited:  otf = opticsGet(optics,'otf data',oi, fSupport, [wave]);
         %
