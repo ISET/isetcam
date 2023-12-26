@@ -1,4 +1,4 @@
-function wvf = wvfMatchOI(oi)
+function [wvf, scaleFactor] = wvfMatchOI(oi)
 % Match otf support of wvf with the optical image
 %
 % Syntax:
@@ -71,6 +71,7 @@ end
 
 apertureDiameter_scaled = scaleFactor * apertureDiameter; % pupil_sample is smaller by scaleFactor times
 nPixels_scaled = scaleFactor * nPixels;
+fprintf('Aperture: %.4f, number of samples: %d \n', apertureDiameter_scaled, nPixels_scaled);
 % nPixels     = scaleFactor *nPixels;
 
 % not sure whether it matters
@@ -79,6 +80,7 @@ nPixels_scaled = scaleFactor * nPixels;
 wvf = wvfSet(wvf, 'spatial samples', nPixels_scaled);
 
 wvf = wvfSet(wvf,'field size mm',apertureDiameter_scaled);
+
 
 
 end

@@ -21,11 +21,11 @@ clear all; close all
 %%
 s_size = 1280;
 flengthM = 5e-3;
-fnumber = 2;
+fnumber = 4;
 pupilMM = (flengthM*1e3)/fnumber;
 
-scene = sceneCreate('grid lines',s_size,s_size);
-scene = sceneSet(scene,'fov',40);
+scene = sceneCreate('point array',s_size,s_size);
+scene = sceneSet(scene,'fov',20);
 
 oi = oiCreate('shift invariant');
 
@@ -41,18 +41,39 @@ oi = oiSet(oi,'displaymode','hdr');
 ip = piRadiance2RGB(oi,'etime',1/30);
 ipWindow(ip)
 
+
 %% Match wvf with OI
 t = tic;
 
-wvf = wvfMatchOI(oi);
+[wvf,wvf_scale] = wvfMatchOI(oi);
 
-nsides = 8;
+nsides = 5; % circular aperture
 [aperture, params] = wvfAperture(wvf,'nsides',nsides,...
-    'dot mean',50, 'dot sd',20, 'dot opacity',0.5,'dot radius',20,...
-    'line mean',50, 'line sd', 20, 'line opacity',0.5,'linewidth',10);
+    'dot mean',50, 'dot sd',20, 'dot opacity',0.5,'dot radius',100,...
+    'line mean',50, 'line sd', 20, 'line opacity',0.5,'linewidth',80);
 tic;
 wvf = wvfCompute(wvf,'aperture',aperture);
 toc;
+% Resample PSFs, so that we do not need to interpolate them in oiCompute.
+for ww = 1:numel(wvf.psf)
+
+    psf_ww = wvf.psf{ww};
+    [rows, cols] = size(psf_ww);
+    [X, Y] = meshgrid(-cols/2:cols/2-1, -rows/2:rows/2-1);
+    resample_rows = rows/wvf_scale;
+    resample_cols = cols/wvf_scale;
+    % New grid for resampling
+    [Xq, Yq] = meshgrid(-resample_cols/2:resample_cols/2-1, -resample_rows/2:resample_rows/2-1);
+
+    psf_resampled = interp2(X, Y, psf_ww, Xq, Yq, 'cubic');
+
+    psf_resampled = psf_resampled/sum(psf_resampled(:));
+    
+    wvf.psf{ww} = psf_resampled;
+end
+
+wvf.refSizeOfFieldMM = wvf.refSizeOfFieldMM/wvf_scale;
+wvf.nSpatialSamples  = wvf.nSpatialSamples/wvf_scale;
 
 oi_wvf = oiCompute(wvf,scene);
 oi_wvf = oiSet(oi_wvf, 'name','icam');

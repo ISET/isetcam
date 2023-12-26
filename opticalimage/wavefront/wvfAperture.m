@@ -80,7 +80,7 @@ p.addParameter('linewidth',2,@isnumeric);
 
 p.addParameter('segmentlength',600,@isnumeric);
 
-p.addParameter('nsides',0, @(x)(isnumeric(x) && (x > 2)));
+p.addParameter('nsides',0, @(x)(isnumeric(x) && (x > 2 || x <= 0)));
 
 p.parse(wvf,varargin{:});
 dotMean     = p.Results.dotmean;
