@@ -19,88 +19,64 @@
 ieInit;
 clear all; close all
 %%
-s_size = 1024;
-scene = sceneCreate('point array',s_size,s_size/2);
-scene = sceneSet(scene,'fov',10);
-
-waveList = sceneGet(scene,'wave');
-
-oi = oiCreate();
-
-flengthM = 7e-3;
+s_size = 1280;
+flengthM = 5e-3;
 fnumber = 2;
 pupilMM = (flengthM*1e3)/fnumber;
+
+scene = sceneCreate('grid lines',s_size,s_size);
+scene = sceneSet(scene,'fov',40);
+
+oi = oiCreate('shift invariant');
 
 oi = oiSet(oi,'optics focallength',flengthM);
 oi = oiSet(oi,'optics fnumber',flengthM*1e3/pupilMM);
 
 % oi needs information from scene to figure out the proper resolution.
 oi = oiCompute(oi, scene);
+oiWindow(oi);
 
-oi_fsupport = oiGet(oi,'fsupport');
-fx = oi_fsupport(:,:,1); fy = oi_fsupport(:,:,2);
+oi = oiSet(oi, 'name','icam');
+oi = oiSet(oi,'displaymode','hdr');
+ip = piRadiance2RGB(oi,'etime',1/30);
+ipWindow(ip)
 
-nX    = size(fx,1);      nY = size(fy,1);
-nWave = length(waveList);
-
-oiDelta  = oiGet(oi,'sample spacing','mm');
-
-%% now create a WVF that can calcuate the OTF that matches the OI
+%% Match wvf with OI
 t = tic;
-optics = oiGet(oi,'optics');
-wvf    = optics2wvf(optics);
-wvf    = wvfSet(wvf,'wave',waveList);
 
-% we should give a proper size for filed size to allow for the accurate
-% representation of the diffraction effects and any aberrations.
+wvf = wvfMatchOI(oi);
 
-psf_sample = oiDelta(1); % mm
+nsides = 8;
+[aperture, params] = wvfAperture(wvf,'nsides',nsides,...
+    'dot mean',50, 'dot sd',20, 'dot opacity',0.5,'dot radius',20,...
+    'line mean',50, 'line sd', 20, 'line opacity',0.5,'linewidth',10);
+tic;
+wvf = wvfCompute(wvf,'aperture',aperture);
+toc;
 
-focallengthMM = flengthM*1e3;
-lambda = 550 * 1e-6; % mm
-nPixels = nX;
-pupil_sample = lambda * focallengthMM/(nPixels * psf_sample);
+oi_wvf = oiCompute(wvf,scene);
+oi_wvf = oiSet(oi_wvf, 'name','icam');
 
-% according to ChatGPT, 3 to 4 times the aperture seems a good number
-pupilPlanDiameterMM = pupilMM * 3;
-scaleFactor = pupilPlanDiameterMM/ (nPixels * pupil_sample);
+oiWindow(oi_wvf);
+oi_wvf = oiSet(oi_wvf,'displaymode','hdr');
+ip_wvf = piRadiance2RGB(oi_wvf,'etime',1/30);
+ipWindow(ip_wvf);
 
-if scaleFactor > 1
-    scaleFactor = ceil(scaleFactor);
-    nPixels = scaleFactor*nPixels;
-    fprintf('Scale the pupil plane by %d times to have a proper PSF calculation.\n',scaleFactor)
-end
-
-fieldSizeMM = nPixels * pupil_sample;
-
-% not sure whether it matters
-% wvf = wvfSet(wvf, 'sample interval domain','pupil'); 
-
-wvf = wvfSet(wvf, 'spatial samples', nPixels);
-
-wvf = wvfSet(wvf,'field size mm',fieldSizeMM, 550 );
-
-wvf = wvfCompute(wvf);  
-
+%{
+% Check some numbers
 fprintf('COMPLETED: Wavefront Size: %d, takes %.2f seconds. \n',nPixels, toc(t));
 
 psf_ss = wvfGet(wvf, 'psf spatial samples', 'um', 550);
 
 psf_sample_interval = psf_ss(2)-psf_ss(1);
 
-
 oi_sample_interval = oiGet(oi,'sample spacing','um'); 
 
-fprintf('PSF sample interval is %f.2 um; \n OI sample interval is %f.2 um \n', psf_sample_interval/scaleFactor, oi_sample_interval(1));
-%%
-wvfPlot(wvf,'psf','unit','um','wave',550,'plot range',15);
+fprintf('PSF sample interval is %f.2 um; \n OI sample interval is %f.2 um \n', psf_sample_interval*scaleFactor, oi_sample_interval(1));
 
-figure;imagesc(wvf.psf{1})
-%%
+figure;imagesc(wvf.psf{1});clim([1e-20 1e-7]);
 
+wvf_fx = wvfGet(wvf, 'otf support', 'mm', 550);
 
-
-
-
-
-
+fprintf('Freqency Extent: WVF: %.4f, OI: %.4f \n', wvf_fx(end)/scaleFactor, fx(end));
+%}

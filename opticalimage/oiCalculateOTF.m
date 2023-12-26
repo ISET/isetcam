@@ -60,8 +60,7 @@ switch lower(opticsModel)
         % It is important that the units specified for this
         % calculation and the units specified for the custom OTF be
         % the same.  Can we check?
-        % otf = customOTF(oi,fSupport,wave,unit);
-        otf = custom2OTF(oi,fSupport,wave,unit);
+        otf = customOTF(oi,fSupport,wave,unit);
         
     case {'skip','skipotf'}
         % Doesn't really happen.

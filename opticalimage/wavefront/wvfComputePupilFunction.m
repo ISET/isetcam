@@ -268,7 +268,7 @@ for ii = 1:nWavelengths
     %
     % We might come back and carefully comment all this new code someday,
     % as well as look more closely at s_wvfDiffraction.
-    sz = round((nPixels - boundingBox(3))/2) - 2;
+    sz = double(round((nPixels - boundingBox(3))/2) - 2);
     if sz > 0
         % In some cases, there is no need to pad.
         aperture = padarray(aperture,[sz,sz],0,'both');

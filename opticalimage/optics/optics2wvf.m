@@ -35,7 +35,7 @@ wvf = wvfCreate('wave',optics.OTF.wave,'zcoeffs',optics.zCoeffs);
 wvf = wvfSet(wvf,'measured pupil diameter',optics.zDiameterMM);
 
 % Only allows meter now. - ZL
-wvf = wvfSet(wvf, 'focal length', opticsGet(optics, 'focal length', 'm'));
+wvf = wvfSet(wvf, 'focal length', opticsGet(optics, 'focal length', 'mm'), 'mm');
 
 % Pupil diameter that we are currently calculation
 wvf = wvfSet(wvf,'calc pupil diameter',opticsGet(optics,'diameter','mm'));
