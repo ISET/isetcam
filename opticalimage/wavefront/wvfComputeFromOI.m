@@ -55,10 +55,14 @@ else
     nPixels = nY;
 end
 
-% Sample width on pupil plane is connected to the sample width on PSF
-% plane through Fourier Transform. A narrawer sample on pupile plane means
-% higher freqency, thus wider space on PSF plane.
-
+% Ref: https://hal.science/hal-01741583/document
+% Equation 25:
+% cutoffFrequency = 1/(lambda * fnumber)
+% psf_sample = 1/cutoffFreqency
+% pupil_plane = pupil_sample*nPixels;
+% fnumber = focallength/ (pupil_sample*nPixels)
+% cutoffFrequency = pupil_plane/(focallength*lambda)
+% cutoffFrequency increases as the size of pupil_plane increase
 pupil_sample = lambda * focallengthMM/ (psf_sample * nPixels);
 
 apertureDiameter = nPixels * pupil_sample;
@@ -91,24 +95,30 @@ if isempty(aperture), aperture =[]; end
 tic;
 wvf = wvfCompute(wvf,'aperture',aperture);
 toc;
+if scaleFactor>1
+    % Assuming psf is your Point Spread Function matrix
+    sigma_x = sqrt(nPixels_scaled/nX); % Standard deviation for Gaussian filter
+    sigma_y = sqrt(nPixels_scaled/nY);
+    filterSize_x = ceil(6 * sigma_x);
+    filterSize_y = ceil(6 * sigma_y);
+    % lowPassFilter = fspecial('gaussian', round(filterSize), sigma);
+    filterX = fspecial('gaussian', [1, filterSize_x], sigma_x);
+    filterY = fspecial('gaussian', [filterSize_y, 1], sigma_y);
 
-% Resample PSFs, so that we do not need to interpolate them in oiCompute.
-for ww = 1:numel(wvf.psf)
+    % combine the filter
+    combinedFilter = conv2(filterY, filterX);
 
-    psf_ww = wvf.psf{ww};
-    [rows, cols] = size(psf_ww);
-    [X, Y] = meshgrid(-cols/2:cols/2-1, -rows/2:rows/2-1);
+    % Resample PSFs, so that we do not need to interpolate them in oiCompute.
+    for ww = 1:numel(wvf.psf)
 
-    % New grid for resampling
-    [Xq, Yq] = meshgrid(-nX/2:nX/2-1, -nY/2:nY/2-1);
+        psf_ww = wvf.psf{ww};
+        psf_filtered = imfilter(psf_ww, combinedFilter, 'conv');
 
-    psf_resampled = interp2(X, Y, psf_ww, Xq, Yq, 'cubic');
-
-    psf_resampled = psf_resampled/sum(psf_resampled(:));
-    
-    wvf.psf{ww} = psf_resampled;
+        psf_resampled = imresize(psf_filtered, [nX, nY], 'bicubic','Antialiasing',false);
+        psf_resampled = psf_resampled/sum(psf_resampled(:));
+        wvf.psf{ww}  = psf_resampled;
+    end
 end
-
 wvf.refSizeOfFieldMM = wvf.refSizeOfFieldMM/scaleFactor;
 wvf.nSpatialSamples  = wvf.nSpatialSamples/scaleFactor;
 
