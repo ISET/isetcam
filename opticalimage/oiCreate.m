@@ -1,4 +1,4 @@
-function [oi,wvf] = oiCreate(oiType,varargin)
+function [oi, wvf, scene] = oiCreate(oiType,varargin)
 % Create an optical image structure 
 %
 % Syntax
@@ -56,9 +56,10 @@ function [oi,wvf] = oiCreate(oiType,varargin)
 %          sz = varargin{1}; wave = varargin{2};  
 %
 % Returns
-%   oi  - The constructed optical image with the optics
-%   wvf - The optics structure is created from a wavefront struct. That
-%         struct is optionally returned as the second argument.
+%   oi    - The constructed optical image with the optics
+%   wvf   - The optics structure is created from a wavefront struct. That
+%           struct is optionally returned as the second argument.
+%   scene - The scene used to create the oi for uniform cases
 %
 % Description
 %
@@ -100,6 +101,7 @@ else
 end
 
 %%
+scene = []; wvf = [];
 switch ieParamFormat(oiType)
     case {'empty'}
         % Just the basic shell of the oi struct
@@ -178,7 +180,7 @@ switch ieParamFormat(oiType)
         end
 
     case {'human','wvfhuman','humanwvf'}
-        % oi = oiCreate('wvf human', pupilMM, zCoefs, wave)
+        % [oi, wvf] = oiCreate('wvf human', pupilMM, zCoefs, wave)
         %
         % Human optics specified from Thibos data.  The wavefront
         % structure has LCA set to use human.
@@ -203,6 +205,8 @@ switch ieParamFormat(oiType)
         end
 
     case {'uniformd65'}
+        % [oi,scene] = oiCreate('uniform d65',sz,wave);
+        %
         % Uniform, D65 optical image.  No cos4th falloff, huge field of
         % view (120 deg). Used in lux-sec SNR testing and scripting
         wave = 400:10:700; sz = 32;
@@ -212,14 +216,16 @@ switch ieParamFormat(oiType)
         wvf = [];
 
     case {'uniformee','uniformeespecify'}
-        % Uniform, equal energy optical image. No cos4th falloff. Might be used in
-        % lux-sec SNR testing or scripting.  Not really used now
-        % (5.3.2005).
+        % [oi, scene] = oiCreate('uniform ee',sz,wave);
+        %
+        % Uniform, equal energy optical image. No cos4th falloff. Might be
+        % used in lux-sec SNR testing or scripting.  
+        % Not really used now, since (5.3.2005).
         wave = 400:10:700; sz = 32;
         if length(varargin) >= 1, sz = varargin{1}; end
         if length(varargin) >= 2, wave = varargin{2}; end
-        oi = oiCreateUniformEE(sz,wave);
-        wvf = [];
+        [oi,scene] = oiCreateUniformEE(sz,wave);
+        wvf = scene;
 
     case {'black'}
         % oi = oiCreate('black',sz,wave);
@@ -263,7 +269,7 @@ end
 end
 
 %--------------------------------------------
-function oi = oiCreateUniformD65(sz,wave)
+function [oi, scene] = oiCreateUniformD65(sz,wave)
 %  Create a spatially uniform, D65 image with a very large field of view.
 %  The optical image is created without any cos4th fall off so it can be
 %  used for lux-sec SNR testing.  The diffraction limited fnumber is set
@@ -282,7 +288,7 @@ oi = oiCompute(oi,scene);
 end
 
 %---------------------------------------------
-function oi = oiCreateUniformEE(sz,wave)
+function [oi,scene] = oiCreateUniformEE(sz,wave)
 %  Create a spatially uniform, equal energy image with a very large field
 %  of view. The optical image is created without any cos4th fall off so it
 %  can be used for lux-sec SNR testing.  The diffraction limited fnumber is

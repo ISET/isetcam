@@ -40,7 +40,7 @@ scene = sceneAdjustLuminance(scene,meanL);    % Candelas/m2
 scene = sceneSet(scene,'distance',viewD);     % meters
 scene = sceneSet(scene,'fov',fov);            % Field of view in degrees
 
-sceneWindow(scene);
+% sceneWindow(scene);
 
 %% Create an optical image with some default optics.
 oi = oiCreate('diffraction limited');
@@ -50,7 +50,7 @@ oi = oiSet(oi,'optics fnumber',fNumber);
 % Now, compute the optical image from this scene and the current optical
 % image properties
 oi = oiCompute(oi,scene);
-oiWindow(oi);
+% oiWindow(oi);
 
 %% Create sensor
 
@@ -124,11 +124,12 @@ ipWindow(ip);
 %% Define the rect for the ISO12233 calculation
 
 % Have the user select the edge.
-% masterRect = [39    25    51    65];
+masterRect = [39    25    51    65];
 
 % This changed around December 2023.  Not sure why.  Probably some
 % object changed size? (BW)
-masterRect = [166    82   226   303];
+% Then it changed back.
+% masterRect = [166    82   226   303];
 
 % It is also possible to estimate the rectangle automatically using
 % ISOFindSlantedBar, which is called in ieISO12233()
@@ -177,11 +178,8 @@ dxum = dxmm*1000;
 mxmn = 30;
 set(gca,'xlim',[-mxmn mxmn],'ylim',[0 1]);
 
-% Changed from 77 to 75 on Nov. 11, 2019.  This was part of a fix of the
-% ISOFindSlantedBar code that put the rect more into the center of the
-% edge.
-% Then it changed back to 67 in Dec. 2023.  No idea why.
-assert(abs(mtf.mtf50 - 75) <= 3);
+% Inserted 2023.12.28
+assert(abs(mtf.mtf50 - 77) <= 3);
 
 ipWindow(ip);
 h = ieDrawShape(ip,'rectangle',mtf.rect);

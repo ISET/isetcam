@@ -33,10 +33,11 @@ wgts = [w1(:),w2(:)];
 nPairs = size(wgts,1);
 dE = ones(nPairs,1);
 dES = ones(nPairs,1);
+
+%%
 showBar = ieSessionGet('waitbar');
 if showBar, wBar = waitbar(0,'Patches'); end
 
-%%
 for ii=1:size(wgts,1)
     if showBar, wBar = waitbar(ii/size(wgts,1),wBar,'Patches'); end
     
@@ -69,10 +70,6 @@ for ii=1:size(wgts,1)
     % fprintf('Mean delta E for S-CIELAB %f\n',mean(dES(:)));
 end
 if showBar, close(wBar); end
-
-% vcNewGraphWin; mesh(dES)
-% mean(RGB2XWFormat(xyz1))
-% mean(RGB2XWFormat(xyz2))
 
 %% Compare delta E values
 %%

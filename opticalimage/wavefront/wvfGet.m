@@ -1025,6 +1025,18 @@ switch (parm)
         dx = samp(2) - samp(1);
         nyquistF = 1 / (2 * dx);   % Line pairs (cycles) per unit space
         val = unitFrequencyList(nSamp) * nyquistF;
+    case {'otfspacing'}
+        % wvfGet(wvf,'otf spacing',unit)
+        %
+        % Get the spacing of the frequency samples in the given units
+        %
+        unit = 'mm';
+        wave = wvfGet(wvf, 'calc wave');
+        if ~isempty(varargin), unit = varargin{1}; end
+        if length(varargin) > 1, wave = varargin{2}; end
+        
+        otfSupport = wvfGet(wvf,'otf support',unit,wave);
+        val = otfSupport(2) - otfSupport(1);
 
     case {'otfandsupport'}
         % val = wvfGet(wvf,'otf and support',unit,wave);
