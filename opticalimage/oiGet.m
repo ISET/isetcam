@@ -322,8 +322,9 @@ switch oType
                 % set the new logic. Value was 5.  This was in response to
                 % an observation by Zhenyi.
                 if isequal(parm,'distance')
-                    warning('Returning lens to sensor distance.');
+                    warning('Returning lens to sensor focal distance given the scene depth.');
                 end
+
                 % The focal plane depends on the scene distance.  If there
                 % is no scene, we check the depth map.  If there is no
                 % depth map we assume very far away.
@@ -344,7 +345,7 @@ switch oType
                         % fprintf('Assuming scene at infinity.\n');
                         %sDist = 1e10;
 
-                        % Tru to get the validation to work by forcing
+                        % Try to get the validation to work by forcing
                         % this to match what isetbio does for the
                         % validation.
                         sDist = 1.2;

@@ -141,11 +141,13 @@ switch parm
     case {'zcoeffs','zernikecoefficients'}
         % We store the zernike polynomial coefficients to compute the
         % OTF on the fly.
-        optics.zCoeffs = val;
+        error('Not allowed until we implement on the fly wvf');
+        % optics.zCoeffs = val;
     case {'zcoeffsdiameter'}
         % This is the diameter (in millimeters) of the circle for the
         % Zernike polynomial coefficients
-        optics.zDiameterMM = val;
+        error('Not allowed until we implement on the fly wvf');
+        % optics.zDiameterMM = val;
     case {'transmittance','transmittancescale'}
         % opticsSet(optics,'transmittance scale',scaleValues);
         %

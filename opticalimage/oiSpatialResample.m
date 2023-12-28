@@ -1,8 +1,11 @@
 function oi = oiSpatialResample(oi,dx,units,method)
 % Spatial resample all wavebands of a scene
 %
+% Synopsis
 %   oi = oiSpatialResample(oi,dx,'units','method')
 %
+% Brief description
+%  
 % Example:
 %  scene = sceneCreate; scene = sceneSet(scene,'fov',1);
 %  oi = oiCreate; oi = oiCompute;
