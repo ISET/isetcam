@@ -44,7 +44,7 @@ load(displayCalFile,'d'); dsp = d;
 wave = displayGet(dsp,'wave');
 spd = displayGet(dsp,'spd');
 
-vcNewGraphWin; plot(wave,spd);
+ieNewGraphWin; plot(wave,spd);
 xlabel('Wave (nm)'); ylabel('Energy'); grid on
 title('Spectral Power Distribution of Display Color Primaries');
 
@@ -64,7 +64,7 @@ rgbFile = fullfile(isetRootPath,'data','images','rgb','eagle.jpg');
 scene = sceneFromFile(rgbFile,'rgb',[],displayCalFile);
 
 % Show the scene
-sceneWindow(scene); pause(delay);
+% sceneWindow(scene); pause(delay);
 
 %% Change the illuminant to 6500 K
 

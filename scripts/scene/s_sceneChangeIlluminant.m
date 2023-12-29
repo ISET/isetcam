@@ -26,7 +26,7 @@ delay = 0.2;
 % uniformly illuminated with daylight 6500 (D65)
 
 scene = sceneCreate;
-sceneWindow(scene); pause(delay);
+% sceneWindow(scene); pause(delay);
 
 % Plot the illuminant.
 scenePlot(scene,'illuminant photons');
@@ -42,14 +42,14 @@ TungstenEnergy = ieReadSpectra('Tungsten.mat',wave);
 scene = sceneAdjustIlluminant(scene,TungstenEnergy);
 scene = sceneSet(scene,'illuminantComment','Tungsten illuminant');
 
-sceneWindow(scene); pause(delay);
+% sceneWindow(scene); pause(delay);
 scenePlot(scene,'illuminant photons');
 
 %% Read in a multispectral scene from data/images
 
 sceneFile = fullfile(isetRootPath,'data','images','multispectral','StuffedAnimals_tungsten-hdrs.mat');
 scene = sceneFromFile(sceneFile,'multispectral');
-sceneWindow(scene); pause(delay);
+% sceneWindow(scene); pause(delay);
 scenePlot(scene,'illuminant energy');
 
 %% Change the illuminant to equal energy
