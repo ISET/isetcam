@@ -19,7 +19,7 @@ sFile = fullfile(isetRootPath,'data','images','rgb','hats.jpg');
 scene = sceneFromFile(sFile,'rgb', 100, displayCreate('OLED-Sony'));
 scene = sceneAdjustIlluminant(scene,'D65.mat');
 
-ieAddObject(scene); sceneWindow;
+sceneWindow(scene);
 
 %% Show a region of interest on the scene
 
@@ -58,7 +58,7 @@ end
 
 %% Plot one spectral irradiance
 
-vcNewGraphWin;
+ieNewGraphWin;
 plot(oiGet(oi,'wave'),spectralIrradiance,'--');
 grid on
 xlabel('Wavelength (nm)'); ylabel('Photons/s/nm/m^2');
@@ -66,7 +66,7 @@ title(sprintf('Spectral irradiance (f# %d)',fnumbers(end)));
 
 %% Plot the number of photons as a function of f#
 
-vcNewGraphWin;
+ieNewGraphWin;
 loglog(fnumbers,totalQ,'-o');
 grid on;
 xlabel('f#'); ylabel('Photons/s/m^2')

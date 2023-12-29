@@ -98,7 +98,7 @@ sensor = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'),oi);
 
 % Compute the image and bring it up.
 sensor = sensorCompute(sensor,oi);
-sensorWindow(sensor);
+% sensorWindow(sensor);
 
 % Plot a couple of lines
 %    sensorPlotLine(sensor,'h','volts','space',[1,80]);
@@ -161,6 +161,7 @@ ISO12233(barImage, dxmm);
 
 sensor = sensorSet(sensor,'ir filter',irFilter);
 sensor = sensorCompute(sensor,oi);
+ieAddObject(sensor);
 
 %% Compute the MTF with the rectangle selected automatically
 

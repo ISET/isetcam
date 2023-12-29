@@ -50,12 +50,12 @@ volts = logspace(log10(vSwing)-4,log10(vSwing),20);
 SNR = sensorSNR(sensor,volts);
 
 % Plot the relation between mean voltage level and SNR
-vcNewGraphWin;
+ieNewGraphWin;
 semilogx(volts,SNR,'k-');
 grid on; ylabel('SNR (db)'); xlabel('Volts')
 
 %% Another way to do the calculation and plot
-vcNewGraphWin;
+ieNewGraphWin;
 uData = plotSensorSNR(sensor);
 uData
 
