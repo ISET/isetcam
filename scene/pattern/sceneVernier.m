@@ -64,8 +64,8 @@ function scene = sceneVernier(scene, type, params)
     p.lineSpace = 1;
     p.barColor = [1 0.5 0.5];
     p.bgColor = [0 0 0];
-    s = sceneCreate('vernier', 'display', p);
-    vcAddObject(s);
+    s = sceneVernier('vernier', 'display', p);
+    ieAddObject(s);
     sceneWindow;
 %}
 
