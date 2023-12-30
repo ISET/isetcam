@@ -398,7 +398,7 @@ for ii = 1:nWavelengths
     % Conceptually, the aperture function should do this job, we
     % should not do it this way. Using the aperture is better
     % because this imposes an implicit circular aperture. 
-    pupilfuncphase(norm_radius > calcPupilSizeMM/measPupilSizeMM) = 0;
+    % pupilfuncphase(norm_radius > calcPupilSizeMM/measPupilSizeMM) = 0;
 
     % Create the pupil function, combining the aperture and pupil phase
     % functions. 
