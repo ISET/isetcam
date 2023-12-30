@@ -220,14 +220,20 @@ for ii = 1:nWavelengths
     % ieNewGraphWin; imagesc(pupilPos,pupilPos,norm_radius_index); axis image   
 
     %% The aperture function calculations
+    % This index has the locations of the calculated pupil values.  Values
+    % outside this region will be set to 0.
+    calc_radius = calcPupilSizeMM/measPupilSizeMM;
+    calc_radius_index = (norm_radius < calc_radius);
 
     % In the original code, only the Stiles Crawford Effect (SCE) was
     % implemented.  This code allows for a general aperture function, which
     % is crucial for calculation flare.
     nPixels = wvfGet(wvf, 'number spatial samples');
     if isempty(p.Results.aperture)
-        % Assume the aperture is all 1's.
-        aperture = ones(nPixels, nPixels);
+        % If no aperture is given, the aperture should be the calculated
+        % radius_index, which is circular, old code assumes a rectangle
+        % aperture, which causes problem. --Zhenyi
+        aperture = calc_radius_index;
     else
         % Use the passed in aperture function. Make sure its pixel
         % count matches nPixels.
@@ -236,38 +242,39 @@ for ii = 1:nWavelengths
             warning('Adjusting aperture function size.');
             aperture = imresize(aperture,[nPixels,nPixels]);
         end
+
+        % We size the aperture function to be within the region
+        % defined by the calculated pupil diameter.
+        boundingBox = imageBoundingBox(calc_radius_index);
+
+        % Resize the aperture mask to the bounding box of the calculated
+        % radius.  Using nearest neighbor interpolation fixes problems
+        % caused by linear interpolation, where when we start with a mask of
+        % all ones it ends up with some intermediate values.  It is possible
+        % that nearest neighbor is not as desirable when there is a real space
+        % varying pupil aperture mask passed.
+        aperture = imresize(aperture,[boundingBox(3),boundingBox(4)],'nearest');
+
+        % Extend with zeros outside of the calcpupil radius.
+        % DHB/BAW: We subtract 1 to pad a little less. This leaves the pupil as a circle
+        % in the case we looked at, and causes this code to match better the old
+        % ISETBio master when no aperture is passed. There is an issue with
+        % s_wvfDiffraction but it doesn't seem to be affected by this change of
+        % subracting 1.
+        %
+        % We might come back and carefully comment all this new code someday,
+        % as well as look more closely at s_wvfDiffraction.
+        sz = double(round((nPixels - boundingBox(3))/2) - 2);
+        if sz > 0
+            % In some cases, there is no need to pad.
+            aperture = padarray(aperture,[sz,sz],0,'both');
+        end
+        aperture = imresize(aperture,[nPixels,nPixels],'nearest');
     end
     % ieNewGraphWin; imagesc(aperture); axis square
 
-    % This index has the locations of the calculated pupil values.  Values
-    % outside this region will be set to 0.
-    calc_radius = calcPupilSizeMM/measPupilSizeMM;
-    calc_radius_index = (norm_radius < calc_radius);
-
-    % We size the aperture function to be within the region
-    % defined by the calculated pupil diameter.  
-    boundingBox = imageBoundingBox(calc_radius_index);
-
-    % Resize the aperture mask to the bounding box of the calculated
-    % radius.  Using nearest neighbor interpolation fixes problems
-    % caused by linear interpolation, where when we start with a mask of
-    % all ones it ends up with some intermediate values.  It is possible
-    % that nearest neighbor is not as desirable when there is a real space
-    % varying pupil aperture mask passed.
-    aperture = imresize(aperture,[boundingBox(3),boundingBox(4)],'nearest');
-   
-    % Extend with zeros outside of the calcpupil radius.
-    % DHB/BAW: We subtract 1 to pad a little less. This leaves the pupil as a circle
-    % in the case we looked at, and causes this code to match better the old
-    % ISETBio master when no aperture is passed. There is an issue with
-    % s_wvfDiffraction but it doesn't seem to be affected by this change of
-    % subracting 1.
-    %
-    % We might come back and carefully comment all this new code someday,
-    % as well as look more closely at s_wvfDiffraction.
-    sz = round((nPixels - boundingBox(3))/2) - 2;
-    aperture = padarray(aperture,[sz,sz],0,'both');    
-    aperture = imresize(aperture,[nPixels,nPixels],'nearest');
+    % tmp
+    figure(3);imagesc(aperture);axis equal
     % ieNewGraphWin; imagesc(pupilPos,pupilPos,aperture); axis image    
 
     % Keep the amplitude within bounds. imresize, with some interpolation,
