@@ -42,8 +42,9 @@ scene = sceneSet(scene,'photons',data);
 scene = sceneAdjustLuminance(scene,'peak',100000);
 
 
-
-for fnumber = 3:3:11
+index = 1;
+fig = figure;set(fig, 'AutoResizeChildren', 'off');
+for fnumber = 3:5:13
     oi = oiCreate('diffraction limited');
 
     oi = oiSet(oi,'optics focallength',flengthM);
@@ -52,39 +53,59 @@ for fnumber = 3:3:11
     % oi needs information from scene to figure out the proper resolution.
     oi = oiCompute(oi, scene);
     oi = oiCrop(oi,'border');
-    oiWindow(oi);
+    % oiWindow(oi);
 
     oi = oiSet(oi, 'name','dl');
-    oi = oiSet(oi,'displaymode','hdr');
+    % oi = oiSet(oi,'displaymode','hdr');
     ip = piRadiance2RGB(oi,'etime',1);
-    ip = ipSet(ip, 'name','dl');
-    ipWindow(ip)
+
+    rgb = ipGet(ip,'srgb');
+    subplot(3,3,index);imshow(rgb);index = index+1;title(sprintf('DL-Fnumber:%d\n',fnumber));
 
     oi.optics.model = 'shiftinvariant';
     %% Match wvf with OI
-    % nsides = 0; % circular aperture
-    % % 
-    % optics = oiGet(oi,'optics');
-    % wvf    = optics2wvf(optics);
-    % % 
-    % wvf = wvfSet(wvf, 'spatial samples', 1024);
-    % [aperture, params] = wvfAperture(wvf,'nsides',nsides,...
-    %     'dot mean',50, 'dot sd',20, 'dot opacity',0.5,'dot radius',5,...
-    %     'line mean',50, 'line sd', 20, 'line opacity',0.5,'linewidth',2);
+
     aperture = [];
     oi_wvf = oiComputeFlare(oi,scene,'aperture',aperture);
     oi_wvf = oiSet(oi_wvf, 'name','flare');
     oi_wvf = oiCrop(oi_wvf,'border');
-    oiWindow(oi_wvf);
+    % oiWindow(oi_wvf);
 
-    oi_wvf = oiSet(oi_wvf,'displaymode','hdr');
+    % oi_wvf = oiSet(oi_wvf,'displaymode','hdr');
     ip_wvf = piRadiance2RGB(oi_wvf,'etime',1);
-    ip_wvf = ipSet(ip_wvf, 'name','flare');
-    ipWindow(ip_wvf);
-    assert(abs((mean(ip_wvf.data.result(:)) - mean(ip.data.result(:))))< 1/4096); % smaller than 1 digit for 12 bit
+    rgb_wvf = ipGet(ip_wvf,'srgb');
+    subplot(3,3,index);imshow(rgb);index = index+1;title(sprintf('Flare-Fnumber:%d\n',fnumber));
+    subplot(3,3, index);imagesc(abs(rgb(:,:,2)-rgb_wvf(:,:,2)));colormap jet; colorbar; index = index+1;title('difference');
+    assert(max2(abs(rgb(:,:,2)-rgb_wvf(:,:,2)))<0.1);
+end
+%% Modify aperture
+
+scene = sceneCreate('point array',512,512);
+scene = sceneSet(scene,'fov',5);
+% Compare with this: https://en.wikipedia.org/wiki/File:Comparison_aperture_diffraction_spikes.svg
+nsides_list = [0, 4, 5, 6];
+
+fig_2 = figure(2); set(fig_2, 'AutoResizeChildren', 'off');
+for ii = 1:4
+    nsides = nsides_list(ii); % circular aperture
+    %
+    wvf    = wvfCreate('spatial samples', 512);
+
+    [aperture, params] = wvfAperture(wvf,'nsides',nsides,...
+        'dot mean',0, 'dot sd',0, 'dot opacity',0.5,'dot radius',5,...
+        'line mean',0, 'line sd', 0, 'line opacity',0.5,'linewidth',2);
+
+    oi_wvf = oiComputeFlare(oi,scene,'aperture',aperture);
+
+    oi_wvf = oiSet(oi_wvf, 'name','flare');
+    oi_wvf = oiCrop(oi_wvf,'border');
+    ip_wvf = piRadiance2RGB(oi_wvf,'etime',1);
+    rgb_wvf = ipGet(ip_wvf,'srgb');
+
+    subplot(1, 4, ii);imshow(rgb_wvf);title(sprintf('Number of blades: %d\n',nsides));
 end
 
-
+%%
 function binary_mask = create_shapes()
     % Create a blank image
     image_size = 1024;
