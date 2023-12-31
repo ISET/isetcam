@@ -71,10 +71,14 @@ function scene = sceneFromFile(inputData, imType, meanLuminance, dispCal, ...
 % Examples:
 %
 %{
+   % ETTBSkip
+   % Requires user input, don't autorun
    scene = sceneFromFile;
    sceneWindow(scene);
 %}
 %{
+   % ETTBSkip
+   % Requires user input, don't autorun
    imgType = 'rgb'; meanLuminance = 10;
    fullFileName = vcSelectImage;
    scene = sceneFromFile(fullFileName,imgType,meanLuminance);

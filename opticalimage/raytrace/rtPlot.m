@@ -28,12 +28,17 @@ function rtPlot(oi,dataType,varargin)
    oi = oiCreate('raytrace');
    rtPlot(oi,'psf550');
    rtPlot(oi,'psf',550,1);
-   rtPlot(oi,'psf image');
    rtPlot(oi,'psf movie');
    rtPlot(oi,'distortion');
    rtPlot(oi,'distortionw',550);
    rtPlot(oi,'otf550');
    rtPlot(oi,'otf',550,0.5);
+%}
+%{
+   % ETTBSkip
+   % Requires user input, don't autorun
+   oi = oiCreate('raytrace');
+   rtPlot(oi,'psf image');
 %}
 
 %%
