@@ -124,7 +124,7 @@ wvfP = wvfSet(wvfP, 'calc pupil size', pupilDiameterMM);
 % Calculate and plot the OTF/PSF
 
 wvfP = wvfCompute(wvfP);
-oi = wvf2oi(wvfP,'model','human');
+oi = wvf2oi(wvfP,'humanlens',true);
 oiPlot(oi,'PSF',[],550,'airydisk',true); 
 set(gca,'xlim',[-20 20],'ylim',[-20 20]); 
 %% Now plot the MTF after add increasing the defocus of the human eye model
@@ -158,7 +158,7 @@ legend(thisL);
 
 wvfP = wvfSet(wvfP,'zcoeffs',0.5,{'defocus'});
 wvfP = wvfCompute(wvfP);
-oi = wvf2oi(wvfP,'model','human');
+oi = wvf2oi(wvfP,'humanlens',true);
 oiPlot(oi,'PSF',[],550,'airydisk',false);
 ##### SOURCE END #####
 -->

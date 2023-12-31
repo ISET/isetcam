@@ -114,10 +114,10 @@ oi = oiSet(oi, 'name', wvfGet(wvf, 'name'));
 
 % Convert the ISETCam lens transmittance to the default human lens
 if p.Results.humanlens
-    oi = oiSet(oi, 'optics lens', Lens('wave', oiGet(oi, 'optics wave')));
     if checkfields(oi.optics, 'transmittance')
         oi.optics = rmfield(oi.optics, 'transmittance');
     end
+    oi = oiSet(oi, 'optics lens', Lens('wave', oiGet(oi, 'optics wave')));
 end
 
 % We used to add the wvf to the oi struct. But, we decided against adding
