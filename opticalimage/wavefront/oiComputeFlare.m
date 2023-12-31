@@ -65,11 +65,13 @@ p.addParameter('aperture',[]);       % Aperture mask
 % p.addParameter('normalizePSF',true);  % whether normalize the calculatedPSF
 % some parameters for defocus
 p.addParameter('defocusterm', 0); % Zernike defocus term
+p.addParameter('pixelsize',[]);% m
 
 p.parse(oi,scene, varargin{:});
 
 aperture      = p.Results.aperture;
 defocusTerm      = p.Results.defocusterm;
+pixelsize      = p.Results.pixelsize;
 
 %%
 fNumber = oiGet(oi,'fnumber');
@@ -108,7 +110,10 @@ oi = oiPadValue(oi,padSize,'zero photons',sDist);
 %  oiWidth, oiHeight, imgSize, 
 oiSize = oiGet(oi,'size');
 oiHeight = oiSize(1); oiWidth = oiSize(2);
-
+if ~isempty(pixelsize)
+    wAngularMatchPixel = atand(pixelsize*oiWidth/2/focallengthM)*2;
+    oi = oiSet(oi, 'wAngular',wAngularMatchPixel);
+end
 waveList = oiGet(oi, 'wave');
 
 oiDelta = oiGet(oi,'sample spacing','m');
@@ -140,13 +145,13 @@ for ww = 1:nWave
         boundingBox = imageBoundingBox(pupilMask);
         aperture_resize = imresize(aperture,[boundingBox(3),boundingBox(4)],'nearest');
         sz_width = double(round((oiWidth - boundingBox(3))/2) - 2);
-        sz_height = double(round((oiHeight - boundingBox(4))/2) - 2);
+        sz_height = double(round((oiWidth - boundingBox(4))/2) - 2);
         if sz_width > 0
             % In some cases, there is no need to pad.
             aperture_resize = padarray(aperture_resize,[sz_width,sz_height],0,'both');
         end
 
-        aperture_resize = imresize(aperture_resize,[oiWidth,oiHeight],'nearest');
+        aperture_resize = imresize(aperture_resize,[oiHeight,oiWidth],'nearest');
         aperture_resize(aperture_resize > 1) = 1;
         aperture_resize(aperture_resize < 0) = 0;
         pupilMask = aperture_resize;
