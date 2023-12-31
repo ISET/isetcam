@@ -72,7 +72,10 @@ function scene = sceneFromFile(inputData, imType, meanLuminance, dispCal, ...
 %
 %{
    % ETTBSkip
-   % Requires user input, don't autorun
+   % Requires user input, don't autorun.
+   %
+   % This throws a warning because it uses the default display.
+   % Not sure why, because the others also seem to do that.
    scene = sceneFromFile;
    sceneWindow(scene);
 %}
@@ -107,8 +110,6 @@ function scene = sceneFromFile(inputData, imType, meanLuminance, dispCal, ...
   img = floor(ieScale(img,0,255));
   scene = sceneFromFile(img,'monochrome',meanLuminance,thisDisplay,600);
   sceneWindow(scene);
-%}
-%{
 %}
 
 %% Parameter set up
