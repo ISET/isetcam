@@ -81,12 +81,12 @@ function [I, params] = imageVernier(params, varargin)
     img = imageVernier(p);
     imshow(img);
 
-    s = sceneCreate('vernier', 'display', p);
+    s = sceneVernier('vernier', 'display', p);
     ieAddObject(s);
     sceneWindow;
 
     p.display = displayCreate('OLED-Sony', 'dpi', 300);
-    s = sceneCreate('vernier', 'display', p);
+    s = sceneVernier('vernier', 'display', p);
     ieAddObject(s);
     sceneWindow;
 
