@@ -19,15 +19,15 @@
 ieInit;
 clear all; close all
 %%
-s_size = 512;
+s_size = 1024;
 flengthM = 4e-3;
-fnumber = 4;
+fnumber = 2.2;
 
 
 pupilMM = (flengthM*1e3)/fnumber;
 
-scene = sceneCreate('point array',s_size,s_size/4);
-scene = sceneSet(scene,'fov',10);
+scene = sceneCreate('point array',s_size,s_size/2);
+scene = sceneSet(scene,'fov',15);
 d = create_shapes();
 wave = 400:10:700;
 illPhotons = Energy2Quanta(wave,ones(31,1))*1e3;
@@ -41,43 +41,47 @@ scene = sceneSet(scene,'photons',data);
 
 scene = sceneAdjustLuminance(scene,'peak',100000);
 
-oi = oiCreate('diffraction limited');
 
-oi = oiSet(oi,'optics focallength',flengthM);
 
-for fnumber = 2:4:10
+for fnumber = 3:3:11
+    oi = oiCreate('diffraction limited');
+
+    oi = oiSet(oi,'optics focallength',flengthM);
     oi = oiSet(oi,'optics fnumber',fnumber);
 
     % oi needs information from scene to figure out the proper resolution.
     oi = oiCompute(oi, scene);
+    oi = oiCrop(oi,'border');
     oiWindow(oi);
 
-    oi = oiSet(oi, 'name','icam');
+    oi = oiSet(oi, 'name','dl');
     oi = oiSet(oi,'displaymode','hdr');
-    ip = piRadiance2RGB(oi,'etime',0.1);
+    ip = piRadiance2RGB(oi,'etime',1);
+    ip = ipSet(ip, 'name','dl');
     ipWindow(ip)
 
+    oi.optics.model = 'shiftinvariant';
     %% Match wvf with OI
     % nsides = 0; % circular aperture
-    % 
+    % % 
     % optics = oiGet(oi,'optics');
     % wvf    = optics2wvf(optics);
-    % 
+    % % 
+    % wvf = wvfSet(wvf, 'spatial samples', 1024);
     % [aperture, params] = wvfAperture(wvf,'nsides',nsides,...
-    %     'dot mean',50, 'dot sd',20, 'dot opacity',0.5,'dot radius',100,...
-    %     'line mean',50, 'line sd', 20, 'line opacity',0.5,'linewidth',80);
+    %     'dot mean',50, 'dot sd',20, 'dot opacity',0.5,'dot radius',5,...
+    %     'line mean',50, 'line sd', 20, 'line opacity',0.5,'linewidth',2);
     aperture = [];
-    wvf = wvfComputeFromOI(oi, aperture);
-
-    oi_wvf = oiCompute(wvf,scene);
-    oi_wvf = oiSet(oi_wvf, 'name','icam');
-
+    oi_wvf = oiComputeFlare(oi,scene,'aperture',aperture);
+    oi_wvf = oiSet(oi_wvf, 'name','flare');
+    oi_wvf = oiCrop(oi_wvf,'border');
     oiWindow(oi_wvf);
+
     oi_wvf = oiSet(oi_wvf,'displaymode','hdr');
-    ip_wvf = piRadiance2RGB(oi_wvf,'etime',0.1);
+    ip_wvf = piRadiance2RGB(oi_wvf,'etime',1);
+    ip_wvf = ipSet(ip_wvf, 'name','flare');
     ipWindow(ip_wvf);
-    
-    assert((mean(ip_wvf.data.result(:)) - mean(ip.data.result(:)))< 1/4096); % smaller than 1 digit for 12 bit
+    assert(abs((mean(ip_wvf.data.result(:)) - mean(ip.data.result(:))))< 1/4096); % smaller than 1 digit for 12 bit
 end
 
 
