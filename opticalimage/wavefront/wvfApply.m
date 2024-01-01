@@ -52,9 +52,11 @@ scene = sceneCreate('point array',512,128);
 scene = sceneSet(scene,'fov',0.5);
 mn = sceneGet(scene,'mean luminance');
 scene = sceneSet(scene,'mean luminance',mn*1e5);
+wave = sceneGet(scene,'wave');
 
 wvf = wvfCreate;    
 wvf = wvfSet(wvf,'calc pupil diameter',3);
+wvf = wvfSet(wvf,'wave',wave);
 [apertureFunction, params] = wvfAperture(wvf,'nsides',3);
 wvf = wvfPupilFunction(wvf,'apertureFunction',apertureFunction);
 wvf = wvfComputePSF(wvf);
