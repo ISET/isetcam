@@ -11,12 +11,13 @@
 %
 % Wandell, Copyright Imageval, LLC, 2015
 
+%%
 ieInit
 
 %%  Create a display and human optics (Marimont and Wandell model)
 
 d = displayCreate;
-oi = oiCreate('human');
+oi = oiCreate('human mw');
 
 %% We will loop on these when we are ready
 
@@ -41,7 +42,7 @@ oiWindow(oi);
 
 % We will calculate the cone responses at 0.25um and then build the OTF
 params.sz = [128,128];              % Square array
-params.coneAperture = [.5 .5]*1e-6; % In meters
+params.coneAperture = [1 1]*1e-6; % In meters
 
 % Choose the cone type
 dens = zeros(1,4);

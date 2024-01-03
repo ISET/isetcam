@@ -49,6 +49,14 @@ wvf = wvfSet(wvf, 'spatial samples', 1024);
 [oi,pupilmask, psf] = oiComputeFlare(oi, scene,'aperture',aperture);
 ip = piRadiance2RGB(oi,'etime',1);
 ipWindow(ip);
+
+[aperture, params] = wvfAperture(wvf,'nsides',0,...
+    'texFile',fullfile(isetRootPath,'data','optics','flare','scratches','scratch_1.jpg'));
+[oi,pupilmask, psf] = oiComputeFlare(oi, scene,'aperture',aperture);
+figure(1);imshow(aperture)
+ip = piRadiance2RGB(oi,'etime',1);
+ipWindow(ip);
+
 %}
 
 %% Calculate the PSF using the complex pupil method.  
@@ -110,6 +118,9 @@ oi = oiPadValue(oi,padSize,'zero photons',sDist);
 %  oiWidth, oiHeight, imgSize, 
 oiSize = oiGet(oi,'size');
 oiHeight = oiSize(1); oiWidth = oiSize(2);
+
+if oiWidth>oiHeight, oiSize = oiWidth;else oiSize = oiHeight;end
+
 if ~isempty(pixelsize)
     wAngularMatchPixel = atand(pixelsize*oiWidth/2/focallengthM)*2;
     oi = oiSet(oi, 'wAngular',wAngularMatchPixel);
@@ -129,10 +140,10 @@ for ww = 1:nWave
     % this spatial support.  Could be right, but I just don't know.
     % What plane is it in?  Pupil?  oiWidth is in the sensor plane, so
     % maybe the spacing isn't quite right? (BW).
-    pupilSampleStepX = 1 / (oiDelta * oiWidth) * wavelength * focallengthM;
-    pupilSupportX = (-0.5: 1/oiWidth: 0.5-1/oiWidth) * pupilSampleStepX * oiWidth;    
-    pupilSampleStepY = 1 / (oiDelta * oiHeight) * wavelength * focallengthM;
-    pupilSupportY = (-0.5: 1/oiHeight: 0.5-1/oiHeight) * pupilSampleStepY * oiHeight;
+    pupilSampleStepX = 1 / (oiDelta * oiSize) * wavelength * focallengthM;
+    pupilSupportX = (-0.5: 1/oiSize: 0.5-1/oiSize) * pupilSampleStepX * oiSize;    
+    pupilSampleStepY = 1 / (oiDelta * oiSize) * wavelength * focallengthM;
+    pupilSupportY = (-0.5: 1/oiSize: 0.5-1/oiSize) * pupilSampleStepY * oiSize;
     [pupilX, pupilY] = meshgrid(pupilSupportX, pupilSupportY);
     pupilRadius = 0.5*pupilDiameter;
 
@@ -144,14 +155,13 @@ for ww = 1:nWave
     if ~isempty(aperture)
         boundingBox = imageBoundingBox(pupilMask);
         aperture_resize = imresize(aperture,[boundingBox(3),boundingBox(4)],'nearest');
-        sz_width = double(round((oiWidth - boundingBox(3))/2) - 2);
-        sz_height = double(round((oiWidth - boundingBox(4))/2) - 2);
-        if sz_width > 0
+        sz = double(round((oiSize - boundingBox(3))/2) - 2);
+        if sz > 0
             % In some cases, there is no need to pad.
-            aperture_resize = padarray(aperture_resize,[sz_width,sz_height],0,'both');
+            aperture_resize = padarray(aperture_resize,[sz,sz],0,'both');
         end
 
-        aperture_resize = imresize(aperture_resize,[oiHeight,oiWidth],'nearest');
+        aperture_resize = imresize(aperture_resize,[oiSize,oiSize],'nearest');
         aperture_resize(aperture_resize > 1) = 1;
         aperture_resize(aperture_resize < 0) = 0;
         pupilMask = aperture_resize;
@@ -191,12 +201,12 @@ for ww = 1:nWave
 
     % Now we know the size of PSF.  Allocate space
     if ww == 1
-        sz = size(PSF);
-        psf_spectral = zeros(sz(1),sz(2),nWave);
+        sz = size(oi.data.photons(:,:,ww));
         photons_fl   = zeros(sz(1),sz(2),nWave);
+        psf_spectral = zeros(oiSize,oiSize,nWave);
     end
 
-    psf_spectral(:,:,ww) = PSF;
+    
     %{
      ieNewGraphWin; mesh(getMiddleMatrix(PSF,30));
      % The PSF seems pretty much like the one calculated using
@@ -208,8 +218,26 @@ for ww = 1:nWave
      diskSize = airyDisk(waveList(ww),fNumber,'units','um','diameter',true)    
     %}
 
-    % Apply the psf to scene data, creating the OI data
-    photons_fl(:,:,ww) = ImageConvFrequencyDomain(oi.data.photons(:,:,ww), psf_spectral(:,:,ww), 2 );
+    % Deal with non squared scenes
+    if oiWidth ~= oiHeight
+        sz = double(abs(oiWidth - oiHeight)/2);
+        if oiWidth<oiHeight
+            photons = padarray(oi.data.photons(:,:,ww),[0,sz],0,'both');
+            photons_applied = ImageConvFrequencyDomain(photons,PSF, 2);
+            photons_ww = photons_applied(:,sz+1:sz+oiWidth);
+        else
+            photons = padarray(oi.data.photons(:,:,ww),[sz,0],0,'both');
+            photons_applied = ImageConvFrequencyDomain(photons,PSF, 2);
+            photons_ww = photons_applied(sz+1:sz+oiHeight,:);
+        end
+        photons_fl(:,:,ww) = photons_ww;
+    else
+        photons_fl(:,:,ww) = ImageConvFrequencyDomain(oi.data.photons(:,:,ww), PSF, 2 );
+    end
+    
+
+    psf_spectral(:,:,ww) = PSF;
+    % photons_fl(:,:,ww) = ImageConvFrequencyDomain(oi.data.photons(:,:,ww), psf_spectral(:,:,ww), 2 );
 
 end
 
