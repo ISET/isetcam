@@ -69,22 +69,13 @@ function scene = sceneFromFile(inputData, imType, meanLuminance, dispCal, ...
 %   vcSelectImage, ieImageType
 
 % Examples:
-%
-%{
-   % ETTBSkip
-   % Requires user input, don't autorun.
-   %
-   % This throws a warning because it uses the default display.
-   % Not sure why, because the others also seem to do that.
-   scene = sceneFromFile;
-   sceneWindow(scene);
-%}
 %{
    % ETTBSkip
    % Requires user input, don't autorun
+   thisDisplay = displayCreate;
    imgType = 'rgb'; meanLuminance = 10;
    fullFileName = vcSelectImage;
-   scene = sceneFromFile(fullFileName,imgType,meanLuminance);
+   scene = sceneFromFile(fullFileName,imgType,meanLuminance,thisDisplay);
    sceneWindow(scene);
 %}
 %{

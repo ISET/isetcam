@@ -30,9 +30,9 @@ function sensor = sensorComputeMEV(sensor, oi, varargin)
 % Examples:
 %{
 scene = sceneFromFile('Feng_Office-hdrs.mat','multispectral');
-oi = oiCreate; oi = oiCompute(oi,scene);
+oi = oiCreate('shiftinvariant'); oi = oiCompute(oi,scene);
 sensor = sensorCreate;
-sensor = sensorSet(sensor,'fov',sceneGet(scene,'fov'));
+sensor = sensorSet(sensor,'fov',sceneGet(scene,'fov'),oi);
 
 maxTime  = 0.2;   % seconds
 expTimes = [maxTime/10, maxTime];
