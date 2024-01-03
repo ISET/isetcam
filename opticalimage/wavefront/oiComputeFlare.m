@@ -49,6 +49,14 @@ wvf = wvfSet(wvf, 'spatial samples', 1024);
 [oi,pupilmask, psf] = oiComputeFlare(oi, scene,'aperture',aperture);
 ip = piRadiance2RGB(oi,'etime',1);
 ipWindow(ip);
+
+[aperture, params] = wvfAperture(wvf,'nsides',0,...
+    'texFile',fullfile(isetRootPath,'data','optics','flare','scratches','scratch_1.jpg'));
+[oi,pupilmask, psf] = oiComputeFlare(oi, scene,'aperture',aperture);
+figure(1);imshow(aperture)
+ip = piRadiance2RGB(oi,'etime',1);
+ipWindow(ip);
+
 %}
 
 %% Calculate the PSF using the complex pupil method.  
