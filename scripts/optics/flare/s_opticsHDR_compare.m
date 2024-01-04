@@ -26,22 +26,11 @@ flengthMM = flengthM*1e3;
 
 pupilMM = (flengthMM)/fnumber;
 
-scene = sceneCreate('point array',s_size,s_size/2);
-scene = sceneSet(scene,'fov',30);
-
-d = create_shapes();
-wave = 400:10:700;
-illPhotons = Energy2Quanta(wave,blackbody(wave,8000,'energy'));
-
-data = bsxfun(@times, d, reshape(illPhotons, [1 1 31]));
-
-scene = sceneSet(scene,'illuminantPhotons',illPhotons);
-
-scene = sceneSet(scene,'photons',data);
+scene = sceneCreateHDR(s_size,20);
 
 scene = sceneAdjustLuminance(scene,'peak',100000);
 
-
+scene = sceneSet(scene,'fov',30);
 index = 1;
 fig_plot = figure;set(fig_plot, 'AutoResizeChildren', 'off');
 for fnumber = 3:5:13

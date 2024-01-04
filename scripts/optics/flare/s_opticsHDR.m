@@ -23,24 +23,13 @@ s_size = 1024;
 flengthM = 4e-3;
 fnumber = 2.2;
 
-
 pupilMM = (flengthM*1e3)/fnumber;
 
-scene = sceneCreate('point array',s_size,s_size/2);
-scene = sceneSet(scene,'fov',15);
-d = create_shapes();
-wave = 400:10:700;
-illPhotons = Energy2Quanta(wave,ones(31,1))*1e3;
-
-data = bsxfun(@times, d, reshape(illPhotons, [1 1 31]));
-
-scene = sceneSet(scene,'illuminantPhotons',illPhotons);
-
-% Allocate space for the (compressed) photons
-scene = sceneSet(scene,'photons',data);
+scene = sceneCreateHDR(s_size,15);
 
 scene = sceneAdjustLuminance(scene,'peak',100000);
 
+scene = sceneSet(scene,'fov',20);
 
 index = 1;
 fig = figure;set(fig, 'AutoResizeChildren', 'off');
