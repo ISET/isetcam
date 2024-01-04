@@ -26,12 +26,6 @@
 wvf = wvfCreate;
 wvf = wvfCompute(wvf);
 
-otfSupport = wvfGet(wvf,'otf support');
-min(otfSupport), max(otfSupport)
-
-psfSupport = wvfGet(wvf,'psf support','um');
-min(psfSupport), max(psfSupport)
-
 wvfSummarize(wvf);
 
 %% Change number of pixels
@@ -76,7 +70,7 @@ wvfSummarize(wvf);
 
 wvf = wvfCreate;
 
-wvf = wvfSet(wvf,'measured pupil diameter',3,'mm');
+wvf = wvfSet(wvf,'measured pupil diameter',1,'mm');
 wvfSummarize(wvf);
 
 wvf = wvfSet(wvf,'measured pupil diameter',6,'mm');
