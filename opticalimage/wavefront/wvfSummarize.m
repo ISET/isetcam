@@ -13,6 +13,9 @@ fprintf('um per deg\t %f\t um\n', wvfGet(wvf,'um per degree'));
 
 fprintf('pupil diameter\t %f\t mm\n', wvfGet(wvf,'calc pupil diameter','mm'));
 
+fprintf('pupil plane\t %f\t mm\n', wvfGet(wvf,'pupil plane size','mm'));
+fprintf('pupil spacing\t %f\t um\n',wvfGet(wvf, 'pupil sample spacing','um'));
+
 fprintf('zCoeffs:\t %f\n',wvfGet(wvf,'zcoeffs'));
 fprintf('zDiameter:\t %f\t mm\n',wvfGet(wvf,'z pupildiameter','mm'));
 
@@ -23,6 +26,7 @@ fprintf('OTF spacing\t %f\t cyc/mm\n',otfSupport(2)-otfSupport(1));
 psfSupport = wvfGet(wvf,'psf support','um');
 fprintf('Max PSF support\t %f\t um\n',max(psfSupport));
 fprintf('PSF spacing\t %f\t um\n',psfSupport(2)-psfSupport(1));
+
 
 fprintf('-------------------\n');
 

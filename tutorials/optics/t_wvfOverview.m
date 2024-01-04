@@ -82,6 +82,35 @@ wvfSummarize(wvf);
 wvf = wvfSet(wvf,'measured pupil diameter',6,'mm');
 wvfSummarize(wvf);
 
-%% More to come
+%% Match a target OI sample spacing
+
+lambdaMM = 550e-6;
+fnumber = 4;
+focallengthMM = 4;
+nPixels = 1024;
+
+wvf = wvfSet(wvf, 'focal length', focallengthMM, 'mm');
+
+wvf = wvfSet(wvf, 'calc pupil diameter', focallengthMM/fnumber);
+
+wvf = wvfSet(wvf, 'spatial samples', nPixels);
+
+psf_spacingMM = 1e-3; % this is what we are trying to match
+% compute the pupil sample spacing
+pupil_spacingMM = lambdaMM * focallengthMM / (psf_spacingMM * nPixels);
+
+wvf = wvfSet(wvf,'field size mm', pupil_spacingMM * nPixels);
+
+wvfSummarize(wvf);
+
+% Notice that pupil plane is smaller than pupil diameter in this case.
+psf_spacingMM = 3e-3; % this is what we are trying to match
+% compute the pupil sample spacing
+pupil_spacingMM = lambdaMM * focallengthMM / (psf_spacingMM * nPixels);
+
+wvf = wvfSet(wvf,'field size mm', pupil_spacingMM * nPixels);
+
+wvfSummarize(wvf);
+
 
 %% END

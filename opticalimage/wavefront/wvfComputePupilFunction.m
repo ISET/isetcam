@@ -194,7 +194,7 @@ for ii = 1:nWavelengths
     dx = (pupilPlaneSizeMM / nPixels);
     pupilPos = pupilPos * dx;
     %}
-
+    % refSizeOfFieldMM
     pupilPos = wvfGet(wvf,'pupil positions',thisWave,'mm');
     
     %{
