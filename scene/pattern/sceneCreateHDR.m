@@ -1,4 +1,4 @@
-function scene = sceneCreateHDR(n,m)
+function [scene,patches] = sceneCreateHDR(n,m)
 % Create a list of patches that has decreasing level of neutral density
 % n is the size of scene, squared.
 % m is the number of patches
@@ -37,7 +37,7 @@ for i = 1:m
     illPhotons = Energy2Quanta(wave,blackbody(wave,8000,'energy'))*patch_level;
 
     data = data + bsxfun(@times, mask, reshape(illPhotons, [1 1 31]));
-
+    patches{i} = [start_x + (i - 1) * (patch_width + spacing), y_position, patch_width, patch_height];
 end
 
 scene = sceneSet(scene,'photons',data);
