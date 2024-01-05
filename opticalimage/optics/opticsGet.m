@@ -405,7 +405,31 @@ switch parm
         
         opticsModel = opticsGet(optics,'model');
         switch lower(opticsModel)
-            case {'diffractionlimited','shiftinvariant'}
+            case 'diffractionlimited'
+                % For diffraction limited case, the call must be
+                % otf = opticsGet(optics,'otf data',oi, [units], [wave]);
+                
+                if isempty(varargin)
+                    disp('Using vcSession selected oi.')
+                    oi = ieGetObject('oi');
+                    % error('opticsGet(optics,''otf data'',oi,units,thisWave');
+                else
+                    oi = varargin{1};
+                end
+                if length(varargin) < 2, units = 'mm'; else, units = varargin{2}; end
+                if length(varargin) < 3, thisWave = []; else, thisWave = varargin{3}; end
+                
+                % Could this be XXXXXX  and thus avoid the oi argument?
+                %    opticsGet(optics,'dl fsupport',wave,unit,nSamp)
+                fSupport = oiGet(oi,'fSupport',units);   % 'cycles/mm'
+                % wavelength = oiGet(oi,'wave');
+                
+                % We don't store the OTF for diffraction limited. We
+                % compute it on the fly.
+                val = dlMTF(oi,fSupport,thisWave,units);
+                return;
+                
+            case {'shiftinvariant'}
                  
                 if checkfields(optics,'OTF','OTF')
                     % We have an OTF 
