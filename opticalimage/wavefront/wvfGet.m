@@ -873,6 +873,7 @@ switch (parm)
         %  Should call case below to get one val, and then scale up by
         %  number of pixels.
         
+        % 
         % This parameter matters for the OTF and PSF quite a bit. It
         % is the number of um per degree on the retina.
         unit = 'deg';
