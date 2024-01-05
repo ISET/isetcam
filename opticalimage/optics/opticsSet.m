@@ -23,12 +23,10 @@ function optics = opticsSet(optics,parm,val,varargin)
 %      oi = oiSet(oi,'optics <param>',val), generally
 %      oi = oiSet(oi,'optics fnumber',5.6), for an example
 %
-%Example:spec
-%   optics = opticsSet(optics,'fnumber',2.8);
-%   optics = opticsSet(optics,'model','diffractionLimited');
-%
 % To set the aperture you must change either the focal length or the
 % f# = fL/aperture, so aperture = fL/f#
+%
+% The source code contains runable examples.
 %
 % Optics parameters that can be set:
 %
@@ -103,6 +101,12 @@ function optics = opticsSet(optics,parm,val,varargin)
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
+% Examples:
+%{
+  optics = opticsCreate;
+  optics = opticsSet(optics,'fnumber',2.8);
+  optics = opticsSet(optics,'model','diffractionLimited');
+%}
 
 if ~exist('optics','var') || isempty(optics),  error('No optics specified.'); end
 if ~exist('parm','var') || isempty(parm),      error('No parameter specified.'); end
