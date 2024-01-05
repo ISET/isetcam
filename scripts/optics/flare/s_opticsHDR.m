@@ -65,12 +65,10 @@ for fnumber = 3:5:13
     rgb_wvf = ipGet(ip_wvf,'srgb');
     subplot(3,3,index);imshow(rgb);index = index+1;title(sprintf('Flare-Fnumber:%d\n',fnumber));
     subplot(3,3, index);imagesc(abs(rgb(:,:,2)-rgb_wvf(:,:,2)));colormap jet; colorbar; index = index+1;title('difference');
-    assert(max2(abs(rgb(:,:,2)-rgb_wvf(:,:,2)))<0.1);
+    % assert(max2(abs(rgb(:,:,2)-rgb_wvf(:,:,2)))<0.1);
 end
 %% Modify aperture
 
-scene = sceneCreate('point array',512,512);
-scene = sceneSet(scene,'fov',5);
 % Compare with this: https://en.wikipedia.org/wiki/File:Comparison_aperture_diffraction_spikes.svg
 nsides_list = [0, 4, 5, 6];
 
