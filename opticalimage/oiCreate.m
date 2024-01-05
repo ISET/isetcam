@@ -113,11 +113,16 @@ switch ieParamFormat(oiType)
         oi = oiSet(oi,'wave',[]);
         wvf = [];
 
-    case {'diffractionlimited','shiftinvariant','diffraction','wvf','default'}
-
+    case {'diffractionlimited'}
+        % Special case, where diffraction limited is implemented using the
+        % dlMTF method.
+        
+    case {'shiftinvariant','diffraction','wvf','default'}
         % We create via the wavefront method.  We convert the
         % wavefront to an OI, and that process calls opticsCreate to
         % convert the wvf parameters into an ISETCam optics struct.
+        %
+        % When the zcoeffs are 0, this is also a diffraction limited oi.
         wvf = wvfCreate('wave',(400:10:700)');
 
         % Set up the standard optics values we have used for years
