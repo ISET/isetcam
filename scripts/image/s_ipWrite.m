@@ -44,7 +44,10 @@ vcNewGraphWin;
 image(raw)
 
 %% Once you have the data, use standard Matlab utilities to write the file
-fname = 'deleteMe.jpg';
+ if (~exist(fullfile(isetRootPath,'local'),'dir'))
+      mkdir(fullfile(isetRootPath,'local'));
+   end
+fname = fullfile(isetRootPath,'local','deleteMe.jpg');
 imwrite(result,fname,'jpeg');
 delete(fname);
 

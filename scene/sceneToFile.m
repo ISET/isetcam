@@ -31,16 +31,17 @@ function [varExplained, nBases] = sceneToFile(fname,scene,bType,mType,comment)
 % varExplained - Fraction of variance explained by the linear model
 % nBases       - Number of basis functions saved
 %
-%   sceneToFile('deleteMe',scene,[]);
-%
 % (c) Imageval Consulting, LLC 2013
 
 % Examples:
 %{
    scene = sceneCreate;
    ieAddObject(scene); sceneWindow;
-   sceneToFile('deleteMe',scene,0.999);
-   scene2 = sceneFromFile('deleteMe','multispectral');
+   if (~exist(fullfile(isetRootPath,'local'),'dir'))
+      mkdir(fullfile(isetRootPath,'local'));
+   end
+   sceneToFile(fullfile(isetRootPath,'local','deleteMe'),scene,0.999);
+   scene2 = sceneFromFile(fullfile(isetRootPath,'local','deleteMe'),'multispectral');
    ieAddObject(scene2); sceneWindow;
 %}
 

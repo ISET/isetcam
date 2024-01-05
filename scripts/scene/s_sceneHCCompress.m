@@ -45,7 +45,10 @@ basis.wave  = wave;
 
 comment = 'Compressed using hcBasis with imgMean)';
 illuminant = sceneGet(scene,'illuminant');
-oFile = fullfile(isetRootPath,'deleteMe.mat');
+if (~exist(fullfile(isetRootPath,'local'),'dir'))
+    mkdir(fullfile(isetRootPath,'local'));
+end
+oFile = fullfile(isetRootPath,'local','deleteMe.mat');
 ieSaveMultiSpectralImage(oFile,coef,basis,comment,imgMean,illuminant);
 
 %% read in the data

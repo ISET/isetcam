@@ -25,7 +25,10 @@ function fName = sceneSaveImage(scene,fName)
   % We save the data using the flags in the oiWindow, if it is open.
   % Otherwise, the standard RGB with gam = 1.
   scene = sceneCreate;
-  fName = sceneSaveImage(scene,'deleteMe');   % PNG is appended
+  if (~exist(fullfile(isetRootPath,'local'),'dir'))
+      mkdir(fullfile(isetRootPath,'local'));
+  end
+  fName = sceneSaveImage(scene,fullfile(isetRootPath,'local','deleteMe'));   % PNG is appended
   img = imread(fName); ieNewGraphWin; image(img);
   delete(fName);
 %}

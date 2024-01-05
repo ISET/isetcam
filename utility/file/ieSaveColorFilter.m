@@ -35,19 +35,35 @@ function fullFileName = ieSaveColorFilter(inData,fullFileName)
 %
 % See also: ieReadColorFilter(), sensorColorOrder(), sensorDetermineCFA()
 %
-% Example:
-%     isa = sensorCreate;
-%     ieSaveColorFilter(isa);
-%
-%     filterStruct = load(fullfile(isetRootPath,'data','sensor','colorfilters','NikonD100'));
-%     filterStruct.filterNames{1} = 'r_Nikon';
-%     filterStruct.filterNames{2} = 'g_Nikon';
-%     filterStruct.filterNames{3} = 'b_Nikon';
-%     ieSaveColorFilter(filterStruct,'deleteMeColorFilter');
+% The source file contains runable examples
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 %
 % See also:
+
+% Examples:
+%{
+    % ETTBSkip
+    %
+    % Requires user input
+    if (~exist(fullfile(isetRootPath,'local'),'dir'))
+        mkdir(fullfile(isetRootPath,'local'));
+    end
+    isa = sensorCreate;
+    isa.comment = 'Junk';
+    ieSaveColorFilter(isa,fullfile(isetRootPath,'local','deleteMeSensor'));
+%}
+%{
+    if (~exist(fullfile(isetRootPath,'local'),'dir'))
+        mkdir(fullfile(isetRootPath,'local'));
+    end
+    filterStruct = load(fullfile(isetRootPath,'data','sensor','colorfilters','nikon','NikonD100'));
+    filterStruct.filterNames{1} = 'r_Nikon';
+    filterStruct.filterNames{2} = 'g_Nikon';
+    filterStruct.filterNames{3} = 'b_Nikon';
+
+    ieSaveColorFilter(filterStruct,fullfile(isetRootPath,'local','deleteMeColorFilter'));
+%}
 
 %%
 if ieNotDefined('fullFileName'), fullFileName = vcSelectDataFile('sensor','w','mat'); end
