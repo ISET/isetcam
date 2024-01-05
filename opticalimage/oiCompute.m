@@ -200,6 +200,11 @@ end
 if (~isfield(oi,'metadata'))
     oi.metadata = struct;
 end
+
+% If the scene contains no metadata add an empty struct
+if (~isfield(scene,'metadata'))
+    scene.metadata = struct;
+end
 oi.metadata = appendStruct(oi.metadata, scene.metadata);
 
 end

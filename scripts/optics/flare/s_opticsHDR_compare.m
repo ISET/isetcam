@@ -1,7 +1,7 @@
 %% Calculate PSF/OTF using wvf that matches the OI
 % Interpolation in isetcam matches the resolution (um/sample) of the default 
 % PSF/OTF with the OI resolution. However, this process introduces minor 
-% artifacts in the PSF, such as horizontal and vertical spiky lines, 
+% artifacts in the PSF, such as horizontal and vertical streaks, 
 % with intensity levels 1e4 to 1e5 times lower than the PSF's peak. 
 % While generally not problematic, these artifacts could be noticeable in 
 % HDR scenes, particularly in night settings.
@@ -22,17 +22,17 @@ clear all; close all
 s_size = 1024;
 flengthM = 4e-3;
 fnumber = 2.2;
+flengthMM = flengthM*1e3;
 
-pupilMM = (flengthM*1e3)/fnumber;
+pupilMM = (flengthMM)/fnumber;
 
-scene = sceneCreateHDR(s_size,15);
+scene = sceneCreateHDR(s_size,20);
 
 scene = sceneAdjustLuminance(scene,'peak',100000);
 
-scene = sceneSet(scene,'fov',20);
-
+scene = sceneSet(scene,'fov',30);
 index = 1;
-fig = figure;set(fig, 'AutoResizeChildren', 'off');
+fig_plot = figure;set(fig_plot, 'AutoResizeChildren', 'off');
 for fnumber = 3:5:13
     oi = oiCreate('diffraction limited');
 
@@ -45,54 +45,48 @@ for fnumber = 3:5:13
     % oiWindow(oi);
 
     oi = oiSet(oi, 'name','dl');
-    % oi = oiSet(oi,'displaymode','hdr');
     ip = piRadiance2RGB(oi,'etime',1);
 
     rgb = ipGet(ip,'srgb');
     subplot(3,3,index);imshow(rgb);index = index+1;title(sprintf('DL-Fnumber:%d\n',fnumber));
 
     oi.optics.model = 'shiftinvariant';
-    %% Match wvf with OI
+    %% Compute with oiComputeFlare
 
     aperture = [];
-    oi_wvf = oiComputeFlare(oi,scene,'aperture',aperture);
-    oi_wvf = oiSet(oi_wvf, 'name','flare');
-    oi_wvf = oiCrop(oi_wvf,'border');
+    oi_flare = oiComputeFlare(oi,scene,'aperture',aperture);
+    oi_flare = oiSet(oi_flare, 'name','flare');
+    oi_flare = oiCrop(oi_flare,'border');
     % oiWindow(oi_wvf);
 
     % oi_wvf = oiSet(oi_wvf,'displaymode','hdr');
-    ip_wvf = piRadiance2RGB(oi_wvf,'etime',1);
-    rgb_wvf = ipGet(ip_wvf,'srgb');
+    ip_flare = piRadiance2RGB(oi_flare,'etime',1);
+    rgb_flare = ipGet(ip_flare,'srgb');
     subplot(3,3,index);imshow(rgb);index = index+1;title(sprintf('Flare-Fnumber:%d\n',fnumber));
-    subplot(3,3, index);imagesc(abs(rgb(:,:,2)-rgb_wvf(:,:,2)));colormap jet; colorbar; index = index+1;title('difference');
-    assert(max2(abs(rgb(:,:,2)-rgb_wvf(:,:,2)))<0.1);
+
+    %% match wvf with OI, and compute with oicompute
+    wvf = wvfCreate;
+    wvf = wvfSet(wvf, 'focal length', flengthMM, 'mm');
+    wvf = wvfSet(wvf, 'calc pupil diameter', flengthMM/fnumber);
+    nPixels = oiGet(oi, 'size'); nPixels = nPixels(1);
+    wvf = wvfSet(wvf, 'spatial samples', nPixels);
+    psf_spacingMM = oiGet(oi,'sample spacing','mm');
+    lambdaMM = 550*1e-6;
+    pupil_spacingMM = lambdaMM * flengthMM / (psf_spacingMM(1) * nPixels);
+    wvf = wvfSet(wvf,'field size mm', pupil_spacingMM * nPixels);
+    wvf = wvfCompute(wvf);
+    wvfSummarize(wvf);
+
+    oi = oiCompute(wvf, scene);
+    oi = oiSet(oi, 'name','flare');
+    % oiWindow(oi);
+    oi = oiCrop(oi,'border');
+    ip = piRadiance2RGB(oi,'etime',1);
+    rgb = ipGet(ip,'srgb');
+    subplot(3,3, index);imshow(rgb);index = index+1;title(sprintf('WVF-Fnumber:%d\n',fnumber));
 end
-%% Modify aperture
 
-scene = sceneCreate('point array',512,512);
-scene = sceneSet(scene,'fov',5);
-% Compare with this: https://en.wikipedia.org/wiki/File:Comparison_aperture_diffraction_spikes.svg
-nsides_list = [0, 4, 5, 6];
 
-fig_2 = figure(2); set(fig_2, 'AutoResizeChildren', 'off');
-for ii = 1:4
-    nsides = nsides_list(ii); % circular aperture
-    %
-    wvf    = wvfCreate('spatial samples', 512);
-
-    [aperture, params] = wvfAperture(wvf,'nsides',nsides,...
-        'dot mean',0, 'dot sd',0, 'dot opacity',0.5,'dot radius',5,...
-        'line mean',0, 'line sd', 0, 'line opacity',0.5,'linewidth',2);
-
-    oi_wvf = oiComputeFlare(oi,scene,'aperture',aperture);
-
-    oi_wvf = oiSet(oi_wvf, 'name','flare');
-    oi_wvf = oiCrop(oi_wvf,'border');
-    ip_wvf = piRadiance2RGB(oi_wvf,'etime',1);
-    rgb_wvf = ipGet(ip_wvf,'srgb');
-
-    subplot(1, 4, ii);imshow(rgb_wvf);title(sprintf('Number of blades: %d\n',nsides));
-end
 
 %%
 function binary_mask = create_shapes()
@@ -131,21 +125,3 @@ function binary_mask = create_shapes()
     % Display the image
     % imshow(binary_mask);
 end
-%{
-% Check some numbers
-fprintf('COMPLETED: Wavefront Size: %d, takes %.2f seconds. \n',nPixels, toc(t));
-
-psf_ss = wvfGet(wvf, 'psf spatial samples', 'um', 550);
-
-psf_sample_interval = psf_ss(2)-psf_ss(1);
-
-oi_sample_interval = oiGet(oi,'sample spacing','um'); 
-
-fprintf('PSF sample interval is %f.2 um; \n OI sample interval is %f.2 um \n', psf_sample_interval*scaleFactor, oi_sample_interval(1));
-
-figure;imagesc(wvf.psf{1});clim([1e-20 1e-7]);
-
-wvf_fx = wvfGet(wvf, 'otf support', 'mm', 550);
-
-fprintf('Freqency Extent: WVF: %.4f, OI: %.4f \n', wvf_fx(end)/scaleFactor, fx(end));
-%}

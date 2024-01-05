@@ -33,22 +33,7 @@ function val = oiGet(oi,parm,varargin)
 %       optics = oiGet(oi,'optics');
 %       val = opticsGet(optics,param1,param2);
 %
-% Examples:
-%    oi = oiCreate;
-%    oiGet(oi,'rows')
-%    oiGet(oi,'wave')
-%
-%    oiGet(oi,'optics') - Use oiGet(oi,'optics property') to get optics
-%                         parameter
-%    oiGet(oi,'optics fnumber')
-%    oiGet(oi, 'optics otf data','mm',500)
-%
-%    oiGet(oi,'area','mm')
-%    oiGet(oi,'width spatial resolution','microns')
-%    oiGet(oi,'angular resolution')
-%    oiGet(oi,'dist Per Samp','mm')
-%    oiGet(oi,'spatial support','microns');   % Meshgrid of zero-centered (x,y) values
-%    oiGet(oi,'photons',waveList);            % Photons at list of wavelengths
+%  The source file contains examples.
 %
 %  List of OI parameters
 %      {'name'}           - optical image name
@@ -160,9 +145,34 @@ function val = oiGet(oi,parm,varargin)
 
 % Examples:
 %{
-oi = oiCreate('wvf');
-oiGet(oi,'wvf number spatial samples')
-oiGet(oi,'wvf pupil diameter','m')
+   oi = oiCreate;
+   oi = oiSet(oi,'fov', 10);
+   oiGet(oi,'rows')
+   oiGet(oi,'wave')
+
+   % Use oiGet(oi,'optics') to get the optics object out.
+   % opticsGet and opticsSet can be use don that, and
+   % it can be put back in with oi = oiSet(oi,'optics',optics);
+   optics = oiGet(oi,'optics');
+   oi = oiSet(oi,'optics',optics);
+
+   % Some optics properties can be obtained directly with oiGet.
+   oiGet(oi,'optics fnumber')
+   oiGet(oi, 'optics otf data','mm',500);
+
+   % Compute oi for a scene and then get
+   oi = oiCompute(oi,sceneCreate);
+   oiGet(oi,'area','mm')
+   oiGet(oi,'width spatial resolution','microns')
+   oiGet(oi,'angular resolution')
+   oiGet(oi,'dist Per Samp','mm');
+   oiGet(oi,'spatial support','microns');             % Meshgrid of zero-centered (x,y) value
+   photons = oiGet(oi,'photons',[400 600]);           % Photons at list of wavelengths
+%}
+%{
+   [oi, wvf] = oiCreate('wvf'); oi = oiSet(oi,'wvf',wvf);
+   oiGet(oi,'wvf number spatial samples')
+   oiGet(oi,'wvf pupil diameter','m')
 %}
 
 val = [];
