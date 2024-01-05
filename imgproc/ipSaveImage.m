@@ -23,7 +23,10 @@ function fName = ipSaveImage(ip,fName,showImageFlag,trueSizeFlag, varargin)
   camera = cameraCompute(camera,scene);
   cameraWindow(camera,'ip');
   ip = cameraGet(camera,'ip');
-  showImageFlag = false; trueSizeFlag = false;
+  showImageFlag = false; trueSizeFlag = false
+  if (~exist(fullfile(isetRootPath,'local'),'dir'))
+      mkdir(fullfile(isetRootPath,'local'));
+  end
   fName = ipSaveImage(ip,fullfile(isetRootPath,'local','deleteMe'),showImageFlag,trueSizeFlag);   % PNG is appended
   img = imread(fName); ieNewGraphWin; image(img);
   delete(fName);
