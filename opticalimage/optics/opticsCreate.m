@@ -88,7 +88,31 @@ switch lower(opticsType)
         optics.type = 'optics';
         optics.name = 'empty';
 
-    case {'default','diffractionlimited','shiftinvariant'}
+    case {'default','diffractionlimited'}
+        optics.type = 'optics';
+        optics = opticsSet(optics,'name','standard (1/4-inch)');
+        optics = opticsSet(optics,'model','diffractionLimited');
+
+        % Standard 1/4-inch sensor parameters
+        sensorDiagonal = 0.004;
+        FOV = 46;
+        fLength = inv(tan(FOV/180*pi)/2/sensorDiagonal)/2;
+
+        optics = opticsSet(optics,'fnumber',4);  % Ratio of focal length to diameter
+        optics = opticsSet(optics,'focalLength', fLength);
+        optics = opticsSet(optics,'otfMethod','dlmtf');
+
+        % Default lens transmittance. 
+        optics.transmittance.wave = opticsGet(optics,'wave');
+        optics.transmittance.scale = ones(size(optics.transmittance.wave));
+
+        % There should not be a human lens transmittance object
+        if isfield(optics,'lens')
+            warning('Removing human lens slot.')
+            optics = rmfield(optics,'lens');
+        end
+
+    case {'shiftinvariant'}
         % Removed:  'standard(1/4-inch)','quarterinch' on Dec 18, 2023
         % These are all diffraction limited methods.
         % optics = opticsDefault;
