@@ -1,10 +1,9 @@
-function [fig, cfaImg] = sensorShowCFA(sensor, app, sz)
+function [fig, cfaImg] = sensorShowCFA(sensor, app, sz, sScale)
 % Create an image illustrating the sensor CFA spatial pattern (unit
 % block)
 %
 % Synopsis
-%
-%    [fig, cfaImg] = sensorShowCFA(sensor, [app], [sz])
+%    [fig, cfaImg] = sensorShowCFA(sensor, [app = []], [sz = []], [sScale = 32])
 %
 % Brief description
 %  The plotted colors are based on the letter names of the color filters for
@@ -15,7 +14,10 @@ function [fig, cfaImg] = sensorShowCFA(sensor, app, sz)
 %  sensor:    Sensor object
 %  app:       app for the sensorWindow that has imgCFA as a slot
 %  sz:        Row/Col for the number of unit blocks to show.  Default
-%             is [1,1]
+%             is one unit block:  [1,1]
+%  sScale:    How much to increase the scale of the image.  By default,
+%             assuming a 2x2 block, we set sScale to 32.  But if the image
+%             is much bigger, we reduce sScale.
 %
 % Return
 %   fig:    Handle to the figure where data are rendered
@@ -43,9 +45,8 @@ if ieNotDefined('app')
     app = [];
 end
 if ieNotDefined('sz'), sz = []; end
+if ieNotDefined('sScale'), sScale = []; end
 
-% Should be a parameter
-sScale = 32;
 
 %% Indexed color image of the sensor detectors.
 
@@ -53,10 +54,8 @@ pattern    = sensorGet(sensor,'pattern');
 if ~isempty(sz)
     pattern = repmat(pattern,sz(1),sz(2));
 end
-
 nExposures = sensorGet(sensor,'n exposures');
-
-mxVolts = sensorGet(sensor,'voltage swing');
+mxVolts    = sensorGet(sensor,'voltage swing');
 
 %% Create an image of the sensor CFA
 
@@ -77,7 +76,14 @@ end
 % spectral QE
 cfaSmall = sensorData2Image(ss);
 
-% Size scaling should be a parameter.
+if isempty(sScale)
+    tmp = size(cfaSmall);
+    if tmp(1) < 2, sScale = 32;
+    elseif tmp(1) < 8, sScale = 8;
+    else, sScale = 1;
+    end
+end
+
 cfaImg = imageIncreaseImageRGBSize(cfaSmall,sScale);
 
 %% Draw the CFA

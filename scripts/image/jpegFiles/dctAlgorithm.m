@@ -1,7 +1,7 @@
 %
 %	Make the dct Algorithms components
 %
-cd /wusr5/brian/book/07imgrep/fig/subDctAlgorithm
+% cd /wusr5/brian/book/07imgrep/fig/subDctAlgorithm
 
 %makeDctMatrix;
 
