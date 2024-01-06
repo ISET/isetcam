@@ -74,3 +74,6 @@ set(gca,'xlim',[-20 20],'ylim',[-20 20])
 title(sprintf('F-number = %d',fnBig))
 
 %% END
+
+%% Useful when testing tutorials
+drawnow;
