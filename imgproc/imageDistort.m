@@ -34,9 +34,12 @@ switch dMethod
         if ~isempty(varargin), q = varargin{1};
         else q = 75;
         end
-        imwrite(img,'deleteMe.jpg','jpeg','Quality',q);
-        imgN = imread('deleteMe.jpg');
-        delete('deleteMe.jpg');
+        if (~exist(fullfile(isetRootPath,'local'),'dir'))
+            mkdir(fullfile(isetRootPath,'local'));
+        end
+        imwrite(img,fullfile(isetRootPath,'local','deleteMe.jpg'),'jpeg','Quality',q);
+        imgN = imread(fullfile(isetRootPath,'local','deleteMe.jpg'));
+        delete(fullfile(isetRootPath,'local','deleteMe.jpg'));
     case 'scalecontrast'
         % imageDistort(img,'scale contrast',0.1);
         % Generally the scalar for the distortion should be -.2 to .2

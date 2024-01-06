@@ -111,13 +111,45 @@ switch ieParamFormat(oiType)
         oi.metadata = [];  % Store metadata typically for machine-learning apps
         oi = oiSet(oi, 'diffuser method', 'skip');
         oi = oiSet(oi,'wave',[]);
-        wvf = [];
 
-    case {'diffractionlimited','shiftinvariant','diffraction','wvf','default'}
+    case {'diffractionlimited','default'}
+        % Diffraction limited is implemented using the dlMTF method.
+        % This is like the wvf case, but the dl MTF is computed on the fly
+        % at the same sampling precision needed by the scene.
+        oi.type = 'opticalimage';
+        oi.name = vcNewObjectName('opticalimage');
+        oi.metadata = [];  % Store metadata typically for machine-learning apps
 
-        % We create via the wavefront method.  We convert the
-        % wavefront to an OI, and that process calls opticsCreate to
-        % convert the wvf parameters into an ISETCam optics struct.
+        optics = opticsCreate('diffraction limited');
+        oi = oiSet(oi,'optics',optics);
+        
+        % Set up the default glass diffuser with a 2 micron blur circle, but
+        % skipped
+        oi = oiSet(oi,'diffuser method','skip');
+        oi = oiSet(oi,'diffuser blur',2*10^-6);  % If used, 2 um.
+        
+        % Camera lenses use transmittance, not human lens.
+        if checkfields(oi.optics, 'lens')
+            warning('How did a human lens get in diffraction limited?')
+            oi.optics = rmfield(oi.optics, 'lens');
+            oi.optics.transmittance.wave = (370:730)';
+            oi.optics.transmittance.scale = ones(length(370:730), 1);
+        end
+
+    case {'shiftinvariant','wvf'}
+        % We create via the wavefront method.  We create a wvf, convert it
+        % to an oi using wvf2oi, which calls wvf2optics.  
+        %
+        % When the zcoeffs are 0, this is a diffraction limited oi.  The
+        % default parameters return a diffraction limited oi. The freq and
+        % psf sampling, however, are a bit challenging to specify in that
+        % case.
+        %
+        % Probably the better way to use a specific wvf is to do this:
+        %
+        %    optics = wvf2optics(wvf); 
+        %    oiSet(oi,'optics',optics);
+        
         wvf = wvfCreate('wave',(400:10:700)');
 
         % Set up the standard optics values we have used for years

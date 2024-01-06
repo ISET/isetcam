@@ -188,28 +188,36 @@ if ~exist('parm','var') || isempty(parm), error('Param must be defined.'); end
 
 switch oType
     case 'optics'
-        % If optics, then we either return the optics or an optics
-        % parameter.  I think we can handle the longer varargin by
-        % sending in varargin{:}, by the way.  Try 
-        % val =  opticsGet(optics,parm,varargin{:});
+        % If the first string is optics, we either return the optics or an optics
+        % parameter.  
         optics = oi.optics;
         if isempty(parm), val = optics;
         else
+            %{
+            % Original call, using dlMTF.  
+            optics = oi.optics;
+            if isempty(parm), val = optics;
+            else, val = opticsGet(optics,parm,varargin{:});
+            end
+            %}
+
+            % There is a special case for the OTF when we use dlMTF.
+            % See comment below.
             switch(parm)
                 case {'otf','otfdata'}
-                    % In the old diffraction limited case the fsupport
-                    % comes from an oiGet, so we need to send in the
-                    % oi.  This is bad and we should have fsupport
-                    % available from the optics itself. In general,
-                    % this is not the case.  It would be best if we
-                    % could make the opticsGet() retrieve fsupport
-                    % without using the oi.  And maybe it does because
-                    % there is a dlfsupport get in there.
+                    % In the diffraction limited case the fsupport comes
+                    % from an oiGet, so we need to send in the oi.  This is
+                    % bad and we should have fsupport available from the
+                    % optics itself. In general, this is not the case.  It
+                    % would be best if we could make the opticsGet()
+                    % retrieve fsupport without using the oi.  And maybe it
+                    % does because there is a dlfsupport get in there.
                     if ~checkfields(optics,'OTF','OTF')
                         val = opticsGet(optics,parm,oi,varargin{:});
                     else
                         val = opticsGet(optics,parm,varargin{:});
                     end
+            
                 otherwise
                     % All other gets.
                     val = opticsGet(optics,parm,varargin{:});
