@@ -153,15 +153,17 @@ for ww = 1:nWave
     % The polynomial order that we use here really matters.  For the Fish
     % EYE, pNum = 8 was a serious problem. pNum = 6 worked well for Fish Eye
     pNum = 8;
-    if length(imght(:)) < 7
+    if length(imght(:)) < 9
         if length(imght(:)) < 2
             error('Insufficient image height data');
         else
             pNum = length(imght(:)) - 2;
-            warndlg(sprintf('Caution: polyfit reduced to %.0f.',pNum));
+            fprintf('\nCaution: polyfit deg reduced to %.0f.',pNum);
         end
     end
-    % pNum is the polynomial degree
+
+    % pNum is the polynomial degree.
+    % We get warnings here if pNum is big (typically 8)
     % The distortion (di) are fitted to image height (imght).
     polyP = polyfit(di(:),imght(:),pNum);
     % figure; plot(polyval(polyP,di(:)),imght(:),'-o'); grid on
