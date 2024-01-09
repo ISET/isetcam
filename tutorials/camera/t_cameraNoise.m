@@ -1,6 +1,6 @@
 %% Use the camera object to control different types of sensor noise
 %
-%   Download a hyperspectral scene from the ISETBIO database.
+%   Read an interesting image
 %   Show the image at a high light level
 %   Show the image at a reduced light level
 %   Set up to illustrate the effects with different amounts of noise
@@ -15,20 +15,22 @@ camera = cameraCreate;
 camera = cameraSet(camera,'optics fnumber',2);
 
 %% Download an interesting scene
-if ~exist('RdtClient', 'file'), return; end
-rd = RdtClient('isetbio');
-rd.crp('/resources/scenes/multiband/scien/2008');
+% if ~exist('RdtClient', 'file'), return; end
+% rd = RdtClient('isetbio');
+% rd.crp('/resources/scenes/multiband/scien/2008');
+% 
+% % Here are the scenes in the remote data base in that directory
+% rd.listArtifacts('print',true);
+% 
+% % Load the scene, which is in the form of a basis.
+% d = rd.readArtifact('AsianWoman');
+% 
+% % Convert from basis to a scene
+% s = sceneFromBasis(d);
 
-% Here are the scenes in the remote data base in that directory
-rd.listArtifacts('print',true);
+s = sceneFromFile('faceMale.jpg','rgb',[],displayCreate);
 
-% Load the scene, which is in the form of a basis.
-d = rd.readArtifact('AsianWoman');
-
-% Convert from basis to a scene
-s = sceneFromBasis(d);
-
-ieAddObject(s); sceneWindow;
+sceneWindow(s);
 
 %% Turn off all noise and compute through the lens and so forth
 
@@ -76,4 +78,4 @@ camera = cameraSet(camera,'sensor prnu level',prnu);   % Percent variation
 camera = cameraCompute(camera,s);
 cameraWindow(camera,'ip');
 
-%%
+%% END
