@@ -49,7 +49,7 @@ optics = opticsSet(optics,'fnumber',opt_fnumber);
 optics = opticsSet(optics,'focallength',opt_flength);
 optics = opticsSet(optics,'off axis method','skip');
 oi     = oiSet(oi,'optics',optics);
-oi     = oiCompute(scene,oi);
+oi     = oiCompute(oi,scene);
 
 ieAddObject(oi);
 oiWindow;

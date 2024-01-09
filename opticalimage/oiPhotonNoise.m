@@ -14,13 +14,17 @@ function [noisyPhotons,theNoise] = oiPhotonNoise(oi)
 %
 % See also:  noiseShot, poissrnd, v_photonNoise
 %
-% Examples:
-%    scene = sceneCreate('uniform'); oi = oiCreate;  oi = oiCompute(scene,oi);
-%    [noisyPhotons,theNoise] = oiPhotonNoise(oi);
-%    vcNewGraphWin; tmp = noisyPhotons(:,:,10); tmp = tmp(tmp > 2*10^13); histogram(tmp(:))
-%    imagesc(noisyPhotons(:,:,10)); colormap(gray(64))
+% The source code contains examples.
 %
 % Copyright ImagEval Consultants, LLC, 2003.
+
+% Examples:
+%{
+   scene = sceneCreate('uniform'); oi = oiCreate;  oi = oiCompute(oi,scene);
+   [noisyPhotons,theNoise] = oiPhotonNoise(oi);
+   vcNewGraphWin; tmp = noisyPhotons(:,:,10); tmp = tmp(tmp > 2*10^13); histogram(tmp(:))
+   imagesc(noisyPhotons(:,:,10)); colormap(gray(64))
+%}
 
 if isstruct(oi) && strcmp(oiGet(oi,'type'), 'opticalimage')
     photons = oiGet(oi, 'photons');

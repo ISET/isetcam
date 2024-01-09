@@ -27,7 +27,7 @@ scene = sceneFromFile(fName,'multispectral',200);
 % ieAddObject(scene); sceneWindow
 %%  Create an optical image with the default lens parameters (f# = 2.0)
 oi = oiCreate;
-oi = oiCompute(scene,oi);
+oi = oiCompute(oi,scene);
 % ieAddObject(oi); oiWindow
 
 %%  A series of sensors with different pixel sizes but same dye size

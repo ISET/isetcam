@@ -56,7 +56,7 @@ optics = opticsSet(optics,'fnumber',fNumber*0.8);
 oiDL = oiSet(oiDL,'optics',optics);
 
 oiDL = oiSet(oiDL,'optics model','diffraction limited');
-oiDL = oiCompute(scene,oiDL);
+oiDL = oiCompute(oiDL,scene);
 oiDL = oiSet(oiDL,'name','psf diffraction case');
 oiWindow(oiDL);
 

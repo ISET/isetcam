@@ -98,14 +98,7 @@ function oi = oiCompute(oi,scene,varargin)
 % Use ieSessionSet('waitbar',0) to turn off waitbar displays
 % Use ieSessionSet('waitbar',1) to turn on waitbar displays
 %
-% Example
-%   oi = oiCompute(scene,oi);
-%
-%   oi = ieGetObject('oi'); scene = vcGetObject('scene');
-%   load siZemaxExample00
-%   optics = opticsSet(optics,'model','shiftinvariant');
-%   oi = oiSet(oi,'optics',optics);
-%   oi = oiCompute(scene,oi);
+% The source code contains examples.
 %
 % See also: 
 %   opticsDLCompute, opticsSICompute, opticsRayTrace

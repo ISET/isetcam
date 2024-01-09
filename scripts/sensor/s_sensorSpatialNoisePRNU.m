@@ -58,7 +58,7 @@ sensor = sensorSet(sensor,'noise flag',2);
 scene = sceneSet(scene,'fov',sensorGet(sensor,'fov')*1.5);
 
 % Compute the optical image
-oi = oiCompute(scene,oi);
+oi = oiCompute(oi,scene);
 ieAddObject(oi);
 oiWindow;
 

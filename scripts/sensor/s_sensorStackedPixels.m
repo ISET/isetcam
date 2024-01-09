@@ -27,7 +27,7 @@ scene = sceneSet(scene,'hfov',horizontalFOV);
 oi = oiCreate;
 oi = oiSet(oi,'optics fnumber',4);
 oi = oiSet(oi,'optics focal length',3e-3);   % units are meters
-oi = oiCompute(scene,oi);
+oi = oiCompute(oi,scene);
 % oiWindow(oi);
 
 %% Create a cell array of three monochrome sensors
