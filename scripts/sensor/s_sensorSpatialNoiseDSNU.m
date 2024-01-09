@@ -29,7 +29,7 @@ sensor = sensorSet(sensor,'size',[196 196]);
 darkScene = sceneSet(darkScene,'fov',sensorGet(sensor,'fov')*1.5);
 
 % Compute the dark optical image
-darkOI = oiCompute(darkScene,oi);
+darkOI = oiCompute(oi,darkScene);
 
 %% Set sensor parameters
 dsnuLevel = 0.05;       % Std. dev. of offset in volts
