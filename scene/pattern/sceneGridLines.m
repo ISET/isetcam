@@ -33,8 +33,8 @@ nWave = sceneGet(scene,'nwave');
 d = zeros(sz);
 for ii=0:lineThickness-1
     % Insert number of lines according to thickness
-    d((round(lineSpacing/2):lineSpacing:sz) + ii, :) = 1; % Down a column
-    d(:, (round(lineSpacing/2):lineSpacing:sz) + ii) = 1; % Across a row
+    d((round(lineSpacing/2):lineSpacing:sz(1)) + ii, :) = 1; % Down a column
+    d(:, (round(lineSpacing/2):lineSpacing:sz(2)) + ii) = 1; % Across a row
 end
 
 % This is a lot more dynamic range than cameras can manage.  I suppose we

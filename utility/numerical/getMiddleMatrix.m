@@ -19,8 +19,11 @@ function middleM = getMiddleMatrix(m,sz)
 sz = round(sz/2);
 
 center = round(size(m)/2);
-rMin = max(1,center(1)-sz); rMax = min(size(m,1), center(1)+sz);
-cMin = max(1,center(2)-sz); cMax = min(size(m,2), center(2)+sz);
+if numel(sz) == 1;
+    sz(2) = sz(1);
+end
+rMin = max(1,center(1)-sz(1)); rMax = min(size(m,1), center(1)+sz(1));
+cMin = max(1,center(2)-sz(2)); cMax = min(size(m,2), center(2)+sz(2));
 
 r = (rMin:rMax);
 c = (cMin:cMax);
