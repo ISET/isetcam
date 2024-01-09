@@ -17,9 +17,8 @@ function middleM = getMiddleMatrix(m,sz)
 % Copyright ImagEval Consultants, LLC, 2003.
 
 sz = round(sz/2);
-
 center = round(size(m)/2);
-if numel(sz) == 1;
+if (numel(sz) == 1)
     sz(2) = sz(1);
 end
 rMin = max(1,center(1)-sz(1)); rMax = min(size(m,1), center(1)+sz(1));

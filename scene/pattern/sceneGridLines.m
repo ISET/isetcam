@@ -25,11 +25,13 @@ if ieNotDefined('spectralType'), spectralType = 'ep'; end
 if ieNotDefined('lineThickness'), lineThickness = 1; end
 
 scene = sceneSet(scene,'name','gridlines');
-
 scene = initDefaultSpectrum(scene,'hyperspectral');
 wave = sceneGet(scene,'wave');
 nWave = sceneGet(scene,'nwave');
 
+if (numel(sz) == 1)
+    sz(2) = sz(1);
+end
 d = zeros(sz);
 for ii=0:lineThickness-1
     % Insert number of lines according to thickness
