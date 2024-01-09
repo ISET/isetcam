@@ -213,7 +213,30 @@ switch oType
                     % retrieve fsupport without using the oi.  And maybe it
                     % does because there is a dlfsupport get in there.
                     if ~checkfields(optics,'OTF','OTF')
-                        val = opticsGet(optics,parm,oi,varargin{:});
+                        % DHB: 1/9/24 - Having the varargin{:} tacked on here as a
+                        % fourth argument here caused an error.  So I took it
+                        % out.  But I am not sure whether there are cases
+                        % where we want the varargin{:} to get passed along.
+                        % The varargin seemed to have the oi in it in the
+                        % case I was looking at. But the comment above suggests
+                        % it is important to pass in the oi explicitly in
+                        % the diffraction limited case, so I was worried
+                        % about just using the call that is used for the
+                        % other cases.
+                        % 
+                        % It was the third example in opticsGet that caused me to 
+                        % make this change.
+                        %{
+                            scene = sceneCreate; oi = oiCreate('diffraction limited'); 
+                            oi = oiCompute(oi,scene); optics = oiGet(oi,'optics');
+                            otf = oiGet(oi,'optics otf data',oi);
+                            otf = opticsGet(optics,'otf data',oi);
+                            otfSupport = oiGet(oi,'fsupport','mm');  % Cycles/mm
+                            ieNewGraphWin; mesh(otfSupport(:,:,1),otfSupport(:,:,2),fftshift(abs(otf(:,:,10))));
+                        %}
+                        %
+                        %  val = opticsGet(optics,parm,oi,varargin{:});
+                        val = opticsGet(optics,parm,oi);  
                     else
                         val = opticsGet(optics,parm,varargin{:});
                     end

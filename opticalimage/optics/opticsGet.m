@@ -151,7 +151,7 @@ function val = opticsGet(optics,parm,varargin)
 %{
    % This example prints out a lot of messages that default
    % values are being used. No need to panic.
-   oi = oiCreate; optics = oiGet(oi,'optics');
+   oi = oiCreate; oi = oiCompute(oi,sceneCreate); optics = oiGet(oi,'optics');
    otf = opticsGet(optics,'otf data',oi, 'mm',450);
    ieNewGraphWin; mesh(fftshift(abs(otf)));
 %}
