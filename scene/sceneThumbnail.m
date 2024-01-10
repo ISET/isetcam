@@ -13,9 +13,13 @@ function pngName = sceneThumbnail(scene,varargin)
 %   force square - Make the thumbnail square by padding or cropping
 %   label        - Logical for label or not
 %   font size    - Font size if there is a label
+%   outputfilename  - Specify where the file should get written.  This is
+%                  is the path including filename, but without the .png
+%                  extension.  Default is to take the name from the scene 
+%                  name.
 %
 % Outputs
-%   fname - Thumbnail file name
+%   pngName - Thumbnail file name
 %
 % See also
 %   insertInImage
@@ -23,9 +27,13 @@ function pngName = sceneThumbnail(scene,varargin)
 
 % Examples:
 %{
+  if (~exist(fullfile(isetRootPath,'local'),'dir'))
+      mkdir(fullfile(isetRootPath,'local'));
+  end
+  outputName = fullfile(isetRootPath,'local','StuffedAnimals_tungsten-hdrs');
   scene = sceneFromFile('StuffedAnimals_tungsten-hdrs.mat','multispectral');
   rowSize = 192;
-  pngFile = sceneThumbnail(scene);
+  pngFile = sceneThumbnail(scene,'output file name',outputName);
 %}
 
 %% Check inputs
@@ -41,6 +49,7 @@ p.addParameter('forcesquare',false,@islogical);   % For a square thumbnail by pa
 p.addParameter('fontsize',9,@isnumeric);   % For a square thumbnail by padding or cropping
 p.addParameter('label',true,@islogical);   % For a square thumbnail by padding or cropping
 p.addParameter('backcolor',[0.0 0.0 0.3],@isvector);
+p.addParameter('outputfilename',[],@ischar);
 
 p.parse(scene,varargin{:});
 
@@ -49,6 +58,7 @@ forceSquare = p.Results.forcesquare;
 fontSize    = p.Results.fontsize;
 label       = p.Results.label;
 backColor   = p.Results.backcolor;
+outputFilename = p.Results.outputfilename;
 
 %%  Read the scene and figure its size
 
@@ -86,7 +96,10 @@ if label
     % ieNewGraphWin; imshow(uint8(mean(rgb,3)));
 end
 
-pngName = [scene.name,'.png'];
+if (isempty(outputFilename))
+    pngName = [scene.name,'.png'];
+else
+    pngName = [outputFilename '.png'];
 imwrite(rgb,pngName);
 
 end
