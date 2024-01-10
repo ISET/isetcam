@@ -17,8 +17,12 @@
 
 %%
 ieInit;
-clear all; close all
-%%
+% ieSessionSet('init clear',false);
+clear all; 
+close all
+
+%% Create a scene
+
 s_size = 1024;
 flengthM = 4e-3;
 fnumber = 2.2;
@@ -32,6 +36,9 @@ scene = sceneAdjustLuminance(scene,'peak',100000);
 
 scene = sceneSet(scene,'fov',30);
 index = 1;
+
+%% Loop comparing the three methods
+
 fig_plot = figure;set(fig_plot, 'AutoResizeChildren', 'off');
 for fnumber = 3:5:13
     oi = oiCreate('diffraction limited');
@@ -86,42 +93,58 @@ for fnumber = 3:5:13
     subplot(3,3, index);imshow(rgb);index = index+1;title(sprintf('WVF-Fnumber:%d\n',fnumber));
 end
 
+%% Let's just compare the wvf methods at fnumber =3
+
+%% THe flare good, working part.
+
+flengthM = 4e-3;
+flengthMM = flengthM*1e3;
+
+fnumber = 3;
+
+%{
+% This doesn't run with flare because dlmtf is ...
+oi = oiCreate('diffraction limited');
+oi = oiSet(oi,'name','diffraction');
+oi = oiSet(oi,'optics focallength',flengthM);
+oi = oiSet(oi,'optics fnumber',fnumber);
+% psfdata = oiGet(oi,'optics psf data',550);
+% ieNewGraphWin; mesh(psf.xy(:,:,1),psf.xy(:,:,2),psf.psf);
+%}
+
+% {
+oi = oiCreate('shift invariant');
+oi = oiSet(oi,'name','SI');
+%}
+
+oi = oiSet(oi,'optics focallength',flengthM);
+oi = oiSet(oi,'optics fnumber',fnumber);
+[oi_flare,~,psf, psfSupport] = oiComputeFlare(oi,scene,'aperture',aperture);
+% oiWindow(oi_flare);
+ieNewGraphWin; mesh(psfSupport(:,:,1),psfSupport(:,:,2),squeeze(psf(:,:,15)));
+set(gca,'xlim',[-5 5],'ylim',[-5 5]);
 
 
-%%
-function binary_mask = create_shapes()
-    % Create a blank image
-    image_size = 1024;
-    binary_mask = zeros(image_size, image_size);
+%% The bad wvf part
+wvf = wvfCreate('wave',400:10:700);
+wvf = wvfSet(wvf, 'focal length', flengthMM, 'mm');
+wvf = wvfSet(wvf, 'calc pupil diameter', flengthMM/fnumber);
+nPixels = oiGet(oi, 'size'); nPixels = nPixels(1);
+wvf = wvfSet(wvf, 'spatial samples', nPixels);
+psf_spacingMM = oiGet(oi,'sample spacing','mm');
+lambdaMM = 550*1e-6;
+pupil_spacingMM = lambdaMM * flengthMM / (psf_spacingMM(1) * nPixels);
+wvf = wvfSet(wvf,'field size mm', pupil_spacingMM * nPixels);
+wvf = wvfCompute(wvf);
+wvfSummarize(wvf);
+psf2 = wvfGet(wvf,'psf',550);
+supp2 = wvfGet(wvf,'spatial support','um');
 
-    % Draw a circle
-    center = [rand(500)+300, 100+rand(500)]; % center of the circle
-    radius = 20;
-    [x, y] = meshgrid(1:image_size, 1:image_size);
-    binary_mask((x - center(1)).^2 + (y - center(2)).^2 <= radius^2) = 1;
+% getMiddleMatrix(psf2,[50 50])
+ieNewGraphWin; mesh(supp2,supp2,psf2);
+set(gca,'xlim',[-5 5],'ylim',[-5 5]);
 
-    % Draw a rectangle
-    top_left = [500, 500];
-    width = 100;
-    height = 100;
-    binary_mask(top_left(1):(top_left(1)+height), top_left(2):(top_left(2)+width)) = 1;
+oi = oiCompute(wvf, scene);
+oi = oiSet(oi,'name','WVF');
+oiWindow(oi);
 
-    % % Draw a triangle
-    % vertices = [200, 300; 250, 400; 150, 400];
-    % binary_mask = insertShape(binary_mask, 'FilledPolygon', vertices(:)', 'Color', 'white', 'Opacity', 1);
-
-    % Draw a hexagon
-    center_hex = [750+rand(100), 750+rand(100)];
-    size_hex = 50;
-    angle = 0:pi/3:2*pi;
-    hex_x = center_hex(1) + size_hex * cos(angle);
-    hex_y = center_hex(2) + size_hex * sin(angle);
-    hexagon = [hex_x; hex_y];
-    binary_mask = insertShape(binary_mask, 'FilledPolygon', hexagon(:)', 'Color', 'white', 'Opacity', 1);
-
-    % Convert to binary
-    binary_mask = im2bw(binary_mask);
-
-    % Display the image
-    % imshow(binary_mask);
-end
