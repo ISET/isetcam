@@ -17,8 +17,7 @@
 
 %%
 ieInit;
-% ieSessionSet('init clear',false);
-clear all; 
+ieSessionSet('init clear',true);
 close all
 
 %% Create a scene
@@ -30,7 +29,7 @@ flengthMM = flengthM*1e3;
 
 pupilMM = (flengthMM)/fnumber;
 
-scene = sceneCreateHDR(s_size,20);
+scene = sceneCreateHDR(s_size,20, 0); % (size, numberOfPatches, Background)
 
 scene = sceneAdjustLuminance(scene,'peak',100000);
 
@@ -61,7 +60,7 @@ for fnumber = 3:5:13
     %% Compute with oiComputeFlare
 
     aperture = [];
-    oi_flare = oiComputeFlare(oi,scene,'aperture',aperture);
+    oi_flare = oiComputeFlare2(oi,scene,'aperture',aperture);
     oi_flare = oiSet(oi_flare, 'name','flare');
     oi_flare = oiCrop(oi_flare,'border');
     % oiWindow(oi_wvf);
@@ -96,7 +95,7 @@ end
 %% Let's just compare the wvf methods at fnumber =3
 
 %% THe flare good, working part.
-
+%{
 flengthM = 4e-3;
 flengthMM = flengthM*1e3;
 
@@ -112,7 +111,7 @@ oi = oiSet(oi,'optics fnumber',fnumber);
 % ieNewGraphWin; mesh(psf.xy(:,:,1),psf.xy(:,:,2),psf.psf);
 %}
 
-% {
+%{
 oi = oiCreate('shift invariant');
 oi = oiSet(oi,'name','SI');
 %}
@@ -124,8 +123,7 @@ oi = oiSet(oi,'optics fnumber',fnumber);
 ieNewGraphWin; mesh(psfSupport(:,:,1),psfSupport(:,:,2),squeeze(psf(:,:,15)));
 set(gca,'xlim',[-5 5],'ylim',[-5 5]);
 
-
-%% The bad wvf part
+% The bad wvf part
 wvf = wvfCreate('wave',400:10:700);
 wvf = wvfSet(wvf, 'focal length', flengthMM, 'mm');
 wvf = wvfSet(wvf, 'calc pupil diameter', flengthMM/fnumber);
@@ -147,4 +145,4 @@ set(gca,'xlim',[-5 5],'ylim',[-5 5]);
 oi = oiCompute(wvf, scene);
 oi = oiSet(oi,'name','WVF');
 oiWindow(oi);
-
+%}
