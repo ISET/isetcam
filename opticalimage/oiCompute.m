@@ -130,6 +130,7 @@ p.addRequired('oi',@isstruct);
 p.addRequired('scene',@isstruct);
 p.addParameter('padvalue','zero',@(x)(ischar(x) || isvector(x)));
 p.addParameter('crop',false,@islogical);
+p.addParameter('aperture',[],@ismatrix);
 p.parse(oi,scene,varargin{:});
 
 % if ~exist('oi','var') || isempty(oi), error('Opticalimage required.'); end
@@ -167,7 +168,7 @@ switch ieParamFormat(opticsModel)
         % The skip case is handled by the DL case
         oi = opticsDLCompute(scene,oi,varargin{:});
     case 'shiftinvariant'
-        oi = opticsSICompute(scene,oi,varargin{:});
+        oi = opticsSICompute(scene,oi,p.Results.aperture,varargin{:});
     case 'raytrace'
         % We are not using the pad value in this case.
         oi = opticsRayTrace(scene,oi,varargin{:});

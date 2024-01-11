@@ -1,4 +1,4 @@
-function oi = opticsPSF(oi,scene,varargin)
+function oi = opticsPSF(oi,scene,aperture,varargin)
 % Apply the opticalImage using the PSF method to the photon data
 %
 % Synopsis
@@ -45,6 +45,8 @@ p.KeepUnmatched = true;
 
 p.addRequired('oi',@(x)(isstruct(x) && isequal(x.type,'opticalimage')));
 p.addRequired('scene',@(x)(isstruct(x) && isequal(x.type,'scene')));
+if ieNotDefined('aperture'), aperture = []; end
+
 p.addParameter('padvalue','zero',@(x)(ischar(x) || isvector(x)));
 
 p.parse(oi,scene,varargin{:});
@@ -59,7 +61,7 @@ switch lower(opticsModel)
         oi = oiSet(oi,'photons',irradianceImage);
         
     case {'dlmtf','diffractionlimited','shiftinvariant','custom','humanotf'}
-        oi = oiApplyPSF(oi,scene,'mm',p.Results.padvalue);
+        oi = oiApplyPSF(oi,scene,aperture,'mm',p.Results.padvalue);
         
     otherwise
         error('Unknown OTF method');
@@ -68,10 +70,10 @@ end
 end
 
 %-------------------------------------------
-function oi = oiApplyPSF(oi,scene,unit,padvalue)
+function oi = oiApplyPSF(oi,scene,aperture,unit,padvalue)
 %Calculate and apply the otf waveband by waveband
 %
-%   oi = oiApplyOTF(oi,method,unit);
+%   oi = oiApplyPSF(oi,method,unit);
 %
 % We calculate the OTF every time, never saving it, because it can take up
 % a lot of space and is not that hard to calculate.  Also, any change to
@@ -79,20 +81,14 @@ function oi = oiApplyPSF(oi,scene,unit,padvalue)
 % synchronized can be error prone.
 %
 % Example:
-%    oi = oiApplyOTF(oi);
+%    oi = oiApplyPSF(oi);
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
-% TODO:
-%   Aperture
-%   unit
 %
-
 if ieNotDefined('oi'),     error('Optical image required.'); end
-if ieNotDefined('unit'),   unit   = 'cyclesPerDegree'; end
+if ieNotDefined('unit'),   unit   = 'mm'; end
 if ieNotDefined('aperture'), aperture = []; end
-
-% wave     = oiGet(oi,'wave');
 
 % Pad the optical image to allow for light spread.  Also, make sure the row
 % and col values are even.
@@ -121,27 +117,31 @@ switch padvalue
         error('Unknown padvalue %s',padvalue);
 end
 
-% oiGet(oi,'sample size')
 oi = oiPadValue(oi,padSize,padType,sDist);
-% oiGet(oi,'sample size')
 
 
 % Convert the oi into the wvf format and compute the PSF
 wavelist  = oiGet(oi,'wave');
 wvf       = wvfCreate('wave',wavelist);
-flengthMM = oiGet(oi,'focal length','mm');
+flength = oiGet(oi,'focal length',unit);
 fnumber   = oiGet(oi, 'f number');
 oiSize    = max(oiGet(oi,'size'));   % Larger of the two sizes
 
-wvf = wvfSet(wvf, 'focal length', flengthMM, 'mm');
-wvf = wvfSet(wvf, 'calc pupil diameter', flengthMM/fnumber);
+wvf = wvfSet(wvf, 'focal length', flength, unit);
+wvf = wvfSet(wvf, 'calc pupil diameter', flength/fnumber);
 wvf = wvfSet(wvf, 'spatial samples', oiSize);
 
-psf_spacingMM = oiGet(oi,'sample spacing','mm');
-lambdaMM = 550*1e-6;
-pupil_spacingMM = lambdaMM * flengthMM / (psf_spacingMM(1) * oiSize);
+psf_spacing = oiGet(oi,'sample spacing',unit);
 
-wvf = wvfSet(wvf,'field size mm', pupil_spacingMM * oiSize);
+lambdaM = 550*1e-9;
+
+lambdaUnit = ieUnitScaleFactor(unit)*lambdaM;
+
+pupil_spacing = lambdaUnit * flength / (psf_spacing(1) * oiSize);
+
+currentUnitScale = ieUnitScaleFactor(unit);
+mmUnitScale = 1000/currentUnitScale;
+wvf = wvfSet(wvf,'field size mm', pupil_spacing * oiSize * mmUnitScale); % only accept mm
 
 % Compute the PSF.  We may need to consider LCA and other parameters
 % at this point.
@@ -184,5 +184,6 @@ end
 
 oi = oiSet(oi,'photons',p);
 
+oi.optics = wvf2optics(wvf);
 end
 

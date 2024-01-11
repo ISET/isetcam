@@ -23,7 +23,7 @@ close all
 %% Create a scene
 
 s_size = 1024;
-flengthM = 4e-3;
+flengthM = 8e-3;
 fnumber = 2.2;
 flengthMM = flengthM*1e3;
 
@@ -51,25 +51,24 @@ for fnumber = 3:5:13
     % oiWindow(oi);
 
     oi = oiSet(oi, 'name','dl');
-    ip = piRadiance2RGB(oi,'etime',1);
+    ip = piRadiance2RGB(oi,'etime',1/10);
 
     rgb = ipGet(ip,'srgb');
     subplot(3,3,index);imshow(rgb);index = index+1;title(sprintf('DL-Fnumber:%d\n',fnumber));
 
-    oi.optics.model = 'shiftinvariant';
-   
     %% Compute with oiComputeFlare
 
     aperture = [];
-    oi_flare = oiComputeFlare2(oi,scene,'aperture',aperture);
+    oi.optics.model = 'shiftinvariant';
+    oi_flare = oiCompute(oi,scene,'aperture',aperture);
     oi_flare = oiSet(oi_flare, 'name','flare');
     oi_flare = oiCrop(oi_flare,'border');
     % oiWindow(oi_flare);
 
     % oi_wvf = oiSet(oi_wvf,'displaymode','hdr');
-    ip_flare = piRadiance2RGB(oi_flare,'etime',1);
+    ip_flare = piRadiance2RGB(oi_flare,'etime',1/10);
     rgb_flare = ipGet(ip_flare,'srgb');
-    subplot(3,3,index);imshow(rgb);index = index+1;title(sprintf('Flare-Fnumber:%d\n',fnumber));
+    subplot(3,3,index);imshow(rgb_flare);index = index+1;title(sprintf('Flare-Fnumber:%d\n',fnumber));
 
     %% match wvf with OI, and compute with oicompute
     wvf = wvfCreate;
@@ -88,9 +87,9 @@ for fnumber = 3:5:13
     oi = oiSet(oi, 'name','flare');
     % oiWindow(oi);
     oi = oiCrop(oi,'border');
-    ip = piRadiance2RGB(oi,'etime',1);
-    rgb = ipGet(ip,'srgb');
-    subplot(3,3, index);imshow(rgb);index = index+1;title(sprintf('WVF-Fnumber:%d\n',fnumber));
+    ip = piRadiance2RGB(oi,'etime',1/10);
+    rgb_wvf = ipGet(ip,'srgb');
+    subplot(3,3, index);imshow(rgb_wvf);index = index+1;title(sprintf('WVF-Fnumber:%d\n',fnumber));
 end
 
 %% Let's just compare the wvf methods at fnumber =3

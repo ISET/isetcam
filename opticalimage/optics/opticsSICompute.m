@@ -1,4 +1,4 @@
-function oi = opticsSICompute(scene,oi,varargin)
+function oi = opticsSICompute(scene,oi,aperture,varargin)
 %Calculate OI irradiance using a custom shift-invariant PSF
 %
 %    oi = opticsSICompute(scene,oi,varargin)
@@ -28,6 +28,7 @@ function oi = opticsSICompute(scene,oi,varargin)
 
 if ieNotDefined('scene'), error('Scene required.'); end
 if ieNotDefined('oi'), error('Opticalimage required.'); end
+if ieNotDefined('aperture'), aperture = []; end
 showWbar = ieSessionGet('waitbar');
 
 % This is the default compute path
@@ -36,8 +37,6 @@ optics = oiGet(oi,'optics');
 % Compute the basic parameters of the oi from the scene parameters.
 oi = oiSet(oi,'wangular',sceneGet(scene,'wangular'));
 oi = oiSet(oi,'wave',sceneGet(scene,'wave'));
-
-if isempty(opticsGet(optics,'otfdata')), error('No OTF data'); end
 
 % We use the custom data.
 % oi     = oiSet(oi,'optics',optics);
@@ -81,7 +80,7 @@ if showWbar, waitbar(0.6,wBar,'Applying OTF-SI'); end
 
 % We replace the old OTF based method with the version that goes
 % through the wavefront terms developed for the flare calculation.
-oi = opticsPSF(oi,scene,varargin{:});
+oi = opticsPSF(oi,scene,aperture,varargin{:});
 
 switch lower(oiGet(oi,'diffuserMethod'))
     case 'blur'

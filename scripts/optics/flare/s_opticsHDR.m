@@ -17,17 +17,18 @@
 
 %%
 ieInit;
-clear all; close all
+ieSessionSet('init clear',true);
+close all;
 %%
 s_size = 1024;
-flengthM = 4e-3;
-fnumber = 2.2;
+flengthM = 17e-3;
+fnumber = 8;
 
 pupilMM = (flengthM*1e3)/fnumber;
 
-scene = sceneCreateHDR(s_size,15);
+scene = sceneCreateHDR(s_size,17,1);
 
-scene = sceneAdjustLuminance(scene,'peak',100000);
+scene = sceneAdjustLuminance(scene,'peak',1e5);
 
 scene = sceneSet(scene,'fov',20);
 
@@ -50,12 +51,11 @@ for fnumber = 3:5:13
 
     rgb = ipGet(ip,'srgb');
     subplot(3,3,index);imshow(rgb);index = index+1;title(sprintf('DL-Fnumber:%d\n',fnumber));
-
-    oi.optics.model = 'shiftinvariant';
+    
     %% Match wvf with OI
-
     aperture = [];
-    oi_wvf = oiComputeFlare(oi,scene,'aperture',aperture);
+    oi.optics.model = 'shiftinvariant';
+    oi_wvf = oiCompute(oi,scene,'aperture',aperture);
     oi_wvf = oiSet(oi_wvf, 'name','flare');
     oi_wvf = oiCrop(oi_wvf,'border');
     % oiWindow(oi_wvf);
@@ -82,7 +82,7 @@ for ii = 1:4
         'dot mean',0, 'dot sd',0, 'dot opacity',0.5,'dot radius',5,...
         'line mean',0, 'line sd', 0, 'line opacity',0.5,'linewidth',2);
 
-    oi_wvf = oiComputeFlare(oi,scene,'aperture',aperture);
+    oi_wvf = oiCompute(oi,scene,'aperture',aperture);
 
     oi_wvf = oiSet(oi_wvf, 'name','flare');
     oi_wvf = oiCrop(oi_wvf,'border');
@@ -92,43 +92,6 @@ for ii = 1:4
     subplot(1, 4, ii);imshow(rgb_wvf);title(sprintf('Number of blades: %d\n',nsides));
 end
 
-%%
-function binary_mask = create_shapes()
-    % Create a blank image
-    image_size = 1024;
-    binary_mask = zeros(image_size, image_size);
-
-    % Draw a circle
-    center = [rand(500)+300, 100+rand(500)]; % center of the circle
-    radius = 20;
-    [x, y] = meshgrid(1:image_size, 1:image_size);
-    binary_mask((x - center(1)).^2 + (y - center(2)).^2 <= radius^2) = 1;
-
-    % Draw a rectangle
-    top_left = [500, 500];
-    width = 100;
-    height = 100;
-    binary_mask(top_left(1):(top_left(1)+height), top_left(2):(top_left(2)+width)) = 1;
-
-    % % Draw a triangle
-    % vertices = [200, 300; 250, 400; 150, 400];
-    % binary_mask = insertShape(binary_mask, 'FilledPolygon', vertices(:)', 'Color', 'white', 'Opacity', 1);
-
-    % Draw a hexagon
-    center_hex = [750+rand(100), 750+rand(100)];
-    size_hex = 50;
-    angle = 0:pi/3:2*pi;
-    hex_x = center_hex(1) + size_hex * cos(angle);
-    hex_y = center_hex(2) + size_hex * sin(angle);
-    hexagon = [hex_x; hex_y];
-    binary_mask = insertShape(binary_mask, 'FilledPolygon', hexagon(:)', 'Color', 'white', 'Opacity', 1);
-
-    % Convert to binary
-    binary_mask = im2bw(binary_mask);
-
-    % Display the image
-    % imshow(binary_mask);
-end
 %{
 % Check some numbers
 fprintf('COMPLETED: Wavefront Size: %d, takes %.2f seconds. \n',nPixels, toc(t));
