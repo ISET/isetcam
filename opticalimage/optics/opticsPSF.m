@@ -164,6 +164,9 @@ nWave = numel(wavelist);
 
 % All the PSFs
 PSF = wvfGet(wvf,'psf');
+if ~iscell(PSF)
+    tmp = PSF; clear PSF; PSF{1} = tmp;
+end
 
 % Get the current data set.  It has the right size.  We over-write it
 % below.
