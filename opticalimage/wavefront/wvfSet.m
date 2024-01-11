@@ -432,6 +432,8 @@ switch parm
         % to allow unevenly spaced wls.)
         if size(val, 2) == 3 && size(val, 1) == 1 % SToWls case
             % Row vector with 3 entries.
+            % Noticed a bug when wave is 500,600,700 it is
+            % mis-interpreted.  Need to fix (BW).
             wls = SToWls(val);
             wvf.wls = MakeItWls(wls);
         else  % A column vector case

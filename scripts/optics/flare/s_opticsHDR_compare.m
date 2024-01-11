@@ -57,13 +57,14 @@ for fnumber = 3:5:13
     subplot(3,3,index);imshow(rgb);index = index+1;title(sprintf('DL-Fnumber:%d\n',fnumber));
 
     oi.optics.model = 'shiftinvariant';
+   
     %% Compute with oiComputeFlare
 
     aperture = [];
     oi_flare = oiComputeFlare2(oi,scene,'aperture',aperture);
     oi_flare = oiSet(oi_flare, 'name','flare');
     oi_flare = oiCrop(oi_flare,'border');
-    % oiWindow(oi_wvf);
+    % oiWindow(oi_flare);
 
     % oi_wvf = oiSet(oi_wvf,'displaymode','hdr');
     ip_flare = piRadiance2RGB(oi_flare,'etime',1);

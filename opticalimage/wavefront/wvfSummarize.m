@@ -4,7 +4,13 @@ function wvfSummarize(wvf)
 % A tutorial is in t_wvfOverview.mlx
 %
 
+% Test with
+% wvf = wvfCreate('wave',[500:50:700]);
+
+wave = wvfGet(wvf,'wave');
+
 fprintf('\nwavefront struct name: %s\n',wvf.name);
+if numel(wave) > 1, fprintf('Summarizing for wave %d\n',wave(1));
 fprintf('-------------------\n');
 
 fprintf('f number\t %f\n',wvfGet(wvf,'fnumber'))
@@ -14,7 +20,7 @@ fprintf('calc pupil diam\t %f\t mm\n', wvfGet(wvf,'calc pupil diameter','mm'));
 
 fprintf('\nReference\n------\n')
 fprintf('n samples\t %d\n',wvf.nSpatialSamples);
-fprintf('ref pupil plane\t %f\t mm\n', wvfGet(wvf,'pupil plane size','mm'));
+fprintf('ref pupil plane\t %f\t mm\n', wvfGet(wvf,'pupil plane size','mm',wave(1)));
 fprintf('ref pupil dx\t %f\t um\n',wvfGet(wvf, 'pupil sample spacing','um'));
 
 fprintf('\nMeasured\n------\n')

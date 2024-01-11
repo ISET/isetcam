@@ -75,7 +75,13 @@ if showWbar, waitbar(0.6,wBar,'OI-SI: Applying OTF'); end
 % If there is a depth plane in the scene, we also blur that and put the
 % 'blurred' depth plane in the oi structure.
 if showWbar, waitbar(0.6,wBar,'Applying OTF-SI'); end
-oi = opticsOTF(oi,scene,varargin{:});
+
+% The original calculation
+% oi = opticsOTF(oi,scene,varargin{:});
+
+% We replace the old OTF based method with the version that goes
+% through the wavefront terms developed for the flare calculation.
+oi = opticsPSF(oi,scene,varargin{:});
 
 switch lower(oiGet(oi,'diffuserMethod'))
     case 'blur'
