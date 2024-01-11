@@ -101,7 +101,7 @@ for dd = length(depthCenters):-1:1
     % plotOI(oi,'ls wavelength')
     % plotOI(oi,'otf wavelength')
     % ieAddObject(scene); sceneWindow
-    % oi = oiCompute(scene,oi); ieAddObject(oi); oiWindow
+    % oi = oiCompute(oi,scene); ieAddObject(oi); oiWindow
     
     % Make a scene with only the data from within the depth conditions.
     % This might be
@@ -113,7 +113,7 @@ for dd = length(depthCenters):-1:1
     % ieAddObject(scene); sceneWindow
     
     % Then we should run
-    oiD{dd} = oiCompute(sceneD,oi);
+    oiD{dd} = oiCompute(oi,sceneD);
     % ieAddObject(oiD{dd}); oiWindow
     % Then we should combine the oiD structures into the final oi output.
     % That would be outside this loop.

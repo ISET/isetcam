@@ -30,17 +30,9 @@ function [optics, wvfP]  = opticsCreate(opticsType,varargin)
 %
 % Inputs
 %  opticsType
-%      {'diffraction limited, 'standard (1/4-inch)'} - DEFAULT
-%      {'standard (1/3-inch)'}
-%      {'standard (1/2-inch)'}
-%      {'standard (2/3-inch)'}
-%      {'standard (1-inch)'}
 %
-%   There is the general shift invariant formulation that uses
-%   non-diffraction limited OTF
-%
-%      {'shift invariant'} - A shift invariant representation based on a
-%                            small pillbox PSF
+%      {'diffraction limited','shiftinvariant'} - Built using the wvf
+%         methods as a shift invariant, diffraction limited, optics.
 %
 %      {'human mw', 'human'} - Also shift-invariant, but uses Marimont
 %                      and Wandell (Hopkins) method
@@ -92,69 +84,72 @@ if ieNotDefined('opticsType'), opticsType = 'default'; end
 opticsType = ieParamFormat(opticsType);
 
 switch lower(opticsType)
-    case {'default','diffractionlimited','standard(1/4-inch)','quarterinch'}
-        % These are all diffraction limited methods.
-        optics = opticsDefault;
+    case {'empty'}
+        optics.type = 'optics';
+        optics.name = 'empty';
+
+    case {'default','diffractionlimited'}
+        optics.type = 'optics';
+        optics = opticsSet(optics,'name','standard (1/4-inch)');
+        optics = opticsSet(optics,'model','diffractionLimited');
+
+        % Standard 1/4-inch sensor parameters
+        sensorDiagonal = 0.004;
+        FOV = 46;
+        fLength = inv(tan(FOV/180*pi)/2/sensorDiagonal)/2;
+
+        optics = opticsSet(optics,'fnumber',4);  % Ratio of focal length to diameter
+        optics = opticsSet(optics,'focalLength', fLength);
+        optics = opticsSet(optics,'otfMethod','dlmtf');
 
         % Default lens transmittance. 
         optics.transmittance.wave = opticsGet(optics,'wave');
         optics.transmittance.scale = ones(size(optics.transmittance.wave));
 
-    case {'standard(1/3-inch)','thirdinch'}
-        optics = opticsThirdInch;
-
-        % Default lens transmittance. 
-        optics.transmittance.wave = opticsGet(optics,'wave');
-        optics.transmittance.scale = ones(size(optics.transmittance.wave));
-
-    case {'standard(1/2-inch)','halfinch'}
-        optics = opticsHalfInch;
-
-        % Default lens transmittance. 
-        optics.transmittance.wave = opticsGet(optics,'wave');
-        optics.transmittance.scale = ones(size(optics.transmittance.wave));
-
-    case {'standard(2/3-inch)','twothirdinch'}
-        optics = opticsTwoThirdInch;
-
-       % Default lens transmittance. 
-        optics.transmittance.wave = opticsGet(optics,'wave');
-        optics.transmittance.scale = ones(size(optics.transmittance.wave));
-
-    case {'standard(1-inch)','oneinch'}
-        optics = opticsOneInch;
-
-       % Default lens transmittance. 
-        optics.transmittance.wave = opticsGet(optics,'wave');
-        optics.transmittance.scale = ones(size(optics.transmittance.wave));
-
-    case 'shiftinvariant'
-        % optics = opticsCreate('shift invariant',oi);
-        %
-        % Shift-invariant optics based on a Gaussian.  (Used to use
-        % SI-pillBox).  The OTF is represented in terms of fx and fy
-        % specified in cycles per millimeter.
-
-        if ~isempty(varargin), oi = varargin{1}; else, oi = oiCreate; end
-        wave = oiGet(oi,'wave');
-        if isempty(wave)
-            wave = 400:10:700;
-            oi = oiSet(oi,'wave',wave);
+        % There should not be a human lens transmittance object
+        if isfield(optics,'lens')
+            warning('Removing human lens slot.')
+            optics = rmfield(optics,'lens');
         end
 
-        % The default is a Gaussian that is wavelength dependent.
-        psfType = 'gaussian';  waveSpread = wave/wave(1);
-        xyRatio = ones(1,length(wave));
-        optics = siSynthetic(psfType,oi,waveSpread,xyRatio);
-        % psfMovie(optics,ieNewGraphWin);
+    case {'shiftinvariant'}
+        % Removed:  'standard(1/4-inch)','quarterinch' on Dec 18, 2023
+        % These are all diffraction limited methods.
+        % optics = opticsDefault;
 
-        % Used to create a pillbox like this
-        % optics = siSynthetic('custom',oi,'SI-pillBox',[]);
+        wave = 400:10:700;
+        wvf = wvfCreate('wave', wave);
 
-        % Default lens transmittance. We use this for generic SI.
-        optics.transmittance.wave = wave;
+        % Experimenting with different values.  Has no effect.
+        % wvf = wvfSet(wvf,'um per degree',50);
+
+        % Standard 1/4-inch sensor parameters
+        % sensorDiagonal = 0.004;
+        % FOV = 46;
+        fLengthM = 0.0039; % inv(tan(FOV/180*pi)/2/sensorDiagonal)/2;
+        fNumber = 4;
+        pupilDiameterM = fLengthM/fNumber;
+        wvf = wvfSet(wvf,'focal length',fLengthM);
+
+        % Annoying but necessary
+        wvf = wvfSet(wvf,'measured pupil diameter',pupilDiameterM*1e3);
+        wvf = wvfSet(wvf,'calc pupil diameter',pupilDiameterM*1e3);
+
+        wvf = wvfCompute(wvf);
+       
+        % This is tangled up in oiCreate and wvf2oi
+        optics = wvf2optics(wvf);
+        
+        % ISETCam transmittance representation
+        optics.transmittance.wave = opticsGet(optics,'wave');
         optics.transmittance.scale = ones(size(optics.transmittance.wave));
 
+        % There should not be a human lens transmittance object
+        if isfield(optics,'lens')
+            warning('Removing human lens slot.')
+            optics = rmfield(optics,'lens');
+        end
+    
     case {'human','humanmw'}
         % Pupil radius in meters.  Default is 3 mm
         %
@@ -167,8 +162,8 @@ switch lower(opticsType)
         else,                  fLengthMeters= 0.017;    % 17 mm focal length default
         end
 
-        % This creates a shift-invariant optics.  The other standard forms
-        % are diffraction limited.
+        % This creates a shift-invariant human optics based on the
+        % Marimont and Wandell calculation.
         optics = opticsHuman(pupilRadius,fLengthMeters);
         optics = opticsSet(optics,'model','shiftInvariant');
         optics = opticsSet(optics,'name','human-MW');
@@ -192,11 +187,12 @@ switch lower(opticsType)
         % Thibos measurements that for a pupil larger than that, and use
         % those to compute the pupil function for your passed diameter.
         %
-        % This is not representative of any particular observer, because
-        % the mean Zernike polynomials do not capture the phase
-        % information, and indeed positive and negative coefficients across
-        % observers will tend to cancel. So as you get serious about a modeling
-        % project, you will likely want to control this more directly.
+        % This is not representative of any particular observer,
+        % because the mean Zernike polynomials do not capture the
+        % phase information, and indeed positive and negative
+        % coefficients across observers will tend to cancel. So as you
+        % get serious about a modeling project, you will likely want
+        % to control this more directly.
         %
         % If you pass zCoefs, the routine assumes that they correspond to
         % the same measurement diameter as the requested pupil size.  This
@@ -260,8 +256,8 @@ switch lower(opticsType)
             'name', sprintf('human-%d', pupilDiameterMM), ...
             'umPerDegree', umPerDegree, ...
             'customLCA', customLCA);
-        wvfP = wvfSet(wvfP, 'measured pupil size', measPupilDiameterMM);
-        wvfP = wvfSet(wvfP, 'calc pupil size', pupilDiameterMM);
+        wvfP = wvfSet(wvfP, 'measured pupil diameter', measPupilDiameterMM);
+        wvfP = wvfSet(wvfP, 'calc pupil diameter', pupilDiameterMM);
 
         % Include human chromatic aberration because this is wvf human
         wvfP   = wvfCompute(wvfP, 'human lca', true);
@@ -326,148 +322,41 @@ optics.vignetting =    0;   % Pixel vignetting is off
 
 end
 
-%{
-%---------------------------------------
-function optics = opticsDiffraction
-% Deprecated
-% Std. diffraction-limited optics w/ 46 deg. fov & fNumber of 4.
-%
-% Copied over from ISETBio - this appears to be the same as the quarterinch
-% default here.  To check (BW)!  In which case, we should use this
-% one, I think.
-%
-% Syntax:
-%   optics = opticsDiffraction
-%
-% Description:
-%    Standard diffraction limited optics with a 46-deg field of view and
-%    fnumber of 4. Simple digital camera optics are like this.
-%
-% Inputs:
-%    None.
-%
-% Outputs:
-%    optics - Struct. The optics structure.
-%
-% Optional key/value pairs:
-%    None.
-%
-
-optics.type = 'optics';
-optics = opticsSet(optics, 'name', 'ideal (small)');
-optics = opticsSet(optics, 'model', 'diffraction limited');
-
-% Standard 1/4-inch sensor parameters
-sensorDiagonal = 0.004;
-FOV = 46;
-fLength = inv(tan(FOV / 180 * pi) / 2 / sensorDiagonal) / 2;
-
-optics = opticsSet(optics, 'fnumber', 4);  % focal length / diameter
-optics = opticsSet(optics, 'focalLength', fLength);
-optics = opticsSet(optics, 'otfMethod', 'dlmtf');
-
-end
-%}
 
 %---------------------------------------
 function optics = opticsDefault
-optics = opticsQuarterInch;
-end
+% Create diffraction limited optics from a wvf structure
 
-%---------------------------------------
-function optics = opticsQuarterInch
-% Standard optics have a 46-deg field of view degrees
+% optics.type = 'optics';
+% optics = opticsSet(optics,'name','standard (1/4-inch)');
+% optics = opticsSet(optics,'model','shiftinvariant');
 
-optics.type = 'optics';
-optics = opticsSet(optics,'name','standard (1/4-inch)');
-optics = opticsSet(optics,'model','diffractionLimited');
+wave = 400:10:700;
+wvf = wvfCreate('wave', wave);
 
 % Standard 1/4-inch sensor parameters
-sensorDiagonal = 0.004;
-FOV = 46;
-fLength = inv(tan(FOV/180*pi)/2/sensorDiagonal)/2;
+% sensorDiagonal = 0.004;
+% FOV = 46;
+fLength = 0.039; % inv(tan(FOV/180*pi)/2/sensorDiagonal)/2;
+fNumber = 4;
+pupilDiameterM = fLength/fNumber;
+wvf = wvfSet(wvf,'focal length',fLength);
 
-optics = opticsSet(optics,'fnumber',4);  % Ratio of focal length to diameter
-optics = opticsSet(optics,'focalLength', fLength);
-optics = opticsSet(optics,'otfMethod','dlmtf');
+% Annoying but necessary
+wvf = wvfSet(wvf,'measuredpupil diameter',pupilDiameterM*1e3);
+wvf = wvfSet(wvf,'calcpupil diameter',pupilDiameterM*1e3);
+wvf = wvfCompute(wvf);
+% optics = wvf2optics(wvf);
 
-end
+oi = wvf2oi(wvf);
+% optics = wvf2optics(wvf);
 
-%---------------------------------------
-function optics = opticsThirdInch
-% Standard 1/3-inch sensor has a diagonal of 6 mm
-%
-optics.type = 'optics';
-optics = opticsSet(optics,'name','standard (1/3-inch)');
-optics = opticsSet(optics,'model','diffractionLimited');
+optics = oiGet(oi,'optics');
 
-optics = opticsSet(optics,'fnumber',4);  % Ratio of focal length to diameter
-
-% Standard optics have a 46-deg field of view degrees
-FOV = 46;
-sensorDiagonal = 0.006;
-fLength = inv(tan(FOV/180*pi)/2/sensorDiagonal)/2;
-
-optics = opticsSet(optics,'focalLength', fLength);
-optics = opticsSet(optics,'otfMethod','dlmtf');
-
-end
-
-%---------------------------------------
-function optics = opticsHalfInch
-%
-
-optics.type = 'optics';
-optics = opticsSet(optics,'name','standard (1/2-inch)');
-optics = opticsSet(optics,'model','diffractionLimited');
-
-optics = opticsSet(optics,'fnumber',4);  % Ratio of focal length to diameter
-
-% Standard optics have a 46-deg field of view degrees
-FOV = 46;
-sensorDiagonal = 0.008;
-fLength = inv(tan(FOV/180*pi)/2/sensorDiagonal)/2;
-
-% Standard 1/2-inch sensor has a diagonal of 8 mm
-optics = opticsSet(optics,'focalLength', fLength);
-optics = opticsSet(optics,'otfMethod','dlmtf');
-
-end
-
-%---------------------------------------
-function optics = opticsTwoThirdInch
-%
-
-optics.type = 'optics';
-optics = opticsSet(optics,'name','standard (2/3-inch)');
-optics = opticsSet(optics,'model','diffractionLimited');
-
-FOV = 46;
-sensorDiagonal = 0.011;
-fLength = inv(tan(FOV/180*pi)/2/sensorDiagonal)/2;
-
-optics = opticsSet(optics,'fnumber',4);  % Ratio of focal length to diameter
-optics = opticsSet(optics,'focalLength', fLength);
-optics = opticsSet(optics,'otfMethod','dlmtf');
-
-end
-
-%---------------------------------------
-function optics = opticsOneInch
-% Standard 1-inch sensor has a diagonal of 16 mm
-
-optics.type = 'optics';
-optics = opticsSet(optics,'name','standard (1-inch)');
-optics = opticsSet(optics,'model','diffractionLimited');
-
-FOV = 46;
-sensorDiagonal = 0.016;
-fLength = inv(tan(FOV/180*pi)/2/sensorDiagonal)/2;
-
-optics = opticsSet(optics,'fnumber',4);  % Ratio of focal length to diameter
-optics = opticsSet(optics,'focalLength', fLength);
-optics = opticsSet(optics,'otfMethod','dlmtf');
-
+% optics = opticsSet(optics,'fnumber',4);  % Ratio of focal length to diameter
+% optics = opticsSet(optics,'focalLength', fLength);
+% optics = opticsSet(optics,'otfMethod','dlmtf');
+% 
 end
 
 %---------------------------------------

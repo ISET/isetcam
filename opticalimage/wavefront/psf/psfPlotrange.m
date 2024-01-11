@@ -1,8 +1,23 @@
 function psfPlotrange(fig,oi,thisWave)
-% Set the plot range of an oiPlot 'psf' figures
+% Set the plot range of a figure created by oiPlot 'psf'
 %
-% For example
-%   
+% Brief
+%   This helps see the details of the PSF.  It sets the axis limits to
+%   a multiple (2.5 times) of the Airy Disk size.  It only uses the
+%   fnumber from the oi.
+%
+% Synopsis
+%   psfPlotrange(fig,oi,thisWave)
+%
+% Inputs
+%   fig  - Figure handle to adjust
+%   oi   - Optical image
+%   thisWave - Which wavelength
+%
+% Optional key/val
+%
+% Outputs
+%  N/A
 %
 % See also
 %   airyDisk, v_opticsFlare, s_wvfDiffraction

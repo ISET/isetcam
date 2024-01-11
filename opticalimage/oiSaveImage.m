@@ -32,7 +32,10 @@ function fName = oiSaveImage(oi,fName)
   % Otherwise, the standard RGB with gam = 1.
   scene = sceneCreate; oi = oiCreate; oi = oiCompute(oi,scene);
   oiWindow(oi);
-  fName = oiSaveImage(oi,'deleteMe');   % PNG is appended
+  if (~exist(fullfile(isetRootPath,'local'),'dir'))
+      mkdir(fullfile(isetRootPath,'local'));
+  end
+  fName = oiSaveImage(oi,fullfile(isetRootPath,'local','deleteMe'));   % PNG is appended
   img = imread(fName); ieNewGraphWin; image(img);
   delete(fName);
 %}

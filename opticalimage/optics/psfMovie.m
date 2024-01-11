@@ -14,17 +14,7 @@ function psfMovie(optics,figNum,delay)
 % one wavelength first, and then the next wavelength. The horizontal axis
 % indicates the image height in microns.
 %
-% Example:
-%   oi = vcGetObject('oi'); optics = oiGet(oi,'optics');
-%   psfMovie(optics,1)
-%
-% This example loads, visualizes, rotates, and visualizes again.
-%   psfMovie;
-%
-%   vcImportObject('OPTICS');
-%   psfMovie([],1);
-%   optics = vcGetObject('optics');
-%   optics = rtPSFEdit(optics,0,1,2);
+% The source code contains examples.
 %
 % Copyright ImagEval, LLC, 2005
 
@@ -35,7 +25,9 @@ function psfMovie(optics,figNum,delay)
 %}
 %{
   optics = opticsCreate('diffraction limited');
+  psfMovie(optics,ieNewGraphWin,0.1);
 %}
+
 if ieNotDefined('optics'), optics = oiGet(vcGetObject('oi'), 'optics'); end
 if ieNotDefined('figNum'), figNum = ieNewGraphWin; end
 if ieNotDefined('delay'), delay = 0.2; end

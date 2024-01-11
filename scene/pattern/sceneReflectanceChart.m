@@ -44,6 +44,8 @@ function [scene, sSamples, reflectance, rcSize] = sceneReflectanceChart(sFiles,s
  sceneWindow(s);
 %}
 %{
+ s = sceneCreate('reflectance chart');
+ p = sceneGet(s,'chart parameters');
  s2 = sceneReflectanceChart(p.sFiles,p.sSamples,p.pSize,p.wave,p.grayFlag,p.sampling);
  sceneWindow(s2);
 %}

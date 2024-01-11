@@ -359,21 +359,24 @@ switch parm
         wvf.PUPILFUNCTION_STALE = true;
 
     case {'focallength','flength'}
-        % wvf = wvfSet(wvf,'focal length',17e-3);
+        % Default unit for focal length is millimeters
+        %
+        %   wvf = wvfSet(wvf,'focal length',17e-3,'m');
         %
         % When we convert the psf in angle units to spatial samples we may
         % need to know the focal length.  This is necessary, for example
         % to specific deg per mm on the film (imaging) surface. We use this
         % wvf parameter to convert from angle (the natural calculation
         % space of the phase aberrations) to spatial samples.
-        %
-        % BW: TODO
-        % Changing the focal length changes the microns per degree. We make
-        % the adjustment here.  Another problematic interaction.  BW's
-        % preference is to only allow a set of one or the other of the
-        % parameters, in all of these cases.
-        wvf.focallength = val;
-        umPerDeg = tand(1)*wvfGet(wvf,'focal length','um');
+        
+        unit = 'mm';
+        if ~isempty(varargin), unit = varargin{1}; end
+
+        % Convert units to microns, per below
+        val = (val/ieUnitScaleFactor(unit))*1e+6;
+
+        % Not sure whether tand(1) or 2*tand(0.5)
+        umPerDeg = 2*tand(0.5)*val;
         wvf = wvfSet(wvf,'um per degree',umPerDeg);
         wvf.PUPILFUNCTION_STALE = true;
 
@@ -456,8 +459,17 @@ switch parm
         % tand(1) = opp/adj (right triangle, point at the lens)
         %   adj = focal length, stored in mm
         %   opp = umPerDegree
-        wvf.focallength = (val*1e-6/tand(1));  % also, convert um to m
+        % wvf.focallength = (val*1e-6/tand(1));  % also, convert um to m
         wvf.PUPILFUNCTION_STALE = true;
+    
+        % case {'fnumber'}
+        %     % We adjust the fnumber by changing the pupil diameter, leaving the
+        %     % focal length unchanged. This differs from ISETCam, which has the
+        %     % fnumber and focal length as parameters and infers the pupil
+        %     % diameter.
+        %     disp('Setting fnumber by adjusting pupil diameter.  Focal length is fixed.')
+        %     fLength = wvfGet(wvf,'focal length','mm');
+        %     wvf     = wvfSet(wvf,'calc pupil diameter',fLength/val,'mm');
 
     case {'customlca'}
         wvf.customLCA = val;

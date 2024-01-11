@@ -98,14 +98,7 @@ function oi = oiCompute(oi,scene,varargin)
 % Use ieSessionSet('waitbar',0) to turn off waitbar displays
 % Use ieSessionSet('waitbar',1) to turn on waitbar displays
 %
-% Example
-%   oi = oiCompute(scene,oi);
-%
-%   oi = ieGetObject('oi'); scene = vcGetObject('scene');
-%   load siZemaxExample00
-%   optics = opticsSet(optics,'model','shiftinvariant');
-%   oi = oiSet(oi,'optics',optics);
-%   oi = oiCompute(scene,oi);
+% The source code contains examples.
 %
 % See also: 
 %   opticsDLCompute, opticsSICompute, opticsRayTrace
@@ -144,8 +137,14 @@ p.parse(oi,scene,varargin{:});
 
 if strcmp(oi.type,'wvf')
     % User sent in an wvf, not an oi.  We convert it to a shift invariant
-    % oi here.  The oi is returned.
-    oi = wvf2oi(oi);
+    % oi here whose wavelength matches the scene.  The oi is returned.
+    wvf = oi;
+    if ~isequal(wvfGet(wvf,'wave'),sceneGet(scene,'wave'))
+        warning('The wvf wavelengths should match the scene.  Recomputing');
+        wvf = wvfSet(wvf,'wave',sceneGet(scene,'wave'));
+        wvf = wvfCompute(wvf);
+    end
+    oi = wvf2oi(wvf);
 end
 
 % Ages ago, we some code flipped the order of scene and oi.  We think
@@ -191,6 +190,14 @@ end
 % We need to preserve metadata from the scene,
 % But not overwrite oi.metadata if it exists
 % We should probably rename this ieStructAppend
+if (~isfield(oi,'metadata'))
+    oi.metadata = struct;
+end
+
+% If the scene contains no metadata add an empty struct
+if (~isfield(scene,'metadata'))
+    scene.metadata = struct;
+end
 oi.metadata = appendStruct(oi.metadata, scene.metadata);
 
 end

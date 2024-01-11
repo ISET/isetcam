@@ -25,16 +25,18 @@ if ieNotDefined('spectralType'), spectralType = 'ep'; end
 if ieNotDefined('lineThickness'), lineThickness = 1; end
 
 scene = sceneSet(scene,'name','gridlines');
-
 scene = initDefaultSpectrum(scene,'hyperspectral');
 wave = sceneGet(scene,'wave');
 nWave = sceneGet(scene,'nwave');
 
+if (numel(sz) == 1)
+    sz(2) = sz(1);
+end
 d = zeros(sz);
 for ii=0:lineThickness-1
     % Insert number of lines according to thickness
-    d((round(lineSpacing/2):lineSpacing:sz) + ii, :) = 1; % Down a column
-    d(:, (round(lineSpacing/2):lineSpacing:sz) + ii) = 1; % Across a row
+    d((round(lineSpacing/2):lineSpacing:sz(1)) + ii, :) = 1; % Down a column
+    d(:, (round(lineSpacing/2):lineSpacing:sz(2)) + ii) = 1; % Across a row
 end
 
 % This is a lot more dynamic range than cameras can manage.  I suppose we

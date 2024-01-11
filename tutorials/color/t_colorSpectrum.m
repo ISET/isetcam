@@ -30,7 +30,7 @@ XYZ = ieReadSpectra('XYZ.mat',wavelength);
 
 % Let's suppose the spectral power distributions of your monitor's
 % phosphors are from the LCD-APple.
-d = displayCreate('LCD-Apple',wavelength);
+d = displayCreate('LCD-Apple','wave',wavelength);
 phosphors = displayGet(d,'spd');
 
 % Here is a plot of the phosphors

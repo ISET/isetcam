@@ -102,17 +102,21 @@ function val = ipGet(ip,param,varargin)
 %                              Returned in a cell array
 %     'L3'                - L3 structure.  Requires L3 repository.
 %
-% Examples:
-%
-%   ipGet  = vcGetObject('ip');
-%   center = ipGet(ipGet,'center')
-%   d2c    = ipGet(ipGet,'distance2Center'); figure; mesh(d2c)
-%
-%   ipGet(ipGet,'combined transform')
-%   ipGet(ipGet,'display')
-%   ipGet(ipGet,'display spd');
-%
 % Copyright ImagEval Consultants, LLC, 2005.
+
+% Examples:
+%{
+  camera = cameraCreate;
+  scene = sceneCreate;
+  camera = cameraCompute(camera,scene);
+  ip  = cameraGet(camera,'ip');
+  center = ipGet(ip,'center')
+  d2c    = ipGet(ip,'distance2Center'); 
+  ieNewGraphWin; mesh(d2c)
+  ipGet(ip,'combined transform')
+  ipGet(ip,'display')
+  spd = ipGet(ip,'display spd'); plotRadiance(ipGet(ip,'wave'),spd);
+%}
 
 %% Check parameters, deal with display syntax and also apply ieParamFormat
 
@@ -462,7 +466,7 @@ switch oType
                 % calculate the distance from the center
                 sz = ipGet(ip,'size');
                 if isempty(sz), return; end
-                val = (sz+1)/2;
+                val = (sz(1:2)+1)/2;
             case {'distance2center'}
                 % Distance from the image center in units of pixels
                 % val = ipGet(ip,'distance2center'); figure; surf(val)

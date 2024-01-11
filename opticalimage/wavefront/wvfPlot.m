@@ -104,9 +104,10 @@ p.addParameter('window',true,@(x)(islogical(x) || ...
     isa(x,'matlab.ui.Figure') || ...
     isa(x,'matlab.graphics.layout.TiledChartLayout')));
 
+pType  = ieParamFormat(pType);
+varargin = ieParamFormat(varargin);
 p.parse(wvfP,pType,varargin{:});
 
-pType  = ieParamFormat(pType);
 unit   = p.Results.unit;
 wave   = p.Results.wave;
 pRange = p.Results.plotrange;

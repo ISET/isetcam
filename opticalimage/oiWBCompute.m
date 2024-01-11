@@ -24,7 +24,7 @@ nWave = length(t);
 chdir(workDir);
 for ii=1:nWave
     load(t(ii).name);
-    oi = oiCompute(scene,oi);
+    oi = oiCompute(oi,scene);
     fname = sprintf('oi%.0d.mat',sceneGet(scene,'wave'));
     vcSaveObject(oi,fname);
 end

@@ -45,6 +45,10 @@ xlabel('Angle'); ylabel('Mired');
 identityLine;
 grid on;
 
+%%
+assert(abs(miredval(end) - 114.3814) < 1e-4);
+assert(abs(angval(end) - 25.0450) < 1e-4);
+
 %% Now fix the white point at d65
 
 % Standard
@@ -68,5 +72,9 @@ nexttile, plot(angval,miredval,'-o');
 xlabel('Angle'); ylabel('Mired');
 identityLine;
 grid on;
+
+%%
+assert(abs(miredval(end) - 12.0726) < 1e-4);
+assert(abs(angval(end) - 2.6800) < 1e-4);
 
 %% END

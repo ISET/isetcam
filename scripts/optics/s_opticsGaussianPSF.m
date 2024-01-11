@@ -45,7 +45,7 @@ optics = siSynthetic(psfType,oi,waveSpread,xyRatio);
 
 % Put optics back into oi and display "blurred" optical image
 oi = oiSet(oi,'optics',optics);
-oi = oiCompute(scene,oi);
+oi = oiCompute(oi,scene);
 ieAddObject(oi);
 oiWindow;
 

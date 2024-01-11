@@ -49,7 +49,7 @@ fprintf('Ray trace lens:     %s\n',oiGet(oi,'optics rt name'))  % Name of the le
 
 %% The oiCompute will call opticsRayTrace to do the computation
 
-oi = oiCompute(scene,oi);
+oi = oiCompute(oi,scene);
 
 % Make it easy to see the points
 sceneWindow; truesize

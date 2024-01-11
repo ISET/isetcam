@@ -78,7 +78,7 @@ sceneWindow(scene);
 rtFileName = vcSelectDataFile('stayput','r','mat',...
     'Select the RT Optics .mat file');
 oi = oiCreate('raytrace', rtFileName);
-oi = oiCompute(scene,oi);
+oi = oiCompute(oi,scene);
 oiWindow(oi);
 
 %% Try another scene
@@ -87,7 +87,7 @@ scene = sceneCreate('slanted edge',512);
 scene = sceneSet(scene,'fov',15);               % large FOV
 scene = sceneSet(scene,'distance',10000000);    % not very important
 % sceneWindow(scene);
-oi = oiCompute(scene,oi);
+oi = oiCompute(oi,scene);
 oiWindow(oi);
 %% End of Tutorial
 %

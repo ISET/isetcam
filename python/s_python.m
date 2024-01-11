@@ -1,7 +1,9 @@
 %% s_python
 %
-% We installed anaconda with its own installer for the Mac M1
-% (https://www.anaconda.com/).
+% We installed anaconda3 with its own installer for the Mac M1 on wandell's
+% office machine.
+%
+% https://www.anaconda.com/
 %
 % After installing anaconda3, it is in ~/opt/anaconda3 and the conda
 % command is available.
@@ -22,5 +24,10 @@
 %
 % Matlab accepted the python environment
 %
-% pe = pyenv('Version','/Users/wandell/opt/anaconda3/envs/py38/bin/python');
+%   pe = pyenv('Version','/Users/wandell/opt/anaconda3/envs/py38/bin/python');
+%
+%%
+% On wandell's Mac at home, which is an Intel machine, we did ...
+%
+%    NYI
 %

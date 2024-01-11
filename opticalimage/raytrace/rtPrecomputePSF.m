@@ -19,16 +19,24 @@ function svPSF = rtPrecomputePSF(oi, angStepSize, cPosition)
 % The angles represented are [0:angStepSize:360], to include both 0 and
 % 360, because that helps subsequent interpolation (see rtAngleLUT).
 %
-% Examples:
-%   psfStruct = rtPrecomputePSF;   % Default shift-variant psf struct
-%
-%   oi = vcGetObject('OI'); scene = vcGetObject('scene');
-%   oi = oiCompute(scene,oi);
-%   angStep = 10;     % Set angle step
-%   psfStruct = rtPrecomputePSF(oi,angStep);  % PSF is single precision
-%   oi = oiSet(oi,'psfStruct',psfStruct);
+% The source code contains examples.
 %
 % Copyright ImagEval, LLC, 2005
+
+% Examples:
+%
+%{
+  % ETTBSkip
+  %
+  % This function doesn't work because it requires that something
+  % be fetchable via scene = ieGetObject('scene');
+  % 
+  oi = oiCreate; scene = sceneCreate;
+  oi = oiCompute(oi,scene);
+  angStep = 10;     % Set angle step
+  psfStruct = rtPrecomputePSF(oi,angStep);  % PSF is single precision
+  oi = oiSet(oi,'psfStruct',psfStruct);
+%}
 
 if ieNotDefined('oi'), oi = vcGetObject('oi'); oiGet(oi,'name'), end
 if ieNotDefined('angStepSize'), angStepSize = 1; end    % Angular step size in deg

@@ -32,7 +32,7 @@ sceneWindow;
 
 %% Optical image
 oi = oiCreate;
-oi = oiCompute(scene,oi);
+oi = oiCompute(oi,scene);
 ieAddObject(oi);
 % oiWindow
 

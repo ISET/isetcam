@@ -65,30 +65,34 @@ function  [integrationTime,maxSignalVoltage,smallOI] = autoExposure(oi,sensor,le
 
 % Examples:
 %{
- scene = sceneCreate; oi = oiCreate; oi = oiCompute(oi,scene); oiWindow(oi);
- [~,rect] = ieROISelect(oi);
- sensor   = sensorCreate;
- sensor   = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'),oi);
- eTime  = autoExposure(oi,sensor,0.90,'weighted','center rect',rect);
- sensor = sensorSet(sensor,'exp time',eTime);
- sensor = sensorCompute(sensor,oi);
- sensorWindow(sensor);
- sensorPlot(sensor,'volts hline',[1, 155]);  % (x,y), not (row, col)
+scene = sceneCreate; oi = oiCreate; oi = oiCompute(oi,scene); 
+% oiWindow(oi);
+% ieROISelect(oi);
+rect = [50   35   28   19];
+sensor   = sensorCreate;
+sensor   = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'),oi);
+eTime  = autoExposure(oi,sensor,0.90,'weighted','center rect',rect);
+sensor = sensorSet(sensor,'exp time',eTime);
+sensor = sensorCompute(sensor,oi);
+% sensorWindow(sensor);
+sz = sensorGet(sensor,'size');
+sensorPlot(sensor,'volts hline',[1, sz(1)]);
 %}
 %{
- scene = sceneCreate; oi = oiCreate; oi = oiCompute(oi,scene);
- sensor   = sensorCreate;
- eTime  = autoExposure(oi,sensor,0.90,'video');
-
+scene = sceneCreate; oi = oiCreate; oi = oiCompute(oi,scene);
+sensor   = sensorCreate;
+eTime  = autoExposure(oi,sensor,0.90,'video');
 %}
 %{
- eTime  = autoExposure(oi,sensor,0.90,'video','center rect',rect,'video max',1/60);
- sensor = sensorSet(sensor,'exp time',eTime);
- sensor = sensorCompute(sensor,oi);
- sensorWindow(sensor);
- sensorPlot(sensor,'volts hline',[1, 155]);  % (x,y), not (row, col)
+scene  = sceneCreate; oi = oiCreate; oi = oiCompute(oi,scene);
+sensor = sensorCreate;
+rect = [50   35   28   19];
+eTime  = autoExposure(oi,sensor,0.90,'video','center rect',rect,'video max',1/60);
+sensor = sensorSet(sensor,'exp time',eTime);
+sensor = sensorCompute(sensor,oi);
+sz     = sensorGet(sensor,'size');
+sensorPlot(sensor,'volts hline',[1, sz(1)]);
 %}
-
 
 %% Parse arguments          
 
@@ -366,6 +370,7 @@ p.parse(oi,sensor,level,varargin{:});
 
 % This is the selected part of the OI.
 rect = p.Results.centerrect;
+if isa(rect,'images.roi.Rectangle'), rect = int32(rect.Position); end
 if isempty(rect), centerOI = oi;
 else, centerOI = oiCrop(oi,rect);
 end

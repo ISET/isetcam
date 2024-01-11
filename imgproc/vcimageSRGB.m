@@ -31,7 +31,7 @@ scene = sceneCreate(sceneName);
 
 oi = vcGetObject('oi');
 if isempty(oi), oi = oiCreate; end
-oi = oiCompute(scene,oi);
+oi = oiCompute(oi,scene);
 
 % Create an XYZ sensor, I guess.
 sensor = vcGetObject('isa');

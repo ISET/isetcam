@@ -33,7 +33,7 @@ function T = sensorDisplayTransform(sensor)
 %   a max value of 1.  But these images look a little dim to me.
 %
 % See also
-%   sensorData2Image, sensorDemosaic
+%   sensorData2Image
 %
 
 % We set the extrapVal to 0.2 because we may have infrared data

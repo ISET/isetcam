@@ -23,24 +23,27 @@ function [oi,sd,blurFilter] = oiDiffuser(oi,sd)
 % equal to the sample spacing of the optical image in microns,
 % oiGet(oi,'widthSpatialResolution','microns');
 %
-% Example
-%   oi = vcGetObject('oi');
-%   [oi,sd,blurFilter] = oiDiffuser(oi);
-%   name = oiGet(oi,'name');
-%   oi = oiSet(oi,'name',sprintf('%s-blur-%.0f',name,sd));
-%   ieAddObject(oi); oiWindow;
-%
-%   oi = oiCreate; scene = sceneCreate; scene = sceneSet(scene,'fov',1);
-%   oi = oiCompute(scene,oi);
-%   % SD units are FWHM microns,
-%   [oi,sd,blurFilter] = oiDiffuser(oi,[10,2]);
-%   [X,Y] = meshgrid(1:size(blurFilter,2),1:size(blurFilter,1));
-%   wSpatialRes = oiGet(oi,'widthSpatialResolution','microns');
-%   X = X*wSpatialRes;  Y = Y*wSpatialRes;
-%   X = X - mean(X(:)); Y = Y - mean(Y(:));
-%   figure(1); mesh(X,Y,blurFilter);
-%
 % Copyright ImagEval Consultants, LLC, 2005.
+
+% Examples:
+%{
+  sd = 4;
+  scene = sceneCreate; scene = sceneSet(scene,'fov',1);
+  oi = oiCreate('shiftinvariant');
+  oi = oiCompute(oi,scene);
+  [oi,sd,blurFilter] = oiDiffuser(oi,sd);
+  name = oiGet(oi,'name');
+  oi = oiSet(oi,'name',sprintf('%s-blur-%.0f',name,sd));
+  ieAddObject(oi); oiWindow;
+
+  % SD units are FWHM microns,
+  [oi,sd,blurFilter] = oiDiffuser(oi,[10,2]);
+  [X,Y] = meshgrid(1:size(blurFilter,2),1:size(blurFilter,1));
+  wSpatialRes = oiGet(oi,'widthSpatialResolution','microns');
+  X = X*wSpatialRes;  Y = Y*wSpatialRes;
+  X = X - mean(X(:)); Y = Y - mean(Y(:));
+  figure(1); mesh(X,Y,blurFilter);
+%}
 
 if ieNotDefined('oi'), oi = vcGetObject('oi'); end
 if ieNotDefined('sd')

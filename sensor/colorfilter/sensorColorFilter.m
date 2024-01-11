@@ -29,26 +29,22 @@ function [fData, wave] = sensorColorFilter(cfType, wave, varargin)
 %
 % Examples:
 %{
-% Gaussian type:
- cfType = 'gaussian';
- [fData,wave] = sensorColorFilter(cfType);
- vcNewGraphWin; plot(wave,fData)
+  % Gaussian type:
+  cfType = 'gaussian';
+  [fData,wave] = sensorColorFilter(cfType);
+  vcNewGraphWin; plot(wave,fData)
 %}
 %{
-% Block filter
- cfType = 'block';
- cPos = [400:50:700]; width = ones(size(cPos))*40;
- [fData,wave] = sensorColorFilter(cfType,wave,cPos,width);
- ieNewGraphWin; plot(wave,fData)
-%}
-%{
- wave = [400:10:700]; cPos = [500,600]; width = [40,40];
- fData = sensorColorFilter(cfType,wave, cPos, width);
- ieNewGraphWin; plot(wave,fData);
+  % Block filter
+  cfType = 'block';
+  wave = [400:10:700]; cPos = [500,600]; width = [40,40];
+  [fData,wave] = sensorColorFilter(cfType,wave,cPos,width);
+  ieNewGraphWin; plot(wave,fData)
 %}
 %{
   cfType = 'gaussian'; wave = [350:850];
-  cPos = 450:20:750; width = ones(size(cPos))*15;
+  wave = [400:10:700]; cPos = [500,600]; 
+  width = ones(size(cPos))*15;
   fData = sensorColorFilter(cfType,wave, cPos, width);
   ieNewGraphWin; plot(wave,fData)
 %}

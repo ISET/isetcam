@@ -35,13 +35,15 @@ function scene = sceneAdjustLuminance(scene,meanL,varargin)
 %}
 %{
   scene = sceneCreate;
+  rect = [0 0 100 100];
   scene = sceneAdjustLuminance(scene,'roi',200,rect);
 %}
 %{
-% For backwards compatibility, we still allow setting the mean level as
-% But not preferred
- scene = sceneAdjustLuminance(scene,100);
- sceneGet(scene,'mean luminance')
+  % For backwards compatibility, we still allow setting the mean level as
+  % follows, but not preferred usage.
+  scene = sceneCreate;
+  scene = sceneAdjustLuminance(scene,100);
+  sceneGet(scene,'mean luminance')
 %}
 
 %% Verify that current luminance exists, or calculate it

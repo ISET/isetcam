@@ -39,10 +39,9 @@ function [sensor,actualFOV] = sensorSetSizeToFOV(sensor,newFOV,oi)
 %  managed in the sensorSet/Get operations.  But human work should really be
 %  in ISETBio.
 %
-%
-% Examples:  ieExamplesPrint('sensorSetSizeToFOV');
-%
 % Copyright ImagEval Consultants, LLC, 2005.
+%
+% The source code contains examples.
 %
 % See also
 %   sensorSet, sensorAdjustIlluminant, sensorAdjustLuminance
@@ -50,18 +49,10 @@ function [sensor,actualFOV] = sensorSetSizeToFOV(sensor,newFOV,oi)
 % Examples:
 %{
  scene = sceneCreate; oi = oiCreate; sensor = sensorCreate;
-%}
-%{
  sensor = sensorSetSizeToFOV(sensor,1,oi);
-%}
-%{
-  sensor = sensorSetSizeToFOV(sensor,30,oi);
-%}
-%{
-  [sensor,fov] = sensorSetSizeToFOV(sensor,[3,1],oi);
-%}
-%{
-  [sensor, fov] = sensorSetSizeToFOV(sensor,[3,3],oi);
+ sensor = sensorSetSizeToFOV(sensor,30,oi);
+ [sensor,fov] = sensorSetSizeToFOV(sensor,[3,1],oi);
+ [sensor, fov] = sensorSetSizeToFOV(sensor,[3,3],oi);
 %}
 
 %% Parameters

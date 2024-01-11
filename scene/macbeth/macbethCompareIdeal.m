@@ -16,12 +16,14 @@ function [embRGB,mRGB,pSize] = macbethCompareIdeal(ip,mRGB,illType)
 
 % Examples:
 %{
-  scene = sceneCreate; oi = oiCreate; oi = oiCompute(oi,scene);
-  sensor = sensorCreate;
-  sensor = sensorSet(sensor,'fov',sceneGet(scene,'fov'),oi);
-  sensor = sensorCompute(sensor,oi);
-  ip = ipCreate; ip = ipCompute(ip,sensor);
-  [embRGB,mRGB,pSize] = macbethCompareIdeal(ip,[],'d65');
+% ETTBSkip
+% User selection required.
+scene = sceneCreate; oi = oiCreate; oi = oiCompute(oi,scene);
+sensor = sensorCreate;
+sensor = sensorSet(sensor,'fov',sceneGet(scene,'fov'),oi);
+sensor = sensorCompute(sensor,oi);
+ip = ipCreate; ip = ipCompute(ip,sensor); ipWindow(ip);
+[embRGB,mRGB,pSize] = macbethCompareIdeal(ip,[],'d65');
 %}
 
 %% Arguments

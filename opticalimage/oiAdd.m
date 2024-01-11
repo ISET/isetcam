@@ -29,7 +29,7 @@ function oiOut = oiAdd(in1,in2,addFlag)
 
 % Examples:
 %{
-  scenes{1} = sceneCreate('rings rays',[],[256 256]);
+  scenes{1} = sceneCreate('rings rays',[],256);
   hParms = harmonicP; hParms.row = 256; hParms.col = 256; hParms.freq = 4;
   scenes{2} = sceneCreate('harmonic',hParms);
   oi = oiCreate;

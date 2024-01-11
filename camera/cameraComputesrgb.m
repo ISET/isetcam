@@ -47,12 +47,18 @@ function [srgbResult, srgbIdeal, raw, camera] = ...
 % gives large images.  Be careful not to oversample the underlying scene by
 % having the sensor have a higher resolution than the scene itself.
 %
-% Example:
-%         load('basiccamera_Bayer.mat');
-%         sceneName = 'StuffedAnimals_tungsten-hdrs';
-%         meanLuminance = 100;
-%         [srgbResult,srgbIdeal] = cameraComputesrgb(camera,sceneName,meanLuminance);
+% The source code contains examples.
 
+% Examples:
+%{
+    % ETTBSkip
+    %
+    % This example fails because the load does not find the specied file.
+    load('basiccamera_Bayer.mat');
+    sceneName = 'StuffedAnimals_tungsten-hdrs';
+    meanLuminance = 100;
+    [srgbResult,srgbIdeal] = cameraComputesrgb(camera,sceneName,meanLuminance);
+%}
 
 %% Check inputs
 switch nargin

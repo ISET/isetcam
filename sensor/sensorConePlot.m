@@ -17,21 +17,22 @@ function [support, spread, delta] = sensorConePlot(sensor,support,spread,delta)
 % See also:  humanConeMosaic, conePlot, sensorCreateConeMosaic,
 %            sensorShowCFA, sensorCreate
 %
+
 % Examples:
-%
+%{
 % All filled up, old defaults
-%   sensor = sensorCreateConeMosaic(sensorCreate,[120,120],[.6 .3 .1]);
-%   sensorConePlot(sensor)
-%
-%   support = [7 7]; spread = 3; delta = .1;
-%   sensorConePlot(sensor,support,spread,delta)
-%
+   sensor = sensorCreateConeMosaic(sensorCreate,[120,120],[.6 .3 .1]);
+   sensorConePlot(sensor)
+
+   support = [7 7]; spread = 3; delta = .1;
+   sensorConePlot(sensor,support,spread,delta)
+%}
+%{
 % Some empty spots (black).  New imaging defaults.
-%   sensor = sensorCreateConeMosaic(sensorCreate,[120,120],[.1 .5 .3 .1]);
-%   support = [5 5]; spread = 2; delta = .2;
-%   sensorConePlot(sensor,support,spread,delta)
-%
-% Copyright ImagEval, 2010
+   sensor = sensorCreateConeMosaic(sensorCreate,[120,120],[.1 .5 .3 .1]);
+   support = [5 5]; spread = 2; delta = .2;
+   sensorConePlot(sensor,support,spread,delta)
+%}
 
 if ieNotDefined('support'), support = []; end
 if ieNotDefined('spread'), spread = []; end
@@ -44,8 +45,9 @@ coneType = sensorGet(sensor,'cone type');
 if isempty(xy)
     % A regular block array with human cones (rather than random mosaic).
     % Even so, we show the whole sensor CFA, as below for conePlot.
-    fullArray = 1;
-    sensorShowCFA(sensor,fullArray);
+    % fullArray = 1;
+    app = sensorWindow;
+    sensorShowCFA(sensor,app); % ,fullArray);
 else
     [support, spread, delta] = ieConePlot(xy, coneType, support, spread, delta);
 end

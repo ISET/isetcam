@@ -33,20 +33,7 @@ function val = oiGet(oi,parm,varargin)
 %       optics = oiGet(oi,'optics');
 %       val = opticsGet(optics,param1,param2);
 %
-% Examples:
-%    oi = oiCreate;
-%    oiGet(oi,'rows')
-%    oiGet(oi,'wave')
-%    oiGet(oi,'optics') - Use oiGet(oi,'optics property') to get optics
-%                         parameter
-%    oiGet(oi,'optics fnumber')
-%
-%    oiGet(oi,'area','mm')
-%    oiGet(oi,'width spatial resolution','microns')
-%    oiGet(oi,'angular resolution')
-%    oiGet(oi,'dist Per Samp','mm')
-%    oiGet(oi,'spatial support','microns');   % Meshgrid of zero-centered (x,y) values
-%    oiGet(oi,'photons',waveList);            % Photons at list of wavelengths
+%  The source file contains examples.
 %
 %  List of OI parameters
 %      {'name'}           - optical image name
@@ -158,9 +145,34 @@ function val = oiGet(oi,parm,varargin)
 
 % Examples:
 %{
-oi = oiCreate('wvf');
-oiGet(oi,'wvf number spatial samples')
-oiGet(oi,'wvf pupil diameter','m')
+   oi = oiCreate;
+   oi = oiSet(oi,'fov', 10);
+   oiGet(oi,'rows')
+   oiGet(oi,'wave')
+
+   % Use oiGet(oi,'optics') to get the optics object out.
+   % opticsGet and opticsSet can be use don that, and
+   % it can be put back in with oi = oiSet(oi,'optics',optics);
+   optics = oiGet(oi,'optics');
+   oi = oiSet(oi,'optics',optics);
+
+   % Some optics properties can be obtained directly with oiGet.
+   oiGet(oi,'optics fnumber')
+   oiGet(oi, 'optics otf data','mm',500);
+
+   % Compute oi for a scene and then get
+   oi = oiCompute(oi,sceneCreate);
+   oiGet(oi,'area','mm')
+   oiGet(oi,'width spatial resolution','microns')
+   oiGet(oi,'angular resolution')
+   oiGet(oi,'dist Per Samp','mm');
+   oiGet(oi,'spatial support','microns');             % Meshgrid of zero-centered (x,y) value
+   photons = oiGet(oi,'photons',[400 600]);           % Photons at list of wavelengths
+%}
+%{
+   [oi, wvf] = oiCreate('wvf'); oi = oiSet(oi,'wvf',wvf);
+   oiGet(oi,'wvf number spatial samples')
+   oiGet(oi,'wvf pupil diameter','m')
 %}
 
 val = [];
@@ -176,13 +188,63 @@ if ~exist('parm','var') || isempty(parm), error('Param must be defined.'); end
 
 switch oType
     case 'optics'
-        % If optics, then we either return the optics or an optics
-        % parameter.  I think we can handle the longer varargin by
-        % sending in varargin{:}, by the way.  Try 
-        % val =  opticsGet(optics,parm,varargin{:});
+        % If the first string is optics, we either return the optics or an optics
+        % parameter.  
         optics = oi.optics;
         if isempty(parm), val = optics;
-        else, val = opticsGet(optics,parm,varargin{:});
+        else
+            %{
+            % Original call, using dlMTF.  
+            optics = oi.optics;
+            if isempty(parm), val = optics;
+            else, val = opticsGet(optics,parm,varargin{:});
+            end
+            %}
+
+            % There is a special case for the OTF when we use dlMTF.
+            % See comment below.
+            switch(parm)
+                case {'otf','otfdata'}
+                    % In the diffraction limited case the fsupport comes
+                    % from an oiGet, so we need to send in the oi.  This is
+                    % bad and we should have fsupport available from the
+                    % optics itself. In general, this is not the case.  It
+                    % would be best if we could make the opticsGet()
+                    % retrieve fsupport without using the oi.  And maybe it
+                    % does because there is a dlfsupport get in there.
+                    if ~checkfields(optics,'OTF','OTF')
+                        % DHB: 1/9/24 - Having the varargin{:} tacked on here as a
+                        % fourth argument here caused an error.  So I took it
+                        % out.  But I am not sure whether there are cases
+                        % where we want the varargin{:} to get passed along.
+                        % The varargin seemed to have the oi in it in the
+                        % case I was looking at. But the comment above suggests
+                        % it is important to pass in the oi explicitly in
+                        % the diffraction limited case, so I was worried
+                        % about just using the call that is used for the
+                        % other cases.
+                        % 
+                        % It was the third example in opticsGet that caused me to 
+                        % make this change.
+                        %{
+                            scene = sceneCreate; oi = oiCreate('diffraction limited'); 
+                            oi = oiCompute(oi,scene); optics = oiGet(oi,'optics');
+                            otf = oiGet(oi,'optics otf data',oi);
+                            otf = opticsGet(optics,'otf data',oi);
+                            otfSupport = oiGet(oi,'fsupport','mm');  % Cycles/mm
+                            ieNewGraphWin; mesh(otfSupport(:,:,1),otfSupport(:,:,2),fftshift(abs(otf(:,:,10))));
+                        %}
+                        %
+                        %  val = opticsGet(optics,parm,oi,varargin{:});
+                        val = opticsGet(optics,parm,oi);  
+                    else
+                        val = opticsGet(optics,parm,varargin{:});
+                    end
+            
+                otherwise
+                    % All other gets.
+                    val = opticsGet(optics,parm,varargin{:});
+            end
         end
 
         %{
@@ -301,8 +363,9 @@ switch oType
                 % set the new logic. Value was 5.  This was in response to
                 % an observation by Zhenyi.
                 if isequal(parm,'distance')
-                    warning('Returning lens to sensor distance.');
+                    warning('Returning lens to sensor focal distance given the scene depth.');
                 end
+
                 % The focal plane depends on the scene distance.  If there
                 % is no scene, we check the depth map.  If there is no
                 % depth map we assume very far away.
@@ -323,7 +386,7 @@ switch oType
                         % fprintf('Assuming scene at infinity.\n');
                         %sDist = 1e10;
 
-                        % Tru to get the validation to work by forcing
+                        % Try to get the validation to work by forcing
                         % this to match what isetbio does for the
                         % validation.
                         sDist = 1.2;
@@ -770,7 +833,7 @@ switch oType
                 if isempty(varargin), units = 'cyclesPerDegree';
                 else, units = varargin{1};
                 end
-                val = oiFrequencySupport(oi,units);
+                val = oiFrequencyResolution(oi,units);
             case {'maxfrequencyresolution','maxfreqres'}
                 % Default is cycles/deg.  By using
                 % oiGet(oi,'maxfreqres',units) you can get cycles/{meters,mm,microns}
@@ -778,9 +841,9 @@ switch oType
                 if isempty(varargin), units = 'cyclesPerDegree';
                 else, units = varargin{1};
                 end
-                % val = oiFrequencySupport(oi,units);
+                % val = oiFrequencyResolution(oi,units);
                 if isempty(varargin), units = []; end
-                fR = oiGet(oi,'frequencyResolution',units);
+                fR = oiGet(oi,'frequency resolution',units);
                 val = max(max(fR.fx),max(fR.fy));
             case {'frequencysupport','fsupportxy','fsupport2d','fsupport'}
                 % val = oiGet(oi,'frequency support',units);

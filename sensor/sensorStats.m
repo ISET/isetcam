@@ -1,20 +1,20 @@
-function [uData, sensor, theRect] = sensorStats(sensor,statType,unitType,quiet)
+function [uData, sensor] = sensorStats(sensor,statType,unitType,roi,quiet)
 % Calculate sensor statistics within a region of interest selected by user
 %
 % Syntax
-%    [stats, sensor, theRect] = sensorStats(sensor,[statType],[unitType],[quiet])
+%    [stats, sensor] = sensorStats(sensor,[statType],[unitType],[quiet])
 %
 % Inputs
 %    sensor:     A sensor it may contain an roi field of Nx2 matrix
 %                locations or a rect
 %    statType:   'basic'
 %    unitType:   'volts' or 'electrons'
-%    quiet:       Do not draw rect if true
+%    roi:        rect
+%    quiet:      Do not draw rect in sensorWindow
 %
 % Returns:
 %    stats:   Struct with the statistics
 %    sensor:  The sensor is returned with the ROI added to it
-%    theRect: Graphics object of the rect on the sensor window
 %
 % Description
 %   Return some summary statistics from the sensor.  Only basic statistics,
@@ -32,28 +32,29 @@ function [uData, sensor, theRect] = sensorStats(sensor,statType,unitType,quiet)
 
 % Examples:
 %{
-  [stats, sensor, theRect] = sensorStats;
-  theRect.LineStyle = ':';
-  delete(theRect);
+scene = sceneCreate; oi = oiCreate; oi = oiCompute(oi,scene);
+sensor = sensorCreate; sensor = sensorCompute(sensor,oi);
+roi = [30 30 15 15];
+quiet = true;
+stats = sensorStats(sensor,'mean','volts',roi,quiet);
+disp(stats)
 %}
 %{
-  % Suppress showing the rect
-  quiet = true;
-  stats = sensorStats(sensor,'','',quiet);
+% Suppress showing the rect
+scene = sceneCreate; oi = oiCreate; oi = oiCompute(oi,scene);
+sensor = sensorCreate; sensor = sensorCompute(sensor,oi);
+roi = [30 30 15 15];
+quiet = true;
+stats = sensorStats(sensor,'','',roi,quiet);
 %}
-%{
-  % Refresh the sensor window to delete the rect
-  stats = sensorStats(sensor.roi);
-%}
-%{
-  sensorStats(sensor,'mean');
-%}
+
 
 %% Parse inputs
 if ieNotDefined('sensor'),    error('Sensor must be provided.'); end
 if ieNotDefined('quiet'),     quiet = false; end
 if ieNotDefined('statType'),  statType = 'basic'; end
 if ieNotDefined('unitType'),  unitType = 'volts'; end
+if ieNotDefined('roi'),       roi = []; end
 
 assert(isstruct(sensor) && isfield(sensor,'type') ...
     && isequal(sensor.type,'sensor'));
@@ -62,9 +63,12 @@ nSensors = sensorGet(sensor,'nsensors');
 
 % We use the sensor.roi if it is there.  If it is empty, we have the user
 % select.
-if isempty(sensorGet(sensor,'roi'))
+if isempty(roi) && isempty(sensorGet(sensor,'roi'))
     [~,roiRectangle] = ieROISelect(sensor);
     sensor = sensorSet(sensor,'roi',round(roiRectangle.Position));
+elseif ~isempty(roi) && isempty(sensorGet(sensor,'roi'))
+    % User sent in roi, but it is not part of the sensor yet
+    sensor = sensorSet(sensor,'roi',roi);
 end
 
 %% Get proper data type.  NaNs are still in there

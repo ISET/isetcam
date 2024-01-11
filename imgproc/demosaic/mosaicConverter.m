@@ -20,16 +20,18 @@ function [bayer_out, outBayerPattern] = mosaicConverter(bayer_in, inBayerPattern
 % know that it would be possible to simply crop the data, changing the
 % array size.  (Yes, maybe that should be an option.)
 %
-% Example:
-%    oi = oiCompute(sceneCreate,oiCreate);
-%    sensor = sensorCompute(sensorCreate,oi);
-%    bayer_in = sensorGet(sensor,'volts');
-%    cfaPattern = sensorGet(sensor,'cfa pattern');
-%    letters = sensorGet(sensor,'filter Color Letters');
-%    inPattern = letters(cfaPattern)'; inPattern = inPattern(:)'; outPattern = 'rggb';
-%    bayer_out = mosaicConverter(bayer_in,inPattern, outPattern);
-%
 % Copyright ImagEval Consultants, LLC, 2005.
+
+% Examples:
+%{
+   oi = oiCompute(oiCreate,sceneCreate);
+   sensor = sensorCompute(sensorCreate,oi);
+   bayer_in = sensorGet(sensor,'volts');
+   cfaPattern = sensorGet(sensor,'cfa pattern');
+   letters = sensorGet(sensor,'filter Color Letters');
+   inPattern = letters(cfaPattern)'; inPattern = inPattern(:)'; outPattern = 'rggb';
+   bayer_out = mosaicConverter(bayer_in,inPattern, outPattern);
+%}
 
 if ieNotDefined('bayer_in'), error('Bayer mosaic required'); end
 if ieNotDefined('inBayerPattern'), error('Original Bayer pattern string required');end

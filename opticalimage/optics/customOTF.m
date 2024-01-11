@@ -1,5 +1,5 @@
 function [OTF2D, fSupport] = customOTF(oi,fSupport,wavelength,units)
-%Interpolate optics OTF for shift-invariant calculation in optical image
+% Interpolate optics OTF for shift-invariant calculation in optical image
 %
 % Brief
 %  This routine returns appropriate spectral OTF given the spatial
@@ -62,13 +62,21 @@ nWave = length(wavelength);
 
 optics     = oiGet(oi,'optics');
 
+% This OTF is a property of the optics and we represent it when we
+% create the original OI.  The frequency sampling may or may not match
+% the frequency sampling we need for the current oi.
+%
 % The OTF default units are cycles per millimeter.  But we can use
 % other units if specified by the user.
 otfSupport = opticsGet(optics,'otfSupport',units);
 [X,Y]      = meshgrid(otfSupport.fy,otfSupport.fx);
 
-% Find the OTF at each wavelength. This may require interpolating the
-% Stored data.
+% Find the OTF at each wavelength. 
+% 
+% This may require interpolating the optics data to match the current
+% OI.  The interpolation method can have significant consequences for
+% the result when we are working with very high dynamic range scenes.
+% (ZL, BW, 12/2023).
 if length(wavelength) == 1
 
     OTF2D = opticsGet(optics,'otfData',wavelength);
@@ -85,15 +93,24 @@ if length(wavelength) == 1
     % the spatial frequencies, fx and fy, that are required given the
     % spatial sampling of the optical image.
     %
+    % BW:  Can't this also be fftshift?  Like below?
     OTF2D    = ifftshift(interp2(X, Y, fftshift(OTF2D), fx, fy, 'linear',0));
     
-else
+else    
     % Same as above, but wavelength by wavelength
     OTF2D = zeros(nY,nX,nWave);
     for ii=1:length(wavelength)
         tmp = opticsGet(optics,'otfData',wavelength(ii));
+        %  ieNewGraphWin; mesh(X,Y,fftshift(abs(tmp)));
+        %  ieNewGraphWin; mesh(abs(fft2(tmp)));
+        % fftshift(interp2(X, Y, fftshift(tmp), fx, fy, 'linear',0));
         OTF2D(:,:,ii) = ...
             fftshift(interp2(X, Y, fftshift(tmp), fx, fy, 'linear',0));
+        %{
+          ieNewGraphWin; 
+          mesh(fx,fy,fftshift(abs(OTF2D(:,:,ii))));  
+          set(gca,'xlim',[-1000 1000],'ylim',[-1000 1000]);
+        %}
     end
 end
 

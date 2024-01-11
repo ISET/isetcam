@@ -14,7 +14,7 @@
 
 % List the reflectance files
 reflDirCollect = {fullfile(isetRootPath,'data','surfaces','reflectances'),...
-                  fullfile(isetRootPath, 'data', 'surfaces', 'reflectances', 'esser', 'reflectance')};
+                  fullfile(isetRootPath, 'data', 'surfaces', 'charts', 'esser', 'reflectance')};
 rFilenames = {};
 for kk=1:numel(reflDirCollect)              
     chdir(reflDirCollect{kk})
@@ -87,7 +87,9 @@ ylabel('Reflectance');
 legend({'1','2','3'},'Location','best');
 
 %%  Save them out in a data file
-fname = fullfile(isetRootPath,'data','surfaces','reflectances', 'basis', 'reflectanceBasis.mat');
+disp('Uncomment at end of file to save.')
+%{
+fname = fullfile(isetRootPath,'data','surfaces','reflectanceBasis.mat');
 ieSaveSpectralFile(wave,Basis,'Surface reflectance basis functions from s_reflectanceBasis',fname);
-
+%}
 %% END

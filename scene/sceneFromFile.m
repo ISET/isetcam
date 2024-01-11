@@ -69,15 +69,13 @@ function scene = sceneFromFile(inputData, imType, meanLuminance, dispCal, ...
 %   vcSelectImage, ieImageType
 
 % Examples:
-%
 %{
-   scene = sceneFromFile;
-   sceneWindow(scene);
-%}
-%{
+   % ETTBSkip
+   % Requires user input, don't autorun
+   thisDisplay = displayCreate;
    imgType = 'rgb'; meanLuminance = 10;
    fullFileName = vcSelectImage;
-   scene = sceneFromFile(fullFileName,imgType,meanLuminance);
+   scene = sceneFromFile(fullFileName,imgType,meanLuminance,thisDisplay);
    sceneWindow(scene);
 %}
 %{
@@ -103,8 +101,6 @@ function scene = sceneFromFile(inputData, imType, meanLuminance, dispCal, ...
   img = floor(ieScale(img,0,255));
   scene = sceneFromFile(img,'monochrome',meanLuminance,thisDisplay,600);
   sceneWindow(scene);
-%}
-%{
 %}
 
 %% Parameter set up

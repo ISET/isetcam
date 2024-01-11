@@ -31,7 +31,7 @@ fov = 8; scene  = sceneSet(scene,'fov',fov);
 oi     = oiCreate;
 oi     = oiSet(oi,'Diffuser Method','blur');
 oi     = oiSet(oi,'Diffuser blur',1.5e-6);
-oi     = oiCompute(scene,oi);
+oi     = oiCompute(oi,scene);
 
 %%
 sensor = sensorCreate;

@@ -56,7 +56,7 @@ sensor = sensorSet(sensor,'size',[128 128]);
 darkScene = sceneSet(darkScene,'fov',sensorGet(sensor,'fov')*1.5);
 
 % Compute optical image
-darkOI = oiCompute(darkScene,oi);
+darkOI = oiCompute(oi,darkScene);
 
 % Set up sensor parameters
 sensor = sensorSet(sensor,'DSNU level',dsnuLevel);

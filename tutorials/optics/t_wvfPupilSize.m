@@ -38,15 +38,15 @@ zCoefs = wvfLoadThibosVirtualEyes(measPupilMM);
 
 % Create the wvf parameter structure with the appropriate values
 wave = 520';
-wvfP = wvfCreate('wave',wave,'zcoeffs',zCoefs,'name',sprintf('%d-pupil',pupilMM));
-wvfP = wvfSet(wvfP,'measured pupil diameter',pupilMM);
+wvfP = wvfCreate('wave',wave,'zcoeffs',zCoefs,'name',sprintf('%d-pupil',measPupilMM));
+wvfP = wvfCompute(wvfP,'human lca',true);
+wvfP = wvfSet(wvfP,'measured pupil diameter',measPupilMM);
 
 %% Calculate the effect of varying the pupil diameter
-
 cPupil = [2,4,7];
-for ii=1:sum(cPupil<=pupilMM)
+for ii=1:sum(cPupil<=measPupilMM)
     wvfP = wvfSet(wvfP,'calc pupil diameter',cPupil(ii));
-    wvfP = wvfCompute(wvfP);
+    wvfP = wvfCompute(wvfP,'human lca',true);
     wvfPlot(wvfP,'psf','unit','um','wave',wave,'plot range',20);
     title(sprintf('pupil diameter %.1f mm',cPupil(ii)));
 end
@@ -72,8 +72,8 @@ measPupilMM = 7.5;
 calcPupilMM = [2, 3, 4, 5, 6, 7];
 for ii = 1:sum(calcPupilMM <= measPupilMM)
     wvfP = wvfSet(wvfP, 'calc pupil size', calcPupilMM(ii));
-    wvfP = wvfCompute(wvfP);
-    wvfPlot(wvfP, '2dpsfspace', 'unit','um', 'wave', 550, 'plot range', 20);
+    wvfP = wvfCompute(wvfP,'human lca',true);
+    wvfPlot(wvfP, 'psf', 'unit','um', 'wave', 550, 'plot range', 20);
     title(sprintf(strcat("Measured pupil diameter %0.1f mm, ", ...
         "calculated pupil diameter %.1f mm"), measPupilMM, ...
         calcPupilMM(ii)));
@@ -110,7 +110,7 @@ for ii = 1:sum(measPupilMM >= calcPupilMM)
         'measured pupil size', measPupilMM(ii), ...
         'calc pupil size', calcPupilMM, ...
         'name', sprintf('%d-pupil', measPupilMM(ii)));
-    wvfP = wvfCompute(wvfP);
+    wvfP = wvfCompute(wvfP,'human lca',true);
     psf{ii} = wvfGet(wvfP, 'psf');
     if (ii > 1)
         maxAbsDiff = max(abs(psf{1}{index550}(:) - psf{ii}{index550}(:)));

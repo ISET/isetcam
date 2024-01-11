@@ -9,21 +9,24 @@ function ri = rtRIInterp(optics,wavelength)
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 %
+% The source code contains examples
+%
 % See also:  rtGeometry
 
 % Examples:
 %{
-oi = oiCreate('raytrace');
-relillum = oiGet(oi,'optics rtrifunction');
-wave = oiGet(oi,'optics rtriwavelength')
-% Function is: relillum(fieldHeight,wave)
-assert(length(wave) == size(relillum,2));  % Wave is 2nd dim
+    oi = oiCreate('raytrace');
+    relillum = oiGet(oi,'optics rtrifunction');
+    wave = oiGet(oi,'optics rtriwavelength')
+
+    % Function is: relillum(fieldHeight,wave)
+    assert(length(wave) == size(relillum,2));  % Wave is 2nd dim
+    
+    % Plot the curve
+    % surf is (X,Y,Z)
+    rtPlot(oi,'relative illumination');
 %}
-%{
-% Plot the curve
-% surf is (X,Y,Z)
-rtPlot(oi,'relative illumination');
-%}
+
 
 %% Retrieve the relative illumination data at this wavelength
 

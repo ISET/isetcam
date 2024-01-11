@@ -56,7 +56,7 @@ nikon = sensorSet(nikon,'color filters',ieReadSpectra('NikonD70',wave));
 nikon = sensorSetSizeToFOV(nikon,sceneGet(scene,'fov'),oi);
 
 %% Display the scene over a range of blackbody illuminants
-bbodyList = (3000:1000:8500);
+bbodyList = (3000:1500:7500);
 nIlluminant = length(bbodyList);
 oIP = ipCreate;
 

@@ -1,7 +1,7 @@
 %% s_humanLSF
 %
 % Calculations illustrating the the human line spread function and
-% OTF.
+% OTF.  Requires ISETBio on the path to access the Lens object.
 %
 % First for the Marimont and Wandell model
 % Second for the wvf human model based on the Thibos' average subject.
@@ -9,14 +9,8 @@
 %
 % The largest effects are caused by chromatic aberration.
 %
-% Copyright ImagEval Consultants, LLC, 2010.
-%
-% Requires ISETBio on the path
-
-if ~exist('isetbioRootPath','file')
-    warning('Requires ISETbio.  Skipping.')
-    return;
-end
+% See also
+%  humanOTF, ijspeert
 
 %%
 ieInit

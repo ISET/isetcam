@@ -52,7 +52,7 @@ oi = oiSet(oi,'optics',optics');
 
 % Now, compute the optical image from this scene and the current optical
 % image properties
-oi = oiCompute(scene,oi);
+oi = oiCompute(oi,scene);
 
 %%  Create a default monochrome image sensor array
 sensorM = sensorCreate('monochrome');   % Monocrhome sensor

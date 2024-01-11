@@ -18,7 +18,7 @@ ieAddObject(scene); sceneWindow
 
 % Optical image
 oi = oiCreate;
-oi = oiCompute(scene,oi);
+oi = oiCompute(oi,scene);
 ieAddObject(oi); oiWindow
 
 %% Set the sensor noise properties

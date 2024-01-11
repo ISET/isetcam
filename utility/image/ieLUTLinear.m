@@ -32,12 +32,11 @@ function DAC = ieLUTLinear(RGB, gTable)
 
 % Examples:
 %{
-%  Not sure what this shows.  d.gamma is a gamma table.
-%  Maybe this shows it is close to a power function?
-   d = displayCreate;
-   rgb = rand(10,10,3);
-   foo = ieLUTLinear(rgb, d.gamma.^(1/2.2));
-   ieNewGraphWin; plot(foo(:),rgb(:),'.')
+    d = displayCreate('LCD-Apple');
+    rgb = rand(10, 10, 3);
+    foo = ieLUTLinear(rgb, displayGet(d, 'inverse gamma'));
+    vcNewGraphWin;
+    plot(foo(:), rgb(:), '.')
 %}
 
 if (nargin==1), gTable = 2.2; end

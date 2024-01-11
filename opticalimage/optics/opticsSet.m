@@ -23,12 +23,10 @@ function optics = opticsSet(optics,parm,val,varargin)
 %      oi = oiSet(oi,'optics <param>',val), generally
 %      oi = oiSet(oi,'optics fnumber',5.6), for an example
 %
-%Example:spec
-%   optics = opticsSet(optics,'fnumber',2.8);
-%   optics = opticsSet(optics,'model','diffractionLimited');
-%
 % To set the aperture you must change either the focal length or the
 % f# = fL/aperture, so aperture = fL/f#
+%
+% The source code contains runable examples.
 %
 % Optics parameters that can be set:
 %
@@ -103,6 +101,12 @@ function optics = opticsSet(optics,parm,val,varargin)
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
+% Examples:
+%{
+  optics = opticsCreate;
+  optics = opticsSet(optics,'fnumber',2.8);
+  optics = opticsSet(optics,'model','diffractionLimited');
+%}
 
 if ~exist('optics','var') || isempty(optics),  error('No optics specified.'); end
 if ~exist('parm','var') || isempty(parm),      error('No parameter specified.'); end
@@ -129,12 +133,25 @@ switch parm
         % transmittance and optics model. For now, we just cram it in
         % here and hope for the best (BW).
         optics.lens = val;
+        if isfield(optics,'transmittance')
+            warning('Adding lens and removing the transmittance slot.')
+            optics = rmfield(optics,'transmittance');
+        end
 
     case {'fnumber','f#'}
         optics.fNumber = val;
     case {'focallength','flength'}
         optics.focalLength = val;
-
+    case {'zcoeffs','zernikecoefficients'}
+        % We store the zernike polynomial coefficients to compute the
+        % OTF on the fly.
+        error('Not allowed until we implement on the fly wvf');
+        % optics.zCoeffs = val;
+    case {'zcoeffsdiameter'}
+        % This is the diameter (in millimeters) of the circle for the
+        % Zernike polynomial coefficients
+        error('Not allowed until we implement on the fly wvf');
+        % optics.zDiameterMM = val;
     case {'transmittance','transmittancescale'}
         % opticsSet(optics,'transmittance scale',scaleValues);
         %

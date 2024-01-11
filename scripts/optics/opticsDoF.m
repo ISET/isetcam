@@ -52,6 +52,9 @@ xlabel('F/#'); ylabel('DOF (m)');
 title(sprintf('Object at %.1f m',oDist));
 %}
 
+% Prevent this function from being autorun as a script
+% UTTBSkip
+
 % Here is the formula from Wikipedia
 if ieNotDefined('optics'), error('Optics must be defined'); end
 if ieNotDefined('oDist'), error('Object distance in meters required.'); end  % Two microns by default.

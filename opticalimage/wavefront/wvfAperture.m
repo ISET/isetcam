@@ -1,5 +1,5 @@
 function [im, params] = wvfAperture(wvf, varargin)
-% Create a synthetic aperture 
+% Create a synthetic aperture
 %
 % Synopsis
 %   [im, params] = wvfAperture(wvf, varargin)
@@ -25,7 +25,7 @@ function [im, params] = wvfAperture(wvf, varargin)
 %   dot sd
 %   dot opacity
 %   dot radius
-%   
+%
 %   n sides - Number of aperture sides
 %
 % Output
@@ -40,25 +40,25 @@ function [im, params] = wvfAperture(wvf, varargin)
 
 % Examples:
 %{
-wvf = wvfCreate;
-im = wvfPupilAmplitude(wvf); % Default with some scratches and dust.
-ieNewGraphWin; imagesc(im); colormap(gray); axis image
+    wvf = wvfCreate;
+    im = wvfAperture(wvf); % Default with some scratches and dust.
+    ieNewGraphWin; imagesc(im); colormap(gray); axis image
 %}
 %{
-% Diffraction limited, circular (no scratches or dust)
-wvf = wvfCreate;
-im = wvfPupilAmplitude(wvf,'dot mean',0,'dot sd',0,'line mean',0,'line sd',0); 
-ieNewGraphWin; imagesc(im); colormap(gray); axis image
+    % Diffraction limited, circular (no scratches or dust)
+    wvf = wvfCreate;
+    im = wvfAperture(wvf,'dot mean',0,'dot sd',0,'line mean',0,'line sd',0); 
+    ieNewGraphWin; imagesc(im); colormap(gray); axis image
 %}
 %{
-wvf = wvfCreate;
-im = wvfPupilAmplitude(wvf,'segment length',100); % Default
-ieNewGraphWin; imagesc(im); colormap(gray); axis image
+    wvf = wvfCreate;
+    im = wvfAperture(wvf,'segment length',100); % Default
+    ieNewGraphWin; imagesc(im); colormap(gray); axis image
 %}
 %{
-wvf = wvfCreate;
-[im,params] = wvfPupilAmplitude(wvf,'n sides',8); 
-ieNewGraphWin; imagesc(im); colormap(gray); axis image
+    wvf = wvfCreate;
+    [im,params] = wvfAperture(wvf,'n sides',8); 
+    ieNewGraphWin; imagesc(im); colormap(gray); axis image
 %}
 
 %% Inputs
@@ -80,7 +80,9 @@ p.addParameter('linewidth',2,@isnumeric);
 
 p.addParameter('segmentlength',600,@isnumeric);
 
-p.addParameter('nsides',0, @(x)(isnumeric(x) && (x > 2)));
+p.addParameter('texfile',[]);
+
+p.addParameter('nsides',0, @(x)(isnumeric(x) && (x > 2 || x <= 0)));
 
 p.parse(wvf,varargin{:});
 dotMean     = p.Results.dotmean;
@@ -94,63 +96,80 @@ lineWidth      = p.Results.linewidth;
 segmentLength  = p.Results.segmentlength;
 nSides         = p.Results.nsides;
 
+texFile = p.Results.texfile;
+
 % Adjust
 imageSize = wvfGet(wvf, 'spatial samples');
 im = ones([imageSize,imageSize], 'single');
 
+if isempty(texFile)
+    if isempty(dotRadius), dotRadius = round(imageSize/200); end
+    %% Add dots (circles), simulating dust.
 
-if isempty(dotRadius), dotRadius = round(imageSize/200); end
+    % We should do more to control the random variable
+    num_dots = randn(1,1)*dotSD + dotMean;
+    num_dots = round(num_dots);
 
-%% Add dots (circles), simulating dust.
+    % Make circles, but limit their size.
+    % BW: Not sure why we don't just clip.
+    max_radius = dotRadius*5;
+    for i = 1:num_dots
+        radius = max(round(dotRadius + rand*5),0);
+        radius = min(radius,max_radius);
+        circle_xyr = rand(1, 3, 'single') .* [imageSize, imageSize, radius];
+        opacity = dotOpacity + (rand * 0.5);
+        opacity = min(opacity,1);
 
-% We should do more to control the random variable
-num_dots = randn(1,1)*dotSD + dotMean;
-num_dots = round(num_dots);
+        % Computer vision toolbox
+        im = insertShape(im, 'FilledCircle', circle_xyr, 'Color', 'black', ...
+            'Opacity', opacity);
+    end
 
-% Make circles, but limit their size.  
-% BW: Not sure why we don't just clip.
-max_radius = dotRadius*5;
-for i = 1:num_dots
-    radius = max(round(dotRadius + rand*5),0);
-    radius = min(radius,max_radius);
-    circle_xyr = rand(1, 3, 'single') .* [imageSize, imageSize, radius];
-    opacity = dotOpacity + (rand * 0.5);
-    opacity = min(opacity,1);
+    %% Add polylines, simulating scratches.
 
-    % Computer vision toolbox
-    im = insertShape(im, 'FilledCircle', circle_xyr, 'Color', 'black', ...
-        'Opacity', opacity);
+    num_lines = randn(1,1)*lineSD + lineMean;
+    num_lines = round(num_lines);
+
+    % max_width = max(0, round(5 + randn * 5));
+    for i = 1:num_lines
+
+        num_segments = randi(16);
+        segment_length = rand * segmentLength;
+
+        % Start position
+        start_xy = rand(2, 1) * imageSize;
+        %
+        segments_xy = RandomPointsInUnitCircle(num_segments) * segment_length;
+        vertices_xy = cumsum([start_xy, segments_xy], 2);
+        vertices_xy = reshape(vertices_xy, 1, []);
+
+        % Width of the scratches
+        width = round(max(1,lineWidth + randn*(lineWidth/2)));
+
+        % Note: the 'Opacity' option doesn't apply to lines, so we have to change the
+        % line color to achieve a similar effect. Also note that [0.5 .. 1] opacity
+        % maps to [0.5 .. 0] in color values.
+        opacity = lineOpacity + (rand * 0.5);
+        im = insertShape(im, 'Line', vertices_xy, 'LineWidth', width, ...
+            'Color', [opacity, opacity, opacity]);
+    end
+else
+    im = imread(texFile);
+    try
+        im = rgb2gray(im);
+    catch
+        % do nothing
+    end
+    im = double(im);
+    im = im/max2(im);
+
+    if mean2(im)<0.2
+        im = 1-im;
+    end
+    im(im<0.95) = im(im<0.95)-rand(1);
+    im(im<0)=0;
+    im = imresize(im, [imageSize, imageSize]);
 end
-
-%% Add polylines, simulating scratches.
-
-num_lines = randn(1,1)*lineSD + lineMean;
-num_lines = round(num_lines);
-
-% max_width = max(0, round(5 + randn * 5));
-for i = 1:num_lines
-
-    num_segments = randi(16);
-    segment_length = rand * segmentLength;
-
-    % Start position
-    start_xy = rand(2, 1) * imageSize;
-    %
-    segments_xy = RandomPointsInUnitCircle(num_segments) * segment_length;
-    vertices_xy = cumsum([start_xy, segments_xy], 2);
-    vertices_xy = reshape(vertices_xy, 1, []);
-
-    % Width of the scratches
-    width = round(max(1,lineWidth + randn*(lineWidth/2)));
-
-    % Note: the 'Opacity' option doesn't apply to lines, so we have to change the
-    % line color to achieve a similar effect. Also note that [0.5 .. 1] opacity
-    % maps to [0.5 .. 0] in color values.
-    opacity = lineOpacity + (rand * 0.5);
-    im = insertShape(im, 'Line', vertices_xy, 'LineWidth', width, ...
-        'Color', [opacity, opacity, opacity]);
-end
-
 centerPoint = [imageSize/2 + 1, imageSize/2+1];
 radius = (imageSize - 1)/2;
 
@@ -176,7 +195,7 @@ imRadius = sqrt(X.^2 + Y.^2);
 idx = (imRadius > radius);
 im(idx) = 0;
 % ieNewGraphWin; imagesc(im); colormap(gray); colorbar; axis image
-
+im = imrotate(im,randi(30));
 %%
 if nargout == 2
     % Fill in params

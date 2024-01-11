@@ -98,7 +98,7 @@ oi = oiSet(oi,'optics focal length',3e-3);     % from lens calibration software
 
 % We use the scene structure and the optical image structure to update the
 % irradiance.
-oi = oiCompute(scene,oi);
+oi = oiCompute(oi,scene);
 
 % We save the optical image structure and bring up the optical image
 % window.

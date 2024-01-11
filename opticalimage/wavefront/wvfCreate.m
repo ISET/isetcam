@@ -111,7 +111,7 @@ p.addParameter('calcobserverfocuscorrection', 0, @isscalar);
 % Set for consistency with 300 um historical.  When we adjust one or the
 % other via wvfSet(), we keep them in sync.
 p.addParameter('umperdegree', 300, @isscalar);
-p.addParameter('focallength', (300/tand(1))*1e-6, @isscalar);  % In meters. 17 mm
+p.addParameter('focallength', 17.1883, @isscalar);  % 17 mm
 
 % Custom lca
 p.addParameter('customlca', [], @(x)( (isempty(x)) || (isa(x, 'function_handle')) ));
@@ -165,7 +165,7 @@ wvf = wvfSet(wvf, 'calc observer focus correction', ...
 
 % Conversion between degrees of visual angle and mm
 % This also sets the focal length for consistency.
-wvf = wvfSet(wvf, 'um per degree',p.Results.umperdegree);
+% wvf = wvfSet(wvf, 'um per degree',p.Results.umperdegree);
 
 % If the user specified a different focal length, that will override
 wvf = wvfSet(wvf, 'focal length',p.Results.focallength);

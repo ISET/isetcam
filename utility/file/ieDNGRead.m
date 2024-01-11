@@ -27,9 +27,11 @@ function [img,info] = ieDNGRead(fname,varargin)
   [img,info] = ieDNGRead(fname);
 %}
 %{
+  fname = 'MCC-centered.dng';
   [~,info] = ieDNGRead(fname,'simple info',true,'only info',true);
 %}
 %{
+  fname = 'MCC-centered.dng';
   [img,info] = ieDNGRead(fname,'simple info',true);
 %}
 

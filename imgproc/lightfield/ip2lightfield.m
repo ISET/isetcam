@@ -27,7 +27,9 @@ function lightfield = ip2lightfield(ip,varargin)
 
 % Examples:
 %{
+ % ETTBSkip 
  % When you have a recipe (thisR) and matched oi/sensor/ip
+ % This examples needs ISET3d data.
  nPinholes  = thisR.get('n microlens');
  lightfield = ip2lightfield(ip,'pinholes',nPinholes);
  LFDispVidCirc(lightfield);

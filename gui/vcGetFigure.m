@@ -27,6 +27,9 @@ function [app, appAxis] = vcGetFigure(obj,select)
 
 % Examples:
 %{
+ % ETTBSkip
+ % This function deprecated, don't autorun example.
+
  scene = sceneCreate;
  sceneWindow(scene);
  [app,appAxis] = vcGetFigure(scene)

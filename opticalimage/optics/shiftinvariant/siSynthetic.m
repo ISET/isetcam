@@ -13,8 +13,8 @@ function optics = siSynthetic(psfType,oi,varargin)
 % oi:        Optical image
 %
 % varargin for gaussian:
-%   waveSpread: size of the PSF spread at each of the wavelength
-%             for gaussian this is in microns (um)
+%   waveSpread: Size of the PSF spread at each of the wavelengths
+%               For gaussian this is in microns (um)
 %   xyRatio:   Ratio of spread in x and y directions
 %   filename:  Output file name for the optics
 %
@@ -32,27 +32,20 @@ function optics = siSynthetic(psfType,oi,varargin)
 %{
   wave = 400:10:700; psfType = 'gaussian';  waveSpread = wave/wave(1);
   xyRatio = ones(1,length(wave));
+  oi = oiCreate('shiftinvariant');
+  oi = oiSet(oi,'wave',wave);
   optics = siSynthetic(psfType,oi,waveSpread,xyRatio);
-  psfMovie(optics,ieNewGraphWin);
+  psfMovie(optics,ieNewGraphWin,0.1);
 %}
 %{
-% Make one with an asymmetric Gaussian
+  % Make one with an asymmetric Gaussian
   wave = 400:10:700; psfType = 'gaussian';  waveSpread = wave/wave(1);
   xyRatio = 2*ones(1,length(wave));
+  oi = oiCreate('shiftinvariant');
+  oi = oiSet(oi,'wave',wave);
   optics = siSynthetic(psfType,oi,waveSpread,xyRatio);
   psfMovie(optics,ieNewGraphWin);
 %}
-%{
-% Convert a custom file to an optics structure
-%  ieSaveSIOpticsFile(rand(128,128,31),(400:10:700),[0.25,0.25],'custom.mat');
-%  inFile = 'custom'; outFile = 'deleteMe.mat'
-%  optics = siSynthetic('custom',oi,'custom',[]);
-%}
-%{
-%  optics = siSynthetic('custom',oi,inFile,outFile);
-%}
-
-
 
 %% Parameter initializiation
 if ieNotDefined('psfType'), psfType = 'gaussian'; end

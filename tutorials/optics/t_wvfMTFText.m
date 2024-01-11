@@ -16,7 +16,7 @@ wave = 550;
 wvfD = wvfCreate();                    % Diffraction limited
 wvfD = wvfSet(wvfD, 'measured wavelength', 550);
 wvfD = wvfSet(wvfD, 'calc wavelengths', 550);
-wvfD = wvfCompute(wvfD);
+wvfD = wvfCompute(wvfD,'human lca', true);
 wvfPlot(wvfD,'psf','unit','min','wave',wave,'plot range',5);
 
 %%
@@ -35,7 +35,7 @@ d = [0 , 0.15, 0.5, 0.7];
 thisL = cell(length(d),1);
 for ii=1:length(d)
     wvf1 = wvfSet(wvfD,'zcoeffs',d(ii),{'defocus'});
-    wvf1 = wvfCompute(wvf1);
+    wvf1 = wvfCompute(wvf1,'human lca', true);
     wvfPlot(wvf1, '1d psf space', 'unit', 'um', 'wave', wave, 'plot range', 10, 'window', false);    
     hold on;
     thisL{ii} = sprintf('D = %0.2f',d(ii));
@@ -52,7 +52,7 @@ d = [0 , 0.15, 0.5, 0.7];
 thisL = cell(length(d),1);
 for ii=1:length(d)
     wvf1 = wvfSet(wvfH,'zcoeffs',d(ii),{'defocus'});
-    wvf1 = wvfCompute(wvf1);
+    wvf1 = wvfCompute(wvf1,'human lca', true);
     wvfPlot(wvf1, '1d psf space', 'unit', 'um', 'wave', wave, 'plot range', 10, 'window', false);
 
     hold on;
@@ -70,30 +70,30 @@ legend(thisL);
 
 ieNewGraphWin([],'tall');
 subplot(2,1,1);
-wvfPlot(wvfD, 'psf space', 'unit', 'um', 'wave', wave, 'plot range', 10, 'window', false);
+wvfPlot(wvfD, 'psf', 'unit', 'um', 'wave', wave, 'plot range', 10, 'window', false);
 
 legend({'Diffraction D=0'})
 
 thisD = d(3);
 subplot(2,1,2);
 wvf1 = wvfSet(wvfD,'zcoeffs',thisD,{'defocus'});
-wvf1 = wvfCompute(wvf1);
-wvfPlot(wvf1, 'psf space', 'unit', 'um', 'wave', wave, 'plot range', 10, 'window', false);
+wvf1 = wvfCompute(wvf1,'human lca', true);
+wvfPlot(wvf1, 'psf', 'unit', 'um', 'wave', wave, 'plot range', 10, 'window', false);
 
 legend({sprintf('Diffraction D=%1.1f',thisD)})
 
 %% Compare the two human PSFs
 ieNewGraphWin([],'tall');
 subplot(2,1,1);
-wvfPlot(wvfH, 'psf space', 'unit', 'um', 'wave', wave, 'plot range', 10, 'window', false);
+wvfPlot(wvfH, 'psf', 'unit', 'um', 'wave', wave, 'plot range', 10, 'window', false);
 
 legend({'Human D=0'})
 
 thisD = d(3);
 subplot(2,1,2);
 wvf1 = wvfSet(wvfH,'zcoeffs',thisD,{'defocus'});
-wvf1 = wvfCompute(wvf1);
-wvfPlot(wvf1, 'psf space', 'unit', 'um', 'wave', wave, 'plot range', 10, 'window', false);
+wvf1 = wvfCompute(wvf1,'human lca', true);
+wvfPlot(wvf1, 'psf', 'unit', 'um', 'wave', wave, 'plot range', 10, 'window', false);
 
 legend({sprintf('Human D=%1.1f',thisD)})
 
@@ -102,7 +102,7 @@ legend({sprintf('Human D=%1.1f',thisD)})
 ieNewGraphWin;
 for ii=1:length(d)
     wvf1 = wvfSet(wvfD,'zcoeffs',d(ii),{'defocus'});
-    wvf1 = wvfCompute(wvf1);
+    wvf1 = wvfCompute(wvf1,'human lca', true);
     wvfPlot(wvf1, '1d otf angle', 'unit', 'deg', 'wave', wave, 'plot range', 100, 'window', false);
 
     hold on;
@@ -122,7 +122,7 @@ legend(thisL);
 ieNewGraphWin;
 for ii=1:length(d)
     wvf1 = wvfSet(wvfH,'zcoeffs',d(ii),{'defocus'});
-    wvf1 = wvfCompute(wvf1);
+    wvf1 = wvfCompute(wvf1,'human lca', true);
     wvfPlot(wvf1, '1d otf angle', 'unit', 'deg', 'wave', wave, 'plot range', 100, 'window', false);
     hold on;
     thisL{ii} = sprintf('Human D = %0.2f',d(ii));
@@ -137,7 +137,7 @@ legend(thisL);
 ieNewGraphWin;
 for ii=1:length(d)
     wvf1 = wvfSet(wvfD,'zcoeffs',d(ii),{'defocus'});
-    wvf1 = wvfCompute(wvf1);
+    wvf1 = wvfCompute(wvf1,'human lca', true);
     wvfPlot(wvf1, '1d otf angle', 'unit', 'deg', 'wave', wave, 'plot range', 100, 'window', false);
     hold on;
     thisL{ii} = sprintf('Diffraction D = %0.1f',d(ii));
@@ -151,7 +151,7 @@ legend(thisL);
 ieNewGraphWin;
 for ii=1:length(d)
     wvf1 = wvfSet(wvfH,'zcoeffs',d(ii),{'defocus'});
-    wvf1 = wvfCompute(wvf1);
+    wvf1 = wvfCompute(wvf1,'human lca', true);
     wvfPlot(wvf1, '1d otf angle', 'unit', 'deg', 'wave', wave, 'plot range', 100, 'window', false);
 
     hold on;

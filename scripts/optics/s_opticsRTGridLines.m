@@ -107,7 +107,7 @@ oiWindow(oi);
 oi = oiSet(oi,'optics model','ray trace');
 
 % Compute the RT
-oi = oiCompute(scene,oi);
+oi = oiCompute(oi,scene);
 oi = oiSet(oi,'name','Automated ray trace');
 
 % Have a look - barrell distortion and all
@@ -128,7 +128,7 @@ oiDL    = oiSet(oiDL,'optics',optics);
 
 % Now set the method to diffraction limited and compute
 oiDL = oiSet(oiDL,'name','DL method');
-oiDL = oiCompute(scene,oiDL);
+oiDL = oiCompute(oiDL,scene);
 
 % No barrel distortion, less blurring
 oiWindow(oiDL);
@@ -152,7 +152,7 @@ sceneSmall = sceneSet(scene,'name','rt-Small-Grid');
 sceneSmall = sceneSet(sceneSmall,'fov',20);
 
 % Ray trace calculation with distortion and shift-variant blurring
-oi = oiCompute(sceneSmall,oi);
+oi = oiCompute(oi,sceneSmall);
 oi = oiSet(oi,'name','rt-Small-RT');
 oiWindow(oi);
 

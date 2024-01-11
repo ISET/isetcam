@@ -41,7 +41,7 @@ sceneWindow(scene);
 %% OPTICS
 %
 oi = oiCreate;
-oi = oiCompute(scene,oi);
+oi = oiCompute(oi,scene);
 oiWindow(oi);
 
 %% SENSOR

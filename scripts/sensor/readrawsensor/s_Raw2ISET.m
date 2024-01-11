@@ -26,6 +26,7 @@
 %           row = 2048,  col = 1536
 %           Color filter array (cfa) is 'bayer-grbg'
 
+% UTTBSkip
 
 %%
 fullName = vcSelectDataFile('stayput','r','raw','Select *.raw file');

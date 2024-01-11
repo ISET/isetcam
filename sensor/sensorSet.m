@@ -17,17 +17,6 @@ function sensor = sensorSet(sensor,param,val,varargin)
 %    pixel = pixelSet(pixel,'param',val);
 %    sensor = sensorSet(sensor,'pixel',pixel);
 %
-% Examples:
-%    sensor = sensorCreate; pixel = pixelCreate;
-%    sensor = sensorSet(sensor,'pixel',pixel);
-%    sensor = sensorSet(sensor,'auto exposure',1);   ('on' and 'off' work, too)
-%    sensor = sensorSet(sensor,'sensor compute method',baseName);
-%    sensor = sensorSet(sensor,'quantization method','10 bit');
-%    sensor = sensorSet(sensor,'analog gain',5);
-%    sensor = sensorSet(sensor,'pixel size same fill factor',1.2e-6);
-%    sensor = sensorSet(sensor,'pixel voltage swing',1.2);
-%    sensor = sensorSet(sensor,'response type','log'); % 'linear' or 'log'
-%
 % General
 %      'name' - This sensor's identifier
 %      'rows' - number of rows
@@ -131,7 +120,22 @@ function sensor = sensorSet(sensor,param,val,varargin)
 % Private
 %      'editfilternames'
 %
+% The source code contains examples.
+%
 % Copyright ImagEval Consultants, LLC, 2003.
+
+
+% Examples:
+%{
+   sensor = sensorCreate; pixel = pixelCreate;
+   sensor = sensorSet(sensor,'pixel',pixel);
+   sensor = sensorSet(sensor,'auto exposure',1);   % ('on' and 'off' work, too)
+   sensor = sensorSet(sensor,'quantization method','10 bit');
+   sensor = sensorSet(sensor,'analog gain',5);
+   sensor = sensorSet(sensor,'pixel size same fill factor',1.2e-6);
+   sensor = sensorSet(sensor,'pixel voltage swing',1.2);
+   sensor = sensorSet(sensor,'response type','log'); % 'linear' or 'log'
+%}
 
 
 %% Check parameters and special cases

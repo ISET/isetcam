@@ -117,7 +117,7 @@ function val = wvfGet(wvf, parm, varargin)
 %       +'middle row'             - The middle row of sampled functions
 %
 %      Calculation parameters
-%        'calc pupil size'        - Pupil size for calculation (mm, *)
+%        'calc pupil diameter'    - Pupil size for calculation (mm, *)
 %        'calc optical axis'      - Optical axis to compute for (deg)
 %        'calc observer accommodation'
 %                                 - Observer accommodation at calculation
@@ -214,18 +214,18 @@ function val = wvfGet(wvf, parm, varargin)
 % Examples:
 %{
     % Compute diffraction limited psf
-    wvfP = wvfCreate;
-    wvfP = wvfComputePSF(wvfP);
-    wvfPlot(wvfP, 'image psf', 'um', 550);
+    wvfP = wvfCreate('wave',550);
+    wvfP = wvfCompute(wvfP);
+    wvfPlot(wvfP,'image psf','wave',550,'plot range',15,'airy disk',true,'unit','um');
 
     psf = wvfGet(wvfP, 'diffraction psf', 550);
     support = wvfGet(wvfP,'psf support','um');
-    wvfPlot(wvf,'2d psf space','um',550,15,'airy disk',true);
+    wvfPlot(wvfP,'image psf','wave',550,'plot range',15,'airy disk',true,'unit','um');
 %}
 %{
     % Strehl is ratio of diffraction and current
     wvfP = wvfCreate;
-    wvfP = wvfComputePSF(wvfP);
+    wvfP = wvfCompute(wvfP,'humanlca',false);
     wvfGet(wvfP, 'strehl', 550)
 %}
 %{
@@ -239,19 +239,19 @@ function val = wvfGet(wvf, parm, varargin)
 	z = wvfGet(wvfP, 'zcoeffs');
     z(5) = 0.3;
     wvfP = wvfSet(wvfP, 'zcoeffs', z);
-	wvfP = wvfComputePSF(wvfP);
+	wvfP = wvfCompute(wvfP,'humanlca',false);
     wvfGet(wvfP, 'strehl', 550)
 %}
 %{
 	wvf = wvfCreate;
-    wvf = wvfComputePSF(wvf);
+    wvf = wvfCompute(wvf);
     otf = wvfGet(wvf,'otf',wvfGet(wvf,'wave'));
     f = wvfGet(wvf, 'otf support', 'mm');
 	ieNewGraphWin; mesh(f, f, abs(otf));
 %}
 %{
     wvf = wvfCreate;
-    wvf = wvfComputePSF(wvf);
+    wvf = wvfCompute(wvf);
 	lsf = wvfGet(wvf, 'lsf', wvfGet(wvf,'wave'));
     x = wvfGet(wvf, 'lsf support', 'um');
 	ieNewGraphWin; plot(x, lsf); grid on; xlabel('Pos (mm)');
@@ -483,17 +483,26 @@ switch (parm)
         
     case {'focallength','flength'}
         % wvfGet(wvf,'focal length',unit);
-        % We use the focal length (m) to calculate meters per degree in psf
-        % spatial samples.
-        if isfield(wvf,'focallength'), val = wvf.focallength; 
-        else
-            warning('Using 17 mm focal length by default.')
-            val = 17e-3;  % 17 mm is default
-        end
-        
-        if ~isempty(varargin)
-            val = val*ieUnitScaleFactor(varargin{1});
-        end
+        %
+        % Default units for focal length is mm
+        %
+        % The focal length is determined by the umPerDeg parameter.
+        %
+        %  op/adj = tand(1); op = tand(1)*adj;
+        %  adj = focalLength; op = umPerDeg
+        %
+        % Not sure how I feel about these two options
+        %  umPerDeg = 2*tand(0.5)*focalLength or
+        %  umPerDeg = tand(1)*focalLength
+        %
+        unit = 'mm';
+        if ~isempty(varargin), unit = varargin{1}; end
+
+        umPerDegree = wvfGet(wvf,'um per degree');
+        val = umPerDegree/(2*tand(0.5));
+
+        % Convert to meters and then scale as per unit
+        val = (val * 1e-6) * ieUnitScaleFactor(unit);
 
     case {'fnumber'}
         % If we have a pupil diameter and focal length, we can produce
@@ -792,13 +801,16 @@ switch (parm)
         end
         
     case {'psfanglepersample', 'angleperpixel', 'angperpix'}
-        % Angular extent per pixel in the psf domain, for calculated
-        % wavelength(s).
+        % Angular extent for a single pixel in the psf domain, for
+        % calculated wavelength(s).
         %
         % wvfGet(wvf, 'psf angle per sample', unit, wList)
         % unit = 'min' (default), 'deg', or 'sec'
-        unit  = varargin{1};
-        wList = varargin{2};
+        unit = 'min';
+        wList = wvfGet(wvf, 'measured wavelength');
+        if ~isempty(varargin), unit = varargin{1}; end
+        if (length(varargin) > 1), wList = varargin{2}; end
+
         val = wvfGet(wvf, 'psf arcmin per sample', wList);
         if ~isempty(unit)
             unit = lower(unit);
@@ -815,11 +827,12 @@ switch (parm)
         end
         
     case {'psfangularsamples'}
+        % Return 1d array of sampled angles for psf, centered on 0, for
+        % a single wavelength
+        %
         % Previously included the following: 'samplesangle',
         % 'samplesarcmin', 'supportarcmin'
         %
-        % Return one-d slice of sampled angles for psf, centered on 0, for
-        % a single wavelength
         % wvfGet(wvf, 'psf angular samples', unit, waveIdx)
         % unit = 'min' (default), 'deg', or 'sec'
         % Should call routine below to get anglePerPix.
@@ -837,10 +850,15 @@ switch (parm)
         val = anglePerPix * ((1:nPixels) - middleRow);
         
     case {'psfangularsample'}
+        % Returns a single angle value that is per pixel step
+        %
         % wvfGet(wvf, 'psf angular sample', unit, waveIdx)
         % unit = 'min' (default), 'deg', or 'sec'
-        unit = varargin{1};
-        wList = varargin{2};
+        unit = 'min';
+        wList = wvfGet(wvf, 'measured wavelength');
+        if ~isempty(varargin), unit = varargin{1}; end
+        if (length(varargin) > 1), wList = varargin{2}; end
+
         if (length(wList) > 1)
             error('This only works for one wavelength at a time');
         end
@@ -855,6 +873,7 @@ switch (parm)
         %  Should call case below to get one val, and then scale up by
         %  number of pixels.
         
+        % 
         % This parameter matters for the OTF and PSF quite a bit. It
         % is the number of um per degree on the retina.
         unit = 'deg';
@@ -886,26 +905,7 @@ switch (parm)
                 % Leave it alone
             otherwise
                 error('Bad unit for samples space, %s', unit);
-        end
-        
-        %{
-       % This seems like a duplicate of the code in the previous case. BW
-       % commented it out.
-      case {'psfspatialsample'}
-        unit = 'mm';
-        wList = wvfGet(wvf, 'calc wave');  % BW changed to calc from meas
-        if ~isempty(varargin), unit = varargin{1}; end
-        if length(varargin) > 1, wList = varargin{2}; end
-        if length(wList) > 1, error('One wavelength only'); end
-        
-        % Get the samples in degrees
-        val = wvfGet(wvf, 'psf angular sample', 'deg', wList);
-        
-        % Convert to meters and then to selected spatial scale
-        mPerDeg = (wvfGet(wvf,'um per degree') * 10^-6);
-        val = val * mPerDeg;
-        val = val * ieUnitScaleFactor(unit);
-        %}
+        end               
 
     case {'pupilsupport','pupilspatialsamples'}
         % wvfGet(wvf, 'pupil spatial samples', 'mm', wList)
@@ -972,10 +972,12 @@ switch (parm)
     case {'otf'}
         % wvfGet(wvf, 'otf', wave)
         %
-        % Return the otf from the psf.  Until July, 2023 we computed the
-        % OTF from the PsfToOtf function in Psychtoolbox.
+        % Compute OTF from the psf, using the PTB routine PsfToOtf
+        %        
+        % The frequency support can be calculated with respect to
+        % different units using
         %
-        % What are the spatial units? cyc/mm?
+        %    wvfGet(wvf, 'otfsupport', unit, wave)
 
         wave = wvfGet(wvf, 'calc wave');
         if ~isempty(varargin), wave = varargin{1}; end
@@ -984,26 +986,28 @@ switch (parm)
         end
         psf = wvfGet(wvf, 'psf', wave);
         
-        % Compute OTF.
+        % Use PTB PsfToOtf to convert to (0,0) sf at the center of the
+        % otf representation.  This differs from the ISETCam optics
+        % structure convention, where (0,0) sf is at the upper left.
         %
-        % Use PTB PsfToOtf to convert to (0,0) sf at center otf
-        % representation.  This differs from the ISETCam optics structure
-        % convention, where (0,0) sf is at the upper left. 
+        % The basic calculation in PsfToOtf is
+        %
+        %   otf = fftshift(fft2(ifftshift(psf)));
+        %
         [~,~,val] = PsfToOtf([],[],psf);
         
-        % BW: July 2023
-        % We used to apply ifftshift to put 0,0 in the upper left.
-        % This is only needed in wvf2oi, and we removed it here.
-        % val = ifftshift(val);
-        
-        % We used to zero out small imaginary values.  This, however, can
-        % cause numerical problems much worse than having small imaginary
-        % values in the otf.  So we don't do it anymore.
+        % From PTB:  We used to zero out small imaginary values.
+        % This, however, can cause numerical problems much worse than
+        % having small imaginary values in the otf.  So we don't do it
+        % anymore.
         
     case {'otfsupport'}
+        % Spatial frequency support (default cyc/mm) for the OTF.
+        % Different units can be requested.
+        %
         % wvfGet(wvf, 'otfsupport', unit, wave)
         %
-        % Spatial frequency support (default cyc/mm) for the OTF
+        % The frequency support is wavelength specific
         %
         unit = 'mm';
         wave = wvfGet(wvf, 'calc wave');
@@ -1022,6 +1026,18 @@ switch (parm)
         dx = samp(2) - samp(1);
         nyquistF = 1 / (2 * dx);   % Line pairs (cycles) per unit space
         val = unitFrequencyList(nSamp) * nyquistF;
+    case {'otfspacing'}
+        % wvfGet(wvf,'otf spacing',unit)
+        %
+        % Get the spacing of the frequency samples in the given units
+        %
+        unit = 'mm';
+        wave = wvfGet(wvf, 'calc wave');
+        if ~isempty(varargin), unit = varargin{1}; end
+        if length(varargin) > 1, wave = varargin{2}; end
+        
+        otfSupport = wvfGet(wvf,'otf support',unit,wave);
+        val = otfSupport(2) - otfSupport(1);
 
     case {'otfandsupport'}
         % val = wvfGet(wvf,'otf and support',unit,wave);

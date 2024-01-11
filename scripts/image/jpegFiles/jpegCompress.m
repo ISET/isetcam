@@ -55,3 +55,5 @@ end
 if (max(im(:))<=1)
     imjpeg = imjpeg/255;
 end
+
+end

@@ -29,14 +29,14 @@ function sceneOut = sceneAdd(in1,in2,addFlag)
 
 % Examples:
 %{
-  scenes{1} = sceneCreate('rings rays',[],[256 256]);
+  scenes{1} = sceneCreate('rings rays',[],256);
   scenes{2} = sceneCreate('sweep frequency',256);
   tmp = sceneCreate; scenes{3} = sceneSet(tmp,'resize',[256 256]);
   sceneOut = sceneAdd(scenes,[0.5 0.5 0.3],'add');
   sceneWindow(sceneOut);
 %}
 %{
-  scenes{1} = sceneCreate('rings rays',[],[256 256]);
+  scenes{1} = sceneCreate('rings rays',[],[256]);
   scenes{2} = sceneCreate('sweep frequency',256);
   sceneOut = sceneAdd(scenes{1},scenes{2});
   sceneWindow(sceneOut);
