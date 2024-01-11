@@ -133,25 +133,11 @@ p.addParameter('crop',false,@islogical);
 p.addParameter('aperture',[],@ismatrix);
 p.parse(oi,scene,varargin{:});
 
-% if ~exist('oi','var') || isempty(oi), error('Opticalimage required.'); end
-% if ~exist('scene','var') || isempty(scene), error('Scene required.'); end
-
-if strcmp(oi.type,'wvf')
-    % User sent in an wvf, not an oi.  We convert it to a shift invariant
-    % oi here whose wavelength matches the scene.  The oi is returned.
-    wvf = oi;
-    if ~isequal(wvfGet(wvf,'wave'),sceneGet(scene,'wave'))
-        warning('The wvf wavelengths should match the scene.  Recomputing');
-        wvf = wvfSet(wvf,'wave',sceneGet(scene,'wave'));
-        wvf = wvfCompute(wvf);
-    end
-    oi = wvf2oi(wvf);
-end
-
 % Ages ago, we some code flipped the order of scene and oi.  We think
 % we have caught all those cases, but we still test.  Maybe delete
 % this code by January 2024.
-if strcmp(oi.type,'scene') && strcmp(scene.type,'opticalimage')
+if strcmp(oi.type,'scene') && (strcmp(scene.type,'opticalimage') ||...
+        strcmp(scene.type,'wvf'))
     warning('flipping oi and scene variables.')
     tmp = scene; scene = oi; oi = tmp; clear tmp
 end
@@ -162,9 +148,16 @@ end
 
 % We pass varargin because it may contain the key/val parameters
 % such as pad value and crop. But we only use pad value here.
-opticsModel = oiGet(oi,'optics model');
+if strcmp(oi.type,'wvf')
+    opticsModel = 'shiftinvariant';
+else
+    opticsModel = oiGet(oi,'optics model');
+end
 switch ieParamFormat(opticsModel)
     case {'diffractionlimited','dlmtf', 'skip'}
+        if strcmp(oi.type,'wvf')
+            error('Wavefront is not supported for diffraction limited optics.');
+        end
         % The skip case is handled by the DL case
         oi = opticsDLCompute(scene,oi,varargin{:});
     case 'shiftinvariant'

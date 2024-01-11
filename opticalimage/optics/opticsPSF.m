@@ -1,4 +1,4 @@
-function oi = opticsPSF(oi,scene,aperture,varargin)
+function oi = opticsPSF(oi,scene,aperture,wvf,varargin)
 % Apply the opticalImage using the PSF method to the photon data
 %
 % Synopsis
@@ -46,6 +46,7 @@ p.KeepUnmatched = true;
 p.addRequired('oi',@(x)(isstruct(x) && isequal(x.type,'opticalimage')));
 p.addRequired('scene',@(x)(isstruct(x) && isequal(x.type,'scene')));
 if ieNotDefined('aperture'), aperture = []; end
+if ieNotDefined('wvf'), wvf = []; end
 
 p.addParameter('padvalue','zero',@(x)(ischar(x) || isvector(x)));
 
@@ -61,7 +62,7 @@ switch lower(opticsModel)
         oi = oiSet(oi,'photons',irradianceImage);
         
     case {'dlmtf','diffractionlimited','shiftinvariant','custom','humanotf'}
-        oi = oiApplyPSF(oi,scene,aperture,'mm',p.Results.padvalue);
+        oi = oiApplyPSF(oi,scene,aperture,wvf,'mm',p.Results.padvalue);
         
     otherwise
         error('Unknown OTF method');
@@ -70,7 +71,7 @@ end
 end
 
 %-------------------------------------------
-function oi = oiApplyPSF(oi,scene,aperture,unit,padvalue)
+function oi = oiApplyPSF(oi,scene,aperture,wvf,unit,padvalue)
 %Calculate and apply the otf waveband by waveband
 %
 %   oi = oiApplyPSF(oi,method,unit);
@@ -87,8 +88,10 @@ function oi = oiApplyPSF(oi,scene,aperture,unit,padvalue)
 
 %
 if ieNotDefined('oi'),     error('Optical image required.'); end
-if ieNotDefined('unit'),   unit   = 'mm'; end
-if ieNotDefined('aperture'), aperture = []; end
+if ieNotDefined('aperture'), aperture = [];  end
+if ieNotDefined('wvf'),           wvf = [];  end
+if ieNotDefined('unit'),         unit = 'mm';end
+
 
 % Pad the optical image to allow for light spread.  Also, make sure the row
 % and col values are even.
@@ -122,13 +125,19 @@ oi = oiPadValue(oi,padSize,padType,sDist);
 
 % Convert the oi into the wvf format and compute the PSF
 wavelist  = oiGet(oi,'wave');
-wvf       = wvfCreate('wave',wavelist);
+
 flength = oiGet(oi,'focal length',unit);
 fnumber   = oiGet(oi, 'f number');
 oiSize    = max(oiGet(oi,'size'));   % Larger of the two sizes
 
+if isempty(wvf)
+    wvf = wvfCreate('wave',wavelist);
+end
+
 wvf = wvfSet(wvf, 'focal length', flength, unit);
 wvf = wvfSet(wvf, 'calc pupil diameter', flength/fnumber);
+
+wvf = wvfSet(wvf,'wave',wavelist);
 wvf = wvfSet(wvf, 'spatial samples', oiSize);
 
 psf_spacing = oiGet(oi,'sample spacing',unit);

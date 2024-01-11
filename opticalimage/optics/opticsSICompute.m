@@ -31,6 +31,16 @@ if ieNotDefined('oi'), error('Opticalimage required.'); end
 if ieNotDefined('aperture'), aperture = []; end
 showWbar = ieSessionGet('waitbar');
 
+if strcmp(oi.type,'wvf')
+    wvf = oi;
+    flength = wvfGet(wvf,'focal length','m');
+    fnumber = wvfGet(wvf, 'f number');
+    oi = oiCreate('shift invariant');
+    oi = oiSet(oi,'f number',fnumber);
+    oi = oiSet(oi,'optics focal length',flength);
+else
+    wvf = [];
+end
 % This is the default compute path
 optics = oiGet(oi,'optics');
 
@@ -67,20 +77,21 @@ switch lower(offaxismethod)
         oi = opticsCos4th(oi);
 end
 
-if showWbar, waitbar(0.6,wBar,'OI-SI: Applying OTF'); end
+if showWbar, waitbar(0.6,wBar,'OI-SI: Applying PSF'); end
 % This section applys the OTF to the scene radiance data to create the
 % irradiance data.
 %
 % If there is a depth plane in the scene, we also blur that and put the
 % 'blurred' depth plane in the oi structure.
-if showWbar, waitbar(0.6,wBar,'Applying OTF-SI'); end
+if showWbar, waitbar(0.6,wBar,'Applying PSF-SI'); end
 
 % The original calculation
 % oi = opticsOTF(oi,scene,varargin{:});
 
 % We replace the old OTF based method with the version that goes
 % through the wavefront terms developed for the flare calculation.
-oi = opticsPSF(oi,scene,aperture,varargin{:});
+oi = opticsPSF(oi,scene,aperture,wvf,varargin{:});
+
 
 switch lower(oiGet(oi,'diffuserMethod'))
     case 'blur'

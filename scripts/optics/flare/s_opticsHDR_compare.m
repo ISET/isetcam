@@ -23,15 +23,15 @@ close all
 %% Create a scene
 
 s_size = 1024;
-flengthM = 8e-3;
+flengthM = 4e-3;
 fnumber = 2.2;
 flengthMM = flengthM*1e3;
 
 pupilMM = (flengthMM)/fnumber;
 
-scene = sceneCreateHDR(s_size,20, 0); % (size, numberOfPatches, Background)
+scene = sceneCreateHDR(s_size,17,1);
 
-scene = sceneAdjustLuminance(scene,'peak',100000);
+scene = sceneAdjustLuminance(scene,'peak',1e5);
 
 scene = sceneSet(scene,'fov',30);
 index = 1;
@@ -39,19 +39,19 @@ index = 1;
 %% Loop comparing the three methods
 
 fig_plot = figure;set(fig_plot, 'AutoResizeChildren', 'off');
-for fnumber = 3:5:13
+for fnumber = 5:4:13
     oi = oiCreate('diffraction limited');
 
-    oi = oiSet(oi,'optics focallength',flengthM);
+    oi = oiSet(oi,'optics focallength',flengthM); % only in meters
     oi = oiSet(oi,'optics fnumber',fnumber);
 
     % oi needs information from scene to figure out the proper resolution.
     oi = oiCompute(oi, scene);
     oi = oiCrop(oi,'border');
-    % oiWindow(oi);
+    oiWindow(oi);
 
     oi = oiSet(oi, 'name','dl');
-    ip = piRadiance2RGB(oi,'etime',1/10);
+    ip = piRadiance2RGB(oi,'etime',1);
 
     rgb = ipGet(ip,'srgb');
     subplot(3,3,index);imshow(rgb);index = index+1;title(sprintf('DL-Fnumber:%d\n',fnumber));
@@ -63,10 +63,10 @@ for fnumber = 3:5:13
     oi_flare = oiCompute(oi,scene,'aperture',aperture);
     oi_flare = oiSet(oi_flare, 'name','flare');
     oi_flare = oiCrop(oi_flare,'border');
-    % oiWindow(oi_flare);
+    oiWindow(oi_flare);
 
     % oi_wvf = oiSet(oi_wvf,'displaymode','hdr');
-    ip_flare = piRadiance2RGB(oi_flare,'etime',1/10);
+    ip_flare = piRadiance2RGB(oi_flare,'etime',1);
     rgb_flare = ipGet(ip_flare,'srgb');
     subplot(3,3,index);imshow(rgb_flare);index = index+1;title(sprintf('Flare-Fnumber:%d\n',fnumber));
 
@@ -83,66 +83,11 @@ for fnumber = 3:5:13
     wvf = wvfCompute(wvf);
     wvfSummarize(wvf);
 
-    oi = oiCompute(wvf, scene);
-    oi = oiSet(oi, 'name','flare');
-    % oiWindow(oi);
-    oi = oiCrop(oi,'border');
-    ip = piRadiance2RGB(oi,'etime',1/10);
-    rgb_wvf = ipGet(ip,'srgb');
+    oi_wvf = oiCompute(wvf, scene);
+    oi_wvf = oiSet(oi_wvf, 'name','wvf');
+    oiWindow(oi_wvf);
+    oi_wvf = oiCrop(oi_wvf,'border');
+    ip_wvf = piRadiance2RGB(oi_wvf,'etime',1);
+    rgb_wvf = ipGet(ip_wvf,'srgb');
     subplot(3,3, index);imshow(rgb_wvf);index = index+1;title(sprintf('WVF-Fnumber:%d\n',fnumber));
 end
-
-%% Let's just compare the wvf methods at fnumber =3
-
-%% THe flare good, working part.
-%{
-flengthM = 4e-3;
-flengthMM = flengthM*1e3;
-
-fnumber = 3;
-
-%{
-% This doesn't run with flare because dlmtf is ...
-oi = oiCreate('diffraction limited');
-oi = oiSet(oi,'name','diffraction');
-oi = oiSet(oi,'optics focallength',flengthM);
-oi = oiSet(oi,'optics fnumber',fnumber);
-% psfdata = oiGet(oi,'optics psf data',550);
-% ieNewGraphWin; mesh(psf.xy(:,:,1),psf.xy(:,:,2),psf.psf);
-%}
-
-%{
-oi = oiCreate('shift invariant');
-oi = oiSet(oi,'name','SI');
-%}
-
-oi = oiSet(oi,'optics focallength',flengthM);
-oi = oiSet(oi,'optics fnumber',fnumber);
-[oi_flare,~,psf, psfSupport] = oiComputeFlare(oi,scene,'aperture',aperture);
-% oiWindow(oi_flare);
-ieNewGraphWin; mesh(psfSupport(:,:,1),psfSupport(:,:,2),squeeze(psf(:,:,15)));
-set(gca,'xlim',[-5 5],'ylim',[-5 5]);
-
-% The bad wvf part
-wvf = wvfCreate('wave',400:10:700);
-wvf = wvfSet(wvf, 'focal length', flengthMM, 'mm');
-wvf = wvfSet(wvf, 'calc pupil diameter', flengthMM/fnumber);
-nPixels = oiGet(oi, 'size'); nPixels = nPixels(1);
-wvf = wvfSet(wvf, 'spatial samples', nPixels);
-psf_spacingMM = oiGet(oi,'sample spacing','mm');
-lambdaMM = 550*1e-6;
-pupil_spacingMM = lambdaMM * flengthMM / (psf_spacingMM(1) * nPixels);
-wvf = wvfSet(wvf,'field size mm', pupil_spacingMM * nPixels);
-wvf = wvfCompute(wvf);
-wvfSummarize(wvf);
-psf2 = wvfGet(wvf,'psf',550);
-supp2 = wvfGet(wvf,'spatial support','um');
-
-% getMiddleMatrix(psf2,[50 50])
-ieNewGraphWin; mesh(supp2,supp2,psf2);
-set(gca,'xlim',[-5 5],'ylim',[-5 5]);
-
-oi = oiCompute(wvf, scene);
-oi = oiSet(oi,'name','WVF');
-oiWindow(oi);
-%}

@@ -10,7 +10,7 @@ function wvfSummarize(wvf)
 wave = wvfGet(wvf,'wave');
 
 fprintf('\nwavefront struct name: %s\n',wvf.name);
-if numel(wave) > 1, fprintf('Summarizing for wave %d\n',wave(1));
+if numel(wave) > 1, fprintf('Summarizing for wave %d\n',wave(1));end
 fprintf('-------------------\n');
 
 fprintf('f number\t %f\n',wvfGet(wvf,'fnumber'))
