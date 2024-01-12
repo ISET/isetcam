@@ -202,13 +202,12 @@ for ww = 1:nWave
     else
         p(:,:,ww) = ImageConvFrequencyDomain(p(:,:,ww), PSF{ww}, 2 );
     end
-
+    % otf requires a single wavelength
+    otf(:,:,ww) = wvfGet(wvf,'otf',wavelist(ww));
 end
 
 oi = oiSet(oi,'photons',p);
-
-oi = oiSet(oi,'optics',wvf2optics(wvf));
+oi = oiSet(oi,'optics OTF',otf);
 oi = oiSet(oi,'optics wvf',wvf);
-
 end
 
