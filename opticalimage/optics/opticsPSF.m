@@ -157,13 +157,14 @@ currentUnitScale = ieUnitScaleFactor(unit);
 mmUnitScale      = 1000/currentUnitScale;
 wvf = wvfSet(wvf,'field size mm', pupil_spacing * oiSize * mmUnitScale); % only accept mm
 
-% Compute the PSF.  We may need to consider LCA and other parameters
-% at this point.  It should be possible to set this true easily.
-switch wvf.customLCA
-    case 'human'
+% Compute the PSF.  
+
+if ~isempty(wvf.customLCA)
+    if strcmp(wvf.customLCA,'human')
         wvf = wvfCompute(wvf,'aperture',aperture,'human lca',true);
-    otherwise
-        wvf = wvfCompute(wvf,'aperture',aperture,'human lca',false);
+    end
+else
+    wvf = wvfCompute(wvf,'aperture',aperture,'human lca',false);
 end
 
 % Make this work:  wvfPlot(wvf,'psf space',550);
@@ -185,6 +186,7 @@ p = oiGet(oi,'photons');
 oiHeight = size(p,1);
 oiWidth = size(p,2);
 
+otf= zeros(oiSize,oiSize,nWave);
 for ww = 1:nWave
     
     % Deal with non square scenes

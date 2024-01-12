@@ -29,7 +29,7 @@ flengthMM = flengthM*1e3;
 
 pupilMM = (flengthMM)/fnumber;
 
-scene = sceneCreateHDR(s_size,17,1);
+scene = sceneCreateHDR(s_size,17,0);
 
 scene = sceneAdjustLuminance(scene,'peak',1e5);
 
@@ -38,7 +38,7 @@ index = 1;
 
 %% Loop comparing the three methods
 
-fig_plot = figure;set(fig_plot, 'AutoResizeChildren', 'off');
+fig_plot = figure; set(fig_plot, 'AutoResizeChildren', 'off');
 for fnumber = 5:4:13
     oi = oiCreate('diffraction limited');
 
@@ -48,7 +48,7 @@ for fnumber = 5:4:13
     % oi needs information from scene to figure out the proper resolution.
     oi = oiCompute(oi, scene);
     oi = oiCrop(oi,'border');
-    oiWindow(oi);
+    % oiWindow(oi);
 
     oi = oiSet(oi, 'name','dl');
     ip = piRadiance2RGB(oi,'etime',1);
@@ -63,7 +63,7 @@ for fnumber = 5:4:13
     oi_flare = oiCompute(oi,scene,'aperture',aperture);
     oi_flare = oiSet(oi_flare, 'name','flare');
     oi_flare = oiCrop(oi_flare,'border');
-    oiWindow(oi_flare);
+    % oiWindow(oi_flare);
 
     % oi_wvf = oiSet(oi_wvf,'displaymode','hdr');
     ip_flare = piRadiance2RGB(oi_flare,'etime',1);
@@ -85,7 +85,7 @@ for fnumber = 5:4:13
 
     oi_wvf = oiCompute(wvf, scene);
     oi_wvf = oiSet(oi_wvf, 'name','wvf');
-    oiWindow(oi_wvf);
+    % oiWindow(oi_wvf);
     oi_wvf = oiCrop(oi_wvf,'border');
     ip_wvf = piRadiance2RGB(oi_wvf,'etime',1);
     rgb_wvf = ipGet(ip_wvf,'srgb');
