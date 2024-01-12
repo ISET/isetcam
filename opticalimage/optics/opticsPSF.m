@@ -212,7 +212,9 @@ for ww = 1:nWave
 end
 
 oi = oiSet(oi,'photons',p);
-oi = oiSet(oi,'optics OTF',otf);
+wvfOptics = wvf2optics(wvf);
+oi.optics.OTF = wvfOptics.OTF;
+
 oi = oiSet(oi,'optics wvf',wvf);
 end
 
