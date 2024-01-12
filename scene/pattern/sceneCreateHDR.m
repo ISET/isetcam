@@ -9,7 +9,7 @@ wave = 400:10:700;
 nWave = numel(wave);
 
 if backgroundimage % logical
-    image = imread('~/Desktop/hdr_street.jpg');
+    image = imread(fullfile(isetRootPath,'data/images/rgb/PsychBuilding.png'));
     image = rgb2gray(double(image)/255);
 
     image = imresize(image,[n,n]);
