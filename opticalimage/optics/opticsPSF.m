@@ -212,8 +212,15 @@ for ww = 1:nWave
 end
 
 oi = oiSet(oi,'photons',p);
+
 wvfOptics = wvf2optics(wvf);
+
+% Update the OTF struct while preserve the optics struct.
 oi.optics.OTF = wvfOptics.OTF;
+
+% We saved OTF in optics, we can clear the data saved in wvf, if we need
+% them, we can call wvfCompute.
+wvf = wvfClearData(wvf);
 
 oi = oiSet(oi,'optics wvf',wvf);
 end
