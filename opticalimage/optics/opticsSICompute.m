@@ -1,7 +1,7 @@
-function oi = opticsSICompute(scene,oi,aperture,varargin)
+function oi = opticsSICompute(scene,oiwvf,aperture,varargin)
 %Calculate OI irradiance using a custom shift-invariant PSF
 %
-%    oi = opticsSICompute(scene,oi,varargin)
+%    oi = opticsSICompute(scene,oiwvf,varargin)
 %
 % The shift invariant transform (OTF) is stored in the optics structure in
 % the optics.data.OTF slot.  The representation includes the spatial
@@ -26,21 +26,32 @@ function oi = opticsSICompute(scene,oi,aperture,varargin)
 %
 % Copyright ImagEval Consultants, LLC, 2005
 
+%%
 if ieNotDefined('scene'), error('Scene required.'); end
-if ieNotDefined('oi'), error('Opticalimage required.'); end
+if ieNotDefined('oiwvf'), error('Opticalimage or wvf required.'); end
 if ieNotDefined('aperture'), aperture = []; end
 showWbar = ieSessionGet('waitbar');
 
-if strcmp(oi.type,'wvf')
-    wvf = oi;
+% Interpret the oiwvf as an oi or wvf.  If an oi, it might have a wvf.
+if strcmp(oiwvf.type,'wvf')
+    % User sent in a wvf
+    wvf = oiwvf;
     flength = wvfGet(wvf,'focal length','m');
     fnumber = wvfGet(wvf, 'f number');
     oi = oiCreate('shift invariant');
     oi = oiSet(oi,'f number',fnumber);
     oi = oiSet(oi,'optics focal length',flength);
-else
-    wvf = [];
+elseif strcmp(oiwvf.type,'opticalimage')
+    % User sent an OI.  It might have a wvf in the optics
+    oi = oiwvf;
+    optics = oiGet(oi,'optics');
+    if isfield(optics,'wvf')
+        wvf = optics.wvf;
+    else
+        wvf = [];
+    end
 end
+
 % This is the default compute path
 optics = oiGet(oi,'optics');
 
@@ -91,7 +102,6 @@ if showWbar, waitbar(0.6,wBar,'Applying PSF-SI'); end
 % We replace the old OTF based method with the version that goes
 % through the wavefront terms developed for the flare calculation.
 oi = opticsPSF(oi,scene,aperture,wvf,varargin{:});
-
 
 switch lower(oiGet(oi,'diffuserMethod'))
     case 'blur'

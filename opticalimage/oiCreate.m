@@ -195,12 +195,16 @@ switch ieParamFormat(oiType)
         oi = oiSet(oi,'optics',optics);
         
     case {'humanmw'}
+        % oi = oiCreate('human mw');
+        %
         % Marimont and Wandell human optics model.
         %
         % Historically, 'human' defaulted to the Marimont and Wandell
         % case.  Changed July, 2023. So this could create some
         % trouble. But so far so good.
-        [oi,wvf] = oiCreate('shift invariant');
+        oi = oiCreate('shift invariant');
+        wvf = [];   % Not part of the M-W calculation
+
         oi = oiSet(oi,'diffuserMethod','skip');
         oi = oiSet(oi,'optics',opticsCreate('human mw'));
         oi = oiSet(oi,'name','human-MW');
@@ -225,7 +229,7 @@ switch ieParamFormat(oiType)
 
         % These optics default to the Thibos zcoeffs for 3mm, unless
         % varargin has something else in mind.  The wvf is attached to
-        % oi.optics.wvf
+        % oi.optics.wvf but also returned by this function, oiCreate.
         [optics,wvf] = opticsCreate('wvf human', varargin{:});
         oi = oiSet(oi, 'optics', optics);
         oi = oiSet(oi, 'name', 'human-WVF');

@@ -45,6 +45,7 @@ p.KeepUnmatched = true;
 
 p.addRequired('oi',@(x)(isstruct(x) && isequal(x.type,'opticalimage')));
 p.addRequired('scene',@(x)(isstruct(x) && isequal(x.type,'scene')));
+
 if ieNotDefined('aperture'), aperture = []; end
 if ieNotDefined('wvf'), wvf = []; end
 
@@ -71,7 +72,7 @@ end
 end
 
 %-------------------------------------------
-function oi = oiApplyPSF(oi,scene,aperture,wvf,unit,padvalue)
+function oi = oiApplyPSF(oi,scene,aperture,wvf,unit,padvalue,humanlca)
 %Calculate and apply the otf waveband by waveband
 %
 %   oi = oiApplyPSF(oi,method,unit);
@@ -91,7 +92,6 @@ if ieNotDefined('oi'),     error('Optical image required.'); end
 if ieNotDefined('aperture'), aperture = [];  end
 if ieNotDefined('wvf'),           wvf = [];  end
 if ieNotDefined('unit'),         unit = 'mm';end
-
 
 % Pad the optical image to allow for light spread.  Also, make sure the row
 % and col values are even.
@@ -122,39 +122,50 @@ end
 
 oi = oiPadValue(oi,padSize,padType,sDist);
 
-
 % Convert the oi into the wvf format and compute the PSF
 wavelist  = oiGet(oi,'wave');
+flength   = oiGet(oi,'focal length',unit);
+fnumber   = oiGet(oi,'f number');
 
-flength = oiGet(oi,'focal length',unit);
-fnumber   = oiGet(oi, 'f number');
-oiSize    = max(oiGet(oi,'size'));   % Larger of the two sizes
+% WVF is square.  Use the arger of the two sizes
+oiSize    = max(oiGet(oi,'size'));   
 
 if isempty(wvf)
     wvf = wvfCreate('wave',wavelist);
 end
 
+% Make sure the wvf matches how the person set the oi/optics info
 wvf = wvfSet(wvf, 'focal length', flength, unit);
 wvf = wvfSet(wvf, 'calc pupil diameter', flength/fnumber);
-
-wvf = wvfSet(wvf,'wave',wavelist);
+wvf = wvfSet(wvf, 'wave',wavelist);
 wvf = wvfSet(wvf, 'spatial samples', oiSize);
 
+% Setting this matches the pupil sample spacing with the oi sample
+% spacing.
+%
+% BW: Worried about the lambdaM fixed value.
 psf_spacing = oiGet(oi,'sample spacing',unit);
 
+% 550 nm.
 lambdaM = 550*1e-9;
-
 lambdaUnit = ieUnitScaleFactor(unit)*lambdaM;
 
-pupil_spacing = lambdaUnit * flength / (psf_spacing(1) * oiSize);
-
+% Set the reference field size (see t_wvfOverview).  This set only takes mm
+% for now.  We may change in the future.
+pupil_spacing    = lambdaUnit * flength / (psf_spacing(1) * oiSize);
 currentUnitScale = ieUnitScaleFactor(unit);
-mmUnitScale = 1000/currentUnitScale;
+mmUnitScale      = 1000/currentUnitScale;
 wvf = wvfSet(wvf,'field size mm', pupil_spacing * oiSize * mmUnitScale); % only accept mm
 
 % Compute the PSF.  We may need to consider LCA and other parameters
-% at this point.
-wvf = wvfCompute(wvf,'aperture',aperture);
+% at this point.  It should be possible to set this true easily.
+switch wvf.customLCA
+    case 'human'
+        wvf = wvfCompute(wvf,'aperture',aperture,'human lca',true);
+    otherwise
+        wvf = wvfCompute(wvf,'aperture',aperture,'human lca',false);
+end
+
 % Make this work:  wvfPlot(wvf,'psf space',550);
 
 % Old
@@ -196,6 +207,8 @@ end
 
 oi = oiSet(oi,'photons',p);
 
-oi.optics = wvf2optics(wvf);
+oi = oiSet(oi,'optics',wvf2optics(wvf));
+oi = oiSet(oi,'optics wvf',wvf);
+
 end
 
