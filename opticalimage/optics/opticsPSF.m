@@ -72,7 +72,7 @@ end
 end
 
 %-------------------------------------------
-function oi = oiApplyPSF(oi,scene,aperture,wvf,unit,padvalue,humanlca)
+function oi = oiApplyPSF(oi,scene,aperture,wvf,unit,padvalue)
 %Calculate and apply the otf waveband by waveband
 %
 %   oi = oiApplyPSF(oi,method,unit);
@@ -157,13 +157,15 @@ currentUnitScale = ieUnitScaleFactor(unit);
 mmUnitScale      = 1000/currentUnitScale;
 wvf = wvfSet(wvf,'field size mm', pupil_spacing * oiSize * mmUnitScale); % only accept mm
 
-% Compute the PSF.  
-
+% Compute the PSF.  We may need to consider LCA and other parameters
+% at this point.  It should be possible to set this true easily.
 if ~isempty(wvf.customLCA)
+    % For now, human is the only option
     if strcmp(wvf.customLCA,'human')
         wvf = wvfCompute(wvf,'aperture',aperture,'human lca',true);
     end
 else
+    % customLCA is empty
     wvf = wvfCompute(wvf,'aperture',aperture,'human lca',false);
 end
 
@@ -186,7 +188,8 @@ p = oiGet(oi,'photons');
 oiHeight = size(p,1);
 oiWidth = size(p,2);
 
-otf= zeros(oiSize,oiSize,nWave);
+otf = zeros(oiSize,oiSize,nWave);
+
 for ww = 1:nWave
     
     % Deal with non square scenes
