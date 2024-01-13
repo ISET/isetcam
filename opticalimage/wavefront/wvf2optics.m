@@ -130,10 +130,10 @@ optics = opticsSet(optics, 'fnumber', fnumber);
 optics = opticsSet(optics, 'focalLength', flength);
 
 % Copy the OTF parameters.
-optics = opticsSet(optics,'OTF fx', fx);
-optics = opticsSet(optics,'OTF fy', fy);
+optics = opticsSet(optics,'OTF fx', fx);    % cyc/mm
+optics = opticsSet(optics,'OTF fy', fy);    % cyc/mm
 optics = opticsSet(optics,'otfdata', otf);
-optics = opticsSet(optics,'OTF wave', wave);
+optics = opticsSet(optics,'OTF wave', wave); % nm
 optics = opticsSet(optics,'wave', wave);
 
 % We are planning to compute the OTF for shiftinvariant and
@@ -145,6 +145,8 @@ optics = opticsSet(optics,'wave', wave);
 % optics = opticsSet(optics,'zcoeffs diameter',wvfGet(wvf,'measured pupil diameter'));
 
 % ISETCam transmittance representation initialized as 1s.
+% ISETBio doesn't use the transmittance field.  It uses Lens. This can
+% create a problem.
 optics.transmittance.wave = opticsGet(optics,'wave');
 optics.transmittance.scale = ones(size(optics.transmittance.wave));
 
