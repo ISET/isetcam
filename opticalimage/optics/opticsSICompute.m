@@ -96,13 +96,21 @@ if showWbar, waitbar(0.6,wBar,'OI-SI: Applying PSF'); end
 % 'blurred' depth plane in the oi structure.
 if showWbar, waitbar(0.6,wBar,'Applying PSF-SI'); end
 
-% The original calculation
-% oi = opticsOTF(oi,scene,varargin{:});
+% The optics calculation
+opticsName = oiGet(oi,'optics name');
+switch opticsName
+    case 'human-MW'
+        % We did not update the MW calculation.  It was very rough
+        % anyway.  We use the old methods to calculate.
+        oi = opticsOTF(oi,scene,varargin{:});
+    otherwise
+        % We replaced the old OTF based method with the version that
+        % goes through the wavefront terms, as developed for the flare
+        % calculation.
+        oi = opticsPSF(oi,scene,aperture,wvf,varargin{:});
+end
 
-% We replace the old OTF based method with the version that goes
-% through the wavefront terms developed for the flare calculation.
-oi = opticsPSF(oi,scene,aperture,wvf,varargin{:});
-
+% Diffuser
 switch lower(oiGet(oi,'diffuserMethod'))
     case 'blur'
         if showWbar, waitbar(0.75,wBar,'Diffuser'); end
