@@ -131,6 +131,7 @@ p.addRequired('scene',@isstruct);
 p.addParameter('padvalue','zero',@(x)(ischar(x) || isvector(x)));
 p.addParameter('crop',false,@islogical);
 p.addParameter('aperture',[],@ismatrix);
+p.addParameter('pixelsize',[],@isscalar); % in meters
 p.parse(oi,scene,varargin{:});
 
 % Ages ago, we some code flipped the order of scene and oi.  We think
@@ -140,6 +141,16 @@ if strcmp(oi.type,'scene') && (strcmp(scene.type,'opticalimage') ||...
         strcmp(scene.type,'wvf'))
     warning('flipping oi and scene variables.')
     tmp = scene; scene = oi; oi = tmp; clear tmp
+end
+%% Adjust oi fov if user send in a pixel size
+
+if ~isempty(p.Results.pixelsize)
+    pz = p.Results.pixelsize;
+    sw = sceneGet(scene, 'cols');
+    flengthM = oiGet(oi, 'focal length', 'm');
+    wAngular = atand(pz*sw/2/flengthM)*2;
+    % oi use scene hFOV later.
+    scene = sceneSet(scene, 'wAngular',wAngular);
 end
 
 %% Compute according to the selected model.
