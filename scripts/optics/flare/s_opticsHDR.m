@@ -20,7 +20,7 @@ ieInit;
 ieSessionSet('init clear',true);
 close all;
 %%
-s_size = 1024;
+s_size = 4000;
 flengthM = 17e-3;
 fnumber = 8;
 
@@ -31,6 +31,7 @@ scene = sceneCreateHDR(s_size,17,1);
 scene = sceneAdjustLuminance(scene,'peak',1e5);
 
 scene = sceneSet(scene,'fov',20);
+scene = sceneSet(scene,'distance', 1);
 
 index = 1;
 fig = figure;set(fig, 'AutoResizeChildren', 'off');
@@ -39,7 +40,6 @@ for fnumber = 3:5:13
 
     oi = oiSet(oi,'optics focallength',flengthM);
     oi = oiSet(oi,'optics fnumber',fnumber);
-
     % oi needs information from scene to figure out the proper resolution.
     oi = oiCompute(oi, scene);
     oi = oiCrop(oi,'border');
@@ -55,15 +55,15 @@ for fnumber = 3:5:13
     %% Match wvf with OI
     aperture = [];
     oi.optics.model = 'shiftinvariant';
-    oi_wvf = oiCompute(oi,scene,'aperture',aperture);
+    oi_wvf = oiCompute(oi,scene,'aperture',aperture,'pixelsize',2.0833e-6);
     oi_wvf = oiSet(oi_wvf, 'name','flare');
     oi_wvf = oiCrop(oi_wvf,'border');
     % oiWindow(oi_wvf);
 
     % oi_wvf = oiSet(oi_wvf,'displaymode','hdr');
-    ip_wvf = piRadiance2RGB(oi_wvf,'etime',1);
+    ip_wvf = piRadiance2RGB(oi_wvf,'etime',1,'pixel size',3); % um
     rgb_wvf = ipGet(ip_wvf,'srgb');
-    subplot(3,3,index);imshow(rgb);index = index+1;title(sprintf('Flare-Fnumber:%d\n',fnumber));
+    subplot(3,3,index);imshow(rgb_wvf);index = index+1;title(sprintf('Flare-Fnumber:%d\n',fnumber));
     subplot(3,3, index);imagesc(abs(rgb(:,:,2)-rgb_wvf(:,:,2)));colormap jet; colorbar; index = index+1;title('difference');
     % assert(max2(abs(rgb(:,:,2)-rgb_wvf(:,:,2)))<0.1);
 end
