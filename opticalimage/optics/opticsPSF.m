@@ -146,13 +146,16 @@ wvf = wvfSet(wvf, 'spatial samples', oiSize);
 % BW: Worried about the lambdaM fixed value.
 psf_spacing = oiGet(oi,'sample spacing',unit);
 
-% 550 nm.
-lambdaM = 550*1e-9;
+% Default measurement wavelength is 550 nm.
+lambdaM = wvfGet(wvf, 'measured wl', 'm');
+
 lambdaUnit = ieUnitScaleFactor(unit)*lambdaM;
 
-% Set the reference field size (see t_wvfOverview).  This set only takes mm
-% for now.  We may change in the future.
-pupil_spacing    = lambdaUnit * flength / (psf_spacing(1) * oiSize);
+% Calculate the pupil sample spacing.
+pupil_spacing    = lambdaUnit * flength / (psf_spacing(1) * oiSize); % in meters
+
+% Account for different unit scale, scale the user input unit to mm, 
+% This set only takes mm for now.
 currentUnitScale = ieUnitScaleFactor(unit);
 mmUnitScale      = 1000/currentUnitScale;
 wvf = wvfSet(wvf,'field size mm', pupil_spacing * oiSize * mmUnitScale); % only accept mm
