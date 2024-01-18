@@ -188,7 +188,7 @@ p = oiGet(oi,'photons');
 oiHeight = size(p,1);
 oiWidth = size(p,2);
 
-otf = zeros(oiSize,oiSize,nWave);
+% otf = zeros(oiSize,oiSize,nWave);
 
 for ww = 1:nWave
     
@@ -208,7 +208,7 @@ for ww = 1:nWave
         p(:,:,ww) = ImageConvFrequencyDomain(p(:,:,ww), PSF{ww}, 2 );
     end
     % otf requires a single wavelength
-    otf(:,:,ww) = wvfGet(wvf,'otf',wavelist(ww));
+    % otf(:,:,ww) = wvfGet(wvf,'otf',wavelist(ww));
 end
 
 oi = oiSet(oi,'photons',p);
