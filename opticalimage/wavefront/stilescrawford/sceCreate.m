@@ -111,8 +111,8 @@ switch (rho_source)
             rawData = ReadStructsFromText(dataFilename);
             initWls = [400 5 71];
             rho0 = interp1([rawData.Wavelength]', ...
-                [rawData.Peakedness]', SToWls(initWls), 'linear');
-            index = find(SToWls(initWls) == 550);
+                [rawData.Peakedness]', ieSToWls(initWls), 'linear');
+            index = find(ieSToWls(initWls) == 550);
             if (isempty(index))
                 error('Oops. Need a splined value at exactly 550 nm');
             end
@@ -143,8 +143,8 @@ switch (rho_source)
         rawData = ReadStructsFromText(dataFilename);
         initWls = [400 5 71];
         rho0 = interp1([rawData.Wavelength]', [rawData.Peakedness]', ...
-            SToWls(initWls), 'linear');
-        index = find(SToWls(initWls) == 550);
+            ieSToWls(initWls), 'linear');
+        index = find(ieSToWls(initWls) == 550);
         if (isempty(index))
             error('Oops. Need a splined value at exactly 550 nm');
         end
@@ -153,7 +153,7 @@ switch (rho_source)
     case 'none'
         % Fill in with zeros
         initWls = [400 10 31];
-        rho0 = zeros(size(SToWls(initWls)));
+        rho0 = zeros(size(ieSToWls(initWls)));
 
     otherwise
         error('Unsupported method %s\n', rho_source);
@@ -187,8 +187,18 @@ end
 %% Spline initial wavelength sampling to request in wls, 
 % and extend with values at min/max wavelength if requested
 sceP.wavelengths = wave(:);
-sceP.rho = interp1(SToWls(initWls), rho0, sceP.wavelengths, 'linear');
+sceP.rho = interp1(ieSToWls(initWls), rho0, sceP.wavelengths, 'linear');
 index = find(sceP.wavelengths < initWls(1));
 if (~isempty(index)), sceP.rho(index) = rho0(1); end
 index = find(sceP.wavelengths < initWls(end));
 if (~isempty(index)), sceP.rho(index) = rho0(end); end
+
+end
+
+function vec = ieSToWls(wls)
+
+lastW = wls(1) + (wls(3)-1)*wls(2);
+vec = (wls(1):wls(2):lastW)';
+
+end
+
