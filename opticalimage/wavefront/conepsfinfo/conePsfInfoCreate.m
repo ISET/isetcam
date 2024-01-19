@@ -73,7 +73,7 @@ if (~isempty(p.Results.spectralSensitivities))
     end
     conePsfInfo.spectralSensitivities = p.Results.spectralSensitivities;
 else
-    temp = load('T_cones_ss2');
+    temp = load('conesPsfInfoData_ss2');
     conePsfInfo.spectralSensitivities = SplineCmf(temp.S_cones_ss2, ...
         temp.T_cones_ss2, conePsfInfo.wavelengths);
     clear temp    
