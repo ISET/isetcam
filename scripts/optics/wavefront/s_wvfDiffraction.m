@@ -23,7 +23,7 @@ wvf = wvfSet(wvf,'calc pupil diameter',flengthMM/fNumber);
 wvf = wvfSet(wvf,'focal length',flengthM);
 
 wvf = wvfCompute(wvf);
-wvfPlot(wvf,'2d psf space','unit','um','wave',thisWave,'plot range',10,'airy disk',true);
+wvfPlot(wvf,'psf','unit','um','wave',thisWave,'plot range',10,'airy disk',true);
 AD = airyDisk(thisWave,fNumber,'units','um','diameter',true);
 title(sprintf("fNumber %.2f Wave %.0f Airy Diam %.2f",wvfGet(wvf,'fnumber'),wvfGet(wvf,'wave'),AD));
 

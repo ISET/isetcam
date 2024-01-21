@@ -11,9 +11,12 @@
 % As a temporary workaround, we precalculate the OTF at the OI's resolution 
 % and configure the OI accordingly. 
 % This method allows oiCompute to bypass the interpolation step.
-
-
+%
 % Zhenyi, 2023
+
+%  Not running.  Maybe delete or debug
+% 
+return;
 
 %%
 ieInit;

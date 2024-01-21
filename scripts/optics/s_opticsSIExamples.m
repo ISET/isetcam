@@ -87,7 +87,7 @@ oi     = oiSet(oi,'optics model','shiftInvariant');
 
 oi = oiCompute(oi,scene);
 oi = oiSet(oi,'name','Sharpened');
-ieAddObject(oi); oiWindow;
+oiWindow(oi);
 %% Example 3: A Gaussian PSF that changes with wavelength
 % The spread of the Gaussian increases with wavelength, so the long wavelength
 % PSF is much blurrier than the short wavelength PSF.  Look for the color fringing
@@ -106,11 +106,11 @@ oi      = oiSet(oi,'optics',optics);
 
 % Here is the rest of the computation, as above
 oi  = oiSet(oi,'optics model','shiftInvariant');
-scene   = vcGetObject('scene');
+scene   = ieGetObject('scene');
 oi      = oiCompute(oi,scene);
 
 oi = oiSet(oi,'name','Chromatic Gaussian');
-ieAddObject(oi); oiWindow;
+oiWindow(oi);
 %% An asymmetric shift invariant psf
 % Notice that the checks appear a little wider than tall.  In the oiWindow,
 % use
@@ -118,14 +118,20 @@ ieAddObject(oi); oiWindow;
 % * Analyze | Optics | PSF Mesh to see the point spread a different wavelengths
 % * Analyze | Line x Wave Plot to see the loss of contrast a long wavelengths
 % compared to short wavelengths
-%%
+
+%%  This may not be doing the right thing
+%
+% We need to make the wavelength dependence larger
+
 fullName = fullfile(isetRootPath,'data','optics','si2x1GaussianWaveVarying.mat');
-newVal   = vcImportObject('OPTICS',fullName);
-oi       = vcGetObject('oi');
-oi       = oiCompute(oi,scene);
+oi = ieGetObject('oi');
+tmp = load(fullName);
+oi = oiSet(oi,'optics',tmp.optics);
+oi = oiSet(oi,'optics name','Gaussian Wave');
+oi = oiCompute(oi,scene);
 oi = oiSet(oi,'name','Asymmetric Gaussian');
-ieAddObject(oi);
-oiWindow;
+oiWindow(oi);
+
 %% Compare multiple oi images
 % This function lets you compare the image from all of the computed optical
 % images.
