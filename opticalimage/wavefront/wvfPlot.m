@@ -370,7 +370,8 @@ switch(pType)
         % Compute OTF, with DC at center for visualazation.  Not entirely
         % clear why we don't simply get the otf from the wvf structure
         % using wvfGet, shift to zero center using fftshift, and plot that.
-        [~,~,otf] = PsfToOtf([],[],psf);
+        % [~,~,otf] = PsfToOtf([],[],psf);
+        otf  = fftshift(fft2(ifftshift(psf)));  % Key line from PTB
         
         % Restrict to parameter range
         if ~isinf(pRange)
@@ -407,8 +408,9 @@ switch(pType)
         % Compute OTF, with DC at center for visualazation.  Not entirely
         % clear why we don't simply get the otf from the wvf structure
         % using wvfGet, shift to zero center using fftshift, and plot that.
-        [~,~,otf] = PsfToOtf([],[],psf);
-        
+        % [~,~,otf] = PsfToOtf([],[],psf);
+        otf = fftshift(fft2(ifftshift(psf)));  % Key line from PTB
+
         % Restrict to parameter range
         if ~isinf(pRange)
             index = (abs(freq) < pRange);
@@ -451,8 +453,9 @@ switch(pType)
         % Compute OTF, with DC at center for visualazation.  Not entirely
         % clear why we don't simply get the otf from the wvf structure
         % using wvfGet, shift to zero center using fftshift, and plot that.
-        [~,~,otf] = PsfToOtf([],[],psf);
-        
+        % [~,~,otf] = PsfToOtf([],[],psf);
+        otf = fftshift(fft2(ifftshift(psf)));  % Key line from PTB
+
         % Restrict to parameter range
         if ~isinf(pRange)
             index = (abs(freq) < pRange);

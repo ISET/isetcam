@@ -221,7 +221,12 @@ switch parm
     case {'wangular','widthangular','hfov','horizontalfieldofview','fov'}
         % Angular field of view for the OI width.  In degrees.
         oi.wAngular = val;
-        
+    case {'samplespacing'}
+        % In meters
+        oiWidth = oiGet(oi,'cols');
+        focallengthM = oiGet(oi, 'focal length', 'm');
+        wAngularMatchPixel = atand(val*oiWidth/2/focallengthM)*2;
+        oi = oiSet(oi, 'wAngular',wAngularMatchPixel);
     case 'magnification'
         % Optical images have other mags calculated from the optics.
         evalin('caller','mfilename')

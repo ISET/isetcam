@@ -150,6 +150,8 @@ switch lower(opticsType)
             optics = rmfield(optics,'lens');
         end
     
+        % Maybe wvf.customLCA = 'none';
+
     case {'human','humanmw'}
         % Pupil radius in meters.  Default is 3 mm
         %
@@ -259,6 +261,9 @@ switch lower(opticsType)
         wvfP = wvfSet(wvfP, 'measured pupil diameter', measPupilDiameterMM);
         wvfP = wvfSet(wvfP, 'calc pupil diameter', pupilDiameterMM);
 
+        % Note that we are using human lca.
+        wvfP   = wvfSet(wvfP,'custom lca','human');
+
         % Include human chromatic aberration because this is wvf human
         wvfP   = wvfCompute(wvfP, 'human lca', true);
         oi     = wvf2oi(wvfP);
@@ -282,6 +287,7 @@ switch lower(opticsType)
         if checkfields(optics, 'transmittance')
             optics = rmfield(optics, 'transmittance');
         end
+
 
         % Store the wavefront parameters
         optics.wvf = wvfP;

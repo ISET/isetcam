@@ -67,6 +67,9 @@ sceneHDR = sceneSet(sceneHDR,'fov',1);
 
 %% These two scenes are both 384x384.
 
+% The piFlareApply is deprecated and part of ISETAuto
+%
+%{
 [oiHDR, pupilFunctionHDR, psfHDR, psfSupportHDR] = piFlareApply(sceneHDR,'num sides aperture',nsides, ...
     'focal length',wvfGet(wvf,'focal length','m'), ...
     'fnumber',wvfGet(wvf,'fnumber'));
@@ -96,6 +99,7 @@ scenePoint = sceneSet(scenePoint,'fov',2);
 ieNewGraphWin();
 mesh(psfSupportPoint(:,:,1),psfSupportPoint(:,:,2),psfP); title('Point');
 set(gca,'xlim',[-20 20],'ylim',[-20 20]);
+
 
 %%  Another issue: 
 % 
@@ -155,7 +159,7 @@ nexttile; mesh(psfSupportHDR(:,:,1),psfSupportHDR(:,:,2),psfH); title('HDR');
 set(gca,'xlim',[-20 20],'ylim',[-20 20]);
 nexttile; plot(psfP(:),psfH(:),'o'); identityLine;   
 
-
+%}
 %%
 
 oi = oiCompute(wvf,sceneHDR);
