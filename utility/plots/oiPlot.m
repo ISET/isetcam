@@ -973,7 +973,7 @@ switch lower(pType)
                 [adX,adY,adZ] = ieShape('circle',nCircleSamples,radius);
                 
             case {'shiftinvariant'}
-                psfData  = opticsGet(optics,'psf data',thisWave);
+                psfData  = opticsGet(optics,'psf data',thisWave,units);
                 psf      = psfData.psf;
                 sSupport = psfData.xy;
                 

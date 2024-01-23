@@ -138,6 +138,13 @@ switch parm
             optics = rmfield(optics,'transmittance');
         end
 
+    case {'wvf'}
+        % We are starting to rely on the wvf more in oiCompute. We are
+        % starting to keep the wvf, which ahs the pupil function, psf.
+        % That's big and redundant with the OTF.  We may strip out the
+        % OTF part when we have the wvf.
+        optics.wvf = val;
+
     case {'fnumber','f#'}
         optics.fNumber = val;
     case {'focallength','flength'}

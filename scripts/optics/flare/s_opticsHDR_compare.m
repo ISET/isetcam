@@ -17,8 +17,11 @@
 
 %%
 ieInit;
-clear all; close all
-%%
+ieSessionSet('init clear',true);
+close all
+
+%% Create a scene
+
 s_size = 1024;
 flengthM = 4e-3;
 fnumber = 2.2;
@@ -26,17 +29,20 @@ flengthMM = flengthM*1e3;
 
 pupilMM = (flengthMM)/fnumber;
 
-scene = sceneCreateHDR(s_size,20);
+scene = sceneCreateHDR(s_size,17,0);
 
-scene = sceneAdjustLuminance(scene,'peak',100000);
+scene = sceneAdjustLuminance(scene,'peak',1e5);
 
 scene = sceneSet(scene,'fov',30);
 index = 1;
-fig_plot = figure;set(fig_plot, 'AutoResizeChildren', 'off');
-for fnumber = 3:5:13
+
+%% Loop comparing the three methods
+
+fig_plot = figure; set(fig_plot, 'AutoResizeChildren', 'off');
+for fnumber = 5:4:13
     oi = oiCreate('diffraction limited');
 
-    oi = oiSet(oi,'optics focallength',flengthM);
+    oi = oiSet(oi,'optics focallength',flengthM); % only in meters
     oi = oiSet(oi,'optics fnumber',fnumber);
 
     % oi needs information from scene to figure out the proper resolution.
@@ -50,19 +56,19 @@ for fnumber = 3:5:13
     rgb = ipGet(ip,'srgb');
     subplot(3,3,index);imshow(rgb);index = index+1;title(sprintf('DL-Fnumber:%d\n',fnumber));
 
-    oi.optics.model = 'shiftinvariant';
     %% Compute with oiComputeFlare
 
     aperture = [];
-    oi_flare = oiComputeFlare(oi,scene,'aperture',aperture);
+    oi.optics.model = 'shiftinvariant';
+    oi_flare = oiCompute(oi,scene,'aperture',aperture);
     oi_flare = oiSet(oi_flare, 'name','flare');
     oi_flare = oiCrop(oi_flare,'border');
-    % oiWindow(oi_wvf);
+    % oiWindow(oi_flare);
 
     % oi_wvf = oiSet(oi_wvf,'displaymode','hdr');
     ip_flare = piRadiance2RGB(oi_flare,'etime',1);
     rgb_flare = ipGet(ip_flare,'srgb');
-    subplot(3,3,index);imshow(rgb);index = index+1;title(sprintf('Flare-Fnumber:%d\n',fnumber));
+    subplot(3,3,index);imshow(rgb_flare);index = index+1;title(sprintf('Flare-Fnumber:%d\n',fnumber));
 
     %% match wvf with OI, and compute with oicompute
     wvf = wvfCreate;
@@ -77,51 +83,11 @@ for fnumber = 3:5:13
     wvf = wvfCompute(wvf);
     wvfSummarize(wvf);
 
-    oi = oiCompute(wvf, scene);
-    oi = oiSet(oi, 'name','flare');
-    % oiWindow(oi);
-    oi = oiCrop(oi,'border');
-    ip = piRadiance2RGB(oi,'etime',1);
-    rgb = ipGet(ip,'srgb');
-    subplot(3,3, index);imshow(rgb);index = index+1;title(sprintf('WVF-Fnumber:%d\n',fnumber));
-end
-
-
-
-%%
-function binary_mask = create_shapes()
-    % Create a blank image
-    image_size = 1024;
-    binary_mask = zeros(image_size, image_size);
-
-    % Draw a circle
-    center = [rand(500)+300, 100+rand(500)]; % center of the circle
-    radius = 20;
-    [x, y] = meshgrid(1:image_size, 1:image_size);
-    binary_mask((x - center(1)).^2 + (y - center(2)).^2 <= radius^2) = 1;
-
-    % Draw a rectangle
-    top_left = [500, 500];
-    width = 100;
-    height = 100;
-    binary_mask(top_left(1):(top_left(1)+height), top_left(2):(top_left(2)+width)) = 1;
-
-    % % Draw a triangle
-    % vertices = [200, 300; 250, 400; 150, 400];
-    % binary_mask = insertShape(binary_mask, 'FilledPolygon', vertices(:)', 'Color', 'white', 'Opacity', 1);
-
-    % Draw a hexagon
-    center_hex = [750+rand(100), 750+rand(100)];
-    size_hex = 50;
-    angle = 0:pi/3:2*pi;
-    hex_x = center_hex(1) + size_hex * cos(angle);
-    hex_y = center_hex(2) + size_hex * sin(angle);
-    hexagon = [hex_x; hex_y];
-    binary_mask = insertShape(binary_mask, 'FilledPolygon', hexagon(:)', 'Color', 'white', 'Opacity', 1);
-
-    % Convert to binary
-    binary_mask = im2bw(binary_mask);
-
-    % Display the image
-    % imshow(binary_mask);
+    oi_wvf = oiCompute(wvf, scene);
+    oi_wvf = oiSet(oi_wvf, 'name','wvf');
+    % oiWindow(oi_wvf);
+    oi_wvf = oiCrop(oi_wvf,'border');
+    ip_wvf = piRadiance2RGB(oi_wvf,'etime',1);
+    rgb_wvf = ipGet(ip_wvf,'srgb');
+    subplot(3,3, index);imshow(rgb_wvf);index = index+1;title(sprintf('WVF-Fnumber:%d\n',fnumber));
 end

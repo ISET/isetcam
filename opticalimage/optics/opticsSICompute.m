@@ -1,7 +1,7 @@
-function oi = opticsSICompute(scene,oi,varargin)
+function oi = opticsSICompute(scene,oiwvf,aperture,varargin)
 %Calculate OI irradiance using a custom shift-invariant PSF
 %
-%    oi = opticsSICompute(scene,oi,varargin)
+%    oi = opticsSICompute(scene,oiwvf,varargin)
 %
 % The shift invariant transform (OTF) is stored in the optics structure in
 % the optics.data.OTF slot.  The representation includes the spatial
@@ -26,9 +26,31 @@ function oi = opticsSICompute(scene,oi,varargin)
 %
 % Copyright ImagEval Consultants, LLC, 2005
 
+%%
 if ieNotDefined('scene'), error('Scene required.'); end
-if ieNotDefined('oi'), error('Opticalimage required.'); end
+if ieNotDefined('oiwvf'), error('Opticalimage or wvf required.'); end
+if ieNotDefined('aperture'), aperture = []; end
 showWbar = ieSessionGet('waitbar');
+
+% Interpret the oiwvf as an oi or wvf.  If an oi, it might have a wvf.
+if strcmp(oiwvf.type,'wvf')
+    % User sent in a wvf
+    wvf = oiwvf;
+    flength = wvfGet(wvf,'focal length','m');
+    fnumber = wvfGet(wvf, 'f number');
+    oi = oiCreate('shift invariant');
+    oi = oiSet(oi,'f number',fnumber);
+    oi = oiSet(oi,'optics focal length',flength);
+elseif strcmp(oiwvf.type,'opticalimage')
+    % User sent an OI.  It might have a wvf in the optics
+    oi = oiwvf;
+    optics = oiGet(oi,'optics');
+    if isfield(optics,'wvf')
+        wvf = optics.wvf;
+    else
+        wvf = [];
+    end
+end
 
 % This is the default compute path
 optics = oiGet(oi,'optics');
@@ -36,8 +58,6 @@ optics = oiGet(oi,'optics');
 % Compute the basic parameters of the oi from the scene parameters.
 oi = oiSet(oi,'wangular',sceneGet(scene,'wangular'));
 oi = oiSet(oi,'wave',sceneGet(scene,'wave'));
-
-if isempty(opticsGet(optics,'otfdata')), error('No OTF data'); end
 
 % We use the custom data.
 % oi     = oiSet(oi,'optics',optics);
@@ -68,15 +88,29 @@ switch lower(offaxismethod)
         oi = opticsCos4th(oi);
 end
 
-if showWbar, waitbar(0.6,wBar,'OI-SI: Applying OTF'); end
+if showWbar, waitbar(0.6,wBar,'OI-SI: Applying PSF'); end
 % This section applys the OTF to the scene radiance data to create the
 % irradiance data.
 %
 % If there is a depth plane in the scene, we also blur that and put the
 % 'blurred' depth plane in the oi structure.
-if showWbar, waitbar(0.6,wBar,'Applying OTF-SI'); end
-oi = opticsOTF(oi,scene,varargin{:});
+if showWbar, waitbar(0.6,wBar,'Applying PSF-SI'); end
 
+% The optics calculation
+opticsName = oiGet(oi,'optics name');
+switch lower(opticsName)
+    case {'human-mw','opticsotf'}
+        % We did not update the MW calculation.  It was very rough
+        % anyway.  We use the old methods to calculate.
+        oi = opticsOTF(oi,scene,varargin{:});
+    otherwise
+        % We replaced the old OTF based method with the version that
+        % goes through the wavefront terms, as developed for the flare
+        % calculation.
+        oi = opticsPSF(oi,scene,aperture,wvf,varargin{:});
+end
+
+% Diffuser
 switch lower(oiGet(oi,'diffuserMethod'))
     case 'blur'
         if showWbar, waitbar(0.75,wBar,'Diffuser'); end

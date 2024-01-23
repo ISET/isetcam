@@ -119,8 +119,13 @@ p.addParameter('customlca', [], @(x)( (isempty(x)) || (isa(x, 'function_handle')
 % SCE parameters
 p.addParameter('sceparams',sceCreate([],'none'), @isstruct);
 
-% Cone PSF information
-p.addParameter('calcconepsfinfo',conePsfInfoCreate,@isstruct);
+if exist('conePsfInfoCreate','file')
+    % Cone PSF information - only for ISETBio people
+    p.addParameter('calcconepsfinfo',conePsfInfoCreate,@isstruct);
+else
+    % ISETCam sets to empty
+    p.addParameter('calcconepsfinfo',[],@isstruct);
+end
 
 % Whether to flip the PSF upside/down
 p.addParameter('flipPSFUpsideDown', false, @islogical);

@@ -110,6 +110,8 @@ switch lower(offaxismethod)
         oi = opticsCos4th(oi);
 end
 
+% oiCompute type code
+
 % Pad the optical image to allow for light spread (code from isetcam)
 padSize  = round([sceneHeight sceneWidth]/8);
 padSize(3) = 0;
@@ -119,16 +121,24 @@ oi = oiPadValue(oi,padSize,'zero photons',sDist);
 oiSize = oiGet(oi,'size');
 oiHeight = oiSize(1); oiWidth = oiSize(2);
 
-if oiWidth>oiHeight, oiSize = oiWidth;else oiSize = oiHeight;end
 
+if oiWidth>oiHeight, oiSize = oiWidth;
+else, oiSize = oiHeight;
+end
+
+% Match the sample spacing the user might request as part of oiCompute
 if ~isempty(pixelsize)
     wAngularMatchPixel = atand(pixelsize*oiWidth/2/focallengthM)*2;
     oi = oiSet(oi, 'wAngular',wAngularMatchPixel);
 end
+
 waveList = oiGet(oi, 'wave');
 
-oiDelta = oiGet(oi,'sample spacing','m');
+% Start to compute the pupil function
+
+oiDelta = oiGet(oi,'sample spacing','m');  % In the sensor/retina plane
 oiDelta = oiDelta(1);
+% 
 % For each wavelength, apply the dirty mask
 nWave = numel(waveList);
 for ww = 1:nWave
@@ -136,19 +146,40 @@ for ww = 1:nWave
     % Wavelength in meters
     wavelength = waveList(ww) * 1e-9; % (m)
 
+    %{
+    % To match with the wvf code:
+    flengthM = 4e-3;
+    flengthMM = flengthM*1e3;
+    fnumber = 3;
+    wvf = wvfCreate('wave',400:10:700);
+    wvf = wvfSet(wvf, 'focal length', flengthMM, 'mm');
+    wvf = wvfSet(wvf, 'calc pupil diameter', flengthMM/fnumber);
+    nPixels = oiGet(oi, 'size'); nPixels = nPixels(1);
+    wvf = wvfSet(wvf, 'spatial samples', nPixels);
+    psf_spacingMM = oiGet(oi,'sample spacing','mm');
+    lambdaMM = 550*1e-6;
+    pupil_spacingMM = lambdaMM * flengthMM / (psf_spacingMM(1) * nPixels);
+    wvf = wvfSet(wvf,'field size mm', pupil_spacingMM * nPixels);
+    wvf = wvfCompute(wvf);
+    wavelengthNM = round(wavelength*10^9);
+    %}
+
     % Set up the pupil function.  I am not sure about the logic for
     % this spatial support.  Could be right, but I just don't know.
     % What plane is it in?  Pupil?  oiWidth is in the sensor plane, so
     % maybe the spacing isn't quite right? (BW).
     pupilSampleStepX = 1 / (oiDelta * oiSize) * wavelength * focallengthM;
-    pupilSupportX = (-0.5: 1/oiSize: 0.5-1/oiSize) * pupilSampleStepX * oiSize;    
+    % wvfGet(wvf, 'pupil sample spacing','m',round(wavelength*10^9)) 
+    pupilSupportX = (-0.5: 1/oiSize: 0.5-1/oiSize) * pupilSampleStepX * oiSize;
+    % wvfGet(wvf, 'pupil support','m',round(wavelength*10^9)) 
+    
     pupilSampleStepY = 1 / (oiDelta * oiSize) * wavelength * focallengthM;
     pupilSupportY = (-0.5: 1/oiSize: 0.5-1/oiSize) * pupilSampleStepY * oiSize;
     [pupilX, pupilY] = meshgrid(pupilSupportX, pupilSupportY);
+    
     pupilRadius = 0.5*pupilDiameter;
 
     pupilRadialDistance = sqrt(pupilX.^2 + pupilY.^2);
-
 
     % Valid parts of the pupil
     pupilMask = pupilRadialDistance <= pupilRadius;
@@ -182,6 +213,7 @@ for ww = 1:nWave
     % https://www.mathworks.com/company/newsletters/articles/analyzing-lasik-optical-data-using-zernike-functions.html
     % ---------------------------------------------------------------------
     
+    % No general wavefront aberration.  But we could defocus.
     % Default defocusTerm is 0
     wavefront = zeros(size(pupilRho)) + defocusTerm*(2 * pupilRho .^2 - 1);
 
@@ -190,6 +222,15 @@ for ww = 1:nWave
     % This is the pupil function.  We should compare with the wvf
     % calculation.
     pupilFunction = phase_term .* pupilMask;
+
+    % By here, we have the pupil function
+    % tmp = wvfGet(wvf,'pupil function',round(wavelength*10^9));
+    %{
+    % Build a wvf here and use wvfComputePSF ....
+   
+    %}
+
+    % This is the same as wvfComputePSF function
 
     % Calculate the PSF from the pupil function
     psfFnAmp = fftshift(fft2(ifftshift(pupilFunction)));
@@ -217,8 +258,8 @@ for ww = 1:nWave
      title('piFlareApply');
      diskSize = airyDisk(waveList(ww),fNumber,'units','um','diameter',true)    
     %}
-
-    % Deal with non squared scenes
+    % PSFwvf = wvfGet(wvf,'psf',round(wavelength*1e9));
+    % Deal with non square scenes
     if oiWidth ~= oiHeight
         sz = double(abs(oiWidth - oiHeight)/2);
         if oiWidth<oiHeight

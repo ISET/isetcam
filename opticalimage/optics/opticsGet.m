@@ -833,6 +833,8 @@ switch parm
                     % now.
                     nSamps = size(psf,1)/2;
                     fSupport = opticsGet(optics,'otf fx',units);
+
+                    % What is the spatial unit?
                     sSupport = opticsGet(optics,'psf support',fSupport,nSamps);
                     
                     % BW:  July 3, 2023.
