@@ -281,8 +281,11 @@ switch lower(opticsType)
             (2 * pupilRadiusMeters));
         optics = opticsSet(optics, 'focalLength', fLengthMeters);
 
-        % Human, so add default human Lens, and get rid of the ISETCam
-        % transmittance field.
+        % Human, so we assume this is ISETBio We add default human Lens,
+        % and get rid of the ISETCam transmittance field.
+        %
+        % There is another lens constructor for in isetlens (lensC).  That
+        % is quite confusing.  It is used by ISET3d.
         optics.lens = Lens;
         if checkfields(optics, 'transmittance')
             optics = rmfield(optics, 'transmittance');
