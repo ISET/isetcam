@@ -95,12 +95,12 @@ filterSize = params.filterSize;
 % For the support to be an odd number of points so that the gaussians are
 % symmetric
 if isodd(filterSize),support = filterSize;
-else                 support = filterSize - 1; params.filterSize = support;
+else,                support = filterSize - 1; params.filterSize = support;
 end
 
 % Retrieve the parameters will be used to create the Gaussian filters that
 % make up the SCIELAB filters.
-[x1 x2 x3] = scGaussianParameters(sampPerDeg,params);
+[x1, x2, x3] = scGaussianParameters(sampPerDeg,params);
 
 % Generate the filters
 if (dimension == 1 || dimension == 2)
@@ -136,18 +136,23 @@ if ( (sampPerDeg < minSAMPPERDEG) && (dimension ~= 2) )
     uprate = ceil(minSAMPPERDEG/sampPerDeg);
     sampPerDeg = sampPerDeg * uprate;
     % filterSize = filterSize * uprate;
-else  uprate = 1;
+else,  uprate = 1;
 end
 
 % upsample and downsample
 if ( ((dimension==1) || (dimension==3)) && (uprate>1) )
     disp('Upsampling and down sampling.')
     upcol = [1:uprate (uprate-1):(-1):1]/uprate;
-    s = length(upcol);
-    upcol = resize(upcol, [1 s+support-1]);
+
+    % Mike Vrhel caught this as an error, saying we should not apply
+    % the commented out code to change upcol.  See his comments in the
+    % patch below. 
+    %   s = length(upcol);
+    %   upcol = resize(upcol, [1 s+support-1]);
     up1 = conv2(filters{1}, upcol, 'same');
     up2 = conv2(filters{2}, upcol, 'same');
     up3 = conv2(filters{3}, upcol, 'same');
+
     s = size(up1, 2);
     mid = ceil(s/2);
     downs = [fliplr((mid:(-uprate):1)) (mid+uprate):uprate:size(up1,2)];
@@ -164,4 +169,40 @@ support = support/sampPerDeg;
 
 return;
 
+%{
+From b73f0794f177591abae67cac347c0182d33d6f41 Mon Sep 17 00:00:00 2001
+From: Michael Vrhel <michael@mvrhel.com>
+Date: Tue, 27 Feb 2024 21:07:16 -0800
+Subject: [PATCH] sCIELAB filter creation fix
 
+In the case when the filters are interpolated and subsampled, keep
+the interpolation kernel centered prior to the convolution.
+---
+ metrics/scielab/scPrepareFilters.m | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/metrics/scielab/scPrepareFilters.m b/metrics/scielab/scPrepareFilters.m
+index 0d5a1b90..2c7fb7a9 100644
+--- a/metrics/scielab/scPrepareFilters.m
++++ b/metrics/scielab/scPrepareFilters.m
+@@ -143,8 +143,15 @@ end
+ if ( ((dimension==1) || (dimension==3)) && (uprate>1) )
+     disp('Upsampling and down sampling.')
+     upcol = [1:uprate (uprate-1):(-1):1]/uprate;
+-    s = length(upcol);
+-    upcol = resize(upcol, [1 s+support-1]);
++
++    % Note that the use of 'same' in the convolution works as intended here
++    % if the interpolation kernel and the filter are each centered in 
++    % their support. Padding the interpolator with zeros to the right and using
++    % 'same' in the convolution will end up giving you back a filter that
++    % is half the support that you want, not to mention shifted to the
++    % left.
++    %s = length(upcol);
++    %upcol = resize(upcol, [1 s+support-1]);
+     up1 = conv2(filters{1}, upcol, 'same');
+     up2 = conv2(filters{2}, upcol, 'same');
+     up3 = conv2(filters{3}, upcol, 'same');
+-- 
+2.39.0.windows.2
+%}
