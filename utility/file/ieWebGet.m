@@ -30,6 +30,7 @@ function localFile = ieWebGet(varargin)
 %    remove temp files:  Remove downloaded temporary file (default: true)
 %    unzip:           :  Unzip the local file (default: true)
 %    verbose          :  Print a report to the command window
+%    downloaddir      :  Directory for download
 %
 % Output
 %   localFile:  Name of the local download file
@@ -131,6 +132,7 @@ p.addParameter('unzip', true, @islogical);  % assume the user wants the resource
 p.addParameter('localname','',@ischar);     % Defaults to remote name
 p.addParameter('removetempfiles', true, @islogical);
 p.addParameter('verbose',true,@islogical);  % Tell the user what happened
+p.addParameter('downloaddir','',@ischar);
 
 p.parse(varargin{:});
 
@@ -155,12 +157,16 @@ switch resourceType
         % s = ieWebGet('resource type','pbrtv4','resource name','kitchen');
 
         % ISET3d must be on your path.
-        % The download directory is ignored by git in ISET3d.
-        switch resourceType
-            case 'pbrtv3'
-                downloadDir = fullfile(piRootPath,'data','v3','web');
-            case 'pbrtv4'
-                downloadDir = fullfile(piRootPath,'data','scenes','web');
+        if ~isempty(p.Results.downloaddir)
+            % The user gave us a place to download to.
+            downloadDir = p.Results.downloaddir;
+        else
+            switch resourceType
+                case 'pbrtv3'
+                    downloadDir = fullfile(piRootPath,'data','v3','web');
+                case 'pbrtv4'
+                    downloadDir = fullfile(piRootPath,'data','scenes','web');
+            end
         end
 
         % This should never happen. The directory is part of ISET3d and is
@@ -207,9 +213,14 @@ switch resourceType
 
         remoteFileName = strcat(resourceName, '.mat');
         resourceURL    = strcat(baseURL, remoteFileName);
-        downloadDir = fullfile(isetRootPath,'local','scenes', resourceType);
-        if ~isfolder(downloadDir), mkdir(downloadDir); end
+        if ~isempty(p.Results.downloaddir)
+            % The user gave us a place to download to.
+            downloadDir = p.Results.downloaddir;
+        else
+            downloadDir = fullfile(isetRootPath,'local','scenes', resourceType);
+        end
 
+        if ~isfolder(downloadDir), mkdir(downloadDir); end
         localFile = fullfile(downloadDir, remoteFileName);
 
         if askFirst
