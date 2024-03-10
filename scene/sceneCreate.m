@@ -50,7 +50,7 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %
 % NARROWBAND COLOR PATCHES
 %    wave = [600, 610];  sz = 64;
-%    scene = sceneCreate('uniform monochromatic',wave,sz);
+%    scene = sceneCreate('uniform monochromatic',sz,wave);
 %
 % SPATIAL TEST PATTERNS:
 %
