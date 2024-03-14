@@ -1138,23 +1138,6 @@ switch oType
                 fov =  sensorGet(sensor,'vfov');
                 val = fov/width;
                 
-                % Computational flags
-                %{
-            case {'sensorcompute','sensorcomputemethod'}
-                % Swap in a sensorCompute routine.  If this is empty, then the
-                % standard vcamera\sensor\mySensorCompute routine will be used.
-                if checkfields(sensor,'sensorComputeMethod'), val = sensor.sensorComputeMethod;
-                else,  val = 'mySensorCompute';  end
-                %}
-                %{
-            case {'consistency','computationalconsistency'}
-                % If the consistency field is not present, assume false and set it
-                % false.  This checks whether the parameters and the displayed
-                % image are consistent/updated.
-                if checkfields(sensor,'consistency'), val = sensor.consistency;
-                else, sensorSet(sensor,'consistency',0); val = 0;
-                end
-                %}
             case {'chartparameters'}
                 % Struct of chart parameters
                 if checkfields(sensor,'chartP'), val = sensor.chartP; end
@@ -1197,7 +1180,15 @@ switch oType
                     val = false;
                 end
                 
-                % Human cone case
+                % Metadata - more to be added.  See sensorSet()
+            case 'metadatacrop'
+                val = sensor.metadata.crop;
+            case 'metadatascenename'
+                val = sensor.metadata.scenename;
+            case 'metadataopticsname'
+                val = sensor.metadata.opticsname;
+
+                % Human cone case - Many of these should go way (BW)
             case {'human'}
                 % Structure containing information about human cone case
                 % Only applies when the name field has the string 'human' in it.

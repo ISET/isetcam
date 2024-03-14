@@ -130,4 +130,6 @@ if ~isempty(dv)
     sensor = sensorSet(sensor,'digital values',newDV);
 end
 
+sensor = sensorSet(sensor,'metadata crop',rect);
+
 end
