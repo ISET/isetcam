@@ -26,12 +26,13 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %
 % MACBETH COLOR AND LUMINANCE CHART
 %
-%   The default, scene = sceneCreate, is a Macbeth color checker illuminated
-%   by a D65 light source with a mean luminance of 100 cd/m2.  The scene is
-%   described only a small number of spatial 64x96 (row,col).  This can be
-%   changed using the patchSize argument (default - 16 pixels).  The
-%   wavelength  400:10:700 samples, making it efficient to use for experiments.
+%   The default, scene = sceneCreate, is a Macbeth color checker
+%   illuminated by a D65 light source with a mean luminance of 100
+%   cd/m2.  The scene is described only a small number of spatial
+%   64x96 (row,col).  This can be changed using the patchSize argument
 %
+%    scene = sceneCreate('macbethEE_IR',[patchSize=16],[wave=400:10:700]);
+%   
 %   Here are some options
 %      {'macbeth d65'}         - Macbeth D65 image.
 %      {'macbeth d50'}         - D50 illuminant
@@ -40,7 +41,6 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %      {'macbeth tungsten'}    - Tungsten illuminant
 %      {'macbeth EE_IR'}       - Equal energy extends out to the IR
 %      {L star}                - Vertical bars spaced in equal L* steps
-%
 %
 %   Use sceneAdjustIlluminant() to change the scene SPD.
 %
