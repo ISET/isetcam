@@ -289,6 +289,20 @@ switch sensorType
         % sensorCreate('imx363',[],'row col',[300 400]);
         sensor = sensorIMX363('row col',[600 800], varargin{:});
         
+    case {'imx490'}
+        % Variant of the IMX363, but with different pixel size and
+        % a few other default parameters.
+        sensor = sensorIMX363('row col',[600 800], ...
+            'pixel size',5.5844e-06, ...
+            'dn2volts',0.025e-3, ...
+            'digitalblacklevel', 0, ...
+            'digitalwhitelevel', 4096, ...
+            'wellcapacity', 120000, ...
+            'fillfactor',1, ...
+            'isospeed',55, ...
+            'name','imx490');
+        sensor = sensorSet(sensor,'integration time',0);
+
     case 'nikond100'
         % Old model.  I increased the spatial samples before
         % returning the sensor.
@@ -414,7 +428,7 @@ sensor = sensorSet(sensor,'integrationTime',0);
 sensor = sensorSet(sensor,'autoexposure',1);
 sensor = sensorSet(sensor,'CDS',0);
 
-if ~isequal(sensorType, 'imx363')
+if ~(isequal(sensorType, 'imx363') || isequal(sensorType,'imx490'))
     % Put in a default infrared filter.  All ones.
     sensor = sensorSet(sensor,'irfilter',ones(sensorGet(sensor,'nwave'),1));
 end
@@ -615,8 +629,8 @@ p = inputParser;
 
 % Set the default values here
 p.addParameter('rowcol',[3024 4032],@isvector);
-p.addParameter('pixelsize',1.4 *1e-6,@isnumeric);
-p.addParameter('analoggain',1.4 *1e-6,@isnumeric);
+p.addParameter('pixelsize',1.4e-6,@isnumeric);
+p.addParameter('analoggain',1.4e-6,@isnumeric);
 p.addParameter('isospeed',270,@isnumeric);
 p.addParameter('isounitygain', 55, @isnumeric);
 p.addParameter('quantization','10 bit',@(x)(ismember(x,{'12 bit','10 bit','8 bit','analog'})));
@@ -634,6 +648,7 @@ p.addParameter('readnoise',5,@isnumeric);
 p.addParameter('qefilename', fullfile(isetRootPath,'data','sensor','qe_IMX363_public.mat'), @isfile);
 p.addParameter('irfilename', fullfile(isetRootPath,'data','sensor','ircf_public.mat'), @isfile);
 p.addParameter('nbits', 10, @isnumeric);
+p.addParameter('name','imx363',@ischar);
 
 % Parse the varargin to get the parameters
 p.parse(varargin{:});
@@ -657,7 +672,7 @@ prnu         = p.Results.prnu;          % Photoresponse nonuniformity
 readnoise    = p.Results.readnoise;     % Read noise in electrons
 qefilename   = p.Results.qefilename;    % QE curve file name
 irfilename   = p.Results.irfilename;    % IR cut filter file name
-nbits        = p.Results.nbits; % needs to be set for bracketing to work
+nbits        = p.Results.nbits;         % needs to be set for bracketing to work
 
 %% Initialize the sensor object
 
@@ -722,7 +737,7 @@ sensor = pixelCenterFillPD(sensor,fillfactor);
 [data,filterNames] = ieReadColorFilter(wavelengths,qefilename);
 sensor = sensorSet(sensor,'filter spectra',data);
 sensor = sensorSet(sensor,'filter names',filterNames);
-sensor = sensorSet(sensor,'Name','IMX363');
+sensor = sensorSet(sensor,'Name',p.Results.name);
 
 % import IR cut filter
 sensor = sensorReadFilter('infrared', sensor, irfilename);
