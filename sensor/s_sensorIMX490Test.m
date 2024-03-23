@@ -1,12 +1,17 @@
+%% Illustrate the imx490
+%
+%
 
-%% Basic run
+scene = sceneCreate('checkerboard',32);
 
-scene = sceneCreate;
 oi = oiCreate;
 oi = oiCompute(oi,scene);
 [sensor,sArray] = imx490Compute(oi);
 
 sensorWindow(sensor);
+
+sensorWindow(sArray{1});
+sensorWindow(sArray{2});
 sensorWindow(sArray{3});
 sensorWindow(sArray{4});
 

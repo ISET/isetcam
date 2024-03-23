@@ -75,20 +75,20 @@ imx490Large = sensorSet(imx490Large,'size',rowcol/3);
 % sensorGet(imx490Large,'size'), rowcol/3   % This can be 1 pixel short.
 
 % Compute the 4 different responses, prior to combination
-imx490Large  = sensorSet(imx490Large,'analog gain', gains(1));
-imx490Large1 = sensorCompute(imx490Large,oi);
+imx490Large1 = sensorSet(imx490Large,'analog gain', gains(1));
+imx490Large1 = sensorCompute(imx490Large1,oi);
 sensorArray{1} = imx490Large1;
 
-imx490Large  = sensorSet(imx490Large,'analog gain', gains(2));
-imx490Large2 = sensorCompute(imx490Large,oi);
+imx490Large2 = sensorSet(imx490Large,'analog gain', gains(2));
+imx490Large2 = sensorCompute(imx490Large2,oi);
 sensorArray{2} = imx490Large2;
 
-imx490Small  = sensorSet(imx490Small,'analog gain', gains(3));
-imx490Small3 = sensorCompute(imx490Small,oi);
+imx490Small3 = sensorSet(imx490Small,'analog gain', gains(3));
+imx490Small3 = sensorCompute(imx490Small3,oi);
 sensorArray{3} = imx490Small3;
 
-imx490Small  = sensorSet(imx490Small,'analog gain', gains(4));
-imx490Small4 = sensorCompute(imx490Small,oi);
+imx490Small4 = sensorSet(imx490Small,'analog gain', gains(4));
+imx490Small4 = sensorCompute(imx490Small4,oi);
 sensorArray{4} = imx490Small4;
 
 
