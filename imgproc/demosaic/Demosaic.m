@@ -132,6 +132,8 @@ m = ieParamFormat(m);
 switch lower(m)
     case {'iebilinear','bilinear'}
         method = 'ieBilinear';
+    case {'matlabbilinear'}
+        method = 'matlabbilinear';
     case {'multichannel'}
         method = 'multichannel';
     case {'adaptivelaplacian'}
@@ -174,7 +176,11 @@ switch lower(method)
             % Rarely go this computational path.  Mainly used for human retina.
             demosaicedImage = demosaicMultichannel(imgRGB,sensor,'interpolate');
         end
-        
+    case {'matlabbilinear'}
+        % [1] Malvar, H.S., L. He, and R. Cutler, High quality linear
+        % interpolation for demosaicing of Bayer-patterned color
+        % images. ICASPP, Volume 34, Issue 11, pp. 2274-2282, May 2004.  
+        demosaicedImage = demosaic(imgRGB,sensorGet(sensor,'pattern'));
     case 'adaptivelaplacian'
         clipToRange = 0;
         if (strcmp(bPattern,'grbg') || ...

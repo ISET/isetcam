@@ -27,8 +27,12 @@ function sensor = sensorCreate(sensorType,pixel,varargin)
 %                      sensorCreate('MT9V024',[],{'rgb','mono','rccc'})
 %      {'ar0132at'}  - An ON sensor used in automotive applications
 %                      sensorCreate('ar0132at',[],{'rgb','rgbw','rccc'})
+%
 %      {'imx363'}    - A widely used Sony digital camera sensor (used
 %                      in the Google Pixel 4a)
+%      {'imx490-large'} - The Sony imx490 sensor large
+%      {'imx490-small'} - The Sony imx490 sensor large 
+%
 %      {'nikond100'} - An older model Nikon (D100)
 %
 % Other types
@@ -289,19 +293,40 @@ switch sensorType
         % sensorCreate('imx363',[],'row col',[300 400]);
         sensor = sensorIMX363('row col',[600 800], varargin{:});
         
-    case {'imx490'}
-        % Variant of the IMX363, but with different pixel size and
-        % a few other default parameters.
+    case {'imx490-large'}
+        % Variant of the IMX363 that contains a big pixel and a small
+        % pixel. These pixel parameters were determined by Zhenyi as
+        % part of ISETAuto. Each one of these pixels, the large and
+        % small 
         sensor = sensorIMX363('row col',[600 800], ...
-            'pixel size',5.5844e-06, ...
-            'dn2volts',0.025e-3, ...
+            'pixel size',5.5845e-06, ...
+            'dn2volts',0.25e-3, ...
             'digitalblacklevel', 0, ...
             'digitalwhitelevel', 4096, ...
             'wellcapacity', 120000, ...
             'fillfactor',1, ...
             'isospeed',55, ...
-            'name','imx490');
-        sensor = sensorSet(sensor,'integration time',0);
+            'read noise',1,...
+            'quantization','12 bit',...
+            'name','imx490-large');
+
+    case {'imx490-small'}
+        % Variant of the IMX363 that contains a big pixel and a small
+        % pixel. These pixel parameters were determined by Zhenyi as
+        % part of ISETAuto. Each one of these pixels, the large and
+        % small 
+                
+        sensor = sensorIMX363('row col',[600 800], ...
+            'pixel size',(5.5845/3)*1e-06, ...
+            'dn2volts',0.25e-3, ...
+            'digitalblacklevel', 0, ...
+            'digitalwhitelevel', 4096, ...
+            'wellcapacity', 60000, ...
+            'fillfactor',1, ...
+            'isospeed',55, ...
+            'read noise',1,...
+            'quantization','12 bit',...
+            'name','imx490-small');
 
     case 'nikond100'
         % Old model.  I increased the spatial samples before
@@ -647,7 +672,6 @@ p.addParameter('wave',390:10:710,@isnumeric);
 p.addParameter('readnoise',5,@isnumeric);
 p.addParameter('qefilename', fullfile(isetRootPath,'data','sensor','qe_IMX363_public.mat'), @isfile);
 p.addParameter('irfilename', fullfile(isetRootPath,'data','sensor','ircf_public.mat'), @isfile);
-p.addParameter('nbits', 10, @isnumeric);
 p.addParameter('name','imx363',@ischar);
 
 % Parse the varargin to get the parameters
@@ -672,7 +696,6 @@ prnu         = p.Results.prnu;          % Photoresponse nonuniformity
 readnoise    = p.Results.readnoise;     % Read noise in electrons
 qefilename   = p.Results.qefilename;    % QE curve file name
 irfilename   = p.Results.irfilename;    % IR cut filter file name
-nbits        = p.Results.nbits;         % needs to be set for bracketing to work
 
 %% Initialize the sensor object
 
@@ -688,7 +711,6 @@ sensor = sensorSet(sensor,'pixel conversion gain', conversiongain);
 sensor = sensorSet(sensor,'pixel voltage swing', voltageSwing);
 sensor = sensorSet(sensor,'pixel dark voltage', darkvoltage) ;
 sensor = sensorSet(sensor,'pixel read noise electrons', readnoise);
-
 % Gain and offset - Principles
 %
 % In ISETCam we use this formula to incorporate channel gain and offset
@@ -728,7 +750,6 @@ sensor = sensorSet(sensor,'analog Offset',analogOffset);
 sensor = sensorSet(sensor,'exp time',exposuretime);
 sensor = sensorSet(sensor,'quantization method', quantization);
 sensor = sensorSet(sensor,'wave', wavelengths);
-sensor = sensorSet(sensor,'quantization method','10 bit');
 
 % Adjust the pixel fill factor
 sensor = pixelCenterFillPD(sensor,fillfactor);
