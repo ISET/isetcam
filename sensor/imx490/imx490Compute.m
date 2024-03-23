@@ -54,8 +54,7 @@ if ~isempty(p.Results.noiseflag)
     imx490Large = sensorSet(imx490Large,'noise flag',p.Results.noiseflag);
 end
 
-% Always set an exposure time, or else all the sensor adjust and fill
-% up.
+% Always set an exposure time.  Autoexposure defeats the purpose.
 imx490Small = sensorSet(imx490Small,'exp time',expTime);
 imx490Large = sensorSet(imx490Large,'exp time',expTime);
 
@@ -69,10 +68,6 @@ rowcol = sensorGet(imx490Small,'size');
 rowcol = ceil(rowcol/3)*3;
 imx490Small = sensorSet(imx490Small,'size',rowcol);
 imx490Large = sensorSet(imx490Large,'size',rowcol/3);
-
-%
-% sensorGet(imx490Small,'size'), rowcol
-% sensorGet(imx490Large,'size'), rowcol/3   % This can be 1 pixel short.
 
 % Compute the 4 different responses, prior to combination
 imx490Large1 = sensorSet(imx490Large,'analog gain', gains(1));
@@ -91,25 +86,18 @@ imx490Small4 = sensorSet(imx490Small,'analog gain', gains(4));
 imx490Small4 = sensorCompute(imx490Small4,oi);
 sensorArray{4} = imx490Small4;
 
-
 %% Subsample the small pixel sensor
 %
 % When the sensor is RG/GB and the pixel size ratio is exactly 3:1, we
 % can subsample the small pixels to match the color and spatial scale
 % perfectly.
-%
+
+
 % This finds the small pixels that correspond to the large pixel
 % position. The effective pixel size becomes the size of the large
-% pixel.
-
-%{
-% sSize = sensorGet(imx490Small3, 'size');
-% [X,  Y]  = meshgrid(1:sSize(2), 1:sSize(1));
-% [Xq, Yq] = meshgrid(1:3:sSize(2), 1:3:sSize(1));
-%}
-
+% pixel. The whole routine only works for the 3:1 ratio.
 pixelSize = sensorGet(imx490Large,'pixel size');
-sSize = sensorGet(imx490Small,'size');
+sSize     = sensorGet(imx490Small,'size');
 
 resample1 = 1:3:sSize(1);
 resample2 = 1:3:sSize(2);
@@ -117,6 +105,11 @@ sSize = sensorGet(imx490Large,'size');
 
 resample1 = resample1(1:sSize(1));
 resample2 = resample2(1:sSize(2));
+
+% Retain the photodetector area for the cases in the future when the fill
+% factor is not one.  When the fill factor is 1, we can just use 3^2.
+pdArea1 = sensorGet(imx490Large,'pixel pd area');
+pdArea2 = sensorGet(imx490Small,'pixel pd area');
 
 %%
 v3 = sensorGet(imx490Small3,'volts');
@@ -144,14 +137,15 @@ imx490Small4 = sensorSet(imx490Small4,'pixel size same fill factor',pixelSize);
 % To input refer, we multiple by the ratio of their aperture (3^2) and
 % divide by their gain.
 %
-% But there could be lots of different ways to do this.  Maybe pick
-% the largest voltage that is not saturated?
-v1 = sensorGet(imx490Large1,'volts');
-v2 = sensorGet(imx490Large2,'volts')/gains(2);
-v3 = sensorGet(imx490Small3,'volts')*3^2/gains(3);
-v4 = sensorGet(imx490Small4,'volts')*3^2/gains(4);
+v1 = sensorGet(imx490Large1,'volts')/gains(1);
+v2 = sensorGet(imx490Large2,'volts')*gains(2);
+v3 = sensorGet(imx490Small3,'volts')*(pdArea1/pdArea2)*gains(3);
+v4 = sensorGet(imx490Small4,'volts')*(pdArea1/pdArea2)*gains(4);
 
-% Combine the volts
+% Different ways to do this.  Maybe pick the largest voltage that is not
+% saturated?
+
+% Combine the input referred volts.  Scale. Save.
 volts = v1 + v2 + v3 + v4;
 volts = sensorGet(imx490Large,'pixel voltage swing') * ieScale(volts,1);
 imx490Large = sensorSet(imx490Large,'volts',volts);

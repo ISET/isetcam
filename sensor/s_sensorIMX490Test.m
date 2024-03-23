@@ -3,6 +3,8 @@
 %
 
 scene = sceneCreate('checkerboard',32);
+scene = sceneCreate('uniform',256);
+
 
 oi = oiCreate;
 oi = oiCompute(oi,scene);
@@ -10,10 +12,21 @@ oi = oiCompute(oi,scene);
 
 sensorWindow(sensor);
 
+% Note:  The ratio of electron capture makes sense.  The conversion gain,
+% however, differs so when we plot w.r.t volts the ratios are not as you
+% might naively expect.  The dv values follow volts.
 sensorWindow(sArray{1});
 sensorWindow(sArray{2});
 sensorWindow(sArray{3});
 sensorWindow(sArray{4});
+
+% For the uniform case, these should be about 4x
+uData1 = sensorPlot(sArray{1},'electrons hline',[55 1]);
+sensorPlot(sArray{2},'electrons hline',[55 1]);
+
+% These are OK.  A factor of 4.
+uData2 = sensorPlot(sArray{3},'electrons hline',[150 1]);
+sensorPlot(sArray{4},'electrons hline',[150 1]);
 
 %{
 %% Checking that I can match ZL
