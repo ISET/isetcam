@@ -27,8 +27,12 @@ function sensor = sensorCreate(sensorType,pixel,varargin)
 %                      sensorCreate('MT9V024',[],{'rgb','mono','rccc'})
 %      {'ar0132at'}  - An ON sensor used in automotive applications
 %                      sensorCreate('ar0132at',[],{'rgb','rgbw','rccc'})
+%
 %      {'imx363'}    - A widely used Sony digital camera sensor (used
 %                      in the Google Pixel 4a)
+%      {'imx490-large'} - The Sony imx490 sensor large
+%      {'imx490-small'} - The Sony imx490 sensor large 
+%
 %      {'nikond100'} - An older model Nikon (D100)
 %
 % Other types
@@ -289,6 +293,41 @@ switch sensorType
         % sensorCreate('imx363',[],'row col',[300 400]);
         sensor = sensorIMX363('row col',[600 800], varargin{:});
         
+    case {'imx490-large'}
+        % Variant of the IMX363 that contains a big pixel and a small
+        % pixel. These pixel parameters were determined by Zhenyi as
+        % part of ISETAuto. Each one of these pixels, the large and
+        % small 
+        sensor = sensorIMX363('row col',[600 800], ...
+            'pixel size',5.5845e-06, ...
+            'dn2volts',0.25e-3, ...
+            'digitalblacklevel', 0, ...
+            'digitalwhitelevel', 4096, ...
+            'wellcapacity', 120000, ...
+            'fillfactor',1, ...
+            'isospeed',55, ...
+            'read noise',1,...
+            'quantization','12 bit',...
+            'name','imx490-large');
+
+    case {'imx490-small'}
+        % Variant of the IMX363 that contains a big pixel and a small
+        % pixel. These pixel parameters were determined by Zhenyi as
+        % part of ISETAuto. Each one of these pixels, the large and
+        % small 
+                
+        sensor = sensorIMX363('row col',[600 800], ...
+            'pixel size',(5.5845/3)*1e-06, ...
+            'dn2volts',0.25e-3, ...
+            'digitalblacklevel', 0, ...
+            'digitalwhitelevel', 4096, ...
+            'wellcapacity', 60000, ...
+            'fillfactor',1, ...
+            'isospeed',55, ...
+            'read noise',1,...
+            'quantization','12 bit',...
+            'name','imx490-small');
+
     case 'nikond100'
         % Old model.  I increased the spatial samples before
         % returning the sensor.
@@ -414,7 +453,7 @@ sensor = sensorSet(sensor,'integrationTime',0);
 sensor = sensorSet(sensor,'autoexposure',1);
 sensor = sensorSet(sensor,'CDS',0);
 
-if ~isequal(sensorType, 'imx363')
+if ~(isequal(sensorType, 'imx363') || isequal(sensorType,'imx490'))
     % Put in a default infrared filter.  All ones.
     sensor = sensorSet(sensor,'irfilter',ones(sensorGet(sensor,'nwave'),1));
 end
@@ -615,8 +654,8 @@ p = inputParser;
 
 % Set the default values here
 p.addParameter('rowcol',[3024 4032],@isvector);
-p.addParameter('pixelsize',1.4 *1e-6,@isnumeric);
-p.addParameter('analoggain',1.4 *1e-6,@isnumeric);
+p.addParameter('pixelsize',1.4e-6,@isnumeric);
+p.addParameter('analoggain',1.4e-6,@isnumeric);
 p.addParameter('isospeed',270,@isnumeric);
 p.addParameter('isounitygain', 55, @isnumeric);
 p.addParameter('quantization','10 bit',@(x)(ismember(x,{'12 bit','10 bit','8 bit','analog'})));
@@ -633,7 +672,7 @@ p.addParameter('wave',390:10:710,@isnumeric);
 p.addParameter('readnoise',5,@isnumeric);
 p.addParameter('qefilename', fullfile(isetRootPath,'data','sensor','qe_IMX363_public.mat'), @isfile);
 p.addParameter('irfilename', fullfile(isetRootPath,'data','sensor','ircf_public.mat'), @isfile);
-p.addParameter('nbits', 10, @isnumeric);
+p.addParameter('name','imx363',@ischar);
 
 % Parse the varargin to get the parameters
 p.parse(varargin{:});
@@ -657,7 +696,6 @@ prnu         = p.Results.prnu;          % Photoresponse nonuniformity
 readnoise    = p.Results.readnoise;     % Read noise in electrons
 qefilename   = p.Results.qefilename;    % QE curve file name
 irfilename   = p.Results.irfilename;    % IR cut filter file name
-nbits        = p.Results.nbits; % needs to be set for bracketing to work
 
 %% Initialize the sensor object
 
@@ -673,7 +711,6 @@ sensor = sensorSet(sensor,'pixel conversion gain', conversiongain);
 sensor = sensorSet(sensor,'pixel voltage swing', voltageSwing);
 sensor = sensorSet(sensor,'pixel dark voltage', darkvoltage) ;
 sensor = sensorSet(sensor,'pixel read noise electrons', readnoise);
-
 % Gain and offset - Principles
 %
 % In ISETCam we use this formula to incorporate channel gain and offset
@@ -713,7 +750,6 @@ sensor = sensorSet(sensor,'analog Offset',analogOffset);
 sensor = sensorSet(sensor,'exp time',exposuretime);
 sensor = sensorSet(sensor,'quantization method', quantization);
 sensor = sensorSet(sensor,'wave', wavelengths);
-sensor = sensorSet(sensor,'quantization method','10 bit');
 
 % Adjust the pixel fill factor
 sensor = pixelCenterFillPD(sensor,fillfactor);
@@ -722,7 +758,7 @@ sensor = pixelCenterFillPD(sensor,fillfactor);
 [data,filterNames] = ieReadColorFilter(wavelengths,qefilename);
 sensor = sensorSet(sensor,'filter spectra',data);
 sensor = sensorSet(sensor,'filter names',filterNames);
-sensor = sensorSet(sensor,'Name','IMX363');
+sensor = sensorSet(sensor,'Name',p.Results.name);
 
 % import IR cut filter
 sensor = sensorReadFilter('infrared', sensor, irfilename);
