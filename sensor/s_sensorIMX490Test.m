@@ -9,7 +9,7 @@ load('HDR-02-Brian','scene');
 oi = oiCreate;
 oi = oiCompute(oi,scene);   % oiWindow(oi);
 oi = oiCrop(oi,'border');
-[sensor,metadata] = imx490Compute(oi,'method','best snr','exptime',1/10);
+[sensor,metadata] = imx490Compute(oi,'method','best snr','exptime',1/3);
 [sensor,metadata] = imx490Compute(oi,'method','average','exptime',1/10);
 
 % For the HDR car scene use exptime of 0.1 sec

@@ -175,7 +175,6 @@ switch ieParamFormat(method)
         e1(~idx1) = 0; e2(~idx2) = 0; e3(~idx3) = 0; e4(~idx4) = 0;
 
         % Find the pixel with the most non-saturated electrons
-        saturated 
         [val,bestPixel] = max([e1(:), e2(:), e3(:), e4(:)],[],2);
         val = reshape(val,size(e1));
         bestPixel = reshape(bestPixel,size(e1));
