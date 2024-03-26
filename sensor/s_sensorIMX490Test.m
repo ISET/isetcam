@@ -7,10 +7,12 @@
 load('HDR-02-Brian','scene');
 
 oi = oiCreate;
-oi = oiCompute(oi,scene);
+oi = oiCompute(oi,scene);   % oiWindow(oi);
+oi = oiCrop(oi,'border');
+[sensor,metadata] = imx490Compute(oi,'method','best snr','exptime',1/10);
+[sensor,metadata] = imx490Compute(oi,'method','average','exptime',1/10);
 
 % For the HDR car scene use exptime of 0.1 sec
-[sensor,metadata] = imx490Compute(oi,'method','average','exptime',1/10);
 sArray = metadata.sensorArray;
 
 sensorWindow(sensor);
@@ -22,6 +24,11 @@ sensorWindow(sArray{1});
 sensorWindow(sArray{2});
 sensorWindow(sArray{3});
 sensorWindow(sArray{4});
+
+%%
+ip = ipCreate;
+ip = ipCompute(ip,sensor);
+ipWindow(ip);
 
 %% For the uniform case, these should be about 4x
 uData1 = sensorPlot(sArray{1},'electrons hline',[55 1]);

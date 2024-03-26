@@ -71,7 +71,8 @@ end
 % Convert the electron data into voltage signals
 conversionGain = sensorGet(sensor,'pixel conversion gain');
 
-% In volts
+% In volts, needs both conversion Gain and Sensor analog gain
+%
 noisyImage = conversionGain*round(electronImage + electronNoise);
 theNoise   = conversionGain*electronNoise;
 

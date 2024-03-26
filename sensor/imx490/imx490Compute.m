@@ -59,7 +59,7 @@ p.addRequired('oi',@isstruct);
 p.addParameter('gain',[1 4 1 4],@isvector);
 p.addParameter('noiseflag',2,@isnumeric);
 p.addParameter('exptime',1/60,@isnumeric);
-p.addParameter('method','average',@(x)(ismember(x,{'average','bestsnr'})));
+p.addParameter('method','average',@(x)(ismember(ieParamFormat(x),{'average','bestsnr'})));
 p.parse(oi,varargin{:});
 
 gains   = p.Results.gain;
@@ -107,40 +107,83 @@ imx490Small2 = sensorSet(imx490Small2,'name',sprintf('small-%1dx',gains(4)));
 imx490Small2 = sensorCompute(imx490Small2,oi);
 sensorArray{4} = imx490Small2;
 
-% Retain the photodetector area for the cases in the future when the fill
-% factor is not one.  When the fill factor is 1, we can just use 3^2.
+% Retain the photodetector area and related parameters we might use to
+% make an input referred calculation.
 pdArea1 = sensorGet(imx490Large,'pixel pd area');
 pdArea2 = sensorGet(imx490Small,'pixel pd area');
 
+% Conversion gain
+cgLarge = sensorGet(imx490Large1,'pixel conversion gain');
+cgSmall = sensorGet(imx490Small1,'pixel conversion gain');
+
+
 %% Different algorithms for combining the 4 values.
-switch method
+switch ieParamFormat(method)
     case 'average'
         % Combine the input referred volts, exclusing saturated values.
-        cgLarge = sensorGet(imx490Large1,'pixel conversion gain');
-        cgSmall = sensorGet(imx490Small1,'pixel conversion gain');
-        vSwingL = sensorGet(imx490Large,'pixel voltage swing');
-        vSwingS = sensorGet(imx490Small,'pixel voltage swing');
-        
         v1 = sensorGet(imx490Large1,'volts');
         v2 = sensorGet(imx490Large2,'volts');
         v3 = sensorGet(imx490Small1,'volts');
         v4 = sensorGet(imx490Small2,'volts');
+
+        % Voltage swing
+        vSwingL = sensorGet(imx490Large,'pixel voltage swing');
+        vSwingS = sensorGet(imx490Small,'pixel voltage swing');
         idx1 = (v1 < vSwingL); idx2 = (v2 < vSwingL);
-        idx3 = (v1 < vSwingS); idx4 = (v2 < vSwingS);
+        idx3 = (v3 < vSwingS); idx4 = (v4 < vSwingS);
+
+        % How to average
         N = idx1 + idx2 + idx3 + idx4;
-        v1(~idx1) = 0; v2(~idx2) = 0; v3(~idx3) = 0; v4(~idx4) = 0;
 
-        v1 = v1*gains(1);
-        v2 = v2*gains(2);
-        v3 = v3*(pdArea1/pdArea2)*gains(3)/(cgSmall/cgLarge);
-        v4 = v4*(pdArea1/pdArea2)*gains(4)/(cgSmall/cgLarge);
+        % These are the input referred estimates. When all the
+        % voltages are saturated the image is rendered as black.
+        % volts per pixel -> (volts/m^2) * gain / (volts/electron)
+        %                 -> electrons/m2
+        % Maybe we want electrons / um^2 which would be 1e-12
+        in1 = sensorGet(imx490Large1,'electrons');
+        in2 = sensorGet(imx490Large2,'electrons');
 
-        volts = v1 + v2 + v3 + v4;
-        volts = volts ./ N;
+        v2 = (v2/pdArea1)*sensorGet(imx490Large2,'analog gain')/cgLarge;
+        
+        v1 = (v1/pdArea1)*sensorGet(imx490Large1,'analog gain')/cgLarge;
+        v2 = (v2/pdArea1)*sensorGet(imx490Large2,'analog gain')/cgLarge;
+        v3 = (v3/pdArea2)*sensorGet(imx490Small1,'analog gain')/cgSmall;
+        v4 = (v4/pdArea2)*sensorGet(imx490Small2,'analog gain')/cgSmall;
+        %  The estimated input, which should be equal for a uniform
+        %  field
+        %  mean(v1(:)),mean(v2(:)),mean(v3(:)),mean(v4(:))
+
+        % v1(~idx1) = 0; v2(~idx2) = 0; v3(~idx3) = 0; v4(~idx4) = 0;
+        % Set the voltage to the mean of the input referred estimates.
+        volts = (v1 + v2 + v3 + v4) ./ N;        
         volts = sensorGet(imx490Large,'pixel voltage swing') * ieScale(volts,1);
         imx490Large = sensorSet(imx490Large,'volts',volts);
+
     case 'bestsnr'
-        % Choose the pixel with the best SNR.
+        % Choose the pixel with the most electrons and thus best SNR.        
+        e1 = sensorGet(imx490Large1,'electrons');
+        e2 = sensorGet(imx490Large2,'electrons');
+        e3 = sensorGet(imx490Small1,'electrons');
+        e4 = sensorGet(imx490Small2,'electrons'); 
+
+        % Find pixels with electrons below well capacity. Set the
+        % saturated levels to zero so they do not appear as max
+        wcL = sensorGet(imx490Large,'pixel well capacity');
+        wcS = sensorGet(imx490Small,'pixel well capacity');
+        idx1 = (e1 < wcL); idx2 = (e2 < wcL);
+        idx3 = (e3 < wcS); idx4 = (e4 < wcS);
+        e1(~idx1) = 0; e2(~idx2) = 0; e3(~idx3) = 0; e4(~idx4) = 0;
+
+        % Find the pixel with the most non-saturated electrons
+        saturated 
+        [val,bestPixel] = max([e1(:), e2(:), e3(:), e4(:)],[],2);
+        val = reshape(val,size(e1));
+        bestPixel = reshape(bestPixel,size(e1));
+        %{
+         ieNewGraphWin; imagesc(val);
+         cm = [1 0 0; 1 0.5 0; 0 0 1; 0 0.5 1; 1 1 1];
+         ieNewGraphWin; colormap(cm); image(bestPixel);
+        %}
     otherwise
         error('Unknown method %s\n',method);
 end
