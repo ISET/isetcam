@@ -448,20 +448,29 @@ switch oType
                 
             case {'electron','electrons'}
                 % sensorGet(sensor,'electrons');
+                % sensorGet(sensor,'electrons',[colorband]);
                 % sensorGet(sensor,'electrons',2);
                 %
                 % Removed 'photons' from the list March 25, 2024 (BW)
                 pixel = sensorGet(sensor,'pixel');
+
+                % The volts also have an analog gain and offset that must
+                % be discounted.  Until March 25, 2024 we did not account
+                % for this.  Mostly gain/offset was 1/0, and we didn't
+                % notice. Then with the imx490 gain manipulations, the bug
+                % was found.  This was never a problem with computed
+                % voltage or dv.  But if we estimated the electrons in a
+                % sensor with a nonunity gain or an offset, the estimated
+                % number of electrons at capture was off.
                 
-                % cg is volts/electron
-                val = sensorGet(sensor,'volts')/pixelGet(pixel,'conversionGain');
-                
-                % The volts also have an analog gain that must be
-                % discounted.  Until March 25, 2024 we did not account
-                % for this.  Mostly gain was 1, and we didn't notice.
-                % Then with the imx490 gain manipulations, the bug was
-                % found.
-                val = val*sensorGet(sensor,'analog gain');
+                % The sensor compute function:
+                %     volts = (voltsRaw + ao)/ag;
+                % To invert
+                %     voltsRaw = volts*ag - ao                
+                ag = sensorGet(sensor,'analog gain');
+                ao = sensorGet(sensor,'analog offset');
+                cg = pixelGet(pixel,'conversionGain');
+                val = (sensorGet(sensor,'volts')*ag - ao)/cg;
 
                 % Pull out a particular color plane
                 if ~isempty(varargin)
@@ -471,8 +480,8 @@ switch oType
                 % Electrons are integers
                 val = round(val);
             case {'electronsperarea'}
-                % sensorGet(sensor,'electrons per area','area unit')
-                % sensorGet(sensor,'electrons per area','m')
+                % sensorGet(sensor,'electrons per area','unit',channel)
+                % sensorGet(sensor,'electrons per area','m',2)
                 % Default is 'um'
                 units = 'm';
                 if ~isempty(varargin), units = varargin{1}; end
@@ -480,6 +489,10 @@ switch oType
                 val    = sensorGet(sensor,'electrons');
                 pdArea = sensorGet(sensor,'pixel pd area');
                 val    = (val/pdArea)*ieUnitScaleFactor(units)^2;
+                % Pull out a particular color plane
+                if length(varargin) > 1
+                    val = sensorColorData(val,sensor,varargin{2}); 
+                end
 
             case {'dvorvolts'}
                 val = sensorGet(sensor,'dv');
