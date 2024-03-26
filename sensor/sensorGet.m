@@ -76,6 +76,9 @@ function [val, type] = sensorGet(sensor,param,varargin)
 %      'electrons'      - Sensor output in electrons
 %         A single color plane can be returned
 %         sensorGet(sensor,'electrons',2);
+%      'electrons per area' - Normalize by the pixel area.  
+%          Default units is meter^2, but you can specify unit, um^2          
+%          sensorGet(sensor,'electrons per area','um')
 %      'chromaticity'   - Sensor rg-chromaticity after Demosaicking (roiRect allowed)
 %      'dv or volts'    - Return either dv if present, otherwise volts
 %      'roi locs'       - Stored region of interest (roiLocs)
@@ -443,19 +446,41 @@ switch oType
                     val = sensorColorData(val,sensor,varargin{1});
                 end
                 
-            case {'electron','electrons','photons'}
+            case {'electron','electrons'}
                 % sensorGet(sensor,'electrons');
                 % sensorGet(sensor,'electrons',2);
-                % This is also used for human case, where we call the data photons
-                % as in photon absorptions.
+                %
+                % Removed 'photons' from the list March 25, 2024 (BW)
                 pixel = sensorGet(sensor,'pixel');
+                
+                % cg is volts/electron
                 val = sensorGet(sensor,'volts')/pixelGet(pixel,'conversionGain');
                 
+                % The volts also have an analog gain that must be
+                % discounted.  Until March 25, 2024 we did not account
+                % for this.  Mostly gain was 1, and we didn't notice.
+                % Then with the imx490 gain manipulations, the bug was
+                % found.
+                val = val*sensorGet(sensor,'analog gain');
+
                 % Pull out a particular color plane
-                if ~isempty(varargin), val = sensorColorData(val,sensor,varargin{1}); end
-                % Electrons are ints
-                val = round(val);
+                if ~isempty(varargin)
+                    val = sensorColorData(val,sensor,varargin{1}); 
+                end
                 
+                % Electrons are integers
+                val = round(val);
+            case {'electronsperarea'}
+                % sensorGet(sensor,'electrons per area','area unit')
+                % sensorGet(sensor,'electrons per area','m')
+                % Default is 'um'
+                units = 'm';
+                if ~isempty(varargin), units = varargin{1}; end
+                
+                val    = sensorGet(sensor,'electrons');
+                pdArea = sensorGet(sensor,'pixel pd area');
+                val    = (val/pdArea)*ieUnitScaleFactor(units)^2;
+
             case {'dvorvolts'}
                 val = sensorGet(sensor,'dv');
                 if isempty(val)
