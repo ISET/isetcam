@@ -12,7 +12,7 @@ function [imx490Large, metadata] = imx490Compute(oi,varargin)
 %   IP seems to be a speciality of LUCID
 %      https://thinklucid.com/product/triton-5-mp-imx490/  - Specifications
 %      https://thinklucid.com/product/triton-5-mp-imx490/  - EMVA Data
-%
+%      https://thinklucid.com/tech-briefs/sony-imx490-hdr-sensor-and-flicker-mitigation/
 %   From the LUCID web-site:  
 %   
 %   The IMX490 achieves high dynamic range using two sub-pixels for each

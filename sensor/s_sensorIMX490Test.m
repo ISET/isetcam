@@ -67,6 +67,8 @@ v2 = sensorGet(sArray{2},'volts');
 ieNewGraphWin; plot(v1(:),v2(:),'.');
 identityLine; grid on;
 
+sensorWindow(sArray{1});
+sensorWindow(sArray{2});
 
 %%
 [sensor,metadata] = imx490Compute(oi,'method','best snr','exptime',1/3);
