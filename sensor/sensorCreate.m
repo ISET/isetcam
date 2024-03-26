@@ -678,8 +678,8 @@ p.addParameter('wellcapacity',6000,@isnumeric);
 p.addParameter('exposuretime',1/60,@isnumeric);
 p.addParameter('wave',390:10:710,@isnumeric);
 p.addParameter('readnoise',5,@isnumeric);
-p.addParameter('qefilename', fullfile(isetRootPath,'data','sensor','qe_IMX363_public.mat'), @isfile);
-p.addParameter('irfilename', fullfile(isetRootPath,'data','sensor','ircf_public.mat'), @isfile);
+p.addParameter('qefilename', fullfile(isetRootPath,'data','sensor','colorfilters','auto','SONY','cf_imx490.mat'), @isfile);
+p.addParameter('irfilename', fullfile(isetRootPath,'data','sensor','irfilters','ircf_public.mat'), @isfile);
 p.addParameter('name','imx363',@ischar);
 
 % Parse the varargin to get the parameters

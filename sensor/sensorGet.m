@@ -488,7 +488,7 @@ switch oType
                 
                 val    = sensorGet(sensor,'electrons');
                 pdArea = sensorGet(sensor,'pixel pd area');
-                val    = (val/pdArea)*ieUnitScaleFactor(units)^2;
+                val    = (val/pdArea)/(ieUnitScaleFactor(units)^2);
                 % Pull out a particular color plane
                 if length(varargin) > 1
                     val = sensorColorData(val,sensor,varargin{2}); 

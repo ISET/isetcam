@@ -2,14 +2,14 @@
 %
 %
 
-% scene = sceneCreate('checkerboard',32);
-% scene = sceneCreate('uniform',256);
-load('HDR-02-Brian','scene');
+%% In this case the volts are 4x but the electrons are equal
+%
+% As it should be, IMHO.
 
+scene = sceneCreate('uniform',256);
 oi = oiCreate;
 oi = oiCompute(oi,scene);   % oiWindow(oi);
 oi = oiCrop(oi,'border');
-[sensor,metadata] = imx490Compute(oi,'method','best snr','exptime',1/3);
 [sensor,metadata] = imx490Compute(oi,'method','average','exptime',1/10);
 
 % For the HDR car scene use exptime of 0.1 sec
@@ -24,6 +24,52 @@ sensorWindow(sArray{1});
 sensorWindow(sArray{2});
 sensorWindow(sArray{3});
 sensorWindow(sArray{4});
+
+%% Various checks.
+e1 = sensorGet(sArray{1},'electrons');
+e2 = sensorGet(sArray{2},'electrons');
+ieNewGraphWin; plot(e1(:),e2(:),'.');
+identityLine; grid on;
+
+v1 = sensorGet(sArray{1},'volts');
+v2 = sensorGet(sArray{2},'volts');
+ieNewGraphWin; plot(v1(:),v2(:),'.');
+identityLine; grid on;
+
+% e3 is 1/9th the area, so 1/9th the electrons of e1
+e3 = sensorGet(sArray{3},'electrons');
+ieNewGraphWin; plot(e1(:),e3(:),'.');
+identityLine; grid on;
+
+dv1 = sensorGet(sArray{1},'dv');
+dv2 = sensorGet(sArray{2},'dv');
+ieNewGraphWin; plot(dv1(:),dv2(:),'.');
+identityLine; grid on;
+
+
+%% Now try with a complex image
+
+load('HDR-02-Brian','scene');
+oi = oiCreate;
+oi = oiCompute(oi,scene);   % oiWindow(oi);
+oi = oiCrop(oi,'border');
+[sensor,metadata] = imx490Compute(oi,'method','average','exptime',1/10);
+sArray = metadata.sensorArray;
+
+% Note that the electrons match up to voltage saturation
+e1 = sensorGet(sArray{1},'electrons');
+e2 = sensorGet(sArray{2},'electrons');
+ieNewGraphWin; plot(e1(:),e2(:),'.');
+identityLine; grid on;
+
+v1 = sensorGet(sArray{1},'volts');
+v2 = sensorGet(sArray{2},'volts');
+ieNewGraphWin; plot(v1(:),v2(:),'.');
+identityLine; grid on;
+
+
+%%
+[sensor,metadata] = imx490Compute(oi,'method','best snr','exptime',1/3);
 
 %%
 ip = ipCreate;
