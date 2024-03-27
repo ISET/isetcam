@@ -154,20 +154,12 @@ switch ieParamFormat(method)
         in1 = sensorGet(imx490Large1,'electrons per area','um');
         in2 = sensorGet(imx490Large2,'electrons per area','um');
         in3 = sensorGet(imx490Small1,'electrons per area','um');
-        in4 = sensorGet(imx490Small2,'electrons per area','um');
-        
-        %{
-        v1 = (v1/pdArea1)*sensorGet(imx490Large1,'analog gain')/cgLarge;
-        v2 = (v2/pdArea1)*sensorGet(imx490Large2,'analog gain')/cgLarge;
-        v3 = (v3/pdArea2)*sensorGet(imx490Small1,'analog gain')/cgSmall;
-        v4 = (v4/pdArea2)*sensorGet(imx490Small2,'analog gain')/cgSmall;
-        %}
+        in4 = sensorGet(imx490Small2,'electrons per area','um');                
 
         %  The estimated input, which should be equal for a uniform
         %  field
-        %  mean(v1(:)),mean(v2(:)),mean(v3(:)),mean(v4(:))
+        %  mean(in1(:)),mean(in2(:)),mean(in3(:)),mean(in4(:))
 
-        % v1(~idx1) = 0; v2(~idx2) = 0; v3(~idx3) = 0; v4(~idx4) = 0;
         % Set the voltage to the mean of the input referred estimates.
         volts = (in1 + in2 + in3 + in4) ./ N;
         volts = sensorGet(imx490Large,'pixel voltage swing') * ieScale(volts,1);
