@@ -70,6 +70,29 @@ identityLine; grid on;
 sensorWindow(sArray{1});
 sensorWindow(sArray{2});
 
+%% Make an ideal form of the image
+
+scene = sceneCreate('uniform',256);
+oi = oiCreate;
+oi = oiCompute(oi,scene);   % oiWindow(oi);
+oi = oiCrop(oi,'border');
+oi = oiSpatialResample(oi, 3,'um');
+oiGet(oi,'size')
+
+% Calculate the imx490 sensor
+sensor = imx490Compute(oi,'method','average','exptime',1/10);
+
+% Create an matched, ideal X,Y,Z sensors that can calculate the XYZ values
+% at each pixel.
+sensorI = sensorCreateIdeal('match xyz',sensor);
+sensorI = sensorCompute(sensorI,oi);
+sensorWindow(sensorI(2));
+sensorGet(sensorI(2),'pixel fill factor')
+
+% The sensor data and the oi data have the same vector length.  Apart from
+% maybe a pixel at one edige or the other, they should be aligned
+%
+
 %%
 [sensor,metadata] = imx490Compute(oi,'method','best snr','exptime',1/3);
 
@@ -86,36 +109,4 @@ sensorPlot(sArray{2},'electrons hline',[55 1]);
 uData2 = sensorPlot(sArray{3},'electrons hline',[150 1]);
 sensorPlot(sArray{4},'electrons hline',[150 1]);
 
-%{
-%% Checking that I can match ZL
-sensor490 = sensorCreate('imx490-large');
-sensor490.pixel
-
-% sensorZL = sensorIMX363V2('row col',[600 800]);
-% sensorZL.pixel
-
-pixelSize = 1.8615;
-colorFilterFile = '/Users/wandell/Documents/MATLAB/isetcam/data/sensor/colorfilters/auto/ar0132atRGB.mat';
-oiSize = [1536        1536];
-lpixel_hgain = sensorIMX363V2(...
-    'pixelsize', 3*pixelSize*1e-6, ...
-    'quantization', '12 bit',...
-    'qefilename',colorFilterFile, ...
-    'wellcapacity',120000,'fillfactor',1,'isospeed',55, ...
-    'rowcol',ceil([oiSize(1) oiSize(2)]/3));
-
-isequal(lpixel_hgain.pixel,sensor490.pixel)
-% [common, d1, d2] = comp_struct(lpixel_hgain.pixel,sensor490.pixel)
-
-%%
-sensor490 = sensorCreate('imx490-small');
-sensor490.pixel
-spixel_hgain = sensorIMX363V2('pixelsize', pixelSize*1e-6, ...
-    'quantization', '12 bit',...
-    'qefilename',colorFilterFile, ...
-    'wellcapacity',60000,'fillfactor',1,'isospeed',55, ...
-    'rowcol',[oiSize(1) oiSize(2)]);
-isequal(spixel_hgain.pixel,sensor490.pixel)
-[common, d1, d2] = comp_struct(spixel_hgain.pixel,sensor490.pixel)
-%}
-
+%% END

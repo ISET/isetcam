@@ -78,8 +78,19 @@ imx490Large = sensorSet(imx490Large,'noise flag',p.Results.noiseflag);
 imx490Small = sensorSet(imx490Small,'exp time',expTime);
 imx490Large = sensorSet(imx490Large,'exp time',expTime);
 
+% The oi should have 3 um sampling resolution.  This will match the sensor
+% fov to the oi.
+assert(max(abs(oiGet(oi,'spatial resolution','um') - sensorGet(imx490Large,'pixel size','um'))) < 1e-4)
+
+oiSize = oiGet(oi,'size');
+imx490Large = sensorSet(imx490Large,'size',oiSize);
+imx490Small = sensorSet(imx490Small,'size',oiSize);
+
+%{
+% This is how we were matching.
 imx490Large = sensorSet(imx490Large,'fov',oiGet(oi,'fov'),oi);
 imx490Small = sensorSet(imx490Small,'fov',oiGet(oi,'fov'),oi);
+%}
 
 %% The user specifies gains as multiplicative factor
 
