@@ -10,6 +10,9 @@ function [oi, wvf, scene] = oiCreate(oiType,varargin)
 %
 % Inputs
 %   oiType -
+%     {'pinhole'}    - Turn off cos4th, infinite depth of field and
+%                      NaN focal length
+%
 %     {'diffraction limited'} -  Diffraction limited optics, no diffuser or
 %                         data (Default).  Equivalent to using the wvf or
 %                         shift-invariant with a zero wavefront
@@ -279,9 +282,9 @@ switch ieParamFormat(oiType)
 
     case {'pinhole'}
         % Pinhole camera version of OI
-        oi = oiCreate('shift invariant');
+        oi = oiCreate('empty');
         oi = oiSet(oi, 'optics model', 'skip');
-        oi = oiSet(oi, 'bit depth', 64);  % Forces double
+        % oi = oiSet(oi, 'bit depth', 64);  % Forces double
         oi = oiSet(oi, 'optics offaxis method', 'skip');
         oi = oiSet(oi, 'diffuser method', 'skip');
 

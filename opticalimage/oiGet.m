@@ -404,10 +404,12 @@ switch oType
                 if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
                 
             case {'wangular','widthangular','hfov','horizontalfieldofview','fov'}
-                % oiCompute(oi,scene) assigns the angular field of view to the oi.
+                % oiCompute(oi,scene) assigns the angular field of
+                % view to the oi. 
+                %
                 % This horizontal FOV represents the size of the OI,
-                % usually after the computational padding.
-                % reflects the angle of the scene it represents.
+                % usually after the computational padding. Reflects
+                % the angle of the scene it represents.
                 if checkfields(oi,'wAngular')
                     val = oi.wAngular;
                 else
@@ -416,10 +418,12 @@ switch oType
                     % 'focal plane distance'.
                     fprintf('*** The oi fov is not set yet.  ');
                     scene = vcGetObject('scene');
-                    if isempty(scene) % Default scene visual angle.
+                    if isempty(scene) 
+                        % Default scene visual angle.
                         fprintf('Using a default fov of 10.\n');
                         disp('oiGet:  No scene, arbitrary oi angle: 10 deg'), val = 10;
-                    else              % Use current scene angular width
+                    else              
+                        % Use current scene angular width
                         fprintf('Using the scene fov.\n');
                         val = sceneGet(scene,'wangular');
                     end

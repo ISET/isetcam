@@ -5,7 +5,13 @@ function sensor = sensorCreateIdeal(idealType,sensorExample,varargin)
 %  sensor = sensorCreateIdeal(idealType,[sensorExample],varargin)
 %
 % Brief
-%  Create an ideal image sensor array.
+%  Create an ideal image sensor array.  The key step is how we set the
+%  noise flag at the end (to -1).  The other step is we can swap in
+%  the XYZ filters for the existing filters to match a matched 'XYZ'
+%  sensor.
+%
+%  It is possible to get the XYZ from the oi directly, without even
+%  going through the sensor!  (oiGet(oi,'xyz')).
 %
 % Inputs:
 %  idealType: The sensor array we create is determined by this parameter
@@ -16,9 +22,9 @@ function sensor = sensorCreateIdeal(idealType,sensorExample,varargin)
 %       * match xyz: - As above, but also replace color filters with
 %                      XYZQuanta filters
 %
-%     These do not involve a match, they are just sensor arrays with no
-%     DSNU, PRNU, and the noiseFlag set to 1. The oi, sensor parameters are
-%     the defaults
+%     These do not involve a match, they are just sensor arrays with
+%     no DSNU, PRNU, and the noiseFlag set to -1. The oi, sensor
+%     parameters are the defaults
 %
 %       * monochrome - 100% filter transmission (Clear), default sensor
 %       * XYZ        - XYZQuanta filters, default sensor
@@ -116,7 +122,7 @@ switch lower(idealType)
             sensor(ii) = sensorSet(sensor(ii),'filter names',{colorFilterNames{ii}});
 
             % Rather than set noise to zero, we set noise flag to 1.
-            sensor(ii) = sensorSet(sensor(ii),'noise flag',1);
+            % sensor(ii) = sensorSet(sensor(ii),'noise flag',1);
 
             % Equal exposure times.
             sensor(ii) = sensorSet(sensor(ii),'integration time',expTime);
@@ -221,6 +227,9 @@ end
 
 % Turn off all noise for the ideal sensors.
 for ii=1:numel(sensor)
+    % No photon noise, no electrical pixel noisem no sensor fixed
+    % pattern noise.  The volts are always available and continuous,
+    % the dv field depends on the quantization method.
     sensor(ii) = sensorSet(sensor(ii),'noise flag',-1);
 end
 

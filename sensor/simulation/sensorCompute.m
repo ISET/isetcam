@@ -32,7 +32,7 @@ function [outSensor, unitSigCurrent] = sensorCompute(sensor,oi,showBar)
 %
 % The conditions are:
 %
-%  noiseFlag | photon   e-noises gain/offset clipping  CDS
+%  noiseFlag | photon   e-noises   PRNU/DSNU  clipping  CDS
 %    -2      |   +         0            0         0     0   ('no pixel no system')
 %    -1      |   0         0            0         0     0   ('no photon no pixel no system')
 %     0      |   0         0            +         +     +   ('no photon no pixel')

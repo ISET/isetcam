@@ -18,7 +18,10 @@ function oi = oiCompute(oi,scene,varargin)
 %
 %   crop - Crop the OI to the same size as the scene. (Logical)
 %          Default: false;
-%         (We could do a setprefs on these, but BW is resistant.)
+%
+%   pixel size - Spatial resolution of the oi image. A scalar in
+%                meters. Normally it is set to match the optics and
+%                scene properties.
 %
 % Return
 %   oi - The oi with computed photon irradiance
@@ -123,6 +126,13 @@ oi = oiCreate;
 oi = oiCompute(oi,scene,'pad value','border','crop',true);
 oiWindow(oi);
 %}
+%{
+% Almost right.  Off by 1 part in 100.  Need to fix. (BW).
+scene = sceneCreate;
+oi = oiCreate;
+oi = oiCompute(oi,scene,'pad value','border','crop',true,'pixel size',1e-6);
+oiWindow(oi);
+%}
 %% Parse
 varargin = ieParamFormat(varargin);
 p = inputParser;
@@ -149,7 +159,7 @@ if ~isempty(p.Results.pixelsize)
     sw = sceneGet(scene, 'cols');
     flengthM = oiGet(oi, 'focal length', 'm');
     wAngular = atand(pz*sw/2/flengthM)*2;
-    % oi use scene hFOV later.
+    % oi uses scene hFOV later.
     scene = sceneSet(scene, 'wAngular',wAngular);
 end
 

@@ -10,6 +10,7 @@ scene = sceneCreate('uniform',256);
 oi = oiCreate;
 oi = oiCompute(oi,scene);   % oiWindow(oi);
 oi = oiCrop(oi,'border');
+oi = oiSpatialResample(oi,3e-6);
 [sensor,metadata] = imx490Compute(oi,'method','average','exptime',1/10);
 
 % For the HDR car scene use exptime of 0.1 sec
@@ -53,6 +54,10 @@ load('HDR-02-Brian','scene');
 oi = oiCreate;
 oi = oiCompute(oi,scene);   % oiWindow(oi);
 oi = oiCrop(oi,'border');
+oi = oiSpatialResample(oi,3,'um'); % oiWindow(oi);
+oi2 = oiCompute(oi,scene,'crop',true,'pixel size',3e-6);   % oiWindow(oi2);
+oi2 = oiSpatialResample(oi2,3,'um'); % oiWindow(oi);
+
 [sensor,metadata] = imx490Compute(oi,'method','average','exptime',1/10);
 sArray = metadata.sensorArray;
 
@@ -82,12 +87,14 @@ oiGet(oi,'size')
 % Calculate the imx490 sensor
 sensor = imx490Compute(oi,'method','average','exptime',1/10);
 
-% Create an matched, ideal X,Y,Z sensors that can calculate the XYZ values
-% at each pixel.
+% Could just do an oiGet(oi,'xyz')
+%
+% Or we can create a matched, ideal X,Y,Z sensors that can calculate
+% the XYZ values at each pixel.
 sensorI = sensorCreateIdeal('match xyz',sensor);
 sensorI = sensorCompute(sensorI,oi);
-sensorWindow(sensorI(2));
-sensorGet(sensorI(2),'pixel fill factor')
+sensorWindow(sensorI(3));
+sensorGet(sensorI(1),'pixel fill factor')
 
 % The sensor data and the oi data have the same vector length.  Apart from
 % maybe a pixel at one edge or the other, they should be aligned
