@@ -122,9 +122,6 @@ function val = wvfGet(wvf, parm, varargin)
 %        'calc observer accommodation'
 %                                 - Observer accommodation at calculation
 %                                   time (diopters)
-%        'calc observer focus correction'
-%                                 - Focus correction added optically for
-%                                   observer at calculation time (diopters)
 %        'calc wavelengths'       - Wavelengths to calculate over (nm, *)
 %        'calc cone psf info'     - Structure with cone sensitivities and
 %                                   weighting spectrum for computing the
@@ -166,10 +163,6 @@ function val = wvfGet(wvf, parm, varargin)
 %        'measured observer accommodation'
 %                                 - Observer accommodation at aberration
 %                                   measurement time (diopters)
-%        'measured observer focus correction'
-%                                 - Focus correction added optically for
-%                                   observer at measurement time (diopters)
-%
 %
 %      Need to be implemented/checked/documented
 %       +'distanceperpix'          -
@@ -467,6 +460,7 @@ switch (parm)
             'measuredobserveraccommodationdiopters'}
         % Observer accommodation, measured in diopters relative to relaxed
         % state of eye
+        error('This value is no longer used, so setting it will not lead to good things.')
         val = wvf.measObserverAcommodationDiopters;
         
     case {'measuredobserverfocuscorrection', ...

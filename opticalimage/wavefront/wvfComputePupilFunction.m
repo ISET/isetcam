@@ -360,7 +360,8 @@ for ii = 1:nWavelengths
     
     % Get Zernike coefficients
     % Need to make sure the c vector is long enough to contain defocus
-    % term, because we handle that specially.  But why?
+    % term, because we handle that specially so we can add in LCA with
+    % there actually being something there.
     % 
     % This wastes a little time when we just compute diffraction, but
     % that is the least of our worries.

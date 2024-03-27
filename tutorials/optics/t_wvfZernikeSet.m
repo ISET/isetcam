@@ -44,7 +44,7 @@ oiWindow(oi);
 %% Change the defocus coefficient
 
 wvf = wvfCreate('wave',sceneGet(scene,'wave'));
-D = [0 1 2];    % Amount of defocus
+D = [0 1 2];    % Amount of defocus in microns
 for ii=1:length(D)
     wvf = wvfSet(wvf,'zcoeffs',D(ii),{'defocus'});
     wvf = wvfCompute(wvf,'human lca',true);

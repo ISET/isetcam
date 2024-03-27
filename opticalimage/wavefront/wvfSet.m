@@ -523,6 +523,9 @@ switch parm
             'measuredobserverfocuscorrectiondiopters'}
         % Focus correction added optically for observer at the measurement
         % time (diopters)
+        error('This value is no longer used, so setting it will not lead to good things.')
+        % Also, there is a typo below since this case is setting the wrong
+        % field.  Not fixing because that field is going way.
         wvf.measObserverAcommodationDiopters = val;
         wvf.PUPILFUNCTION_STALE = true;
 
