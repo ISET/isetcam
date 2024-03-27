@@ -686,6 +686,7 @@ switch (parm)
     case {'calcobserverfocuscorrection', 'defocusdiopters'}
         % Specify optical correction added to observer focus at the
         % calculation time
+        error('This value is no longer used, so getting it will not be helpful.');
         val = wvf.calcObserverFocusCorrectionDiopters;
         
     case {'calcwave', 'calcwavelengths', 'wavelengths', 'wavelength', ...
