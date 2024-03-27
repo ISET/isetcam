@@ -90,7 +90,7 @@ sensorWindow(sensorI(2));
 sensorGet(sensorI(2),'pixel fill factor')
 
 % The sensor data and the oi data have the same vector length.  Apart from
-% maybe a pixel at one edige or the other, they should be aligned
+% maybe a pixel at one edge or the other, they should be aligned
 %
 
 %%
