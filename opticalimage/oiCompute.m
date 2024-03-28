@@ -60,12 +60,12 @@ function oi = oiCompute(oi,scene,varargin)
 % in opticsDLCompute. This blur and intensity in this computation depends
 % on the diffraction limited parameters (f/#) but little else.
 %
-% To create an image with no blur, set the f/# to a very small number.
-% This will provide an image that has the geometry and zero-blur as used in
-% computer graphics pinhole cameras.  The absolute light level, however,
-% will be higher than what would be seen through a small pinhole. You can
-% manage this by setting scaling the spectral irradiance
-% (oiAdjustIlluminance).
+% To create an image with no blur, set the f/# (focal length over the
+% aperture) to be a very small number. This image has the geometry and
+% zero-blur as used in computer graphics pinhole cameras.  The
+% absolute light level, however, will be higher than what would be
+% seen through a small pinhole. You can manage this by setting scaling
+% the spectral irradiance (oiAdjustIlluminance).
 %
 % * The second model is shift-invariant optics.  This depends on having a
 % wavelength-dependent OTF defined and included in the optics structure.

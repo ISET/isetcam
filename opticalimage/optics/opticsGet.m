@@ -228,11 +228,13 @@ switch parm
             val = opticsGet(optics,'fNumber')*(1 - opticsGet(optics,'mag'));
         end
     case {'focallength','flength'}
-        % opticsGet(optics,'flength',units); If this is a pinhole (no
-        % optics), the focal length is how we specify the distance
-        % from the pinhole to the image plane.  If it is not a
-        % pinhole, it is the effective focal length - which in my mind
-        % is a generalization of the thin lens focal length.
+        % opticsGet(optics,'flength',units); 
+        % 
+        % If this is a pinhole (no optics), the focal length is how we
+        % specify the distance from the pinhole to the image plane.
+        % If it is not a pinhole, it is the effective focal length -
+        % which in my mind is a generalization of the thin lens focal
+        % length.
         %
         % In the distant past, we thought we should be using a
         % different value when calculating with a pinhole.  Go back to
@@ -339,8 +341,16 @@ switch parm
         % Should this be a call to effective f#?
         val=1/(2*opticsGet(optics,'fnumber'));
     case {'aperturediameter','diameter','pupildiameter'}
-        %These already check the rt condition, so no need to do it again
-        val = opticsGet(optics,'focalLength')/opticsGet(optics,'fnumber');
+        % We already checked the rt condition, so no need to do it again.
+        %
+        % When the optics name is 'pinhole*', the fnumber will be
+        % small, which forces the OTF to be very flat. We use the
+        % small fnumber value as the aperture size.
+        if length(optics.name) > 6 && isequal(optics.name(1:7),'pinhole')
+            val = opticsGet(optics,'fnumber');
+        else
+            val = opticsGet(optics,'focalLength')/opticsGet(optics,'fnumber');
+        end
         if ~isempty(varargin), val = ieUnitScaleFactor(varargin{1})*val; end
     case {'apertureradius','radius','pupilradius'}
         val = opticsGet(optics,'diameter')/2;

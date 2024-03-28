@@ -162,6 +162,8 @@ wvf = wvfSet(wvf, 'calc wavelengths', p.Results.calcwavelengths);
 wvf = wvfSet(wvf, 'calc optical axis', p.Results.calcopticalaxis);
 wvf = wvfSet(wvf, 'calc observer accommodation', ...
     p.Results.calcobserveraccommodation);
+
+% BW thinks DHB made this throw an error.  So removed.
 % wvf = wvfSet(wvf, 'calc observer focus correction', ...
 %     p.Results.calcobserverfocuscorrection);
 
