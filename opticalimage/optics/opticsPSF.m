@@ -197,7 +197,7 @@ for ww = 1:nWave
     
     % Deal with non square scenes
     if oiWidth ~= oiHeight
-        sz = double(abs(oiWidth - oiHeight)/2);
+        sz = round(double(abs(oiWidth - oiHeight)/2));
         if oiWidth < oiHeight
             photons = padarray(p(:,:,ww),[0,sz],0,'both');
             photons = ImageConvFrequencyDomain(photons,PSF{ww}, 2);
