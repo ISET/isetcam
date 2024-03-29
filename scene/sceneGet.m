@@ -90,7 +90,7 @@ function val = sceneGet(scene,parm,varargin)
 %      'distance per degree'*  - sample spacing per deg of visual angle
 %      'degrees per distance'  - degrees per unit distance, e.g.,  sceneGet(scene,'degPerDist','micron')
 %      'degrees per sample'
-%      'spatial support'       - spatial locations of points e.g., sceneGet(oi,'spatialsupport','microns')
+%      'spatial support'       - spatial locations of points e.g., sceneGet(scene,'spatialsupport','microns')
 %      'h angular resolution'  - height degrees per pixel
 %      'w angular resolution'  - width degrees per pixel
 %      'angular resolution'    - (height, width) degrees per pixel
