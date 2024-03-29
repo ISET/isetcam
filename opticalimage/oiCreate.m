@@ -145,14 +145,21 @@ switch ieParamFormat(oiType)
         % With these default settings the focal length is 10 mm and the
         % aperture diameter is 10 m.        
         oi = oiCreate();
-        oi = oiSet(oi, 'optics name','pinhole')
-        oi = oiSet(oi, 'optics fnumber',1e-3);
-        oi = oiSet(oi, 'optics focal length',1e-2);
+        oi = oiSet(oi, 'name', 'pinhole');
+        oi = oiSet(oi, 'optics name','pinhole');
+        
+        % This makes the computation a pinhole
+        oi = oiSet(oi,'optics model','skip');
         oi = oiSet(oi, 'optics offaxis method', 'skip');
         oi = oiSet(oi, 'diffuser method', 'skip');
 
+        % Not sure why we set these, but it is true that when we have
+        % a very small fnumber, we should have no blur - like a
+        % pinhole.
+        oi = oiSet(oi, 'optics fnumber',1e-3);
+        oi = oiSet(oi, 'optics focal length',1e-2);
+
         % Pinhole do not have a focal length or fNumber.
-        oi = oiSet(oi, 'name', 'pinhole');
         wvf = [];
 
     case {'empty'}
