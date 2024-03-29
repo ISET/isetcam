@@ -81,6 +81,7 @@ for ww=1:length(wave)
 
     % The OTF has DC in the center.
     thisOTF = wvfGet(wvf,'otf',wave(ww));
+    % [~,~,psfCheck] = OtfToPsf([],[],thisOTF);
     % ieNewGraphWin; mesh(X,Y,abs(thisOTF));
 
     if (all(f == fx))
@@ -97,6 +98,7 @@ for ww=1:length(wave)
     % to the wvf centered format. Using fftshift() can invert this
     % reorganization of the data.
     otf(:, :, ww) = ifftshift(est);
+    % otf(:, :, ww) = est;
 end
 
 %{
