@@ -127,7 +127,7 @@ wavelist  = oiGet(oi,'wave');
 flength   = oiGet(oi,'focal length',unit);
 fnumber   = oiGet(oi,'f number');
 
-% WVF is square.  Use the arger of the two sizes
+% WVF is square.  Use the larger of the two sizes
 oiSize    = max(oiGet(oi,'size'));   
 
 if isempty(wvf)
