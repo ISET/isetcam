@@ -990,7 +990,7 @@ switch (parm)
         %   otf = fftshift(fft2(ifftshift(psf)));
         %
         % [~,~,val1] = PsfToOtf([],[],psf);   % Removed PTB function
-        val = fftshift(fft2(ifftshift(psf)));  % Key line from PTB
+        val = fftshift(fft2(ifftshift(psf))); % Key line from PTB function
         %val = ifftshift(val);
         %[~,~,psfCheck] = OtfToPsf([],[],val);
 
