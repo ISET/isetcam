@@ -97,8 +97,8 @@ for ww=1:length(wave)
     % this point, the data have (0,0) in the center.  Thus we use ifftshift
     % to the wvf centered format. Using fftshift() can invert this
     % reorganization of the data.
-    otf(:, :, ww) = ifftshift(est);
-    % otf(:, :, ww) = est;
+    %otf(:, :, ww) = ifftshift(est);
+    otf(:, :, ww) = est;
 end
 
 %{
