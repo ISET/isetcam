@@ -131,7 +131,7 @@ otfM = oiCalculateOTF(oi, wave, unit);  % Took changes from ISETBio.
 
 nWlImagTooBig = 0;
 maxImagFraction = 0;
-imagFractionTol = 1e-3;
+imagFractionTol = 1e-6;
 for ii=1:length(wave)
     % img = oiGet(oi,'photons',wave(ii));
     img = p(:, :, ii);
@@ -189,7 +189,7 @@ end
 
 if (nWlImagTooBig > 0)
     if ( max(abs(filteredIMGImag(:)))/max(abs(filteredIMGReal(:))) > imagFractionTol )
-        fprintf('OpticsOTF: Imaginary part exceeds fractional tolerance relative to real part at %d wavelengths, max fraction %0.1g\n',nWlImagTooBig,maxImagFraction);
+        error(sprintf('OpticsOTF: Imaginary part exceeds fractional tolerance relative to real part at %d wavelengths, max fraction %0.1g\n',nWlImagTooBig,maxImagFraction));
     end
 end
 
