@@ -129,6 +129,9 @@ oi = oiPadValue(oi,padSize,padType,sDist);
 p = oiGet(oi,'photons');
 otfM = oiCalculateOTF(oi, wave, unit);  % Took changes from ISETBio.
 
+nWlImagTooBig = 0;
+maxImagFraction = 0;
+imagFractionTol = 1e-3;
 for ii=1:length(wave)
     % img = oiGet(oi,'photons',wave(ii));
     img = p(:, :, ii);
@@ -150,7 +153,20 @@ for ii=1:length(wave)
     
     % Multiply the transformed otf and the image.
     % Then invert and put the image center in  the center of the matrix
-    filteredIMG = abs(ifft2(otf .* imgFFT));
+    filteredIMGRaw = ifft2(otf .* imgFFT);
+    filteredIMGReal = real(filteredIMGRaw);
+    filteredIMGImag = imag(filteredIMGRaw);
+    imagFraction = max(abs(filteredIMGImag(:)))/max(abs(filteredIMGReal(:)));
+    if ( imagFraction > imagFractionTol )
+        nWlImagTooBig = nWlImagTooBig + 1;
+        if (imagFraction > maxImagFraction)
+            maxImagFraction = imagFraction;
+        end
+    end
+
+    % Take the absolute value to get rid of imaginary parts
+    filteredIMG = abs(filteredIMGRaw);
+
     % filteredIMG = abs(ifftshift(ifft2(otf .* imgFFT)));
     % if  (sum(filteredIMG(:))/sum(img(:)) - 1) > 1e-10  % Should be 1 if DC is correct
     %   warning('DC poorly accounted for');
@@ -162,13 +178,19 @@ for ii=1:length(wave)
     %  end
     
     % Sometimes we had  annoying complex values left after this filtering.
-    % We got rid of it by an abs() operator.  It should never be there.
+    % We got rid of it by an abs() operator above.  It should never be there.
     % But we think it arises because of rounding error.  We haven't seen
     % this in years, however.
     % figure(1); imagesc(abs(filteredIMG)); colormap(gray(64))
     %
     % oi = oiSet(oi,'photons',filteredIMG,wave(ii));
     p(:,:,ii) = filteredIMG;
+end
+
+if (nWlImagTooBig > 0)
+    if ( max(abs(filteredIMGImag(:)))/max(abs(filteredIMGReal(:))) > imagFractionTol )
+        fprintf('OpticsOTF: Imaginary part exceeds fractional tolerance relative to real part at %d wavelengths, max fraction %0.1g\n',nWlImagTooBig,maxImagFraction);
+    end
 end
 
 % Put all the photons in at once.
