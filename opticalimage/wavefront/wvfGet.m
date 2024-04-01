@@ -991,7 +991,7 @@ switch (parm)
         %
         % [~,~,val1] = PsfToOtf([],[],psf);   % Removed PTB function
         val = fftshift(fft2(ifftshift(psf))); % Key line from PTB function
-        %val = ifftshift(val);
+        val = ifftshift(val);
         %[~,~,psfCheck] = OtfToPsf([],[],val);
 
         % From PTB:  We used to zero out small imaginary values.
