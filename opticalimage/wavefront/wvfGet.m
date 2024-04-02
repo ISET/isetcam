@@ -460,7 +460,6 @@ switch (parm)
             'measuredobserveraccommodationdiopters'}
         % Observer accommodation, measured in diopters relative to relaxed
         % state of eye
-        error('This value is no longer used, so setting it will not lead to good things.')
         val = wvf.measObserverAcommodationDiopters;
         
     case {'measuredobserverfocuscorrection', ...
@@ -680,7 +679,6 @@ switch (parm)
     case {'calcobserverfocuscorrection', 'defocusdiopters'}
         % Specify optical correction added to observer focus at the
         % calculation time
-        error('This value is no longer used, so getting it will not be helpful.');
         val = wvf.calcObserverFocusCorrectionDiopters;
         
     case {'calcwave', 'calcwavelengths', 'wavelengths', 'wavelength', ...
