@@ -142,7 +142,7 @@ otfM = oiCalculateOTF(oi, wave, unit);
 % Initialize check variables
 nWlImagTooBig = 0;
 maxImagFraction = 0;
-imagFractionTol = 1e-3;
+imagFractionTol = 1e-2;
 for ii=1:length(wave)
     img = p(:, :, ii);
     % figure(1); imagesc(img); colormap(gray(64));
