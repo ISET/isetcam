@@ -74,9 +74,13 @@ otfSupport = opticsGet(optics,'otfSupport',units);
 % Find the OTF at each wavelength. 
 % 
 % This may require interpolating the optics data to match the current
-% OI.  The interpolation method can have significant consequences for
-% the result when we are working with very high dynamic range scenes.
-% (ZL, BW, 12/2023).
+% OI.  A theory is that the interpolation method can have significant
+% consequences for the result when we are working with very high dynamic
+% range scenes (ZL, BW, 12/2023). It might also be that the problem is not
+% the interpolation per se, but other bugs (DHB, 4/2/24).
+%
+% We handel the one wavelength case separately because in this case it is a
+% 2D array rather than a 3D array.
 if length(wavelength) == 1
 
     OTF2D = opticsGet(optics,'otfData',wavelength);
@@ -86,14 +90,17 @@ if length(wavelength) == 1
     % We interpolate the stored OTF2D onto the support grid for the
     % optical image.
     %
-    % The OTF2D representation stores DC is in (1,1). So we would want
+    % The OTF2D representation stores DC in (1,1). So we would want
     % the fSupport to run from 1:N. The otfSupport that we use to
     % create X and Y, runs from -N:N. To make things match up, we
     % apply an fftshift to the OTF2D data prior to interpolating to
     % the spatial frequencies, fx and fy, that are required given the
     % spatial sampling of the optical image.
     %
-    % BW:  Can't this also be fftshift?  Like below?
+    % Note that it is critical to use ifftshift to put back what fftshift
+    % did, and not use fftshift twice.  You can get lured into thinking
+    % that fftshift self-inverts because it does in some special cases, but
+    % not in all cases.
     OTF2D    = ifftshift(interp2(X, Y, fftshift(OTF2D), fx, fy, 'linear',0));
     
 else    
