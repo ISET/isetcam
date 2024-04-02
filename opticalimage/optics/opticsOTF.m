@@ -41,14 +41,12 @@ function oi = opticsOTF(oi,scene,varargin)
 varargin = ieParamFormat(varargin);
 p = inputParser;
 p.KeepUnmatched = true;
-
 p.addRequired('oi',@(x)(isstruct(x) && isequal(x.type,'opticalimage')));
 p.addRequired('scene',@(x)(isstruct(x) && isequal(x.type,'scene')));
 p.addParameter('padvalue','zero',@(x)(ischar(x) || isvector(x)));
-
 p.parse(oi,scene,varargin{:});
 
-%%
+%% Get the optics model and fan out as appropriate
 optics      = oiGet(oi,'optics');
 opticsModel = opticsGet(optics,'model');
 
