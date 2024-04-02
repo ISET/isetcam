@@ -70,8 +70,6 @@ fprintf('\tPupil size (mm): %g\n', wvfGet(wvf, 'calc pupil size'));
 fprintf('\tOptical axis (deg): %g\n', wvfGet(wvf, 'calc optical axis'));
 fprintf('\tObserver accommodation (diopters): %g\n', ...
     wvfGet(wvf, 'calc observer accommodation'));
-fprintf('\tObserver focus correction (diopters): %g\n', ...
-    wvfGet(wvf, 'calc observer focus correction'));
 fprintf('\tWavelengths: ')
 val = wvfGet(wvf, 'calc wavelengths');
 for i = 1:length(val)
