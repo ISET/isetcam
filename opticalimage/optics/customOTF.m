@@ -105,7 +105,7 @@ else
         %  ieNewGraphWin; mesh(abs(fft2(tmp)));
         % fftshift(interp2(X, Y, fftshift(tmp), fx, fy, 'linear',0));
         OTF2D(:,:,ii) = ...
-            fftshift(interp2(X, Y, fftshift(tmp), fx, fy, 'linear',0));
+            ifftshift(interp2(X, Y, fftshift(tmp), fx, fy, 'linear',0));
         %{
           ieNewGraphWin; 
           mesh(fx,fy,fftshift(abs(OTF2D(:,:,ii))));  

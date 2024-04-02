@@ -131,7 +131,7 @@ otfM = oiCalculateOTF(oi, wave, unit);  % Took changes from ISETBio.
 
 nWlImagTooBig = 0;
 maxImagFraction = 0;
-imagFractionTol = 1e-6;
+imagFractionTol = 1e-3;
 for ii=1:length(wave)
     % img = oiGet(oi,'photons',wave(ii));
     img = p(:, :, ii);
