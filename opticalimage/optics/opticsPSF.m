@@ -86,8 +86,8 @@ function oi = oiApplyPSF(oi,scene,aperture,wvf,unit,padvalue)
 %    oi = oiApplyPSF(oi);
 %
 % Copyright ImagEval Consultants, LLC, 2003.
-
-%
+ 
+% Input handling
 if ieNotDefined('oi'),     error('Optical image required.'); end
 if ieNotDefined('aperture'), aperture = [];  end
 if ieNotDefined('wvf'),           wvf = [];  end
