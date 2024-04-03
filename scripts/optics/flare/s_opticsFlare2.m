@@ -18,13 +18,13 @@ wvfSet(wvf,'focal length',flengthM);
 % Now create some flare based on the aperture, dust and scratches.
 % There are many parameters for this function, including dot mean, line
 % mean, dot sd, line sd, line opacity.  They are returned in params
-nsides = 3;
+nsides = 6;
 apertureFunc = wvfAperture(wvf,'nsides',nsides,...
     'dot mean',20, 'dot sd',3, 'dot opacity',0.5, ...
     'line mean',20, 'line sd', 2, 'line opacity',0.5);
 
-wvf = wvfPupilFunction(wvf,'amplitude',apertureFunc);
-wvf = wvfCompute(wvf,'force',false);  % force as false is important
+wvf = wvfPupilFunction(wvf,'aperture function',apertureFunc);
+wvf = wvfCompute(wvf); 
 wvfPlot(wvf,'psf','unit','um','wave',550,'plot range',20,'airy disk',true);
 
 %{
@@ -51,7 +51,7 @@ oiPlot(oi,'psf550');
 set(gca,'xlim',[-20 20],'ylim',[-20 20]);
 
 %%  There is a lot of similarity in the PSF, but the spatial scale is not the same
-
+%{
 [oiApply, pMask, psf] = piFlareApply(scenePoint,'num sides aperture',nsides, ...
     'focal length',wvfGet(wvf,'focal length','m'), ...
     'fnumber',wvfGet(wvf,'fnumber'));
@@ -64,6 +64,15 @@ title('piFlareApply psf');
 oiApply = oiSet(oiApply,'name','flare');
 oiWindow(oiApply);
 oiSet(oiApply,'gamma',0.5); drawnow;
+%%
+oi = oiCompute(oiApply,sceneHDR);
+oi = oiCrop(oi,'border');
+oi = oiSet(oi,'name','flare');
+oiWindow(oi);
+oiSet(oi,'render flag','hdr');
+oiSet(oi,'gamma',1); drawnow;
+
+%}
 
 %% HDR Test scene. Green repeating circles
 
@@ -77,22 +86,14 @@ oiWindow(oi);
 oiSet(oi,'render flag','hdr');
 oiSet(oi,'gamma',1); drawnow;
 
-%%
-oi = oiCompute(oiApply,sceneHDR);
-oi = oiCrop(oi,'border');
-oi = oiSet(oi,'name','flare');
-oiWindow(oi);
-oiSet(oi,'render flag','hdr');
-oiSet(oi,'gamma',1); drawnow;
-
 %% Change the number of sides
 nsides = 5;
 [apertureFunc, params] = wvfAperture(wvf,'nsides',nsides,...
     'dot mean',20, 'dot sd',3, 'dot opacity',0.5, ...
     'line mean',20, 'line sd', 2, 'line opacity',0.5);
 
-wvf = wvfPupilFunction(wvf,'amplitude',apertureFunc);
-wvf = wvfComputePSF(wvf,'force',false);  % force as false is important
+wvf = wvfPupilFunction(wvf,'aperture function',apertureFunc);
+wvf = wvfComputePSF(wvf); 
 wvfPlot(wvf,'psf','unit','um','wave',550,'plot range',20,'airy disk',true);
 
 scenePoint = sceneSet(scenePoint,'fov',1);
@@ -118,8 +119,8 @@ nsides = 3;
     'dot mean',20, 'dot sd',3, 'dot opacity',0.5, ...
     'line mean',20, 'line sd', 2, 'line opacity',0.5);
 
-wvf = wvfPupilFunction(wvf,'amplitude',apertureFunc);
-wvf = wvfComputePSF(wvf,'force',false);  % force as false is important
+wvf = wvfPupilFunction(wvf,'aperture function',apertureFunc);
+wvf = wvfComputePSF(wvf);  % force as false is important
 wvfPlot(wvf,'psf','unit','um','wave',550,'plot range',20,'airy disk',true);
 
 oi = oiCompute(wvf,sceneHDR);
@@ -127,7 +128,5 @@ oi = oiSet(oi,'name','wvf');
 oiWindow(oi);
 oiSet(oi,'render flag','hdr');
 oiSet(oi,'gamma',1); drawnow;
-
-%% Now attend to longitudinal chromatic aberration
 
 %% END
