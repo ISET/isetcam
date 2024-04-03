@@ -19,43 +19,41 @@ ieInit;
 ieSessionSet('init clear',true);
 close all;
 
-%%
+%%  Comopare DL and WVF calculations for different fNumbers
+
 s_size = 1000;
 flengthM = 4e-3;
 fnumber = 8;
-
 pupilMM = (flengthM*1e3)/fnumber;
 
 scene = sceneCreateHDR(s_size,17,1);
-
 scene = sceneAdjustLuminance(scene,'peak',1e5);
-
 scene = sceneSet(scene,'fov',10);
 scene = sceneSet(scene,'distance', 1);
 
 index = 1;
 fig = figure;set(fig, 'AutoResizeChildren', 'off');
 for fnumber = 3:5:13
-    % DL 
+    % Compute with the DL model
     oi = oiCreate('diffraction limited');
     oi = oiSet(oi,'optics focallength',flengthM);
     oi = oiSet(oi,'optics fnumber',fnumber);
+
     % oi needs information from scene to figure out the proper resolution.
-    oi = oiCompute(oi, scene);
-    oi = oiCrop(oi,'border');
+    oi = oiCompute(oi, scene,'crop',true);   
    
-    % SI
+    % Compute with the SI model.  opticspsf path
     aperture = [];
-    oi = oiSet(oi,'optics model','shift invariant');
-    oi_wvf = oiCompute(oi,scene,'aperture',aperture);
+    oi = oiSet(oi,'optics model','shift invariant');   
+    oi_wvf = oiCompute(oi,scene,'aperture',aperture,'crop',true);
     oi_wvf = oiSet(oi_wvf, 'name','flare');
-    oi_wvf = oiCrop(oi_wvf,'border');
-    %
+
+    % Show some images
     if exist('piRootPath.m','file')
         % If iset3d exist, use piRadiance2RGB
-        ip = piRadiance2RGB(oi,'etime',1);
-        rgb = ipGet(ip,'srgb');
-        ip_wvf = piRadiance2RGB(oi_wvf,'etime',1);
+        ip      = piRadiance2RGB(oi,'etime',1);
+        rgb     = ipGet(ip,'srgb');
+        ip_wvf  = piRadiance2RGB(oi_wvf,'etime',1);
         rgb_wvf = ipGet(ip_wvf,'srgb');
 
         subplot(3,3,index);imshow(rgb);index = index+1;title(sprintf('DL-Fnumber:%d\n',fnumber));
@@ -63,10 +61,12 @@ for fnumber = 3:5:13
         subplot(3,3, index);imagesc(abs(rgb(:,:,2)-rgb_wvf(:,:,2)));colormap jet; colorbar; index = index+1;title('difference');
     end
 
+    % Compare the two computational paths.  Check is for each of the fnumbers.
     assert(mean2(oi_wvf.data.photons(:,:,15))/mean2(oi.data.photons(:,:,15))-1 < 0.0001);
 end
 
-%% Change the shape of the aperture
+%% Change the shape of the aperture and produce flare
+
 if exist('piRootPath.m','file')
     % Compare with this: https://en.wikipedia.org/wiki/File:Comparison_aperture_diffraction_spikes.svg
     nsides_list = [0, 4, 5, 6];
@@ -80,13 +80,26 @@ if exist('piRootPath.m','file')
             'dot mean',0, 'dot sd',0, 'dot opacity',0.5,'dot radius',5,...
             'line mean',0, 'line sd', 0, 'line opacity',0.5,'linewidth',2);
 
-        oi_wvf = oiCompute(oi,scene,'aperture',aperture);
+        oi_wvf = oiCompute(oi,scene,'aperture',aperture,'crop',true);
 
-        oi_wvf = oiSet(oi_wvf, 'name','flare');
-        oi_wvf = oiCrop(oi_wvf,'border');
+        oi_wvf = oiSet(oi_wvf, 'name','flare');        
         ip_wvf = piRadiance2RGB(oi_wvf,'etime',1);
         rgb_wvf = ipGet(ip_wvf,'srgb');
 
         subplot(1, 4, ii);imshow(rgb_wvf);title(sprintf('Number of blades: %d\n',nsides));
     end
 end
+
+%%
+oi = oiCreate('wvf');
+oi = oiSet(oi,'optics name','opticsotf');
+oi = oiCompute(oi,scene,'crop',true,'aperture',aperture);
+oiWindow(oi);
+
+oi = oiSet(oi,'optics name','opticspsf');
+oi = oiCompute(oi,scene,'crop',true,'aperture',aperture);
+oiWindow(oi);
+
+
+
+%% END
