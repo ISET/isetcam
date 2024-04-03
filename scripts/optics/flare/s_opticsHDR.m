@@ -6,17 +6,13 @@
 % While generally not problematic, these artifacts could be noticeable in 
 % HDR scenes, particularly in night settings.
 %
-% A potential solution is to generate a high-resolution OTF in real-time, 
-% but this approach is computationally intensive for large scenes. 
-% As a temporary workaround, we precalculate the OTF at the OI's resolution 
-% and configure the OI accordingly. 
-% This method allows oiCompute to bypass the interpolation step.
+% A potential solution is to generate a high-resolution OTF in
+% real-time, but this approach is computationally intensive for large
+% scenes. As a temporary workaround, we precalculate the OTF at the
+% OI's resolution and configure the OI accordingly. This method allows
+% oiCompute to bypass the interpolation step.
 %
 % Zhenyi, 2023
-
-%  Not running.  Maybe delete or debug
-% 
-% return;
 
 %%
 ieInit;

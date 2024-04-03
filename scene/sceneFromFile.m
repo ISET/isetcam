@@ -12,7 +12,7 @@ function scene = sceneFromFile(inputData, imType, meanLuminance, dispCal, ...
 %             may also be
 %              * RGB data, rather than the file name
 %              * A file that contains a scene structure
-%  imageType: 'spectral', 'rgb' or 'monochrome'
+%  imageType: 'spectral', 'rgb', 'exr', or 'monochrome'
 %              When 'rgb', the imageData might be RGB format. 'spectral'
 %              includes both multispectral and hyperspectral.
 %  meanLuminance: If a value is sent in, set scene to this meanLuminance.
@@ -141,6 +141,26 @@ if notDefined('imType'), error('imType required.'); end
 imType = ieParamFormat(imType);
 
 switch lower(imType)
+    case {'exr'}
+        % Read an EXR file into a scene.
+        % scene = sceneFromFile(exrFile,'exr');
+        % In the future we might read additional metadata, but not
+        % available.
+        if ~exist(inputData,'file')
+            error('Cannot find file %s\n',inputData);
+        else
+            [~,~,e] = fileparts(inputData);
+            if ~isequal(e,'.exr')
+                error('EXR file required.  Extension is %s\n',e);
+            end
+        end
+
+        scene = piEXR2ISET(inputData);
+        dMap  = piReadEXR(inputData, 'data type','depth');
+        scene = sceneSet(scene,'depth map',dMap);
+        scene = sceneSet(scene, 'filename', inputData);
+        return;
+
     case {'monochrome','rgb'}  % 'unispectral'
         % init display structure
         if notDefined('dispCal')
