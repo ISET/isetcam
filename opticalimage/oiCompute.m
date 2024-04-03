@@ -145,15 +145,15 @@ p.addParameter('pixelsize',[],@isscalar); % in meters
 p.parse(oi,scene,varargin{:});
 
 % Ages ago, we some code flipped the order of scene and oi.  We think
-% we have caught all those cases, but we still test.  Maybe delete
-% this code by January 2024.
+% we have caught all those cases, but we still test, and are now forcing
+% the user to correct.
 if strcmp(oi.type,'scene') && (strcmp(scene.type,'opticalimage') ||...
         strcmp(scene.type,'wvf'))
-    warning('flipping oi and scene variables.')
+    error('You need to flip order oi and scene variables in the call to oiCompute')
     tmp = scene; scene = oi; oi = tmp; clear tmp
 end
-%% Adjust oi fov if user send in a pixel size
 
+%% Adjust oi fov if user sends in a pixel size
 if ~isempty(p.Results.pixelsize)
     pz = p.Results.pixelsize;
     sw = sceneGet(scene, 'cols');
@@ -164,9 +164,9 @@ if ~isempty(p.Results.pixelsize)
 end
 
 %% Compute according to the selected model.
-
+%
 % Should we pad the scene before the call to these computes?
-
+%
 % We pass varargin because it may contain the key/val parameters
 % such as pad value and crop. But we only use pad value here.
 if strcmp(oi.type,'wvf')
