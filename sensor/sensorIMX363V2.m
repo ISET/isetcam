@@ -18,7 +18,7 @@ function sensor = sensorIMX363V2(varargin)
 % Return
 %   sensor - struct with the IMX363 model parameters
 %
-% Examples:  ieExamplesPrint('sensorIMX363');
+% Examples:  ieExamplesPrint('sensorIMX363V2');
 %
 % See also
 %  sensorCreate
@@ -27,11 +27,14 @@ function sensor = sensorIMX363V2(varargin)
 %   We need to make this one the one inside of sensorCreate
 % Examples:
 %{
- % The defaults and some plots
- sensor = sensorCreate('IMX363');
- sensorPlot(sensor,'spectral qe');
- sensorPlot(sensor,'cfa block');
- sensorPlot(sensor,'pixel snr');
+    ieExamplesPrint('sensorIMX363V2');
+%}
+%{
+    % The defaults and some plots
+    sensor = sensorCreate('IMX363');
+    sensorPlot(sensor,'spectral qe');
+    sensorPlot(sensor,'cfa block');
+    sensorPlot(sensor,'pixel snr');
 %}
 %{
  % Adjust a parameter

@@ -70,7 +70,7 @@ function [filters,support,params] = scPrepareFilters(params)
   subplot(1,2,1); mesh(support,support,filters{3})
   subplot(1,2,2); mesh(support,support,k1)
    
-  % The values are the same as shown by the zero difference
+  % The values are the same aes shown by the zero difference
   figure; clf;
   subplot(1,3,1); mesh(support,support,k1-filters{1});
   subplot(1,3,2); mesh(support,support,k2-filters{2});
