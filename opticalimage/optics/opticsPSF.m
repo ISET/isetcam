@@ -208,6 +208,9 @@ for ww = 1:nWave
             p(:,:,ww) = photons(sz+1:sz+oiHeight,:);
         end
     else
+        % BW:  Debugging as per DHB.  This line breaks the padding.
+        % It seems the convolution is not circular. Currently
+        % debugging in v_ibioRDT_wvfPadPSF.m
         p(:,:,ww) = ImageConvFrequencyDomain(p(:,:,ww), PSF{ww}, 2 );
     end
     % otf requires a single wavelength
