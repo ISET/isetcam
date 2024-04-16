@@ -1423,15 +1423,15 @@ img = imageSlantedEdge(imSize, barSlope, darklevel);
 % Make the image
 imSize = round(imSize/2);
 [X,Y] = meshgrid(-imSize:imSize,-imSize:imSize);
-img = zeros(size(X));
+%  img = zeros(size(X));
 %  y = barSlope*x defines the line.  We find all the Y values that are
 %  above the line
-list = (Y > barSlope*X );
+% list = (Y > barSlope*X );
 
 % We assume target is perfectly reflective (white), so the illuminant is
 % the equal energy illuminant; that is, the SPD is all due to the
 % illuminant
-img( list ) = 1;
+% img( list ) = 1;
 
 % Prevent dynamic range problem with ieCompressData
 img = ieClip(img,1e-6,1);

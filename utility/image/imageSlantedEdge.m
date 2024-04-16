@@ -1,17 +1,18 @@
 function img = imageSlantedEdge(imSize,slope, darklevel)
-% Make a slanted edge binary image
+% Make a slanted edge image - always square and odd number of rows/cols
 %
-% Syntax
+% Brief
+%   This target is used for the ISO 12233 standard. By construction
+%   the image size is always returned as odd. The bright side is
+%   always 1. The dark level is a parameter.
+%
+% Synopsis
 %   img = imageSlantedEdge(imSize,slope,darklevel);
 %
-% Description
-%   Create a slanted edge image.  Useful for resolution
-%   testing.
-%
 % Inputs
-%   imSize - (row,col) (384,384) by default
-%   slope  - slope of the edge (2.6 default)
-%   darklevel - The white level is 1.  This sets the dark level (0 default)
+%   imSize    - (row,col) (384,384) by default
+%   slope     - slope of the edge (2.6 default)
+%   darklevel - Dark side (0 default).  White side is always 1.
 %
 % Key/val pairs
 %   N/A
@@ -19,7 +20,10 @@ function img = imageSlantedEdge(imSize,slope, darklevel)
 % Outputs
 %  img:   A slanted edge image with a slope at the edge.
 %
-% JEF/BW 2019
+% Description
+%   The axes for an image start with (1,1) at the upper left.  So a
+%   slope of 2.6 produces a line y = slope*x that becomes an image
+%   with the edge sloping downwards.
 %
 % See also
 %   sceneCreate('slanted edge')
@@ -45,7 +49,13 @@ if ieNotDefined('darklevel'), darklevel = 0; end
 if numel(imSize) == 1, imSize(2) = imSize; end
 
 %% Make the image
-imSize = round(imSize/2);
+
+% We force the image size to be odd.
+
+% This is even
+imSize = round(imSize/2);   
+
+% This is always odd
 [X,Y] = meshgrid(-imSize(2):imSize(2),-imSize(1):imSize(1));
 
 img = ones(size(X))*darklevel;

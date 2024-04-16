@@ -2,8 +2,8 @@ function [OTF2D, fSupport] = customOTF(oi,fSupport,wavelength,units)
 % Interpolate optics OTF for shift-invariant calculation in optical image
 %
 % Brief
-%  This routine returns appropriate spectral OTF given the spatial
-%  sampling in the optical image.
+%  Returns the spectral OTF given the spatial sampling in the
+%  optical image.
 %
 % Synopsis
 %  [OTF2D,fSupport] = customOTF(oi,[fSupport],[wavelength = :],[units='mm'])
@@ -23,22 +23,18 @@ function [OTF2D, fSupport] = customOTF(oi,fSupport,wavelength,units)
 % Description
 %  In the shift-invariant optics model, custom data are stored in the
 %  optics.OTF slot.  This routine reads the otf data and interpolates
-%  them to the fSupport and wavelength of the optical image or optics
-%  structure.
+%  them to the fSupport and wavelength of the optical image (oi).
 %
-%  The returned OTF is normalized so that all energy is transmitted
-%  (i.e., the DC value is 1).  This is done by normalizing the peak
-%  value to one. If we ever have a case when the peak is other than
-%  the DC, we have a problem with energy conservation - where did the
-%  photons go?
+%  The OTF is normalized so that all energy is transmitted (i.e., the
+%  DC value is 1). We always represent the loss of energy by the
+%  filters along the light path.
 %
 %  The default units for the frequency support are cycles/millimeters.
 %
-%  TODO:  We can accept fSupport in
-%  various units. But we can also set 'units'.  It is possible that
-%  the user sends in fSupport in, say, cyc/deg and sends in units as
-%  'mm'.  The case we do not want is fSupport is in cyc/deg and units
-%  is in mm.
+%  TODO:  We can accept fSupport in various units. But we can also set
+%  'units'.  It is possible that the user sends in fSupport in, say,
+%  cyc/deg and sends in units as 'mm'.  The case we do not want is
+%  fSupport is in cyc/deg and units is in mm.
 %
 % See also:
 %   oiCalculateOTF, dlCore.m

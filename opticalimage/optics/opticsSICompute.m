@@ -1,30 +1,39 @@
 function oi = opticsSICompute(scene,oiwvf,aperture,varargin)
-%Calculate OI irradiance using a custom shift-invariant PSF
+% Calculate OI irradiance using a shift-invariant PSF
 %
 %    oi = opticsSICompute(scene,oiwvf,varargin)
 %
-% The shift invariant transform (OTF) is stored in the optics structure in
-% the optics.data.OTF slot.  The representation includes the spatial
-% frequencies in the x and y dimensions (OTF.fx, OTF.fy) which are
-% represented in cycles/mm.  The value of the OTF, which can be complex, is
-% stored in OTF.OTF.
-%
+% The shift invariant transform is calculated from the optics
+% structure. At present, we compute the PSF from a stored wavefront
+% function, on the fly, using the sampling density appropriate for the
+% scene.  This is done in the opticsPSF() function.  
+% 
+% (See below for another option, opticsOTF().)
+% 
 % This routine simply manages the order of events for converting the scene
 % radiance to sensor irradiance.  The events are:
 %
 %    * Converting scene radiance to image irradiance
 %    * Applying the off-axis (e.g., cos4th) fall off
-%    * The OTF is applied (opticsOTF)
+%    * The OTF is applied 
+%         (opticsPSF or opticsOTF, according to the optics name field)
 %    * A final blur for the anti-aliasing filter is applied
 %    * The illuminance is calculated and stored
 %
-% See also: opticsRayTrace, oiCompute, opticsOTF
+% Note:
 %
-% Example
-%    scene = vcGetObject('scene');
-%    oi    = vcGetObject('oi');
+%  Historically, we pre-computed an OTF and stored it in the optics
+%  structure in the optics.data.OTF slot.  This contines the values
 %
-% Copyright ImagEval Consultants, LLC, 2005
+%    OTF.OTF, OTF.fx, OTF.fy (where frequency is cycles/mm)
+%
+%  We interpolate the stored OTF to match the sampling density in the
+%  scene.  This is the opticsOTF() function.  To use this path rather
+%  than the opticsPSF, set the name field of the optics structure to
+%  'opticsotf'.  For an example, see v_icam_oiPad
+%
+% See also: 
+%   opticsRayTrace, oiCompute, opticsPSF, opticsOTF
 
 %%
 if ieNotDefined('scene'), error('Scene required.'); end

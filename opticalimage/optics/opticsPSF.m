@@ -9,6 +9,9 @@ function oi = opticsPSF(oi,scene,aperture,wvf,varargin)
 %  scene
 %
 % Optional key/val
+%  aperture
+%  wvf
+%  padvalue
 %
 % Return
 %   oi
@@ -200,18 +203,45 @@ for ww = 1:nWave
         sz = round(double(abs(oiWidth - oiHeight)/2));
         if oiWidth < oiHeight
             photons = padarray(p(:,:,ww),[0,sz],0,'both');
-            photons = ImageConvFrequencyDomain(photons,PSF{ww}, 2);
+            % photons = ImageConvFrequencyDomain(photons,PSF{ww}, 2);
+            photons = fftshift(ifft2(fft2(photons) .* fft2(PSF{ww})));
             p(:,:,ww) = photons(:,sz+1:sz+oiWidth);
         else
             photons = padarray(p(:,:,ww),[sz,0],0,'both');
-            photons = ImageConvFrequencyDomain(photons,PSF{ww}, 2);
+            % photons = ImageConvFrequencyDomain(photons,PSF{ww}, 2);
+            photons = fftshift(ifft2(fft2(photons) .* fft2(PSF{ww})));
             p(:,:,ww) = photons(sz+1:sz+oiHeight,:);
         end
     else
         % BW:  Debugging as per DHB.  This line breaks the padding.
         % It seems the convolution is not circular. Currently
         % debugging in v_ibioRDT_wvfPadPSF.m
-        p(:,:,ww) = ImageConvFrequencyDomain(p(:,:,ww), PSF{ww}, 2 );
+
+        % tmp = conv2(p(:,:,ww),PSF{ww},'same');
+
+        % The ImageConvFrequencyDomain method almost always worked.
+        % But for the slanted bar scene, for some reason, it had a
+        % roll off at the edge towards zero that should not have been
+        % there.  We tried various tests to see why, but none worked.
+        % The method has parameters in how it calls fft2() that nearly
+        % always work but for some reason fail us in the slanted edge
+        % case.  (See v_icam_wvfPadPSF).  So we now do this step in
+        % the compute the same way that it is done in opticsOTF.
+
+        % In this case, we need an fftshift that is not needed in the
+        % opticsOTF case. Perhaps that is because we store the OTF in
+        % a different format there and here we simply take fft2(PSF).
+        % 
+        % That may be the reason why there is a 1 pixel shift in the
+        % result for odd (but not even) size images.  See
+        % v_icam_wvfPadPSF.m.  Let's try to eliminate
+        %
+        % Deprecated because it pads and causes the roll off sometimes
+        % p(:,:,ww) = ImageConvFrequencyDomain(p(:,:,ww), PSF{ww}, 2 );
+
+        % Designed to match the opticsOTF values
+        p(:,:,ww) = ifft2( fft2(p(:,:,ww)) .* fft2(ifftshift(PSF{ww})) );
+        
     end
     % otf requires a single wavelength
     % otf(:,:,ww) = wvfGet(wvf,'otf',wavelist(ww));

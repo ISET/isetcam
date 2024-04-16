@@ -1,4 +1,9 @@
 %% Calculate PSF/OTF using wvf that matches the OI
+%
+% Deprecated
+%   We now do a version of the potential solution below using
+%   opticsPSF.
+%
 % Interpolation in isetcam matches the resolution (um/sample) of the default 
 % PSF/OTF with the OI resolution. However, this process introduces minor 
 % artifacts in the PSF, such as horizontal and vertical spiky lines, 
@@ -10,7 +15,7 @@
 % real-time, but this approach is computationally intensive for large
 % scenes. As a temporary workaround, we precalculate the OTF at the
 % OI's resolution and configure the OI accordingly. This method allows
-% oiCompute to bypass the interpolation step.
+% oiCompute to bypass the interpolation step. 
 %
 % Zhenyi, 2023
 

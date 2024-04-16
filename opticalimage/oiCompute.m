@@ -150,7 +150,8 @@ p.parse(oi,scene,varargin{:});
 if strcmp(oi.type,'scene') && (strcmp(scene.type,'opticalimage') ||...
         strcmp(scene.type,'wvf'))
     error('You need to flip order oi and scene variables in the call to oiCompute')
-    tmp = scene; scene = oi; oi = tmp; clear tmp
+    % We used to help the user
+    % tmp = scene; scene = oi; oi = tmp; clear tmp
 end
 
 %% Adjust oi fov if user sends in a pixel size

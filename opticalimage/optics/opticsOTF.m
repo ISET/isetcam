@@ -121,24 +121,21 @@ switch padvalue
         error('Unknown padvalue %s',padvalue);
 end
 
-%% Padding
+%% Adjust the data by padding, and get the OTF
+
 % oiGet(oi,'sample size')
 oi = oiPadValue(oi,padSize,padType,sDist);
 % oiGet(oi,'sample size')
 
-% See t_codeFFTinMatlab to understand the logic of the operations here.
-% We used to do this one wavelength at a time.  But this could cause
-% dynamic range problems for ieCompressData.  So, for now we are
-% experimenting with filtering one at a time but stuffing the whole data
-% set in at once.
-
-% Get the current data set.  It has the right size.  We over-write it
+% Get the current photons.  It has the right size.  We over-write it
 % below.
 p = oiGet(oi,'photons');
+
+% Get the OTF
 otfM = oiCalculateOTF(oi, wave, unit); 
 
-%% Calculate for each wavelength
-%
+%% Calculate blured photons for each wavelength
+
 % Initialize check variables
 nWlImagTooBig = 0;
 maxImagFraction = 0;
@@ -169,8 +166,8 @@ for ii=1:length(wave)
     filteredIMGRaw = ifft2(otf .* imgFFT);
 
     % Get real and imaginary parts.  The image should be real up to
-    % numerical issues. We save the largest deviation over wavelengths, and
-    % check outside the loop below.
+    % numerical issues. We save the largest deviation over
+    % wavelengths, and check outside the loop below.
     filteredIMGReal = real(filteredIMGRaw);
     filteredIMGImag = imag(filteredIMGRaw);
     imagFraction = max(abs(filteredIMGImag(:)))/max(abs(filteredIMGReal(:)));
@@ -181,13 +178,12 @@ for ii=1:length(wave)
         end
     end
 
-    % Take the absolute value to get rid of any small stray imaginary parts
+    % The complex values should never be there. But we think it arises
+    % because of rounding error and or asymmetry in the OTF as a
+    % result of the interpolation. Take the absolute value to
+    % eliminate small imaginary terms
     filteredIMG = abs(filteredIMGRaw);
-    
-    % Sometimes we had  annoying complex values left after this filtering.
-    % We got rid of it by an abs() operator above.  It should never be there.
-    % But we think it arises because of rounding error and or asymmetry in the OTF
-    % as a result of the interpolation.  W
+
     % figure(1); imagesc(abs(filteredIMG)); colormap(gray(64))
     p(:,:,ii) = filteredIMG;
 end
@@ -195,7 +191,7 @@ end
 % Check that the imaginary part was not too big
 if (nWlImagTooBig > 0)
     if ( max(abs(filteredIMGImag(:)))/max(abs(filteredIMGReal(:))) > imagFractionTol )
-        error(sprintf('OpticsOTF: Imaginary part exceeds fractional tolerance relative to real part at %d wavelengths, max fraction %0.1g\n',nWlImagTooBig,maxImagFraction));
+        error('OpticsOTF: Imaginary exceeds tolerance relative to real at %d wavelengths, max fraction %0.1g\n',nWlImagTooBig,maxImagFraction);
     end
 end
 
