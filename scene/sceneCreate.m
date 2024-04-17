@@ -26,12 +26,13 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %
 % MACBETH COLOR AND LUMINANCE CHART
 %
-%   The default, scene = sceneCreate, is a Macbeth color checker illuminated
-%   by a D65 light source with a mean luminance of 100 cd/m2.  The scene is
-%   described only a small number of spatial 64x96 (row,col).  This can be
-%   changed using the patchSize argument (default - 16 pixels).  The
-%   wavelength  400:10:700 samples, making it efficient to use for experiments.
+%   The default, scene = sceneCreate, is a Macbeth color checker
+%   illuminated by a D65 light source with a mean luminance of 100
+%   cd/m2.  The scene is described only a small number of spatial
+%   64x96 (row,col).  This can be changed using the patchSize argument
 %
+%    scene = sceneCreate('macbethEE_IR',[patchSize=16],[wave=400:10:700]);
+%   
 %   Here are some options
 %      {'macbeth d65'}         - Macbeth D65 image.
 %      {'macbeth d50'}         - D50 illuminant
@@ -41,7 +42,6 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %      {'macbeth EE_IR'}       - Equal energy extends out to the IR
 %      {L star}                - Vertical bars spaced in equal L* steps
 %
-%
 %   Use sceneAdjustIlluminant() to change the scene SPD.
 %
 % REFLECTANCE CHART
@@ -50,7 +50,7 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %
 % NARROWBAND COLOR PATCHES
 %    wave = [600, 610];  sz = 64;
-%    scene = sceneCreate('uniform monochromatic',wave,sz);
+%    scene = sceneCreate('uniform monochromatic',sz,wave);
 %
 % SPATIAL TEST PATTERNS:
 %
@@ -1423,15 +1423,15 @@ img = imageSlantedEdge(imSize, barSlope, darklevel);
 % Make the image
 imSize = round(imSize/2);
 [X,Y] = meshgrid(-imSize:imSize,-imSize:imSize);
-img = zeros(size(X));
+%  img = zeros(size(X));
 %  y = barSlope*x defines the line.  We find all the Y values that are
 %  above the line
-list = (Y > barSlope*X );
+% list = (Y > barSlope*X );
 
 % We assume target is perfectly reflective (white), so the illuminant is
 % the equal energy illuminant; that is, the SPD is all due to the
 % illuminant
-img( list ) = 1;
+% img( list ) = 1;
 
 % Prevent dynamic range problem with ieCompressData
 img = ieClip(img,1e-6,1);

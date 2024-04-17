@@ -76,6 +76,9 @@ function [val, type] = sensorGet(sensor,param,varargin)
 %      'electrons'      - Sensor output in electrons
 %         A single color plane can be returned
 %         sensorGet(sensor,'electrons',2);
+%      'electrons per area' - Normalize by the pixel area.  
+%          Default units is meter^2, but you can specify unit, um^2          
+%          sensorGet(sensor,'electrons per area','um')
 %      'chromaticity'   - Sensor rg-chromaticity after Demosaicking (roiRect allowed)
 %      'dv or volts'    - Return either dv if present, otherwise volts
 %      'roi locs'       - Stored region of interest (roiLocs)
@@ -443,19 +446,54 @@ switch oType
                     val = sensorColorData(val,sensor,varargin{1});
                 end
                 
-            case {'electron','electrons','photons'}
+            case {'electron','electrons'}
                 % sensorGet(sensor,'electrons');
+                % sensorGet(sensor,'electrons',[colorband]);
                 % sensorGet(sensor,'electrons',2);
-                % This is also used for human case, where we call the data photons
-                % as in photon absorptions.
+                %
+                % Removed 'photons' from the list March 25, 2024 (BW)
                 pixel = sensorGet(sensor,'pixel');
-                val = sensorGet(sensor,'volts')/pixelGet(pixel,'conversionGain');
+
+                % The volts also have an analog gain and offset that must
+                % be discounted.  Until March 25, 2024 we did not account
+                % for this.  Mostly gain/offset was 1/0, and we didn't
+                % notice. Then with the imx490 gain manipulations, the bug
+                % was found.  This was never a problem with computed
+                % voltage or dv.  But if we estimated the electrons in a
+                % sensor with a nonunity gain or an offset, the estimated
+                % number of electrons at capture was off.
                 
+                % The sensor compute function:
+                %     volts = (voltsRaw + ao)/ag;
+                % To invert
+                %     voltsRaw = volts*ag - ao                
+                ag = sensorGet(sensor,'analog gain');
+                ao = sensorGet(sensor,'analog offset');
+                cg = pixelGet(pixel,'conversionGain');
+                val = (sensorGet(sensor,'volts')*ag - ao)/cg;
+
                 % Pull out a particular color plane
-                if ~isempty(varargin), val = sensorColorData(val,sensor,varargin{1}); end
-                % Electrons are ints
-                val = round(val);
+                if ~isempty(varargin)
+                    val = sensorColorData(val,sensor,varargin{1}); 
+                end
                 
+                % Electrons are integers
+                val = round(val);
+            case {'electronsperarea'}
+                % sensorGet(sensor,'electrons per area','unit',channel)
+                % sensorGet(sensor,'electrons per area','m',2)
+                % Default is 'um'
+                units = 'm';
+                if ~isempty(varargin), units = varargin{1}; end
+                
+                val    = sensorGet(sensor,'electrons');
+                pdArea = sensorGet(sensor,'pixel pd area');
+                val    = (val/pdArea)/(ieUnitScaleFactor(units)^2);
+                % Pull out a particular color plane
+                if length(varargin) > 1
+                    val = sensorColorData(val,sensor,varargin{2}); 
+                end
+
             case {'dvorvolts'}
                 val = sensorGet(sensor,'dv');
                 if isempty(val)
@@ -1138,23 +1176,6 @@ switch oType
                 fov =  sensorGet(sensor,'vfov');
                 val = fov/width;
                 
-                % Computational flags
-                %{
-            case {'sensorcompute','sensorcomputemethod'}
-                % Swap in a sensorCompute routine.  If this is empty, then the
-                % standard vcamera\sensor\mySensorCompute routine will be used.
-                if checkfields(sensor,'sensorComputeMethod'), val = sensor.sensorComputeMethod;
-                else,  val = 'mySensorCompute';  end
-                %}
-                %{
-            case {'consistency','computationalconsistency'}
-                % If the consistency field is not present, assume false and set it
-                % false.  This checks whether the parameters and the displayed
-                % image are consistent/updated.
-                if checkfields(sensor,'consistency'), val = sensor.consistency;
-                else, sensorSet(sensor,'consistency',0); val = 0;
-                end
-                %}
             case {'chartparameters'}
                 % Struct of chart parameters
                 if checkfields(sensor,'chartP'), val = sensor.chartP; end
@@ -1197,7 +1218,15 @@ switch oType
                     val = false;
                 end
                 
-                % Human cone case
+                % Metadata - more to be added.  See sensorSet()
+            case 'metadatacrop'
+                val = sensor.metadata.crop;
+            case 'metadatascenename'
+                val = sensor.metadata.scenename;
+            case 'metadataopticsname'
+                val = sensor.metadata.opticsname;
+
+                % Human cone case - Many of these should go way (BW)
             case {'human'}
                 % Structure containing information about human cone case
                 % Only applies when the name field has the string 'human' in it.

@@ -191,6 +191,7 @@ end
 
 end
 
+%%
 function data = tableOI(oi, format)
 % iePTable(oiCreate);
 
@@ -252,6 +253,7 @@ data  = cellCombine(data,oData);
 
 end
 
+%%
 function data = tableOptics(optics,format)
 % iePTable(opticsCreate);
 
@@ -330,6 +332,7 @@ end
 
 end
 
+%%
 function data = tablePixel(pixel,format)
 % iePTable(pixel);
 
@@ -366,6 +369,7 @@ switch format
 end
 end
 
+%%
 function data = tableIP(ip,format)
 % iePtable(ipCreate)
 
@@ -420,6 +424,7 @@ switch format
 end
 end
 
+%%
 function data = tableCamera(camera,format)
 % Creates separate tables for each of the main camera components
 
@@ -435,6 +440,7 @@ data  = cellCombine(data,ipData);
 
 end
 
+%%
 function data = cellCombine(oData,sData)
 % Related to cellMerge, but works for matrices of cell arrays.
 
@@ -449,12 +455,13 @@ data =  cell(oRows + sRows,2);
 cols = size(oData,2);
 
 for ii=1:cols
-    data(1:oRows,ii) = oData(:,ii);
-    data((oRows+1):end,ii) = sData(:,ii);
+    data((sRows+1):end,ii) = oData(:,ii);
+    data(1:sRows,ii) = sData(:,ii);
 end
 
 end
 
+%%
 function mnuExportSelected(src,event)
 % allow user to export the current parameters
 paramFolder = fullfile(isetRootPath, "local", "parameters");

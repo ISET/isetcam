@@ -10,6 +10,9 @@ function [oi, wvf, scene] = oiCreate(oiType,varargin)
 %
 % Inputs
 %   oiType -
+%     {'pinhole'}    - Turn off cos4th, infinite depth of field and
+%                      NaN focal length
+%
 %     {'diffraction limited'} -  Diffraction limited optics, no diffuser or
 %                         data (Default).  Equivalent to using the wvf or
 %                         shift-invariant with a zero wavefront
@@ -103,15 +106,6 @@ end
 %%
 scene = []; wvf = [];
 switch ieParamFormat(oiType)
-    case {'empty'}
-        % Just the basic shell of the oi struct
-        % Other terms will get added by the calling function
-        oi.type = 'opticalimage';
-        oi.name = vcNewObjectName('opticalimage');
-        oi.metadata = [];  % Store metadata typically for machine-learning apps
-        oi = oiSet(oi, 'diffuser method', 'skip');
-        oi = oiSet(oi,'wave',[]);
-
     case {'diffractionlimited','default'}
         % Diffraction limited is implemented using the dlMTF method.
         % This is like the wvf case, but the dl MTF is computed on the fly
@@ -135,6 +129,47 @@ switch ieParamFormat(oiType)
             oi.optics.transmittance.wave = (370:730)';
             oi.optics.transmittance.scale = ones(length(370:730), 1);
         end
+
+    case {'pinhole'}
+        % Pinhole optics in an OI. 
+        % 
+        % We set the f/# (focal length over the aperture) to be a very
+        % small number. This image has zero-blur because the
+        % diffraction aperture is very large. That is the goal of the
+        % pinhole camera optics, but the way we achieve it is odd.
+        % 
+        % The absolute light level is high because a small fnumber
+        % means the focal length is very short compared to the
+        % aperture.
+        %
+        % With these default settings the focal length is 10 mm and the
+        % aperture diameter is 10 m.        
+        oi = oiCreate();
+        oi = oiSet(oi, 'name', 'pinhole');
+        oi = oiSet(oi, 'optics name','pinhole');
+        
+        % This makes the computation a pinhole
+        oi = oiSet(oi,'optics model','skip');
+        oi = oiSet(oi, 'optics offaxis method', 'skip');
+        oi = oiSet(oi, 'diffuser method', 'skip');
+
+        % Not sure why we set these, but it is true that when we have
+        % a very small fnumber, we should have no blur - like a
+        % pinhole.
+        oi = oiSet(oi, 'optics fnumber',1e-3);
+        oi = oiSet(oi, 'optics focal length',1e-2);
+
+        % Pinhole do not have a focal length or fNumber.
+        wvf = [];
+
+    case {'empty'}
+        % Just the basic shell of the oi struct
+        % Other terms will get added by the calling function
+        oi.type = 'opticalimage';
+        oi.name = vcNewObjectName('opticalimage');
+        oi.metadata = [];  % Store metadata typically for machine-learning apps
+        oi = oiSet(oi, 'diffuser method', 'skip');
+        oi = oiSet(oi,'wave',[]);
 
     case {'shiftinvariant','wvf'}
         % We create via the wavefront method.  We create a wvf, convert it
@@ -275,21 +310,6 @@ switch ieParamFormat(oiType)
         oi = oiSet(oi,'wave',wave);
         oi = oiSet(oi,'photons',zeros(sz,sz,numel(wave)));
         oi = oiSet(oi,'fov',100);        
-        wvf = [];
-
-    case {'pinhole'}
-        % Pinhole camera version of OI
-        oi = oiCreate('shift invariant');
-        oi = oiSet(oi, 'optics model', 'skip');
-        oi = oiSet(oi, 'bit depth', 64);  % Forces double
-        oi = oiSet(oi, 'optics offaxis method', 'skip');
-        oi = oiSet(oi, 'diffuser method', 'skip');
-
-        % Pinhole do not have a focal length.  In this case, the focal
-        % length is used to say the image plane distance.
-        oi = oiSet(oi, 'optics focal length',NaN);
-        oi = oiSet(oi, 'optics name','pinhole');
-        oi = oiSet(oi, 'name', 'pinhole');
         wvf = [];
 
     otherwise

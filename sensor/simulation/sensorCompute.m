@@ -32,7 +32,7 @@ function [outSensor, unitSigCurrent] = sensorCompute(sensor,oi,showBar)
 %
 % The conditions are:
 %
-%  noiseFlag | photon   e-noises gain/offset clipping  CDS
+%  noiseFlag | photon   e-noises   PRNU/DSNU  clipping  CDS
 %    -2      |   +         0            0         0     0   ('no pixel no system')
 %    -1      |   0         0            0         0     0   ('no photon no pixel no system')
 %     0      |   0         0            +         +     +   ('no photon no pixel')
@@ -195,7 +195,7 @@ for ss=1:length(sensorArray)   % Number of sensors
         case 'log'
             % We need to keep the smallest value above zero. We also
             % want the read noise level to make sense with respect to
-            % the voltage swing.
+            % the voltage swing.  Very little tested (BW).
             readNoise = sensorGet(sensor,'pixel read noise');
             if readNoise == 0
                 warning('Invalid read noise for log response type.  Using 2^16 of voltage swing');
@@ -223,7 +223,12 @@ for ss=1:length(sensorArray)   % Number of sensors
     % See sensorComputeNoise to run just this noise section when you have a
     % mean image and just want many noisy, clipped, quantized examples.
     noiseFlag = sensorGet(sensor,'noise flag');
-    
+
+    ag = sensorGet(sensor,'analogGain');
+    ao = sensorGet(sensor,'analogOffset');
+    sensor = sensorSet(sensor,'analog gain',1);
+    sensor = sensorSet(sensor,'analog offset',0);
+
     % The noise flag rules for different integer values are described in
     % the header to this function.
     %
@@ -236,6 +241,10 @@ for ss=1:length(sensorArray)   % Number of sensors
         if noiseFlag > 0
             % if noiseFlag = 1, add photon noise, but not other noises
             % if noiseFlag = 2, add photon noise and other noises
+
+            % At this point, the analog gain and offset have not yet
+            % been applied. So we over-ride the values that were sent
+            % in, and put them back after computing the noise.            
             sensor = sensorAddNoise(sensor);
         end
         
@@ -251,8 +260,6 @@ for ss=1:length(sensorArray)   % Number of sensors
         % Also, some people use gain as a multipler and some as a divider.
         % Sorry for that.  Here you can see the formula.  We divide by the
         % gain.
-        ag = sensorGet(sensor,'analogGain');
-        ao = sensorGet(sensor,'analogOffset');
         if ag ~=1 || ao ~= 0
             if strcmp(responseType,'log')
                 % We added a warning for the 'log' sensor type. Offset
@@ -277,8 +284,14 @@ for ss=1:length(sensorArray)   % Number of sensors
             %
             volts = (volts + ao)/ag;
             sensor = sensorSet(sensor,'volts',volts);
+
+            % Save the ag and ao.  If we aren't in this section, we
+            % can just leave them as 1 and 0.
+            sensor = sensorSet(sensor,'analog gain',ag);
+            sensor = sensorSet(sensor,'analog offset',ao);
         end
-        
+
+
         %% Clipping
         
         % Applied for 0,1,2

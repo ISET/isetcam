@@ -122,9 +122,6 @@ function val = wvfGet(wvf, parm, varargin)
 %        'calc observer accommodation'
 %                                 - Observer accommodation at calculation
 %                                   time (diopters)
-%        'calc observer focus correction'
-%                                 - Focus correction added optically for
-%                                   observer at calculation time (diopters)
 %        'calc wavelengths'       - Wavelengths to calculate over (nm, *)
 %        'calc cone psf info'     - Structure with cone sensitivities and
 %                                   weighting spectrum for computing the
@@ -166,10 +163,6 @@ function val = wvfGet(wvf, parm, varargin)
 %        'measured observer accommodation'
 %                                 - Observer accommodation at aberration
 %                                   measurement time (diopters)
-%        'measured observer focus correction'
-%                                 - Focus correction added optically for
-%                                   observer at measurement time (diopters)
-%
 %
 %      Need to be implemented/checked/documented
 %       +'distanceperpix'          -
@@ -995,8 +988,9 @@ switch (parm)
         %   otf = fftshift(fft2(ifftshift(psf)));
         %
         % [~,~,val1] = PsfToOtf([],[],psf);   % Removed PTB function
-
-        val = fftshift(fft2(ifftshift(psf)));  % Key line from PTB
+        val = fftshift(fft2(ifftshift(psf))); % Key line from PTB function
+        val = ifftshift(val);
+        %[~,~,psfCheck] = OtfToPsf([],[],val);
 
         % From PTB:  We used to zero out small imaginary values.
         % This, however, can cause numerical problems much worse than

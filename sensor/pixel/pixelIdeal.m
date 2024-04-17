@@ -30,4 +30,4 @@ pixel = pixelSet(pixel,'readNoiseVolts',0);    % No read noise
 pixel = pixelSet(pixel,'darkVoltage',0);       % No dark noise
 pixel = pixelSet(pixel,'voltage swing',1e6);   % 1,000,000 volts
 
-return
+end

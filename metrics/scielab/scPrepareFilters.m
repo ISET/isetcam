@@ -33,18 +33,7 @@ function [filters,support,params] = scPrepareFilters(params)
 % The filters are a cell array.  The support defines the spatial support in
 % terms of degrees of visual angle.
 %
-% Example:
-%   params.deltaEversion = '2000';
-%   params.sampPerDeg    = 145;
-%   params.imageFormat   = 'LMS';
-%   params.filterSize    = 145;
-%   params.dimension     = 2;
-%   [filters,support]    = scPrepareFilters(params);
-%
-%   figure;   % Units are degrees of visual angle
-%   subplot(1,3,1), mesh(support,support,filters{1}); colormap(hsv(256));
-%   subplot(1,3,2), mesh(support,support,filters{2}); colormap(hsv(256));
-%   subplot(1,3,3), mesh(support,support,filters{3}); colormap(hsv(256));
+% The source code below contains a runnable example.
 %
 % In 1996, Xuemei Zhang used this routine
 %   [k1, k2, k3] = separableFilters(params.sampPerDeg,2);
@@ -58,6 +47,35 @@ function [filters,support,params] = scPrepareFilters(params)
 %   figure(1); clf, mesh(support,support,k3-filters{3})
 %
 % Copyright ImagEval Consultants, LLC, 2003.
+
+% Examples:
+%{
+  clear; close all; 
+  params.deltaEversion = '2000';
+  params.sampPerDeg    = 145;
+  params.imageFormat   = 'LMS';
+  params.filterSize    = 145;
+  params.dimension     = 2;
+  [filters,support]    = scPrepareFilters(params);
+  
+  % Units are degrees of visual angle
+  figure; clf;
+  subplot(1,3,1), mesh(support,support,filters{1}); colormap(hsv(256));
+  subplot(1,3,2), mesh(support,support,filters{2}); colormap(hsv(256));
+  subplot(1,3,3), mesh(support,support,filters{3}); colormap(hsv(256));
+    
+  % In 1996, Xuemei Zhang used this routine
+  [k1, k2, k3] = separableFilters(params.sampPerDeg,2);
+  figure; clf;
+  subplot(1,2,1); mesh(support,support,filters{3})
+  subplot(1,2,2); mesh(support,support,k1)
+   
+  % The values are the same aes shown by the zero difference
+  figure; clf;
+  subplot(1,3,1); mesh(support,support,k1-filters{1});
+  subplot(1,3,2); mesh(support,support,k2-filters{2});
+  subplot(1,3,3); mesh(support,support,k3-filters{3});
+%}
 
 % Check parameters
 if ieNotDefined('params'), error('Params required.'); end

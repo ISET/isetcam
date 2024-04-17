@@ -5,13 +5,21 @@ function oi = opticsOTF(oi,scene,varargin)
 %    oi = opticsOTF(oi,scene,varargin);
 %
 % Inputs
-%   oi
-%  scene
+%  oi            - oi with optical blur not yet applied to photons
+%  scene         - the scene from whence the photons came.  Here it is only
+%                  used to determine the pad size, because the photons in
+%                  the passed oi have already been set up by the calling
+%                  routine.
 %
 % Optional key/val
+%  'padvalue'    - How to pad the oi to handle boder effects. {'zero','mean','border','spd'}
+%                  See oiPadValue but note that for some reason that takes
+%                  different strings for the options above. And that 'spd'
+%                  is not implemented. This routine translates the strings
+%                  above into what oiPadValue wants.
 %
 % Return
-%   oi
+%   oi          - oi with computed photons inserted.
 %
 % Description
 %   The optical transform function (OTF) associated with the optics in
@@ -41,14 +49,12 @@ function oi = opticsOTF(oi,scene,varargin)
 varargin = ieParamFormat(varargin);
 p = inputParser;
 p.KeepUnmatched = true;
-
 p.addRequired('oi',@(x)(isstruct(x) && isequal(x.type,'opticalimage')));
 p.addRequired('scene',@(x)(isstruct(x) && isequal(x.type,'scene')));
 p.addParameter('padvalue','zero',@(x)(ischar(x) || isvector(x)));
-
 p.parse(oi,scene,varargin{:});
 
-%%
+%% Get the optics model and fan out as appropriate
 optics      = oiGet(oi,'optics');
 opticsModel = opticsGet(optics,'model');
 
@@ -68,7 +74,7 @@ end
 
 %-------------------------------------------
 function oi = oiApplyOTF(oi,scene,unit,padvalue)
-%Calculate and apply the otf waveband by waveband
+% Calculate and apply the otf waveband by waveband
 %
 %   oi = oiApplyOTF(oi,method,unit);
 %
@@ -85,6 +91,7 @@ function oi = oiApplyOTF(oi,scene,unit,padvalue)
 if ieNotDefined('oi'),     error('Optical image required.'); end
 if ieNotDefined('unit'),   unit   = 'cyclesPerDegree'; end
 
+% Get sampling wavelengths
 wave     = oiGet(oi,'wave');
 
 % Pad the optical image to allow for light spread.  Also, make sure the row
@@ -114,23 +121,26 @@ switch padvalue
         error('Unknown padvalue %s',padvalue);
 end
 
+%% Adjust the data by padding, and get the OTF
+
 % oiGet(oi,'sample size')
 oi = oiPadValue(oi,padSize,padType,sDist);
 % oiGet(oi,'sample size')
 
-% See t_codeFFTinMatlab to understand the logic of the operations here.
-% We used to do this one wavelength at a time.  But this could cause
-% dynamic range problems for ieCompressData.  So, for now we are
-% experimenting with filtering one at a time but stuffing the whole data
-% set in at once.
-
-% Get the current data set.  It has the right size.  We over-write it
+% Get the current photons.  It has the right size.  We over-write it
 % below.
 p = oiGet(oi,'photons');
-otfM = oiCalculateOTF(oi, wave, unit);  % Took changes from ISETBio.
 
+% Get the OTF
+otfM = oiCalculateOTF(oi, wave, unit); 
+
+%% Calculate blured photons for each wavelength
+
+% Initialize check variables
+nWlImagTooBig = 0;
+maxImagFraction = 0;
+imagFractionTol = 1e-2;
 for ii=1:length(wave)
-    % img = oiGet(oi,'photons',wave(ii));
     img = p(:, :, ii);
     % figure(1); imagesc(img); colormap(gray(64));
     
@@ -139,39 +149,53 @@ for ii=1:length(wave)
     % position.
     % otf = oiCalculateOTF(oi,wave(ii),unit);
     otf = otfM(:,:,ii);
-    % figure(1); mesh(otf); otf(1,1)
+    % figure(1); mesh(abs(otf)); otf(1,1)
     
-    % Put the image center in (1,1) and take the transform.
+    % Take the fourier transform.  This leaves DC at (1,1), matched 
+    % to the way we store the OTF.
     imgFFT = fft2(img);
-    % imgFFT = fft2(fftshift(img));
     % figure(1); imagesc(abs(imgFFT));
     % figure(2); imagesc(abs(otf));
     % colormap(gray(64))
     
-    % Multiply the transformed otf and the image.
-    % Then invert and put the image center in  the center of the matrix
-    filteredIMG = abs(ifft2(otf .* imgFFT));
-    % filteredIMG = abs(ifftshift(ifft2(otf .* imgFFT)));
-    % if  (sum(filteredIMG(:))/sum(img(:)) - 1) > 1e-10  % Should be 1 if DC is correct
-    %   warning('DC poorly accounted for');
-    % end
-    
-    % Temporary debug statements
-    %  if ~isreal(filteredIMG)
-    %     warning('ISET:complexphotons','Complex photons: %.0f', wave(ii));
-    %  end
-    
-    % Sometimes we had  annoying complex values left after this filtering.
-    % We got rid of it by an abs() operator.  It should never be there.
-    % But we think it arises because of rounding error.  We haven't seen
-    % this in years, however.
-    % figure(1); imagesc(abs(filteredIMG)); colormap(gray(64))
+    % Multiply the transformed otf and image. No fftshifts needed here
+    % because everything has DC at (1,1).
     %
-    % oi = oiSet(oi,'photons',filteredIMG,wave(ii));
+    % Then invert.  This leaves the image correct because that is what
+    % ifft2 does when its input has DC at (1,1), which it does here.
+    filteredIMGRaw = ifft2(otf .* imgFFT);
+
+    % Get real and imaginary parts.  The image should be real up to
+    % numerical issues. We save the largest deviation over
+    % wavelengths, and check outside the loop below.
+    filteredIMGReal = real(filteredIMGRaw);
+    filteredIMGImag = imag(filteredIMGRaw);
+    imagFraction = max(abs(filteredIMGImag(:)))/max(abs(filteredIMGReal(:)));
+    if ( imagFraction > imagFractionTol )
+        nWlImagTooBig = nWlImagTooBig + 1;
+        if (imagFraction > maxImagFraction)
+            maxImagFraction = imagFraction;
+        end
+    end
+
+    % The complex values should never be there. But we think it arises
+    % because of rounding error and or asymmetry in the OTF as a
+    % result of the interpolation. Take the absolute value to
+    % eliminate small imaginary terms
+    filteredIMG = abs(filteredIMGRaw);
+
+    % figure(1); imagesc(abs(filteredIMG)); colormap(gray(64))
     p(:,:,ii) = filteredIMG;
 end
 
-% Put all the photons in at once.
+% Check that the imaginary part was not too big
+if (nWlImagTooBig > 0)
+    if ( max(abs(filteredIMGImag(:)))/max(abs(filteredIMGReal(:))) > imagFractionTol )
+        error('OpticsOTF: Imaginary exceeds tolerance relative to real at %d wavelengths, max fraction %0.1g\n',nWlImagTooBig,maxImagFraction);
+    end
+end
+
+%% Put all the photons into the oi at once.
 oi = oiSet(oi,'photons',p);
 
 end

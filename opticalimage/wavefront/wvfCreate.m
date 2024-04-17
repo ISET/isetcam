@@ -93,7 +93,6 @@ p.addParameter('measuredpupil', 8, @isscalar);
 p.addParameter('measuredwl', 550, @isscalar);
 p.addParameter('measuredopticalaxis', 0, @isscalar);
 p.addParameter('measuredobserveraccommodation', 0, @isscalar);
-p.addParameter('measuredobserverfocuscorrection', 0, @isscalar);
 
 % Spatial sampling parameters
 p.addParameter('sampleintervaldomain', 'psf', @ischar);
@@ -105,7 +104,7 @@ p.addParameter('calcpupilsize', 3, @isscalar);
 p.addParameter('calcwavelengths', 550, @isnumeric);
 p.addParameter('calcopticalaxis', 0, @isscalar);
 p.addParameter('calcobserveraccommodation', 0), @isscalar;
-p.addParameter('calcobserverfocuscorrection', 0, @isscalar);
+%p.addParameter('calcobserverfocuscorrection', 0, @isscalar);
 
 % Retinal parameters
 % Set for consistency with 300 um historical.  When we adjust one or the
@@ -150,8 +149,6 @@ wvf = wvfSet(wvf, 'measured wl', p.Results.measuredwl);
 wvf = wvfSet(wvf, 'measured optical axis', p.Results.measuredopticalaxis);
 wvf = wvfSet(wvf, 'measured observer accommodation', ...
     p.Results.measuredobserveraccommodation);
-wvf = wvfSet(wvf, 'measured observer focus correction', ...
-    p.Results.measuredobserverfocuscorrection);
 
 % Spatial sampling parameters
 wvf = wvfSet(wvf, 'sample interval domain', ...
@@ -165,8 +162,10 @@ wvf = wvfSet(wvf, 'calc wavelengths', p.Results.calcwavelengths);
 wvf = wvfSet(wvf, 'calc optical axis', p.Results.calcopticalaxis);
 wvf = wvfSet(wvf, 'calc observer accommodation', ...
     p.Results.calcobserveraccommodation);
-wvf = wvfSet(wvf, 'calc observer focus correction', ...
-    p.Results.calcobserverfocuscorrection);
+
+% BW thinks DHB made this throw an error.  So removed.
+% wvf = wvfSet(wvf, 'calc observer focus correction', ...
+%     p.Results.calcobserverfocuscorrection);
 
 % Conversion between degrees of visual angle and mm
 % This also sets the focal length for consistency.

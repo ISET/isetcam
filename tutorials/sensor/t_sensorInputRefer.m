@@ -65,14 +65,14 @@ fprintf('Direct calculation of photon rate:  %.4f \n',mean(pImage(:)))
 
 sensor = sensorCompute(sensor,oi);
 
-% Get the photons from the first pixel type
-photons = sensorGet(sensor,'photons');
+% Get the electrons from the first pixel type
+electrons = sensorGet(sensor,'electrons');
 
 % In the middle of the image to avoid the edges
-photons = getMiddleMatrix(photons,[40,40]);
+electrons = getMiddleMatrix(electrons,[40,40]);
 
 % This is the Photon absorptions per exposure (which is 1 sec)
-pRate = mean(photons(:));
+pRate = mean(electrons(:));
 
 % ieAddObject(oi); ieAddObject(sensor);
 % oiWindow; sensorImageWindow;
@@ -90,13 +90,13 @@ oi = oiCompute(oi,s);
 fprintf('Through the optics the illuminance is %e lux\n',oiGet(oi,'mean illuminance'));
 
 sensor = sensorCompute(sensor,oi);
-photons = sensorGet(sensor,'photons',1);
+electrons = sensorGet(sensor,'electrons',1);
 
 % Photon absorptions per exposure
-fprintf('Computed mean photon rate %e\n',mean(photons(:)))
+fprintf('Computed mean photon rate %e\n',mean(electrons(:)))
 
 % Show the distribution
-% vcNewGraphWin; histogram(photons(:),50)
+% vcNewGraphWin; histogram(electrons(:),50)
 
 c2e = sensorGet(sensor,'integration time')/ q;
 
@@ -113,12 +113,12 @@ fprintf('Direct calculation of photon rate:  %.4f (target = %.4f)\n',mean(pImage
 nSamp = round(max(2*sqrt(tRate)*50,1000));
 val = poissrnd(tRate,nSamp);
 
-xval =  min(photons(:)):max(photons(:));
+xval =  min(electrons(:)):max(electrons(:));
 
 vcNewGraphWin;
 n = hist(val(:),xval); bar(xval,n/sum(n(:))); hold on;
 
-[n,c] = hist(photons(:),xval);
+[n,c] = hist(electrons(:),xval);
 n = n/sum(n(:)); lst = (n > 0);
 plot(c(lst),n(lst),'ro-','linewidth',2);
 

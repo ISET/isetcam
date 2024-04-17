@@ -116,6 +116,7 @@ function sensor = sensorSet(sensor,param,val,varargin)
 %                      -- TBD: Other recipe info
 %                      --      Like illumination
 %   'metadata lensname'
+%   'metadata crop'    -- Stored rect
 %
 % Private
 %      'editfilternames'
@@ -664,7 +665,8 @@ switch lower(param)
         sensor.metadata.scenename = val;
     case 'metadataopticsname'
         sensor.metadata.opticsname = val;
-
+    case 'metadatacrop'
+        sensor.metadata.crop = val;
     otherwise
         error('Unknown parameter.');
 end

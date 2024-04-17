@@ -29,7 +29,6 @@ scene = sceneSet(scene,'fov',5);
 
 % This method attaches the human lens to the optics
 [oi, wvf] = oiCreate('wvf human');
-
 wvfPlot(wvf,'psf','unit','um','wave',550,'plotrange',20);  % PSF in micron scale
 oiPlot(oi,'psf');
 
@@ -42,16 +41,17 @@ oi = oiSet(oi,'name','Diffraction');
 oiWindow(oi);
 
 %% Change the defocus coefficient
-
+%
+% Units are microns.  
 wvf = wvfCreate('wave',sceneGet(scene,'wave'));
-D = [0 1 2];    % Amount of defocus
+D = [0 1 2];    
 for ii=1:length(D)
     wvf = wvfSet(wvf,'zcoeffs',D(ii),{'defocus'});
     wvf = wvfCompute(wvf,'human lca',true);
     wvfPlot(wvf,'psf','unit','um','wave',550,'plotrange',40);  % PSF in micron scale
     oi = wvf2oi(wvf,'human lens',true);
     oi = oiCompute(oi,scene);
-    oi = oiSet(oi,'name',sprintf('Human D %.1f',D(ii)));
+    oi = oiSet(oi,'name',sprintf('Human defocus D %.1f microns',D(ii)));
     oiWindow(oi);
 end
 
@@ -65,7 +65,7 @@ for ii=1:length(A)
     wvf = wvfCompute(wvf,'human lca',true);
     wvfPlot(wvf,'psf','unit','um','wave',550,'plotrange',40);  % PSF in micron scale
     oi = oiCompute(wvf,scene);
-    oi = oiSet(oi,'name',sprintf('Human D %.1f, A %.1f',0.5,A(ii)));
+    oi = oiSet(oi,'name',sprintf('Human D %.1f microns, A %.1f microns',0.5,A(ii)));
     oiWindow(oi);
 end
 

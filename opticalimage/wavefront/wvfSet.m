@@ -194,6 +194,7 @@ switch parm
         % change the point spread location, not quality, as measured in
         % wavefront aberrations. We use the "j" single-index scheme of OSA
         % standards
+    
     case {'zcoeffs', 'zcoeff', 'zcoef'}
         % wvfSet(wvf, 'zcoeffs', val, jIndex);
         % jIndex is optional, and can be a vector of j values or a string
@@ -416,6 +417,7 @@ switch parm
     case {'calcobserverfocuscorrection', 'defocusdiopters'}
         % Specify optical correction added to observer focus at the
         % calculation time
+        error('This value is no longer used, so setting it will not lead to good things.')
         wvf.calcObserverFocusCorrectionDiopters = val;
         wvf.PUPILFUNCTION_STALE = true;
 
@@ -521,6 +523,9 @@ switch parm
             'measuredobserverfocuscorrectiondiopters'}
         % Focus correction added optically for observer at the measurement
         % time (diopters)
+        error('This value is no longer used, so setting it will not lead to good things.')
+        % Also, there is a typo below since this case is setting the wrong
+        % field.  Not fixing because that field is going way.
         wvf.measObserverAcommodationDiopters = val;
         wvf.PUPILFUNCTION_STALE = true;
 

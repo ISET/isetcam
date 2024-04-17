@@ -18,7 +18,10 @@ function oi = oiCompute(oi,scene,varargin)
 %
 %   crop - Crop the OI to the same size as the scene. (Logical)
 %          Default: false;
-%         (We could do a setprefs on these, but BW is resistant.)
+%
+%   pixel size - Spatial resolution of the oi image. A scalar in
+%                meters. Normally it is set to match the optics and
+%                scene properties.
 %
 % Return
 %   oi - The oi with computed photon irradiance
@@ -57,12 +60,12 @@ function oi = oiCompute(oi,scene,varargin)
 % in opticsDLCompute. This blur and intensity in this computation depends
 % on the diffraction limited parameters (f/#) but little else.
 %
-% To create an image with no blur, set the f/# to a very small number.
-% This will provide an image that has the geometry and zero-blur as used in
-% computer graphics pinhole cameras.  The absolute light level, however,
-% will be higher than what would be seen through a small pinhole. You can
-% manage this by setting scaling the spectral irradiance
-% (oiAdjustIlluminance).
+% To create an image with no blur, set the f/# (focal length over the
+% aperture) to be a very small number. This image has the geometry and
+% zero-blur as used in computer graphics pinhole cameras.  The
+% absolute light level, however, will be higher than what would be
+% seen through a small pinhole. You can manage this by setting scaling
+% the spectral irradiance (oiAdjustIlluminance).
 %
 % * The second model is shift-invariant optics.  This depends on having a
 % wavelength-dependent OTF defined and included in the optics structure.
@@ -123,6 +126,13 @@ oi = oiCreate;
 oi = oiCompute(oi,scene,'pad value','border','crop',true);
 oiWindow(oi);
 %}
+%{
+% Almost right.  Off by 1 part in 100.  Need to fix. (BW).
+scene = sceneCreate;
+oi = oiCreate;
+oi = oiCompute(oi,scene,'pad value','border','crop',true,'pixel size',1e-6);
+oiWindow(oi);
+%}
 %% Parse
 varargin = ieParamFormat(varargin);
 p = inputParser;
@@ -135,28 +145,29 @@ p.addParameter('pixelsize',[],@isscalar); % in meters
 p.parse(oi,scene,varargin{:});
 
 % Ages ago, we some code flipped the order of scene and oi.  We think
-% we have caught all those cases, but we still test.  Maybe delete
-% this code by January 2024.
+% we have caught all those cases, but we still test, and are now forcing
+% the user to correct.
 if strcmp(oi.type,'scene') && (strcmp(scene.type,'opticalimage') ||...
         strcmp(scene.type,'wvf'))
-    warning('flipping oi and scene variables.')
-    tmp = scene; scene = oi; oi = tmp; clear tmp
+    error('You need to flip order oi and scene variables in the call to oiCompute')
+    % We used to help the user
+    % tmp = scene; scene = oi; oi = tmp; clear tmp
 end
-%% Adjust oi fov if user send in a pixel size
 
+%% Adjust oi fov if user sends in a pixel size
 if ~isempty(p.Results.pixelsize)
     pz = p.Results.pixelsize;
     sw = sceneGet(scene, 'cols');
     flengthM = oiGet(oi, 'focal length', 'm');
     wAngular = atand(pz*sw/2/flengthM)*2;
-    % oi use scene hFOV later.
+    % oi uses scene hFOV later.
     scene = sceneSet(scene, 'wAngular',wAngular);
 end
 
 %% Compute according to the selected model.
-
+%
 % Should we pad the scene before the call to these computes?
-
+%
 % We pass varargin because it may contain the key/val parameters
 % such as pad value and crop. But we only use pad value here.
 if strcmp(oi.type,'wvf')

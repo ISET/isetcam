@@ -51,7 +51,7 @@ function [figNum, uData] = sensorPlotLine(sensor, ori, dataType, sORt, xy)
 
 
 %%
-if ieNotDefined('sensor'), sensor = vcGetObject('sensor'); end
+if ieNotDefined('sensor'), sensor = ieGetObject('sensor'); end
 if ieNotDefined('ori'), ori = 'h'; end
 if ieNotDefined('dataType'), dataType =  'electrons'; end
 if ieNotDefined('sORt'), sORt = 'space'; end

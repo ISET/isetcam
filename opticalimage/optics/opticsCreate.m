@@ -86,9 +86,11 @@ opticsType = ieParamFormat(opticsType);
 switch lower(opticsType)
     case {'empty'}
         optics.type = 'optics';
-        optics.name = 'empty';
+        optics.name = 'empty';   
 
     case {'default','diffractionlimited'}
+        % This method is also used for a pinhole.  Just in that case
+        % we set the fNumber to be very small (
         optics.type = 'optics';
         optics = opticsSet(optics,'name','standard (1/4-inch)');
         optics = opticsSet(optics,'model','diffractionLimited');
@@ -113,9 +115,8 @@ switch lower(opticsType)
         end
 
     case {'shiftinvariant'}
-        % Removed:  'standard(1/4-inch)','quarterinch' on Dec 18, 2023
-        % These are all diffraction limited methods.
-        % optics = opticsDefault;
+        % Initialized as a diffraction limited wavefront that matches
+        % the diffraction limited one above.
 
         wave = 400:10:700;
         wvf = wvfCreate('wave', wave);
@@ -331,7 +332,7 @@ optics.vignetting =    0;   % Pixel vignetting is off
 
 end
 
-
+%{
 %---------------------------------------
 function optics = opticsDefault
 % Create diffraction limited optics from a wvf structure
@@ -367,6 +368,7 @@ optics = oiGet(oi,'optics');
 % optics = opticsSet(optics,'otfMethod','dlmtf');
 % 
 end
+%}
 
 %---------------------------------------
 function optics = opticsHuman(pupilRadiusMeters,fLengthMeters)
