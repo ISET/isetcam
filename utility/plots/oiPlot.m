@@ -1,23 +1,27 @@
 function [udata, g] = oiPlot(oi,pType,roiLocs,varargin)
 % Gateway routine for plotting optical image (oi) properties
 %
+% Brief
+%  Gateway routine to plot the irradiance or illuminance data in the
+%  optical image. There are many options. The data shown in the plot
+%  are generally returned.
+%
+% Synopsis
 %   [udata, g] = oiPlot([oi],[pType='illuminance hline'],[ROI],[wave])
 %
-% TODO:  Make a 'no figure' option work.  It is stuck in below, but not as
-% effective as the 'window', false in wvfPlot.
+% Inputs
+%   oi    - Optical image
+%   pType - Plot type
 %
-% Gateway routine to plot the irradiance or illuminance data in the optical
-% image. There are many options.
+% Optional
+%   roiLocs    - When there is a region of interest or other image
+%                specification. Some explanations below.  Usually it
+%                is the four vector:  [r,c,h,w]
+%   'nofigure' - When the last argument is 'nofigure', the plot is
+%                deleted, only the data are returned;
 %
-% The data shown in the plot are generally returned in udata.  The data can
-% also be retrieved from the figure, using get(figHandle,'userdata');
-%
-% Inputs are the optical image (oi), the plot type (pType), in some cases a
-% position or ROI locations is required (xy) and in some cases other
-% arguments can be included to make plotting from scripts possible without
-% user intervention (e.g., grid spacing in irradiance image with grid).
-%
-% This is a list of the plot types
+% There is a long list of plot types and some explanation of the ROI
+% parameter (which is plotType dependent).
 %
 %    Irradiance
 %     {'irradiance photons roi'} - Irradiance within an ROI of the image
@@ -66,13 +70,21 @@ function [udata, g] = oiPlot(oi,pType,roiLocs,varargin)
 %      {'relative illumination'} - Calls opticsPlotOffAxis
 %      {'lens transmittance'}    - Calls opticsPlotTransmittance
 %
-% The source code contains examples
+% See also:  
+%    oiPlot, scenePlot, sensorPlot, v_icam_oiPlot
 %
-% See also:  plotOITest, scenePlot, sensorPlot
-%
-% Copyright ImagEval Consultants, LLC, 2005.
 
 % Examples:
+%{
+scene = sceneCreate; oi = oiCreate; oi = oiCompute(oi,scene);
+oiPlot(oi,'irradiance photons roi',[10 10 10 10]);
+%}
+%{
+scene = sceneCreate; oi = oiCreate; oi = oiCompute(oi,scene);
+uData = oiPlot(oi,'irradiance photons roi',[10 10 10 10],'nofigure');
+ieNewGraphWin; plot(uData.x,uData.y); grid on; 
+xlabel('Wavelength (nm)'); ylabel('Irradiance (watts/m^2)');
+%}
 %{
 scene = sceneCreate; oi = oiCreate; oi = oiCompute(oi,scene);
 
