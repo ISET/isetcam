@@ -108,13 +108,6 @@ oi = oiSet(oi, 'wave', wvfGet(wvf, 'calc wave'));
 % is the OTF, but we also manage other fields.  
 optics = wvf2optics(wvf);
 
-% Add in the wvf to the optics.  This is where the PSF compute function
-% will look for it.  We don't think that oiSet(oi,'wvf') should be
-% allowable, or at least if it is, then it should also put it into the
-% optics.  Also, it is possible that this should be done by wvf2optics,
-% rather than here.
-optics = opticsSet(optics,'wvf',wvf);
-
 % Put optics into oi and propagate the name.
 oi = oiSet(oi,'optics',optics);
 oi = oiSet(oi, 'name', wvfGet(wvf, 'name'));

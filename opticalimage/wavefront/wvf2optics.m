@@ -113,6 +113,13 @@ ieNewGraphWin; mesh(X,Y,abs(ifftshift(otf(:,:,ww))));
 
 optics = opticsCreate('empty');
 
+% Add in the wvf to the optics.  This is where the PSF compute function
+% will look for it.  We don't think that oiSet(oi,'wvf') should be
+% allowable, or at least if it is, then it should also put it into the
+% optics.  Also, it is possible that this should be done by wvf2optics,
+% rather than here.
+optics = opticsSet(optics,'wvf',wvf);
+
 optics = opticsSet(optics, 'name', 'wvf');
 optics = opticsSet(optics, 'model', 'shiftinvariant');
 
