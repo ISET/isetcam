@@ -6,7 +6,6 @@ function [command,status] = ieSCP(user,host,src,destinationPath,varargin)
 %
 % Description
 %   Uses scp to securely copy a file or a folder from a remote machine.
-%   NOTE:  Folder copy is not implemented and tested.  
 %
 % Input
 %   user - user name
@@ -15,7 +14,6 @@ function [command,status] = ieSCP(user,host,src,destinationPath,varargin)
 %   destinationPath - the destination folder
 %
 % Optional
-%   folder - Copy a folder, not a file (default false)
 %   quiet  - Suppress printout to command window
 %
 % See also
@@ -66,17 +64,16 @@ p.addRequired('host',@ischar);
 p.addRequired('src',@ischar);    % Remote file or remote folder
 p.addRequired('destinationPath',@ischar);
 
-p.addParameter('folder',false,@islogical);  % Download the whole folder
 p.addParameter('quiet',false,@islogical);
 
 p.parse(user,host,src,destinationPath,varargin{:});
 
 %% Construct the SSH command for scp
 flags = '';
-if p.Results.folder, flags = [flags,' -r']; end
 if p.Results.quiet,  flags = [flags,' -q']; end
 
-command = ['scp ',flags, ' ', user, '@', host, ':', src, ' ', destinationPath];
+% The -r flag works for either a file or a directory.
+command = ['scp -r',flags, ' ', user, '@', host, ':', src, ' ', destinationPath];
 
 % Execute the command using system
 status = system(command);
