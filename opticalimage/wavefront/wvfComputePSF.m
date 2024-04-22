@@ -85,7 +85,7 @@ pupilfunc = cell(nWave, 1);
 % Also, this function may not force a new computation of the pupil
 % function.  We can set the 'force' parameter to true, to force.
 if p.Results.computepupilfunc
-    wvf = wvfComputePupilFunction(wvf,'human lca',p.Results.humanlca);
+    wvf = wvfCompute(wvf,'human lca',p.Results.humanlca);
 end
 
 % wave = wvfGet(wvf, 'wave');

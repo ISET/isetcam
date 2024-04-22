@@ -98,17 +98,24 @@ varargin = ieParamFormat(varargin);
 p = inputParser;
 p.addRequired('wvf',@isstruct);
 p.addParameter('humanlens',false,@islogical);
-
 p.parse(wvf,varargin{:});
 
 %% Set the frequency support and OTF data into the optics slot of the OI
-
 oi = oiCreate('empty');
 oi = oiSet(oi, 'wave', wvfGet(wvf, 'calc wave'));
 
 % Convert the wvf parameters into ISETCam optics struct. The most important
-% is the OTF, but we also manage fnumber and focal length.
+% is the OTF, but we also manage other fields.  
 optics = wvf2optics(wvf);
+
+% Add in the wvf to the optics.  This is where the PSF compute function
+% will look for it.  We don't think that oiSet(oi,'wvf') should be
+% allowable, or at least if it is, then it should also put it into the
+% optics.  Also, it is possible that this should be done by wvf2optics,
+% rather than here.
+optics = opticsSet(optics,'wvf',wvf);
+
+% Put optics into oi and propagate the name.
 oi = oiSet(oi,'optics',optics);
 oi = oiSet(oi, 'name', wvfGet(wvf, 'name'));
 
@@ -119,15 +126,5 @@ if p.Results.humanlens
     end
     oi = oiSet(oi, 'optics lens', Lens('wave', oiGet(oi, 'optics wave')));
 end
-
-% We used to add the wvf to the oi struct. But, we decided against adding
-% it because when the oi is updated the wvf is not updated. This leads to
-% mismatches. Also, the wvf struct is large because it contains the pupil
-% func and the psfs.
-%
-% Instead, oiCreate returns the wvf as an optional second argument. The
-% user can keep that around if interested.
-%
-% oi = oiSet(oi, 'wvf',wvf);
 
 end

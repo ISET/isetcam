@@ -34,10 +34,6 @@ function oi = opticsPSF(oi,scene,aperture,wvf,varargin)
 % See also
 %  oiCalculateOTF, oiCompute
 %
-% Examples:
-%  oi = opticsOTF(oi);      % Not saved
-%  oi = opticsOTF(oi,1);    % OTF data are saved -- NOT YET IMPLEMENTED
-%
 % Copyright ImagEval Consultants, LLC, 2005.
 
 %% Parse
@@ -133,8 +129,15 @@ fnumber   = oiGet(oi,'f number');
 % WVF is square.  Use the larger of the two sizes
 oiSize    = max(oiGet(oi,'size'));   
 
+% It is possible to get here without having a wvf structure stored with the
+% optics of the oi.  But we think that is a case that should be flagged
+% explicitly as an error, rather than making up a wvf which might specify
+% different optics from what is in the OTF field of the optics structure.
+%
+% 4/22/24 DHB Made this an error.
 if isempty(wvf)
-    wvf = wvfCreate('wave',wavelist);
+    error('Trying to apply PSF method with an empty wvf structure. This should not happen.')
+    %wvf = wvfCreate('wave',wavelist);
 end
 
 % Make sure the wvf matches how the person set the oi/optics info
