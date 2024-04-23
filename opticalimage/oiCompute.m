@@ -4,6 +4,11 @@ function oi = oiCompute(oi,scene,varargin)
 % Syntax
 %    oi = oiCompute(oi,scene,varargin)
 %
+% Brief
+%   Convert a scene (radiance) into an optical image (irradiance) at
+%   the sensor surface.  Uses the optics, usually specified by a
+%   wavefront structure in the optics.
+%
 % Input
 %   oi          - Optical image struct or a wavefront struct
 %   scene       - Spectral scene struct
@@ -19,14 +24,14 @@ function oi = oiCompute(oi,scene,varargin)
 %   crop - Crop the OI to the same size as the scene. (Logical)
 %          Default: false;
 %
-%   pixel size - Spatial resolution of the oi image. A scalar in
-%                meters. Normally it is set to match the optics and
-%                scene properties.
+%   pixel size - Set the spatial sampling resolution of the oi image.
+%                A scalar in meters. Convenient to match the optics
+%                and sensor pixel size.
 %
 % Return
-%   oi - The oi with computed photon irradiance
+%   oi - The optical image with computed photon irradiance
 %
-% Brief description:
+% Description:
 %  We call the spectral irradiance image, on the sensor plane just
 %  before sensor capture, the ** optical image **.  This spectral
 %  irradiance depends on the scene and the the optics attached to the
@@ -42,9 +47,11 @@ function oi = oiCompute(oi,scene,varargin)
 %    sDist = sceneGet(scene,'distance');
 %    oi = oiPad(oi,padSize,sDist);
 %
-%  To remove the padded region, you can use oiCrop, as in
+%  To remove the padded region, you can can run this routine with 
+% 
+%     oiCompute(oi,scene,'crop',true);
 %
-%     oi = oiCrop(oi,'border');
+% or use oiCrop, as in oi = oiCrop(oi,'border');
 %
 % Optical models:
 %
@@ -56,7 +63,7 @@ function oi = oiCompute(oi,scene,varargin)
 % This function calls the relevant model depending on the setting in
 % opticsGet(optics,'model');
 %
-% * The first model is based on diffraction-limited optics and calculated
+% The first model is based on diffraction-limited optics and calculated
 % in opticsDLCompute. This blur and intensity in this computation depends
 % on the diffraction limited parameters (f/#) but little else.
 %
@@ -67,7 +74,7 @@ function oi = oiCompute(oi,scene,varargin)
 % seen through a small pinhole. You can manage this by setting scaling
 % the spectral irradiance (oiAdjustIlluminance).
 %
-% * The second model is shift-invariant optics.  This depends on having a
+% The second model is shift-invariant optics.  This depends on having a
 % wavelength-dependent OTF defined and included in the optics structure.
 % Examples of shift-invariant data structres can be found in the
 % data\optics directory. More generally, the OTF can be calculated using
@@ -77,31 +84,31 @@ function oi = oiCompute(oi,scene,varargin)
 % use opticsSet(optics,'model','shiftInvariant');
 %
 % N.B. The diffraction-limited model is a special case of the
-% shift-invariant model. Specifying diffraction-limited implies using the
-% specific wavelength-dependent OTFs that are determined by the f/#.
+% shift-invariant model. Specifying diffraction-limited implies using
+% the specific wavelength-dependent OTFs that are determined by the
+% f/#.
 %
-% ISET also includes a special shift-invariant case for computing the human
-% optical image. You may specify the optics model to be 'human'.  In that
-% case, this program calls the routine humanOI, which uses the human OTF
-% calculations in a shift-invariant fashion.  The companion ISETBIO program
-% has a more extensive set of tools for modeling biological vision.  That
-% program was derived from ISET, but it is not as extensive and does not
-% include the full set of models.
+% ISET also includes a special shift-invariant case for computing the
+% human optical image. You may specify the optics model to be 'human'.
+% In that case, this program calls the routine humanOI, which uses the
+% human OTF calculations in a shift-invariant fashion.  The companion
+% ISETBIO program has a more extensive set of tools for modeling
+% biological vision.  That program was derived from ISET, but it is
+% not as extensive and does not include the full set of models.
 %
-% * Historically, we used a third model, ray trace, to
-% allow **shift-varying** wavelength-dependent point spread functions.
-% This model includes geometric distortion information, relative
+% Historically, we used a third model, ray trace, to allow
+% **shift-varying** wavelength-dependent point spread functions. This
+% model includes geometric distortion information, relative
 % illumination and field-height and wavelength dependent point spread
 % functions (or OTFS). The main use of this model these days is to
 % import data from a ray trace program, such as Zemax. To set this
 % method use opticsSet(optics,'model','rayTrace').
 %
-% Note:  IN RECENT YEARS, we use iset3d for ray trace calculations.
+% In recent years, we more frequently use iset3d for ray trace
+% calculations. 
 %
 % Use ieSessionSet('waitbar',0) to turn off waitbar displays
 % Use ieSessionSet('waitbar',1) to turn on waitbar displays
-%
-% The source code contains examples.
 %
 % See also: 
 %   opticsDLCompute, opticsSICompute, opticsRayTrace

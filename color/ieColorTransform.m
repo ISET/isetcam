@@ -45,7 +45,7 @@ function T = ieColorTransform(sensor,targetSpace,illuminant,surface)
 % Copyright ImagEval Consultants, LLC, 2005.
 
 % Example:
-% {
+%{
 scene = sceneCreate;
 sXYZ = sceneGet(scene,'xyz');
 
