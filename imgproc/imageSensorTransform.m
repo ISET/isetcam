@@ -1,8 +1,10 @@
 function T = imageSensorTransform(sensorQE,targetQE,illuminant,wave, method)
 % Calculate sensor -> target linear transformation
 %
+% Synopsis
 %  T = imageSensorTransform(sensorQE, targetQE,illuminant,wave, method)
 %
+% Inputs
 % sensorQE:   A matrix with columns containing the sensor spectral quantum
 %             efficiencies.
 % targetQE:   A matrix with columns containing the spectral quantum efficiency
@@ -10,18 +12,32 @@ function T = imageSensorTransform(sensorQE,targetQE,illuminant,wave, method)
 %             could be something else, such as an ideal camera.
 % illuminant: The name of the illuminant spectral power distribution.
 %             Can be a vector of length(wave) or a name. Default is 'D65'
-% wave:       The sample wavelengths
+% wave:       The sample wavelengths.  Default 400:10:700
 % method:     Indicates the estimation method, which decides on the sample
 %             surfaces and perhaps other choices
 %
-% The routine computes a nSensor x nTargetspace transform, T, to convert
-% from sensor space to target space.
+% Output
+%  T:         The transform
 %
-%  The returned transform can be applied as:
+% Description
+%  The routine computes a nSensor x nTargetspace transform, T, to
+%  convert from sensor space to target space.
 %
-%            img = imageLinearTransform(img,T);
+%  The data in sensor space is a row vector and target space is
 %
-% Copyright ImagEval Consultants, LLC, 2005.
+%    targetVec = rowVec * T
+%
+% Equivalently, if we have the QE of the sensor and target, then
+%
+%    targetQE = sensorQE * T
+%
+%  The transform, T, is applied to (r,c,w) data using:
+%
+%    img = imageLinearTransform(img,T);
+%
+% See also
+%   ieColorTransform, imageSensorCorrection, ipCompute
+%
 
 % Example
 %{
@@ -42,8 +58,11 @@ pred = sensorQE*A;
 ieNewGraphWin; plot(wave,pred,'--',wave,targetQE,'k-');
 %}
 
-%% PROGRAMMING TODO
+%% PROGRAMMING
 
+% Check the end for some code that validates whether the transform, T,
+% does about the right thing.
+%
 %  We should have a variety of ways of computing this linear transform
 %  including methods that account for known noise, use ridge methods
 %  search to minimize deltaE, and perhaps others.
@@ -64,8 +83,8 @@ else
     illQuanta = illuminant;
 end
 
-% The method mostly defines the surfaces at this point.  In the future, it
-% might do more, I hope.
+% The method is based on fitting the surfaces to the proper XYZ value.
+% Here we read the surface reflectances.
 method = ieParamFormat(method);
 switch method
     case {'mccoptimized','mcc'}
@@ -83,7 +102,7 @@ switch method
 end
 
 %% Predicted sensor responses
-%
+
 % The sensorMacbeth is an XW format, nSurface x nSensor
 sensorMacbeth = (sensorQE'*diag(illQuanta)*surRef)';
 
@@ -99,21 +118,21 @@ targetMacbeth = (targetQE'*diag(illQuanta)*surRef)';
 % with a backslash, not this way.  Also, should deal with noise
 % characteristics if possible.
 
-% Data in columns
+% Find the linear transform that maps the sensor data into the target
+% space.
 %
 % targetMacbeth = sensorMacbeth * T
-% T = pinv(sensorMacbeth)*targetMacbeth;
 T = sensorMacbeth \ targetMacbeth;
 
 %% Test code
 %{
- pred = sensorMacbeth*T;
- predImg = XW2RGBFormat(pred,4,6);
- ieNewGraphWin([],'tall'); 
- subplot(3,1,1), imagescRGB(imageIncreaseImageRGBSize(predImg,20));
- desiredImg = XW2RGBFormat(targetMacbeth,4,6);
- subplot(3,1,2), imagescRGB(imageIncreaseImageRGBSize(desiredImg,20));
- subplot(3,1,3), plot(pred(:),targetMacbeth(:),'.'); grid on; 
- axis square; identityLine;
+pred = sensorMacbeth*T;
+predImg = XW2RGBFormat(pred,4,6);
+ieNewGraphWin([],'tall'); 
+subplot(3,1,1), imagescRGB(imageIncreaseImageRGBSize(predImg,20));
+desiredImg = XW2RGBFormat(targetMacbeth,4,6);
+subplot(3,1,2), imagescRGB(imageIncreaseImageRGBSize(desiredImg,20));
+subplot(3,1,3), plot(pred(:),targetMacbeth(:),'.'); grid on; 
+axis square; identityLine;
 %}
 end

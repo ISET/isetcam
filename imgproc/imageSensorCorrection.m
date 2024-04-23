@@ -1,7 +1,7 @@
-function [img,vci] = imageSensorCorrection(img,vci,sensor)
+function [img,ip] = imageSensorCorrection(img,ip,sensor)
 % Convert sensor color data (img) to a calibrated internal color space
 %
-%   [img,vci] = imageSensorCorrection(img,vci,sensor)
+%   [img,vci] = imageSensorCorrection(img,ip,sensor)
 %
 % This routine applies a linear transform to the sensor data, converting
 % the data to an internal color space.  The internal space can be the
@@ -24,7 +24,7 @@ function [img,vci] = imageSensorCorrection(img,vci,sensor)
 %
 % The algorithm used is controlled by
 %
-%     ipGet(vci,'Sensor conversion method')
+%     ipGet(ip,'Sensor conversion method')
 %
 % Sensor conversion method options:
 %
@@ -67,27 +67,27 @@ function [img,vci] = imageSensorCorrection(img,vci,sensor)
 
 if ieNotDefined('img'), error('Image required'); end
 
-param = ieParamFormat(ipGet(vci,'conversion method sensor'));
+param = ieParamFormat(ipGet(ip,'conversion method sensor'));
 switch param
     case {'none','sensor'}
         % This case can be trouble when there are more than 3 color
         % channels.  In this condition, we don't have a plan for how to get
         % the data into sRGB space.
-        N = ipGet(vci,'nSensorInputs');
+        N = ipGet(ip,'nSensorInputs');
         
         if N > 3
             % warndlg('Warning.  No sensor conversion but n sensors > 3');
         end
         % We are told not to transform, so set it to identity with
         % dimension of the sensor input
-        vci = ipSet(vci,'conversion transform sensor',eye(N,N));
+        ip = ipSet(ip,'conversion transform sensor',eye(N,N));
         
     case {'mccoptimized','esseroptimized','multisurface'}
         % Find a linear transformation using  the sensor spectral
         % sensitivities into the internal color space.  The transform is
         % chosen to optimize the representation of the surfaces in a
         % Macbeth Color Checker under a D65 illuminant.
-        ics = ipGet(vci,'internal Color Space');
+        ics = ipGet(ip,'internal Color Space');
         
         % This routine calculates the matrix transform between the two
         % spaces for an illuminant (D65) and some selection of surfaces.
@@ -115,28 +115,28 @@ switch param
         
         % Store the transform.  Note that because of clipping, this
         % transform alone may not do precisely the same job.
-        vci = ipSet(vci,'conversion transform sensor',T);
+        ip = ipSet(ip,'conversion transform sensor',T);
         
         
     case {'new','manualmatrixentry'}
         
         % User types in a matrix
-        Torig = ipGet(vci,'combined transform');
+        Torig = ipGet(ip,'combined transform');
         Torig = Torig/max(Torig(:));
         T = ieReadMatrix(Torig,'%.3f   ','Color Transform');
         if isempty(T), img = []; return; end
         
         % Store and apply this transform.
-        vci = ipSet(vci,'conversion transform sensor',T);
+        ip = ipSet(ip,'conversion transform sensor',T);
         img = imageLinearTransform(img,T);  % vcNewGraphWin; imagesc(img)
         
         % Set the other transforms to empty.
-        vci = ipSet(vci,'correction method illuminant',[]);
-        vci = ipSet(vci,'ics2display',[]);
+        ip = ipSet(ip,'correction method illuminant',[]);
+        ip = ipSet(ip,'ics2display',[]);
         
     case 'currentmatrix'
         % Use the stored transform matrix, don't recompute.
-        T   = ipGet(vci,'prodT');
+        T   = ipGet(ip,'prodT');
         img = imageLinearTransform(img,T);
         
     otherwise

@@ -44,6 +44,27 @@ function T = ieColorTransform(sensor,targetSpace,illuminant,surface)
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
+% Example:
+% {
+scene = sceneCreate;
+sXYZ = sceneGet(scene,'xyz');
+
+oi = oiCreate('wvf');
+oi = oiCompute(oi,scene,'crop',true); 
+
+sensor = sensorCreate('rgbw');
+sensor = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'),oi);
+sensor = sensorSet(sensor,'noise flag',0);
+sensor = sensorCompute(sensor,oi);
+sensorWindow(sensor);
+
+T  = ieColorTransform(sensor,'XYZ','D65','mcc');
+ip = ipCreate;
+ip = ipCompute(ip,sensor);
+sensorXYZ = imageLinearTransform(ip.data.sensorspace,T);
+%}
+
+%%
 if ieNotDefined('targetSpace'), targetSpace = 'XYZ';          end
 if ieNotDefined('illuminant'),  illuminant  = 'D65';          end
 if ieNotDefined('surface'),     surface     = 'multisurface'; end
