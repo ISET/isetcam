@@ -12,40 +12,45 @@ function ip = ipCompute(ip,sensor)
 %   ip:      The image processor struct
 %   sensor:  The sensor struct
 %
+% Output:
+%   ip:      The ip now has the processed data stored in it
+%
 % Description
+%  The sensor data (either the voltage or digital values) are
+%  processed by a series of steps in ipCompute. A sequence of image
+%  data are stored within the ip.data slot.
 %
-%  The sensor data (either the voltage or digital values) are processed by
-%  a series of stages in ipCompute. A sequence of images are stored within
-%  the ip.data slot.
+%  input:  the voltage (or digital values, dv) from the sensor object.
+%  sensorspace:  The demosaicked input
+%  result:       The processed data demosaic data in lrgb format
+%                (between 0 and 1), ready for conversion to srgb as
+%                part of the display 
 %
-%  input:  contains the voltage (or digital values, dv) from the sensor
-%          object.
-%  sensorspace:  The demosaicked data from input
-%  result:       The processed data in lrgb format (between 0 and 1), ready
-%                for conversion to srgb as part of the display
-%
-%  By default the ip applies demosaic, sensor color conversion to an
-%  internal representation, and illuminant correction towards a specific
-%  display (in that order).  Which algorithms are applied is controlled by
-%  setting the parameters of the ip (i.e., ipSet).  The parameter control
-%  features like the demosaicking method, the sensor conversion approach,
-%  and the illuminant correction.
+%  The main processing routine is ipComputeSingle, below. Single
+%  refers to a single exposure.
 %
 %  If the sensor is monochrome, the pipeline copies the sensor data to the
 %  display output as a monochrome image.
 %
-%  This method runs on the assumption that the internal color space is
-%  three-dimensional.
+%  If the sensor has multiple color channels, the ip applies demosaic,
+%  sensor color conversion to a 3D internal color space (ICS), and
+%  illuminant correction (white balancing)
+%
+%  Which algorithms are applied is controlled by setting the
+%  parameters of the ip (i.e., ipSet). The parameters control features
+%  like the demosaicking method, the sensor conversion approach, and
+%  the illuminant correction.
 %
 % About L3
 %
 %   We are writing other rendering pipelines based on different
 %   architectures in the future.  One special one is L3.
 %
-%   If the ip.name begins with 'L3' then the data are rendered using the L3
-%   render method. The option 'L3global' uses the global parameters of the
-%   L3 structure.  In this case, we expect an L3 structure that was learned
-%   is attached to the ip. (More documentation needed, sorry! BW)
+%   If the ip.name begins with 'L3' then the data are rendered using
+%   the L3 render method. The option 'L3global' uses the global
+%   parameters of the L3 structure.  In this case, we expect an L3
+%   structure that was learned is attached to the ip. (More
+%   documentation needed, sorry! BW)
 %
 % See also
 %   ipWindow, ipPlot
@@ -59,28 +64,27 @@ if ~exist('sensor','var') || isempty(sensor) % need to make sure it has at least
     error('Sensor structure is required.');
 end
 
-
-%% Assign a name if the current one is 'default' or a copy.
-% Maybe we should always assign the sensor name whenever we compute?
-if strcmpi(ipGet(ip,'name'),'default') || ...
-        strcmpi(ipGet(ip,'name'),'copy')
-    ip = ipSet(ip,'name',sensorGet(sensor(1),'name'));
-end
-
 %% Handle sensor array case.  No special exposure cases are handled.
+
 if length(sensor) > 1
-    % No need to put volts into the ip.  Demosaic will recognize this as
-    % an array of sensors and it will pull the volts out of each of the
-    % individual sensors.
+    % Not sure about this whole subsection.  It isn't obvious we are
+    % handling the sensor array case properly, or that we ever get
+    % here.
+
     ip = ipSet(ip,'datamax',sensorGet(sensor(1),'max'));
+
+    % The first processing step, Demosaic, will recognize sensor as
+    % an array. It will pull the volts out of each of the
+    % individual sensors.
+
+    % Single exposure case.
     ip = ipComputeSingle(ip,sensor);
     return;
 end
 
-%% Classic CFA mosaic. Get the sensor data.
+%% Process the sensor data.
 
-% We demosaick the quantized sensor values.  If this field is empty, use the
-% continuous voltages
+% Store the sensor mosaic.  Either continuous or digital values.
 [output, type] = sensorGet(sensor,'dv or volts');
 ip = ipSet(ip,'input',double(output));
 
@@ -89,15 +93,15 @@ ip = ipSet(ip,'input',double(output));
 %  terribly important because we render into an RGB display in the unit
 %  cube.
 if isequal(type, 'dv')
-    ip = ipSet(ip,'datamax',sensorGet(sensor(1),'maxdigitalvalue'));
+    ip = ipSet(ip,'datamax',sensorGet(sensor(1),'max digital value'));
 else
-    ip = ipSet(ip,'datamax',sensorGet(sensor(1),'maxvoltage'));
+    ip = ipSet(ip,'datamax',sensorGet(sensor(1),'max voltage'));
 end
 
-%% Pre-process the multiple exposure durations case
-% Combine the the exposure durations into a single planar array.  Then we
-% process using the single exposure processing stream.
+%% Pre-process multiple exposure cases
 
+% Combine the exposure durations into a single planar array.  Then we
+% process using the single exposure processing stream.
 exposureMethod = sensorGet(sensor,'exposure method');
 switch exposureMethod(1:3)
     case 'sin'  % singleExposure
@@ -113,36 +117,37 @@ switch exposureMethod(1:3)
         error('Unknown exposure method %s\n',exposureMethod);
 end
 
-% We introduce the L3 pipeline here, which is not part of ISET.
+% We introduce the L3 pipeline here, which is not really part of ISET.
 % Perhaps we should test for the L3render function and warn the user if it
 % does not exist on the path?
 pType = ieParamFormat(ipGet(ip,'name'));
-if strncmpi(pType,'l3',2)
-    
-    %Perform L^3 processing, either local or global
+if ~strncmpi(pType,'l3',2)
+    % Conventional pipeline of single exposure. Most common case. We
+    % should probably remove the l3 case altogether.
+    ip = ipComputeSingle(ip,sensor);
+else
+    % Special case that probably shouldn't be here
+    % Perform L^3 processing, either local or global
     mode = 'local';
     if strncmpi(pType,'l3global',8), mode = 'global'; end
     fprintf('** Using L3render %s method **\n',mode);
-    
+
     L3 = ipGet(ip,'L3');
     [L3xyz,lumIdx,satIdx,clusterIdx] = L3render(L3,sensor,mode);
-    
+
     % Convert the results and save in the L3 structure and ip.
     % Shouldn't we be saving the srgb?  Or using xyz2lrgb?
     [srgb, lrgb] = xyz2srgb(L3xyz); %#ok<ASGLU>
     ip = ipSet(ip,'result',lrgb);
-    
+
     L3  = L3Set(L3,'luminance index',lumIdx);
     L3  = L3Set(L3,'xyz result',L3xyz);
     L3  = L3Set(L3,'saturation index',satIdx);
     L3  = L3Set(L3,'cluster index',clusterIdx);
     ip = ipSet(ip,'L3',L3);
-else
-    % Conventional pipeline, most common case
-    ip = ipComputeSingle(ip,sensor);
 end
 
-% Name the ip with its input sensor name, too
+% Name the ip with its input sensor name
 ip = ipSet(ip,'name',sensorGet(sensor,'name'));
 
 end
@@ -219,8 +224,9 @@ elseif nFilters >= 3 || nSensors > 1
         ip.data.input = max( (ip.data.input - zerolevel) ,0);
     end
     
-    %1.  Demosaic in sensor space. The data remain in the sensor
-    % channels and there is no scaling.
+    %% Demosaic the sensor data in sensor space. 
+
+    % The data remain in the sensor channels and there is no scaling.
     if ndims(ip.data.input) == nFilters, img = ip.data.input;
     elseif ismatrix(ip.data.input),      img = Demosaic(ip,sensor);
     else
@@ -228,13 +234,18 @@ elseif nFilters >= 3 || nSensors > 1
     end
     
     % Save the demosaiced sensor space channel values. May be used later
-    % for adaptation of color balance for IR enabled sensors
-    % if shooting bracketed, where did we get de-mosaiced?
+    % for adaptation of color balance for IR enabled sensors.
     ip = ipSet(ip,'sensor space',img);    % saveimg = img;
     
-    % Decide if we are using the current matrix or we are in a processing
-    % chain for balancing and rendering, or whether we are using the
-    % current matrix.
+    %% Sensor and illuminant correction
+
+    % Convert the demosaicked sensor data into an internal color
+    % space. The choice of the internal color space conversion is
+    % governed by the field ipGet(ip,'Sensor Correction Method').
+    % Then do an illuminant correction.
+
+    % Decide on the approach. Two of the options specify the matrix.
+    % The third option, 'adaptive', processes based on the data.
     tMethod = ieParamFormat(ipGet(ip,'transform method'));
     switch tMethod
         case 'current'
@@ -268,14 +279,9 @@ elseif nFilters >= 3 || nSensors > 1
             % ip = ipSet(ip,'sensor correction transform',[]);
             ip = ipSet(ip,'ics2display',[]);
         case 'adaptive'
-            % Recompute a transform based, in part, on process the image
-            % data and with knowledge of the multiple color filters.
-            %
-            
-            % 2.  Convert the demosaicked img data into an internal color
-            % space. The choice of the internal space is governed by the
-            % field ipGet(ip,'Sensor Correction Method')
-            
+            % Recompute a transform based on the image data and with
+            % knowledge of the sensor color filters.
+
             N = length(sensor);
             if N > 1
                 % If the sensor is an array of monochrome sensors, we
@@ -296,26 +302,28 @@ elseif nFilters >= 3 || nSensors > 1
             if isempty(img), disp('User canceled'); return; end
             % imtool(img/max(img(:))); ii = 3; imtool(img(:,:,ii))
             
-            % 3. Perform an illuminant correct operation in the ICS space.
-            % The operation is governed by the 'illuminant correction method'
-            % parameter.
+            %% Illuminant correction.
+            
+            % The operation is governed by the 'illuminant correction
+            % method' parameter.
             [img,ip] = imageIlluminantCorrection(img,ip);
             
-            % 4.  Convert from the img data in the internal color space
-            % into display space.  The display space is sRGB.  The data are
-            % scaled so that the largest value in display space (0,1) is
-            % the same ratio as the peak sensor data value to the maximum
-            % sensor output.
+            %% Convert from the internal color space to sRGB display space.
+            
+            % The data are scaled so that the largest value in display
+            % space (0,1) is the same ratio as the peak sensor data
+            % value to the maximum sensor output.
             %
             % N.B. The display on the user's desk is not likely to be the
             % calibrated display that is modeled.
             [img,ip] = displayRender(img,ip,s);
+
         otherwise
             error('Unknown transform method %s\n',tMethod);
     end
     
-    % Done with all the image processing.  Save in result.
-    ip = ipSet(ip,'result',img);
+    %% Save the sRGB data 
+    ip = ipSet(ip,'display rgb',img);
     
 end
 

@@ -71,6 +71,8 @@ switch lower(targetSpace)
         % This is where the transform is calculated
         T = imageSensorTransform(sensorQE,targetQE,illuminant,wave,surface);
         
+        % We should check that targetQE ~ sensorQE*T
+        
     case {'linearsrgb','lrgb'}
         % Probably unused
         T = linearsrgb(sensorQE,illuminant,wave);

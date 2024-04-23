@@ -21,11 +21,29 @@ function T = imageSensorTransform(sensorQE,targetQE,illuminant,wave, method)
 %
 %            img = imageLinearTransform(img,T);
 %
-% Example:
-%
 % Copyright ImagEval Consultants, LLC, 2005.
 
-%% PROGRAMMING TODO:
+% Example
+%{
+s = sensorCreate('rgbw');
+sensorQE = sensorGet(s,'spectral qe');
+wave = sensorGet(s,'wave');
+targetQE = ieReadSpectra('xyzQuanta',wave);
+
+T = imageSensorTransform(sensorQE,targetQE,'',wave, 'mcc');
+pred = sensorQE*T;
+ieNewGraphWin; plot(wave,pred,'--',wave,targetQE,'k-');
+
+% Compare to the straight pseudoinverse calculation, without the
+% illuminant
+% targetQE = sensorQE*A, so 
+A = pinv(sensorQE)*targetQE;
+pred = sensorQE*A;
+ieNewGraphWin; plot(wave,pred,'--',wave,targetQE,'k-');
+%}
+
+%% PROGRAMMING TODO
+
 %  We should have a variety of ways of computing this linear transform
 %  including methods that account for known noise, use ridge methods
 %  search to minimize deltaE, and perhaps others.
@@ -81,16 +99,21 @@ targetMacbeth = (targetQE'*diag(illQuanta)*surRef)';
 % with a backslash, not this way.  Also, should deal with noise
 % characteristics if possible.
 
+% Data in columns
+%
+% targetMacbeth = sensorMacbeth * T
 % T = pinv(sensorMacbeth)*targetMacbeth;
 T = sensorMacbeth \ targetMacbeth;
 
 %% Test code
-% pred = sensorMacbeth*T;
-% predImg = XW2RGBFormat(pred,6,4);
-% figure; title('mcc')
-% subplot(1,2,1), imagescRGB(imageIncreaseImageRGBSize(predImg,20));
-% desiredImg = XW2RGBFormat(targetMacbeth,6,4);
-% subplot(1,2,2),imagescRGB(imageIncreaseImageRGBSize(desiredImg,20));
-% figure; plot(pred(:),targetMacbeth(:),'.'); grid on
-
+%{
+ pred = sensorMacbeth*T;
+ predImg = XW2RGBFormat(pred,4,6);
+ ieNewGraphWin([],'tall'); 
+ subplot(3,1,1), imagescRGB(imageIncreaseImageRGBSize(predImg,20));
+ desiredImg = XW2RGBFormat(targetMacbeth,4,6);
+ subplot(3,1,2), imagescRGB(imageIncreaseImageRGBSize(desiredImg,20));
+ subplot(3,1,3), plot(pred(:),targetMacbeth(:),'.'); grid on; 
+ axis square; identityLine;
+%}
 end

@@ -185,7 +185,7 @@ switch param
     case {'input','sensorinput'}
         % A copy of the sensor data is stored here
         ip.data.input = val;
-    case {'result','displayrgb','displayoutput'}
+    case {'displayrgb','displayoutput','result'}
         % The image processed data
         ip.data.result = val;
     case {'datawhitepoint','datawp'}

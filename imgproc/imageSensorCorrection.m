@@ -23,6 +23,7 @@ function [img,vci] = imageSensorCorrection(img,vci,sensor)
 % value in this image and maximum possible sensor value.
 %
 % The algorithm used is controlled by
+%
 %     ipGet(vci,'Sensor conversion method')
 %
 % Sensor conversion method options:
