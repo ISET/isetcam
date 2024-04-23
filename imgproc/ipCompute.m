@@ -138,9 +138,12 @@ if strncmpi(pType,'l3',2)
     L3  = L3Set(L3,'cluster index',clusterIdx);
     ip = ipSet(ip,'L3',L3);
 else
-    % Conventional RGB pipeline, most common case
+    % Conventional pipeline, most common case
     ip = ipComputeSingle(ip,sensor);
 end
+
+% Name the ip with its input sensor name, too
+ip = ipSet(ip,'name',sensorGet(sensor,'name'));
 
 end
 

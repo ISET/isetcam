@@ -188,7 +188,7 @@ switch lower(method)
                 strcmp(bPattern,'bggr'))
             demosaicedImage = AdaptiveLaplacian(imgRGB, bPattern, clipToRange);
         else
-            hdl = ieSessionGet('vcimagehandles');
+            hdl = ieSessionGet('ipwindow');
             str = 'Sensor color format must be rggb or bggr for Laplacian. Using ieBilinear.';
             ieInWindowMessage(str,hdl)
             demosaicedImage = ieBilinear(imgRGB,sensorGet(sensor,'pattern'));
