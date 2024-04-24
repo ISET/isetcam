@@ -340,9 +340,12 @@ switch sensorType
         % Old model.  I increased the spatial samples before
         % returning the sensor.
         load('NikonD100Sensor','isa');
+        isa.type = 'sensor';
+
         sensor = isa;
         sensor = sensorSet(sensor,'size',[72 88]*4);
-
+        sensor = sensorSet(sensor,'name','Nikon-D100');
+        
     case {'fourcolor'}  % Often used for multiple channel
         % sensorCreate('custom',pixel,filterPattern,filterFile);
         if length(varargin) >= 1, filterPattern = varargin{1};
