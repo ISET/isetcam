@@ -72,7 +72,7 @@ p.parse(user,host,src,destinationPath,varargin{:});
 flags = '';
 if p.Results.quiet,  flags = [flags,' -q']; end
 
-% The -r flag works for either a file or a directory.
+% The -r flag works for either a file or a directory.star
 command = ['scp -r',flags, ' ', user, '@', host, ':', src, ' ', destinationPath];
 
 % Execute the command using system
