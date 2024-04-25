@@ -107,7 +107,7 @@ classdef cpScene < handle
                 options.recipe struct = struct([]);
                 options.sceneName char = 'cornell box bunny chart';
                 options.scenePath char = 'Cornell_BoxBunnyChart';
-                options.resolution (1,2) {mustBeNumeric} = [512 512];
+                options.resolution (1,2) {mustBeNumeric} = [1024 1024];
                 options.numRays (1,1) {mustBeNumeric} = 64;
                 options.numFrames (1,1) {mustBeNumeric} = 1;
                 options.imageFileNames (1,:) string = [];
@@ -167,7 +167,7 @@ classdef cpScene < handle
                     else
                         obj.thisR.camera = piCameraCreate('perspective');
                     end
-                    obj.thisR.set('film diagonal',66); % sensor mm
+                    obj.thisR.set('film diagonal',obj.filmDiagonal); % sensor mm
                     obj.allowsObjectMotion = true;
                     % ideally we should be able to accept an array of scene
                     % files
