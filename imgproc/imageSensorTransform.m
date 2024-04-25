@@ -1,8 +1,8 @@
-function T = imageSensorTransform(sensorQE,targetQE,illuminant,wave, method)
+function T = imageSensorTransform(sensorQE,targetQE,illuminant,wave, surfaces, whitept)
 % Calculate sensor -> target linear transformation
 %
 % Synopsis
-%  T = imageSensorTransform(sensorQE, targetQE,illuminant,wave, method)
+%  T = imageSensorTransform(sensorQE, targetQE,illuminant,wave, surfaces, whitept)
 %
 % Inputs
 % sensorQE:   A matrix with columns containing the sensor spectral quantum
@@ -13,7 +13,10 @@ function T = imageSensorTransform(sensorQE,targetQE,illuminant,wave, method)
 % illuminant: The name of the illuminant spectral power distribution.
 %             Can be a vector of length(wave) or a name. Default is 'D65'
 % wave:       The sample wavelengths.  Default 400:10:700
-% method:     Indicates which sample surfaces (mcc, esser, multisurface)
+% surfaces:   Indicates which sample surfaces (mcc, esser, multisurface)
+% whitept:    Force T to map the illuminant in the sensor space to the
+%             1-vector in the target space.  For XYZ, this is a
+%             chromaticity of 0.333,0.333.  (Logical, default: false).
 %
 % Output
 %  T:         The nChannels x 3 linear transform
@@ -23,12 +26,12 @@ function T = imageSensorTransform(sensorQE,targetQE,illuminant,wave, method)
 %  convert from sensor space to target space.
 %
 %  The linear transform maps data in sensor space, a row vector, into
-%  target space 
+%  target space
 %
 %    targetVec = rowVec * T
 %
 % Equivalently, if we have the QE of the sensor and target channel
-% quantum efficients, then 
+% quantum efficients, then
 %
 %    targetQE = sensorQE * T
 %
@@ -36,16 +39,18 @@ function T = imageSensorTransform(sensorQE,targetQE,illuminant,wave, method)
 %
 %    img = imageLinearTransform(img,T);
 %
-%  This implementation is trivial .  In practice, the selection of the
-%  transformation can be much more nuanced.  A particular case we need
-%  to think through is RGBW.  ZL has been training small networks for
-%  this.
+%  In some cases, such as for an RGBW, we sometimes require that
 %
-% Programming notes
+%     [sensorLight]*T = [1 1 1]
 %
-%  BW: When we have an RGBW, we should insist that the fourth
-%  row satisfy [sm,sm,sm,sm]*T = [1 1 1], where sm is the sensor max
-%  (voltage swing).
+% where sensorLightis the sensor response to the light source.  That
+% is the purpose of the whitept parameter, recently added to
+% ip.render.whitept.  I suppose we might allow whitept to be a vector
+% in the target space some day (BW).
+%
+% The current implementation is trivial; in practice, the selection of
+% the transformation can be much more nuanced.  ZL has been training
+% small networks for this.
 %
 % See also
 %   ieColorTransform, imageSensorCorrection, ipCompute
@@ -83,7 +88,8 @@ ieNewGraphWin; plot(wave,pred,'--',wave,targetQE,'k-');
 %% Check arguments
 if ieNotDefined('illuminant'), illuminant = 'D65'; end
 if ieNotDefined('wave'), wave = 400:10:700; end
-if ieNotDefined('method'), method = 'multisurface'; end
+if ieNotDefined('surfaces'), surfaces = 'multisurface'; end
+if ieNotDefined('whitept'), whitept = false; end
 
 %% Read the MCC surface spectra and a target illuminant, say D65.
 if ischar(illuminant)
@@ -99,8 +105,8 @@ end
 % sensor response, for a selection of surfaces under a specific light,
 % to the XYZ value under that light. Here we read which surface
 % reflectances.
-method = ieParamFormat(method);
-switch method
+surfaces = ieParamFormat(surfaces);
+switch surfaces
     case {'mccoptimized','mcc'}
         % fullfile(isetRootPath,'data','surfaces','macbethChart');
         fName  = which('macbethChart.mat');
@@ -113,7 +119,7 @@ switch method
         % By default, returns 96 surfaces.
         surRef = ieReflectanceSamples([],[],wave);
     otherwise
-        error('Unknown method %s\n',method);
+        error('Unknown method %s\n',surfaces);
 end
 
 %% Predicted sensor responses
@@ -138,6 +144,18 @@ targetResponse = (targetQE'*diag(illQuanta)*surRef)';
 %
 % targetResponse = sensorResponse * T
 T = sensorResponse \ targetResponse;
+
+if whitept
+    % Force the returned transform, T, to map the the 1-vector in the
+    % sensor to the illuminant value (scaled).  Worked out in
+    % s_autoLightGroups (isetauto).
+    sensorLight = illQuanta'*sensorQE;
+    sensorLight = sensorLight / max(sensorLight);
+    sensorWhite = sensorLight*T;
+    
+    % Forces T to satisfy sensorLight * T = ones
+    T = T * diag( 1 ./ sensorWhite);
+end
 
 %% Test code
 %{

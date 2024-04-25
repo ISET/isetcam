@@ -261,7 +261,7 @@ switch oType
             case {'renderstructure','render'}
                 % Structure
                 if checkfields(ip,'render'), val = ip.render; end
-            case {'scaledisplay','scaledisplayoutput'}
+            case {'renderscale','scaledisplay','scaledisplayoutput'}
                 % Returns a scale factor to apply to display output
                 if checkfields(ip,'render','scale')
                     val = ip.render.scale;
@@ -300,6 +300,11 @@ switch oType
                     % Whatever we decided, store it now.
                     ip.render.gamma = val;
                 end
+            case {'renderwhitept'}
+                % Logical.  If true, forces the sensor conversion matrix to
+                % convert the scene illuminant to [1 1 1].
+                % Used in imageSensorCorrection.
+                val = ip.render.whitept;
                 
                 % Image processor data
             case {'data','datastructure'}

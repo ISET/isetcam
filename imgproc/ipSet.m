@@ -1,32 +1,14 @@
 function ip = ipSet(ip,param,val,varargin)
 %Set image processor parameters and transforms.
 %
-%       ip = ipSet(ip,param,val,varargin)
+% Synopsis
+%  ip = ipSet(ip,param,val,varargin)
 %
 % Image processing (ip) structure describes parameters and methods used in
 % the image processing pipeline.  The structure also includes information
-% about the target display.  This structure is also called the virtual
-% camera image (ip) for many years.  (I am trying to switch over from ip
-% naming to ip naming.)
+% about the target display.  
 %
-% The image processing methods in the default ISET pipeline are (a)
-% demosaicking, (b) conversion from sensor space to the internal color
-% space, (c) illuminant correction, and (d) conversion from the internal
-% space to the display primaries.
-%
-% The method parameters speicfy the methods for performing, say, sensor
-% correction or illuminant correction. The transform parameters are the
-% matrix transformations applied in these cases.
-%
-% The display is a structure that is represented within the processing
-% pipeline.   We are in the process of developing an extensive display
-% simulation technology. The display object has its own create/set/get
-% calls (i.e., displayGet).  Still, many of the parameters can be retrieved
-% from this structure as well (see below).
-%
-% We expect that many people will want to write their own processing
-% pipeline.  The methods included here are illustrative of current
-% practice, we do not think of them as optimal.
+% Inputs
 %
 % Image Processor parameters
 %   'name'                  - Unique name for this processor
@@ -73,9 +55,9 @@ function ip = ipSet(ip,param,val,varargin)
 %
 %      'transforms' - The sensor and illuminant correction transforms
 %                       are stored in this cell array.
-%       (ip.transform{1}) - sensor conversion transform.
-%              The second is the illuminant correction
-%              The third is the internal color to display
+%       (ip.data.transform{1}) - The sensor conversion transform.
+%       (ip.data.transform{2}) - The second is the illuminant correction
+%       (ip.data.transform{3}) - The third is the internal color to display
 %
 %  Display properties will be removed from this function in the future
 %      'display'  - Target display structure
@@ -94,6 +76,30 @@ function ip = ipSet(ip,param,val,varargin)
 %     'roi'             - Rect used for an ROI
 %     'gamma display'   - Gamma for rendering data to ipWindow image
 %     'scale display'   - True or false for scaling the ipWindow image
+%
+% Description
+%
+% The image processing methods in the default ISET pipeline are (a)
+% demosaicking, (b) conversion from sensor space to the internal color
+% space, (c) illuminant correction, and (d) conversion from the
+% internal space to the display primaries.
+%
+% The parameters specify the methods for performing, say, sensor
+% correction or illuminant correction. The transform parameters are
+% the matrix transformations applied in these cases.
+%
+% The display is a structure that is represented within the processing
+% pipeline.   We are in the process of developing an extensive display
+% simulation technology. The display object has its own create/set/get
+% calls (i.e., displayGet).  Still, many of the parameters can be retrieved
+% from this structure as well (see below).
+%
+% We expect that many people will want to write their own processing
+% pipeline.  The methods included here are illustrative of current
+% practice, we do not think of them as optimal.
+%
+% This structure was  called the virtual camera image (vci) for many
+% years.  (I am trying to switch over from ip naming to ip naming.)
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 %
@@ -248,9 +254,14 @@ switch param
             ip = ipSet(ip,'ics2display transform', eye(3));
         end
         
-    case {'scaledisplay','scaledisplayoutput'}
+    case {'renderscale','scaledisplay','scaledisplayoutput'}
         % This is a binary 1 or 0 for one or off
         ip.render.scale = val;
+    case {'renderwhitept'}
+        % Logical.  If true, forces the sensor conversion matrix to
+        % convert the scene illuminant to [1 1 1].
+        % Used in imageSensorCorrection.
+        ip.render.whitept = val;
     case {'gammadisplay','rendergamma','gamma'}
         % Controls the gamma for rendering the result data to the
         % GUI display.
