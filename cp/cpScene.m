@@ -154,7 +154,13 @@ classdef cpScene < handle
                     obj.sceneName = options.sceneName;
 
                     if ~piDockerExists, piDockerConfig; end
-                    obj.thisR = piRecipeDefault('scene name', obj.sceneName);
+                    
+                    try
+                        obj.thisR = piRecipeDefault('scene name', obj.sceneName);
+                    catch
+                        obj.thisR = piRead([obj.sceneName '.pbrt'], 'exporter', 'Copy');
+                    end
+
                     if ~isempty(options.lensFile)
                         obj.thisR.camera = piCameraCreate('omni',...
                             'lensFile',obj.lensFile);
