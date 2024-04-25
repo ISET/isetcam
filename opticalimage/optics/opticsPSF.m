@@ -203,17 +203,32 @@ for ww = 1:nWave
     
     % Deal with non square scenes
     if oiWidth ~= oiHeight
-        sz = round(double(abs(oiWidth - oiHeight)/2));
-        if oiWidth < oiHeight
-            photons = padarray(p(:,:,ww),[0,sz],0,'both');
-            % photons = ImageConvFrequencyDomain(photons,PSF{ww}, 2);
-            photons = fftshift(ifft2(fft2(photons) .* fft2(PSF{ww})));
-            p(:,:,ww) = photons(:,sz+1:sz+oiWidth);
+        %  sz = round(double(abs(oiWidth - oiHeight)/2));
+
+        % Find the difference between height and width, and set sz to
+        % compensate.
+        delta = abs(oiWidth - oiHeight);
+        if isodd(delta) 
+            sz(1) = floor(delta/2); sz(2) = sz(1) + 1;
         else
-            photons = padarray(p(:,:,ww),[sz,0],0,'both');
+            sz(1) = delta/2; sz(2) = sz(1);
+        end
+
+        if oiWidth < oiHeight
+            % Add zeros to the columns
+            photons = padarray(p(:,:,ww),[0,sz(1)],0,'pre');
+            photons = padarray(photons,[0,sz(2)],0,'post');
+            % photons = padarray(p(:,:,ww),[0,sz],0,'both');
             % photons = ImageConvFrequencyDomain(photons,PSF{ww}, 2);
             photons = fftshift(ifft2(fft2(photons) .* fft2(PSF{ww})));
-            p(:,:,ww) = photons(sz+1:sz+oiHeight,:);
+            p(:,:,ww) = photons(:,sz(1)+(1:oiWidth));
+        else
+            photons = padarray(p(:,:,ww),[sz(1),0],0,'pre');
+            photons = padarray(photons,[sz(2),0],0,'post');
+            % photons = padarray(p(:,:,ww),[sz,0],0,'both');
+            % photons = ImageConvFrequencyDomain(photons,PSF{ww}, 2);
+            photons = fftshift(ifft2(fft2(photons) .* fft2(PSF{ww})));
+            p(:,:,ww) = photons(sz(1)+(1:oiHeight),:);
         end
     else
         % BW:  Debugging as per DHB.  This line breaks the padding.
