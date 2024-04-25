@@ -13,27 +13,39 @@ function T = imageSensorTransform(sensorQE,targetQE,illuminant,wave, method)
 % illuminant: The name of the illuminant spectral power distribution.
 %             Can be a vector of length(wave) or a name. Default is 'D65'
 % wave:       The sample wavelengths.  Default 400:10:700
-% method:     Indicates the estimation method, which decides on the sample
-%             surfaces and perhaps other choices
+% method:     Indicates which sample surfaces (mcc, esser, multisurface)
 %
 % Output
-%  T:         The transform
+%  T:         The nChannels x 3 linear transform
 %
 % Description
-%  The routine computes a nSensor x nTargetspace transform, T, to
+%  The routine computes a nChannels x nTargetspace transform, T, to
 %  convert from sensor space to target space.
 %
-%  The data in sensor space is a row vector and target space is
+%  The linear transform maps data in sensor space, a row vector, into
+%  target space 
 %
 %    targetVec = rowVec * T
 %
-% Equivalently, if we have the QE of the sensor and target, then
+% Equivalently, if we have the QE of the sensor and target channel
+% quantum efficients, then 
 %
 %    targetQE = sensorQE * T
 %
-%  The transform, T, is applied to (r,c,w) data using:
+%  The returned transform, T, can be applied to image data (r,c,w) using:
 %
 %    img = imageLinearTransform(img,T);
+%
+%  This implementation is trivial .  In practice, the selection of the
+%  transformation can be much more nuanced.  A particular case we need
+%  to think through is RGBW.  ZL has been training small networks for
+%  this.
+%
+% Programming notes
+%
+%  BW: When we have an RGBW, we should insist that the fourth
+%  row satisfy [sm,sm,sm,sm]*T = [1 1 1], where sm is the sensor max
+%  (voltage swing).
 %
 % See also
 %   ieColorTransform, imageSensorCorrection, ipCompute
@@ -83,8 +95,10 @@ else
     illQuanta = illuminant;
 end
 
-% The method is based on fitting the surfaces to the proper XYZ value.
-% Here we read the surface reflectances.
+% The method is based on finding a linear transformation fits the
+% sensor response, for a selection of surfaces under a specific light,
+% to the XYZ value under that light. Here we read which surface
+% reflectances.
 method = ieParamFormat(method);
 switch method
     case {'mccoptimized','mcc'}
@@ -96,6 +110,7 @@ switch method
         fName = which('esserChart.mat');
         surRef = ieReadSpectra(fName,wave);
     case {'multisurface'}
+        % By default, returns 96 surfaces.
         surRef = ieReflectanceSamples([],[],wave);
     otherwise
         error('Unknown method %s\n',method);
@@ -103,15 +118,15 @@ end
 
 %% Predicted sensor responses
 
-% The sensorMacbeth is an XW format, nSurface x nSensor
-sensorMacbeth = (sensorQE'*diag(illQuanta)*surRef)';
+% The sensorResponse is an XW format, nSurface x nChannels
+sensorResponse = (sensorQE'*diag(illQuanta)*surRef)';
 
 % These are the desired sensor responses to the surface reflectance
 % functions under the illuminant in the internal color space. The target
 % space should be correct for a photon (quanta) representation of the data.
 % That is, targetQE should be something like XYZQuanta or stockmanQuanta.
 % It will typically be nSurfacer x nTargetDims
-targetMacbeth = (targetQE'*diag(illQuanta)*surRef)';
+targetResponse = (targetQE'*diag(illQuanta)*surRef)';
 
 % This is the linear transformation that maps the sensor values into the
 % target values, as illustrated in the comment below.  Should be calculated
@@ -121,18 +136,18 @@ targetMacbeth = (targetQE'*diag(illQuanta)*surRef)';
 % Find the linear transform that maps the sensor data into the target
 % space.
 %
-% targetMacbeth = sensorMacbeth * T
-T = sensorMacbeth \ targetMacbeth;
+% targetResponse = sensorResponse * T
+T = sensorResponse \ targetResponse;
 
 %% Test code
 %{
-pred = sensorMacbeth*T;
+pred = sensorResponse*T;
 predImg = XW2RGBFormat(pred,4,6);
 ieNewGraphWin([],'tall'); 
 subplot(3,1,1), imagescRGB(imageIncreaseImageRGBSize(predImg,20));
-desiredImg = XW2RGBFormat(targetMacbeth,4,6);
+desiredImg = XW2RGBFormat(targetResponse,4,6);
 subplot(3,1,2), imagescRGB(imageIncreaseImageRGBSize(desiredImg,20));
-subplot(3,1,3), plot(pred(:),targetMacbeth(:),'.'); grid on; 
+subplot(3,1,3), plot(pred(:),targetResponse(:),'.'); grid on; 
 axis square; identityLine;
 %}
 end

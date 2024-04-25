@@ -1,33 +1,12 @@
 function val = ipGet(ip,param,varargin)
 %Get image processor parameters and derived quantities.
 %
-%       val = ipGet(ip,param,varargin)
+% Synopsis
+%   val = ipGet(ip,param,varargin)
 %
-%  Unique image processing parameters are stored and many others are
-%  derived from stored values.
-%
-%  The image processing structure parameters refer to a function call for
-%  performing, say, demosaicking, sensor conversion or illuminant
-%  correction.  These transform parameters are the 3x3 linear
-%  transformations applied in many of these cases.
-%
-%  The main ISET structures (scene, oi, sensor, ip, display) are stored in
-%  the ISET database.  To retrieve the currently selected image processor,
-%  use
-%
-%     ip = vcGetObject('ip');
-%
-%  The image processing structure contains a display structure. Because of
-%  the importance of the display structure, it is possible to retrieve
-%  display parameters from the ipGet() function using the syntax
-%
-%     ipGet(ip,'display <parameter name>'),
-%     e.g., ipGet(ip,'display spd');
-%
-%  NOTE:  The display structure attached to the image processor is not
-%  necessarily the same as the ISET display structure.  The ip.display is
-%  typically a simple sRGB model that is used for rendering.  The display
-%  in the main ISET database is the one analyzed in the displayWindow.
+% Brief
+%  Returns stored image processing (ip) parameters and also derives
+%  many quantities from the stored parameters.
 %
 % Image Processor parameters
 %      'name'  - This image processing structure name
@@ -68,7 +47,7 @@ function val = ipGet(ip,param,varargin)
 %
 % DATA information
 %      'data'  - Data structure
-%       'sensor mosaic'   - Sensor mosaic used to initiate rendering pipeline
+%       'sensor mosaic'   - Sensor mosaic data that initiates rendering
 %       'sensor channels' - Sensor data demosaicked into RGB format
 %       'nSensor channels'- Number of sensor channel inputs
 %       'data display'  - Digital values for display rendering
@@ -85,7 +64,7 @@ function val = ipGet(ip,param,varargin)
 %       'maximum sensor value'
 %       'data white point'
 %       'scale display'
-%      'data or display white'  - Data white point if present, otherwise
+%       'data or display white'  - Data white point if present, otherwise
 %                                   display white point
 %
 % Miscellaneous
@@ -101,6 +80,20 @@ function val = ipGet(ip,param,varargin)
 %     'image grid'        - X,Y coords (in pixels) from image center
 %                            Returned in a cell array
 %     'L3'                - L3 structure.  Requires L3 repository.
+%
+% Description
+%  The image processing parameters are stored in a struct (ip). The
+%  parameters define both values and functions needed to perform,
+%  say, demosaicking, sensor conversion or illuminant correction.
+%  These transform parameters are the 3x3 linear transformations
+%  applied in many of these cases.
+%
+%  The image processing structure contains a display structure. Because of
+%  the importance of the display structure, it is possible to retrieve
+%  display parameters from the ipGet() function using the syntax
+%
+%     ipGet(ip,'display <parameter name>'),
+%     e.g., ipGet(ip,'display spd');
 %
 % See also
 %   ipSet, sensorGet, ...
