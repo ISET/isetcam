@@ -263,9 +263,10 @@ switch param
         % Force the sensor conversion matrix to map the scene
         % illuminant to [1 1 1] in the target space. 
         % 
-        % This is achieved 
-        % post-processing step if the user does not like the default
-        % adaptive rendering.
+        % This is run as a post-processing step. If you do not like
+        % the default adaptive rendering, you can run this and have an
+        % impact. It was particularly useful for RGBW in ISETAuto
+        % calculations.  
         
         % Need to check parameters.
         ill = val;
@@ -278,14 +279,19 @@ switch param
             error('Bad sensor data');
         end
 
-
+        % How the sensor responds to the illuminant
         sensorLight = ill(:)'*sensorQE;
         sensorLight = sensorLight / max(sensorLight);
+
+        % Modify the conversion matrix to make the response all 1s for
+        % this light.
         T = ipGet(ip,'sensor conversion matrix');
         sensorWhite = sensorLight*T;
         T = T * diag( 1 ./ sensorWhite);
         ip = ipSet(ip,'sensor conversion matrix',T);
 
+        % Fix the transform so the next time ipCompute is run it will
+        % use this modified transform.
         ip = ipSet(ip, 'transform method', 'current');
         disp('Fixing the transform method.')
         
