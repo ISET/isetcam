@@ -260,13 +260,24 @@ switch param
     case {'renderwhitept'}
         % ip = ipSet(ip,'whitept',[lightspectra],[sensorqe]);
         %
-        % Force the sensor conversion matrix to convert the scene
-        % illuminant to [1 1 1]. Run as a post-processing step if the
-        % user does not like the default adaptive rendering.
+        % Force the sensor conversion matrix to map the scene
+        % illuminant to [1 1 1] in the target space. 
+        % 
+        % This is achieved 
+        % post-processing step if the user does not like the default
+        % adaptive rendering.
         
         % Need to check parameters.
         ill = val;
-        sensorQE = varargin{1};
+        assert(isnumeric(val));
+        if isstruct(varargin{1}) && isequal(varargin{1}.type,'sensor')
+            sensorQE = sensorGet(varargin{1},'spectral qe');
+        elseif isnumeric(varargin{1})
+            sensorQE = varargin{1};
+        else
+            error('Bad sensor data');
+        end
+
 
         sensorLight = ill(:)'*sensorQE;
         sensorLight = sensorLight / max(sensorLight);

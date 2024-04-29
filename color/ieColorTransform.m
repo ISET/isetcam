@@ -106,7 +106,7 @@ switch lower(targetSpace)
         targetQE = ieReadSpectra(targetSpace,wave);
         
         % This is where the transform is calculated        
-        T = imageSensorTransform(sensorQE,targetQE,illuminant,wave,surface,whitept);
+        T = imageSensorTransform(sensorQE,targetQE,illuminant,wave,surface);
         
         % We should check that targetQE ~ sensorQE*T
         

@@ -89,7 +89,6 @@ ip = ipSet(ip,'conversion method sensor ','MCC optimized');
 %% Rendering assumptions
 
 ip = ipSet(ip,'scaleDisplay',1);
-ip = ipSet(ip,'render whitept',false);
 
 % ip = ipSet(ip,'mccRectHandles',[]);
 
