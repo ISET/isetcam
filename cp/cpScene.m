@@ -158,7 +158,7 @@ classdef cpScene < handle
                     try
                         obj.thisR = piRecipeDefault('scene name', obj.sceneName);
                     catch
-                        obj.thisR = piRead([obj.sceneName '.pbrt'], 'exporter', 'Copy');
+                        obj.thisR = piRead(which([obj.sceneName '.pbrt']), 'exporter', 'Copy');
                     end
 
                     if ~isempty(options.lensFile)
@@ -203,7 +203,7 @@ classdef cpScene < handle
         % TODO: If there is no camera or object motion, then for burst &
         % stack operations, maybe we should just render once in pbrt to
         % save time?
-        function [sceneObjects, sceneFiles] = render(obj,expTimes, options)
+        function [sceneObjects, sceneFiles, renderedFiles] = render(obj,expTimes, options)
             arguments
                 obj cpScene;
                 expTimes (1,:);
@@ -226,6 +226,7 @@ classdef cpScene < handle
             %   we return an array of oi objects, otherwise scenes
             %   FUTURE
 
+            renderedFiles = [];
             if exist('sceneObjects', 'var'); clear(sceneObjects); end
             % Process based on sceneType.
             switch obj.sceneType
@@ -245,6 +246,7 @@ classdef cpScene < handle
 
                     %% We need to write a copy of the recipe in its default
                     % location also, for future processing
+
                     piWrite(obj.thisR);
 
 
@@ -357,8 +359,13 @@ classdef cpScene < handle
                             % an option:
 
                             obj.thisR.set('filmrendertype',{'radiance','depth'});
-                            [sceneObject, results] = piRender(obj.thisR,  ...
+                            [sceneObject, results, ~, renderedFile] = piRender(obj.thisR,  ...
                                 'verbose', obj.verbosity);
+
+                            [p, n, e] = fileparts(renderedFile);
+                            sequencedFileName = fullfile(ivRootPath, 'local', sprintf('%s-%02d%s',n,ii,e));
+                            movefile(renderedFile, sequencedFileName,'f');
+                            renderedFiles{end+1} = sequencedFileName;
                         else
                             sceneObject = sceneFromFile(imageFileName, 'multispectral');
                         end
@@ -372,10 +379,11 @@ classdef cpScene < handle
                             if obj.sceneLuminance > 0
                                 sceneObject = sceneSet(sceneObject,'meanluminance', obj.sceneLuminance);
                             end
-                            sceneWindow(sceneObject);
+                            %sceneWindow(sceneObject);
                             sceneToFile(imageFileName,sceneObject);
                             % this is mostly just for debugging & human inspection
-                            sceneSaveImage(sceneObject,imageFilePrefixName);
+                            %rgbImage = sceneShowImage(sceneObject,-3); % HDR, no render
+                            %imwrite(rgbImage,imageFilePrefixName)
                             %sprintf("Scene luminance is: %f", sceneGet(sceneObject, 'mean luminance'));
                         elseif isequal(sceneObject.type, 'opticalimage') % we have an optical image
                             oiSaveImage(sceneObject, append(imageFilePrefixName,'.png'));
@@ -452,7 +460,7 @@ classdef cpScene < handle
                         'y shift', ourMotion{2}(2),...
                         'z shift', ourMotion{2}(3));  % meters
                 end
-                if ~isempty(ourMotion{3})
+                if ~isempty(ourMotion{3}) && ~isequal(max(ourMotion{3}),0)
                     obj.thisR = piCameraRotate(obj.thisR,...
                         'x rot', ourMotion{3}(1),...
                         'y rot', ourMotion{3}(2),...
