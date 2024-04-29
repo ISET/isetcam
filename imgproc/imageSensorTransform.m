@@ -1,8 +1,8 @@
-function T = imageSensorTransform(sensorQE,targetQE,illuminant,wave, surfaces, whitept)
+function T = imageSensorTransform(sensorQE,targetQE,illuminant,wave, surfaces)
 % Calculate sensor -> target linear transformation
 %
 % Synopsis
-%  T = imageSensorTransform(sensorQE, targetQE,illuminant,wave, surfaces, whitept)
+%  T = imageSensorTransform(sensorQE, targetQE,illuminant,wave, surfaces)
 %
 % Inputs
 % sensorQE:   A matrix with columns containing the sensor spectral quantum
@@ -14,9 +14,6 @@ function T = imageSensorTransform(sensorQE,targetQE,illuminant,wave, surfaces, w
 %             Can be a vector of length(wave) or a name. Default is 'D65'
 % wave:       The sample wavelengths.  Default 400:10:700
 % surfaces:   Indicates which sample surfaces (mcc, esser, multisurface)
-% whitept:    Force T to map the illuminant in the sensor space to the
-%             1-vector in the target space.  For XYZ, this is a
-%             chromaticity of 0.333,0.333.  (Logical, default: false).
 %
 % Output
 %  T:         The nChannels x 3 linear transform
@@ -144,18 +141,6 @@ targetResponse = (targetQE'*diag(illQuanta)*surRef)';
 %
 % targetResponse = sensorResponse * T
 T = sensorResponse \ targetResponse;
-
-if whitept
-    % Force the returned transform, T, to map the the 1-vector in the
-    % sensor to the illuminant value (scaled).  Worked out in
-    % s_autoLightGroups (isetauto).
-    sensorLight = illQuanta'*sensorQE;
-    sensorLight = sensorLight / max(sensorLight);
-    sensorWhite = sensorLight*T;
-    
-    % Forces T to satisfy sensorLight * T = ones
-    T = T * diag( 1 ./ sensorWhite);
-end
 
 %% Test code
 %{

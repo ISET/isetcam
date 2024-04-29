@@ -216,7 +216,9 @@ switch oType
             case {'sensorconversionmethod','conversionmethodsensor'}
                 val = ip.sensorCorrection.method;
                 if isempty(val), val = 'None'; end
-                
+            case {'sensorconversionmatrix'}
+                val = ip.data.transforms{1};
+
                 % Image processing matrices (transforms)
             case {'transformcellarray','transforms'}
                 if checkfields(ip,'data','transforms'), val = ip.data.transforms; end
@@ -236,7 +238,7 @@ switch oType
                     val = transforms{2};
                 else,   val = eye(3,3);
                 end
-            case {'ics2display','ics2displaytransform','internalcs2displayspace'}
+            case {'ics2display','ics2displaymatrix','ics2displaytransform','internalcs2displayspace'}
                 transforms = ipGet(ip,'transforms');
                 if length(transforms) >= 3 && ~isempty(transforms{3})
                     val = transforms{3};
@@ -305,7 +307,7 @@ switch oType
                 % convert the scene illuminant to [1 1 1].
                 % Used in imageSensorCorrection.
                 val = ip.render.whitept;
-                
+
                 % Image processor data
             case {'data','datastructure'}
                 val = ip.data;

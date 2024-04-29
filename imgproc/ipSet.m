@@ -258,10 +258,26 @@ switch param
         % This is a binary 1 or 0 for one or off
         ip.render.scale = val;
     case {'renderwhitept'}
-        % Logical.  If true, forces the sensor conversion matrix to
-        % convert the scene illuminant to [1 1 1].
-        % Used in imageSensorCorrection.
-        ip.render.whitept = val;
+        % ip = ipSet(ip,'whitept',[lightspectra],[sensorqe]);
+        %
+        % Force the sensor conversion matrix to convert the scene
+        % illuminant to [1 1 1]. Run as a post-processing step if the
+        % user does not like the default adaptive rendering.
+        
+        % Need to check parameters.
+        ill = val;
+        sensorQE = varargin{1};
+
+        sensorLight = ill(:)'*sensorQE;
+        sensorLight = sensorLight / max(sensorLight);
+        T = ipGet(ip,'sensor conversion matrix');
+        sensorWhite = sensorLight*T;
+        T = T * diag( 1 ./ sensorWhite);
+        ip = ipSet(ip,'sensor conversion matrix',T);
+
+        ip = ipSet(ip, 'transform method', 'current');
+        disp('Fixing the transform method.')
+        
     case {'gammadisplay','rendergamma','gamma'}
         % Controls the gamma for rendering the result data to the
         % GUI display.

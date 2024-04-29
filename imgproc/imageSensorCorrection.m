@@ -87,25 +87,20 @@ switch param
         % sensitivities into the internal color space.  The transform is
         % chosen to optimize the representation of the surfaces in a
         % Macbeth Color Checker under a D65 illuminant.
-        ics = ipGet(ip,'internal Color Space');
-        
-        % Logical:  If true, forces the sensor conversion matrix to
-        % map the illuminant responses in sensor space to 1,1,1 in the
-        % target space.
-        whitept = ipGet(ip,'render whitept');
+        ics = ipGet(ip,'internal Color Space');                
 
         % This routine calculates the matrix transform between the two
         % spaces for an illuminant (D65) and some selection of surfaces.
         switch param
             case {'mccoptimized','mcc'}
                 % Small, industry standard data set
-                T = ieColorTransform(sensor,ics,'D65','mcc',whitept);
+                T = ieColorTransform(sensor,ics,'D65','mcc');
             case {'esseroptimized','esser'}
                 % Used for IR calculations
-                T = ieColorTransform(sensor,ics,'D65','esser',whitept);
+                T = ieColorTransform(sensor,ics,'D65','esser');
             case 'multisurface'
                 % Larger, better random selection of surfaces
-                T = ieColorTransform(sensor,ics,'D65','multisurface',whitept);
+                T = ieColorTransform(sensor,ics,'D65','multisurface');
         end
         
         % Apply the transform to the image data
