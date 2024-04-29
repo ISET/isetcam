@@ -75,8 +75,8 @@ else
 end
 
 % cut off the brightest and darkest parts:
-low_end = prctile(real(res(:)), prc_loend);
-high_end = prctile(real(res(:)), prc_hiend);
+low_end = prctile(res(:), prc_loend);
+high_end = prctile(res(:), prc_hiend);
 res = (res-low_end)/(high_end-low_end);
 res = min(1, res);
 res = max(0, res);
