@@ -79,9 +79,15 @@ function sensor = sensorSet(sensor,param,val,varargin)
 %                                'on' and 'off' are also OK.
 %
 % Pixel
-%      'pixel'
+%      'pixel'    - A pixel structure.  See pixelSet/Get.  Pixel size,
+%                   fill factor, many features.  Calls to
+%                   sensorSet(sensor,'pixel [some var]',val) are passed to
+%                   pixelSet.
+%      'match oi' - Adjust the sensor spatial sampling (pixel size and
+%                   number of rows/cols to match the spatial
+%                   properties of an optical image 
 %
-% Optics
+% Sensor microlens optics
 %      'vignetting'
 %      'microlens'
 %      'sensor etendue'
@@ -119,7 +125,7 @@ function sensor = sensorSet(sensor,param,val,varargin)
 %   'metadata crop'    -- Stored rect
 %
 % Private
-%      'editfilternames'
+%   'editfilternames'
 %
 % The source code contains examples.
 %
@@ -557,18 +563,37 @@ switch lower(param)
     case {'pixel','imagesensorarraypixel'}
         sensor.pixel = val;
     case {'pixelsize'}
+        % Deprecated, I think (BW).
+        %
         % sensorSet(sensor,'pixel size',2-vectorInmeters);
-        % Adjust the pixel size while maintaining the photodetector fill
-        % factor The size is specified in meters. It is supposed to be a
-        % 2-vector, but if a single number is sent in we convert it to a
-        % 2-vector.
+
+        warning('Use sensorSet(sensor,''pixel size constant fill factor'', val)');
+
+        % Adjust the pixel size while maintaining the photodetector
+        % fill factor The size is specified in meters. It is supposed
+        % to be a 2-vector, but if a single number is sent in we
+        % convert it to a 2-vector.
         if length(val) == 1, val = [val,val]; end
         pixel  = sensorGet(sensor,'pixel');
         pixel  = pixelSet(pixel,'size',val);
         ff     = pixelGet(pixel,'fill factor');
         sensor = sensorSet(sensor,'pixel',pixel);
         sensor = pixelCenterFillPD(sensor, ff);
-        
+    case {'matchoi'}
+        % sensorSet(sensor,'match oi',oi);
+        %
+        % Adjust the sensor pixel size and row/col to match the
+        % spatial properties of an oi.  N.B. The oi can be computed
+        % with a specific spatial sampling resolution.
+        assert(isfield(val,'type') && isequal(val.type,'opticalimage'));
+        oi = val;
+        pixelSize = oiGet(oi,'width spatial resolution','m');
+        sensor = sensorSet(sensor,'pixel size same fill factor',pixelSize);
+
+        % Now the row/col size
+        oiSize = oiGet(oi,'size');
+        sensor = sensorSet(sensor, 'size', oiSize);
+
         % Microlens related
     case {'microlens','ml'}
         sensor.ml = val;

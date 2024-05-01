@@ -1,49 +1,57 @@
 function [reflectances, sSamples, wave] = ieReflectanceSamples(sFiles,sSamples,wave,sampling)
 % Return a sample of surface reflectance functions
 %
+% Synopsis
 %  [reflectances, sSamples, wave] = ieReflectanceSamples(sFiles,sSamples,[wave],[sampling])
 %
-% The surface reflectances are drawn from the cell array of names in
-% sFiles{} and returned in the columns of the matrix reflectances.
+% Brief 
+%  The surface reflectances are drawn from the cell array of names in
+%  sFiles{} and returned in the columns of the matrix reflectances.
 %
 % INPUTS
 %
-% sFiles:   Cell array of file names with reflectance spectra.  If none are
-% supplied then the defaults are 24 samples from each of
+%  sFiles:   Cell array of file names with reflectance spectra.  If none are
+%           supplied then the defaults are 24 samples from each of 4
+%           sources (96 reflectances in total)
+%
 %     'MunsellSamples_Vhrel.mat'
 %     'Food_Vhrel.mat'
 %     'DupontPaintChip_Vhrel.mat'
 %     'HyspexSkinReflectance.mat'
-% sSamples: Either a
-%            - Vector indicating how many surfaces to sample from each file
+%
+%  sSamples: Either
+%            - A vector indicating how many surfaces to sample from each file
 %            - A cell array of specifying the list of samples from each file
-% wave:     wavelength Samples (400:10:700)
-% sampling: 'r' means with replacement (default).  Anything else means no
+%  wave:     wavelength Samples (400:10:700)
+%  sampling: 'r' means with replacement (default).  Anything else means no
 %           replacement.
 %
 % RETURNS:
-% reflectances:  Columns of reflectance functions
+%  reflectances:  Columns of reflectance functions
 %
-% See also: macbethChartCreate, sceneReflectanceChart
-%
-%Example:
-%  r = ieReflectanceSamples;
-%
-% This way, you know which samples were chosen and you can use to repeat
-%
-%  [r, sSamples] = ieReflectanceSamples([],[],400:5:700,'no replacement');
-%  r2 = ieReflectanceSamples([],sSamples,400:5:700,'no replacement');
-%  vcNewGraphWin; plot(r(:),r2(:),'.')
-%
-%  sFiles = cell(1,2);
-%  sFiles{1} = fullfile(isetRootPath,'data','surfaces','reflectances','MunsellSamples_Vhrel.mat');
-%  sFiles{2} = fullfile(isetRootPath,'data','surfaces','reflectances','DupontPaintChip_Vhrel.mat');
-%  sSamples = [12,12]*5;
-%  [reflectances, sSamples] = ieReflectanceSamples(sFiles,sSamples);
-%  plot(wave,reflectances); grid on
-%
-% Copyright ImagEval Consultants, LLC, 2010.
+% See also: 
+%  macbethChartCreate, sceneReflectanceChart
 
+% Example:
+%{
+  r = ieReflectanceSamples;
+%}
+%{
+  [r, sSamples] = ieReflectanceSamples([],[],400:5:700,'no replacement');
+  r2 = ieReflectanceSamples([],sSamples,400:5:700,'no replacement');
+  ieNewGraphWin; plot(r(:),r2(:),'.')
+%}
+%{
+  sFiles = cell(1,2);
+  sFiles{1} = fullfile(isetRootPath,'data','surfaces','reflectances','MunsellSamples_Vhrel.mat');
+  sFiles{2} = fullfile(isetRootPath,'data','surfaces','reflectances','DupontPaintChip_Vhrel.mat');
+  sSamples = [12,12]*5;
+  wave = 400:10:700;
+  [reflectances, sSamples] = ieReflectanceSamples(sFiles,sSamples,wave);
+  iePlot(wave,reflectances); grid on
+%}
+
+%%
 if ieNotDefined('sFiles')
     % Make up a list for the user
     sFiles = cell(1,4);

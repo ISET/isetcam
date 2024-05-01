@@ -898,15 +898,22 @@ switch oType
                 end
                 
             case {'renderflagindex'}
-                % val = oiGet(oi,'display flag index')
-                % When there is an oiWindow open and set in the vcSESSION,
-                % find the display flag index
+                % val = oiGet(oi,'render flag index')
                 %
-                % See if there is a display window
                 oiW = ieSessionGet('oi window');
-                if isempty(oiW), val = 1;   % Default if no window
-                else, val = find(ieContains(oiW.popupRender.Items,oiW.popupRender.Value));
+                if ~isempty(oiW)
+                    % The window is open.  Use the popup value
+                    val = find(ieContains(oiW.popupRender.Items,oiW.popupRender.Value));
+                elseif isempty(oiW) && isfield(oi,'renderflag')
+                    % There is a setting for the render.
+                    val = oi.renderflag;
+                else
+                    % No window, no setting, return the default.
+                    val = 1;
                 end
+                % if isempty(oiW), val = 1;   % Default if no window
+                % else, val = find(ieContains(oiW.popupRender.Items,oiW.popupRender.Value));
+                % end
                 
             case {'renderflagstring'}
                 % val = oiGet(oi,'display flag string')
