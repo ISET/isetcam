@@ -81,6 +81,7 @@ function val = opticsGet(optics,parm,varargin)
 %      {'incoherentcutoffspatialfrequency'}*    - Vector of incoherent cutoff freq
 %                                                 for all wavelengths
 %      {'maxincoherentcutoffspatialfrequency'}* - Largest incoherent cutoff
+%      {'wvf'}             - wvf structure associated with optics; [] if none.
 %
 % Lens transmittance
 %      {'transmittance'}    - lens transmission function
@@ -254,6 +255,15 @@ switch parm
         units = 'm';
         if ~isempty(varargin), units = varargin{1}; end
         val = 1/opticsGet(optics,'focallength',units);
+
+    case {'wvf'}
+        % There can be a wvf field associated with an optics structure.
+        % If it's there, return it.  If not, return empty.
+        if (isfield(optics,'wvf'))
+            val = optics.wvf;
+        else
+            val = [];
+        end
         
     case {'imagedistance','focalplane','focalplanedistance'}
         % Lensmaker's equation calculation of distance from the center of a

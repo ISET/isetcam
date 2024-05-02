@@ -5,8 +5,8 @@ function [videoFile] = sceneMakeVideo(sceneList)
 ourVideo = struct('cdata',[],'colormap',[]);
 
 % Initialize a videowriter
-videoFile = strcat("Auto-Video", "-", 'output');
-v = VideoWriter(videoFile, 'MPEG-4');
+videoFile = fullfile(ivRootPath, 'local', ['Video-output' '.mpeg']);
+v = VideoWriter(videoFile,'Motion JPEG AVI');
 v.FrameRate = 3; % 
 
 open(v);
