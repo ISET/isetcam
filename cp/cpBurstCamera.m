@@ -84,7 +84,7 @@ classdef cpBurstCamera < cpCamera
             if isequal(previewImages{1}.type, 'opticalimage')
                 oi = previewImages{1};
             else
-                oi = oiCompute(previewImages{1},obj.cmodules(1).oi);
+                oi = oiCompute(obj.cmodules(1).oi,previewImages{1});
             end
             % by default set our base exposure to simple auto-exposure
             baseExposure = [autoExposure(oi, obj.cmodules(1).sensor, .95, 'default')];

@@ -151,20 +151,41 @@ if isequal(oType,'optics')
     end
 elseif isequal(oType,'wvf')
     if isempty(parm)
-        oi.wvf = val;
+        error('We no longer allow setting wvf into the oi.  Use oiSet(oi,''optics wvf'',wvf) to attach a wvf');
         return;
     else
         % We are adjusting the wavefront parameters
-        if isempty(varargin), oi.wvf = wvfSet(oi.wvf,parm,val);
-        elseif length(varargin) == 1
-            oi.wvf = wvfSet(oi.wvf,parm,val,varargin{:});
-        elseif length(varargin) == 2
-            oi.wvf = wvfSet(oi.wvf,parm,val,varargin{1},varargin{2});
+        % These live in the optics structure of the oi now.
+        % Get the wvf
+        wvf = opticsGet(oi.optics,'wvf');
+        if (isempty(wvf))
+            error('Trying to set wvf structure of optics, but there is none there.');
         end
+
+        % Set the wvf with whatever the user asked us to do
+        if isempty(varargin), wvf = wvfSet(wvf,parm,val);
+        elseif length(varargin) == 1
+            wvf = wvfSet(wvf,parm,val,varargin{:});
+        elseif length(varargin) == 2
+            wvf = wvfSet(wvf,parm,val,varargin{1},varargin{2});
+        end
+
+        % Could consider doing a wvfCompute here, but refraining for
+        % now.  Could also consider insisting that the wvf as newly
+        % set has not be made inconsistent with parameters in the oi.
+        % But for now we have not done so.
+
+        % Put the modified wvf back into the oi's optics structure.
+        oi.optics = opticsSet(oi.optics,'wvf',wvf);
         
         % Should we always do this here before returning?
-        wvf = wvfCompute(oi.wvf);
-        oi = wvf2oi(wvf);
+        % DHB, FH: We think the commented out code here is a bad idea.
+        % It will lose everything about the oi that wasn't in the wvf,
+        % which is surely not the intent.
+        %
+        % wvf = wvfCompute(oi.wvf);
+        % oi = wvf2oi(wvf);
+
         return;
     end
 elseif isempty(parm)

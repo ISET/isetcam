@@ -13,11 +13,13 @@ function selectedObjs = imageMultiview(objType, selectedObjs, singlewindow)
 %
 % Inputs:
 %    objType      - Which window (scene, oi, or vcimage)
-%    selectedObjs - (Optional) List of the selected object numbers, e.g.,
+%
+% Optional
+%    selectedObjs - Indices of the selected objects, e.g.,
 %                   [1 3 5]. Default is all of the objects in ObjList.
-%    singlewindow - (Optional) Whether or not to plot all of the images in
-%                   the same figure in subplots (true), or in different
-%                   figures (false.) Default is false.
+%    singlewindow - Plot all of the images in the same window in subplots
+%                   (true), or in different windows (false). Default is
+%                   false.
 %
 % Outputs:
 %    selectedObjs - The selected objects
@@ -100,16 +102,21 @@ for ii = selectedObjs
 
     switch objType
         case 'SCENE'
-            sceneShowImage(objList{ii}, true, gam, thisFig);
+            renderFlag = sceneGet(objList{ii},'render flag index');
+            sceneShowImage(objList{ii}, renderFlag, gam, thisFig);
             t = sprintf('Scene %d - %s', ii, ...
                 sceneGet(objList{ii}, 'name'));
             
         case 'OPTICALIMAGE'
-            oiW.figure1 = thisFig;
-            oiShowImage(objList{ii}, true, gam,oiW);
+            oiW.figure1 = thisFig;  % Not sure why this is here.
+            renderFlag = sceneGet(objList{ii},'render flag index');
+            oiShowImage(objList{ii}, renderFlag, gam,oiW);
             t =sprintf('OI %d - %s', ii, oiGet(objList{ii}, 'name'));
             
+            % No sensor case?
+
         case 'VCIMAGE'
+            %  IP case doesn't have the same rendering, right?
             img = imageShowImage(objList{ii},gam,true,0);
             t =sprintf('IP %d - %s', ii, ipGet(objList{ii}, 'name'));
             image(img); axis image; axis off;

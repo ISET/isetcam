@@ -90,15 +90,30 @@ switch lower(opticsType)
 
     case {'default','diffractionlimited'}
         % This method is also used for a pinhole.  Just in that case
-        % we set the fNumber to be very small (
+        % we set the fNumber to be very small
         optics.type = 'optics';
         optics = opticsSet(optics,'name','standard (1/4-inch)');
         optics = opticsSet(optics,'model','diffractionLimited');
 
-        % Standard 1/4-inch sensor parameters
+        % This is an old standard we have used in ISETCam.  The
+        % 1/4-inch is just a label, not a real measurement.
+
+        % For some years, we derived the focal length using an
+        % incorrect formula
+        %
+        % FOV = 46;
+        % sensorDiagonal = 0.004;
+        % fLength = inv(tan(FOV/180*pi)/2/sensorDiagonal)/2;
+        %
+        % The correct formula with the parameters that preserve
+        % validation, we have
+        FOV = 54.747093438872568;
         sensorDiagonal = 0.004;
-        FOV = 46;
-        fLength = inv(tan(FOV/180*pi)/2/sensorDiagonal)/2;
+        fLength = (sensorDiagonal/2)/tand(FOV/2);        
+
+        % This is the value to preserve historical code validation.
+        % fLength = 0.003862755099228;   
+
 
         optics = opticsSet(optics,'fnumber',4);  % Ratio of focal length to diameter
         optics = opticsSet(optics,'focalLength', fLength);
