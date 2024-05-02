@@ -87,7 +87,7 @@ end
 %% Convert the ip RGB data to XYZ and then sRGB
 
 % The data to XYZ conversion uses the properties of the display
-% stored in the image processor, ip.
+% stored in the image processor and the values in ip.data.result.
 img = xyz2srgb(imageDataXYZ(ip));
 
 % Puzzled by this.  If it is srgb, how can it be anything but 3?

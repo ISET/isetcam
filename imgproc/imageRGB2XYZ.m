@@ -1,24 +1,31 @@
 function dataXYZ = imageRGB2XYZ(ip,RGB)
 % Convert values in an RGB Format data into XYZ values (also RGB Format)
 %
+% Synopsis
 %   dataXYZ = imageRGB2XYZ(ip,RGB)
 %
-% The conversion from RGB to XYZ accounts for the characteristics
-% of the display represented in ip (image processor). RGB must be
-% in XW format (space-wavelength).
+% Inputs
+%   ip - Image process struct with metadata
+%   RGB - Image in either RGB or XW format
 %
-% This routine assumes that the RGB values are 'linear' primary
-% intensities and that any gamma correction will be applied
-% elsewhere.
+% Outputs
+%  dataXYZ - XYZ data in RGB format
 %
-% Perhaps this routine should be inside of imageDataXYZ.
+% Description
+%  The conversion from RGB to XYZ accounts for the characteristics of
+%  the display represented in ip (image processor). RGB must be in XW
+%  format (space-wavelength).
 %
-% Example:
-%   See plotDisplayColor
+%  This routine assumes that the RGB values are 'linear' primary
+%  intensities and that any gamma correction will be applied
+%  elsewhere.
 %
-% See also:  imageDataXYZ, ieXYZFromEnergy
+%  Perhaps this routine should be inside of imageDataXYZ.
 %
 % Copyright ImagEval Consultants, LLC, 2003.
+%
+% See also:  
+%   imageDataXYZ, ieXYZFromEnergy, ipPlot, plotDisplayColor
 
 %% Argument checking and set input data format flag
 if ~(ismatrix(RGB))

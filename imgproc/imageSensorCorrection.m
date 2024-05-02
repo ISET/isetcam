@@ -1,5 +1,5 @@
 function [img,ip] = imageSensorCorrection(img,ip,sensor)
-% Convert sensor color data (img) to a calibrated internal color space
+% Convert sensor color data (img) to an internal color space
 %
 %   [img,vci] = imageSensorCorrection(img,ip,sensor)
 %
