@@ -340,7 +340,11 @@ switch oType
                 if checkfields(ip,'data','quantization')
                     val = ip.data.quantization;
                 end
-            case {'nbits','bits'}
+            case {'quantizationmethod'}
+                if checkfields(ip,'data','quantization','method')
+                    val = ip.data.quantization.method;
+                end
+            case {'quantizationnbits','nbits','bits'}
                 if checkfields(ip,'data','quantization','bits')
                     val = ip.data.quantization.bits;
                 end
@@ -367,18 +371,21 @@ switch oType
                 
                 % Result and display are mixed up together here.
                 % We should decide which to use
-            case {'result','results','datadisplay','dataresult'}
+            case {'result','results'}
                 % ipGet(ip,'result')
                 %
-                % These are the linear intensities of the display
-                % primaries. They are stored as values between 0 and
-                % 1.
+                % The ip has a display model.  The values in result
+                % are the linear intensities of the display primaries.
+                % They are stored as values between 0 and 1 (off to
+                % maximum intensity).
+                %
+                % We use imageShowImage to convert these data into an
+                % sRGB image.  We use imageDataXYZ to get the xyz
+                % values.  (See below for both).
+                %
+                % Deleted aliases:
+                % 'datadisplay','dataresult','quantizedresult'
                 if checkfields(ip,'data','result'), val = ip.data.result; end
-                
-            case {'quantizedresult'}
-                % ipGet(ip,'quantized result',[nbits]);
-                val = ipGet(ip,'result');
-
 
             case {'dataxyz'}
                 % ipGet(ip,'display data xyz');

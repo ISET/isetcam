@@ -104,12 +104,12 @@ switch parm
     case {'renderflag','displaymode'}
         % sceneSet(scene,'display mode','hdr');
         switch val
-            case {'hdr',3}
-                val = 3;
             case {'rgb','standardrgb',1}
                 val = 1;
             case {'gray','grayscale',2}
                 val = 2;
+            case {'hdr',3}
+                val = 3;
             case {'clip','cliphighlights',4}
                 val = 4;
             otherwise

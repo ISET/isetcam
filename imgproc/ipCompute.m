@@ -298,17 +298,18 @@ elseif nFilters >= 3 || nSensors > 1
                 s = sensor;
             end
             
+            % Sensor data are converted to the internal color space
             [img,ip] = imageSensorCorrection(img,ip,s);
             if isempty(img), disp('User canceled'); return; end
             % imtool(img/max(img(:))); ii = 3; imtool(img(:,:,ii))
             
             %% Illuminant correction.
             
-            % The operation is governed by the 'illuminant correction
-            % method' parameter.
+            % The 'illuminant correction method' transforms, within
+            % the ICS.
             [img,ip] = imageIlluminantCorrection(img,ip);
             
-            %% Convert from the internal color space to sRGB display space.
+            %% Convert from the internal color space to linear display primaries
             
             % The data are scaled so that the largest value in display
             % space (0,1) is the same ratio as the peak sensor data
@@ -322,8 +323,8 @@ elseif nFilters >= 3 || nSensors > 1
             error('Unknown transform method %s\n',tMethod);
     end
     
-    %% Save the sRGB data 
-    ip = ipSet(ip,'display rgb',img);
+    %% Save the linear primary data 
+    ip = ipSet(ip,'display linear rgb',img);
     
 end
 
