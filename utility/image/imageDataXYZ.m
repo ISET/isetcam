@@ -3,10 +3,10 @@ function dataXYZ = imageDataXYZ(ip,roiLocs)
 %
 %    dataXYZ = imageDataXYZ(ip,[roiLocs])
 %
-% The linear primary data are contained in the result field of
-% the image processing (ip) structure.  The XYZ of those RGB
-% values are computed by multiplying the monitor SPD (in energy)
-% with these linear RGB values of the display.
+% The linear primary data are contained in the result field of the
+% image processing (ip) structure.  The XYZ of those RGB values are
+% computed by multiplying the monitor SPD (in energy) with these
+% linear RGB values of the display.
 %
 % Typically, the entire image is returned in RGB (r,c,w)-format .
 %

@@ -191,8 +191,17 @@ switch param
     case {'input','sensorinput'}
         % A copy of the sensor data is stored here
         ip.data.input = val;
-    case {'displayrgb','displayoutput','result'}
-        % The image processed data
+    case {'result','displaylinearrgb'}
+        % ipSet(ip,'result',val)
+        %        
+        % The ip has a display model. The parameter val contains the
+        % primary intensities (linear) for the display, computed with
+        % ipCompute.  If the display is RGB, these are the linear
+        % primary intensities for the RGB display.
+        %
+        % ipGet uses ip to calculate the xyz and srgb images from
+        % these values.
+        %
         ip.data.result = val;
     case {'datawhitepoint','datawp'}
         % Hmm.  Probably used for rendering.
@@ -207,7 +216,7 @@ switch param
         % The quantization struct might be used to determine if the
         % input data were really digital values.  Not much used yet.
         ip.data.quantization = val;
-    case {'nbits'}
+    case {'nbits','quantizationnbits'}
         % ip = ipSet(ip,'nbits',val);
         %
         % Bit depth of the image representations

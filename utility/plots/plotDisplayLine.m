@@ -33,8 +33,8 @@ function [uData,figNum] = plotDisplayLine(ip,ori,xy)
 
 %% Params
 
-if ieNotDefined('ip'),    ip = vcGetObject('VCIMAGE'); end
-if ieNotDefined('ori'),    ori = 'h'; end
+if ieNotDefined('ip'),  ip = ieGetObject('VCIMAGE'); end
+if ieNotDefined('ori'), ori= 'h'; end
 if ieNotDefined('xy')
     % Find the line in the sensor window.
     switch lower(ori)
@@ -51,10 +51,10 @@ end
 
 %% Call main routine
 
-data = ipGet(ip,'quantized result');
+data = ipGet(ip,'result');
 if isempty(data), error('Results not computed in display window.'); end
 
-[figNum, uData] = plotColorDisplayLines(xy,data,ori);
+[figNum, uData] = plotColorDisplayLines(ip,xy,data,ori);
 
 %% Draw a line on the ipWindow
 switch ori
@@ -71,12 +71,22 @@ end
 end
 
 %% -----------------------------
-function [figNum, uData] = plotColorDisplayLines(xy,data,ori)
-% Internal routine:  plot color line data from display data
+function [figNum, uData] = plotColorDisplayLines(ip,xy,data,ori)
+% Internal routine:  plot color line data from results.  
+% 
+% The data in ip.data.results are always between 0 and 1, reflecting
+% the display primaries (linear).  If the quantization method is not
+% analog, we use the quantization method to plot the digital values.
 %
 
-dType = 'digital';
-if max(data(:)) <=1, dType = 'analog'; end
+switch ipGet(ip,'quantization method')
+    case 'analog'
+        dType = 'analogy';
+    otherwise
+        dType = 'digital';
+        nbits = ipGet(ip,'quantization nbits');
+        data = data*2^nbits;
+end
 
 switch lower(ori)
     case {'h','horizontal'}
@@ -91,7 +101,7 @@ switch lower(ori)
         error('Unknown line orientation');
 end
 
-figNum = vcNewGraphWin([],'tall');
+figNum = ieNewGraphWin([],'tall');
 
 % Extract the data and assign a line color corresponding to the cfa color.
 pos = 1:size(lData,1);
@@ -105,7 +115,7 @@ for ii=1:3
         case 'digital'
             ylabel('Digital value');
         case 'analog'
-            ylabel('Value')
+            ylabel('Linear primary intensity')
     end
     if ii==1,  title(titleString); end
 end
