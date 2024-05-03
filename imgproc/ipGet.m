@@ -56,6 +56,8 @@ function val = ipGet(ip,param,varargin)
 %       'data srgb'     - sRGB rendering of the display data (This is
 %                            used in the GUI window
 %       'data xyz'      - CIE XYZ values of the display data
+%       'data ics'      - Internal color space representation 
+%                         (often XYZ, but not always).
 %       'data roi'      - Slot to store region of interest RGB data
 %       'roi xyz'       - Slot to store XYZ values of ROI data
 %       'result scaled to max' - Display data scaled to display max
@@ -371,33 +373,66 @@ switch oType
                 
                 % Result and display are mixed up together here.
                 % We should decide which to use
-            case {'result','results'}
+            case {'datadisplay','result','results'}
                 % ipGet(ip,'result')
                 %
-                % The ip has a display model.  The values in result
-                % are the linear intensities of the display primaries.
-                % They are stored as values between 0 and 1 (off to
-                % maximum intensity).
+                % Deleted aliases:
+                %   'dataresult','quantizedresult'
+                %
+                % The values are the linear intensities of the ip
+                % display primaries that show the illuminant corrected
+                % ICS data. The primary linear intensities are values
+                % between 0 and 1 (off to maximum intensity).
                 %
                 % We use imageShowImage to convert these data into an
-                % sRGB image.  We use imageDataXYZ to get the xyz
-                % values.  (See below for both).
+                % sRGB image that the user is shown on their screen in
+                % the ipWindow.
+                % 
+                if checkfields(ip,'data','result')
+                    val = ip.data.result; 
+                end
+
+            case {'dataics'}
+                % ipGet(ip,'data ics')
+                % 
+                % The image processor has an internal color space.
+                % Often, but not always, XYZ.  The sensor data are
+                % transformed into this space, corrected for the
+                % illumination, and then transformed to the display
+                % primary intensities by the mapping in
+                % ieInternal2Display.
+                val = ipGet(ip,'sensor space');
+                T   = ipGet(ip,'sensor conversion matrix');
+                val = imageLinearTransform(val,T);
+
+            case {'dataicsilluminantcorrected'}
+                % img = ipGet(ip,'data ics illuminant corrected');
                 %
-                % Deleted aliases:
-                % 'datadisplay','dataresult','quantizedresult'
-                if checkfields(ip,'data','result'), val = ip.data.result; end
+                % Data in the ICS space, after illuminant correction.
+                %
+                val = ipGet(ip,'dataics');
+                T   = ipGet(ip,'illuminant correction matrix');
+                val = imageLinearTransform(val,T);
 
             case {'dataxyz'}
                 % ipGet(ip,'display data xyz');
-                % Convert the linear display data into XYZ values, accounting for
-                % the display primaries.
+                %
+                % The display data into XYZ values, accounting for the
+                % display primaries.                
                 val = imageDataXYZ(ip);
-            case {'srgb','datasrgb'}
+
+            case {'datasrgb','srgb'}
                 % ipGet(ip,'data srgb');
                 %
+                % The display data in 'result' are transformed into
+                % XYZ and then sRGB for display.  
+                %
+                %    val = imageDataXYZ(ip);
+                %    val = xyz2srgb(val);
+                %
+                % The returned image applies the gamma value from the
+                % ip window, if the window is open.
                 val = imageShowImage(ip,[],[],0);
-                %  val = imageDataXYZ(ip);
-                %  val = xyz2srgb(val);
                 
             case {'scaledresult','resultscaledtomax','resultscaled'}
                 % srgb = ipGet(ip,'scaled result')

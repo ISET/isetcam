@@ -1,16 +1,16 @@
-function [img,ip] = displayRender(img,ip,sensor)
+function [displayImg,ip] = displayRender(icsImage,ip,sensor)
 % Transform img from the internal color space to linear display rgb
 %
 % Synopsis
-%   [img,ip] = displayRender(img,ip,sensor);
+%   [displayImg,ip] = displayRender(icsImage,ip,sensor);
 %
 % Input
-%   img - Data in the internal color space
+%   icsImage - Data in the internal color space
 %   ip  - The image processor
 %   sensor - The sensor
 %
 % Output
-%   img - Linear primary intensities in the display space
+%   displayImg - Linear primary intensities in the display space
 %   ip  - Image processor
 %
 % Description
@@ -44,7 +44,7 @@ function [img,ip] = displayRender(img,ip,sensor)
 %   ipCompute
 
 %%
-if notDefined('img'), error('Must define image'); end
+if notDefined('icsImage'), error('Must define ICS image'); end
 if notDefined('ip'), ip = ieGetObject('ip'); end
 if notDefined('sensor'), sensor = ieGetObject('sensor'); end
 
@@ -54,7 +54,7 @@ switch ieParamFormat(ipGet(ip,'internalCS'))
     case {'xyz','stockman'}
         % This is the transform from the internal color space to the
         % display primary representation.
-        M = ieInternal2Display(ip);
+        ics2displayT = ieInternal2Display(ip);
     case {'sensor'}
         % No color space conversion in this case.
         %
@@ -64,7 +64,7 @@ switch ieParamFormat(ipGet(ip,'internalCS'))
 
         % Always three display outputs (RGB), but sometimes 4 or more
         % sensors. Not sure this makes sense.
-        M = eye(N,3);  
+        ics2displayT = eye(N,3);  
     otherwise
         error('Unknown internal color space')
 end
@@ -78,8 +78,8 @@ switch lower(method)
 
     case {'sensor','mccoptimized', 'esseroptimized'}
         % Store and apply the transform from ICS to Display
-        ip = ipSet(ip,'ics2display',M);
-        img = imageLinearTransform(img,M);
+        ip = ipSet(ip,'ics2display',ics2displayT);
+        displayImg = imageLinearTransform(icsImage,ics2displayT);
         
     otherwise
         error('Unknown color conversion method %s',method)
@@ -102,9 +102,9 @@ qm = sensorGet(sensor,'quantization method');
 % images will still be dark instead of being scaled so that the
 % brightest part is white.  Multiplying by the volts 2 max volts
 % ratio sets the range.
-imgMax = max(img(:));
-img = (img/imgMax)*sensorGet(sensor,'volts 2 max ratio');
-img = ieClip(img,0,ipGet(ip,'max sensor'));
+displayImgMax = max(displayImg(:));
+displayImg = (displayImg/displayImgMax)*sensorGet(sensor,'volts 2 max ratio');
+displayImg = ieClip(displayImg,0,ipGet(ip,'max sensor'));
 
 switch qm
     case 'analog'
@@ -113,7 +113,7 @@ switch qm
     case 'linear'
         % Quantize, digital values. We clip at 0.
         nbits = ipGet(ip,'quantization nbits');
-        img = round(img*(2^nbits))/2^nbits;
+        displayImg = round(displayImg*(2^nbits))/2^nbits;
         
         % The biggest value is less than 1.  What should it be?  Maybe we
         % set it a little below 1.  If you find yourself back here with a
