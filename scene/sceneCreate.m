@@ -70,6 +70,8 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %      {'zone plate'}   - Circular zone plot, equal photon spectrum
 %      {'star pattern'} - Thin radial lines used to test printers and displays
 %      {'letter'}       - Create an image of a letter.
+%      {'disk'}         - An array of squares on a black background
+%      {'square'}       - An array of circles on a black background
 %
 %  Additional parameters are available for several of the patterns.  For
 %  example, the harmonic call can set the frequency, contrast, phase,
