@@ -56,15 +56,35 @@ switch ieParamFormat(ipGet(ip,'internalCS'))
         % display primary representation.
         ics2displayT = ieInternal2Display(ip);
     case {'sensor'}
-        % No color space conversion in this case.
+        % The ICS is the sensor. These can be more than 3 dimensional,
+        % and we need a way to transform to the display
+        % representation.
         %
-        % nSensors = ipGet(ip,'nSensorInputs');        
-        % Simply copy the data from the sensor space to display RGB
-        N = size(ipGet(ip,'correction matrix illuminant'),2);
+        % Find an rgb such that the sensor response to display light
+        % matches the response to the true light, L
+        %
+        %   sensor*(P*rgb) = sensor*L
+        %   rgb = (sensor*P)^-1*sensor*L
+        %
+        % The sensor data are (sensor*L).  So the transformation is
+        % simply (sensor*P)^-1.  When the matrix sensor*P is not
+        % square, we have to make a choice about what to do.
+        %
+        P = ipGet(ip,'display spd');
+        S = sensorGet(sensor,'spectral qe');
+        ics2displayT = pinv(S'*P)';
 
-        % Always three display outputs (RGB), but sometimes 4 or more
-        % sensors. Not sure this makes sense.
-        ics2displayT = eye(N,3);  
+        %{
+        % N = size(ipGet(ip,'illuminant correction matrix'),2);
+        %
+        % Typically, this is 3x3 for three sensors.  But when there
+        % are 4 sensors (e.g., RGBW) we need to get to the three
+        % dimensional primaries of the display.  This selection just
+        % picks out the first three sensors and ignores the others.
+        %
+        % ics2displayT = eye(N,3);  
+        %}
+
     otherwise
         error('Unknown internal color space')
 end
@@ -72,9 +92,10 @@ end
 method = ieParamFormat(ipGet(ip,'Sensor conversion method'));
 switch lower(method)
     case {'current','currentmatrix','manualmatrixentry','none'}
-        % The user set the full transform manually.  This matrix
-        % includes the final transform from the ICS to the display
-        % space.  So we do nothing.
+        % The user set the full transform manually.  This matrix,
+        % which is stored in the sensor conversion matrix slot,
+        % goes from the sensorspace all the way to the display image.
+        displayImg = icsImage;
 
     case {'sensor','mccoptimized', 'esseroptimized'}
         % Store and apply the transform from ICS to Display
