@@ -111,6 +111,7 @@ optics = wvf2optics(wvf);
 % Put optics into oi and propagate the name.
 oi = oiSet(oi,'optics',optics);
 oi = oiSet(oi, 'name', wvfGet(wvf, 'name'));
+oi = oiSet(oi,'compute method','opticspsf');
 
 % Convert the ISETCam lens transmittance to the default human lens
 if p.Results.humanlens
