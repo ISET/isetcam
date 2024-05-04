@@ -70,8 +70,8 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %      {'zone plate'}   - Circular zone plot, equal photon spectrum
 %      {'star pattern'} - Thin radial lines used to test printers and displays
 %      {'letter'}       - Create an image of a letter.
-%      {'disk'}         - An array of squares on a black background
-%      {'square'}       - An array of circles on a black background
+%      {'disk array'}   - Array of squares on a black background
+%      {'square array'} - Array of circles on a black background
 %
 %  Additional parameters are available for several of the patterns.  For
 %  example, the harmonic call can set the frequency, contrast, phase,
@@ -102,8 +102,8 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %         sceneCreate('rings rays',radialFreq,imageSize);
 %         sceneCreate('sweep frequency',imageSize,maxFrequency);
 %         scene = sceneCreate('letter', font, display);
-%         scene = sceneCreate('disks', diskDiameter, arraySize); 
-%         scene = sceneCreate('squares', squareSize, arraySize);
+%         scene = sceneCreate('disk array', imageSize, diskRadius, arraySize); 
+%         scene = sceneCreate('square array', imageSize, squareSize, arraySize);
 %         
 %
 % NOISE ANALYSIS TEST PATTERNS
@@ -387,10 +387,20 @@ switch sceneName
         if length(varargin) >= 2,  dynamicRange = varargin{2}; end
         
         scene = sceneExpRamp(scene,sz,dynamicRange);
-    case {'disks'}        
-        % scene = sceneCreate('disks', diskDiameter, arraySize); 
-    case {'squares'}
-        % scene = sceneCreate('squares', squareSize, arraySize);
+    case {'diskarray'}        
+        % scene = sceneCreate('disk array', imgSize, diskRadius, arraySize);
+        imgSize = []; diskRadius = []; arraySize = [];
+        if length(varargin) >=1, imgSize = varargin{1}; end
+        if length(varargin) >=2, diskRadius = varargin{2}; end
+        if length(varargin) >=3, arraySize = varargin{3}; end
+        scene = sceneDiskArray(scene,imgSize,diskRadius,arraySize);
+    case {'squarearray'}
+        % scene = sceneCreate('squares', imgSize, squareSize, arraySize);
+        imgSize = []; squareSize = []; arraySize = [];
+        if length(varargin) >=1, imgSize = varargin{1}; end
+        if length(varargin) >=2, squareSize = varargin{2}; end
+        if length(varargin) >=3, arraySize = varargin{3}; end
+        scene = sceneSquareArray(scene,imgSize,squareSize,arraySize);
 
     case {'uniform','uniformee','uniformequalenergy'}
         % scene = sceneCreate('uniform',size,wave);
@@ -963,6 +973,56 @@ img       = repmat(img,[1,1,nWave]);
 illP = illuminantGet(il,'photons');
 img  = img*diag(illP);
 img  = XW2RGBFormat(img,r,c);
+scene = sceneSet(scene,'photons',img);
+
+end
+
+%--------------------------------------------------
+function scene = sceneDiskArray(scene,sz,radius,arraySize)
+
+if ieNotDefined('sz'), sz = 128; end
+if ieNotDefined('radius'), radius = 128; end
+if ieNotDefined('arraySize'), arraySize = [1 1]; end
+
+scene = sceneSet(scene,'name','Disk Array');
+scene = initDefaultSpectrum(scene,'hyperspectral');
+nWave = sceneGet(scene,'nwave');
+wave = sceneGet(scene,'wave');
+img = imgDiskArray(sz,radius,arraySize);
+
+il = illuminantCreate('equal photons',wave,100);
+scene = sceneSet(scene,'illuminant',il);
+
+img = repmat(img,[1,1,nWave]);
+[img,r,c] = RGB2XWFormat(img);
+illP = illuminantGet(il,'photons');
+img = img*diag(illP);
+img = XW2RGBFormat(img,r,c);
+scene = sceneSet(scene,'photons',img);
+
+end
+
+%--------------------------------------------------
+function scene = sceneSquareArray(scene,sz,squaresize,arraySize)
+
+if ieNotDefined('sz'), sz = 128; end
+if ieNotDefined('squaresize'), squaresize = 16; end
+if ieNotDefined('arraySize'), arraySize = [1 1]; end
+
+scene = sceneSet(scene,'name','Square Array');
+scene = initDefaultSpectrum(scene,'hyperspectral');
+nWave = sceneGet(scene,'nwave');
+wave = sceneGet(scene,'wave');
+img = imgSquareArray(sz,squaresize,arraySize);
+
+il = illuminantCreate('equal photons',wave,100);
+scene = sceneSet(scene,'illuminant',il);
+
+img = repmat(img,[1,1,nWave]);
+[img,r,c] = RGB2XWFormat(img);
+illP = illuminantGet(il,'photons');
+img = img*diag(illP);
+img = XW2RGBFormat(img,r,c);
 scene = sceneSet(scene,'photons',img);
 
 end
