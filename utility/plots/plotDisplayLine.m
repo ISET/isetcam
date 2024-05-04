@@ -51,6 +51,8 @@ end
 
 %% Call main routine
 
+% Result is supposed to be the linear primary intensity, between 0 and
+% 1.  We are having some difficulty making sure the scale is right.
 data = ipGet(ip,'result');
 if isempty(data), error('Results not computed in display window.'); end
 
@@ -81,7 +83,7 @@ function [figNum, uData] = plotColorDisplayLines(ip,xy,data,ori)
 
 switch ipGet(ip,'quantization method')
     case 'analog'
-        dType = 'analogy';
+        dType = 'analog';
     otherwise
         dType = 'digital';
         nbits = ipGet(ip,'quantization nbits');

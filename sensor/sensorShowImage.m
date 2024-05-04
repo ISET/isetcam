@@ -57,7 +57,7 @@ if ieNotDefined('app')
     app = ieSessionGet('sensor window'); 
     % if we're called without a sensor Window
     % then we can't de-reference through app:
-    if ~isequal(app, 0)
+    if ~isequal(app, 0) && ~isempty(app)
         axes(app.imgMain); cla;
     end
 end
@@ -106,11 +106,16 @@ if ~isempty(img)
     if ismatrix(img), img = repmat(img,[1,1,3]); end
     
     % What is this condition on app 0?  Is that do not display?
-    if ~isequal(app,0)
+    if ~isequal(app,0) && ~isempty(app)
         axes(app.imgMain);    % Make sure the gca is in this figure
         image(app.imgMain,x,y,img); 
         axis image; axis off; % Sets the gca axis
+    else
+        % No app
+        imagesc(x,y,img); 
+        axis image; axis off; % Sets the gca axis
     end
+
     if (sensorGet(sensor,'nSensors') == 1), colormap(gray(256)); end
 end
 
