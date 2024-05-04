@@ -215,9 +215,9 @@ elseif nFilters >= 3 || nSensors > 1
     % processing.
     %
     % We do that here by adjusting the ip.data.input by the zero level
-    % amount, making sure that we do not have any negative values.  This
-    % lets us use the same code as usual below.  See also
-    % zerolevel = sensorZerolevel(sensor);
+    % amount, making sure that we do not have any negative values
+    % (maybe because of noise).  This lets us use the same code as
+    % usual below.  See also zerolevel = sensorZerolevel(sensor);
     %
     zerolevel = sensorGet(sensor,'zero level');
     if zerolevel ~= 0 && ~isnan(zerolevel)
@@ -249,21 +249,27 @@ elseif nFilters >= 3 || nSensors > 1
     tMethod = ieParamFormat(ipGet(ip,'transform method'));
     switch tMethod
         case 'current'
-            % Use the stored transform matrix, don't recompute.
+            % Use the stored transform matrices, don't recompute based
+            % on the image (adaptive).
+
             T   = ipGet(ip,'prodT');
+
+            % This is supposed to be the linear primary intensities
+            % because it incorporates all three transforms.
             img = imageLinearTransform(img,T);
-            % Scale the img to make sure the results is 0 to 1]
-            % We already subtract the zero level from image earlier
-            % in some cases we are already normalized
+
+            % Scale img to make sure the results is [0,1].
             if ~isempty(sensorGet(sensor, 'maxdigitalvalue'))
                 img = img / (sensorGet(sensor, 'maxdigitalvalue') - zerolevel);
             elseif ~isempty(ipGet(ip,'maximum sensor value'))
                 img = img / (ipGet(sensor, 'maximum sensor value') - zerolevel);
             end
         case {'new','manual matrix entry'}
-            % Allow the user to specify a matrix from the GUI. When set this
-            % way, the sensor correction transform is the only one used to
-            % convert from sensor to display.
+            % Allow the user to specify a matrix from the GUI. When
+            % the complete linear transform is set this way, we cannot
+            % parse it into several parts.  We put the whole linear
+            % transform into the slot for the sensor correction, and
+            % that maps from the sensor to the display.            
             
             Torig = ipGet(ip,'combined transform');
             Torig = Torig/max(Torig(:));
@@ -350,7 +356,8 @@ expTimes      = sensorGet(sensor,'expTimes');
 % Get the data, either as volts or digital values.
 % Indicate which on return
 img       = ipGet(ip,'input');
-inputImg = img; % save for debugging
+% inputImg = img; % save for debugging
+
 % We might have gotten either volts or dv.
 % Despite comment above I don't think we know which? So...
 if isfield(sensor.data,'dv') && ~isempty(sensor.data.dv)

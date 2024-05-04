@@ -416,9 +416,14 @@ switch oType
                 % displayRender to make sure the image display range
                 % matches the sensor data range.
                 v = sensorGet(sensor,'volts');
-                pixel = sensorGet(sensor,'pixel');
-                sm = pixelGet(pixel,'voltage swing');
-                val = max(v(:))/sm;
+                if isempty(v)
+                    % This can happen we only have digital values
+                    val = 1;
+                    return;
+                else
+                    sm = sensorGet(sensor,'pixel voltage swing');
+                    val = max(v(:))/sm;
+                end
             case {'responsedr'}
                 % sensorGet(sensor,'response dr') - Sensor response dynamic range
                 % Dynamic range of the sensor response (minimum to maximum) In the

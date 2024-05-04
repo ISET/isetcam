@@ -1,26 +1,29 @@
 function [img,ip] = imageSensorCorrection(img,ip,sensor)
 % Convert sensor color data (img) to an internal color space
 %
+% Synopsis
 %   [img,vci] = imageSensorCorrection(img,ip,sensor)
 %
-% This routine applies a linear transform to the sensor data, converting
-% the data to an internal color space.  The internal space can be the
-% sensor space itself, in which case the transform is the identity.  Or it
-% can be a CIE space, such as XYZ or the cone space such as Stockman.
+% Description
 %
-% The current implementation only uses linear transforms of the data. In
-% the future, we will allow more complex transformations, such as those
-% that have locally linear transformations.
+%  This routine applies a linear transform to the sensor data, converting
+%  the data to an internal color space.  The internal space can be the
+%  sensor space itself, in which case the transform is the identity.  Or it
+%  can be a CIE space, such as XYZ or the cone space such as Stockman.
 %
-% The absolute scale of the internal color space is arbitrary because we
-% don't know the absolute sensitivity of the input. For example, we don't
-% know the exposure duration or the sensitivity of the camera, and so
-% forth. For the case of XYZ, we scale the data so that the largest value
-% is 1.
+%  The current implementation only uses linear transforms of the data. In
+%  the future, we will allow more complex transformations, such as those
+%  that have locally linear transformations.
 %
-% The final scaling of the output data in RGB space is set so that the
-% largest RGB value is equal to the ratio between the largest sensor data
-% value in this image and maximum possible sensor value.
+%  The absolute scale of the internal color space is arbitrary because we
+%  don't know the absolute sensitivity of the input. For example, we don't
+%  know the exposure duration or the sensitivity of the camera, and so
+%  forth. For the case of XYZ, we scale the data so that the largest value
+%  is 1.
+%
+%  The final scaling of the output data in RGB space is set so that
+%  the largest RGB value is equal to the ratio between the largest
+%  sensor data value in this image and maximum possible sensor value.
 %
 % The algorithm used is controlled by
 %

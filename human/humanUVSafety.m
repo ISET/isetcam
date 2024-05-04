@@ -9,7 +9,10 @@ function [val, level, safety] = humanUVSafety(energy,wave,varargin)
 %   wave   - wavelength samples of the irradiance
 %
 % Optional key/val pairs
-%   method -  'skineye' (sections 4.3.1), 'eye' (section 4.3.2 ), 'bluehazard' (section 4.3.3)
+%   method -  'skineye' (sections 4.3.1), 'eye' (section 4.3.2 ),
+%             'bluehazard' (section 4.3.3) 'skin thermal' (4.12), 
+%             'skin thermal threshold' (EQN 22 in INCIRP)
+%
 %   duration - Stimulus duration in seconds used for 'eye' and 'bluehazard'
 %              methods
 %
@@ -66,8 +69,8 @@ function [val, level, safety] = humanUVSafety(energy,wave,varargin)
 % Hello Joyce,
 %
 %  It is definitely pi.
-%  There is 2*pi solid angle for the hemisphere, but when you integrate
-%  you end up getting pi as factor.
+%  There is 2*pi solid angle for the hemisphere, but when you
+%  integrate over the solid angle you end up getting pi as factor.
 %
 % See you next week,
 %
@@ -113,15 +116,31 @@ function [val, level, safety] = humanUVSafety(energy,wave,varargin)
 % See also
 %   s_humanSafetyUVExposure, ieLuminance2Radiance
 
+% Example:
+%{ 
+  % This is the radiance of the source
+  [lgt,wave] = ieReadSpectra('LED450');
+  % Suppose it is d = 0.1 meters away from the surface.  The angle it sweeps
+  % out from the surface is w = 0.1 steradians
+  w = 0.1; d = 0.1; irradiance = lgt * (1/d^2) * w;
+  [val, level, safety] = humanUVSafety(irradiance,wave,'method','skin thermal threshold','duration',0.030)
+  
+  w = 0.01; d = 1; irradiance = lgt * (1/d^2) * w;
+  [val, level, safety] = humanUVSafety(irradiance,wave,'method','skin thermal threshold','duration',0.030)
+
+%}
+
 %% Check inputs
 
 varargin = ieParamFormat(varargin);
 
 p = inputParser;
 
-p.addRequired('irradiance',@isvector);
-p.addRequired('wave',@isvector)
-p.addParameter('method','skineye',@(x)(ismember(ieParamFormat(x),{'skineye','eye','bluehazard','thermalskin',})));
+p.addRequired('energy',@(x)(isvector(x) || isempty(x)));
+p.addRequired('wave',@(x)(isvector(x) || isempty(x)));
+
+methods = {'skineye','eye','bluehazard','thermalskin','skinthermalthreshold'};
+p.addParameter('method','skineye',@(x)(ismember(ieParamFormat(x),methods)));
 p.addParameter('duration',1,@isnumeric);
 p.parse(energy,wave,varargin{:});
 
@@ -133,6 +152,9 @@ duration = p.Results.duration;
 if numel(wave) == 1
     dLambda = 10;
     disp('Assuming 10 nm bandwidth');
+elseif isempty(wave)
+    % Skin thermal threshold case
+    dLambda = [];    %
 else
     dLambda  = wave(2) - wave(1);
 end
@@ -297,16 +319,16 @@ switch method
         % the standards document.  May be simple to 
 
     case 'thermalskin'
-     % Equation 4.12
-        % This exposure limit is based on skin injury due to a rise in tissue temperature 
-        % and applies only to small area irradiation. 
+        % Equation 4.12
+        % This exposure limit is based on skin injury due to a rise in tissue temperature
+        % and applies only to small area irradiation.
         % Exposure limits for periods greater than 10 s are not provided.
         % dLambda*dot(blueHazard,energy);
         % duration must be in seconds
-      level = dLambda * duration^0.25 * sum(energy); 
-       val = level;
+        level = duration^0.25 * sum(energy) * dLambda;
+        val = level;
         % level should be less than 20000 * duration^0.25
-        % 
+        %
         % Determine if the level times the duration is safe or not
         % Returns val as true for safe, and false for not safe.
         if duration <= 10  &&  level < 20000 * duration^0.25 % seconds
@@ -314,4 +336,35 @@ switch method
         else
             safety = false;
         end
+
+    case 'skinthermalthreshold'
+        % humanUVSafety(lgt,wave,'method','skin thermal threshold')
+        %
+        % Equation (22) from
+        %
+        % ICNIRP GUIDELINES ON LIMITS OF EXPOSURE TO INCOHERENT
+        % VISIBLE AND INFRARED RADIATION International Commission on
+        % Non-Ionizing Radiation Protection*
+        %
+        % This is a threshold level of irradiance exposure.  Just a
+        % number.  To see if a light below 3000 nm is safe, you sum
+        % the (joules/m2) of irradiance over time and wavelength and
+        % compare to this number.
+        %
+        % Suppose you have a spectral light, Watts/m2/nm = Joules/sec/m2/nm
+        %
+        %    sum(lgt) * dLambda * duration(sec)
+        % 
+        % Then we compare that number to this threshold number
+        %
+
+        val = sum(energy)*(wave(2)-wave(1))*duration;
+        level = val;
+
+        H = 2 * duration^0.25*10^4;  % Equation 22
+
+        if val < H, safety = true; 
+        else, safety = false; 
+        end
+      
 end
