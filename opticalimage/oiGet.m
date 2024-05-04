@@ -124,6 +124,13 @@ function val = oiGet(oi,parm,varargin)
 %       {'raytrace optics name'}  - Optics used to derive shift-variant psf
 %       {'rt psf size'}        - row,col dimensions of the psf
 %
+%       {'compute method'}  - How to apply the OTF. 
+%                              'opticspsf' - PSF method that regenerates PSF from the wvf.
+%                              'opticsotf' - OTF method that splines the OTF
+%                              'humanmw'   - Human Marimont-Wandell calc
+%                             This applies for some methods, and
+%                             is empty other methods where the question does not apply.
+%
 % Misc
 %      {'gamma'}             - Gamma setting in the oiWindow
 %      {'rgb image'}         - RGB rendering of OI data
@@ -285,7 +292,9 @@ switch oType
             case 'consistency'
                 % deprecated.
                 val = oi.consistency;
-                
+
+            case 'computemethod'
+                val = oi.computeMethod;       
                 
             case {'rows','row','nrows','nrow'}
                 if checkfields(oi,'data','photons'), val = size(oi.data.photons,1);
@@ -898,22 +907,15 @@ switch oType
                 end
                 
             case {'renderflagindex'}
-                % val = oiGet(oi,'render flag index')
+                % val = oiGet(oi,'display flag index')
+                % When there is an oiWindow open and set in the vcSESSION,
+                % find the display flag index
                 %
+                % See if there is a display window
                 oiW = ieSessionGet('oi window');
-                if ~isempty(oiW)
-                    % The window is open.  Use the popup value
-                    val = find(ieContains(oiW.popupRender.Items,oiW.popupRender.Value));
-                elseif isempty(oiW) && isfield(oi,'renderflag')
-                    % There is a setting for the render.
-                    val = oi.renderflag;
-                else
-                    % No window, no setting, return the default.
-                    val = 1;
+                if isempty(oiW), val = 1;   % Default if no window
+                else, val = find(ieContains(oiW.popupRender.Items,oiW.popupRender.Value));
                 end
-                % if isempty(oiW), val = 1;   % Default if no window
-                % else, val = find(ieContains(oiW.popupRender.Items,oiW.popupRender.Value));
-                % end
                 
             case {'renderflagstring'}
                 % val = oiGet(oi,'display flag string')
