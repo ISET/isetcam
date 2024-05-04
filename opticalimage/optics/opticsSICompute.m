@@ -106,9 +106,9 @@ if showWbar, waitbar(0.6,wBar,'OI-SI: Applying PSF'); end
 if showWbar, waitbar(0.6,wBar,'Applying PSF-SI'); end
 
 % The optics calculation
-opticsName = oiGet(oi,'optics name');
-switch lower(opticsName)
-    case {'human-mw','opticsotf'}
+computeMethod = oiGet(oi,'compute method');
+switch lower(computeMethod)
+    case {'humanmw','opticsotf'}
         % We did not update the MW calculation.  It was very rough
         % anyway.  We use the old methods to calculate.
         oi = opticsOTF(oi,scene,varargin{:});

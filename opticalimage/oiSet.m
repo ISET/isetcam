@@ -80,6 +80,13 @@ function oi = oiSet(oi,parm,val,varargin)
 %       {'psf image heights'}  - Vector of sampled image heights
 %       {'rayTrace optics name'}  - Optics used to derive shift-variant psf
 %
+%      {'compute method'}  - How to apply the OTF. 
+%                              'opticspsf' - PSF method that regenerates PSF from the wvf.
+%                              'opticsotf' - OTF method that splines the OTF
+%                              'humanmw'   - Human Marimont-Wandell calc
+%                             This applies for some methods, and
+%                             is empty other methods where the question does not apply.
+%
 % Depth information
 %      {'depth map'}         - Distance of original scene pixel (meters)
 %
@@ -238,6 +245,16 @@ switch parm
     case {'distance' }
         % Positive for scenes, negative for optical images
         oi.distance = val;
+
+    case {'computemethod'}
+        % Compute method.  Only applies for shift invariant
+        if (strcmp(val,'opticspsf') | strcmp(val,'opticsotf') | strcmp(val,'humanmw'))
+            oi.computeMethod = val;
+        elseif (isempty(val))
+            oi.computeMethod = val;
+        else
+            error('Illegal value for computeMethod passed');
+        end
         
     case {'wangular','widthangular','hfov','horizontalfieldofview','fov'}
         % Angular field of view for the OI width.  In degrees.

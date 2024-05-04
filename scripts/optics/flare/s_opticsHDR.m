@@ -97,11 +97,11 @@ end
 
 %%
 oi = oiCreate('wvf');
-oi = oiSet(oi,'optics name','opticsotf');
+oi = oiSet(oi,'compute method','opticsotf');
 oi = oiCompute(oi,scene,'crop',true,'aperture',aperture);
 oiWindow(oi);
 
-oi = oiSet(oi,'optics name','opticspsf');
+oi = oiSet(oi,'compute method','opticspsf');
 oi = oiCompute(oi,scene,'crop',true,'aperture',aperture);
 oiWindow(oi);
 
