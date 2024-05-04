@@ -136,7 +136,11 @@ oiSize    = max(oiGet(oi,'size'));
 %
 % 4/22/24 DHB Made this an error.
 if isempty(wvf)
-    error('Trying to apply PSF method with an empty wvf structure. This should not happen.')
+    if (isfield(oi,'optics') & isfield(oi.optics,'wvf'))
+        wvf = oi.optics.wvf;
+    else
+        error('Trying to apply PSF method with an empty passed wvf structure and no wvf field in the oi''s optics. This should not happen.');
+    end
     %wvf = wvfCreate('wave',wavelist);
 end
 

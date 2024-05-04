@@ -184,7 +184,6 @@ switch ieParamFormat(oiType)
         %
         %    optics = wvf2optics(wvf); 
         %    oiSet(oi,'optics',optics);
-        
         wvf = wvfCreate('wave',(400:10:700)');
 
         % Set up the standard optics values we have used for years
@@ -216,6 +215,9 @@ switch ieParamFormat(oiType)
             oi.optics.transmittance.scale = ones(length(370:730), 1);
         end        
 
+        % Set compute method
+        oi = oiSet(oi, 'compute method', 'opticspsf');
+
         % Enables the oiWindow to show fnumber and flength
         if isequal(ieParamFormat(oiType),'diffractionlimited')
             oi.optics.model = 'diffractionlimited';
@@ -228,6 +230,7 @@ switch ieParamFormat(oiType)
         if ~isempty(varargin), rtFileName = varargin{1}; end
         load(rtFileName,'optics');
         oi = oiSet(oi,'optics',optics);
+        oi = oiSet(oi, 'compute method', []);
         
     case {'humanmw'}
         % oi = oiCreate('human mw');
@@ -244,6 +247,7 @@ switch ieParamFormat(oiType)
         oi = oiSet(oi,'optics',opticsCreate('human mw'));
         oi = oiSet(oi,'name','human-MW');
         oi = oiSet(oi, 'optics lens', Lens('wave', oiGet(oi, 'optics wave')));
+        oi = oiSet(oi, 'compute method', 'humanmw');
 
         % Used by ISETCam, but removed for human lens case.
         if checkfields(oi.optics, 'transmittance')
@@ -269,6 +273,7 @@ switch ieParamFormat(oiType)
         oi = oiSet(oi, 'optics', optics);
         oi = oiSet(oi, 'name', 'human-WVF');
         oi = oiSet(oi, 'optics lens', Lens('wave', oiGet(oi, 'optics wave')));
+        oi = oiSet(oi, 'compute method', 'opticspsf');
 
         % Used by ISETCam, but removed for human lens case.
         if checkfields(oi.optics, 'transmittance')
@@ -285,6 +290,7 @@ switch ieParamFormat(oiType)
         if length(varargin) >= 2, wave = varargin{2}; end
         oi = oiCreateUniformD65(sz,wave);
         wvf = [];
+        oi = oiSet(oi, 'compute method', []);
 
     case {'uniformee','uniformeespecify'}
         % [oi, scene] = oiCreate('uniform ee',sz,wave);
@@ -297,6 +303,7 @@ switch ieParamFormat(oiType)
         if length(varargin) >= 2, wave = varargin{2}; end
         [oi,scene] = oiCreateUniformEE(sz,wave);
         wvf = scene;
+        oi = oiSet(oi, 'compute method', []);
 
     case {'black'}
         % oi = oiCreate('black',sz,wave);
