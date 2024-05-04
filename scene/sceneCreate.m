@@ -102,6 +102,9 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %         sceneCreate('rings rays',radialFreq,imageSize);
 %         sceneCreate('sweep frequency',imageSize,maxFrequency);
 %         scene = sceneCreate('letter', font, display);
+%         scene = sceneCreate('disks', diskDiameter, arraySize); 
+%         scene = sceneCreate('squares', squareSize, arraySize);
+%         
 %
 % NOISE ANALYSIS TEST PATTERNS
 %
@@ -384,7 +387,11 @@ switch sceneName
         if length(varargin) >= 2,  dynamicRange = varargin{2}; end
         
         scene = sceneExpRamp(scene,sz,dynamicRange);
-        
+    case {'disks'}        
+        % scene = sceneCreate('disks', diskDiameter, arraySize); 
+    case {'squares'}
+        % scene = sceneCreate('squares', squareSize, arraySize);
+
     case {'uniform','uniformee','uniformequalenergy'}
         % scene = sceneCreate('uniform',size,wave);
         % Equal energy
