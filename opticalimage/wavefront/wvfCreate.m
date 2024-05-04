@@ -113,7 +113,7 @@ p.addParameter('umperdegree', 300, @isscalar);
 p.addParameter('focallength', 17.1883, @isscalar);  % 17 mm
 
 % Custom lca
-p.addParameter('customlca', [], @(x)( (isempty(x)) || (isa(x, 'function_handle')) ));
+p.addParameter('customlca', [], @(x)( (isempty(x) || isstr(x) || ismatrix(x) | (isa(x, 'function_handle')))) );
 
 % SCE parameters
 p.addParameter('sceparams',sceCreate([],'none'), @isstruct);
@@ -175,7 +175,11 @@ wvf = wvfSet(wvf, 'calc observer accommodation', ...
 wvf = wvfSet(wvf, 'focal length',p.Results.focallength);
 
 % Custom LCA function handle
-wvf = wvfSet(wvf, 'custom lca',p.Results.customlca);
+if (isempty(p.Results.customlca))
+    wvf = wvfSet(wvf,'custom lca', 'none');
+else
+    wvf = wvfSet(wvf, 'custom lca',p.Results.customlca);
+end
 
 % Stiles Crawford Effect parameters
 wvf = wvfSet(wvf, 'sce params', p.Results.sceparams);

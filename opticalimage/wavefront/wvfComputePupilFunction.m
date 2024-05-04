@@ -92,8 +92,8 @@ function wvf = wvfComputePupilFunction(wvf, varargin)
  % This example could be improved, or at least produce more
  % interesting plots, if we put in some actual Zernike values,
  % so it wouldn't just be uniform.
- wvf = wvfCreate;
- wvf = wvfComputePupilFunction(wvf,'humanlca',true);
+ wvf = wvfCreate('customlca','human');
+ wvf = wvfComputePupilFunction(wvf);
  ieNewGraphWin;
  subplot(1,2,1); imagesc(wvfGet(wvf,'pupil function phase')); axis('square');
  subplot(1,2,2); imagesc(wvfGet(wvf,'aperture')); axis('square');
@@ -107,8 +107,8 @@ varargin = ieParamFormat(varargin);
 p = inputParser;
 p.addRequired('wvf',@isstruct);
 
-p.addParameter('humanlca',false,@islogical);   % Apply longitudinal chromatic aberration
-p.addParameter('lcafunction',[],@ismatrix);
+%p.addParameter('humanlca',false,@islogical);   % Apply longitudinal chromatic aberration
+%p.addParameter('lcafunction',[],@ismatrix);
 p.addParameter('aperture',[],@ismatrix);
 p.addParameter('computesce',false,@islogical);   % Apply Stiles Crawford effect to aperture function
 
@@ -328,23 +328,14 @@ for ii = 1:nWavelengths
     %
     % We flip the sign to describe change in optical power when we pass
     % this through wvfDefocusDioptersToMicrons.
-    if p.Results.humanlca
+    lcaMethod = wvfGet(wvf,'customLca');
+    if (ischar(lcaMethod) & strcmp(lcaMethod,'human'))
         % disp('Using human LCA wvfLCAFromWave...')
         lcaDiopters = wvfLCAFromWavelengthDifference(wvfGet(wvf, ...
             'measured wavelength', 'nm'), thisWave);
         lcaMicrons = wvfDefocusDioptersToMicrons(-lcaDiopters, ...
             measPupilSizeMM);
-    elseif ~isempty(p.Results.lcafunction)
-        % disp('Using a custom LCA...')
-        %
-        % Needs to be written.  I think lcaDiopters should simply be
-        % lcafunction.
-        %         lcaDiopters = customLCAfunction(wvfGet(wvf, ...
-        %             'measured wavelength', 'nm'), thisWave);
-        lcaDiopters = p.Results.lcafunction;
-        lcaMicrons = wvfDefocusDioptersToMicrons(-lcaDiopters, ...
-            measPupilSizeMM);
-    else
+    elseif (ischar(lcaMethod) & strcmp(lcaMethod,'none'))
         % No longitudinal chromatic aberration.  If we have only one
         % wavelength, perhaps we should not include chromatic
         % aberration.  But maybe we should, say for the human case?
@@ -355,8 +346,22 @@ for ii = 1:nWavelengths
         % lcaDiopters.
         %
         lcaMicrons = 0;
+    elseif (ismatrix(lcaMethod))
+        % disp('Using a custom LCA...')
+        %
+        % Needs to be written.  I think lcaDiopters should be obtained from
+        % the matrix lcaFunction in some way, but need to determine
+        % convention.  But it also looks like we once had the idea of
+        % passing an actual function.
+        %         lcaDiopters = customLCAfunction(wvfGet(wvf, ...
+        %             'measured wavelength', 'nm'), thisWave);
+        error('Need to implement custom lca function code');
+        lcaDiopters = lcaFunction;
+        lcaMicrons = wvfDefocusDioptersToMicrons(-lcaDiopters, ...
+            measPupilSizeMM);
+    else
+        error('Unexpected value for custom lca field in wvf');
     end
-
     
     % Get Zernike coefficients
     % Need to make sure the c vector is long enough to contain defocus
