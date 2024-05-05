@@ -281,7 +281,7 @@ switch lower(opticsType)
         wvfP   = wvfSet(wvfP,'custom lca','human');
 
         % Include human chromatic aberration because this is wvf human
-        wvfP   = wvfCompute(wvfP, 'human lca', true);
+        wvfP   = wvfCompute(wvfP);
         oi     = wvf2oi(wvfP);
         optics = oiGet(oi,'optics');
         optics = opticsSet(optics,'name','humanwvf');
