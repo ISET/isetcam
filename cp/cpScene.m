@@ -363,7 +363,7 @@ classdef cpScene < handle
                                 'verbose', obj.verbosity);
 
                             [p, n, e] = fileparts(renderedFile);
-                            sequencedFileName = fullfile(ivRootPath, 'local', sprintf('%s-%03d-%03d%s',n,ii,obj.expTimes(ii), e));
+                            sequencedFileName = fullfile(ivRootPath, 'local', sprintf('%s-%03d-%03d%s',n,ii,floor(1000*obj.expTimes(ii)), e));
                             movefile(renderedFile, sequencedFileName,'f');
                             renderedFiles{end+1} = sequencedFileName;
                         else
@@ -454,13 +454,28 @@ classdef cpScene < handle
         function movePBRTCamera(obj)
             for ii = 1:numel(obj.cameraMotion)
                 ourMotion = obj.cameraMotion{ii};
+                % New way is to use activetransform
+                %{
+                if ~isempty(ourMotion{2})
+
+                    from = obj.thisR.get('from');
+                    endpoint = from(:) + ourMotion{2}(:);  % meters
+
+                    obj.thisR.set('camera motion translate start',from(:));
+                    obj.thisR.set('camera motion translate end',endpoint);
+                    % Rotation is null for now
+                    %obj.thisR.set('camera motion rotate start',piRotationMatrix);
+                    %obj.thisR.set('camera motion rotate end',piRotationMatrix);                
+                end
+
+                %}
                 if ~isempty(ourMotion{2})
                     obj.thisR = piCameraTranslate(obj.thisR, ...
                         'x shift', ourMotion{2}(1),...
                         'y shift', ourMotion{2}(2),...
                         'z shift', ourMotion{2}(3));  % meters
                 end
-                if ~isempty(ourMotion{3}) && ~isequal(max(ourMotion{3}),0)
+                if ~isempty(ourMotion{3}) 
                     obj.thisR = piCameraRotate(obj.thisR,...
                         'x rot', ourMotion{3}(1),...
                         'y rot', ourMotion{3}(2),...
