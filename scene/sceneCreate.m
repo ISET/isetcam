@@ -134,66 +134,71 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 %
-% The source code contains examples.
+% The source code contains examples, or run this to see the examples at the
+% top
+%   ieExamplesPrint('sceneCreate');
 %
 % See also:
 %  sceneFromFile, displayCreate, s_sceneReflectanceCharts.m
 
 % Examples:
 %{
-   scene = sceneCreate('macbeth',32);
-
-   patchSize = 8;
-   wave = (380:4:1068)';
-   scene = sceneCreate('macbethEE_IR',patchSize,wave);
+scene = sceneCreate('macbeth',32);
+patchSize = 8;
+wave = (380:4:1068)';
+scene = sceneCreate('macbethEE_IR',patchSize,wave);
 %}
 %{
-    scene = sceneCreate('radialLines');
+scene = sceneCreate('radialLines');
 %}
 %{
-    % The size of the individual patches, or bars, and wavelength sampling
-    % are parameters. They can be set a additional parameters
-    patchSizePixels = 16;
-    wave = [380:5:720];
-    scene = sceneCreate('macbeth Tungsten',patchSizePixels,wave);
+% The size of the individual patches, or bars, and wavelength sampling
+% are parameters. They can be set a additional parameters
+patchSizePixels = 16;
+wave = [380:5:720];
+scene = sceneCreate('macbeth Tungsten',patchSizePixels,wave);
 %}
 %{
-   % If you would like the color checker to have black borders around the
-   % patches, then use
-   patchSizePixels = 16; wave = [380:5:720]; blackBorder = true;
-   scene = sceneCreate('macbeth d65',patchSizePixels,wave,...
+% If you would like the color checker to have black borders around the
+% patches, then use
+patchSizePixels = 16; wave = [380:5:720]; blackBorder = true;
+scene = sceneCreate('macbeth d65',patchSizePixels,wave,...
              'macbethChart.mat',blackBorder);
 %}
 %{
-   % For a bar width of 50 pixels, 5 bars, at L* levels (1:nBars)-1 * 10, use
-   scene = sceneCreate('lstar',50,5,10);
+% For a bar width of 50 pixels, 5 bars, at L* levels (1:nBars)-1 * 10, use
+scene = sceneCreate('lstar',50,5,10);
 %}
 %{
-   % You can also create your own specific refelctance chart this way:
-   sFiles{1} = 'MunsellSamples_Vhrel.mat';
-   sFiles{2} = 'Food_Vhrel.mat';
-   pSize = 24; sSamples = [18 18];
-   wave = 400:10:700; grayFlag = 0; sampling = 'r';
-   scene = sceneCreate('reflectance chart',pSize,sSamples,sFiles,wave,grayFlag,sampling);
+% You can also create your own specific refelctance chart this way:
+sFiles{1} = 'MunsellSamples_Vhrel.mat';
+sFiles{2} = 'Food_Vhrel.mat';
+pSize = 24; sSamples = [18 18];
+wave = 400:10:700; grayFlag = 0; sampling = 'r';
+scene = sceneCreate('reflectance chart',pSize,sSamples,sFiles,wave,grayFlag,sampling);
 %}
 %{
-   % Passing extra params to the 'harmonic' scene create 
-   parms.freq = 1; parms.contrast = 1; parms.ph = 0;
-   parms.ang= 0; parms.row = 128; parms.col = 128;
-   parms.GaborFlag=0;
-   [scene,parms] = sceneCreate('harmonic',parms);
+% Passing extra params to the 'harmonic' scene create 
+parms.freq = 1; parms.contrast = 1; parms.ph = 0;
+parms.ang= 0; parms.row = 128; parms.col = 128;
+parms.GaborFlag=0;
+[scene,parms] = sceneCreate('harmonic',parms);
 %}
 %{
-    % The uniform patterns are small by default (32,32).  If you would like
-    % them at a higher density, you can use
-    scene = sceneCreate('uniformD65',256);
+% The uniform patterns are small by default (32,32).  If you would like
+% them at a higher density, you can use
+scene = sceneCreate('uniformD65',256);
 %}
 %{
-    % Notice that the dynamic range is not in log unit, but rather a
-    % linear dynamic range.  sz is the row/col size of the image
-    sz = 256; dynamicRange = 1024;
-    scene = sceneCreate('linear intensity ramp',sz,dynamicRange);
-    scene = sceneCreate('exponential intensity ramp',sz,dynamicRange);
+% Notice that the dynamic range is not in log unit, but rather a
+% linear dynamic range.  sz is the row/col size of the image
+sz = 256; dynamicRange = 1024;
+scene = sceneCreate('linear intensity ramp',sz,dynamicRange);
+scene = sceneCreate('exponential intensity ramp',sz,dynamicRange);
+%}
+%{
+sceneWindow(sceneCreate('disk array', 128, 8, [3,3])); 
+sceneWindow(sceneCreate('square array', 256, 32,[1,1]));
 %}
 
 %% Initial definition
