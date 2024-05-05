@@ -12,11 +12,12 @@ function [noisyPhotons,theNoise] = oiPhotonNoise(oi)
 % it throughout.  Matlab has one in the stats toolbox, but we don't want to
 % impose the stats toolbox requirement on others.
 %
-% See also:  noiseShot, poissrnd, v_photonNoise
-%
 % The source code contains examples.
 %
 % Copyright ImagEval Consultants, LLC, 2003.
+%
+% See also:  
+%   noiseShot, poissrnd, v_photonNoise
 
 % Examples:
 %{
