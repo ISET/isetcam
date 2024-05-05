@@ -11,17 +11,20 @@ function img  = imgRamp(imSize,dynamicRange)
 % contouring caused by poor analog to digital conversion, and sometimes
 % for evaluating problems with demosaic'ing routines.
 %
+% Copyright ImagEval Consultants, LLC, 2005.
+%
+% See also
+%   imgRadialRamp, imgDeadleaves, ...
+
 % Examples:
 %{
-   vcNewGraphWin;
+   ieNewGraphWin;
    sz = 1024; dRange = 1024;
    img  = imgRamp(sz,dRange);
    imagesc(img); colormap(gray(64)); axis image
-%
-   vcNewGraphWin; mesh(img);
+   ieNewGraphWin; mesh(img);
 %}
 
-% Copyright ImagEval Consultants, LLC, 2005.
 
 if ieNotDefined('imSize'),       imSize = 128;       end
 if ieNotDefined('dynamicRange'), dynamicRange = 256; end
