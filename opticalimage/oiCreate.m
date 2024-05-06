@@ -265,7 +265,7 @@ switch ieParamFormat(oiType)
         % Human optics specified from Thibos data.  The wavefront
         % structure has LCA set to use human.
         %
-        % This is an alternative calculation compared to human mw
+        % This is an alternative calculation compared to 'human mw'
         % (Marimont and Wandell), above.         
 
         oi = oiCreate('shift invariant');

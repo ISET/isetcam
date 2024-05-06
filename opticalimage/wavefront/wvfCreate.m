@@ -1,14 +1,15 @@
 function wvf = wvfCreate(varargin)
-% Create a wavefront parameters structure.
+% Create a wavefront parameter structure.
 %
 % Syntax:
 %   wvf = wvfCreate;
 %
 % Description:
-%    Create the wavefront parameters structure.
+%    Create a wavefront parameter structure.
 %
-%    The default parameters will give you diffraction limited PSF
-%    for 550 nm light and a 3 mm pupil.
+%    The default parameters are for a diffraction limited PSF for 550 nm
+%    light and a 3 mm pupil, fnumber of 5.73, and focal length of 17.2.
+%    (Approximate).
 %
 %    Many of the keys specified in the key/value pair section below accept
 %    synonyms. The key listed is our preferred usage, see the code in
@@ -17,6 +18,10 @@ function wvf = wvfCreate(varargin)
 %    The properties that may be specified here using key/value pairs may
 %    also be set using wvfSet.  And, wvfSet gives more details of what they
 %    mean.
+%
+%    We use oiCreate('wvf human') to calculate a wvf with the Thibos
+%    standard observer parameters, rather than this diffraction limited
+%    wvf.  That method relies on opticsCreate('wvf human').
 %
 % Inputs:
 %    None required.
@@ -47,7 +52,8 @@ function wvf = wvfCreate(varargin)
 %     'calc cone psf info'                 - Default structure returned by
 %                                            conePsfInfoCreate.
 %
-% Examples are included in the code.     
+% Examples are included in the code. Or run
+%   ieExamplesPrint('wvfCreate')
 %
 % See Also:
 %    wvfSet, wvfGet, wvfKeySynonyms, sceCreate, sceGet
@@ -76,7 +82,10 @@ function wvf = wvfCreate(varargin)
 
 % Examples:
 %{
-	wvf = wvfCreate('calc wavelengths', [400:10:700]);
+wvf = wvfCreate('wavelengths', [400:10:700]);
+%}
+%{
+wvf = wvfCreate('calc pupil diameter',4,'wavelengths',400:100:700)
 %}
 
 %% Input parse
