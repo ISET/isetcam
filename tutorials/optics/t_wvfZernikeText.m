@@ -136,7 +136,8 @@ wvfPrint(wvf0);
 % The plot shows an airy disk computed from the Zernike polynomials; that
 % is representing the diffraction-limited PSF obtained when the Zernike
 % coefficients are all zero.
-wvf0 = wvfCompute(wvf0,'human lca', true);
+wvf0 = wvfSet(wvf0, 'customLca', 'human');
+wvf0 = wvfCompute(wvf0);
 wList = wvfGet(wvf0, 'calc wave');
 wvfPlot(wvf0, 'psf', 'unit','um', 'wave',wList, 'plot range', maxUM);
 
@@ -165,7 +166,8 @@ fprintf('Third Zernike coefficient is %g\n', wvfGet(wvf3, 'zcoeffs', 3));
 %
 % We can see that the phase changes seem to be aligned with the + and - 45
 % degree axes, which makes sense for oblique astigmatism.
-wvf3 = wvfComputePupilFunction(wvf3, 'human lca', true);
+wvf3 = wvfSet(wvf3,'customLca', 'human');
+wvf3 = wvfComputePupilFunction(wvf3);
 wvfPlot(wvf3, '2dpupilphasespace', 'unit','mm', 'wave',wList, 'plot range', pupilfuncrangeMM);
 
 %% Plot the PSF
@@ -173,7 +175,8 @@ wvfPlot(wvf3, '2dpupilphasespace', 'unit','mm', 'wave',wList, 'plot range', pupi
 % hard to get meaning from them. We'd much prefer to look at the PSF, which
 % gives us an idea of how the pupil will blur an image. This is essentially
 % done by applying a Fourier Transform to the pupil function.
-wvf3 = wvfCompute(wvf3, 'human lca', true);
+wvf3 = wvfSet(wvf3, 'customLca', 'human');
+wvf3 = wvfCompute(wvf3);
 
 % Now we can plot the normalized PSF for a pupil only whose only aberration
 % is the 45 degree astigmatism.
@@ -192,7 +195,8 @@ wvfPlot(wvf3, 'psf', 'unit','um', 'wave',wList, 'plot range', maxUM);
 % astigmatism is aligned to the x and y axes.
 vertical_astig = 0.75;
 wvf5 = wvfSet(wvf0, 'zcoeffs', vertical_astig, {'vertical_astigmatism'});
-wvf5 = wvfCompute(wvf5, 'human lca', true);
+wff5 = wvfSet(wvf5, 'customLca', 'human');
+wvf5 = wvfCompute(wvf5);
 wvfPlot(wvf5, '2dpupilphasespace', 'unit','mm', 'wave',wList, 'plot range', maxMM);
 
 wvfPlot(wvf5, 'psf', 'unit','um', 'wave',wList, 'plot range', maxUM);
@@ -222,9 +226,9 @@ for ii = jindices
     ieNewGraphWin;
     insertCoeff = 0.75;
     wvf = wvfSet(wvf0, 'zcoeffs', insertCoeff, ii);
-    wvf = wvfCompute(wvf, 'human lca', true);
+    wvf = wvfSet(wvf, 'customLca', 'human');
+    wvf = wvfCompute(wvf);
     [n, m] = wvfOSAIndexToZernikeNM(ii);
-
     subplot(3, 1, 1);
     wvfPlot(wvf, '2dwavefrontaberrationsspace', 'unit','mm', 'plot range', pupilfuncrangeMM, 'window',false);
     title(sprintf('Wavefront aberrations for j = %d (n = %d, m = %d)', ...
@@ -264,7 +268,8 @@ wvf0 = wvfSet(wvf0, 'calc wavelengths', 550);
 % pupil function. The LCA itself is computed based on the difference
 % between the measurement wavelength (for which the defocus coefficient is
 % specified) and the wavelength being calclated for.
-wvf0 = wvfCompute(wvf0, 'human lca', true);
+wvf0 = wvfSet(wvf0, 'customLca', 'human');
+wvf0 = wvfCompute(wvf0);
 wList = wvfGet(wvf0, 'calc wavelengths');
 ieNewGraphWin;
 maxMM = 3;
@@ -279,7 +284,8 @@ theWavelength = 600;
 wvf1 = wvfCreate;
 wvf1 = wvfSet(wvf1, 'calc wavelengths', theWavelength);
 wList = wvfGet(wvf1, 'calc wavelengths');
-wvf1 = wvfCompute(wvf1, 'human lca', true);
+wvf1 = wvfSet(wvf1, 'customLca', 'human');
+wvf1 = wvfCompute(wvf1);
 wvfPlot(wvf1, '1dpsf', 'unit','mm', 'wave', wList, 'plot range', maxMM, 'window', false);
 
 % To unpack this, we can do explicitly what is done inside the pupil
@@ -299,7 +305,8 @@ wList = wvfGet(wvf2, 'calc wavelengths');
 defocus = wvfGet(wvf2, 'zcoeffs', {'defocus'});
 defocus = defocus + lcaMicrons;
 wvf2 = wvfSet(wvf2, 'zcoeffs', defocus, {'defocus'});
-wvf2 = wvfCompute(wvf2, 'human lca', true);
+wvf2 = wvfSet(wvf2, 'customLca', 'human');
+wvf2 = wvfCompute(wvf2);
 [~, pData] = wvfPlot(wvf2, '1dpsf', 'unit','mm', 'wave', wList, 'plot range', maxMM, 'window', false);
 set(pData, 'color', 'b', 'linewidth', 2);
 
@@ -321,7 +328,8 @@ set(pData, 'color', 'b', 'linewidth', 2);
 % Begin with an unaberrated pupil and see what its amplitude and phase look
 % like. We'll also plot the associated diffraction-limited PSF.
 wvf0 = wvfCreate;
-wvf0 = wvfCompute(wvf0, 'human lca', true);
+wvf0 = wvfSet(wvf0, 'customLca', 'human');
+wvf0 = wvfCompute(wvf0);
 maxMM = 2; %MM from the center of the PSF
 pupilfuncrangeMM = 5;
 ieNewGraphWin;
@@ -347,7 +355,8 @@ wvfPlot(wvf0, '1dpsfspace', 'unit','mm','plot range', maxMM,'window',false);
 % PSF different? Why?
 wvf0SCE = wvfSet(wvf0, 'sceParams', ...
     sceCreate(wvfGet(wvf0, 'calc wave'), 'berendschot_data'));
-wvf0SCE = wvfCompute(wvf0SCE, 'human lca', true);
+wvf0SCE = wvfSet(wvf0SCE, 'customLca', 'human');
+wvf0SCE = wvfCompute(wvf0SCE);
 ieNewGraphWin;
 subplot(2, 2, 1);
 wvfPlot(wvf0SCE, '2dpupilamplitudespace', 'unit','mm', 'plot range', ...
@@ -366,7 +375,8 @@ set(pData, 'color', 'b', 'linewidth', 1);
 % Compare the above with how the SCE affects an aberrated PSF. Let's create
 % a PSF with moderate astigmatism along the xy axes.
 wvf5 = wvfSet(wvf0, 'zcoeffs', 0.75, {'vertical_astigmatism'});
-wvf5 = wvfCompute(wvf5, 'human lca', true);
+wvf5 = wvfSet(wvf5, 'customLca', 'human');
+wvf5 = wvfCompute(wvf5);
 ieNewGraphWin;
 subplot(2, 2, 1);
 wvfPlot(wvf5, '2dpupilamplitudespace', 'unit','mm','plot range', pupilfuncrangeMM, ...
@@ -386,7 +396,8 @@ wvfPlot(wvf5, '1dpsfspace', 'unit','mm', 'plot range', maxMM, 'window', false);
 % Which PSF would create a "better image" on the retina?
 wvf5SCE = wvfSet(wvf5, 'sceParams', sceCreate(wvfGet(wvf5, ...
     'calc wave'), 'berendschot_data'));
-wvf5SCE = wvfCompute(wvf5SCE, 'human lca', true);
+wvf5SCE = wvfSet(wvf5SCE, 'customLca', 'human');
+wvf5SCE = wvfCompute(wvf5SCE);
 ieNewGraphWin;
 subplot(2, 2, 1);
 wvfPlot(wvf5SCE, '2dpupilamplitudespace', 'unit','mm','plot range', ...
@@ -432,8 +443,8 @@ for ii = 1:nSubjects
     fprintf('** Subject %d\n', whichSubjects(ii))
 
     wvfHuman = wvfSet(wvfHuman0, 'zcoeffs', theZernikeCoeffs(:, ii));
-    wvfHuman = wvfCompute(wvfHuman, 'human lca', true);
-
+    wvfHuman = wvfSet(wvfHuman, 'customLca', 'human');
+    wvfHuman = wvfCompute(wvfHuman);
     ieNewGraphWin;
     subplot(2, 2, 1);
     wvfPlot(wvfHuman, '2dpupilamplitudespace', 'unit','mm', 'plot range', calcMM, ...
@@ -471,7 +482,8 @@ for ii = 1:nSubjects
     zCoeffs = theZernikeCoeffs(:, ii);
     zCoeffs(4:6) = 0;
     wvfHuman = wvfSet(wvfHuman0, 'zcoeffs', zCoeffs);
-    wvfHuman = wvfCompute(wvfHuman, 'human lca', true);
+    wvfHuman = wvfSet(wvfHuman, 'customLca', 'human');
+    wvfHuman = wvfCompute(wvfHuman);
 
     ieNewGraphWin;
     subplot(2, 2, 1);

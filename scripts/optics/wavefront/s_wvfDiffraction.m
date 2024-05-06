@@ -94,7 +94,8 @@ tiledlayout(2,2);
 
 for ww = wList
     wvf = wvfSet(wvf,'calc wave',ww);
-    wvf = wvfCompute(wvf,'human lca',true);
+    wvf = wvfSet(wvf,'customLca','human');
+    wvf = wvfCompute(wvf);
 
     nexttile;
     wvfPlot(wvf,'image psf','unit','um','wave',ww,'plot range',20,'airy disk',true,'window',false);

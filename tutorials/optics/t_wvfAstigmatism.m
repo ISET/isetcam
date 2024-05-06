@@ -23,7 +23,8 @@ maxUM  = 20;
 % through sixth coefficients, the standard deviations (sqrt of variances on
 % the diagonal) range between about 0.25 and about 0.5.
 wvfP = wvfCreate;
-wvfParams = wvfCompute(wvfP,'human lca',true);
+wvfP = wvfSet(wvfP,'customLca','human');
+wvfParams = wvfCompute(wvfP);
 
 % The fourth and fifth coefficients are defocus and vertical
 % astigmatism.
@@ -42,7 +43,8 @@ wList = 550; % wvfGet(wvfParams,'wave');
 %%
 for ii=1:size(Zvals,1)
     wvfParams = wvfSet(wvfParams,'zcoeffs',Zvals(ii,:),{'defocus' 'vertical_astigmatism'});
-    wvfParams = wvfCompute(wvfParams,'human lca', true);
+    wvfParams = wvfSet(wvfParams,'customLca','human');
+    wvfParams = wvfCompute(wvfParams);
     
     % Mesh
     subplot(3, 3, ii)

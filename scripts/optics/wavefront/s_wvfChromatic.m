@@ -21,7 +21,8 @@ wvf = wvfSet(wvf,'calc pupil diameter',flengthMM/fNumber);
 wvf = wvfSet(wvf,'focal length',flengthM);
 
 % Turn on LCA.  Compute.
-wvf = wvfCompute(wvf,'human lca',true);
+wvf = wvfSet(wvf,'customLca','human');
+wvf = wvfCompute(wvf);
 oi = wvf2oi(wvf);
 
 %% Sample 4 pointspreads as images
@@ -56,7 +57,8 @@ identityLine;
 wList = wvfGet(wvf,'wave');
 
 % Compute with LCA for all wavelengths
-wvf = wvfCompute(wvf,'human lca',true);
+wvf = wvfSet(wvf,'customLca','human');
+wvf = wvfCompute(wvf);
 
 ieNewGraphWin([],'upper left big');
 nPanels = ceil(sqrt(numel(wList)));
@@ -85,8 +87,8 @@ oiPlot(oi,'lsf wavelength');
 oiWindow(oi);
 
 %% Now try it but compute with LCA turned off
-
-wvf = wvfCompute(wvf,'human lca',false);
+wvf = wvfSet(wvf,'customLca','none');
+wvf = wvfCompute(wvf);
 oi = oiCompute(wvf,sceneGrid);
 oi = oiSet(oi,'name','LCA off');
 oiPlot(oi,'lsf wavelength');
