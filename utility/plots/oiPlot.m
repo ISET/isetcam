@@ -620,11 +620,13 @@ switch pType
         colormap(jet(64))
         
     case {'psf'}
-        % oiPlot(oi,'psf',[],wave);
+        % oiPlot(oi,'psf',[roiLocs is empty],wave);
         % Point spread function at selected wavelength
         %
-        if isempty(varargin), udata = plotOTF(oi,'psf', 'airy disk', true);
-        else, w = varargin{1}; 
+        if isempty(varargin)
+            % Default wavelength is 550 nm
+            udata = plotOTF(oi,'psf', 'airy disk', true);
+        else, w = varargin{1};
             idx = find(strcmp('airydisk',varargin));
             if ~isempty(idx), airydisk = varargin{idx+1};
             else, airydisk = true;
@@ -636,7 +638,15 @@ switch pType
         namestr = sprintf('ISET: %s',oiGet(oi,'name'));
         set(g,'Name',namestr);
         colormap(jet(128))
-        
+
+    case {'psf550'}
+        % PSF at 550nm spatial units are microns
+        udata = plotOTF(oi,'psf', 'this wave', 550, 'airy disk', true);
+        set(g,'userdata',udata);
+        namestr = sprintf('ISET: %s',oiGet(oi,'name'));
+        set(g,'Name',namestr);
+        colormap(jet(64))
+
     case {'psfxaxis'}
         % oiPlot(oi,'psf xaxis',[],[wave=550],[units='um']);
         %
@@ -672,14 +682,6 @@ switch pType
         title(sprintf('F# %.2f Wave %d Airy D %.2f',...
             fNumber,thisWave,AD));
         hold off;
-
-    case {'psf550'}
-        % PSF at 550nm spatial units are microns
-        udata = plotOTF(oi,'psf', 'this wave', 550, 'airy disk', true);
-        set(g,'userdata',udata);
-        namestr = sprintf('ISET: %s',oiGet(oi,'name'));
-        set(g,'Name',namestr);
-        colormap(jet(64))
         
     case {'lswavelength','lsfwavelength'}
         % uData = oiPlot(oi,pType,[],nSpatialSamps)
@@ -1020,7 +1022,11 @@ switch lower(pType)
             ringZ = max(psf(:))*1e-3;
             hold on; p = plot3(adX,adY,adZ + ringZ,'k-');
             set(p,'linewidth',3); hold off;
-            %  end
+            if exist('radius','var')
+                % Maybe 10 is not enough?  Too much?
+                set(gca,'xlim',10*radius*[-1 1],'ylim',10*radius*[-1 1]);
+            end
+
         end
 
         % Label, store data

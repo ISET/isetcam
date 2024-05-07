@@ -1,12 +1,12 @@
-%% Calculating a diffraction limited, but defocused, image
+%% Calculating defocused, images
 %
 % s_opticsDefocusWVF
 %
 % We use wavefront methods to introduce defocus a diffraction limited lens.
 %
 %  * The code at the top of this script shows the steps explicitly.
-%  * The code at the end shows a simpler way to set the defocus, but it hides
-% the computations.
+%  * The code at the end shows a simpler way to set the defocus, but
+%    it hides the computations.
 %
 % The logic in both cases is this
 %
@@ -26,26 +26,25 @@
 ieInit
 
 %% Test scene
+
 scene = sceneCreate('freqorient',[512 512]);
 scene = sceneSet(scene,'fov',2);
 ieAddObject(scene);
 
 %% Wavefront method
 
-% This is a very explicit method for creating the wavefront and
-% building the oi
+% This the explicit method for creating the wavefront and building the
+% oi
 wvf0 = wvfCreate('wave',sceneGet(scene,'wave'));
 
-% This is how to set the focal length and pupil diameter.  It is annoying
-% that the diameter is millimeters.  I hope to change it to meters but that
-% will involve dealing with many scripts.  And more patience than I have
-% right now. (BW).
+% This is how to set the focal length and pupil diameter explicitly.
+% A lot of optics is in millimeters.  Not a great thing.
 wvf0 = wvfSet(wvf0,'focal length',8);    % Millimeters
 wvfGet(wvf0,'focal length','mm')
 wvf0 = wvfSet(wvf0,'pupil diameter',3);  % Millimeters
 wvfGet(wvf0,'pupil diameter','mm')
 
-% We need to calculate the pointspread explicitly
+% We calculate the pointspread explicitly
 wvf0 = wvfCompute(wvf0);
 
 % Finally, we convert the wavefront representation to a shift-invariant
