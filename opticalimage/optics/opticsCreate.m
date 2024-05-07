@@ -50,7 +50,7 @@ function [optics, wvfP]  = opticsCreate(opticsType,varargin)
 %                       wvfLoadThibosVirtualEyes.
 %        wave:          Vector. Wavelengths. Default 400:10:700.
 %        umPerDegree:   Retinal parameter, microns per degree. Default 300.
-%        customLCA:     A function handle specifying a custom LCA function
+%        lcaMethod:     'none', 'human', or a function handle specifying a custom LCA function
 %
 % Outputs:
 %    optics     - Struct. The created optics structure.
@@ -150,7 +150,7 @@ switch lower(opticsType)
         % Annoying but necessary
         wvf = wvfSet(wvf,'measured pupil diameter',pupilDiameterM*1e3);
         wvf = wvfSet(wvf,'calc pupil diameter',pupilDiameterM*1e3);
-
+        wvf = wvfSet(wvf,'lca method','none');
         wvf = wvfCompute(wvf);
        
         % This is tangled up in oiCreate and wvf2oi
@@ -166,7 +166,7 @@ switch lower(opticsType)
             optics = rmfield(optics,'lens');
         end
     
-        % Maybe wvf.customLCA = 'none';
+        'none';
 
     case {'human','humanmw'}
         % Pupil radius in meters.  Default is 3 mm
@@ -196,7 +196,7 @@ switch lower(opticsType)
 
     case {'wvfhuman','humanwvf'}
         % opticsCreate('wvf human',pupilDiameterMM, zCoefs, wave, ...
-        %               umPerDegree, customLCA)
+        %               umPerDegree, lcaMethod)
         %
         % Default optics based on mean Zernike polynomials estimated
         % by Thibos, for 3 mm pupil. Chromatic aberration is included.
@@ -222,7 +222,7 @@ switch lower(opticsType)
         wave            = 400:10:700;
         wave            = wave(:);
         umPerDegree     = 300;    % This corresponds to focal length 17.1mm
-        customLCA       = [];
+        lcaMethod       = [];
 
         % Set pupil size
         if (~isempty(varargin) && ~isempty(varargin{1}))
@@ -265,7 +265,13 @@ switch lower(opticsType)
             umPerDegree = varargin{4};
         end
         if (length(varargin) > 4 && ~isempty(varargin{5}))
-            customLCA = varargin{5};
+            lcaMethod = varargin{5};
+        end
+
+        % Get default on lcaMethod right.  Human unless otherwise
+        % specified.
+        if (isempty(lcaMethod))
+            lcaMethod = 'human';
         end
 
         % Create wavefront parameters. Set both measured and calc
@@ -273,12 +279,9 @@ switch lower(opticsType)
         wvfP = wvfCreate('calc wavelengths', wave, 'zcoeffs', zCoefs, ...
             'name', sprintf('human-%d', pupilDiameterMM), ...
             'umPerDegree', umPerDegree, ...
-            'customLCA', customLCA);
+            'lcaMethod', lcaMethod);
         wvfP = wvfSet(wvfP, 'measured pupil diameter', measPupilDiameterMM);
         wvfP = wvfSet(wvfP, 'calc pupil diameter', pupilDiameterMM);
-
-        % Note that we are using human lca.
-        wvfP   = wvfSet(wvfP,'custom lca','human');
 
         % Include human chromatic aberration because this is wvf human
         wvfP   = wvfCompute(wvfP);

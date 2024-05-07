@@ -16,7 +16,7 @@ wave = 550;
 wvfD = wvfCreate();                    % Diffraction limited
 wvfD = wvfSet(wvfD, 'measured wavelength', 550);
 wvfD = wvfSet(wvfD, 'calc wavelengths', 550);
-wvfD = wvfSet(wvfD, 'customLca', 'human');
+wvfD = wvfSet(wvfD, 'lcaMethod', 'human');
 wvfD = wvfCompute(wvfD);
 wvfPlot(wvfD,'psf','unit','min','wave',wave,'plot range',5);
 
@@ -36,7 +36,7 @@ d = [0 , 0.15, 0.5, 0.7];
 thisL = cell(length(d),1);
 for ii=1:length(d)
     wvf1 = wvfSet(wvfD,'zcoeffs',d(ii),{'defocus'});
-    wvf1 = wvfSet(wvf1, 'customLca', 'human');
+    wvf1 = wvfSet(wvf1, 'lcaMethod', 'human');
     wvf1 = wvfCompute(wvf1);
     wvfPlot(wvf1, '1d psf space', 'unit', 'um', 'wave', wave, 'plot range', 10, 'window', false);    
     hold on;
@@ -54,7 +54,7 @@ d = [0 , 0.15, 0.5, 0.7];
 thisL = cell(length(d),1);
 for ii=1:length(d)
     wvf1 = wvfSet(wvfH,'zcoeffs',d(ii),{'defocus'});
-    wvf1 = wvfSet(wvf1, 'customLca', 'human');
+    wvf1 = wvfSet(wvf1, 'lcaMethod', 'human');
     wvf1 = wvfCompute(wvf1);
     wvfPlot(wvf1, '1d psf space', 'unit', 'um', 'wave', wave, 'plot range', 10, 'window', false);
 
@@ -80,7 +80,7 @@ legend({'Diffraction D=0'})
 thisD = d(3);
 subplot(2,1,2);
 wvf1 = wvfSet(wvfD,'zcoeffs',thisD,{'defocus'});
-wvf1 = wvfSet(wvf1, 'customLca', 'human');
+wvf1 = wvfSet(wvf1, 'lcaMethod', 'human');
 wvf1 = wvfCompute(wvf1);
 wvfPlot(wvf1, 'psf', 'unit', 'um', 'wave', wave, 'plot range', 10, 'window', false);
 
@@ -96,7 +96,7 @@ legend({'Human D=0'})
 thisD = d(3);
 subplot(2,1,2);
 wvf1 = wvfSet(wvfH,'zcoeffs',thisD,{'defocus'});
-wvf1 = wvfSet(wvf1, 'customLca', 'human');
+wvf1 = wvfSet(wvf1, 'lcaMethod', 'human');
 wvf1 = wvfCompute(wvf1);wvfPlot(wvf1, 'psf', 'unit', 'um', 'wave', wave, 'plot range', 10, 'window', false);
 legend({sprintf('Human D=%1.1f',thisD)})
 
@@ -104,7 +104,7 @@ legend({sprintf('Human D=%1.1f',thisD)})
 ieNewGraphWin;
 for ii=1:length(d)
     wvf1 = wvfSet(wvfD,'zcoeffs',d(ii),{'defocus'});
-    wvf1 = wvfSet(wvf1, 'customLca', 'human');
+    wvf1 = wvfSet(wvf1, 'lcaMethod', 'human');
     wvf1 = wvfCompute(wvf1);
     wvfPlot(wvf1, '1d otf angle', 'unit', 'deg', 'wave', wave, 'plot range', 100, 'window', false);
     hold on;
@@ -124,7 +124,7 @@ legend(thisL);
 ieNewGraphWin;
 for ii=1:length(d)
     wvf1 = wvfSet(wvfH,'zcoeffs',d(ii),{'defocus'});
-    wvf1 = wvfSet(wvf1, 'customLca', 'human');
+    wvf1 = wvfSet(wvf1, 'lcaMethod', 'human');
     wvf1 = wvfCompute(wvf1);
     wvfPlot(wvf1, '1d otf angle', 'unit', 'deg', 'wave', wave, 'plot range', 100, 'window', false);
     hold on;
@@ -139,7 +139,7 @@ legend(thisL);
 ieNewGraphWin;
 for ii=1:length(d)
     wvf1 = wvfSet(wvfD,'zcoeffs',d(ii),{'defocus'});
-    wvf1 = wvfSet(wvf1, 'customLca', 'human');
+    wvf1 = wvfSet(wvf1, 'lcaMethod', 'human');
     wvf1 = wvfCompute(wvf1);
     wvfPlot(wvf1, '1d otf angle', 'unit', 'deg', 'wave', wave, 'plot range', 100, 'window', false);
     hold on;
@@ -154,7 +154,7 @@ legend(thisL);
 ieNewGraphWin;
 for ii=1:length(d)
     wvf1 = wvfSet(wvfH,'zcoeffs',d(ii),{'defocus'});
-    wvf1 = wvfSet(wvf1, 'customLca', 'human');
+    wvf1 = wvfSet(wvf1, 'lcaMethod', 'human');
     wvf1 = wvfCompute(wvf1);
     wvfPlot(wvf1, '1d otf angle', 'unit', 'deg', 'wave', wave, 'plot range', 100, 'window', false);
     hold on;

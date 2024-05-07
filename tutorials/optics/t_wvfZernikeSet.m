@@ -47,7 +47,7 @@ wvf = wvfCreate('wave',sceneGet(scene,'wave'));
 D = [0 1 2];    
 for ii=1:length(D)
     wvf = wvfSet(wvf,'zcoeffs',D(ii),{'defocus'});
-    wvf = wvfSet(wvf, 'customLca', 'human');
+    wvf = wvfSet(wvf, 'lcaMethod', 'human');
     wvf = wvfCompute(wvf);
     wvfPlot(wvf,'psf','unit','um','wave',550,'plotrange',40);  % PSF in micron scale
     oi = wvf2oi(wvf,'human lens',true);
@@ -63,7 +63,7 @@ wvf = wvfCreate('wave',sceneGet(scene,'wave'));
 A = [-1, 0, 1];     % Amount of astigmatism
 for ii=1:length(A)
     wvf = wvfSet(wvf,'zcoeffs',[2, A(ii)],{'defocus','vertical_astigmatism'});
-    wvf = wvfSet(wvf, 'customLca', 'human');
+    wvf = wvfSet(wvf, 'lcaMethod', 'human');
     wvf = wvfCompute(wvf);
     wvfPlot(wvf,'psf','unit','um','wave',550,'plotrange',40);  % PSF in micron scale
     oi = oiCompute(wvf,scene);

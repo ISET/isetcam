@@ -94,7 +94,7 @@ tiledlayout(2,2);
 
 for ww = wList
     wvf = wvfSet(wvf,'calc wave',ww);
-    wvf = wvfSet(wvf,'customLca','human');
+    wvf = wvfSet(wvf,'lcaMethod','human');
     wvf = wvfCompute(wvf);
 
     nexttile;

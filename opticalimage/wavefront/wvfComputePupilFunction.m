@@ -92,7 +92,7 @@ function wvf = wvfComputePupilFunction(wvf, varargin)
  % This example could be improved, or at least produce more
  % interesting plots, if we put in some actual Zernike values,
  % so it wouldn't just be uniform.
- wvf = wvfCreate('customlca','human');
+ wvf = wvfCreate('lca method','human');
  wvf = wvfComputePupilFunction(wvf);
  ieNewGraphWin;
  subplot(1,2,1); imagesc(wvfGet(wvf,'pupil function phase')); axis('square');
@@ -175,7 +175,7 @@ areapixapod = zeros(nWavelengths, 1);
 wavefrontaberrations = cell(nWavelengths, 1);
 
 % Check whether if we are using a custom LCA
-% customLCAfunction = wvfGet(wvf, 'custom lca');
+% customLCAfunction = wvfGet(wvf, 'lca method');
 
 for ii = 1:nWavelengths
     thisWave = waveNM(ii);
@@ -328,7 +328,7 @@ for ii = 1:nWavelengths
     %
     % We flip the sign to describe change in optical power when we pass
     % this through wvfDefocusDioptersToMicrons.
-    lcaMethod = wvfGet(wvf,'customLca');
+    lcaMethod = wvfGet(wvf,'lcaMethod');
     if (ischar(lcaMethod) & strcmp(lcaMethod,'human'))
         % disp('Using human LCA wvfLCAFromWave...')
         lcaDiopters = wvfLCAFromWavelengthDifference(wvfGet(wvf, ...

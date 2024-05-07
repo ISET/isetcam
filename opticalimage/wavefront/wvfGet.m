@@ -129,6 +129,7 @@ function val = wvfGet(wvf, parm, varargin)
 %       +'number calc wavelengths'
 %                                 - Number of wavelengths to calculate over
 %                                   Pupil and sointspread function
+%       +'lca method'             - 'none', 'human', function handle for a custom LCA
 %
 %      Psf related
 %       +'psf'                    - Point spread function. Must call
@@ -273,8 +274,8 @@ switch (parm)
         % Conversion factor between um on retina & visual angle in degreees
         val = wvf.umPerDegree;
         
-    case {'customlca'}
-        val = wvf.customLCA;
+    case {'lcamethod'}
+        val = wvf.lcaMethod;
         
     otherwise
         isBookkeeping = false;
