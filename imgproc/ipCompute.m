@@ -329,7 +329,10 @@ elseif nFilters >= 3 || nSensors > 1
             error('Unknown transform method %s\n',tMethod);
     end
     
-    %% Save the linear primary data 
+    %% Save the linear primary data.  
+    % 
+    % These are always between 0 and 1, but they  might be quantized
+    % within that range.
     ip = ipSet(ip,'display linear rgb',img);
     
 end

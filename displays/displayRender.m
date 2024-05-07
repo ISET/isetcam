@@ -124,26 +124,23 @@ qm = sensorGet(sensor,'quantization method');
 % brightest part is white.  Multiplying by the volts 2 max volts
 % ratio sets the range.
 displayImgMax = max(displayImg(:));
-displayImg = (displayImg/displayImgMax)*sensorGet(sensor,'volts 2 max ratio');
-displayImg = ieClip(displayImg,0,ipGet(ip,'max sensor'));
+
+% This returns the ratio of either (a) max data voltage to voltage
+% swing, or max digital value to 2^nbits
+displayImg = (displayImg/displayImgMax)*sensorGet(sensor,'response ratio');
+
+% No negative values
+displayImg = max(displayImg,0);
 
 switch qm
     case 'analog'
-        % do nothing
-       
+        % do nothing       
     case 'linear'
-        % Quantize, digital values. We clip at 0.
+        % The primary levels have been linearly quantized. At this
+        % point, they are represented between 0 and 1. We multiply
+        % them out to digital values.
         nbits = ipGet(ip,'quantization nbits');
         displayImg = round(displayImg*(2^nbits))/2^nbits;
-        
-        % The biggest value is less than 1.  What should it be?  Maybe we
-        % set it a little below 1.  If you find yourself back here with a
-        % better idea, do it.  For example, if we have a maximum digial of
-        % 8096, and the peak value is 7096, we would set it to a max of
-        % 7096/8096.
-        %
-
-        % img = img/max(img(:));
         
     otherwise
         error('Unknown quantization method %s\n',qm);
