@@ -409,7 +409,7 @@ switch oType
                 %
                 if checkfields(sensor,'data','volts'), val = sensor.data.volts; end
                 if ~isempty(varargin), val = sensorColorData(val,sensor,varargin{1}); end
-            case{'volts2maxratio','responseratio'}
+            case{'responseratio','volts2maxratio'}
                 % sensorGet(sensor,'response ratio')
                 %
                 % Ratio of peak data voltage to voltage swing.  Used in
@@ -417,8 +417,10 @@ switch oType
                 % matches the sensor data range.
                 v = sensorGet(sensor,'volts');
                 if isempty(v)
-                    % This can happen we only have digital values
-                    val = 1;
+                    % This can happen if we only have digital values
+                    dv = sensorGet(sensor,'dv');
+                    sm = sensorGet(sensor,'max digital value');
+                    val = max(dv(:))/sm;
                     return;
                 else
                     sm = sensorGet(sensor,'pixel voltage swing');

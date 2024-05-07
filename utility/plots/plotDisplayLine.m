@@ -87,7 +87,7 @@ switch ipGet(ip,'quantization method')
     otherwise
         dType = 'digital';
         nbits = ipGet(ip,'quantization nbits');
-        data = data*2^nbits;
+        data = data*(2^nbits);
 end
 
 switch lower(ori)

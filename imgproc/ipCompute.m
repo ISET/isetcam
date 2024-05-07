@@ -251,19 +251,32 @@ elseif nFilters >= 3 || nSensors > 1
         case 'current'
             % Use the stored transform matrices, don't recompute based
             % on the image (adaptive).
-
             T   = ipGet(ip,'prodT');
 
             % This is supposed to be the linear primary intensities
             % because it incorporates all three transforms.
             img = imageLinearTransform(img,T);
 
-            % Scale img to make sure the results is [0,1].
-            if ~isempty(sensorGet(sensor, 'maxdigitalvalue'))
-                img = img / (sensorGet(sensor, 'maxdigitalvalue') - zerolevel);
-            elseif ~isempty(ipGet(ip,'maximum sensor value'))
-                img = img / (ipGet(sensor, 'maximum sensor value') - zerolevel);
+            % See comments in displayRender.  This is the same set of
+            % scaling operations as we perform there.  
+            img = (img/max(img(:)))*sensorGet(sensor,'response ratio');
+            img = max(img,0);
+
+            qm = sensorGet(sensor,'quantization method');
+            switch qm
+                case 'analog'
+                    % do nothing
+                case 'linear'
+                    % The primary levels have been linearly quantized. At this
+                    % point, they are represented between 0 and 1. We multiply
+                    % them out to digital values.
+                    nbits = ipGet(ip,'quantization nbits');
+                    img = round(img*(2^nbits))/2^nbits;
+
+                otherwise
+                    error('Unknown quantization method %s\n',qm);
             end
+
         case {'new','manual matrix entry'}
             % Allow the user to specify a matrix from the GUI. When
             % the complete linear transform is set this way, we cannot
@@ -279,6 +292,26 @@ elseif nFilters >= 3 || nSensors > 1
             % Store and apply this transform.
             ip = ipSet(ip,'conversion matrix sensor',T);
             img = imageLinearTransform(img,T);  % vcNewGraphWin; imagesc(img)
+            
+            % See comments in displayRender.  This is the same set of
+            % scaling operations as we perform there.  
+            img = (img/max(img(:)))*sensorGet(sensor,'response ratio');
+            img = max(img,0);
+
+            qm = sensorGet(sensor,'quantization method');
+            switch qm
+                case 'analog'
+                    % do nothing
+                case 'linear'
+                    % The primary levels have been linearly quantized. At this
+                    % point, they are represented between 0 and 1. We multiply
+                    % them out to digital values.
+                    nbits = ipGet(ip,'quantization nbits');
+                    img = round(img*(2^nbits))/2^nbits;
+
+                otherwise
+                    error('Unknown quantization method %s\n',qm);
+            end
             
             % Set the other transforms to empty.
             ip = ipSet(ip,'correction matrix illuminant',[]);
@@ -329,7 +362,10 @@ elseif nFilters >= 3 || nSensors > 1
             error('Unknown transform method %s\n',tMethod);
     end
     
-    %% Save the linear primary data 
+    %% Save the linear primary data.  
+    % 
+    % These are always between 0 and 1, but they  might be quantized
+    % within that range.
     ip = ipSet(ip,'display linear rgb',img);
     
 end
