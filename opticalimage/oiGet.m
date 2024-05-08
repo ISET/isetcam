@@ -202,15 +202,7 @@ switch oType
         % parameter.  
         optics = oi.optics;
         if isempty(parm), val = optics;
-        else
-            %{
-            % Original call, using dlMTF.  
-            optics = oi.optics;
-            if isempty(parm), val = optics;
-            else, val = opticsGet(optics,parm,varargin{:});
-            end
-            %}
-
+        else            
             % There is a special case for the OTF when we use dlMTF.
             % See comment below.
             switch(parm)
