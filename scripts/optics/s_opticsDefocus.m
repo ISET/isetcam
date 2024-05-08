@@ -8,8 +8,12 @@
 % ISET also can calculate defocus using wavefront aberrations based on
 % Zernike polynomials.  These are explained in s_opticsDefocusWVF
 % 
-% Other tutorials explaining the wavefront methods are described in
-% *t_wvf<TAB>* tutorials.
+% Many other tutorials explaining the wavefront methods are described
+% in *t_wvf<TAB>* tutorials.
+%
+% This script include a human example, but it is worth remembering
+% that most of our work with human optics is in the ISETBio
+% repository.
 %
 % Copyright ImagEval Consultants, LLC, 2011
 %
