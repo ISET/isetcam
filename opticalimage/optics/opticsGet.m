@@ -515,9 +515,12 @@ switch parm
         val.fx = opticsGet(optics,'otf fx');
         val.fy = opticsGet(optics,'otf fy');
 
-        % Transform so DC is in center
-        val.otf = fftshift(otf);
+        % Transform so DC is in center.
 
+        % Changed  May 8, 2024 to fix v_icam_oiWVF and
+        % v_icam_opticsWVF.
+        % val.otf = fftshift(otf);
+        val.otf = otf;
     case {'degreesperdistance','degperdist'}
         % opticsGet(optics,'deg per dist','mm')
         %
