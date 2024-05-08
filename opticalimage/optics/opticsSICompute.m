@@ -43,7 +43,9 @@ showWbar = ieSessionGet('waitbar');
 
 % Interpret the oiwvf as an oi or wvf.  If an oi, it might have a wvf.
 if strcmp(oiwvf.type,'wvf')
-    % User sent in a wvf
+    % User sent in a wvf.  Set up a skeletal oi, and then compute
+    % with the wvf below by calling opticsPSF below and passing the
+    % wvf in.  That call puts the wvf into the oi.
     wvf = oiwvf;
     flength = wvfGet(wvf,'focal length','m');
     fnumber = wvfGet(wvf, 'f number');

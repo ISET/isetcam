@@ -303,8 +303,19 @@ switch oType
                 val = oi.consistency;
 
             case 'computemethod'
-                val = oi.computeMethod;       
-                
+                % This tries to be a little smart for backwards
+                % compatibility with stored oi's, such as we have with the
+                % mRGC mosaics.
+                if (isfield(oi,'computeMethod'))
+                    val = oi.computeMethod; 
+                else
+                    if (isfield(oi.optics,'wvf'))
+                        val = 'opticspsf';
+                    else
+                        val = 'opticsotf';
+                    end
+                end
+
             case {'rows','row','nrows','nrow'}
                 if checkfields(oi,'data','photons'), val = size(oi.data.photons,1);
                 else

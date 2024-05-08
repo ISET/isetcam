@@ -46,6 +46,7 @@ function wvf = wvfCreate(varargin)
 %     'calc optical axis'                  - 0
 %     'calc observer accommodation'        - 0
 %     'calc observer focus correction'     - 0
+%     'lca method'                         - 'none' (can set to 'human')
 %     'um per degree'                      - 300
 %     'sce params'                         - Struct specifying no sce
 %                                            correction.
@@ -116,13 +117,14 @@ p.addParameter('calcobserveraccommodation', 0), @isscalar;
 %p.addParameter('calcobserverfocuscorrection', 0, @isscalar);
 
 % Retinal parameters
+%
 % Set for consistency with 300 um historical.  When we adjust one or the
 % other via wvfSet(), we keep them in sync.
 p.addParameter('umperdegree', 300, @isscalar);
 p.addParameter('focallength', 17.1883, @isscalar);  % 17 mm
 
-% Custom lca
-p.addParameter('customlca', [], @(x)( (isempty(x)) || (isa(x, 'function_handle')) ));
+% LCA method
+p.addParameter('lcamethod', [], @(x)( (isempty(x) || isstr(x) || ismatrix(x) | (isa(x, 'function_handle')))) );
 
 % SCE parameters
 p.addParameter('sceparams',sceCreate([],'none'), @isstruct);
@@ -183,8 +185,12 @@ wvf = wvfSet(wvf, 'calc observer accommodation', ...
 % If the user specified a different focal length, that will override
 wvf = wvfSet(wvf, 'focal length',p.Results.focallength);
 
-% Custom LCA function handle
-wvf = wvfSet(wvf, 'custom lca',p.Results.customlca);
+% LCA method
+if (isempty(p.Results.lcamethod))
+    wvf = wvfSet(wvf,'lca method', 'none');
+else
+    wvf = wvfSet(wvf, 'lca method',p.Results.lcamethod);
+end
 
 % Stiles Crawford Effect parameters
 wvf = wvfSet(wvf, 'sce params', p.Results.sceparams);

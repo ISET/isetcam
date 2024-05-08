@@ -29,11 +29,11 @@ scene = sceneCreate('gridlines');
 scene = sceneSet(scene, 'fov', 1);
 
 %% Create wavefront for human eyes
-% Note that averaging the coefficients to get the sample mean is not the
-% same as finding optics for a typical human observer. Averaging the
-% coefficients does not yield a PSF whose phase structure is like that of
-% individual observers.  Nicolas Cottaris has analyzed this in some detail
-% as part of the IBIOColorDetect project.
+% Note that averaging the coefficients to get the sample mean is not
+% the same as finding optics for a typical human observer. Averaging
+% the coefficients does not yield a PSF whose phase structure is like
+% that of any observer.  Nicolas Cottaris has analyzed this in some
+% detail as part of the IBIOColorDetect project.
 pupilMM = 4.5;
 zCoefs = wvfLoadThibosVirtualEyes(pupilMM);
 wave = (400:10:700)';

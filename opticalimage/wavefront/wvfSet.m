@@ -69,10 +69,9 @@ function wvf = wvfSet(wvf, parm, val, varargin)
 %    Retinal scale
 %       'um per degree'           - Conversion factor degree of visual angle
 %                                   and um on retina
-%    Custom LCA
-%       'custom lca'              - function handle for a custom LCA
-%                                   (deprecated or perhaps updated in the
-%                                   future)
+%    LCA method
+%       'lca method'              - 'none', 'human', function handle for a custom LCA
+%                                   
 %    Stiles Crawford Effect
 %       'sce params'              - The Stiles-Crawford Effect structure
 %
@@ -475,8 +474,8 @@ switch parm
         %     fLength = wvfGet(wvf,'focal length','mm');
         %     wvf     = wvfSet(wvf,'calc pupil diameter',fLength/val,'mm');
 
-    case {'customlca'}
-        wvf.customLCA = val;
+    case {'lcamethod'}
+        wvf.lcaMethod = val;
 
     case {'sceparams', 'stilescrawford'}
         % Stiles-Crawford Effect structure.

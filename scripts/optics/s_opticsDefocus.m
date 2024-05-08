@@ -34,7 +34,7 @@ D = zeros(size(wave));             % No defocus (diffraction limited)
 otf = opticsDefocusCore(optics,sampleSF,D);
 
 %%
-vcNewGraphWin;
+ieNewGraphWin;
 mesh(sampleSF,wave,otf)
 set(gca,'zlim',[0 1]);
 xlabel('Spatial Frequency (cyc/deg)'), ylabel('wave'), zlabel('OTF')
