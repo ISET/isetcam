@@ -35,7 +35,7 @@ function [command,status] = ieSCP(user,host,src,destinationPath,varargin)
   
   % Prepare the local directory  
   imageID = '1114091636';
-  destPath = fullfile(iaRootPath,'local',imageID);
+  destPath = fullfile(isetRootPath,'local',imageID);
   if ~exist(destPath,'dir'), mkdir(destPath); end
 
   % First the metadata
