@@ -123,6 +123,9 @@ switch ieParamFormat(oiType)
         oi = oiSet(oi,'diffuser method','skip');
         oi = oiSet(oi,'diffuser blur',2*10^-6);  % If used, 2 um.
         
+        % BW: Checking.
+        oi = oiSet(oi,'compute method','opticsotf');
+
         % Camera lenses use transmittance, not human lens.
         if checkfields(oi.optics, 'lens')
             warning('How did a human lens get in diffraction limited?')

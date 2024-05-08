@@ -1,4 +1,8 @@
-% Create human optics approximation and compare to Marimont & Wandell model
+% t_wvfHuman
+% 
+% Create human optics approximation and compare to Marimont & Wandell
+% model. Most of the work on human cases is in ISETBio.  This is left
+% over.
 %
 % Description:
 %    Use the WVF methods to create an approximation to human optics in
@@ -7,9 +11,10 @@
 % Notes:
 %    * [NOTE: DHB - The appearance of the two optical images is
 %       surprisingly different. This should be expanded to compare the
-%       PSFs, or something else, so that the tutorial makes clear why they
-%       are so different.]
+%       PSFs in MW and Thibos to clarify why they are so different.]
 %
+% See also
+%    ISETBio
 
 % History:
 %    11/26/17  dhb  Simplify not to use wvfCreate (which didn't preserve
