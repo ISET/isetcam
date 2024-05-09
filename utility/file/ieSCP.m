@@ -21,7 +21,8 @@ function [command,status] = ieSCP(user,host,src,destinationPath,varargin)
 
 % Example:
 %{
-  % Just the metadata file
+  % ETTBSkip 
+  % Copy just the metadata file
   user = 'wandell';
   host = 'orange.stanford.edu';
   src  = '/acorn/data/iset/isetauto/Ford/SceneMetadata/1114091636.mat';
@@ -29,6 +30,7 @@ function [command,status] = ieSCP(user,host,src,destinationPath,varargin)
   ieSCP(user,host,src,destPath,'quiet',false);
 %}
 %{
+  % ETTBSkip 
   % The metadata and the rendered images
   user = 'wandell';
   host = 'orange.stanford.edu';
@@ -53,7 +55,6 @@ function [command,status] = ieSCP(user,host,src,destinationPath,varargin)
      destFile = fullfile(destPath,thisFile);
      ieSCP(user,host,srcFile,destFile);
   end
-
 %}
 
 %% Input args

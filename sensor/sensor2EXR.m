@@ -59,7 +59,12 @@ if isempty(filename), filename = [fullfile(tempname),'.exr']; end
 exrwrite(data,filename);
 info = exrinfo(filename);
 
-str = sprintf('Name: %s, Noiseflag: %d',sensorGet(sensor,'name'),sensorGet(sensor,'noise flag'));
+pSize = sensorGet(sensor,'pixel size','um');
+str = sprintf('Name: %s | Noise-flag: %d | Pixel-Size: %.2f um | N-Channels: %d',...
+    sensorGet(sensor,'name'),...
+    sensorGet(sensor,'noise flag'), ...
+    pSize(1), ...
+    sensorGet(sensor,'nfilters'));
 info.AttributeInfo.Comments = str;
 exrwrite(data, filename, 'Attributes', info.AttributeInfo);
 
