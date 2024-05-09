@@ -842,19 +842,20 @@ switch parm
         end
         
     case {'renderflagindex'}
-        % val = oiGet(oi,'display flag index')
+        % val = sceneGet(oi,'render flag index')
         %
-        % When there is an oiWindow open and set in the vcSESSION,
-        % find the display flag index.  Otherwise return our value
         sceneW = ieSessionGet('scene window');
-        if isfield(scene,'renderflag')
-                val = scene.renderflag;
-        elseif ~isempty(sceneW)
+        if ~isempty(sceneW)
+            % The window is open.  Use the popup value
             val = find(ieContains(sceneW.popupRender.Items,sceneW.popupRender.Value));
+        elseif isempty(sceneW) && isfield(scene,'renderflag')
+            % There is a setting for the render.
+            val = scene.renderflag;
         else
+            % No window, no setting, return the default.
             val = 1;
         end
-        
+
     case {'renderflagstring'}
         % val = oiGet(oi,'display flag string')
         % When there is an oiWindow open and set in the vcSESSION,

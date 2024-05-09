@@ -409,16 +409,26 @@ switch oType
                 %
                 if checkfields(sensor,'data','volts'), val = sensor.data.volts; end
                 if ~isempty(varargin), val = sensorColorData(val,sensor,varargin{1}); end
-            case{'volts2maxratio','responseratio'}
+            case{'responseratio','volts2maxratio'}
                 % sensorGet(sensor,'response ratio')
                 %
                 % Ratio of peak data voltage to voltage swing.  Used in
                 % displayRender to make sure the image display range
                 % matches the sensor data range.
                 v = sensorGet(sensor,'volts');
-                pixel = sensorGet(sensor,'pixel');
-                sm = pixelGet(pixel,'voltage swing');
-                val = max(v(:))/sm;
+                if isempty(v)
+                    % This can happen if we only have digital values
+                    dv = sensorGet(sensor,'dv');
+                    sm = sensorGet(sensor,'max digital value');
+
+                    % dv might be uint16 or some such.  We force the
+                    % return to be a double.
+                    val = double(max(dv(:))/sm);
+                    return;
+                else
+                    sm = sensorGet(sensor,'pixel voltage swing');
+                    val = max(v(:))/sm;
+                end
             case {'responsedr'}
                 % sensorGet(sensor,'response dr') - Sensor response dynamic range
                 % Dynamic range of the sensor response (minimum to maximum) In the

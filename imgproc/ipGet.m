@@ -1,33 +1,16 @@
 function val = ipGet(ip,param,varargin)
 %Get image processor parameters and derived quantities.
 %
-%       val = ipGet(ip,param,varargin)
+% Synopsis
+%   val = ipGet(ip,param,varargin)
 %
-%  Unique image processing parameters are stored and many others are
-%  derived from stored values.
+% Brief
+%  Returns stored and derived image processing (ip) parameters.  The
+%  term data refers to the display primary linear intensities.
 %
-%  The image processing structure parameters refer to a function call for
-%  performing, say, demosaicking, sensor conversion or illuminant
-%  correction.  These transform parameters are the 3x3 linear
-%  transformations applied in many of these cases.
-%
-%  The main ISET structures (scene, oi, sensor, ip, display) are stored in
-%  the ISET database.  To retrieve the currently selected image processor,
-%  use
-%
-%     ip = vcGetObject('ip');
-%
-%  The image processing structure contains a display structure. Because of
-%  the importance of the display structure, it is possible to retrieve
-%  display parameters from the ipGet() function using the syntax
-%
-%     ipGet(ip,'display <parameter name>'),
-%     e.g., ipGet(ip,'display spd');
-%
-%  NOTE:  The display structure attached to the image processor is not
-%  necessarily the same as the ISET display structure.  The ip.display is
-%  typically a simple sRGB model that is used for rendering.  The display
-%  in the main ISET database is the one analyzed in the displayWindow.
+%  If the first part of the param is 'display', then we call
+%  displayGet, using the part after display as the parameter.  For
+%  example, ipGet(ip,'display spd');
 %
 % Image Processor parameters
 %      'name'  - This image processing structure name
@@ -41,81 +24,101 @@ function val = ipGet(ip,param,varargin)
 %      'render'       - Render structure
 %          Includes gamma and scale parameters
 %      'demosaic'     - Demosaic structure
-%        'demosaic method'     - Spatial demosaicking function
+%      'demosaic method' - Spatial demosaicking function
 %
 %      'sensor conversion'  - Sensor conversion structure
-%        'sensor conversion method'    - Function name for color conversion
-%        'sensor conversion matrix'      - sensor conversion (transform{1})
+%      'sensor conversion method'    - Function name for color conversion
+%      'sensor conversion matrix'    - sensor conversion (transform{1})
 %
 %      'illuminant correction' - Illuminant correction structure
-%        'illuminant correction method'     - Function name for color balance
-%        'illuminant correction matrix'     - illuminant color balance    (transform{2})
+%      'illuminant correction method'  - Function name for color balance
+%      'illuminant correction matrix'  - illuminant color balance    (transform{2})
+%
 %      'internal color space'          - Internal color space name (e.g.,'XYZ')
-%        'internal color matching function' - Reads the file with the name
+%      'internal color matching function' - Reads the file with the name
 %
 %      'transforms' - All rendering transforms in a cell array
-%        'ics2display transform'      - Internal color space to display (transform{3})
-%        'Combined transform'         - Product of the other 3 matrices
+%      'ics2display transform'      - Internal color space to display (transform{3})
+%      'combined transform'         - Product of the other 3 matrices
 %                                             tSC{1}*tIC{2}*tICS2D{3}
-%        'Each transform'             - cell array of three matrices
+%      'each transform'             - cell array of three matrices
 %
 % Wavelength functions for the internal color space
-%      'spectrum'     - Wavelength information structure
-%        'wavelength' - wavelength samples
-%        'binwidth'   - wavelength bin size
-%        'nwave'      - number of wavelength samples
+%      'spectrum'   - Wavelength information structure
+%      'wavelength' - wavelength samples
+%      'binwidth'   - wavelength bin size
+%      'nwave'      - number of wavelength samples
 %
-% DATA information
+% DATA information (data generally means the display intensities)
 %      'data'  - Data structure
-%        'sensor mosaic'   - Sensor mosaic used to initiate rendering pipeline
-%        'sensor channels' - Sensor data demosaicked into RGB format
-%        'nSensor channels'- Number of sensor channel inputs
-%        'data display'  - Digital values for display rendering
-%                            These are linear values for the primaries, not
-%                            accounting for the gamma.
-%        'data srgb'     - sRGB rendering of the display data (This is
-%                            used in the GUI window
-%        'data xyz'      - CIE XYZ values of the display data
-%        'data roi'      - Slot to store region of interest RGB data
-%        'roi xyz'       - Slot to store XYZ values of ROI data
-%        'result scaled to max' - Display data scaled to display max
-%        'result primary n'     - Primary SPD for nth primary
-%        'result max','rgb max'
-%        'maximum sensor value'
-%        'data white point'
-%        'scale display'
-%      'data or display white'  - Data white point if present, otherwise
+%       'sensor mosaic'   - Sensor mosaic data that initiates rendering
+%       'sensor channels' - Sensor data demosaicked into RGB format
+%       'nSensor channels'- Number of sensor channel inputs
+%       'maximum sensor value' - The maximum voltage (or dv) for the
+%                                input sensor
+%
+%       'data display'  - Linear values for the primaries, [0,1]
+%       'data srgb'     - sRGB rendering of the display data 
+%                         (Shown in the GUI window)
+%       'data xyz'      - CIE XYZ values of the display data
+%       'data ics'      - Internal color space representation 
+%                         (often XYZ, but not always).
+%       'data roi'      - Slot to store region of interest RGB data
+%       'data scaled to max' - Display data scaled to display max
+%       'data intensities max' - Maximum of the display linear
+%                                intensities
+%       'scale display'
+%       'data white point'
+%       'data or display white'  - Data white point if present, otherwise
 %                                   display white point
 %
-%
 % Miscellaneous
+%     'roi xyz'           - Slot to store XYZ values of ROI data
 %     'mcc Rect Handles'  - Handles for the rectangle selections in an MCC
 %                           (deprecated in Matlab 2020a app version.)
 %     'mcc Corner Points' - Outer corners of the MCC
 %     'corner points'     - Four corners for general charts.  Will replace
-%                           the MCC special case along with chart<>
-%                           functions.
+%                            the MCC special case along with chart<>
+%                            functions.
 %     'center'            - (r,c) at the image center
 %     'distance2center'   - Distance (in pixels) to image center
 %     'angle'             - Angle around image center
 %     'image grid'        - X,Y coords (in pixels) from image center
-%                              Returned in a cell array
+%                            Returned in a cell array
 %     'L3'                - L3 structure.  Requires L3 repository.
 %
-% Copyright ImagEval Consultants, LLC, 2005.
+% Description
+%  The image processing parameters are stored in a struct (ip). The
+%  parameters define both values and functions needed to perform,
+%  say, demosaicking, sensor conversion or illuminant correction.
+%  These transform parameters are the 3x3 linear transformations
+%  applied in many of these cases.
+%
+%  The image processing structure contains a display structure. Because of
+%  the importance of the display structure, it is possible to retrieve
+%  display parameters from the ipGet() function using the syntax
+%
+%     ipGet(ip,'display <parameter name>'),
+%     e.g., ipGet(ip,'display spd');
+%
+% See also
+%   ipSet, sensorGet, ...
+%
 
 % Examples:
 %{
   camera = cameraCreate;
-  scene = sceneCreate;
+  scene  = sceneCreate;
   camera = cameraCompute(camera,scene);
   ip  = cameraGet(camera,'ip');
   center = ipGet(ip,'center')
   d2c    = ipGet(ip,'distance2Center'); 
   ieNewGraphWin; mesh(d2c)
-  ipGet(ip,'combined transform')
+  ct = ipGet(ip,'combined transform')
+  sum(ct)
   ipGet(ip,'display')
-  spd = ipGet(ip,'display spd'); plotRadiance(ipGet(ip,'wave'),spd);
+  spd = ipGet(ip,'display spd'); 
+  plotRadiance(ipGet(ip,'wave'),spd);
 %}
 
 %% Check parameters, deal with display syntax and also apply ieParamFormat
@@ -136,7 +139,7 @@ switch oType
         display = ip.display;
         if isempty(oParam), val = display;
         elseif   isempty(varargin), val = displayGet(display,oParam);
-        else     val = displayGet(display,paoParamram,varargin{1});
+        else,    val = displayGet(display,paoParamram,varargin{1});
         end
         
     case 'l3'
@@ -179,7 +182,7 @@ switch oType
                 if checkfields(ip,'data','input'),val = size(ip.data.input,2); end
             case {'inputsize'}
                 if checkfields(ip,'data','input'), val = size(ip.data.input); end
-            case {'resultsize','size'}
+            case {'rgbsize','resultsize','displaysize','size'}
                 if checkfields(ip,'data','result'), val = size(ip.data.result); end
                 
                 % Calibrated color space, or sensor spectral QE.
@@ -219,7 +222,9 @@ switch oType
             case {'sensorconversionmethod','conversionmethodsensor'}
                 val = ip.sensorCorrection.method;
                 if isempty(val), val = 'None'; end
-                
+            case {'sensorconversionmatrix'}
+                val = ip.data.transforms{1};
+
                 % Image processing matrices (transforms)
             case {'transformcellarray','transforms'}
                 if checkfields(ip,'data','transforms'), val = ip.data.transforms; end
@@ -239,7 +244,7 @@ switch oType
                     val = transforms{2};
                 else,   val = eye(3,3);
                 end
-            case {'ics2display','ics2displaytransform','internalcs2displayspace'}
+            case {'ics2display','ics2displaymatrix','ics2displaytransform','internalcs2displayspace'}
                 transforms = ipGet(ip,'transforms');
                 if length(transforms) >= 3 && ~isempty(transforms{3})
                     val = transforms{3};
@@ -264,7 +269,8 @@ switch oType
             case {'renderstructure','render'}
                 % Structure
                 if checkfields(ip,'render'), val = ip.render; end
-            case {'scaledisplay','scaledisplayoutput'}
+            case {'renderscale','scaledisplay','scaledisplayoutput'}
+                % Returns a scale factor to apply to display output
                 if checkfields(ip,'render','scale')
                     val = ip.render.scale;
                 else
@@ -302,7 +308,12 @@ switch oType
                     % Whatever we decided, store it now.
                     ip.render.gamma = val;
                 end
-                
+            case {'renderwhitept'}
+                % Logical.  If true, forces the sensor conversion matrix to
+                % convert the scene illuminant to [1 1 1].
+                % Used in imageSensorCorrection.
+                val = ip.render.whitept;
+
                 % Image processor data
             case {'data','datastructure'}
                 val = ip.data;
@@ -335,12 +346,16 @@ switch oType
                 if checkfields(ip,'data','quantization')
                     val = ip.data.quantization;
                 end
-            case {'nbits','bits'}
+            case {'quantizationmethod'}
+                if checkfields(ip,'data','quantization','method')
+                    val = ip.data.quantization.method;
+                end
+            case {'quantizationnbits','nbits','bits'}
                 if checkfields(ip,'data','quantization','bits')
                     val = ip.data.quantization.bits;
                 end
             case {'maxdigitalvalue'}
-                % sensorGet(sensor,'max digital value')
+                % ipGet(ip,'max digital value')
                 %
                 % Either the max digital value or 1 if there is no
                 % representation of the nbits.
@@ -353,57 +368,96 @@ switch oType
             case {'ninputfilters','numbersensorchannels','nsensorinputs'}
                 val = size(ip.data.sensorspace,3);
                 
-            case {'sensorchannels','sensorspace'}
-                % ipGet(ip,'sensor channels')
+            case {'datasensor','sensordata','sensorchannels','sensorspace'}
+                % ipGet(ip,'sensor data')
+                %
                 % The demosaicked sensor (device) values
                 % This has dimension row,col,nChannel
                 val = ip.data.sensorspace;
                 
                 % Result and display are mixed up together here.
                 % We should decide which to use
-            case {'result','results','datadisplay','dataresult',}
+            case {'datadisplay','dataintensities','rgbintensities','result','results'}
                 % ipGet(ip,'result')
                 %
-                % These are the linear primary intensities of the display.
-                % THey are stored as values between 0 and 1.  If you would
-                % like the quantization values, use 'quantized result'
-                if checkfields(ip,'data','result'), val = ip.data.result; end
-            case {'quantizedresult'}
-                val = ipGet(ip,'result');
+                % Deleted aliases:
+                %   'dataresult','quantizedresult'
                 %
-                % If the results are already quantized, why would we
-                % multiply again by the max digital value?  Only if the
-                % result field was scaled to 0,1.  BUt it's not. So, I
-                % removed this (BW).
-                % val = val*ipGet(ip,'max digital value');
-                
+                % The values are the linear intensities of the ip
+                % display primaries that show the illuminant corrected
+                % ICS data. The primary linear intensities are values
+                % between 0 and 1 (off to maximum intensity).  They
+                % may have been quantized, but in that range.
+                %
+                % We use imageShowImage to convert these data into an
+                % sRGB image that the user is shown on their screen in
+                % the ipWindow.
+                % 
+                if checkfields(ip,'data','result')
+                    val = ip.data.result; 
+                end
+
+            case {'dataics'}
+                % ipGet(ip,'data ics')
+                % 
+                % The image processor has an internal color space.
+                % Often, but not always, XYZ.  The sensor data are
+                % transformed into this space, corrected for the
+                % illumination, and then transformed to the display
+                % primary intensities by the mapping in
+                % ieInternal2Display.
+                val = ipGet(ip,'sensor space');
+                T   = ipGet(ip,'sensor conversion matrix');
+                val = imageLinearTransform(val,T);
+
+            case {'dataicsilluminantcorrected'}
+                % img = ipGet(ip,'data ics illuminant corrected');
+                %
+                % Data in the ICS space, after illuminant correction.
+                %
+                val = ipGet(ip,'dataics');
+                T   = ipGet(ip,'illuminant correction matrix');
+                val = imageLinearTransform(val,T);
+
             case {'dataxyz'}
                 % ipGet(ip,'display data xyz');
-                % Convert the linear display data into XYZ values, accounting for
-                % the display primaries.
+                %
+                % The display data into XYZ values, accounting for the
+                % display primaries.                
                 val = imageDataXYZ(ip);
-            case {'srgb','datasrgb'}
+
+            case {'datasrgb','srgb'}
                 % ipGet(ip,'data srgb');
                 %
+                % The display data in 'result' are transformed into
+                % XYZ and then sRGB for display.  
+                %
+                %    val = imageDataXYZ(ip);
+                %    val = xyz2srgb(val);
+                %
+                % The returned image applies the gamma value from the
+                % ip window, if the window is open.
                 val = imageShowImage(ip,[],[],0);
-                %  val = imageDataXYZ(ip);
-                %  val = xyz2srgb(val);
                 
-            case {'scaledresult','resultscaledtomax','resultscaled'}
+            case {'dataintensitiesscaled','scaledresult','resultscaledtomax','resultscaled'}
                 % srgb = ipGet(ip,'scaled result')
                 %
                 % Get the srgb image, scaled to max of 1, from the ip
                 % result data.
                 ip = ipSet(ip,'scale display output',true);
                 val = imageShowImage(ip,[],[],0);
-            case {'resultred','resultprimary1','reddata','datared'}
+            %{    
+            case {'displayprimary1','resultred','resultprimary1','reddata','datared'}
                 val = ip.data.result(:,:,1);
-            case {'resultgreen','resultprimary2','greendata','datagreen'}
+            case {'displayprimary2','resultgreen','resultprimary2','greendata','datagreen'}
                 val = ip.data.result(:,:,2);
-            case {'resultblue','resultprimary3','bluedata','datablue'}
+            case {'displayprimary3','resultblue','resultprimary3','bluedata','datablue'}
                 val = ip.data.result(:,:,3);
-            case {'resultprimary','resultprimaryn'}
+            %}
+            case {'dataintensity','resultprimary','resultprimaryn'}
+                % A single display channel
                 % redPrimary = ipGet(ip,resultprimary,1);
+                %
                 % p4 = ipGet(ip,resultprimary,4);
                 if length(varargin) == 1, n = varargin{1};
                 else, errordlg('You must specify a primary number.')
@@ -412,8 +466,13 @@ switch oType
                     val = ip.data.result(:,:,n);
                 else, error('No such display primary.');
                 end
-            case {'resultmax'}
+            case {'dataintensitiesmax','resultmax'}
                 if checkfields(ip,'data','result'), val = max(ip.data.result(:)); end
+            case {'dataintensitiesdv','dataintensitiesdigitalvalues'}
+                % Digital value of the display intensities
+                val = ipGet(ip,'data intensities');
+                nbits = ipGet(ip,'nbits');
+                val = val*(2^nbits);
             case {'maxsensor','maximumsensorvalue','maximumsensorvoltageswing'}
                 if checkfields(ip,'data','max'), val = ip.data.max;
                 else
@@ -430,22 +489,7 @@ switch oType
                 val = ipGet(ip,'data white point');
                 if isempty(val), val = ipGet(ip,'display white point'); end
                 
-                % ISET window management
-                %{
-            case {'consistency','computationalconsistency','parameterconsistency'}
-                ip.consistency = val;
-                %
-                %                 % Macbeth color checker and related ROIs and image spatial management
-                %             case {'mccrecthandles'}
-                %                 % These are handles to the squares on the MCC selection regions
-                %                 % see macbethSelect
-                %                 if checkfields(ip,'mccRectHandles'), val = ip.mccRectHandles; end
-                %             case {'mcccornerpoints'}
-                %                 % Corner points for the whole MCC chart
-                %                 warning('Use chart corner points')
-                %                 if checkfields(ip,'mccCornerPoints'), val = ip.mccCornerPoints; end
-                %
-                %}
+                % Chart related
             case {'chartparameters'}
                 % Struct of chart parameters
                 if checkfields(ip,'chartP'), val = ip.chartP; end

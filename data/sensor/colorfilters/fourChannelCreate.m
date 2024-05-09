@@ -1,14 +1,19 @@
-% Create four channel sensor for some test analyses.
+function sensor = fourChannelCreate(varargin)
+% Create four channel RGBW sensor for some test analyses.
 %
 % This is a fabricated sensor.
 %
+% 
 
+% Example:
+
+%
 wave = 400:1:700;
 
-rgbFile = fullfile(isetRootPath,'data','sensor','rgb');
+rgbFile = fullfile(isetRootPath,'data','sensor','colorfilters','RGB');
 [rgbData,rgbFilterNames] = ieReadColorFilter(wave,rgbFile);
 
-wFile = fullfile(isetRootPath,'data','sensor','W');
+wFile = fullfile(isetRootPath,'data','sensor','colorfilters','W');
 [wData,wFilterNames] = ieReadColorFilter(wave,wFile);
 
 % Merge the data sets
@@ -22,6 +27,11 @@ sensor = sensorCreate;
 sensor = sensorSet(sensor,'wave',wave);
 sensor = sensorSet(sensor,'colorfilters',data);
 sensor = sensorSet(sensor,'filterNames',filterNames);
-fName = fullfile(isetRootPath,'data','sensor','colorfilters','RGBW.mat');
-ieSaveColorFilter(sensor,fName);
+
+
+% fName = fullfile(isetRootPath,'data','sensor','colorfilters','RGBW.mat');
+% ieSaveColorFilter(sensor,fName);
+
+end
+
 

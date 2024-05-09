@@ -124,11 +124,21 @@ function val = oiGet(oi,parm,varargin)
 %       {'raytrace optics name'}  - Optics used to derive shift-variant psf
 %       {'rt psf size'}        - row,col dimensions of the psf
 %
+%       {'compute method'}  - How to apply the OTF. 
+%                              'opticspsf' - PSF method that regenerates PSF from the wvf.
+%                              'opticsotf' - OTF method that splines the OTF
+%                              'humanmw'   - Human Marimont-Wandell calc
+%                             This applies for some methods, and
+%                             is empty other methods where the question does not apply.
+%
 % Misc
 %      {'gamma'}             - Gamma setting in the oiWindow
 %      {'rgb image'}         - RGB rendering of OI data
 %      {'centroid'}          - Centroid of a point image
 %      {'corner points'}     - Chart corner points
+%
+% Metadata
+%      {'metadata'}          - A slot used for misc parameters
 %
 % Auxiliary information
 %      'illuminant'           - HDRS multispectral data illuminant stored here (watts/sr/m^2/nm)
@@ -151,14 +161,14 @@ function val = oiGet(oi,parm,varargin)
    oiGet(oi,'wave')
 
    % Use oiGet(oi,'optics') to get the optics object out.
-   % opticsGet and opticsSet can be use don that, and
-   % it can be put back in with oi = oiSet(oi,'optics',optics);
+   % opticsGet and opticsSet can be used on optics. The struct
+   % can be put back in with oi = oiSet(oi,'optics',optics);
    optics = oiGet(oi,'optics');
    oi = oiSet(oi,'optics',optics);
 
    % Some optics properties can be obtained directly with oiGet.
    oiGet(oi,'optics fnumber')
-   oiGet(oi, 'optics otf data','mm',500);
+   oiGet(oi,'optics otf data','mm',500);
 
    % Compute oi for a scene and then get
    oi = oiCompute(oi,sceneCreate);
@@ -170,9 +180,9 @@ function val = oiGet(oi,parm,varargin)
    photons = oiGet(oi,'photons',[400 600]);           % Photons at list of wavelengths
 %}
 %{
-   [oi, wvf] = oiCreate('wvf'); oi = oiSet(oi,'wvf',wvf);
+   [oi, wvf] = oiCreate('wvf');
    oiGet(oi,'wvf number spatial samples')
-   oiGet(oi,'wvf pupil diameter','m')
+   oiGet(oi,'wvf pupil diameter','mm')
 %}
 
 val = [];
@@ -192,15 +202,7 @@ switch oType
         % parameter.  
         optics = oi.optics;
         if isempty(parm), val = optics;
-        else
-            %{
-            % Original call, using dlMTF.  
-            optics = oi.optics;
-            if isempty(parm), val = optics;
-            else, val = opticsGet(optics,parm,varargin{:});
-            end
-            %}
-
+        else            
             % There is a special case for the OTF when we use dlMTF.
             % See comment below.
             switch(parm)
@@ -259,8 +261,8 @@ switch oType
     case 'wvf'
         % If a wavefront structure, then we either return the wvf or
         % an wvf parameter.  See above for varargin{:}
-        if isfield(oi,'wvf'),  wvf = oi.wvf;
-        else,                  error('OI does not have a wavefront slot.');
+        if checkfields(oi,'optics','wvf'),  wvf = oi.optics.wvf;
+        else,                  error('OI optics does not have a wavefront slot.');
         end
         if isempty(parm), val = wvf;
         else, val = wvfGet(wvf,parm,varargin{:});
@@ -276,7 +278,13 @@ switch oType
                 val = oi.type;
             case 'name'
                 val = oi.name;
+            case 'metadata'
+                % Used in different ways.  Not always there.
+                if isfield(oi,'metadata')
+                    val = oi.metadata;
+                end
             case 'human'
+                % When the lens slot is there, this is a human model.
                 if isfield(oi.optics,'lens'), val = true;
                 else,                         val = false;
                 end
@@ -285,8 +293,21 @@ switch oType
             case 'consistency'
                 % deprecated.
                 val = oi.consistency;
-                
-                
+
+            case 'computemethod'
+                % This tries to be a little smart for backwards
+                % compatibility with stored oi's, such as we have with the
+                % mRGC mosaics.
+                if (isfield(oi,'computeMethod'))
+                    val = oi.computeMethod; 
+                else
+                    if (isfield(oi.optics,'wvf'))
+                        val = 'opticspsf';
+                    else
+                        val = 'opticsotf';
+                    end
+                end
+
             case {'rows','row','nrows','nrow'}
                 if checkfields(oi,'data','photons'), val = size(oi.data.photons,1);
                 else

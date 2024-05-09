@@ -43,7 +43,9 @@ showWbar = ieSessionGet('waitbar');
 
 % Interpret the oiwvf as an oi or wvf.  If an oi, it might have a wvf.
 if strcmp(oiwvf.type,'wvf')
-    % User sent in a wvf
+    % User sent in a wvf.  Set up a skeletal oi, and then compute
+    % with the wvf below by calling opticsPSF below and passing the
+    % wvf in.  That call puts the wvf into the oi.
     wvf = oiwvf;
     flength = wvfGet(wvf,'focal length','m');
     fnumber = wvfGet(wvf, 'f number');
@@ -106,9 +108,9 @@ if showWbar, waitbar(0.6,wBar,'OI-SI: Applying PSF'); end
 if showWbar, waitbar(0.6,wBar,'Applying PSF-SI'); end
 
 % The optics calculation
-opticsName = oiGet(oi,'optics name');
-switch lower(opticsName)
-    case {'human-mw','opticsotf'}
+computeMethod = oiGet(oi,'compute method');
+switch lower(computeMethod)
+    case {'humanmw','opticsotf'}
         % We did not update the MW calculation.  It was very rough
         % anyway.  We use the old methods to calculate.
         oi = opticsOTF(oi,scene,varargin{:});

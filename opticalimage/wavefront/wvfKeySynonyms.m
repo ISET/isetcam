@@ -38,7 +38,7 @@ function keyValues = wvfKeySynonyms(keyValues)
 %    01/10/18  jnm  Formatting update
 
 %% Handle case where a single string is passed
-%
+
 % This converts input into a cell array. We reconvert after the synonym
 % replacement section.
 if (ischar(keyValues))
@@ -77,8 +77,6 @@ for kk = 1:2:length(keyValuesCell)
         case {'measuredobserverfocuscorrection', ...
                 'measuredobserverfocuscorrectiondiopters'}
             keyValuesCell{kk} = 'measuredobserverfocuscorrection';
-        case {'zcoeffs', 'zcoeff', 'zcoef'}
-            keyValuesCell{kk} = 'zcoeffs';
         case {'sampleintervaldomain'}
             keyValuesCell{kk} = 'sampleintervaldomain';
         case {'numberspatialsamples', 'spatialsamples', 'npixels', ...
@@ -117,4 +115,6 @@ if (ischar(keyValues))
     keyValues = keyValuesCell{1};
 elseif (iscell(keyValuesCell))
     keyValues = keyValuesCell;
+end
+
 end

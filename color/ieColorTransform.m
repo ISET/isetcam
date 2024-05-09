@@ -1,35 +1,48 @@
-function T = ieColorTransform(sensor,targetSpace,illuminant,surface)
+function T = ieColorTransform(sensor,targetSpace,illuminant,surface,whitept)
 % Gateway routine to transform sensor data into a target color space
 %
-%    T = ieColorTransform(sensor,[targetSpace='XYZ'],[illuminant='D65'],[surface='Macbeth'])
+% Synopsis
+%  T = ieColorTransform(sensor,[targetSpace='XYZ'],[illuminant='D65'],[surface='Macbeth'],[whitept=false])
 %
+% Brief
 % This is a gateway to a collection of methods that find color space
 % transformations to map sensor data into a target color space. This
 % routine currently has only a few defaults. It will expand over time,
 % significantly.  The calling conventions are likely to change, as well.
 %
-% The default method is to find a linear transformation that maps the the
-% sensor responses to the Macbeth ColorChecker into the Macbeth
-% ColorChecker values in XYZ under D65 using a least-squares minimization.
+% Input
+%   sensor
+%   targetSpace
+%   illuminant
+%   surface
+%   whitept
 %
-% Optionally, the user can send in a spectral file name that contains a
-% different surface set (surface) or a file name that contains a
-% different illuminant (illuminant).
+% Output
+%   T - Transform from sensor space to target space
 %
-% An alternative is to find the linear transformation that minimizes the
-% transformation into linear sRGB values for the Macbeth Color Checker.
-% These values are stored in a file.  In the future, we will implement a
-% set of linear sRGB values for other sets of surfaces and lights, or at
-% least a method of calculating them in here on the fly, and performing
-% that minimization.
+% Description
+%  The default method is to find a linear transformation that maps the the
+%  sensor responses to the Macbeth ColorChecker into the Macbeth
+%  ColorChecker values in XYZ under D65 using a least-squares minimization.
 %
-% More elaborate alternatives will be included later.  These are an
-% alternative is to minimize a weighted sum of the mean error and the
-% noise error.  (Ulrich Barnhoefer, SPIE paper).
+%  Optionally, the user can send in a spectral file name that contains a
+%  different surface set (surface) or a file name that contains a
+%  different illuminant (illuminant).
 %
-% We will aso build more complex maps, based on the Manifold methods
-% and return a lookup table for the transformation. (Jeff DiCarlo, JOSA
-% paper)
+%  An alternative is to find the linear transformation that minimizes the
+%  transformation into linear sRGB values for the Macbeth Color Checker.
+%  These values are stored in a file.  In the future, we will implement a
+%  set of linear sRGB values for other sets of surfaces and lights, or at
+%  least a method of calculating them in here on the fly, and performing
+%  that minimization.
+%
+%  More elaborate alternatives will be included later.  These are an
+%  alternative is to minimize a weighted sum of the mean error and the
+%  noise error.  (Ulrich Barnhoefer, SPIE paper).
+%
+%  We will aso build more complex maps, based on the Manifold methods
+%  and return a lookup table for the transformation. (Jeff DiCarlo, JOSA
+%  paper)
 %
 % Examples:
 %    sensor = vcGetObject('sensor');
@@ -43,7 +56,31 @@ function T = ieColorTransform(sensor,targetSpace,illuminant,surface)
 %    img = imageLinearTransform(img,T);
 %
 % Copyright ImagEval Consultants, LLC, 2005.
+%
+% See also
+%
 
+% Example:
+%{
+scene = sceneCreate;
+sXYZ = sceneGet(scene,'xyz');
+
+oi = oiCreate('wvf');
+oi = oiCompute(oi,scene,'crop',true); 
+
+sensor = sensorCreate('rgbw');
+sensor = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'),oi);
+sensor = sensorSet(sensor,'noise flag',0);
+sensor = sensorCompute(sensor,oi);
+sensorWindow(sensor);
+
+T  = ieColorTransform(sensor,'XYZ','D65','mcc');
+ip = ipCreate;
+ip = ipCompute(ip,sensor);
+sensorXYZ = imageLinearTransform(ip.data.sensorspace,T);
+%}
+
+%%
 if ieNotDefined('targetSpace'), targetSpace = 'XYZ';          end
 if ieNotDefined('illuminant'),  illuminant  = 'D65';          end
 if ieNotDefined('surface'),     surface     = 'multisurface'; end
@@ -68,8 +105,10 @@ switch lower(targetSpace)
         targetSpace = which(sprintf('%sQuanta.mat',targetSpace));
         targetQE = ieReadSpectra(targetSpace,wave);
         
-        % This is where the transform is calculated
+        % This is where the transform is calculated        
         T = imageSensorTransform(sensorQE,targetQE,illuminant,wave,surface);
+        
+        % We should check that targetQE ~ sensorQE*T
         
     case {'linearsrgb','lrgb'}
         % Probably unused

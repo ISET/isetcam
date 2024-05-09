@@ -26,6 +26,9 @@
 %
 %   pe = pyenv('Version','/Users/wandell/opt/anaconda3/envs/py38/bin/python');
 %
+%% May 8, 2024.  We updated to 3.9 using the commands above
+% but replacing 38 with 39
+%
 %%
 % On wandell's Mac at home, which is an Intel machine, we did ...
 %

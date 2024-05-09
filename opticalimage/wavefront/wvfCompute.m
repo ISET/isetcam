@@ -39,8 +39,11 @@ p.addRequired('wvf',@isstruct);
 p.addParameter('computepupilfunction',true,@islogical);
 p.addParameter('computepsf',true,@islogical);
 
-p.addParameter('humanlca',false,@islogical);   % Apply longitudinal chromatic aberration
-p.addParameter('lcafunction',[],@ismatrix);
+% We decied these behaviors should be controlled by the customLca field,
+% not a key/value pair.
+% p.addParameter('humanlca',false,@islogical);   % Apply longitudinal chromatic aberration
+% p.addParameter('lcafunction',[],@ismatrix);
+
 p.addParameter('aperture',[],@ismatrix);
 p.addParameter('computesce',false,@islogical);   % Apply Stiles Crawford effect to aperture function
 
@@ -51,15 +54,18 @@ params = p.Results;
 
 if params.computepupilfunction
 
-    if params.humanlca && ~isempty(params.lcafunction)
-        error('You cannot specify human lca and a custom lca function.')
-    end
+    % if params.humanlca && ~isempty(params.lcafunction)
+    %     error('You cannot specify human lca and a custom lca function.')
+    % end
    
+    % wvf  = wvfComputePupilFunction(wvf,...
+    %     'human lca',        params.humanlca, ...
+    %     'aperture',         params.aperture, ...
+    %     'compute sce',      params.computesce, ...
+    %     'lca function',     params.lcafunction);
     wvf  = wvfComputePupilFunction(wvf,...
-        'human lca',        params.humanlca, ...
         'aperture',         params.aperture, ...
-        'compute sce',      params.computesce, ...
-        'lca function',     params.lcafunction);
+        'compute sce',      params.computesce);
 else
     warning('No pupil function computed.');
 end

@@ -68,9 +68,14 @@ classdef cpScene < handle
         expTimes = [.5];    % single or array of exposure times to use when
         % generating the rendered images
 
-        allowsCameraMotion = true;
-        cameraMotion = []; % extent of camera motion in meters per second
+        % we have two types of camera motion
+        % 1) Translate & Rotate per frame
+        % 2) ActiveTranform for motion during frame
+        useActiveCameraMotion = false;
+
+        % See if we can use this for both 'active' & 'passive'
         % ['<cameraname>' [tx ty tz] [rx ry rz]]
+        cameraMotion = []; % extent of camera motion in meters per second
 
         allowsObjectMotion = false; % default until set by scene type
         objectMotion = []; % none until the user adds some
@@ -107,7 +112,7 @@ classdef cpScene < handle
                 options.recipe struct = struct([]);
                 options.sceneName char = 'cornell box bunny chart';
                 options.scenePath char = 'Cornell_BoxBunnyChart';
-                options.resolution (1,2) {mustBeNumeric} = [512 512];
+                options.resolution (1,2) {mustBeNumeric} = [1024 1024];
                 options.numRays (1,1) {mustBeNumeric} = 64;
                 options.numFrames (1,1) {mustBeNumeric} = 1;
                 options.imageFileNames (1,:) string = [];
@@ -121,6 +126,7 @@ classdef cpScene < handle
                 options.dispCal char = 'OLED-Sony.mat';
                 options.apertureDiameter {mustBeNumeric} = [];
                 options.verbose {mustBeNumeric} = 0; % squash output by default
+                options.useActiveCameraMotion = true;
             end
             obj.resolution = options.resolution;
             obj.numRays = options.numRays;
@@ -130,7 +136,7 @@ classdef cpScene < handle
             obj.apertureDiameter = options.apertureDiameter;
             obj.verbosity = options.verbose;
             obj.sceneLuminance = options.sceneLuminance;
-
+            obj.useActiveCameraMotion = options.useActiveCameraMotion;
             %cpScene Construct an instance of this class
             %   allow whatever init we want to accept in the creation call
             obj.sceneType = sceneType;
@@ -154,11 +160,11 @@ classdef cpScene < handle
                     obj.sceneName = options.sceneName;
 
                     if ~piDockerExists, piDockerConfig; end
-                    
+
                     try
                         obj.thisR = piRecipeDefault('scene name', obj.sceneName);
                     catch
-                        obj.thisR = piRead([obj.sceneName '.pbrt'], 'exporter', 'Copy');
+                        obj.thisR = piRead(which([obj.sceneName '.pbrt']), 'exporter', 'Copy');
                     end
 
                     if ~isempty(options.lensFile)
@@ -167,7 +173,7 @@ classdef cpScene < handle
                     else
                         obj.thisR.camera = piCameraCreate('perspective');
                     end
-                    obj.thisR.set('film diagonal',66); % sensor mm
+                    obj.thisR.set('film diagonal',obj.filmDiagonal); % sensor mm
                     obj.allowsObjectMotion = true;
                     % ideally we should be able to accept an array of scene
                     % files
@@ -203,7 +209,7 @@ classdef cpScene < handle
         % TODO: If there is no camera or object motion, then for burst &
         % stack operations, maybe we should just render once in pbrt to
         % save time?
-        function [sceneObjects, sceneFiles] = render(obj,expTimes, options)
+        function [sceneObjects, sceneFiles, renderedFiles] = render(obj,expTimes, options)
             arguments
                 obj cpScene;
                 expTimes (1,:);
@@ -226,6 +232,7 @@ classdef cpScene < handle
             %   we return an array of oi objects, otherwise scenes
             %   FUTURE
 
+            renderedFiles = [];
             if exist('sceneObjects', 'var'); clear(sceneObjects); end
             % Process based on sceneType.
             switch obj.sceneType
@@ -245,6 +252,7 @@ classdef cpScene < handle
 
                     %% We need to write a copy of the recipe in its default
                     % location also, for future processing
+
                     piWrite(obj.thisR);
 
 
@@ -320,10 +328,8 @@ classdef cpScene < handle
                         % We do this per frame because we want to
                         % allow for some perturbance/shake/etc.
 
-                        % Need to improve by supporting motion during
-                        % capture like in: t_piIntro_cameramotion
-                        if obj.allowsCameraMotion && ii > 1
-                            movePBRTCamera(obj);
+                        if ~isempty(obj.cameraMotion)
+                            movePBRTCamera(obj, ii);
                         end
                         %
                         %% Render and visualize
@@ -357,8 +363,13 @@ classdef cpScene < handle
                             % an option:
 
                             obj.thisR.set('filmrendertype',{'radiance','depth'});
-                            [sceneObject, results] = piRender(obj.thisR,  ...
+                            [sceneObject, results, ~, renderedFile] = piRender(obj.thisR,  ...
                                 'verbose', obj.verbosity);
+
+                            [p, n, e] = fileparts(renderedFile);
+                            sequencedFileName = fullfile(ivRootPath, 'local', sprintf('%s-%03d-%03d%s',n,ii,floor(1000*obj.expTimes(ii)), e));
+                            movefile(renderedFile, sequencedFileName,'f');
+                            renderedFiles{end+1} = sequencedFileName;
                         else
                             sceneObject = sceneFromFile(imageFileName, 'multispectral');
                         end
@@ -372,10 +383,11 @@ classdef cpScene < handle
                             if obj.sceneLuminance > 0
                                 sceneObject = sceneSet(sceneObject,'meanluminance', obj.sceneLuminance);
                             end
-                            sceneWindow(sceneObject);
+                            %sceneWindow(sceneObject);
                             sceneToFile(imageFileName,sceneObject);
                             % this is mostly just for debugging & human inspection
-                            sceneSaveImage(sceneObject,imageFilePrefixName);
+                            %rgbImage = sceneShowImage(sceneObject,-3); % HDR, no render
+                            %imwrite(rgbImage,imageFilePrefixName)
                             %sprintf("Scene luminance is: %f", sceneGet(sceneObject, 'mean luminance'));
                         elseif isequal(sceneObject.type, 'opticalimage') % we have an optical image
                             oiSaveImage(sceneObject, append(imageFilePrefixName,'.png'));
@@ -443,22 +455,64 @@ classdef cpScene < handle
             end
         end
 
-        function movePBRTCamera(obj)
+        function movePBRTCamera(obj, frameNumber)
+
+            persistent rotationMatrixStart;
+            persistent translationStart;
+
+            % unless we are allowing active motion
+            % the first frame doesn't move
+            if isequal(frameNumber, 1)
+                if ~obj.useActiveCameraMotion
+                    return;
+                else
+                    rotationMatrixStart = piRotationMatrix;
+                end
+            end
             for ii = 1:numel(obj.cameraMotion)
                 ourMotion = obj.cameraMotion{ii};
-                if ~isempty(ourMotion{2})
-                    obj.thisR = piCameraTranslate(obj.thisR, ...
-                        'x shift', ourMotion{2}(1),...
-                        'y shift', ourMotion{2}(2),...
-                        'z shift', ourMotion{2}(3));  % meters
-                end
-                if ~isempty(ourMotion{3})
-                    obj.thisR = piCameraRotate(obj.thisR,...
-                        'x rot', ourMotion{3}(1),...
-                        'y rot', ourMotion{3}(2),...
-                        'z rot', ourMotion{3}(3));
-                end
 
+                % New way is to use activetransform
+                if obj.useActiveCameraMotion
+                    if ~isempty(ourMotion{2})
+
+                        translationEnd = ourMotion{2}(:)';  % meters
+
+                        obj.thisR.set('camera motion translate start',[0 0 0]);
+                        obj.thisR.set('camera motion translate end',translationEnd);
+
+                    end
+                    if ~isempty(ourMotion{3})
+
+                        rotationMatrixEnd = rotationMatrixStart;
+                        rotationMatrixEnd(1,1) = rotationMatrixStart(1,1) ...
+                            + ourMotion{3}(3);
+                        rotationMatrixEnd(1,2) = rotationMatrixStart(1,2) ...
+                            + ourMotion{3}(2);
+                        rotationMatrixEnd(1,3) = rotationMatrixStart(1,3) ...
+                            + ourMotion{3}(1);
+
+                        obj.thisR.set('camera motion rotate start',rotationMatrixStart);
+                        obj.thisR.set('camera motion rotate end',rotationMatrixEnd);
+
+                        % I think we need to daisy chain rotation matrices
+                        rotationMatrixStart = rotationMatrixEnd;
+
+                    end
+                else % non active
+                    if ~isempty(ourMotion{2})
+                        obj.thisR = piCameraTranslate(obj.thisR, ...
+                            'x shift', ourMotion{2}(1),...
+                            'y shift', ourMotion{2}(2),...
+                            'z shift', ourMotion{2}(3));  % meters
+                    end
+                    if ~isempty(ourMotion{3})
+                        obj.thisR = piCameraRotate(obj.thisR,...
+                            'x rot', ourMotion{3}(1),...
+                            'y rot', ourMotion{3}(2),...
+                            'z rot', ourMotion{3}(3));
+                    end
+                end
             end
         end
 

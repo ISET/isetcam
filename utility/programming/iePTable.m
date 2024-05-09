@@ -206,13 +206,14 @@ switch format
         % OK, we have an oi so put up the data.
         precision = 3;
         data = {...
-            'Optical Image name',         char(oiGet(oi,'name')), '';
-            'Rows & cols',       num2str(oiGet(oi,'size')),                             'samples';
-            'Horizontal FOV',         num2str(oiGet(oi,'fov')),                              'deg';
-            'Wave (nm)',                num2str(wave), 'nm';
-            'Spatial resolution',     num2str(oiGet(oi,'spatial resolution','um'),precision),'um/sample';
-            'Mean illuminance',num2str(oiGet(oi,'mean illuminance'),precision),       'lux';
-            'Area',            num2str(oiGet(oi,'area','mm'),precision),              'mm^2';
+            'Optical Image name', char(oiGet(oi,'name')), '';
+            'Compute method',   oiGet(oi,'compute method'), '';
+            'Rows & cols',        num2str(oiGet(oi,'size')),                             'samples';
+            'Horizontal FOV',     num2str(oiGet(oi,'fov')),                              'deg';
+            'Wave (nm)',          num2str(wave), 'nm';
+            'Spatial resolution', num2str(oiGet(oi,'spatial resolution','um'),precision),'um/sample';
+            'Mean illuminance',   num2str(oiGet(oi,'mean illuminance'),precision),       'lux';
+            'Area',               num2str(oiGet(oi,'area','mm'),precision),              'mm^2';
             };
         
         % Deal with light field optical image parameters.
@@ -229,9 +230,10 @@ switch format
         % OK, we have an oi so put up the data.
         precision = 3;
         data = {...
-            'Rows & columns',              num2str(oiGet(oi,'size'));
+            'Compute method',        oiGet(oi,'compute method');
+            'Rows & columns',         num2str(oiGet(oi,'size'));
             'H FOV (deg)',            num2str(oiGet(oi,'fov'));
-            'Wave (nm)',                num2str(wave);
+            'Wave (nm)',              num2str(wave);
             'Resolution (um/sample)', num2str(oiGet(oi,'spatial resolution','um'),precision);
             'Mean illuminance (lux)', num2str(oiGet(oi,'mean illuminance'),precision);
             'Area (mm^2)',            num2str(oiGet(oi,'area','mm'),precision)';
@@ -292,6 +294,13 @@ if isempty(sensor), data = []; return; end
 oi = ieGetObject('oi');
 if isempty(oi), oi = oiCreate; end
 
+switch sensorGet(sensor,'quantization method') 
+    case 'linear'
+        nbits = sprintf('%d',sensorGet(sensor,'nbits'));
+    case 'analog'
+        nbits = 'analog';
+end
+
 switch format
     case 'window'
         % num2str - 2nd argument is precision
@@ -305,8 +314,9 @@ switch format
             'Horizontal Res / distance',       num2str(sensorGet(sensor,'wspatial resolution','um'),precision), 'um';
             'Horizontal Res / degrees',       num2str(sensorGet(sensor,'h deg per pixel',oi),precision), 'deg/pixel';
             'Exposure time',      num2str(sensorGet(sensor,'exp time')),                 's';
+            'Bits',               nbits,                                           'bits';
             'DSNU',          num2str(sensorGet(sensor, 'dsnu level'),precision),    'V';
-            'PRNU',          num2str(sensorGet(sensor, 'prnu level'),precision),    '%';
+            'PRNU',          num2str(sensorGet(sensor, 'prnu level'),precision),    'percent';
             'Analog gain',   num2str(sensorGet(sensor, 'analog gain'),precision),   '';
             'Analog offset', num2str(sensorGet(sensor, 'analog offset'),precision), 'V';
             };
@@ -320,8 +330,9 @@ switch format
         data = {
             'Size (mm)',     num2str(sensorGet(sensor,'dimension','mm'),precision);
             'Hor FOV (deg)', num2str(sensorGet(sensor,'fov',1e6, oi),precision);
-            'Res (um)',  num2str(sensorGet(sensor,'wspatial resolution','um'),precision);
+            'Res (um)',      num2str(sensorGet(sensor,'wspatial resolution','um'),precision);
             'Res (deg/pix)', num2str(sensorGet(sensor,'h deg perpixel'),precision);
+            'Bits',          nbits;
             'Analog gain',   num2str(sensorGet(sensor,'analog gain'), precision);
             'Analog offset', num2str(sensorGet(sensor,'analog offset'),precision);
             };
@@ -374,6 +385,10 @@ function data = tableIP(ip,format)
 % iePtable(ipCreate)
 
 if isempty(ip), data = []; return; end
+if ipGet(ip,'max sensor') < 256,  nbits = 'analog';
+else,          nbits = sprintf('%d',log2(ipGet(ip,'max sensor')));
+end
+
 switch format
     case 'window'
         precision = 3;
@@ -385,15 +400,18 @@ switch format
             'Illuminant correction',  ipGet(ip,'illuminant correction method'),   '';
             'Display name',        ipGet(ip,'display name'),                   '';
             'Display dpi',         num2str(ipGet(ip,'display dpi')),           'dots per inch';
+            'Display bits',        nbits,                                      'bits'
             '--------------------', '-----------------------', '-------------------';
             };
         
     case 'embed'
         precision = 3;
+        
         data = {
             'name',                ipGet(ip,'name');
             'row, col, primaries', num2str(ipGet(ip,'result size'),precision);
             'display name',        ipGet(ip,'display name');
+            'n bits',              nbits;               
             };
     otherwise
         error('Unknown table format %s\n',format);

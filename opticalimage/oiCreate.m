@@ -2,7 +2,7 @@ function [oi, wvf, scene] = oiCreate(oiType,varargin)
 % Create an optical image structure 
 %
 % Syntax
-%   [oi, wvf] = oiCreate(oiType,varargin)
+%   [oi, wvf, scene] = oiCreate(oiType,varargin)
 %
 % Description
 %  The oi structure describes the optics parameters and stores image
@@ -14,23 +14,19 @@ function [oi, wvf, scene] = oiCreate(oiType,varargin)
 %                      NaN focal length
 %
 %     {'diffraction limited'} -  Diffraction limited optics, no diffuser or
-%                         data (Default).  Equivalent to using the wvf or
-%                         shift-invariant with a zero wavefront
-%                         aberrations.
+%                      data (Default).  Equivalent to using the wvf or
+%                      shift-invariant with a zero wavefront aberrations.
 %
-%     {'shift invariant'}  -  Shift-invariant model, used for wavefront
-%                      calculations in ISETCam and also as the basis for
-%                      the wvf human (wavefront model estimated from
-%                      adaptive optics)
-%
+%     {'wvf'}        - Use a wavefront structure to define
+%                      shift-invariant optics.  Default is diffraction
+%                      limited, fnumber 4, focal length 3.863 mm
+%     
 %     {'wvf human'}  - Human shift-invariant optics based on mean
 %                      wavefront abberration from Thibos et al. (2009,
 %                      Ophthalmic & Physiological Optics). Optional
 %                      parameters can be passed for this case (see below).
 %                      Also includes the human Lens default.
 %
-%     {'wvf'}        - Use the wavefront measurements to define the optics.
-%     
 %     {'human mw'}   - Human shift-invariant optics model with chromatic
 %                      aberration estimated by Marimont-Wandell
 %
@@ -49,19 +45,19 @@ function [oi, wvf, scene] = oiCreate(oiType,varargin)
 %
 % Optional key/val
 %   
-%   varargin - parameters are used for rayTrace, human wvf, uniform d65,
-%      uniform ee and black.
+%   varargin - Different parameters can be used for rayTrace, human wvf,
+%   wvf, uniform d65, uniform ee and black.
 % 
 %     rayTrace    - varargin{1} = rtFileName
 %     human wvf   - varargin{:} passed to opticsCreate
 %
 %     uniform d65, uniform ee, black -  
 %          sz = varargin{1}; wave = varargin{2};  
+%     wvf  - varargin{1} = A specific wavefront struct
 %
 % Returns
 %   oi    - The constructed optical image with the optics
-%   wvf   - The optics structure is created from a wavefront struct. That
-%           struct is optionally returned as the second argument.
+%   wvf   - The wavefront structure used to create the optics
 %   scene - The scene used to create the oi for uniform cases
 %
 % Description
@@ -89,6 +85,7 @@ oi = oiCreate('uniform EE');   % Create an equal energy
 %}
 %
 
+%% Parse arguments
 validTypes = {'default','pinhole','diffractionlimited','diffraction', ...
     'shiftinvariant','raytrace','wvf',...
     'human','humanmw','wvfhuman','humanwvf',...
@@ -97,13 +94,17 @@ validTypes = {'default','pinhole','diffractionlimited','diffraction', ...
 % Default is the diffraction limited calculation
 if ieNotDefined('oiType'), oiType = 'diffraction limited'; 
 else 
+    % If oiCreate('valid'), we return the valid types
     if strncmp(oiType,'valid',5)
         oi = validTypes;
         return;
     end
 end
 
-%%
+oiType   = ieParamFormat(oiType);
+varargin = ieParamFormat(varargin);
+
+%%  Create
 scene = []; wvf = [];
 switch ieParamFormat(oiType)
     case {'diffractionlimited','default'}
@@ -122,6 +123,9 @@ switch ieParamFormat(oiType)
         oi = oiSet(oi,'diffuser method','skip');
         oi = oiSet(oi,'diffuser blur',2*10^-6);  % If used, 2 um.
         
+        % BW: Checking.
+        oi = oiSet(oi,'compute method','opticsotf');
+
         % Camera lenses use transmittance, not human lens.
         if checkfields(oi.optics, 'lens')
             warning('How did a human lens get in diffraction limited?')
@@ -171,36 +175,38 @@ switch ieParamFormat(oiType)
         oi = oiSet(oi, 'diffuser method', 'skip');
         oi = oiSet(oi,'wave',[]);
 
-    case {'shiftinvariant','wvf'}
-        % We create via the wavefront method.  We create a wvf, convert it
-        % to an oi using wvf2oi, which calls wvf2optics.  
+    case {'wvf','shiftinvariant'}
+        % oiCreate('wvf') or 
+        % oiCreate('wvf',wvf);
         %
-        % When the zcoeffs are 0, this is a diffraction limited oi.  The
-        % default parameters return a diffraction limited oi. The freq and
-        % psf sampling, however, are a bit challenging to specify in that
-        % case.
+        % Create the optics from a wavefront structure.  We create a
+        % wvf, convert it to an oi using wvf2oi, which calls wvf2optics.
         %
-        % Probably the better way to use a specific wvf is to do this:
+        % The default uses a diffraction limited oi.
         %
-        %    optics = wvf2optics(wvf); 
-        %    oiSet(oi,'optics',optics);
-        
-        wvf = wvfCreate('wave',(400:10:700)');
 
-        % Set up the standard optics values we have used for years
-        % For ISETCam these were 0.039 mm focal length and fnumber 4.
+        if ~isempty(varargin) && isequal(varargin{1}.type,'wvf')
+            wvf = varargin{1};
+        else
+            wvf = wvfCreate('wave',(400:10:700)');
 
-        % Set the f pupil diameter to this value because, well, DHB says
-        % this is what it was.
-        diameterMM = 9.6569e-01;
-        wvf = wvfSet(wvf,'calc pupil diameter',diameterMM,'mm');
-        
-        % If the f-number is 4, then the focal length must have been
-        % fN = fLength/aperture s0 fLength = fN*aperture
-        wvf = wvfSet(wvf,'focal length',diameterMM*4,'mm');
+            % Set up the standard optics values we have used for years
+            % For ISETCam these were 0.039 mm focal length and fnumber 4.
 
-        % Create the psf
+            % Set the f pupil diameter to this value because, well, DHB says
+            % this is what it was.
+            diameterMM = 9.6569e-01;
+            wvf = wvfSet(wvf,'calc pupil diameter',diameterMM,'mm');
+
+            % If the f-number is 4, then the focal length must have been
+            % fN = fLength/aperture s0 fLength = fN*aperture
+            wvf = wvfSet(wvf,'focal length',diameterMM*4,'mm');
+        end
+
+        % Always create the psf
         wvf = wvfCompute(wvf);
+
+        % Create the oi
         oi  = wvf2oi(wvf);
         
         % Set up the default glass diffuser with a 2 micron blur circle, but
@@ -210,11 +216,15 @@ switch ieParamFormat(oiType)
         
         % Camera lenses use transmittance, not human lens.
         if checkfields(oi.optics, 'lens')
+            % BW:  Haven't seen this for a while.
             warning('How did a human lens get in diffraction limited?')
             oi.optics = rmfield(oi.optics, 'lens');
             oi.optics.transmittance.wave = (370:730)';
             oi.optics.transmittance.scale = ones(length(370:730), 1);
         end        
+
+        % Set compute method
+        oi = oiSet(oi, 'compute method', 'opticspsf');
 
         % Enables the oiWindow to show fnumber and flength
         if isequal(ieParamFormat(oiType),'diffractionlimited')
@@ -228,6 +238,7 @@ switch ieParamFormat(oiType)
         if ~isempty(varargin), rtFileName = varargin{1}; end
         load(rtFileName,'optics');
         oi = oiSet(oi,'optics',optics);
+        oi = oiSet(oi, 'compute method', []);
         
     case {'humanmw'}
         % oi = oiCreate('human mw');
@@ -244,6 +255,7 @@ switch ieParamFormat(oiType)
         oi = oiSet(oi,'optics',opticsCreate('human mw'));
         oi = oiSet(oi,'name','human-MW');
         oi = oiSet(oi, 'optics lens', Lens('wave', oiGet(oi, 'optics wave')));
+        oi = oiSet(oi, 'compute method', 'humanmw');
 
         % Used by ISETCam, but removed for human lens case.
         if checkfields(oi.optics, 'transmittance')
@@ -256,7 +268,7 @@ switch ieParamFormat(oiType)
         % Human optics specified from Thibos data.  The wavefront
         % structure has LCA set to use human.
         %
-        % This is an alternative calculation compared to human mw
+        % This is an alternative calculation compared to 'human mw'
         % (Marimont and Wandell), above.         
 
         oi = oiCreate('shift invariant');
@@ -269,6 +281,7 @@ switch ieParamFormat(oiType)
         oi = oiSet(oi, 'optics', optics);
         oi = oiSet(oi, 'name', 'human-WVF');
         oi = oiSet(oi, 'optics lens', Lens('wave', oiGet(oi, 'optics wave')));
+        oi = oiSet(oi, 'compute method', 'opticspsf');
 
         % Used by ISETCam, but removed for human lens case.
         if checkfields(oi.optics, 'transmittance')
@@ -285,6 +298,7 @@ switch ieParamFormat(oiType)
         if length(varargin) >= 2, wave = varargin{2}; end
         oi = oiCreateUniformD65(sz,wave);
         wvf = [];
+        oi = oiSet(oi, 'compute method', []);
 
     case {'uniformee','uniformeespecify'}
         % [oi, scene] = oiCreate('uniform ee',sz,wave);
@@ -297,6 +311,7 @@ switch ieParamFormat(oiType)
         if length(varargin) >= 2, wave = varargin{2}; end
         [oi,scene] = oiCreateUniformEE(sz,wave);
         wvf = scene;
+        oi = oiSet(oi, 'compute method', []);
 
     case {'black'}
         % oi = oiCreate('black',sz,wave);

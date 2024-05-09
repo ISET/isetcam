@@ -422,6 +422,7 @@ dataType = ieParamFormat(dataType);
 switch lower(dataType)
     case {'spectralsr','sr','pixelspectralsr','pdspectralsr'}
         % volts/irradiance(energy units)
+        % Is sr spectral responsivity?
         pixel = sensorGet(sensor,'pixel');
         wave = pixelGet(pixel,'wave');
         data = pixelGet(pixel,'spectralsr');

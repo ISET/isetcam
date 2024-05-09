@@ -136,7 +136,11 @@ oiSize    = max(oiGet(oi,'size'));
 %
 % 4/22/24 DHB Made this an error.
 if isempty(wvf)
-    error('Trying to apply PSF method with an empty wvf structure. This should not happen.')
+    if (isfield(oi,'optics') & isfield(oi.optics,'wvf'))
+        wvf = oi.optics.wvf;
+    else
+        error('Trying to apply PSF method with an empty passed wvf structure and no wvf field in the oi''s optics. This should not happen.');
+    end
     %wvf = wvfCreate('wave',wavelist);
 end
 
@@ -168,15 +172,16 @@ wvf = wvfSet(wvf,'field size mm', pupil_spacing * oiSize * mmUnitScale); % only 
 
 % Compute the PSF.  We may need to consider LCA and other parameters
 % at this point.  It should be possible to set this true easily.
-if ~isempty(wvf.customLCA)
-    % For now, human is the only option
-    if strcmp(wvf.customLCA,'human')
-        wvf = wvfCompute(wvf,'aperture',aperture,'human lca',true);
-    end
-else
-    % customLCA is empty
-    wvf = wvfCompute(wvf,'aperture',aperture,'human lca',false);
-end
+% if ~isempty(wvf.customLCA)
+%     % For now, human is the only option
+%     if strcmp(wvf.customLCA,'human')
+%         wvf = wvfCompute(wvf,'aperture',aperture,'human lca',true);
+%     end
+% else
+%     % customLCA is empty
+%     wvf = wvfCompute(wvf,'aperture',aperture,'human lca',false);
+% end
+wvf = wvfCompute(wvf,'aperture',aperture);
 
 % Make this work:  wvfPlot(wvf,'psf space',550);
 
@@ -203,17 +208,32 @@ for ww = 1:nWave
     
     % Deal with non square scenes
     if oiWidth ~= oiHeight
-        sz = round(double(abs(oiWidth - oiHeight)/2));
-        if oiWidth < oiHeight
-            photons = padarray(p(:,:,ww),[0,sz],0,'both');
-            % photons = ImageConvFrequencyDomain(photons,PSF{ww}, 2);
-            photons = fftshift(ifft2(fft2(photons) .* fft2(PSF{ww})));
-            p(:,:,ww) = photons(:,sz+1:sz+oiWidth);
+        %  sz = round(double(abs(oiWidth - oiHeight)/2));
+
+        % Find the difference between height and width, and set sz to
+        % compensate.
+        delta = abs(oiWidth - oiHeight);
+        if isodd(delta) 
+            sz(1) = floor(delta/2); sz(2) = sz(1) + 1;
         else
-            photons = padarray(p(:,:,ww),[sz,0],0,'both');
+            sz(1) = delta/2; sz(2) = sz(1);
+        end
+
+        if oiWidth < oiHeight
+            % Add zeros to the columns
+            photons = padarray(p(:,:,ww),[0,sz(1)],0,'pre');
+            photons = padarray(photons,[0,sz(2)],0,'post');
+            % photons = padarray(p(:,:,ww),[0,sz],0,'both');
             % photons = ImageConvFrequencyDomain(photons,PSF{ww}, 2);
             photons = fftshift(ifft2(fft2(photons) .* fft2(PSF{ww})));
-            p(:,:,ww) = photons(sz+1:sz+oiHeight,:);
+            p(:,:,ww) = photons(:,sz(1)+(1:oiWidth));
+        else
+            photons = padarray(p(:,:,ww),[sz(1),0],0,'pre');
+            photons = padarray(photons,[sz(2),0],0,'post');
+            % photons = padarray(p(:,:,ww),[sz,0],0,'both');
+            % photons = ImageConvFrequencyDomain(photons,PSF{ww}, 2);
+            photons = fftshift(ifft2(fft2(photons) .* fft2(PSF{ww})));
+            p(:,:,ww) = photons(sz(1)+(1:oiHeight),:);
         end
     else
         % BW:  Debugging as per DHB.  This line breaks the padding.

@@ -26,7 +26,7 @@ function rgb = oiShowImage(oi,renderFlag,gam,oiW,titleString)
 %%
 if ~exist('oi','var') || isempty(oi) || ~checkfields(oi,'data'), cla; return;  end
 if ~exist('gam','var') || isempty(gam), gam = 1; end
-if ~exist('displayFlag','var'), renderFlag = 1; end
+if ~exist('renderFlag','var'), renderFlag = 1; end
 if ~exist('oiW','var'), oiW = []; end
 if ~exist('titleString','var'), titleString = 'OI Display'; end
 

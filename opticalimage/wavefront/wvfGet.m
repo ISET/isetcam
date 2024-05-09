@@ -129,6 +129,7 @@ function val = wvfGet(wvf, parm, varargin)
 %       +'number calc wavelengths'
 %                                 - Number of wavelengths to calculate over
 %                                   Pupil and sointspread function
+%       +'lca method'             - 'none', 'human', function handle for a custom LCA
 %
 %      Psf related
 %       +'psf'                    - Point spread function. Must call
@@ -218,7 +219,8 @@ function val = wvfGet(wvf, parm, varargin)
 %{
     % Strehl is ratio of diffraction and current
     wvfP = wvfCreate;
-    wvfP = wvfCompute(wvfP,'humanlca',false);
+    wvfP = wvfSet(wvfP,'lcaMethod','none');
+    wvfP = wvfCompute(wvfP);
     wvfGet(wvfP, 'strehl', 550)
 %}
 %{
@@ -232,7 +234,8 @@ function val = wvfGet(wvf, parm, varargin)
 	z = wvfGet(wvfP, 'zcoeffs');
     z(5) = 0.3;
     wvfP = wvfSet(wvfP, 'zcoeffs', z);
-	wvfP = wvfCompute(wvfP,'humanlca',false);
+    wvfP = wvfSet(wvfP,'lcaMethod','none');
+    wvfP = wvfCompute(wvfP);
     wvfGet(wvfP, 'strehl', 550)
 %}
 %{
@@ -273,8 +276,8 @@ switch (parm)
         % Conversion factor between um on retina & visual angle in degreees
         val = wvf.umPerDegree;
         
-    case {'customlca'}
-        val = wvf.customLCA;
+    case {'lcamethod'}
+        val = wvf.lcaMethod;
         
     otherwise
         isBookkeeping = false;
