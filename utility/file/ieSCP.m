@@ -34,6 +34,8 @@ function [command,status] = ieSCP(user,host,src,destinationPath,varargin)
   host = 'orange.stanford.edu';
   
   % Prepare the local directory  
+  % This assumes you're using ISETAuto
+  % thus iaRootPath() works
   imageID = '1114091636';
   destPath = fullfile(iaRootPath,'local',imageID);
   if ~exist(destPath,'dir'), mkdir(destPath); end
