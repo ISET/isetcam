@@ -420,7 +420,10 @@ switch oType
                     % This can happen if we only have digital values
                     dv = sensorGet(sensor,'dv');
                     sm = sensorGet(sensor,'max digital value');
-                    val = max(dv(:))/sm;
+
+                    % dv might be uint16 or some such.  We force the
+                    % return to be a double.
+                    val = double(max(dv(:))/sm);
                     return;
                 else
                     sm = sensorGet(sensor,'pixel voltage swing');
