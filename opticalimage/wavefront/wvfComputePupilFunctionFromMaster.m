@@ -155,7 +155,7 @@ if (~isfield(wvf, 'pupilfunc') || ~isfield(wvf, 'PUPILFUNCTION_STALE') ...
     wavefrontaberrations = cell(nWavelengths, 1);
     
     % Check whether if we are using a custom LCA
-    customLCAfunction = wvfGet(wvf, 'custom lca');
+    customLCAfunction = wvfGet(wvf, 'lca method');
 
     for ii = 1:nWavelengths
         thisWave = waveNM(ii);

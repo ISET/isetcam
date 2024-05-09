@@ -1,29 +1,33 @@
 function T = ieInternal2Display(ip)
 %Calculate linear transformation from internal color space to display space
 %
-%     T = ieInternal2Display(ip)
+% Synopsis
+%  T = ieInternal2Display(ip)
 %
-% The transformation T finds the linear display values (RGB) that produce
-% the internal color space values (e.g., XYZ).  The calculation is
-% performed assuming that we have linear control of the display primaries.
-% To create a real display image, we may have to correct for the display
-% nonlinearity.
+% Description
+%  The transformation T finds the linear display values (RGB) that produce
+%  the internal color space values (e.g., XYZ).  The calculation is
+%  performed assuming that we have linear control of the display primaries.
+%  To create a real display image, we may have to correct for the display
+%  nonlinearity.
 %
 %       (displayRGB*displaySPD')*internalCS = internalValues
 %       displayRGB*(displaySPD'*internalCS) = internalValues
 %       displayRGB = internalValues * inv(displaySPD'*internalCS);
-%  So,
+%   So,
 %       internal2display = inv(displaySPD'*internalCS);
 %
-% Example:
+%  Example:
 %
 %  Suppose result is in the internal color space (e.g., XYZ)
-%
-%   img = ipGet(vci,'result');
-%   T = ieInternal2Display(vci);
+%   img = ipGet(ip,'data ics');
+%   T = ieInternal2Display(ip);
 %   displayImage = imageLinearTransform(img,T);
 %
 % Copyright ImagEval Consultants, LLC, 2005.
+%
+% See also
+%   displayRender, ipCompute
 
 %% Arguments
 if ieNotDefined('ip'), ip = vcGetObject('vcimage'); end

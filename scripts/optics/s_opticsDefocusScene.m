@@ -35,17 +35,18 @@ nSteps = min(ceil(maxSF),70);              % Round up, but don't go too high.
 sampleSF = linspace(0, maxSF, nSteps);     % cyc/deg
 
 % Add the scene to the database and show it
-ieAddObject(scene); sceneWindow;
+sceneWindow(scene);
 
 %% Adjust illuminant color
 
 % I prefer this rendering.  Why not enjoy life?
 scene = sceneAdjustIlluminant(scene,'D65.mat');
-ieAddObject(scene); sceneWindow;
+sceneWindow(scene);
 
 %% Standard shift invariant optics
 % We are assuming a diffraction limited lens with some defocus.
-%
+
+% oi     = oiCreate('diffraction limited');
 oi     = oiCreate;
 optics = oiGet(oi,'optics');
 optics = opticsSet(optics,'model','shift invariant');
@@ -67,7 +68,7 @@ optics = opticsBuild2Dotf(optics,otf,sampleSFmm);
 oi = oiSet(oi,'optics',optics);
 oi = oiCompute(oi,scene);
 oi = oiSet(oi,'name',sprintf('%.1f-defocus',D));
-ieAddObject(oi); oiWindow;
+oiWindow(oi);
 
 %% Perfect focus, and then two cases where the distance is wrong
 

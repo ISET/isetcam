@@ -38,7 +38,8 @@ index = 1;
 
 %% Loop comparing the three methods
 
-fig_plot = figure; set(fig_plot, 'AutoResizeChildren', 'off');
+fig_plot = ieNewGraphWin;
+set(fig_plot, 'AutoResizeChildren', 'off');
 for fnumber = 5:4:13
     oi = oiCreate('diffraction limited');
 
@@ -58,9 +59,12 @@ for fnumber = 5:4:13
 
     %% Compute with oiComputeFlare
 
+    oi_flare = oiCreate('wvf');
+    oi_flare = oiSet(oi_flare,'optics focallength',flengthM); % only in meters
+    oi_flare = oiSet(oi_flare,'optics fnumber',fnumber);
+
     aperture = [];
-    oi.optics.model = 'shiftinvariant';
-    oi_flare = oiCompute(oi,scene,'aperture',aperture);
+    oi_flare = oiCompute(oi_flare,scene,'aperture',aperture);
     oi_flare = oiSet(oi_flare, 'name','flare');
     oi_flare = oiCrop(oi_flare,'border');
     % oiWindow(oi_flare);
@@ -89,5 +93,6 @@ for fnumber = 5:4:13
     oi_wvf = oiCrop(oi_wvf,'border');
     ip_wvf = piRadiance2RGB(oi_wvf,'etime',1);
     rgb_wvf = ipGet(ip_wvf,'srgb');
-    subplot(3,3, index);imshow(rgb_wvf);index = index+1;title(sprintf('WVF-Fnumber:%d\n',fnumber));
+    subplot(3,3, index);imshow(rgb_wvf);
+    index = index+1;title(sprintf('WVF-Fnumber:%d\n',fnumber));
 end

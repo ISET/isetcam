@@ -80,6 +80,13 @@ function oi = oiSet(oi,parm,val,varargin)
 %       {'psf image heights'}  - Vector of sampled image heights
 %       {'rayTrace optics name'}  - Optics used to derive shift-variant psf
 %
+%      {'compute method'}  - How to apply the OTF. 
+%                              'opticspsf' - PSF method that regenerates PSF from the wvf.
+%                              'opticsotf' - OTF method that splines the OTF
+%                              'humanmw'   - Human Marimont-Wandell calc
+%                             This applies for some methods, and
+%                             is empty other methods where the question does not apply.
+%
 % Depth information
 %      {'depth map'}         - Distance of original scene pixel (meters)
 %
@@ -152,32 +159,10 @@ if isequal(oType,'optics')
 elseif isequal(oType,'wvf')
     if isempty(parm)
         error('We no longer allow setting wvf into the oi.  Use oiSet(oi,''optics wvf'',wvf) to attach a wvf');
-        return;
-    else
-        % We are adjusting the wavefront parameters
-        % These live in the optics structure of the oi now.
-        % Get the wvf
-        wvf = opticsGet(oi.optics,'wvf');
-        if (isempty(wvf))
-            error('Trying to set wvf structure of optics, but there is none there.');
-        end
-
-        % Set the wvf with whatever the user asked us to do
-        if isempty(varargin), wvf = wvfSet(wvf,parm,val);
-        elseif length(varargin) == 1
-            wvf = wvfSet(wvf,parm,val,varargin{:});
-        elseif length(varargin) == 2
-            wvf = wvfSet(wvf,parm,val,varargin{1},varargin{2});
-        end
-
-        % Could consider doing a wvfCompute here, but refraining for
-        % now.  Could also consider insisting that the wvf as newly
-        % set has not be made inconsistent with parameters in the oi.
-        % But for now we have not done so.
-
-        % Put the modified wvf back into the oi's optics structure.
-        oi.optics = opticsSet(oi.optics,'wvf',wvf);
         
+    else
+        % Previous comment:
+        %
         % Should we always do this here before returning?
         % DHB, FH: We think the commented out code here is a bad idea.
         % It will lose everything about the oi that wasn't in the wvf,
@@ -185,7 +170,59 @@ elseif isequal(oType,'wvf')
         %
         % wvf = wvfCompute(oi.wvf);
         % oi = wvf2oi(wvf);
+        %
+        % Let's preserve the parameters.
 
+        % We are adjusting the wavefront parameters
+        % These are stored in the optics structure of the oi now.        
+        wvf = opticsGet(oi.optics,'wvf');
+        if (isempty(wvf))
+            error('Trying to set wvf structure of optics, but there is none there.');
+        end
+
+        % Set the wvf with whatever the user asked us to do
+        if isempty(varargin), wvf = wvfSet(wvf,parm,val,varargin{:});
+        elseif length(varargin) == 1
+            wvf = wvfSet(wvf,parm,val,varargin{:});
+        elseif length(varargin) == 2
+            wvf = wvfSet(wvf,parm,val,varargin{1},varargin{2});
+        end
+
+        % The wavefront struct. When we change the wvf, we also need
+        % to update the oi.
+
+        % Preserve some parameters
+        dMethod     = oiGet(oi,'diffuser method');
+        dBlur       = oiGet(oi,'diffuser blur');    % If used, 2 um.
+        cMethod     = oiGet(oi, 'compute method');  % Shouldn't be necessary
+        opticsModel = oiGet(oi,'optics model');
+        metadata = oiGet(oi,'metadata');
+        depthmap = oiGet(oi,'depthmap');
+        wAngular = oiGet(oi,'wangular');
+
+        % Like oiCreate, but we save some parameters
+
+        % We assume the new wvf has wavelength that matches the oi.
+        % Perhaps we should check this.
+        wvf = wvfCompute(wvf);
+        
+        % Rebuild the oi.  data is clear, which is a good thing.
+        oi  = wvf2oi(wvf);
+
+        % We shouldn't have to check for 'lens'.  But we do update these
+        % parameters.
+        oi = oiSet(oi,'diffuser method',dMethod);
+        oi = oiSet(oi,'diffuser blur',dBlur);  % If used, 2 um.
+        oi = oiSet(oi,'compute method',cMethod);  % Shouldn't be necessary
+        oi = oiSet(oi,'optics model',opticsModel);
+        oi = oiSet(oi,'metadata',metadata);
+        oi = oiSet(oi,'wangular',wAngular);
+        oi = oiSet(oi,'data',[]);
+        oi = oiSet(oi,'depthmap',depthmap);
+        
+        % Put the modified wvf back into the oi's optics structure.
+        oi.optics = opticsSet(oi.optics,'wvf',wvf);
+        
         return;
     end
 elseif isempty(parm)
@@ -203,6 +240,9 @@ switch parm
         % When the data are ready from a file, we save the file name.
         % Happens, perhaps, when reading multispectral image data.
         oi.filename = val;
+    case {'metadata'}
+        % A struct that people use in different ways.
+        oi.metadata = val;
     case {'consistency','computationalconsistency'}
         % When parameters are changed, the consistency flag on the optical
         % image changes.  This is irrelevant for the scene case.
@@ -238,6 +278,16 @@ switch parm
     case {'distance' }
         % Positive for scenes, negative for optical images
         oi.distance = val;
+
+    case {'computemethod'}
+        % Compute method.  Only applies for shift invariant
+        if (strcmp(val,'opticspsf') | strcmp(val,'opticsotf') | strcmp(val,'humanmw'))
+            oi.computeMethod = val;
+        elseif (isempty(val))
+            oi.computeMethod = val;
+        else
+            error('Illegal value for computeMethod passed');
+        end
         
     case {'wangular','widthangular','hfov','horizontalfieldofview','fov'}
         % Angular field of view for the OI width.  In degrees.
@@ -366,12 +416,7 @@ switch parm
         % only store the whole wvf, which also include pupil size and
         % focal length.
         oi.zernike = val(:);
-    case {'wvf'}
-        % The whole wavefront struct.  In process of how to use
-        % this in programs, with oiComputePSF and
-        % wvfSet/wvfGet.
-        oi.wvf = val;
-        
+
         % Precomputed shift-variant (sv) psf and related parameters
     case {'psfstruct','shiftvariantstructure'}
         % This structure

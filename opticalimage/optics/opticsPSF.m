@@ -136,7 +136,11 @@ oiSize    = max(oiGet(oi,'size'));
 %
 % 4/22/24 DHB Made this an error.
 if isempty(wvf)
-    error('Trying to apply PSF method with an empty wvf structure. This should not happen.')
+    if (isfield(oi,'optics') & isfield(oi.optics,'wvf'))
+        wvf = oi.optics.wvf;
+    else
+        error('Trying to apply PSF method with an empty passed wvf structure and no wvf field in the oi''s optics. This should not happen.');
+    end
     %wvf = wvfCreate('wave',wavelist);
 end
 
@@ -168,15 +172,16 @@ wvf = wvfSet(wvf,'field size mm', pupil_spacing * oiSize * mmUnitScale); % only 
 
 % Compute the PSF.  We may need to consider LCA and other parameters
 % at this point.  It should be possible to set this true easily.
-if ~isempty(wvf.customLCA)
-    % For now, human is the only option
-    if strcmp(wvf.customLCA,'human')
-        wvf = wvfCompute(wvf,'aperture',aperture,'human lca',true);
-    end
-else
-    % customLCA is empty
-    wvf = wvfCompute(wvf,'aperture',aperture,'human lca',false);
-end
+% if ~isempty(wvf.customLCA)
+%     % For now, human is the only option
+%     if strcmp(wvf.customLCA,'human')
+%         wvf = wvfCompute(wvf,'aperture',aperture,'human lca',true);
+%     end
+% else
+%     % customLCA is empty
+%     wvf = wvfCompute(wvf,'aperture',aperture,'human lca',false);
+% end
+wvf = wvfCompute(wvf,'aperture',aperture);
 
 % Make this work:  wvfPlot(wvf,'psf space',550);
 

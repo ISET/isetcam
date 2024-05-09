@@ -22,4 +22,4 @@ if ieNotDefined('origin'),  origin = (sz+1)/2; end
 
 img = (xramp.^2 + yramp.^2).^(expt/2);
 
-return;
+end

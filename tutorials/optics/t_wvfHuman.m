@@ -1,4 +1,8 @@
-% Create human optics approximation and compare to Marimont & Wandell model
+% t_wvfHuman
+% 
+% Create human optics approximation and compare to Marimont & Wandell
+% model. Most of the work on human cases is in ISETBio.  This is left
+% over.
 %
 % Description:
 %    Use the WVF methods to create an approximation to human optics in
@@ -7,9 +11,10 @@
 % Notes:
 %    * [NOTE: DHB - The appearance of the two optical images is
 %       surprisingly different. This should be expanded to compare the
-%       PSFs, or something else, so that the tutorial makes clear why they
-%       are so different.]
+%       PSFs in MW and Thibos to clarify why they are so different.]
 %
+% See also
+%    ISETBio
 
 % History:
 %    11/26/17  dhb  Simplify not to use wvfCreate (which didn't preserve
@@ -24,11 +29,11 @@ scene = sceneCreate('gridlines');
 scene = sceneSet(scene, 'fov', 1);
 
 %% Create wavefront for human eyes
-% Note that averaging the coefficients to get the sample mean is not the
-% same as finding optics for a typical human observer. Averaging the
-% coefficients does not yield a PSF whose phase structure is like that of
-% individual observers.  Nicolas Cottaris has analyzed this in some detail
-% as part of the IBIOColorDetect project.
+% Note that averaging the coefficients to get the sample mean is not
+% the same as finding optics for a typical human observer. Averaging
+% the coefficients does not yield a PSF whose phase structure is like
+% that of any observer.  Nicolas Cottaris has analyzed this in some
+% detail as part of the IBIOColorDetect project.
 pupilMM = 4.5;
 zCoefs = wvfLoadThibosVirtualEyes(pupilMM);
 wave = (400:10:700)';

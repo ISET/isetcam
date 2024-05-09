@@ -1,102 +1,89 @@
 function oi = oiCompute(oi,scene,varargin)
-% Gateway routine for optical image irradiance calculation
+% Optical image irradiance calculation
 %
 % Syntax
 %    oi = oiCompute(oi,scene,varargin)
 %
 % Brief
 %   Convert a scene (radiance) into an optical image (irradiance) at
-%   the sensor surface.  Uses the optics, usually specified by a
-%   wavefront structure in the optics.
+%   the sensor surface.  Uses the optics, which are often specified by
+%   a wavefront structure.  The oi has a field, oi.optics, that
+%   defines the optics parameters (including the wavefront).
 %
 % Input
 %   oi          - Optical image struct or a wavefront struct
 %   scene       - Spectral scene struct
 %
 % Optional key/val
-%   pad value - Pad value oi.  
+%   'pad value' - The computation can pad the edges in various ways.
 %       Options, implemented in oiPadValue called via opticsOTF 
 %            zero - pad scene with zeros (Default)
 %            mean - pad scene with mean image spectral radiance
-%            border - pad with values from near the border
+%            border - pad with values from near the oi border
 %            spd  - Use this vector as the SPD (NYI)
 %
 %   crop - Crop the OI to the same size as the scene. (Logical)
 %          Default: false;
 %
-%   pixel size - Set the spatial sampling resolution of the oi image.
-%                A scalar in meters. Convenient to match the optics
-%                and sensor pixel size.
+%   'pixel size' - Set the spatial sampling resolution of the oi image.
+%                A scalar in meters. This parameter is convenient to
+%                make the oi sampling match the sensor pixel size.
 %
 % Return
 %   oi - The optical image with computed photon irradiance
 %
 % Description:
-%  We call the spectral irradiance image, on the sensor plane just
-%  before sensor capture, the ** optical image **.  This spectral
-%  irradiance depends on the scene and the the optics attached to the
-%  optical image structure, oi.
+%  We call the image spectral irradiance on the sensor plane, just
+%  before sensor capture, the ** optical image **.  This function
+%  calculates the optical image from the scene and optics.
 %
-%  The returned spectral radiance is padded compared to the scene to
-%  allow for light spreading from the edge of the scene.  The nature
-%  of the padding is specified in by the optional key/value argument
-%  'pad'.  The default padding call is something like this:
+%  Compute methods
+%  Two different compute methods are used.  These are determined by
+%  the oi parameter, 'computeMethod', which specifies opticspsf or
+%  opticsotf.
 %
-%    imSize   = oiGet(oi,'size');
-%    padSize  = round(imSize/8); padSize(3) = 0;
-%    sDist = sceneGet(scene,'distance');
-%    oi = oiPad(oi,padSize,sDist);
-%
-%  To remove the padded region, you can can run this routine with 
+%  Scene padding
+%  The user can pad the scene spectral radiance for the calculation in
+%  several slightly different ways.
 % 
-%     oiCompute(oi,scene,'crop',true);
+%  In one case, the padding extends the scene with zeros. This allows
+%  light to spread from the edge of the scene. In other cases, the
+%  padding is set to the mean level of the scene, or the values near
+%  the border. The padding is specified in by the optional key/value
+%  argument 'pad', as in
 %
-% or use oiCrop, as in oi = oiCrop(oi,'border');
+%     oi = oiCompute(oi,scene,'pad value','mean');
+%
+%  To remove the padded region before routine, use this parameter
+% 
+%     oi = oiCompute(oi,scene,'crop',true);
+%
+%  or use oiCrop, as in oi = oiCrop(oi,'border');
 %
 % Optical models:
 %
-% Three types of optical calculations are implemented.  These are
-% selected from the interface in the oiWindow, or they can be set via
+% Three types of optics are implemented.
 %
-%    optics = opticsSet(optics,'model', parameter)
+% 'wvf': This model is a shift-invariant optics calculation. The
+% optical PSF is specified by a wavefront aberration (wvf) structure.
+% The wavefront parameters are explained and managed by
+% wvfCreate/Set/Get/Compute. The basic principle is that the wavefront
+% aberrations of the lens are defined by the coefficients of a Zernike
+% polynomial.  The calculation from the wvf is carried out using
+% either the computeMethod opticspsf (typical) or opticsotf
+% (historical).
+% 
+% 'diffraction limited' - We implemented a diffraction-limited optics
+% numerical calculation.  This is explained in opticsDLCompute. This
+% blur and intensity in this computation depends on the diffraction
+% limited parameters (f/#) but little else.
 %
-% This function calls the relevant model depending on the setting in
-% opticsGet(optics,'model');
-%
-% The first model is based on diffraction-limited optics and calculated
-% in opticsDLCompute. This blur and intensity in this computation depends
-% on the diffraction limited parameters (f/#) but little else.
-%
-% To create an image with no blur, set the f/# (focal length over the
-% aperture) to be a very small number. This image has the geometry and
-% zero-blur as used in computer graphics pinhole cameras.  The
-% absolute light level, however, will be higher than what would be
-% seen through a small pinhole. You can manage this by setting scaling
-% the spectral irradiance (oiAdjustIlluminance).
-%
-% The second model is shift-invariant optics.  This depends on having a
-% wavelength-dependent OTF defined and included in the optics structure.
-% Examples of shift-invariant data structres can be found in the
-% data\optics directory. More generally, the OTF can be calculated using
-% the wavefront tools (wvf<TAB>) that allow the user to specify wavefront
-% aberrations using the Zernike Polynomial basis. In this case, the optical
-% image is computed using the function opticsSICompute.  To use this method
-% use opticsSet(optics,'model','shiftInvariant');
-%
-% N.B. The diffraction-limited model is a special case of the
+% The diffraction-limited model is a special case of the
 % shift-invariant model. Specifying diffraction-limited implies using
 % the specific wavelength-dependent OTFs that are determined by the
 % f/#.
 %
-% ISET also includes a special shift-invariant case for computing the
-% human optical image. You may specify the optics model to be 'human'.
-% In that case, this program calls the routine humanOI, which uses the
-% human OTF calculations in a shift-invariant fashion.  The companion
-% ISETBIO program has a more extensive set of tools for modeling
-% biological vision.  That program was derived from ISET, but it is
-% not as extensive and does not include the full set of models.
-%
-% Historically, we used a third model, ray trace, to allow
+% 'ray trace' - A third model, ray trace, implements a
 % **shift-varying** wavelength-dependent point spread functions. This
 % model includes geometric distortion information, relative
 % illumination and field-height and wavelength dependent point spread
@@ -104,14 +91,19 @@ function oi = oiCompute(oi,scene,varargin)
 % import data from a ray trace program, such as Zemax. To set this
 % method use opticsSet(optics,'model','rayTrace').
 %
-% In recent years, we more frequently use iset3d for ray trace
-% calculations. 
+% In recent years, we use iset3d for ray trace calculations.
+%
+% In oiCreate you will see additional special cases.  These include
+% 'human wvf' and 'human mw', special shift-invariant cases for
+% computing the human optical image. The companion ISETBio repository
+% has a more extensive set of tools for modeling biological vision.
 %
 % Use ieSessionSet('waitbar',0) to turn off waitbar displays
 % Use ieSessionSet('waitbar',1) to turn on waitbar displays
 %
 % See also: 
-%   opticsDLCompute, opticsSICompute, opticsRayTrace
+%   oiCreate, wvfGet/Set, opticsDLCompute, opticsSICompute,
+%   opticsRayTrace
 %
 
 % Examples:

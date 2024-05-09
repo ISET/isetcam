@@ -41,18 +41,18 @@ function sensor = sensorSet(sensor,param,val,varargin)
 %      'data'               - data structure
 %        'volts'            - voltage responses
 %        'digitalValues'    - digital values
-%      'analog gain'        - Transform volts
-%      'analog offset'      - Transform volts
-%            Formula for offset and gain: (v + analogOffset)/analogGain)
+%      'analog gain'        - Divisive gain (volts/gain)
+%      'analog offset'      - Additive offset (volts + offset)
+%         Formula for offset and gain: (v + offset)/gain)
 %
 %      'roi'                - region of interest information
 %                               (roiLocs, Nx2, or rect 1x4 format)
-%      'cds'                - correlated double sampling flat
+%      'cds'                - correlated double sampling flag
 %      'quantization method'- method used for quantization
 %                               ('analog', '10 bit', '8 bit', '12 bit')
 %      'response type'  - We allow a 'log' sensor type.  Default is
-%                          'linear'.  For the 'log' type, we convert
-%                          the pixel voltage by log10() on return.
+%                         'linear'.  For the 'log' type, we convert
+%                         the pixel voltage by log10() on return.
 %
 %      'dsnu image'         - Dark signal non uniformity (DSNU) image
 %      'prnu image'         - Photo response non uniformity (PRNU) image
