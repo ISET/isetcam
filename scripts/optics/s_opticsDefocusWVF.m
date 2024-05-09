@@ -27,8 +27,10 @@ ieInit
 
 %% Test scene
 
-scene = sceneCreate('freqorient',[512 512]);
-scene = sceneSet(scene,'fov',2);
+% scene = sceneCreate('freqorient',[512 512]);
+scene = sceneCreate('point array',[512 512],128);
+
+scene = sceneSet(scene,'fov',1.5);
 ieAddObject(scene);
 
 %% Wavefront method
@@ -58,8 +60,8 @@ fprintf('f# %0.2f and defocus %0.2f\n',oiGet(oi0,'fnumber'),oiGet(oi0,'wvf zcoef
 
 %% Now we compute with the oi as usual
 
-oi0 = oiCompute(oi0,scene);
-oi0 = oiSet(oi0,'name','Diffraction limited');
+oi0 = oiCompute(oi0,scene,'crop',true);
+oi0 = oiSet(oi0,'name','WVF: Diffraction limited');
 oiWindow(oi0);
 
 %% Here is the point spread.  Diffraction-limited in this case.
@@ -68,10 +70,13 @@ oiWindow(oi0);
 oiPlot(oi0,'psf 550');
 
 %% Adjust the defocus (in diopters)
+
+diopters = 1.5;
+
 wvf1 = wvfCreate('wave',sceneGet(scene,'wave'));
 
 % Make a new one with some defocus
-wvf1 = wvfSet(wvf1,'zcoeffs',1.5,'defocus');
+wvf1 = wvfSet(wvf1,'zcoeffs',diopters,'defocus');
 wvf1 = wvfCompute(wvf1);
 oi1 = wvf2oi(wvf1);
 oiPlot(oi1,'psf 550');
@@ -79,7 +84,7 @@ oiPlot(oi1,'psf 550');
 fprintf('f# %0.2f and defocus %0.2f\n',oiGet(oi1,'fnumber'),oiGet(oi1,'wvf zcoeffs','defocus'));
 
 %% Compute
-oi1 = oiCompute(oi1,scene);
+oi1 = oiCompute(oi1,scene,'crop',true);
 oi1 = oiSet(oi1,'name','Defocused');
 oiWindow(oi1);
 
@@ -100,7 +105,7 @@ set(gca,'xlim',[-20 20],'ylim',[-20 20]);
 
 %% This should be the equivalent code
 
-oi = oiSet(oi,'wvf zcoeffs',1,'defocus');  % Defocus
+oi = oiSet(oi,'wvf zcoeffs',diopters,'defocus');  % Defocus
 oiPlot(oi,'psf 550');
 set(gca,'xlim',[-20 20],'ylim',[-20 20]);
 
