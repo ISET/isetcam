@@ -37,7 +37,8 @@ scene = sceneSet(scene,'fov',10);
 scene = sceneSet(scene,'distance', 1);
 
 index = 1;
-fig = figure;set(fig, 'AutoResizeChildren', 'off');
+fig = ieNewGraphWin;
+set(fig, 'AutoResizeChildren', 'off');
 for fnumber = 3:5:13
     % Compute with the DL model
     oi = oiCreate('diffraction limited');
@@ -48,9 +49,13 @@ for fnumber = 3:5:13
     oi = oiCompute(oi, scene,'crop',true);   
    
     % Compute with the SI model.  opticspsf path
+    oi_wvf = oiCreate('wvf');
+    oi_wvf = oiSet(oi_wvf,'optics focallength',flengthM);
+    oi_wvf = oiSet(oi_wvf,'optics fnumber',fnumber);
+
     aperture = [];
-    oi = oiSet(oi,'optics model','shift invariant');   
-    oi_wvf = oiCompute(oi,scene,'aperture',aperture,'crop',true);
+    % oi = oiSet(oi,'optics model','shift invariant');   
+    oi_wvf = oiCompute(oi_wvf,scene,'aperture',aperture,'crop',true);
     oi_wvf = oiSet(oi_wvf, 'name','flare');
 
     % Show some images
@@ -63,11 +68,13 @@ for fnumber = 3:5:13
 
         subplot(3,3,index);imshow(rgb);index = index+1;title(sprintf('DL-Fnumber:%d\n',fnumber));
         subplot(3,3,index);imshow(rgb_wvf);index = index+1;title(sprintf('Flare-Fnumber:%d\n',fnumber));
-        subplot(3,3, index);imagesc(abs(rgb(:,:,2)-rgb_wvf(:,:,2)));colormap jet; colorbar; index = index+1;title('difference');
+        subplot(3,3, index);imagesc(abs(rgb(:,:,2)-rgb_wvf(:,:,2)));
+        colormap jet; colorbar; index = index+1;title('difference');
+        drawnow;
     end
 
     % Compare the two computational paths.  Check is for each of the fnumbers.
-    assert(mean2(oi_wvf.data.photons(:,:,15))/mean2(oi.data.photons(:,:,15))-1 < 0.0001);
+    assert(mean(oi_wvf.data.photons(:,:,15),"all")/mean(oi.data.photons(:,:,15),'all') - 1 < 1e-3);
 end
 
 %% Change the shape of the aperture and produce flare
@@ -76,7 +83,8 @@ if exist('piRootPath.m','file')
     % Compare with this: https://en.wikipedia.org/wiki/File:Comparison_aperture_diffraction_spikes.svg
     nsides_list = [0, 4, 5, 6];
 
-    fig_2 = figure(2); set(fig_2, 'AutoResizeChildren', 'off');
+    fig_2 = ieNewGraphWin; 
+    set(fig_2, 'AutoResizeChildren', 'off');
     for ii = 1:4
 
         nsides = nsides_list(ii); 
@@ -95,16 +103,18 @@ if exist('piRootPath.m','file')
     end
 end
 
-%%
+%% Demonstration that the opticspsf method manages HDR, but not opticsotf
+
 oi = oiCreate('wvf');
 oi = oiSet(oi,'compute method','opticsotf');
 oi = oiCompute(oi,scene,'crop',true,'aperture',aperture);
+oi = oiSet(oi,'name','optics OTF method');
 oiWindow(oi);
+oi = oiSet(oi,'render flag','hdr');
 
 oi = oiSet(oi,'compute method','opticspsf');
 oi = oiCompute(oi,scene,'crop',true,'aperture',aperture);
+oi = oiSet(oi,'name','optics PSF method');
 oiWindow(oi);
-
-
 
 %% END

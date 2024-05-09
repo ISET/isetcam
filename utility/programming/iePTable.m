@@ -206,13 +206,14 @@ switch format
         % OK, we have an oi so put up the data.
         precision = 3;
         data = {...
-            'Optical Image name',         char(oiGet(oi,'name')), '';
-            'Rows & cols',       num2str(oiGet(oi,'size')),                             'samples';
-            'Horizontal FOV',         num2str(oiGet(oi,'fov')),                              'deg';
-            'Wave (nm)',                num2str(wave), 'nm';
-            'Spatial resolution',     num2str(oiGet(oi,'spatial resolution','um'),precision),'um/sample';
-            'Mean illuminance',num2str(oiGet(oi,'mean illuminance'),precision),       'lux';
-            'Area',            num2str(oiGet(oi,'area','mm'),precision),              'mm^2';
+            'Optical Image name', char(oiGet(oi,'name')), '';
+            'Compute method',   oiGet(oi,'compute method'), '';
+            'Rows & cols',        num2str(oiGet(oi,'size')),                             'samples';
+            'Horizontal FOV',     num2str(oiGet(oi,'fov')),                              'deg';
+            'Wave (nm)',          num2str(wave), 'nm';
+            'Spatial resolution', num2str(oiGet(oi,'spatial resolution','um'),precision),'um/sample';
+            'Mean illuminance',   num2str(oiGet(oi,'mean illuminance'),precision),       'lux';
+            'Area',               num2str(oiGet(oi,'area','mm'),precision),              'mm^2';
             };
         
         % Deal with light field optical image parameters.
@@ -229,9 +230,10 @@ switch format
         % OK, we have an oi so put up the data.
         precision = 3;
         data = {...
-            'Rows & columns',              num2str(oiGet(oi,'size'));
+            'Compute method',        oiGet(oi,'compute method');
+            'Rows & columns',         num2str(oiGet(oi,'size'));
             'H FOV (deg)',            num2str(oiGet(oi,'fov'));
-            'Wave (nm)',                num2str(wave);
+            'Wave (nm)',              num2str(wave);
             'Resolution (um/sample)', num2str(oiGet(oi,'spatial resolution','um'),precision);
             'Mean illuminance (lux)', num2str(oiGet(oi,'mean illuminance'),precision);
             'Area (mm^2)',            num2str(oiGet(oi,'area','mm'),precision)';
