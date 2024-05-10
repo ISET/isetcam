@@ -39,7 +39,7 @@ varargin = ieParamFormat(varargin);
 p = inputParser;
 
 p.addRequired('sensor',@(x)(isstruct(x) && isequal(x.type,'sensor')))
-p.addRequired('filename',@ischar);
+p.addRequired('filename',@(x)(ischar(x) || isstring(x)));
 p.addParameter('datatype','volts',@ischar);
 p.addParameter('comment','',@isstruct);
 
