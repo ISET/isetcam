@@ -99,8 +99,21 @@ end
 
 if isempty(filename), filename = [fullfile(tempname),'.exr']; end
 
-% Not sure if the RGB ordering is right.
-exrwrite(data,filename);
+% These are the defaults
+% if size(rgb,3) == 3
+%     Channels = ["R","G","B"]
+% else
+%     Channels = ["R","G","B","W"]
+% end
+
+% Create channel labels from filter names
+filterNames = sensorGet(sensor,'filter names');
+Channels = string(filterNames{1,1});
+for cc = 2:numel(filterNames)
+    Channels = [Channels,string(filterNames{cc})]; %#ok<AGROW>
+end
+
+exrwrite(data,filename,"Channels",Channels);
 info = exrinfo(filename);
 % system(sprintf('open %s',filename));
 
@@ -115,6 +128,6 @@ if isempty(comment)
 end
 
 info.AttributeInfo.Comments = comment;
-exrwrite(data, filename, 'Attributes', info.AttributeInfo);
+exrwrite(data, filename, 'Attributes', info.AttributeInfo,'Channels',Channels);
 
 end
