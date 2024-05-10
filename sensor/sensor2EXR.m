@@ -105,35 +105,16 @@ info = exrinfo(filename);
 % system(sprintf('open %s',filename));
 
 if isempty(comment)
-    str = sprintf('Name: %s, Noiseflag: %d',sensorGet(sensor,'name'),sensorGet(sensor,'noise flag'));
-else
-    str = comment;
+    pSize = sensorGet(sensor,'pixel size','um');
+    comment = sprintf('Name: %s | Exposure %.2f ms | Pixel-Size: %.2f um | N-Channels: %d |  Noise-flag: %d',...
+        sensorGet(sensor,'name'),...
+        sensorGet(sensor,'exp time','ms'), ...
+        pSize(1), ...
+        sensorGet(sensor,'nfilters'), ...
+        sensorGet(sensor,'noise flag'));
 end
 
-<<<<<<< Updated upstream
-pSize = sensorGet(sensor,'pixel size','um');
-str = sprintf('Name: %s | Exposure %.2f ms | Pixel-Size: %.2f um | N-Channels: %d |  Noise-flag: %d',...
-    sensorGet(sensor,'name'),...    
-    sensorGet(sensor,'exp time','ms'), ...
-    pSize(1), ...
-    sensorGet(sensor,'nfilters'), ...
-    sensorGet(sensor,'noise flag'));
-=======
->>>>>>> Stashed changes
-info.AttributeInfo.Comments = str;
+info.AttributeInfo.Comments = comment;
 exrwrite(data, filename, 'Attributes', info.AttributeInfo);
 
 end
-
-%{
-% Create an empty struct
-exr_info = struct();
-
-% Add fields dynamically
-exr_info.FileName = '';
-exr_info.PartName = '';
-exr_info.PartType = '';
-exr_info.DisplayWindow = [];
-exr_info.ChannelInfo = struct('PixelType', {}, 'XSubSampling', {}, 'YSubSampling', {});
-exr_info.AttributeInfo = struct();
-%}
