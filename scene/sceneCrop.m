@@ -17,7 +17,7 @@ function [scene,rect] = sceneCrop(scene,rect)
 %   returned.
 %
 %   Because these are multispectral data, we can't use the usual imcrop.
-%   Instead, we use vcROISelect to return the selected data.  Then we turn
+%   Instead, we use ieROISelect to return the selected data.  Then we turn
 %   the selected data into a photon image and reset the relevant parameters
 %   in the scene structure.
 %
@@ -30,7 +30,8 @@ function [scene,rect] = sceneCrop(scene,rect)
 if ieNotDefined('scene'), error('You must define a scene.'); end
 
 if ieNotDefined('rect')
-    [roiLocs,rect] = vcROISelect(scene);
+    [roiLocs,roi] = ieROISelect(scene);
+    rect = round(roi.Position);
 else
     cmin = rect(1); cmax = rect(1)+rect(3);
     rmin = rect(2); rmax = rect(2)+rect(4);
