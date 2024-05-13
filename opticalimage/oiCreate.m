@@ -66,7 +66,7 @@ function [oi, wvf, scene] = oiCreate(oiType,varargin)
 %  specify a spectrum for the optical image use
 %
 %      oi = oiCreate('default');
-%      oi = initDefaultSpectrum('hyperspectral');
+%      oi = initDefaultSpectrum(oi, 'hyperspectral');
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 %
