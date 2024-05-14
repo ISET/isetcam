@@ -30,7 +30,7 @@ function [filename, rgb] = sensor2EXR(sensor,filename,varargin)
 % Example:
 %{
 scene = sceneCreate('freqorient',512); scene = sceneSet(scene,'fov',10);
-oi = oiCreate('wvf'); oi = oiCompute(oi,scene);
+oi = oiCreate('wvf'); oi = oiCompute(oi,scene,'border','crop');
 sensor = sensorCreate; 
 sensor = sensorSet(sensor,'fov',sceneGet(scene,'fov'),oi);
 sensor = sensorCompute(sensor,oi);
@@ -103,18 +103,18 @@ end
 if isempty(filename), filename = [fullfile(tempname),'.exr']; end
 
 % These are the defaults
-% if size(rgb,3) == 3
-%     Channels = ["R","G","B"]
-% else
-%     Channels = ["R","G","B","W"]
-% end
+if size(rgb,3) == 3
+    Channels = ["R","G","B"]
+else
+    Channels = ["R","G","B","A"]
+end
 
 % Create channel labels from filter names
-filterNames = sensorGet(sensor,'filter names');
-Channels = string(filterNames{1,1});
-for cc = 2:numel(filterNames)
-    Channels = [Channels,string(filterNames{cc})]; %#ok<AGROW>
-end
+% filterNames = sensorGet(sensor,'filter names');
+% Channels = string(filterNames{1,1});
+% for cc = 2:numel(filterNames)
+%     Channels = [Channels,string(filterNames{cc})]; %#ok<AGROW>
+% end
 
 exrwrite(data,filename,"Channels",Channels);
 info = exrinfo(filename);
