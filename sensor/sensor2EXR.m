@@ -55,7 +55,10 @@ p.addRequired('filename',@(x)(ischar(x) || isstring(x)));
 p.addParameter('datatype','volts',@ischar);
 p.addParameter('dataformat','noisyrgb',@ischar);
 p.addParameter('comment','',@ischar);
-p.addParameter('noiselevel',0.02,@isscalar);
+
+% The models were trained with this noise level.  Do not change unless
+% you train with a different noise level.
+p.addParameter('noiselevel',0.01,@isscalar);
 
 p.parse(sensor,filename,varargin{:});
 

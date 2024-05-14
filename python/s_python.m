@@ -26,11 +26,23 @@
 %
 %   pe = pyenv('Version','/Users/wandell/opt/anaconda3/envs/py38/bin/python');
 %
-%% May 8, 2024.  We updated to 3.9 using the commands above
-% but replacing 38 with 39
+%% May 8, 2024.  We updated to 3.9 using the commands above but replacing 38 with 39
+%
+%   pe = pyenv('Version','/Users/wandell/opt/anaconda3/envs/py39/bin/python');
+%
+%% May 13
+%
+% It seems I had an old Intel version installed. 
+%
+% We got the miniconda installer, and got an Apple Silicon version.  
+% 
+%   https://docs.anaconda.com/free/miniconda/
+%
+% I then created a py39 version using the conda command, as above.
 %
 %%
-% On wandell's Mac at home, which is an Intel machine, we did ...
+% On wandell's Mac at home, which is an Intel machine, we should do
+% the same but with miniconda for the Intel architecture.
 %
 %    NYI
 %
