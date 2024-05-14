@@ -104,9 +104,9 @@ if isempty(filename), filename = [fullfile(tempname),'.exr']; end
 
 % These are the defaults
 if size(rgb,3) == 3
-    Channels = ["R","G","B"]
+    Channels = ["R","G","B"];
 else
-    Channels = ["R","G","B","A"]
+    Channels = ["R","G","B","A"];
 end
 
 % Create channel labels from filter names
