@@ -9,4 +9,4 @@ function vci = ipClearData(vci)
 
 vci = ipSet(vci,'data',[]);
 
-return;
+end

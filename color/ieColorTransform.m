@@ -1,21 +1,21 @@
-function T = ieColorTransform(sensor,targetSpace,illuminant,surface,whitept)
+function T = ieColorTransform(sensor,targetSpace,illuminant,surface)
 % Gateway routine to transform sensor data into a target color space
 %
 % Synopsis
-%  T = ieColorTransform(sensor,[targetSpace='XYZ'],[illuminant='D65'],[surface='Macbeth'],[whitept=false])
+%  T = ieColorTransform(sensor,[targetSpace='XYZ'],[illuminant='D65'],[surface='Macbeth'])
 %
 % Brief
-% This is a gateway to a collection of methods that find color space
-% transformations to map sensor data into a target color space. This
-% routine currently has only a few defaults. It will expand over time,
-% significantly.  The calling conventions are likely to change, as well.
+%   A gateway to a collection of methods that find color space
+%   transformations to map sensor data into a target color space. This
+%   routine currently has only a few defaults. It will expand over
+%   time, significantly.  The calling conventions are likely to
+%   change, as well.
 %
 % Input
-%   sensor
-%   targetSpace
-%   illuminant
-%   surface
-%   whitept
+%   sensor      - Defines the sensor QE
+%   targetSpace - Target color space (ICS)
+%   illuminant  - Default illuminant SPD
+%   surface     - Surface collection to use for estimation
 %
 % Output
 %   T - Transform from sensor space to target space
@@ -80,7 +80,7 @@ ip = ipCompute(ip,sensor);
 sensorXYZ = imageLinearTransform(ip.data.sensorspace,T);
 %}
 
-%%
+%% Parse
 if ieNotDefined('targetSpace'), targetSpace = 'XYZ';          end
 if ieNotDefined('illuminant'),  illuminant  = 'D65';          end
 if ieNotDefined('surface'),     surface     = 'multisurface'; end
@@ -88,6 +88,7 @@ if ieNotDefined('surface'),     surface     = 'multisurface'; end
 wave     = sensorGet(sensor,'wave');
 sensorQE = sensorGet(sensor,'spectral QE');
 
+%%
 switch lower(targetSpace)
     case {'stockman','xyz'}
         % This transforms the sensor values into a calibrated space -
@@ -144,7 +145,7 @@ function T = linearsrgb(sensorQE,illuminant,wave)
 % surfaces that are sent in.  I think this is fairly straightforward and
 % should be implemented soon.
 
-warning('linear srgb is used');
+error('linear srgb is used');
 
 %  TODO
 %  Instead of this code, though, we should be using the standard color

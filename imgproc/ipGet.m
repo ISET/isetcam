@@ -39,7 +39,7 @@ function val = ipGet(ip,param,varargin)
 %
 %      'transforms' - All rendering transforms in a cell array
 %      'ics2display transform'      - Internal color space to display (transform{3})
-%      'combined transform'         - Product of the other 3 matrices
+%      'transform combined'         - Product of the other 3 matrices
 %                                             tSC{1}*tIC{2}*tICS2D{3}
 %      'each transform'             - cell array of three matrices
 %
@@ -250,7 +250,7 @@ switch oType
                     val = transforms{3};
                 else,  val = eye(3,3);
                 end
-            case {'combinedtransform','prodt'} %product of transforms (prodT)
+            case {'transformcombined','combinedtransform','prodt'} %product of transforms (prodT)
                 % This is meant to be rowVec*M were rowVec = (r,g,b). If the
                 % transform is empty for any of these, the 3x3 identity is returned
                 % by the ipGet
@@ -366,14 +366,18 @@ switch oType
                 end
                 
             case {'ninputfilters','numbersensorchannels','nsensorinputs'}
-                val = size(ip.data.sensorspace,3);
+                if checkfields(ip,'data','sensorspace')
+                    val = size(ip.data.sensorspace,3);
+                end
                 
-            case {'datasensor','sensordata','sensorchannels','sensorspace'}
+            case {'datasensor','sensordata','sensorchannels','sensorspace','demosaicsensor'}
                 % ipGet(ip,'sensor data')
                 %
                 % The demosaicked sensor (device) values
                 % This has dimension row,col,nChannel
-                val = ip.data.sensorspace;
+                if checkfields(ip,'data','sensorspace')
+                    val = ip.data.sensorspace;
+                end                 
                 
                 % Result and display are mixed up together here.
                 % We should decide which to use

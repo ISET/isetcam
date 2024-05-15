@@ -1,6 +1,11 @@
 function [voltImage, dsnu, prnu] = sensorComputeImage(oi,sensor,wBar)
 % Main routine to comput the sensor voltage data from the optical image
 %
+% TODO: ***
+%   There is an issue when using the IMX363 sensor (and thus maybe the
+%   IMX490 sensor).  See comments in isetvalidation/iset/sensor
+%   scripts and autoExposure/aeLuminance.
+%
 % Syntax:
 %  [voltImage,dsnu,prnu] = sensorComputeImage(oi,sensor,wBarHandles)
 %

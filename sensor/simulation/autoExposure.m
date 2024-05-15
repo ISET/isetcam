@@ -1,6 +1,12 @@
 function  [integrationTime,maxSignalVoltage,smallOI] = autoExposure(oi,sensor,level,aeMethod,varargin)
 % Gateway routine to auto-exposure methods
 %
+% TODO: ***
+%   There is an issue when using the IMX363 sensor (and thus maybe the
+%   IMX490 sensor).  See comments in isetvalidation/iset/sensor
+%   scripts.  Adjusted for aeLuminance here, but not for the other
+%   methods.
+%
 % Syntax:
 %   [integrationTime,maxSignalVoltage,smallOI] = autoExposure(oi,sensor,[level = 0.95],[aeMethod='default'],varargin)
 %
@@ -118,6 +124,8 @@ switch lower(aeMethod)
     case 'specular'
         [integrationTime,maxSignalVoltage] = aeSpecular(oi,sensor,level);
     case {'luminance', 'default'}
+        % Extracts brightest part of the image and sets the exposure
+        % duration to just below saturation for that part.
         [integrationTime,maxSignalVoltage,smallOI] = aeLuminance(oi,sensor,level);
     case 'full'
         [integrationTime,maxSignalVoltage] = aeFull(oi,sensor,level);
@@ -175,8 +183,23 @@ smallOI = oiSet(smallOI,'wangular',2*sensorFOV);
 % using the brightest part of the opticl image, and a 1 sec exposure
 % duration. (Generally, the voltage at 1 sec is larger than the voltage
 % swing.)
-%
-signalVoltage = sensorComputeImage(smallOI,smallSensor);
+
+% {
+ % For the IMX363 there is a difference between this method and the
+ % sensorComputeImage method. Why?
+ %
+ % Allow the voltage to swing very high.  Calculate how high for 1
+ % sec. Find the max and divide out.
+ smallSensor   = sensorSet(smallSensor,'pixel voltage swing',1e6);
+ smallSensor   = sensorCompute(smallSensor,smallOI);
+ signalVoltage = sensorGet(smallSensor,'volts');
+%}
+
+%{
+ % This has been standard for a long time.  But see above comment.
+ signalVoltage = sensorComputeImage(smallOI,smallSensor);
+%}
+
 maxSignalVoltage = max(signalVoltage(:));
 
 % Determine the integration time by figuring how large the voltage was. The
