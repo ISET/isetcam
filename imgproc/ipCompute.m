@@ -226,9 +226,8 @@ elseif nFilters >= 3 || nSensors > 1
 
     %% Demosaic the sensor data in sensor space.
 
-    % For some NN cases (e.g., rgbwrestormer) we have already computed
-    % the sensor space data. So if slot is already filled, do not
-    % demosaic
+    % For the NN cases (e.g., rgbwrestormer) we already computed the
+    % sensor space data. So if slot is already filled, do not demosaic
     if ~isequal(ipGet(ip,'transform method'),'rgbwrestormer')
         % The data remain in the sensor channels and there is no scaling.
         if ndims(ip.data.input) == nFilters, img = ip.data.input;
@@ -327,7 +326,7 @@ elseif nFilters >= 3 || nSensors > 1
             ip = ipSet(ip,'correction matrix illuminant',[]);
             % ip = ipSet(ip,'sensor correction transform',[]);
             ip = ipSet(ip,'ics2display',[]);
-        case {'adaptive','rgbwrestormer'}
+        case {'adaptive'}
             % Recompute a transform based on the image data and with
             % knowledge of the sensor color filters.
 
@@ -370,7 +369,14 @@ elseif nFilters >= 3 || nSensors > 1
             % N.B. The display on the user's desk is not likely to be the
             % calibrated display that is modeled.
             [img,ip] = displayRender(img,ip,s);
-
+        case {'rgbwrestormer'}
+            % In this case the demosaicked data are there and we have
+            % set the transforms too.  So just apply the combined
+            % transform.
+            T = ipGet(ip,'transform combined');
+            img = ipGet(ip,'sensor space');
+            img = imageLinearTransform(img,T);            
+            img = img/max(img(:))*sensorGet(sensor,'response ratio');
         otherwise
             error('Unknown transform method %s\n',tMethod);
     end
