@@ -1,7 +1,7 @@
-function [img,vci] = imageIlluminantCorrection(img,vci)
+function [img,vci,Tilluminant] = imageIlluminantCorrection(img,vci)
 %Gateway illuminant correction routine from ICS to display space.
 %
-%    [img,vci] = imageIlluminantCorrection(img,vci);
+%    [img,vci,Tilluminant] = imageIlluminantCorrection(img,vci);
 %
 % The general processing pipeline has the following steps:
 %
@@ -51,29 +51,29 @@ switch iCorrection
         % set D to the identity but equal to the number of sensors in the
         % img data.  Then we return without bothering to multiply.
         N = size(img,3);    % Image data are in RGB format
-        D = eye(N,N);
-        vci = ipSet(vci,'illuminant correction transform',D);
+        Tilluminant = eye(N,N);
+        vci = ipSet(vci,'illuminant correction transform',Tilluminant);
         return;
         
     case {'grayworld'}
-        D = grayWorld(img,vci);
+        Tilluminant = grayWorld(img,vci);
         
     case {'whiteworld'}
-        D = whiteWorld(img,vci);
+        Tilluminant = whiteWorld(img,vci);
         
     case {'manualmatrixentry','manual'}
-        D = ipGet(vci,'illuminant correction transform');
-        D = ieReadMatrix(D,'  %.2f');
+        Tilluminant = ipGet(vci,'illuminant correction transform');
+        Tilluminant = ieReadMatrix(Tilluminant,'  %.2f');
         
     otherwise
         error('Unknown illuminant correction method %s\n',iCorrection);
 end
 
 % Update the transform in the vci structure
-vci = ipSet(vci,'illuminant correction transform',D);
+vci = ipSet(vci,'illuminant correction transform',Tilluminant);
 
 % Convert the data
-img = imageLinearTransform(img,D);
+img = imageLinearTransform(img,Tilluminant);
 
 end
 

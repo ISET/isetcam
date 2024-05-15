@@ -377,6 +377,8 @@ elseif nFilters >= 3 || nSensors > 1
             img = ipGet(ip,'sensor space');
             img = imageLinearTransform(img,T);            
             img = img/max(img(:))*sensorGet(sensor,'response ratio');
+            img = ieClip(img,0,[]);
+
         otherwise
             error('Unknown transform method %s\n',tMethod);
     end
@@ -391,7 +393,7 @@ end
 
 end
 
-%%
+%% ------------------------
 function ip = ipComputeBracketed(ip,sensor,combinationMethod)
 % Compute for bracketed exposure case
 %
