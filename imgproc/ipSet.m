@@ -37,11 +37,6 @@ function ip = ipSet(ip,param,val,varargin)
 %                  'mcc optimized', 'esser optimized', 'multisurface'
 %     'conversion matrix sensor'  - The sensor conversion matrix
 %
-%  Calibrated color space (sensor spectral QE is allowed).
-%      'internal colorspace'      - Name of the internal color space
-%            Options: 'sensor', 'XYZ', 'Stockman', 'linear srgb'
-%      'internal cs 2 display space' - Transform from internal to display
-%
 %  Correction for the illuminant
 %      'correction illuminant'               - Color balance structure
 %      'correction method illuminant'        - Name of the method (function)
@@ -49,6 +44,11 @@ function ip = ipSet(ip,param,val,varargin)
 %            'none', 'gray world', 'white world', 'manual matrix entry'
 %
 %      'correction matrix illuminant'        - Color balance transform
+%
+%  Calibrated color space (sensor spectral QE is allowed).
+%      'internal colorspace'      - Name of the internal color space
+%            Options: 'sensor', 'XYZ', 'Stockman', 'linear srgb'
+%      'internal cs 2 display space' - Transform from internal to display
 %
 %      'spectrum'           - Wavelength structure
 %        'wavelength'
