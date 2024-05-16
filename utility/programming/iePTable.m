@@ -394,7 +394,7 @@ switch format
         precision = 3;
         data = {
             'Name',                ipGet(ip,'name'), '';
-            'Rows, Columns, Primaries', num2str(ipGet(ip,'result size'),precision), '';
+            'Rows, Columns, Primaries', num2str(fix(ipGet(ip,'result size'))), '';
             'Demosaic',            ipGet(ip,'demosaic method'),                '';
             'Sensor conversion',   ipGet(ip,'sensor conversion method'),       '';
             'Illuminant correction',  ipGet(ip,'illuminant correction method'),   '';
@@ -409,7 +409,7 @@ switch format
         
         data = {
             'name',                ipGet(ip,'name');
-            'row, col, primaries', num2str(ipGet(ip,'result size'),precision);
+            'row, col, primaries', num2str(fix(ipGet(ip,'result size')));
             'display name',        ipGet(ip,'display name');
             'n bits',              nbits;               
             };

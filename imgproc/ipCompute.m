@@ -227,8 +227,9 @@ elseif nFilters >= 3 || nSensors > 1
     %% Demosaic the sensor data in sensor space.
 
     % For the NN cases (e.g., rgbwrestormer) we already computed the
-    % sensor space data. So if slot is already filled, do not demosaic
-    if ~isequal(ipGet(ip,'transform method'),'rgbwrestormer')
+    % sensor space data. We can always add the string nodemosaic to
+    % any method to skip the demosaic step.
+    if ~isequal(ipGet(ip,'demosaic method'),'skip')
         % The data remain in the sensor channels and there is no scaling.
         if ndims(ip.data.input) == nFilters, img = ip.data.input;
         elseif ismatrix(ip.data.input),      img = Demosaic(ip,sensor);
