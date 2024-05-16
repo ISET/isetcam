@@ -162,7 +162,7 @@ classdef cpScene < handle
                     if ~piDockerExists, piDockerConfig; end
 
                     try
-                        obj.thisR = piRecipeDefault('scene name', obj.sceneName);
+                        obj.thisR = piRecipeCreate(obj.sceneName);
                     catch
                         obj.thisR = piRead(which([obj.sceneName '.pbrt']), 'exporter', 'Copy');
                     end
