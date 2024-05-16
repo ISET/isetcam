@@ -367,7 +367,7 @@ classdef cpScene < handle
                                 'verbose', obj.verbosity);
 
                             [p, n, e] = fileparts(renderedFile);
-                            sequencedFileName = fullfile(ivRootPath, 'local', sprintf('%s-%03d-%03d%s',n,ii,floor(1000*obj.expTimes(ii)), e));
+                            sequencedFileName = fullfile(ivDirGet('computed'), sprintf('%s-%03d-%03d%s',n,ii,round(1000*obj.expTimes(ii)), e));
                             movefile(renderedFile, sequencedFileName,'f');
                             renderedFiles{end+1} = sequencedFileName;
                         else
