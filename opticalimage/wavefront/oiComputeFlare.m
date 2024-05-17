@@ -1,5 +1,8 @@
 function [oi, pupilFunction, psf_spectral, psfSupport] = oiComputeFlare(oi, scene, varargin)
-% Add lens flare to a scene/optical image.
+% Deprecated:
+% 
+%   We now use the usual oiCompute and wvfAperture methods
+%   Add lens flare to a scene/optical image.
 %
 % Syntax
 %    oi = oiComputeFlare(oi,scene,varargin)
@@ -29,7 +32,7 @@ scene = sceneCreate('point array',sceneSize, 512);
 scene = sceneSet(scene,'fov',10);
 scene = sceneSet(scene, 'distance',0.05);
 sceneSampleSize = sceneGet(scene,'sample size','m');
-oi = oiCreate();
+oi = oiCreate('wvf');
 [oi,pupilmask, psf] = oiComputeFlare(oi, scene);
 ip = piRadiance2RGB(oi,'etime',1);
 ipWindow(ip);
