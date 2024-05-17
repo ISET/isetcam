@@ -3,6 +3,11 @@
 %
 % D. Cardinal, Stanford University, 2022
 
+%
+disp('DJC to fix s_faceDetectionDemo.')
+
+return;
+
 % Default detector is set for faces
 faceDetect = vision.CascadeObjectDetector();
 
