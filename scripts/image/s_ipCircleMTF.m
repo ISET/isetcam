@@ -40,8 +40,11 @@ rImg = img(:,:,2);
 % figure(1); imagesc(rImg); axis image
 thisPeak = zeros(1,length(rList));
 
-fig = ieNewGraphWin;
+%%
+
 for ii=1:length(rList)
+    ieNewGraphWin;
+    tiledlayout(1,2);
     
     % Find the points at this distance
     lst = (abs(d2c - rList(ii)) < 1);  % figure; imagesc(l)
@@ -61,16 +64,17 @@ for ii=1:length(rList)
     % Do it later. I think it is just the number of cycles in the pattern.
     thisPeak(ii) = max(spec(2:n));
     
-    subplot(1,2,1), plot(2:n,spec(2:n),'--');
+    nexttile; plot(2:n,spec(2:n),'--');
     xlabel('Freq'); ylabel('Amp');
     
     % Show the circle on the image
-    subplot(1,2,2), tmp = rImg; tmp(lst) = 0;
+    nexttile; tmp = rImg; tmp(lst) = 0;
     imagesc(tmp); colormap(gray(256)); axis image; pause(2);
 end
 
 %% Plot the modulation transfer function
-ieNewGraphWin; plot(max(rList) - rList,thisPeak,'o-')
+ieNewGraphWin; 
+plot(max(rList) - rList,thisPeak,'o-')
 xlabel('maxRadius - thisRadius')
 ylabel('FFT peak')
 grid on
