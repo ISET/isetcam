@@ -1,12 +1,31 @@
 function [names, data, nSamples] = ieDataList(type, varargin)
+% Create lists of different types of data
+%
+% This function is incomplete and poorly documented.
+%
+% Input
+%   dataType
+%  
+% Optional
+%   'wave'
+%
+% Output
+%   names
+%   data
+%   nSamples
+%
+% See also
+%  We deleted an old thing called ieData which seemed even worse.
+%
 
-% Example
+% Example:
 %{
-ieDataList('refl');
+[n,d,s] = ieDataList('refl')
 %}
 %{
-ieDataList('light');
+ieDataList('light')
 %}
+
 %% Parser
 varargin = ieParamFormat(varargin);
 p = inputParser;
