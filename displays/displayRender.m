@@ -1,8 +1,8 @@
-function [displayImg,ip] = displayRender(icsImage,ip,sensor)
+function [displayImg,ip,Tics2display] = displayRender(icsImage,ip,sensor)
 % Transform img from the internal color space to linear display rgb
 %
 % Synopsis
-%   [displayImg,ip] = displayRender(icsImage,ip,sensor);
+%   [displayImg,ip, Tics2display] = displayRender(icsImage,ip,sensor);
 %
 % Input
 %   icsImage - Data in the internal color space
@@ -12,6 +12,7 @@ function [displayImg,ip] = displayRender(icsImage,ip,sensor)
 % Output
 %   displayImg - Linear primary intensities in the display space
 %   ip  - Image processor
+%   Tics2display - Transform from internal color space to display
 %
 % Description
 %  Prior to this call, the ipCompute processing pipeline transforms
@@ -54,7 +55,7 @@ switch ieParamFormat(ipGet(ip,'internalCS'))
     case {'xyz','stockman'}
         % This is the transform from the internal color space to the
         % display primary representation.
-        ics2displayT = ieInternal2Display(ip);
+        Tics2display = ieInternal2Display(ip);
     case {'sensor'}
         % The ICS is the sensor. These can be more than 3 dimensional,
         % and we need a way to transform to the display
@@ -72,7 +73,7 @@ switch ieParamFormat(ipGet(ip,'internalCS'))
         %
         P = ipGet(ip,'display spd');
         S = sensorGet(sensor,'spectral qe');
-        ics2displayT = pinv(S'*P)';
+        Tics2display = pinv(S'*P)';
 
         %{
         % N = size(ipGet(ip,'illuminant correction matrix'),2);
@@ -99,8 +100,8 @@ switch lower(method)
 
     case {'sensor','mccoptimized', 'esseroptimized'}
         % Store and apply the transform from ICS to Display
-        ip = ipSet(ip,'ics2display',ics2displayT);
-        displayImg = imageLinearTransform(icsImage,ics2displayT);
+        ip = ipSet(ip,'ics2display',Tics2display);
+        displayImg = imageLinearTransform(icsImage,Tics2display);
         
     otherwise
         error('Unknown color conversion method %s',method)

@@ -18,6 +18,12 @@
 % (c) Imageval Consulting, LLC, 2012
 %
 
+%%
+if isempty(which('Lens'))
+    fprintf('%s requires ISETBio (Lens).',mfilename);
+    return;
+end
+
 %% Initialize
 ieInit
 
@@ -59,7 +65,7 @@ for ii=1:3
     sensor{ii} = sensorCompute(sensor{ii},oi);
     vcAddAndSelectObject(sensor{ii});
     
-    p = sensorGet(sensor{ii},'photons');
+    p = sensorGet(sensor{ii},'electrons');
     p = reshape(p,params.sz(1),params.sz(2));
     p = p - mean(p(:));  % Remove mean
     pFFT{ii} = fftshift(abs(fft2(p)));  % Compute FFT

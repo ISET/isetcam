@@ -1,8 +1,8 @@
-function selectedObjs = imageMultiview(objType, selectedObjs, singlewindow)
+function selectedObjs = imageMultiview(objType, selectedObjs, singlewindow, app)
 % Display multiple images of selected GUI objects
 %
 % Syntax:
-%   selectedObjs = imageMultiview(objType, [selectedObjs], [singlewindow])
+%   selectedObjs = imageMultiview(objType, [selectedObjs], [singlewindow], [app])
 %
 % Description:
 %    This routine lets the user compare the images side by side, rather
@@ -82,7 +82,12 @@ else
     rWin = [];
     fType = 'upper left';
 end
-gam = 1;  % Figure out a rationale for this.
+
+% Maybe we will have other rendering options in the future
+if notDefined('app'), gam = 1;
+else,                 gam = str2double(app.editGamma.Value);
+end
+
 subCount = 1;  % Which subplot are we in
 
 %% This is the display loop

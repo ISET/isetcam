@@ -40,11 +40,7 @@ dispCal = 'crt.mat';   % Calibrated display
 % This is the mean delta E
 mn = mean(eImage(:));
 
-% When updating the display code as per HJ, the number here changed to
-% 1.5118 rather than 1.849.  Not sure why.  Other numbers below changed a
-% little also.  I presume we have slightly different display numbers
-% interpolated.
-assert(abs(mn - 2.2079) < 0.01,'Mean error image is off');
+assert(abs(mn - 1.5118) < 0.01,'Mean error image is off');
 
 % Show the error image
 ieNewGraphWin; imagesc(eImage)
@@ -53,8 +49,9 @@ colorbar;
 % Show the RGB images as scenes. This illustrates how the RGB data were
 % converted to SPDs using the calibrated display
 vcAddAndSelectObject(scene1);
-vcAddAndSelectObject(scene2);sceneWindow;
-imageMultiview('scene',[1 2],false);
+vcAddAndSelectObject(scene2);
+% sceneWindow;
+imageMultiview('scene',[1 2],true);
 
 
 %% Illustrate the processing within the routine, showing explicit calls.
@@ -110,7 +107,7 @@ params.filters = [];
 [errorImage, params] = scielab(img1XYZ, img2XYZ, whiteXYZ, params);
 
 % Here is the mean spatial CIELAB deltaE
-mean(errorImage(:))
+assert(abs(mean(errorImage(:)) - 1.8294) < 1e-3);
 
 %% Examining and interpreting the results.
 ieNewGraphWin;
