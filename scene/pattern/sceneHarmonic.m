@@ -30,62 +30,32 @@ function [scene, params] = sceneHarmonic(scene, params, wave)
 %   wave    - (Optional)  Wavelength samples for scene. Default is pull a
 %             default hyperspectral scene's wave.
 %
+% Optional key/value pairs:
+%    None.
+%
+%
 % Outputs:
 %    scene  - The (created or) modified scene structure.
 %    params - The harmonic parameters.
 %
-% Optional key/value pairs:
-%    None.
-%
+% See also
+%   Use the examples from sceneCreate('harmonic'), which call this
+%   function.
 
 % History:
 %    xx/xx/06       Imageval Consulting, LLC Copyright 2006
 %    02/02/18  jnm  Formatting
 
-% Examples:
+% Example:
 %{
-    params = harmonicP;
-    scene = sceneInit;
-    scene = sceneHarmonic(scene, params);
-    scene = sceneComplete(scene);
-    ieAddObject(scene);
-    sceneWindow;
+% sceneHarmonic is called this way.
+%
+parms.freq = 1; parms.contrast = 1; parms.ph = 0;
+parms.ang= 0; parms.row = 128; parms.col = 128;
+parms.GaborFlag=0;
+[scene,parms] = sceneCreate('harmonic',parms);
 %}
-%{
-    params.freq = 5;
-    params.ang = pi / 3;
-    params.GaborFlag = 0.2;
-    clear scene
-    scene = sceneHarmonic([], params);
-    scene = sceneComplete(scene);
-    ieAddObject(scene);
-    sceneWindow;
-%}
-%{
-    % A color (cone isolating) version
-    dsp = displayCreate('LCD-Apple.mat');
-    wave = displayGet(dsp, 'wave');
-    params = harmonicP;
-    backSPD = displayGet(dsp, 'spd primaries') * 0.5 * ones(3, 1);
-    backSPD = Energy2Quanta(wave, backSPD);
-    [~, modSPD] = humanConeIsolating(dsp);
-    modSPD = Energy2Quanta(wave, modSPD);
 
-    params.backSPD = backSPD;
-    params.modSPD = modSPD(:, 1);
-    params.wave = wave;
-
-    params.contrast = 1;   
-    params.freq = 6; 
-    params.GaborFlag = 0.2;
-    params.ang = pi / 3;
-
-    scene = sceneInit;
-    scene = sceneHarmonic(scene, params, displayGet(dsp, 'wave'));
-    scene = sceneComplete(scene);
-    ieAddObject(scene);
-    sceneWindow;
-%}
 
 %% Build the spatial form of the image from harmonic parameters
 if notDefined('params')

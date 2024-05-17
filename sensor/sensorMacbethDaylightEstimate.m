@@ -12,7 +12,7 @@ function [illPhotons,cp,wgts,Cstacked,X] = sensorMacbethDaylightEstimate(sensor,
 %            data and all the sensor parameters
 %
 % Optional key/value pairs
-%   cp -  Corner points of the MCC
+%   corner points -  Corner points of the MCC
 %
 % Outputs
 %   illPhotons - Estimated illuminant (photons)
@@ -48,11 +48,11 @@ function [illPhotons,cp,wgts,Cstacked,X] = sensorMacbethDaylightEstimate(sensor,
 
    % Create a scene and set its illuminant to be the first daylight
    % component
-   scene = sceneCreate;
-   wave = sceneGet(scene,'wave');
+   scene = sceneCreate; wave = sceneGet(scene,'wave');
    dayBasis = ieReadSpectra('cieDaylightBasis.mat',wave);
    wgts = [1,-1,0.3]';
-   % Impomrtant to use this, not sceneSet()
+
+   % Important to use this, not sceneSet()
    scene = sceneAdjustIlluminant(scene,dayBasis*wgts,true);
    sceneWindow(scene);
 
@@ -62,6 +62,7 @@ function [illPhotons,cp,wgts,Cstacked,X] = sensorMacbethDaylightEstimate(sensor,
    sensor = sensorCreate; sensor = sensorSet(sensor,'fov',fov,oi);
    sensor = sensorSet(sensor,'noise flag',1);
    sensor = sensorCompute(sensor,oi);
+   sensorWindow(sensor);
 
    % Estimate the daylight, should have weights as above
    cp = [1   180

@@ -1,8 +1,8 @@
 function [cfaN,cfaMap] = sensorImageColorArray(cfa)
 % Deprecated:  Create an image of the color filter array
 %  
-% Plan to deprecate and use sensorData2Image as a replacement.  See
-% sensorShowCFA for how to call sensorData2Image to produce the CFA image.
+% Use sensorData2Image as a replacement.  See sensorShowCFA for how to
+% call sensorData2Image to produce the CFA image.
 %
 %    [cfaN,cfaMap] = sensorImageColorArray(cfa)
 %
