@@ -71,9 +71,9 @@ function  [integrationTime,maxSignalVoltage,smallOI] = autoExposure(oi,sensor,le
 
 % Examples:
 %{
-scene = sceneCreate; oi = oiCreate; oi = oiCompute(oi,scene); 
-% oiWindow(oi);
-% ieROISelect(oi);
+scene = sceneCreate; 
+oi = oiCreate; oi = oiCompute(oi,scene); 
+% oiWindow(oi); ieROISelect(oi);
 rect = [50   35   28   19];
 sensor   = sensorCreate;
 sensor   = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'),oi);

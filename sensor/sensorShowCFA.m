@@ -33,10 +33,6 @@ function [fig, cfaImg] = sensorShowCFA(sensor, app, sz, sScale)
   [~, img] = sensorShowCFA(sensor);
   [~, img] = sensorShowCFA(sensor,[],[4 4]);
 %}
-%{
-mxVolts    = sensorGet(sensor,'voltage swing');
-
-%}
 
 %%
 if ieNotDefined('sensor'), sensor = ieGetObject('sensor'); end
