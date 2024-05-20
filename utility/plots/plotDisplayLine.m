@@ -93,11 +93,11 @@ end
 switch lower(ori)
     case {'h','horizontal'}
         lData = squeeze(data(xy(2),:,:));
-        titleString =sprintf('ISET:  Horizontal line %.0f',xy(2));
+        titleString =sprintf('%s:  Horizontal line %.0f',ipGet(ip,'name'),xy(2));
         xstr = 'Col number';
     case {'v','vertical'}
         lData = squeeze(data(:,xy(1),:));
-        titleString =sprintf('ISET:  Vertical line %.0f',xy(1));
+        titleString =sprintf('%s:  Vertical line %.0f',ipGet(ip,'name'),xy(1));
         xstr = 'Row number';
     otherwise
         error('Unknown line orientation');
