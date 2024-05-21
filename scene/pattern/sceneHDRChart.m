@@ -1,12 +1,13 @@
-function scene = sceneHDRChart(dRange,nLevels,rowsPerLevel,maxL,il)
+function scene = sceneHDRChart(dRange,nLevels,colsPerLevel,maxL,il)
 % Create a HDR chart of horizontal strips from dark to bright
 %
-%   scene = sceneHDRChart(dRange,nLevels,rowPerLevel,maxL,il)
+% Synopsis
+%  scene = sceneHDRChart(dRange,nLevels,rowPerLevel,maxL,il)
 %
 % Inputs
 %  dRange:        The dynamic range of the scene
 %  nLevels:       Number of luminance steps (log spacing, N=10)
-%  rowsPerLevel:  Rows per luminance level
+%  colsPerLevel:  Rows per luminance level
 %  maxL:          Maximum luminance
 %  il:            Illuminant
 %
@@ -18,8 +19,8 @@ function scene = sceneHDRChart(dRange,nLevels,rowsPerLevel,maxL,il)
 
 %Examples:
 %{
-  rowsPerLevel = 12; nLevels = 30; dRange = 10^3.5;
-  scene = sceneHDRChart(dRange,nLevels,rowsPerLevel);
+  colsPerLevel = 12; nLevels = 30; dRange = 10^3.5;
+  scene = sceneHDRChart(dRange,nLevels,colsPerLevel);
   sceneWindow(scene);
 %}
 %{
@@ -29,7 +30,7 @@ function scene = sceneHDRChart(dRange,nLevels,rowsPerLevel,maxL,il)
 
 if ieNotDefined('dRange'),  dRange  = 10^4; end
 if ieNotDefined('nLevels'), nLevels = 12; end
-if ieNotDefined('rowsPerLevel'),   rowsPerLevel   = 8; end
+if ieNotDefined('colsPerLevel'),   colsPerLevel   = 8; end
 
 % Default scene
 scene = sceneCreate;
@@ -38,8 +39,8 @@ wave = sceneGet(scene,'wave');
 if ieNotDefined('il'), il = illuminantCreate('d65',wave); end
 illPhotons = illuminantGet(il,'photons');
 
-% Spatial arrangement
-r = nLevels*rowsPerLevel; c = r;
+% Spatial arrangement - Make the scene square
+c = nLevels*colsPerLevel; r = c;
 nWave = length(wave);
 
 % Convert the scene reflectances into photons assuming an equal energy
@@ -53,9 +54,9 @@ img = zeros(r,c,nWave);
 for ll = 1:nLevels
     clear tmp
     tmp(1,1,:) =  photons(ll,:);
-    tmp = repmat(tmp,[rowsPerLevel,c]);
-    theseRows = (ll-1)*rowsPerLevel + (1:rowsPerLevel);
-    img(theseRows,:,:) = tmp;
+    tmp = repmat(tmp,[r,colsPerLevel]);
+    theseCols = (ll-1)*colsPerLevel + (1:colsPerLevel);
+    img(:,theseCols,:) = tmp;
 end
 
 scene = sceneSet(scene,'photons',img);
