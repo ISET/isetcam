@@ -31,7 +31,6 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %   cd/m2.  The scene is described only a small number of spatial
 %   64x96 (row,col).  This can be changed using the patchSize argument
 %
-%    scene = sceneCreate('macbethEE_IR',[patchSize=16],[wave=400:10:700]);
 %   
 %   Here are some options
 %      {'macbeth d65'}         - Macbeth D65 image.
@@ -40,7 +39,11 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %      {'macbeth fluorescent'} - Fluorescent illuminant
 %      {'macbeth tungsten'}    - Tungsten illuminant
 %      {'macbeth EE_IR'}       - Equal energy extends out to the IR
-%      {L star}                - Vertical bars spaced in equal L* steps
+%      {'L star'}              - Vertical bars spaced in equal L* steps
+%      {'hdr lights'}          - High dynamic range colored image
+%                                  Many parameters for lines, circles,
+%                                  squares. See sceneHDRLights.
+%      {'hdr chart'}           - High dynamic range test chart
 %
 %   Use sceneAdjustIlluminant() to change the scene SPD.
 %
@@ -52,6 +55,30 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %    wave = [600, 610];  sz = 64;
 %    scene = sceneCreate('uniform monochromatic',sz,wave);
 %
+% NOISE ANALYSIS TEST PATTERNS
+%
+%      {'linear intensity ramp'}  - Equal photon
+%      {'exponential intensity ramp'} - Equal photon
+%      {'uniformEqualEnergy'}   - Equal energy
+%      {'uniformEqualPhoton'}   - Equal photon density
+%      {'uniformd65'}           - D65 SPD
+%      {'whitenoise'}           - Noise pattern for testing
+%
+% Here are some options
+%
+%    scene = sceneCreate('macbeth[*]',[patchSize=16],[wave=400:10:700]);
+%    scene = sceneCreate('uniform monochromatic',[wave=500],[sz=128]);
+%    scene = sceneCreate('linear intensity ramp',[sz=256],[dynamicRange-256]);
+%    scene = sceneCreate('exponential intensity ramp',[sz=256],[dynamicRange-256]);
+%    scene = sceneCreate('l star',barRowCol=[128 20],[nBars=10],[deltaE=10]);
+%    scene = sceneCreate('hdr lights');
+%
+%  N.B. - key/val format in the hdr chart case.  Unusual.  Considering
+%  for new methods.
+%
+%    sceneCreate('hdr chart','cols per level',12,'n levels',16,'d range',10^3.5)
+%    sceneCreate('hdr image', 'imsize', 512, 'n patches',8,'background image',true,'drange',3);
+
 % SPATIAL TEST PATTERNS:
 %
 %      {'rings rays'}            - Resolution pattern
@@ -92,6 +119,7 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %         sceneCreate('bar',imageSize,width);
 %
 %  Other patterns have different parameters:
+%
 %         sceneCreate('slanted edge',imageSize,edgeSlope,fov,wave,darklevel);
 %         sceneCreate('checkerboard',pixelsPerCheck,numberOfChecks)
 %         sceneCreate('grid lines',imageSize,pixelsBetweenLines);
@@ -106,21 +134,16 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %         scene = sceneCreate('square array', imageSize, squareSize, arraySize);
 %         
 %
-% NOISE ANALYSIS TEST PATTERNS
-%
-%      {'linear intensity ramp'}  - Equal photon
-%      {'exponential intensity ramp'} - Equal photon
-%      {'uniformEqualEnergy'}   - Equal energy
-%      {'uniformEqualPhoton'}   - Equal photon density
-%      {'uniformd65'}           - D65 SPD
-%      {'whitenoise'}           - Noise pattern for testing
-%
 % SCENES FROM IMAGE DATA
-%   We create scenes using RGB data in image files and a model display.  In
-%   this approach, we simply read a tiff or jpeg file and create a scene
-%   structure assuming the radiance is from a calibrated display.  These
-%   image-based scenes created by sceneFromFile.  See the comments there
-%   for more information.
+%   We create scenes using RGB data in image files and a model
+%   display.  In this approach, we simply read a tiff or jpeg file and
+%   create a scene structure assuming the radiance is from a
+%   calibrated display.  These image-based scenes created by
+%
+%        sceneFromFile
+% 
+%   See the comments and examples in sceneFromFile,
+%        ieExamplesPrint('sceneFromFile');
 %
 % EMPTY
 %   For certain programming reasons, it is sometimes useful to have a scene
@@ -195,6 +218,11 @@ scene = sceneCreate('uniformD65',256);
 sz = 256; dynamicRange = 1024;
 scene = sceneCreate('linear intensity ramp',sz,dynamicRange);
 scene = sceneCreate('exponential intensity ramp',sz,dynamicRange);
+%}
+%{
+barRowCol = [128 20]; % row, col
+nBars = 15; deltaE = 3;
+scene = sceneCreate('l star',barRowCol,nBars,deltaE);
 %}
 %{
 sceneWindow(sceneCreate('disk array', 128, 8, [3,3])); 
@@ -467,7 +495,7 @@ switch sceneName
         
         % Create a uniform, monochromatic image.  Used for color-matching
         % analyses.  Set the peak radiance in photons.
-        sz = 128; wavelength = 500;
+         wavelength = 500; sz = 128;
         if length(varargin) >= 1, wavelength = varargin{1}; end
         if length(varargin) >= 2, sz = varargin{2}; end
         
@@ -640,21 +668,51 @@ switch sceneName
         return; % Do not adjust luminance or other properties
 
     case {'hdrchart'}
+        % sceneCreate('hdr chart','cols per level',12,'n levels',16,'d range',10^3.5)
         p = inputParser;
         varargin = ieParamFormat(varargin);
-        p.addParameter('rowsperlevel',12);
+        p.addParameter('colsperlevel',12);
         p.addParameter('nlevels',16);
         p.addParameter('drange',10^3.5);
         p.parse(varargin{:});
         r = p.Results;
-        scene = sceneHDRChart(r.drange,r.nlevels,r.rowsperlevel);
-    case {'hdr','highdynamicrange'}
-        % scene = sceneCreate('hdr',varargin);
+        scene = sceneHDRChart(r.drange,r.nlevels,r.colsperlevel);
+        scene = sceneSet(scene,'name','hdr chart');
+    case {'hdrlights','highdynamicrange','hdr'}
+        % scene = sceneCreate('hdr lights',varargin);
+        %{
+        p.addParameter('imagesize',384,@isnumeric);
+        p.addParameter('ncircles',4,@isnumeric);
+        p.addParameter('radius',[0.01,0.035,0.07,0.1],@isvector);
+        p.addParameter('circlecolors',{'white','green','blue','yellow','magenta','white'},@iscell);
+        p.addParameter('nlines',4,@isnumeric);
+        p.addParameter('linelength',0.02,@isnumeric);
+        p.addParameter('linecolors',{'white','green','blue','yellow','magenta','white'},@iscell);
+        %}
+        scene = sceneHDRLights(varargin{:});
+        scene = sceneSet(scene,'name','hdr lights');
+    case {'hdrimage'}
+        % scene = sceneCreate('hdr image',varargin);
+        % 
+        %  Bright patches on a dark image
+        %  Parameters
+        %
+        %  'imsize', 'patch shape', 'n patches','background','dynamicrange'
+        %
         p = inputParser;
         varargin = ieParamFormat(varargin);
-        p.addParameter('size',256);
+        p.addParameter('imsize',[512,512],@isvector);
+        p.addParameter('npatches',8,@isinteger);
+        p.addParameter('background',which('data/images/rgb/PsychBuilding.png'),@ischar);
+        p.addParameter('dynamicrange',3,@isnumeric);
+        p.addParameter('patchshape','square',@ischar);
         p.parse(varargin{:});
-        scene = sceneHDRLights();
+        r = p.Results;
+        
+        scene = sceneHDRImage(r.npatches,'image size',r.imsize,...
+            'background',r.background,'dynamic range',r.dynamicrange,...
+            'patch shape',r.patchshape);
+        scene = sceneSet(scene,'name','hdr image');
     otherwise
         error('Unknown scene format: %s.',sceneName);
 end
