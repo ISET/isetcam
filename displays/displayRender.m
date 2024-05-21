@@ -126,6 +126,9 @@ qm = sensorGet(sensor,'quantization method');
 % ratio sets the range.
 displayImgMax = max(displayImg(:));
 
+% Find all the pixels were at least one of the sensors channels is
+% saturated. Set the display at the location to white.
+
 % This returns the ratio of either (a) max data voltage to voltage
 % swing, or max digital value to 2^nbits
 displayImg = (displayImg/displayImgMax)*sensorGet(sensor,'response ratio');

@@ -1,15 +1,15 @@
-function scene = sceneHDRImage(nPatches,varargin)
+function [scene, background] = sceneHDRImage(nPatches,varargin)
 % HDR image of bright patches, like lights, superimposed on a dim background
 %
 % Synopsis
 %   scene = sceneHDRImage(imSize,nPatches,varargin)
 %
 % Inputs
-%
 %   nPatches        - Number of light patches superimposed on background
 %
 % Optional Key/val
-%   imSize            - Scalar.  Number of scene rows and cols
+%   imSize            - Scene rows and cols (default: image size or
+%                       [512,512] if no image
 %   dynamic range     - Scene dynamic range (default:  3 log units)
 %   patch shape       - patch shape square,circle (default: square)
 %   background image  - PNG or JPEG image file
@@ -18,11 +18,15 @@ function scene = sceneHDRImage(nPatches,varargin)
 %    scene   - Background image with superimposed patches
 %
 % Description
-%   Create a high dynamic range scene (all the spectral radiances are
-%   the same).  The scene is a background image (png, jpeg) with some
-%   superimposed squares that are very bright compared to the
-%   background.  The scene is useful for assessing the impact of
-%   flare.
+%   Returns a high dynamic range scene by superimposing bright patches
+%   on a background scene.  The background is defined by an image
+%   (png, jpeg) whose mean luminance is set to 1 cd/m2 (nit). The
+%   superimposed squares are set to create a specified dynamic range
+%   (log10), so 3 means 1000 cd/m2 and 2 means 100 cd/m2. The HDR
+%   scene is useful for assessing the impact of flare.
+%
+%   The patches can be squares or circles.  In the future we might
+%   allow the user to set the size and position of the patches.
 %
 % See also
 %    sceneCreate('hdr lights'); sceneCreate('hdr chart');
@@ -43,7 +47,11 @@ scene = sceneHDRImage(nPatches,'background',img,'dynamic range',drange);  % Defa
 %{
 % Zero background
 nPatches = 10; drange = 2;
-scene = sceneHDRImage(nPatches,'background','','dynamic range',drange);  % Default 3 log units drange
+scene = sceneHDRImage(nPatches,'background','','dynamic range',drange);  
+%}
+%{
+nPatches = 5; drange = 2; 
+scene = sceneHDRImage(nPatches,'patch shape','circle');  
 %}
 %%
 varargin = ieParamFormat(varargin);
@@ -89,12 +97,6 @@ end
 imWidth  = imSize(2);
 imHeight = imSize(1);
 
-patch_width = floor(imWidth / (2 * nPatches)); % Width of each patch
-spacing = floor(patch_width / 2);              % Space between patches
-
-% Calculate the starting x position of the first patch
-start_x = round((imWidth - (nPatches * patch_width + (nPatches - 1) * spacing)) / 2);
-
 %% Loop to create each patch
 
 % Log spacing to span the dynamic range
@@ -106,17 +108,25 @@ for ii = 1:nPatches
     switch patchShape
         case 'square'
             % Make a square patch image
+            patch_width = floor(imWidth / (2 * nPatches)); % Width of each patch
             patch_height = patch_width;
-            y_position = round((imHeight - patch_height) / 2);
+            spacing = floor(patch_width / 2);              % Space between patches
 
-            % Draw the square
-            rows = y_position: y_position+patch_height;
-            cols = start_x + (ii - 1) * (patch_width + spacing) : start_x + (ii - 1) * (patch_width + spacing) + patch_width;
-            patchImage(rows,cols) = 1;
-            % patchImage = imrotate(patchImage,90);
+            % Place the square
+            start_col   = round((imWidth - (nPatches * patch_width + (nPatches - 1) * spacing)) / 2);
+            start_row = round((imHeight - patch_height) / 2);
+            rows = start_row + (1:patch_height);
+            cols = start_col + ((ii - 1)*(patch_width + spacing):(ii - 1)*(patch_width + spacing) + patch_width);
+            patchImage(rows,cols) = 1;            
             patchImage = repmat(patchImage,[1 1 3]);
         case 'circle'
-            disp('NYI')
+            radius = floor(imWidth / (4*nPatches));
+            center_col = linspace(4*radius,imWidth-4*radius,nPatches); 
+            center_row = round(imHeight/ 2);
+            [X,Y] = meshgrid(1:imSize(2),1:imSize(1));
+            dist = sqrt((X - center_col(ii)).^2 + (Y - center_row).^2);
+            patchImage = (dist<radius);
+            patchImage = repmat(patchImage,[1 1 3]);
         otherwise
     end
 
@@ -134,9 +144,11 @@ for ii = 1:nPatches
     % patches{ii} = [start_x + (ii - 1) * (patch_width + spacing), y_position, patch_width, patch_height];
 end
 
-% Add in the background scene
-scene = sceneAdd(scene,tmp);
+if nargout == 2
+    background = scene;
+end
 
-% scene = sceneSet(scene,'photons',data);
+% Combine the background scene and the patches
+scene = sceneAdd(scene,tmp);
 
 end

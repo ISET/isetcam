@@ -267,11 +267,16 @@ elseif nFilters >= 3 || nSensors > 1
             % because it incorporates all three transforms.
             img = imageLinearTransform(img,T);
 
-            % See comments in displayRender.  This is the same set of
-            % scaling operations as we perform there.
+            % See comments in displayRender.
+            % We scale the transformed data to a max of 1, but then
+            % multiply by how filled up the sensor was.  So if the
+            % sensor was only at half well capacity, we scale by half.
             img = (img/max(img(:)))*sensorGet(sensor,'response ratio');
+
+            % We make sure everything is positive.
             img = max(img,0);
 
+            % Quantize
             qm = sensorGet(sensor,'quantization method');
             switch qm
                 case 'analog'
@@ -350,15 +355,15 @@ elseif nFilters >= 3 || nSensors > 1
                 s = sensor;
             end
 
-            % Sensor data are converted to the internal color space
+            % Convert the sensor data to the internal color space
             [img,ip] = imageSensorCorrection(img,ip,s);
             if isempty(img), disp('User canceled'); return; end
             % imtool(img/max(img(:))); ii = 3; imtool(img(:,:,ii))
 
             %% Illuminant correction.
 
-            % The 'illuminant correction method' transforms, within
-            % the ICS.
+            % The 'illuminant correction method' transforms the data
+            % within the ICS.
             [img,ip] = imageIlluminantCorrection(img,ip);
 
             %% Convert from the internal color space to linear display primaries

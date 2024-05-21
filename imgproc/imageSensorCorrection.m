@@ -61,14 +61,20 @@ function [img,ip,Tsensor] = imageSensorCorrection(img,ip,sensor)
 %    {'manual'}  - The user is queried and enters a matrix manually. Other
 %    methods and transforms are set to null
 %
-% See also:  imageIlluminantCorrection, ipCompute, displayRender
-%
-% Example:
-%
-%
 % Copyright ImagEval Consultants, LLC, 2003.
+%
+% See also:  
+%   imageIlluminantCorrection, ipCompute, displayRender
+%
+
+%%
 
 if ieNotDefined('img'), error('Image required'); end
+
+% We should flag locations where at least one of the color channel
+% pixels is saturated. The linear transformation doesn't make sense
+% for those pixels.  We should make sure that the display at those
+% locations is white.
 
 param = ieParamFormat(ipGet(ip,'conversion method sensor'));
 switch param
@@ -116,10 +122,7 @@ switch param
         % Set the maximum value in the ICS to 1.
         mx = max(img(:));
         img = img/mx; 
-
-        % Do we need to do this?  Deleted and testing.
-        % Tsensor = Tsensor/mx;
-        
+       
         % Store the transform.  Note that because of clipping, this
         % transform alone may not do precisely the same job.
         ip = ipSet(ip,'conversion transform sensor',Tsensor);
