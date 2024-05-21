@@ -77,7 +77,8 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %  for new methods.
 %
 %    sceneCreate('hdr chart','cols per level',12,'n levels',16,'d range',10^3.5)
-%
+%    sceneCreate('hdr image', 'imsize', 512, 'n patches',8,'background image',true,'drange',3);
+
 % SPATIAL TEST PATTERNS:
 %
 %      {'rings rays'}            - Resolution pattern
@@ -694,16 +695,21 @@ switch sceneName
         % scene = sceneCreate('hdr image',varargin);
         % 
         %  Bright patches on a dark image
+        %  Parameters
+        %
+        %  'imsize', 'n patches','background image','drange'
+        %
         p = inputParser;
         varargin = ieParamFormat(varargin);
         p.addParameter('imsize',512);
         p.addParameter('npatches',8);
         p.addParameter('backgroundimage',true);
+        p.addParameter('drange',3,@isnumeric)
         p.parse(varargin{:});
         r = p.Results;
         
-        scene = sceneCreateHDR(r.imsize,r.npatches,r.backgroundimage);
-        
+        scene = sceneHDRImage(r.imsize,r.npatches,r.backgroundimage,r.drange);
+        scene = sceneSet(scene,'name','hdr image');
     otherwise
         error('Unknown scene format: %s.',sceneName);
 end

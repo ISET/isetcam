@@ -1,115 +1,58 @@
-function [scene,patches] = sceneCreateHDR(imSize,nPatches,backgroundimage,drange)
-% HDR image of bright patches, like lights, superimposed on a dim background
+function [scene,patches] = sceneCreateHDR(n,m,backgroundimage)
+% Deprecated, replaced by sceneHDRImage
+% 
+% Create a list of patches that has decreasing level of neutral density
+% n is the size of scene, squared.
+% m is the number of patches
 %
-% Synopsis
-%   [scene,patches] = sceneCreateHDR(imSize,nPatches,backgroundimage,drange)
-%
-% Inputs
-%
-%   imSize          - Scalar.  Number of scene rows (and cols)
-%   nPatches        - Number of light patches superimposed on background
-%   backgroundimage - Logical to use Psych building, or char to
-%         another image file
-%   drange          - Scene dynamic range
-%
-% Output
-%    scene
-%    patches
-%
-% Description
-%   Create a high dynamic range scene (all the spectral radiances are
-%   the same).  The scene is a background image (png, jpeg) with some
-%   superimposed squares that are very bright compared to the
-%   background.  The scene is useful for assessing the impact of
-%   flare.
-%
-% See also
-%    sceneCreate('hdr lights'); sceneCreate('hdr chart');
-%    sceneCreate('hdr image');
-%
+%  From Zhenyi.  He may still be using it.
 
-% Example:
-%{
-imSize = 512; nPatches = 10; img = true; drange = 4;
-scene = sceneCreateHDR(imSize,nPatches,img,drange);  % Default 3 log units drange
-% sceneWindow(scene);
-%}
-%{
-img = 'stanfordQuadEntryLowRes.png';
-imSize = 512; nPatches = 10; drange = 2;
-scene = sceneCreateHDR(imSize,nPatches,img,drange);  % Default 3 log units drange
-%}
+scene = sceneCreate();
 
-%%
-p = inputParser;
-p.addRequired('imSize',@isnumeric);
-p.addRequired('nPatches',@isnumeric);
-p.addRequired('backgroundimage',@(x)(islogical(x) || (ischar(x) && exist(x,'file'))));
-p.addRequired('drange',@(x)(isnumeric(x) && x < 10));
+wave = 400:10:700;
+nWave = numel(wave);
 
-p.parse(imSize,nPatches,backgroundimage,drange)
+if backgroundimage % logical
+    image = imread(fullfile(isetRootPath,'data/images/rgb/PsychBuilding.png'));
+    image = rgb2gray(double(image)/255);
 
-imgFile = '';
-if islogical(backgroundimage) && backgroundimage
-    imgFile = which('data/images/rgb/PsychBuilding.png');
-elseif ischar(backgroundimage)
-    imgFile = backgroundimage;
-end
-
-
-%% Make the background image
-
-if isempty(imgFile)
-    % Black scene
-    scene = sceneCreate('uniformee',imSize);
-    scene = sceneAdjustLuminance(scene,'mean',0);  % Black scene
+    image = imresize(image,[n,n]);
+    backgroundPhotons =  Energy2Quanta(wave,blackbody(wave,8000,'energy'))*1/2^(m-1);
+    data = bsxfun(@times, image, reshape(backgroundPhotons, [1 1 31]));
 else
-    % This could be a sceneFromFile and resize.
-    img = imread(imgFile);
-    img = imresize(img,[imSize,imSize]);
-    scene = sceneFromFile(img,'rgb',1,displayCreate,400:10:700);
-    % data = sceneGet(scene,'photons');
-    % backgroundPhotons =  Energy2Quanta(wave,blackbody(wave,8000,'energy'))*1/2^(nPatches-1);
-    % data = bsxfun(@times, img, reshape(backgroundPhotons, [1 1 31]));
+    % Create a black background
+    data = zeros(n, n, nWave);
 end
-
-% wave = sceneGet(scene,'wave'); 
-
-%% Make the patches.  Define the width  and the spacing of the patches
-patch_width = floor(imSize / (2 * nPatches)); % Width of each patch
-spacing = floor(patch_width / 2);             % Space between patches
+% Define the width of each patch and the spacing between them
+patch_width = floor(n / (2 * m)); % Width of each patch
+spacing = floor(patch_width / 2); % Space between patches
 
 % Calculate the starting x position of the first patch
-start_x = round((imSize - (nPatches * patch_width + (nPatches - 1) * spacing)) / 2);
+start_x = round((n - (m * patch_width + (m - 1) * spacing)) / 2);
 
-%% Loop to create each patch
+% Loop to create each patch
+for i = 1:m
+    mask = zeros(n, n);
 
-patches = cell(1,nPatches);
-patch_levels = fliplr(logspace(0,drange,nPatches));
-for ii = 1:nPatches
+    % Calculate the color of the patch (from white to black)
+    patch_level = 1/2^(i-1);
 
-    % Make a patch image
-    patchImage = zeros(imSize, imSize);
+    % Calculate the height and y position of the patch
+    % patch_height = floor(((i - 0.5) / m) * n);
     patch_height = patch_width;
-    y_position = round((imSize - patch_height) / 2);
+    y_position = round((n - patch_height) / 2);
 
     % Draw the rectangle for the patch
-    patchImage(start_x + (ii - 1) * (patch_width + spacing) : start_x + (ii - 1) * (patch_width + spacing) + patch_width,...
+    mask(start_x + (i - 1) * (patch_width + spacing) : start_x + (i - 1) * (patch_width + spacing) + patch_width,...
         y_position: y_position+patch_height) = 1;
-    patchImage = imrotate(patchImage,90);
-    patchImage = repmat(patchImage,[1 1 3]);
+    mask = imrotate(mask,90);
+    
+    illPhotons = Energy2Quanta(wave,blackbody(wave,8000,'energy'))*patch_level;
 
-    patchScene = sceneFromFile(patchImage,'rgb',1,displayCreate,400:10:700);
-    patchScene = sceneAdjustLuminance(patchScene,'peak',patch_levels(ii));
-    
-    scene = sceneAdd(scene,patchScene);
-    
-    % illPhotons = Energy2Quanta(wave,blackbody(wave,8000,'energy'))*patch_levels(ii);
-    % Add the patch into the background image data
-    % data = data + bsxfun(@times, mask, reshape(illPhotons, [1 1 31]));
-    % patches{ii} = [start_x + (ii - 1) * (patch_width + spacing), y_position, patch_width, patch_height];
+    data = data + bsxfun(@times, mask, reshape(illPhotons, [1 1 31]));
+
+    patches{i} = [start_x + (i - 1) * (patch_width + spacing), y_position, patch_width, patch_height];
 end
 
-% scene = sceneSet(scene,'photons',data);
-
+scene = sceneSet(scene,'photons',data);
 end
