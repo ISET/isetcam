@@ -1,7 +1,11 @@
 function [scene,patches] = sceneCreateHDR(n,m,backgroundimage)
+% Deprecated, replaced by sceneHDRImage
+% 
 % Create a list of patches that has decreasing level of neutral density
 % n is the size of scene, squared.
 % m is the number of patches
+%
+%  From Zhenyi.  He may still be using it.
 
 scene = sceneCreate();
 

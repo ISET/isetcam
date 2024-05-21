@@ -1,9 +1,7 @@
-function vcSetSelectedObject(objType,val)
+function ieSelectObject(objType,val)
 % Set selected object in vcSESSION variable.
 %
-% ** Plan to deprecate and replace with ieSelectObject **
-%
-%   vcSetSelectedObject(objType,val)
+%   ieSelectObject(objType,val)
 %
 %  Sets the currently selected object, where the ISET object type might be
 %  SCENE,OPTICALIMAGE,ISA, and VCIMAGE.
@@ -28,10 +26,6 @@ function vcSetSelectedObject(objType,val)
 %  We should eliminate these routines and instead do the work through
 %  switch statements that go to ieSessionSet
 
-ieSelectObject(objType,val);
-
-end
-%{
 global vcSESSION; %#ok<NUSED>
 
 % Make sure we have the correct string
@@ -51,4 +45,3 @@ else
 end
 
 end
-%}

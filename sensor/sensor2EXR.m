@@ -30,7 +30,8 @@ function [filename, rgb] = sensor2EXR(sensor,filename,varargin)
 % Example:
 %{
 scene = sceneCreate('freqorient',512); scene = sceneSet(scene,'fov',10);
-oi = oiCreate('wvf'); oi = oiCompute(oi,scene,'border','crop');
+oi = oiCreate('wvf'); 
+oi = oiCompute(oi,scene,'crop',true);
 sensor = sensorCreate; 
 sensor = sensorSet(sensor,'fov',sceneGet(scene,'fov'),oi);
 sensor = sensorCompute(sensor,oi);

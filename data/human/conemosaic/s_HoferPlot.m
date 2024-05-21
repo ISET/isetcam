@@ -16,11 +16,12 @@
 %    None.
 %
 
+%%
 curDir = pwd;
-pDir = fullfile(synapseRootPath, 'receptors', 'data', 'williams');
+pDir = fullfile(isetRootPath, 'data', 'human', 'cones','williams');
 chdir(pDir)
 
-% How did we get these?  From some xls spreadsheet on the web.
+%% How did we get these?  From some xls spreadsheet on the web.
 subj = {'HS', 'AP', 'BS', 'MD', 'YY'};
 for ii = 1:length(subj)
     load(subj{ii})
@@ -65,9 +66,11 @@ for ii = 1:length(subj)
     g = fspecial('gaussian', [11, 11], 3);
     tmp = imfilter(coneImage, g);
 
-    figure(ii);
+    ieNewGraphWin;
     imagescRGB(tmp);
     title(sprintf('Subject %s', subj{ii}));
 end
 
 chdir(curDir)
+
+%% End

@@ -315,35 +315,7 @@ switch param
             app.refresh;
         end
         
-        % Consistency (red button)
-        %{
-    case {'consistency','computationalconsistency','parameterconsistency'}
-        ip.consistency = val;
-        %}
-        % Special case for ROIs and macbeth color checker.  This should get
-        % generalized to chart and chart parameter calls.  Too special now for
-        % MCC case.  See related comments in sensorSet.
-        %{
-      case {'mccrecthandles'}
-        % These are handles to the squares on the MCC selection regions
-        % see macbethSelect
-        if checkfields(ip,'mccRectHandles')
-            if ~isempty(ip.mccRectHandles)
-                try delete(ip.mccRectHandles(:));
-                catch
-                end
-            end
-        end
-        ip.mccRectHandles = val;
-        %}
-        %{
-    case {'mccpointlocs','mcccornerpoints'}
-        % Corner points for the whole chart.  These have been MCC charts
-        % but we should update to a chartP struct and have these be
-        % chartP.cornerPoints.
-        warning('use chart corner points')
-        ip.mccCornerPoints=  val;
-        %}
+        % Chart
     case {'chartparameters'}
         % Reflectance chart parameters are stored here.
         ip.chartP = val;
