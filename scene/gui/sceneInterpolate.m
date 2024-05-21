@@ -5,11 +5,9 @@ function scene = sceneInterpolate(scene,newSize)
 %     scene = sceneInterpolate(scene,newSize)
 %
 % Description:
-%  Spatially interpolate photon data in a scene structure by a scale factor
-%  (sFactor). If sFactor is a single number, then it is a scale factor
-%  that is applied to both the rows and the columns. The result is
-%  rounded to an integer. If sFactor is 2D, the entries are applied
-%  separately to the row and column dimensions.
+%  Spatially interpolate photon data in a scene structure to a new
+%  size (row,col). If newSize is a single number, we assume a square
+%  of that size. 
 %
 %  If the illuminant is spatial-spectral, it is spatially interpolated
 %  as well.
@@ -27,24 +25,27 @@ function scene = sceneInterpolate(scene,newSize)
  scene = sceneCreate;
  sceneWindow(scene);
  sz = sceneGet(scene,'size');
- scene2 = sceneInterpolate(scene,[1,2].*sz);
+ scene2 = sceneInterpolate(scene,round([1.5,2].*sz));
  sceneWindow(scene2);
 %}
+
 %% Parse
-if ieNotDefined('newSize'), error('sFactor must be defined'); end
-if ieNotDefined('scene'), error('scene must be defined'); end
+if ieNotDefined('newSize'), error('newSize must be defined'); end
+if ieNotDefined('scene'),   error('scene must be defined'); end
 
-r = sceneGet(scene,'rows');
-c = sceneGet(scene,'cols');
+% r = sceneGet(scene,'rows');
+% c = sceneGet(scene,'cols');
+% If a single number, we assume square of that size
+if isscalar(newSize), newSize = [newSize,newSize]; end
 
-if numel(newSize) == 1, newSize = [newSize,newSize]; end
-newRow = newSize(1); newCol = newSize(2);
+newRow = newSize(1); 
+newCol = newSize(2);
 
 if checkfields(scene,'data','photons')
     photons = sceneGet(scene,'photons');
-    scene = sceneClearData(scene);
+    scene   = sceneClearData(scene);
     photons = imageInterpolate(photons,newRow,newCol);
-    scene = sceneSet(scene,'photons',photons);
+    scene   = sceneSet(scene,'photons',photons);
 end
 
 if checkfields(scene,'depthMap')

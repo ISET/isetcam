@@ -697,18 +697,21 @@ switch sceneName
         %  Bright patches on a dark image
         %  Parameters
         %
-        %  'imsize', 'n patches','background image','drange'
+        %  'imsize', 'patch shape', 'n patches','background','dynamicrange'
         %
         p = inputParser;
         varargin = ieParamFormat(varargin);
-        p.addParameter('imsize',512);
-        p.addParameter('npatches',8);
-        p.addParameter('backgroundimage',true);
-        p.addParameter('drange',3,@isnumeric)
+        p.addParameter('imsize',[512,512],@isvector);
+        p.addParameter('npatches',8,@isinteger);
+        p.addParameter('background',which('data/images/rgb/PsychBuilding.png'),@ischar);
+        p.addParameter('dynamicrange',3,@isnumeric);
+        p.addParameter('patchshape','square',@ischar);
         p.parse(varargin{:});
         r = p.Results;
         
-        scene = sceneHDRImage(r.imsize,r.npatches,r.backgroundimage,r.drange);
+        scene = sceneHDRImage(r.npatches,'image size',r.imsize,...
+            'background',r.background,'dynamic range',r.dynamicrange,...
+            'patch shape',r.patchshape);
         scene = sceneSet(scene,'name','hdr image');
     otherwise
         error('Unknown scene format: %s.',sceneName);
