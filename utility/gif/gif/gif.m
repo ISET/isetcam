@@ -73,6 +73,7 @@ if nargin>0
             
       % Clear persistent variables associated with this function: 
       clear gif_filename firstframe DelayTime DitherOption LoopCount frame resolution
+      return;  % Added by BW.
    end
    
    % If the first input ends in .gif, assume this is the first frame:
@@ -159,7 +160,7 @@ end
 
 %% Perform work: 
 
-if resolution % If resolution is >0, it means use export_fig
+if exist('resolution','var') && resolution % If resolution is >0, it means use export_fig
    
    if isgraphics(frame,'figure')
       f = export_fig('-nocrop',['-r',num2str(resolution)]);
@@ -168,7 +169,7 @@ if resolution % If resolution is >0, it means use export_fig
       f = export_fig(['-r',num2str(resolution)]);
    end
       
-else
+elseif exist('frame','var')
    % Get frame: 
    fr = getframe(frame); 
    f =  fr.cdata; 

@@ -78,7 +78,7 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %
 %    sceneCreate('hdr chart','cols per level',12,'n levels',16,'d range',10^3.5)
 %    sceneCreate('hdr image', 'imsize', 512, 'n patches',8,'background image',true,'drange',3);
-
+%
 % SPATIAL TEST PATTERNS:
 %
 %      {'rings rays'}            - Resolution pattern
@@ -702,7 +702,7 @@ switch sceneName
         p = inputParser;
         varargin = ieParamFormat(varargin);
         p.addParameter('imsize',[512,512],@isvector);
-        p.addParameter('npatches',8,@isinteger);
+        p.addParameter('npatches',8,@isscalar);
         p.addParameter('background',which('data/images/rgb/PsychBuilding.png'),@ischar);
         p.addParameter('dynamicrange',3,@isnumeric);
         p.addParameter('patchshape','square',@ischar);

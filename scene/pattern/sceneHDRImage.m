@@ -133,15 +133,11 @@ for ii = 1:nPatches
     patchScene = sceneFromFile(patchImage,'rgb',1,displayCreate,400:10:700);
     patchScene = sceneAdjustLuminance(patchScene,'peak',patch_levels(ii));
     
-    % Add the patches.  Backgrounds stay zero.
+    % Add the patches.  Background stays zero.
     if ii==1, tmp = patchScene;
     else,     tmp = sceneAdd(tmp,patchScene);
     end
 
-    % illPhotons = Energy2Quanta(wave,blackbody(wave,8000,'energy'))*patch_levels(ii);
-    % Add the patch into the background image data
-    % data = data + bsxfun(@times, mask, reshape(illPhotons, [1 1 31]));
-    % patches{ii} = [start_x + (ii - 1) * (patch_width + spacing), y_position, patch_width, patch_height];
 end
 
 if nargout == 2
