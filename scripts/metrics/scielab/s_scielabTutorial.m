@@ -1,8 +1,7 @@
 %% s_scielabTutorial
 %
-% This script is a long exploration of the S-CIELAB calculations in the
-% context of ISET.  There are shorter example scripts as well that
-% illustrate specific S-CIELAB properties.
+% This script is an exploration of the S-CIELAB calculations in the
+% context of ISETCam.
 %
 % Read an image and process it through S-CIELAB, illustrating the
 % intermediate image results.  You can also experiment to see the effects
@@ -16,9 +15,11 @@
 % This script emphasizes the processing at the image RGB stage.  The script
 % s_scielabExample emphasizes comparisons at the scene stage.
 %
-% See Also:  s_scielabExample
-%
 % Copyright ImagEval Consultants, LLC, 2010
+%
+% See Also:
+%   s_scielab*
+%
 
 %%
 ieInit
@@ -27,8 +28,7 @@ ieInit
 fName = fullfile(isetRootPath,'data','images','multispectral','StuffedAnimals_tungsten-hdrs.mat');
 scene = sceneFromFile(fName,'multispectral');
 scene = sceneSet(scene,'fov',8);
-ieAddObject(scene);
-sceneWindow;
+sceneWindow(scene);
 
 %% Optical image
 oi = oiCreate;
@@ -44,14 +44,13 @@ ieAddObject(sensor);
 % sensorImageWindow;
 
 % Rendered image
-vci = ipCreate;
-vci = ipSet(vci,'correction method illuminant','grayworld');
-vci = ipCompute(vci,sensor);
-ieAddObject(vci);
-ipWindow;
+ip = ipCreate;
+ip = ipSet(ip,'correction method illuminant','gray world');
+ip = ipCompute(ip,sensor);
+ipWindow(ip);
 
 %% Retrieve the rendered image and start processing
-srgb = ipGet(vci,'result');    % Between 0 and 1.
+srgb = ipGet(ip,'result');    % Between 0 and 1.
 
 imgXYZ   = srgb2xyz(srgb);        % Y = imgXYZ(:,:,2); imtool(Y/max(Y(:)))
 whiteXYZ = srgb2xyz(ones(1,1,3)); % max(Y(:)); whiteXYZ(2)
@@ -84,7 +83,7 @@ imagescOPP(imgOpp,gam);
 imagescOPP(imgFilteredOpp,gam);
 
 %% Compare the original and spatially blurred XYZ image, back in srgb space
-vcNewGraphWin;
+ieNewGraphWin;
 subplot(1,2,1), imagescRGB(xyz2srgb(imgXYZ));
 subplot(1,2,2), imagescRGB(xyz2srgb(imgFilteredXYZ));
 

@@ -2,7 +2,7 @@ function [pData, mLocs, pSize, cornerPoints, pStd] = ...
     macbethSelect(obj,showSelection,fullData,cornerPoints)
 % Identify Macbeth color checker patch positions from window image
 %
-% I would like to deprecate and use chartXXX routines instead.
+% Please deprecate and use chartXXX routines instead.
 %
 % Synopsis
 %  [pData mLocs, pSize, cornerPoints, pStd] =
@@ -64,11 +64,12 @@ function [pData, mLocs, pSize, cornerPoints, pStd] = ...
 %
 % See also:
 %   macbethIlluminant - The one routine that uses this method
+%   macbeth* - Many routines, but replaced by the chart* methods
 %
 
 % Examples:
 %{
-% Uncomment to run, requires the user to make selections
+%ETTBSkip
 %
 %   scene = sceneCreate; sceneWindow(scene);
 %   macbethSelect(scene); scene = ieGetObject('scene');
@@ -80,13 +81,14 @@ function [pData, mLocs, pSize, cornerPoints, pStd] = ...
     96    64
     96     1
      1     1];
- scene = sceneSet(scene,'mcc corner points',cornerPoints);
+ scene = sceneSet(scene,'corner points',cornerPoints);
  sceneWindow(scene);
  macbethDrawRects(scene,'on');
 %}
 %{
  scene  = sceneCreate; oi = oiCreate; oi = oiCompute(oi,scene);
- sensor = sensorCreate; sensor = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'));
+ sensor = sensorCreate; 
+ sensor = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'),oi);
  sensor = sensorCompute(sensor,oi);
  ip = ipCreate; ip = ipCompute(ip,sensor);
  cornerPoints = [
@@ -94,33 +96,11 @@ function [pData, mLocs, pSize, cornerPoints, pStd] = ...
    240   179
    241    21
      2    21];
- ip = ipSet(ip,'mcc corner points',cornerPoints);
+ ip = ipSet(ip,'corner points',cornerPoints);
  ipWindow(ip); macbethDrawRects(ip,'on');
  data = macbethSelect(ip);
 %}
-%{
-  % See macbethSensorValues() for this functionality.
-  sensor = sensorCreate;
-  [fullRGB,locs,pSize] = macbethSelect(sensor,0,1);
-  [fullRGB,locs,pSize] = macbethSelect(sensor);
-%}
-%{
-  obj = vcGetObject('vcimage'); [rgb,locs] = macbethSelect(obj);
-  dataXYZ = imageRGB2xyz(obj,rgb); whiteXYZ = dataXYZ(1,:);
-  lab = ieXYZ2LAB(dataXYZ,whiteXYZ);
-  plot3(lab(:,1),lab(:,2),lab(:,3),'o')
-%}
-%{
-% This method is used to get the raw data of the gray series
-  obj = ieGetObject('ip');
-  mRGB = macbethSelect(obj,false);
-  graySeries = mRGB(4:4:24,:);
-%}
-%{
-  showSelection = 1;
-  obj = vcGetObject('ip');
-  [mRGB mLocs, pSize, cornerPoints]= macbethSelect(obj,showSelection);
-%}
+
 
 %%
 if ieNotDefined('obj'), obj = vcGetObject('vcimage'); end

@@ -24,7 +24,7 @@ function ip = ipCompute(ip,sensor)
 %  sensorspace:  The demosaicked input
 %  result:       The processed data demosaic data in lrgb format
 %                (between 0 and 1), ready for conversion to srgb as
-%                part of the display 
+%                part of the display
 %
 %  The main processing routine is ipComputeSingle, below. Single
 %  refers to a single exposure.
@@ -182,15 +182,15 @@ if nFilters == 1 && nSensors == 1
     % of the display, but normalize between 0 and 1 based on the kind of
     % data.
     img = ip.data.input / sensorGet(sensor,'max');
-    
+
     % No need to demosaic, but we put the scaled input into sensorspace
     ip = ipSet(ip,'sensor space',img);
-    
+
     % The image data are RGB, even though the sensor is monochrome.
     ip = ipSet(ip,'result',repmat(img,[1,1,3]));
     ip = ipSet(ip,'sensor space',repmat(img,[1,1,3]));    % saveimg = img;
     return;
-    
+
 elseif nFilters == 2
     % For 2-color filter case, we only Demosaic, like the monochrome case
     % (above).
@@ -200,15 +200,15 @@ elseif nFilters == 2
     if ~isequal(ieParamFormat(ipGet(ip,'demosaic method')),ieParamFormat('analog rccc'))
         error('2D is only implemented for RCCC demosaic case');
     end
-    
+
     img = Demosaic(ip,sensor);    % Returns a monochrome image
     ip = ipSet(ip,'result',repmat(img,[1,1,3]));
     ip = ipSet(ip,'sensor space',repmat(img,[1,1,3]));    % saveimg = img;
     return;
-    
+
 elseif nFilters >= 3 || nSensors > 1
     % Basic color processing pipeline. Single exposure case.
-    
+
     % 0.  Some sensor designs expect the zero level (response to a black
     % scene) should be a positive value.  If we store that level in the
     % sensor structure, the IP should subtract the zero level prior to
@@ -223,20 +223,30 @@ elseif nFilters >= 3 || nSensors > 1
     if zerolevel ~= 0 && ~isnan(zerolevel)
         ip.data.input = max( (ip.data.input - zerolevel) ,0);
     end
-    
-    %% Demosaic the sensor data in sensor space. 
 
-    % The data remain in the sensor channels and there is no scaling.
-    if ndims(ip.data.input) == nFilters, img = ip.data.input;
-    elseif ismatrix(ip.data.input),      img = Demosaic(ip,sensor);
+    %% Demosaic the sensor data in sensor space.
+
+    % For the NN cases (e.g., rgbwrestormer) we already computed the
+    % sensor space data. We can always add the string nodemosaic to
+    % any method to skip the demosaic step.
+    if ~isequal(ipGet(ip,'demosaic method'),'skip')
+        % The data remain in the sensor channels and there is no scaling.
+        if ndims(ip.data.input) == nFilters, img = ip.data.input;
+        elseif ismatrix(ip.data.input),      img = Demosaic(ip,sensor);
+        else
+            error('Not sure about input data structure');
+        end
+
+        % Save the demosaiced sensor space channel values. May be used later
+        % for adaptation of color balance for IR enabled sensors.
+        ip = ipSet(ip,'sensor space',img);    % saveimg = img;
     else
-        error('Not sure about input data structure');
+        % Make sure we have the demosaicked data from the restormer
+        img = ipGet(ip,'sensor space');
+        assert(~isempty(img));
     end
-    
-    % Save the demosaiced sensor space channel values. May be used later
-    % for adaptation of color balance for IR enabled sensors.
-    ip = ipSet(ip,'sensor space',img);    % saveimg = img;
-    
+
+
     %% Sensor and illuminant correction
 
     % Convert the demosaicked sensor data into an internal color
@@ -257,11 +267,16 @@ elseif nFilters >= 3 || nSensors > 1
             % because it incorporates all three transforms.
             img = imageLinearTransform(img,T);
 
-            % See comments in displayRender.  This is the same set of
-            % scaling operations as we perform there.  
+            % See comments in displayRender.
+            % We scale the transformed data to a max of 1, but then
+            % multiply by how filled up the sensor was.  So if the
+            % sensor was only at half well capacity, we scale by half.
             img = (img/max(img(:)))*sensorGet(sensor,'response ratio');
+
+            % We make sure everything is positive.
             img = max(img,0);
 
+            % Quantize
             qm = sensorGet(sensor,'quantization method');
             switch qm
                 case 'analog'
@@ -282,19 +297,19 @@ elseif nFilters >= 3 || nSensors > 1
             % the complete linear transform is set this way, we cannot
             % parse it into several parts.  We put the whole linear
             % transform into the slot for the sensor correction, and
-            % that maps from the sensor to the display.            
-            
+            % that maps from the sensor to the display.
+
             Torig = ipGet(ip,'combined transform');
             Torig = Torig/max(Torig(:));
             T = ieReadMatrix(Torig,'%.3f   ','Color Transform');
             if isempty(T), return; end
-            
+
             % Store and apply this transform.
             ip = ipSet(ip,'conversion matrix sensor',T);
             img = imageLinearTransform(img,T);  % vcNewGraphWin; imagesc(img)
-            
+
             % See comments in displayRender.  This is the same set of
-            % scaling operations as we perform there.  
+            % scaling operations as we perform there.
             img = (img/max(img(:)))*sensorGet(sensor,'response ratio');
             img = max(img,0);
 
@@ -312,21 +327,24 @@ elseif nFilters >= 3 || nSensors > 1
                 otherwise
                     error('Unknown quantization method %s\n',qm);
             end
-            
+
             % Set the other transforms to empty.
             ip = ipSet(ip,'correction matrix illuminant',[]);
             % ip = ipSet(ip,'sensor correction transform',[]);
             ip = ipSet(ip,'ics2display',[]);
-        case 'adaptive'
+        case {'adaptive'}
             % Recompute a transform based on the image data and with
             % knowledge of the sensor color filters.
 
             N = length(sensor);
             if N > 1
                 % If the sensor is an array of monochrome sensors, we
-                % create a dummy version of the sensor,  that includes all
-                % of the filters. These are needed for
-                % imageSensorCorrection and displayRender (below).
+                % create a dummy version of the sensor,  that includes
+                % all of the color filter channels. These are needed
+                % for imageSensorCorrection and displayRender (below).
+                %
+                % Perhaps we should be checking that each one is
+                % monochrome.
                 s = sensor(1);
                 filterSpectra = zeros(sensorGet(s,'n wave'),N);
                 for ii=1:N
@@ -336,20 +354,20 @@ elseif nFilters >= 3 || nSensors > 1
             else
                 s = sensor;
             end
-            
-            % Sensor data are converted to the internal color space
+
+            % Convert the sensor data to the internal color space
             [img,ip] = imageSensorCorrection(img,ip,s);
             if isempty(img), disp('User canceled'); return; end
             % imtool(img/max(img(:))); ii = 3; imtool(img(:,:,ii))
-            
+
             %% Illuminant correction.
-            
-            % The 'illuminant correction method' transforms, within
-            % the ICS.
+
+            % The 'illuminant correction method' transforms the data
+            % within the ICS.
             [img,ip] = imageIlluminantCorrection(img,ip);
-            
+
             %% Convert from the internal color space to linear display primaries
-            
+
             % The data are scaled so that the largest value in display
             % space (0,1) is the same ratio as the peak sensor data
             % value to the maximum sensor output.
@@ -357,22 +375,31 @@ elseif nFilters >= 3 || nSensors > 1
             % N.B. The display on the user's desk is not likely to be the
             % calibrated display that is modeled.
             [img,ip] = displayRender(img,ip,s);
+        case {'rgbwrestormer'}
+            % In this case the demosaicked data are there and we have
+            % set the transforms too.  So just apply the combined
+            % transform.
+            T = ipGet(ip,'transform combined');
+            img = ipGet(ip,'sensor space');
+            img = imageLinearTransform(img,T);            
+            img = img/max(img(:))*sensorGet(sensor,'response ratio');
+            img = ieClip(img,0,[]);
 
         otherwise
             error('Unknown transform method %s\n',tMethod);
     end
-    
-    %% Save the linear primary data.  
-    % 
+
+    %% Save the linear primary data.
+    %
     % These are always between 0 and 1, but they  might be quantized
     % within that range.
     ip = ipSet(ip,'display linear rgb',img);
-    
-end
 
 end
 
-%%
+end
+
+%% ------------------------
 function ip = ipComputeBracketed(ip,sensor,combinationMethod)
 % Compute for bracketed exposure case
 %
@@ -444,7 +471,7 @@ switch combinationMethod
         workImage(workImage < 0) = sensorMax;
         % For now simply scale to fit:
         workImage = workImage * (satMax / max(workImage,[],'all'));
-        
+
     otherwise
         error('Unknown combination method: %s\n', combinationMethod)
 end
@@ -494,30 +521,30 @@ newImg  = zeros(nRows,nCols);
 
 
 for kk = 1:nExps
-    
+
     % Note: The value for the kkth position in the CFA block (in
     % vectorized form) comes from the kkth exposure plane
     tmp = zeros(nRows,nCols);
-    
+
     [ii,jj] = ind2sub(cfaSize,kk);
     rows = ii:cfaSize(1):nRows;
     cols = jj:cfaSize(2):nCols;
-    
+
     tmp(rows,cols) = img(rows,cols,kk);
-    
+
     % Check to see if any of these pixels are saturated
     satInd = (tmp > 0.99*sensorMax);
-    
+
     % Normalize intensity values to get intensity/s
     tmp = tmp/expTimes(ii,jj);
-    
+
     % Set saturated pixels to the maximum possible pixel value
     tmp(satInd) = mx;
-    
+
     % Now replace the rows and columns corresponding to the current color
     % into identical positions in newImg
     newImg(rows,cols) = tmp(rows,cols);
-    
+
 end
 
 % Update sensorMax with the largest value we can ever get
@@ -553,7 +580,7 @@ switch combinationMethod
 
         %burstMax = sensorMax * numel(expTimes);
         maxImg = sum(img,3);
-        
+
         newImg = maxImg / numel(expTimes);
         ip = ipSet(ip, 'input', newImg);
 

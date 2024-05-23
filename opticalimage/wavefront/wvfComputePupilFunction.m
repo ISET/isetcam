@@ -355,10 +355,24 @@ for ii = 1:nWavelengths
         % passing an actual function.
         %         lcaDiopters = customLCAfunction(wvfGet(wvf, ...
         %             'measured wavelength', 'nm'), thisWave);
-        error('Need to implement custom lca function code');
+        error('Need to implement lca argument is a vector or matrix case.');
+        % Something like this
         lcaDiopters = lcaFunction;
         lcaMicrons = wvfDefocusDioptersToMicrons(-lcaDiopters, ...
             measPupilSizeMM);
+    elseif isa(lcaMethod,'function_handle')
+        % We need to calculate lcaMicrons for each wavelength, I think.
+        error('Need to implement lca argument is a function handle case.');
+        % Something like this
+        wave = wvfGet(wvf,'wave');
+        measuredw = wvfGet(wvf, 'measured wavelength');
+        measuredp = wvfGet(wvf,'measured pupil size','mm')
+        for ww = 1:numel(wave)
+            lcaDiopters = lcaFunction(measuredw,wave(ww));
+            lcaMicrons = wvfDefocusDioptersToMicrons(-lcaDiopters, ...
+                measPupilSizeMM);
+        end
+
     else
         error('Unexpected value for custom lca field in wvf');
     end

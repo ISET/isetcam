@@ -1,6 +1,5 @@
 function [fig, cfaImg] = sensorShowCFA(sensor, app, sz, sScale)
-% Create an image illustrating the sensor CFA spatial pattern (unit
-% block)
+% Create an image showing the sensor CFA spatial pattern 
 %
 % Synopsis
 %    [fig, cfaImg] = sensorShowCFA(sensor, [app = []], [sz = []], [sScale = 32])
@@ -33,10 +32,6 @@ function [fig, cfaImg] = sensorShowCFA(sensor, app, sz, sScale)
   oi = oiCompute(oi,s); sensor = sensorCompute(sensor,oi);
   [~, img] = sensorShowCFA(sensor);
   [~, img] = sensorShowCFA(sensor,[],[4 4]);
-%}
-%{
-  sensor = sensorCreate('human');
-  sensorShowCFA(sensor);
 %}
 
 %%

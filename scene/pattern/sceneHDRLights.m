@@ -21,6 +21,10 @@ function scene = sceneHDRLights(varargin)
   scene = sceneHDRLights('n circles',4,'radius',repmat(0.01,1,4),'circle colors',{'white'});
   sceneWindow(scene);
 %}
+%{
+ params = hdrlightsP;
+ scene = sceneCreate('hdr lights',params);
+%}
 
 %%
 varargin = ieParamFormat(varargin);

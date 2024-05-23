@@ -1,7 +1,8 @@
 function [data, vObj] = ieMovie(data, varargin)
 % Show a movie of an (x, y, t) or (x, y, c, t) matrix
 %
-% BW:  May not be up-to-date
+% See the MATLAB method, mplay in the vision toolbox
+% Or the external movieplayer in isetbio/external
 %
 % Syntax:
 %   [data, vObj] = ieMovie(data, [varargin])

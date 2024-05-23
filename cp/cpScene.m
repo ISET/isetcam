@@ -54,7 +54,8 @@ classdef cpScene < handle
         isetSceneFileNames = [];
         imageFileNames = [];
 
-        thisR;
+        thisR = [];
+        thisD = [];
 
         scenePath;  % defaults set in constructor if needed
         sceneName;
@@ -127,6 +128,7 @@ classdef cpScene < handle
                 options.apertureDiameter {mustBeNumeric} = [];
                 options.verbose {mustBeNumeric} = 0; % squash output by default
                 options.useActiveCameraMotion = true;
+                options.thisD = [];
             end
             obj.resolution = options.resolution;
             obj.numRays = options.numRays;
@@ -137,6 +139,8 @@ classdef cpScene < handle
             obj.verbosity = options.verbose;
             obj.sceneLuminance = options.sceneLuminance;
             obj.useActiveCameraMotion = options.useActiveCameraMotion;
+            obj.thisD = options.thisD;
+
             %cpScene Construct an instance of this class
             %   allow whatever init we want to accept in the creation call
             obj.sceneType = sceneType;
@@ -162,7 +166,7 @@ classdef cpScene < handle
                     if ~piDockerExists, piDockerConfig; end
 
                     try
-                        obj.thisR = piRecipeDefault('scene name', obj.sceneName);
+                        obj.thisR = piRecipeCreate(obj.sceneName);
                     catch
                         obj.thisR = piRead(which([obj.sceneName '.pbrt']), 'exporter', 'Copy');
                     end
@@ -364,10 +368,10 @@ classdef cpScene < handle
 
                             obj.thisR.set('filmrendertype',{'radiance','depth'});
                             [sceneObject, results, ~, renderedFile] = piRender(obj.thisR,  ...
-                                'verbose', obj.verbosity);
+                                'verbose', obj.verbosity, 'docker', obj.thisD);
 
                             [p, n, e] = fileparts(renderedFile);
-                            sequencedFileName = fullfile(ivRootPath, 'local', sprintf('%s-%03d-%03d%s',n,ii,floor(1000*obj.expTimes(ii)), e));
+                            sequencedFileName = fullfile(ivDirGet('computed'), sprintf('%s-%03d-%03d%s',n,ii,round(1000*obj.expTimes(ii)), e));
                             movefile(renderedFile, sequencedFileName,'f');
                             renderedFiles{end+1} = sequencedFileName;
                         else

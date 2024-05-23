@@ -1,8 +1,8 @@
-function [img,ip] = imageSensorCorrection(img,ip,sensor)
+function [img,ip,Tsensor] = imageSensorCorrection(img,ip,sensor)
 % Convert sensor color data (img) to an internal color space
 %
 % Synopsis
-%   [img,vci] = imageSensorCorrection(img,ip,sensor)
+%   [img,vci,Tsensor] = imageSensorCorrection(img,ip,sensor)
 %
 % Description
 %
@@ -61,14 +61,20 @@ function [img,ip] = imageSensorCorrection(img,ip,sensor)
 %    {'manual'}  - The user is queried and enters a matrix manually. Other
 %    methods and transforms are set to null
 %
-% See also:  imageIlluminantCorrection, ipCompute, displayRender
-%
-% Example:
-%
-%
 % Copyright ImagEval Consultants, LLC, 2003.
+%
+% See also:  
+%   imageIlluminantCorrection, ipCompute, displayRender
+%
+
+%%
 
 if ieNotDefined('img'), error('Image required'); end
+
+% We should flag locations where at least one of the color channel
+% pixels is saturated. The linear transformation doesn't make sense
+% for those pixels.  We should make sure that the display at those
+% locations is white.
 
 param = ieParamFormat(ipGet(ip,'conversion method sensor'));
 switch param
@@ -83,7 +89,8 @@ switch param
         end
         % We are told not to transform, so set it to identity with
         % dimension of the sensor input
-        ip = ipSet(ip,'conversion transform sensor',eye(N,N));
+        Tsensor = eye(N,N);
+        ip = ipSet(ip,'conversion transform sensor',Tsensor);
         
     case {'mccoptimized','esseroptimized','multisurface'}
         % Find a linear transformation using  the sensor spectral
@@ -97,40 +104,40 @@ switch param
         switch param
             case {'mccoptimized','mcc'}
                 % Small, industry standard data set
-                T = ieColorTransform(sensor,ics,'D65','mcc');
+                Tsensor = ieColorTransform(sensor,ics,'D65','mcc');
             case {'esseroptimized','esser'}
                 % Used for IR calculations
-                T = ieColorTransform(sensor,ics,'D65','esser');
+                Tsensor = ieColorTransform(sensor,ics,'D65','esser');
             case 'multisurface'
                 % Larger, better random selection of surfaces
-                T = ieColorTransform(sensor,ics,'D65','multisurface');
+                Tsensor = ieColorTransform(sensor,ics,'D65','multisurface');
         end
         
         % Apply the transform to the image data
-        img = imageLinearTransform(img,T);
+        img = imageLinearTransform(img,Tsensor);
         
         % Do not allow negative values
         img = ieClip(img,0,[]);
         
         % Set the maximum value in the ICS to 1.
         mx = max(img(:));
-        img = img/mx; T = T/mx;
-        
+        img = img/mx; 
+       
         % Store the transform.  Note that because of clipping, this
         % transform alone may not do precisely the same job.
-        ip = ipSet(ip,'conversion transform sensor',T);
+        ip = ipSet(ip,'conversion transform sensor',Tsensor);
         
     case {'new','manualmatrixentry'}
         
         % User types in a matrix
         Torig = ipGet(ip,'combined transform');
         Torig = Torig/max(Torig(:));
-        T = ieReadMatrix(Torig,'%.3f   ','Color Transform');
-        if isempty(T), img = []; return; end
+        Tsensor = ieReadMatrix(Torig,'%.3f   ','Color Transform');
+        if isempty(Tsensor), img = []; return; end
         
         % Store and apply this transform.
-        ip = ipSet(ip,'conversion transform sensor',T);
-        img = imageLinearTransform(img,T);  % vcNewGraphWin; imagesc(img)
+        ip = ipSet(ip,'conversion transform sensor',Tsensor);
+        img = imageLinearTransform(img,Tsensor);  % vcNewGraphWin; imagesc(img)
         
         % Set the other transforms to empty.
         ip = ipSet(ip,'correction method illuminant',[]);
@@ -138,8 +145,8 @@ switch param
         
     case 'currentmatrix'
         % Use the stored transform matrix, don't recompute.
-        T   = ipGet(ip,'prodT');
-        img = imageLinearTransform(img,T);
+        Tsensor   = ipGet(ip,'prodT');
+        img = imageLinearTransform(img,Tsensor);
         
     otherwise
         error('Unknown sensor conversion transform method: ß%s\n', param)

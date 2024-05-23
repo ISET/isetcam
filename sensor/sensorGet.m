@@ -81,6 +81,11 @@ function [val, type] = sensorGet(sensor,param,varargin)
 %          sensorGet(sensor,'electrons per area','um')
 %      'chromaticity'   - Sensor rg-chromaticity after Demosaicking (roiRect allowed)
 %      'dv or volts'    - Return either dv if present, otherwise volts
+%      'response ratio'  - Peak sensor volt divided by voltage swing
+%      'response dr'     - Sensor response dynamic range.
+%           If min is 0, we use (voltage swing / 2^12) as the smallest
+%           value
+%
 %      'roi locs'       - Stored region of interest (roiLocs)
 %      'roi rect'       - Rect.  Format is [cmin,rmin,width,height]
 %      'roi volts'      - Volts inside of stored region of interest
@@ -93,10 +98,6 @@ function [val, type] = sensorGet(sensor,param,varargin)
 %      'hline electrons' - horizontal line electrons
 %      'vline volts'     - vertical line volts
 %      'vline electrons' - vertical line electrons
-%      'response ratio'  - Peak sensor volt divided by voltage swing
-%      'response dr'     - Sensor response dynamic range.
-%           If min is 0, we use (voltage swing / 2^12) as the smallest
-%           value
 %
 % Sensor roi
 %     'roi' - rectangle representing current region of interest.
@@ -402,13 +403,28 @@ switch oType
                 if checkfields(sensor,'etendue'), val = sensor.etendue; end
                 
             case {'voltage','volts'}
-                % sensorGet(sensor,'volts',i) gets the ith sensor data in a vector.
-                % sensorGet(sensor,'volts') gets all the sensor data in a plane.
-                % This syntax applies to most of the voltage/electron/dv gets
-                % below.
+                % sensorGet(sensor,'volts',ii) gets the ith sensor data in
+                % a vector. 
                 %
+                % sensorGet(sensor,'volts') gets all the sensor data in a
+                % single mosaic.
+                %
+                % When you request a single channel, the data are returned
+                % as a vector. If the channel is present twice (e.g., two
+                % greens in the Bayer) all the data are concatenated into
+                % the vector.
+                
                 if checkfields(sensor,'data','volts'), val = sensor.data.volts; end
                 if ~isempty(varargin), val = sensorColorData(val,sensor,varargin{1}); end
+
+            case{'voltimages'}
+                % images = sensorGet(sensor,'volt images')
+                %
+                % Return the mosaic preserving only the values in the
+                % specific channel.  The other channel data are set to
+                % zero. The sensor can have more than three color channels.
+                rgb = plane2rgb(sensorGet(sensor,'volts'),sensor);
+
             case{'responseratio','volts2maxratio'}
                 % sensorGet(sensor,'response ratio')
                 %

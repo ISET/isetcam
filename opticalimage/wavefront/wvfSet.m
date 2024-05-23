@@ -465,16 +465,19 @@ switch parm
         % wvf.focallength = (val*1e-6/tand(1));  % also, convert um to m
         wvf.PUPILFUNCTION_STALE = true;
     
-        % case {'fnumber'}
-        %     % We adjust the fnumber by changing the pupil diameter, leaving the
-        %     % focal length unchanged. This differs from ISETCam, which has the
-        %     % fnumber and focal length as parameters and infers the pupil
-        %     % diameter.
-        %     disp('Setting fnumber by adjusting pupil diameter.  Focal length is fixed.')
-        %     fLength = wvfGet(wvf,'focal length','mm');
-        %     wvf     = wvfSet(wvf,'calc pupil diameter',fLength/val,'mm');
+        %{
+        case {'fnumber'}
+             % We adjust the fnumber by changing the pupil diameter, leaving the
+             % focal length unchanged. This differs from ISETCam, which has the
+             % fnumber and focal length as parameters and infers the pupil
+             % diameter.
+             disp('Setting fnumber by adjusting pupil diameter.  Focal length is fixed.')
+             fLength = wvfGet(wvf,'focal length','mm');
+             wvf     = wvfSet(wvf,'calc pupil diameter',fLength/val,'mm');
+        %}
 
     case {'lcamethod'}
+        % 'none', 'human', function handle for a custom LCA
         wvf.lcaMethod = val;
 
     case {'sceparams', 'stilescrawford'}

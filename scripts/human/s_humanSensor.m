@@ -13,6 +13,13 @@
 %
 % Copyright ImagEval Consultants, LLC, 2010.
 
+
+%%
+if isempty(which('Lens'))
+    fprintf('%s requires ISETBio (Lens).',mfilename);
+    return;
+end
+
 %% Initialize ISET
 ieInit
 
@@ -97,7 +104,7 @@ sensorWindow(sensor);
 % black curve at the top is a measure of the typical noise we have modeled
 % in the pixel and sensor parameters.  Notice the very low contrast in the
 % S-cones, due to chromatic aberration.
-f = sensorPlotLine(sensor,[],'photons','space',[1 116]);
+f = sensorPlotLine(sensor,[],'electrons','space',[1 116]);
 
 %% To retrieve and plot the L,M and S cone absorptions you can use this:
 %  The absorption histograms are variable in part because of photon noise,
@@ -109,7 +116,7 @@ f = sensorPlotLine(sensor,[],'photons','space',[1 116]);
 ieNewGraphWin;
 fColor = {'red','green','blue'};
 for ii=1:3
-    cData = sensorGet(sensor,'photons',ii+1);
+    cData = sensorGet(sensor,'electrons',ii+1);
     histogram(cData,30,'FaceColor',fColor{ii});
     hold on
 end

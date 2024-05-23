@@ -639,17 +639,18 @@ function sensor = sensorIMX363(varargin)
 
 % Examples:
 %{
- % The defaults and some plots
- sensor = sensorCreate('IMX363');
- sensorPlot(sensor,'spectral qe');
- sensorPlot(sensor,'cfa block');
- sensorPlot(sensor,'pixel snr');
+% The defaults and some plots
+sensor = sensorCreate('IMX363');
+sensorPlot(sensor,'spectral qe');
+sensorPlot(sensor,'cfa block');
+sensorPlot(sensor,'pixel snr');
 %}
 %{
- % Adjust a parameter
- sensor = sensorCreate('IMX363',[],'row col',[256 384]);
- sensorPlot(sensor,'cfa full');
+% Adjust a parameter
+sensor = sensorCreate('IMX363',[],'row col',[256 384]);
+sensorPlot(sensor,'cfa full');
 %}
+
 
 %% Parse parameters
 

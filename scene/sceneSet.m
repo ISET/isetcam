@@ -177,11 +177,10 @@ switch parm
         scene = sceneSet(scene, 'luminance', []);
     case 'resize'
         % scene = sceneSet(scene,'resize',[newRow,newCol]);
+        %
         % Resize the scene by spatially interpolating the photon data
-        if numel(val) == 1
-            newSz = [val,val];
-        else
-            newSz = val;
+        if isscalar(val), newSz = [val,val];
+        else,             newSz = val;
         end
         scene = sceneInterpolate(scene,newSz);
     case 'energy'

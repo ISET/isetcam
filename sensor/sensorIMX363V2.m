@@ -5,7 +5,7 @@ function sensor = sensorIMX363V2(varargin)
 % Create the sensor structure for the IMX363
 %
 % Synopsis
-%    sensor = sensorIMX363(varargin);
+%    sensor = sensorIMX363V2(varargin);
 %
 % Brief description
 %    Creates the default IMX363 sensor model
@@ -22,7 +22,7 @@ function sensor = sensorIMX363V2(varargin)
 %
 % See also
 %  sensorCreate
-%
+
 % TODO:
 %   We need to make this one the one inside of sensorCreate
 % Examples:
@@ -30,19 +30,21 @@ function sensor = sensorIMX363V2(varargin)
     ieExamplesPrint('sensorIMX363V2');
 %}
 %{
-    % The defaults and some plots
-    sensor = sensorCreate('IMX363');
-    sensorPlot(sensor,'spectral qe');
-    sensorPlot(sensor,'cfa block');
-    sensorPlot(sensor,'pixel snr');
+% The defaults and some plots
+sensor = sensorCreate('IMX363');
+sensorPlot(sensor,'spectral qe');
+sensorPlot(sensor,'cfa block');
+sensorPlot(sensor,'pixel snr');
 %}
 %{
- % Adjust a parameter
- sensor = sensorCreate('IMX363',[],'row col',[256 384]);
- sensorPlot(sensor,'cfa full');
+% Adjust a parameter
+sensor = sensorCreate('IMX363',[],'row col',[256 384]);
+sensorPlot(sensor,'cfa full');
 %}
 
 %% Parse parameters
+
+warning('Calling sensorIMX363V2.  Not sure how this compares with sensorCreate.')
 
 % Building up the input parser will let you do more experiments with the
 % sensor.

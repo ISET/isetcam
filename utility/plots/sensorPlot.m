@@ -297,6 +297,9 @@ switch pType
         % Wavelength and color properties
     case {'cfa','cfablock'}
         [g, uData] = sensorShowCFA(sensor);
+    case {'cfafull'}
+        sz = sensorGet(sensor,'size');
+        [g, uData.img] = sensorShowCFA(sensor,[],sz);        
     case {'colorfilters'}
         [uData, g] = plotSpectra(sensor,'color filters');
     case {'irfilter'}

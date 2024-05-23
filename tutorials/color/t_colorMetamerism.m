@@ -150,30 +150,32 @@ sceneWindow(barS);
 
 %% Compute the OI and show the SPD across a line in the image
 
-% Notice that the optical image spectral irradiance varies across
-% the row. The LCD spectra are clearly scene at the positive
-% positions.  They are blurred a little onto the left side by the
-% optics.
-oi = oiCreate('human');
-oi = oiCompute(oi,barS);
+if ~isempty(which('Lens'))
+    % Notice that the optical image spectral irradiance varies across
+    % the row. The LCD spectra are clearly scene at the positive
+    % positions.  They are blurred a little onto the left side by the
+    % optics.
+    oi = oiCreate('wvf human');
+    oi = oiCompute(oi,barS);
 
-midRow = round(oiGet(oi,'rows')/2);
-oiPlot(oi,'h line irradiance',[1,midRow]);
-title('1 cpd bar');
-oiWindow(oi);
+    midRow = round(oiGet(oi,'rows')/2);
+    oiPlot(oi,'h line irradiance',[1,midRow]);
+    title('1 cpd bar');
+    oiWindow(oi);
 
-%% Compute the sensor response for these half degree bars
+    %% Compute the sensor response for these half degree bars
 
-% Although the spd of the OI differs across the image the cone
-% absorptions are fairly constant across the horizontal line at
-% this spatial resolution.
-sensor = sensorCreate('human');
-sensor = sensorSet(sensor,'exp time',0.10);
-sensor = sensorSetSizeToFOV(sensor,1,oi);
-sensor = sensorCompute(sensor,oi);
+    % Although the spd of the OI differs across the image the cone
+    % absorptions are fairly constant across the horizontal line at
+    % this spatial resolution.
+    sensor = sensorCreate('human');
+    sensor = sensorSet(sensor,'exp time',0.10);
+    sensor = sensorSetSizeToFOV(sensor,1,oi);
+    sensor = sensorCompute(sensor,oi);
 
-sz = sensorGet(sensor,'size');
-sensorPlot(sensor,'electrons hline',round([1,sz(1)/2]));
-sensorWindow(sensor);
+    sz = sensorGet(sensor,'size');
+    sensorPlot(sensor,'electrons hline',round([1,sz(1)/2]));
+    sensorWindow(sensor);
+end
 
 %% END

@@ -207,5 +207,6 @@ if readNoise ~= 0,  dv = binNoiseRead(ISA); end
 
 %% Returns dv, dsnu and prnu
 
-return;
+end
+
 

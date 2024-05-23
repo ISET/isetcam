@@ -431,7 +431,7 @@ switch oType
                 % This horizontal FOV represents the size of the OI,
                 % usually after the computational padding. Reflects
                 % the angle of the scene it represents.
-                if checkfields(oi,'wAngular')
+                if checkfields(oi,'wAngular') && ~isempty(oi.wAngular)
                     val = oi.wAngular;
                 else
                     % We use the scene or a default.  Maybe this should be
