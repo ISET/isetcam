@@ -13,7 +13,8 @@ function [scene, background] = sceneHDRImage(nPatches,varargin)
 %   dynamic range     - Scene dynamic range (default:  3 log units)
 %   patch shape       - patch shape square,circle (default: square)
 %   background image  - PNG or JPEG image file
-%   
+%   row               - Image row where the patches should be placed
+%
 % Output
 %    scene   - Background image with superimposed patches
 %
@@ -61,6 +62,8 @@ p.addParameter('background',which('data/images/rgb/PsychBuilding.png'), @(x)(ise
 p.addParameter('imagesize',[],@isnumeric);
 p.addParameter('dynamicrange',3,@(x)(isnumeric(x) && x < 10));
 p.addParameter('patchshape','square',@(x)(ismember(x,{'circle','square'})));
+p.addParameter('row',[],@isscalar);
+
 p.parse(nPatches,varargin{:});
 
 imgFile    = p.Results.background;
@@ -91,7 +94,7 @@ else
     % data = bsxfun(@times, img, reshape(backgroundPhotons, [1 1 31]));
 end
 
-% wave = sceneGet(scene,'wave'); 
+% wave = sceneGet(scene,'wave');
 
 %% Make the patches.  Define the width  and the spacing of the patches
 imWidth  = imSize(2);
@@ -114,17 +117,24 @@ for ii = 1:nPatches
 
             % Place the square
             start_col   = round((imWidth - (nPatches * patch_width + (nPatches - 1) * spacing)) / 2);
-            start_row = round((imHeight - patch_height) / 2);
+            if isempty(p.Results.row)
+                start_row = round((imHeight - patch_height) / 2);
+            else, start_row = p.Results.row;
+            end
+
             rows = start_row + (1:patch_height);
             cols = start_col + ((ii - 1)*(patch_width + spacing):(ii - 1)*(patch_width + spacing) + patch_width);
-            patchImage(rows,cols) = 1;            
+            patchImage(rows,cols) = 1;
             patchImage = repmat(patchImage,[1 1 3]);
         case 'circle'
             radius = floor(imWidth / (4*nPatches));
-            center_col = linspace(4*radius,imWidth-4*radius,nPatches); 
-            center_row = round(imHeight/ 2);
+            center_col = linspace(4*radius,imWidth-4*radius,nPatches);
+            if isempty(p.Results.row)
+                start_row = round(imHeight/ 2);
+            else, start_row = p.Results.row;
+            end
             [X,Y] = meshgrid(1:imSize(2),1:imSize(1));
-            dist = sqrt((X - center_col(ii)).^2 + (Y - center_row).^2);
+            dist = sqrt((X - center_col(ii)).^2 + (Y - start_row).^2);
             patchImage = (dist<radius);
             patchImage = repmat(patchImage,[1 1 3]);
         otherwise
@@ -132,7 +142,7 @@ for ii = 1:nPatches
 
     patchScene = sceneFromFile(patchImage,'rgb',1,displayCreate,400:10:700);
     patchScene = sceneAdjustLuminance(patchScene,'peak',patch_levels(ii));
-    
+
     % Add the patches.  Background stays zero.
     if ii==1, tmp = patchScene;
     else,     tmp = sceneAdd(tmp,patchScene);
