@@ -462,7 +462,7 @@ classdef cpScene < handle
         function movePBRTCamera(obj, frameNumber)
 
             persistent rotationMatrixStart;
-            persistent translationStart;
+            persistent rotationMatrixEnd;
 
             % unless we are allowing active motion
             % the first frame doesn't move
@@ -471,6 +471,7 @@ classdef cpScene < handle
                     return;
                 else
                     rotationMatrixStart = piRotationMatrix;
+                    rotationMatrixEnd = piRotationMatrix;
                 end
             end
             for ii = 1:numel(obj.cameraMotion)
@@ -486,9 +487,13 @@ classdef cpScene < handle
                         obj.thisR.set('camera motion translate end',translationEnd);
 
                     end
+                    % If we have shutter times, then maybe we can send in
+                    % the "full" rotation and let pbrt do the work of
+                    % only processing the portion while the shutter is open
                     if ~isempty(ourMotion{3})
 
-                        rotationMatrixEnd = rotationMatrixStart;
+                        % Start where we left off -- OR NOT!
+                        %rotationMatrixStart = rotationMatrixEnd;
                         rotationMatrixEnd(1,1) = rotationMatrixStart(1,1) ...
                             + ourMotion{3}(3);
                         rotationMatrixEnd(1,2) = rotationMatrixStart(1,2) ...
@@ -498,9 +503,6 @@ classdef cpScene < handle
 
                         obj.thisR.set('camera motion rotate start',rotationMatrixStart);
                         obj.thisR.set('camera motion rotate end',rotationMatrixEnd);
-
-                        % I think we need to daisy chain rotation matrices
-                        rotationMatrixStart = rotationMatrixEnd;
 
                     end
                 else % non active
