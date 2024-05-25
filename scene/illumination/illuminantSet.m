@@ -61,50 +61,53 @@ switch param
     case {'wave','wavelength'}
         % il = illuminantSet(il,'wave',wave)
         %
-        % Need to interpolate data sets and reset when wave is adjusted.
-        % We aren't handling spatial-spectral here properly.
-        
+        % Interpolate the illuminant photons
         oldW = illuminantGet(il,'wave');
         newW = val(:);
-        il.spectrum.wave = newW;
         if isequal(newW(:),oldW(:))
             % Nothing to interpolate
             return;
         end
 
-        switch ndims(il.data.photons)
-            case 3
-                % Interpolate the spatial-spectral illuminant
-                % Have a look at sceneInterpolateW for how to do this.
-                error('Spatial spectral illuminant interpolation.  Write it.');
-            case 1
-                % Interpolate the spectral vector for the illuminant
-                % photons.
-                p = illuminantGet(il,'photons');
-                if ~isempty(p)
-                    % We need to handle the spatial spectral and purely
-                    % spectral cases differently here.  This can break
-                    % sceneFromFile when we set the wavelength and we need to
-                    % interpolate.
+        il.spectrum.wave = newW;
+        photons = illuminantGet(il,'photons');
+        if ~isempty(photons)
+            switch ndims(il.data.photons)
+                case 3
+                    % Interpolate the spatial-spectral illuminant
                     %
-                    % If p has the same length as newW, let's assume it was already
-                    % changed.  Otherwise, if it has the length of oldW, we should
-                    % try to interpolate it.
-                    if length(p) == length(newW)
-                        % Sample length of photons already equal to newW.  No
-                        % problem.
-                    elseif length(p) == length(oldW)
-                        % Adjust the sampling.
-                        newP = interp1(oldW,p,newW,'linear',min(p(:)*1e-3)');
-                        il = illuminantSet(il,'photons',newP);
+                    % Unlike the case below, we always interpolate.  Same
+                    % method as sceneInterpolateW.
+                    row = size(photons,1); col = size(photons,2);
+                    photons = interp1(oldW,RGB2XWFormat(photons)',newW, 'linear')';
+                    photons = XW2RGBFormat(photons,row,col);
+                    il = illuminantSet(il,'photons',photons);
+                case 1
+                    % Interpolate the spectral illuminant vector
+                    %
+                    if length(photons) == length(newW)
+                        % If p has the same length as newW, let's assume it
+                        % was already changed by the user.  This must have
+                        % been put here a long time ago.  Might not be
+                        % needed any more.
+                        disp('Illuminant photons appear to have been changed already.')
+                    elseif length(photons) == length(oldW)
+                        % Adjust the sampling.  We know how.
+                        photons = interp1(oldW,photons,newW,'linear',min(photons(:)*1e-3)');
+                        il = illuminantSet(il,'photons',photons);
                     else
+                        % Confused.
                         error('Photons and wavelength sample points not interpretable');
                     end
-                    % vcNewGraphWin; plot(newW,newP);                    
-                end
-            otherwise
-                error('Unknown illuminant photon dimensionality.');        
+                    % ieNewGraphWin; plot(newW,newP);
+
+                otherwise
+                    error('Unknown illuminant photon dimensionality.');
+            end
+        else
+            disp('No illuminant photons.  Should not happen.');
         end
+
     case 'comment'
         il.comment = val;
     otherwise

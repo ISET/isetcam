@@ -697,21 +697,26 @@ switch sceneName
         %  Bright patches on a dark image
         %  Parameters
         %
-        %  'imsize', 'patch shape', 'n patches','background','dynamicrange'
+        %  'imsize', 'patch shape', 'n patches','patch size' 
+        %  'background','dynamicrange',  
         %
+
+        % I think this can be handled by just passing varargin through, but
+        % then we wouldn't have the information here.
         p = inputParser;
         varargin = ieParamFormat(varargin);
-        p.addParameter('imsize',[512,512],@isvector);
+        p.addParameter('imsize',[],@isvector);
         p.addParameter('npatches',8,@isscalar);
         p.addParameter('background',which('data/images/rgb/PsychBuilding.png'),@ischar);
         p.addParameter('dynamicrange',3,@isnumeric);
         p.addParameter('patchshape','square',@ischar);
+        p.addParameter('patchsize',[],@isnumeric);
         p.parse(varargin{:});
         r = p.Results;
         
         scene = sceneHDRImage(r.npatches,'image size',r.imsize,...
             'background',r.background,'dynamic range',r.dynamicrange,...
-            'patch shape',r.patchshape);
+            'patch shape',r.patchshape,'patch size',r.patchsize);
         scene = sceneSet(scene,'name','hdr image');
     otherwise
         error('Unknown scene format: %s.',sceneName);

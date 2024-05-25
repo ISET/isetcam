@@ -62,6 +62,8 @@ p.addParameter('background',which('data/images/rgb/PsychBuilding.png'), @(x)(ise
 p.addParameter('imagesize',[],@isnumeric);
 p.addParameter('dynamicrange',3,@(x)(isnumeric(x) && x < 10));
 p.addParameter('patchshape','square',@(x)(ismember(x,{'circle','square'})));
+p.addParameter('patchsize',[],@isnumeric);
+
 p.addParameter('row',[],@isscalar);
 
 p.parse(nPatches,varargin{:});
@@ -70,6 +72,7 @@ imgFile    = p.Results.background;
 imSize     = p.Results.imagesize;
 drange     = p.Results.dynamicrange;
 patchShape = p.Results.patchshape;
+patchSize  = p.Results.patchsize;
 
 %% Make the background image
 
@@ -96,9 +99,6 @@ else
         imSize = sceneGet(scene,'size');
     end
     scene = sceneAdjustLuminance(scene,'mean',1);
-    % data = sceneGet(scene,'photons');
-    % backgroundPhotons =  Energy2Quanta(wave,blackbody(wave,8000,'energy'))*1/2^(nPatches-1);
-    % data = bsxfun(@times, img, reshape(backgroundPhotons, [1 1 31]));
 end
 
 % wave = sceneGet(scene,'wave');
@@ -118,15 +118,17 @@ for ii = 1:nPatches
     switch patchShape
         case 'square'
             % Make a square patch image
-            patch_width = floor(imWidth / (2 * nPatches)); % Width of each patch
+            if isempty(patchSize), patch_width = floor(imWidth / (2 * nPatches)); 
+            else, patch_width = patchSize;
+            end
+
             patch_height = patch_width;
             spacing = floor(patch_width / 2);              % Space between patches
 
             % Place the square
             start_col   = round((imWidth - (nPatches * patch_width + (nPatches - 1) * spacing)) / 2);
-            if isempty(p.Results.row)
-                start_row = round((imHeight - patch_height) / 2);
-            else, start_row = p.Results.row;
+            if isempty(p.Results.row), start_row = round((imHeight - patch_height) / 2);
+            else,                      start_row = p.Results.row;
             end
 
             rows = start_row + (1:patch_height);
@@ -134,11 +136,14 @@ for ii = 1:nPatches
             patchImage(rows,cols) = 1;
             patchImage = repmat(patchImage,[1 1 3]);
         case 'circle'
-            radius = floor(imWidth / (4*nPatches));
+            
+            if isempty(patchSize),radius = floor(imWidth / (4*nPatches));
+            else,                 radius = patchSize;
+            end
+
             center_col = linspace(4*radius,imWidth-4*radius,nPatches);
-            if isempty(p.Results.row)
-                start_row = round(imHeight/ 2);
-            else, start_row = p.Results.row;
+            if isempty(p.Results.row), start_row = round(imHeight/ 2);
+            else,                      start_row = p.Results.row;
             end
             [X,Y] = meshgrid(1:imSize(2),1:imSize(1));
             dist = sqrt((X - center_col(ii)).^2 + (Y - start_row).^2);
