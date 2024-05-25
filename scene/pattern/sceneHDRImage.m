@@ -81,8 +81,15 @@ if isempty(imgFile)
 else
     % Considering making the image monochrome.  Would need to create a
     % method, scene = sceneSet(scene,'monochrome');
-    img   = imread(imgFile);
-    scene = sceneFromFile(img,'rgb',1,displayCreate,400:10:700);
+    [~,~,e] = fileparts(imgFile);
+
+    if ~isequal(e,'.mat')
+        img   = imread(imgFile);
+        scene = sceneFromFile(img,'rgb',1,displayCreate,400:10:700);
+    else                  
+        scene = sceneFromFile(imgFile,'spectral',1,displayCreate,400:10:700);
+    end
+
     if ~isempty(imSize)
         scene = sceneSet(scene,'resize',imSize);
     else

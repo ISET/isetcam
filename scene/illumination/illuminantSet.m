@@ -43,7 +43,7 @@ switch param
         % Use single precision because we may have an illuminant that is
         % spectral spatial.
         il.data.photons = single(val);
-        
+
     case 'energy'
         % User sent in energy.  We convert to photons and set.
         % We need to handle the spatial spectral case properly.
@@ -60,30 +60,50 @@ switch param
         end
     case {'wave','wavelength'}
         % il = illuminantSet(il,'wave',wave)
-        % Need to interpolate data sets and reset when wave is adjusted.
         %
-        % We aren't handling spatial-spectral here properly.  FIX.
+        % Need to interpolate data sets and reset when wave is adjusted.
+        % We aren't handling spatial-spectral here properly.
+        
         oldW = illuminantGet(il,'wave');
         newW = val(:);
         il.spectrum.wave = newW;
-        
-        % Now decide what to do with photons
-        p = illuminantGet(il,'photons');
-        if ~isempty(p)
-            % If p has the same length as newW, let's assume it was already
-            % changed.  Otherwise, if it has the length of oldW, we should
-            % try to interpolate it.
-            if length(p) == length(newW)
-                % Sample length of photons already equal to newW.  No
-                % problem.
-            elseif length(p) == length(oldW)
-                % Adjust the sampling.
-                newP = interp1(oldW,p,newW,'linear',min(p(:)*1e-3)');
-                il = illuminantSet(il,'photons',newP);
-            else
-                error('Photons and wavelength sample points not interpretable');
-            end
-            % vcNewGraphWin; plot(newW,newP);
+        if isequal(newW(:),oldW(:))
+            % Nothing to interpolate
+            return;
+        end
+
+        switch ndims(il.data.photons)
+            case 3
+                % Interpolate the spatial-spectral illuminant
+                % Have a look at sceneInterpolateW for how to do this.
+                error('Spatial spectral illuminant interpolation.  Write it.');
+            case 1
+                % Interpolate the spectral vector for the illuminant
+                % photons.
+                p = illuminantGet(il,'photons');
+                if ~isempty(p)
+                    % We need to handle the spatial spectral and purely
+                    % spectral cases differently here.  This can break
+                    % sceneFromFile when we set the wavelength and we need to
+                    % interpolate.
+                    %
+                    % If p has the same length as newW, let's assume it was already
+                    % changed.  Otherwise, if it has the length of oldW, we should
+                    % try to interpolate it.
+                    if length(p) == length(newW)
+                        % Sample length of photons already equal to newW.  No
+                        % problem.
+                    elseif length(p) == length(oldW)
+                        % Adjust the sampling.
+                        newP = interp1(oldW,p,newW,'linear',min(p(:)*1e-3)');
+                        il = illuminantSet(il,'photons',newP);
+                    else
+                        error('Photons and wavelength sample points not interpretable');
+                    end
+                    % vcNewGraphWin; plot(newW,newP);                    
+                end
+            otherwise
+                error('Unknown illuminant photon dimensionality.');        
         end
     case 'comment'
         il.comment = val;
