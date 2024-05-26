@@ -1,6 +1,6 @@
 %% Wavefront aberrations and the Zernike polynomial
 %
-% We illustrate the effects on the PSF of adjusting various
+% We illustrate the effects on the PSF of adjusting Zernike
 % coefficients. This is example is for defocus and astigmatism and
 % black/white image.
 %
@@ -27,8 +27,7 @@ scene = sceneSet(scene,'fov',5);
 
 %% Create wavefront object and convert it to an optical image object
 
-% This method attaches the human lens to the optics
-[oi, wvf] = oiCreate('wvf human');
+[oi, wvf] = oiCreate('wvf');
 wvfPlot(wvf,'psf','unit','um','wave',550,'plotrange',20);  % PSF in micron scale
 oiPlot(oi,'psf');
 
@@ -37,41 +36,25 @@ oiPlot(oi,'psf');
 oi = oiCompute(oi,scene);
 oi = oiSet(oi,'name','Diffraction');
 
-% OI is quite yellow
 oiWindow(oi);
-
-%% Change the defocus coefficient
-%
-% Units are microns.  
-wvf = wvfCreate('wave',sceneGet(scene,'wave'));
-D = [0 1 2];    
-for ii=1:length(D)
-    wvf = wvfSet(wvf,'zcoeffs',D(ii),{'defocus'});
-    wvf = wvfSet(wvf, 'lcaMethod', 'human');
-    wvf = wvfCompute(wvf);
-    wvfPlot(wvf,'psf','unit','um','wave',550,'plotrange',40);  % PSF in micron scale
-    oi = wvf2oi(wvf,'human lens',true);
-    oi = oiCompute(oi,scene);
-    oi = oiSet(oi,'name',sprintf('Human defocus D %.1f microns',D(ii)));
-    oiWindow(oi);
-end
 
 %% Increase astigmatism combined with some defocus
 
-% This time, I did not add the human lens.  So the image looks more white.
 wvf = wvfCreate('wave',sceneGet(scene,'wave'));
 A = [-1, 0, 1];     % Amount of astigmatism
+D = 2;
 for ii=1:length(A)
-    wvf = wvfSet(wvf,'zcoeffs',[2, A(ii)],{'defocus','vertical_astigmatism'});
-    wvf = wvfSet(wvf, 'lcaMethod', 'human');
+    wvf = wvfSet(wvf,'zcoeffs',[D, A(ii)],{'defocus','vertical_astigmatism'});
     wvf = wvfCompute(wvf);
     wvfPlot(wvf,'psf','unit','um','wave',550,'plotrange',40);  % PSF in micron scale
     oi = oiCompute(wvf,scene);
-    oi = oiSet(oi,'name',sprintf('Human D %.1f microns, A %.1f microns',0.5,A(ii)));
+    thisD = oiGet(oi,'wvf','zcoeffs','defocus');
+    thisA = oiGet(oi,'wvf','zcoeffs','vertical_astigmatism');
+    oi = oiSet(oi,'name',sprintf('Defocus %.1f microns, A %.1f microns',thisD,thisA));
     oiWindow(oi);
 end
 
-%%
+%% End
 
 
 

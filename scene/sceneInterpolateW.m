@@ -100,22 +100,15 @@ if ~isempty(photons)
         % This is wavelength x space, rather than XW as usual
         photons    = RGB2XWFormat(photons)';
         newPhotons = interp1(curWave,photons,waveSpectrum.wave, 'linear')';
-        % Replaced 2013.09.29 for speed
-        % newPhotons = interp1(curWave,photons,...
-        %      waveSpectrum.wave, 'linear',min(photons(:))*1e-3)';
         newPhotons = XW2RGBFormat(newPhotons,row,col);
     else
         % Big data set condition, so we loop down the rows
         newPhotons = zeros(r,c,length(waveSpectrum.wave));
         for rr=1:r
-            % Get a row
+            % Interpolate all the columns and wavelengths in a single row.
             pRow = squeeze(photons(rr,:,:))';
-            % Interpolate all the columns in that row and put it in its place
             newPhotons(rr,:,:) = interp1(curWave(:),pRow,...
                 waveSpectrum.wave(:),'linear')';
-            % Replaced 2013.09.29 for speed
-            %   newPhotons(rr,:,:) = interp1(curWave(:),pRow,...
-            %        waveSpectrum.wave(:),'linear',min(photons(:))*1e-3)';
         end
     end
     

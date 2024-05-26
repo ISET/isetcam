@@ -41,17 +41,22 @@ assert(abs((initialPhotons/endingPhotons) - 1) < 1e-6);
 %% Now change the pupil diameter
  
 % Still diffraction limited, but sharper because a larger pupil diameter
-pDiameter = oiGet(oi,'wvf calc pupil diameter');
-oi = oiSet(oi,'wvf calc pupil diameter',2*pDiameter);
+wvf = oiGet(oi,'wvf'); 
+pDiameter = wvfGet(wvf,'calc pupil diameter');
+wvf = wvfSet(wvf,'calc pupil diameter',2*pDiameter);
+oi = oiSet(oi,'optics wvf',wvf);
+
 oi = oiCompute(oi,scene);
 oiWindow(oi);
  
 %% Put the pupil diameter back
-oi = oiSet(oi,'wvf calc pupil diameter',pDiameter);
+wvf = wvfSet(wvf,'calc pupil diameter',pDiameter);
+oi = oiSet(oi,'optics wvf',wvf);
 oi = oiCompute(oi,scene);
 endingPhotons = mean(oiGet(oi,'photons'),'all');
  
 oiWindow(oi);
  
 assert(abs((initialPhotons/endingPhotons) - 1) < 1e-6);
- 
+
+%%

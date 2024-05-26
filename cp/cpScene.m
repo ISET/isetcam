@@ -54,7 +54,8 @@ classdef cpScene < handle
         isetSceneFileNames = [];
         imageFileNames = [];
 
-        thisR;
+        thisR = [];
+        thisD = [];
 
         scenePath;  % defaults set in constructor if needed
         sceneName;
@@ -127,6 +128,7 @@ classdef cpScene < handle
                 options.apertureDiameter {mustBeNumeric} = [];
                 options.verbose {mustBeNumeric} = 0; % squash output by default
                 options.useActiveCameraMotion = true;
+                options.thisD = [];
             end
             obj.resolution = options.resolution;
             obj.numRays = options.numRays;
@@ -137,6 +139,8 @@ classdef cpScene < handle
             obj.verbosity = options.verbose;
             obj.sceneLuminance = options.sceneLuminance;
             obj.useActiveCameraMotion = options.useActiveCameraMotion;
+            obj.thisD = options.thisD;
+
             %cpScene Construct an instance of this class
             %   allow whatever init we want to accept in the creation call
             obj.sceneType = sceneType;
@@ -364,7 +368,7 @@ classdef cpScene < handle
 
                             obj.thisR.set('filmrendertype',{'radiance','depth'});
                             [sceneObject, results, ~, renderedFile] = piRender(obj.thisR,  ...
-                                'verbose', obj.verbosity);
+                                'verbose', obj.verbosity, 'docker', obj.thisD);
 
                             [p, n, e] = fileparts(renderedFile);
                             sequencedFileName = fullfile(ivDirGet('computed'), sprintf('%s-%03d-%03d%s',n,ii,round(1000*obj.expTimes(ii)), e));
@@ -458,7 +462,7 @@ classdef cpScene < handle
         function movePBRTCamera(obj, frameNumber)
 
             persistent rotationMatrixStart;
-            persistent translationStart;
+            persistent rotationMatrixEnd;
 
             % unless we are allowing active motion
             % the first frame doesn't move
@@ -467,6 +471,7 @@ classdef cpScene < handle
                     return;
                 else
                     rotationMatrixStart = piRotationMatrix;
+                    rotationMatrixEnd = piRotationMatrix;
                 end
             end
             for ii = 1:numel(obj.cameraMotion)
@@ -482,9 +487,13 @@ classdef cpScene < handle
                         obj.thisR.set('camera motion translate end',translationEnd);
 
                     end
+                    % If we have shutter times, then maybe we can send in
+                    % the "full" rotation and let pbrt do the work of
+                    % only processing the portion while the shutter is open
                     if ~isempty(ourMotion{3})
 
-                        rotationMatrixEnd = rotationMatrixStart;
+                        % Start where we left off -- OR NOT!
+                        %rotationMatrixStart = rotationMatrixEnd;
                         rotationMatrixEnd(1,1) = rotationMatrixStart(1,1) ...
                             + ourMotion{3}(3);
                         rotationMatrixEnd(1,2) = rotationMatrixStart(1,2) ...
@@ -494,9 +503,6 @@ classdef cpScene < handle
 
                         obj.thisR.set('camera motion rotate start',rotationMatrixStart);
                         obj.thisR.set('camera motion rotate end',rotationMatrixEnd);
-
-                        % I think we need to daisy chain rotation matrices
-                        rotationMatrixStart = rotationMatrixEnd;
 
                     end
                 else % non active
