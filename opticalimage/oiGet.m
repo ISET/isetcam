@@ -183,6 +183,7 @@ function val = oiGet(oi,parm,varargin)
    [oi, wvf] = oiCreate('wvf');
    oiGet(oi,'wvf number spatial samples')
    oiGet(oi,'wvf pupil diameter','mm')
+   oiGet(oi,'wvf','zcoeffs','defocus')
 %}
 
 val = [];
@@ -264,8 +265,14 @@ switch oType
         if checkfields(oi,'optics','wvf'),  wvf = oi.optics.wvf;
         else,                  error('OI optics does not have a wavefront slot.');
         end
-        if isempty(parm), val = wvf;
-        else, val = wvfGet(wvf,parm,varargin{:});
+        if isempty(varargin), val = wvf;
+        else
+            wvfParam = varargin{1};
+            if numel(varargin) > 1, newV = varargin{2:end};
+                val = wvfGet(wvf,wvfParam,newV);
+            else
+                val = wvfGet(wvf,wvfParam);
+            end
         end
 
     otherwise
@@ -486,14 +493,12 @@ switch oType
                 % Store the Zernike polynomial coefficients
                 val = oi.zernike;
             case {'wvf'}
-                % The whole wavefront struct.  In process of how to use
-                % this in programs, with wvfComputePSF and
-                % wvfSet/wvfGet.
+                % The whole wavefront struct.
                 val = oi.wvf;
                 
                 % Sometimes we precompute the psf from the optics and store
                 % it here. The angle spacing of the precomputation is
-                % specified here. I think this should go away (BW).
+                % specified here.
             case {'psfstruct','shiftvariantstructure'}
                 % Entire svPSF structure (sv = shift-varying)
                 if checkfields(oi,'psf'), val = oi.psf; end
