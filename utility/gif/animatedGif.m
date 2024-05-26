@@ -28,7 +28,7 @@ function fName = animatedGif(pImg,fName,deltaT,c_map)
 % mplay(pImg);
 %
 %
-% See also:  ctToolbox/ctScripts/presentations/p_Microsoft2013XX
+% See also:  gif, ctToolbox/ctScripts/presentations/p_Microsoft2013XX
 %
 % BW,HJ PDCSOFT Team 2013
 

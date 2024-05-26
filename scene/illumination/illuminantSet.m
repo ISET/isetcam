@@ -12,17 +12,22 @@ function il = illuminantSet(il,param,val,varargin)
 %
 % Parameters
 %
+% (c) Imageval Consulting, LLC, 2012
 %
 % See also:  illuminantCreate, illuminantGet
 %
+
 % Examples:
-%   il = illuminantCreate;    % Creates the illuminant structure, no data
-%   il = illuminantSet(il,'name','outdoor');
-%   il = illuminantSet(il,'photons', photons);
-%  or
-%   il = illuminantSet(il,'energy',e);  % Converts to energy for you
-%
-% (c) Imageval Consulting, LLC, 2012
+%{
+il = illuminantCreate;    % Creates the illuminant structure, no data
+il = illuminantSet(il,'name','outdoor');
+photons = illuminantGet(il,'photons');
+tmp = illuminantSet(il,'photons',photons);
+wave = illuminantGet(il,'wave');
+tmp = illuminantSet(il,'wave',wave(1:2:end));
+energy = illuminantGet(il,'energy');
+tmp = illuminantSet(il,'energy',energy);
+%}
 
 %% Parameter checking
 
@@ -43,7 +48,7 @@ switch param
         % Use single precision because we may have an illuminant that is
         % spectral spatial.
         il.data.photons = single(val);
-        
+
     case 'energy'
         % User sent in energy.  We convert to photons and set.
         % We need to handle the spatial spectral case properly.
@@ -60,31 +65,49 @@ switch param
         end
     case {'wave','wavelength'}
         % il = illuminantSet(il,'wave',wave)
-        % Need to interpolate data sets and reset when wave is adjusted.
         %
-        % We aren't handling spatial-spectral here properly.  FIX.
+        % Interpolate the illuminant photons
         oldW = illuminantGet(il,'wave');
         newW = val(:);
-        il.spectrum.wave = newW;
-        
-        % Now decide what to do with photons
-        p = illuminantGet(il,'photons');
-        if ~isempty(p)
-            % If p has the same length as newW, let's assume it was already
-            % changed.  Otherwise, if it has the length of oldW, we should
-            % try to interpolate it.
-            if length(p) == length(newW)
-                % Sample length of photons already equal to newW.  No
-                % problem.
-            elseif length(p) == length(oldW)
-                % Adjust the sampling.
-                newP = interp1(oldW,p,newW,'linear',min(p(:)*1e-3)');
-                il = illuminantSet(il,'photons',newP);
-            else
-                error('Photons and wavelength sample points not interpretable');
-            end
-            % vcNewGraphWin; plot(newW,newP);
+        if isequal(newW(:),oldW(:))
+            % Nothing to interpolate
+            return;
         end
+
+        il.spectrum.wave = newW;
+        photons = illuminantGet(il,'photons');
+        if ~isempty(photons)
+            if isvector(photons)
+                % Interpolate the spectral illuminant vector
+                %
+                if length(photons) == length(newW)
+                    % If p has the same length as newW, let's assume it
+                    % was already changed by the user.  This must have
+                    % been put here a long time ago.  Might not be
+                    % needed any more.
+                    disp('Illuminant photons appear to have been changed already.')
+                elseif length(photons) == length(oldW)
+                    % Adjust the sampling.  We know how.
+                    photons = interp1(oldW,photons,newW,'linear',min(photons(:)*1e-3)');
+                    il = illuminantSet(il,'photons',photons);
+                end
+            elseif ndims(photons) == 3
+                % Interpolate the spatial-spectral illuminant
+                %
+                % Unlike the case below, we always interpolate.  Same
+                % method as sceneInterpolateW.
+                row = size(photons,1); col = size(photons,2);
+                photons = interp1(oldW,RGB2XWFormat(photons)',newW, 'linear')';
+                photons = XW2RGBFormat(photons,row,col);
+                il = illuminantSet(il,'photons',photons);
+            else    
+                % Confused.
+                error('Photons and wavelength sample points not interpretable');
+            end           
+        else
+            disp('No illuminant photons.  Should not happen.');
+        end
+
     case 'comment'
         il.comment = val;
     otherwise
