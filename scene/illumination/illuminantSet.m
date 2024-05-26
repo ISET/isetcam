@@ -12,17 +12,22 @@ function il = illuminantSet(il,param,val,varargin)
 %
 % Parameters
 %
+% (c) Imageval Consulting, LLC, 2012
 %
 % See also:  illuminantCreate, illuminantGet
 %
+
 % Examples:
-%   il = illuminantCreate;    % Creates the illuminant structure, no data
-%   il = illuminantSet(il,'name','outdoor');
-%   il = illuminantSet(il,'photons', photons);
-%  or
-%   il = illuminantSet(il,'energy',e);  % Converts to energy for you
-%
-% (c) Imageval Consulting, LLC, 2012
+%{
+il = illuminantCreate;    % Creates the illuminant structure, no data
+il = illuminantSet(il,'name','outdoor');
+photons = illuminantGet(il,'photons');
+tmp = illuminantSet(il,'photons',photons);
+wave = illuminantGet(il,'wave');
+tmp = illuminantSet(il,'wave',wave(1:2:end));
+energy = illuminantGet(il,'energy');
+tmp = illuminantSet(il,'energy',energy);
+%}
 
 %% Parameter checking
 
@@ -72,38 +77,33 @@ switch param
         il.spectrum.wave = newW;
         photons = illuminantGet(il,'photons');
         if ~isempty(photons)
-            switch ndims(il.data.photons)
-                case 3
-                    % Interpolate the spatial-spectral illuminant
-                    %
-                    % Unlike the case below, we always interpolate.  Same
-                    % method as sceneInterpolateW.
-                    row = size(photons,1); col = size(photons,2);
-                    photons = interp1(oldW,RGB2XWFormat(photons)',newW, 'linear')';
-                    photons = XW2RGBFormat(photons,row,col);
+            if isvector(photons)
+                % Interpolate the spectral illuminant vector
+                %
+                if length(photons) == length(newW)
+                    % If p has the same length as newW, let's assume it
+                    % was already changed by the user.  This must have
+                    % been put here a long time ago.  Might not be
+                    % needed any more.
+                    disp('Illuminant photons appear to have been changed already.')
+                elseif length(photons) == length(oldW)
+                    % Adjust the sampling.  We know how.
+                    photons = interp1(oldW,photons,newW,'linear',min(photons(:)*1e-3)');
                     il = illuminantSet(il,'photons',photons);
-                case 1
-                    % Interpolate the spectral illuminant vector
-                    %
-                    if length(photons) == length(newW)
-                        % If p has the same length as newW, let's assume it
-                        % was already changed by the user.  This must have
-                        % been put here a long time ago.  Might not be
-                        % needed any more.
-                        disp('Illuminant photons appear to have been changed already.')
-                    elseif length(photons) == length(oldW)
-                        % Adjust the sampling.  We know how.
-                        photons = interp1(oldW,photons,newW,'linear',min(photons(:)*1e-3)');
-                        il = illuminantSet(il,'photons',photons);
-                    else
-                        % Confused.
-                        error('Photons and wavelength sample points not interpretable');
-                    end
-                    % ieNewGraphWin; plot(newW,newP);
-
-                otherwise
-                    error('Unknown illuminant photon dimensionality.');
-            end
+                end
+            elseif ndims(photons) == 3
+                % Interpolate the spatial-spectral illuminant
+                %
+                % Unlike the case below, we always interpolate.  Same
+                % method as sceneInterpolateW.
+                row = size(photons,1); col = size(photons,2);
+                photons = interp1(oldW,RGB2XWFormat(photons)',newW, 'linear')';
+                photons = XW2RGBFormat(photons,row,col);
+                il = illuminantSet(il,'photons',photons);
+            else    
+                % Confused.
+                error('Photons and wavelength sample points not interpretable');
+            end           
         else
             disp('No illuminant photons.  Should not happen.');
         end
