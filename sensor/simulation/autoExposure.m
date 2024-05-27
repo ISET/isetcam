@@ -193,12 +193,10 @@ smallOI = oiSet(smallOI,'wangular',2*sensorFOV);
  smallSensor   = sensorSet(smallSensor,'pixel voltage swing',1e6);
  smallSensor   = sensorCompute(smallSensor,smallOI);
  signalVoltage = sensorGet(smallSensor,'volts');
-%}
+% }
 
-%{
- % This has been standard for a long time.  But see above comment.
- signalVoltage = sensorComputeImage(smallOI,smallSensor);
-%}
+% This has been standard for a long time.  But see above comment.
+% signalVoltage = sensorComputeImage(smallOI,smallSensor);
 
 maxSignalVoltage = max(signalVoltage(:));
 
