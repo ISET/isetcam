@@ -25,30 +25,10 @@ function vcSetSelectedObject(objType,val)
 %
 
 % TODO:
-%  We should eliminate these routines and instead do the work through
+%  We are eliminating these  vc* routines and instead working through
 %  switch statements that go to ieSessionSet
 
 ieSelectObject(objType,val);
 
 end
-%{
-global vcSESSION; %#ok<NUSED>
 
-% Make sure we have the correct string
-objType = vcEquivalentObjtype(objType);
-
-if logical(isempty(val)) || logical(val < 1)
-    % No object is selected.
-    eval(['vcSESSION.SELECTED.',objType,'= [];'])
-else
-    % Select the object.
-    nObjects = length(vcGetObjects(objType));
-    if val <= nObjects
-        eval(['vcSESSION.SELECTED.',objType,'= val;']);
-    else
-        error('Selected object out of range.');
-    end
-end
-
-end
-%}

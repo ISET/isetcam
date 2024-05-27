@@ -181,8 +181,8 @@ function val = oiGet(oi,parm,varargin)
 %}
 %{
    [oi, wvf] = oiCreate('wvf');
-   oiGet(oi,'wvf number spatial samples')
-   oiGet(oi,'wvf pupil diameter','mm')
+   oiGet(oi,'wvf','number spatial samples')
+   oiGet(oi,'wvf','calc pupil diameter','mm')
    oiGet(oi,'wvf','zcoeffs','defocus')
 %}
 
