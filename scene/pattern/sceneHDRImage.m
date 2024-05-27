@@ -123,16 +123,20 @@ for ii = 1:nPatches
             end
 
             patch_height = patch_width;
-            spacing = floor(patch_width / 2);              % Space between patches
+            % spacing = floor(patch_width / 2);              % Space between patches
+
+            spacing = imWidth/(nPatches+1);
+            start_col = round((1:nPatches)*spacing);
 
             % Place the square
-            start_col   = round((imWidth - (nPatches * patch_width + (nPatches - 1) * spacing)) / 2);
+            % OLD:  start_col   = round((imWidth - (nPatches * patch_width + (nPatches - 1) * spacing)) / 2);
             if isempty(p.Results.row), start_row = round((imHeight - patch_height) / 2);
             else,                      start_row = p.Results.row;
             end
 
             rows = start_row + (1:patch_height);
-            cols = start_col + ((ii - 1)*(patch_width + spacing):(ii - 1)*(patch_width + spacing) + patch_width);
+            % cols = start_col + ((ii - 1)*(patch_width + spacing):(ii - 1)*(patch_width + spacing) + patch_width);
+            cols = start_col(ii) - round(patch_width/2) + (1:patch_width);
             patchImage(rows,cols) = 1;
             patchImage = repmat(patchImage,[1 1 3]);
         case 'circle'
@@ -141,7 +145,10 @@ for ii = 1:nPatches
             else,                 radius = patchSize;
             end
 
-            center_col = linspace(4*radius,imWidth-4*radius,nPatches);
+            % Spread the circles across the whole image
+            spacing = imWidth/(nPatches+1);
+            center_col = (1:nPatches)* spacing;
+            % center_col = linspace(4*radius,imWidth-4*radius,nPatches);
             if isempty(p.Results.row), start_row = round(imHeight/ 2);
             else,                      start_row = p.Results.row;
             end
