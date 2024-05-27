@@ -324,9 +324,11 @@ classdef cpScene < handle
                         % render a frame, as we might need to render subsequent
                         % frames
                         obj.thisR.set('shutteropen', sTime);
+                        % Try deliberately setting active transform times
+                        obj.thisR.set('transformtimesstart',sTime);
                         sTime = sTime + max(.001, obj.expTimes(ii));
                         obj.thisR.set('shutterclose', sTime);
-
+                        obj.thisR.set('transformtimesend',sTime);
 
                         % process camera motion if allowed
                         % We do this per frame because we want to
