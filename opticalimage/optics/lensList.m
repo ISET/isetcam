@@ -5,10 +5,10 @@ function files = lensList(varargin)
 %   files = lensList(...)
 %
 % Description:
-%   Print a list of the lens .json files in the default directory.  You can
-%   create a lens from one of the files with the lens constructor.
-%   These json files are the ones we use as lens information for
-%   PBRT-V3-spectral.
+%   Requires iset3d. Print a list of the lens .json files in the default
+%   directory.  You can create a lens from one of the files with the lens
+%   constructor. These json files are the ones we use as lens information
+%   for PBRT-V4-spectral.
 %
 %   The files should have a metadata slot that includes their focal
 %   length and fnumber.
@@ -30,15 +30,21 @@ function files = lensList(varargin)
 
 % Examples:
 %{
-   lensNames = lensList;   
+if exist('piDirGet','file')
+   lensNames = lensList;  
+end
 %}
 %{
+if exist('piDirGet','file')
   lensNames = lensList('quiet',true);
   disp(lensNames);
+end
 %}
 %{
+if exist('piDirGet','file')
   lensList('star','dgauss*.json')
   lensList('star','*wide*.json')
+end
 %}
 
 %% Parse input
