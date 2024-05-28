@@ -83,6 +83,6 @@ grid on; colormap(hot); colorbar; axis xy;
 ylabel('Object distance (m)'); xlabel('F#'); zlabel('DOF (m)');
 
 
-
+%%
 
 

@@ -14,9 +14,10 @@ ieInit;
 saveDir = pwd;
 
 % All at once
-sDir = {'color','data','display','gui','human','image','metrics','oi','optics','scene','sensor','utility'};
-% Or pick a subset
-% sDir = {'color'};
+% sDir = {'color','data','display','gui','human','image',};
+% sDir = {'metrics','oi','optics','scene','sensor','utility'};
+% Or pick a subsetp
+sDir = {'optics','scene'};
 maxHeight = 512;
 maxWidth  = 512;
 

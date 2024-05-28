@@ -24,6 +24,8 @@
 ieInit
 delay = 0.2;
 
+clear basis
+
 %% Read in the scene
 fName = fullfile(isetRootPath,'data','images','multispectral','StuffedAnimals_tungsten-hdrs');
 scene = sceneFromFile(fName,'multispectral');
