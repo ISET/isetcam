@@ -9,21 +9,15 @@ ieSessionSet('init clear',false);
 
 %%
 ieInit;
-clear all; % Clear at the beginning, but not again.
 
 %% One scripts sub directory at a time
 saveDir = pwd;
 
-% str = 'optics';    % Which directory
-% sDir = {str};
-
 % All at once
-% sDir = {'color','scene','optics','sensor','color','metrics','image','gui','human'};
-% sDir = {'scene','optics','sensor','color','metrics','image','gui','human'};
-% sDir = {'optics','sensor','color','metrics','image','gui','human'};
-% sDir = {'sensor','color','metrics','image','gui','human'};
-% sDir = {'color'};
-sDir = {'gui','human'};
+sDir = {'color','data','display','gui','human','image',...
+    'metrics','oi','optics','scene','sensor','utility'};
+% Or pick a subset
+% sDir = {'optics','scene'};
 maxHeight = 512;
 maxWidth  = 512;
 
@@ -36,9 +30,9 @@ excludeNames = {'Contents.m'};
 % Loop on all the directories in the list
 for ss = 1:length(sDir)
     fprintf('Script directory: %s \n',sDir{ss});
-    oDir = fullfile('/Users/wandell/Google Drive/Business/Imageval/website/scripts',sDir{ss});
-    % oDir = fullfile(isetRootPath,'local',sDir{ss});
-    
+    oDir = fullfile(isetRootPath,'local','scripts',sDir{ss});
+    if ~exist(oDir,'dir'), mkdir(oDir); end
+
     % Run them - later we can publish them, as a group with similar code.
     cd(fullfile(isetRootPath,'scripts',sDir{ss}));
     allScripts = dir('*.m');
@@ -64,12 +58,14 @@ for ss = 1:length(sDir)
     end
     % ieInit forces us to reset.
     % sDir = {str};
-    fprintf('***** \n\n');
+    fprintf('***** Finished directory %s \n\n',sDir{ss});
 end
 
 
 %%
 function keepScripts = excludeScripts(theseScripts,excludeNames)
+
+keepScripts = [];
 
 cnt = 1;
 for ii=1:length(theseScripts)

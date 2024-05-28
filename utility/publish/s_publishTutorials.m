@@ -9,14 +9,15 @@ ieSessionSet('init clear',false);
 
 %%
 ieInit;
-clear all; % Clear at the beginning, but not again.
 
 %% One scripts sub directory at a time
 % str = 'optics';    % Which directory
 % tDir = {str};
 
 % All at once
-tDir = {'camera','code','color','display','introduction','scene','optics','sensor','color','metrics','image','gui'};
+tDir = {'camera','code','color','display','gui',...
+    'image','introduction','metrics','oi','optics',...
+    'printing','scene','sensor'};
 maxHeight = 512;
 maxWidth  = 512;
 
@@ -27,12 +28,12 @@ oFormats = {'html'};
 
 excludeNames = {'Contents.m'};
 
-% Loop on all the directories in the list
+%% Loop on all the directories in the list
 for ss = 1:length(tDir)
     fprintf('Script directory: %s \n',tDir{ss});
-    oDir = fullfile('/Users/wandell/Google Drive/Business/Imageval/website/tutorials',tDir{ss});
-    % oDir = fullfile(isetRootPath,'local',tDir{ss});
-    
+    oDir = fullfile(isetRootPath,'local','publish',tDir{ss});
+    if ~exist(oDir,'dir'), mkdir(oDir); end
+
     % Run them - later we can publish them, as a group with similar code.
     cd(fullfile(isetRootPath,'tutorials',tDir{ss}));
     allTutorials = dir('*.m');
@@ -56,9 +57,8 @@ for ss = 1:length(tDir)
         
         fprintf('done\n');
     end
-    % ieInit forces us to reset.
-    % tDir = {str};
-    fprintf('***** \n\n');
+
+    fprintf('***** done with directory %s ***** \n\n',tDir{ss});
 end
 
 

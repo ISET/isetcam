@@ -56,7 +56,7 @@ oi0 = wvf2oi(wvf0);
 oiPlot(oi0,'psf 550');
 
 % Here is the summary
-fprintf('f# %0.2f and defocus %0.2f\n',oiGet(oi0,'fnumber'),oiGet(oi0,'wvf zcoeffs','defocus'));
+fprintf('f# %0.2f and defocus %0.2f\n',oiGet(oi0,'fnumber'),oiGet(oi0,'wvf','zcoeffs','defocus'));
 
 %% Now we compute with the oi as usual
 
@@ -81,7 +81,7 @@ wvf1 = wvfCompute(wvf1);
 oi1 = wvf2oi(wvf1);
 oiPlot(oi1,'psf 550');
 
-fprintf('f# %0.2f and defocus %0.2f\n',oiGet(oi1,'fnumber'),oiGet(oi1,'wvf zcoeffs','defocus'));
+fprintf('f# %0.2f and defocus %0.2f\n',oiGet(oi1,'fnumber'),oiGet(oi1,'wvf','zcoeffs','defocus'));
 
 %% Compute
 oi1 = oiCompute(oi1,scene,'crop',true);
@@ -105,7 +105,9 @@ set(gca,'xlim',[-20 20],'ylim',[-20 20]);
 
 %% This should be the equivalent code
 
-oi = oiSet(oi,'wvf zcoeffs',diopters,'defocus');  % Defocus
+wvf = oiGet(oi,'optics wvf');
+wvf = wvfSet(wvf,'zcoeffs',diopters,'defocus');
+oi = oiSet(oi,'optics wvf',wvf);
 oiPlot(oi,'psf 550');
 set(gca,'xlim',[-20 20],'ylim',[-20 20]);
 

@@ -23,7 +23,8 @@
 % (c) Imageval Consulting, LLC, 2012
 
 %%
-ieInit
+ieInit;
+clear rad2deg
 
 %% Create optical image
 
@@ -49,9 +50,9 @@ title(sprintf('F/# = %.2f  Foc Leng = %.2f (mm)',fNumber,fLength));
 
 %% Show the linespread in units of arc min rather than position (um)
 
-vcNewGraphWin;
+ieNewGraphWin;
 posMM = uData.x/1000;              % Microns to mm
-aMinutes = rad2deg(atan2(posMM,fLength)) * 3437.75;   % Angle in arcminutes.
+aMinutes = atan2d(posMM,fLength) * 3437.75;   % Angle in arcminutes.
 mesh(aMinutes,uData.wavelength,uData.lsWave);
 view(30,20);
 xlabel('angle (arc min)');
@@ -75,7 +76,7 @@ set(gca,'xlim',[-AiryRingUM AiryRingUM],'ylim',[-AiryRingUM AiryRingUM])
 mid = ceil(r/2);
 psfMid = uData.psf(mid,:);
 posMM = uData.x(mid,:)/1000;               % Microns to mm
-posMinutes = rad2deg(atan2(posMM,fLength)) * 3437.75;
+posMinutes = atan2d(posMM,fLength) * 3437.75;
 
 vcNewGraphWin;
 plot(posMinutes,psfMid)
