@@ -2,6 +2,9 @@
 %
 %
 
+%%
+ieInit;
+
 %% In this case the volts are 4x but the electrons are equal
 %
 % As it should be, IMHO.
@@ -18,6 +21,7 @@ sArray = metadata.sensorArray;
 
 sensorWindow(sensor);
 
+%%
 % Note:  The ratio of electron capture makes sense.  The conversion gain,
 % however, differs so when we plot w.r.t volts the ratios are not as you
 % might naively expect.  The dv values follow volts.
