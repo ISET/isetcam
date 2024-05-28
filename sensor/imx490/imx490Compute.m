@@ -144,8 +144,12 @@ switch ieParamFormat(method)
         idx1 = (v1 < vSwingL); idx2 = (v2 < vSwingL);
         idx3 = (v3 < vSwingS); idx4 = (v4 < vSwingS);
 
-        % How to average
+        % How many pixels contribute to the average
         N = idx1 + idx2 + idx3 + idx4;
+
+        % When none of the four measurements meet the criteria, N=0.
+        % In that case, volts is infinite and we set those to the
+        % saturation level (1).  See below. 
 
         % These are the input referred estimates. When all the
         % voltages are saturated the image is rendered as black.
@@ -163,8 +167,12 @@ switch ieParamFormat(method)
 
         % Set the voltage to the mean of the input referred estimates.
         volts = (in1 + in2 + in3 + in4) ./ N;
+        volts(isinf(volts)) = 1;
         volts = sensorGet(imx490Large,'pixel voltage swing') * ieScale(volts,1);
         imx490Large = sensorSet(imx490Large,'volts',volts);
+
+        % Save how many pixels contributed to the value at each pixel.
+        imx490Large.metadata.npixels = N;
 
     case 'bestsnr'
         % Choose the pixel with the most electrons and thus best SNR.        

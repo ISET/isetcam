@@ -76,8 +76,23 @@ v2 = sensorGet(sArray{2},'volts');
 ieNewGraphWin; plot(v1(:),v2(:),'.');
 identityLine; grid on;
 
+% Change into local/imx490
+ieNewGraphWin; 
+for ii=1:4
+    srgb = sensorGet(sArray{ii},'rgb');
+    imagesc(srgb); truesize; axis off;
+    exportgraphics(gcf,sprintf('imx490-%d.png',ii));   
+end
+srgb = sensorGet(sensor,'rgb');
+imagesc(srgb.^0.3); truesize; axis off
+exportgraphics(gcf,sprintf('imx490-average.png'));   
+
+%{
 sensorWindow(sArray{1});
 sensorWindow(sArray{2});
+sensorWindow(sArray{3});
+sensorWindow(sArray{4});
+%}
 
 %% Make an ideal form of the image
 
