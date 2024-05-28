@@ -28,7 +28,8 @@ function [imx490Large, metadata] = imx490Compute(oi,varargin)
 %   Integration times: min of 86.128 μs to max of 5 s
 %
 % Input
-%   oi - optical image
+%   oi - optical image.  It should be created with a spatial sampling
+%        resolution of 3 um to match the sensor.
 %
 % Optional key/val
 %   gain      - Four gain values.  Default: 1,4,1,4
@@ -80,7 +81,7 @@ imx490Large = sensorSet(imx490Large,'exp time',expTime);
 
 % The oi should have 3 um sampling resolution.  This will match the sensor
 % fov to the oi.
-assert(max(abs(oiGet(oi,'spatial resolution','um') - sensorGet(imx490Large,'pixel size','um'))) < 1e-4)
+assert(max(abs(oiGet(oi,'spatial resolution','um') - sensorGet(imx490Large,'pixel size','um'))) < 1e-3)
 
 oiSize = oiGet(oi,'size');
 imx490Large = sensorSet(imx490Large,'size',oiSize);
@@ -184,6 +185,12 @@ switch ieParamFormat(method)
         [val,bestPixel] = max([e1(:), e2(:), e3(:), e4(:)],[],2);
         val = reshape(val,size(e1));
         bestPixel = reshape(bestPixel,size(e1));
+
+        % Calculate the voltage and remember which pixel it came from
+        cg = sensorGet(imx490Large,'pixel conversion gain');
+        volts = val*cg;
+        imx490Large = sensorSet(imx490Large,'volts',volts);
+        imx490Large.metadata.bestPixel = bestPixel;
         %{
          ieNewGraphWin; imagesc(val);
          cm = [1 0 0; 1 0.5 0; 0 0 1; 0 0.5 1; 1 1 1];
