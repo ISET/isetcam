@@ -27,7 +27,7 @@ lum = ieLuminanceFromPhotons(spd',wave(:));
 spd = spd*diag(100./lum);
 
 %% Plot the spectral power distributions (photons)
-vcNewGraphWin;
+ieNewGraphWin;
 plot(wave,spd);
 grid on; xlabel('Wavelength'); ylabel('Photons (q/sr/m^2/s)');
 
@@ -41,7 +41,7 @@ lum = ieLuminanceFromEnergy(spd',wave(:));
 % Scale them to 100 cd/m2
 spd = spd*diag(100./lum);
 
-vcNewGraphWin;
+ieNewGraphWin;
 plot(wave,spd);
 grid on; xlabel('Wavelength'); ylabel('Energy (watts/sr/m^2/s)');
 
@@ -51,7 +51,7 @@ dayBasis = ieReadSpectra('cieDaylightBasis',wave);
 
 % Daylight spectral power distributions are weighted sums of
 % these basis functions.
-vcNewGraphWin;
+ieNewGraphWin;
 p = plot(wave,dayBasis,'k-');
 set(p,'linewidth',2);
 xlabel('Wavelength'); ylabel('Energy (relative)'); grid on
@@ -60,7 +60,7 @@ xlabel('Wavelength'); ylabel('Energy (relative)'); grid on
 
 % The mean, and +/1 the first coefficient.
 wgts = [1 0 0 ; 1, 1, 0; 1 -1 0]';
-vcNewGraphWin;
+ieNewGraphWin;
 plot(wave,dayBasis*wgts)
 grid on; xlabel('Wavelength'); ylabel('Energy (relative)');
 
