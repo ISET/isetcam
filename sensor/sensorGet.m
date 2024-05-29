@@ -522,8 +522,12 @@ switch oType
                     val = sensorColorData(val,sensor,varargin{1}); 
                 end
                 
-                % Electrons are integers
+                % Electrons are integers and > 0.  Sometimes because
+                % of noise near zero or the offset, we have a negative
+                % value.
                 val = round(val);
+                val = max(val,0);
+
             case {'electronsperarea'}
                 % sensorGet(sensor,'electrons per area','unit',channel)
                 % sensorGet(sensor,'electrons per area','m',2)

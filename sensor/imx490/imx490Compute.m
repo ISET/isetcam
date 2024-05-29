@@ -142,19 +142,21 @@ switch ieParamFormat(method)
         v2 = sensorGet(imx490Large2,'volts');
         v3 = sensorGet(imx490Small1,'volts');
         v4 = sensorGet(imx490Small2,'volts');
+        % min(v1(:)),min(v2(:)),min(v3(:)),min(v4(:))
 
         % Voltage swing
         vSwingL = sensorGet(imx490Large,'pixel voltage swing');
         vSwingS = sensorGet(imx490Small,'pixel voltage swing');
-        idx1 = (v1 <= vSwingL); idx2 = (v2 <= vSwingL);
-        idx3 = (v3 <= vSwingS); idx4 = (v4 <= vSwingS);
 
-        % How many pixels contribute to the average
+        % Locations that are not saturated in each sensor
+        idx1 = (v1 < vSwingL); idx2 = (v2 < vSwingL);
+        idx3 = (v3 < vSwingS); idx4 = (v4 < vSwingS);
+
+        % We average the not saturated pixels.  This is how many.
         N = idx1 + idx2 + idx3 + idx4;
 
-        % When none of the four measurements meet the criteria, N=0.
-        % In that case, volts is infinite and we set those to the
-        % saturation level (1).  See below. 
+        % When all four measurements are saturated, N=0. We set those
+        % pixels to the saturation level (1).  See below.
 
         % These are the input referred estimates. When all the
         % voltages are saturated the image is rendered as black.
@@ -169,12 +171,18 @@ switch ieParamFormat(method)
         %  The estimated input, which should be equal for a uniform
         %  field
         %  mean(in1(:)),mean(in2(:)),mean(in3(:)),mean(in4(:))
+        %  min(in1(:)),min(in2(:)),min(in3(:)),min(in4(:))
+        %  max(in1(:)),max(in2(:)),max(in3(:)),max(in4(:))
 
-        % Set the voltage to the mean of the input referred estimates.
-        volts = (in1 + in2 + in3 + in4) ./ N;
+        % Set the voltage to the mean of the not saturated, input
+        % referred electrons.
+        cg = sensorGet(imx490Large,'pixel conversion gain');
+        volts = cg*((in1 + in2 + in3 + in4) ./ N);
         vSwing = sensorGet(imx490Large,'pixel voltage swing');
         volts(isinf(volts)) = 1;
         volts = vSwing * ieScale(volts,1);
+        % volts = ieClip(volts,0,vSwing);
+
         imx490Large = sensorSet(imx490Large,'volts',volts);
 
         % The voltages are computed with this assumption.
