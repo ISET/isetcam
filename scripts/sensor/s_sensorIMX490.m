@@ -78,10 +78,15 @@ oi2 = oiSpatialResample(oi2,3,'um'); % oiWindow(oi);
     disp('Ooops')
     % It seems we do not always have a voltage > analog offset
   end 
+ if min(v(:)) < 0
+    disp('Zero oops')
+    % The voltages are always positive, however.  So maybe we are not
+    % adding the offset properly in the calculation.
+  end 
 %}
 sArray = metadata.sensorArray;
 
-% Note that the electrons match up to voltage saturation
+%% Note that the electrons match up to voltage saturation
 e1 = sensorGet(sArray{1},'electrons');
 e2 = sensorGet(sArray{2},'electrons');
 ieNewGraphWin; plot(e1(:),e2(:),'.');

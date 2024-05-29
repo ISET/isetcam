@@ -146,8 +146,8 @@ switch ieParamFormat(method)
         % Voltage swing
         vSwingL = sensorGet(imx490Large,'pixel voltage swing');
         vSwingS = sensorGet(imx490Small,'pixel voltage swing');
-        idx1 = (v1 < vSwingL); idx2 = (v2 < vSwingL);
-        idx3 = (v3 < vSwingS); idx4 = (v4 < vSwingS);
+        idx1 = (v1 <= vSwingL); idx2 = (v2 <= vSwingL);
+        idx3 = (v3 <= vSwingS); idx4 = (v4 <= vSwingS);
 
         % How many pixels contribute to the average
         N = idx1 + idx2 + idx3 + idx4;
