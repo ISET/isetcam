@@ -495,22 +495,27 @@ switch oType
                 %     volts = (voltsRaw + ao)/ag;
                 %
                 % Hence, to invert from the stored voltage to the raw,
-                % which is a correct estimate of the incident light,
-                % we use
+                % which is a correct estimate of the number of
+                % electrons and thus also the intensity of the
+                % incident light, we use
                 %
                 %     voltsRaw = volts*ag - ao                
                 %
                 ag = sensorGet(sensor,'analog gain');
                 ao = sensorGet(sensor,'analog offset');
-                cg = pixelGet(pixel,'conversion gain');
+                volts = double(sensorGet(sensor,'volts'));
 
-                % This should never turn the electrons to a negative
-                % number.  Maybe noise happens? In which case we
-                % should clip?
-                val = (sensorGet(sensor,'volts')*ag - ao)/cg;
-                % if min(val(:)) < 0
-                %     keyboard;
-                % end
+                % Maybe clipping should be part of sensorGet for
+                % 'volts'.  The reason we need it, I think, is because
+                % we are probably not clipping properly on the ao
+                % value in sensorCompute. So maybe that should happen.
+                % (BW).
+                vSwing = sensorGet(sensor,'pixel voltage swing');
+                volts = ieClip(volts,ao,vSwing);
+
+                % This is the 'raw' voltage times the conversion gain.
+                cg = pixelGet(pixel,'conversion gain');
+                val = (volts*ag - ao)/cg;
 
                 % Pull out a particular color plane
                 if ~isempty(varargin)

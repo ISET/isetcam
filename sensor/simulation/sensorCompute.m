@@ -165,7 +165,7 @@ for ss=1:length(sensorArray)   % Number of sensors
     
     %% Convert to volts
     % Handle multiple exposure value case.
-    if numel(cur2volt) == 1
+    if isscalar(cur2volt)
         % There is only one exposure time.  Conventional calculation
         voltImage = cur2volt*unitSigCurrent;
     else

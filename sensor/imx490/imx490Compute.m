@@ -137,7 +137,7 @@ cgSmall = sensorGet(imx490Small1,'pixel conversion gain');
 
 switch ieParamFormat(method)
     case 'average'
-        % Combine the input referred volts, exclusing saturated values.
+        % Combine the input referred volts, excluding saturated values.
         v1 = sensorGet(imx490Large1,'volts');
         v2 = sensorGet(imx490Large2,'volts');
         v3 = sensorGet(imx490Small1,'volts');
@@ -176,6 +176,10 @@ switch ieParamFormat(method)
         volts(isinf(volts)) = 1;
         volts = vSwing * ieScale(volts,1);
         imx490Large = sensorSet(imx490Large,'volts',volts);
+
+        % The voltages are computed with this assumption.
+        imx490Large = sensorSet(imx490Large,'analog gain',1);
+        imx490Large = sensorSet(imx490Large,'analog offset',0);
 
         % Save the number of pixels that contribute to the value at
         % each pixel. 

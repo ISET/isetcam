@@ -68,8 +68,7 @@ oi = oiSpatialResample(oi,3,'um'); % oiWindow(oi);
 oi2 = oiCompute(oi,scene,'crop',true,'pixel size',3e-6);   % oiWindow(oi2);
 oi2 = oiSpatialResample(oi2,3,'um'); % oiWindow(oi);
 
-[sensor,metadata] = imx490Compute(oi,'method','average',...
-    'exptime',1/10, 'noise flag',0);
+[sensor,metadata] = imx490Compute(oi,'method','average','exptime',1/10);
 
 % sensorWindow(sensor);
 %{
@@ -102,7 +101,7 @@ xlabel('V Sensor 1'); ylabel('V Sensor 2');
 identityLine; grid on;
 
 % Change into local/imx490
-% {
+%{
 volts = sensorGet(sensor,'volts');
 mesh(volts); set(gca,'zscale','log');
 
