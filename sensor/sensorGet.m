@@ -489,14 +489,28 @@ switch oType
                 % sensor with a nonunity gain or an offset, the estimated
                 % number of electrons at capture was off.
                 
-                % The sensor compute function:
+                % The sensor compute function applies gain and offset
+                % to the raw voltage like this:
+                %
                 %     volts = (voltsRaw + ao)/ag;
-                % To invert
+                %
+                % Hence, to invert from the stored voltage to the raw,
+                % which is a correct estimate of the incident light,
+                % we use
+                %
                 %     voltsRaw = volts*ag - ao                
+                %
                 ag = sensorGet(sensor,'analog gain');
                 ao = sensorGet(sensor,'analog offset');
-                cg = pixelGet(pixel,'conversionGain');
+                cg = pixelGet(pixel,'conversion gain');
+
+                % This should never turn the electrons to a negative
+                % number.  Maybe noise happens? In which case we
+                % should clip?
                 val = (sensorGet(sensor,'volts')*ag - ao)/cg;
+                % if min(val(:)) < 0
+                %     keyboard;
+                % end
 
                 % Pull out a particular color plane
                 if ~isempty(varargin)

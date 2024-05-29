@@ -9,10 +9,36 @@ function [imx490Large, metadata] = imx490Compute(oi,varargin)
 %   They are each measured twice, once with high gain and once with
 %   low gain.  It produces 4 different values from each pixel.
 %  
-%   IP seems to be a speciality of LUCID
+%   Integration times: min of 86.128 μs to max of 5 s
+%
+% Input
+%   oi - optical image.  It should be created with a spatial sampling
+%        resolution of 3 um to match the sensor.
+%
+% Optional key/val
+%   gain      - Four gain values.  Default: 1,4,1,4
+%   noiseflag - Default 2
+%   exp time  - Default 1/60 s
+%   method    - How to combine the four values to 1 for each pixel
+%               {'average','bestsnr'}; 
+%
+% Output
+%   sensorCombined - Constructed combination
+%   metadata - Cell array of the four captures, and other metadata about
+%              the selection algorithm.
+%
+% Description
+%   Data from the four pixel values are also combined into a single
+%   (sensorCombined). %   The four individual sensors are returned in
+%   metadata. We are developing image processing methods for that
+%   combination here.
+%
+%   Image processing for this sensor is a speciality of LUCID
+%
 %      https://thinklucid.com/product/triton-5-mp-imx490/  - Specifications
 %      https://thinklucid.com/product/triton-5-mp-imx490/  - EMVA Data
 %      https://thinklucid.com/tech-briefs/sony-imx490-hdr-sensor-and-flicker-mitigation/
+%
 %   From the LUCID web-site:  
 %   
 %   The IMX490 achieves high dynamic range using two sub-pixels for each
@@ -25,32 +51,9 @@ function [imx490Large, metadata] = imx490Compute(oi,varargin)
 %   and scaled when appropriate to reflect how the channels are combined
 %   into a 24-bit HDR image
 %
-%   Integration times: min of 86.128 μs to max of 5 s
-%
-% Input
-%   oi - optical image.  It should be created with a spatial sampling
-%        resolution of 3 um to match the sensor.
-%
-% Optional key/val
-%   gain      - Four gain values.  Default: 1,4,1,4
-%   noiseflag - Default 2
-%   exp time  - Default 1/60 s
-%   method    - Method for combining the four values to 1 for each pixel
-%       Options:  average, bestsnr, ...
-%
-% Output
-%   sensorCombined - Constructed combination
-%   metadata - Cell array of the four captures, and other metadata about
-%              the selection algorithm.
-%
-% Description
-%   Combine them into a single sensor struct, and return that.  If
-%   requested, return the four individual sensors as a sensor cell
-%   array.
 %
 % See also
-%  s_sensorIMX490Test
-%  sensorCreate('imx490-large') ...
+%  s_sensorIMX490, sensorCreate('imx490-large') ...
 
 %% Read parameters
 varargin= ieParamFormat(varargin);
@@ -119,6 +122,7 @@ imx490Small2 = sensorSet(imx490Small2,'name',sprintf('small-%1dx',gains(4)));
 imx490Small2 = sensorCompute(imx490Small2,oi);
 sensorArray{4} = imx490Small2;
 
+%{
 % Retain the photodetector area and related parameters we might use to
 % make an input referred calculation.
 pdArea1 = sensorGet(imx490Large,'pixel pd area');
@@ -127,9 +131,10 @@ pdArea2 = sensorGet(imx490Small,'pixel pd area');
 % Conversion gain
 cgLarge = sensorGet(imx490Large1,'pixel conversion gain');
 cgSmall = sensorGet(imx490Small1,'pixel conversion gain');
+%}
 
+%% Algorithms for combining the 4 values
 
-%% Different algorithms for combining the 4 values.
 switch ieParamFormat(method)
     case 'average'
         % Combine the input referred volts, exclusing saturated values.
@@ -167,11 +172,13 @@ switch ieParamFormat(method)
 
         % Set the voltage to the mean of the input referred estimates.
         volts = (in1 + in2 + in3 + in4) ./ N;
+        vSwing = sensorGet(imx490Large,'pixel voltage swing');
         volts(isinf(volts)) = 1;
-        volts = sensorGet(imx490Large,'pixel voltage swing') * ieScale(volts,1);
+        volts = vSwing * ieScale(volts,1);
         imx490Large = sensorSet(imx490Large,'volts',volts);
 
-        % Save how many pixels contributed to the value at each pixel.
+        % Save the number of pixels that contribute to the value at
+        % each pixel. 
         imx490Large.metadata.npixels = N;
 
     case 'bestsnr'
@@ -227,70 +234,5 @@ metadata.sensorArray = sensorArray;
 metadata.method = method;
 
 end
-%{
-% And now so that the fov of the two pixel sizes match by the perfect
-% factor of 3.
-rowcol = sensorGet(imx490Small,'size');
-rowcol = ceil(rowcol/3)*3;
-imx490Small = sensorSet(imx490Small,'size',rowcol);
-imx490Large = sensorSet(imx490Large,'size',rowcol/3);
-%}
-
-%% Subsample the small pixel sensor
-%
-% When the sensor is RG/GB and the pixel size ratio is exactly 3:1, we
-% can subsample the small pixels to match the color and spatial scale
-% perfectly.
-
-%{
-% This finds the small pixels that correspond to the large pixel
-% position. The effective pixel size becomes the size of the large
-% pixel. The whole routine only works for the 3:1 ratio.
-pixelSize = sensorGet(imx490Large,'pixel size');
-sSize     = sensorGet(imx490Small,'size');
-
-resample1 = 1:3:sSize(1);
-resample2 = 1:3:sSize(2);
-sSize = sensorGet(imx490Large,'size');
-
-resample1 = resample1(1:sSize(1));
-resample2 = resample2(1:sSize(2));
 
 
-v3 = sensorGet(imx490Small1,'volts');
-v3 = v3(resample1,resample2);
-imx490Small1 = sensorSet(imx490Small1, 'volts', v3);
-
-dv3 = sensorGet(imx490Small1,'dv');
-dv3 = dv3(resample1,resample2);
-imx490Small1 = sensorSet(imx490Small1, 'dv', dv3);
-imx490Small1 = sensorSet(imx490Small1,'pixel size same fill factor',pixelSize);
-
-% Small, high gain
-v4 = sensorGet(imx490Small2,'volts');
-v4 = v4(resample1,resample2);
-imx490Small2 = sensorSet(imx490Small2, 'volts', v4);
-
-dv4 = sensorGet(imx490Small2,'dv');
-dv4 = dv4(resample1,resample2);
-imx490Small2 = sensorSet(imx490Small2, 'dv', dv4);
-imx490Small2 = sensorSet(imx490Small2,'pixel size same fill factor',pixelSize);
-%}
-
-%% Combine data from different sensors 
-
-% The first idea is to input refer the voltages and then combine them.
-% To input refer, we multiple by the ratio of their aperture (3^2) and
-% divide by their gain.
-%
-% To properly input refer, we need to account for the conversion gain.  Or
-% we need to use the 'electrons'
-%{
-e1 = sensorGet(imx490Large1,'electrons')*gains(1);
-e2 = sensorGet(imx490Large2,'electrons')*gains(2);
-e3 = sensorGet(imx490Small1,'electrons')*(pdArea1/pdArea2)*gains(3);
-e4 = sensorGet(imx490Small2,'electrons')*(pdArea1/pdArea2)*gains(4);
-
-% For a uniform scene input, these should all be the same
-% mean2(v1), mean2(v2), mean2(v3), mean2(v4)
-%}

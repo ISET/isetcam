@@ -1,106 +1,168 @@
-%% s_sensorComparison
-%
-% Run the same OI through multiple sensors, just for comparison.  BW
-% used this script to create the sensor images for the Ford
-% presentation.
-%
-% Combines two test charts:  Macbeth and a sweep frequency.
+%% Illustrate the imx490
 %
 %
 
 %%
-ieInit
+ieInit;
 
-%% Make a combined iimage
+%% In this case the volts are 4x but the electrons are equal
+%
+% As it should be, IMHO.
 
-% MCC side
-patchSize = 96;
-sceneC = sceneCreate('macbethD65',patchSize);
-sz = sceneGet(sceneC,'size');
-sceneC = sceneSet(sceneC,'resize',round([sz(1), sz(2)/2]));
-sceneWindow(sceneC);
-
-% Sweep frequency side
-sceneS = sceneCreate('sweep frequency',sz(1),sz(1)/16);
-sceneWindow(sceneS);
-
-% Combine
-scene = sceneCombine(sceneC,sceneS,'direction','horizontal');
-
-hfov = 20;
-scene = sceneSet(scene,'fov',hfov);
-vfov  = sceneGet(scene,'v fov');
-sceneWindow(scene);
-
-%%
+scene = sceneCreate('uniform',256);
 oi = oiCreate;
-oi = oiSet(oi,'optics fnumber',1.2);
-oi = oiCompute(oi,scene);
-oiWindow(oi);
+oi = oiCompute(oi,scene);   % oiWindow(oi);
+oi = oiCrop(oi,'border');
+oi = oiSpatialResample(oi,3e-6);
+[sensor,metadata] = imx490Compute(oi,'method','average','exptime',1/10);
 
-%% Now run through some sensors
+sensorWindow(sensor);
 
-% sensorList = {'bayer-rggb','imx363','rgbw','mt9v024','mt9v024','imec44','cyym','monochrome'};
+%% Show the uniform field responses in case.
 
-% Used for Ford talk
-sensorList = {'imx363','mt9v024','cyym'};
-%sensorList = {'imx363'};
+% Note:  The ratio of electron capture makes sense.  The conversion gain,
+% however, differs so when we plot w.r.t volts the ratios are not as you
+% might naively expect.  The dv values follow volts.
+
+% For the HDR car scene use exptime of 0.1 sec
+sArray = metadata.sensorArray;
+sensorWindow(sArray{1});
+sensorWindow(sArray{2});
+sensorWindow(sArray{3});
+sensorWindow(sArray{4});
+
+%% Various checks.
+e1 = sensorGet(sArray{1},'electrons');
+e2 = sensorGet(sArray{2},'electrons');
+ieNewGraphWin; plot(e1(:),e2(:),'.');
+xlabel('E Sensor 1'); ylabel('E Sensor 2');
+identityLine; grid on;
+
+v1 = sensorGet(sArray{1},'volts');
+v2 = sensorGet(sArray{2},'volts');
+ieNewGraphWin; plot(v1(:),v2(:),'.');
+xlabel('V Sensor 1'); ylabel('V Sensor 2');
+identityLine; grid on;
+
+% e3 is 1/9th the area, so 1/9th the electrons of e1
+e3 = sensorGet(sArray{3},'electrons');
+ieNewGraphWin; plot(e1(:),e3(:),'.');
+xlabel('E Sensor 1'); ylabel('E Sensor 3');
+identityLine; grid on;
+
+dv1 = sensorGet(sArray{1},'dv');
+dv2 = sensorGet(sArray{2},'dv');
+ieNewGraphWin; plot(dv1(:),dv2(:),'.');
+xlabel('DV Sensor 1'); ylabel('DV Sensor 2');
+identityLine; grid on;
 
 
-for ii=1:numel(sensorList)
-    if isequal(sensorList{ii},'mt9v024') 
-        sensor = sensorCreate(sensorList{ii},[],'rccc');
-    else
-        sensor = sensorCreate(sensorList{ii});
-    end
+%% Now try with a complex image
 
-    sensor = sensorSet(sensor,'pixel size',1.5e-6);
-    sensor = sensorSet(sensor,'hfov',hfov,oi);
-    sensor = sensorSet(sensor,'vfov',vfov);
-    sensor = sensorSet(sensor,'auto exposure',true);
-    sensor = sensorCompute(sensor,oi);
-    sensorWindow(sensor);
+load('HDR-02-Brian','scene');
 
-    switch sensorList{ii}
-        case 'imx363'
-            ip = ipCreate('imx363 RGB',sensor);
-            ip = ipCompute(ip,sensor);
-            ipWindow(ip);
-        case 'mt9v024'
-            ip = ipCreate('mt9v024 RCCC', sensor);
-            % NOTE: ipCreate doesn't seem to take its cue from the 
-            %       sensor that it is rccc, so we do it manually
-            ip = ipSet(ip,'demosaic method','analog rccc');
-            ip = ipCompute(ip,sensor);
-            ipWindow(ip);
-    end
+oi = oiCreate;
+oi = oiCompute(oi,scene);   % oiWindow(oi);
+oi = oiCrop(oi,'border');
+oi = oiSpatialResample(oi,3,'um'); % oiWindow(oi);
+oi2 = oiCompute(oi,scene,'crop',true,'pixel size',3e-6);   % oiWindow(oi2);
+oi2 = oiSpatialResample(oi2,3,'um'); % oiWindow(oi);
 
-    sensor = sensorSet(sensor,'pixel size constant fill factor',6e-6);
-    sensor = sensorSet(sensor,'hfov',hfov,oi);
-    sensor = sensorSet(sensor,'vfov',vfov);
-    sensor = sensorSet(sensor,'auto exposure',true);
-    sensor = sensorCompute(sensor,oi);
+[sensor,metadata] = imx490Compute(oi,'method','average',...
+    'exptime',1/10, 'noise flag',0);
 
-    switch sensorList{ii}
-        case 'imx363'
-            ip = ipCreate('imx363 RGB',sensor);
-            ip = ipCompute(ip,sensor);
-            ipWindow(ip);
-        case 'mt9v024'
-            ip = ipCreate('mt9v024 RCCC', sensor);
-            % NOTE: ipCreate doesn't seem to take its cue from the 
-            %       sensor that it is rccc, so we do it manually
-            ip = ipSet(ip,'demosaic method','analog rccc');
-            ip = ipCompute(ip,sensor);
-            ipWindow(ip);
-    end
-    
-    % [~,img] = sensorShowCFA(sensor,[],[3 3]);
-    sensorWindow(sensor);
+% sensorWindow(sensor);
+%{
+  v = sensorGet(sensor,'volts');
+  if min(v(:)) < sensorGet(sensor,'analog offset')
+    disp('Ooops')
+    % It seems we do not always have a voltage > analog offset
+  end 
+%}
+sArray = metadata.sensorArray;
 
+% Note that the electrons match up to voltage saturation
+e1 = sensorGet(sArray{1},'electrons');
+e2 = sensorGet(sArray{2},'electrons');
+ieNewGraphWin; plot(e1(:),e2(:),'.');
+xlabel('E Sensor 1'); ylabel('E Sensor 2');
+identityLine; grid on;
+
+v1 = sensorGet(sArray{1},'volts');
+v2 = sensorGet(sArray{2},'volts');
+
+ieNewGraphWin; 
+plot(v1(:),v2(:),'.'); identityLine; grid on;
+xlabel('V Sensor 1'); ylabel('V Sensor 2');
+identityLine; grid on;
+
+% Change into local/imx490
+% {
+volts = sensorGet(sensor,'volts');
+mesh(volts); set(gca,'zscale','log');
+
+ieNewGraphWin; 
+for ii=1:4
+    srgb = sensorGet(sArray{ii},'rgb');
+    imagesc(srgb); truesize; axis off;
+    fname = ...
+     fullfile(isetRootPath,'local','imx490',sprintf(imx490-%d.png',ii);
+    exportgraphics(gcf,sprintf('imx490-%d.png',ii));   
 end
+srgb = sensorGet(sensor,'rgb');
+imagesc(srgb.^0.3); truesize; axis off
+%}
+
+% exportgraphics(gcf,sprintf('imx490-average.png'));   
+
+%{
+sensorWindow(sensor);
+
+sensorWindow(sArray{1});
+sensorWindow(sArray{2});
+sensorWindow(sArray{3});
+sensorWindow(sArray{4});
+%}
+
+%% Make an ideal form of the image
+
+scene = sceneCreate('uniform',256);
+oi = oiCreate;
+oi = oiCompute(oi,scene);   % oiWindow(oi);
+oi = oiCrop(oi,'border');
+oi = oiSpatialResample(oi, 3,'um');
+oiGet(oi,'size')
+
+% Calculate the imx490 sensor
+sensor = imx490Compute(oi,'method','average','exptime',1/10);
+
+% Could just do an oiGet(oi,'xyz')
+%
+% Or we can create a matched, ideal X,Y,Z sensors that can calculate
+% the XYZ values at each pixel.
+sensorI = sensorCreateIdeal('match xyz',sensor);
+sensorI = sensorCompute(sensorI,oi);
+sensorWindow(sensorI(3));
+sensorGet(sensorI(1),'pixel fill factor')
+
+% The sensor data and the oi data have the same vector length.  Apart from
+% maybe a pixel at one edge or the other, they should be aligned
+%
 
 %%
+[sensor,metadata] = imx490Compute(oi,'method','best snr','exptime',1/3);
 
+%%
+ip = ipCreate;
+ip = ipCompute(ip,sensor);
+ipWindow(ip);
 
+%% For the uniform case, these should be about 4x
+uData1 = sensorPlot(sArray{1},'electrons hline',[55 1]);
+sensorPlot(sArray{2},'electrons hline',[55 1]);
 
+% These are OK.  A factor of 4.
+uData2 = sensorPlot(sArray{3},'electrons hline',[150 1]);
+sensorPlot(sArray{4},'electrons hline',[150 1]);
+
+%% END
