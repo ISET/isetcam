@@ -1,6 +1,6 @@
 # ISETCam
 
-Image systems engineering toolbox (ISET) for cameras (Cam).  ISETCam is the base repository.  It includes the basic routines that are used by other ISET repositories to represent scenes, optics, fundamental calculations for energy, quanta, color, and software utilities. This repository is necessary to run ISETBio and most other ISET repositories (e.g., ISET3D, ISETAuto, ISETLens).
+Image systems engineering toolbox (ISET) for cameras (Cam).  ISETCam is the base repository.  It includes the basic routines that are used by other ISET repositories to represent scenes, optics, fundamental calculations for energy, quanta, color, and software utilities. ISETCam is necessary to run ISETBio and most other ISET repositories (e.g., ISET3D, ISETAuto, ISETLens).
 
 Please see the [ISETCam wiki page](https://github.com/iset/isetcam/wiki) for more information.
 
@@ -10,14 +10,14 @@ This ISETCam distribution originated with a commercial product, ISET from Imagev
 
 ### Software architecture
 
-* May 28, 2024 - Please see the section on optics for an update on how ISETCam now relies on wavefront aberrations, represented by Zernike polynomials, to represent shift-invariant systems.  The new implementation also includes specifications of apertures with non-circular shapes, scratches, and dust particles.
+* May 29, 2024 - Please see the section on optics for an update on how ISETCam now relies on wavefront aberrations, represented by Zernike polynomials, to represent shift-invariant systems.  The new computation includes specifications of apertures with non-circular shapes, scratches, and dust particles.
 * May 29, 2024 - The separation between ISETCam and ISETBio is complete. ISETBio now relies on the scene, optical image and certain other fundamental functions in ISETCam as a base library. Numerical validations have been moved into the ISETValidate repository, and these include separate ISETCam, ISETBio and ISET3d validations.  Extensive regression testing was performed to validate the new code against numerical calculations from the prior code.
 
 ### Models
 
-* February 10, 2024 - We added a model for the split pixel sensor, specifically the Sony IMX490. These are based on the prior implementation of the Sony IMX363 sensor. A script, s_sensorIMX490 and related functions have been added. These methods simulate the split pixel capture and include some means for combining the large and small photodetector data.  The algorithms for combining continue to be developed.  A major point of this sensor is for the high dynamic range imaging, such as nighttime driving.  We added an ISET repository (ISETHdrsensor) that is exploring different HDR sensor technologies, including the split pixel.
 * May 1, 2024 - New functions for creating controlled HDR images have been added (see sceneHDRImages).
 * May 10, 2024 - First example implemented for running a PyTorch network, exported as an ONNX file, inside of Matlab using miniconda and pyenv.  See s_python.m
+* February 10, 2024 - We added a model for the split pixel sensor, specifically the Sony IMX490. These are based on the prior implementation of the Sony IMX363 sensor. A script, s_sensorIMX490 and related functions have been added. These methods simulate the split pixel capture and include some means for combining the large and small photodetector data.  The algorithms for combining continue to be developed.  A major point of this sensor is for the high dynamic range imaging, such as nighttime driving.  We added an ISET repository (ISETHdrsensor) that is exploring different HDR sensor technologies, including the split pixel.
 
 ## Utilities
 
