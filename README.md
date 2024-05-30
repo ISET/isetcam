@@ -1,6 +1,6 @@
 # ISETCam
 
-Image systems engineering toolbox for cameras.  This is the core repository including many basic routines that are used by other ISET repositories.  This repository is necessary to run ISETBio.  It is already necessary for ISET3D, ISETAuto, ISETLens, and others.
+Image systems engineering toolbox (ISET) for cameras (Cam).  ISETCam is the base repository.  It includes the basic routines that are used by other ISET repositories to represent scenes, optics, fundamental calculations for energy, quanta, color, and software utilities. This repository is necessary to run ISETBio and most other ISET repositories (e.g., ISET3D, ISETAuto, ISETLens).
 
 Please see the [ISETCam wiki page](https://github.com/iset/isetcam/wiki) for more information.
 
