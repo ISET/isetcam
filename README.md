@@ -6,3 +6,7 @@ Please see the [ISETCam wiki page](https://github.com/iset/isetcam/wiki) for mor
 
 This ISETCam distribution originated with the commercial product, ISET from Imageval. The ISETCam code and repositories that rely on this code have expanded significantly. For example, it is closely integrated with physically based rendering and graphics in [ISET3D](https://github.com/ISET/iset3d/wiki) and the modeling methods for the human visual encoding in [ISETBio](https://github.com/ISETBIO/ISETBio/wiki).
 
+# Notes
+
+* May 28, 2024 - Please see the section on optics for an update on how ISETCam now calculates shift-invariant systems
+* May 29, 2024 - The separation between ISETCam and ISETBio has been implemented.  There are no longer duplicate functions,  ISETBio now relies on ISETCam as a base library, and validations now rely on the independent ISETValidate repository.  See the ISETBio wiki page for an update on how we performed the validations and regression testing.
