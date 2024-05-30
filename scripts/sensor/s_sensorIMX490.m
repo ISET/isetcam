@@ -68,21 +68,9 @@ oi = oiSpatialResample(oi,3,'um'); % oiWindow(oi);
 oi2 = oiCompute(oi,scene,'crop',true,'pixel size',3e-6);   % oiWindow(oi2);
 oi2 = oiSpatialResample(oi2,3,'um'); % oiWindow(oi);
 
-[sensor,metadata] = imx490Compute(oi,'method','average','exptime',1/10);
-
+[sensor,metadata] = imx490Compute(oi2,'method','average','exptime',1);
 % sensorWindow(sensor);
-%{
-  v = sensorGet(sensor,'volts');
-  if min(v(:)) < sensorGet(sensor,'analog offset')
-    disp('Ooops')
-    % It seems we do not always have a voltage > analog offset
-  end 
- if min(v(:)) < 0
-    disp('Zero oops')
-    % The voltages are always positive, however.  So maybe we are not
-    % adding the offset properly in the calculation.
-  end 
-%}
+
 sArray = metadata.sensorArray;
 
 %% Note that the electrons match up to voltage saturation
@@ -100,24 +88,28 @@ plot(v1(:),v2(:),'.'); identityLine; grid on;
 xlabel('V Sensor 1'); ylabel('V Sensor 2');
 identityLine; grid on;
 
-% Change into local/imx490
-%{
-volts = sensorGet(sensor,'volts');
-mesh(volts); set(gca,'zscale','log');
+%% Save images into local/imx490
+% {
+% volts = sensorGet(sensor,'volts');
+% mesh(volts); set(gca,'zscale','log');
 
 ieNewGraphWin; 
 for ii=1:4
     srgb = sensorGet(sArray{ii},'rgb');
     imagesc(srgb); truesize; axis off;
     fname = ...
-     fullfile(isetRootPath,'local','imx490',sprintf(imx490-%d.png',ii);
-    exportgraphics(gcf,sprintf('imx490-%d.png',ii));   
+        fullfile(isethdrsensorRootPath,'local','imx490',sprintf('imx490-%d.png',ii));
+    exportgraphics(gcf,fname);   
 end
 srgb = sensorGet(sensor,'rgb');
 imagesc(srgb.^0.3); truesize; axis off
+fname = fullfile(isethdrsensorRootPath,'local','imx490',sprintf('imx490-combined.png'));
+exportgraphics(gcf,fname);   
 %}
 
-% exportgraphics(gcf,sprintf('imx490-average.png'));   
+ip = ipCreate;
+ip = ipCompute(ip,sensor);
+ipWindow(ip);
 
 %{
 sensorWindow(sensor);
