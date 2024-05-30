@@ -511,6 +511,10 @@ switch oType
                 % value in sensorCompute. So maybe that should happen.
                 % (BW).
                 vSwing = sensorGet(sensor,'pixel voltage swing');
+                
+                % Delete this after a while.  I don't know what the
+                % criterion should be.
+                assert(min(volts(:)) - ao > -1e-3);                
                 volts = ieClip(volts,ao,vSwing);
 
                 % This is the 'raw' voltage times the conversion gain.
