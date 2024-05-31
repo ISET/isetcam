@@ -68,7 +68,7 @@ oi = oiSpatialResample(oi,3,'um'); % oiWindow(oi);
 oi2 = oiCompute(oi,scene,'crop',true,'pixel size',3e-6);   % oiWindow(oi2);
 oi2 = oiSpatialResample(oi2,3,'um'); % oiWindow(oi);
 
-[sensor,metadata] = imx490Compute(oi2,'method','average','exptime',1);
+[sensor,metadata] = imx490Compute(oi2,'method','average','exptime',1/30);
 % sensorWindow(sensor);
 
 sArray = metadata.sensorArray;
