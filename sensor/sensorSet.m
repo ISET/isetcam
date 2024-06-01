@@ -154,21 +154,17 @@ if ~exist('val','var'),   error('Value field required.'); end
 
 [oType, param] = ieParameterOtype(param);
 
-%% Handle the case of a pixelSet via this sensorSet call.
+%% Handle the case of a pixel parameter via this sensorSet call.
 if isequal(oType,'pixel')
     if isempty(param)
         % oi = oiSet(oi,'optics',optics);
         sensor.pixel = val;
         return;
     else
-        if isempty(varargin), sensor.pixel = pixelSet(sensor.pixel,param,val);
-        elseif length(varargin) == 1
-            sensor.pixel = pixelSet(sensor.pixel,param,val,varargin{1});
-        elseif length(varargin) == 2
-            sensor.pixel = pixelSet(sensor.pixel,param,val,varargin{1},varargin{2});
-        end
-        return;
+        % Not fully tested (June 1 2024).  I think this is how we do it.
+        sensor.pixel = pixelSet(sensor.pixel, param, val, varargin(:));
     end
+    return;
 elseif isempty(param)
     error('oType %s. Empty param.\n',oType);
 end
@@ -573,7 +569,7 @@ switch lower(param)
         % fill factor The size is specified in meters. It is supposed
         % to be a 2-vector, but if a single number is sent in we
         % convert it to a 2-vector.
-        if length(val) == 1, val = [val,val]; end
+        if isscalar(val), val = [val,val]; end
         pixel  = sensorGet(sensor,'pixel');
         pixel  = pixelSet(pixel,'size',val);
         ff     = pixelGet(pixel,'fill factor');

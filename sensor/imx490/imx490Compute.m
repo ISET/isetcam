@@ -240,7 +240,7 @@ nbits = sensorGet(imx490Large,'nbits');
 dv = 2^nbits*ieScale(volts,1);
 imx490Large = sensorSet(imx490Large,'dv',dv);
 
-imx490Large = sensorSet(imx490Large,'name','Combined');
+imx490Large = sensorSet(imx490Large,'name',sprintf('Combined-%s',method));
 
 metadata.sensorArray = sensorArray;
 metadata.method = method;
