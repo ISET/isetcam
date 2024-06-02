@@ -292,7 +292,7 @@ elseif nFilters >= 3 || nSensors > 1
                     error('Unknown quantization method %s\n',qm);
             end
 
-        case {'new','manual matrix entry'}
+        case {'new','manualmatrixentry'}
             % Allow the user to specify a matrix from the GUI. When
             % the complete linear transform is set this way, we cannot
             % parse it into several parts.  We put the whole linear
@@ -385,6 +385,10 @@ elseif nFilters >= 3 || nSensors > 1
             img = img/max(img(:))*sensorGet(sensor,'response ratio');
             img = ieClip(img,0,[]);
 
+        case {'adaptivehdr'}
+            % For the HDR case in which many pixels are saturated
+            %
+            % The idea is to first find the adaptive transformation.
         otherwise
             error('Unknown transform method %s\n',tMethod);
     end

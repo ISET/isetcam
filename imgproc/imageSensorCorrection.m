@@ -1,5 +1,5 @@
 function [img,ip,Tsensor] = imageSensorCorrection(img,ip,sensor)
-% Convert sensor color data (img) to an internal color space
+% Convert sensor color data (img) to an internal color space (ICS)
 %
 % Synopsis
 %   [img,vci,Tsensor] = imageSensorCorrection(img,ip,sensor)
@@ -35,6 +35,14 @@ function [img,ip,Tsensor] = imageSensorCorrection(img,ip,sensor)
 %    color conversion transformation for this step is set to the identity
 %    matrix
 %
+%    {'manual matrix entry'}  - The user is queried and enters a matrix
+%    manually. Other transforms are set to null
+%
+%    {'current matrix'}  - The stored transform matrix in 'prodt' is used.
+%    That should change, IMHO, because it includes the illuminant
+%    correction.  I think this should only apply the current sensor
+%    transform.  Or, perhaps 'current' should never come here at all.
+%
 %    {'mcc optimized'} - We calculate the (predicted) sensor responses to a
 %    Macbeth color checker (MCC) under D65.  Call these P. We also
 %    calculate the lRGB (linear sRGB) display values of the MCC under D65.
@@ -58,8 +66,6 @@ function [img,ip,Tsensor] = imageSensorCorrection(img,ip,sensor)
 %    {'esser optimized'} - As for MCC but using the Esser target. This case
 %      is used for IR data because we have the Esser chart into the IR.
 %
-%    {'manual'}  - The user is queried and enters a matrix manually. Other
-%    methods and transforms are set to null
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 %
@@ -127,7 +133,7 @@ switch param
         % transform alone may not do precisely the same job.
         ip = ipSet(ip,'conversion transform sensor',Tsensor);
         
-    case {'new','manualmatrixentry'}
+    case {'manualmatrixentry','new'}
         
         % User types in a matrix
         Torig = ipGet(ip,'combined transform');
