@@ -489,22 +489,49 @@ switch oType
                 % sensor with a nonunity gain or an offset, the estimated
                 % number of electrons at capture was off.
                 
-                % The sensor compute function:
+                % The sensor compute function applies gain and offset
+                % to the raw voltage like this:
+                %
                 %     volts = (voltsRaw + ao)/ag;
-                % To invert
+                %
+                % Hence, to invert from the stored voltage to the raw,
+                % which is a correct estimate of the number of
+                % electrons and thus also the intensity of the
+                % incident light, we use
+                %
                 %     voltsRaw = volts*ag - ao                
+                %
                 ag = sensorGet(sensor,'analog gain');
                 ao = sensorGet(sensor,'analog offset');
-                cg = pixelGet(pixel,'conversionGain');
-                val = (sensorGet(sensor,'volts')*ag - ao)/cg;
+                volts = double(sensorGet(sensor,'volts'));
+
+                % Maybe clipping should be part of sensorGet for
+                % 'volts'.  The reason we need it, I think, is because
+                % we are probably not clipping properly on the ao
+                % value in sensorCompute. So maybe that should happen.
+                % (BW).
+                vSwing = sensorGet(sensor,'pixel voltage swing');
+                
+                % Delete this after a while.  I don't know what the
+                % criterion should be.
+                assert(min(volts(:)) - ao > -1e-3);                
+                volts = ieClip(volts,ao,vSwing);
+
+                % This is the 'raw' voltage times the conversion gain.
+                cg = pixelGet(pixel,'conversion gain');
+                val = (volts*ag - ao)/cg;
 
                 % Pull out a particular color plane
                 if ~isempty(varargin)
                     val = sensorColorData(val,sensor,varargin{1}); 
                 end
                 
-                % Electrons are integers
+                % Electrons are integers and > 0.  Sometimes because
+                % of noise near zero or the offset, we have a negative
+                % value.
                 val = round(val);
+                val = max(val,0);
+
             case {'electronsperarea'}
                 % sensorGet(sensor,'electrons per area','unit',channel)
                 % sensorGet(sensor,'electrons per area','m',2)

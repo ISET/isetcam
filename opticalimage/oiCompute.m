@@ -155,9 +155,12 @@ end
 
 %% Adjust oi fov if user sends in a pixel size
 if ~isempty(p.Results.pixelsize)
+
+    % This is the pixel size in meters
     pz = p.Results.pixelsize;
     sw = sceneGet(scene, 'cols');
     flengthM = oiGet(oi, 'focal length', 'm');
+
     wAngular = atand(pz*sw/2/flengthM)*2;
     % oi uses scene hFOV later.
     scene = sceneSet(scene, 'wAngular',wAngular);
@@ -200,6 +203,14 @@ oi = oiSet(oi,'depth map',oiPadDepthMap(scene,[],varargin{:}));
 % This crops the photons and the depth map
 if p.Results.crop
     oi = oiCrop(oi,'border');
+end
+
+% Dangerous, introduced June 1, 2024 by BW.
+if p.Results.pixelsize
+    % The pixel size was not always precise.  I added this resample to
+    % force the issue.  Not sure why it wasn't precise above.  Maybe
+    % figuring out how to make that precise would be better.
+    oi = oiSpatialResample(oi,p.Results.pixelsize,'m');
 end
 
 % We need to preserve metadata from the scene,
