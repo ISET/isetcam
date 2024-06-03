@@ -392,12 +392,23 @@ switch parm
             tmp = sceneGet(scene,'photons',wave(ii));
             val(ii) = max(tmp(:));
         end
-    case {'luminancedynamicrange','dynamicrange'}
+    case {'luminancedynamicrangedb','dynamicrangedb'}
         % sceneGet(scene,'luminance dynamic range')
         % Measured in dB (10 log10(max/min))
+        %
+        % June 3 2024.  Changed to linear value
         lum = sceneGet(scene,'luminance');
         if min(lum(:)) > 0
             val = 10*log10(max(lum(:))/min(lum(:)));
+        else,  val = Inf;
+        end
+    case {'luminancedynamicrange','dynamicrange'}
+        % sceneGet(scene,'luminance dynamic range')
+        %
+        % Added as default, June 3 2024.
+        lum = sceneGet(scene,'luminance');
+        if min(lum(:)) > 0
+            val = max(lum(:))/min(lum(:));
         else,  val = Inf;
         end
     case {'peakradianceandwave'}

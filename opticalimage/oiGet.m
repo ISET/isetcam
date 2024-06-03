@@ -73,6 +73,14 @@ function val = oiGet(oi,parm,varargin)
 %  I added 'roi mean photons', and I may add roiphotons, roienergy, and so
 %  forth here in the future, and make the vcGetROIData call here.
 %
+% Illuminance
+%      illuminance              - Map of the illuminance
+%      mean/max/min illuminance - One of these
+%      percentile illuminance   - illuminance percentiles
+%               default percentiles are [0.1 10 50 90 99.9];
+%      illuminance dynamic range    - Linear dynamic range
+%      illuminance dynamic range db - 10 log10 ( linear DR)
+%
 % Wavelength information
 %      {'spectrum'}     - Wavelength information structure
 %        {'binwidth'}   - spacing between samples
@@ -640,12 +648,44 @@ switch oType
                     oi.data.illuminance = oiCalculateIlluminance(oi);
                 end
                 val = max(oi.data.illuminance(:));
+            case {'minilluminance'}
+                % Derived from the illuminance
+                if ~checkfields(oi,'data','illuminance') || isempty(oi.data.illuminance)
+                    oi.data.illuminance = oiCalculateIlluminance(oi);
+                end
+                val = min(oi.data.illuminance(:));
+
             case {'illuminance','illum'}
+                % The whole spatial illuminance map
                 if ~checkfields(oi,'data','illuminance') || isempty(oi.data.illuminance)
                     val = oiCalculateIlluminance(oi);
                 else,    val = oi.data.illuminance;
                 end
-                
+            case {'illuminancedynamicrangedb','dynamicrangedb'}
+                illum = oiGet(oi,'illuminance');
+                if min(illum(:)) > 0
+                    val = 10*log10(max(illum(:))/min(illum(:)));
+                else,  val = Inf;
+                end
+            case {'percentileilluminance','percentilesilluminance'}
+                % Useful for finding and then setting the dynamic range
+                if isempty(varargin)
+                    percentiles = [0.1 10 50 90 99.9];
+                else
+                    assert(isvector(varargin{1}));
+                    percentiles = varargin{1};
+                end
+                illum = oiGet(oi,'illuminance');
+                val.percentiles = percentiles;
+                val.lum = prctile(illum(:),percentiles);
+
+            case {'illuminancedynamicrange','dynamicrange'}
+                % oiGet(oi,'luminance dynamic range')
+                illum = oiGet(oi,'illuminance');
+                if min(illum(:)) > 0
+                    val = max(illum(:))/min(illum(:));
+                else,  val = Inf;
+                end
                 
             case {'xyz','dataxyz'}
                 % oiGet(oi,'xyz');

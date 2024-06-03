@@ -159,15 +159,15 @@ switch format
             'Name',                     char(sceneGet(scene,'name')),                                '';
             'Field of view (hor)',      num2str(sceneGet(scene,'fov')),                              'deg';
             'Field of view (diag)',     num2str(sceneGet(scene,'diagonal field of view')),           'deg';
-            'Rows & columns',            num2str(sceneGet(scene,'size')),                             'samples';
-            'Height & Width',            num2str(sceneGet(scene,'height and width','mm'),precision),  'mm';
-            'Distance',                  num2str(sceneGet(scene,'distance','m'),precision),           'meters';
-            'Angular resolution',        num2str(sceneGet(scene,'angular resolution'),precision),     'deg/samp';
-            'Sample spacing',            num2str(sceneGet(scene,'sample spacing','mm'),precision),    'mm/sample';
+            'Rows & columns',           num2str(sceneGet(scene,'size')),                             'samples';
+            'Height & Width',           num2str(sceneGet(scene,'height and width','mm'),precision),  'mm';
+            'Distance',                 num2str(sceneGet(scene,'distance','m'),precision),           'meters';
+            'Angular resolution',       num2str(sceneGet(scene,'angular resolution'),precision),     'deg/samp';
+            'Sample spacing',           num2str(sceneGet(scene,'sample spacing','mm'),precision),    'mm/sample';
             'Wave - min,max,delta (nm)', num2str(wave), 'nm';
-            'Peak radiance, wave',       sprintf('%e, %.0f',sceneGet(scene,'peakradianceandwave')),   'q/s/sr/m^2, nm';
+            'Peak radiance, wave',      sprintf('%.2e, %.0f',sceneGet(scene,'peakradianceandwave')),   'q/s/sr/m^2, nm';
             'Mean luminance',           num2str(sceneGet(scene,'mean luminance'),precision),         'cd/m^2 (nits)';
-            'Dynamic range',            num2str(sceneGet(scene,'luminance dynamic range')),          'dB';
+            'Dynamic range (linear)',   sprintf('%.2e',sceneGet(scene,'luminance dynamic range')),   'linear';
             'Illuminant name',          sceneGet(scene,'illuminant name'),                           '';
             'Depth range',              num2str(sceneGet(scene,'depth range')),                      'm';
             };
@@ -182,8 +182,8 @@ switch format
             'Samp space (mm/sample)',   num2str(sceneGet(scene,'sample spacing','mm'),precision);
             'Wave (nm)',                num2str(wave);
             'Mean luminance (cd/m^2)',  num2str(sceneGet(scene,'mean luminance'),precision);
+            'Dynamic range (linear)',   sprintf('%.2e',sceneGet(scene,'luminance dynamic range'));
             'Illuminant name',          sceneGet(scene,'illuminant name');
-            'Lum dynamic range',        num2str(sceneGet(scene,'luminance dynamic range'));
             };
     otherwise
         error('Unknown table format %s\n',format);
@@ -213,6 +213,7 @@ switch format
             'Wave (nm)',          num2str(wave), 'nm';
             'Spatial resolution', num2str(oiGet(oi,'spatial resolution','um'),precision),'um/sample';
             'Mean illuminance',   num2str(oiGet(oi,'mean illuminance'),precision),       'lux';
+            'Dynamic range',      num2str(oiGet(oi,'dynamic range'),precision),          'linear';            
             'Area',               num2str(oiGet(oi,'area','mm'),precision),              'mm^2';
             };
         
@@ -236,6 +237,7 @@ switch format
             'Wave (nm)',              num2str(wave);
             'Resolution (um/sample)', num2str(oiGet(oi,'spatial resolution','um'),precision);
             'Mean illuminance (lux)', num2str(oiGet(oi,'mean illuminance'),precision);
+            'Dynamic range',          num2str(oiGet(oi,'dynamic range'),precision);
             'Area (mm^2)',            num2str(oiGet(oi,'area','mm'),precision)';
             };
         
