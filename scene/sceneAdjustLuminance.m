@@ -1,13 +1,15 @@
-function scene = sceneAdjustLuminance(scene,meanL,varargin)
+function scene = sceneAdjustLuminance(scene, method, targetL, varargin)
 % Scale scene luminance
 %
 % Synopsis:
-%   scene = sceneAdjustLuminance(scene,param,val,[roi rect])
+%   scene = sceneAdjustLuminance(scene, method, targetL,[locs or rect])
 %
-% Brief description:
-%   The photon level in the scene structure is multiplied so that the
-%   luminance parameter ('mean', 'peak' or 'roi') is set to val. The
-%   illuminant is also scaled to preserve the reflectance.
+% Brief:
+%   The photon level in the scene structure is scaled so that one of
+%   the luminance distribution parameters ('mean', 'max', 'median',
+%   or 'roi') is set to val.
+%   
+%   The illuminant is also scaled to preserve the reflectance.
 %
 % Inputs
 %   scene:  Scene object
@@ -15,7 +17,11 @@ function scene = sceneAdjustLuminance(scene,meanL,varargin)
 %   val:    Luminance value on return
 %
 % Output
-%   scene
+%   scene:  Adjusted scene
+%
+% Description
+%    We scale the photons in the scene to set a particular parameter
+%    (mean, peak, median, or ROI) to a specified luminance level.
 %
 % ieExamplesPrint('sceneAdjustLuminance');
 %
@@ -31,12 +37,13 @@ function scene = sceneAdjustLuminance(scene,meanL,varargin)
 %{
   scene = sceneCreate;
   scene = sceneAdjustLuminance(scene,'peak',200);
-  sceneGet(scene,'mean luminance')
+  sceneGet(scene,'max luminance')
 %}
 %{
   scene = sceneCreate;
   rect = [0 0 100 100];
   scene = sceneAdjustLuminance(scene,'roi',200,rect);
+  sceneGet(scene,'roi mean luminance',rect)
 %}
 %{
   % For backwards compatibility, we still allow setting the mean level as
@@ -46,9 +53,11 @@ function scene = sceneAdjustLuminance(scene,meanL,varargin)
   sceneGet(scene,'mean luminance')
 %}
 
-%% Verify that current luminance exists, or calculate it
-if isnumeric(meanL), method = 'mean'; targetL = meanL;
-else,                method = meanL; targetL = varargin{1};
+%% For backwards compatibility 
+
+if isnumeric(method)
+    targetL = method; 
+    method = 'mean'; 
 end
 
 %% Saves a lot of time.  This makes the calculation single precision.
@@ -61,21 +70,26 @@ switch method
             photons   = photons*(targetL/currentL);
         catch ME
             % Probably the data are too big for memory.  So scale the photons
-            % one waveband at a time.
+            % one waveband at a time.  I don't think this happens, so
+            % I want a warning when it does.
+            warning('Data too big for memory.  One wave at a time.')
             nWave = sceneGet(scene,'wave');
             for ii=1:nWave
                 photons(:,:,ii) = photons(:,:,ii)*(targetL/currentL);
             end
         end
-    case 'peak'
+    case {'max','peak'}
         % Let's hope we are past the age of running out of memory
+        currentL = sceneGet(scene,'max luminance');
+        photons = photons*(targetL/currentL);
+    case 'median'
+        % The median is the 50th percentile
         luminance = sceneGet(scene,'luminance');
-        currentL = max(luminance(:));
-        clear luminance;
+        currentL = median(luminance(:));
         photons = photons*(targetL/currentL);
     case {'roi','crop'}
-        % The roi can be a locs or rect
-        roi = varargin{2};
+        % If roi, then the user had to send in locs or rect
+        roi = varargin{1};
         currentL = sceneGet(scene, 'roi mean luminance', roi);
         try
             photons = photons*(targetL/currentL);

@@ -61,18 +61,19 @@ function val = sceneGet(scene,parm,varargin)
 %        'mean photons spd' - mean spd in photon units
 %
 % Luminance information
-%        'dynamic range'    - luminance dynamic range
-%        'max/min/mean luminance' - Each one of these
-%        'percentile luminance'   - Luminance level at different
-%           percentiles
+%        'dynamic range'                 - luminance dynamic range
+%        'max/min/mean/median luminance' - Each one of these
+%        'percentile luminance'          - Luminance level at different
+%                                          percentiles
 %
 % The roi can be specified as either Nx2 locations or as a 4-vector of
 % [row,col,height,width].  Returned values are the mean over the roi.
 %
-%        'roi photons'      - spd of the points in a region of interest
-%                               The region can be a rect or xy locs
-%        'roi energy'      - as above, but energy
-%        'roi reflectance' - as above, but reflectance
+%        'roi photons'            - spd of points in a region of interest                                     
+%        'roi energy'             - as above, but energy
+%        'roi reflectance'        - as above, but reflectance
+%        'roi luminance'          - as above, but luminance
+%        'roi mean luminance'     - mean luminance in the roi
 %        'roi mean energy'        - energy spd averaged within a region of interest
 %        'roi mean photons'       - photons spd averaged within in a region of interest
 %        'roi mean reflectance'   - reflectance spd averaged within in a region of interest
@@ -377,7 +378,7 @@ switch parm
         val = sceneGet(scene,'roi reflectance', roiLocs);
         val = mean(val,1);
         
-    case {'peakradiance'}
+    case {'maxradiance','peakradiance'}
         % p = sceneGet(scene,'peakRadiance',500);
         % p = sceneGet(scene,'peakRadiance');
         % Return the peak radiance at a list of wavelengths.  If no
@@ -512,6 +513,10 @@ switch parm
         lum = sceneGet(scene,'luminance');
         val = double(min(lum(:)));
 
+    case {'medianluminance'}
+        lum = sceneGet(scene,'luminance');
+        val = double(median(lum(:)));
+        
     case {'percentileluminance','percentilesluminance'}
         % Useful for finding and then setting the dynamic range
         if isempty(varargin)
