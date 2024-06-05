@@ -436,7 +436,7 @@ switch oType
                 if isempty(v)
                     % This can happen if we only have digital values
                     dv = sensorGet(sensor,'dv');
-                    sm = sensorGet(sensor,'max digital value');
+                    sm = double(sensorGet(sensor,'max digital value'));
 
                     % dv might be uint16 or some such.  We force the
                     % return to be a double.
