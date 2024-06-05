@@ -399,21 +399,28 @@ switch format
             'Rows, Columns, Primaries', num2str(fix(ipGet(ip,'result size'))), '';
             'Demosaic',            ipGet(ip,'demosaic method'),                '';
             'Sensor conversion',   ipGet(ip,'sensor conversion method'),       '';
-            'Illuminant correction',  ipGet(ip,'illuminant correction method'),   '';
+            'Internal color space', ipGet(ip,'internal color space'),          '';
+            'Illuminant correction',  ipGet(ip,'illuminant correction method'),'';
+            '--------------------', '---------------------', '-------------------';
             'Display name',        ipGet(ip,'display name'),                   '';
             'Display dpi',         num2str(ipGet(ip,'display dpi')),           'dots per inch';
-            'Display bits',        nbits,                                      'bits'
-            '--------------------', '-----------------------', '-------------------';
+            'Display bits',        sprintf('%d',ipGet(ip,'nbits')),            'bits'
             };
         
     case 'embed'
         precision = 3;
         
         data = {
-            'name',                ipGet(ip,'name');
-            'row, col, primaries', num2str(fix(ipGet(ip,'result size')));
-            'display name',        ipGet(ip,'display name');
-            'n bits',              nbits;               
+            'Name',                ipGet(ip,'name');
+            'Row, col, primaries', num2str(fix(ipGet(ip,'result size')));
+            'Demosaic',            ipGet(ip,'demosaic method');
+            'Sensor conversion',   ipGet(ip,'sensor conversion method');
+            'Internal color space', ipGet(ip,'internal color space');
+            'Illuminant correction',  ipGet(ip,'illuminant correction method');
+            '--------------------', '---------------------';
+            'Display name',        ipGet(ip,'display name');
+            'Display dpi',         num2str(ipGet(ip,'display dpi'));
+            'Display bits',        sprintf('%d',ipGet(ip,'nbits')),;               
             };
     otherwise
         error('Unknown table format %s\n',format);

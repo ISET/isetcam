@@ -57,10 +57,12 @@ p = inputParser;
 p.addRequired('ip',@(x)(isstruct(x) && isequal(x.type,'vcimage')));
 p.addParameter('saturation',[],@isscalar);
 p.addParameter('hdrlevel',0.95,@isscalar);
+p.addParameter('wgtblur',1,@isscalar);
 p.parse(ip,varargin{:});
 
 hdrLevel = p.Results.hdrlevel;
 saturation = p.Results.saturation;
+wgtBlur = p.Results.wgtblur;
 
 %%
 input = ipGet(ip,'input');
@@ -83,6 +85,15 @@ end
 %}
 wgts = (input/saturation - hdrLevel) / (1-hdrLevel);
 wgts = ieClip(wgts,0,1);
+
+% We blur the weights a little because of the Bayer mosaic. We have
+% had cases where the green is saturated, but the adjacen red or blue
+% is not. Such weights can have a regular pattern that is not
+% desirable.
+%
+% Maybe the size/std should be a parameter.
+g = fspecial("gaussian",5,wgtBlur);
+wgts = conv2(wgts,g,'same');
 
 % Have a look prior
 %  ipWindow(ip);
