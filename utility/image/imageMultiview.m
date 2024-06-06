@@ -70,7 +70,7 @@ end
 if singlewindow
     if numel(selectedObjs) > 3
         rWin = ceil(sqrt(numel(selectedObjs)));
-        cWin = rWin;
+        cWin = ceil(numel(selectedObjs)/rWin);
         fType = 'upper left';
     else
         rWin = numel(selectedObjs);
