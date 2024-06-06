@@ -5,14 +5,12 @@ function selectedObjs = imageMultiview(objType, selectedObjs, singlewindow, app)
 %   selectedObjs = imageMultiview(objType, [selectedObjs], [singlewindow], [app])
 %
 % Description:
-%    This routine lets the user compare the images side by side, rather
-%    than flipping through them in the GUI window.
-%
-%    Examples are located within the code. To access the examples, type
-%    'edit imageMultiview.m' into the Command Window.
+%    Compares rendered images side by side, rather than flipping
+%    through them in the GUI window.
 %
 % Inputs:
-%    objType      - Which window (scene, oi, or vcimage)
+%    objType      - Which window (scene, opticalimage, or vcimage).
+%                   Sensor is not supported.
 %
 % Optional
 %    selectedObjs - Indices of the selected objects, e.g.,
@@ -26,6 +24,8 @@ function selectedObjs = imageMultiview(objType, selectedObjs, singlewindow, app)
 %
 % Optional key/value pairs:
 %    None.
+%
+% ieExamplesPrint('imageMultiview');
 %
 % See Also:
 %    imageMontage
