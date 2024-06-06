@@ -11,13 +11,12 @@ function selectedObjs = imageMultiview(objType, selectedObjs, singlewindow, app)
 % Inputs:
 %    objType      - Which window (scene, opticalimage, or vcimage).
 %                   Sensor is not supported.
-%
-% Optional
 %    selectedObjs - Indices of the selected objects, e.g.,
 %                   [1 3 5]. Default is all of the objects in ObjList.
 %    singlewindow - Plot all of the images in the same window in subplots
 %                   (true), or in different windows (false). Default is
 %                   false.
+%    app          - App designer, the relevant app
 %
 % Outputs:
 %    selectedObjs - The selected objects
@@ -114,7 +113,7 @@ for ii = selectedObjs
             
         case 'OPTICALIMAGE'
             oiW.figure1 = thisFig;  % Not sure why this is here.
-            renderFlag = sceneGet(objList{ii},'render flag index');
+            renderFlag = oiGet(objList{ii},'render flag index');
             oiShowImage(objList{ii}, renderFlag, gam,oiW);
             t =sprintf('OI %d - %s', ii, oiGet(objList{ii}, 'name'));
             

@@ -2,7 +2,7 @@ function rgb = oiShowImage(oi,renderFlag,gam,oiW,titleString)
 % Render an image of the oi data
 %
 % Synopsis
-%    rgb = oiShowImage(oi,renderFlag,gam,oiW)
+%    rgb = oiShowImage(oi,renderFlag,gam,oiW,titleString)
 %
 % Inputs
 %  oi:   Optical image
@@ -13,6 +13,8 @@ function rgb = oiShowImage(oi,renderFlag,gam,oiW,titleString)
 %     = +/- 4,   clip highlights (Set top 0.05 percent of pixels to max)
 %     = -5,      clip Highlights aggresively -- 5% (sb parameter instead)
 %  gam: Set display gamma parameter
+%  oiW:
+%  titleString
 %
 % Examples:
 %   oiShowImage(oi);
