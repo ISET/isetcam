@@ -393,7 +393,7 @@ switch parm
             tmp = sceneGet(scene,'photons',wave(ii));
             val(ii) = max(tmp(:));
         end
-    case {'luminancedynamicrangedb','dynamicrangedb'}
+    case {'dynamicrangelog10','luminancedynamicrangedb','dynamicrangedb'}
         % sceneGet(scene,'luminance dynamic range')
         % Measured in dB (10 log10(max/min))
         %
