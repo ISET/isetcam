@@ -54,7 +54,7 @@ if ~iscell(in1)
     % Two scenes.  Add them.
 
     %% Get the photons and do the right thing
-    p = sceneGet(in1,'photons');
+    photons = sceneGet(in1,'photons');
     s = sceneGet(in2,'photons');
     nWave = sceneGet(in2,'nwave');
 
@@ -62,12 +62,12 @@ if ~iscell(in1)
         case 'add'
             % Just add
             % Add p and s and return that as the photons in scene1
-            sceneOut = sceneSet(in1,'photons',p+s);
+            sceneOut = sceneSet(in1,'photons',photons+s);
         case 'average'
             % for combining scenes from different exposure times
             % without making them artificially high intensity
             % Add p and s and return that as the photons in scene1
-            sceneOut = sceneSet(in1,'photons',(p+s)/2);
+            sceneOut = sceneSet(in1,'photons',(photons+s)/2);
         case 'removespatialmean'
             % Remove the mean of scene2 before adding to scene1
             % This effectively adds the contrast of scene2 to scene1.
@@ -75,7 +75,7 @@ if ~iscell(in1)
                 s(:,:,ww) = s(:,:,ww) - mean(mean(s(:,:,ww)));
             end
             % Add p and s and return that as the photons in scene1
-            sceneOut = sceneSet(in1,'photons',p+s);
+            sceneOut = sceneSet(in1,'photons',photons+s);
         otherwise
             error('Unknown addFlag %s',addFlag)
     end
@@ -88,12 +88,12 @@ else
     wgts = in2;                       % Weights
     assert(length(wgts) == nScenes);
 
-    p = wgts(1)*sceneGet(in1{1},'photons');
+    photons = wgts(1)*sceneGet(in1{1},'photons');
 
     switch addFlag
         case 'add'
             for ss=2:nScenes
-                p = p + wgts(ss)*sceneGet(in1{ss},'photons');
+                photons = photons + wgts(ss)*sceneGet(in1{ss},'photons');
             end
         case 'average' 
             totalPhotons = 0;
@@ -101,19 +101,19 @@ else
                 totalPhotons = totalPhotons + sceneGet(in1{jj},'photons');
             end
             averagePhotons = totalPhotons/nScenes;
-            p = averagePhotons;
+            photons = averagePhotons;
         case 'removespatialmean'
             for ss=2:nScenes
                 s = sceneGet(in1{ss},'photons');
                 for ww=1:nWave
                     s(:,:,ww) = s(:,:,ww) - mean(mean(s(:,:,ww)));
                 end
-                p = p + wgts(ss)*s;
+                photons = photons + wgts(ss)*s;
             end
         otherwise
             error('Unknown addFlag %s',addFlag)
     end
-    sceneOut = sceneSet(in1{1},'photons',p);
+    sceneOut = sceneSet(in1{1},'photons',photons);
 end
 
 end
