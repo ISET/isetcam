@@ -75,7 +75,7 @@ function [uData, g] = sensorPlot(sensor, ptype, roilocs, varargin)
   scene = sceneCreate; camera = cameraCreate;
   camera = cameraCompute(camera,scene);
   sensor = cameraGet(camera,'sensor');
-  % sensorWindow(sensor);
+  sensorWindow(sensor);
   sensorPlot(sensor,'electrons hline',[1 19]);
 %}
 %{
