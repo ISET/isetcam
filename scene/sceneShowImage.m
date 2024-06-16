@@ -9,16 +9,10 @@ function rgb = sceneShowImage(scene,renderFlag,gam,app)
 %  rendering depends on the displayFlag.
 %
 % Inputs
-%  scene:
-%  renderFlag:
-%     absolute value of 0,1 return sRGB image
-%     absolute value of 2,  compute gray scale for IR
-%     absolute value of 3,  HDR rendering method
-%     absolute value of 4,  return lRGB image (NYI)
-%
+%  scene:       Scene with spectral radiance data
+%  renderFlag:  See imageSPD header for description of these options.
 %     If renderFlag is negative, do not display, just render the values
-%     into the returned rgb variable.
-%
+%     into the returned rgb variable. Values 
 %  gam:    The gamma value for the rendering, applied after the rendering.
 %  app:    sceneWindow_App class object, or a fig, or 0 (equiv to
 %          renderFlag <= 0)

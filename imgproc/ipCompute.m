@@ -14,6 +14,8 @@ function ip = ipCompute(ip,sensor,varargin)
 %
 % Optional key/val:
 %   hdr white:  Apply hdr bright light whitening at the end
+%   hdr level:  The signal level for saturation (default: max data)
+%   wgt blur:   How much to blur the hdr weight map (default: 2)
 %
 % Output:
 %   ip:      The ip now has the processed data stored in it
@@ -64,13 +66,17 @@ varargin = ieParamFormat(varargin);
 p = inputParser;
 p.addRequired('ip',@(x)(isstruct(x) && isequal(x.type,'vcimage')));
 p.addRequired('sensor',@(x)(isstruct(x) && isequal(x.type,'sensor')))
+p.addParameter('saturation',[],@isscalar);   % ipHDRWhite parameters
 p.addParameter('hdrwhite',false,@islogical);
-p.addParameter('hdrlevel',0.95,@isscalar);
+p.addParameter('hdrlevel',.95,@isscalar);
+p.addParameter('wgtblur',1,@isscalar);
 
 p.parse(ip,sensor,varargin{:});
 
 hdrWhite = p.Results.hdrwhite;
 hdrLevel = p.Results.hdrlevel;
+wgtBlur  = p.Results.wgtblur;
+saturation = p.Results.saturation;
 
 %% Handle sensor array case.  No special exposure cases are handled.
 
@@ -160,13 +166,21 @@ end
 ip = ipSet(ip,'name',sensorGet(sensor,'name'));
 
 if hdrWhite
-    switch dataType
-        case 'volts'
-            saturation = sensorGet(sensor,'max voltage');
-        case 'dv'
-            saturation = sensorGet(sensor,'max digital value');
+    if isempty(saturation)
+        switch dataType
+            case 'volts'
+                saturation = sensorGet(sensor,'max voltage');
+            case 'dv'
+                saturation = sensorGet(sensor,'max digital value');
+        end
     end
-    ip = ipHDRWhite(ip,'hdr level',hdrLevel, 'saturation',saturation);
+
+    % Specifies all the key/val parameters.
+    %
+    % hdrLevel   - the fraction of the saturation level we start to act    
+    % saturation - the saturation level
+    % wgtBlur    - The blur size for the derived weight map.    
+    ip = ipHDRWhite(ip,'hdr level', hdrLevel, 'saturation',saturation,'wgt blur',wgtBlur);
 end
 
 end

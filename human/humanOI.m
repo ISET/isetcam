@@ -1,5 +1,8 @@
 function oi = humanOI(scene, oi)
-% Calculate human optical retinal irradiance from scene description
+% Deprecated: human optical retinal irradiance from scene description
+%
+% We used this for years, but we have moved on to ISETBio and oiCreate
+% methods.
 %
 % Syntax:
 %   oi = humanOI(scene, oi)
@@ -22,6 +25,9 @@ function oi = humanOI(scene, oi)
 % Optional key/value pairs:
 %    None.
 %
+% ieExamp
+% See also
+%   oiCreate('wvf human');
 
 % History:
 %    xx/xx/05       Copyright ImagEval Consultants, LLC, 2005
@@ -30,9 +36,10 @@ function oi = humanOI(scene, oi)
 
 % Examples:
 %{
-    oi = oiCreate('human');
-    scene = sceneCreate();
-    oi = humanOI(scene, oi)
+% ETTBSkip
+oi = oiCreate('human');
+scene = sceneCreate();
+oi = humanOI(scene, oi)
 %}
 
 if notDefined('scene'), error('Scene required.'); end

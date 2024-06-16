@@ -5,27 +5,26 @@ function selectedObjs = imageMultiview(objType, selectedObjs, singlewindow, app)
 %   selectedObjs = imageMultiview(objType, [selectedObjs], [singlewindow], [app])
 %
 % Description:
-%    This routine lets the user compare the images side by side, rather
-%    than flipping through them in the GUI window.
-%
-%    Examples are located within the code. To access the examples, type
-%    'edit imageMultiview.m' into the Command Window.
+%    Compares rendered images side by side, rather than flipping
+%    through them in the GUI window.
 %
 % Inputs:
-%    objType      - Which window (scene, oi, or vcimage)
-%
-% Optional
+%    objType      - Which window (scene, opticalimage, or vcimage).
+%                   Sensor is not supported.
 %    selectedObjs - Indices of the selected objects, e.g.,
 %                   [1 3 5]. Default is all of the objects in ObjList.
 %    singlewindow - Plot all of the images in the same window in subplots
 %                   (true), or in different windows (false). Default is
 %                   false.
+%    app          - App designer, the relevant app
 %
 % Outputs:
 %    selectedObjs - The selected objects
 %
 % Optional key/value pairs:
 %    None.
+%
+% ieExamplesPrint('imageMultiview');
 %
 % See Also:
 %    imageMontage
@@ -71,7 +70,7 @@ end
 if singlewindow
     if numel(selectedObjs) > 3
         rWin = ceil(sqrt(numel(selectedObjs)));
-        cWin = rWin;
+        cWin = ceil(numel(selectedObjs)/rWin);
         fType = 'upper left';
     else
         rWin = numel(selectedObjs);
@@ -114,7 +113,7 @@ for ii = selectedObjs
             
         case 'OPTICALIMAGE'
             oiW.figure1 = thisFig;  % Not sure why this is here.
-            renderFlag = sceneGet(objList{ii},'render flag index');
+            renderFlag = oiGet(objList{ii},'render flag index');
             oiShowImage(objList{ii}, renderFlag, gam,oiW);
             t =sprintf('OI %d - %s', ii, oiGet(objList{ii}, 'name'));
             

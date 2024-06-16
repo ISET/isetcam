@@ -115,11 +115,12 @@ function [val, type] = sensorGet(sensor,param,varargin)
 %                          'linear'.  For the 'log' type, we convert
 %                          the pixel voltage by log10() on return.
 %
-%      'quantization}   -  Quantization structre
-%        'nbits'                - number of bits in quantization method
-%        'max output'            -
-%        'quantization lut'
-%        'quantization method'
+%      'quantization'   -  Quantization structure
+%        'nbits'        - number of bits in quantization method
+%        'max voltage'  - max voltage
+%        'max digital'  - 2^nbits
+%        'quantization lut'    - If there is a LUT
+%        'quantization method' - 'analog','linear','sqrt'
 %      'zero level'    - The expected level to a black image
 %
 % Sensor color filter array and related color properties
@@ -435,7 +436,7 @@ switch oType
                 if isempty(v)
                     % This can happen if we only have digital values
                     dv = sensorGet(sensor,'dv');
-                    sm = sensorGet(sensor,'max digital value');
+                    sm = double(sensorGet(sensor,'max digital value'));
 
                     % dv might be uint16 or some such.  We force the
                     % return to be a double.
@@ -760,16 +761,20 @@ switch oType
                 val = sensor.quantization;
             case {'nbits','bits'}
                 if checkfields(sensor,'quantization','bits'), val = sensor.quantization.bits; end
-            case {'max','maxoutput','maxvoltage'}
+            case {'maxvoltage','max','maxoutput'}
                 % sensorGet(sensor,'max voltage')
                 pixel = sensorGet(sensor,'pixel');
                 val   = pixelGet(pixel,'voltageswing');
-            case {'maxdigitalvalue'}
+            case {'maxdigital','maxdigitalvalue'}
                 % sensorGet(sensor,'max digital value')
                 nbits = sensorGet(sensor,'nbits');
-                if isempty(nbits), return
-                else, val = 2^nbits;
-                end
+                if isempty(nbits), return; end
+
+                % ipCompute always removes the zerolevel as part of
+                % the input.  So the biggest value we can have is
+                % this.
+                zeroLevel = sensorGet(sensor,'zero level');
+                val = 2^nbits - zeroLevel;                
                 
             case {'lut','quantizationlut'}
                 if checkfields(sensor,'quantization','lut'), val = sensor.quantization.lut; end
