@@ -262,7 +262,7 @@ switch param
         end
         ip.render.renderflag = val;
         app = ieSessionGet('ip window');
-        if ~isempty(app)
+        if isvalid(app)
             app.popupRender.Value = app.popupRender.Items{val};
             app.refresh(ip);
         end
