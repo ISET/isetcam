@@ -262,9 +262,11 @@ switch param
         end
         ip.render.renderflag = val;
         app = ieSessionGet('ip window');
-        if ~isempty(app)
+        try
             app.popupRender.Value = app.popupRender.Items{val};
             app.refresh(ip);
+        catch
+            % Handle isn't valid.  Move on.
         end
 
     case {'rendermethod','renderingmethod','customrendermethod'}

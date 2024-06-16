@@ -47,10 +47,6 @@ function img = imageShowImage(ip,gam,trueSizeFlag,app)
 % Render Flag:  Gray scale
 % Render Flag:  Clip highlights
 %
-% Examples:
-%   imageShowImage(vci{3},1/2.2)
-%   imageShowImage(vci{3})
-%
 % Copyright ImagEval Consultants, LLC, 2003.
 %
 % See also:
