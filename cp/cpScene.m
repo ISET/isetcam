@@ -128,6 +128,7 @@ classdef cpScene < handle
                 options.apertureDiameter {mustBeNumeric} = [];
                 options.verbose {mustBeNumeric} = 0; % squash output by default
                 options.useActiveCameraMotion = true;
+                options.allowsObjectMotion = false;
                 options.thisD = [];
             end
             obj.resolution = options.resolution;
@@ -281,11 +282,16 @@ classdef cpScene < handle
 
                     % process object motion if allowed
                     if obj.allowsObjectMotion
-                        for ii = 1:numel(obj.objectMotion)
-                            ourMotion = obj.objectMotion{ii};
+                        for ii = 1:numel(obj.objectMotion.transform)
+                            ourMotion = obj.objectMotion.transform{ii};
                             if ~isempty(ourMotion{1})
-                                obj.thisR.set('asset', ourMotion{1}, 'motion', 'translation', ourMotion{2});
-                                obj.thisR.set('asset', ourMotion{1}, 'motion', 'rotation', ourMotion{3});
+                                %obj.thisR.set('asset', ourMotion{1}, 'motion', 'translation', ourMotion{2});
+                                %obj.thisR.set('asset', ourMotion{1}, 'motion', 'rotation', ourMotion{3});
+
+                                piAssetSet(obj.thisR, ourMotion{1}, 'motion', []);         
+                                piAssetMotionAdd(obj.thisR,ourMotion{1}, ...
+                                    'translation', ourMotion{2}, 'rotation', ourMotion{3});
+                            
                             end
                             %thisR.set('asset', bunnyName, 'translation', [moveX, moveY, moveZ]);
 
@@ -324,9 +330,13 @@ classdef cpScene < handle
                         % render a frame, as we might need to render subsequent
                         % frames
                         obj.thisR.set('shutteropen', sTime);
+                        % Try deliberately setting active transform times
+                        % But the transforms are per second so maybe 0 to
+                        % 1?
+                        obj.thisR.set('transformtimesstart',sTime);
                         sTime = sTime + max(.001, obj.expTimes(ii));
                         obj.thisR.set('shutterclose', sTime);
-
+                        obj.thisR.set('transformtimesend',sTime);
 
                         % process camera motion if allowed
                         % We do this per frame because we want to

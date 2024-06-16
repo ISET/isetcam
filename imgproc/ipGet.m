@@ -148,13 +148,13 @@ switch oType
         
         % If there is no L3, return empty
         if isfield(ip,'L3'), L3 = ip.L3;
-        else return;
+        else, return;
         end
         
         % Either return L3 or the L3 param
         if isempty(oParam), val = L3;
         elseif   isempty(varargin), val = L3Get(L3,oParam);
-        else     val = L3Get(L3,oParam,varargin{1});
+        else,    val = L3Get(L3,oParam,varargin{1});
         end
         
     otherwise
@@ -172,7 +172,7 @@ switch oType
             case {'binwidth','waveresolution'}
                 wave = ipGet(ip,'wave');
                 if length(wave) > 1, val = wave(2) - wave(1);
-                else val = 1;
+                else, val = 1;
                 end
             case {'nwave','nwaves'}
                 val = length(ipGet(ip,'wave'));
@@ -269,6 +269,12 @@ switch oType
             case {'renderstructure','render'}
                 % Structure
                 if checkfields(ip,'render'), val = ip.render; end
+            case {'renderflag'}
+                % Interpretations
+                % 1 -> rgb, 2 -> hdr, 3 -> gray
+                if checkfields(ip,'render','renderflag')
+                    val = ip.render.renderflag; 
+                end
             case {'renderscale','scaledisplay','scaledisplayoutput'}
                 % Returns a scale factor to apply to display output
                 if checkfields(ip,'render','scale')
@@ -286,7 +292,6 @@ switch oType
                     else
                         val = 0;
                     end
-                    % Could be ipSet()
                     ip.render.scale = val;
                 end
                 
@@ -381,17 +386,18 @@ switch oType
                 
                 % Result and display are mixed up together here.
                 % We should decide which to use
-            case {'datadisplay','dataintensities','rgbintensities','result','results'}
-                % ipGet(ip,'result')
+            case {'lineardisplayrgb','datadisplay','result','results'}
+                % ipGet(ip,'linear display rgb')
                 %
                 % Deleted aliases:
-                %   'dataresult','quantizedresult'
+                %   'dataresult','quantizedresult',
+                %   'dataintensities','rgbintensities'
                 %
-                % The values are the linear intensities of the ip
-                % display primaries that show the illuminant corrected
-                % ICS data. The primary linear intensities are values
-                % between 0 and 1 (off to maximum intensity).  They
-                % may have been quantized, but in that range.
+                % The values are the linear intensities of the ip display
+                % primaries that show the illuminant corrected ICS data.
+                % The primary linear intensities are values between 0 and 1
+                % (off to maximum intensity).  They may have been
+                % quantized, but in that range.
                 %
                 % We use imageShowImage to convert these data into an
                 % sRGB image that the user is shown on their screen in
@@ -450,20 +456,13 @@ switch oType
                 % result data.
                 ip = ipSet(ip,'scale display output',true);
                 val = imageShowImage(ip,[],[],0);
-            %{    
-            case {'displayprimary1','resultred','resultprimary1','reddata','datared'}
-                val = ip.data.result(:,:,1);
-            case {'displayprimary2','resultgreen','resultprimary2','greendata','datagreen'}
-                val = ip.data.result(:,:,2);
-            case {'displayprimary3','resultblue','resultprimary3','bluedata','datablue'}
-                val = ip.data.result(:,:,3);
-            %}
+
             case {'dataintensity','resultprimary','resultprimaryn'}
                 % A single display channel
                 % redPrimary = ipGet(ip,resultprimary,1);
                 %
                 % p4 = ipGet(ip,resultprimary,4);
-                if length(varargin) == 1, n = varargin{1};
+                if isscalar(varargin), n = varargin{1};
                 else, errordlg('You must specify a primary number.')
                 end
                 if size(ip.data.result,3) >= n
@@ -546,7 +545,7 @@ switch oType
                 %   longest - Longest not saturated
                 %   Others to come, I hope
                 if checkfields(ip,'combinationMethod'), val = ip.combineExposures;
-                else val = 'longest';
+                else, val = 'longest';
                 end
                 
             case {'l3'}

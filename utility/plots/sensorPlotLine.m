@@ -153,6 +153,9 @@ for ii=1:nColors
     xMin = min(xMin,min(pixPos{ii}));
 end
 
+% Sanity check.
+if mx == 0, error('Sensor data are all zeros or NaNs.'); end
+
 for ii=1:nColors
     % Build the subplot panels using the appropriate colors.
     subplot(nColors,1,ii);

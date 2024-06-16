@@ -59,15 +59,21 @@ function val = sceneGet(scene,parm,varargin)
 %        'energy'           - radiance data (energy)
 %        'mean energy spd'  - mean spd in energy units
 %        'mean photons spd' - mean spd in photon units
-%        'dynamic range'    - luminance dynamic range
 %
-%    The roi can be specified as either Nx2 locations or as a 4-vector of
-%    [row,col,height,width].  Returned values are the mean over the roi.
+% Luminance information
+%        'dynamic range'                 - luminance dynamic range
+%        'max/min/mean/median luminance' - Each one of these
+%        'percentile luminance'          - Luminance level at different
+%                                          percentiles
 %
-%        'roi photons'      - spd of the points in a region of interest
-%                               The region can be a rect or xy locs
-%        'roi energy'      - as above, but energy
-%        'roi reflectance' - as above, but reflectance
+% The roi can be specified as either Nx2 locations or as a 4-vector of
+% [row,col,height,width].  Returned values are the mean over the roi.
+%
+%        'roi photons'            - spd of points in a region of interest                                     
+%        'roi energy'             - as above, but energy
+%        'roi reflectance'        - as above, but reflectance
+%        'roi luminance'          - as above, but luminance
+%        'roi mean luminance'     - mean luminance in the roi
 %        'roi mean energy'        - energy spd averaged within a region of interest
 %        'roi mean photons'       - photons spd averaged within in a region of interest
 %        'roi mean reflectance'   - reflectance spd averaged within in a region of interest
@@ -253,7 +259,7 @@ switch parm
     case 'data'
         % sceneGet(scene,'data');
         % The whole data structure is returned.
-        if checkfields(scene,'data'), val = scene.data; end;
+        if checkfields(scene,'data'), val = scene.data; end
         
     case {'photons'}
         % sceneGet(scene,'photons',[wavelength]); Returns radiance (photon)
@@ -372,7 +378,7 @@ switch parm
         val = sceneGet(scene,'roi reflectance', roiLocs);
         val = mean(val,1);
         
-    case {'peakradiance'}
+    case {'maxradiance','peakradiance'}
         % p = sceneGet(scene,'peakRadiance',500);
         % p = sceneGet(scene,'peakRadiance');
         % Return the peak radiance at a list of wavelengths.  If no
@@ -387,12 +393,23 @@ switch parm
             tmp = sceneGet(scene,'photons',wave(ii));
             val(ii) = max(tmp(:));
         end
-    case {'luminancedynamicrange','dynamicrange'}
+    case {'dynamicrangelog10','luminancedynamicrangedb','dynamicrangedb'}
         % sceneGet(scene,'luminance dynamic range')
         % Measured in dB (10 log10(max/min))
+        %
+        % June 3 2024.  Changed to linear value
         lum = sceneGet(scene,'luminance');
         if min(lum(:)) > 0
             val = 10*log10(max(lum(:))/min(lum(:)));
+        else,  val = Inf;
+        end
+    case {'luminancedynamicrange','dynamicrange'}
+        % sceneGet(scene,'luminance dynamic range')
+        %
+        % Added as default, June 3 2024.
+        lum = sceneGet(scene,'luminance');
+        if min(lum(:)) > 0
+            val = max(lum(:))/min(lum(:));
         else,  val = Inf;
         end
     case {'peakradianceandwave'}
@@ -419,7 +436,7 @@ switch parm
         % Considering eliminating the 64 option (double precision)
         if checkfields(scene,'data','bitDepth')
             val = scene.data.bitDepth;
-        else val = 32;
+        else, val = 32;
         end
         
     case 'energy'
@@ -429,13 +446,13 @@ switch parm
             % Save memory using direct access.
             % val = sceneGet(scene,'photons');
             wave = sceneGet(scene,'wave');
-            [XW,r,c,w] = RGB2XWFormat(scene.data.photons); %#ok<NASGU>
+            [XW,r,c] = RGB2XWFormat(scene.data.photons); 
             val = Quanta2Energy(wave,XW);
             val = XW2RGBFormat(val,r,c);
         else
             thisWave = varargin{1};  % Only one wavelength, not a list yet
             val = sceneGet(scene,'photons',thisWave);
-            [XW,r,c,w] = RGB2XWFormat(val); %#ok<NASGU>
+            [XW,r,c] = RGB2XWFormat(val);
             val = Quanta2Energy(thisWave,XW);
             val = XW2RGBFormat(val,r,c);
         end
@@ -457,7 +474,7 @@ switch parm
         % sceneGet(scene,'roi mean energy', roi)
         % Return the mean energy spd in a region of interest
         if isempty(varargin), error('ROI required')
-        else roiLocs = varargin{1};
+        else, roiLocs = varargin{1};
         end
         val = sceneGet(scene,'roi energy', roiLocs);
         val = mean(val,1);
@@ -472,7 +489,7 @@ switch parm
         % sceneGet(scene,'roi mean photons', roi)
         % Return the mean photon spd in a region of interest
         if isempty(varargin), error('ROI required')
-        else roiLocs = varargin{1};
+        else, roiLocs = varargin{1};
         end
         val = sceneGet(scene,'roi photons', roiLocs);
         val = mean(val,1);
@@ -492,6 +509,26 @@ switch parm
         lum = sceneGet(scene,'luminance');
         val = double(max(lum(:)));
         
+    case {'minluminance'}
+        lum = sceneGet(scene,'luminance');
+        val = double(min(lum(:)));
+
+    case {'medianluminance'}
+        lum = sceneGet(scene,'luminance');
+        val = double(median(lum(:)));
+        
+    case {'percentileluminance','percentilesluminance'}
+        % Useful for finding and then setting the dynamic range
+        if isempty(varargin)
+            percentiles = [0.1 10 50 90 99.9];
+        else
+            assert(isvector(varargin{1}));
+            percentiles = varargin{1};
+        end
+        lum = sceneGet(scene,'luminance');
+        val.percentiles = percentiles;
+        val.lum = prctile(lum(:),percentiles);
+
     case {'luminanceimage','luminance'}
         % sceneGet(scene,'luminance image');
         if ~checkfields(scene,'data','luminance') || isempty(scene.data.luminance)
@@ -554,7 +591,7 @@ switch parm
         % integration ranges.
         wave = sceneGet(scene,'wave');
         if length(wave) > 1, val = wave(2) - wave(1);
-        else val = 1;
+        else, val = 1;
         end
     case {'wave','wavelength'}
         % Always a column vector, even if people stick it in the wrong way.
@@ -670,7 +707,7 @@ switch parm
         % val = sceneGet(scene,'frequencyResolution','mm');
         % val = sceneGet(scene,'frequencyResolution','cpd');
         if isempty(varargin), units = 'cyclesPerDegree';
-        else units = varargin{1};
+        else, units = varargin{1};
         end
         val = sceneFrequencySupport(scene,units);
     case {'maxfrequencyresolution','maxfreqres'}
@@ -680,7 +717,7 @@ switch parm
         % you can get cycles/{meters,mm,microns}
         %
         if isempty(varargin), units = 'cyclesPerDegree';
-        else units = varargin{1};
+        else, units = varargin{1};
         end
         % val = sceneFrequencySupport(scene,units);
         if isempty(varargin), units = []; end
@@ -689,7 +726,7 @@ switch parm
     case {'frequencysupport','fsupportxy','fsupport2d','fsupport'}
         % val = sceneGet(scene,'frequencyResolution',units);
         if isempty(varargin), units = 'cyclesPerDegree';
-        else units = varargin{1};
+        else, units = varargin{1};
         end
         fResolution = sceneGet(scene,'frequencyresolution',units);
         [xSupport, ySupport] = meshgrid(fResolution.fx,fResolution.fy);
@@ -697,14 +734,14 @@ switch parm
     case {'frequencysupportcol','fsupportx'}
         % val = sceneGet(scene,'frequencyResolution',units);
         if isempty(varargin), units = 'cyclesPerDegree';
-        else units = varargin{1};
+        else, units = varargin{1};
         end
         fResolution = sceneGet(scene,'frequencyresolution',units);
         l=find(abs(fResolution.fx) == 0); val = fResolution.fx(l:end);
     case {'frequencysupportrow','fsupporty'}
         % val = sceneGet(scene,'frequencyResolution',units);
         if isempty(varargin), units = 'cyclesPerDegree';
-        else units = varargin{1};
+        else, units = varargin{1};
         end
         fResolution = sceneGet(scene,'frequencyresolution',units);
         l=find(abs(fResolution.fy) == 0); val = fResolution.fy(l:end);
@@ -725,7 +762,7 @@ switch parm
         
         il = sceneGet(scene,'illuminant');
         if isempty(il), disp('No scene illuminant.'); return;
-        else            val = illuminantGet(il,'illuminant format');
+        else,           val = illuminantGet(il,'illuminant format');
         end
         
     case {'illuminantphotons'}
@@ -742,7 +779,7 @@ switch parm
         % If spectral, then just the illuminant data in a c
         %
         if isempty(varargin), error('ROI required');
-        else roi = varargin{1};
+        else, roi = varargin{1};
         end
         val = vcGetROIData(scene,roi,'illuminant photons');
         
@@ -750,7 +787,7 @@ switch parm
         % sceneGet(scene,'roi mean illuminant photons', roi)
         % Return the mean illuminant photon spd in a region of interest
         if isempty(varargin), error('ROI required')
-        else roiLocs = varargin{1};
+        else, roiLocs = varargin{1};
         end
         val = sceneGet(scene,'roi illuminant photons', roiLocs);
         val = mean(val,1);

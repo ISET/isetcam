@@ -88,7 +88,8 @@ ip = ipSet(ip,'conversion method sensor ','MCC optimized');
 
 %% Rendering assumptions
 
-ip = ipSet(ip,'scaleDisplay',1);
+ip = ipSet(ip,'scaleDisplay',1);    % Scale to fill up the sRGB space
+ip = ipSet(ip,'renderflag','rgb');  % sRGB is standard.  hdr and gray options
 
 % ip = ipSet(ip,'mccRectHandles',[]);
 

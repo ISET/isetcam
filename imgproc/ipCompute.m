@@ -1,8 +1,8 @@
-function ip = ipCompute(ip,sensor)
+function ip = ipCompute(ip,sensor,varargin)
 % Image processing pipeline from image sensor to a display
 %
 % Synopsis
-%    ip = ipCompute(ip,sensor);
+%    ip = ipCompute(ip,sensor,varargin);
 %
 % Brief description
 %   The image processing pipeline (ip) converts  sensor data (sensor) into
@@ -11,6 +11,11 @@ function ip = ipCompute(ip,sensor)
 % Inputs:
 %   ip:      The image processor struct
 %   sensor:  The sensor struct
+%
+% Optional key/val:
+%   hdr white:  Apply hdr bright light whitening at the end
+%   hdr level:  The signal level for saturation (default: max data)
+%   wgt blur:   How much to blur the hdr weight map (default: 2)
 %
 % Output:
 %   ip:      The ip now has the processed data stored in it
@@ -55,14 +60,23 @@ function ip = ipCompute(ip,sensor)
 % See also
 %   ipWindow, ipPlot
 
+%% Parse arguments
+varargin = ieParamFormat(varargin);
 
-%% Check arguments
-if ~exist('ip','var') || isempty(ip)
-    error('Image process structure is required.');
-end
-if ~exist('sensor','var') || isempty(sensor) % need to make sure it has at least one!
-    error('Sensor structure is required.');
-end
+p = inputParser;
+p.addRequired('ip',@(x)(isstruct(x) && isequal(x.type,'vcimage')));
+p.addRequired('sensor',@(x)(isstruct(x) && isequal(x.type,'sensor')))
+p.addParameter('saturation',[],@isscalar);   % ipHDRWhite parameters
+p.addParameter('hdrwhite',false,@islogical);
+p.addParameter('hdrlevel',.95,@isscalar);
+p.addParameter('wgtblur',1,@isscalar);
+
+p.parse(ip,sensor,varargin{:});
+
+hdrWhite = p.Results.hdrwhite;
+hdrLevel = p.Results.hdrlevel;
+wgtBlur  = p.Results.wgtblur;
+saturation = p.Results.saturation;
 
 %% Handle sensor array case.  No special exposure cases are handled.
 
@@ -85,17 +99,18 @@ end
 %% Process the sensor data.
 
 % Store the sensor mosaic.  Either continuous or digital values.
-[output, type] = sensorGet(sensor,'dv or volts');
+[output, dataType] = sensorGet(sensor,'dv or volts');
 ip = ipSet(ip,'input',double(output));
 
 %  The max is either the max digital value or the voltage swing, depending
 %  on whether we have computed DVs or Volts.  But this value is not
 %  terribly important because we render into an RGB display in the unit
 %  cube.
-if isequal(type, 'dv')
-    ip = ipSet(ip,'datamax',sensorGet(sensor(1),'max digital value'));
-else
-    ip = ipSet(ip,'datamax',sensorGet(sensor(1),'max voltage'));
+switch dataType
+    case 'dv'
+        ip = ipSet(ip,'datamax',sensorGet(sensor(1),'max digital value'));
+    case 'volts'
+        ip = ipSet(ip,'datamax',sensorGet(sensor(1),'max voltage'));
 end
 
 %% Pre-process multiple exposure cases
@@ -149,6 +164,24 @@ end
 
 % Name the ip with its input sensor name
 ip = ipSet(ip,'name',sensorGet(sensor,'name'));
+
+if hdrWhite
+    if isempty(saturation)
+        switch dataType
+            case 'volts'
+                saturation = sensorGet(sensor,'max voltage');
+            case 'dv'
+                saturation = sensorGet(sensor,'max digital value');
+        end
+    end
+
+    % Specifies all the key/val parameters.
+    %
+    % hdrLevel   - the fraction of the saturation level we start to act    
+    % saturation - the saturation level
+    % wgtBlur    - The blur size for the derived weight map.    
+    ip = ipHDRWhite(ip,'hdr level', hdrLevel, 'saturation',saturation,'wgt blur',wgtBlur);
+end
 
 end
 
@@ -292,7 +325,7 @@ elseif nFilters >= 3 || nSensors > 1
                     error('Unknown quantization method %s\n',qm);
             end
 
-        case {'new','manual matrix entry'}
+        case {'new','manualmatrixentry'}
             % Allow the user to specify a matrix from the GUI. When
             % the complete linear transform is set this way, we cannot
             % parse it into several parts.  We put the whole linear
@@ -385,6 +418,10 @@ elseif nFilters >= 3 || nSensors > 1
             img = img/max(img(:))*sensorGet(sensor,'response ratio');
             img = ieClip(img,0,[]);
 
+        case {'adaptivehdr'}
+            % For the HDR case in which many pixels are saturated
+            %
+            % The idea is to first find the adaptive transformation.
         otherwise
             error('Unknown transform method %s\n',tMethod);
     end

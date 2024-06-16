@@ -66,6 +66,8 @@ function [conePsf, coneSceFraction] = wvfComputeConePSF(wvf)
 % Optional key/value pairs:
 %    None.
 %
+%  ieExamplesOne('wvfComputeConePSF')
+%
 % See Also:
 %    wvfGet, wvfComputePSF, conePsfInfoCreate, conePsfInfoGet
 %
@@ -86,33 +88,37 @@ function [conePsf, coneSceFraction] = wvfComputeConePSF(wvf)
 
 % Examples:
 %{
-    % Compute cone weighted PSFs using default parameters for conePsfInfo.
-    wvf = wvfCreate('wave', 400:10:700);
-    wvf = wvfSet(wvf,'lcaMethod','human');
-    wvf = wvfCompute(wvf);
-    [cPSF, cSceFrac] = wvfComputeConePSF(wvf);
+% ETTBSkip
 
-    % Should get the answer using the wvfGet call.
-    cPSF1 = wvfGet(wvf, 'conepsf');
-    if (any(cPSF(:) ~= cPSF1(:)))
-       fprintf('Oops. Call to wvfComputeConePSF does not match wvfGet\n');
-    end
+% Requires ISETBio WlsToS ...
 
-    % Look at how blurry that S cone PSF is, even for the diffraction
-    % limited case!
-    figure;
-    clf;
-    hold on
-    [m, n, k] = size(cPSF);
-    plot(cPSF(floor(m / 2) + 1, :, 1) ...
-        / max(cPSF(floor(m / 2) + 1, :, 1)), 'r', 'LineWidth', 3);
-    plot(cPSF(floor(m / 2) + 1, :, 2) ...
-        / max(cPSF(floor(m / 2) + 1, :, 2)), 'g', 'LineWidth', 2);
-    plot(cPSF(floor(m / 2) + 1, :, 3) ...
-        / max(cPSF(floor(m / 2) + 1, :, 3)), 'b', 'LineWidth', 1);
-    xlim([0 201]);
-    xlabel('Position (arbitrary units');
-    ylabel('Cone PSF');
+% Compute cone weighted PSFs using default parameters for conePsfInfo.
+wvf = wvfCreate('wave', 400:10:700);
+wvf = wvfSet(wvf,'lcaMethod','human');
+wvf = wvfCompute(wvf);
+[cPSF, cSceFrac] = wvfComputeConePSF(wvf);
+
+% Should get the answer using the wvfGet call.
+cPSF1 = wvfGet(wvf, 'conepsf');
+if (any(cPSF(:) ~= cPSF1(:)))
+    fprintf('Oops. Call to wvfComputeConePSF does not match wvfGet\n');
+end
+
+% Look at how blurry that S cone PSF is, even for the diffraction
+% limited case!
+figure;
+clf;
+hold on
+[m, n, k] = size(cPSF);
+plot(cPSF(floor(m / 2) + 1, :, 1) ...
+    / max(cPSF(floor(m / 2) + 1, :, 1)), 'r', 'LineWidth', 3);
+plot(cPSF(floor(m / 2) + 1, :, 2) ...
+    / max(cPSF(floor(m / 2) + 1, :, 2)), 'g', 'LineWidth', 2);
+plot(cPSF(floor(m / 2) + 1, :, 3) ...
+    / max(cPSF(floor(m / 2) + 1, :, 3)), 'b', 'LineWidth', 1);
+xlim([0 201]);
+xlabel('Position (arbitrary units');
+ylabel('Cone PSF');
 %}
 
 %% Get wavelengths
