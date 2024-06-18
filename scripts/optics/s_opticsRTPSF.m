@@ -11,9 +11,11 @@
 %
 % The illuminance computed the two ways is then compared.
 %
-% See also:  oiCompute, imageMultiview
-%
 % Copyright ImagEval Consultants, LLC, 2008
+%
+% See also:  
+%   oiCompute, imageMultiview
+%
 
 %%
 ieInit
