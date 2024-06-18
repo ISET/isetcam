@@ -11,13 +11,16 @@ ieSessionSet('init clear',false);
 ieInit;
 
 %% One scripts sub directory at a time
-% str = 'optics';    % Which directory
-% tDir = {str};
+str = 'oi';    % Which directory
+tDir = {str};
 
+%{
 % All at once
 tDir = {'camera','code','color','display','gui',...
     'image','introduction','metrics','oi','optics',...
     'printing','scene','sensor'};
+%}
+
 maxHeight = 512;
 maxWidth  = 512;
 
