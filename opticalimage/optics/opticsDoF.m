@@ -1,21 +1,29 @@
 function dof = opticsDoF(optics,oDist,cocDiam)
 % Depth of field for a thin lens
 %
-% The depth of field formula from Wikipedia is
+% Synopsis
+%    dof = opticsDoF(optics,oDist,cocDiam)
+%
+% Brief
+%  The depth of field formula from Wikipedia is
 %
 %    DOF = (2 f/# C U^2)/ FocalLength^2
 %
 % Here is the wikipedia article:  https://en.wikipedia.org/wiki/Depth_of_field
 %
-% The lengths are in meters
+% Input
+%   optics   - Optics struct
+%   oDist   - In focus distance (meters)
+%   cocDiam - Circle of confusion you are willing to tolerate (meters, default 10 um)
 %
-% The calculation is based on finding two points on either side of the in
-% focus distance that have an equal circle of confusion.  See opticsCoC and
-% s_opticsCoC.
+% Output
+%   dof - Depth of field in meters
+%
+% Description
+%  The calculation is based on finding two points on either side of
+%  the in focus distance that have an equal circle of confusion.  See
+%  opticsCoC and s_opticsCoC.
 % 
-% We are checking that this DOF formula matches the calculation in
-% opticsCOC. That will be tested in the scripts s_opticsDoF and s_opticsCoC
-%
 % See also
 %  opticsCoC, s_opticsDoF, s_opticsCoc
 

@@ -12,12 +12,13 @@ ieInit;
 
 %% One scripts sub directory at a time
 saveDir = pwd;
-
+%{
 % All at once
 sDir = {'color','data','display','gui','human','image',...
     'metrics','oi','optics','scene','sensor','utility'};
+%}
 % Or pick a subset
-% sDir = {'optics','scene'};
+sDir = {'optics'};
 maxHeight = 512;
 maxWidth  = 512;
 
