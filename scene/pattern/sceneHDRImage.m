@@ -51,7 +51,7 @@ nPatches = 10; drange = 2;
 scene = sceneHDRImage(nPatches,'background','','dynamic range',drange);  
 %}
 %{
-nPatches = 5; drange = 2; 
+nPatches = 1; drange = 2; 
 scene = sceneHDRImage(nPatches,'patch shape','circle');  
 %}
 %%
