@@ -649,18 +649,21 @@ switch parm
         
         % ----- Diffraction limited parameters
     case {'dlfsupport','dlfsupportmatrix'}
-        % This seems like a problem.  Two return formats?  f support
-        % depends on wavelength?  Oh boy. (BW).
+        % This is the frequency support -Nyquist:Nyquist for a
+        % diffraction limited optics model.  The Nyquist is also
+        % called the incoherent cutoff frequency.
         %
-        % Two different return formats.  Either
+        % Two different return formats.  
+        %
         %  val{1} and val{2} as vectors, or
         %  val  = fSupport(:,:,:);
+        %
         % opticsGet(optics,'dl fsupport',wave,unit,nSamp)
         % opticsGet(optics,'dl fsupport matrix',wave,unit,nSamp)
         %
         % Diffraction limited frequency support at a wavelength (i.e.
-        % support out to the incoherent cutoff frequency).  This can be
-        % used for plotting, for example.
+        % support out to the incoherent cutoff frequency).  This can
+        % be used for plotting, for example.
         
         if length(varargin) < 1, error('Must specify wavelength'); else, thisWave = varargin{1}; end
         if length(varargin) < 2, units = 'mm'; else, units = varargin{2}; end
@@ -686,9 +689,11 @@ switch parm
         end
         
     case {'incoherentcutoffspatialfrequency','incutfreq','incutoff'}
+        % Cutoff spatial frequency for a diffraction limited lens. 
+        % Incoherent light.
+        %
+        % See formulae in dlCore.m
         % cycles/distance
-        % Cutoff spatial frequency for a diffraction limited lens.  See
-        % formulae in dlCore.m
         apertureDiameter = opticsGet(optics,'aperturediameter');
 
         % Should this be the focal length (i.e., an object distance of
@@ -701,10 +706,11 @@ switch parm
         % choose a sample set.
         if isempty(wavelength), wavelength = (400:10:700)*10^-9; end
         
-        % See dlCore.m for a description of the formula.  We divide by the
-        % scale factor, instead of multiplying, because these are
-        % frequencies (1/m), not distances.
+        % See dlCore.m. 
+        % We divide by the scale factor, instead of multiplying,
+        % because these are frequencies (1/m), not distances.
         val = (apertureDiameter / imageDistance) ./ wavelength;
+
         if ~isempty(varargin), val = val/ieUnitScaleFactor(varargin{1}); end
         
     case {'maxincoherentcutoffspatialfrequency','maxincutfreq','maxincutoff'}
