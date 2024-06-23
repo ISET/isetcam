@@ -57,7 +57,7 @@ inPSF = psfCenter(inPSF);
 if (n ~= m), error('Input must be a square matrix'); end
 nLinearPixels = n;
 [peakRow, peakCol] = psfFindPeak(inPSF);
-radiusMat = MakeRadiusMat(nLinearPixels, nLinearPixels, peakCol, peakRow);
+radiusMat = ieRadialMatrix(nLinearPixels, nLinearPixels, peakCol, peakRow);
 
 % Find the criterion radius
 maxRadius = max(radiusMat(:));

@@ -37,6 +37,8 @@ function [coneAvgCriterionRadius, coneCriterionRadii, wvfPOut] = ...
 % Optional key/value pairs
 %     None.
 %
+% ieExamplesOne('wvfComputeConeAverageCriterionRadius')
+%
 % See also:
 %     wfvGet, conePsfInfoGet, wvfComputeOptimizedConePsf
 
@@ -46,26 +48,29 @@ function [coneAvgCriterionRadius, coneCriterionRadii, wvfPOut] = ...
 
 % Examples:
 %{
-    % Compute cone weighted PSFs using default parameters for conePsfInfo.
-    wvf = wvfCreate('wave', 400:10:700);
+% ETTBSkip
+%
+% Requires ISETBio.  Might also be out of date.
+% Compute cone weighted PSFs using default parameters for conePsfInfo.
+wvf = wvfCreate('wave', 400:10:700);
 
-    % Compute with no defocus.  Note that wvfCompute is called
-    % inside of wvfComputeConeAverageCriterionRadius, so we don't
-    % need to call it in advance.  But since wvf isn't returned,
-    % you would have to call it if you wanted to use wvf at this
-    % level of the code.
-    defocusDiopters = 0;
-    criterionFraction = 0.5;
-    [coneAvgCriterionRadius, coneCriterionRadii] = ...
-        wvfComputeConeAverageCriterionRadius(wvf, ...
-        defocusDiopters, criterionFraction)
+% Compute with no defocus.  Note that wvfCompute is called
+% inside of wvfComputeConeAverageCriterionRadius, so we don't
+% need to call it in advance.  But since wvf isn't returned,
+% you would have to call it if you wanted to use wvf at this
+% level of the code.
+defocusDiopters = 0;
+criterionFraction = 0.5;
+[coneAvgCriterionRadius, coneCriterionRadii] = ...
+    wvfComputeConeAverageCriterionRadius(wvf, ...
+    defocusDiopters, criterionFraction)
 
-    % And with one diopter
-    defocusDiopters = 1;
-    criterionFraction = 0.5;
-    [coneAvgCriterionRadius, coneCriterionRadii] = ...
-        wvfComputeConeAverageCriterionRadius(wvf, ...
-        defocusDiopters, criterionFraction)
+% And with one diopter
+defocusDiopters = 1;
+criterionFraction = 0.5;
+[coneAvgCriterionRadius, coneCriterionRadii] = ...
+    wvfComputeConeAverageCriterionRadius(wvf, ...
+    defocusDiopters, criterionFraction)
 %}
 
 % Set defocus
@@ -89,7 +94,7 @@ coneAvgCriterionRadius = 0;
 for j = 1:nCones
     coneCriterionRadii(j) = ...
         psfFindCriterionRadius(conePSF(:, :, j), criterionFraction);
-    
+
     coneAvgCriterionRadius = ...
         coneAvgCriterionRadius + coneWeighting(j)*coneCriterionRadii(j);
 end

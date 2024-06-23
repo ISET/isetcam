@@ -1,22 +1,25 @@
-% Depth of field for a thin lens with a known focal length and aperture.
+% s_opticsDoF
+% 
+% Calculate the depth of field for a thin lens with a known focal
+% length and aperture.
 %
 % The depth of field formula from Wikipedia is
 %
 %    DOF = (2 f/# C U^2)/ FocalLength^2
 %
-% Here is the wikipedia article:  https://en.wikipedia.org/wiki/Depth_of_field
+% https://en.wikipedia.org/wiki/Depth_of_field
 %
 % It is also possible to calculate the DOF by using the opticsCoC
-% calculation. We do both calculations here.  You can try varying the 
+% calculation. We do both calculations here. 
 %
 % See also
 %  s_opticsCoC
 %
-
 % The circle of confusion calculation has a wonderful history
-%
 % http://en.wikipedia.org/wiki/Circle_of_confusion#Determining_a_circle_of_confusion_diameter_from_the_object_field
 %
+% See also
+%   s_opticsCoC
 
 %%
 ieInit
@@ -50,6 +53,7 @@ thisLine = line([0 5],[cocDiam,cocDiam]);
 thisLine.Color = 'k';
 thisLine.LineStyle = '--';
 xlabel('Object distance (m)'); ylabel('CoC diameter (m)');
+drawnow;
 
 %% Calculating depth of field from CoC
 
@@ -78,10 +82,13 @@ for ii=1:numel(oDist)
     end
 end
 
-ieNewGraphWin; imagesc(fnumber,oDist,dof); 
-grid on; colormap(hot); colorbar; axis xy;
-ylabel('Object distance (m)'); xlabel('F#'); zlabel('DOF (m)');
+%% Log DoF, as a mesh
 
+ieNewGraphWin; 
+imagesc(fnumber,oDist,log10(dof)); 
+ylabel('Object distance (m)'); xlabel('F#'); zlabel('DOF (m)');
+title('Log_{10} Depth of Field (m)'); 
+grid on; colormap(jet); colorbar; axis xy;
 
 %%
 

@@ -247,6 +247,28 @@ switch param
         % Manage image rendering
     case {'render','renderstructure'}  % This is the entire render structure.
         ip.render = val;
+    case {'renderflag','displaymode'}
+        % ipSet(ip,'display mode','hdr');
+        % Also refreshes the app when it is present.
+        switch ieParamFormat(val)
+            case {'rgb',1}
+                val = 1;
+            case {'hdr',2}
+                val = 2;
+            case {'gray',3}
+                val = 3;
+            otherwise
+                fprintf('Permissible display modes: rgb, hdr, gray\n');
+        end
+        ip.render.renderflag = val;
+        app = ieSessionGet('ip window');
+        try
+            app.popupRender.Value = app.popupRender.Items{val};
+            app.refresh(ip);
+        catch
+            % Handle isn't valid.  Move on.
+        end
+
     case {'rendermethod','renderingmethod','customrendermethod'}
         ip.render.method = val;
     case {'renderdemosaiconly'}

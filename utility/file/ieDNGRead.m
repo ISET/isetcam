@@ -91,12 +91,37 @@ else
         error('Cannot find file %s',fname);
     end
 
-    if rgbflag
+    if rgbflag       
         img = imread(fullFile);
     else
         % Raw mosaic will be returned.  This is the default.
+        % If the file name has spaces in it, dcrawRead gets unhappy.
+        % Test for that.  Then fix it.
         img = dcrawRead(fullFile);
     end
 end
+
+
+% Depending on the orientation, should we rotate the data?
+%{
+      switch ieInfo.orientation
+       case 1
+        % Counter clockwise 90 deg
+        % R G
+        % G B
+       case 3
+        % Clockwise 90 deg
+        % B G
+        % G R
+       case 6
+        % Upright
+        % G R
+        % B G
+       case 8
+        % Inverted
+      otherwise
+        error('Unknown Orientation value');
+     end
+%}
 
 end

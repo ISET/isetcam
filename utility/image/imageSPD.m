@@ -14,7 +14,7 @@ function rgb = imageSPD(spd,wList,gam,row,col,displayFlag,xcoords,ycoords,thisW)
 % row,col:  The image size (needed when the data are in XW format)
 %
 % displayFlag: (if value is 0 or negative, don't display)
-%     = 0, +/- 1 compute RGB image
+%     = 0, +/- 1 compute sRGB image
 %     = +/- 2,   compute gray scale for IR
 %     = +/- 3,   use HDR method (hdrRender.m)
 %     = +/- 4,   clip highlights (Set top 0.05 percent of pixels to max)

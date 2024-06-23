@@ -71,26 +71,19 @@ function oi = wvf2oi(wvf,varargin)
 
 % Examples:
 %{
-    wvf = wvfCreate;
-    wvf = wvfCompute(wvf);
-    oi = wvf2oi(wvf);
-    oiPlot(oi, 'psf550');
+wvf = wvfCreate;
+wvf = wvfCompute(wvf);
+oi = wvf2oi(wvf);
+oiPlot(oi, 'psf550');
 %}
 %{
-    wvf = wvfCreate('wave', [400 550 700]');
-    wvf = wvfSet(wvf, 'zcoeff', 1, 'defocus');
-	wvf = wvfCompute(wvf);
-    oi = wvf2oi(wvf);
-    oiPlot(oi, 'psf550');
+wvf = wvfCreate('wave', [400 550 700]');
+wvf = wvfSet(wvf, 'zcoeff', 1, 'defocus');
+wvf = wvfCompute(wvf);
+oi = wvf2oi(wvf);
+oiPlot(oi, 'psf550');
 %}
-%{
-    wvf = wvfCreate;
-    wvf = wvfCompute(wvf);
-    oi = wvf2oi(wvf,'human lens',true);
-    scene = sceneCreate;
-    oi = oiCompute(oi,scene);
-    oiWindow(oi);
-%}
+
 
 %% Set up parameters
 varargin = ieParamFormat(varargin);

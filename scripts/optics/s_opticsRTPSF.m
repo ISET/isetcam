@@ -1,9 +1,9 @@
 %% The ray trace point spread function (PSF)
 %
-% The *ray trace* optics calculation is illustrated with a point
-% array scene. The scene with a set of points is transformed to
-% an optical image using ray trace methods based on the
-% aspherical, 2mm lens computed in Zemax.
+% The ray trace optics calculation is illustrated with a point array
+% scene. The scene with a set of points is transformed to an optical
+% image using ray trace methods based on the aspherical, 2mm lens
+% computed in Zemax.
 %
 % The scene is also transformed using diffraction limited methods
 % (shift-invariant).  The f# and focal length of the diffraction
@@ -11,9 +11,11 @@
 %
 % The illuminance computed the two ways is then compared.
 %
-% See also:  oiCompute, imageMultiview
-%
 % Copyright ImagEval Consultants, LLC, 2008
+%
+% See also:  
+%   oiCompute, imageMultiview
+%
 
 %%
 ieInit

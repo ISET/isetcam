@@ -15,16 +15,17 @@ function [ip, wgts] = ipHDRWhite(ip,varargin)
 % Key/val:
 %   saturation: The saturation level in the 'input' field.  This
 %               depends on whether the input is in digital values or volts
-%
 %   hdr level:  What fraction of saturation starts the scaling towards
 %               white.  For scenes when the lights are extremely bright
 %               compared to anything else (i.e., very HDR) the value
 %               doesn't matter much.
+%   wgt blur:   How much to blur the saturation weight map.  
+%               (default: 2 pixels)
 %
 % Outputs
-%   ip:  IP structure with modified output (results) field
-%   wgts:  The weighting towards 1,1,1 for every pixel.  Mostly these are
-%          zeros; they approach 1 near the bright lights.
+%   ip:    IP structure with modified output (results) field
+%   wgts:  The weight map.  Mostly the weights are zeros; they
+%          approach 1 near the bright lights. 
 %
 % Description
 %   High dynamic range scenes often have saturated pixels.  The typical
@@ -56,11 +57,13 @@ varargin = ieParamFormat(varargin);
 p = inputParser;
 p.addRequired('ip',@(x)(isstruct(x) && isequal(x.type,'vcimage')));
 p.addParameter('saturation',[],@isscalar);
-p.addParameter('hdrlevel',0.95,@isscalar);
+p.addParameter('hdrlevel',.95,@isscalar);
+p.addParameter('wgtblur',1,@isscalar);
 p.parse(ip,varargin{:});
 
-hdrLevel = p.Results.hdrlevel;
+hdrLevel   = p.Results.hdrlevel;
 saturation = p.Results.saturation;
+wgtBlur    = p.Results.wgtblur;
 
 %%
 input = ipGet(ip,'input');
@@ -83,6 +86,15 @@ end
 %}
 wgts = (input/saturation - hdrLevel) / (1-hdrLevel);
 wgts = ieClip(wgts,0,1);
+
+% We blur the weights a little because of the Bayer mosaic. We have
+% had cases where the green is saturated, but the adjacen red or blue
+% is not. Such weights can have a regular pattern that is not
+% desirable.
+%
+% Maybe the size/std should be a parameter.
+g = fspecial("gaussian",5,wgtBlur);
+wgts = conv2(wgts,g,'same');
 
 % Have a look prior
 %  ipWindow(ip);
