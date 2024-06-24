@@ -70,11 +70,20 @@ gains   = p.Results.gain;
 expTime = p.Results.exptime;
 method  = p.Results.method;
 
+% Currently requires an OI with 3 um sampling resolution.  But see
+% code below.
+assert(abs(oiGet(oi,'spatial resolution','um') - 3) < 1e-3)
+
 %%  Set up the two sensor sizes
 
-% These differ in the fill factor.
+% These differ in the fill factor.  Maybe we should use 'match',oi
+% here rather than require the 3 um?  Can we?  Didn't work for me at
+% this point.
 imx490Small = sensorCreate('imx490-small');
+% imx490Small = sensorSet(imx490Small,'match oi',oi);
+
 imx490Large = sensorCreate('imx490-large');
+% imx490Large = sensorSet(imx490Large,'match oi',oi);
 
 imx490Small = sensorSet(imx490Small,'noise flag',p.Results.noiseflag);
 imx490Large = sensorSet(imx490Large,'noise flag',p.Results.noiseflag);
