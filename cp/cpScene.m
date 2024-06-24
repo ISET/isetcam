@@ -301,8 +301,17 @@ classdef cpScene < handle
                                     obj.thisR.set('asset', ourMotion{1}, 'rotation', []);         
                                 end
                                 %}
-                                piAssetMotionAdd(obj.thisR,ourMotion{1}, ...
-                                    'translation', ourMotion{2}, 'rotation', ourMotion{3});
+                                % NOTE: sending 0 seems to confuse
+                                % piGeometryWrite, so check for useful
+                                % values
+                                if ~isequal(ourMotion{2},[0 0 0])
+                                    piAssetMotionAdd(obj.thisR,ourMotion{1}, ...
+                                        'translation', ourMotion{2});
+                                end
+                                if ~isequal(ourMotion{3},[0 0 0])
+                                    piAssetMotionAdd(obj.thisR,ourMotion{1}, ...
+                                        'rotation', ourMotion{3});
+                                end
                             
                             end
                             %thisR.set('asset', bunnyName, 'translation', [moveX, moveY, moveZ]);
