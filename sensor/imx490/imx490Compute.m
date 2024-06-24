@@ -72,7 +72,8 @@ method  = p.Results.method;
 
 % Currently requires an OI with 3 um sampling resolution.  But see
 % code below.
-assert(abs(oiGet(oi,'spatial resolution','um') - 3) < 1e-3)
+tst = oiGet(oi,'spatial resolution','um');
+assert(abs(tst(1) - 3) < 1e-3);
 
 %%  Set up the two sensor sizes
 
