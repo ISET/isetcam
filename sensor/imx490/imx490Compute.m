@@ -73,7 +73,6 @@ method  = p.Results.method;
 % Currently requires an OI with 3 um sampling resolution.  But see
 % code below.
 tst = oiGet(oi,'spatial resolution','um');
-assert(abs(tst(1) - 3) < 1e-3);
 
 %%  Set up the two sensor sizes
 
@@ -81,10 +80,10 @@ assert(abs(tst(1) - 3) < 1e-3);
 % here rather than require the 3 um?  Can we?  Didn't work for me at
 % this point.
 imx490Small = sensorCreate('imx490-small');
-% imx490Small = sensorSet(imx490Small,'match oi',oi);
+imx490Small = sensorSet(imx490Small,'match oi',oi);
 
 imx490Large = sensorCreate('imx490-large');
-% imx490Large = sensorSet(imx490Large,'match oi',oi);
+imx490Large = sensorSet(imx490Large,'match oi',oi);
 
 imx490Small = sensorSet(imx490Small,'noise flag',p.Results.noiseflag);
 imx490Large = sensorSet(imx490Large,'noise flag',p.Results.noiseflag);
