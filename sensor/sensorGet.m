@@ -927,7 +927,10 @@ switch oType
             case 'pixel'
                 val = sensor.pixel;
                 
-            case {'dr','dynamicrange','sensordynamicrange'}
+            case {'dr','drdb20','dynamicrange','sensordynamicrange'}
+                % Calculated using 20 log10 formula.  Not sure that is
+                % a great idea.  Also, different from what we are
+                % doing in scene and oi
                 val = sensorDR(sensor);
                 
             case 'diffusionmtf'
