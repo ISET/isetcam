@@ -31,7 +31,7 @@ for ii=1:length(lightLevels)
     scene  = sceneAdjustLuminance(scene,lightLevels(ii));
     camera = cameraSet(camera,'sensor exp time',exposureTime);
     
-    c = cameraCompute(camera,scene);
+    thisCamera = cameraCompute(camera,scene);
     
     %     oi     = oiCompute(camera.oi,scene);
     %
@@ -42,41 +42,41 @@ for ii=1:length(lightLevels)
     %     % v = sensorGet(sensor,'volts',2);
     %     % vcNewGraphWin; histogram(v(:),50);
     %
-    %     vci    = ipCompute(camera.vci,sensor);
-    %     result = ipGet(vci,'result');
+    %     ip    = ipCompute(camera.ip,sensor);
+    %     result = ipGet(ip,'result');
     
-    resultMax  = cameraGet(c,'ip result max');
-    sensorMax = cameraGet(c,'ip max sensor');  % Changed this.  Is it right?
+    resultMax  = cameraGet(thisCamera,'ip result max');
+    sensorMax = cameraGet(thisCamera,'ip max sensor');  % Changed this.  Is it right?
     
     % Scale the displayed data so the max value is the max of the display.
-    %     resultMax  = ipGet(vci,'result max');
-    %     displayMax = ipGet(vci,'rgb max');
+    %     resultMax  = ipGet(ip,'result max');
+    %     displayMax = ipGet(ip,'rgb max');
     if (sensorMax - resultMax) < 10*eps
         % Meaningless because saturated
         fprintf('Saturated at light level %.2f\n',lightLevels(ii));
         vSNR(ii) = NaN;
         rect = [];
     else
-        vci = cameraGet(c,'vci');
-        result = ipGet(vci,'result');
+        ip = cameraGet(thisCamera,'ip');
+        result = ipGet(ip,'result');
         
         % Scale result to display max
-        vci = ipSet(vci,'result',result*(sensorMax/resultMax));
+        ip = ipSet(ip,'result',result*(sensorMax/resultMax));
         
         % Exclude edge regions (10 percent of each edge)
         % rect = [colmin,rowmin,width,height]
         if ii==1
-            sz   = ipGet(vci,'size');
+            sz   = ipGet(ip,'size');
             border   = round(sz(1:2)*0.1);   % Border
             rect = [border(2), border(1), sz(2)-(2*border(2)), sz(1)-(2*border(1))];
         end
         
         % What are the units?  1 / Delta E, I think.
-        vSNR(ii) = vcimageVSNR(vci,dpi,dist,rect);
+        vSNR(ii) = vcimageVSNR(ip,dpi,dist,rect);
     end
     
-    vci = ipSet(vci,'name',sprintf('Level %.2f',lightLevels(ii)));
-    eAnalysis.vci(ii) = vci;
+    ip = ipSet(ip,'name',sprintf('Level %.2f',lightLevels(ii)));
+    eAnalysis.ip(ii) = ip;
     
 end
 

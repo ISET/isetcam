@@ -54,7 +54,7 @@ function [vSNR,rect] = vcimageVSNR(ip,dpi,dist,rect)
  assert(abs(vSNR - 15) < 0.1)
 %}
 %%
-if ieNotDefined('vci'), ip = vcGetObject('vci'); end
+if ieNotDefined('ip'), ip = vcGetObject('vci'); end
 
 % Dots per inch on the display and subject's viewing distance
 if ieNotDefined('dpi'),  dpi  = ipGet(ip,'display DPI');   end
