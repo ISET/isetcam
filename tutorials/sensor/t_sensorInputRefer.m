@@ -1,26 +1,29 @@
-%% Calculate the mean absorption rate at a detector
+%% Calculate the mean absorption count at a detector
 %
-% Then illustrates how to set the scene luminance of a uniform, equal
-% energy scene to achieve any specified absorption rate.
+% Then illustrate how to set the scene luminance of a uniform, equal energy
+% scene to achieve any specified absorption rate.
 %
 % Conversely, when we know the number of electrons in a particular type of
 % pixel, we can estimate the illuminance of an equal energy light at the
 % sensor, or the luminance of an equal energy light in the scene, prior to
 % the optics.
 %
-% See also: signalCurrent, poissrnd, getMiddleMatrix
-%
 % Copyright Imageval Consulting, LLC 2015
+%
+% See also:
+%    signalCurrent, poissrnd, getMiddleMatrix
+%
 
 %%
 ieInit
 
 %% A target photon absorption rate for the sensor
-tRate = 2;
+targetCount = 3;
 
-fprintf('Adjusting to a target rate of %.4f\n',tRate);
+fprintf('Adjusting to a target mean count of %.4f\n',targetCount);
 
 %%  Calculate the photon absorption rate for a 1 cd/m2 at 1 sec
+
 s = sceneCreate('uniform ee');
 lum = 1;
 s = sceneAdjustLuminance(s,lum);  % 1 cd/m2
@@ -57,9 +60,9 @@ c2e = sensorGet(sensor,'integration time')/ q;
 %   c2e * Amps/pixel/sec
 %     = (e/A) * (A/pixel/sec)
 %     = e / pixel / sec
-pImage = c2e*signalCurrent(oi,sensor);
+eImage = c2e*signalCurrent(oi,sensor);
 
-fprintf('Direct calculation of photon rate:  %.4f \n',mean(pImage(:)))
+fprintf('Initial electron count:  %.4f \n',mean(eImage(:)))
 
 %%  The ISET calculation produces the same mean rate
 
@@ -72,19 +75,19 @@ electrons = sensorGet(sensor,'electrons');
 electrons = getMiddleMatrix(electrons,[40,40]);
 
 % This is the Photon absorptions per exposure (which is 1 sec)
-pRate = mean(electrons(:));
+eCount = mean(electrons(:));
 
 % ieAddObject(oi); ieAddObject(sensor);
 % oiWindow; sensorImageWindow;
 
-%% Calculate how to adjust the scene luminance
+%% Adjust the scene luminance
 
 % Scale the scene luminance
-newLum = lum * (tRate/pRate);
+newLum = lum * (targetCount/eCount);
 fprintf('Adjusting the scene luminance to %e cd/m^2\n',newLum);
 s = sceneAdjustLuminance(s,newLum);  % 1 cd/m2
 
-%% Compute the photon rate at the new scene luminance level
+%% Compute the electron count at the new scene luminance level
 
 oi = oiCompute(oi,s);
 fprintf('Through the optics the illuminance is %e lux\n',oiGet(oi,'mean illuminance'));
@@ -93,10 +96,7 @@ sensor = sensorCompute(sensor,oi);
 electrons = sensorGet(sensor,'electrons',1);
 
 % Photon absorptions per exposure
-fprintf('Computed mean photon rate %e\n',mean(electrons(:)))
-
-% Show the distribution
-% vcNewGraphWin; histogram(electrons(:),50)
+fprintf('Adjusted electron count %e\n',mean(electrons(:)))
 
 c2e = sensorGet(sensor,'integration time')/ q;
 
@@ -104,25 +104,25 @@ c2e = sensorGet(sensor,'integration time')/ q;
 %   c2e * Amps/pixel/sec
 %    = (e/A) * (A/pixel/sec)
 %    = e / pixel / sec
-pImage = c2e*signalCurrent(oi,sensor);
+eImage = c2e*signalCurrent(oi,sensor);
 
-fprintf('Direct calculation of photon rate:  %.4f (target = %.4f)\n',mean(pImage(:)),tRate)
+fprintf('Direct calculation of electron count:  %.4f (target = %.4f)\n',mean(eImage(:)),targetCount)
 
 %% Histogram of photon numbers and expected Poisson distribution
 
-nSamp = round(max(2*sqrt(tRate)*50,1000));
-val = poissrnd(tRate,nSamp);
+ieNewGraphWin;
+xval = 0:(targetCount + 3*sqrt(targetCount));
+h = histogram(electrons(:),xval,'Normalization','probability');
+h.FaceColor = [0 .3 1];
+h.EdgeColor = [0 0 0];
 
-xval =  min(electrons(:)):max(electrons(:));
+hold on;
+y = poisspdf(xval,targetCount);
+plot(xval + 0.5,y,'r-o','LineWidth',2);
+xlabel('Electron count'); ylabel('Probability')
 
-vcNewGraphWin;
-n = hist(val(:),xval); bar(xval,n/sum(n(:))); hold on;
-
-[n,c] = hist(electrons(:),xval);
-n = n/sum(n(:)); lst = (n > 0);
-plot(c(lst),n(lst),'ro-','linewidth',2);
-
-xlabel('Photon count'); ylabel('Number')
-title(sprintf('Photon distribution (mean %.3f)',mean(pImage(:))));
+title(sprintf('Electron distribution (mean %.3f)',mean(eImage(:))));
+legend({'Count','Poisson pdf'});
+grid on
 
 %%

@@ -1,8 +1,13 @@
 function vSNR = xyz2vSNR(roiXYZ,whitePtXYZ,params)
-%Calculate visual SNR from an XYZ image
+% Calculate visual SNR from an XYZ image
 %
-%   vSNR = xyz2vSNR(roiXYZ,whitePtXYZ,params)
+% Synopsis
+%   vSNR = xyz2vSNR(roiXYZ,whitePtXYZ,[params=scParams])
 %
+% Input
+%   roiXYZ
+%   whitePtXYZ
+%   params
 %
 % Example:
 %  params = scParams;
@@ -49,4 +54,4 @@ L = std(m1(:))^2; A = std(m2(:))^2; B = std(m3(:))^2;
 % Here is the formula from the pixel binning paper
 vSNR = 1/sqrt(A+B+L); % When std <1 SNR > 0
 
-return
+end
