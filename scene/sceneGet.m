@@ -200,7 +200,11 @@ switch parm
     case {'distance','objectdistance','imagedistance'}
         % Positive for scenes (object), negative for optical images
         % (images).
-        val = scene.distance;
+        if isfield(scene,'depthMap')
+            val = median(sceneGet(scene,'depth map'),'all');
+        else
+            val = scene.distance;
+        end
         if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
 
     case {'fovhorizontal','fov','wangular','widthangular','hfov','horizontalfieldofview','horizontalfov'}
@@ -418,7 +422,9 @@ switch parm
         lum = sceneGet(scene,'luminance');
         if min(lum(:)) > 0
             val = max(lum(:))/min(lum(:));
-        else,  val = Inf;
+        else
+            tmp = prctile(lum(:),[0.1,99.9]);
+            val = tmp(2)/tmp(1);
         end
     case {'peakradianceandwave'}
         % Probably deprecated
