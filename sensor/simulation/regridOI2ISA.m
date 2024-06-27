@@ -104,8 +104,8 @@ interpolatedCFAN = interpcfaSCDI(newRows, newCols, sensor, spacing);
 % pixel size is much larger than the oi sampling resolution.
 
 % We will use these ratios to define the Gaussian SD (sigma)
-heightSamplesPerPixel = ceil(sensorHeightSpacing / oiHeightSpacing);
-widthSamplesPerPixel  = ceil(sensorWidthSpacing  / oiWidthSpacing);
+heightSamplesPerPixel = double(ceil(sensorHeightSpacing / oiHeightSpacing));
+widthSamplesPerPixel  = double(ceil(sensorWidthSpacing  / oiWidthSpacing));
 
 % Build the Gaussian kernel.  Assuming a square pixel. (April, 2019)
 % The std. dev. of the Gaussian kernel is 1/4 of the number of samples
