@@ -4,6 +4,10 @@
 % the MT9V024 version.  This has a 3.75 micron pixels and that one has 6
 % micron pixels.
 %
+% Specifications
+%
+%   https://www.mouser.com/datasheet/2/308/AR0132AT-D-888230.pdf
+%
 % Copyright Imageval LLC, 2017
 
 %% Make the color filters

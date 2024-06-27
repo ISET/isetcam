@@ -89,9 +89,15 @@ switch parm
         % Happens, perhaps, when reading multispectral image data.
         % Infrequently used.
         scene.filename = val;
+    case {'metadata'}
+        % A struct that people use in different ways.
+        scene.metadata = val;
     case {'consistency','computationalconsistency'}
+        % Deprecated, I think
+        %
         % When parameters are changed, the consistency flag on the optical
         % image changes.  This is irrelevant for the scene case.
+        warning('consistency');
         scene.consistency = val;
     case {'gamma'}
         % sceneSet([],'gamma',1);

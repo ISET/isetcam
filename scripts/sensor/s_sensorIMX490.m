@@ -55,7 +55,7 @@ dv2 = sensorGet(sArray{2},'dv');
 ieNewGraphWin; plot(dv1(:),dv2(:),'.');
 xlabel('DV Sensor 1'); ylabel('DV Sensor 2');
 identityLine; grid on;
-
+drawnow;
 
 %% Now try with a complex image
 
@@ -87,9 +87,10 @@ ieNewGraphWin;
 plot(v1(:),v2(:),'.'); identityLine; grid on;
 xlabel('V Sensor 1'); ylabel('V Sensor 2');
 identityLine; grid on;
+drawnow;
 
 %% Save images into local/imx490
-% {
+%{
 % volts = sensorGet(sensor,'volts');
 % mesh(volts); set(gca,'zscale','log');
 
