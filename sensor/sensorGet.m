@@ -459,6 +459,8 @@ switch oType
                 val = vMax/vMin;
                 
             case {'analoggain','ag'}
+                % Formula for gain and offset
+                %   volts = (voltsRaw + ao)/ag;
                 if checkfields(sensor,'analogGain'), val = sensor.analogGain;
                 else, val = 1;
                 end
