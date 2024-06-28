@@ -303,8 +303,7 @@ switch sensorType
         % pixel model.  The default parameters are from an Omnivision
         % paper.
         clear sensor
-        sensor{1} = sensorCreate('ovt-large');
-        sensor{2} = sensorCreate('ovt-small');
+        sensor = sensorCreateSplitPixel;
         return;
     case {'ovt-large'}
         sensor = sensorIMX363('row col',[600 800], ...
@@ -320,7 +319,7 @@ switch sensorType
             'name','ovt-large');
 
     case {'ovt-small'}
-        % Start with IMX363 but modify the parameters
+        % Start with IMX363 but modify the parameters for the OVT.
         sensor = sensorIMX363('row col',[600 800], ...
             'pixel size',2.8e-06, ...
             'dn2volts',0.25e-3, ...

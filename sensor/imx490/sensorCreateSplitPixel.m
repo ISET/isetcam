@@ -5,16 +5,18 @@ function sensorArray = sensorCreateSplitPixel(varargin)
 %    sensorArray = sensorCreateSplitPixel(varargin)
 %
 % Brief 
-%   Split pixel pair with parameters based on this paper from
+%   Split pixel pair with parameters based on this Omnivision paper
 %   Omnivision.
 % 
-% Solhusvik, Johannes, Trygve Willassen, Sindre Mikkelsen, Mathias
-% Wilhelmsen, Sohei Manabe, Duli Mao, Zhaoyu He, Keiji Mabuchi, and
-% Takuma Hasegawa. n.d. “A 1280x960 2.8μm HDR CIS with DCG and
-% Split-Pixel Combined.” Accessed June 26, 2024.
+%     Solhusvik, Johannes, Trygve Willassen, Sindre Mikkelsen, Mathias
+%     Wilhelmsen, Sohei Manabe, Duli Mao, Zhaoyu He, Keiji Mabuchi,
+%     and Takuma Hasegawa. n.d. “A 1280x960 2.8μm HDR CIS with DCG and
+%     Split-Pixel Combined.” Accessed June 26, 2024.
+%
 % https://www.imagesensors.org/Past%20Workshops/2019%20Workshop/2019%20Papers/R32.pdf.
 %
 % Optional key/val
+%    sensorSet key/val pairs.  
 %
 % Output
 %   sensorArray - Cell array of the two sensors
@@ -51,41 +53,50 @@ varargin = ieParamFormat(varargin);
 
 % Start with the IMX490 and adjust the parameters here.
 SPD = sensorCreate('imx490-small');
-LPD = sensorCreate('imx490-large');
+SPD = sensorSet(SPD,'pixel size same fill factor',2.8*1e-6);
+SPD = sensorSet(SPD,'pixel fill factor',1);
 
+LPD = sensorCreate('imx490-large');
+LPD = sensorSet(LPD,'pixel size same fill factor',2.8*1e-6);
+LPD = sensorSet(LPD,'pixel fill factor',1);
 %%  Set up two sensors
 
-imx490Large1 = sensorSet(sensorLarge, 'pixel conversion gain', 200e-6);
-imx490Large1 = sensorSet(imx490Large1,'pixel read noise electrons', 0.83);
-imx490Large1 = sensorSet(imx490Large1,'pixel dark voltage',25.6*200e-6); % 25.6e-/s * 200 uv/e-
-imx490Large1 = sensorSet(imx490Large1,'voltage swing', 22000*49e-6); % well capacity * conversion gain
-imx490Large1 = sensorSet(imx490Large1,'pixel spectral qe', 1);
+% We decided that the voltage swing is always the full well capacity times
+% the lower conversion gain.  The higher conversion gain just
+% saturates the voltage at a lower number of electrons.  Is that
+% right?
 
-imx490Large1 = sensorSet(imx490Large1,'name',sprintf('large-HCG'));
-sensorArray{1} = imx490Large1;
+LPDHCG = sensorSet(LPD, 'pixel conversion gain', 200e-6);
+LPDHCG = sensorSet(LPDHCG,'pixel read noise electrons', 0.83);
+LPDHCG = sensorSet(LPDHCG,'pixel dark voltage',25.6*200e-6); % 25.6e-/s * 200 uv/e-
+LPDHCG = sensorSet(LPDHCG,'voltage swing', 22000*49e-6); % well capacity * conversion gain
+LPDHCG = sensorSet(LPDHCG,'pixel spectral qe', 1);
 
-imx490Large2 = sensorSet(sensorLarge, 'pixel conversion gain', 49e-6);
-imx490Large2 = sensorSet(imx490Large2,'pixel read noise electrons', 3.05);
-imx490Large2 = sensorSet(imx490Large2,'pixel dark voltage',25.6*49e-6); % 25.6e-/s * 200 uv/e-
-imx490Large2 = sensorSet(imx490Large2,'voltage swing', 22000*49e-6); % well capacity * conversion gain
-imx490Large2 = sensorSet(imx490Large2,'pixel spectral qe', 1);
-imx490Large2 = sensorSet(imx490Large2,'name',sprintf('large-LCG'));
-sensorArray{2} = imx490Large2;
+LPDHCG = sensorSet(LPDHCG,'name',sprintf('large-HCG'));
+sensorArray{1} = LPDHCG;
 
-imx490Small1 = sensorSet(sensorSmall, 'pixel conversion gain', 200e-6);
-imx490Small1 = sensorSet(imx490Small1,'pixel read noise electrons', 0.83);
-imx490Small1 = sensorSet(imx490Small1,'pixel dark voltage',4.2*200e-6); % 25.6e-/s * 200 uv/e-
-imx490Small1 = sensorSet(imx490Small1,'voltage swing', 7900*49e-6); % well capacity * conversion gain
-imx490Small1 = sensorSet(imx490Small1,'pixel spectral qe', 0.1);
-imx490Small1 = sensorSet(imx490Small1,'name',sprintf('small-HCG'));
-sensorArray{3} = imx490Small1;
+LPDLCG = sensorSet(LPD, 'pixel conversion gain', 49e-6);
+LPDLCG = sensorSet(LPDLCG,'pixel read noise electrons', 3.05);
+LPDLCG = sensorSet(LPDLCG,'pixel dark voltage',25.6*49e-6); % 25.6e-/s * 200 uv/e-
+LPDLCG = sensorSet(LPDLCG,'voltage swing', 22000*49e-6); % well capacity * conversion gain
+LPDLCG = sensorSet(LPDLCG,'pixel spectral qe', 1);
+LPDLCG = sensorSet(LPDLCG,'name',sprintf('large-LCG'));
+sensorArray{2} = LPDLCG;
 
-imx490Small2 = sensorSet(sensorSmall, 'pixel conversion gain', 49e-6);
-imx490Small2 = sensorSet(imx490Small2,'pixel read noise electrons', 2.96);
-imx490Small2 = sensorSet(imx490Small2,'pixel dark voltage',4.2*49e-6); % 25.6e-/s * 200 uv/e-
-imx490Small2 = sensorSet(imx490Small2,'voltage swing', 7900*49e-6); % well capacity * conversion gain
-imx490Small2 = sensorSet(imx490Small2,'pixel spectral qe', 0.1);
-imx490Small2 = sensorSet(imx490Small2,'name',sprintf('small-LCG'));
-sensorArray{4} = imx490Small2;
+SPDHCG = sensorSet(SPD, 'pixel conversion gain', 200e-6);
+SPDHCG = sensorSet(SPDHCG,'pixel read noise electrons', 0.83);
+SPDHCG = sensorSet(SPDHCG,'pixel dark voltage',4.2*200e-6); % 25.6e-/s * 200 uv/e-
+SPDHCG = sensorSet(SPDHCG,'voltage swing', 7900*49e-6); % well capacity * conversion gain
+SPDHCG = sensorSet(SPDHCG,'pixel spectral qe', 0.01);
+SPDHCG = sensorSet(SPDHCG,'name',sprintf('small-HCG'));
+sensorArray{3} = SPDHCG;
+
+SPDLCG = sensorSet(SPD, 'pixel conversion gain', 49e-6);
+SPDLCG = sensorSet(SPDLCG,'pixel read noise electrons', 2.96);
+SPDLCG = sensorSet(SPDLCG,'pixel dark voltage',4.2*49e-6); % 25.6e-/s * 200 uv/e-
+SPDLCG = sensorSet(SPDLCG,'voltage swing', 7900*49e-6); % well capacity * conversion gain
+SPDLCG = sensorSet(SPDLCG,'pixel spectral qe', 0.01);
+SPDLCG = sensorSet(SPDLCG,'name',sprintf('small-LCG'));
+sensorArray{4} = SPDLCG;
 
 end
