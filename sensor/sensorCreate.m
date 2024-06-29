@@ -303,7 +303,7 @@ switch sensorType
         % pixel model.  The default parameters are from an Omnivision
         % paper.
         clear sensor
-        sensor = sensorCreateSplitPixel;
+        sensor = sensorCreateSplitPixel(varargin{:});
         return;
     case {'ovt-large'}
         sensor = sensorIMX363('row col',[600 800], ...
