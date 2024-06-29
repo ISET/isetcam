@@ -16,14 +16,24 @@ function sensorArray = sensorCreateSplitPixel(varargin)
 % https://www.imagesensors.org/Past%20Workshops/2019%20Workshop/2019%20Papers/R32.pdf.
 %
 % Optional key/val
-%    sensorSet key/val pairs.  
+%    sensorSet parameters that do not require multiple entries
+%    For example, {'exp time',0.005} would work.
 %
 % Output
 %   sensorArray - Cell array of the two sensors
 %
 % Description
-%   Sensor parameters:
-%      https://www.imagesensors.org/Past%20Workshops/2019%20Workshop/2019%20Papers/R32.pdf
+%   The split pixel concept was introduced some years ago by
+%   Omnivision, we think.  There are a set of papers around this time.
+%   This function creates 4 sensors, like the 4-output split pixel
+%   from Sony IMX490.  There are 2 large pixels with high and low
+%   conversion conversion gain, and 2 small pixels with high and low
+%   CG.  The parameters are taken from this older paper.  You can
+%   adjust the parameters in the individual sensors as they are
+%   returned, or parameters that you want to adjust for all of them
+%   can be passed in as varargin.
+%
+%  https://www.imagesensors.org/Past%20Workshops/2019%20Workshop/2019%20Papers/R32.pdf
 %  
 %   For image processing ideas using the split pixel, check the LUCID
 %   web-site.  The combine two pixels with different analog gain
@@ -46,7 +56,7 @@ function sensorArray = sensorCreateSplitPixel(varargin)
 
 % Example:
 %{
-  sensorPair = sensorCreate('split pixel');
+  sensorArray = sensorCreateSplitPixel('exp time',0.05);
 %}
 %% Read parameters
 varargin = ieParamFormat(varargin);
@@ -73,7 +83,6 @@ LPDHCG = sensorSet(LPDHCG,'voltage swing', 22000*49e-6); % well capacity * conve
 LPDHCG = sensorSet(LPDHCG,'pixel spectral qe', 1);
 
 LPDHCG = sensorSet(LPDHCG,'name',sprintf('large-HCG'));
-sensorArray{1} = LPDHCG;
 
 LPDLCG = sensorSet(LPD, 'pixel conversion gain', 49e-6);
 LPDLCG = sensorSet(LPDLCG,'pixel read noise electrons', 3.05);
@@ -81,7 +90,6 @@ LPDLCG = sensorSet(LPDLCG,'pixel dark voltage',25.6*49e-6); % 25.6e-/s * 200 uv/
 LPDLCG = sensorSet(LPDLCG,'voltage swing', 22000*49e-6); % well capacity * conversion gain
 LPDLCG = sensorSet(LPDLCG,'pixel spectral qe', 1);
 LPDLCG = sensorSet(LPDLCG,'name',sprintf('large-LCG'));
-sensorArray{2} = LPDLCG;
 
 SPDHCG = sensorSet(SPD, 'pixel conversion gain', 200e-6);
 SPDHCG = sensorSet(SPDHCG,'pixel read noise electrons', 0.83);
@@ -89,7 +97,6 @@ SPDHCG = sensorSet(SPDHCG,'pixel dark voltage',4.2*200e-6); % 25.6e-/s * 200 uv/
 SPDHCG = sensorSet(SPDHCG,'voltage swing', 7900*49e-6); % well capacity * conversion gain
 SPDHCG = sensorSet(SPDHCG,'pixel spectral qe', 0.01);
 SPDHCG = sensorSet(SPDHCG,'name',sprintf('small-HCG'));
-sensorArray{3} = SPDHCG;
 
 SPDLCG = sensorSet(SPD, 'pixel conversion gain', 49e-6);
 SPDLCG = sensorSet(SPDLCG,'pixel read noise electrons', 2.96);
@@ -97,6 +104,17 @@ SPDLCG = sensorSet(SPDLCG,'pixel dark voltage',4.2*49e-6); % 25.6e-/s * 200 uv/e
 SPDLCG = sensorSet(SPDLCG,'voltage swing', 7900*49e-6); % well capacity * conversion gain
 SPDLCG = sensorSet(SPDLCG,'pixel spectral qe', 0.01);
 SPDLCG = sensorSet(SPDLCG,'name',sprintf('small-LCG'));
-sensorArray{4} = SPDLCG;
+
+for ii=1:2:numel(varargin)
+    SPDLCG = sensorSet(SPDLCG,varargin{ii},varargin{ii+1});
+    SPDHCG = sensorSet(SPDHCG,varargin{ii},varargin{ii+1});
+    LPDLCG = sensorSet(LPDLCG,varargin{ii},varargin{ii+1});
+    LPDHCG = sensorSet(LPDHCG,varargin{ii},varargin{ii+1});
+end
+
+sensorArray(1) = LPDHCG;
+sensorArray(2) = LPDLCG;
+sensorArray(3) = SPDHCG;
+sensorArray(4) = SPDLCG;
 
 end
