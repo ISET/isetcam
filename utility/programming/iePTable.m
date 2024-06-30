@@ -309,17 +309,18 @@ switch format
         precision = 3;
         
         data = {
+            '-------------------', '------- Sensor -------', '-----------'
             'Name',         sensorGet(sensor,'name'), '';
             'Size',          num2str(sensorGet(sensor,'dimension','mm'),precision), 'mm';
-            'Rows and Columns',       num2str(sensorGet(sensor,'size')),                     '';
-            'Horizontal FOV',       num2str(sensorGet(sensor,'fov', 1e6, oi),precision),   'deg';
-            'Horizontal Res / distance',       num2str(sensorGet(sensor,'wspatial resolution','um'),precision), 'um';
-            'Horizontal Res / degrees',       num2str(sensorGet(sensor,'h deg per pixel',oi),precision), 'deg/pixel';
-            'Exposure time',      num2str(sensorGet(sensor,'exp time')),                 's';
-            'Bits',               nbits,                                           'bits';
+            'Rows and Columns',  num2str(sensorGet(sensor,'size')),                     '';
+            'Horizontal FOV',    num2str(sensorGet(sensor,'fov', 1e6, oi),precision),   'deg';
+            'Horizontal Res / distance', num2str(sensorGet(sensor,'wspatial resolution','um'),precision), 'um';
+            'Horizontal Res / degrees',  num2str(sensorGet(sensor,'h deg per pixel',oi),precision), 'deg/pixel';
+            'Exposure time',      num2str(sensorGet(sensor,'exp time')),            's';
+            'Bits',               nbits,                                            'bits';
             'DSNU',          num2str(sensorGet(sensor, 'dsnu level'),precision),    'V';
             'PRNU',          num2str(sensorGet(sensor, 'prnu level'),precision),    'percent';
-            'Analog gain',   num2str(sensorGet(sensor, 'analog gain'),precision),   '';
+            'Analog gain',   num2str(sensorGet(sensor, 'analog gain'),precision),   '(raw + ao)/ag';
             'Analog offset', num2str(sensorGet(sensor, 'analog offset'),precision), 'V';
             };
         
@@ -353,7 +354,7 @@ switch format
     case 'window'
         precision = 3;
         data = {
-            '-------------------', '------- Pixel -------',  '-------------------';
+            '-------------------', '------- Pixel -------',  '-----------';
             'Width & height',           num2str(pixelGet(pixel, 'width','um'),     precision),  'um';
             'Fill factor',            num2str(pixelGet(pixel, 'fill factor'),    precision),  '';
             'Dark voltage (V/sec)',   num2str(pixelGet(pixel, 'dark voltage'),   precision), 'V/sec';
