@@ -115,8 +115,8 @@ widthSamplesPerPixel  = ceil(sensorWidthSpacing  / oiWidthSpacing);
 % Notice that when there is only 1 OI sample per pixel, the support is
 % just [1,1] so that the Gaussian blur is irrelevant.
 gKernel = fspecial('gaussian', ...
-    [heightSamplesPerPixel widthSamplesPerPixel], ...
-    heightSamplesPerPixel/4);
+    [double(heightSamplesPerPixel) double(widthSamplesPerPixel)], ...
+    double(heightSamplesPerPixel/4));
 
 % Other case we should use the average:
 % gKernel = ones(heightRatio, widthRatio)/(heightRatio*widthRatio);
