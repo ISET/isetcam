@@ -11,11 +11,14 @@ function sensor = sensorIMX363(varargin)
 %   N/A
 %
 % Optional Key/val pairs
+%   These are used by sensorSet() to adjust the parameters
 %
 % Return
-%   sensor - struct with the IMX363 model parameters
+%   sensor - Default (should be) sensor with the IMX363 model
+%            parameters used by Zheng Lyu in the calibration paper.  I
+%            am a bit worried.
 %
-% Examples:  ieExamplesPrint('sensorIMX363');
+% ieExamplesPrint('sensorIMX363');
 %
 % See also
 %  sensorCreate
@@ -47,7 +50,9 @@ varargin = ieParamFormat(varargin);
 % Start parsing
 p = inputParser;
 
-% Set the default values here
+% Set the default values here.  These were used by Zheng Lyu.  If we
+% ever change, we need to preserve these.  I fear ZLiu may have edited
+% (looking at the color filters, below).
 p.addParameter('rowcol',[3024 4032],@isvector);
 p.addParameter('pixelsize',1.4e-6,@isnumeric);
 p.addParameter('analoggain',1.4e-6,@isnumeric);

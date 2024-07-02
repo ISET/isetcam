@@ -34,7 +34,7 @@ function sensor = sensorCreate(sensorType,pixel,varargin)
 %                         use for modeling split pixel.  Default
 %                         parameters are from an Omnivision model
 %      {'imx490-large'} - The Sony imx490 sensor large
-%      {'imx490-small'} - The Sony imx490 sensor large 
+%      {'imx490-small'} - The Sony imx490 sensor large
 %
 %      {'nikond100'} - An older model Nikon (D100)
 %
@@ -201,7 +201,7 @@ switch sensorType
         % cPattern = 'bayer'    % any sensorCreate option
         % sensorCreate('ideal',[],'human','bayer');
         error('sensorCreate(''ideal'') is deprecated.  Use sensorCreateIdeal');
-        
+
     case {'lightfield'}
         % Light field sensor matched to an oi.  Note the overload on the
         % pixel argument.  Both forms work.
@@ -228,9 +228,9 @@ switch sensorType
         sensor = sensorSet(sensor,'name',oiGet(oi,'name'));
     case {'dualpixel'}
         % sensor = sensorCreate('dual pixel',[], oi, nMicrolens);
-        %   
+        %
         %   nMicrolens is the row and col number of the microlens
-        %   array 
+        %   array
         %
         % We set the pixel size to match the spatial sampling of the
         % optical image in the light field case.  In the dual pixel
@@ -240,26 +240,26 @@ switch sensorType
         % In the future: We should be able to specify the orientation
         % (h or v) of the dual pixels.
         %
-        
+
         oi = varargin{1};
         ss_meters = oiGet(oi,'sample spacing','m');
-        
+
         % Default original sensor
         sensor = sensorCreate;
-        
+
         % We make the height bigger than the width
         sensor = sensorSet(sensor,'pixel height',2*ss_meters(1));
         sensor = sensorSet(sensor,'pixel width',ss_meters(1));
-        
+
         % Double the number of columns
         nMicrolens = varargin{2};
         sensor = sensorSet(sensor,'size',[nMicrolens(1), 2*nMicrolens(2)]);
 
         % Set the CFA pattern accounting for the new dual pixel
-        % architecture 
+        % architecture
         sensor = sensorSet(sensor,'pattern',[2 2 1 1; 3 3 2 2]);
 
-        
+
     case {'mt9v024'}
         % ON 6um sensor.  It can be mono, rgb, or rccc
         % sensor = sensorCreate('MT9V024',[],'rccc');
@@ -267,11 +267,13 @@ switch sensorType
         else,                 colorType = varargin{1};
         end
         sensor = sensorMT9V024(sensor,colorType);
-                
+
     case {'ar0132at'}
         % ON RGB automotive sensor.
         %
         % See ar0132atCreate for how these were built.
+        %
+        % We should make this into a sensorCreateAR0132AT function.
         %
         if isempty(varargin), colorType = 'rgb';
         else,                 colorType = varargin{1};
@@ -279,92 +281,105 @@ switch sensorType
 
         switch ieParamFormat(colorType)
             case 'rgb'
-                load('ar0132atSensorRGB.mat','sensor');         
+                load('ar0132atSensorRGB.mat','sensor');
             case 'rccc'
-                load('ar0132atSensorRCCC','sensor');         
+                load('ar0132atSensorRCCC','sensor');
             case 'rgbw'
-                load('ar0132atSensorRGBW.mat','sensor');         
+                load('ar0132atSensorRGBW.mat','sensor');
             otherwise
                 error('Unknown AR0132at color type:  %s', colorType)
         end
 
-        
+        % We should rename sensorIMX363 to something like
+        % sensorCreateBase. 
+        %
     case {'imx363','googlepixel4a'}
         % A Sony sensor used in many systems
-        % To over-ride the row/col default use
+        %
+        % To over-ride the row/col default use the varargin slots.
         %
         % sensorCreate('imx363',[],'row col',[300 400]);
         sensor = sensorIMX363('row col',[600 800], varargin{:});
-        
+
+        % Split pixel parameters for OVT
     case {'ovt-large'}
-        sensor = sensorIMX363('row col',[600 800], ...
-            'pixel size',2.8e-06, ...
+        params = struct('rowcol',[600 800], ...
+            'pixelsize',2.8e-06, ...
             'dn2volts',0.25e-3, ...
             'digitalblacklevel', 0, ...
             'digitalwhitelevel', 4096, ...
             'wellcapacity', 120000, ...
             'fillfactor',0.9, ...
             'isospeed',55, ...
-            'read noise',1,...
+            'readnoise',1,...
             'quantization','12 bit',...
             'name','ovt-large');
 
+        sensor = sensorIMX363(params);
+
     case {'ovt-small'}
-        % Start with IMX363 but modify the parameters for the OVT.
-        sensor = sensorIMX363('row col',[600 800], ...
-            'pixel size',2.8e-06, ...
+        params = struct('rowcol',[600 800], ...
+            'pixelsize',2.8e-06, ...
             'dn2volts',0.25e-3, ...
             'digitalblacklevel', 0, ...
             'digitalwhitelevel', 4096, ...
             'wellcapacity', 120000, ...
             'fillfactor',0.1, ...
             'isospeed',55, ...
-            'read noise',1,...
+            'readnoise',1,...
             'quantization','12 bit',...
             'name','ovt-small');
-                
+
+        sensor = sensorIMX363(params);
+
+        % Split pixel parameters for IMX490
+
     case {'imx490-large'}
         % Variant of the IMX363 that contains a big pixel and a small
         % pixel. These pixel parameters were determined by Zhenyi as
         % part of ISETAuto. Each one of these pixels, the large and
-        % small 
+        % small
         %
         % From the Lucid site.
         % Integration times
         %    min of 86.128 μs to max of 5 s
         %
-        % Original value from ZL - 5.5845e-06.  But Lucid site says 3 um.
-        % I adjusted to 3um per the site, but shrunk the fill factor.  The
-        % small pixel fits into the space and 0.85/.15
-        sensor = sensorIMX363('row col',[600 800], ...
-            'pixel size',3e-06, ...
+        % Original value from ZL: 5.5845e-06.  But Lucid site says 3
+        % um. I adjusted to 3um per the site, but shrunk the fill
+        % factor.  The small pixel fits into the space and 0.85/.15
+        params = struct('rowcol',[600 800], ...
+            'pixelsize',3e-06, ...
             'dn2volts',0.25e-3, ...
             'digitalblacklevel', 64, ...
             'digitalwhitelevel', 4096, ...
             'wellcapacity', 120000, ...
             'fillfactor',0.9, ...
             'isospeed',55, ...
-            'read noise',1,...
+            'readnoise',1,...
             'quantization','12 bit',...
             'name','imx490-large');
+
+        sensor = sensorIMX363(params);
 
     case {'imx490-small'}
         % Variant of the IMX363 that contains a big pixel and a small
         % pixel. These pixel parameters were determined by Zhenyi as
         % part of ISETAuto. Each one of these pixels, the large and
-        % small 
-                
-        sensor = sensorIMX363('row col',[600 800], ...
-            'pixel size',3e-06, ...
+        % small
+
+        params = struct('rowcol',[600 800], ...
+            'pixelsize',3e-06, ...
             'dn2volts',0.25e-3, ...
             'digitalblacklevel', 64, ...
             'digitalwhitelevel', 4096, ...
             'wellcapacity', 60000, ...
             'fillfactor',0.1, ...
             'isospeed',55, ...
-            'read noise',1,...
+            'readnoise',1,...
             'quantization','12 bit',...
             'name','imx490-small');
+
+        sensor = sensorIMX363(params);
 
     case 'nikond100'
         % Old model.  I increased the spatial samples before
@@ -375,7 +390,7 @@ switch sensorType
         sensor = isa;
         sensor = sensorSet(sensor,'size',[72 88]*4);
         sensor = sensorSet(sensor,'name','Nikon-D100');
-        
+
     case {'fourcolor'}  % Often used for multiple channel
         % sensorCreate('custom',pixel,filterPattern,filterFile);
         if length(varargin) >= 1, filterPattern = varargin{1};
@@ -392,7 +407,7 @@ switch sensorType
         if length(varargin) >= 1
             rowcol = varargin{1};
         end
-        sensor = sensorCreateIMECSSM4x4vis('row col',rowcol); 
+        sensor = sensorCreateIMECSSM4x4vis('row col',rowcol);
     case 'monochrome'
         filterFile = 'Monochrome';
         sensor = sensorMonochrome(sensor,filterFile);
@@ -405,13 +420,13 @@ switch sensorType
         if isempty(varargin), N = 3;
         else, N = varargin{1};
         end
-        
+
         sensorA(N) = sensorCreate('monochrome');
         for ii=1:(N-1), sensorA(ii) = sensorA(N); end
         sensor = sensorA;
-        
+
         return;
-        
+
     case {'rgbw','interleaved'}
         % Create an RGBW (interleaved) sensor with one transparent and 3
         % color filters.  Inteleaved comes about because MP and BW treated
@@ -427,7 +442,7 @@ switch sensorType
         if length(varargin) >= 1, params = varargin{1};
         else, params = [];
         end
-        
+
         % Assign key fields
         if checkfields(params,'sz'), sz = params.sz;
         else, sz = []; end
@@ -441,29 +456,29 @@ switch sensorType
         if checkfields(params,'wave'), wave = params.wave;
         else,                          wave = 400:10:700;
         end
-        
+
         % Add the default human pixel with StockmanQuanta filters.
         sensor = sensorSet(sensor,'wave',wave);
         sensor = sensorSet(sensor,'pixel',pixelCreate('human',wave));
-        
+
         % Build up a human cone mosaic.
         [sensor, xy, coneType, rSeed, rgbDensities] = ...
             sensorCreateConeMosaic(sensor, sz, rgbDensities, coneAperture, rSeed, 'human');
         %  figure(1); ieConePlot(xy,coneType);
-        
+
         % We don't want the pixel to saturate
         pixel  = sensorGet(sensor,'pixel');
         pixel  = pixelSet(pixel,'voltage swing',1);  % 1 volt
         sensor = sensorSet(sensor,'pixel',pixel);
         sensor = sensorSet(sensor,'exposure time',1); % 1 sec
-        
+
         % Parameters are stored in case you want the exact same mosaic
         % again. Should we have sets and gets for this?
         sensor = sensorSet(sensor,'cone locs',xy);
         sensor = sensorSet(sensor,'cone type',coneType);
         sensor = sensorSet(sensor,'densities',rgbDensities);
         sensor = sensorSet(sensor,'rSeed',rSeed);
-        
+
     case {'custom'}      % Often used for multiple channel
         % sensorCreate('custom',filterColorLetters,filterPattern,filterFile,wave);
         if length(varargin) >= 1, filterPattern = varargin{1};
@@ -519,34 +534,6 @@ sensor = sensorSet(sensor,'cfa pattern',filterPattern);
 [filterSpectra,filterNames] = sensorReadColorFilters(sensor,filterFile);
 sensor = sensorSet(sensor,'filterspectra',filterSpectra);
 sensor = sensorSet(sensor,'filternames',filterNames);
-
-end
-
-%-----------------------------
-function sensor = sensorInterleaved(sensor,filterPattern,filterFile)
-%
-%   Create a default interleaved image sensor array structure.
-
-sensor = sensorSet(sensor,'name',sprintf('interleaved-%.0f',vcCountObjects('sensor')));
-sensor = sensorSet(sensor,'cfaPattern',filterPattern);
-
-% Read in a default set of filter spectra
-% [filterSpectra,filterNames] = sensorReadColorFilters(sensor,filterFile);
-if ischar(filterFile) && exist(filterFile,'file')
-    [filterSpectra,filterNames] = sensorReadColorFilters(sensor,filterFile);
-elseif isstruct(filterFile)
-    filterSpectra = filterFile.data;
-    filterNames   = filterFile.filterNames;
-    filterWave    = filterFile.wavelength;
-    extrapVal = 0;
-    filterSpectra = interp1(filterWave, filterSpectra, sensorGet(sensor,'wave'),...
-        'linear',extrapVal);
-else
-    error('Bad format for filterFile variable.');
-end
-
-sensor = sensorSet(sensor,'filterSpectra',filterSpectra);
-sensor = sensorSet(sensor,'filterNames',filterNames);
 
 end
 
