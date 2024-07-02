@@ -1,13 +1,16 @@
 function sensorArray = sensorCreateSplitPixel(varargin)
 % Create a split pixel pair of sensors
-% 
+%
+% See TODO at the end of the file and comments in the file.
+% Particularly, the OVT simulation parameters.
+%
 % Synopsis
 %    sensorArray = sensorCreateSplitPixel(varargin)
 %
-% Brief 
+% Brief
 %   Split pixel pair with parameters based on this Omnivision paper
 %   Omnivision.
-% 
+%
 %     Solhusvik, Johannes, Trygve Willassen, Sindre Mikkelsen, Mathias
 %     Wilhelmsen, Sohei Manabe, Duli Mao, Zhaoyu He, Keiji Mabuchi,
 %     and Takuma Hasegawa. n.d. “A 1280x960 2.8μm HDR CIS with DCG and
@@ -34,12 +37,12 @@ function sensorArray = sensorCreateSplitPixel(varargin)
 %   can be passed in as varargin.
 %
 %  https://www.imagesensors.org/Past%20Workshops/2019%20Workshop/2019%20Papers/R32.pdf
-%  
+%
 %   For image processing ideas using the split pixel, check the LUCID
 %   web-site.  The combine two pixels with different analog gain
 %   values. They describe processing for the IMX490 which has two
 %   sizes and two gains.
-%   
+%
 %   "The IMX490 achieves high dynamic range using two sub-pixels for each
 %   pixel location which vary in sensitivity and saturation capacity. Each
 %   sub-pixel is readout with high and low conversion gains giving four
@@ -61,6 +64,12 @@ function sensorArray = sensorCreateSplitPixel(varargin)
 %% Read parameters
 varargin = ieParamFormat(varargin);
 
+%% We should have optional parameters for OVT and Sony IMX.
+
+% See Notes at the end.  Move them here, ultimately
+
+%%
+
 % Start with the IMX490 and adjust the parameters here.
 SPD = sensorCreate('imx490-small');
 SPD = sensorSet(SPD,'pixel size same fill factor',2.8*1e-6);
@@ -70,6 +79,13 @@ LPD = sensorCreate('imx490-large');
 LPD = sensorSet(LPD,'pixel size same fill factor',2.8*1e-6);
 LPD = sensorSet(LPD,'pixel fill factor',1);
 %%  Set up two sensors
+
+% The difference between the two sensors is only in the spectral QE.
+% Because the small pixel is both small and in the OVT case covered by
+% a filter, it is 0.01 the qe of the large pixel.
+%
+% For the OVT case, I will also try changing the spectral curves,
+% which are shown in their paper, cited above.  Not yet implemented.
 
 % We decided that the voltage swing is always the full well capacity times
 % the lower conversion gain.  The higher conversion gain just
@@ -106,6 +122,8 @@ SPDLCG = sensorSet(SPDLCG,'pixel spectral qe', 0.01);
 SPDLCG = sensorSet(SPDLCG,'name',sprintf('small-LCG'));
 
 for ii=1:2:numel(varargin)
+    str = varargin{ii};
+    if strncmp(str,'pixel',5), varargin{ii} = ['pixel ',str(6:end)]; end
     SPDLCG = sensorSet(SPDLCG,varargin{ii},varargin{ii+1});
     SPDHCG = sensorSet(SPDHCG,varargin{ii},varargin{ii+1});
     LPDLCG = sensorSet(LPDLCG,varargin{ii},varargin{ii+1});
@@ -118,3 +136,109 @@ sensorArray(3) = SPDHCG;
 sensorArray(4) = SPDLCG;
 
 end
+
+
+%{
+% We need to rename sensorIMX363 to something like sensorCreateBase
+% We need to put these parameters into sensorCreate and comment on
+% where we got the values
+%
+% Split pixel parameters for OVT
+switch sensorName
+    case {'ovt-large'}
+        params = struct('rowcol',[600 800], ...
+            'pixelsize',2.8e-06, ...
+            'dn2volts',0.25e-3, ...
+            'digitalblacklevel', 0, ...
+            'digitalwhitelevel', 4096, ...
+            'wellcapacity', 120000, ...
+            'fillfactor',0.9, ...
+            'isospeed',55, ...
+            'readnoise',1,...
+            'quantization','12 bit',...
+            'name','ovt-large');
+
+        sensor = sensorIMX363(params);
+
+    case {'ovt-small'}
+        params = struct('rowcol',[600 800], ...
+            'pixelsize',2.8e-06, ...
+            'dn2volts',0.25e-3, ...
+            'digitalblacklevel', 0, ...
+            'digitalwhitelevel', 4096, ...
+            'wellcapacity', 120000, ...
+            'fillfactor',0.1, ...
+            'isospeed',55, ...
+            'readnoise',1,...
+            'quantization','12 bit',...
+            'name','ovt-small');
+
+        sensor = sensorIMX363(params);
+
+        % Split pixel parameters for IMX490
+
+    case {'imx490-large'}
+        % Variant of the IMX363 that contains a big pixel and a small
+        % pixel. These pixel parameters were determined by Zhenyi as
+        % part of ISETAuto. Each one of these pixels, the large and
+        % small
+        %
+        % From the Lucid site.
+        % Integration times
+        %    min of 86.128 μs to max of 5 s
+        %
+        % Original value from ZL - 5.5845e-06.  But Lucid site says 3 um.
+        % I adjusted to 3um per the site, but shrunk the fill factor.  The
+        % small pixel fits into the space and 0.85/.15
+        parmas = struct('rowcol',[600 800], ...
+            'pixelsize',3e-06, ...
+            'dn2volts',0.25e-3, ...
+            'digitalblacklevel', 64, ...
+            'digitalwhitelevel', 4096, ...
+            'wellcapacity', 120000, ...
+            'fillfactor',0.9, ...
+            'isospeed',55, ...
+            'readnoise',1,...
+            'quantization','12 bit',...
+            'name','imx490-large');
+
+        sensor = sensorIMX363(params);
+
+    case {'imx490-small'}
+        % Variant of the IMX363 that contains a big pixel and a small
+        % pixel. These pixel parameters were determined by Zhenyi as
+        % part of ISETAuto. Each one of these pixels, the large and
+        % small
+
+        params = struct('rowcol',[600 800], ...
+            'pixelsize',3e-06, ...
+            'dn2volts',0.25e-3, ...
+            'digitalblacklevel', 64, ...
+            'digitalwhitelevel', 4096, ...
+            'wellcapacity', 60000, ...
+            'fillfactor',0.1, ...
+            'isospeed',55, ...
+            'readnoise',1,...
+            'quantization','12 bit',...
+            'name','imx490-small');
+
+        sensor = sensorIMX363(params);
+
+    case {'ovt-large'}
+        params = struct('rowcol',[600 800], ...
+            'pixelsize',2.8e-06, ...
+            'dn2volts',0.25e-3, ...
+            'digitalblacklevel', 0, ...
+            'digitalwhitelevel', 4096, ...
+            'wellcapacity', 120000, ...
+            'fillfactor',0.9, ...
+            'isospeed',55, ...
+            'readnoise',1,...
+            'quantization','12 bit',...
+            'name','ovt-large');
+
+        sensor = sensorIMX363(params);
+end
+
+%}
+
