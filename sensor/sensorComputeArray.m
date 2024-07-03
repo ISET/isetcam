@@ -65,11 +65,12 @@ switch ieParamFormat(method)
         % Combine the input referred volts, excluding saturated values.
         rowcol = sensorGet(sensors(1),'size');       
         volts = zeros(rowcol(1),rowcol(2),numel(sensors));
-        vSwing = zeros(numel(sensors),1);
+        vSwing = zeros(numel(sensors),1); cg = vSwing;
         idx = volts;
         for ii=1:numel(sensors)
             volts(:,:,ii) = sensorGet(sensors(ii),'volts');
-            vSwing(ii) = sensorGet(sensors(1),'pixel voltage swing');
+            vSwing(ii) = sensorGet(sensors(ii),'pixel voltage swing');
+            cg(ii) = sensorGet(sensors(ii),'pixel conversion gain');
             idx(:,:,ii) = volts(:,:,ii) < vSwing(ii);
         end
                 
@@ -87,6 +88,10 @@ switch ieParamFormat(method)
         electrons = zeros(size(volts));
         for ii=1:numel(sensors)
             electrons(:,:,ii) = sensorGet(sensors(ii),'electrons per area','um');
+            thisElectrons = electrons(:,:,ii);
+            thisIDX = idx(:,:,ii);
+            thisElectrons(~thisIDX) = 0;
+            electrons(:,:,ii) = thisElectrons;
         end
 
         %  The estimated input, which should be equal for a uniform
@@ -97,16 +102,19 @@ switch ieParamFormat(method)
 
         % Set the voltage to the mean of the not saturated, input
         % referred electrons.
-        cg = sensorGet(sensors(1),'pixel conversion gain');
-        volts = cg*(sum(electrons,3) ./ N);
+
+        volts = zeros(rowcol(1),rowcol(2));
+        for ii=1:numel(sensors)
+            volts = volts + cg(ii)*electrons(:,:,ii);
+        end        
+        volts = volts ./ N;
 
         vSwing = sensorGet(sensors(1),'pixel voltage swing');
         volts(isinf(volts)) = 1;
         volts = vSwing * ieScale(volts,1);
-        % volts = ieClip(volts,0,vSwing);
 
         sensorCombined = sensors(1);
-        sensorCombined = sensorSet(sensorCombined,'pixel voltage swing',max(volts(:)));
+        sensorCombined = sensorClearData(sensorCombined);
         sensorCombined = sensorSet(sensorCombined,'volts',volts);
 
         % The voltages are computed with this assumption.
