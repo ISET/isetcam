@@ -152,7 +152,7 @@ switch lower(idealType)
         % PRNU are not calculated because noise flag is set to 1.
         %
         % Does not accept a sensor example
-        if ~isempty(sensorExample)
+        if exist('sensorExample','var') && ~isempty(sensorExample)
             error('Sensor example not used for monochrome case.'); 
         end
         sensor = sensorCreate('monochrome');
