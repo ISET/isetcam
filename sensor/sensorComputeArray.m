@@ -22,19 +22,19 @@ function [sensorCombined,sensors] = sensorComputeArray(sensorArray,oi,varargin)
 %
 
 %{
-% Average seems OK, but not fully tested.
-% best snr has problems
-% 
-scene = sceneCreate; scene = sceneSet(scene,'fov',25); oi = oiCreate('wvf'); 
+% Good parameters for debugging
+scene = sceneCreate('default',12); scene = sceneSet(scene,'fov',3); oi = oiCreate('wvf'); 
 oi = oiCompute(oi,scene,'crop',true);
-sensorArray = sensorCreateArray('splitpixel','exp time',0.05);
+sensorArray = sensorCreateArray('splitpixel','exp time',0.07,'size',[64 96]);
 [sA,s]=sensorComputeArray(sensorArray,oi,'method','average');
-% sensorWindow(sA);
-ip = ipCreate; ip = ipCompute(ip,sA); 
-% ipWindow(ip)
-% for ii=1:numel(s); sensorWindow(s(ii)); end       
+sensorWindow(sA);
+for ii=1:numel(s); sensorWindow(s(ii)); end       
+%
+ip = ipCreate; ip = ipCompute(ip,sA); ipWindow(ip);
+%
 % cm = [1 0 0; 1 0.5 0; 0 0 1; 0 0.5 1; 1 1 1];
 % ieNewGraphWin; colormap(cm); image(sA.metadata.bestPixel);
+% ieNewGraphWin; colormap(cm); image(sA.metadata.npixels); colormap;
 %}
 
 %% Parameters
@@ -57,6 +57,7 @@ method = p.Results.method;
 for ii=1:numel(sensorArray)
     sensors(ii) = sensorCompute(sensorArray(ii),oi); %#ok<AGROW>
 end
+% for ii=1:numel(sensors); sensorWindow(sensors(ii)); end       
 
 %%
 
@@ -65,17 +66,17 @@ switch ieParamFormat(method)
         % Combine the input referred volts, excluding saturated values.
         rowcol = sensorGet(sensors(1),'size');       
         volts = zeros(rowcol(1),rowcol(2),numel(sensors));
+        idx = zeros(rowcol(1),rowcol(2),numel(sensors));
         vSwing = zeros(numel(sensors),1); cg = vSwing;
-        idx = volts;
         for ii=1:numel(sensors)
             volts(:,:,ii) = sensorGet(sensors(ii),'volts');
             vSwing(ii) = sensorGet(sensors(ii),'pixel voltage swing');
             cg(ii) = sensorGet(sensors(ii),'pixel conversion gain');
-            idx(:,:,ii) = volts(:,:,ii) < vSwing(ii);
+            idx(:,:,ii) = (volts(:,:,ii) < 0.95 * vSwing(ii));
         end
                 
         % We average the not saturated pixels.  This is how many.
-        N = sum(idx,3);
+        N = sum(idx,3);  % ieNewGraphWin; imagesc(N);
 
         % When all four measurements are saturated, N=0. We set those
         % pixels to the saturation level (1).  See below.
@@ -87,7 +88,7 @@ switch ieParamFormat(method)
         % Maybe we want electrons / um^2 which would be 1e-12
         electrons = zeros(size(volts));
         for ii=1:numel(sensors)
-            electrons(:,:,ii) = sensorGet(sensors(ii),'electrons per area','um');
+            electrons(:,:,ii) = sensorGet(sensors(ii),'electrons per area','um');            
             thisElectrons = electrons(:,:,ii);
             thisIDX = idx(:,:,ii);
             thisElectrons(~thisIDX) = 0;
@@ -102,19 +103,21 @@ switch ieParamFormat(method)
 
         % Set the voltage to the mean of the not saturated, input
         % referred electrons.
-
+        volts = (sum(electrons,3)*cg(1))./N;
+        %{
         volts = zeros(rowcol(1),rowcol(2));
         for ii=1:numel(sensors)
             volts = volts + cg(ii)*electrons(:,:,ii);
         end        
         volts = volts ./ N;
+        %}
 
         vSwing = sensorGet(sensors(1),'pixel voltage swing');
         volts(isinf(volts)) = 1;
         volts = vSwing * ieScale(volts,1);
 
-        sensorCombined = sensors(1);
-        sensorCombined = sensorClearData(sensorCombined);
+        sensorCombined = sensors(2);
+        sensorCombined = sensorSet(sensorCombined,'quantization method','analog');
         sensorCombined = sensorSet(sensorCombined,'volts',volts);
 
         % The voltages are computed with this assumption.
