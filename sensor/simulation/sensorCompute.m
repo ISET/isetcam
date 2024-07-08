@@ -342,10 +342,9 @@ for ss=1:length(sensorArray)   % Number of sensors
             sensor = sensorSet(sensor,'digital values',analog2digital(sensor,'sqrt'));
         case 'lut'
             warning('sensorComputeNoise:LUT','LUT quantization not yet implemented.')
-        case 'gamma'
-            warning('sensorComputeNoise:Gamma','Gamma quantization not yet implemented.')
         otherwise
-            sensor = sensorSet(sensor,'digital values',analog2digital(sensor,'linear'));
+            % Changed to analog July, 2024.
+            % sensor = sensorSet(sensor,'digital values',analog2digital(sensor,'linear'));
     end
     
     %% Correlated double sampling

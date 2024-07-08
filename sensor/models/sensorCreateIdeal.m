@@ -5,44 +5,36 @@ function sensor = sensorCreateIdeal(idealType,sensorExample,varargin)
 %  sensor = sensorCreateIdeal(idealType,[sensorExample],varargin)
 %
 % Brief
-%  Create an ideal image sensor array.  The key step is how we set the
-%  noise flag at the end (to -1).  The other step is we can swap in
-%  the XYZ filters for the existing filters to match a matched 'XYZ'
-%  sensor.
-%
-%  It is possible to get the XYZ from the oi directly, without even
-%  going through the sensor!  (oiGet(oi,'xyz')).
+%  Create an ideal image sensor array.  We can mean several different
+%  things by ideal. See below.
 %
 % Inputs:
-%  idealType: The sensor array we create is determined by this parameter
-%      and the sensorExample. The fill factor or other geometry parameters
-%      are not adjusted. 
+%  idealType: 
+%      The sensor array we create is usually determined by this
+%      parameter and the sensorExample. 
 %
 %       * match:     - Same as sensor example, but noise turned off
 %       * match xyz: - As above, but also replace color filters with
 %                      XYZQuanta filters
 %
-%     These do not involve a match, they are just sensor arrays with
-%     no DSNU, PRNU, and the noiseFlag set to -1. The oi, sensor
-%     parameters are the defaults
+%     These ideal types do not match a sensor. They are just sensor
+%     arrays with zero DSNU, PRNU, and the noiseFlag set to -1. 
 %
 %       * monochrome - 100% filter transmission (Clear), default sensor
 %       * XYZ        - XYZQuanta filters, default sensor
 %
-%     When the string is chosen, the default parameters for the sensor and
-%     pixel are created and then these are made ideal.
-%
-%  sensorExample - A sensor that is matched
+%  sensorExample - A sensor whose general parameters are used to as
+%      the template for the ideal.
 %
 % Output
 %  sensorI - An array of monochrome sensors, one for each of the color
 %            channels of the idealType sensor.
 %
 % Description:
-%  The array contains ideal  pixels (no read noise, dark voltage, 100%
-%  fill-factor). Such an array can be used as a comparison to a typical
-%  sensor.  We also use this to simply calculate the number of photons
-%  incident at each pixel.
+%  The array contains ideal  pixels (zero read noise, dark voltage,
+%  100% fill-factor). Such an array can be used as a comparison to a
+%  typical sensor.  We also use this to simply calculate the number of
+%  photons incident at each pixel.
 %
 %  For the ideal pixel, the spectral quantum efficiency of the detector is
 %  100% at all wavelengths.
@@ -52,7 +44,7 @@ function sensor = sensorCreateIdeal(idealType,sensorExample,varargin)
 %  different from this because it does not force a 100% fill factor.
 %
 % See also:
-%   cameraCreate - Calls this one for certain tests.
+%   cameraCreate - Calls this function for certain tests.
 
 % Examples:
 %{
@@ -155,22 +147,32 @@ switch lower(idealType)
         end
 
     case 'monochrome'
-        % Create an ideal monochrome sensor.  Photon noise in computation.
+        % Create an ideal monochrome sensor.  Photon noise only.
         % Ideal pixel, with no significant noise characteristics.  DSNU and
         % PRNU are not calculated because noise flag is set to 1.
+        %
+        % Does not accept a sensor example
+        if exist('sensorExample','var') && ~isempty(sensorExample)
+            error('Sensor example not used for monochrome case.'); 
+        end
         sensor = sensorCreate('monochrome');
         sensor = sensorSet(sensor,'name','Monochrome');
-        if ~isempty(varargin)
+
+        % sensorCreateArray can send in parameters that are not the
+        % size. We check if this is a number - from sensorCreateArray
+        % it would be key (string).  There may be examples that count
+        % on this being a number.
+        if ~isempty(varargin) && isscalar(varargin{1})
             pixelSizeM = varargin{1};
             % In case they assumed square and sent in only one number
-            if numel(pixelSizeM) == 1
+            if isscalar(pixelSizeM)
                 pixelSizeM = repmat(pixelSizeM,1,2);
             end
             sensor = sensorSet(sensor,'pixel size same fill factor',pixelSizeM);
         else
-            % They didn't specify.  So we tell them.s
+            % They didn't specify.  So we tell them.
             pixelSizeM = sensorGet(sensor,'pixel size');
-            fprintf('Ideal sensor pixel size: %.2e\n',pixelSizeM);
+            fprintf('Setting ideal sensor pixel size (m): %.2e\n',pixelSizeM(1));
         end
 
         pixel  = sensorGet(sensor,'pixel');

@@ -44,6 +44,9 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %                                  Many parameters for lines, circles,
 %                                  squares. See sceneHDRLights.
 %      {'hdr chart'}           - High dynamic range test chart
+%      {'hdr image'}           - Sequence of lights on a dark
+%                                background image.  See below and see
+%                                sceneHDRImage() for multiple parameters 
 %
 %   Use sceneAdjustIlluminant() to change the scene SPD.
 %
@@ -77,7 +80,7 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %  for new methods.
 %
 %    sceneCreate('hdr chart','cols per level',12,'n levels',16,'d range',10^3.5)
-%    sceneCreate('hdr image', 'imsize', 512, 'n patches',8,'background image',true,'drange',3);
+%    sceneCreate('hdr image', 'imsize', 512, 'n patches',8,'background','','dynamic range',3);
 %
 % SPATIAL TEST PATTERNS:
 %
@@ -377,7 +380,7 @@ switch sceneName
         %
         if isempty(varargin)
             [scene,parms] = sceneHarmonic(scene);
-        elseif length(varargin) == 1
+        elseif isscalar(varargin)
             parms = varargin{1};
             [scene,parms] = sceneHarmonic(scene,parms);
         elseif length(varargin) == 2
@@ -462,7 +465,7 @@ switch sceneName
         if isempty(varargin)
             sz = 32;
             scene = sceneUniform(scene,'equal photons',sz);
-        elseif length(varargin) == 1
+        elseif isscalar(varargin)
             sz = varargin{1};
             scene = sceneUniform(scene,'equal photons',sz);
         elseif length(varargin) == 2
@@ -791,7 +794,7 @@ if ieNotDefined('contrast'), contrast = 0.20;
 elseif contrast > 1, contrast = contrast/100;
 end
 
-if numel(sz) == 1, sz(2) = sz(1); end
+if isscalar(sz), sz(2) = sz(1); end
 
 scene = initDefaultSpectrum(scene,'hyperspectral');
 wave  = sceneGet(scene,'wave');
@@ -1160,16 +1163,16 @@ end
 function scene = sceneUniform(scene,spectralType,sz,varargin)
 %% Create a spatially uniform scene.
 %
-% Various spd types are supported, including d65, blackbody, equal energy,
-% equal photon
+% spd types: d65, blackbody, equal energy, equal photon, 
 %
-% D65, equal energy, equal photons
-% Blackbody - varargin{1} should be the color temperature
+%  If blackbody - varargin{1} should be the color temperature
 %
+%  sz = [row,col]
+% 
 
 if ieNotDefined('scene'), error('Scene required.'); end
 if ieNotDefined('spectralType'), spectralType = 'ep'; end
-if ieNotDefined('sz'), sz = 32; end
+if ieNotDefined('sz'), sz = [32,32]; end
 scene = sceneSet(scene,'name',sprintf('uniform-%s',spectralType));
 
 % Add the spectral wavelength sampling
@@ -1178,9 +1181,10 @@ if ~isfield(scene,'spectrum')
 end
 wave  = sceneGet(scene,'wave');
 nWave = sceneGet(scene,'nwave');
+if isscalar(sz), sz = [sz,sz]; end
 
 % 100% reflectance
-d = ones(sz,sz,nWave);
+d = ones(sz(1),sz(2),nWave);
 
 spectralType = ieParamFormat(spectralType);
 switch lower(spectralType)
@@ -1558,8 +1562,8 @@ nWave  = sceneGet(scene,'nwave');
 img = imageSlantedEdge(imSize, barSlope, darklevel);
 
 % Make the image
-imSize = round(imSize/2);
-[X,Y] = meshgrid(-imSize:imSize,-imSize:imSize);
+% imSize = round(imSize/2);
+% [X,Y] = meshgrid(-imSize:imSize,-imSize:imSize);
 %  img = zeros(size(X));
 %  y = barSlope*x defines the line.  We find all the Y values that are
 %  above the line
@@ -1644,7 +1648,7 @@ for ii=1:nBars
 end
 
 % Adjust the size of the image
-if length(bSize) == 1,     barWidth = bSize; barHeight = 128;
+if isscalar(bSize),     barWidth = bSize; barHeight = 128;
 elseif length(bSize) == 2, barHeight = bSize(1); barWidth = bSize(2);
 else,                      error('Bad bSize %f\n',bSize);
 end

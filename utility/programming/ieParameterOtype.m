@@ -63,15 +63,15 @@ switch ieParamFormat(param)
         oType = 'l3'; return
 end
 
-%% Find the string before the first space or the first '/'.
+%% Find the string before the first space, '/', or '_'
 
-% Special characters are spaces and /
+% When we call these subtypes, we seem to always need a break
+% character after the subtype, like pixel or wvf.  This could be fixed
+% up, but it would take a lot of checking.  In some cases
+% (sensorCreatePixel) we check and insert a space.
 c1 = strfind(param,' ');   % Find the spaces
 c2 = strfind(param,'/');   % Find the '/'
 c3 = strfind(param,'_');   % Find the '_'
-
-% Find the first space or '/' or '_'  If we checked for whole string, we wouldn't
-% need the bit above.
 pos = min([c1,c2,c3]);
 
 % Parse and return the string as oType
