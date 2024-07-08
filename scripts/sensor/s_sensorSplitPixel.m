@@ -7,6 +7,12 @@
 % graphs and images.  It may be useful, if you are running by hand, to
 % show the sensorWindow and ipWindow.
 %
+% TODO:  
+%   * Quantization calculations are needed, based on the high and
+%     low conversion gain.
+%   * Methods for creating different types of sensor arrays, not just
+%     the OVT model.
+%
 % See also
 %   sensorCreateArray, sensorComputeArray, sensorCreateSplitPixel
 
@@ -57,7 +63,7 @@ mesh(sA.metadata.npixels); colormap(jet(4)); colorbar;
 set(gca,'zlim',[1 4]);
 
 %%
-[sA,s]=sensorComputeArray(sensorArray,oi,'method','bestsnr');
+sA=sensorComputeArray(sensorArray,oi,'method','bestsnr');
 
 % This is the combined
 % sensorWindow(sA);
@@ -69,5 +75,20 @@ ip = ipCompute(ip,sA);
 rgb = ipGet(ip,'srgb');
 ieNewGraphWin; imagesc(rgb); title('Best SNR')
 % ipWindow(ip);
+
+%% Now with only two pixels, no extra conversion gain
+
+clear sensorArray;
+tmp = sensorCreateArray('splitpixel','exp time',0.1,'size',2*[64 96],'noise flag',1);
+sensorArray(1) = tmp(1);
+sensorArray(2) = tmp(3);
+[sA,s] = sensorComputeArray(sensorArray,oi,'method','bestsnr');
+sensorWindow(sA);
+for ii=1:numel(s); sensorWindow(s(ii)); end
+
+%% Average methods
+[sA,s]=sensorComputeArray(sensorArray,oi,'method','average');
+sensorWindow(sA);
+for ii=1:numel(s); sensorWindow(s(ii)); end
 
 %% END
