@@ -79,7 +79,7 @@ patchSize  = p.Results.patchsize;
 if isempty(imgFile)
     % Black scene
     if isempty(imSize), imSize = [512,512]; end
-    scene = sceneCreate('uniformee',imSize(1));
+    scene = sceneCreate('uniformee',imSize);
     scene = sceneAdjustLuminance(scene,'mean',0);  % Black scene
 else
     % Considering making the image monochrome.  Would need to create a

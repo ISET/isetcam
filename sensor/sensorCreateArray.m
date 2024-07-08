@@ -11,7 +11,7 @@ function sensorArray = sensorCreateArray(arrayType,varargin)
 %   Currently a standard array.
 %
 % Input
-%   arrayType - 'split pixel','idea', ...
+%   arrayType - 'split pixel','ideal', ...
 %
 % Optional key/val pairs
 %   A list of sensor parameters that apply to ALL of the sensors in

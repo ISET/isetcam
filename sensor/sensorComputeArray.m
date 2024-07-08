@@ -18,14 +18,14 @@ function [sensorCombined,sensors] = sensorComputeArray(sensorArray,oi,varargin)
 %   sensorArray
 %
 % See also
-%    sensorCompute, sensorCreateArray
+%    sensorCompute, sensorCreateArray, v_icam_splitPixel
 %
 
 %{
 % Good parameters for debugging
 scene = sceneCreate('default',12); scene = sceneSet(scene,'fov',3); oi = oiCreate('wvf'); 
 oi = oiCompute(oi,scene,'crop',true);
-sensorArray = sensorCreateArray('splitpixel','exp time',0.07,'size',[64 96]);
+sensorArray = sensorCreateArray('splitpixel','exp time',0.01,'size',[64 96]);
 [sA,s]=sensorComputeArray(sensorArray,oi,'method','average');
 sensorWindow(sA);
 for ii=1:numel(s); sensorWindow(s(ii)); end       
@@ -59,127 +59,109 @@ for ii=1:numel(sensorArray)
 end
 % for ii=1:numel(sensors); sensorWindow(sensors(ii)); end       
 
-%%
+%% Computational method
 
+% We base our calculations on the electrons, not the voltages.
+% The conversion gain is internal to the sensor.
+%
+% Note: We are not calculating in the quantized space.  To deal with
+% quantization, we need to incorporate conversion gain. For now, we
+% are just using analog values.
+%
+% To infer the input level from the number of electrons, we need to
+% account for both the area of the pixel, and the presence of a filter
+% mask in front of the pixel. These electrons are really 'virtual
+% electrons'.  Maybe we should call the estimates apparent photons
+% (aPhotons)?
+
+rowcol      = sensorGet(sensors(1),'size');
+idx         = zeros(rowcol(1),rowcol(2),numel(sensors));
+vElectrons  = zeros(rowcol(1),rowcol(2),numel(sensors));
+vSwing      = zeros(numel(sensors),1);
+sensitivity = zeros(numel(sensors),1);
+
+sensorCombined = sensors(1);
+
+% Identify the saturated pixels.  Calculate the relative
+% spectral sensitivity of the QE.  We account for pixel area
+% separatly, below.
+for ii=1:numel(sensors)
+    vSwing(ii) = sensorGet(sensors(ii),'pixel voltage swing');
+    r = sensorGet(sensors(ii),'spectral qe') ./ sensorGet(sensors(1),'spectral qe');
+    sensitivity(ii) = mean(r(:),'all','omitnan');
+
+    volts = sensorGet(sensors(ii),'volts');
+    idx(:,:,ii) = (volts < (0.95 * vSwing(ii)));
+end
+
+% This accounts for area and relative sensitivty.
+for ii=1:numel(sensors)
+    % We get the electrons, but account for the area
+    electrons = sensorGet(sensors(ii),'electrons per area','um');
+    thisIDX = idx(:,:,ii);
+
+    % Set saturated pixels to 0
+    electrons(~thisIDX) = 0;
+
+    % If the sensitivity is less than sensors(1), we scale up
+    % the number of virtual electrons.  The virtual electrons
+    % are like an input intensity referred value.
+    vElectrons(:,:,ii) = electrons/sensitivity(ii);
+end
+% ieNewGraphWin; imagesc(vElectrons(:,:,4)); colormap(gray);
+% colorbar;
+
+
+%%
 switch ieParamFormat(method)
     case 'average'
-        % Combine the input referred volts, excluding saturated values.
-        rowcol = sensorGet(sensors(1),'size');       
-        volts = zeros(rowcol(1),rowcol(2),numel(sensors));
-        idx = zeros(rowcol(1),rowcol(2),numel(sensors));
-        vSwing = zeros(numel(sensors),1); cg = vSwing;
-        for ii=1:numel(sensors)
-            volts(:,:,ii) = sensorGet(sensors(ii),'volts');
-            vSwing(ii) = sensorGet(sensors(ii),'pixel voltage swing');
-            cg(ii) = sensorGet(sensors(ii),'pixel conversion gain');
-            idx(:,:,ii) = (volts(:,:,ii) < 0.95 * vSwing(ii));
-        end
-                
-        % We average the not saturated pixels.  This is how many.
-        N = sum(idx,3);  % ieNewGraphWin; imagesc(N);
-
-        % When all four measurements are saturated, N=0. We set those
-        % pixels to the saturation level (1).  See below.
-
-        % These are the input referred estimates. When all the
-        % voltages are saturated the image is rendered as black.
-        % volts per pixel -> (volts/m^2) * gain / (volts/electron)
-        %                 -> electrons/m2
-        % Maybe we want electrons / um^2 which would be 1e-12
-        electrons = zeros(size(volts));
-        for ii=1:numel(sensors)
-            electrons(:,:,ii) = sensorGet(sensors(ii),'electrons per area','um');            
-            thisElectrons = electrons(:,:,ii);
-            thisIDX = idx(:,:,ii);
-            thisElectrons(~thisIDX) = 0;
-            electrons(:,:,ii) = thisElectrons;
-        end
-
-        %  The estimated input, which should be equal for a uniform
-        %  field
-        %  mean(in1(:)),mean(in2(:)),mean(in3(:)),mean(in4(:))
-        %  min(in1(:)),min(in2(:)),min(in3(:)),min(in4(:))
-        %  max(in1(:)),max(in2(:)),max(in3(:)),max(in4(:))
-
-        % Set the voltage to the mean of the not saturated, input
-        % referred electrons.
-        volts = (sum(electrons,3)*cg(1))./N;
-        %{
-        volts = zeros(rowcol(1),rowcol(2));
-        for ii=1:numel(sensors)
-            volts = volts + cg(ii)*electrons(:,:,ii);
-        end        
-        volts = volts ./ N;
-        %}
-
-        vSwing = sensorGet(sensors(1),'pixel voltage swing');
-        volts(isinf(volts)) = 1;
-        volts = vSwing * ieScale(volts,1);
-
-        sensorCombined = sensors(2);
-        sensorCombined = sensorSet(sensorCombined,'quantization method','analog');
-        sensorCombined = sensorSet(sensorCombined,'volts',volts);
-
-        % The voltages are computed with this assumption.
-        sensorCombined = sensorSet(sensorCombined,'analog gain',1);
-        sensorCombined = sensorSet(sensorCombined,'analog offset',0);
-
+               
+        % The number of non-saturated sensors at that pixel
+        N = sum(idx,3);  
         % Save the number of pixels that contribute to the value at
-        % each pixel. 
+        % each pixel.
         sensorCombined.metadata.npixels = N;
+
+        % ieNewGraphWin; imagesc(N);
+        
+        if nnz(N(:) == 0) > 0
+            error('All sensors are saturated at some pixels');
+        else
+            % Calculate the mean of the virtual electrons, accounting
+            % for the number of valid sensors.
+            volts = sum(vElectrons,3) ./ N;
+        end
 
     case 'bestsnr'
         % Choose the pixel with the most electrons and thus best SNR.
-        % Not done yet.  We need to correct to input referred based on
-        % the conversion gain and spectral QE of that sensor.  We seem
-        % to already be correcting based on the area.
-        rowcol = sensorGet(sensors(1),'size');
-        electrons = zeros(rowcol(1),rowcol(2),numel(sensors));
-        idx = electrons;
-        wellcapacity = zeros(numel(sensors),1);
-        for ii=1:numel(sensors)
-            electrons(:,:,ii) = sensorGet(sensors(ii),'electrons per area','um');
-            wellcapacity(ii) = sensorGet(sensors(ii),'pixel well capacity');
-
-            % Find pixels with electrons below well capacity. Set the
-            % saturated levels to zero so they do not appear as max
-            % e1(~idx1) = 0; e2(~idx2) = 0; e3(~idx3) = 0; e4(~idx4) = 0;
-            idx(:,:,ii) = electrons(:,:,ii) < wellcapacity(ii);
-            thisElectrons = electrons(:,:,ii); thisIDX = idx(:,:,ii);
-            thisElectrons(~thisIDX) = 0;
-            electrons(:,:,ii) = thisElectrons;
-        end
-
-        % Find the pixel with the most non-saturated electrons
-        [val, bestPixel] = max(electrons,[],3);
-
-        % We need to input-refer the electrons so that the voltage
-        % from each pixel is an estimate of the light at that pixel.
-        % This first calculation corrects for conversion gain.  
-        cg = zeros(numel(sensors),1);
-        for ii=1:numel(sensors)
-            cg(ii) = sensorGet(sensors(ii),'pixel conversion gain');
-        end
-
-        % ieNewGraphWin; imagesc(cg(bestPixel)); 
-        % ieNewGraphWin; imagesc(bestPixel);
-        % ieNewGraphWin; imagesc(val);
-        % Not working.  Not sure why.  Need a debugging system.
-        volts = val ./ cg(bestPixel);
         
-        % ieNewGraphWin; imagesc(volts); colormap(gray)
-        % But for the OVT split pixel, we also need to estimate based on QE.
-
-        % Prepare the combined sensor.
-        sensorCombined = sensors(1);
-        sensorCombined = sensorSet(sensorCombined,'pixel voltage swing',sensorGet(sensors(1),'pixel voltage swing')*4);
+        % Find the pixel with the most non-saturated electrons
+        [volts, bestPixel] = max(vElectrons,[],3);
         sensorCombined.metadata.bestPixel = bestPixel;
-        sensorCombined = sensorSet(sensorCombined,'analog gain',1);
-        sensorCombined = sensorSet(sensorCombined,'analog offset',0);
+    
+    otherwise
+        error('Unknown method %s\n',method);
+end
 
-        sensorCombined = sensorSet(sensorCombined,'volts',volts);
+% Scale the volts to occupy the whole voltage swing.
+vSwing = sensorGet(sensorCombined,'pixel voltage swing');
+volts = vSwing * ieScale(volts,1);
 
-    case 'sum'
+% This is an analog calculation
+sensorCombined = sensorSet(sensorCombined,'quantization method','analog');
+sensorCombined = sensorSet(sensorCombined,'volts',volts);
+
+% The voltages are computed with this assumption.
+sensorCombined = sensorSet(sensorCombined,'analog gain',1);
+sensorCombined = sensorSet(sensorCombined,'analog offset',0);
+
+sensorCombined = sensorSet(sensorCombined,'name',sprintf('Combined-%s',method));
+
+end
+
+
+%{
+case 'sum'
         % I don't understand this one
         rowcol = sensorGet(sensors(1),'size');
         electrons = zeros(rowcol(1),rowcol(2),numel(sensors));
@@ -210,10 +192,4 @@ switch ieParamFormat(method)
         dv = 2^nbits*ieScale(volts,1);
         sensorCombined = sensorSet(sensorCombined,'dv',dv);
         return;
-    otherwise
-        error('Unknown method %s\n',method);
-end
-
-sensorCombined = sensorSet(sensorCombined,'name',sprintf('Combined-%s',method));
-
-end
+%}
