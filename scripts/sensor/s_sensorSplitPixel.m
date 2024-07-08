@@ -1,6 +1,14 @@
 %% Illustrate the split pixel sensor implementation
 %
+% Notice that the 'best snr' case, in fact, has better snr.  The
+% average combines sensors with very noisy pixels.
 %
+% I commented out the various ISET window displays and just show some
+% graphs and images.  It may be useful, if you are running by hand, to
+% show the sensorWindow and ipWindow.
+%
+% See also
+%   sensorCreateArray, sensorComputeArray, sensorCreateSplitPixel
 
 %%
 ieInit;
@@ -18,20 +26,29 @@ oi = oiCompute(oi,scene,'crop',true);
 %% Make a sensor array that can see the whole range
 
 % The sensor size is big enough to capture the whole chart
-sensorArray = sensorCreateArray('splitpixel','exp time',0.1,'size',2*[64 96],'noise flag',0);
-[sA,s]=sensorComputeArray(sensorArray,oi,'method','average');
+sensorArray = sensorCreateArray('splitpixel','exp time',0.1,'size',2*[64 96],'noise flag',1);
+[sA,s]      = sensorComputeArray(sensorArray,oi,'method','average');
 
 % This is the combined
-sensorWindow(sA);
+% sensorWindow(sA);
 sensorPlot(sA,'volts hline',[1 48],'twolines',true);
 set(gca,'yscale','log');
 
 %% These are the individual sensors
 
-for ii=1:numel(s); sensorWindow(s(ii)); end       
+% for ii=1:numel(s); sensorWindow(s(ii)); end      
+ieNewGraphWin; tiledlayout(2,2);
+for ii=1:numel(s)
+    nexttile;
+    imagesc(sensorGet(s(ii),'rgb'));
+end
 
 %%
-ip = ipCreate; ip = ipCompute(ip,sA); ipWindow(ip);
+ip = ipCreate; 
+ip = ipCompute(ip,sA);
+rgb = ipGet(ip,'srgb');
+ieNewGraphWin; imagesc(rgb);  title('Average')
+% ipWindow(ip);
 
 %%  Show the map of how many sensors contribute to each pixel
 
@@ -43,8 +60,14 @@ set(gca,'zlim',[1 4]);
 [sA,s]=sensorComputeArray(sensorArray,oi,'method','bestsnr');
 
 % This is the combined
-sensorWindow(sA);
+% sensorWindow(sA);
 sensorPlot(sA,'volts hline',[1 48],'twolines',true);
 set(gca,'yscale','log');
+
+%%
+ip = ipCompute(ip,sA); 
+rgb = ipGet(ip,'srgb');
+ieNewGraphWin; imagesc(rgb); title('Best SNR')
+% ipWindow(ip);
 
 %% END

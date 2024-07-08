@@ -18,23 +18,24 @@ function [sensorCombined,sensors] = sensorComputeArray(sensorArray,oi,varargin)
 %   sensorArray
 %
 % See also
-%    sensorCompute, sensorCreateArray, v_icam_splitPixel
+%    sensorCompute, sensorCreateArray, s_sensorSplitPixel
 %
 
 %{
-% Good parameters for debugging
 scene = sceneCreate('default',12); scene = sceneSet(scene,'fov',3); oi = oiCreate('wvf'); 
 oi = oiCompute(oi,scene,'crop',true);
-sensorArray = sensorCreateArray('splitpixel','exp time',0.01,'size',[64 96]);
+sensorArray = sensorCreateArray('splitpixel','exp time',0.1,'size',[64 96]);
 [sA,s]=sensorComputeArray(sensorArray,oi,'method','average');
-sensorWindow(sA);
-for ii=1:numel(s); sensorWindow(s(ii)); end       
-%
 ip = ipCreate; ip = ipCompute(ip,sA); ipWindow(ip);
-%
-% cm = [1 0 0; 1 0.5 0; 0 0 1; 0 0.5 1; 1 1 1];
-% ieNewGraphWin; colormap(cm); image(sA.metadata.bestPixel);
-% ieNewGraphWin; colormap(cm); image(sA.metadata.npixels); colormap;
+ieNewGraphWin; colormap(jet(4)); image(sA.metadata.npixels); colorbar;
+%}
+%{
+scene = sceneCreate('default',12); scene = sceneSet(scene,'fov',3); oi = oiCreate('wvf'); 
+oi = oiCompute(oi,scene,'crop',true);
+sensorArray = sensorCreateArray('splitpixel','exp time',0.2,'size',[64 96]);
+[sA,s]=sensorComputeArray(sensorArray,oi,'method','best snr');
+ip = ipCreate; ip = ipCompute(ip,sA); ipWindow(ip);
+ieNewGraphWin; colormap(jet(4)); image(sA.metadata.bestPixel); colorbar;
 %}
 
 %% Parameters
@@ -133,10 +134,20 @@ switch ieParamFormat(method)
         end
 
     case 'bestsnr'
-        % Choose the pixel with the most electrons and thus best SNR.
+        % Choose the pixel with the most real electrons and thus best SNR.
         
+        % We need to convert vElectrons back to electrons.  Then we
+        % store the volts with the vElectron value from the best
+        % electron.
+        electrons = vElectrons;
+        for ii=1:numel(sensors)
+            electrons(:,:,ii) = vElectrons(:,:,ii)*sensitivity(ii);
+        end
+        [volts, bestPixel] = max(electrons,[],3);
+        volts = volts ./ sensitivity(bestPixel);
+
         % Find the pixel with the most non-saturated electrons
-        [volts, bestPixel] = max(vElectrons,[],3);
+        % [volts, bestPixel] = max(vElectrons,[],3);
         sensorCombined.metadata.bestPixel = bestPixel;
     
     otherwise
