@@ -1,17 +1,40 @@
 %% Illustrate the split pixel sensor implementation
 %
-% Notice that the 'best snr' case, in fact, has better snr.  The
-% average combines sensors with very noisy pixels.
+% The split pixel design includes two photosites within a single
+% pixel.  One has a much higher sensitivity than the other.  In some
+% cases, there are multiple readouts from each pixel with different
+% conversion gains.  See the notes in sensorCreateSplitPixel for more
+% background information.  Ultimately, there will be a class tutorial
+% about this design.
 %
-% I commented out the various ISET window displays and just show some
-% graphs and images.  It may be useful, if you are running by hand, to
-% show the sensorWindow and ipWindow.
+% This script illustrates how to run the split pixel simulation.  For
+% the moment, we only have an implementation of something like the
+% Omnivision pixel. We will implement more features over time
+% (07.08.2024).
+%
+% For the computation of an image from the multiple pixels, we have
+% two methods.  One provides a value corresponding to the 'average'
+% estimate at each pixel from all the sensors.  The other provides a
+% value from just the sensor with the 'best snr'.
+%
+% When you run the simulation, notice that the 'best snr' case, in
+% fact, has better snr for the brighter regions. The average combines
+% sensors with very noisy pixels, which degrades.  But for the dark
+% pixels, where there is very little signal altogether, the average
+% may be a bit better.  Hard to say just now.s
+%
+% Programming Notes:
+%  I commented out the various ISET window displays and just show some
+%  graphs and images.  It may be useful, if you are running by hand, to
+%  show the sensorWindow and ipWindow.
 %
 % TODO:  
 %   * Quantization calculations are needed, based on the high and
 %     low conversion gain.
 %   * Methods for creating different types of sensor arrays, not just
-%     the OVT model.
+%     the OVT model.  The Sony IMX490 is halfway implemented.
+%   * It is possible to run by combining with just 2 or 3 sensors.
+%   * Remember that there are various sceneCreate('hdr *') types
 %
 % See also
 %   sensorCreateArray, sensorComputeArray, sensorCreateSplitPixel
@@ -90,5 +113,20 @@ for ii=1:numel(s); sensorWindow(s(ii)); end
 [sA,s]=sensorComputeArray(sensorArray,oi,'method','average');
 sensorWindow(sA);
 for ii=1:numel(s); sensorWindow(s(ii)); end
+
+%% Now try with a general HDR scene
+
+scene = sceneCreate('hdr image');
+scene = sceneSet(scene,'fov',8); 
+
+oi = oiCreate('wvf'); 
+oi = oiCompute(oi,scene,'crop',true);
+
+sensorArray = sensorCreateArray('splitpixel','exp time',0.05,'size',2*[64 96],'noise flag',1);
+[sA,s]=sensorComputeArray(sensorArray,oi,'method','average');
+sensorWindow(sA); sensorSet(sA,'gamma',0.3);
+
+ip = ipCreate; ip = ipCompute(ip,sA); 
+ipWindow(ip); ip = ipSet(ip,'gamma',0.3);
 
 %% END
