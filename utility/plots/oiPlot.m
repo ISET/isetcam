@@ -148,7 +148,7 @@ if ieNotDefined('roiLocs')
     switch pType
         case {'irradiancehline','hline','hlineirradiance' , ...
                 'irradianceenergyhline','energyhline','hlineirradianceenergy' , ...
-                'illuminancehline','horizontallineilluminance','hlineilluminance', ...
+                'illuminancehline','illuminancehlinergb','horizontallineilluminance','hlineilluminance', ...
                 'illuminanceffthline',...
                 'contrasthline','hlinecontrast', ...
                 }
@@ -425,6 +425,37 @@ switch pType
         udata.cmd = 'plot(pos,illum)';
         set(g,'Name',sprintf('Line %.0f (%s)',roiLocs(2),oiGet(oi,'name')));
         
+    case {'illuminancehlinergb'}
+        % Show the illuminance of a line overlaid on the RGB image
+        
+        % Put in the rgb image with the rendering parameters of the
+        % oiWindow.
+        rgb = oiGet(oi,'rgb'); cols = size(rgb,2);        
+        imagesc(rgb); axis off
+        hold on;
+        thisL = line([1 cols],[roiLocs(2) roiLocs(2)],'Color','g','LineStyle','--');
+        thisL.LineWidth = 0.1;
+        yyaxis left
+        set(gca,'xticklabel','','yticklabel','');
+
+        % Plot the white line illuminance, log scale, against the
+        % right axis.
+        yyaxis right;
+        udata = oiPlot(oi,'hline illuminance',[1,roiLocs(2)],'no figure');
+        plot(1:numel(udata.data),udata.data,'w-');
+        ax = gca; ax.YAxis(2).Scale = 'log'; 
+        yMin = 10^(floor(log10(min(udata.data(:))))); 
+        yMax = 10^(ceil(log10(max(udata.data(:)))));
+
+        % Places the log plot in the bottom third of the image.
+        ax.YAxis(2).Limits = [yMin,yMax^3];
+        yTick = get(ax,'ytick');
+        yTick = yTick(yTick <= yMax);
+        set(ax,'ytick',yTick);
+        ylabel('Log10 Illuminance'); axis on;
+
+        % Set the name and indicate the line.
+        set(g,'Name',sprintf('Line %.0f (%s)',roiLocs(2),oiGet(oi,'name')));
     case {'illuminancemeshlog'}
         % Mesh plot of image log illuminance
         udata = plotIlluminanceMesh(oi,'log');
