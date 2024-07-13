@@ -5,6 +5,8 @@ function params = wvfApertureP
 %
 % See also
 %   wvfAperture
+%
+% We should implement wvfApertureSet/Get
 
 % Example:
 %{

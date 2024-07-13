@@ -426,20 +426,20 @@ switch pType
         set(g,'Name',sprintf('Line %.0f (%s)',roiLocs(2),oiGet(oi,'name')));
         
     case {'illuminancehlinergb'}
-        % Show the illuminance of a line overlaid on the RGB image
+        % oiPlot(oi,'illuminance hline rgb',[1 100]);
+        %
+        % Plot the illuminance of a line superimposed on the RGB
+        % image.  The illuminance is log10 illuminance plot.
         
-        % Put in the rgb image with the rendering parameters of the
-        % oiWindow.
+        % The rgb image has the rendering parameters of the oiWindow.
         rgb = oiGet(oi,'rgb'); cols = size(rgb,2);        
-        imagesc(rgb); axis off
-        hold on;
+        imagesc(rgb); axis off; hold on;
         thisL = line([1 cols],[roiLocs(2) roiLocs(2)],'Color','g','LineStyle','--');
         thisL.LineWidth = 0.1;
-        yyaxis left
+        yyaxis left % No numbers on the image axis.
         set(gca,'xticklabel','','yticklabel','');
 
-        % Plot the white line illuminance, log scale, against the
-        % right axis.
+        % A white line of log illuminance.  Values on the right.
         yyaxis right;
         udata = oiPlot(oi,'hline illuminance',[1,roiLocs(2)],'no figure');
         plot(1:numel(udata.data),udata.data,'w-');
@@ -447,13 +447,15 @@ switch pType
         yMin = 10^(floor(log10(min(udata.data(:))))); 
         yMax = 10^(ceil(log10(max(udata.data(:)))));
 
-        % Places the log plot in the bottom third of the image.
+        % This scale places the log plot in the bottom third of the image.
         ax.YAxis(2).Limits = [yMin,yMax^3];
-        yTick = get(ax,'ytick');
-        yTick = yTick(yTick <= yMax);
+        n = log10(yMax)-log10(yMin)+1;
+        yTick = logspace(log10(yMin),log10(yMax),n);
+        yTick = yTick(1:2:n);   % Space by 2 log units
         set(ax,'ytick',yTick);
-        ylabel('Log10 Illuminance'); axis on;
-
+        ylabel('Log10 Illuminance (lux)'); axis on;
+        truesize;
+        
         % Set the name and indicate the line.
         set(g,'Name',sprintf('Line %.0f (%s)',roiLocs(2),oiGet(oi,'name')));
     case {'illuminancemeshlog'}
