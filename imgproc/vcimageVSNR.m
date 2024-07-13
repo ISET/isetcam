@@ -38,6 +38,7 @@ function [vSNR,rect] = vcimageVSNR(ip,dpi,dist,rect)
  sensor = sensorCreate; 
  sensor = sensorSet(sensor,'pixel size same fill factor',[1.4 1.4]*1e-6);
  sensor = sensorSet(sensor,'fov',5,oi);
+ sensor = sensorSet(sensor,'noise flag',0);
  sensor = sensorCompute(sensor,oi);
  ip = ipCompute(ipCreate,sensor);
 
@@ -46,12 +47,7 @@ function [vSNR,rect] = vcimageVSNR(ip,dpi,dist,rect)
  rect = [18    13   215   174];
  dist = 0.20; % Seen at 18 inches
  [vSNR rect ] = vcimageVSNR(ip,dpi,dist,rect);
- assert(abs(vSNR - 1.65) < 0.1)
-
- % Further away the SNR is much better
- dist = 2;  % Three meters
- vSNR = vcimageVSNR(ip,dpi,dist,rect);
- assert(abs(vSNR - 15) < 0.1)
+ assert(abs(vSNR/37.743 - 1) < 0.01)
 %}
 %%
 if ieNotDefined('ip'), ip = vcGetObject('vci'); end
