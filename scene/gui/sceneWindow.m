@@ -105,9 +105,6 @@ else
     sceneW.refresh;
 end
 
-% Assume true if it does not exist.  Or if it is true.
-if ~exist('show','var') || show, drawnow; end
-
 if ~isempty(p.Results.renderflag)
     sceneSet(scene,'render flag',p.Results.renderflag);
 end
@@ -115,5 +112,8 @@ end
 if ~isempty(p.Results.gamma)
     sceneSet(scene,'gamma',p.Results.gamma);
 end
+
+% Assume true if it does not exist.  Or if it is true.
+if ~exist('show','var') || show, drawnow; end
 
 end
