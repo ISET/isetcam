@@ -303,6 +303,26 @@ switch sensorType
 
         % Split pixel parameters for OVT
     case {'ovt-large'}
+        % Solhusvik, Johannes, et al. "1280× 960 2.8 µm HDR CIS with DCG and
+        % Split-Pixel Combined." Proceedings of the International Image Sensor
+        % Workshop (IISW), Snowbird, UT, USA. 2019.
+        %
+        % https://www.imagesensors.org/Past%20Workshops/2019%20Workshop/2019%20Papers/R32.pdf.
+        %
+        % The difference between the two sensors is only in the
+        % spectral QE. Because the small pixel is both small and in
+        % the OVT case covered by a filter, it is 0.01 the qe of the
+        % large pixel.
+        %
+        % For the OVT case, I will also try changing the spectral
+        % curves, which are shown in their paper, cited above.  Not
+        % yet implemented.
+        %
+        % We decided that the voltage swing is always the full well
+        % capacity times the lower conversion gain.  The higher
+        % conversion gain just saturates the voltage at a lower number
+        % of electrons.  Is that right?
+
         params = struct('rowcol',[600 800], ...
             'pixelsize',2.8e-06, ...
             'dn2volts',0.25e-3, ...
@@ -318,6 +338,7 @@ switch sensorType
         sensor = sensorIMX363(params);
 
     case {'ovt-small'}
+        % See above.
         params = struct('rowcol',[600 800], ...
             'pixelsize',2.8e-06, ...
             'dn2volts',0.25e-3, ...
