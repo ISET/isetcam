@@ -229,7 +229,7 @@ switch lower(pType)
         
         udata.wave = wave;
         udata.photons = photons;
-        if numel(photons) == 1
+        if isscalar(photons)
             bar(wave,photons); grid on;
         else
             plot(wave,photons,'k-'); grid on;
@@ -803,7 +803,7 @@ switch lower(pType)
         
     case {'depthmapcontour'}
         %scenePlot(scene,'depth map contour')
-        if length(varargin) >=1, n = varargin{1}; else n = 4; end
+        if length(varargin) >=1, n = varargin{1}; else, n = 4; end
         
         dmap = sceneGet(scene,'depth map'); mx = max(dmap(:));
         dmap = ieScale(dmap,0,1);
