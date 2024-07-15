@@ -122,6 +122,17 @@ switch param
         
     case {'initclear'}
         % Clear workspace variables with ieInit.  True or False.
+        if ischar(val)
+            % Allowing on and off.  Not sure why.
+            switch lower(val)
+                case 'on'
+                    val = true;
+                case 'off'
+                    val = false;
+                otherwise
+                    error('Improper value %s',val);
+            end
+        end
         setpref('ISET','initclear',logical(val));
         
         % Set window information at startup

@@ -102,7 +102,12 @@ sensorArray = sensor;
 clear sensor;
 
 for ss=1:length(sensorArray)   % Number of sensors
-    sensor = sensorArray(ss);
+    if iscell(sensorArray)
+        sensor = sensorArray{ss};
+    else
+        sensor = sensorArray(ss);
+    end
+
     %% Standard compute path
     if showBar, wBar = waitbar(0,sprintf('Sensor %d image:  ',ss)); end
     
@@ -114,7 +119,7 @@ for ss=1:length(sensorArray)   % Number of sensors
     % model here, but that is not currently the case.
     integrationTime = sensorGet(sensor,'integration Time');
     pattern = sensorGet(sensor,'pattern');
-    if numel(integrationTime) == 1 && ...
+    if isscalar(integrationTime) && ...
             ( (integrationTime == 0) || sensorGet(sensor,'auto exposure') )
         % The autoexposure will need to work for the cases of 1 value for the
         % whole array and it will need to work for the case in which the
@@ -337,10 +342,9 @@ for ss=1:length(sensorArray)   % Number of sensors
             sensor = sensorSet(sensor,'digital values',analog2digital(sensor,'sqrt'));
         case 'lut'
             warning('sensorComputeNoise:LUT','LUT quantization not yet implemented.')
-        case 'gamma'
-            warning('sensorComputeNoise:Gamma','Gamma quantization not yet implemented.')
         otherwise
-            sensor = sensorSet(sensor,'digital values',analog2digital(sensor,'linear'));
+            % Changed to analog July, 2024.
+            % sensor = sensorSet(sensor,'digital values',analog2digital(sensor,'linear'));
     end
     
     %% Correlated double sampling

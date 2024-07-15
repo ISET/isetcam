@@ -67,7 +67,7 @@ switch param
     case {'size','widthheight','widthandheight'} %M
         % pixelSet(pixe,'size')
         % The fill factor changes, because pd is not change.
-        if length(val) == 1, val(2) = val(1); end
+        if isscalar(val), val(2) = val(1); end
         pixel = pixelSet(pixel,'width',val(1));
         pixel = pixelSet(pixel,'height',val(2));
         disp('Fill factor may have changed. You can use: size same fill factor');
@@ -145,8 +145,14 @@ switch param
         pixel.spectrum.wave = val(:);
         
     case {'pixelspectralqe','pixelqe','spectralqe','pixelquantumefficiency','pdspectralqe','qe','photodetectorquantumefficiency','photodetectorspectralquantumefficiency'}
-        pixel.spectralQE = val;
-        
+        if isscalar(val)
+            pixel.spectralQE = pixel.spectralQE *val;
+        else
+            % Probably check that it matches wave
+            assert(numel(val)==numel(pixel.spectrum.wave));
+            pixel.spectralQE = val;
+        end
+
     otherwise
         error('Unknown param: %s',param);
 end

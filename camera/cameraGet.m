@@ -66,38 +66,38 @@ switch oType
     case {'oi'}
         if isempty(p), val = camera.oi;
         elseif   isempty(varargin), val = oiGet(camera.oi,p);
-        else val = oiGet(camera.oi,p,varargin{1});
+        else, val = oiGet(camera.oi,p,varargin{1});
         end
         
     case {'optics'}
         if isempty(p), val = camera.oi.optics;
         elseif   isempty(varargin), val = opticsGet(camera.oi.optics,p);
-        else val = opticsGet(camera.oi.optics,p,varargin{1});
+        else, val = opticsGet(camera.oi.optics,p,varargin{1});
         end
         
     case {'sensor'}
         % Not dealing with varargin yet
         if isempty(p), val = camera.sensor;
         elseif isempty(varargin), val = sensorGet(camera.sensor,p);
-        else val = sensorGet(camera.sensor,p,varargin{1});
+        else, val = sensorGet(camera.sensor,p,varargin{1});
         end
         
     case {'pixel'}
         if     isempty(p), val = camera.sensor.pixel;
         elseif isempty(varargin), val = pixelGet(camera.sensor.pixel,p);
-        else   val = pixelGet(camera.sensor.pixel,p,varargin{1});
+        else,  val = pixelGet(camera.sensor.pixel,p,varargin{1});
         end
         
     case {'ip'}
         if isempty(p), val = camera.vci;
         elseif isempty(varargin), val = ipGet(camera.vci,p);
-        else val = ipGet(camera.vci,p,varargin{1});
+        else,  val = ipGet(camera.vci,p,varargin{1});
         end
         
     case {'l3'}
         if isempty(p), val = camera.vci.L3;
         elseif isempty(varargin), val = L3Get(camera.vci.L3,p);
-        else val = L3Get(camera.vci.L3,p,varargin{1});
+        else, val = L3Get(camera.vci.L3,p,varargin{1});
         end
         
     otherwise
@@ -117,7 +117,7 @@ switch oType
                 pType = ieParamFormat(pType);
                 
                 if strcmp(pType,'l3') || strcmp(pType,'l3global'), val = 'l3';
-                else val = 'default';
+                else, val = 'default';
                 end
                 
             case {'image'}
@@ -155,10 +155,10 @@ switch oType
                 else
                     if ~isfield(camera, 'metrics'); camera.metrics = []; end
                     metrics = camera.metrics;
-                    if length(varargin) == 1
+                    if isscalar(varargin)
                         metricname = ieParamFormat(varargin{1});
-                        if isfield(metrics, metricname);
-                            val = getfield(metrics, metricname);
+                        if isfield(metrics, metricname)
+                            val = getfield(metrics.(metricname));
                         else
                             metric = metricsCamera(camera, metricname);
                             val = metric;   %return newly calculated metric

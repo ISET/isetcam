@@ -1,14 +1,20 @@
 function [udata, g] = scenePlot(scene,pType,roiLocs,varargin)
 % Gateway routine to plot scene radiance properties
 %
-%  [udata, hdl] = scenePlot([scene],[pType='luminance hline'],[roiLocs])
+% Synopsis
+%  [udata, hdl] = scenePlot([scene],[pType='luminance hline'],[roiLocs],varargin)
 %
-% Various plots of the scene radiance, luminance, contrast, illuminant or
-% depth data in various formats.
+% Brief:
+%   Various plots of the scene radiance, luminance, contrast,
+%   illuminant or depth data in various formats.
 %
-% udata:  The plotted data are stored in the structure udata.
+% Optional
+%   'nofigure' - When the last argument is 'nofigure', the plot is
+%                deleted, only the data are returned;
+% Returns
+%  udata:  The plotted data are stored in the structure udata.
 %         This variable is stored in figure: udata = get(figNum,'userdata')
-% hdl:    The figure handle
+%  hdl:    The figure handle
 %
 % The roiLocs can usually be specified either as an Nx2 matrix of locations
 % or as a rect, in which case the rect is recognized and converted to
@@ -113,6 +119,7 @@ udata = [];
 % Format the parameter for the plot type
 pType = ieParamFormat(pType);
 
+%% Deal with the ROI
 if ieNotDefined('roiLocs')
     switch lower(pType)
         case {'radiancevline','vlineradiance', ...
@@ -128,7 +135,7 @@ if ieNotDefined('roiLocs')
             ieROIDraw(scene,'shape','line','shape data',[roiLocs(1) roiLocs(1) 1 sz(1)]);
             
         case {'radiancehline','hlineradiance',...
-                'luminancehline','luminanceffthline' ...
+                'luminancehline','luminancehlinergb','luminanceffthline' ...
                 'contrasthline','hlinecontrast'}
             
             % Get a location and draw a horizontal line
@@ -178,8 +185,11 @@ elseif isa(roiLocs,'images.roi.Rectangle')
 end
 
 
-% Make the plot window and use set a default gray scale map.
-g = ieNewGraphWin;
+%% Make the plot window and use set a default gray scale map.
+
+% Plot starts off.  Turned on at the end, except if no figure
+% argument is passed.
+g = ieNewGraphWin; g.Visible = 'off';
 mp = 0.4*gray(64) + 0.3*ones(size(gray(64)));
 colormap(mp);
 nTicks = 4;   % For the images and graphs
@@ -198,7 +208,7 @@ switch lower(pType)
         
         udata.wave = wave;
         udata.energy = energy;
-        if numel(energy) == 1
+        if isscalar(energy)
             bar(wave,energy); grid on;
         else
             plot(wave,energy,'k-'); grid on;
@@ -429,7 +439,7 @@ switch lower(pType)
         
         % Luminance
     case {'luminancehline'}
-        
+        % Horizontal line of the luminance
         data = sceneGet(scene,'luminance');
         if isempty(data), warndlg(sprintf('luminance data are unavailable.')); return; end
         lum = data(roiLocs(2),:);
@@ -444,6 +454,40 @@ switch lower(pType)
         udata.cmd = 'plot(pos,lum)';
         lineN = sprintf('Row %d',roiLocs(2));
         legend(({lineN}))
+    case {'luminancehlinergb'}
+        % scenePlot(scene,'luminance hline rgb',[1 564]);
+        %
+        % Plot the luminance of a line superimposed on the RGB
+        % image.  The illuminance is log10 luminance plot.
+        
+        % The rgb image has the rendering parameters of the oiWindow.
+        rgb = sceneGet(scene,'rgb'); cols = size(rgb,2);        
+        imagesc(rgb); axis off; hold on;
+        thisL = line([1 cols],[roiLocs(2) roiLocs(2)],'Color','g','LineStyle','--');
+        thisL.LineWidth = 0.1;
+        yyaxis left % No numbers on the image axis.
+        set(gca,'xticklabel','','yticklabel','');
+
+        % A white line of log illuminance.  Values on the right.
+        yyaxis right;
+        udata = scenePlot(scene,'luminance hline',[1,roiLocs(2)],'no figure');
+        plot(1:numel(udata.data),udata.data,'w-');
+        ax = gca; ax.YAxis(2).Scale = 'log'; 
+        yMin = 10^(floor(log10(min(udata.data(:))))); 
+        yMax = 10^(ceil(log10(max(udata.data(:)))));
+
+        % This scale places the log plot in the bottom third of the image.
+        ax.YAxis(2).Limits = [yMin,yMax^3];
+        n = log10(yMax)-log10(yMin)+1;
+        yTick = logspace(log10(yMin),log10(yMax),n);
+        yTick = yTick(1:2:n);   % Space by 2 log units
+        set(ax,'ytick',yTick);
+        ylabel('Log10 luminance (cd/m^2)'); axis on;
+        truesize;
+
+        % Set the name and indicate the line.
+        set(g,'Name',sprintf('Line %.0f (%s)',roiLocs(2),sceneGet(scene,'name')));
+
     case {'luminanceffthline'}
         % This is the FFT of the luminance contrast
         % space = sceneGet(scene,'spatialSupport');
@@ -589,8 +633,7 @@ switch lower(pType)
         
         udata.wave = wave; udata.pos = pos.y; udata.data = data';
         udata.cmd = 'mesh(pos,wave,data)';
-        
-        
+                
         % Could go into plotSceneLuminance
     case {'luminancefft','fftluminance'}
         % Spatial frequency amplitude at a single wavelength.  Axis range
@@ -777,7 +820,7 @@ switch lower(pType)
         error('Unknown scenePlot type.: %s\n',pType);
 end
 
-% Add roi information to the window.
+%% Add information to the window.
 
 % In some cases the udata is the image data (depth map)
 if ~exist('udata','var'),  udata = get(gcf,'userdata'); end
@@ -789,5 +832,17 @@ if isstruct(udata)
     set(gcf,'userdata',udata);
 end
 
+%% Suppress showing the window if the final varargin is nofigure
+% or nowindow.
+if ~isempty(varargin) && isa(varargin{end},'char') && ...
+        (isequal(ieParamFormat(varargin{end}),'nofigure') || ...
+        isequal(ieParamFormat(varargin{end}),'nowindow'))
+    % Maybe?
+    delete(g);
+    return;
+else
+    % Make it visible.
+    g.Visible = 'On';
+end
 
 end

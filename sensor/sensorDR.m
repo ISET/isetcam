@@ -1,12 +1,13 @@
 function [DR, maxVoltage, minVoltage] = sensorDR(sensor,integrationTime)
-%Compute sensor dynamic range (in dB)
+% Compute sensor dynamic range (in dB)
 %
 %   [DR, maxVoltage, minVoltage] = sensorDR(sensor,integrationTime)
 %
 %  This algorithm calculates the ratio of the maximum pixel current divided
-%  by the minimum voltage.
+%  by the minimum voltage. (Changed to 10 from 20 on June 26, 2024 in
+%  dev-hdrsensor branch).
 %
-%      DR = 20 * log10(maxVoltage ./ minVoltage);
+%      DR = 10 * log10(maxVoltage ./ minVoltage);
 %
 %  The maximum voltage is determined by the voltage swing minus the
 %  darkvoltage.
@@ -95,7 +96,7 @@ minVoltage = noiseSD;
 % not realistic, just used in some ideal cases.  We protect against an
 % error here.
 if minVoltage == 0, DR = Inf;
-else DR = 20 * log10(maxVoltage ./ minVoltage);
+else, DR = 10 * log10(maxVoltage ./ minVoltage);
 end
 
 return;

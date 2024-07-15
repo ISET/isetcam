@@ -54,7 +54,8 @@ sensor = sensorSet(sensor,'pixel size same fill factor',pixelSize);
 % photodetector size to be equal to the pixel size using the routine
 % pixelCenterFillPD()
 
-colorFilterFile = fullfile(isetRootPath,'data','sensor','CMOS','ar0132at.mat');
+colorFilterFile = fullfile(isetRootPath,'data','sensor','colorfilters','auto','ar0132at.mat');
+assert(exist(colorFilterFile,'file'))
 
 wave = sceneGet(scene,'wave');
 [filterSpectra, filterNames] = ieReadColorFilter(wave,colorFilterFile);
@@ -80,13 +81,17 @@ sensor = sensorSet(sensor,'exp time',0.003);
 % sensorGet(sensor,'pixel read noise electrons')
 
 
-%%
+%% Have a look if you are running by hand
+
 sensor = sensorCompute(sensor,oi);
-ieAddObject(sensor); sensorWindow;
+%{
+sensorWindow(sensor);
 sensorPlot(sensor,'volts hline',[1 114]);   % (x,y)
 sensorPlot(sensor,'volts hline',[1 15]);   % (x,y)
+%}
 
-%%
-sensorDR(sensor,1)
+%% Check calculation
+
+assert(abs(sensorDR(sensor,1) - 34.2434) < 1e-3)
 
 %%

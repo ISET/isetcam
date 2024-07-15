@@ -104,8 +104,8 @@ interpolatedCFAN = interpcfaSCDI(newRows, newCols, sensor, spacing);
 % pixel size is much larger than the oi sampling resolution.
 
 % We will use these ratios to define the Gaussian SD (sigma)
-heightSamplesPerPixel = ceil(sensorHeightSpacing / oiHeightSpacing);
-widthSamplesPerPixel  = ceil(sensorWidthSpacing  / oiWidthSpacing);
+heightSamplesPerPixel = double(ceil(sensorHeightSpacing / oiHeightSpacing));
+widthSamplesPerPixel  = double(ceil(sensorWidthSpacing  / oiWidthSpacing));
 
 % Build the Gaussian kernel.  Assuming a square pixel. (April, 2019)
 % The std. dev. of the Gaussian kernel is 1/4 of the number of samples
@@ -115,8 +115,8 @@ widthSamplesPerPixel  = ceil(sensorWidthSpacing  / oiWidthSpacing);
 % Notice that when there is only 1 OI sample per pixel, the support is
 % just [1,1] so that the Gaussian blur is irrelevant.
 gKernel = fspecial('gaussian', ...
-    [heightSamplesPerPixel widthSamplesPerPixel], ...
-    heightSamplesPerPixel/4);
+    [double(heightSamplesPerPixel) double(widthSamplesPerPixel)], ...
+    double(heightSamplesPerPixel/4));
 
 % Other case we should use the average:
 % gKernel = ones(heightRatio, widthRatio)/(heightRatio*widthRatio);

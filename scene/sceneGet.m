@@ -69,7 +69,7 @@ function val = sceneGet(scene,parm,varargin)
 % The roi can be specified as either Nx2 locations or as a 4-vector of
 % [row,col,height,width].  Returned values are the mean over the roi.
 %
-%        'roi photons'            - spd of points in a region of interest                                     
+%        'roi photons'            - spd of points in a region of interest
 %        'roi energy'             - as above, but energy
 %        'roi reflectance'        - as above, but reflectance
 %        'roi luminance'          - as above, but luminance
@@ -120,7 +120,7 @@ function val = sceneGet(scene,parm,varargin)
 %        'wavelength' - column vector of wavelength sample
 %        'nwave'      - number of wavelength samples
 %
-% Auxiliary information
+% Illuminant information
 %      'illuminant'           - HDRS multispectral data illuminant stored here (watts/sr/m^2/nm)
 %        'illuminant name'    - Illuminant name
 %        'illuminant energy'  - energy data
@@ -131,6 +131,9 @@ function val = sceneGet(scene,parm,varargin)
 %        'illuminant format'  - 'spatial spectral' or 'spectral'
 %        'roi illuminant photons'        - illuminant photon spd in a region of interest
 %        'roi mean illuminant photons'   - illuminant photon spd averaged within in a region of interest
+%
+% Metadata
+%      {'metadata'}          - A slot used for misc parameters
 %
 % Display
 %      'rgb image'  - RGB image of the scene display
@@ -153,17 +156,22 @@ val = [];
 parm = ieParamFormat(parm);
 
 switch parm
-    
+
     % Book keeping
     case 'type'
         val = scene.type;
     case 'name'
         val = scene.name;
+    case 'metadata'
+        % Used in different ways.  Not always there.
+        if isfield(scene,'metadata')
+            val = scene.metadata;
+        end
     case 'filename'
         val = scene.filename;
     case 'consistency'
         val = scene.consistency;
-        
+
         % Geometry
     case {'rows','row','nrows','nrow'}
         if checkfields(scene,'data','photons'), val = size(scene.data.photons,1); end
@@ -171,14 +179,14 @@ switch parm
         if checkfields(scene,'data','photons'), val = size(scene.data.photons,2); end
     case 'size'
         val = [sceneGet(scene,'rows'),sceneGet(scene,'cols')];
-        
+
     case {'samplespacing'}
         % sceneGet(scene,'sampleSpacing','mm')
         sz = sceneGet(scene,'size');
         val = [sceneGet(scene,'width')/sz(2) , sceneGet(scene,'height')/sz(1)];
         if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-    
-        
+
+
     case {'samplesize'}
         % This is knotted up with sample spacing (basically the same
         % thing).  We should untie the knot some day.  It goes
@@ -188,23 +196,27 @@ switch parm
         c = sceneGet(scene,'cols');       % Number of sample columns
         val = w/c;                        % M/sample
         if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-        
+
     case {'distance','objectdistance','imagedistance'}
         % Positive for scenes (object), negative for optical images
         % (images).
-        val = scene.distance;
+        if isfield(scene,'depthMap')
+            val = median(sceneGet(scene,'depth map'),'all');
+        else
+            val = scene.distance;
+        end
         if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-        
+
     case {'fovhorizontal','fov','wangular','widthangular','hfov','horizontalfieldofview','horizontalfov'}
         if checkfields(scene,'wAngular'), val = scene.wAngular; end
-        
+
     case {'fovvertical','hangular','heightangular','vfov','verticalfieldofview'}
         % We only store the width FOV.  We insist that the pixels are
         % square
         h = sceneGet(scene,'height');      % Height in meters
         d = sceneGet(scene,'distance');    % Distance in meters
         val = rad2deg(2*atan((0.5*h)/d));  % Vertical field of view
-        
+
     case {'dangular','diagonalangular','diagonalfieldofview'}
         % For large field of views, we do the tangent computation.  When
         % the FOV is less than 10 deg, this is essentially the same as
@@ -221,7 +233,7 @@ switch parm
         rH = deg2rad(sceneGet(scene,'hAngular'));
         d = sqrt( (vd*tan(rW))^2 + (vd*tan(rH))^2 );
         val = rad2deg(atan2(d,vd));
-        
+
     case 'aspectratio'
         r = sceneGet(scene,'rows'); c = sceneGet(scene,'cols');
         if isempty(c) || c == 0 && strcmp(sceneGet(scene,'type'),'opticalimage')
@@ -234,7 +246,7 @@ switch parm
         % Scenes always have a magnification of 1. Optical image mag
         % is calculated from the optics.
         val = 1;
-        
+
         % Depth
     case {'depthmap'}
         % sceneGet(scene,'depth map',units);
@@ -245,7 +257,7 @@ switch parm
             val = ones(sz(1),sz(2))*sceneGet(scene,'distance','m');
         end
         if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-        
+
     case {'depthrange'}
         % Min and max of depth.  Units can be specified
         % sceneGet(scene,'depth range',units)
@@ -260,7 +272,7 @@ switch parm
         % sceneGet(scene,'data');
         % The whole data structure is returned.
         if checkfields(scene,'data'), val = scene.data; end
-        
+
     case {'photons'}
         % sceneGet(scene,'photons',[wavelength]); Returns radiance (photon)
         % data.  It is possible to ask for just a single waveband. Data are
@@ -279,15 +291,15 @@ switch parm
                 end
             end
         end
-        
+
     case {'photonsnoise'}
         % sceneGet(scene,'photons noise',roiLocs);
         if isempty(varargin), roiLocs = [];
         else, roiLocs = varargin{1};
         end
-        
+
         val = scenePhotonNoise(scene,roiLocs);
-        
+
     case {'roiphotons','roiphotonsspd'}
         % sceneGet(scene,'photons roi',rectOrlocs);
         %
@@ -303,7 +315,7 @@ switch parm
         else, roiLocs = varargin{1};
         end
         val = vcGetROIData(scene,roiLocs,'photons');
-        
+
     case {'reflectance'}
         % Divide the scene photons by the illuminant photons to derive
         % scene reflectance.
@@ -316,12 +328,12 @@ switch parm
         % illuminantSPD = sceneGet(scene,'illuminant photons');
         % reflectance = radiance*diag(1./illuminantSPD);
         % reflectance = mean(reflectance);
-        
+
         % % No space allocated
         illPhotons = scene.illuminant.data.photons;
         nWave      = sceneGet(scene,'nWave');
         photons    = scene.data.photons;
-        
+
         % Direct access to scene data saves memory allocation.
         switch sceneGet(scene,'illuminant format')
             case 'spatial spectral'
@@ -347,13 +359,13 @@ switch parm
         if isempty(varargin), error('ROI required');
         else, roiLocs = varargin{1};
         end
-        
+
         sPhotons = vcGetROIData(scene,roiLocs,'photons');
-        
+
         % This is a trick way (ugh) to get the illuminant photons in a ROI
         illuminantSPD = sceneGet(scene,'illuminant photons');
         if isempty(illuminantSPD), error('No illuminant data'); end
-        
+
         illF = sceneGet(scene,'illuminant format');
         switch illF
             case 'spatial spectral'
@@ -367,7 +379,7 @@ switch parm
             otherwise
                 error('Unknown illuminant format %s\n',illF);
         end
-        
+
     case {'roimeanreflectance'}
         % sceneGet(scene,'roi mean reflectance', roi)
         %
@@ -377,7 +389,7 @@ switch parm
         end
         val = sceneGet(scene,'roi reflectance', roiLocs);
         val = mean(val,1);
-        
+
     case {'maxradiance','peakradiance'}
         % p = sceneGet(scene,'peakRadiance',500);
         % p = sceneGet(scene,'peakRadiance');
@@ -410,7 +422,9 @@ switch parm
         lum = sceneGet(scene,'luminance');
         if min(lum(:)) > 0
             val = max(lum(:))/min(lum(:));
-        else,  val = Inf;
+        else
+            tmp = prctile(lum(:),[0.1,99.9]);
+            val = tmp(2)/tmp(1);
         end
     case {'peakradianceandwave'}
         % Probably deprecated
@@ -438,7 +452,7 @@ switch parm
             val = scene.data.bitDepth;
         else, val = 32;
         end
-        
+
     case 'energy'
         % sceneGet(scene,'energy',[wavelength]);
         % Get the energy, possibly just one waveband
@@ -446,7 +460,7 @@ switch parm
             % Save memory using direct access.
             % val = sceneGet(scene,'photons');
             wave = sceneGet(scene,'wave');
-            [XW,r,c] = RGB2XWFormat(scene.data.photons); 
+            [XW,r,c] = RGB2XWFormat(scene.data.photons);
             val = Quanta2Energy(wave,XW);
             val = XW2RGBFormat(val,r,c);
         else
@@ -469,7 +483,7 @@ switch parm
         else, roiLocs = varargin{1};
         end
         val = vcGetROIData(scene,roiLocs,'energy');
-        
+
     case {'roimeanenergy'}
         % sceneGet(scene,'roi mean energy', roi)
         % Return the mean energy spd in a region of interest
@@ -478,13 +492,13 @@ switch parm
         end
         val = sceneGet(scene,'roi energy', roiLocs);
         val = mean(val,1);
-        
+
     case {'meanenergyspd'}
         % sceneGet(scene,'mean energy spd')
         % mean spd in energy units
         val = sceneGet(scene,'energy');
         val = mean(RGB2XWFormat(val));
-        
+
     case {'roimeanphotons'}
         % sceneGet(scene,'roi mean photons', roi)
         % Return the mean photon spd in a region of interest
@@ -493,22 +507,22 @@ switch parm
         end
         val = sceneGet(scene,'roi photons', roiLocs);
         val = mean(val,1);
-        
+
     case {'meanphotonsspd'}
         % sceneGet(scene,'mean photons spd')
         % mean spd in photon units
         val = sceneGet(scene,'photons');
         val = mean(RGB2XWFormat(val));
-        
+
     case {'meanluminance','meanlum','meanl'}
         % sceneGet(scene,'meanLuminance');
         lum = sceneGet(scene,'luminance');
         val = double(mean(lum(:)));
-        
+
     case {'maxluminance'}
         lum = sceneGet(scene,'luminance');
         val = double(max(lum(:)));
-        
+
     case {'minluminance'}
         lum = sceneGet(scene,'luminance');
         val = double(min(lum(:)));
@@ -516,7 +530,7 @@ switch parm
     case {'medianluminance'}
         lum = sceneGet(scene,'luminance');
         val = double(median(lum(:)));
-        
+
     case {'percentileluminance','percentilesluminance'}
         % Useful for finding and then setting the dynamic range
         if isempty(varargin)
@@ -537,7 +551,7 @@ switch parm
             val = scene.data.luminance;
         end
         val = double(val);
-        
+
     case {'roimeanluminance'}
         % sceneGet(scene, 'roi mean luminance', locsORrect);
         if isempty(varargin), error('ROI required')
@@ -546,7 +560,7 @@ switch parm
         roiMeanPhotons = sceneGet(scene, 'roi mean photons', roiLocs);
         wave = sceneGet(scene, 'wave');
         val = ieLuminanceFromPhotons(roiMeanPhotons, wave);
-        
+
     case {'roiluminance'}
         % sceneGet(scene, 'roi luminance', locsORrect);
         if isempty(varargin), error('ROI required')
@@ -555,11 +569,11 @@ switch parm
         roiPhotons = sceneGet(scene, 'roi photons', roiLocs);
         wave = sceneGet(scene, 'wave');
         val = ieLuminanceFromPhotons(roiPhotons, wave);
-        
+
         if numel(roiLocs) == 4
             val = reshape(val, roiLocs(3)+1, roiLocs(4)+1);
         end
-        
+
     case {'xyz','dataxyz'}
         % sceneGet(scene,'xyz');
         % RGB array of scene XYZ values.
@@ -568,7 +582,7 @@ switch parm
         val     = ieXYZFromEnergy(Quanta2Energy(wave,photons),wave);
         % sz = sceneGet(scene,'size');
         % val = XW2RGBFormat(val,sz(1),sz(2));
-        
+
     case {'lms','datalms','cone'}
         % sceneGet(scene,'lms');
         % RGB (3D array) of scene Stockman LMS values
@@ -581,7 +595,7 @@ switch parm
         [energy,r,c] = RGB2XWFormat(energy);
         val = energy*S*dWave;
         val = XW2RGBFormat(val,r,c);
-        
+
         % Wavelength parameters
     case {'spectrum','wavespectrum'}
         if checkfields(scene,'spectrum'), val = scene.spectrum; end
@@ -598,7 +612,7 @@ switch parm
         if checkfields(scene,'spectrum'), val = scene.spectrum.wave(:); end
     case {'nwave','nwaves'}
         if checkfields(scene,'spectrum'), val = length(scene.spectrum.wave); end
-        
+
     case 'height'
         % Height in meters is default
         % sceneGet(scene,'distance','microns')
@@ -612,23 +626,23 @@ switch parm
         w = sceneGet(scene,'wangular');  % Field of view (horizontal, width)
         val = 2*d*tan(deg2rad(w/2));
         if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-        
+
     case {'diagonal','diagonalsize'}
         val = sqrt(sceneGet(scene,'height')^2 + sceneGet(scene,'width')^2);
         if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-        
+
     case {'heightwidth','heightandwidth'}
         % sceneGet(scene,'heightwidth','mm');
         val(1) = sceneGet(scene,'height');
         val(2) = sceneGet(scene,'width');
         if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-        
+
     case {'area','areameterssquared'}
         % sceneGet(scene,'area')    %square meters
         % sceneGet(scene,'area','mm') % square millimeters
         val = sceneGet(scene,'height')*sceneGet(scene,'width');
         if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1})^2; end
-        
+
     case {'hspatialresolution','heightspatialresolution','hres'}
         % Resolution parameters
         % Size in distance per pixel, default is meters per pixel
@@ -637,7 +651,7 @@ switch parm
         r = sceneGet(scene,'rows');
         val = h/r;
         if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-        
+
     case {'wspatialresolution','widthspatialresolution','wres'}
         % Resolution parameters
         % Size in m per pixel is default.
@@ -647,18 +661,18 @@ switch parm
         c = sceneGet(scene,'cols');
         val = w/c;
         if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-        
+
     case {'spatialresolution','distancepersample','distpersamp'}
         % sceneGet(scene,'distPerSamp','mm')
         val = [sceneGet(scene,'hspatialresolution'), sceneGet(scene,'wspatialresolution')];
         if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-        
+
     case {'distperdeg','distanceperdegree'}
         % sceneGet(scene,'distanceperdegree')
         % sceneGet(scene,'distancePerDegree','microns');
         val = sceneGet(scene,'width')/sceneGet(scene,'fov');
         if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-        
+
     case {'degreesperdistance','degperdist'}
         % sceneGet(scene,'degPerMeter')
         % sceneGet(scene,'degPerDist','micron')
@@ -667,7 +681,7 @@ switch parm
     case {'degreepersample','degpersamp','degreespersample'}
         % sceneGet(scene,'deg per samp')
         val = sceneGet(scene,'fov')/sceneGet(scene,'cols');
-        
+
     case {'spatialsupport','spatialsamplingpositions'}
         % Spatial locations of points in meters
         % Also, sceneGet(oi,'spatialsupport','microns')
@@ -701,7 +715,7 @@ switch parm
     case {'angularresolution'}
         % Height and width
         val = [sceneGet(scene,'hangularresolution'), sceneGet(scene,'wangularresolution')];
-        
+
     case {'frequencyresolution','freqres'}
         % Default is cycles per degree (cpd).
         % val = sceneGet(scene,'frequencyResolution','mm');
@@ -745,7 +759,7 @@ switch parm
         end
         fResolution = sceneGet(scene,'frequencyresolution',units);
         l=find(abs(fResolution.fy) == 0); val = fResolution.fy(l:end);
-        
+
         % Illuminant information from multispectral scenes
     case {'illuminant'}
         % This is the whole illuminant structure.
@@ -759,17 +773,17 @@ switch parm
         % Returns: spectral, spatial spectral, or empty
         % Check whether illuminant is spatial spectral or just an SPD
         % vector.
-        
+
         il = sceneGet(scene,'illuminant');
         if isempty(il), disp('No scene illuminant.'); return;
         else,           val = illuminantGet(il,'illuminant format');
         end
-        
+
     case {'illuminantphotons'}
         % The data field is has illuminant in photon units.
         il = sceneGet(scene,'illuminant');
         val = illuminantGet(il,'photons');
-        
+
     case {'roiilluminantphotons'}
         % sceneGet(scene,'roi illuminant photons',roi)
         % roi is either roiLocs or roi rect
@@ -782,7 +796,7 @@ switch parm
         else, roi = varargin{1};
         end
         val = vcGetROIData(scene,roi,'illuminant photons');
-        
+
     case {'roimeanilluminantphotons'}
         % sceneGet(scene,'roi mean illuminant photons', roi)
         % Return the mean illuminant photon spd in a region of interest
@@ -791,7 +805,7 @@ switch parm
         end
         val = sceneGet(scene,'roi illuminant photons', roiLocs);
         val = mean(val,1);
-        
+
     case {'illuminantenergy'}
         % The data field is has illuminant in standard energy units.  We
         % convert from energy to photons here.  We account for the two
@@ -827,20 +841,20 @@ switch parm
                 energy = XW2RGBFormat(energy,sz(1),sz(2));
             otherwise
         end
-        
+
         % Create an RGB image
         val = xyz2srgb(ieXYZFromEnergy(energy,wave));
-        
+
     case {'illuminantwave'}
         % Must be the same as the scene wave
         val = sceneGet(scene,'wave');
-        
+
     case {'illuminantxyz','whitexyz'}
         % XYZ coordinates of illuminant, which is also the scene white
         % point.
         energy = sceneGet(scene,'illuminant energy');
         wave   = sceneGet(scene,'wave');
-        
+
         % Deal with spatial spectral case and vector case
         if ndims(energy) == 3
             [energy,r,c] = RGB2XWFormat(energy);
@@ -853,9 +867,9 @@ switch parm
         val = double(val);
     case {'illuminantcomment'}
         if checkfields(scene,'illuminant','comment'),val = scene.illuminant.comment; end
-        
-        
-        
+
+
+
         % For display purposes
     case {'rgb','rgbimage','srgb'}
         % rgb = sceneGet(scene,'rgb image');
@@ -863,21 +877,21 @@ switch parm
         % Get the image shown in the window.  This is an sRGB rendering of
         % the spectral data, using xyz2srgb().  If gamma is not 1, then the
         % user is modifying the sRGB data with the gamma.
-        
+
         gam        = sceneGet(scene,'gamma');
         renderFlag = sceneGet(scene,'render flag index');
         renderFlag = -1*abs(renderFlag);
         val = sceneShowImage(scene,renderFlag,gam);
-        
+
     case {'gamma'}
         % sceneGet(scene,'gamma')
-        
+
         % See if there is a display window
         thisW = ieSessionGet('scene window');
         if isempty(thisW), val = 1;  % Default if no window
         else, val = str2double(thisW.editGamma.Value);
         end
-        
+
     case {'renderflagindex'}
         % val = sceneGet(oi,'render flag index')
         %
@@ -897,13 +911,13 @@ switch parm
         % val = oiGet(oi,'display flag string')
         % When there is an oiWindow open and set in the vcSESSION,
         % find the display flag index
-        
+
         % See if there is a scene window
         sceneW = ieSessionGet('scene window');
         if isempty(sceneW), val = 'no window';   % Default if no window
         else,               val = sceneW.popupRender.Value;
         end
-        
+
         % Reflectance chart parameters.  Used for MCC and other charts.
     case {'chartparameters'} % Structure of reflectance chart parameters
         if checkfields(scene,'chartP'), val = scene.chartP; end
@@ -920,10 +934,10 @@ switch parm
         % [colMin rowMin width height]
         % Used for ROI display and management.
         if checkfields(oi,'chartP','currentRect'), val = oi.chartP.currentRect; end
-        
+
     otherwise
         disp(['Unknown parameter: ',parm]);
-        
+
 end
 
 end

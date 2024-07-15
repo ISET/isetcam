@@ -399,9 +399,27 @@ switch lower(param)
         % Setting new voltage data requires updating rows and cols
         % Really, we should not have separate rows/cols but just use the
         % sensor data, IMHO (BW).
+        
         sensor.data.volts = val;
+        switch lower(sensorGet(sensor,'quantization method'))
+            case 'analog'
+                % If the quantization method is Analog, then the data are
+                % stored only in data.volts.  
+                sensor.data.dv = [];
+            case 'linear'
+                sensor = sensorSet(sensor,'digital values',analog2digital(sensor,'linear'));
+            case 'sqrt'
+                sensor = sensorSet(sensor,'digital values',analog2digital(sensor,'sqrt'));
+            case 'lut'
+                warning('sensorComputeNoise:LUT','LUT quantization not yet implemented.')
+            otherwise
+                % Treat as analog
+                sensor.data.dv = [];
+        end
+
         sensor.rows = size(val,1);
         sensor.cols = size(val,2);
+        
         %  We adjust the row and column size to match the data. The data
         %  size is the factor that determines the sensor row and column values.
         %  The row and col values are only included for those cases when

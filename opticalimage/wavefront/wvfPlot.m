@@ -4,6 +4,9 @@ function [uData, pData, fighdl] = wvfPlot(wvfP, pType, varargin)
 % Syntax:
 %   [userData, plotData, fighdl] = wvfPlot(wvfP, [pType], [varargin]);
 %
+% TODO:  The window plotting control needs to be fixed.
+%        Follow the logic in scenePlot or oiPlot.
+%
 % Description:
 %    By default, this routine opens a new graph window (ieNewGraphWin). If
 %    the final varargin argument is set to 'no window', then the

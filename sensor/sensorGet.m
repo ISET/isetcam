@@ -459,6 +459,8 @@ switch oType
                 val = vMax/vMin;
                 
             case {'analoggain','ag'}
+                % Formula for gain and offset
+                %   volts = (voltsRaw + ao)/ag;
                 if checkfields(sensor,'analogGain'), val = sensor.analogGain;
                 else, val = 1;
                 end
@@ -515,7 +517,7 @@ switch oType
                 
                 % Delete this after a while.  I don't know what the
                 % criterion should be.
-                assert(min(volts(:)) - ao > -1e-3);                
+                assert( min(volts(:)) - ao > -1e-3);                
                 volts = ieClip(volts,ao,vSwing);
 
                 % This is the 'raw' voltage times the conversion gain.
@@ -927,7 +929,10 @@ switch oType
             case 'pixel'
                 val = sensor.pixel;
                 
-            case {'dr','dynamicrange','sensordynamicrange'}
+            case {'dr','drdb20','dynamicrange','sensordynamicrange'}
+                % Calculated using 20 log10 formula.  Not sure that is
+                % a great idea.  Also, different from what we are
+                % doing in scene and oi
                 val = sensorDR(sensor);
                 
             case 'diffusionmtf'

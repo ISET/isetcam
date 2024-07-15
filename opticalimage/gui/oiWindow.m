@@ -1,22 +1,24 @@
-function oiW = oiWindow(oi,show, replace)
+function oiW = oiWindow(oi,varargin)
 % Wrapper that replaces the GUIDE oiWindow functionality
 %
 % Synopsis
-%   oiW = oiWindow(oi, [show=true], [replace=false])
+%   oiW = oiWindow(oi,varargin)
 %
 % Brief description
 %   Opens a oiWindow interface based on the oiWindow_App.
 %
 % Inputs
-%   oi:     The oi you want in the window.  If empty, the currently
-%           selected oi in global vcSESSION is used.  If there is no
-%           selected oi a default scene is created and used.
+%   oi:     The oi you want in the window.  If not sent in or empty (ok),
+%           the currently selected oi in global vcSESSION is used. If there
+%           is no selected oi a default scene and oi are created and used.
 %
 % Optional
 %   show:   Executes a drawnow command on exiting.
 %           (default true)
 %   replace: Logical.  If true, then replace the current oi, rather than
 %            adding the oi to the database.  Default: false
+%   render flag:  'rgb','hdr','clip','monochrome'
+%   gamma:    Display gamma, typically [0-1]     
 %
 % Outputs
 %   oiW:  An oiWindow_App object.
@@ -52,16 +54,9 @@ function oiW = oiWindow(oi,show, replace)
 
 %% Add the scene to the database if it is in the call
 
-if notDefined('replace'), replace = false; end
-if notDefined('show'), show = true; end
+varargin = ieParamFormat(varargin);
 
-if exist('oi','var')
-    % An oi was passed in. We add it to the database and select it.
-    % That oi will appear in the oiWindow.
-    if replace, ieReplaceObject(oi);
-    else,       ieAddObject(oi);
-    end
-else
+if ~exist('oi','var') || isempty(oi)
     % Get the currently selected scene
     oi = ieGetObject('oi');
     if isempty(oi)
@@ -71,6 +66,25 @@ else
         ieAddObject(oi);
     end
 end
+
+p = inputParser;
+p.addRequired('oi',@(x)(isstruct(x) && isequal(x.type,'opticalimage')));
+p.addParameter('show',true,@islogical);
+p.addParameter('replace',false,@islogical);
+p.addParameter('renderflag',[],@ischar);
+p.addParameter('gamma',[],@isscalar);
+
+p.parse(oi,varargin{:});
+
+%% An oi was passed in. 
+
+% We add it to the database and select it.
+% That oi will appear in the oiWindow.
+if p.Results.replace, ieReplaceObject(oi);
+else,                 ieAddObject(oi);
+end
+
+show = p.Results.show;
 
 %% See if there is a live window.
 
@@ -91,5 +105,13 @@ end
 
 % Assume true if it does not exist.  Or if it is true.
 if ~exist('show','var') || show, drawnow; end
+
+if ~isempty(p.Results.renderflag)
+    oiSet(oi,'render flag',p.Results.renderflag);
+end
+
+if ~isempty(p.Results.gamma)
+    oiSet(oi,'gamma',p.Results.gamma);
+end
 
 end

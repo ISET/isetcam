@@ -288,9 +288,30 @@ classdef cpScene < handle
                                 %obj.thisR.set('asset', ourMotion{1}, 'motion', 'translation', ourMotion{2});
                                 %obj.thisR.set('asset', ourMotion{1}, 'motion', 'rotation', ourMotion{3});
 
-                                piAssetSet(obj.thisR, ourMotion{1}, 'motion', []);         
-                                piAssetMotionAdd(obj.thisR,ourMotion{1}, ...
-                                    'translation', ourMotion{2}, 'rotation', ourMotion{3});
+                                if ~isempty(obj.thisR.get('asset',ourMotion{1},'motion'))
+                                    obj.thisR.set('asset', ourMotion{1}, 'motion', []);         
+                                end
+                                % NOTE: Clearing motion _doesn't_ clear
+                                %       translation and rotation currently
+                                %{
+                                if ~isempty(obj.thisR.get('asset',ourMotion{1},'translation'))
+                                    obj.thisR.set('asset', ourMotion{1}, 'translation', []);         
+                                end
+                                if ~isempty(obj.thisR.get('asset',ourMotion{1},'rotation'))
+                                    obj.thisR.set('asset', ourMotion{1}, 'rotation', []);         
+                                end
+                                %}
+                                % NOTE: sending 0 seems to confuse
+                                % piGeometryWrite, so check for useful
+                                % values
+                                if ~isequal(ourMotion{2},[0 0 0])
+                                    piAssetMotionAdd(obj.thisR,ourMotion{1}, ...
+                                        'translation', ourMotion{2});
+                                end
+                                if ~isequal(ourMotion{3},[0 0 0])
+                                    piAssetMotionAdd(obj.thisR,ourMotion{1}, ...
+                                        'rotation', ourMotion{3});
+                                end
                             
                             end
                             %thisR.set('asset', bunnyName, 'translation', [moveX, moveY, moveZ]);

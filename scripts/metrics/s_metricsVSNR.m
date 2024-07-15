@@ -2,9 +2,11 @@
 %
 % We calculate the *visible SNR* (VSNR) of a camera and its
 % processing pipeline. This metric can be used to evaluate
-% different imaging artifacts.  See
-% <http://white.stanford.edu/~brian/papers/pdc/2010-vSNR-Farrell.pdf
-% Farrell et al., 2010>.
+% different imaging artifacts.  
+% 
+% See
+% <http://white.stanford.edu/~brian/papers/pdc/2010-vSNR-Farrell.pdf>
+% Farrell et al., 2010.
 %
 % We show both the VSNR and the $\Delta E$ CIELAB error.
 %
@@ -32,7 +34,7 @@ levels = logspace(1.5,3,3);
 % Computes for a 10 ms exposure duration.
 cVSNR  = cameraVSNR(camera,levels);
 
-vcNewGraphWin;
+ieNewGraphWin;
 loglog(cVSNR.lightLevels,cVSNR.vSNR,'-o');
 xlabel('Light level (cd/m^2)')
 ylabel('vSNR (1/dE)');
