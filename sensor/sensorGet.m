@@ -1257,8 +1257,8 @@ switch oType
             case {'rgb'}
                 % sensorGet(sensor,'rgb',dataType,gam,scaleMax)
                 dataType = 'volts';
-                gam = 1;
-                scaleMax = 0;
+                gam = sensorGet(sensor,'gamma');
+                scaleMax = sensorGet(sensor,'scalemax');
                 if ~isempty(varargin), dataType = varargin{1}; end
                 if length(varargin) > 1, gam = varargin{2}; end
                 if length(varargin) > 2, scaleMax = varargin{3}; end

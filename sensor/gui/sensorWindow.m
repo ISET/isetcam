@@ -1,4 +1,4 @@
-function sensorW = sensorWindow(sensor)
+function sensorW = sensorWindow(sensor,varargin)
 % Wrapper that replaces the GUIDE oiWindow functionality
 %
 % Synopsis
@@ -11,8 +11,13 @@ function sensorW = sensorWindow(sensor)
 %   sensor: The sensor you want in the window.  If empty, the currently
 %           selected sensor in global vcSESSION is used.  If there is no
 %           selected sensor a default sensor is created and used.
+%
+% Key/val options
 %   show:   Executes a drawnow command on exiting.
 %           (Optional, default true)
+%   replace: Logical.  If true, then replace the current sensor, rather than
+%            adding the sensor to the database.  Default: false
+%   gamma:    Display gamma, typically [0-1]     
 %
 % Outputs
 %   sensorW:  An sensorWindow_App object.
@@ -48,21 +53,36 @@ function sensorW = sensorWindow(sensor)
 
 %% Add a sensor to the database if it is in the call
 
-if exist('sensor','var')
-    % A sensor was passed in.  We add it to the database and select it.
-    % That sensor will appear in the window.
-    ieAddObject(sensor);
-else
+varargin = ieParamFormat(varargin);
+
+if ~exist('sensor','var') || isempty(sensor)
     % Get the currently selected scene
     sensor = ieGetObject('sensor');
     if isempty(sensor)
-        % There are no sensors. We create the default sensor and add it to
+        % There are no ois. We create the default oi and add it to
         % the database
         sensor = sensorCreate;
         ieAddObject(sensor);
     end
 end
 
+p = inputParser;
+p.addRequired('oi',@(x)(isstruct(x) && isequal(x.type,'sensor')));
+p.addParameter('show',true,@islogical);
+p.addParameter('replace',false,@islogical);
+p.addParameter('gamma',[],@isscalar);
+
+p.parse(sensor,varargin{:});
+
+%% A sensor exists
+
+% We add it to the database and select it.
+% That sensor will appear in the sensorWindow.
+if p.Results.replace, ieReplaceObject(sensor);
+else,                 ieAddObject(sensor);
+end
+
+show = p.Results.show;
 %% See if there is a window.
 
 sensorW = ieSessionGet('sensor window');
@@ -78,6 +98,10 @@ elseif ~isvalid(sensorW)
 else
     % Just refresh it
     sensorW.refresh;
+end
+
+if ~isempty(p.Results.gamma)
+    sensorSet(sensor,'gamma',p.Results.gamma);
 end
 
 % Assume true if it does not exist.  Or if it is true.

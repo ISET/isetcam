@@ -47,7 +47,7 @@ p.addRequired('sensorArray',@(x)(isstruct(x(:))));
 p.addRequired('oi',@(x)(isstruct(x(:)) && isequal(x.type,'opticalimage')));
 
 validMethods = {'average','sum','bestsnr'};
-p.addParameter('method','sum',@(x)(ismember(ieParamFormat(x),validMethods)));
+p.addParameter('method','average',@(x)(ismember(ieParamFormat(x),validMethods)));
 
 p.parse(sensorArray,oi,varargin{:});
 

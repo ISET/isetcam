@@ -826,7 +826,7 @@ wave = oiGet(oi,'wave');
 irradiance = vcGetROIData(oi,roiLocs,dataType);
 irradiance = mean(irradiance);
 
-if length(wave) == 1
+if isscalar(wave)
     % For a monochrome image, a plot doesn't make any sense.  So, we just
     % put up a box describing the mean irradiance.
     switch dataType
