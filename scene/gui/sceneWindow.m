@@ -78,15 +78,21 @@ p.addParameter('gamma',[],@isscalar);
 
 p.parse(scene,varargin{:});
 
-%% A scene was passed in
+%% Manage the scene parameters
+
+if ~isempty(p.Results.renderflag)
+    scene = sceneSet(scene,'render flag',p.Results.renderflag);
+end
+
+if ~isempty(p.Results.gamma)
+    scene = sceneSet(scene,'gamma',p.Results.gamma);
+end
 
 % We add it to the database and select it.
 % That oi will appear in the oiWindow.
 if p.Results.replace, ieReplaceObject(scene);
 else,                 ieAddObject(scene);
 end
-
-show = p.Results.show;
 
 %% See if there is a live window.
 
@@ -105,15 +111,7 @@ else
     sceneW.refresh;
 end
 
-if ~isempty(p.Results.renderflag)
-    sceneSet(scene,'render flag',p.Results.renderflag);
-end
-
-if ~isempty(p.Results.gamma)
-    sceneSet(scene,'gamma',p.Results.gamma);
-end
-
 % Assume true if it does not exist.  Or if it is true.
-if ~exist('show','var') || show, drawnow; end
+if p.Results.show, drawnow; end
 
 end

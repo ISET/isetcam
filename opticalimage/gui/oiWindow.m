@@ -76,6 +76,16 @@ p.addParameter('gamma',[],@isscalar);
 
 p.parse(oi,varargin{:});
 
+%% Display settings
+
+if ~isempty(p.Results.renderflag)
+    oi = oiSet(oi,'render flag',p.Results.renderflag);
+end
+
+if ~isempty(p.Results.gamma)
+    oi = oiSet(oi,'gamma',p.Results.gamma);
+end
+
 %% An oi was passed in. 
 
 % We add it to the database and select it.
@@ -83,8 +93,6 @@ p.parse(oi,varargin{:});
 if p.Results.replace, ieReplaceObject(oi);
 else,                 ieAddObject(oi);
 end
-
-show = p.Results.show;
 
 %% See if there is a live window.
 
@@ -103,15 +111,7 @@ else
     oiW.refresh;
 end
 
-if ~isempty(p.Results.renderflag)
-    oiSet(oi,'render flag',p.Results.renderflag);
-end
-
-if ~isempty(p.Results.gamma)
-    oiSet(oi,'gamma',p.Results.gamma);
-end
-
-% Assume true if it does not exist.  Or if it is true.
-if ~exist('show','var') || show, drawnow; end
+%%
+if p.Results.show; drawnow; end
 
 end

@@ -76,13 +76,17 @@ p.parse(sensor,varargin{:});
 
 %% A sensor exists
 
+if ~isempty(p.Results.gamma)
+    sensor = sensorSet(sensor,'gamma',p.Results.gamma);
+end
+
 % We add it to the database and select it.
 % That sensor will appear in the sensorWindow.
 if p.Results.replace, ieReplaceObject(sensor);
 else,                 ieAddObject(sensor);
 end
 
-show = p.Results.show;
+
 %% See if there is a window.
 
 sensorW = ieSessionGet('sensor window');
@@ -100,11 +104,7 @@ else
     sensorW.refresh;
 end
 
-if ~isempty(p.Results.gamma)
-    sensorSet(sensor,'gamma',p.Results.gamma);
-end
-
 % Assume true if it does not exist.  Or if it is true.
-if ~exist('show','var') || show, drawnow; end
+if p.Results.show, drawnow; end
 
 end

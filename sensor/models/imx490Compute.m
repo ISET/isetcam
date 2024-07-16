@@ -1,6 +1,9 @@
 function [imx490Large, metadata] = imx490Compute(oi,varargin)
 % Create Sony imx490 sensor response
 % 
+% Deprecated.  We are now using sensorCreateArray and
+% sensorComputeArray
+%
 % Synopsis
 %    [sensorCombined, metadata] = imx490Compute(oi,varargin)
 %
@@ -54,6 +57,8 @@ function [imx490Large, metadata] = imx490Compute(oi,varargin)
 %
 % See also
 %  s_sensorIMX490, sensorCreate('imx490-large') ...
+
+warning('Deprecated for sensorComputeArray');
 
 %% Read parameters
 varargin= ieParamFormat(varargin);
