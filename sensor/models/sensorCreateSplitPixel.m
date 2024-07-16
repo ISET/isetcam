@@ -68,8 +68,8 @@ function sensorArray = sensorCreateSplitPixel2(varargin)
 
 % Example:
 %{
-  sensorArray = sensorCreateSplitPixel2('design','ovt','exp time',0.05);
-  sensorArray = sensorCreateSplitPixel2('design','imx490','exp time',0.01,'pixel size same fill factor',2.8e-6);
+  sensorArray = sensorCreateSplitPixel('design','ovt','exp time',0.05);
+  sensorArray = sensorCreateSplitPixel('design','imx490','exp time',0.01,'pixel size same fill factor',2.8e-6);
 
 %}
 %% Read parameters
