@@ -78,16 +78,6 @@ p.addParameter('gamma',[],@isscalar);
 
 p.parse(ip,varargin{:});
 
-%% Display settings
-
-if ~isempty(p.Results.renderflag)
-    ip = ipSet(ip,'render flag',p.Results.renderflag);
-end
-
-if ~isempty(p.Results.gamma)
-    ip = ipSet(ip,'gamma',p.Results.gamma);
-end
-
 %% An ip was passed in. 
 
 % We add it to the database and select it.
@@ -111,6 +101,19 @@ elseif ~isvalid(ipW)
 else
     % Just refresh it
     ipW.refresh;
+end
+
+
+%% Display settings
+
+if ~isempty(p.Results.renderflag)
+    ip = ipSet(ip,'render flag',p.Results.renderflag);
+    ieReplaceObject(ip);
+end
+
+if ~isempty(p.Results.gamma)
+    ip = ipSet(ip,'gamma',p.Results.gamma);
+    ieReplaceObject(ip);
 end
 
 if p.Results.show, drawnow; end

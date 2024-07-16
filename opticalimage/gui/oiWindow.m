@@ -76,16 +76,6 @@ p.addParameter('gamma',[],@isscalar);
 
 p.parse(oi,varargin{:});
 
-%% Display settings
-
-if ~isempty(p.Results.renderflag)
-    oi = oiSet(oi,'render flag',p.Results.renderflag);
-end
-
-if ~isempty(p.Results.gamma)
-    oi = oiSet(oi,'gamma',p.Results.gamma);
-end
-
 %% An oi was passed in. 
 
 % We add it to the database and select it.
@@ -112,6 +102,21 @@ else
 end
 
 %%
+
+%% Display settings
+
+% Someday, we may have renderflag and gamma slots in the oi itself.
+% So I replace them now after setting, to future-proof.
+if ~isempty(p.Results.renderflag)
+    oi = oiSet(oi,'render flag',p.Results.renderflag);
+    ieReplaceObject(oi);
+end
+
+if ~isempty(p.Results.gamma)
+    oi = oiSet(oi,'gamma',p.Results.gamma);
+    ieReplaceObject(oi);
+end
+
 if p.Results.show; drawnow; end
 
 end
