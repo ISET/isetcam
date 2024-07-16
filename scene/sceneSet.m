@@ -101,31 +101,33 @@ switch parm
         scene.consistency = val;
     case {'gamma'}
         % sceneSet([],'gamma',1);
-        % Should this be ieSessionSet('scene gamma',val)
-        % hObj = ieSessionGet('scene window');
-        sceneW = ieSessionGet('scene window');
-        % eventdata = [];
-        sceneW.editGamma.Value = num2str(val);
-        sceneW.refresh;
-    case {'renderflag','displaymode'}
-        % sceneSet(scene,'display mode','hdr');
-        switch val
-            case {'rgb','standardrgb',1}
-                val = 1;
-            case {'gray','grayscale',2}
-                val = 2;
-            case {'hdr',3}
-                val = 3;
-            case {'clip','cliphighlights',4}
-                val = 4;
-            otherwise
-                fprintf('Permissible display modes: rgb, gray, hdr, clip\n');
-        end
-        scene.renderflag = val;
         app = ieSessionGet('scene window');
         if ~isempty(app)
+            app.editGamma.Value = num2str(val);
+            app.refresh;
+        else
+            warning('Scene gamma only set when window.');
+        end
+    case {'renderflag','displaymode'}
+        % sceneSet(scene,'display mode','hdr');
+        app = ieSessionGet('scene window');
+        if ~isempty(app)
+            switch val
+                case {'rgb','standardrgb',1}
+                    val = 1;
+                case {'gray','grayscale',2}
+                    val = 2;
+                case {'hdr',3}
+                    val = 3;
+                case {'clip','cliphighlights',4}
+                    val = 4;
+                otherwise
+                    fprintf('Permissible display modes: rgb, gray, hdr, clip\n');
+            end
             app.popupRender.Value = app.popupRender.Items{val};
             app.refresh;
+        else
+            warning('Render flag only set when window is open.');
         end
 
     case {'distance' }

@@ -248,16 +248,24 @@ switch parm
         % image changes.  This is irrelevant for the scene case.
         oi.consistency = val;
     case {'gamma'}
+        % oiWindow must be open
+        %
         % oiSet([],'gamma',0.6);
-        % Should this be ieSessionSet('oi gamma',val)
         app = ieSessionGet('oi window');
-        app.editGamma.Value = num2str(val);
-        app.refresh;
+        if ~isempty(app)
+            app.editGamma.Value = num2str(val);
+            app.refresh;
+        else
+            warning('Gamma only set when window is open');
+        end
+
     case {'renderflag','displaymode'}
+        % oiWindow must be open
+        %
         % oiSet(scene,'display mode','hdr');
         app = ieSessionGet('oi window');
         if isempty(app)
-            warning('Render flag is only set when the sceneWindow is open');
+            warning('Render flag is only set when the oiWindow is open');
         else
             switch val
                 case {'hdr',3}
@@ -273,8 +281,8 @@ switch parm
             end
             app.popupRender.Value = app.popupRender.Items{val};
             app.refresh;
-        end
-        
+       end
+
     case {'distance' }
         % Positive for scenes, negative for optical images
         oi.distance = val;
