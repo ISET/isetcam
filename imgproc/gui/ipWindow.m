@@ -1,8 +1,8 @@
-function ipW = ipWindow(ip)
+function ipW = ipWindow(ip,varargin)
 % Wrapper that replaces the GUIDE oiWindow functionality
 %
 % Synopsis
-%   ipW = ipWindow(ip)
+%   ipW = ipWindow(ip,varargin)
 %
 % Brief description
 %   Opens an ipWindow interface based on the ipWindow_App.
@@ -11,8 +11,16 @@ function ipW = ipWindow(ip)
 %   ip:  The image processor you want in the window.  If empty, the currently
 %        selected ip in global vcSESSION is used.  If there is no
 %        selected ip a default ip is created and used.
+%
+% Optional key/val pairs
+%
 %   show:   Executes a drawnow command on exiting.
-%           (Optional, default true)
+%           (default true)
+%   replace: Logical.  If true, then replace the current oi, rather than
+%            adding the oi to the database.  Default: false
+%   render flag:  'rgb','hdr','gray'
+%   gamma:    Display gamma, typically [0-1] 
+%
 %
 % Outputs
 %   ipW:  An ipWindow_App object.
@@ -48,19 +56,44 @@ function ipW = ipWindow(ip)
 
 %% Add a sensor to the database if it is in the call
 
-if exist('ip','var')
-    % An image process was passed in.  We add it to the database and select it.
-    % That ip will appear in the window.
-    ieAddObject(ip);
-else
+varargin = ieParamFormat(varargin);
+
+if ~exist('ip','var') || isempty(ip)
     % Get the currently selected scene
     ip = ieGetObject('ip');
     if isempty(ip)
-        % There are no ips. We create the default ip and add it to
+        % There are no ois. We create the default oi and add it to
         % the database
-        ip = ipCreate;
+        ip = oiCreate;
         ieAddObject(ip);
     end
+end
+
+p = inputParser;
+p.addRequired('ip',@(x)(isstruct(x) && isequal(x.type,'vcimage')));
+p.addParameter('show',true,@islogical);
+p.addParameter('replace',false,@islogical);
+p.addParameter('renderflag',[],@ischar);
+p.addParameter('gamma',[],@isscalar);
+
+p.parse(ip,varargin{:});
+
+%% Display settings
+
+if ~isempty(p.Results.renderflag)
+    ip = ipSet(ip,'render flag',p.Results.renderflag);
+end
+
+if ~isempty(p.Results.gamma)
+    ip = ipSet(ip,'gamma',p.Results.gamma);
+end
+
+%% An ip was passed in. 
+
+% We add it to the database and select it.
+% That oi will appear in the oiWindow.
+if p.Results.replace, ieReplaceObject(ip);
+else,                 ieAddObject(ip);
 end
 
 %% See if there is a window.
@@ -80,7 +113,6 @@ else
     ipW.refresh;
 end
 
-% Assume true if it does not exist.  Or if it is true.
-if ~exist('show','var') || show, drawnow; end
+if p.Results.show, drawnow; end
 
 end

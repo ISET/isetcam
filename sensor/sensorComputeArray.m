@@ -47,7 +47,7 @@ p.addRequired('sensorArray',@(x)(isstruct(x(:))));
 p.addRequired('oi',@(x)(isstruct(x(:)) && isequal(x.type,'opticalimage')));
 
 validMethods = {'average','sum','bestsnr'};
-p.addParameter('method','sum',@(x)(ismember(ieParamFormat(x),validMethods)));
+p.addParameter('method','average',@(x)(ismember(ieParamFormat(x),validMethods)));
 
 p.parse(sensorArray,oi,varargin{:});
 
@@ -126,7 +126,7 @@ switch ieParamFormat(method)
         % ieNewGraphWin; imagesc(N);
         
         if nnz(N(:) == 0) > 0
-            error('All sensors are saturated at some pixels');
+            warning('All sensors are saturated at some pixels');
         else
             % Calculate the mean of the virtual electrons, accounting
             % for the number of valid sensors.
@@ -166,41 +166,10 @@ sensorCombined = sensorSet(sensorCombined,'volts',volts);
 sensorCombined = sensorSet(sensorCombined,'analog gain',1);
 sensorCombined = sensorSet(sensorCombined,'analog offset',0);
 
-sensorCombined = sensorSet(sensorCombined,'name',sprintf('Combined-%s',method));
+tmp = split(sensorGet(sensors(1),'name'),'-');
+thisDesign = tmp{1};
+sensorCombined = sensorSet(sensorCombined,'name',sprintf('%s-%s',thisDesign,method));
 
 end
 
 
-%{
-case 'sum'
-        % I don't understand this one
-        rowcol = sensorGet(sensors(1),'size');
-        electrons = zeros(rowcol(1),rowcol(2),numel(sensors));
-        vSwing = zeros(numel(sensors),1);
-        cg = zeros(numel(sensors),1);
-
-        for ii=1:numel(sensors)
-            electrons(:,:,ii) = sensorGet(imx490Large1,'electrons per area','um');
-            vSwing(ii) = sensorGet(sensors(ii),'pixel voltage swing');
-            cg(ii) = sensorGet(sensors(ii),'pixel conversion gain');
-        end
-
-        % Set the voltage to the mean of the not saturated, input
-        % referred electrons.
-        cg = sensorGet(sensors(1),'pixel conversion gain');
-        volts = cg*(sum(electrons,3));
-        volts(isinf(volts)) = 1;
-        volts = vSwing * ieScale(volts,1);
-
-        sensorCombined = sensors(1);
-        sensorCombined = sensorSet(sensorCombined,'volts',volts);
-
-        % The voltages are computed with this assumption.
-        sensorCombined = sensorSet(sensorCombined,'analog gain',1);
-        sensorCombined = sensorSet(sensorCombined,'analog offset',0);
-
-        nbits = 24;
-        dv = 2^nbits*ieScale(volts,1);
-        sensorCombined = sensorSet(sensorCombined,'dv',dv);
-        return;
-%}

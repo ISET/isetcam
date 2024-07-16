@@ -1,8 +1,8 @@
-function sceneW = sceneWindow(scene,show,replace)
+function sceneW = sceneWindow(scene,varargin)
 % Wrapper that replaces the GUIDE sceneWindow functionality
 %
 % Synopsis
-%   sceneW = sceneWindow(scene,[show=true], [replace=false])
+%   sceneW = sceneWindow(scene,varargin)
 %
 % Brief description
 %   Opens a sceneWindow interface based on the sceneWindow_App.
@@ -12,10 +12,14 @@ function sceneW = sceneWindow(scene,show,replace)
 %           selected scene in global vcSESSION is used.  If there is no
 %           selected scene a default scene is created and used.
 %           (Optional, default is currently selected scene)
+%
+% Optional key/val
 %   show:   Executes a drawnow command on exiting.
 %           (Optional, default true)
 %   replace: Logical.  If true, then replace the current scene, rather than
 %            adding the scene to the database.  Default: false
+%   render flag:  'rgb','hdr','clip','monochrome'
+%   gamma:    Display gamma, typically [0-1]     
 %
 % Outputs
 %   sceneW:  An sceneWindow_App object.
@@ -52,24 +56,42 @@ function sceneW = sceneWindow(scene,show,replace)
 %% Add the scene to the database if it is in the call
 %  Or replace the current scene if the third argument is true
 %
-if notDefined('replace'), replace = false; end
-if notDefined('show'), show = true; end
+varargin = ieParamFormat(varargin);
 
-if exist('scene','var')
-    % A scene was passed in.  We add it to the database and select it.
-    % That scene will appear in the window.
-    if replace,  ieReplaceObject(scene);
-    else,        ieAddObject(scene);
-    end
-else
+if ~exist('scene','var') || isempty(scene)
     % Get the currently selected scene
     scene = ieGetObject('scene');
     if isempty(scene)
-        % There are no scenes. We create the default scene and add it to
+        % There are no ois. We create the default oi and add it to
         % the database
         scene = sceneCreate;
         ieAddObject(scene);
     end
+end
+
+p = inputParser;
+p.addRequired('scene',@(x)(isstruct(x) && isequal(x.type,'scene')));
+p.addParameter('show',true,@islogical);
+p.addParameter('replace',false,@islogical);
+p.addParameter('renderflag',[],@ischar);
+p.addParameter('gamma',[],@isscalar);
+
+p.parse(scene,varargin{:});
+
+%% Manage the scene parameters
+
+if ~isempty(p.Results.renderflag)
+    scene = sceneSet(scene,'render flag',p.Results.renderflag);
+end
+
+if ~isempty(p.Results.gamma)
+    scene = sceneSet(scene,'gamma',p.Results.gamma);
+end
+
+% We add it to the database and select it.
+% That oi will appear in the oiWindow.
+if p.Results.replace, ieReplaceObject(scene);
+else,                 ieAddObject(scene);
 end
 
 %% See if there is a live window.
@@ -90,6 +112,6 @@ else
 end
 
 % Assume true if it does not exist.  Or if it is true.
-if ~exist('show','var') || show, drawnow; end
+if p.Results.show, drawnow; end
 
 end

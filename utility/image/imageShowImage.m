@@ -84,33 +84,12 @@ if isempty(img)
     return;
 end
 
-% Not sure what this is doing here.  The linear display rgb doesn't really
-% have anything to do with the sensor level.  But who knows.  Keeping it
-% around.  It was the 'else' part of the above.
-%
-% elseif max(img(:)) > ipGet(ip,'max sensor')
-%     % Checking for another bad condition in result
-%     if ~ipGet(ip,'scale display')
-%         warning('Image max (%.2f) exceeds volt swing (%.2f).\n', ...
-%             max(img(:)),ipGet(ip,'max sensor'));
-%         ip = ipSet(ip,'scale display',true);
-%     end
-% end
-
 %% Convert the ip RGB data to XYZ and then sRGB
 
 % imageDataXYZ uses the properties of the display stored in the image
 % processor and the values in ip.data.result (also called the 'linear
 % display rgb'. 
 img = xyz2srgb(imageDataXYZ(ip));
-
-% Puzzled by this.  If it is srgb, how can it be anything but 3?
-%{
-if   ismatrix(img),     ipType = 'monochrome';
-elseif ndims(img) == 3, ipType = 'rgb';
-else,                   ipType = 'multisensor';
-end
-%}
 
 renderFlag = ipGet(ip,'render flag');
 
@@ -141,7 +120,7 @@ switch renderFlag
         img = hdrRender(img);
         if gam ~=1, img = img.^gam; end
 
-    case {3,'gray'}
+    case {3,'gray','monochrome'}
         tmp = mean(img,3);
         % Maybe a better way to do this?
         for ii=1:3
