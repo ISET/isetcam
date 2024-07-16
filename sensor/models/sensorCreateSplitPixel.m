@@ -1,4 +1,4 @@
-function sensorArray = sensorCreateSplitPixel2(varargin)
+function sensorArray = sensorCreateSplitPixel(varargin)
 % Create a split pixel pair of sensors
 %
 % See TODO at the end of the file and comments in the file.
@@ -68,9 +68,8 @@ function sensorArray = sensorCreateSplitPixel2(varargin)
 
 % Example:
 %{
-  sensorArray = sensorCreateSplitPixel('design','ovt','exp time',0.05);
-  sensorArray = sensorCreateSplitPixel('design','imx490','exp time',0.01,'pixel size same fill factor',2.8e-6);
-
+  sensorArray = sensorCreateSplitPixel('array type','ovt','exp time',0.05);
+  sensorArray = sensorCreateSplitPixel('array type','imx490','exp time',0.01,'pixel size same fill factor',2.8e-6);
 %}
 %% Read parameters
 varargin = ieParamFormat(varargin);
@@ -78,23 +77,23 @@ varargin = ieParamFormat(varargin);
 p = inputParser;
 p.KeepUnmatched = true;
 validTypes = {'ovt','imx490'};
-p.addParameter('design','ovt',@(x)(ismember(x,validTypes)));
+p.addParameter('arraytype','ovt',@(x)(ismember(x,validTypes)));
 p.parse(varargin{:});
-
-switch p.Results.design
+arrayType = p.Results.arraytype;
+switch arrayType
     case 'ovt'
         [SPDLCG,SPDHCG,LPDLCG,LPDHCG] = designOVT;
     case 'imx490'
         [SPDLCG,SPDHCG,LPDLCG,LPDHCG] = designIMX490;
     otherwise
-        error('Unknown split pixel design %s.\n',design);
+        error('Unknown split pixel array type %s.\n',arrayType);
 end
 
 % See Notes at the end.  Move them here, ultimately
 
 for ii=1:2:numel(varargin)
     str = varargin{ii};
-    if ~isequal(str,'design')
+    if ~isequal(ieParamFormat(str),'arraytype')
         if strncmp(str,'pixel',5), varargin{ii} = ['pixel ',str(6:end)]; end
         SPDLCG = sensorSet(SPDLCG,varargin{ii},varargin{ii+1});
         SPDHCG = sensorSet(SPDHCG,varargin{ii},varargin{ii+1});

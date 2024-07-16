@@ -1,8 +1,8 @@
-function sensorArray = sensorCreateArray(arrayType,varargin)
+function sensorArray = sensorCreateArray(varargin)
 % Create a sensor array
 %
 % Synopsis
-%   sensorArray = sensorCreateArray(arrayType, varargin)
+%   sensorArray = sensorCreateArray(varargin)
 %
 % Brief:
 %   Some image systems use a coordinated array of sensors, such as
@@ -32,52 +32,55 @@ function sensorArray = sensorCreateArray(arrayType,varargin)
 %{
 %  Split pixel, and possibility of adjusting various parameters in
 %  common to the two sensors.
-   sensors = sensorCreateArray('split pixel','pixel size same fill factor',1.4e-6);
+   sensors = sensorCreateArray('array type','imx490','pixel size same fill factor',1.4e-6);
+%}
+%{
+   sensors = sensorCreateArray('array type','ovt','pixel size same fill factor',3e-6);
 %}
 %{
 %  Straight XYZ sensor array.  Only photon noise.
-   sensors = sensorCreateArray('ideal','ideal type','xyz');
+   sensors = sensorCreateArray('array type','xyz');
 %}
 %{
 %  Match the ideal to the example sensor.  No noise and XYZ filters.
    sensor = sensorCreate;
-   sensors = sensorCreateArray('ideal','ideal type','matchxyz','sensor example',sensor);
+   sensors = sensorCreateArray('array type','matchxyz','sensor example',sensor);
 %}
 %{
 % Only one sensor returned.  So not really an array.  No example
 % allowed.
-sensors = sensorCreateArray('ideal','ideal type','monochrome');
+sensors = sensorCreateArray('array type','monochrome');
 %}
 %% Params
 
 varargin = ieParamFormat(varargin);
-arrayType = ieParamFormat(arrayType);
 
 p = inputParser;
 p.KeepUnmatched = true;
 
-validArrayTypes = {'splitpixel','ideal'};
-p.addRequired('arrayType',@(x)(ismember(x,validArrayTypes)));
+validArrayTypes = {'ovt','imx490','match','matchxyz','xyz','monochrome'};
 
-% The ideal sensors are typically arrays, though not the monochrome
-% case.  They often need a sensor example, though.
-validIdealTypes = {'match','matchxyz','xyz','monochrome'};
-p.addParameter('idealtype','xyz',@(x)(ismember(x,validIdealTypes)))
+p.addParameter('arraytype','ovt',@(x)(ismember(x,validArrayTypes)));
 p.addParameter('sensorexample',[],@(x)(isstruct(x) && isequal(x.type,'sensor')));
 
-p.parse(arrayType,varargin{:});
+p.parse(varargin{:});
+
+arrayType = p.Results.arraytype;
 
 %% Switch to various implementations
 
+% varargins that work with sensorSet.  If they start with
+% 'pixel', they need to have a space following pixel. We
+% eliminated spaces above.  So we put it back here.
+
 switch arrayType
-    case 'splitpixel'
-        % varargins that work with sensorSet.  If they start with
-        % 'pixel', they need to have a space following pixel. We
-        % eliminated spaces above.  So we put it back here.
+    case 'ovt'
+        sensorArray = sensorCreateSplitPixel('array type','ovt',varargin{:});
+    case 'imx490'
         sensorArray = sensorCreateSplitPixel(varargin{:});
-    case 'ideal'
+    case {'match','matchxyz','xyz','monochrome'}
         % Not sure what varargins are permitted
-        sensorArray = sensorCreateIdeal(p.Results.idealtype,p.Results.sensorexample,varargin{:});
+        sensorArray = sensorCreateIdeal(arrayType,p.Results.sensorexample,varargin{:});
     otherwise
         error('Unknown array type: %s',arrayType);
 end
