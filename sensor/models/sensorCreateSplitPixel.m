@@ -1,9 +1,6 @@
 function sensorArray = sensorCreateSplitPixel(varargin)
 % Create a split pixel pair of sensors
 %
-% See TODO at the end of the file and comments in the file.
-% Particularly, the OVT simulation parameters.
-%
 % Synopsis
 %    sensorArray = sensorCreateSplitPixel(varargin)
 %
@@ -89,23 +86,39 @@ switch arrayType
         error('Unknown split pixel array type %s.\n',arrayType);
 end
 
-% See Notes at the end.  Move them here, ultimately
-
+% Change the parameters, as sent in
 for ii=1:2:numel(varargin)
     str = varargin{ii};
     if ~isequal(ieParamFormat(str),'arraytype')
-        if strncmp(str,'pixel',5), varargin{ii} = ['pixel ',str(6:end)]; end
-        SPDLCG = sensorSet(SPDLCG,varargin{ii},varargin{ii+1});
-        SPDHCG = sensorSet(SPDHCG,varargin{ii},varargin{ii+1});
-        LPDLCG = sensorSet(LPDLCG,varargin{ii},varargin{ii+1});
-        LPDHCG = sensorSet(LPDHCG,varargin{ii},varargin{ii+1});
+        % It would be better if users put in pixel_, then we would not
+        % have to do this.  The issue is pixelmumble doesn't work.  We
+        % find pixelmumble and turn it to 'pixel mumble'.  But
+        % pixel_mumble would work.  So we can leave that alone.s
+        if strncmp(str,'pixel',5) && ~isequal(str(6),'_'), varargin{ii} = ['pixel ',str(6:end)]; end
+        if ~isempty(SPDLCG)
+            SPDLCG = sensorSet(SPDLCG,varargin{ii},varargin{ii+1});
+        end
+
+        if ~isempty(SPDHCG)
+            SPDHCG = sensorSet(SPDHCG,varargin{ii},varargin{ii+1});
+        end
+
+        if ~isempty(LPDLCG)
+            LPDLCG = sensorSet(LPDLCG,varargin{ii},varargin{ii+1});
+        end
+
+        if ~isempty(LPDHCG)
+            LPDHCG = sensorSet(LPDHCG,varargin{ii},varargin{ii+1});
+        end
     end
 end
 
-sensorArray(1) = LPDHCG;
-sensorArray(2) = LPDLCG;
-sensorArray(3) = SPDHCG;
-sensorArray(4) = SPDLCG;
+% Sometimes 4, sometimes 3, maybe sometimes 2?  1 should always be a
+% simple sensorCreate, IMHO.  Not a sensorCreateArray.
+sensorArray(1) = LPDLCG;  % Always exists
+if ~isempty(LPDHCG), sensorArray(end+1) = LPDHCG; end
+if ~isempty(SPDLCG), sensorArray(end+1) = SPDLCG; end
+if ~isempty(SPDHCG), sensorArray(end+1) = SPDHCG; end
 
 end
 
@@ -156,20 +169,11 @@ function [SPDLCG,SPDHCG,LPDLCG,LPDHCG] = designOVT
 % right?
 
 % Start with the IMX490 and adjust the parameters here.
-SPD = sensorCreate('ovt-small');
-SPD = sensorSet(SPD,'pixel size same fill factor',2.8*1e-6);
-SPD = sensorSet(SPD,'pixel fill factor',1);
-
-SPDLCG = SPD;
-cg = sensorGet(SPD,'pixel conversion gain');
-SPDHCG = sensorSet(SPD,'pixel conversion gain',4*cg);
+SPDLCG = sensorCreate('ovt-small');
+SPDHCG = [];
 
 LPD = sensorCreate('ovt-large');
-LPD = sensorSet(LPD,'pixel size same fill factor',2.8*1e-6);
-LPD = sensorSet(LPD,'pixel fill factor',1);
-
-LPDLCG = LPD;
-cg = sensorGet(LPD,'pixel conversion gain');
-LPDHCG = sensorSet(LPD,'pixel conversion gain', 4*cg);
+LPDLCG = LPD(1);
+LPDHCG = LPD(2);
 
 end
