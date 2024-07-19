@@ -153,7 +153,6 @@ function [SPDLCG,SPDHCG,LPDLCG,LPDHCG] = designIMX490
 % Start with the IMX490 and adjust the parameters here.
 SPD = sensorCreate('imx490-small');
 SPD = sensorSet(SPD,'pixel size same fill factor',2.8*1e-6);
-SPD = sensorSet(SPD,'pixel fill factor',1);
 
 SPDLCG = SPD;
 cg = sensorGet(SPD,'pixel conversion gain');
@@ -161,7 +160,6 @@ SPDHCG = sensorSet(SPD,'pixel conversion gain',4*cg);
 
 LPD = sensorCreate('imx490-large');
 LPD = sensorSet(LPD,'pixel size same fill factor',2.8*1e-6);
-LPD = sensorSet(LPD,'pixel fill factor',1);
 LPDLCG = LPD;
 cg = sensorGet(LPD,'pixel conversion gain');
 LPDHCG = sensorSet(LPD,'pixel conversion gain', 4*cg);
