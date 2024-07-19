@@ -21,7 +21,7 @@ function [val, type] = sensorGet(sensor,param,varargin)
 %  The key structures (scene, oi, sensor, ip, display) are stored in the
 %  ISET database.  To retrieve the currently selected optical image, use
 %
-%     sensor = vcGetObject('sensor');
+%     sensor = ieGetObject('sensor');
 %
 %  A '*' indicates that the syntax oiGet(scene,param,unit) can be used,
 %  where unit specifies the spatial scale of the returned value:  'm'
@@ -262,15 +262,12 @@ if ~exist('param','var') || isempty(param), error('Param must be defined.'); end
 % Default return value.
 val = [];
 
-% Added this code so we can make many opticsGet calls using the oi.
-% This is like the cameraGet call in which we now can use
-%   oiGet(oi,'optics param')
-% and that will be equivalent to
-%
-%   optics = oiGet(oi,'optics');
-%   opticsGet(optics,param)
-%
-% Parse param to see if it indicates which object.  Store parameter.
+% Added this code so we can make pixelGet calls from the sensor. This
+% function parses param to see if it indicates which object.  
+% 
+% In general, if you write 'pixel some parameter', the call will go
+% through pixelGet.  It also catches some cases, like 'voltage swing',
+% which are pixel parameters, and does the right thing.
 [oType,param] = ieParameterOtype(param);
 
 switch oType

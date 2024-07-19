@@ -16,6 +16,12 @@ function ip = ipCompute(ip,sensor,varargin)
 %   hdr white:  Apply hdr bright light whitening at the end
 %   hdr level:  The signal level for saturation (default: max data)
 %   wgt blur:   How much to blur the hdr weight map (default: 2)
+%   network demosaic:  Demosaic with a named neural network.  Options
+%     now are only 'rgb' and 'rgbw', which were trained for the ar0123at
+%     network.  We should change the names to plan for the future. The
+%     user has to have the Python environment setup and the ONNX
+%     demosaicking files on their path.  These are not part of the
+%     usual ISETCam distribution.
 %
 % Output:
 %   ip:      The ip now has the processed data stored in it
@@ -25,11 +31,11 @@ function ip = ipCompute(ip,sensor,varargin)
 %  processed by a series of steps in ipCompute. A sequence of image
 %  data are stored within the ip.data slot.
 %
-%  input:  the voltage (or digital values, dv) from the sensor object.
-%  sensorspace:  The demosaicked input
-%  result:       The processed data demosaic data in lrgb format
-%                (between 0 and 1), ready for conversion to srgb as
-%                part of the display
+%   input:  the voltage (or digital values, dv) from the sensor object.
+%   sensorspace:  The demosaicked input
+%   result:       The processed data demosaic data in lrgb format
+%                 (between 0 and 1), ready for conversion to srgb as
+%                 part of the display
 %
 %  The main processing routine is ipComputeSingle, below. Single
 %  refers to a single exposure.
@@ -47,18 +53,23 @@ function ip = ipCompute(ip,sensor,varargin)
 %  the illuminant correction.
 %
 % About L3
+%   We will deprecate the L3 approach from here.  It will be handled
+%   elsewhere.  We now are training networks rather than using the L3
+%   methods.
 %
-%   We are writing other rendering pipelines based on different
-%   architectures in the future.  One special one is L3.
+%   Deprecated comments:
 %
-%   If the ip.name begins with 'L3' then the data are rendered using
-%   the L3 render method. The option 'L3global' uses the global
-%   parameters of the L3 structure.  In this case, we expect an L3
-%   structure that was learned is attached to the ip. (More
-%   documentation needed, sorry! BW)
+%    We are writing other rendering pipelines based on different
+%    architectures in the future.  One special one is L3.
+%
+%    If the ip.name begins with 'L3' then the data are rendered using
+%    the L3 render method. The option 'L3global' uses the global
+%    parameters of the L3 structure.  In this case, we expect an L3
+%    structure that was learned is attached to the ip. (More
+%    documentation needed, sorry! BW)
 %
 % See also
-%   ipWindow, ipPlot
+%   ipWindow, ipPlot, ipGet/Set
 
 %% Parse arguments
 varargin = ieParamFormat(varargin);
@@ -70,7 +81,7 @@ p.addParameter('saturation',[],@isscalar);   % ipHDRWhite parameters
 p.addParameter('hdrwhite',false,@islogical);
 p.addParameter('hdrlevel',.95,@isscalar);
 p.addParameter('wgtblur',1,@isscalar);
-
+p.addParameter('networkdemosaic',[],@ischar);
 p.parse(ip,sensor,varargin{:});
 
 hdrWhite = p.Results.hdrwhite;
@@ -132,15 +143,27 @@ switch exposureMethod(1:3)
         error('Unknown exposure method %s\n',exposureMethod);
 end
 
-% We introduce the L3 pipeline here, which is not really part of ISET.
+%% We introduce the L3 pipeline here, which is not really part of ISET.
+
+% This will be deprecated in September, 2024.
+
 % Perhaps we should test for the L3render function and warn the user if it
 % does not exist on the path?
 pType = ieParamFormat(ipGet(ip,'name'));
 if ~strncmpi(pType,'l3',2)
     % Conventional pipeline of single exposure. Most common case. We
     % should probably remove the l3 case altogether.
+
+    if ~isempty(p.Results.networkdemosaic)
+        % 'rgb' or 'rgbw'
+        ip = ipNetworkDemosaic(ip,sensor,p.Results.networkdemosaic);
+    end
+
     ip = ipComputeSingle(ip,sensor);
 else
+    warning('L3 processing is deprecated.')
+    return;
+    %{
     % Special case that probably shouldn't be here
     % Perform L^3 processing, either local or global
     mode = 'local';
@@ -160,11 +183,13 @@ else
     L3  = L3Set(L3,'saturation index',satIdx);
     L3  = L3Set(L3,'cluster index',clusterIdx);
     ip = ipSet(ip,'L3',L3);
+    %}
 end
 
 % Name the ip with its input sensor name
 ip = ipSet(ip,'name',sensorGet(sensor,'name'));
 
+%% If we are dealing with bright saturation case of HDR images?
 if hdrWhite
     if isempty(saturation)
         switch dataType
@@ -633,4 +658,43 @@ end
 ip.metadata = appendStruct(ip.metadata,sensor.metadata);
 
 %ip = ipSet(ip,'input',newImg);
+end
+
+%% ---------- Network demosaic
+
+function ip = ipNetworkDemosaic(ip,sensor,networkName)
+% Preprocess the demosaicking and set up the parameters for compute
+% call.  The user has to have the Python environment setup.  More
+% comments above.  Developed as part of ISETHDRSENSOR project.
+
+exrDir = fullfile(isetRootPath,'local');
+baseName = fullfile(exrDir,'rgbw');
+fname  = sensor2EXR(sensor,[baseName,'.exr']);
+ipName = sprintf('%s-demosaic.exr',baseName);
+
+%'rgbw' and 'rgb' for now.  These were trained on the ar0132at sensor.
+% We should probably check.
+isetDemosaicNN(networkName, fname, ipName);
+
+% img = exrread(fname);
+% ieNewGraphWin; imagesc(abs(img.^0.3)); truesize
+
+% Create the rendering transforms
+wave     = sensorGet(sensor,'wave');
+sensorQE = sensorGet(sensor,'spectral qe');
+targetQE = ieReadSpectra('xyzQuanta',wave);
+T{1} = imageSensorTransform(sensorQE(:,1:3),targetQE,'D65',wave,'mcc');
+T{2} = eye(3,3);
+T{3} = ieInternal2Display(ip);
+
+ip = ipSet(ip,'demosaic method','skip');
+ip = ipSet(ip,'transforms',T);
+ip = ipSet(ip,'transform method','current');
+
+img = exrread(ipName);
+% ieNewGraphWin; imagesc(abs(img.^0.2));
+
+ip = ipSet(ip,'sensor space',img);
+
+% We should remove the exr files here.
 end

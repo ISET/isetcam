@@ -51,18 +51,43 @@ if ieNotDefined('param'), error('plotting parameter required'); end
 if ieNotDefined('xy'), xy = []; end
 
 uData = [];
-
+show = true;
+if ~isempty(varargin) && strcmp(ieParamFormat(varargin{end}),'nofigure')
+    show = false;
+end
 % Some day this might be unused.
-hdl = []; %#ok<NASGU> 
+hdl = []; %#ok<NASGU>
 
 %%
 param    = ieParamFormat(param);
+
+switch param
+    case {'horizontalline','verticalline','verticallineluminance','horizontallineluminance'}
+        if ieNotDefined('xy')
+            % Find the line in the sensor window.
+            switch param
+                case {'horizontalline','horizontallineluminance'}
+                    message = 'Select horizontal line';
+                case {'verticalline','verticallineluminance'}
+                    message = 'Select vertical line';
+                otherwise
+                    error('Unknown orientation')
+            end
+            pointLoc = iePointSelect(ip,message,1);
+            xy = round(pointLoc);
+        end
+    otherwise
+        % No xy needed.
+end
+
+
+%% Do the plot
 switch param
     case 'horizontalline'
         % Set xy
         [uData, hdl] = plotDisplayLine(ip,'h',xy);
     case 'verticalline'
-        [uData, hdl] = plotDisplayLine(ip,'v');
+        [uData, hdl] = plotDisplayLine(ip,'v',xy);
     case 'chromaticity'
         [uData, hdl] = plotDisplayColor(ip,'chromaticity');
     case 'cielab'
@@ -75,7 +100,30 @@ switch param
         [uData, hdl] = plotDisplayColor(ip,'RGB');
     case 'rgb3d'
         [uData, hdl] = plotDisplayColor(ip,'rgb3d');
-        
+    case 'verticallineluminance'
+        % ipPlot(ip,'vertical line luminance',[1,col]);
+        % Planning to deprecate plotDisplayColor.  So wrote this here
+        % for now.
+        data = ipGet(ip,'data luminance');
+        lData = squeeze(data(:,xy(1),:));
+        pos = 1:numel(lData);
+        uData.pos = pos; uData.data = lData;
+        if show
+            hdl = ieNewGraphWin; plot(pos,lData,'k-','LineWidth',1); grid on;
+            titleString = sprintf('%s:  Col %d',ipGet(ip,'name'),xy(1));
+            xlabel('Row number'); ylabel('Luminance (cd/m2)'); title(titleString);
+        end
+    case 'horizontallineluminance'
+        % ipPlot(ip,'horizontal line luminance',[row,1]);
+        data = ipGet(ip,'data luminance');
+        lData = squeeze(data(xy(2),:,:));
+        pos = 1:numel(lData);
+        uData.pos = pos; uData.data = lData;        
+        if show
+            hdl = ieNewGraphWin; plot(pos,lData,'k-','LineWidth',1); grid on;
+            titleString = sprintf('%s:  Row %d',ipGet(ip,'name'),xy(2));
+            xlabel('Col number'); ylabel('Luminance (cd/m2)'); title(titleString);
+        end
     case {'roi'}
         % [uData,g] = ipPlot(ip,'roi');
         %
@@ -93,6 +141,18 @@ switch param
         
     otherwise
         error('Uknown parameter %s\n',param);
+end
+
+%% Draw a line on the ipWindow
+switch param
+    case {'horizontalline','horizontallineluminance'}
+        % See also ieDrawShape
+        sz = ipGet(ip,'size');
+        ieROIDraw(ip,'shape','line','shape data',[1 sz(2) xy(2) xy(2)]);
+    case {'verticalline','verticallineluminance'}
+        % See also ieDrawShape
+        sz = ipGet(ip,'size');
+        ieROIDraw(ip,'shape','line','shape data',[xy(1) xy(1) 1 sz(1)]);
 end
 
 % Attach the user data to the axis too?

@@ -1,5 +1,5 @@
 function [uData, g] = plotSensor(sensor, pType, roiLocs, varargin)
-% Gateway routine for plotting sensor data
+% Routine for plotting sensor data.  sensorPlot is main gateway now.
 %
 %   [uData, g] = plotSensor([sensor], pType, roiLocs, varargin)
 %
