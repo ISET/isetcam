@@ -21,17 +21,18 @@ function img = sensorData2Image(sensor,dataType,gam,scaleMax)
 %       is monochrome, the image is a single matrix.
 %
 % Description
-%  This routine creates the color at each pixel resemble the transmissivity
-%  of the color filter at that pixel. The intensity measures the size of the
-%  data.  The dataType is normally volts.
+%  This routine creates the color at each pixel resemble the
+%  transmissivity of the color filter at that pixel. The intensity
+%  measures the size of the data.  The dataType is normally volts.
 %
-%  Normally, the function takes in one CFA plane. It can also handle the
-%  case of multiple exposure durations.
+%  Normally, the function takes in one CFA plane. It can also handle
+%  the case of multiple exposure durations.
 %
-%  While it is usally used for volts, the routine converts the image from
-%  the 'dv' fields or even 'electrons' (I think).
+%  While it is usally used for volts, the routine converts the image
+%  from the 'dv' fields or even 'electrons' (I think).
 %
-%  The returned images can be written out as a tiff file by sensorSaveImage.
+%  The returned images can be written out as a tiff file by
+%  sensorSaveImage.
 %
 % Examples:
 %  sensor = vcGetObject('sensor');
