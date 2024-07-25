@@ -146,6 +146,7 @@ elseif isa(app,'matlab.ui.Figure')
     if trueSizeFlag
         truesize;
     end
+    set(app,'Name',ipGet(ip,'name'));
 end
 
 end

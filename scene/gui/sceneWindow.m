@@ -80,14 +80,6 @@ p.parse(scene,varargin{:});
 
 %% Manage the scene parameters
 
-if ~isempty(p.Results.renderflag)
-    scene = sceneSet(scene,'render flag',p.Results.renderflag);
-end
-
-if ~isempty(p.Results.gamma)
-    scene = sceneSet(scene,'gamma',p.Results.gamma);
-end
-
 % We add it to the database and select it.
 % That oi will appear in the oiWindow.
 if p.Results.replace, ieReplaceObject(scene);
@@ -109,6 +101,20 @@ elseif ~isvalid(sceneW)
 else
     % Just refresh it
     sceneW.refresh;
+end
+
+%% Adjust
+
+% Someday, we may have renderflag and gamma slots in the oi itself.
+% So I replace them now after setting, to future-proof.
+if ~isempty(p.Results.renderflag)
+    scene = sceneSet(scene,'render flag',p.Results.renderflag);
+    ieReplaceObject(scene);
+end
+
+if ~isempty(p.Results.gamma)
+    scene = sceneSet(scene,'gamma',p.Results.gamma);
+    ieReplaceObject(scene);
 end
 
 % Assume true if it does not exist.  Or if it is true.

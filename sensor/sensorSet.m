@@ -171,8 +171,7 @@ end
 
 %% The usual method of setting sensor parameters starts here
 
-param = ieParamFormat(param);  % Lower case and remove spaces
-switch lower(param)
+switch ieParamFormat(param)  % Lower case and remove spaces
     
     case {'name','title'}
         sensor.name = val;
@@ -707,7 +706,7 @@ switch lower(param)
     case 'metadatacrop'
         sensor.metadata.crop = val;
     otherwise
-        error('Unknown parameter.');
+        error('Unknown parameter %s',param);
 end
 
 end

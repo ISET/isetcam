@@ -1,10 +1,8 @@
 function [voltImage, dsnu, prnu] = sensorComputeImage(oi,sensor,wBar)
-% Main routine to comput the sensor voltage data from the optical image
+% Approximate the sensor voltage data from the optical image
 %
-% TODO: ***
-%   There is an issue when using the IMX363 sensor (and thus maybe the
-%   IMX490 sensor).  See comments in isetvalidation/iset/sensor
-%   scripts and autoExposure/aeLuminance.
+% TODO:  Called in some special cases instead of sensorCompute, such
+% as autoExposure.  Should be reconsidered.
 %
 % Syntax:
 %  [voltImage,dsnu,prnu] = sensorComputeImage(oi,sensor,wBarHandles)
@@ -12,9 +10,12 @@ function [voltImage, dsnu, prnu] = sensorComputeImage(oi,sensor,wBar)
 % Brief description:
 %  Compute the expected sensor voltage image from the sensor parameters and
 %  the optical image.  It calls a variety of sub-routines that implement
-%  many parts of the calculation.  The voltages returned here are not
-%  clipped by the voltage swing.  That is done in the sensorCompute()
-%  function.
+%  many parts of the calculation.  
+% 
+%  The voltages returned here are not clipped by the voltage swing.
+%  That is done in the sensorCompute() function.
+%
+%  The noise terms are calculated as well.
 %
 % Inputs:
 %   oi:           Optical image
@@ -54,7 +55,7 @@ function [voltImage, dsnu, prnu] = sensorComputeImage(oi,sensor,wBar)
 %   7.  Analog gain (ag) and analog offset (ao) are applied to the
 %   voltage image: voltImage = (voltImage + ao)/ag;
 %
-%   Many more notes on the calculation, including all the units are
+%   More notes on the calculation, including all the units are
 %   embedded in the comments below.
 %
 %   If the waitBar handles are provided, they are used to show progress.
@@ -97,7 +98,7 @@ end
 
 %% Convert to volts
 % Handle multiple exposure value case.
-if numel(cur2volt) == 1
+if isscalar(cur2volt)
     % There is only one exposure time.  Conventional calculation
     voltImage = cur2volt*unitSigCurrent;
 else
@@ -117,10 +118,10 @@ end
 % illumination. See notes in signalCurrentDensity for another approach that
 % we might use some day, say in ISET-3.0
 if showBar, waitbar(0.4,wBar,'Sensor image: Optical Efficiency'); end
-sensor = sensorVignetting(sensor);
-etendue = sensorGet(sensor,'sensorEtendue');
+sensor    = sensorVignetting(sensor);
+etendue   = sensorGet(sensor,'sensorEtendue');
 voltImage = voltImage .* repmat(etendue,[1 1 sensorGet(sensor,'nExposures')]);
-sensor   = sensorSet(sensor,'volts',voltImage);
+sensor    = sensorSet(sensor,'volts',voltImage);
 
 % This can be a single matrix or it can a volume of data.  We should
 % consider whether we want to place the volume elsewhere and always have

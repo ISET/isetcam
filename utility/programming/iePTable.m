@@ -1,4 +1,4 @@
-function thisTable = iePTable(obj,varargin)
+function [thisTable, thisWindow] = iePTable(obj,varargin)
 % Create a table listing the object parameters
 %
 %   tbl = iePTable(obj,varargin);
@@ -50,18 +50,18 @@ varargin = ieParamFormat(varargin);
 
 p = inputParser;
 p.addRequired('obj',@isstruct);
+
 vFunc = @(x)(ismember(x,{'window','embed'}));
-p.addParameter('uitable',[],@(x)(isa(x,'matlab.ui.control.Table')));
 p.addParameter('format','window',vFunc);
-% p.addParameter('backgroundcolor',[0.8 0.8 0.8],@isvector);
+p.addParameter('uitable',[],@(x)(isa(x,'matlab.ui.control.Table')));
 p.addParameter('fontsize',14,@isscalar);
 p.parse(obj,varargin{:});
 
 format   = p.Results.format;
-% bColor   = p.Results.backgroundcolor;
 FontSize = p.Results.fontsize;
+thisWindow = [];
 
-% Main window
+%% Main window
 if isequal(format,'window')
     thisWindow = uifigure('Name', "ISET Parameter Table");
     movegui(thisWindow,'northwest');
@@ -123,10 +123,7 @@ if isequal(format,'window')
     mnuTools = uimenu(thisWindow,'Text','File');
     
     mnuExport = uimenu(mnuTools,'Text','Export...');
-    mnuExport.MenuSelectedFcn = @mnuExportSelected;
-    
-    
-    
+    mnuExport.MenuSelectedFcn = @mnuExportSelected;        
 else
     if ~isempty(p.Results.uitable)
         thisTable = p.Results.uitable;
@@ -136,8 +133,7 @@ else
     thisTable.ColumnName  = {'Property','Value'};
     thisTable.ColumnWidth = {round(thisTable.Position(3)/2),round(thisTable.Position(3)/2)}; %'auto';
     thisTable.FontName    = 'Courier';
-    thisTable.FontSize    = getpref('ISET','fontSize',18) - 3;
-    
+    thisTable.FontSize    = getpref('ISET','fontSize',18) - 3;    
 end
 
 thisTable.Data    = data;

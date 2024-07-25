@@ -4,13 +4,22 @@ function img = sensorShowImage(sensor,gam,scaleMax,app)
 % Synopsis
 %    img = sensorShowImage(sensor,[gam=1],[scaleMax=0],[app])
 %
+% Brief description
+%  Show the image of the sensor pixels.  This is the image shown in
+%  the sensorWindow.  This routine also enables rendering in an
+%  independent window.
+%
 % Inputs
 %   sensor:    ISETCam sensor
 %   gam:       Display gamma
 %   scaleMax:  Scale to maximum brightness
-%   app:       The sensorWindow app.  If this is the number 0, the image is
-%              returned but not displayed in the axis (app.imgMain).
-%
+%   app:       The sensorWindow app.  
+%         If empty, searches for sensorWindow app
+%           If app is found, shown in there
+%           If app is not found, shown in a window
+%         If this is the number 0, the image is returned but not displayed 
+%         If a matlab.ui.Figure, shown in that figure
+%         
 % Optional key/value
 %   N/A
 %
@@ -18,49 +27,73 @@ function img = sensorShowImage(sensor,gam,scaleMax,app)
 %   img:  RGB image displayed in main axis
 %
 % Description
-%  The main image axis show the r,g,b or c,m,y or monochrome array that
-%  indicates the values of individual pixels in the sensor (depending on
-%  the sensor type).
+% 
+%  For the sensor, we have RGB values that are linear with respect to
+%  the number of volts at the pixel. To preserve the general
+%  appearance, we call sensorData2Image.  That function handles the
+%  conversion for many different types of sensors. The basic idea is
+%  to examine the color filters, preserve them in the rendering.
 %
-% Notes Image appearance -
+%  The display is governed modified by the sensor gamma parameter,
+%  which is read from the sensorWindow, if it is open.
 %
-%  In the other windows we convert the display image into an sRGB format by
-%  first calculating XYZ values and then using xyz2srgb. In this window,
-%  however, we do not have XYZ values at every pixel. Rather, we have RGB
-%  values that are linear with respect to the number of volts at the pixel.
-%  To preserve the general appearance, we treat these values as linear rgb
-%  and use lrgb2srgb() to calculate the displayed image.  This is
-%  implemented in sensorData2Image.
+%  The data are either scaled to a maximum of the voltage swing
+%  (default). Or if scaleMax = 1 (Scale button is selected in the
+%  window) the image data are scaled to fill up the display range.
+%  This option is useful for small voltage values compared to the
+%  voltage swing.
 %
-%  The final display can be modified by the gamma parameter is read from the
-%  figure setting.
-%
-%  The data are either scaled to a maximum of the voltage swing (default) or
-%  if scaleMax = 1 (Scale button is selected in the window) the image data
-%  are scaled to fill up the display range. This option is useful for small
-%  voltage values compared to the voltage swing, say in the simulation of
-%  human cone responses.
+%  N.B.  The render process here is slightly different from other
+%  ISETCam window. In the other ISETCam windows we convert the display
+%  image into an sRGB format by first calculating XYZ values and then
+%  using xyz2srgb. In this window, however, we do not have XYZ values
+%  at every pixel.
 %
 % Copyright ImagEval Consultants, LLC, 2003.
-%
-% Examples:
-%   sensorShowImage(sensor,gam);
-%   sensorShowImage(sensor);
 %
 % See also:
 %   sensorData2Image, imageShowImage, sceneShowImage, oiShowImage
 %
 
+% Example:
+%{
+%ETTBSkip
+scene = sceneCreate; oi = oiCreate; sensor = sensorCreate;
+oi = oiCompute(oi,scene); sensor = sensorCompute(sensor,oi);
+sensorWindow(sensor);
+gam = 0.3; scaleMax = true;
+sensorShowImage(sensor,gam,scaleMax,ieNewGraphWin);
+%}
+
+%% Parameters
+
 if ieNotDefined('gam'),      gam = ieSessionGet('sensor gamma'); end
 if ieNotDefined('scaleMax'), scaleMax = 0; end
-if ieNotDefined('app')
-    app = ieSessionGet('sensor window'); 
-    % if we're called without a sensor Window
-    % then we can't de-reference through app:
-    if ~isequal(app, 0) && ~isempty(app)
-        axes(app.imgMain); cla;
+if ~exist('app','var') || isempty(app), app = []; end
+
+if isempty(app)
+    % User told us nothing.
+    try
+        % We think the user wants it in the sensorWindow.  Give it a
+        % try.
+        [app,appAxis] = ieAppGet('sensor');        
+    catch
+        % No sensorWindow app found. So render in a figure.
+        app = ieNewGraphWin;
+        appAxis = [];
     end
+elseif isa(app,'sensorWindow_App')
+    % The user sent the sensorWindow app.  This is the main image axis.
+    [app,appAxis] = ieAppGet('sensor');  
+elseif isa(app,'matlab.ui.Figure')
+    % The user sent in a Matlab figure.
+    appAxis = [];
+elseif isequal(app,0)
+    % User sent in a 0. Just return the values and do not display.
+    % Equivalent to displayFlag = false;
+    appAxis = [];
 end
+
 if isempty(sensor),return; end
 
 % We have the voltage or digital values and we want to render them into an
@@ -102,20 +135,33 @@ end
 % the currently selected figure.  We might actively select the axis to be
 % safe.
 if ~isempty(img)
+
     % If the sensor is monochrome, the img is a matrix, not RGB.
-    if ismatrix(img), img = repmat(img,[1,1,3]); end
+    if ismatrix(img)
+        img = repmat(img,[1,1,3]); 
+    end
     
-    % What is this condition on app 0?  Is that do not display?
-    if ~isequal(app,0) && ~isempty(app)
-        axes(app.imgMain);    % Make sure the gca is in this figure
-        image(app.imgMain,x,y,img); 
-        axis image; axis off; % Sets the gca axis
-    else
-        % No app
-        imagesc(x,y,img); 
+    % Different figure options
+    if isa(app,'sensorWindow_App')
+        % The axis in the window
+        image(appAxis,img); axis image; axis off;
+    elseif isa(app,'matlab.ui.Figure')
+        % A Matlab figure.  Choose it and show.
+        figure(app);
+        image(img); axis image; axis off;
+        set(app,'Name',sensorGet(sensor,'name'));
+    elseif isequal(app,0)
+        % On app 0, do not display
+        return;
+    else 
+        warning('Unknown app argument.');
+        disp(app);
+        axes(appAxis);    % Make sure the gca is in this figure
+        image(appAxis,x,y,img);
         axis image; axis off; % Sets the gca axis
     end
 
+    % Monochrome sensor color map.
     if (sensorGet(sensor,'nSensors') == 1), colormap(gray(256)); end
 end
 

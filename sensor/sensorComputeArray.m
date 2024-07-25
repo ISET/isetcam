@@ -5,26 +5,35 @@ function [sensorCombined,sensors] = sensorComputeArray(sensorArray,oi,varargin)
 %   [sensorCombined, sensorArray] = sensorComputeArray(sensorArray,oi,varargin)
 %
 % Brief:
-%   Calculate response to oi, followed by the combined sensor.  Both a
+%   Calculate response to oi for each of the sensors, and then create
+%   the combined sensor.  There are various possible algorithms for
+%   combining the multiple sensor data.
 %
 % Input
-%  sensorArray
-%  oi
+%   sensorArray - Usually an array of 4 sensors (ovt or imx490).  This
+%      may be generalized to different numbers in the future, and
+%      different algorithms.s
+%   oi  - Optical image
 %
 % Optional key/val
+%  method:  {'average','best snr'}  default: average
 %
 % Output
-%   sensorCombined
-%   sensorArray
+%   sensorCombined - Data pooled from the multiple sensors in the array
+%   sensorArray    - The individual sensors
 %
 % See also
 %    sensorCompute, sensorCreateArray, s_sensorSplitPixel
-%
 
+% Notes:
+%  The way we scale the voltages is worth thinking about.  See notes
+%  below near line 170.
+
+% Examples:
 %{
 scene = sceneCreate('default',12); scene = sceneSet(scene,'fov',3); oi = oiCreate('wvf'); 
 oi = oiCompute(oi,scene,'crop',true);
-sensorArray = sensorCreateArray('splitpixel','exp time',0.1,'size',[64 96]);
+sensorArray = sensorCreateArray('array type','ovt','exp time',0.1,'size',[64 96]);
 [sA,s]=sensorComputeArray(sensorArray,oi,'method','average');
 ip = ipCreate; ip = ipCompute(ip,sA); ipWindow(ip);
 ieNewGraphWin; colormap(jet(4)); image(sA.metadata.npixels); colorbar;
@@ -32,7 +41,7 @@ ieNewGraphWin; colormap(jet(4)); image(sA.metadata.npixels); colorbar;
 %{
 scene = sceneCreate('default',12); scene = sceneSet(scene,'fov',3); oi = oiCreate('wvf'); 
 oi = oiCompute(oi,scene,'crop',true);
-sensorArray = sensorCreateArray('splitpixel','exp time',0.2,'size',[64 96]);
+sensorArray = sensorCreateArray('array type','imx490','exp time',0.2,'size',[64 96]);
 [sA,s]=sensorComputeArray(sensorArray,oi,'method','best snr');
 ip = ipCreate; ip = ipCompute(ip,sA); ipWindow(ip);
 ieNewGraphWin; colormap(jet(4)); image(sA.metadata.bestPixel); colorbar;
@@ -52,6 +61,9 @@ p.addParameter('method','average',@(x)(ismember(ieParamFormat(x),validMethods)))
 p.parse(sensorArray,oi,varargin{:});
 
 method = p.Results.method;
+
+% Should be a parameter.  I ran a bunch with 0.95 because of noise.
+maxVSwing = 0.9;
 
 %% Compute for each of the sensors in the array
 
@@ -88,29 +100,35 @@ sensorCombined = sensors(1);
 % separatly, below.
 for ii=1:numel(sensors)
     vSwing(ii) = sensorGet(sensors(ii),'pixel voltage swing');
+
+    % We adjust for the spectral QE, using a sensitivity term relative
+    % to the first sensor.  The sensitivity variable is used below.
     r = sensorGet(sensors(ii),'spectral qe') ./ sensorGet(sensors(1),'spectral qe');
     sensitivity(ii) = mean(r(:),'all','omitnan');
 
     volts = sensorGet(sensors(ii),'volts');
-    idx(:,:,ii) = (volts < (0.95 * vSwing(ii)));
+    idx(:,:,ii) = (volts < (maxVSwing * vSwing(ii)));
 end
 
-% This accounts for area and relative sensitivty.
+% This accounts for area and relative QE sensitivty.
 for ii=1:numel(sensors)
     % We get the electrons, but account for the area
     electrons = sensorGet(sensors(ii),'electrons per area','um');
+    % ieNewGraphWin; imagesc(electrons); colormap(gray)
+
     thisIDX = idx(:,:,ii);
 
     % Set saturated pixels to 0
     electrons(~thisIDX) = 0;
 
-    % If the sensitivity is less than sensors(1), we scale up
-    % the number of virtual electrons.  The virtual electrons
-    % are like an input intensity referred value.
+    % If the sensitivity is less than sensors(1), we scale up the
+    % number of virtual electrons.  The virtual electrons are an input
+    % intensity referred value.
     vElectrons(:,:,ii) = electrons/sensitivity(ii);
+    % ieNewGraphWin; imagesc(vElectrons(:,:,ii)); colormap(gray);
+    % colorbar;
 end
-% ieNewGraphWin; imagesc(vElectrons(:,:,4)); colormap(gray);
-% colorbar;
+
 
 
 %%
@@ -134,7 +152,9 @@ switch ieParamFormat(method)
         end
 
     case 'bestsnr'
-        % Choose the pixel with the most real electrons and thus best SNR.
+        % At this point, the pixels that are saturated should all
+        % be set to zero. Choose the pixel with the most real
+        % electrons and thus best SNR. 
         
         % We need to convert vElectrons back to electrons.  Then we
         % store the volts with the vElectron value from the best
@@ -156,6 +176,16 @@ end
 
 % Scale the volts to occupy the whole voltage swing.
 vSwing = sensorGet(sensorCombined,'pixel voltage swing');
+
+% Consider this method of scaling the volts.  If we think there is a
+% large gap between the very bright pixels and most, we could bring
+% the 95th percentile up to half of the voltage swing.
+%{
+ tst = prctile(volts(:),99.5);
+ volts = (volts/tst)*0.50*vSwing;
+ volts = ieClip(volts,0,vSwing);
+%}
+% Simple linear scale
 volts = vSwing * ieScale(volts,1);
 
 % This is an analog calculation
@@ -166,6 +196,8 @@ sensorCombined = sensorSet(sensorCombined,'volts',volts);
 sensorCombined = sensorSet(sensorCombined,'analog gain',1);
 sensorCombined = sensorSet(sensorCombined,'analog offset',0);
 
+% The names are usually ovt-large or imx490-small.  So we split on the
+% '-' to create the name.
 tmp = split(sensorGet(sensors(1),'name'),'-');
 thisDesign = tmp{1};
 sensorCombined = sensorSet(sensorCombined,'name',sprintf('%s-%s',thisDesign,method));

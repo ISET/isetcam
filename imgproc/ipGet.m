@@ -61,6 +61,8 @@ function val = ipGet(ip,param,varargin)
 %       'data srgb'     - sRGB rendering of the display data 
 %                         (Shown in the GUI window)
 %       'data xyz'      - CIE XYZ values of the display data
+%       'data luminance'- The Y value of the CIE XYZ
+%
 %       'data ics'      - Internal color space representation 
 %                         (often XYZ, but not always).
 %       'data roi'      - Slot to store region of interest RGB data
@@ -139,12 +141,14 @@ switch oType
         display = ip.display;
         if isempty(oParam), val = display;
         elseif   isempty(varargin), val = displayGet(display,oParam);
-        else,    val = displayGet(display,paoParamram,varargin{1});
+        else,    val = displayGet(display,oParam,varargin{1});
         end
         
     case 'l3'
+        % This should be deprecated
+        %
         % L3 object is attached to image processor.  Code for L3, though
-        % is in a separate repository.
+        % is in a separate repository. 
         
         % If there is no L3, return empty
         if isfield(ip,'L3'), L3 = ip.L3;
@@ -435,7 +439,11 @@ switch oType
                 % The display data into XYZ values, accounting for the
                 % display primaries.                
                 val = imageDataXYZ(ip);
-
+            case {'dataluminance'}
+                % ipGet(ip,'data luminance');
+                % The Y value from the CIE XYZ
+                val = imageDataXYZ(ip);
+                val = val(:,:,2);
             case {'datasrgb','srgb'}
                 % ipGet(ip,'data srgb');
                 %
