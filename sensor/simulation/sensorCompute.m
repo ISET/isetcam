@@ -32,12 +32,12 @@ function [outSensor, unitSigCurrent] = sensorCompute(sensor,oi,showBar)
 %
 % The conditions are:
 %
-%  noiseFlag | photon   e-noises       FPN     CDS
-%    -2      |   +         0            0       0   ('no pixel no system')
-%    -1      |   0         0            0       0   ('no photon no pixel no system')
-%     0      |   0         0            +       +   ('no photon no pixel')
-%     1      |   +         0            +       +   ('no pixel noise')
-%     2      |   +         +            +       +   ('default')
+%  noiseFlag | photon   e-noises   FPN     CDS
+%    -2      |   +         0        0       0   ('no pixel no system')
+%    -1      |   0         0        0       0   ('no photon no pixel no system')
+%     0      |   0         0        0       0   ('no photon no pixel')
+%     1      |   +         0        +       +   ('no pixel noise')
+%     2      |   +         +        +       +   ('default')
 %
 %  photon noise:  Photon noise
 %  pixel noise:   Electrical noise (read, reset, dark) (eNoise)
@@ -45,10 +45,10 @@ function [outSensor, unitSigCurrent] = sensorCompute(sensor,oi,showBar)
 %  CDS:           If the flag is set, for 0,1,2
 %  Column FPN:    If the flag is set for 0,1,2
 %
-% * Quantization is managed through the quantization method. It can be
-%   turned off by setting the quantization %   method to 'analog'  
-% * If you want to avoid clipping, set the voltage swing to be very
-%   large.  Though, we always clip tne negative values at 0.
+%  * Quantization is managed through the quantization method. It can be
+%    turned off by setting the quantization %   method to 'analog'  
+%  * If you want to avoid clipping, set the voltage swing to be very
+%    large.  Though, we always clip tne negative values at 0.
 %
 % In addition to controlling factors through the noise flag, it is possible
 % to manage them by individually setting sensor parameters. For example,
@@ -230,9 +230,10 @@ for ss=1:length(sensorArray)   % Number of sensors
     % mean image and just want many noisy, clipped, quantized examples.
     noiseFlag = sensorGet(sensor,'noise flag');
 
-    % We calculate the noise without the analog offset and gain So we
-    % set analog gain/offset to 1 and 0 here. They will be applied and
-    % the values restored later
+    % We calculate the noise without the analog offset and gain. We
+    % set analog gain/offset to 1 and 0 here, and then after adding in
+    % the noises we apply the gain and offsets. We will restore these
+    % later to the struct.    
     ag = sensorGet(sensor,'analog gain');
     ao = sensorGet(sensor,'analog offset');
     sensor = sensorSet(sensor,'analog gain',1);
@@ -240,34 +241,32 @@ for ss=1:length(sensorArray)   % Number of sensors
 
     % The noise flag rules for different integer values are described in
     % the header to this function.    
-    if noiseFlag == 0 || noiseFlag == 1 || noiseFlag == 2
+    if noiseFlag == 0 || noiseFlag == -1
+        % No noise added at all.
+
+    elseif noiseFlag == 1 || noiseFlag == 2
         
         % See the comments in the header for the definition of the
         % noiseFlag. N.B. The noiseFlag  governs clipping and
         % quantization (GCQ), not just noise (photon, electrical).
-        if noiseFlag == 1 || noiseFlag == 2
-            % if noiseFlag = 1, add photon noise, but not electrical
-            % or FC noise 
-            % if noiseFlag = 2, add photon noise and FPN 
 
-            % At this point, the analog gain and offset have not yet
-            % been applied. So we over-ride the values that were sent
-            % in, and put them back after computing this noise.            
-            sensor = sensorAddNoise(sensor);
-        end
+        % if noiseFlag = 1, add photon noise, but not electrical.  It
+        % does have FPN.
+        % 
+        % if noiseFlag = 2, add photon noise, electrical, FPN .
+
+        % The noise is added in here so we can loop over multiple
+        % exposures, say for exposure bracketing.  The loop in this
+        % function is for multiple sensors.
+        sensor = sensorAddNoise(sensor);
+
         
-        %% PRNU DSNU
-
-        vImage = noiseFPN(sensor);
-        sensor = sensorSet(sensor,'volts',vImage);
-
-        %% Column fixed pattern noise
-        vImage = noiseColumnFPN(sensor);        
-        sensor = sensorSet(sensor,'volts',vImage);  
-
         %% Correlated double sampling
         if  sensorGet(sensor,'cds')
             disp('CDS on')
+
+            % Needs checking and fixing. 2024.
+
             % Read a zero integration time image that we subtract from the
             % simulated image.  This removes much of the effect of dsnu.
             integrationTime = sensorGet(sensor,'integration time');
@@ -281,16 +280,10 @@ for ss=1:length(sensorArray)   % Number of sensors
 
                 
     elseif noiseFlag == -2
-        % Only add photon noise.  No CDS or other noise methods.
-        % Unfortunately, the sensorAddNoise parameter doesn't match
-        % the noiseFlag parameter closely.  So, we set it and then put
-        % it back.
-        sensor = sensorSet(sensor,'noiseFlag',1);  % Only Poisson noise
-        sensor = sensorAddNoise(sensor);
-        sensor = sensorSet(sensor,'noiseFlag',noiseFlag);  % Put it back
-    elseif noiseFlag == -1
-        % No photon no pixel no system
-        
+        % Only adds the photon noise.  Used for applications when we
+        % want to compare to the best possible performance, limited
+        % only by shot noise.  These are 'ideal' sensor cases.
+        sensor = sensorAddNoise(sensor);         
     else
         error('Bad noiseFlag %d\n',noiseFlag);
     end
@@ -298,11 +291,11 @@ for ss=1:length(sensorArray)   % Number of sensors
     %% Apply gain and offset.  This also restores the values into sensor
     sensor = sensorGainOffset(sensor,ag,ao);
 
-    %% Clipping
+    %% Clipping - always applied
 
     % We clip the voltage because everything must fall between 0 and
     % voltage swing.  This is true even if the responseType is
-    % log.
+    % log.  To avoid clipping, set vSwing very large.
     vSwing = sensorGet(sensor,'pixel voltage swing');
     sensor = sensorSet(sensor,'volts',ieClip(sensorGet(sensor,'volts'),0,vSwing));
         

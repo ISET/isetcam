@@ -19,9 +19,10 @@ function sensor = sensorAddNoise(sensor)
 %
 % IMPORTANT NOTE:
 % noiseFlag cases that are correctly handled.
-%   0 - No noise at all, so we shouldn't even be here.
+%   0 - No noise at all, so we shouldn't even be here. We return.
 %   1 - Shot noise only (arises from the photons)
 %   2 - Shot noise and other electronic noise
+%  -2 - Shot noise only
 %
 % We are not sure whether the -1 and -2 cases are handled correctly.
 %
@@ -93,46 +94,44 @@ for ii=1:nExposures
     
     vImage = volts(:,:,ii);
     
-    % Add the dark current. At this point the dark current is the same
-    % at all pixels. Later, we apply the PRNU gain factor to the sum
-    % of the signal and noise, so that the noise dark current
-    % effectively varies across pixels.  Sam Kavusi says that this
-    % variation in gain (also called PRNU) is not precisely the same
-    % for signal and noise.  But we have no way to assess this for
-    % most cases, so we treat the PRNU for noise and signal as the
-    % same until forced to do it otherwise.
-    if noiseFlag == 2  
+    % Add the dark current, which is the same at all pixels. Later, we
+    % apply the PRNU gain factor to the sum of the signal and noise,
+    % so that the noise dark current effectively varies across pixels.
+    %
+    % We add the dark voltage into the signal and we treat the (small
+    % amount of) dark voltage variation as if it has the same noise as
+    % the shot noise, arising from the photons.
+    %
+    % Sam Kavusi says that the variation in gain (also called PRNU) is
+    % not precisely the same for signal (photons) and noise.  But we
+    % have no way to assess this for most cases. So, we treat the PRNU
+    % for noise and signal as the same.
+    if noiseFlag == 2
+        % Treating the dark voltage as if it were caused by light.
         vImage = vImage + pixelGet(pixel,'dark Voltage')*eTimes(ii);
         sensor = sensorSet(sensor,'volts',vImage);
-    elseif noiseFlag == 1
-        sensor = sensorSet(sensor,'volts',vImage);
-    elseif noiseFlag == -1
-    elseif noiseFlag == -2
     end
     
-    % Add shot noise if the noiseFlag is 1 or 2.
-    % It must be done after adding the dark current.
-    if  noiseFlag == 1 || noiseFlag == 2 || noiseFlag == -2
-        vImage = noiseShot(sensor);
-    end
-    
-    % If noiseFlag = 2, add other electrical noise.  Not otherwise.
+    % Calculated after adding the dark current.  Runs for -2, 1 and 2
+    vImage = noiseShot(sensor);
+
+    % If noiseFlag = 2, add the read noise, too.
     if noiseFlag == 2
         vImage = vImage + (pixelGet(pixel,'read noise volts') * randn(size(vImage)));
         sensor = sensorSet(sensor,'volts',vImage);
-        
-        %{
-        % Now handled in sensorCompute
-        % Fixed pattern noise (equivalent to noiseFPN.m)
-        vImage = noiseFPN(sensor);
-        sensor = sensorSet(sensor,'volts',vImage);
-        
-        % Column fixed pattern noise (equivalent to noiseColumnFPN.m)
-        vImage = noiseColumnFPN(sensor);
-        %}
-
     end
     
+    %% PRNU DSNU
+
+    if noiseFlag == 1 || noiseFlag == 2
+        vImage = noiseFPN(sensor);
+        sensor = sensorSet(sensor,'volts',vImage);
+
+        %% Column fixed pattern noise
+        vImage = noiseColumnFPN(sensor);
+        % sensor = sensorSet(sensor,'volts',vImage);
+    end
+
     % That's is.  Store it in the volume image ...
     volts(:,:,ii) = vImage;
 end
