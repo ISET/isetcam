@@ -29,4 +29,4 @@ else
     noisyImage = voltageImage;
 end
 
-return
+end

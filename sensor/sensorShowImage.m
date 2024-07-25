@@ -4,6 +4,11 @@ function img = sensorShowImage(sensor,gam,scaleMax,app)
 % Synopsis
 %    img = sensorShowImage(sensor,[gam=1],[scaleMax=0],[app])
 %
+% Brief description
+%  Show the image of the sensor pixels.  This is the image shown in
+%  the sensorWindow.  This routine also enables rendering in an
+%  independent window.
+%
 % Inputs
 %   sensor:    ISETCam sensor
 %   gam:       Display gamma
@@ -22,28 +27,27 @@ function img = sensorShowImage(sensor,gam,scaleMax,app)
 %   img:  RGB image displayed in main axis
 %
 % Description
-%  The main image axis show the r,g,b or c,m,y or monochrome array that
-%  indicates the values of individual pixels in the sensor (depending on
-%  the sensor type).
+% 
+%  For the sensor, we have RGB values that are linear with respect to
+%  the number of volts at the pixel. To preserve the general
+%  appearance, we call sensorData2Image.  That function handles the
+%  conversion for many different types of sensors. The basic idea is
+%  to examine the color filters, preserve them in the rendering.
 %
-% Notes Image appearance -
+%  The display is governed modified by the sensor gamma parameter,
+%  which is read from the sensorWindow, if it is open.
 %
-%  In the other windows we convert the display image into an sRGB format by
-%  first calculating XYZ values and then using xyz2srgb. In this window,
-%  however, we do not have XYZ values at every pixel. Rather, we have RGB
-%  values that are linear with respect to the number of volts at the pixel.
-%  To preserve the general appearance, we treat these values as linear rgb
-%  and use lrgb2srgb() to calculate the displayed image.  This is
-%  implemented in sensorData2Image.
+%  The data are either scaled to a maximum of the voltage swing
+%  (default). Or if scaleMax = 1 (Scale button is selected in the
+%  window) the image data are scaled to fill up the display range.
+%  This option is useful for small voltage values compared to the
+%  voltage swing.
 %
-%  The final display can be modified by the gamma parameter is read from the
-%  figure setting.
-%
-%  The data are either scaled to a maximum of the voltage swing (default) or
-%  if scaleMax = 1 (Scale button is selected in the window) the image data
-%  are scaled to fill up the display range. This option is useful for small
-%  voltage values compared to the voltage swing, say in the simulation of
-%  human cone responses.
+%  N.B.  The render process here is slightly different from other
+%  ISETCam window. In the other ISETCam windows we convert the display
+%  image into an sRGB format by first calculating XYZ values and then
+%  using xyz2srgb. In this window, however, we do not have XYZ values
+%  at every pixel.
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 %
@@ -57,22 +61,16 @@ function img = sensorShowImage(sensor,gam,scaleMax,app)
 scene = sceneCreate; oi = oiCreate; sensor = sensorCreate;
 oi = oiCompute(oi,scene); sensor = sensorCompute(sensor,oi);
 sensorWindow(sensor);
-sensorShowImage(sensor,0.3);
-sensorShowImage(sensor,0.3,1,ieNewGraphWin);
-
+gam = 0.3; scaleMax = true;
+sensorShowImage(sensor,gam,scaleMax,ieNewGraphWin);
 %}
+
+%% Parameters
+
 if ieNotDefined('gam'),      gam = ieSessionGet('sensor gamma'); end
 if ieNotDefined('scaleMax'), scaleMax = 0; end
 if ~exist('app','var') || isempty(app), app = []; end
 
-% if ieNotDefined('app')
-%     app = ieSessionGet('sensor window');
-%     % if we're called without a sensor Window
-%     % then we can't de-reference through app:
-%     if ~isequal(app, 0) && ~isempty(app)
-%         axes(app.imgMain); cla;
-%     end
-% end
 if isempty(app)
     % User told us nothing.
     try

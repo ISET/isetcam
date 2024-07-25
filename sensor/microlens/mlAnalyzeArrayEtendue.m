@@ -23,6 +23,8 @@ function sensor = mlAnalyzeArrayEtendue(sensor,method,nAngles)
 %   (default = 5) because the etendue function is very smooth and can be
 %   estimated from just a couple of values.
 %
+% Copyright ImagEval Consultants, LLC, 2003.
+%
 % Example:
 %   oi = oiCreate; sensor = sensorCreate;
 %   ieAddObject(oi); ieAddObject(sensor);
@@ -40,7 +42,8 @@ function sensor = mlAnalyzeArrayEtendue(sensor,method,nAngles)
 %   sensor = mlAnalyzeArrayEtendue(sensor,'centered',5);
 %   plotSensorEtendue(sensor);
 %
-% Copyright ImagEval Consultants, LLC, 2003.
+% See also
+%
 
 % Programming Note:  Maybe the default method should be optimal.
 
@@ -109,4 +112,4 @@ end
 % Update the microlens structure
 sensor = sensorSet(sensor,'ml',ml);
 
-return
+end

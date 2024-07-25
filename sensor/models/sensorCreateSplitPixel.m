@@ -179,6 +179,8 @@ SPDHCG = [];
 
 LPD = sensorCreate('ovt-large');
 LPDLCG = LPD(1);
+
 LPDHCG = LPD(2);
+
 
 end

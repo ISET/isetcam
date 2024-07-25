@@ -62,6 +62,9 @@ p.parse(sensorArray,oi,varargin{:});
 
 method = p.Results.method;
 
+% Should be a parameter.  I ran a bunch with 0.95 because of noise.
+maxVSwing = 0.9;
+
 %% Compute for each of the sensors in the array
 
 for ii=1:numel(sensorArray)
@@ -104,13 +107,15 @@ for ii=1:numel(sensors)
     sensitivity(ii) = mean(r(:),'all','omitnan');
 
     volts = sensorGet(sensors(ii),'volts');
-    idx(:,:,ii) = (volts < (0.95 * vSwing(ii)));
+    idx(:,:,ii) = (volts < (maxVSwing * vSwing(ii)));
 end
 
 % This accounts for area and relative QE sensitivty.
 for ii=1:numel(sensors)
     % We get the electrons, but account for the area
     electrons = sensorGet(sensors(ii),'electrons per area','um');
+    % ieNewGraphWin; imagesc(electrons); colormap(gray)
+
     thisIDX = idx(:,:,ii);
 
     % Set saturated pixels to 0
@@ -120,9 +125,10 @@ for ii=1:numel(sensors)
     % number of virtual electrons.  The virtual electrons are an input
     % intensity referred value.
     vElectrons(:,:,ii) = electrons/sensitivity(ii);
+    % ieNewGraphWin; imagesc(vElectrons(:,:,ii)); colormap(gray);
+    % colorbar;
 end
-% ieNewGraphWin; imagesc(vElectrons(:,:,4)); colormap(gray);
-% colorbar;
+
 
 
 %%
@@ -146,7 +152,9 @@ switch ieParamFormat(method)
         end
 
     case 'bestsnr'
-        % Choose the pixel with the most real electrons and thus best SNR.
+        % At this point, the pixels that are saturated should all
+        % be set to zero. Choose the pixel with the most real
+        % electrons and thus best SNR. 
         
         % We need to convert vElectrons back to electrons.  Then we
         % store the volts with the vElectron value from the best
