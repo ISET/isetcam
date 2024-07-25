@@ -1,11 +1,13 @@
 function sensor = sensorAddNoise(sensor)
 % Add electrical and photon noise to the sensor voltage image
 %
+% Synopsis
 %    sensor = sensorAddNoise(sensor)
 %
-% Typically, the sensor structure contains the mean voltage image (without
-% noise). Here, we compute the photon noise, sensor electrical noise, and
-% quantization error here and add them into the voltage image.
+% Brief
+%  The sensor structure enters with the mean voltage image (without
+%  noise). Here, we compute the photon noise, sensor electrical noise,
+%  and quantization error here and add them into the voltage image.
 %
 % Certain noise terms (fixed pattern noise, seed parameters?) are stored
 % and returned in the sensor structure that is returned.  Hence if you want
@@ -17,18 +19,22 @@ function sensor = sensorAddNoise(sensor)
 %
 % IMPORTANT NOTE:
 % noiseFlag cases that are correctly handled.
-%   0 - No noise at all
-%   1 - Photon noise only
-%   2 - Photon noise and electronic noise
+%   0 - No noise at all, so we shouldn't even be here.
+%   1 - Shot noise only (arises from the photons)
+%   2 - Shot noise and other electronic noise
+%
 % We are not sure whether the -1 and -2 cases are handled correctly.
 %
-% Additional imperfections (analog gain/offset, clipping, quantization) are
-% handled in the main sensorCompute routine.  The inclusion of these
-% operations are managed by other values of the noiseFlag.
-%
-% See also:  sensorComputeNoise
+% Additional factors (analog gain/offset, clipping, quantization
+% called FPN) are handled in the main sensorCompute routine.  The
+% inclusion of these operations are managed by other values of the
+% noiseFlag.
 %
 % Copyright ImagEval Consultants, LLC, 2011.
+%
+% See also:
+%    sensorComputeNoise
+%
 
 %% Add noise
 
@@ -87,37 +93,44 @@ for ii=1:nExposures
     
     vImage = volts(:,:,ii);
     
-    % Add the dark current At this point the noise dark current is the same
-    % at all pixels. Later, we apply the PRNU gain factor to the sum of the
-    % signal and noise, so that the noise dark current effectively varies
-    % across pixels.  Sam Kavusi says that this variation in gain (also
-    % called PRNU) is not precisely the same for signal and noise.  But we
-    % have no way to assess this for most cases, so we treat the PRNU for
-    % noise and signal as the same until forced to do it otherwise.
-    if noiseFlag > 1  % If noiseFlag = 2
+    % Add the dark current. At this point the dark current is the same
+    % at all pixels. Later, we apply the PRNU gain factor to the sum
+    % of the signal and noise, so that the noise dark current
+    % effectively varies across pixels.  Sam Kavusi says that this
+    % variation in gain (also called PRNU) is not precisely the same
+    % for signal and noise.  But we have no way to assess this for
+    % most cases, so we treat the PRNU for noise and signal as the
+    % same until forced to do it otherwise.
+    if noiseFlag == 2  
         vImage = vImage + pixelGet(pixel,'dark Voltage')*eTimes(ii);
         sensor = sensorSet(sensor,'volts',vImage);
-    else
+    elseif noiseFlag == 1
         sensor = sensorSet(sensor,'volts',vImage);
+    elseif noiseFlag == -1
+    elseif noiseFlag == -2
     end
     
     % Add shot noise if the noiseFlag is 1 or 2.
     % It must be done after adding the dark current.
-    if  noiseFlag > 0
+    if  noiseFlag == 1 || noiseFlag == 2 || noiseFlag == -2
         vImage = noiseShot(sensor);
     end
     
-    % Add read noise if noiseFlag = 2
-    if noiseFlag > 1
+    % If noiseFlag = 2, add other electrical noise.  Not otherwise.
+    if noiseFlag == 2
         vImage = vImage + (pixelGet(pixel,'read noise volts') * randn(size(vImage)));
         sensor = sensorSet(sensor,'volts',vImage);
         
+        %{
+        % Now handled in sensorCompute
         % Fixed pattern noise (equivalent to noiseFPN.m)
         vImage = noiseFPN(sensor);
         sensor = sensorSet(sensor,'volts',vImage);
         
         % Column fixed pattern noise (equivalent to noiseColumnFPN.m)
         vImage = noiseColumnFPN(sensor);
+        %}
+
     end
     
     % That's is.  Store it in the volume image ...

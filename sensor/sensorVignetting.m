@@ -16,6 +16,8 @@ function sensor = sensorVignetting(sensor,pvFlag,nAngles)
 %           ml<TAB>, mlAnalyzeArrayEtendue(), mlGet/Set/Create, and
 %           MicrolensWindow
 %
+% Copyright ImagEval Consultants, LLC, 2006.
+%
 %Examples:
 %   foo = sensorVignetting; plotSensorEtendue(foo);
 %   foo = sensorVignetting([],3); plotSensorEtendue(foo);
@@ -23,7 +25,8 @@ function sensor = sensorVignetting(sensor,pvFlag,nAngles)
 %   sensor = vcGetObject('sensor'); sensor = sensorSet(sensor,'vignetting',1);
 %   foo = sensorVignetting(sensor); plotSensorEtendue(foo);
 %
-% Copyright ImagEval Consultants, LLC, 2006.
+% See also
+%
 
 if ieNotDefined('sensor'), sensor = vcGetObject('sensor'); end
 if ieNotDefined('pvFlag'), pvFlag = sensorGet(sensor,'vignetting'); end
