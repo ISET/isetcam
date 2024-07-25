@@ -8,8 +8,8 @@ function [tbl, stringTable] = sensorDescription(sensor,varargin)
 %   sensor
 %  
 % Optional key/val
-%   show - Prints to command line by default (logical)
-%   close window  - Closes the display window by default (logical)
+%   show -          Prints to command line by default (logical: true)
+%   close window  - Closes the display window by default (logical: true)
 %
 % Output
 %   tbl - A simple Matlab table

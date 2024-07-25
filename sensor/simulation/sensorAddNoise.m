@@ -121,6 +121,8 @@ for ii=1:nExposures
         sensor = sensorSet(sensor,'volts',vImage);
     end
     
+    sensor = sensorSet(sensor,'volts',vImage);
+
     %% PRNU DSNU
 
     if noiseFlag == 1 || noiseFlag == 2
