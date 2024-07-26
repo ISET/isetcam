@@ -40,6 +40,4 @@ sensor = sensorSet(sensor,'noise flag',2);
 sensor = sensorCompute(sensor,oi);
 sensorPlot(sensor,'volts hline',[1 320],'two lines', true);
 
-%% Now column FPN
-
 %% END
