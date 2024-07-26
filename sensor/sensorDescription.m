@@ -1,18 +1,34 @@
-function [tbl, stringTable] = sensorDescription(sensor,varargin)
+function [tbl, stringTable, hdl] = sensorDescription(sensor,varargin)
 % Print out table of sensor and pixel parameters
 %
 % Synopsis
-%   tbl = sensorDescription(sensor)
+%   [tbl, stringTable, hdl] = sensorDescription(sensor)
+%
+% Brief
+%   Create a table and potentially a window showing the sensor
+%   parameters. 
 %
 % Input
-%   sensor
+%   sensor - ISETCam sensor
 %  
 % Optional key/val
 %   show -          Prints to command line by default (logical: true)
 %   close window  - Closes the display window by default (logical: true)
 %
 % Output
-%   tbl - A simple Matlab table
+%   tbl - A simple Matlab table of the parameters
+%   stringTable -  The table parameters in string format
+%   hdl - If the window is displayed, this is its handle
+%
+% Description
+%   Returning the data in a table means that someday we can do fancier
+%   things with the data.  Maybe from multiple sensor tables, or
+%   setting table display properties.
+%
+%   The string table is best for just dumping to the command line
+%
+%   Sometimes we want the data up in a window, so the hdl lets you
+%   position the window.
 %
 % See also:
 %   iePTable()
