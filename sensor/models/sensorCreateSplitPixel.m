@@ -149,6 +149,12 @@ end
 
 function [SPDLCG,SPDHCG,LPDLCG,LPDHCG] = designIMX490
 % Sony's IMX490
+%
+% I am unclear why we are using conversion gain here, but analog gain in
+% the OVT case.  To discuss with Zhenyi.
+%
+% Also, remember that cg and analog gain are (a) multiplier, and (b)
+% divisor.
 
 % Start with the IMX490 and adjust the parameters here.
 SPD = sensorCreate('imx490-small');
@@ -169,9 +175,8 @@ end
 function [SPDLCG,SPDHCG,LPDLCG,LPDHCG] = designOVT
 %%  Set up two sensors
 %
-% See the parameter description in sensorCreate.  These are the
-% defaults implemented there, with parameters from the 2019 paper from
-% Solhusvik.
+% See the parameters in sensorCreate.  These are the defaults implemented
+% there, with parameters from the 2019 paper from Solhusvik.
 %
 
 SPDLCG = sensorCreate('ovt-small');
