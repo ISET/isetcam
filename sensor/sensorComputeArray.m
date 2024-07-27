@@ -7,16 +7,17 @@ function [sensorCombined,sensors] = sensorComputeArray(sensorArray,oi,varargin)
 % Brief:
 %   Calculate response to oi for each of the sensors, and then create
 %   the combined sensor.  There are various possible algorithms for
-%   combining the multiple sensor data.
+%   combining the multiple sensors.
 %
 % Input
-%   sensorArray - Usually an array of 4 sensors (ovt or imx490).  This
-%      may be generalized to different numbers in the future, and
-%      different algorithms.s
-%   oi  - Optical image
+%   sensorArray -  An array of 3 (OVT) or 4 sensors (imx490).  The
+%                  first two are always large photodiode.
+%   oi          - Optical image
 %
 % Optional key/val
-%  method:  {'average','best snr'}  default: average
+%  method:  {'average','best snr','saturated'}  default: saturated
+%  saturated:  The fraction of the voltage swing before we declare the
+%              pixel saturated.  Default: 0.95
 %
 % Output
 %   sensorCombined - Data pooled from the multiple sensors in the array
@@ -24,10 +25,6 @@ function [sensorCombined,sensors] = sensorComputeArray(sensorArray,oi,varargin)
 %
 % See also
 %    sensorCompute, sensorCreateArray, s_sensorSplitPixel
-
-% Notes:
-%  The way we scale the voltages is worth thinking about.  See notes
-%  below near line 170.
 
 % Examples:
 %{
@@ -55,15 +52,14 @@ p = inputParser;
 p.addRequired('sensorArray',@(x)(isstruct(x(:))));
 p.addRequired('oi',@(x)(isstruct(x(:)) && isequal(x.type,'opticalimage')));
 
-validMethods = {'average','sum','bestsnr'};
-p.addParameter('method','average',@(x)(ismember(ieParamFormat(x),validMethods)));
+validMethods = {'average','saturated'};
+p.addParameter('method','saturated',@(x)(ismember(ieParamFormat(x),validMethods)));
+p.addParameter('saturated',0.95,@(x)(x >= 0 && x < 1));
 
 p.parse(sensorArray,oi,varargin{:});
 
-method = p.Results.method;
-
-% Should be a parameter.  I ran a bunch with 0.95 because of noise.
-maxVSwing = 0.9;
+method    = p.Results.method;
+saturated = p.Results.saturated;  % Between 0 and 1
 
 %% Compute for each of the sensors in the array
 
@@ -88,50 +84,83 @@ end
 % (aPhotons)?
 
 rowcol      = sensorGet(sensors(1),'size');
-idx         = zeros(rowcol(1),rowcol(2),numel(sensors));
-vElectrons  = zeros(rowcol(1),rowcol(2),numel(sensors));
+idx         = false(rowcol(1),rowcol(2),numel(sensors));
+input       = zeros(rowcol(1),rowcol(2),numel(sensors));
 vSwing      = zeros(numel(sensors),1);
 sensitivity = zeros(numel(sensors),1);
 
+% Initialize the output to match the properties of the first array
+% element.
 sensorCombined = sensors(1);
 
-% Identify the saturated pixels.  Calculate the relative
-% spectral sensitivity of the QE.  We account for pixel area
-% separatly, below.
-for ii=1:numel(sensors)
-    vSwing(ii) = sensorGet(sensors(ii),'pixel voltage swing');
+%% Identify the saturated pixels and estimate the input.  
 
-    % We adjust for the spectral QE, using a sensitivity term relative
-    % to the first sensor.  The sensitivity variable is used below.
+%  We consider a ouxek saturated if it reaches maxVSwing of the true
+%  voltage swing.
+for ii=1:numel(sensors)
+    
+    % Calculate the relative spectral sensitivity of the QE.  We
+    % account for pixel area separatly, below. We will adjust for the
+    % spectral QE, using a sensitivity term relative to the first
+    % sensor.
     r = sensorGet(sensors(ii),'spectral qe') ./ sensorGet(sensors(1),'spectral qe');
     sensitivity(ii) = mean(r(:),'all','omitnan');
 
     volts = sensorGet(sensors(ii),'volts');
-    idx(:,:,ii) = (volts < (maxVSwing * vSwing(ii)));
+    vSwing(ii) = sensorGet(sensors(ii),'pixel voltage swing');
+
+    % These indices are considered saturated.
+    idx(:,:,ii) = (volts > (saturated * vSwing(ii)));
+
+    electrondensity = sensorGet(sensors(ii),'electrons per area','um');
+
+    input(:,:,ii) = electrondensity/sensitivity(ii);
+
+    % We should check that the small pixel is NOT saturated in
+    % locations where the large pixel is saturated.
+    %{
+      ieNewGraphWin; imagesc(idx(:,:,1));
+      ieNewGraphWin; imagesc(idx(:,:,3));
+      sum(idx(:,:,1) .* idx(:,:,3),'all')
+    %}
 end
 
-% This accounts for area and relative QE sensitivty.
+%% Input refer the sensor electrons
+
+% Account for the area of the photodiode and the relative spectral QE.
+% These virtual electrons are an estimate of how many electrons we
+% would have if the photodiode areas and spectral QE were all the
+% same.
+%{
 for ii=1:numel(sensors)
-    % We get the electrons, but account for the area
-    electrons = sensorGet(sensors(ii),'electrons per area','um');
+    % Estimate the electrons, accounting for the PD area. The
+    % voltages are stored, and we use conversion gain and analog
+    % gain/offset to estimate.
+    electrondensity = sensorGet(sensors(ii),'electrons per area','um');
+
     % ieNewGraphWin; imagesc(electrons); colormap(gray)
 
+    %{
+    % Not saturated
     thisIDX = idx(:,:,ii);
 
     % Set saturated pixels to 0
-    electrons(~thisIDX) = 0;
+    electrondensity(thisIDX) = 0;
+    %}
 
-    % If the sensitivity is less than sensors(1), we scale up the
+    % If the spectral QE is less than sensors(1), we scale up the
     % number of virtual electrons.  The virtual electrons are an input
     % intensity referred value.
-    vElectrons(:,:,ii) = electrons/sensitivity(ii);
-    % ieNewGraphWin; imagesc(vElectrons(:,:,ii)); colormap(gray);
+    input(:,:,ii) = electrondensity/sensitivity(ii);
+
+    % ieNewGraphWin; imagesc(input(:,:,ii)); colormap(gray);
     % colorbar;
 end
+%}
 
 
+%% Make the combined sensor
 
-%%
 switch ieParamFormat(method)
     case 'average'
                
@@ -148,31 +177,48 @@ switch ieParamFormat(method)
         else
             % Calculate the mean of the virtual electrons, accounting
             % for the number of valid sensors.
-            volts = sum(vElectrons,3) ./ N;
+            volts = sum(input,3) ./ N;
         end
-
+        
     case 'bestsnr'
-        % At this point, the pixels that are saturated should all
-        % be set to zero. Choose the pixel with the most real
-        % electrons and thus best SNR. 
+        % The saturated pixels are already set to zero. Choose the
+        % pixel with the most real (virtual?) electrons and thus best
+        % SNR.  Not sure this one makes sense.
         
         % We need to convert vElectrons back to electrons.  Then we
         % store the volts with the vElectron value from the best
         % electron.
-        electrons = vElectrons;
+        electrondensity = input;
         for ii=1:numel(sensors)
-            electrons(:,:,ii) = vElectrons(:,:,ii)*sensitivity(ii);
+            electrondensity(:,:,ii) = input(:,:,ii)*sensitivity(ii);
         end
-        [volts, bestPixel] = max(electrons,[],3);
+        [volts, bestPixel] = max(electrondensity,[],3);
         volts = volts ./ sensitivity(bestPixel);
-
+        
         % Find the pixel with the most non-saturated electrons
         % [volts, bestPixel] = max(vElectrons,[],3);
-        sensorCombined.metadata.bestPixel = bestPixel;
-    
+        sensorCombined.metadata.bestPixel = bestPixel;        
+
+    case 'saturated'
+        % Use the first (LPD) at locations it is not saturated.  This
+        % is the best sensor.
+
+        % For the OVT case, just do this.  Though maybe we should
+        % average input 1 and 2.
+        volts   = input(:,:,1);
+
+        % Replace the saturated pixels with estimates from the 3rd OVT
+        % or 3rd IMX490.  For now.  We will do better later.
+        thisIDX = idx(:,:,1);
+        tmp     = input(:,:,3);
+        volts(thisIDX) = tmp(thisIDX);
+
     otherwise
         error('Unknown method %s\n',method);
 end
+
+%% Set up the combined sensor metadata
+
 
 % Scale the volts to occupy the whole voltage swing.
 vSwing = sensorGet(sensorCombined,'pixel voltage swing');
@@ -185,6 +231,7 @@ vSwing = sensorGet(sensorCombined,'pixel voltage swing');
  volts = (volts/tst)*0.50*vSwing;
  volts = ieClip(volts,0,vSwing);
 %}
+
 % Simple linear scale
 volts = vSwing * ieScale(volts,1);
 
@@ -196,10 +243,13 @@ sensorCombined = sensorSet(sensorCombined,'volts',volts);
 sensorCombined = sensorSet(sensorCombined,'analog gain',1);
 sensorCombined = sensorSet(sensorCombined,'analog offset',0);
 
+% More metadata
+sensorCombined.metadata.saturated = idx;
+
 % The names are usually ovt-large or imx490-small.  So we split on the
 % '-' to create the name.
-tmp = split(sensorGet(sensors(1),'name'),'-');
-thisDesign = tmp{1};
+tmp = split(sensorGet(sensors(1),'name'),'-'); thisDesign = tmp{1};
+
 sensorCombined = sensorSet(sensorCombined,'name',sprintf('%s-%s',thisDesign,method));
 
 end
