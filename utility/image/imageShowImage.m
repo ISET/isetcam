@@ -95,22 +95,25 @@ renderFlag = ipGet(ip,'render flag');
 
 switch renderFlag
     case {1,'rgb'}
-        % Set the largest srgb to 1.
+        % Set the largest srgb value to 1.
         %
         % We  do this by converting srgb to lrgb, then scaling to 1, then
         % putting back to srgb.
-        if ipGet(ip,'scaleDisplay')
+        if ipGet(ip,'scale display')
             img = srgb2lrgb(img);
             mxImage = max(img(:));
             img = img/mxImage;
             img = lrgb2srgb(img);
         end
         
-        % There may be some negative numbers or numbers
-        % > 1 because of processing noise and saturation + noise.
+        % There may be some negative numbers
+        % Or numbers > 1 
+        % because of processing noise and saturation + noise.
         img = ieClip(img,0,1);
         
-        % This is the gamma the user asks for on the ISET window
+        % This is the gamma the user asks for on the ISET window, or may
+        % have set manually in the ip.
+        %
         % Normally it is 1 because the display data are already
         % in sRGB mode.
         if gam ~=1, img = img.^gam; end
@@ -118,6 +121,8 @@ switch renderFlag
     case {2,'hdr'}
         % Unusual to use HDR in the ipWindow, but ...
         img = hdrRender(img);
+
+        % Sometimes we add a gamma to the hdr.  Weird, but there it is.
         if gam ~=1, img = img.^gam; end
 
     case {3,'gray','monochrome'}
