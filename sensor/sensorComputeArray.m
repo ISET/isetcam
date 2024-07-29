@@ -111,7 +111,7 @@ for ii=1:numel(sensors)
 
     % These indices are considered saturated.
     idx(:,:,ii) = (volts > (saturated * vSwing(ii)));
-    fprintf('Sensor %d:  Saturated %d\n',ii, sum(idx(:,:,ii),'all'));
+    % fprintf('Sensor %d:  Saturated %d\n',ii, sum(idx(:,:,ii),'all'));
 
     electrondensity = sensorGet(sensors(ii),'electrons per area','um');
 
