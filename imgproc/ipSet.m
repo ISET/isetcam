@@ -267,6 +267,7 @@ switch param
             app.refresh(ip);
         catch
             % Handle isn't valid.  Move on.
+            warning('No ip window app.')
         end
 
     case {'rendermethod','renderingmethod','customrendermethod'}
@@ -334,7 +335,12 @@ switch param
         % If the window is open and valid, set the edit box and refresh it.
         app = ieSessionGet('ip window');
         if ~isempty(app) && isvalid(app)
-            app.refresh;
+            try
+                app.editGamma.Value = num2str(val);
+                app.refresh(ip);
+            catch
+                warning('No ip window app.')
+            end
         end
         
         % Chart

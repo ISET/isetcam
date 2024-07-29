@@ -100,7 +100,7 @@ elseif ~isvalid(ipW)
     ieSessionSet('ip window',ipW);
 else
     % Just refresh it
-    ipW.refresh;
+    ipW.refresh(ip);
 end
 
 

@@ -88,8 +88,14 @@ ip = ipSet(ip,'conversion method sensor ','MCC optimized');
 
 %% Rendering assumptions
 
-ip = ipSet(ip,'scaleDisplay',1);    % Scale to fill up the sRGB space
-ip = ipSet(ip,'renderflag','rgb');  % sRGB is standard.  hdr and gray options
+% We do not use ipSet because that searches for an app and executes.
+% We do not want that when we create.
+%
+%  ip = ipSet(ip,'scaleDisplay',1);    % Scale to fill up the sRGB space
+%  ip = ipSet(ip,'renderflag','rgb');  % sRGB is standard.  hdr and gray options
+
+ip.render.renderflag = 'rgb';
+ip.render.scale = true;   % Should be 
 
 % ip = ipSet(ip,'mccRectHandles',[]);
 

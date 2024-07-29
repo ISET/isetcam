@@ -52,7 +52,7 @@ p = inputParser;
 p.addRequired('sensorArray',@(x)(isstruct(x(:))));
 p.addRequired('oi',@(x)(isstruct(x(:)) && isequal(x.type,'opticalimage')));
 
-validMethods = {'average','saturated'};
+validMethods = {'bestsnr','saturated'};
 p.addParameter('method','saturated',@(x)(ismember(ieParamFormat(x),validMethods)));
 p.addParameter('saturated',0.95,@(x)(x >= 0 && x < 1));
 
@@ -110,7 +110,7 @@ for ii=1:numel(sensors)
     vSwing(ii) = sensorGet(sensors(ii),'pixel voltage swing');
 
     % These indices are considered saturated.
-    idx(:,:,ii) = (volts > (saturated * vSwing(ii)));
+    idx(:,:,ii) = (volts >= (saturated * vSwing(ii)));
     % fprintf('Sensor %d:  Saturated %d\n',ii, sum(idx(:,:,ii),'all'));
 
     electrondensity = sensorGet(sensors(ii),'electrons per area','um');
@@ -129,36 +129,14 @@ end
 %% Make the combined sensor
 
 switch ieParamFormat(method)
-    case 'average'
-               
-        % The number of non-saturated sensors at that pixel
-        N = sum(idx,3);  
-        % Save the number of pixels that contribute to the value at
-        % each pixel.
-        sensorCombined.metadata.npixels = N;
-
-        % ieNewGraphWin; imagesc(N);
-        
-        if nnz(N(:) == 0) > 0
-            warning('All sensors are saturated at some pixels');
-        else
-            % Calculate the mean of the virtual electrons, accounting
-            % for the number of valid sensors.
-            volts = sum(input,3) ./ N;
-        end
-        
+            
     case 'bestsnr'
-        % The saturated pixels are already set to zero. Choose the
-        % pixel with the most real (virtual?) electrons and thus best
+        % Choose the pixel with the most real electrons and thus best
         % SNR.  Not sure this one makes sense.
         
         % We need to convert vElectrons back to electrons.  Then we
         % store the volts with the vElectron value from the best
         % electron.
-        electrondensity = input;
-        for ii=1:numel(sensors)
-            electrondensity(:,:,ii) = input(:,:,ii)*sensitivity(ii);
-        end
         [volts, bestPixel] = max(electrondensity,[],3);
         volts = volts ./ sensitivity(bestPixel);
         
@@ -173,7 +151,8 @@ switch ieParamFormat(method)
 
         % At locations where first and second are good, use
         % the average of LPD-LCG and LPD-HCG input referred estimates.
-        good1 = ~idx(:,:,1); good2 = ~idx(:,:,2);
+        good1 = ~idx(:,:,1); 
+        good2 = ~idx(:,:,2);
         good1and2 = logical(good1 .* good2);
         tmp1 = input(:,:,1); tmp2 = input(:,:,2);
         volts(good1and2) = 0.5*tmp1(good1and2) + 0.5*tmp2(good1and2);
