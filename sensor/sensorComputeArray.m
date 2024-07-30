@@ -95,36 +95,35 @@ sensorCombined = sensors(1);
 
 %% Identify the saturated pixels and estimate the input.  
 
-%  We consider a pixel saturated if it reaches maxVSwing of the true
-%  voltage swing.
-for ii=1:numel(sensors)
-    
-    % Calculate the relative spectral sensitivity of the QE.  We
-    % account for pixel area separatly, below. We will adjust for the
-    % spectral QE, using a sensitivity term relative to the first
-    % sensor.
-    r = sensorGet(sensors(ii),'spectral qe') ./ sensorGet(sensors(1),'spectral qe');
-    sensitivity(ii) = mean(r(:),'all','omitnan');
+arrayType = sensorGet(sensors(1),'name');
+switch arrayType(1:3)
+    case 'ovt'
+        for ii=1:numel(sensors)
+            volts = sensorGet(sensors(ii),'volts');
+            vSwing(ii) = sensorGet(sensors(ii),'pixel voltage swing');
 
-    volts = sensorGet(sensors(ii),'volts');
-    vSwing(ii) = sensorGet(sensors(ii),'pixel voltage swing');
+            %  We consider a pixel saturated if it reaches maxVSwing of the true
+            %  voltage swing.
+            idx(:,:,ii) = (volts >= (saturated * vSwing(ii)));
+            % fprintf('Sensor %d:  Saturated %d\n',ii, sum(idx(:,:,ii),'all'));
 
-    % These indices are considered saturated.
-    idx(:,:,ii) = (volts >= (saturated * vSwing(ii)));
-    % fprintf('Sensor %d:  Saturated %d\n',ii, sum(idx(:,:,ii),'all'));
-
-    electrondensity = sensorGet(sensors(ii),'electrons per area','um');
-
-    input(:,:,ii) = electrondensity/sensitivity(ii);
-
-    % We should check that the small pixel is NOT saturated in
-    % locations where the large pixel is saturated.
-    %{
-      ieNewGraphWin; imagesc(idx(:,:,1));
-      ieNewGraphWin; imagesc(idx(:,:,3));
-      sum(idx(:,:,1) .* idx(:,:,3),'all')
-    %}
+            % Input refer values relative to the first sensor
+            if ii==1 
+                % LPD LCG
+                input(:,:,ii) = volts;
+            elseif ii==2
+                % LPD HCG
+                input(:,:,ii) = volts * sensorGet(sensors(ii),'analog gain');
+            elseif ii == 3
+                % SPD LCG
+                input(:,:,ii) = volts / sensorGet(sensors(ii),'pixel fill factor');
+            end
+        end
+    case 'imx'
+        error('NYI.')
+    otherwise
 end
+
 
 %% Make the combined sensor
 
@@ -145,30 +144,19 @@ switch ieParamFormat(method)
         sensorCombined.metadata.bestPixel = bestPixel;        
 
     case 'saturated'
+        % Only implemented with the OVT in mind
+
         % Start with the data from the LPD-LCG at locations it is not
         % saturated. This is the best input referred sensor estimate.
-        volts   = input(:,:,1);
+        volts   = zeros(size(input(:,:,1)));
 
         % At locations where first and second are good, use
         % the average of LPD-LCG and LPD-HCG input referred estimates.
         good1 = ~idx(:,:,1);         
         tmp1 = input(:,:,1); 
-        volts(good1) = tmp1(good1);% tmp2 = input(:,:,2);
-        tmp3         = input(:,:,3);
-        volts(~good1) = tmp3(~good1); 
-
-        %good2 = ~idx(:,:,2);
-        %good1and2 = logical(good1 .* good2);
-        % volts(good1and2) = 0.5*tmp1(good1and2) + 0.5*tmp2(good1and2);
-
-        % If LPD-LCG is saturated, LPC-HCG will be, too.
-
-        % Replace the LPD-LCG saturated pixels with estimates from the 3rd
-        % OVT (or 3rd IMX490) which is SPD-LCG.  If it is IMX490, we could
-        % do the average of SPD-LCG and SPD-HCG.
-        %sat1        = idx(:,:,1);
-        %tmp         = input(:,:,3);
-        %volts(sat1) = tmp(sat1);
+        volts(good1)  = tmp1(good1); 
+        tmp3          = input(:,:,3);
+        volts(~good1) = tmp3(~good1);         
 
     otherwise
         error('Unknown method %s\n',method);
