@@ -151,20 +151,24 @@ switch ieParamFormat(method)
 
         % At locations where first and second are good, use
         % the average of LPD-LCG and LPD-HCG input referred estimates.
-        good1 = ~idx(:,:,1); 
-        good2 = ~idx(:,:,2);
-        good1and2 = logical(good1 .* good2);
-        tmp1 = input(:,:,1); tmp2 = input(:,:,2);
-        volts(good1and2) = 0.5*tmp1(good1and2) + 0.5*tmp2(good1and2);
+        good1 = ~idx(:,:,1);         
+        tmp1 = input(:,:,1); 
+        volts(good1) = tmp1(good1);% tmp2 = input(:,:,2);
+        tmp3         = input(:,:,3);
+        volts(~good1) = tmp3(~good1); 
+
+        %good2 = ~idx(:,:,2);
+        %good1and2 = logical(good1 .* good2);
+        % volts(good1and2) = 0.5*tmp1(good1and2) + 0.5*tmp2(good1and2);
 
         % If LPD-LCG is saturated, LPC-HCG will be, too.
 
         % Replace the LPD-LCG saturated pixels with estimates from the 3rd
         % OVT (or 3rd IMX490) which is SPD-LCG.  If it is IMX490, we could
         % do the average of SPD-LCG and SPD-HCG.
-        sat1        = idx(:,:,1);
-        tmp         = input(:,:,3);
-        volts(sat1) = tmp(sat1);
+        %sat1        = idx(:,:,1);
+        %tmp         = input(:,:,3);
+        %volts(sat1) = tmp(sat1);
 
     otherwise
         error('Unknown method %s\n',method);
