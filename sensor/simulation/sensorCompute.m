@@ -273,8 +273,7 @@ for ss=1:length(sensorArray)   % Number of sensors
     %% Clipping - always applied
 
     % We clip the voltage because everything must fall between 0 and
-    % voltage swing.  This is true even if the responseType is
-    % log.  To avoid clipping, set vSwing very large.
+    % voltage swing.  To avoid clipping, set vSwing very large.
     vSwing = sensorGet(sensor,'pixel voltage swing');
     sensor = sensorSet(sensor,'volts',ieClip(sensorGet(sensor,'volts'),0,vSwing));
         
