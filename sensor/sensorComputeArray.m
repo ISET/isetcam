@@ -151,11 +151,20 @@ switch ieParamFormat(method)
 
         % At locations where first and second are good, use
         % the average of LPD-LCG and LPD-HCG input referred estimates.
-        good1 = ~idx(:,:,2);         
-        tmp1 = input(:,:,2); 
-        volts(good1)  = tmp1(good1); 
-        tmp3          = input(:,:,3);
-        volts(~good1) = tmp3(~good1);         
+        tmp1 = input(:,:,1);
+        tmp2 = input(:,:,2);
+        tmp3 = input(:,:,3);
+
+        good1 = logical(~idx(:,:,1));  
+        good2 = logical(~idx(:,:,2));
+        both = logical(good1 & good2);
+        volts(both) = 0.5*(tmp1(both) + tmp2(both));
+
+        only1 = logical(good1 & ~good2);
+        volts(only1) = tmp1(only1);
+
+        neither = logical(~good1 & ~good2);
+        volts(neither) = tmp3(neither);         
 
     otherwise
         error('Unknown method %s\n',method);
