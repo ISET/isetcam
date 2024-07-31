@@ -275,6 +275,9 @@ for ss=1:length(sensorArray)   % Number of sensors
     % We clip the voltage because everything must fall between 0 and
     % voltage swing.  To avoid clipping, set vSwing very large.
     vSwing = sensorGet(sensor,'pixel voltage swing');
+
+    % This is the place where we clip, after dealing with all the
+    % noise, not before.
     sensor = sensorSet(sensor,'volts',ieClip(sensorGet(sensor,'volts'),0,vSwing));
         
     %% Quantization - Always applied.  If analog, no real quantization

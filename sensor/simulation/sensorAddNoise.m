@@ -132,7 +132,6 @@ for ii=1:nExposures
     % Add the read noise
     if noiseFlag == 2
         vImage = vImage + (pixelGet(pixel,'read noise volts') * randn(size(vImage)));
-        sensor = sensorSet(sensor,'volts',vImage);
     end
     
     sensor = sensorSet(sensor,'volts',vImage);
