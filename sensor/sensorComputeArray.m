@@ -94,7 +94,6 @@ sensitivity = zeros(numel(sensors),1);
 sensorCombined = sensors(1);
 
 %% Identify the saturated pixels and estimate the input.  
-
 arrayType = sensorGet(sensors(1),'name');
 switch arrayType(1:3)
     case 'ovt'
@@ -152,8 +151,8 @@ switch ieParamFormat(method)
 
         % At locations where first and second are good, use
         % the average of LPD-LCG and LPD-HCG input referred estimates.
-        good1 = ~idx(:,:,1);         
-        tmp1 = input(:,:,1); 
+        good1 = ~idx(:,:,2);         
+        tmp1 = input(:,:,2); 
         volts(good1)  = tmp1(good1); 
         tmp3          = input(:,:,3);
         volts(~good1) = tmp3(~good1);         
