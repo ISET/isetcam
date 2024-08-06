@@ -1,4 +1,4 @@
-function [filename, rgb] = sensor2EXR(sensor,filename,varargin)
+function [filename, rgb, data_max] = sensor2EXR(sensor,filename,varargin)
 % Save sensor volts (default) or digital values into an EXR file
 %
 % Synopsis
@@ -75,6 +75,15 @@ switch datatype
     case 'digital'
         data = sensorGet(sensor,'dv');
 end
+
+if mean(data(:)) < noiselevel
+    warning(['Sensor signal: %f should be larger than noise level:%f. ' ...
+        'Otherwise, the result from demosaicing network might not be ' ...
+        'accurate.'],mean(data(:)),noiselevel);
+end
+
+data_max = max2(data);
+data = 0.9*data/data_max;
 
 switch dataformat
     case 'mosaic'
