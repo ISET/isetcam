@@ -1,5 +1,11 @@
+% s_zernikeInterpolation
+%
+% Interpolating a PSF as a function of field height, or wavelength,
+% can happen either in space, or in Zernike polynomials.
+% 
 % Given wavelengths and image heights
 ieInit;
+
 %% Load data
 load('zernike_doubleGauss.mat','data');
 wavelengths = data.wavelengths;
