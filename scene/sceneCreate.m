@@ -498,7 +498,7 @@ switch sceneName
         
         % Create a uniform, monochromatic image.  Used for color-matching
         % analyses.  Set the peak radiance in photons.
-         wavelength = 500; sz = 128;
+        wavelength = 500; sz = 128;
         if length(varargin) >= 1, wavelength = varargin{1}; end
         if length(varargin) >= 2, sz = varargin{2}; end
         

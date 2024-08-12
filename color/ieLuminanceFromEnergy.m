@@ -83,7 +83,7 @@ V = ieReadSpectra(fName,wave);
 % 683 is the standard factor for conversion when the energy are in Watts.
 % The wavelength difference accounts for the wavelength sampling.
 if numel(wave) > 1,  binwidth = wave(2) - wave(1);
-else,                fprintf('%d nm bandwidth\n',binwidth);
+else,                %fprintf('%d nm bandwidth\n',binwidth);
 end
 
 % The luminance formula.
