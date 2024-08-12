@@ -68,13 +68,9 @@ localFile = ieWebGet('resourcename', 'ChessSet', 'resourcetype', 'pbrt')
 data      = ieWebGet('op', 'read', 'resourcetype', 'hyperspectral', 'resourcename', 'FruitMCC')
 localFile = ieWebGet('op', 'fetch', 'resourcetype', 'hdr', 'resourcename', 'BBQsite1')
 %}
-<<<<<<< Updated upstream
-
-=======
 %{
 ieWebGet('resource type','sdrfruit');
 %}
->>>>>>> Stashed changes
 %% First, handle the special input arguments: browse, list, url.
 
 % General argument parsing happens later.
