@@ -58,13 +58,7 @@ function localFile = ieWebGet(varargin)
 % Examples
 %{
  % Browse the remote site
- ieWebGet('browse');
- ieWebGet('browse','pbrtv3');
- ieWebGet('browse','hyperspectral');
  ieWebGet('browse','pbrtv4');
-%}
-%{
- ieWebGet('list')
 %}
 %{
  localFile = ieWebGet('resource name','bmw-m6');
@@ -74,7 +68,13 @@ localFile = ieWebGet('resourcename', 'ChessSet', 'resourcetype', 'pbrt')
 data      = ieWebGet('op', 'read', 'resourcetype', 'hyperspectral', 'resourcename', 'FruitMCC')
 localFile = ieWebGet('op', 'fetch', 'resourcetype', 'hdr', 'resourcename', 'BBQsite1')
 %}
+<<<<<<< Updated upstream
 
+=======
+%{
+ieWebGet('resource type','sdrfruit');
+%}
+>>>>>>> Stashed changes
 %% First, handle the special input arguments: browse, list, url.
 
 % General argument parsing happens later.
