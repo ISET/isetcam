@@ -259,7 +259,6 @@ for ss=1:length(sensorArray)   % Number of sensors
         % exposures, say for exposure bracketing.  The loop in this
         % function is for multiple sensors.
         sensor = sensorAddNoise(sensor);
-
         
         %% Correlated double sampling
         if  sensorGet(sensor,'cds')
