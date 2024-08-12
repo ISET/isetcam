@@ -1,5 +1,5 @@
 function localFile = ieWebGet(varargin)
-%% Download a resource from the Stanford web site
+%% Download a resource from a Stanford web site
 %
 % Synopsis
 %   localFile = ieWebGet(varargin)
@@ -23,6 +23,7 @@ function localFile = ieWebGet(varargin)
 %    (see below)
 %
 %    ask first: Confirm with user prior to downloading (default: true)
+%
 %    resource type (default: 'pbrtv4')
 %        {'pbrtv4', 'pbrtv3','spectral','hdr','faces'}
 %    
@@ -74,7 +75,11 @@ localFile = ieWebGet('resourcename', 'ChessSet', 'resourcetype', 'pbrt')
 data      = ieWebGet('op', 'read', 'resourcetype', 'hyperspectral', 'resourcename', 'FruitMCC')
 localFile = ieWebGet('op', 'fetch', 'resourcetype', 'hdr', 'resourcename', 'BBQsite1')
 %}
-
+%{
+URL = 'https://stacks.stanford.edu/v2/file/tb259jf5957/version/1/ISET_fruit.zip'
+fname = fullfile(isetRootPath,'local','tmp.zip');
+websave(fname,URL);
+%}
 %% First, handle the special input arguments: browse, list, url.
 
 % General argument parsing happens later.
@@ -103,6 +108,7 @@ if isequal(ieParamFormat(varargin{1}),'browse')
     return;
 end
 
+%{
 if isequal(ieParamFormat(varargin{1}),'list')
     % read the list of resources from the remote site. I think we should
     % make this option go away because I don't want to maintain the
@@ -117,6 +123,7 @@ if isequal(ieParamFormat(varargin{1}),'list')
     end
     return;
 end
+%}
 
 %%  Normal situation
 
@@ -124,7 +131,7 @@ varargin = ieParamFormat(varargin);
 
 p = inputParser;
 p.addParameter('resourcename', '', @ischar);
-vFunc = @(x)(ismember(x,{'pbrtv4','spectral','hdr','faces','pbrtv3'}));
+vFunc = @(x)(ismember(x,{'pbrtv4','spectral','hdr','faces','pbrtv3','sdrfruit'}));
 p.addParameter('resourcetype', 'pbrtv4',vFunc);
 
 p.addParameter('askfirst', true, @islogical);
@@ -233,6 +240,33 @@ switch resourceType
         catch
             warning("Unable to retrieve %s", resourceURL);
         end
+    case {'sdrfruit'}
+        %
+        % Draft for SDR downloads.
+        %
+        if ~isempty(p.Results.downloaddir)
+            % The user gave us a place to download to.
+            downloadDir = p.Results.downloaddir;
+        else
+            downloadDir = fullfile(isetRootPath,'local','scenes', resourceType);
+        end
+
+        if ~isfolder(downloadDir), mkdir(downloadDir); end
+        localFile = fullfile(downloadDir, 'FruitMCC.zip');
+
+        if askFirst
+            proceed = confirmDownload(resourceName, localFile);
+            if proceed == false, return, end
+        end
+
+        % Could write for these cases
+        resourceURL = baseURL;
+        try
+            websave(localFile, resourceURL);
+        catch
+            warning("Unable to retrieve %s", resourceURL);
+        end
+
 end
 
 end
@@ -277,7 +311,7 @@ urlList = ...
     'http://stanford.edu/~wandell/data/faces/'
     };
 
-switch resourceType
+switch ieParamFormat(resourceType)
     case 'all'
         baseURL = urlList;
     case 'pbrtv4'
@@ -290,6 +324,8 @@ switch resourceType
         baseURL = urlList{4};
     case 'faces'
         baseURL = urlList{5};
+    case 'sdrfruit'
+        baseURL = 'https://stacks.stanford.edu/v2/file/tb259jf5957/version/1/ISET_fruit.zip';
     otherwise
         error('Unknown resource type %s\n',src);
 end
