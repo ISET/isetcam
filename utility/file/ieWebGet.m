@@ -44,7 +44,7 @@ function localFile = ieWebGet(varargin)
 %   The type of resources are listed above.  To see the remote web site or
 %   the names of the resources, use the 'browse' option.
 %
-%   'spectral,'hdr','pbrtv4','pbrtv3'
+%   'spectral,'hdr','pbrtv4'
 % 
 %    The spectral scenes were measured with multi or hyperspectral cameras.
 %    The hdr scenes were measured with multiple exposures of a linear,
@@ -57,25 +57,31 @@ function localFile = ieWebGet(varargin)
 
 % Examples
 %{
- % Browse the remote site
- ieWebGet('browse','pbrtv4');
+% Browse the remote site
+ieWebGet('browse','pbrtv4');
+ieWebGet('browse','spectral');
+ieWebGet('browse','faces');
 %}
 %{
- localFile = ieWebGet('resource name','bmw-m6');
+% PBRT V4 is default
+localFile = ieWebGet('resource name','lettersAtDepth');
 %}
 %{
-localFile = ieWebGet('resourcename', 'ChessSet', 'resourcetype', 'pbrt')
-data      = ieWebGet('op', 'read', 'resourcetype', 'hyperspectral', 'resourcename', 'FruitMCC')
-localFile = ieWebGet('op', 'fetch', 'resourcetype', 'hdr', 'resourcename', 'BBQsite1')
+localFile = ieWebGet('resourcename', 'ChessSet', 'resourcetype', 'pbrtv4')
+localFile = ieWebGet('resourcetype', 'spectral', 'resourcename', 'FruitMCC')
+localFile = ieWebGet('resourcetype', 'hdr', 'resourcename', 'BBQsite1')
 %}
 %{
-ieWebGet('resource type','sdrfruit');
+% Starting to implement SDR data
+fname = ieWebGet('resource type','sdrfruit','askfirst',false,'unzip',true);
 %}
-%% First, handle the special input arguments: browse, list, url.
 
-% General argument parsing happens later.
+%% General argument parsing happens later.
 
-if isequal(ieParamFormat(varargin{1}),'url')
+[~,validResources] = urlResource;
+
+if isequal(ieParamFormat(varargin{1}),'list')
+    % ieWebGet('list');
     [~,urlList] = urlResource('all');
 
     fprintf('\nResource URLs\n=================\n\n');
@@ -120,7 +126,7 @@ varargin = ieParamFormat(varargin);
 
 p = inputParser;
 p.addParameter('resourcename', '', @ischar);
-vFunc = @(x)(ismember(x,{'pbrtv4','spectral','hdr','faces','pbrtv3'}));
+vFunc = @(x)(ismember(x,validResources));
 p.addParameter('resourcetype', 'pbrtv4',vFunc);
 
 p.addParameter('askfirst', true, @islogical);
@@ -147,8 +153,8 @@ localFile = '';        % Default local file name
 
 switch resourceType
 
-    case {'pbrtv3','pbrtv4'}
-        % PBRT V3 or V4 resources are zip files.
+    case {'pbrtv4'}
+        % PBRT V4 resources are zip files.
         %
         % s = ieWebGet('resource type','pbrtv4','resource name','kitchen');
 
@@ -206,6 +212,9 @@ switch resourceType
         % Download mat-files
         % Both are 'spectral' type, but we put the HDR files into a
         % separate directory to make them easier to identify.
+        if isempty(resourceName)
+            error('Resource file name is required for type %s.',resourceType);
+        end
 
         remoteFileName = strcat(resourceName, '.mat');
         resourceURL    = strcat(baseURL, remoteFileName);
@@ -226,6 +235,38 @@ switch resourceType
 
         try
             websave(localFile, resourceURL);
+        catch
+            warning("Unable to retrieve %s", resourceURL);
+        end
+    case {'sdrfruit'}
+        % All the SDR initialized resources from the Stanford Digital
+        % Repository.  Not quite sure how we will manage in the end.
+        if ~isempty(resourceName)
+            remoteFileName = strcat(resourceName, '.mat');
+            resourceURL    = strcat(baseURL, remoteFileName);
+        else
+            resourceURL = baseURL;
+            remoteFileName = 'ISET_Fruit.zip';
+        end        
+        if ~isempty(p.Results.downloaddir)
+            % The user gave us a place to download to.
+            downloadDir = p.Results.downloaddir;
+        else
+            downloadDir = fullfile(isetRootPath,'local','scenes', resourceType);
+        end
+
+        if ~isfolder(downloadDir), mkdir(downloadDir); end
+        localFile = fullfile(downloadDir, remoteFileName);
+
+        if askFirst
+            proceed = confirmDownload(resourceName, localFile);
+            if proceed == false, return, end
+        end
+
+        try
+            fprintf('Downloading ...')
+            websave(localFile, resourceURL);
+            fprintf('done.\n');
         catch
             warning("Unable to retrieve %s", resourceURL);
         end
@@ -262,23 +303,26 @@ end
 
 %% Assign URL to resource type
 
-function [baseURL, urlList] = urlResource(resourceType)
+function [baseURL, validResources] = urlResource(resourceType)
 % List the URLs in use here.
 
+if ieNotDefined('resourceType'), resourceType = 'all'; end
+
+validResources = {'pbrtv4','spectral','hdr','faces','sdrfruit'};
+
 urlList = ...
-    {'http://stanford.edu/~wandell/data/pbrtv4/', ...
-    'http://stanford.edu/~wandell/data/pbrtv3/', ...
+    {'http://stanford.edu/~wandell/dtaa', ...
+    'http://stanford.edu/~wandell/data/pbrtv4/', ...
     'http://stanford.edu/~wandell/data/hdr/', ...
     'http://stanford.edu/~wandell/data/spectral/', ...
-    'http://stanford.edu/~wandell/data/faces/'
+    'http://stanford.edu/~wandell/data/faces/', ...
+    'https://stacks.stanford.edu/v2/file/tb259jf5957/version/1/ISET_fruit.zip'
     };
 
 switch resourceType
-    case 'all'
+    case {'all',''}
         baseURL = urlList;
     case 'pbrtv4'
-        baseURL = urlList{1};
-    case 'pbrtv3'
         baseURL = urlList{2};
     case 'hdr'
         baseURL = urlList{3};
@@ -286,6 +330,8 @@ switch resourceType
         baseURL = urlList{4};
     case 'faces'
         baseURL = urlList{5};
+    case 'sdrfruit'
+        baseURL = urlList{6};
     otherwise
         error('Unknown resource type %s\n',src);
 end
