@@ -9,12 +9,13 @@ function localFile = ieWebGet(varargin)
 %  We call these files 'resources'.  The resource type and the remote file
 %  name define how to get the file.
 %
+%  When the files are PBRT V4 files, we seem to be downloading to
+%  ISET3d-tiny (or ISET3d).  For other files to ISETCam.
+%
 % Inputs
 %   N/A
 %
 % Key/val pairs
-%
-%   'url'     - Print resource urls contained in this file.
 %
 %   'browse' -  browse a website for a resource
 %   'list'   -  return the contents of resourceslist.json on the remote
@@ -57,6 +58,9 @@ function localFile = ieWebGet(varargin)
 
 % Examples
 %{
+ieWebGet('list');
+%}
+%{
 % Browse the remote site
 ieWebGet('browse','pbrtv4');
 ieWebGet('browse','spectral');
@@ -75,6 +79,9 @@ localFile = ieWebGet('resourcetype', 'hdr', 'resourcename', 'BBQsite1')
 % Starting to implement SDR data
 fname = ieWebGet('resource type','sdrfruit','askfirst',false,'unzip',true);
 %}
+%{
+fname = ieWebGet('resource type','sdr multispectral');
+%}
 
 %% General argument parsing happens later.
 
@@ -82,10 +89,10 @@ fname = ieWebGet('resource type','sdrfruit','askfirst',false,'unzip',true);
 
 if isequal(ieParamFormat(varargin{1}),'list')
     % ieWebGet('list');
-    [~,urlList] = urlResource('all');
+    urlList = urlResource('all');
 
     fprintf('\nResource URLs\n=================\n\n');
-    for ii=1:numel(urlList)
+    for ii=2:numel(urlList)
         fprintf('%s\n',urlList{ii});
     end
     fprintf('\n');
@@ -93,32 +100,19 @@ if isequal(ieParamFormat(varargin{1}),'list')
 end
 
 if isequal(ieParamFormat(varargin{1}),'browse')
-    % assume for now that means we are looking on the web
+    % Assume we are looking on the web at Wandell's cardinal account.
+    % This works for the url locations 2-5, but not the others
     if numel(varargin) < 2
         baseURL = urlResource('default');
     else
         baseURL = urlResource(varargin{2});
     end
-
+    
     web(baseURL);
     localFile = '';
     return;
 end
 
-if isequal(ieParamFormat(varargin{1}),'list')
-    % read the list of resources from the remote site. I think we should
-    % make this option go away because I don't want to maintain the
-    % resource list, and I would like to add more files.
-    baseURL = urlResource(varargin{2});
-    try
-        localFile = webread(strcat(baseURL, 'resourcelist.json'));
-    catch
-        % We should find a better way to do this
-        warning("Unable to find resourcelist.json on the remote site. Suggest using browse.");
-        localFile = webread(baseURL);
-    end
-    return;
-end
 
 %%  Normal situation
 
@@ -126,7 +120,7 @@ varargin = ieParamFormat(varargin);
 
 p = inputParser;
 p.addParameter('resourcename', '', @ischar);
-vFunc = @(x)(ismember(x,validResources));
+vFunc = @(x)(ismember(ieParamFormat(x),validResources));
 p.addParameter('resourcetype', 'pbrtv4',vFunc);
 
 p.addParameter('askfirst', true, @islogical);
@@ -151,7 +145,7 @@ localFile = '';        % Default local file name
 
 %% Download the resource
 
-switch resourceType
+switch ieParamFormat(resourceType)
 
     case {'pbrtv4'}
         % PBRT V4 resources are zip files.
@@ -238,21 +232,24 @@ switch resourceType
         catch
             warning("Unable to retrieve %s", resourceURL);
         end
-    case {'sdrfruit'}
+    case {'sdrfruit','sdrmultispectral'}
         % All the SDR initialized resources from the Stanford Digital
         % Repository.  Not quite sure how we will manage in the end.
-        if ~isempty(resourceName)
-            remoteFileName = strcat(resourceName, '.mat');
-            resourceURL    = strcat(baseURL, remoteFileName);
-        else
-            resourceURL = baseURL;
-            remoteFileName = 'ISET_Fruit.zip';
-        end        
+        switch ieParamFormat(resourceType)
+            case 'sdrfruit'
+                remoteFileName = 'ISET_Fruit.zip';
+            case 'sdrmultispectral'
+                remoteFileName = 'MultispectralDataset2.zip';
+            otherwise
+                % Can never get here.
+        end
+
         if ~isempty(p.Results.downloaddir)
             % The user gave us a place to download to.
             downloadDir = p.Results.downloaddir;
         else
-            downloadDir = fullfile(isetRootPath,'local','scenes', resourceType);
+            % Go to local/sdr
+            downloadDir = fullfile(isetRootPath,'local','sdr');
         end
 
         if ~isfolder(downloadDir), mkdir(downloadDir); end
@@ -265,10 +262,10 @@ switch resourceType
 
         try
             fprintf('Downloading ...')
-            websave(localFile, resourceURL);
+            websave(localFile, baseURL);
             fprintf('done.\n');
         catch
-            warning("Unable to retrieve %s", resourceURL);
+            warning("Unable to retrieve %s", baseURL);
         end
 end
 
@@ -305,10 +302,17 @@ end
 
 function [baseURL, validResources] = urlResource(resourceType)
 % List the URLs in use here.
+%
+% This needs to be a better search mechanism so we can put in more general
+% names for the resource type.
+%
+% See also
+%
+
 
 if ieNotDefined('resourceType'), resourceType = 'all'; end
 
-validResources = {'pbrtv4','spectral','hdr','faces','sdrfruit'};
+validResources = {'pbrtv4','spectral','hdr','faces','sdrfruit','sdrmultispectral'};
 
 urlList = ...
     {'http://stanford.edu/~wandell/dtaa', ...
@@ -316,10 +320,11 @@ urlList = ...
     'http://stanford.edu/~wandell/data/hdr/', ...
     'http://stanford.edu/~wandell/data/spectral/', ...
     'http://stanford.edu/~wandell/data/faces/', ...
-    'https://stacks.stanford.edu/v2/file/tb259jf5957/version/1/ISET_fruit.zip'
+    'https://stacks.stanford.edu/v2/file/tb259jf5957/version/1/ISET_fruit.zip',...
+    'https://stacks.stanford.edu/file/druid:vp031yb6470/MultispectralDataset2.zip'
     };
 
-switch resourceType
+switch ieParamFormat(resourceType)
     case {'all',''}
         baseURL = urlList;
     case 'pbrtv4'
@@ -332,6 +337,8 @@ switch resourceType
         baseURL = urlList{5};
     case 'sdrfruit'
         baseURL = urlList{6};
+    case 'sdrmultispectral'
+        baseURL = urlList{7};
     otherwise
         error('Unknown resource type %s\n',src);
 end
