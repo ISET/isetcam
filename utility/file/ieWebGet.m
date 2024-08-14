@@ -1,5 +1,5 @@
 function localFile = ieWebGet(varargin)
-%% Download a resource from the Stanford web site
+%% Download a resource from a Stanford web site
 %
 % Synopsis
 %   localFile = ieWebGet(varargin)
@@ -7,10 +7,11 @@ function localFile = ieWebGet(varargin)
 % Brief description
 %  Download an ISET or ISET3d related zip or mat-file file from the web.
 %  We call these files 'resources'.  The resource type and the remote file
-%  name define how to get the file.
+%  name are used to define how to get the file.
 %
-%  When the files are PBRT V4 files, we seem to be downloading to
-%  ISET3d-tiny (or ISET3d).  For other files to ISETCam.
+%  When the files are PBRT V4 files, we download by default to the
+%  local directory in ISET3d-tiny (or ISET3d).  For other files to the
+%  local directory in ISETCam. 
 %
 % Inputs
 %   N/A
@@ -23,7 +24,7 @@ function localFile = ieWebGet(varargin)
 %    The following argument (varargin{2}) specifies the resource type
 %    (see below)
 %
-%    ask first: Confirm with user prior to downloading (default: true)
+%    confirm:       Confirm with user prior to downloading (default: true)
 %    resource type (default: 'pbrtv4')
 %        {'pbrtv4', 'pbrtv3','spectral','hdr','faces'}
 %    
@@ -123,7 +124,7 @@ p.addParameter('resourcename', '', @ischar);
 vFunc = @(x)(ismember(ieParamFormat(x),validResources));
 p.addParameter('resourcetype', 'pbrtv4',vFunc);
 
-p.addParameter('askfirst', true, @islogical);
+p.addParameter('confirm', true, @islogical);
 p.addParameter('unzip', true, @islogical);  % assume the user wants the resource unzipped, if applicable
 p.addParameter('localname','',@ischar);     % Defaults to remote name
 p.addParameter('removetempfiles', true, @islogical);
@@ -140,7 +141,7 @@ removeTempFiles = p.Results.removetempfiles;
 baseURL = urlResource(resourceType);
 
 % verbose   = p.Results.verbose;
-askFirst  = p.Results.askfirst;
+confirm  = p.Results.confirm;
 localFile = '';        % Default local file name
 
 %% Download the resource
@@ -222,7 +223,7 @@ switch ieParamFormat(resourceType)
         if ~isfolder(downloadDir), mkdir(downloadDir); end
         localFile = fullfile(downloadDir, remoteFileName);
 
-        if askFirst
+        if confirm
             proceed = confirmDownload(resourceName, localFile);
             if proceed == false, return, end
         end
@@ -314,8 +315,21 @@ if ieNotDefined('resourceType'), resourceType = 'all'; end
 
 validResources = {'pbrtv4','spectral','hdr','faces','sdrfruit','sdrmultispectral'};
 
+% We should maintain something like this:
+%{
+ii = 1;
+sdrWeb(ii).names = {'isetmultispectral'};
+sdrWeb(ii).purl = 'https://purl.stanford.edu/vp031yb6470';
+sdrWeb(ii).files = {'montage.jpg','MultispectralDataset2.zip'};
+sdrWeb(ii).fileurl = 'https://stacks.stanford.edu/file/druid:vp031yb6470'; 
+websave('tmp.jpg',fullfile(sdrWeb(1).fileurl,sdrWeb(1).files{1}))
+web(sdrWeb(1).purl);
+
+%}
+
+
 urlList = ...
-    {'http://stanford.edu/~wandell/dtaa', ...
+    {'http://stanford.edu/~wandell/data', ...
     'http://stanford.edu/~wandell/data/pbrtv4/', ...
     'http://stanford.edu/~wandell/data/hdr/', ...
     'http://stanford.edu/~wandell/data/spectral/', ...
