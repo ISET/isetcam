@@ -59,6 +59,9 @@ function localFile = ieWebGet(varargin)
 
 % Examples
 %{
+ieWebGet('resourcename', 'kitchen', 'resourcetype', 'pbrtv4', 'unzip', true);
+%}
+%{
 ieWebGet('list');
 %}
 %{
