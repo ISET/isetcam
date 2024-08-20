@@ -80,6 +80,11 @@ p.parse(ip,varargin{:});
 
 %% An ip was passed in. 
 
+if isempty(ip.data.input)
+    warning('No image data.  Returning without adding this empty ip to the window.');
+    return;
+end
+
 % We add it to the database and select it.
 % That oi will appear in the oiWindow.
 if p.Results.replace, ieReplaceObject(ip);
