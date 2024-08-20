@@ -11,7 +11,7 @@ function localFile = ieWebGet(varargin)
 %
 %  When the files are PBRT V4 files, we download by default to the
 %  local directory in ISET3d-tiny (or ISET3d).  For other files to the
-%  local directory in ISETCam. 
+%  local directory in ISETCam.
 %
 % Inputs
 %   N/A
@@ -27,7 +27,7 @@ function localFile = ieWebGet(varargin)
 %    confirm:       Confirm with user prior to downloading (default: true)
 %    resource type (default: 'pbrtv4')
 %        {'pbrtv4', 'pbrtv3','spectral','hdr','faces'}
-%    
+%
 %    resource name    :  Remote file name (no default)
 %    remove temp files:  Remove downloaded temporary file (default: true)
 %    unzip:           :  Unzip the local file (default: true)
@@ -47,7 +47,7 @@ function localFile = ieWebGet(varargin)
 %   the names of the resources, use the 'browse' option.
 %
 %   'spectral,'hdr','pbrtv4'
-% 
+%
 %    The spectral scenes were measured with multi or hyperspectral cameras.
 %    The hdr scenes were measured with multiple exposures of a linear,
 %    scientific camera.
@@ -86,8 +86,8 @@ fname = ieWebGet('resource type','sdrfruit','askfirst',false,'unzip',true);
 %{
 fname = ieWebGet('resource type','sdr multispectral');
 %}
-
 %% General argument parsing happens later.
+
 
 [~,validResources] = urlResource;
 
@@ -111,11 +111,28 @@ if isequal(ieParamFormat(varargin{1}),'browse')
     else
         baseURL = urlResource(varargin{2});
     end
-    
+
     web(baseURL);
     localFile = '';
     return;
 end
+
+%{
+if isequal(ieParamFormat(varargin{1}),'list')
+    % read the list of resources from the remote site. I think we should
+    % make this option go away because I don't want to maintain the
+    % resource list, and I would like to add more files.
+    baseURL = urlResource(varargin{2});
+    try
+        localFile = webread(strcat(baseURL, 'resourcelist.json'));
+    catch
+        % We should find a better way to do this
+        warning("Unable to find resourcelist.json on the remote site. Suggest using browse.");
+        localFile = webread(baseURL);
+    end
+    return;
+end
+%}
 
 
 %%  Normal situation
@@ -248,6 +265,7 @@ switch ieParamFormat(resourceType)
                 % Can never get here.
         end
 
+
         if ~isempty(p.Results.downloaddir)
             % The user gave us a place to download to.
             downloadDir = p.Results.downloaddir;
@@ -258,7 +276,6 @@ switch ieParamFormat(resourceType)
 
         if ~isfolder(downloadDir), mkdir(downloadDir); end
         localFile = fullfile(downloadDir, remoteFileName);
-
         if askFirst
             proceed = confirmDownload(resourceName, localFile);
             if proceed == false, return, end
@@ -271,6 +288,7 @@ switch ieParamFormat(resourceType)
         catch
             warning("Unable to retrieve %s", baseURL);
         end
+
 end
 
 end
@@ -352,7 +370,7 @@ switch ieParamFormat(resourceType)
         baseURL = urlList{4};
     case 'faces'
         baseURL = urlList{5};
-    case 'sdrfruit'
+    case 'sdrfruit'        
         baseURL = urlList{6};
     case 'sdrmultispectral'
         baseURL = urlList{7};

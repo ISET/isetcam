@@ -4,6 +4,9 @@
 %    Wandell, as instructed by Zhenyi
 %    May 24, 2024
 %
+% These have also been posted on the ISETCam wiki page and the
+% ISETHDRSENSOR Readme page.
+%
 %% Mac Terminal:  Creating the environment
 %
 % I downloaded the miniconda installer*, and got an Apple Silicon version

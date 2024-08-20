@@ -9,7 +9,7 @@ function val = wvfGet(wvf, parm, varargin)
 %    those parameters. We generally store only unique values and  calculate
 %    all derived values.
 %
-%    A '*' indicates that the syntax wvfGet(wvf, param, unit) can be used,
+%    A '+' indicates that the syntax wvfGet(wvf, param, unit) can be used,
 %    where unit specifies the spatial scale of the returned value:
 %
 %       length: 'm', 'cm', 'mm', 'um', 'nm'.
@@ -164,13 +164,10 @@ function val = wvfGet(wvf, parm, varargin)
 %        'measured observer accommodation'
 %                                 - Observer accommodation at aberration
 %                                   measurement time (diopters)
-%
-%      Need to be implemented/checked/documented
-%       +'distanceperpix'          -
-%       +'samplesspace'            -
-%       +'strehl'                  - Ratio of the peak of diffraction
-%                                    limited to actual
-%
+%       +'psf support'            - Sample positions of the PSF
+%        'strehl '                - Ratio of the peak of diffraction
+%                                   limited to actual PSF
+%                                   (wave-dependent)
 % Outputs:
 %    val      - The value of the parameter ('parm')
 %
@@ -285,7 +282,7 @@ end
 
 %% Zernike/pupil plane properties
 %
-% The Zernicke coefficients define the wavefront aberrations in the
+% The Zernike coefficients define the wavefront aberrations in the
 % pupil plane. Various quantities are derived from this.
 isZernike = true;
 switch (parm)
@@ -306,7 +303,7 @@ switch (parm)
     case {'wavefrontaberrations','wavefrontaberration'}
         % wvfGet(wvf,'wavefront aberration',[thisWave])
         %
-        % The wavefront aberrations are calculated from Zernicke
+        % The wavefront aberrations are calculated from Zernike
         % coefficients in the routine wvfComputePupilFunction
         %
         % If there are multiple wavelengths, then this is a cell array of
@@ -334,7 +331,7 @@ switch (parm)
         % wavelength, we return the wavefront aberrations as a matrix,
         % rather than as a cell array with one entry.
         if isempty(varargin)
-            if (length(wvf.wavefrontaberrations) == 1)
+            if (isscalar(wvf.wavefrontaberrations))
                 val = wvf.wavefrontaberrations{1};
             else
                 val = wvf.wavefrontaberrations;
@@ -378,7 +375,7 @@ switch (parm)
         % wavelength, we return the pupil function as a matrix, rather than
         % as a cell array with one entry.
         if isempty(varargin)
-            if (length(wvf.pupilfunc) == 1)
+            if (isscalar(wvf.pupilfunc))
                 val = wvf.pupilfunc{1};
             else
                 val = wvf.pupilfunc;
@@ -736,7 +733,7 @@ switch (parm)
         % one entry.
         if isempty(varargin)
             % Nothing sent in, but there is only one.
-            if (length(wvf.psf) == 1)
+            if (isscalar(wvf.psf))
                 val = wvf.psf{1};
             else
                 % Nothing sent in, so return the whole psf
@@ -1292,11 +1289,11 @@ switch (parm)
                 ' %s. Use wvfComputePSF'], parm);
         end
         
-        [nil, val] = wvfComputeConePSF(wvf);
+        [~, val] = wvfComputeConePSF(wvf);
         
     case 'strehl'
-        % Strehl ratio. The strehl is the ratio of the peak of diff limited
-        % and the existing PSF at each wavelength.
+        % Strehl ratio. The strehl is the ratio of the peak of diff
+        % limited and the existing PSF at each wavelength.
         %   wvfGet(wvf, 'strehl', wList);
         
         % Force user to code to explicitly compute the PSF if it isn't

@@ -1,12 +1,12 @@
 function oi = opticsPSF(oi,scene,aperture,wvf,varargin)
-% Apply the opticalImage using the PSF method to the photon data
+% Calculate the optical image from the scene, using the PSF method
 %
 % Synopsis
 %    oi = opticsPSF(oi,scene,varargin);
 %
 % Inputs
 %   oi
-%  scene
+%   scene
 %
 % Optional key/val
 %  aperture
@@ -17,19 +17,21 @@ function oi = opticsPSF(oi,scene,aperture,wvf,varargin)
 %   oi
 %
 % Description
-%  FIX FIX
-%   The optical transform function (OTF) associated with the optics in
-%   the OI is applied to the scene data.  This function is called for
-%   shift-invariant and diffraction-limited models.  It is not called
-%   for the ray trace calculation, which uses the (ray trace method)
-%   pointspreads derived from Zemax.
+%  This function is called for shift-invariant and diffraction-limited
+%  models.  It is not called for the ray trace calculation, which uses
+%  the (ray trace method).
 %
-%   The OTF data are spectral and thus can be rather large.  The
-%   spectral OTF represents every spatial frequency in every waveband.
+%  When 'skip' is not set, we use the method oiApplyPSF below. That
+%  method 
+% 
+%   * uses one of several approaches to pad the OI
+%   * sets the wvf parameters in the optics struct to match the
+%  scene spectral radiance spatial sampling (see oiApplyPSF, lines
+%  ...). 
 %
-%   The programming issues concerning using Matlab to apply the OTF to the
-%   image (rather than convolution in the space domain) are explained
-%   below.
+%  The programming issues concerning using Matlab to apply the OTF to
+%  the image (rather than convolution in the space domain) are
+%  explained below.
 %
 % See also
 %  oiCalculateOTF, oiCompute
@@ -92,8 +94,9 @@ if ieNotDefined('aperture'), aperture = [];  end
 if ieNotDefined('wvf'),           wvf = [];  end
 if ieNotDefined('unit'),         unit = 'mm';end
 
-% Pad the optical image to allow for light spread.  Also, make sure the row
-% and col values are even.
+%% Pad the optical image to allow for light spread.  
+
+% Also, make sure the row  and col values are even.
 imSize   = oiGet(oi,'size');
 padSize  = round(imSize/8);
 padSize(3) = 0;
@@ -103,9 +106,7 @@ sDist = sceneGet(scene,'distance');
 % strategies.  Apparently, we have zero, mean and border implemented -
 % which are not all documented at the top.  We should also allow spd
 % and test it. Zero photons was the default for ISETCam, and mean
-% photons was the default for ISETBio.  
-% 
-% This update is being tested as of 9/25/2023.
+% photons was the default for ISETBio.
 switch padvalue
     case 'zero'
         padType = 'zero photons';
@@ -121,7 +122,9 @@ end
 
 oi = oiPadValue(oi,padSize,padType,sDist);
 
-% Convert the oi into the wvf format and compute the PSF
+%% Get information from the oi 
+
+% We will set some of this into the wvf and compute the PSF
 wavelist  = oiGet(oi,'wave');
 flength   = oiGet(oi,'focal length',unit);
 fnumber   = oiGet(oi,'f number');
@@ -129,19 +132,15 @@ fnumber   = oiGet(oi,'f number');
 % WVF is square.  Use the larger of the two sizes
 oiSize    = max(oiGet(oi,'size'));   
 
-% It is possible to get here without having a wvf structure stored with the
-% optics of the oi.  But we think that is a case that should be flagged
-% explicitly as an error, rather than making up a wvf which might specify
-% different optics from what is in the OTF field of the optics structure.
-%
-% 4/22/24 DHB Made this an error.
+% It is possible (but unlikely) to get here without having a wvf
+% structure stored in the optics of the oi.  That is made an explicit
+% error, rather than making up a wvf.
 if isempty(wvf)
-    if (isfield(oi,'optics') & isfield(oi.optics,'wvf'))
+    if (isfield(oi,'optics') && isfield(oi.optics,'wvf'))
         wvf = oi.optics.wvf;
     else
-        error('Trying to apply PSF method with an empty passed wvf structure and no wvf field in the oi''s optics. This should not happen.');
+        error('Applying PSF method with an empty wvf structure and no optics.wvf field.');
     end
-    %wvf = wvfCreate('wave',wavelist);
 end
 
 % Make sure the wvf matches how the person set the oi/optics info
@@ -150,10 +149,11 @@ wvf = wvfSet(wvf, 'calc pupil diameter', flength/fnumber);
 wvf = wvfSet(wvf, 'wave',wavelist);
 wvf = wvfSet(wvf, 'spatial samples', oiSize);
 
-% Setting this matches the pupil sample spacing with the oi sample
-% spacing.
-%
-% BW: Worried about the lambdaM fixed value.
+%% Get read to compute the PSF
+
+% With this information set, we can match the pupil sample spacing
+% with the desired oi sample spacing. This also determines the
+% frequency samples for the OTF.
 psf_spacing = oiGet(oi,'sample spacing',unit);
 
 % Default measurement wavelength is 550 nm.
@@ -161,7 +161,8 @@ lambdaM = wvfGet(wvf, 'measured wl', 'm');
 
 lambdaUnit = ieUnitScaleFactor(unit)*lambdaM;
 
-% Calculate the pupil sample spacing.
+% Calculate the pupil sample spacing to match the PSF and the oi
+% spatial samples.
 pupil_spacing    = lambdaUnit * flength / (psf_spacing(1) * oiSize); % in meters
 
 % Account for different unit scale, scale the user input unit to mm, 
@@ -170,39 +171,22 @@ currentUnitScale = ieUnitScaleFactor(unit);
 mmUnitScale      = 1000/currentUnitScale;
 wvf = wvfSet(wvf,'field size mm', pupil_spacing * oiSize * mmUnitScale); % only accept mm
 
-% Compute the PSF.  We may need to consider LCA and other parameters
-% at this point.  It should be possible to set this true easily.
-% if ~isempty(wvf.customLCA)
-%     % For now, human is the only option
-%     if strcmp(wvf.customLCA,'human')
-%         wvf = wvfCompute(wvf,'aperture',aperture,'human lca',true);
-%     end
-% else
-%     % customLCA is empty
-%     wvf = wvfCompute(wvf,'aperture',aperture,'human lca',false);
-% end
+% Compute the pupil function with the new parameters
 wvf = wvfCompute(wvf,'aperture',aperture);
 
-% Make this work:  wvfPlot(wvf,'psf space',550);
-
-% Old
-% otfM = oiCalculateOTF(oi, wave, unit);  % Took changes from ISETBio.
-
-nWave = numel(wavelist);
-
-% All the PSFs
+% Get the wavelength-dependent PSFs
 PSF = wvfGet(wvf,'psf');
 if ~iscell(PSF)
     tmp = PSF; clear PSF; PSF{1} = tmp;
 end
 
-% Get the current data set.  It has the right size.  We over-write it
-% below.
+%% Apply the PSF to the scene photons
+
+% One wavelength at a time
 p = oiGet(oi,'photons');
 oiHeight = size(p,1);
 oiWidth = size(p,2);
-
-% otf = zeros(oiSize,oiSize,nWave);
+nWave = numel(wavelist);
 
 for ww = 1:nWave
     
@@ -230,57 +214,39 @@ for ww = 1:nWave
         else
             photons = padarray(p(:,:,ww),[sz(1),0],0,'pre');
             photons = padarray(photons,[sz(2),0],0,'post');
-            % photons = padarray(p(:,:,ww),[sz,0],0,'both');
-            % photons = ImageConvFrequencyDomain(photons,PSF{ww}, 2);
             photons = fftshift(ifft2(fft2(photons) .* fft2(PSF{ww})));
             p(:,:,ww) = photons(sz(1)+(1:oiHeight),:);
         end
     else
-        % BW:  Debugging as per DHB.  This line breaks the padding.
-        % It seems the convolution is not circular. Currently
-        % debugging in v_ibioRDT_wvfPadPSF.m
-
-        % tmp = conv2(p(:,:,ww),PSF{ww},'same');
-
-        % The ImageConvFrequencyDomain method almost always worked.
-        % But for the slanted bar scene, for some reason, it had a
-        % roll off at the edge towards zero that should not have been
-        % there.  We tried various tests to see why, but none worked.
-        % The method has parameters in how it calls fft2() that nearly
-        % always work but for some reason fail us in the slanted edge
-        % case.  (See v_icam_wvfPadPSF).  So we now do this step in
-        % the compute the same way that it is done in opticsOTF.
-
-        % In this case, we need an fftshift that is not needed in the
-        % opticsOTF case. Perhaps that is because we store the OTF in
-        % a different format there and here we simply take fft2(PSF).
-        % 
-        % That may be the reason why there is a 1 pixel shift in the
-        % result for odd (but not even) size images.  See
-        % v_icam_wvfPadPSF.m.  Let's try to eliminate
-        %
-        % Deprecated because it pads and causes the roll off sometimes
-        % p(:,:,ww) = ImageConvFrequencyDomain(p(:,:,ww), PSF{ww}, 2 );
-
-        % Designed to match the opticsOTF values
+        % This is where we usually work for square scenes.
         p(:,:,ww) = ifft2( fft2(p(:,:,ww)) .* fft2(ifftshift(PSF{ww})) );
         
     end
-    % otf requires a single wavelength
-    % otf(:,:,ww) = wvfGet(wvf,'otf',wavelist(ww));
+
 end
 
+% Set the transformed photons into the OI
 oi = oiSet(oi,'photons',p);
 
+% Convert the modified wvf to the updated optics
 wvfOptics = wvf2optics(wvf);
 
-% Update the OTF struct while preserve the optics struct.
+% Update the only the OTF, preserving the rest of the optics struct.
+% When we are computing with the opticsPSF method, we do not need to
+% store this.  But it is convenient to have for plotting and to be
+% consistent with the opticsOTF path, which still exists.
 oi.optics.OTF = wvfOptics.OTF;
 
-% We saved OTF in optics, we can clear the data saved in wvf, if we need
-% them, we can call wvfCompute.
+% We saved OTF in optics, we can clear the data saved in wvf. When we need
+% them again, we call wvfCompute.  
+% We clear
+% wvf.psf, wvf.wavefrontaberrations, wvf.pupilfunc, wvf.areapix, and
+% wvf.areapixapod.
+
 wvf = wvfClearData(wvf);
 
+% Update the wvf
 oi = oiSet(oi,'optics wvf',wvf);
+
 end
 
