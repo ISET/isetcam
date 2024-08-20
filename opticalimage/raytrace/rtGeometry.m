@@ -111,8 +111,8 @@ dx = xwidth/colMax;      %x-width of pixel in mm
 % for the field of view, if we pad.  I am not sure we need to pad.  So, for
 % now, I have set zeropad to do not pad, and will do some more testing.
 
-%zeropad=16;                            %zero padding size.  Figure out how to set this properly
-zeropad = 0;
+zeropad=16;                            %zero padding size.  Figure out how to set this properly
+% zeropad = 0;
 paddedRowMax = rowMax + 2*zeropad;        %number of rows in final geometric image space
 paddedColMax = colMax + 2*zeropad;        %number of columns in final geometric image space
 rowCenter=(paddedRowMax+1)/2;           %center row of final geometric image space
