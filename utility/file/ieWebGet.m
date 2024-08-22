@@ -288,7 +288,26 @@ switch ieParamFormat(resourceType)
         catch
             warning("Unable to retrieve %s", baseURL);
         end
-
+    case {'isethdrsensor'}
+        if ~isempty(p.Results.downloaddir)
+            % The user gave us a place to download to.
+            downloadDir = p.Results.downloaddir;
+        else
+            % Go to local/sdr
+            downloadDir = fullfile(isetRootPath,'local','sdr');
+        end
+        
+        localFile = fullfile(downloadDir, resourceName);
+        localDir  = fileparts(localFile);
+        if ~isfolder(localDir), mkdir(localDir); end
+        remoteURL = fullfile(baseURL,resourceName);
+        try
+            fprintf('*** Downloading %s from ISETHDRSensor SDR ... \n',resourceName);
+            websave(localFile, remoteURL);
+            fprintf('*** File is downloaded! \n');
+        catch
+            warning("Unable to retrieve %s", remoteURL);
+        end
 end
 
 end
@@ -334,7 +353,7 @@ function [baseURL, validResources] = urlResource(resourceType)
 
 if ieNotDefined('resourceType'), resourceType = 'all'; end
 
-validResources = {'pbrtv4','spectral','hdr','faces','sdrfruit','sdrmultispectral'};
+validResources = {'pbrtv4','spectral','hdr','faces','sdrfruit','sdrmultispectral','isethdrsensor','isethdrlightgroup'};
 
 % We should maintain something like this:
 %{
@@ -356,7 +375,8 @@ urlList = ...
     'http://stanford.edu/~wandell/data/spectral/', ...
     'http://stanford.edu/~wandell/data/faces/', ...
     'https://stacks.stanford.edu/v2/file/tb259jf5957/version/1/ISET_fruit.zip',...
-    'https://stacks.stanford.edu/file/druid:vp031yb6470/MultispectralDataset2.zip'
+    'https://stacks.stanford.edu/file/druid:vp031yb6470/MultispectralDataset2.zip',...
+    'https://stacks.stanford.edu/file/druid:bt316kj3589/isethdrsensor'
     };
 
 switch ieParamFormat(resourceType)
@@ -374,6 +394,8 @@ switch ieParamFormat(resourceType)
         baseURL = urlList{6};
     case 'sdrmultispectral'
         baseURL = urlList{7};
+    case 'isethdrsensor'
+        baseURL = urlList{8};
     otherwise
         error('Unknown resource type %s\n',src);
 end
