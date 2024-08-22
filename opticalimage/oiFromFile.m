@@ -1,5 +1,5 @@
 function oi = oiFromFile(imageData,imageType, meanLuminance, dispCal, wList)
-% Read an RGB file (e.g. from Code V) and insert it into an optical image
+% Read an RGB file and create an optical image
 %
 % Synopsis
 %    oi = oiFromFile(I,imType)
