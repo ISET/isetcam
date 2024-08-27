@@ -417,8 +417,8 @@ switch parm
         % Specify optical correction added to observer focus at the
         % calculation time
         error('This value is no longer used, so setting it will not lead to good things.')
-        wvf.calcObserverFocusCorrectionDiopters = val;
-        wvf.PUPILFUNCTION_STALE = true;
+        % wvf.calcObserverFocusCorrectionDiopters = val;
+        % wvf.PUPILFUNCTION_STALE = true;
 
     case {'calcwave', 'calcwavelengths', 'wavelengths', 'wavelength', ...
             'wls', 'wave'}

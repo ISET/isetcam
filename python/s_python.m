@@ -4,8 +4,10 @@
 %    Wandell, as instructed by Zhenyi
 %    May 24, 2024
 %
-% These have also been posted on the ISETCam wiki page and the
-% ISETHDRSENSOR Readme page.
+% These have also been posted on the ISETCam wiki page 
+%    (https://github.com/ISET/isetcam/wiki/Related-software) 
+% 
+% and the ISETHDRSENSOR Readme page.
 %
 %% Mac Terminal:  Creating the environment
 %

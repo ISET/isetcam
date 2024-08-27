@@ -104,18 +104,20 @@ end
 % can create problems.
 if ~exist('masterRect','var')
     masterRect = ISOFindSlantedBar(ip);
-    if isempty(masterRect), return; end
+    if isempty(masterRect), mtfData = []; return; end
 end
 
 varargin = ieParamFormat(varargin);
 p = inputParser;
-p.addRequired('ip',@(x)(isstuct(x) && isequal(x.type,'vcimage')));
-p.addRequired('sensor',@(x)(isstuct(x) && isequal(x.type,'sensor')));
+p.addRequired('ip',@(x)(isstruct(x) && isequal(x.type,'vcimage')));
+p.addRequired('sensor',@(x)(isstruct(x) && isequal(x.type,'sensor')));
 p.addRequired('plotOptions',@ischar);
 p.addRequired('masterRect',@isvector);
 
 p.addParameter('weight',[0.213   0.715   0.072],@(x)(isvector(x) && isequal(numel(x),3)));
 p.addParameter('npoly',1,@isinteger);
+
+p.parse(ip,sensor,plotOptions,masterRect,varargin{:});
 
 %% Get the bar image ready.
 
@@ -137,5 +139,6 @@ mtfData.rect = masterRect; % [masterRect(2) masterRect(1) masterRect(4) masterRe
 mtfData.esf = esf;         % Edge spread function, finely sampled, I think
 mtfData.fitme = fitme;
 mtfData.win = h;
+
 end
 

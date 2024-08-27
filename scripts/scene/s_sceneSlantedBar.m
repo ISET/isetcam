@@ -29,8 +29,7 @@ scene = sceneCreate('slantedBar', sz, barSlope, fieldOfView);
 scene = sceneAdjustLuminance(scene,meanL);
 
 % Have a look at the image in the scene Window
-ieAddObject(scene);
-sceneWindow;
+sceneWindow(scene);
 
 % Here is the scene energy
 scenePlot(scene,'illuminant energy roi')
@@ -40,8 +39,7 @@ scenePlot(scene,'illuminant energy roi')
 scene = sceneAdjustIlluminant(scene,'D65.mat');
 
 % Have a look
-ieAddObject(scene);
-sceneWindow;
+sceneWindow(scene);
 scenePlot(scene,'illuminant energy roi')
 
 %% Create slanted bar with another slope
@@ -51,7 +49,6 @@ sz          = 128;
 fieldOfView = 0.5;
 
 scene = sceneCreate('slantedBar', sz, barSlope, fieldOfView);
-ieAddObject(scene);
-sceneWindow;
+sceneWindow(scene);
 
 %%

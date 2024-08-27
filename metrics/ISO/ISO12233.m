@@ -579,7 +579,7 @@ for k =1: nW
 end
 nlow = nlow./(nRow*nCol);
 
-if status ~= 1, warndlg('Data clipping errors detected','ClipCheck'); end
+if status ~= 1, warning('Data clipping errors detected'); end
 
 end
 
