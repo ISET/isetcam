@@ -680,10 +680,11 @@ switch combinationMethod
         error("Don't know how to combine burst of images");
 end
 
-% Pass metadata along
-ip.metadata = appendStruct(ip.metadata,sensor.metadata);
+% Pass sensor metadata along, if it exists.
+if isfield(sensor,'metadata')
+    ip.metadata = appendStruct(ip.metadata,sensor.metadata);
+end
 
-%ip = ipSet(ip,'input',newImg);
 end
 
 %% ---------- Network demosaic
