@@ -560,7 +560,7 @@ switch sceneName
         
     case {'pointarray','manypoints'}
         % sceneCreate('pointArray',sz,spacing,spectralType);
-        sz = 128; spacing = 16; spectralType = 'ep';
+        sz = 128; spacing = 16; spectralType = 'ep'; pointSize = 1;
         if length(varargin) >= 1, sz           = varargin{1}; end
         if length(varargin) >= 2, spacing      = varargin{2}; end
         if length(varargin) >= 3, spectralType = varargin{3}; end
