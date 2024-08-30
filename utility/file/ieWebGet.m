@@ -62,6 +62,25 @@ ieWebGet('list')
 %{
 % Browse the remote site
 ieWebGet('browse','pbrtv4');
+ieWebGet('browse','iset3d-scenes');
+ieWebGet('browse','bitterli');
+ieWebGet('browse','vistalab-collection');
+
+ieWebGet('browse','iset-multispectral-collection');
+ieWebGet('browse','people-multispectral');  % ISET Multispectral Image Database
+ieWebGet('browse','misc-multispectral1');  % ISET Multispectral Image Database
+ieWebGet('browse','misc-multispectral2');  % ISET Multispectral Image Database
+
+% Collection is implemented, but a search works returns.  Ask Amy.
+ieWebGet('browse','iset-hyperspectral-collection');
+ieWebGet('browse','faces-1m');       % ISET Hyperspectral Image Database
+ieWebGet('browse','faces-3m');       % ISET Hyperspectral Image Database
+ieWebGet('browse','fruits-charts');  % ISET Hyperspectral Image Database
+ieWebGet('browse','landscape-hyperspectral');  % ISET Hyperspectral Image Database
+
+ieWebGet('browse','cone-fundamentals-paper');
+ieWebGet('browse','isethdrsensor-paper');
+
 %}
 %{
 localFile = ieWebGet('resourcetype', 'pbrtv4','resourcefile','kitchen.zip');
@@ -116,9 +135,7 @@ end
 
 %%  Download
 
-% Forces the file names to lower case, which is how they are stored on
-% the SDR, too, for pbrtv4, bitterli, and iset3d-scenes.  But NOT for
-% some of the other resources.  So, wondering what to do (BW).
+%
 varargin = ieParamFormat(varargin);
 [~,validResources] = urlResource('all');
 
@@ -153,9 +170,9 @@ resourceURL = resource(4);
 switch ieParamFormat(resourceType)
 
     case {'pbrtv4','bitterli','iset3d-scenes'}
-        % 
-        
+        % An example
         % s = ieWebGet('resource type','pbrtv4','resource file','kitchen.zip');
+        % localFile = ieWebGet('resourcetype', 'iset3d-scenes','resourcefile','simplescene');
 
         % ISET3d must be on your path.
         if ~isempty(p.Results.downloaddir)
@@ -347,14 +364,18 @@ resourceCell = {...
     'bitterli','ISET 3d Scenes bitterli', 'https://purl.stanford.edu/cb706yg0989', 'https://stacks.stanford.edu/file/druid:cb706yg0989/sdrscenes/bitterli';
     'pbrtv4',  'ISET 3d Scenes pharr', 'https://purl.stanford.edu/cb706yg0989',    'https://stacks.stanford.edu/file/druid:cb706yg0989/sdrscenes/pbrtv4';
     'iset3d-scenes', 'ISET 3d Scenes iset3d', 'https://purl.stanford.edu/cb706yg0989', 'https://stacks.stanford.edu/file/druid:cb706yg0989/sdrscenes/iset3d-scenes';
-    'isethdrsensor','ISET HDR Sensor', 'https://purl.stanford.edu/bt316kj3589', 'https://stacks.stanford.edu/file/druid:bt316kj3589/isethdrsensor';
-    'people-multispectral','ISET multispectral scenes of people','https://purl.stanford.edu/mv668yq1424', '';
     'landscape-hyperspectral','ISET hyperspectral scene data for landscapes','https://purl.stanford.edu/dy318qn9992', 'https://stacks.stanford.edu/file/druid:dy318qn9992';
     'faces-3m','ISET scenes of faces at 3M', 'https://purl.stanford.edu/rr512xk8301','';
     'faces-1m','ISET hyperspectral scenes of human faces at high resolution, 1M distance', 'https://purl.stanford.edu/jj361kc0271',''
     'fruits-charts','ISET scenes with fruits and calibration charts','https://purl.stanford.edu/tb259jf5957', '';
+    'people-multispectral','ISET multispectral scenes of people','https://purl.stanford.edu/mv668yq1424', '';
     'misc-multispectral1','ISET multispectral scenes of faces, fruit, objects, charts','https://purl.stanford.edu/sx264cp0814', '';
     'misc-multispectral2','ISET multispectral scenes of fruit, books, color calibration charts','https://purl.stanford.edu/vp031yb6470','';
+    'vistalab-collection','Vista Lab Collection','https://searchworks.stanford.edu/catalog?f[collection][]=qd500xn1572','';
+    'iset-multispectral-collection','ISET Multispectral Image Database','https://searchworks.stanford.edu/view/sm380jb1849','';
+    'iset-hyperspectral-collection','Not yet implemented','https://searchworks.stanford.edu/?search_field=search&q=ISET+Hyperspectral+Image+Database','';
+    'cone-fundamentals-paper','Deriving the cone fundamentals','https://purl.stanford.edu/jz111ct9401','';
+    'isethdrsensor-paper','ISET HDR Sensor', 'https://purl.stanford.edu/bt316kj3589', 'https://stacks.stanford.edu/file/druid:bt316kj3589/isethdrsensor'
     };
 
 validResources = resourceCell(:,1);
