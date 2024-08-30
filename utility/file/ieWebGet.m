@@ -1,6 +1,7 @@
 function localFile = ieWebGet(varargin)
 %% Download a resource from a Stanford web site
 %
+%
 % Synopsis
 %   localFile = ieWebGet(varargin)
 %
@@ -59,10 +60,7 @@ function localFile = ieWebGet(varargin)
 
 % Examples
 %{
-ieWebGet('resourcename', 'kitchen', 'resourcetype', 'pbrtv4', 'unzip', true);
-%}
-%{
-ieWebGet('list');
+ieWebGet('resourcename', 'kitchen.zip', 'resourcetype', 'bitterli', 'unzip', true);
 %}
 %{
 % Browse the remote site
@@ -88,7 +86,6 @@ fname = ieWebGet('resource type','sdr multispectral');
 %}
 %% General argument parsing happens later.
 
-
 [~,validResources] = urlResource;
 
 if isequal(ieParamFormat(varargin{1}),'list')
@@ -103,9 +100,7 @@ if isequal(ieParamFormat(varargin{1}),'list')
     return;
 end
 
-if isequal(ieParamFormat(varargin{1}),'browse')
-    % Assume we are looking on the web at Wandell's cardinal account.
-    % This works for the url locations 2-5, but not the others
+if isequal(ieParamFormat(varargin{1}),'browse')    
     if numel(varargin) < 2
         baseURL = urlResource('default');
     else
@@ -116,24 +111,6 @@ if isequal(ieParamFormat(varargin{1}),'browse')
     localFile = '';
     return;
 end
-
-%{
-if isequal(ieParamFormat(varargin{1}),'list')
-    % read the list of resources from the remote site. I think we should
-    % make this option go away because I don't want to maintain the
-    % resource list, and I would like to add more files.
-    baseURL = urlResource(varargin{2});
-    try
-        localFile = webread(strcat(baseURL, 'resourcelist.json'));
-    catch
-        % We should find a better way to do this
-        warning("Unable to find resourcelist.json on the remote site. Suggest using browse.");
-        localFile = webread(baseURL);
-    end
-    return;
-end
-%}
-
 
 %%  Normal situation
 
@@ -178,12 +155,7 @@ switch ieParamFormat(resourceType)
             % The user gave us a place to download to.
             downloadDir = p.Results.downloaddir;
         else
-            switch resourceType
-                case 'pbrtv3'
-                    downloadDir = fullfile(piRootPath,'data','v3','web');
-                case 'pbrtv4'
-                    downloadDir = fullfile(piRootPath,'data','scenes','web');
-            end
+            downloadDir = fullfile(piRootPath,'data','scenes','web');
         end
 
         % This should never happen. The directory is part of ISET3d and is
@@ -350,10 +322,13 @@ function [baseURL, validResources] = urlResource(resourceType)
 % See also
 %
 
-
 if ieNotDefined('resourceType'), resourceType = 'all'; end
 
-validResources = {'pbrtv4','spectral','hdr','faces','sdrfruit','sdrmultispectral','isethdrsensor','isethdrlightgroup'};
+% Scenes for PBRT rendering, measured scenes
+validResources = {'bitterli','pbrtv4','iset3d-scenes',...
+    'spectral','hdr','faces',...
+    'sdrfruit','sdrmultispectral',...
+    'isethdrsensor','isethdrlightgroup'};
 
 % We should maintain something like this:
 %{
@@ -364,13 +339,33 @@ sdrWeb(ii).files = {'montage.jpg','MultispectralDataset2.zip'};
 sdrWeb(ii).fileurl = 'https://stacks.stanford.edu/file/druid:vp031yb6470'; 
 websave('tmp.jpg',fullfile(sdrWeb(1).fileurl,sdrWeb(1).files{1}))
 web(sdrWeb(1).purl);
-
 %}
 
+% Browse links
+% ISET 3d Scenes     
+%    https://purl.stanford.edu/cb706yg0989
+% ISET HDR Sensor    
+%    https://purl.stanford.edu/bt316kj3589
+% ISET multispectral scenes of people 
+%    https://purl.stanford.edu/mv668yq1424
+% ISET hyperspectral scene data for landscapes 
+%    https://purl.stanford.edu/dy318qn9992 
+%    https://stacks.stanford.edu/file/druid:dy318qn9992/ISET_landscape.zip
+% ISET scenes of faces at 3M     https://purl.stanford.edu/rr512xk8301
+% ISET scenes with fruits and calibration charts   https://purl.stanford.edu/tb259jf5957
+% ISET multispectral scenes of faces, fruit, objects, charts  https://purl.stanford.edu/sx264cp0814
+% ISET multispectral scenes of fruit, books, color calibration charts
+%       https://purl.stanford.edu/vp031yb6470
+% ISET hyperspectral scenes of human faces at high resolution, 1M distance
+%       https://purl.stanford.edu/jj361kc0271
+%
+%
+%
 
 urlList = ...
-    {'http://stanford.edu/~wandell/data', ...
-    'http://stanford.edu/~wandell/data/pbrtv4/', ...
+    {'https://stacks.stanford.edu/file/druid:cb706yg0989/sdrscenes/bitterli', ...
+    'https://stacks.stanford.edu/file/druid:cb706yg0989/sdrscenes/pbrtv4', ...
+    'https://stacks.stanford.edu/file/druid:cb706yg0989/sdrscenes/iset3d-scenes',
     'http://stanford.edu/~wandell/data/hdr/', ...
     'http://stanford.edu/~wandell/data/spectral/', ...
     'http://stanford.edu/~wandell/data/faces/', ...
@@ -379,23 +374,25 @@ urlList = ...
     'https://stacks.stanford.edu/file/druid:bt316kj3589/isethdrsensor'
     };
 
-switch ieParamFormat(resourceType)
-    case {'all',''}
-        baseURL = urlList;
+switch ieParamFormat(resourceType)    
+    case 'bitterli'
+        baseURL = urlList{1};
     case 'pbrtv4'
         baseURL = urlList{2};
-    case 'hdr'
+    case 'iset3d-scenes'
         baseURL = urlList{3};
-    case 'spectral'
+    case 'hdr'
         baseURL = urlList{4};
-    case 'faces'
+    case 'spectral'
         baseURL = urlList{5};
-    case 'sdrfruit'        
+    case 'faces'
         baseURL = urlList{6};
-    case 'sdrmultispectral'
+    case 'sdrfruit'        
         baseURL = urlList{7};
-    case 'isethdrsensor'
+    case 'sdrmultispectral'
         baseURL = urlList{8};
+    case 'isethdrsensor'
+        baseURL = urlList{9};
     otherwise
         error('Unknown resource type %s\n',src);
 end
