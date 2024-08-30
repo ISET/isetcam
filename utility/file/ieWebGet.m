@@ -1,35 +1,27 @@
 function localFile = ieWebGet(varargin)
 %% Download a resource from a Stanford web site
 %
-%
 % Synopsis
 %   localFile = ieWebGet(varargin)
 %
 % Brief description
-%  Download an ISET or ISET3d related zip or mat-file file from the web.
-%  We call these files 'resources'.  The resource type and the remote file
-%  name are used to define how to get the file.
-%
-%  When the files are PBRT V4 files, we download by default to the
-%  local directory in ISET3d-tiny (or ISET3d).  For other files to the
-%  local directory in ISETCam.
+%   Download an ISET related files from the web.  Used for ISETCam and
+%   ISET3d data.
 %
 % Inputs
 %   N/A
 %
 % Key/val pairs
 %
-%   'browse' -  browse a website for a resource
-%   'list'   -  return the contents of resourceslist.json on the remote
-%               site.
+%   'browse' -  browse a website contaning useful files
+%   'list'   -  list the remote websites
+%
 %    The following argument (varargin{2}) specifies the resource type
 %    (see below)
 %
 %    confirm:       Confirm with user prior to downloading (default: true)
 %    resource type (default: 'pbrtv4')
-%        {'pbrtv4', 'pbrtv3','spectral','hdr','faces'}
-%
-%    resource name    :  Remote file name (no default)
+%    resource file    :  Remote file name (no default)
 %    remove temp files:  Remove downloaded temporary file (default: true)
 %    unzip:           :  Unzip the local file (default: true)
 %    verbose          :  Print a report to the command window
@@ -39,12 +31,17 @@ function localFile = ieWebGet(varargin)
 %   localFile:  Name of the local download file
 %
 % Description
-%   We store some large data sets (resources) as zip- and mat-files on the
-%   Stanford resource, cardinal.stanford.edu.  This routine is a gateway to
-%   download those files.  We store them on cardinal because they are too
-%   large to be conveniently stored on GitHub.
+%   We store large data sets (resources) as zip- and mat-files on the
+%   Stanford resource, Stanford Digital Repository (SDR).  This
+%   routine is a gateway to download files from there. We store them
+%   on SDR because they are too large to be conveniently stored on
+%   GitHub.
 %
-%   The type of resources are listed above.  To see the remote web site or
+%   The various resources we currently download can be returned using
+%
+%     ieWebGet('list')
+% 
+% To see the remote web site or
 %   the names of the resources, use the 'browse' option.
 %
 %   'spectral,'hdr','pbrtv4'
@@ -60,17 +57,20 @@ function localFile = ieWebGet(varargin)
 
 % Examples
 %{
-ieWebGet('resourcename', 'kitchen.zip', 'resourcetype', 'bitterli', 'unzip', true);
+ieWebGet('list')
 %}
 %{
 % Browse the remote site
 ieWebGet('browse','pbrtv4');
-ieWebGet('browse','spectral');
-ieWebGet('browse','faces');
 %}
 %{
-% PBRT V4 is default
-localFile = ieWebGet('resource name','lettersAtDepth');
+localFile = ieWebGet('resourcetype', 'pbrtv4','resourcefile','kitchen.zip');
+%}
+%{
+localFile = ieWebGet('resourcetype', 'iset3d','resourcefile','SimpleScene');
+%}
+%{
+localFile = ieWebGet('resourcetype', 'bitterli','resourcefile','cornell-box');
 %}
 %{
 localFile = ieWebGet('resourcename', 'ChessSet', 'resourcetype', 'pbrtv4')
@@ -84,42 +84,48 @@ fname = ieWebGet('resource type','sdrfruit','askfirst',false,'unzip',true);
 %{
 fname = ieWebGet('resource type','sdr multispectral');
 %}
-%% General argument parsing happens later.
 
-[~,validResources] = urlResource;
+%% Manage the list and browse conditions
 
+%------- list --------
 if isequal(ieParamFormat(varargin{1}),'list')
     % ieWebGet('list');
-    urlList = urlResource('all');
+    resourceList = urlResource('all');
 
-    fprintf('\nResource URLs\n=================\n\n');
-    for ii=2:numel(urlList)
-        fprintf('%s\n',urlList{ii});
+    fprintf('\nResource types\n=================\n\n');
+    for ii=2:numel(resourceList)
+        fprintf('%s\n',resourceList{ii});
     end
     fprintf('\n');
+    localFile = resourceList(:,1);
     return;
 end
 
-if isequal(ieParamFormat(varargin{1}),'browse')    
-    if numel(varargin) < 2
-        baseURL = urlResource('default');
-    else
-        baseURL = urlResource(varargin{2});
+%------- browse --------
+if isequal(ieParamFormat(varargin{1}),'browse')
+    if numel(varargin) < 2, resourceType = 'pbrtv4';
+    else,                   resourceType = varargin{2};
     end
 
-    web(baseURL);
+    resource = urlResource(resourceType);
+    
+    web(resource{3});
     localFile = '';
     return;
 end
 
-%%  Normal situation
+%%  Download
 
+% Forces the file names to lower case, which is how they are stored on
+% the SDR, too, for pbrtv4, bitterli, and iset3d-scenes.  But NOT for
+% some of the other resources.  So, wondering what to do (BW).
 varargin = ieParamFormat(varargin);
+[~,validResources] = urlResource('all');
 
 p = inputParser;
-p.addParameter('resourcename', '', @ischar);
 vFunc = @(x)(ismember(ieParamFormat(x),validResources));
 p.addParameter('resourcetype', 'pbrtv4',vFunc);
+p.addParameter('resourcefile', '', @ischar);
 
 p.addParameter('confirm', true, @islogical);
 p.addParameter('unzip', true, @islogical);  % assume the user wants the resource unzipped, if applicable
@@ -130,12 +136,10 @@ p.addParameter('downloaddir','',@ischar);
 
 p.parse(varargin{:});
 
-resourceName   = p.Results.resourcename;
 resourceType   = p.Results.resourcetype;
+resourceFile   = p.Results.resourcefile;
 unZip          = p.Results.unzip;
 removeTempFiles = p.Results.removetempfiles;
-
-baseURL = urlResource(resourceType);
 
 % verbose   = p.Results.verbose;
 confirm  = p.Results.confirm;
@@ -143,12 +147,15 @@ localFile = '';        % Default local file name
 
 %% Download the resource
 
+resource = urlResource(resourceType);
+resourceURL = resource(4);
+
 switch ieParamFormat(resourceType)
 
-    case {'pbrtv4'}
-        % PBRT V4 resources are zip files.
-        %
-        % s = ieWebGet('resource type','pbrtv4','resource name','kitchen');
+    case {'pbrtv4','bitterli','iset3d-scenes'}
+        % 
+        
+        % s = ieWebGet('resource type','pbrtv4','resource file','kitchen.zip');
 
         % ISET3d must be on your path.
         if ~isempty(p.Results.downloaddir)
@@ -166,19 +173,23 @@ switch ieParamFormat(resourceType)
         end
 
         % We should check if the zip is already there.
-        remoteFileName = strcat(resourceName, '.zip');
-        resourceURL    = strcat(baseURL, remoteFileName);
-        localZIP       = fullfile(downloadDir, remoteFileName);
+        [~,~,e] = fileparts(resourceFile);
+        if ~isequal(e,'.zip')
+            remoteFileName = strcat(resourceFile, '.zip');
+        else, remoteFileName = resourceFile;
+        end
+        remoteURL    = strcat(resourceURL{1}, '/',remoteFileName);
+        localZIP     = fullfile(downloadDir, remoteFileName);
 
-        if askFirst
-            proceed = confirmDownload(resourceName, localZIP);
+        if confirm
+            proceed = confirmDownload(resourceFile, localZIP);
             if proceed == false, return, end
         end
 
         try
             % The pbrt files are zip files.
             fprintf('Downloading to %s ... \n',localZIP);
-            websave(localZIP, resourceURL);
+            websave(localZIP, remoteURL);
             fprintf('Done\n');
             if unZip
                 unzip(localZIP, downloadDir);
@@ -186,7 +197,7 @@ switch ieParamFormat(resourceType)
                     delete(localZIP);
                 end
                 % not sure how we "know" what the unzip path is?
-                localFile = fullfile(downloadDir, resourceName);
+                localFile = fullfile(downloadDir, resourceFile);
             else
                 localFile = localZIP;
             end
@@ -199,11 +210,11 @@ switch ieParamFormat(resourceType)
         % Download mat-files
         % Both are 'spectral' type, but we put the HDR files into a
         % separate directory to make them easier to identify.
-        if isempty(resourceName)
+        if isempty(resourceFile)
             error('Resource file name is required for type %s.',resourceType);
         end
 
-        remoteFileName = strcat(resourceName, '.mat');
+        remoteFileName = strcat(resourceFile, '.mat');
         resourceURL    = strcat(baseURL, remoteFileName);
         if ~isempty(p.Results.downloaddir)
             % The user gave us a place to download to.
@@ -216,7 +227,7 @@ switch ieParamFormat(resourceType)
         localFile = fullfile(downloadDir, remoteFileName);
 
         if confirm
-            proceed = confirmDownload(resourceName, localFile);
+            proceed = confirmDownload(resourceFile, localFile);
             if proceed == false, return, end
         end
 
@@ -249,7 +260,7 @@ switch ieParamFormat(resourceType)
         if ~isfolder(downloadDir), mkdir(downloadDir); end
         localFile = fullfile(downloadDir, remoteFileName);
         if askFirst
-            proceed = confirmDownload(resourceName, localFile);
+            proceed = confirmDownload(resourceFile, localFile);
             if proceed == false, return, end
         end
 
@@ -269,12 +280,12 @@ switch ieParamFormat(resourceType)
             downloadDir = fullfile(isetRootPath,'local','sdr');
         end
         
-        localFile = fullfile(downloadDir, resourceName);
+        localFile = fullfile(downloadDir, resourceFile);
         localDir  = fileparts(localFile);
         if ~isfolder(localDir), mkdir(localDir); end
-        remoteURL = fullfile(baseURL,resourceName);
+        remoteURL = fullfile(baseURL,resourceFile);
         try
-            fprintf('*** Downloading %s from ISETHDRSensor SDR ... \n',resourceName);
+            fprintf('*** Downloading %s from ISETHDRSensor SDR ... \n',resourceFile);
             websave(localFile, remoteURL);
             fprintf('*** File is downloaded! \n');
         catch
@@ -313,7 +324,7 @@ end
 
 %% Assign URL to resource type
 
-function [baseURL, validResources] = urlResource(resourceType)
+function [resource, validResources] = urlResource(resourceType)
 % List the URLs in use here.
 %
 % This needs to be a better search mechanism so we can put in more general
@@ -322,79 +333,40 @@ function [baseURL, validResources] = urlResource(resourceType)
 % See also
 %
 
-if ieNotDefined('resourceType'), resourceType = 'all'; end
-
-% Scenes for PBRT rendering, measured scenes
-validResources = {'bitterli','pbrtv4','iset3d-scenes',...
-    'spectral','hdr','faces',...
-    'sdrfruit','sdrmultispectral',...
-    'isethdrsensor','isethdrlightgroup'};
-
-% We should maintain something like this:
+% Example:
 %{
-ii = 1;
-sdrWeb(ii).names = {'isetmultispectral'};
-sdrWeb(ii).purl = 'https://purl.stanford.edu/vp031yb6470';
-sdrWeb(ii).files = {'montage.jpg','MultispectralDataset2.zip'};
-sdrWeb(ii).fileurl = 'https://stacks.stanford.edu/file/druid:vp031yb6470'; 
-websave('tmp.jpg',fullfile(sdrWeb(1).fileurl,sdrWeb(1).files{1}))
-web(sdrWeb(1).purl);
+resourceType = 'faces-1M';
 %}
 
-% Browse links
-% ISET 3d Scenes     
-%    https://purl.stanford.edu/cb706yg0989
-% ISET HDR Sensor    
-%    https://purl.stanford.edu/bt316kj3589
-% ISET multispectral scenes of people 
-%    https://purl.stanford.edu/mv668yq1424
-% ISET hyperspectral scene data for landscapes 
-%    https://purl.stanford.edu/dy318qn9992 
-%    https://stacks.stanford.edu/file/druid:dy318qn9992/ISET_landscape.zip
-% ISET scenes of faces at 3M     https://purl.stanford.edu/rr512xk8301
-% ISET scenes with fruits and calibration charts   https://purl.stanford.edu/tb259jf5957
-% ISET multispectral scenes of faces, fruit, objects, charts  https://purl.stanford.edu/sx264cp0814
-% ISET multispectral scenes of fruit, books, color calibration charts
-%       https://purl.stanford.edu/vp031yb6470
-% ISET hyperspectral scenes of human faces at high resolution, 1M distance
-%       https://purl.stanford.edu/jj361kc0271
-%
-%
-%
+if notDefined('resourceType'), resourceType = 'all'; end
 
-urlList = ...
-    {'https://stacks.stanford.edu/file/druid:cb706yg0989/sdrscenes/bitterli', ...
-    'https://stacks.stanford.edu/file/druid:cb706yg0989/sdrscenes/pbrtv4', ...
-    'https://stacks.stanford.edu/file/druid:cb706yg0989/sdrscenes/iset3d-scenes',
-    'http://stanford.edu/~wandell/data/hdr/', ...
-    'http://stanford.edu/~wandell/data/spectral/', ...
-    'http://stanford.edu/~wandell/data/faces/', ...
-    'https://stacks.stanford.edu/v2/file/tb259jf5957/version/1/ISET_fruit.zip',...
-    'https://stacks.stanford.edu/file/druid:vp031yb6470/MultispectralDataset2.zip',...
-    'https://stacks.stanford.edu/file/druid:bt316kj3589/isethdrsensor'
+% An N x 4 cell array
+%
+% resource name, SDR name, SDR purl, SDR data url
+resourceCell = {...
+    'bitterli','ISET 3d Scenes bitterli', 'https://purl.stanford.edu/cb706yg0989', 'https://stacks.stanford.edu/file/druid:cb706yg0989/sdrscenes/bitterli';
+    'pbrtv4',  'ISET 3d Scenes pharr', 'https://purl.stanford.edu/cb706yg0989',    'https://stacks.stanford.edu/file/druid:cb706yg0989/sdrscenes/pbrtv4';
+    'iset3d-scenes', 'ISET 3d Scenes iset3d', 'https://purl.stanford.edu/cb706yg0989', 'https://stacks.stanford.edu/file/druid:cb706yg0989/sdrscenes/iset3d-scenes';
+    'isethdrsensor','ISET HDR Sensor', 'https://purl.stanford.edu/bt316kj3589', 'https://stacks.stanford.edu/file/druid:bt316kj3589/isethdrsensor';
+    'people-multispectral','ISET multispectral scenes of people','https://purl.stanford.edu/mv668yq1424', '';
+    'landscape-hyperspectral','ISET hyperspectral scene data for landscapes','https://purl.stanford.edu/dy318qn9992', 'https://stacks.stanford.edu/file/druid:dy318qn9992';
+    'faces-3m','ISET scenes of faces at 3M', 'https://purl.stanford.edu/rr512xk8301','';
+    'faces-1m','ISET hyperspectral scenes of human faces at high resolution, 1M distance', 'https://purl.stanford.edu/jj361kc0271',''
+    'fruits-charts','ISET scenes with fruits and calibration charts','https://purl.stanford.edu/tb259jf5957', '';
+    'misc-multispectral1','ISET multispectral scenes of faces, fruit, objects, charts','https://purl.stanford.edu/sx264cp0814', '';
+    'misc-multispectral2','ISET multispectral scenes of fruit, books, color calibration charts','https://purl.stanford.edu/vp031yb6470','';
     };
 
-switch ieParamFormat(resourceType)    
-    case 'bitterli'
-        baseURL = urlList{1};
-    case 'pbrtv4'
-        baseURL = urlList{2};
-    case 'iset3d-scenes'
-        baseURL = urlList{3};
-    case 'hdr'
-        baseURL = urlList{4};
-    case 'spectral'
-        baseURL = urlList{5};
-    case 'faces'
-        baseURL = urlList{6};
-    case 'sdrfruit'        
-        baseURL = urlList{7};
-    case 'sdrmultispectral'
-        baseURL = urlList{8};
-    case 'isethdrsensor'
-        baseURL = urlList{9};
-    otherwise
-        error('Unknown resource type %s\n',src);
+validResources = resourceCell(:,1);
+
+if isequal(resourceType,'all')
+    % Return the cell arrays
+    resource = resourceCell;
+    return;
+else
+    % Find the matching one.
+    idx = contains(validResources,ieParamFormat(resourceType));
+    resource = resourceCell(idx,:);
 end
 
 end
