@@ -263,7 +263,7 @@ switch ieParamFormat(resourceType)
     case {'misc-multispectral2'}
         % All the SDR initialized resources from the Stanford Digital
         % Repository.  Not quite sure how we will manage in the end.
-        remoteFileName = 'MultispectralDataSet2.zip';
+        remoteFileName = 'MultispectralDataset2.zip';
         if isempty(downloaddir)
             downloadDir = fullfile(isetRootPath,'local','sdr');
         end       
@@ -360,7 +360,7 @@ resourceCell = {...
     'fruits-charts','ISET scenes with fruits and calibration charts','https://purl.stanford.edu/tb259jf5957', '';
     'people-multispectral','ISET multispectral scenes of people','https://purl.stanford.edu/mv668yq1424', '';
     'misc-multispectral1','ISET multispectral scenes of faces, fruit, objects, charts','https://purl.stanford.edu/sx264cp0814', 'https://stacks.stanford.edu/file/druid:sx264cp0814';
-    'misc-multispectral2','ISET multispectral scenes of fruit, books, color calibration charts','https://purl.stanford.edu/vp031yb6470','';
+    'misc-multispectral2','ISET multispectral scenes of fruit, books, color calibration charts','https://purl.stanford.edu/vp031yb6470','https://stacks.stanford.edu/file/druid:vp031yb6470';
     'vistalab-collection','Vista Lab Collection','https://searchworks.stanford.edu/catalog?f[collection][]=qd500xn1572','';
     'iset-multispectral-collection','ISET Multispectral Image Database','https://searchworks.stanford.edu/view/sm380jb1849','';
     'iset-hyperspectral-collection','Not yet implemented','https://searchworks.stanford.edu/?search_field=search&q=ISET+Hyperspectral+Image+Database','';
