@@ -41,21 +41,23 @@ function localFile = ieWebGet(varargin)
 %
 %     ieWebGet('list')
 % 
-% To see the remote web site or
-%   the names of the resources, use the 'browse' option.
+% To see the remote web site or the names of the resources, use the
+% 'browse' option. 
 %
-%   'spectral,'hdr','pbrtv4'
+%     ieWebGet('browse','vistalab-collection');
+%     ieWebGet('browse','pbrtv4');
 %
-%    The spectral scenes were measured with multi or hyperspectral cameras.
-%    The hdr scenes were measured with multiple exposures of a linear,
-%    scientific camera.
-%    The PBRT files are either V3 or V4.
+% Some notes about the data
+%
+%  * The spectral scenes were measured with multi or hyperspectral cameras.
+%  * The hdr scenes were measured with multiple exposures of a linear, scientific camera.
+%  * The PBRT files are for ISET3d-tiny and V4.
+%  * The *papers* are connected to publications
 %
 % See also:
 %    webImageBrowser_mlapp
 %
 
-% Examples
 %{
 ieWebGet('list')
 %}
@@ -90,6 +92,10 @@ localFile = ieWebGet('resourcetype', 'iset3d','resourcefile','SimpleScene');
 %}
 %{
 localFile = ieWebGet('resourcetype', 'bitterli','resourcefile','cornell-box');
+%}
+%{
+localFile = ieWebGet('resourcetype', 'misc-multispectral1');
+
 %}
 %{
 localFile = ieWebGet('resourcename', 'ChessSet', 'resourcetype', 'pbrtv4')
@@ -155,6 +161,7 @@ p.parse(varargin{:});
 
 resourceType   = p.Results.resourcetype;
 resourceFile   = p.Results.resourcefile;
+downloaddir    = p.Results.downloaddir;
 unZip          = p.Results.unzip;
 removeTempFiles = p.Results.removetempfiles;
 
@@ -253,41 +260,24 @@ switch ieParamFormat(resourceType)
         catch
             warning("Unable to retrieve %s", resourceURL);
         end
-    case {'sdrfruit','sdrmultispectral'}
+    case {'misc-multispectral2'}
         % All the SDR initialized resources from the Stanford Digital
         % Repository.  Not quite sure how we will manage in the end.
-        switch ieParamFormat(resourceType)
-            case 'sdrfruit'
-                remoteFileName = 'ISET_Fruit.zip';
-            case 'sdrmultispectral'
-                remoteFileName = 'MultispectralDataset2.zip';
-            otherwise
-                % Can never get here.
-        end
-
-
-        if ~isempty(p.Results.downloaddir)
-            % The user gave us a place to download to.
-            downloadDir = p.Results.downloaddir;
-        else
-            % Go to local/sdr
+        remoteFileName = 'MultispectralDataSet2.zip';
+        if isempty(downloaddir)
             downloadDir = fullfile(isetRootPath,'local','sdr');
-        end
+        end       
+        remoteURL    = strcat(resourceURL{1}, '/',remoteFileName);
+        localFile = sdrSpectralDownload(remoteURL,remoteFileName,downloadDir,confirm);
 
-        if ~isfolder(downloadDir), mkdir(downloadDir); end
-        localFile = fullfile(downloadDir, remoteFileName);
-        if askFirst
-            proceed = confirmDownload(resourceFile, localFile);
-            if proceed == false, return, end
-        end
+    case {'misc-multispectral1'}
+        remoteFileName = 'MultispectralDataSet1.zip';
+        if isempty(downloaddir)
+            downloadDir = fullfile(isetRootPath,'local','sdr');
+        end       
+        remoteURL    = strcat(resourceURL{1}, '/',remoteFileName);
+        localFile = sdrSpectralDownload(remoteURL,remoteFileName,downloadDir,confirm);
 
-        try
-            fprintf('Downloading ...')
-            websave(localFile, baseURL);
-            fprintf('done.\n');
-        catch
-            warning("Unable to retrieve %s", baseURL);
-        end
     case {'isethdrsensor'}
         if ~isempty(p.Results.downloaddir)
             % The user gave us a place to download to.
@@ -369,7 +359,7 @@ resourceCell = {...
     'faces-1m','ISET hyperspectral scenes of human faces at high resolution, 1M distance', 'https://purl.stanford.edu/jj361kc0271',''
     'fruits-charts','ISET scenes with fruits and calibration charts','https://purl.stanford.edu/tb259jf5957', '';
     'people-multispectral','ISET multispectral scenes of people','https://purl.stanford.edu/mv668yq1424', '';
-    'misc-multispectral1','ISET multispectral scenes of faces, fruit, objects, charts','https://purl.stanford.edu/sx264cp0814', '';
+    'misc-multispectral1','ISET multispectral scenes of faces, fruit, objects, charts','https://purl.stanford.edu/sx264cp0814', 'https://stacks.stanford.edu/file/druid:sx264cp0814';
     'misc-multispectral2','ISET multispectral scenes of fruit, books, color calibration charts','https://purl.stanford.edu/vp031yb6470','';
     'vistalab-collection','Vista Lab Collection','https://searchworks.stanford.edu/catalog?f[collection][]=qd500xn1572','';
     'iset-multispectral-collection','ISET Multispectral Image Database','https://searchworks.stanford.edu/view/sm380jb1849','';
@@ -392,3 +382,23 @@ end
 
 end
 
+% ----------
+function localFile = sdrSpectralDownload(resourceURL,remoteFileName,downloadDir,confirm)
+%
+
+if isempty(downloadDir) || ~isfolder(downloadDir), mkdir(downloadDir); end
+localFile = fullfile(downloadDir, remoteFileName);
+if confirm
+    proceed = confirmDownload(remoteFileName, localFile);
+    if proceed == false, return, end
+end
+
+try
+    fprintf('Downloading ...')
+    websave(localFile, resourceURL);
+    fprintf('done.\n');
+catch
+    warning("Unable to retrieve %s", resourceURL);
+end
+
+end
