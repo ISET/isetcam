@@ -40,9 +40,9 @@ function localFile = ieWebGet(varargin)
 %   The various resources we currently download can be returned using
 %
 %     ieWebGet('list')
-% 
+%
 % To see the remote web site or the names of the resources, use the
-% 'browse' option. 
+% 'browse' option.
 %
 %     ieWebGet('browse','vistalab-collection');
 %     ieWebGet('browse','pbrtv4');
@@ -133,7 +133,7 @@ if isequal(ieParamFormat(varargin{1}),'browse')
     end
 
     resource = urlResource(resourceType);
-    
+
     web(resource{3});
     localFile = '';
     return;
@@ -230,43 +230,96 @@ switch ieParamFormat(resourceType)
             localFile = '';
         end
 
-    case {'spectral','hdr','faces'}
-        % Download mat-files
-        % Both are 'spectral' type, but we put the HDR files into a
-        % separate directory to make them easier to identify.
-        if isempty(resourceFile)
-            error('Resource file name is required for type %s.',resourceType);
-        end
-
-        remoteFileName = strcat(resourceFile, '.mat');
-        resourceURL    = strcat(baseURL, remoteFileName);
-        if ~isempty(p.Results.downloaddir)
-            % The user gave us a place to download to.
-            downloadDir = p.Results.downloaddir;
+    case {'faces-3m'}
+        % localFile = ieWebGet('resource type','faces-3m','resource file','montage.jpg');
+        if isempty(resourceFile) || isequal(resourceFile,'all')
+            % Download them all
+            remoteFileName = {'ISET_loresfemale_1_6.zip','ISET_loresfemale_7_12.zip',...
+                'ISET_loresmale_1_8.zip','ISET_loresmale_9_16.zip','ISET_loresmale_17_24.zip',...
+                'ISET_loresmale_25_40.zip','montage.jpg'};
         else
-            downloadDir = fullfile(isetRootPath,'local','scenes', resourceType);
+            % Download the one requested.
+            remoteFileName{1} = resourceFile;
         end
 
-        if ~isfolder(downloadDir), mkdir(downloadDir); end
-        localFile = fullfile(downloadDir, remoteFileName);
-
-        if confirm
-            proceed = confirmDownload(resourceFile, localFile);
-            if proceed == false, return, end
+        if isempty(downloaddir)
+            downloadDir = fullfile(isetRootPath,'local','sdr','faces3m');
+        end
+        nFiles = numel(remoteFileName);
+        for ii=1:nFiles
+            remoteURL    = strcat(resourceURL{1}, '/',remoteFileName{ii});
+            localFile = sdrSpectralDownload(remoteURL,remoteFileName{ii},downloadDir,confirm);
         end
 
-        try
-            websave(localFile, resourceURL);
-        catch
-            warning("Unable to retrieve %s", resourceURL);
+    case {'faces-1m'}
+        % localFile = ieWebGet('resource type','faces-1m','resource file','montage.jpg');
+        if isempty(resourceFile) || isequal(resourceFile,'all')
+            % Download them all
+            remoteFileName = {
+                'ISET_hiresfemale_1_4.zip','ISET_hiresfemale_5_8.zip','ISET_hiresfemale_9_13.zip',...
+                'ISET_hiresmale_1_4.zip','ISET_hiresmale_5_8.zip','ISET_hiresmale_9_12.zip',...
+                'montage.jpg'};
+        else
+            % Download the one requested.
+            remoteFileName{1} = resourceFile;
         end
+
+        if isempty(downloaddir)
+            downloadDir = fullfile(isetRootPath,'local','sdr','faces1m');
+        end
+        nFiles = numel(remoteFileName);
+        for ii=1:nFiles
+            remoteURL    = strcat(resourceURL{1}, '/',remoteFileName{ii});
+            localFile = sdrSpectralDownload(remoteURL,remoteFileName{ii},downloadDir,confirm);
+        end
+        % case {'spectral','hdr','faces'}
+        %     % Download mat-files
+        %     % Both are 'spectral' type, but we put the HDR files into a
+        %     % separate directory to make them easier to identify.
+        %     if isempty(resourceFile)
+        %         error('Resource file name is required for type %s.',resourceType);
+        %     end
+        %
+        %     remoteFileName = strcat(resourceFile, '.mat');
+        %     resourceURL    = strcat(baseURL, remoteFileName);
+        %     if ~isempty(p.Results.downloaddir)
+        %         % The user gave us a place to download to.
+        %         downloadDir = p.Results.downloaddir;
+        %     else
+        %         downloadDir = fullfile(isetRootPath,'local','scenes', resourceType);
+        %     end
+        %
+        %     if ~isfolder(downloadDir), mkdir(downloadDir); end
+        %     localFile = fullfile(downloadDir, remoteFileName);
+        %
+        %     if confirm
+        %         proceed = confirmDownload(resourceFile, localFile);
+        %         if proceed == false, return, end
+        %     end
+        %
+        %     try
+        %         websave(localFile, resourceURL);
+        %     catch
+        %         warning("Unable to retrieve %s", resourceURL);
+        %     end
+    case {'hdr-images'}
+        % localFile = ieWebGet('resource type','hdr-images');
+        % All the SDR initialized resources from the Stanford Digital
+        % Repository.  Not quite sure how we will manage in the end.
+        remoteFileName = 'HDR.zip';
+        if isempty(downloaddir)
+            downloadDir = fullfile(isetRootPath,'local','sdr','hdr');
+        end
+        remoteURL    = strcat(resourceURL{1}, '/',remoteFileName);
+        localFile = sdrSpectralDownload(remoteURL,remoteFileName,downloadDir,confirm);
+
     case {'misc-multispectral2'}
         % All the SDR initialized resources from the Stanford Digital
         % Repository.  Not quite sure how we will manage in the end.
         remoteFileName = 'MultispectralDataset2.zip';
         if isempty(downloaddir)
             downloadDir = fullfile(isetRootPath,'local','sdr');
-        end       
+        end
         remoteURL    = strcat(resourceURL{1}, '/',remoteFileName);
         localFile = sdrSpectralDownload(remoteURL,remoteFileName,downloadDir,confirm);
 
@@ -274,7 +327,7 @@ switch ieParamFormat(resourceType)
         remoteFileName = 'MultispectralDataSet1.zip';
         if isempty(downloaddir)
             downloadDir = fullfile(isetRootPath,'local','sdr');
-        end       
+        end
         remoteURL    = strcat(resourceURL{1}, '/',remoteFileName);
         localFile = sdrSpectralDownload(remoteURL,remoteFileName,downloadDir,confirm);
 
@@ -286,7 +339,7 @@ switch ieParamFormat(resourceType)
             % Go to local/sdr
             downloadDir = fullfile(isetRootPath,'local','sdr');
         end
-        
+
         localFile = fullfile(downloadDir, resourceFile);
         localDir  = fileparts(localFile);
         if ~isfolder(localDir), mkdir(localDir); end
@@ -331,23 +384,18 @@ end
 
 %% Assign URL to resource type
 
+%---------urlResource----------
 function [resource, validResources] = urlResource(resourceType)
-% List the URLs in use here.
+% Keep track of the URLs for browsing and downloading here.
 %
-% This needs to be a better search mechanism so we can put in more general
-% names for the resource type.
+% resource name, SDR name, SDR purl, SDR data url
 %
 % See also
 %
 
-% Example:
-%{
-resourceType = 'faces-1M';
-%}
-
 if notDefined('resourceType'), resourceType = 'all'; end
 
-% An N x 4 cell array
+% Stored in an N x 4 cell array
 %
 % resource name, SDR name, SDR purl, SDR data url
 resourceCell = {...
@@ -355,12 +403,13 @@ resourceCell = {...
     'pbrtv4',  'ISET 3d Scenes pharr', 'https://purl.stanford.edu/cb706yg0989',    'https://stacks.stanford.edu/file/druid:cb706yg0989/sdrscenes/pbrtv4';
     'iset3d-scenes', 'ISET 3d Scenes iset3d', 'https://purl.stanford.edu/cb706yg0989', 'https://stacks.stanford.edu/file/druid:cb706yg0989/sdrscenes/iset3d-scenes';
     'landscape-hyperspectral','ISET hyperspectral scene data for landscapes','https://purl.stanford.edu/dy318qn9992', 'https://stacks.stanford.edu/file/druid:dy318qn9992';
-    'faces-3m','ISET scenes of faces at 3M', 'https://purl.stanford.edu/rr512xk8301','';
-    'faces-1m','ISET hyperspectral scenes of human faces at high resolution, 1M distance', 'https://purl.stanford.edu/jj361kc0271',''
+    'faces-3m','ISET scenes of faces at 3M', 'https://purl.stanford.edu/rr512xk8301','https://stacks.stanford.edu/file/druid:rr512xk8301';
+    'faces-1m','ISET hyperspectral scenes of human faces at high resolution, 1M distance', 'https://purl.stanford.edu/jj361kc0271','https://stacks.stanford.edu/file/druid:jj361kc0271'
     'fruits-charts','ISET scenes with fruits and calibration charts','https://purl.stanford.edu/tb259jf5957', '';
     'people-multispectral','ISET multispectral scenes of people','https://purl.stanford.edu/mv668yq1424', '';
     'misc-multispectral1','ISET multispectral scenes of faces, fruit, objects, charts','https://purl.stanford.edu/sx264cp0814', 'https://stacks.stanford.edu/file/druid:sx264cp0814';
     'misc-multispectral2','ISET multispectral scenes of fruit, books, color calibration charts','https://purl.stanford.edu/vp031yb6470','https://stacks.stanford.edu/file/druid:vp031yb6470';
+    'hdr-images','HDR Images of Natural Scenes','https://purl.stanford.edu/sz929jt3255','https://stacks.stanford.edu/file/druid:sz929jt3255';...
     'vistalab-collection','Vista Lab Collection','https://searchworks.stanford.edu/catalog?f[collection][]=qd500xn1572','';
     'iset-multispectral-collection','ISET Multispectral Image Database','https://searchworks.stanford.edu/view/sm380jb1849','';
     'iset-hyperspectral-collection','Not yet implemented','https://searchworks.stanford.edu/?search_field=search&q=ISET+Hyperspectral+Image+Database','';
@@ -382,7 +431,7 @@ end
 
 end
 
-% ----------
+% ----------sdrSpectralDownload----------
 function localFile = sdrSpectralDownload(resourceURL,remoteFileName,downloadDir,confirm)
 %
 
