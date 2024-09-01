@@ -1,66 +1,81 @@
-function localFile = ieWebGet(varargin)
-%% Download a resource from a Stanford web site
+function [localFile, zipfilenames] = ieWebGet(varargin)
+%% Download a zip file from a Stanford Digital Repository deposit
 %
 % Synopsis
-%   localFile = ieWebGet(varargin)
+%   [localFile,zipfilenames] = ieWebGet(varargin)
 %
 % Brief description
-%   Download an ISET related files from the web.  Used for ISETCam and
-%   ISET3d data.
+%   Download a zip file from a deposit in the Stanford Digital Reposition.
+%   Used for ISETCam, ISET3d, ISETBio, and related data files.
 %
 % Inputs
 %   N/A
 %
 % Key/val pairs
 %
-%   'browse' -  browse a website contaning useful files
-%   'list'   -  list the remote websites
+%   'list'   -  list the websites we know about
+%   'browse' -  browse the website with the deposited files
 %
 %    The following argument (varargin{2}) specifies the resource type
 %    (see below)
 %
-%    confirm:       Confirm with user prior to downloading (default: true)
-%    resource type (default: 'pbrtv4')
-%    resource file    :  Remote file name (no default)
-%    remove temp files:  Remove downloaded temporary file (default: true)
-%    unzip:           :  Unzip the local file (default: true)
-%    verbose          :  Print a report to the command window
-%    downloaddir      :  Directory for download
+%    deposit type     :  SDR deposit name (default: 'pbrtv4')
+%    deposit file     :  Deposit file name (default: depends on deposit)
+%    downloaddir      :  Download directory (default: depends on deposit)
+%
+%    confirm:         :  Confirm prior to download (default: true)
+%    unzip:           :  Unzip after download (default: true)
+%    remove zip file  :  Remove the zip file (default: true)
 %
 % Output
-%   localFile:  Name of the local download file
+%   localFile:  Full path to the downloaded zip file.  If unzipped, then a
+%               full path to the directory where the files have been
+%               unzipped.
+%   fnames:     When the file is unzipped, we also return the filenames
+%               from the unzip directory
 %
 % Description
-%   We store large data sets (resources) as zip- and mat-files on the
-%   Stanford resource, Stanford Digital Repository (SDR).  This
-%   routine is a gateway to download files from there. We store them
-%   on SDR because they are too large to be conveniently stored on
-%   GitHub.
+%  ISET files that are too large for a GitHub repository in the Stanford
+%  Digital Repository (SDR). SDR calls a group of files a 'deposit'.
+%  Multiple deposits from a research group are called a collection.
 %
-%   The various resources we currently download can be returned using
+%  This routine downloads files from an SDR deposit to your local computer.
+%
+%  We know about these SDR deposits
 %
 %     ieWebGet('list')
 %
-% To see the remote web site or the names of the resources, use the
-% 'browse' option.
+%  To use a browser to view a deposit or a collection, use the
+% 'browse' option. Such as, these deposits
+%
+%     ieWebGet('browse','pbrtv4');
+%     ieWebGet('browse','hdr-images');
+%
+%  Or these collections
 %
 %     ieWebGet('browse','vistalab-collection');
-%     ieWebGet('browse','pbrtv4');
+%     ieWebGet('browse','iset-hyperspectral-collection');
+%     ieWebGet('browse','iset-multispectral-collection');
 %
-% Some notes about the data
+% Notes and TODO
+%  * We should be able to take a cell array of deposit files, not just one.
+%  * Some deposits only have two files.  We should probably unpack the zip
+%  file that contains multiple other files so they can be accessed
+%  individually.
+%
+% Information about the deposited files are on the SDR web pages. Here are
+% a few notes.
 %
 %  * The spectral scenes were measured with multi or hyperspectral cameras.
 %  * The hdr scenes were measured with multiple exposures of a linear, scientific camera.
-%  * The PBRT files are for ISET3d-tiny and V4.
-%  * The *papers* are connected to publications
+%  * The PBRT files are for ISET3d-tiny and PBRT V4.
+%  * The *papers* deposits are connected to publications, and the files are
+%    highly idiosyncratic.
 %
 % See also:
 %    webImageBrowser_mlapp
 %
 
-%{
-ieWebGet('list')
-%}
 %{
 % Browse the remote site
 ieWebGet('browse','pbrtv4');
@@ -85,22 +100,22 @@ ieWebGet('browse','isethdrsensor-paper');
 
 %}
 %{
-localFile = ieWebGet('resourcetype', 'pbrtv4','resourcefile','kitchen.zip');
+localFile = ieWebGet('deposit name', 'pbrtv4','deposit file','kitchen.zip');
 %}
 %{
-localFile = ieWebGet('resourcetype', 'iset3d','resourcefile','SimpleScene');
+localFile = ieWebGet('deposit name', 'iset3d','deposit file','SimpleScene');
 %}
 %{
-localFile = ieWebGet('resourcetype', 'bitterli','resourcefile','cornell-box');
+% Get this file, unzip it, remove the zip file
+[localFile,zipFiles] = ieWebGet('deposit name', 'bitterli', ...
+                       'deposit file','cornell-box', ...
+                       'confirm',false,'unzip',true,'remove zip file',true);
 %}
 %{
-localFile = ieWebGet('resourcetype', 'misc-multispectral1');
+localFile = ieWebGet('deposit name', 'misc-multispectral1');
 
 %}
 %{
-localFile = ieWebGet('resourcename', 'ChessSet', 'resourcetype', 'pbrtv4')
-localFile = ieWebGet('resourcetype', 'spectral', 'resourcename', 'FruitMCC')
-localFile = ieWebGet('resourcetype', 'hdr', 'resourcename', 'BBQsite1')
 %}
 %{
 % Starting to implement SDR data
@@ -115,24 +130,24 @@ fname = ieWebGet('resource type','sdr multispectral');
 %------- list --------
 if isequal(ieParamFormat(varargin{1}),'list')
     % ieWebGet('list');
-    resourceList = urlResource('all');
+    depositList = urlDeposit('all');
 
-    fprintf('\nResource types\n=================\n\n');
-    for ii=2:numel(resourceList)
-        fprintf('%s\n',resourceList{ii});
+    fprintf('\Deposits\n=================\n\n');
+    for ii=2:numel(depositList)
+        fprintf('%s\n',depositList{ii});
     end
     fprintf('\n');
-    localFile = resourceList(:,1);
+    localFile = depositList(:,1);
     return;
 end
 
 %------- browse --------
 if isequal(ieParamFormat(varargin{1}),'browse')
-    if numel(varargin) < 2, resourceType = 'pbrtv4';
-    else,                   resourceType = varargin{2};
+    if numel(varargin) < 2, depositName = 'pbrtv4';
+    else,                   depositName = varargin{2};
     end
 
-    resource = urlResource(resourceType);
+    resource = urlDeposit(depositName);
 
     web(resource{3});
     localFile = '';
@@ -141,45 +156,45 @@ end
 
 %%  Download
 
-%
+% Not often returned.  But 
+zipfilenames = '';
+
 varargin = ieParamFormat(varargin);
-[~,validResources] = urlResource('all');
+[~,validResources] = urlDeposit('all');
 
 p = inputParser;
 vFunc = @(x)(ismember(ieParamFormat(x),validResources));
-p.addParameter('resourcetype', 'pbrtv4',vFunc);
-p.addParameter('resourcefile', '', @ischar);
+p.addParameter('depositname', 'pbrtv4',vFunc);
+p.addParameter('depositfile', '', @ischar);
 
 p.addParameter('confirm', true, @islogical);
 p.addParameter('unzip', true, @islogical);  % assume the user wants the resource unzipped, if applicable
 p.addParameter('localname','',@ischar);     % Defaults to remote name
-p.addParameter('removetempfiles', true, @islogical);
-p.addParameter('verbose',true,@islogical);  % Tell the user what happened
+p.addParameter('removezipfile', true, @islogical);
 p.addParameter('downloaddir','',@ischar);
 
 p.parse(varargin{:});
 
-resourceType   = p.Results.resourcetype;
-resourceFile   = p.Results.resourcefile;
+depositName   = p.Results.depositname;
+resourceFile   = p.Results.depositfile;
 downloaddir    = p.Results.downloaddir;
 unZip          = p.Results.unzip;
-removeTempFiles = p.Results.removetempfiles;
+removeZipFile  = p.Results.removezipfile;
 
-% verbose   = p.Results.verbose;
 confirm  = p.Results.confirm;
 localFile = '';        % Default local file name
 
 %% Download the resource
 
-resource = urlResource(resourceType);
-resourceURL = resource(4);
+resource = urlDeposit(depositName);
+depositURL = resource(4);
 
-switch ieParamFormat(resourceType)
+switch ieParamFormat(depositName)
 
     case {'pbrtv4','bitterli','iset3d-scenes'}
         % An example
         % s = ieWebGet('resource type','pbrtv4','resource file','kitchen.zip');
-        % localFile = ieWebGet('resourcetype', 'iset3d-scenes','resourcefile','simplescene');
+        % localFile = ieWebGet('deposit name', 'iset3d-scenes','deposit file','simplescene');
 
         % ISET3d must be on your path.
         if ~isempty(p.Results.downloaddir)
@@ -196,42 +211,31 @@ switch ieParamFormat(resourceType)
             mkdir(downloadDir);
         end
 
-        % We should check if the zip is already there.
+        % We should check if the zip is already in the name.
         [~,~,e] = fileparts(resourceFile);
         if ~isequal(e,'.zip')
             remoteFileName = strcat(resourceFile, '.zip');
         else, remoteFileName = resourceFile;
         end
-        remoteURL    = strcat(resourceURL{1}, '/',remoteFileName);
-        localZIP     = fullfile(downloadDir, remoteFileName);
+        remoteURL    = strcat(depositURL{1}, '/',remoteFileName);
+        localFile    = fullfile(downloadDir, remoteFileName);
 
         if confirm
-            proceed = confirmDownload(resourceFile, localZIP);
+            proceed = confirmDownload(resourceFile, localFile);
             if proceed == false, return, end
         end
 
         try
             % The pbrt files are zip files.
-            fprintf('Downloading to %s ... \n',localZIP);
-            websave(localZIP, remoteURL);
-            fprintf('Done\n');
-            if unZip
-                unzip(localZIP, downloadDir);
-                if removeTempFiles
-                    delete(localZIP);
-                end
-                % not sure how we "know" what the unzip path is?
-                localFile = fullfile(downloadDir, resourceFile);
-            else
-                localFile = localZIP;
-            end
+            fprintf('Downloading to %s ... \n',localFile);
+            websave(localFile, remoteURL);            
         catch
-            warning("Failed to retrieve: %s", resourceURL);
+            warning("Failed to retrieve: %s", depositURL);
             localFile = '';
         end
 
     case {'faces-3m'}
-        % localFile = ieWebGet('resource type','faces-3m','resource file','montage.jpg');
+        % localFile = ieWebGet('deposit name','faces-3m','deposit file','montage.jpg');
         if isempty(resourceFile) || isequal(resourceFile,'all')
             % Download them all
             remoteFileName = {'ISET_loresfemale_1_6.zip','ISET_loresfemale_7_12.zip',...
@@ -247,7 +251,7 @@ switch ieParamFormat(resourceType)
         end
         nFiles = numel(remoteFileName);
         for ii=1:nFiles
-            remoteURL    = strcat(resourceURL{1}, '/',remoteFileName{ii});
+            remoteURL = strcat(depositURL{1}, '/',remoteFileName{ii});
             localFile = sdrSpectralDownload(remoteURL,remoteFileName{ii},downloadDir,confirm);
         end
 
@@ -269,39 +273,9 @@ switch ieParamFormat(resourceType)
         end
         nFiles = numel(remoteFileName);
         for ii=1:nFiles
-            remoteURL    = strcat(resourceURL{1}, '/',remoteFileName{ii});
+            remoteURL    = strcat(depositURL{1}, '/',remoteFileName{ii});
             localFile = sdrSpectralDownload(remoteURL,remoteFileName{ii},downloadDir,confirm);
-        end
-        % case {'spectral','hdr','faces'}
-        %     % Download mat-files
-        %     % Both are 'spectral' type, but we put the HDR files into a
-        %     % separate directory to make them easier to identify.
-        %     if isempty(resourceFile)
-        %         error('Resource file name is required for type %s.',resourceType);
-        %     end
-        %
-        %     remoteFileName = strcat(resourceFile, '.mat');
-        %     resourceURL    = strcat(baseURL, remoteFileName);
-        %     if ~isempty(p.Results.downloaddir)
-        %         % The user gave us a place to download to.
-        %         downloadDir = p.Results.downloaddir;
-        %     else
-        %         downloadDir = fullfile(isetRootPath,'local','scenes', resourceType);
-        %     end
-        %
-        %     if ~isfolder(downloadDir), mkdir(downloadDir); end
-        %     localFile = fullfile(downloadDir, remoteFileName);
-        %
-        %     if confirm
-        %         proceed = confirmDownload(resourceFile, localFile);
-        %         if proceed == false, return, end
-        %     end
-        %
-        %     try
-        %         websave(localFile, resourceURL);
-        %     catch
-        %         warning("Unable to retrieve %s", resourceURL);
-        %     end
+        end        
     case {'hdr-images'}
         % localFile = ieWebGet('resource type','hdr-images');
         % All the SDR initialized resources from the Stanford Digital
@@ -310,7 +284,7 @@ switch ieParamFormat(resourceType)
         if isempty(downloaddir)
             downloadDir = fullfile(isetRootPath,'local','sdr','hdr');
         end
-        remoteURL    = strcat(resourceURL{1}, '/',remoteFileName);
+        remoteURL    = strcat(depositURL{1}, '/',remoteFileName);
         localFile = sdrSpectralDownload(remoteURL,remoteFileName,downloadDir,confirm);
 
     case {'misc-multispectral2'}
@@ -320,7 +294,7 @@ switch ieParamFormat(resourceType)
         if isempty(downloaddir)
             downloadDir = fullfile(isetRootPath,'local','sdr');
         end
-        remoteURL    = strcat(resourceURL{1}, '/',remoteFileName);
+        remoteURL    = strcat(depositURL{1}, '/',remoteFileName);
         localFile = sdrSpectralDownload(remoteURL,remoteFileName,downloadDir,confirm);
 
     case {'misc-multispectral1'}
@@ -328,7 +302,7 @@ switch ieParamFormat(resourceType)
         if isempty(downloaddir)
             downloadDir = fullfile(isetRootPath,'local','sdr');
         end
-        remoteURL    = strcat(resourceURL{1}, '/',remoteFileName);
+        remoteURL    = strcat(depositURL{1}, '/',remoteFileName);
         localFile = sdrSpectralDownload(remoteURL,remoteFileName,downloadDir,confirm);
 
     case {'isethdrsensor'}
@@ -351,6 +325,21 @@ switch ieParamFormat(resourceType)
         catch
             warning("Unable to retrieve %s", remoteURL);
         end
+end
+
+
+%% Download succeeded. Should we unzip it?  Remove the zip?
+if unZip
+    % localFile = ieWebGet('deposit file', 'chessset', 'deposit name','iset3d-scenes','unzip',true);
+    zipfilenames = unzip(localFile);
+    idx = strfind(localFile,'.zip');
+
+    if removeZipFile
+        % After unzipping, we usually remove the zip.  The localFile
+        % directory then becomes the local path, really.
+        delete(localFile);
+        localFile = localFile(1:(idx-1));
+    end
 end
 
 end
@@ -384,20 +373,25 @@ end
 
 %% Assign URL to resource type
 
-%---------urlResource----------
-function [resource, validResources] = urlResource(resourceType)
+%---------urlDeposit----------
+function [resource, validResources] = urlDeposit(depositName)
 % Keep track of the URLs for browsing and downloading here.
 %
-% resource name, SDR name, SDR purl, SDR data url
+% Resource name, SDR name, SDR purl, SDR data url
 %
 % See also
 %
 
-if notDefined('resourceType'), resourceType = 'all'; end
+if notDefined('depositName'), depositName = 'all'; end
 
 % Stored in an N x 4 cell array
 %
-% resource name, SDR name, SDR purl, SDR data url
+% Resource name, SDR name, SDR purl, SDR data url
+%
+% For a nice print out:
+%
+%   disp(resourceCell)
+%
 resourceCell = {...
     'bitterli','ISET 3d Scenes bitterli', 'https://purl.stanford.edu/cb706yg0989', 'https://stacks.stanford.edu/file/druid:cb706yg0989/sdrscenes/bitterli';
     'pbrtv4',  'ISET 3d Scenes pharr', 'https://purl.stanford.edu/cb706yg0989',    'https://stacks.stanford.edu/file/druid:cb706yg0989/sdrscenes/pbrtv4';
@@ -413,29 +407,36 @@ resourceCell = {...
     'vistalab-collection','Vista Lab Collection','https://searchworks.stanford.edu/catalog?f[collection][]=qd500xn1572','';
     'iset-multispectral-collection','ISET Multispectral Image Database','https://searchworks.stanford.edu/view/sm380jb1849','';
     'iset-hyperspectral-collection','Not yet implemented','https://searchworks.stanford.edu/?search_field=search&q=ISET+Hyperspectral+Image+Database','';
-    'cone-fundamentals-paper','Deriving the cone fundamentals','https://purl.stanford.edu/jz111ct9401','';
+    'cone-fundamentals-paper','Deriving the cone fundamentals','https://purl.stanford.edu/jz111ct9401','https://stacks.stanford.edu/file/druid:jz111ct9401/cone_fundamentals';
     'isethdrsensor-paper','ISET HDR Sensor', 'https://purl.stanford.edu/bt316kj3589', 'https://stacks.stanford.edu/file/druid:bt316kj3589/isethdrsensor'
     };
 
 validResources = resourceCell(:,1);
 
-if isequal(resourceType,'all')
+if isequal(depositName,'all')
     % Return the cell arrays
     resource = resourceCell;
     return;
 else
     % Find the matching one.
-    idx = contains(validResources,ieParamFormat(resourceType));
+    idx = strcmp(validResources, ieParamFormat(depositName));
+    % Maybe just contains, but for now a full match up the upper/lower and
+    % spaces.
+    % idx = contains(validResources,ieParamFormat(depositName));
+    if isempty(idx)
+        error('No matching resource: %s\n',depositName);
+    end
     resource = resourceCell(idx,:);
 end
 
 end
 
 % ----------sdrSpectralDownload----------
-function localFile = sdrSpectralDownload(resourceURL,remoteFileName,downloadDir,confirm)
+function localFile = sdrSpectralDownload(depositURL,remoteFileName,downloadDir,confirm)
 %
 
 if isempty(downloadDir) || ~isfolder(downloadDir), mkdir(downloadDir); end
+
 localFile = fullfile(downloadDir, remoteFileName);
 if confirm
     proceed = confirmDownload(remoteFileName, localFile);
@@ -444,10 +445,10 @@ end
 
 try
     fprintf('Downloading ...')
-    websave(localFile, resourceURL);
+    websave(localFile, depositURL);
     fprintf('done.\n');
 catch
-    warning("Unable to retrieve %s", resourceURL);
+    warning("Unable to retrieve %s", depositURL);
 end
 
 end
