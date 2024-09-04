@@ -227,8 +227,11 @@ switch ieParamFormat(depositName)
 
         try
             % The pbrt files are zip files.
-            fprintf('Downloading to %s ... \n',localFile);
-            websave(localFile, remoteURL);            
+            fprintf('Downloading to %s ...',localFile);
+            websave(localFile, remoteURL);
+            if exist(localFile,'file'), fprintf(' done\n'); 
+            else, error('failed download.\n'); 
+            end
         catch
             warning("Failed to retrieve: %s", depositURL);
             localFile = '';
@@ -332,6 +335,8 @@ end
 if unZip
     % localFile = ieWebGet('deposit file', 'chessset', 'deposit name','iset3d-scenes','unzip',true);
     zipfilenames = unzip(localFile);
+
+    % The directory is the part before .zip
     idx = strfind(localFile,'.zip');
 
     if removeZipFile
