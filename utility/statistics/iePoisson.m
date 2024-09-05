@@ -92,7 +92,7 @@ p.addRequired('lambda', @isnumeric);
 
 % Key/value
 p.addParameter('nSamp', 1, @isnumeric);
-vFunc = @(x)(ismember(x, {'random', 'frozen'}));
+vFunc = @(x)(ismember(x, {'random', 'frozen', 'donotset'}));
 p.addParameter('noiseFlag', 'random', vFunc);
 p.addParameter('seed', 1, @isnumeric);
 p.parse(lambda, varargin{:});
