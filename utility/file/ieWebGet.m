@@ -207,7 +207,7 @@ switch ieParamFormat(depositName)
         % This should never happen. The directory is part of ISET3d and is
         % a .gitignore directory.
         if ~isfolder(downloadDir)
-            warning('Making download directory error: %s',downloadDir);
+            warning('Making download directory: %s',downloadDir);
             mkdir(downloadDir);
         end
 
@@ -221,15 +221,15 @@ switch ieParamFormat(depositName)
         localFile    = fullfile(downloadDir, remoteFileName);
 
         if confirm
-            proceed = confirmDownload(resourceFile, localFile);
+            fprintf('** Downloading to %s ** \n',localFile);
+            proceed = confirmDownload(resourceFile, localFile);            
             if proceed == false, return, end
         end
 
         try
             % The pbrt files are zip files.
-            fprintf('Downloading to %s ...',localFile);
             websave(localFile, remoteURL);
-            if exist(localFile,'file'), fprintf(' done\n'); 
+            if exist(localFile,'file'), fprintf('Download complete.\n'); 
             else, error('failed download.\n'); 
             end
         catch
@@ -334,7 +334,7 @@ end
 %% Download succeeded. Should we unzip it?  Remove the zip?
 if unZip
     % localFile = ieWebGet('deposit file', 'chessset', 'deposit name','iset3d-scenes','unzip',true);
-    zipfilenames = unzip(localFile);
+    zipfilenames = unzip(localFile,downloadDir);
 
     % The directory is the part before .zip
     idx = strfind(localFile,'.zip');
