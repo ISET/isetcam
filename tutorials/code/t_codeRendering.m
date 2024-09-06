@@ -21,7 +21,7 @@ ieInit
 wave = 400:10:700;   % Specify the wavelength samples
 spd = blackbody(wave,3000);
 
-vcNewGraphWin; plot(wave,spd);
+ieNewGraphWin; plot(wave,spd);
 xlabel('Wavelength (nm)');
 ylabel('Energy (watts/sr/m2/nm)');
 grid on;
@@ -37,7 +37,7 @@ XYZ = XW2RGBFormat(XYZ,1,1);
 % We then convert this to sRGB
 sRGB = xyz2srgb(XYZ);
 
-vcNewGraphWin;
+ieNewGraphWin;
 imagesc(sRGB)
 axis off; axis image
 
@@ -49,12 +49,11 @@ axis off; axis image
 
 % We convert a vector into the 3D format (which we call RGBFormat) as
 % follows.
-vcNewGraphWin;
 spd3D = XW2RGBFormat(spd(:)',1,1);
 
 % The spd3D has only one spatial point, which is hard to see.  So, let's
 % make it bigger
-spd3D = imageIncreaseImageRGBSize(spd3D,40);
+spd3D = imageIncreaseImageRGBSize(spd3D,120);
 imageSPD(spd3D,wave);
 
 %% Here is a bluish blackbody radiator
@@ -62,7 +61,7 @@ spd   = blackbody(wave,8000);
 spd3D = XW2RGBFormat(spd',1,1);
 
 % It is only one point, which is hard to see.  So, let's make it bigger
-spd3D = imageIncreaseImageRGBSize(spd3D,40);
+spd3D = imageIncreaseImageRGBSize(spd3D,120);
 imageSPD(spd3D,wave);
 
 %% End
