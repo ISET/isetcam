@@ -718,7 +718,9 @@ switch lower(pType)
         plot(wave(:),energy,'k-')
         xlabel('Wavelength (nm)');
         ylabel('Energy (watts/sr/nm/m^2)');
-        grid on,  title(sprintf('%s Illuminant',sceneGet(scene,'name')));
+
+        % Protect any underscores in the name
+        grid on,  title(strrep(sprintf('%s Illuminant',sceneGet(scene,'name')),'_','\_'));
         udata.wave = wave; udata.energy = energy;
         udata.comment = sceneGet(scene,'illuminant comment');
         
@@ -752,7 +754,8 @@ switch lower(pType)
         % Plot 'em up
         plot(wave(:),photons,'k-')
         xlabel('Wavelength (nm)'); ylabel('Radiance (q/sec/sr/nm/m^2)');
-        grid on,  title(sprintf('%s Illuminant',sceneGet(scene,'name')));
+        % Protect any underscores in the name
+        grid on,  title(strrep(sprintf('%s Illuminant',sceneGet(scene,'name')),'_','\_'));
         udata.wave = wave; udata.photons = photons;
         udata.comment = sceneGet(scene,'illuminant comment');
         

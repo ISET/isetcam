@@ -24,7 +24,12 @@ ieInit
 %% Create a test scene
 scene = sceneCreate('frequency orientation');
 
-% Store this for later use when transforming the illuminant
+% Have a look
+sceneWindow(scene);
+
+scenePlot(scene,'illuminant photons');
+
+% Store this for later - we will edit the illuminant
 illP = sceneGet(scene,'illuminant photons');
 
 %% Make the scene illuminant spatial spectral
@@ -74,7 +79,7 @@ sceneWindow(scene);
 
 illEnergy = sceneGet(scene,'illuminant energy');
 
-vcNewGraphWin;
+ieNewGraphWin;
 mesh(wave,1:r,squeeze(illEnergy(:,1,:)))
 xlabel('wavelength')
 ylabel('pos')
@@ -102,7 +107,7 @@ illPhotons = sceneGet(scene,'illuminant photons');
 % We will scale across the columns
 cc = 1:c;
 illScale = 1 + 0.5*sin(2*pi*(cc/c));
-% vcNewGraphWin; plot(wave,spd);
+% ieNewGraphWin; plot(wave,spd);
 
 % Scale the illuminant intensity along the cols
 for cc=1:c
@@ -118,7 +123,7 @@ scene = sceneSet(scene,'illuminant photons',illPhotons);
 
 % Have a look
 scene = sceneSet(scene,'name','Col harmonic');
-ieAddObject(scene); sceneWindow;
+sceneWindow(scene);
 
 %% Now scale across rows
 
@@ -126,7 +131,7 @@ rr       = 1:r;
 freq     = 1;
 illScale = 1 + 0.5*sin(2*pi*freq*(rr/r));
 
-vcNewGraphWin;
+ieNewGraphWin;
 plot(illScale); grid on
 title('Scale along the rows');
 
@@ -141,7 +146,7 @@ scene = sceneSet(scene,'illuminant photons', illPhotons);
 scene = sceneSet(scene,'photons',illPhotons .* reflectance);
 scene = sceneSet(scene,'name','Row/col harmonic');
 
-ieAddObject(scene); sceneWindow;
+sceneWindow(scene);
 
 %%  Show the scene illuminant image
 

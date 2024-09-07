@@ -15,29 +15,28 @@ ieInit
 
 %% Create the Natural-100 scene reflectance chart
 scene = sceneCreate('reflectance chart');
+% sceneWindow(scene);
 
-%% It is possible to choose your own reflectances
+%% Or write code to choose your own samples
+%
+%{
+   sFiles = cell(1,6);
+   sFiles{1} = fullfile(isetRootPath,'data','surfaces','reflectances','MunsellSamples_Vhrel.mat');
+   sFiles{2} = fullfile(isetRootPath,'data','surfaces','reflectances','Food_Vhrel.mat');
+   sFiles{3} = fullfile(isetRootPath,'data','surfaces','reflectances','DupontPaintChip_Vhrel.mat');
+   sFiles{4} = fullfile(isetRootPath,'data','surfaces','reflectances','skin','HyspexSkinReflectance.mat');
+   sFiles{5} = fullfile(isetRootPath,'data','surfaces','reflectances','Nature_Vhrel.mat');
+   sFiles{6} = fullfile(isetRootPath,'data','surfaces','reflectances','Objects_Vhrel.mat');
 
-%
-%% Or write code like this to choose your own basis functions
-%
-%   s = ieReadSpectra(sFiles{1});
-%   sFiles = cell(1,6);
-%   sFiles{1} = fullfile(isetRootPath,'data','surfaces','reflectances','MunsellSamples_Vhrel.mat');
-%   sFiles{2} = fullfile(isetRootPath,'data','surfaces','reflectances','Food_Vhrel.mat');
-%   sFiles{3} = fullfile(isetRootPath,'data','surfaces','reflectances','DupontPaintChip_Vhrel.mat');
-%   sFiles{4} = fullfile(isetRootPath,'data','surfaces','reflectances','HyspexSkinReflectance.mat');
-%   sFiles{5} = fullfile(isetRootPath,'data','surfaces','reflectances','Nature_Vhrel.mat');
-%   sFiles{6} = fullfile(isetRootPath,'data','surfaces','reflectances','Objects_Vhrel.mat');
-%
-%   sSamples = [12,12,24,5,24,12];    % Samples from each file
-%
-%   pSize = 24;    % Patch size
-%   wave =[];      % Whatever is in the file
-%   grayFlag = 0;  % No gray strip
-%   sampling = 'no replacement';
-%   scene = sceneReflectanceChart(sFiles,sSamples,pSize,wave,grayFlag,sampling);
-%   ieAddObject(scene); sceneWindow;
+   sSamples = [12,12,24,5,24,12];    % Samples from each file
+
+   pSize = 24;    % Patch size
+   wave =[];      % Whatever is in the file
+   grayFlag = 0;  % No gray strip
+   sampling = 'no replacement';
+   scene = sceneReflectanceChart(sFiles,sSamples,pSize,wave,grayFlag,sampling);
+   sceneWindow(scene);
+%}
 
 %% Approximate the reflectance chart with a linear model
 
@@ -53,7 +52,7 @@ fprintf('Variance explained %.03f by %d bases\n',...
 
 %% Show the basis functions
 
-vcNewGraphWin;
+ieNewGraphWin;
 plot(wave, basisData);
 xlabel('Wave (nm)'); ylabel('Basis scale');
 
@@ -63,7 +62,7 @@ bType = 0.95;
 [~, basisData,~,varExplained] = hcBasis( reflectance,bType,mType);
 fprintf('Variance explained %.03f by %d bases\n',...
     varExplained,size(basisData,2));
-vcNewGraphWin;
+ieNewGraphWin;
 plot(wave, basisData);
 xlabel('Wave (nm)'); ylabel('Basis scale');
 
@@ -75,7 +74,7 @@ fprintf('Variance explained %.03f by %d bases\n',...
     varExplained,size(basisData,2));
 tmp = size(basisData);
 
-vcNewGraphWin;
+ieNewGraphWin;
 plot(wave, basisData);
 xlabel('Wave (nm)'); ylabel('Basis scale');
 
