@@ -186,7 +186,7 @@ scenePlot(scene,'illuminant energy');
 
 % In this case, we create a blackbody illuminant and reilluminate the
 % scene.
-bb = blackbody(sceneGet(scene,'wave'),3500,'energy');
+bb = blackbody(sceneGet(scene,'wave'),5500,'energy');
 scene = sceneAdjustIlluminant(scene,bb);
 sceneWindow(scene);
 
