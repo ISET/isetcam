@@ -71,7 +71,7 @@ if ~exist('sensor','var') || isempty(sensor)
         catch
             app = sensorWindow_App;
         end
-        sensorW = sensor;
+        sensorW = app;
         app.refresh;
         return;
     end

@@ -74,7 +74,7 @@ if ~exist('scene','var') || isempty(scene)
         catch
             app = sceneWindow_App;
         end
-        sceneW = scene;
+        sceneW = app;
         app.refresh;
         return;
     end

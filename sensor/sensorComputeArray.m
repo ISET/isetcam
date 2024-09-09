@@ -15,7 +15,7 @@ function [sensorCombined,sensors] = sensorComputeArray(sensorArray,oi,varargin)
 %   oi          - Optical image
 %
 % Optional key/val
-%  method:  {'average','best snr','saturated'}  default: saturated
+%  method:  {'best snr','saturated'}  default: saturated
 %  saturated:  The fraction of the voltage swing before we declare the
 %              pixel saturated.  Default: 0.95
 %
@@ -28,21 +28,13 @@ function [sensorCombined,sensors] = sensorComputeArray(sensorArray,oi,varargin)
 
 % Examples:
 %{
-scene = sceneCreate('default',12); scene = sceneSet(scene,'fov',3); oi = oiCreate('wvf'); 
-oi = oiCompute(oi,scene,'crop',true);
+scene = sceneCreate('default',12); scene = sceneSet(scene,'fov',3); 
+oi = oiCreate('wvf'); oi = oiCompute(oi,scene,'crop',true);
 sensorArray = sensorCreateArray('array type','ovt','exp time',0.1,'size',[64 96]);
-[sA,s]=sensorComputeArray(sensorArray,oi,'method','average');
+[sA,s]=sensorComputeArray(sensorArray,oi,'method','saturated');
 ip = ipCreate; ip = ipCompute(ip,sA); ipWindow(ip);
-ieNewGraphWin; colormap(jet(4)); image(sA.metadata.npixels); colorbar;
 %}
-%{
-scene = sceneCreate('default',12); scene = sceneSet(scene,'fov',3); oi = oiCreate('wvf'); 
-oi = oiCompute(oi,scene,'crop',true);
-sensorArray = sensorCreateArray('array type','imx490','exp time',0.2,'size',[64 96]);
-[sA,s]=sensorComputeArray(sensorArray,oi,'method','best snr');
-ip = ipCreate; ip = ipCompute(ip,sA); ipWindow(ip);
-ieNewGraphWin; colormap(jet(4)); image(sA.metadata.bestPixel); colorbar;
-%}
+
 
 %% Parameters
 

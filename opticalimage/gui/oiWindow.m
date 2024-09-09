@@ -72,7 +72,7 @@ if ~exist('oi','var') || isempty(oi)
         catch
             app = oiWindow_App;
         end
-        oiW = oi;
+        oiW = app;
         app.refresh;
         return;
     end

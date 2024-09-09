@@ -74,7 +74,7 @@ if ~exist('ip','var') || isempty(ip)
         catch
             app = ipWindow_App;
         end
-        ipW = ip;
+        ipW = app;
         app.refresh;
         return;
     end
