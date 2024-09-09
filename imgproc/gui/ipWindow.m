@@ -66,7 +66,15 @@ if ~exist('ip','var') || isempty(ip)
         % the database
         ip = oiCreate;
         ieAddObject(ip);
+    else
+        % There is an ip in vcSESSION. None was passed in.  So this is a
+        % refresh only.
+        app = ieAppGet(ip); 
+        ipW = ip;
+        app.refresh;
+        return;
     end
+
 end
 
 p = inputParser;

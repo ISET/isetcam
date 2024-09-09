@@ -19,7 +19,7 @@ function sceneW = sceneWindow(scene,varargin)
 %   replace: Logical.  If true, then replace the current scene, rather than
 %            adding the scene to the database.  Default: false
 %   render flag:  'rgb','hdr','clip','monochrome'
-%   gamma:    Display gamma, typically [0-1]     
+%   gamma:    Display gamma, typically [0-1]
 %
 % Outputs
 %   sceneW:  An sceneWindow_App object.
@@ -62,11 +62,19 @@ if ~exist('scene','var') || isempty(scene)
     % Get the currently selected scene
     scene = ieGetObject('scene');
     if isempty(scene)
-        % There are no ois. We create the default oi and add it to
+        % There are no scenes. We create the default scene and add it to
         % the database
         scene = sceneCreate;
         ieAddObject(scene);
+    else
+        % There is a scene in vcSESSION. None was passed in.  So this is a
+        % refresh only.
+        app = ieAppGet(scene); 
+        sceneW = scene;
+        app.refresh;
+        return;
     end
+
 end
 
 p = inputParser;

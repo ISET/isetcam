@@ -64,6 +64,13 @@ if ~exist('oi','var') || isempty(oi)
         % the database
         oi = oiCreate;
         ieAddObject(oi);
+    else
+        % There is a scene in vcSESSION. None was passed in.  So this is a
+        % refresh only.
+        app = ieAppGet(oi);
+        oiW = oi;
+        app.refresh;
+        return;
     end
 end
 
