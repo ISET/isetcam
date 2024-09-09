@@ -69,7 +69,11 @@ if ~exist('ip','var') || isempty(ip)
     else
         % There is an ip in vcSESSION. None was passed in.  So this is a
         % refresh only.
-        app = ieAppGet(ip); 
+        try
+            app = ieAppGet(ip);
+        catch
+            app = ipWindow_App;
+        end
         ipW = ip;
         app.refresh;
         return;

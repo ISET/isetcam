@@ -69,7 +69,11 @@ if ~exist('scene','var') || isempty(scene)
     else
         % There is a scene in vcSESSION. None was passed in.  So this is a
         % refresh only.
-        app = ieAppGet(scene); 
+        try
+            app = ieAppGet(scene);
+        catch
+            app = sceneWindow_App;
+        end
         sceneW = scene;
         app.refresh;
         return;

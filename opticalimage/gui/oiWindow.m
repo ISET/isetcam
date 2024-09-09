@@ -67,7 +67,11 @@ if ~exist('oi','var') || isempty(oi)
     else
         % There is a scene in vcSESSION. None was passed in.  So this is a
         % refresh only.
-        app = ieAppGet(oi);
+        try
+            app = ieAppGet(oi);
+        catch
+            app = oiWindow_App;
+        end
         oiW = oi;
         app.refresh;
         return;

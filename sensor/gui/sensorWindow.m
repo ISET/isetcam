@@ -66,7 +66,11 @@ if ~exist('sensor','var') || isempty(sensor)
     else
         % There is a sensor in vcSESSION. None was passed in.  So this is a
         % refresh only.
-        app = ieAppGet(sensor); 
+        try
+            app = ieAppGet(sensor);
+        catch
+            app = sensorWindow_App;
+        end
         sensorW = sensor;
         app.refresh;
         return;
