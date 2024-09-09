@@ -281,7 +281,7 @@ classdef cpScene < handle
                     % frames
 
                     % process object motion if allowed
-                    if obj.allowsObjectMotion
+                    if obj.allowsObjectMotion & ~isempty(obj.objectMotion)
                         for ii = 1:numel(obj.objectMotion.transform)
                             ourMotion = obj.objectMotion.transform{ii};
                             if ~isempty(ourMotion{1})

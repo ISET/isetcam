@@ -189,7 +189,17 @@ switch parm
     case {'relativeillumination','offaxismethod','cos4thflag'}
         % Flag determining whether you use the cos4th method
         % Bad naming because of history.
-        optics.offaxis = val;
+        if isequal(lower(val),'off') | ~val
+            val = 'Skip';
+        elseif val
+            val = 'cos4th';
+        end
+        valid = {'skip','cos4th'};
+        if ismember(lower(val),valid)
+            optics.offaxis = val;
+        else
+            error('off axis method must be skip or cos4th');
+        end
     case {'cos4thfunction','cos4thmethod'}
         % We only have cos4th offaxis implemented, and this probably is all
         % we will ever use.

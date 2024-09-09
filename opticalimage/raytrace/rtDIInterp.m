@@ -50,6 +50,6 @@ wave = opticsGet(optics,'rtGeom Wavelength');
 % Use a nearest neighbor method.  We could linearly interpolate, I suppose
 [~, waveIdx] = min(abs(wavelength - wave));
 
-di = distimght(:,waveIdx);  %Correct (1 Wave, All Fields)
+di = distimght(:,waveIdx);  %Correct (1 Wave, All field heights)
 
 end

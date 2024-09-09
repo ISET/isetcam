@@ -66,7 +66,19 @@ if ~exist('ip','var') || isempty(ip)
         % the database
         ip = oiCreate;
         ieAddObject(ip);
+    else
+        % There is an ip in vcSESSION. None was passed in.  So this is a
+        % refresh only.
+        try
+            app = ieAppGet(ip);
+        catch
+            app = ipWindow_App;
+        end
+        ipW = app;
+        app.refresh;
+        return;
     end
+
 end
 
 p = inputParser;
@@ -79,6 +91,11 @@ p.addParameter('gamma',[],@isscalar);
 p.parse(ip,varargin{:});
 
 %% An ip was passed in. 
+
+if isempty(ip.data.input)
+    warning('No image data.  Returning without adding this empty ip to the window.');
+    return;
+end
 
 % We add it to the database and select it.
 % That oi will appear in the oiWindow.
@@ -100,7 +117,7 @@ elseif ~isvalid(ipW)
     ieSessionSet('ip window',ipW);
 else
     % Just refresh it
-    ipW.refresh;
+    ipW.refresh(ip);
 end
 
 

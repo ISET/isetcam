@@ -63,7 +63,19 @@ if ~exist('sensor','var') || isempty(sensor)
         % the database
         sensor = sensorCreate;
         ieAddObject(sensor);
+    else
+        % There is a sensor in vcSESSION. None was passed in.  So this is a
+        % refresh only.
+        try
+            app = ieAppGet(sensor);
+        catch
+            app = sensorWindow_App;
+        end
+        sensorW = app;
+        app.refresh;
+        return;
     end
+
 end
 
 p = inputParser;

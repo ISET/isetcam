@@ -6,10 +6,9 @@
 % Second, we use the CIE daylight basis functions to create
 % examples of daylight spectra.
 %
-% See also:  ieLuminanceFromPhotons, ieLuminanceFromEnergy,
-% daylight
+% See also:  
+%   ieLuminanceFromPhotons, ieLuminanceFromEnergy, daylight
 %
-% Copyright ImagEval Consultants, LLC, 2010.
 
 %%
 ieInit;

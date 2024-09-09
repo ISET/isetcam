@@ -125,7 +125,7 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %
 %         sceneCreate('slanted edge',imageSize,edgeSlope,fov,wave,darklevel);
 %         sceneCreate('checkerboard',pixelsPerCheck,numberOfChecks)
-%         sceneCreate('grid lines',imageSize,pixelsBetweenLines);
+%         sceneCreate('grid lines',imageSize,pixelsBetweenLines,spectralType,thickness);
 %         sceneCreate('point array',imageSize,pixelsBetweenPoints);
 %         sceneCreate('moire orient',imageSize,edgeSlope);
 %         sceneCreate('vernier',imageSize,lineWidth,pixelOffset);
@@ -560,14 +560,15 @@ switch sceneName
         
     case {'pointarray','manypoints'}
         % sceneCreate('pointArray',sz,spacing,spectralType);
-        sz = 128; spacing = 16; spectralType = 'ep';
+        sz = 128; spacing = 16; spectralType = 'ep'; pointSize = 1;
         if length(varargin) >= 1, sz           = varargin{1}; end
         if length(varargin) >= 2, spacing      = varargin{2}; end
         if length(varargin) >= 3, spectralType = varargin{3}; end
-        scene = scenePointArray(scene,sz,spacing,spectralType);
+        if length(varargin) >= 4, pointSize    = varargin{4}; end
+        scene = scenePointArray(scene,sz,spacing,spectralType,pointSize);
         
     case {'gridlines','distortiongrid'}
-        % sceneCreate('gridlines',imageSize,spacing,spectralType);
+        % sceneCreate('gridlines',imageSize,spacing,spectralType,thickness);
         sz = 128; spacing = 16; spectralType = 'ep'; lineThickness = 1;
         if length(varargin) >= 1, sz            = varargin{1}; end
         if length(varargin) >= 2, spacing       = varargin{2}; end

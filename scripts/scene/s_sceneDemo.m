@@ -13,9 +13,9 @@
 %  * Extract and plot scene luminance (cd/m^2) across a row of
 %  that target.
 %
-% See also: sceneCreate, s_sceneFromMultispectral, s_sceneFromRGB
+% See also: 
+%   sceneCreate, s_sceneFromMultispectral, s_sceneFromRGB
 %
-% Copyright ImagEval Consultants, LLC, 2003.
 
 %%
 ieInit;

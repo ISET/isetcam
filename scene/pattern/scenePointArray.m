@@ -1,15 +1,24 @@
-function scene = scenePointArray(scene,sz,pointSpacing,spectralType)
+function scene = scenePointArray(scene,sz,pointSpacing,spectralType,pointSize)
 % Make a point array stimulus for evaluating the optics
 %
-%     scene = scenePointArray(scene,[sz=128],[pointSpacing=16],[spectralType='d65'])
+% Synopsis
+%  scene = scenePointArray(scene,[sz=128],[pointSpacing=16],[spectralType='d65'],[pointSize = 1])
 %
-% The point array scene clarifies the PSF at a variety of locations in the optical
-% image.  It also gives a sense of the geometrical distortions.
+% Description
 %
-% SZ defines the row and column size of the image.           (default: 128)
-% pointSpacing defines the distance between points in pixels (default: 16)
-% The spectrum is D65 by default.
-%   Alternative spectral types are 'ee' (equal energy) and 'ep' (equal photons)
+%  A scene with a point array scene clarifies the PSF at a variety of
+%  locations in the optical image.  It also gives a sense of the
+%  geometrical distortions.  
+%
+% Inputs
+%   scene - an initialized scene structure
+%   sz    - row and column size of the image.           (default: 128)
+%   pointSpacing - distance between points in pixels (default: 16)
+%   spectrum -  {'equal energy','equal photon','d65'}   D65 by default
+%   pointSize - 1 by default.  Can be an integer > 1
+%
+% Return
+%   scene
 %
 %Example:
 %   scene = sceneCreate;
@@ -19,11 +28,15 @@ function scene = scenePointArray(scene,sz,pointSpacing,spectralType)
 %   scene = scenePointArray(scene,64,8,'ep');
 %
 % Copyright ImagEval Consultants, LLC, 2003.
+%
+% See also
+%   sceneCreate
 
 if ieNotDefined('scene'), error('Scene structure required'); end
 if ieNotDefined('sz'), sz = 128; end
 if ieNotDefined('pointSpacing'), pointSpacing = 16; end
 if ieNotDefined('spectralType'), spectralType = 'd65'; end
+if ieNotDefined('pointSize'),    pointSize = 1; end
 
 scene = sceneSet(scene, 'name', 'pointarray');
 
@@ -31,8 +44,17 @@ scene = initDefaultSpectrum(scene,'multispectral');
 wave  = sceneGet(scene,'wave');
 nWave = sceneGet(scene,'nwave');
 
-d = zeros(sz); idx = round(pointSpacing/2):pointSpacing:sz;
+% Make an image of the points with size 1
+d = zeros(sz); 
+idx = round(pointSpacing/2):pointSpacing:sz;
 d(idx, idx) = 1;
+
+% Make the points bigger by convolution with a box equal to point size
+if pointSize > 1
+    pointSize = round(pointSize);
+    kernel = ones(pointSize,pointSize);
+    d = conv2(d,kernel,'same');
+end
 
 switch lower(spectralType)
     case {'d65'}

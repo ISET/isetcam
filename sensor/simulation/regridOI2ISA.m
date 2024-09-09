@@ -45,9 +45,9 @@ function [flatSCDI, newRows, newCols] = regridOI2ISA(scdi,oi,sensor,spacing)
 % spatialIntegration).  It is possible, however, to set the spacing
 % from the GUI to a finer spacing.
 %
-% In 2019 Zheng Lyu and BW enabled using a nonlinear interpolation
-% method to average over more of the irradiance, simulating the
-% integration across the pixel aperture.
+% In 2019 Zheng Lyu and BW enabled using an interpolation method to
+% average over more of the irradiance, simulating the integration
+% across the pixel aperture.
 %
 % Copyright ImagEval Consultants, LLC, 2003
 %
@@ -55,10 +55,8 @@ function [flatSCDI, newRows, newCols] = regridOI2ISA(scdi,oi,sensor,spacing)
 %    spatialIntegration, signalCurrent
 %
 
-
 % Examples:
 %{
-
 %}
 
 %%

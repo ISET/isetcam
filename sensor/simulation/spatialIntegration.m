@@ -39,11 +39,12 @@ function signalCurrentImage = spatialIntegration(scdi,oi,sensor,gridSpacing)
 %    illustrating the effects of wavelength-dependent point spread
 %    functions, this mode is valuable.
 %
-% INPUT:    scdi [nRows x nCols]   [A/m^2]
+% INPUT:    scdi     spatial current density image [nRows x nCols] [A/m^2]
 %           oi:      optical image [structure]
 %           sensor:  image sensor array
 %           gridSpacing specifies how finely to interpolate within each
-%           pixel. This value must be of the form 1/N where N is an odd integer.
+%              pixel. This value must be of the form 1/N where N is an
+%              odd integer. 
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 

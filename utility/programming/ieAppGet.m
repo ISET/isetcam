@@ -6,12 +6,15 @@ function [app, appAxis] = ieAppGet(obj,varargin)
 % Syntax
 %   [app, appAxis] = ieAppGet(obj,varargin)
 %
+% Brief
+%  Get the app object and main image axes corresponding to one of the
+%  ISETCam windows. These are stored in the vcSESSION global.
+%
 % Input
 %   obj:    One of the ISETCam main object types, scene, oi, sensor, ip.
-%           Or a of one of the main types, in which case we use
-%           ieGetObject(str)
-%           Or an app from a valid appdesigner
-%           Or a Matlab figure
+%            Or a character string defining the object type
+%            Or an app from a valid appdesigner
+%            Or a Matlab figure
 %
 % Optional key/value
 %   select: If true, put the focus on the figure (call figure(app.figure1))
@@ -24,18 +27,14 @@ function [app, appAxis] = ieAppGet(obj,varargin)
 %             Figure.
 %
 % Description
-%   Primary use is to get the app object and main image axes
-%   corresponding to one of the ISETCam windows. Possible ISET objects
-%   are scene, oi, sensor, ip. obj can be one of these structs, or
-%   just a string that identifies which of the struct to get using
-%   ieGetObject. The main image axis can also be returned.
+%   Possible ISET objects are scene, oi, sensor, ip. obj can be one of
+%   these structs, or just a string that identifies which of the struct to
+%   get using ieGetObject. The main image axis can also be returned.
 %
 %   In some cases the obj may be a Matlab figure.  In that case, app
 %   is returned empty and appAxis is the CurrentAxes of the figure.
 %
 %   If select is 'true' then the focus is placed on the figure.
-%
-% Copyright ImagEval Consultants, LLC, 2005.
 %
 % See also
 %   ieAxisGet, vcEquivalentObjtype, vcGetObjectType

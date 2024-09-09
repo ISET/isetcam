@@ -52,6 +52,32 @@ function ip = ipCompute(ip,sensor,varargin)
 %  like the demosaicking method, the sensor conversion approach, and
 %  the illuminant correction.
 %
+% Special cases
+%
+%    'network demosaic' - 
+%    We have a means of incorporating a neural network for demosaicing (and
+%    denoising).  This is used in the isethdrsensor repository. The method
+%    is special cased for that (not general).  But it works well and we are
+%    considering whether we build it up.  The basic idea is to train a
+%    network, store it as an ONNX format, and then run it using the python
+%    environment in Matlab. The ISETHDRSENSOR paper has examples and the
+%    repository has code.
+%
+%    'hdr *'     
+%    When processing high dynamic range scenes through the pipeline, there
+%    will be fully saturated regions (i.e., pixels that are all at full
+%    well capacity).  In that case it is inappropriate to use the same
+%    image processing parameters to render the color. If you do, the fully
+%    saturated pixels may show up as colored, rather than white.  The
+%    parameters related to hdr call a routine (ipHDRWhite) that forces
+%    fully saturated pixels to be rendered as white.  The algorithm takes
+%    three parameters.
+%       'hdr white' - logical that says use the method.
+%       'hdr level' - scalar that defines when we start worrying about
+%                   saturation.  
+%       'wgt blur'  - blurring parameter that smooths out the region
+%                     identified as saturated
+%
 % About L3
 %   We will deprecate the L3 approach from here.  It will be handled
 %   elsewhere.  We now are training networks rather than using the L3
@@ -654,10 +680,11 @@ switch combinationMethod
         error("Don't know how to combine burst of images");
 end
 
-% Pass metadata along
-ip.metadata = appendStruct(ip.metadata,sensor.metadata);
+% Pass sensor metadata along, if it exists.
+if isfield(sensor,'metadata')
+    ip.metadata = appendStruct(ip.metadata,sensor.metadata);
+end
 
-%ip = ipSet(ip,'input',newImg);
 end
 
 %% ---------- Network demosaic

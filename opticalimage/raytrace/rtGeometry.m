@@ -1,12 +1,15 @@
-function oi = rtGeometry(oi,scene)
+function oi = rtGeometry(oi,scene, pNum)
 % Compute the irradiance with ray traced geometric distortion
 %
 % Synopsis
-%    oi = rtGeometry(oi,scene)
+%    oi = rtGeometry(oi,scene,[pNum])
 %
 % Inputs
 %   oi  -  Optical image with ray trace data
 %   scene - Scene
+%
+% Optional
+%   pNum - polynomial degree
 %
 % The optics in the oi needs to have ray trace data from Zemax or Code V.
 %
@@ -40,6 +43,9 @@ function oi = rtGeometry(oi,scene)
 % Load Lens Ideal Image Height, Distorted Image Height, and
 % Relative Illumination Data
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%
+if notDefined('pNum'), pNum = 8; end
 
 %%
 optics = oiGet(oi,'optics');
@@ -105,8 +111,8 @@ dx = xwidth/colMax;      %x-width of pixel in mm
 % for the field of view, if we pad.  I am not sure we need to pad.  So, for
 % now, I have set zeropad to do not pad, and will do some more testing.
 
-%zeropad=16;                            %zero padding size.  Figure out how to set this properly
-zeropad = 0;
+zeropad=16;                            %zero padding size.  Figure out how to set this properly
+% zeropad = 0;
 paddedRowMax = rowMax + 2*zeropad;        %number of rows in final geometric image space
 paddedColMax = colMax + 2*zeropad;        %number of columns in final geometric image space
 rowCenter=(paddedRowMax+1)/2;           %center row of final geometric image space
@@ -152,13 +158,17 @@ for ww = 1:nWave
     
     % The polynomial order that we use here really matters.  For the Fish
     % EYE, pNum = 8 was a serious problem. pNum = 6 worked well for Fish Eye
-    pNum = 8;
-    if length(imght(:)) < 9
-        if length(imght(:)) < 2
-            error('Insufficient image height data');
-        else
-            pNum = length(imght(:)) - 2;
-            fprintf('\nCaution: polyfit deg reduced to %.0f.',pNum);
+
+    % If the user sent in a pNum, use it.  Otherwise, try to figure it
+    % out.
+    if ~exist('pNum','var')
+        if length(imght(:)) < 9
+            if length(imght(:)) < 2
+                error('Insufficient image height data');
+            else
+                pNum = length(imght(:)) - 2;
+                fprintf('\nCaution: polyfit deg reduced to %.0f.',pNum);
+            end
         end
     end
 

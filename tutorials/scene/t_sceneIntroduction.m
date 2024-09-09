@@ -4,18 +4,16 @@
 %
 % ISETCam is structured around a few key objects that are important parts
 % of the image acquisition pipeline. These are the *scene, optical image,
-% sensor, and image processor*. This script introduces the first and
-% simplest ISETCam object: a *scene* .
+% sensor, and image processor*. This script introduces the WsISETCam *scene*.
 %
 % A main goal of this script is to illustrate the ISETCam programming
 % style. By using ISETCam objects properly, the code and analysis are much
-% easier to understand. The implementation of these objects was written
-% before Matlab implemented its classes and thus doesn't rely on that
-% feature.
-%
-% But many of the principles are the same. For each object there are three
-% fundamental operations: *Create, set parameters, and get* object
-% parameters.
+% easier to understand. 
+% 
+% The implementation of these objects was written before Matlab implemented
+% its classes and thus doesn't rely on that feature. But many of the
+% principles are the same. For each object there are three fundamental
+% operations: *Create, set parameters, and get* object parameters.
 %
 % The scene describes the spectral radiance field.  For the present
 % tutorial we  work with a simple planar radiance image, such as the image
@@ -41,16 +39,19 @@
 %  t_IntroductionOI.m
 %
 
-%%
+%% At the beginning of a session, we usually initialize ISETCam
+
 ieInit
 
 %% Create a scene and explore some of its features
+
 % The create function initiates the object. Typically, there are many
 % different initial formats. For the scene, the optics including color
 % targets, patterns, charts, and images.
 
-% ISET sceneCreate builds a number of predefined scenes
-% You can see the range of possibilities by typing
+% The ISETCam function sceneCreate builds a number of predefined scenes
+% that are useful for testing image systems. You can see the range of
+% possibilities by typing
 %
 %  *help sceneCreate* , or
 %  *doc sceneScreate*
@@ -93,9 +94,12 @@ hFOV  = sceneGet(scene,'hfov')
 
 % Show the changes in the window.
 ieReplaceObject(scene);
+
+% And now refresh the window
 sceneWindow;
 
 %% Philosophical interlude - programming issues
+
 % There are always more parameters to "get" than are to "set".  This is
 % because there are dependencies among any object parameters.  For example,
 % if you know the image distance and horizontal field of view, you can
@@ -104,8 +108,8 @@ sceneWindow;
 % In designing the sets/gets, the author must select an approach:  Do we
 % allow the user to set anything and then update the other parameters for
 % consistency, or do we only allow the user to set specific parameters and
-% through this limitation enforce consistency.  ISET uses the 2nd method:
-% Only some parameters can be set.
+% through this limitation enforce consistency.  ISETCam uses the 2nd
+% method: Only some parameters can be set.
 %
 % That is why there are more gets than sets.  You can get parameters that
 % depend on the sets.
@@ -113,11 +117,11 @@ sceneWindow;
 % You can see the scene structure and its parameters simply by
 % typing
 scene
-%% Use sets and gets to interact with ISET objects
+%% Use sets and gets to interact with ISETCam objects
 
-% While the objects in ISET can be addressed directly - please don't.
-% If you are ever tempted to set the objects directly, go get a cup of
-% coffee.  When you come back, you will feel like using a sceneSet
+% While the objects in ISETCam can be addressed directly - please don't. If
+% you are ever tempted to set the objects directly, go get a cup of coffee.
+% When you come back, you will feel like using a sceneSet
 
 % You can see the scene parameters you can set by typing
 % help sceneSet
@@ -130,14 +134,14 @@ scene
 
 % To see an example of the dependence, consider the effect of scene
 % distance, which we can get, on scene sample spacing.
-dist    = sceneGet(scene,'distance','mm');
-spacing = sceneGet(scene,'sample spacing','mm');
-dist
+dist    = sceneGet(scene,'distance','mm')
+spacing = sceneGet(scene,'sample spacing','mm')
+
 
 % If we move the scene closer, and we maintain the same number of row and
 % column samples, the spacing changes.
 scene = sceneSet(scene,'distance',0.6);
-sceneGet(scene,'sample spacing','mm');
+sceneGet(scene,'sample spacing','mm')
 
 %% Change the distance and horizontal field of view (hFOV)
 
@@ -156,9 +160,9 @@ sceneGet(scene,'sample spacing','m')
 
 %% Creating a scene from a file
 
-% ISET includes a few multispectral scenes.  These are large files, so the
-% default distribution only includes one example.  We have another 100 or
-% so that are available.
+% ISETCam includes a few multispectral scenes.  These are large files, so
+% the default distribution only includes one example.  We have another 100
+% or so that are available.
 
 fname = fullfile(isetRootPath,'data','images','multispectral','StuffedAnimals_tungsten-hdrs.mat');
 scene = sceneFromFile(fname,'multispectral');
@@ -166,14 +170,15 @@ sceneWindow(scene);
 %% Plot scene properties
 
 % Many scene properties that can be plotted either from the scene Window or
-% using scenePlot. For example, ISET scenes specify a uniform illuminant by
+% using scenePlot. For example, ISETCam scenes specify a uniform illuminant by
 % default.  You can plot the illuminant in energy units by this command.
 scenePlot(scene,'illuminant energy');
 
 % The scenePlot command above is equivalent to
+%
 %  wave = sceneGet(scene,'wave');
 %  illuminant  = sceneGet(scene,'illuminant energy');
-%  vcNewGraphWin; plot(wave,illuminant); grid on
+%  ieNewGraphWin; plot(wave,illuminant); grid on
 %  xlabel('wave (nm)'); ylabel('Energy (watts/sr/nm/m^2)')
 %
 
@@ -181,11 +186,11 @@ scenePlot(scene,'illuminant energy');
 
 % In this case, we create a blackbody illuminant and reilluminate the
 % scene.
-bb = blackbody(sceneGet(scene,'wave'),3500,'energy');
+bb = blackbody(sceneGet(scene,'wave'),5500,'energy');
 scene = sceneAdjustIlluminant(scene,bb);
 sceneWindow(scene);
 
-%%  ISET keeps track of units
+%%  ISETCam keeps track of units
 
 % In this case, we plot the illuminant in units of photons, rather than
 % energy.

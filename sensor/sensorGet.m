@@ -514,8 +514,16 @@ switch oType
                 
                 % Delete this after a while.  I don't know what the
                 % criterion should be.
-                assert( min(volts(:)) - ao > -1e-3);                
-                volts = ieClip(volts,ao,vSwing);
+                assert( min(volts(:)) - ao > -1e-3);
+
+                % We used to clip at the voltage swing.  But that is
+                % incorrect.  When we are computing the 'theoretical'
+                % electrons can be beyond the voltage swing for a
+                % while, and if we clip we are adding noise
+                % incorrectly. So the clipping has to take place
+                % elsewhere in sensorCompute, at the very end of the
+                % chain.
+                % volts = ieClip(volts,ao,vSwing);
 
                 % This is the 'raw' voltage times the conversion gain.
                 cg = pixelGet(pixel,'conversion gain');
@@ -527,8 +535,9 @@ switch oType
                 end
                 
                 % Electrons are integers and > 0.  Sometimes because
-                % of noise near zero or the offset, we have a negative
-                % value.
+                % of noise near zero, we have a negative values.
+                % Unlike the values above well capacity, we do not
+                % allow that.
                 val = round(val);
                 val = max(val,0);
 

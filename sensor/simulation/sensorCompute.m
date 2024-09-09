@@ -1,79 +1,79 @@
-function [outSensor, unitSigCurrent] = sensorCompute(sensor,oi,showBar)
-%Compute sensor response from optical image data
+function outSensor = sensorCompute(sensor,oi,showBar)
+% Compute sensor response from optical image data
 %
+% Synopsis
 %   sensor = sensorCompute([sensor],[oi],[showBar = 1])
 %
-%  This function calculates the sensor volts (electrons) at each pixel from
-%  the optical image (oi).
+% Brief
+%  Calculates the sensor volts (electrons) at each pixel from the
+%  optical image (oi). The computation checks a variety of sensor
+%  parameters and flags in the sensor structure to perform the
+%  calculation.
 %
 % Inputs
 %    sensor:   Image sensor, possibly a cell array of sensors
 %    oi:       Optical irradiance data
-%
+%   showBar:   Display the show bar during the computation (default
+%              from ieSessionGet('waitbar')
 % Return
 %    sensor: Image sensor (possibly an array of sensors). The computed
 %            voltage data are stored in the sensor.
 %
-%  The computation checks a variety of parameters and flags in the sensor
-%  structure to perform the calculation.  These parameters and flags can be
-%  set either through the graphical user interface (sensorWindow) or
-%  by scripts.
-%
-% NOISE FLAG
-%  The noise flag is an important way to control the details of the
-%  calculation.  The default value of the noiseFlag is 2.  This case is
-%  standard operating mode with photon noise, read/reset, dsnu, prnu,
-%  analog gain/offset, clipping, quantization, included.
-%
-%  Each of the noises can be individually controlled, but the noise flag
-%  simplifies turning off different types of noise for certain experiments
-%
-%   sensor = sensorSet(sensor,'noise flag',noiseFlag);
-%
-% The conditions are:
-%
-%  noiseFlag | photon   e-noises   FPN     CDS
-%    -2      |   +         0        0       0   ('no pixel no system')
-%    -1      |   0         0        0       0   ('no photon no pixel no system')
-%     0      |   0         0        0       0   ('no photon no pixel')
-%     1      |   +         0        +       +   ('no pixel noise')
-%     2      |   +         +        +       +   ('default')
-%
-%  photon noise:  Photon noise
-%  pixel noise:   Electrical noise (read, reset, dark) (eNoise)
-%  FPN:           Prnu, dsnu
-%  CDS:           If the flag is set, for 0,1,2
-%  Column FPN:    If the flag is set for 0,1,2
-%
-%  * Quantization is managed through the quantization method. It can be
-%    turned off by setting the quantization %   method to 'analog'  
-%  * If you want to avoid clipping, set the voltage swing to be very
-%    large.  Though, we always clip tne negative values at 0.
-%
-% In addition to controlling factors through the noise flag, it is possible
-% to manage them by individually setting sensor parameters. For example,
-% when noiseFlag 0,1,2, you can still control the analog gain/offset noise
-% can be eliminated by setting 'prnu sigma' and 'dsnu sigma' to 0.
-% Similarly you can set the read noise and dark voltage to 0.
-%
-%   * quantization       - set 'quantization method' to 'analog' (default)
-%   * CDS                - set the cds flag to false (default)
-%   * Clipping           - You can avoid clipping high with a large
-%        voltage swing.  But other noise factors might drive the
-%        voltage below 0, and we would clip.
-%
 % COMPUTATIONAL OUTLINE:
 %
-%   1. Check exposure duration: autoExposure default, or use the set
-%      time.
-%   2. Compute the mean image: sensorComputeImage()
-%   3. Etendue calculation to account for pixel vignetting
-%   4. Noise cases
-%   5. Analog gain and offset, clipping, quantization
-%   6. Macbeth ROI management
+%   1. Manage exposure duration and bracketing (autoExposure)
+%   2. Compute the mean voltage image (sensorComputeImage)
+%   3. Account for pixel vignetting (sensorVignetting)
+%   4. Noise cases (sensorAddNoise)
+%   5. Apply analog gain and offset (sensorGainOffset)
+%   6. Clipping and quantization (analog2digital)
+%   7. Macbeth ROI management
 %
-%  The value of showBar determines whether the waitbar is displayed to
-%  indicate progress during the computation.
+% NOISE FLAG
+%  The types of noise, and their levels, can be individually
+%  controlled. The noise flag is used to simplify turning off
+%  different types of noise for certain experiments, without changing
+%  the sensor parameters.
+%
+%  The default is noiseFlag = 2. This case is standard operating mode
+%  with photon noise, read/reset, dsnu, prnu. 
+%
+%    sensor = sensorSet(sensor,'noise flag',noiseFlag);
+%
+% The noise flag conditions are:
+%
+%  noiseFlag | photon   e-noises   FPN     
+%    -2      |   +         0        0     ('no electrical no FPN')
+%    -1      |   0         0        0     ('no photon no electrical no FPN')
+%     0      |   0         0        0     ('no photon no electrical no FPN')
+%     1      |   +         0        +     ('no electrical')
+%     2      |   +         +        +     ('all')
+%
+%  photon noise:  Also called shot noise
+%  pixel noise:   Electrical noise (read, reset, dark) (eNoise)
+%  FPN:           Prnu, dsnu
+%
+%  * The setting noiseFlag = -2 is very useful for evaluating a purely
+%    photon noise limited system.
+%  * 0 and -1 are no noise at all.  They are both there for historical
+%    reasons.  Use noiseFlag = 0 because we might change the meaning of
+%    -1 some day.
+%
+% OTHER CONTROLS
+%  There are additional, less frequently modeled,  noise
+%  properties.You can control these processes individually.
+%
+%  * CDS:           Correlated double sampling (needs checking)
+%  * Column FPN:    This is a specialized type of FPN
+%
+% When noiseFlag 0,1,2, you can still control the analog gain/offset values. 
+% FPN can be eliminated by setting 'prnu sigma' and 'dsnu sigma' to 0.
+% Similarly you can set the read noise and dark voltage to 0.
+% Quantization can be elimited by setting 'quantization method' to
+% 'analog'.
+%
+% The value of showBar determines whether the waitbar is displayed to
+% indicate progress during the computation.
 %
 % Copyright ImagEval Consultants, LLC, 2011
 %
@@ -91,7 +91,7 @@ function [outSensor, unitSigCurrent] = sensorCompute(sensor,oi,showBar)
 %% Define and initialize parameters
 if ~exist('sensor','var') || isempty(sensor), sensor = vcGetSelectedObject('sensor'); end
 if ~exist('oi','var') || isempty(oi),         oi = vcGetSelectedObject('oi');         end
-if ~exist('showBar','var') || isempty(showBar), showBar = ieSessionGet('waitbar'); end
+if ~exist('showBar','var') || isempty(showBar), showBar = ieSessionGet('waitbar');    end
 
 wBar = [];
 
@@ -165,7 +165,6 @@ for ss=1:length(sensorArray)   % Number of sensors
     else,       unitSigCurrent = signalCurrent(oi,sensor);
     end
     
-    
     %% Convert to volts
     % Handle multiple exposure value case.
     if isscalar(cur2volt)
@@ -193,25 +192,6 @@ for ss=1:length(sensorArray)   % Number of sensors
     voltImage = voltImage .* repmat(etendue,[1 1 sensorGet(sensor,'nExposures')]);
     % ieNewGraphWin; imagesc(voltImage); colormap(gray(64))
     
-    %{
-    responseType = sensorGet(sensor,'response type');
-    switch responseType
-        case 'log'
-            warning('We are deprecating the log sensor model.  Send BW a message if you see this.')
-            % We need to keep the smallest value above zero. We also
-            % want the read noise level to make sense with respect to
-            % the voltage swing.  Very little tested (BW).
-            readNoise = sensorGet(sensor,'pixel read noise');
-            if readNoise == 0
-                warning('Invalid read noise for log response type.  Using 2^16 of voltage swing');
-                readNoise = sensorGet(sensor,'pixel voltage swing')/(2^16);
-            end
-            voltImage = log10(voltImage + readNoise) - log10(readNoise);
-        otherwise
-            % Linear case.  Do nothing.
-    end
-    %}
-
     % This can be a single matrix or it can a volume of data.  We should
     % consider whether we want to place the volume elsewhere and always have
     % voltImage be a matrix is displayed into the sensor window.
@@ -293,9 +273,11 @@ for ss=1:length(sensorArray)   % Number of sensors
     %% Clipping - always applied
 
     % We clip the voltage because everything must fall between 0 and
-    % voltage swing.  This is true even if the responseType is
-    % log.  To avoid clipping, set vSwing very large.
+    % voltage swing.  To avoid clipping, set vSwing very large.
     vSwing = sensorGet(sensor,'pixel voltage swing');
+
+    % This is the place where we clip, after dealing with all the
+    % noise, not before.
     sensor = sensorSet(sensor,'volts',ieClip(sensorGet(sensor,'volts'),0,vSwing));
         
     %% Quantization - Always applied.  If analog, no real quantization
@@ -328,12 +310,10 @@ for ss=1:length(sensorArray)   % Number of sensors
         % processes.
         delete(wBar); return;
     end
-    
-    %% Macbeth chart management
-    
-    % Possible overlay showing center of Macbeth chart
-    % sensor = sensorSet(sensor,'mccRectHandles',[]);
+       
     if showBar, close(wBar); end
+
+    %% Metadata management
     
     % Copy metadata from oi to the sensor
     sensor = sensorSet(sensor,'metadata sensorname',sensorGet(sensor,'name'));
@@ -354,3 +334,23 @@ for ss=1:length(sensorArray)   % Number of sensors
 end
 
 end
+
+
+%{
+    responseType = sensorGet(sensor,'response type');
+    switch responseType
+        case 'log'
+            warning('We are deprecating the log sensor model.  Send BW a message if you see this.')
+            % We need to keep the smallest value above zero. We also
+            % want the read noise level to make sense with respect to
+            % the voltage swing.  Very little tested (BW).
+            readNoise = sensorGet(sensor,'pixel read noise');
+            if readNoise == 0
+                warning('Invalid read noise for log response type.  Using 2^16 of voltage swing');
+                readNoise = sensorGet(sensor,'pixel voltage swing')/(2^16);
+            end
+            voltImage = log10(voltImage + readNoise) - log10(readNoise);
+        otherwise
+            % Linear case.  Do nothing.
+    end
+%}

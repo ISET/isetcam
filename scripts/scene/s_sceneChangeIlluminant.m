@@ -1,9 +1,9 @@
 %% Change the illuminant spectral power distribution of a scene
 %
-% ISET lets you specify any spectral power distribution as a
-% scene illuminant, and the data/lights directory includes a
-% large number of standard lights, including fluorescents,
-% tungsten, LED, daylights, and blackbody.
+% ISETCam lets you specify any spectral power distribution as a scene
+% illuminant, and the data/lights directory includes a large number of
+% standard lights, including fluorescents, tungsten, LED, daylights, and
+% blackbody.
 %
 % The *scene window* lets you select a new scene illuminant from
 % the pulldown menu.
