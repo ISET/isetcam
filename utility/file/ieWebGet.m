@@ -305,7 +305,7 @@ switch ieParamFormat(depositName)
         if isempty(downloaddir)
             downloadDir = fullfile(isetRootPath,'local','sdr');
         end
-        remoteURL    = strcat(depositURL{1}, '/',remoteFileName);
+        remoteURL = strcat(depositURL{1}, '/',remoteFileName);
         localFile = sdrSpectralDownload(remoteURL,remoteFileName,downloadDir,confirm);
 
     case {'isethdrsensor-paper'}
@@ -313,16 +313,18 @@ switch ieParamFormat(depositName)
             % The user gave us a place to download to.
             downloadDir = p.Results.downloaddir;
         else
-            % Go to local/sdr
-            downloadDir = fullfile(isetRootPath,'local','sdr');
+            % We assume isethdrsensor is on the user's path
+            downloadDir = fullfile(isethdrsensorRootPath);
         end
 
-        localFile = fullfile(downloadDir, depositFile);
-        localDir  = fileparts(localFile);
-        if ~isfolder(localDir), mkdir(localDir); end
-        remoteURL = fullfile(baseURL,depositFile);
+        % The deposit file may be in a subdirectory.  Here we pull out
+        % just the file name to append to the downloadDir.
+        tmp = split(depositFile,'/');
+        localFile = fullfile(downloadDir, tmp{end});
+        if ~isfolder(downloadDir), mkdir(downloadDir); end
+        remoteURL = fullfile(depositURL{1},depositFile);
         try
-            fprintf('*** Downloading %s from ISETHDRSensor SDR ... \n',depositFile);
+            fprintf('*** Downloading %s from ISETHDRSensor on SDR ... \n',depositFile);
             websave(localFile, remoteURL);
             fprintf('*** File is downloaded! \n');
         catch
@@ -335,17 +337,22 @@ end
 
 %% Download succeeded. Should we unzip it?  Remove the zip?
 if unZip
-    % localFile = ieWebGet('deposit file', 'chessset', 'deposit name','iset3d-scenes','unzip',true);
-    zipfilenames = unzip(localFile,downloaddir);
+    [~,~,ext] = fileparts(localFile);
+    if ~isequal(ext,'.zip')
+        fprintf('Download (%s)is not a zip file.\nSkipping unzip.\n',localFile);
+    else
+        % localFile = ieWebGet('deposit file', 'chessset', 'deposit name','iset3d-scenes','unzip',true);
+        zipfilenames = unzip(localFile,downloaddir);
 
-    % The directory is the part before .zip
-    idx = strfind(localFile,'.zip');
+        % The directory is the part before .zip
+        idx = strfind(localFile,'.zip');
 
-    if removeZipFile
-        % After unzipping, we usually remove the zip.  The localFile
-        % directory then becomes the local path, really.
-        delete(localFile);
-        localFile = localFile(1:(idx-1));
+        if removeZipFile
+            % After unzipping, we usually remove the zip.  The localFile
+            % directory then becomes the local path, really.
+            delete(localFile);
+            localFile = localFile(1:(idx-1));
+        end
     end
 end
 
