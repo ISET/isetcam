@@ -328,6 +328,8 @@ switch ieParamFormat(depositName)
         catch
             warning("Unable to retrieve %s", remoteURL);
         end
+    otherwise
+        error('Unknown deposit name %s',depositName);
 end
 
 
