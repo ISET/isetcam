@@ -64,7 +64,7 @@ if ~exist('ip','var') || isempty(ip)
     if isempty(ip)
         % There are no ois. We create the default oi and add it to
         % the database
-        ip = oiCreate;
+        ip = ipCreate;
         ieAddObject(ip);
     else
         % There is an ip in vcSESSION. None was passed in.  So this is a
