@@ -308,7 +308,7 @@ switch ieParamFormat(depositName)
         remoteURL    = strcat(depositURL{1}, '/',remoteFileName);
         localFile = sdrSpectralDownload(remoteURL,remoteFileName,downloadDir,confirm);
 
-    case {'isethdrsensor'}
+    case {'isethdrsensor-paper'}
         if ~isempty(p.Results.downloaddir)
             % The user gave us a place to download to.
             downloadDir = p.Results.downloaddir;
@@ -334,7 +334,7 @@ end
 %% Download succeeded. Should we unzip it?  Remove the zip?
 if unZip
     % localFile = ieWebGet('deposit file', 'chessset', 'deposit name','iset3d-scenes','unzip',true);
-    zipfilenames = unzip(localFile,downloadDir);
+    zipfilenames = unzip(localFile,downloaddir);
 
     % The directory is the part before .zip
     idx = strfind(localFile,'.zip');
