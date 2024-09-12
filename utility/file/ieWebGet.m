@@ -322,7 +322,7 @@ switch ieParamFormat(depositName)
         tmp = split(depositFile,'/');
         localFile = fullfile(downloadDir, tmp{end});
         if ~isfolder(downloadDir), mkdir(downloadDir); end
-        remoteURL = dockerWrapper.pathToLinux(fullfile(depositURL{1},depositFile));
+        remoteURL = pathToLinux(fullfile(depositURL{1},depositFile));
         try
             fprintf('*** Downloading %s from ISETHDRSensor on SDR ... \n',depositFile);
             websave(localFile, remoteURL);
