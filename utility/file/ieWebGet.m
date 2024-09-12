@@ -76,7 +76,9 @@ function [localFile, zipfilenames] = ieWebGet(varargin)
 %    webImageBrowser_mlapp
 %
 
+% Examples:
 %{
+% ETTBSkip
 % Browse the remote site
 ieWebGet('browse','pbrtv4');
 ieWebGet('browse','iset3d-scenes');
@@ -97,31 +99,33 @@ ieWebGet('browse','landscape-hyperspectral');  % ISET Hyperspectral Image Databa
 
 ieWebGet('browse','cone-fundamentals-paper');
 ieWebGet('browse','isethdrsensor-paper');
-
 %}
 %{
+% ETTBSkip
 localFile = ieWebGet('deposit name', 'pbrtv4','deposit file','kitchen.zip');
 %}
 %{
+% ETTBSkip
 localFile = ieWebGet('deposit name', 'iset3d','deposit file','SimpleScene');
 %}
 %{
 % Get this file, unzip it, remove the zip file
+% ETTBSkip
 [localFile,zipFiles] = ieWebGet('deposit name', 'bitterli', ...
                        'deposit file','cornell-box', ...
                        'confirm',false,'unzip',true,'remove zip file',true);
 %}
 %{
+% ETTBSkip
 localFile = ieWebGet('deposit name', 'misc-multispectral1');
-
-%}
-%{
 %}
 %{
 % Starting to implement SDR data
+% ETTBSkip
 fname = ieWebGet('resource type','sdrfruit','askfirst',false,'unzip',true);
 %}
 %{
+% ETTBSkip
 fname = ieWebGet('resource type','sdr multispectral');
 %}
 
