@@ -176,7 +176,7 @@ p.addParameter('downloaddir','',@ischar);
 p.parse(varargin{:});
 
 depositName   = p.Results.depositname;
-resourceFile   = p.Results.depositfile;
+depositFile   = p.Results.depositfile;
 downloaddir    = p.Results.downloaddir;
 unZip          = p.Results.unzip;
 removeZipFile  = p.Results.removezipfile;
@@ -212,17 +212,17 @@ switch ieParamFormat(depositName)
         end
 
         % We should check if the zip is already in the name.
-        [~,~,e] = fileparts(resourceFile);
+        [~,~,e] = fileparts(depositFile);
         if ~isequal(e,'.zip')
-            remoteFileName = strcat(resourceFile, '.zip');
-        else, remoteFileName = resourceFile;
+            remoteFileName = strcat(depositFile, '.zip');
+        else, remoteFileName = depositFile;
         end
         remoteURL    = strcat(depositURL{1}, '/',remoteFileName);
         localFile    = fullfile(downloadDir, remoteFileName);
 
         if confirm
             fprintf('** Downloading to %s ** \n',localFile);
-            proceed = confirmDownload(resourceFile, localFile);            
+            proceed = confirmDownload(depositFile, localFile);            
             if proceed == false, return, end
         end
 
@@ -239,14 +239,14 @@ switch ieParamFormat(depositName)
 
     case {'faces-3m'}
         % localFile = ieWebGet('deposit name','faces-3m','deposit file','montage.jpg');
-        if isempty(resourceFile) || isequal(resourceFile,'all')
+        if isempty(depositFile) || isequal(depositFile,'all')
             % Download them all
             remoteFileName = {'ISET_loresfemale_1_6.zip','ISET_loresfemale_7_12.zip',...
                 'ISET_loresmale_1_8.zip','ISET_loresmale_9_16.zip','ISET_loresmale_17_24.zip',...
                 'ISET_loresmale_25_40.zip','montage.jpg'};
         else
             % Download the one requested.
-            remoteFileName{1} = resourceFile;
+            remoteFileName{1} = depositFile;
         end
 
         if isempty(downloaddir)
@@ -260,7 +260,7 @@ switch ieParamFormat(depositName)
 
     case {'faces-1m'}
         % localFile = ieWebGet('resource type','faces-1m','resource file','montage.jpg');
-        if isempty(resourceFile) || isequal(resourceFile,'all')
+        if isempty(depositFile) || isequal(depositFile,'all')
             % Download them all
             remoteFileName = {
                 'ISET_hiresfemale_1_4.zip','ISET_hiresfemale_5_8.zip','ISET_hiresfemale_9_13.zip',...
@@ -268,7 +268,7 @@ switch ieParamFormat(depositName)
                 'montage.jpg'};
         else
             % Download the one requested.
-            remoteFileName{1} = resourceFile;
+            remoteFileName{1} = depositFile;
         end
 
         if isempty(downloaddir)
@@ -305,45 +305,54 @@ switch ieParamFormat(depositName)
         if isempty(downloaddir)
             downloadDir = fullfile(isetRootPath,'local','sdr');
         end
-        remoteURL    = strcat(depositURL{1}, '/',remoteFileName);
+        remoteURL = strcat(depositURL{1}, '/',remoteFileName);
         localFile = sdrSpectralDownload(remoteURL,remoteFileName,downloadDir,confirm);
 
-    case {'isethdrsensor'}
+    case {'isethdrsensor-paper'}
         if ~isempty(p.Results.downloaddir)
             % The user gave us a place to download to.
             downloadDir = p.Results.downloaddir;
         else
-            % Go to local/sdr
-            downloadDir = fullfile(isetRootPath,'local','sdr');
+            % We assume isethdrsensor is on the user's path
+            downloadDir = fullfile(isethdrsensorRootPath);
         end
 
-        localFile = fullfile(downloadDir, resourceFile);
-        localDir  = fileparts(localFile);
-        if ~isfolder(localDir), mkdir(localDir); end
-        remoteURL = fullfile(baseURL,resourceFile);
+        % The deposit file may be in a subdirectory.  Here we pull out
+        % just the file name to append to the downloadDir.
+        tmp = split(depositFile,'/');
+        localFile = fullfile(downloadDir, tmp{end});
+        if ~isfolder(downloadDir), mkdir(downloadDir); end
+        remoteURL = fullfile(depositURL{1},depositFile);
         try
-            fprintf('*** Downloading %s from ISETHDRSensor SDR ... \n',resourceFile);
+            fprintf('*** Downloading %s from ISETHDRSensor on SDR ... \n',depositFile);
             websave(localFile, remoteURL);
             fprintf('*** File is downloaded! \n');
         catch
             warning("Unable to retrieve %s", remoteURL);
         end
+    otherwise
+        error('Unknown deposit name %s',depositName);
 end
 
 
 %% Download succeeded. Should we unzip it?  Remove the zip?
 if unZip
-    % localFile = ieWebGet('deposit file', 'chessset', 'deposit name','iset3d-scenes','unzip',true);
-    zipfilenames = unzip(localFile,downloadDir);
+    [~,~,ext] = fileparts(localFile);
+    if ~isequal(ext,'.zip')
+        fprintf('Download (%s)is not a zip file.\nSkipping unzip.\n',localFile);
+    else
+        % localFile = ieWebGet('deposit file', 'chessset', 'deposit name','iset3d-scenes','unzip',true);
+        zipfilenames = unzip(localFile,downloaddir);
 
-    % The directory is the part before .zip
-    idx = strfind(localFile,'.zip');
+        % The directory is the part before .zip
+        idx = strfind(localFile,'.zip');
 
-    if removeZipFile
-        % After unzipping, we usually remove the zip.  The localFile
-        % directory then becomes the local path, really.
-        delete(localFile);
-        localFile = localFile(1:(idx-1));
+        if removeZipFile
+            % After unzipping, we usually remove the zip.  The localFile
+            % directory then becomes the local path, really.
+            delete(localFile);
+            localFile = localFile(1:(idx-1));
+        end
     end
 end
 
