@@ -319,7 +319,7 @@ switch ieParamFormat(depositName)
 
         % The deposit file may be in a subdirectory.  Here we pull out
         % just the file name to append to the downloadDir.
-        tmp = split(depositFile,'/');
+        tmp = split(depositFile,filesep());
         localFile = fullfile(downloadDir, tmp{end});
         if ~isfolder(downloadDir), mkdir(downloadDir); end
         remoteURL = pathToLinux(fullfile(depositURL{1},depositFile));
