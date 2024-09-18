@@ -88,7 +88,9 @@ switch displayName
 
 end
 
-if length(varargin) == 1
+if numel(varargin) == 1
+    % We used to allow just the one argument.  We still do it, but we
+    % warn.
     warning('ISETBIO: Should set wave as name-value pairs');
     d = displaySet(d, 'wave', varargin{1});
 else
