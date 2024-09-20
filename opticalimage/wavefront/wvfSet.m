@@ -70,7 +70,8 @@ function wvf = wvfSet(wvf, parm, val, varargin)
 %       'um per degree'           - Conversion factor degree of visual angle
 %                                   and um on retina
 %    LCA method
-%       'lca method'              - 'none', 'human', function handle for a custom LCA
+%       'lca method'              - 'none', 'human', function handle
+%                                    for a custom LCA 
 %                                   
 %    Stiles Crawford Effect
 %       'sce params'              - The Stiles-Crawford Effect structure
