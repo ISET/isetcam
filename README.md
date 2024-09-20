@@ -12,6 +12,7 @@ This ISETCam distribution originated with a commercial product, ISET from Imagev
 
 * May 29, 2024 - Please see the section on optics for an update on how ISETCam now relies on wavefront aberrations, represented by Zernike polynomials, to represent shift-invariant systems.  The new computation includes specifications of apertures with non-circular shapes, scratches, and dust particles.
 * May 29, 2024 - The separation between ISETCam and ISETBio is complete. ISETBio now relies on the scene, optical image and certain other fundamental functions in ISETCam as a base library. Numerical validations have been moved into the ISETValidate repository, and these include separate ISETCam, ISETBio and ISET3d validations.  Extensive regression testing was performed to validate the new code against numerical calculations from the prior code.
+* September, 2024 - Additional support for hdrsensor
 
 ### Models
 
