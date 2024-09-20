@@ -12,7 +12,7 @@ function scene = scenePointArray(scene,sz,pointSpacing,spectralType,pointSize)
 %
 % Inputs
 %   scene - an initialized scene structure
-%   sz    - row and column size of the image.           (default: 128)
+%   sz    - row and column size of the image (default: 128)
 %   pointSpacing - distance between points in pixels (default: 16)
 %   spectrum -  {'equal energy','equal photon','d65'}   D65 by default
 %   pointSize - 1 by default.  Can be an integer > 1
@@ -33,7 +33,7 @@ function scene = scenePointArray(scene,sz,pointSpacing,spectralType,pointSize)
 %   sceneCreate
 
 if ieNotDefined('scene'), error('Scene structure required'); end
-if ieNotDefined('sz'), sz = 128; end
+if ieNotDefined('sz'), sz = [128 128]; end
 if ieNotDefined('pointSpacing'), pointSpacing = 16; end
 if ieNotDefined('spectralType'), spectralType = 'd65'; end
 if ieNotDefined('pointSize'),    pointSize = 1; end
@@ -44,10 +44,14 @@ scene = initDefaultSpectrum(scene,'multispectral');
 wave  = sceneGet(scene,'wave');
 nWave = sceneGet(scene,'nwave');
 
+% From here on out, sz is row,col
+if isscalar(sz), sz = [sz,sz]; end
+
 % Make an image of the points with size 1
 d = zeros(sz); 
-idx = round(pointSpacing/2):pointSpacing:sz;
-d(idx, idx) = 1;
+idx = round(pointSpacing/2):pointSpacing:sz(2);
+idy = round(pointSpacing/2:pointSpacing:sz(1));
+d(idy, idx) = 1;
 
 % Make the points bigger by convolution with a box equal to point size
 if pointSize > 1
