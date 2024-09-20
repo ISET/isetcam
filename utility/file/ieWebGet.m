@@ -12,7 +12,6 @@ function [localFile, zipfilenames] = ieWebGet(varargin)
 %   N/A
 %
 % Key/val pairs
-%
 %   'list'   -  list the websites we know about
 %   'browse' -  browse the website with the deposited files
 %
