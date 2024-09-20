@@ -5,8 +5,8 @@ function wvf = wvfCompute(wvf,varargin)
 %   wvf = wvfCompute(wvf,varargin)
 %
 % Brief description
-%   Wrapper for computing the pupil function and psf for the general
-%   optics calculation based on a wavefront and shift-invariant optics.  
+%   Wrapper for computing the pupil function and psf based on a
+%   wavefront for shift-invariant optics.
 %
 % Input
 %   wvf - Wavefront struct (wvfCreate for an example)
@@ -14,17 +14,11 @@ function wvf = wvfCompute(wvf,varargin)
 % Optional key/val
 %   compute pupil function - Call wvfComputePupilFunction
 %   compute psf            - Call wvfComputePSF
-%   aperture function      - Use this aperture function (matrix)
-%   human lca              - Add human longitudinal chromatic aberration
-%                            when computing the pupil function
-%   lca function           - Use this longitudinal chromatic aberration
-%                            function     
+%   aperture               - Use this aperture function (matrix)
 %   compute sce            - Add Stiles Crawford effect to aperture
 %                            function 
-%
 % Output
 %   wvf - modified wavefront structure with pupil function and psf
-%
 %
 % See also
 %   wvfComputePSF, wvfComputePupilFunction, wvfAperture
@@ -39,11 +33,6 @@ p.addRequired('wvf',@isstruct);
 p.addParameter('computepupilfunction',true,@islogical);
 p.addParameter('computepsf',true,@islogical);
 
-% We decied these behaviors should be controlled by the customLca field,
-% not a key/value pair.
-% p.addParameter('humanlca',false,@islogical);   % Apply longitudinal chromatic aberration
-% p.addParameter('lcafunction',[],@ismatrix);
-
 p.addParameter('aperture',[],@ismatrix);
 p.addParameter('computesce',false,@islogical);   % Apply Stiles Crawford effect to aperture function
 
@@ -52,17 +41,7 @@ params = p.Results;
 
 %% Parameters for computing the pupil function
 
-if params.computepupilfunction
-
-    % if params.humanlca && ~isempty(params.lcafunction)
-    %     error('You cannot specify human lca and a custom lca function.')
-    % end
-   
-    % wvf  = wvfComputePupilFunction(wvf,...
-    %     'human lca',        params.humanlca, ...
-    %     'aperture',         params.aperture, ...
-    %     'compute sce',      params.computesce, ...
-    %     'lca function',     params.lcafunction);
+if params.computepupilfunction  
     wvf  = wvfComputePupilFunction(wvf,...
         'aperture',         params.aperture, ...
         'compute sce',      params.computesce);
