@@ -201,16 +201,19 @@ switch format
     case 'window'
         % OK, we have an oi so put up the data.
         precision = 3;
+        hw = sprintf('%.3f %.3f',oiGet(oi,'height','mm'),oiGet(oi,'width','mm'));
+        fov = sprintf('%.1f %.1f',oiGet(oi,'h fov'),oiGet(oi,'diagonal field of view'));
+
         data = {...
-            'Optical Image name', char(oiGet(oi,'name')), '';
-            'Compute method',   oiGet(oi,'compute method'), '';
+            'Optical Image name', char(oiGet(oi,'name')),     '';
+            'Compute method',     oiGet(oi,'compute method'), '';
             'Rows & cols',        num2str(oiGet(oi,'size')),                             'samples';
-            'Horizontal FOV',     num2str(oiGet(oi,'fov')),                              'deg';
+            'Horiz, Diag FOV',    fov,                                                   'deg';
             'Wave (nm)',          num2str(wave), 'nm';
-            'Spatial resolution', num2str(oiGet(oi,'spatial resolution','um'),precision),'um/sample';
+            'Height,Width',       hw,                                                    'mm';
+            'Resolution',         sprintf('%.3f %.3f',oiGet(oi,'spatial resolution','um')),'um/sample';
             'Mean illuminance',   num2str(oiGet(oi,'mean illuminance'),precision),       'lux';
             'Dynamic range',      num2str(oiGet(oi,'dynamic range'),precision),          'linear';            
-            'Area',               num2str(oiGet(oi,'area','mm'),precision),              'mm^2';
             };
         
         % Deal with light field optical image parameters.
@@ -225,16 +228,17 @@ switch format
         
     case 'embed'
         % OK, we have an oi so put up the data.
-        precision = 3;
+        % precision = 1;        
+        fov = sprintf('%.1f %.1f',oiGet(oi,'h fov'),oiGet(oi,'diagonal field of view'));
         data = {...
-            'Compute method',        oiGet(oi,'compute method');
+            'Compute method',         oiGet(oi,'compute method');
             'Rows & columns',         num2str(oiGet(oi,'size'));
-            'H FOV (deg)',            num2str(oiGet(oi,'fov'));
+            'Hor, Dia, FOV (deg)',    fov;
             'Wave (nm)',              num2str(wave);
-            'Resolution (um/sample)', num2str(oiGet(oi,'spatial resolution','um'),precision);
-            'Mean illuminance (lux)', num2str(oiGet(oi,'mean illuminance'),precision);
-            'Dynamic range',          num2str(oiGet(oi,'dynamic range'),precision);
-            'Area (mm^2)',            num2str(oiGet(oi,'area','mm'),precision)';
+            'Resolution (um/sample)', sprintf('%.1f, %.1f',oiGet(oi,'spatial resolution','um'));
+            'Height,Width (mm)',      sprintf('%.1f %.1f',oiGet(oi,'height','mm'),oiGet(oi,'width','mm'));
+            'Mean illuminance (lux)', sprintf('%.1f',oiGet(oi,'mean illuminance'));
+            'Dynamic range',          sprintf('%.1f',oiGet(oi,'dynamic range'));
             };
         
         % Deal with light field optical image parameters.
@@ -265,7 +269,7 @@ switch format
         data = {...
             'Optics model',     opticsGet(optics,'model'),                     '';
             'Optics name',      opticsGet(optics,'name'),                      '';
-            'Focal length',     num2str(opticsGet(optics,'focal length','mm'),precision),      'mm';
+            'Focal length',     sprintf('%.3f',opticsGet(optics,'focal length','mm')),      'mm';
             'F-number',         sprintf('%.1f',opticsGet(optics,'fnumber')),              'dimensionless';
             'Aperture diameter',num2str(opticsGet(optics,'aperture diameter','mm'),precision), 'mm';
             };
@@ -275,7 +279,7 @@ switch format
         
         data = {...
             'Optics model',          sprintf('%s-%s',opticsGet(optics,'name'),opticsGet(optics,'model'));
-            'Focal length (mm)',     num2str(opticsGet(optics,'focal length','mm'),     precision);
+            'Focal length (mm)',     sprintf('%.1f',opticsGet(optics,'focal length','mm'));
             'F-number',              sprintf('%.1f',opticsGet(optics,'fnumber'));
             'Aperture diameter (mm)',num2str(opticsGet(optics,'aperture diameter','mm'),precision);
             };
