@@ -135,6 +135,7 @@ function oi = oiSet(oi,parm,val,varargin)
    %oi = oiSet(oi,'wvf pupil diameter',3,'mm')
 %}
 
+%% Params
 if ~exist('parm','var') || isempty(parm), error('Param must be defined.'); end
 if ~exist('val','var'), error('Value field required.'); end
 
@@ -158,8 +159,7 @@ if isequal(oType,'optics')
     end
 elseif isequal(oType,'wvf')
     if isempty(parm)
-        error('We no longer allow setting wvf into the oi.  Use oiSet(oi,''optics wvf'',wvf) to attach a wvf');
-        
+        error('Use oiSet(oi,''optics wvf'',wvf) to attach a wvf');
     else
         % Previous comment:
         %
@@ -182,7 +182,7 @@ elseif isequal(oType,'wvf')
 
         % Set the wvf with whatever the user asked us to do
         if isempty(varargin), wvf = wvfSet(wvf,parm,val,varargin{:});
-        elseif length(varargin) == 1
+        elseif length(varargin) == 1 %#ok<*ISCL>
             wvf = wvfSet(wvf,parm,val,varargin{:});
         elseif length(varargin) == 2
             wvf = wvfSet(wvf,parm,val,varargin{1},varargin{2});
@@ -229,7 +229,7 @@ elseif isempty(parm)
     error('oType %s. Empty param.\n',oType);
 end
 
-% The typical oi Path is here.
+%% The typical oi Path is here.
 parm = ieParamFormat(parm);
 switch parm
     case {'name','oiname'}
