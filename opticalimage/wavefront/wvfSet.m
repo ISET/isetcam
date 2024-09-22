@@ -212,14 +212,21 @@ switch parm
         % zcoeffs is shorter than required by jIndex, the vector is padded
         % with zeros prior to the insertion of the passed coefficients.
         if (isempty(varargin))
+            % No names, so just set the zcoeffs to the vector sent in
             wvf.zcoeffs = val;
         else
+            % We have a cell array of names.  Convert to indices and set
+            % appropriately
             idx = wvfOSAIndexToVectorIndex(varargin{1});
             maxidx = max(idx);
             if (maxidx > length(wvf.zcoeffs))
+                % Extend with zeroes
                 wvf.zcoeffs(length(wvf.zcoeffs) + 1:maxidx) = 0;
+            end            
+            for ii=1:numel(idx)
+                wvf.zcoeffs(idx(ii)) = val(ii);
             end
-            wvf.zcoeffs(idx) = val;
+
         end
         wvf.PUPILFUNCTION_STALE = true;
 
