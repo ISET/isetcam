@@ -150,11 +150,11 @@ end
 
 switch format
     case 'window'
+        fov = sprintf('%.4f %.4f',sceneGet(scene,'h fov'),sceneGet(scene,'diagonal field of view'));
         precision = 4;
         data = {...
             'Name',                     char(sceneGet(scene,'name')),                                '';
-            'Field of view (hor)',      num2str(sceneGet(scene,'fov')),                              'deg';
-            'Field of view (diag)',     num2str(sceneGet(scene,'diagonal field of view')),           'deg';
+            'Hor, Dia fov',             fov,                                                         'deg';
             'Rows & columns',           num2str(sceneGet(scene,'size')),                             'samples';
             'Height & Width',           num2str(sceneGet(scene,'height and width','mm'),precision),  'mm';
             'Distance',                 num2str(sceneGet(scene,'distance','m'),precision),           'meters';
@@ -169,8 +169,10 @@ switch format
             };
     case 'embed'
         precision = 2;
+        fov = sprintf('%.2f %.2f',sceneGet(scene,'h fov'),sceneGet(scene,'diagonal field of view'));
+
         data = {...
-            'FoV (width)',              num2str(sceneGet(scene,'fov'),precision);
+            'Hor, Dia fov',             fov;
             'Rows/cols',                num2str(sceneGet(scene,'size'));
             'Hght/Width (mm)',          num2str(sceneGet(scene,'height and width','mm'),precision+2);
             'Distance (m)',             num2str(sceneGet(scene,'distance','m'),precision);
@@ -210,7 +212,7 @@ switch format
             'Rows & cols',        num2str(oiGet(oi,'size')),                             'samples';
             'Horiz, Diag FOV',    fov,                                                   'deg';
             'Wave (nm)',          num2str(wave), 'nm';
-            'Height,Width',       hw,                                                    'mm';
+            'Hght,Wdth',          hw,                                                    'mm';
             'Resolution',         sprintf('%.3f %.3f',oiGet(oi,'spatial resolution','um')),'um/sample';
             'Mean illuminance',   num2str(oiGet(oi,'mean illuminance'),precision),       'lux';
             'Dynamic range',      num2str(oiGet(oi,'dynamic range'),precision),          'linear';            
@@ -236,7 +238,7 @@ switch format
             'Hor, Dia, FOV (deg)',    fov;
             'Wave (nm)',              num2str(wave);
             'Resolution (um/sample)', sprintf('%.1f, %.1f',oiGet(oi,'spatial resolution','um'));
-            'Height,Width (mm)',      sprintf('%.1f %.1f',oiGet(oi,'height','mm'),oiGet(oi,'width','mm'));
+            'Hght,Wdth (mm)',         sprintf('%.1f %.1f',oiGet(oi,'height','mm'),oiGet(oi,'width','mm'));
             'Mean illuminance (lux)', sprintf('%.1f',oiGet(oi,'mean illuminance'));
             'Dynamic range',          sprintf('%.1f',oiGet(oi,'dynamic range'));
             };
