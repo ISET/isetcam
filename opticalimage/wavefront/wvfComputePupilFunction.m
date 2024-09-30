@@ -122,7 +122,7 @@ p.parse(wvf,varargin{:});
 % size that gave rise to the measured coefficients.
 calcPupilSizeMM = wvfGet(wvf, 'calc pupil diameter', 'mm');
 measPupilSizeMM = wvfGet(wvf, 'measured pupil diameter', 'mm');
-if (calcPupilSizeMM > measPupilSizeMM)
+if (abs(calcPupilSizeMM - measPupilSizeMM) > 1e-6)
     error(['Calculation pupil (%.2f mm) must not exceed measurement'...
         ' pupil (%.2f mm).'], calcPupilSizeMM, measPupilSizeMM);
 end
