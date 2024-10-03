@@ -6,7 +6,7 @@ Please see the [ISETCam wiki page](https://github.com/iset/isetcam/wiki) for mor
 
 This ISETCam distribution originated with a commercial product, ISET from Imageval. The ISETCam code and repositories have expanded significantly. For example, ISET software is closely integrated with physically based rendering and graphics (PBRT) in [ISET3D](https://github.com/ISET/iset3d/wiki). It is also closely connected to models the human visual encoding in [ISETBio](https://github.com/ISETBIO/ISETBio/wiki).
 
-A set of tutorial videos introducing aspects of ISETCam and the companion tool for biological vision ISETBio is available at [this YouTube playlist]{https://www.youtube.com/playlist?list=PLr6PuubdQrtQ-rz5RIe13k3YFrmwBh7gr}.
+A set of tutorial videos introducing aspects of ISETCam and the companion tool for biological vision ISETBio is available at [this YouTube playlist](https://www.youtube.com/playlist?list=PLr6PuubdQrtQ-rz5RIe13k3YFrmwBh7gr).
 
 # Notes
 
