@@ -22,13 +22,19 @@ function lsf = psf2lsf(psf,varargin)
 %   as a one-dimensional measure, and compute the IFFT.  This is the
 %   linespread in one direction.
 %
-%   If the PSF is circularly symmetric, the 1D LSF is all you need.  If the
-%   PSF is not circularly symmetric, you might want to choose a different
-%   line though the FFT2 of the PSF.  That code, which may require some
-%   interpolation in the transform domain, is waiting to be written.
+%   If the PSF is circularly symmetric, the 1D LSF is all you need.
+%
+%   If you want to choose a different line though the FFT2 of the PSF,
+%   neither horizontal or vertical, you may require some interpolation
+%   in the transform domain. That code is waiting to be written.
+%
+%   N.B. For horizontal and vertical linespreads, the calculation is
+%   just the sum along the rows or the sum across the columns.  See
+%   the calculation in the example.  I think that approach is
+%   implemented somewhere in ISET, but I can't find it right now (BW).
 %
 % See also
-%    psf2otf
+%    psf2otf, PsfToLsf, LsfToPsf
 
 % Examples:
 %{
@@ -38,11 +44,16 @@ function lsf = psf2lsf(psf,varargin)
 
    % Passes fewer frequencies because the broad direction
    lsf = psf2lsf(psf);
-   ieNewGraphWin; plot(lsf)
+   ieNewGraphWin; plot(lsf);
+   lsf1 = sum(psf,2);
+   hold on; plot(lsf1,'o');
 
    % More frequencies because the narrow direction
    lsf = psf2lsf(psf,'direction','vertical');
-   ieNewGraphWin; plot(lsf)
+   ieNewGraphWin; plot(lsf);
+   lsf1 = sum(psf,1);
+   hold on; plot(lsf1,'o');
+
 %}
 %{
    % Loops through wavelengths
