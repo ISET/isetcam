@@ -253,6 +253,12 @@ for ii = 1:nWavelengths
     % defined by the calculated pupil diameter.  
     boundingBox = imageBoundingBox(calc_radius_index);
 
+    % There are cases when I have used an extremely small aperture (10
+    % microns), and this code fails (BW).  The reason is the bounding box
+    % size is 0,0. Setting the number of spatial samples to be higher might
+    % solve the problem, but it can also make the calculation extremely
+    % slow.  So, for now, I am staying away from such tiny apertures.
+
     % Resize the aperture mask to the bounding box of the calculated
     % radius.  Using nearest neighbor interpolation fixes problems
     % caused by linear interpolation, where when we start with a mask of
