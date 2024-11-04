@@ -1,10 +1,16 @@
-function psfPlot(fig,uData)
-% [uData, fig] = oiPlot(oi,'psf', ...)
+function airyDiskPlot(fig,uData)
+% Plots the first zero crossing of the Airy disk on a figure
+%
+% Synoposis
+% [uData, fig] = airyDiskPlot(oi,'psf', ...)
 % Then call this.
 %
 % Adjust the spacing for the plotted PSF.  Maybe this should be called
 % psfPlot
 %
+
+error('Deprecated.')
+
 figure(fig);
 
 pRange = ceil(max(uData.x(:)));
