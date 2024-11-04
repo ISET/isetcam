@@ -475,6 +475,9 @@ switch parm
     
         %{
         case {'fnumber'}
+             % We do not allow setting the fnumber in the wavefront
+             % There are ways to do this in oiSet and opticsSet()
+             %
              % We adjust the fnumber by changing the pupil diameter, leaving the
              % focal length unchanged. This differs from ISETCam, which has the
              % fnumber and focal length as parameters and infers the pupil

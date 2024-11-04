@@ -1,35 +1,40 @@
-function val = airyDisk(thisWave, fNumber, varargin)
-% Return the Airy disk radius or diameter
+function [radius,img] = airyDisk(thisWave, fNumber, varargin)
+% Return the Airy disk radius (or diameter) and possibly the image
 %
 % Synopsis
-%    val = airyDisk(thisWave, fNumber, varargin)
+%    [radius,img] = airyDisk(thisWave, fNumber, varargin)
 %
 % Input
 %   wave:     Wavelength in meters or nanometers (both OK).
 %   fnumber:  Diffraction limited optics f number
 %
 % Optional
-%   'units'     Units of the return ('um','mm','m','deg')
+%   'units'     Units of the return ('um','mm','m','deg') default: 'm'
 %   'diameter': If true, returns diameter.  Default:  false.
 %   'pupil diameter' - Used for case of 'deg'
 %
 % Return
-%   val:   Radius (default) or if diameter is set to true then
-%          diameter.
+%   radius:  Radius (default) or if diameter is set to true then
+%            diameter.
+%   img:     Struct with an image of the Airy pattern as well as the x and
+%            y values
 %
 % See also
 %   v_opticsWVFchromatic, s_opticsDLPSF
 
-% Examples
+% Examples:
 %{
 thisWave = 400; fn = 5;
-radius = airyDiskRadius(thisWave,fn,'units','um')
-   
+radius = airyDisk(thisWave,fn,'units','um')
+%}
+%{
 thisWave = 700; fn = 5;   % Longer wavelength
-radius = airyDiskRadius(thisWave,fn,'units','um')
-
+[~,img] = airyDisk(thisWave,fn,'units','um');
+ieNewGraphWin; mesh(img.x,img.y,img.data);
+%}
+%{
 thisWave = 700; fn = 2;   % Bigger aperture
-radius = airyDiskRadius(thisWave,fn,'units','um')
+radius = airyDisk(thisWave,fn)
 %}
 
 %%  
@@ -56,22 +61,29 @@ switch units
     case {'m','mm','um'}
         % Here's the formula in spatial distance
         radius = (2.44*fNumber*thisWave)/2;  % Meters
-        val = radius * ieUnitScaleFactor(units);
+        radius = radius * ieUnitScaleFactor(units);
 
     case {'deg'}
         % https://www.fxsolver.com/browse/formulas/Airy+disk
-        val = asind(1.22*thisWave/p.Results.pupildiameter);
+        radius = asind(1.22*thisWave/p.Results.pupildiameter);
         
     case {'rad'}
-        val = asin(1.22*thisWave/p.Results.pupildiameter);
+        radius = asin(1.22*thisWave/p.Results.pupildiameter);
 
     otherwise
         error('Unknown unit: %s\n',units);
 end
 
 if p.Results.diameter
-    val = val*2;
+    radius = radius*2;
 end
 
-
+if nargout == 2
+    % Return the image as well
+    oi = oiCreate('wvf');
+    oi = oiSet(oi,'fnumber',fNumber);
+    thisWave = 400;
+    uData = oiPlot(oi,'psf',[],thisWave,'nofigure');
+    img.data = uData.psf; img.x = uData.x(1,:); img.y = uData.y(:,1);
+    % ieNewGraphWin; mesh(img.x,img.y,img.data);
 end
