@@ -232,11 +232,11 @@ switch parm
 
         %% Spatial sampling parameters
         %
-        % In the end, we calculate using discretized sampling. Because the
-        % pupil function and the psf are related by a fourier transform, it
-        % is natural to use the same number of spatial samples for both the
-        % pupil function and the corresponding psf.  The parameters here
-        % specify the sampling.
+        % In the end, we calculate using discretized sampling. Because
+        % the pupil function and the psf are related by a Fourier
+        % transform, it is natural to use the same number of spatial
+        % samples for both the pupil function and the corresponding
+        % psf.  The parameters here specify the sampling.
         %
         % Note that this may be done independently of the wavefront
         % measurements, because the spatial scale of those is defined by
@@ -314,7 +314,14 @@ switch parm
 
     case {'psfsampleinterval','refpsfsampleinterval' 'refpsfarcminpersample', ...
             'refpsfarcminperpixel'}
-        % Arc minutes per pixel of the sampled psf at the measurement
+        % wvfSet(wvf,'psf sample interval',val)
+        %
+        % See 'psf sample spacing', just below for a simple way to set
+        % the spacing with spatial units
+        %
+        % val is the arc minutes per pixel specified in radians?
+        %
+        % Sets the arc minutes per pixel of the sampled psf at the measurement
         % wavelength.
         %
         % When we convert between the pupil function and the PSF, we use
@@ -361,11 +368,34 @@ switch parm
         % BW: July, 2023.  Reading through here.  Hope to check. See my
         % comments above, complaining about the interaction between field
         % size, sample spacing, and number of samples.
+        %                
         radiansPerPixel = val / (180 * 60 / 3.1416);
-        wvf.refSizeOfFieldMM = wvfGet(wvf, 'measured wl', 'mm') ...
-            / radiansPerPixel;
+        tmp = wvfGet(wvf, 'measured wl', 'mm') / radiansPerPixel;
+        wvf = wvfSet('field size mm', tmp);
+
+        % Original
+        % wvf.refSizeOfFieldMM = wvfGet(wvf, 'measured wl', 'mm') ...
+        %    / radiansPerPixel;
         wvf.PUPILFUNCTION_STALE = true;
 
+    case {'psfsamplespacing','psfdx'}
+        % wvfSet(wvf,'psf sample spacing',valMM)
+        %
+        % This is documented in t_wvfOverview.mlx.
+
+        psf_spacingMM = val;
+        lambdaMM = wvfGet(wvf,'wave','mm');
+        focallengthMM = wvfGet(wvf,'focal length','mm');
+        nPixels = wvfGet(wvf,'npixels');
+
+        if numel(lambdaMM) > 1, warning('Using wave %.1f nm',lambdaMM(1)*1e6); end
+        % compute the pupil sample spacing that matches this PSF sample
+        % spacing in the image plane.
+        pupil_spacingMM = lambdaMM(1) * focallengthMM / (psf_spacingMM * nPixels);
+
+        % This implements the change in PSF dx
+        wvf = wvfSet(wvf,'field size mm', pupil_spacingMM * nPixels);
+       
     case {'focallength','flength'}
         % Default unit for focal length is millimeters
         %
