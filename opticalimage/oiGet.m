@@ -276,8 +276,8 @@ switch oType
         if isempty(varargin), val = wvf;
         else
             wvfParam = varargin{1};
-            if numel(varargin) > 1, newV = varargin{2:end};
-                val = wvfGet(wvf,wvfParam,newV);
+            if numel(varargin) > 1, newV = varargin(2:end);
+                val = wvfGet(wvf,wvfParam,newV{:});
             else
                 val = wvfGet(wvf,wvfParam);
             end

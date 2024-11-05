@@ -106,9 +106,9 @@ if p.Results.diameter
 end
 
 if nargout == 2
-    % Return the image as well.  High resolution. We can only do this
-    % if we have an fNumber.  Otherwise we do not know the distance to
-    % the image plane.
+    % Return the image as well. We can only do this if we have an
+    % fNumber.  Otherwise we do not know the distance to the image
+    % plane.
     if isempty(fNumber)
         warning('Cannot compute the image');
         img = []; return;
