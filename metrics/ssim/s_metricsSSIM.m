@@ -11,8 +11,8 @@ ieInit;
 %% Reference scene all the way to a rendered image
 
 % The initial calculation has zero noise
-% scene = sceneCreate('sweep frequency',512,20);
-scene = sceneCreate;
+scene = sceneCreate('sweep frequency',512,20);
+% scene = sceneCreate;
 % sceneWindow(scene);
 
 oi = oiCreate;
