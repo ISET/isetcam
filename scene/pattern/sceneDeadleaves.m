@@ -50,6 +50,8 @@ options.null = 0;
 if nargin<2
     sigma = 3;
 end
+
+% These parameters need to be exposed in the input arguments.
 if isfield(options,'rmin')
     rmin = options.rmin;
 else
