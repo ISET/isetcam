@@ -132,6 +132,7 @@ oi = oiCreate;
 oi = oiCompute(oi,scene,'pad value','border','crop',true,'pixel size',1e-6);
 oiWindow(oi);
 %}
+
 %% Parse
 varargin = ieParamFormat(varargin);
 p = inputParser;
