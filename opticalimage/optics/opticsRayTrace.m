@@ -9,6 +9,38 @@ function oi = opticsRayTrace(scene,oi,varargin)
 %
 % See also:  oiCompute, rtPrecomputePSFApply, rtPrecomputePSF
 %
+% Recommended by chatGPT.  Also, what we have used for years.
+% https://chatgpt.com/share/678e981b-e950-8002-8e5e-0a97b1d3fe8f
+%
+% 1. **Geometric Distortion**:  
+%    Start with geometric distortion because it defines how the rays from the
+%    scene map onto the image sensor. This step adjusts the spatial layout of
+%    the image to account for the lens's optical imperfections (e.g., barrel
+%    or pincushion distortion). The output is a geometrically corrected
+%    version of the scene that you will process further.    
+% 
+% 2. **Lens Shading**:  
+%    After geometric distortion, apply the lens shading (also called
+%    vignetting). Lens shading accounts for the variation in light intensity
+%    across the image due to lens imperfections and the falloff of
+%    illumination towards the periphery of the image. Applying this after
+%    distortion ensures that the shading correction is aligned with the
+%    corrected geometry.     
+% 
+% 3. **Blurring**:  
+%    Finally, apply blurring to simulate the effect of the point spread
+%    function (PSF) of the lens, which models how light spreads due to
+%    diffraction and aberrations. This should be the last step because
+%    blurring is spatially invariant in the corrected geometry and should
+%    apply to the corrected intensity distribution after lens shading.    
+% 
+% ### Summary of the Sequence:
+% **Geometric Distortion → Lens Shading → Blurring**
+% 
+% This order ensures that each operation is applied to the appropriate
+% intermediate state of the image, yielding the most physically accurate
+% simulation.   
+%
 % Copyright ImagEval Consultants, LLC, 2003.
 
 %% Check parameters
@@ -74,6 +106,8 @@ oi = oiSet(oi,'wangular',sceneGet(scene,'wangular'));
 %  (a) Geometric distortion,
 %  (b) Relative illumination, and
 %  (c) OTF blurring
+%
+% See comments at the top.
 
 % The function rtGeometry converts the scene radiance into optical
 % irradiance. It also calculates the geometric distortion and relative
