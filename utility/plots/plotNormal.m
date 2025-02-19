@@ -1,15 +1,15 @@
 function fig = plotNormal(m, s)
-% Plots a normal distribution with specified mean and standard deviation.
+% Plot normal distributions with specified mean and standard deviation.
 %
 % Synopsis
 %  fig = plotNormal(m, s)
 %
 % Input:
-%   m: Mean of the normal distribution.
-%   s: Standard deviation of the normal distribution.
+%   m: Vector of means of the normal distribution.
+%   s: Vector of standard deviation of the normal distribution.
 %
 % See also
-%
+%   xaxisLine, identityLine, plotRadiance
 
 % Example:
 %{
@@ -17,21 +17,31 @@ function fig = plotNormal(m, s)
   axesHandles = findobj(fig, 'Type', 'axes');
   gCurve = findobj(axesHandles,'Type','line')
 %}
+%{
+  fig = plotNormal([1 2],[0.1 .5]);
+%}
 
 % Generate x-values for the plot.  We'll go out a few standard deviations
-% on either side of the mean for a good visualization.  Adjust the range
-% as needed.
-x = linspace(m - 4*s, m + 4*s, 100);  % 100 points for a smooth curve
+% on either side of the min and max mean for a good visualization.  Adjust
+% the range as needed.
+x = linspace(min(m) - 4*max(s), max(m) + 4*max(s), 200);  % 100 points for a smooth curve
 
-% Calculate the probability density function (PDF) of the normal distribution.
-y = (1 / (s * sqrt(2*pi))) * exp(-((x - m).^2) / (2*s^2));
-
-% Could use y = normpdf(x,m,s), from the statistics toolbox
-% But we implemented the formula, directly.
-%
-% Create the plot.
 fig = ieNewGraphWin;
-plot(x, y, 'k-', 'LineWidth', 2); % Blue solid line, 2 pixels wide
+for ii=1:numel(m)
+
+    % Calculate the probability density function (PDF) of the normal distribution.
+    y = (1 / (s(ii) * sqrt(2*pi))) * exp(-((x - m(ii)).^2) / (2*s(ii)^2));
+
+    % Could use y = normpdf(x,m,s), from the statistics toolbox
+    % But we implemented the formula, directly.
+    %
+    % Create the plot.
+
+    plot(x, y, 'k-', 'LineWidth', 2); % Blue solid line, 2 pixels wide
+
+    hold on;
+
+end
 
 % Add labels and title.
 xlabel('x');
