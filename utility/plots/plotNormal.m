@@ -1,12 +1,15 @@
-function fig = plotNormal(m, s)
+function fig = plotNormal(m, s, varargin)
 % Plot normal distributions with specified mean and standard deviation.
 %
 % Synopsis
-%  fig = plotNormal(m, s)
+%  fig = plotNormal(m, s, varargin)
 %
 % Input:
 %   m: Vector of means of the normal distribution.
-%   s: Vector of standard deviation of the normal distribution.
+%   s: Vector of standard deviations of the normal distribution.
+%
+% Key/Val
+%   color - Cell array of possible colors
 %
 % See also
 %   xaxisLine, identityLine, plotRadiance
@@ -18,8 +21,18 @@ function fig = plotNormal(m, s)
   gCurve = findobj(axesHandles,'Type','line')
 %}
 %{
-  fig = plotNormal([1 2],[0.1 .5]);
+  fig = plotNormal([1 2],[0.1 .5],'color',{'k','r'});
 %}
+
+%% Parse inputs
+varargin = ieParamFormat(varargin);
+
+p = inputParser;
+p.addRequired('m',@isnumeric);
+p.addRequired('s',@isnumeric);
+p.addParameter('color','',@iscell);
+p.parse(m,s,varargin{:});
+color = p.Results.color;
 
 % Generate x-values for the plot.  We'll go out a few standard deviations
 % on either side of the min and max mean for a good visualization.  Adjust
@@ -27,6 +40,7 @@ function fig = plotNormal(m, s)
 x = linspace(min(m) - 4*max(s), max(m) + 4*max(s), 200);  % 100 points for a smooth curve
 
 fig = ieNewGraphWin;
+
 for ii=1:numel(m)
 
     % Calculate the probability density function (PDF) of the normal distribution.
@@ -37,7 +51,7 @@ for ii=1:numel(m)
     %
     % Create the plot.
 
-    plot(x, y, 'k-', 'LineWidth', 2); % Blue solid line, 2 pixels wide
+    plot(x, y, [color{ii},'-'], 'LineWidth', 2); % Blue solid line, 2 pixels wide
 
     hold on;
 
