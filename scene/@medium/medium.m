@@ -1,32 +1,56 @@
 classdef medium < hiddenHandle
 % Abstract class (interface) for participating media.
 %
-% This class contains properties for the participating media properties. We
-% are starting with transmission through blood (oxy and deoxy).
+% Synopsis
+%   mdm = medium(filename);
 %
-% Subclasses of @medium inherit spectral properties and methods from
-% @medium.  Using this superclass scheme, enforces consistency amongst all
-% subclasses in terms of how they handle spectral properties.  So far,
-% though, we have no subclasses.
+% Brief description
+%   Class describing a participating medium. We are starting with
+% transmission through blood (oxy and deoxy). 
 %
-% A file can contain multiple absorbances.  Better have good comments for
-% those!
+% Input:
+%	 filename - ieReadSpectral file with absorbance data.  Can contain
+%	 multiple absorbances
 %
-% Description:
-%    Our understanding of the terminology for describing medium
-%    properties is below.
+% Output:
+%    medium          - The created medium object.
+%   
+% Optional key/value pairs:
+%    'opticalDensity' - Default optical density (1).
+%    'absorbance'     - Spectral data read from data file
+%	 'wave'           - Vector of wavelengths in nm read from data file
 %
-%    In general, the spectral data for the different media are stored in
-%    columns.  This applies to all of the parameters below.
+% Summary
+%  Subclasses of @medium inherit spectral properties and methods from
+%  @medium.  Using this superclass scheme, enforces consistency amongst all
+%  subclasses in terms of how they handle spectral properties.  So far,
+%  though, we have no subclasses.
+%
+%  In general, the spectral data for the different media are stored in
+%  columns.  This applies to all of the parameters below.
+%
+%  Our understanding of the terminology for describing medium properties is
+%  below. These are all dimensionless quantities.  They can be measured by
+%  the ratio of light incident on the medium and light that passes through
+%  the medium (transmission, T).  Then 
+%
+%     absorptance = 1 - T, and
+%     absorbance = -log10(T).
+%
+%  The measured transmission will depend, of course, on the density of the
+%  medium.
+%
+%  See also https://g.co/gemini/share/990088f50091
+%  More words follow.
 %
 %    obj.absorbance  - the absorbance spectra of the medium, normalized to
 %    a peak value of 1. This describes the absorbed light for a thin sheet
-%    of the medium. 
+%    of the medium. This quantity is often used in chemistry.
 % 
 %    The normalization to peak of 1 is a convention that lets us explicitly
-%    specify the density: obj.opticalDensity*ojb.absorbance. Some
+%    specify the density: obj.opticalDensity*obj.absorbance. Some
 %    scientists might call the product the absorbance, but we prefer to
-%    keep the density and normalized absorbance separate.
+%    represent the optical density and normalized absorbance separate.
 %
 %    (Re ISETBio: This quantity is called obj.unitDensity in the Lens
 %    and Macular objects, and in the Lens object it is not normalized. 
@@ -41,43 +65,47 @@ classdef medium < hiddenHandle
 %    passes through a thin layer of the medium with absorbance given by
 %    obj.opticalDensity*obj.absorbance.  See the formula below.
 %
-%    Useful formulae:
+%    Another useful formulae:
 %       
 %           absorptance = 1 - 10.^(-opticalDensity * absorbance). 
 %
-%       Absorbance spectra are normalized to a peak value of 1, and
-%       then scaled by optical density to get the specific system
-%       absorbance.
+%    Absorbance spectra are normalized to a peak value of 1, and
+%    then scaled by optical density to get the specific system
+%    absorbance.
 %
-%       Absorptance spectra are the proportion of quanta actually absorbed.
-%       This is the term used in this routine.
+%    Absorptance spectra are the proportion of quanta actually absorbed.
 %
-% Input:
-%	 None required.
-%
-% Output:
-%    medium          - The created medium object.
-%   
-% Optional key/value pairs:
-%    'opticalDensity' - Default optical density (1).
-%    'absorbance'     - Spectral data read from data file
-%	 'wave'           - Vector of wavelengths in nm read from data file
-%
-%    The raw absorbance data are read in from a file.  The full wavelength
-%    and absorbance are stored in wave_ and absorbance_. Typically wave_ is
-%    set to a large wavelength support.
+%    The absorbance data are read in from a file.  The full wavelength and
+%    absorbance from the file are stored in wave_ and absorbance_.
+%    Typically wave_ is set to a large wavelength support.
 % 
-%    The user can set 'wave', and the set will interpolate the raw data
-%    onto this sampling of wave. After creating, you can't change wave_, or
-%    absorbance_, but you can change wave.
+%    The user can set 'wave', which is the support for the computation.
+%    This absorbance is interpolated from the raw data onto this sampling
+%    of wave. 
+%
+%    After creating, you can't change wave_, or absorbance_, but you can
+%    change wave.
+%
+% References
+%   https://www.researchgate.net/publication/282123448_Shelf-life_enhancement_of_donor_blood_by_He-Ne_laser_biostimulation/figures?lo=1
+%   https://pmc.ncbi.nlm.nih.gov/articles/PMC3953607/  (Table 1).
 %
 % See also
 %   ISETBio:  @receptorPigment, @Lens
+%
 
 % Example:
 %{
-   deoxyblood = medium('deoxyHemoglobin.mat');
+   deoxyblood = medium('deoxyHemoglobin.mat','wave',400:700);
    deoxyblood.comment
+   ieNewGraphWin;
+   odValues = logspace(-2,0,10);
+   for od = odValues
+       deoxyblood.opticalDensity = od;
+       deoxyblood.plot('transmittance');
+       hold on;
+   end 
+   legend(cellstr(num2str(odValues')));
 %}
 %{
   oxyblood = medium('oxyHemoglobin.mat','wave',400:1:700);
@@ -97,10 +125,10 @@ end
 
 properties (Dependent)
 
-    % spectral absorbance of the medium
+    % normalized spectral absorbance of the medium
     absorbance;
     
-    % absorptance - absorptance without ocular media
+    % absorptance is line absorption likelihood
     absorptance;
 
     % transmittance is 1 - absorptance
@@ -113,35 +141,19 @@ properties (SetAccess = protected)
     filename;
 end
 
-% ReceptorPigment subclasses do not have any access to these properties directly
-properties (SetAccess = protected, GetAccess = protected)
-        
-end
-
 properties (SetObservable, AbortSet)
     % wave - wavelength samples
     wave;
     comment;
 end
 
-properties (SetAccess = public)
-    % I made these public so I could change them from a script.  But NC may
-    % want us to do this a different way with set operations.
-    %
-    
+properties (SetAccess = private)    
     % wave_ - The internal wavelength samples
     wave_;
 
     % absorbance_ - The absorbance data sampled at wave_
     absorbance_;
 end
-
-% % Abstract, public methods. Each subclass of @medium *must* implement
-% %  its own version of all functions listed as abstract. If it does not, 
-% % it cannot instantiate objects.
-% methods(Abstract)
-%     description(obj, varargin)
-% end
 
 % Public methods
 methods
@@ -168,7 +180,6 @@ methods
 
     end % Constructor
     
-    
     % Interpolate from the original data
     % So far, I am not saving the interpolated data.  Maybe I should and
     % then update it when 'wave' changes.
@@ -181,13 +192,35 @@ methods
         val = 1 - obj.absorptance;
     end
 
-
     function val = get.absorptance(obj) % compute absorptance
         val = 1 - 10 .^ (-obj.absorbance * diag(obj.opticalDensity));
     end
-
     
-end % Public methods
+    function set.wave(obj,val)
+        obj.wave = val;
+    end
 
+    function plot(obj,type)
+        switch type
+            case 'transmittance'
+                y = obj.transmittance;
+                str = 'Transmittance';
+            case 'absorbance'
+                y = obj.absorbance;
+                str = 'Absorbance';
+            case 'absorptance'
+                y = obj.absorptance;
+                str = 'Absorptance';
+
+            otherwise
+                error('Unknown type %s\n',type);
+        end
+        plot(obj.wave,y);
+        xlabel("Wavelength (nm)"); ylabel(str); 
+        grid on;
+
+    end
+
+end % Public methods
 
 end
