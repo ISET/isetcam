@@ -96,25 +96,21 @@ classdef medium < hiddenHandle
 
 % Example:
 %{
-   deoxyblood = medium('deoxyHemoglobin.mat','wave',400:700);
+   deoxyblood = medium('deoxy_molarExtinctionCoefficient.mat','wave',400:700);
    deoxyblood.comment
    ieNewGraphWin;
    odValues = logspace(-2,0,10);
    for od = odValues
        deoxyblood.opticalDensity = od;
-       deoxyblood.plot('transmittance');
+       deoxyblood.plot('transmittance','new figure',false);
        hold on;
    end 
    legend(cellstr(num2str(odValues')));
 %}
 %{
-  oxyblood = medium('oxyHemoglobin.mat','wave',400:1:700);
+  oxyblood = medium('oxy_molarExtinctionCoefficient.mat','wave',400:1:700);
   oxyblood.comment
-%}
-%{
-  % Hmm.  This has four terms but only three are in the comment
-  skin = medium('SkinComponentAbsorbances.mat','wave',400:1:700);
-  ieNewGraphWin; plot(skin.wave,skin.transmittance(:,1));
+  oxyblood.plot('absorbance','line','r-');
 %}
 
 % Public properties 
@@ -180,27 +176,36 @@ methods
 
     end % Constructor
     
-    % Interpolate from the original data
-    % So far, I am not saving the interpolated data.  Maybe I should and
-    % then update it when 'wave' changes.
+    % Interpolate from the original data.  Put in the optical density   
     function val = get.absorbance(obj)
         val = interp1(obj.wave_,obj.absorbance_,obj.wave,'pchip');
+        val = obj.opticalDensity*val;
     end
 
-    % absorptance and transmittance are complements
+    % compute absorptance from absorbance.  
+    function val = get.absorptance(obj) 
+        val = 1 - 10 .^ (-obj.absorbance);
+    end
+
+    % compute transmittance from absorptance, which is computed from
+    % absorbance  
     function val = get.transmittance(obj)
         val = 1 - obj.absorptance;
     end
 
-    function val = get.absorptance(obj) % compute absorptance
-        val = 1 - 10 .^ (-obj.absorbance * diag(obj.opticalDensity));
-    end
-    
     function set.wave(obj,val)
         obj.wave = val;
     end
 
-    function plot(obj,type)
+    function plot(obj,type,varargin)
+        % Plotting utility
+        varargin = ieParamFormat(varargin);
+        p = inputParser;
+        p.addRequired('type',@ischar);
+        p.addParameter('line','k-',@ischar);
+        p.addParameter('newfigure',true,@islogical);
+        p.parse(type,varargin{:});
+
         switch type
             case 'transmittance'
                 y = obj.transmittance;
@@ -215,7 +220,8 @@ methods
             otherwise
                 error('Unknown type %s\n',type);
         end
-        plot(obj.wave,y);
+        if p.Results.newfigure, ieNewGraphWin; end
+        plot(obj.wave,y,p.Results.line);
         xlabel("Wavelength (nm)"); ylabel(str); 
         grid on;
 
