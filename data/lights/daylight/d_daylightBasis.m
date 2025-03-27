@@ -60,7 +60,7 @@ plot(dayWave,dayBasis);
 wave = 400:1:700;
 
 % Stanford data set from J. DiCarlo
-test1 = ieReadSpectra('daylightSpectra',wave);
+test1 = ieReadSpectra('daylightStanford',wave);
 size(test1)
 % ieFigure; plot(wave,test1);
 [U1,~,~] = svd(test1,'econ');
