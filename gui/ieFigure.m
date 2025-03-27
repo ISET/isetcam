@@ -20,9 +20,12 @@ function thisFigure = ieFigure(thisFigure, fType, titleString, varargin)
 %     set(gcf,param,val);
 %
 % You can set your preferred color order and other properties in the
-% startup, say by using
+% startup file by using set() command with the graphics root
+% structure
 %
 %   groot = get(0);
+%   % Color order, RGB ...
+%   co = [1 0 0; 0 1 0 ; 0 0 1; 1 0 1; 0 1 1; 0 0 0];
 %   set(groot,'defaultAxesColorOrder',co)
 %   set(groot,'DefaultAxesFontsize',16)
 %   set(groot,'DefaultAxesFontName','Georgia')
@@ -42,8 +45,6 @@ function thisFigure = ieFigure(thisFigure, fType, titleString, varargin)
 %  ieNewGraphWin([],'wide','Color',[0.5 0.5 0.5])
 %  g = ieNewGraphWin([],[],'Visible','Off');
 %  g.Visible = 'on';
-%
-% Copyright ImagEval Consultants, LLC, 2005
 %
 % See also:
 %   ieSessionSet
