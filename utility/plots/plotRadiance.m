@@ -35,7 +35,7 @@ p.addRequired('radiance',@isnumeric);
 
 p.addParameter('title','Spectral radiance',@ischar);
 p.addParameter('hdl',[],@(x)(isa(x,'matlab.ui.Figure')));
-p.addParameter('color','r');
+p.addParameter('color','',@ischar);
 p.addParameter('linewidth',2,@isnumeric);
 
 p.parse(wavelength,radiance,varargin{:});
@@ -44,9 +44,7 @@ strTitle = p.Results.title;
 hdl      = p.Results.hdl;
 
 %% Open the window
-if isempty(hdl)
-    hdl = ieNewGraphWin;
-end
+if isempty(hdl), hdl = ieFigure; end
 
 wavelength = wavelength(:);
 
@@ -56,12 +54,12 @@ wavelength = wavelength(:);
 nWave = length(wavelength);
 if nWave == size(radiance,1)
     thisPlot = plot(wavelength(:),radiance,...
-        'LineWidth',p.Results.linewidth, ...
-        'Color',p.Results.color);
+        'LineWidth',p.Results.linewidth);
+    if ~isempty(p.Results.color), set(thisPlot,'Color',p.Results.color); end
 elseif length(wavelength) == size(radiance,2)
     thisPlot = plot(wavelength(:),radiance',...
-        'LineWidth',p.Results.linewidth, ...
-        'Color',p.Results.color);
+        'LineWidth',p.Results.linewidth);
+        if ~isempty(p.Results.color), set(thisPlot,'Color',p.Results.color); end
 end
 
 %% Label it
