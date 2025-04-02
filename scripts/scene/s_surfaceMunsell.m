@@ -39,7 +39,7 @@ imagesc(srgb);
 
 %% Plot the illuminant C, which is a kind of blue sky daylight
 
-vcNewGraphWin;
+ieFigure;
 plot(munsell.wavelength,munsell.illuminant);
 grid on;
 
@@ -50,7 +50,7 @@ chromaticityPlot(xy,'white')
 
 %% Here are the LAB coordinates of the surfaces
 
-vcNewGraphWin;
+ieFigure;
 plot3(munsell.LAB(:,2),munsell.LAB(:,3),munsell.LAB(:,1),'o')
 grid on;
 xlabel('a'); ylabel('b'); zlabel('L');

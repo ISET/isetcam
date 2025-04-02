@@ -43,7 +43,7 @@ for jj = rr
     reflectances = cat(2,tmp,reflectances);
 end
 
-ieNewGraphWin;
+ieFigure;
 plot(wave,reflectances); grid on;
 xlabel('Wave (nm)'); ylabel('Reflectance');
 
@@ -67,7 +67,7 @@ xlabel('Wave (nm)'); ylabel('Reflectance');
 
 %%
 
-ieNewGraphWin;
+ieFigure;
 plot(approx(:),reflectances(:),'.');
 identityLine;
 grid on;
@@ -78,7 +78,7 @@ t = text(0.1,0.8,sprintf('DIM = %d\nRMSE = %.3f',dim, rmse),'FontSize',18);
 
 %%  Show the basis functions
 
-ieNewGraphWin;
+ieFigure;
 plot(wave,Basis,'linewidth',1); grid on;
 xaxisLine;   % Nice to see where 0 is.
 
