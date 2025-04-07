@@ -55,12 +55,11 @@ nWave = length(wavelength);
 if nWave == size(radiance,1)
     thisPlot = plot(wavelength(:),radiance,...
         'LineWidth',p.Results.linewidth);
-    if ~isempty(p.Results.color), set(thisPlot,'Color',p.Results.color); end
 elseif length(wavelength) == size(radiance,2)
     thisPlot = plot(wavelength(:),radiance',...
         'LineWidth',p.Results.linewidth);
-        if ~isempty(p.Results.color), set(thisPlot,'Color',p.Results.color); end
 end
+        if ~isempty(p.Results.color), set(thisPlot,'Color',p.Results.color); end
 
 %% Label it
 
