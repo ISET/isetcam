@@ -92,6 +92,12 @@ switch(fType)
     otherwise % Matlab default
 end
 
+% Testing.
+set(gca,'TickDir','out');
+
+% Experimenting
+set(thisFigure, 'GraphicsSmoothing', 'on');
+
 %% Apply the varargin arguments as key/value pairs
 if ~isempty(varargin)
     n = length(varargin);
