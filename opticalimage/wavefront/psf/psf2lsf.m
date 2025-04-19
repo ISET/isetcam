@@ -34,7 +34,7 @@ function lsf = psf2lsf(psf,varargin)
 %   implemented somewhere in ISET, but I can't find it right now (BW).
 %
 % See also
-%    psf2otf, PsfToLsf, LsfToPsf
+%    lsf2circularpsf, psf2otf
 
 % Examples:
 %{
