@@ -12,9 +12,10 @@ function [hdl, thisPlot] = plotReflectance(wavelength,reflectance,varargin)
 %    reflectance    - Columns of radiances
 %
 % Optional key/value pairs
-%    hdl   - Use this hdl instead of ieFigure
+%    hdl   - Use this hdl instead of opening a new figure with ieFigure
 %    title - Default: 'Spectral reflectance'
 %    line width - Default: 2
+%    line style - One of the usual:  :,;,--,-
 %    color - a color letter 'k','r', or a color 3-vector ([0.5,0.3,0.2])
 %
 % Returns;
@@ -36,6 +37,7 @@ p.addParameter('title','Spectral reflectance',@ischar);
 p.addParameter('hdl',[],@(x)(isa(x,'matlab.ui.Figure')));
 p.addParameter('color',[],@(x)(ischar(x) || isvector(x)));
 p.addParameter('linewidth',2,@isnumeric);
+p.addParameter('linestyle','-',@ischar);
 
 p.parse(wavelength,reflectance,varargin{:});
 strTitle = p.Results.title;
@@ -60,6 +62,7 @@ if ~isempty(p.Results.color)
     ll = findobj(thisPlot,'type','line');
     for ii= 1:numel(ll)
         set(ll(ii),'Color',p.Results.color);
+        set(ll(ii),'linestyle',p.Results.linestyle);
     end
 end
 
