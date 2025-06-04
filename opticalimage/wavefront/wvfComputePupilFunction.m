@@ -28,9 +28,10 @@ function wvf = wvfComputePupilFunction(wvf, varargin)
 %    The pupil function is calculated for 10 orders of Zernike coeffcients
 %    specified to the OSA standard, with the convention that we include the
 %    j = 0 term, even though it does not affect the psf. Thus the first
-%    entry of the passed coefficients corresponds to j = 1. Adding in the
-%    j = 0 term does not change the psf. The spatial coordinate system is
-%    also OSA standard.
+%    entry of the stored Zernike coefficients corresponds to OSA j = 0.
+%    Adding in the j = 0 term does not change the psf. The spatial
+%    coordinate system is also OSA standard, and the units of the Zernike's
+%    stored in the wvf structure are microns.
 %
 %    Note that this system is the same for both left and right eyes. If the
 %    biology is left-right reflection symmetric, one might want to
@@ -390,6 +391,9 @@ for ii = 1:nWavelengths
     % 
     % This wastes a little time when we just compute diffraction, but
     % that is the least of our worries.
+    %
+    % The stored coefficienets are in OSA order starting at j = 0 (piston).
+    % The fifth entry of the Matlab vector is defocus (j = 4).
     c = wvfGet(wvf, 'zcoeffs');
     if (length(c) < 5)
         c(length(c) + 1:5) = 0;
@@ -405,6 +409,9 @@ for ii = 1:nWavelengths
     % OSA definition. We correct for that factor, multiplying by sqrt(pi).
     %
     % Also, we do not bother to compute for coefficients that are 0.
+    %
+    % The stored coefficicents that we pull out of the wvf structure above
+    % are in OSA order, starting at j = 0 (piston).
     wavefrontAberrationsUM = zeros(size(xpos));
     for k = 1:length(c)
         if (c(k) ~= 0)
