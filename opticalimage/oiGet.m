@@ -554,6 +554,9 @@ switch oType
                 
             case {'photons'}
                 % oiGet(oi,'photons',[waveBand])
+                %
+                % The units are photons/sec/m2
+                %
                 % Read photon data.  Default is all wavebands in 3d matrix.
                 
                 % Note we avoid using oiGet(oi,'photons') so as to not

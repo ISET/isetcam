@@ -27,7 +27,7 @@ function roiData = vcGetROIData(obj,roiLocs,dataType)
 %                  reflectance
 %   opticalimage:  photons (default) or energy
 %   sensor:        volts   (default) or electrons
-%   vcimage:       results (default) or input
+%   ip:            results (default) or input
 %
 % The data are returned in a matrix (XW format), roiData.  The rows
 % represent each of the positions and the data across the columns represent
@@ -38,17 +38,18 @@ function roiData = vcGetROIData(obj,roiLocs,dataType)
 %
 % Examples:
 %
-%  vci = vcGetObject('vci');
-%  roiLocs = vcROISelect(vci);
-%  result = vcGetROIData(vci,roiLocs,'result');          % Nx3
+% Image processing
+%  ip      = ieGetObject('ip');
+%  roiLocs = vcROISelect(ip);
+%  result  = vcGetROIData(ip,roiLocs,'result');          % Nx3
 %
-%  For sensor, data are Nx3 and missing values are NaNs
-%
-%  sensor = vcGetObject('isa');
-%  roiLocs = vcROISelect(sensor);
+% For sensor, data are Nx3 and missing values are NaNs
+%  sensor    = ieGetObject('isa');
+%  roiLocs   = vcROISelect(sensor);
 %  electrons = vcGetROIData(sensor,roiLocs,'electrons'); % Nx3
 %
-%  scene   = vcGetObject('scene');
+% Scene
+%  scene   = ieGetObject('scene');
 %  roiLocs = vcROISelect(scene);
 %  photons = vcGetROIData(scene,roiLocs,'photons');             % Nx31
 %  photons = vcGetROIData(scene,roiLocs,'illuminant photons');  % Nx31
@@ -70,6 +71,10 @@ end
 objType = vcGetObjectType(obj);
 switch lower(objType)
     case {'scene'}
+        % Units are:
+        %   photons:  photons/sec/m2/nm
+        %   energy:   watts/sec/m2/nm
+        %
         % Read the ROI for the radiance data or the illuminant data.
         if ieNotDefined('dataType'), dataType = 'photons'; end
         
@@ -97,17 +102,18 @@ switch lower(objType)
                 end
             case {'photons','radiancephotons'}
                 % img = sceneGet(obj,'photons');
-                % Save memory allocation.
+                % Abusive code to save memory allocation.
+                if isempty(obj.data.photons), errordlg('No radiance data in scene.'); end
                 [img,r,c] = RGB2XWFormat(obj.data.photons);
-                if isempty(img), errordlg('No radiance data in scene.'); end
             case {'energy','radianceenergy'}
+                if isempty(obj.data.photons), errordlg('No radiance data in scene.'); end
                 img = sceneGet(obj,'energy');
-                [img,r,c] = RGB2XWFormat(img);
                 if isempty(img), errordlg('No radiance data in scene.'); end
+                [img,r,c] = RGB2XWFormat(img);
             case {'luminance','luminanceroi'}
+                if isempty(obj.data.photons), errordlg('No radiance data in scene.'); end
                 img = sceneGet(obj,'luminance');
                 [img,r,c] = RGB2XWFormat(img);
-                if isempty(img), errordlg('No luminance data in scene.'); end
             otherwise
                 error('Unknown data type %s\n',dataType);
         end
@@ -120,6 +126,10 @@ switch lower(objType)
         roiData = img(imgLocs,:);
         
     case {'opticalimage','oi'}
+        % Units are
+        %  photons:  photons/sec/m2/nm
+        %  energy:   watts/sec/m2/nm
+        %
         if ieNotDefined('dataType'), dataType = 'photons'; end
         
         data = oiGet(obj,dataType);
