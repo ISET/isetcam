@@ -364,9 +364,6 @@ end
 %% Query the user to confirm the download
 function proceed = confirmDownload(resourceName, localFile)
 
-opts.Default = 'No';
-opts.Interpreter = 'tex';
-
 % Just show the part of the file from isetcam or iset3d onward
 ii = strfind(localFile,'isetcam');
 if isempty(ii)
@@ -374,11 +371,14 @@ if isempty(ii)
 end
 showFile = localFile(ii:end);
 
+opts.Default = 'No';
+opts.Interpreter = 'none';
+
 if exist(localFile,'file')
-    question = sprintf('\\fontsize{14}%s \nto\n%s\n', resourceName, showFile);
+    question = sprintf('%s → %s', resourceName, showFile);  % visually compact
     answer = questdlg(question, 'Overwrite? ', 'Yes', 'No', 'Cancel',opts);
 else
-    question = sprintf('\\fontsize{14}%s \nto\n%s', resourceName, showFile);
+    question = sprintf('%s → %s', resourceName, showFile);  % visually compact
     answer = questdlg(question, 'Download? ', 'Yes', 'No', 'Cancel',opts);
 end
 
