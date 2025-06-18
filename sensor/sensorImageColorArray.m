@@ -20,6 +20,8 @@ function [cfaN,cfaMap] = sensorImageColorArray(cfa)
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
+warning('Deprecated.  See sensorData2Image.');
+
 if ieNotDefined('cfa'), error('cfa (letter array) required.'); end
 
 % These will be the numbers that indicate which filter is present at each
