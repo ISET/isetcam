@@ -1,8 +1,8 @@
 # ISETCam
 
-Image systems engineering toolbox (ISET) for cameras (Cam).  ISETCam is the base repository.  It includes the basic routines that are used by other ISET repositories to represent scenes, optics, fundamental calculations for energy, quanta, color, and software utilities. ISETCam is necessary to run ISETBio and most other ISET repositories (e.g., ISET3D, ISETAuto, ISETLens).
-
 Please see the [ISETCam wiki page](https://github.com/iset/isetcam/wiki) for more information.
+
+This is the Image Systems Engineering Toolbox (ISET) for Cameras (Cam).  ISETCam is the base repository that includes routines to represent scenes, optics, fundamental calculations for energy, quanta, color, and software utilities. ISETCam must be on your Matlab path to run ISETBio and most other ISET repositories (e.g., ISET3D, ISETAuto, ISETLens).
 
 This ISETCam distribution originated with a commercial product, ISET from Imageval. The ISETCam code and repositories have expanded significantly. For example, ISET software is closely integrated with physically based rendering and graphics (PBRT) in [ISET3D](https://github.com/ISET/iset3d/wiki). It is also closely connected to models the human visual encoding in [ISETBio](https://github.com/ISETBIO/ISETBio/wiki).
 

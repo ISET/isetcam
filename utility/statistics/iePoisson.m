@@ -30,6 +30,7 @@ function [val, seed] = iePoisson(lambda, varargin)
 %                seed (or set to a fixed value.) The options are 'frozen'
 %                or 'random. Default is 'random'.
 %    seed      - The noise seed number. Default is 1.
+%
 % References:
 %    Knuth routine - found on a web-page reference and also at
 %       http://en.wikipedia.org/wiki/Poisson_distribution
