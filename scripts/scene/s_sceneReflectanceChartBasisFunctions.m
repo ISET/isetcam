@@ -52,7 +52,7 @@ fprintf('Variance explained %.03f by %d bases\n',...
 
 %% Show the basis functions
 
-ieNewGraphWin;
+ieFigure;
 plot(wave, basisData);
 xlabel('Wave (nm)'); ylabel('Basis scale');
 
@@ -62,7 +62,7 @@ bType = 0.95;
 [~, basisData,~,varExplained] = hcBasis( reflectance,bType,mType);
 fprintf('Variance explained %.03f by %d bases\n',...
     varExplained,size(basisData,2));
-ieNewGraphWin;
+ieFigure;
 plot(wave, basisData);
 xlabel('Wave (nm)'); ylabel('Basis scale');
 
@@ -74,7 +74,7 @@ fprintf('Variance explained %.03f by %d bases\n',...
     varExplained,size(basisData,2));
 tmp = size(basisData);
 
-ieNewGraphWin;
+ieFigure;
 plot(wave, basisData);
 xlabel('Wave (nm)'); ylabel('Basis scale');
 

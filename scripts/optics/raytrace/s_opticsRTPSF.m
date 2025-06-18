@@ -44,6 +44,9 @@ oi = oiSet(oi,'name','ray trace case');
 oi = oiSet(oi,'optics',optics);
 
 %% Compute
+%
+%  Calls to opticsRayTrace which has many comments
+%
 oi = oiSet(oi,'optics model','ray trace');
 oi = oiCompute(oi,scene);
 oi = oiSet(oi,'name','ray trace case');

@@ -3,6 +3,9 @@ function p = identityLine(ax,threeD)
 %
 %   p = identityLine(ax,threeD)
 %
+% See also
+%    xaxisLine
+%
 % Example:
 %   plot(1:10,randn(1,10),'o')
 %   identityLine(gca);

@@ -1,6 +1,10 @@
 function fName = animatedGif(pImg,fName,deltaT,c_map)
 % Save an animated gif from a 3D volume of gray scale images
 %
+% Synopsis:
+%   See ie3dGIF before you decide to use this function.
+%
+% Also
 % In the future, if we want to save RGB image sequences we need to apply
 %
 %    [M  c_map]= rgb2ind(RGB,256);  % If we have an rgb, do this

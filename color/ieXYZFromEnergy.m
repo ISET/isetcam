@@ -70,7 +70,7 @@ end
 % columns of S.
 S = ieReadSpectra('XYZ',wave);
 if numel(wave) > 1,  dWave = wave(2) - wave(1);
-else                 dWave = 10;   disp('10 nm band assumed');
+else,                dWave = 10;   disp('10 nm band assumed');
 end
 
 % The return value has three columns, [X,Y,Z].

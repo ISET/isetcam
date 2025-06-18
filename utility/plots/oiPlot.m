@@ -833,7 +833,7 @@ if isscalar(wave)
         case 'photons'
             str = sprintf('Irradiance: %.3e (q/s/m^2/nm)  at %.0f nm',irradiance,wave);
         case 'energy'
-            str = sprintf('Irradiance: %.3e (Watts/m^2/nm) at %.0f nm',irradiance,wave);
+            str = sprintf('Irradiance: %.3e (watts/m^2/nm) at %.0f nm',irradiance,wave);
         otherwise
             error('Unknown data type.');
     end

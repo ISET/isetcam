@@ -4,7 +4,9 @@ function img = sensorData2Image(sensor,dataType,gam,scaleMax)
 % Synopsis
 %   img = sensorData2Image(sensor,[dataType = 'volts'],[gam=1],[scaleMax=0 (false)])
 %
-% This function renders an image of the sensor CFA.
+%  This function can also be used to render an image of the sensor CFA.
+%  We do this by setting the volts to a constant value in all the
+%  pixels.
 %
 % Inputs
 %   sensor   - ISETCam sensor
@@ -35,8 +37,8 @@ function img = sensorData2Image(sensor,dataType,gam,scaleMax)
 %  sensorSaveImage.
 %
 % Examples:
-%  sensor = vcGetObject('sensor');
-%  oi     = vcGetObject('oi');
+%  sensor = ieGetObject('sensor');
+%  oi     = ieGetObject('oi');
 %  sensor = sensorCompute(sensor,oi);
 %  img    = sensorData2Image(sensor,'volts',0.6);
 %  figure; imagesc(img)

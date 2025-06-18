@@ -276,8 +276,8 @@ switch oType
         if isempty(varargin), val = wvf;
         else
             wvfParam = varargin{1};
-            if numel(varargin) > 1, newV = varargin{2:end};
-                val = wvfGet(wvf,wvfParam,newV);
+            if numel(varargin) > 1, newV = varargin(2:end);
+                val = wvfGet(wvf,wvfParam,newV{:});
             else
                 val = wvfGet(wvf,wvfParam);
             end
@@ -554,6 +554,9 @@ switch oType
                 
             case {'photons'}
                 % oiGet(oi,'photons',[waveBand])
+                %
+                % The units are photons/sec/m2
+                %
                 % Read photon data.  Default is all wavebands in 3d matrix.
                 
                 % Note we avoid using oiGet(oi,'photons') so as to not

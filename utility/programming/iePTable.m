@@ -1,6 +1,7 @@
 function [thisTable, thisWindow] = iePTable(obj,varargin)
 % Create a table listing the object parameters
 %
+% Synopsis
 %   tbl = iePTable(obj,varargin);
 %
 % Input
@@ -11,7 +12,8 @@ function [thisTable, thisWindow] = iePTable(obj,varargin)
 %  tbl:  A table object.  The window is the 'Parent'
 %          (get(tbl,'Parent')).  Table parameters can be set.
 %
-% TODO:  Should we add to allow custom table entries?
+% TODO:  The row size isn't right for all cases.
+%        Should we add to allow custom table entries?
 %        Should we make a saveas output to EPS?
 %        Mathworks should have a way to make a display figure from a table
 %        object.  What they do is allow you to create a uitable display
@@ -64,7 +66,18 @@ thisWindow = [];
 %% Main window
 if isequal(format,'window')
     thisWindow = uifigure('Name', "ISET Parameter Table");
-    movegui(thisWindow,'northwest');
+    
+    % Sets the size like ieFigure;
+    set(thisWindow,'Units','normalized');
+    set(thisWindow,'Position',[0.0070 0.5500 0.2800 0.3600]);
+    
+    % Gets the window upper left.  No longer needed because of
+    % 'Position'
+    % movegui(thisWindow,'northwest');
+
+    % Makes it easier to set the column widths, below.
+    set(thisWindow,'Units','pixels');
+
 end
 
 %% Build table
@@ -106,24 +119,44 @@ end
 %% Create the table in its own window or embedded format
 
 if isequal(format,'window')
-    
-    thisWindow.Name = strcat(thisWindow.Name, extendTitle);
-    %can't set to normalized in 2020a
-    %thisTable = uitable('Parent',thisWindow,'Units','normalized');
-    thisTable = uitable('Parent', thisWindow);
-    thisTable.ColumnName  = {'Property','Value','Units'};
-    thisTable.ColumnWidth = {200,200,200};
-    winPos = thisWindow.Position;
+    % Window Units are 'pixels', set above.
+    thisWindow.Name = strcat(thisWindow.Name, extendTitle);  
+
+    % Calculates the approximate width for each of the three table
+    % columns by dividing the window width by 3 and rounding down to
+    % the nearest integer.  
+    winPos = thisWindow.Position;                            
+    colWidth = floor(winPos(3)/3);                           
+
+    % Make the table
+    thisTable = uitable('Parent', thisWindow);                
+    thisTable.ColumnName  = {'Property','Value','Units'};     
+    thisTable.ColumnWidth = {colWidth,colWidth,colWidth};     
+
+    % Sets the position and size of the table within the window.
+    % [left, bottom, width, height]. It appears there might be a typo
+    % ('win' instead of 'winPos(3)'). Assuming 'winPos(3)' was
+    % intended for width and 'winPos(4)' for height, with a 2-pixel
+    % margin on each side.    
     thisTable.Position = [2 2 winPos(3)-2 winPos(4)-2];
-    %thisTable.Position    = [0.025 0.025, 0.95, 0.95];
+
     thisTable.FontSize    = FontSize;
     thisTable.FontName    = 'Courier';
     thisTable.Tag = 'IEPTable Table';
+
+    % Creates a top-level menu item in the window with the text 'File'.
+    mnuTools = uimenu(thisWindow,'Text','File');              
+
+    % Creates a submenu item under the 'File' menu with the text
+    % 'Export...'. The ellipsis (...) typically indicates that
+    % selecting this item will open another dialog box.  
+    mnuExport = uimenu(mnuTools,'Text','Export...');          
     
-    mnuTools = uimenu(thisWindow,'Text','File');
+    % Sets the function to be executed when the 'Export...' menu item
+    % is selected. It assigns the function handle '@mnuExportSelected'
+    % to the 'MenuSelectedFcn' callback property.  
+    mnuExport.MenuSelectedFcn = @mnuExportSelected;           
     
-    mnuExport = uimenu(mnuTools,'Text','Export...');
-    mnuExport.MenuSelectedFcn = @mnuExportSelected;        
 else
     if ~isempty(p.Results.uitable)
         thisTable = p.Results.uitable;
@@ -141,8 +174,10 @@ thisTable.RowName = '';       % No numbers at left
 
 end
 
+%%  Each ISETCam type has its own table command
 function data = tableScene(scene,format)
 % iePTable(sceneCreate);
+
 wave = sceneGet(scene,'wave');
 if numel(wave) > 1
     wave = [wave(1), wave(end), wave(2)-wave(1)];

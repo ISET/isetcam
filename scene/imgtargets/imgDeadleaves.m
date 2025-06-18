@@ -1,6 +1,9 @@
 function img = imgDeadleaves(n,sigma,options)
 % Compute a random image using the dead-leaves model
 %
+% TODO:  Coordinate with imageDeadleaves.  They are nearly the same.
+%        This function is used by sceneDeadleaves.
+%
 % Syntax
 %   image = imgDeadleaves(n,sigma,options);
 %

@@ -20,11 +20,14 @@ function [reflectances, sSamples, wave] = ieReflectanceSamples(sFiles,sSamples,w
 %     'HyspexSkinReflectance.mat'
 %
 %  sSamples: Either
-%            - A vector indicating how many surfaces to sample from each file
-%            - A cell array of specifying the list of samples from each file
+%      - A vector indicating how many surfaces to sample from each file
+%      - A cell array, each cell specifies the exact samples from each file
+%
 %  wave:     wavelength Samples (400:10:700)
-%  sampling: 'r' means with replacement (default).  Anything else means no
-%           replacement.
+%  sampling: The samples are drawn probabilistically.  
+%            'r' sample sSamples(i) from the file with replacement (default).
+%            'all' Use all the data (no sampling), sSamples is ignored
+%            Anything else means sample sSamples(i) without replacement. 
 %
 % RETURNS:
 %  reflectances:  Columns of reflectance functions
@@ -53,18 +56,12 @@ function [reflectances, sSamples, wave] = ieReflectanceSamples(sFiles,sSamples,w
 
 %%
 if ieNotDefined('sFiles')
-    % Make up a list for the user
+    % Make up a default list
     sFiles = cell(1,4);
     sFiles{1} = which('MunsellSamples_Vhrel.mat');
     sFiles{2} = which('Food_Vhrel.mat');
     sFiles{3} = which('DupontPaintChip_Vhrel.mat');
     sFiles{4} = which('HyspexSkinReflectance.mat');
-    %{
-    sFiles{1} = fullfile(isetRootPath,'data','surfaces','reflectances','MunsellSamples_Vhrel.mat');
-    sFiles{2} = fullfile(isetRootPath,'data','surfaces','reflectances','Food_Vhrel.mat');
-    sFiles{3} = fullfile(isetRootPath,'data','surfaces','reflectances','DupontPaintChip_Vhrel.mat');
-    sFiles{4} = fullfile(isetRootPath,'data','surfaces','reflectances','skin','HyspexSkinReflectance.mat');
-    %}
     if ~exist('sSamples','var') || isempty(sSamples)
         sSamples = [24 24 24 24];
     end
@@ -103,14 +100,19 @@ for ii=1:nFiles
     % Generate the random list of surfaces.  They are sampled with
     % replacement.
     if ~iscell(sSamples)
-        if strncmp(sampling,'r',1)  % With replacement
+        if strncmp(sampling,'r',1)  
+            % Sample with replacement
             % randi doesn't exist in 2008 Matlab.
             if exist('randi','builtin')
                 sampleList{ii} = randi(nRef,[1 sSamples(ii)]);
             else
                 sampleList{ii} = ceil(rand([1 sSamples(ii)])*nRef);
             end
-        else  % Without replacement
+        elseif strcmpi(sampling,'all')
+            % Use them all
+            sampleList{ii} = 1:nRef;
+        else  
+            % Without replacement
             if sSamples(ii) > nRef, error('Not enough samples in %s\n',sFiles{ii});
             else
                 list = randperm(nRef);
@@ -120,6 +122,7 @@ for ii=1:nFiles
         % fprintf('Choosing %d of %d samples\n',sSamples(ii),nRef);
         % fprintf('Unique samples:   %d\n',length(unique(sampleList{ii})));
     else
+        % User sent in the specific list of samples for each file
         sampleList{ii} = sSamples{ii};
     end
     

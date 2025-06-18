@@ -22,7 +22,7 @@ function oi = oiCompute(oi,scene,varargin)
 %            border - pad with values from near the oi border
 %            spd  - Use this vector as the SPD (NYI)
 %
-%   crop - Crop the OI to the same size as the scene. (Logical)
+%   'crop' - Crop the OI to the same size as the scene. (Logical)
 %          Default: false;
 %
 %   'pixel size' - Set the spatial sampling resolution of the oi image.

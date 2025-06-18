@@ -1,5 +1,7 @@
 function [M, rseed] = imageDeadLeaves(n,sigma,options)
-% Compute a random image using the dead-leaves model
+% Deprecated:  Compute a random image using the dead-leaves model
+%
+%  See imgDeadLeaves().
 %
 %   [M, rseed] = imageDeadLeaves(n,sigma,options);
 %

@@ -1,12 +1,21 @@
 function gauss = gauss2(halfWidthY, supportY, halfWidthX, supportX)
 % Construct a 2D Gaussian matrix.
 %
+% Synopsis
 %     gMatrix = gauss2(halfWidthY, supportY, halfWidthX, supportX)
 %
-% You should always call this function with an odd number for the support
-% so that the Gaussian is symmetric (centered).  In that case the
-% calculation here ends up being the same as the calculation used by Matlab
-% in fspecial.  There is a slight difference for an even support.
+% Inputs
+%    halfWidthY, supportY
+%    halfWidthX, supportX
+%
+% Output
+%   gauss
+%
+% Description:
+%   You should always call this function with an odd number for the support
+%   so that the Gaussian is symmetric (centered).  In that case the
+%   calculation here ends up being the same as the calculation used by
+%   Matlab in fspecial.  There is a slight difference for an even support.
 %
 % The bivariate Gaussian formula is
 %
@@ -41,6 +50,10 @@ function gauss = gauss2(halfWidthY, supportY, halfWidthX, supportX)
 %
 % We differ slightly fspecial, sigh.  But not much.
 %
+% See also
+%   ieHwhm2SD - converts half-width half-max to std dev of a Gaussian
+%
+
 % Copyright ImagEval Consultants, LLC, 2003.
 
 if ieNotDefined('halfWidthX'), halfWidthX = halfWidthY; end
@@ -62,7 +75,7 @@ gauss = exp(-(1/2)*((X/sdX).^2 + (Y/sdY).^2));
 % Normalize to unit area
 gauss = gauss/sum(sum(gauss));
 
-return;
+end
 
 
 

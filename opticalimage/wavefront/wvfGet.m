@@ -111,6 +111,8 @@ function val = wvfGet(wvf, parm, varargin)
 %       +'psf spatial samples'    - One-d slice of sampled psf in spatial
 %                                   units, centered on 0 for a single
 %                                   wavelength (*)
+%       +'psf dx'                 - Spatial separation between psf
+%                                   samples.
 %       +'pupil spatial samples'  - One-d slice of sampled pupil function
 %                                   in spatial units, centered on 0 for a
 %                                   single wavelength (*)
@@ -857,6 +859,20 @@ switch (parm)
         end
         val = wvfGet(wvf, 'psf angle per sample', unit, wList);
         
+    case {'psfdx'}
+        % wvfGet(wvf,'psf dx',unit, waveNM);
+        %
+        % Spacing between the samples in the PSF support
+        % Default spatial unit is 'um'
+        %
+        if numel(varargin) < 1, unit = 'um'; 
+        else, unit = varargin{1}; end
+        if numel(varargin) < 2, thisWave = wvfGet(wvf,'wave'); 
+        else, thisWave = varargin{2}; end
+
+        psfSupport = wvfGet(wvf,'psf support',unit,thisWave);
+        val = psfSupport(2) - psfSupport(1);
+
     case {'psfsupport','psfspatialsample','psfspatialsamples', ...
             'samplesspace', 'supportspace','spatialsupport'}
         % wvfGet(wvf, 'samples space', 'um', wList)

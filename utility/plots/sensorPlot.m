@@ -297,10 +297,23 @@ switch pType
         % Wavelength and color properties
     case {'cfa','cfablock'}
         [g, uData] = sensorShowCFA(sensor);
+    case {'cfaimage'}
+        v = sensorGet(sensor,'volts');
+        if isempty(v), tmp = ones(32,32);
+        else, tmp = ones(size(v));
+        end
+        sensorcfa = sensorSet(sensor,'volts',tmp);
+        img = sensorData2Image(sensorcfa);
+        g = ieFigure; 
+        image(img); axis image; axis off;
+        uData.img = img;
     case {'cfafull'}
         sz = sensorGet(sensor,'size');
         [g, uData.img] = sensorShowCFA(sensor,[],sz);        
-    case {'colorfilters'}
+
+    case {'colorchannels','colorfilters'}
+        % These are not purely the color filters.  They are the system
+        % color response, so best to call color channel.
         [uData, g] = plotSpectra(sensor,'color filters');
     case {'irfilter'}
         [uData, g] = plotSpectra(sensor,'ir filter');
@@ -314,7 +327,7 @@ switch pType
         % Sensor spectral quantum efficiency
         [uData, g] = plotSpectra(sensor,'sensor spectral qe');
     case {'sensorspectralsr'}
-        % Sensor spectral spectral responsivity
+        % Sensor spectral responsivity
         error('Not yet implemented: sensor spectral sr.  Check pixelSR');
         
         % Sensor and Pixel electronics related
@@ -425,7 +438,8 @@ dataType = ieParamFormat(dataType);
 switch lower(dataType)
     case {'spectralsr','sr','pixelspectralsr','pdspectralsr'}
         % volts/irradiance(energy units)
-        % Is sr spectral responsivity?
+        % Is sr spectral responsivity?  So spectral spectral
+        % responsivity?  Weird (BW).
         pixel = sensorGet(sensor,'pixel');
         wave = pixelGet(pixel,'wave');
         data = pixelGet(pixel,'spectralsr');
