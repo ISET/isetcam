@@ -311,13 +311,14 @@ switch pType
         sz = sensorGet(sensor,'size');
         [g, uData.img] = sensorShowCFA(sensor,[],sz);        
 
-    case {'colorchannels','colorfilters'}
-        % These are not purely the color filters.  They are the system
-        % color response, so best to call color channel.
+    case {'colorfilters'}
+        % These are just the color filters.  This is different from
+        % the channel spectral qe.
         [uData, g] = plotSpectra(sensor,'color filters');
+
     case {'irfilter'}
         [uData, g] = plotSpectra(sensor,'ir filter');
-    case {'pixelspectralqe'}
+    case {'pdspectralqe','pixelspectralqe'}
         % Volts/Quantum response by wavelength
         [uData, g] = plotSpectra(sensor,'pixel spectral qe');
     case {'pixelspectralsr'}
@@ -474,6 +475,7 @@ switch lower(dataType)
         data = sensorGet(sensor,'spectral qe');
         filterNames = sensorGet(sensor,'filter Color Letters Cell');
         ystr = 'Quantum efficiency';
+
     case {'sensorspectralsr'}
         error('NYI implemented.  see pixelSR for conversion from QE to SR');
         
