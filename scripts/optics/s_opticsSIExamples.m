@@ -18,25 +18,32 @@
 
 %%
 ieInit
+
 %% Create the scene
+
 % First, we  create a checkerboard scene to blur.
 
 pixPerCheck = 16;
 nChecks = 6;
 scene = sceneCreate('checkerboard',pixPerCheck,nChecks);
 wave  = sceneGet(scene,'wave');
+
+% We make a small field of view so that we have a good view of the details
+% and blurring that will follow.
 scene = sceneSet(scene,'fov',3);
 
-% Replace the optical image into your ISET window
 sceneWindow(scene);
+
 %% Example 1: Create a pillbox point spread function
-% Point spread functions are small images.  There is one image for each wavelength.
-% In this example, the spatial grid is 128 x 128 with samples spaced every 0.25
-% microns. Hence, the image size is  128 * 0.25 = 32 microns on a side.
+
+% Point spread functions are small images.  There is one image for each
+% wavelength. In this example, the spatial grid is 128 x 128 with samples
+% spaced every 0.25 microns. Hence, the image size is  128 * 0.25 = 32
+% microns on a side.
 %
 % We create a point spread for each wavelength, 400:10:700. We write out
 % a file that contains the point spread functions using ieSaveSIDataFile.
-%%
+%
 umPerSample = [0.5,0.5];                % Sample spacing
 
 % Point spread is a little square in the middle of the image
@@ -50,7 +57,7 @@ ieSaveSIDataFile(psf,wave,umPerSample,psfFile);
 %% Read the psf and copy it into the optics slot of the oi
 % After you compute, use the menu Analyze | Optics | <>  in the oiWindow to
 % plot various properties of the optics.
-%%
+%
 oi = oiCreate;
 optics = siSynthetic('custom',oi,psfFile,[]);
 
@@ -65,11 +72,12 @@ oi = oiCompute(oi,scene);
 oi = oiSet(oi,'name','Pillbox');
 
 % Add to the database and show the OI window
-ieAddObject(oi); oiWindow;
+oiWindow(oi);
+
 %% Example 2:  A sharpening filter
 % Now, we build a difference of Gaussians that will sharpen the original image
 % a little.  This is the psf.
-%%
+%
 h1 = fspecial('gaussian', 128, 5);
 h2 = fspecial('gaussian', 128, 10);
 h = h1 - 0.5*h2;
@@ -92,7 +100,7 @@ oiWindow(oi);
 % The spread of the Gaussian increases with wavelength, so the long wavelength
 % PSF is much blurrier than the short wavelength PSF.  Look for the color fringing
 % in the oiWindow.
-%%
+%
 wave    = oiGet(oi,'wave');
 psfType = 'gaussian';
 waveSpread = (wave/wave(1)).^3;
@@ -123,13 +131,54 @@ oiWindow(oi);
 %
 % We need to make the wavelength dependence larger
 
+wave    = oiGet(oi,'wave');
+psfType = 'gaussian';
+waveSpread = (wave/wave(1)).^2;
+
+% Make point spreads with an asymmetric Gaussian
+xyRatio = .3*ones(1,length(wave));
+
+% Now call the routine with these parameters
+optics  = siSynthetic(psfType,oi,double(waveSpread),xyRatio);
+oi      = oiSet(oi,'optics',optics);
+
+% Here is the rest of the computation, as above
+oi  = oiSet(oi,'optics model','shiftInvariant');
+scene   = ieGetObject('scene');
+oi      = oiCompute(oi,scene);
+
+oi = oiSet(oi,'name','Chromatic Gaussian');
+oiWindow(oi);
+
+%% Show the PSF as a function of wavelength in a movie
+
+psfMovie(oiGet(oi,'optics'),ieFigure,0.1);
+
+
+%% Compare a horizontal and vertical line blur
+vData = oiPlot(oi,' illuminance vline',[120,1],'nofigure');
+hData = oiPlot(oi,' illuminance hline',[1,120],'nofigure');
+
+ieFigure; 
+plot(vData.pos,vData.data,'r-',hData.pos,hData.data,'b-');
+grid on; xlabel('Position'); ylabel('Illuminance (lux)');
+legend({'vertical','horizontal'});
+
+
+%% Plot a horizontal and a vertical line
+uData = oiPlot(oi,' irradiance hline',[1,120],);
+uData = oiPlot(oi,' irradiance vline',[1,120]);
+
+%%
 fullName = fullfile(isetRootPath,'data','optics','si2x1GaussianWaveVarying.mat');
+
 oi = ieGetObject('oi');
 tmp = load(fullName);
 oi = oiSet(oi,'optics',tmp.optics);
 oi = oiSet(oi,'optics name','Gaussian Wave');
 oi = oiCompute(oi,scene);
 oi = oiSet(oi,'name','Asymmetric Gaussian');
+
 oiWindow(oi);
 
 %% Compare multiple oi images

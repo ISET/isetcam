@@ -12,7 +12,7 @@ function optics = siSynthetic(psfType,oi,varargin)
 %           'custom'   --  read a file with variables explained below
 % oi:        Optical image
 %
-% varargin for gaussian:
+% varargin for Gaussian:
 %   waveSpread: Size of the PSF spread at each of the wavelengths
 %               For gaussian this is in microns (um)
 %   xyRatio:   Ratio of spread in x and y directions
@@ -22,9 +22,8 @@ function optics = siSynthetic(psfType,oi,varargin)
 %   inData  - filename or struct with psf, umPerSamp, and wave data
 %   outFile - Optional
 %
-% Copyright ImagEval Consultants, LLC, 2005.
-%
 % See also:  s_SIExamples, ieSaveSIOpticsFile
+%
 %  t_codeFFTinMatlab for an explanation of some of the operations in here.
 %
 
