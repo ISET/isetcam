@@ -55,7 +55,9 @@ sceneWindow(scene);
 umPerSample = [0.5,0.5];                % Sample spacing
 
 % Point spread is a little square in the middle of the image
-h = zeros(128,128); h(48:79,48:79) = 1; h = h/sum(h(:));
+c = (64 - 8):(64+8);
+h = zeros(128,128); h(( 64-8):(64+8),(64-8):(64+8)) = 1; 
+h = h/sum(h(:));
 psf = zeros(128,128,length(wave));
 for ii=1:length(wave), psf(:,:,ii) = h; end     % PSF data
 
@@ -63,8 +65,8 @@ for ii=1:length(wave), psf(:,:,ii) = h; end     % PSF data
 psfFile = fullfile(tempdir,'SI-pillbox');
 ieSaveSIDataFile(psf,wave,umPerSample,psfFile);
 
-%% Read the psf and copy it into the optics slot of the oi
-
+% Read the psf and copy it into the optics slot of the oi
+%
 % After you compute, use the menu Analyze | Optics | <>  in the oiWindow to
 % plot various properties of the optics.
 %
@@ -84,30 +86,21 @@ oi = oiSet(oi,'name','Pillbox');
 % Add to the database and show the OI window
 oiWindow(oi);
 
-%% Example 2:  A sharpening filter
+%% Example 2:  A wavelength-dependent Lorentizian
 
-% Now, we build a difference of Gaussians that will sharpen the original image
-% a little.  This is the psf.
-%
-h1 = fspecial('gaussian', 128, 5);
-h2 = fspecial('gaussian', 128, 10);
-h = h1 - 0.5*h2;
-ieFigure; mesh(h)
-psf = zeros(128,128,length(wave));
-for ii=1:length(wave), psf(:,:,ii) = h; end     % PSF data
+% The Lorentzian gamma parameter seems to run nicely from 1 to 10 or so on
+% this support. Log spacing converts better to spread than linear spacing.
+psfType    = 'lorentzian'; 
+nWave      = oiGet(oi,'nwave');
+gParameter = logspace(0,1,nWave);
+optics     = siSynthetic(psfType,oi,gParameter);
 
-psfFile = fullfile(tempdir,'customFile');
-
-% Save the data and all the rest, in compact form
-ieSaveSIDataFile(psf,wave,umPerSample,psfFile);
-
-optics = siSynthetic('custom',oi,psfFile,[]);
-oi     = oiSet(oi,'optics',optics);
-oi     = oiSet(oi,'optics model','shiftInvariant');
-
+oi = oiSet(oi,'optics',optics);
 oi = oiCompute(oi,scene);
-oi = oiSet(oi,'name','Sharpened');
+oi = oiSet(oi,'name','Wave dependent Lorentzian');
 oiWindow(oi);
+%  psfMovie(optics,ieNewGraphWin);
+
 %% Example 3: A circular Gaussian PSF that changes with wavelength
 
 % The spread of the Gaussian increases with wavelength, so the long wavelength
@@ -148,7 +141,7 @@ waveSpread = (wave/wave(1)).^2;
 % Make point spreads with a bivariate Gaussian.
 % If sFactor < 1, then x (horizontal) is sharper.  
 % If sFactor > 1, then y (vertical)   is sharper. 
-sFactor = 1.5;  
+sFactor = 2;  
 xyRatio = sFactor*ones(1,length(wave));
 
 % Now call the routine with these parameters
@@ -160,7 +153,7 @@ oi  = oiSet(oi,'optics model','shiftInvariant');
 scene   = ieGetObject('scene');
 oi      = oiCompute(oi,scene);
 
-oi = oiSet(oi,'name','Chromatic Gaussian');
+oi = oiSet(oi,'name',sprintf('Chromatic Gaussian ratio %.1f',sFactor));
 oiWindow(oi);
 
 %% Show the PSF as a function of wavelength in a movie
@@ -198,8 +191,36 @@ legend({'vertical','horizontal'});
 % images.
 %
 % This example chooses the first 4 oi images
-%{
+% {
  imageMultiview('oi',1:4,1);
 %}
 
+%% Sharpening
+
+% Not physically realizable but used in image processing applications
+%
+% Now, we build a difference of Gaussians that will sharpen the original image
+% a little.  This is the psf.
+%
+%{
+h1 = fspecial('gaussian', 128, 5);
+h2 = fspecial('gaussian', 128, 10);
+h = h1 - 0.5*h2;
+ieFigure; mesh(h)
+psf = zeros(128,128,length(wave));
+for ii=1:length(wave), psf(:,:,ii) = h; end     % PSF data
+
+psfFile = fullfile(tempdir,'customFile');
+
+% Save the data and all the rest, in compact form
+ieSaveSIDataFile(psf,wave,umPerSample,psfFile);
+
+optics = siSynthetic('custom',oi,psfFile,[]);
+oi     = oiSet(oi,'optics',optics);
+oi     = oiSet(oi,'optics model','shiftInvariant');
+
+oi = oiCompute(oi,scene);
+oi = oiSet(oi,'name','Sharpened');
+oiWindow(oi);
+%}
 %% End
