@@ -11,24 +11,31 @@ function optics = siSynthetic(psfType,oi,varargin)
 % By default, the optics (custom) fields are filled in using simple values.
 %
 % Inputs
-% psfType:  'gaussian'   --  bivariate normal
+% psfType:  'gaussian'   -- Bivariate normal  (default)
 %           'lorentzian' -- Lorentzian (Cauchy) 
-%           'custom'   --  read a file with variables explained below
-% oi:        Optical image
+%           'pillbox'    -- Square patch
+%           'custom'     -- Read a file with the variables, as explained
+%                           below.  They are interpolated to match the
+%                           optics requirements.
 %
-% Optional
-% varargin for Gaussian:
-%   waveSpread: Size of the PSF spread at each of the wavelengths
-%               For gaussian this is in microns (um)
-%   xyRatio:   Ratio of spread in x and y directions
-%   filename:  Output file name for the optics
+% oi:        Optical image (ieGetObject('oi') is the default)
 %
-% varargin for Lorentzian
+% Optional varargin arguments
+%
+% **Gaussian**
+%   waveSpread: Size of the PSF spread (microns) at each of the wavelengths
+%   xyRatio:    Ratio of spread in x and y directions
+%   filename:   Output file name for the optics
+%
+% **Lorentzian**
 %   gParameter:  The gamma parameter determines tail size.  It is either a
 %                scalar, or a vector equal in length to the number of
 %                wavelengths in the oi. 
 %
-% varargin for custom
+% **pillbox**
+%   size:        Size of the pillbox edge in microns
+%
+% **custom**
 %   inData  - filename or struct with psf, umPerSamp, and wave data
 %   outFile - Optional
 %
@@ -77,7 +84,7 @@ nWave    = length(wave);
 % Spatial samples used for ISET representation of the OTF
 nSamples = 128;                  % 128 samples, spaced 0.25 um
 OTF      = zeros(nSamples,nSamples,nWave);
-dx(1:2)  = 0.25*1e-3;              % The output sampling in mm per samp
+dx(1:2)  = 0.25*1e-3;            % The output sampling in mm per samp
 
 %% Create psf and OTF
 
@@ -85,8 +92,20 @@ switch lower(psfType)
     case 'gaussian'
         % Create a Gaussian set of PSFs.
         if length(varargin) < 2, error('Wavespread and xyRatio required'); end
+
         xSpread = varargin{1};    % Spread is in units of um here
+        if isscalar(xSpread), xSpread = ones(nWave,1)*xSpread;
+        elseif numel(xSpread) == nWave
+        else
+            error('Bad number of entries in xSpread')
+        end
+
         xyRatio = varargin{2};
+        if isscalar(xyRatio), xyRatio = ones(nWave,1)*xyRatio;
+        elseif numel(xyRatio) == nWave
+        else
+            error('Bad number of entries in xyRatio')
+        end
         ySpread  = xSpread(:) .* xyRatio(:);
         if length(varargin) == 3, outFile = varargin{3};
         else, outFile = []; end
@@ -104,6 +123,7 @@ switch lower(psfType)
             psf         = fftshift(psf);  % Place center of psf at (1,1)
             OTF(:,:,jj) = fft2(psf);
         end
+
     case 'lorentzian'
         if isempty(varargin), gParameter = 1;
         else, gParameter = varargin{1};
@@ -125,9 +145,35 @@ switch lower(psfType)
             psf         = fftshift(psf);  % Place center of psf at (1,1)
             OTF(:,:,jj) = fft2(psf);
         end
+    case 'pillbox'
+        % Square patch of patchSize.  Wavelength dependency not yet
+        % implemented.
+
+        if isempty(varargin)
+            % Choose size of the pillbox that is a little bigger than the
+            % Airy Disk size.  The dx units above are in millimeters
+            % because the OTF in optics is in millimeters.
+            fNumber = oiGet(oi,'optics fnumber');
+            patchSize = airyDisk(700,fNumber,'units','mm');
+        else
+            patchSize = varargin{1};
+        end
+
+        psfSamples = ceil(patchSize/dx(1));
+        samples    = (64-psfSamples):(64+psfSamples);
+
+        psf = zeros(128,128); 
+        psf(samples,samples) = 1;
+        psf = psf/sum(psf(:));
+        psf = fftshift(psf);  % Place center of psf at (1,1)
+
+        for jj=1:length(wave)
+            OTF(:,:,jj) = fft2(psf);
+        end        
 
     case 'custom'
-        %% Get PSF data
+        % Get PSF data from a file.  Interpolate the data
+
         if isempty(varargin)
             % Find a file by asking user
             inFile = ...

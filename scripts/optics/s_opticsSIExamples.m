@@ -1,24 +1,25 @@
 %% Shift-invariant optics examples
 %
-% This script illustrates how to create shift-invariant optics.
+% This script demonstrates the creation of shift-invariant optics with
+% custom point spread functions (PSFs).
 %
-% It creates a point spread functions for each wavelength, and places them
-% in an optics structure and then optical image (OI) structure.  We then
-% calculate the effect of the PSF on a simple scene, displaying the result
-% in an optical image window.
+% For each wavelength, PSFs are generated and incorporated into an optics
+% structure, which is then embedded within an optical image (OI) structure.
 %
-% The PSF is specified as a blur at the optical image plane, using
-% different functions.  The wavelength dependency is also introduced.
+% The script proceeds to calculate the impact of these PSFs on a simple
+% scene, visualizing the outcome in an optical image window.
 %
-% See also
+% PSFs are generated using `siSynthetic`, which supports various types and
+% introduces wavelength-dependent chromatic aberrations. Read the
+% siSynthetic function to learn how to create optics using a defined PSF.
+%
+% See also: 
 %   siSynthetic, ieSaveSIDataFile
 
 %%
 ieInit
 
 %% Create the scene
-
-% First, we  create a checkerboard scene to blur.
 
 %{
 pixPerCheck = 16;
@@ -32,46 +33,23 @@ imSize = [256 256];
 spacing = 64;
 thickness = 3;
 scene = sceneCreate('grid lines',imSize,spacing,'ee',thickness);
-wave  = sceneGet(scene,'wave');
 
 % We make a small field of view so that we close up view of the details.
 scene = sceneSet(scene,'fov',2);
 
 sceneWindow(scene);
 
+oi = oiCreate('psf');
+
 %% Example 1: Create a pillbox point spread function
 
-% Point spread functions are small images.  There is one image for each
-% wavelength. In this example, the spatial grid is 128 x 128 with samples
-% spaced every 0.25 microns. Hence, the PSF image size is  128 * 0.25 = 32
-% microns on a side.
-%
-% We create a point spread for each wavelength, 400:10:700. We write out
-% a file that contains the point spread functions using ieSaveSIDataFile.
+% The pillbox was often used in the past because it can be computed very
+% quickly.  It isn't good for much, but I stuck it in here anyway.  Mostly,
+% notice how much blurrier the pillbox is than an Airy pattern with the
+% same disk size.
 
-% We specify the point spread with respect to units on the optical image
-% which is also a sensor surface.  The sampling here is enough for a 1
-% micron pixel.
-umPerSample = [0.5,0.5];                % Sample spacing
-
-% Point spread is a little square in the middle of the image
-c = (64 - 8):(64+8);
-h = zeros(128,128); h(( 64-8):(64+8),(64-8):(64+8)) = 1; 
-h = h/sum(h(:));
-psf = zeros(128,128,length(wave));
-for ii=1:length(wave), psf(:,:,ii) = h; end     % PSF data
-
-% Save the data
-psfFile = fullfile(tempdir,'SI-pillbox');
-ieSaveSIDataFile(psf,wave,umPerSample,psfFile);
-
-% Read the psf and copy it into the optics slot of the oi
-%
-% After you compute, use the menu Analyze | Optics | <>  in the oiWindow to
-% plot various properties of the optics.
-%
-oi = oiCreate;
-optics = siSynthetic('custom',oi,psfFile,[]);
+patchSize = airyDisk(700,oiGet(oi,'optics fnumber'),'units','mm');
+optics    = siSynthetic('pillbox',oi , patchSize);
 
 % Attach the optics to the oi (optical image)
 oi = oiSet(oi,'optics',optics);
@@ -109,7 +87,7 @@ oiWindow(oi);
 %
 wave    = oiGet(oi,'wave');
 psfType = 'gaussian';
-waveSpread = (wave/wave(1)).^3;
+waveSpread = 0.5*(wave/wave(1)).^3;
 
 % Make point spreads with a circular bivariate Gaussian
 xyRatio = ones(1,length(wave));
@@ -136,7 +114,7 @@ oiWindow(oi);
 
 wave    = oiGet(oi,'wave');
 psfType = 'gaussian';
-waveSpread = (wave/wave(1)).^2;
+waveSpread = 0.5*(wave/wave(1)).^3;
 
 % Make point spreads with a bivariate Gaussian.
 % If sFactor < 1, then x (horizontal) is sharper.  
