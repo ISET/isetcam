@@ -82,6 +82,7 @@ switch lower(psfType)
             % biNormal calculation.
             psf         = biNormal(xSpread(jj)/dx(2),ySpread(jj)/dx(1),0,nSamples);
             psf         = psf/sum(psf(:));
+            psf         = rot90(psf);     % Testing
             psf         = fftshift(psf);  % Place center of psf at (1,1)
             OTF(:,:,jj) = fft2(psf);
         end
