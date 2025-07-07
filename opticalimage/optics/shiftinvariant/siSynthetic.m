@@ -82,7 +82,7 @@ wave     = oiGet(oi,'wave');
 nWave    = length(wave);
 
 % Spatial samples used for ISET representation of the OTF
-nSamples = 128;                  % 128 samples, spaced 0.25 um
+nSamples = 129;                  % 128 samples, spaced 0.25 um
 OTF      = zeros(nSamples,nSamples,nWave);
 dx(1:2)  = 0.25*1e-3;            % The output sampling in mm per samp
 
@@ -103,9 +103,9 @@ switch lower(psfType)
         xyRatio = varargin{2};
         if isscalar(xyRatio), xyRatio = ones(nWave,1)*xyRatio;
         elseif numel(xyRatio) == nWave
-        else
-            error('Bad number of entries in xyRatio')
+        else,  error('Bad number of entries in xyRatio')
         end
+        
         ySpread  = xSpread(:) .* xyRatio(:);
         if length(varargin) == 3, outFile = varargin{3};
         else, outFile = []; end
@@ -120,7 +120,7 @@ switch lower(psfType)
             psf         = biNormal(xSpread(jj)/dx(2),ySpread(jj)/dx(1),0,nSamples);
             psf         = psf/sum(psf(:));
             psf         = rot90(psf);     % Testing
-            psf         = fftshift(psf);  % Place center of psf at (1,1)
+            psf         = ifftshift(psf);  % Place center of psf at (1,1)
             OTF(:,:,jj) = fft2(psf);
         end
 
@@ -142,7 +142,7 @@ switch lower(psfType)
         for jj=1:nWave
             psf = 1 ./ (1 + (r/g(jj)).^2);
             psf         = psf/sum(psf(:));
-            psf         = fftshift(psf);  % Place center of psf at (1,1)
+            psf         = ifftshift(psf);  % Place center of psf at (1,1)
             OTF(:,:,jj) = fft2(psf);
         end
     case 'pillbox'
@@ -159,13 +159,14 @@ switch lower(psfType)
             patchSize = varargin{1};
         end
 
+        % nSamples is 1:129, so the center location is 65
         psfSamples = ceil(patchSize/dx(1));
-        samples    = (64-psfSamples):(64+psfSamples);
+        samples    = ((nSamples+1)/2 - psfSamples):((nSamples+1)/2 + psfSamples);
 
-        psf = zeros(128,128); 
+        psf = zeros(nSamples,nSamples); 
         psf(samples,samples) = 1;
         psf = psf/sum(psf(:));
-        psf = fftshift(psf);  % Place center of psf at (1,1)
+        psf = ifftshift(psf);  % Place center of psf at (1,1)
 
         for jj=1:length(wave)
             OTF(:,:,jj) = fft2(psf);

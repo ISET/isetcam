@@ -1,8 +1,8 @@
-function selectedObjs = imageMultiview(objType, selectedObjs, singlewindow, app)
+function [selectedObjs, hdl] = imageMultiview(objType, selectedObjs, singlewindow, app)
 % Display multiple images of selected GUI objects
 %
 % Syntax:
-%   selectedObjs = imageMultiview(objType, [selectedObjs], [singlewindow], [app])
+%   [selectedObjs,hdl] = imageMultiview(objType, [selectedObjs], [singlewindow], [app])
 %
 % Description:
 %    Compares rendered images side by side, rather than flipping
@@ -20,6 +20,7 @@ function selectedObjs = imageMultiview(objType, selectedObjs, singlewindow, app)
 %
 % Outputs:
 %    selectedObjs - The selected objects
+%    hdl          - Figure handle (not axes)
 %
 % Optional key/value pairs:
 %    None.
@@ -36,6 +37,7 @@ function selectedObjs = imageMultiview(objType, selectedObjs, singlewindow, app)
 %    12/26/17   BW  Removed vcimage/imageGet. Fixed examples.
 %    01/26/18  jnm  Formatting update to match Wiki.
 %
+
 % Examples:
 %{
     scene = sceneCreate; ieAddObject(scene);
@@ -133,5 +135,7 @@ for ii = selectedObjs
     if singlewindow, title(t); else, set(gcf, 'name', t); end
     
 end
+
+hdl = gcf;
 
 end
