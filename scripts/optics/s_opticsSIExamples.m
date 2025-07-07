@@ -55,7 +55,7 @@ optics    = siSynthetic('pillbox',oi , patchSize);
 oi = oiSet(oi,'optics',optics);
 
 % Setthe model to shift invariant
-oi = oiSet(oi,'optics model','shiftInvariant');
+% oi = oiSet(oi,'optics model','shiftInvariant');
 
 % Apply the optics to the checkerboard scene.
 oi = oiCompute(oi,scene);
@@ -136,7 +136,7 @@ oiWindow(oi);
 
 %% Show the PSF as a function of wavelength in a movie
 
-oiPlot(oi,'psf',550)
+oiPlot(oi,'psf',550);
 
 % psfMovie(oiGet(oi,'optics'),ieFigure,0.1);
 
