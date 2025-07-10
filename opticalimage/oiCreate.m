@@ -30,6 +30,9 @@ function [oi, wvf, scene] = oiCreate(oiType,varargin)
 %     {'human mw'}   - Human shift-invariant optics model with chromatic
 %                      aberration estimated by Marimont-Wandell
 %
+%     {'psf'}        - A shift invariant OI created from a PSF optics
+%                      struct, typically created by siSynthetic
+%
 %     {'ray trace'}  - Ray trace OI, which is a limited form of ray
 %                      tracing. It includes a wavelength-dependent and
 %                      field height dependent PSF, along with relative
@@ -230,6 +233,31 @@ switch ieParamFormat(oiType)
         if isequal(ieParamFormat(oiType),'diffractionlimited')
             oi.optics.model = 'diffractionlimited';
         end
+    case {'psf'}
+        % Create optics from a PSF (e.g., siSynthetic). This is also a shift
+        % invariant type of OI, but there is no wavefront representation
+        
+        oi = oiCreate('default');
+        fNumber = oiGet(oi,'optics fnumber');
+        wave = 400:10:700;
+        oi = oiSet(oi,'wave',wave);
+
+        % The Gaussian spread is the same for all wavelengths and set to
+        % twice the size of the airy disk diameter
+        diskradius = airyDisk(wave(end),fNumber,'units','um');        
+        psfType = 'gaussian';
+        sigma = 2*diskradius;
+
+        % Make point spreads with a circular bivariate Gaussian
+        xyRatio = ones(1,length(wave));
+
+        % Now call the routine with these parameters
+        optics  = siSynthetic(psfType,oi,sigma,xyRatio);
+        oi      = oiSet(oi,'optics',optics);
+
+        oi  = oiSet(oi,'optics model','shiftInvariant');
+
+        % Should we set computeMethod to opticspsf?
 
     case {'raytrace'}
         % Create the default ray trace unless a file name is passed in

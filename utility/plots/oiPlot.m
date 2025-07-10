@@ -224,7 +224,7 @@ switch pType
         udata.wave = wave; 
         udata.pos = posMicrons.x; udata.data = double(data');
         udata.cmd = 'mesh(pos,wave,data)';
-        set(g,'Name',sprintf('ISET GraphWin: line %.0f',roiLocs(2)));
+        set(g,'Name',sprintf('ISET GraphWin: hline %.0f',roiLocs(2)));
         colormap(jet(64));
         
     case {'irradianceenergyhline','hlineenergy','hlineirradianceenergy'}
@@ -287,7 +287,7 @@ switch pType
         udata.wave = wave;         
         udata.roiLocs = roiLocs;
         udata.pos = posMicrons.y; udata.data = double(data');
-        set(g,'Name',sprintf('Line %.0f',roiLocs(1)));
+        set(g,'Name',sprintf('Irradiance vline %.0f',roiLocs(1)));
         colormap(jet(64));
         
     case {'irradiancefft'}
@@ -1062,9 +1062,9 @@ switch lower(pType)
 
         end
 
-        % Label, store data
-        xlabel('Position (um)'); ylabel('Position (um)');
-        zlabel('Irradiance (relative)');
+        % Label, store data.  Remember x is columns, y is rows
+        xlabel('X-Position (um)'); ylabel('Y-Position (um)');
+        zlabel('Irradiance (unit volume)');
         title(sprintf('Point spread (%.0f nm)',thisWave));
         uData.x = sSupport(:,:,1); uData.y = sSupport(:,:,2);
         uData.psf = psf;

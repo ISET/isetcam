@@ -26,8 +26,8 @@ if ieNotDefined('wave'), error('wavelength samples required (nm)'); end
 if ieNotDefined('umPerSamp'), error('Microns per sample(2-vector) required'); end
 if ieNotDefined('fName'), fName = vcSelectDataFile('stayPut','w'); end
 
-notes.timeStamp = datestr(now);
+notes.timeStamp = datetime('now');
 
 save(fName,'psf','wave','umPerSamp','notes');
 
-return;
+end
