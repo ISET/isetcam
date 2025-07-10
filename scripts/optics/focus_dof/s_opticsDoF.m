@@ -27,7 +27,7 @@ ieInit
 %% This matches one of the cases in s_opticsCoC
 
 fN = 2;      % Dimensionless
-fL = 0.100;  % Meters
+fL = 0.100;  % Meters (100 mm)
 
 optics = opticsCreate;
 optics = opticsSet(optics,'fnumber',fN);
@@ -55,6 +55,11 @@ thisLine.LineStyle = '--';
 xlabel('Object distance (m)'); ylabel('CoC diameter (m)');
 drawnow;
 
+%{
+fname = fullfile(fiseRootPath, 'local','optics-dof-graph.svg');
+exportgraphics(gcf,fname)
+%}
+
 %% Calculating depth of field from CoC
 
 [~,idx1] = min(abs(coc(1:100) - cocDiam));
@@ -68,8 +73,8 @@ fprintf('Interpolated from CoC DOF = %.2f m\n',cocDOF);
 fprintf('These are usually close!\n');
 
 % Sweep out object distances and optics fnumbers
-oDist = (0.5:0.5:20);
-fnumber = (2:1:32);
+oDist = (0.5:0.25:20);
+fnumber = (2:0.25:20);
 
 % Choose a pretty tight criterion for blur (4 super pixels)
 CoC = 20e-6;
@@ -85,10 +90,18 @@ end
 %% Log DoF, as a mesh
 
 ieNewGraphWin; 
-imagesc(fnumber,oDist,log10(dof)); 
-ylabel('Object distance (m)'); xlabel('F#'); zlabel('DOF (m)');
-title('Log_{10} Depth of Field (m)'); 
+% imagesc(fnumber,oDist,log10(dof)); 
+imagesc(fnumber,oDist,dof); 
+% mesh(fnumber,oDist,dof); 
+ylabel('Object distance (m)'); xlabel('f/#'); zlabel('DOF (m)');
+title('Depth of Field (m)'); 
 grid on; colormap(jet); colorbar; axis xy;
+
+
+% {
+fname = fullfile(fiseRootPath, 'local','optics-dof-image.pdf');
+exportgraphics(gcf,fname)
+%}
 
 %%
 

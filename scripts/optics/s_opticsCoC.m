@@ -43,12 +43,12 @@ for oo = [1,2]
     % Set the distance to the inplane focus
     [c, xDist] = opticsCoC(optics,oDist(oo),'unit','mm','n samples',50);
 
-    hdl = ieNewGraphWin;
+    hdl = ieFigure;
 
     % Plot the circle diameter as a function of distance
     semilogy(xDist,c,'b','LineStyle',lineStyle{oo}); grid on;
     xlabel('Object distance (m)');
-    ylabel('Diameter of circle of confusion (mm)');    
+    ylabel('Diameter of circle of confusion (mm)');
 
     %% Shrink the aperture
 
@@ -64,10 +64,10 @@ for oo = [1,2]
     hold on;
     semilogy(xDist,c,'r','LineStyle',lineStyle(oo)); grid on;
     xlabel('Object distance (m)');
-    ylabel('Diameter of circle of confusion (mm)')    
+    ylabel('Diameter of circle of confusion (mm)')
 
-    %% Keep the same F# but change to focal length
-
+    %% Keep the same F# but change the focal length
+    %{
     fN = 2;
     fL = 0.100;
     optics = opticsSet(optics,'fnumber',fN);
@@ -81,11 +81,16 @@ for oo = [1,2]
     semilogy(xDist,c,'k','LineStyle',lineStyle(oo)); grid on;
     xlabel('Object distance (m)');
     ylabel('Diameter of circle of confusion (mm)')
+    %}
 
     legend({'F# 2 FL 50 mm','F# 8 FL 50 mm','F# 2 FL 100 mm'});
-    title(sprintf('Circle of Confusion - Focus distance %.1f m',oDist(oo)));
+    % title(sprintf('Circle of Confusion - Focus distance %.1f m',oDist(oo)));
     drawnow;
+    
 end
 
 %%
-
+%{
+fname = fullfile(fiseRootPath, 'local','optics-coc-2.svg');
+exportgraphics(gcf,fname);
+%}
