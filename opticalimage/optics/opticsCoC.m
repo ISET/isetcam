@@ -6,15 +6,13 @@ function [circ, xDist] = opticsCoC( optics, oDist, varargin )
 %
 %  Brief description:
 %    The default blur circle is calculated for an object at a distance
-%    oDist (meters) on the surface of a sensor positioned at the focal
-%    distance from the lens. This calculation is an approximation for a
-%    thin lens.
-%
-%    If we set 
+%    oDist (meters) on the surface of a sensor positioned at an image
+%    distance (focal distance) from the lens. This calculation is an
+%    approximation for a thin lens.
 %
 %  Parameters
 %    optics - optics struct (required)
-%    oDist  - distance to the object in focus (meters)
+%    oDist  - distance to the in-focus object (meters)
 %
 %  Optional key/val pairs
 %    unit  - Spatial units of the circle diameter ('m' default)
@@ -28,36 +26,38 @@ function [circ, xDist] = opticsCoC( optics, oDist, varargin )
 % We use ray trace geometry to compute the circle size.  We could impose a
 % limit for diffraction, but it is not relevant for this calculation.
 %
-% Suppose the in-focus image point, O, is at the object distance, oDist.
-% The optics focal length is f. Then O is brought to focus at fO,
-% determined by the Lensmaker's Equation.
+% Suppose the in-focus image point, P, is at the object distance,
+% pDist. The optics focal length is f. Then P is brought to focus in
+% the image plane at a distance f_P, whose value is determined by the
+% Lensmaker's Equation.
 %
-% Consider another point, say X, at distance xDist.  It will be in focus at
-% fX, also calculated by the Lensmaker's equation.
+% Consider another point, say X, at object distance xDist.  It will be
+% in focus at f_X, also calculated by the Lensmaker's equation.
 % 
-% First, imagine that X is closer thanO and thus fX is beyond fO. The
-% spread of the rays from X at the focal plane, fO - the circle of
+% First, imagine that X is closer than P and thus f_X is beyond f_P.
+% The spread of the rays from X at the image plane, f_P - the circle of
 % confusion - is calculated from the two similar right triangles (see
-% course powerpoint). One triangle has a side A/2 and fX, and the smaller,
-% similar triangle has one side (fX - fO) and another side (A/2)*(fX -
-% fO)/fX. This side is half the diameter of the circle of confusion.
+% course powerpoint). One triangle has a side A/2 and f_X, and the
+% smaller, similar triangle has one side (f_X - f_P) and another side
+% (A/2)*(f_X - f_P)/f_X. This side is half the diameter of the circle of
+% confusion.
 %
-% Second, imagine that fX is closer than fO. There will still be similar
-% triangles.  But the length of the short side is fO - fX. 
+% Second, imagine that f_X is closer than f_P. There will still be similar
+% triangles.  But the length of the short side is f_P - f_X. 
 %
-% So the general formula for the diameter of the circle of confusion on the
+% The formula for the diameter of the circle of confusion on the
 % sensor surface is
 %
-%     CoC = 2 * (A/2) * abs(fX - fO)/fX 
-%         = A * abs(fX - fO)/fX
+%     CoC = 2 * (A/2) * abs(f_X - f_P)/f_X 
+%         = A * abs(f_X - f_P)/f_X
 %
-% where fX and fO are derived from the LensMaker's equation for points O
-% and X at distance oDist and xDist.
+% Again, f_X and f_P are derived from the LensMaker's equation for points P
+% and X at distance pDist and xDist.
 %
 % To calculate the depth of field, we find two distances in object space
 % that have the same circle of confusion. One point (X) will be closer than
-% O (xDist < oDist) and the other point (Y) will be further than the object
-% point, O (yDist > oDist).  The distance between those two points is the
+% O (xDist < pDist) and the other point (Y) will be further than the object
+% point, O (yDist > pDist).  The distance between those two points is the
 % depth of field (at a distance P, and a criterion circle of confusion).
 %
 %    2 * (A/2) * abs(fX - fO)/fX  =  2 * (A/2) * abs(fY - fO)/fY
@@ -83,8 +83,8 @@ function [circ, xDist] = opticsCoC( optics, oDist, varargin )
 %
 % Example:
 %   optics = opticsCreate;
-%   oDist = 1;    opticsCoC(optics,oDist,'um')  % Far away
-%   oDist = 0.2;  opticsCoC(optics,oDist,'um')  % Close
+%   pDist = 1;    opticsCoC(optics,pDist,'um')  % Far away
+%   pDist = 0.2;  opticsCoC(optics,pDist,'um')  % Close
 %
 % Copyright Imageval Consulting, LLC 2015
 %
@@ -96,8 +96,8 @@ function [circ, xDist] = opticsCoC( optics, oDist, varargin )
 optics = opticsCreate;
 optics = opticsSet(optics,'focal length',0.100); % 50 mm
 optics = opticsSet(optics,'fnumber',20);  
-oDist = 3; 
-[cocDiam, xDist] = opticsCoC(optics,oDist,'unit','um');
+pDist = 3; 
+[cocDiam, xDist] = opticsCoC(optics,pDist,'unit','um');
 ieNewGraphWin; plot(xDist,cocDiam); grid on;
 %}
 
@@ -106,7 +106,7 @@ varargin = ieParamFormat(varargin);
 
 p = inputParser;
 p.addRequired('optics',@isstruct);
-p.addRequired('oDist',@(x)(isnumeric(x) && numel(x) == 1));
+p.addRequired('oDist',@(x)(isnumeric(x) && isscalar(x)));
 p.addParameter('unit','m',@ischar);
 p.addParameter('xdist',[],@isvector);
 p.addParameter('nsamples',21,@isnumeric);   % Odd is a little better
