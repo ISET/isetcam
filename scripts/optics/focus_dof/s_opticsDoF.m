@@ -39,7 +39,7 @@ oDist = 2;  % Meters
 % CoC criterion.  You should have a look at the plotted CoC to make sure
 % that you have a reasonable size CoC.  That would be one where the curve
 % actually gets there!
-cocDiam = 0.0005;  % Meters
+cocDiam = 50*1e-6;  % Meters. 50 microns is blurry for a 1 um sensor
 
 % This depth of field is about 0.36 meters
 dof = opticsDoF(optics,oDist,cocDiam);
@@ -68,13 +68,13 @@ cocDOF = xDist(idx2) - xDist(idx1);
 
 %%  Make an image showing the dof for a range of F# and Obj Distances
 
+% Not sure why I am comparing these.  But ...
 fprintf('Formula based DOF = %.2f m\n',dof);
 fprintf('Interpolated from CoC DOF = %.2f m\n',cocDOF);
-fprintf('These are usually close!\n');
 
 % Sweep out object distances and optics fnumbers
-oDist = (0.5:0.25:20);
-fnumber = (2:0.25:20);
+oDist   =  (0.5:0.25:20);
+fnumber = (2:0.25:12);
 
 % Choose a pretty tight criterion for blur (4 super pixels)
 CoC = 20e-6;
@@ -87,19 +87,20 @@ for ii=1:numel(oDist)
     end
 end
 
-%% Log DoF, as a mesh
+%% Depth of field as an image
 
-ieNewGraphWin; 
+ieFigure; 
 % imagesc(fnumber,oDist,log10(dof)); 
-imagesc(fnumber,oDist,dof); 
-% mesh(fnumber,oDist,dof); 
-ylabel('Object distance (m)'); xlabel('f/#'); zlabel('DOF (m)');
-title('Depth of Field (m)'); 
+% imagesc(fnumber,oDist,dof); 
+surf(fnumber,oDist,dof);
+set(gca,'xlim',[2 12]);
+ylabel('Object distance (m)'); 
+xlabel('f/#'); zlabel('DOF (m)');
+% title('Depth of Field (m)'); 
 grid on; colormap(jet); colorbar; axis xy;
 
-
-% {
-fname = fullfile(fiseRootPath, 'local','optics-dof-image.pdf');
+%{
+fname = fullfile(fiseRootPath, 'local','optics-dof-image.png');
 exportgraphics(gcf,fname)
 %}
 
