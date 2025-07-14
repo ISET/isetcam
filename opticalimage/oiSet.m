@@ -289,7 +289,7 @@ switch parm
 
     case {'computemethod'}
         % Compute method.  Only applies for shift invariant
-        if (strcmp(val,'opticspsf') | strcmp(val,'opticsotf') | strcmp(val,'humanmw'))
+        if (strcmp(val,'opticspsf') || strcmp(val,'opticsotf') || strcmp(val,'humanmw'))
             oi.computeMethod = val;
         elseif (isempty(val))
             oi.computeMethod = val;

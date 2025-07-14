@@ -193,7 +193,8 @@ sensorCombined.metadata.saturated = idx;
 
 % The names are usually ovt-large or imx490-small.  So we split on the
 % '-' to create the name.
-tmp = split(sensorGet(sensors(1),'name'),'-'); thisDesign = tmp{1};
+tmp = strsplit(sensorGet(sensors(1),'name'),'-');
+thisDesign = tmp{1};
 
 sensorCombined = sensorSet(sensorCombined,'name',sprintf('%s-%s',thisDesign,method));
 

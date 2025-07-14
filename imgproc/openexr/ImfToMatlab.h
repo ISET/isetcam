@@ -25,7 +25,7 @@
 
 #include <mex.h>
 
-#include <ImfNamespace.h>
+// #include <ImfNamespace.h>
 #include <ImfAttribute.h>
 
 

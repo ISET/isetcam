@@ -60,7 +60,7 @@ char* MD5File(char* szFilename);
  *
  */
 #include <mex.h>
-#include <matrix.h>
+// #include <matrix.h>
 
 
 /*********************************************************************

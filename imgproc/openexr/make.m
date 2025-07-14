@@ -1,43 +1,52 @@
+% This makefile returns .oct files as replacement to MATLAB's .mex
+% Some headers from cpp files have been commented out either to avoid conflict 
+% or absence of those libraries in Octave. 
+
+% Thus, we have a compiler for Octave. 
+
 clc;
 verbose = false;
 
-
-% -----------------------------------------------
+% -------------------------------------------------
 build_files = { 'exrinfo.cpp', ...
-    'exrread.cpp', ...
-    'exrreadchannels.cpp', ...
-    'exrwrite.cpp', ...
-    'exrwritechannels.cpp'};
+                'exrread.cpp', ...
+                'exrreadchannels.cpp', ...
+                'exrwrite.cpp', ...
+                'exrwritechannels.cpp'};
+
+% build_files = { 'exrinfo.cpp'};
 
 companion_files = { 'utilities.cpp', ...
-    'ImfToMatlab.cpp', ...
-    'MatlabToImf.cpp'};
+                    'ImfToMatlab.cpp', ...
+                    'MatlabToImf.cpp' };
 
-additionals = {};
-if(verbose == true)
-    additionals = [additionals, {'-v'}];
+% Header and library paths — adjust if needed
+lib_paths = ['-L', getenv('CONDA_PREFIX'), '/lib'];
+include_paths = sprintf('-I%s/include/OpenEXR -I%s/include/Imath', ...
+    getenv('CONDA_PREFIX'), getenv('CONDA_PREFIX'));
+libs = '-lOpenEXR -lIex -lImath -lIlmThread -lz';
+
+% Verbose
+extra_flags = '';
+if verbose
+    extra_flags = '-v';
 end
 
-for n = 1:size(build_files, 2)
-    if(verbose == true)
-        clc;
+% Build loop
+for k = 1:numel(build_files)
+    src = build_files{k};
+    [~, outname, ~] = fileparts(src);
+    out = [outname, '.mex'];
+    cmd = sprintf('mkoctfile --mex %s %s %s %s %s %s -o %s %s', ...
+              include_paths, lib_paths, extra_flags, ...
+              src, strjoin(companion_files, ' '), libs, out);
+    disp(['Building ', out, '...']);
+    disp(['CMD: ', cmd])
+    status = system(cmd);
+    if status ~= 0
+        error(['Failed to compile: ', src]);
     end
-    
-    file = cell2mat(build_files(n));
-    
-    disp(['Building ', file]);
-    
-    mex(file, companion_files{:}, ...
-        '-I/usr/local/include/OpenEXR', ...
-        '-I/usr/local/include/Imath',...
-        '-L/usr/local/lib', ...
-        '-lOpenEXR',...
-        '-lIex', ...
-        '-lImath', ...
-        '-lIlmThread', ...
-        '-largeArrayDims', ...
-        additionals{:});
 end
 
 clear;
-disp('Finished building OpenEXR for Matlab');
+disp('Finished building OpenEXR MEX/OCT files for Octave.');

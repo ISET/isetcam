@@ -357,10 +357,14 @@ switch sensorType
         end
 
         qeFile = fullfile(isetRootPath,'data','sensor','colorfilters','OVT','ovt-large.mat');
-        wave = sensorGet(sensor,'wave');
-        [data,filterNames] = ieReadColorFilter(wave,qeFile);
-        sensor = sensorSet(sensor,'filter spectra',data);
-        sensor = sensorSet(sensor,'filter names',filterNames);
+        wave = sensorGet(sensor, 'wave');
+        [data, ~] = ieReadColorFilter(wave, qeFile);
+
+        % Hardcoded filter names (since Octave can't read the cell array from .mat)
+        filterNames = {'r', 'g', 'b'};
+
+        sensor = sensorSet(sensor, 'filter spectra', data);
+        sensor = sensorSet(sensor, 'filter names', filterNames);
 
         % LPD-HCG - Higher voltage output
         sensor(2) = sensor(1);
@@ -401,12 +405,17 @@ switch sensorType
         % We have the small, but correcting for the differences is a
         % challenge.  So, we use the large twice.
         % qeFile = fullfile(isetRootPath,'data','sensor','colorfilters','OVT','ovt-small.mat');
-        qeFile = fullfile(isetRootPath,'data','sensor','colorfilters','OVT','ovt-large.mat');
+        qeFile = fullfile(isetRootPath, 'data', 'sensor', 'colorfilters', 'OVT', 'ovt-large.mat');
 
-        wave = sensorGet(sensor,'wave');
-        [data,filterNames] = ieReadColorFilter(wave,qeFile);
-        sensor = sensorSet(sensor,'filter spectra',data);
-        sensor = sensorSet(sensor,'filter names',filterNames);
+        wave = sensorGet(sensor, 'wave');
+        [data, ~] = ieReadColorFilter(wave, qeFile);
+
+        % Hardcoded filter names (since Octave can't read the cell array from .mat)
+        filterNames = {'r', 'g', 'b'};
+
+        sensor = sensorSet(sensor, 'filter spectra', data);
+        sensor = sensorSet(sensor, 'filter names', filterNames);
+
 
         return;
 

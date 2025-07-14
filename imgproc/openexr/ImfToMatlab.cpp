@@ -24,7 +24,7 @@
 #include <cassert>
 
 #include <mex.h>
-#include <matrix.h>
+// #include <matrix.h>
 
 #ifdef __clang__
   #pragma clang diagnostic push
