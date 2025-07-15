@@ -27,3 +27,15 @@ A set of tutorial videos introducing aspects of ISETCam and the companion tool f
 * May 10, 2024 We work more smoothly with EXR files, including sceneFromFile now reading in EXR files, and writing out sensor2EXR) This work was implemented for the extensions to HDR imaging and application of the Restormer PyTorch network for demosaicing sensor data.
 * April 15, 2024 Implemented a remote copy function ieSCP, to help with the distributed nature of our assets and datafiles
 
+## Octave Support
+- July 14, 2025: Ayush Jamdar at Omnivision Technologies Inc. 
+- GNU Octave is an free open-source alternative to MATLAB. While MATLAB (> R2022b) has its own tools to read `exr` files, Octave doesn't have native support for this and relies on other tools like `openexr`. 
+- We have added/modified `exrinfo.cpp`, `exrread.cpp`, `exrreadchannels.cpp`, `exrwrite.cpp`, and `exrwritechannels.cpp` to work with Octave-compatible headers and datatypes.
+- These readers and writers are completely based on OpenEXR tools. One doesn't need MATLAB to run these scripts. 
+- `make.m` calls `mkoctfile` with the `--mex` flag so that the executable functions hence generated can be called by Octave. 
+- We've added `octave-functions/` that replicate the behaviour of certain MATLAB functions. 
+- We only used the Octave CLI; the `ipWindow` GUIs don't yet work. 
+- We have tested `isethdrsensor/scripts/fullSimulation.m` on examples from the ISET HDR dataset. 
+- Known warnings that Octave throws: 
+    - Octave can't read `filterNames` from the `.mat` files. As a temporary fix, we've hardcoded r, g, b filter names.
+    - After the recent updates to `isetcam/main`, Octave throws a new but benign warning "Invalid UTF-8 byte sequences have been replaced."   

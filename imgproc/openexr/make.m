@@ -1,8 +1,10 @@
-% This makefile returns .oct files as replacement to MATLAB's .mex
-% Some headers from cpp files have been commented out either to avoid conflict 
+% This makefile generates .mex files using mkoctfile from Octave. 
+% Some headers from cpp files have been removed / commented out either to avoid conflict 
 % or absence of those libraries in Octave. 
-
 % Thus, we have a compiler for Octave. 
+
+% Modified by Ayush Jamdar at Omnivision Technogies Inc. 
+% Original authors are from the ISETCam project. 
 
 clc;
 verbose = false;
