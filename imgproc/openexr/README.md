@@ -56,3 +56,10 @@ You may also need to update `~/.matlab/YOUR_MATLAB_VERSION/mexopts.sh` (e.g. in 
 	   300   300     3
 
 	>> exrwrite(a, 'a.exr');
+
+
+# Octave Support
+- July 24, 2025: Ayush Jamdar
+- Modified `cpp` files to generate `mex` executables compatible with Octave. 
+- Run `make.m` to generage the executable functions. 
+- The `dev-octave` branch has been tested to work with Octave 6.4.0

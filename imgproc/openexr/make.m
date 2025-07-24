@@ -3,7 +3,7 @@
 % or absence of those libraries in Octave. 
 % Thus, we have a compiler for Octave. 
 
-% Modified by Ayush Jamdar at Omnivision Technogies Inc. 
+% Modified by Ayush Jamdar. 
 % Original authors are from the ISETCam project. 
 
 clc;
