@@ -38,4 +38,8 @@ A set of tutorial videos introducing aspects of ISETCam and the companion tool f
 - We have tested `isethdrsensor/scripts/fullSimulation.m` on examples from the ISET HDR dataset. 
 - Known warnings that Octave throws: 
     - Octave can't read `filterNames` from the `.mat` files. As a temporary fix, we've hardcoded r, g, b filter names.
-    - After the recent updates to `isetcam/main`, Octave throws a new but benign warning "Invalid UTF-8 byte sequences have been replaced."   
+    - After the recent updates to `isetcam/main`, Octave throws a new but benign warning "Invalid UTF-8 byte sequences have been replaced." 
+
+## Instructions for Octave Packages
+- Get kernel-level packages for a conda environment from `environment.yml`
+- Get packages for Octave as listed in `octave-requirements.txt`
