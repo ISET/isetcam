@@ -208,7 +208,8 @@ switch param
         ip.data.wp = val;
         
     case {'sensorspace'}
-        % What is this?  Comment, please.  Should probably go away.
+        % The demosaicked sensor (device) values
+        % This has dimension row,col,nChannel
         ip.data.sensorspace = val;
     case {'quantization'}
         % Struct of quantization parameters.  Copied from sensor.
