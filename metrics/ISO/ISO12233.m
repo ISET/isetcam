@@ -299,10 +299,10 @@ for i=1:nn2, dat(i,:) = [freq(i), mtf(i,:)]; end
 
 %% Plot SFRs on same axes
 if nWave >1
-    sym{1} = '-r';
-    sym{2} = '-g';
-    sym{3} = '-b';
-    sym{4} = '-k';
+    sym{1} = '-k';
+    sym{2} = '-r';
+    sym{3} = '-g';
+    sym{4} = '-b';
 else
     sym{1} = 'k';
 end
@@ -356,8 +356,9 @@ end
 switch plotOptions
     case 'all'
         % Set data into the figure
-        h = ieNewGraphWin;
+        h = ieFigure;
         set(h,'userdata',results);
+        
         % Draw the luminance term
         p = plot(freq( 1:nn2out), mtf(1:nn2out, 1), sym{1});
         set(p,'linewidth',2);
@@ -388,15 +389,15 @@ switch plotOptions
         % delta is (x,y)
         plotTextString(txt,'ur',[0.4 0.2],18);
         
-        hold off;
-        
-        grid on
+        hold off; grid on;
+        legend({'lum','red','green','blue'});
+
     case 'luminance'
         % Set data into the figure
-        h = vcNewGraphWin;
+        h = ieFigure;
         set(h,'userdata',results);
         
-        p = plot(freq( 1:nn2out), mtf(1:nn2out, 1), sym{1});
+        p = plot(freq( 1:nn2out), mtf(1:nn2out, 1), 'k');
         set(p,'linewidth',2);
         
         % [p,fname,e] = fileparts(ttext);
@@ -416,7 +417,8 @@ switch plotOptions
         newText = sprintf('Percent alias = %0.2f',results.aliasingPercentage);
         txt = addText(txt,[newText,' %']);
         plotTextString(txt,'ur');
-        hold off;
+        hold off; grid on;
+
     case 'none'
         % Do nothing, we don't want a plot
         h = [];
