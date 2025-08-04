@@ -6,8 +6,13 @@
 %
 % These have also been posted on the ISETCam wiki page 
 %    (https://github.com/ISET/isetcam/wiki/Related-software) 
-% 
+%
 % and the ISETHDRSENSOR Readme page.
+%
+% and we started a new repository, ISETPy, that has the instructions
+% and will be building up a collection of Python tools to use in ISETCam
+% projects.
+%
 %
 %% Mac Terminal:  Creating the environment
 %
