@@ -20,7 +20,12 @@
 #include <ImfHeader.h>
 #include <ImfFrameBuffer.h>
 #include <ImfExport.h>
-// #include <ImfNamespace.h>  // Don't include, not needed in 2.5.7
+
+#ifdef OCTAVE
+	// #include <ImfNamespace.h>
+#else 
+	#include <ImfNamespace.h>
+#endif
 
 // Math + exception handling
 #include <Iex.h>

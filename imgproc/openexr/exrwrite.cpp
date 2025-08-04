@@ -26,8 +26,17 @@
 
 
 #include <mex.h>
-// #include <matrix.h>
-// #include <tmwtypes.h>   // Matlab types
+
+#ifdef OCTAVE
+	// #include <matrix.h>
+    // #include <tmwtypes.h>   // Matlab types
+    // #include <ImfNamespace.h>
+#else 
+    #include <matrix.h>
+	#include <tmwtypes.h>   // Matlab types
+    #include <ImfNamespace.h>
+#endif
+
 
 #include <ImathBox.h>
 #include <ImfRgba.h>
@@ -55,7 +64,6 @@
 #include <ImfOutputFile.h>
 #include <ImfHeader.h>
 #include <ImfChannelList.h>
-// #include <ImfNamespace.h>
 #include <ImathMath.h>
 #include <ImfFrameBuffer.h>
 
