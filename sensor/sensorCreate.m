@@ -357,11 +357,16 @@ switch sensorType
         end
 
         qeFile = fullfile(isetRootPath,'data','sensor','colorfilters','OVT','ovt-large.mat');
-        wave = sensorGet(sensor, 'wave');
-        [data, ~] = ieReadColorFilter(wave, qeFile);
 
-        % Hardcoded filter names (since Octave can't read the cell array from .mat)
-        filterNames = {'r', 'g', 'b'};
+        wave = sensorGet(sensor, 'wave');
+
+        if isOctave()
+            % Hardcoded filter names (since Octave can't read the cell array from .mat)
+            [data, ~] = ieReadColorFilter(wave, qeFile);
+            filterNames = {'r', 'g', 'b'};
+        else    
+            [data,filterNames] = ieReadColorFilter(wave,qeFile);
+        end
 
         sensor = sensorSet(sensor, 'filter spectra', data);
         sensor = sensorSet(sensor, 'filter names', filterNames);
@@ -408,10 +413,14 @@ switch sensorType
         qeFile = fullfile(isetRootPath, 'data', 'sensor', 'colorfilters', 'OVT', 'ovt-large.mat');
 
         wave = sensorGet(sensor, 'wave');
-        [data, ~] = ieReadColorFilter(wave, qeFile);
 
-        % Hardcoded filter names (since Octave can't read the cell array from .mat)
-        filterNames = {'r', 'g', 'b'};
+        if isOctave()
+            % Hardcoded filter names (since Octave can't read the cell array from .mat)
+            [data, ~] = ieReadColorFilter(wave, qeFile);
+            filterNames = {'r', 'g', 'b'};
+        else    
+            [data,filterNames] = ieReadColorFilter(wave,qeFile);
+        end
 
         sensor = sensorSet(sensor, 'filter spectra', data);
         sensor = sensorSet(sensor, 'filter names', filterNames);
