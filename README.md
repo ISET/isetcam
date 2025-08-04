@@ -29,6 +29,7 @@ A set of tutorial videos introducing aspects of ISETCam and the companion tool f
 
 ## Octave Support
 - July 14, 2025: Ayush Jamdar. 
+- New: A function `isOctave` tests if code is being run in Octave and uses modified code accordingly.
 - GNU Octave is an free open-source alternative to MATLAB. While MATLAB (> R2022b) has its own tools to read `exr` files, Octave doesn't have native support for this and relies on other tools like `openexr`. 
 - We have added/modified `exrinfo.cpp`, `exrread.cpp`, `exrreadchannels.cpp`, `exrwrite.cpp`, and `exrwritechannels.cpp` to work with Octave-compatible headers and datatypes.
 - These readers and writers are completely based on OpenEXR tools. One doesn't need MATLAB to run these scripts. 
