@@ -391,18 +391,27 @@ switch sceneName
             error('Wrong number of parameters! Input params structure and optional wavelengths.')
         end
     case {'sweep','sweepfrequency'}
-        % sceneCreate('sweepFrequency',sz,maxF);
-        % sz = 512; maxF = sz/16;
+        % sceneCreate('sweepFrequency',sz,maxF,wave,yContrast);
+        % sz = 512; maxF = sz/16; wave = 550;
         %
-        % These are always equal photon type.  Could add a third argument
-        % for spectral type.  Also, we should make this work with
-        % varargin{1} being a struct with the parameters.
-        sz = 128; maxFreq = sz/16;
+        % Default:  
+        %   sz = 128, maxFreq = sz/16; wave = []; yContrast = [];
+        %   Default wavelength is equal energy.
+        %               
+        sz = 128; maxFreq = sz/16; wave = []; yContrast = [];
         if length(varargin) >= 1, sz = varargin{1}; end
         if length(varargin) >= 2, maxFreq = varargin{2}; end
-        scene = sceneSweep(scene,sz,maxFreq);
-        parms.sz = sz; 
+        if length(varargin) >= 3, wave = varargin{3}; end
+        if length(varargin) >= 4, yContrast = varargin{4}; end
+
+        if isscalar(sz), sz = [sz,sz]; end
+        
+        % We return parms.
+        scene = sceneSweep(scene,sz,maxFreq,wave,yContrast);
+        parms.sz = sz;
         parms.maxFreq = maxFreq;
+        parms.wave = varargin{3};
+
     case {'ramp','linearintensityramp','rampequalphoton'}
         % scene = sceneCreate('ramp',sz,dynamicRange);
         % The linear ramp has reduced contrast from top to bottom.
@@ -954,17 +963,30 @@ scene = sceneSet(scene,'illuminant',il);
 end
 
 %--------------------------------------------------
-function scene = sceneSweep(scene,sz,maxFreq)
-%%  These are always equal photon
+function scene = sceneSweep(scene,sz,maxFreq,wave,yContrast)
+% Sweep frequency with some wavelength
+%
+% Defaults
+%   sz - (row,col)             [128 128] 
+%   maxFreq - cycles/image     sz(2)/16    
+%   wave -        Default initial spectrum
+%   yContrast - Row contrast    default:  Linear reduction in imgSweep
 
-if ieNotDefined('sz'), sz = 128; end
-if ieNotDefined('maxFreq'), maxFreq = sz/16; end
+%%
+if ieNotDefined('sz'), sz = [128,128]; end
+if ieNotDefined('maxFreq'), maxFreq = sz(2)/16; end
+if ieNotDefined('yContrast'), yContrast = []; end
 
 scene = sceneSet(scene,'name','sweep');
-scene = initDefaultSpectrum(scene,'hyperspectral');
+if ieNotDefined('wave')
+    scene = initDefaultSpectrum(scene,'hyperspectral');
+else
+    scene = sceneSet(scene,'wave',wave);
+end
+
 nWave = sceneGet(scene,'nwave');
 
-img = imgSweep(sz,maxFreq);
+img = imgSweep(sz,maxFreq,yContrast);
 img = img/max(img(:));
 
 wave  = sceneGet(scene,'wave');
@@ -1009,23 +1031,6 @@ else
 end
 
 nWave = sceneGet(scene,'nwave');
-
-% TODO: Adjust pass the parameters back from the imgHarmonic window. In
-% other cases, they are simply attached to the global parameters in
-% vcSESSION.  We can get them by a getappdata call in here, but not if we
-% close the window as part of imageSetHarmonic
-%
-% Switched to using the harmonicP method instead of this. (July 2022).
-%
-% if ieNotDefined('parms')
-%     global parms; %#ok<REDEF>
-%     h   = imageSetHarmonic; waitfor(h);
-%     img = imageHarmonic(parms);
-%     p   = parms;
-%     clear parms;
-% else
-%     [img,p] = imageHarmonic(parms);
-% end
 
 [img,p] = imageHarmonic(parms);
 
