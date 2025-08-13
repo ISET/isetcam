@@ -135,7 +135,7 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %         scene = sceneCreate('letter', font, display);
 %         scene = sceneCreate('disk array', imageSize, diskRadius, arraySize); 
 %         scene = sceneCreate('square array', imageSize, squareSize, arraySize);
-%         
+%         scene = sceneCreate('harmonic',harmonicP);
 %
 % SCENES FROM IMAGE DATA
 %   We create scenes using RGB data in image files and a model
@@ -206,7 +206,7 @@ scene = sceneCreate('reflectance chart',pSize,sSamples,sFiles,wave,grayFlag,samp
 %{
 % Passing extra params to the 'harmonic' scene create 
 parms.freq = 1; parms.contrast = 1; parms.ph = 0;
-parms.ang= 0; parms.row = 128; parms.col = 128;
+parms.ang= 0; parms.row = 129; parms.col = 129;
 parms.GaborFlag=0;
 [scene,parms] = sceneCreate('harmonic',parms);
 %}
@@ -372,7 +372,6 @@ switch sceneName
         end
         scene = sceneMackay(scene,radFreq,sz);
     case {'harmonic','sinusoid'}
-        %
         % scene = sceneCreate(scene,'harmonic',imageHparams);
         %
         % The scene spectral radiance is set to an equal photon radiance
