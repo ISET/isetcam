@@ -36,7 +36,7 @@ Zvals = [Z4(:), Z5(:)];
 %% Vary defocus and vertical astigmatism
 
 % Make a plot of the psf for each case.
-h = ieNewGraphWin;
+h = ieFigure;
 set(h,'Position',[0.5 0.5 0.45 0.45]);
 wList = 550; % wvfGet(wvfParams,'wave');
 
@@ -48,9 +48,16 @@ for ii=1:size(Zvals,1)
     
     % Mesh
     subplot(3, 3, ii)
-    wvfPlot(wvfParams, 'psf', 'unit','um', 'wave', wList, 'plot range', maxUM, 'window', false);
-    title(sprintf('Defocus = %.1f Astig == %.1f\n', Zvals(ii, 1), ...
+    wvfPlot(wvfParams, 'psf normalized', 'unit','um', 'wave', wList, 'plot range', maxUM, 'window', false);
+    title('');
+    if ii==1
+        subtitle(sprintf('[Defocus,Astig] = (%.1f, %.1f)', Zvals(ii, 1), ...
         Zvals(ii, 2)));
+    else
+        subtitle(sprintf('(%.1f, %.1f)', Zvals(ii, 1), ...
+        Zvals(ii, 2)));
+    end
+
 
 end
 

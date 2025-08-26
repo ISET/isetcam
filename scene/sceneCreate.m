@@ -136,6 +136,9 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %         scene = sceneCreate('disk array', imageSize, diskRadius, arraySize); 
 %         scene = sceneCreate('square array', imageSize, squareSize, arraySize);
 %         scene = sceneCreate('harmonic',harmonicP);
+%         parms.angles = linspace(0,pi/2,5); parms.freqs =  [1,2,4,8,16];
+%         parms.blockSize = 64; parms.contrast = .8;
+%         scene = sceneCreate('frequency orientation',parms);
 %
 % SCENES FROM IMAGE DATA
 %   We create scenes using RGB data in image files and a model

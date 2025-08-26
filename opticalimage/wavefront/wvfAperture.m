@@ -15,18 +15,22 @@ function [im, params] = wvfAperture(wvf, varargin)
 %   wvf: wavefront structure
 %
 % Optional key/val parameters
-%   line mean - Number of lines
-%   line sd
-%   line opacity
-%   line width
-%   segment length
+%  shape -  'rectangle','polygon' (Default: polygon)
+%   n sides - Number of polygon sides
+%   aspect ratio - rectangle aspect ratio
 %
+%  Line parameters
+%   line mean - Number of lines
+%   line sd   - Standard deviation of lines
+%   line opacity -
+%   line width   -
+%   segment length -
+%
+%  Dot parameters
 %   dot mean  - Number of dots
 %   dot sd
 %   dot opacity
 %   dot radius
-%
-%   n sides - Number of aperture sides
 %
 % Output
 %  im: A matrix of values in the [0, 1] range. 0 means completely
@@ -60,6 +64,15 @@ function [im, params] = wvfAperture(wvf, varargin)
     [im,params] = wvfAperture(wvf,'n sides',8); 
     ieNewGraphWin; imagesc(im); colormap(gray); axis image
 %}
+%{
+    wvf = wvfCreate;
+    [im,params] = wvfAperture(wvf,'shape',...
+                       'rectangle','aspect ratio',[2 1], ...
+                       'dot mean',0,'dot sd',0,...
+                       'line mean',0,'line sd',0); 
+    ieNewGraphWin; imagesc(im); colormap(gray); axis image
+
+%}
 
 %% Inputs
 
@@ -67,6 +80,7 @@ varargin = ieParamFormat(varargin);
 
 p = inputParser;
 p.addRequired('wvf',@isstruct);
+p.addParameter('shape','polygon',@ischar);
 
 p.addParameter('dotmean',20,@isnumeric);
 p.addParameter('dotsd',5,@isnumeric);
@@ -80,11 +94,22 @@ p.addParameter('linewidth',2,@isnumeric);
 
 p.addParameter('segmentlength',600,@isnumeric);
 
+% Not sure what this is.  I think texture file is the name of an image
+% file that represents the texture of the apodization function.
 p.addParameter('texfile',[]);
 
 p.addParameter('nsides',0, @(x)(isnumeric(x) && (x > 2 || x <= 0)));
+p.addParameter('aspectratio',[1 1],@isvector);  % row, col
+p.addParameter('imagerotate',[],@isnumeric);
+
 
 p.parse(wvf,varargin{:});
+
+shape       = p.Results.shape;        % Polygon or rectangle
+aspectRatio = p.Results.aspectratio;  % [row,col] lengths of the rectangle
+nSides      = p.Results.nsides;       % Number of polygon sides
+imrotate    = p.Results.imagerotate;  % Rotate the final image.
+
 dotMean     = p.Results.dotmean;
 dotSD       = p.Results.dotsd;
 dotOpacity  = p.Results.dotopacity;
@@ -94,16 +119,18 @@ lineSD         = p.Results.linesd;
 lineOpacity    = p.Results.lineopacity;
 lineWidth      = p.Results.linewidth;
 segmentLength  = p.Results.segmentlength;
-nSides         = p.Results.nsides;
 
 texFile = p.Results.texfile;
 
-% Adjust
+%% Adjust sampling
 imageSize = wvfGet(wvf, 'spatial samples');
 im = ones([imageSize,imageSize], 'single');
 
+%% Create the line and dot scratches.  If everything is 0, then no scratches.
 if isempty(texFile)
+    
     if isempty(dotRadius), dotRadius = round(imageSize/200); end
+    
     %% Add dots (circles), simulating dust.
 
     % We should do more to control the random variable
@@ -154,6 +181,7 @@ if isempty(texFile)
             'Color', [opacity, opacity, opacity]);
     end
 else
+    % There is a texture file that must be an image
     im = imread(texFile);
     try
         im = rgb2gray(im);
@@ -173,13 +201,42 @@ end
 centerPoint = [imageSize/2 + 1, imageSize/2+1];
 radius = (imageSize - 1)/2;
 
-% Clip the image with a bounding polygon
-if nSides > 0
-    % create n-sided polygon
-    pgon1 = nsidedpoly(nSides, 'Center', centerPoint, 'radius', radius);
-    % create a binary image with the polygon
-    pgonmask = poly2mask(floor(pgon1.Vertices(:,1)), floor(pgon1.Vertices(:,2)), imageSize, imageSize);
-    im = im.*pgonmask;
+%% Make the basic outline shape
+switch shape
+    case 'polygon'
+        if nSides > 0
+            % create n-sided polygon
+            pgon1 = nsidedpoly(nSides, 'Center', centerPoint, 'radius', radius);
+            % create a binary image with the polygon
+            pgonmask = poly2mask(floor(pgon1.Vertices(:,1)), floor(pgon1.Vertices(:,2)), imageSize, imageSize);
+            im = im.*pgonmask;
+        end
+    case 'rectangle'
+        % Make the rectangle a little smaller than image size
+        % aspectRatio = [1 2];  % Row, Col
+        im = imresize(im, [imageSize, imageSize]);
+        mx = max(aspectRatio); 
+        
+        % These are the two lengths of the rectangle.  Do we want to
+        % be able to rotate? 
+        rectSides = round((aspectRatio/(1.1*mx))*imageSize);
+        
+        % Middle of the image plus and minus half the rectangle sizes.
+        ll = [imageSize/2 - rectSides(2)/2,imageSize/2 - rectSides(1)/2];
+        ul = [imageSize/2 - rectSides(2)/2,imageSize/2 + rectSides(1)/2];
+        ur = [imageSize/2 + rectSides(2)/2,imageSize/2 + rectSides(1)/2];
+        lr = [imageSize/2 + rectSides(2)/2,imageSize/2 - rectSides(1)/2];
+        
+        % Four corners, lowerleft, lower right moving clockwise
+        corners = round([ll(1),ll(2); ul(1),ul(2); ur(1),ur(2); lr(1),lr(2)]);
+        pgonmask = poly2mask(floor(corners(:,1)), floor(corners(:,2)), imageSize, imageSize);
+        im = im.*pgonmask;
+        
+        % ieFigure; plot(corners(:,1),corners(:,2),'o'); axis equal
+        % ieFigure; imshow(pgonmask); axis image
+        % ieFigure; imshow(im); axis image
+    otherwise
+        error('Unknown shape:  %s\n',shape);
 end
 
 % Color image to gray. In some cases, when there are no dots or scratches,
@@ -187,18 +244,32 @@ end
 if ndims(im) == 3
     im = rgb2gray(im);
 end
-
-% Now make the pattern circular
-[X,Y] = meshgrid((1:imageSize) - centerPoint(1),(1:imageSize) - centerPoint(2));
-imRadius = sqrt(X.^2 + Y.^2);
-% ieNewGraphWin; imagesc(imRadius); colormap(gray); colorbar; axis image
-idx = (imRadius > radius);
-im(idx) = 0;
 % ieNewGraphWin; imagesc(im); colormap(gray); colorbar; axis image
-im = imrotate(im,randi(30));
-%%
+
+switch shape
+    case 'polygon'
+        % Now make the pattern circular
+        [X,Y] = meshgrid((1:imageSize) - centerPoint(1),(1:imageSize) - centerPoint(2));
+        imRadius = sqrt(X.^2 + Y.^2);
+        % ieNewGraphWin; imagesc(imRadius); colormap(gray); colorbar; axis image
+        idx = (imRadius > radius);
+        im(idx) = 0;
+
+        % Not sure why we did a random rotation in this case.  Zhenyi
+        % may know.  Not me (BW).  I added a parameter to specifically
+        % control this rotation. 
+        if isempty(imrotate), im = imrotate(im,randi(3));
+        else,                 im = imrotate(im,imrotate);
+        end
+    case 'rectangle'
+        if ~isempty(imrotate)
+            im = imrotate(im,imrotate);
+        end
+    otherwise
+end
+
+%% Return parameters
 if nargout == 2
-    % Fill in params
     params.dotMean = dotMean;
     params.dotSD = dotSD;
     params.dotOpacity = dotOpacity;
@@ -214,6 +285,7 @@ end
 end
 
 %% Utility function
+
 function xy = RandomPointsInUnitCircle(num_points)
 % Random point generation within the unit circle
 
