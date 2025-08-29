@@ -108,7 +108,7 @@ p.parse(wvf,varargin{:});
 shape       = p.Results.shape;        % Polygon or rectangle
 aspectRatio = p.Results.aspectratio;  % [row,col] lengths of the rectangle
 nSides      = p.Results.nsides;       % Number of polygon sides
-imrotate    = p.Results.imagerotate;  % Rotate the final image.
+rotatedeg   = p.Results.imagerotate;  % Rotate the final image in degrees
 
 dotMean     = p.Results.dotmean;
 dotSD       = p.Results.dotsd;
@@ -258,12 +258,12 @@ switch shape
         % Not sure why we did a random rotation in this case.  Zhenyi
         % may know.  Not me (BW).  I added a parameter to specifically
         % control this rotation. 
-        if isempty(imrotate), im = imrotate(im,randi(3));
-        else,                 im = imrotate(im,imrotate);
+        if isempty(rotatedeg), im = imrotate(im,randi(30));
+        else,                  im = imrotate(im,rotatedeg);
         end
     case 'rectangle'
-        if ~isempty(imrotate)
-            im = imrotate(im,imrotate);
+        if ~isempty(rotatedeg)
+            im = imrotate(im,rotatedeg);
         end
     otherwise
 end
