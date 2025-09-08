@@ -1,4 +1,4 @@
-function thisLine = yaxisLine(ax,xval)
+function thisLine = yaxisLine(ax,val)
 % Draw a dark line parallel to the y-axis of a graph
 %
 % Synopsis
@@ -10,7 +10,7 @@ function thisLine = yaxisLine(ax,xval)
 %
 % Input
 %  axes -   Default is gca
-%  xval  -  Default is y = 0
+%  val  -  Default is y = 0
 %
 % Output
 %  thisLine - Handle to the plotted line
@@ -26,14 +26,14 @@ yaxisLine(gca,0.5);
 
 %%
 if ieNotDefined('ax'), ax = gca; end
-if ieNotDefined('xval'), xval = 0; end
+if ieNotDefined('val'), val = 0; end
 
 %%
 ylim = get(ax, 'ylim');
 
 % Here's the line from (m1,m1) to (m2,m2).  Both of these points are on
 % the identity line (x = y).
-thisLine = line([xval xval], [ylim(1) ylim(2)], 'color', [.3 .3 .3], 'linestyle', '--');
+thisLine = line([val val], [ylim(1) ylim(2)], 'color', [.3 .3 .3], 'linestyle', '--');
 
 
 % Set line properties.  These probably want to come in as an argument
