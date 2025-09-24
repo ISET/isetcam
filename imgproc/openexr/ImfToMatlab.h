@@ -24,9 +24,13 @@
 #pragma once
 
 #include <mex.h>
-
-#include <ImfNamespace.h>
 #include <ImfAttribute.h>
+
+#ifdef OCTAVE
+	// #include <ImfNamespace.h>
+#else 
+	#include <ImfNamespace.h>
+#endif
 
 
 // Utilities to convert from OpenEXR types to Matlab types
