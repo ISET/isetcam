@@ -20,8 +20,8 @@ function params = harmonicP(varargin)
 %       contrast  - Contrast. Default 1.
 %       freq      - Spatial frequency (cycles/image). Default 1.
 %       ph        - Phase (0 is center of image). Default pi/2.
-%       row       - Rows. Default 64.
-%       col       - Columns. Default 64.
+%       row       - Rows. Default 65.
+%       col       - Columns. Default 65.
 %       center    - position within the support. Default [0 0]
 %       GaborFlag - Gaussian window, standard deviation re: window size.
 %                   Default 0.
@@ -61,8 +61,8 @@ p.addParameter('ang', 0, @isnumeric);
 p.addParameter('contrast', 1, @isnumeric);
 p.addParameter('freq', 1, @isnumeric);
 p.addParameter('ph', pi / 2, @isnumeric);
-p.addParameter('row', 64, @isscalar);
-p.addParameter('col', 64, @isscalar);
+p.addParameter('row', 65, @isscalar);
+p.addParameter('col', 65, @isscalar);
 p.addParameter('center',[0 0],@isvector);
 p.addParameter('GaborFlag', 0, @isscalar);
 

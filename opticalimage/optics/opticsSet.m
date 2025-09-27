@@ -188,8 +188,10 @@ switch parm
         % ---- Relative illumination calculations
     case {'relativeillumination','offaxismethod','cos4thflag'}
         % Flag determining whether you use the cos4th method
-        % Bad naming because of history.
-        if isequal(lower(val),'off') | isequal(lower(val),'skip') | ~val
+        if isequal(lower(val),'off') | ...
+                isequal(lower(val),'skip') | ...
+                isempty(val) | ...
+                ~val
             val = 'Skip';
         elseif val
             val = 'cos4th';

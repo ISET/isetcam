@@ -1125,8 +1125,6 @@ switch oType
                 end
                 % This can be single with the new data format.
                 val = double(val);
-            case {'illuminantcomment'}
-                if checkfields(oi,'illuminant','comment'),val = scene.illuminant.comment; end
                 
             otherwise
                 disp(['Unknown parameter: ',parm]);

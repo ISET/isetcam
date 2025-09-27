@@ -14,11 +14,13 @@ function [udata, g] = oiPlot(oi,pType,roiLocs,varargin)
 %   pType - Plot type
 %
 % Optional
-%   roiLocs    - When there is a region of interest or other image
+%    roiLocs   - When there is a region of interest or other image
 %                specification. Some explanations below.  Usually it
 %                is the four vector:  [r,c,h,w]
-%   'nofigure' - When the last argument is 'nofigure', the plot is
-%                deleted, only the data are returned;
+%   'nofigure' - When the last argument is the string 'nofigure', the
+%                plot is deleted, only the data are returned;
+%   fighandle  - If the last argument is a figure handle, we use that
+%                rather than creating a new figure.
 %
 % There is a long list of plot types and some explanation of the ROI
 % parameter (which is plotType dependent).
@@ -31,8 +33,10 @@ function [udata, g] = oiPlot(oi,pType,roiLocs,varargin)
 %     {'irradiance vline'}  - Vertical line spectral irradiance (photons)
 %                            (space x wavelength)
 %     {'irradiance fft'}    - 2D FFT of radiance at some wavelength
-%     {'irradiance image with grid'} - Show spatial grid on irradiance image
-%     {'irradiance image wave grid'} - Irradiance image within a band
+%     {'irradiance image with grid'} - Irradiance rgb image
+%                    representation of irradiance, emphasizing spatial grid
+%     {'irradiance image wave grid'} - Irradiance rgb image representation 
+%                    within a wavelength band, empahsizing spatial grid
 %
 %    Illuminance
 %     {'illuminance mesh log'}      - Me'psfsh plot of image log illuminance
@@ -82,17 +86,16 @@ oiPlot(oi,'irradiance photons roi',[10 10 10 10]);
 %{
 scene = sceneCreate; oi = oiCreate; oi = oiCompute(oi,scene);
 uData = oiPlot(oi,'irradiance photons roi',[10 10 10 10],'nofigure');
-ieNewGraphWin; plot(uData.x,uData.y); grid on; 
+ieFigure;
+plot(uData.x,uData.y); grid on; 
 xlabel('Wavelength (nm)'); ylabel('Irradiance (watts/m^2)');
 %}
 %{
 scene = sceneCreate; oi = oiCreate; oi = oiCompute(oi,scene);
 
 rows = round(oiGet(oi,'rows')/2);
-
 uData = oiPlot(oi,' irradiance hline',[1,rows])
 uData = oiPlot(oi,'illuminance fft hline',[1,rows])
-
 uData = oiPlot(oi,'contrast hline',[1,rows])
 
 % Commented out because it asks the user for a value
@@ -128,9 +131,16 @@ thisW = [];
 if ~isempty(varargin)
     % See if the user sent in thisW
     if isequal(class(varargin{end}),'oiWindow_App')
-        thisW = varargin{:};
-        
-        % Remove the app from the array.  Backwards compatibility.
+        thisW = varargin{:};        
+
+        % Remove the last argument from the array.  Backwards
+        % compatibility. 
+        varargin = varargin(1:(end-1));
+    elseif isa(varargin{end},'matlab.ui.Figure')
+        thisW.figure1 = varargin{end};
+
+        % Remove the last argument from the array.  Backwards
+        % compatibility. 
         varargin = varargin(1:(end-1));
     end
 end
@@ -140,6 +150,7 @@ pType = ieParamFormat(pType);
 
 if ieNotDefined('roiLocs')
     
+    % We need to select the figure to draw
     if ~isempty(thisW)
         % Focus on the oiWindow for clicking.
         figure(thisW.figure1);
@@ -179,8 +190,17 @@ end
 
 %% Make the plot window and use this default gray scale map
 
-g = ieNewGraphWin; g.Visible = 'off';
-mp = 0.4*gray(64) + 0.4*ones(size(gray(64)));
+if ~isempty(thisW)
+    % The user has something in mind.  Leave it alone.
+    g = thisW.figure1;
+    mp = colormap(g);
+else
+    % This is what we normally do.
+    g = ieFigure;
+    g.Visible = 'off';
+    mp = 0.4*gray(64) + 0.4*ones(size(gray(64)));
+end
+
 colormap(mp);
 
 switch pType
@@ -328,25 +348,31 @@ switch pType
         set(g,'Name',sprintf('Irradiance with grid'));
         colormap(jet(64))
         
-    case {'irradianceimagewave','irradianceimagewavegrid'}
-        % oiPlot(oi,'irradianceImageWave',wave,gSpacing);
+    case {'irradianceimagewave','irradianceimagewavegrid'}       
+        % oiPlot(oi,'irradiance image wave',[], wave, sampleSpacing-um);
+
+        % Default wavelength is 500nm.  Maybe it should be 550nm.
         if isempty(varargin), wave = 500;
         else, wave = varargin{1};
         end
-        
+
         irrad   = oiGet(oi,'photons',wave);
         sz      = oiGet(oi,'size');
         spacing = oiGet(oi,'sampleSpacing','um');
-        
+
         % This is probably now a spatial support oiGet ...
         xCoords = spacing(2) * (1:sz(2)); xCoords = xCoords - mean(xCoords);
         yCoords = spacing(1) * (1:sz(1)); yCoords = yCoords - mean(yCoords);
         suggestedSpacing = round(max(xCoords(:))/5);
-        if length(varargin) == 2, gSpacing = varargin{2};
+
+        % Determine actual spacing
+        if length(varargin) == 2
+            gSpacing = varargin{2};            
         else
             gSpacing = ieReadNumber('Enter grid spacing (um)',suggestedSpacing,'%.2f');
             if isempty(gSpacing), return; end
         end
+        if isscalar(gSpacing), gSpacing = [gSpacing,gSpacing]; end
         
         imagesc(xCoords,yCoords,irrad); colormap(gray(64))
         xlabel('Position (um)'); ylabel('Position (um)');
@@ -355,15 +381,19 @@ switch pType
         udata.xCoords = xCoords;
         udata.yCoords = yCoords;
         
-        xGrid = (0:gSpacing:round(max(xCoords))); tmp = -1*fliplr(xGrid); xGrid = [tmp(1:(end-1)), xGrid];
-        yGrid = (0:gSpacing:round(max(yCoords))); tmp = -1*fliplr(yGrid); yGrid = [tmp(1:(end-1)), yGrid];
+        xGrid = (0:gSpacing(2):round(max(xCoords))); tmp = -1*fliplr(xGrid); xGrid = [tmp(1:(end-1)), xGrid];
+        yGrid = (0:gSpacing(1):round(max(yCoords))); tmp = -1*fliplr(yGrid); yGrid = [tmp(1:(end-1)), yGrid];
         
         set(gca,'xcolor',[.5 .5 .5]); set(gca,'ycolor',[.5 .5 .5]);
         set(gca,'xtick',xGrid,'ytick',yGrid); grid on
         set(g,'Name',sprintf('Image with grid'));
         
     case {'irradianceimagegrid','irradianceimagewithgrid','irradianceimage'}
+        % rgb image of the irradiance
+        %
         % oiPlot(oi,'irradianceImage',sampleSpacing-um);
+        % oiPlot(oi,'irradiance image with grid',[],app);
+
         irrad   = oiGet(oi,'photons');
         wave    = oiGet(oi,'wave');
         nWave   = oiGet(oi,'nwave');
@@ -372,15 +402,18 @@ switch pType
         gam     = oiGet(oi,'gamma');
         
         % This is probably now a spatial support oiGet ...
+        % This is probably now a spatial support oiGet ...
         xCoords = spacing(2) * (1:sz(2)); xCoords = xCoords - mean(xCoords);
         yCoords = spacing(1) * (1:sz(1)); yCoords = yCoords - mean(yCoords);
+        suggestedSpacing = round(max(xCoords(:))/5);
+
         if length(varargin) >= 1, gSpacing = varargin{1};
-        else
-            suggestedSpacing = round(max(xCoords(:))/5);
+        else            
             gSpacing = ieReadNumber('Enter grid spacing (um)',suggestedSpacing,'%.2f');
             if isempty(gSpacing), return; end
         end
-        
+        if isscalar(gSpacing), gSpacing = [gSpacing,gSpacing]; end
+
         if nWave > 1
             imageSPD(irrad,wave,gam,sz(1),sz(2),1,xCoords,yCoords,g);
         else
@@ -395,8 +428,8 @@ switch pType
         udata.xCoords = xCoords;
         udata.yCoords = yCoords;
         
-        xGrid = (0:gSpacing:round(max(xCoords))); tmp = -1*fliplr(xGrid); xGrid = [tmp(1:(end-1)), xGrid];
-        yGrid = (0:gSpacing:round(max(yCoords))); tmp = -1*fliplr(yGrid); yGrid = [tmp(1:(end-1)), yGrid];
+        xGrid = (0:gSpacing(2):round(max(xCoords))); tmp = -1*fliplr(xGrid); xGrid = [tmp(1:(end-1)), xGrid];
+        yGrid = (0:gSpacing(1):round(max(yCoords))); tmp = -1*fliplr(yGrid); yGrid = [tmp(1:(end-1)), yGrid];
         
         set(gca,'xcolor',[.5 .5 .5]); set(gca,'ycolor',[.5 .5 .5]);
         set(gca,'xtick',xGrid,'ytick',yGrid); grid on

@@ -378,7 +378,37 @@ switch lower(pType)
         
         udata.pos = pos.x; udata.data = lum';
         udata.cmd = 'plot(pos,lum)';
+    case {'luminancehlinergb'}
+        % plotScene(scene,'illuminance hline rgb',xy);
+        %
+        %  Show the rgb image with a plot on top of it in a new window
+        %
+
+        % Plot luminance across the middle row of the oi
+        data = sceneGet(scene, 'luminance');
+        if isempty(data), warndlg(sprintf('Luminance data are unavailable.')); return; end
+        lum = data(roiLocs(2),:);
+        posMicrons = sceneSpatialSupport(scene,'um');
         
+        srgbImage = sceneGet(scene, 'rgb');
+        image(posMicrons.x,-posMicrons.y,srgbImage);        
+        hold on; 
+        xlabel('Position (um)'); ylabel('Position (um)');
+
+        % The image runs negative to positive on the y-axis.  So, we
+        % scale the luminance by -1.
+        %
+        % Hardcoding this 0.8 might be dumb. (BW).
+        ymax = max(posMicrons.y(:));
+        lum = ieScale(-1*lum,-0.8*ymax,0.8*ymax);
+        plot(posMicrons.x,lum, 'LineWidth', 2, 'Color',[1 1 1]);
+        % ylabel('Illuminance (lux)');
+        grid on; axis image;
+
+        udata.pos = posMicrons.x; udata.data = lum';
+        udata.cmd = 'plot(pos,lum)';
+        set(g,'Name',sprintf('Line %.0f',roiLocs(2)));
+
     case {'luminanceffthline'}
         % This is the FFT of the luminance contrast
         % space = sceneGet(scene,'spatialSupport');

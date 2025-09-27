@@ -36,6 +36,8 @@ function [udata, g] = plotOI(oi,pType,roiLocs,varargin)
 %     {'illuminance vline'}     - Vertical line luminance
 %     {'illuminance fft vline'} - Vertical line luminance FFT
 %     {'illuminance roi'}       - Histogram of illuminance in an ROI
+%     {'illuminance hline srgb'} - Image (srgb) with middle row
+%                                  illuminance superimposed. 
 %
 %    CIE
 %      {'chromaticity roi'}     - CIE xy in a region of interest
@@ -233,7 +235,7 @@ switch pType
     case {'irradianceimagewave','irradianceimagewavegrid'}
         % plotOI(oi,'irradianceImageWave',wave,gSpacing);
         if isempty(varargin), wave = 500;
-        else wave = varargin{1};
+        else, wave = varargin{1};
         end
         
         irrad   = oiGet(oi,'photons',wave);
@@ -326,6 +328,36 @@ switch pType
         udata.cmd = 'plot(pos,illum)';
         set(g,'Name',sprintf('Line %.0f',roiLocs(2)));
         
+    case {'illuminancehlinergb'}
+        % plotOI(oi,'illuminance hline rgb',xy);
+        %
+        %  Show the rgb image with a plot on top of it in a new window
+        %
+
+        % Plot illuminance across the middle row of the oi
+        data = oiGet(oi, 'illuminance');
+        if isempty(data), warndlg(sprintf('Illuminance data are unavailable.')); return; end
+        illum = data(roiLocs(2),:);
+        posMicrons = oiSpatialSupport(oi,'um');
+        
+        srgbImage = oiGet(oi, 'rgb');
+        image(posMicrons.x,-posMicrons.y,srgbImage);        
+        hold on; 
+        xlabel('Position (um)'); ylabel('Position (um)');
+
+        % The image runs negative to positive on the y-axis.  So, we
+        % scale the illuminance by -1, and we adjust to make it fit
+        % within the axis.
+        ymax = max(posMicrons.y(:));
+        illum = ieScale(-1*illum,-0.8*ymax,0.8*ymax);
+        plot(posMicrons.x,illum, 'LineWidth', 2, 'Color',[1 1 1]);
+        % ylabel('Illuminance (lux)');
+        grid on; axis image;
+
+        udata.pos = posMicrons.x; udata.data = illum';
+        udata.cmd = 'plot(pos,illum)';
+        set(g,'Name',sprintf('Line %.0f',roiLocs(2)));
+
     case {'illuminancemeshlog'}
         % Mesh plot of image log illuminance
         udata = plotIlluminanceMesh(oi,'log');
@@ -497,7 +529,7 @@ switch pType
                 rtPlot(oi,'otf');
             otherwise
                 if isempty(varargin), udata = plotOTF(oi,'otf');
-                else w = varargin{1}; udata = plotOTF(oi,'otf',w);
+                else, w = varargin{1}; udata = plotOTF(oi,'otf',w);
                 end
         end
         set(g,'userdata',udata);
@@ -515,7 +547,7 @@ switch pType
         % Point spread function at selected wavelength
         % plotOI(oi,'psf',[],420);
         if isempty(varargin), udata = plotOTF(oi,'psf');
-        else w = varargin{1}; udata = plotOTF(oi,'psf',w);
+        else, w = varargin{1}; udata = plotOTF(oi,'psf',w);
         end
         set(g,'userdata',udata);
         namestr = sprintf('ISET: %s',oiGet(oi,'name'));
@@ -546,7 +578,7 @@ switch pType
                 disp('Not yet implemented')
             otherwise
                 if ~isempty(varargin), nSamps = varargin{1};
-                else nSamps = 40;
+                else, nSamps = 40;
                 end
                 udata = plotOTF(oi,'ls wavelength',[], nSamps);
                 set(g,'userdata',udata);
@@ -577,7 +609,7 @@ end
 
 if exist('udata','var'), set(gcf,'userdata',udata); end
 
-return;
+end
 
 % - Brought into this file from a separate function
 function udata = plotOIIrradiance(oi,dataType,roiLocs)
@@ -600,7 +632,7 @@ wave = oiGet(oi,'wave');
 irradiance = vcGetROIData(oi,roiLocs,dataType);
 irradiance = mean(irradiance);
 
-if length(wave) == 1
+if isscalar(wave)
     % For a monochrome image, a plot doesn't make any sense.  So, we just
     % put up a box describing the mean irradiance.
     switch dataType
@@ -633,7 +665,7 @@ else
     end
 end
 
-return;
+end
 
 % Moved into plotOI June, 2012.
 function uData = plotOTF(oi,pType,varargin)
@@ -679,11 +711,11 @@ switch lower(pType)
         units = 'mm';  % Units are cycles/mm
         if ieContains(pType,'550'),        thisWave = 550;
         elseif length(varargin) >=1,    thisWave = varargin{1};
-        else thisWave = ieReadNumber('Select OTF wavelength (nm)',550,'%.0f');
+        else, thisWave = ieReadNumber('Select OTF wavelength (nm)',550,'%.0f');
         end
         
         if length(varargin) >= 2, nSamp = varargin{2};
-        else nSamp = 40; end
+        else, nSamp = 40; end
         
         % Retrieve OTF data (which might be complex) from the optics
         opticsModel = opticsGet(optics,'opticsModel');
@@ -728,7 +760,7 @@ switch lower(pType)
         y   = getMiddleMatrix(fSupport(:,:,2),sz);
         otf = getMiddleMatrix(otf,sz);
         if isreal(otf(:)), mesh(x,y,otf);
-        else disp('Complex otf values'), mesh(x,y,abs(otf));
+        else, disp('Complex otf values'), mesh(x,y,abs(otf));
         end
         
         % Label axes and store data
@@ -741,7 +773,7 @@ switch lower(pType)
         units = 'um'; nSamp = 100; oSample = 4;
         if ieContains(pType,'550'),        thisWave = 550;
         elseif length(varargin) >=1,    thisWave = varargin{1};
-        else thisWave = ieReadNumber('Select PSF wavelength (nm)',550,'%.0f');
+        else, thisWave = ieReadNumber('Select PSF wavelength (nm)',550,'%.0f');
         end
         
         opticsModel = opticsGet(optics,'model');
@@ -825,7 +857,7 @@ switch lower(pType)
             end
         end
         if length(varargin) >= 2, spaceSamp = varargin{2};
-        else spaceSamp = 40;
+        else, spaceSamp = 40;
         end
         
         % The incoherent cutoff frequency has units of cycles/micron
@@ -951,7 +983,7 @@ switch lower(pType)
         error('Unknown plotOTF data type.');
 end
 
-return;
+end
 
 function uData = plotIlluminanceMesh(oi,yScale)
 % Plot optical image illuminance (lux) as a mesh
@@ -996,7 +1028,7 @@ uData.c = c; uData.r = r;
 xlabel('um'); ylabel('um');
 title('Illuminance');
 
-return;
+end
 
 function uData = plotOICIE(oi,dataType,roiLocs)
 % plotting CIE data from optical image.  Could be moved into the case
@@ -1057,7 +1089,7 @@ uData.roiLocs = roiLocs;
 oName = oiGet(oi,'name');
 set(gcf,'Name',sprintf('ISET-OI: %s',oName));
 
-return
+end
 
 
 %---------------------------------------------------
@@ -1090,5 +1122,5 @@ else
     sz = max(25,centerRow - idx);
 end
 
-return;
+end
 
