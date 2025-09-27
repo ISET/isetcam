@@ -381,8 +381,8 @@ switch pType
         udata.xCoords = xCoords;
         udata.yCoords = yCoords;
         
-        xGrid = (0:gSpacing:round(max(xCoords))); tmp = -1*fliplr(xGrid); xGrid = [tmp(1:(end-1)), xGrid];
-        yGrid = (0:gSpacing:round(max(yCoords))); tmp = -1*fliplr(yGrid); yGrid = [tmp(1:(end-1)), yGrid];
+        xGrid = (0:gSpacing(2):round(max(xCoords))); tmp = -1*fliplr(xGrid); xGrid = [tmp(1:(end-1)), xGrid];
+        yGrid = (0:gSpacing(1):round(max(yCoords))); tmp = -1*fliplr(yGrid); yGrid = [tmp(1:(end-1)), yGrid];
         
         set(gca,'xcolor',[.5 .5 .5]); set(gca,'ycolor',[.5 .5 .5]);
         set(gca,'xtick',xGrid,'ytick',yGrid); grid on
@@ -428,8 +428,8 @@ switch pType
         udata.xCoords = xCoords;
         udata.yCoords = yCoords;
         
-        xGrid = (0:gSpacing:round(max(xCoords))); tmp = -1*fliplr(xGrid); xGrid = [tmp(1:(end-1)), xGrid];
-        yGrid = (0:gSpacing:round(max(yCoords))); tmp = -1*fliplr(yGrid); yGrid = [tmp(1:(end-1)), yGrid];
+        xGrid = (0:gSpacing(2):round(max(xCoords))); tmp = -1*fliplr(xGrid); xGrid = [tmp(1:(end-1)), xGrid];
+        yGrid = (0:gSpacing(1):round(max(yCoords))); tmp = -1*fliplr(yGrid); yGrid = [tmp(1:(end-1)), yGrid];
         
         set(gca,'xcolor',[.5 .5 .5]); set(gca,'ycolor',[.5 .5 .5]);
         set(gca,'xtick',xGrid,'ytick',yGrid); grid on
