@@ -13,6 +13,8 @@ function answer = ieQuestdlg(question, titleStr, options)
 
 % Example:
 %{
+ % ETTBSkip 
+ % Don't want to autotest an example that doesn't return without human input
   question = 'Am I awake?';
   titleStr = 'Little window';
   answer = ieQuestdlg(question,titleStr);
