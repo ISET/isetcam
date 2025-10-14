@@ -134,7 +134,7 @@ switch parm
         % here and hope for the best (BW).
         optics.lens = val;
         if isfield(optics,'transmittance')
-            warning('Adding lens and removing the transmittance slot.')
+            warning('Adding human lens info, removing the transmittance slot.')
             optics = rmfield(optics,'transmittance');
         end
 
