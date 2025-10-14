@@ -412,7 +412,7 @@ switch sceneName
         scene = sceneSweep(scene,sz,maxFreq,wave,yContrast);
         parms.sz = sz;
         parms.maxFreq = maxFreq;
-        parms.wave = varargin{3};
+        parms.wave = wave;
 
     case {'ramp','linearintensityramp','rampequalphoton'}
         % scene = sceneCreate('ramp',sz,dynamicRange);
