@@ -374,7 +374,10 @@ switch pType
         end
         if isscalar(gSpacing), gSpacing = [gSpacing,gSpacing]; end
         
-        imagesc(xCoords,yCoords,irrad); colormap(gray(64))
+        gam = 1;
+        imageSPD(irrad,wave,gam,sz(1),sz(2),1,xCoords,yCoords,g);
+        % imagesc(xCoords,yCoords,irrad); colormap(gray(64))
+
         xlabel('Position (um)'); ylabel('Position (um)');
         
         udata.irrad = irrad;
