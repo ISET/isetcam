@@ -114,6 +114,9 @@ switch lower(name)
         SPD = blackbody(wave,temperature);
         
     case {'555nm','monochrome'}
+        % This is too specalized.  We should make 555 the default, but
+        % allow any visible wavelength, really.  For now, I handle
+        % this in illuminantCreate for the monochromatic type.
         SPD = zeros(length(wave),1);
         % Set the wavelength closest to 555 to 1
         [~,idx] = min(abs(wave - 555));

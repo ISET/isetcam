@@ -2,7 +2,7 @@ function il = illuminantCreate(ilName, wave, varargin)
 % Create an ISETCam illuminant (light source) structure.
 %
 % Synopsis:
-%   il = illuminantCreate(ilName, wave, varargin)
+%   il = illuminantCreate(ilName, wave, [colorTemp],[luminance])
 %
 % Brief description:
 %   The illuminant structure includes information about the SPD of the
@@ -13,6 +13,8 @@ function il = illuminantCreate(ilName, wave, varargin)
 % Inputs
 %   ilName    - Illuminant name (see below).  default is 'd65'
 %   wave      - List of wavelengths.  Default is 400:10:700;
+%
+% Optional
 %   colorTemp - Required when ilName is blackbody (deg K)
 %   luminance - Required when ilName is blackbody (cd/m2)
 %
@@ -62,6 +64,12 @@ function il = illuminantCreate(ilName, wave, varargin)
   e = illuminantGet(il,'energy');
   plotRadiance(wave,e)
 %}
+%{
+  % Energy at just 1 wavelength.
+  wave = 450;
+  il = illuminantCreate('monochromatic',wave);
+  e = illuminantGet(il,'energy');
+%}
 
 %% Initialize parameters
 if ~exist('ilName','var')||isempty(ilName), ilName = 'd65'; end
@@ -101,7 +109,22 @@ switch ieParamFormat(ilName)
         iPhotons = Energy2Quanta(wave,iEnergy); % Check this step
         
         il = illuminantSet(il,'name',sprintf('blackbody-%.0f',illP.temperature));
+
+    case 'monochromatic'
+        illP.name = ilName;
+        illP.luminance = 100;
+        illP.spectrum.wave = wave;
+        if ~isempty(varargin), illP.luminance = varargin{1}; end
         
+        iEnergy = zeros(length(wave),1);
+        % Set the wavelength closest to 555 to 1
+        [~,idx] = min(abs(wave - 555));
+        iEnergy(idx) = 1;
+
+        % iEnergy = illuminantRead(illP);		    % [W/(sr m^2 nm)]
+        iPhotons = Energy2Quanta(wave,iEnergy); % Check this step
+        il = illuminantSet(il,'name',illP.name);
+
     case 'gaussian'
         % illuminantCreate('gaussian',wave,params)
         % params.center(), params.sd(), params.peakEnergy
