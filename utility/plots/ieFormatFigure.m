@@ -30,62 +30,6 @@ function ieFormatFigure( fig, fontname, fontsize, figsize, border )
 %
 % Copyright ImagEval Consultants, LLC, 2005.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Format the input parameters.
+error('Deprecated.  Call ieFigureFormat');
 
-% Load default paramemters.
-
-if ieNotDefined('fig'),      fig = 0;  end          % Root
-if ieNotDefined('fontname'), fontname = 'Helvetica'; end
-if ieNotDefined('fontsize'), fontsize = [18 14];     end
-if ieNotDefined('figsize'),  figsize  = [6.5 6.5];   end
-if ieNotDefined('border'),   border = [1 0.5];       end
-
-% Check the fontsize.
-
-if (length(fontsize) == 1),   fontsize = [fontsize fontsize];  end
-
-% Check the figure size.
-if (length(figsize) == 1), figsize = [figsize figsize];    end
-
-% Check the border.
-if (length(border) == 2), border = [border(1) border(1) border(2) border(2)]; end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Get the figure axes.
-
-if (~ieNotDefined('fig') ~= 1 | fig == 0),    fig = gcf;    end
-axs = get( fig, 'CurrentAxes' );
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Get the current figure position.
-
-if (strcmp(get(fig, 'Units'),'inches') == 1),    pos = get(fig, 'Position');
-else   pos = [0 0 0 0];   end
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Set the figure properties.
-
-set( fig,         'Units', 'inches' );
-set( fig,      'Position', [pos(1:2) figsize] );
-set( fig, 'PaperPosition', [4.25-figsize(1)/2 5.5-figsize(2)/2 figsize] );
-set( fig,         'Color', [1 1 1] );
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Set the axes properties.
-
-set( get(axs,  'Title'), 'FontName', fontname, ...
-    'FontSize', fontsize(1) );
-set( get(axs, 'XLabel'), 'FontName', fontname, ...
-    'FontSize', fontsize(1) );
-set( get(axs, 'YLabel'), 'FontName', fontname, ...
-    'FontSize', fontsize(1) );
-set( get(axs, 'ZLabel'), 'FontName', fontname, ...
-    'FontSize', fontsize(1) );
-set( axs,                'FontName', fontname, ...
-    'FontSize', fontsize(2) );
-
-set( axs,    'Units', 'inches' );
-set( axs, 'Position', [border(1:2) (figsize-border(1:2)-border(3:4))] );
-
-return;
+end
