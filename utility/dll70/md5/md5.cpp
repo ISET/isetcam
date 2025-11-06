@@ -60,7 +60,11 @@ char* MD5File(char* szFilename);
  *
  */
 #include <mex.h>
-#include <matrix.h>
+#ifdef OCTAVE 
+	// #include <matrix.h>
+#else	
+	#include <matrix.h>
+#endif
 
 
 /*********************************************************************

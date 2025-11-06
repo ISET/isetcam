@@ -40,14 +40,14 @@ if isnumeric(s)
 end
 
 % If it definitely isn't a string, return it.
-if (~ischar(s) && ~iscell(s) & ~isstring(s))
+if (~ischar(s) && ~iscell(s)&& ~isstring(s))
     % error('s has to be a character array or cell array');
     sformatted = s;
     return;
 end
 
 % Lower case
-if (ischar(s) | isstring(s))
+if (ischar(s) || isstring(s))
     % To lower and remove spaces
     sformatted = lower(s);
     sformatted = strrep(sformatted,' ','');
