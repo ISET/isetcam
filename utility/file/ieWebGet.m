@@ -55,6 +55,7 @@ function [localFile, zipfilenames] = ieWebGet(varargin)
 %     ieWebGet('browse','vistalab-collection');
 %     ieWebGet('browse','iset-hyperspectral-collection');
 %     ieWebGet('browse','iset-multispectral-collection');
+%     ieWebGet('browse','isethdr-lightgroup');
 %
 % Notes and TODO
 %  * We should be able to take a cell array of deposit files, not just one.
@@ -98,6 +99,7 @@ ieWebGet('browse','landscape-hyperspectral');  % ISET Hyperspectral Image Databa
 
 ieWebGet('browse','cone-fundamentals-paper');
 ieWebGet('browse','isethdrsensor-paper');
+ieWebGet('browse','isethdr-lightgroup');
 %}
 %{
 % ETTBSkip
@@ -126,6 +128,10 @@ fname = ieWebGet('resource type','sdrfruit','askfirst',false,'unzip',true);
 %{
 % ETTBSkip
 fname = ieWebGet('resource type','sdr multispectral');
+%}
+%{
+% ETTBSkip
+fname = ieWebGet('resource type',1113091607_otherlights
 %}
 
 %% Manage the list and browse conditions
@@ -333,6 +339,43 @@ switch ieParamFormat(depositName)
         catch
             warning("Unable to retrieve %s", remoteURL);
         end
+    case {'isethdr-lightgroup'}
+        % Like the hdr sensor data, but for the larger light group
+        % collection, with some more complexity.
+        %
+        % We need a special download call in this case.  A few things
+        %
+        %  * I want a list of all the possible numbers
+        %  * The method should download the collection of light group exr files
+        %  * Also the instances file?
+        %  * Maybe there is a corresponding mat-file
+        %
+        % In the isethdr-sensor case we had a loop in the calling
+        % routine.  Is that something we should do externally, or
+        % should we include it here?
+
+        if ~isempty(p.Results.downloaddir)
+            % The user gave us a place to download to.
+            downloadDir = p.Results.downloaddir;
+        else
+            % We assume isethdrsensor is on the user's path
+            downloadDir = fullfile(isethdrsensorRootPath);
+        end
+
+        % The deposit file may be in a subdirectory.  Here we pull out
+        % just the file name to append to the downloadDir.
+        tmp = split(depositFile,filesep());
+        localFile = fullfile(downloadDir, tmp{end});
+        if ~isfolder(downloadDir), mkdir(downloadDir); end
+        remoteURL = pathToLinux(fullfile(depositURL{1},depositFile));
+        try
+            fprintf('*** Downloading %s from ISETHDR-HDR SDR ... \n',depositFile);
+            websave(localFile, remoteURL);
+            fprintf('*** File is downloaded! \n');
+        catch
+            warning("Unable to retrieve %s", remoteURL);
+        end
+
     otherwise
         error('Unknown deposit name %s',depositName);
 end
@@ -425,8 +468,8 @@ resourceCell = {...
     'iset-multispectral-collection','ISET Multispectral Image Database','https://searchworks.stanford.edu/view/sm380jb1849','';
     'iset-hyperspectral-collection','Not yet implemented','https://searchworks.stanford.edu/?search_field=search&q=ISET+Hyperspectral+Image+Database','';
     'cone-fundamentals-paper','Deriving the cone fundamentals','https://purl.stanford.edu/jz111ct9401','https://stacks.stanford.edu/file/druid:jz111ct9401/cone_fundamentals';
-    'isethdrsensor-paper','ISET HDR Sensor', 'https://purl.stanford.edu/bt316kj3589', 'https://stacks.stanford.edu/file/druid:bt316kj3589/isethdrsensor'
-    };
+    'isethdrsensor-paper','ISET HDR Sensor', 'https://purl.stanford.edu/bt316kj3589', 'https://stacks.stanford.edu/file/druid:bt316kj3589/isethdrsensor';
+    'isethdr-lightgroup','ISET HDR Auto Lightgroup','https://purl.stanford.edu/zg292rq7608',''};
 
 validResources = resourceCell(:,1);
 
