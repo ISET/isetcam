@@ -127,7 +127,7 @@ if ieNotDefined('pType'), pType = 'hlineilluminance'; end
 % In some cases we want to select the app window.  The user can indicate
 % which oiWindow by appending the app as the last argument to this call.
 % With this method, we have the window available when we need it, below.
-thisW = [];
+thisW = []; g=[];
 if ~isempty(varargin)
     % See if the user sent in thisW
     if isequal(class(varargin{end}),'oiWindow_App')
@@ -137,7 +137,7 @@ if ~isempty(varargin)
         % compatibility. 
         varargin = varargin(1:(end-1));
     elseif isa(varargin{end},'matlab.ui.Figure')
-        thisW.figure1 = varargin{end};
+        g = varargin{end};
 
         % Remove the last argument from the array.  Backwards
         % compatibility. 
@@ -190,9 +190,9 @@ end
 
 %% Make the plot window and use this default gray scale map
 
-if ~isempty(thisW)
+if ~isempty(g)
     % The user has something in mind.  Leave it alone.
-    g = thisW.figure1;
+    figure(g);
     mp = colormap(g);
 else
     % This is what we normally do.
@@ -374,7 +374,10 @@ switch pType
         end
         if isscalar(gSpacing), gSpacing = [gSpacing,gSpacing]; end
         
-        imagesc(xCoords,yCoords,irrad); colormap(gray(64))
+        gam = 1;
+        imageSPD(irrad,wave,gam,sz(1),sz(2),1,xCoords,yCoords,g);
+        % imagesc(xCoords,yCoords,irrad); colormap(gray(64))
+
         xlabel('Position (um)'); ylabel('Position (um)');
         
         udata.irrad = irrad;

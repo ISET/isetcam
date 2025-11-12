@@ -1,6 +1,8 @@
 %% Illustrate the imx490
 %
 %
+% Prevent this function from being autorun as a script
+% UTTBSkip
 
 %%
 ieInit;
@@ -14,9 +16,12 @@ oi = oiCreate;
 oi = oiCompute(oi,scene);   % oiWindow(oi);
 oi = oiCrop(oi,'border');
 oi = oiSpatialResample(oi,3e-6);
-[sensor,metadata] = imx490Compute(oi,'method','average','exptime',1/10);
 
-sensorWindow(sensor);
+% [sensor,metadata] = imx490Compute(oi,'method','average','exptime',1/10);
+sensorArray = sensorCreateArray('array type','ovt','exp time',0.1,'size',[64 96]);
+[sensorCombined,sArray]=sensorComputeArray(sensorArray,oi,'method','saturated');
+
+sensorWindow(sensorCombined);
 
 %% Show the uniform field responses in case.
 
@@ -25,33 +30,31 @@ sensorWindow(sensor);
 % might naively expect.  The dv values follow volts.
 
 % For the HDR car scene use exptime of 0.1 sec
-sArray = metadata.sensorArray;
-sensorWindow(sArray{1});
-sensorWindow(sArray{2});
-sensorWindow(sArray{3});
-sensorWindow(sArray{4});
+for ii=1:numel(sArray)
+    sensorWindow(sArray(ii));
+end
 
 %% Various checks.
-e1 = sensorGet(sArray{1},'electrons');
-e2 = sensorGet(sArray{2},'electrons');
+e1 = sensorGet(sArray(1),'electrons');
+e2 = sensorGet(sArray(2),'electrons');
 ieNewGraphWin; plot(e1(:),e2(:),'.');
 xlabel('E Sensor 1'); ylabel('E Sensor 2');
 identityLine; grid on;
 
-v1 = sensorGet(sArray{1},'volts');
-v2 = sensorGet(sArray{2},'volts');
+v1 = sensorGet(sArray(1),'volts');
+v2 = sensorGet(sArray(2),'volts');
 ieNewGraphWin; plot(v1(:),v2(:),'.');
 xlabel('V Sensor 1'); ylabel('V Sensor 2');
 identityLine; grid on;
 
 % e3 is 1/9th the area, so 1/9th the electrons of e1
-e3 = sensorGet(sArray{3},'electrons');
+e3 = sensorGet(sArray(3),'electrons');
 ieNewGraphWin; plot(e1(:),e3(:),'.');
 xlabel('E Sensor 1'); ylabel('E Sensor 3');
 identityLine; grid on;
 
-dv1 = sensorGet(sArray{1},'dv');
-dv2 = sensorGet(sArray{2},'dv');
+dv1 = sensorGet(sArray(1),'dv');
+dv2 = sensorGet(sArray(2),'dv');
 ieNewGraphWin; plot(dv1(:),dv2(:),'.');
 xlabel('DV Sensor 1'); ylabel('DV Sensor 2');
 identityLine; grid on;
@@ -68,20 +71,21 @@ oi = oiSpatialResample(oi,3,'um'); % oiWindow(oi);
 oi2 = oiCompute(oi,scene,'crop',true,'pixel size',3e-6);   % oiWindow(oi2);
 oi2 = oiSpatialResample(oi2,3,'um'); % oiWindow(oi);
 
-[sensor,metadata] = imx490Compute(oi2,'method','average','exptime',1/30);
-% sensorWindow(sensor);
+sensorArray = sensorCreateArray('array type','ovt','exp time',0.1,'size',3*[64 96]);
+[sensorCombined,sArray]=sensorComputeArray(sensorArray,oi2);
 
-sArray = metadata.sensorArray;
+% [sensorCombined,sArray] = imx490Compute(oi2,'method','average','exptime',1/30);
+% sensorWindow(sensorCombined);
 
 %% Note that the electrons match up to voltage saturation
-e1 = sensorGet(sArray{1},'electrons');
-e2 = sensorGet(sArray{2},'electrons');
+e1 = sensorGet(sArray(1),'electrons');
+e2 = sensorGet(sArray(2),'electrons');
 ieNewGraphWin; plot(e1(:),e2(:),'.');
 xlabel('E Sensor 1'); ylabel('E Sensor 2');
 identityLine; grid on;
 
-v1 = sensorGet(sArray{1},'volts');
-v2 = sensorGet(sArray{2},'volts');
+v1 = sensorGet(sArray(1),'volts');
+v2 = sensorGet(sArray(2),'volts');
 
 ieNewGraphWin; 
 plot(v1(:),v2(:),'.'); identityLine; grid on;
@@ -109,15 +113,15 @@ exportgraphics(gcf,fname);
 %}
 
 ip = ipCreate;
-ip = ipCompute(ip,sensor);
+ip = ipCompute(ip,sensorCombined);
 ipWindow(ip);
 
 %{
 sensorWindow(sensor);
 
-sensorWindow(sArray{1});
-sensorWindow(sArray{2});
-sensorWindow(sArray{3});
+sensorWindow(sArray(1));
+sensorWindow(sArray(2));
+sensorWindow(sArray(3));
 sensorWindow(sArray{4});
 %}
 
@@ -155,11 +159,11 @@ ip = ipCompute(ip,sensor);
 ipWindow(ip);
 
 %% For the uniform case, these should be about 4x
-uData1 = sensorPlot(sArray{1},'electrons hline',[55 1]);
-sensorPlot(sArray{2},'electrons hline',[55 1]);
+uData1 = sensorPlot(sArray(1),'electrons hline',[55 1]);
+sensorPlot(sArray(2),'electrons hline',[55 1]);
 
 % These are OK.  A factor of 4.
-uData2 = sensorPlot(sArray{3},'electrons hline',[150 1]);
+uData2 = sensorPlot(sArray(3),'electrons hline',[150 1]);
 sensorPlot(sArray{4},'electrons hline',[150 1]);
 
 %% END

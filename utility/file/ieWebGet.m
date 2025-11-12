@@ -45,10 +45,13 @@ function [localFile, zipfilenames] = ieWebGet(varargin)
 %     ieWebGet('list')
 %
 %  To use a browser to view a deposit or a collection, use the
-% 'browse' option. Such as, these deposits
+% 'browse' option. 
+% 
+% These are example deposits
 %
 %     ieWebGet('browse','pbrtv4');
 %     ieWebGet('browse','hdr-images');
+%     ieWebGet('browse','isethdr-lightgroup');
 %
 %  Or these collections
 %
@@ -98,6 +101,7 @@ ieWebGet('browse','landscape-hyperspectral');  % ISET Hyperspectral Image Databa
 
 ieWebGet('browse','cone-fundamentals-paper');
 ieWebGet('browse','isethdrsensor-paper');
+ieWebGet('browse','isethdr-lightgroup');
 %}
 %{
 % ETTBSkip
@@ -127,20 +131,31 @@ fname = ieWebGet('resource type','sdrfruit','askfirst',false,'unzip',true);
 % ETTBSkip
 fname = ieWebGet('resource type','sdr multispectral');
 %}
+%{
+% ETTBSkip
+fname = ieWebGet('resource type',1113091607_otherlights
+%}
 
 %% Manage the list and browse conditions
 
 %------- list --------
 if isequal(ieParamFormat(varargin{1}),'list')
     % ieWebGet('list');
-    depositList = urlDeposit('all');
+    [~, validDeposits, validCollections] = urlDeposit('all');
 
-    fprintf('\Deposits\n=================\n\n');
-    for ii=2:numel(depositList)
-        fprintf('%s\n',depositList{ii});
+    fprintf('Deposits\n=================\n');
+    for ii=1:size(validDeposits,1)
+        fprintf('%s\n',validDeposits{ii});
     end
     fprintf('\n');
-    localFile = depositList(:,1);
+
+    fprintf('Collections\n=================\n');
+    for ii=1:size(validCollections,1)
+        fprintf('%s\n',validCollections{ii});
+    end
+    fprintf('\n');
+
+    localFile = '';
     return;
 end
 
@@ -168,7 +183,7 @@ varargin = ieParamFormat(varargin);
 p = inputParser;
 vFunc = @(x)(ismember(ieParamFormat(x),validResources));
 p.addParameter('depositname', 'pbrtv4',vFunc);
-p.addParameter('depositfile', '', @ischar);
+p.addParameter('depositfile', '', @(x)(ischar(x) || all(cellfun(@ischar,x))));
 
 p.addParameter('confirm', true, @islogical);
 p.addParameter('unzip', true, @islogical);  % assume the user wants the resource unzipped, if applicable
@@ -333,6 +348,117 @@ switch ieParamFormat(depositName)
         catch
             warning("Unable to retrieve %s", remoteURL);
         end
+    case {'isethdr-lightgroup'}
+        % Example usage for downloading light group data from ISETHDR.
+        % This section handles both single and multiple light group requests.
+        % 
+        % For a single light group, use:
+        %   localFile = ieWebGet('deposit name', 'isethdr-lightgroup', 'deposit file', '1113095922');
+        %   This will download the light group with metadata: 1113095922
+        %   Note: No metadata file is available for the light group with ID: 1113042746.
+        %
+        % For multiple light groups, use:
+        %   localFile = ieWebGet('deposit name', 'isethdr-lightgroup', 'deposit file', {'1113042746', '1113042313'});
+        %
+        % The deposit file may be located in a subdirectory. This code extracts
+        % the file name to append to the download directory.
+        %
+        % The light group collection contains thousands of files, organized into
+        % groups. This section accounts for that grouping and downloads:
+        %   - Multiple light groups in one call
+        %   - The collection of light group EXR files along with the associated
+        %     MAT-file containing metadata (sceneMeta)
+        %   - The instances file, which may contain additional information related
+        %     to the MAT-file with sceneMeta.
+        %
+        % A loop is implemented to handle multiple deposit files, similar to the
+        % isethdr-sensor case, allowing for efficient downloading of grouped data.
+
+        % This file contains the list of files and the subdirectory
+        % they are in.
+        load("hdr_lightgroup_indices.mat",'scene_indices');
+
+        % Force the depositFile to be a cell array, even if there is
+        % only one.
+        if ~iscell(depositFile)
+            depositFile = {depositFile}; % Simplified to directly create a cell array
+        end
+
+        % Preallocate localFile for efficiency
+        localFile = cell(size(depositFile));
+
+        for df = 1:numel(depositFile)
+            % The user should have sent in an index for the depositFile.
+            % We look up the sub directory for each index.
+            tmp = split(depositFile{df},filesep());
+            remoteIndex = tmp{end};
+            remoteSubdir = scene_folder(scene_indices, remoteIndex);
+            if isempty(remoteSubdir)
+                error('Invalid file index %s.',remoteIndex);
+            end
+
+            if ~isempty(p.Results.downloaddir)
+                % The user gave us a place to download to.
+                downloadDir = p.Results.downloaddir;
+            else
+                % We assume isethdrsensor is on the user's path
+                downloadDir = fullfile(isetRootPath,'local',remoteIndex);
+            end
+
+            % This finds the subdirectory of the file on the SDR
+            if ~isfolder(downloadDir), mkdir(downloadDir); end
+
+            % To make the remote URL
+
+            % This is the base URL for the light group files
+            remoteURL = pathToLinux(fullfile(depositURL{1},...
+                remoteSubdir,...
+                depositFile{df}));
+
+            fileTypes = {'skymap','streetlights','headlights','otherlights','instanceID'};
+            fprintf('*** Downloading %s from ISETHDR-LIGHTGROUPS ... \n',depositFile{df});
+            for ff = 1:numel(fileTypes)
+                try
+                    thisURL = [remoteURL,'_',fileTypes{ff},'.exr'];
+                    localFile{df} = fullfile(downloadDir, [remoteIndex,'_',fileTypes{ff},'.exr']);
+                    
+                    % Check if localFile exists before downloading
+                    if ~exist(localFile{df},"file")
+                        websave(localFile{df}, thisURL);
+                    end
+                    fprintf('*** %s_%s is downloaded! \n',remoteIndex,fileTypes{ff});
+                catch
+                    warning("Unable to retrieve %s", thisURL);
+                end
+            end
+
+            % Check if remoteIndex is one of the integers in metadata_indices
+            
+            % These files are in the metadata subdirectory.
+            % We need to strip the remoteIndex.
+            load("hdr_lightgroup_metadata_indices.mat",'metadata_indices');
+            
+            if any(metadata_indices == str2double(remoteIndex))
+                try
+                    thisURL = fullfile(depositURL{1},'metadata',[remoteIndex,'.mat']);
+                    localFile{df} = fullfile(downloadDir, [remoteIndex,'.mat']);
+                    websave(localFile{df}, thisURL);
+                    fprintf('*** %s metadata is downloaded! \n',remoteIndex);
+                catch
+                    warning("No metadata file found for %s.", remoteIndex);
+                end
+            else
+                fprintf('*** %s has no metadata.\n', remoteIndex);
+            end
+
+        end
+
+        % These are not zip files.
+        if unZip
+            % warning('These are not zip files.');
+            unZip = false;
+        end
+
     otherwise
         error('Unknown deposit name %s',depositName);
 end
@@ -391,59 +517,76 @@ end
 %% Assign URL to resource type
 
 %---------urlDeposit----------
-function [resource, validResources] = urlDeposit(depositName)
-% Keep track of the URLs for browsing and downloading here.
+function [resource, validResources, collections] = urlDeposit(depositName)
+% Find the URLs for browsing and downloading here.
 %
-% Resource name, SDR name, SDR purl, SDR data url
+% The information is stored in a cell array. Not returned, but
+% searched. The cell array contains:
+%
+%   Resource name, SDR name, SDR purl, SDR data url in the stacks
+%
+% There are some collections that you might decide to browse, returned
+% as the third argument.
 %
 % See also
-%
 
+% Check if depositName is defined; if not, set it to 'all'
 if notDefined('depositName'), depositName = 'all'; end
 
+% Define the main deposits, their purl for viewing, and their stacks for downloading.
 % Stored in an N x 4 cell array
-%
-% Resource name, SDR name, SDR purl, SDR data url
-%
-% For a nice print out:
-%
-%   disp(resourceCell)
-%
 resourceCell = {...
     'bitterli','ISET 3d Scenes bitterli', 'https://purl.stanford.edu/cb706yg0989', 'https://stacks.stanford.edu/file/druid:cb706yg0989/sdrscenes/bitterli';
     'pbrtv4',  'ISET 3d Scenes pharr', 'https://purl.stanford.edu/cb706yg0989',    'https://stacks.stanford.edu/file/druid:cb706yg0989/sdrscenes/pbrtv4';
     'iset3d-scenes', 'ISET 3d Scenes iset3d', 'https://purl.stanford.edu/cb706yg0989', 'https://stacks.stanford.edu/file/druid:cb706yg0989/sdrscenes/iset3d-scenes';
     'landscape-hyperspectral','ISET hyperspectral scene data for landscapes','https://purl.stanford.edu/dy318qn9992', 'https://stacks.stanford.edu/file/druid:dy318qn9992';
     'faces-3m','ISET scenes of faces at 3M', 'https://purl.stanford.edu/rr512xk8301','https://stacks.stanford.edu/file/druid:rr512xk8301';
-    'faces-1m','ISET hyperspectral scenes of human faces at high resolution, 1M distance', 'https://purl.stanford.edu/jj361kc0271','https://stacks.stanford.edu/file/druid:jj361kc0271'
-    'fruits-charts','ISET scenes with fruits and calibration charts','https://purl.stanford.edu/tb259jf5957', '';
-    'people-multispectral','ISET multispectral scenes of people','https://purl.stanford.edu/mv668yq1424', '';
+    'faces-1m','ISET hyperspectral scenes of human faces at high resolution, 1M distance', 'https://purl.stanford.edu/jj361kc0271','https://stacks.stanford.edu/file/druid:jj361kc0271';
+    'fruits-charts','ISET scenes with fruits and calibration charts','https://purl.stanford.edu/tb259jf5957', 'https://stacks.stanford.edu/file/tb259jf5957';
+    'people-multispectral','ISET multispectral scenes of people','https://purl.stanford.edu/mv668yq1424', 'https://stacks.stanford.edu/file/mv668yq1424';
     'misc-multispectral1','ISET multispectral scenes of faces, fruit, objects, charts','https://purl.stanford.edu/sx264cp0814', 'https://stacks.stanford.edu/file/druid:sx264cp0814';
     'misc-multispectral2','ISET multispectral scenes of fruit, books, color calibration charts','https://purl.stanford.edu/vp031yb6470','https://stacks.stanford.edu/file/druid:vp031yb6470';
     'hdr-images','HDR Images of Natural Scenes','https://purl.stanford.edu/sz929jt3255','https://stacks.stanford.edu/file/druid:sz929jt3255';...
-    'vistalab-collection','Vista Lab Collection','https://searchworks.stanford.edu/catalog?f[collection][]=qd500xn1572','';
-    'iset-multispectral-collection','ISET Multispectral Image Database','https://searchworks.stanford.edu/view/sm380jb1849','';
-    'iset-hyperspectral-collection','Not yet implemented','https://searchworks.stanford.edu/?search_field=search&q=ISET+Hyperspectral+Image+Database','';
     'cone-fundamentals-paper','Deriving the cone fundamentals','https://purl.stanford.edu/jz111ct9401','https://stacks.stanford.edu/file/druid:jz111ct9401/cone_fundamentals';
-    'isethdrsensor-paper','ISET HDR Sensor', 'https://purl.stanford.edu/bt316kj3589', 'https://stacks.stanford.edu/file/druid:bt316kj3589/isethdrsensor'
+    'isethdrsensor-paper','ISET HDR Sensor', 'https://purl.stanford.edu/bt316kj3589', 'https://stacks.stanford.edu/file/druid:bt316kj3589/isethdrsensor';
+    'isethdr-lightgroup','ISET HDR Auto Lightgroup','https://purl.stanford.edu/zg292rq7608','https://stacks.stanford.edu/file/zg292rq7608/'};
+
+collections = {...
+    'vistalab-collection','Vista Lab Collection','https://searchworks.stanford.edu/catalog?f[collection][]=qd500xn1572',''; ...
+    'iset-hyperspectral-collection','Not yet implemented','https://searchworks.stanford.edu/?search_field=search&q=ISET+Hyperspectral+Image+Database',''; ...
+    'iset-multispectral-collection','ISET Multispectral Image Database','https://searchworks.stanford.edu/view/sm380jb1849','';
     };
 
+% Extract valid resource names for checking
 validResources = resourceCell(:,1);
 
 if isequal(depositName,'all')
-    % Return the cell arrays
+    % If 'all' is requested, return the entire resource cell array,
+    % and remember that validResources is the 2nd argument and
+    % collection names is returned as the 3rd argument.    
     resource = resourceCell;
+    collections = collections(:,1);
     return;
 else
-    % Find the matching one.
-    idx = strcmp(validResources, ieParamFormat(depositName));
-    % Maybe just contains, but for now a full match up the upper/lower and
-    % spaces.
-    % idx = contains(validResources,ieParamFormat(depositName));
+    % Find the index of the requested resource
+    idx = find(strcmp(validResources, ieParamFormat(depositName)), 1);
+
+    % If no matching resource is found, check the collections
     if isempty(idx)
-        error('No matching resource: %s\n',depositName);
+
+        validResources = collections(:,1);
+        idx = find(strcmp(validResources, ieParamFormat(depositName)), 1);
+        
+        % If still no match, throw an error
+        if isempty(idx)
+            error('No matching resource or collection: %s\n', depositName);
+        else
+            resource = collections(idx,:);
+        end
+    else
+        % Return the details of the matched resource
+        resource = resourceCell(idx, :);
     end
-    resource = resourceCell(idx,:);
 end
 
 end
@@ -468,4 +611,21 @@ catch
     warning("Unable to retrieve %s", depositURL);
 end
 
+end
+
+function str = scene_folder(lightgroup, N)
+    % Initialize the output
+    str = [];
+
+    if ischar(N), N = str2num(N); end %#ok<ST2NM>
+
+    % Loop through each cell in the cell array
+    for i = 1:numel(lightgroup)
+        % Check if the current cell contains the integer N
+        if ismember(N, lightgroup{i})
+            cellIndex = i; % Store the index of the cell
+            str = sprintf('ISETScene_%03d_renderings',cellIndex);
+            return; % Exit the function once found
+        end
+    end
 end

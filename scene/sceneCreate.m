@@ -412,7 +412,7 @@ switch sceneName
         scene = sceneSweep(scene,sz,maxFreq,wave,yContrast);
         parms.sz = sz;
         parms.maxFreq = maxFreq;
-        parms.wave = varargin{3};
+        parms.wave = wave;
 
     case {'ramp','linearintensityramp','rampequalphoton'}
         % scene = sceneCreate('ramp',sz,dynamicRange);
@@ -1219,11 +1219,20 @@ scene = sceneSet(scene,'photons',d);
 end
 %--------------------------------------------------
 function scene = sceneLine(scene,spectralType,sz,offset)
-%% Create a single line scene.
+%% Create a single vertical line scene.
+%
+%   scene - ISETCam scene struct
+%   spectralType - 'ep' equal photon default.  d65 or ee (equal
+%                   energy) or the others
+%   sz     - row, col of the image.  If a single number then we set 
+%            sz = [val,val]
+%   offset - column offset from sz/2
+%
+
 % This is used for computing linespreads and OTFs.
 
 if ieNotDefined('spectralType'), spectralType = 'ep'; end
-if ieNotDefined('sz'),     sz = 64; end
+if ieNotDefined('sz'),     sz = [64,64]; end
 if ieNotDefined('offset'), offset = 0; end
 
 scene = sceneSet(scene,'name',sprintf('line-%s',spectralType));
@@ -1235,8 +1244,9 @@ wave    = sceneGet(scene,'wave');
 nWave   = sceneGet(scene,'nwave');
 
 % Black is more than zero to prevent HDR problem with ieCompressData
-linePos = round(sz/2) + offset;
-photons = ones(sz,sz,nWave)*1e-4;
+% (This seems outdated)
+linePos = round(sz(2)/2) + offset;
+photons = ones(sz(1),sz(2),nWave)*1e-4;
 photons(:,linePos,:) = 1;
 
 spectralType = ieParamFormat(spectralType);

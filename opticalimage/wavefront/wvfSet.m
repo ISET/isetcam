@@ -371,7 +371,10 @@ switch parm
         %                
         radiansPerPixel = val / (180 * 60 / 3.1416);
         tmp = wvfGet(wvf, 'measured wl', 'mm') / radiansPerPixel;
-        wvf = wvfSet('field size mm', tmp);
+
+        % 2025:10:25
+        % Not sure why but there was a missing wvf on the set side (BW).
+        wvf = wvfSet(wvf,'field size mm', tmp);
 
         % Original
         % wvf.refSizeOfFieldMM = wvfGet(wvf, 'measured wl', 'mm') ...
