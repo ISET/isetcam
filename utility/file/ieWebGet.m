@@ -174,7 +174,7 @@ varargin = ieParamFormat(varargin);
 p = inputParser;
 vFunc = @(x)(ismember(ieParamFormat(x),validResources));
 p.addParameter('depositname', 'pbrtv4',vFunc);
-p.addParameter('depositfile', '', @ischar);
+p.addParameter('depositfile', '', @(x)(ischar(x) || all(cellfun(@ischar,x))));
 
 p.addParameter('confirm', true, @islogical);
 p.addParameter('unzip', true, @islogical);  % assume the user wants the resource unzipped, if applicable
@@ -340,40 +340,114 @@ switch ieParamFormat(depositName)
             warning("Unable to retrieve %s", remoteURL);
         end
     case {'isethdr-lightgroup'}
-        % Like the hdr sensor data, but for the larger light group
-        % collection, with some more complexity.
+        % Example usage for downloading light group data from ISETHDR.
+        % This section handles both single and multiple light group requests.
+        % 
+        % For a single light group, use:
+        %   localFile = ieWebGet('deposit name', 'isethdr-lightgroup', 'deposit file', '1113095922');
+        %   This will download the light group with metadata: 1113095922
+        %   Note: No metadata file is available for the light group with ID: 1113042746.
         %
-        % We need a special download call in this case.  A few things
+        % For multiple light groups, use:
+        %   localFile = ieWebGet('deposit name', 'isethdr-lightgroup', 'deposit file', {'1113042746', '1113042313'});
         %
-        %  * I want a list of all the possible numbers
-        %  * The method should download the collection of light group exr files
-        %  * Also the instances file?
-        %  * Maybe there is a corresponding mat-file
+        % The deposit file may be located in a subdirectory. This code extracts
+        % the file name to append to the download directory.
         %
-        % In the isethdr-sensor case we had a loop in the calling
-        % routine.  Is that something we should do externally, or
-        % should we include it here?
+        % The light group collection contains thousands of files, organized into
+        % groups. This section accounts for that grouping and downloads:
+        %   - Multiple light groups in one call
+        %   - The collection of light group EXR files along with the associated
+        %     MAT-file containing metadata (sceneMeta)
+        %   - The instances file, which may contain additional information related
+        %     to the MAT-file with sceneMeta.
+        %
+        % A loop is implemented to handle multiple deposit files, similar to the
+        % isethdr-sensor case, allowing for efficient downloading of grouped data.
 
-        if ~isempty(p.Results.downloaddir)
-            % The user gave us a place to download to.
-            downloadDir = p.Results.downloaddir;
-        else
-            % We assume isethdrsensor is on the user's path
-            downloadDir = fullfile(isethdrsensorRootPath);
+        % This file contains the list of files and the subdirectory
+        % they are in.
+        load("hdr_lightgroup_indices.mat",'scene_indices');
+
+        % Force the depositFile to be a cell array, even if there is
+        % only one.
+        if ~iscell(depositFile)
+            depositFile = {depositFile}; % Simplified to directly create a cell array
         end
 
-        % The deposit file may be in a subdirectory.  Here we pull out
-        % just the file name to append to the downloadDir.
-        tmp = split(depositFile,filesep());
-        localFile = fullfile(downloadDir, tmp{end});
-        if ~isfolder(downloadDir), mkdir(downloadDir); end
-        remoteURL = pathToLinux(fullfile(depositURL{1},depositFile));
-        try
-            fprintf('*** Downloading %s from ISETHDR-HDR SDR ... \n',depositFile);
-            websave(localFile, remoteURL);
-            fprintf('*** File is downloaded! \n');
-        catch
-            warning("Unable to retrieve %s", remoteURL);
+        % Preallocate localFile for efficiency
+        localFile = cell(size(depositFile));
+
+        for df = 1:numel(depositFile)
+            % The user should have sent in an index for the depositFile.
+            % We look up the sub directory for each index.
+            tmp = split(depositFile{df},filesep());
+            remoteIndex = tmp{end};
+            remoteSubdir = scene_folder(scene_indices, remoteIndex);
+            if isempty(remoteSubdir)
+                error('Invalid file index %s.',remoteIndex);
+            end
+
+            if ~isempty(p.Results.downloaddir)
+                % The user gave us a place to download to.
+                downloadDir = p.Results.downloaddir;
+            else
+                % We assume isethdrsensor is on the user's path
+                downloadDir = fullfile(isetRootPath,'local',remoteIndex);
+            end
+
+            % This finds the subdirectory of the file on the SDR
+            if ~isfolder(downloadDir), mkdir(downloadDir); end
+
+            % To make the remote URL
+
+            % This is the base URL for the light group files
+            remoteURL = pathToLinux(fullfile(depositURL{1},...
+                remoteSubdir,...
+                depositFile{df}));
+
+            fileTypes = {'skymap','streetlights','headlights','otherlights','instanceID'};
+            fprintf('*** Downloading %s from ISETHDR-LIGHTGROUPS ... \n',depositFile{df});
+            for ff = 1:numel(fileTypes)
+                try
+                    thisURL = [remoteURL,'_',fileTypes{ff},'.exr'];
+                    localFile{df} = fullfile(downloadDir, [remoteIndex,'_',fileTypes{ff},'.exr']);
+                    
+                    % Check if localFile exists before downloading
+                    if ~exist(localFile{df},"file")
+                        websave(localFile{df}, thisURL);
+                    end
+                    fprintf('*** %s_%s is downloaded! \n',remoteIndex,fileTypes{ff});
+                catch
+                    warning("Unable to retrieve %s", thisURL);
+                end
+            end
+
+            % Check if remoteIndex is one of the integers in metadata_indices
+            
+            % These files are in the metadata subdirectory.
+            % We need to strip the remoteIndex.
+            load("hdr_lightgroup_metadata_indices.mat",'metadata_indices');
+            
+            if any(metadata_indices == str2double(remoteIndex))
+                try
+                    thisURL = fullfile(depositURL{1},'metadata',[remoteIndex,'.mat']);
+                    localFile{df} = fullfile(downloadDir, [remoteIndex,'.mat']);
+                    websave(localFile{df}, thisURL);
+                    fprintf('*** %s metadata is downloaded! \n',remoteIndex);
+                catch
+                    warning("No metadata file found for %s.", remoteIndex);
+                end
+            else
+                fprintf('*** %s has no metadata.\n', remoteIndex);
+            end
+
+        end
+
+        % These are not zip files.
+        if unZip
+            % warning('These are not zip files.');
+            unZip = false;
         end
 
     otherwise
@@ -469,7 +543,7 @@ resourceCell = {...
     'iset-hyperspectral-collection','Not yet implemented','https://searchworks.stanford.edu/?search_field=search&q=ISET+Hyperspectral+Image+Database','';
     'cone-fundamentals-paper','Deriving the cone fundamentals','https://purl.stanford.edu/jz111ct9401','https://stacks.stanford.edu/file/druid:jz111ct9401/cone_fundamentals';
     'isethdrsensor-paper','ISET HDR Sensor', 'https://purl.stanford.edu/bt316kj3589', 'https://stacks.stanford.edu/file/druid:bt316kj3589/isethdrsensor';
-    'isethdr-lightgroup','ISET HDR Auto Lightgroup','https://purl.stanford.edu/zg292rq7608',''};
+    'isethdr-lightgroup','ISET HDR Auto Lightgroup','https://purl.stanford.edu/zg292rq7608','https://stacks.stanford.edu/file/zg292rq7608/'};
 
 validResources = resourceCell(:,1);
 
@@ -511,4 +585,21 @@ catch
     warning("Unable to retrieve %s", depositURL);
 end
 
+end
+
+function str = scene_folder(lightgroup, N)
+    % Initialize the output
+    str = [];
+
+    if ischar(N), N = str2num(N); end %#ok<ST2NM>
+
+    % Loop through each cell in the cell array
+    for i = 1:numel(lightgroup)
+        % Check if the current cell contains the integer N
+        if ismember(N, lightgroup{i})
+            cellIndex = i; % Store the index of the cell
+            str = sprintf('ISETScene_%03d_renderings',cellIndex);
+            return; % Exit the function once found
+        end
+    end
 end
