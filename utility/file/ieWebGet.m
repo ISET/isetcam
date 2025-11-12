@@ -45,17 +45,19 @@ function [localFile, zipfilenames] = ieWebGet(varargin)
 %     ieWebGet('list')
 %
 %  To use a browser to view a deposit or a collection, use the
-% 'browse' option. Such as, these deposits
+% 'browse' option. 
+% 
+% These are example deposits
 %
 %     ieWebGet('browse','pbrtv4');
 %     ieWebGet('browse','hdr-images');
+%     ieWebGet('browse','isethdr-lightgroup');
 %
 %  Or these collections
 %
 %     ieWebGet('browse','vistalab-collection');
 %     ieWebGet('browse','iset-hyperspectral-collection');
 %     ieWebGet('browse','iset-multispectral-collection');
-%     ieWebGet('browse','isethdr-lightgroup');
 %
 % Notes and TODO
 %  * We should be able to take a cell array of deposit files, not just one.
@@ -139,14 +141,21 @@ fname = ieWebGet('resource type',1113091607_otherlights
 %------- list --------
 if isequal(ieParamFormat(varargin{1}),'list')
     % ieWebGet('list');
-    depositList = urlDeposit('all');
+    [~, validDeposits, validCollections] = urlDeposit('all');
 
-    fprintf('\Deposits\n=================\n\n');
-    for ii=2:numel(depositList)
-        fprintf('%s\n',depositList{ii});
+    fprintf('Deposits\n=================\n');
+    for ii=1:size(validDeposits,1)
+        fprintf('%s\n',validDeposits{ii});
     end
     fprintf('\n');
-    localFile = depositList(:,1);
+
+    fprintf('Collections\n=================\n');
+    for ii=1:size(validCollections,1)
+        fprintf('%s\n',validCollections{ii});
+    end
+    fprintf('\n');
+
+    localFile = '';
     return;
 end
 
@@ -508,62 +517,76 @@ end
 %% Assign URL to resource type
 
 %---------urlDeposit----------
-function [resource, validResources] = urlDeposit(depositName)
-% Keep track of the URLs for browsing and downloading here.
+function [resource, validResources, collections] = urlDeposit(depositName)
+% Find the URLs for browsing and downloading here.
 %
-% Resource name, SDR name, SDR purl, SDR data url
+% The information is stored in a cell array. Not returned, but
+% searched. The cell array contains:
+%
+%   Resource name, SDR name, SDR purl, SDR data url in the stacks
+%
+% There are some collections that you might decide to browse, returned
+% as the third argument.
 %
 % See also
-%
 
+% Check if depositName is defined; if not, set it to 'all'
 if notDefined('depositName'), depositName = 'all'; end
 
+% Define the main deposits, their purl for viewing, and their stacks for downloading.
 % Stored in an N x 4 cell array
-%
-% Resource name, SDR name, SDR purl, SDR data url
-%
-% For a nice print out:
-%
-%   disp(resourceCell)
-%
-
-% Not a repository, but a useful place to go.
-%  'vistalab-collection','Vista Lab Collection','https://searchworks.stanford.edu/catalog?f[collection][]=qd500xn1572','';
-%  'iset-hyperspectral-collection','Not yet implemented','https://searchworks.stanford.edu/?search_field=search&q=ISET+Hyperspectral+Image+Database','';
-
 resourceCell = {...
     'bitterli','ISET 3d Scenes bitterli', 'https://purl.stanford.edu/cb706yg0989', 'https://stacks.stanford.edu/file/druid:cb706yg0989/sdrscenes/bitterli';
     'pbrtv4',  'ISET 3d Scenes pharr', 'https://purl.stanford.edu/cb706yg0989',    'https://stacks.stanford.edu/file/druid:cb706yg0989/sdrscenes/pbrtv4';
     'iset3d-scenes', 'ISET 3d Scenes iset3d', 'https://purl.stanford.edu/cb706yg0989', 'https://stacks.stanford.edu/file/druid:cb706yg0989/sdrscenes/iset3d-scenes';
     'landscape-hyperspectral','ISET hyperspectral scene data for landscapes','https://purl.stanford.edu/dy318qn9992', 'https://stacks.stanford.edu/file/druid:dy318qn9992';
     'faces-3m','ISET scenes of faces at 3M', 'https://purl.stanford.edu/rr512xk8301','https://stacks.stanford.edu/file/druid:rr512xk8301';
-    'faces-1m','ISET hyperspectral scenes of human faces at high resolution, 1M distance', 'https://purl.stanford.edu/jj361kc0271','https://stacks.stanford.edu/file/druid:jj361kc0271'
-    'fruits-charts','ISET scenes with fruits and calibration charts','https://purl.stanford.edu/tb259jf5957', '';
-    'people-multispectral','ISET multispectral scenes of people','https://purl.stanford.edu/mv668yq1424', '';
+    'faces-1m','ISET hyperspectral scenes of human faces at high resolution, 1M distance', 'https://purl.stanford.edu/jj361kc0271','https://stacks.stanford.edu/file/druid:jj361kc0271';
+    'fruits-charts','ISET scenes with fruits and calibration charts','https://purl.stanford.edu/tb259jf5957', 'https://stacks.stanford.edu/file/tb259jf5957';
+    'people-multispectral','ISET multispectral scenes of people','https://purl.stanford.edu/mv668yq1424', 'https://stacks.stanford.edu/file/mv668yq1424';
     'misc-multispectral1','ISET multispectral scenes of faces, fruit, objects, charts','https://purl.stanford.edu/sx264cp0814', 'https://stacks.stanford.edu/file/druid:sx264cp0814';
     'misc-multispectral2','ISET multispectral scenes of fruit, books, color calibration charts','https://purl.stanford.edu/vp031yb6470','https://stacks.stanford.edu/file/druid:vp031yb6470';
     'hdr-images','HDR Images of Natural Scenes','https://purl.stanford.edu/sz929jt3255','https://stacks.stanford.edu/file/druid:sz929jt3255';...
-    'iset-multispectral-collection','ISET Multispectral Image Database','https://searchworks.stanford.edu/view/sm380jb1849','';
     'cone-fundamentals-paper','Deriving the cone fundamentals','https://purl.stanford.edu/jz111ct9401','https://stacks.stanford.edu/file/druid:jz111ct9401/cone_fundamentals';
     'isethdrsensor-paper','ISET HDR Sensor', 'https://purl.stanford.edu/bt316kj3589', 'https://stacks.stanford.edu/file/druid:bt316kj3589/isethdrsensor';
     'isethdr-lightgroup','ISET HDR Auto Lightgroup','https://purl.stanford.edu/zg292rq7608','https://stacks.stanford.edu/file/zg292rq7608/'};
 
+collections = {...
+    'vistalab-collection','Vista Lab Collection','https://searchworks.stanford.edu/catalog?f[collection][]=qd500xn1572',''; ...
+    'iset-hyperspectral-collection','Not yet implemented','https://searchworks.stanford.edu/?search_field=search&q=ISET+Hyperspectral+Image+Database',''; ...
+    'iset-multispectral-collection','ISET Multispectral Image Database','https://searchworks.stanford.edu/view/sm380jb1849','';
+    };
+
+% Extract valid resource names for checking
 validResources = resourceCell(:,1);
 
 if isequal(depositName,'all')
-    % Return the cell arrays
+    % If 'all' is requested, return the entire resource cell array,
+    % and remember that validResources is the 2nd argument and
+    % collection names is returned as the 3rd argument.    
     resource = resourceCell;
+    collections = collections(:,1);
     return;
 else
-    % Find the matching one.
-    idx = strcmp(validResources, ieParamFormat(depositName));
-    % Maybe just contains, but for now a full match up the upper/lower and
-    % spaces.
-    % idx = contains(validResources,ieParamFormat(depositName));
+    % Find the index of the requested resource
+    idx = find(strcmp(validResources, ieParamFormat(depositName)), 1);
+
+    % If no matching resource is found, check the collections
     if isempty(idx)
-        error('No matching resource: %s\n',depositName);
+
+        validResources = collections(:,1);
+        idx = find(strcmp(validResources, ieParamFormat(depositName)), 1);
+        
+        % If still no match, throw an error
+        if isempty(idx)
+            error('No matching resource or collection: %s\n', depositName);
+        else
+            resource = collections(idx,:);
+        end
+    else
+        % Return the details of the matched resource
+        resource = resourceCell(idx, :);
     end
-    resource = resourceCell(idx,:);
 end
 
 end
