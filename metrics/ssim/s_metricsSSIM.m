@@ -41,7 +41,7 @@ ip = ipSet(ip,'name','default');
 ip = ipSet(ip,'internal cs','XYZ');
 ip = ipSet(ip,'conversion method sensor','MCC Optimized');
 ip = ipSet(ip,'name','MCC-XYZ');
-ip = ipSet(ip,'correction method illuminant','white world');
+ip = ipSet(ip,'correction method illuminant','gray world');
 ip = ipCompute(ip,sensor);
 ipWindow(ip);
 
@@ -63,6 +63,14 @@ ip = ipCompute(ip,sensor);
 ipWindow(ip);
 testsRGB = ipGet(ip,'srgb');
 
+fprintf('Test sRGB mean %0.1f\nRef  sRGB mean %.1f\n',mean(testsRGB(:)), mean(refsRGB(:)));
+
+%% To fix
+
+% testsRGB and refsRGB do not have the same mean.
+% I think they should, but what I did above was let the exposure
+% duration vary between the two captures.  Maybe don't do that.
+
 %% Compare the images visually, with color
 
 ieNewGraphWin;
@@ -81,7 +89,7 @@ montage({sum(refsRGB,3)/3,sum(testsRGB,3)/3});
 % subtract from one.
 ieNewGraphWin;
 imagesc(1 - mean(ssimmap,3)); axis image;
-title('SSIM Error (1-ssim)(')
+title('SSIM Error (1-ssim)')
 colorbar; axis image; axis off
 
 %%
@@ -93,26 +101,44 @@ mesh(1 - mean(ssimmap,3));
 %% Now try S-CIELAB
 
 params = scParams;
-fov = 10;
+ieFigure; 
+tiledlayout(2,2);
+
+fov = 1;
 params.sampPerDeg = round(size(testsRGB,1)/fov);
 testXYZ = ieClip(srgb2xyz(testsRGB),0,[]);
 refXYZ  = ieClip(srgb2xyz(refsRGB),0,[]);
+
+nexttile;
+imagesc(refsRGB);
+title('Reference image')
+
+nexttile;
+imagesc(testsRGB);
+title('Noisy image')
 
 whitePt = [.92 .98 .98];
 clims = [0 20];
-dEimg20 = scielab(testXYZ,refXYZ,whitePt,params);
-ieNewGraphWin; imagesc(dEimg20,clims);
+dEimg = scielab(testXYZ,refXYZ,whitePt,params);
+
+nexttile;
+imagesc(dEimg,clims);
 colorbar; axis image; axis off
+title(sprintf('FOV: %.1f',fov));
+
 
 params = scParams;
-fov = 50;
+fov = 20;
 params.sampPerDeg = round(size(testsRGB,1)/fov);
 testXYZ = ieClip(srgb2xyz(testsRGB),0,[]);
 refXYZ  = ieClip(srgb2xyz(refsRGB),0,[]);
 
-dEimg50 = scielab(testXYZ,refXYZ,whitePt,params);
-ieNewGraphWin; imagesc(dEimg50,clims);
+dEimg = scielab(testXYZ,refXYZ,whitePt,params);
+nexttile;
+imagesc(dEimg,clims);
 colorbar; axis image; axis off
+title(sprintf('FOV: %.1f',fov));
+
 
 % ieNewGraphWin;
 % mesh(dEimg);
