@@ -842,7 +842,8 @@ function scene = sceneDefault(scene,illuminantType,patchSize,wave,surfaceFile,bl
 
 % These are the default surface reflectance values
 if ieNotDefined('surfaceFile')
-    surfaceFile = which('macbethChart.mat');
+    surfaceFile = fullfile(isetRootPath,'data','surfaces','reflectances','macbethChart.mat');
+    % A mistake:  surfaceFile = which('macbethChart.mat');
 end
 if ieNotDefined('blackBorder'), blackBorder = false; end
 
