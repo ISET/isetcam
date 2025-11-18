@@ -529,7 +529,7 @@ switch sceneName
         % wave:   Wavelength samples
         % scene = sceneCreate('lineee',128,2);
         % scene = sceneCreate('lineee',128,2,380:4:1068);
-        sz = 64; offset = 0;
+        sz = [64,64]; offset = 0;
         if length(varargin) >= 1, sz = varargin{1};     end
         if length(varargin) >= 2, offset = varargin{2}; end
         if length(varargin) == 3
