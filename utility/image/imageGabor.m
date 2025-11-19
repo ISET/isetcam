@@ -2,7 +2,7 @@ function g = imageGabor(varargin)
 %IMAGEGABOR  Create a 2-D Gabor image using inputParser name-value pairs
 %
 % Synopsis:
-%   g = imageGabor('frequency',f, 'phase',p, 'spread',s, 'orientation',t,'imsize',sz)
+%   g = imageGabor('frequency',f, 'phase',p, 'spread',s, 'orientation',t,'imsize',sz, 'contrast',contrast)
 %
 % Name-value arguments (all optional):
 %     'frequency'   - spatial frequency in cycles/image (default 5)
@@ -12,33 +12,32 @@ function g = imageGabor(varargin)
 %     'imagesize'   - Image size (row,col) (default 8*spread, but always made odd)
 %     'contrast'    - Gabor image contrast (default 1)
 %
+% The method can also take the parameters from harmonicP. 
+%
 % Description
 %   The image is returned with a mean of 0.5. 
 %   The image size is forced to be odd.
 %   The Gaussian envelope is always circular.
 %
+% See also:  
+%    gaborP
 
 % Example:
 %{
 ieFigure; tiledlayout(2,2);
 
-img = imageGabor('contrast',0.1);
-nexttile;
-imshow(img); axis image; colormap(gray);
-assert(max(img(:)) < 0.56 && min(img(:)) > 0.45)
+img = imageGabor('contrast',1);
+nexttile; imshow(img); axis image; colormap(gray);
 
 img = imageGabor('frequency',16, 'image size',64,'orientation',pi/4);
-nexttile
-imshow(img); axis image; colormap(gray);
+nexttile; imshow(img); axis image; colormap(gray);
 
-img = imageGabor('frequency',2, 'spread',32,'orientation',-pi/4,'image size',128,'phase',pi/4);
-nexttile;
-imshow(img); axis image; colormap(gray); grid on; axis on;
+img = imageGabor('frequency',2, 'spread',0.3,'orientation',-pi/4,'image size',128,'phase',pi/4);
+nexttile; imshow(img); axis image; colormap(gray); grid on; axis on;
 set(gca,'xticklabel','','yticklabel','');
 
-img = imageGabor('frequency',2, 'spread',32,'orientation',-pi/4,'image size',128,'phase',0);
-nexttile;
-imshow(img); axis image; colormap(gray); grid on; axis on; 
+img = imageGabor('frequency',5, 'spread',0.2,'orientation',-pi/4,'image size',128,'phase',0);
+nexttile; imshow(img); axis image; colormap(gray); grid on; axis on; 
 set(gca,'xticklabel','','yticklabel','');
 %}
 
@@ -46,9 +45,9 @@ set(gca,'xticklabel','','yticklabel','');
 
 defaultFreq = 5;
 defaultPhase = 0;
-defaultSpread = 10;
+defaultSpread = 0.2;
 defaultTheta = 0;
-defaultSize  = 0;
+defaultSize  = 128;
 defaultContrast = 1;
 
 % Validation functions
@@ -67,28 +66,47 @@ addParameter(p, 'orientation', defaultTheta,     mustBeScalarReal);
 addParameter(p, 'imagesize',   defaultSize,      mustBeScalarReal);
 addParameter(p, 'contrast',    defaultContrast,  mustBeScalarReal);
 
+p.addParameter('ang', [], @isnumeric);
+p.addParameter('freq', [], @isnumeric);
+p.addParameter('ph', [], @isnumeric);
+p.addParameter('row', [], @isscalar);
+p.addParameter('col', [], @isscalar);
+p.addParameter('gaborflag', [], @isscalar);
+
 parse(p, varargin{:});
+
 freq   = p.Results.frequency;
+if ~isempty(p.Results.freq), freq = p.Results.freq; end
+
 phase  = p.Results.phase;
+if ~isempty(p.Results.ph), phase = p.Results.ph; end
+
 sigma  = p.Results.spread;
+if ~isempty(p.Results.gaborflag), sigma = p.Results.gaborflag; end
+
 theta  = p.Results.orientation;
+if ~isempty(p.Results.ang), theta = p.Results.ang; end
+
 imsize = p.Results.imagesize;
+if ~isempty(p.Results.row), imsize = p.Results.row; end
+
 contrast = p.Results.contrast;
 
-% Kernel size: cover ±4*sigma and make odd
-if imsize == 0
-    halfsize = max(1, ceil(4*sigma));
-    [x, y] = meshgrid(-halfsize:halfsize, -halfsize:halfsize);
-else
-    halfsize = max(1, round(imsize/2));
-    [x, y] = meshgrid(-halfsize:halfsize, -halfsize:halfsize);
-end
+
+%% Calculate the image
+
+halfsize = max(1, round(imsize/2));
+[x, y] = meshgrid(-halfsize:halfsize, -halfsize:halfsize);
 
 %% Calculations
 
 % Convert freq per image to freq per pixel.
 imsize = numel(-halfsize:halfsize);
 freq = fImageTofPixel('nCycles',freq,'imageSize',[imsize imsize],'theta',theta);
+
+% If set by gabor flag it is a fraction of the image.  We turn it
+% into a number of pixels here.
+if sigma < 1, sigma = round(sigma*halfsize); end
 
 % Gaussian envelope
 gEnv = exp(- (x.^2 + y.^2) / (2 * sigma^2));
@@ -106,7 +124,8 @@ g = contrast * gEnv .* harmonic;
 g = 0.5*g + 0.5;
 
 % Delete this after some time.  This is November 18 2025.
-assert(min(g(:)) >= 0 && max(g(:)) <=1);
+assert(min(g(:)) >= 0)
+assert(max(g(:)) <= 1);
 
 end
 

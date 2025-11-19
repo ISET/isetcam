@@ -95,7 +95,7 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %      {'gridlines'}             - Grid lines
 %      {'checkerboard'}          - Checkerboard with equal photon spectrum
 %      {'frequency orientation'} - Demosaicking test pattern, equal photon spectrum
-%      {'slanted edge'} - Used for ISO spatial resolution, equal photon spectrum
+%      {'slanted bar'} - Used for ISO spatial resolution, equal photon spectrum
 %      {'moire orient'} - Circular Moire pattern
 %      {'zone plate'}   - Circular zone plot, equal photon spectrum
 %      {'star pattern'} - Thin radial lines used to test printers and displays
@@ -123,7 +123,7 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %
 %  Other patterns have different parameters:
 %
-%         sceneCreate('slanted edge',imageSize,edgeSlope,fov,wave,darklevel);
+%         sceneCreate('slanted bar',imageSize,edgeSlope,fov,wave,darklevel);
 %         sceneCreate('checkerboard',pixelsPerCheck,numberOfChecks)
 %         sceneCreate('grid lines',imageSize,pixelsBetweenLines,spectralType,thickness);
 %         sceneCreate('point array',imageSize,pixelsBetweenPoints);
@@ -207,10 +207,9 @@ wave = 400:10:700; grayFlag = 0; sampling = 'r';
 scene = sceneCreate('reflectance chart',pSize,sSamples,sFiles,wave,grayFlag,sampling);
 %}
 %{
-% Passing extra params to the 'harmonic' scene create 
-parms.freq = 1; parms.contrast = 1; parms.ph = 0;
-parms.ang= 0; parms.row = 129; parms.col = 129;
-parms.GaborFlag=0;
+% Passing extra params to the 'harmonic' sceneCreate 
+parms = harmonicP('freq',3,'ang',45,'ph',0,'GaborFlag',0.2);
+parms.row = 129; parms.col = 129;
 [scene,parms] = sceneCreate('harmonic',parms);
 %}
 %{
@@ -620,10 +619,10 @@ switch sceneName
             scene = sceneMOTarget(scene,varargin{1});
         end
     case {'slantedbar','iso12233','slantededge'}
-        % scene = sceneCreate('slantedEdge',sz, slope, fieldOfView, wave);
-        % scene = sceneCreate('slantedEdge',128,1.33);  % size, slope
-        % scene = sceneCreate('slantedEdge',128,1.33,[], (380:4:1064));       % size, slope, wave
-        % scene = sceneCreate('slantedEdge',128,1.33,[], (380:4:1064), 0.3);  % size, slope, wave, darklevel
+        % scene = sceneCreate('slanted bar',sz, slope, fieldOfView, wave);
+        % scene = sceneCreate('slanted edge',128,1.33);  % size, slope
+        % scene = sceneCreate('iso12233',128,1.33,[], (380:4:1064));       % size, slope, wave
+        % scene = sceneCreate('slanted bar',128,1.33,[], (380:4:1064), 0.3);  % size, slope, wave, darklevel
         
         barSlope = []; fov = []; wave = []; imSize = []; darklevel = 0;
         if length(varargin) >= 1, imSize = varargin{1}; end
@@ -1677,3 +1676,4 @@ photons = imageIncreaseImageRGBSize(photons,[barHeight,barWidth]);
 scene = sceneSet(scene,'photons',photons);
 
 end
+
