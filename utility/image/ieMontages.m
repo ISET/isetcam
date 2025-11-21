@@ -25,6 +25,7 @@ function ieMontages(varargin)
 %                  montage files. Saved files are FilePrefix_01.png, etc.
 %                  Alias: 'OutPrefix'. Default: 'montage'.
 %   'FontSize'   - font size for tile labels. Default: 12.
+%   'adjust'     - Use imadjust to stretch the rgb values (logical) default: true
 %
 % Examples
 %   ieMontages();                                      % default behavior
@@ -51,6 +52,8 @@ validPrefix = @(x) (ischar(x) || isstring(x));
 addParameter(p,'fileprefix','montage',validPrefix);
 
 addParameter(p,'fontsize',12,@(x)isnumeric(x)&&isscalar(x)&&x>0);
+
+addParameter(p,'adjust',false,@islogical);
 
 parse(p,varargin{:});
 
@@ -96,6 +99,12 @@ for pg = 1:nPages
         ax = nexttile;
         if k <= numel(idx)
             im = imread(fileNames{idx(k)});
+            
+            % Stretch the data
+            % if p.Results.adjust
+            %     im = imadjust(im,[prctile(im(:),1),prctile(im(:),99)]);
+            % end
+
             imshow(im,'Border','tight');
             hold on;
             % Add label in top-left with semi-transparent background
