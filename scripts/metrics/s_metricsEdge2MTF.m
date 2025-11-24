@@ -78,7 +78,7 @@ c = masterRect(3)+1;
 r = masterRect(4)+1;
 barImage = reshape(barImage,r,c,3);
 
-vcNewGraphWin; imagesc(barImage(:,:,1)); axis image; colormap(gray(64));
+ieFigure; imagesc(barImage(:,:,1)); axis image; colormap(gray(64));
 for ii=1:r
     plot(barImage(ii,:,1));
     hold on;
@@ -91,7 +91,7 @@ img = barImage(:,:,2);
 dimg = diff(img,1,2);
 dimg = abs(dimg);
 
-vcNewGraphWin; imagesc(dimg); axis image; colormap(hot(64))
+ieFigure; imagesc(dimg); axis image; colormap(hot(64))
 col = size(dimg,2);
 row = size(dimg,1);
 dimgS = zeros(size(dimg));
@@ -100,22 +100,22 @@ dimgS = zeros(size(dimg));
 fixed = dimg(20,:);
 for rr = 1:row
     [c,lags] = ieCXcorr(fixed,dimg(rr,:));
-    % vcNewGraphWin; plot(1:col,fixed,'o-',1:col,dimg(rr,:),'x-');
+    % ieFigure; plot(1:col,fixed,'o-',1:col,dimg(rr,:),'x-');
     [~,ii] = max(c);
     dimgS(rr,:) = circshift(dimg(rr,:)',lags(ii))';
 end
-vcNewGraphWin; imagesc(dimgS); axis image; colormap(hot(64))
+ieFigure; imagesc(dimgS); axis image; colormap(hot(64))
 
 % Here is the mean after aligning
 mn = mean(dimgS);
 % Make this have unit area
 mn = mn / sum(mn);
-vcNewGraphWin; plot(mn)
+ieFigure; plot(mn)
 
 %% Here is the MTF of the mean
 mtf = abs(fft(mn));
 freq = (1:round((col/2))) - 1;
-vcNewGraphWin; plot(freq,100*mtf(1:length(freq)),'o-')
+ieFigure; plot(freq,100*mtf(1:length(freq)),'o-')
 xlabel('Frequency (cycles/bar image)')
 ylabel('Modulation (%)')
 grid on

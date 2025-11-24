@@ -105,12 +105,12 @@ end
 surfaces = ieParamFormat(surfaces);
 switch surfaces
     case {'mccoptimized','mcc'}
-        % fullfile(isetRootPath,'data','surfaces','macbethChart');
-        fName  = which('macbethChart.mat');
+        fName = fullfile(isetRootPath,'data','surfaces','reflectances','macbethChart.mat');
+        if ~exist(fName,'file'), error('macbethChart reflectance file missing.'); end
         surRef = ieReadSpectra(fName,wave);
     case {'esseroptimized','esser'}
-        % fullfile(isetRootPath,'data','surfaces','esserChart');
-        fName = which('esserChart.mat');
+        fName = fullfile(isetRootPath,'data','surfaces','reflectances','esserChart.mat');
+        if ~exist(fName,'file'), error('esserChart reflectance file missing.'); end
         surRef = ieReadSpectra(fName,wave);
     case {'multisurface'}
         % By default, returns 96 surfaces.
