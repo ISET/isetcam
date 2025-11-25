@@ -54,8 +54,12 @@ y = round(imSize * 0.25);
 xvals = round(linspace(0.2,0.8,nCircles)*imSize);
 radius = radius*imSize;
 for ii = 1:numel(xvals)
-    cc = mod(ii,numel(cColors)) + 1;    
-    img = insertShape(img,'filled-circle',[xvals(ii),y,radius(ii)],'Color',cColors{cc});
+    cc = mod(ii,numel(cColors)) + 1;  
+    if isOctave  ()
+      img = insertShape(img,'filledcircle',[xvals(ii),y,radius(ii)],'Color',cColors{cc});
+    else 
+      img = insertShape(img,'filled-circle',[xvals(ii),y,radius(ii)],'Color',cColors{cc});
+    end
 end
 
 %% Put lines of different thickness and orientation around the middle
@@ -69,7 +73,11 @@ lineLength = round(lineLength*imSize);
 hw = round([1,7*lineLength; 1,3*lineLength; 3*lineLength,1; 8*lineLength,1]);
 for ii = 1:numel(xvals)
     cc = mod(ii,numel(lColors)) + 1;
-    img = insertShape(img,'filled-rectangle',[xvals(ii),y,hw(ii,1),hw(ii,2)],'Color',lColors{cc});
+    if isOctave()
+      img = insertShape(img,'filledrectangle',[xvals(ii),y,hw(ii,1),hw(ii,2)],'Color',lColors{cc});
+    else
+      img = insertShape(img,'filled-rectangle',[xvals(ii),y,hw(ii,1),hw(ii,2)],'Color',lColors{cc});
+    end
 end
 
 %% Squares
@@ -78,7 +86,11 @@ xvals = round(linspace(0.1,0.7,3)*imSize);
 squareEdge = imSize/64;
 hw = [2 2; 5 5; 9 9]*squareEdge;
 for ii = 1:numel(xvals)
-    img = insertShape(img,'filled-rectangle',[xvals(ii),y,hw(ii,1),hw(ii,2)],'Color','white');
+    if isOctave()
+      img = insertShape(img,'filledrectangle',[xvals(ii),y,hw(ii,1),hw(ii,2)],'Color','white');
+    else
+      img = insertShape(img,'filled-rectangle',[xvals(ii),y,hw(ii,1),hw(ii,2)],'Color','white');
+    end
 end
 % ieNewGraphWin; imagesc(img); axis image
 

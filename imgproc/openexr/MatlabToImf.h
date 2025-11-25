@@ -306,10 +306,17 @@ inline void convertData(TargetType * dest,
 
     switch(srcType) {
     case mxDOUBLE_CLASS:
-        convertData<real64_T>(dest, pa, len);
+        #ifdef OCTAVE
+            convertData<double>(dest, pa, len);
+        #else 
+            convertData<real64_T>(dest, pa, len);
         break;
     case mxSINGLE_CLASS:
-        convertData<real32_T>(dest, pa, len);
+        #ifdef OCTAVE
+            convertData<float>(dest, pa, len);
+        #else 
+            convertData<real32_T>(dest, pa, len);
+        #endif
         break;
     case mxINT8_CLASS:
         convertData<int8_T>(dest, pa, len);
