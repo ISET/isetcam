@@ -105,8 +105,8 @@ if ieNotDefined('patchSize'), patchSize = 16;   end
 if ieNotDefined('patchList'), patchList = 1:24; end
 
 if ieNotDefined('surfaceFile')
-    surfaceFile = which('macbethChart.mat');
-    % surfaceFile = fullfile(isetRootPath,'data','surfaces','macbethChart.mat');
+    % A mistake:  surfaceFile = which('macbethChart.mat');
+    surfaceFile = fullfile(isetRootPath,'data','surfaces','reflectances','macbethChart.mat');
 end
 
 if ieNotDefined('blackBorder'), blackBorder = false; end
@@ -127,6 +127,7 @@ wave =   sceneGet(macbethChartObject,'wave');
 nWaves = sceneGet(macbethChartObject,'nwave');
 
 % Read the MCC reflectance data
+
 macbethChart = ieReadSpectra(surfaceFile,wave);
 
 % Sort out whether we have the right set of patches

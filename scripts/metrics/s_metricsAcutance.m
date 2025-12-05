@@ -1,11 +1,12 @@
-%% Compute the acutance of a camera object.
+%% Compute the acutance from a camera object.
+%
+% The *acutance metric* depends on the optics and sensor, but not
+% the image processing steps.  It is a single number that weights the
+% system MTF by a CSF curve.
 %
 % To simplify the code we often use the *camera object* to keep
 % track of the different objects. It has slots for optics (oi)
 % and the sensor and the image processor (ip).
-%
-% The *acutance metric* depends on the optics and sensor, but not
-% the image processing steps.
 %
 % See also:  cameraCreate, cameraMTF, ISOAcutance,
 % s_metricsColorAccuracy
@@ -46,7 +47,7 @@ cpd      = cMTF.freq / degPerMM;
 % camera sees.  To compute acutance we need the cpiq and the camera MTF.
 % Here, we plot the MTF and the cpiq, and then we calculate the acutance
 % inside the function below.  We put this in the title of the figure.
-vcNewGraphWin;
+ieFigure;
 cpiq = cpiqCSF(cpd);
 plot(cpd, cpiq, '-k', cpd, lumMTF,'--r');
 grid on;

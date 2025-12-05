@@ -9,7 +9,7 @@ function scene = sceneCombine(scene1,scene2,keyval)
 %   scene2 - There are various ways to combine them.  See below.
 %
 % Optional Key/val pairs
-%   direction - horizontal, vertical, or both.
+%   direction - horizontal, vertical, centered, or both.
 %
 %      Depending on the direction, the number of rows ('horizontal') or
 %      cols ('vertical') must be equal.  If 'both', then we first combine
@@ -37,11 +37,15 @@ scene = sceneCombine(sceneCreate('rings rays'),sceneCreate('rings rays'),'direct
 sceneWindow(scene);
 %}
 %{
-scene = sceneCombine(sceneCreate,sceneCreate,'direction','both');
+s1 = sceneCreate; sz = sceneGet(s1,'size');
+s2 = sceneCreate('freq orient'); s2 = sceneInterpolate(s2,sz);
+scene = sceneCombine(s1,s2,'direction','both');
 sceneWindow(scene);
 %}
 %{
-scene = sceneCombine(sceneCreate,sceneCreate,'direction','centered');
+s1 = sceneCreate; sz = sceneGet(s1,'size');
+s2 = sceneCreate('freq orient'); s2 = sceneInterpolate(s2,sz);
+scene = sceneCombine(s1,s2,'direction','centered');
 sceneWindow(scene);
 %}
 

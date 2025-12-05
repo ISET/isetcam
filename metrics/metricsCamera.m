@@ -16,8 +16,8 @@ function metric = metricsCamera(camera, metricname)
 %
 % Perhaps this should not be called directly but only by cameraGet.
 %
-% The script, s_metricsCamera, does the same thing and probably should be
-% deleted.
+% See also
+%  s_metrics<TAB>
 %
 % Copyright ImagEval Consultants, LLC, 2012.
 
