@@ -176,4 +176,8 @@ for ii=1:nPatches
     [~,rects(ii,:)] = chartROI(mLocs(:,ii),pSize(1)*sFactor);
 end
 
+% Account for the scaling factor on the return
+% We may need to make sure this is even?  Or odd?
+pSize = pSize*sFactor;
+
 end
