@@ -39,6 +39,7 @@ sensorCFA = sensorCreate('custom', pixel, mosaicPattern, filterFile);
 % Set physical size and array dimensions
 sensorCFA = sensorSet(sensorCFA, 'pixel size constant fill factor', pixelSize_um * 1e-6); % µm->m
 sensorCFA = sensorSetSizeToFOV(sensorCFA,4,oi);
+
 % sensorCFA = sensorSet(sensorCFA,'fov',oiGet(oi,'fov'),oi);
 % sensorCFA = sensorSet(sensorCFA, 'rows', 640);
 % sensorCFA = sensorSet(sensorCFA, 'cols', 960);
@@ -112,7 +113,7 @@ cp = [
 % There is a problem with a rounding factor in this analysis.  So some
 % sFactors don't work with   
 sFactor = 0.34;   
-[rectsCFA,mLocs,pSize] = chartRectangles(cp,4,6,sFactor);  % MCC parameters
+[~,mLocs,pSize] = chartRectangles(cp,4,6,sFactor);  % MCC parameters
 % chartRectsDraw(sensorCFA,rectsCFA);
 rgbCFApatches_raw = chartRectsData(sensorCFA,mLocs,pSize(1),true);
 
@@ -171,7 +172,7 @@ cp_router = [
 % There is a problem with a rounding factor in this analysis.  So some
 % sFactors don't work with   
 sFactor = 0.34;   
-[rectsCFA,mLocs,pSize] = chartRectangles(cp_router,4,6,sFactor);  % MCC parameters
+[~,mLocs,pSize] = chartRectangles(cp_router,4,6,sFactor);  % MCC parameters
 % chartRectsDraw(sensorCFA,rectsCFA);
 rgbRouterpatches_raw = chartRectsData(sensor_router,mLocs,pSize(1),true);
 
@@ -237,12 +238,18 @@ grid on;
 
 allDataCFA_xyz = allDataCFA*T_cfa;
 allDataRouter_xyz = allDataRouter*T_router;
+mx = max(max(vertcat(allDataCFA_xyz,allDataRouter_xyz)));
+
+% We normalize.  Not needed.
+allDataCFA_xyz = allDataCFA_xyz/mx;
+allDataRouter_xyz = allDataRouter_xyz/mx;
 
 ieFigure;
 scatter3(allDataCFA_xyz(:,1), allDataCFA_xyz(:,2), allDataCFA_xyz(:,3), 12, 'b', '.');
 hold on;
 scatter3(allDataRouter_xyz(:,1), allDataRouter_xyz(:,2), allDataRouter_xyz(:,3), 12, 'r', '.');
 axis equal
+xlabel('X'); ylabel('Y'); zlabel('Z');
 
 %% Calculate the precision of each patch
 
@@ -257,64 +264,36 @@ for ii=1:24
 end
 
 % White patch without the NaNs
-whiteXYZ = mean(xyzRouterPatches{4});
+whiteXYZ = double(mean(xyzRouterPatches{4}));
 
 % For each patch, calculate the Lab values for each point. 
 labRouterPatches = cell(24,1);
+xyzMeanRouter = zeros(24,3);
 colorPrecisionRouter = zeros(24,1);
 for ii=1:24
+    xyzMeanRouter(ii,:) = mean(xyzRouterPatches{ii});
     labRouterPatches{ii} = ieXYZ2LAB(xyzRouterPatches{ii},double(whiteXYZ));
     colorPrecisionRouter(ii) = det(cov(labRouterPatches{ii}))^(1/3);
 end
 
 % For each patch, calculate the Lab values for each point. 
 labCFAPatches = cell(24,1);
+xyzMeanCFA = zeros(24,3);
 colorPrecisionCFA = zeros(24,1);
 for ii=1:24
+    xyzMeanCFA(ii,:) = mean(xyzCFAPatches{ii});
     labCFAPatches{ii} = ieXYZ2LAB(xyzCFAPatches{ii},double(whiteXYZ));
     colorPrecisionCFA(ii) = det(cov(labCFAPatches{ii}))^(1/3);
 end
 
-mean(colorPrecisionCFA)
-mean(colorPrecisionRouter)
+dE = deltaEab(xyzMeanCFA,xyzMeanRouter,whiteXYZ);
+dE = reshape(dE,4,6);
+fprintf('Overall similarity between CFA and Router: %.3f\n',mean(dE(:)));
 
+% ieFigure; imagesc(dE); colormap(gray); colorbar;
 
-%% Convert to LAB using the white point
-
-% ieXYZ2LAB or xyz2lab
-% Compute the standard deviation
-
-%% sRGB
-%{
-row = size(xyz_router_patches,1);
-col = 1;
-XW_router = XW2RGBFormat(xyz_router_patches,row,col);
-sRGB_router = xyz2srgb(XW_router);
-srgb_XW_router = RGB2XWFormat(sRGB_router);
-
-row = size(xyz_rgb_patches,1);
-col = 1;
-XW_rgb = XW2RGBFormat(xyz_rgb_patches,row,col);
-sRGB_rgb = xyz2srgb(XW_rgb);
-srgb_XW_rgb = RGB2XWFormat(sRGB_rgb);
-
-ieFigure;
-scatter3(srgb_XW_rgb(:,1), srgb_XW_rgb(:,2), srgb_XW_rgb(:,3), 12, 'r', '.');
-hold on;
-scatter3(srgb_XW_router(:,1), srgb_XW_router(:,2), srgb_XW_router(:,3), 12, 'b', '.');
-%}
-
-%% color router - patch data
-%{
-sensor_router = sensorSet(sensor_router,'roi',[35,235,55,60]);
-sensorGet(sensor_router,'roi rect')
-%sensor_router = sensorSet(sensor_router,'roi',[35,235,2,2]);
-router_area1 = sensorGet(sensor_router,'roi electrons');
-%router_area1 = reshape(router_area1,3,61,56);
-%router_area1 = permute(router_area1,[3,2,1]);
-%figure(3); imagesc(router_area1)
-mean(router_area1(:,1),'omitnan')
-%}
+fprintf('Color precisions:  CFA: %0.3f   Router %0.3f\n',...
+    mean(colorPrecisionCFA), mean(colorPrecisionRouter));
 
 %% Color router: 3-plane
 %{

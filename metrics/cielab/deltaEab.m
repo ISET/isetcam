@@ -36,7 +36,7 @@ function [dEab, errComponents] = deltaEab(xyz1,xyz2,whitePnt,deltaEVer)
 %
 % Copyright ImagEval Consultants, LLC, 2003.
 
-if ieNotDefined('deltaEVer'), deltaEVer='2000'; end;
+if ieNotDefined('deltaEVer'), deltaEVer='2000'; end
 
 if ndims(xyz1) == 3
     if size(xyz1,3) ~= 3, error('xyz1 must be RGB or XW format'); end
