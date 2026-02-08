@@ -520,7 +520,7 @@ switch sceneName
         if isempty(varargin), sz = 64;
         else, sz = varargin{1};
         end
-        scene = sceneLine(scene,'D65',sz);
+        scene = sceneLine(scene,'D65',[sz sz]);
     case {'lineee','impulse1dee'}
         % scene = sceneCreate('line ee',size,offset,wave);
         % size:   Image row/col

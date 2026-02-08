@@ -525,7 +525,7 @@ surf(angleInRad2D,angleInRad2D,iPSF2D);
 %% Using ISET to visualize defocus of diffraction limited optics
 
 % Create a scene comprising a multispectral line, with equal photons
-scene = sceneCreate('line ep',128);    % A thin line, equal photon radiance at each wavelength
+scene = sceneCreate('line ep',[128 128]);    % A thin line, equal photon radiance at each wavelength
 scene = sceneSet(scene,'fov', 0.5);    % Small field of view (deg)
 ieAddObject(scene); sceneWindow;       % Save it in the database and show
 
