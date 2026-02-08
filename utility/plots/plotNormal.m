@@ -14,7 +14,7 @@ function fig = plotNormal(m, s, varargin)
 % See also
 %   xaxisLine, identityLine, plotRadiance
 
-% Example:
+% Examples:
 %{
   fig = plotNormal(10,2);
   axesHandles = findobj(fig, 'Type', 'axes');
@@ -51,7 +51,11 @@ for ii=1:numel(m)
     %
     % Create the plot.
 
-    plot(x, y, [color{ii},'-'], 'LineWidth', 2); % Blue solid line, 2 pixels wide
+    if (isempty(color))
+        plot(x, y, ['-'], 'LineWidth', 2); % Blue solid line, 2 pixels wide
+    else
+        plot(x, y, [color{ii},'-'], 'LineWidth', 2); % Blue solid line, 2 pixels wide
+    end
 
     hold on;
 
