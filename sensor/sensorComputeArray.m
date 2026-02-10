@@ -1,6 +1,12 @@
 function [sensorCombined,sensors] = sensorComputeArray(sensorArray,oi,varargin)
 % Calculate sensor array response including a combined resonse
 %
+%%%%%%%%%%%%%%%%%%%
+% For BW:  This routine is in need of work.  Go to the HDR paper with
+% Zhenyi Liu and update based on the methods developed there.  This one is
+% out of date.
+%%%%%%%%%%%%%%%%%%%
+%
 % Synopsis
 %   [sensorCombined, sensorArray] = sensorComputeArray(sensorArray,oi,varargin)
 %
@@ -127,7 +133,7 @@ switch ieParamFormat(method)
         % We need to convert vElectrons back to electrons.  Then we
         % store the volts with the vElectron value from the best
         % electron.
-        [volts, bestPixel] = max(electrondensity,[],3);
+        [volts, bestPixel] = max(input,[],3);
         volts = volts ./ sensitivity(bestPixel);
         
         % Find the pixel with the most non-saturated electrons

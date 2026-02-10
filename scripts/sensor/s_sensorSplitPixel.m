@@ -39,8 +39,16 @@
 % See also
 %   sensorCreateArray, sensorComputeArray, sensorCreateSplitPixel
 
+
+
+%% Needs sensorComputeArray to be updated.
+% Does not run correctly now.
+%
+
 %%
 ieInit;
+
+return;
 
 %% Here is a high dynamic range test chart
 
@@ -55,8 +63,8 @@ oi = oiCompute(oi,scene,'crop',true);
 %% Make a sensor array that can see the whole range
 
 % The sensor size is big enough to capture the whole chart
-sensorArray = sensorCreateArray('splitpixel','exp time',0.1,'size',2*[64 96],'noise flag',1);
-[sA,s]      = sensorComputeArray(sensorArray,oi,'method','average');
+sensorArray = sensorCreateArray('array type','ovt','exp time',0.1,'size',2*[64 96],'noise flag',1);
+[sA,s]      = sensorComputeArray(sensorArray,oi,'method','saturated');
 
 % This is the combined
 % sensorWindow(sA);
@@ -76,13 +84,13 @@ end
 ip = ipCreate; 
 ip = ipCompute(ip,sA);
 rgb = ipGet(ip,'srgb');
-ieNewGraphWin; imagesc(rgb);  title('Average')
+ieNewGraphWin; imagesc(rgb);  title('Saturated')
 % ipWindow(ip);
 
 %%  Show the map of how many sensors contribute to each pixel
 
 ieNewGraphWin; 
-mesh(sA.metadata.npixels); colormap(jet(4)); colorbar;
+mesh(sum(sA.metadata.saturated,3)); colormap(jet(4)); colorbar;
 set(gca,'zlim',[1 4]);
 
 %%
@@ -102,7 +110,7 @@ ieNewGraphWin; imagesc(rgb); title('Best SNR')
 %% Now with only two pixels, no extra conversion gain
 
 clear sensorArray;
-tmp = sensorCreateArray('splitpixel','exp time',0.1,'size',2*[64 96],'noise flag',1);
+tmp = sensorCreateArray('array type','ovt','exp time',0.1,'size',2*[64 96],'noise flag',1);
 sensorArray(1) = tmp(1);
 sensorArray(2) = tmp(3);
 [sA,s] = sensorComputeArray(sensorArray,oi,'method','bestsnr');
@@ -122,8 +130,8 @@ scene = sceneSet(scene,'fov',8);
 oi = oiCreate('wvf'); 
 oi = oiCompute(oi,scene,'crop',true);
 
-sensorArray = sensorCreateArray('splitpixel','exp time',0.05,'size',2*[64 96],'noise flag',1);
-[sA,s]=sensorComputeArray(sensorArray,oi,'method','average');
+sensorArray = sensorCreateArray('array type','ovt','exp time',0.05,'size',2*[64 96],'noise flag',1);
+[sA,s]=sensorComputeArray(sensorArray,oi,'method','bestsnr');
 sensorWindow(sA); sensorSet(sA,'gamma',0.3);
 
 ip = ipCreate; ip = ipCompute(ip,sA); 

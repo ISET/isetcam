@@ -67,11 +67,12 @@ fprintf('For a 30 ms exposure, you can take %d exposures in an eight hour period
 
 %%  The mean daylight we measured in California
 
-[radiance,wave] = ieReadSpectra('DaylightPsychBldg.mat',wave);
-plotRadiance(wave,radiance);
+[radiance,wave] = ieReadSpectra('daylightStanford.mat',wave);
+thisRadiance = radiance(:,500);
+plotRadiance(wave,thisRadiance);
 
 % Convert radiance to irradiance
-irradiance = radiance*pi;
+irradiance = thisRadiance*pi;
 
 exposureMinutes = humanUVSafety(irradiance,wave);
 fprintf('Safe exposure (hours) for 8 hour period is %.2f minutes (%.2f hours)\n',exposureMinutes,exposureMinutes/60);
