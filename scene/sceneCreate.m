@@ -31,7 +31,7 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %   cd/m2.  The scene is described only a small number of spatial
 %   64x96 (row,col).  This can be changed using the patchSize argument
 %
-%   
+%
 %   Here are some options
 %      {'macbeth d65'}         - Macbeth D65 image.
 %      {'macbeth d50'}         - D50 illuminant
@@ -46,13 +46,14 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %      {'hdr chart'}           - High dynamic range test chart
 %      {'hdr image'}           - Sequence of lights on a dark
 %                                background image.  See below and see
-%                                sceneHDRImage() for multiple parameters 
+%                                sceneHDRImage() for multiple parameters
 %
 %   Use sceneAdjustIlluminant() to change the scene SPD.
 %
 % REFLECTANCE CHART
 %
 %   {'reflectance chart'} - Natural-100 reflectance chart.
+%   {'fluorescence chart'} - Emissive fluorescence patch chart.
 %
 % NARROWBAND COLOR PATCHES
 %    wave = [600, 610];  sz = 64;
@@ -133,7 +134,7 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %         sceneCreate('rings rays',radialFreq,imageSize);
 %         sceneCreate('sweep frequency',imageSize,maxFrequency);
 %         scene = sceneCreate('letter', font, display);
-%         scene = sceneCreate('disk array', imageSize, diskRadius, arraySize); 
+%         scene = sceneCreate('disk array', imageSize, diskRadius, arraySize);
 %         scene = sceneCreate('square array', imageSize, squareSize, arraySize);
 %         scene = sceneCreate('harmonic',harmonicP);
 %         parms.angles = linspace(0,pi/2,5); parms.freqs =  [1,2,4,8,16];
@@ -147,7 +148,7 @@ function [scene,parms] = sceneCreate(sceneName,varargin)
 %   calibrated display.  These image-based scenes created by
 %
 %        sceneFromFile
-% 
+%
 %   See the comments and examples in sceneFromFile,
 %        ieExamplesPrint('sceneFromFile');
 %
@@ -207,7 +208,7 @@ wave = 400:10:700; grayFlag = 0; sampling = 'r';
 scene = sceneCreate('reflectance chart',pSize,sSamples,sFiles,wave,grayFlag,sampling);
 %}
 %{
-% Passing extra params to the 'harmonic' sceneCreate 
+% Passing extra params to the 'harmonic' sceneCreate
 parms = harmonicP('freq',3,'ang',45,'ph',0,'GaborFlag',0.2);
 parms.row = 129; parms.col = 129;
 [scene,parms] = sceneCreate('harmonic',parms);
@@ -230,7 +231,7 @@ nBars = 15; deltaE = 3;
 scene = sceneCreate('l star',barRowCol,nBars,deltaE);
 %}
 %{
-sceneWindow(sceneCreate('disk array', 128, 8, [3,3])); 
+sceneWindow(sceneCreate('disk array', 128, 8, [3,3]));
 sceneWindow(sceneCreate('square array', 256, 32,[1,1]));
 %}
 
@@ -291,12 +292,12 @@ switch sceneName
         % s = sceneCreate('macbeth custom reflectance',patchSize,wave,surfaceFile)
         % s = sceneCreate('macbeth custom reflectance',32,400:10:700,'macbethChart2.mat');
         scene = sceneDefault(scene,'d65',patchSize,wave,surfaceFile,blackBorder);
-        
+
     case {'reflectancechart'}
         % sceneCreate('reflectance chart',pSize,sSamples,sFiles,wave,grayFlag,sampling);
         % sceneCreate('reflectance chart',chartP);
         % There is always a gray strip at the right.
-        
+
         if ~isempty(varargin) && isstruct(varargin{1})
             chartP   = varargin{1};
             sFiles   = chartP.sFiles;     % Surface reflectance files
@@ -306,7 +307,7 @@ switch sceneName
             grayFlag = chartP.grayFlag;   % Add a gray strip column on right
             sampling = chartP.sampling;   % Sample with replacement
         else
-            
+
             % Default surface files
             sFiles{1} = which('MunsellSamples_Vhrel.mat');
             sFiles{2} = which('Food_Vhrel.mat');
@@ -316,14 +317,14 @@ switch sceneName
               sFiles{2} = fullfile(isetRootPath,'data','surfaces','reflectances','Food_Vhrel.mat');
               sFiles{3} = fullfile(isetRootPath,'data','surfaces','reflectances','skin','HyspexSkinReflectance.mat');
             %}
-            
+
             % Surface samples from the files
             sSamples = [50 40 10];   % 100 samples, should be 10x10
             pSize = 24;     % Patch size in pixels
             wave = [];      % Wavelength samples
             grayFlag = 1;   % Add a gray strip column on right
             sampling = 'r'; % Sample with replacement
-            
+
             if isempty(varargin)
             else
                 pSize = varargin{1};
@@ -334,9 +335,49 @@ switch sceneName
                 if length(varargin) > 5, sampling = varargin{6}; end
             end
         end
-        
+
         scene = sceneReflectanceChart(sFiles,sSamples,pSize,wave,grayFlag,sampling);
-        
+
+    case {'fluorescencechart'}
+        % sceneCreate('fluorescence chart',odBloodLevels,weights,pSize,wave,targetLuminance);
+        % sceneCreate('fluorescence chart',chartP);
+        % odBloodLevels: [nBlood x 1] or [1 x nBlood], chart rows
+        % weights: [nWeight x nBasis], chart cols (one fluorophore weight vector per row)
+        % pSize: scalar pixels per square patch, wave: [nWave x 1] or [1 x nWave], targetLuminance: scalar cd/m2
+        % Example:
+        %    od=2:12; w1=(7:20)'; W=[w1 zeros(numel(w1),3)];
+        %    scene=sceneCreate('fluorescence chart',od,W,24,475:5:700,10);
+
+        if ~isempty(varargin) && isstruct(varargin{1})
+            chartP = varargin{1};
+            odBloodLevels = chartP.odBloodLevels;
+            weights = chartP.weights;
+            pSize = chartP.pSize;
+            wave = chartP.wave;
+            if isfield(chartP,'targetLuminance')
+                targetLuminance = chartP.targetLuminance;
+            else
+                targetLuminance = 100;
+            end
+        else
+            odBloodLevels = 2:12;
+            weight1 = (7:20)';
+            weights = [weight1, zeros(numel(weight1),3)];
+            pSize = 24;
+            wave = [];
+            targetLuminance = 100;
+
+            if ~isempty(varargin)
+                odBloodLevels = varargin{1};
+                if length(varargin) > 1, weights = varargin{2}; end
+                if length(varargin) > 2, pSize = varargin{3}; end
+                if length(varargin) > 3, wave = varargin{4}; end
+                if length(varargin) > 4, targetLuminance = varargin{5}; end
+            end
+        end
+
+        scene = sceneFluorescenceChart(odBloodLevels,weights,pSize,wave,targetLuminance);
+
     case {'lstar'}
         % For a bar width of 50 pixels, 5 bars, at L* levels (1:nBars)-1 * 10, use
         %   scene = sceneCreate('lstar',50,5,10);
@@ -349,7 +390,7 @@ switch sceneName
         end
         scene = sceneLstarSteps(scene,bSize,nBars,deltaE);
         scene = sceneSet(scene,'name',sprintf('L-star (%d)',deltaE));
-        
+
         % Monochrome,RGB and multispectral add only a little.  Mostly created in sceneFromFile
     case {'monochrome','unispectral'}
         % sceneMonochrome is used for images with only one spectral band.
@@ -359,7 +400,7 @@ switch sceneName
     case 'rgb'
         if isempty(varargin), scene = sceneRGB(scene);
         else, scene = sceneRGB(varargin{1});end
-        
+
     case {'mackay','rayimage','ringsrays'}
         % Also called the Siemens star pattern
         % radF = 24; imSize = 512;
@@ -395,10 +436,10 @@ switch sceneName
         % sceneCreate('sweepFrequency',sz,maxF,wave,yContrast);
         % sz = 512; maxF = sz/16; wave = 550;
         %
-        % Default:  
+        % Default:
         %   sz = 128, maxFreq = sz/16; wave = []; yContrast = [];
         %   Default wavelength is equal energy.
-        %               
+        %
         sz = 128; maxFreq = sz/16; wave = []; yContrast = [];
         if length(varargin) >= 1, sz = varargin{1}; end
         if length(varargin) >= 2, maxFreq = varargin{2}; end
@@ -406,7 +447,7 @@ switch sceneName
         if length(varargin) >= 4, yContrast = varargin{4}; end
 
         if isscalar(sz), sz = [sz,sz]; end
-        
+
         % We return parms.
         scene = sceneSweep(scene,sz,maxFreq,wave,yContrast);
         parms.sz = sz;
@@ -417,13 +458,13 @@ switch sceneName
         % scene = sceneCreate('ramp',sz,dynamicRange);
         % The linear ramp has reduced contrast from top to bottom.
         % The exp ramp is the same across the rows.
-        
+
         sz = 256; dynamicRange = 256;
         if length(varargin) >= 1,  sz = varargin{1}; end
         if length(varargin) >= 2,  dynamicRange = varargin{2}; end
-        
+
         scene = sceneRamp(scene,sz,dynamicRange);
-        
+
     case {'expramp','exponentialintensityramp'}
         % scene = sceneCreate('exponential intensity ramp',sz,dynamicRange);
         % The exp ramp is the same for all rows.
@@ -431,9 +472,9 @@ switch sceneName
         sz = 256; dynamicRange = 256;
         if length(varargin) >= 1,  sz = varargin{1}; end
         if length(varargin) >= 2,  dynamicRange = varargin{2}; end
-        
+
         scene = sceneExpRamp(scene,sz,dynamicRange);
-    case {'diskarray'}        
+    case {'diskarray'}
         % scene = sceneCreate('disk array', imgSize, diskRadius, arraySize);
         imgSize = []; diskRadius = []; arraySize = [];
         if length(varargin) >=1, imgSize = varargin{1}; end
@@ -462,7 +503,7 @@ switch sceneName
             scene = sceneSet(scene,'wave',wave);
         end
         scene = sceneUniform(scene,'equal energy',sz);
-        
+
     case {'uniformeespecify'}   % Equal energy, specify waveband
         % scene = sceneCreate('uniformEESpecify',sz,wavelength);
         sz = 32; wavelength = 400:10:700;
@@ -505,17 +546,17 @@ switch sceneName
         scene = sceneUniform(scene,'blackbody',sz,cTemp);
     case {'uniformmonochromatic'}
         % scene = sceneCreate('uniform monochromatic',sz,wavelength);
-        
+
         % Create a uniform, monochromatic image.  Used for color-matching
         % analyses.  Set the peak radiance in photons.
         wavelength = 500; sz = 128;
         if length(varargin) >= 1, wavelength = varargin{1}; end
         if length(varargin) >= 2, sz = varargin{2}; end
-        
+
         scene = sceneSet(scene,'wave',wavelength);
         scene = sceneUniform(scene,'equalenergy',sz);
         scene = sceneSet(scene,'name','narrow band');
-        
+
     case {'line','lined65','impulse1dd65'}
         if isempty(varargin), sz = 64;
         else, sz = varargin{1};
@@ -557,17 +598,17 @@ switch sceneName
         if length(varargin) >=3, offset = varargin{3};   end
         if length(varargin) >=4, lineReflectance = varargin{4};   end
         if length(varargin) ==5, backReflectance = varargin{5};   end
-        
+
         scene = sceneVernier(scene,sz,width,offset,lineReflectance,backReflectance);
     case {'whitenoise','noise'}
         % sceneCreate('noise',[128 128])
         sz = 128; contrast = 20;
         if length(varargin) >= 1, sz = varargin{1}; end
         if length(varargin) >= 2, contrast = varargin{2}; end
-        
+
         scene = sceneNoise(scene,sz,contrast);
         scene = sceneSet(scene,'name','white noise');
-        
+
     case {'pointarray','manypoints'}
         % sceneCreate('pointArray',sz,spacing,spectralType);
         sz = 128; spacing = 16; spectralType = 'ep'; pointSize = 1;
@@ -576,7 +617,7 @@ switch sceneName
         if length(varargin) >= 3, spectralType = varargin{3}; end
         if length(varargin) >= 4, pointSize    = varargin{4}; end
         scene = scenePointArray(scene,sz,spacing,spectralType,pointSize);
-        
+
     case {'gridlines','distortiongrid'}
         % sceneCreate('gridlines',imageSize,spacing,spectralType,thickness);
         sz = 128; spacing = 16; spectralType = 'ep'; lineThickness = 1;
@@ -585,14 +626,14 @@ switch sceneName
         if length(varargin) >= 3, spectralType  = varargin{3}; end
         if length(varargin) >= 4, lineThickness = varargin{4}; end
         scene = sceneGridLines(scene,sz,spacing,spectralType,lineThickness);
-        
+
     case {'checkerboard'}
         period = 16; spacing = 8; spectralType = 'ep';
         if length(varargin) >= 1, period       = varargin{1}; end
         if length(varargin) >= 2, spacing      = varargin{2}; end
         if length(varargin) >= 3, spectralType = varargin{3}; end
         scene = sceneCheckerboard(scene,period,spacing,spectralType);
-        
+
     case {'frequencyorientation','demosaictarget','freqorientpattern','freqorient'}
         %   parms.angles = linspace(0,pi/2,5);
         %   parms.freqs =  [1,2,4,8,16];
@@ -600,12 +641,12 @@ switch sceneName
         %   parms.contrast = .8;
         % scene = sceneCreate('freqorient',parms);
 
-        if isempty(varargin), params = FOTParams; 
+        if isempty(varargin), params = FOTParams;
         else,                 params = varargin{1};
         end
         % First argument is parms structure
         scene = sceneFOTarget(scene,params);
-        
+
     case {'moireorient'}
         %% Moire pattern test
         %   parms.angles = linspace(0,pi/2,5);
@@ -623,7 +664,7 @@ switch sceneName
         % scene = sceneCreate('slanted edge',128,1.33);  % size, slope
         % scene = sceneCreate('iso12233',128,1.33,[], (380:4:1064));       % size, slope, wave
         % scene = sceneCreate('slanted bar',128,1.33,[], (380:4:1064), 0.3);  % size, slope, wave, darklevel
-        
+
         barSlope = []; fov = []; wave = []; imSize = []; darklevel = 0;
         if length(varargin) >= 1, imSize = varargin{1}; end
         if length(varargin) >= 2, barSlope = varargin{2};  end
@@ -631,12 +672,12 @@ switch sceneName
         if length(varargin) >= 4, wave = varargin{4}; end
         if length(varargin) >= 5, darklevel = varargin{5}; end
         scene = sceneSlantedBar(scene,imSize,barSlope,fov,wave,darklevel);
-        
+
     case {'zoneplate'}
         imSize = 384;
         if length(varargin)>=1, imSize = varargin{1}; end
         scene = sceneZonePlate(scene,imSize);
-        
+
     case {'starpattern','radiallines'}
         % Thin radial lines - Useful for testing oriented blur
         %
@@ -647,7 +688,7 @@ switch sceneName
         if length(varargin) >=2, spectralType = varargin{2}; end
         if length(varargin) >=3, nLines = varargin{3}; end
         scene = sceneRadialLines(scene,imSize,spectralType,nLines);
-        
+
     case {'deadleaves'}
         % Dead leaves chart used by Mumford and many others for image
         % quality assessment
@@ -658,26 +699,26 @@ switch sceneName
         if length(varargin) >= 1, imSize = varargin{1}; end
         if length(varargin) >= 2, nFactor = varargin{2}; end
         scene = sceneDeadleaves(imSize,nFactor);
-        
+
     case {'letter', 'font'}
         % Create scene of single letter
         %
         % scene = sceneCreate('letter', font, display);
-        % 
+        %
         % font = fontCreate;
         % font = fontSet(font,'character','ABC');
         % scene = sceneCreate('letter',font); sceneWindow(scene);
-        
+
         % Defaults, both have 96 dpi.  The default fontCreate is a 'g'
         % in Georgia font.
         font = fontCreate;
-        display = 'LCD-Apple'; 
-        
+        display = 'LCD-Apple';
+
         % Assign arguments
         if ~isempty(varargin), font = varargin{1}; end
-        if length(varargin) > 1, display = varargin{2}; end      
+        if length(varargin) > 1, display = varargin{2}; end
         if ischar(display), display = displayCreate(display); end
-        
+
         scene = sceneFromFont(font, display);
         return; % Do not adjust luminance or other properties
 
@@ -707,12 +748,12 @@ switch sceneName
         scene = sceneSet(scene,'name','hdr lights');
     case {'hdrimage'}
         % scene = sceneCreate('hdr image',varargin);
-        % 
+        %
         %  Bright patches on a dark image
         %  Parameters
         %
-        %  'imsize', 'patch shape', 'n patches','patch size' 
-        %  'background','dynamicrange',  
+        %  'imsize', 'patch shape', 'n patches','patch size'
+        %  'background','dynamicrange',
         %
 
         % I think this can be handled by just passing varargin through, but
@@ -727,7 +768,7 @@ switch sceneName
         p.addParameter('patchsize',[],@isnumeric);
         p.parse(varargin{:});
         r = p.Results;
-        
+
         scene = sceneHDRImage(r.npatches,'image size',r.imsize,...
             'background',r.background,'dynamic range',r.dynamicrange,...
             'patch shape',r.patchshape,'patch size',r.patchsize);
@@ -757,11 +798,11 @@ end
 % Also, a best guess is made about one known reflectance.  This is a very little
 % used feature, and might be deprecated.
 if checkfields(scene,'data','photons') && ~isempty(scene.data.photons)
-    
+
     if isempty(sceneGet(scene,'known reflectance')) && checkfields(scene,'data','photons')
         % We set up a known reflectance index here.  If there is one, then
-        % value must have been set up elsewhere.  And I am surprised.  
-        
+        % value must have been set up elsewhere.  And I am surprised.
+
         % If there is no illuminant yet, create one with the same
         % wavelength samples as the scene radiance. We make the illuminant
         % with a 100 cd/m2 mean luminance
@@ -769,7 +810,7 @@ if checkfields(scene,'data','photons') && ~isempty(scene.data.photons)
             il = illuminantCreate('equal photons',sceneGet(scene,'wave'),100);
             scene = sceneSet(scene,'illuminant',il);
         end
-        
+
         % Find the location and across all wavelengths in the scene with
         % the peak radiance.
         v = sceneGet(scene,'peak radiance and wave');
@@ -782,11 +823,11 @@ if checkfields(scene,'data','photons') && ~isempty(scene.data.photons)
         % Store the known reflectance and its row,col,wave value.
         scene = sceneSet(scene,'known reflectance',v);
     end
-    
+
     % Calculate and store the scene luminance
     luminance = sceneCalculateLuminance(scene);
     scene = sceneSet(scene,'luminance',luminance);
-    
+
     % Adjust the mean illumination level to 100 cd/m2.
     scene = sceneAdjustLuminance(scene,100);
 end
@@ -969,8 +1010,8 @@ function scene = sceneSweep(scene,sz,maxFreq,wave,yContrast)
 % Sweep frequency with some wavelength
 %
 % Defaults
-%   sz - (row,col)             [128 128] 
-%   maxFreq - cycles/image     sz(2)/16    
+%   sz - (row,col)             [128 128]
+%   maxFreq - cycles/image     sz(2)/16
 %   wave -        Default initial spectrum
 %   yContrast - Row contrast    default:  Linear reduction in imgSweep
 
@@ -1011,12 +1052,12 @@ function [scene,p] = sceneHarmonic(scene,parms, wave)
 %
 %  hp = harmonicP;
 %
-% Harmonic parameters are: 
+% Harmonic parameters are:
 %   parms.freq, parms.row, parms.col, parms.ang, parms.ph, parms.contrast
 %
 % The frequency units are with respect to the image (cyces/image).  To
 % determine cycles/deg (cpd) use
-% 
+%
 %   freq/sceneGet(scene,'fov');
 %
 % The spectral radiance is set to an equal photon radiance (not equal
@@ -1171,12 +1212,12 @@ end
 function scene = sceneUniform(scene,spectralType,sz,varargin)
 %% Create a spatially uniform scene.
 %
-% spd types: d65, blackbody, equal energy, equal photon, 
+% spd types: d65, blackbody, equal energy, equal photon,
 %
 %  If blackbody - varargin{1} should be the color temperature
 %
 %  sz = [row,col]
-% 
+%
 
 if ieNotDefined('scene'), error('Scene required.'); end
 if ieNotDefined('spectralType'), spectralType = 'ep'; end
@@ -1224,7 +1265,7 @@ function scene = sceneLine(scene,spectralType,sz,offset)
 %   scene - ISETCam scene struct
 %   spectralType - 'ep' equal photon default.  d65 or ee (equal
 %                   energy) or the others
-%   sz     - row, col of the image.  If a single number then we set 
+%   sz     - row, col of the image.  If a single number then we set
 %            sz = [val,val]
 %   offset - column offset from sz/2
 %
@@ -1260,11 +1301,11 @@ switch lower(spectralType)
         % to the number of photons is just to produce a reasonable energy
         % level.
         il = illuminantCreate('equal energy',wave);
-        
+
     case 'd65'
         % D65 spectra for the line
         il = illuminantCreate('d65',wave);
-        
+
     otherwise
         error('Unknown uniform field type %s.',spectralType);
 end
@@ -1410,7 +1451,7 @@ for ii=1:nLines
     if x > 0
         tmp = [x,y]; x = u; y = v; u = tmp(1); v = tmp(2);
     end
-    
+
     if ~isequal(u,x), slope = (y - v) / (u - x);
         for jj=x:0.2:u
             kk = round(jj*slope);
