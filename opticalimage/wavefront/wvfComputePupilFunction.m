@@ -87,6 +87,7 @@ function wvf = wvfComputePupilFunction(wvf, varargin)
 %                   in this case.
 %    07/05/22  npc  Custom LCA
 %    07/05/23  baw  Many.  Changed nolca to lca, removed big 'if'
+%    02/27/26  npc  Enabled custom LCA
 
 % Examples:
 %{
@@ -336,6 +337,7 @@ for ii = 1:nWavelengths
     % We flip the sign to describe change in optical power when we pass
     % this through wvfDefocusDioptersToMicrons.
     lcaMethod = wvfGet(wvf,'lcaMethod');
+
     if (ischar(lcaMethod) & strcmp(lcaMethod,'human'))
         % disp('Using human LCA wvfLCAFromWave...')
         lcaDiopters = wvfLCAFromWavelengthDifference(wvfGet(wvf, ...
@@ -353,6 +355,13 @@ for ii = 1:nWavelengths
         % lcaDiopters.
         %
         lcaMicrons = 0;
+    elseif isa(lcaMethod,'function_handle')
+        % We need to calculate lcaMicrons for each wavelength, I think.
+        lcaDiopters = lcaMethod(wvfGet(wvf, ...
+                'measured wavelength', 'nm'), thisWave);
+        lcaMicrons = wvfDefocusDioptersToMicrons(-lcaDiopters, ...
+                measPupilSizeMM);
+        
     elseif (ismatrix(lcaMethod))
         % disp('Using a custom LCA...')
         %
@@ -367,19 +376,6 @@ for ii = 1:nWavelengths
         lcaDiopters = lcaFunction;
         lcaMicrons = wvfDefocusDioptersToMicrons(-lcaDiopters, ...
             measPupilSizeMM);
-    elseif isa(lcaMethod,'function_handle')
-        % We need to calculate lcaMicrons for each wavelength, I think.
-        error('Need to implement lca argument is a function handle case.');
-        % Something like this
-        wave = wvfGet(wvf,'wave');
-        measuredw = wvfGet(wvf, 'measured wavelength');
-        measuredp = wvfGet(wvf,'measured pupil size','mm')
-        for ww = 1:numel(wave)
-            lcaDiopters = lcaFunction(measuredw,wave(ww));
-            lcaMicrons = wvfDefocusDioptersToMicrons(-lcaDiopters, ...
-                measPupilSizeMM);
-        end
-
     else
         error('Unexpected value for custom lca field in wvf');
     end
