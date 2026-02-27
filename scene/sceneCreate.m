@@ -342,10 +342,11 @@ switch sceneName
         % sceneCreate('fluorescence chart',odBloodLevels,weights,pSize,wave,targetLuminance);
         % sceneCreate('fluorescence chart',chartP);
         % odBloodLevels: [nBlood x 1] or [1 x nBlood], chart rows
-        % weights: [nWeight x nBasis], chart cols (one fluorophore weight vector per row)
+        % weights: [nWeight x 5], chart cols (one fluorophore weight vector per row)
+        %          Fluorophore order: [collagen1, FAD, porphyrin, chlorophyllA, keratin]
         % pSize: scalar pixels per square patch, wave: [nWave x 1] or [1 x nWave], targetLuminance: scalar cd/m2
         % Example:
-        %    od=2:12; w1=(7:20)'; W=[w1 zeros(numel(w1),3)];
+        %    od=2:12; w1=(7:20)'; W=[w1 zeros(numel(w1),4)];
         %    scene=sceneCreate('fluorescence chart',od,W,24,475:5:700,10);
 
         if ~isempty(varargin) && isstruct(varargin{1})
@@ -362,7 +363,7 @@ switch sceneName
         else
             odBloodLevels = 2:12;
             weight1 = (7:20)';
-            weights = [weight1, zeros(numel(weight1),3)];
+            weights = [weight1, zeros(numel(weight1),4)];
             pSize = 24;
             wave = [];
             targetLuminance = 100;
