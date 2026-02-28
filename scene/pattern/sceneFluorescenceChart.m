@@ -57,36 +57,15 @@ if size(weights,2) ~= 5
     error('weights must have 5 columns (four basis fluorophores + keratin).');
 end
 
-% Load fluorescence basis and oxy-blood model once for efficiency.
-fluorophoreNamesB = {'collagen1-smooth','FAD_webfluor','PorphyrinBjurshammar','chlorophyllA-7'};
-[fixedFluorophores,wave] = fiLoadBasis(fluorophoreNamesB,'wave',wave);
-oxyblood = medium('oxy_molarExtinctionCoefficient.mat', 'wave', wave);
-
-% Keratin modeled as a skewed Gaussian.
-mu0 = 425; sigma0 = 386; a0 = 5;
-keratinBasis = normpdf((wave - mu0) / sigma0) .* (1 + normcdf(a0 * wave));
-keratinBasis = keratinBasis(:);
-
-% Final basis ordering:
-%   1) collagen (blood-modulated), 2) FAD, 3) porphyrin, 4) chlorophyllA, 5) keratin
-fixedFluorophores = cat(2,fixedFluorophores,keratinBasis);
-
-weightsT = weights';
-bloodBasis = fixedFluorophores(:,1);
-
 signalCube = zeros(nBlood,nWeight,nWave);
 rIdxMap = reshape(1:prod(rcSize),rcSize);
 
 for rr = 1:nBlood
-    oxyblood.opticalDensity = odBloodLevels(rr);
-    oxyTransmittance = oxyblood.transmittance;
-
-    finalFluorophores = fixedFluorophores;
-    finalFluorophores(:,1) = bloodBasis .* oxyTransmittance;
-
-    % signalMat is [nWave x nWeight]
-    signalMat = finalFluorophores * weightsT;
-    signalCube(rr,:,:) = reshape(signalMat',1,nWeight,nWave);
+    for cc = 1:nWeight
+        thisWeights = weights(cc,:)';
+        thisSignal = fluorescenceSignal(wave,odBloodLevels(rr),thisWeights);
+        signalCube(rr,cc,:) = reshape(thisSignal,1,1,nWave);
+    end
 end
 
 XYZ = ieXYZFromPhotons(signalCube,wave);
@@ -114,7 +93,8 @@ chartP.rowcol = rcSize;
 chartP.rIdxMap = rIdxMap;
 chartP.XYZ = XYZ;
 chartP.signalCube = signalCube;
-chartP.keratinParams = [mu0 sigma0 a0];
+chartP.keratinParams = [];
+chartP.signalSource = 'fluorescenceSignal';
 
 scene = sceneSet(scene,'chart parameters',chartP);
 
