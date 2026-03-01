@@ -1,8 +1,8 @@
-function [scene, signalCube, rcSize] = sceneFluorescenceChart(odBloodLevels,weights,pSize,wave,targetLuminance)
+function [scene, signalCube, rcSize] = sceneFluorescenceChart(odBloodLevels,weights,pSize,wave,targetLuminance,varargin)
 % Create a fluorescence chart for testing
 %
 %   [scene, signalCube, rcSize] = ...
-%      sceneFluorescenceChart(odBloodLevels,weights,[pSize],[wave],[targetLuminance])
+%      sceneFluorescenceChart(odBloodLevels,weights,[pSize],[wave],[targetLuminance],[chartOptions])
 %
 % A fluorescence chart is created with blood variations down the rows and
 % weight variations across the columns.
@@ -14,11 +14,14 @@ function [scene, signalCube, rcSize] = sceneFluorescenceChart(odBloodLevels,weig
 %  pSize           - Number of pixels on the side of each square patch (default 24)
 %  wave            - Wavelength samples (default scene wave)
 %  targetLuminance - Mean scene luminance in cd/m2 (default 100)
+%  chartOptions    - Optional struct. Supported field:
+%                    weightGridSize [nRows nCols], enabling two-axis
+%                    fluorophore layout with scalar (fixed) odBloodLevels.
 %
 % Returns
 %  scene       - Fluorescence chart as an ISETCam scene
-%  signalCube  - Fluorescence signals sized [nBlood x nWeight x nWave]
-%  rcSize      - [rows cols] = [nBlood nWeight]
+%  signalCube  - Fluorescence signals sized [rows x cols x nWave]
+%  rcSize      - [rows cols]
 %
 % The chart parameters are attached to the scene and can be retrieved via
 % sceneGet(scene,'chart parameters').
@@ -33,6 +36,15 @@ if ieNotDefined('weights')
 end
 if ieNotDefined('pSize'), pSize = 24; end
 if ieNotDefined('targetLuminance'), targetLuminance = 100; end
+
+chartOptions = struct();
+if ~isempty(varargin)
+    if isstruct(varargin{1})
+        chartOptions = varargin{1};
+    else
+        error('Optional 6th input must be a chartOptions struct.');
+    end
+end
 
 odBloodLevels = odBloodLevels(:);
 if ~ismatrix(weights) || isempty(weights)
@@ -51,20 +63,58 @@ end
 nBlood = numel(odBloodLevels);
 nWeight = size(weights,1);
 nWave = numel(wave);
-rcSize = [nBlood, nWeight];
+
+isTwoAxisWeightMode = false;
+weightGridSize = [];
+if isfield(chartOptions,'weightGridSize') && ~isempty(chartOptions.weightGridSize)
+    weightGridSize = chartOptions.weightGridSize(:)';
+    if numel(weightGridSize) ~= 2
+        error('chartOptions.weightGridSize must be [nRows nCols].');
+    end
+    if any(weightGridSize < 1) || any(mod(weightGridSize,1) ~= 0)
+        error('chartOptions.weightGridSize values must be positive integers.');
+    end
+    if prod(weightGridSize) ~= nWeight
+        error('prod(chartOptions.weightGridSize) must equal size(weights,1).');
+    end
+    if nBlood ~= 1
+        error('Two-axis weight mode requires scalar odBloodLevels (fixed blood density).');
+    end
+    isTwoAxisWeightMode = true;
+end
+
+if isTwoAxisWeightMode
+    rcSize = weightGridSize;
+else
+    rcSize = [nBlood, nWeight];
+end
 
 if size(weights,2) ~= 5
     error('weights must have 5 columns (four basis fluorophores + keratin).');
 end
 
-signalCube = zeros(nBlood,nWeight,nWave);
+signalCube = zeros(rcSize(1),rcSize(2),nWave);
 rIdxMap = reshape(1:prod(rcSize),rcSize);
 
-for rr = 1:nBlood
-    for cc = 1:nWeight
-        thisWeights = weights(cc,:)';
-        thisSignal = fluorescenceSignal(wave,odBloodLevels(rr),thisWeights);
-        signalCube(rr,cc,:) = reshape(thisSignal,1,1,nWave);
+if isTwoAxisWeightMode
+    % Build row-major index grid consistent with fluorescenceWeights case-2 flattening.
+    idxGrid = reshape(1:nWeight,rcSize(2),rcSize(1))';
+    fixedBlood = odBloodLevels(1);
+    for rr = 1:rcSize(1)
+        for cc = 1:rcSize(2)
+            weightIdx = idxGrid(rr,cc);
+            thisWeights = weights(weightIdx,:)';
+            thisSignal = fluorescenceSignal(wave,fixedBlood,thisWeights);
+            signalCube(rr,cc,:) = reshape(thisSignal,1,1,nWave);
+        end
+    end
+else
+    for rr = 1:nBlood
+        for cc = 1:nWeight
+            thisWeights = weights(cc,:)';
+            thisSignal = fluorescenceSignal(wave,odBloodLevels(rr),thisWeights);
+            signalCube(rr,cc,:) = reshape(thisSignal,1,1,nWave);
+        end
     end
 end
 
@@ -93,6 +143,14 @@ chartP.rowcol = rcSize;
 chartP.rIdxMap = rIdxMap;
 chartP.XYZ = XYZ;
 chartP.signalCube = signalCube;
+chartP.twoAxisWeightMode = isTwoAxisWeightMode;
+if isTwoAxisWeightMode
+    chartP.weightGridSize = weightGridSize;
+    chartP.weightIndexGrid = idxGrid;
+else
+    chartP.weightGridSize = [];
+    chartP.weightIndexGrid = [];
+end
 chartP.keratinParams = [];
 chartP.signalSource = 'fluorescenceSignal';
 
