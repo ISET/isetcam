@@ -1,7 +1,11 @@
 # Copilot Instructions for 'isetcam' Workspace
 
 ## Purpose
-Use these instructions to navigate ISETCam-style code quickly and choose project-consistent functions before writing new code.
+Use these instructions to navigate ISETCam-style code quickly and choose project-consistent functions before writing new code.  
+
+## Matlab setup
+
+For instructions in how to setup matlab for use with VS Code, see [this guide](../.vscode/matlab-setup.md).
 
 ## Workspace Context
 This workspace commonly spans:

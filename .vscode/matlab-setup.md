@@ -10,6 +10,43 @@ To ensure the VS Code MATLAB extension finds your specific MATLAB installation, 
 
    - `/Applications/MATLAB_R2024b.app` (or your specific version)
 
+### Alternative: Edit global User Settings JSON directly
+
+Instead of setting values through the Settings UI, you can edit the global user settings file:
+
+- `~/Library/Application Support/Code/User/settings.json`
+
+Add or confirm these entries:
+
+```jsonc
+"MATLAB.installPath": "/Applications/MATLAB_R2025b.app",
+"MATLAB.matlabConnectionTiming": "onStart",
+"files.associations": {
+    "*.m": "matlab"
+}
+```
+
+This applies across all VS Code workspaces unless overridden by a project-specific `.vscode/settings.json`.
+
+### Project-level override (workspace specific)
+
+To override global settings for only one project, create or edit:
+
+- `.vscode/settings.json` in that project folder
+- Command Palette shortcut: **Preferences: Open Workspace Settings (JSON)**
+
+Example:
+
+```jsonc
+"MATLAB.installPath": "/Applications/MATLAB_R2025b.app",
+"MATLAB.matlabConnectionTiming": "onStart",
+"files.associations": {
+    "*.m": "matlab"
+}
+```
+
+VS Code precedence is: **workspace settings** (`.vscode/settings.json`) override **user settings** (`~/Library/Application Support/Code/User/settings.json`).
+
 ## 2) Update `startup.m` for environment detection
 
 The VS Code MATLAB extension typically runs MATLAB in a terminal/headless mode. To initialize ISETCam paths properly, have `startup.m` detect when it is running under VS Code.
