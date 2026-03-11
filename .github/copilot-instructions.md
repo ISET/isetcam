@@ -1,14 +1,12 @@
-# Copilot Instructions for `oraleye-lab-images` Workspace
+# Copilot Instructions for 'isetcam' Workspace
 
 ## Purpose
 Use these instructions to navigate ISETCam-style code quickly and choose project-consistent functions before writing new code.
 
 ## Workspace Context
 This workspace commonly spans:
-- `oraleye-lab-images`
 - `isetcam`
-- `isetprojects/isetfluorescence`
-- `isetprojects/oe_tongue_lip`
+- `isetvalidate`
 
 Assume MATLAB is the primary runtime.
 
