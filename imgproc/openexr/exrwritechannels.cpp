@@ -633,7 +633,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     }
 
     try {
-        std::auto_ptr<WriteData> data(prepareArguments(nrhs, prhs));
+        std::unique_ptr<WriteData> data(prepareArguments(nrhs, prhs));
         data->writeEXR();
     }
     catch (Iex::BaseExc & e) {
