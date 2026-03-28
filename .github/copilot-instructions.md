@@ -54,6 +54,7 @@ Before implementing new color transforms, check `isetcam/color` for existing uti
 3. Reuse existing plotting helpers where available before custom figure styling.
 4. Keep new APIs consistent with ISETCam argument style and object naming.
 5. Update header comments (`Syntax`, `Inputs`, `Returns`, `See also`) when modifying function behavior.
+6. **Terminal Tooling**: If executing sweeping codebase searches via a terminal or run command, assume a macOS environment. The user has `rg` (ripgrep) and `find_by_name` installed. Prefer using `rg` over standard `grep` or slower MATLAB search functions.
 
 ## MATLAB Workflow Expectations
 - Keep edits minimal and consistent with existing MATLAB style.

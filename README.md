@@ -27,3 +27,6 @@ A set of tutorial videos introducing aspects of ISETCam and the companion tool f
 * May 10, 2024 We work more smoothly with EXR files, including sceneFromFile now reading in EXR files, and writing out sensor2EXR) This work was implemented for the extensions to HDR imaging and application of the Restormer PyTorch network for demosaicing sensor data.
 * April 15, 2024 Implemented a remote copy function ieSCP, to help with the distributed nature of our assets and datafiles
 
+## Developer Recommendations
+
+* **System Tools**: For navigating the ISET repositories via the command line or using AI agents, we strongly recommend having `rg` (ripgrep) and advanced `find` (like `find_by_name`) utilities installed on your macOS path. These provide a much faster and more accurate alternative to standard recursive text search when exploring the codebase.
