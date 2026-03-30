@@ -78,22 +78,22 @@ try
     b = 1 - b;   %Make black on white
     padsize = 3*ceil(size(b,2)/3) - size(b,2);
     b = padarray(b,[0 padsize],1,'pre');
-    
+
     % Reformat the bit maps, which are not always a multiple of 3 wide
     bitmap = ones(size(b,1),ceil(size(b,2)/3),3);
     for ii=1:3
         bitmap(:,:,ii) = b(:,ii:3:end);
     end
-    
+
     return;
-    
+
 catch
-    
+
     % No font file found.  Create an example on the screen
     character = fontGet(font,'character');
     fontSz = fontGet(font,'size');
     family = fontGet(font,'family');
-    
+
     %% Set up canvas
     hFig = figure('Position', [50 50 150+fontSz 150+fontSz],...
         'Units', 'pixels', ...
@@ -101,7 +101,7 @@ catch
         'Visible', 'off');
     axes('Position',[0 0 1 1],'Units','Normalized');
     axis off;
-    
+
     %% Draw character and capture the frame
     % Place each character in the middle of the figure
     texthandle = text(0.5,1,character, ...
@@ -114,7 +114,8 @@ catch
         'Interpreter', 'None', ...
         'Color',[0 0 0]);
     drawnow;
-    
+
+    %{
     % Take a snapshot
     try
         bitMap = hardcopy(hFig, '-dzbuffer', '-r0');
@@ -122,24 +123,58 @@ catch
         bitMap = getframe(hFig);
         bitMap = bitMap.cdata;
     end
-    
+    %}
+
+    % Take a snapshot
+    try
+        dpiVal = font.dpi;
+        dpiVal = max(20, min(600, round(dpiVal)));  % clamp to [20,600]
+    catch
+        dpiVal = 96;
+    end
+
+    try
+        % Use explicit DPI instead of '-r0' which can return huge bitmaps
+        bitMap = hardcopy(hFig, '-dzbuffer', sprintf('-r%d', dpiVal));
+    catch
+        % Fallback #1: try getframe after forcing a visible render pass
+        drawnow;
+        wasVisible = strcmp(get(hFig,'Visible'),'on');
+        try
+            if ~wasVisible, set(hFig,'Visible','on'); end
+            drawnow;
+            tmp = getframe(hFig);
+            bitMap = tmp.cdata;
+        catch
+            % Fallback #2: print to a temporary PNG and read it back
+            tmpPng = [tempname,'.png'];
+            print(hFig, tmpPng, '-dpng', sprintf('-r%d', dpiVal));
+            bitMap = imread(tmpPng);
+            if exist(tmpPng,'file'), delete(tmpPng); end
+        end
+        if ~wasVisible && ishandle(hFig), set(hFig,'Visible','off'); end
+    end
+
     delete(texthandle);
-    
-    % Crop height as appropriate
+
+    % Crop to the non-white glyph region. If no glyph is detected,
+    % preserve behavior by returning a minimal white bitmap.
     bwBitMap = min(bitMap, [], 3);
-    bitMap = bitMap(find(min(bwBitMap, [], 2) < 255, 1, 'first') : ...
-        find(min(bwBitMap, [], 2) < 255, 1, 'last'), :, :);
-    
-    % Crop width to remove all white space
-    bitMap = bitMap(:, find(min(bwBitMap, [], 1) < 255, 1, 'first') : ...
-        find(min(bwBitMap, [], 1) < 255, 1, 'last'), :);
-    
+    rows = find(min(bwBitMap, [], 2) < 255);
+    cols = find(min(bwBitMap, [], 1) < 255);
+    if isempty(rows) || isempty(cols)
+        bitmap = ones(1, 1, 3);
+        close(hFig);
+        return;
+    end
+    bitMap = bitMap(rows(1):rows(end), cols(1):cols(end), :);
+
     % Invert and store in binary format
     bitmap = zeros(size(bitMap));
     bitmap(bitMap > 127) = 1;
-    
+
     close(hFig);
-    
+
 end
 
 end
