@@ -17,6 +17,7 @@ function font = fontCreate(letter,family,sz,dpi,style)
 %{
    font = fontCreate('A','Georgia',24,96);
    ieNewGraphWin; imagesc(font.bitmap);
+   axis image;
 %}
 %{
    font = fontCreate('l','georgia',14,72);
@@ -66,14 +67,22 @@ function bitmap = fontBitmapGet(font)
 % (HJ) May, 2014
 
 %% Init
+
+% The font creation routine needs units to be pixels
+prevUnits = get(groot,'DefaultFigureUnits');
+c = onCleanup(@() set(groot,'DefaultFigureUnits',prevUnits));
+
+% Set default units to pixels for this scope
+set(groot,'DefaultFigureUnits','pixels');
+
 if notDefined('font'), error('font required'); end
 
-try
-    % See if we have a font stored for this variable
-    name = fontGet(font,'name');
-    fName = sprintf('%s.mat',name);
-    fName = fullfile(isetRootPath,'data','fonts',fName);
-    load(fName);
+% See if we have a font stored for this variable
+name = fontGet(font,'name');
+fName = sprintf('%s.mat',name);
+fName = fullfile(isetRootPath,'data','fonts',fName);
+if exist(fName,'file')
+    load(fName,'bmSrc');
     b = bmSrc.dataIndex;
     b = 1 - b;   %Make black on white
     padsize = 3*ceil(size(b,2)/3) - size(b,2);
@@ -86,8 +95,7 @@ try
     end
 
     return;
-
-catch
+else
 
     % No font file found.  Create an example on the screen
     character = fontGet(font,'character');
@@ -95,25 +103,22 @@ catch
     family = fontGet(font,'family');
 
     %% Set up canvas
-    hFig = figure('Position', [50 50 150+fontSz 150+fontSz],...
-        'Units', 'pixels', ...
-        'Color', [1 1 1], ...
-        'Visible', 'off');
-    axes('Position',[0 0 1 1],'Units','Normalized');
-    axis off;
+    hFig = figure('Units','pixels',...
+        'Position',[50 50 150+fontSz 150+fontSz],...
+        'Color',[1 1 1],'Visible','off');
+    % hAx = axes('Position',[0 0 1 1],'Units','Normalized');
+    axis off
 
-    %% Draw character and capture the frame
-    % Place each character in the middle of the figure
-    texthandle = text(0.5,1,character, ...
-        'Units', 'Normalized', ...
+    text(0.5, 0.5, character, ...
+        'Units','normalized', ...
         'FontName', family, ...
-        'FontUnits', 'pixels', ...
+        'FontUnits','pixels', ...
         'FontSize', fontSz, ...
-        'HorizontalAlignment', 'Center', ...
-        'VerticalAlignment', 'Top', ...
-        'Interpreter', 'None', ...
-        'Color',[0 0 0]);
-    drawnow;
+        'HorizontalAlignment','center', ...
+        'VerticalAlignment','middle', ...
+        'Interpreter','none','Color',[0 0 0]);
+    drawnow
+
 
     %{
     % Take a snapshot
@@ -133,29 +138,27 @@ catch
         dpiVal = 96;
     end
 
+
+    % Fallback #1: try getframe after forcing a visible render pass
+    drawnow;
+
+    % Ensure figure is visible for rendering
+    wasVisible = strcmp(get(hFig,'Visible'),'on');
+    if ~wasVisible, set(hFig,'Visible','on'); end
+    drawnow; pause(0.05);    % let the UI finish rendering
+
+    tmpPng = [tempname, '.png'];
     try
-        % Use explicit DPI instead of '-r0' which can return huge bitmaps
-        bitMap = hardcopy(hFig, '-dzbuffer', sprintf('-r%d', dpiVal));
+        % Preferred: exportgraphics when available
+        exportgraphics(gca, tmpPng, 'Resolution', dpiVal);
     catch
-        % Fallback #1: try getframe after forcing a visible render pass
-        drawnow;
-        wasVisible = strcmp(get(hFig,'Visible'),'on');
-        try
-            if ~wasVisible, set(hFig,'Visible','on'); end
-            drawnow;
-            tmp = getframe(hFig);
-            bitMap = tmp.cdata;
-        catch
-            % Fallback #2: print to a temporary PNG and read it back
-            tmpPng = [tempname,'.png'];
-            print(hFig, tmpPng, '-dpng', sprintf('-r%d', dpiVal));
-            bitMap = imread(tmpPng);
-            if exist(tmpPng,'file'), delete(tmpPng); end
-        end
-        if ~wasVisible && ishandle(hFig), set(hFig,'Visible','off'); end
+        % Fallback: print then read (older releases or exportgraphics fails)
+        print(hFig, tmpPng, '-dpng', sprintf('-r%d', dpiVal));
     end
 
-    delete(texthandle);
+    bitMap = imread(tmpPng);
+    if exist(tmpPng,'file'), delete(tmpPng); end
+    if ~wasVisible && ishandle(hFig), set(hFig,'Visible','off'); end
 
     % Crop to the non-white glyph region. If no glyph is detected,
     % preserve behavior by returning a minimal white bitmap.
@@ -178,3 +181,4 @@ catch
 end
 
 end
+
