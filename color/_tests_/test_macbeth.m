@@ -42,6 +42,9 @@ wave = sceneGet(scene,'wave');
 % The function also returns the scene object with these corner points stored.
 [cornerpoints, scene] = chartCornerpoints(scene,true);
 
+% Add the local scene to the global session so UI functions can access it
+ieAddObject(scene);
+
 %% Estimate the illuminant photons from the MCC data
 %
 % Call the `macbethIlluminant` function to estimate the illuminant's spectral
