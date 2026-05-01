@@ -28,7 +28,7 @@ scene = sceneCreate('macbeth d65');
 
 % The commented lines below show how to interactively get corner points
 % using the scene window. For automated validation, hardcoded points are used.
-% sceneWindow(scene); % Opens the scene window for visual inspection.
+% ieAddObject(scene); sceneWindow(scene); % Opens the scene window for visual inspection.
 % cornerPoints = chartCornerpoints(scene,true); % Allows interactive selection of corner points.
 
 % Hardcoded corner points for the Macbeth chart within the scene.
@@ -63,7 +63,7 @@ newRects = sceneGet(scene,'chart rects');
 assert(isequal(rects,newRects));
 
 % Display the scene in a window and overlay the calculated chart rectangles.
-sceneWindow(scene);
+ieAddObject(scene); sceneWindow(scene);
 chartRectsDraw(scene,rects);
 
 %% Optical Image (OI) Object Processing
@@ -98,7 +98,7 @@ newRects = oiGet(oi,'chart rects');
 assert(isequal(rects,newRects));
 
 % Display the optical image in a window and overlay the calculated chart rectangles.
-oiWindow(oi);
+ieAddObject(oi); oiWindow(oi);
 chartRectsDraw(oi,rects);
 
 %% Sensor Object Processing
@@ -143,7 +143,7 @@ newRects = sensorGet(sensor,'chart rects');
 assert(isequal(rects,newRects));
 
 % Display the sensor data in a window and overlay the calculated chart rectangles.
-sensorWindow(sensor);
+ieAddObject(sensor); sensorWindow(sensor);
 chartRectsDraw(sensor,rects);
 
 %% Image Processor (IP) Object Processing
@@ -184,7 +184,7 @@ newRects = ipGet(ip,'chart rects');
 assert(isequal(rects,newRects));
 
 % Display the processed image in an IP window and overlay the calculated chart rectangles.
-ipWindow(ip);
+ieAddObject(ip); ipWindow(ip);
 chartRectsDraw(ip,rects);
 
 %% END
@@ -201,7 +201,7 @@ ieInit
 
 %%
 scene = sceneCreate('macbeth d65');
-% sceneWindow(scene);
+% ieAddObject(scene); sceneWindow(scene);
 %  cornerPoints = chartCornerpoints(scene,true);
 cornerPoints = [1    65
     96    64
@@ -217,7 +217,7 @@ scene = sceneSet(scene,'chart rectangles',rects);
 newRects = sceneGet(scene,'chart rects');
 assert(isequal(rects,newRects));
 
-sceneWindow(scene); chartRectsDraw(scene,rects);
+ieAddObject(scene); sceneWindow(scene); chartRectsDraw(scene,rects);
 
 %% Now the oi
 oi = oiCreate;
@@ -229,7 +229,7 @@ rects = chartRectangles(cornerPoints,4,6,0.5);
 oi = oiSet(oi,'chart rectangles',rects);
 newRects = oiGet(oi,'chart rects');
 assert(isequal(rects,newRects));
-oiWindow(oi); chartRectsDraw(oi,rects);
+ieAddObject(oi); oiWindow(oi); chartRectsDraw(oi,rects);
 
 
 %% Now the sensor
@@ -249,7 +249,7 @@ sensor = sensorSet(sensor,'chart rectangles',rects);
 newRects = sensorGet(sensor,'chart rects');
 assert(isequal(rects,newRects));
 
-sensorWindow(sensor); chartRectsDraw(sensor,rects);
+ieAddObject(sensor); sensorWindow(sensor); chartRectsDraw(sensor,rects);
 
 %% IP
 
@@ -267,7 +267,7 @@ ip = ipSet(ip,'chart rectangles',rects);
 newRects = ipGet(ip,'chart rects');
 assert(isequal(rects,newRects));
 
-ipWindow(ip); chartRectsDraw(ip,rects);
+ieAddObject(ip); ipWindow(ip); chartRectsDraw(ip,rects);
 
 %% END
 
