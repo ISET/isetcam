@@ -1,5 +1,5 @@
 function tests = test_extHistcn()
-    tests = functiontests(localfunctions);
+tests = functiontests(localfunctions);
 end
 
 function testMain(testCase)

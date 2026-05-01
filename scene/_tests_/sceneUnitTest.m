@@ -22,7 +22,7 @@ import matlab.unittest.TestRunner;
 
 % Note: If scripts use ieInit, it may call clearvars and delete the
 % unittest runner's state in the main workspace. To avoid this, consider
-% converting test scripts to function-based tests (e.g. by adding a 
+% converting test scripts to function-based tests (e.g. by adding a
 % 'function test_myFunction(testCase)' header) or setting
 % ieSessionSet('init clear', false) prior to testing.
 

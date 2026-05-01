@@ -1,5 +1,5 @@
 function results = opticsUnitTest
-% OPTICSUNITTEST - Run all optics tests in the _tests_ directory 
+% OPTICSUNITTEST - Run all optics tests in the _tests_ directory
 %
 % Usage:
 %   results = opticsUnitTest;

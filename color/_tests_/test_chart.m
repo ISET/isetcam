@@ -1,5 +1,5 @@
 function tests = test_chart()
-    tests = functiontests(localfunctions);
+tests = functiontests(localfunctions);
 end
 
 function testMain(testCase)
@@ -35,9 +35,9 @@ scene = sceneCreate('macbeth d65');
 % These points define the four corners of the chart in pixel coordinates:
 % [top-left; top-right; bottom-right; bottom-left].
 cornerPoints = [1    65    % Top-left (col, row) or (x,y)
-                96    64    % Top-right
-                96     1    % Bottom-right
-                1      1];  % Bottom-left
+    96    64    % Top-right
+    96     1    % Bottom-right
+    1      1];  % Bottom-left
 
 % Set the determined corner points into the scene object.
 scene = sceneSet(scene,'corner points',cornerPoints);
@@ -63,8 +63,11 @@ newRects = sceneGet(scene,'chart rects');
 assert(isequal(rects,newRects));
 
 % Display the scene in a window and overlay the calculated chart rectangles.
-ieAddObject(scene); sceneWindow(scene);
+%{
+ieAddObject(scene);
+sceneWindow(scene);
 chartRectsDraw(scene,rects);
+%}
 
 %% Optical Image (OI) Object Processing
 %
@@ -98,8 +101,8 @@ newRects = oiGet(oi,'chart rects');
 assert(isequal(rects,newRects));
 
 % Display the optical image in a window and overlay the calculated chart rectangles.
-ieAddObject(oi); oiWindow(oi);
-chartRectsDraw(oi,rects);
+% ieAddObject(oi); oiWindow(oi);
+% chartRectsDraw(oi,rects);
 
 %% Sensor Object Processing
 %
@@ -125,9 +128,9 @@ sensor = sensorCompute(sensor,oi);
 % These points define the chart's location in sensor pixel coordinates.
 cornerPoints = ...
     [38   208
-     276   210
-     276    50
-     39    48];
+    276   210
+    276    50
+    39    48];
 
 % Calculate the patch rectangles for the sensor based on its corner points,
 % 4 rows, 6 columns, and 0.5 border percentage.
@@ -143,8 +146,8 @@ newRects = sensorGet(sensor,'chart rects');
 assert(isequal(rects,newRects));
 
 % Display the sensor data in a window and overlay the calculated chart rectangles.
-ieAddObject(sensor); sensorWindow(sensor);
-chartRectsDraw(sensor,rects);
+% ieAddObject(sensor); sensorWindow(sensor);
+% chartRectsDraw(sensor,rects);
 
 %% Image Processor (IP) Object Processing
 %
@@ -168,7 +171,7 @@ cornerPoints = ...
     [39   207
     278   209
     278    50
-     39    50];
+    39    50];
 
 % Calculate the patch rectangles for the IP based on its corner points,
 % 4 rows, 6 columns, and 0.5 border percentage.
@@ -184,8 +187,8 @@ newRects = ipGet(ip,'chart rects');
 assert(isequal(rects,newRects));
 
 % Display the processed image in an IP window and overlay the calculated chart rectangles.
-ieAddObject(ip); ipWindow(ip);
-chartRectsDraw(ip,rects);
+% ieAddObject(ip); ipWindow(ip);
+% chartRectsDraw(ip,rects);
 
 %% END
 

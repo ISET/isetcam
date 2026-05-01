@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "../../../isetvalidate"
+		},
+		{
+			"path": "../../../tools/UnitTestToolbox"
 		}
 	],
 	"settings": {}

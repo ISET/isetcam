@@ -1,7 +1,7 @@
 function results = ieUnitTests()
 % IEUNITTESTS - Master runner for all ISETCam unit tests
 %
-% This script automatically discovers all `_tests_` directories 
+% This script automatically discovers all `_tests_` directories
 % within the ISETCam workspace, agglomerates them into a master
 % test suite, and runs them.
 %
