@@ -18,6 +18,8 @@ ieInit
 fname  = 'hats.jpg';
 ffname = fullfile(isetRootPath,'data','images','rgb',fname);
 img    = imread(ffname);
+% Subsample to prevent 'scatplot' voronoi calculation from taking too long
+img    = img(1:15:end,1:15:end,:);
 
 %% Make a scatter plot image intensity of the r and g channels
 r = img(:,:,1);
