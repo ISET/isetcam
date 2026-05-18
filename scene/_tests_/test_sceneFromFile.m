@@ -1,8 +1,8 @@
 function tests = test_sceneFromFile()
-    tests = functiontests(localfunctions);
+tests = functiontests(localfunctions);
 end
 
-function testMain(testCase)
+function testMain(~)
 %% Validation script for sceneFromFile
 %
 % Makes and deletes a small test scene in the local directory
@@ -33,6 +33,7 @@ mn = sceneGet(scene,'mean luminance');
 assert(abs(mn - 30.04707249) < 1e-5);
 
 %% Create a file from RGB data
+rng(1);
 RGB = ieClip(255*rand(10,10,3),0,255);
 scene = sceneFromFile(RGB,'rgb',100,'lcdExample');
 sceneWindow(scene);
@@ -40,28 +41,30 @@ sceneWindow(scene);
 %% Now try sceneToFile with the scene data
 
 % This tests whether the new 'fov' and 'dist' read/write works
-vExplained = sceneToFile('testS2',scene);
+sceneToFile('testS2',scene);
 scene2 = sceneFromFile('testS2','multispectral');
 
 wave = sceneGet(scene,'wave');
 q1 = sceneGet(scene,'photons',wave(10));
 q2 = sceneGet(scene2,'photons',wave(10));
 assert(sceneGet(scene,'fov') == sceneGet(scene2,'fov'))
+assert(max(abs(q1(:) - q2(:))) < 1e-5)
 
 % ieNewGraphWin; title('Validating sceneToFile');
 % assert( max(abs(q1(1:10:end)-q2(1:10:end))) < 1e-5);
-% plot(q1(1:10:end),q2(1:10:end),'.'); 
+% plot(q1(1:10:end),q2(1:10:end),'.');
 % grid on; xlabel('scene 1'); ylabel('scene 2');
 
 %% Now try on a jpg image
 fullFileName = which('eagle.jpg');
 scene = sceneFromFile(fullFileName,'rgb',100,'lcdExample');
-assert(abs(scene.wAngular - 15.5233) < 1e-3);
+assert(abs(sceneGet(scene,'fov') - 15.5233) < 1e-3);
 
 % sceneWindow(scene);
 
 %% Clean up
 if exist('testS.mat','file'), delete('testS.mat'); end
+if exist('testS2.mat','file'), delete('testS2.mat'); end
 
 %%
 

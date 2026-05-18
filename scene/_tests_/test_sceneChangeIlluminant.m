@@ -1,8 +1,8 @@
 function tests = test_sceneChangeIlluminant()
-    tests = functiontests(localfunctions);
+tests = functiontests(localfunctions);
 end
 
-function testMain(testCase)
+function testMain(~)
 %% Change the illuminant spectral power distribution of a scene
 %
 % ISET lets you specify any spectral power distribution as a
@@ -80,5 +80,83 @@ assert(mean(photons(:))/11.532888329013328e+15 - 1 < tolerance,msg)
 drawnow;
 
 %%
+
+end
+
+function testPreserveMeanAndReflectance(~)
+
+ieInit;
+
+tolerance = 1e-4;
+roi = [9 9 24 24];
+
+scene = sceneCreate;
+baselineMeanL = sceneGet(scene, 'mean luminance');
+baselineReflectance = sceneGet(scene, 'roi mean photons', roi) ./ sceneGet(scene, 'roi mean illuminant photons', roi);
+baselineIlluminant = mean(sceneGet(scene, 'illuminant photons'), 'all');
+
+wave = sceneGet(scene, 'wave');
+tungstenEnergy = ieReadSpectra('Tungsten.mat', wave);
+scene = sceneAdjustIlluminant(scene, tungstenEnergy);
+
+adjustedMeanL = sceneGet(scene, 'mean luminance');
+adjustedReflectance = sceneGet(scene, 'roi mean photons', roi) ./ sceneGet(scene, 'roi mean illuminant photons', roi);
+adjustedIlluminant = mean(sceneGet(scene, 'illuminant photons'), 'all');
+
+assert(abs(adjustedMeanL - baselineMeanL) < tolerance * baselineMeanL, ...
+    'sceneAdjustIlluminant should preserve mean luminance by default.');
+assert(max(abs(baselineReflectance - adjustedReflectance)) / max(abs(baselineReflectance)) < 1e-5, ...
+    'sceneAdjustIlluminant should preserve reflectance.');
+assert(abs(adjustedIlluminant - baselineIlluminant) > tolerance * baselineIlluminant, ...
+    'Illuminant photons should change after illuminant replacement.');
+
+end
+
+function testStructInputMatchesVectorInput(~)
+
+ieInit;
+
+tolerance = 1e-6;
+scene = sceneCreate;
+wave = sceneGet(scene, 'wave');
+tungstenEnergy = ieReadSpectra('Tungsten.mat', wave);
+
+illuminant = illuminantCreate('d65', wave);
+illuminant = illuminantSet(illuminant, 'energy', tungstenEnergy);
+
+sceneFromVector = sceneAdjustIlluminant(scene, tungstenEnergy);
+sceneFromStruct = sceneAdjustIlluminant(scene, illuminant);
+
+vectorPhotons = sceneGet(sceneFromVector, 'photons');
+structPhotons = sceneGet(sceneFromStruct, 'photons');
+vectorIlluminant = sceneGet(sceneFromVector, 'illuminant photons');
+structIlluminant = sceneGet(sceneFromStruct, 'illuminant photons');
+
+assert(max(abs(vectorPhotons(:) - structPhotons(:))) / mean(vectorPhotons(:)) < tolerance, ...
+    'Struct and vector illuminant inputs should produce the same photons.');
+assert(max(abs(vectorIlluminant(:) - structIlluminant(:))) / mean(vectorIlluminant(:)) < tolerance, ...
+    'Struct and vector illuminant inputs should produce the same illuminant.');
+
+end
+
+function testPreserveMeanFalseChangesMeanLuminance(~)
+
+ieInit;
+
+scene = sceneCreate;
+baselineMeanL = sceneGet(scene, 'mean luminance');
+wave = sceneGet(scene, 'wave');
+tungstenEnergy = ieReadSpectra('Tungsten.mat', wave);
+
+preservedScene = sceneAdjustIlluminant(scene, tungstenEnergy, true);
+unpreservedScene = sceneAdjustIlluminant(scene, tungstenEnergy, false);
+
+preservedMeanL = sceneGet(preservedScene, 'mean luminance');
+unpreservedMeanL = sceneGet(unpreservedScene, 'mean luminance');
+
+assert(abs(preservedMeanL - baselineMeanL) < 1e-4 * baselineMeanL, ...
+    'Preserve-mean mode should preserve mean luminance.');
+assert(abs(unpreservedMeanL - baselineMeanL) > 1e-3 * baselineMeanL, ...
+    'preserveMean=false should allow mean luminance to change.');
 
 end

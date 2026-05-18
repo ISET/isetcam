@@ -10,5 +10,11 @@
 			"path": "../../../tools/UnitTestToolbox"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"chat.tools.terminal.autoApprove": {
+			"matlab": true,
+			"command": true,
+			"/Applications/MATLAB_R2024b.app/bin/matlab": true
+		}
+	}
 }

@@ -1,8 +1,8 @@
 function tests = test_sceneMacbeth()
-    tests = functiontests(localfunctions);
+tests = functiontests(localfunctions);
 end
 
-function testMain(testCase)
+function testMain(~)
 %% v_sceneMacbeth
 %
 % Validate Macbeth chart scene creation
@@ -18,10 +18,10 @@ fprintf('Validating macbeth scenes ...')
 patchSize = 32; wave = 500:5:600;
 scene = sceneCreate('default',patchSize,wave);
 % ieAddObject(scene); sceneWindow;
-assert(isequal(scene.spectrum.wave,500:5:600),'Bad default scene create');
+assert(isequal(sceneGet(scene,'wave')',500:5:600),'Bad default scene create');
 
 scene = sceneCreate('empty',[],400:2:700);
-assert(isequal(scene.spectrum.wave,400:2:700),'Bad empty scene create');
+assert(isequal(sceneGet(scene,'wave')',400:2:700),'Bad empty scene create');
 
 %% Macbeth cases
 
@@ -47,7 +47,7 @@ assert(sum(tmp(:))/4.7760e+20 - 1 < 1e-5);
 
 wave = 390:900;
 scene = sceneCreate('macbeth equal energy infrared',[],wave);
-assert(isequal(scene.spectrum.wave,390:900),'Bad IR scene create');
+assert(isequal(sceneGet(scene,'wave')',390:900),'Bad IR scene create');
 
 fprintf('done\n');
 

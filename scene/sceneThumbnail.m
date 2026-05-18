@@ -15,7 +15,7 @@ function pngName = sceneThumbnail(scene,varargin)
 %   font size    - Font size if there is a label
 %   outputfilename  - Specify where the file should get written.  This is
 %                  is the path including filename, but without the .png
-%                  extension.  Default is to take the name from the scene 
+%                  extension.  Default is to take the name from the scene
 %                  name.
 %
 % Outputs
@@ -88,8 +88,10 @@ end
 
 %% Write it out
 
+sceneName = sceneGet(scene,'name');
+
 if label
-    rgb = insertInImage(ieScale(rgb,1), @()text(2,8,scene.name),...
+    rgb = insertInImage(ieScale(rgb,1), @()text(2,8,sceneName),...
         {'fontweight','bold','color','w','fontsize',fontSize,...
         'linewidth',1,'margin',1,...
         'backgroundcolor',backColor});
@@ -97,9 +99,9 @@ if label
 end
 
 if (isempty(outputFilename))
-    pngName = [scene.name,'.png'];
+    pngName = [sceneName,'.png'];
 else
     pngName = [outputFilename '.png'];
-imwrite(rgb,pngName);
+    imwrite(rgb,pngName);
 
 end
