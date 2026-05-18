@@ -1,8 +1,8 @@
 function tests = test_sceneSpatialResample()
-    tests = functiontests(localfunctions);
+tests = functiontests(localfunctions);
 end
 
-function testMain(testCase)
+function testMain(~)
 %% Spatial resample of a scene and and oi
 %
 % Validate the spatial resampling of the scene and oi photon data.
@@ -15,6 +15,11 @@ ieInit
 %% Create a scene
 scene = sceneCreate;
 scene = sceneSet(scene,'fov',1);
+originalName = sceneGet(scene,'name');
+originalSize = sceneGet(scene,'size');
+originalWidth = sceneGet(scene,'width','um');
+originalHeight = sceneGet(scene,'height','um');
+originalMeanL = sceneGet(scene,'mean luminance');
 % sceneWindow(scene);
 
 %% Resample
@@ -24,6 +29,12 @@ scene = sceneSpatialResample(scene,dx,'um');
 
 sr = sceneGet(scene,'spatial resolution','um');
 assert(abs(sr(2) - 50) < 0.05)
+assert(~isequal(sceneGet(scene,'size'), originalSize))
+assert(all(sceneGet(scene,'size') > originalSize))
+assert(strcmp(sceneGet(scene,'name'), sprintf('%s-linear', originalName)))
+assert(abs(sceneGet(scene,'width','um') - originalWidth) / originalWidth < 0.02)
+assert(abs(sceneGet(scene,'height','um') - originalHeight) / originalHeight < 0.02)
+assert(abs(sceneGet(scene,'mean luminance') - originalMeanL) / originalMeanL < 5e-3)
 
 %% Create an oi with a larger spatial sample (14 um)
 scene = sceneCreate;

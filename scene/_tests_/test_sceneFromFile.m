@@ -44,11 +44,22 @@ sceneWindow(scene);
 sceneToFile('testS2',scene);
 scene2 = sceneFromFile('testS2','multispectral');
 
-wave = sceneGet(scene,'wave');
-q1 = sceneGet(scene,'photons',wave(10));
-q2 = sceneGet(scene2,'photons',wave(10));
+wave1 = sceneGet(scene,'wave');
+wave2 = sceneGet(scene2,'wave');
+q1 = sceneGet(scene,'photons',wave1(10));
+q2 = sceneGet(scene2,'photons',wave2(10));
+ill1 = sceneGet(scene,'illuminant photons');
+ill2 = sceneGet(scene2,'illuminant photons');
+photons1 = sceneGet(scene,'photons');
+photons2 = sceneGet(scene2,'photons');
+
+assert(isequal(wave1,wave2))
 assert(sceneGet(scene,'fov') == sceneGet(scene2,'fov'))
+assert(sceneGet(scene,'distance') == sceneGet(scene2,'distance'))
 assert(max(abs(q1(:) - q2(:))) < 1e-5)
+assert(abs(mean(photons1(:)) - mean(photons2(:))) < 1e-8)
+assert(max(abs(ill1(:) - ill2(:))) / max(abs(ill1(:))) < 1e-6)
+assert(strcmp(sceneGet(scene2,'name'),'testS2'))
 
 % ieNewGraphWin; title('Validating sceneToFile');
 % assert( max(abs(q1(1:10:end)-q2(1:10:end))) < 1e-5);
