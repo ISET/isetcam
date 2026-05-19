@@ -42,7 +42,7 @@ varargin = ieParamFormat(varargin);
 
 p = inputParser;
 
-p.addRequired('scene',@(x)(isequal(x.type,'scene')));
+p.addRequired('scene',@(x)(isequal(vcGetObjectType(x),'scene')));
 
 p.addParameter('rowsize',192,@isnumeric);  % 192 rows
 p.addParameter('forcesquare',false,@islogical);   % For a square thumbnail by padding or cropping

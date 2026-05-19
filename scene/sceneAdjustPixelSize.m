@@ -27,8 +27,8 @@ function [scene, newD] = sceneAdjustPixelSize(scene, oi, pixelSize)
 %}
 %% Parse input
 p = inputParser;
-p.addRequired('scene', @(x)isequal(x.type, 'scene'));
-p.addRequired('oi', @(x)isequal(x.type, 'opticalimage'));
+p.addRequired('scene', @(x)isequal(vcGetObjectType(x), 'scene'));
+p.addRequired('oi', @(x)isequal(vcGetObjectType(x), 'opticalimage'));
 p.addRequired('pixelSize', @isvector);
 
 p.parse(scene, oi, pixelSize);

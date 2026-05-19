@@ -82,7 +82,7 @@ if ~exist('scene','var') || isempty(scene)
 end
 
 p = inputParser;
-p.addRequired('scene',@(x)(isstruct(x) && isequal(x.type,'scene')));
+p.addRequired('scene',@(x)(isstruct(x) && isequal(vcGetObjectType(x),'scene')));
 p.addParameter('show',true,@islogical);
 p.addParameter('replace',false,@islogical);
 p.addParameter('renderflag',[],@ischar);

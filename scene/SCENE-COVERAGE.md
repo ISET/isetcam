@@ -101,8 +101,8 @@ First-pass triage conclusion:
 
 ### 1.2 Cleanup Order
 
-- `[~]` Replace direct field access in tests first when trivial.
-- `[ ]` Replace direct field access in scene utilities and mutators where behavior should already be covered by `sceneGet`/`sceneSet`.
+- `[x]` Replace direct field access in tests first when trivial.
+- `[x]` Replace direct field access in scene utilities and mutators where behavior should already be covered by `sceneGet`/`sceneSet`.
 - `[ ]` Defer direct access that occurs inside `sceneGet` and `sceneSet` themselves.
 - `[ ]` Document any cases where the accessor API is missing a needed getter/setter path.
 
@@ -116,12 +116,12 @@ First-pass triage conclusion:
 
 #### Batch B: Geometry and illuminant access
 
-- `[ ]` Distance, FOV, size, spectrum, illuminant name/comment/energy/photons.
-- `[ ]` Verify no regressions in derived quantities after each batch.
+- `[x]` Distance, FOV, size, spectrum, illuminant name/comment/energy/photons.
+- `[x]` Verify no regressions in derived quantities after each batch.
 
 #### Batch C: Data-path access
 
-- `[ ]` Photon cube reads/writes outside the accessor layer.
+- `[x]` Photon cube reads/writes outside the accessor layer.
 - `[ ]` Luminance cache updates.
 - `[ ]` ROI and resampling paths.
 - `[ ]` Only make these changes after focused tests are in place.
@@ -137,37 +137,37 @@ Goal: turn the scene test suite from mostly smoke/integration checks into a more
 
 ### 2.1 Current Test Cleanup
 
-- `[ ]` Review existing tests for duplicate coverage.
+- `[x]` Review existing tests for duplicate coverage.
 - `[ ]` Reduce GUI-heavy checks that do not assert behavior.
-- `[ ]` Replace direct field access in tests with getters/setters where practical.
-- `[ ]` Convert weak smoke tests into explicit numerical or structural checks.
+- `[x]` Replace direct field access in tests with getters/setters where practical.
+- `[x]` Convert weak smoke tests into explicit numerical or structural checks.
 
 ### 2.2 Core Behavior Coverage
 
 #### Scene creation and accessors
 
-- `[ ]` Add tests for default scene geometry, wave sampling, and mean luminance.
-- `[ ]` Add tests for `sceneGet` derived values: size, width, height, spatial resolution, support, FOV.
-- `[ ]` Add tests for `sceneSet` updates: name, metadata, photons, energy, FOV, distance.
+- `[x]` Add tests for default scene geometry, wave sampling, and mean luminance.
+- `[x]` Add tests for `sceneGet` derived values: size, width, height, spatial resolution, support, FOV.
+- `[x]` Add tests for `sceneSet` updates: name, metadata, photons, energy, FOV, distance.
 
 #### Scene mutators
 
 - `[x]` Add focused tests for `sceneAdjustIlluminant`.
 - `[x]` Add focused tests for `sceneAdjustLuminance`.
-- `[ ]` Add stronger tests for `sceneSpatialResample`.
+- `[x]` Add stronger tests for `sceneSpatialResample`.
 - `[ ]` Add coverage for representative scene transforms such as crop/pad/combine/insert if they are part of the cleanup path.
 
 #### Scene I/O
 
-- `[ ]` Strengthen round-trip tests for `sceneFromFile` and `sceneToFile`.
-- `[ ]` Verify photons, wave, FOV, distance, and illuminant metadata survive save/load.
-- `[ ]` Re-enable or replace commented-out round-trip assertions with deterministic checks.
+- `[x]` Strengthen round-trip tests for `sceneFromFile` and `sceneToFile`.
+- `[x]` Verify photons, wave, FOV, distance, and illuminant metadata survive save/load.
+- `[x]` Re-enable or replace commented-out round-trip assertions with deterministic checks.
 
 #### Scene generators
 
-- `[ ]` Replace broad single-metric checks in pattern tests with geometry-aware assertions.
-- `[ ]` Keep a focused set of built-in scene generator tests rather than one large demo-style script.
-- `[ ]` Add targeted checks for Macbeth, reflectance chart, checkerboard, point array, grid lines, slanted bar, and harmonic scenes.
+- `[x]` Replace broad single-metric checks in pattern tests with geometry-aware assertions.
+- `[x]` Keep a focused set of built-in scene generator tests rather than one large demo-style script.
+- `[x]` Add targeted checks for Macbeth, reflectance chart, checkerboard, point array, grid lines, slanted bar, and harmonic scenes.
 
 ### 2.3 Golden-Value Checks
 
@@ -175,17 +175,17 @@ Use golden values where the outputs should be stable and meaningful.
 
 #### Good golden-value targets
 
-- `[ ]` Default Macbeth scene under standard illuminants.
+- `[x]` Default Macbeth scene under standard illuminants.
 - `[ ]` `sceneAdjustIlluminant` on a fixed source scene.
-- `[ ]` `sceneAdjustLuminance` targets for mean, peak, median, and ROI modes.
+- `[x]` `sceneAdjustLuminance` targets for mean, peak, median, and ROI modes.
 - `[ ]` `sceneFromFile` multispectral sample scene.
-- `[ ]` `sceneSpatialResample` on a fixed default scene.
+- `[x]` `sceneSpatialResample` on a fixed default scene.
 
 #### Golden values to capture
 
 - `[ ]` Mean luminance.
 - `[ ]` Sum or mean of photons.
-- `[ ]` Representative ROI patch values.
+- `[x]` Representative ROI patch values.
 - `[ ]` Illuminant mean photons or energy.
 - `[ ]` Dimensions, wavelength support, and spatial resolution.
 
@@ -194,7 +194,7 @@ Use golden values where the outputs should be stable and meaningful.
 - `[ ]` Prefer a small number of high-value goldens over many brittle ones.
 - `[ ]` Use inline scalar goldens when possible.
 - `[ ]` Only introduce external golden data files if the expected structure is too large to maintain inline.
-- `[ ]` Note the source data and tolerance for each golden check.
+- `[x]` Note the source data and tolerance for each golden check.
 
 ### 2.4 Test Infrastructure Improvements
 
@@ -205,13 +205,13 @@ Use golden values where the outputs should be stable and meaningful.
 
 ## Proposed Execution Order
 
-- `[ ]` 1. Replace direct field access in existing scene tests where trivial.
-- `[ ]` 2. Add focused tests for `sceneAdjustIlluminant` and `sceneAdjustLuminance`.
-- `[ ]` 3. Strengthen `sceneFromFile`/`sceneToFile` round-trip checks.
-- `[ ]` 4. Add geometry/accessor tests for `sceneCreate`, `sceneGet`, and `sceneSet`.
-- `[ ]` 5. Expand `sceneSpatialResample` checks.
-- `[ ]` 6. Refactor broad demo-style tests into smaller targeted tests.
-- `[ ]` 7. Start direct-access cleanup in production scene code once the above tests are passing.
+- `[x]` 1. Replace direct field access in existing scene tests where trivial.
+- `[x]` 2. Add focused tests for `sceneAdjustIlluminant` and `sceneAdjustLuminance`.
+- `[x]` 3. Strengthen `sceneFromFile`/`sceneToFile` round-trip checks.
+- `[x]` 4. Add geometry/accessor tests for `sceneCreate`, `sceneGet`, and `sceneSet`.
+- `[x]` 5. Expand `sceneSpatialResample` checks.
+- `[x]` 6. Refactor broad demo-style tests into smaller targeted tests.
+- `[x]` 7. Start direct-access cleanup in production scene code once the above tests are passing.
 
 ## Progress Log
 
@@ -224,11 +224,71 @@ Use golden values where the outputs should be stable and meaningful.
 - `[x]` Added focused coverage for `sceneAdjustLuminance` modes: `mean`, `max`, `median`, and `roi`.
 - `[x]` Replaced the remaining low-risk direct accesses in `sceneThumbnail`, `macbethIlluminant`, and `sceneCrop`.
 - `[x]` Added focused coverage for `sceneAdjustIlluminant` default preserve-mean behavior, reflectance preservation, struct input, and `preserveMean=false`.
+- `[x]` Strengthened `test_sceneSpatialResample` with physical-scale, naming, and luminance-stability checks.
+- `[x]` Strengthened `test_sceneFromFile` round-trip checks for wave, FOV, distance, illuminant photons, photon preservation, and expected loaded-name behavior.
+- `[x]` Extended the `test_sceneFromFile` round-trip contract checks to include `type`, `magnification`, `spectrum`, and `data` preservation.
+- `[x]` Replaced direct photon access in `sceneAdjustLuminance` with the accessor path while preserving single-precision behavior.
+- `[x]` Replaced the remaining scene-side direct-access validators and mixed dispatch checks with `vcGetObjectType`-based lookups.
+- `[x]` Added focused coverage for `sceneCreate`, `sceneGet`, and `sceneSet` geometry/bookkeeping/data behavior in `test_sceneAccessors`.
+- `[x]` Refactored `test_sceneexamples` from repeated mean-photon smoke checks into geometry-aware goldens for harmonic, checkerboard, grid lines, point array, slanted bar, and deterministic scalar anchors for spectral scenes.
+- `[x]` Added patch-level Macbeth ROI goldens for representative brown, blue-green, white, and black patches under D65 and tungsten illuminants.
+- `[x]` Added `chartParams` to centralize default `reflectance chart` parameters and switched the sceneexample golden to use an explicit deterministic `chartP` sample list instead of seeding the global RNG.
+- `[x]` Revalidated the full `sceneUnitTest` suite after the cleanup and coverage expansion.
 
 ### Next
 
-- `[ ]` Identify the next non-trivial direct-access targets in scene production code.
-- `[ ]` Add stronger tests for `sceneSpatialResample` and scene round-trip behavior.
+- `[x]` Identify the next non-trivial direct-access targets in scene production code.
+- `[x]` Decide whether to extend round-trip coverage to additional saved fields such as spectrum/type/data or leave the current contract as sufficient.
+- `[x]` Add geometry/accessor-focused tests for `sceneCreate`, `sceneGet`, and `sceneSet`.
+- `[ ]` Review remaining demo-heavy scene tests (`test_scenedemo`, `test_scenePlot`) for any further conversion into behavior assertions.
+- `[ ]` Decide whether `reflectance chart` deserves deeper structural checks beyond the current deterministic mean-photon anchor.
+
+Direct-access cleanup status for `scene/`:
+
+- `[x]` Remaining scene-side direct-access cases outside accessor internals and declared out-of-scope areas have been cleaned.
+- `[ ]` Remaining intentionally out-of-scope areas: accessor-layer internals and illuminant-structure internals under `scene/illumination/*`.
+
+### Next Direct-Access Targets
+
+Ranked production-code targets after the completed low-risk batch:
+
+- `[x]` `scene/sceneAdjustLuminance.m`
+  - line 64
+  - current direct access: `scene.data.photons`
+  - risk: high
+  - why next: this is the main remaining direct scene-data access in core production code, and it sits on a now-tested path (`mean`, `max`, `median`, `roi`).
+  - caution: performance-sensitive; any change should keep the current fast path or justify a regression.
+  - status: completed via `single(sceneGet(scene,'photons'))`; focused `test_sceneAdjustLuminance` passes.
+
+- `[x]` `scene/sceneAdjustPixelSize.m`
+  - lines 30-31
+  - current direct access: validator checks `scene.type` and `oi.type`
+  - risk: medium-low
+  - why next: small cleanup, but it touches input validation rather than computation; good after the next geometry/accessor tests land.
+
+- `[x]` `scene/gui/sceneWindow.m`
+  - line 85
+  - current direct access: validator checks `scene.type`
+  - risk: medium-low
+  - why next: straightforward conversion, but lower value than production computation paths because it is UI entry-point validation.
+
+- `[x]` `scene/macbeth/macbethPatchData.m`
+  - lines 55-57, 84
+  - current direct access: dispatch on `obj.type`
+  - risk: medium
+  - why next: mixed object-family helper (`scene`, `opticalimage`, `sensor`, `vcimage`); should probably be cleaned in a coordinated pass with related chart utilities.
+
+- `[x]` `scene/macbeth/macbethDrawRects.m`
+  - lines 36, 48, 59
+  - current direct access: dispatch on `obj.type`
+  - risk: medium
+  - why next: same rationale as `macbethPatchData`; scene-related but shared across object families.
+
+Out of scope for the scene cleanup pass:
+
+- illuminant-structure access inside `scene/illumination/*`
+- accessor-layer internals in `sceneGet`, `sceneSet`, and `sceneCreate`
+- test files already cleaned in the earlier batch
 
 ## Notes
 

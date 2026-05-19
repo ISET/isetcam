@@ -8,7 +8,7 @@ function scene = sceneAdjustLuminance(scene, method, targetL, varargin)
 %   The photon level in the scene structure is scaled so that one of
 %   the luminance distribution parameters ('mean', 'max', 'median',
 %   or 'roi') is set to val.
-%   
+%
 %   The illuminant is also scaled to preserve the reflectance.
 %
 % Inputs
@@ -53,15 +53,15 @@ function scene = sceneAdjustLuminance(scene, method, targetL, varargin)
   sceneGet(scene,'mean luminance')
 %}
 
-%% For backwards compatibility 
+%% For backwards compatibility
 
 if isnumeric(method)
-    targetL = method; 
-    method = 'mean'; 
+    targetL = method;
+    method = 'mean';
 end
 
 %% Saves a lot of time.  This makes the calculation single precision.
-photons = scene.data.photons;
+photons = single(sceneGet(scene,'photons'));
 
 switch method
     case 'mean'

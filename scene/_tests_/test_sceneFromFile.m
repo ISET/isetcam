@@ -52,13 +52,28 @@ ill1 = sceneGet(scene,'illuminant photons');
 ill2 = sceneGet(scene2,'illuminant photons');
 photons1 = sceneGet(scene,'photons');
 photons2 = sceneGet(scene2,'photons');
+spectrum1 = sceneGet(scene,'spectrum');
+spectrum2 = sceneGet(scene2,'spectrum');
+data1 = sceneGet(scene,'data');
+data2 = sceneGet(scene2,'data');
 
 assert(isequal(wave1,wave2))
+assert(strcmp(sceneGet(scene,'type'), sceneGet(scene2,'type')))
+assert(isequal(sceneGet(scene,'magnification'), sceneGet(scene2,'magnification')))
 assert(sceneGet(scene,'fov') == sceneGet(scene2,'fov'))
 assert(sceneGet(scene,'distance') == sceneGet(scene2,'distance'))
+assert(isequal(spectrum1.wave, spectrum2.wave))
 assert(max(abs(q1(:) - q2(:))) < 1e-5)
 assert(abs(mean(photons1(:)) - mean(photons2(:))) < 1e-8)
 assert(max(abs(ill1(:) - ill2(:))) / max(abs(ill1(:))) < 1e-6)
+assert(isequal(fieldnames(data1), fieldnames(data2)))
+assert(max(abs(data1.photons(:) - data2.photons(:))) < 1e-5)
+if isfield(data1,'luminance') && isfield(data2,'luminance')
+    assert(isempty(data1.luminance) == isempty(data2.luminance))
+    if ~isempty(data1.luminance)
+        assert(max(abs(data1.luminance(:) - data2.luminance(:))) < 1e-5)
+    end
+end
 assert(strcmp(sceneGet(scene2,'name'),'testS2'))
 
 % ieNewGraphWin; title('Validating sceneToFile');

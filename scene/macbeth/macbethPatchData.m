@@ -47,41 +47,42 @@ if fullData  % The values from every location in each of the 24 patches
         mRGB{ii} = vcGetROIData(obj,theseLocs,dataType);
         % stdRGB(ii,:) = nanstd(mRGB{ii});
     end
-    
+
 else  % Mean values from each patch
-    
+
     % In this case, the means have different vector lengths for different
     % data types.  And for scene and oi the mRGB is really mSpectral
-    switch(lower(obj.type))
+    objType = lower(vcGetObjectType(obj));
+    switch(objType)
         case {'scene', 'opticalimage'}
-            if isequal(obj.type,'scene'), nWave = sceneGet(obj,'nwave');
+            if isequal(objType,'scene'), nWave = sceneGet(obj,'nwave');
             else, nWave = oiGet(obj,'nwave');
             end
-            
+
             mRGB = zeros(24,nWave);
             stdRGB = zeros(24,nWave);
             for ii = 1:24
                 theseLocs = macbethROIs(mLocs(:,ii),delta);  % List locs for this patch
-                
+
                 % The sensor case will have NaNs
                 theseData    = vcGetROIData(obj,theseLocs,dataType);
                 mRGB(ii,:)   = nanmean(theseData);
                 stdRGB(ii,:) = nanstd(theseData);
-                
+
             end
         case {'sensor','vcimage'}
             mRGB   = zeros(24,3);  % This should be 24 x nSensors, not 24 x 3
             stdRGB = zeros(24,3);  % This should be 24 x nSensors
             for ii = 1:24
                 theseLocs = macbethROIs(mLocs(:,ii),delta);  % List locs for this patch
-                
+
                 % The sensor case will have NaNs
                 theseData    = vcGetROIData(obj,theseLocs,dataType);
                 mRGB(ii,:)   = nanmean(theseData);
                 stdRGB(ii,:) = nanstd(theseData);
             end
         otherwise
-            error('Unknown object type %s\n',obj.type);
+            error('Unknown object type %s\n',objType);
     end
 end
 
