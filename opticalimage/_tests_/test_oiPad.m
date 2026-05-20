@@ -37,6 +37,12 @@ for padding = 10:10:100
     newSpacing = oiGet(oip,'sample spacing');
     assert(max(abs(newSpacing - baseSpacing)) < 1e-10)
 end
+
+oip = oiPad(oi,[40 40]);
+assert(isequal(oiGet(oip,'size'),[201 201]));
+assert(abs(oiGet(oip,'fov')/2.07199171491491 - 1) < 1e-6);
+assert(abs(mean(oiGet(oip,'illuminance'),'all')/1.1183705329895 - 1) < 1e-4);
+assert(abs(sum(oiGet(oip,'photons'),'all')/5.31577172443882e+19 - 1) < 1e-4);
 % disp('v_oiPad succeeds for diffraction limited');
 
 %% Make SIL oi for testing
@@ -53,6 +59,12 @@ for padding = 10:10:100
     newSpacing = oiGet(oip,'sample spacing');
     assert(max(abs(newSpacing - baseSpacing)) < 1e-10)
 end
+
+oip = oiPad(oi,[40 40]);
+assert(isequal(oiGet(oip,'size'),[201 201]));
+assert(abs(oiGet(oip,'fov')/2.07199171491491 - 1) < 1e-6);
+assert(abs(mean(oiGet(oip,'illuminance'),'all')/1.11837303638458 - 1) < 1e-4);
+assert(abs(sum(oiGet(oip,'photons'),'all')/5.31577146684277e+19 - 1) < 1e-4);
 % disp('v_oiPad succeeds for shift invariant');
 %%  Now check for the ray trace oi case, which failed at one time
 
@@ -71,6 +83,12 @@ for padding = 10:10:100
     newSpacing = oiGet(oip,'sample spacing');
     assert(max(abs(newSpacing - baseSpacing)) < 1e-10)
 end
+
+oip = oiPad(oi,[40 40]);
+assert(isequal(oiGet(oip,'size'),[269 269]));
+assert(abs(oiGet(oip,'fov')/2.77272502827149 - 1) < 1e-6);
+assert(abs(mean(oiGet(oip,'illuminance'),'all')/0.410668759282349 - 1) < 1e-4);
+assert(abs(sum(oiGet(oip,'photons'),'all')/5.02003239027267e+18 - 1) < 1e-4);
 disp('v_oiPad succeeds for ray trace');
 ieDeleteObject(s);
 

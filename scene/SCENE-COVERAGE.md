@@ -129,7 +129,7 @@ First-pass triage conclusion:
 ### 1.4 Decisions and Follow-up
 
 - `[ ]` Record any accessor gaps that need new `sceneGet`/`sceneSet` cases.
-- `[ ]` Record any places where direct access is intentionally retained for performance or internal implementation reasons.
+- `[x]` Record any places where direct access is intentionally retained for performance or internal implementation reasons.
 
 ## Part 2. Test Limitations and Coverage Expansion
 
@@ -138,7 +138,7 @@ Goal: turn the scene test suite from mostly smoke/integration checks into a more
 ### 2.1 Current Test Cleanup
 
 - `[x]` Review existing tests for duplicate coverage.
-- `[ ]` Reduce GUI-heavy checks that do not assert behavior.
+- `[x]` Reduce GUI-heavy checks that do not assert behavior.
 - `[x]` Replace direct field access in tests with getters/setters where practical.
 - `[x]` Convert weak smoke tests into explicit numerical or structural checks.
 
@@ -155,7 +155,7 @@ Goal: turn the scene test suite from mostly smoke/integration checks into a more
 - `[x]` Add focused tests for `sceneAdjustIlluminant`.
 - `[x]` Add focused tests for `sceneAdjustLuminance`.
 - `[x]` Add stronger tests for `sceneSpatialResample`.
-- `[ ]` Add coverage for representative scene transforms such as crop/pad/combine/insert if they are part of the cleanup path.
+- `[x]` Add coverage for representative scene transforms such as crop/pad/combine/insert if they are part of the cleanup path.
 
 #### Scene I/O
 
@@ -183,25 +183,25 @@ Use golden values where the outputs should be stable and meaningful.
 
 #### Golden values to capture
 
-- `[ ]` Mean luminance.
-- `[ ]` Sum or mean of photons.
+- `[x]` Mean luminance.
+- `[x]` Sum or mean of photons.
 - `[x]` Representative ROI patch values.
-- `[ ]` Illuminant mean photons or energy.
-- `[ ]` Dimensions, wavelength support, and spatial resolution.
+- `[x]` Illuminant mean photons or energy.
+- `[x]` Dimensions, wavelength support, and spatial resolution.
 
 #### Golden-value discipline
 
-- `[ ]` Prefer a small number of high-value goldens over many brittle ones.
-- `[ ]` Use inline scalar goldens when possible.
+- `[x]` Prefer a small number of high-value goldens over many brittle ones.
+- `[x]` Use inline scalar goldens when possible.
 - `[ ]` Only introduce external golden data files if the expected structure is too large to maintain inline.
 - `[x]` Note the source data and tolerance for each golden check.
 
 ### 2.4 Test Infrastructure Improvements
 
-- `[ ]` Prefer deterministic inputs and fixed tolerances.
+- `[x]` Prefer deterministic inputs and fixed tolerances.
 - `[ ]` Seed RNG in any test that uses random RGB/image data.
 - `[ ]` Prefer `verify*` style assertions where helpful for better failure messages.
-- `[ ]` Keep scene tests runnable in non-interactive environments where possible.
+- `[x]` Keep scene tests runnable in non-interactive environments where possible.
 
 ## Proposed Execution Order
 
@@ -233,6 +233,8 @@ Use golden values where the outputs should be stable and meaningful.
 - `[x]` Refactored `test_sceneexamples` from repeated mean-photon smoke checks into geometry-aware goldens for harmonic, checkerboard, grid lines, point array, slanted bar, and deterministic scalar anchors for spectral scenes.
 - `[x]` Added patch-level Macbeth ROI goldens for representative brown, blue-green, white, and black patches under D65 and tungsten illuminants.
 - `[x]` Added `chartParams` to centralize default `reflectance chart` parameters and switched the sceneexample golden to use an explicit deterministic `chartP` sample list instead of seeding the global RNG.
+- `[x]` Added focused transform coverage for `sceneCrop`, `sceneInsert`, `sceneSet(...,'resize',...)`, and `sceneCombine`.
+- `[x]` Split `sceneUnitTest` into default core quantitative mode and optional `sceneUnitTest('full')` smoke/UI mode.
 - `[x]` Revalidated the full `sceneUnitTest` suite after the cleanup and coverage expansion.
 
 ### Next
@@ -242,6 +244,12 @@ Use golden values where the outputs should be stable and meaningful.
 - `[x]` Add geometry/accessor-focused tests for `sceneCreate`, `sceneGet`, and `sceneSet`.
 - `[ ]` Review remaining demo-heavy scene tests (`test_scenedemo`, `test_scenePlot`) for any further conversion into behavior assertions.
 - `[ ]` Decide whether `reflectance chart` deserves deeper structural checks beyond the current deterministic mean-photon anchor.
+
+### Archive Note
+
+The main scene cleanup and coverage expansion work is complete enough that active development has moved on to OI coverage.
+
+This file is retained as a record of the scene decisions, completed work, and the small set of optional follow-up items above.
 
 Direct-access cleanup status for `scene/`:
 
