@@ -1,17 +1,21 @@
-function results = sceneUnitTest
-% SCENEUNITTEST - Run all scene tests in the _tests_ directory using MATLAB's built-in framework.
+function results = sceneUnitTest(mode)
+% SCENEUNITTEST - Run scene tests in the _tests_ directory.
 %
-% This function initializes a test suite from the current directory
-% and runs all script-based or function-based tests found (e.g., test_scene.m).
+% By default, this runner executes the core quantitative regression tests.
+% Pass 'full' to include the slower GUI/smoke tests.
 %
 % Usage:
 %   results = sceneUnitTest;
+%   results = sceneUnitTest('full');
 %
 % We recommend utilizing MATLAB's built in 'assert(..)' statements
 % inside your test scripts for numerical validation.
 %
 % See also: matlab.unittest.TestSuite
 %
+
+if ieNotDefined('mode'), mode = 'core'; end
+mode = ieParamFormat(mode);
 
 % Get the directory where this function resides
 [testDir, ~, ~] = fileparts(mfilename('fullpath'));
@@ -29,6 +33,21 @@ import matlab.unittest.TestRunner;
 % Create the test suite from files in this folder matching the default
 % MATLAB test naming conventions (starting with 'test_')
 suite = TestSuite.fromFolder(testDir);
+
+switch mode
+    case {'core','fast','quantitative'}
+        smokeTests = {'test_scene/','test_scenePlot/','test_scenedemo/'};
+        names = {suite.Name};
+        keep = true(size(suite));
+        for ii = 1:numel(smokeTests)
+            keep = keep & ~strncmp(names,smokeTests{ii},length(smokeTests{ii}));
+        end
+        suite = suite(keep);
+    case {'full','all'}
+        % Keep the full suite, including GUI/smoke tests.
+    otherwise
+        error('Unknown sceneUnitTest mode %s. Use ''core'' or ''full''.',mode);
+end
 
 % Create a runner with standard text output
 runner = TestRunner.withTextOutput;

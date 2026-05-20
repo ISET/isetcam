@@ -1,11 +1,12 @@
 function tests = test_scene()
-    tests = functiontests(localfunctions);
+tests = functiontests(localfunctions);
 end
 
-function testMain(testCase)
-%% Validation for scenes
+function testMain(~)
+%% GUI/smoke validation for scenes
 %
-% Scripts related to scenes
+% This file exercises scene window and smoke-test behavior. The
+% quantitative sceneCombine regression lives in test_sceneCombine.
 %
 % Additional scripts of interest
 %
@@ -21,13 +22,7 @@ scene = sceneCreate;
 sceneWindow(scene);
 sceneSet(scene,'gamma',0.5);
 sceneSet(scene,'gamma',1);
-mn = sceneGet(scene,'mean luminance');
-
-%% Check sceneCombine
-
-scene = sceneCombine(sceneCreate,sceneCreate,'direction','horizontal');
-mn2 = sceneGet(scene,'mean luminance');
-assert(abs(mn/mn2 - 1) < 1e-5);
+sceneGet(scene,'mean luminance');
 
 % sceneWindow(scene);
 % drawnow;
