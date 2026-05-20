@@ -14,7 +14,10 @@
 		"chat.tools.terminal.autoApprove": {
 			"matlab": true,
 			"command": true,
-			"/Applications/MATLAB_R2024b.app/bin/matlab": true
+			"/Applications/MATLAB_R2024b.app/bin/matlab": true,
+			"git add": true,
+			"git commit": true,
+			"git push": true
 		}
 	}
 }
