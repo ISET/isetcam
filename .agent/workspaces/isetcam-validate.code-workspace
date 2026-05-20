@@ -17,7 +17,9 @@
 			"/Applications/MATLAB_R2024b.app/bin/matlab": true,
 			"git add": true,
 			"git commit": true,
-			"git push": true
+			"git push": true,
+			"git remote": true,
+			"printf": true
 		}
 	}
 }

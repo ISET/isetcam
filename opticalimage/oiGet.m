@@ -132,7 +132,7 @@ function val = oiGet(oi,parm,varargin)
 %       {'raytrace optics name'}  - Optics used to derive shift-variant psf
 %       {'rt psf size'}        - row,col dimensions of the psf
 %
-%       {'compute method'}  - How to apply the OTF. 
+%       {'compute method'}  - How to apply the OTF.
 %                              'opticspsf' - PSF method that regenerates PSF from the wvf.
 %                              'opticsotf' - OTF method that splines the OTF
 %                              'humanmw'   - Human Marimont-Wandell calc
@@ -208,10 +208,10 @@ if ~exist('parm','var') || isempty(parm), error('Param must be defined.'); end
 switch oType
     case 'optics'
         % If the first string is optics, we either return the optics or an optics
-        % parameter.  
+        % parameter.
         optics = oi.optics;
         if isempty(parm), val = optics;
-        else            
+        else
             % There is a special case for the OTF when we use dlMTF.
             % See comment below.
             switch(parm)
@@ -234,11 +234,11 @@ switch oType
                         % the diffraction limited case, so I was worried
                         % about just using the call that is used for the
                         % other cases.
-                        % 
-                        % It was the third example in opticsGet that caused me to 
+                        %
+                        % It was the third example in opticsGet that caused me to
                         % make this change.
                         %{
-                            scene = sceneCreate; oi = oiCreate('diffraction limited'); 
+                            scene = sceneCreate; oi = oiCreate('diffraction limited');
                             oi = oiCompute(oi,scene); optics = oiGet(oi,'optics');
                             otf = oiGet(oi,'optics otf data',oi);
                             otf = opticsGet(optics,'otf data',oi);
@@ -247,11 +247,11 @@ switch oType
                         %}
                         %
                         %  val = opticsGet(optics,parm,oi,varargin{:});
-                        val = opticsGet(optics,parm,oi);  
+                        val = opticsGet(optics,parm,oi);
                     else
                         val = opticsGet(optics,parm,varargin{:});
                     end
-            
+
                 otherwise
                     % All other gets.
                     val = opticsGet(optics,parm,varargin{:});
@@ -286,9 +286,9 @@ switch oType
     otherwise
         % Must be an oi object.  Format the parameter and move on.
         parm = ieParamFormat(parm);
-        
+
         switch parm
-            
+
             case 'type'
                 val = oi.type;
             case 'name'
@@ -314,7 +314,7 @@ switch oType
                 % compatibility with stored oi's, such as we have with the
                 % mRGC mosaics.
                 if (isfield(oi,'computeMethod'))
-                    val = oi.computeMethod; 
+                    val = oi.computeMethod;
                 else
                     if (isfield(oi.optics,'wvf'))
                         val = 'opticspsf';
@@ -341,7 +341,7 @@ switch oType
                         val = sceneGet(scene,'rows');
                     end
                 end
-                
+
             case {'cols','col','ncols','ncol'}
                 if checkfields(oi,'data','photons'), val = size(oi.data.photons,2);
                 elseif checkfields(oi,'cols') && ~isempty(oi.cols)
@@ -382,7 +382,7 @@ switch oType
                 end
                 val = [oiGet(oi,'width')/sz(2) , oiGet(oi,'height')/sz(1)];
                 if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-                
+
             case {'samplesize'}
                 % oiGet(oi,'sample size','mm')
                 % This is the spacing between samples.  We expect row and
@@ -394,7 +394,7 @@ switch oType
                 c = oiGet(oi,'cols');       % Number of sample columns
                 val = w/c;                  % M/sample
                 if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-                
+
             case {'imagedistance','focalplanedistance','distance'}
                 % oiGet(oi,'focal plane distance',[scene])
                 %
@@ -443,17 +443,17 @@ switch oType
                     % The scene distance was sent in
                     sDist = sceneGet(varargin{1},'distance','m');
                 end
-                
+
                 % Call the optics version of this routine, with the sDist
                 % set.
                 val = oiGet(oi,'optics image distance',sDist);
-                
+
                 % Adjust the units
                 if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-                
+
             case {'wangular','widthangular','hfov','horizontalfieldofview','fov'}
                 % oiCompute(oi,scene) assigns the angular field of
-                % view to the oi. 
+                % view to the oi.
                 %
                 % This horizontal FOV represents the size of the OI,
                 % usually after the computational padding. Reflects
@@ -464,22 +464,22 @@ switch oType
                     error(['OI horizontal field of view is not set. ', ...
                         'Call oiCompute with a scene or set oi = oiSet(oi,''wangular'',value).']);
                 end
-                
+
             case {'hangular','heightangular','vfov','verticalfieldofview'}
                 % We only store the width FOV.  We insist that the pixels are square
                 h = oiGet(oi,'height');               % Height in meters
                 d = oiGet(oi,'focal plane distance'); % Distance to lens
                 val = rad2deg(2*atan((0.5*h)/d));     % Vertical field of view
-                
+
             case {'dangular','diagonalangular','diagonalfieldofview'}
                 val = sqrt(oiGet(oi,'wAngular')^2 + oiGet(oi,'hAngular')^2);
-                
+
             case 'aspectratio'
                 r = oiGet(oi,'rows'); c = oiGet(oi,'cols');
                 if (isempty(c) || c == 0), disp('No OI'); return;
                 else, val = r/c;
                 end
-                
+
                 % Terms related to the optics
                 % This is the large optics structure
             case 'optics'
@@ -492,7 +492,7 @@ switch oType
                 if checkfields(oi, 'optics', 'lens'), lens = oi.optics.lens;
                 else, return;
                 end
-                
+
                 if isempty(varargin), val = lens; return;
                 else, val = lens.get(parm, varargin{:});
                 end
@@ -503,7 +503,7 @@ switch oType
             case {'wvf'}
                 % The whole wavefront struct.
                 val = oi.wvf;
-                
+
                 % Sometimes we precompute the psf from the optics and store
                 % it here. The angle spacing of the precomputation is
                 % specified here.
@@ -535,8 +535,8 @@ switch oType
                 % Wavelengths for this calculation. Should match the optics, I
                 % think.  Not sure why it is duplicated.
                 if checkfields(oi,'psf','wavelength'), val = oi.psf.wavelength; end
-                
-                
+
+
                 % optical diffuser properties
             case {'diffusermethod'}
                 % 0 - skip, 1 - gauss blur, 2 - birefringent
@@ -548,17 +548,17 @@ switch oType
                     val = oi.diffuser.blur;
                 end
                 if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-                
+
             case 'data'
                 if checkfields(oi,'data'), val = oi.data; end
-                
+
             case {'photons'}
                 % oiGet(oi,'photons',[waveBand])
                 %
                 % The units are photons/sec/m2
                 %
                 % Read photon data.  Default is all wavebands in 3d matrix.
-                
+
                 % Note we avoid using oiGet(oi,'photons') so as to not
                 % duplicate the memory usage in the photon data.
                 if checkfields(oi,'data','photons')
@@ -584,7 +584,7 @@ switch oType
                 %
                 % Mean photons at each wavelength (SPD) in the ROI
                 if isempty(varargin), error('ROI required'); end
-                
+
                 roiLocs = varargin{1};  % Either locs or rect is OK
                 val = mean(vcGetROIData(oi,roiLocs));
                 val = val(:)';
@@ -612,7 +612,7 @@ switch oType
                 % The current photons are the mean.
                 % This returns the mean photons plus Poisson noise
                 val = oiPhotonNoise(oi);
-                
+
             case {'energynoise','energywithnoise'}
                 % Return mean energy plus Poisson photon noise
                 % val = oiGet(oi,'energy noise');
@@ -631,14 +631,14 @@ switch oType
                 if checkfields(oi,'data','bitDepth'), val = oi.data.bitDepth;
                 else, val = 32;
                 end
-                
+
             case 'energy'
                 % We  compute the energy from the photons and only
                 % store photons.  Otherwise, there could be an inconsistency.
                 photons = oiGet(oi,'photons');
                 wave = oiGet(oi,'wave');
                 val = Quanta2Energy(wave,photons);
-                
+
             case {'meanilluminance','meanillum'}
                 % Derived from the illuminance
                 if ~checkfields(oi,'data','illuminance') || isempty(oi.data.illuminance)
@@ -689,7 +689,7 @@ switch oType
                     val = max(illum(:))/min(illum(:));
                 else,  val = Inf;
                 end
-                
+
             case {'xyz','dataxyz'}
                 % oiGet(oi,'xyz');
                 % RGB array of oi XYZ values.  These are returned as an RGB format
@@ -697,7 +697,7 @@ switch oType
                 photons = oiGet(oi,'photons');
                 wave    = oiGet(oi,'wave');
                 val     = ieXYZFromEnergy(Quanta2Energy(wave,photons),wave);
-                
+
             case {'spectrum'}
                 if checkfields(oi,'spectrum'), val = oi.spectrum; end
             case 'binwidth'
@@ -716,7 +716,7 @@ switch oType
                 % oiGet(oi,'n wave')
                 % Changed July 2012.
                 val = length(oiGet(oi,'wave'));
-                
+
             case 'height'
                 % Height in meters is default
                 % Computed from sample size times number of rows.
@@ -730,38 +730,38 @@ switch oType
                 % plane and the horizontal (width) field of view.
                 %
                 % Width in meters is default - We need to handle 'skip' case
-                
+
                 % TG/BW changed this from 'focal plane distance' to
                 % 'optics focal length' (Nov 5 2021).  This might
                 % cause various test failures.
                 d   = oiGet(oi,'focal plane distance');
                 % d   = oiGet(oi,'optics focal length');   % Distance from lens to image
                 fov = oiGet(oi,'wangular');              % Field of view (horizontal, width)
-                
+
                 % fov   = 2 * atand((0.5*width)/d) % Opposite over adjacent
                 % width = 2 * d * tand(fov/2)
                 val = 2*d*tand(fov/2);
                 if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-                
+
             case {'diagonal','diagonalsize'}
                 val = sqrt(oiGet(oi,'height')^2 + oiGet(oi,'width')^2);
                 if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-                
+
             case {'heightwidth','heightandwidth'}
                 val(1) = oiGet(oi,'height');
                 val(2) = oiGet(oi,'width');
                 if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-                
+
             case {'area','areameterssquared'}
                 % oiGet(oi,'area')    %square meters
                 % oiGet(oi,'area','mm') % square millimeters
                 val = oiGet(oi,'height')*oiGet(oi,'width');
                 if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1})^2; end
-                
+
             case {'centerpixel','centerpoint'}
                 val = [oiGet(oi,'rows'),oiGet(oi,'cols')];
                 val = floor(val/2) + 1;
-                
+
             case {'hspatialresolution','heightspatialresolution','hres'}
                 % oiGet(oi,'h spatial resolution',units)
                 % Resolution parameters
@@ -782,11 +782,11 @@ switch oType
                 end
                 val = h/r;
                 if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-                
+
             case {'wspatialresolution','widthspatialresolution','wres'}
                 % oiGet(oi,'w spatial resolution',units)
                 % Size in m per pixel is default.
-                
+
                 w = oiGet(oi,'width');
                 c = oiGet(oi,'cols');
                 if isempty(c)
@@ -799,23 +799,23 @@ switch oType
                     else
                         c = oiGet(scene,'cols');
                     end
-                    
+
                 end
                 val = w/c;
                 if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-                
+
             case {'spatialresolution','distancepersample','distpersamp'}
                 % oiGet(oi,'distPerSamp','mm')
                 val = [oiGet(oi,'hspatialresolution'), oiGet(oi,'wspatialresolution')];
                 if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-                
+
             case {'distperdeg','distanceperdegree'}
                 % This routine should call
                 % opticsGet(optics,'dist per deg',unit) rather than compute it
                 % here.
                 val = oiGet(oi,'width')/oiGet(oi,'fov');
                 if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-                
+
             case {'degreesperdistance','degperdist'}
                 % oiGet(oi,'degrees per distance')
                 % oiGet(oi,'degPerDist','micron')
@@ -829,7 +829,7 @@ switch oType
                 val = 1 / val;
                 % val = oiGet(oi,'fov')/oiGet(oi,'width');
                 % if ~isempty(varargin), val = val/ieUnitScaleFactor(varargin{1}); end
-                
+
             case {'spatialsupportmesh','spatialsupport'}% ,'spatialsamplingpositions'}
                 % oiGet(oi,'spatialsupport',[units])
                 %
@@ -838,12 +838,12 @@ switch oType
                 % val(:,:,[1 2]) where 1 is the x-dimension and
                 %                      2 is the y-dimension.
                 %
-                
+
                 sSupport = oiSpatialSupport(oi);  % Meters is default
                 [xSupport, ySupport] = meshgrid(sSupport.x,sSupport.y);
                 val(:,:,1) = xSupport; val(:,:,2) = ySupport;
                 if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-                
+
             case {'spatialsupportlinear'}
                 % oiGet(oi,'linear spatial support',[units])
                 % linear samples of y,x spatial positions.
@@ -853,19 +853,19 @@ switch oType
                     val.x = val.x*ieUnitScaleFactor(varargin{1});
                     val.y = val.y*ieUnitScaleFactor(varargin{1});
                 end
-                
+
             case {'angularsupport','angularsamplingpositions'}
                 % Angular values of sample points
                 % Units can be deg (default), min or sec and should include radians
                 %
                 degPerSamp = oiGet(oi,'angular resolution');
                 sz = oiGet(oi,'size');
-                
+
                 tmp = degPerSamp(2)*(1:sz(2));
                 aSupport.x = tmp - mean(tmp(:));
                 tmp = degPerSamp(1)*(1:sz(1));
                 aSupport.y = tmp - mean(tmp(:));
-                
+
                 % Deal with units
                 if ~isempty(varargin)
                     unit = lower(varargin{1});
@@ -885,7 +885,7 @@ switch oType
                             error('Unknown angular unit %s\n',unit);
                     end
                 end
-                
+
                 [xSupport, ySupport] = meshgrid(aSupport.x,aSupport.y);
                 val(:,:,1) = xSupport; val(:,:,2) = ySupport;
                 %
@@ -898,11 +898,11 @@ switch oType
             case {'angularresolution','degperpixel','degpersample','degreepersample','degreeperpixel'}
                 % Height and width
                 val = [oiGet(oi,'hangularresolution'), oiGet(oi,'wangularresolution')];
-                
+
             case {'frequencyresolution','freqres'}
                 % Default is cycles per degree
                 % val = oiGet(oi,'frequencyResolution',units);
-                
+
                 if isempty(varargin), units = 'cyclesPerDegree';
                 else, units = varargin{1};
                 end
@@ -940,21 +940,21 @@ switch oType
                 end
                 fResolution = oiGet(oi,'frequencyresolution',units);
                 l=find(abs(fResolution.fy) == 0); val = fResolution.fy(l:end);
-                
+
                 % Visual information
             case {'rgb','rgbimage'}
                 %  rgb = oiGet(oi,'rgb image');
                 %
                 % Get the rgb image shown in the oiWindow as per the
                 % displayFlag
-                
+
                 % Uses oiShowImage() to compute the rgb data consistently
                 % with what is in the oiWindow.  Force the renderFlag to
                 % negative to prevent display.
                 gam = oiGet(oi,'gamma');
                 renderFlag = oiGet(oi,'render flag index');
                 val = oiShowImage(oi,-1*abs(renderFlag),gam);
-                
+
             case {'gamma'}
                 % oiGet(oi,'display gamma')
                 % There can be a conflict with the display window in display
@@ -965,7 +965,7 @@ switch oType
                 if isempty(oiW), val = 1;  % Default if no window
                 else, val = str2double(oiW.editGamma.Value);
                 end
-                
+
             case {'renderflagindex'}
                 % val = oiGet(oi,'display flag index')
                 % When there is an oiWindow open and set in the vcSESSION,
@@ -976,18 +976,18 @@ switch oType
                 if isempty(oiW), val = 1;   % Default if no window
                 else, val = find(ieContains(oiW.popupRender.Items,oiW.popupRender.Value));
                 end
-                
+
             case {'renderflagstring'}
                 % val = oiGet(oi,'display flag string')
                 % When there is an oiWindow open and set in the vcSESSION,
                 % find the display flag index
-                
+
                 % See if there is a display window
                 oiW = ieSessionGet('oi window');
                 if isempty(oiW), val = 'Standard RGB';   % Default if no window
                 else, val = oiW.popupRender.Value;
                 end
-                
+
             case {'chartparameters'}
                 % Struct of chart parameters
                 if checkfields(oi,'chartP'), val = oi.chartP; end
@@ -1001,7 +1001,7 @@ switch oType
                 % [colMin rowMin width height]
                 % Used for ROI display and management.
                 if checkfields(oi,'chartP','currentRect'), val = oi.chartP.currentRect; end
-                
+
             case {'centroid'}
                 % val = oiGet(oi,'centroid',[units]);
                 % Finding the centroid of the luminance distribution in the
@@ -1014,13 +1014,13 @@ switch oType
                 % By default, the units are col/row.
                 % If a unit is specified, they are the physical units
                 % (e.g., 'mm').
-                
+
                 img = oiGet(oi,'illuminance');
                 sz  = oiGet(oi,'size');
-                
+
                 % Force to unit area and flip up/down for a point spread
                 img = img./sum(img(:));
-                
+
                 if isempty(varargin)
                     % Calculate the weighted centroid/center-of-mass with
                     % respect to col/row units
@@ -1032,11 +1032,11 @@ switch oType
                     s = oiGet(oi,'spatial support',varargin{1});
                     distanceX = s(:,:,1); distanceY = s(:,:,2);
                 end
-                
+
                 % distanceMatrix = sqrt(distanceX.^2 + distanceY.^2);
                 val.X = sum(sum(img .* distanceX));
                 val.Y = sum(sum(img .* distanceY));
-                
+
             case {'depthmap'}
                 % oiGet(oi,'depth map',units)
                 %
@@ -1049,7 +1049,7 @@ switch oType
                 % the oi depth map values are all logical '1' (true).
                 if checkfields(oi,'depthMap'), val = oi.depthMap; end
                 if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-                
+
             case {'depthrange'}
                 % oiGet(oi,'depth map', units)
                 % Min and max of the depth values > 0
@@ -1057,7 +1057,7 @@ switch oType
                 tmp = depthmap(depthmap > 0);
                 val = [min(tmp(:)), max(tmp(:))];
                 if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
-                
+
                 % Illuminant methods. Related to ISET3D.
                 %
                 % In some iset3d cases we compute illuminant information.
@@ -1081,7 +1081,7 @@ switch oType
                 if isempty(il), disp('No OI illuminant.'); return;
                 else,           val = illuminantGet(il,'illuminant format');
                 end
-                
+
             case {'illuminantphotons'}
                 % The data field is has illuminant in photon units.
                 il = oiGet(oi,'illuminant');
@@ -1108,13 +1108,13 @@ switch oType
             case {'illuminantwave'}
                 % Must be the same as the oi wave
                 val = oiGet(oi,'wave');
-                
+
             case {'illuminantxyz','whitexyz'}
                 % XYZ coordinates of illuminant, which is also the scene white
                 % point.
                 energy = oiGet(oi,'illuminant energy');
                 wave   = oiGet(oi,'wave');
-                
+
                 % Deal with spatial spectral case and vector case
                 if ndims(energy) == 3
                     [energy,r,c] = RGB2XWFormat(energy);
@@ -1125,10 +1125,10 @@ switch oType
                 end
                 % This can be single with the new data format.
                 val = double(val);
-                
+
             otherwise
                 disp(['Unknown parameter: ',parm]);
-                
+
         end
 end
 

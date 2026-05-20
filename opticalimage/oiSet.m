@@ -80,7 +80,7 @@ function oi = oiSet(oi,parm,val,varargin)
 %       {'psf image heights'}  - Vector of sampled image heights
 %       {'rayTrace optics name'}  - Optics used to derive shift-variant psf
 %
-%      {'compute method'}  - How to apply the OTF. 
+%      {'compute method'}  - How to apply the OTF.
 %                              'opticspsf' - PSF method that regenerates PSF from the wvf.
 %                              'opticsotf' - OTF method that splines the OTF
 %                              'humanmw'   - Human Marimont-Wandell calc
@@ -174,7 +174,7 @@ elseif isequal(oType,'wvf')
         % Let's preserve the parameters.
 
         % We are adjusting the wavefront parameters
-        % These are stored in the optics structure of the oi now.        
+        % These are stored in the optics structure of the oi now.
         wvf = opticsGet(oi.optics,'wvf');
         if (isempty(wvf))
             error('Trying to set wvf structure of optics, but there is none there.');
@@ -205,7 +205,7 @@ elseif isequal(oType,'wvf')
         % We assume the new wvf has wavelength that matches the oi.
         % Perhaps we should check this.
         wvf = wvfCompute(wvf);
-        
+
         % Rebuild the oi.  data is clear, which is a good thing.
         oi  = wvf2oi(wvf);
 
@@ -219,10 +219,10 @@ elseif isequal(oType,'wvf')
         oi = oiSet(oi,'wangular',wAngular);
         oi = oiSet(oi,'data',[]);
         oi = oiSet(oi,'depthmap',depthmap);
-        
+
         % Put the modified wvf back into the oi's optics structure.
         oi.optics = opticsSet(oi.optics,'wvf',wvf);
-        
+
         return;
     end
 elseif isempty(parm)
@@ -291,7 +291,7 @@ switch parm
             end
             app.popupRender.Value = app.popupRender.Items{val};
             app.refresh;
-       end
+        end
 
     case {'distance' }
         % Positive for scenes, negative for optical images
@@ -306,7 +306,7 @@ switch parm
         else
             error('Illegal value for computeMethod passed');
         end
-        
+
     case {'wangular','widthangular','hfov','horizontalfieldofview','fov'}
         % Angular field of view for the OI width.  In degrees.
         oi.wAngular = val;
@@ -321,13 +321,13 @@ switch parm
         evalin('caller','mfilename')
         warndlg('Setting oi magnification.  Bad idea.')
         oi.magnification = val;
-        
+
     case {'optics','opticsstructure'}
         oi.optics = val;
-        
+
     case {'data','datastructure'}
         oi.data = val;
-        
+
     case {'lens', 'lenspigment'}
         % Imported from ISETBio.  Probably this should be
         % oiSet(oi,'optics lens',lens);
@@ -342,7 +342,7 @@ switch parm
         if ~(isa(val, 'double') || isa(val, 'single') || isa(val, 'gpuArray'))
             error('Photons must be type double / single / gpuArray');
         end
-        
+
         % This should probably go away.
         bitDepth = oiGet(oi, 'bitDepth');
         if isempty(bitDepth), error('Compression parameters not set'); end
@@ -351,7 +351,7 @@ switch parm
             idx = ieFindWaveIndex(oiGet(oi, 'wave'),varargin{1});
             idx = logical(idx);
         end
-        
+
         switch bitDepth
             case 64 % Double
                 if isempty(varargin)
@@ -368,10 +368,10 @@ switch parm
             otherwise
                 error('Unsupported bit depth %f',bitDepth);
         end
-        
+
         % Clear out derivative luminance/illuminance computations
         oi = oiSet(oi,'illuminance', []);
-        
+
     case {'datamin','dmin'}
         % Only used by compressed photons.  Not by user.
         oi.data.dmin = val;
@@ -382,11 +382,11 @@ switch parm
         % Only used by compressed photons.  Not by user.
         oi.data.bitDepth = val;
         % oi = oiClearData(oi);
-        
+
     case {'illuminance','illum'}
         % The value is stored for efficiency.
         oi.data.illuminance = val;
-        
+
     case {'meanillum','meanilluminance'}
         % Set the whole illuminance
         % The mean will be derived in oiGet.
@@ -398,7 +398,7 @@ switch parm
     case {'datawave','datawavelength','wave','wavelength'}
         % oi = oiSet(oi,'wave',val)
         % val is a vector in evenly spaced nanometers
-        
+
         % If there are photon data, we interpolate the data as well as
         % setting the wavelength. If there are no photon data, we just set
         % the wavelength.
@@ -407,7 +407,7 @@ switch parm
         elseif ~isequal(val, oiGet(oi, 'wave'))
             oi = oiInterpolateW(oi, val);
         end
-        
+
         % Optical methods
     case {'opticsmodel'}
         % oi = oiSet(oi,'optics model', 'ray trace');
@@ -416,7 +416,7 @@ switch parm
         % Spacing and case variation is allowed.
         val = ieParamFormat(val);
         oi.optics.model = val;
-        
+
         % Glass diffuser properties
     case {'diffusermethod'}
         % This determines calculation
@@ -427,7 +427,7 @@ switch parm
         % Should be in meters.  The value is set for shift invariant blur.
         % The value for birefringent could come from here, too.
         oi.diffuser.blur = val;
-        
+
         % For the 'wvf' model case, under development
     case {'zernike'}
         % Store the Zernike polynomial coefficients.  Maybe we should
@@ -455,12 +455,12 @@ switch parm
         % Wavelengths for this calculation. Should match the optics, I
         % think.  Not sure why it is duplicated.
         oi.psf.wavelength = val;
-        
+
     case 'depthmap'
         % Depth map, usuaully inherited from scene, in meters
         % oiSet(oi,'depth map',dMap);
         oi.depthMap = val;
-        
+
         % Chart parameters for MCC and other cases
     case {'chartparameters'}
         % Reflectance chart parameters are stored here.
@@ -474,7 +474,7 @@ switch parm
         % [colMin rowMin width height]
         % Used for ROI display and management.
         oi.chartP.currentRect = val;
-        
+
         % Illuminant (spatial-spectral) for ISET3D case
     case {'illuminant'}
         % The whole structure
@@ -485,7 +485,7 @@ switch parm
         % changes the reflectance. This might not be what you want.  If you
         % want to change the scene as if it is illuminanted differently
         % use the function: sceneAdjustIlluminant()
-        
+
         % The data can be a vector (one SPD for the whole image) or they
         % can be in spatial spectral format SPD with a different illuminant
         % at each position.
@@ -514,7 +514,7 @@ switch parm
         oi.illuminant.comment = val;
     case {'illuminantspectrum'}
         oi.illuminant.spectrum = val;
-        
+
     otherwise
         error('Unknown oiSet parameter: %s',parm);
 end
