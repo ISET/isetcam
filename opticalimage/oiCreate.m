@@ -71,6 +71,10 @@ function [oi, wvf, scene] = oiCreate(oiType,varargin)
 %      oi = oiCreate('default');
 %      oi = initDefaultSpectrum(oi, 'hyperspectral');
 %
+%  Bare optical images created without a scene carry a default image-plane
+%  geometry of 10 deg horizontal FOV and 256 by 256 samples. oiCompute
+%  overwrites these defaults using the scene geometry.
+%
 % Copyright ImagEval Consultants, LLC, 2003.
 %
 % See also:  
@@ -363,6 +367,27 @@ switch ieParamFormat(oiType)
         fprintf('-------\n')
         
         error('***Unknown oiType: %s\n',oiType);
+end
+
+if isstruct(oi) && checkfields(oi,'type') && strcmpi(oi.type,'opticalimage')
+    oi = oiApplyDefaultGeometry(oi);
+end
+
+end
+
+function oi = oiApplyDefaultGeometry(oi)
+
+if (~checkfields(oi,'wAngular')) || isempty(oi.wAngular)
+    oi.wAngular = 10;
+end
+
+if (~checkfields(oi,'data','photons')) || isempty(oi.data.photons)
+    if (~checkfields(oi,'rows')) || isempty(oi.rows)
+        oi.rows = 256;
+    end
+    if (~checkfields(oi,'cols')) || isempty(oi.cols)
+        oi.cols = 256;
+    end
 end
 
 end

@@ -2,7 +2,7 @@ function tests = test_oi()
     tests = functiontests(localfunctions);
 end
 
-function testMain(testCase)
+function testMain(~)
 %% Test optical image functions
 %
 % This tests the diffraction limited case.  There are other wvf cases

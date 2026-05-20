@@ -325,9 +325,15 @@ switch oType
 
             case {'rows','row','nrows','nrow'}
                 if checkfields(oi,'data','photons'), val = size(oi.data.photons,1);
+                elseif checkfields(oi,'rows') && ~isempty(oi.rows)
+                    val = oi.rows;
                 else
                     % disp('Using current scene rows')
-                    scene = vcGetObject('scene');
+                    try
+                        scene = vcGetObject('scene');
+                    catch
+                        scene = [];
+                    end
                     if isempty(scene)
                         disp('oiGet: No scene and no oi data.  Using 256 rows.');
                         val = 256;
@@ -338,9 +344,15 @@ switch oType
                 
             case {'cols','col','ncols','ncol'}
                 if checkfields(oi,'data','photons'), val = size(oi.data.photons,2);
+                elseif checkfields(oi,'cols') && ~isempty(oi.cols)
+                    val = oi.cols;
                 else
                     % disp('Using current scene cols')
-                    scene = vcGetObject('scene');
+                    try
+                        scene = vcGetObject('scene');
+                    catch
+                        scene = [];
+                    end
                     if isempty(scene)
                         disp('No scene and no oi data.  Using 256 cols.');
                         val = 256;
@@ -449,20 +461,8 @@ switch oType
                 if checkfields(oi,'wAngular') && ~isempty(oi.wAngular)
                     val = oi.wAngular;
                 else
-                    % We use the scene or a default.  Maybe this should be
-                    % an error.  Or computed from the 'width' and the
-                    % 'focal plane distance'.
-                    fprintf('*** The oi fov is not set yet.  ');
-                    scene = vcGetObject('scene');
-                    if isempty(scene) 
-                        % Default scene visual angle.
-                        fprintf('Using a default fov of 10.\n');
-                        disp('oiGet:  No scene, arbitrary oi angle: 10 deg'), val = 10;
-                    else              
-                        % Use current scene angular width
-                        fprintf('Using the scene fov.\n');
-                        val = sceneGet(scene,'wangular');
-                    end
+                    error(['OI horizontal field of view is not set. ', ...
+                        'Call oiCompute with a scene or set oi = oiSet(oi,''wangular'',value).']);
                 end
                 
             case {'hangular','heightangular','vfov','verticalfieldofview'}

@@ -236,6 +236,16 @@ switch parm
         oi.name = val;
     case 'type'
         oi.type = val;
+    case {'size'}
+        if numel(val) ~= 2
+            error('OI size must be a [rows cols] vector.');
+        end
+        oi.rows = val(1);
+        oi.cols = val(2);
+    case {'rows','row','nrows','nrow'}
+        oi.rows = val;
+    case {'cols','col','ncols','ncol'}
+        oi.cols = val;
     case {'filename'}
         % When the data are ready from a file, we save the file name.
         % Happens, perhaps, when reading multispectral image data.
