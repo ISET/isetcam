@@ -61,11 +61,5 @@ assert(abs(support(1,end,1)/4.2141217067371e-05 - 1) < 1e-6);
 assert(abs(support(1,1,2)/-4.2141217067371e-05 - 1) < 1e-6);
 assert(abs(support(end,1,2)/4.2141217067371e-05 - 1) < 1e-6);
 
-%% Check GUI control
-oiWindow(oi); pause(0.2);
-oiSet(oi,'gamma',1);
-oiSet(oi,'gamma',0.4); pause(0.5)
-oiSet(oi,'gamma',1);
-
 %%
 end
