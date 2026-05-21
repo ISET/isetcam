@@ -41,7 +41,7 @@ theWavelength = wvfGet(wvfParams0,'wave');
 wvfParams0 = wvfComputePupilFunction(wvfParams0);
 assert(abs(mean(wvfGet(wvfParams0,'pupilfunc'),'all') - 0.0269) < 0.001);
 
-% ieNewGraphWin; imagesc(angle(wvfGet(wvfParams0,'pupil function',theWavelength)))
+% ieFigure; imagesc(angle(wvfGet(wvfParams0,'pupil function',theWavelength)))
 
 %% Initialize Stiles Crawford
 wvfParams0 = wvfSet(wvfParams0,'sce params',sceCreate(theWavelength,'none'));
@@ -53,7 +53,7 @@ wvfParams = wvfComputePupilFunction(wvfParams);
 pupilF = wvfGet(wvfParams,'pupil function',theWavelength);
 assert(abs(abs(mean(pupilF,'all')) - 0.0036) < 0.001);
 
-% ieNewGraphWin;  mesh(angle(pupilF))
+% ieFigure;  mesh(angle(pupilF))
 % Add the x,y units, which describe the pupil, I think, in some scale
 % related to mm, but not sure which.
 
@@ -63,7 +63,7 @@ wvfParams = wvfSet(wvfParams,'wave',theWavelength);
 wvfParams = wvfSet(wvfParams,'sce params',sceCreate(theWavelength,'none'));
 wvfParams = wvfComputePupilFunction(wvfParams);
 pupilF = wvfGet(wvfParams,'pupil function',theWavelength);
-% ieNewGraphWin;  imagesc(angle(pupilF))
+% ieFigure;  imagesc(angle(pupilF))
 assert(abs(abs(mean(pupilF,'all')) -  0.0037) < 0.001);
 
 %% Add a SCE
@@ -73,11 +73,11 @@ wvfParams  = wvfComputePupilFunction(wvfParams);
 pupilF = wvfGet(wvfParams,'pupil function',theWavelength);
 assert(abs(abs(mean(pupilF,'all')) -  0.0037) < 0.001);
 
-% ieNewGraphWin;  imagesc(angle(pupilF))
+% ieFigure;  imagesc(angle(pupilF))
 
 % It looks like the center of the SCE effect is not in the center of pupil.
 % Maybe that is right?  Don't really understand.
-% ieNewGraphWin;  mesh(abs(pupilF))
+% ieFigure;  mesh(abs(pupilF))
 
 
 %% End

@@ -96,7 +96,7 @@ function wvf = wvfComputePupilFunction(wvf, varargin)
  % so it wouldn't just be uniform.
  wvf = wvfCreate('lca method','human');
  wvf = wvfComputePupilFunction(wvf);
- ieNewGraphWin;
+ ieFigure;
  subplot(1,2,1); imagesc(wvfGet(wvf,'pupil function phase')); axis('square');
  subplot(1,2,2); imagesc(wvfGet(wvf,'aperture')); axis('square');
 %}
@@ -217,12 +217,12 @@ for ii = 1:nWavelengths
     % radius (measPupilSizeMM/2)
     norm_radius = (sqrt(xpos .^ 2 + ypos .^ 2)) / (measPupilSizeMM / 2);
     theta = atan2(ypos, xpos);
-    % ieNewGraphWin; imagesc(norm_radius); axis square
+    % ieFigure; imagesc(norm_radius); axis square
 
     % Only values that are within the unit circle are valid for the
     % Zernike polynomial.
     norm_radius_index = (norm_radius <= 1);
-    % ieNewGraphWin; imagesc(pupilPos,pupilPos,norm_radius_index); axis image   
+    % ieFigure; imagesc(pupilPos,pupilPos,norm_radius_index); axis image   
 
     %% The aperture function calculations
 
@@ -244,7 +244,7 @@ for ii = 1:nWavelengths
             aperture(aperture < 0) = 0;
         end
     end
-    % ieNewGraphWin; imagesc(aperture); axis square
+    % ieFigure; imagesc(aperture); axis square
 
     % This index has the locations of the calculated pupil values.  Values
     % outside this region will be set to 0.
@@ -285,7 +285,7 @@ for ii = 1:nWavelengths
     end
     aperture = imresize(aperture,[nPixels,nPixels],'nearest');
     
-    % ieNewGraphWin; imagesc(pupilPos,pupilPos,aperture); axis image    
+    % ieFigure; imagesc(pupilPos,pupilPos,aperture); axis image    
 
     % Keep the amplitude within bounds. imresize, with some interpolation,
     % functions, produce values outside 0,1.  With bilinear we have not
@@ -299,7 +299,7 @@ for ii = 1:nWavelengths
     aperture(aperture > 1) = 1;
     aperture(aperture < 0) = 0;
 
-    % ieNewGraphWin; imagesc(pupilPos,pupilPos,aperture); axis image    
+    % ieFigure; imagesc(pupilPos,pupilPos,aperture); axis image    
     
     if p.Results.computesce
         % Incorporate the SCE correction params.  Modify the aperture
@@ -436,13 +436,13 @@ for ii = 1:nWavelengths
     pupilfunc{ii} = aperture .* pupilfuncphase;
     %pupilfunc{ii} = pupilfuncphase;
     %{
-     ieNewGraphWin; imagesc(pupilPos,pupilPos,aperture); axis image
-     ieNewGraphWin; imagesc(pupilPos,pupilPos,angle(pupilfuncphase)); axis image
-     ieNewGraphWin; imagesc(pupilPos,pupilPos,abs(pupilfuncphase)); axis image
+     ieFigure; imagesc(pupilPos,pupilPos,aperture); axis image
+     ieFigure; imagesc(pupilPos,pupilPos,angle(pupilfuncphase)); axis image
+     ieFigure; imagesc(pupilPos,pupilPos,abs(pupilfuncphase)); axis image
     %}
     %{
-     ieNewGraphWin; imagesc(pupilPos,pupilPos,abs(pupilfunc{ii})); axis image
-     ieNewGraphWin; imagesc(pupilPos,pupilPos,angle(pupilfunc{ii})); axis image
+     ieFigure; imagesc(pupilPos,pupilPos,abs(pupilfunc{ii})); axis image
+     ieFigure; imagesc(pupilPos,pupilPos,angle(pupilfunc{ii})); axis image
     %}
     
     % These are special parameters Heidi Hofer calculated.  We do not

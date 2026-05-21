@@ -151,7 +151,7 @@ function lcaDiopters = wvfLCAFromWavelengthDifference(...
 	for ii = 1:length(w)
         d3(ii) = wvfLCAFromWavelengthDifference(w0, w(ii), 'iset');
     end
-	vcNewGraphWin; hold on
+	ieFigure; hold on
     plot(w, d1, 'r-', 'LineWidth', 4);
     plot(w, d2, '--g','LineWidth', 3);
     plot(w, d3, ':b', 'LineWidth', 2);

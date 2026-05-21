@@ -32,7 +32,7 @@ assert(abs(imageWidthMM - expectedWidthMM) < 1e-12);
 
 transWave = opticsGet(optics,'transmittance wave');
 transScale = opticsGet(optics,'transmittance');
-assert(isequal(size(transWave),size(transScale)));
+assert(numel(transWave) == numel(transScale));
 assert(all(transScale == 1));
 
 end

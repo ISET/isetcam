@@ -44,13 +44,13 @@ function lsf = psf2lsf(psf,varargin)
 
    % Passes fewer frequencies because the broad direction
    lsf = psf2lsf(psf);
-   ieNewGraphWin; plot(lsf);
+   ieFigure; plot(lsf);
    lsf1 = sum(psf,2);
    hold on; plot(lsf1,'o');
 
    % More frequencies because the narrow direction
    lsf = psf2lsf(psf,'direction','vertical');
-   ieNewGraphWin; plot(lsf);
+   ieFigure; plot(lsf);
    lsf1 = sum(psf,1);
    hold on; plot(lsf1,'o');
 
@@ -59,7 +59,7 @@ function lsf = psf2lsf(psf,varargin)
    % Loops through wavelengths
    psf = randn(128,128,6);
    lsf = psf2lsf(psf);
-   ieNewGraphWin; surf(lsf)
+   ieFigure; surf(lsf)
 %}
 
 %%

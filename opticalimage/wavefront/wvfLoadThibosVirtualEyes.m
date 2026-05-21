@@ -78,22 +78,22 @@ function [sample_mean, sample_cov, subject_coeffs] = ...
     s7 = wvfLoadThibosVirtualEyes(7.5);
     N = length(s3);
 
-    vcNewGraphWin;
+    ieFigure;
     plot(s3(1:N), s4(1:N), 'o');
     axis equal;
     grid on
 
-    vcNewGraphWin;
+    ieFigure;
     plot(s4(1:N), s6(1:N), 'o'); 
     axis equal; 
     grid on
 
-    vcNewGraphWin;
+    ieFigure;
     plot(s6(1:N), s7(1:N), 'o'); 
     axis equal; 
     grid on
 
-    vcNewGraphWin;
+    ieFigure;
     plot(s3(1:N), s7(1:N), 'o'); 
     axis equal; 
     grid on

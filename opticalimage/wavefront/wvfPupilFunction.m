@@ -106,7 +106,7 @@ if isempty(amplitude)
 else                  
     A = imresize(amplitude,[nPixels,nPixels]);
 end
-% ieNewGraphWin; imagesc(A); axis image
+% ieFigure; imagesc(A); axis image
 
 pupilDiameterMM = wvfGet(wvf,'calc pupil diameter','mm');
 
@@ -135,13 +135,13 @@ for ii = 1:nWavelengths
     % pupil radius.
     norm_radius = (sqrt(xpos .^ 2 + ypos .^ 2)) / (pupilDiameterMM / 2);
     theta = atan2(ypos, xpos);
-    % ieNewGraphWin; imagesc(norm_radius); axis square
+    % ieFigure; imagesc(norm_radius); axis square
 
     % Only values that are within the unit circle are valid for the Zernike
     % polynomial. 
     norm_radius_index = (norm_radius <= 1);
     % The indices within the unit radius
-    % ieNewGraphWin; imagesc(norm_radius_index); axis image   
+    % ieFigure; imagesc(norm_radius_index); axis image   
 
     % We place the amplitude function within the region defined by the
     % calculated pupil radius.  
@@ -160,7 +160,7 @@ for ii = 1:nWavelengths
     % Keep the amplitude within bounds
     A(A > 1) = 1;
     A(A < 0) = 0;
-    % ieNewGraphWin; imagesc(A); axis image
+    % ieFigure; imagesc(A); axis image
 
     % Get Zernike coefficients and add in appropriate info to defocus
     % Need to make sure the c vector is long enough to contain defocus
@@ -193,20 +193,20 @@ for ii = 1:nWavelengths
     % Here is phase of the pupil function, w/ unit amplitude everywhere
     wavefrontaberrations{ii} = wavefrontAberrationsUM;
     pupilfuncphase = exp(-1i * 2 * pi * wavefrontAberrationsUM / waveUM(ii));
-    % ieNewGraphWin; imagesc(wavefrontAberrationsUM);
+    % ieFigure; imagesc(wavefrontAberrationsUM);
 
     % Set values outside the pupil to 0 amplitude.  Though possibly
     % this should all be part of the amplitude mask, A.  These are the
     % values not in the norm_radius_index calculated above.
     pupilfuncphase(norm_radius>0.5) = 1;
-    % ieNewGraphWin; imagesc(angle(pupilfuncphase));
+    % ieFigure; imagesc(angle(pupilfuncphase));
 
     % Multiply phase by the pupil function amplitude function.
     % Important to zero out before this step, because computation of A
     % doesn't know about the pupil size.
     pupilfunc{ii} = A .* pupilfuncphase;
-    % ieNewGraphWin; imagesc(angle(pupilfunc{ii})); axis image
-    % ieNewGraphWin; imagesc(abs(pupilfunc{ii})); axis image;
+    % ieFigure; imagesc(angle(pupilfunc{ii})); axis image
+    % ieFigure; imagesc(abs(pupilfunc{ii})); axis image;
 
     % We think the ratio of these two quantities tells us how much
     % light is effectively lost in cone absorbtions because of the

@@ -62,7 +62,7 @@ data2  = oiPlot(oi,'illuminance hline',round([1 sz(2)/2]),'nofigure');
 %% Check that the two methods are close
 
 % Have a look if you are here.
-% ieNewGraphWin; plot(data1.pos,data1.data,'r-',data2.pos,data2.data,'ko');
+% ieFigure; plot(data1.pos,data1.data,'r-',data2.pos,data2.data,'ko');
 
 % Fractional error is a couple of percent
 assert(std( (data1.data ./ data2.data) ) < 4e-2)
@@ -90,7 +90,7 @@ uDataOTF = oiPlot(oi,'illuminance hline',round([1 sz(2)/2]),'nofigure');
 d1 = ieScale(uDataOTF.data,1);
 d2 = ieScale(uDataPSF.data,1);
 
-ieNewGraphWin([],'tall');
+ieFigure([],'tall');
 tiledlayout(2,1);
 nexttile;
 plot(uDataOTF.pos,d1,'ro',uDataPSF.pos,d1,'gs');

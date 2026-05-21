@@ -47,7 +47,7 @@ wvfP = wvfSet(wvfP,'lcaMethod','human');
 wvfParams = wvfCompute(wvfP);
 
 %% Plot the series of lines
-f = vcNewGraphWin([],'tall');
+f = ieFigure([],'tall');
 for ii=1:nWave
     subplot(nWave,1,ii)
     [f,p] = wvfPlot(wvfParams,'image psf','unit','um','wave',wList(ii),'plotrange',maxUM,'window',false);
@@ -58,7 +58,7 @@ end
 % [~,p] = wvfPlot(wvfParams,'1d psf angle','min',ii,maxMIN);
 
 %% Plot the series of point spreads
-vcNewGraphWin([],'tall');
+ieFigure([],'tall');
 for ii=1:nWave
     subplot(nWave,1,ii)
     wvfPlot(wvfParams,'image psf','unit','um','wave',wList(ii),'plotrange',maxUM,'window',false);

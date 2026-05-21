@@ -40,7 +40,7 @@ wvf0 = wvfCompute(wvf0);
 psf0 = wvfGet(wvf0, 'psf');
 psfC = psfCircularlyAverage(psf0);
 
-ieNewGraphWin;
+ieFigure;
 subplot(1, 2, 1); mesh(psf0); title('Astigmatic PSF');
 view(0, 90); axis('equal'); axis([50 150 50 150]);
 
