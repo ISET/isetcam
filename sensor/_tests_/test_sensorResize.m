@@ -17,7 +17,6 @@ ieInit
 
 %% Create a scene and compute an OI
 scene = sceneCreate;
-sceneWindow(scene);
 
 oi = oiCreate;
 oi = oiCompute(oi,scene);
@@ -48,7 +47,6 @@ sensor4 = sensorHumanResize(sensor,rows,cols);
 sensor4 = sensorSet(sensor4,'exptime',0.2);
 sensor4 = sensorCompute(sensor4,oi);
 v = sensorGet(sensor4,'volts');
-imagesc(v)
 sensorWindow(sensor4);
 
 %%

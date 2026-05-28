@@ -11,10 +11,9 @@ function testMain(testCase)
 % all of the different exposures in the sensor window, which has a slider
 % that lets you scan through the different exposures.
 %
-% The code first illustrates working with *scene, oi, sensor* directly.
-% Then it shows the same calculation using a *camera* object.
+% The code illustrates working with *scene, oi, sensor* directly.
 %
-% See also:  sensorCompute, cameraCreate, cameraWindow
+% See also:  sensorCompute, sensorWindow
 %
 % Copyright Imageval, LLC, 2013
 
@@ -43,6 +42,11 @@ exposurePlane = floor(nExposures/2) + 1;
 sensor = sensorSet(sensor,'exposure plane',exposurePlane);
 sensor = sensorCompute(sensor,oi);
 
+volts = sensorGet(sensor,'volts');
+assert(isequal(size(volts,3),numel(T1)));
+assert(isequal(sensorGet(sensor,'exposure time'),T1));
+assert(sensorGet(sensor,'n captures') == numel(T1));
+
 % Notice on the lower right the Bracket, and how there is a slider on the
 % lower left that is labeled 'Exposure'. Adjust the slider on the lower
 % left of the window to show a different exposure duration.
@@ -57,13 +61,6 @@ sensorWindow;
 %% Longest
 sensor = sensorSet(sensor,'exposure plane',5);
 vcReplaceObject(sensor); sensorWindow;
-
-%% This is very short code when you work with a camera object
-
-camera = cameraCreate;
-camera = cameraSet(camera,'sensor exp time',T1);
-camera = cameraCompute(camera,scene);
-cameraWindow(camera,'sensor');
 
 %%
 end

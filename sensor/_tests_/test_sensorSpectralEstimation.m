@@ -117,19 +117,7 @@ subplot(1,2,2), plot(wave,f); grid on; set(gca,'ylim',[0 1])
 title('Sensor');
 %}
 
-%% Compare directly
-
-ieNewGraphWin;
-plot(f(:),cFilters(:),'o');
-title('Estimated and simulated filters')
-identityLine;
-xlabel('Simulated')
-ylabel('Estimated');
-
 assert( abs(mean(cFilters(:))/0.273934849542002 )  - 1 < 1e-3,'Estimated filter test.');
-
-%%
-drawnow;
 
 %%
 

@@ -32,9 +32,6 @@ sensor3 = sensorCompute(sensor3,oi);
 sensorWindow(sensor3);
 
 %%
-drawnow;
-
-%%
 
 
 

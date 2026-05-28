@@ -21,47 +21,37 @@ sensorWindow(sensor);
 
 %%
 sensorPlot(sensor,'electrons hline',[20 20]);
-drawnow;
 
 %%
 sensorPlot(sensor,'volts vline',[20 20]);
-drawnow;
 
 %%
 sensorPlot(sensor,'volts hline',[20 20]);
-drawnow;
 
 %%
 sensorPlot(sensor,'dv hline',[20 20]);
-drawnow;
 
 %%
 sensorPlot(sensor,'sensor snr');
-drawnow;
 
 %%
 uData = sensorPlot(sensor,'electrons hist',[15 15 45 45]);
 sensorPlot(sensor,'electrons hist',uData.roiLocs);
-drawnow;
 
 %%
 sensorPlot(sensor,'pixel snr');
-drawnow;
 
 %%
 sensorPlot(sensor,'cfa block');
-drawnow;
 
 %% Dummy up one of the blocks and check the color
 n = sensorGet(sensor,'filter names');
 n{3} = 'oDefault';
 sensor2 = sensorSet(sensor,'filter names',n);
 sensorPlot(sensor2,'cfa block');
-drawnow;
 
 %%
 sensorPlot(sensor,'cfa block');
-drawnow;
 
 %%
 sensorPlot(sensor,'etendue');

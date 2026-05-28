@@ -21,8 +21,5 @@ sensor = cameraGet(camera,'sensor');
 
 sensorPlot(sensor,'chromaticity',[20 20 40 40]);
 
-%%
-drawnow;
-
 %% End
 end

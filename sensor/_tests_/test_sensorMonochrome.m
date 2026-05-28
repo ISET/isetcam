@@ -16,29 +16,17 @@ ieInit
 s = sceneCreate; 
 oi = oiCreate; oi = oiCompute(oi,s);
 
-%% This is a color sensor
-sensor = sensorCreate;
-sensor = sensorCompute(sensor,oi);
-% sensorWindow(sensor);
-
-ip = ipCreate;
-ip = ipCompute(ip,sensor); 
-ipWindow(ip);
-
-%% Now the monochrome sensor
+%% Monochrome sensor response
 sensor = sensorCreate('monochrome');
 sensor = sensorSet(sensor,'noise flag',0);
 sensor = sensorCompute(sensor,oi);
 sensorWindow(sensor);
 
-%% Show in the IP window
-ip = ipCompute(ip,sensor); 
-ipWindow(ip);
-
-assert( abs (mean(ipGet(ip,'result'),'all')/0.327242224265567 - 1) < 1e-4)
-
-%%
-drawnow;
+volts = sensorGet(sensor,'volts');
+electrons = sensorGet(sensor,'electrons');
+assert( abs(mean(volts,'all')/0.327242314815521 - 1) < 1e-4);
+assert( abs(mean(electrons,'all')/3272.42266414141 - 1) < 1e-4);
+assert(sensorGet(sensor,'nfilters') == 1);
 
 %% END
 

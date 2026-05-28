@@ -41,49 +41,17 @@ sensor = sensorSet(sensor,'exp time',0.025*(3*1e-4));  % Very short exposure
 sensor = sensorCompute(sensor,oi);
 % sensorWindow(sensor,'scale',true);
 
-%% Plot histogram and the Poisson histogram together
-
 e = sensorGet(sensor,'electrons');
 lambda = mean(e(:));
-
-%%
-ieNewGraphWin;
-nSamps = length(e(:));
-eHist = histogram(e(:),'Normalization','probability');
-hold on
-val = poissrnd(repmat(lambda,nSamps,1));
-pHist = histogram(val(:),'Normalization','probability');
-pHist.NumBins = eHist.NumBins*2;
-hold off
-xlabel('Electrons'); ylabel('Count')
-
-%% Poisson formula for lambda
-samples  = 0:round(5*lambda);
-nSamples = length(samples);
-p = zeros(nSamples,1);
-for ii=0:(nSamples-1)
-    p(ii+1) = exp(-lambda)*((lambda^ii)/factorial(ii));
-end
-hold on
-plot(samples,p,'ro--');
-
+assert(lambda > 0);
 
 %% Now for a longer exposure
 sensor = sensorSet(sensor,'exp time',0.025*(3*1e-4)*100);  % Long exposure
 sensor = sensorCompute(sensor,oi);
 % sensorWindow(sensor,'scale',true);
 
-%% Plot histogram and the Poisson histogram together
-
 e = sensorGet(sensor,'electrons');
 lambda = mean(e(:));
-
-%%
-ieNewGraphWin;
-nSamps = length(e(:));
-eHist = histogram(e(:),'Normalization','probability');
-xlabel('Electrons'); ylabel('Count')
-
 
 %% Poisson formula means it should be fit by a Gaussian and
 % the std dev should be sqrt(mean)
@@ -94,6 +62,7 @@ fprintf('\n-----\n');
 fprintf('Nominal: std dev %.2f\n',sd);
 fprintf('Data:    std dev %.2f\n',sigma);
 fprintf('-----\n');
+assert(abs(sigma/sd - 1) < 0.1,'Poisson electron standard deviation is unexpected');
 
 %% END
 

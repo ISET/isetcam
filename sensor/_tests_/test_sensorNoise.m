@@ -64,8 +64,6 @@ sensorAllNoise2 = sensorSet(sensorAllNoise2,'name','all noise2');
 
 v1 = sensorGet(sensorAllNoise,'volts');
 v2 = sensorGet(sensorAllNoise2,'volts');
-ieNewGraphWin; plot(v1(:),v2(:),'.')
-title('Should be identity line')
 assert(max(abs(v1(:) - v2(:))) < 1e-6,'Reused noise difference too large')
 
 %% Do not reuse the noise
@@ -75,8 +73,6 @@ sensorAllNoise3 = sensorSet(sensorAllNoise3,'name','all noise2');
 
 v1 = sensorGet(sensorAllNoise,'volts');
 v2 = sensorGet(sensorAllNoise3,'volts');
-ieNewGraphWin; plot(v1(:),v2(:),'.')
-title('Should be scattered')
 assert(max(abs(v1(:) - v2(:))) > 1e-4,'Reused noise difference too small')
 
 %% Add noise to the mean
@@ -92,15 +88,7 @@ sensorWindow(sensorNoise);
 
 v1 = sensorGet(sensorMean,'volts');
 v2 = sensorGet(sensorNoise,'volts');
-ieNewGraphWin; plot(v1(:),v2(:),'.')
-xlabel('No noise'); ylabel('General noise');
-title('Should be scattered')
-
-% The photon noise, clipping, and quantization errors
-ieNewGraphWin; histogram(v1(:) - v2(:),100);
-xlabel('Volts')
-ylabel('Pixel count')
-title('Noise photon, clipping, quantization)')
+assert(max(abs(v1(:) - v2(:))) > 1e-4,'Added noise difference too small')
 
 %%  Let's try the functions on two or three test scenes.
 
@@ -130,10 +118,7 @@ sensorWindow(sensorNew2);
 
 v1 = sensorGet(sensorNew1,'volts');
 v2 = sensorGet(sensorNew2,'volts');
-ieNewGraphWin; plot(v1(:),v2(:),'.');
-grid on
-xlabel('sensor 1')
-xlabel('sensor 2')
+assert(max(abs(v1(:) - v2(:))) < 1e-12,'Noise-free sensor runs should match')
 
 %% Set sensorNew to reuse the same
 
@@ -148,10 +133,7 @@ sensorNewReuse = sensorCompute(sensorNew,oi);
 %%
 v1 = sensorGet(sensorNew,'volts');
 v2 = sensorGet(sensorNewReuse,'volts');
-ieNewGraphWin; plot(v1(:),v2(:),'.');
-grid on
-xlabel('sensor original')
-xlabel('sensor reuse')
+assert(max(abs(v1(:) - v2(:))) < 1e-6,'Reused grid-line noise difference too large')
 
 %% End
 end

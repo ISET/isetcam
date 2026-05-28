@@ -23,7 +23,6 @@ scene  = sceneSet(scene,'fov',4);
 oi     = oiCreate;
 oi     = oiCompute(oi,scene);
 sensor = sensorCreate;
-ip     = ipCreate;
 
 %% Set the channel exposures, long for blue
 
@@ -60,23 +59,22 @@ assert( abs(mean(photons(:))/2.7616738e+03) - 1 < 1e-3);
 
 % Click on the CFA exposure button to popup the channel exposure settings
 
-%% Show the image processed result
-ip = ipCompute(ip,sensor);
-srgb = ipGet(ip,'srgb');
-assert( abs(mean(srgb(:))-0.5113124) < 1e-2);
+%% Confirm the long-red exposure in the sensor mosaic
+volts = sensorGet(sensor,'volts');
+assert( abs(mean(volts(:))/0.27616739) - 1 < 1e-3);
 
 %% The same calculation with a camera objet
 
 camera = cameraCreate;
 camera = cameraSet(camera,'sensor exposure duration',T1);
 camera = cameraCompute(camera,scene);
-srgb = cameraGet(camera,'ip srgb');
-assert( abs(mean(srgb(:))-0.5488235) < 1e-2);
+cameraSensor = cameraGet(camera,'sensor');
+photons = sensorGet(cameraSensor,'electrons');
+volts = sensorGet(cameraSensor,'volts');
+assert( abs(mean(photons(:))/3.019645182291667e+03) - 1 < 1e-3);
+assert( abs(mean(volts(:))/0.301964819431305) - 1 < 1e-3);
 
 % cameraWindow(camera,'sensor');
-
-%%
-drawnow;
 
 %%
 end

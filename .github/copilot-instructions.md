@@ -54,12 +54,13 @@ Before implementing new color transforms, check `isetcam/color` for existing uti
 3. Reuse existing plotting helpers where available before custom figure styling.
 4. Keep new APIs consistent with ISETCam argument style and object naming.
 5. Update header comments (`Syntax`, `Inputs`, `Returns`, `See also`) when modifying function behavior.
-6. **Terminal Tooling**: If executing sweeping codebase searches via a terminal or run command, assume a macOS environment. The user has `rg` (ripgrep) and `find_by_name` installed. Prefer using `rg` over standard `grep` or slower MATLAB search functions.
+6. **Terminal Tooling**: If executing sweeping codebase searches via a terminal or run command, assume a macOS environment. The user has `rg` (ripgrep) and `fd` installed; prefer `rg` for text search and `fd` for filename/path search. Prefer these over standard `grep`/`find` or slower MATLAB search functions.
 
 ## MATLAB Workflow Expectations
 - Keep edits minimal and consistent with existing MATLAB style.
 - Prefer vectorized operations for performance-sensitive loops.
 - Validate modified files with workspace diagnostics when possible.
+- MATLAB is available through the VS Code MATLAB extension, with a MATLAB terminal open and the workspace path set. A local executable is also available at `/Applications/MATLAB_R2025b.app/bin/matlab`; use it with `-batch` for non-interactive test runs when needed. If a sandboxed shell launch fails silently or exits with status 1, rerun the same MATLAB command unsandboxed/escalated because MATLAB may need to write preferences or cache files outside the workspace.
 - Do not add new dependencies unless necessary.
 
 ## If Uncertain

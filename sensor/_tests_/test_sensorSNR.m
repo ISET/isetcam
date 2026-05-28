@@ -54,14 +54,7 @@ volts = logspace(log10(vSwing)-4,log10(vSwing),20);
 % Compute the SNR
 SNR = sensorSNR(sensor,volts);
 
-% Plot the relation between mean voltage level and SNR
-ieNewGraphWin;
-semilogx(volts,SNR,'k-');
-grid on; ylabel('SNR (db)'); xlabel('Volts')
-
-%% Another way to do the calculation and plot
-uData = plotSensorSNR(sensor);
-assert( abs(uData.snr(1) - (-20.043213)) < 1e-3);
+assert( abs(SNR(1) - (-20.043213)) < 1e-3);
 
 % Notice that for this plot we also show the SNR limit associated with
 % specific sources of noise.  In the graph above the Shot and Read noise
@@ -140,16 +133,11 @@ vcNewGraphWin; plotSensorSNR(sensor5);drawnow;
 % The additional SNR returns are the curves plotted in plotSensorSNR
 [SNR, volts, SNRshot, SNRread, SNRdsnu, SNRprnu] = sensorSNR(sensor,volts);
 
-% Plot the relation between mean voltage level and SNR limits from the PRNU
-% and DSNU.
-semilogx(volts,SNRprnu,'r-',...
-    volts,SNRdsnu,'b-', ...
-    volts,SNRread,'m-', ...
-    volts,SNRshot,'g-');
-grid on; ylabel('SNR (db)'); xlabel('Volts')
-legend({'PRNU','DSNU','Read','Shot'},'Location','north')
-%%
-drawnow;
+assert(numel(SNR) == numel(volts));
+assert(numel(SNRshot) == numel(volts));
+assert(numel(SNRread) == numel(volts));
+assert(isscalar(SNRdsnu) || numel(SNRdsnu) == numel(volts));
+assert(numel(SNRprnu) == numel(volts));
 
 %% END
 

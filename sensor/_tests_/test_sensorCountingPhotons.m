@@ -62,24 +62,6 @@ for ff = 1:length(fnumbers)
 end
 assert( abs(mean(totalQ(:))/4.998396095733760e+13) - 1 < 1e-5);
 
-%% Plot one spectral irradiance
-
-ieNewGraphWin([],'tall');
-tiledlayout(2,1)
-nexttile;
-plot(oiGet(oi,'wave'),spectralIrradiance,'--');
-grid on
-xlabel('Wavelength (nm)'); ylabel('Photons/s/nm/m^2');
-title(sprintf('Spectral irradiance (f# %d)',fnumbers(end)));
-
-%% Plot the number of photons as a function of f#
-
-nexttile;
-loglog(fnumbers,totalQ,'-o');
-grid on;
-xlabel('f#'); ylabel('Photons/s/m^2')
-title('Total photons vs. f#')
-
 %%
 
 end
