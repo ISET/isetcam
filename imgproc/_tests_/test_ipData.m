@@ -23,26 +23,27 @@ ip = ipCreate; ip = ipCompute(ip,sensor);
 
 %%  Read the main data types in sequence
 
-ieNewGraphWin([],'tall');
-tiledlayout(3,2);
+input = ipGet(ip,'input');
+sensorSpace = ipGet(ip,'sensor space');
+dataICS = ipGet(ip,'data ics');
+dataICSCorrected = ipGet(ip,'data ics illuminant corrected');
+dataDisplay = ipGet(ip,'data display');
+dataSRGB = ipGet(ip,'data srgb');
 
-img = ipGet(ip,'input');
-nexttile; imagesc(img); axis image; colormap(gray)
+assert(isequal(size(input),[72 88]));
+assert(isequal(size(sensorSpace),[72 88 3]));
+assert(isequal(size(dataICS),[72 88 3]));
+assert(isequal(size(dataICSCorrected),[72 88 3]));
+assert(isequal(size(dataDisplay),[72 88 3]));
+assert(isequal(size(dataSRGB),[72 88 3]));
 
-img = ipGet(ip,'sensor space');
-nexttile; imagesc(img); axis image
-
-img = ipGet(ip,'data ics');
-nexttile; imagesc(img); axis image
-
-img = ipGet(ip,'data ics illuminant corrected');
-nexttile; imagesc(img); axis image
-
-img = ipGet(ip,'data display');
-nexttile; imagesc(img);axis image
-
-img = ipGet(ip,'data srgb');
-nexttile; imagesc(img);axis image
+assert(abs(mean(double(input(:)))/0.176879730209539 - 1) < 1e-6);
+assert(abs(mean(double(dataDisplay(:)))/0.256176269958385 - 1) < 1e-6);
+assert(abs(mean(double(dataSRGB(:)))/0.499497101490208 - 1) < 1e-6);
+assert(min(dataDisplay(:)) >= 0);
+assert(max(dataDisplay(:)) <= 1);
+assert(min(dataSRGB(:)) >= 0);
+assert(max(dataSRGB(:)) <= 1);
 
 %%
 

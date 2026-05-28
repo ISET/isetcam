@@ -21,14 +21,16 @@ targetQE = ieReadSpectra('xyzQuanta',wave);
 
 T = imageSensorTransform(sensorQE,targetQE,'',wave, 'mcc');
 pred = sensorQE*T;
-ieNewGraphWin; plot(wave,pred,'--',wave,targetQE,'k-');
+assert(isequal(size(T),[4 3]));
+assert(sqrt(mean((pred(:) - targetQE(:)).^2)) < 1e-18);
 
 %% Compare to the straight pseudoinverse calculation, without the illuminant
 
 % targetQE = sensorQE*A, so 
 A = pinv(sensorQE)*targetQE;
 pred = sensorQE*A;
-ieNewGraphWin; plot(wave,pred,'--',wave,targetQE,'k-');
+assert(isequal(size(A),[4 3]));
+assert(sqrt(mean((pred(:) - targetQE(:)).^2)) < 1e-18);
 
 %% Use the transform and compare XYZ with the scene XYZ
 
@@ -52,7 +54,6 @@ sensor = sensorCreate('rgbw');
 [cf,filterNames] = ieReadColorFilter(sensorGet(sensor,'wave'),'gaussianlBGRWwithIR');
 sensor = sensorSet(sensor,'filter transmissivities',cf);
 sensor = sensorSet(sensor,'filter names',filterNames);
-sensorPlot(sensor,'spectral qe');
 %}
 % sensor = sensorCreate('MT9V024');
 % sensor = sensorCreate('imx363');
@@ -75,8 +76,8 @@ sensorXYZ = imageLinearTransform(sensorData,T);
 sceneXYZs  = ieScale(sceneXYZ,1);
 sensorXYZs = ieScale(sensorXYZ,1);
 
-iePlot(sceneXYZs(:),sensorXYZs(:),'.');
-identityLine;
+assert(isequal(size(sensorXYZs),size(sceneXYZs)));
+assert(all(isfinite(sensorXYZs(:))));
 
 %% sceneXYZ = sensorXYZ*T
 
@@ -86,8 +87,7 @@ sensorXYZs = RGB2XWFormat(sensorXYZs);
 T = sensorXYZs\sceneXYZs;
 
 tmp = sensorXYZs*T;
-iePlot(sceneXYZs(:),tmp(:),'.');
-identityLine;
+assert(sqrt(mean((tmp(:) - sceneXYZs(:)).^2)) < 0.1);
 
 %% What about an affine fit?
 
@@ -96,8 +96,7 @@ sensorXYZ_extended = [sensorXYZs,O];
 
 T = sensorXYZ_extended\sceneXYZs;
 tmp = sensorXYZ_extended*T;
-iePlot(sceneXYZs(:),tmp(:),'.');
-identityLine;
+assert(sqrt(mean((tmp(:) - sceneXYZs(:)).^2)) < 0.1);
 
 %% END
 

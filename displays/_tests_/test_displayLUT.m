@@ -29,37 +29,19 @@ ieInit
 d = displayCreate('LCD-Apple');
 gTable = displayGet(d,'gamma table');
 
-%% Show the gamma table
-ieNewGraphWin;
-plot(gTable(:,1));
-xlabel('DAC value'); ylabel('Linear intensity'); title('Gamma Table')
-grid on;
-
-%% Show the inverted gamma table
-ieNewGraphWin;
 igTable = ieLUTInvert(gTable,size(gTable,1));
-plot(igTable(:,1));
-ylabel('DAC value'); xlabel('Linear intensity'); title('Inverted Gamma Table')
-grid on;
+assert(isequal(size(igTable),size(gTable)));
 
 %% Suppose rgb is
 RGB = repmat(linspace(0.1,1,10)', 1,3);
 dac = ieLUTLinear(RGB,igTable);
-ieNewGraphWin; plot(RGB(:,1),dac(:,1),'o');
-xlabel('Linear rgb'); ylabel('DAC value'); grid on;
+assert(isequal(size(dac),size(RGB)));
+assert(all(dac(:) >= 0));
+assert(all(dac(:) <= size(gTable,1)));
 
 %% Suppose we start with the DAC value and want linear RGB
 
 estRGB = ieLUTDigital(round(dac),gTable);
-ieNewGraphWin; plot(dac(:,1),estRGB(:,1),'o');
-xlabel('DAC value'); ylabel('Linear rgb'); grid on;
-
-%% Round trip
-ieNewGraphWin;
-plot(RGB(:,1),estRGB(:,1),'o-');
-ylabel('Estimated linear rgb'); xlabel('Original linear rgb');
-grid on; title('Round trip ieLUTLinear,ieLUTDigital');
-identityLine;
 
 %% Validate
 assert(max(estRGB(:) - RGB(:)) < 0.01);
@@ -68,18 +50,11 @@ assert(max(estRGB(:) - RGB(:)) < 0.01);
 
 RGB = repmat(linspace(0.1,1,10)', 1,3);
 dac = rgb2dac(RGB,igTable);
-ieNewGraphWin; plot(RGB(:,1),dac(:,1),'o');
-xlabel('Linear rgb'); ylabel('DAC value'); grid on;
+assert(isequal(size(dac),size(RGB)));
+assert(all(dac(:) >= 0));
+assert(all(dac(:) <= size(gTable,1)));
 
 estRGB = dac2rgb(round(dac),gTable);
-ieNewGraphWin; plot(dac(:,1),estRGB(:,1),'o');
-xlabel('DAC value'); ylabel('Linear rgb'); grid on;
-
-ieNewGraphWin;
-plot(RGB(:,1),estRGB(:,1),'o-');
-ylabel('Estimated linear rgb'); xlabel('Original linear rgb');
-grid on; title('Round trip dac2rgb, rgb2dac');
-identityLine;
 
 %% Validate
 assert(max(estRGB(:) - RGB(:)) < 0.01);
