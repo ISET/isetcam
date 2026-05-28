@@ -143,22 +143,12 @@ end
 
 %% The mtfData cell array 
 
-% We graph the results, comparing the different pixel size MTFs.
-ieNewGraphWin;
-c = {'r','g','b','c','m','y','k'};
 for ii=1:length(mtfData)
-    h = plot(mtfData{ii}.freq,mtfData{ii}.mtf,['-',c{ii}]);
-    hold on
-    newText = sprintf('%.0f um\n',pSize(ii));
-    nfreq = mtfData{ii}.nyquistf;
-    l = line([nfreq ,nfreq],[0.1,0],'color',c{ii});
-    text((nfreq-10),0.12,newText,'color',c{ii});
+    assert(isfield(mtfData{ii},'freq'));
+    assert(isfield(mtfData{ii},'mtf'));
+    assert(isfield(mtfData{ii},'mtf50'));
+    assert(mtfData{ii}.mtf50 > 0);
 end
-
-xlabel('lines/mm');
-ylabel('Relative amplitude');
-title('MTF for different pixel sizes (fixed die size)');
-hold off; grid on
 
 %% END
 end

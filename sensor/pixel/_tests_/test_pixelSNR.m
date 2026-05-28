@@ -74,21 +74,5 @@ end
 assert(abs(mean(SNR{1})/2.010891692270300 - 1) < 1e-3);
 assert(abs(mean(SNR{end})/21.030386980069753 - 1) < 1e-3);
 
-%% SNR
-
-% The data were saved in the cell arrays SNR{} and luxsec{}.
-% Here we make a summary plot.
-ieNewGraphWin;
-c = {'r','g','b','c','m','y','k'};
-txt = cell(1,length(SNR));
-for ii=1:length(SNR)
-    semilogx(luxsec{ii},SNR{ii},['-',c{ii}])
-    hold on;
-    txt{ii} = sprintf('%.0f um',pixelSize(ii)*10^6);
-end
-xlabel('Lux-sec'), ylabel('SNR (db)'); title('SNR vs. Lux-sec')
-grid on
-legend(txt);
-
 %%
 end

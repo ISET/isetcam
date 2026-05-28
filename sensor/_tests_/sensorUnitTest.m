@@ -39,12 +39,10 @@ fullOnlyTests = {'test_sensorAnalyzeDarkVoltage/', ...
 switch mode
     case {'core','fast','quantitative'}
         suite = localSelectTests(suite,coreTests);
-    case {'visual','system'}
-        suite = localSelectTests(suite,fullOnlyTests);
     case {'full','all'}
         suite = localSelectTests(suite,[coreTests fullOnlyTests]);
     otherwise
-        error('Unknown sensorUnitTest mode %s. Use ''core'', ''visual'', or ''full''.',mode);
+        error('Unknown sensorUnitTest mode %s. Use ''core'' or ''full''.',mode);
 end
 
 runner = TestRunner.withTextOutput;
