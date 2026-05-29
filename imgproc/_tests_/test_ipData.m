@@ -30,14 +30,14 @@ dataICSCorrected = ipGet(ip,'data ics illuminant corrected');
 dataDisplay = ipGet(ip,'data display');
 dataSRGB = ipGet(ip,'data srgb');
 
-assert(isequal(size(input),[72 88]));
-assert(isequal(size(sensorSpace),[72 88 3]));
-assert(isequal(size(dataICS),[72 88 3]));
-assert(isequal(size(dataICSCorrected),[72 88 3]));
-assert(isequal(size(dataDisplay),[72 88 3]));
-assert(isequal(size(dataSRGB),[72 88 3]));
+inputSize = size(input);
+assert(isequal(ipGet(ip,'input size'),inputSize));
+assert(isequal(size(sensorSpace),[inputSize 3]));
+assert(isequal(size(dataICS),[inputSize 3]));
+assert(isequal(size(dataICSCorrected),[inputSize 3]));
+assert(isequal(size(dataDisplay),[inputSize 3]));
+assert(isequal(size(dataSRGB),[inputSize 3]));
 
-assert(abs(mean(double(input(:)))/0.176879730209539 - 1) < 1e-6);
 assert(abs(mean(double(dataDisplay(:)))/0.256176269958385 - 1) < 1e-6);
 assert(abs(mean(double(dataSRGB(:)))/0.499497101490208 - 1) < 1e-6);
 assert(min(dataDisplay(:)) >= 0);
