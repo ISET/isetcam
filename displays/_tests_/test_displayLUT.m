@@ -30,7 +30,12 @@ d = displayCreate('LCD-Apple');
 gTable = displayGet(d,'gamma table');
 
 igTable = ieLUTInvert(gTable,size(gTable,1));
+displayInverseGamma = displayGet(d,'inverse gamma');
 assert(isequal(size(igTable),size(gTable)));
+assert(max(abs(igTable(:) - displayInverseGamma(:))) < 1e-12);
+assert(all(reshape(diff(igTable) >= -1e-12,[],1)));
+assert(all(igTable(:) >= 0));
+assert(all(igTable(:) <= size(gTable,1)));
 
 %% Suppose rgb is
 RGB = repmat(linspace(0.1,1,10)', 1,3);
@@ -58,6 +63,29 @@ estRGB = dac2rgb(round(dac),gTable);
 
 %% Validate
 assert(max(estRGB(:) - RGB(:)) < 0.01);
+
+%% Image-shaped RGB data preserve shape through both LUT paths
+
+RGB = zeros(4,5,3);
+RGB(:,:,1) = 0.2;
+RGB(:,:,2) = 0.5;
+RGB(:,:,3) = 0.8;
+
+dac = ieLUTLinear(RGB,igTable);
+estRGB = ieLUTDigital(round(dac),gTable);
+
+assert(isequal(size(dac),size(RGB)));
+assert(isequal(size(estRGB),size(RGB)));
+assert(max(abs(estRGB(:) - RGB(:))) < 0.01);
+
+%% Scalar gamma mode is a simple power-law path
+
+RGB = repmat([0 0.25 0.5 1]',1,3);
+dac = ieLUTLinear(RGB,2);
+estRGB = ieLUTDigital(dac,2);
+
+assert(max(abs(dac(:) - sqrt(RGB(:)))) < 1e-12);
+assert(max(abs(estRGB(:) - RGB(:))) < 1e-12);
 
 %% END
 

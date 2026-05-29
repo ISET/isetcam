@@ -24,6 +24,9 @@ mode = ieParamFormat(mode);
 import matlab.unittest.TestSuite;
 import matlab.unittest.TestRunner;
 
+existingFigures = findall(groot,'Type','figure');
+cleanupFigures = onCleanup(@() localCloseTestFigures(existingFigures));
+
 % Note: If scripts use ieInit, it may call clearvars and delete the
 % unittest runner's state in the main workspace. To avoid this, consider
 % converting test scripts to function-based tests (e.g. by adding a
@@ -54,5 +57,15 @@ runner = TestRunner.withTextOutput;
 
 % Execute the test suite
 results = runner.run(suite);
+
+end
+
+function localCloseTestFigures(existingFigures)
+%% Close figures opened by tests while preserving pre-existing figures.
+
+allFigures = findall(groot,'Type','figure');
+testFigures = setdiff(allFigures,existingFigures);
+testFigures = testFigures(ishghandle(testFigures));
+if ~isempty(testFigures), close(testFigures); end
 
 end
