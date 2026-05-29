@@ -21,7 +21,6 @@ testDirs = dir(fullfile(rootPath, '**', '_tests_'));
 
 import matlab.unittest.TestSuite;
 import matlab.unittest.TestRunner;
-import matlab.unittest.plugins.TestReportPlugin;
 
 masterSuite = [];
 
@@ -49,17 +48,6 @@ runner = TestRunner.withTextOutput;
 % Run the suite
 results = runner.run(masterSuite);
 
-% Display a nice summary table at the end
-fprintf('\n--- ISETCam Test Summary ---\n');
-disp(table(results));
-
-% Print final pass/fail count
-numPassed = sum([results.Passed]);
-numFailed = sum([results.Failed]);
-numIncomplete = sum([results.Incomplete]);
-
-fprintf('Total Passed:     %d\n', numPassed);
-fprintf('Total Failed:     %d\n', numFailed);
-fprintf('Total Incomplete: %d\n', numIncomplete);
+ieTestReport(results,'ieUnitTests');
 
 end

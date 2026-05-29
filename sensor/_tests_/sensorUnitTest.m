@@ -50,6 +50,7 @@ end
 
 runner = TestRunner.withTextOutput;
 results = runner.run(suite);
+ieTestReport(results,'sensorUnitTest');
 
 end
 

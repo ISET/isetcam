@@ -57,6 +57,7 @@ runner = TestRunner.withTextOutput;
 
 % Execute the test suite
 results = runner.run(suite);
+ieTestReport(results,'sceneUnitTest');
 
 end
 

@@ -15,6 +15,7 @@ cleanupFigures = onCleanup(@() localCloseTestFigures(existingFigures));
 suite = TestSuite.fromFolder(testDir);
 runner = TestRunner.withTextOutput;
 results = runner.run(suite);
+ieTestReport(results,'utilityUnitTest');
 
 end
 
