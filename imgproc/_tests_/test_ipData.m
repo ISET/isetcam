@@ -16,7 +16,9 @@ scene = sceneCreate; scene = sceneSet(scene,'fov',4);
 
 oi = oiCreate; oi = oiCompute(oi,scene);
 
-sensor = sensorCreate; sensor = sensorCompute(sensor,oi);
+sensor = sensorCreate;
+sensor = sensorSet(sensor,'noise flag',0);
+sensor = sensorCompute(sensor,oi);
 
 ip = ipCreate; ip = ipCompute(ip,sensor);
 % ipWindow(ip);
@@ -38,8 +40,8 @@ assert(isequal(size(dataICSCorrected),[inputSize 3]));
 assert(isequal(size(dataDisplay),[inputSize 3]));
 assert(isequal(size(dataSRGB),[inputSize 3]));
 
-assert(abs(mean(double(dataDisplay(:)))/0.256176269958385 - 1) < 1e-6);
-assert(abs(mean(double(dataSRGB(:)))/0.499497101490208 - 1) < 1e-6);
+assert(abs(mean(double(dataDisplay(:)))/0.258427747087131 - 1) < 1e-6);
+assert(abs(mean(double(dataSRGB(:)))/0.505019098744049 - 1) < 1e-6);
 assert(min(dataDisplay(:)) >= 0);
 assert(max(dataDisplay(:)) <= 1);
 assert(min(dataSRGB(:)) >= 0);
