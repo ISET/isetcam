@@ -89,7 +89,16 @@ function val = sceneGet(scene,parm,varargin)
 %        'lms'                 - 3D array of cone values (Stockman)
 %
 % Resolution parameters
-%      'sample size'*          - size of each square pixel
+%      'sample spacing'*       - center-to-center sample spacing
+%      'sample size'*          - compatibility alias for sample spacing
+%                                under the square-pixel model
+%                                Current behavior: 'sample spacing'
+%                                returns a 2-vector [height,width], while
+%                                'sample size' returns a scalar legacy
+%                                value.  The long-term cleanup direction
+%                                is to prefer 'sample spacing' as the
+%                                canonical API and keep 'sample size'
+%                                only as a compatibility alias.
 %      'hspatial resolution'*  - height spatial resolution (distance between pixels)
 %      'wspatial resolution'*  - width spatial resolution
 %      'spatial resolution'*   - (height,width) spatial resolution
@@ -182,16 +191,21 @@ switch parm
 
     case {'samplespacing'}
         % sceneGet(scene,'sampleSpacing','mm')
+        % Preferred term for the center-to-center sample distance.
+        % Returns [heightSpacing widthSpacing].
         sz = sceneGet(scene,'size');
         val = [sceneGet(scene,'width')/sz(2) , sceneGet(scene,'height')/sz(1)];
         if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
 
 
     case {'samplesize'}
-        % This is knotted up with sample spacing (basically the same
-        % thing).  We should untie the knot some day.  It goes
-        % through 'height' and 'width'.  For now, samplesize returns
-        % the same as the first entry of samplespacing.
+        % Compatibility alias for sample spacing.
+        % Returns the legacy scalar value under the square-pixel model.
+        %
+        % Scene geometry stores distance and horizontal FOV. Width is
+        % derived from those values, and sample spacing is then derived
+        % from width and the number of columns. This assumes square
+        % pixels, so the vertical spacing matches the horizontal spacing.
         w = sceneGet(scene,'width');      % Image width in meters
         c = sceneGet(scene,'cols');       % Number of sample columns
         val = w/c;                        % M/sample
@@ -211,8 +225,8 @@ switch parm
         if checkfields(scene,'wAngular'), val = scene.wAngular; end
 
     case {'fovvertical','hangular','heightangular','vfov','verticalfieldofview'}
-        % We only store the width FOV.  We insist that the pixels are
-        % square
+        % We only store the horizontal FOV.  The vertical FOV is derived
+        % from height, and height is derived under the square-pixel model.
         h = sceneGet(scene,'height');      % Height in meters
         d = sceneGet(scene,'distance');    % Distance in meters
         val = rad2deg(2*atan((0.5*h)/d));  % Vertical field of view
@@ -614,14 +628,17 @@ switch parm
         if checkfields(scene,'spectrum'), val = length(scene.spectrum.wave); end
 
     case 'height'
-        % Height in meters is default
-        % sceneGet(scene,'distance','microns')
-        s = sceneGet(scene,'sample size'); % Each side of a sample, M
+        % Height is derived from the square-pixel sample spacing and the
+        % number of rows. The horizontal FOV is the stored angular value.
+        % Use the legacy alias here to avoid a recursive call through the
+        % sample-spacing getter, which itself derives height.
+        s = sceneGet(scene,'sample size'); % Center-to-center spacing, m
         r = sceneGet(scene,'rows');
         val = s*r;
         if ~isempty(varargin), val = val*ieUnitScaleFactor(varargin{1}); end
     case {'width'}
-        % Width in meters is default
+        % Width is derived from object distance and horizontal field of
+        % view.  Other geometric quantities flow from this value.
         d = sceneGet(scene,'distance');
         w = sceneGet(scene,'wangular');  % Field of view (horizontal, width)
         val = 2*d*tan(deg2rad(w/2));
@@ -933,7 +950,7 @@ switch parm
     case {'currentrect'}
         % [colMin rowMin width height]
         % Used for ROI display and management.
-        if checkfields(oi,'chartP','currentRect'), val = oi.chartP.currentRect; end
+        if checkfields(scene,'chartP','currentRect'), val = scene.chartP.currentRect; end
 
     otherwise
         disp(['Unknown parameter: ',parm]);

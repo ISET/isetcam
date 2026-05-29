@@ -82,7 +82,7 @@ for ww=1:length(wave)
     % The OTF has DC in the center.
     thisOTF = wvfGet(wvf,'otf',wave(ww));
     % [~,~,psfCheck] = OtfToPsf([],[],thisOTF);
-    % ieNewGraphWin; mesh(X,Y,abs(thisOTF));
+    % ieFigure; mesh(X,Y,abs(thisOTF));
 
     if (all(f == fx))
         % Straight assignment.  No interpolation.  This is the usual
@@ -103,9 +103,9 @@ end
 
 %{
 % Stored format
-ieNewGraphWin; mesh(X,Y,abs(otf(:,:,ww)));
+ieFigure; mesh(X,Y,abs(otf(:,:,ww)));
 % This plots it centered.
-ieNewGraphWin; mesh(X,Y,abs(ifftshift(otf(:,:,ww))));
+ieFigure; mesh(X,Y,abs(ifftshift(otf(:,:,ww))));
 %}
 
 

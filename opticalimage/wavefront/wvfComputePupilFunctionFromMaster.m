@@ -285,7 +285,7 @@ if (~isfield(wvf, 'pupilfunc') || ~isfield(wvf, 'PUPILFUNCTION_STALE') ...
         % Important to zero out before this step, because computation of A
         % doesn't know about the pupil size.
         pupilfunc{ii} = A .* pupilfuncphase;
-        % vcNewGraphWin; imagesc(angle(pupilfunc{ii}))
+        % ieFigure; imagesc(angle(pupilfunc{ii}))
         
         % We think the ratio of these two quantities tells us how much
         % light is effectively lost in cone absorbtions because of the

@@ -9,7 +9,7 @@ function scene = sceneAdjustIlluminant(scene,illEnergy,preserveMean)
 %
 % Inputs
 %  scene:      A scene structure, or the current scene will be assumed
-%  illEnergy:  Either a file name to spectral data, or 
+%  illEnergy:  Either a file name to spectral data, or
 %              an illuminant energy vector (same length as scene wave)
 %              or an ISETCam illuminant struct.
 %  preserveMean:  Scale result to preserve mean illuminant (default true)
@@ -69,7 +69,7 @@ elseif ischar(illEnergy)
     % Read from the filename sent by the user
     fullName = illEnergy;
     illEnergy = ieReadSpectra(fullName,wave);
-elseif isstruct(illEnergy) && isequal(illEnergy.type,'illuminant')
+elseif isstruct(illEnergy) && isequal(vcGetObjectType(illEnergy),'illuminant')
     fullName = illuminantGet(illEnergy,'name');
     illEnergy = illuminantGet(illEnergy,'energy');
 else
@@ -118,39 +118,39 @@ switch sceneGet(scene,'illuminant format')
     case 'spectral'
         % In this case the illuminant is a vector.  We convert to photons
         illPhotons = Energy2Quanta(illEnergy,wave);
-        
+
         % Find the multiplier ratio
         illFactor  = illPhotons ./ curIll;
-        
+
         % Adjust the radiance data and the illuminant by the illFactor
         % This preserves the reflectance.
         skipIlluminant = 0;  % Don't skip changing the illuminant (do change it!)
         scene = sceneSPDScale(scene,illFactor,'*',skipIlluminant);
-        
+
     case 'spatial spectral'
-        
+
         if isequal(size(curIll),size(illEnergy))
             [newIll,r,c] = RGB2XWFormat(illEnergy);
             newIll = Energy2Quanta(wave,newIll');
             newIll = XW2RGBFormat(newIll',r,c);
-            
+
             % Get the scene radiance
             photons = sceneGet(scene,'photons');
             % Divide the radiance photons by the current illuminant and then
             % multiply by the new illuminant.  These are the radiance photons
             % under the new illuminant.  This preserves the reflectance.
             photons = (photons ./ curIll) .* newIll;
-            
+
             % Set the new radiance back into the scene
             scene = sceneSet(scene,'photons',photons);
-            
+
             % Set the new illuminant back into the scene
             scene = sceneSet(scene,'illuminant photons',newIll);
         else
             % This could be an loop across wavelength using interp2()
             error('No adjust illuminant method yet for spatial spectral illuminants');
         end
-        
+
 end
 
 % Make sure the mean luminance is unchanged.

@@ -1,0 +1,113 @@
+function tests = test_ipIlluminant()
+    tests = functiontests(localfunctions);
+end
+
+function testMain(testCase)
+%% Illuminant correction
+%
+% Calculate illuminant correction matrices for a surface
+% reflectance chart and collection of illuminants.  Each matrix
+% converts the data obtained under a test illuminant into an
+% estimate of the sensor data under a standard illuminant (D65 in
+% this case).
+%
+% One could then transform the sensor data into a standard space
+% such as XYZ, assuming that we know the illuminant (D65).
+%
+% N.B.  There are still some edits to come for the part at the
+% end.
+%
+% See also:
+
+% Copyright ImagEval Consultants, LLC, 2016
+
+%%
+ieInit
+
+%% Create an N-100 reflectance chart
+%
+% Alternatively, you can choose the scene surface reflectances
+% here this way, if you want.
+%
+% Choose some example reflectance data
+sFiles = cell(1,2);
+sFiles{1} = fullfile(isetRootPath,'data','surfaces','reflectances','MunsellSamples_Vhrel.mat');
+sFiles{2} = fullfile(isetRootPath,'data','surfaces','reflectances','Food_Vhrel.mat');
+pSize = 20;
+sSamples{1} = [46 12 54 23 40 59 41 22 1 1 39 14 18 40 17 57];
+sSamples{2} = [1 10 8 23 23 25 26 22 16 2 24 25 10 4 7 22];
+scene = sceneReflectanceChart(sFiles,sSamples,pSize);
+
+% ieAddObject(scene); sceneWindow;
+
+%% Create an oi and a sensor
+
+oi = oiCreate;
+
+% Set the sensor of interest here
+nikon = sensorCreate;
+nikon = sensorSet(nikon,'noise flag',0);
+wave  = sensorGet(nikon,'wave');
+
+% Load up  Nikon color filters and an infrared
+nikon = sensorSet(nikon,'infrared',ieReadSpectra('infrared2',wave));
+nikon = sensorSet(nikon,'color filters',ieReadSpectra('NikonD70',wave));
+nikon = sensorSetSizeToFOV(nikon,sceneGet(scene,'fov'),oi);
+
+%% Display the scene over a range of blackbody illuminants
+bbodyList = [3000, 7500];
+nIlluminant = length(bbodyList);
+oIP = ipCreate;
+
+% We could put in a transform selected by imageSensorCorrection
+%    oVci = ipSet(oVci,'color conversion transform',VAL);
+%    oVci = ipSet(oVci,'Sensor Correction Method','mcc optimized');
+%    oVci = ipSet(oVci,'Illuminant Correction Method','gray world');
+%    oVci = ipSet(oVci,'Internal CS','XYZ');
+
+oIP = ipSet(oIP,'Transform method','adaptive');
+oIP = ipSet(oIP,'conversion method Sensor ','none');
+oIP = ipSet(oIP,'correction method Illuminant ','none');
+oIP = ipSet(oIP,'Internal CS','sensor');
+
+% Adjust the scene illuminant SPD and compute a series of rendered images.
+vci = cell(1,nIlluminant);
+for ii=1:nIlluminant
+    scene = sceneAdjustIlluminant(scene,blackbody(wave,bbodyList(ii),'energy'));
+    scene = sceneAdjustLuminance(scene,100);
+    scene = sceneSet(scene,'name',sprintf('surface %.1f',bbodyList(ii)));
+    % sceneWindow(scene); 
+    
+    oi = oiCompute(oi,scene);
+    % oiWindow(oi);      
+    
+    nikon = sensorCompute(nikon,oi);
+    % sensorWindow(nikon);   
+    
+    vci{ii} = ipCompute(oIP,nikon);
+    vci{ii} = ipSet(vci{ii},'name',sprintf('BB %d',bbodyList(ii)));
+    ieAddObject(vci{ii});
+end
+
+%% Check the values
+
+
+m = ipGet(vci{1},'srgb');
+% mean(double(m(:)))
+assert(abs(mean(double(m(:)))/ 0.4768 - 1) < 1e-2);
+
+m = ipGet(vci{nIlluminant},'srgb');
+% mean(double(m(:)))
+assert(abs(mean(double(m(:)))/ 0.4800 - 1) < 1e-2);
+
+%% Now fix the transform and rerun.  The result should be the same.
+
+vci{1} = ipSet(vci{1},'transform method','current');
+ip = ipCompute(vci{1},nikon);
+% ipWindow(ip);
+
+m2 = ipGet(ip,'srgb');
+assert(mean(m2(:))/mean(m(:)) - 1 < 1e-5);
+
+%% END
+end

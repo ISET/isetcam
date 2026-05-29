@@ -25,6 +25,9 @@ ieMainClose;
 
 % Close the other windows
 close all
+remainingFigures = findall(groot,'Type','figure');
+remainingFigures = remainingFigures(ishghandle(remainingFigures));
+if ~isempty(remainingFigures), close(remainingFigures); end
 
 % Clear vcSESSION
 clear global;  % Made consistent with ISETBIO

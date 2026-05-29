@@ -87,7 +87,7 @@ function [pData, mLocs, pSize, cornerPoints, pStd] = ...
 %}
 %{
  scene  = sceneCreate; oi = oiCreate; oi = oiCompute(oi,scene);
- sensor = sensorCreate; 
+ sensor = sensorCreate;
  sensor = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'),oi);
  sensor = sensorCompute(sensor,oi);
  ip = ipCreate; ip = ipCompute(ip,sensor);
@@ -114,12 +114,13 @@ if ieNotDefined('queryUser'), queryUser = false; end
 %   * Sent in
 %   * Attached to the object
 %   * We choose in the window
-switch lower(obj.type)
+objType = lower(vcGetObjectType(obj));
+switch objType
     case 'vcimage'
         dataType = 'result';
         % obj = ipSet(obj,'mcc Rect Handles',[]);
         % ieAddObject(obj); ipWindow;
-        
+
         if ieNotDefined('cornerPoints')
             cornerPoints = ipGet(obj,'corner points');
             if isempty(cornerPoints)
@@ -128,7 +129,7 @@ switch lower(obj.type)
             end
         end
         obj = ipSet(obj,'chart corner points',cornerPoints);
-        
+
     case {'isa','sensor'}
         % app = ieSessionGet('sensor window');
         dataType = 'dvorvolts';
@@ -140,7 +141,7 @@ switch lower(obj.type)
             end
         end
         obj = sensorSet(obj,'chart corner points',cornerPoints);
-        
+
     case {'scene'}
         dataType = 'photons';
         cornerPoints = sceneGet(obj,'chart corner points');
@@ -149,7 +150,7 @@ switch lower(obj.type)
             cornerPoints = chartCornerpoints(obj);
         end
         obj = sceneSet(obj,'chart corner points',cornerPoints);
-        
+
     otherwise
         error('Unknown object type');
 end
@@ -167,7 +168,7 @@ if queryUser
     else
         while ~rectsOK   % False, a change is desired
             % Bring up the window
-            switch vcEquivalentObjtype(obj.type)
+            switch vcEquivalentObjtype(objType)
                 case {'VCIMAGE'}
                     ipWindow;
                 case {'ISA'}
@@ -175,15 +176,15 @@ if queryUser
                 case {'SCENE'}
                     sceneWindow;
                 otherwise
-                    error('Unknown type %s\n',obj.type);
+                    error('Unknown type %s\n',objType);
             end
-            
+
             % These appear to come back as (x,y),(col,row).  The upper left of the
             % image is (1,1).
             cornerPoints = vcPointSelect(obj,4,...
                 'Select (1) lower left, (2) lower right, (3) upper right, (4) upper left');
-            
-            switch vcEquivalentObjtype(obj.type)
+
+            switch vcEquivalentObjtype(objType)
                 case 'VCIMAGE'
                     obj = ipSet(obj,'mcc corner points',cornerPoints);
                 case 'ISA'

@@ -92,7 +92,7 @@ fprintf('\n');
 % S = [550 1 1]; 
 % T = load('T_cones_ss2');   % Probably in the PTB
 % T_cones = SplineCmf(T.S_cones_ss2, T.T_cones_ss2, S);
-% % vcNewGraphWin; plot(wave, T_cones'); xlabel('Wavelength (nm)');
+% % ieFigure; plot(wave, T_cones'); xlabel('Wavelength (nm)');
 % 
 % % Weighting spectrum, for combining the PSFs in an average 
 % T = load('spd_D65');

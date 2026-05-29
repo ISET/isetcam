@@ -56,7 +56,7 @@ psf2 = lsf2circularpsf(lsf);
 psf  = psf/max(psf(:));
 psf2 = psf2/max(psf2(:));
 
-ieNewGraphWin([],'wide');
+ieFigure([],'wide');
 tiledlayout(1,2)
 nexttile; plot(psf(:),psf2(:),'o'); identityLine
 nexttile; mesh(psf2);
@@ -97,7 +97,7 @@ psf2 = lsf2circularpsf(lsf);
 % Normalize them both and compare
 psf2 = psf2/max(psf2(:));
 
-ieNewGraphWin([],'wide');
+ieFigure([],'wide');
 tiledlayout(1,2)
 nexttile; plot(psf(:),psf2(:),'o'); identityLine
 nexttile; mesh(psf2);

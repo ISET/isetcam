@@ -31,19 +31,19 @@ function thisFigure = ieFigure(thisFigure, fType, titleString, varargin)
 %   set(groot,'DefaultAxesFontName','Georgia')
 %
 % Examples:
-%  ieNewGraphWin;
+%  ieFigure;
 %
-%  ieNewGraphWin([],'upper left')
-%  ieNewGraphWin([],'tall')
-%  ieNewGraphWin([],'wide')
-%  ieNewGraphWin([],'upper left big')
+%  ieFigure([],'upper left')
+%  ieFigure([],'tall')
+%  ieFigure([],'wide')
+%  ieFigure([],'upper left big')
 %
 % Or set your own position
-%  ieNewGraphWin([],[],'position',[0.5 0.5 0.28 0.36]);
+%  ieFigure([],[],'position',[0.5 0.5 0.28 0.36]);
 %
 % To set other fields, use
-%  ieNewGraphWin([],'wide','Color',[0.5 0.5 0.5])
-%  g = ieNewGraphWin([],[],'Visible','Off');
+%  ieFigure([],'wide','Color',[0.5 0.5 0.5])
+%  g = ieFigure([],[],'Visible','Off');
 %  g.Visible = 'on';
 %
 % See also:
@@ -51,7 +51,7 @@ function thisFigure = ieFigure(thisFigure, fType, titleString, varargin)
 %
 
 %%
-if ieNotDefined('thisWindow'), thisFigure = figure; end
+if ieNotDefined('thisFigure'), thisFigure = figure; end
 if ieNotDefined('fType')
     fType = 'upperleft';
 end

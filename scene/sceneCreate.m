@@ -307,23 +307,13 @@ switch sceneName
             grayFlag = chartP.grayFlag;   % Add a gray strip column on right
             sampling = chartP.sampling;   % Sample with replacement
         else
-
-            % Default surface files
-            sFiles{1} = which('MunsellSamples_Vhrel.mat');
-            sFiles{2} = which('Food_Vhrel.mat');
-            sFiles{3} = which('HyspexSkinReflectance.mat');
-            %{
-              sFiles{1} = fullfile(isetRootPath,'data','surfaces','reflectances','MunsellSamples_Vhrel.mat');
-              sFiles{2} = fullfile(isetRootPath,'data','surfaces','reflectances','Food_Vhrel.mat');
-              sFiles{3} = fullfile(isetRootPath,'data','surfaces','reflectances','skin','HyspexSkinReflectance.mat');
-            %}
-
-            % Surface samples from the files
-            sSamples = [50 40 10];   % 100 samples, should be 10x10
-            pSize = 24;     % Patch size in pixels
-            wave = [];      % Wavelength samples
-            grayFlag = 1;   % Add a gray strip column on right
-            sampling = 'r'; % Sample with replacement
+            chartP = chartParams;
+            sFiles = chartP.sFiles;
+            sSamples = chartP.sSamples;
+            pSize = chartP.pSize;
+            wave = chartP.wave;
+            grayFlag = chartP.grayFlag;
+            sampling = chartP.sampling;
 
             if isempty(varargin)
             else
