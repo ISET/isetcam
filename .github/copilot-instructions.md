@@ -1,67 +1,82 @@
-# Copilot Instructions for 'isetcam' Workspace
+# ISETCam AI Instructions
 
-## Purpose
-Use these instructions to navigate ISETCam-style code quickly and choose project-consistent functions before writing new code.  
+Use this file as the shared startup guidance for Copilot, Claude, Codex,
+Gemini, and other AI coding assistants working in this repository.
 
-## Matlab setup
+## Repository Context
 
-For instructions in how to setup matlab for use with VS Code, see [this guide](../.vscode/matlab-setup.md).
+- MATLAB is the primary runtime.
+- The main repository is `isetcam`; related local repositories may include
+  `isetvalidate`, `isetbio`, and `tools/UnitTestToolbox`.
+- For VS Code MATLAB setup, see `../.vscode/matlab-setup.md`.
+- For MATLAB Command Window path setup, use `.github/matlab-paths.md`.
 
-## Workspace Context
-This workspace commonly spans:
-- `isetcam`
-- `isetvalidate`
+## ISETCam Pipeline
 
-Assume MATLAB is the primary runtime.
+Prefer existing object-specific functions before writing new utilities.
 
-## Core ISETCam Naming Conventions
-When searching for functionality, use these prefixes first:
+1. Scene: `scene*` functions, accessed with `sceneGet` and `sceneSet`.
+2. Optical image: `oi*` functions, accessed with `oiGet` and `oiSet`.
+3. Sensor: `sensor*` functions, accessed with `sensorGet` and `sensorSet`.
+4. Image processing: `ip*` functions, accessed with `ipGet` and `ipSet`.
+5. Display: `display*` functions, accessed with `displayGet` and `displaySet`.
 
-- **Scene functions**: `scene*`
-- **Optical image functions**: `oi*`
-- **Sensor functions**: `sensor*`
-- **Image processing functions**: `ip*`
-- **Display functions**: `display*`
+Common constructors and compute functions include `sceneCreate`,
+`oiCreate`, `oiCompute`, `sensorCreate`, `sensorCompute`, `ipCreate`,
+`ipCompute`, and `displayCreate`.
 
-Typical pipeline object flow:
-1. Scene (`scene*`)
-2. Optical image (`oi*`)
-3. Sensor (`sensor*`)
-4. Image processing (`ip*`)
-5. Display (`display*`)
+For object diagnostics, prefer existing plotting functions such as
+`scenePlot`, `oiPlot`, `sensorPlot`, `ipPlot`, and `displayPlot` over ad hoc
+plotting.
 
-## Plotting Conventions
-There are many generic plotting routines (`plot*`), but for object-specific diagnostics prefer:
+## Search Guidance
 
-- `scenePlot`
-- `oiPlot`
-- `sensorPlot`
-- `ipPlot`
-- `displayPlot`
+- Use `rg` for text search and `fd` for filename/path search when using a
+  terminal.
+- Before adding behavior, search for nearby examples with the relevant object
+  prefix.
+- For color transforms and color science utilities, search `color/` before
+  implementing new code.
+- For new scene patterns or chart behavior, check existing examples in
+  `scene/` and especially related pattern/chart code.
 
-When a specific object plot function exists, prefer it over ad hoc plotting.
+## Coding Style
 
-## Color Processing Guidance
-There are many color processing routines in:
-
-- `isetcam/color`
-
-Before implementing new color transforms, check `isetcam/color` for existing utilities and preferred internal conventions.
-
-## Practical Search Heuristics for Agents
-1. Prefer existing constructors/getters/setters/plotters with object prefixes above.
-2. For any new feature, search for similar object-level patterns first (for example, chart constructors in `scene/pattern`).
-3. Reuse existing plotting helpers where available before custom figure styling.
-4. Keep new APIs consistent with ISETCam argument style and object naming.
-5. Update header comments (`Syntax`, `Inputs`, `Returns`, `See also`) when modifying function behavior.
-6. **Terminal Tooling**: If executing sweeping codebase searches via a terminal or run command, assume a macOS environment. The user has `rg` (ripgrep) and `fd` installed; prefer `rg` for text search and `fd` for filename/path search. Prefer these over standard `grep`/`find` or slower MATLAB search functions.
-
-## MATLAB Workflow Expectations
 - Keep edits minimal and consistent with existing MATLAB style.
-- Prefer vectorized operations for performance-sensitive loops.
-- Validate modified files with workspace diagnostics when possible.
-- MATLAB is available through the VS Code MATLAB extension, with a MATLAB terminal open and the workspace path set. A local executable is also available at `/Applications/MATLAB_R2025b.app/bin/matlab`; use it with `-batch` for non-interactive test runs when needed. If a sandboxed shell launch fails silently or exits with status 1, rerun the same MATLAB command unsandboxed/escalated because MATLAB may need to write preferences or cache files outside the workspace.
-- Do not add new dependencies unless necessary.
+- Reuse established constructors, getters, setters, plotting helpers, and
+  object naming conventions.
+- Prefer vectorized MATLAB where it improves clarity or performance.
+- Update function header comments when behavior changes, especially `Syntax`,
+  `Inputs`, `Returns`, and `See also`.
+- Do not add dependencies unless they are necessary and consistent with the
+  repository.
 
-## If Uncertain
-If multiple plausible implementations exist, choose the simplest option consistent with existing `scene*`, `oi*`, `sensor*`, `ip*`, and `display*` patterns, then ask the user for refinement.
+## Validation
+
+- Validate modified files with MATLAB diagnostics or focused test commands when
+  practical.
+- ISETCam has unit tests for the major objects in `_tests_` directories
+  throughout the repository.
+- Each `_tests_` directory can be run on its own for focused validation.
+- Prefer colocated function-level tests named `test_<functionname>.m` when
+  adding or changing behavior.
+- Good function-level tests should cover API/shape expectations, key behavior
+  or mapping checks, stable golden-value fingerprints with named tolerances,
+  and important input-validation cases.
+- Run the full unit-test suite with `ieUnitTests`.
+- Render or summarize `ieUnitTests` output with `ieTestReport`.
+- Treat `isetvalidate` as the broader system/regression validation suite when
+  relevant to a change.
+- MATLAB is available through the VS Code MATLAB extension.
+- A local MATLAB executable is available at
+  `/Applications/MATLAB_R2025b.app/bin/matlab` and can be used with `-batch`
+  for non-interactive checks.
+- If launching MATLAB from a sandboxed shell fails silently or exits with
+  status 1, retry unsandboxed or escalated because MATLAB may need to write
+  preferences or cache files outside the repository.
+
+## When Uncertain
+
+Choose the simplest implementation that matches existing `scene*`, `oi*`,
+`sensor*`, `ip*`, and `display*` patterns. Ask the user only when the choice
+would materially affect behavior, API shape, or test expectations.
