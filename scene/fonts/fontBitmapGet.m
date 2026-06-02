@@ -36,7 +36,7 @@ try
     % See if we have a font stored for this variable
     name = fontGet(font, 'name');
     fName = sprintf('%s.mat', name);
-    fName = fullfile(isetbioDataPath, 'fonts', fName);
+    fName = fullfile(isetRootPath, 'data', 'fonts', fName);
     load(fName);
     b = bmSrc.dataIndex;     
     b = 1 - b;  %Make black on white
