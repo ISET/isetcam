@@ -183,7 +183,7 @@ scenePlot(scene,'illuminant energy');
 % 
 %   wave = sceneGet(scene,'wave');
 %   illuminant  = sceneGet(scene,'illuminant energy');
-%   ieNewGraphWin; plot(wave,illuminant); grid on
+%   ieFigure; plot(wave,illuminant); grid on
 %   xlabel('wave (nm)'); ylabel('Energy (watts/sr/nm/m^2)')
 %
 
