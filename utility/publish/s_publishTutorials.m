@@ -1,6 +1,8 @@
-%% s_scriptsPublish
+%% s_publishTutorials
 %
-% Publish scripts as HTML files that can be viewed in a browser.
+% Publish tutorials as HTML files that can be viewed in a browser.
+%
+% HTML and figure PNG files are written next to each tutorial m-file.
 %
 % Copyright ImageVal Consulting, LLC 2016
 
@@ -10,8 +12,8 @@ ieSessionSet('init clear',false);
 %%
 ieInit;
 
-%% One scripts sub directory at a time
-str = 'oi';    % Which directory
+%% One tutorial sub directory at a time
+str = 'scene';    % Which directory
 tDir = {str};
 
 %{
@@ -24,40 +26,27 @@ tDir = {'camera','code','color','display','gui',...
 maxHeight = 512;
 maxWidth  = 512;
 
-% Output directory and format - The number of characters on a comment
-% line needs to be reduced for publish.  70 seems OK.
-% This could be {'html','pdf'}
-oFormats = {'html'};
-
 excludeNames = {'Contents.m'};
 
 %% Loop on all the directories in the list
 for ss = 1:length(tDir)
-    fprintf('Script directory: %s \n',tDir{ss});
-    oDir = fullfile(isetRootPath,'local','publish',tDir{ss});
-    if ~exist(oDir,'dir'), mkdir(oDir); end
+    fprintf('Tutorial directory: %s \n',tDir{ss});
 
-    % Run them - later we can publish them, as a group with similar code.
-    cd(fullfile(isetRootPath,'tutorials',tDir{ss}));
-    allTutorials = dir('*.m');
+    tutorialDir = fullfile(isetRootPath,'tutorials',tDir{ss});
+    allTutorials = dir(fullfile(tutorialDir,'*.m'));
     tutorialNames = excludeTutorials(allTutorials,excludeNames);
     nTutorials = length(tutorialNames);
-    fprintf('Executing %d scripts from %s directory\n',nTutorials,tDir{ss});
-    
+    fprintf('Publishing %d tutorials from %s directory\n',nTutorials,tDir{ss});
+
     for thisTutorial=1:nTutorials
-        % Need to re-execute on each loop because of the ieInit commands
-        cd(fullfile(isetRootPath,'tutorials',tDir{ss}));
-        
         fprintf('%d %s ...',thisTutorial,tutorialNames(thisTutorial).name);
-        
-        for thisFormat = 1:length(oFormats)
-            publish(tutorialNames(thisTutorial).name,...
-                'format',oFormats{thisFormat},...
-                'outputDir',oDir, ...
-                'maxHeight',maxHeight,...
-                'maxWidth',maxWidth);
-        end
-        
+        tutorialFile = fullfile(tutorialDir,tutorialNames(thisTutorial).name);
+        ieTutorialPublish(tutorialFile,...
+            'maxHeight',maxHeight,...
+            'maxWidth',maxWidth,...
+            'createThumbnail',false,...
+            'imageFormat','png');
+
         fprintf('done\n');
     end
 
@@ -67,6 +56,8 @@ end
 
 %%
 function keepScripts = excludeTutorials(these,excludeNames)
+
+keepScripts = [];
 
 cnt = 1;
 for ii=1:length(these)
@@ -80,4 +71,3 @@ for ii=1:length(these)
 end
 
 end
-
