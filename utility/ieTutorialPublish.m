@@ -1,14 +1,17 @@
 function htmlFile = ieTutorialPublish(fname,varargin)
-% Publish a tutorial m-file as HTML in the same directory.
+% Publish a tutorial m-file as a self-contained HTML file.
 %
 % Syntax:
 %   htmlFile = ieTutorialPublish(fname)
 %   htmlFile = ieTutorialPublish(fname,'param',value,...)
 %
 % Description:
-%   This utility publishes a tutorial/script m-file to HTML so the output
-%   file sits next to the source m-file. Figure snapshots are saved as
-%   separate image files (PNG by default), not in a separate output folder.
+%   Publishes a tutorial/script m-file to HTML so the output file sits
+%   next to the source m-file.
+%
+%   When imageFormat is 'inline' (the default), figure snapshots are
+%   base64-encoded and embedded directly in the HTML so the result is a
+%   single self-contained file with no external PNG dependencies.
 %
 % Inputs:
 %   fname
@@ -21,7 +24,8 @@ function htmlFile = ieTutorialPublish(fname,varargin)
 %   'showCode'         - Show source code in HTML (default true)
 %   'maxHeight'        - Max image height in pixels (default 512)
 %   'maxWidth'         - Max image width in pixels (default 512)
-%   'imageFormat'      - Image format for figure snapshots (default 'png')
+%   'imageFormat'      - 'inline' embeds images as base64 (default);
+%                        any format accepted by imwrite uses external files
 %   'createThumbnail'  - Create thumbnail image (default false)
 %   'catchError'       - Catch and render errors in HTML (default true)
 %   'stylesheet'       - Optional stylesheet file (default '')
@@ -32,7 +36,7 @@ function htmlFile = ieTutorialPublish(fname,varargin)
 %
 % Example:
 %{
-% Publish a tutorial in-place
+% Publish a tutorial in-place with embedded images
 % htmlFile = ieTutorialPublish('tutorials/scene/t_sceneIntroduction.m');
 % web(htmlFile,'-browser');
 %}
@@ -81,7 +85,7 @@ p.addParameter('evalCode',true,@islogical);
 p.addParameter('showCode',true,@islogical);
 p.addParameter('maxHeight',512,@(x) isempty(x) || (isscalar(x) && isnumeric(x) && x > 0));
 p.addParameter('maxWidth',512,@(x) isempty(x) || (isscalar(x) && isnumeric(x) && x > 0));
-p.addParameter('imageFormat','png',@(x) ischar(x) || (isstring(x) && isscalar(x)));
+p.addParameter('imageFormat','inline',@(x) ischar(x) || (isstring(x) && isscalar(x)));
 p.addParameter('createThumbnail',false,@islogical);
 p.addParameter('catchError',true,@islogical);
 p.addParameter('stylesheet','',@(x) ischar(x) || (isstring(x) && isscalar(x)));
@@ -89,7 +93,14 @@ p.parse(varargin{:});
 opts = p.Results;
 
 if isstring(opts.imageFormat), opts.imageFormat = char(opts.imageFormat); end
-if isstring(opts.stylesheet), opts.stylesheet = char(opts.stylesheet); end
+if isstring(opts.stylesheet),  opts.stylesheet  = char(opts.stylesheet);  end
+
+% 'inline' is handled by post-processing; publish itself needs a real format.
+inlineImages = strcmpi(opts.imageFormat,'inline');
+publishImageFormat = 'png';
+if ~inlineImages
+    publishImageFormat = opts.imageFormat;
+end
 
 publishOpts = struct( ...
     'format','html', ...
@@ -98,7 +109,7 @@ publishOpts = struct( ...
     'showCode',opts.showCode, ...
     'maxHeight',opts.maxHeight, ...
     'maxWidth',opts.maxWidth, ...
-    'imageFormat',opts.imageFormat, ...
+    'imageFormat',publishImageFormat, ...
     'createThumbnail',opts.createThumbnail, ...
     'catchError',opts.catchError);
 
@@ -110,5 +121,109 @@ origDir = pwd;
 cleanupObj = onCleanup(@() cd(origDir));
 cd(sourceDir);
 htmlFile = publish(sourceFile,publishOpts);
+
+if inlineImages
+    htmlFile = ieEmbedHTMLImages(htmlFile);
+end
+
+end
+
+% -------------------------------------------------------------------------
+function htmlFile = ieEmbedHTMLImages(htmlFile)
+% Read published HTML, embed PNG images as base64 data URIs, inject CSS
+% overrides for readable font sizes, write back, delete loose PNG files.
+
+htmlText = fileread(htmlFile);
+
+% --- Embed PNG images ---------------------------------------------------
+% Match src="something.png" — the closing quote must follow .png directly,
+% so already-embedded data URIs (data:image/png;base64,...) are skipped.
+imgPattern = 'src="([^"]+\.png)"';
+[tokens, matches] = regexp(htmlText, imgPattern, 'tokens', 'match');
+
+htmlDir  = fileparts(htmlFile);
+toDelete = {};
+
+for ii = 1:numel(tokens)
+    imgName = tokens{ii}{1};
+    imgPath = fullfile(htmlDir, imgName);
+    if exist(imgPath,'file') ~= 2, continue; end
+
+    fid = fopen(imgPath,'rb');
+    imgBytes = fread(fid, Inf, 'uint8=>uint8');
+    fclose(fid);
+
+    b64 = matlab.net.base64encode(imgBytes);
+    if isstring(b64), b64 = char(b64); end
+
+    htmlText = strrep(htmlText, matches{ii}, ...
+        ['src="data:image/png;base64,' b64 '"']);
+    toDelete{end+1} = imgPath; %#ok<AGROW>
+end
+
+% --- Inject CSS overrides -----------------------------------------------
+cssOverride = [
+    'html body { font-size:14px; }'                                         newline ...
+    'h1 { font-size:1.6em; }'                                               newline ...
+    'h2 { font-size:1.3em; margin-top:28px; }'                              newline ...
+    '.content { max-width:900px; margin:0 auto; padding:30px; line-height:148%; }' newline ...
+    'pre, code { font-size:13px; line-height:1.35; }'                        newline ...
+    'pre.codeinput {'                                                        newline ...
+    '  font-size:13px; border-radius:4px;'                                  newline ...
+    '  box-shadow:0 1px 3px rgba(0,0,0,.08); }'                             newline ...
+    'pre.codeoutput {'                                                       newline ...
+    '  font-size:13px; border-left:3px solid #6aaadd;'                      newline ...
+    '  background:#f0f6fb; padding-left:14px; }'                            newline ...
+    'img { display:block; margin:20px auto; }'                              newline ...
+    'span.keyword { color:#0070c1 }'                                        newline ...
+    'span.comment { color:#2e7d32 }'                                        newline ...
+    'span.string  { color:#7b3f9e }'                                        newline ...
+    'pre.language-matlab {'                                                  newline ...
+    '  font-size:13px; background:#f7f7f7; padding:10px;'                   newline ...
+    '  border:1px solid #d3d3d3; border-left:3px solid #5aaa7a;'            newline ...
+    '  border-radius:4px; box-shadow:0 1px 3px rgba(0,0,0,.08); }'          newline ...
+    'code, tt { font-family:Menlo,Monaco,Consolas,"Courier New",monospace;' newline ...
+    '  background:#efefef; padding:2px 5px; border-radius:3px;'             newline ...
+    '  font-size:0.88em; color:#333; }'                                     newline ...
+    'pre code, pre tt { background:none; padding:0; border-radius:0; font-size:inherit; }' newline ...
+    ];
+
+htmlText = strrep(htmlText, '</style>', [cssOverride '</style>']);
+
+% --- Wrap inline code references ----------------------------------------
+% Patterns like "help funcName" and "doc funcName" in prose text are
+% wrapped in <code> tags so they render with code styling.  We skip
+% content inside <pre> blocks to avoid double-processing code listings.
+htmlText = ieWrapInlineCode(htmlText);
+
+% --- Write back and clean up --------------------------------------------
+fid = fopen(htmlFile,'w');
+fwrite(fid, htmlText, 'char');
+fclose(fid);
+
+for ii = 1:numel(toDelete)
+    delete(toDelete{ii});
+end
+
+end
+
+% -------------------------------------------------------------------------
+function htmlText = ieWrapInlineCode(htmlText)
+% Wrap "help funcName" and "doc funcName" patterns in <code> tags,
+% leaving content inside <pre>...</pre> blocks untouched.
+
+% Split on <pre> blocks so we only touch prose text.
+[prose, preBlocks] = regexp(htmlText, '(?s)<pre[^>]*>.*?</pre>', 'split', 'match');
+
+pattern = '\b(help|doc)\s+(\w+)\b';
+for ii = 1:numel(prose)
+    prose{ii} = regexprep(prose{ii}, pattern, '<code>$1 $2</code>');
+end
+
+% Reassemble prose and pre blocks in original order.
+htmlText = prose{1};
+for ii = 1:numel(preBlocks)
+    htmlText = [htmlText preBlocks{ii} prose{ii+1}]; %#ok<AGROW>
+end
 
 end

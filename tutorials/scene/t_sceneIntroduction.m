@@ -41,17 +41,18 @@
 
 ieInit
 %% Create a scene and explore some of its features
+%
 % The create function initiates the object. Typically, there are many different 
 % initial formats. For the scene, the optics including color targets, patterns, 
 % charts, and images.
 % 
 % The ISETCam function sceneCreate builds a number of predefined scenes that 
 % are useful for testing image systems. You can see the range of possibilities 
-% by typing
-%% 
-% * help sceneCreate , or
-% * doc sceneCreate
-%% 
+% by typing either of these lines
+% 
+%   help sceneCreate
+%   doc sceneCreate
+%
 % into the Matlab prompt.
 
 % Create a scene: Here is a simple scene of a color chart
@@ -66,18 +67,9 @@ sceneWindow(scene);
 % size as well (Edit | Change Font Size). There are many other options in the 
 % pull down menus for cropping, transposing, and measuring scene properties.
 % 
-% The command
-%%
-% 
-%   sceneWindow(scene);
+% The command |sceneWindow(scene);| is equivalent to |ieAddObject(scene);
+% sceneWindow;| 
 %
-%% 
-% is equivalent to
-%%
-% 
-%   ieAddObject(scene); sceneWindow;
-%
-
 
 %% The way to interact with an object is through gets and sets.
 % For example, each object has a name and a type.
@@ -114,6 +106,7 @@ sceneWindow;
 % That is why there are more gets than sets.  You can get parameters that depend 
 % on the sets. You can see the scene structure and its parameters simply by typing 
 % the scene parameter
+
 %%
 % 
 %   scene
@@ -124,19 +117,19 @@ sceneWindow;
 % you come back, you will feel like using a sceneSet
 % 
 % You can see the scene parameters you can set by typing 
-%%
+%
 % 
 %   help sceneSet
 %
 %% 
 % For a nicer formatting, use the Matlab doc command. For example, you might 
 % try
-%%
 % 
 %   doc sceneGet
 %   doc sceneSet
 %
 %% Explore the relationship between parameters
+%
 % To see an example of the dependence, consider the effect of scene distance, 
 % which we can get, on scene sample spacing.
 
