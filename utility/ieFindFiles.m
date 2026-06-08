@@ -18,7 +18,7 @@ function files = ieFindFiles(rootDir,ext)
 
 % Example:
 %{
-files = ieFindFiles(fullfile(fiToolboxRootPath,'data'),'mat');
+files = ieFindFiles(fullfile(isetRootPath,'data'),'mat');
 disp(files);
 %}
 

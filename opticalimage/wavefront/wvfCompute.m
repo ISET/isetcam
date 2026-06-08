@@ -50,7 +50,7 @@ else
 end
 
 %{
-ieNewGraphWin([], 'wide');
+ieFigure([], 'wide');
 subplot(1,3,1); wvfPlot(wvf,'image pupil amp','unit','um','wave',550,'window',false);
 subplot(1,3,2); wvfPlot(wvf,'image pupil phase','unit','um','wave',550,'window',false);
 subplot(1,3,3); wvfPlot(wvf,'image wavefront aberrations','unit','um','wave',550,'window',false);

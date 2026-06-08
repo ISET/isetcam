@@ -242,14 +242,14 @@ function val = wvfGet(wvf, parm, varargin)
     wvf = wvfCompute(wvf);
     otf = wvfGet(wvf,'otf',wvfGet(wvf,'wave'));
     f = wvfGet(wvf, 'otf support', 'mm');
-	ieNewGraphWin; mesh(f, f, abs(otf));
+	ieFigure; mesh(f, f, abs(otf));
 %}
 %{
     wvf = wvfCreate;
     wvf = wvfCompute(wvf);
 	lsf = wvfGet(wvf, 'lsf', wvfGet(wvf,'wave'));
     x = wvfGet(wvf, 'lsf support', 'um');
-	ieNewGraphWin; plot(x, lsf); grid on; xlabel('Pos (mm)');
+	ieFigure; plot(x, lsf); grid on; xlabel('Pos (mm)');
 %}
 
 %% Massage parameters
@@ -1065,7 +1065,7 @@ switch (parm)
 
     case {'lsf'}
         % wave = wvfGet(wvf, 'calc wave');
-        % lsf = wvfGet(wvf, 'lsf', unit, wave); ieNewGraphWin; plot(lsf)
+        % lsf = wvfGet(wvf, 'lsf', unit, wave); ieFigure; plot(lsf)
         % For the moment, this only runs if we have precomputed the PSF and
         % we have a matching wavelength in the measured and calc
         % wavelengths. We need to think this through more.

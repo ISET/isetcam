@@ -55,6 +55,7 @@ function [specRad, XYZ] = blackbody( wave, temps, unitType , eqWave)
   ieNewGraphWin; plot(wave,sp); grid on;
 %}
 %{
+  wave = 400:10:700;
  [sp, XYZ] = blackbody(wave,3000:500:8000,'watts',600);
  ieNewGraphWin; plot(wave,sp); grid on;
 %}

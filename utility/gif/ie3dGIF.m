@@ -22,6 +22,9 @@ function gif_filename = ie3dGIF(hdl,varargin)
 
 % Example:
 %{
+% ETTBSkip
+%
+% DHB: Example references variables that don't exist, so does not run.
 hdl = figure;
 scatter3(wgts(1,1:sNum), wgts(2,1:sNum), wgts(3,1:sNum), 50, 'b', 'filled'); hold on;
 scatter3(wgts(1,sNum+1:end), wgts(2,sNum+1:end), wgts(3,sNum+1:end), 50, 'r', 'filled'); hold on;

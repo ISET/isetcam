@@ -35,7 +35,7 @@ function [siData, wvfP] = wvf2PSF(wvfP, showBar)
 %    oi = oiSet(oi,'optics flength',flength);
 %    oi = oiSet(oi,'optics',optics);
 %
-%    vcNewGraphWin([],'tall');
+%    ieFigure([],'tall');
 %    subplot(2,1,1), wvfPlot(wvfP,'image psf','um',550,15,'no window');
 %    subplot(2,1,2), wvfPlot(wvfP,'image psf','um',550,15,'no window');
 %
@@ -65,7 +65,7 @@ psf = zeros(nPix,nPix,nWave);
 if showBar, wBar = waitbar(0,'Creating PSF'); end
 for ii=1:nWave
     if showBar, waitbar(ii/nWave,wBar); end
-    thisPSF = wvfGet(wvfP,'psf',wave(ii));  % vcNewGraphWin; imagesc(thisPSF)
+    thisPSF = wvfGet(wvfP,'psf',wave(ii));  % ieFigure; imagesc(thisPSF)
     
     % These are the samples in space as per the wavefront calculation.  I
     % don't understand how they are calculated but as of today, they are

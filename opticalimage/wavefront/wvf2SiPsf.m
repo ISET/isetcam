@@ -106,7 +106,7 @@ ieSaveSIDataFile(siPSFData.psf, siPSFData.wave, ...
 % plot, but since everything is square here that is OK for now. To fix
 % it, would need to know convention fo umPerSamp vector order as well
 % as that for imagesc.
-ieNewGraphWin([], 'tall');
+ieFigure([], 'tall');
 subplot(2, 1, 1);
 wvfPlot(wvfP, 'image psf', 'unit','um', 'wave', 550, 'plot range', 15, 'window', gcf);
 [m, n, k] = size(siPSFData.psf);

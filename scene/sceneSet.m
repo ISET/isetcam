@@ -22,6 +22,13 @@ function scene = sceneSet(scene,parm,val,varargin)
 %    scene = sceneSet(scene,'fov',3);               % Set scene field of view to 3 deg
 %    scene = sceneSet(scene,'resize',[256 256]);
 %
+%  Geometry note:
+%    The stored angular geometry is the horizontal field of view
+%    ('wangular'/'fov'). Width is derived from distance and horizontal
+%    field of view. Sample spacing and height are then derived assuming
+%    square pixels. 'Sample size' remains as a compatibility alias for
+%    that spacing.
+%
 % Scene description
 %      'name'          - An informative name describing the scene
 %      'type'          - The string 'scene'
@@ -135,6 +142,8 @@ switch parm
         scene.distance = val;
 
     case {'wangular','widthangular','hfov','horizontalfieldofview','fov'}
+        % Store only the horizontal FOV.  The vertical FOV and height are
+        % derived later under the square-pixel geometry model.
         if val > 180,   val = 180 - eps; warndlg('Warning: fov > 180');
         elseif val < 0, val = eps; warndlg('Warning fov < 0');
         end

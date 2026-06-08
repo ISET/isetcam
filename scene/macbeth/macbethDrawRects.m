@@ -33,7 +33,8 @@ if ieNotDefined('onoff'), onoff = 'on'; end  % Default is on
 
 switch onoff
     case 'on'
-        switch vcEquivalentObjtype(obj.type)
+        objType = vcGetObjectType(obj);
+        switch vcEquivalentObjtype(objType)
             case 'VCIMAGE'
                 cornerPoints = ipGet(obj,'chart corner points');
                 ipWindow;
@@ -45,28 +46,29 @@ switch onoff
                 cornerPoints = sceneGet(obj,'chart corner points');
                 sceneWindow;
             otherwise
-                error('Unknown object type %s',obj.type);
+                error('Unknown object type %s',objType);
         end
-        
+
         if isempty(cornerPoints), error('No chart corner points'); end
-        
+
         % From the corner points, calculate the macbeth patch center locations.
         rects = chartRectangles(cornerPoints,4,6,0.5);
         chartRectsDraw(obj,rects);
-        
+
     case 'off'
         % This is just a refresh.
-        switch lower(obj.type)
+        objType = lower(vcGetObjectType(obj));
+        switch objType
             case 'vcimage'
                 ipWindow;
-                
+
             case {'isa','sensor'}
                 sensorWindow;
-                
+
             case {'scene'}
                 sceneWindow;
         end
-        
+
     otherwise
         error('Unknown on/off %s\n',onoff);
 end

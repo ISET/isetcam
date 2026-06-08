@@ -73,10 +73,13 @@ scene = sceneSet(scene,'meanLuminance',meanL);
 
 % Store the rect and clear out incorrect metadata.  Maybe we should be
 % updating.
-scene.metadata.rect = rect;
-if isfield(scene.metadata,'coordinates')
-    scene.metadata = rmfield(scene.metadata,'coordinates'); 
+metadata = sceneGet(scene,'metadata');
+if isempty(metadata), metadata = struct; end
+metadata.rect = rect;
+if isfield(metadata,'coordinates')
+    metadata = rmfield(metadata,'coordinates');
 end
+scene = sceneSet(scene,'metadata',metadata);
 
 end
 

@@ -43,8 +43,10 @@ function [files,tRows] = ieTableGet(T,varargin)
 % See also
 %   table
 
-% Example:
+% Examples:
 %{
+% ETTBSkip
+%
 % ewave 415 or 450 and substrate tongue and subject J
 T = oeDatabaseCreate;
 [~,tRows] = ieTableGet(T,'ewave',415,'ewave',450,'operator','or');
@@ -52,6 +54,8 @@ files = ieTableGet(tRows,'substrate','tongue','subject','J');
 disp(files);
 %}
 %{
+% ETTBSkip
+%
 % Subject J or Z.  Ewave 405 or 415.  Substrate tongue.
 T = oeDatabaseCreate;
 [~,tRows] = ieTableGet(T,'subject','J','subject','Z','operator','or');

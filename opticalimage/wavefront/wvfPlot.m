@@ -8,9 +8,9 @@ function [uData, pData, fighdl] = wvfPlot(wvfP, pType, varargin)
 %        Follow the logic in scenePlot or oiPlot.
 %
 % Description:
-%    By default, this routine opens a new graph window (ieNewGraphWin). If
+%    By default, this routine opens a new graph window (ieFigure). If
 %    the final varargin argument is set to 'no window', then the
-%    ieNewGraphWin is suppressed. Hence, you can use this call to plot
+%    ieFigure is suppressed. Hence, you can use this call to plot
 %    within a subplot of a current window.
 %
 %    Plot types:
@@ -62,7 +62,7 @@ function [uData, pData, fighdl] = wvfPlot(wvfP, pType, varargin)
 %         4. somehow remove the 0 phase areas outside of calculated pupil]
 %
 % See Also:
-%    wvfComputePSF, v_wvfDiffractionPSF, ieNewGraphWin
+%    wvfComputePSF, v_wvfDiffractionPSF, ieFigure
 
 % History:
 %    xx/xx/12   bw    (c) Wavefront Toolbox Team
@@ -133,7 +133,7 @@ if islogical(window) && ~window
 elseif (isa(window,'matlab.ui.Figure') || isa(window,'matlab.graphics.layout.TiledChartLayout'))
     figure(window);
 elseif isempty(window) || window
-    fighdl = ieNewGraphWin;
+    fighdl = ieFigure;
 end
 
 %% Switch through the plots
@@ -384,7 +384,7 @@ switch(pType)
         end
         
         % Axes, labeling, store data
-        % ieNewGraphWin;
+        % ieFigure;
         mesh(freq, freq, abs(otf))
         str = sprintf('Freq (lines/%s)', unit);
         xlabel(str); ylabel(str); title(sprintf('OTF %.0f', wave));
@@ -422,7 +422,7 @@ switch(pType)
         end
         
         % Axes, labeling, store data
-        % ieNewGraphWin;
+        % ieFigure;
         middleRow = (freq == 0);
         positiveCols = (freq >= 0);
         plot(freq(positiveCols), abs(otf(middleRow,positiveCols)));
@@ -475,7 +475,7 @@ switch(pType)
         % freq * space/deg = freq / (deg/space)
         
         % Axes, labeling, store data
-        % ieNewGraphWin;
+        % ieFigure;
         middleRow = (freq == 0);
         positiveCols = (freq >= 0);
         plot(freq(positiveCols), abs(otf(middleRow,positiveCols)));

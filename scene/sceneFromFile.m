@@ -169,7 +169,7 @@ switch lower(imType)
         end
 
         if ischar(dispCal), theDisplay = displayCreate(dispCal);
-        elseif isstruct(dispCal) && isequal(dispCal.type, 'display')
+        elseif isstruct(dispCal) && isequal(vcGetObjectType(dispCal), 'display')
             theDisplay = dispCal;
         else
             error('Bad display information.');
@@ -202,7 +202,7 @@ switch lower(imType)
         % be passed in in varargin{2}
 
         % Initialize the whole illuminant struct
-        if isempty(illEnergy) 
+        if isempty(illEnergy)
             if ~displayGet(theDisplay, 'is emissive')
                 % Reflective
                 error('illuminant energy specification required for reflective display');
@@ -273,7 +273,7 @@ scene = sceneSet(scene, 'photons', photons);
 scene = sceneSet(scene, 'illuminant', il);
 
 % Name the scene with the file name or just announce that we received rgb
-% data.  
+% data.
 % Also, check whether the file contains 'fov' and 'dist' variables
 % and adjust the scene, over-riding what we did, if they are there.
 if ischar(inputData)
@@ -299,7 +299,7 @@ if scaleReflectance
     % Adjust illuminant level to a max reflectance 0.95. If the
     % reflectances are expected to be dark, set this to false.
     r = sceneGet(scene,'reflectance');
-    maxR = max(r(:));    
+    maxR = max(r(:));
     if maxR > 0.95
         illEnergy = sceneGet(scene,'illuminant energy');
         scene = sceneSet(scene,'illuminant energy',illEnergy*maxR);
@@ -323,9 +323,9 @@ end
             case 'none'
                 photons = vcReadImage(I, imType, d, doSub, sz);
             case {'xyzmatch', 'xyznonneg', 'xyznonnegstrict'}
-                % This is the case we want XYZ of image + basis could equal 
+                % This is the case we want XYZ of image + basis could equal
                 % to XYZ of img convert from srgb to xyz space.
-                % 
+                %
                 % Get srgb2xyz matrix
                 srgb2xyz = colorTransformMatrix('srgb2xyz');
                 srgb2xyzCol = srgb2xyz';

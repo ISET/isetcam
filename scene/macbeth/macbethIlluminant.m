@@ -38,7 +38,7 @@ function illPhotons = macbethIlluminant(scene)
 %
 
 %% Check input
-assert(isequal(scene.type,'scene'))
+assert(isequal(sceneGet(scene,'type'),'scene'))
 
 %% Get data
 wave = sceneGet(scene,'wave');
@@ -47,7 +47,7 @@ mccReflectance = mccReflectance';   % XW format
 
 % cp = chartCornerpoints(scene,true);
 % [rects,mLocs,pSize] = chartRectangles(cp,4,6,0.5);  % MCC parameters
-  
+
 % Spectral radiance from the macbeth patchs
 mccSPD = macbethSelect(scene);
 
@@ -57,14 +57,14 @@ illPhotons = zeros(nWave,1);
 for ii=1:nWave
     x = mccReflectance(:,ii);
     y = mccSPD(:,ii);
-    
+
     % y = x*ill
     % x'*y = x'*x*ill
     % (x'*x)^-1*x'*y = ill
     % illPhotons(ii) = (1/dot(x,x))*x'*y;
     % Or,
     illPhotons(ii) = pinv(x)*y;
-    
+
 end
 
 ieNewGraphWin;

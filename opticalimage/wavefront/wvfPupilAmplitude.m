@@ -44,17 +44,17 @@ function [im, params] = wvfPupilAmplitude(wvf, varargin)
 %{
 wvf = wvfCreate;
 im = wvfAperture(wvf); % Default
-ieNewGraphWin; imagesc(im); colormap(gray); axis image
+ieFigure; imagesc(im); colormap(gray); axis image
 %}
 %{
 wvf = wvfCreate;
 im = wvfAperture(wvf,'segment length',100); % Default
-ieNewGraphWin; imagesc(im); colormap(gray); axis image
+ieFigure; imagesc(im); colormap(gray); axis image
 %}
 %{
 wvf = wvfCreate;
 [im,params] = wvfAperture(wvf,'n sides',8); 
-ieNewGraphWin; imagesc(im); colormap(gray); axis image
+ieFigure; imagesc(im); colormap(gray); axis image
 %}
 
 error('Use wvfAperture.')
@@ -172,10 +172,10 @@ end
 % Now make the pattern circular
 [X,Y] = meshgrid((1:imageSize) - centerPoint(1),(1:imageSize) - centerPoint(2));
 imRadius = sqrt(X.^2 + Y.^2);
-% ieNewGraphWin; imagesc(imRadius); colormap(gray); colorbar; axis image
+% ieFigure; imagesc(imRadius); colormap(gray); colorbar; axis image
 idx = (imRadius > radius);
 im(idx) = 0;
-% ieNewGraphWin; imagesc(im); colormap(gray); colorbar; axis image
+% ieFigure; imagesc(im); colormap(gray); colorbar; axis image
 
 %%
 if nargout == 2

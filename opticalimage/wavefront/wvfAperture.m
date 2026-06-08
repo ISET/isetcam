@@ -46,23 +46,23 @@ function [im, params] = wvfAperture(wvf, varargin)
 %{
     wvf = wvfCreate;
     im = wvfAperture(wvf); % Default with some scratches and dust.
-    ieNewGraphWin; imagesc(im); colormap(gray); axis image
+    ieFigure; imagesc(im); colormap(gray); axis image
 %}
 %{
     % Diffraction limited, circular (no scratches or dust)
     wvf = wvfCreate;
     im = wvfAperture(wvf,'dot mean',0,'dot sd',0,'line mean',0,'line sd',0); 
-    ieNewGraphWin; imagesc(im); colormap(gray); axis image
+    ieFigure; imagesc(im); colormap(gray); axis image
 %}
 %{
     wvf = wvfCreate;
     im = wvfAperture(wvf,'segment length',100); % Default
-    ieNewGraphWin; imagesc(im); colormap(gray); axis image
+    ieFigure; imagesc(im); colormap(gray); axis image
 %}
 %{
     wvf = wvfCreate;
     [im,params] = wvfAperture(wvf,'n sides',8); 
-    ieNewGraphWin; imagesc(im); colormap(gray); axis image
+    ieFigure; imagesc(im); colormap(gray); axis image
 %}
 %{
     wvf = wvfCreate;
@@ -70,7 +70,7 @@ function [im, params] = wvfAperture(wvf, varargin)
                        'rectangle','aspect ratio',[2 1], ...
                        'dot mean',0,'dot sd',0,...
                        'line mean',0,'line sd',0); 
-    ieNewGraphWin; imagesc(im); colormap(gray); axis image
+    ieFigure; imagesc(im); colormap(gray); axis image
 
 %}
 
@@ -244,14 +244,14 @@ end
 if ndims(im) == 3
     im = rgb2gray(im);
 end
-% ieNewGraphWin; imagesc(im); colormap(gray); colorbar; axis image
+% ieFigure; imagesc(im); colormap(gray); colorbar; axis image
 
 switch shape
     case 'polygon'
         % Now make the pattern circular
         [X,Y] = meshgrid((1:imageSize) - centerPoint(1),(1:imageSize) - centerPoint(2));
         imRadius = sqrt(X.^2 + Y.^2);
-        % ieNewGraphWin; imagesc(imRadius); colormap(gray); colorbar; axis image
+        % ieFigure; imagesc(imRadius); colormap(gray); colorbar; axis image
         idx = (imRadius > radius);
         im(idx) = 0;
 

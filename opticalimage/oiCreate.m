@@ -1,5 +1,5 @@
 function [oi, wvf, scene] = oiCreate(oiType,varargin)
-% Create an optical image structure 
+% Create an optical image structure
 %
 % Syntax
 %   [oi, wvf, scene] = oiCreate(oiType,varargin)
@@ -20,7 +20,7 @@ function [oi, wvf, scene] = oiCreate(oiType,varargin)
 %     {'wvf'}        - Use a wavefront structure to define
 %                      shift-invariant optics.  Default is diffraction
 %                      limited, fnumber 4, focal length 3.863 mm
-%     
+%
 %     {'wvf human'}  - Human shift-invariant optics based on mean
 %                      wavefront abberration from Thibos et al. (2009,
 %                      Ophthalmic & Physiological Optics). Optional
@@ -37,7 +37,7 @@ function [oi, wvf, scene] = oiCreate(oiType,varargin)
 %                      tracing. It includes a wavelength-dependent and
 %                      field height dependent PSF, along with relative
 %                      illumination and geometric distortion.  These data
-%                      are derived from Zemax, typically. 
+%                      are derived from Zemax, typically.
 %
 %     {'uniform d65'} - Turns off offaxis to make uniform D65 image
 %
@@ -47,15 +47,15 @@ function [oi, wvf, scene] = oiCreate(oiType,varargin)
 %
 %
 % Optional key/val
-%   
+%
 %   varargin - Different parameters can be used for rayTrace, human wvf,
 %   wvf, uniform d65, uniform ee and black.
-% 
+%
 %     rayTrace    - varargin{1} = rtFileName
 %     human wvf   - varargin{:} passed to opticsCreate
 %
-%     uniform d65, uniform ee, black -  
-%          sz = varargin{1}; wave = varargin{2};  
+%     uniform d65, uniform ee, black -
+%          sz = varargin{1}; wave = varargin{2};
 %     wvf  - varargin{1} = A specific wavefront struct
 %
 % Returns
@@ -71,9 +71,13 @@ function [oi, wvf, scene] = oiCreate(oiType,varargin)
 %      oi = oiCreate('default');
 %      oi = initDefaultSpectrum(oi, 'hyperspectral');
 %
+%  Bare optical images created without a scene carry a default image-plane
+%  geometry of 10 deg horizontal FOV and 256 by 256 samples. oiCompute
+%  overwrites these defaults using the scene geometry.
+%
 % Copyright ImagEval Consultants, LLC, 2003.
 %
-% See also:  
+% See also:
 %   sceneCreate, oiCompute, oiSet/Get, wvfCreate, wvf2oi, wvf2optics
 
 % Example
@@ -95,8 +99,8 @@ validTypes = {'default','pinhole','diffractionlimited','diffraction', ...
     'uniformd65','uniformee','black'};
 
 % Default is the diffraction limited calculation
-if ieNotDefined('oiType'), oiType = 'diffraction limited'; 
-else 
+if ieNotDefined('oiType'), oiType = 'diffraction limited';
+else
     % If oiCreate('valid'), we return the valid types
     if strncmp(oiType,'valid',5)
         oi = validTypes;
@@ -120,12 +124,12 @@ switch ieParamFormat(oiType)
 
         optics = opticsCreate('diffraction limited');
         oi = oiSet(oi,'optics',optics);
-        
+
         % Set up the default glass diffuser with a 2 micron blur circle, but
         % skipped
         oi = oiSet(oi,'diffuser method','skip');
         oi = oiSet(oi,'diffuser blur',2*10^-6);  % If used, 2 um.
-        
+
         % BW: Checking.
         oi = oiSet(oi,'compute method','opticsotf');
 
@@ -138,23 +142,23 @@ switch ieParamFormat(oiType)
         end
 
     case {'pinhole'}
-        % Pinhole optics in an OI. 
-        % 
+        % Pinhole optics in an OI.
+        %
         % We set the f/# (focal length over the aperture) to be a very
         % small number. This image has zero-blur because the
         % diffraction aperture is very large. That is the goal of the
         % pinhole camera optics, but the way we achieve it is odd.
-        % 
+        %
         % The absolute light level is high because a small fnumber
         % means the focal length is very short compared to the
         % aperture.
         %
         % With these default settings the focal length is 10 mm and the
-        % aperture diameter is 10 m.        
+        % aperture diameter is 10 m.
         oi = oiCreate();
         oi = oiSet(oi, 'name', 'pinhole');
         oi = oiSet(oi, 'optics name','pinhole');
-        
+
         % This makes the computation a pinhole
         oi = oiSet(oi,'optics model','skip');
         oi = oiSet(oi, 'optics offaxis method', 'skip');
@@ -179,7 +183,7 @@ switch ieParamFormat(oiType)
         oi = oiSet(oi,'wave',[]);
 
     case {'wvf','shiftinvariant'}
-        % oiCreate('wvf') or 
+        % oiCreate('wvf') or
         % oiCreate('wvf',wvf);
         %
         % Create the optics from a wavefront structure.  We create a
@@ -211,12 +215,12 @@ switch ieParamFormat(oiType)
 
         % Create the oi
         oi  = wvf2oi(wvf);
-        
+
         % Set up the default glass diffuser with a 2 micron blur circle, but
         % skipped
         oi = oiSet(oi,'diffuser method','skip');
         oi = oiSet(oi,'diffuser blur',2*10^-6);  % If used, 2 um.
-        
+
         % Camera lenses use transmittance, not human lens.
         if checkfields(oi.optics, 'lens')
             % BW:  Haven't seen this for a while.
@@ -224,7 +228,7 @@ switch ieParamFormat(oiType)
             oi.optics = rmfield(oi.optics, 'lens');
             oi.optics.transmittance.wave = (370:730)';
             oi.optics.transmittance.scale = ones(length(370:730), 1);
-        end        
+        end
 
         % Set compute method
         oi = oiSet(oi, 'compute method', 'opticspsf');
@@ -236,7 +240,7 @@ switch ieParamFormat(oiType)
     case {'psf'}
         % Create optics from a PSF (e.g., siSynthetic). This is also a shift
         % invariant type of OI, but there is no wavefront representation
-        
+
         oi = oiCreate('default');
         fNumber = oiGet(oi,'optics fnumber');
         wave = 400:10:700;
@@ -244,7 +248,7 @@ switch ieParamFormat(oiType)
 
         % The Gaussian spread is the same for all wavelengths and set to
         % twice the size of the airy disk diameter
-        diskradius = airyDisk(wave(end),fNumber,'units','um');        
+        diskradius = airyDisk(wave(end),fNumber,'units','um');
         psfType = 'gaussian';
         sigma = 2*diskradius;
 
@@ -267,7 +271,7 @@ switch ieParamFormat(oiType)
         load(rtFileName,'optics');
         oi = oiSet(oi,'optics',optics);
         oi = oiSet(oi, 'compute method', []);
-        
+
     case {'humanmw'}
         % oi = oiCreate('human mw');
         %
@@ -297,7 +301,7 @@ switch ieParamFormat(oiType)
         % structure has LCA set to use human.
         %
         % This is an alternative calculation compared to 'human mw'
-        % (Marimont and Wandell), above.         
+        % (Marimont and Wandell), above.
 
         oi = oiCreate('shift invariant');
         oi = oiSet(oi, 'diffuser method', 'skip');
@@ -332,7 +336,7 @@ switch ieParamFormat(oiType)
         % [oi, scene] = oiCreate('uniform ee',sz,wave);
         %
         % Uniform, equal energy optical image. No cos4th falloff. Might be
-        % used in lux-sec SNR testing or scripting.  
+        % used in lux-sec SNR testing or scripting.
         % Not really used now, since (5.3.2005).
         wave = 400:10:700; sz = 32;
         if length(varargin) >= 1, sz = varargin{1}; end
@@ -349,10 +353,10 @@ switch ieParamFormat(oiType)
         wave = 400:10:700; sz = 32;
         if length(varargin) >= 1, sz = varargin{1}; end
         if length(varargin) >= 2, wave = varargin{2}; end
-        oi = oiCreate('shift invariant'); 
+        oi = oiCreate('shift invariant');
         oi = oiSet(oi,'wave',wave);
         oi = oiSet(oi,'photons',zeros(sz,sz,numel(wave)));
-        oi = oiSet(oi,'fov',100);        
+        oi = oiSet(oi,'fov',100);
         wvf = [];
 
     otherwise
@@ -361,8 +365,29 @@ switch ieParamFormat(oiType)
             fprintf('%d: %s\n',ii,validTypes{ii});
         end
         fprintf('-------\n')
-        
+
         error('***Unknown oiType: %s\n',oiType);
+end
+
+if isstruct(oi) && checkfields(oi,'type') && strcmpi(oi.type,'opticalimage')
+    oi = oiApplyDefaultGeometry(oi);
+end
+
+end
+
+function oi = oiApplyDefaultGeometry(oi)
+
+if (~checkfields(oi,'wAngular')) || isempty(oi.wAngular)
+    oi.wAngular = 10;
+end
+
+if (~checkfields(oi,'data','photons')) || isempty(oi.data.photons)
+    if (~checkfields(oi,'rows')) || isempty(oi.rows)
+        oi.rows = 256;
+    end
+    if (~checkfields(oi,'cols')) || isempty(oi.cols)
+        oi.cols = 256;
+    end
 end
 
 end
