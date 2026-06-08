@@ -11,6 +11,39 @@ Gemini, and other AI coding assistants working in this repository.
 - For VS Code MATLAB setup, see `../.vscode/matlab-setup.md`.
 - For MATLAB Command Window path setup, use `.github/matlab-paths.md`.
 
+## Tutorials and Examples
+
+ISETCam keeps `tutorials/` and `examples/` as separate teaching surfaces for
+different goals and audiences.
+
+- **Tutorials (`tutorials/`)**
+  - Audience: learners (including new students) who can program and are
+    learning image systems engineering and ISETCam object fundamentals.
+  - Purpose: short, heavily commented introductions to key objects and APIs.
+  - Expected content:
+    - object creation and setup
+    - `*Get`/`*Set` usage for key properties
+    - basic visualization (`*Window`, `*Plot`)
+    - one simple quantitative computation/checkpoint
+  - Expected behavior: runs relatively quickly and is easy to read linearly.
+
+- **Examples (`examples/`)**
+  - Audience: users looking for realistic analysis patterns to adapt.
+  - Purpose: applied workflows and more advanced computations using ISETCam.
+  - Expected content:
+    - end-to-end numerical analyses or visualization workflows
+    - realistic parameter choices and tradeoff exploration
+    - code that users may copy/adapt as a starting point for their own work
+  - Expected behavior: can be longer and more detailed than tutorials.
+
+When adding or editing files, preserve this distinction. If content is mainly
+onboarding and API orientation, place it in `tutorials/`. If content is mainly
+applied workflow, analysis, or deeper exploration, place it in `examples/`.
+
+For student contributors, prioritize clarity, reproducibility, and instructional
+value: use clear comments, stable outputs, and explicit links to related wiki
+pages, tests, and nearby tutorials/examples.
+
 ## ISETCam Pipeline
 
 Prefer existing object-specific functions before writing new utilities.
