@@ -1,9 +1,9 @@
-function htmlFile = ieTutorialPublish(fname,varargin)
+function htmlFile = iePublish(fname,varargin)
 % Publish a tutorial m-file as a self-contained HTML file.
 %
 % Syntax:
-%   htmlFile = ieTutorialPublish(fname)
-%   htmlFile = ieTutorialPublish(fname,'param',value,...)
+%   htmlFile = iePublish(fname)
+%   htmlFile = iePublish(fname,'param',value,...)
 %
 % Description:
 %   Publishes a tutorial/script m-file to HTML so the output file sits
@@ -37,7 +37,7 @@ function htmlFile = ieTutorialPublish(fname,varargin)
 % Example:
 %{
 % Publish a tutorial in-place with embedded images
-% htmlFile = ieTutorialPublish('tutorials/scene/t_sceneIntroduction.m');
+% htmlFile = iePublish('tutorials/scene/t_sceneIntroduction.m');
 % web(htmlFile,'-browser');
 %}
 %
