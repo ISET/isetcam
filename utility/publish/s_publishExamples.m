@@ -1,6 +1,12 @@
-%% s_scriptsPublish
+%% s_publishExamples
 %
 % Publish scripts as HTML files that can be viewed in a browser.
+%
+% Note on publishing individual files:
+% To publish a single example script (e.g., s_myExample.m) with the exact
+% formatting and sizing settings used here, use the underlying
+% utility directly:
+%    iePublish('s_myExample.m');
 %
 % HTML and figure PNG files are written next to each script m-file.
 %
@@ -33,16 +39,16 @@ for ss = 1:length(sDir)
     scriptNames = excludeScripts(allScripts,excludeNames);
     nScripts = length(scriptNames);
     fprintf('Publishing %d scripts from %s directory\n',nScripts,sDir{ss});
-    
+
     for thisScript=1:nScripts
         fprintf('%d %s ...',thisScript,scriptNames(thisScript).name);
         scriptFile = fullfile(scriptDir,scriptNames(thisScript).name);
-        ieTutorialPublish(scriptFile,...
+        iePublish(scriptFile,...
             'maxHeight',maxHeight,...
             'maxWidth',maxWidth,...
             'createThumbnail',false,...
             'imageFormat','png');
-        
+
         fprintf('done\n');
     end
 

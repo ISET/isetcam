@@ -1,4 +1,4 @@
-function tests = test_ieTutorialPublish()
+function tests = test_iePublish()
 tests = functiontests(localfunctions);
 end
 
@@ -13,7 +13,7 @@ cleanupObj = onCleanup(@() rmdir(tmpDir,'s')); %#ok<NASGU>
 tmpMFile = fullfile(tmpDir,'t_sceneIntroduction.m');
 copyfile(srcFile,tmpMFile);
 
-htmlFile = ieTutorialPublish(tmpMFile,'evalCode',false);
+htmlFile = iePublish(tmpMFile,'evalCode',false);
 
 verifyTrue(testCase,exist(htmlFile,'file') == 2);
 [htmlDir,htmlName,htmlExt] = fileparts(htmlFile);

@@ -7,8 +7,14 @@ function s_publishTutorials(tDir)
 %   s_publishTutorials('scene') % publish one directory (function syntax)
 %   s_publishTutorials('scene','oi','sensor') % publish several
 %
+% Note on publishing individual files:
+%   To publish a single tutorial script (e.g. t_myTutorial.m) with the exact
+%   formatting, styling, and image inline settings used here, use the
+%   underlying utility directly:
+%      iePublish('t_myTutorial.m');
+%
 % Description:
-%   Calls ieTutorialPublish on every m-file in the specified tutorial
+%   Calls iePublish on every m-file in the specified tutorial
 %   subdirectory (or directories).  HTML is written next to each m-file
 %   with figures embedded as base64 so no external PNG files are needed.
 %
@@ -47,7 +53,7 @@ for ss = 1:numel(tDir)
     for ii = 1:nTutorials
         fprintf('  %d  %s ...', ii, tutorialNames(ii).name);
         tutorialFile = fullfile(tutorialDir, tutorialNames(ii).name);
-        ieTutorialPublish(tutorialFile, ...
+        iePublish(tutorialFile, ...
             'maxHeight',      maxHeight,  ...
             'maxWidth',       maxWidth,   ...
             'createThumbnail',false,      ...
