@@ -28,6 +28,8 @@ if isempty(allFiles)
     return;
 end
 
+logInfo = ieInitTutorialExampleRunLog(repoRoot, 'ieExamplesTest', targetDir, allFiles, scriptName);
+
 wbarFlag = ieSessionGet('wait bar');
 initClear = ieSessionGet('init clear');
 existingFigures = findall(groot, 'Type', 'figure');
@@ -35,13 +37,15 @@ cleanupObj = onCleanup(@() localRestoreSessionState(wbarFlag, initClear, existin
 
 fprintf('\n=========================================\n');
 fprintf('Running %d scripts in %s\n', numel(allFiles), targetDir);
+fprintf('Run log: %s\n', logInfo.runDir);
 fprintf('=========================================\n');
 
 ieSessionSet('wait bar', 0);
 ieSessionSet('init clear', true);
 
-testResults = localRunAllFiles(allFiles, targetDir, 'ieExamplesTest', existingFigures);
+testResults = localRunAllFiles(allFiles, targetDir, 'ieExamplesTest', existingFigures, logInfo);
 localPrintSummary('ieExamplesTest', testResults);
+localLogSummary(logInfo, testResults);
 
 end
 
@@ -101,22 +105,28 @@ skipNames = {'s_initFont'};
 
 end
 
-function testResults = localRunAllFiles(allFiles, targetDir, runnerName, existingFigures)
+function testResults = localRunAllFiles(allFiles, targetDir, runnerName, existingFigures, logInfo)
 %% Run all collected files and record pass/fail/skip status.
 
 testResults = struct('file', {}, 'status', {}, 'error', {});
 skipPatterns = localSkipPatterns(runnerName);
+runState = localInitialRunState(allFiles);
 
 for fileIndex = 1:numel(allFiles)
     filePath = fullfile(allFiles(fileIndex).folder, allFiles(fileIndex).name);
     [~, name, ~] = fileparts(filePath);
     fprintf('Run [%d/%d]: %s... ', fileIndex, numel(allFiles), name);
+    runState.currentFile = filePath;
+    runState.currentIndex = fileIndex;
+    ieUpdateTutorialExampleRunLog(logInfo, 'ScriptStarted', runState, localEventDetail(fileIndex, numel(allFiles), filePath, ''));
 
     if localShouldSkip(filePath, skipPatterns) || ...
             localShouldSkipRestrictedBatch(filePath) || ...
             localFileHasSkipTag(filePath)
         fprintf('SKIPPED\n');
         testResults(end+1) = localMakeResult(filePath, 'Skipped', ''); %#ok<AGROW>
+        runState.completedResults = testResults;
+        ieUpdateTutorialExampleRunLog(logInfo, 'ScriptSkipped', runState, localEventDetail(fileIndex, numel(allFiles), filePath, ''));
         continue;
     end
 
@@ -124,10 +134,14 @@ for fileIndex = 1:numel(allFiles)
     if passed
         fprintf('OK\n');
         testResults(end+1) = localMakeResult(filePath, 'Passed', ''); %#ok<AGROW>
+        runState.completedResults = testResults;
+        ieUpdateTutorialExampleRunLog(logInfo, 'ScriptPassed', runState, localEventDetail(fileIndex, numel(allFiles), filePath, ''));
     else
         fprintf('FAILED\n');
         warning('Script failed: %s', errMsg);
         testResults(end+1) = localMakeResult(filePath, 'Failed', errMsg); %#ok<AGROW>
+        runState.completedResults = testResults;
+        ieUpdateTutorialExampleRunLog(logInfo, 'ScriptFailed', runState, localEventDetail(fileIndex, numel(allFiles), filePath, errMsg));
     end
 end
 
@@ -143,6 +157,54 @@ end
         end
 
     end
+
+end
+
+function runState = localInitialRunState(allFiles)
+%% Build the mutable run state persisted by the progress logger.
+
+plannedFiles = cell(numel(allFiles), 1);
+for fileIndex = 1:numel(allFiles)
+    plannedFiles{fileIndex} = fullfile(allFiles(fileIndex).folder, allFiles(fileIndex).name);
+end
+
+runState = struct();
+runState.startedAt = char(datetime('now', 'Format', 'yyyy-MM-dd HH:mm:ss'));
+runState.lastEventAt = runState.startedAt;
+runState.currentFile = '';
+runState.currentIndex = 0;
+runState.totalFiles = numel(allFiles);
+runState.plannedFiles = {plannedFiles};
+runState.completedResults = struct('file', {}, 'status', {}, 'error', {});
+
+end
+
+function detail = localEventDetail(fileIndex, totalFiles, filePath, errMsg)
+%% Format one log line detail message.
+
+detail = sprintf('[%d/%d] %s', fileIndex, totalFiles, filePath);
+if ~isempty(errMsg)
+    detail = sprintf('%s | %s', detail, errMsg);
+end
+
+end
+
+function localLogSummary(logInfo, testResults)
+%% Persist the final run summary.
+
+summary = sprintf('Passed=%d Failed=%d Skipped=%d', ...
+    sum(strcmp({testResults.status}, 'Passed')), ...
+    sum(strcmp({testResults.status}, 'Failed')), ...
+    sum(strcmp({testResults.status}, 'Skipped')));
+runState = struct();
+runState.startedAt = '';
+runState.lastEventAt = '';
+runState.currentFile = '';
+runState.currentIndex = numel(testResults);
+runState.totalFiles = numel(testResults);
+runState.plannedFiles = {{}};
+runState.completedResults = testResults;
+ieUpdateTutorialExampleRunLog(logInfo, 'RunCompleted', runState, summary);
 
 end
 
