@@ -1,7 +1,7 @@
 %% Spatial-CIELAB (SCIELAB) metric calculation using ISET.
 %
 % The first section shows how to read an RGB image into a scene. Then, we
-% calculate the scielab dieIifferences between two scenes.  The data in the
+% calculate the scielab differences between two scenes.  The data in the
 % scene depend on the display that is used to interpret the RGB data.
 %
 % The second section expands on the calculation, showing the steps in more
