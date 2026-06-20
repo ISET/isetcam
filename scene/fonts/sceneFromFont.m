@@ -18,11 +18,11 @@ function scene = sceneFromFont(font,dsp,scene, oSample, varargin)
 %% Input arguments
 if notDefined('font'),    font = fontCreate; end
 if notDefined('dsp'), dsp = displayCreate('LCD-Apple'); end
-if notDefined('scene')
+if notDefined('scene') || isempty(scene)
     scene = sceneCreate('empty');
     scene = sceneSet(scene,'wave',displayGet(dsp,'wave'));
 end
-if notDefined('oSample'), oSample = [20 20]; end
+if notDefined('oSample') || isempty(oSample), oSample = [20 20]; end
 if ~isempty(varargin), padsz   = varargin{1}; else padsz = []; end
 if length(varargin)>1, padval  = varargin{2}; else padval = []; end
 

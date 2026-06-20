@@ -700,6 +700,7 @@ switch sceneName
         % Create scene of single letter
         %
         % scene = sceneCreate('letter', font, display);
+        % scene = sceneCreate('letter', font, display, padSize, padValue);
         %
         % font = fontCreate;
         % font = fontSet(font,'character','ABC');
@@ -715,7 +716,10 @@ switch sceneName
         if length(varargin) > 1, display = varargin{2}; end
         if ischar(display), display = displayCreate(display); end
 
-        scene = sceneFromFont(font, display);
+        fontSceneArgs = {};
+        if length(varargin) > 2, fontSceneArgs{1} = varargin{3}; end
+        if length(varargin) > 3, fontSceneArgs{2} = varargin{4}; end
+        scene = sceneFromFont(font, display, [], [], fontSceneArgs{:});
         return; % Do not adjust luminance or other properties
 
     case {'hdrchart'}
@@ -1713,4 +1717,3 @@ photons = imageIncreaseImageRGBSize(photons,[barHeight,barWidth]);
 scene = sceneSet(scene,'photons',photons);
 
 end
-

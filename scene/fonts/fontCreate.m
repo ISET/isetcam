@@ -107,13 +107,13 @@ catch
     axis(ax, 'off');
 
     % Draw character
-    texthandle = text(ax, 0.5, 1, character, ...
+    texthandle = text(ax, 0.5, 0.5, character, ...
         'Units', 'normalized', ...
         'FontName', family, ...
         'FontUnits', 'pixels', ...
         'FontSize', fontSz, ...
         'HorizontalAlignment', 'center', ...
-        'VerticalAlignment', 'top', ...
+        'VerticalAlignment', 'middle', ...
         'Interpreter', 'none', ...
         'Color', [0 0 0]);
 
@@ -151,8 +151,7 @@ catch
 
     % Convert to grayscale mask and find non-white rows/cols
     gray = min(bitMap, [], 3);
-    rows = find(gray < 255);
-    cols = find(gray < 255);
+    [rows, cols] = find(gray < 255);
 
     % If nothing drawn, return empty bitmap
     if isempty(rows) || isempty(cols)
@@ -160,13 +159,14 @@ catch
         return;
     end
 
-    rowInd = rows(1) : rows(end);
-    colInd = cols(1) : cols(end);
+    rowInd = min(rows) : max(rows);
+    colInd = min(cols) : max(cols);
     bitMap = bitMap(rowInd, colInd, :);
 
-    % Binary bitmap: 1 where dark (character), 0 for background
-    bitmap = zeros(size(bitMap,1), size(bitMap,2));
-    bitmap(min(bitMap, [], 3) < 128) = 1;
+    % Binary RGB bitmap: 1 where dark (character), 0 for background.
+    % sceneFromFont expects one plane per display primary.
+    bitmap = min(bitMap, [], 3) < 128;
+    bitmap = repmat(bitmap, [1 1 3]);
 
 end
 
