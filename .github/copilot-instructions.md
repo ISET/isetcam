@@ -70,6 +70,9 @@ The legacy `% UTTBSkip` marker remains supported for compatibility with older
 files, but new and updated ISETCam files should use `% SkipFile` because these
 runners do not depend on UnitTestToolbox.
 
+For the shared cross-repository runner architecture and migration plan, see
+`docs/tutorial-example-test-architecture.md`.
+
 ## ISETCam Pipeline
 
 Prefer existing object-specific functions before writing new utilities.
