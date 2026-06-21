@@ -31,7 +31,7 @@ function image = LoadRawSensorData(filename,bpp,byteFormat,row,col)
 %}
 
 % Prevent this function from being autorun as a script
-% UTTBSkip
+% SkipFile
 
 if ~exist('filename', 'var' ), error( 'Need filename'); end
 if ~exist('byteFormat','var'), byteFormat = 'little';  end

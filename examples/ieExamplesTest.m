@@ -241,7 +241,7 @@ end
 end
 
 function shouldSkip = localFileHasSkipTag(filePath)
-%% Skip files that opt out via the UTTBSkip source tag.
+%% Skip files that opt out via a supported source tag.
 
 shouldSkip = false;
 fid = fopen(filePath, 'r');
@@ -250,7 +250,8 @@ if fid < 0
 end
 cleanupObj = onCleanup(@() fclose(fid)); %#ok<NASGU>
 fileText = char(fread(fid, 'uint8=>char')');
-shouldSkip = contains(fileText, '% UTTBSkip');
+shouldSkip = contains(fileText, '% SkipFile') || ...
+    contains(fileText, '% UTTBSkip');
 
 end
 

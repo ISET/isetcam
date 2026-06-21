@@ -50,6 +50,26 @@ For student contributors, prioritize clarity, reproducibility, and instructional
 value: use clear comments, stable outputs, and explicit links to related wiki
 pages, tests, and nearby tutorials/examples.
 
+### Skipping Automated Tutorial and Example Runs
+
+The `ieTutorialsTest` and `ieExamplesTest` runners execute `t_*` and `s_*`
+files by default. To exclude a source file from these automated smoke runs,
+add this exact comment anywhere in the file:
+
+```matlab
+% SkipFile
+```
+
+Use this opt-out sparingly for files that require unavailable external data or
+toolboxes, deliberate user interaction, unusually expensive computation, or a
+known failure that is explicitly documented nearby. The runners report these
+files as `Skipped`. Remove the tag when the file becomes suitable for routine
+automated execution.
+
+The legacy `% UTTBSkip` marker remains supported for compatibility with older
+files, but new and updated ISETCam files should use `% SkipFile` because these
+runners do not depend on UnitTestToolbox.
+
 ## ISETCam Pipeline
 
 Prefer existing object-specific functions before writing new utilities.
