@@ -1,11 +1,16 @@
-function run = ieTutorialsTest(selector)
+function run = ieTutorialsTest(selector,start)
 % Run ISETCam tutorials through the shared tutorial/example test engine.
 %
 % Syntax:
 %   run = ieTutorialsTest
 %   run = ieTutorialsTest(selector)
+%   run = ieTutorialsTest(selector,start)
+%
+% start identifies the first selected tutorial to run.  Use an empty
+% selector to resume the complete tutorial list from start.
 
 if nargin < 1, selector = ''; end
+if nargin < 2, start = ''; end
 
 config = struct();
 config.repositoryName = 'ISETCam';
@@ -13,6 +18,7 @@ config.repositoryRoot = isetRootPath;
 config.suiteKind = 'tutorials';
 config.runnerName = mfilename;
 config.selector = selector;
+config.start = start;
 config.skipPathPatterns = { ...
     [filesep 'data' filesep], ...
     ['hyperspectral' filesep 'support']};

@@ -8,7 +8,7 @@ function run = ieRunTutorialExampleTests(config)
 %   repositoryName, repositoryRoot, suiteKind, runnerName
 %
 % Optional config fields:
-%   selector, skipPathPatterns, conditionalSkipFcn, setupFcn
+%   selector, start, skipPathPatterns, conditionalSkipFcn, setupFcn
 
 config = localValidateConfig(config);
 if ~isempty(config.setupFcn), config.setupFcn(); end
@@ -27,6 +27,7 @@ if isempty(selectedFiles) && ~isempty(config.selector)
         'No %s file matched "%s" in %s.', ...
         config.suiteKind,config.selector,targetDir);
 end
+selectedFiles = localStartFile(selectedFiles,targetDir,config.start);
 
 run = localCreateRun(config,targetDir,selectedFiles);
 localWritePlannedFiles(run);
@@ -126,10 +127,12 @@ if ~ismember(config.suiteKind,{'tutorials','examples'})
 end
 
 if ~isfield(config,'selector'), config.selector = ''; end
+if ~isfield(config,'start'), config.start = ''; end
 if ~isfield(config,'skipPathPatterns'), config.skipPathPatterns = {}; end
 if ~isfield(config,'conditionalSkipFcn'), config.conditionalSkipFcn = []; end
 if ~isfield(config,'setupFcn'), config.setupFcn = []; end
 config.selector = char(config.selector);
+config.start = char(config.start);
 if ischar(config.skipPathPatterns)
     config.skipPathPatterns = {config.skipPathPatterns};
 end
@@ -215,6 +218,23 @@ selectedFiles = files(matches);
 
 end
 
+function selectedFiles = localStartFile(files,targetDir,start)
+%% Trim the execution plan so it begins with the requested file.
+
+if isempty(start)
+    selectedFiles = files;
+    return;
+end
+matches = localSelectFiles(files,targetDir,start);
+if isempty(matches)
+    error('ieRunTutorialExampleTests:NoStartMatch', ...
+        'No selected file matched start "%s" in %s.',start,targetDir);
+end
+startIndex = find(strcmp(files,matches{1}),1);
+selectedFiles = files(startIndex:end);
+
+end
+
 function run = localCreateRun(config,targetDir,plannedFiles)
 %% Construct the canonical run record and output paths.
 
@@ -238,6 +258,7 @@ run.suiteKind = config.suiteKind;
 run.runnerName = config.runnerName;
 run.targetDir = targetDir;
 run.selector = config.selector;
+run.start = config.start;
 run.state = 'Running';
 run.startedAt = localTimestamp();
 run.lastEventAt = run.startedAt;

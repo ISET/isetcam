@@ -77,6 +77,38 @@ assert(didError);
 
 end
 
+function testStart(~)
+%% start resumes a deterministic plan at the requested file.
+
+repoRoot = tempname;
+tutorialDir = fullfile(repoRoot,'tutorials');
+mkdir(tutorialDir);
+cleanupObj = onCleanup(@() rmdir(repoRoot,'s'));
+localWriteFile(fullfile(tutorialDir,'t_alpha.m'),'value = 1;');
+localWriteFile(fullfile(tutorialDir,'t_beta.m'),'value = 2;');
+localWriteFile(fullfile(tutorialDir,'t_gamma.m'),'value = 3;');
+
+config = struct('repositoryName','Synthetic', ...
+    'repositoryRoot',repoRoot,'suiteKind','tutorials', ...
+    'runnerName','syntheticTutorialsTest','start','t_beta');
+runRecord = ieRunTutorialExampleTests(config);
+assert(numel(runRecord.plannedFiles) == 2);
+assert(endsWith(runRecord.plannedFiles{1},'t_beta.m'));
+assert(endsWith(runRecord.plannedFiles{2},'t_gamma.m'));
+assert(strcmp(runRecord.start,'t_beta'));
+
+config.start = 't_missing';
+didError = false;
+try
+    ieRunTutorialExampleTests(config);
+catch exception
+    didError = strcmp(exception.identifier, ...
+        'ieRunTutorialExampleTests:NoStartMatch');
+end
+assert(didError);
+
+end
+
 function localWriteFile(fileName,fileText)
 %% Write one synthetic script.
 

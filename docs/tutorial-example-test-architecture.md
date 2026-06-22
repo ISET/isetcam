@@ -58,6 +58,7 @@ Optional fields are:
 | Field                | Default     | Meaning                                    |
 | -------------------- | ----------- | ------------------------------------------ |
 | `selector`           | `''`        | One file name or relative/full path to run |
+| `start`              | `''`        | First selected file to run                 |
 | `skipPathPatterns`   | `{}`        | Repository-specific path exclusions        |
 | `conditionalSkipFcn` | `[]`        | Optional function returning a skip reason  |
 | `setupFcn`           | `[]`        | Repository-specific path/dependency setup  |
@@ -146,6 +147,8 @@ Increment `schemaVersion` only for incompatible checkpoint changes.
 - Do not execute `.mlx` files. Plain-text Live Code `.m` is the canonical
   source, and executing `.mlx` introduces name-shadowing and renderer crashes.
 - A selector may be a bare stem, file name, relative path, or full path.
+- `start` accepts the same forms and trims the selected plan so execution
+  begins with that file.
 - Duplicate stems are configuration errors and should be reported before the
   run begins.
 
