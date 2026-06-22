@@ -75,12 +75,12 @@ for fileIndex = 1:numel(selectedFiles)
         result = localMakeResult(filePath,'Passed','', ...
             resultStartedAt,localTimestamp(),durationSeconds);
         eventName = 'ScriptPassed';
-        fprintf('OK\n');
+        fprintf('\n-----OK-----\n');
     else
         result = localMakeResult(filePath,'Failed',errorText, ...
             resultStartedAt,localTimestamp(),durationSeconds);
         eventName = 'ScriptFailed';
-        fprintf('FAILED\n');
+        fprintf('\n----FAILED--\n');
         warning('Script failed: %s',errorText);
     end
     run.results(end+1) = result;
@@ -373,7 +373,7 @@ if ~localIsWithin(filePath,targetDir)
 end
 cd(fileparts(filePath));
 try
-    fprintf('Running %s\n',filePath);
+    % fprintf('Running %s\n',filePath);
     run(filePath);
     passed = true;
     errorText = '';
