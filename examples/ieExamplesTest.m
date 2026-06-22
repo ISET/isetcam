@@ -1,16 +1,16 @@
-function run = ieExamplesTest(selector,start)
+function run = ieExamplesTest(varargin)
 % Run ISETCam examples through the shared tutorial/example test engine.
 %
 % Syntax:
 %   run = ieExamplesTest
-%   run = ieExamplesTest(selector)
-%   run = ieExamplesTest(selector,start)
+%   run = ieExamplesTest('select',scriptName)
+%   run = ieExamplesTest('start',scriptName)
 %
-% start identifies the first selected example to run.  Use an empty
-% selector to resume the complete example list from start.
+% With no arguments, all examples run.  'select' runs only scriptName;
+% 'start' runs scriptName and every example after it.  A single scriptName
+% argument remains supported as the legacy form of 'select'.
 
-if nargin < 1, selector = ''; end
-if nargin < 2, start = ''; end
+[selector,start] = localParseSelection(varargin{:});
 
 config = struct();
 config.repositoryName = 'ISETCam';
@@ -26,6 +26,34 @@ config.skipPathPatterns = { ...
 config.conditionalSkipFcn = @localConditionalSkip;
 
 run = ieRunTutorialExampleTests(config);
+
+end
+
+function [selector,start] = localParseSelection(varargin)
+%% Parse the public selection options while retaining legacy calls.
+
+selector = '';
+start = '';
+if isempty(varargin), return; end
+if isscalar(varargin)
+    selector = varargin{1};
+    return;
+end
+if numel(varargin) ~= 2
+    error('ieExamplesTest:InvalidInput', ...
+        'Use no arguments or one name-value pair: select or start.');
+end
+
+option = lower(char(varargin{1}));
+switch option
+    case {'select','selector'}
+        selector = varargin{2};
+    case 'start'
+        start = varargin{2};
+    otherwise
+        error('ieExamplesTest:InvalidOption', ...
+            'Unknown option "%s". Use select or start.',option);
+end
 
 end
 

@@ -93,6 +93,18 @@ ISETCam may retain its historical `ieTutorialsTest` and `ieExamplesTest`
 names. New repositories should use `<repository>TutorialsTest` and
 `<repository>ExamplesTest`.
 
+The public wrappers accept one optional name-value pair:
+
+```matlab
+repositoryTutorialsTest('select','t_oneTutorial')
+repositoryTutorialsTest('start','t_firstTutorialToRun')
+```
+
+With no arguments, a wrapper runs the complete suite. `select` runs only the
+named file, while `start` runs the named file and all subsequent files in the
+deterministically sorted plan. The legacy single positional selector remains
+supported for compatibility.
+
 ## Canonical Run Record
 
 The function return value and the contents of `checkpoint.mat` should be the
