@@ -40,6 +40,13 @@ When adding or editing files, preserve this distinction. If content is mainly
 onboarding and API orientation, place it in `tutorials/`. If content is mainly
 applied workflow, analysis, or deeper exploration, place it in `examples/`.
 
+### Data-Generation Scripts
+
+Some scripts exist to generate or refresh repository data files rather than to
+serve as tutorials or examples. Name these scripts `data_*.m`. This naming
+distinguishes them from automated tutorial (`t_*.m`) and example (`s_*.m`)
+smoke-test sources and makes their side-effecting purpose explicit.
+
 You can convert these tutorials and examples into HTML documentation by running
 the `s_publishTutorials` and `s_publishExamples` utilities from the MATLAB 
 command window. To publish a single file, use the underlying utility

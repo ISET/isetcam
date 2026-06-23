@@ -354,10 +354,10 @@ for patternIndex = 1:numel(patterns)
 end
 
 fileText = fileread(filePath);
-if contains(fileText,'% SkipFile')
+if localHasSourceMarker(fileText,'SkipFile')
     reason = 'source marker: % SkipFile';
     return;
-elseif contains(fileText,'% UTTBSkip')
+elseif localHasSourceMarker(fileText,'UTTBSkip')
     reason = 'legacy source marker: % UTTBSkip';
     return;
 end
@@ -370,6 +370,15 @@ elseif ischar(conditionalResult) || ...
         (isstring(conditionalResult) && isscalar(conditionalResult))
     reason = char(conditionalResult);
 end
+
+end
+
+function tf = localHasSourceMarker(fileText,marker)
+%% Match a distinct comment marker with optional horizontal whitespace.
+
+pattern = sprintf('(?m)^[ \\t]*%%[ \\t]*%s(?:[ \\t\\r]|$)', ...
+    regexptranslate('escape',marker));
+tf = ~isempty(regexp(fileText,pattern,'once'));
 
 end
 

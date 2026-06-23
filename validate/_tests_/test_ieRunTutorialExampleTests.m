@@ -15,6 +15,14 @@ localWriteFile(fullfile(tutorialDir,'t_fail.m'), ...
     'error(''synthetic:expected'',''expected failure'');');
 localWriteFile(fullfile(tutorialDir,'t_skip.m'), ...
     sprintf('%% SkipFile\nvalue = 2;'));
+localWriteFile(fullfile(tutorialDir,'t_skip_compact.m'), ...
+    sprintf('%%SkipFile\nvalue = 3;'));
+localWriteFile(fullfile(tutorialDir,'t_skip_spaced.m'), ...
+    sprintf('  %%  SkipFile  reason\nvalue = 4;'));
+localWriteFile(fullfile(tutorialDir,'t_skip_legacy.m'), ...
+    sprintf('%%  UTTBSkip\nvalue = 5;'));
+localWriteFile(fullfile(tutorialDir,'t_not_skip.m'), ...
+    sprintf('%% SkipFilename is not a marker\nvalue = 6;'));
 localWriteFile(fullfile(tutorialDir,'t_ignored.mlx'),'not a MATLAB script');
 
 config = struct();
@@ -27,11 +35,11 @@ reportText = evalc('runRecord = ieRunTutorialExampleTests(config);');
 
 assert(runRecord.schemaVersion == 1);
 assert(strcmp(runRecord.state,'Completed'));
-assert(numel(runRecord.plannedFiles) == 3);
-assert(numel(runRecord.results) == 3);
-assert(sum(strcmp({runRecord.results.status},'Passed')) == 1);
+assert(numel(runRecord.plannedFiles) == 7);
+assert(numel(runRecord.results) == 7);
+assert(sum(strcmp({runRecord.results.status},'Passed')) == 2);
 assert(sum(strcmp({runRecord.results.status},'Failed')) == 1);
-assert(sum(strcmp({runRecord.results.status},'Skipped')) == 1);
+assert(sum(strcmp({runRecord.results.status},'Skipped')) == 4);
 assert(all(isfield(runRecord.results, ...
     {'file','status','error','startedAt','finishedAt','durationSeconds'})));
 assert(isfile(runRecord.checkpointFile));
@@ -41,9 +49,9 @@ assert(contains(reportText,'Total Failed:'));
 checkpoint = load(runRecord.checkpointFile,'run');
 assert(isequal(checkpoint.run,runRecord));
 checkpointSummary = ieTestReport(runRecord.checkpointFile,'List','all');
-assert(checkpointSummary.passed == 1);
+assert(checkpointSummary.passed == 2);
 assert(checkpointSummary.failed == 1);
-assert(checkpointSummary.skipped == 1);
+assert(checkpointSummary.skipped == 4);
 temporaryCheckpoints = dir(fullfile(runRecord.runDir,'*.mat'));
 assert(isscalar(temporaryCheckpoints));
 
