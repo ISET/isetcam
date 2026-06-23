@@ -1,5 +1,5 @@
 function run = ieRunTutorialExampleTests(config)
-% Run tutorial or example scripts using the shared ISET smoke-test engine.
+% Run tutorial or example scripts using the shared validation engine.
 %
 % Syntax:
 %   run = ieRunTutorialExampleTests(config)

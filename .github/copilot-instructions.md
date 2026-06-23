@@ -52,7 +52,7 @@ pages, tests, and nearby tutorials/examples.
 
 ### Skipping Automated Tutorial and Example Runs
 
-The `ieTutorialsTest` and `ieExamplesTest` runners execute `t_*` and `s_*`
+The `ieTutorialTest` and `ieExampleTest` runners execute `t_*` and `s_*`
 files by default. To exclude a source file from these automated smoke runs,
 add this exact comment anywhere in the file:
 
@@ -125,8 +125,8 @@ plotting.
 - Good function-level tests should cover API/shape expectations, key behavior
   or mapping checks, stable golden-value fingerprints with named tolerances,
   and important input-validation cases.
-- Run the full unit-test suite with `ieUnitTests`.
-- Render or summarize `ieUnitTests` output with `ieTestReport`.
+- Run the full unit-test suite with `ieUnitTest`.
+- Render or summarize `ieUnitTest` output with `ieTestReport`.
 - Treat `isetvalidate` as the broader system/regression validation suite when
   relevant to a change.
 - MATLAB is available through the VS Code MATLAB extension.

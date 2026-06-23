@@ -20,10 +20,10 @@ repositories already depend on ISETCam.
 
 The four current entry points are:
 
-- `ieTutorialsTest`
-- `ieExamplesTest`
-- `isetbioTutorialsTest`
-- `isetbioExamplesTest`
+- `ieTutorialTest`
+- `ieExampleTest`
+- `isetbioTutorialTest`
+- `isetbioExampleTest`
 
 All four entry points are now thin configuration wrappers over the shared
 `ieRunTutorialExampleTests` engine. They return the same canonical run record,
@@ -62,7 +62,6 @@ Optional fields are:
 | `skipPathPatterns`   | `{}`        | Repository-specific path exclusions        |
 | `conditionalSkipFcn` | `[]`        | Optional function returning a skip reason  |
 | `setupFcn`           | `[]`        | Repository-specific path/dependency setup  |
-| `executionMode`      | `inprocess` | Reserved for future process isolation      |
 
 The engine supplies common defaults for discovery, `% SkipFile`, logging,
 cleanup, error capture, and reporting. Repository wrappers must not copy the
@@ -70,12 +69,12 @@ engine's helper functions.
 
 ### Thin repository wrappers
 
-Each repository keeps two familiar entry points. A wrapper should be about
-10-20 lines:
+Each repository keeps two small public entry points in its top-level
+`validate/` directory:
 
 ```matlab
-function run = isetbioExamplesTest(selector)
-if nargin < 1, selector = ''; end
+function run = isetbioExampleTest(varargin)
+[selector,start] = localParseSelection(varargin{:});
 
 config = struct();
 config.repositoryName = 'ISETBio';
@@ -83,27 +82,26 @@ config.repositoryRoot = isetbioRootPath;
 config.suiteKind = 'examples';
 config.runnerName = mfilename;
 config.selector = selector;
+config.start = start;
 config.skipPathPatterns = {'library'};
 
 run = ieRunTutorialExampleTests(config);
 end
 ```
 
-ISETCam may retain its historical `ieTutorialsTest` and `ieExamplesTest`
-names. New repositories should use `<repository>TutorialsTest` and
-`<repository>ExamplesTest`.
+ISETCam uses `ieTutorialTest` and `ieExampleTest`. Other repositories use
+`<repository>TutorialTest` and `<repository>ExampleTest`.
 
 The public wrappers accept one optional name-value pair:
 
 ```matlab
-repositoryTutorialsTest('select','t_oneTutorial')
-repositoryTutorialsTest('start','t_firstTutorialToRun')
+repositoryTutorialTest('selection','t_oneTutorial')
+repositoryTutorialTest('start','t_firstTutorialToRun')
 ```
 
-With no arguments, a wrapper runs the complete suite. `select` runs only the
+With no arguments, a wrapper runs the complete suite. `selection` runs only the
 named file, while `start` runs the named file and all subsequent files in the
-deterministically sorted plan. The legacy single positional selector remains
-supported for compatibility.
+deterministically sorted plan.
 
 ## Canonical Run Record
 
@@ -255,8 +253,9 @@ maintaining their own summary printer.
 
 ## Shared Implementation Location
 
-The shared engine and supporting code live in ISETCam. The implementation uses
-one public engine plus local helpers rather than many small public utilities.
+The shared engine, reporter, public runners, and focused infrastructure tests
+live in ISETCam's top-level `validate/` directory. The implementation uses one
+public engine plus local helpers rather than many small public utilities.
 The superseded helpers were removed during migration:
 
 - `ieInitTutorialExampleRunLog`
@@ -302,7 +301,7 @@ tests.
 
 ### Phase 3: Thin wrappers — completed
 
-1. Replace the bodies of `ieTutorialsTest` and `ieExamplesTest` with config
+1. Replace the bodies of `ieTutorialTest` and `ieExampleTest` with config
    wrappers.
 2. Replace the ISETBio runner bodies with equivalent wrappers.
 3. Remove duplicated local helpers after side-by-side result comparison.
