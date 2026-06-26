@@ -25,6 +25,38 @@ assert(abs(mean(bitmap(:)) - 0.532763532763533) < 1e-12);
 
 end
 
+function testFontCreateAndUncachedBitmap(~)
+%% Uncached fonts render into valid RGB bitmaps and non-black scenes.
+
+fontSpecs = { ...
+    'A', 'Georgia', 18, 96; ...
+    'Z', 'Georgia', 14, 96};
+
+for ii = 1:size(fontSpecs, 1)
+    font = fontCreate(fontSpecs{ii, :});
+    bitmap = fontGet(font, 'bitmap');
+
+    assert(ndims(bitmap) == 3);
+    assert(all(size(bitmap, [1 2]) > 1));
+    assert(size(bitmap, 3) == 3);
+    assert(all(bitmap(:) == 0 | bitmap(:) == 1));
+    assert(any(bitmap(:) == 0));
+    assert(any(bitmap(:) == 1));
+
+    if ii == 1
+        scene = sceneCreate('letter', font, displayCreate('LCD-Apple'), ...
+            [7 7], 0);
+        photons = sceneGet(scene, 'photons');
+        luminance = sceneGet(scene, 'luminance');
+        assert(sceneGet(scene, 'mean luminance') > 0);
+        assert(any(photons(:) > 0));
+        assert(all([luminance(1,1), luminance(1,end), ...
+            luminance(end,1), luminance(end,end)] == 0));
+    end
+end
+
+end
+
 function testFontPaddingAndInversion(~)
 %% Padded and inverted font bitmaps preserve expected geometry and values.
 

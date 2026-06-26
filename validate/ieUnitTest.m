@@ -1,12 +1,12 @@
-function results = ieUnitTests()
-% IEUNITTESTS - Master runner for all ISETCam unit tests
+function results = ieUnitTest()
+% IEUNITTEST - Master runner for all ISETCam unit tests
 %
 % This script automatically discovers all `_tests_` directories
 % within the ISETCam workspace, agglomerates them into a master
 % test suite, and runs them.
 %
 % Usage:
-%   results = ieUnitTests;
+%   results = ieUnitTest;
 %
 % Returns:
 %   results - A matlab.unittest.TestResult array containing the outcome.
@@ -32,7 +32,7 @@ for ii = 1:length(testDirs)
         folderPath = fullfile(testDirs(ii).folder, testDirs(ii).name);
         % Create test suite from each folder and append to master
         folderSuite = TestSuite.fromFolder(folderPath);
-        masterSuite = [masterSuite, folderSuite];
+        masterSuite = [masterSuite, folderSuite]; %#ok<AGROW>
     end
 end
 
@@ -51,7 +51,7 @@ runner = TestRunner.withTextOutput;
 % Run the suite
 results = runner.run(masterSuite);
 
-ieTestReport(results,'ieUnitTests');
+ieTestReport(results,'ieUnitTest');
 
 end
 

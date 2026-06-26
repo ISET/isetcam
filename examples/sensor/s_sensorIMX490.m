@@ -2,7 +2,7 @@
 %
 %
 % Prevent this function from being autorun as a script
-% UTTBSkip
+% SkipFile
 
 %%
 ieInit;

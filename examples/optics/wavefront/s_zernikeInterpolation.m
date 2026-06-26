@@ -5,12 +5,19 @@
 % 
 % Given wavelengths and image heights
 ieInit;
+% return;
+
+%% TODO
+%
+% Seems to crash Matlab.  Debug when you have the chance
+%
 
 %% Load data
 load('zernike_doubleGauss.mat','data');
 wavelengths = data.wavelengths;
 image_heights = data.image_heights;
 zCoeffs = data.zernikeCoefficients;
+
 %% Utilities
  
 function nearest_two = find_nearest_two(array, number)
@@ -55,7 +62,7 @@ function [psf,wavefront] = generate_psf(zernike_coeffs, zernike_type)
     theta = atan2(y, x);
     
     % Initialize the PSF
-    psf = zeros(gridSize, gridSize);
+    % psf = zeros(gridSize, gridSize);
     
     % Select Zernike polynomial terms based on the specified type
     switch zernike_type
@@ -151,10 +158,10 @@ zernike_interpolated = interp_func(image_heights(test_index));
 validation = zernike_interpolated - zernike_GT;
 
 % Plotting the results for visual validation
-figure;
-
+ieFigure;
 plot(zernike_GT, 'DisplayName', 'Ground Truth');
 hold on;
+
 plot(zernike_interpolated, '--', 'DisplayName', 'Interpolation using Zernike');
 title(sprintf('Actual vs Interpolated at %02f nm and %02f degrees',wavelength,image_heights(test_index)));
 legend;
@@ -164,35 +171,27 @@ hold off;
 
 [psf_GT,~] = generate_psf(zernike_GT, 'fringe');
 
-figure('Position', [200, 300, 1500, 400]);
+ieFigure([],'wide');
+tiledlayout(1,3)
 
-subplot(1, 3, 1);
+nexttile;
 imagesc(psf_interpolated);title('Interpolated');
 xlim([156,356]);ylim([156,356]);
 
-subplot(1, 3, 2);
+nexttile;
 imagesc(psf_GT);title('Actual');
-
 xlim([156,356]);ylim([156,356]);
 
-% subplot(3, 1, 3);
-% imagesc(psf_interpolated - psf_GT);title('Difference');
-% xlim([156,356]);ylim([156,356]);
-
-subplot(1, 3, 3);
 % Interpolate in space
 [psf_1,~] = generate_psf(zCoeffs.(sprintf('wave_%d_field_%d', thisWave_index, nearest_two(1))), 'fringe');
 [psf_2,~] = generate_psf(zCoeffs.(sprintf('wave_%d_field_%d', thisWave_index, nearest_two(2))), 'fringe');
 
-
-
 psf_interpSpace = psf_1*(image_heights(test_index)-image_heights(nearest_two(1)))/(nearest_two(2)-nearest_two(1))+...
     psf_2*(nearest_two(2)-image_heights(test_index))/(nearest_two(2)-nearest_two(1));
 
+nexttile;
 imagesc(psf_interpSpace);title('Interpolation in Space');
-
 xlim([156,356]);ylim([156,356]);
-
 
 %%
 %{
