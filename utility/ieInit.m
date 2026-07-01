@@ -39,7 +39,9 @@ clear global;  % Made consistent with ISETBIO
 
 % In ISETBIO this is false.
 % Determine if you want to clear session variables
-if ieSessionGet('init clear'), clearvars;  end
+if ieSessionGet('init clear') && ~localCalledFromUnitTest
+    clearvars;
+end
 
 %% Initialize ISET database variable
 
@@ -57,3 +59,18 @@ if ~isempty(ver('Octave'))
 end
 
 %%
+
+function tf = localCalledFromUnitTest
+%% True when ieInit is executing inside MATLAB's unit-test framework.
+
+stack = dbstack('-completenames');
+tf = false;
+for ii = 1:numel(stack)
+    stackFile = strrep(stack(ii).file, '\\', '/');
+    if contains(stackFile, '/+matlab/+unittest/')
+        tf = true;
+        return;
+    end
+end
+
+end

@@ -26,12 +26,7 @@ import matlab.unittest.TestRunner;
 
 existingFigures = findall(groot,'Type','figure');
 cleanupFigures = onCleanup(@() localCloseTestFigures(existingFigures));
-
-% Note: If scripts use ieInit, it may call clearvars and delete the
-% unittest runner's state in the main workspace. To avoid this, consider
-% converting test scripts to function-based tests (e.g. by adding a
-% 'function test_myFunction(testCase)' header) or setting
-% ieSessionSet('init clear', false) prior to testing.
+cleanupPrefs = ieUnitTestSetup(); %#ok<NASGU>
 
 % Create the test suite from files in this folder matching the default
 % MATLAB test naming conventions (starting with 'test_')
