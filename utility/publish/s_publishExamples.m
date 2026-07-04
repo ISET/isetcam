@@ -1,6 +1,7 @@
 %% s_publishExamples
 %
-% Publish scripts as HTML files that can be viewed in a browser.
+% Publish scripts as self-contained HTML files that can be viewed in a
+% browser and linked from wiki pages.
 %
 % Note on publishing individual files:
 % To publish a single example script (e.g., s_myExample.m) with the exact
@@ -8,7 +9,8 @@
 % utility directly:
 %    iePublish('s_myExample.m');
 %
-% HTML and figure PNG files are written next to each script m-file.
+% HTML is written next to each script m-file with figures embedded as base64
+% so no external PNG files are needed.
 %
 % Copyright ImageVal Consulting, LLC 2016
 
@@ -47,7 +49,7 @@ for ss = 1:length(sDir)
             'maxHeight',maxHeight,...
             'maxWidth',maxWidth,...
             'createThumbnail',false,...
-            'imageFormat','png');
+            'imageFormat','inline');
 
         fprintf('done\n');
     end
