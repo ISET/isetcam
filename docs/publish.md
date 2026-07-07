@@ -75,6 +75,23 @@ For wiki-linked pages, keep `imageFormat` set to `'inline'`. Other formats,
 such as `'png'`, require the external image files to be copied and linked along
 with the HTML file.
 
+## Embedded Movies
+
+Small MP4 movies can be embedded in the generated HTML. Write the movie next to
+the source file while publishing, then add a prose marker comment with the
+relative movie file name:
+
+```matlab
+movieFile = fullfile(fileparts(mfilename('fullpath')), 'exampleMovie.mp4');
+ieMovie(movieData, 'vname', movieFile, 'show', false, 'FrameRate', 8);
+%%
+% iePublishVideo: exampleMovie.mp4
+```
+
+With the default inline publishing mode, `iePublish` replaces that marker with
+a self-contained HTML `<video>` element and deletes the temporary MP4. Keep
+embedded movies short and modest in size so the HTML file stays reasonable.
+
 ## GitHub and Wiki Links
 
 The generated files are ordinary HTML and should render correctly when served

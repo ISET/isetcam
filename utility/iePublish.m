@@ -12,6 +12,10 @@ function htmlFile = iePublish(fname,varargin)
 %   When imageFormat is 'inline' (the default), figure snapshots are
 %   base64-encoded and embedded directly in the HTML so the result is a
 %   single self-contained file with no external PNG dependencies.
+%   Small MP4 movies can also be embedded by writing the movie next to the
+%   source file and adding a prose comment line:
+%
+%       % iePublishVideo: myMovie.mp4
 %
 % Inputs:
 %   fname
@@ -130,8 +134,9 @@ end
 
 % -------------------------------------------------------------------------
 function htmlFile = ieEmbedHTMLImages(htmlFile)
-% Read published HTML, embed PNG images as base64 data URIs, inject CSS
-% overrides for readable font sizes, write back, delete loose PNG files.
+% Read published HTML, embed PNG images and marked MP4 videos as base64 data
+% URIs, inject CSS overrides for readable font sizes, write back, delete
+% loose generated media files.
 
 htmlText = fileread(htmlFile);
 
@@ -161,6 +166,10 @@ for ii = 1:numel(tokens)
     toDelete{end+1} = imgPath; %#ok<AGROW>
 end
 
+% --- Embed marked MP4 videos --------------------------------------------
+[htmlText, videoFiles] = ieEmbedHTMLVideos(htmlText, htmlDir);
+toDelete = [toDelete videoFiles]; %#ok<AGROW>
+
 % --- Inject CSS overrides -----------------------------------------------
 cssOverride = [
     'html body { font-size:14px; }'                                         newline ...
@@ -174,7 +183,8 @@ cssOverride = [
     'pre.codeoutput {'                                                       newline ...
     '  font-size:13px; border-left:3px solid #6aaadd;'                      newline ...
     '  background:#f0f6fb; padding-left:14px; }'                            newline ...
-    'img { display:block; margin:20px auto; }'                              newline ...
+    'img, video { display:block; margin:20px auto; }'                       newline ...
+    'video { width:512px; max-width:100%; height:auto; }'                   newline ...
     'span.keyword { color:#0070c1 }'                                        newline ...
     'span.comment { color:#2e7d32 }'                                        newline ...
     'span.string  { color:#7b3f9e }'                                        newline ...
@@ -205,6 +215,61 @@ for ii = 1:numel(toDelete)
     delete(toDelete{ii});
 end
 
+end
+
+% -------------------------------------------------------------------------
+function [htmlText, embeddedFiles] = ieEmbedHTMLVideos(htmlText, htmlDir)
+% Replace prose marker paragraphs with inline MP4 video elements.
+%
+% Marker syntax in the source m-file:
+%   % iePublishVideo: relativeMovieFile.mp4
+
+embeddedFiles = {};
+
+% Split on <pre> blocks so code listings remain unchanged.
+[prose, preBlocks] = regexp(htmlText, '(?s)<pre[^>]*>.*?</pre>', 'split', 'match');
+markerPattern = '<p>\s*iePublishVideo:\s*([^<]+?\.mp4)\s*</p>';
+
+for ii = 1:numel(prose)
+    [tokens, matches] = regexp(prose{ii}, markerPattern, 'tokens', 'match');
+    for jj = 1:numel(tokens)
+        movieName = strtrim(tokens{jj}{1});
+        moviePath = movieName;
+        if ~isfile(moviePath)
+            moviePath = fullfile(htmlDir, movieName);
+        end
+
+        if ~isfile(moviePath)
+            warning('iePublish:MissingVideo', ...
+                'Could not find video file for publishing: %s', movieName);
+            continue;
+        end
+
+        fid = fopen(moviePath,'rb');
+        movieBytes = fread(fid, Inf, 'uint8=>uint8');
+        fclose(fid);
+
+        b64 = matlab.net.base64encode(movieBytes);
+        if isstring(b64), b64 = char(b64); end
+
+        videoHTML = [ ...
+            '<video controls preload="metadata" width="512">' ...
+            '<source src="data:video/mp4;base64,' b64 '" type="video/mp4">' ...
+            'Your browser does not support the video tag.' ...
+            '</video>'];
+
+        prose{ii} = strrep(prose{ii}, matches{jj}, videoHTML);
+        embeddedFiles{end+1} = moviePath; %#ok<AGROW>
+    end
+end
+
+% Reassemble prose and pre blocks in original order.
+htmlText = prose{1};
+for ii = 1:numel(preBlocks)
+    htmlText = [htmlText preBlocks{ii} prose{ii+1}]; %#ok<AGROW>
+end
+
+embeddedFiles = unique(embeddedFiles);
 end
 
 % -------------------------------------------------------------------------

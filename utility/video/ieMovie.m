@@ -60,12 +60,12 @@ p.KeepUnmatched = true;
 p.addRequired('data', @isnumeric);
 
 % Name-Value
-p.addParameter('vname', '', @ischar);
+p.addParameter('vname', '', @(x) ischar(x) || (isstring(x) && isscalar(x)));
 p.addParameter('FrameRate', 20, @isnumeric);
 p.addParameter('step', 1, @isnumeric);
 p.addParameter('show', true, @islogical);
 p.addParameter('gamma', 1, @isnumeric);
-p.addParameter('ax', gca, @isgraphics);
+p.addParameter('ax', [], @(x) isempty(x) || isgraphics(x));
 
 p.parse(data, varargin{:});
 data = p.Results.data;
@@ -74,15 +74,24 @@ vname = p.Results.vname;
 show = p.Results.show;
 gam = p.Results.gamma;
 FrameRate = p.Results.FrameRate;
+ax = p.Results.ax;
+
+if isstring(vname), vname = char(vname); end
+step = max(1, round(step));
 
 % User set a video name. So, figure they want it saved.
 if ~isempty(vname), save = true; else, save = false; end
 
 %% Create the movie and video object
 
-% Video object & select the axes
 vObj = [];
-axes(p.Results.ax);
+if show
+    if isempty(ax)
+        hFig = figure;
+        ax = axes('Parent',hFig);
+    end
+    axes(ax);
+end
 
 % Could be monochrome or rgb
 % Time step is always the last dimension
@@ -116,36 +125,40 @@ end
 if isequal(tDim, 4)
     % RGB data
     for ii = 1:step:size(data, tDim)
-        imagesc(data(:, :, :, ii));
-        axis image;
-        set(gca, 'xticklabel', '', 'yticklabel', '');
-        caxis([mind maxd]);
-        drawnow;
-        if ii == 1 && ~show, set(gcf, 'Visible', 'off'); end
-        if save
-            F = getframe;
-            writeVideo(vObj, F);
+        frame = data(:, :, :, ii);
+        if show
+            axes(ax);
+            imagesc(frame);
+            axis image;
+            set(ax, 'xticklabel', '', 'yticklabel', '');
+            caxis([mind maxd]);
+            drawnow;
         end
-        pause(1 / FrameRate);
+        if save, writeVideo(vObj, frame); end
+        if show, pause(1 / FrameRate); end
     end
 elseif isequal(tDim, 3)
     % Monochrome data
-    colormap(gray(256));
-    for ii = 1:nFrames
-        imagesc(data(:, :, ii));
-        axis image;
-        set(gca, 'xticklabel', '', 'yticklabel', '');
-        caxis([mind maxd]);
-        drawnow;
-        if ii == 1 && ~show, set(gcf, 'Visible', 'off'); end
-        if save, F = getframe; writeVideo(vObj, F); end
-        pause(1 / FrameRate);
+    if show, colormap(ax, gray(256)); end
+    for ii = 1:step:nFrames
+        frame = data(:, :, ii);
+        if show
+            axes(ax);
+            imagesc(frame);
+            axis image;
+            set(ax, 'xticklabel', '', 'yticklabel', '');
+            caxis([mind maxd]);
+            drawnow;
+        end
+        if save, writeVideo(vObj, repmat(frame, [1 1 3])); end
+        if show, pause(1 / FrameRate); end
     end
+else
+    error('Data must be an (x, y, t) or (x, y, c, t) matrix.');
 end
 
 % Write the video object if save is true
 if save
-    writeVideo(vObj, F);
     close(vObj);
     
     % Restore warning state
