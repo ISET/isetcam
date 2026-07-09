@@ -38,6 +38,8 @@ FigureHandle = findobj('tag','LFDisplay');
 if( isempty(FigureHandle) )
     
     % Get screen size
+    RootUnits = get( 0, 'units' );
+    RootUnitsCleanup = onCleanup(@() set( 0, 'units', RootUnits ));
     set( 0, 'units','pixels' );
     ScreenSize = get( 0, 'screensize' );
     ScreenSize = ScreenSize(3:4);
@@ -47,6 +49,7 @@ if( isempty(FigureHandle) )
     
     % Create the figure
     FigureHandle = figure(...
+        'units','pixels',...
         'doublebuffer','on',...
         'backingstore','off',...
         ...%'menubar','none',...
@@ -57,7 +60,7 @@ if( isempty(FigureHandle) )
     WindowPos = get( FigureHandle, 'Position' );
     WindowPos(3:4) = FrameSize;
     WindowPos(1:2) = floor( (ScreenSize - FrameSize)./2 );
-    set( FigureHandle, 'Position', WindowPos );
+    set( FigureHandle, 'Units', 'pixels', 'Position', WindowPos );
     
     % Set the axis position and size within the figure
     AxesPos = [0,0,size(InitialFrame,2),size(InitialFrame,1)];
@@ -76,7 +79,7 @@ if( isempty(FigureHandle) )
         truesize(floor(ScaleFactor*size(InitialFrame(:,:,1))));
     end
 else
+    set(FigureHandle,'units','pixels');
     ImageHandle = findobj(FigureHandle,'type','image');
     set(ImageHandle,'cdata', InitialFrame);
 end
-
