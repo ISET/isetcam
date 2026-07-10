@@ -60,7 +60,7 @@ for fileIndex = 1:numel(selectedFiles)
         result = localMakeResult(filePath,'Skipped','', ...
             resultStartedAt,localTimestamp(),0);
         run.results(end+1) = result;
-        fprintf('SKIPPED\n');
+        fprintf('SKIPPED (%s)\n',skipReason);
         run = localRecordEvent(run,'ScriptSkipped', ...
             localEventDetail(fileIndex,numel(selectedFiles),filePath,skipReason));
         continue;
