@@ -230,7 +230,7 @@ grid on
 
 % Try adding in some measurement noise to create a new estimate.
 %
-randn('seed',0);
+rng(0,'twister');
 n = 10*randn(size(rgbResponses));
 sig = max(0,rgbResponses + n);
 estimate = (sig(:,l)*pinv(spectral_signals(:,l)))';

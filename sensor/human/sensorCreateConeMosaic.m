@@ -60,12 +60,7 @@ function [sensor, xy, coneType, rSeed, densities] = sensorCreateConeMosaic(senso
 if ieNotDefined('sensor'),       sensor = sensorCreate; end
 if ieNotDefined('sz'),           sz = [72,88]; end
 if ieNotDefined('densities'),    densities = [0 0.6, 0.3, 0.1]; end
-if ieNotDefined('rSeed')
-    try rSeed = rng;
-    catch err
-        rSeed = rand('seed');
-    end
-end
+if ieNotDefined('rSeed'),        rSeed = rng; end
 if ieNotDefined('species'),      species = 'human'; end
 
 % Aperture in meters.
@@ -156,4 +151,3 @@ switch lower(species)
 end
 
 return
-

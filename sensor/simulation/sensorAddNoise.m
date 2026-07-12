@@ -67,17 +67,11 @@ if sensorGet(sensor,'reuse noise')
     noiseSeed = sensorGet(sensor,'noise seed');
     if isempty(noiseSeed)
         warning('sensorAddNoise:NoPreviousNoise','No previous noise. Initiating new seed');
-        try noiseSeed = rng;
-        catch err
-            noiseSeed = randn('seed');
-        end
+        noiseSeed = rng;
         sensorSet(sensor,'noise seed',noiseSeed);
     else
         % Initialize with current seed.
-        try  rng(noiseSeed);
-        catch err
-            randn('seed',noiseSeed);
-        end
+        localSetModernRNG(noiseSeed);
     end
     
     % We should really get rid of the stored dsnu/prnu images. Although
@@ -89,10 +83,7 @@ if sensorGet(sensor,'reuse noise')
 else
     % Not reusing.  But remember the initial noise state for this
     % calculation 
-    try noiseSeed = rng;
-    catch err
-        noiseSeed = randn('seed');
-    end
+    noiseSeed = rng;
     sensor = sensorSet(sensor,'noise seed',noiseSeed);
 end
 
@@ -152,5 +143,19 @@ for ii=1:nExposures
 end
 
 sensor = sensorSet(sensor,'volts',volts);
+
+end
+
+function localSetModernRNG(noiseSeed)
+%% Restore a saved modern RNG state, or map old numeric seeds to Twister.
+
+if isstruct(noiseSeed)
+    rng(noiseSeed);
+elseif isnumeric(noiseSeed) && isscalar(noiseSeed)
+    rng(noiseSeed,'twister');
+else
+    error('sensorAddNoise:InvalidNoiseSeed', ...
+        'noiseSeed must be an RNG state struct or scalar numeric seed.');
+end
 
 end

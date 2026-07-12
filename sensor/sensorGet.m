@@ -1019,11 +1019,8 @@ switch oType
             case {'noiseseed'}
                 if checkfields(sensor,'noiseSeed'), val = sensor.noiseSeed;
                 else
-                    try
-                        rng('default');
-                    catch
-                        rng('seed');
-                    end% Compute both electronic and shot noise
+                    rng('default');
+                    val = rng;
                 end
                 
             case {'ngridsamples','pixelsamples','nsamplesperpixel','npixelsamplesforcomputing'}
@@ -1478,4 +1475,3 @@ end
 % integer coordinates are defined by the deltaX and deltaY values.
 %
 % get cfa matrix as letters or numbers via sensorDetermineCFA in here.
-

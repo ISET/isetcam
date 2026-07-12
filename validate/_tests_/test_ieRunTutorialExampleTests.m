@@ -117,6 +117,63 @@ assert(didError);
 
 end
 
+function testLegacyRNGDoesNotLeak(~)
+%% Legacy random-number state from a script is cleared by the runner.
+
+repoRoot = tempname;
+tutorialDir = fullfile(repoRoot,'tutorials');
+mkdir(tutorialDir);
+cleanupObj = onCleanup(@() rmdir(repoRoot,'s'));
+localWriteFile(fullfile(tutorialDir,'t_legacy_rng.m'), ...
+    'randn(''seed'',0);');
+
+config = struct('repositoryName','Synthetic', ...
+    'repositoryRoot',repoRoot,'suiteKind','tutorials', ...
+    'runnerName','syntheticTutorialsTest');
+runRecord = ieRunTutorialExampleTests(config);
+assert(strcmp(runRecord.results.status,'Passed'));
+
+rng('shuffle','twister');
+rng('default');
+
+end
+
+function testLegacyRNGDoesNotBreakConditionalSkip(~)
+%% Conditional skip hooks run after the runner restores modern RNG state.
+
+repoRoot = tempname;
+tutorialDir = fullfile(repoRoot,'tutorials');
+mkdir(tutorialDir);
+cleanupObj = onCleanup(@() rmdir(repoRoot,'s'));
+localWriteFile(fullfile(tutorialDir,'t_pass.m'),'value = 1;');
+
+localSetLegacyRandomState(repoRoot);
+config = struct('repositoryName','Synthetic', ...
+    'repositoryRoot',repoRoot,'suiteKind','tutorials', ...
+    'runnerName','syntheticTutorialsTest', ...
+    'conditionalSkipFcn',@localRNGSensitiveSkipReason);
+runRecord = ieRunTutorialExampleTests(config);
+assert(strcmp(runRecord.results.status,'Passed'));
+
+end
+
+function reason = localRNGSensitiveSkipReason(~)
+%% Exercise a skip hook that uses modern RNG while MATLAB may be in legacy mode.
+
+rng('shuffle','twister');
+reason = '';
+
+end
+
+function localSetLegacyRandomState(parentDir)
+%% Enter MATLAB's legacy random-number mode for runner isolation testing.
+
+legacySetupFile = fullfile(parentDir,'legacy_rng_setup.m');
+localWriteFile(legacySetupFile,'randn(''seed'',0);');
+run(legacySetupFile);
+
+end
+
 function localWriteFile(fileName,fileText)
 %% Write one synthetic script.
 

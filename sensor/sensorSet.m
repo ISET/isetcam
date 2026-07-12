@@ -528,11 +528,10 @@ switch ieParamFormat(param)  % Lower case and remove spaces
         sensor.noiseFlag = val;
     case {'reusenoise'}
         % Decide whether we reuse (1) or recalculate (0) the noise.  If we
-        % reuse, then we set the randn() stream as per the state below.
+        % reuse, then we set the random-number stream as per the state below.
         sensor.reuseNoise = val;
     case {'noiseseed'}
-        % Used for randn seed.  Some day we will need to update
-        % for Matlab's randStream objects.
+        % Used for an rng state struct or scalar numeric seed.
         sensor.noiseSeed = val;
         
     case {'ngridsamples','pixelsamples','nsamplesperpixel','npixelsamplesforcomputing'}

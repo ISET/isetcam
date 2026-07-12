@@ -55,6 +55,7 @@ for fileIndex = 1:numel(selectedFiles)
     fprintf('Run [%d/%d]: %s%s... ', ...
         fileIndex,numel(selectedFiles),fileName,fileExt);
 
+    localResetRandomState;
     skipReason = localSkipReason(filePath,config);
     if ~isempty(skipReason)
         result = localMakeResult(filePath,'Skipped','', ...
@@ -385,10 +386,18 @@ end
 function localResetISETState
 %% Reset figures, variables, and vcSESSION using the supported initializer.
 
+localResetRandomState;
 ieSessionSet('wait bar',false);
 ieSessionSet('init clear',true);
 ieInit;
 drawnow;
+
+end
+
+function localResetRandomState
+%% Restore MATLAB's modern random-number generator after legacy scripts.
+
+rng('default');
 
 end
 

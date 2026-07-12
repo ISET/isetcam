@@ -137,3 +137,59 @@ assert(max(abs(v1(:) - v2(:))) < 1e-6,'Reused grid-line noise difference too lar
 
 %% End
 end
+
+function testNumericNoiseSeedUsesModernRNG(~)
+%% Old scalar noise seeds should be mapped to modern Twister RNG state.
+
+ieInit;
+
+scene = sceneCreate;
+oi = oiCreate;
+oi = oiCompute(oi,scene);
+
+sensor = sensorCreate;
+sensor = sensorSet(sensor,'noise flag',2);
+sensor = sensorSet(sensor,'reuse noise',1);
+sensor = sensorSet(sensor,'noise seed',123);
+
+localSetLegacyRandomState();
+sensor1 = sensorCompute(sensor,oi);
+rng('shuffle','twister');
+
+localSetLegacyRandomState();
+sensor2 = sensorCompute(sensor,oi);
+rng('shuffle','twister');
+
+v1 = sensorGet(sensor1,'volts');
+v2 = sensorGet(sensor2,'volts');
+assert(max(abs(v1(:) - v2(:))) < 1e-6, ...
+    'Numeric noise seed should reproducibly drive modern RNG');
+
+end
+
+function localSetLegacyRandomState()
+%% Enter legacy RNG mode through a temporary script for compatibility tests.
+
+legacySetupFile = [tempname '.m'];
+cleanupObj = onCleanup(@() localDeleteIfPresent(legacySetupFile));
+localWriteFile(legacySetupFile,'randn(''seed'',0);');
+run(legacySetupFile);
+
+end
+
+function localWriteFile(fileName,fileText)
+%% Write one temporary MATLAB script.
+
+fid = fopen(fileName,'w');
+assert(fid >= 0);
+cleanupObj = onCleanup(@() fclose(fid));
+fprintf(fid,'%s\n',fileText);
+
+end
+
+function localDeleteIfPresent(fileName)
+%% Delete a temporary file if it exists.
+
+if isfile(fileName), delete(fileName); end
+
+end
