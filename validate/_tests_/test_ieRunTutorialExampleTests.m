@@ -57,6 +57,32 @@ assert(isscalar(temporaryCheckpoints));
 
 end
 
+function testUnderDevelopmentFilesAreNotPlanned(~)
+%% Files below underDevelopment are excluded from the run plan entirely.
+
+repoRoot = tempname;
+tutorialDir = fullfile(repoRoot,'tutorials');
+developmentDir = fullfile(tutorialDir,'underDevelopment');
+mkdir(developmentDir);
+cleanupObj = onCleanup(@() rmdir(repoRoot,'s'));
+localWriteFile(fullfile(tutorialDir,'t_visible.m'),'value = 1;');
+localWriteFile(fullfile(developmentDir,'t_hidden.m'), ...
+    'error(''synthetic:hidden'',''should not run'');');
+localWriteFile(fullfile(developmentDir,'s_hidden.m'), ...
+    'error(''synthetic:hidden'',''should not run'');');
+localWriteFile(fullfile(developmentDir,'t_visible.m'), ...
+    'error(''synthetic:duplicate'',''should not be considered'');');
+
+config = struct('repositoryName','Synthetic', ...
+    'repositoryRoot',repoRoot,'suiteKind','tutorials', ...
+    'runnerName','syntheticTutorialsTest');
+runRecord = ieRunTutorialExampleTests(config);
+assert(isscalar(runRecord.plannedFiles));
+assert(endsWith(runRecord.plannedFiles{1},'t_visible.m'));
+assert(strcmp(runRecord.results.status,'Passed'));
+
+end
+
 function testSelectorAndDuplicateDetection(~)
 %% Selection is deterministic and duplicate stems fail before execution.
 

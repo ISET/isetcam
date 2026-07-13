@@ -162,8 +162,17 @@ files = cell(numel(entries),1);
 for fileIndex = 1:numel(entries)
     files{fileIndex} = fullfile(entries(fileIndex).folder,entries(fileIndex).name);
 end
+files = files(~cellfun(@localIsUnderDevelopment,files));
 files = unique(files);
 files = sort(files);
+
+end
+
+function tf = localIsUnderDevelopment(filePath)
+%% True when a script lives below an underDevelopment directory.
+
+parts = strsplit(localNormalizePath(filePath),filesep);
+tf = any(strcmpi(parts,'underDevelopment'));
 
 end
 
