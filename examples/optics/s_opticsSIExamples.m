@@ -13,7 +13,7 @@
 % introduces wavelength-dependent chromatic aberrations. Read the
 % siSynthetic function to learn how to create optics using a defined PSF.
 %
-% See also: 
+% See also:
 %   siSynthetic, ieSaveSIDataFile
 
 %%
@@ -68,7 +68,7 @@ oiWindow(oi);
 
 % The Lorentzian gamma parameter seems to run nicely from 1 to 10 or so on
 % this support. Log spacing converts better to spread than linear spacing.
-psfType    = 'lorentzian'; 
+psfType    = 'lorentzian';
 nWave      = oiGet(oi,'nwave');
 gParameter = logspace(0,1,nWave);
 optics     = siSynthetic(psfType,oi,gParameter);
@@ -117,9 +117,9 @@ psfType = 'gaussian';
 waveSpread = 0.5*(wave/wave(1)).^3;
 
 % Make point spreads with a bivariate Gaussian.
-% If sFactor < 1, then x (horizontal) is sharper.  
-% If sFactor > 1, then y (vertical)   is sharper. 
-sFactor = 2;  
+% If sFactor < 1, then x (horizontal) is sharper.
+% If sFactor > 1, then y (vertical)   is sharper.
+sFactor = 2;
 xyRatio = sFactor*ones(1,length(wave));
 
 % Now call the routine with these parameters
@@ -174,7 +174,7 @@ xyMiddle = center(1:2);
 vData = oiPlot(oi,' illuminance vline',xyMiddle,'nofigure');
 hData = oiPlot(oi,' illuminance hline',xyMiddle,'nofigure');
 
-ieFigure; 
+ieFigure;
 plot(vData.pos,vData.data,'r-',hData.pos,hData.data,'b-');
 grid on; xlabel('Position'); ylabel('Illuminance (lux)');
 legend({'vertical','horizontal'});
@@ -192,7 +192,7 @@ legend({'vertical','horizontal'});
 %
 % This example chooses the first 4 oi images
 % {
- imageMultiview('oi',1:4,1);
+imageMultiview('oi',1:4,1);
 %}
 
 %% Ideal and custom-OTF shift-invariant variants
@@ -234,17 +234,17 @@ oiPlot(oiDL,'PSF 550');
 
 % Gaussian OTF examples with two blur levels.
 for sigma = [3 10]
-	g = fspecial('gaussian',[nSamples nSamples],sigma);
-	g = fftshift(g);
-	ieFigure; imagesc(g)
+    g = fspecial('gaussian',[nSamples nSamples],sigma);
+    g = fftshift(g);
+    ieFigure; imagesc(g)
 
-	gOTF = repmat(g,[1 1 nWave]);
-	oiG = oiSet(oiSI,'optics OTF',gOTF);
-	oiG = oiSet(oiG,'optics fnumber',fNumberSI);
-	oiG = oiCompute(oiG,sceneSI);
-	oiG = oiSet(oiG,'name',sprintf('Gaussian OTF %.0f',sigma));
-	oiWindow(oiG);
-	oiPlot(oiG,'PSF 550');
+    gOTF = repmat(g,[1 1 nWave]);
+    oiG = oiSet(oiSI,'optics OTF',gOTF);
+    oiG = oiSet(oiG,'optics fnumber',fNumberSI);
+    oiG = oiCompute(oiG,sceneSI);
+    oiG = oiSet(oiG,'name',sprintf('Gaussian OTF %.0f',sigma));
+    oiWindow(oiG);
+    oiPlot(oiG,'PSF 550');
 end
 
 %% Sharpening

@@ -19,7 +19,7 @@
 % described in *t_wvf<TAB>* tutorials.
 %
 % See also:  sceneCreate, opticsDefocusCore,
-%            humanWaveDefocus, 
+%            humanWaveDefocus,
 %
 
 %%

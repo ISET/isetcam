@@ -1,7 +1,7 @@
 %% s_wvfSpatial
-% 
+%
 % Illustrating the spatial sampling control in various ways.
-% 
+%
 %  * Changing the number of pixels
 %  * Changing the pupil plane size
 %  * Changing the focal length
@@ -120,7 +120,7 @@ for ff = fl
     oiD = wvf2oi(wvf);
 
     wvf = wvfCompute(wvf);
-    oiPlot(oiD,'psf xaxis',[],thisWave,'um'); 
+    oiPlot(oiD,'psf xaxis',[],thisWave,'um');
     hold on;
     wvfPlot(wvf,'psf xaxis','unit','um','wave',thisWave,'plot range',20,'airy disk',true,'window',false);
 
@@ -194,11 +194,11 @@ for ii=1:numel(thisWave)
     apertureFunction = wvfGet(wvf,'pupil function amplitude',thisWave(ii));
     wavefrontabberration = wvfGet(wvf,'wavefront aberration',thisWave(ii));
 
-    nexttile, imagesc(apertureFunction); axis image; 
+    nexttile, imagesc(apertureFunction); axis image;
 
     nexttile, imagesc(pupilPhase); axis image;
     title(sprintf('wave %d',thisWave(ii)));
 
     nexttile, imagesc(wavefrontabberration); axis image;
-    
+
 end

@@ -74,7 +74,7 @@ alpha  = zeros(size(s));
 otf    = zeros(size(s));
 
 for ii = 1:length(lambda)
-    
+
     % We should probably convert sampleSF to sampleSFmm above, and then get
     % rid of the 'c' parameter.
     %
@@ -82,12 +82,12 @@ for ii = 1:length(lambda)
     % Compute the reduced spatial frequency (0,2)
     %            m *        (m/m) *    cy/m  - Dimensionless in the end
     s(ii,:) = (lambda(ii) /(D0*p)) * cSF;
-    
+
     % Methods:  Marimont and Wandell
     % Related to the defocus specified by w20, which in turn depends on p
     % D and D0.
     alpha(ii,:) = (4*pi./(lambda(ii))).*w20(ii).*abs(s(ii,:));
-    
+
     % We put the vector of sample SF into this array.
     % Then we interpolate to the full 2D array outside of this loop.
     otf(ii,:) = opticsDefocusedMTF(s(ii,:),abs(alpha(ii,:)));
