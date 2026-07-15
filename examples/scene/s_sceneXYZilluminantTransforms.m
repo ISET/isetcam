@@ -40,7 +40,7 @@ ieInit
 scene = sceneCreate('reflectance chart');
 sceneD65 = sceneAdjustIlluminant(scene,'D65.mat');
 sceneD65 = sceneSet(sceneD65,'name','Reflectance Chart D65');
-ieAddObject(sceneD65); sceneWindow;
+sceneWindow(sceneD65);
 
 %%  Solve for matrix relating the chart under two different lights
 

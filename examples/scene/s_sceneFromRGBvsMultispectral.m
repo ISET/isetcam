@@ -3,14 +3,11 @@
 % Compare a hyperspectral scene estimated from an *RGB image* to the
 % original *hyperspectral* scene.
 %
-% * Read in a multispectral scene and create an sRGB image we
-% should have a script that is s_multispectral2RGB include the
-% gamma rendering
-% * Read in the RGB image and estimate multispectral image
-% convert to linear given known gamma convert to multispectral
-% image (see s_sceneFromMultispectral.m)
-% * Compare the estimated multispectral scene to the original
-% multispectral scene comparison of spectral reflectances
+% Workflow:
+%
+% * Read a multispectral scene and render an sRGB image.
+% * Reconstruct a multispectral estimate from the sRGB image.
+% * Compare the reconstructed scene to the original.
 %
 % The bottom line is that
 %
@@ -33,7 +30,7 @@ scene = sceneFromFile(fullFileName,'multispectral',[],[],wList);
 bb = blackbody(sceneGet(scene,'wave'),6500,'energy');
 scene = sceneAdjustIlluminant(scene,bb);
 
-ieAddObject(scene); sceneWindow;  % Display the scene in the scene window
+sceneWindow(scene);  % Display the scene in the scene window
 
 %% Obtain the sRGB data from the scene
 
@@ -45,7 +42,7 @@ displayCalFile = 'LCD-Apple.mat';
 load(displayCalFile,'d');
 sceneRGB = sceneFromFile(rgb,'rgb',meanL,d);
 sceneRGB = sceneSet(sceneRGB,'name','From RGB');
-% ieAddObject(sceneRGB); sceneWindow;
+% sceneWindow(sceneRGB);
 
 % Now convert the illuminant
 wave = sceneGet(sceneRGB,'wave');
@@ -54,6 +51,6 @@ sceneRGB = sceneAdjustIlluminant(sceneRGB,bb);
 sceneRGB = sceneAdjustLuminance(sceneRGB,meanL);
 
 sceneRGB = sceneSet(sceneRGB,'name','From RGB 6500K');
-ieAddObject(sceneRGB); sceneWindow;
+sceneWindow(sceneRGB);
 
 %%

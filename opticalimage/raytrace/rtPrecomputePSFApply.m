@@ -19,7 +19,7 @@ function oi = rtPrecomputePSFApply(oi,angStep)
 %
 % Copyright ImagEval, LLC, 2005
 %
-% See also:  rtPrecomputePSF, s_opticsRTSynthetic, s_opticsRTPSFView.m
+% See also:  rtPrecomputePSF, s_opticsRTSynthetic, s_opticsRTSyntheticPSFView.m
 
 % Examples
 %{

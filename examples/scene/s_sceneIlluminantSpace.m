@@ -13,8 +13,8 @@
 % the illuminant, which we call spatial-spectral, is allowed to
 % vary across the scene.
 %
-% See also:  
-%   s_sceneIlluminant, s_sceneIlluminantMixtures, sceneIlluminantSS,
+% See also:
+%   s_sceneIlluminant, sceneIlluminantSS,
 %     sceneAdjustIlluminant, sceneAdjustReflectance
 %
 
@@ -137,7 +137,7 @@ title('Scale along the rows');
 
 % Scale across the columns
 for ii=1:r
-    illPhotons(ii,:,:) = squeeze(illPhotons(ii,:,:)) * illScale(cc);
+    illPhotons(ii,:,:) = squeeze(illPhotons(ii,:,:)) * illScale(ii);
 end
 
 % Correct the energy for this illuminant
@@ -151,5 +151,32 @@ sceneWindow(scene);
 %%  Show the scene illuminant image
 
 scenePlot(scene,'illuminant image');
+
+%% Build a top/bottom mixed illuminant scene
+%
+% Mix tungsten and D65 illuminants in one scene using a spatial-spectral
+% illuminant map.
+
+s1 = sceneCreate('macbeth tungsten');
+s1 = sceneIlluminantSS(s1);
+illT = sceneGet(s1,'illuminant energy');
+
+s2 = sceneCreate;
+s2 = sceneIlluminantSS(s2);
+illD65 = sceneGet(s2,'illuminant energy');
+
+ill = illT;
+sz = sceneGet(s1,'size');
+rows = 1:round(sz(1)/2);
+cols = 1:sz(2);
+ill(rows,cols,:) = illD65(rows,cols,:);
+
+sMixed = sceneAdjustIlluminant(s1,ill);
+sMixed = sceneSet(sMixed,'name','Top D65 / Bottom Tungsten');
+
+ieAddObject(s1);      % Tungsten
+ieAddObject(s2);      % D65
+ieAddObject(sMixed);  % Mixed spatial-spectral
+imageMultiview('scene',1:3,true);
 
 %%

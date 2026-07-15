@@ -55,8 +55,8 @@ ieSessionGet('font size')
 % This number is a increment (or decrement) relative to the default fonts
 % in the Matlab display windows.  Here is the font size in your current
 % scene window
-scene = sceneCreate; ieAddObject(scene);
-sceneWindow;
+scene = sceneCreate;
+sceneWindow(scene);
 drawnow
 pause(2)
 

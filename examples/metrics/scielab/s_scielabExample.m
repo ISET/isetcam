@@ -43,7 +43,7 @@ mn = mean(eImage(:));
 assert(abs(mn - 1.5118) < 0.01,'Mean error image is off');
 
 % Show the error image
-ieNewGraphWin; imagesc(eImage)
+ieFigure; imagesc(eImage)
 colorbar;
 
 % Show the RGB images as scenes. This illustrates how the RGB data were
@@ -110,18 +110,18 @@ params.filters = [];
 assert(abs(mean(errorImage(:)) - 1.8294) < 1e-3);
 
 %% Examining and interpreting the results.
-ieNewGraphWin;
+ieFigure;
 imagesc(errorImage);
 colorbar('vert');
 title('S-CIELAB error map')
 
-ieNewGraphWin;
+ieFigure;
 histogram(errorImage(:),100)
 title('S-CIELAB delta E histogram')
 
 %% Examine the SCIELAB spatial filters
 
-f = ieNewGraphWin([],'wide');
+f = ieFigure([],'wide');
 filters = params.filters;   %
 support = params.support;   % Degress
 mx = max(filters{1}(:));
@@ -155,7 +155,7 @@ edgeImage = edge(gImage,'prewitt');
 
 % imshow(edgeImage)
 % imshow(bigErr)
-ieNewGraphWin;
+ieFigure;
 overlay = 1 + edgeImage + 2*bigErr;
 overlayMap = ...
     [0 0 0;

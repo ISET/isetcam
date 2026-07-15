@@ -80,6 +80,38 @@ wvfPlot(wvf,'psf','unit','um','wave',thisWave,'plot range',20,'airy disk',true);
 fprintf('Npix %d delta Arcmin %.5f\n',wvfGet(wvf,'npixels'), wvfGet(wvf,'psf sample spacing'));
 fprintf('um per deg %f\n',wvfGet(wvf,'um per degree'));
 
+%% Set PSF sample spacing directly (image-plane spacing)
+%
+% You can set desired PSF spacing in the image plane directly with
+%   wvfSet(wvf,'psf sample spacing',valMM)
+%
+% The equivalent pupil-plane spacing relation is:
+%   pupilSpacingMM = lambdaMM * focalLengthMM / (psfSpacingMM * nPixels)
+
+lambdaNM = 550;
+fnumber = 4;
+focallengthMM = 4;
+nPixels = 1024;
+
+wvfSpacing = wvfCreate;
+wvfSpacing = wvfSet(wvfSpacing,'wave',lambdaNM);
+wvfSpacing = wvfSet(wvfSpacing,'focal length',focallengthMM,'mm');
+wvfSpacing = wvfSet(wvfSpacing,'calc pupil diameter',focallengthMM/fnumber);
+wvfSpacing = wvfSet(wvfSpacing,'spatial samples',nPixels);
+
+psfSpacingMM = 1e-3;
+lambdaMM = wvfGet(wvfSpacing,'wave','mm');
+nPixels = wvfGet(wvfSpacing,'npixels');
+pupilSpacingMM = lambdaMM * focallengthMM / (psfSpacingMM * nPixels);
+wvfSpacing = wvfSet(wvfSpacing,'field size mm',pupilSpacingMM * nPixels);
+wvfSummarize(wvfSpacing);
+
+wvfSpacing = wvfSet(wvfSpacing,'psf sample spacing',2e-3);
+wvfSummarize(wvfSpacing);
+
+% The angular sample interval is reported separately.
+wvfGet(wvfSpacing,'ref psf sample interval');
+
 %% Loop a bit on focal length, showing overlap of wvf and oi curves
 
 fl = linspace(5,20,4)*1e-3;
@@ -112,7 +144,7 @@ fx  = wvfGet(wvf,'otf support');
 [Fx,Fy] = meshgrid(fx,fx);
 
 % Still need to understand.
-ieNewGraphWin;
+ieFigure;
 mesh(Fx,Fy,abs(pf));    % Aperture function
 %{
 % Equivalent
@@ -120,7 +152,7 @@ pfa = wvfGet(wvf,'pupil function amplitude');
 mesh(Fx,Fy,pfa);
 %}
 
-ieNewGraphWin;
+ieFigure;
 mesh(Fx,Fy,angle(pf));  % Wavefront aberration
 %{
  % Equivalent
@@ -130,7 +162,7 @@ mesh(Fx,Fy,angle(pf));  % Wavefront aberration
 
 % The pupil function goes to the PSF and then back to the OTF. I would like
 % a direct route.
-ieNewGraphWin;
+ieFigure;
 otf = wvfGet(wvf,'otf',thisWave);
 mesh(Fx,Fy,abs(otf));
 
@@ -141,7 +173,7 @@ wvf = wvfCompute(wvf);
 
 pupilPhase = wvfGet(wvf,'pupil function phase');
 apertureFunction = wvfGet(wvf,'pupil function amplitude');
-ieNewGraphWin; colormap("jet");
+ieFigure; colormap("jet");
 subplot(1,2,1), imagesc(apertureFunction); axis image
 subplot(1,2,2), imagesc(pupilPhase); axis image
 
@@ -153,7 +185,7 @@ wvf = wvfSet(wvf,'zcoeff',1,{'defocus'});
 wvf = wvfCompute(wvf);
 
 thisWave = [400,500,600];
-ieNewGraphWin; colormap("jet");
+ieFigure; colormap("jet");
 tcl = tiledlayout(3,3);
 for ii=1:numel(thisWave)
     % The pupil phase extends over 2*pi.  But the aberration only extnds over

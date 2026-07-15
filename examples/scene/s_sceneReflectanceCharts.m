@@ -27,8 +27,7 @@ ieInit
 %% Default usage with sceneCreate
 
 scene = sceneCreate('reflectance chart');
-ieAddObject(scene);
-sceneWindow;
+sceneWindow(scene);
 
 %% Create your own chart
 
@@ -62,14 +61,14 @@ scene = sceneCreate('reflectance chart',pSize,sSamples,sFiles,wave,grayFlag,samp
 sceneGet(scene,'chart parameters')
 
 % Show it on the screen
-ieAddObject(scene); sceneWindow;
+sceneWindow(scene);
 
 %% Change the illumination from the default illuminant (equal energy) to D65
 
 wave = sceneGet(scene,'wave');  d65 = ieReadSpectra('D65',wave);
 sceneD65 = sceneAdjustIlluminant(scene,d65);
 sceneD65 = sceneSet(sceneD65,'name','Reflectance Chart D65');
-ieAddObject(sceneD65); sceneWindow;
+sceneWindow(sceneD65);
 
 %% Add a gray strip column
 
@@ -77,17 +76,17 @@ grayStrip = 1;
 sceneGray = sceneReflectanceChart(sFiles,sSamples,pSize,wave,grayStrip);
 sceneGray = sceneSet(sceneGray,'name','Reflectance Chart EE Gray Strip');
 
-ieAddObject(sceneGray); sceneWindow;
+sceneWindow(sceneGray);
 
 %% Store the parameters needed to make exactly the same chart
 
 [sceneOriginal, storedSamples] = sceneReflectanceChart(sFiles,sSamples,pSize);
 sceneOriginal = sceneSet(sceneOriginal,'name','Original');
-ieAddObject(sceneOriginal); sceneWindow;
+sceneWindow(sceneOriginal);
 
 sceneReplica = sceneReflectanceChart(sFiles,storedSamples,pSize);
 sceneReplica = sceneSet(sceneReplica,'name','Replica');
-ieAddObject(sceneReplica); sceneWindow;
+sceneWindow(sceneReplica);
 
 %%
 

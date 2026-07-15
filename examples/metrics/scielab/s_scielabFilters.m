@@ -28,11 +28,11 @@ y = y - mean(y(:));
 
 zMax = max(filters{1}(:))*1.2;
 
-vcNewGraphWin; mesh(x,y,filters{1}); set(gca,'zlim',[0 zMax])
+ieFigure; mesh(x,y,filters{1}); set(gca,'zlim',[0 zMax])
 xlabel('Pos (deg)');ylabel('Pos (deg)');
-vcNewGraphWin; mesh(x,y,filters{2});set(gca,'zlim',[0 zMax])
+ieFigure; mesh(x,y,filters{2});set(gca,'zlim',[0 zMax])
 xlabel('Pos (deg)');ylabel('Pos (deg)');
-vcNewGraphWin; mesh(x,y,filters{3});set(gca,'zlim',[0 zMax])
+ieFigure; mesh(x,y,filters{3});set(gca,'zlim',[0 zMax])
 xlabel('Pos (deg)');ylabel('Pos (deg)');
 
 %% The filter point spreads as an image
@@ -40,19 +40,19 @@ xlabel('Pos (deg)');ylabel('Pos (deg)');
 cMap = gray(256)*0.7 + repmat([.3 .3 .3],256,1);
 fSize = 18;
 
-vcNewGraphWin; imagesc(x,y,filters{1}); axis image; grid on
+ieFigure; imagesc(x,y,filters{1}); axis image; grid on
 colormap(cMap); % colorbar
 set(gca,'xtick',[-0.2:.2:.2],'ytick',[-0.2:.2:.2])
 set(gca,'fontSize',fSize); axis off
 title(cName{1});xlabel('deg')
 
-vcNewGraphWin; imagesc(x,y,filters{2}); axis image; grid on
+ieFigure; imagesc(x,y,filters{2}); axis image; grid on
 colormap(cMap); % colorbar
 set(gca,'xtick',[-0.2:.2:.2],'ytick',[-0.2:.2:.2])
 set(gca,'fontSize',fSize); axis off
 title(cName{2});
 
-vcNewGraphWin; imagesc(x,y,filters{3}); axis image; grid on
+ieFigure; imagesc(x,y,filters{3}); axis image; grid on
 colormap(cMap); % colorbar
 set(gca,'xtick',[-0.2:.2:.2],'ytick',[-0.2:.2:.2])
 set(gca,'fontSize',fSize); axis off
@@ -72,7 +72,7 @@ tFilter = cell(1,3);
 for ii=1:3
     ps = fftshift(filters{ii});   % The center should be at ps(1,1)
     tFilter{ii} = fftshift(abs(fft2(ps)));
-    vcNewGraphWin; imagesc(freqDeg,freqDeg,tFilter{ii}); axis image;
+    ieFigure; imagesc(freqDeg,freqDeg,tFilter{ii}); axis image;
     set(gca,'xlim',[-20 20],'ylim',[-20 20]); truesize
     grid on; colormap(gray(256)); title(cName{ii});
 end
@@ -97,7 +97,7 @@ freq = (1:scP.filterSize) - scP.filterSize/2; % Center around 0
 freqDeg = freq/imgDeg;                                  % First cycle is cycles/imgDeg.
 
 tFilters = cell(1,3);
-vcNewGraphWin;
+ieFigure;
 for ii=1:3
     ps = fftshift(filters{ii});                  % The center should be at ps(1,1)
     tFilters{ii} = fftshift(abs(fft2(ps)));      % plot(support,ps(1,:))
@@ -109,7 +109,7 @@ for ii=1:3
     set(gcf,'Name',sprintf('FFT %s',scP.filterversion));
 end
 
-vcNewGraphWin([],'wide'); lst = {'lum','r/g','b/y'};
+ieFigure([],'wide'); lst = {'lum','r/g','b/y'};
 for ii=1:3
     subplot(1,3,ii), imagesc(support,support,filters{ii}); axis image;
     set(gca,'xlim',[-.2 .2],'ylim',[-.2 .2])

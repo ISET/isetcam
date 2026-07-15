@@ -23,7 +23,7 @@ function OTF = opticsDefocusedMTF(s,alpha)
 %
 % See also: humanCore,opticsDefocusParameters (NYI), opticsDepthDefocus
 %
-% See also:  opticsDefocusCore, s_opticsDefocus
+% See also:  opticsDefocusCore, s_opticsDefocusWVF
 %
 % See paper by Marimont and Wandell for definitions and functions.
 %

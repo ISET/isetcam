@@ -34,7 +34,7 @@ wvf = wvfCompute(wvf,'aperture',aperture);
 %% Summarize
 disp(params);
 
-ieNewGraphWin([], 'wide');
+ieFigure([], 'wide');
 tiledlayout(1,3);
 nexttile; wvfPlot(wvf,'image pupil amp','unit','um','wave',550,'window',false);
 nexttile; wvfPlot(wvf,'image pupil phase','unit','um','wave',550,'window',false);

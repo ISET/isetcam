@@ -78,7 +78,7 @@ line(srgbxy(1,:),srgbxy(2,:),'linewidth',1)
 line(adobergbxy(1,:),adobergbxy(2,:),'color','white','linewidth',2);
 title('Natural surfaces under D65')
 
-% vcNewGraphWin;
+% ieFigure;
 % subplot(1,2,1), plot(wave,light); grid on; xlabel('Wavelength (nm)');
 % subplot(1,2,2), plot(wave,reflectances); grid on; xlabel('Wavelength (nm)');
 
@@ -101,7 +101,7 @@ line(adobergbxy(1,:),adobergbxy(2,:),'color','white','linewidth',2);
 
 title('Natural surfaces yellow illuminant')
 
-% vcNewGraphWin;
+% ieFigure;
 % subplot(1,2,1), plot(wave,light); grid on; xlabel('Wavelength (nm)');
 % subplot(1,2,2), plot(wave,reflectances); grid on; xlabel('Wavelength (nm)');
 
@@ -143,7 +143,7 @@ line(adobergbxy(1,:),adobergbxy(2,:),'color','white','linewidth',2);
 title('Synthetic surfaces under D65')
 
 %{
- ieNewGraphWin([],'wide');
+ ieFigure([],'wide');
  subplot(1,2,1), plot(wave,light); grid on; xlabel('Wavelength (nm)');
  subplot(1,2,2), plot(wave,reflectances); grid on; xlabel('Wavelength (nm)');
 %}

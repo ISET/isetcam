@@ -1,4 +1,4 @@
-% s_zernikeInterpolation
+% s_wvfZernikeInterpolation
 %
 % Interpolating a PSF as a function of field height, or wavelength,
 % can happen either in space, or in Zernike polynomials.

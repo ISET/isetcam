@@ -68,13 +68,13 @@ wvfEst = wvfSet(wvf,'zcoeffs',x);
 wvfEst = wvfCompute(wvfEst);
 psfEst = wvfPlot(wvfEst,'psf','unit','um','plot range',20);
 
-ieNewGraphWin;
+ieFigure;
 plot(psf.z(:),psfEst.z(:),'.');
 identityLine;
 
 %% Show the pupil phase functions
 
-ieNewGraphWin([],'tall');
+ieFigure([],'tall');
 subplot(2,1,1), wvfPlot(wvf,'image pupil phase','unit','mm','wave',wave,'window',false)
 subplot(2,1,2), wvfPlot(wvfEst,'image pupil phase','unit','mm','wave',wave,'window',false)
 

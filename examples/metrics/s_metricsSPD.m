@@ -13,7 +13,7 @@ wave = 400:10:700;
 % Standard
 s1 = daylight(wave,4000);
 
-% ieNewGraphWin; plot(wave,s1,'-',wave,s2,'--');
+% ieFigure; plot(wave,s1,'-',wave,s2,'--');
 
 % Select a range of color temperatures
 ctemp = (4000:500:7000);
@@ -33,7 +33,7 @@ end
 
 %% Plot the relationships
 
-ieNewGraphWin([],'tall');
+ieFigure([],'tall');
 tiledlayout(2,1);
 nexttile; plot(angval,deval,'-o');
 xlabel('Vector angle'); ylabel('\Delta E');
@@ -61,7 +61,7 @@ for ii=1:numel(ctemp)
     miredval(ii) = metricsSPD(s1,s2,'metric','mired','wave',wave);
 end
 
-ieNewGraphWin([],'tall');
+ieFigure([],'tall');
 tiledlayout(2,1);
 nexttile, plot(angval,deval,'-o');
 xlabel('Angle'); ylabel('\Delta E');

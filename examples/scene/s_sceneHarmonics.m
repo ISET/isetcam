@@ -27,7 +27,7 @@ params.GaborFlag=0;
 
 % The basic call to sceneCreate with the params is
 [scene,params] = sceneCreate('harmonic',params);
-ieAddObject(scene); sceneWindow;
+sceneWindow(scene);
 
 %% The sum of two (or more) harmonics
 
@@ -40,7 +40,7 @@ params.ang  = [0, 0];         % orientations
 params.ph  = [0 pi/3];        % phases
 
 TwoFreq = sceneCreate('harmonic',params);
-ieAddObject(TwoFreq); sceneWindow;
+sceneWindow(TwoFreq);
 
 %% Vary the orientation of the two harmonics
 
@@ -50,7 +50,7 @@ params.ang  = [pi/4, -pi/4];  % orientations
 params.ph  = [0 0];           % phase
 
 TwoFreq = sceneCreate('harmonic',params);
-ieAddObject(TwoFreq); sceneWindow;
+sceneWindow(TwoFreq);
 
 %%  another example
 
@@ -60,6 +60,6 @@ params.ang  = [pi/4, -pi/4]; % orientations
 params.ph  = [0 0]; % phase
 
 TwoFreq = sceneCreate('harmonic',params);
-ieAddObject(TwoFreq); sceneWindow;
+sceneWindow(TwoFreq);
 
 %%

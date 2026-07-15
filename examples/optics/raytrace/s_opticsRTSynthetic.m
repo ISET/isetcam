@@ -21,8 +21,7 @@ scene = sceneCreate('point array',256);
 
 scene = sceneSet(scene,'h fov',3);
 scene = sceneInterpolateW(scene,550:100:650);
-ieAddObject(scene);
-sceneWindow;
+sceneWindow(scene);
 
 %% Build the optical image
 

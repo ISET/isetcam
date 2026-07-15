@@ -34,7 +34,7 @@ levels = logspace(1.5,3,3);
 % Computes for a 10 ms exposure duration.
 cVSNR  = cameraVSNR(camera,levels);
 
-ieNewGraphWin;
+ieFigure;
 loglog(cVSNR.lightLevels,cVSNR.vSNR,'-o');
 xlabel('Light level (cd/m^2)')
 ylabel('vSNR (1/dE)');
@@ -42,7 +42,7 @@ grid on;
 
 %% It can be nice to plot the dE values on the right hand side.
 
-vcNewGraphWin();
+ieFigure();
 ax = plotyy(cVSNR.lightLevels,cVSNR.vSNR,cVSNR.lightLevels,cVSNR.vSNR,'loglog');
 xlabel('Light level (cd/m^2)')
 grid on;

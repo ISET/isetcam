@@ -19,7 +19,7 @@ function [otf, sampleSFmm] = opticsDefocusCore(optics,sampleSF,D)
 % sampleSFmm:  Sample spatial frequency in cyc/millimeters
 %
 % See also: humanCore (this routine derived from that), opticsDefocusedMTF,
-%           defocusMTF, s_opticsDefocus
+%           defocusMTF, s_opticsDefocusWVF
 %
 % Example:
 %

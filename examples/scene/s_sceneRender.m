@@ -3,12 +3,12 @@
 % We show how to render a scene using different illuminants, and
 % then we show how to render an HDR scene.
 %
-% We generally think og rendering as calculating the CIE XYZ
-% values for the spectral data. We do this by first calculating
-% the radiance signal for the surfaces under daylight (think of
-% this as color balancing) Then we calculate the xyz values and
-% use an xyz to linear sRGB final step should be to pass the
-% linear rgb into a display gamma lut
+% Rendering here means mapping spectral radiance to displayable RGB.
+% A typical sequence is:
+%
+% * adjust scene illuminant (if desired)
+% * compute XYZ from spectral data
+% * map XYZ to display RGB for visualization
 %
 % See also: hdrRender, sceneShowImage, sceneFromFile, scenePlot,
 %           ieReadSpectra, sceneAdjustIlluminant, scenePlot
@@ -24,7 +24,7 @@ fullFileName = fullfile(isetRootPath,'data','images','multispectral','StuffedAni
 scene = sceneFromFile(fullFileName ,'multispectral',[],[],wList);
 
 % Have a look at the image (just mapping different spectral bands into rgb)
-ieAddObject(scene); sceneWindow;
+sceneWindow(scene);
 
 % Plot the illuminant
 scenePlot(scene,'illuminant photons roi')
@@ -43,7 +43,7 @@ scene = sceneAdjustIlluminant(scene,daylight);
 scene = sceneSet(scene,'illuminantComment','Daylight (D75) illuminant');
 
 % Have a look
-ieAddObject(scene); sceneWindow;
+sceneWindow(scene);
 scenePlot(scene,'illuminant photons roi')
 
 %% HDR
@@ -51,7 +51,7 @@ scenePlot(scene,'illuminant photons roi')
 %The FX-Window data
 fname = fullfile(isetRootPath,'data','images','multispectral','Feng_Office-hdrs.mat');
 s = sceneFromFile(fname,'multispectral');
-ieAddObject(s); sceneWindow;
+sceneWindow(s);
 
 srgb = sceneShowImage(s,0);
 res = hdrRender(srgb);

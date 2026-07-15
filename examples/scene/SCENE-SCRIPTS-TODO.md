@@ -2,17 +2,17 @@
 
 Date: 2026-06-03
 
-This note records the current review status for `scripts/scene` so the cleanup can proceed later without redoing the initial analysis.
+This note records the current review status for `examples/scene` so the cleanup can proceed later without redoing the initial analysis.
 
 ## Smoke-check harness
 
-All `scripts/scene/s_*.m` files were run successfully with an isolated MATLAB smoke harness.
+All `examples/scene/s_*.m` files were run successfully with an isolated MATLAB smoke harness.
 
 Harness pattern:
 
 ```sh
 cd /Users/wandell/Documents/MATLAB/isetcam
-for f in scripts/scene/s_*.m; do
+for f in examples/scene/s_*.m; do
   name=${f:t:r}
   print -r -- "RUN $name"
   output=$(/Applications/MATLAB_R2025b.app/bin/matlab -batch "root='$PWD'; addpath(genpath(root)); set(0,'DefaultFigureVisible','off'); try, run(fullfile(root,'$f')); close all force; fprintf('SCRIPT_PASS\\n'); catch ME, close all force; fprintf('SCRIPT_FAIL\\n'); fprintf('%s\\n', getReport(ME,'basic','hyperlinks','off')); exit(1); end;" 2>&1)
@@ -28,7 +28,7 @@ done
 
 Why this harness: a single shared MATLAB session was not reliable because some scripts mutate or clear workspace state. Running each script in a fresh MATLAB process avoids cross-script contamination.
 
-Result: all 26 `scripts/scene/s_*.m` scripts passed isolated smoke checks.
+Result: all 26 `examples/scene/s_*.m` scripts passed isolated smoke checks.
 
 ## Highest-priority cleanup items
 
@@ -37,17 +37,17 @@ Result: all 26 `scripts/scene/s_*.m` scripts passed isolated smoke checks.
    - Remove the duplicated Macbeth sections.
    - Candidate new name: `s_sceneBuiltinExamples.m` or `s_sceneCreateExamples.m`.
 
-2. Consolidate the ROI scripts.
-   - Keep `s_sceneDataExtractionAndPlotting.m` as the primary ROI/data-extraction script.
-   - Retire `s_sceneRoi.m`, or keep it only after narrowing its purpose and renaming it to `s_sceneGetRoiData.m`.
+2. Consolidate the ROI scripts. (Completed)
+   - `s_sceneDataExtractionAndPlotting.m` is the primary ROI/data-extraction script.
+   - `s_sceneRoi.m` was retired.
 
-3. Merge the spatial-spectral illuminant demos.
+3. Merge the spatial-spectral illuminant demos. (Completed)
    - Fold the top/bottom two-illuminant example from `s_sceneIlluminantMixtures.m` into `s_sceneIlluminantSpace.m`.
    - Retire `s_sceneIlluminantMixtures.m` after the merge.
 
-4. Replace or retire `s_sceneIncreaseSize.m`.
-   - The current script directly manipulates scene photons via `imageIncreaseImageRGBSize`.
-   - Prefer a future script centered on the tested resize/resample APIs instead.
+4. Replace or retire `s_sceneIncreaseSize.m`. (Completed)
+   - `s_sceneIncreaseSize.m` was retired.
+   - Geometry-aware resizing/resampling now appears in `s_sceneGeometryOps.m`.
 
 5. Clean up weak or outdated prose.
    - `s_sceneFromRGBvsMultispectral.m`
@@ -81,7 +81,7 @@ Script-heavy but not obviously paired with scene tests:
 ## Suggested follow-up order
 
 1. Curate the overview scripts first.
-2. Remove or merge redundant ROI and illuminant files.
-3. Replace legacy resize content with a script aligned to current tested APIs.
+2. Remove or merge redundant ROI and illuminant files. (Completed)
+3. Replace legacy resize content with a script aligned to current tested APIs. (Completed)
 4. Revisit comment quality after the file list is smaller.
 5. Consider adding one new geometry-oriented script later for combine/crop/insert or resize/resample.
