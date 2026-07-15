@@ -1,3 +1,5 @@
+% SkipFile
+
 % Read a scene with arbitrary spectral radiance functions, say from
 % ISETAuto day
 %

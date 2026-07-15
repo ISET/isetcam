@@ -93,4 +93,62 @@ plot(fnumbers,SNR,'-o');
 grid on;
 xlabel('F/#'); ylabel('Signal-to-noise ratio')
 
+%% Poisson scaling in digital values
+%
+% Inspect how photon shot noise maps into digital values after applying
+% a linear conversion gain.
+
+lambda = logspace(1,3,10);
+nSamp  = 100;
+useSeed = 1;
+photons = zeros(numel(lambda),nSamp);
+for ii = 1:numel(lambda)
+    photons(ii,:) = poissrnd(lambda(ii),nSamp,useSeed);
+end
+
+mPhotons = mean(photons,2);
+sPhotons = std(photons,0,2);
+ieFigure;
+loglog(mPhotons,sPhotons,'k--');
+axis equal; grid on
+xlabel('Mean photons'); ylabel('Std photons')
+title('Poisson scaling in photon counts')
+
+% Example conversion gain from photons to digital values.
+dvPerPhoton = 0.01;
+dv = photons*dvPerPhoton;
+
+mDV = mean(dv,2);
+sDV = std(dv,0,2);
+rootDV = sqrt(mDV);
+
+ieFigure;
+loglog(mDV,sDV,'k--',mDV,rootDV,'b--');
+axis equal; grid on
+xlabel('Mean digital value'); ylabel('Std digital value')
+title('Poisson scaling after conversion gain')
+
+%% Sensor ROI digital-value statistics
+
+sensor = sensorCreate('imx363');
+sensor = sensorSet(sensor,'row',500);
+sensor = sensorSet(sensor,'col',500);
+
+scene = sceneCreate('macbeth');
+scene = sceneSet(scene,'fov',10);
+oi = oiCreate('diffraction limited');
+sensor = sensorSet(sensor,'exp time',0.016);
+
+oi = oiCompute(oi,scene);
+sensor = sensorCompute(sensor,oi);
+sensorWindow(sensor);
+
+% [col row width height], (x,y,width,height)
+rect = [186 340 44 46];
+sensor = sensorSet(sensor,'roi',rect);
+dvRoi = sensorGet(sensor,'roi dv',rect);
+
+fprintf('ROI mean dv: %.3f\n',nanmean(dvRoi(:)));
+fprintf('ROI std dv:  %.3f\n',nanstd(dvRoi(:)));
+
 %%

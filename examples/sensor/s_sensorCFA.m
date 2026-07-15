@@ -102,4 +102,34 @@ cameraWindow(camera,'sensor');
 img = cameraGet(camera, 'sensor rgb');
 ieViewer(img);
 
+%% Per-channel CFA exposure durations
+%
+% Exposure duration can be set per CFA cell using a matrix matched to the
+% CFA pattern layout.
+
+sceneExp  = sceneCreate;
+sceneExp  = sceneSet(sceneExp,'fov',4);
+
+oiExp     = oiCreate;
+oiExp     = oiCompute(oiExp,sceneExp);
+sensorExp = sensorCreate;
+
+% Array is GR/BG. Values are exposure durations in seconds.
+Texp = [0.04  0.030; 0.30  0.02];
+sensorExp = sensorSet(sensorExp,'exposure duration',Texp);
+sensorExp = sensorCompute(sensorExp,oiExp);
+sensorExp = sensorSet(sensorExp,'name','Bluish exposure matrix');
+sensorWindow(sensorExp);
+
+Texp = [0.04  0.70; 0.030  0.02];
+sensorExp = sensorSet(sensorExp,'exposure duration',Texp);
+sensorExp = sensorCompute(sensorExp,oiExp);
+sensorExp = sensorSet(sensorExp,'name','Reddish exposure matrix');
+sensorWindow(sensorExp);
+
+cameraExp = cameraCreate;
+cameraExp = cameraSet(cameraExp,'sensor exposure duration',Texp);
+cameraExp = cameraCompute(cameraExp,sceneExp);
+cameraWindow(cameraExp,'sensor');
+
 %% END

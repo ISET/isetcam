@@ -2,15 +2,14 @@
 %
 % Files
 %   s_sensorAnalyzeDarkVoltage - Simulating the measurement of sensor dark voltage
-%   s_sensorCountingPhotons    - Calculate the number of photons at a pixel
-%   s_sensorExposureBracket    - Simulate exposure bracketing with sensorCompute
-%   s_sensorExposureCFA        - Experiments setting exposure separately for each color channel
+%   s_sensorCFA                - CFA pattern changes and per-channel exposure durations
+%   s_sensorCFAPointSpread     - CFA point-spread behavior and filter transmissivity plots
+%   s_sensorCountingPhotons    - Photon counting and Poisson scaling in digital values
+%   s_sensorExposureBracket    - Exposure bracketing plus HDR pixel-size extension
 %   s_sensorExternalAnalysis   - Create a sensor with properties of your device
-%   s_sensorHDR_PixelSize      - Simulate a sensor that combines data from multiple pixel sizes.
 %   s_sensorMCC                - Converts the a tiff file into ISET sensor format.
 %   s_sensorMicrolens          - Calculations for a microlens array on the sensor
 %   s_sensorNoise              - Measure different sensor noise
-%   s_sensorPlotColorFilters   - Plots the transmissivities of color filters
 %   s_sensorRollingShutter     - Simulate rolling shutter effects
 %   s_sensorSizeResolution     - Count pixels for a particular sensor (quarterinch, halfinch)
 %   s_sensorSNR                - How pixel and sensor parameters influence sensor SNR.
