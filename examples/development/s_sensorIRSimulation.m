@@ -4,6 +4,7 @@
 %  Demonstrate ISET analyses using IR scene data and IR sensor
 %
 % Copyright ImagEval Consultants, LLC, 2010
+% SkipFile
 
 %% Set up a scene containing infrared data
 %

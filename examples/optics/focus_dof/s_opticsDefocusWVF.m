@@ -18,8 +18,8 @@
 % Zernike polynomials.  Tutorials emphasizing the wavefront methods are
 % described in *t_wvf<TAB>* tutorials.
 %
-% See also:  sceneCreate, s_opticsDefocus, opticsDefocusCore,
-%            humanWaveDefocus, 
+% See also:  sceneCreate, opticsDefocusCore,
+%            humanWaveDefocus,
 %
 
 %%
@@ -115,6 +115,35 @@ set(gca,'xlim',[-20 20],'ylim',[-20 20]);
 oi = oiCompute(oi,scene);
 oi = oiSet(oi,'name','defocused');
 oiWindow(oi);
+
+%% Quick consistency checks for defocus toggles
+
+initialPhotons = mean(oiGet(oi,'photons'),'all');
+
+% Add and remove vertical astigmatism; scene-average photons should remain stable.
+oi = oiSet(oi,'wvf zcoeffs',1,'vertical_astigmatism');
+oi = oiCompute(oi,scene);
+oi = oiSet(oi,'wvf zcoeffs',0,'vertical_astigmatism');
+oi = oiCompute(oi,scene);
+
+% Remove defocus and verify average irradiance returns close to baseline.
+oi = oiSet(oi,'wvf zcoeffs',0,'defocus');
+oi = oiCompute(oi,scene);
+endingPhotons = mean(oiGet(oi,'photons'),'all');
+assert(abs((initialPhotons/endingPhotons) - 1) < 1e-6);
+
+% Changing pupil diameter alters sharpness while approximately preserving energy.
+wvf = oiGet(oi,'wvf');
+pDiameter = wvfGet(wvf,'calc pupil diameter');
+wvf = wvfSet(wvf,'calc pupil diameter',2*pDiameter);
+oi = oiSet(oi,'optics wvf',wvf);
+oi = oiCompute(oi,scene);
+
+wvf = wvfSet(wvf,'calc pupil diameter',pDiameter);
+oi = oiSet(oi,'optics wvf',wvf);
+oi = oiCompute(oi,scene);
+finalPhotons = mean(oiGet(oi,'photons'),'all');
+assert(abs((initialPhotons/finalPhotons) - 1) < 1e-6);
 
 %{
   % This is what happens in the oiSet() above

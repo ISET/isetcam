@@ -1,5 +1,8 @@
-%% Show the CFA image of a point and line for different f/# lenses
+%% Show CFA point-spread behavior and color-filter transmissivities
 %
+% This example combines two related tasks:
+% 1) show CFA image structure for a point array across lens f/# values
+% 2) plot calibrated color-filter transmissivities for representative sensors
 %
 % Copyright Imageval Consulting, LLC 2016
 
@@ -27,18 +30,32 @@ rect = [32 24 11 11];
 x = [0:rect(3)]*pSize(1);
 x = x - mean(x(:));
 x = x*1e6;
-ieNewGraphWin; panel = 1;
+ieFigure; panel = 1;
 for ff = [2 4 8 12]
     oi    = oiSet(oi,'optics fnumber',ff);
     oi    = oiCompute(oi,scene);
     sensor = sensorCompute(sensor,oi);
-    
+
     img = sensorData2Image(sensor);
     img = imcrop(img,rect);
     subplot(2,2,panel)
     imagesc(x,x,img); axis image; title(sprintf('F/# %d',ff));
     panel = panel + 1;
     xlabel('Position (um)');
+end
+
+%% Plot calibrated color-filter transmissivities
+
+cList = {'NikonD1','NikonD70','NikonD100','interleavedRGBW'};
+wavelength = 400:1000;
+
+for ii = 1:numel(cList)
+    data = ieReadColorFilter(wavelength,cList{ii});
+    ieFigure;
+    plot(wavelength,data);
+    xlabel('Wavelength (nm)'); ylabel('Transmissivity');
+    title(sprintf('Color filters: %s',cList{ii}));
+    grid on;
 end
 
 %%

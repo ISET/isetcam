@@ -28,7 +28,7 @@ ieSessionSet('waitbar','on');
 scene = sceneCreate('point array',384);
 scene = sceneSet(scene,'h fov',4);
 scene = sceneInterpolateW(scene,550:100:650);
-ieAddObject(scene); sceneWindow;
+sceneWindow(scene);
 
 %% Create the space-varying optics
 oi = oiCreate;
@@ -42,7 +42,7 @@ oiWindow(oi);
 
 %% View the PSFs at the various field heights
 
-ieNewGraphWin;
+ieFigure;
 % These are the computed PSFs
 svPSF = oiGet(oi,'psf struct');
 for ii=1:size(svPSF.psf,2)
@@ -50,7 +50,7 @@ for ii=1:size(svPSF.psf,2)
 end
 
 %% These are PSFs at the various sample angles
-ieNewGraphWin;
+ieFigure;
 for ii=1:size(svPSF.psf,1)
     imagesc(svPSF.psf{ii,end,1}); axis image; pause(0.3);
 end

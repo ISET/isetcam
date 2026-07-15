@@ -26,6 +26,28 @@
 ieInit;
 clear rad2deg
 
+%% Quick diffraction walkthrough with f-number changes
+
+sceneQuick = sceneCreate('point array');
+sceneQuick = sceneSet(sceneQuick,'h fov',1);
+sceneWindow(sceneQuick);
+
+oiQuick = oiCreate;
+oiQuick = oiCompute(oiQuick,sceneQuick);
+oiQuick = oiSet(oiQuick,'name','Default f/#');
+oiWindow(oiQuick);
+
+% Larger f/# increases blur (and depth of field).
+oiQuick = oiSet(oiQuick,'optics fnumber',12);
+oiQuick = oiSet(oiQuick,'name','Large f/#');
+oiQuick = oiCompute(oiQuick,sceneQuick);
+oiWindow(oiQuick);
+oiPlot(oiQuick,'psf 550');
+
+pupilMM = oiGet(oiQuick,'optics pupil diameter','mm');
+focalMM = oiGet(oiQuick,'optics focal length','mm');
+fprintf('Quick check: focal/pupil ratio %.3f\n',focalMM/pupilMM);
+
 %% Create optical image
 
 % Here, we do the calculation by pulling out the optics
@@ -50,7 +72,7 @@ title(sprintf('F/# = %.2f  Foc Leng = %.2f (mm)',fNumber,fLength));
 
 %% Show the linespread in units of arc min rather than position (um)
 
-ieNewGraphWin;
+ieFigure;
 posMM = uData.x/1000;              % Microns to mm
 aMinutes = atan2d(posMM,fLength) * 3437.75;   % Angle in arcminutes.
 mesh(aMinutes,uData.wavelength,uData.lsWave);
@@ -78,7 +100,7 @@ psfMid = uData.psf(mid,:);
 posMM = uData.x(mid,:)/1000;               % Microns to mm
 posMinutes = atan2d(posMM,fLength) * 3437.75;
 
-vcNewGraphWin;
+ieFigure;
 plot(posMinutes,psfMid)
 xlabel('Arc min')
 AiryRingMM = AiryRingUM/1000;
@@ -115,7 +137,7 @@ psfMid = uData.psf(mid,:);
 posMM = uData.x(mid,:)/1000;               % Microns to mm
 posMinutes = rad2deg(atan2(posMM,fLength)) * 3437.75;
 
-vcNewGraphWin;
+ieFigure;
 plot(posMinutes,psfMid), xlabel('Arc min'), set(gca,'xlim',[-2 2])
 
 %% Now change the f-number and plot in angle again

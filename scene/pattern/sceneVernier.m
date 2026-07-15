@@ -17,7 +17,7 @@ function scene = sceneVernier(scene, type, params)
 %             'display' and 'object'.
 %        'display' - scene is created from an image on display
 %        'object'  - scene is created from the object structure which
-%                    contains specific parameters.  
+%                    contains specific parameters.
 %    params - (Optional) A structure containing the Vernier parameters. The
 %             parameters, based on scene type, and their defaults are
 %             listed below:
@@ -27,7 +27,7 @@ function scene = sceneVernier(scene, type, params)
 %            offset     - Displacement in pixels. Default 1.
 %            meanLum    - Mean luminance. Default is pulled from scene.
 %        Display
-%            lineSpace  - Spacing between the lines in pixels. 
+%            lineSpace  - Spacing between the lines in pixels.
 %            display    - Display name or structure. Default 'LCD-Apple'.
 %            barLength  - Length of the line segment in number of pixels.
 %            barColor   - Bar color, 0~1 RGB value. Default from the
@@ -65,8 +65,7 @@ function scene = sceneVernier(scene, type, params)
     p.barColor = [1 0.5 0.5];
     p.bgColor = [0 0 0];
     s = sceneVernier('vernier', 'display', p);
-    ieAddObject(s);
-    sceneWindow;
+    sceneWindow(s);
 %}
 
 % check inputs
@@ -91,42 +90,42 @@ switch type
         else
             lineReflectance = 0.6;
         end
-        
+
         if isfield(params, 'bgReflect')
             backReflectance = params.bgReflect;
         else
             backReflectance = 0.3;
         end
-        
+
         scene = sceneSet(scene, 'name', sprintf('vernier-%d', offset));
-        
+
         %% We make the image square
         if isscalar(sz), r = sz; c = sz; else, r = sz(1); c = sz(2); end
-        
+
         % Make the column number odd so we can really center the top line
         if ~isodd(c), c = c + 1; end
-        
+
         % Vernier line size and offset
         % Top and bottom half rows and columns
         % Columns containing top line, shifted offset/2
         topCols = (1:width) + round((c - width) / 2) - floor(offset / 2);
-        
+
         % Columns containing bottom line, shifted offset from top columns
         % With this algorithm, the width of the
         botCols = topCols + offset;
-        
+
         % Split the rows, too
         topHalf = round(r / 2);
         topRows = 1:topHalf;
         botRows = (topHalf + 1):r;
-        
+
         %% Init spectrum
         if ~isfield(scene, 'spectrum')
             scene = initDefaultSpectrum(scene, 'hyperspectral');
         end
         wave = sceneGet(scene, 'wave');
         nWave = sceneGet(scene, 'nwave');
-        
+
         %% Make the photon data
         if isfield(params, 'il')
             il = params.il;
@@ -135,7 +134,7 @@ switch type
         end
         scene = sceneSet(scene, 'illuminant', il);
         illP = sceneGet(scene, 'illuminant photons');
-        
+
         photons = ones(r, c, nWave);
         for ii = 1 : nWave
             topBar = lineReflectance * illP(ii) * ...
@@ -147,7 +146,7 @@ switch type
             photons(topRows, topCols, ii) = topBar;
             photons(botRows, botCols, ii) = botBar;
         end
-        
+
         scene = sceneSet(scene, 'photons', photons);
     case 'display'
         % Init related parameters
@@ -157,12 +156,12 @@ switch type
             display = displayCreate('LCD-Apple');
         end
         if ischar(display), display = displayCreate(display); end
-        
+
         Img = imageVernier(params);
-        
+
         % Create scene from the RGB data
         scene = sceneFromFile(Img, 'rgb', [], display);
-        
+
     otherwise
         error('unknown vernier scene type');
 end

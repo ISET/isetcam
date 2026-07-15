@@ -50,7 +50,7 @@ disp(u)
 get(p)
 
 %% A multiple axis window
-ieNewGraphWin([],'tall');
+ieFigure([],'tall');
 subplot(3,1,1), wvfPlot(wvf,'1d psf','unit',unit,'wave',wave,'window',false);
 title([num2str(wave) ' nm']);
 subplot(3,1,2), wvfPlot(wvf,'1d psf normalized','unit',unit,'wave',wave,'window',false);
@@ -97,7 +97,7 @@ wvfPlot(wvf,'image psf angle','unit',unit,'wave',wave);
 title(['Relative amplitude ' num2str(wave) ' nm']);
 
 % A multiple axis window
-ieNewGraphWin([],'tall');
+ieFigure([],'tall');
 subplot(3,1,1), wvfPlot(wvf,'1d psf','unit',unit,'wave',wave,'window',false);
 title([num2str(wave) ' nm']);
 subplot(3,1,2), 

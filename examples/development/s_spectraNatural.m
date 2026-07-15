@@ -1,3 +1,5 @@
+% SkipFile
+
 % Read a scene with arbitrary spectral radiance functions, say from
 % ISETAuto day
 %
@@ -65,19 +67,19 @@ plotRadiance(wave,C);
 % C' * s = C'* rBasis * w
 %
 % Suppose C is 31 x 9, and rBasis is 31 x 8
-% then 
+% then
 %
-% X = C' * rBasis 
-% 
+% X = C' * rBasis
+%
 % is 9 x 8
 %
-% 
+%
 % (X' * X) is 8 x 8 and close to singular.  But probably usable.
 %
 X = C'*rBasis;
 svd(X'*X)
 
-%% We choose enough channels to find a unique set of weights for the natural spectra 
+%% We choose enough channels to find a unique set of weights for the natural spectra
 %
 %  s is known, w are the weights
 %

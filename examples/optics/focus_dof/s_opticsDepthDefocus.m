@@ -45,7 +45,7 @@ objDist = linspace(fLength*1.5,100*fLength,nSteps);
 % power  (D0).
 D  = opticsDepthDefocus(objDist,optics);
 
-vcNewGraphWin;
+ieFigure;
 semilogx(objDist/fLength,D/D0);
 title('Sensor at focal length')
 xlabel('Distance to object (units: focal length)');
@@ -64,7 +64,7 @@ legend(t);
 % for different object distances
 [tmp, imgDist] = opticsDepthDefocus(objDist,optics);
 
-vcNewGraphWin;
+ieFigure;
 o = objDist*ieUnitScaleFactor('mm');
 plot(o,imgDist*ieUnitScaleFactor('mm'));
 xlabel('Distance to object (mm)'); ylabel('Image dist (mm)')
@@ -75,7 +75,7 @@ legend(t)
 
 %%  Plot with respect to focal lengths
 
-vcNewGraphWin;
+ieFigure;
 plot(objDist/fLength,imgDist/fLength);
 xlabel('Distance to object (units: focal length)'); ylabel('Image dist (units: focal length)')
 grid on
@@ -98,7 +98,7 @@ fprintf('In focus object is %.3f focal lengths from thin lens.\n',objDist(ii)/fL
 
 % The dioptric error as a function of object distance (in units of focal
 % length
-vcNewGraphWin;
+ieFigure;
 semilogx(objDist/fLength,D);
 xlabel('Object distance (focal lengths)');
 ylabel('Dioptric error (1/m)')
@@ -127,7 +127,7 @@ lType = {'k-','r--','b--','g-'};
 % Graph of object distance versus defocus for different pupil
 % sizes. The point is that as the pupil size changes, the defocus
 % parameter, w20, also changes.
-vcNewGraphWin;
+ieFigure;
 for ii=1:length(s)
     w20(:,ii) = (s(ii)*p)^2/2*(D0.*D)./(D0+D);  % See human Core
     semilogx(objDist/fLength,w20(:,ii),lType{ii}); hold on;
@@ -137,5 +137,38 @@ hold off; grid on; legend(leg)
 title('Depth of field')
 xlabel('Object distance (re: focal length)');
 ylabel('Hopkins w20 (defocus)');
+
+%% Image-plane displacement for a target dioptric change
+%
+% For a lens with base optical power baseD and power change deltaD,
+% the required image-plane displacement follows directly from
+% 1/do + 1/di = 1/f, with do at infinity.
+
+baseD = 50:100:350;   % Diopters (base lens power)
+deltaD = 1:15;        % Diopter change from base power
+
+ieFigure;
+set(gca,'yscale','log');
+hold on
+for ii = 1:length(baseD)
+    displacement = (1/baseD(ii)) - (1 ./ (baseD(ii) + deltaD));
+    semilogy(deltaD,displacement);
+end
+xlabel('\Delta Diopters')
+ylabel('Displacement (m)');
+grid on
+
+labels = cell(size(baseD));
+for ii = 1:numel(baseD)
+    labels{ii} = sprintf('%d D',baseD(ii));
+end
+legend(labels,'Location','northwest')
+
+%% Displacement-to-focal-length ratio is power-invariant
+
+baseD = 50:50:300;
+deltaD = baseD/10;
+displacement = (1 ./ baseD) - (1 ./ (baseD + deltaD));
+fprintf('Ratio of displacement to focal length %f\n',displacement.*baseD);
 
 %%

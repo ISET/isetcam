@@ -21,17 +21,17 @@ nFrames = 50;% Enough frames to feel good
 vcNewGraphWin;
 for ii=1:nFrames
     % waitbar(ii/nFrames,w,sprintf('Scene %i',ii));
-    
-    % Rotation is shrinking the image.  Figure out why.
+
+    % Rotation may introduce boundary clipping depending on interpolation.
     deg = ii*rate;
     s = sceneRotate(scene,deg);
-    
+
     % You could just look at the scene
-    % ieAddObject(s); sceneWindow;
-    
+    % sceneWindow(s);
+
     % But instead I made a movie of the scene luminance
     imagesc(sceneGet(s,'luminance')); colormap(gray(64)); pause(1/fps);
-    
+
 end
 
 %%

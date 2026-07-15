@@ -19,7 +19,7 @@ ieInit;
 %% Create wavefront object and convert it to an optical image object
 uData = cell(16,1);
 
-ieNewGraphWin([],'upper left big');
+ieFigure([],'upper left big');
 for ii=1:16
     subplot(4,4,ii);
     wvf = wvfCreate;   % Creates just 0
@@ -35,7 +35,7 @@ end
 
 %% Our values are flipped updown compared to these
 
-ieNewGraphWin([],'upper left big');
+ieFigure([],'upper left big');
 
 % Over the unit radius disk.  Diameter is 2.
 x = -1:0.01:1;

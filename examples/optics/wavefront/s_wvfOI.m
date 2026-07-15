@@ -21,7 +21,7 @@ thisWave = wvfGet(wvf,'wave');
 flengthMM = 6; flengthM = flengthMM*1e-3;
 
 fNumber = linspace(3,7,4);
-ieNewGraphWin([],'upper left big');
+ieFigure([],'upper left big');
 tiledlayout(2,2);
 for ii=1:numel(fNumber)
 
@@ -63,7 +63,7 @@ assert(abs(sum(uData.data(:)) - 0.1572) < 1e-3);
 wvfOTF = wvfGet(wvf,'otf');
 oiOTF  = oiGet(oi,'optics otf');
 
-ieNewGraphWin;
+ieFigure;
 
 % You must use fftshift, not ifftshift, to convert OI OTF data to
 % match the WVF data.
@@ -92,7 +92,7 @@ wvf = wvfSet(wvf,'focal length',flengthM);
 wvf = wvfCompute(wvf);
 oi = wvf2oi(wvf);
 
-ieNewGraphWin([],'upper left big');
+ieFigure([],'upper left big');
 tiledlayout(3,3);
 % Loop through the wavelengths, plotting the psf slice
 for ii = 1:numel(waves)
@@ -115,7 +115,7 @@ wvf = wvfSet(wvf,'focal length',flengthM);
 wvf = wvfCompute(wvf);
 oi = wvf2oi(wvf);
 
-ieNewGraphWin;
+ieFigure;
 tiledlayout(3,3);
 % Loop through the wavelengths, plotting the psf slice
 for ii = 1:numel(waves)

@@ -39,7 +39,7 @@ img = zeros(r,r,3);
 img((r+1)/2,(r+1)/2,pixelType) = 1;
 
 %{
- ieNewGraphWin; imagesc(img)
+ ieFigure; imagesc(img)
 %}
 
 pointScene = sceneFromFile(img,'rgb',[],d);
@@ -74,7 +74,7 @@ sensorWindow(sensor);
 
 v = sensorGet(sensor,'volts',coneType);  % Get the right cone type
 
-ieNewGraphWin([],'tall');
+ieFigure([],'tall');
 
 subplot(2,1,1)
 sz = sensorGet(sensor,'size');
@@ -90,7 +90,7 @@ title(sprintf('Volts %d',coneType));
 
 img((r+1)/2,(r+1)/2,:) = 1;
 %{
- ieNewGraphWin; imagesc(img)
+ ieFigure; imagesc(img)
 %}
 
 pointScene = sceneFromFile(img,'rgb',[],d);
@@ -103,7 +103,7 @@ sensorWindow(sensor);
 
 v = sensorGet(sensor,'volts',coneType);  % Get the right cone type
 
-ieNewGraphWin([],'tall');
+ieFigure([],'tall');
 
 subplot(2,1,1)
 sz = sensorGet(sensor,'size');
@@ -117,7 +117,7 @@ title(sprintf('Volts %d',coneType));
 
 %% This OTF has the unwanted ringing in the x/y directions..
 
-ieNewGraphWin; 
+ieFigure; 
 m = getMiddleMatrix(v,127);
 otf = psf2otf(m); mesh(fftshift(abs(otf)));
 title('OTF');

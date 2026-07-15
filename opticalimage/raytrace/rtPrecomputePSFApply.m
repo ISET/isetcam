@@ -19,7 +19,7 @@ function oi = rtPrecomputePSFApply(oi,angStep)
 %
 % Copyright ImagEval, LLC, 2005
 %
-% See also:  rtPrecomputePSF, s_opticsRTSynthetic, s_opticsRTPSFView.m
+% See also:  rtPrecomputePSF, s_opticsRTSynthetic, s_opticsRTSyntheticPSFView.m
 
 % Examples
 %{
@@ -135,7 +135,7 @@ if size(rtPSF{1,1,1}) ~= psfSize
     % Not a match.  Recompute.
     app = ieSessionGet('oi window');
     ieInWindowMessage('Recomputing PSF to match oi sampling. ',app,[]);
-    
+
     psfStruct = rtPrecomputePSF(oi,oiGet(oi,'psfAngleStep'));
     if isempty(psfStruct)
         % Even worse.  The PSF is basically an impulse.  No need to
@@ -143,7 +143,7 @@ if size(rtPSF{1,1,1}) ~= psfSize
         warndlg('Scene is undersampled.  No blurring applied');
         return;
     end
-    
+
     % Clear message.
     % Get the PSFs again, this time with the right size
     ieInWindowMessage('',app,[]);
@@ -211,7 +211,7 @@ outIrrad = double(zeros(oiGet(oi,'row'),oiGet(oi,'col'),length(wavelength)));
 % This worked.
 % outIrrad = double(zeros(imSize(1)+2*extraRow,imSize(2)+2*extraCol,length(wavelength)));
 
-%% Calculate the shift-variant summation of irradiance 
+%% Calculate the shift-variant summation of irradiance
 % Loop over wavelengths, image height, and image angles.
 nFieldHeights = length(imgHeight);
 showWaitBar = ieSessionGet('waitbar');
@@ -221,28 +221,28 @@ if showWaitBar
 end
 
 for ww=1:nWave  % Settle on a wavelength, indexed by ww
-    
+
     % This is the input irradiance at the current wavelength.
     % The wavelength indices always match the precomputed PSFs.
     thisIrrad = inIrrad(:,:,ww);   % vcNewGraphWin; imagesc(thisIrrad)
     thisOut   = zeros(size(outIrrad,1),size(outIrrad,2));
-    
+
     for rr = 2:nFieldHeights    % Settle on a field height, indexed by rr
-        
+
         % Heights are in mm.  We convert to um.
         str = sprintf('Applying psfs: Wave: %.0f nm Height: %.0f (um)', ...
             wavelength(ww),imgHeight(rr)*1e3);
         if showWaitBar, wBar = waitbar(rr/nFieldHeights,wBar,str); end
         % The PSF data are PSF{Angle,ImageHeight,Wavelength}
-        
+
         % Find all the points between the current and last image height.
         % These will be the two indices, rr and rr-1, into the PSF data.
         lBand1 = (dataHeight >= imgHeight(rr-1)) & (dataHeight < imgHeight(rr));
         %  vcNewGraphWin; image(lBand1); colormap(gray(2))
-        
+
         [r1,c1] = find(lBand1);  % The 1 index doesn't make sense.
         % ind1 = find(lBand1);     % Indices into the data in the band
-        
+
         % Every point gets a weight that define its distance from the two
         % heights that bound the sample position. We create an image of the
         % weights for the inner PSF at every output position.  Only the
@@ -250,19 +250,19 @@ for ww=1:nWave  % Settle on a wavelength, indexed by ww
         innerDistance = abs(dataHeight - imgHeight(rr-1));
         innerWeight = 1 - (innerDistance / (imgHeight(rr) - imgHeight(rr-1)));
         % vcNewGraphWin; imagesc(innerWeight.*lBand1);
-        
+
         % The radial weight applied to the inner PSF. The outer PSF gets
         % 1 - wgt1
         % rWgt = innerWeight(ind1);
         % figure; histogram(rWgt,50); % Fewer pixels near inner radius
-        
+
         for jj=1:length(r1)
             % For every point, jj, in the identified region, form a PSF
             % that is the weighted sum of four PSFs.  These are the four
             % corresponding to the position a little closer to the origin
             % and a little further, and the angles a little smaller and a
             % little larger than the angle of this point in the plane.
-            
+
             % Weighted sum of the two points at common field heights and
             % wavelengths.
             %  aIdx = aLUT(dataAngle(ind1(jj)));
@@ -272,7 +272,7 @@ for ww=1:nWave  % Settle on a wavelength, indexed by ww
             % hold on; plot(r1(jj),c1(jj),'wo')
             %  Original:  An error
             % aIdx = aLUT(dataAngle(jj),1); aWgt = aLUT(dataAngle(jj),2);
-            
+
             % Get the PSF at this index and the next for both angle and
             % image height.
             % These are the two angles.
@@ -282,19 +282,19 @@ for ww=1:nWave  % Settle on a wavelength, indexed by ww
                 ((1-aWgt)*rtPSF{aIdx+1,rr,ww});
             % vcNewGraphWin; imagesc(tmpPSF1);
             % vcNewGraphWin; imagesc(tmpPSF2);
-            
+
             % These are the two field heights.
             % I am not sure why we use rr-1 and rr,
             % but we use aIdx and aIdx+1.  Probably OK, but inelegant.
             % out =((rWgt(jj)*tmpPSF1)+ ((1-rWgt(jj))*tmpPSF2)).*thisIrrad(ind1(jj));
             rWgt = innerWeight(r1(jj),c1(jj));
             % rWgt = innerWeight(ind1(jj));  % Equivalent
-            
+
             thisPSF =((rWgt*tmpPSF1) + ((1-rWgt)*tmpPSF2));
             out = thisPSF.*thisIrrad(r1(jj),c1(jj));
             % vcNewGraphWin; imagesc(thisPSF)
             % sum(thisPSF(:))
-            
+
             % Place the result in the proper row and column of the
             % output irradiance.
             %

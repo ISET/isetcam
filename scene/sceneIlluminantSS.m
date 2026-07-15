@@ -30,7 +30,7 @@ function scene = sceneIlluminantSS(scene,pattern)
 %
 % See also
 %    sceneCreate, sceneIlluminantPattern, s_sceneIlluminantSpace,
-%    s_sceneChangeIlluminant, s_sceneIlluminantMixtures
+%    s_sceneChangeIlluminant
 %
 
 % Examples:
@@ -63,10 +63,10 @@ switch iFormat
         foo = repmat(iPhotons(:),[1,sz(1),sz(2)]);
         iPhotons = permute(foo,[ 2 3 1]);
         scene = sceneSet(scene,'illuminant photons',iPhotons);
-        
+
     case 'spatial spectral'
         % Already in spatial spectral format
-        
+
     otherwise
         error('Unknown illuminant format');
 end

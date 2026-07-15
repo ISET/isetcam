@@ -18,8 +18,7 @@ ieInit
 %% Plot scene data
 
 scene = sceneCreate('macbethd65');
-ieAddObject(scene);
-sceneWindow;
+sceneWindow(scene);
 
 % Here are the luminance data from a line
 rows = round(sceneGet(scene,'rows')/2);

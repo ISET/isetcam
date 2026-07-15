@@ -4,6 +4,7 @@
 % Need to get this right and then expand to epipolar geometry and such.
 %
 % Copyright Imageval LLC, 2016
+% SkipFile
 
 %%
 ieInit

@@ -72,7 +72,7 @@ for ii=1:3
 end
 
 %% Plot the three spatial amplitude spectra
-ieNewGraphWin([],'tall');
+ieFigure([],'tall');
 for ii=1:3
     subplot(3,1,ii)
     imagesc(pFFT{ii}); colormap(hot(64)); colorbar;

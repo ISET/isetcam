@@ -64,7 +64,6 @@ assert(isequal(rects,newRects));
 
 % Display the scene in a window and overlay the calculated chart rectangles.
 %{
-ieAddObject(scene);
 sceneWindow(scene);
 chartRectsDraw(scene,rects);
 %}

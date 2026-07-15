@@ -82,13 +82,11 @@ function [I, params] = imageVernier(params, varargin)
     imshow(img);
 
     s = sceneVernier('vernier', 'display', p);
-    ieAddObject(s);
-    sceneWindow;
+    sceneWindow(s);
 
     p.display = displayCreate('OLED-Sony', 'dpi', 300);
     s = sceneVernier('vernier', 'display', p);
-    ieAddObject(s);
-    sceneWindow;
+    sceneWindow(s);
 
     x = (-63:64) / 128;
     f = 2;
@@ -191,12 +189,12 @@ if gap == 0, return; end
 
 if isodd(sz(1)) && isodd(gap)
     % We put NaNs in the middle row and the appropriate number above and
-    % below that row 
+    % below that row
     mid = (sz(1) + 1) / 2;
-    rows = ((1:gap) - (gap + 1) / 2) + mid;    
+    rows = ((1:gap) - (gap + 1) / 2) + mid;
 elseif ~isodd(sz(1)) && ~isodd(gap)
     mid = sz(1) / 2;
-    rows = (1:gap) - gap / 2 + mid; 
+    rows = (1:gap) - gap / 2 + mid;
 else
     error('Bad row size %d, gap size %d pair.', sz(1), gap)
 end

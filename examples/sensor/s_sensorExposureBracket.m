@@ -60,4 +60,47 @@ camera = cameraSet(camera,'sensor exp time',T1);
 camera = cameraCompute(camera,scene);
 cameraWindow(camera,'sensor');
 
+%% Optional extension: HDR with multiple pixel sizes
+%
+% This extension simulates several monochrome sensors at different pixel
+% sizes while keeping the dye area fixed. The resulting image stack is
+% useful for HDR-style fusion experiments.
+
+fName = fullfile(isetRootPath,'data','images','multispectral','Feng_Office-hdrs.mat');
+if exist(fName,'file')
+    hdrScene = sceneFromFile(fName,'multispectral',200);
+    hdrOi = oiCreate;
+    hdrOi = oiCompute(hdrOi,hdrScene);
+
+    pSize = [1 2 4];
+    dyeSizeMicrons = 512;
+    baseSensor = sensorCreate('monochrome');
+    baseSensor = sensorSet(baseSensor,'expTime',0.003);
+    baseProcessor = ipCreate;
+
+    sensorSetCell = cell(numel(pSize),1);
+    ipSetCell = cell(numel(pSize),1);
+    for ii = 1:numel(pSize)
+        sensorSetCell{ii} = sensorSet(baseSensor,'pixel size constant fill factor',[pSize(ii) pSize(ii)]*1e-6);
+        sensorSetCell{ii} = sensorSet(sensorSetCell{ii},'rows',round(dyeSizeMicrons/pSize(ii)));
+        sensorSetCell{ii} = sensorSet(sensorSetCell{ii},'cols',round(dyeSizeMicrons/pSize(ii)));
+        sensorSetCell{ii} = sensorCompute(sensorSetCell{ii},hdrOi);
+        sensorSetCell{ii} = sensorSet(sensorSetCell{ii},'name',sprintf('pSize %.1f',pSize(ii)));
+        ieAddObject(sensorSetCell{ii});
+
+        ipSetCell{ii} = ipCompute(baseProcessor,sensorSetCell{ii});
+        ipSetCell{ii} = ipSet(ipSetCell{ii},'name',sprintf('pSize %.1f',pSize(ii)));
+        ieAddObject(ipSetCell{ii});
+    end
+
+    imageMultiview('ip',1:numel(pSize),true);
+
+    ii = 2;
+    volts = sensorGet(sensorSetCell{ii},'volts'); %#ok<NASGU>
+    ii = 1;
+    rgbResult = ipGet(ipSetCell{ii},'result'); %#ok<NASGU>
+else
+    warning('HDR source file not found; skipping pixel-size extension: %s',fName);
+end
+
 %%
