@@ -21,7 +21,7 @@ ieInit
 % room with a few lamps on, but not overly bright. If you're reading a
 % book with a standard table lamp, the page might be closer to 50-100
 % nits, but the overall average luminance of the entire room (walls,
-% furniture, shadows) could easily be around 10 nits.    
+% furniture, shadows) could easily be around 10 nits.
 scene = sceneCreate('uniform equal photon',[512 512]);
 scene = sceneSet(scene,'mean luminance',10);
 

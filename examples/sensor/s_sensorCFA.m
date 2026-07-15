@@ -2,7 +2,7 @@
 %
 % This script illustrates how to change the CFA in a sensor.
 %
-% See also:  
+% See also:
 %  sensorShowCFA, sensorPlot, cameraCreate, cameraWindow
 %
 

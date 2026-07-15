@@ -35,7 +35,7 @@ for ff = [2 4 8 12]
     oi    = oiSet(oi,'optics fnumber',ff);
     oi    = oiCompute(oi,scene);
     sensor = sensorCompute(sensor,oi);
-    
+
     img = sensorData2Image(sensor);
     img = imcrop(img,rect);
     subplot(2,2,panel)
