@@ -9,3 +9,6 @@ web/webImageBrowser/PackagingLog.html
 
 *.asv
 data/images/multispectral/FruitMCC.mat
+
+# Personal Claude Code overrides; .claude/settings.json is shared and committed
+.claude/settings.local.json

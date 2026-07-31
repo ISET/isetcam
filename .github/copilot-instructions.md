@@ -7,6 +7,14 @@ skills in `.github/skills/`, each with its own trigger conditions — load
 the matching skill when its topic applies rather than searching for detail
 here.
 
+Skills are canonical in `.github/skills/<name>/SKILL.md`. Claude Code discovers
+skills only in `.claude/skills/`, so the whole directory is symlinked:
+`.claude/skills -> ../.github/skills`. One symlink per repository, not one per
+skill, so adding a skill needs no bookkeeping. Link the directory, never the
+individual skills — a directory of per-skill symlinks enumerates as symlinks
+rather than directories, which tools filtering on "is a directory" will skip.
+The same arrangement exists in ISET3D and ISETBio.
+
 ## Repository Context
 
 - MATLAB is the primary runtime.
