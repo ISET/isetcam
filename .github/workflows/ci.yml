@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  repository-checks:
+    name: Repository checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out ISETCam
+        uses: actions/checkout@v6
+
+      - name: Verify shared AI instructions and skills
+        shell: bash
+        run: |
+          test -f AGENTS.md
+          test -f CLAUDE.md
+          test -f GEMINI.md
+          grep -q '.github/copilot-instructions.md' AGENTS.md
+          grep -q '.github/copilot-instructions.md' CLAUDE.md
+          grep -q '.github/copilot-instructions.md' GEMINI.md
+
+          test "$(readlink .agents/skills)" = "../.github/skills"
+          test "$(readlink .claude/skills)" = "../.github/skills"
+          test -f .github/copilot-instructions.md
+          test -d .github/skills
+
+          find .github/skills -mindepth 1 -maxdepth 1 -type d \
+            -exec test -f '{}/SKILL.md' ';'
+
+  matlab-smoke:
+    name: MATLAB smoke test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out ISETCam
+        uses: actions/checkout@v6
+        with:
+          path: isetcam
+
+      - name: Set up MATLAB
+        uses: matlab-actions/setup-matlab@v3
+        with:
+          cache: true
+
+      - name: Run validation smoke tests
+        uses: matlab-actions/run-command@v3
+        with:
+          command: >
+            addpath(genpath("isetcam"));
+            results = runtests("isetcam/validate/_tests_");
+            assertSuccess(results);
