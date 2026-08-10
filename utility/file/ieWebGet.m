@@ -22,6 +22,10 @@ function [localFile, zipfilenames] = ieWebGet(varargin)
 %    deposit file     :  Deposit file name (default: depends on deposit)
 %    downloaddir      :  Download directory (default: depends on deposit)
 %
+%    For manifest-backed resources, deposit file may be an SDR-relative
+%    asset path. The asset is written below downloaddir with that relative
+%    hierarchy preserved.
+%
 %    confirm:         :  Confirm prior to download (default: true)
 %    unzip:           :  Unzip after download (default: true)
 %    remove zip file  :  Remove the zip file (default: true)
@@ -525,11 +529,44 @@ switch ieParamFormat(depositName)
         end
 
     case {'isetbio-mosaics'}
-        % This public resource is intentionally browse-only for now. Its
-        % manifest-aware downloader belongs in ISETBio and must preserve
-        % relative asset paths and verify manifest checksums.
-        error(['isetbio-mosaics direct download is not implemented yet. ', ...
-            'Use ieWebGet(''browse'', ''isetbio-mosaics'') to view the deposit.']);
+        % ISETBio owns manifest selection, cache policy, and verification.
+        % ieWebGet only transports an explicitly requested, SDR-relative
+        % asset and preserves its path below the caller's download root.
+        if isempty(depositFile) || ~ischar(depositFile)
+            error(['isetbio-mosaics requires one SDR-relative asset path. ', ...
+                'For example, ''cone_mosaics/manifest.json''.']);
+        end
+        if isempty(downloaddir)
+            error(['isetbio-mosaics requires ''downloaddir'' so the caller ', ...
+                'controls its cache location.']);
+        end
+
+        relativePath = strrep(depositFile, '\', '/');
+        pathParts = split(relativePath, '/');
+        if startsWith(relativePath, '/') || any(strcmp(pathParts, '..')) || ...
+                any(strcmp(pathParts, '.')) || any(pathParts == "")
+            error('deposit file must be a non-empty relative path without traversal.');
+        end
+
+        localFile = fullfile(downloaddir, pathParts{:});
+        localDir = fileparts(localFile);
+        if ~isfolder(localDir), mkdir(localDir); end
+        remoteURL = [depositURL{1} '/' relativePath];
+
+        if confirm
+            proceed = confirmDownload(relativePath, localFile);
+            if ~proceed, return; end
+        end
+
+        try
+            websave(localFile, remoteURL);
+        catch ME
+            error('ieWebGet:DownloadFailed', ...
+                'Unable to retrieve %s: %s', remoteURL, ME.message);
+        end
+
+        % Manifest assets are never zip archives.
+        unZip = false;
 
     otherwise
         error('Unknown deposit name %s',depositName);
