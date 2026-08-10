@@ -24,7 +24,8 @@ function [localFile, zipfilenames] = ieWebGet(varargin)
 %
 %    For manifest-backed resources, deposit file may be an SDR-relative
 %    asset path. The asset is written below downloaddir with that relative
-%    hierarchy preserved.
+%    hierarchy preserved. For isetbio-mosaics, use deposit file 'all' to
+%    mirror every manifest-listed asset into downloaddir.
 %
 %    confirm:         :  Confirm prior to download (default: true)
 %    unzip:           :  Unzip after download (default: true)
@@ -136,6 +137,13 @@ fname = ieWebGet('resource type','sdrfruit','askfirst',false,'unzip',true);
 %{
 % ETTBSkip
 fname = ieWebGet('resource type','sdr multispectral');
+%}
+%{
+% Download the complete ISETBio mosaic deposit, preserving its SDR layout.
+% ETTBSkip
+localDir = ieWebGet('deposit name', 'isetbio-mosaics', ...
+    'deposit file', 'all', 'downloaddir', fullfile(tempdir, 'isetbio-mosaics'), ...
+    'unzip', false);
 %}
 
 %% Manage the list and browse conditions
@@ -541,6 +549,15 @@ switch ieParamFormat(depositName)
                 'controls its cache location.']);
         end
 
+        if isequal(ieParamFormat(depositFile), 'all')
+            if confirm
+                proceed = confirmDownload('all isetbio-mosaics assets', downloaddir);
+                if ~proceed, return; end
+            end
+            localFile = localMirrorIsetbioMosaics(depositURL{1}, downloaddir);
+            return;
+        end
+
         relativePath = strrep(depositFile, '\', '/');
         pathParts = split(relativePath, '/');
         if startsWith(relativePath, '/') || any(strcmp(pathParts, '..')) || ...
@@ -594,6 +611,69 @@ if unZip
     end
 end
 
+end
+
+function localDir = localMirrorIsetbioMosaics(remoteRoot, localDir)
+% Mirror the published ISETBio mosaic deposit from its manifests.
+
+if ~isfolder(localDir), mkdir(localDir); end
+topManifest = localDownloadMosaicAsset(remoteRoot, localDir, 'manifest.json', []);
+topData = jsondecode(fileread(topManifest));
+
+for collectionIndex = 1:numel(topData.collections)
+    collection = topData.collections(collectionIndex);
+    collectionManifest = localDownloadMosaicAsset(remoteRoot, localDir, ...
+        collection.manifest, []);
+    collectionData = jsondecode(fileread(collectionManifest));
+
+    for fileIndex = 1:numel(collectionData.files)
+        record = collectionData.files(fileIndex);
+        relativePath = [collection.name '/' record.path];
+        localDownloadMosaicAsset(remoteRoot, localDir, relativePath, record);
+    end
+end
+end
+
+function localFile = localDownloadMosaicAsset(remoteRoot, localRoot, relativePath, record)
+% Download one manifest-relative asset and verify data records when supplied.
+
+pathParts = split(relativePath, '/');
+localFile = fullfile(localRoot, pathParts{:});
+if ~isempty(record) && isfile(localFile) && localMosaicRecordMatches(localFile, record)
+    fprintf('Verified cached asset: %s\n', relativePath);
+    return;
+end
+
+localDir = fileparts(localFile);
+if ~isfolder(localDir), mkdir(localDir); end
+temporaryFile = tempname(localDir);
+cleanup = onCleanup(@() localDeleteFile(temporaryFile));
+remoteURL = [remoteRoot '/' relativePath];
+try
+    websave(temporaryFile, remoteURL);
+catch ME
+    error('ieWebGet:DownloadFailed', ...
+        'Unable to retrieve %s: %s', remoteURL, ME.message);
+end
+
+if ~isempty(record) && ~localMosaicRecordMatches(temporaryFile, record)
+    error('ieWebGet:Checksum', ...
+        'Downloaded asset failed its manifest checksum or byte-count check: %s', ...
+        relativePath);
+end
+movefile(temporaryFile, localFile, 'f');
+clear cleanup
+fprintf('Downloaded: %s\n', relativePath);
+end
+
+function tf = localMosaicRecordMatches(localFile, record)
+details = dir(localFile);
+tf = ~isempty(details) && details.bytes == record.bytes && ...
+    strcmpi(ieHash(localFile, 'file', 'SHA-256', 'hex'), record.sha256);
+end
+
+function localDeleteFile(fileName)
+if isfile(fileName), delete(fileName); end
 end
 
 %% Query the user to confirm the download
