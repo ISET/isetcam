@@ -52,6 +52,7 @@ function [localFile, zipfilenames] = ieWebGet(varargin)
 %     ieWebGet('browse','pbrtv4');
 %     ieWebGet('browse','hdr-images');
 %     ieWebGet('browse','isethdr-lightgroup');
+%     ieWebGet('browse','isetbio-mosaics');
 %
 %  Or these collections
 %
@@ -523,6 +524,13 @@ switch ieParamFormat(depositName)
             unZip = false;
         end
 
+    case {'isetbio-mosaics'}
+        % This public resource is intentionally browse-only for now. Its
+        % manifest-aware downloader belongs in ISETBio and must preserve
+        % relative asset paths and verify manifest checksums.
+        error(['isetbio-mosaics direct download is not implemented yet. ', ...
+            'Use ieWebGet(''browse'', ''isetbio-mosaics'') to view the deposit.']);
+
     otherwise
         error('Unknown deposit name %s',depositName);
 end
@@ -619,7 +627,8 @@ resourceCell = {...
     'hdr-images','HDR Images of Natural Scenes','https://purl.stanford.edu/sz929jt3255','https://stacks.stanford.edu/file/druid:sz929jt3255';...
     'cone-fundamentals-paper','Deriving the cone fundamentals','https://purl.stanford.edu/jz111ct9401','https://stacks.stanford.edu/file/druid:jz111ct9401/cone_fundamentals';
     'isethdrsensor-paper','ISET HDR Sensor', 'https://purl.stanford.edu/bt316kj3589', 'https://stacks.stanford.edu/file/druid:bt316kj3589/isethdrsensor';
-    'isethdr-lightgroup','ISET HDR Auto Lightgroup','https://purl.stanford.edu/zg292rq7608','https://stacks.stanford.edu/file/zg292rq7608/'};
+    'isethdr-lightgroup','ISET HDR Auto Lightgroup','https://purl.stanford.edu/zg292rq7608','https://stacks.stanford.edu/file/zg292rq7608/';
+    'isetbio-mosaics','ISETBio retinal mosaic data','https://purl.stanford.edu/vm447vf0975','https://stacks.stanford.edu/file/vm447vf0975'};
 
 collections = {...
     'vistalab-collection','Vista Lab Collection','https://searchworks.stanford.edu/catalog?f[collection][]=qd500xn1572',''; ...
