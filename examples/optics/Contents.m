@@ -1,43 +1,49 @@
 % OPTICS
 %
 % Root Scripts
-%   s_opticsCoC             - The circle of confusion.
-%   s_opticsCos4th          - The cos^4th illumination falloff.
-%   s_opticsDLPsf           - Diffraction-limited PSF calculations.
-%   s_opticsImageFormation  - Fundamentals of image formation.
-%   s_opticsMicrolens       - The microlens object and window.
-%   s_opticsPadCrop         - Padding and cropping optical images.
-%   s_opticsPSF2OTF         - Convert PSF to OTF.
-%   s_opticsPSF2Zcoeffs     - Estimate Zernike coefficients from PSF.
-%   s_opticsSIExamples      - Shift-invariant optics examples.
 %
-% Subdirectories
-%   flare/
-%     s_opticsFlare         - Wavefront-based flare experiments.
+%     s_opticsCoC                          - The circle of confusion
+%     s_opticsCos4th                       - Vignetting
+%     s_opticsDLPsf                        - Diffraction limited point spread function calculations
+%     s_opticsImageFormation               - Class tutorial on optics and image formation (Psych 221)
+%     s_opticsMicrolens                    - The microlens object and window
+%     s_opticsPadCrop                      - Illustrate padding and cropping of the OI in ISETCam
+%     s_opticsPSF2OTF                      - Convert PSF to OTF.
+%     s_opticsPSF2Zcoeffs                  - Estimate Zernike coefficients from PSF.
+%     s_opticsSIExamples                   - Shift-invariant optics examples
 %
-%   focus_dof/
-%     s_opticsDefocusScene  - Defocus on scene irradiance.
-%     s_opticsDefocusWVF    - Defocus using wavefront model.
-%     s_opticsDepthDefocus  - Depth-of-field and defocus analysis.
-%     s_opticsDoF           - Depth-of-field visualizations.
+% CHROMAB (subdir chromAb)
+%     chromAb/ChromAb                      -
+%     chromAb/makeCAplots                  -
+%     chromAb/makeCmatrix                  -
+%     chromAb/makeCombinedOtf              -
+%     chromAb/retinalImage                 -
 %
-%   raytrace/
-%     s_opticsRTGridLines   - Ray-trace model on grid-line target.
-%     s_opticsRTPSF         - Ray-trace PSF calculations.
-%     s_opticsRTSyntheticPSFView - Synthetic ray-trace PSF view.
-%     s_opticsRTSynthetic   - Ray-trace optics with synthetic PSFs.
+% FLARE (subdir flare)
+%     flare/s_opticsFlare                  - Experiments with flare
 %
-%   wavefront/
-%     s_wvfAstigmatism      - Astigmatism in wavefront calculations.
-%     s_wvfDiffraction      - Wavefront diffraction examples.
-%     s_wvfOI               - Wavefront-to-optical-image workflow.
-%     s_wvfPlot             - Wavefront plotting examples.
-%     s_wvfPupilSize        - Effect of pupil size.
-%     s_wvfSpatial          - Spatial representation in wavefront optics.
-%     s_wvfThibosModel      - Thibos model wavefront examples.
-%     s_wvfWavefronts       - Wavefront and aberration examples.
-%     s_wvfZernikeSet       - Zernike coefficient examples.
-%     s_wvfZernikeInterpolation - Interpolate Zernike coefficients.
+% FOCUS_DOF (subdir focus_dof)
+%     focus_dof/s_opticsDefocusScene       - Calculating the defocused image (spectral irradiance) of a scene
+%     focus_dof/s_opticsDefocusWVF         - Calculating defocused, images
+%     focus_dof/s_opticsDepthDefocus       - Calculating depth of field and defocus
+%     focus_dof/s_opticsDoF                -
 %
-%   chromAb/
-%     Legacy and external-tool-dependent chromatic aberration material.
+% RAYTRACE (subdir raytrace)
+%     raytrace/s_opticsRTGridLines         - The ray trace optical model illustrated
+%     raytrace/s_opticsRTPSF               - The ray trace point spread function (PSF)
+%     raytrace/s_opticsRTPSFView           - Calculating with the ray trace model (synthetic)
+%     raytrace/s_opticsRTSynthetic         - Ray trace optics model based on synthetic PSFs
+%     raytrace/s_opticsRTSyntheticPSFView  - Calculating with the ray trace model (synthetic)
+%
+% WAVEFRONT (subdir wavefront)
+%     wavefront/s_wvfAstigmatism           - Wavefront calculations of astigmatism
+%     wavefront/s_wvfDiffraction           - Illustrate diffraction limited cases
+%     wavefront/s_wvfOI                    - Conversion tests from wvf to oi
+%     wavefront/s_wvfPlot                  - Using the wvfPlot function
+%     wavefront/s_wvfPupilSize             - t_wvfPupilSize
+%     wavefront/s_wvfSpatial               -
+%     wavefront/s_wvfThibosModel           - Adaptive optics data for the human point spread function
+%     wavefront/s_wvfWavefronts            - Plot the wavefront aberrations of Zernike polynomial coefficients
+%     wavefront/s_wvfZernikeInterpolation  -
+%     wavefront/s_wvfZernikeSet            - Wavefront aberrations and the Zernike polynomial
+%
