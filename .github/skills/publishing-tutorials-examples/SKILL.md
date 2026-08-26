@@ -95,6 +95,23 @@ ieMovie(movieData, 'vname', movieFile, 'show', false, 'FrameRate', 8);
 
 With the default inline publishing mode, `iePublish` replaces that marker
 with a self-contained HTML `<video>` element and deletes the temporary MP4.
+
+Keep `%%` and `% iePublishVideo: ...` on separate lines as shown above.
+Combining them into one `%% iePublishVideo: ...` cell-title line renders as
+an HTML heading (`<h2>`) instead of a paragraph (`<p>`), and `iePublish`'s
+marker regex only matches `<p>` text — the video then silently never gets
+embedded, with no error to flag it.
+
+Build movie frames from plain numeric data and hand the whole stack to
+`ieMovie` directly, rather than rendering a plot and screen-capturing it
+(`getframe`, `exportgraphics`) inside the frame loop. Under `publish`-driven
+execution (which `iePublish` uses), a figure updated and captured mid-loop
+can come back solid black regardless of the figure's `Visible` setting —
+this is an interaction with how `publish` manages figures, not specific to
+one script or renderer. If a frame needs annotation (title, colorbar, axis
+labels) that raw intensity data can't show, render that as a separate
+static figure outside the movie loop instead of trying to bake it into
+every video frame.
 Keep embedded movies short and modest in size so the HTML file stays
 reasonable.
 
