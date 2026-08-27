@@ -20,6 +20,7 @@ The same arrangement exists in ISET3D and ISETBio.
 - MATLAB is the primary runtime.
 - The main repository is `isetcam`; related local repositories may include
   `isetvalidate`, `isetbio`, and `tools/UnitTestToolbox`.
+- Read and try to follow Matlab coding rules at https://github.com/matlab/rules
 - Setting up MATLAB paths, the VS Code MATLAB extension, or a `.m` CLI
   session: see the `matlab-environment-setup` skill.
 
