@@ -60,7 +60,7 @@ sigma   = 1./carrier;
 
 
 % We will plot the signal as it is generated, updating at each scale
-figHandle = ieNewGraphWin;
+figHandle = ieFigure;
 
 % loop across scales, adding in local elements
 for ii = 1:length(carrier)
