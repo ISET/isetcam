@@ -82,7 +82,7 @@ for ii = 1:length(carrier)
         
         % As a sanity check, we might want to NOT randomize the position.
         % If we do not randomize the gaussian position, the spectrum of the
-        % harmoic signal should be exactly uniform.
+        % harmonic signal should be exactly uniform.
         % pos = 0;                      
         g = exp(-(t - pos).^2/(2*sigma(ii)^2));
         
