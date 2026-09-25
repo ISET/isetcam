@@ -20,7 +20,9 @@ The same arrangement exists in ISET3D and ISETBio.
 - MATLAB is the primary runtime.
 - The main repository is `isetcam`; related local repositories may include
   `isetvalidate`, `isetbio`, and `tools/UnitTestToolbox`.
-- Read and try to follow Matlab coding rules at https://github.com/matlab/rules
+- Follow the MATLAB coding rules at https://github.com/matlab/rules for new
+  code; where they conflict with the surrounding ISETCam style, match the
+  surrounding code.
 - Setting up MATLAB paths, the VS Code MATLAB extension, or a `.m` CLI
   session: see the `matlab-environment-setup` skill.
 
@@ -32,9 +34,8 @@ The same arrangement exists in ISET3D and ISETBio.
 - `human/`, `metrics/`, `gui/`, `utility/`, `camera/` — supporting object
   types, image/optics quality metrics, UI, and shared helpers.
 - `tutorials/`, `examples/` — teaching and applied-workflow scripts (see
-  the `authoring-tutorials-examples` skill).
-- `scripts/` — example/demo scripts under active review; see the
-  `matlab-script-review` agent (`.github/agents/`).
+  the `authoring-tutorials-examples` skill; to review them, the
+  `matlab-script-review` agent in `.github/agents/`).
 - `validate/` — the shared tutorial/example test engine and repository-wide
   test runners (see the `testing-workflow` and `test-runner-architecture`
   skills).

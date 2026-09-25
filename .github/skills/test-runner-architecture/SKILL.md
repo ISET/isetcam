@@ -21,9 +21,9 @@ architecture. The architecture must:
 ISETCam owns the shared implementation because ISETBio, ISET3D, and related
 repositories already depend on ISETCam.
 
-## Implementation Status
+## Entry Points
 
-The four current entry points are:
+The four entry points are:
 
 - `ieTutorialTest`
 - `ieExampleTest`
@@ -32,9 +32,7 @@ The four current entry points are:
 
 All four entry points are thin configuration wrappers over the shared
 `ieRunTutorialExampleTests` engine. They return the same canonical run
-record, and `checkpoint.mat` contains that identical record. The previous
-duplicated runner bodies and standalone logging/selection helpers have been
-removed.
+record, and `checkpoint.mat` contains that identical record.
 
 `ieTestReport` accepts MATLAB unit-test results, a canonical run record, a
 checkpoint file, or a run directory. Temporary adapters remain for
@@ -264,13 +262,7 @@ maintaining their own summary printer.
 The shared engine, reporter, public runners, and focused infrastructure
 tests live in ISETCam's top-level `validate/` directory. The implementation
 uses one public engine plus local helpers rather than many small public
-utilities. The superseded helpers were removed during migration:
-
-- `ieInitTutorialExampleRunLog`
-- `ieUpdateTutorialExampleRunLog`
-- `ieSelectTutorialExampleFiles`
-
-Keep `ieTestReport` public.
+utilities. Keep `ieTestReport` public.
 
 ## Validation Contract
 
@@ -290,40 +282,16 @@ Every repository adds a small contract test asserting that both wrappers
 return the canonical schema. Repository tests should not duplicate engine
 unit tests.
 
-## Completed Migration and Extension Plan
+## Extension Plan
 
-### Phase 1: Canonical schema and tests — completed
-
-1. Define a schema-versioned run-record constructor in ISETCam.
-2. Update `ieTestReport` to consume the canonical run struct and checkpoint.
-3. Retain temporary adapters for the current result/checkpoint formats.
-4. Add synthetic engine/report tests.
-
-### Phase 2: Shared engine — completed
-
-1. Implement `ieRunTutorialExampleTests` in ISETCam.
-2. Move discovery, selection, skips, execution, cleanup, checkpointing, and
-   summary behavior into the engine.
-3. Use atomic checkpoint replacement.
-4. Run ISETCam's existing suites through the engine.
-
-### Phase 3: Thin wrappers — completed
-
-1. Replace the bodies of `ieTutorialTest` and `ieExampleTest` with config
-   wrappers.
-2. Replace the ISETBio runner bodies with equivalent wrappers.
-3. Remove duplicated local helpers after side-by-side result comparison.
-4. Have all wrappers return the canonical run record and call
-   `ieTestReport`.
-
-### Phase 4: Additional repositories — ready for adoption
+### Additional repositories — ready for adoption
 
 1. Add the two thin wrappers to ISET3D.
 2. Supply only repository-specific skips and setup hooks.
 3. Add wrapper schema contract tests.
 4. Document the commands in that repository's shared agent instructions.
 
-### Phase 5: Optional process isolation and resume — future
+### Optional process isolation and resume — future
 
 1. Add per-script process isolation for suites vulnerable to native graphics
    crashes.

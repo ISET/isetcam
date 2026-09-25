@@ -66,7 +66,7 @@ contract and the legacy `% UTTBSkip` compatibility note.
 
 ## Reviewing Existing Scripts
 
-To review scripts under `scripts/*` for runnability, comment quality,
+To review scripts under `examples/*` or `tutorials/*` for runnability, comment quality,
 overlap, and coverage against nearby `_tests_` directories, use the existing
 `matlab-script-review` agent
 (`.github/agents/matlab-script-review.agent.md`) rather than re-deriving that

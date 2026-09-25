@@ -132,9 +132,9 @@ end
 
 ## Non-Interactive / CLI MATLAB
 
-A local MATLAB executable is available at
-`/Applications/MATLAB_R2025b.app/bin/matlab` and can be used with `-batch`
-for non-interactive checks (for example, from an agent or CI-style shell).
+For non-interactive checks (for example, from an agent or CI-style shell),
+run the app-bundle executable with `-batch`; the `matlab-evaluation` skill
+covers locating the installed release and the batch command form.
 
 If launching MATLAB from a sandboxed shell fails silently or exits with
 status 1, retry unsandboxed or escalated — MATLAB may need to write
