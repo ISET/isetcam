@@ -1,7 +1,7 @@
 %% Script to create Stockman curves on a quantal, not energy, basis
 %
 wave = 380:780;
-fname = fullfile(isetRootPath,'data','human','stockman.mat');
+fname = fullfile(isetRootPath,'data','human','cones','stockman.mat');
 [fSEnergy,fN] = ieReadColorFilter(wave,fname);
 % vcNewGraphWin; plot(wave,fSEnergy); grid on
 
@@ -24,7 +24,7 @@ mx = max(fSQuanta);
 fSQuanta = fSQuanta*diag(1./mx);
 % vcNewGraphWin; plot(wave,fSQuanta); grid on
 
-oname = fullfile(isetRootPath,'data','human','stockmanQuanta.mat');
+oname = fullfile(isetRootPath,'data','human','cones','stockmanQuanta.mat');
 inData.wavelength = wave;  % Vector of W wavelength samples
 inData.data = fSQuanta;    % Matrix of filters (W rows, N filter columns)
 inData.filterNames = fN;   % Cell array of names; first letter is a color hint

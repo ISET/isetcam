@@ -9,7 +9,7 @@ function bool = ieVarInFile(fullname,varName)
 % varName:   The variable name string.
 %
 % Example:
-%   fullname = fullfile(isetRootPath,'data','human','XYZ.mat');
+%   fullname = which('XYZ.mat');
 %   ieVarInFile(fullname,'data')
 %
 %   ieVarInFile(fullname,'xyz')

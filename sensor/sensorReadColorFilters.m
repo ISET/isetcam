@@ -17,7 +17,7 @@ nWave = sensorGet(sensor,'nwave');
 
 switch lower(filterFile)
     case 'xyz'
-        fname = fullfile(isetRootPath,'data','human','XYZ');
+        fname = 'XYZ.mat';
     case 'rgb'
         fname = fullfile(isetRootPath,'data','sensor','colorfilters','RGB.mat');
     case 'monochrome'
@@ -31,7 +31,7 @@ switch lower(filterFile)
     case {'grbc'}
         fname = fullfile(isetRootPath,'data','sensor','colorfilters','GRBC.mat');
     case 'stockmanabs'
-        fname = fullfile(isetRootPath,'data','human','stockman.mat');
+        fname = 'stockman.mat';
         %     case 'mousecolorfilters.mat'
         %         fname = '/home/estelle/psych221/mouseColorFilters.mat';
     otherwise

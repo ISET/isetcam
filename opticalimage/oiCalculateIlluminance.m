@@ -44,7 +44,7 @@ sz          = oiGet(oi,'size');
 meanCompIlluminance = 0;
 
 % Read the V-lambda data at the relevant wavelengths
-fName = fullfile(isetRootPath,'data','human','luminosity.mat');
+fName = 'luminosity.mat';
 V = ieReadSpectra(fName,wave);
 
 irradianceP = oiGet(oi,'photons');

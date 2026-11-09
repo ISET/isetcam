@@ -101,9 +101,9 @@ switch lower(species)
                 % the units of the light in energy. ISET computes the
                 % sensor response based on an irradiance in photons.  So we
                 % use the form of the Stockman filters that is appropriate
-                % for photon input.  See the script stockmanQuanta in the
-                % data/human directory.
-                fname = fullfile(isetRootPath,'data','human','stockmanQuanta.mat');
+                % for photon input.  See the script stockmanQuantaCreate in
+                % data/human/cones.
+                fname = 'stockmanQuanta.mat';
                 [fsQuanta,fN] = ieReadColorFilter(wave,fname);
                 % vcNewGraphWin; plot(wave,fsQuanta); grid on
                 

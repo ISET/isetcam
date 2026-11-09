@@ -47,7 +47,7 @@ switch vcGetImageFormat(energy,wave)
         xwData = energy;
 end
 
-fName = fullfile(isetRootPath,'data','human','rods.mat');
+fName = 'rods.mat';
 Vprime = ieReadSpectra(fName,wave);
 
 if numel(wave) > 1,  dWave = wave(2) - wave(1);

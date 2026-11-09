@@ -3,7 +3,7 @@
 
 %%
 wave = 380:780;
-fname = fullfile(isetRootPath,'data','human','XYZ.mat');
+fname = fullfile(isetRootPath,'data','human','cmf','XYZ.mat');
 xyzEnergy = ieReadSpectra(fname,wave,0);
 % vcNewGraphWin; plot(wave,xyzEnergy); grid on
 
@@ -37,7 +37,7 @@ if abs(valQ - valE) > 10e-9
 end
 
 %% Save
-oname = fullfile(isetRootPath,'data','human','xyzQuanta.mat');
+oname = fullfile(isetRootPath,'data','human','cmf','xyzQuanta.mat');
 ieSaveSpectralFile(wave,xyzQuanta,'XYZ in a format to calculate with quantal input',oname);
 
 %% Compare the energy and quantal forms.
@@ -57,7 +57,7 @@ vcNewGraphWin; plot(wave,vlambdaQuanta); grid on
 
 % vcNewGraphWin; plot(wave,vlambdaQuanta./vlambda); grid on
 %% Save
-oname = fullfile(isetRootPath,'data','human','vlambdaQuanta');
+oname = fullfile(isetRootPath,'data','human','luminosity','vlambdaQuanta');
 ieSaveSpectralFile(wave,vlambdaQuanta,'vLambda in a format to calculate with quantal input',oname);
 
 % Copy to duplicate names
