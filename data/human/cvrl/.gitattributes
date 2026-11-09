@@ -1,0 +1,3 @@
+# Keep the CVRL tables byte-exact so their SHA-256 checksums stay valid.
+*.csv -text
+*.tsv -text

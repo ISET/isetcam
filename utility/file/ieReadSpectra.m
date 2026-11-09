@@ -45,7 +45,7 @@ function [res,wave,comment,fname] = ieReadSpectra(fname,wave,extrapVal,makePosit
 
 % Examples:
 %{
-  fileName = 'XYZQuanta.mat';
+  fileName = 'xyzQuanta.mat';
   wave = 400:10:700;
   data = ieReadSpectra(fileName,wave)
   [data,wave] = ieReadSpectra(fileName)
@@ -53,8 +53,7 @@ function [res,wave,comment,fname] = ieReadSpectra(fname,wave,extrapVal,makePosit
 
 if ~exist('fname','var')||isempty(fname), fname = ''; end
 
-% Create a partialpath for this file name.  For this to work, we need to
-% keep all of the spectral data in a single directory, I am afraid.
+% FNAME can be a file name on the MATLAB path or a full path.
 if isempty(fname)
     fname = vcSelectDataFile('');
     if isempty(fname), disp('User canceled'); return; end

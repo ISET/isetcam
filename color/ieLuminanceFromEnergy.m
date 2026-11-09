@@ -76,7 +76,7 @@ switch vcGetImageFormat(energy,wave)
         xwData = energy;
 end
 
-fName = fullfile(isetRootPath,'data','human','luminosity');
+fName = 'luminosity.mat';
 V = ieReadSpectra(fName,wave);
 % ieNewGraphWin; plot(wave,V);  % The luminance curve
 

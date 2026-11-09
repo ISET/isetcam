@@ -25,10 +25,10 @@
 %% Run the cell below this first to set the variables
 
 % Here we just save the variables
-fname = fullfile(isetRootPath,'data','human','melanopsinEnergy.mat');
+fname = fullfile(isetRootPath,'data','human','melanopsin','melanopsinEnergy.mat');
 ieSaveSpectralFile(wave,melanopsinEnergy,'From the CIE spreadsheet',fname);
 
-fname = fullfile(isetRootPath,'data','human','melanopsinQuanta.mat');
+fname = fullfile(isetRootPath,'data','human','melanopsin','melanopsinQuanta.mat');
 ieSaveSpectralFile(wave,melanopsinQuanta,'From the CIE spreadsheet',fname);
 
 

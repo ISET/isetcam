@@ -454,7 +454,7 @@ plot(wavelength,data)
 
 % Save 'em
 curDir = pwd;
-chdir([isetRootPath,filesep,'data\human'])
+chdir(fullfile(isetRootPath,'data','human','macular'))
 ieSaveSpectralFile(wavelength,data,comment);
 chdir(curDir);
 

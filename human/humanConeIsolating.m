@@ -79,7 +79,7 @@ function [coneIsolating, spd] = humanConeIsolating(dsp)
     wave = displayGet(dsp, 'wave');
 
     % Check that these spd values are cone isolating
-    coneFile = fullfile(isetRootPath, 'data', 'human', 'stockman');
+    coneFile = 'stockman.mat';
     cones = ieReadSpectra(coneFile, wave);
     id = cones' * spd;
     id = id / max(id(:))

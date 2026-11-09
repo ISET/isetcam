@@ -3,7 +3,7 @@
 
 % Write Luminosity (V-lambda)
 [XYZ,wave] = ieReadSpectra('XYZ');
-oname = fullfile(isetRootPath,'data','human','luminosity');
+oname = fullfile(isetRootPath,'data','human','luminosity','luminosity.mat');
 ieSaveSpectralFile(wave,XYZ(:,2),'Luminosity (Vlambda) in energy format',oname);
 
 % Plot the data to check.
@@ -19,7 +19,7 @@ q2e = Quanta2Energy(wave,ones(length(wave),1));
 % By multiplying with quanta2Energy, when the data come in as quanta they
 % are converted to energy.
 dataQuanta = q2e(:).* vLambda(:);
-oname = fullfile(isetRootPath,'data','human','luminosityQuanta.mat');
+oname = fullfile(isetRootPath,'data','human','luminosity','luminosityQuanta.mat');
 ieSaveSpectralFile(wave,dataQuanta,'Luminosity in a quantal input format',oname);
 
 % Show the effect of wavelength ... not important.  Just a check.
@@ -75,13 +75,13 @@ data = juddL(:,2);
 comment = 'Downloaded from the Stockman site, http://cvrl.ucl.ac.uk/.   This is linear Judd modified photopic luminosity, w.r.t. Energy input';
 
 % Save the file, being careful to include the filterNames cell array
-oname = fullfile(isetRootPath,'data','human','juddLuminosity.mat');
+oname = fullfile(isetRootPath,'data','human','luminosity','juddLuminosity.mat');
 ieSaveSpectralFile(wave,data,'Judd luminosity in an energy input format',oname);
 
 %% Convert to quantal format
 q2e = Quanta2Energy(wave,ones(length(wave),1));
 dataQuanta = q2e(:).* data(:);
-oname = fullfile(isetRootPath,'data','human','luminosityJuddQuanta.mat');
+oname = fullfile(isetRootPath,'data','human','luminosity','luminosityJuddQuanta.mat');
 ieSaveSpectralFile(wave,dataQuanta,'Judd luminosity in a quantal input format',oname);
 
 vcNewGraphWin; plot(wave,dataQuanta./data); grid on

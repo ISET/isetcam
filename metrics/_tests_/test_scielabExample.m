@@ -77,7 +77,7 @@ hatsC = dac2rgb(double(imread(file2))/255);
 
 %% 2.  Load the display calibration information
 
-% coneFile = fullfile(isetRootPath,'data','human','SmithPokornyCones');
+% coneFile = 'SmithPokornyCones.mat';
 % spCones = ieReadSpectra(coneFile,wave);   %plot(wave,spCones)
 displayFile = fullfile(isetRootPath,'data','displays','crt');
 dsp = displayCreate(displayFile);

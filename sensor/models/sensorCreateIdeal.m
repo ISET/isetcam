@@ -136,7 +136,7 @@ switch lower(idealType)
         % If we don't scale, the numbers are very small after correcting
         % for pixel area, so that we never get any electrons.  Hence
         % scaling is required.
-        fname  = fullfile(isetRootPath,'data','human','XYZQuanta.mat');
+        fname  = 'xyzQuanta.mat';
         wave = sensorGet(sensor(1),'wave');
         transmissivities = ieReadSpectra(fname, wave);   %Load and interpolate filters
         transmissivities = transmissivities/max(transmissivities(:));
@@ -208,7 +208,7 @@ switch lower(idealType)
         % If we don't scale, the numbers are very small after correcting
         % for pixel area, so that we never get any electrons.  Hence
         % scaling is not optional.
-        fname  = fullfile(isetRootPath,'data','human','XYZQuanta.mat');
+        fname  = 'xyzQuanta.mat';
         wave = 400:10:700;
         transmissivities = ieReadSpectra(fname, wave);   %Load and interpolate filters
         transmissivities = transmissivities/max(transmissivities(:));

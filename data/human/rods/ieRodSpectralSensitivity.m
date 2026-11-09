@@ -42,7 +42,7 @@ rods  = rods*rodPeakAbsorbtance;
 ieNewGraphWin; plot(wave,rods); grid on;
 
 %%  Save
-fname = fullfile(isetRootPath,'data','human','rods.mat');
+fname = fullfile(isetRootPath,'data','human','rods','rods.mat');
 ieSaveSpectralFile(wave,rods,'Estimated rhodopsin dividing scotopic sensitivity by human lens',fname);
 
 %% END
