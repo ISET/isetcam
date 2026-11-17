@@ -68,7 +68,8 @@ function val = opticsGet(optics,parm,varargin)
 %      {'cos4th data'}         - place to store cos4th data
 %
 % OTF information   - Used for shift-invariant calculations
-%      {'otf data'}        - the optical transfer function data
+%      {'otf data'}        - optical transfer function data; for shift-invariant
+%                            optics without stored data, [] if no oi is supplied
 %      {'otf size'}
 %      {'otf fx'}          - column (fx) samples of OTF data
 %      {'otf fy'}          - row (fy) samples of OTF data
@@ -484,8 +485,17 @@ switch parm
                     %
                     %   otf = opticsGet(optics,'otf data',oi, [units], [wave]);
 
+                    if isempty(varargin)
+                        val = [];
+                        return;
+                    end
+
                     oi = varargin{1};
-                    assert(isequal(oi.type,'opticalimage'))
+                    if ~isstruct(oi) || ~isfield(oi,'type') || ...
+                            ~strcmp(oi.type,'opticalimage')
+                        error('ISET:opticsGet:MissingOTF', ...
+                            'Shift-invariant OTF data are not loaded. Supply an optical image to calculate a diffraction-limited OTF.');
+                    end
 
                     if length(varargin) < 2, units = 'mm'; else, units = varargin{2}; end
                     if length(varargin) < 3, thisWave = []; else, thisWave = varargin{3}; end

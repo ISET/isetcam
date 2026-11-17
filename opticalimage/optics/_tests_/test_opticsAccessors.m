@@ -103,3 +103,20 @@ assert(isempty(opticsGet(optics,'otf data')));
 assert(strcmp(opticsGet(optics,'type'),'optics'));
 
 end
+
+function testShiftInvariantWithoutStoredOTF(~)
+%% Switching models does not create OTF data or require an oi for inspection
+
+optics = opticsCreate('default');
+optics = opticsSet(optics,'model','shift invariant');
+
+assert(isempty(opticsGet(optics,'otf data')));
+
+try
+    opticsGet(optics,'otf data',550);
+    error('Expected a missing OTF error.');
+catch ME
+    assert(strcmp(ME.identifier,'ISET:opticsGet:MissingOTF'));
+end
+
+end
