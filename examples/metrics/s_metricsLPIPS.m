@@ -1,16 +1,36 @@
-%% Equal MSE, different appearance: blur versus mild global dimming.
+%% s_metricsLPIPS 
+% 
+% This script demonstrates that pixel-wise mean squared error (MSE)
+% does not always predict perceptual similarity.
+% 
+% It creates two distorted versions of an image—one blurred and one
+% dimmed—with matched MSE, then compares them using features from the
+% VGG-16 network and the LPIPS perceptual metric.
+%
+% The example also visualizes the intermediate feature activations,
+% feature normalization, squared differences, and learned BAPPS
+% weights used to compute LPIPS. It can be used as a teaching example
+% for understanding the difference between image fidelity metrics and
+% perceptual similarity.
+%
+% The script requires the ISETCam image data and optionally the Deep
+% Learning Toolbox. If the toolbox is unavailable, a base-MATLAB
+% VGG-16 implementation is used instead.
+%
 % MATLAB R2021a+; toolboxes optional. Official VGG-16 / BAPPS-v0.1 weights.
 % First run downloads about 528 MiB; later runs use the local MAT cache.
 % Internet and a Java-enabled MATLAB session are needed for the first download.
 % The generated lpips_vgg16_weights.mat stays beside this script.
 % Reference: https://richzhang.github.io/PerceptualSimilarity/
 
+%% Initialize
 blurSigma = 1.8;  % Gaussian blur standard deviation, in image pixels.
 showLayer = 3;  % 1..5: choose the layer to illustrate in detail.
 assert(ismember(showLayer,1:5));
 demoDir = fileparts(mfilename('fullpath'));
 
 %% 1. Matched-MSE images
+%
 % We make a toy example of more and less perceptually noticeable changes,
 % while keeping mean squared error (MSE) the same.
 %
