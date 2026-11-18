@@ -12,3 +12,6 @@ data/images/multispectral/FruitMCC.mat
 
 # Personal Claude Code overrides; .claude/settings.json is shared and committed
 .claude/settings.local.json
+
+# Downloaded model weights and generated caches
+/data/modelweights/
