@@ -216,38 +216,15 @@ switch oType
             % See comment below.
             switch(parm)
                 case {'otf','otfdata'}
-                    % In the diffraction limited case the fsupport comes
-                    % from an oiGet, so we need to send in the oi.  This is
-                    % bad and we should have fsupport available from the
-                    % optics itself. In general, this is not the case.  It
-                    % would be best if we could make the opticsGet()
-                    % retrieve fsupport without using the oi.  And maybe it
-                    % does because there is a dlfsupport get in there.
                     if ~checkfields(optics,'OTF','OTF')
-                        % DHB: 1/9/24 - Having the varargin{:} tacked on here as a
-                        % fourth argument here caused an error.  So I took it
-                        % out.  But I am not sure whether there are cases
-                        % where we want the varargin{:} to get passed along.
-                        % The varargin seemed to have the oi in it in the
-                        % case I was looking at. But the comment above suggests
-                        % it is important to pass in the oi explicitly in
-                        % the diffraction limited case, so I was worried
-                        % about just using the call that is used for the
-                        % other cases.
-                        %
-                        % It was the third example in opticsGet that caused me to
-                        % make this change.
-                        %{
-                            scene = sceneCreate; oi = oiCreate('diffraction limited');
-                            oi = oiCompute(oi,scene); optics = oiGet(oi,'optics');
-                            otf = oiGet(oi,'optics otf data',oi);
-                            otf = opticsGet(optics,'otf data',oi);
-                            otfSupport = oiGet(oi,'fsupport','mm');  % Cycles/mm
-                            ieNewGraphWin; mesh(otfSupport(:,:,1),otfSupport(:,:,2),fftshift(abs(otf(:,:,10))));
-                        %}
-                        %
-                        %  val = opticsGet(optics,parm,oi,varargin{:});
-                        val = opticsGet(optics,parm,oi);
+                        % The analytic OTF uses this OI's frequency grid.
+                        if ~isempty(varargin) && isstruct(varargin{1})
+                            varargin(1) = [];  % Legacy explicit OI argument
+                        end
+                        if numel(varargin) == 1 && isnumeric(varargin{1})
+                            varargin = [{[]} varargin];  % Wavelength alone
+                        end
+                        val = opticsGet(optics,parm,oi,varargin{:});
                     else
                         val = opticsGet(optics,parm,varargin{:});
                     end
@@ -414,30 +391,17 @@ switch oType
                     warning('Returning lens to sensor focal distance given the scene depth.');
                 end
 
-                % The focal plane depends on the scene distance.  If there
-                % is no scene, we check the depth map.  If there is no
-                % depth map we assume very far away.
+                % With no scene argument, use the central depth, excluding
+                % zeros outside the scene in a padded optical image.
                 if isempty(varargin)
-                    % No scene distance sent in.  So, we use the oi depth
-                    % map to figure out the scene distance in the middle
-                    if checkfields(oi,'depthMap') && ~isempty(oi.depthMap)
-                        sz = size(oi.depthMap);
-                        minSize = 10;
-                        if  sz(1) < 2*minSize || sz(2) < 2*minSize
-                            sDist = mean(oi.depthMap(:));
-                        else
-                            % Use the middle of the depth map
-                            sDist = getMiddleMatrix(oi.depthMap,minSize);
-                            sDist = mean(sDist(:));
-                        end
-                    else
-                        % fprintf('Assuming scene at infinity.\n');
-                        %sDist = 1e10;
-
-                        % Try to get the validation to work by forcing
-                        % this to match what isetbio does for the
-                        % validation.
-                        sDist = 1.2;
+                    sDist = 1.2;
+                    depths = oiGet(oi,'depth map');
+                    if ~isempty(depths)
+                        depths = getMiddleMatrix(depths,10);
+                    end
+                    validDepths = depths(depths > 0);
+                    if ~isempty(validDepths)
+                        sDist = mean(validDepths);
                     end
                 else
                     % The scene distance was sent in

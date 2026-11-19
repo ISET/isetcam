@@ -31,12 +31,12 @@ sA          = sensorComputeArray(sensorArray,oi,'method','average');
 uData = sensorPlot(sA,'volts hline',[1 48],'twolines',true,'no fig',true);
 set(gca,'yscale','log');
 
-assert(abs(sum(uData.pixData{1})/15.8806) - 1 < 1e-3);
+assert(abs(sum(uData.pixData{1})/15.8806 - 1) < 1e-3);
 
 %%
 sA      = sensorComputeArray(sensorArray,oi,'method','bestsnr');
 uData = sensorPlot(sA,'volts hline',[1 48],'twolines',true,'no fig',true);
-assert(abs(sum(uData.pixData{1})/15.8778) - 1 < 1e-3);
+assert(abs(sum(uData.pixData{1})/15.8778 - 1) < 1e-3);
 
 %% END
 end

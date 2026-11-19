@@ -50,6 +50,62 @@ assert(abs((E7/E2)/(7/2)^2 - 1) < 1e-4);
 
 end
 
+function testComputedImageGeometryAndPower(testCase)
+%% Finite-distance images preserve sample pitch through padding and cropping.
+
+f = 0.004;
+N = 4;
+hfov = 1;
+sceneSize = [9 13];
+scene = sceneCreate('uniform ee',sceneSize,[500 550 600]);
+scene = sceneSet(scene,'fov',hfov);
+oi = oiCreate('diffraction limited');
+oi = oiSet(oi,'optics focal length',f);
+oi = oiSet(oi,'optics fnumber',N);
+oi = oiSet(oi,'optics offaxis method','skip');
+paddedSize = sceneSize + 2*round(sceneSize/8);
+
+for d = [1.2 0.1 0.012 0.008]
+    scene = sceneSet(scene,'distance',d);
+    imageDistance = f*d/(d-f);
+    pitch = 2*imageDistance*tand(hfov/2)/sceneSize(2);
+    paddedFOV = 2*atand(paddedSize(2)/sceneSize(2)*tand(hfov/2));
+
+    padded = oiCompute(oi,scene);
+    cropped = oiCompute(oi,scene,'crop',true);
+    testCase.verifyEqual(oiGet(padded,'size'),paddedSize);
+    testCase.verifyEqual(oiGet(cropped,'size'),sceneSize);
+    testCase.verifyEqual(oiGet(padded,'hfov'),paddedFOV,'AbsTol',1e-12);
+    testCase.verifyEqual(oiGet(cropped,'hfov'),hfov,'AbsTol',1e-12);
+    testCase.verifyEqual(oiGet(padded,'sample size'),pitch,'RelTol',1e-12);
+    testCase.verifyEqual(oiGet(cropped,'sample size'),pitch,'RelTol',1e-12);
+    testCase.verifyEqual(oiGet(cropped,'depth map'),d*ones(sceneSize));
+
+    pupilRadius = f/(2*N);
+    pupilFactor = pi*pupilRadius^2/(pupilRadius^2 + d^2);
+    scenePitch = sceneGet(scene,'sample size');
+    expectedPower = sum(sceneGet(scene,'photons'),[1 2])*scenePitch^2*pupilFactor;
+    imagePower = sum(double(oiGet(padded,'photons')),[1 2])*pitch^2;
+    testCase.verifyEqual(imagePower,expectedPower,'RelTol',1e-6);
+end
+
+end
+
+function testComputeWithRequestedPixelSize(testCase)
+%% A requested pitch is set at the image distance and keeps the sample grid.
+
+scene = sceneCreate('uniform ee',[9 13],[500 550 600]);
+scene = sceneSet(scene,'distance',0.008);
+oi = oiSet(oiCreate('diffraction limited'),'optics focal length',0.004);
+pitch = 5e-6;
+result = oiCompute(oi,scene,'crop',true,'pixel size',pitch);
+
+testCase.verifyEqual(oiGet(result,'size'),sceneGet(scene,'size'));
+testCase.verifyEqual(oiGet(result,'sample size'),pitch,'RelTol',1e-12);
+testCase.verifyEqual(oiGet(result,'hfov'),2*atand(13*pitch/(2*0.008)),'AbsTol',1e-12);
+
+end
+
 function testMagnificationFactor(~)
 %% A near object reduces the irradiance by (1+|m|)^2 (working f-number)
 

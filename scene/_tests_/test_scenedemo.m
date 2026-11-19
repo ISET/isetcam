@@ -61,7 +61,7 @@ sceneTest = sceneCreate('freq orient pattern');
 % of the luminance across the bottom row
 sz = sceneGet(sceneTest,'size');
 uData = scenePlot(sceneTest,'luminance hline',sz,'nofigure');
-assert(mean(uData.data)/100.5751 - 1 < tolerance);
+assert(abs(mean(uData.data)/100.5751 - 1) < tolerance);
 
 % We can do this ourselves by getting the luminance of this
 % bottom row as follows
@@ -69,7 +69,7 @@ luminance = sceneGet(sceneTest,'luminance');
 data = luminance(sz(1),:);
 
 support = sceneSpatialSupport(sceneTest,'mm');
-assert(support.x(1)/(-104.5762) - 1 < tolerance);
+assert(abs(support.x(1)/(-104.5762) - 1) < tolerance);
 
 rows = round(sceneGet(sceneTest,'rows')/2);
 assert(rows == 128,'Row test failed')

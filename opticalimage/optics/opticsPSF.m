@@ -100,7 +100,6 @@ if ieNotDefined('unit'),         unit = 'mm';end
 imSize   = oiGet(oi,'size');
 padSize  = round(imSize/8);
 padSize(3) = 0;
-sDist = sceneGet(scene,'distance');
 
 % ISETBio and ISETCam, historically, used different padding
 % strategies.  Apparently, we have zero, mean and border implemented -
@@ -120,7 +119,8 @@ switch padvalue
         error('Unknown padvalue %s',padvalue);
 end
 
-oi = oiPadValue(oi,padSize,padType,sDist);
+oi = oiPadValue(oi,padSize,padType);
+oi = oiSet(oi,'depth map',oiPadDepthMap(scene));
 
 %% Get information from the oi 
 

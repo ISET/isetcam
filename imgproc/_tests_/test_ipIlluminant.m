@@ -107,7 +107,7 @@ ip = ipCompute(vci{1},nikon);
 % ipWindow(ip);
 
 m2 = ipGet(ip,'srgb');
-assert(mean(m2(:))/mean(m(:)) - 1 < 1e-5);
+assert(abs(mean(m2(:))/mean(m(:)) - 1) < 1e-5);
 
 %% END
 end

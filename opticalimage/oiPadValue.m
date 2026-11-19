@@ -1,4 +1,4 @@
-function oi = oiPadValue(oi, padSize, padType, sDist, direction)
+function oi = oiPadValue(oi, padSize, padType, ~, direction)
 % Pad the oi irradiance data, usually prior to applying OTF
 %
 % Syntax:
@@ -25,8 +25,7 @@ function oi = oiPadValue(oi, padSize, padType, sDist, direction)
 %    padSize   - Matrix. A matrix containing the dimensions to pad out.
 %    padType  - String. Default: 'mean photons'. How to pad.
 %                See validatePadStruct() for valid padValue values
-%    sDist     - (Optional) Scalar Numeric. The scene distance. Default is
-%                to query from a scene. If no scene, assume 1m.
+%    sDist     - (Optional) Legacy scene distance argument, ignored.
 %    direction - (Optional) String. Direction to pad. Default is 'both'.
 %                Options are: 'both', 'pre', or 'post'.
 %
@@ -57,15 +56,6 @@ function oi = oiPadValue(oi, padSize, padType, sDist, direction)
     oiWindow(oi);
 %}
 
-if notDefined('sDist')
-    scene = vcGetObject('scene');
-    if isempty(scene)
-        warning('oiPad: No scene, assuming 1 m sDist');
-        sDist = 1;
-    else
-        sDist = sceneGet(scene, 'distance');
-    end
-end
 if notDefined('direction'), direction = 'both'; end
 
 % We make sure padSize matches the dimensionality of photons.
@@ -111,36 +101,10 @@ for ii = 1 : nwave
         padarray(photons(:, :, ii), padSize, padval(ii), direction);
 end
 
-% Clear unused stuff
-clear photons;
-photons = newPhotons;
-clear newPhotons;
-
-% The sample spacing of the optical image at the surface of the sensor must
-% be adjusted for the padding. We must make this adjustment before putting
-% the new data into the oi because we need to preserve the number of
-% columns until we are done with this calculation.
-
-% The width per horizontal sample at the sensor surface is the ratio of the
-% width to the number of columns. The new number of columns is the sum of
-% the current number and the horizontal pad size, which is in pad(2)
-
-if strcmp(direction, 'both')
-    padCols = padSize(2) * 2;
-else
-    padCols = padSize(2);
-end
-newWidth = oiGet(oi, 'width') * (1 + padCols / oiGet(oi, 'cols'));
-
-% Find the distance from the image to the lens
-imageDistance = oiGet(oi, 'optics image distance', sDist);
-
-% Now we compute the new horizontal field of view using the formula that
-% says the opposite over adjacent is the tangent of the angle. We return
-% the value in degrees
-oi = oiSet(oi, 'h fov', 2 * atand(newWidth / 2 / imageDistance));
-
-% Now we adjust the columns by placing in the new photons
-oi = oiSet(oi, 'photons', photons);
+% Preserve sample spacing by scaling the image width with the column count.
+widthRatio = c / size(photons, 2);
+halfFOV = oiGet(oi, 'h fov') / 2;
+oi = oiSet(oi, 'h fov', 2 * atand(widthRatio * tand(halfFOV)));
+oi = oiSet(oi, 'photons', newPhotons);
 
 end

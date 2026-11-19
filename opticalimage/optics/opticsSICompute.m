@@ -69,6 +69,7 @@ optics = oiGet(oi,'optics');
 % Compute the basic parameters of the oi from the scene parameters.
 oi = oiSet(oi,'wangular',sceneGet(scene,'wangular'));
 oi = oiSet(oi,'wave',sceneGet(scene,'wave'));
+oi = oiSet(oi,'depth map',sceneGet(scene,'depth map'));
 
 % We use the custom data.
 % oi     = oiSet(oi,'optics',optics);

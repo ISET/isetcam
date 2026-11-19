@@ -63,7 +63,11 @@ else
     clear oi
 end
 
-if ieNotDefined('wavelength'), wavelength = oiGet(oi,'wavelength'); end
+if ieNotDefined('wavelength')
+    wavelength = [];
+    if exist('oi','var'), wavelength = oiGet(oi,'wavelength'); end
+    if isempty(wavelength), wavelength = opticsGet(optics,'wavelength'); end
+end
 if ieNotDefined('units'),      units = 'cyclesPerDegree'; end
 if ieNotDefined('fSupport'),   fSupport = oiGet(oi,'fSupport',units); end
 

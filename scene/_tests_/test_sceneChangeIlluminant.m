@@ -36,7 +36,7 @@ scene = sceneCreate;
 
 % Plot the illuminant.
 uData = scenePlot(scene,'illuminant photons',[],'nofigure');
-assert(mean(uData.photons)/1.4089583e+16 - 1 < tolerance,msg);
+assert(abs(mean(uData.photons)/1.4089583e+16 - 1) < tolerance,msg);
 
 %% Replace the current illuminant with a tungsten illuminant
 
@@ -51,7 +51,7 @@ scene = sceneSet(scene,'illuminantComment','Tungsten illuminant');
 
 % sceneWindow(scene); pause(delay);
 uData = scenePlot(scene,'illuminant photons',[],'nofigure');
-assert(mean(uData.photons(:))/1.4548346e+16 - 1 < tolerance,msg);
+assert(abs(mean(uData.photons(:))/1.4548346e+16 - 1) < tolerance,msg);
 
 %% Read in a multispectral scene from data/images
 
@@ -59,7 +59,7 @@ sceneFile = fullfile(isetRootPath,'data','images','multispectral','StuffedAnimal
 scene = sceneFromFile(sceneFile,'multispectral');
 % sceneWindow(scene); pause(delay);
 uData = scenePlot(scene,'illuminant energy',[],'nofigure');
-assert(mean(double(uData.energy(:)))/ 0.001763837502128 - 1 < tolerance,msg);
+assert(abs(mean(double(uData.energy(:)))/ 0.001763837502128 - 1) < tolerance,msg);
 
 %% Change the illuminant to equal energy
 
@@ -68,13 +68,13 @@ assert(mean(double(uData.energy(:)))/ 0.001763837502128 - 1 < tolerance,msg);
 scene = sceneAdjustIlluminant(scene,'equalEnergy.mat');
 % sceneWindow(scene); pause(delay);
 photons = sceneGet(scene,'photons');
-assert(mean(photons(:))/1.180579424901852e+15 - 1 < tolerance,msg)
+assert(abs(mean(photons(:))/1.180579424901852e+15 - 1) < tolerance,msg)
 %% Convert the scene to the sunset color, Horizon_Gretag
 
 scene = sceneAdjustIlluminant(scene,'illHorizon-20180220.mat');
 % sceneWindow(scene); pause(delay);
 photons = sceneGet(scene,'photons');
-assert(mean(photons(:))/11.532888329013328e+15 - 1 < tolerance,msg)
+assert(abs(mean(photons(:))/1.532888329013328e+15 - 1) < tolerance,msg)
 
 %%
 drawnow;
