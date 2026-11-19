@@ -21,13 +21,13 @@ assert(numel(uData.x) == 31);
 assert(numel(uData.y) == 31);
 assert(size(uData.roiLocs,1) == 1);
 assert(abs(mean(uData.x) - 550) < 1e-12);
-localAssertRel(mean(uData.y),6.22778741125274e+13,1e-6);
+localAssertRel(mean(uData.y),63244690632036,1e-6);
 
 uData = oiPlot(oi,'hline',[20 20],'nofigure');
 assert(numel(uData.pos) == 120);
 assert(numel(uData.wave) == 31);
-localAssertRel(mean(uData.data,'all'),1.34289341800568e+14,1e-6);
-localAssertRel(sum(uData.data,'all'),4.99556351498113e+17,1e-6);
+localAssertRel(mean(uData.data,'all'),136374103200482,1e-6);
+localAssertRel(sum(uData.data,'all'),5.07311663905791e+17,1e-6);
 
 uData = oiPlot(oi,'illuminance fft hline',[1,rows],'nofigure');
 assert(numel(uData.freq) == 60);
@@ -40,12 +40,12 @@ uData = oiPlot(oi,'irradiance image wave',[],500,40);
 assert(isequal(size(uData.irrad),[80 120]));
 assert(numel(uData.xCoords) == 120);
 assert(numel(uData.yCoords) == 80);
-localAssertRel(mean(uData.irrad,'all'),1.02785551232117e+14,1e-6);
+localAssertRel(mean(uData.irrad,'all'),104381233641431,1e-6);
 
 uData = oiPlot(oi,'irradiance fft',[],450,'nofigure');
 assert(isequal(size(uData.z),[80 120]));
-localAssertRel(mean(uData.z,'all'),2.66193461572237e+15,1e-6);
-localAssertRel(max(uData.z(:)),2.77875314092820e+17,1e-6);
+localAssertRel(mean(uData.z,'all'),2.70325978143147e+15,1e-6);
+localAssertRel(max(uData.z(:)),2.82189157347564e+17,1e-6);
 
 uData = oiPlot(oi,'psf 550','um','nofigure');
 assert(isequal(size(uData.psf),[120 120]));

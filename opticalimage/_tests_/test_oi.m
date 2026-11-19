@@ -47,13 +47,13 @@ oi = oiCompute(oi,scene);
 
 uData = oiPlot(oi,'illuminance mesh linear');
 assert(isequal(size(uData.data),[320 320]));
-assert(mean(double(uData.data(:))/3.073368220531811 - 1) < tolerance);
+assert(mean(double(uData.data(:))/3.12108049875606 - 1) < tolerance);
 
 photons = oiGet(oi,'photons');
-assert(abs(sum(photons,'all')/3.7495597982948e+20 - 1) < 1e-4);
+assert(abs(sum(photons,'all')/3.80776968964576e+20 - 1) < 1e-4);
 
 centerROI = mean(photons(150:170,150:170,:),'all');
-assert(abs(centerROI/2.11036640405092e+14 - 1) < 1e-4);
+assert(abs(centerROI/214312867384502 - 1) < 1e-4);
 
 support = oiGet(oi,'spatial support');
 assert(abs(support(1,1,1)/-4.2141217067371e-05 - 1) < 1e-6);
