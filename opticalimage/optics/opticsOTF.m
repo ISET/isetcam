@@ -99,7 +99,6 @@ wave     = oiGet(oi,'wave');
 imSize   = oiGet(oi,'size');
 padSize  = round(imSize/8);
 padSize(3) = 0;
-sDist = sceneGet(scene,'distance');
 
 % ISETBio and ISETCam, historically, used different padding
 % strategies.  Apparently, we have zero, mean and border implemented -
@@ -123,9 +122,8 @@ end
 
 %% Adjust the data by padding, and get the OTF
 
-% oiGet(oi,'sample size')
-oi = oiPadValue(oi,padSize,padType,sDist);
-% oiGet(oi,'sample size')
+oi = oiPadValue(oi,padSize,padType);
+oi = oiSet(oi,'depth map',oiPadDepthMap(scene));
 
 % Get the current photons.  It has the right size.  We over-write it
 % below.

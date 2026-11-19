@@ -10,13 +10,13 @@ photons = oiGet(oi,'photons');
 
 rect = [3 2 2 3];  % [x y width height]
 baseSpacing = oiGet(oi,'distance per sample');
-focalLength = oiGet(oi,'optics focal length');
+imageDistance = oiGet(oi,'focal plane distance');
 
 cropped = oiCrop(oi,rect);
 croppedPhotons = oiGet(cropped,'photons');
 
 expectedPhotons = photons(2:5,3:5,:);
-expectedFOV = 2*atand((rect(3)+1)*baseSpacing(2)/(2*focalLength));
+expectedFOV = 2*atand((rect(3)+1)*baseSpacing(2)/(2*imageDistance));
 
 assert(isequal(oiGet(cropped,'size'),[rect(4)+1 rect(3)+1]));
 assert(max(abs(croppedPhotons(:) - expectedPhotons(:))) < 1e-12);

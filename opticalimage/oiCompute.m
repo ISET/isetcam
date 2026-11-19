@@ -28,6 +28,7 @@ function oi = oiCompute(oi,scene,varargin)
 %   'pixel size' - Set the spatial sampling resolution of the oi image.
 %                A scalar in meters. This parameter is convenient to
 %                make the oi sampling match the sensor pixel size.
+%                The field of view is adjusted at the image plane.
 %
 % Return
 %   oi - The optical image with computed photon irradiance
@@ -126,7 +127,6 @@ oi = oiCompute(oi,scene,'pad value','border','crop',true);
 oiWindow(oi);
 %}
 %{
-% Almost right.  Off by 1 part in 100.  Need to fix. (BW).
 scene = sceneCreate;
 oi = oiCreate;
 oi = oiCompute(oi,scene,'pad value','border','crop',true,'pixel size',1e-6);
@@ -154,17 +154,18 @@ if strcmp(oi.type,'scene') && (strcmp(scene.type,'opticalimage') ||...
     % tmp = scene; scene = oi; oi = tmp; clear tmp
 end
 
-%% Adjust oi fov if user sends in a pixel size
-if ~isempty(p.Results.pixelsize)
-
-    % This is the pixel size in meters
-    pz = p.Results.pixelsize;
-    sw = sceneGet(scene, 'cols');
-    flengthM = oiGet(oi, 'focal length', 'm');
-
-    wAngular = atand(pz*sw/2/flengthM)*2;
-    % oi uses scene hFOV later.
-    scene = sceneSet(scene, 'wAngular',wAngular);
+%% Set the field of view for the requested image-plane sampling
+pixelSize = p.Results.pixelsize;
+if ~isempty(pixelSize)
+    sceneDistance = sceneGet(scene,'distance');
+    if strcmp(oi.type,'wvf')
+        focalLength = wvfGet(oi,'focal length','m');
+        imageDistance = 1 / (1/focalLength - 1/sceneDistance);
+    else
+        imageDistance = oiGet(oi,'optics image distance',sceneDistance);
+    end
+    imageWidth = pixelSize * sceneGet(scene,'cols');
+    scene = sceneSet(scene,'wangular',2 * atand(imageWidth / (2*imageDistance)));
 end
 
 %% Compute according to the selected model.
@@ -190,6 +191,7 @@ switch ieParamFormat(opticsModel)
     case 'raytrace'
         % We are not using the pad value in this case.
         oi = opticsRayTrace(scene,oi,varargin{:});
+        oi = oiSet(oi,'depth map',oiPadDepthMap(scene));
     otherwise
         error('Unknown optics model')
 end
@@ -197,21 +199,23 @@ end
 % Indicate scene it is derived from
 oi = oiSet(oi,'name',sceneGet(scene,'name'));
 
-% Pad the scene dpeth map and attach it to the oi.   The padded values are
-% set to 0, though perhaps we should pad them with the mean distance.
-oi = oiSet(oi,'depth map',oiPadDepthMap(scene,[],varargin{:}));
-
-% This crops the photons and the depth map
+% Remove the exact computed padding from both photons and depth.
 if p.Results.crop
-    oi = oiCrop(oi,'border');
+    if strcmpi(opticsModel,'raytrace')
+        oi = oiCrop(oi,'border');
+    else
+        sceneSize = sceneGet(scene,'size');
+        padding = (oiGet(oi,'size') - sceneSize) / 2;
+        if any(padding > 0)
+            rect = [padding(2)+1 padding(1)+1 sceneSize(2)-1 sceneSize(1)-1];
+            oi = oiCrop(oi,rect);
+        end
+    end
 end
 
-% Dangerous, introduced June 1, 2024 by BW.
-if p.Results.pixelsize
-    % The pixel size was not always precise.  I added this resample to
-    % force the issue.  Not sure why it wasn't precise above.  Maybe
-    % figuring out how to make that precise would be better.
-    oi = oiSpatialResample(oi,p.Results.pixelsize,'m');
+% If the optics change the sampling, resample to the requested pitch.
+if ~isempty(pixelSize) && abs(oiGet(oi,'sample size') - pixelSize) > 10*eps(pixelSize)
+    oi = oiSpatialResample(oi,pixelSize,'m');
 end
 
 % We need to preserve metadata from the scene,

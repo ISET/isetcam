@@ -437,7 +437,11 @@ switch parm
                 else
                     oi = varargin{1};
                 end
-                if length(varargin) < 2, units = 'mm'; else, units = varargin{2}; end
+                if length(varargin) < 2 || isempty(varargin{2})
+                    units = 'mm';
+                else
+                    units = varargin{2};
+                end
                 if length(varargin) < 3, thisWave = []; else, thisWave = varargin{3}; end
                 
                 % Could this be XXXXXX  and thus avoid the oi argument?

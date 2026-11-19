@@ -117,7 +117,7 @@ subplot(1,2,2), plot(wave,f); grid on; set(gca,'ylim',[0 1])
 title('Sensor');
 %}
 
-assert( abs(mean(cFilters(:))/0.273934849542002 )  - 1 < 1e-3,'Estimated filter test.');
+assert(abs(mean(cFilters(:))/0.273934849542002 - 1) < 1e-3,'Estimated filter test.');
 
 %%
 

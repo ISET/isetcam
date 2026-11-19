@@ -59,7 +59,7 @@ ieSaveMultiSpectralImage(oFile,coef,basis,comment,imgMean,illuminant);
 wList = 400:5:700;
 scene2 = sceneFromFile(oFile ,'multispectral',[],[],wList);
 m = sceneGet(scene2,'mean luminance');
-assert(abs(m/31.219952376281693) - 1 < tolerance);
+assert(abs(m/31.219952376281693 - 1) < tolerance);
 
 % This poor representation produces a very desaturated image
 % sceneWindow(scene2);
@@ -79,7 +79,7 @@ comment = 'Compressed using hcBasis with imgMean)';
 
 illuminant = sceneGet(scene,'illuminant');
 m = double(illuminantGet(illuminant,'luminance'));
-assert(abs(m/ 3.919852905273438e+02) - 1 < tolerance);
+assert(abs(m/138.22428894042969 - 1) < tolerance);
 
 % illuminant.wavelength = scene.spectrum.wave;
 % illuminant.data = scene.illuminant.data;
@@ -89,7 +89,7 @@ ieSaveMultiSpectralImage(oFile,coef,basis,comment,imgMean,illuminant);
 wList = 400:5:700;
 scene2 = sceneFromFile(oFile ,'multispectral',[],[],wList);
 m = sceneGet(scene2,'mean luminance');
-assert(abs(m/30.078709415522464) - 1 < tolerance);
+assert(abs(m/30.078709415522464 - 1) < tolerance);
 % sceneWindow(scene2); 
 
 %% Clean up the temporary file.

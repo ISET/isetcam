@@ -61,9 +61,8 @@ n  = oiGet(oi,'name');
 oi = oiSet(oi,'name',sprintf('%s-%s',n,method));
 
 % Now adjust the FOV so that the dx works out perfectly
-sr    = oiGet(oi,'spatial resolution');
-fov   = oiGet(oi,'fov');
-oi    = oiSet(oi,'fov',fov*dx/sr(2));
+imageDistance = oiGet(oi,'focal plane distance');
+oi = oiSet(oi,'fov',2 * atand(length(xN) * dx / (2*imageDistance)));
 
 end
 

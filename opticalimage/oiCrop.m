@@ -7,12 +7,12 @@ function [oi,rect] = oiCrop(oi,rect)
 % Description
 %   The image axis is (1,1) in the upper left.  Increasing y-values run
 %   down the image.  Increasing x-values run to the right.
-%   The rect parameters are (x,y,width,height).
+%   The rect parameters are [x y width-1 height-1].
 %   (x,y) is the upper left corner of the rectangular region
 %
 % Inputs
 %    oi:  An optical image structure
-%  rect:  Typically a vector (rect) of [row col height width]
+%  rect:  A vector [x y width-1 height-1].
 %         It can also be the string 'border' in which case the black border
 %         is removed
 %
@@ -30,7 +30,8 @@ function [oi,rect] = oiCrop(oi,rect)
 %
 %  Because these are multispectral data, we can't use the usual imcrop.
 %
-%  This routine also updates the field of view parameter.s
+%  Crop the depth map along with the photons when their sizes match.
+%  Update the field of view to preserve the image-plane sample spacing.
 %
 %  A common case is to remove the black border from the oi window.  That is
 %  managed by setting rect = 'border';
@@ -38,6 +39,7 @@ function [oi,rect] = oiCrop(oi,rect)
 % Copyright ImagEval Consultants, LLC, 2003.
 %
 % See also
+%   oiCompute, oiPadValue
 %
 
 % Examples:
@@ -74,8 +76,9 @@ elseif isvector(rect)
     roiLocs = ieRect2Locs(rect);
 end
 
-%% Preserve the original sample space
-sampleSpace = oiGet(oi, 'distance per sample');
+%% Preserve the original sample spacing
+samplePitch = oiGet(oi,'sample size');
+sourceSize = oiGet(oi,'size');
 %% Adjust the irradiance data
 
 % The number of selected columns and rows
@@ -85,32 +88,21 @@ c = rect(3)+1; r = rect(4)+1;
 photons = vcGetROIData(oi,roiLocs,'photons');
 photons = XW2RGBFormat(photons,r,c);
 
-% oi    = oiClearData(oi);
-oi    = oiSet(oi,'photons',photons);
-newSz = oiGet(oi,'size');
+oi = oiSet(oi,'photons',photons);
+depthMap = oiGet(oi,'depth map');
+if isequal(size(depthMap),sourceSize)
+    rows = ieClip(roiLocs(:,1),1,sourceSize(1));
+    cols = ieClip(roiLocs(:,2),1,sourceSize(2));
+    depthMap = reshape(depthMap(sub2ind(sourceSize,rows,cols)),r,c);
+    oi = oiSet(oi,'depth map',depthMap);
+end
 
 oi = oiSet(oi,'illuminance',oiCalculateIlluminance(oi));
 
 %% Update the horizontal field of view
 
-% Also, the sample spacing will not be preserved when the FOV changes and
-% becomes large. We might consider to do an integration to calculate
-% accurate width/height of the new frame.
-
-
-focalLength = oiGet(oi, 'optics focal length');
-%{
-% ZLY: I think we can calculate the wAngular in this way.
-wAngular = oiGet(oi,'wangular');
-sz = oiGet(oi,'size');
-wAngularNew = atand(newSz(2) * sampleSpace/2/focalLength) /...
-    atand(sz(2) * sampleSpace/2/focalLength) * wAngular;
-%}
-wAngularNew = atand(newSz(2) * sampleSpace(2) / 2 / focalLength) * 2;
-
-
-oi = oiSet(oi,'wangular',wAngularNew);
-
+imageDistance = oiGet(oi,'focal plane distance');
+oi = oiSet(oi,'wangular',2 * atand(c * samplePitch / (2*imageDistance)));
 
 end
 
