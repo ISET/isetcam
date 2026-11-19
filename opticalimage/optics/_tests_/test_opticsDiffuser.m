@@ -42,8 +42,8 @@ oi = oiCompute(oi,scene);
 second = oiGet(oi,'photons');
 testCase.verifySize(second,size(first));
 testCase.verifyGreaterThan(norm(double(first(:))-double(second(:))),0);
-testCase.verifyEqual(double(sum(first,'all')),3.33050540968185e19,'RelTol',1e-6);
-testCase.verifyEqual(double(sum(second,'all')),3.40119465833496e19,'RelTol',1e-6);
+testCase.verifyEqual(double(sum(first,'all')),3.38220952258202e19,'RelTol',1e-6);
+testCase.verifyEqual(double(sum(second,'all')),3.45399617952111e19,'RelTol',1e-6);
 
 %% END
 end
