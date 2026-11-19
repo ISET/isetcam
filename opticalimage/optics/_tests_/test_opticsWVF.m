@@ -101,7 +101,7 @@ oiD = oiCompute(wvfD,gridScene);
 oiD = oiSet(oiD,'name',sprintf('oiCompute Defocus %.1f no LCA',defocus));
 photons550 = oiGet(oiD,'photons',550);
 
-testValue = 1.3628e+19;  % Set on May 8, 2024.
+testValue = 1.3731e+19;  % Updated November 2026 for the irradiance formula (Issue #22).
 assert(abs((sum(photons550(:))/testValue) - 1) < 1e-3);
 
 %% Now recompute and include human longitudinal chromatic aberration

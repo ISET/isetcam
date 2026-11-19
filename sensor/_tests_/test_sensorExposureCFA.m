@@ -40,7 +40,7 @@ sensor = sensorCompute(sensor,oi);
 sensor = sensorSet(sensor,'name','Bluish');
 
 photons = sensorGet(sensor,'electrons');
-assert( abs(mean(photons(:))/2.2453684e+03) - 1 < 1e-3);
+assert( abs(mean(photons(:))/2268.57228535354) - 1 < 1e-3);
 
 % sensorWindow(sensor);
 
@@ -53,7 +53,7 @@ sensor = sensorCompute(sensor,oi);
 sensor = sensorSet(sensor,'name','Reddish');
 
 photons = sensorGet(sensor,'electrons');
-assert( abs(mean(photons(:))/2.7616738e+03) - 1 < 1e-3);
+assert( abs(mean(photons(:))/2779.03385416667) - 1 < 1e-3);
 
 % sensorWindow(sensor);
 
@@ -61,7 +61,7 @@ assert( abs(mean(photons(:))/2.7616738e+03) - 1 < 1e-3);
 
 %% Confirm the long-red exposure in the sensor mosaic
 volts = sensorGet(sensor,'volts');
-assert( abs(mean(volts(:))/0.27616739) - 1 < 1e-3);
+assert( abs(mean(volts(:))/0.277903586626053) - 1 < 1e-3);
 
 %% The same calculation with a camera objet
 
@@ -71,8 +71,8 @@ camera = cameraCompute(camera,scene);
 cameraSensor = cameraGet(camera,'sensor');
 photons = sensorGet(cameraSensor,'electrons');
 volts = sensorGet(cameraSensor,'volts');
-assert( abs(mean(photons(:))/3.019645182291667e+03) - 1 < 1e-3);
-assert( abs(mean(volts(:))/0.301964819431305) - 1 < 1e-3);
+assert( abs(mean(photons(:))/3038.12174479167) - 1 < 1e-3);
+assert( abs(mean(volts(:))/0.30381253361702) - 1 < 1e-3);
 
 % cameraWindow(camera,'sensor');
 

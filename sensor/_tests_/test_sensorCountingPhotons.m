@@ -60,7 +60,7 @@ for ff = 1:length(fnumbers)
     spectralIrradiance = oiGet(oi,'roi mean photons',roiRect);
     totalQ(ff) = sum(spectralIrradiance);
 end
-assert( abs(mean(totalQ(:))/4.998396095733760e+13) - 1 < 1e-5);
+assert( abs(mean(totalQ(:))/51770269048217.6) - 1 < 1e-5);
 
 %%
 
