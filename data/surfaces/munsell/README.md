@@ -39,8 +39,20 @@ Subcommittee on the Spacing of the Munsell Colors," *J. Opt. Soc. Am.* 33,
 385–418 (1943).
 
 The files were downloaded unchanged in November 2026 from the Munsell Color
-Science Laboratory at RIT, which makes them available for research purposes:
-<https://www.rit.edu/science/munsell-color-science-lab-educational-resources>
+Science Laboratory (MCSL) at RIT:
+<https://www.rit.edu/science/munsell-color-science-lab-educational-resources>.
+According to that page, the tables were taken from Wyszecki and Stiles,
+*Color Science*, 2nd ed. (1982).
+
+## Terms of use
+
+**For research use only.** The renotation section of the RIT page states no
+terms of use for these files. The same page restricts its spectral-image
+downloads: "THESE IMAGES ARE MADE AVAILABLE FOR RESEARCH PURPOSES ONLY. All
+other uses are prohibited. Copyright remains with PoCS / MCSL." ISETCam
+treats the renotation files the same way and includes them for research
+use. When you use them, cite Newhall, Nickerson and Judd (1943) and credit
+the Munsell Color Science Laboratory at RIT as the source of the files.
 
 ## ISETCam functions
 

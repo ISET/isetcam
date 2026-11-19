@@ -35,12 +35,13 @@ function data = ieMunsellRenotation(dataset)
 %                diffuser (Y = 0.975 * published Y).  This is the scale
 %                used by ASTM D1535 and by ieMunsell2XYZ.
 %     whiteXYZ - XYZ of a perfect reflecting diffuser under Illuminant C
-%     source   - Citation and URL
+%     source   - Citation, URL, and terms of use
 %
 % Description
 %   The data files are in data/surfaces/munsell.  They were downloaded
-%   from the Munsell Color Science Laboratory at RIT, which makes them
-%   available for research purposes.  The renotation specifies the aim
+%   from the Munsell Color Science Laboratory at RIT and are included in
+%   ISETCam for research use only; see data/surfaces/munsell/README.md
+%   for the terms of use.  The renotation specifies the aim
 %   colors of the Munsell system; it is not a set of measurements of the
 %   chips in a particular Munsell Book of Color.
 %
@@ -101,7 +102,8 @@ data.XYZ      = xyy2xyz([data.xyY(:,1:2), 0.975*data.xyY(:,3)]);
 data.whiteXYZ = [98.074 100 118.232];
 data.source   = ['Newhall, Nickerson and Judd, J. Opt. Soc. Am. 33, 385-418 (1943). ' ...
     'Munsell Color Science Laboratory, RIT: ' ...
-    'https://www.rit.edu/science/munsell-color-science-lab-educational-resources'];
+    'https://www.rit.edu/science/munsell-color-science-lab-educational-resources. ' ...
+    'For research use only; see data/surfaces/munsell/README.md.'];
 
 cache.(key) = data;
 
