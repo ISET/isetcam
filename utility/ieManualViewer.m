@@ -1,7 +1,13 @@
-function ieManualViewer(mType)
+function url = ieManualViewer(mType,varargin)
 %View ISET manual information.
 %
 %   ieManualViewer(mType)
+%   url = ieManualViewer(mType,'open',false)
+%
+% Optional key/value:
+%   open - Open the browser (default true). False only returns the URL.
+% Returns:
+%   url - Documentation URL for the requested manual type.
 %
 % Open a browser into the m2html web-site to show the functions and the
 % source code.  This is not as good an overview as going to the ISETCam
@@ -25,43 +31,44 @@ ieManualViewer('iset tutorials');
 ieManualViewer('scene functions');
 %}
 
-%%  Defaults
-if ieNotDefined('mType')
-    % Take them to the ISETCam wiki
-    web('https://github.com/iset/isetcam/wiki','-browser');
-    return;
-end
+%% Defaults and browser control
+if ieNotDefined('mType'), mType = 'isetcam wiki'; end
+p = inputParser;
+p.addParameter('open',true,@(x) islogical(x) && isscalar(x));
+p.parse(varargin{:});
 
 %% Options
 
 mType = ieParamFormat(mType);
 switch mType
     case {'isetcamwiki'}
-        web('https://github.com/iset/isetcam/wiki','-browser');
+        url = 'https://github.com/iset/isetcam/wiki';
     case {'isetfunctions','isettutorials'}
         % m2html overview for old-timers
-        web('https://github.com/ISET/isetcam/wiki/Tutorials-and-scripts','-browser');
+        url = 'https://github.com/ISET/isetcam/wiki/Tutorials-and-scripts';
     case {'github'}
         % Main
-        web('https://github.com/ISET/isetcam','-browser')
+        url = 'https://github.com/ISET/isetcam';
         % Separate directories
     case {'scenefunctions'}
-        web('https://github.com/ISET/isetcam/tree/master/scene','-browser');
+        url = 'https://github.com/ISET/isetcam/tree/master/scene';
     case {'oifunctions'}
-        web('https://github.com/ISET/isetcam/tree/master/opticalimage','-browser');
+        url = 'https://github.com/ISET/isetcam/tree/master/opticalimage';
     case {'opticsfunctions'}
-        web('https://github.com/ISET/isetcam/tree/master/opticalimage/optics','-browser');
+        url = 'https://github.com/ISET/isetcam/tree/master/opticalimage/optics';
     case {'sensorfunctions'}
-        web('https://github.com/ISET/isetcam/tree/master/sensor','-browser');
+        url = 'https://github.com/ISET/isetcam/tree/master/sensor';
     case {'pixelfunctions'}
-        web('https://github.com/ISET/isetcam/tree/master/sensor/pixel','-browser');
+        url = 'https://github.com/ISET/isetcam/tree/master/sensor/pixel';
     case {'ipfunctions'}
-        web('https://github.com/ISET/isetcam/tree/master/imgproc','-browser');
+        url = 'https://github.com/ISET/isetcam/tree/master/imgproc';
     case {'metricsfunctions'}
-        web('https://github.com/ISET/isetcam/tree/master/metrics','-browser');
+        url = 'https://github.com/ISET/isetcam/tree/master/metrics';
     case {'displayfunctions'}
-        web('https://github.com/ISET/isetcam/tree/master/displays','-browser');
+        url = 'https://github.com/ISET/isetcam/tree/master/displays';
     otherwise
-        web('https://github.com/iset/isetcam/wiki','-browser');
+        url = 'https://github.com/iset/isetcam/wiki';
 end
+if p.Results.open, web(url,'-browser'); end
+
 end

@@ -25,16 +25,16 @@ tmp = oiGet(oi,'optics otf',[],550);
 assert(abs(sum(tmp(:)))/3.966187029892846e+04 - 1 < 1e-4);
 
 %%
-uData = oiPlot(oi,'otf',[],550);
+uData = oiPlot(oi,'otf',[],550,'nofigure');
 assert(abs(mean(abs(uData.otf(:)))/0.012275433296988 - 1) < tolerance);
 
-uData = oiPlot(oi,'otf',[],450);
+uData = oiPlot(oi,'otf',[],450,'nofigure');
 assert(abs(mean(abs(uData.otf(:)))/0.012275433296988- 1) < tolerance);
 
 %% Shift invariant, which defaults to diffraction limited
 oi = oiCreate('shift invariant');
-oiPlot(oi,'otf',[],550);
-oiPlot(oi,'otf',[],450);
+oiPlot(oi,'otf',[],550,'nofigure');
+oiPlot(oi,'otf',[],450,'nofigure');
 
 tmp = oiGet(oi,'optics otf',550);
 assert(abs(sum(tmp(:)))/109 -1 < 1e-4);
@@ -45,7 +45,7 @@ scene = sceneSet(scene,'fov',1);
 oi = oiCreate('wvf');
 oi = oiCompute(oi,scene);
 
-uData = oiPlot(oi,'illuminance mesh linear');
+uData = oiPlot(oi,'illuminance mesh linear',[],'nofigure');
 assert(isequal(size(uData.data),[320 320]));
 assert(mean(double(uData.data(:))/3.073368220531811 - 1) < tolerance);
 

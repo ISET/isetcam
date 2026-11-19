@@ -17,19 +17,21 @@ oi = oiCompute(oi,scene);
 sensor = sensorCreate;
 sensor = sensorCompute(sensor,oi);
 
-sensorWindow(sensor);
+originalSize = sensorGet(sensor,'size');
+testCase.verifyEqual(size(sensorGet(sensor,'volts')),originalSize);
 
 %% Set by field of view
 sensor2 = sensorSetSizeToFOV(sensor,sceneGet(scene,'fov'),oi);
 sensor2 = sensorCompute(sensor2,oi);
-sensorWindow(sensor2);
+testCase.verifyEqual(size(sensorGet(sensor2,'volts')),sensorGet(sensor2,'size'));
 
 %% Increase the size this way
 
 sz = sensorGet(sensor2,'size');
 sensor3 = sensorSet(sensor,'size',sz);
 sensor3 = sensorCompute(sensor3,oi);
-sensorWindow(sensor3);
+testCase.verifyEqual(sensorGet(sensor3,'size'),sz);
+testCase.verifyEqual(sensorGet(sensor3,'size'),sensorGet(sensor2,'size'));
 
 %%
 

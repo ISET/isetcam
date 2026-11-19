@@ -35,7 +35,7 @@ scene = sceneCreate;
 % sceneWindow(scene); pause(delay);
 
 % Plot the illuminant.
-uData = scenePlot(scene,'illuminant photons');
+uData = scenePlot(scene,'illuminant photons',[],'nofigure');
 assert(mean(uData.photons)/1.4089583e+16 - 1 < tolerance,msg);
 
 %% Replace the current illuminant with a tungsten illuminant
@@ -50,7 +50,7 @@ scene = sceneAdjustIlluminant(scene,TungstenEnergy);
 scene = sceneSet(scene,'illuminantComment','Tungsten illuminant');
 
 % sceneWindow(scene); pause(delay);
-uData = scenePlot(scene,'illuminant photons');
+uData = scenePlot(scene,'illuminant photons',[],'nofigure');
 assert(mean(uData.photons(:))/1.4548346e+16 - 1 < tolerance,msg);
 
 %% Read in a multispectral scene from data/images
@@ -58,7 +58,7 @@ assert(mean(uData.photons(:))/1.4548346e+16 - 1 < tolerance,msg);
 sceneFile = fullfile(isetRootPath,'data','images','multispectral','StuffedAnimals_tungsten-hdrs.mat');
 scene = sceneFromFile(sceneFile,'multispectral');
 % sceneWindow(scene); pause(delay);
-uData = scenePlot(scene,'illuminant energy');
+uData = scenePlot(scene,'illuminant energy',[],'nofigure');
 assert(mean(double(uData.energy(:)))/ 0.001763837502128 - 1 < tolerance,msg);
 
 %% Change the illuminant to equal energy

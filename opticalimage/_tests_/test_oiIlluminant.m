@@ -109,11 +109,11 @@ illuWave = oiGet(oi, 'illuminant wave');
 assert(isequal(size(illuPhoton),[80 120 31]));
 assert(abs(sum(illuPhoton,'all')/6.47167491633122e+22 - 1) < 1e-4);
 assert(abs(mean(illuPhoton(30:50,50:70,:),'all')/2.1566482492162e+17 - 1) < 1e-4);
-rgb = imageSPD(illuPhoton, illuWave);
+rgb = imageSPD(illuPhoton,illuWave,1,[],[],-1);
 assert(abs( mean(double(rgb(:)))/0.667954238028162 - 1 )< tolerance);
 
 %%
-uData = oiPlot(oi, 'illuminant image');
+uData = oiPlot(oi, 'illuminant image',[],'nofigure');
 assert(abs(mean(double(uData.srgb(:)))/0.693425079000493 - 1) < tolerance);
 
 %% END

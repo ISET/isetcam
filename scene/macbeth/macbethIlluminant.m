@@ -1,8 +1,8 @@
-function illPhotons = macbethIlluminant(scene)
+function illPhotons = macbethIlluminant(scene,varargin)
 % Estimate the spectral radiance of the scene illuminant from the MCC (photons)
 %
 % Synopsis
-%   illPhotons = macbethIlluminant(scene)
+%   illPhotons = macbethIlluminant(scene,'plot',true)
 %
 % Brief description
 %   Uses the MCC to estimate the spectral power distribution of the
@@ -13,6 +13,9 @@ function illPhotons = macbethIlluminant(scene)
 % Inputs
 %   scene - Uses the corner points if selected, otherwise forces the user
 %           to select the MCC corner points
+% Optional key/value:
+%   plot - Show patch selection and estimated illuminant (default true).
+%          False requires stored chart corner points and creates no figures.
 % Returns
 %   illPhotons - Estimated illuminant SPD (photons)
 %
@@ -39,6 +42,13 @@ function illPhotons = macbethIlluminant(scene)
 
 %% Check input
 assert(isequal(sceneGet(scene,'type'),'scene'))
+p = inputParser;
+p.addParameter('plot',true,@(x) islogical(x) && isscalar(x));
+p.parse(varargin{:});
+if ~p.Results.plot && isempty(sceneGet(scene,'chart corner points'))
+    error('macbethIlluminant:MissingCorners', ...
+        'Stored chart corner points are required when plot is false.');
+end
 
 %% Get data
 wave = sceneGet(scene,'wave');
@@ -49,7 +59,7 @@ mccReflectance = mccReflectance';   % XW format
 % [rects,mLocs,pSize] = chartRectangles(cp,4,6,0.5);  % MCC parameters
 
 % Spectral radiance from the macbeth patchs
-mccSPD = macbethSelect(scene);
+mccSPD = macbethSelect(scene,p.Results.plot);
 
 %% Compute
 nWave = numel(wave);
@@ -67,7 +77,9 @@ for ii=1:nWave
 
 end
 
-ieNewGraphWin;
-plot(wave,illPhotons);
+if p.Results.plot
+    ieNewGraphWin;
+    plot(wave,illPhotons);
+end
 
 end

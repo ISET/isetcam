@@ -33,14 +33,17 @@ oi = oiCreate;
 oi = oiSet(oi,'diffuser Method','blur');
 oi = oiSet(oi,'diffuser Blur',[6,2]*1e-6);  %Units are meters.
 oi = oiCompute(oi,scene);
-oiWindow(oi);
+first = oiGet(oi,'photons');
 
 % Rotate the diffusing blur direction.
 oi = oiSet(oi,'diffuserBlur',[2,6]*1e-6);  %Units are meters.
 
 oi = oiCompute(oi,scene);
-vcReplaceAndSelectObject(oi);
-oiWindow;
+second = oiGet(oi,'photons');
+testCase.verifySize(second,size(first));
+testCase.verifyGreaterThan(norm(double(first(:))-double(second(:))),0);
+testCase.verifyEqual(double(sum(first,'all')),3.33050540968185e19,'RelTol',1e-6);
+testCase.verifyEqual(double(sum(second,'all')),3.40119465833496e19,'RelTol',1e-6);
 
 %% END
 end

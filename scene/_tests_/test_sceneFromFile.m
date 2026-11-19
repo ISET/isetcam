@@ -36,7 +36,6 @@ assert(abs(mn - 30.04707249) < 1e-5);
 rng(1);
 RGB = ieClip(255*rand(10,10,3),0,255);
 scene = sceneFromFile(RGB,'rgb',100,'lcdExample');
-sceneWindow(scene);
 
 %% Now try sceneToFile with the scene data
 

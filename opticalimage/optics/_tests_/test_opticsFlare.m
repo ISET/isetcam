@@ -14,6 +14,9 @@ function testMain(testCase)
 
 %%
 ieInit;
+state = rng;
+cleanup = onCleanup(@() rng(state)); %#ok<NASGU>
+rng(12,'twister');
 
 %% A simple test scene
 scene = sceneCreate('point array',128,32);
@@ -40,35 +43,26 @@ aperture = wvfAperture(wvf,'nsides',nsides,...
 % This does not yet work.
 plotWave = 600;
 wvf = wvfCompute(wvf,'aperture',aperture);
-wvfPlot(wvf,'psf','unit','um','plot range',20,'airy disk',true,'wave',plotWave);
-
-ieNewGraphWin([], 'wide');
-subplot(1,3,1); wvfPlot(wvf,'image pupil amp','unit','um','window',false,'wave',plotWave);
-subplot(1,3,2); wvfPlot(wvf,'image pupil phase','unit','um','window',false,'wave',plotWave);
-subplot(1,3,3); wvfPlot(wvf,'image wavefront aberrations','unit','um','window',false,'wave',plotWave);
+psf = wvfGet(wvf,'psf',plotWave);
+testCase.verifyEqual(double(sum(psf,'all')),1,'AbsTol',1e-6);
+testCase.verifyGreaterThanOrEqual(psf,0);
+testCase.verifyGreaterThanOrEqual(aperture,0);
+testCase.verifyLessThanOrEqual(aperture,1);
 
 %% Convert to an OI
 oi = wvf2oi(wvf);
-[uData, fig] = oiPlot(oi,'psf 550');
-
-psfPlotrange(fig,oi);
-thisWave = wvfGet(wvf,'wave');
-AD = airyDisk(plotWave,wvfGet(wvf,'fnumber'),'diameter',true);
-title(sprintf("fNumber %.2f Wave %.0f Airy Diam %.2f",oiGet(oi,'optics fnumber'),plotWave,AD));
-
 %% oiCompute using the wvf
 oi = oiCompute(wvf,scene);
-
-% Show the oi PSF
-oiPlot(oi,'psf550');
-set(gca,'xlim',[-10 10],'ylim',[-10 10]);
 
 %% Make an image
 
 oi = oiSet(oi,'name',sprintf('wvf-%d',nsides));
 oi = oiCrop(oi,'border');
-oiWindow(oi);
-oiSet(oi,'gamma',0.5); drawnow;
+
+photons = oiGet(oi,'photons');
+testCase.verifyTrue(all(isfinite(photons(:))));
+testCase.verifyGreaterThan(mean(photons,'all'),0);
+
 
 %% HDR test scene
 
@@ -78,8 +72,11 @@ scene = sceneSet(scene,'fov',1);
 oi = oiCompute(oi,scene);
 oi = oiSet(oi,'name','wvf');
 oi = oiCrop(oi,'border');
-oiWindow(oi);
-oiSet(oi,'gamma',0.5); drawnow;
+
+photons = oiGet(oi,'photons');
+testCase.verifyTrue(all(isfinite(photons(:))));
+testCase.verifyGreaterThan(mean(photons,'all'),0);
+
 
 %% The same scene through Zhenyi's piFlareApply
 
@@ -91,8 +88,10 @@ if exist('piFlareApply','file')
         'fnumber',wvfGet(wvf,'fnumber'));
 
     oiApply = oiSet(oiApply,'name','piFlare');
-    oiWindow(oiApply);
-    oiSet(oiApply,'gamma',0.5); drawnow;
+
+    photons = oiGet(oiApply,'photons');
+    testCase.verifyTrue(all(isfinite(photons(:))));
+    testCase.verifyGreaterThan(mean(photons,'all'),0);
 end
 
 %%

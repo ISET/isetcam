@@ -1,33 +1,12 @@
-function tests = test_scene()
-tests = functiontests(localfunctions);
+function tests = test_scene
+ tests = functiontests(localfunctions);
 end
 
-function testMain(~)
-%% GUI/smoke validation for scenes
-%
-% This file exercises scene window and smoke-test behavior. The
-% quantitative sceneCombine regression lives in test_sceneCombine.
-%
-% Additional scripts of interest
-%
-%  s_XYZilluminantTransforms
-%  s_sceneReflectanceCharts
-%  s_sceneFromRGB
-%  scenePlotTest
-%
-
-%% Check GUI control
-
+function testDefaultRadiance(testCase)
+% Golden values for the default D65 Macbeth chart, without a scene window.
 scene = sceneCreate;
-sceneWindow(scene);
-sceneSet(scene,'gamma',0.5);
-sceneSet(scene,'gamma',1);
-sceneGet(scene,'mean luminance');
-
-% sceneWindow(scene);
-% drawnow;
-
-%%
-
-
+photons = double(sceneGet(scene,'photons'));
+testCase.verifyEqual(sceneGet(scene,'mean luminance'),100,'AbsTol',1e-6);
+testCase.verifyEqual(max(photons(:)),1.3119e16,'RelTol',1e-5);
+testCase.verifyEqual(mean(photons(:)),3.7624e15,'RelTol',1e-5);
 end

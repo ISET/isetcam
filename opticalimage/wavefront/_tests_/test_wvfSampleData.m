@@ -76,19 +76,16 @@ for ii = 1:nSubjects
     wvfP = wvfCompute(wvfP);
 
     % Diffraction limited
-    udataD = wvfPlot(wvfP,'1d psf angle','unit','min','wave',wList,'plotrange',maxMIN);
-    hold on;
+    lineD = wvfGet(wvfP,'1d psf',wList);
     
     % Now, set it up for the typical subject
     wvfP = wvfSet(wvfP,'zcoeffs',theZernikeCoeffs(:,ii));
     wvfP = wvfSet(wvfP,'lcaMethod','human');
     wvfP = wvfCompute(wvfP);
 
-    [udataS, pData] = wvfPlot(wvfP,'1d psf angle','unit','min','wave',wList,'plotrange',maxMIN);
-    set(pData,'color','b');
-    hold on;
+    lineS = wvfGet(wvfP,'1d psf',wList);
     
-    strehlDirect = max(udataS.y(:))/max(udataD.y(:));
+    strehlDirect = max(lineS(:))/max(lineD(:));
     assert(abs(ratios(ii) - strehlDirect) < 1e-3);
    
     % wvfPlot(wvfP,'image psf','unit','um','wave',wList,'plotrange',20);
