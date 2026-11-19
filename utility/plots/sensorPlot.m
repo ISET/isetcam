@@ -136,9 +136,11 @@ elseif capture <= ncaptures
     % Make the sensor like it has just one capture.  We put it back at the
     % end, if needed.
     store.volts = sensorGet(sensor,'volts');
+    % Digital values may be derived from volts. Read all captures before
+    % replacing volts with the selected plane.
+    store.dv = sensorGet(sensor,'dv');
     sensor = sensorSet(sensor,'volts',store.volts(:,:,capture));
     
-    store.dv = sensorGet(sensor,'dv');
     if ~isempty(store.dv)
         sensor = sensorSet(sensor,'dv',store.dv(:,:,capture));
     end

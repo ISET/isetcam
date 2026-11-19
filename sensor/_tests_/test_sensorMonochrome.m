@@ -20,7 +20,6 @@ oi = oiCreate; oi = oiCompute(oi,s);
 sensor = sensorCreate('monochrome');
 sensor = sensorSet(sensor,'noise flag',0);
 sensor = sensorCompute(sensor,oi);
-sensorWindow(sensor);
 
 volts = sensorGet(sensor,'volts');
 electrons = sensorGet(sensor,'electrons');

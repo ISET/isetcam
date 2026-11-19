@@ -1,25 +1,16 @@
-function tests = test_sensorChromaticity()
-    tests = functiontests(localfunctions);
+function tests = test_sensorChromaticity
+ tests = functiontests(localfunctions);
 end
 
-function testMain(testCase)
-%% v_sensor
-%
-%  Scripts to run sensor and pixel functions
-%
-% Copyright ImagEval Consultants, LLC, 2011.
-
+function testChromaticity(testCase)
 ieInit;
-
-%% Test chromaticity plot for sensor
-
-scene  = sceneCreate; 
-camera = cameraCreate;
-camera = cameraCompute(camera,scene);
+scene = sceneCreate;
+camera = cameraCompute(cameraCreate,scene);
 sensor = cameraGet(camera,'sensor');
-% sensorWindow(sensor);
-
-sensorPlot(sensor,'chromaticity',[20 20 40 40]);
-
-%% End
+rect = [20 20 40 40];
+rg = sensorGet(sensor,'chromaticity',rect);
+testCase.verifySize(rg,[1600 2]);
+testCase.verifyTrue(all(isfinite(rg(:))));
+testCase.verifyGreaterThanOrEqual(rg,0);
+testCase.verifyLessThanOrEqual(sum(rg,2),1+1e-12);
 end

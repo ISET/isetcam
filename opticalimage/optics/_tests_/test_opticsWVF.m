@@ -26,19 +26,8 @@ wvf = wvfSet(wvf,'lcaMethod','none');
 wvf  = wvfCompute(wvf);
 
 pRange = 10;  % Microns
-wvfPlot(wvf,'psf','unit','um','plot range',pRange,'airy disk',true);
-title(sprintf('Calculated pupil diameter %.1f mm',pupilMM));
-
-%% Compare wvf and oi methods directly
-
-wvfData = wvfPlot(wvf,'psf xaxis','unit','um','plot range',10);
-
 oi = wvf2oi(wvf);
 uData = oiGet(oi,'optics psf xaxis');
-hold on;
-plot(uData.samp,uData.data,'gs');
-legend({'wvf','Airy','oi'});
-
 % Check the summation
 assert(abs(sum(uData.data(:)) - 0.157166317909746) < 1e-3);
 
@@ -73,14 +62,9 @@ wvf  = wvfCompute(wvf);
 oi = wvf2oi(wvf);
 
 %%  Show that the diffraction limited OTFs differ by wavelength
-ieNewGraphWin([],'wide');
-otf = oiPlot(oi,'otf',[],wave(1),'mm','no window');
-subplot(1,2,1); mesh(otf.fx,otf.fy,abs(otf.otf));
-title(sprintf('Wave: %d',wave(1)));
-otf = oiPlot(oi,'otf',[],wave(end),'mm','no window');
-subplot(1,2,2); mesh(otf.fx,otf.fy,abs(otf.otf));
-title(sprintf('Wave: %d',wave(end)));
-drawnow;
+shortOTF = oiGet(oi,'optics otf',wave(1));
+longOTF = oiGet(oi,'optics otf',wave(end));
+testCase.verifyGreaterThan(mean(abs(shortOTF),'all'),mean(abs(longOTF),'all'));
 
 %% Compute with the oi and the wvf
 gridScene = sceneCreate('grid lines',384,128);
@@ -91,11 +75,9 @@ gridScene = sceneSet(gridScene,'hfov',1);
 % Create the oi
 oi = oiCompute(oi,gridScene);
 oi = oiSet(oi,'name',sprintf('oi f/# %.2f',oiGet(oi,'fnumber')));
-oiWindow(oi);
 
 %% This is the oi computed directly with the wvfP using wvfApply
 oiWVF = oiCompute(wvf,gridScene);
-oiWindow(oiWVF);
 
 % Compare the photons
 photons1 = oiGet(oi,'photons');
@@ -110,15 +92,13 @@ wvfD = wvfSet(wvfD,'lcaMethod','none');
 wvfD = wvfCompute(wvfD);
 pRange = 20;
 plotWave = 700;
-wvfPlot(wvfD,'psf','unit','um','wave',plotWave,'plot range',pRange);
-title(sprintf('Defocus %.1f D',defocus));
+
 psf500 = wvfGet(wvfD,'psf',500);
 assert(abs(max(psf500(:)) - 0.0017609) < 1e-6);
 
 %% Convert to an OI and render
 oiD = oiCompute(wvfD,gridScene);
 oiD = oiSet(oiD,'name',sprintf('oiCompute Defocus %.1f no LCA',defocus));
-oiWindow(oiD);
 photons550 = oiGet(oiD,'photons',550);
 
 testValue = 1.3731e+19;  % Updated November 2026 for the irradiance formula (Issue #22).
@@ -129,7 +109,6 @@ wvfDCA = wvfSet(wvfD,'lcaMethod','human');
 wvfDCA = wvfCompute(wvfDCA);
 oiDCA = oiCompute(wvfDCA,gridScene);
 oiDCA = oiSet(oiDCA,'name','Defocus and LCA');
-oiWindow(oiDCA);
 
 %% Add some astigmatism, still include the human LCA
 wvfVA = wvfSet(wvf,'zcoeff',0.5,'defocus');
@@ -143,12 +122,10 @@ photons550 = oiGet(oi,'photons',550);
 assert(abs((sum(photons550(:))/testValue) - 1) < 1e-3);
 
 oi = oiSet(oi,'name','vertical astig');
-oiWindow(oi);
 
 testWave = [450,550];
 for ii = 1:numel(testWave)
-    uData = oiPlot(oi,'psf',[],testWave(ii));
-    set(gca,'xlim',[-20 20],'ylim',[-20 20]);
+    uData = oiPlot(oi,'psf',[],testWave(ii),'nofigure');
 end
 
 % Check the 550 nm PSF max ...

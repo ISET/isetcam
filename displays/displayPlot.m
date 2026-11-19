@@ -6,8 +6,12 @@ function [uData, g] = displayPlot(d,param,varargin)
 % Types of plots
 %    spd or primaries  - Spectral power distributions of the primaries
 %    gamma table  - Function from digital value to relative intensity
-%    gamut        - xy chromaticity gamut
-%    gamut 3d     - LAB gamut
+%    gamut or gamut2d - xy chromaticity gamut
+%    gamut3d      - XYZ gamut surface (formerly Lab; use gamutlab for Lab)
+%    gamutlab     - Legacy Lab gamut
+%
+% gamut/gamut2d and gamut3d forward varargin to displayGamut. Their outputs
+% are gamut data and the figure handle; see displayGamut for options.
 %
 % List of displays included in ISET distribution
 %  Dell-Chevron.mat        LCD-HP.mat              OLED-Sony.mat
@@ -60,33 +64,20 @@ switch param
         uData = gTable;
         set(g,'userdata',uData);
         
-    case 'gamut'  % Plot color gamut in chromaticity (xy) space
-        spd = displayGet(d, 'spd primaries');
-        wave = displayGet(d, 'wave');
-        XYZ = ieXYZFromEnergy(spd', wave);
-        xy = chromaticity(XYZ);
-        
-        % eliminate black primary
-        indx = (sum(xy, 2) < 0.1);
-        xy(indx, :) = [];
-        
-        g = chromaticityPlot(xy, 'gray', 256);
-        xy = [xy; xy(1,:)];
-        l = line(xy(:,1),xy(:,2));
-        set(l,'color',[.6 .6 .6],'linewidth',2);
-        
-        % Store data in figure
-        uData.xy = xy;
-        set(g,'userdata',uData);
-        
-    case 'gamut3d'  % Plot display gamut in Lab space (3D)
+    case {'gamut','gamut2d'}
+        [uData, g] = displayGamut(d,varargin{:},'space','xy');
+
+    case 'gamut3d'
+        [uData, g] = displayGamut(d,varargin{:},'space','xyz');
+
+    case 'gamutlab'  % Plot display gamut in Lab space (3D)
         % check number of primaries in display
         if displayGet(d, 'n primaries') > 3
             warning('Display has more than 3 primaries');
             disp('Only first 3 primaries are used');
         end
         % create new graph
-        ieNewGraphWin; ha = gca;
+        g = ieNewGraphWin; ha = gca;
         
         % samples dac values
         nSamp  = 30;
@@ -139,6 +130,9 @@ switch param
         % title
         title('Color Gamut of display in Lab space');
         xlabel('a'); ylabel('b'); zlabel('L');
+        uData.XYZ = XYZ;
+        uData.Lab = Lab;
+        set(g,'UserData',uData);
         
     case {'psf'}
         % display the three subpixel point spread functions (psf)

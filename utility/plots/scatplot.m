@@ -91,11 +91,14 @@ y = y(:);
 idat = isfinite(x);
 x = x(idat);
 y = y(idat);
-holdstate = ishold;
-if holdstate==0
-    cla
+holdstate = false;
+if po ~= 0
+    holdstate = ishold;
+    if holdstate==0
+        cla
+    end
+    hold on
 end
-hold on
 %--------- Caclulate data density ---------
 dd = datadensity(x,y,method,radius);
 %------------- Gridding -------------------
@@ -146,7 +149,7 @@ out.xi = xi;
 out.yi = yi;
 out.zi = zi;
 out.zif = zif;
-if ~holdstate
+if po ~= 0 && ~holdstate
     hold off
 end
 return

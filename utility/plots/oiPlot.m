@@ -366,7 +366,7 @@ switch pType
         suggestedSpacing = round(max(xCoords(:))/5);
 
         % Determine actual spacing
-        if length(varargin) == 2
+        if length(varargin) >= 2
             gSpacing = varargin{2};            
         else
             gSpacing = ieReadNumber('Enter grid spacing (um)',suggestedSpacing,'%.2f');

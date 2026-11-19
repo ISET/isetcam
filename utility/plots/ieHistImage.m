@@ -9,7 +9,7 @@ function [img, xy, cmap, fhandle] = ieHistImage(X, varargin)
 %
 % Optional key/val pairs
 %   method   - Use histcn or scatplot drawing method (default: scatplot)
-%   plotFlag - logical, default true
+%   plotFlag - logical, default true. False returns data without graphics.
 %   fhandle  - Figure handle
 %   edges    - Number of edges on x and y axes 
 %
@@ -75,7 +75,7 @@ switch p.Results.histtype
         radius = sqrt((range(x)/30)^2 + (range(y)/30)^2);
         N = 100;  % Not sure
         n = 5;    % Smoothing?
-        po = 1;   % Plot options
+        po = double(plotFlag);   % Zero computes the scatter density only.
         ms = 4;   % Marker size        
         scatStruct = scatplot(x,y,method,radius,N,n,po,ms,gray(256));
         img = scatStruct.zif;
@@ -86,6 +86,7 @@ switch p.Results.histtype
 end
 
 %% We will allow more parameters here
+cmap = 0.4 + 0.6*gray(256);
 if plotFlag
     if isempty(fhandle), fhandle = ieNewGraphWin;
     else,                figure(fhandle)
@@ -93,8 +94,8 @@ if plotFlag
     
     imagesc(xy{1},xy{2},img);
     
-    axis xy; cmap = 0.4 + 0.6*gray(256);
-    colormap(0.4 + 0.6*gray(256)); colorbar
+    axis xy;
+    colormap(cmap); colorbar
     grid on; axis square;
 end
 

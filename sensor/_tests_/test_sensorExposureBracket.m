@@ -50,17 +50,17 @@ assert(sensorGet(sensor,'n captures') == numel(T1));
 % Notice on the lower right the Bracket, and how there is a slider on the
 % lower left that is labeled 'Exposure'. Adjust the slider on the lower
 % left of the window to show a different exposure duration.
-sensorWindow(sensor);
 
 %% Display the shortest exposure
 
 sensor = sensorSet(sensor,'exposure plane',1);
-vcReplaceObject(sensor); 
-sensorWindow;
+
 
 %% Longest
 sensor = sensorSet(sensor,'exposure plane',5);
-vcReplaceObject(sensor); sensorWindow;
+
+testCase.verifyEqual(sensorGet(sensor,'exposure plane'),5);
+testCase.verifyGreaterThanOrEqual(mean(volts(:,:,end),'all'),mean(volts(:,:,1),'all'));
 
 %%
 end

@@ -5,7 +5,8 @@ end
 function testMain(~)
 %% Numeric checks for representative oiPlot return data.
 
-cleanupObj = onCleanup(@localCleanupPlotState);
+existingFigures = findall(groot,'Type','figure');
+cleanupObj = onCleanup(@() localCleanupPlotState(existingFigures)); %#ok<NASGU>
 
 ieInit;
 
@@ -34,9 +35,8 @@ assert(numel(uData.freq) == 60);
 localAssertRel(mean(uData.data,'all'),0.0981732085347176,1e-6);
 localAssertRel(max(uData.data(:)),1,1e-12);
 
-% This branch needs the grid-spacing argument in its historical position,
-% so we let it make a figure and rely on the cleanup fixture.
-uData = oiPlot(oi,'irradiance image wave',[],500,40);
+% Grid spacing and nofigure can be supplied together.
+uData = oiPlot(oi,'irradiance image wave',[],500,40,'nofigure');
 assert(isequal(size(uData.irrad),[80 120]));
 assert(numel(uData.xCoords) == 120);
 assert(numel(uData.yCoords) == 80);
@@ -73,21 +73,9 @@ end
 
 end
 
-function localCleanupPlotState
+function localCleanupPlotState(existingFigures)
 %% Close figures created by oiPlot checks.
 
-try
-    delete(findall(groot,'Type','figure'));
-catch
-end
-
-try
-    testTimers = timerfindall;
-    if ~isempty(testTimers)
-        stop(testTimers);
-        delete(testTimers);
-    end
-catch
-end
+delete(setdiff(findall(groot,'Type','figure'),existingFigures));
 
 end

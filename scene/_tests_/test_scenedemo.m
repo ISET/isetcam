@@ -60,7 +60,7 @@ sceneTest = sceneCreate('freq orient pattern');
 % With this one, we might try some simple plots, such as a plot
 % of the luminance across the bottom row
 sz = sceneGet(sceneTest,'size');
-uData = scenePlot(sceneTest,'luminance hline',sz);
+uData = scenePlot(sceneTest,'luminance hline',sz,'nofigure');
 assert(mean(uData.data)/100.5751 - 1 < tolerance);
 
 % We can do this ourselves by getting the luminance of this
@@ -73,7 +73,9 @@ assert(support.x(1)/(-104.5762) - 1 < tolerance);
 
 rows = round(sceneGet(sceneTest,'rows')/2);
 assert(rows == 128,'Row test failed')
-scenePlot(sceneTest,'radiance hline',[1,rows]);
+uData = scenePlot(sceneTest,'radiance hline',[1,rows],'nofigure');
+radiance = sceneGet(sceneTest,'photons');
+testCase.verifyEqual(uData.data,squeeze(radiance(rows,:,:))');
 drawnow;
 
 %% END
