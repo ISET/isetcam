@@ -1,17 +1,24 @@
-isetcam.wiki
+# ISETCam .gitignore
+#
+# A leading "/" anchors a pattern to the repository root; patterns without
+# a slash (e.g. *.asv) match at any depth. Run-local output in local/ is
+# ignored by local/.gitignore.
+
+# OS and MATLAB editor files
 .DS_Store
-manual
-
-web/webImageBrowser/PackagingLog.html
-web/webImageBrowser/snippets_from_web/image_browser.fig
-web/webImageBrowser/snippets_from_web/image_browser.m
-web/webImageBrowser/PackagingLog.html
-
 *.asv
-data/images/multispectral/FruitMCC.mat
 
 # Personal Claude Code overrides; .claude/settings.json is shared and committed
-.claude/settings.local.json
+/.claude/settings.local.json
 
-# Downloaded model weights and generated caches
+# Separately cloned wiki and generated manual
+/isetcam.wiki
+/manual
+
+# Downloaded model weights and generated caches (see s_metricsLPIPS)
 /data/modelweights/
+
+# webImageBrowser packaging log and scratch code
+/web/webImageBrowser/PackagingLog.html
+/web/webImageBrowser/snippets_from_web/image_browser.fig
+/web/webImageBrowser/snippets_from_web/image_browser.m
