@@ -20,14 +20,14 @@
 % MATLAB R2021a+; toolboxes optional. Official VGG-16 / BAPPS-v0.1 weights.
 % First run downloads about 528 MiB; later runs use the local MAT cache.
 % Internet and a Java-enabled MATLAB session are needed for the first download.
-% The generated lpips_vgg16_weights.mat stays beside this script.
+% Downloaded checkpoints and lpips_vgg16_weights.mat stay in data/modelweights/.
 % Reference: https://richzhang.github.io/PerceptualSimilarity/
 
 %% Initialize
 blurSigma = 1.8;  % Gaussian blur standard deviation, in image pixels.
 showLayer = 3;  % 1..5: choose the layer to illustrate in detail.
 assert(ismember(showLayer,1:5));
-demoDir = fileparts(mfilename('fullpath'));
+weightsDir = fullfile(isetRootPath, 'data', 'modelweights');
 
 %% 1. Matched-MSE images
 %
@@ -70,10 +70,10 @@ title({sprintf('RGB gain = %.3f (detail preserved)',gain),sprintf('MSE = %.6g',m
 lightFigure(gcf);
 
 %% 2. Extract VGG features using the EXACT backbone used by official LPIPS.
-weightsFile = fullfile(demoDir, 'lpips_vgg16_weights.mat');
+weightsFile = fullfile(weightsDir, 'lpips_vgg16_weights.mat');
 if ~isfile(weightsFile)
-    fprintf('First run: downloading official VGG-16 and BAPPS weights (~528 MiB).\n');
-    rebuild_lpips_weights;
+    fprintf('Preparing official VGG-16 and BAPPS weights (first download ~528 MiB).\n');
+    rebuild_lpips_weights(weightsDir);
 end
 weights = load(weightsFile);
 layerNames = {'relu1_2', 'relu2_2', 'relu3_3', 'relu4_3', 'relu5_3'};
@@ -216,16 +216,15 @@ set(findall(fig,'Type','text'), 'Color','k');
 set(findall(fig,'Type','colorbar'), 'Color','k');
 end
 
-function rebuild_lpips_weights
+function rebuild_lpips_weights(weightsDir)
 % REBUILD_LPIPS_WEIGHTS Download and cache official weights using MATLAB alone.
-% Downloads about 528 MiB on the first run; saves the converted MAT file locally.
+% Keeps downloaded checkpoints and the converted MAT file in weightsDir.
 % This reads float32 tensors at known offsets in TWO CHECKSUM-PINNED official
 % legacy PyTorch checkpoints. It is deliberately not a general pickle reader.
 % No Python, PyTorch installation, or model-import add-on is used.
-demoDir = fileparts(mfilename('fullpath'));
-workDir = tempname;
-mkdir(workDir);
-cleanup = onCleanup(@() rmdir(workDir,'s')); %#ok<NASGU>
+if ~isfolder(weightsDir)
+    mkdir(weightsDir);
+end
 commit = '082bb24f84c091ea94de2867d34c4544f68e0963';
 checkpointUrls = { ...
     'https://download.pytorch.org/models/vgg16-397923af.pth', ...
@@ -234,8 +233,8 @@ checkpointUrls = { ...
 checkpointSha256 = { ...
     '397923af8e79cdbb6a7127f12361acd7a2f83e06b05044ddf496e83de57a5bf0', ...
     'a78928a0af1e5f0fcb1f3b9e8f8c3a2a5a3de244d830ad5c1feddc79b8432868'};
-vggFile = fullfile(workDir,'vgg16.pth');
-linearFile = fullfile(workDir,'vgg_lpips.pth');
+vggFile = fullfile(weightsDir,'vgg16.pth');
+linearFile = fullfile(weightsDir,'vgg_lpips.pth');
 downloadChecked(checkpointUrls{1}, vggFile, 553433881, checkpointSha256{1});
 downloadChecked(checkpointUrls{2}, linearFile, 7289, checkpointSha256{2});
 
@@ -280,7 +279,7 @@ for l = 1:5
     assert(all(isfinite(linearWeights{l}(:))) && all(linearWeights{l}(:) >= 0));
 end
 clear closeLinear
-save(fullfile(demoDir,'lpips_vgg16_weights.mat'), 'convNames','convWeights', ...
+save(fullfile(weightsDir,'lpips_vgg16_weights.mat'), 'convNames','convWeights', ...
     'convBias','linearWeights','checkpointUrls','checkpointSha256','commit','-v7');
 fprintf('Rebuilt lpips_vgg16_weights.mat from verified official checkpoints.\n');
 end
@@ -292,8 +291,10 @@ assert(n == count, 'Unexpected checkpoint tensor length.');
 end
 
 function downloadChecked(url, destination, expectedBytes, expectedHash)
-fprintf('Downloading %s\n',url);
-websave(destination,url,weboptions('Timeout',600));
+if ~isfile(destination)
+    fprintf('Downloading %s\n',url);
+    websave(destination,url,weboptions('Timeout',600));
+end
 info = dir(destination);
 assert(info.bytes == expectedBytes, 'Unexpected checkpoint file size.');
 % Java is bundled with standard desktop MATLAB; stream to bound memory use.
