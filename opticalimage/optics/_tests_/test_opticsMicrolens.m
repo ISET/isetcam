@@ -49,48 +49,41 @@ mlens = mlensCreate;
 % mlens structure itself.
 [mlens, psImages] = mlRadiance(mlens);
 
-% Show the distribution as an image
-mlIrradianceImage(mlens)
-
-plotML(mlens,'mesh pixel irradiance')
-
+% Check irradiance and phase-space arrays numerically.
 sIrradiance = mlensGet(mlens,'source irradiance');
-x = mlensGet(mlens,'x coordinate');
-ieNewGraphWin; mesh(x,x,sIrradiance);
-h = hot(255); colormap(h(50:250,:)); colorbar;
-xlabel('Position (um)');
-drawnow;
-
-%%  Phase space images
-
-x = mlensGet(mlens,'x coordinate');
-p = mlensGet(mlens,'p coordinate');
-
-ieNewGraphWin([],'tall');
-subplot(4,1,1), imagesc(x,p,psImages.source); axis image;
-subplot(4,1,2), imagesc(x,p,psImages.lens); axis image;
-subplot(4,1,3), imagesc(x,p,psImages.lensOffset); axis image;
-subplot(4,1,4), imagesc(x,p,psImages.detector); axis image;
-xlabel('x coordinate'); ylabel('p coordinate')
-drawnow;
+pIrradiance = mlensGet(mlens,'pixel irradiance');
+% Fixed regression values: MATLAB R2025b, model code at 015b1309.
+testCase.verifyEqual(sum(sIrradiance,'all'),1953,'AbsTol',1e-10);
+testCase.verifyEqual(sum(pIrradiance,'all'),595.97015625,'RelTol',1e-8);
+testCase.verifyTrue(all(isfinite(sIrradiance(:))));
+testCase.verifyGreaterThanOrEqual(sIrradiance,0);
+testCase.verifyGreaterThan(sum(pIrradiance,'all'),0);
+for name = {'source','lens','lensOffset','detector'}
+    values = psImages.(name{1});
+    testCase.verifyTrue(all(isfinite(values(:))));
+    testCase.verifyGreaterThanOrEqual(values,0);
+end
 
 %% Etendue
 
 sensor = ieGetObject('sensor');
 sensor = mlAnalyzeArrayEtendue(sensor,'no microlens');
-plotSensorEtendue(sensor);
-title('No microlens')
-drawnow;
+etendue = sensorGet(sensor,'etendue');
+testCase.verifySize(etendue,sensorGet(sensor,'size'));
+testCase.verifyTrue(all(isfinite(etendue(:))));
+testCase.verifyGreaterThanOrEqual(etendue,0);
 
 sensor = mlAnalyzeArrayEtendue(sensor,'centered');
-plotSensorEtendue(sensor);
-title('Microlens centered on each pixel')
-drawnow;
+etendue = sensorGet(sensor,'etendue');
+testCase.verifySize(etendue,sensorGet(sensor,'size'));
+testCase.verifyTrue(all(isfinite(etendue(:))));
+testCase.verifyGreaterThanOrEqual(etendue,0);
 
 sensor = mlAnalyzeArrayEtendue(sensor,'optimal');
-plotSensorEtendue(sensor);
-title('Microlens optimal on each pixel')
-drawnow;
+etendue = sensorGet(sensor,'etendue');
+testCase.verifySize(etendue,sensorGet(sensor,'size'));
+testCase.verifyTrue(all(isfinite(etendue(:))));
+testCase.verifyGreaterThanOrEqual(etendue,0);
 
 %% END
 end

@@ -151,7 +151,8 @@ axis image; colormap(gray(64));
 dxmm = sensorGet(sensor,'pixel width','mm');
 
 % Run the ISO 12233 code.  The results are stored in the window.
-ISO12233(barImage, dxmm);
+initialMTF = ISO12233(barImage,dxmm,[],'none');
+testCase.verifyGreaterThan(initialMTF.mtf50,0);
 
 %% Compare what happens when we place an IR blocking filter in the path
 
@@ -167,7 +168,7 @@ ieAddObject(sensor);
 ip = ipCompute(ip,sensor);
 
 % Compute the MTF and the Linespread function
-mtf = ieISO12233(ip);
+mtf = ieISO12233(ip,sensor,'none');
 
 %{
 ieNewGraphWin;

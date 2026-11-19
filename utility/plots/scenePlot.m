@@ -387,7 +387,7 @@ switch lower(pType)
             gSpacing = ieReadNumber('Enter grid spacing (mm)',suggestedSpacing,'%.2f');
         end
         
-        imageSPD(rad,wave,1,sz(1),sz(2),1,xCoords,yCoords);
+        imageSPD(rad,wave,1,sz(1),sz(2),1,xCoords,yCoords,g);
         xlabel('Position (mm)'); ylabel('Position (mm)');
         
         udata.rad = rad;

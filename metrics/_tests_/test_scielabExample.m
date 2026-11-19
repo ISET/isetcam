@@ -53,8 +53,7 @@ mn = mean(eImage(:));
 assert(abs(mn - 1.5118) < 0.01,'Mean error image is off');
 
 % Show the error image
-ieNewGraphWin; imagesc(eImage)
-colorbar;
+
 
 % Show the RGB images as scenes. This illustrates how the RGB data were
 % converted to SPDs using the calibrated display
@@ -167,14 +166,13 @@ edgeImage = edge(gImage,'prewitt');
 
 % imshow(edgeImage)
 % imshow(bigErr)
-ieNewGraphWin;
 overlay = 1 + edgeImage + 2*bigErr;
 overlayMap = ...
     [0 0 0;
     0.5 0.5 0.5;
     1, 0, 0;
     0, 1, 0];
-image(overlay); colormap(overlayMap)
+testCase.verifyTrue(all(overlay(:) >= 1 & overlay(:) <= 4));
 
 %% calculate the mean DE for values greater than 2
 count = 0;

@@ -4,6 +4,9 @@ function results = ieUnitTest()
 % This script automatically discovers all `_tests_` directories
 % within the ISETCam workspace, agglomerates them into a master
 % test suite, and runs them.
+% Numerical regression tests use golden values or analytic invariants. Plot
+% data are requested without displaying figures; test_windowPosition is the
+% single smoke test that opens scene, oi, sensor, and ip app windows.
 %
 % Usage:
 %   results = ieUnitTest;

@@ -1,33 +1,24 @@
-function tests = test_ipDemosaicShift()
-    tests = functiontests(localfunctions);
+function tests = test_ipDemosaicShift
+ tests = functiontests(localfunctions);
 end
 
-function testMain(testCase)
-%% v_demosaic
-
-% GG says that there is a shift in the position of the line caused by the
-% demosaicking algorithm.  She sent a clear email about this
-
-%%
-ieInit
-
-%%
+function testLineLocation(testCase)
+% Both demosaicers should keep a centered line at the same image column.
+ieInit;
 scene = sceneCreate('line ee');
-sceneWindow(scene);
-
-%%
-c = cameraCreate;
-c = cameraSet(c,'ip demosaic method','bilinear');
-c = cameraCompute(c,scene);
-ipWindow(c.vci);
-
-%%
-c = cameraSet(c,'ip demosaic method','Laplacian');
-c = cameraCompute(c,scene);
-ipWindow(c.vci);
-
-%%
-drawnow;
-
-%% END
+camera = cameraCreate;
+sensor = sensorSet(cameraGet(camera,'sensor'),'noise flag',0);
+camera = cameraSet(camera,'sensor',sensor);
+locations = zeros(2,3);
+methods = {'bilinear','Laplacian'};
+for ii = 1:2
+    camera = cameraSet(camera,'ip demosaic method',methods{ii});
+    camera = cameraCompute(camera,scene);
+    ip = cameraGet(camera,'ip');
+    rgb = ipGet(ip,'results');
+    testCase.verifyTrue(all(isfinite(rgb(:))));
+    profile = squeeze(sum(rgb,1));
+    [~,locations(ii,:)] = max(profile,[],1);
+end
+testCase.verifyEqual(locations(1,:),locations(2,:),'AbsTol',1);
 end

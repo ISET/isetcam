@@ -26,14 +26,14 @@ oi = oiCompute(oi,scene);
 sensor = sensorCreate('human');
 sensor = sensorSet(sensor,'exptime',0.2);
 sensor = sensorCompute(sensor,oi);
-sensorWindow(sensor);
+testCase.verifyEqual(size(sensorGet(sensor,'volts')),sensorGet(sensor,'size'));
 
 %% Something funny happens with the exposure duration.
 rows = [10,10]; cols = [10,10];
 sensor2 = sensorHumanResize(sensor,rows,cols);
 sensor2 = sensorSet(sensor2,'exptime',0.2);
 sensor2 = sensorCompute(sensor2,oi);
-sensorWindow(sensor2);
+testCase.verifyEqual(sensorGet(sensor2,'size'),sensorGet(sensor,'size')+[20 20]);
 
 %%
 rows = [-10,-10]; cols = [-10,-10];
@@ -47,14 +47,17 @@ sensor4 = sensorHumanResize(sensor,rows,cols);
 sensor4 = sensorSet(sensor4,'exptime',0.2);
 sensor4 = sensorCompute(sensor4,oi);
 v = sensorGet(sensor4,'volts');
-sensorWindow(sensor4);
+testCase.verifyEqual(sensorGet(sensor4,'size'),sensorGet(sensor,'size')+[50 0]);
 
 %%
 rows = [-50,0]; cols = [0,0];
 sensor5 = sensorHumanResize(sensor4,rows,cols);
 sensor5 = sensorSet(sensor5,'volts',v(51:end,:));
 % ieNewGraphWin; v2 = sensorGet(sensor5,'volts'); imagesc(v2)
-sensorWindow(sensor5);
+testCase.verifyEqual(sensorGet(sensor5,'size'),sensorGet(sensor,'size'));
+
+testCase.verifyEqual(sensorGet(sensor3,'size'),sensorGet(sensor,'size'));
+testCase.verifyEqual(sensorGet(sensor5,'volts'),v(51:end,:));
 
 %% END
 

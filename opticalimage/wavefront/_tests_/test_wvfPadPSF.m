@@ -90,14 +90,7 @@ uDataOTF = oiPlot(oi,'illuminance hline',round([1 sz(2)/2]),'nofigure');
 d1 = ieScale(uDataOTF.data,1);
 d2 = ieScale(uDataPSF.data,1);
 
-ieFigure([],'tall');
-tiledlayout(2,1);
-nexttile;
-plot(uDataOTF.pos,d1,'ro',uDataPSF.pos,d1,'gs');
-grid on;  title('No shift'); legend({'OTF','PSF'});
-nexttile;
-plot(d1,d2,'k.');
-identityLine;
+
 
 assert(max( abs(d1 - d2) ) < 2e-2)
 

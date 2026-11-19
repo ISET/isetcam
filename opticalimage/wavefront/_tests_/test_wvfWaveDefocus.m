@@ -46,28 +46,20 @@ wList = wvfGet(wvfP,'wave');
 wvfP = wvfSet(wvfP,'lcaMethod','human');
 wvfParams = wvfCompute(wvfP);
 
-%% Plot the series of lines
-f = ieFigure([],'tall');
-for ii=1:nWave
-    subplot(nWave,1,ii)
-    [f,p] = wvfPlot(wvfParams,'image psf','unit','um','wave',wList(ii),'plotrange',maxUM,'window',false);
-    title(sprintf('wave %d',wList(ii)));
+% Human LCA should spread the PSF away from the nominal focus wavelength.
+peaks = zeros(size(wList));
+for ii = 1:nWave
+    psf = wvfGet(wvfParams,'psf',wList(ii));
+    testCase.verifyTrue(all(isfinite(psf(:))));
+    testCase.verifyGreaterThanOrEqual(psf,0);
+    testCase.verifyEqual(sum(psf,'all'),1,'AbsTol',1e-6);
+    peaks(ii) = max(psf(:));
 end
-
-% Alternative plotting method
-% [~,p] = wvfPlot(wvfParams,'1d psf angle','min',ii,maxMIN);
-
-%% Plot the series of point spreads
-ieFigure([],'tall');
-for ii=1:nWave
-    subplot(nWave,1,ii)
-    wvfPlot(wvfParams,'image psf','unit','um','wave',wList(ii),'plotrange',maxUM,'window',false);
-    title(sprintf('wave %d',wList(ii)));
-end
-
-%% End
-
-
-
-
+focus = find(wList == 550);
+% Fixed regression values: MATLAB R2025b, model code at 015b1309.
+expectedPeaks = [0.000180921831262 0.000508675424493 0.00316845014637 ...
+    0.0268557708968 0.0106743106183 0.00176826080453 0.000991354845476];
+testCase.verifyEqual(peaks(:)',expectedPeaks,'RelTol',1e-6);
+testCase.verifyGreaterThan(peaks(focus),peaks(1));
+testCase.verifyGreaterThan(peaks(focus),peaks(end));
 end

@@ -1,50 +1,24 @@
-function tests = test_saveImage()
-    tests = functiontests(localfunctions);
+function tests = test_saveImage
+ tests = functiontests(localfunctions);
 end
 
-function testMain(testCase)
-% v_saveImage:
-%
-% Validate the xxSaveImage functions
-%
-% Not well done, yet
-%
-%
-
-%%
-ieInit
-chdir(fullfile(isetRootPath,'local'))
-
-%% We save the image data from various windows to a file
+function testSavedPixels(testCase)
+% Check exported pixel values instead of displaying and rereading images.
+ieInit;
+folder = tempname;
+mkdir(folder);
+cleanup = onCleanup(@() rmdir(folder,'s')); %#ok<NASGU>
 scene = sceneCreate;
-camera = cameraCreate;
-camera = cameraCompute(camera,scene);
-cameraWindow(camera,'ip');
-
-%%
-fName = 'deleteMe';
-sceneWindow(scene);
-outputPNG = sceneSaveImage(scene,fName);
-img = imread(outputPNG);
-ieNewGraphWin; image(img);
-delete(outputPNG);
-
-%%
-ip = cameraGet(camera,'oi');
-outputPNG = oiSaveImage(ip,'deleteMe');   % PNG is appended
-img = imread(outputPNG); ieNewGraphWin; image(img);
-delete(outputPNG);
-
-%% No sensor case implemented (yet)
-
-%% Image processing window
+camera = cameraCompute(cameraCreate,scene);
+file = sceneSaveImage(scene,fullfile(folder,'scene'));
+expected = sceneShowImage(scene,-1,sceneGet(scene,'gamma'));
+testCase.verifyEqual(imread(file),im2uint8(expected));
+oi = cameraGet(camera,'oi');
+file = oiSaveImage(oi,fullfile(folder,'oi'));
+expected = oiShowImage(oi,-1,oiGet(oi,'gamma'));
+testCase.verifyEqual(imread(file),im2uint8(expected));
 ip = cameraGet(camera,'ip');
-showImageFlag = true; trueSizeFlag = true;
-fName = ipSaveImage(ip,'deleteMe',showImageFlag,trueSizeFlag);   % PNG is appended
-
-img = imread(fName);
-ieNewGraphWin; image(img);
-delete(fName);
-
-%% END
+file = ipSaveImage(ip,fullfile(folder,'ip'),false,false);
+expected = imageShowImage(ip,ipGet(ip,'display gamma'),true,0);
+testCase.verifyEqual(imread(file),im2uint8(expected));
 end

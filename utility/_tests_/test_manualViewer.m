@@ -1,36 +1,27 @@
-function tests = test_manualViewer()
-    tests = functiontests(localfunctions);
+function tests = test_manualViewer
+ tests = functiontests(localfunctions);
 end
 
-function testMain(testCase)
-%% Validate web page viewer for manuals
-%
-%
-
-%%
-ieInit;
-
-%%
-ieManualViewer('isetcam wiki')
-
-disp('Try the individual pages that are in v_icam_manualViewer')
-
-%{
-% Tutorials
-ieManualViewer('iset functions')
-
-% Scene
-ieManualViewer('scene functions')
-
-% OI/optics
-ieManualViewer('oi functions')
-ieManualViewer('optics functions')
-
-ieManualViewer('sensor functions')
-ieManualViewer('pixel functions')
-
-ieManualViewer('ip functions')
-ieManualViewer('metrics functions')
-%}
-%%
+function testDocumentationURLs(testCase)
+% Golden URLs check routing without opening external browser windows.
+types = {'isetcam wiki','iset functions','iset tutorials','github', ...
+    'scene functions','oi functions','optics functions','sensor functions', ...
+    'pixel functions','ip functions','metrics functions','display functions'};
+expected = {'https://github.com/iset/isetcam/wiki', ...
+    'https://github.com/ISET/isetcam/wiki/Tutorials-and-scripts', ...
+    'https://github.com/ISET/isetcam/wiki/Tutorials-and-scripts', ...
+    'https://github.com/ISET/isetcam', ...
+    'https://github.com/ISET/isetcam/tree/master/scene', ...
+    'https://github.com/ISET/isetcam/tree/master/opticalimage', ...
+    'https://github.com/ISET/isetcam/tree/master/opticalimage/optics', ...
+    'https://github.com/ISET/isetcam/tree/master/sensor', ...
+    'https://github.com/ISET/isetcam/tree/master/sensor/pixel', ...
+    'https://github.com/ISET/isetcam/tree/master/imgproc', ...
+    'https://github.com/ISET/isetcam/tree/master/metrics', ...
+    'https://github.com/ISET/isetcam/tree/master/displays'};
+for ii=1:numel(types)
+    testCase.verifyEqual(ieManualViewer(types{ii},'open',false),expected{ii});
+end
+testCase.verifyEqual(ieManualViewer([],'open',false),expected{1});
+testCase.verifyEqual(ieManualViewer('unknown','open',false),expected{1});
 end

@@ -84,12 +84,7 @@ if showBar, close(wBar); end
 % # ITEM2
 %
 
-ieNewGraphWin;
-plot(dE(:),dES(:),'o')
-title('CIELAB vs. SCIELAB for uniform patches')
-xlabel('CIELAB \Delta E')
-ylabel('SCIELAB \Delta E')
-axis on; grid on; identityLine;
+testCase.verifyEqual(dES,dE,'AbsTol',0.05);
 
 % Store a hash of the quantized dES values.  Weird.  Why not just use
 % mean(dES(:))

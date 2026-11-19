@@ -38,17 +38,6 @@ end
 
 %% Plot the relationships
 
-ieNewGraphWin([],'tall');
-tiledlayout(2,1);
-nexttile; plot(angval,deval,'-o');
-xlabel('Vector angle'); ylabel('\Delta E');
-identityLine;
-grid on; title('Standard D4000')
-
-nexttile, plot(angval,miredval,'-o');
-xlabel('Angle'); ylabel('Mired');
-identityLine;
-grid on;
 
 %%
 assert(abs(miredval(end) - 114.3814) < 1e-4);
@@ -66,17 +55,6 @@ for ii=1:numel(ctemp)
     miredval(ii) = metricsSPD(s1,s2,'metric','mired','wave',wave);
 end
 
-ieNewGraphWin([],'tall');
-tiledlayout(2,1);
-nexttile, plot(angval,deval,'-o');
-xlabel('Angle'); ylabel('\Delta E');
-identityLine;
-grid on; title('Standard D6500')
-
-nexttile, plot(angval,miredval,'-o');
-xlabel('Angle'); ylabel('Mired');
-identityLine;
-grid on;
 
 %%
 assert(abs(miredval(end) - 12.0726) < 1e-4);
